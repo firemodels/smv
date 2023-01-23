@@ -2878,20 +2878,28 @@ void UpdateBoundInfo(void){
   }
 
   int nhvacboundsmax = 0;
-  if(hvacvalsinfo != NULL)nhvacboundsmax = hvacvalsinfo->n_duct_vars + hvacvalsinfo->n_node_vars;
+  if(hvacductvalsinfo != NULL)nhvacboundsmax += hvacductvalsinfo->n_duct_vars;
+  if(hvacnodevalsinfo != NULL)nhvacboundsmax += hvacnodevalsinfo->n_node_vars;
   if(nhvacboundsmax>0){
-    FREEMEMORY(hvacbounds);
-    NewMemory((void*)&hvacbounds,nhvacboundsmax*sizeof(boundsdata));
-    nhvacbounds=0;
+    FREEMEMORY(hvacductbounds);
+    NewMemory((void*)&hvacductbounds,hvacductvalsinfo->n_duct_vars*sizeof(boundsdata));
+    nhvacductbounds=0;
+
+    FREEMEMORY(hvacnodebounds);
+    NewMemory((void*)&hvacnodebounds,hvacnodevalsinfo->n_node_vars*sizeof(boundsdata));
+    nhvacnodebounds=0;
+
     for(i=0;i<nhvacboundsmax;i++){
       hvacvaldata *hi;
       boundsdata *hbi;
 
-      if(i<hvacvalsinfo->n_duct_vars){
-        hi = hvacvalsinfo->duct_vars + i;
+      if(i<hvacductvalsinfo->n_duct_vars){
+        hi = hvacductvalsinfo->duct_vars + i;
+        hbi = hvacductbounds + nhvacductbounds;
       }
       else{
-        hi = hvacvalsinfo->node_vars + i - hvacvalsinfo->n_duct_vars;
+        hi = hvacnodevalsinfo->node_vars + i - hvacductvalsinfo->n_duct_vars;
+        hbi = hvacnodebounds + nhvacnodebounds;
       }
       hi->firstshort=1;
       hi->valmin=1.0;
@@ -2899,7 +2907,6 @@ void UpdateBoundInfo(void){
       hi->setvalmin=0;
       hi->setvalmax=0;
 
-      hbi = hvacbounds + nhvacbounds;
       hbi->shortlabel       = hi->label.shortlabel;
       hbi->dlg_setvalmin    = PERCENTILE_MIN;
       hbi->dlg_setvalmax    = PERCENTILE_MAX;
@@ -2913,19 +2920,32 @@ void UpdateBoundInfo(void){
       hbi->line_contour_max = 1.0;
       hbi->line_contour_num = 1;
       hbi->label            = &(hi->label);
-      nhvacbounds++;
-      for(n=0;n<i;n++){
+      int nbeg;
+      if(i<hvacductvalsinfo->n_duct_vars){
+        nbeg = 0;
+        nhvacductbounds++;
+      }
+      else{
+        nbeg = hvacductvalsinfo->n_duct_vars;
+        nhvacnodebounds++;
+      }
+      for(n=nbeg;n<i;n++){
         hvacvaldata *hn;
 
-        if(n<hvacvalsinfo->n_duct_vars){
-          hn = hvacvalsinfo->duct_vars + n;
+        if(n<hvacductvalsinfo->n_duct_vars){
+          hn = hvacductvalsinfo->duct_vars + n;
         }
         else{
-          hn = hvacvalsinfo->node_vars + n - hvacvalsinfo->n_duct_vars;
+          hn = hvacnodevalsinfo->node_vars + n - hvacductvalsinfo->n_duct_vars;
         }
         if(strcmp(hi->label.shortlabel,hn->label.shortlabel)==0){
           hi->firstshort=0;
-          nhvacbounds--;
+          if(n<hvacductvalsinfo->n_duct_vars){
+            nhvacductbounds--;
+          }
+          else{
+            nhvacnodebounds--;
+          }
           break;
         }
       }
@@ -2935,7 +2955,8 @@ void UpdateBoundInfo(void){
   GetGlobalPartBounds(ALL_FILES);
   GetGlobalSliceBounds();
   GetGlobalPatchBounds();
-  GetGlobalHVACBounds(0);
+  GetGlobalHVACDuctBounds(0);
+  GetGlobalHVACNodeBounds(0);
 }
 
 /*
@@ -7607,42 +7628,44 @@ int ReadSMV(bufferstreamdata *stream){
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   */
     if(MatchSMV(buffer, "HVACVALS") == 1){
-      FREEMEMORY(hvacvalsinfo);
-      NewMemory(( void ** )&hvacvalsinfo, sizeof(hvacvalsdata));
-      hvacvalsinfo->times = NULL;
-      hvacvalsinfo->loaded = 0;
+      FREEMEMORY(hvacductvalsinfo);
+      NewMemory(( void ** )&hvacductvalsinfo, sizeof(hvacvalsdata));
+      hvacductvalsinfo->times = NULL;
+      hvacductvalsinfo->loaded = 0;
 
       if(FGETS(buffer, 255, stream) == NULL)BREAK;
-      hvacvalsinfo->file = GetCharPtr(TrimFrontBack(buffer));
+      hvacductvalsinfo->file = GetCharPtr(TrimFrontBack(buffer));
 
       if(FGETS(buffer, 255, stream) == NULL)BREAK;
-      sscanf(buffer, "%i", &hvacvalsinfo->n_node_vars);
+      sscanf(buffer, "%i", &hvacductvalsinfo->n_node_vars);
 
-      NewMemory((void **)&hvacvalsinfo->node_vars, hvacvalsinfo->n_node_vars * sizeof(hvacvaldata));
-      for(i = 0;i < hvacvalsinfo->n_node_vars;i++){
+      NewMemory((void **)&hvacductvalsinfo->node_vars, hvacductvalsinfo->n_node_vars * sizeof(hvacvaldata));
+      for(i = 0;i < hvacductvalsinfo->n_node_vars;i++){
         hvacvaldata *hi;
         flowlabels *labeli;
 
-        hi = hvacvalsinfo->node_vars + i;
+        hi = hvacductvalsinfo->node_vars + i;
         InitHvacData(hi);
         labeli = &hi->label;
         ReadLabels(labeli, stream, NULL);
       }
       
       if(FGETS(buffer, 255, stream) == NULL)BREAK;
-      sscanf(buffer, "%i", &hvacvalsinfo->n_duct_vars);
+      sscanf(buffer, "%i", &hvacductvalsinfo->n_duct_vars);
       
-      NewMemory((void **)&hvacvalsinfo->duct_vars, hvacvalsinfo->n_duct_vars * sizeof(hvacvaldata));
-      for(i = 0;i < hvacvalsinfo->n_duct_vars;i++){
+      NewMemory((void **)&hvacductvalsinfo->duct_vars, hvacductvalsinfo->n_duct_vars * sizeof(hvacvaldata));
+      for(i = 0;i < hvacductvalsinfo->n_duct_vars;i++){
         hvacvaldata *hi;
         flowlabels *labeli;
 
-        hi = hvacvalsinfo->duct_vars + i;
+        hi = hvacductvalsinfo->duct_vars + i;
         InitHvacData(hi);
         labeli = &hi->label;
         ReadLabels(labeli, stream, NULL);
       }
-
+      FREEMEMORY(hvacnodevalsinfo);
+      NewMemory(( void ** )&hvacnodevalsinfo, sizeof(hvacvalsdata));
+      memcpy(hvacnodevalsinfo, hvacductvalsinfo, sizeof(hvacvalsdata));
     }
     /*
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -11651,19 +11674,37 @@ int GetNewBoundIndex(int old_index){
   return bound_map[old_index];
 }
 
-/* ------------------ SetHVACBounds ------------------------ */
+/* ------------------ SetHVACDuctBounds ------------------------ */
 
-void SetHVACBounds(int set_valmin, float valmin, int set_valmax, float valmax, char *quantity){
+void SetHVACDuctBounds(int set_valmin, float valmin, int set_valmax, float valmax, char *quantity){
   int i;
 
-  for(i = 0; i < nhvacbounds; i++){
+  for(i = 0; i < nhvacductbounds; i++){
     boundsdata *boundi;
 
-    boundi = hvacbounds + i;
+    boundi = hvacductbounds + i;
     if(strcmp(quantity, "") == 0 || strcmp(quantity, boundi->shortlabel) == 0){
-      hvacbounds[i].dlg_setvalmin = glui_setpatchmin;
-      hvacbounds[i].dlg_setvalmax = glui_setpatchmax;
-      SetMinMax(BOUND_HVAC, boundi->shortlabel, set_valmin, valmin, set_valmax, valmax);
+      hvacductbounds[i].dlg_setvalmin = glui_setpatchmin;
+      hvacductbounds[i].dlg_setvalmax = glui_setpatchmax;
+      SetMinMax(BOUND_HVACDUCT, boundi->shortlabel, set_valmin, valmin, set_valmax, valmax);
+      update_glui_bounds = 1;
+    }
+  }
+}
+
+/* ------------------ SetHVACNodeBounds ------------------------ */
+
+void SetHVACNodeBounds(int set_valmin, float valmin, int set_valmax, float valmax, char *quantity){
+  int i;
+
+  for(i = 0; i < nhvacnodebounds; i++){
+    boundsdata *boundi;
+
+    boundi = hvacnodebounds + i;
+    if(strcmp(quantity, "") == 0 || strcmp(quantity, boundi->shortlabel) == 0){
+      hvacnodebounds[i].dlg_setvalmin = glui_setpatchmin;
+      hvacnodebounds[i].dlg_setvalmax = glui_setpatchmax;
+      SetMinMax(BOUND_HVACNODE, boundi->shortlabel, set_valmin, valmin, set_valmax, valmax);
       update_glui_bounds = 1;
     }
   }
@@ -13195,19 +13236,38 @@ int ReadIni2(char *inifile, int localfile){
       update_chop_colors = 1;
       continue;
     }
-    if(MatchINI(buffer, "V2_HVAC") == 1){
+    if(MatchINI(buffer, "V2_HVACDUCT") == 1){
+      int sethvacductmin, sethvacductmax;
+      float hvacductmin, hvacductmax;
+
       fgets(buffer, 255, stream);
       TrimBack(buffer);
       strcpy(buffer2, "");
-      sscanf(buffer, "%i %f %i %f %s", &glui_setpatchmin, &glui_patchmin, &glui_setpatchmax, &glui_patchmax, buffer2);
-      if(
-        glui_sethvacmin == BOUND_SET_MIN || glui_sethvacmin == BOUND_PERCENTILE_MIN ||
-        glui_sethvacmax == BOUND_SET_MAX || glui_sethvacmax == BOUND_PERCENTILE_MAX
-        ){
+      sscanf(buffer, "%i %f %i %f %s", &sethvacductmin, &hvacductmin, &sethvacductmax, &hvacductmax, buffer2);
+      if(sethvacductmin != BOUND_SET_MIN)sethvacductmin = BOUND_LOADED_MIN;
+      if(sethvacductmax != BOUND_SET_MAX)sethvacductmax = BOUND_LOADED_MAX;
+      if(sethvacductmin == BOUND_SET_MIN || sethvacductmax == BOUND_SET_MAX){
         research_mode = 0;
         update_research_mode = 1;
       }
-      SetHVACBounds(glui_setpatchmin, glui_patchmin, glui_setpatchmax, glui_patchmax, buffer2);
+      SetHVACDuctBounds(sethvacductmin, hvacductmin, sethvacductmax, hvacductmax, buffer2);
+      continue;
+    }
+    if(MatchINI(buffer, "V2_HVACNODE") == 1){
+      int sethvacnodemin, sethvacnodemax;
+      float hvacnodemin, hvacnodemax;
+
+      fgets(buffer, 255, stream);
+      TrimBack(buffer);
+      strcpy(buffer2, "");
+      sscanf(buffer, "%i %f %i %f %s", &sethvacnodemin, &hvacnodemin, &sethvacnodemax, &hvacnodemax, buffer2);
+      if(sethvacnodemin != BOUND_SET_MIN)sethvacnodemin = BOUND_LOADED_MIN;
+      if(sethvacnodemax != BOUND_SET_MAX)sethvacnodemax = BOUND_LOADED_MAX;
+      if(sethvacnodemin == BOUND_SET_MIN || sethvacnodemax == BOUND_SET_MAX){
+        research_mode = 0;
+        update_research_mode = 1;
+      }
+      SetHVACNodeBounds(sethvacnodemin, hvacnodemin, sethvacnodemax, hvacnodemax, buffer2);
       continue;
     }
     if(MatchINI(buffer, "V_ZONE") == 1){
@@ -15847,15 +15907,27 @@ void WriteIniLocal(FILE *fileout){
     }
     }
   }
-  if(nhvacbounds > 0){
-    for(i = 0; i < nhvacbounds; i++){
-      fprintf(fileout, "V2_HVAC\n");
+  if(nhvacductbounds > 0){
+    for(i = 0; i < nhvacductbounds; i++){
+      fprintf(fileout, "V2_HVACDUCT\n");
       int set_valmin = 0, set_valmax = 0;
       float valmin = 1.0, valmax = 0.0;
       char *label;
 
-      label = hvacbounds[i].label->shortlabel;
-      GetMinMax(BOUND_HVAC, label, &set_valmin, &valmin, &set_valmax, &valmax);
+      label = hvacductbounds[i].label->shortlabel;
+      GetMinMax(BOUND_HVACDUCT, label, &set_valmin, &valmin, &set_valmax, &valmax);
+      fprintf(fileout, " %i %f %i %f %s\n", set_valmin, valmin, set_valmax, valmax, label);
+    }
+  }
+  if(nhvacnodebounds > 0){
+    for(i = 0; i < nhvacnodebounds; i++){
+      fprintf(fileout, "V2_HVACNODE\n");
+      int set_valmin = 0, set_valmax = 0;
+      float valmin = 1.0, valmax = 0.0;
+      char *label;
+
+      label = hvacnodebounds[i].label->shortlabel;
+      GetMinMax(BOUND_HVACNODE, label, &set_valmin, &valmin, &set_valmax, &valmax);
       fprintf(fileout, " %i %f %i %f %s\n", set_valmin, valmin, set_valmax, valmax, label);
     }
   }

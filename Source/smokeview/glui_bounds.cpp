@@ -394,7 +394,14 @@ void bounds_dialog::setup(const char *file_type, GLUI_Rollout *ROLLOUT_dialog, c
   percentile_enabled = percentile_enabled_arg;
 
 // bound min/max
-  ROLLOUT_main_bound = glui_bounds->add_rollout_to_panel(ROLLOUT_dialog, _("Bound/Truncate data"), false, 0, PROC_CB);
+  char main_label[256];
+  if(strcmp(file_type, "hvac") == 0){
+    strcpy(main_label, "Bound data");
+  }
+  else{
+    strcpy(main_label, "Bound/Truncate data");
+  }
+  ROLLOUT_main_bound = glui_bounds->add_rollout_to_panel(ROLLOUT_dialog, main_label, false, 0, PROC_CB);
   INSERT_ROLLOUT(ROLLOUT_main_bound, glui_bounds);
   ADDPROCINFO(procinfo, *nprocinfo, ROLLOUT_main_bound, 0, glui_bounds);
 
@@ -553,27 +560,29 @@ void bounds_dialog::setup(const char *file_type, GLUI_Rollout *ROLLOUT_dialog, c
 
 //*** chop above/below
 
-  ROLLOUT_truncate = glui_bounds->add_rollout_to_panel(PANEL_bound2, "Truncate data",false);
+  if(strcmp(file_type, "hvac") != 0){
+    ROLLOUT_truncate = glui_bounds->add_rollout_to_panel(PANEL_bound2, "Truncate data", false);
 
-  PANEL_truncate_max = glui_bounds->add_panel_to_panel(ROLLOUT_truncate, "", GLUI_PANEL_NONE);
-  EDIT_chopmax = glui_bounds->add_edittext_to_panel(PANEL_truncate_max, "", GLUI_EDITTEXT_FLOAT, &(bounds.chopmax), BOUND_CHOPMAX, Callback);
-  glui_bounds->add_column_to_panel(PANEL_truncate_max, false);
-  STATIC_chopmax_unit = glui_bounds->add_statictext_to_panel(PANEL_truncate_max, "");
-  STATIC_chopmax_unit->set_w(10);
-  glui_bounds->add_column_to_panel(PANEL_truncate_max, false);
-  CHECKBOX_set_chopmax = glui_bounds->add_checkbox_to_panel(PANEL_truncate_max, _("Above"), &(bounds.set_chopmax), BOUND_SETCHOPMAX, Callback);
+    PANEL_truncate_max = glui_bounds->add_panel_to_panel(ROLLOUT_truncate, "", GLUI_PANEL_NONE);
+    EDIT_chopmax = glui_bounds->add_edittext_to_panel(PANEL_truncate_max, "", GLUI_EDITTEXT_FLOAT, &(bounds.chopmax), BOUND_CHOPMAX, Callback);
+    glui_bounds->add_column_to_panel(PANEL_truncate_max, false);
+    STATIC_chopmax_unit = glui_bounds->add_statictext_to_panel(PANEL_truncate_max, "");
+    STATIC_chopmax_unit->set_w(10);
+    glui_bounds->add_column_to_panel(PANEL_truncate_max, false);
+    CHECKBOX_set_chopmax = glui_bounds->add_checkbox_to_panel(PANEL_truncate_max, _("Above"), &(bounds.set_chopmax), BOUND_SETCHOPMAX, Callback);
 
-  PANEL_truncate_min = glui_bounds->add_panel_to_panel(ROLLOUT_truncate, "", GLUI_PANEL_NONE);
-  EDIT_chopmin = glui_bounds->add_edittext_to_panel(PANEL_truncate_min, "", GLUI_EDITTEXT_FLOAT, &(bounds.chopmin), BOUND_CHOPMIN, Callback);
-  glui_bounds->add_column_to_panel(PANEL_truncate_min, false);
-  STATIC_chopmin_unit = glui_bounds->add_statictext_to_panel(PANEL_truncate_min, "");
-  STATIC_chopmin_unit->set_w(10);
-  glui_bounds->add_column_to_panel(PANEL_truncate_min, false);
-  CHECKBOX_set_chopmin = glui_bounds->add_checkbox_to_panel(PANEL_truncate_min, _("Below"), &(bounds.set_chopmin), BOUND_SETCHOPMIN, Callback);
+    PANEL_truncate_min = glui_bounds->add_panel_to_panel(ROLLOUT_truncate, "", GLUI_PANEL_NONE);
+    EDIT_chopmin = glui_bounds->add_edittext_to_panel(PANEL_truncate_min, "", GLUI_EDITTEXT_FLOAT, &(bounds.chopmin), BOUND_CHOPMIN, Callback);
+    glui_bounds->add_column_to_panel(PANEL_truncate_min, false);
+    STATIC_chopmin_unit = glui_bounds->add_statictext_to_panel(PANEL_truncate_min, "");
+    STATIC_chopmin_unit->set_w(10);
+    glui_bounds->add_column_to_panel(PANEL_truncate_min, false);
+    CHECKBOX_set_chopmin = glui_bounds->add_checkbox_to_panel(PANEL_truncate_min, _("Below"), &(bounds.set_chopmin), BOUND_SETCHOPMIN, Callback);
 
-  Callback(BOUND_VAL_TYPE);
-  Callback(BOUND_SETCHOPMIN);
-  Callback(BOUND_SETCHOPMAX);
+    Callback(BOUND_VAL_TYPE);
+    Callback(BOUND_SETCHOPMIN);
+    Callback(BOUND_SETCHOPMAX);
+  }
   if(cache_flag!=NULL&&percentile_enabled==1){
     Callback(BOUND_CACHE_DATA);
     if(strcmp(file_type, "hvac") != 0){
@@ -1142,7 +1151,7 @@ void bounds_dialog::CB(int var){
 };
 
 bounds_dialog patchboundsCPP, partboundsCPP, plot3dboundsCPP, sliceboundsCPP;
-bounds_dialog hvacboundsCPP;
+bounds_dialog hvacductboundsCPP, hvacnodeboundsCPP;
 
 /* ------------------ SliceBoundsCPPSetupNoGraphics ------------------------ */
 
@@ -1157,7 +1166,8 @@ extern "C" void SetResearchMode(int flag){
   if(nsliceinfo>0)sliceboundsCPP.set_research_mode(flag);
   if(npartinfo>0)partboundsCPP.set_research_mode(flag);
   if(nplot3dinfo>0)plot3dboundsCPP.set_research_mode(flag);
-  if(nhvacbounds>0)hvacboundsCPP.set_research_mode(flag);
+  if(nhvacductbounds>0)hvacductboundsCPP.set_research_mode(flag);
+  if(nhvacnodebounds > 0)hvacnodeboundsCPP.set_research_mode(flag);
 }
 
 /* ------------------ SetColorbarDigitsCPP ------------------------ */
@@ -1195,7 +1205,8 @@ int InResearchMode(void){
   if(npartinfo>0&&partboundsCPP.in_research_mode()==0)return 0;
   if(nplot3dinfo>0&&plot3dboundsCPP.in_research_mode()==0)return 0;
   if(nsliceinfo>0&&sliceboundsCPP.in_research_mode()==0)return 0;
-  if(nhvacbounds>0&&hvacboundsCPP.in_research_mode()==0)return 0;
+  if(nhvacductbounds>0&&hvacductboundsCPP.in_research_mode()==0)return 0;
+  if(nhvacnodebounds > 0 && hvacnodeboundsCPP.in_research_mode() == 0)return 0;
   return 1;
 }
 
@@ -1234,8 +1245,11 @@ extern "C" void SetPercentiles(int type, float val_00, float per_valmin, float v
 
 extern "C" cpp_boundsdata *GetBoundsData(int type){
   switch(type){
-    case BOUND_HVAC:
-      if(nhvacbounds>0)return hvacboundsCPP.get_bounds_data();
+    case BOUND_HVACDUCT:
+      if(nhvacductbounds>0)return hvacductboundsCPP.get_bounds_data();
+      break;
+    case BOUND_HVACNODE:
+      if(nhvacnodebounds > 0)return hvacnodeboundsCPP.get_bounds_data();
       break;
     case BOUND_PATCH:
       if(npatchinfo>0)return patchboundsCPP.get_bounds_data();
@@ -1260,8 +1274,11 @@ extern "C" cpp_boundsdata *GetBoundsData(int type){
 
 extern "C" void GetGlobalBoundsMinMax(int type, char *label, float *valmin, float *valmax){
   switch(type){
-    case BOUND_HVAC:
-      if(nhvacbounds>0)hvacboundsCPP.get_global_minmax(label, valmin, valmax);
+    case BOUND_HVACDUCT:
+      if(nhvacductbounds>0)hvacductboundsCPP.get_global_minmax(label, valmin, valmax);
+      break;
+    case BOUND_HVACNODE:
+      if(nhvacnodebounds > 0)hvacnodeboundsCPP.get_global_minmax(label, valmin, valmax);
       break;
     case BOUND_PATCH:
       if(npatchinfo>0)patchboundsCPP.get_global_minmax(label, valmin, valmax);
@@ -1285,8 +1302,11 @@ extern "C" void GetGlobalBoundsMinMax(int type, char *label, float *valmin, floa
 
 extern "C" void SetCacheFlag(int type, int cache_flag){
   switch(type){
-    case BOUND_HVAC:
-      if(nhvacbounds>0)hvacboundsCPP.set_cache_flag(cache_flag);
+    case BOUND_HVACDUCT:
+      if(nhvacductbounds>0)hvacductboundsCPP.set_cache_flag(cache_flag);
+      break;
+    case BOUND_HVACNODE:
+      if(nhvacnodebounds > 0)hvacnodeboundsCPP.set_cache_flag(cache_flag);
       break;
     case BOUND_PATCH:
       if(npatchinfo>0)patchboundsCPP.set_cache_flag(cache_flag);
@@ -1310,8 +1330,11 @@ extern "C" void SetCacheFlag(int type, int cache_flag){
 
 extern "C" int GetCacheFlag(int type){
   switch(type){
-    case BOUND_HVAC:
-      if(nhvacbounds>0)return hvacboundsCPP.get_cache_flag();
+    case BOUND_HVACDUCT:
+      if(nhvacductbounds>0)return hvacductboundsCPP.get_cache_flag();
+      break;
+    case BOUND_HVACNODE:
+      if(nhvacnodebounds > 0)return hvacnodeboundsCPP.get_cache_flag();
       break;
     case BOUND_PATCH:
       if(npatchinfo>0)return patchboundsCPP.get_cache_flag();
@@ -1437,6 +1460,12 @@ extern "C" void SetPercentileDraw(int type, int val){
 /* ------------------ UpdateGluiBounds ------------------------ */
 
 extern "C" void UpdateGluiBounds(void){
+  if(nhvacductbounds > 0){
+    hvacductboundsCPP.CB(BOUND_VAL_TYPE);
+  }
+  if(nhvacnodebounds > 0){
+    hvacnodeboundsCPP.CB(BOUND_VAL_TYPE);
+  }
   if(npatchinfo>0){
     patchboundsCPP.CB(BOUND_VAL_TYPE);
     patchboundsCPP.CB(BOUND_SETCHOPMIN);
@@ -1466,8 +1495,11 @@ extern "C" void UpdateGluiBounds(void){
 
 extern "C" int GetValType(int type){
   switch(type){
-    case BOUND_HVAC:
-      if(nhvacbounds>0)return hvacboundsCPP.get_valtype();
+    case BOUND_HVACDUCT:
+      if(nhvacductbounds>0)return hvacductboundsCPP.get_valtype();
+      break;
+    case BOUND_HVACNODE:
+      if(nhvacnodebounds > 0)return hvacnodeboundsCPP.get_valtype();
       break;
     case BOUND_PATCH:
       if(npatchinfo>0)return patchboundsCPP.get_valtype();
@@ -1492,8 +1524,11 @@ extern "C" int GetValType(int type){
 
 extern "C" int GetNValtypes(int type){
   switch(type){
-    case BOUND_HVAC:
-      if(nhvacbounds>0)return hvacboundsCPP.get_nvaltypes();
+    case BOUND_HVACDUCT:
+      if(nhvacductbounds>0)return hvacductboundsCPP.get_nvaltypes();
+      break;
+    case BOUND_HVACNODE:
+      if(nhvacnodebounds > 0)return hvacnodeboundsCPP.get_nvaltypes();
       break;
     case BOUND_PATCH:
       if(npatchinfo>0)return patchboundsCPP.get_nvaltypes();
@@ -1518,8 +1553,11 @@ extern "C" int GetNValtypes(int type){
 
 extern "C" void SetValTypeIndex(int type, int valtype_index){
   switch(type){
-    case BOUND_HVAC:
-      if(nhvacbounds > 0)hvacboundsCPP.set_valtype_index(valtype_index);
+    case BOUND_HVACDUCT:
+      if(nhvacductbounds > 0)hvacductboundsCPP.set_valtype_index(valtype_index);
+      break;
+    case BOUND_HVACNODE:
+      if(nhvacnodebounds > 0)hvacnodeboundsCPP.set_valtype_index(valtype_index);
       break;
     case BOUND_PATCH:
       if(npatchinfo>0)patchboundsCPP.set_valtype_index(valtype_index);
@@ -1543,10 +1581,16 @@ extern "C" void SetValTypeIndex(int type, int valtype_index){
 
 extern "C" void GetOnlyMinMax(int type, char *label, int *set_valmin, float *valmin, int *set_valmax, float *valmax){
   switch(type){
-    case BOUND_HVAC:
-      if(nhvacbounds>0){
-        hvacboundsCPP.get_min(label, set_valmin, valmin);
-        hvacboundsCPP.get_max(label, set_valmax, valmax);
+    case BOUND_HVACDUCT:
+      if(nhvacductbounds>0){
+        hvacductboundsCPP.get_min(label, set_valmin, valmin);
+        hvacductboundsCPP.get_max(label, set_valmax, valmax);
+      }
+      break;
+    case BOUND_HVACNODE:
+      if(nhvacnodebounds > 0){
+        hvacnodeboundsCPP.get_min(label, set_valmin, valmin);
+        hvacnodeboundsCPP.get_max(label, set_valmax, valmax);
       }
       break;
     case BOUND_PATCH:
@@ -1583,14 +1627,21 @@ extern "C" void GetOnlyMinMax(int type, char *label, int *set_valmin, float *val
 
 extern "C" void GetMinMax(int type, char *label, int *set_valmin, float *valmin, int *set_valmax, float *valmax){
   switch(type){
-    case BOUND_HVAC:
-      if(nhvacbounds>0){
-        hvacboundsCPP.set_valtype(label);
-        hvacboundsCPP.get_min(label, set_valmin, valmin);
-        hvacboundsCPP.get_max(label, set_valmax, valmax);
+    case BOUND_HVACDUCT:
+      if(nhvacductbounds>0){
+        hvacductboundsCPP.set_valtype(label);
+        hvacductboundsCPP.get_min(label, set_valmin, valmin);
+        hvacductboundsCPP.get_max(label, set_valmax, valmax);
       }
       break;
-   case BOUND_PATCH:
+    case BOUND_HVACNODE:
+      if(nhvacnodebounds > 0){
+        hvacnodeboundsCPP.set_valtype(label);
+        hvacnodeboundsCPP.get_min(label, set_valmin, valmin);
+        hvacnodeboundsCPP.get_max(label, set_valmax, valmax);
+      }
+      break;
+    case BOUND_PATCH:
       if(npatchinfo>0){
         patchboundsCPP.set_valtype(label);
         patchboundsCPP.get_min(label, set_valmin, valmin);
@@ -1628,9 +1679,13 @@ extern "C" void GetMinMax(int type, char *label, int *set_valmin, float *valmin,
 
 extern "C" void GetMinMaxAll(int type, int *set_valmin, float *valmin, int *set_valmax, float *valmax, int *nall){
   switch(type){
-    case BOUND_HVAC:
-      hvacboundsCPP.get_min_all(set_valmin, valmin, nall);
-      hvacboundsCPP.get_max_all(set_valmax, valmax, nall);
+    case BOUND_HVACDUCT:
+      hvacductboundsCPP.get_min_all(set_valmin, valmin, nall);
+      hvacductboundsCPP.get_max_all(set_valmax, valmax, nall);
+      break;
+    case BOUND_HVACNODE:
+      hvacnodeboundsCPP.get_min_all(set_valmin, valmin, nall);
+      hvacnodeboundsCPP.get_max_all(set_valmax, valmax, nall);
       break;
     case BOUND_PATCH:
       patchboundsCPP.get_min_all(set_valmin, valmin, nall);
@@ -1658,9 +1713,13 @@ extern "C" void GetMinMaxAll(int type, int *set_valmin, float *valmin, int *set_
 
 extern "C" void SetMinMax(int type, char *label, int set_valmin, float valmin, int set_valmax, float valmax){
   switch(type){
-    case BOUND_HVAC:
-      hvacboundsCPP.set_min(label, set_valmin, valmin);
-      hvacboundsCPP.set_max(label, set_valmax, valmax);
+    case BOUND_HVACDUCT:
+      hvacductboundsCPP.set_min(label, set_valmin, valmin);
+      hvacductboundsCPP.set_max(label, set_valmax, valmax);
+      break;
+    case BOUND_HVACNODE:
+      hvacnodeboundsCPP.set_min(label, set_valmin, valmin);
+      hvacnodeboundsCPP.set_max(label, set_valmax, valmax);
       break;
     case BOUND_PATCH:
       patchboundsCPP.set_min(label, set_valmin, valmin);
@@ -1688,8 +1747,11 @@ extern "C" void SetMinMax(int type, char *label, int set_valmin, float valmin, i
 
 extern "C" void SetMin(int type, char *label, int set_valmin, float valmin){
   switch(type){
-    case BOUND_HVAC:
-      hvacboundsCPP.set_min(label, set_valmin, valmin);
+    case BOUND_HVACDUCT:
+      hvacductboundsCPP.set_min(label, set_valmin, valmin);
+      break;
+    case BOUND_HVACNODE:
+      hvacnodeboundsCPP.set_min(label, set_valmin, valmin);
       break;
     case BOUND_PATCH:
       patchboundsCPP.set_min(label, set_valmin, valmin);
@@ -1713,8 +1775,11 @@ extern "C" void SetMin(int type, char *label, int set_valmin, float valmin){
 
 extern "C" void SetMax(int type, char *label, int set_valmax, float valmax){
   switch(type){
-    case BOUND_HVAC:
-      hvacboundsCPP.set_max(label, set_valmax, valmax);
+    case BOUND_HVACDUCT:
+      hvacductboundsCPP.set_max(label, set_valmax, valmax);
+      break;
+    case BOUND_HVACNODE:
+      hvacnodeboundsCPP.set_max(label, set_valmax, valmax);
       break;
     case BOUND_PATCH:
       patchboundsCPP.set_max(label, set_valmax, valmax);
@@ -1738,9 +1803,13 @@ extern "C" void SetMax(int type, char *label, int set_valmax, float valmax){
 
 extern "C" void SetMinMaxAll(int type, int *set_valmin, float *valmin, int *set_valmax, float *valmax, int nall){
   switch(type){
-    case BOUND_HVAC:
-      hvacboundsCPP.set_min_all(set_valmin, valmin, nall);
-      hvacboundsCPP.set_max_all(set_valmax, valmax, nall);
+    case BOUND_HVACDUCT:
+      hvacductboundsCPP.set_min_all(set_valmin, valmin, nall);
+      hvacductboundsCPP.set_max_all(set_valmax, valmax, nall);
+      break;
+    case BOUND_HVACNODE:
+      hvacnodeboundsCPP.set_min_all(set_valmin, valmin, nall);
+      hvacnodeboundsCPP.set_max_all(set_valmax, valmax, nall);
       break;
     case BOUND_PATCH:
       patchboundsCPP.set_min_all(set_valmin, valmin, nall);
@@ -1768,8 +1837,11 @@ extern "C" void SetMinMaxAll(int type, int *set_valmin, float *valmin, int *set_
 
 extern "C" void SetChopMin(int type, char *label, int set_valmin, float valmin){
   switch(type){
-    case BOUND_HVAC:
-      hvacboundsCPP.set_chopmin(label, set_valmin, valmin);
+    case BOUND_HVACDUCT:
+      hvacductboundsCPP.set_chopmin(label, set_valmin, valmin);
+      break;
+    case BOUND_HVACNODE:
+      hvacnodeboundsCPP.set_chopmin(label, set_valmin, valmin);
       break;
     case BOUND_PATCH:
       patchboundsCPP.set_chopmin(label, set_valmin, valmin);
@@ -1793,8 +1865,11 @@ extern "C" void SetChopMin(int type, char *label, int set_valmin, float valmin){
 
 extern "C" void SetChopMax(int type, char *label, int set_valmax, float valmax){
   switch(type){
-    case BOUND_HVAC:
-      hvacboundsCPP.set_chopmax(label, set_valmax, valmax);
+    case BOUND_HVACDUCT:
+      hvacductboundsCPP.set_chopmax(label, set_valmax, valmax);
+      break;
+    case BOUND_HVACNODE:
+      hvacnodeboundsCPP.set_chopmax(label, set_valmax, valmax);
       break;
     case BOUND_PATCH:
       patchboundsCPP.set_chopmax(label, set_valmax, valmax);
@@ -1814,11 +1889,11 @@ extern "C" void SetChopMax(int type, char *label, int set_valmax, float valmax){
   }
 }
 
-/* ------------------ HVAC callback: HVACBoundsCPP_CB ------------------------ */
+/* ------------------ HVAC callback: HVACDuctBoundsCPP_CB ------------------------ */
 
-extern "C" void HVACBoundsCPP_CB(int var){
-  if(nhvacbounds == 0)return;
-  hvacboundsCPP.CB(var);
+extern "C" void HVACDuctBoundsCPP_CB(int var){
+  if(nhvacductbounds == 0)return;
+  hvacductboundsCPP.CB(var);
   switch(var){
   case BOUND_RELOAD_DATA:
     ReadHVACData(LOAD);
@@ -1828,7 +1903,7 @@ extern "C" void HVACBoundsCPP_CB(int var){
     if(npatchinfo > 0)patchboundsCPP.CB(BOUND_RESEARCH_MODE);
     if(nplot3dinfo > 0)plot3dboundsCPP.CB(BOUND_RESEARCH_MODE);
     if(nsliceinfo > 0)sliceboundsCPP.CB(BOUND_RESEARCH_MODE);
-    HVACBoundsCPP_CB(BOUND_UPDATE_COLORS);
+    HVACDuctBoundsCPP_CB(BOUND_UPDATE_COLORS);
     break;
   case BOUND_VALMAX:
   case BOUND_VALMIN:
@@ -1837,19 +1912,57 @@ extern "C" void HVACBoundsCPP_CB(int var){
   case BOUND_UPDATE_COLORS:
     int valtype;
 
-    hvacboundsCPP.CB(var);
-    valtype = GetValType(BOUND_HVAC);
-    UpdateHVACColorLabels(valtype);
+    hvacductboundsCPP.CB(var);
+    valtype = GetValType(BOUND_HVACDUCT);
+    UpdateHVACDuctColorLabels(valtype);
     break;
   default:
     break;
   }
 }
 
-/* ------------------ UpdateHVACType ------------------------ */
+/* ------------------ HVAC callback: HVACNodeBoundsCPP_CB ------------------------ */
 
-extern "C" void UpdateHVACType(void){
-  HVACBoundsCPP_CB(BOUND_VAL_TYPE);
+extern "C" void HVACNodeBoundsCPP_CB(int var){
+  if(nhvacnodebounds == 0)return;
+  hvacnodeboundsCPP.CB(var);
+  switch(var){
+  case BOUND_RELOAD_DATA:
+    ReadHVACData(LOAD);
+    break;
+  case BOUND_RESEARCH_MODE:
+    if(npartinfo > 0)partboundsCPP.CB(BOUND_RESEARCH_MODE);
+    if(npatchinfo > 0)patchboundsCPP.CB(BOUND_RESEARCH_MODE);
+    if(nplot3dinfo > 0)plot3dboundsCPP.CB(BOUND_RESEARCH_MODE);
+    if(nsliceinfo > 0)sliceboundsCPP.CB(BOUND_RESEARCH_MODE);
+    HVACNodeBoundsCPP_CB(BOUND_UPDATE_COLORS);
+    break;
+  case BOUND_VALMAX:
+  case BOUND_VALMIN:
+  case BOUND_SETVALMIN:
+  case BOUND_SETVALMAX:
+  case BOUND_UPDATE_COLORS:
+    int valtype;
+
+    hvacnodeboundsCPP.CB(var);
+    valtype = GetValType(BOUND_HVACNODE);
+    UpdateHVACNodeColorLabels(valtype);
+    break;
+  default:
+    break;
+  }
+}
+
+/* ------------------ UpdateHVACDuctType ------------------------ */
+
+extern "C" void UpdateHVACDuctType(void){
+  HVACDuctBoundsCPP_CB(BOUND_VAL_TYPE);
+}
+
+/* ------------------ UpdateHVACNodeType ------------------------ */
+
+extern "C" void UpdateHVACNodeType(void){
+  HVACNodeBoundsCPP_CB(BOUND_VAL_TYPE);
 }
 
 /* ------------------ slice callback: SliceBoundsCPP_CB ------------------------ */
@@ -1998,7 +2111,8 @@ extern "C" void SliceBoundsCPP_CB(int var){
       if(npartinfo>0)partboundsCPP.CB(BOUND_RESEARCH_MODE);
       if(npatchinfo>0)patchboundsCPP.CB(BOUND_RESEARCH_MODE);
       if(nplot3dinfo>0)plot3dboundsCPP.CB(BOUND_RESEARCH_MODE);
-      if(nhvacbounds>0)hvacboundsCPP.CB(BOUND_RESEARCH_MODE);
+      if(nhvacductbounds>0)hvacductboundsCPP.CB(BOUND_RESEARCH_MODE);
+      if(nhvacnodebounds > 0)hvacnodeboundsCPP.CB(BOUND_RESEARCH_MODE);
       break;
     case BOUND_PERCENTILE_MODE:
       if(npartinfo>0)partboundsCPP.CB(BOUND_PERCENTILE_MODE);
@@ -2169,7 +2283,8 @@ extern "C" void Plot3DBoundsCPP_CB(int var){
       if(npartinfo>0)partboundsCPP.CB(BOUND_RESEARCH_MODE);
       if(npatchinfo>0)patchboundsCPP.CB(BOUND_RESEARCH_MODE);
       if(nsliceinfo>0)sliceboundsCPP.CB(BOUND_RESEARCH_MODE);
-      if(nhvacbounds>0)hvacboundsCPP.CB(BOUND_RESEARCH_MODE);
+      if(nhvacductbounds>0)hvacductboundsCPP.CB(BOUND_RESEARCH_MODE);
+      if(nhvacnodebounds > 0)hvacnodeboundsCPP.CB(BOUND_RESEARCH_MODE);
       break;
     case BOUND_PERCENTILE_MODE:
       if(npartinfo>0)partboundsCPP.CB(BOUND_PERCENTILE_MODE);
@@ -2323,7 +2438,8 @@ extern "C" void PartBoundsCPP_CB(int var){
       if(npatchinfo>0)patchboundsCPP.CB(BOUND_RESEARCH_MODE);
       if(nplot3dinfo>0)plot3dboundsCPP.CB(BOUND_RESEARCH_MODE);
       if(nsliceinfo>0)sliceboundsCPP.CB(BOUND_RESEARCH_MODE);
-      if(nhvacbounds>0)hvacboundsCPP.CB(BOUND_RESEARCH_MODE);
+      if(nhvacductbounds>0)hvacductboundsCPP.CB(BOUND_RESEARCH_MODE);
+      if(nhvacnodebounds > 0)hvacnodeboundsCPP.CB(BOUND_RESEARCH_MODE);
 #ifdef pp_PARTVAL
       UpdatePartColors(NULL, 0);
 #endif
@@ -2543,7 +2659,8 @@ extern "C" void PatchBoundsCPP_CB(int var){
       if(npartinfo>0)partboundsCPP.CB(BOUND_RESEARCH_MODE);
       if(nplot3dinfo>0)plot3dboundsCPP.CB(BOUND_RESEARCH_MODE);
       if(nsliceinfo>0)sliceboundsCPP.CB(BOUND_RESEARCH_MODE);
-      if(nhvacbounds>0)hvacboundsCPP.CB(BOUND_RESEARCH_MODE);
+      if(nhvacductbounds>0)hvacductboundsCPP.CB(BOUND_RESEARCH_MODE);
+      if(nhvacnodebounds > 0)hvacnodeboundsCPP.CB(BOUND_RESEARCH_MODE);
       break;
     case BOUND_PERCENTILE_MODE:
       if(npartinfo>0)partboundsCPP.CB(BOUND_PERCENTILE_MODE);
@@ -2985,7 +3102,7 @@ GLUI_Rollout *ROLLOUT_config = NULL;
 GLUI_Rollout *ROLLOUT_autoload=NULL;
 GLUI_Rollout *ROLLOUT_compress=NULL;
 GLUI_Rollout *ROLLOUT_plot3d=NULL,*ROLLOUT_part=NULL,*ROLLOUT_slice=NULL,*ROLLOUT_bound=NULL,*ROLLOUT_iso=NULL;
-GLUI_Rollout *ROLLOUT_hvac2;
+GLUI_Rollout *ROLLOUT_hvacduct=NULL, *ROLLOUT_hvacnode=NULL;
 GLUI_Rollout *ROLLOUT_iso_colors = NULL;
 GLUI_Rollout *ROLLOUT_smoke3d=NULL,*ROLLOUT_volsmoke3d=NULL;
 GLUI_Rollout *ROLLOUT_time=NULL,*ROLLOUT_colorbar=NULL;
@@ -3219,9 +3336,10 @@ GLUI_RadioButton *RADIOBUTTON_zone_permax=NULL;
 #define EVAC_ROLLOUT     5
 #define PLOT3D_ROLLOUT   6
 #define SLICE_ROLLOUT    7
-#define HVAC_ROLLOUT     8
+#define HVACDUCT_ROLLOUT 8
+#define HVACNODE_ROLLOUT 9
 
-procdata  boundprocinfo[9];
+procdata  boundprocinfo[10];
 int      nboundprocinfo = 0;
 
 //*** isoprocinfo entries
@@ -3232,9 +3350,13 @@ procdata  isoprocinfo[3];
 int      nisoprocinfo=0;
 
 
-//*** hvacprocinfo entries
-procdata  hvacprocinfo[1];
-int      nhvacprocinfo = 0;
+//*** hvacductprocinfo entries
+procdata  hvacductprocinfo[1];
+int      nhvacductprocinfo = 0;
+
+//*** hvacnodeprocinfo entries
+procdata  hvacnodeprocinfo[1];
+int      nhvacnodeprocinfo = 0;
 
 //*** sliceprocinfo entries
 #define SLICE_BOUND             0
@@ -4976,17 +5098,30 @@ extern "C" void GluiBoundsSetup(int main_window){
     glui_bounds->add_column_to_panel(ROLLOUT_plot3d,false);
   }
 
-  // ----------------------------------- HVAC ----------------------------------------
+  // ----------------------------------- HVAC ducts ----------------------------------------
 
-  if(nhvacinfo > 0&&nhvacbounds_cpp>0){
+  if(nhvacinfo > 0&&nhvacductbounds_cpp>0){
     glui_active = 1;
-    ROLLOUT_hvac2 = glui_bounds->add_rollout_to_panel(ROLLOUT_filebounds, "HVAC", false, HVAC_ROLLOUT, BoundRolloutCB);
-    INSERT_ROLLOUT(ROLLOUT_hvac2, glui_bounds);
-    ADDPROCINFO(boundprocinfo, nboundprocinfo, ROLLOUT_hvac2, HVAC_ROLLOUT, glui_bounds);
+    ROLLOUT_hvacduct = glui_bounds->add_rollout_to_panel(ROLLOUT_filebounds, "HVAC ducts", false, HVACDUCT_ROLLOUT, BoundRolloutCB);
+    INSERT_ROLLOUT(ROLLOUT_hvacduct, glui_bounds);
+    ADDPROCINFO(boundprocinfo, nboundprocinfo, ROLLOUT_hvacduct, HVACDUCT_ROLLOUT, glui_bounds);
 
-    hvacboundsCPP.setup("hvac", ROLLOUT_hvac2, hvacbounds_cpp, nhvacbounds_cpp, &cache_hvac_data, HIDE_CACHE_CHECKBOX, PERCENTILE_ENABLED, HVACBoundsCPP_CB,
-      HVACRolloutCB, hvacprocinfo, &nhvacprocinfo);
-    HVACBoundsCPP_CB(BOUND_VAL_TYPE);
+    hvacductboundsCPP.setup("hvac", ROLLOUT_hvacduct, hvacductbounds_cpp, nhvacductbounds_cpp, &cache_hvac_data, HIDE_CACHE_CHECKBOX, PERCENTILE_ENABLED, HVACDuctBoundsCPP_CB,
+      HVACRolloutCB, hvacductprocinfo, &nhvacductprocinfo);
+    HVACDuctBoundsCPP_CB(BOUND_VAL_TYPE);
+  }
+
+  // ----------------------------------- HVAC nodes ----------------------------------------
+
+  if(nhvacinfo > 0 && nhvacnodebounds_cpp > 0){
+    glui_active = 1;
+    ROLLOUT_hvacnode = glui_bounds->add_rollout_to_panel(ROLLOUT_filebounds, "HVAC nodes", false, HVACNODE_ROLLOUT, BoundRolloutCB);
+    INSERT_ROLLOUT(ROLLOUT_hvacnode, glui_bounds);
+    ADDPROCINFO(boundprocinfo, nboundprocinfo, ROLLOUT_hvacnode, HVACNODE_ROLLOUT, glui_bounds);
+
+    hvacnodeboundsCPP.setup("hvac", ROLLOUT_hvacnode, hvacnodebounds_cpp, nhvacnodebounds_cpp, &cache_hvac_data, HIDE_CACHE_CHECKBOX, PERCENTILE_ENABLED, HVACNodeBoundsCPP_CB,
+      HVACRolloutCB, hvacnodeprocinfo, &nhvacnodeprocinfo);
+    HVACNodeBoundsCPP_CB(BOUND_VAL_TYPE);
   }
 
   // ----------------------------------- Slice ----------------------------------------
@@ -6186,7 +6321,8 @@ extern "C" void SliceBoundCB(int var){
       break;
     case RESEARCH_MODE:
       SetResearchMode(research_mode);
-      HVACBoundsCPP_CB(BOUND_UPDATE_COLORS);
+      HVACDuctBoundsCPP_CB(BOUND_UPDATE_COLORS);
+      HVACNodeBoundsCPP_CB(BOUND_UPDATE_COLORS);
       SliceBoundsCPP_CB(BOUND_UPDATE_COLORS);
       PatchBoundsCPP_CB(BOUND_UPDATE_COLORS);
       PartBoundsCPP_CB(BOUND_RELOAD_DATA);
@@ -6466,9 +6602,13 @@ extern "C" void ShowBoundsDialog(int type){
       if(ROLLOUT_slice != NULL)ROLLOUT_slice->open();
       if(ROLLOUT_slice_settings != NULL)ROLLOUT_slice_settings->open();
       break;
-    case DLG_HVAC:
-      if(ROLLOUT_hvac2 != NULL)ROLLOUT_hvac2->open();
-      hvacboundsCPP.open_minmax();
+    case DLG_HVACDUCT:
+      if(ROLLOUT_hvacduct != NULL)ROLLOUT_hvacduct->open();
+      hvacductboundsCPP.open_minmax();
+      break;
+    case DLG_HVACNODE:
+      if(ROLLOUT_hvacnode != NULL)ROLLOUT_hvacnode->open();
+      hvacnodeboundsCPP.open_minmax();
       break;
     case DLG_PART:
       if(ROLLOUT_part!=NULL)ROLLOUT_part->open();

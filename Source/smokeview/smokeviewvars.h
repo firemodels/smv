@@ -29,7 +29,8 @@ SVEXTERN int SVDECL(nhvacnodeinfo, 0), SVDECL(nhvacductinfo, 0), SVDECL(nhvacinf
 SVEXTERN int SVDECL(hvac_show_connections, 0), SVDECL(hvac_show_networks, 1);
 SVEXTERN int SVDECL(nhvacconnectinfo, 0);
 SVEXTERN hvacconnectdata SVDECL(*hvacconnectinfo, NULL);
-SVEXTERN hvacvalsdata SVDECL(*hvacvalsinfo, NULL);
+SVEXTERN hvacvalsdata SVDECL(*hvacductvalsinfo, NULL);
+SVEXTERN hvacvalsdata SVDECL(*hvacnodevalsinfo, NULL);
 SVEXTERN hvacdata SVDECL(*hvacinfo, NULL);
 SVEXTERN hvacnodedata SVDECL(*hvacnodeinfo, NULL);
 SVEXTERN hvacductdata SVDECL(*hvacductinfo, NULL);
@@ -386,7 +387,7 @@ SVEXTERN float SVDECL(tour_snap_time, 0.0);
 SVEXTERN int SVDECL(render_resolution, RENDER_RESOLUTION_CURRENT);
 SVEXTERN int SVDECL(timebar_overlap, TIMEBAR_OVERLAP_AUTO);
 SVEXTERN int SVDECL(vis_colorbar, COLORBAR_HIDDEN);
-#define N_COLORBARS 7
+#define N_COLORBARS 8
 SVEXTERN int hcolorbar_vis[N_COLORBARS];
 
 SVEXTERN int SVDECL(windrose_ttype, 2);
@@ -1267,7 +1268,6 @@ SVEXTERN int frameratevalue;
 SVEXTERN int setpartmin, setpartmax;
 SVEXTERN int SVDECL(setisomin, PERCENTILE_MIN),   SVDECL(setisomax, PERCENTILE_MAX);
 SVEXTERN int SVDECL(glui_setslicemin,GLOBAL_MIN), SVDECL(glui_setslicemax,GLOBAL_MAX);
-SVEXTERN int SVDECL(glui_sethvacmin, GLOBAL_MIN), SVDECL(glui_sethvacmax, GLOBAL_MAX);
 
 SVEXTERN float slice_line_contour_min;
 SVEXTERN float slice_line_contour_max;
@@ -1949,13 +1949,13 @@ SVEXTERN int showfiles;
 SVEXTERN cpp_boundsdata SVDECL(*slicebounds_cpp, NULL), SVDECL(*partbounds_cpp, NULL), SVDECL(*patchbounds_cpp, NULL), SVDECL(*plot3dbounds_cpp, NULL);
 SVEXTERN int SVDECL(nslicebounds_cpp, 0), SVDECL(npartbounds_cpp, 0), SVDECL(npatchbounds_cpp, 0), SVDECL(nplot3dbounds_cpp, 0);
 SVEXTERN int SVDECL(update_glui_bounds, 0), SVDECL(update_ini, 0), SVDECL(update_chop_colors,0);
-SVEXTERN cpp_boundsdata SVDECL(*hvacbounds_cpp, NULL);
-SVEXTERN int SVDECL(nhvacbounds_cpp, 0);
+SVEXTERN cpp_boundsdata SVDECL(*hvacductbounds_cpp, NULL), SVDECL(*hvacnodebounds_cpp, NULL);
+SVEXTERN int SVDECL(nhvacductbounds_cpp, 0), SVDECL(nhvacnodebounds_cpp, 0);
 SVEXTERN boundsdata SVDECL(*slicebounds,NULL), SVDECL(*isobounds,NULL), SVDECL(*patchbounds,NULL);
 SVEXTERN boundsdata SVDECL(*slicebounds_temp, NULL);
 SVEXTERN vslicedata SVDECL(*vsliceinfo,NULL);
-SVEXTERN boundsdata SVDECL(*hvacbounds, NULL);
-SVEXTERN int SVDECL(nhvacbounds, 0);
+SVEXTERN boundsdata SVDECL(*hvacductbounds, NULL), SVDECL(*hvacnodebounds, NULL);
+SVEXTERN int SVDECL(nhvacductbounds, 0), SVDECL(nhvacnodebounds, 0);
 SVEXTERN int SVDECL(hvac_maxcells, 0), SVDECL(hvac_n_ducts, 0);
 
 SVEXTERN int force_redisplay;

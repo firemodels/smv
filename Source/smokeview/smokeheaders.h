@@ -32,14 +32,16 @@ EXTERNCPP void TimeAveragePlot2DData(float *times, float *vals, float *vals_avg,
 
 EXTERNCPP void SplitCB(int var);
 
-EXTERNCPP void HVACBoundsCPP_CB(int var);
+EXTERNCPP void HVACDuctBoundsCPP_CB(int var);
+EXTERNCPP void HVACNodeBoundsCPP_CB(int var);
 EXTERNCPP void SetHVACInfo(void);
 EXTERNCPP void DrawHVACS(void);
 EXTERNCPP hvacnodedata *GetHVACNode(hvacdata *hvaci, int node_id);
 EXTERNCPP void InitHvacData(hvacvaldata *hi);
 EXTERNCPP void ReadHVACData(int flag);
 EXTERNCPP int IsHVACVisible(void);
-EXTERNCPP void UpdateHVACColorLabels(int index);
+EXTERNCPP void UpdateHVACDuctColorLabels(int index);
+EXTERNCPP void UpdateHVACNodeColorLabels(int index);
 EXTERNCPP void UpdateAllHVACColorLabels(void);
 
 #ifdef pp_REFRESH
@@ -94,7 +96,8 @@ EXTERNCPP void InitStartupDirs(void);
 
 EXTERNCPP int GetFontHeight(void);
 
-EXTERNCPP void UpdateShowColorbar(int *showcfast_arg, int *show_slice_colorbar_arg, int *show_hvac_colorbar_arg);
+EXTERNCPP void UpdateShowColorbar(int *showcfast_arg, int *show_slice_colorbar_arg, 
+  int *show_hvacduct_colorbar_arg, int *show_hvacnode_colorbar_arg);
 
 EXTERNCPP void UpdateSliceSkip(void);
 
@@ -161,8 +164,10 @@ EXTERNCPP void GetGlobalPatchBounds(void);
 EXTERNCPP void GetLoadedPlot3dBounds(int *compute_loaded, float *loaded_min, float *loaded_max);
 EXTERNCPP void GetGlobalPlot3DBounds(void);
 EXTERNCPP void GetGlobalSliceBounds(void);
-EXTERNCPP void GetGlobalHVACBounds(int flag);
-EXTERNCPP void UpdateHVACType(void);
+EXTERNCPP void GetGlobalHVACDuctBounds(int flag);
+EXTERNCPP void GetGlobalHVACNodeBounds(int flag);
+EXTERNCPP void UpdateHVACDuctType(void);
+EXTERNCPP void UpdateHVACNodeType(void);
 EXTERNCPP void UpdateGlobalFEDSliceBounds(void);
 
 EXTERNCPP void Slice2Device(void);
