@@ -5399,9 +5399,6 @@ void DrawFacesOLD(){
           else{
             glLineWidth(*facei->linewidth);
           }
-          if(visGrid!=0){
-            glLineWidth(5.0);
-          }
           glBegin(GL_LINES);
           //xxx facei->linecolor not defined properly when reading a geometry file
           glColor3fv(facei->linecolor);
