@@ -2547,11 +2547,11 @@ void ScriptPlot3dProps(scriptdata *scripti){
 /* ------------------ ScriptShowHVACDuctVAL ------------------------ */
 
 void ScriptShowHVACDuctVal(scriptdata *scripti){
-  int valindex;
+  int ductvalindex;
 
-  valindex = GetHVACDuctValIndex(scripti->cval);
-  if(valindex>=0){
-    HVACDuctValueMenu(valindex);
+  ductvalindex = GetHVACDuctValIndex(scripti->cval);
+  if(ductvalindex>=0){
+    HVACDuctValueMenu(ductvalindex);
   }
   else{
     printf("***warning: %s not a known hvac duct quantity\n", scripti->cval);
@@ -2561,11 +2561,11 @@ void ScriptShowHVACDuctVal(scriptdata *scripti){
 /* ------------------ ScriptShowHVACNodeVAL ------------------------ */
 
 void ScriptShowHVACNodeVal(scriptdata *scripti){
-  int valindex;
+  int nodevalindex;
 
-  valindex = GetHVACNodeValIndex(scripti->cval);
-  if(valindex>=0){
-    HVACNodeValueMenu(valindex);
+  nodevalindex = GetHVACNodeValIndex(scripti->cval);
+  if(nodevalindex>=0){
+    HVACNodeValueMenu(nodevalindex);
   }
   else{
     printf("***warning: %s not a known hvac node quantity\n", scripti->cval);
