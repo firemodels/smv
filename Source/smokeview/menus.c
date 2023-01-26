@@ -301,7 +301,8 @@ float     part_load_time;
 #define MENU_HVAC_SHOW_FILTER_HIDE       -11
 #define MENU_HVAC_SHOW_DUCT_IDS          -12
 #define MENU_HVAC_SHOW_NODE_IDS          -13
-#define MENU_HVAC_HIDE_ALL_VALUES        -15
+// defined in smokeviewdefs.h (so it can also be used in IOscript.c )
+//#define MENU_HVAC_HIDE_ALL_VALUES        -15
 #define MENU_HVAC_CELL_VIEW              -16
 
 #ifdef WIN32
@@ -6637,9 +6638,9 @@ void HVACNetworkMenu(int value){
   GLUTPOSTREDISPLAY;
 }
 
-/* ------------------ SetHVACNodeIndex ------------------------ */
+/* ------------------ SetHVACNodeValIndex ------------------------ */
 
-void SetHVACNodeIndex(int value){
+void SetHVACNodeValIndex(int value){
   int i, return_val;
 
   return_val = -1;
@@ -6681,9 +6682,9 @@ void SetHVACDuct(void){
   }
 }
 
-/* ------------------ SetHVACDuctIndex ------------------------ */
+/* ------------------ SetHVACDuctValIndex ------------------------ */
 
-void SetHVACDuctIndex(int value){
+void SetHVACDuctValIndex(int value){
   int i, return_val;
 
   return_val = -1;
@@ -6710,7 +6711,7 @@ void HVACNodeValueMenu(int value){
   if(hvacductvalsinfo->times==NULL){
     ReadHVACData(LOAD);
   }
-  SetHVACNodeIndex(value);
+  SetHVACNodeValIndex(value);
   plotstate = GetPlotState(DYNAMIC_PLOTS);
   UpdateTimes();
   if(hvacductvar_index >= 0 || hvacnodevar_index >= 0){
@@ -6738,7 +6739,7 @@ void HVACDuctValueMenu(int value){
   if(hvacductvalsinfo->times==NULL){
     ReadHVACData(LOAD);
   }
-  SetHVACDuctIndex(value);
+  SetHVACDuctValIndex(value);
   plotstate = GetPlotState(DYNAMIC_PLOTS);
   UpdateTimes();
   if(hvacductvar_index >= 0 || hvacnodevar_index >= 0){
@@ -6771,8 +6772,8 @@ void LoadHVACMenu(int value){
       GLUTPOSTREDISPLAY;      
       break;
     case MENU_HVAC_UNLOAD:
-      SetHVACNodeIndex(-1);
-      SetHVACDuctIndex(-1);
+      SetHVACNodeValIndex(-1);
+      SetHVACDuctValIndex(-1);
       ReadHVACData(UNLOAD);
       plotstate = GetPlotState(DYNAMIC_PLOTS);
       UpdateTimes();
@@ -6791,8 +6792,8 @@ void HVACMenu(int value){
 
   if(value==MENU_HVAC_SHOW_NODE_IGNORE)return;
   if(value==MENU_HVAC_HIDE_ALL_VALUES){
-    SetHVACNodeIndex(-1);
-    SetHVACDuctIndex(-1);
+    SetHVACNodeValIndex(-1);
+    SetHVACDuctValIndex(-1);
     plotstate = GetPlotState(DYNAMIC_PLOTS);
     UpdateTimes();
     updatemenu = 1;

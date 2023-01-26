@@ -324,6 +324,9 @@ int GetScriptKeywordIndex(char *keyword){
   if(MatchSSF(keyword,"SETBOUNDBOUNDS")==MATCH)return SCRIPT_SETBOUNDBOUNDS;
   if(MatchSSF(keyword,"SETTOURVIEW") == MATCH)return SCRIPT_SETTOURVIEW;
   if(MatchSSF(keyword,"SETVIEWPOINT") == MATCH)return SCRIPT_SETVIEWPOINT;             // documented
+  if(MatchSSF(keyword,"SHOWHVACDUCTVAL") == MATCH)return SCRIPT_SHOWHVACDUCTVAL;
+  if(MatchSSF(keyword,"SHOWHVACNODEVAL") == MATCH)return SCRIPT_SHOWHVACNODEVAL;
+  if(MatchSSF(keyword,"HIDEHVACVALS") == MATCH)return SCRIPT_HIDEHVACVALS;
   if(MatchSSF(keyword,"SHOWPLOT3DDATA") == MATCH)return SCRIPT_SHOWPLOT3DDATA;         // documented
   if(MatchSSF(keyword,"SHOWSMOKESENSORS")==MATCH)return SCRIPT_SHOWSMOKESENSORS;
   if(MatchSSF(keyword,"UNLOADALL") == MATCH)return SCRIPT_UNLOADALL;                   // documented
@@ -602,6 +605,20 @@ NewMemory((void **)&scriptinfo, nscriptinfo*sizeof(scriptdata));
 
 // SHOWSMOKESENSORS
       case SCRIPT_SHOWSMOKESENSORS:
+        break;
+
+// SHOWHVACDUCTVAL
+      case SCRIPT_SHOWHVACDUCTVAL:
+        SETcval;
+        break;
+
+// SHOWHVACNODEVAL
+      case SCRIPT_SHOWHVACNODEVAL:
+        SETcval;
+        break;
+
+// SHOWHVACHIDEVALS
+      case SCRIPT_HIDEHVACVALS:
         break;
 
 // RENDERSIZE
@@ -2527,6 +2544,40 @@ void ScriptPlot3dProps(scriptdata *scripti){
   }
 }
 
+/* ------------------ ScriptShowHVACDuctVAL ------------------------ */
+
+void ScriptShowHVACDuctVal(scriptdata *scripti){
+  int valindex;
+
+  valindex = GetHVACDuctValIndex(scripti->cval);
+  if(valindex>=0){
+    HVACDuctValueMenu(valindex);
+  }
+  else{
+    printf("***warning: %s not a known hvac duct quantity\n", scripti->cval);
+  }
+}
+
+/* ------------------ ScriptShowHVACNodeVAL ------------------------ */
+
+void ScriptShowHVACNodeVal(scriptdata *scripti){
+  int valindex;
+
+  valindex = GetHVACNodeValIndex(scripti->cval);
+  if(valindex>=0){
+    HVACNodeValueMenu(valindex);
+  }
+  else{
+    printf("***warning: %s not a known hvac node quantity\n", scripti->cval);
+  }
+}
+
+/* ------------------ ScriptHideHVACVals ------------------------ */
+
+void ScriptHideHVACVals(void){
+  HVACMenu(MENU_HVAC_HIDE_ALL_VALUES);
+}
+
 /* ------------------ ScriptShowSmokeSensors ------------------------ */
 
 void ScriptShowSmokeSensors(void){
@@ -3489,6 +3540,15 @@ int RunScriptCommand(scriptdata *script_command){
       break;
     case SCRIPT_PARTCLASSCOLOR:
       ScriptPartClassColor(scripti);
+      break;
+    case SCRIPT_SHOWHVACDUCTVAL:
+      ScriptShowHVACDuctVal(scripti);
+      break;
+    case SCRIPT_SHOWHVACNODEVAL:
+      ScriptShowHVACNodeVal(scripti);
+      break;
+    case SCRIPT_HIDEHVACVALS:
+      ScriptHideHVACVals();
       break;
     case SCRIPT_SHOWSMOKESENSORS:
       ScriptShowSmokeSensors();

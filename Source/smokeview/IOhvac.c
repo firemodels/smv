@@ -983,6 +983,34 @@ hvacductdata *GetHVACDuctID(char *duct_name){
   return NULL;
 }
 
+/* ------------------ GetHVACDuctValIndex ------------------------ */
+
+int GetHVACDuctValIndex(char *shortlabel){
+  int i;
+
+  for(i = 0;i < hvacductvalsinfo->n_duct_vars;i++){
+    hvacvaldata *hi;
+
+    hi = hvacductvalsinfo->duct_vars + i;
+    if(strcmp(hi->label.shortlabel, shortlabel) == 0)return i;
+  }
+  return -1;
+}
+
+/* ------------------ GetHVACNodeValIndex ------------------------ */
+
+int GetHVACNodeValIndex(char *shortlabel){
+  int i;
+
+  for(i = 0;i < hvacnodevalsinfo->n_node_vars;i++){
+    hvacvaldata *hi;
+
+    hi = hvacnodevalsinfo->node_vars + i;
+    if(strcmp(hi->label.shortlabel, shortlabel) == 0)return i;
+  }
+  return -1;
+}
+
 /* ------------------ GetHVACNodeID ------------------------ */
 
 hvacnodedata *GetHVACNodeID(char *node_name){

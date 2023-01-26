@@ -555,6 +555,8 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 #define MENU_MOTION_Z_VECTOR       6
 #define MENU_MOTION_SHOW_VECTORS   7
 
+#define MENU_HVAC_HIDE_ALL_VALUES -15
+
 #define FIRSTCALL     1
 #define NOT_FIRSTCALL 0
 
