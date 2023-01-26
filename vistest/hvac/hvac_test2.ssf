@@ -1,0 +1,21 @@
+// put rendered files in specified directory
+
+RENDERDIR
+ .
+
+UNLOADALL
+LOADINIFILE
+ hvac_test2.ini
+HIDEHVACVALS
+SHOWHVACDUCTVAL
+  temp_d
+SHOWHVACNODEVAL
+  Y_n_SPEC_1
+SETTIMEVAL
+ 5.0
+RENDERONCE
+ hvac_test2_5p0
+HIDEHVACVALS
+SHOWHVACNODEVAL
+  T_n
+
