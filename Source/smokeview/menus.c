@@ -6644,7 +6644,10 @@ void SetHVACNodeValIndex(int value){
   int i, return_val;
 
   return_val = -1;
-  if(hvacnodevalsinfo == NULL)return return_val;
+  if(hvacnodevalsinfo == NULL){
+    hvacnodevar_index = return_val;
+    return;
+  }
   for(i = 0;i < hvacnodevalsinfo->n_node_vars;i++){
     hvacvaldata *hi;
 
@@ -6689,7 +6692,10 @@ void SetHVACDuctValIndex(int value){
   int i, return_val;
 
   return_val = -1;
-  if(hvacductvalsinfo == NULL)return return_val;
+  if(hvacductvalsinfo == NULL){
+    hvacductvar_index = return_val;
+    return;
+  }
   for(i = 0;i < hvacductvalsinfo->n_duct_vars;i++){
     hvacvaldata *hi;
 
