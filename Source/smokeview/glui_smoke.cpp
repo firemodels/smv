@@ -493,6 +493,9 @@ extern "C" void Glui3dSmokeSetup(int main_window){
     &use_opacity_multiplier, USE_OPACITY_MULTIPLIER_CHECK, Smoke3dCB);
   SPINNER_emission_factor = glui_3dsmoke->add_spinner_to_panel(PANEL_fire_opacity, "opacity multiplier:", GLUI_SPINNER_FLOAT, &emission_factor, USE_FIRE_ALPHA, Smoke3dCB);
   SPINNER_smoke3d_fire_halfdepth->set_float_limits(0.01, 100.0);
+#ifdef pp_SMOKEFIX
+  glui_3dsmoke->add_checkbox_to_panel(PANEL_fire_opacity, "opacity adjustment", &adjustalphaflag);
+#endif
   Smoke3dCB(USE_OPACITY_DEPTH);
 
   if(co2_colormap_type==0){
