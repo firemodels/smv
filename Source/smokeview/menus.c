@@ -6644,6 +6644,10 @@ void SetHVACNodeValIndex(int value){
   int i, return_val;
 
   return_val = -1;
+  if(hvacnodevalsinfo == NULL){
+    hvacnodevar_index = return_val;
+    return;
+  }
   for(i = 0;i < hvacnodevalsinfo->n_node_vars;i++){
     hvacvaldata *hi;
 
@@ -6688,6 +6692,10 @@ void SetHVACDuctValIndex(int value){
   int i, return_val;
 
   return_val = -1;
+  if(hvacductvalsinfo == NULL){
+    hvacductvar_index = return_val;
+    return;
+  }
   for(i = 0;i < hvacductvalsinfo->n_duct_vars;i++){
     hvacvaldata *hi;
 
@@ -11689,7 +11697,7 @@ updatemenu=0;
 
   /* --------------------------------hvac menu -------------------------- */
 
-  if(nhvacinfo > 0){
+  if(nhvacinfo > 0 && hvacductvalsinfo!=NULL){
     char menulabel[1024];
 
     CREATEMENU(loadhvacmenu, LoadHVACMenu);
@@ -12928,7 +12936,7 @@ updatemenu=0;
       if(glui_active==1){
         glutAddMenuEntry("-",MENU_DUMMY);
       }
-      if(nhvacinfo > 0){
+      if(nhvacinfo > 0 && hvacductvalsinfo!=NULL){
         GLUTADDSUBMENU("HVAC", loadhvacmenu);
       }
       GLUTADDSUBMENU(_("Configuration files"),smokeviewinimenu);
