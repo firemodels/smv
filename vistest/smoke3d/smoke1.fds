@@ -4,13 +4,13 @@
   the general case by assuming a uniform distribution of smoke.  Smoke grey levels are computed
   using 
 
-     grey level (GL) = 255(1 = exp(-K*S*DX))
+     grey level (GL) = 255*exp(-K*S*DX)
 
   where K=8700 m2/kg is the mass extinction value and DX=0.5 m is the path length through the smoke.  
   This equation is inverted to obtain
 
-    DX = -LN(1-GL/255)/(K*S)
-    S = -LN(1-GL/255)/(K*DX)
+    DX = -LN(GL/255)/(K*S)
+    S = -LN(GL/255)/(K*DX)
 
   For GL=128, S=1.60247 * 10**-4 kg/m3 is the soot density
 
@@ -20,7 +20,7 @@
 
 &SPEC ID='SOOT'/
 &SM3D QUANTITY='DENSITY', SPEC_ID='SOOT' /
-&INIT XB=0.25,0.75,0.25,0.75,0.25,0.75,MASS_FRACTION=0.000215194,SPEC_ID='SOOT' /
+&INIT XB=0.25,0.75,0.25,0.75,0.25,0.75,MASS_FRACTION=0.000180079,SPEC_ID='SOOT' /
 
 &VENT XB=0.0,0.0,0.0,1.0,0.0,1.0,SURF_ID='OPEN' /
 &VENT XB=1.0,1.0,0.0,1.0,0.0,1.0,SURF_ID='OPEN' /
@@ -29,6 +29,7 @@
 &VENT XB=0.0,1.0,0.0,1.0,0.0,0.0,SURF_ID='OPEN' /
 &VENT XB=0.0,1.0,0.0,1.0,1.0,1.0,SURF_ID='OPEN' /
 
+&SLCF PBY=0.5,QUANTITY='DENSITY',SPEC_ID='SOOT',CELL_CENTERED=T /
 &SLCF XB=0.0,1.0,0.0,1.0,0.0,1.0,QUANTITY='DENSITY',SPEC_ID='SOOT' /
 &SLCF XB=0.0,1.0,0.0,1.0,0.0,1.0,QUANTITY='TEMPERATURE' /
 
