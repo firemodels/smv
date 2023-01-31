@@ -1873,7 +1873,9 @@ void GetSmokeDir(float *mm){
   float absangle, cosangle, minangle;
   int iminangle;
   float dx, dy, dz;
+#ifndef pp_SKIPSMOKEDIRS
   float factor;
+#endif
 
   eye_position_fds[0] = -DOT3(mm + 0, mm + 12) / mscale[0];
   eye_position_fds[1] = -DOT3(mm + 4, mm + 12) / mscale[1];
