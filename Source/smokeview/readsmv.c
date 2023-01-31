@@ -14541,10 +14541,14 @@ int ReadIni2(char *inifile, int localfile){
         sscanf(buffer, "%i %i", &use_opacity_depth_ini, &use_opacity_multiplier_ini);
         use_opacity_ini = 1;
         continue;
-        }
+      }
       if(MatchINI(buffer, "SMOKEPROP")==1){
         if(fgets(buffer, 255, stream)==NULL)break;
+#ifdef pp_SMOKEFIX
+        sscanf(buffer, "%f %i", &glui_smoke3d_extinct, &adjustalphaflag);
+#else
         sscanf(buffer, "%f", &glui_smoke3d_extinct);
+#endif
         glui_smoke3d_extinct_default = glui_smoke3d_extinct;
         continue;
       }
@@ -16706,7 +16710,11 @@ void WriteIni(int flag,char *filename){
     fprintf(fileout, " %i %i\n", use_opacity_depth, use_opacity_multiplier);
   }
   fprintf(fileout, "SMOKEPROP\n");
+#ifdef pp_SMOKEFIX
+  fprintf(fileout, "%f %i\n", glui_smoke3d_extinct, adjustalphaflag);
+#else
   fprintf(fileout, "%f\n", glui_smoke3d_extinct);
+#endif
   glui_smoke3d_extinct_default = glui_smoke3d_extinct;
   fprintf(fileout, "SMOKESKIP\n");
   fprintf(fileout," %i %i %i %i %i\n",smokeskipm1,smoke3d_skip, smoke3d_skipx, smoke3d_skipy, smoke3d_skipz);
