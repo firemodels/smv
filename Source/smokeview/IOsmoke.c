@@ -105,33 +105,9 @@ void UpdateOpacityMap(void){
   }
 }
 
-/* ------------------ AdjustAlpha ------------------------ */
-
-unsigned char AdjustAlpha(unsigned char alpha, float factor){
-  double val, rr;
-  float falpha;
-  float term1, term2, term3, term4;
-
-  rr = factor;
-  falpha = alpha/255.0;
-
-  //val = 1.0 - pow(1.0-falpha,rr);
-  term1 = falpha*rr;
-  term2 = falpha*(rr-1.0)/2.0;
-  term3 = falpha*(rr-2.0)/3.0;
-  term4 = falpha*(rr-3.0)/4.0;
-  val = term1*(1.0-term2*(1.0-term3*(1.0-term4)));
-
-  val = 255*val+0.5;
-  if(val>255)val = 255;
-  alpha = val;
-  return alpha;
-}
-
-//              alphaf_out[n]=AdjustAlpha(ALPHAIN, eye_position_fds, xp, ASPECTRATIO, NORM, NORMTYPE);
-
 // -------------------------- ADJUSTALPHA ----------------------------------
 
+// alpha correction done in alpha_map (different map for each direction, x, y, z, xy, xz, yz)
 #define ADJUSTALPHA(ALPHAIN) \
             alphaf_out[n]=0;\
             if(ALPHAIN==0)continue;\
@@ -139,6 +115,7 @@ unsigned char AdjustAlpha(unsigned char alpha, float factor){
             alphaf_out[n] = alpha_map[ALPHAIN]
 
 // -------------------------- DRAWVERTEX ----------------------------------
+
 #define DRAWVERTEX(XX,YY,ZZ)        \
   value[0]=alphaf_ptr[n11]; \
   value[1]=alphaf_ptr[n12]; \
@@ -1822,12 +1799,15 @@ void InitAlphas(unsigned char *alphanew,
     base_extinct = 1.0;
     new_extinct = 1.0;
   }
-  for(i = 0; i<254; i++){
+  alphanew[0] = 0;
+  for(i = 1; i<254; i++){
     float val;
+    int ival;
 
-    val = -log(1.0-(i)/254.0)/(base_extinct*base_dx);
-    val = 254.0*(1.0-exp(-val*new_extinct*new_dx));
-    alphanew[i] = CLAMP((unsigned char)val, 0, 254);
+    val = -log(1.0-(float)i/254.0)/(base_extinct*base_dx);
+    val = 254.0*(1.0-exp(-val*new_extinct*new_dx))+0.5;
+    ival = CLAMP(val, 0, 254);
+    alphanew[i] = (unsigned char)ival;
   }
 }
 

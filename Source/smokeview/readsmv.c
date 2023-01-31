@@ -14541,7 +14541,7 @@ int ReadIni2(char *inifile, int localfile){
         sscanf(buffer, "%i %i", &use_opacity_depth_ini, &use_opacity_multiplier_ini);
         use_opacity_ini = 1;
         continue;
-        }
+      }
       if(MatchINI(buffer, "SMOKEPROP")==1){
         if(fgets(buffer, 255, stream)==NULL)break;
         sscanf(buffer, "%f", &glui_smoke3d_extinct);
