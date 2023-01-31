@@ -131,26 +131,19 @@ unsigned char AdjustAlpha(unsigned char alpha, float factor){
 /* ------------------ adjustalpha ------------------------ */
 #ifdef pp_SMOKEFIX
 unsigned char adjustalpha(unsigned char alpha, float factor){
-  double val, rr;
-  float falpha;
-  float term1, term2, term3, term4;
+  double val, base;
 
-  rr = factor;
-  falpha = alpha / 255.0;
-
-  val = 1.0 - pow(1.0-falpha,rr);
-
-  val = CLAMP(255 * val + 0.5, 0.0, 255.0);
+  if(factor == 0.0)return 0;
+  if(factor == 1.0)return alpha;
+  base  = 1.0 - (double)alpha/255.0;
+  val   = 1.0 - pow(base,(double)factor);
+  val   = CLAMP(255*val + 0.5, 0.0, 255.0);
   alpha = val;
   return alpha;
 }
-#endif
-
-//              alphaf_out[n]=AdjustAlpha(ALPHAIN, eye_position_fds, xp, ASPECTRATIO, NORM, NORMTYPE);
 
 // -------------------------- ADJUSTALPHA ----------------------------------
 
-#ifdef pp_SMOKEFIX
 #define ADJUSTALPHA(ALPHAIN,ASPECTRATIO) \
             alphaf_out[n]=0;\
             if(ALPHAIN==0)continue;\
