@@ -138,15 +138,9 @@ unsigned char adjustalpha(unsigned char alpha, float factor){
   rr = factor;
   falpha = alpha / 255.0;
 
-  //val = 1.0 - pow(1.0-falpha,rr);
-  term1 = falpha * rr;
-  term2 = falpha * (rr - 1.0) / 2.0;
-  term3 = falpha * (rr - 2.0) / 3.0;
-  term4 = falpha * (rr - 3.0) / 4.0;
-  val = term1 * (1.0 - term2 * (1.0 - term3 * (1.0 - term4)));
+  val = 1.0 - pow(1.0-falpha,rr);
 
-  val = 255 * val + 0.5;
-  if(val > 255)val = 255;
+  val = CLAMP(255 * val + 0.5, 0.0, 255.0);
   alpha = val;
   return alpha;
 }
