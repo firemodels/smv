@@ -105,33 +105,10 @@ void UpdateOpacityMap(void){
   }
 }
 
-/* ------------------ AdjustAlpha ------------------------ */
-
-unsigned char AdjustAlpha(unsigned char alpha, float factor){
-  double val, rr;
-  float falpha;
-  float term1, term2, term3, term4;
-
-  rr = factor;
-  falpha = alpha/255.0;
-
-  //val = 1.0 - pow(1.0-falpha,rr);
-  term1 = falpha*rr;
-  term2 = falpha*(rr-1.0)/2.0;
-  term3 = falpha*(rr-2.0)/3.0;
-  term4 = falpha*(rr-3.0)/4.0;
-  val = term1*(1.0-term2*(1.0-term3*(1.0-term4)));
-
-  val = 255*val+0.5;
-  if(val>255)val = 255;
-  alpha = val;
-  return alpha;
-}
-
 // -------------------------- ADJUSTALPHA ----------------------------------
 
 // alpha correction done in alpha_map (different map for each direction, x, y, z, xy, xz, yz)
-#define ADJUSTALPHA(ALPHAIN,ASPECTRATIO) \
+#define ADJUSTALPHA(ALPHAIN) \
             alphaf_out[n]=0;\
             if(ALPHAIN==0)continue;\
             if(iblank_smoke3d!=NULL&&iblank_smoke3d[n]==SOLID)continue;\
@@ -2020,7 +1997,7 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
           jterm = (j-js1)*nx;
           n = iterm+jterm+kterm;
           ASSERT(n>=0&&n<smoke3di->nchars_uncompressed);
-          ADJUSTALPHA(smokealpha_ptr[n], meshi->dxDdx);
+          ADJUSTALPHA(smokealpha_ptr[n]);
         }
       }
     }
@@ -2170,7 +2147,7 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
           iterm = (i-is1);
           n = iterm+jterm+kterm;
           ASSERT(n>=0&&n<smoke3di->nchars_uncompressed);
-          ADJUSTALPHA(smokealpha_ptr[n], meshi->dyDdx);
+          ADJUSTALPHA(smokealpha_ptr[n]);
         }
       }
     }
@@ -2315,7 +2292,7 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
           iterm = (i-is1);
           n = iterm+jterm+kterm;
           ASSERT(n>=0&&n<smoke3di->nchars_uncompressed);
-          ADJUSTALPHA(smokealpha_ptr[n], meshi->dzDdx);
+          ADJUSTALPHA(smokealpha_ptr[n]);
         }
       }
     }
@@ -2478,7 +2455,7 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
 
           n = iterm+jterm+kterm;
           ASSERT(n>=0&&n<smoke3di->nchars_uncompressed);
-          ADJUSTALPHA(smokealpha_ptr[n], meshi->dxyDdx);
+          ADJUSTALPHA(smokealpha_ptr[n]);
         }
       }
     }
@@ -2658,7 +2635,7 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
 
           n = iterm+jterm+kterm;
           ASSERT(n>=0&&n<smoke3di->nchars_uncompressed);
-          ADJUSTALPHA(smokealpha_ptr[n], meshi->dxyDdx);
+          ADJUSTALPHA(smokealpha_ptr[n]);
         }
       }
     }
@@ -2844,7 +2821,7 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
 
           n = iterm+jterm+kterm;
           ASSERT(n>=0&&n<smoke3di->nchars_uncompressed);
-          ADJUSTALPHA(smokealpha_ptr[n], meshi->dyzDdx);
+          ADJUSTALPHA(smokealpha_ptr[n]);
         }
       }
     }
@@ -3024,7 +3001,7 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
 
           n = iterm+jterm+kterm;
           ASSERT(n>=0&&n<smoke3di->nchars_uncompressed);
-          ADJUSTALPHA(smokealpha_ptr[n], meshi->dyzDdx);
+          ADJUSTALPHA(smokealpha_ptr[n]);
         }
       }
     }
@@ -3211,7 +3188,7 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
 
           n = iterm+jterm+kterm;
           ASSERT(n>=0&&n<smoke3di->nchars_uncompressed);
-          ADJUSTALPHA(smokealpha_ptr[n], meshi->dxzDdx);
+          ADJUSTALPHA(smokealpha_ptr[n]);
         }
       }
     }
@@ -3391,7 +3368,7 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
 
           n = iterm+jterm+kterm;
           ASSERT(n>=0&&n<smoke3di->nchars_uncompressed);
-          ADJUSTALPHA(smokealpha_ptr[n], meshi->dxzDdx);
+          ADJUSTALPHA(smokealpha_ptr[n]);
         }
       }
     }
