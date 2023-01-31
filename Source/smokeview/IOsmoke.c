@@ -130,6 +130,7 @@ unsigned char AdjustAlpha(unsigned char alpha, float factor){
 
 // -------------------------- ADJUSTALPHA ----------------------------------
 
+// alpha correction done in alpha_map (different map for each direction, x, y, z, xy, xz, yz)
 #define ADJUSTALPHA(ALPHAIN,ASPECTRATIO) \
             alphaf_out[n]=0;\
             if(ALPHAIN==0)continue;\
