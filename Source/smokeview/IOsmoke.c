@@ -128,40 +128,16 @@ unsigned char AdjustAlpha(unsigned char alpha, float factor){
   return alpha;
 }
 
-/* ------------------ adjustalpha ------------------------ */
-#ifdef pp_SMOKEFIX
-unsigned char adjustalpha(unsigned char alpha, float factor){
-  double val, base;
-
-  if(factor == 0.0)return 0;
-  if(factor == 1.0)return alpha;
-  base  = 1.0 - (double)alpha/255.0;
-  val   = 1.0 - pow(base,(double)factor);
-  val   = CLAMP(255*val + 0.5, 0.0, 255.0);
-  alpha = val;
-  return alpha;
-}
-
 // -------------------------- ADJUSTALPHA ----------------------------------
 
 #define ADJUSTALPHA(ALPHAIN,ASPECTRATIO) \
             alphaf_out[n]=0;\
             if(ALPHAIN==0)continue;\
             if(iblank_smoke3d!=NULL&&iblank_smoke3d[n]==SOLID)continue;\
-            if(adjustalphaflag==0){\
-              alphaf_out[n]=alpha_map[ALPHAIN];\
-            }\
-            else{\
-              alphaf_out[n]=adjustalpha(alpha_map[ALPHAIN], ASPECTRATIO);\
-            }
-#else
-#define ADJUSTALPHA(ALPHAIN,ASPECTRATIO) \
-            alphaf_out[n]=0;\
-            if(ALPHAIN==0)continue;\
-            if(iblank_smoke3d!=NULL&&iblank_smoke3d[n]==SOLID)continue;\
             alphaf_out[n] = alpha_map[ALPHAIN]
-#endif
+
 // -------------------------- DRAWVERTEX ----------------------------------
+
 #define DRAWVERTEX(XX,YY,ZZ)        \
   value[0]=alphaf_ptr[n11]; \
   value[1]=alphaf_ptr[n12]; \
@@ -1845,12 +1821,15 @@ void InitAlphas(unsigned char *alphanew,
     base_extinct = 1.0;
     new_extinct = 1.0;
   }
-  for(i = 0; i<254; i++){
+  alphanew[0] = 0;
+  for(i = 1; i<254; i++){
     float val;
+    int ival;
 
-    val = -log(1.0-(i)/254.0)/(base_extinct*base_dx);
-    val = 254.0*(1.0-exp(-val*new_extinct*new_dx));
-    alphanew[i] = CLAMP((unsigned char)val, 0, 254);
+    val = -log(1.0-(float)i/254.0)/(base_extinct*base_dx);
+    val = 254.0*(1.0-exp(-val*new_extinct*new_dx))+0.5;
+    ival = CLAMP(val, 0, 254);
+    alphanew[i] = (unsigned char)ival;
   }
 }
 

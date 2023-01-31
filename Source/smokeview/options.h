@@ -12,7 +12,6 @@
   #define PROGVERSION ""
 #endif
 
-#define pp_SMOKEFIX         // adjust smoke alphas
 //#define pp_COLORBAR_DEBUG     // output colorbar debug info
 #define pp_COLORBARS_CSV      // add csv colorbars//
 //#define pp_COLORBAR_CONSTANT  // make colorbar brightness constant in colorbar dialog box

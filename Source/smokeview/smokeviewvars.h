@@ -1695,10 +1695,6 @@ SVEXTERN char SVDECL(*smokeview_casedir, NULL);
 #ifdef pp_LUA
 SVEXTERN char SVDECL(*smokeview_bindir_abs,NULL);
 SVEXTERN int  SVDECL(adjustalphaflag, 3);
-#else
-#ifdef pp_SMOKEFIX
-SVEXTERN int  SVDECL(adjustalphaflag, 1);
-#endif
 #endif
 SVEXTERN scriptfiledata first_scriptfile, last_scriptfile, SVDECL(*default_script,NULL);
 #ifdef pp_LUA
