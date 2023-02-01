@@ -1857,51 +1857,51 @@ void GetSmokeDir(float *mm){
   ( m2 m6 m10 m14 ) (z)  = (0)
   ( m3 m7 m11 m15 ) (1)    (1)
 
-  ( m0 m4  m8 )      (m12)
+      ( m0 m4  m8 )      (m12)
   Q=  ( m1 m5  m9 )  u = (m13)
-  ( m2 m6 m10 )      (m14)
+      ( m2 m6 m10 )      (m14)
 
   (Q   u) (x)     (0)
   (v^T 1) (y)   = (1)
 
-  m3=m7=m11=0, v^T=0, y=1   Qx+u=0 => x=-Q^Tu
+  m3=m7=m11=0, v^T=0, y=1   Q^TQ=I (Q is orthogonal), Qx+u=0 => x=-Q^Tu
   */
-  int i, ii, j;
-  meshdata *meshj;
-  float norm[3], scalednorm[3];
-  float normdir[3];
-  float absangle, cosangle, minangle;
-  int iminangle;
+  int j;
   float dx, dy, dz;
-#ifndef pp_SKIPSMOKEDIRS
-  float factor;
-#endif
 
   eye_position_fds[0] = -DOT3(mm + 0, mm + 12) / mscale[0];
   eye_position_fds[1] = -DOT3(mm + 4, mm + 12) / mscale[1];
   eye_position_fds[2] = -DOT3(mm + 8, mm + 12) / mscale[2];
 
   for(j = 0;j<nmeshes;j++){
-    meshdata  *meshi;
+    meshdata  *meshj;
+    int i;
+    float absangle, cosangle, minangle;
+    int iminangle;
 
-    meshi = meshinfo + j;
-    dx = meshi->boxmiddle_scaled[0] - eye_position_fds[0];
-    dy = meshi->boxmiddle_scaled[1] - eye_position_fds[1];
-    dz = meshi->boxmiddle_scaled[2] - eye_position_fds[2];
-    meshi->eyedist = sqrt(dx*dx + dy*dy + dz*dz);
-  }
-
-  for(j = 0;j<nmeshes;j++){
     meshj = meshinfo + j;
+    dx = meshj->boxmiddle_scaled[0] - eye_position_fds[0];
+    dy = meshj->boxmiddle_scaled[1] - eye_position_fds[1];
+    dz = meshj->boxmiddle_scaled[2] - eye_position_fds[2];
+    meshj->eyedist = sqrt(dx*dx + dy*dy + dz*dz);
+
 
     minangle = 1000.0;
     iminangle = -10;
+    int ibeg, iend;
 
-#ifdef pp_SMOKESKIPDIRS
-    for(i = -3;i <= 3;i++){
-#else
-    for(i = -9;i <= 9;i++){
-#endif
+    if(smoke_offaxis==1){
+      ibeg = -9;
+      iend =  9;
+    }
+    else{
+      ibeg = -3;
+      iend =  3;
+    }
+    for(i = ibeg;i <= iend;i++){
+      float scalednorm[3], norm[3], normdir[3], factor;
+      int ii;
+
       if(i == 0)continue;
       ii = ABS(i);
       norm[0] = 0.0;
@@ -1920,7 +1920,6 @@ void GetSmokeDir(float *mm){
         if(i<0)norm[2] = -1.0;
         if(i>0)norm[2] = 1.0;
         break;
-#ifndef pp_SKIPSMOKEDIRS
       case 4:
         dx = meshj->xplt_orig[1] - meshj->xplt_orig[0];
         dy = meshj->yplt_orig[1] - meshj->yplt_orig[0];
@@ -2035,7 +2034,6 @@ void GetSmokeDir(float *mm){
           norm[2] = dx*factor;
         }
         break;
-#endif
       default:
         ASSERT(FFALSE);
         break;
