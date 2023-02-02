@@ -1,0 +1,21 @@
+RENDERDIR
+ ..\..\Manuals\SMV_Verification_Guide\SCRIPT_FIGURES
+UNLOADALL
+LOADFILE
+ smoke1_1_1.s3d
+SETTIMEVAL
+ 0.5
+SETVIEWPOINT
+ view_center
+RENDERONCE
+ smoke1_center
+SETVIEWPOINT
+ view_edge
+RENDERONCE
+ smoke1_edge
+SETVIEWPOINT
+ view_corner
+RENDERONCE
+ smoke1_corner
+
+
