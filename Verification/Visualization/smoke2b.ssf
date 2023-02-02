@@ -1,0 +1,13 @@
+RENDERDIR
+ ..\..\Manuals\SMV_Verification_Guide\SCRIPT_FIGURES
+UNLOADALL
+LOADFILE
+ smoke2b_1_1.s3d
+SETTIMEVAL
+ 0.5
+SETVIEWPOINT
+ view_edge
+RENDERONCE
+ smoke2_edge
+
+
