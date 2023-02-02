@@ -1,0 +1,49 @@
+&HEAD CHID='smoke2', TITLE='Verify Smokeview Smoke3D Feature' /
+
+  A quantitative test of the smoke opacity calculation in Smokeview.  This test simplifies
+  the general case by assuming a uniform distribution of smoke.  Smoke grey levels are computed
+  using 
+
+     grey level (GL) = 255*exp(-K*S*rho*DX)
+
+  where K=8700 m2/kg is the mass extinction value and DX=0.5 m is the path length through the smoke,
+  rho=1.195 kg/m3 is the ambient air density.  
+  This equation is inverted to obtain
+
+    DX = -LN(GL/255)/(K*S*rho)
+    S = -LN(GL/255)/(K*DX*rho)
+
+  For GL=110, S=1.661744 * 10**-4 kg/m3 is the soot density
+
+&MESH IJK=40,40,40, XB=0.0,1.0,0.0,1.0,0.0,1.0 /
+
+&TIME T_END=1.0 /
+
+&SPEC ID='SOOT'/
+&SM3D QUANTITY='DENSITY', SPEC_ID='SOOT' /
+&INIT XB=0.25,0.75,0.25,0.75,0.25,0.75,MASS_FRACTION=0.000180079,SPEC_ID='SOOT' /
+
+&VENT XB=0.0,0.0,0.0,1.0,0.0,1.0,SURF_ID='OPEN' /
+&VENT XB=1.0,1.0,0.0,1.0,0.0,1.0,SURF_ID='OPEN' /
+&VENT XB=0.0,1.0,0.0,0.0,0.0,1.0,SURF_ID='OPEN' /
+&VENT XB=0.0,1.0,1.0,1.0,0.0,1.0,SURF_ID='OPEN' /
+&VENT XB=0.0,1.0,0.0,1.0,0.0,0.0,SURF_ID='OPEN' /
+&VENT XB=0.0,1.0,0.0,1.0,1.0,1.0,SURF_ID='OPEN' /
+
+&SLCF PBY=0.5,QUANTITY='DENSITY',SPEC_ID='SOOT',CELL_CENTERED=T /
+&SLCF XB=0.0,1.0,0.0,1.0,0.0,1.0,QUANTITY='DENSITY',SPEC_ID='SOOT' /
+&SLCF XB=0.0,1.0,0.0,1.0,0.0,1.0,QUANTITY='TEMPERATURE' /
+
+&PROP ID='smoketest' SMOKEVIEW_ID='smokesensor' /
+&DEVC XYZ=0.0,0.4,0.5, QUANTITY='VISIBILITY', ID='vis1' PROP_ID='smoketest' /
+&DEVC XYZ=0.0,1.0,0.0, QUANTITY='VISIBILITY', ID='vis1' PROP_ID='smoketest' /
+&DEVC XYZ=0.0,1.0,0.5, QUANTITY='VISIBILITY', ID='vis1' PROP_ID='smoketest' /
+&DEVC XYZ=0.4,0.5,1.0, QUANTITY='VISIBILITY', ID='vis1' PROP_ID='smoketest' /
+&DEVC XYZ=0.5,1.0,0.5, QUANTITY='VISIBILITY', ID='vis1' PROP_ID='smoketest' /
+&DEVC XYZ=0.6,0.5,0.0, QUANTITY='VISIBILITY', ID='vis1' PROP_ID='smoketest' /
+&DEVC XYZ=1.0,0.6,0.5, QUANTITY='VISIBILITY', ID='vis1' PROP_ID='smoketest' /
+&DEVC XYZ=1.0,1.0,0.0, QUANTITY='VISIBILITY', ID='vis1' PROP_ID='smoketest' /
+&DEVC XYZ=1.0,1.0,0.5, QUANTITY='VISIBILITY', ID='vis1' PROP_ID='smoketest' /
+
+&TAIL /
+
