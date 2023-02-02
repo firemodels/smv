@@ -1132,6 +1132,41 @@ values. The numbers displayed in the lower row of both resolution images represe
 \label{figsmoketest2}%
 \end{figure}
 
+Figure~\ref{figsmokeorien} shows smoke for different grid resolutions 
+and different orientations. Each case consists of a 
+$0.5\mbox{m}\times 0.5\mbox{m}\times 0.5\mbox{m}$ region in the center of the domain
+with soot density defined
+so that gray level is 100 (where gray levels range
+from 0 to 255).  When looking towards the edge or a corner the path length will be 
+longer than looking down the middle so the the resulting gray level 
+with be darker (smaller number).
+The three cases on the left have a grid resolution of $160\times 80\times 40$ and
+the three cases on the right have a grid resolution of $40\times 40\times 40$.  FDS computes opacities
+along the X direction.  Smokeview then adjusts these opacities as the scene is rotated
+or translated {\em i.e.}\
+as the scene is viewed from a different direction.
+
+\newcommand{\centered}[1]{\begin{tabular}{l} #1 \end{tabular}}
+\begin{figure}[bph]
+\begin{center}
+ \centering
+\begin{tabular}{lcc}
+ \centered{100}
+ &\centered{\includegraphics[width=3.00in]{SCRIPT_FIGURES/smoke1_center}}&
+ \centered{\includegraphics[width=3.00in]{SCRIPT_FIGURES/smoke2_center}} \\
+ \centered{68}&\centered{\includegraphics[width=3.00in]{SCRIPT_FIGURES/smoke1_edge}}&
+ \centered{\includegraphics[width=3.00in]{SCRIPT_FIGURES/smoke2_edge}} \\
+ \centered{50}&\centered{\includegraphics[width=3.00in]{SCRIPT_FIGURES/smoke1_corner}}&
+ \centered{\includegraphics[width=3.00in]{SCRIPT_FIGURES/smoke2_corner}} \\
+exact&mesh: $160\times 80\times 40$& mesh: $40\times 40\times 40$
+ \end{tabular}
+\end{center}
+ \caption[A test verifying smoke transparency for different orientations.]{A test verifying smoke transparency for different orientations and grid resolutions. The number in the center 
+ is the grey level `computed` by smokeview.  The path length is longer when looking towards
+ an edge or corner so the smoke should appear to be darker.
+ }
+\label{figsmokeorien}%
+\end{figure}
 
 \chapter{WUI Test Cases}
 \newcommand{\npage}{}
