@@ -1876,8 +1876,8 @@ void GetSmokeDir(float *mm){
   for(j = 0;j<nmeshes;j++){
     meshdata  *meshj;
     int i;
-    float absangle, cosangle, minangle;
-    int iminangle;
+    float absangle, cosangle, minangle, mincosangle;
+    int iminangle, alphadir, minalphadir;
 
     meshj = meshinfo + j;
     dx = meshj->boxmiddle_scaled[0] - eye_position_fds[0];
@@ -1885,7 +1885,8 @@ void GetSmokeDir(float *mm){
     dz = meshj->boxmiddle_scaled[2] - eye_position_fds[2];
     meshj->eyedist = sqrt(dx*dx + dy*dy + dz*dz);
 
-
+    minalphadir = ALPHA_X;
+    mincosangle = 2.0;
     minangle = 1000.0;
     iminangle = -10;
     int ibeg, iend;
@@ -1909,18 +1910,22 @@ void GetSmokeDir(float *mm){
       norm[2] = 0.0;
       switch(ii){
       case XDIR:
+        alphadir = ALPHA_X;
         if(i<0)norm[0] = -1.0;
         if(i>0)norm[0] = 1.0;
         break;
       case YDIR:
+        alphadir = ALPHA_Y;
         if(i<0)norm[1] = -1.0;
         if(i>0)norm[1] = 1.0;
         break;
       case ZDIR:
+        alphadir = ALPHA_Z;
         if(i<0)norm[2] = -1.0;
         if(i>0)norm[2] = 1.0;
         break;
       case 4:
+        alphadir = ALPHA_XY;
         dx = meshj->xplt_orig[1] - meshj->xplt_orig[0];
         dy = meshj->yplt_orig[1] - meshj->yplt_orig[0];
         factor = dx*dx + dy*dy;
@@ -1940,6 +1945,7 @@ void GetSmokeDir(float *mm){
         }
         break;
       case 5:
+        alphadir = ALPHA_XY;
         dx = meshj->xplt_orig[1] - meshj->xplt_orig[0];
         dy = meshj->yplt_orig[1] - meshj->yplt_orig[0];
         factor = dx*dx + dy*dy;
@@ -1959,6 +1965,7 @@ void GetSmokeDir(float *mm){
         }
         break;
       case 6:
+        alphadir = ALPHA_YZ;
         dy = meshj->yplt_orig[1] - meshj->yplt_orig[0];
         dz = meshj->zplt_orig[1] - meshj->zplt_orig[0];
         factor = dz*dz + dy*dy;
@@ -1978,6 +1985,7 @@ void GetSmokeDir(float *mm){
         }
         break;
       case 7:
+        alphadir = ALPHA_YZ;
         dy = meshj->yplt_orig[1] - meshj->yplt_orig[0];
         dz = meshj->zplt_orig[1] - meshj->zplt_orig[0];
         factor = dz*dz + dy*dy;
@@ -1997,6 +2005,7 @@ void GetSmokeDir(float *mm){
         }
         break;
       case 8:
+        alphadir = ALPHA_XZ;
         dx = meshj->xplt_orig[1] - meshj->xplt_orig[0];
         dz = meshj->zplt_orig[1] - meshj->zplt_orig[0];
         factor = dz*dz + dx*dx;
@@ -2016,6 +2025,7 @@ void GetSmokeDir(float *mm){
         }
         break;
       case 9:
+        alphadir = ALPHA_XZ;
         dx = meshj->xplt_orig[1] - meshj->xplt_orig[0];
         dz = meshj->zplt_orig[1] - meshj->zplt_orig[0];
         factor = dx*dx + dz*dz;
@@ -2042,23 +2052,39 @@ void GetSmokeDir(float *mm){
       scalednorm[1] = norm[1] * mscale[1];
       scalednorm[2] = norm[2] * mscale[2];
 
-      normdir[0] = DOT3SKIP(mm, 4, scalednorm, 1);
+      normdir[0] = DOT3SKIP(mm,     4, scalednorm, 1);
       normdir[1] = DOT3SKIP(mm + 1, 4, scalednorm, 1);
       normdir[2] = DOT3SKIP(mm + 2, 4, scalednorm, 1);
 
       cosangle = normdir[2] / NORM3(normdir);
       cosangle = CLAMP(cosangle, -1.0, 1.0);
-      absangle = acos(cosangle)*RAD2DEG;
-      if(absangle<0.0)absangle = -absangle;
+      absangle = ABS(acos(cosangle)*RAD2DEG);
       if(absangle<minangle){
+        minalphadir = alphadir;
         iminangle = i;
         minangle = absangle;
+        mincosangle = ABS(cosangle);
         meshj->norm[0] = norm[0];
         meshj->norm[1] = norm[1];
         meshj->norm[2] = norm[2];
       }
     }
     meshj->smokedir = iminangle;
+
+    if(meshj->smoke3d_soot != NULL){
+      smoke3ddata *soot;
+      float smoke_dist;
+
+      soot = meshj->smoke3d_soot;
+      if(smoke_adjust == 1){
+        smoke_dist = meshj->smoke_dist[minalphadir]/mincosangle;
+      }
+      else{
+        smoke_dist = meshj->smoke_dist[minalphadir];
+      }
+      InitAlphas(soot->alphas_dir[minalphadir], soot->extinct, glui_smoke3d_extinct,
+        meshj->dxyz_orig[0], smoke_dist);
+    }
     if(demo_mode != 0){
       meshj->smokedir = 1;
     }

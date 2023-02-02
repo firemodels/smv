@@ -336,6 +336,10 @@ EXTERNCPP void UpdateVSliceDups(void);
 EXTERNCPP void UnloadVSliceMenu(int value);
 EXTERNCPP void UpdateSliceDups(void);
 EXTERNCPP void UpdateSmokeAlphas(void);
+EXTERNCPP void InitAlphas(unsigned char *alphanew,
+                          float base_extinct, float new_extinct,
+                          float base_dx, float new_dx);
+
 EXTERNCPP void UpdateBoundarySliceDups(void);
 EXTERNCPP void IsoBoundCB(int var);
 EXTERNCPP void UpdateScriptStep(void);
@@ -478,7 +482,6 @@ EXTERNCPP void UpdateHVACViews(void);
 EXTERNCPP void HVACDuctValueMenu(int value);
 EXTERNCPP void HVACNodeValueMenu(int value);
 EXTERNCPP void UpdateHVACVarLists(void);
-
 
 EXTERNCPP void HideGluiGeometry(void);
 

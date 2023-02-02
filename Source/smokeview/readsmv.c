@@ -3894,6 +3894,13 @@ void UpdateMeshCoords(void){
     meshi->dxyDdx = DIAGDIST(dx, dy)/dx;
     meshi->dxzDdx = DIAGDIST(dx, dz)/dx;
     meshi->dyzDdx = DIAGDIST(dy, dz)/dx;
+
+    meshi->smoke_dist[ALPHA_X]  = dx;
+    meshi->smoke_dist[ALPHA_Y]  = dy;
+    meshi->smoke_dist[ALPHA_Z]  = dz;
+    meshi->smoke_dist[ALPHA_XY] = DIAGDIST(dx, dy);
+    meshi->smoke_dist[ALPHA_YZ] = DIAGDIST(dy, dz);
+    meshi->smoke_dist[ALPHA_XZ] = DIAGDIST(dx, dz);
   }
 }
 
