@@ -371,7 +371,7 @@ void DrawDevicesVal(void){
   for(i=0;i<ndeviceinfo;i++){
     devicei = deviceinfo + i;
 
-    if(devicei->object->visible==0)continue;
+    if(devicei->object->visible==0||devicei->show == 0)continue;
     xyz = devicei->xyz;
     xyznorm = devicei->xyznorm;
     if(active_smokesensors==1&&show_smokesensors!=SMOKESENSORS_HIDDEN&&STRCMP(devicei->object->label,"smokesensor")==0){

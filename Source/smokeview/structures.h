@@ -962,6 +962,7 @@ typedef struct _sv_object {
 #define LENDEVICEBUFFER 255
 typedef struct _device {
   int active;
+  int show;
   int screenijk[3], visval, target_index;
   char deviceID[LENDEVICEBUFFER], csvlabel[LENDEVICEBUFFER], *labelptr;
   char quantity[LENDEVICEBUFFER], unit[LENDEVICEBUFFER];

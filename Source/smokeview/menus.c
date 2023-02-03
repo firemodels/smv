@@ -280,6 +280,9 @@ float     part_load_time;
 //#define OBJECT_PLOT_SHOW_TREE_ALL  -12 put in smokeviewdefs.h
 //#define PLOT_HRRPUV                -13 put in smokeviewdef.h
 
+#define MENU_DEVICES_SHOWALL -1
+#define MENU_DEVICES_HIDEALL -2
+
 #define ISO_COLORS 4
 
 #define MENU_HVAC_CONNECTION_IGNORE    -999
@@ -6248,6 +6251,36 @@ void DeviceTypeMenu(int val){
   DeviceCB(DEVICE_devicetypes);
 }
 
+/* ------------------ ShowDevicesMenu ------------------------ */
+
+void ShowDevicesMenu(int value){
+  if(value==MENU_DUMMY)return;
+  updatemenu = 1;
+  GLUTPOSTREDISPLAY;
+  if(value==MENU_DEVICES_SHOWALL||value==MENU_DEVICES_HIDEALL){
+    int i;
+
+    for(i=0; i<ndeviceinfo; i++){
+      devicedata *devicei;
+
+      devicei = deviceinfo + i;
+      if(value==MENU_DEVICES_SHOWALL){
+        devicei->show = 1;
+      }
+      else{
+        devicei->show = 0;
+      }
+    }
+    return;
+  }
+  if(value>=0&&value<ndeviceinfo){
+    devicedata *devicei;
+
+    devicei = deviceinfo + value;
+    devicei->show = 1 - devicei->show;
+  }
+}
+ 
 /* ------------------ ShowObjectsMenu ------------------------ */
 
 void ShowObjectsMenu(int value){
@@ -8411,7 +8444,7 @@ static int *particlepropshowsubmenu=NULL;
 static int particlestreakshowmenu=0;
 static int tourmenu=0,tourcopymenu=0;
 static int trainerviewmenu=0,mainmenu=0,zoneshowmenu=0,particleshowmenu=0;
-static int showobjectsmenu=0,showobjectsplotmenu=0,devicetypemenu=0,spheresegmentmenu=0,propmenu=0;
+static int showobjectsmenu=0,showdevicesmenu=0,showobjectsplotmenu=0,devicetypemenu=0,spheresegmentmenu=0,propmenu=0;
 static int unloadplot3dmenu=0, unloadpatchmenu=0, unloadisomenu=0;
 static int showmultislicemenu=0;
 static int textureshowmenu=0;
@@ -9431,6 +9464,33 @@ updatemenu=0;
     glutAddMenuEntry(_("Settings..."), MENU_DEVICE_SETTINGS);
   }
   if(nobject_defs>0){
+    if(ndeviceinfo > 0){
+      int showall=1, hideall=1;
+
+      CREATEMENU(showdevicesmenu, ShowDevicesMenu);
+      for(i = 0; i < ndeviceinfo; i++){
+        devicedata *devicei;
+        char devicelabel[256];
+
+        devicei = deviceinfo + i;
+        strcpy(devicelabel, "");
+        if(devicei->show==1){
+          strcat(devicelabel,"*");
+          hideall=0;
+        }
+        else{
+          showall=0;
+        }
+        strcat(devicelabel, devicei->deviceID);
+        glutAddMenuEntry(devicelabel, i);
+      }
+      glutAddMenuEntry("-",MENU_DUMMY);
+      if(showall==1)glutAddMenuEntry("*Show all", MENU_DEVICES_SHOWALL);
+      if(showall==0)glutAddMenuEntry("Show all", MENU_DEVICES_SHOWALL);
+      if(hideall==1)glutAddMenuEntry("*Hide all", MENU_DEVICES_HIDEALL);
+      if(hideall==0)glutAddMenuEntry("Hide all", MENU_DEVICES_HIDEALL);
+    }
+
     CREATEMENU(showobjectsmenu,ShowObjectsMenu);
     for(i=0;i<nobject_defs;i++){
       sv_object *obj_typei;
@@ -9483,6 +9543,9 @@ updatemenu=0;
       }
     }
     glutAddMenuEntry("-",MENU_DUMMY);
+    if(ndeviceinfo > 0){
+      GLUTADDSUBMENU(_("Show/Hide devices"), showdevicesmenu);
+    }
     GLUTADDSUBMENU(_("Segments"),spheresegmentmenu);
     if(nobject_defs>0&&ndeviceinfo>0){
       glutAddMenuEntry("-",MENU_DUMMY);
