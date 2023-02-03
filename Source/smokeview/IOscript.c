@@ -3581,16 +3581,18 @@ int RunScriptCommand(scriptdata *script_command){
       break;
     case SCRIPT_SHOWDEV:
     case SCRIPT_HIDEDEV:
-      int dev_index;
+      {
+        int dev_index;
 
-      dev_index = GetDeviceIndexFromLabel(scripti->cval);
-      if(dev_index<0){
-        printf("***error: device %s does not exist\n", scripti->cval);
-        break;
+        dev_index = GetDeviceIndexFromLabel(scripti->cval);
+        if(dev_index<0){
+          printf("***error: device %s does not exist\n", scripti->cval);
+          break;
+        }
+        dev_index += ndeviceinfo;                                       // show device
+        if(scripti->command==SCRIPT_HIDEDEV)dev_index += ndeviceinfo;  // hide device
+        ShowDevicesMenu(dev_index);
       }
-      dev_index += ndeviceinfo;                                       // show device
-      if(scripti->command==SCRIPT_HIDEDEV)dev_index += ndeviceinfo;  // hide device
-      ShowDevicesMenu(dev_index);
       break;
     case SCRIPT_SHOWPLOT3DDATA:
       ScriptShowPlot3dData(scripti);
