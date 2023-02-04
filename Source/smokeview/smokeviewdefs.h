@@ -766,6 +766,9 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 #define SCRIPT_CANCEL           -8
 #define MENU_SCRIPT_SETTINGS    -9
 
+#define MENU_DEVICES_SHOWALL -1
+#define MENU_DEVICES_HIDEALL -2
+
 #define DRAWSCENE    1
 #define SELECTOBJECT 2
 

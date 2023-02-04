@@ -339,7 +339,8 @@ EXTERNCPP void UpdateSmokeAlphas(void);
 EXTERNCPP void InitAlphas(unsigned char *alphanew,
                           float base_extinct, float new_extinct,
                           float base_dx, float new_dx);
-
+EXTERNCPP void ShowDevicesMenu(int value);
+EXTERNCPP int GetDeviceIndexFromLabel(char *label);
 EXTERNCPP void UpdateBoundarySliceDups(void);
 EXTERNCPP void IsoBoundCB(int var);
 EXTERNCPP void UpdateScriptStep(void);

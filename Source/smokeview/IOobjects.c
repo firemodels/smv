@@ -5666,6 +5666,20 @@ devicedata *GetCSVDeviceFromLabel(char *label, int index){
   return NULL;
 }
 
+/* ----------------------- GetDeviceIndexFromLabel ----------------------------- */
+
+int GetDeviceIndexFromLabel(char *label){
+  int i;
+
+  for(i = 0;i < ndeviceinfo;i++){
+    devicedata *devicei;
+
+    devicei = deviceinfo + i;
+    if(STRCMP(devicei->deviceID, label) == 0)return i;
+  }
+  return -1;
+}
+
 /* ----------------------- GetDeviceFromLabel ----------------------------- */
 
 devicedata *GetDeviceFromLabel(char *label,int index){

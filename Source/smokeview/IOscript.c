@@ -327,6 +327,10 @@ int GetScriptKeywordIndex(char *keyword){
   if(MatchSSF(keyword,"SHOWHVACDUCTVAL") == MATCH)return SCRIPT_SHOWHVACDUCTVAL;
   if(MatchSSF(keyword,"SHOWHVACNODEVAL") == MATCH)return SCRIPT_SHOWHVACNODEVAL;
   if(MatchSSF(keyword,"HIDEHVACVALS") == MATCH)return SCRIPT_HIDEHVACVALS;
+  if(MatchSSF(keyword, "SHOWALLDEVS") == MATCH)return SCRIPT_SHOWALLDEVS;
+  if(MatchSSF(keyword, "HIDEALLDEVS") == MATCH)return SCRIPT_HIDEALLDEVS;
+  if(MatchSSF(keyword, "SHOWDEV") == MATCH)return SCRIPT_SHOWDEV;
+  if(MatchSSF(keyword, "HIDEDEV") == MATCH)return SCRIPT_HIDEDEV;
   if(MatchSSF(keyword,"SHOWPLOT3DDATA") == MATCH)return SCRIPT_SHOWPLOT3DDATA;         // documented
   if(MatchSSF(keyword,"SHOWSMOKESENSORS")==MATCH)return SCRIPT_SHOWSMOKESENSORS;
   if(MatchSSF(keyword,"UNLOADALL") == MATCH)return SCRIPT_UNLOADALL;                   // documented
@@ -617,8 +621,24 @@ NewMemory((void **)&scriptinfo, nscriptinfo*sizeof(scriptdata));
         SETcval;
         break;
 
-// SHOWHVACHIDEVALS
-      case SCRIPT_HIDEHVACVALS:
+// SHOWALLDEVS
+      case SCRIPT_SHOWALLDEVS:
+        break;
+
+// HIDEALLDEVS
+      case SCRIPT_HIDEALLDEVS:
+        break;
+        
+// SHOWDEV
+// dev_id
+      case SCRIPT_SHOWDEV:
+        SETcval;
+        break;
+
+// HIDEDEV
+//  dev_id
+      case SCRIPT_HIDEDEV:
+        SETcval;
         break;
 
 // RENDERSIZE
@@ -3552,6 +3572,25 @@ int RunScriptCommand(scriptdata *script_command){
       break;
     case SCRIPT_SHOWSMOKESENSORS:
       ScriptShowSmokeSensors();
+      break;
+    case SCRIPT_SHOWALLDEVS:
+      ShowDevicesMenu(MENU_DEVICES_SHOWALL);
+      break;
+    case SCRIPT_HIDEALLDEVS:
+      ShowDevicesMenu(MENU_DEVICES_HIDEALL);
+      break;
+    case SCRIPT_SHOWDEV:
+    case SCRIPT_HIDEDEV:
+      int dev_index;
+
+      dev_index = GetDeviceIndexFromLabel(scripti->cval);
+      if(dev_index<0){
+        printf("***error: device %s does not exist\n", scripti->cval);
+        break;
+      }
+      dev_index += ndeviceinfo;                                       // show device
+      if(scripti->command==SCRIPT_HIDEDEV)dev_index += ndeviceinfo;  // hide device
+      ShowDevicesMenu(dev_index);
       break;
     case SCRIPT_SHOWPLOT3DDATA:
       ScriptShowPlot3dData(scripti);

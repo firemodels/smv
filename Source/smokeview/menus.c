@@ -280,9 +280,6 @@ float     part_load_time;
 //#define OBJECT_PLOT_SHOW_TREE_ALL  -12 put in smokeviewdefs.h
 //#define PLOT_HRRPUV                -13 put in smokeviewdef.h
 
-#define MENU_DEVICES_SHOWALL -1
-#define MENU_DEVICES_HIDEALL -2
-
 #define ISO_COLORS 4
 
 #define MENU_HVAC_CONNECTION_IGNORE    -999
@@ -6254,7 +6251,7 @@ void DeviceTypeMenu(int val){
 /* ------------------ ShowDevicesMenu ------------------------ */
 
 void ShowDevicesMenu(int value){
-  if(value==MENU_DUMMY)return;
+  if(value==MENU_DUMMY||ndeviceinfo<=0)return;
   updatemenu = 1;
   GLUTPOSTREDISPLAY;
   if(value==MENU_DEVICES_SHOWALL||value==MENU_DEVICES_HIDEALL){
@@ -6273,11 +6270,21 @@ void ShowDevicesMenu(int value){
     }
     return;
   }
-  if(value>=0&&value<ndeviceinfo){
+  {
+    int ival, itype;
     devicedata *devicei;
 
-    devicei = deviceinfo + value;
-    devicei->show = 1 - devicei->show;
+    if(value >= 3 * ndeviceinfo)return;
+    ival = value % ndeviceinfo;
+    itype = value / ndeviceinfo;
+
+    devicei = deviceinfo + ival;
+    //             0 <= value <   ndeviceinfo : toggle
+    //   ndeviceinfo <= value < 2*ndeviceinfo : show
+    // 2*ndeviceinfo <= value < 3*ndeviceinfo : hide
+    if(itype == 0)devicei->show = 1 - devicei->show;
+    if(itype == 1)devicei->show = 1;
+    if(itype == 2)devicei->show = 0;
   }
 }
  
