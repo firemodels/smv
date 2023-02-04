@@ -3886,22 +3886,19 @@ void UpdateMeshCoords(void){
     meshi->dxyz_orig[1] = dy;
     meshi->dxyz_orig[2] = dz;
 
-    // dxy = x*y/sqrt(x*x+y*y)
-#define DIAGDIST(X,Y)  (X)*(Y)/sqrt((X)*(X)+(Y)*(Y))
-
     meshi->dxDdx  = 1.0;
     meshi->dyDdx  = dy/dx;
     meshi->dzDdx  = dz/dx;
-    meshi->dxyDdx = DIAGDIST(dx, dy)/dx;
-    meshi->dxzDdx = DIAGDIST(dx, dz)/dx;
-    meshi->dyzDdx = DIAGDIST(dy, dz)/dx;
+    meshi->dxyDdx = dy/sqrt(dx*dx+dy*dy);
+    meshi->dxzDdx = dz/sqrt(dx*dx+dz*dz);
+    meshi->dyzDdx = (dy*dz/dx)/sqrt(dy*dy+dz*dz);
 
     meshi->smoke_dist[ALPHA_X]  = dx;
     meshi->smoke_dist[ALPHA_Y]  = dy;
     meshi->smoke_dist[ALPHA_Z]  = dz;
-    meshi->smoke_dist[ALPHA_XY] = DIAGDIST(dx, dy);
-    meshi->smoke_dist[ALPHA_YZ] = DIAGDIST(dy, dz);
-    meshi->smoke_dist[ALPHA_XZ] = DIAGDIST(dx, dz);
+    meshi->smoke_dist[ALPHA_XY] = dx*dy/sqrt(dx*dx + dy*dy);
+    meshi->smoke_dist[ALPHA_YZ] = dy*dz/sqrt(dy*dy + dz*dz);
+    meshi->smoke_dist[ALPHA_XZ] = dx*dz/sqrt(dx*dx + dz*dz);
   }
 }
 
