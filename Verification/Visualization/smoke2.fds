@@ -1,4 +1,4 @@
-&HEAD CHID='smoke2a', TITLE='Verify Smokeview Smoke3D Feature' /
+&HEAD CHID='smoke2', TITLE='Verify Smokeview Smoke3D Feature' /
 
   A quantitative test of the smoke opacity calculation in Smokeview.  This test simplifies
   the general case by assuming a uniform distribution of smoke.  Smoke grey levels are computed
@@ -35,9 +35,9 @@
 &SLCF XB=0.0,1.0,0.0,1.0,0.0,1.0,QUANTITY='TEMPERATURE' /
 
 &PROP ID='smoketest' SMOKEVIEW_ID='smokesensor' /
-&DEVC XYZ=0.5,1.0,0.5, QUANTITY='VISIBILITY', ID='vis1' PROP_ID='smoketest' /
-DEVC XYZ=0.0,1.0,0.5, QUANTITY='VISIBILITY', ID='vis1' PROP_ID='smoketest' /
-DEVC XYZ=0.0,1.0,0.0, QUANTITY='VISIBILITY', ID='vis1' PROP_ID='smoketest' /
+&DEVC XYZ=0.5,1.0,0.5, QUANTITY='VISIBILITY', ID='view_center' PROP_ID='smoketest' /
+&DEVC XYZ=0.0,1.0,0.5, QUANTITY='VISIBILITY', ID='view_edge' PROP_ID='smoketest' /
+&DEVC XYZ=0.0,1.0,0.0, QUANTITY='VISIBILITY', ID='view_corner'   PROP_ID='smoketest' /
 
 DEVC XYZ=0.0,0.4,0.5, QUANTITY='VISIBILITY', ID='vis1' PROP_ID='smoketest' /
 DEVC XYZ=0.4,0.5,1.0, QUANTITY='VISIBILITY', ID='vis1' PROP_ID='smoketest' /
