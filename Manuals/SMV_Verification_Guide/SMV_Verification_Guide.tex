@@ -561,7 +561,7 @@ The case has four meshes.  Particle temperatures in these meshes are initialized
 \begin{figure}[bph]
 \begin{center}
 \raisebox{2.0ex}[2pt]{\includegraphics[width=5.0in]{SCRIPT_FIGURES/part_color_1}}\\
-\includegraphics[width=5.30in]{\SMVfigdir/horiz_colorbar}}
+\includegraphics[width=5.30in]{\SMVfigdir/horiz_colorbar}
 \end{center}
  \caption[A test verifying particle color assignment]
  {A test verifying particle color assignment.
@@ -653,7 +653,6 @@ files. Difference contours from these slice files are displayed at \SI{0}{s},
  \end{tabular}
 \end{center}
  \caption[Two vertical slices drawn at $x=0.4$ and $y=1.2$.]{Two vertical slices drawn at $x=0.4$ and $y=1.2$.}
-}
 \label{figslicexy}%
 \end{figure}
 
@@ -1133,6 +1132,41 @@ values. The numbers displayed in the lower row of both resolution images represe
 \label{figsmoketest2}%
 \end{figure}
 
+Figure~\ref{figsmokeorien} shows smoke for three orientations and two grid resolutions. 
+Each case consists of a 
+$0.5\mbox{m}\times 0.5\mbox{m}\times 0.5\mbox{m}$ cube in the center of the domain
+with soot density defined
+so that gray level is 100 (where gray levels can range
+from 0 to 255).  The path length is longer when looking towards an edge or corner
+so the resulting gray level with be darker {\em i.e.}\ have smaller gray level.
+The three cases on the left have a grid resolution of $160\times 80\times 40$ and
+the three cases on the right have a grid resolution of $40\times 40\times 40$.  
+FDS computes opacities
+along the X direction.  Smokeview then adjusts these opacities as the scene is rotated
+or translated {\em i.e.}\
+as the scene is viewed from a different direction.
+
+\newcommand{\centered}[1]{\begin{tabular}{l} #1 \end{tabular}}
+\begin{figure}[bph]
+\begin{center}
+ \centering
+\begin{tabular}{lcc}
+ \centered{100}
+ &\centered{\includegraphics[width=3.00in]{SCRIPT_FIGURES/smoke1_center}}&
+ \centered{\includegraphics[width=3.00in]{SCRIPT_FIGURES/smoke2_center}} \\
+ \centered{68}&\centered{\includegraphics[width=3.00in]{SCRIPT_FIGURES/smoke1_edge}}&
+ \centered{\includegraphics[width=3.00in]{SCRIPT_FIGURES/smoke2_edge}} \\
+ \centered{50}&\centered{\includegraphics[width=3.00in]{SCRIPT_FIGURES/smoke1_corner}}&
+ \centered{\includegraphics[width=3.00in]{SCRIPT_FIGURES/smoke2_corner}} \\
+theoretical&mesh: $160\times 80\times 40$& mesh: $40\times 40\times 40$
+ \end{tabular}
+\end{center}
+ \caption[A test verifying smoke transparency for three orientations and two grid resolutions.]{A test verifying smoke transparency for three orientations and two grid resolutions. The number in the center
+ is the grey level `computed` by smokeview.  The path length is longer when looking towards
+ an edge or corner so the smoke should appear to be darker and have a smaller gray level.
+ }
+\label{figsmokeorien}%
+\end{figure}
 
 \chapter{WUI Test Cases}
 \newcommand{\npage}{}

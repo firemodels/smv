@@ -2547,10 +2547,10 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
           n22 = n12+nxy;
           n21 = n11+nxy;
 
-          //        n11 = (j-js1)*nx   + (i-is1)   + (k-ks1)*nx*ny;
-          //        n12 = (j-1-js1)*nx + (i+1-is1) + (k-ks1)*nx*ny;
+          //        n11 = (j  -js1)*nx + (i  -is1) + (k  -ks1)*nx*ny;
+          //        n12 = (j-1-js1)*nx + (i+1-is1) + (k  -ks1)*nx*ny;
           //        n22 = (j-1-js1)*nx + (i+1-is1) + (k+1-ks1)*nx*ny;
-          //        n21 = (j-js1)*nx   + (i-is1)   + (k+1-ks1)*nx*ny;
+          //        n21 = (j  -js1)*nx + (i  -is1) + (k+1-ks1)*nx*ny;
 
           if(nterraininfo>0&&ABS(vertical_factor-1.0)>0.01){
             int m11, m12, m22, m21;
@@ -2732,10 +2732,10 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
           n22 = n12+nxy;
           n21 = n11+nxy;
 
-          //    n11 = (j-js1)*nx + (i-is1) + (k-ks1)*nx*ny;
-          //    n12 = (j+1-js1)*nx + (i+1-is1) + (k-ks1)*nx*ny;
+          //    n11 = (j  -js1)*nx + (i  -is1) + (k  -ks1)*nx*ny;
+          //    n12 = (j+1-js1)*nx + (i+1-is1) + (k  -ks1)*nx*ny;
           //    n22 = (j+1-js1)*nx + (i+1-is1) + (k+1-ks1)*nx*ny;
-          //    n21 = (j-js1)*nx + (i-is1) + (k+1-ks1)*nx*ny;
+          //    n21 = (j  -js1)*nx + (i  -is1) + (k+1-ks1)*nx*ny;
 
           if(nterraininfo>0&&ABS(vertical_factor-1.0)>0.01){
             int m11, m12, m22, m21;
@@ -2913,10 +2913,10 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
           n22 = n12+1;
           n21 = n22-nx+nxy;
 
-          //        n11 = (i-is1)   + (j-js1)*nx   + (k-ks1)*nx*ny;
-          //        n12 = (i-is1)   + (j+1-js1)*nx + (k-1-ks1)*nx*ny;
+          //        n11 = (i  -is1) + (j  -js1)*nx + (k  -ks1)*nx*ny;
+          //        n12 = (i  -is1) + (j+1-js1)*nx + (k-1-ks1)*nx*ny;
           //        n22 = (i+1-is1) + (j+1-js1)*nx + (k-1-ks1)*nx*ny;
-          //        n21 = (i+1-is1) + (j-js1)*nx   + (k-ks1)*nx*ny;
+          //        n21 = (i+1-is1) + (j  -js1)*nx + (k  -ks1)*nx*ny;
 
           if(nterraininfo>0&&ABS(vertical_factor-1.0)>0.01){
             int m11, m12, m22, m21;
@@ -3092,16 +3092,15 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
           ynode[2] = y3;
           ynode[3] = yy1;
 
-
           n11 = jterm+iterm+kterm;
           n12 = n11+nxy+nx;
           n22 = n12+1;
           n21 = n22-nx-nxy;
 
-          //    n11 = (i-is1)   + (j-js1)*nx    + (k-ks1)*nx*ny;
-          //    n12 = (i-is1)   + (j+1-js1)*nx  + (k+1-ks1)*nx*ny;
+          //    n11 = (i  -is1) + (j  -js1)*nx  + (k  -ks1)*nx*ny;
+          //    n12 = (i  -is1) + (j+1-js1)*nx  + (k+1-ks1)*nx*ny;
           //    n22 = (i+1-is1) + (j+1-js1)*nx  + (k+1-ks1)*nx*ny;
-          //    n21 = (i+1-is1) + (j-js1)*nx    + (k-ks1)*nx*ny;
+          //    n21 = (i+1-is1) + (j  -js1)*nx  + (k  -ks1)*nx*ny;
 
           if(nterraininfo>0&&ABS(vertical_factor-1.0)>0.01){
             int m11, m12, m22, m21;
@@ -3120,7 +3119,6 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
     }
     glEnd();
     break;
-
 
     // +++++++++++++++++++++++++++++++++++ DIR 8 +++++++++++++++++++++++++++++++++++++++
 
@@ -3145,7 +3143,6 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
         kend = 0;
         iend = ipk-kend;
       }
-
 
       if(smokecullflag==1){
         x11[0] = xplt[is1+ibeg];
@@ -3280,10 +3277,10 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
           n22 = n12+nx;
           n21 = n22-1+nxy;
 
-          //        n11 = (i-is1)   + (j-js1)*nx   + (k-ks1)*nx*ny;
-          //        n12 = (i+1-is1) + (j-js1)*nx   + (k-1-ks1)*nx*ny;
+          //        n11 = (i  -is1) + (j  -js1)*nx + (k  -ks1)*nx*ny;
+          //        n12 = (i+1-is1) + (j  -js1)*nx + (k-1-ks1)*nx*ny;
           //        n22 = (i+1-is1) + (j+1-js1)*nx + (k-1-ks1)*nx*ny;
-          //        n21 = (i-is1)   + (j+1-js1)*nx + (k-ks1)*nx*ny;
+          //        n21 = (i  -is1) + (j+1-js1)*nx + (k  -ks1)*nx*ny;
 
           if(nterraininfo>0&&ABS(vertical_factor-1.0)>0.01){
             int m11, m12, m22, m21;
@@ -3465,10 +3462,10 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
           n22 = n12+nx;
           n21 = n22-1-nxy;
 
-          //    n11 = (i-is1)   + (j-js1)*nx   + (k-ks1)*nx*ny;
-          //    n12 = (i+1-is1) + (j-js1)*nx   + (k+1-ks1)*nx*ny;
+          //    n11 = (i  -is1) + (j  -js1)*nx + (k  -ks1)*nx*ny;
+          //    n12 = (i+1-is1) + (j  -js1)*nx + (k+1-ks1)*nx*ny;
           //    n22 = (i+1-is1) + (j+1-js1)*nx + (k+1-ks1)*nx*ny;
-          //    n21 = (i-is1)   + (j+1-js1)*nx + (k-ks1)*nx*ny;
+          //    n21 = (i  -is1) + (j+1-js1)*nx + (k  -ks1)*nx*ny;
 
           if(nterraininfo>0&&ABS(vertical_factor-1.0)>0.01){
             int m11, m12, m22, m21;

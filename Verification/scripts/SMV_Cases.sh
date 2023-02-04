@@ -29,6 +29,8 @@ $QFDS -d Visualization smoke_sensor.fds
 $QFDS -d Visualization smoke_test.fds
 $QFDS -d Visualization smoke_test2.fds
 $QFDS -d Visualization smoke_test3.fds
+$QFDS -d Visualization smoke1.fds
+$QFDS -d Visualization smoke2.fds
 $QFDS -d Visualization smoke_test_geom.fds
 $QFDS -d Visualization sprinkler_many.fds
 $QFDS -d Visualization testsort.fds

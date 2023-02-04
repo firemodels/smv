@@ -371,7 +371,7 @@ void DrawDevicesVal(void){
   for(i=0;i<ndeviceinfo;i++){
     devicei = deviceinfo + i;
 
-    if(devicei->object->visible==0)continue;
+    if(devicei->object->visible==0||devicei->show == 0)continue;
     xyz = devicei->xyz;
     xyznorm = devicei->xyznorm;
     if(active_smokesensors==1&&show_smokesensors!=SMOKESENSORS_HIDDEN&&STRCMP(devicei->object->label,"smokesensor")==0){
@@ -5664,6 +5664,20 @@ devicedata *GetCSVDeviceFromLabel(char *label, int index){
     }
   }
   return NULL;
+}
+
+/* ----------------------- GetDeviceIndexFromLabel ----------------------------- */
+
+int GetDeviceIndexFromLabel(char *label){
+  int i;
+
+  for(i = 0;i < ndeviceinfo;i++){
+    devicedata *devicei;
+
+    devicei = deviceinfo + i;
+    if(STRCMP(devicei->deviceID, label) == 0)return i;
+  }
+  return -1;
 }
 
 /* ----------------------- GetDeviceFromLabel ----------------------------- */
