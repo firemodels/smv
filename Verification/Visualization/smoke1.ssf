@@ -12,6 +12,8 @@ SETVIEWPOINT
  view_center
 RENDERONCE
  smoke1_center
+RENDERONCE
+ smoke1_down_y
 HIDEALLDEVS
 SHOWDEV
  view_edge
@@ -26,5 +28,19 @@ SETVIEWPOINT
  view_corner
 RENDERONCE
  smoke1_corner
+HIDEALLDEVS
+SHOWDEV
+ down_x
+SETVIEWPOINT
+ down_x
+RENDERONCE
+ smoke1_down_x
+HIDEALLDEVS
+SHOWDEV
+ down_z
+SETVIEWPOINT
+ down_z
+RENDERONCE
+ smoke1_down_z
 
 
