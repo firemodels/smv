@@ -1132,7 +1132,11 @@ values. The numbers displayed in the lower row of both resolution images represe
 \label{figsmoketest2}%
 \end{figure}
 
-Figure~\ref{figsmokeorien} shows smoke for three orientations and two grid resolutions. 
+Figure \ref{figsmokedirection} show smoke for viewed along the x, y and
+z directions.  The grid spacing is different for each direction so the opacities passed from fds to smokeview need to be adjusted differently. The grid in the x direction
+has has 160 planes, in the y direction has 80 planes and in the z direction 
+has 40 planes.
+Figure~\ref{figsmokeorien} shows smoke for three orientations and two grid resolutions.
 Each case consists of a 
 $0.5\mbox{m}\times 0.5\mbox{m}\times 0.5\mbox{m}$ cube in the center of the domain
 with soot density defined
@@ -1150,20 +1154,38 @@ as the scene is viewed from a different direction.
 \begin{figure}[bph]
 \begin{center}
  \centering
+\begin{tabular}{cc}
+\centered{x direction\\ 160 grid planes}&
+\centered{\includegraphics[width=3.50in]{SCRIPT_FIGURES/smoke1_down_x}}\\
+\centered{y direction\\ 80 grid planes}&
+\centered{\includegraphics[width=3.50in]{SCRIPT_FIGURES/smoke1_down_y}}\\
+\centered{ z direction\\ 40 grid planes}&
+\centered{\includegraphics[width=3.50in]{SCRIPT_FIGURES/smoke1_down_z}}\\
+\end{tabular}
+\end{center}
+ \caption[A test verifying smoke transparency for three grid spacings 160, 80 and 40.]{A test verifying smoke transparency for three grid spacings 160, 80 and 40 along the x, y and z directions. Expected gray level is 100.
+ }
+\label{figsmokedirection}%
+\end{figure}
+
+\begin{figure}[bph]
+\begin{center}
+ \centering
 \begin{tabular}{lcc}
- \centered{100}
+ \centered{100\\1/2 m}
  &\centered{\includegraphics[width=3.00in]{SCRIPT_FIGURES/smoke1_center}}&
  \centered{\includegraphics[width=3.00in]{SCRIPT_FIGURES/smoke2_center}} \\
- \centered{68}&\centered{\includegraphics[width=3.00in]{SCRIPT_FIGURES/smoke1_edge}}&
+ \centered{68\\$\sqrt{2}/2$ m}&\centered{\includegraphics[width=3.00in]{SCRIPT_FIGURES/smoke1_edge}}&
  \centered{\includegraphics[width=3.00in]{SCRIPT_FIGURES/smoke2_edge}} \\
- \centered{50}&\centered{\includegraphics[width=3.00in]{SCRIPT_FIGURES/smoke1_corner}}&
+ \centered{50\\$\sqrt{3}/2$ m}&\centered{\includegraphics[width=3.00in]{SCRIPT_FIGURES/smoke1_corner}}&
  \centered{\includegraphics[width=3.00in]{SCRIPT_FIGURES/smoke2_corner}} \\
-theoretical&mesh: $160\times 80\times 40$& mesh: $40\times 40\times 40$
+\centered{expected gray level\\path length}&grid planes: $160\times 80\times 40$& 
+grid planes: $40\times 40\times 40$
  \end{tabular}
 \end{center}
  \caption[A test verifying smoke transparency for three orientations and two grid resolutions.]{A test verifying smoke transparency for three orientations and two grid resolutions. The number in the center
  is the grey level `computed` by smokeview.  The path length is longer when looking towards
- an edge or corner so the smoke should appear to be darker and have a smaller gray level.
+ an edge or corner so the smoke appears darker and has a smaller gray level.
  }
 \label{figsmokeorien}%
 \end{figure}
