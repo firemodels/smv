@@ -1107,7 +1107,7 @@ void SetSmokeSensor(gdImagePtr RENDERimage, int width, int height){
 
       devicei = deviceinfo + idev;
 
-      if(devicei->object->visible == 0)continue;
+      if(devicei->object->visible == 0 || devicei->show == 0)continue;
       if(strcmp(devicei->object->label, "smokesensor") != 0)continue;
       idev_row = devicei->screenijk[0];
       idev_col = devicei->screenijk[1];
@@ -1280,7 +1280,7 @@ int SVimage2var(int rendertype,
 
       devicei = deviceinfo + idev;
 
-      if(devicei->object->visible==0)continue;
+      if(devicei->object->visible == 0 || devicei->show == 0)continue;
       if(strcmp(devicei->object->label,"smokesensor")!=0)continue;
       idev_row = devicei->screenijk[0];
       idev_col = devicei->screenijk[1];
