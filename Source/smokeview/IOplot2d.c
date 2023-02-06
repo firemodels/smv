@@ -1023,7 +1023,7 @@ void DrawTreePlot(int first, int n){
     float highlight_time = 0.0, highlight_val = 0.0;
 
     devicei = deviceinfo_sortedz[first+j];
-    if(devicei->object->visible==0)continue;
+    if(devicei->object->visible == 0 || devicei->show == 0)continue;
     if(devicei->times==NULL||devicei->vals==NULL)continue;
     if(devicei->nvals<=1||devicei->type2!=devicetypes_index)continue;
     drawplot++;

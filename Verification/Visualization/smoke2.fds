@@ -15,13 +15,13 @@
 
   For GL=110, S=1.661744 * 10**-4 kg/m3 is the soot density
 
-&MESH IJK=40,40,40, XB=0.0,1.0,0.0,1.0,0.0,1.0 /
+&MESH IJK=40,40,40 XB=0.0,1.0,0.0,1.0,0.0,1.0 /
 
 &TIME T_END=1.0 /
 
 &SPEC ID='SOOT'/
 &SM3D QUANTITY='DENSITY', SPEC_ID='SOOT' /
-&INIT XB=0.25,0.75,0.25,0.75,0.25,0.75,MASS_FRACTION=0.000180079,SPEC_ID='SOOT' /
+&INIT XB=0.0,1.0,0.0,1.0,0.0,1.0,MASS_FRACTION=0.0000900393,SPEC_ID='SOOT' /
 
 &VENT XB=0.0,0.0,0.0,1.0,0.0,1.0,SURF_ID='OPEN' /
 &VENT XB=1.0,1.0,0.0,1.0,0.0,1.0,SURF_ID='OPEN' /
@@ -35,9 +35,11 @@
 &SLCF XB=0.0,1.0,0.0,1.0,0.0,1.0,QUANTITY='TEMPERATURE' /
 
 &PROP ID='smoketest' SMOKEVIEW_ID='smokesensor' /
+&DEVC XYZ=0.0,0.5,0.5, QUANTITY='VISIBILITY', ID='down_x'      PROP_ID='smoketest' /
+&DEVC XYZ=0.0,1.0,0.0, QUANTITY='VISIBILITY', ID='view_corner' PROP_ID='smoketest' /
+&DEVC XYZ=0.0,1.0,0.5, QUANTITY='VISIBILITY', ID='view_edge'   PROP_ID='smoketest' /
+&DEVC XYZ=0.5,0.5,0.0, QUANTITY='VISIBILITY', ID='down_z'      PROP_ID='smoketest' /
 &DEVC XYZ=0.5,1.0,0.5, QUANTITY='VISIBILITY', ID='view_center' PROP_ID='smoketest' /
-&DEVC XYZ=0.0,1.0,0.5, QUANTITY='VISIBILITY', ID='view_edge' PROP_ID='smoketest' /
-&DEVC XYZ=0.0,1.0,0.0, QUANTITY='VISIBILITY', ID='view_corner'   PROP_ID='smoketest' /
 
 DEVC XYZ=0.0,0.4,0.5, QUANTITY='VISIBILITY', ID='vis1' PROP_ID='smoketest' /
 DEVC XYZ=0.4,0.5,1.0, QUANTITY='VISIBILITY', ID='vis1' PROP_ID='smoketest' /
