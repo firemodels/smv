@@ -15,7 +15,7 @@
 
   For GL=110, S=1.661744 * 10**-4 kg/m3 is the soot density
 
-&MESH IJK=40,40,40
+&MESH IJK=40,40,40 XB=0.0,1.0,0.0,1.0,0.0,1.0 /
 
 &TIME T_END=1.0 /
 
