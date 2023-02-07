@@ -1,0 +1,15 @@
+RENDERDIR
+ ..\..\Manuals\SMV_Verification_Guide\SCRIPT_FIGURES
+UNLOADALL
+LOADFILE
+ smokex080_1_1.s3d
+SETTIMEVAL
+ 0.5
+HIDEALLDEVS
+SHOWDEV
+ down_x
+SETVIEWPOINT
+ down_x
+RENDERONCE
+ smokex080_downx
+
