@@ -396,7 +396,7 @@ void UpdateShow(void){
       devicedata *devicei;
 
       devicei = deviceinfo+i;
-      if(devicei->type2==devicetypes_index&&devicei->object->visible==1){
+      if(devicei->type2==devicetypes_index&&devicei->object->visible==1&&devicei->show==1){
         showdeviceflag = 1;
         break;
       }
@@ -1190,6 +1190,7 @@ void UpdateTimes(void){
 
       devicei = deviceinfo+i;
       if(devicei->object->visible==0||devicei->nvals==0)continue;
+      if(devicei->show == 0)continue;
       if(devicei->type2==devicetypes_index){
         MergeGlobalTimes(devicei->times, devicei->nvals);
       }
@@ -1499,7 +1500,7 @@ void UpdateTimes(void){
     devicedata *devicei;
 
     devicei = deviceinfo + i;
-    if(devicei->object->visible==0)continue;
+    if(devicei->object->visible == 0 || devicei->show == 0)continue;
     if(devicei->nstate_changes==0)continue;
     FREEMEMORY(devicei->showstatelist);
     if(nglobal_times>0){
@@ -1626,7 +1627,7 @@ int GetPlotStateSub(int choice){
           devicedata *devicei;
 
           devicei = deviceinfo+i;
-          if(devicei->object->visible==0)continue;
+          if(devicei->object->visible == 0 || devicei->show == 0)continue;
           if(devicei->type2==devicetypes_index){
             stept = 1;
             return DYNAMIC_PLOTS;
