@@ -579,8 +579,9 @@ void SetSuperIndex(meshdata *meshi, int dir){
   meshi->s_offset[dir] = index;
 }
 
-/* ------------------ GetNodeBeg ------------------------ */
 #ifdef pp_VSKIP
+/* ------------------ GetNodeBeg ------------------------ */
+
 int GetNodeBeg(meshdata *meshi, int dir, int skip){
   int return_val;
   meshdata *nabor;
@@ -650,6 +651,80 @@ void GetAllNodeBegs(int skip){
     meshi->node_ijk0[0] = GetNodeBeg(meshi, 0, skip);
     meshi->node_ijk0[1] = GetNodeBeg(meshi, 1, skip);
     meshi->node_ijk0[2] = GetNodeBeg(meshi, 2, skip);
+  }
+}
+
+/* ------------------ GetCellBeg ------------------------ */
+
+int GetCellBeg(meshdata *meshi, int dir, int skip){
+  int return_val;
+  meshdata *nabor;
+
+  if(meshi->cell_ijk0[dir] >= 0)return meshi->cell_ijk0[dir];
+  switch(dir){
+  case 0:
+    nabor = meshi->nabors[MLEFT];
+    if(nabor == NULL){
+      meshi->cell_ijk0[dir] = 0;
+      return_val = 0;
+    }
+    else{
+      return_val = GetCellBeg(nabor, dir, skip) + skip * (meshi->ibar / skip) + skip;
+      return_val = return_val % meshi->ibar;
+      meshi->cell_ijk0[dir] = return_val;
+    }
+    break;
+  case 1:
+    nabor = meshi->nabors[MFRONT];
+    if(nabor == NULL){
+      meshi->cell_ijk0[dir] = 0;
+      return_val = 0;
+    }
+    else{
+      return_val = GetCellBeg(nabor, dir, skip) + skip * (meshi->jbar / skip) + skip;
+      return_val = return_val % meshi->jbar;
+      meshi->cell_ijk0[dir] = return_val;
+    }
+    break;
+  case 2:
+    nabor = meshi->nabors[MDOWN];
+    if(nabor == NULL){
+      meshi->cell_ijk0[dir] = 0;
+      return_val = 0;
+    }
+    else{
+      return_val = GetCellBeg(nabor, dir, skip) + skip * (meshi->kbar / skip) + skip;
+      return_val = return_val % meshi->kbar;
+      meshi->cell_ijk0[dir] = return_val;
+    }
+    break;
+  default:
+    ASSERT(FFALSE);
+    break;
+  }
+  return return_val;
+}
+
+/* ------------------ GetAllCellBegs ------------------------ */
+
+void GetAllCellBegs(int skip){
+  int i;
+
+  for(i = 0;i < nmeshes;i++){
+    meshdata *meshi;
+
+    meshi = meshinfo + i;
+    meshi->cell_ijk0[0] = -1;
+    meshi->cell_ijk0[1] = -1;
+    meshi->cell_ijk0[2] = -1;
+  }
+  for(i = 0;i < nmeshes;i++){
+    meshdata *meshi;
+
+    meshi = meshinfo + i;
+    meshi->cell_ijk0[0] = GetCellBeg(meshi, 0, skip);
+    meshi->cell_ijk0[1] = GetCellBeg(meshi, 1, skip);
+    meshi->cell_ijk0[2] = GetCellBeg(meshi, 2, skip);
   }
 }
 #endif

@@ -6276,6 +6276,7 @@ extern "C" void SliceBoundCB(int var){
       if(SPINNER_plot3dvectorskip!=NULL)SPINNER_plot3dvectorskip->set_int_val(vectorskip);
 #ifdef pp_VSKIP
       GetAllNodeBegs(vectorskip);
+      GetAllCellBegs(vectorskip);
 #endif
       break;
     case ZONEVALMINMAX:

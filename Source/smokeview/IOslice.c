@@ -8039,6 +8039,7 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
   int plotx, ploty, plotz;
   char *iblank_cell;
   int ibar, jbar;
+  int vectorskipi, vectorskipj, vectorskipk;
 
   sd = sliceinfo + vd->ival;
   meshi = meshinfo + sd->blocknumber;
@@ -8059,6 +8060,10 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
   jbar = meshi->jbar;
   iblank_cell = meshi->c_iblank_cell;
 
+  vectorskipi = vectorskip;
+  vectorskipj = vectorskip;
+  vectorskipk = vectorskip;
+  
   vel_max = max_velocity;
   if(vel_max<= 0.0)vel_max = 1.0;
   u = vd->u;
@@ -8068,6 +8073,7 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
     int j;
     int maxj;
     float xhalf;
+    int jbeg, kbeg;
 
     if(plotx > 0){
       xhalf = (xplttemp[plotx] + xplttemp[plotx - 1]) / 2.0;
@@ -8083,14 +8089,32 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
     glBegin(GL_LINES);
     glColor4fv(foregroundcolor);
     maxj = sd->js2;
+#ifdef pp_VSKIP
+    if(sd->js1==0&&vectorskipj>1){
+      jbeg = meshi->cell_ijk0[1];
+    }
+    else{
+      jbeg = sd->js1;
+    }
+    if(sd->ks1==0&&vectorskipk>1){
+      kbeg = meshi->cell_ijk0[2];
+    }
+    else{
+      kbeg = sd->ks1;
+    }
+#else
+    jbeg = sd->js1;
+    kbeg = sd->ks1;
+#endif
     if(sd->js1 + 1 > maxj)maxj = sd->js1 + 1;
-    for(j = sd->js1; j <= maxj; j++){
+
+    for(j = jbeg; j <= maxj; j+=vectorskipj){
       float yy1, yhalf;
       int k;
 
       yy1 = yplttemp[j];
       if(j != maxj)yhalf = (yplttemp[j] + yplttemp[j + 1]) / 2.0;
-      for(k = sd->ks1; k < sd->ks2; k++){
+      for(k = kbeg; k < sd->ks2; k+=vectorskipk){
         float zhalf, z1;
         int in_solid, in_gas;
 
@@ -8137,13 +8161,13 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
     glPointSize(vectorpointsize);
     glBegin(GL_POINTS);
     glColor4fv(foregroundcolor);
-    for(j = sd->js1; j <= maxj; j++){
+    for(j = jbeg; j <= maxj; j+=vectorskipj){
       float yy1, yhalf;
       int k;
 
       yy1 = yplttemp[j];
       if(j != maxj)yhalf = (yplttemp[j] + yplttemp[j + 1]) / 2.0;
-      for(k = sd->ks1; k < sd->ks2; k++){
+      for(k = kbeg; k < sd->ks2; k+=vectorskipk){
         float zhalf, z1;
 
         int in_solid, in_gas;
@@ -8186,6 +8210,7 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
   if((vd->volslice == 1 && ploty > 0 && visy_all == 1) || (vd->volslice == 0 && sd->idir == YDIR)){
     int maxi;
     float yhalf;
+    int ibeg, kbeg;
 
     if(ploty > 0){
       yhalf = (yplttemp[ploty] + yplttemp[ploty - 1]) / 2.0;
@@ -8200,7 +8225,25 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
     if(sd->is1 + 1 > maxi)maxi = sd->is1 + 1;
     glBegin(GL_LINES);
     glColor4fv(foregroundcolor);
-    for(i = sd->is1; i <= maxi; i++){
+#ifdef pp_VSKIP
+    if(sd->is1==0&&vectorskipi>1){
+      ibeg = meshi->cell_ijk0[0];
+    }
+    else{
+      ibeg = sd->is1;
+    }
+    if(sd->ks1==0&&vectorskipk>1){
+      kbeg = meshi->cell_ijk0[2];
+    }
+    else{
+      kbeg = sd->ks1;
+    }
+#else
+    ibeg = sd->is1;
+    kbeg = sd->ks1;
+#endif
+
+    for(i = ibeg; i <= maxi; i+=vectorskipi){
       float x1, xhalf;
       int k;
 
@@ -8210,7 +8253,7 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
       x1 = xplttemp[i];
       if(i + 1 != sd->nslicei)xhalf = (xplttemp[i] + xplttemp[i + 1]) / 2.0;
 
-      for(k = sd->ks1; k < sd->ks2; k++){
+      for(k = kbeg; k < sd->ks2; k+=vectorskipk){
         float zhalf, z1;
         int in_solid, in_gas;
 
@@ -8253,7 +8296,7 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
     glPointSize(vectorpointsize);
     glBegin(GL_POINTS);
     glColor4fv(foregroundcolor);
-    for(i = sd->is1; i <= maxi; i++){
+    for(i = ibeg; i <= maxi; i+=vectorskipi){
       float x1, xhalf;
       int k;
 
@@ -8263,7 +8306,7 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
       x1 = xplttemp[i];
       if(i + 1 != sd->nslicei)xhalf = (xplttemp[i] + xplttemp[i + 1]) / 2.0;
 
-      for(k = sd->ks1; k < sd->ks2; k++){
+      for(k = kbeg; k < sd->ks2; k+=vectorskipk){
         float zhalf, z1;
         int in_solid, in_gas;
 
@@ -8305,6 +8348,7 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
   if((vd->volslice == 1 && plotz > 0 && visz_all == 1) || (vd->volslice == 0 && sd->idir == ZDIR)){
     int maxi;
     float zhalf;
+    int ibeg, jbeg;
 
     if(plotz > 0){
       zhalf = (zplttemp[plotz] + zplttemp[plotz - 1]) / 2.0;
@@ -8315,11 +8359,28 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
 
     constval = zhalf + offset_slice*sd->sliceoffset+SCALE2SMV(slice_dz);
     glLineWidth(vectorlinewidth);
+#ifdef pp_VSKIP
+    if(sd->is1==0&&vectorskipi>1){
+      ibeg = meshi->cell_ijk0[0];
+    }
+    else{
+      ibeg = sd->is1;
+    }
+    if(sd->js1==0&&vectorskipj>1){
+      jbeg = meshi->cell_ijk0[1];
+    }
+    else{
+      jbeg = sd->js1;
+    }
+#else
+    ibeg = sd->is1;
+    jbeg = sd->js1;
+#endif
     maxi = sd->is1 + sd->nslicei - 1;
     if(sd->is1 + 1 > maxi)maxi = sd->is1 + 1;
     glBegin(GL_LINES);
     glColor4fv(foregroundcolor);
-    for(i = sd->is1; i <= maxi; i++){
+    for(i = ibeg; i <= maxi; i+=vectorskipi){
       float xhalf;
       float x1;
       int j;
@@ -8329,7 +8390,7 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
 
       x1 = xplttemp[i];
       if(i + 1 != sd->nslicei)xhalf = (xplttemp[i] + xplttemp[i + 1]) / 2.0;
-      for(j = sd->js1; j <= sd->js2; j++){
+      for(j = jbeg; j <= sd->js2; j+=vectorskipj){
         float yhalf;
         float yy1;
         int in_solid, in_gas;
@@ -8374,7 +8435,7 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
     glPointSize(vectorpointsize);
     glBegin(GL_POINTS);
     glColor4fv(foregroundcolor);
-    for(i = sd->is1; i <= maxi; i++){
+    for(i = ibeg; i <= maxi; i+=vectorskipi){
       float xhalf;
       float x1;
       int j;
@@ -8384,7 +8445,7 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
 
       x1 = xplttemp[i];
       if(i + 1 != sd->nslicei)xhalf = (xplttemp[i] + xplttemp[i + 1]) / 2.0;
-      for(j = sd->js1; j <= sd->js2; j++){
+      for(j = jbeg; j <= sd->js2; j+=vectorskipj){
         float yhalf;
         float yy1;
         int in_solid, in_gas;
