@@ -8501,13 +8501,32 @@ void DrawVVolSliceTerrain(const vslicedata *vd){
     }
 
     if(vector_debug==0){
+      int ibeg, jbeg;
+
+#ifdef pp_VSKIP
+      if(sd->is1==0&&vectorskipi>1){
+        ibeg = meshi->node_ijk0[0];
+      }
+      else{
+        ibeg = sd->is1;
+      }
+      if(sd->js1==0&&vectorskipj>1){
+        jbeg = meshi->node_ijk0[1];
+      }
+      else{
+        jbeg = sd->js1;
+      }
+#else
+      ibeg = sd->is1;
+      jbeg = sd->js1;
+#endif
       glBegin(GL_LINES);
-      for(i = sd->is1; i<maxi+1; i += vectorskipi){
+      for(i = ibeg; i<maxi+1; i += vectorskipi){
         float x1;
         int j;
 
         x1 = xplttemp[i];
-        for(j = sd->js1; j<sd->js2+1; j += vectorskipj){
+        for(j = jbeg; j<sd->js2+1; j += vectorskipj){
           int n11;
           float z11;
           float *rgb_ptr;
@@ -8542,12 +8561,12 @@ void DrawVVolSliceTerrain(const vslicedata *vd){
 
       glPointSize(vectorpointsize);
       glBegin(GL_POINTS);
-      for(i = sd->is1; i < maxi + 1; i += vectorskipi){
+      for(i = ibeg; i < maxi + 1; i += vectorskipi){
         float x1;
         int j;
 
         x1 = xplttemp[i];
-        for(j = sd->js1; j < sd->js2 + 1; j += vectorskipj){
+        for(j = jbeg; j < sd->js2 + 1; j += vectorskipj){
           int n11;
           float z11;
           float *rgb_ptr;
