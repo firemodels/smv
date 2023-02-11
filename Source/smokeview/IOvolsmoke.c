@@ -620,7 +620,7 @@ void SetSuperIndex(meshdata *meshi, int dir){
 /* ------------------ GetCellNodeBeg ------------------------ */
 
 int GetCellNodeBeg(meshdata *meshi, int dir, int skip){
-  int return_val;
+  int return_val=0;
   meshdata *nabor;
 
   if(meshi->ijk0[dir]>=0)return meshi->ijk0[dir];
