@@ -734,42 +734,38 @@ void InitNabors(void){
         meshi->nabors[MDOWN] = meshj;
         continue;
       }
-#ifdef pp_VSKIP
-      for(j = 0;j < nmeshes;j++){
-        meshdata *meshj;
-
-        if(i == j)continue;
-
-        meshj = meshinfo + j;
-
-        if(SkipMeshConnect(meshi, MLEFT, meshj) == 1){
-          meshi->skip_nabors[MRIGHT] = meshj;
-          continue;
-        }
-        if(SkipMeshConnect(meshi, MRIGHT, meshj) == 1){
-          meshi->skip_nabors[MLEFT] = meshj;
-          continue;
-        }
-        if(SkipMeshConnect(meshi, MFRONT, meshj) == 1){
-          meshi->skip_nabors[MBACK] = meshj;
-          continue;
-        }
-        if(SkipMeshConnect(meshi, MBACK, meshj) == 1){
-          meshi->skip_nabors[MFRONT] = meshj;
-          continue;
-        }
-        if(SkipMeshConnect(meshi, MDOWN, meshj) == 1){
-          meshi->skip_nabors[MUP] = meshj;
-          continue;
-        }
-        if(SkipMeshConnect(meshi, MUP, meshj) == 1){
-          meshi->skip_nabors[MDOWN] = meshj;
-          continue;
-        }
-      }
-#endif
     }
 #ifdef pp_VSKIP
+    for(j = 0;j < nmeshes;j++){
+      meshdata *meshj;
+
+      if(i == j)continue;
+      meshj = meshinfo + j;
+      if(SkipMeshConnect(meshi, MLEFT, meshj) == 1){
+        meshi->skip_nabors[MRIGHT] = meshj;
+        continue;
+      }
+      if(SkipMeshConnect(meshi, MRIGHT, meshj) == 1){
+        meshi->skip_nabors[MLEFT] = meshj;
+        continue;
+      }
+      if(SkipMeshConnect(meshi, MFRONT, meshj) == 1){
+        meshi->skip_nabors[MBACK] = meshj;
+        continue;
+      }
+      if(SkipMeshConnect(meshi, MBACK, meshj) == 1){
+        meshi->skip_nabors[MFRONT] = meshj;
+        continue;
+      }
+      if(SkipMeshConnect(meshi, MDOWN, meshj) == 1){
+        meshi->skip_nabors[MUP] = meshj;
+        continue;
+      }
+      if(SkipMeshConnect(meshi, MUP, meshj) == 1){
+        meshi->skip_nabors[MDOWN] = meshj;
+        continue;
+      }
+    }
     for(j=0;j<3;j++){
       meshi->ijk0[j] = -1;
     }
