@@ -836,8 +836,7 @@ void InitMesh(meshdata *meshi){
 
 #ifdef pp_VSKIP
   for(i=0;i<3;i++){
-    meshi->node_ijk0[i] = -1;
-    meshi->cell_ijk0[i] = -1;
+    meshi->ijk0[i] = -1;
   }
 #endif
   meshi->znodes_complete = NULL;

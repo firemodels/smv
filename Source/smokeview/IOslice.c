@@ -8091,13 +8091,13 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
     maxj = sd->js2;
 #ifdef pp_VSKIP
     if(sd->js1==0&&vectorskipj>1){
-      jbeg = meshi->cell_ijk0[1];
+      jbeg = meshi->ijk0[1];
     }
     else{
       jbeg = sd->js1;
     }
     if(sd->ks1==0&&vectorskipk>1){
-      kbeg = meshi->cell_ijk0[2];
+      kbeg = meshi->ijk0[2];
     }
     else{
       kbeg = sd->ks1;
@@ -8227,13 +8227,13 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
     glColor4fv(foregroundcolor);
 #ifdef pp_VSKIP
     if(sd->is1==0&&vectorskipi>1){
-      ibeg = meshi->cell_ijk0[0];
+      ibeg = meshi->ijk0[0];
     }
     else{
       ibeg = sd->is1;
     }
     if(sd->ks1==0&&vectorskipk>1){
-      kbeg = meshi->cell_ijk0[2];
+      kbeg = meshi->ijk0[2];
     }
     else{
       kbeg = sd->ks1;
@@ -8361,13 +8361,13 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
     glLineWidth(vectorlinewidth);
 #ifdef pp_VSKIP
     if(sd->is1==0&&vectorskipi>1){
-      ibeg = meshi->cell_ijk0[0];
+      ibeg = meshi->ijk0[0];
     }
     else{
       ibeg = sd->is1;
     }
     if(sd->js1==0&&vectorskipj>1){
-      jbeg = meshi->cell_ijk0[1];
+      jbeg = meshi->ijk0[1];
     }
     else{
       jbeg = sd->js1;
@@ -8566,13 +8566,13 @@ void DrawVVolSliceTerrain(const vslicedata *vd){
 
 #ifdef pp_VSKIP
       if(sd->is1==0&&vectorskipi>1){
-        ibeg = meshi->node_ijk0[0];
+        ibeg = meshi->ijk0[0];
       }
       else{
         ibeg = sd->is1;
       }
       if(sd->js1==0&&vectorskipj>1){
-        jbeg = meshi->node_ijk0[1];
+        jbeg = meshi->ijk0[1];
       }
       else{
         jbeg = sd->js1;
@@ -8807,13 +8807,13 @@ void DrawVVolSlice(const vslicedata *vd){
     }
 #ifdef pp_VSKIP
     if(sd->js1==0&&vectorskipj>1){
-      jbeg = meshi->node_ijk0[1];
+      jbeg = meshi->ijk0[1];
     }
     else{
       jbeg = sd->js1;
     }
     if(sd->ks1==0&&vectorskipk>1){
-      kbeg = meshi->node_ijk0[2];
+      kbeg = meshi->ijk0[2];
     }
     else{
       kbeg = sd->ks1;
@@ -8945,13 +8945,13 @@ void DrawVVolSlice(const vslicedata *vd){
     }
 #ifdef pp_VSKIP
     if(sd->is1==0&&vectorskipi>1){
-      ibeg = meshi->node_ijk0[0];
+      ibeg = meshi->ijk0[0];
     }
     else{
       ibeg = sd->is1;
     }
     if(sd->ks1==0&&vectorskipk>1){
-      kbeg = meshi->node_ijk0[2];
+      kbeg = meshi->ijk0[2];
     }
     else{
       kbeg = sd->ks1;
@@ -9086,13 +9086,13 @@ void DrawVVolSlice(const vslicedata *vd){
     glBegin(GL_LINES);
 #ifdef pp_VSKIP
     if(sd->is1==0&&vectorskipi>1){
-      ibeg = meshi->node_ijk0[0];
+      ibeg = meshi->ijk0[0];
     }
     else{
       ibeg = sd->is1;
     }
     if(sd->js1==0&&vectorskipj>1){
-      jbeg = meshi->node_ijk0[1];
+      jbeg = meshi->ijk0[1];
     }
     else{
       jbeg = sd->js1;
