@@ -394,6 +394,43 @@ int IsBottomMesh(meshdata *mesh_from){
   return return_val;
 }
 
+
+/* ------------------ MeshConnect ------------------------ */
+
+#ifdef pp_VSKIP
+int SkipMeshConnect(meshdata *mesh_from, int val, meshdata *mesh_to){
+  float xyz[3];
+  int return_val;
+  //  returns 1 if mesh_from  is 'val' of mesh_to (where val is MLEFT, MRIGHT, MFRONT, MBACK, MDOWN, MBACK )
+
+  memcpy(xyz, mesh_to->boxmiddle, 3 * sizeof(float));
+  switch(val){
+  case MLEFT:
+    xyz[0] = mesh_to->boxmin[0] - mesh_to->dcell3[0];
+    break;
+  case MRIGHT:
+    xyz[0] = mesh_to->boxmax[0] + mesh_to->dcell3[0];
+    break;
+  case MFRONT:
+    xyz[1] = mesh_to->boxmin[1] - mesh_to->dcell3[1];
+    break;
+  case MBACK:
+    xyz[1] = mesh_to->boxmax[1] + mesh_from->dcell3[1];
+    break;
+  case MDOWN:
+    xyz[2] = mesh_to->boxmin[2] - mesh_to->dcell3[2];
+    break;
+  case MUP:
+    xyz[2] = mesh_to->boxmax[2] + mesh_to->dcell3[2];
+    break;
+  default:
+    break;
+  }
+  return_val = InMeshI(mesh_from, xyz);
+  return return_val;
+}
+#endif
+
 /* ------------------ MeshConnect ------------------------ */
 
 int MeshConnect(meshdata *mesh_from, int val, meshdata *mesh_to){
@@ -589,38 +626,38 @@ int GetCellNodeBeg(meshdata *meshi, int dir, int skip){
   if(meshi->ijk0[dir]>=0)return meshi->ijk0[dir];
   switch(dir){
     case 0:
-      nabor = meshi->nabors[MLEFT];
+      nabor = meshi->skip_nabors[MLEFT];
       if(nabor == NULL){
         meshi->ijk0[dir] = 0;
         return_val = 0;
       }
       else{
-        return_val = GetCellNodeBeg(nabor, dir, skip) + skip*(meshi->ibar/skip) + skip;
-        return_val = return_val % meshi->ibar;
+        return_val = GetCellNodeBeg(nabor, dir, skip) + skip*(nabor->ibar/skip) + skip;
+        return_val = return_val % nabor->ibar;
         meshi->ijk0[dir] = return_val;
       }
       break;
     case 1:
-      nabor = meshi->nabors[MFRONT];
+      nabor = meshi->skip_nabors[MFRONT];
       if(nabor == NULL){
         meshi->ijk0[dir] = 0;
         return_val = 0;
       }
       else{
-        return_val = GetCellNodeBeg(nabor, dir, skip) + skip*(meshi->jbar/skip) + skip;
-        return_val = return_val % meshi->jbar;
+        return_val = GetCellNodeBeg(nabor, dir, skip) + skip*(nabor->jbar/skip) + skip;
+        return_val = return_val % nabor->jbar;
         meshi->ijk0[dir] = return_val;
       }
       break;
     case 2:
-      nabor = meshi->nabors[MDOWN];
+      nabor = meshi->skip_nabors[MDOWN];
       if(nabor == NULL){
         meshi->ijk0[dir] = 0;
         return_val = 0;
       }
       else{
-        return_val = GetCellNodeBeg(nabor, dir, skip) + skip*(meshi->kbar/skip) + skip;
-        return_val = return_val % meshi->kbar;
+        return_val = GetCellNodeBeg(nabor, dir, skip) + skip*(nabor->kbar/skip) + skip;
+        return_val = return_val % nabor->kbar;
         meshi->ijk0[dir] = return_val;
       }
       break;
@@ -697,6 +734,40 @@ void InitNabors(void){
         meshi->nabors[MDOWN] = meshj;
         continue;
       }
+#ifdef pp_VSKIP
+      for(j = 0;j < nmeshes;j++){
+        meshdata *meshj;
+
+        if(i == j)continue;
+
+        meshj = meshinfo + j;
+
+        if(SkipMeshConnect(meshi, MLEFT, meshj) == 1){
+          meshi->skip_nabors[MRIGHT] = meshj;
+          continue;
+        }
+        if(SkipMeshConnect(meshi, MRIGHT, meshj) == 1){
+          meshi->skip_nabors[MLEFT] = meshj;
+          continue;
+        }
+        if(SkipMeshConnect(meshi, MFRONT, meshj) == 1){
+          meshi->skip_nabors[MBACK] = meshj;
+          continue;
+        }
+        if(SkipMeshConnect(meshi, MBACK, meshj) == 1){
+          meshi->skip_nabors[MFRONT] = meshj;
+          continue;
+        }
+        if(SkipMeshConnect(meshi, MDOWN, meshj) == 1){
+          meshi->skip_nabors[MUP] = meshj;
+          continue;
+        }
+        if(SkipMeshConnect(meshi, MUP, meshj) == 1){
+          meshi->skip_nabors[MDOWN] = meshj;
+          continue;
+        }
+      }
+#endif
     }
 #ifdef pp_VSKIP
     for(j=0;j<3;j++){

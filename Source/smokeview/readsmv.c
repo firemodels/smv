@@ -838,6 +838,9 @@ void InitMesh(meshdata *meshi){
   for(i=0;i<3;i++){
     meshi->ijk0[i] = -1;
   }
+  for(i = 0;i < 6;i++){
+    meshi->skip_nabors[i]=NULL;
+  }
 #endif
   meshi->znodes_complete = NULL;
   meshi->nznodes = 0;
@@ -13739,6 +13742,9 @@ int ReadIni2(char *inifile, int localfile){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%i ", &vectorskip);
       if(vectorskip<1)vectorskip = 1;
+#ifdef pp_VSKIP
+      GetAllCellNodeBegs(vectorskip);
+#endif
       continue;
     }
     if(MatchINI(buffer, "SPRINKLERABSSIZE") == 1){

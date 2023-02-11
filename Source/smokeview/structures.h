@@ -794,6 +794,7 @@ typedef struct _meshdata {
   int *pi1, *pi2, *pj1, *pj2, *pk1, *pk2;
 #ifdef pp_VSKIP
   int ijk0[3];
+  struct _meshdata *skip_nabors[6];
 #endif
   int *blockonpatch;
   struct _meshdata **meshonpatch;

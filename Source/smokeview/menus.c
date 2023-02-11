@@ -2469,6 +2469,9 @@ void VectorSkipMenu(int value){
   vectorskip=value;
   visVector=1;
   updatemenu=1;
+#ifdef pp_VSKIP
+  GetAllCellNodeBegs(vectorskip);
+#endif
   GLUTPOSTREDISPLAY;
 }
 

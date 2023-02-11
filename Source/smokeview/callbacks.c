@@ -2523,6 +2523,9 @@ void Keyboard(unsigned char key, int flag){
         else{
           vectorskip++;
           if(vectorskip>4)vectorskip=1;
+#ifdef pp_VSKIP
+          GetAllCellNodeBegs(vectorskip);
+#endif
         }
       }
       break;
