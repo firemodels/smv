@@ -834,6 +834,12 @@ void FreeLabels(flowlabels *flowlabel){
 void InitMesh(meshdata *meshi){
   int i;
 
+#ifdef pp_VSKIP
+  for(i=0;i<3;i++){
+    meshi->node_ijk0[i] = -1;
+    meshi->cell_ijk0[i] = -1;
+  }
+#endif
   meshi->znodes_complete = NULL;
   meshi->nznodes = 0;
   meshi->floor_mesh = meshi;

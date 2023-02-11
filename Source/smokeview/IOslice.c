@@ -8714,24 +8714,42 @@ void DrawVVolSlice(const vslicedata *vd){
   if((vd->volslice == 1 && plotx >= 0 && visx_all == 1) || (vd->volslice == 0 && sd->idir == XDIR)){
     int maxj;
     int vectorskipj, vectorskipk;
+    int jbeg, kbeg;
 
     constval = xplttemp[plotx] + offset_slice*sd->sliceoffset+SCALE2SMV(slice_dz);
     glLineWidth(vectorlinewidth);
     glBegin(GL_LINES);
-    maxj = sd->js2;
     vectorskipj = vectorskip;
     vectorskipk = vectorskip;
     if(vec_uniform_spacing==1){
       if(factor_j!=1)vectorskipj *= factor_j;
       if(factor_k!=1)vectorskipk *= factor_k;
     }
-    if(sd->js1 + 1 > maxj)maxj = sd->js1 + 1;
-    for(j = sd->js1; j < maxj + 1; j += vectorskipj){
+#ifdef pp_VSKIP
+    if(sd->js1==0&&vectorskipj>1){
+      jbeg = meshi->node_ijk0[1];
+    }
+    else{
+      jbeg = sd->js1;
+    }
+    if(sd->ks1==0&&vectorskipk>1){
+      kbeg = meshi->node_ijk0[2];
+    }
+    else{
+      kbeg = sd->ks1;
+    }
+#else
+    jbeg = sd->js1;
+    kbeg = sd->ks1;
+#endif
+    maxj = sd->js2;
+    if(jbeg + 1 > maxj)maxj = jbeg + 1;
+    for(j = jbeg; j < maxj + 1; j += vectorskipj){
 #ifndef pp_SLICEVAL
       n = (plotx - sd->is1)*sd->nslicej*sd->nslicek + (j - sd->js1)*sd->nslicek - vectorskipk;
 #endif
       yy1 = yplttemp[j];
-      for(k = sd->ks1; k < sd->ks2 + 1; k += vectorskipk){
+      for(k = kbeg; k < sd->ks2 + 1; k += vectorskipk){
 #ifdef pp_SLICEVAL
         n = IJK_SLICE(plotx,j,k);
 #else
@@ -8780,14 +8798,12 @@ void DrawVVolSlice(const vslicedata *vd){
 
     glPointSize(vectorpointsize);
     glBegin(GL_POINTS);
-    maxj = sd->js2;
-    if(sd->js1 + 1 > maxj)maxj = sd->js1 + 1;
-    for(j = sd->js1; j < maxj + 1; j += vectorskipj){
+    for(j = jbeg; j < maxj + 1; j += vectorskipj){
 #ifndef pp_SLICEVAL
       n = (plotx - sd->is1)*sd->nslicej*sd->nslicek + (j - sd->js1)*sd->nslicek - vectorskipk;
 #endif
       yy1 = yplttemp[j];
-      for(k = sd->ks1; k < sd->ks2 + 1; k += vectorskipk){
+      for(k = kbeg; k < sd->ks2 + 1; k += vectorskipk){
 #ifdef pp_SLICEVAL
         n = IJK_SLICE(plotx,j,k);
 #else
@@ -8836,26 +8852,44 @@ void DrawVVolSlice(const vslicedata *vd){
   if((vd->volslice == 1 && ploty >= 0 && visy_all == 1) || (vd->volslice == 0 && sd->idir == YDIR)){
     int maxi;
     int vectorskipi, vectorskipk;
+    int ibeg, kbeg;
 
     constval = yplttemp[ploty] + offset_slice*sd->sliceoffset+SCALE2SMV(slice_dz);
     glLineWidth(vectorlinewidth);
     glBegin(GL_LINES);
-    maxi = sd->is1 + sd->nslicei - 1;
     vectorskipi = vectorskip;
     vectorskipk = vectorskip;
     if(vec_uniform_spacing==1){
       if(factor_i!=1)vectorskipi *= factor_i;
       if(factor_k!=1)vectorskipk *= factor_k;
     }
-    if(sd->is1 + 1 > maxi)maxi = sd->is1 + 1;
-    for(i = sd->is1; i < maxi + 1; i += vectorskipi){
+#ifdef pp_VSKIP
+    if(sd->is1==0&&vectorskipi>1){
+      ibeg = meshi->node_ijk0[0];
+    }
+    else{
+      ibeg = sd->is1;
+    }
+    if(sd->ks1==0&&vectorskipk>1){
+      kbeg = meshi->node_ijk0[2];
+    }
+    else{
+      kbeg = sd->ks1;
+    }
+#else
+    ibeg = sd->is1;
+    kbeg = sd->ks1;
+#endif
+    maxi = sd->is1 + sd->nslicei - 1;
+    if(ibeg + 1 > maxi)maxi = ibeg + 1;
+    for(i = ibeg; i < maxi + 1; i += vectorskipi){
 #ifndef pp_SLICEVAL
       n = (i - sd->is1)*sd->nslicej*sd->nslicek + (ploty - sd->js1)*sd->nslicek - vectorskipk;
 #endif
 
       x1 = xplttemp[i];
 
-      for(k = sd->ks1; k < sd->ks2 + 1; k += vectorskipk){
+      for(k = kbeg; k < sd->ks2 + 1; k += vectorskipk){
 #ifdef pp_SLICEVAL
         n = IJK_SLICE(i,ploty,k);
 #else
@@ -8903,14 +8937,14 @@ void DrawVVolSlice(const vslicedata *vd){
     SNIFF_ERRORS("after DrawVVolSlice:lines dir=2");
     glPointSize(vectorpointsize);
     glBegin(GL_POINTS);
-    for(i = sd->is1; i < maxi + 1; i += vectorskipi){
+    for(i = ibeg; i < maxi + 1; i += vectorskipi){
 #ifndef pp_SLICEVAL
       n = (i - sd->is1)*sd->nslicej*sd->nslicek + (ploty - sd->js1)*sd->nslicek - vectorskipk;
 #endif
 
       x1 = xplttemp[i];
 
-      for(k = sd->ks1; k < sd->ks2 + 1; k += vectorskipk){
+      for(k = kbeg; k < sd->ks2 + 1; k += vectorskipk){
 #ifdef pp_SLICEVAL
         n = IJK_SLICE(i,ploty,k);
 #else
@@ -8959,6 +8993,7 @@ void DrawVVolSlice(const vslicedata *vd){
   if((vd->volslice == 1 && plotz >= 0 && visz_all == 1) || (vd->volslice == 0 && sd->idir == ZDIR)){
     int maxi;
     int vectorskipi, vectorskipj;
+    int ibeg, jbeg;
 
     constval = zplttemp[plotz] + offset_slice*sd->sliceoffset+SCALE2SMV(slice_dz);
     vectorskipi = vectorskip;
@@ -8969,15 +9004,32 @@ void DrawVVolSlice(const vslicedata *vd){
     }
     glLineWidth(vectorlinewidth);
     glBegin(GL_LINES);
+#ifdef pp_VSKIP
+    if(sd->is1==0&&vectorskipi>1){
+      ibeg = meshi->node_ijk0[0];
+    }
+    else{
+      ibeg = sd->is1;
+    }
+    if(sd->js1==0&&vectorskipj>1){
+      jbeg = meshi->node_ijk0[1];
+    }
+    else{
+      jbeg = sd->js1;
+    }
+#else
+    ibeg = sd->is1;
+    jbeg = sd->js1;
+#endif
     maxi = sd->is1 + sd->nslicei - 1;
-    if(sd->is1 + 1 > maxi)maxi = sd->is1 + 1;
-    for(i = sd->is1; i < maxi + 1; i += vectorskipi){
+    if(ibeg + 1 > maxi)maxi = ibeg + 1;
+    for(i = ibeg; i < maxi + 1; i += vectorskipi){
 #ifndef pp_SLICEVAL
       n = (i - sd->is1)*sd->nslicej*sd->nslicek + (plotz - sd->ks1) - vectorskipj*sd->nslicek;
 #endif
 
       x1 = xplttemp[i];
-      for(j = sd->js1; j < sd->js2 + 1; j += vectorskipj){
+      for(j = jbeg; j < sd->js2 + 1; j += vectorskipj){
 #ifdef pp_SLICEVAL
         n = IJK_SLICE(i,j,plotz);
 #else
@@ -9026,13 +9078,13 @@ void DrawVVolSlice(const vslicedata *vd){
 
     glPointSize(vectorpointsize);
     glBegin(GL_POINTS);
-    for(i = sd->is1; i < sd->is1 + sd->nslicei; i += vectorskipi){
+    for(i = ibeg; i < sd->is1 + sd->nslicei; i += vectorskipi){
 #ifndef pp_SLICEVAL
       n = (i - sd->is1)*sd->nslicej*sd->nslicek + (plotz - sd->ks1) - vectorskipj*sd->nslicek;
 #endif
 
       x1 = xplttemp[i];
-      for(j = sd->js1; j < sd->js2 + 1; j += vectorskipj){
+      for(j = jbeg; j < sd->js2 + 1; j += vectorskipj){
 #ifdef pp_SLICEVAL
         n = IJK_SLICE(i,j,plotz);
 #else

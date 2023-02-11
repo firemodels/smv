@@ -6274,6 +6274,9 @@ extern "C" void SliceBoundCB(int var){
     break;
     case SLICE_VECTORSKIP:
       if(SPINNER_plot3dvectorskip!=NULL)SPINNER_plot3dvectorskip->set_int_val(vectorskip);
+#ifdef pp_VSKIP
+      GetAllNodeBegs(vectorskip);
+#endif
       break;
     case ZONEVALMINMAX:
       GetZoneColors(zonetu, nzonetotal, izonetu, zonemin, zonemax, nrgb, nrgb_full, colorlabelzone, colorvalueszone, zonelevels256);

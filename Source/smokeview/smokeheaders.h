@@ -341,6 +341,9 @@ EXTERNCPP void InitAlphas(unsigned char *alphanew,
                           float base_dx, float new_dx);
 EXTERNCPP void ShowDevicesMenu(int value);
 EXTERNCPP int GetDeviceIndexFromLabel(char *label);
+#ifdef pp_VSKIP
+EXTERNCPP void GetAllNodeBegs(int skip);
+#endif
 EXTERNCPP void UpdateBoundarySliceDups(void);
 EXTERNCPP void IsoBoundCB(int var);
 EXTERNCPP void UpdateScriptStep(void);

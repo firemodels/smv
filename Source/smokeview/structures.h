@@ -792,6 +792,9 @@ typedef struct _meshdata {
   int *boundarytype;
   int *patchdir,*patch_surfindex;
   int *pi1, *pi2, *pj1, *pj2, *pk1, *pk2;
+#ifdef pp_VSKIP
+  int node_ijk0[3], cell_ijk0[3];
+#endif
   int *blockonpatch;
   struct _meshdata **meshonpatch;
   struct _meshdata *nabors[6];
