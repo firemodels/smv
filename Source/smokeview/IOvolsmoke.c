@@ -634,6 +634,7 @@ int GetCellNodeBeg(meshdata *meshi, int dir, int skip){
       else{
         return_val = GetCellNodeBeg(nabor, dir, skip) + skip*(nabor->ibar/skip) + skip;
         return_val = return_val % nabor->ibar;
+        return_val = return_val % skip;
         meshi->ijk0[dir] = return_val;
       }
       break;
@@ -646,6 +647,7 @@ int GetCellNodeBeg(meshdata *meshi, int dir, int skip){
       else{
         return_val = GetCellNodeBeg(nabor, dir, skip) + skip*(nabor->jbar/skip) + skip;
         return_val = return_val % nabor->jbar;
+        return_val = return_val % skip;
         meshi->ijk0[dir] = return_val;
       }
       break;
@@ -658,6 +660,7 @@ int GetCellNodeBeg(meshdata *meshi, int dir, int skip){
       else{
         return_val = GetCellNodeBeg(nabor, dir, skip) + skip*(nabor->kbar/skip) + skip;
         return_val = return_val % nabor->kbar;
+        return_val = return_val % skip;
         meshi->ijk0[dir] = return_val;
       }
       break;
