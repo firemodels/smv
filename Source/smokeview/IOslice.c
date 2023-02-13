@@ -2336,16 +2336,106 @@ void GetAllCellNodeBegs(int skip){
   }
 }
 
-/* ------------------ UpdateVectorSkip ------------------------ */
+/* ------------------ UpdateVectorSkipDefault ------------------------ */
+
+void UpdateVectorSkipDefault(void){
+  int i;
+
+  for(i = 0; i < nsliceinfo; i++){
+    slicedata *slicei;
+    meshdata *slicemesh;
+    int ii, jj, kk;
+
+    slicei = sliceinfo + i;
+    if(slicei->loaded == 0)continue;
+    slicemesh = meshinfo + slicei->blocknumber;
+    for(ii = slicei->is1; ii <= slicei->is2; ii++){
+      slicei->imap[ii - slicei->is1] = ii;
+    }
+    slicei->n_imap = slicei->is2 + 1 - slicei->is1;
+
+    for(jj = slicei->js1; jj <= slicei->js2; jj++){
+      slicei->jmap[jj - slicei->js1] = jj;
+    }
+    slicei->n_jmap = slicei->js2 + 1 - slicei->js1;
+
+    for(kk = slicei->ks1; kk <= slicei->ks2; kk++){
+      slicei->kmap[kk - slicei->ks1] = kk;
+    }
+    slicei->n_kmap = slicei->ks2 + 1 - slicei->ks1;
+  }
+}
+
+/* ------------------ UpdateVectorSkipNonUniform ------------------------ */
+
+void UpdateVectorSkipNonUniform(slicedata *slicei, int skipx, int skipy, int skipz){
+  meshdata *slicemesh;
+  int ii;
+
+  if(slicei->loaded == 0)return;
+  slicemesh = meshinfo + slicei->blocknumber;
+
+  int n = 0;
+  for(ii = slicemesh->ijk0[0]; ii <= slicei->is2; ii += skipx){
+    slicei->imap[n++] = ii;
+  }
+  slicei->n_imap = n;
+
+  n = 0;
+  for(ii = slicemesh->ijk0[1]; ii <= slicei->js2; ii += skipy){
+    slicei->jmap[n++] = ii;
+  }
+  slicei->n_jmap = n;
+
+  n = 0;
+  for(ii = slicemesh->ijk0[2]; ii <= slicei->ks2; ii += skipz){
+    slicei->kmap[n++] = ii;
+  }
+  slicei->n_kmap = n;
+}
+
+/* ------------------ UpdateVectorSkipUniform ------------------------ */
+
+void UpdateVectorSkipUniform(int skip){
+  int i;
+
+  for(i = 0; i < nsliceinfo; i++){
+    slicedata *slicei;
+    meshdata *slicemesh;
+    float mesh_dx, mesh_dy, mesh_dz;
+    int factor_i, factor_j, factor_k;
+    int vectorskipi, vectorskipj, vectorskipk;
+
+    slicei = sliceinfo + i;
+    if(slicei->loaded == 0)continue;
+    slicemesh = meshinfo + slicei->blocknumber;
+
+    vectorskipi = skip;
+    vectorskipj = skip;
+    vectorskipk = skip;
+    mesh_dx = slicemesh->xplt_orig[1] - slicemesh->xplt_orig[0];
+    mesh_dy = slicemesh->yplt_orig[1] - slicemesh->yplt_orig[0];
+    mesh_dz = slicemesh->zplt_orig[1] - slicemesh->zplt_orig[0];
+    factor_i = MAX(1, max_dx / mesh_dx + 0.5);
+    factor_j = MAX(1, max_dy / mesh_dy + 0.5);
+    factor_k = MAX(1, max_dz / mesh_dz + 0.5);
+
+    if(factor_i != 1)vectorskipi *= factor_i;
+    if(factor_j != 1)vectorskipj *= factor_j;
+    if(factor_k != 1)vectorskipk *= factor_k;
+    UpdateVectorSkipNonUniform(slicei, vectorskipi, vectorskipj, vectorskipk);
+  }
+}
+
+    /* ------------------ UpdateVectorSkip ------------------------ */
 
 void UpdateVectorSkip(int skip){
   int i;
 
   GetAllCellNodeBegs(skip);    
-  for(i = 0;i < nsliceinfo;i++){
+  for(i = 0; i < nsliceinfo; i++){
     slicedata *slicei;
     meshdata *slicemesh;
-    int ii,jj,kk;
 
     slicei = sliceinfo + i;
     if(slicei->loaded == 0)continue;
@@ -2353,70 +2443,37 @@ void UpdateVectorSkip(int skip){
     if(slicei->imap == NULL){
       int *imap;
 
-      NewMemory((void **)&imap, (slicemesh->ibar+1) * sizeof(int));
+      NewMemory(( void ** )&imap, (slicemesh->ibar + 1) * sizeof(int));
       slicei->imap = imap;
       slicei->n_imap = 0;
     }
     if(slicei->jmap == NULL){
       int *jmap;
 
-      NewMemory((void **)&jmap, (slicemesh->jbar + 1) * sizeof(int));
+      NewMemory(( void ** )&jmap, (slicemesh->jbar + 1) * sizeof(int));
       slicei->jmap = jmap;
       slicei->n_jmap = 0;
     }
     if(slicei->kmap == NULL){
       int *kmap;
 
-      NewMemory((void **)&kmap, (slicemesh->kbar + 1) * sizeof(int));
+      NewMemory(( void ** )&kmap, (slicemesh->kbar + 1) * sizeof(int));
       slicei->kmap = kmap;
       slicei->n_kmap = 0;
     }
-    for(ii = slicei->is1;ii <= slicei->is2;ii++){
-      slicei->imap[ii - slicei->is1] = ii;
-    }
-    slicei->n_imap = slicei->is2 + 1 - slicei->is1;
-
-    for(jj = slicei->js1;jj <= slicei->js2;jj++){
-      slicei->jmap[jj - slicei->js1] = jj;
-    }
-    slicei->n_jmap = slicei->js2 + 1 - slicei->js1;
-
-    for(kk = slicei->ks1;kk <= slicei->ks2;kk++){
-      slicei->kmap[kk - slicei->ks1] = kk;
-    }
-    slicei->n_kmap = slicei->ks2 + 1 - slicei->ks1;
   }
-  if(skip == 1)return;
-  for(i = 0;i < nsliceinfo;i++){
-    slicedata *slicei;
-    meshdata *slicemesh;
-    int ii;
-
-    slicei = sliceinfo + i;
-    if(slicei->loaded == 0)continue;
-    slicemesh = meshinfo + slicei->blocknumber;
-    CheckMemory;
-
-    int n=0;
-    for(ii=slicemesh->ijk0[0];ii<=slicei->is2;ii+=skip){
-      slicei->imap[n++] = ii;
+  if(vec_uniform_spacing == 1){
+    UpdateVectorSkipUniform(skip);
+  }
+  else{
+    if(skip == 1){
+      UpdateVectorSkipDefault();
     }
-    slicei->n_imap = n;
-    CheckMemory;
-
-    n=0;
-    for(ii=slicemesh->ijk0[1];ii<=slicei->js2;ii+=skip){
-      slicei->jmap[n++] = ii;
+    else{
+      for(i = 0; i < nsliceinfo; i++){
+        UpdateVectorSkipNonUniform(sliceinfo + i, skip, skip, skip);
+      }
     }
-    slicei->n_jmap = n;
-    CheckMemory;
-
-    n=0;
-    for(ii=slicemesh->ijk0[2];ii<=slicei->ks2;ii+=skip){
-      slicei->kmap[n++] = ii;
-    }
-    slicei->n_kmap = n;
-    CheckMemory;
   }
 }
 #endif
@@ -3426,7 +3483,10 @@ void GetSliceParams2(void){
 void UpdateVSlices(void){
   int i;
 
-  for(i = 0; i<nmeshes; i++){
+  max_dx = meshinfo->xplt_orig[1] - meshinfo->xplt_orig[0];
+  max_dy = meshinfo->yplt_orig[1] - meshinfo->yplt_orig[0];
+  max_dz = meshinfo->zplt_orig[1] - meshinfo->zplt_orig[0];
+  for(i = 1; i<nmeshes; i++){
     meshdata *meshi;
     float *xplt, *yplt, *zplt;
 
@@ -3434,19 +3494,10 @@ void UpdateVSlices(void){
     xplt = meshi->xplt_orig;
     yplt = meshi->yplt_orig;
     zplt = meshi->zplt_orig;
-    if(i==0){
-      max_dx = xplt[1]-xplt[0];
-      max_dy = yplt[1]-yplt[0];
-      max_dz = zplt[1]-zplt[0];
-    }
-    else{
-      max_dx = MAX(max_dx, xplt[1]-xplt[0]);
-      max_dy = MAX(max_dy, yplt[1]-yplt[0]);
-      max_dz = MAX(max_dz, zplt[1]-zplt[0]);
-    }
+    max_dx = MAX(max_dx, xplt[1]-xplt[0]);
+    max_dy = MAX(max_dy, yplt[1]-yplt[0]);
+    max_dz = MAX(max_dz, zplt[1]-zplt[0]);
   }
-
-  max_dx = meshinfo[0].xplt_orig[1]-meshinfo[0].xplt_orig[0];
 
 #ifdef _DEBUG
   PRINTF("  updating vector slices\n");

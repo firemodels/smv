@@ -5288,7 +5288,7 @@ extern "C" void GluiBoundsSetup(int main_window){
 
     glui_bounds->add_column_to_panel(PANEL_slice_vector, false);
     PANEL_vector2 = glui_bounds->add_panel_to_panel(PANEL_slice_vector, "", false);
-    glui_bounds->add_checkbox_to_panel(PANEL_vector2, "uniform spacing", &vec_uniform_spacing);
+    glui_bounds->add_checkbox_to_panel(PANEL_vector2, "uniform spacing", &vec_uniform_spacing, VEC_UNIFORM_SPACING, SliceBoundCB);
     glui_bounds->add_checkbox_to_panel(PANEL_vector2, "uniform length", &vec_uniform_length);
 
     CHECKBOX_color_vector_black = glui_bounds->add_checkbox_to_panel(PANEL_vector2, _("use foreground color"), &color_vector_black);
@@ -6432,6 +6432,11 @@ extern "C" void SliceBoundCB(int var){
       SPINNER_plot3d_vectorlinelength->set_float_val(vecfactor);
     }
     SliceBoundCB(UPDATE_VECTOR);
+    break;
+  case VEC_UNIFORM_SPACING:
+#ifdef pp_VSKIP
+    update_vectorskip = 1;
+#endif
     break;
   case UPDATE_VECTOR:
     if(vecfactor<0.0){
