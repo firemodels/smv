@@ -534,9 +534,7 @@ void bounds_dialog::setup(const char *file_type, GLUI_Rollout *ROLLOUT_dialog, c
     if(strcmp(file_type,"boundary")==0)skip_update_colors_button = 1;
     if(strcmp(file_type,"particle")==0)skip_update_colors_button = 1;
     if(strcmp(file_type,"PLOT3D")==0)skip_update_colors_button = 1;
-#ifdef pp_SLICEVAL
     if(strcmp(file_type,"slice")==0)skip_update_colors_button = 1;
-#endif
     if(strcmp(file_type, "hvac") == 0)skip_update_colors_button = 1;
     if(skip_update_colors_button==0){
       BUTTON_update_colors      = glui_bounds->add_button_to_panel(PANEL_buttons, "Update colors", BOUND_UPDATE_COLORS, Callback);
@@ -1968,11 +1966,9 @@ extern "C" void SliceBoundsCPP_CB(int var){
     case BOUND_VALMAX:
     case BOUND_SETVALMIN:
     case BOUND_SETVALMAX:
-#ifdef pp_SLICEVAL
       SetLoadedSliceBounds(NULL, 0);
       UpdateSliceBounds2();
       break;
-#endif
     case BOUND_VAL_TYPE:
     case BOUND_CHOPMIN:
     case BOUND_CHOPMAX:

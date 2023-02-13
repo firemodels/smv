@@ -828,7 +828,7 @@ void UpdateSliceColors(int last_slice){
     }
   }
 }
-#ifdef pp_SLICEVAL
+
 /* ------------------ UpdateSliceBounds2 ------------------------ */
 
 void UpdateSliceBounds2(void){
@@ -871,7 +871,6 @@ void UpdateSliceBounds2(void){
     SetSliceColors(qmin, qmax, sd, 0, &error);
   }
 }
-#endif
 
 /* ------------------ GetSliceColors ------------------------ */
 

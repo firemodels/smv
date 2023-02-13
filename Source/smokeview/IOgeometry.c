@@ -3717,10 +3717,7 @@ void DrawGeomData(int flag, slicedata *sd, patchdata *patchi, int geom_type){
   int i;
   unsigned char *ivals;
   int is_ccell = 0;
-#ifdef pp_SLICEVAL
   float *vals;
-#endif
-
 
   int set_valmin, set_valmax;
   char *label;
@@ -3732,7 +3729,6 @@ void DrawGeomData(int flag, slicedata *sd, patchdata *patchi, int geom_type){
 #define GEOMBOUNDTEXTURE(val) CLAMP(((val-ttmin)/(ttmax-ttmin)),0.0,1.0)
 
   float rvals[3];
-#ifdef pp_SLICEVAL
   float valmin, valmax;
   if(sd!=NULL){
     valmin = sd->valmin;
@@ -3744,13 +3740,10 @@ void DrawGeomData(int flag, slicedata *sd, patchdata *patchi, int geom_type){
   }
 #define GEOMSLICECOLOR(val) CLAMP((int)(255.0*(val-valmin)/(valmax-valmin)),0,255)
 #define GEOMSLICETEXTURE(val) CLAMP(((val-valmin)/(valmax-valmin)),0.0,1.0)
-#endif
 
 if(strcmp(patchi->label.shortlabel, "ccell")==0)is_ccell = 1;
   if(geom_type==GEOM_STATIC){
-#ifdef pp_SLICEBOUNDVAL
     vals = patchi->geom_vals_static[patchi->geom_itime];
-#endif
     ivals = patchi->geom_ival_static;
   }
   else{
@@ -3891,7 +3884,6 @@ if(strcmp(patchi->label.shortlabel, "ccell")==0)is_ccell = 1;
             if(show_boundary_shaded == 0)continue;
           }
 
-#ifdef pp_SLICEVAL
           if(sd==NULL||sd->cell_center==1){
             if(sd!=NULL){
               rvals[0] = GEOMSLICETEXTURE(vals[j]);
@@ -3907,18 +3899,6 @@ if(strcmp(patchi->label.shortlabel, "ccell")==0)is_ccell = 1;
             rvals[1] = GEOMSLICETEXTURE(vals[trianglei->vert_index[1]]);
             rvals[2] = GEOMSLICETEXTURE(vals[trianglei->vert_index[2]]);
           }
-#else
-          if(sd==NULL||sd->cell_center==1){
-            rvals[0] = (float)ivals[j]/255.0;
-            rvals[1] = rvals[0];
-            rvals[2] = rvals[0];
-          }
-          else{
-            rvals[0] = (float)ivals[trianglei->vert_index[0]]/255.0;
-            rvals[1] = (float)ivals[trianglei->vert_index[1]]/255.0;
-            rvals[2] = (float)ivals[trianglei->vert_index[2]]/255.0;
-          }
-#endif
 
           xyzptr[0] = trianglei->verts[0]->xyz;
           xyzptr[1] = trianglei->verts[1]->xyz;
