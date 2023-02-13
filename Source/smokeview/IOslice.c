@@ -1354,9 +1354,7 @@ FILE_SIZE ReadVSlice(int ivslice, int time_frame, float *time_value, int flag, i
     updatemenu=1;
     plotstate=GetPlotState(DYNAMIC_PLOTS);
     update_draw_hist = 1;
-#ifdef pp_VSKIP
     update_vectorskip = 1;
-#endif
     return return_filesize;
   }
   if(vd->finalize==0)set_slicecolor = DEFER_SLICECOLOR;
@@ -1518,9 +1516,7 @@ FILE_SIZE ReadVSlice(int ivslice, int time_frame, float *time_value, int flag, i
     updatemenu = 1;
     ForceIdle();
   }
-#ifdef pp_VSKIP
   update_vectorskip = 1;
-#endif
   return return_filesize;
 }
 
@@ -2256,7 +2252,6 @@ void UpdateSliceMenuLabels(void){
   }
 }
 
-#ifdef pp_VSKIP
 /* ------------------ GetCellNodeBeg ------------------------ */
 
 int GetCellNodeBeg(meshdata *meshi, int dir, int skip){
@@ -2472,7 +2467,6 @@ void UpdateVectorSkip(int skip){
     }
   }
 }
-#endif
 
 /* ------------------ UpdateVsliceMenulabels ------------------------ */
 
@@ -8091,9 +8085,7 @@ void DrawSliceFrame(){
 
 void DrawVVolSliceCellCenter(const vslicedata *vd){
   int i;
-#ifdef pp_VSKIP
   int ii, jj, kk;
-#endif
   float constval;
   slicedata *u, *v, *w, *sd;
   float vel_max;
@@ -8102,9 +8094,6 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
   int plotx, ploty, plotz;
   char *iblank_cell;
   int ibar, jbar;
-#ifndef pp_VSKIP
-  int vectorskipi, vectorskipj, vectorskipk;
-#endif
 
   sd = sliceinfo + vd->ival;
   meshi = meshinfo + sd->blocknumber;
@@ -8124,13 +8113,6 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
   ibar = meshi->ibar;
   jbar = meshi->jbar;
   iblank_cell = meshi->c_iblank_cell;
-
-#ifndef pp_VSKIP
-  vectorskipi = vectorskip;
-  vectorskipj = vectorskip;
-  vectorskipk = vectorskip;
-#endif
-  
   vel_max = max_velocity;
   if(vel_max<= 0.0)vel_max = 1.0;
   u = vd->u;
@@ -8139,11 +8121,6 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
   if((vd->volslice == 1 && plotx > 0 && visx_all == 1) || (vd->volslice == 0 && sd->idir == XDIR)){
     int j;
     float xhalf;
-#ifndef pp_VSKIP
-    int maxj;
-    int jbeg, kbeg;
-#endif
-
     if(plotx > 0){
       xhalf = (xplttemp[plotx] + xplttemp[plotx - 1]) / 2.0;
     }
@@ -8157,15 +8134,8 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
     glLineWidth(vectorlinewidth);
     glBegin(GL_LINES);
     glColor4fv(foregroundcolor);
-#ifdef pp_VSKIP
     for(jj = 0; jj < sd->n_jmap; jj++){
       j = sd->jmap[jj];
-#else
-    jbeg = sd->js1;
-    kbeg = sd->ks1;
-    maxj = MAX(sd->js2, sd->js1 + 1);
-    for(j = jbeg; j <= maxj; j += vectorskipj){
-#endif
       float yy1, yy2, yhalf;
       int k;
 
@@ -8177,12 +8147,8 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
         yy2 = yy1;
       }
       yhalf = (yy1+yy2) / 2.0;
-#ifdef pp_VSKIP
     for(kk = 0; kk < sd->n_kmap; kk++){
       k = sd->kmap[kk];
-#else
-      for(k = kbeg; k < sd->ks2; k+=vectorskipk){
-#endif
         float zhalf, z1;
         int in_solid, in_gas;
 
@@ -8229,12 +8195,8 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
     glPointSize(vectorpointsize);
     glBegin(GL_POINTS);
     glColor4fv(foregroundcolor);
-#ifdef pp_VSKIP
     for(jj = 0; jj < sd->n_jmap; jj++){
       j = sd->jmap[jj];
-#else
-    for(j = jbeg; j <= maxj; j+=vectorskipj){
-#endif
       float yy1, yy2, yhalf;
       int k;
 
@@ -8246,12 +8208,8 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
         yy2 = yy1;
       }
       yhalf = (yy1+yy2) / 2.0;
-#ifdef pp_VSKIP
     for(kk = 0; kk < sd->n_kmap; kk++){
       k = sd->jmap[kk];
-#else
-      for(k = kbeg; k < sd->ks2; k+=vectorskipk){
-#endif
         float zhalf, z1;
 
         int in_solid, in_gas;
@@ -8293,10 +8251,6 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
   }
   if((vd->volslice == 1 && ploty > 0 && visy_all == 1) || (vd->volslice == 0 && sd->idir == YDIR)){
     float yhalf;
-#ifndef pp_VSKIP
-    int maxi;
-    int ibeg, kbeg;
-#endif
 
     if(ploty > 0){
       yhalf = (yplttemp[ploty] + yplttemp[ploty - 1]) / 2.0;
@@ -8307,19 +8261,10 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
 
     constval = yhalf + offset_slice*sd->sliceoffset+SCALE2SMV(slice_dz);
     glLineWidth(vectorlinewidth);
-#ifndef pp_VSKIP
-    maxi = MAX(sd->is1 + sd->nslicei - 1, sd->is1 + 1);
-#endif
     glBegin(GL_LINES);
     glColor4fv(foregroundcolor);
-#ifdef pp_VSKIP
     for(ii = 0; ii < sd->n_imap; ii++){
       i = sd->imap[ii];
-#else
-    ibeg = sd->is1;
-    kbeg = sd->ks1;
-    for(i = ibeg; i <= maxi; i+=vectorskipi){
-#endif
 
       float x1, xhalf;
       int k;
@@ -8330,12 +8275,8 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
       x1 = xplttemp[i];
       if(i + 1 != sd->nslicei)xhalf = (xplttemp[i] + xplttemp[i + 1]) / 2.0;
 
-#ifdef pp_VSKIP
       for(kk = 0; kk < sd->n_kmap; kk++){
         k = sd->kmap[kk];
-#else
-      for(k = kbeg; k < sd->ks2; k+=vectorskipk){
-#endif
         float zhalf, z1;
         int in_solid, in_gas;
 
@@ -8378,12 +8319,8 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
     glPointSize(vectorpointsize);
     glBegin(GL_POINTS);
     glColor4fv(foregroundcolor);
-#ifdef pp_VSKIP
     for(ii = 0; ii < sd->n_imap; ii++){
       i = sd->imap[ii];
-#else
-    for(i = ibeg; i <= maxi; i+=vectorskipi){
-#endif
       float x1, xhalf;
       int k;
 
@@ -8393,12 +8330,8 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
       x1 = xplttemp[i];
       if(i + 1 != sd->nslicei)xhalf = (xplttemp[i] + xplttemp[i + 1]) / 2.0;
 
-#ifdef pp_VSKIP
       for(kk = 0; kk < sd->n_kmap; kk++){
         k = sd->kmap[kk];
-#else
-      for(k = kbeg; k < sd->ks2; k+=vectorskipk){
-#endif
         float zhalf, z1;
         int in_solid, in_gas;
 
@@ -8439,10 +8372,6 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
   }
   if((vd->volslice == 1 && plotz > 0 && visz_all == 1) || (vd->volslice == 0 && sd->idir == ZDIR)){
     float zhalf;
-#ifndef pp_VSKIP
-    int maxi;
-    int ibeg, jbeg;
-#endif
 
     if(plotz > 0){
       zhalf = (zplttemp[plotz] + zplttemp[plotz - 1]) / 2.0;
@@ -8455,15 +8384,8 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
     glLineWidth(vectorlinewidth);
     glBegin(GL_LINES);
     glColor4fv(foregroundcolor);
-#ifdef pp_VSKIP
     for(ii = 0; ii < sd->n_imap; ii++){
       i = sd->imap[ii];
-#else
-    ibeg = sd->is1;
-    jbeg = sd->js1;
-    maxi = MAX(sd->is1 + sd->nslicei - 1, sd->is1 + 1);
-    for(i = ibeg; i <= maxi; i+=vectorskipi){
-#endif
       float xhalf;
       float x1;
       int j;
@@ -8473,12 +8395,8 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
 
       x1 = xplttemp[i];
       if(i + 1 != sd->nslicei)xhalf = (xplttemp[i] + xplttemp[i + 1]) / 2.0;
-#ifdef pp_VSKIP
       for(jj = 0; jj < sd->n_jmap; jj++){
         j = sd->jmap[jj];
-#else
-      for(j = jbeg; j <= sd->js2; j+=vectorskipj){
-#endif
         float yhalf;
         float yy1;
         int in_solid, in_gas;
@@ -8523,12 +8441,8 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
     glPointSize(vectorpointsize);
     glBegin(GL_POINTS);
     glColor4fv(foregroundcolor);
-#ifdef pp_VSKIP
     for(ii = 0; ii < sd->n_imap; ii++){
       i = sd->imap[ii];
-#else
-    for(i = ibeg; i <= maxi; i+=vectorskipi){
-#endif
       float xhalf;
       float x1;
       int j;
@@ -8538,12 +8452,8 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
 
       x1 = xplttemp[i];
       if(i + 1 != sd->nslicei)xhalf = (xplttemp[i] + xplttemp[i + 1]) / 2.0;
-#ifdef pp_VSKIP
       for(jj = 0; jj < sd->n_jmap; jj++){
         j = sd->jmap[jj];
-#else
-      for(j = jbeg; j <= sd->js2; j+=vectorskipj){
-#endif
         float yhalf;
         float yy1;
         int in_solid, in_gas;
@@ -8588,9 +8498,7 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
 /* ------------------ DrawVVolSliceTerrain ------------------------ */
 
 void DrawVVolSliceTerrain(const vslicedata *vd){
-#ifdef pp_VSKIP
   int ii, jj;
-#endif
   int i;
   slicedata *u, *v, *w, *sd;
   float vel_max;
@@ -8620,13 +8528,7 @@ void DrawVVolSliceTerrain(const vslicedata *vd){
   w = vd->w;
 
   if((vd->volslice == 1 && plotz >= 0 && visz_all == 1) || (vd->volslice == 0 && sd->idir == ZDIR)){
-#ifndef pp_VSKIP
-    int maxi;
-#endif
     float agl_smv;
-#ifndef pp_VSKIP
-    int vectorskipi, vectorskipj;
-#endif
     float zmin, zmax, voffset;
 
     xplttemp = meshi->xplt_orig;
@@ -8651,47 +8553,17 @@ void DrawVVolSliceTerrain(const vslicedata *vd){
     glTranslatef(-xbar0,-ybar0,-zbar0 + voffset);
 
     glLineWidth(vectorlinewidth);
-#ifndef pp_VSKIP
-    maxi = MAX(sd->is1 + sd->nslicei - 1, sd->is1 + 1);
-    vectorskipi = vectorskip;
-    vectorskipj = vectorskip;
-    if(vec_uniform_spacing==1){
-      float mesh_dx, mesh_dy;
-      int factor_i, factor_j;
-
-      mesh_dx = meshi->xplt_orig[1]-meshi->xplt_orig[0];
-      mesh_dy = meshi->yplt_orig[1]-meshi->yplt_orig[0];
-      factor_i = max_dx/mesh_dx+0.5;
-      factor_j = max_dy/mesh_dy+0.5;
-      if(factor_i!=1)vectorskipi *= factor_i;
-      if(factor_j!=1)vectorskipj *= factor_j;
-    }
-#endif
 
     if(vector_debug==0){
-#ifndef pp_VSKIP
-      int ibeg, jbeg;
-#endif
-
       glBegin(GL_LINES);
-#ifdef pp_VSKIP
       for(ii = 0; ii <sd->n_imap; ii++){
         i = sd->imap[ii];
-#else
-      ibeg = sd->is1;
-      jbeg = sd->js1;
-      for(i = ibeg; i <= maxi; i += vectorskipi){
-#endif
         float x1;
         int j;
 
         x1 = xplttemp[i];
-#ifdef pp_VSKIP
         for(jj = 0; jj < sd->n_jmap; jj++){
           j = sd->jmap[jj];
-#else
-        for(j = jbeg; j<=sd->js2; j += vectorskipj){
-#endif
           int n11;
           float z11;
           float *rgb_ptr;
@@ -8726,22 +8598,14 @@ void DrawVVolSliceTerrain(const vslicedata *vd){
 
       glPointSize(vectorpointsize);
       glBegin(GL_POINTS);
-#ifdef pp_VSKIP
       for(ii = 0; ii < sd->n_imap; ii++){
         i = sd->imap[ii];
-#else
-      for(i = ibeg; i <= maxi; i += vectorskipi){
-#endif
         float x1;
         int j;
 
         x1 = xplttemp[i];
-#ifdef pp_VSKIP
         for(jj = 0; jj < sd->n_jmap; jj++){
           j = sd->jmap[jj];
-#else
-        for(j = jbeg; j <= sd->js2; j += vectorskipj){
-#endif
           int n11;
           float z11;
           float *rgb_ptr;
@@ -8846,9 +8710,7 @@ void DrawVVolSliceTerrain(const vslicedata *vd){
 
 void DrawVVolSlice(const vslicedata *vd){
   int i, j, k, n;
-#ifdef pp_VSKIP
   int ii, jj, kk;
-#endif
   int i11;
   float constval, x1, yy1, z1;
   slicedata *u, *v, *w, *sd;
@@ -8860,9 +8722,6 @@ void DrawVVolSlice(const vslicedata *vd){
   char *iblank;
   int nx, ny, nxy;
   float *rgb_ptr;
-#ifndef pp_VSKIP
-  int vectorskipi, vectorskipj, vectorskipk;
-#endif
 
   sd = sliceinfo + vd->ival;
   meshi = meshinfo + sd->blocknumber;
@@ -8878,26 +8737,6 @@ void DrawVVolSlice(const vslicedata *vd){
     valmin = 0.0;
     valmax = 1.0;
   }
-#ifndef pp_VSKIP
-  vectorskipi = vectorskip;
-  vectorskipj = vectorskip;
-  vectorskipk = vectorskip;
-  if(vec_uniform_spacing==1){
-    float mesh_dx, mesh_dy, mesh_dz;
-    int factor_i, factor_j, factor_k;
-
-    mesh_dx = meshi->xplt_orig[1]-meshi->xplt_orig[0];
-    mesh_dy = meshi->yplt_orig[1]-meshi->yplt_orig[0];
-    mesh_dz = meshi->zplt_orig[1]-meshi->zplt_orig[0];
-    factor_i = max_dx/mesh_dx+0.5;
-    factor_j = max_dy/mesh_dy+0.5;
-    factor_k = max_dz/mesh_dz+0.5;
-    if(factor_i!=1)vectorskipj *= factor_i;
-    if(factor_j!=1)vectorskipj *= factor_j;
-    if(factor_k!=1)vectorskipk *= factor_k;
-  }
-#endif
-
   if(vd->volslice == 1){
     plotx = meshi->iplotx_all[iplotx_all];
     ploty = meshi->iploty_all[iploty_all];
@@ -8920,30 +8759,14 @@ void DrawVVolSlice(const vslicedata *vd){
   v = vd->v;
   w = vd->w;
   if((vd->volslice == 1 && plotx >= 0 && visx_all == 1) || (vd->volslice == 0 && sd->idir == XDIR)){
-#ifndef pp_VSKIP
-    int maxj;
-    int jbeg, kbeg;
-#endif
-
     constval = xplttemp[plotx] + offset_slice*sd->sliceoffset+SCALE2SMV(slice_dz);
     glLineWidth(vectorlinewidth);
     glBegin(GL_LINES);
-#ifdef pp_VSKIP
     for(jj = 0; jj < sd->n_jmap; jj++){
       j = sd->jmap[jj];
-#else
-    jbeg = sd->js1;
-    kbeg = sd->ks1;
-    maxj = MAX(sd->js2, jbeg + 1);
-    for(j = jbeg; j <= maxj; j += vectorskipj){
-#endif
       yy1 = yplttemp[j];
-#ifdef pp_VSKIP
-    for(kk = 0; kk < sd->n_kmap; kk++){
-      k = sd->kmap[kk];
-#else
-      for(k = kbeg; k < sd->ks2 + 1; k += vectorskipk){
-#endif
+      for(kk = 0; kk < sd->n_kmap; kk++){
+        k = sd->kmap[kk];
         n = IJK_SLICE(plotx,j,k);
         if(color_vector_black == 0 && show_node_slices_and_vectors == 0){
           if(sd->constant_color == NULL){
@@ -8984,19 +8807,11 @@ void DrawVVolSlice(const vslicedata *vd){
 
     glPointSize(vectorpointsize);
     glBegin(GL_POINTS);
-#ifdef pp_VSKIP
     for(jj = 0; jj < sd->n_jmap; jj++){
       j = sd->jmap[jj];
-#else
-    for(j = jbeg; j <= maxj; j += vectorskipj){
-#endif
       yy1 = yplttemp[j];
-#ifdef pp_VSKIP
     for(kk = 0; kk < sd->n_kmap; kk++){
       k = sd->kmap[kk];
-#else
-      for(k = kbeg; k <= sd->ks2; k += vectorskipk){
-#endif
         n = IJK_SLICE(plotx,j,k);
         if(color_vector_black == 0 && show_node_slices_and_vectors == 0){
           if(sd->constant_color == NULL){
@@ -9035,32 +8850,14 @@ void DrawVVolSlice(const vslicedata *vd){
     SNIFF_ERRORS("after DrawVVolSlice:points dir=1");
   }
   if((vd->volslice == 1 && ploty >= 0 && visy_all == 1) || (vd->volslice == 0 && sd->idir == YDIR)){
-#ifndef pp_VSKIP
-    int maxi;
-    int ibeg, kbeg;
-#endif
-
     constval = yplttemp[ploty] + offset_slice*sd->sliceoffset+SCALE2SMV(slice_dz);
     glLineWidth(vectorlinewidth);
     glBegin(GL_LINES);
-#ifdef pp_VSKIP
     for(ii = 0; ii < sd->n_imap; ii++){
       i = sd->imap[ii];
-#else
-    ibeg = sd->is1;
-    kbeg = sd->ks1;
-    maxi = MAX(sd->is1 + sd->nslicei - 1, ibeg + 1);
-    for(i = ibeg; i <= maxi; i += vectorskipi){
-#endif
-
       x1 = xplttemp[i];
-
-#ifdef pp_VSKIP
       for(kk = 0; kk < sd->n_kmap; kk++){
         k = sd->kmap[kk];
-#else
-      for(k = kbeg; k <= sd->ks2; k += vectorskipk){
-#endif
         n = IJK_SLICE(i,ploty,k);
         if(color_vector_black == 0 && show_node_slices_and_vectors == 0){
           if(sd->constant_color == NULL){
@@ -9100,21 +8897,11 @@ void DrawVVolSlice(const vslicedata *vd){
     SNIFF_ERRORS("after DrawVVolSlice:lines dir=2");
     glPointSize(vectorpointsize);
     glBegin(GL_POINTS);
-#ifdef pp_VSKIP
     for(ii = 0; ii < sd->n_imap; ii++){
       i = sd->imap[ii];
-#else
-    for(i = ibeg; i <= maxi; i += vectorskipi){
-#endif
-
       x1 = xplttemp[i];
-
-#ifdef pp_VSKIP
       for(kk = 0; kk < sd->n_kmap; kk++){
         k = sd->kmap[kk];
-#else
-      for(k = kbeg; k <= sd->ks2; k += vectorskipk){
-#endif
         n = IJK_SLICE(i,ploty,k);
         if(color_vector_black == 0 && show_node_slices_and_vectors == 0){
           if(sd->constant_color == NULL){
@@ -9153,31 +8940,14 @@ void DrawVVolSlice(const vslicedata *vd){
     SNIFF_ERRORS("after DrawVVolSlice:points dir=2");
   }
   if((vd->volslice == 1 && plotz >= 0 && visz_all == 1) || (vd->volslice == 0 && sd->idir == ZDIR)){
-#ifndef pp_VSKIP
-    int maxi;
-    int ibeg, jbeg;
-#endif
-
     constval = zplttemp[plotz] + offset_slice*sd->sliceoffset+SCALE2SMV(slice_dz);
     glLineWidth(vectorlinewidth);
     glBegin(GL_LINES);
-#ifdef pp_VSKIP
     for(ii = 0; ii < sd->n_imap; ii++){
       i = sd->imap[ii];
-#else
-    ibeg = sd->is1;
-    jbeg = sd->js1;
-    maxi = MAX(sd->is1 + sd->nslicei - 1, ibeg + 1);
-    for(i = ibeg; i <= maxi; i += vectorskipi){
-#endif
-
       x1 = xplttemp[i];
-#ifdef pp_VSKIP
-    for(jj = 0; jj < sd->n_jmap; jj++){
-      j = sd->jmap[jj];
-#else
-      for(j = jbeg; j <= sd->js2; j += vectorskipj){
-#endif
+      for(jj = 0; jj < sd->n_jmap; jj++){
+        j = sd->jmap[jj];
         n = IJK_SLICE(i,j,plotz);
         if(color_vector_black == 0 && show_node_slices_and_vectors == 0){
           if(sd->constant_color == NULL){
@@ -9218,20 +8988,11 @@ void DrawVVolSlice(const vslicedata *vd){
 
     glPointSize(vectorpointsize);
     glBegin(GL_POINTS);
-#ifdef pp_VSKIP
     for(ii = 0; ii < sd->n_imap; ii++){
       i = sd->imap[ii];
-#else
-    for(i = ibeg; i < sd->is1 + sd->nslicei; i += vectorskipi){
-#endif
-
       x1 = xplttemp[i];
-#ifdef pp_VSKIP
-    for(jj = 0; jj < sd->n_jmap; jj++){
-      j = sd->jmap[jj];
-#else
-      for(j = jbeg; j < sd->js2 + 1; j += vectorskipj){
-#endif
+      for(jj = 0; jj < sd->n_jmap; jj++){
+        j = sd->jmap[jj];
         n = IJK_SLICE(i,j,plotz);
         if(color_vector_black == 0 && show_node_slices_and_vectors == 0){
           if(sd->constant_color == NULL){

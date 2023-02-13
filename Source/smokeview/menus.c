@@ -2469,9 +2469,7 @@ void VectorSkipMenu(int value){
   vectorskip=value;
   visVector=1;
   updatemenu=1;
-#ifdef pp_VSKIP
   update_vectorskip = 1;
-#endif
   GLUTPOSTREDISPLAY;
 }
 

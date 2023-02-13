@@ -6250,9 +6250,7 @@ extern "C" void SliceBoundCB(int var){
         if(SPINNER_slicevectorskip != NULL)SPINNER_slicevectorskip->set_int_val(vectorskip);
       }
       if(SPINNER_plot3dvectorskip!=NULL)SPINNER_plot3dvectorskip->set_int_val(vectorskip);
-#ifdef pp_VSKIP
       update_vectorskip = 1;
-#endif
       break;
     case ZONEVALMINMAX:
       GetZoneColors(zonetu, nzonetotal, izonetu, zonemin, zonemax, nrgb, nrgb_full, colorlabelzone, colorvalueszone, zonelevels256);
@@ -6404,9 +6402,7 @@ extern "C" void SliceBoundCB(int var){
     SliceBoundCB(UPDATE_VECTOR);
     break;
   case VEC_UNIFORM_SPACING:
-#ifdef pp_VSKIP
     update_vectorskip = 1;
-#endif
     break;
   case UPDATE_VECTOR:
     if(vecfactor<0.0){

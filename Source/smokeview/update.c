@@ -1893,12 +1893,10 @@ void UpdateShowScene(void){
     update_slicexyz = 0;
     UpdateSliceXYZ();
   }
-#ifdef pp_VSKIP
   if(update_vectorskip == 1){
     update_vectorskip = 0;
     UpdateVectorSkip(vectorskip);
   }
-#endif
   if(open_movie_dialog==1){
     open_movie_dialog = 0;
     if(have_slurm==1&&nmovie_queues>0){

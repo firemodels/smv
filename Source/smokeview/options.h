@@ -17,7 +17,6 @@
 //#define pp_COLORBAR_CONSTANT  // make colorbar brightness constant in colorbar dialog box
 //define pp_COLORBAR_HSL        // add option to display color bar in terms of HSL (hue, saturation, lightness)
 
-#define pp_VSKIP            // skip vector slices across meshes uniformly
 // use floating point to color data
 
 //*** parallel file loading

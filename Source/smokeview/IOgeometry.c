@@ -2388,7 +2388,6 @@ int InMesh(float *xyz){
   return 0;
 }
 
-#ifdef pp_VSKIP
 /* ------------------ InMesh ------------------------ */
 
 int InMeshI(meshdata *meshi, float *xyz){
@@ -2401,7 +2400,6 @@ int InMeshI(meshdata *meshi, float *xyz){
   if(xyz[2]<boxmin[2] || xyz[2]>boxmax[2])return 0;
   return 1;
 }
-#endif
 
 /* ------------------ OutSideDomain ------------------------ */
 

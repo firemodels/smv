@@ -792,10 +792,8 @@ typedef struct _meshdata {
   int *boundarytype;
   int *patchdir,*patch_surfindex;
   int *pi1, *pi2, *pj1, *pj2, *pk1, *pk2;
-#ifdef pp_VSKIP
   int ijk0[3];
   struct _meshdata *skip_nabors[6];
-#endif
   int *blockonpatch;
   struct _meshdata **meshonpatch;
   struct _meshdata *nabors[6];
@@ -1420,10 +1418,8 @@ typedef struct _slicedata {
   int volslice;
   int is1, is2, js1, js2, ks1, ks2;
   int iis1, iis2, jjs1, jjs2, kks1, kks2;
-#ifdef pp_VSKIP
   int *imap, *jmap, *kmap;
   int n_imap, n_jmap, n_kmap;
-#endif
   int plotx, ploty, plotz;
   int ijk_min[3], ijk_max[3];
   float xmin,xmax,ymin,ymax,zmin,zmax;

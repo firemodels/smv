@@ -834,14 +834,12 @@ void FreeLabels(flowlabels *flowlabel){
 void InitMesh(meshdata *meshi){
   int i;
 
-#ifdef pp_VSKIP
   for(i=0;i<3;i++){
     meshi->ijk0[i] = -1;
   }
   for(i = 0;i < 6;i++){
     meshi->skip_nabors[i]=NULL;
   }
-#endif
   meshi->znodes_complete = NULL;
   meshi->nznodes = 0;
   meshi->floor_mesh = meshi;
@@ -5669,14 +5667,12 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
   sd->valmax_smv = 0.0;
   sd->valmin_fds = 1.0;
   sd->valmax_fds = 0.0;
-#ifdef pp_VSKIP
   sd->imap = NULL;
   sd->jmap = NULL;
   sd->kmap = NULL;
   sd->n_imap=0;
   sd->n_jmap=0;
   sd->n_kmap=0;
-#endif
   sd->cell_center = cellcenter;
   if(slicegeom==1&&cell_center_flag==1)sd->cell_center = 1;
  // sd->file_size = 0;
@@ -13750,9 +13746,7 @@ int ReadIni2(char *inifile, int localfile){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%i ", &vectorskip);
       if(vectorskip<1)vectorskip = 1;
-#ifdef pp_VSKIP
       update_vectorskip = 1;
-#endif
       continue;
     }
     if(MatchINI(buffer, "SPRINKLERABSSIZE") == 1){

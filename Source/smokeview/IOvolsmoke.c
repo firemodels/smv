@@ -397,7 +397,6 @@ int IsBottomMesh(meshdata *mesh_from){
 
 /* ------------------ MeshConnect ------------------------ */
 
-#ifdef pp_VSKIP
 int SkipMeshConnect(meshdata *mesh_from, int val, meshdata *mesh_to){
   float xyz[3];
   int return_val;
@@ -429,7 +428,6 @@ int SkipMeshConnect(meshdata *mesh_from, int val, meshdata *mesh_to){
   return_val = InMeshI(mesh_from, xyz);
   return return_val;
 }
-#endif
 
 /* ------------------ MeshConnect ------------------------ */
 
@@ -659,7 +657,6 @@ void InitNabors(void){
         continue;
       }
     }
-#ifdef pp_VSKIP
     for(j = 0;j < nmeshes;j++){
       meshdata *meshj;
 
@@ -693,7 +690,6 @@ void InitNabors(void){
     for(j=0;j<3;j++){
       meshi->ijk0[j] = -1;
     }
-#endif
   }
 }
 

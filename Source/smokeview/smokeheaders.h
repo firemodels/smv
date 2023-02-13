@@ -176,10 +176,8 @@ EXTERNCPP void PauseTime(float pause_time);
 
 EXTERNCPP  void UpdateSliceXYZ(void);
 EXTERNCPP int InMesh(float *xyz);
-#ifdef pp_VSKIP
 EXTERNCPP int InMeshI(meshdata *meshi, float *xyz);
 EXTERNCPP void UpdateVectorSkip(int skip);
-#endif
 EXTERNCPP char *GetHomeDir(void);
 EXTERNCPP void SetPercentileDrawOff(void);
 EXTERNCPP void ClosePartFiles(void);

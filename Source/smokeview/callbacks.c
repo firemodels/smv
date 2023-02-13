@@ -2522,9 +2522,7 @@ void Keyboard(unsigned char key, int flag){
         }
         else{
           vectorskip++;
-#ifdef pp_VSKIP
           update_vectorskip = 1;
-#endif
         }
       }
       break;
@@ -2540,9 +2538,7 @@ void Keyboard(unsigned char key, int flag){
       default:
         vectorskip--;
         if(vectorskip<1)vectorskip=1;
-#ifdef pp_VSKIP
         update_vectorskip = 1;
-#endif
       }
     case 't':
       switch(keystate){
