@@ -533,9 +533,7 @@ void bounds_dialog::setup(const char *file_type, GLUI_Rollout *ROLLOUT_dialog, c
     int skip_update_colors_button=0;
     if(strcmp(file_type,"boundary")==0)skip_update_colors_button = 1;
     if(strcmp(file_type,"particle")==0)skip_update_colors_button = 1;
-#ifdef pp_PLOT3DVAL
     if(strcmp(file_type,"PLOT3D")==0)skip_update_colors_button = 1;
-#endif
 #ifdef pp_SLICEVAL
     if(strcmp(file_type,"slice")==0)skip_update_colors_button = 1;
 #endif
@@ -2164,10 +2162,8 @@ extern "C" void Plot3DBoundsCPP_CB(int var){
     case BOUND_VALMAX:
     case BOUND_SETVALMIN:
     case BOUND_SETVALMAX:
-#ifdef pp_PLOT3DVAL
       UpdateAllPlot3DColors(0);
       break;
-#endif
     case BOUND_CHOPMIN:
     case BOUND_CHOPMAX:
     case BOUND_SETCHOPMIN:

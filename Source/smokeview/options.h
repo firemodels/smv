@@ -21,7 +21,6 @@
 // use floating point to color data
 
 #define pp_SLICEVAL         // speed up slice file color updating
-#define pp_PLOT3DVAL        // speed up plot3d file color updating
 
 //*** parallel file loading
 #define pp_SLICE_MULTI        // load slice files in parallel
