@@ -235,8 +235,8 @@ int ReadCSV(csvfiledata *csvfi, int flag){
 
     ci = csvfi->csvinfo + i;
     ci->nvals = nrows-2;
-    NewMemory((void **)&ci->vals,      ci->nvals*sizeof(csvdata));
-    NewMemory((void **)&ci->vals_orig, ci->nvals*sizeof(csvdata));
+    NewMemory((void **)&ci->vals,      MAX(1, ci->nvals)*sizeof(csvdata));
+    NewMemory((void **)&ci->vals_orig, MAX(1, ci->nvals)*sizeof(csvdata));
   }
   CheckMemory;
 
@@ -477,8 +477,8 @@ void ReadHRR(int flag){
     hrrdata *hi;
 
     hi = hrrinfo+i;
-    NewMemory((void **)&hi->vals, (nrows-2)*sizeof(float));
-    NewMemory((void **)&hi->vals_orig, (nrows-2)*sizeof(float));
+    NewMemory((void **)&hi->vals,      MAX(1,(nrows-2))*sizeof(float));
+    NewMemory((void **)&hi->vals_orig, MAX(1,(nrows-2))*sizeof(float));
     hi->base_col = -1;
     hi->nvals = nrows-2;
   }
