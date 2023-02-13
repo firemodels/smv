@@ -536,9 +536,7 @@ void bounds_dialog::setup(const char *file_type, GLUI_Rollout *ROLLOUT_dialog, c
 #ifdef pp_BOUNDVAL
     if(strcmp(file_type,"boundary")==0)skip_update_colors_button = 1;
 #endif
-#ifdef pp_PARTVAL
     if(strcmp(file_type,"particle")==0)skip_update_colors_button = 1;
-#endif
 #ifdef pp_PLOT3DVAL
     if(strcmp(file_type,"PLOT3D")==0)skip_update_colors_button = 1;
 #endif
@@ -2328,10 +2326,8 @@ extern "C" void PartBoundsCPP_CB(int var){
     case BOUND_SETVALMAX:
     case BOUND_VALMIN:
     case BOUND_VALMAX:
-#ifdef pp_PARTVAL
       UpdatePartColors(NULL, 0);
       break;
-#endif
     case BOUND_CHOPMIN:
     case BOUND_CHOPMAX:
     case BOUND_SETCHOPMIN:
@@ -2440,17 +2436,13 @@ extern "C" void PartBoundsCPP_CB(int var){
       if(nsliceinfo>0)sliceboundsCPP.CB(BOUND_RESEARCH_MODE);
       if(nhvacductbounds>0)hvacductboundsCPP.CB(BOUND_RESEARCH_MODE);
       if(nhvacnodebounds > 0)hvacnodeboundsCPP.CB(BOUND_RESEARCH_MODE);
-#ifdef pp_PARTVAL
       UpdatePartColors(NULL, 0);
-#endif
       break;
     case BOUND_PERCENTILE_MODE:
       if(npatchinfo>0)patchboundsCPP.CB(BOUND_PERCENTILE_MODE);
       if(nplot3dinfo>0)plot3dboundsCPP.CB(BOUND_PERCENTILE_MODE);
       if(nsliceinfo>0)sliceboundsCPP.CB(BOUND_PERCENTILE_MODE);
-#ifdef pp_PARTVAL
       UpdatePartColors(NULL, 0);
-#endif
       break;
     case BOUND_LEFT_PERCEN:
     case BOUND_DOWN_PERCEN:
