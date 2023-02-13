@@ -2343,12 +2343,10 @@ void UpdateVectorSkipDefault(void){
 
   for(i = 0; i < nsliceinfo; i++){
     slicedata *slicei;
-    meshdata *slicemesh;
     int ii, jj, kk;
 
     slicei = sliceinfo + i;
     if(slicei->loaded == 0)continue;
-    slicemesh = meshinfo + slicei->blocknumber;
     for(ii = slicei->is1; ii <= slicei->is2; ii++){
       slicei->imap[ii - slicei->is1] = ii;
     }
