@@ -8211,7 +8211,9 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
   int plotx, ploty, plotz;
   char *iblank_cell;
   int ibar, jbar;
+#ifndef pp_VSKIP
   int vectorskipi, vectorskipj, vectorskipk;
+#endif
 
   sd = sliceinfo + vd->ival;
   meshi = meshinfo + sd->blocknumber;
@@ -8232,9 +8234,11 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
   jbar = meshi->jbar;
   iblank_cell = meshi->c_iblank_cell;
 
+#ifndef pp_VSKIP
   vectorskipi = vectorskip;
   vectorskipj = vectorskip;
   vectorskipk = vectorskip;
+#endif
   
   vel_max = max_velocity;
   if(vel_max<= 0.0)vel_max = 1.0;
@@ -8397,9 +8401,9 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
     SNIFF_ERRORS("after DrawVVolSliceCellCenter:points dir=1");
   }
   if((vd->volslice == 1 && ploty > 0 && visy_all == 1) || (vd->volslice == 0 && sd->idir == YDIR)){
-    int maxi;
     float yhalf;
 #ifndef pp_VSKIP
+    int maxi;
     int ibeg, kbeg;
 #endif
 
@@ -8412,7 +8416,9 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
 
     constval = yhalf + offset_slice*sd->sliceoffset+SCALE2SMV(slice_dz);
     glLineWidth(vectorlinewidth);
+#ifndef pp_VSKIP
     maxi = MAX(sd->is1 + sd->nslicei - 1, sd->is1 + 1);
+#endif
     glBegin(GL_LINES);
     glColor4fv(foregroundcolor);
 #ifdef pp_VSKIP
@@ -8723,7 +8729,9 @@ void DrawVVolSliceTerrain(const vslicedata *vd){
   w = vd->w;
 
   if((vd->volslice == 1 && plotz >= 0 && visz_all == 1) || (vd->volslice == 0 && sd->idir == ZDIR)){
+#ifndef pp_VSKIP
     int maxi;
+#endif
     float agl_smv;
     int vectorskipi, vectorskipj;
     float zmin, zmax, voffset;
@@ -8750,7 +8758,9 @@ void DrawVVolSliceTerrain(const vslicedata *vd){
     glTranslatef(-xbar0,-ybar0,-zbar0 + voffset);
 
     glLineWidth(vectorlinewidth);
+#ifndef pp_VSKIP
     maxi = MAX(sd->is1 + sd->nslicei - 1, sd->is1 + 1);
+#endif
     vectorskipi = vectorskip;
     vectorskipj = vectorskip;
     if(vec_uniform_spacing==1){
@@ -8957,7 +8967,9 @@ void DrawVVolSlice(const vslicedata *vd){
   char *iblank;
   int nx, ny, nxy;
   float *rgb_ptr;
+#ifndef pp_VSKIP
   int vectorskipi, vectorskipj, vectorskipk;
+#endif
 
   sd = sliceinfo + vd->ival;
   meshi = meshinfo + sd->blocknumber;
@@ -8975,7 +8987,7 @@ void DrawVVolSlice(const vslicedata *vd){
     valmax = 1.0;
   }
 #endif
-
+#ifndef pp_VSKIP
   vectorskipi = vectorskip;
   vectorskipj = vectorskip;
   vectorskipk = vectorskip;
@@ -8993,6 +9005,7 @@ void DrawVVolSlice(const vslicedata *vd){
     if(factor_j!=1)vectorskipj *= factor_j;
     if(factor_k!=1)vectorskipk *= factor_k;
   }
+#endif
 
   if(vd->volslice == 1){
     plotx = meshi->iplotx_all[iplotx_all];
