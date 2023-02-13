@@ -10053,7 +10053,8 @@ void SortSlices(void){
       slicedata *slicej;
 
       slicej = sliceinfo + j;
-      if(slicej->loaded == 0 || slicej->display == 0 || slicej->blocknumber != i)continue;
+
+      if(slicej->loaded == 0 || slicej->blocknumber != i)continue;
       if(slicej->slice_filetype!=SLICE_NODE_CENTER&&
          slicej->slice_filetype!=SLICE_CELL_CENTER&&
          slicej->slice_filetype!=SLICE_FACE_CENTER)continue;
