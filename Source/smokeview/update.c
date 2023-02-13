@@ -205,7 +205,7 @@ void UpdateFrameNumber(int changetime){
 #else
           if(smoke3di->ismoke3d_time != smoke3di->lastiframe){
             smoke3di->lastiframe = smoke3di->ismoke3d_time;
-            UpdateSmoke3D(smoke3di);;
+            UpdateSmoke3D(smoke3di);
           }
 #endif
         }
@@ -1870,7 +1870,7 @@ int HaveSootLoaded(void) {
     smoke3ddata *smoke3di;
 
     smoke3di = smoke3dinfo+i;
-    if(smoke3di->loaded==1&&smoke3di->extinct>0.0)return GetSmoke3DType(smoke3di->label.shortlabel);;
+    if(smoke3di->loaded==1&&smoke3di->extinct>0.0)return GetSmoke3DType(smoke3di->label.shortlabel);
   }
   return NO_SMOKE;
 }

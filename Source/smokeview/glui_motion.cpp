@@ -595,7 +595,7 @@ void GSliceCB(int var){
     az *= DEG2RAD;
     elev *= DEG2RAD;
     gslice_norm[0] = cos(az)*cos(elev);
-    gslice_norm[1] = sin(az)*cos(elev);;
+    gslice_norm[1] = sin(az)*cos(elev);
     gslice_norm[2] = sin(elev);
     break;
   case GSLICE_TRANSLATE:

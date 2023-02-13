@@ -2257,7 +2257,7 @@ void DrawSmoke3DGPUVol(void){
     yy2 = meshi->y1;
     z1 = meshi->z0;
     z2 = meshi->z1;
-    dcell = meshi->dcell;;
+    dcell = meshi->dcell;
     inside = meshi->inside;
     newmesh=0;
     if(combine_meshes==1){

@@ -1699,7 +1699,7 @@ SVEXTERN int  SVDECL(adjustalphaflag, 3);
 #ifdef pp_VSKIP
 SVEXTERN int SVDECL(update_vectorskip, 0);
 #endif
-SVEXTERN int SVDECL(smoke_offaxis, 0), SVDECL(smoke_adjust, 1);;
+SVEXTERN int SVDECL(smoke_offaxis, 0), SVDECL(smoke_adjust, 1);
 SVEXTERN scriptfiledata first_scriptfile, last_scriptfile, SVDECL(*default_script,NULL);
 #ifdef pp_LUA
 SVEXTERN luascriptfiledata first_luascriptfile, last_luascriptfile, SVDECL(*default_luascript,NULL);

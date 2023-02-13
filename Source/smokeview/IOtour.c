@@ -623,7 +623,7 @@ void GetTourProperties(tourdata *touri){
 
     thiskey = keyj;
     nextkey = keyj->next;
-    if(nextkey->next==NULL)break;;
+    if(nextkey->next==NULL)break;
 
     DDIST3(thiskey->xyz_smv, nextkey->xyz_smv, dist);
     n = MIN(MAX(dist/0.1, 11), 1001);
@@ -1267,7 +1267,7 @@ tourdata *AddTour(char *label){
     touri->keyframe_times[1]=key_time;
   }
   else{
-    keyframe *keyfrom, *keylast;;
+    keyframe *keyfrom, *keylast;
     tourdata *tourfrom;
     int first=1;
 

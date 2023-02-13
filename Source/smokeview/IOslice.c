@@ -2911,7 +2911,7 @@ void UpdateFedinfo(void){
     nn_slice = nsliceinfo + i;
 
     sd->is_fed = 1;
-    sd->slcf_index = co2->slcf_index;;
+    sd->slcf_index = co2->slcf_index;
     sd->uvw = 0;
     sd->fedptr = fedi;
     sd->slice_filetype = co2->slice_filetype;
@@ -7840,7 +7840,7 @@ void DrawSliceFrame(){
 
     i=slice_sorted_loaded_list[ii];
     sd = sliceinfo + i;
-    if(SetupSlice(sd) == 0)continue;;
+    if(SetupSlice(sd) == 0)continue;
     orien = 0;
     direction = 1;
     blend_mode = 0;

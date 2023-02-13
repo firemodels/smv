@@ -3172,7 +3172,7 @@ void DrawVerticalColorbarRegLabels(void){
       float val;
 
       if(iposition == i)continue;
-      val = tttmin + i * hvacrange / (nrgb - 2);;
+      val = tttmin + i * hvacrange / (nrgb - 2);
       colorbar_vals[i] = val;
       GetMantissaExponent(ABS(val), colorbar_exponents + i);
     }
@@ -3221,7 +3221,7 @@ void DrawVerticalColorbarRegLabels(void){
       float val;
 
       if(iposition == i)continue;
-      val = tttmin + i * hvacrange / (nrgb - 2);;
+      val = tttmin + i * hvacrange / (nrgb - 2);
       colorbar_vals[i] = val;
       GetMantissaExponent(ABS(val), colorbar_exponents + i);
     }

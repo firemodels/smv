@@ -525,7 +525,7 @@ void ReadHRR(int flag){
       int doit = 0;
 
       doit = 0;
-      if(strlen(fuel_name)>0&&strstr(hi->label.longlabel, fuel_name)!=NULL)doit = 1;;
+      if(strlen(fuel_name)>0&&strstr(hi->label.longlabel, fuel_name)!=NULL)doit = 1;
       if(doit==0&&strstr(hi->label.longlabel, "FUEL")!=NULL)doit = 1;
       if(doit==0)continue;
       hi2 = hrrinfo + nhrrinfo + nhrrhcinfo;
@@ -3201,7 +3201,7 @@ int CompareSmoketypes( const void *arg1, const void *arg2 ){
   smoke3dtypedata *smoketypei, *smoketypej;
   smoke3ddata *smoke3di, *smoke3dj;
   char *labeli, *labelj;
-  float exti, extj;;
+  float exti, extj;
 
   smoketypei = (smoke3dtypedata *)arg1;
   smoketypej = (smoke3dtypedata *)arg2;
@@ -9190,7 +9190,7 @@ int ReadSMV(bufferstreamdata *stream){
 
   if(ndeviceinfo>0){
     if(NewMemory((void **)&deviceinfo,ndeviceinfo*sizeof(devicedata))==0)return 2;
-    devicecopy=deviceinfo;;
+    devicecopy=deviceinfo;
   }
   ndeviceinfo=0;
   REWIND(stream);

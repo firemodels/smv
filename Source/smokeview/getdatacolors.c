@@ -1388,8 +1388,8 @@ void UpdateRGBColors(int colorbar_index){
   }
   if(show_extreme_mindata==1){
     rgb_full[0][0]=rgb_below_min[0]/255.0;
-    rgb_full[0][1]=rgb_below_min[1]/255.0;;
-    rgb_full[0][2]=rgb_below_min[2]/255.0;;
+    rgb_full[0][1]=rgb_below_min[1]/255.0;
+    rgb_full[0][2]=rgb_below_min[2]/255.0;
   }
   if(show_extreme_maxdata==1){
     rgb_full[255][0]=rgb_above_max[0]/255.0;
