@@ -3722,7 +3722,6 @@ void DrawGeomData(int flag, slicedata *sd, patchdata *patchi, int geom_type){
 #endif
 
 
-#ifdef pp_BOUNDVAL
   int set_valmin, set_valmax;
   char *label;
   float ttmin, ttmax;
@@ -3731,7 +3730,6 @@ void DrawGeomData(int flag, slicedata *sd, patchdata *patchi, int geom_type){
   GetMinMax(BOUND_PATCH, label, &set_valmin, &ttmin, &set_valmax, &ttmax);
 #define GEOMBOUNDCOLOR(val) CLAMP((int)(255.0*(val-ttmin)/(ttmax-ttmin)),0,255)
 #define GEOMBOUNDTEXTURE(val) CLAMP(((val-ttmin)/(ttmax-ttmin)),0.0,1.0)
-#endif
 
   float rvals[3];
 #ifdef pp_SLICEVAL
@@ -3824,7 +3822,6 @@ if(strcmp(patchi->label.shortlabel, "ccell")==0)is_ccell = 1;
           tridata *trianglei;
 
           trianglei = geomlisti->triangles + j;
-#ifdef pp_BOUNDVAL
           if(patchi->patch_filetype==PATCH_GEOMETRY_BOUNDARY){
             rvals[0] = GEOMBOUNDTEXTURE(vals[j]);
           }
@@ -3834,9 +3831,6 @@ if(strcmp(patchi->label.shortlabel, "ccell")==0)is_ccell = 1;
           else{
             rvals[0] = (float)ivals[j]/255.0;
           }
-#else
-          rvals[0] = (float)ivals[j]/255.0;
-#endif
           rvals[1] = rvals[0];
           rvals[2] = rvals[0];
           if(patchi->patch_filetype == PATCH_GEOMETRY_SLICE){

@@ -40,9 +40,7 @@ GLUI *glui_bounds=NULL;
 #define BOUND_PERCENTILE_MODE          125
 #define BOUND_PLOT_MINMAX              126
 #define BOUND_COLORBAR_DIGITS          127
-#ifdef pp_BOUNDVAL
 #define BOUND_DONTUPDATE_COLORS        128
-#endif
 
 #define PERCENTILE_DISABLED 0
 #define PERCENTILE_ENABLED  1
@@ -533,9 +531,7 @@ void bounds_dialog::setup(const char *file_type, GLUI_Rollout *ROLLOUT_dialog, c
     }
     PANEL_buttons = glui_bounds->add_panel_to_panel(PANEL_minmax, "", GLUI_PANEL_NONE);
     int skip_update_colors_button=0;
-#ifdef pp_BOUNDVAL
     if(strcmp(file_type,"boundary")==0)skip_update_colors_button = 1;
-#endif
     if(strcmp(file_type,"particle")==0)skip_update_colors_button = 1;
 #ifdef pp_PLOT3DVAL
     if(strcmp(file_type,"PLOT3D")==0)skip_update_colors_button = 1;
@@ -1064,9 +1060,7 @@ void bounds_dialog::CB(int var){
       break;
 
       // update colors, reload data buttons - handle in calling routine
-#ifdef pp_BOUNDVAL
     case BOUND_DONTUPDATE_COLORS:
-#endif
     case BOUND_UPDATE_COLORS:
     case BOUND_RELOAD_DATA:
       break;
@@ -2503,9 +2497,7 @@ extern "C" void PatchBoundsCPP_CB(int var){
     case BOUND_VALMAX:
     case BOUND_SETVALMIN:
     case BOUND_SETVALMAX:
-#ifdef pp_BOUNDVAL
       UpdateAllBoundaryColors(0);
-#endif
       break;
     case BOUND_VAL_TYPE:
     case BOUND_CHOPMIN:
@@ -2601,22 +2593,16 @@ extern "C" void PatchBoundsCPP_CB(int var){
         histogram_label2 = NULL;
       }
       break;
-#ifdef pp_BOUNDVAL
     case BOUND_DONTUPDATE_COLORS:
-#endif
     case BOUND_UPDATE_COLORS:
       if(HavePatchData()==1){
         SetLoadedPatchBounds(NULL, 0);
-#ifdef pp_BOUNDVAL
         if(var==BOUND_DONTUPDATE_COLORS){
           UpdateAllBoundaryColors(0);
         }
         else{
           UpdateAllBoundaryColors(1);
         }
-#else
-        UpdateAllBoundaryColors(1);
-#endif
       }
       else{
         PatchBoundsCPP_CB(BOUND_RELOAD_DATA);
