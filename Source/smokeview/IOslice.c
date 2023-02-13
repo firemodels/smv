@@ -8782,7 +8782,9 @@ void DrawVVolSliceTerrain(const vslicedata *vd){
     int maxi;
 #endif
     float agl_smv;
+#ifndef pp_VSKIP
     int vectorskipi, vectorskipj;
+#endif
     float zmin, zmax, voffset;
 
     xplttemp = meshi->xplt_orig;
@@ -8809,7 +8811,6 @@ void DrawVVolSliceTerrain(const vslicedata *vd){
     glLineWidth(vectorlinewidth);
 #ifndef pp_VSKIP
     maxi = MAX(sd->is1 + sd->nslicei - 1, sd->is1 + 1);
-#endif
     vectorskipi = vectorskip;
     vectorskipj = vectorskip;
     if(vec_uniform_spacing==1){
@@ -8823,6 +8824,7 @@ void DrawVVolSliceTerrain(const vslicedata *vd){
       if(factor_i!=1)vectorskipi *= factor_i;
       if(factor_j!=1)vectorskipj *= factor_j;
     }
+#endif
 
     if(vector_debug==0){
 #ifndef pp_VSKIP
