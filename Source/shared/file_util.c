@@ -760,7 +760,7 @@ char *GetProgDir(char *progname, char **svpath){
     strncpy(progpath,progname,lendir);
     progpath[lendir]=0;
     NewMemory((void **)&smokeviewpath2,(unsigned int)(strlen(progname)+1));
-    strcpy(smokeviewpath2,"");;
+    strcpy(smokeviewpath2,"");
   }
   strcat(smokeviewpath2,progname);
   *svpath=smokeviewpath2;
