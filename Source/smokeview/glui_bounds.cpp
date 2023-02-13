@@ -5064,7 +5064,6 @@ extern "C" void GluiBoundsSetup(int main_window){
     SPINNER_plot3d_vectorlinewidth->set_float_limits(1.0,10.0);
     SPINNER_plot3d_vectorlinelength=glui_bounds->add_spinner_to_panel(ROLLOUT_vector,_("vector length"),GLUI_SPINNER_FLOAT,&vecfactor,UPDATE_VECTOR,Plot3DBoundCB);
     SPINNER_plot3dvectorskip=glui_bounds->add_spinner_to_panel(ROLLOUT_vector,_("Vector skip"),GLUI_SPINNER_INT,&vectorskip,PLOT3D_VECTORSKIP,Plot3DBoundCB);
-    SPINNER_plot3dvectorskip->set_int_limits(1,10);
 
     glui_bounds->add_column_to_panel(PANEL_plot3d, false);
 
@@ -5286,7 +5285,6 @@ extern "C" void GluiBoundsSetup(int main_window){
     SPINNER_vectorlinewidth->set_float_limits(1.0,20.0);
     SPINNER_vectorlinelength = glui_bounds->add_spinner_to_panel(PANEL_vector1, _("length"), GLUI_SPINNER_FLOAT, &vecfactor, UPDATE_VECTOR, SliceBoundCB);
     SPINNER_slicevectorskip = glui_bounds->add_spinner_to_panel(PANEL_vector1, _("skip"), GLUI_SPINNER_INT, &vectorskip, SLICE_VECTORSKIP, SliceBoundCB);
-    SPINNER_slicevectorskip->set_int_limits(1, 10);
 
     glui_bounds->add_column_to_panel(PANEL_slice_vector, false);
     PANEL_vector2 = glui_bounds->add_panel_to_panel(PANEL_slice_vector, "", false);
@@ -5592,6 +5590,10 @@ extern "C" void Plot3DBoundCB(int var){
   SNIFF_ERRORS("Plot3DBoundCB: start");
   switch(var){
   case PLOT3D_VECTORSKIP:
+    if(vectorskip < 1){
+      vectorskip = 1;
+      if(SPINNER_plot3dvectorskip != NULL)SPINNER_slicevectorskip->set_int_val(vectorskip);
+    }
     if(SPINNER_slicevectorskip!=NULL)SPINNER_slicevectorskip->set_int_val(vectorskip);
     break;
   case UPDATE_VECTOR_FROM_SMV:
@@ -6273,9 +6275,13 @@ extern "C" void SliceBoundCB(int var){
     updatemenu = 1;
     break;
     case SLICE_VECTORSKIP:
+      if(vectorskip < 1){
+        vectorskip = 1;
+        if(SPINNER_slicevectorskip != NULL)SPINNER_slicevectorskip->set_int_val(vectorskip);
+      }
       if(SPINNER_plot3dvectorskip!=NULL)SPINNER_plot3dvectorskip->set_int_val(vectorskip);
 #ifdef pp_VSKIP
-      GetAllCellNodeBegs(vectorskip);
+      update_vectorskip = 1;
 #endif
       break;
     case ZONEVALMINMAX:

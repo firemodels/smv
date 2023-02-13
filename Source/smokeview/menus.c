@@ -2470,7 +2470,7 @@ void VectorSkipMenu(int value){
   visVector=1;
   updatemenu=1;
 #ifdef pp_VSKIP
-  GetAllCellNodeBegs(vectorskip);
+  update_vectorskip = 1;
 #endif
   GLUTPOSTREDISPLAY;
 }

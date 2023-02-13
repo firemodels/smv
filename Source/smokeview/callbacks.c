@@ -2522,20 +2522,28 @@ void Keyboard(unsigned char key, int flag){
         }
         else{
           vectorskip++;
-          if(vectorskip>4)vectorskip=1;
 #ifdef pp_VSKIP
-          GetAllCellNodeBegs(vectorskip);
+          update_vectorskip = 1;;
 #endif
         }
       }
       break;
     case 'S':
-      stereotypeOLD=stereotype;
-      stereotype++;
-      if(stereotype>5)stereotype=0;
-      if(stereotype==STEREO_TIME&&videoSTEREO!=1)stereotype=STEREO_LR;
-      UpdateGluiStereo();
-      break;
+      switch(keystate){
+      case GLUT_ACTIVE_ALT:
+        stereotypeOLD=stereotype;
+        stereotype++;
+        if(stereotype>5)stereotype=0;
+        if(stereotype==STEREO_TIME&&videoSTEREO!=1)stereotype=STEREO_LR;
+        UpdateGluiStereo();
+        break;
+      default:
+        vectorskip--;
+        if(vectorskip<1)vectorskip=1;
+#ifdef pp_VSKIP
+        update_vectorskip = 1;;
+#endif
+      }
     case 't':
       switch(keystate){
       case GLUT_ACTIVE_ALT:

@@ -178,6 +178,7 @@ EXTERNCPP  void UpdateSliceXYZ(void);
 EXTERNCPP int InMesh(float *xyz);
 #ifdef pp_VSKIP
 EXTERNCPP int InMeshI(meshdata *meshi, float *xyz);
+EXTERNCPP void UpdateVectorSkip(int skip);
 #endif
 EXTERNCPP char *GetHomeDir(void);
 EXTERNCPP void SetPercentileDrawOff(void);
@@ -344,9 +345,6 @@ EXTERNCPP void InitAlphas(unsigned char *alphanew,
                           float base_dx, float new_dx);
 EXTERNCPP void ShowDevicesMenu(int value);
 EXTERNCPP int GetDeviceIndexFromLabel(char *label);
-#ifdef pp_VSKIP
-EXTERNCPP void GetAllCellNodeBegs(int skip);
-#endif
 EXTERNCPP void UpdateBoundarySliceDups(void);
 EXTERNCPP void IsoBoundCB(int var);
 EXTERNCPP void UpdateScriptStep(void);
