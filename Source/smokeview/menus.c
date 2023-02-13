@@ -2469,6 +2469,7 @@ void VectorSkipMenu(int value){
   vectorskip=value;
   visVector=1;
   updatemenu=1;
+  update_vectorskip = 1;
   GLUTPOSTREDISPLAY;
 }
 
@@ -5269,7 +5270,7 @@ void Plot3DListMenu(int value){
 
     plot3di = plot3dinfo+list[i];
     plot3di->finalize = 1;
-    break;;
+    break;
   }
   for(i=0;i<nlist;i++){
     int errorcode;
@@ -7591,7 +7592,7 @@ void InitLoadSliceMenu(int *loadslicemenuptr, int unloadslicemenu, int *loadsubs
     sd = sliceinfo + sliceorderindex[i];
     if(i>0)sdim1 = sliceinfo + sliceorderindex[i-1];
     if(i==0||strcmp(sd->label.longlabel,sdim1->label.longlabel)!=0){
-      char mlabel[1024],mlabel2[1024];;
+      char mlabel[1024],mlabel2[1024];
 
       STRCPY(mlabel,sd->label.longlabel);
       if((i==0&&sd->mesh_type>0)||(i>0&&sd->mesh_type!=sdim1->mesh_type)){
@@ -11851,7 +11852,7 @@ updatemenu=0;
 
   //*** setup vector slice menus
 
-    InitUnloadVSLiceMenu(&unloadvslicemenu);;
+    InitUnloadVSLiceMenu(&unloadvslicemenu);
     InitVSliceSubMenu(&loadsubvslicemenu);
     InitVSliceLoadMenu(&vsliceloadmenu, loadsubvslicemenu, unloadvslicemenu);
     if(nslicedups > 0){

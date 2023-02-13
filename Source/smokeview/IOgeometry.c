@@ -2388,6 +2388,19 @@ int InMesh(float *xyz){
   return 0;
 }
 
+/* ------------------ InMesh ------------------------ */
+
+int InMeshI(meshdata *meshi, float *xyz){
+  float *boxmin, *boxmax;
+
+  boxmin = meshi->boxmin;
+  boxmax = meshi->boxmax;
+  if(xyz[0]<boxmin[0] || xyz[0]>boxmax[0])return 0;
+  if(xyz[1]<boxmin[1] || xyz[1]>boxmax[1])return 0;
+  if(xyz[2]<boxmin[2] || xyz[2]>boxmax[2])return 0;
+  return 1;
+}
+
 /* ------------------ OutSideDomain ------------------------ */
 
 int OutSideDomain(vertdata **verts){
@@ -3702,12 +3715,8 @@ void DrawGeomData(int flag, slicedata *sd, patchdata *patchi, int geom_type){
   int i;
   unsigned char *ivals;
   int is_ccell = 0;
-#ifdef pp_SLICEVAL
   float *vals;
-#endif
 
-
-#ifdef pp_BOUNDVAL
   int set_valmin, set_valmax;
   char *label;
   float ttmin, ttmax;
@@ -3716,10 +3725,8 @@ void DrawGeomData(int flag, slicedata *sd, patchdata *patchi, int geom_type){
   GetMinMax(BOUND_PATCH, label, &set_valmin, &ttmin, &set_valmax, &ttmax);
 #define GEOMBOUNDCOLOR(val) CLAMP((int)(255.0*(val-ttmin)/(ttmax-ttmin)),0,255)
 #define GEOMBOUNDTEXTURE(val) CLAMP(((val-ttmin)/(ttmax-ttmin)),0.0,1.0)
-#endif
 
   float rvals[3];
-#ifdef pp_SLICEVAL
   float valmin, valmax;
   if(sd!=NULL){
     valmin = sd->valmin;
@@ -3731,13 +3738,10 @@ void DrawGeomData(int flag, slicedata *sd, patchdata *patchi, int geom_type){
   }
 #define GEOMSLICECOLOR(val) CLAMP((int)(255.0*(val-valmin)/(valmax-valmin)),0,255)
 #define GEOMSLICETEXTURE(val) CLAMP(((val-valmin)/(valmax-valmin)),0.0,1.0)
-#endif
 
 if(strcmp(patchi->label.shortlabel, "ccell")==0)is_ccell = 1;
   if(geom_type==GEOM_STATIC){
-#ifdef pp_SLICEBOUNDVAL
     vals = patchi->geom_vals_static[patchi->geom_itime];
-#endif
     ivals = patchi->geom_ival_static;
   }
   else{
@@ -3809,7 +3813,6 @@ if(strcmp(patchi->label.shortlabel, "ccell")==0)is_ccell = 1;
           tridata *trianglei;
 
           trianglei = geomlisti->triangles + j;
-#ifdef pp_BOUNDVAL
           if(patchi->patch_filetype==PATCH_GEOMETRY_BOUNDARY){
             rvals[0] = GEOMBOUNDTEXTURE(vals[j]);
           }
@@ -3819,9 +3822,6 @@ if(strcmp(patchi->label.shortlabel, "ccell")==0)is_ccell = 1;
           else{
             rvals[0] = (float)ivals[j]/255.0;
           }
-#else
-          rvals[0] = (float)ivals[j]/255.0;
-#endif
           rvals[1] = rvals[0];
           rvals[2] = rvals[0];
           if(patchi->patch_filetype == PATCH_GEOMETRY_SLICE){
@@ -3882,7 +3882,6 @@ if(strcmp(patchi->label.shortlabel, "ccell")==0)is_ccell = 1;
             if(show_boundary_shaded == 0)continue;
           }
 
-#ifdef pp_SLICEVAL
           if(sd==NULL||sd->cell_center==1){
             if(sd!=NULL){
               rvals[0] = GEOMSLICETEXTURE(vals[j]);
@@ -3898,18 +3897,6 @@ if(strcmp(patchi->label.shortlabel, "ccell")==0)is_ccell = 1;
             rvals[1] = GEOMSLICETEXTURE(vals[trianglei->vert_index[1]]);
             rvals[2] = GEOMSLICETEXTURE(vals[trianglei->vert_index[2]]);
           }
-#else
-          if(sd==NULL||sd->cell_center==1){
-            rvals[0] = (float)ivals[j]/255.0;
-            rvals[1] = rvals[0];
-            rvals[2] = rvals[0];
-          }
-          else{
-            rvals[0] = (float)ivals[trianglei->vert_index[0]]/255.0;
-            rvals[1] = (float)ivals[trianglei->vert_index[1]]/255.0;
-            rvals[2] = (float)ivals[trianglei->vert_index[2]]/255.0;
-          }
-#endif
 
           xyzptr[0] = trianglei->verts[0]->xyz;
           xyzptr[1] = trianglei->verts[1]->xyz;

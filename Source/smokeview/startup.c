@@ -1294,7 +1294,7 @@ void InitVars(void){
       if(queue==NULL||nmovie_queues>=MAX_QUEUS)break;
       movie_queues[nmovie_queues++]=TrimFrontBack(queue);
     }
-    ResizeMemory((void **)&movie_queues, nmovie_queues*sizeof(char *));;
+    ResizeMemory((void **)&movie_queues, nmovie_queues*sizeof(char *));
     have_slurm = 1;
   }
 

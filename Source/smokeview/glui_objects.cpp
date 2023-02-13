@@ -960,14 +960,14 @@ void UpdatePlotDevList(void){
     devicedata *devi;
 
     devi = deviceinfo + i;
-    devi->inlist = 0;;
+    devi->inlist = 0;
   }
   LIST_plot_add_dev->delete_item(-1);
   for(i = 0; i<ndeviceinfo; i++){
     devicedata *devi;
 
     devi = deviceinfo+i;
-    devi->inlist = 1 - InDevList(devi, i);;
+    devi->inlist = 1 - InDevList(devi, i);
     LIST_plot_add_dev->delete_item(i);
   }
   LIST_plot_add_dev->add_item(-1, "");
@@ -1659,7 +1659,7 @@ extern "C" void GluiPlot2DSetup(int main_window){
         devicedata *devi;
 
         devi = deviceinfo+i;
-        devi->inlist = 0;;
+        devi->inlist = 0;
       }
       for(i = 0; i<ndeviceinfo; i++){
         devicedata *devi;

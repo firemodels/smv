@@ -19,11 +19,6 @@
 
 // use floating point to color data
 
-#define pp_PARTVAL          // speed up part file color updating
-#define pp_SLICEVAL         // speed up slice file color updating
-#define pp_BOUNDVAL         // speed up boundary file color updating
-#define pp_PLOT3DVAL        // speed up plot3d file color updating
-
 //*** parallel file loading
 #define pp_SLICE_MULTI        // load slice files in parallel
 #define pp_PART_MULTI         // load particle files in parallel
@@ -32,15 +27,6 @@
 
 //#define pp_SMOKE3DSTREAM      // stream smoke3d data
 //#define pp_PARTSTREAM         // stream particle data
-
-#ifdef pp_SLICEVAL
-#define pp_SLICEBOUNDVAL
-#endif
-
-#ifdef pp_BOUNDVAL
-#undef pp_SLICEBOUNDVAL
-#define pp_SLICEBOUNDVAL
-#endif
 
 // turn on pp_STREAM if streaming is on for any file type
 

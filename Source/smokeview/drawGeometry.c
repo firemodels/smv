@@ -55,7 +55,7 @@ void DrawCircVentsApproxSolid(int option){
       switch(cvi->dir){
         case UP_X:
         case DOWN_X:
-          xx=xplt[cvi->imin]+dx;;
+          xx=xplt[cvi->imin]+dx;
           for(kk=cvi->kmin;kk<cvi->kmax;kk++){
             zz = zplt[kk];
             zz2 = zplt[kk+1];
@@ -88,7 +88,7 @@ void DrawCircVentsApproxSolid(int option){
           break;
         case UP_Y:
         case DOWN_Y:
-          yy=yplt[cvi->jmin]+dx;;
+          yy=yplt[cvi->jmin]+dx;
           for(kk=cvi->kmin;kk<cvi->kmax;kk++){
             zz = zplt[kk];
             zz2 = zplt[kk+1];
@@ -121,7 +121,7 @@ void DrawCircVentsApproxSolid(int option){
           break;
         case UP_Z:
         case DOWN_Z:
-          zz=zplt[cvi->kmin]+dx;;
+          zz=zplt[cvi->kmin]+dx;
           for(jj=cvi->jmin;jj<cvi->jmax;jj++){
             yy = yplt[jj];
             yy2 = yplt[jj+1];
@@ -211,7 +211,7 @@ void DrawCircVentsApproxOutline(int option){
       switch(cvi->dir){
         case UP_X:
         case DOWN_X:
-          xx=xplt[cvi->imin]+dx;;
+          xx=xplt[cvi->imin]+dx;
           for(kk=cvi->kmin;kk<cvi->kmax;kk++){
             zz0 = zplt[MAX(kk-1,cvi->kmin)];
             zz = zplt[kk];
@@ -253,7 +253,7 @@ void DrawCircVentsApproxOutline(int option){
           break;
         case UP_Y:
         case DOWN_Y:
-          yy=yplt[cvi->jmin]+dx;;
+          yy=yplt[cvi->jmin]+dx;
           for(kk=cvi->kmin;kk<cvi->kmax;kk++){
             zz0 = zplt[MAX(kk-1,cvi->kmin)];
             zz = zplt[kk];
@@ -296,7 +296,7 @@ void DrawCircVentsApproxOutline(int option){
           break;
         case UP_Z:
         case DOWN_Z:
-          zz=zplt[cvi->kmin]+dx;;
+          zz=zplt[cvi->kmin]+dx;
           for(jj=cvi->jmin;jj<cvi->jmax;jj++){
             yy0 = yplt[MAX(jj-1,cvi->jmin)];
             yy = yplt[jj];

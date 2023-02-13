@@ -369,7 +369,7 @@ char *TrimFrontZeros(char *line){
     if(c[0]!='0')return c;
     if(c[0]=='0'&&c[1]=='.')return c;
   }
-  return line;;
+  return line;
 }
 
 /* ------------------ TrimMZeros ------------------------ */
@@ -1026,7 +1026,7 @@ char *GetStringPtr(char *buffer){
       break;
     }
   }
-  if(first<0)return NULL;;
+  if(first<0)return NULL;
 
   for(i=strlen(buffer)-1;i>=0;i--){
     if(buffer[i]!=' '){

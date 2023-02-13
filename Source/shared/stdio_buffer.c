@@ -260,7 +260,7 @@ int ReadBuffer(char *filename, int filesize, char *buffer, int nthreads, int use
     else{
       end = start+filesizei;
     }
-    if(end>filesize)end = filesize;;
+    if(end>filesize)end = filesize;
 
     readbufferi = readbufferinfo+i;
     readbufferi->buffer = buffer;

@@ -857,7 +857,7 @@ void UpdateGlobalFEDSliceBounds(void){
 
     boundi = slicebounds+i;
     if(strcmp(boundi->label->shortlabel, "FED")==0){
-      boundi->dlg_valmin = 0.0;;
+      boundi->dlg_valmin = 0.0;
       boundi->dlg_valmax = 3.0;
     }
   }

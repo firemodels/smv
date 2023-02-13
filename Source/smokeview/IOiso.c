@@ -710,7 +710,7 @@ void ReadIsoOrig(const char *file, int ifile, int flag, int *errorcode){
           fread(&asurface->tmin,4,1,isostream);
           fread(&asurface->tmax,4,1,isostream);
           read_size+=2*(4+4+4);
-          //printf("amin=%f amax=%f imin=%f imax=%f\n",asurface->tmin,asurface->tmax,ib->tmin,ib->tmax);;
+          //printf("amin=%f amax=%f imin=%f imax=%f\n",asurface->tmin,asurface->tmax,ib->tmin,ib->tmax);
           if(NewMemoryMemID((void **)&tvertices_i,nvertices_i*sizeof(unsigned short),ib->memory_id)==0){
             break_frame=1;
             break;

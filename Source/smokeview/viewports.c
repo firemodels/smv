@@ -565,7 +565,7 @@ int SubPortOrtho(int quad,
 #define WINDOW_MARGIN 0
 int SubPortOrtho2Custom( portdata *p, GLint screen_left, GLint screen_down, int left_percen, int down_percen, int length_percen){
 
-  GLint x0, y0;;
+  GLint x0, y0;
   GLsizei dxy;
   float df;
 

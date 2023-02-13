@@ -235,8 +235,8 @@ int ReadCSV(csvfiledata *csvfi, int flag){
 
     ci = csvfi->csvinfo + i;
     ci->nvals = nrows-2;
-    NewMemory((void **)&ci->vals,      ci->nvals*sizeof(csvdata));
-    NewMemory((void **)&ci->vals_orig, ci->nvals*sizeof(csvdata));
+    NewMemory((void **)&ci->vals,      MAX(1, ci->nvals)*sizeof(csvdata));
+    NewMemory((void **)&ci->vals_orig, MAX(1, ci->nvals)*sizeof(csvdata));
   }
   CheckMemory;
 
@@ -477,8 +477,8 @@ void ReadHRR(int flag){
     hrrdata *hi;
 
     hi = hrrinfo+i;
-    NewMemory((void **)&hi->vals, (nrows-2)*sizeof(float));
-    NewMemory((void **)&hi->vals_orig, (nrows-2)*sizeof(float));
+    NewMemory((void **)&hi->vals,      MAX(1,(nrows-2))*sizeof(float));
+    NewMemory((void **)&hi->vals_orig, MAX(1,(nrows-2))*sizeof(float));
     hi->base_col = -1;
     hi->nvals = nrows-2;
   }
@@ -525,7 +525,7 @@ void ReadHRR(int flag){
       int doit = 0;
 
       doit = 0;
-      if(strlen(fuel_name)>0&&strstr(hi->label.longlabel, fuel_name)!=NULL)doit = 1;;
+      if(strlen(fuel_name)>0&&strstr(hi->label.longlabel, fuel_name)!=NULL)doit = 1;
       if(doit==0&&strstr(hi->label.longlabel, "FUEL")!=NULL)doit = 1;
       if(doit==0)continue;
       hi2 = hrrinfo + nhrrinfo + nhrrhcinfo;
@@ -834,6 +834,12 @@ void FreeLabels(flowlabels *flowlabel){
 void InitMesh(meshdata *meshi){
   int i;
 
+  for(i=0;i<3;i++){
+    meshi->ijk0[i] = -1;
+  }
+  for(i = 0;i < 6;i++){
+    meshi->skip_nabors[i]=NULL;
+  }
   meshi->znodes_complete = NULL;
   meshi->nznodes = 0;
   meshi->floor_mesh = meshi;
@@ -3193,7 +3199,7 @@ int CompareSmoketypes( const void *arg1, const void *arg2 ){
   smoke3dtypedata *smoketypei, *smoketypej;
   smoke3ddata *smoke3di, *smoke3dj;
   char *labeli, *labelj;
-  float exti, extj;;
+  float exti, extj;
 
   smoketypei = (smoke3dtypedata *)arg1;
   smoketypej = (smoke3dtypedata *)arg2;
@@ -5661,6 +5667,12 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
   sd->valmax_smv = 0.0;
   sd->valmin_fds = 1.0;
   sd->valmax_fds = 0.0;
+  sd->imap = NULL;
+  sd->jmap = NULL;
+  sd->kmap = NULL;
+  sd->n_imap=0;
+  sd->n_jmap=0;
+  sd->n_kmap=0;
   sd->cell_center = cellcenter;
   if(slicegeom==1&&cell_center_flag==1)sd->cell_center = 1;
  // sd->file_size = 0;
@@ -9174,7 +9186,7 @@ int ReadSMV(bufferstreamdata *stream){
 
   if(ndeviceinfo>0){
     if(NewMemory((void **)&deviceinfo,ndeviceinfo*sizeof(devicedata))==0)return 2;
-    devicecopy=deviceinfo;;
+    devicecopy=deviceinfo;
   }
   ndeviceinfo=0;
   REWIND(stream);
@@ -13734,6 +13746,7 @@ int ReadIni2(char *inifile, int localfile){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%i ", &vectorskip);
       if(vectorskip<1)vectorskip = 1;
+      update_vectorskip = 1;
       continue;
     }
     if(MatchINI(buffer, "SPRINKLERABSSIZE") == 1){

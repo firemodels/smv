@@ -179,10 +179,8 @@ void UpdateFrameNumber(int changetime){
         patchi->geom_itime = patchi->geom_timeslist[itimes];
         patchi->geom_ival_static = patchi->geom_ivals_static[patchi->geom_itime];
         patchi->geom_ival_dynamic = patchi->geom_ivals_dynamic[patchi->geom_itime];
-#ifdef pp_SLICEBOUNDVAL
         patchi->geom_val_static  = patchi->geom_vals_static[patchi->geom_itime];
         patchi->geom_val_dynamic = patchi->geom_vals_dynamic[patchi->geom_itime];
-#endif
         patchi->geom_nval_static = patchi->geom_nstatics[patchi->geom_itime];
         patchi->geom_nval_dynamic = patchi->geom_ndynamics[patchi->geom_itime];
       }
@@ -207,7 +205,7 @@ void UpdateFrameNumber(int changetime){
 #else
           if(smoke3di->ismoke3d_time != smoke3di->lastiframe){
             smoke3di->lastiframe = smoke3di->ismoke3d_time;
-            UpdateSmoke3D(smoke3di);;
+            UpdateSmoke3D(smoke3di);
           }
 #endif
         }
@@ -1872,7 +1870,7 @@ int HaveSootLoaded(void) {
     smoke3ddata *smoke3di;
 
     smoke3di = smoke3dinfo+i;
-    if(smoke3di->loaded==1&&smoke3di->extinct>0.0)return GetSmoke3DType(smoke3di->label.shortlabel);;
+    if(smoke3di->loaded==1&&smoke3di->extinct>0.0)return GetSmoke3DType(smoke3di->label.shortlabel);
   }
   return NO_SMOKE;
 }
@@ -1894,6 +1892,10 @@ void UpdateShowScene(void){
   if(update_slicexyz==1){
     update_slicexyz = 0;
     UpdateSliceXYZ();
+  }
+  if(update_vectorskip == 1){
+    update_vectorskip = 0;
+    UpdateVectorSkip(vectorskip);
   }
   if(open_movie_dialog==1){
     open_movie_dialog = 0;

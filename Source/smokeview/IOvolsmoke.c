@@ -394,6 +394,41 @@ int IsBottomMesh(meshdata *mesh_from){
   return return_val;
 }
 
+
+/* ------------------ MeshConnect ------------------------ */
+
+int SkipMeshConnect(meshdata *mesh_from, int val, meshdata *mesh_to){
+  float xyz[3];
+  int return_val;
+  //  returns 1 if mesh_from  is 'val' of mesh_to (where val is MLEFT, MRIGHT, MFRONT, MBACK, MDOWN, MBACK )
+
+  memcpy(xyz, mesh_to->boxmiddle, 3 * sizeof(float));
+  switch(val){
+  case MLEFT:
+    xyz[0] = mesh_to->boxmin[0] - mesh_to->dcell3[0];
+    break;
+  case MRIGHT:
+    xyz[0] = mesh_to->boxmax[0] + mesh_to->dcell3[0];
+    break;
+  case MFRONT:
+    xyz[1] = mesh_to->boxmin[1] - mesh_to->dcell3[1];
+    break;
+  case MBACK:
+    xyz[1] = mesh_to->boxmax[1] + mesh_from->dcell3[1];
+    break;
+  case MDOWN:
+    xyz[2] = mesh_to->boxmin[2] - mesh_to->dcell3[2];
+    break;
+  case MUP:
+    xyz[2] = mesh_to->boxmax[2] + mesh_to->dcell3[2];
+    break;
+  default:
+    break;
+  }
+  return_val = InMeshI(mesh_from, xyz);
+  return return_val;
+}
+
 /* ------------------ MeshConnect ------------------------ */
 
 int MeshConnect(meshdata *mesh_from, int val, meshdata *mesh_to){
@@ -621,6 +656,39 @@ void InitNabors(void){
         meshi->nabors[MDOWN] = meshj;
         continue;
       }
+    }
+    for(j = 0;j < nmeshes;j++){
+      meshdata *meshj;
+
+      if(i == j)continue;
+      meshj = meshinfo + j;
+      if(SkipMeshConnect(meshi, MLEFT, meshj) == 1){
+        meshi->skip_nabors[MRIGHT] = meshj;
+        continue;
+      }
+      if(SkipMeshConnect(meshi, MRIGHT, meshj) == 1){
+        meshi->skip_nabors[MLEFT] = meshj;
+        continue;
+      }
+      if(SkipMeshConnect(meshi, MFRONT, meshj) == 1){
+        meshi->skip_nabors[MBACK] = meshj;
+        continue;
+      }
+      if(SkipMeshConnect(meshi, MBACK, meshj) == 1){
+        meshi->skip_nabors[MFRONT] = meshj;
+        continue;
+      }
+      if(SkipMeshConnect(meshi, MDOWN, meshj) == 1){
+        meshi->skip_nabors[MUP] = meshj;
+        continue;
+      }
+      if(SkipMeshConnect(meshi, MUP, meshj) == 1){
+        meshi->skip_nabors[MDOWN] = meshj;
+        continue;
+      }
+    }
+    for(j=0;j<3;j++){
+      meshi->ijk0[j] = -1;
     }
   }
 }
@@ -2185,7 +2253,7 @@ void DrawSmoke3DGPUVol(void){
     yy2 = meshi->y1;
     z1 = meshi->z0;
     z2 = meshi->z1;
-    dcell = meshi->dcell;;
+    dcell = meshi->dcell;
     inside = meshi->inside;
     newmesh=0;
     if(combine_meshes==1){

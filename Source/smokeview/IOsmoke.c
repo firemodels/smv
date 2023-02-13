@@ -925,7 +925,7 @@ void DrawSmoke3DGPU(smoke3ddata *smoke3di){
 
           n = iterm+jterm+kterm;
           n11 = n;            //n
-          n12 = n11+1;;       //n+1
+          n12 = n11+1;        //n+1
           n22 = n12+nxy;      //n+1+nxy
           n21 = n22-1;        //n+nxy
 
@@ -1027,7 +1027,7 @@ void DrawSmoke3DGPU(smoke3ddata *smoke3di){
 
           n = iterm+jterm+kterm;
           n11 = n;
-          n12 = n11+1;;
+          n12 = n11+1;
           n22 = n12+nx;
           n21 = n22-1;
 

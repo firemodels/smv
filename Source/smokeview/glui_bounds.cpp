@@ -40,9 +40,7 @@ GLUI *glui_bounds=NULL;
 #define BOUND_PERCENTILE_MODE          125
 #define BOUND_PLOT_MINMAX              126
 #define BOUND_COLORBAR_DIGITS          127
-#ifdef pp_BOUNDVAL
 #define BOUND_DONTUPDATE_COLORS        128
-#endif
 
 #define PERCENTILE_DISABLED 0
 #define PERCENTILE_ENABLED  1
@@ -533,18 +531,10 @@ void bounds_dialog::setup(const char *file_type, GLUI_Rollout *ROLLOUT_dialog, c
     }
     PANEL_buttons = glui_bounds->add_panel_to_panel(PANEL_minmax, "", GLUI_PANEL_NONE);
     int skip_update_colors_button=0;
-#ifdef pp_BOUNDVAL
     if(strcmp(file_type,"boundary")==0)skip_update_colors_button = 1;
-#endif
-#ifdef pp_PARTVAL
     if(strcmp(file_type,"particle")==0)skip_update_colors_button = 1;
-#endif
-#ifdef pp_PLOT3DVAL
     if(strcmp(file_type,"PLOT3D")==0)skip_update_colors_button = 1;
-#endif
-#ifdef pp_SLICEVAL
     if(strcmp(file_type,"slice")==0)skip_update_colors_button = 1;
-#endif
     if(strcmp(file_type, "hvac") == 0)skip_update_colors_button = 1;
     if(skip_update_colors_button==0){
       BUTTON_update_colors      = glui_bounds->add_button_to_panel(PANEL_buttons, "Update colors", BOUND_UPDATE_COLORS, Callback);
@@ -1066,9 +1056,7 @@ void bounds_dialog::CB(int var){
       break;
 
       // update colors, reload data buttons - handle in calling routine
-#ifdef pp_BOUNDVAL
     case BOUND_DONTUPDATE_COLORS:
-#endif
     case BOUND_UPDATE_COLORS:
     case BOUND_RELOAD_DATA:
       break;
@@ -1978,11 +1966,9 @@ extern "C" void SliceBoundsCPP_CB(int var){
     case BOUND_VALMAX:
     case BOUND_SETVALMIN:
     case BOUND_SETVALMAX:
-#ifdef pp_SLICEVAL
       SetLoadedSliceBounds(NULL, 0);
       UpdateSliceBounds2();
       break;
-#endif
     case BOUND_VAL_TYPE:
     case BOUND_CHOPMIN:
     case BOUND_CHOPMAX:
@@ -2172,10 +2158,8 @@ extern "C" void Plot3DBoundsCPP_CB(int var){
     case BOUND_VALMAX:
     case BOUND_SETVALMIN:
     case BOUND_SETVALMAX:
-#ifdef pp_PLOT3DVAL
       UpdateAllPlot3DColors(0);
       break;
-#endif
     case BOUND_CHOPMIN:
     case BOUND_CHOPMAX:
     case BOUND_SETCHOPMIN:
@@ -2328,10 +2312,8 @@ extern "C" void PartBoundsCPP_CB(int var){
     case BOUND_SETVALMAX:
     case BOUND_VALMIN:
     case BOUND_VALMAX:
-#ifdef pp_PARTVAL
       UpdatePartColors(NULL, 0);
       break;
-#endif
     case BOUND_CHOPMIN:
     case BOUND_CHOPMAX:
     case BOUND_SETCHOPMIN:
@@ -2440,17 +2422,13 @@ extern "C" void PartBoundsCPP_CB(int var){
       if(nsliceinfo>0)sliceboundsCPP.CB(BOUND_RESEARCH_MODE);
       if(nhvacductbounds>0)hvacductboundsCPP.CB(BOUND_RESEARCH_MODE);
       if(nhvacnodebounds > 0)hvacnodeboundsCPP.CB(BOUND_RESEARCH_MODE);
-#ifdef pp_PARTVAL
       UpdatePartColors(NULL, 0);
-#endif
       break;
     case BOUND_PERCENTILE_MODE:
       if(npatchinfo>0)patchboundsCPP.CB(BOUND_PERCENTILE_MODE);
       if(nplot3dinfo>0)plot3dboundsCPP.CB(BOUND_PERCENTILE_MODE);
       if(nsliceinfo>0)sliceboundsCPP.CB(BOUND_PERCENTILE_MODE);
-#ifdef pp_PARTVAL
       UpdatePartColors(NULL, 0);
-#endif
       break;
     case BOUND_LEFT_PERCEN:
     case BOUND_DOWN_PERCEN:
@@ -2511,9 +2489,7 @@ extern "C" void PatchBoundsCPP_CB(int var){
     case BOUND_VALMAX:
     case BOUND_SETVALMIN:
     case BOUND_SETVALMAX:
-#ifdef pp_BOUNDVAL
       UpdateAllBoundaryColors(0);
-#endif
       break;
     case BOUND_VAL_TYPE:
     case BOUND_CHOPMIN:
@@ -2609,22 +2585,16 @@ extern "C" void PatchBoundsCPP_CB(int var){
         histogram_label2 = NULL;
       }
       break;
-#ifdef pp_BOUNDVAL
     case BOUND_DONTUPDATE_COLORS:
-#endif
     case BOUND_UPDATE_COLORS:
       if(HavePatchData()==1){
         SetLoadedPatchBounds(NULL, 0);
-#ifdef pp_BOUNDVAL
         if(var==BOUND_DONTUPDATE_COLORS){
           UpdateAllBoundaryColors(0);
         }
         else{
           UpdateAllBoundaryColors(1);
         }
-#else
-        UpdateAllBoundaryColors(1);
-#endif
       }
       else{
         PatchBoundsCPP_CB(BOUND_RELOAD_DATA);
@@ -5064,7 +5034,6 @@ extern "C" void GluiBoundsSetup(int main_window){
     SPINNER_plot3d_vectorlinewidth->set_float_limits(1.0,10.0);
     SPINNER_plot3d_vectorlinelength=glui_bounds->add_spinner_to_panel(ROLLOUT_vector,_("vector length"),GLUI_SPINNER_FLOAT,&vecfactor,UPDATE_VECTOR,Plot3DBoundCB);
     SPINNER_plot3dvectorskip=glui_bounds->add_spinner_to_panel(ROLLOUT_vector,_("Vector skip"),GLUI_SPINNER_INT,&vectorskip,PLOT3D_VECTORSKIP,Plot3DBoundCB);
-    SPINNER_plot3dvectorskip->set_int_limits(1,10);
 
     glui_bounds->add_column_to_panel(PANEL_plot3d, false);
 
@@ -5286,11 +5255,10 @@ extern "C" void GluiBoundsSetup(int main_window){
     SPINNER_vectorlinewidth->set_float_limits(1.0,20.0);
     SPINNER_vectorlinelength = glui_bounds->add_spinner_to_panel(PANEL_vector1, _("length"), GLUI_SPINNER_FLOAT, &vecfactor, UPDATE_VECTOR, SliceBoundCB);
     SPINNER_slicevectorskip = glui_bounds->add_spinner_to_panel(PANEL_vector1, _("skip"), GLUI_SPINNER_INT, &vectorskip, SLICE_VECTORSKIP, SliceBoundCB);
-    SPINNER_slicevectorskip->set_int_limits(1, 10);
 
     glui_bounds->add_column_to_panel(PANEL_slice_vector, false);
     PANEL_vector2 = glui_bounds->add_panel_to_panel(PANEL_slice_vector, "", false);
-    glui_bounds->add_checkbox_to_panel(PANEL_vector2, "uniform spacing", &vec_uniform_spacing);
+    glui_bounds->add_checkbox_to_panel(PANEL_vector2, "uniform spacing", &vec_uniform_spacing, VEC_UNIFORM_SPACING, SliceBoundCB);
     glui_bounds->add_checkbox_to_panel(PANEL_vector2, "uniform length", &vec_uniform_length);
 
     CHECKBOX_color_vector_black = glui_bounds->add_checkbox_to_panel(PANEL_vector2, _("use foreground color"), &color_vector_black);
@@ -5592,6 +5560,10 @@ extern "C" void Plot3DBoundCB(int var){
   SNIFF_ERRORS("Plot3DBoundCB: start");
   switch(var){
   case PLOT3D_VECTORSKIP:
+    if(vectorskip < 1){
+      vectorskip = 1;
+      if(SPINNER_plot3dvectorskip != NULL)SPINNER_slicevectorskip->set_int_val(vectorskip);
+    }
     if(SPINNER_slicevectorskip!=NULL)SPINNER_slicevectorskip->set_int_val(vectorskip);
     break;
   case UPDATE_VECTOR_FROM_SMV:
@@ -6273,7 +6245,12 @@ extern "C" void SliceBoundCB(int var){
     updatemenu = 1;
     break;
     case SLICE_VECTORSKIP:
+      if(vectorskip < 1){
+        vectorskip = 1;
+        if(SPINNER_slicevectorskip != NULL)SPINNER_slicevectorskip->set_int_val(vectorskip);
+      }
       if(SPINNER_plot3dvectorskip!=NULL)SPINNER_plot3dvectorskip->set_int_val(vectorskip);
+      update_vectorskip = 1;
       break;
     case ZONEVALMINMAX:
       GetZoneColors(zonetu, nzonetotal, izonetu, zonemin, zonemax, nrgb, nrgb_full, colorlabelzone, colorvalueszone, zonelevels256);
@@ -6423,6 +6400,9 @@ extern "C" void SliceBoundCB(int var){
       SPINNER_plot3d_vectorlinelength->set_float_val(vecfactor);
     }
     SliceBoundCB(UPDATE_VECTOR);
+    break;
+  case VEC_UNIFORM_SPACING:
+    update_vectorskip = 1;
     break;
   case UPDATE_VECTOR:
     if(vecfactor<0.0){
