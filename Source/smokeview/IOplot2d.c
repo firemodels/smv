@@ -87,7 +87,7 @@ int HaveGenHrr(void){
   return 0;
 }
 
-/* ------------------ DrawPlot ------------------------ */
+/* ------------------ DrawGenCurve ------------------------ */
 #define AXIS_LEFT  0
 #define AXIS_RIGHT 1
 #define AXIS_NONE  2
