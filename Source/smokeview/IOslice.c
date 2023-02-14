@@ -8787,8 +8787,8 @@ void DrawVVolSlice(const vslicedata *vd){
     for(jj = 0; jj < sd->n_jmap; jj++){
       j = sd->jmap[jj];
       yy1 = yplttemp[j];
-    for(kk = 0; kk < sd->n_kmap; kk++){
-      k = sd->kmap[kk];
+      for(kk = 0; kk < sd->n_kmap; kk++){
+        k = sd->kmap[kk];
         n = IJK_SLICE(plotx,j,k);
         if(color_vector_black == 0 && show_node_slices_and_vectors == 0){
           if(sd->constant_color == NULL){
@@ -8928,7 +8928,7 @@ void DrawVVolSlice(const vslicedata *vd){
         n = IJK_SLICE(i,j,plotz);
         if(color_vector_black == 0 && show_node_slices_and_vectors == 0){
           if(sd->constant_color == NULL){
-            i11 = IJK_SLICE(i,j,plotz);
+            i11 = SLICECOLOR(n);
             rgb_ptr = rgb_slice + 4 * i11;
           }
           else{
