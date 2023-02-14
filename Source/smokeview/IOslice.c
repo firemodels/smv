@@ -8504,6 +8504,15 @@ void DrawVVolSliceTerrain(const vslicedata *vd){
   v = vd->v;
   w = vd->w;
 
+  float valmin, valmax;
+
+  valmin = sd->valmin;
+  valmax = sd->valmax;
+  if(valmin>=valmax){
+    valmin = 0.0;
+    valmax = 1.0;
+  }
+
   if((vd->volslice == 1 && plotz >= 0 && visz_all == 1) || (vd->volslice == 0 && sd->idir == ZDIR)){
     float agl_smv;
     float zmin, zmax, voffset;
@@ -8548,9 +8557,12 @@ void DrawVVolSliceTerrain(const vslicedata *vd){
           z11 = znode[IJ2(i, j)];
           if(z11<zmin || z11>zmax)continue;
 
-          n11 = (i-sd->is1)*sd->nslicej*sd->nslicek + (j-sd->js1)*sd->nslicek;
+          n11 = IJK_SLICE(i,j, sd->ks1);
           if(color_vector_black==0&&show_node_slices_and_vectors==0){
-            rgb_ptr = rgb_slice+4*sd->iqsliceframe[n11];
+            int i11;
+
+            i11 = SLICECOLOR(n11);
+            rgb_ptr = rgb_slice + 4 * i11;
           }
           else{
             rgb_ptr = foregroundcolor;
@@ -8590,9 +8602,12 @@ void DrawVVolSliceTerrain(const vslicedata *vd){
           z11 = znode[IJ2(i, j)];
           if(z11<=zmin || z11>=zmax)continue;
 
-          n11 = (i-sd->is1)*sd->nslicej*sd->nslicek+(j-sd->js1)*sd->nslicek;
+          n11 = IJK_SLICE(i,j, sd->ks1);
           if(color_vector_black == 0 && show_node_slices_and_vectors == 0){
-            rgb_ptr = rgb_slice + 4*sd->iqsliceframe[n11];
+            int i11;
+
+            i11 = SLICECOLOR(n11);
+            rgb_ptr = rgb_slice + 4 * i11;
           }
           else{
             rgb_ptr = foregroundcolor;
@@ -8634,7 +8649,10 @@ void DrawVVolSliceTerrain(const vslicedata *vd){
           if(z22<zmin || z22>zmax)continue;
           n11 = i*sd->nslicej*sd->nslicek+j*sd->nslicek;
           if(color_vector_black==0&&show_node_slices_and_vectors==0){
-            rgb_ptr = rgb_slice+4*sd->iqsliceframe[n11];
+            int i11;
+
+            i11 = SLICECOLOR(n11);
+            rgb_ptr = rgb_slice + 4 * i11;
           }
           else{
             rgb_ptr = foregroundcolor;
@@ -8767,7 +8785,7 @@ void DrawVVolSlice(const vslicedata *vd){
           if(show_vector_slice[IN_SOLID_GLUI]==0 && in_solid==1)continue;
           if(show_vector_slice[IN_GAS_GLUI]==0   && in_gas==1)continue;
         }
-        //if(rgb_ptr[3]<0.5)continue;
+        if(rgb_ptr[3]<0.1)continue;
 
         z1 = zplttemp[k];
         GET_VEC_DXYZ(u, dx, n);
@@ -8812,7 +8830,7 @@ void DrawVVolSlice(const vslicedata *vd){
           if(show_vector_slice[IN_SOLID_GLUI]==0 && in_solid==1)continue;
           if(show_vector_slice[IN_GAS_GLUI]==0   && in_gas==1)continue;
         }
-        //if(rgb_ptr[3]<0.5)continue;
+        if(rgb_ptr[3]<0.1)continue;
 
         z1 = zplttemp[k];
         GET_VEC_DXYZ(u, dx, n);
@@ -8858,7 +8876,7 @@ void DrawVVolSlice(const vslicedata *vd){
           if(show_vector_slice[IN_SOLID_GLUI]==0 && in_solid==1)continue;
           if(show_vector_slice[IN_GAS_GLUI]==0   && in_gas==1)continue;
         }
-        //if(rgb_ptr[3]<0.5)continue;
+        if(rgb_ptr[3]<0.1)continue;
 
         z1 = zplttemp[k];
         GET_VEC_DXYZ(u, dx, n);
@@ -8902,7 +8920,7 @@ void DrawVVolSlice(const vslicedata *vd){
           if(show_vector_slice[IN_SOLID_GLUI]==0 && in_solid==1)continue;
           if(show_vector_slice[IN_GAS_GLUI]==0   && in_gas==1)continue;
         }
-        //if(rgb_ptr[3]<0.5)continue;
+        if(rgb_ptr[3]<0.1)continue;
 
         z1 = zplttemp[k];
         GET_VEC_DXYZ(u, dx, n);
@@ -8948,7 +8966,7 @@ void DrawVVolSlice(const vslicedata *vd){
           if(show_vector_slice[IN_SOLID_GLUI]==0 && in_solid==1)continue;
           if(show_vector_slice[IN_GAS_GLUI]==0   && in_gas==1)continue;
         }
-        //if(rgb_ptr[3]<0.5)continue;
+        if(rgb_ptr[3]<0.1)continue;
 
         yy1 = yplttemp[j];
         GET_VEC_DXYZ(u, dx, n);
@@ -8993,7 +9011,7 @@ void DrawVVolSlice(const vslicedata *vd){
           if(show_vector_slice[IN_SOLID_GLUI]==0 && in_solid==1)continue;
           if(show_vector_slice[IN_GAS_GLUI]==0   && in_gas==1)continue;
         }
-        //if(rgb_ptr[3]<0.5)continue;
+        if(rgb_ptr[3]<0.1)continue;
 
         yy1 = yplttemp[j];
         GET_VEC_DXYZ(u, dx, n);
