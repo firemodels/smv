@@ -12409,7 +12409,7 @@ int ReadIni2(char *inifile, int localfile){
       float dummy;
 
       fgets(buffer, 255, stream);
-      sscanf(buffer, "%i %f %f %i %i", &idummy, &vf, &dummy, &vec_uniform_length, &vec_uniform_spacing);
+      sscanf(buffer, "%i %f %f %i %i %i", &idummy, &vf, &dummy, &vec_uniform_length, &vec_uniform_spacing, &color_vector_black);
       vecfactor = vf;
       continue;
     }
@@ -16249,7 +16249,7 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, "VECCONTOURS\n");
   fprintf(fileout, " %i %i\n", show_node_slices_and_vectors,show_cell_slices_and_vectors);
   fprintf(fileout, "VECLENGTH\n");
-  fprintf(fileout, " %i %f %f %i %i\n", 4, vecfactor, 1.0, vec_uniform_length, vec_uniform_spacing);
+  fprintf(fileout, " %i %f %f %i %i %i\n", 4, vecfactor, 1.0, vec_uniform_length, vec_uniform_spacing, color_vector_black);
   fprintf(fileout, "VECTORLINEWIDTH\n");
   fprintf(fileout, " %f %f\n", vectorlinewidth, slice_line_contour_width);
   fprintf(fileout, "VECTORPOINTSIZE\n");
