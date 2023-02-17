@@ -2472,7 +2472,7 @@ void UpdateVectorSkip(int skip){
     }
     else{
       for(i = 0; i < nsliceinfo; i++){
-        UpdateVectorSkipNonUniform(sliceinfo + i, skip, skip, skip);
+        UpdateVectorSkipNonUniform(sliceinfo + i, 1, 1, 1);
       }
     }
   }
