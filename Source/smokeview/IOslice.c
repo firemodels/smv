@@ -2252,57 +2252,88 @@ void UpdateSliceMenuLabels(void){
   }
 }
 
-/* ------------------ GetAllCellNodeBegs ------------------------ */
+/* ------------------ UpdateMeshSkip ------------------------ */
 
-void GetAllCellNodeBegs(int skip){
-  int i;
-  float dxyz[3];
+void UpdateMeshSkip(meshdata *meshi, int skip, int dir){
+  meshdata *left, *front, *down;
+  int beg, i, n;
 
-  dxyz[0] = meshinfo->xplt_orig[1] - meshinfo->xplt_orig[0];
-  dxyz[1] = meshinfo->yplt_orig[1] - meshinfo->yplt_orig[0];
-  dxyz[2] = meshinfo->zplt_orig[1] - meshinfo->zplt_orig[0];
-  for(i = 1;i < nmeshes;i++){
-    meshdata *meshi;
-    float dx, dy, dz;
-
-    meshi = meshinfo + i;
-    dx = meshi->xplt_orig[1] - meshi->xplt_orig[0];
-    dy = meshi->yplt_orig[1] - meshi->yplt_orig[0];
-    dz = meshi->zplt_orig[1] - meshi->zplt_orig[0];
-    dxyz[0] = MIN(dxyz[0], dx);
-    dxyz[1] = MIN(dxyz[1], dy);
-    dxyz[2] = MIN(dxyz[2], dz);
+  switch(dir){
+  case 0:
+    if(meshi->n_imap > 0)return;
+    left = meshi->skip_nabors[MLEFT];
+    beg = 0;
+    if(left != NULL){
+      UpdateMeshSkip(left, skip, dir);
+      beg = left->imap[left->n_imap - 1] + skip - left->ibar;
+      beg = beg % skip;
+      if(beg == 0) beg = skip;
+    }
+    n = 0;
+    for(i = beg; i < meshi->ibar + 1; i += skip){
+      meshi->imap[n++] = i;
+    }
+    meshi->n_imap = n;
+    break;
+  case 1:
+    if(meshi->n_jmap > 0)return;
+    front = meshi->skip_nabors[MFRONT];
+    beg = 0;
+    if(front != NULL){
+      UpdateMeshSkip(front, skip, dir);
+      beg = front->jmap[front->n_jmap - 1] + skip - front->jbar;
+      beg = beg % skip;
+      if(beg == 0) beg = skip;
+    }
+    n = 0;
+    for(i = beg; i < meshi->jbar + 1; i += skip){
+      meshi->jmap[n++] = i;
+    }
+    meshi->n_jmap = n;
+    break;
+  case 2:
+    if(meshi->n_kmap > 0)return;
+    down = meshi->skip_nabors[MDOWN];
+    beg = 0;
+    if(down != NULL){
+      UpdateMeshSkip(down, skip, dir);
+      beg = down->kmap[down->n_kmap - 1] + skip - down->kbar;
+      beg = beg % skip;
+      if(beg == 0) beg = skip;
+    }
+    n = 0;
+    for(i = beg; i < meshi->kbar + 1; i += skip){
+      meshi->kmap[n++] = i;
+    }
+    meshi->n_kmap = n;
+    break;
+  default:
+    ASSERT(FFALSE);
+    break;
   }
-  
-  for(i = 0;i < nmeshes;i++){
+
+}
+
+/* ------------------ UpdateAllMeshSkips ------------------------ */
+
+void UpdateAllMeshSkips(int skip){
+  int i;
+
+  for(i = 0; i < nmeshes; i++){
     meshdata *meshi;
-    int beg, end;
 
     meshi = meshinfo + i;
+    meshi->n_imap = 0;
+    meshi->n_jmap = 0;
+    meshi->n_kmap = 0;
+  }
+  for(i = 0; i < nmeshes; i++){
+    meshdata *meshi;
 
-    end = (meshi->xplt_orig[0] - xbar0)/dxyz[0] + 0.5;
-    end /= skip;
-    end *= skip;
-    end += skip;
-    beg = (end*dxyz[0]-meshi->xplt_orig[0])/dxyz[0]+0.5;
-    beg = beg % skip;
-    meshi->ijk0[0] = beg;
-
-    end = (meshi->yplt_orig[0] - ybar0)/dxyz[1] + 0.5;
-    end /= skip;
-    end *= skip;
-    end += skip;
-    beg = (end*dxyz[1]-meshi->yplt_orig[0])/dxyz[1]+0.5;
-    beg = beg % skip;
-    meshi->ijk0[1] = beg;
-
-    end = (meshi->zplt_orig[0] - zbar0)/dxyz[2] + 0.5;
-    end /= skip;
-    end *= skip;
-    end += skip;
-    beg = (end*dxyz[2]-meshi->zplt_orig[0])/dxyz[2]+0.5;
-    beg = beg % skip;
-    meshi->ijk0[2] = beg;
+    meshi = meshinfo + i;
+    UpdateMeshSkip(meshi, skip, 0);
+    UpdateMeshSkip(meshi, skip, 1);
+    UpdateMeshSkip(meshi, skip, 2);
   }
 }
 
@@ -2336,28 +2367,37 @@ void UpdateVectorSkipDefault(void){
 
 /* ------------------ UpdateVectorSkipNonUniform ------------------------ */
 
-void UpdateVectorSkipNonUniform(slicedata *slicei, int skipx, int skipy, int skipz){
+void UpdateVectorSkipNonUniform(slicedata *slicei, int factor_x, int factor_y, int factor_z){
   meshdata *slicemesh;
-  int ii;
+  int ii, jj, kk;
 
   if(slicei->loaded == 0)return;
   slicemesh = meshinfo + slicei->blocknumber;
 
   int n = 0;
-  for(ii = slicemesh->ijk0[0]; ii <= slicei->is2; ii += skipx){
-    slicei->imap[n++] = ii;
+  for(ii = 0; ii < slicemesh->n_imap; ii+=factor_x){
+    int i;
+
+    i = slicemesh->imap[ii];
+    if(slicei->is1<=i&&i<=slicei->is2)slicei->imap[n++] = i;
   }
   slicei->n_imap = n;
 
   n = 0;
-  for(ii = slicemesh->ijk0[1]; ii <= slicei->js2; ii += skipy){
-    slicei->jmap[n++] = ii;
+  for(jj = 0; jj < slicemesh->n_jmap; jj+=factor_y){
+    int j;
+
+    j = slicemesh->jmap[jj];
+    if(slicei->js1<=j&&j<=slicei->js2)slicei->jmap[n++] = j;
   }
   slicei->n_jmap = n;
 
   n = 0;
-  for(ii = slicemesh->ijk0[2]; ii <= slicei->ks2; ii += skipz){
-    slicei->kmap[n++] = ii;
+  for(kk = 0; kk < slicemesh->n_kmap; kk+=factor_z){
+    int k;
+
+    k = slicemesh->kmap[kk];
+    if(slicei->ks1<=k&&k<=slicei->ks2)slicei->kmap[n++] = k;
   }
   slicei->n_kmap = n;
 }
@@ -2372,15 +2412,11 @@ void UpdateVectorSkipUniform(int skip){
     meshdata *slicemesh;
     float mesh_dx, mesh_dy, mesh_dz;
     int factor_i, factor_j, factor_k;
-    int vectorskipi, vectorskipj, vectorskipk;
 
     slicei = sliceinfo + i;
     if(slicei->loaded == 0)continue;
     slicemesh = meshinfo + slicei->blocknumber;
 
-    vectorskipi = skip;
-    vectorskipj = skip;
-    vectorskipk = skip;
     mesh_dx = slicemesh->xplt_orig[1] - slicemesh->xplt_orig[0];
     mesh_dy = slicemesh->yplt_orig[1] - slicemesh->yplt_orig[0];
     mesh_dz = slicemesh->zplt_orig[1] - slicemesh->zplt_orig[0];
@@ -2388,10 +2424,7 @@ void UpdateVectorSkipUniform(int skip){
     factor_j = MAX(1, max_dy / mesh_dy + 0.5);
     factor_k = MAX(1, max_dz / mesh_dz + 0.5);
 
-    if(factor_i != 1)vectorskipi *= factor_i;
-    if(factor_j != 1)vectorskipj *= factor_j;
-    if(factor_k != 1)vectorskipk *= factor_k;
-    UpdateVectorSkipNonUniform(slicei, vectorskipi, vectorskipj, vectorskipk);
+    UpdateVectorSkipNonUniform(slicei, factor_i, factor_j, factor_k);
   }
 }
 
@@ -2400,7 +2433,7 @@ void UpdateVectorSkipUniform(int skip){
 void UpdateVectorSkip(int skip){
   int i;
 
-  GetAllCellNodeBegs(skip);    
+  UpdateAllMeshSkips(skip);    
   for(i = 0; i < nsliceinfo; i++){
     slicedata *slicei;
     meshdata *slicemesh;

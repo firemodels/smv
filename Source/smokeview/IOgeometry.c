@@ -2388,19 +2388,6 @@ int InMesh(float *xyz){
   return 0;
 }
 
-/* ------------------ InMesh ------------------------ */
-
-int InMeshI(meshdata *meshi, float *xyz){
-  float *boxmin, *boxmax;
-
-  boxmin = meshi->boxmin;
-  boxmax = meshi->boxmax;
-  if(xyz[0]<boxmin[0] || xyz[0]>boxmax[0])return 0;
-  if(xyz[1]<boxmin[1] || xyz[1]>boxmax[1])return 0;
-  if(xyz[2]<boxmin[2] || xyz[2]>boxmax[2])return 0;
-  return 1;
-}
-
 /* ------------------ OutSideDomain ------------------------ */
 
 int OutSideDomain(vertdata **verts){
