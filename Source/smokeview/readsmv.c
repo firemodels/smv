@@ -834,12 +834,15 @@ void FreeLabels(flowlabels *flowlabel){
 void InitMesh(meshdata *meshi){
   int i;
 
-  for(i=0;i<3;i++){
-    meshi->ijk0[i] = -1;
-  }
   for(i = 0;i < 6;i++){
     meshi->skip_nabors[i]=NULL;
   }
+  meshi->imap = NULL;
+  meshi->jmap = NULL;
+  meshi->kmap = NULL;
+  meshi->n_imap = 0;
+  meshi->n_jmap = 0;
+  meshi->n_kmap = 0;
   meshi->znodes_complete = NULL;
   meshi->nznodes = 0;
   meshi->floor_mesh = meshi;
@@ -3165,6 +3168,9 @@ void UpdateMeshBoxBounds(void){
     meshi->boxmax[0] = meshi->xplt[meshi->ibar];
     meshi->boxmax[1] = meshi->yplt[meshi->jbar];
     meshi->boxmax[2] = meshi->zplt[meshi->kbar];
+    meshi->boxeps_fds[0] = (meshi->xplt[1] - meshi->xplt[0]) / 2.0;
+    meshi->boxeps_fds[1] = (meshi->yplt[1] - meshi->yplt[0]) / 2.0;
+    meshi->boxeps_fds[2] = (meshi->zplt[1] - meshi->zplt[0]) / 2.0;
   }
 }
 
@@ -8909,6 +8915,7 @@ int ReadSMV(bufferstreamdata *stream){
       float *xp, *yp, *zp;
       float *xp2, *yp2, *zp2;
       float *xplt_cen, *yplt_cen,*zplt_cen;
+      int *imap, *jmap, *kmap;
 
 //      int lenbuffer;
 
@@ -8970,6 +8977,11 @@ int ReadSMV(bufferstreamdata *stream){
          NewMemory((void **)&yp2,sizeof(float)*(jbartemp+1))==0||
          NewMemory((void **)&zp2,sizeof(float)*(kbartemp+1))==0
          )return 2;
+      if(
+        NewMemory(( void ** )&imap, sizeof(int) * (ibartemp + 1)) == 0 ||
+        NewMemory(( void ** )&jmap, sizeof(int) * (jbartemp + 1)) == 0 ||
+        NewMemory(( void ** )&kmap, sizeof(int) * (kbartemp + 1)) == 0
+        )return 2;
       if(meshinfo!=NULL){
         meshi->mesh_type=mesh_type;
         meshi->xplt=xp;
@@ -8987,6 +8999,12 @@ int ReadSMV(bufferstreamdata *stream){
         meshi->plotx=ibartemp/2;
         meshi->ploty=jbartemp/2;
         meshi->plotz=kbartemp/2;
+        meshi->imap = imap;
+        meshi->n_imap = 0;
+        meshi->jmap = jmap;
+        meshi->n_jmap = 0;
+        meshi->kmap = kmap;
+        meshi->n_kmap = 0;
       }
       continue;
     }
@@ -12391,7 +12409,7 @@ int ReadIni2(char *inifile, int localfile){
       float dummy;
 
       fgets(buffer, 255, stream);
-      sscanf(buffer, "%i %f %f %i %i", &idummy, &vf, &dummy, &vec_uniform_length, &vec_uniform_spacing);
+      sscanf(buffer, "%i %f %f %i %i %i", &idummy, &vf, &dummy, &vec_uniform_length, &vec_uniform_spacing, &color_vector_black);
       vecfactor = vf;
       continue;
     }
@@ -16231,7 +16249,7 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, "VECCONTOURS\n");
   fprintf(fileout, " %i %i\n", show_node_slices_and_vectors,show_cell_slices_and_vectors);
   fprintf(fileout, "VECLENGTH\n");
-  fprintf(fileout, " %i %f %f %i %i\n", 4, vecfactor, 1.0, vec_uniform_length, vec_uniform_spacing);
+  fprintf(fileout, " %i %f %f %i %i %i\n", 4, vecfactor, 1.0, vec_uniform_length, vec_uniform_spacing, color_vector_black);
   fprintf(fileout, "VECTORLINEWIDTH\n");
   fprintf(fileout, " %f %f\n", vectorlinewidth, slice_line_contour_width);
   fprintf(fileout, "VECTORPOINTSIZE\n");

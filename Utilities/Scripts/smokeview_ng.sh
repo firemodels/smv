@@ -1,4 +1,10 @@
 #!/bin/bash
+CURRENT_DIR=`pwd`
+SCRIPTDIR=`dirname "$(readlink -f "$0")"`
+cd $SCRIPTDIR/../../..
+FIREMODELS_ROOT=`pwd`
+export FIREMODELS_ROOT
+cd $CURRENT_DIR
 
 function usage {
 echo "smokeview_ng.sh [options ]"
@@ -106,21 +112,15 @@ fi
 VERSION=$PLATFORM$TEST$SIZE$DEBUG
 VERSION2=$PLATFORM$SIZE
 
-if [ "$FIREMODELS" == "" ]; then
-  SVNROOT=$HOME/FDS-SMV
-else
-  SVNROOT=$FIREMODELS
-fi
-
-SMOKEVIEW=$SVNROOT/smv/Build/smokeview/intel_$VERSION2/smokeview_$VERSION
+SMOKEVIEW=$FIREMODELS_ROOT/smv/Build/smokeview/intel_$VERSION2/smokeview_$VERSION
 
 if [ "$BINDIR" == "" ]; then
-  BINDIR="$SVNROOT/smv/for_bundle"
+  BINDIR="$FIREMODELS_ROOT/bot/Bundle/smv/for_bundle"
 fi
 SMVBINDIR="-bindir $BINDIR"
 
-STARTX=$SVNROOT/smv/Utilities/Scripts/startXserver.sh
-STOPX=$SVNROOT/smv/Utilities/Scripts/stopXserver.sh
+STARTX=$FIREMODELS_ROOT/smv/Utilities/Scripts/startXserver.sh
+STOPX=$FIREMODELS_ROOT/smv/Utilities/Scripts/stopXserver.sh
 
 source $STARTX
 echo "     smokeview: $SMOKEVIEW"

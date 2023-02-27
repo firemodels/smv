@@ -719,6 +719,7 @@ typedef struct _meshdata {
                      // MESH_BOTH if face i is neither
   int inside;
   float boxmin[3], boxmiddle[3], boxmax[3], dbox[3], boxeps[3], dcell, dcell3[3], verts[24], eyedist;
+  float boxeps_fds[3];
   float slice_min[3], slice_max[3];
   float boxmin_scaled[3], boxmiddle_scaled[3], boxmax_scaled[3];
   float xyz_bar0[3], xyz_bar[3];
@@ -732,6 +733,8 @@ typedef struct _meshdata {
   int plotx, ploty, plotz;
   int slicedir;
   int plotn;
+  int *imap, *jmap, *kmap;
+  int n_imap, n_jmap, n_kmap;
 
   char *c_iblank_node0, *c_iblank_cell0, *c_iblank_x0, *c_iblank_y0, *c_iblank_z0;
   char *c_iblank_node_html;
@@ -792,7 +795,6 @@ typedef struct _meshdata {
   int *boundarytype;
   int *patchdir,*patch_surfindex;
   int *pi1, *pi2, *pj1, *pj2, *pk1, *pk2;
-  int ijk0[3];
   struct _meshdata *skip_nabors[6];
   int *blockonpatch;
   struct _meshdata **meshonpatch;

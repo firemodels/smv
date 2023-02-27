@@ -1495,6 +1495,7 @@ void DrawZoneVentDataProfile(void){
     float zelev[NELEV_ZONE];
 
     zvi = zventinfo + i;
+    ASSERT(zvi->z0 <= zvi->z1);
     if(zvi->vent_type==VFLOW_VENT||zvi->vent_type==MFLOW_VENT)continue;
     for(j=0;j<NELEV_ZONE;j++){
       zelev[j]=(zvi->z0*(NELEV_ZONE-1-j)+zvi->z1*j)/(float)(NELEV_ZONE-1);
@@ -1536,8 +1537,8 @@ void DrawZoneVentDataProfile(void){
         ywall = zvi->y1;
         break;
       default:
-	ASSERT(FFALSE);
-	break;
+	    ASSERT(FFALSE);
+	    break;
       }
       dvent1 = factor*zvi->area_fraction*zvi->vdata[j];
       dvent2 = factor*zvi->area_fraction*zvi->vdata[j+1];
