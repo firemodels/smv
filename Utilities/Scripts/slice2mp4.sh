@@ -1,4 +1,10 @@
 #!/bin/bash
+CURRENT_DIR=`pwd`
+SCRIPTDIR=`dirname "$(readlink -f "$0")"`
+cd $SCRIPTDIR/../../..
+FIREMODELS_ROOT=`pwd`
+cd $CURRENT_DIR
+
 
 #---------------------------------------------
 #                   Usge
@@ -680,7 +686,7 @@ NPROCS=$NPROCS
 QUEUE=$QUEUE
 SMOKEVIEW="$SMOKEVIEW"
 SMOKEVIEWBINDIR="$SMOKEVIEWBINDIR"
-QSMV="$FIREMODELS/smv/Utilities/Scripts/qsmv.sh $SHARE $O_opt $v_opt"
+QSMV="${FIREMODELS_ROOT}/smv/Utilities/Scripts/qsmv.sh $SHARE $O_opt $v_opt"
 \$QSMV -j $JOBPREFIX -P \$NPROCS -q \$QUEUE -e \$SMOKEVIEW -b \$SMOKEVIEWBINDIR -c $smv_scriptname $input
 EOF
 chmod +x $img_scriptname
