@@ -68,6 +68,11 @@ SVEXTERN float geom_bounding_box[6];
 SVEXTERN int glui_surface_color[4];
 #endif
 
+SVEXTERN int SVDECL(slice_plot_csv, 0);
+SVEXTERN char slice_plot_filename[256];
+SVEXTERN char slice_plot_label[256];
+SVEXTERN int SVDECL(update_plot_label, 0);
+
 #ifdef pp_TERRAIN_SKIP
 SVEXTERN int SVDECL(terrain_skip, 1);
 #endif

@@ -68,6 +68,9 @@
 #define SET_FDS_TIMES            220
 #define SLICE_PLOT               221
 #define SLICE_SIZE               222
+#define SLICE_PLOT_CSV           224
+#define SLICE_PLOT_LABEL         225
+#define SLICE_PLOT_FILENAME      226
 
 #define ISO_TRANSPARENT_CONSTANT 0
 #define ISO_TRANSPARENT_VARYING  1
