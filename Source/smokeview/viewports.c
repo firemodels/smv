@@ -1239,7 +1239,7 @@ void OutputSlicePlot(char *file){
   }
   int j;
 
-  for(j = 0;j < ntimes;j++){
+  for(j = -3;j < ntimes;j++){
     first = 1;
     for(i = 0; i < nsliceinfo; i++){
       slicedata *slicei;
@@ -1248,11 +1248,56 @@ void OutputSlicePlot(char *file){
       slicei = sliceinfo + i;
       devicei = &(slicei->vals2d);
       if(slicei->loaded == 0 || devicei->valid == 0)continue;
-      if(first == 1){
-        fprintf(stream, "%f", devicei->times[j]);
-        first = 0;
+      if(j == -3){
+        int have_xy;
+        char label[30];
+
+        have_xy = 0;
+        if(first == 1){
+          first = 0;
+        }
+        fprintf(stream, ",");
+        if(slicei->is1 != slicei->is2){
+          sprintf(label, "%f", slice_xyz[0]);
+          TrimZeros(label);
+          fprintf(stream, "X=%s", label);
+          have_xy = 1;
+        }
+        if(slicei->js1 != slicei->js2){
+          sprintf(label, "%f", slice_xyz[1]);
+          TrimZeros(label);
+          if(have_xy == 1)fprintf(stream, ";");
+          fprintf(stream, "Y=%s", label);
+          have_xy = 1;
+        }
+        if(slicei->ks1 != slicei->ks2){
+          if(have_xy == 1)fprintf(stream, ";");
+          sprintf(label, "%f", slice_xyz[2]);
+          TrimZeros(label);
+          fprintf(stream, "Z=%s", label);
+        }
       }
-      fprintf(stream, ",%f", devicei->vals[j]);
+      if(j == -2){
+        if(first == 1){
+          fprintf(stream, "time");
+          first = 0;
+        }
+        fprintf(stream, ",%s", slicei->label.shortlabel);
+      }
+      if(j == -1){
+        if(first == 1){
+          fprintf(stream, "s");
+          first = 0;
+        }
+        fprintf(stream, ",%s", slicei->label.unit);
+      }
+      if(j >= 0){
+        if(first == 1){
+          fprintf(stream, "%f", devicei->times[j]);
+          first = 0;
+        }
+        fprintf(stream, ",%f", devicei->vals[j]);
+      }
     }
     fprintf(stream, "\n");
   }
