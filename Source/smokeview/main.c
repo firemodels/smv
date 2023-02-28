@@ -40,7 +40,7 @@ void Usage(char *prog,int option){
     PRINTF("%s\n", _(" -big           - hide scene and data when moving scene or selecting menus"));
     PRINTF("%s\n", _(" -casedir dir   - specify location of case (if different than current directory)"));
     PRINTF("%s\n", _(" -convert_ini case1.ini case2.ini - update case1.ini to the current format"));
-    PRINTF("%s\n", _("                  and save results into case2.ini"));
+    PRINTF("%s\n", _("                  and save the results into case2.ini"));
     PRINTF("%s\n", _(" -demo          - use demonstrator mode of Smokeview"));
     PRINTF("%s\n", _(" -fast          - assume slice files exist in order to reduce startup time"));
     PRINTF("%s\n", _(" -fed           - pre-calculate all FED slice files"));
@@ -65,7 +65,7 @@ void Usage(char *prog,int option){
     PRINTF("%s\n", _("     the -htmlscript and -runhtmlscript keywords are used to generate JSON files"));
     PRINTF("%s\n", _(" -sizes         - output files sizes then exit"));
     PRINTF("%s\n", _(" -skipframe n   - render every n frames"));
-    PRINTF("%s\n", _(" -smoke3d       - only show 3d smoke"));
+    PRINTF("%s\n", _(" -smoke3d       - only show 3D smoke"));
     PRINTF("%s\n", _(" -startframe n  - start rendering at frame n"));
     PRINTF("%s\n", _(" -stereo        - activate stereo mode"));
     PRINTF("%s\n", _(" -timings       - show startup timings"));
