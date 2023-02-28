@@ -1251,9 +1251,6 @@ void OutputSlicePlot(char *file){
       if(j == -3){
         char label[30];
 
-        if(first == 1){
-          first = 0;
-        }
         fprintf(stream, ",");
         sprintf(label, "%f", devicei->xyz[0]);
         TrimZeros(label);
