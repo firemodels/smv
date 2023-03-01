@@ -3056,6 +3056,7 @@ GLUI_Button *BUTTON_PLOT3D = NULL;
 GLUI_Button *BUTTON_3DSMOKE = NULL;
 GLUI_Button *BUTTON_BOUNDARY = NULL;
 GLUI_Button *BUTTON_ISO = NULL;
+GLUI_Button *BUTTON_OUTPUT_PLOT2D=NULL;;
 
 GLUI_Listbox *LIST_colortable = NULL;
 GLUI_Listbox *LIST_iso_colorbar = NULL;
@@ -3381,6 +3382,12 @@ int      nparticleprocinfo=0;
 
 procdata  subboundprocinfo[5];
 int       nsubboundprocinfo=0;
+
+/* ------------------ UpdatePlotLabel ------------------------ */
+
+extern "C" void UpdatePlotLabel(void){
+  SliceBoundCB(SLICE_PLOT_LABEL);
+}
 
 /* ------------------ UpdateSortSlices ------------------------ */
 
@@ -5182,6 +5189,8 @@ extern "C" void GluiBoundsSetup(int main_window){
       glui_bounds->add_checkbox_to_panel(ROLLOUT_plotslice, "show title",         &show_plot2d_title);
       glui_bounds->add_checkbox_to_panel(ROLLOUT_plotslice, "show y axis labels", &show_plot2d_ylabels);
       glui_bounds->add_checkbox_to_panel(ROLLOUT_plotslice, "show x axis labels", &show_plot2d_xlabels);
+      BUTTON_OUTPUT_PLOT2D = glui_bounds->add_button_to_panel(ROLLOUT_plotslice, _("Output data"), SLICE_PLOT_CSV, SliceBoundCB);
+      SliceBoundCB(SLICE_PLOT_LABEL);
     }
 
     if(nslicedups>0){
@@ -6192,6 +6201,7 @@ extern "C" void SliceBoundCB(int var){
   int ii;
   slicedata *sd;
   int last_slice;
+  int use_slice;
 
   SNIFF_ERRORS("SliceBoundCB: start");
   updatemenu=1;
@@ -6216,6 +6226,40 @@ extern "C" void SliceBoundCB(int var){
       break;
     case SLICE_PLOT:
       Slice2Device();
+      break;
+    case SLICE_PLOT_CSV:
+      SliceBoundCB(SLICE_PLOT_FILENAME);
+      if(strlen(slice_plot_filename) > 0)slice_plot_csv = 1;
+      break;
+    case SLICE_PLOT_FILENAME:
+      use_slice = 0;
+      strcpy(slice_plot_filename, fdsprefix);
+      strcat(slice_plot_filename, "_slice");
+      for(i = 0; i < nsliceinfo; i++){
+        slicedata *slicei;
+        devicedata *devicei;
+
+        slicei = sliceinfo + i;
+        devicei = &(slicei->vals2d);
+        if(slicei->loaded == 0 || devicei->valid == 0)continue;
+        strcat(slice_plot_filename, "_");
+        strcat(slice_plot_filename, slicei->label.shortlabel);
+        strcat(slice_plot_filename, ".csv");
+        use_slice = 1;
+        break;
+      }
+      if(use_slice == 0){
+        strcpy(slice_plot_filename, "");
+      }
+      break;
+    case SLICE_PLOT_LABEL:
+      SliceBoundCB(SLICE_PLOT_FILENAME);
+      strcpy(slice_plot_label, "Output data");
+      if(strlen(slice_plot_filename)>0){
+        strcat(slice_plot_label, " to ");
+        strcat(slice_plot_label, slice_plot_filename);
+      }
+      if(BUTTON_OUTPUT_PLOT2D!=NULL)BUTTON_OUTPUT_PLOT2D->set_name(slice_plot_label);
       break;
     case UPDATE_HISTOGRAM:
       update_slice_hists = 1;

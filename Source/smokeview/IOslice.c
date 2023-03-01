@@ -4751,6 +4751,7 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
   meshdata *meshi;
 
   updatemenu = 1;
+  update_plot_label = 1;
   FILE_SIZE return_filesize=0;
   int file_size=0;
 #ifdef pp_memstatus

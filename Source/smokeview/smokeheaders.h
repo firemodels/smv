@@ -9,6 +9,7 @@ EXTERNCPP float GetTime(void);
 
 // gen plot routines
 
+EXTERNCPP void UpdatePlotLabel(void);
 EXTERNCPP char *GetPlotUnit2(plot2ddata *plot2di, curvedata *curve);
 EXTERNCPP char *GetPlotShortLabel2(plot2ddata *plot2di, curvedata *curv);
 EXTERNCPP void GetPlot2DBounds(plot2ddata*plot2di, float *valmin, float *valmax);

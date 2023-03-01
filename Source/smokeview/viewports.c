@@ -1209,15 +1209,96 @@ void ViewportHrrPlot(int quad, GLint screen_left, GLint screen_down) {
 
 }
 
+/* ------------------------ OutputSlicePlot ------------------------- */
+
+void OutputSlicePlot(char *file){
+  int i, ntimes,first=1;
+  FILE *stream = NULL;
+
+  if(file == NULL||strlen(file)==0)return;
+  stream = fopen(file, "w");
+  if(stream == NULL){
+    printf("***error: %s not able to be opened for writing\n", file);
+    return;
+  }
+
+  for(i = 0; i < nsliceinfo; i++){
+    slicedata *slicei;
+    devicedata *devicei;
+
+    slicei = sliceinfo + i;
+    devicei = &(slicei->vals2d);
+    if(slicei->loaded == 0 || devicei->valid == 0)continue;
+    if(first == 1){
+      first = 0;
+      ntimes = devicei->nvals;
+    }
+    else{
+      ntimes = MIN(ntimes, devicei->nvals);
+    }
+  }
+  int j;
+
+  for(j = -3;j < ntimes;j++){
+    first = 1;
+    for(i = 0; i < nsliceinfo; i++){
+      slicedata *slicei;
+      devicedata *devicei;
+
+      slicei = sliceinfo + i;
+      devicei = &(slicei->vals2d);
+      if(slicei->loaded == 0 || devicei->valid == 0)continue;
+      if(j == -3){
+        char label[30];
+
+        fprintf(stream, ",");
+        sprintf(label, "%f", devicei->xyz[0]);
+        TrimZeros(label);
+        fprintf(stream, "X=%s", label);
+
+        sprintf(label, "%f", devicei->xyz[1]);
+        TrimZeros(label);
+        fprintf(stream, ";Y=%s", label);
+
+        sprintf(label, "%f", devicei->xyz[2]);
+        TrimZeros(label);
+        fprintf(stream, ";Z=%s", label);
+      }
+      if(j == -2){
+        if(first == 1){
+          fprintf(stream, "time");
+          first = 0;
+        }
+        fprintf(stream, ",%s", slicei->label.shortlabel);
+      }
+      if(j == -1){
+        if(first == 1){
+          fprintf(stream, "s");
+          first = 0;
+        }
+        fprintf(stream, ",%s", slicei->label.unit);
+      }
+      if(j >= 0){
+        if(first == 1){
+          fprintf(stream, "%f", devicei->times[j]);
+          first = 0;
+        }
+        fprintf(stream, ",%f", devicei->vals[j]);
+      }
+    }
+    fprintf(stream, "\n");
+  }
+  fclose(stream);
+
+}
+
 /* ------------------------ ViewportSlicePlot ------------------------- */
 
 void ViewportSlicePlot(int quad, GLint screen_left, GLint screen_down) {
   if(SubPortOrtho2(quad, &VP_slice_plot, screen_left, screen_down)==0)return;
   SNIFF_ERRORS("111");
   glMatrixMode(GL_MODELVIEW);
-  SNIFF_ERRORS("222");
   glLoadIdentity();
-  SNIFF_ERRORS("333");
   if(vis_slice_plot==1&&global_times!=NULL){
     int i, position;
 
@@ -1254,8 +1335,13 @@ void ViewportSlicePlot(int quad, GLint screen_left, GLint screen_down) {
                slicei->label.shortlabel, NULL, slicei->label.unit,
                VP_slice_plot.left, VP_slice_plot.right, VP_slice_plot.down, VP_slice_plot.top);
       position++;
-      SNIFF_ERRORS("444");
+      SNIFF_ERRORS("2D slice plots");
     }
+    if(slice_plot_csv==1){
+      OutputSlicePlot(slice_plot_filename);
+      slice_plot_csv = 0;
+    }
+
   }
 }
 

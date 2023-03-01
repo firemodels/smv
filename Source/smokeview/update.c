@@ -1897,6 +1897,10 @@ void UpdateShowScene(void){
     update_vectorskip = 0;
     UpdateVectorSkip(vectorskip);
   }
+  if(update_plot_label == 1){
+    update_plot_label = 0;
+    UpdatePlotLabel();
+  }
   if(open_movie_dialog==1){
     open_movie_dialog = 0;
     if(have_slurm==1&&nmovie_queues>0){
