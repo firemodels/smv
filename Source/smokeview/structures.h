@@ -970,7 +970,7 @@ typedef struct _device {
   int screenijk[3], visval, target_index;
   char deviceID[LENDEVICEBUFFER], csvlabel[LENDEVICEBUFFER], *labelptr;
   char quantity[LENDEVICEBUFFER], unit[LENDEVICEBUFFER];
-  float *times, *vals;
+  float *times, *vals, *vals_integral;
   float *vals_orig;
   int update_avg;
   int *valids;

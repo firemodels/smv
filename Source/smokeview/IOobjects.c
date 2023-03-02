@@ -6136,6 +6136,9 @@ void ReadDeviceData(char *file, int filetype, int loadstatus){
       if(devicei->filetype!=filetype)continue;
       FREEMEMORY(devicei->vals);
       FREEMEMORY(devicei->vals_orig);
+#ifdef pp_PLOT2DMAX
+      FREEMEMORY(devicei->vals_integral);
+#endif
       FREEMEMORY(devicei->valids);
     }
     for(i=0;i<ndeviceinfo;i++){
@@ -6215,6 +6218,9 @@ void ReadDeviceData(char *file, int filetype, int loadstatus){
     if(filetype==CSV_FDS)devicei->in_devc_csv=1;
     NewMemory((void **)&devicei->vals,nrows*sizeof(float));
     NewMemory((void **)&devicei->valids,nrows*sizeof(int));
+#ifdef pp_PLOT2DMAX
+    NewMemory((void **)&devicei->vals_integral,nrows*sizeof(float));
+#endif
     devicei->times=times_local;
     NewMemory((void **)&devicei->vals_orig,nrows*sizeof(float));
     strcpy(devicei->unit,devcunits[i]);

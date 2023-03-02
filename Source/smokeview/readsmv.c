@@ -2048,6 +2048,9 @@ void InitDevice(devicedata *devicei, float *xyz, int is_beam, float *xyz1, float
   devicei->times          = NULL;
   devicei->vals           = NULL;
   devicei->vals_orig      = NULL;
+#ifdef pp_PLOT2DMAX
+  devicei->vals_integral  = NULL;
+#endif
   devicei->update_avg     = 0;
   devicei->nstate_changes = 0;
   devicei->istate_changes = 0;
@@ -2123,6 +2126,9 @@ void ParseDevicekeyword(BFILE *stream, devicedata *devicei){
   devicei->times=NULL;
   devicei->vals=NULL;
   devicei->vals_orig = NULL;
+#ifdef pp_PLOT2DMAX
+  devicei->vals_integral = NULL;
+#endif
   devicei->update_avg = 0;
   devicei->target_index = -1;
   devicei->global_valmin = 1.0;
@@ -2254,6 +2260,9 @@ void ParseDevicekeyword2(FILE *stream, devicedata *devicei){
   devicei->params = NULL;
   devicei->times = NULL;
   devicei->vals = NULL;
+#ifdef pp_PLOT2DMAX
+  devicei->vals_integral = NULL;
+#endif
   devicei->vals_orig = NULL;
   devicei->update_avg = 0;
   fgets(buffer, 255, stream);
@@ -5659,6 +5668,9 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
 #endif
   sd->vals2d.vals      = NULL;
   sd->vals2d.vals_orig = NULL;
+#ifdef pp_PLOT2DMAX
+  sd->vals2d.vals_integral = NULL;
+#endif
   sd->vals2d.times     = NULL;
   sd->vals2d.nvals     = 0;
   sd->geom_offsets = NULL;
