@@ -1030,6 +1030,9 @@ typedef struct _curvedata{
   float curve_factor;
   float vmin, vmax;
   float *vals;
+#ifdef pp_PLOT2DMAX
+  float *vals2;
+#endif
   int update_avg;
   float linewidth;
 } curvedata;

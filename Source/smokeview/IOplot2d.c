@@ -404,6 +404,9 @@ void UpdateCurveBounds(plot2ddata *plot2di, int option){
       curve->curve_factor       = 1.0;
       curve->update_avg         = 0;
       curve->vals               = NULL;
+#ifdef pp_PLOT2DMAX
+      curve->vals2              = NULL;
+#endif
       strcpy(curve->scaled_label, "");
       strcpy(curve->scaled_unit,  "");
     }
@@ -453,6 +456,87 @@ void UpdateCurveBounds(plot2ddata *plot2di, int option){
     curve->vmax = 1.0;
   }
 }
+
+#ifdef pp_PLOT2DMAX
+/* ------------------ TimeAverageVals ------------------------ */
+
+float TimeAverageVals(float *times, float *vals, int nvals, float time, float delta_t){
+  float tbeg, tend;
+  int i, ibeg, iend;
+
+  if(times[nvals - 1] - times[0] < delta_t){
+    tbeg = times[0];
+    tend = times[nvals - 1];
+  }
+  else{
+    tbeg = time - delta_t / 2.0;
+    tend = tbeg + delta_t;
+    if(tbeg < times[0]){
+      tbeg = times[0];
+      tend = tbeg + delta_t;
+    }
+    else if(tend > times[nvals - 1]){
+      tend = times[nvals - 1];
+      tbeg = tend - delta_t;
+    }
+  }
+  ibeg = GetInterval(tbeg, times, nvals);
+  if(ibeg < 0)ibeg = 0;
+  iend = GetInterval(tend, times, nvals);
+  if(iend > nvals - 1)iend = nvals - 1;
+
+  if(ibeg == iend)return vals[ibeg];
+
+  float sum = 0.0;
+  for(i = ibeg;i <= iend;i++){
+    float dt;
+
+    if(i == ibeg){
+      dt = times[i + 1] - tbeg;
+    }
+    else if(i == iend){
+      dt = tend - times[i];
+    }
+    else{
+      dt = times[i + 1] - times[i];
+    }
+    sum += vals[i] * dt;
+  }
+  sum /= (tend - tbeg);
+  return sum;
+}
+
+/* ------------------ MaxAverageVal ------------------------ */
+
+float MaxAverageVal(float *times, float *vals, int nvals, float delta_t){
+  int i;
+  float max_avg;
+
+  max_avg = TimeAverageVals(times, vals, nvals, times[0], delta_t);
+  for(i = 0;i < nvals;i++){
+    float val_avg;
+
+    val_avg = TimeAverageVals(times, vals, nvals, times[i], delta_t);
+    max_avg = MAX(val_avg, val_avg);
+  }
+  return max_avg;
+}
+
+/* ------------------ MaxAverageVals ------------------------ */
+
+void MaxAverageVals(float *times, float *vals, float *vals2, int nvals){
+  int i;
+
+  for(i = 1;i < nvals;i++){
+    float max_avg, delta_t;
+
+    delta_t = times[i] - times[0];
+    max_avg = MaxAverageVal(times, vals, nvals, delta_t);
+    vals2[i] = max_avg;
+  }
+  vals2[0] = vals2[1];
+}
+#endif
 
 /* ------------------ DrawGenPlot ------------------------ */
 
@@ -595,19 +679,40 @@ void DrawGenPlot(plot2ddata *plot2di){
     if(curve->vals==NULL){
       NewMemory((void **)&curve->vals, csvi->nvals * sizeof(devicedata *));
     }
-    if(curve->update_avg==1||plot2d_time_average>0.0){
+#ifdef pp_PLOT2DMAX
+    if(curve->vals2==NULL){
+      NewMemory((void **)&curve->vals2, csvi->nvals * sizeof(devicedata *));
+    }
+#endif
+    if(curve->update_avg==1||plot2d_time_average>0.0
+#ifdef pp_PLOT2DMAX
+    ||update_max_avg_vals==1
+#endif
+    ){
       if(curve->update_avg==1){
         curve->update_avg = 0;
         TimeAveragePlot2DData(csvfi->time->vals, csvi->vals, curve->vals, csvi->nvals, plot2d_time_average);
       }
+#ifdef pp_PLOT2DMAX
+      if(update_max_avg_vals==1){
+        update_max_avg_vals = 0;
+        MaxAverageVals(csvfi->time->vals, csvi->vals, curve->vals2, csvi->nvals);
+      }
+#endif
     }
     else{
       memcpy(curve->vals, csvi->vals, csvi->nvals*sizeof(float));
     }
     if(global_times!=NULL){
+      float *vals;
+
+      vals = curve->vals;
+#ifdef pp_PLOT2DMAX
+      if(show_max_avg_vals == 1)vals = curve->vals2;
+#endif
       highlight_time = global_times[itimes];
-      highlight_val = GetCSVVal(global_times[itimes], csvfi->time->vals, curve->vals, csvi->nvals);
-      DrawGenCurve(option, plot2di, curve, plot2d_size_factor, csvfi->time->vals, curve->vals, csvi->nvals,
+      highlight_val = GetCSVVal(global_times[itimes], csvfi->time->vals, vals, csvi->nvals);
+      DrawGenCurve(option, plot2di, curve, plot2d_size_factor, csvfi->time->vals, vals, csvi->nvals,
                    highlight_time, highlight_val, valmin, valmax, side,
                    position, shortlabel, unit_display);
     }
