@@ -460,64 +460,61 @@ void UpdateCurveBounds(plot2ddata *plot2di, int option){
 #ifdef pp_PLOT2DMAX
 /* ------------------ TimeAverageVals ------------------------ */
 
-float TimeAverageVals(float *times, float *vals, int nvals, float time, float delta_t){
-  float tbeg, tend;
-  int i, ibeg, iend;
+void IntegrateVals(float *times, float *vals, float *vals_integral_arg, int nvals){
+  int i;
 
-  if(times[nvals - 1] - times[0] < delta_t){
-    tbeg = times[0];
-    tend = times[nvals - 1];
-  }
-  else{
-    tbeg = time - delta_t / 2.0;
-    tend = tbeg + delta_t;
-    if(tbeg < times[0]){
-      tbeg = times[0];
-      tend = tbeg + delta_t;
-    }
-    else if(tend > times[nvals - 1]){
-      tend = times[nvals - 1];
-      tbeg = tend - delta_t;
-    }
-  }
-  ibeg = GetInterval(tbeg, times, nvals);
-  if(ibeg < 0)ibeg = 0;
-  iend = GetInterval(tend, times, nvals);
-  if(iend > nvals - 1)iend = nvals - 1;
-
-  if(ibeg == iend)return vals[ibeg];
-
-  float sum = 0.0;
-  for(i = ibeg;i <= iend;i++){
+  vals_integral_arg[0] = 0.0;
+  for(i = 1;i < nvals;i++){
     float dt;
 
-    if(i == ibeg){
-      dt = times[i + 1] - tbeg;
-    }
-    else if(i == iend){
-      dt = tend - times[i];
-    }
-    else{
-      dt = times[i + 1] - times[i];
-    }
-    sum += vals[i] * dt;
+    dt = times[i] - times[i - 1];
+    vals_integral_arg[i] = vals_integral_arg[i-1] + dt*(vals[i-1] + vals[i]) / 2.0;
   }
-  sum /= (tend - tbeg);
-  return sum;
+}
+  
+/* ------------------ IntegrateValsAB ------------------------ */
+
+float IntegrateValsAB(float *times, float *vals_integral_arg, int nvals, float tbeg, float tend){
+  int ibeg, iend;
+  float vbeg, vend;
+  float dt1, dt2, dt;
+  float integral;
+
+  ibeg = GetInterval(tbeg, times, nvals);
+  iend = GetInterval(tend, times, nvals);
+  dt1 = tbeg - times[ibeg];
+  dt2 = times[ibeg + 1] - tbeg;
+  dt = times[ibeg + 1] - times[ibeg];
+  vbeg = (dt1 * vals_integral_arg[ibeg + 1] + dt2 * vals_integral_arg[ibeg]) / dt;
+
+  dt1 = tend - times[iend];
+  dt2 = times[iend + 1] - tend;
+  dt = times[iend + 1] - times[iend];
+  vend = (dt1 * vals_integral_arg[iend + 1] + dt2 * vals_integral_arg[iend]) / dt;
+  integral = vend - vbeg;
+  return integral;
 }
 
 /* ------------------ MaxAverageVal ------------------------ */
 
-float MaxAverageVal(float *times, float *vals, int nvals, float delta_t){
+float MaxAverageVal(float *times, float *vals_integral_arg, int nvals, float delta_t){
   int i;
   float max_avg;
+  float tbeg, tend;
 
-  max_avg = TimeAverageVals(times, vals, nvals, times[0], delta_t);
-  for(i = 0;i < nvals;i++){
+  tbeg = times[0];
+  tend = tbeg + delta_t;
+
+  max_avg = IntegrateValsAB(times, vals_integral_arg, nvals, tbeg, tend) / delta_t;
+
+  for(i = 1;i < nvals;i++){
     float val_avg;
 
-    val_avg = TimeAverageVals(times, vals, nvals, times[i], delta_t);
-    max_avg = MAX(val_avg, val_avg);
+    tbeg = times[i];
+    tend = tbeg + delta_t;
+    if(tend > times[nvals - 1])break;
+    val_avg = IntegrateValsAB(times, vals_integral_arg, nvals, tbeg, tend) / delta_t;
+    max_avg = MAX(max_avg, val_avg);
   }
   return max_avg;
 }
@@ -527,14 +524,18 @@ float MaxAverageVal(float *times, float *vals, int nvals, float delta_t){
 void MaxAverageVals(float *times, float *vals, float *vals2, int nvals){
   int i;
 
+  FREEMEMORY(v_integral);
+  NewMemory((void **)&v_integral, nvals * sizeof(float));
+  IntegrateVals(times, vals, v_integral, nvals);
   for(i = 1;i < nvals;i++){
     float max_avg, delta_t;
 
     delta_t = times[i] - times[0];
-    max_avg = MaxAverageVal(times, vals, nvals, delta_t);
+    max_avg = MaxAverageVal(times, v_integral, nvals, delta_t);
     vals2[i] = max_avg;
   }
   vals2[0] = vals2[1];
+  FREEMEMORY(v_integral);
 }
 #endif
 
