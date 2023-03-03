@@ -140,7 +140,8 @@ void ConvertPixelData(unsigned char *bytes_in, int nbytes_in, unsigned char *byt
 /* ------------------ testbit ------------------------ */
 
 int testbit(unsigned char x, unsigned char y){
-  if(x!=0&&y==1||x==0&&y==0)return 1;
+  if(x!=0&&y==1)return 1;
+  if(x==0&&y==0)return 1;
   return 0;
 }
 

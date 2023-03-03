@@ -94,7 +94,9 @@ void Usage(char *prog, int option){
 
 int main(int argc, char **argv){
   int i;
-#ifndef WIN32
+#ifdef WIN32
+  int nprocs;
+#else
   int debug=0;
   char command_buffer[1024];
   char user_path[1024];
@@ -104,7 +106,6 @@ int main(int argc, char **argv){
   int cpu_usage, cpu_usage_max=25;
   int mem_usage, mem_usage_max=75;
   int nprocs_max=-1;
-  int nprocs;
 #ifdef pp_LINUX
   FILE *stream=NULL;
 #endif

@@ -108,13 +108,13 @@ gnu_linux_64_db : $(obj)
 
 # ------------- gnu osx 64 ----------------
 
-gnu_osx_64 : CFLAGS    = -O0 -m64 -D pp_GCC -D  pp_OSX $(GITINFO) $(GNU_COMPINFO) $(SMV_TESTFLAG)
+gnu_osx_64 : CFLAGS    = -O0 -m64 -D pp_GCC -D  pp_OSX $(GITINFO) $(GNU_COMPINFO) $(SMV_TESTFLAG) -Wno-unknown-pragmas
 gnu_osx_64 : LFLAGS    = -m64
 gnu_osx_64 : CC        = gcc
 gnu_osx_64 : exe       = smokediff_osx_64
 
 gnu_osx_64 : $(obj)
-	$(CC) -o $(bin)/$(exe) $(obj) $(LFLAGS) -L $(GLIBDIR)
+	$(CC) -o $(bin)/$(exe) $(obj) $(LFLAGS)
 
 # ------------- gnu osx 64 db ----------------
 
@@ -124,7 +124,7 @@ gnu_osx_64_db : CC        = gcc
 gnu_osx_64_db : exe       = smokediff_osx_64_db
 
 gnu_osx_64_db : $(obj)
-	$(CC) -o $(bin)/$(exe) $(obj) $(LFLAGS) -L $(GLIBDIR)
+	$(CC) -o $(bin)/$(exe) $(obj) $(LFLAGS)
 
 # ------------- intel linux 64 ----------------
 

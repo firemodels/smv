@@ -28,7 +28,6 @@ void Usage(char *prog,int option){
 /* ------------------ main ------------------------ */
 
 int main(int argc, char **argv){
-  int i;
   char *casename = NULL;
   unsigned char *hash = NULL;
 
