@@ -108,7 +108,7 @@ gnu_linux_64_db : $(obj)
 # ------------- gnu osx 64 ----------------
 
 gnu_osx_64 : CFLAGS    = -O0 -m64 -D pp_GCC -D pp_OSX $(GITINFO) $(GNU_COMPINFO) $(SMV_TESTFLAG)
-gnu_osx_64 : LFLAGS    = -L $(LIB_DIR)/gnu_osx_64 -lz -lpthread -L $(GLIBDIR)
+gnu_osx_64 : LFLAGS    = -L $(LIB_DIR)/gnu_osx_64 -lz -lpthread 
 gnu_osx_64 : CC        = gcc
 gnu_osx_64 : exe       = smokezip_osx_64
 
@@ -118,7 +118,7 @@ gnu_osx_64 : $(obj)
 # ------------- gnu osx 64 db ----------------
 
 gnu_osx_64_db : CFLAGS    = -O0 -m64 -Wall -D _DEBUG -D pp_OSX -D pp_GCC -Wno-deprecated-declarations -Wno-write-strings $(GNU_COMPINFO) $(GITINFO) $(SMV_TESTFLAG)
-gnu_osx_64_db : LFLAGS    = -L $(LIB_DIR)/gnu_osx_64 -lz -lpthread -L $(GLIBDIR)
+gnu_osx_64_db : LFLAGS    = -L $(LIB_DIR)/gnu_osx_64 -lz -lpthread
 gnu_osx_64_db : CC        = gcc
 gnu_osx_64_db : exe       = smokezip_osx_64_db
 

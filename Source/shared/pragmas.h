@@ -17,6 +17,7 @@
 #pragma warning (disable:2557)  // comparison between signed and unsigned operands
 #pragma warning (disable:3457)  // conversion from a string literal to "char *" is deprecated
 #endif
+#ifndef pp_OSX
 #pragma warning (disable:177)
 #pragma warning (disable:444)   // destructor for base class
 #pragma warning (disable:494)   // omission of "class"is nonstandard
@@ -34,5 +35,6 @@
 #pragma warning (disable:4389)  // signed/unsigned mis-match
 #pragma warning (disable:4701)
 #pragma warning (disable:4996)
+#endif
 
 #endif

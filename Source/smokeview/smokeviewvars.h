@@ -23,6 +23,12 @@
 #include "glutbitmap.h"
 #endif
 
+#ifdef pp_PLOT2DMAX
+SVEXTERN int SVDECL(show_max_avg_vals, 0);
+SVEXTERN int SVDECL(update_max_avg_vals, 0);
+SVEXTERN float SVDECL(*v_integral, NULL);
+#endif
+
 // hvac data
 SVEXTERN int SVDECL(hvacductvar_index, -1), SVDECL(hvacnodevar_index, -1);
 SVEXTERN int SVDECL(nhvacnodeinfo, 0), SVDECL(nhvacductinfo, 0), SVDECL(nhvacinfo, 0);

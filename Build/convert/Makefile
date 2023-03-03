@@ -113,7 +113,7 @@ gnu_osx_64 : CPP       = g++
 gnu_osx_64 : exe       = convert_osx_64
 
 gnu_osx_64 : $(obj)
-	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS) -L $(GLIBDIR)
+	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS)
 
 # ------------- gnu osx 64 db ----------------
 
@@ -124,7 +124,7 @@ gnu_osx_64_db : CPP       = g++
 gnu_osx_64_db : exe       = convert_osx_64_db
 
 gnu_osx_64_db : $(obj)
-	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS) -L $(GLIBDIR)
+	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS)
 
 # ------------- intel linux 64 ----------------
 
