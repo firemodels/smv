@@ -5129,22 +5129,8 @@ void LoadMultiSliceMenu(int value){
     submenutype=msubslice_menuindex[submenutype];
     slicei = sliceinfo + submenutype;
     submenulabel = slicei->label.longlabel;
-    last_slice = nsliceinfo - 1;
-    for(i = nsliceinfo-1; i>=0; i--){
-      char *longlabel;
-
-      slicei = sliceinfo + i;
-      if(slicei->skipdup == 1)continue;
-      longlabel = slicei->label.longlabel;
-      if(strcmp(longlabel, submenulabel) != 0)continue;
-      if(dir != 0 && dir != slicei->idir)continue;
-      if(dir !=0 && slicei->volslice == 1)continue;
-      last_slice = i;
-      break;
-    }
     START_TIMER(load_time);
     for(i = 0; i<nsliceinfo; i++){
-      int set_slicecolor;
       char *longlabel;
 
       slicei = sliceinfo + i;
@@ -5153,13 +5139,11 @@ void LoadMultiSliceMenu(int value){
       if(strcmp(longlabel,submenulabel)!=0)continue;
       if(dir!=0&&dir!=slicei->idir)continue;
       if(dir!=0&&slicei->volslice==1)continue;
-      set_slicecolor = DEFER_SLICECOLOR;
-      if(i == last_slice)set_slicecolor = SET_SLICECOLOR;
       if(slicei->slice_filetype == SLICE_GEOM){
-        load_size+=ReadGeomData(slicei->patchgeom, slicei, LOAD, ALL_FRAMES, NULL, &errorcode);
+        load_size += ReadGeomData(slicei->patchgeom, slicei, LOAD, ALL_FRAMES, NULL, &errorcode);
       }
       else{
-        load_size+=             ReadSlice(slicei->file,i, ALL_FRAMES, NULL, LOAD,set_slicecolor,&errorcode);
+        load_size += ReadSlice(slicei->file,i, ALL_FRAMES, NULL, LOAD,SET_SLICECOLOR,&errorcode);
       }
       file_count++;
     }
