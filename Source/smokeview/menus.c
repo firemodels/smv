@@ -5117,7 +5117,7 @@ void LoadMultiSliceMenu(int value){
     script_multislice=0;
   }
   else if(value<=-1000){
-    int submenutype, last_slice, dir, errorcode;
+    int submenutype, dir, errorcode;
     char *submenulabel;
     slicedata *slicei;
     float load_time, load_size = 0.0;
