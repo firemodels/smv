@@ -3101,6 +3101,7 @@ GLUI_Panel *PANEL_vector1=NULL, *PANEL_vector2=NULL;
 GLUI_Panel *PANEL_partread = NULL;
 
 GLUI_Panel *PANEL_slice_misc=NULL, *PANEL_slice_vector=NULL, *PANEL_showslice=NULL;
+GLUI_Panel *PANEL_slicevalues = NULL;
 GLUI_Panel *PANEL_plot3d=NULL;
 GLUI_Panel *PANEL_boundary_temp_threshold=NULL;
 GLUI_Panel *PANEL_slice_buttonsA = NULL;
@@ -5236,23 +5237,20 @@ extern "C" void GluiBoundsSetup(int main_window){
     glui_bounds->add_column_to_panel(PANEL_immersed, false);
     PANEL_immersed_drawas = glui_bounds->add_panel_to_panel(PANEL_immersed, "draw slices using", true);
     CHECKBOX_show_slice_shaded = glui_bounds->add_checkbox_to_panel(PANEL_immersed_drawas,   "solid colors",  &glui_show_slice_shaded,   IMMERSED_SET_DRAWTYPE, ImmersedBoundCB);
-    CHECKBOX_show_slice_outlines = glui_bounds->add_checkbox_to_panel(PANEL_immersed_drawas, "outlines", &glui_show_slice_outlines, IMMERSED_SET_DRAWTYPE, ImmersedBoundCB);
-    CHECKBOX_show_slice_points = glui_bounds->add_checkbox_to_panel(PANEL_immersed_drawas,   "points",  &glui_show_slice_points,   IMMERSED_SET_DRAWTYPE, ImmersedBoundCB);
-    CHECKBOX_show_slice_values = glui_bounds->add_checkbox_to_panel(PANEL_immersed_drawas,   "values",  &glui_show_slice_values,   IMMERSED_SET_DRAWTYPE, ImmersedBoundCB);
-    CHECKBOX_show_vector_slice = glui_bounds->add_checkbox_to_panel(PANEL_immersed_drawas,   "vectors", &glui_show_vector_slice,   IMMERSED_SET_DRAWTYPE, ImmersedBoundCB);
+    CHECKBOX_show_slice_outlines = glui_bounds->add_checkbox_to_panel(PANEL_immersed_drawas, "outlines",      &glui_show_slice_outlines, IMMERSED_SET_DRAWTYPE, ImmersedBoundCB);
+    CHECKBOX_show_slice_points = glui_bounds->add_checkbox_to_panel(PANEL_immersed_drawas,   "points",        &glui_show_slice_points,   IMMERSED_SET_DRAWTYPE, ImmersedBoundCB);
+    CHECKBOX_show_slice_values = glui_bounds->add_checkbox_to_panel(PANEL_immersed_drawas,   "values",        &glui_show_slice_values,   IMMERSED_SET_DRAWTYPE, ImmersedBoundCB);
+    CHECKBOX_show_vector_slice = glui_bounds->add_checkbox_to_panel(PANEL_immersed_drawas,   "vectors",       &glui_show_vector_slice,   IMMERSED_SET_DRAWTYPE, ImmersedBoundCB);
 
     ImmersedBoundCB(IMMERSED_SWITCH_CELLTYPE);
     ImmersedBoundCB(IMMERSED_SWITCH_EDGETYPE);
+    ImmersedBoundCB(IMMERSED_SET_DRAWTYPE);
 
-    glui_bounds->add_button_to_panel(PANEL_immersed, _("show values(all regions)"), SHOW_ALL_SLICE_VALUES, ImmersedBoundCB);
-    glui_bounds->add_button_to_panel(PANEL_immersed, _("hide values(all regions)"), HIDE_ALL_SLICE_VALUES, ImmersedBoundCB);
-    SPINNER_sliceval_ndigits = glui_bounds->add_spinner_to_panel(PANEL_immersed, _("digits (0 all)"), GLUI_SPINNER_INT, &sliceval_ndigits);
+    PANEL_slicevalues = glui_bounds->add_panel_to_panel(PANEL_immersed, "slice values", true);
+    glui_bounds->add_button_to_panel(PANEL_slicevalues, _("show all regions"), SHOW_ALL_SLICE_VALUES, ImmersedBoundCB);
+    glui_bounds->add_button_to_panel(PANEL_slicevalues, _("hide all regions"), HIDE_ALL_SLICE_VALUES, ImmersedBoundCB);
+    SPINNER_sliceval_ndigits = glui_bounds->add_spinner_to_panel(PANEL_slicevalues, _("digits (0 all)"), GLUI_SPINNER_INT, &sliceval_ndigits);
     SPINNER_sliceval_ndigits->set_int_limits(0, 10);
-
-    PANEL_showslice = glui_bounds->add_panel_to_panel(PANEL_immersed, "show vectors and", true);
-    CHECKBOX_show_node_slices_and_vectors = glui_bounds->add_checkbox_to_panel(PANEL_showslice, _("node centered slices"), &show_node_slices_and_vectors);
-    CHECKBOX_show_node_slices_and_vectors = glui_bounds->add_checkbox_to_panel(PANEL_showslice, _("cell centered slices"), &show_cell_slices_and_vectors);
-
 
     PANEL_slice_vector = glui_bounds->add_panel_to_panel(ROLLOUT_slice_settings, "vector properties", true);
 
@@ -5269,8 +5267,11 @@ extern "C" void GluiBoundsSetup(int main_window){
     PANEL_vector2 = glui_bounds->add_panel_to_panel(PANEL_slice_vector, "", false);
     glui_bounds->add_checkbox_to_panel(PANEL_vector2, "uniform spacing", &vec_uniform_spacing, VEC_UNIFORM_SPACING, SliceBoundCB);
     glui_bounds->add_checkbox_to_panel(PANEL_vector2, "uniform length", &vec_uniform_length);
-
     CHECKBOX_color_vector_black = glui_bounds->add_checkbox_to_panel(PANEL_vector2, _("use foreground color"), &color_vector_black);
+
+    PANEL_showslice = glui_bounds->add_panel_to_panel(PANEL_vector2, "show vectors and", true);
+    CHECKBOX_show_node_slices_and_vectors = glui_bounds->add_checkbox_to_panel(PANEL_showslice, _("node centered slices"), &show_node_slices_and_vectors);
+    CHECKBOX_show_node_slices_and_vectors = glui_bounds->add_checkbox_to_panel(PANEL_showslice, _("cell centered slices"), &show_cell_slices_and_vectors);
 
     if(ngeom_data > 0)glui_bounds->add_column_to_panel(ROLLOUT_slice_settings, false);
 
