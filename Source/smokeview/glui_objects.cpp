@@ -1645,6 +1645,27 @@ int HaveExt(void){
   return 0;
 }
 
+/* ------------------ UpdatePlot2DINI ------------------------ */
+
+extern "C" void UpdatePlot2DINI(void){
+  if(nplot2dini > 0){
+    int i;
+
+    nplot2dinfo = nplot2dini;
+    FREEMEMORY(plot2dinfo);
+    NewMemory((void **)&plot2dinfo, nplot2dinfo * sizeof(plot2ddata));
+    memcpy(plot2dinfo, plot2dini, nplot2dinfo * sizeof(plot2ddata));
+    for(i = 0; i < nplot2dini; i++){
+      plot2ddata *plot2di;
+
+      plot2di = plot2dinfo + i;
+      LIST_plots->add_item(i, plot2di->plot_label);
+    }
+    LIST_plots->set_int_val(0);
+    GenPlotCB(GENPLOT_SELECT_PLOT);
+  }
+}
+
 /* ------------------ GluiPlot2DSetup ------------------------ */
 
 extern "C" void GluiPlot2DSetup(int main_window){
@@ -1817,18 +1838,9 @@ extern "C" void GluiPlot2DSetup(int main_window){
 
     SetPlot2DBoundLabels(plot2dinfo);
 
-    if(nplot2dini>0){
-      nplot2dinfo = nplot2dini;
-      NewMemory((void **)&plot2dinfo, nplot2dinfo*sizeof(plot2ddata));
-      memcpy(plot2dinfo, plot2dini, nplot2dinfo*sizeof(plot2ddata));
-      for(i = 0; i<nplot2dini; i++){
-        plot2ddata *plot2di;
-
-        plot2di = plot2dinfo+i;
-        LIST_plots->add_item(i, plot2di->plot_label);
-      }
-      LIST_plots->set_int_val(0);
-      GenPlotCB(GENPLOT_SELECT_PLOT);
+    if(update_plot2dini == 1){
+      update_plot2dini = 0;
+      UpdatePlot2DINI();
     }
     GenPlotCB(GENPLOT_SHOW_PLOT);
     plot2d_dialogs_defined = 1;

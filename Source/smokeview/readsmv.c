@@ -12173,10 +12173,10 @@ int ReadIni2(char *inifile, int localfile){
           else{
             curve->quantity = NULL;
           }
-
         }
       }
       update_glui_devices = 1;
+      update_plot2dini = 1;
       continue;
     }
     if(MatchINI(buffer, "GENPLOTLABELS") == 1){
