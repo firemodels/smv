@@ -6793,7 +6793,7 @@ void DrawVolSliceLines(const slicedata *sd){
           slice_color31 = foregroundcolor;
           slice_color33 = foregroundcolor;
         }
-        if(in_solid==1&&show_slice_shaded[IN_SOLID_GLUI]==1){
+        else if(in_solid==1&&show_slice_shaded[IN_SOLID_GLUI]==1){
           slice_color   = foregroundcolor;
           slice_color13 = foregroundcolor;
           slice_color31 = foregroundcolor;
@@ -6891,7 +6891,7 @@ void DrawVolSliceLines(const slicedata *sd){
           slice_color31 = foregroundcolor;
           slice_color33 = foregroundcolor;
         }
-        if(in_solid==1&&show_slice_shaded[IN_SOLID_GLUI]==1){
+        else if(in_solid==1&&show_slice_shaded[IN_SOLID_GLUI]==1){
           slice_color   = foregroundcolor;
           slice_color13 = foregroundcolor;
           slice_color31 = foregroundcolor;
@@ -6982,7 +6982,7 @@ void DrawVolSliceLines(const slicedata *sd){
           slice_color31 = foregroundcolor;
           slice_color33 = foregroundcolor;
         }
-        if(in_solid==1&&show_slice_shaded[IN_SOLID_GLUI]==1){
+        else if(in_solid==1&&show_slice_shaded[IN_SOLID_GLUI]==1){
           slice_color   = foregroundcolor;
           slice_color13 = foregroundcolor;
           slice_color31 = foregroundcolor;
@@ -7129,7 +7129,7 @@ void DrawVolSliceVerts(const slicedata *sd){
           slice_color31 = foregroundcolor;
           slice_color33 = foregroundcolor;
         }
-        if(in_solid==1&&show_slice_shaded[IN_SOLID_GLUI]==1){
+        else if(in_solid==1&&show_slice_shaded[IN_SOLID_GLUI]==1){
           slice_color = foregroundcolor;
           slice_color13 = foregroundcolor;
           slice_color31 = foregroundcolor;
@@ -7219,7 +7219,7 @@ void DrawVolSliceVerts(const slicedata *sd){
           slice_color31 = foregroundcolor;
           slice_color33 = foregroundcolor;
         }
-        if(in_solid==1&&show_slice_shaded[IN_SOLID_GLUI]==1){
+        else if(in_solid==1&&show_slice_shaded[IN_SOLID_GLUI]==1){
           slice_color = foregroundcolor;
           slice_color13 = foregroundcolor;
           slice_color31 = foregroundcolor;
@@ -7300,7 +7300,7 @@ void DrawVolSliceVerts(const slicedata *sd){
           slice_color31 = foregroundcolor;
           slice_color33 = foregroundcolor;
         }
-        if(in_solid==1&&show_slice_shaded[IN_SOLID_GLUI]==1){
+        else if(in_solid==1&&show_slice_shaded[IN_SOLID_GLUI]==1){
           slice_color = foregroundcolor;
           slice_color13 = foregroundcolor;
           slice_color31 = foregroundcolor;
