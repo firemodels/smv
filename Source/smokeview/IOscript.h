@@ -70,6 +70,7 @@
 #define SCRIPT_HIDEALLDEVS       239
 #define SCRIPT_SHOWDEV           240
 #define SCRIPT_HIDEDEV           241
+#define SCRIPT_UNLOADPLOT2D      242
 
 #define SCRIPT_SETTIMEVAL        301
 #define SCRIPT_SETVIEWPOINT      302
