@@ -10,17 +10,17 @@ RENDERDIR
 
 // render 2D plot
 
-//LABEL
-//  render 2D plot
+LABEL
+  render 2D plot
 
-//LOADINIFILE
-// thouse5_plot2d.ini
-//UNLOADALL
-//SETTIMEVAL
-// 30.000000
-//RENDERONCE
-// thouse5_plot2d_030
-//UNLOADPLOT2D
+LOADINIFILE
+ thouse5_plot2d.ini
+UNLOADALL
+SETTIMEVAL
+ 30.000000
+RENDERONCE
+ thouse5_plot2d_030
+UNLOADPLOT2D
 
 // render 3D smoke
 
