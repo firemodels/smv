@@ -1884,6 +1884,10 @@ void UpdateShowScene(void){
     update_plot2dini = 0;
     UpdatePlot2DINI();
   }
+  if(update_device_timeaverage == 1){
+    update_device_timeaverage = 0;
+    DeviceCB(DEVICE_TIMEAVERAGE);
+  }
   if(update_smoke_alphas==1){
     update_smoke_alphas = 0;
     UpdateSmokeAlphas();
