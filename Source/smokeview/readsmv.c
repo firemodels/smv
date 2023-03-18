@@ -171,6 +171,9 @@ int ReadCSV(csvfiledata *csvfi, int flag){
   int nrows, ncols;
   int nunits, nlabels;
   char *buffer, *buffer_labels, *buffer_units, *buffer_temp;
+#ifdef pp_CFAST_CSV
+  char *buffer_dummy;
+#endif
   char *buffptr;
   char **labels, **units;
   float *vals;
@@ -200,6 +203,9 @@ int ReadCSV(csvfiledata *csvfi, int flag){
   NewMemory((void **)&(buffer),        len_buffer);
   NewMemory((void **)&(buffer_labels), len_buffer);
   NewMemory((void **)&(buffer_units),  len_buffer);
+#ifdef pp_CFAST_CSV
+  NewMemory((void **)&(buffer_dummy),  len_buffer);
+#endif
   NewMemory((void **)&(buffer_temp),   len_buffer);
 
   if(strcmp(csvfi->c_type, "ext") == 0){
@@ -235,6 +241,11 @@ int ReadCSV(csvfiledata *csvfi, int flag){
 
     ci = csvfi->csvinfo + i;
     ci->nvals = nrows-2;
+#ifdef pp_CFAST_CSV
+    if(csvfi->format == CSV_CFAST_FORMAT){
+      ci->nvals = nrows-4;
+    }
+#endif
     NewMemory((void **)&ci->vals,      MAX(1, ci->nvals)*sizeof(csvdata));
     NewMemory((void **)&ci->vals_orig, MAX(1, ci->nvals)*sizeof(csvdata));
   }
@@ -242,6 +253,31 @@ int ReadCSV(csvfiledata *csvfi, int flag){
 
   // setup labels and units
 
+#ifdef pp_CFAST_CSV
+  if(csvfi->format == CSV_CFAST_FORMAT){
+    fgets(buffer_labels,    len_buffer, stream);
+    TrimBack(buffer_labels);
+    ParseCSV(buffer_labels, buffer_temp, labels,    &nlabels);
+    CheckMemory;
+
+    fgets(buffer_dummy,    len_buffer, stream);
+    fgets(buffer_dummy,    len_buffer, stream);
+
+    fgets(buffer_units,    len_buffer, stream);
+    TrimBack(buffer_units);
+    ParseCSV(buffer_units, buffer_temp, units,     &nunits);
+  }
+  else{
+    fgets(buffer_units,    len_buffer, stream);
+    TrimBack(buffer_units);
+    ParseCSV(buffer_units, buffer_temp, units,     &nunits);
+
+    fgets(buffer_labels,    len_buffer, stream);
+    TrimBack(buffer_labels);
+    ParseCSV(buffer_labels, buffer_temp, labels,    &nlabels);
+    CheckMemory;
+  }
+#else
   fgets(buffer_units,    len_buffer, stream);
   TrimBack(buffer_units);
   ParseCSV(buffer_units, buffer_temp, units,     &nunits);
@@ -250,6 +286,7 @@ int ReadCSV(csvfiledata *csvfi, int flag){
   TrimBack(buffer_labels);
   ParseCSV(buffer_labels, buffer_temp, labels,    &nlabels);
   CheckMemory;
+#endif
 
   for(i=0; i<csvfi->ncsvinfo; i++){
     csvdata *ci;
