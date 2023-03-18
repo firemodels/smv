@@ -17,8 +17,8 @@
 //#define pp_COLORBAR_CONSTANT  // make colorbar brightness constant in colorbar dialog box
 //define pp_COLORBAR_HSL        // add option to display color bar in terms of HSL (hue, saturation, lightness)
 
-// add option to plot 2d max vals
-//#define pp_PLOT2DMAX
+//#define pp_PLOT2DMAX // add option to plot 2d max vals
+//#define pp_CFAST_CSV // look for cfast spreadsheet files
 
 //*** parallel file loading
 #define pp_SLICE_MULTI        // load slice files in parallel

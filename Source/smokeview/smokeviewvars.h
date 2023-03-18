@@ -23,6 +23,9 @@
 #include "glutbitmap.h"
 #endif
 
+SVEXTERN int SVDECL(update_plot2dini, 0);
+SVEXTERN int SVDECL(update_device_timeaverage, 0);
+
 #ifdef pp_PLOT2DMAX
 SVEXTERN int SVDECL(show_max_avg_vals, 0);
 SVEXTERN int SVDECL(update_max_avg_vals, 0);

@@ -2430,6 +2430,7 @@ void UpdateVectorSkipUniform(int skip){
 
     /* ------------------ UpdateVectorSkip ------------------------ */
 
+
 void UpdateVectorSkip(int skip){
   int i;
 
@@ -2925,6 +2926,13 @@ void UpdateFedinfo(void){
     else{
       SetLabels(&(sd->label), "Fractional effective dose", "FED", " ");
     }
+
+    sd->imap = NULL;
+    sd->jmap = NULL;
+    sd->kmap = NULL;
+    sd->n_imap = 0;
+    sd->n_jmap = 0;
+    sd->n_kmap = 0;
     sd->reg_file = NULL;
     sd->comp_file = NULL;
     sd->compression_type = co2->compression_type;
@@ -6793,7 +6801,7 @@ void DrawVolSliceLines(const slicedata *sd){
           slice_color31 = foregroundcolor;
           slice_color33 = foregroundcolor;
         }
-        if(in_solid==1&&show_slice_shaded[IN_SOLID_GLUI]==1){
+        else if(in_solid==1&&show_slice_shaded[IN_SOLID_GLUI]==1){
           slice_color   = foregroundcolor;
           slice_color13 = foregroundcolor;
           slice_color31 = foregroundcolor;
@@ -6891,7 +6899,7 @@ void DrawVolSliceLines(const slicedata *sd){
           slice_color31 = foregroundcolor;
           slice_color33 = foregroundcolor;
         }
-        if(in_solid==1&&show_slice_shaded[IN_SOLID_GLUI]==1){
+        else if(in_solid==1&&show_slice_shaded[IN_SOLID_GLUI]==1){
           slice_color   = foregroundcolor;
           slice_color13 = foregroundcolor;
           slice_color31 = foregroundcolor;
@@ -6982,7 +6990,7 @@ void DrawVolSliceLines(const slicedata *sd){
           slice_color31 = foregroundcolor;
           slice_color33 = foregroundcolor;
         }
-        if(in_solid==1&&show_slice_shaded[IN_SOLID_GLUI]==1){
+        else if(in_solid==1&&show_slice_shaded[IN_SOLID_GLUI]==1){
           slice_color   = foregroundcolor;
           slice_color13 = foregroundcolor;
           slice_color31 = foregroundcolor;
@@ -7129,7 +7137,7 @@ void DrawVolSliceVerts(const slicedata *sd){
           slice_color31 = foregroundcolor;
           slice_color33 = foregroundcolor;
         }
-        if(in_solid==1&&show_slice_shaded[IN_SOLID_GLUI]==1){
+        else if(in_solid==1&&show_slice_shaded[IN_SOLID_GLUI]==1){
           slice_color = foregroundcolor;
           slice_color13 = foregroundcolor;
           slice_color31 = foregroundcolor;
@@ -7219,7 +7227,7 @@ void DrawVolSliceVerts(const slicedata *sd){
           slice_color31 = foregroundcolor;
           slice_color33 = foregroundcolor;
         }
-        if(in_solid==1&&show_slice_shaded[IN_SOLID_GLUI]==1){
+        else if(in_solid==1&&show_slice_shaded[IN_SOLID_GLUI]==1){
           slice_color = foregroundcolor;
           slice_color13 = foregroundcolor;
           slice_color31 = foregroundcolor;
@@ -7300,7 +7308,7 @@ void DrawVolSliceVerts(const slicedata *sd){
           slice_color31 = foregroundcolor;
           slice_color33 = foregroundcolor;
         }
-        if(in_solid==1&&show_slice_shaded[IN_SOLID_GLUI]==1){
+        else if(in_solid==1&&show_slice_shaded[IN_SOLID_GLUI]==1){
           slice_color = foregroundcolor;
           slice_color13 = foregroundcolor;
           slice_color31 = foregroundcolor;

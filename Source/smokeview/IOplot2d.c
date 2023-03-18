@@ -188,13 +188,13 @@ void DrawGenCurve(int option, plot2ddata *plot2di, curvedata *curve, float size_
     glBegin(GL_LINES);
     if(apply_curve_factor==1){
       for(i = 0; i<n-1; i++){
-        glVertex3f(x[i], 0.0, CLAMP(z[i], zmin/curve_factor, zmax/curve_factor));
+        glVertex3f(x[i],   0.0, CLAMP(z[i],   zmin/curve_factor, zmax/curve_factor));
         glVertex3f(x[i+1], 0.0, CLAMP(z[i+1], zmin/curve_factor, zmax/curve_factor));
       }
     }
     else{
       for(i = 0; i<n-1; i++){
-        glVertex3f(x[i], 0.0, CLAMP(z[i], zmin, zmax));
+        glVertex3f(x[i],   0.0, CLAMP(z[i],   zmin, zmax));
         glVertex3f(x[i+1], 0.0, CLAMP(z[i+1], zmin, zmax));
       }
     }
@@ -236,10 +236,10 @@ void DrawGenCurve(int option, plot2ddata *plot2di, curvedata *curve, float size_
     }
     glBegin(GL_POINTS);
     if(apply_curve_factor==1){
-      glVertex3f(x_cur, 0.0, CLAMP(z_cur, zmin/curve_factor, zmax/curve_factor));
+      glVertex3f(CLAMP(x_cur, xmin, xmax), 0.0, CLAMP(z_cur, zmin/curve_factor, zmax/curve_factor));
     }
     else{
-      glVertex3f(x_cur, 0.0, CLAMP(z_cur, zmin, zmax));
+      glVertex3f(CLAMP(x_cur, xmin, xmax), 0.0, CLAMP(z_cur, zmin, zmax));
     }
     glEnd();
     if(apply_curve_factor==1)glPopMatrix();

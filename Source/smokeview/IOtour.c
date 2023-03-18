@@ -1412,7 +1412,6 @@ void SetupTour(void){
     UpdateTimes();
     plotstate=GetPlotState(DYNAMIC_PLOTS);
     selectedtour_index = TOURINDEX_MANUAL;
-    selectedtour_index = TOURINDEX_MANUAL;
     selected_frame=NULL;
     selected_tour=NULL;
     if(viewalltours==1)TourMenu(MENU_TOUR_SHOWALL);

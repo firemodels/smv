@@ -1220,7 +1220,6 @@ int MakeIBlank(void){
 
     meshi = meshinfo+ig;
 
-    if(meshi->nbptrs==0)continue;
     ibar = meshi->ibar;
     jbar = meshi->jbar;
     kbar = meshi->kbar;
