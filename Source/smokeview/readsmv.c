@@ -6478,6 +6478,58 @@ void ReadSMVOrig(void){
   fclose(stream);
 }
 
+  /* ------------------ InitCSV ------------------------ */
+
+void InitCSV(csvfiledata *csvi, char *file, char *type, int format){
+  csvi->loaded   = 0;
+  csvi->display  = 0;
+  csvi->time     = NULL;
+  csvi->ncsvinfo = 0;
+  csvi->csvinfo  = NULL;
+  csvi->format   = format;
+
+  NewMemory((void **)&csvi->file, strlen(file) + 1);
+  strcpy(csvi->file, file);
+  strcpy(csvi->c_type, type);
+}
+
+#ifdef pp_CFAST_CSV  
+  /* ------------------ AddCfastCsvfi ------------------------ */
+
+void AddCfastCsvfi(char *suffix, char *type, int format){
+  char filename[255];
+  int i;
+
+  strcpy(filename, fdsprefix);
+  strcat(filename, suffix);
+  strcat(filename, ".csv");
+  for(i=0;i<ncsvfileinfo;i++){
+    csvfiledata *csvfi;
+
+    csvfi = csvfileinfo + i;
+    if(strcmp(csvfi->c_type,type)==0)return;
+  }
+  if(FILE_EXISTS_CASEDIR(filename) == NO)return;
+  InitCSV(csvfileinfo + ncsvfileinfo, filename, type, format);
+  ncsvfileinfo++;
+}
+
+  /* ------------------ AddCfastCsvf ------------------------ */
+
+void AddCfastCsvf(void){
+#define CFAST_CSV_MAX 9
+  AddCfastCsvfi("_zone",         "zone",         CSV_FDS_FORMAT);
+  AddCfastCsvfi("_compartments", "compartments", CSV_CFAST_FORMAT);
+  AddCfastCsvfi("_walls",        "walls",        CSV_CFAST_FORMAT);
+  AddCfastCsvfi("_masses",       "masses",       CSV_CFAST_FORMAT);
+  AddCfastCsvfi("_vents",        "vents",        CSV_CFAST_FORMAT);
+  AddCfastCsvfi("_diagnostics",  "diagnostics",  CSV_CFAST_FORMAT);
+  AddCfastCsvfi("_resid",        "resid",        CSV_CFAST_FORMAT);
+  AddCfastCsvfi("_slab",         "slab",         CSV_CFAST_FORMAT);
+  AddCfastCsvfi("_calculations", "calculations", CSV_CFAST_FORMAT);
+}
+#endif
+
   /* ------------------ ReadSMV ------------------------ */
 
 int ReadSMV(bufferstreamdata *stream){
@@ -7340,10 +7392,15 @@ int ReadSMV(bufferstreamdata *stream){
    strcpy(fds_githash,"unknown");
  }
  if(nisoinfo>0&&nmeshes>0)nisos_per_mesh = MAX(nisoinfo / nmeshes,1);
+#ifdef pp_CFAST_CSV  
+  NewMemory((void **)&csvfileinfo,(ncsvfileinfo+CFAST_CSV_MAX)*sizeof(csvfiledata));
+  ncsvfileinfo=0;
+#else
  if(ncsvfileinfo > 0){
    NewMemory((void **)&csvfileinfo,ncsvfileinfo*sizeof(csvfiledata));
    ncsvfileinfo=0;
  }
+#endif
  if(ngeominfo>0){
    NewMemory((void **)&geominfo,ngeominfo*sizeof(geomdata));
    ngeominfo=0;
@@ -7930,16 +7987,7 @@ int ReadSMV(bufferstreamdata *stream){
       if(FILE_EXISTS_CASEDIR(file_ptr) == NO)continue;
 
       csvi = csvfileinfo + ncsvfileinfo;
-
-      csvi->loaded   = 0;
-      csvi->display  = 0;
-      csvi->time     = NULL;
-      csvi->ncsvinfo = 0;
-      csvi->csvinfo  = NULL;
-
-      NewMemory((void **)&csvi->file, strlen(file_ptr) + 1);
-      strcpy(csvi->file, file_ptr);
-      strcpy(csvi->c_type, type_ptr);
+      InitCSV(csvi, file_ptr, type_ptr, CSV_FDS_FORMAT);
 
       ncsvfileinfo++;
       continue;
@@ -11297,6 +11345,10 @@ typedef struct {
   CheckMemory;
 
   UpdateSmoke3dFileParms();
+
+#ifdef pp_CFAST_CSV
+  AddCfastCsvf();
+#endif
 
   //RemoveDupBlockages();
   InitCullGeom(cullgeom);
