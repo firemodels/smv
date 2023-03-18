@@ -1031,6 +1031,7 @@ void GenPlotCB(int var){
       GenPlotCB(GENPLOT_RESET_BOUNDS);
       SetPlot2DBoundLabels(plot2dinfo + iplot2dinfo);
       DeviceCB(DEVICE_TIMEAVERAGE);
+      update_times = 1;
       break;
     case GENPLOT_CSV_FILETYPE:
       UpdateCsvList();

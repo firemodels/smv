@@ -1176,6 +1176,15 @@ void UpdateTimes(void){
   if(vis_hrr_plot==1&&hrrptr!=NULL){
     MergeGlobalTimes(timeptr->vals, timeptr->nvals);
   }
+  {
+    float *times = NULL;
+    int ntimes = 0;
+    int HavePlot2D(float **times, int *ntimes);
+    
+    if(HavePlot2D(&times, &ntimes)==1){
+      MergeGlobalTimes(times, ntimes);
+    }
+  }
   if(GenDevShow()==1){
     MergeGlobalTimes(deviceinfo->times, deviceinfo->nvals);
   }
