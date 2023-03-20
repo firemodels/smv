@@ -47,10 +47,13 @@ typedef struct _csvdata{
 
 /* --------------------------  _csvfiledata ------------------------------------ */
 
+#define CSV_FDS_FORMAT   0
+#define CSV_CFAST_FORMAT 1
 typedef struct _csvfiledata {
   char *file;
   csvdata *csvinfo, *time;
   int ncsvinfo;
+  int format;
   int loaded, display;
   char c_type[32];
 } csvfiledata;

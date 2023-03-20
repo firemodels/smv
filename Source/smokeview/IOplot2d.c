@@ -188,13 +188,13 @@ void DrawGenCurve(int option, plot2ddata *plot2di, curvedata *curve, float size_
     glBegin(GL_LINES);
     if(apply_curve_factor==1){
       for(i = 0; i<n-1; i++){
-        glVertex3f(x[i], 0.0, CLAMP(z[i], zmin/curve_factor, zmax/curve_factor));
+        glVertex3f(x[i],   0.0, CLAMP(z[i],   zmin/curve_factor, zmax/curve_factor));
         glVertex3f(x[i+1], 0.0, CLAMP(z[i+1], zmin/curve_factor, zmax/curve_factor));
       }
     }
     else{
       for(i = 0; i<n-1; i++){
-        glVertex3f(x[i], 0.0, CLAMP(z[i], zmin, zmax));
+        glVertex3f(x[i],   0.0, CLAMP(z[i],   zmin, zmax));
         glVertex3f(x[i+1], 0.0, CLAMP(z[i+1], zmin, zmax));
       }
     }
@@ -236,10 +236,10 @@ void DrawGenCurve(int option, plot2ddata *plot2di, curvedata *curve, float size_
     }
     glBegin(GL_POINTS);
     if(apply_curve_factor==1){
-      glVertex3f(x_cur, 0.0, CLAMP(z_cur, zmin/curve_factor, zmax/curve_factor));
+      glVertex3f(CLAMP(x_cur, xmin, xmax), 0.0, CLAMP(z_cur, zmin/curve_factor, zmax/curve_factor));
     }
     else{
-      glVertex3f(x_cur, 0.0, CLAMP(z_cur, zmin, zmax));
+      glVertex3f(CLAMP(x_cur, xmin, xmax), 0.0, CLAMP(z_cur, zmin, zmax));
     }
     glEnd();
     if(apply_curve_factor==1)glPopMatrix();
@@ -539,6 +539,33 @@ void MaxAverageVals(float *times, float *vals, float *vals2, int nvals){
 }
 #endif
 
+/* ------------------ HavePlot2D ------------------------ */
+
+int HavePlot2D(float **times, int *ntimes){
+  int i;
+
+  for(i = 0; i < nplot2dinfo;i++){
+    plot2ddata *plot2di;
+    int j;
+
+    plot2di = plot2dinfo + i;
+    if(plot2di->show == 0)continue;
+    for(j = 0; j < plot2di->ncurves; j++){
+      curvedata *curve;
+      csvfiledata *csvfi;
+      csvdata *csvi;
+
+      curve = plot2di->curve+j;
+      if(curve==NULL)continue;
+      csvi = GetCsvData(curve->csv_file_index, curve->csv_col_index, &csvfi);
+      *times = csvfi->time->vals;
+      *ntimes = csvi->nvals;
+      return 1;
+    }
+  }
+  return 0;
+}
+
 /* ------------------ DrawGenPlot ------------------------ */
 
 void DrawGenPlot(plot2ddata *plot2di){
@@ -705,15 +732,12 @@ void DrawGenPlot(plot2ddata *plot2di){
       memcpy(curve->vals, csvi->vals, csvi->nvals*sizeof(float));
     }
     if(global_times!=NULL){
-      float *vals;
-
-      vals = curve->vals;
 #ifdef pp_PLOT2DMAX
       if(show_max_avg_vals == 1)vals = curve->vals2;
 #endif
       highlight_time = global_times[itimes];
-      highlight_val = GetCSVVal(global_times[itimes], csvfi->time->vals, vals, csvi->nvals);
-      DrawGenCurve(option, plot2di, curve, plot2d_size_factor, csvfi->time->vals, vals, csvi->nvals,
+      highlight_val = GetCSVVal(global_times[itimes], csvfi->time->vals, curve->vals, csvi->nvals);
+      DrawGenCurve(option, plot2di, curve, plot2d_size_factor, csvfi->time->vals, curve->vals, csvi->nvals,
                    highlight_time, highlight_val, valmin, valmax, side,
                    position, shortlabel, unit_display);
     }

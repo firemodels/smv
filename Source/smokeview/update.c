@@ -1176,6 +1176,15 @@ void UpdateTimes(void){
   if(vis_hrr_plot==1&&hrrptr!=NULL){
     MergeGlobalTimes(timeptr->vals, timeptr->nvals);
   }
+  {
+    float *times = NULL;
+    int ntimes = 0;
+    int HavePlot2D(float **times, int *ntimes);
+    
+    if(HavePlot2D(&times, &ntimes)==1){
+      MergeGlobalTimes(times, ntimes);
+    }
+  }
   if(GenDevShow()==1){
     MergeGlobalTimes(deviceinfo->times, deviceinfo->nvals);
   }
@@ -1880,6 +1889,14 @@ int HaveSootLoaded(void) {
 void UpdateShowScene(void){
   have_fire  = HaveFireLoaded();
   have_smoke = HaveSootLoaded();
+  if(update_plot2dini == 1){
+    update_plot2dini = 0;
+    UpdatePlot2DINI();
+  }
+  if(update_device_timeaverage == 1){
+    update_device_timeaverage = 0;
+    DeviceCB(DEVICE_TIMEAVERAGE);
+  }
   if(update_smoke_alphas==1){
     update_smoke_alphas = 0;
     UpdateSmokeAlphas();

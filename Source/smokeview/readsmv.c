@@ -171,6 +171,9 @@ int ReadCSV(csvfiledata *csvfi, int flag){
   int nrows, ncols;
   int nunits, nlabels;
   char *buffer, *buffer_labels, *buffer_units, *buffer_temp;
+#ifdef pp_CFAST_CSV
+  char *buffer_dummy;
+#endif
   char *buffptr;
   char **labels, **units;
   float *vals;
@@ -200,6 +203,9 @@ int ReadCSV(csvfiledata *csvfi, int flag){
   NewMemory((void **)&(buffer),        len_buffer);
   NewMemory((void **)&(buffer_labels), len_buffer);
   NewMemory((void **)&(buffer_units),  len_buffer);
+#ifdef pp_CFAST_CSV
+  NewMemory((void **)&(buffer_dummy),  len_buffer);
+#endif
   NewMemory((void **)&(buffer_temp),   len_buffer);
 
   if(strcmp(csvfi->c_type, "ext") == 0){
@@ -235,6 +241,11 @@ int ReadCSV(csvfiledata *csvfi, int flag){
 
     ci = csvfi->csvinfo + i;
     ci->nvals = nrows-2;
+#ifdef pp_CFAST_CSV
+    if(csvfi->format == CSV_CFAST_FORMAT){
+      ci->nvals = nrows-4;
+    }
+#endif
     NewMemory((void **)&ci->vals,      MAX(1, ci->nvals)*sizeof(csvdata));
     NewMemory((void **)&ci->vals_orig, MAX(1, ci->nvals)*sizeof(csvdata));
   }
@@ -242,6 +253,31 @@ int ReadCSV(csvfiledata *csvfi, int flag){
 
   // setup labels and units
 
+#ifdef pp_CFAST_CSV
+  if(csvfi->format == CSV_CFAST_FORMAT){
+    fgets(buffer_labels,    len_buffer, stream);
+    TrimBack(buffer_labels);
+    ParseCSV(buffer_labels, buffer_temp, labels,    &nlabels);
+    CheckMemory;
+
+    fgets(buffer_dummy,    len_buffer, stream);
+    fgets(buffer_dummy,    len_buffer, stream);
+
+    fgets(buffer_units,    len_buffer, stream);
+    TrimBack(buffer_units);
+    ParseCSV(buffer_units, buffer_temp, units,     &nunits);
+  }
+  else{
+    fgets(buffer_units,    len_buffer, stream);
+    TrimBack(buffer_units);
+    ParseCSV(buffer_units, buffer_temp, units,     &nunits);
+
+    fgets(buffer_labels,    len_buffer, stream);
+    TrimBack(buffer_labels);
+    ParseCSV(buffer_labels, buffer_temp, labels,    &nlabels);
+    CheckMemory;
+  }
+#else
   fgets(buffer_units,    len_buffer, stream);
   TrimBack(buffer_units);
   ParseCSV(buffer_units, buffer_temp, units,     &nunits);
@@ -250,6 +286,7 @@ int ReadCSV(csvfiledata *csvfi, int flag){
   TrimBack(buffer_labels);
   ParseCSV(buffer_labels, buffer_temp, labels,    &nlabels);
   CheckMemory;
+#endif
 
   for(i=0; i<csvfi->ncsvinfo; i++){
     csvdata *ci;
@@ -6478,6 +6515,58 @@ void ReadSMVOrig(void){
   fclose(stream);
 }
 
+  /* ------------------ InitCSV ------------------------ */
+
+void InitCSV(csvfiledata *csvi, char *file, char *type, int format){
+  csvi->loaded   = 0;
+  csvi->display  = 0;
+  csvi->time     = NULL;
+  csvi->ncsvinfo = 0;
+  csvi->csvinfo  = NULL;
+  csvi->format   = format;
+
+  NewMemory((void **)&csvi->file, strlen(file) + 1);
+  strcpy(csvi->file, file);
+  strcpy(csvi->c_type, type);
+}
+
+#ifdef pp_CFAST_CSV  
+  /* ------------------ AddCfastCsvfi ------------------------ */
+
+void AddCfastCsvfi(char *suffix, char *type, int format){
+  char filename[255];
+  int i;
+
+  strcpy(filename, fdsprefix);
+  strcat(filename, suffix);
+  strcat(filename, ".csv");
+  for(i=0;i<ncsvfileinfo;i++){
+    csvfiledata *csvfi;
+
+    csvfi = csvfileinfo + i;
+    if(strcmp(csvfi->c_type,type)==0)return;
+  }
+  if(FILE_EXISTS_CASEDIR(filename) == NO)return;
+  InitCSV(csvfileinfo + ncsvfileinfo, filename, type, format);
+  ncsvfileinfo++;
+}
+
+  /* ------------------ AddCfastCsvf ------------------------ */
+
+void AddCfastCsvf(void){
+#define CFAST_CSV_MAX 9
+  AddCfastCsvfi("_zone",         "zone",         CSV_FDS_FORMAT);
+  AddCfastCsvfi("_compartments", "compartments", CSV_CFAST_FORMAT);
+  AddCfastCsvfi("_walls",        "walls",        CSV_CFAST_FORMAT);
+  AddCfastCsvfi("_masses",       "masses",       CSV_CFAST_FORMAT);
+  AddCfastCsvfi("_vents",        "vents",        CSV_CFAST_FORMAT);
+  AddCfastCsvfi("_diagnostics",  "diagnostics",  CSV_CFAST_FORMAT);
+  AddCfastCsvfi("_resid",        "resid",        CSV_CFAST_FORMAT);
+  AddCfastCsvfi("_slab",         "slab",         CSV_CFAST_FORMAT);
+  AddCfastCsvfi("_calculations", "calculations", CSV_CFAST_FORMAT);
+}
+#endif
+
   /* ------------------ ReadSMV ------------------------ */
 
 int ReadSMV(bufferstreamdata *stream){
@@ -7340,10 +7429,15 @@ int ReadSMV(bufferstreamdata *stream){
    strcpy(fds_githash,"unknown");
  }
  if(nisoinfo>0&&nmeshes>0)nisos_per_mesh = MAX(nisoinfo / nmeshes,1);
+#ifdef pp_CFAST_CSV  
+  NewMemory((void **)&csvfileinfo,(ncsvfileinfo+CFAST_CSV_MAX)*sizeof(csvfiledata));
+  ncsvfileinfo=0;
+#else
  if(ncsvfileinfo > 0){
    NewMemory((void **)&csvfileinfo,ncsvfileinfo*sizeof(csvfiledata));
    ncsvfileinfo=0;
  }
+#endif
  if(ngeominfo>0){
    NewMemory((void **)&geominfo,ngeominfo*sizeof(geomdata));
    ngeominfo=0;
@@ -7930,16 +8024,7 @@ int ReadSMV(bufferstreamdata *stream){
       if(FILE_EXISTS_CASEDIR(file_ptr) == NO)continue;
 
       csvi = csvfileinfo + ncsvfileinfo;
-
-      csvi->loaded   = 0;
-      csvi->display  = 0;
-      csvi->time     = NULL;
-      csvi->ncsvinfo = 0;
-      csvi->csvinfo  = NULL;
-
-      NewMemory((void **)&csvi->file, strlen(file_ptr) + 1);
-      strcpy(csvi->file, file_ptr);
-      strcpy(csvi->c_type, type_ptr);
+      InitCSV(csvi, file_ptr, type_ptr, CSV_FDS_FORMAT);
 
       ncsvfileinfo++;
       continue;
@@ -11298,6 +11383,10 @@ typedef struct {
 
   UpdateSmoke3dFileParms();
 
+#ifdef pp_CFAST_CSV
+  AddCfastCsvf();
+#endif
+
   //RemoveDupBlockages();
   InitCullGeom(cullgeom);
   UpdateINIList();
@@ -12111,9 +12200,10 @@ int ReadIni2(char *inifile, int localfile){
       NewMemory((void **)&plot2dini, nplot2dini*sizeof(plot2ddata));
 
       fgets(buffer, 255, stream);
-      sscanf(buffer, " %i %i %i %i %i %i",
+      sscanf(buffer, " %i %i %i %i %i %i %f",
              &plot2d_show_plot_title, &plot2d_show_curve_labels, &plot2d_show_curve_values,
-             &plot2d_show_xaxis_labels, &plot2d_show_yaxis_labels, &idevice_add);
+             &plot2d_show_xaxis_labels, &plot2d_show_yaxis_labels, &idevice_add, &plot2d_time_average);
+      update_device_timeaverage = 1;
       UpdateDeviceAdd();
       for(i=0;i<nplot2dini;i++){
         plot2ddata *plot2di;
@@ -12173,10 +12263,10 @@ int ReadIni2(char *inifile, int localfile){
           else{
             curve->quantity = NULL;
           }
-
         }
       }
       update_glui_devices = 1;
+      update_plot2dini = 1;
       continue;
     }
     if(MatchINI(buffer, "GENPLOTLABELS") == 1){
@@ -15670,9 +15760,9 @@ void WriteIniLocal(FILE *fileout){
   );
   fprintf(fileout, "SHOWGENPLOTS\n");
   fprintf(fileout, " %i\n", nplot2dinfo);
-  fprintf(fileout, " %i %i %i %i %i %i\n",
+  fprintf(fileout, " %i %i %i %i %i %i %f\n",
          plot2d_show_plot_title, plot2d_show_curve_labels, plot2d_show_curve_values,
-         plot2d_show_xaxis_labels, plot2d_show_yaxis_labels, idevice_add);
+         plot2d_show_xaxis_labels, plot2d_show_yaxis_labels, idevice_add, plot2d_time_average);
   for(i=0; i<nplot2dinfo; i++){
     plot2ddata *plot2di;
     int j;
