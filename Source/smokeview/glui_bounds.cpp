@@ -3384,6 +3384,12 @@ int      nparticleprocinfo=0;
 procdata  subboundprocinfo[5];
 int       nsubboundprocinfo=0;
 
+/* ------------------ UpdatePartPointSize ------------------------ */
+
+extern "C" void UpdatePartPointSize(void){
+    SPINNER_partpointsize->set_float_val(partpointsize);
+}
+
 /* ------------------ UpdatePlotLabel ------------------------ */
 
 extern "C" void UpdatePlotLabel(void){
@@ -4991,9 +4997,9 @@ extern "C" void GluiBoundsSetup(int main_window){
     ADDPROCINFO(particleprocinfo, nparticleprocinfo, ROLLOUT_particle_settings, PARTICLE_SETTINGS, glui_bounds);
 
     SPINNER_partpointsize=glui_bounds->add_spinner_to_panel(ROLLOUT_particle_settings,_("Particle size"),GLUI_SPINNER_FLOAT,&partpointsize);
-    SPINNER_partpointsize->set_float_limits(1.0,100.0);
+    SPINNER_partpointsize->set_float_limits(PART_MIN_SIZE, PART_MAX_SIZE);
     SPINNER_streaklinewidth=glui_bounds->add_spinner_to_panel(ROLLOUT_particle_settings,_("Streak line width"),GLUI_SPINNER_FLOAT,&streaklinewidth);
-    SPINNER_streaklinewidth->set_float_limits(1.0,100.0);
+    SPINNER_streaklinewidth->set_float_limits(PART_MIN_WIDTH, PART_MAX_WIDTH);
 
     SPINNER_partstreaklength=glui_bounds->add_spinner_to_panel(ROLLOUT_particle_settings,_("Streak length (s)"),GLUI_SPINNER_FLOAT,&float_streak5value,STREAKLENGTH,PartBoundCB);
     SPINNER_partstreaklength->set_float_limits(0.0,tmax_part);

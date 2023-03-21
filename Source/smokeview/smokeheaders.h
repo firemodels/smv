@@ -5,6 +5,7 @@
 #include "gd.h"
 #endif
 
+EXTERNCPP void UpdatePartPointSize(void);
 EXTERNCPP float GetTime(void);
 
 // gen plot routines
