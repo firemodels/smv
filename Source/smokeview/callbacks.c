@@ -2946,12 +2946,12 @@ void Keyboard(unsigned char key, int flag){
       clip_rendered_scene=1-clip_rendered_scene;
       break;
     case '[':
-      edittour=1;
-      UpdateEditTour();
-      break;
     case ']':
-      edittour=0;
-      UpdateEditTour();
+      if(key2=='[')partpointsize--;
+      if(key2==']')partpointsize++;
+      partpointsize = CLAMP(partpointsize, PART_MIN_SIZE, PART_MAX_SIZE);
+      printf("particle size: %f\n", partpointsize);
+      UpdatePartPointSize();
       break;
     case ';':
       ColorbarMenu(COLORBAR_FLIP);

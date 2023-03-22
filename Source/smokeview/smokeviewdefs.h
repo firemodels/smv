@@ -528,6 +528,12 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 #define PART_LINES      3
 #define PART_SMV_DEVICE 4
 
+#define PART_MIN_SIZE    1.0
+#define PART_MAX_SIZE  100.0
+
+#define PART_MIN_WIDTH   1.0
+#define PART_MAX_WIDTH 100.0
+
 #define DOUBLE_BUFFER 2
 #define SINGLE_BUFFER 1
 

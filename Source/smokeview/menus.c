@@ -11607,6 +11607,7 @@ updatemenu=0;
     glutAddMenuEntry(_("  t: set/unset single time step mode"), MENU_DUMMY);
     glutAddMenuEntry(_("  0: reset animation to the initial time"), MENU_DUMMY);
     glutAddMenuEntry(_("  p,P: increment particle variable displayed"), MENU_DUMMY);
+    glutAddMenuEntry(_("  [,]: decreease/increase particle size"), MENU_DUMMY);
     glutAddMenuEntry(_("  T: time display between 'Time s' and 'h:m:s'"), MENU_DUMMY);
     if(cellcenter_slice_active==1){
       glutAddMenuEntry(_("     (also, toggles cell center display on/off)"), MENU_DUMMY);

@@ -124,6 +124,9 @@ GLUI_EditText *EDIT_filter=NULL;
 GLUI_Listbox *LIST_csvfile = NULL;
 GLUI_Listbox *LIST_csvID    = NULL;
 GLUI_Listbox *LIST_curve_unit = NULL;
+#ifdef pp_CFAST_CSV
+GLUI_Listbox *LIST_curve_compartments = NULL;
+#endif
 GLUI_Listbox *LIST_plots = NULL;
 GLUI_Listbox *LIST_plotcurves = NULL;
 GLUI_Listbox *LIST_open=NULL;
@@ -722,6 +725,9 @@ void FilterList(void){
 
   char unit_label[256];
   int unit_id;
+#ifdef pp_CFAST_CSV
+  int compartment_id;
+#endif
 
   for(i=0; i<plot2d_max_columns; i++){
     LIST_csvID->delete_item(i);
@@ -743,24 +749,48 @@ void FilterList(void){
         strcpy(unit_label, "dimensionless");
       }
     }
+#ifdef pp_CFAST_CSV
+    if(isZoneFireModel==1){
+      compartment_id = LIST_curve_compartments->get_int_val();
+    }
+#endif
     for(i = 0; i < csvfi->ncsvinfo; i++){
       csvdata *csvi;
+      int doit;
 
       csvi = GetCsvCurve(i, NULL);
-      if(csvi->skip == 0){
-        if(strcmp(unit_label, "all") == 0){
-          LIST_csvID->add_item(i, csvi->label.shortlabel);
-          continue;
-        }
-        if(csvi->dimensionless == 1 && strcmp(unit_label, "dimensionless")==0){
-          LIST_csvID->add_item(i, csvi->label.shortlabel);
-          continue;
-        }
-        if(csvi->dimensionless == 0 && strcmp(unit_label, csvi->label.unit) == 0){
-          LIST_csvID->add_item(i, csvi->label.shortlabel);
-          continue;
+      if(csvi->skip != 0)continue;
+      doit = 0;
+      if(strcmp(unit_label, "all") == 0)doit = 1;
+      if(doit==0&&csvi->dimensionless == 1 && strcmp(unit_label, "dimensionless")==0)doit = 1;
+      if(doit==0&&csvi->dimensionless == 0 && strcmp(unit_label, csvi->label.unit) == 0)doit = 1;
+      if(doit==0)continue;
+
+#ifdef pp_CFAST_CSV
+      if(isZoneFireModel==1&&compartment_id>=0){
+        if(
+          strcmp(csvfi->c_type, "compartments") == 0 ||
+          strcmp(csvfi->c_type, "masses") == 0       ||
+          strcmp(csvfi->c_type, "walls") == 0       ||
+          strcmp(csvfi->c_type, "zone") == 0
+        ){
+          char *label;
+          int ilabel;
+
+          doit = 0;
+          label = csvi->label.shortlabel;
+          if(strlen(label)>=5&&strncmp(label,"HSLAB",5)==0)continue;
+          label = strchr(label, '_');
+          if(label != NULL){
+            label++;
+            sscanf(label, "%i", &ilabel);
+            if(compartment_id == ilabel-1)doit = 1;
+          }
+          
         }
       }
+#endif
+      if(doit==1)LIST_csvID->add_item(i, csvi->label.shortlabel);
     }
   }
 }
@@ -1037,6 +1067,7 @@ void GenPlotCB(int var){
       UpdateCsvList();
       LIST_csvID->set_int_val(-1);
       UpdateCurveLabels();
+      GenPlotCB(GENPLOT_CURVE_UNIT);
       break;
     case GENPLOT_CURVE_UNIT:
       FilterList();
@@ -1727,9 +1758,25 @@ extern "C" void GluiPlot2DSetup(int main_window){
       if(strcmp(csvfi->c_type, "ext")!=0)LIST_csvfile->add_item(i, csvfi->c_type);
     }
     LIST_csvID = glui_plot2d->add_listbox_to_panel(PANEL_add_curve1,      "curves:", &icsv_cols,  GENPLOT_ADD_CURVE,  GenPlotCB);
+    LIST_csvID->add_item(-1, "");
+
     LIST_curve_unit = glui_plot2d->add_listbox_to_panel(PANEL_add_curve1, "unit:",    &icsv_units, GENPLOT_CURVE_UNIT, GenPlotCB);
     LIST_curve_unit->add_item(-1, "any");
-    LIST_csvID->add_item(-1, "");
+
+#ifdef pp_CFAST_CSV
+    if(isZoneFireModel==1){
+      LIST_curve_compartments = glui_plot2d->add_listbox_to_panel(PANEL_add_curve1, "compartment:", &icsv_compartments, GENPLOT_CURVE_UNIT, GenPlotCB);
+      for(i = 0;i < nrooms;i++){
+        char label[100];
+
+        sprintf(label, "%i", i + 1);
+        LIST_curve_compartments->add_item(i, label);
+      }
+      LIST_curve_compartments->add_item(-1, "any");
+      LIST_curve_compartments->set_int_val(-1);
+    }
+#endif
+
     GenPlotCB(GENPLOT_CSV_FILETYPE);
     GenPlotCB(GENPLOT_CURVE_UNIT);
 
