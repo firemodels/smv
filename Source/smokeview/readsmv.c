@@ -6560,10 +6560,10 @@ void AddCfastCsvf(void){
   AddCfastCsvfi("_walls",        "walls",        CSV_CFAST_FORMAT);
   AddCfastCsvfi("_masses",       "masses",       CSV_CFAST_FORMAT);
   AddCfastCsvfi("_vents",        "vents",        CSV_CFAST_FORMAT);
-  AddCfastCsvfi("_diagnostics",  "diagnostics",  CSV_CFAST_FORMAT);
-  AddCfastCsvfi("_resid",        "resid",        CSV_CFAST_FORMAT);
-  AddCfastCsvfi("_slab",         "slab",         CSV_CFAST_FORMAT);
-  AddCfastCsvfi("_calculations", "calculations", CSV_CFAST_FORMAT);
+ // AddCfastCsvfi("_diagnostics",  "diagnostics",  CSV_CFAST_FORMAT);
+ // AddCfastCsvfi("_resid",        "resid",        CSV_CFAST_FORMAT);
+ // AddCfastCsvfi("_slab",         "slab",         CSV_CFAST_FORMAT);
+ // AddCfastCsvfi("_calculations", "calculations", CSV_CFAST_FORMAT);
 }
 #endif
 
