@@ -1766,7 +1766,14 @@ extern "C" void GluiPlot2DSetup(int main_window){
 #ifdef pp_CFAST_CSV
     if(isZoneFireModel==1){
       LIST_curve_compartments = glui_plot2d->add_listbox_to_panel(PANEL_add_curve1, "compartment:", &icsv_compartments, GENPLOT_CURVE_UNIT, GenPlotCB);
+      for(i = 0;i < nrooms;i++){
+        char label[100];
+
+        sprintf(label, "%i", i + 1);
+        LIST_curve_compartments->add_item(i, label);
+      }
       LIST_curve_compartments->add_item(-1, "any");
+      LIST_curve_compartments->set_int_val(-1);
     }
 #endif
 
