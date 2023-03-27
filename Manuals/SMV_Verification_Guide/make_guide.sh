@@ -7,7 +7,7 @@ clean_build=1
 
 # Build SMV Verification Guide
 
-gitrevision=`git describe --long --dirty`
+gitrevision=`git describe --abbrev=7 --long --dirty`
 echo "\\newcommand{\\gitrevision}{$gitrevision}" > ../Bibliography/gitrevision.tex
 
 pdflatex -interaction nonstopmode SMV_Verification_Guide &> SMV_Verification_Guide.err
