@@ -6589,7 +6589,6 @@ void SetupDeviceData(void){
     devicedata *devi,*devj;
     float *xyzval;
 
-    if(ndeviceinfo>1000&&i%100==0)PRINTF("processing device %i of %i\n", i, ndeviceinfo);
     devi = deviceinfo+i;
     xyzval = devi->xyz;
     devi->vdevice = NULL;
