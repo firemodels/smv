@@ -6554,9 +6554,10 @@ void AddCfastCsvfi(char *suffix, char *type, int format){
   /* ------------------ AddCfastCsvf ------------------------ */
 
 void AddCfastCsvf(void){
-#define CFAST_CSV_MAX 9
+#define CFAST_CSV_MAX 10
   AddCfastCsvfi("_zone",         "zone",         CSV_FDS_FORMAT);
   AddCfastCsvfi("_compartments", "compartments", CSV_CFAST_FORMAT);
+  AddCfastCsvfi("_devices",      "devices",      CSV_CFAST_FORMAT);
   AddCfastCsvfi("_walls",        "walls",        CSV_CFAST_FORMAT);
   AddCfastCsvfi("_masses",       "masses",       CSV_CFAST_FORMAT);
   AddCfastCsvfi("_vents",        "vents",        CSV_CFAST_FORMAT);
