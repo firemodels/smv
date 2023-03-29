@@ -887,7 +887,7 @@ void InitPlot2D(plot2ddata *plot2di, int plot_index){
   plot2di->ncurves = 0;
   plot2di->ncurves_ini = 0;
   plot2di->show = 1;
-  plot2di->xyz[0] = xbar0FDS;
+  plot2di->xyz[0] = xbar0FDS-SCALE2FDS(plot2d_size_factor+0.05);
   plot2di->xyz[1] = ybar0FDS;
   plot2di->xyz[2] = zbar0FDS;
   plot2di->use_valmin[0] = 0;
