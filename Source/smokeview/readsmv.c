@@ -437,7 +437,7 @@ int CompareCSV( const void *arg1, const void *arg2 ){
 
 /* ------------------ ReadAllCSV ------------------------ */
 
-void ReadAllCSV(int flag){
+void ReadAllCSV(void){
   int ifrom, ito;
   csvfiledata *csvfilecopy=NULL;
 
@@ -445,7 +445,7 @@ void ReadAllCSV(int flag){
   NewMemory((void **)&(csvfilecopy), ncsvfileinfo*sizeof(csvfiledata));
 
   for(ifrom=0,ito=0; ifrom<ncsvfileinfo; ifrom++){
-    if(ReadCSV(csvfileinfo+ifrom, flag)==1){
+    if(ReadCSV(csvfileinfo+ifrom, LOAD)==1){
       memcpy(csvfilecopy+ito, csvfileinfo+ifrom, sizeof(csvfiledata));
       ito++;
     }
@@ -11407,7 +11407,7 @@ typedef struct {
     if(strcmp(csvi->c_type, "ext") == 0)ReadDeviceData(csvi->file,CSV_EXP,LOAD);
   }
   SetupDeviceData();
-  ReadAllCSV(LOAD);
+  ReadAllCSV();
   SetupPlot2DUnitData();
   if(nzoneinfo>0)SetupZoneDevs();
 
