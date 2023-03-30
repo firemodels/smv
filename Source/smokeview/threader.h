@@ -131,6 +131,7 @@ MT_EXTERN pthread_t compress_thread_id;
 MT_EXTERN pthread_t update_all_patch_bounds_id;
 MT_EXTERN pthread_t read_volsmoke_id;
 MT_EXTERN pthread_t triangles_id;
+MT_EXTERN pthread_t csv_id;
 MT_EXTERN pthread_t partthread_ids[MAX_THREADS];
 MT_EXTERN pthread_t generate_part_histogram_id;
 MT_EXTERN pthread_t *readbuffer_ids;

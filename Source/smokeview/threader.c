@@ -406,7 +406,7 @@ void *MtReadAllCSVFiles(void *arg){
 
 void ReadAllCSVFilesMT(void){
   if(readcsv_multithread == 1){
-    pthread_create(&triangles_id, NULL, MtReadAllCSVFiles, NULL);
+    pthread_create(&csv_id, NULL, MtReadAllCSVFiles, NULL);
   }
   else{
     ReadAllCSVFiles();
