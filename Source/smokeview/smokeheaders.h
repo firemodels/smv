@@ -25,7 +25,6 @@ EXTERNCPP void DrawGenPlots(void);
 EXTERNCPP int HaveGenDev(void);
 EXTERNCPP int HaveGenHrr(void);
 EXTERNCPP void ShowPlot2D(void);
-EXTERNCPP void ReadAllCSV(void);
 EXTERNCPP char *GetPlotShortLabel(plot2ddata *plot2di, int curv_index);
 EXTERNCPP csvdata *GetCsvData(int file_index, int col_index, csvfiledata **csvf_ptr);
 EXTERNCPP csvdata *GetCsvCurve(int i, csvfiledata **csvf_ptr);
@@ -247,6 +246,10 @@ EXTERNCPP void ShrinkDialogs(void);
 EXTERNCPP void InsertRollout(GLUI_Rollout *rollout, GLUI *dialog);
 EXTERNCPP void CloseRollouts(GLUI *dialog);
 #endif
+
+EXTERNCPP void ReadAllCSVFilesMT(void);
+EXTERNCPP void ReadAllCSVFiles(void);
+EXTERNCPP void UpdateCSVFileTypes(void);
 
 EXTERNCPP int HaveFireLoaded(void);
 EXTERNCPP int HaveSootLoaded(void);

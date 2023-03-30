@@ -416,6 +416,7 @@ void UpdateCurveBounds(plot2ddata *plot2di, int option){
     csvfiledata *csvfi;
 
     csvfi = csvfileinfo+i;
+    if(csvfi->defined == 0)continue;
     for(j = 0; j<csvfi->ncsvinfo; j++){
       csvdata *csvi;
       float valmin, valmax;
@@ -753,7 +754,7 @@ void DrawGenPlots(void){
     plot2ddata *plot2di;
 
     plot2di = plot2dinfo + i;
-    if(plot2di->show == 1){
+    if(plot2di->show == 1&&plot2di->ncurves>0){
       DrawGenPlot(plot2di);
     }
   }

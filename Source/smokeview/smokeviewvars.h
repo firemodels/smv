@@ -335,6 +335,11 @@ SVEXTERN int SVDECL(part_multithread, 1);
 #else
 SVEXTERN int SVDECL(part_multithread, 0);
 #endif
+#ifdef pp_CSV_MULTI
+SVEXTERN int SVDECL(readcsv_multithread,1);
+#else
+SVEXTERN int SVDECL(readcsv_multithread,0);
+#endif
 #ifdef pp_SLICE_MULTI
 SVEXTERN int SVDECL(slice_multithread, 0);
 #endif

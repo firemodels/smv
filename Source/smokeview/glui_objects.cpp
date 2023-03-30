@@ -1698,6 +1698,22 @@ extern "C" void UpdatePlot2DINI(void){
   }
 }
 
+/* ------------------ UpdateCSVFileTypes ------------------------ */
+
+void UpdateCSVFileTypes(void){
+  int i;
+
+  for(i = 0; i<ncsvfileinfo; i++){
+    csvfiledata *csvfi;
+
+    csvfi = csvfileinfo+i;
+    if(strcmp(csvfi->c_type, "ext")!=0 && csvfi->glui_defined==0 && csvfi->defined == 1 && LIST_csvfile != NULL){
+      csvfi->glui_defined = 1;
+      LIST_csvfile->add_item(i, csvfi->c_type);
+    }
+  }
+}
+
 /* ------------------ GluiPlot2DSetup ------------------------ */
 
 extern "C" void GluiPlot2DSetup(int main_window){
@@ -1751,12 +1767,7 @@ extern "C" void GluiPlot2DSetup(int main_window){
     PANEL_add_curve1 = PANEL_add_curve;
     PANEL_csv1 = glui_plot2d->add_panel_to_panel(PANEL_add_curve1, "", 0);
     LIST_csvfile = glui_plot2d->add_listbox_to_panel(PANEL_csv1, "csv file type:", &glui_csv_file_index, GENPLOT_CSV_FILETYPE, GenPlotCB);
-    for(i = 0; i<ncsvfileinfo; i++){
-      csvfiledata *csvfi;
-
-      csvfi = csvfileinfo+i;
-      if(strcmp(csvfi->c_type, "ext")!=0)LIST_csvfile->add_item(i, csvfi->c_type);
-    }
+    UpdateCSVFileTypes();
     LIST_csvID = glui_plot2d->add_listbox_to_panel(PANEL_add_curve1,      "curves:", &icsv_cols,  GENPLOT_ADD_CURVE,  GenPlotCB);
     LIST_csvID->add_item(-1, "");
 

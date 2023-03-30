@@ -16,6 +16,7 @@ void InitMultiThreading(void){
 #ifdef pp_SLICE_MULTI
   pthread_mutex_init(&mutexSLICE_LOAD, NULL);
 #endif
+  pthread_mutex_init(&mutexCSV_LOAD, NULL);
   pthread_mutex_init(&mutexPART_LOAD, NULL);
   pthread_mutex_init(&mutexCOMPRESS,NULL);
   pthread_mutex_init(&mutexVOLLOAD,NULL);
@@ -318,9 +319,7 @@ void *MtReadBufferi(void *arg){
   pthread_exit(NULL);
   return NULL;
 }
-#endif
 
-#ifdef pp_THREADBUFFER
 /* ------------------ ReadBuffer ------------------------ */
 
 int ReadBuffer(char *filename, int filesize, char *buffer, int nthreads, int use_multithread){
@@ -391,7 +390,35 @@ int ReadBuffer(char *filename, int filesize, char *buffer, int nthreads, int use
 }
 #endif
 
-  //***************************** multi threading triangle update ***********************************
+//***************************** multi threading read in csv file ***********************************
+
+/* ------------------ MtReadAllCSVFiles ------------------------ */
+
+#ifdef pp_THREAD
+void ReadAllCSVFiles(void);
+void *MtReadAllCSVFiles(void *arg){
+  ReadAllCSVFiles();
+  pthread_exit(NULL);
+  return NULL;
+}
+
+/* ------------------ UpdateTrianglesMT ------------------------ */
+
+void ReadAllCSVFilesMT(void){
+  if(readcsv_multithread == 1){
+    pthread_create(&triangles_id, NULL, MtReadAllCSVFiles, NULL);
+  }
+  else{
+    ReadAllCSVFiles();
+  }
+}
+#else
+void ReadAllCSVFilesMT(void){
+  ReadAllCSVFiles();
+}
+#endif
+
+//***************************** multi threading triangle update ***********************************
 
 /* ------------------ MtUpdateTriangles ------------------------ */
 

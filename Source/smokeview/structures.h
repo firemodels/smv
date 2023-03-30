@@ -52,6 +52,7 @@ typedef struct _csvdata{
 typedef struct _csvfiledata {
   char *file;
   csvdata *csvinfo, *time;
+  int defined, glui_defined;
   int ncsvinfo;
   int format;
   int loaded, display;

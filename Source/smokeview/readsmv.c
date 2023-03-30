@@ -145,7 +145,7 @@ void UpdateHoc(void){
   }
 }
 
-/* ------------------ ReadCSV ------------------------ */
+/* ------------------ IsDimensionless ------------------------ */
 
 int IsDimensionless(char *unit){
 // unit is dimensionless if unit is NULL, unit is blank or
@@ -164,9 +164,9 @@ int IsDimensionless(char *unit){
   return 0;
 }
 
-/* ------------------ ReadCSV ------------------------ */
+/* ------------------ ReadCSVFile ------------------------ */
 
-int ReadCSV(csvfiledata *csvfi, int flag){
+int ReadCSVFile(csvfiledata *csvfi, int flag){
   FILE *stream;
   int nrows, ncols;
   int nunits, nlabels;
@@ -434,26 +434,23 @@ int CompareCSV( const void *arg1, const void *arg2 ){
   return strcmp(csvi->c_type, csvj->c_type);
 }
 
+/* ------------------ ReadAllCSVFiles ------------------------ */
 
-/* ------------------ ReadAllCSV ------------------------ */
-
-void ReadAllCSV(void){
-  int ifrom, ito;
-  csvfiledata *csvfilecopy=NULL;
+void ReadAllCSVFiles(void){
+  int ifrom;
 
   if(ncsvfileinfo==0)return;
-  NewMemory((void **)&(csvfilecopy), ncsvfileinfo*sizeof(csvfiledata));
 
-  for(ifrom=0,ito=0; ifrom<ncsvfileinfo; ifrom++){
-    if(ReadCSV(csvfileinfo+ifrom, LOAD)==1){
-      memcpy(csvfilecopy+ito, csvfileinfo+ifrom, sizeof(csvfiledata));
-      ito++;
-    }
-  }
-  ncsvfileinfo = ito;
-  if(ncsvfileinfo>0){
-    qsort((csvfiledata *)csvfilecopy, ncsvfileinfo, sizeof(csvfiledata), CompareCSV);
-    memcpy(csvfileinfo, csvfilecopy, ncsvfileinfo*sizeof(csvfiledata));
+  for(ifrom=0; ifrom<ncsvfileinfo; ifrom++){
+    csvfiledata *csvfi;
+    int defined;
+
+    csvfi = csvfileinfo + ifrom;
+    defined = ReadCSVFile(csvfi, LOAD);
+    LOCK_CSV_LOAD;
+    csvfi->defined = defined;
+    UpdateCSVFileTypes();
+    UNLOCK_CSV_LOAD;
   }
 }
 
@@ -6518,12 +6515,14 @@ void ReadSMVOrig(void){
   /* ------------------ InitCSV ------------------------ */
 
 void InitCSV(csvfiledata *csvi, char *file, char *type, int format){
-  csvi->loaded   = 0;
-  csvi->display  = 0;
-  csvi->time     = NULL;
-  csvi->ncsvinfo = 0;
-  csvi->csvinfo  = NULL;
-  csvi->format   = format;
+  csvi->loaded       = 0;
+  csvi->display      = 0;
+  csvi->defined      = 0;
+  csvi->glui_defined = 0;
+  csvi->time         = NULL;
+  csvi->ncsvinfo     = 0;
+  csvi->csvinfo      = NULL;
+  csvi->format       = format;
 
   NewMemory((void **)&csvi->file, strlen(file) + 1);
   strcpy(csvi->file, file);
@@ -11407,7 +11406,7 @@ typedef struct {
     if(strcmp(csvi->c_type, "ext") == 0)ReadDeviceData(csvi->file,CSV_EXP,LOAD);
   }
   SetupDeviceData();
-  ReadAllCSV();
+  ReadAllCSVFilesMT();
   SetupPlot2DUnitData();
   if(nzoneinfo>0)SetupZoneDevs();
 
