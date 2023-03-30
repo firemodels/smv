@@ -1707,8 +1707,8 @@ void UpdateCSVFileTypes(void){
     csvfiledata *csvfi;
 
     csvfi = csvfileinfo+i;
-    if(strcmp(csvfi->c_type, "ext")!=0 && csvfi->glui_defined==0 && csvfi->defined == 1 && LIST_csvfile != NULL){
-      csvfi->glui_defined = 1;
+    if(strcmp(csvfi->c_type, "ext")!=0 && csvfi->glui_defined==0 && csvfi->defined == CSV_DEFINED && LIST_csvfile != NULL){
+      csvfi->glui_defined = CSV_DEFINED;
       LIST_csvfile->add_item(i, csvfi->c_type);
     }
   }

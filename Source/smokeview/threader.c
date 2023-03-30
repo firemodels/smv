@@ -234,6 +234,8 @@ void *MtReadAllGeom(void *arg){
   return NULL;
 }
 
+/* ------------------ ReadAllGeomMT ------------------------ */
+
 void ReadAllGeomMT(void){
   if(readallgeom_multithread==1){
     int i;
@@ -405,8 +407,12 @@ void *MtReadAllCSVFiles(void *arg){
 /* ------------------ UpdateTrianglesMT ------------------------ */
 
 void ReadAllCSVFilesMT(void){
-  if(readcsv_multithread == 1){
-    pthread_create(&csv_id, NULL, MtReadAllCSVFiles, NULL);
+  if(csv_multithread == 1){
+    int i;
+
+    for(i=0;i<ncsv_threads;i++){
+     pthread_create(csv_ids+i, NULL, MtReadAllCSVFiles, NULL);
+    }
   }
   else{
     ReadAllCSVFiles();

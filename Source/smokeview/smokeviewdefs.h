@@ -521,6 +521,10 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 #define CSV_CFAST 1
 #define CSV_EXP   2
 
+#define CSV_UNDEFINED 0
+#define CSV_DEFINED   1
+#define CSV_DEFINING  2
+
 #define TEPS 0.00
 
 #define PART_POINTS     1

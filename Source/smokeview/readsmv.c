@@ -189,13 +189,13 @@ int ReadCSVFile(csvfiledata *csvfi, int flag){
     FREEMEMORY(ci->vals_orig);
   }
   FREEMEMORY(csvfi->csvinfo);
-  if(flag == UNLOAD)return 0;
+  if(flag == UNLOAD)return CSV_UNDEFINED;
 
   stream = fopen(csvfi->file, "r");
-  if(stream == NULL)return 0;
+  if(stream == NULL)return CSV_UNDEFINED;
 
   len_buffer = GetRowCols(stream, &nrows, &ncols);
-  if(nrows==0||ncols==0)return 0;
+  if(nrows==0||ncols==0)return CSV_UNDEFINED;
   len_buffer = MAX(len_buffer + 100 + ncols, 1000);
   csvfi->ncsvinfo = ncols;
 
@@ -214,7 +214,7 @@ int ReadCSVFile(csvfiledata *csvfi, int flag){
       FREEMEMORY(buffer);
       FREEMEMORY(buffer_labels);
       FREEMEMORY(buffer_units);
-      return 0;
+      return CSV_UNDEFINED;
     }
     while(strstr(buffer, "//DATA") == NULL){
       fgets(buffer, len_buffer, stream);
@@ -222,7 +222,7 @@ int ReadCSVFile(csvfiledata *csvfi, int flag){
         FREEMEMORY(buffer);
         FREEMEMORY(buffer_labels);
         FREEMEMORY(buffer_units);
-        return 0;
+        return CSV_UNDEFINED;
       }
     }
   }
@@ -420,7 +420,7 @@ int ReadCSVFile(csvfiledata *csvfi, int flag){
   FREEMEMORY(buffer_units);
 
   fclose(stream);
-  return 1;
+  return CSV_DEFINED;
 }
 
 /* ------------------ CompareCSV ------------------------ */
@@ -446,11 +446,14 @@ void ReadAllCSVFiles(void){
     int defined;
 
     csvfi = csvfileinfo + ifrom;
-    defined = ReadCSVFile(csvfi, LOAD);
-    LOCK_CSV_LOAD;
-    csvfi->defined = defined;
-    UpdateCSVFileTypes();
-    UNLOCK_CSV_LOAD;
+    if(csvfi->defined == CSV_UNDEFINED){
+      csvfi->defined = CSV_DEFINING;
+      defined = ReadCSVFile(csvfi, LOAD);
+      LOCK_CSV_LOAD;
+      csvfi->defined = defined;
+      UpdateCSVFileTypes();
+      UNLOCK_CSV_LOAD;
+    }
   }
 }
 

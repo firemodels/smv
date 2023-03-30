@@ -416,7 +416,7 @@ void UpdateCurveBounds(plot2ddata *plot2di, int option){
     csvfiledata *csvfi;
 
     csvfi = csvfileinfo+i;
-    if(csvfi->defined == 0)continue;
+    if(csvfi->defined != CSV_DEFINED)continue;
     for(j = 0; j<csvfi->ncsvinfo; j++){
       csvdata *csvi;
       float valmin, valmax;
