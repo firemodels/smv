@@ -1044,6 +1044,44 @@ float GetTime(void){
 
   /* ------------------ MergeGlobalTimes ------------------------ */
 
+void MergeGlobalTimes(float *t, int n);
+
+void TruncateGlobalTimes(void){
+  int i, ibeg, iend;
+  
+  if(use_tload_begin==0 && use_tload_end==0 || nglobal_times==0 || global_times==NULL)return;
+  ibeg = 0;
+  iend = nglobal_times - 1;
+  if(use_tload_begin==1){
+    for(i=0;i<nglobal_times;i++){
+      if(tload_begin<global_times[i]){
+        ibeg = i;
+        break;
+      }
+    }
+  }
+  if(use_tload_end==1){
+    for(i=nglobal_times-1;i>=0;i--){
+      if(global_times[i]<tload_end){
+        iend = i;
+        break;
+      }
+    }
+  }
+  for(i=ibeg;i<=iend;i++){
+    global_times[i-ibeg] = global_times[i];
+  }
+  nglobal_times = iend + 1 - ibeg;
+  if(use_tload_begin==1){
+    MergeGlobalTimes(&tload_begin, 1);
+  }
+  if(use_tload_end==1){
+    MergeGlobalTimes(&tload_end, 1);
+  }
+}
+
+  /* ------------------ MergeGlobalTimes ------------------------ */
+
 void MergeGlobalTimes(float *time_in, int ntimes_in){
   int left, right, nbuffer, i;
   float dt_eps;
@@ -1307,6 +1345,10 @@ void UpdateTimes(void){
     if(touri->display==0)continue;
     MergeGlobalTimes(touri->path_times, touri->ntimes);
   }
+
+  TruncateGlobalTimes();
+
+  //--------------------------------------------------------------
 
   CheckMemory;
 
