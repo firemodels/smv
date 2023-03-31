@@ -250,6 +250,7 @@ EXTERNCPP void CloseRollouts(GLUI *dialog);
 EXTERNCPP void ReadAllCSVFilesMT(void);
 EXTERNCPP void ReadAllCSVFiles(void);
 EXTERNCPP void UpdateCSVFileTypes(void);
+EXTERNCPP void FinishAllCSVFiles(void);
 
 EXTERNCPP int HaveFireLoaded(void);
 EXTERNCPP int HaveSootLoaded(void);

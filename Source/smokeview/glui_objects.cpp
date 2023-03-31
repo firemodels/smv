@@ -474,7 +474,7 @@ void AddCSVCurve(plot2ddata *plot2di, int index, int option){
     plot2di->ncurves = nplots+1;
     strcpy(label, c_type);
     strcat(label, "/");
-    strcat(label, csvi->label.shortlabel);
+    if(csvi->label.shortlabel!=NULL)strcat(label, csvi->label.shortlabel);
 
     LIST_plotcurves->add_item(nplots, label);
     LIST_plotcurves->set_int_val(nplots);
@@ -1707,8 +1707,8 @@ void UpdateCSVFileTypes(void){
     csvfiledata *csvfi;
 
     csvfi = csvfileinfo+i;
-    if(strcmp(csvfi->c_type, "ext")!=0 && csvfi->glui_defined==0 && csvfi->defined == 1 && LIST_csvfile != NULL){
-      csvfi->glui_defined = 1;
+    if(strcmp(csvfi->c_type, "ext")!=0 && csvfi->glui_defined==0 && csvfi->defined == CSV_DEFINED && LIST_csvfile != NULL){
+      csvfi->glui_defined = CSV_DEFINED;
       LIST_csvfile->add_item(i, csvfi->c_type);
     }
   }
