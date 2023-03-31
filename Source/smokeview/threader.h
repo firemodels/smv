@@ -33,8 +33,13 @@
   #define LOCK_PART_LOAD    pthread_mutex_lock(&mutexPART_LOAD);
   #define UNLOCK_PART_LOAD  pthread_mutex_unlock(&mutexPART_LOAD);
 
-  #define LOCK_CSV_LOAD    pthread_mutex_lock(&mutexCSV_LOAD);
-  #define UNLOCK_CSV_LOAD  pthread_mutex_unlock(&mutexCSV_LOAD);
+#ifdef pp_CSV_MULTI
+  #define LOCK_CSV_LOAD     if(csv_multithread==1)pthread_mutex_lock(&mutexCSV_LOAD);
+  #define UNLOCK_CSV_LOAD   if(csv_multithread==1)pthread_mutex_unlock(&mutexCSV_LOAD);
+#else
+#define LOCK_CSV_LOAD
+#define UNLOCK_CSV_LOAD
+#endif
 
 #ifdef pp_SLICE_MULTI
   #define LOCK_SLICE_LOAD    pthread_mutex_lock(&mutexSLICE_LOAD);
@@ -131,7 +136,7 @@ MT_EXTERN pthread_t compress_thread_id;
 MT_EXTERN pthread_t update_all_patch_bounds_id;
 MT_EXTERN pthread_t read_volsmoke_id;
 MT_EXTERN pthread_t triangles_id;
-MT_EXTERN pthread_t csv_id;
+MT_EXTERN pthread_t csv_ids[MAX_THREADS];
 MT_EXTERN pthread_t partthread_ids[MAX_THREADS];
 MT_EXTERN pthread_t generate_part_histogram_id;
 MT_EXTERN pthread_t *readbuffer_ids;
