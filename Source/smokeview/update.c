@@ -1049,7 +1049,8 @@ void MergeGlobalTimes(float *t, int n);
 void TruncateGlobalTimes(void){
   int i, ibeg, iend;
   
-  if(use_tload_begin==0 && use_tload_end==0 || nglobal_times==0 || global_times==NULL)return;
+  if(use_tload_begin == 0 && use_tload_end == 0)return;
+  if(nglobal_times==0 || global_times==NULL)return;
   ibeg = 0;
   iend = nglobal_times - 1;
   if(use_tload_begin==1){
