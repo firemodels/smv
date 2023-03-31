@@ -616,6 +616,7 @@ void DrawGenPlot(plot2ddata *plot2di){
     char *unit;
 
     unit  = GetPlotUnit(plot2di, i);
+    if(unit == NULL)continue;
     if(axis_right_unit != NULL && strcmp(axis_right_unit, unit) == 0){
       unit_right_index = i;
       continue;
@@ -638,6 +639,7 @@ void DrawGenPlot(plot2ddata *plot2di){
       valmax *= curve->curve_factor;
     }
     unit = GetPlotUnit(plot2di, i);
+    if(unit == NULL)continue;
     if(axis_right_unit!=NULL&&strcmp(unit, axis_right_unit) == 0){
       if(axis_right_min>axis_right_max){
         axis_right_min = valmin;

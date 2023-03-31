@@ -33,8 +33,8 @@
   #define LOCK_PART_LOAD    pthread_mutex_lock(&mutexPART_LOAD);
   #define UNLOCK_PART_LOAD  pthread_mutex_unlock(&mutexPART_LOAD);
 
-  #define LOCK_CSV_LOAD    pthread_mutex_lock(&mutexCSV_LOAD);
-  #define UNLOCK_CSV_LOAD  pthread_mutex_unlock(&mutexCSV_LOAD);
+  #define LOCK_CSV_LOAD     if(csv_multithread==1)pthread_mutex_lock(&mutexCSV_LOAD);
+  #define UNLOCK_CSV_LOAD   if(csv_multithread==1)pthread_mutex_unlock(&mutexCSV_LOAD);
 
 #ifdef pp_SLICE_MULTI
   #define LOCK_SLICE_LOAD    pthread_mutex_lock(&mutexSLICE_LOAD);

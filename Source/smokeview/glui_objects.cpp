@@ -474,7 +474,7 @@ void AddCSVCurve(plot2ddata *plot2di, int index, int option){
     plot2di->ncurves = nplots+1;
     strcpy(label, c_type);
     strcat(label, "/");
-    strcat(label, csvi->label.shortlabel);
+    if(csvi->label.shortlabel!=NULL)strcat(label, csvi->label.shortlabel);
 
     LIST_plotcurves->add_item(nplots, label);
     LIST_plotcurves->set_int_val(nplots);

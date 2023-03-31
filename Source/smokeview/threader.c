@@ -404,7 +404,7 @@ void *MtReadAllCSVFiles(void *arg){
   return NULL;
 }
 
-/* ------------------ UpdateTrianglesMT ------------------------ */
+/* ------------------ void ReadAllCSVFilesMT ------------------------ */
 
 void ReadAllCSVFilesMT(void){
   if(csv_multithread == 1){
@@ -418,6 +418,19 @@ void ReadAllCSVFilesMT(void){
     ReadAllCSVFiles();
   }
 }
+
+/* ------------------ void FinishAllCSVFiles ------------------------ */
+
+void FinishAllCSVFiles(void){
+  if(csv_multithread == 1){
+    int i;
+
+    for(i = 0; i < ncsv_threads; i++){
+      pthread_join(csv_ids[i], NULL);
+    }
+  }
+}
+
 #else
 void ReadAllCSVFilesMT(void){
   ReadAllCSVFiles();
