@@ -446,14 +446,16 @@ void ReadAllCSVFiles(void){
     int defined;
 
     csvfi = csvfileinfo + ifrom;
+    LOCK_CSV_LOAD;
     if(csvfi->defined == CSV_UNDEFINED){
       csvfi->defined = CSV_DEFINING;
+      UNLOCK_CSV_LOAD;
       defined = ReadCSVFile(csvfi, LOAD);
       LOCK_CSV_LOAD;
       csvfi->defined = defined;
       UpdateCSVFileTypes();
-      UNLOCK_CSV_LOAD;
     }
+    UNLOCK_CSV_LOAD;
   }
 }
 
@@ -11408,14 +11410,14 @@ typedef struct {
     if(strcmp(csvi->c_type, "devc")==0)ReadDeviceData(csvi->file,CSV_FDS,LOAD);
     if(strcmp(csvi->c_type, "ext") == 0)ReadDeviceData(csvi->file,CSV_EXP,LOAD);
   }
+#ifdef pp_THREAD
+  InitMultiThreading();
+#endif
+
   SetupDeviceData();
   ReadAllCSVFilesMT();
   SetupPlot2DUnitData();
   if(nzoneinfo>0)SetupZoneDevs();
-
-#ifdef pp_THREAD
-  InitMultiThreading();
-#endif
 
   InitPartProp();
 
