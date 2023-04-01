@@ -426,6 +426,7 @@ void ReadAllCSVFilesMT(void){
 /* ------------------ void FinishAllCSVFiles ------------------------ */
 
 void FinishAllCSVFiles(void){
+  int i, error = 0;
 #ifdef pp_CSV_MULTI
   if(csv_multithread == 1){
     int i;
@@ -435,6 +436,12 @@ void FinishAllCSVFiles(void){
     }
   }
 #endif
+  for(i=0; i<ncsvfileinfo; i++){
+    csvfiledata *csvfi;
+
+    csvfi = csvfileinfo + i;
+    if(csvfi->defined != CSV_DEFINED)printf("***error: %s failed to be read in\n", csvfi->file);
+  }
 }
 
 #else
