@@ -445,13 +445,11 @@ void ReadAllCSVFiles(void){
     csvfiledata *csvfi;
     int defined;
 
-    csvfi = csvfileinfo + ifrom;
     LOCK_CSV_LOAD;
+    csvfi = csvfileinfo + ifrom;
     if(csvfi->defined == CSV_UNDEFINED){
       csvfi->defined = CSV_DEFINING;
-      UNLOCK_CSV_LOAD;
       defined = ReadCSVFile(csvfi, LOAD);
-      LOCK_CSV_LOAD;
       csvfi->defined = defined;
       UpdateCSVFileTypes();
     }
