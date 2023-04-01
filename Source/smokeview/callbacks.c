@@ -3997,7 +3997,7 @@ void DoScript(void){
   if(runscript == 1){
   // csv files are read in the background.  the following line ensures that they will all be read in
   // before the script begins. gpf
-//      FinishAllCSVFiles(); 
+      JOIN_CSV_FILES; 
       runscript = 0;
       PRINTF("running ssf script instruction\n");
       fflush(stdout);
@@ -4011,7 +4011,7 @@ void DoScript(void){
 void DoScript(void){
   SNIFF_ERRORS("DoScript: start");
   if(runscript == 1){
-    FinishAllCSVFiles();
+    JOIN_CSVFILES;
   }
   if(runscript==1&&default_script!=NULL){
     ScriptMenu(default_script->id);

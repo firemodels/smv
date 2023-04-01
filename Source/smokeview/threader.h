@@ -34,9 +34,11 @@
   #define UNLOCK_PART_LOAD  pthread_mutex_unlock(&mutexPART_LOAD);
 
 #ifdef pp_CSV_MULTI
+  #define JOIN_CSVFILES     FinishAllCSVFiles();
   #define LOCK_CSV_LOAD     if(csv_multithread==1)pthread_mutex_lock(&mutexCSV_LOAD);
   #define UNLOCK_CSV_LOAD   if(csv_multithread==1)pthread_mutex_unlock(&mutexCSV_LOAD);
 #else
+#define JOIN_CSVFILES
 #define LOCK_CSV_LOAD
 #define UNLOCK_CSV_LOAD
 #endif

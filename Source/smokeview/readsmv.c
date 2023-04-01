@@ -437,22 +437,25 @@ int CompareCSV( const void *arg1, const void *arg2 ){
 /* ------------------ ReadAllCSVFiles ------------------------ */
 
 void ReadAllCSVFiles(void){
-  int ifrom;
+  int i;
 
   if(ncsvfileinfo==0)return;
-
-  for(ifrom=0; ifrom<ncsvfileinfo; ifrom++){
+  for(i=0; i<ncsvfileinfo; i++){
     csvfiledata *csvfi;
-    int defined;
 
+    csvfi = csvfileinfo + i;
     LOCK_CSV_LOAD;
-    csvfi = csvfileinfo + ifrom;
-    if(csvfi->defined == CSV_UNDEFINED){
-      csvfi->defined = CSV_DEFINING;
-      defined = ReadCSVFile(csvfi, LOAD);
-      csvfi->defined = defined;
-      UpdateCSVFileTypes();
+    if(csvfi->defined == CSV_DEFINING|| csvfi->defined == CSV_DEFINED){
+      UNLOCK_CSV_LOAD;
+      continue;
     }
+    csvfi->defined = CSV_DEFINING;
+    UNLOCK_CSV_LOAD;
+    ReadCSVFile(csvfi, LOAD);
+    printf("%s loaded\n",csvfi->file);
+    LOCK_CSV_LOAD;
+    csvfi->defined = CSV_DEFINED;
+    UpdateCSVFileTypes();
     UNLOCK_CSV_LOAD;
   }
 }
@@ -11548,7 +11551,7 @@ typedef struct {
   MakeIBlankSmoke3D();
   MakeIBlankAll();
   if(runscript == 1){
-    FinishAllCSVFiles();
+    JOIN_CSVFILES;
     JOIN_IBLANK
   }
   LOCK_IBLANK

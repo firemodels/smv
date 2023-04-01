@@ -8,6 +8,10 @@
 #include "IOvolsmoke.h"
 #include "smokestream.h"
 
+#ifndef pp_THREAD
+#undef pp_CSV_MULTI
+#endif
+
 /* ------------------ InitMultiThreading ------------------------ */
 
 void InitMultiThreading(void){
@@ -403,6 +407,7 @@ void *MtReadAllCSVFiles(void *arg){
   pthread_exit(NULL);
   return NULL;
 }
+#endif
 
 /* ------------------ void ReadAllCSVFilesMT ------------------------ */
 
@@ -425,26 +430,14 @@ void ReadAllCSVFilesMT(void){
 
 /* ------------------ void FinishAllCSVFiles ------------------------ */
 
+#ifdef pp_CSV_MULTI
 void FinishAllCSVFiles(void){
   int i;
-#ifdef pp_CSV_MULTI
   if(csv_multithread == 1){
     for(i = 0; i < ncsv_threads; i++){
       pthread_join(csv_ids[i], NULL);
     }
   }
-#endif
-  for(i=0; i<ncsvfileinfo; i++){
-    csvfiledata *csvfi;
-
-    csvfi = csvfileinfo + i;
-    if(csvfi->defined != CSV_DEFINED)printf("***error: %s failed to be read in\n", csvfi->file);
-  }
-}
-
-#else
-void ReadAllCSVFilesMT(void){
-  ReadAllCSVFiles();
 }
 #endif
 

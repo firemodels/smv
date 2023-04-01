@@ -250,8 +250,9 @@ EXTERNCPP void CloseRollouts(GLUI *dialog);
 EXTERNCPP void ReadAllCSVFilesMT(void);
 EXTERNCPP void ReadAllCSVFiles(void);
 EXTERNCPP void UpdateCSVFileTypes(void);
+#ifdef pp_CSV_MULTI
 EXTERNCPP void FinishAllCSVFiles(void);
-
+#endif
 EXTERNCPP int HaveFireLoaded(void);
 EXTERNCPP int HaveSootLoaded(void);
 EXTERNCPP void Smoke3dCB(int var);
