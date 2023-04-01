@@ -2434,7 +2434,9 @@ void UpdateVectorSkipUniform(int skip){
 void UpdateVectorSkip(int skip){
   int i;
 
-  UpdateAllMeshSkips(skip);    
+  if(nsliceinfo > 0){
+    UpdateAllMeshSkips(skip);
+  }
   for(i = 0; i < nsliceinfo; i++){
     slicedata *slicei;
     meshdata *slicemesh;
