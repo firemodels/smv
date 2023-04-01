@@ -426,11 +426,9 @@ void ReadAllCSVFilesMT(void){
 /* ------------------ void FinishAllCSVFiles ------------------------ */
 
 void FinishAllCSVFiles(void){
-  int i, error = 0;
+  int i;
 #ifdef pp_CSV_MULTI
   if(csv_multithread == 1){
-    int i;
-
     for(i = 0; i < ncsv_threads; i++){
       pthread_join(csv_ids[i], NULL);
     }
