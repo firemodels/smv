@@ -23,7 +23,7 @@
 //*** parallel file loading
 #define pp_SLICE_MULTI        // load slice files in parallel
 #define pp_PART_MULTI         // load particle files in parallel
-//#define pp_CSV_MULTI          // read in csv files in parallel
+#define pp_CSV_MULTI          // read in csv files in parallel
 
 // streaming directives
 
