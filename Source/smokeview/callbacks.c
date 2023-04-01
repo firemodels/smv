@@ -4010,8 +4010,10 @@ void DoScript(void){
 #else
 void DoScript(void){
   SNIFF_ERRORS("DoScript: start");
-  if(runscript==1&&default_script!=NULL){
+  if(runscript == 1){
     FinishAllCSVFiles();
+  }
+  if(runscript==1&&default_script!=NULL){
     ScriptMenu(default_script->id);
     runscript=2;
   }

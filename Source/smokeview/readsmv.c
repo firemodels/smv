@@ -11548,6 +11548,7 @@ typedef struct {
   MakeIBlankSmoke3D();
   MakeIBlankAll();
   if(runscript == 1){
+    FinishAllCSVFiles();
     JOIN_IBLANK
   }
   LOCK_IBLANK
