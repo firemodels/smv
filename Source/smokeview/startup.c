@@ -283,7 +283,7 @@ int SetupCase(char *filename){
   }
 
   /* initialize units */
-  INIT_PRINT_TIMER(timer_start);
+  INIT_TIMER(timer_start);
   InitUnits();
   InitUnitDefs();
   SetUnitVis();

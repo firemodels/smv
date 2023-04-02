@@ -24,6 +24,8 @@
 #define pp_SLICE_MULTI        // load slice files in parallel
 #define pp_PART_MULTI         // load particle files in parallel
 
+//#define pp_DPRINT             // turn on debug print (file, line number)
+
 // streaming directives
 
 //#define pp_SMOKE3DSTREAM      // stream smoke3d data
