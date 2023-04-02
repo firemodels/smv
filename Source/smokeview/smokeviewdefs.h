@@ -245,6 +245,10 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 #define STOP_TIMER(a) a = glutGet(GLUT_ELAPSED_TIME)/1000.0 - a
 #endif
 
+#define INIT_TIMER(timer)   float timer;START_TIMER(timer)
+#define PRINT_TIMER(timer, label) PrintTime(__FILE__, __LINE__, &timer, label)
+
+
 #ifndef START_TICKS
 #define START_TICKS(a) a = glutGet(GLUT_ELAPSED_TIME)
 #endif

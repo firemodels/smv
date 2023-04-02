@@ -13,9 +13,6 @@
 
 #define ONEORZERO(val) if(val!=0)val=1
 
-#define INIT_PRINT_TIMER(timer)   float timer;START_TIMER(timer)
-#define PRINT_TIMER(timer, label) PrintTime(__FILE__, __LINE__, &timer, label)
-
 #define K2C(T) ((T)-273.15)
 #define C2K(T) ((T)+273.15)
 

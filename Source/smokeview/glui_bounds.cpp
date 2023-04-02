@@ -2076,7 +2076,7 @@ extern "C" void SliceBoundsCPP_CB(int var){
           break;
         }
       }
-      INIT_PRINT_TIMER(timer_update_slice_colors);
+      INIT_TIMER(timer_update_slice_colors);
       UpdateSliceColors(last_slice);
       PRINT_TIMER(timer_update_slice_colors, "updateslicecolors");
       break;

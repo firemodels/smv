@@ -2509,7 +2509,7 @@ void InitTextures0(void){
   // get texture filename from SURF and device info
   int i;
 
-  INIT_PRINT_TIMER(texture_timer);
+  INIT_TIMER(texture_timer);
   ntextureinfo = 0;
   for(i=0;i<nsurfinfo;i++){
     surfdata *surfi;
@@ -2777,7 +2777,7 @@ void InitTextures0(void){
   /* ------------------ InitTextures ------------------------ */
 
 void InitTextures(int use_graphics_arg){
-  INIT_PRINT_TIMER(total_texture_time);
+  INIT_TIMER(total_texture_time);
   UpdateDeviceTextures();
   if(nsurfinfo>0||ndevice_texture_list>0){
     if(NewMemory((void **)&textureinfo, (nsurfinfo+ndevice_texture_list+nterrain_textures)*sizeof(texturedata))==0)return;
@@ -6616,7 +6616,7 @@ int ReadSMV(bufferstreamdata *stream){
   char buffer[256], buffers[6][256];
   patchdata *patchgeom;
 
-  INIT_PRINT_TIMER(timer_readsmv);
+  INIT_TIMER(timer_readsmv);
   START_TIMER(processing_time);
 
   START_TIMER(getfilelist_time);
@@ -11376,7 +11376,7 @@ typedef struct {
    ************************************************************************
  */
 
-  INIT_PRINT_TIMER(total_wrapup_time);
+  INIT_TIMER(total_wrapup_time);
   if(update_filesizes==1){
     GetFileSizes();
     SMV_EXIT(0);
