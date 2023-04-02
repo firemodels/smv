@@ -409,6 +409,19 @@ void *MtReadAllCSVFiles(void *arg){
 }
 #endif
 
+/* ------------------ LockCSV ------------------------ */
+#ifdef pp_CSV_MULTI
+void LockCSV(void){
+  LOCK_CSV_LOAD;
+}
+
+/* ------------------ UnLockCSV ------------------------ */
+
+void UnLockCSV(void){
+  UNLOCK_CSV_LOAD;
+}
+#endif
+
 /* ------------------ void ReadAllCSVFilesMT ------------------------ */
 
 void ReadAllCSVFilesMT(void){

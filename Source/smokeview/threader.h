@@ -37,10 +37,14 @@
   #define JOIN_CSVFILES     FinishAllCSVFiles();
   #define LOCK_CSV_LOAD     if(csv_multithread==1)pthread_mutex_lock(&mutexCSV_LOAD);
   #define UNLOCK_CSV_LOAD   if(csv_multithread==1)pthread_mutex_unlock(&mutexCSV_LOAD);
+  #define LOCK_CSV_LOAD_CPP LockCSV()
+  #define UNLOCK_CSV_LOAD_CPP UnLockCSV()
 #else
-#define JOIN_CSVFILES
-#define LOCK_CSV_LOAD
-#define UNLOCK_CSV_LOAD
+  #define JOIN_CSVFILES
+  #define LOCK_CSV_LOAD
+  #define UNLOCK_CSV_LOAD
+  #define LOCK_CSV_LOAD_CPP
+  #define UNLOCK_CSV_LOAD_CPP
 #endif
 
 #ifdef pp_SLICE_MULTI

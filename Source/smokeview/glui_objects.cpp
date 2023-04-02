@@ -729,9 +729,11 @@ void FilterList(void){
   int compartment_id;
 #endif
 
+  LOCK_CSV_LOAD_CPP;
   for(i=0; i<plot2d_max_columns; i++){
     LIST_csvID->delete_item(i);
   }
+  UNLOCK_CSV_LOAD_CPP;
   {
     csvfiledata *csvfi;
 
@@ -839,9 +841,11 @@ void UpdateCsvList(void){
   char label2[256];
   csvfiledata *csvfi;
 
+  LOCK_CSV_LOAD_CPP;
   for(i=0; i<plot2d_max_columns; i++){
     LIST_csvID->delete_item(i);
   }
+  UNLOCK_CSV_LOAD_CPP;
   GetCsvCurve(0, &csvfi);
   for(i = 0; i < csvfi->ncsvinfo; i++){
     csvdata *csvi;
@@ -865,9 +869,11 @@ void UpdateCsvList(void){
   strcat(label2, " curve:");
   LIST_csvID->set_name(label2);
 
+  LOCK_CSV_LOAD_CPP;
   for(i=0; i<plot2d_max_columns; i++){
     LIST_curve_unit->delete_item(i);
   }
+  UNLOCK_CSV_LOAD_CPP;
   for(i = 0; i < csvfi->ncsvinfo; i++){
     csvdata *csvi;
     int dup_unit, j;
