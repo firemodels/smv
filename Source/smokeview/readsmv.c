@@ -400,7 +400,6 @@ int ReadCSVFile(csvfiledata *csvfi, int flag){
     SetLabels(&(cchirad->label), "-QRAD_I/HRR", "-QRAD_I/HRR", "");
     csvfi->ncsvinfo++;
   }
-  plot2d_max_columns = MAX(plot2d_max_columns, csvfi->ncsvinfo);
 
   //copy vals into vals_orig
   for(i=0; i<csvfi->ncsvinfo; i++){
@@ -439,8 +438,8 @@ int CompareCSV( const void *arg1, const void *arg2 ){
 void ReadAllCSVFiles(void){
   int i;
 
-  if(ncsvfileinfo==0)return;
-  for(i=0; i<ncsvfileinfo; i++){
+  if(ncsvfileinfo == 0)return;
+  for(i = 0; i < ncsvfileinfo; i++){
     csvfiledata *csvfi;
 
     csvfi = csvfileinfo + i;
@@ -452,8 +451,9 @@ void ReadAllCSVFiles(void){
     csvfi->defined = CSV_DEFINING;
     UNLOCK_CSV_LOAD;
     ReadCSVFile(csvfi, LOAD);
-    printf("%s loaded\n",csvfi->file);
     LOCK_CSV_LOAD;
+    plot2d_max_columns = MAX(plot2d_max_columns, csvfi->ncsvinfo);
+    printf("%s loaded\n", csvfi->file);
     csvfi->defined = CSV_DEFINED;
     UpdateCSVFileTypes();
     UNLOCK_CSV_LOAD;
