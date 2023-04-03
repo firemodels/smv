@@ -185,10 +185,14 @@ int ReadCSVFile(csvfiledata *csvfi, int flag){
     csvdata *ci;
 
     ci = csvfi->csvinfo + i;
+    LOCK_CSV_LOAD;
     FREEMEMORY(ci->vals);
     FREEMEMORY(ci->vals_orig);
+    UNLOCK_CSV_LOAD;
   }
+  LOCK_CSV_LOAD;
   FREEMEMORY(csvfi->csvinfo);
+  UNLOCK_CSV_LOAD;
   if(flag == UNLOAD)return CSV_UNDEFINED;
 
   stream = fopen(csvfi->file, "r");
@@ -200,6 +204,7 @@ int ReadCSVFile(csvfiledata *csvfi, int flag){
   csvfi->ncsvinfo = ncols;
 
   // allocate memory
+  LOCK_CSV_LOAD;
   NewMemory((void **)&(buffer),        len_buffer);
   NewMemory((void **)&(buffer_labels), len_buffer);
   NewMemory((void **)&(buffer_units),  len_buffer);
@@ -207,21 +212,26 @@ int ReadCSVFile(csvfiledata *csvfi, int flag){
   NewMemory((void **)&(buffer_dummy),  len_buffer);
 #endif
   NewMemory((void **)&(buffer_temp),   len_buffer);
+  UNLOCK_CSV_LOAD;
 
   if(strcmp(csvfi->c_type, "ext") == 0){
     fgets(buffer, len_buffer, stream);
     if(feof(stream)){
+      LOCK_CSV_LOAD;
       FREEMEMORY(buffer);
       FREEMEMORY(buffer_labels);
       FREEMEMORY(buffer_units);
+      UNLOCK_CSV_LOAD;
       return CSV_UNDEFINED;
     }
     while(strstr(buffer, "//DATA") == NULL){
       fgets(buffer, len_buffer, stream);
       if(feof(stream)){
+        LOCK_CSV_LOAD;
         FREEMEMORY(buffer);
         FREEMEMORY(buffer_labels);
         FREEMEMORY(buffer_units);
+        UNLOCK_CSV_LOAD;
         return CSV_UNDEFINED;
       }
     }
@@ -229,11 +239,13 @@ int ReadCSVFile(csvfiledata *csvfi, int flag){
 
   int nsize;
   nsize = csvfi->ncsvinfo+1;
+  LOCK_CSV_LOAD;
   NewMemory((void **)&(csvfi->csvinfo), nsize*sizeof(csvdata));
   NewMemory((void **)&labels,           nsize*sizeof(char *));
   NewMemory((void **)&units,            nsize*sizeof(char *));
   NewMemory((void **)&vals,             nsize*sizeof(float));
   NewMemory((void **)&valids,           nsize*sizeof(int));
+  UNLOCK_CSV_LOAD;
 
   // initialize each column
   for(i=0; i<nsize; i++){
@@ -246,8 +258,10 @@ int ReadCSVFile(csvfiledata *csvfi, int flag){
       ci->nvals = nrows-4;
     }
 #endif
+    LOCK_CSV_LOAD;
     NewMemory((void **)&ci->vals,      MAX(1, ci->nvals)*sizeof(csvdata));
     NewMemory((void **)&ci->vals_orig, MAX(1, ci->nvals)*sizeof(csvdata));
+    UNLOCK_CSV_LOAD;
   }
   CheckMemory;
 
@@ -410,6 +424,7 @@ int ReadCSVFile(csvfiledata *csvfi, int flag){
   }
 
   CheckMemory;
+  LOCK_CSV_LOAD;
   FREEMEMORY(units);
   FREEMEMORY(labels);
   FREEMEMORY(vals);
@@ -417,6 +432,7 @@ int ReadCSVFile(csvfiledata *csvfi, int flag){
   FREEMEMORY(buffer);
   FREEMEMORY(buffer_labels);
   FREEMEMORY(buffer_units);
+  UNLOCK_CSV_LOAD;
 
   fclose(stream);
   return CSV_DEFINED;
