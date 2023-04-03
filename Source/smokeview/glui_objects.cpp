@@ -1034,9 +1034,9 @@ void UpdatePlotDevList(void){
   }
 }
 
-/* ------------------ GenPlot2CB ------------------------ */
+/* ------------------ GenPlotCB ------------------------ */
 
-void GenPlot2CB(int var){
+void GenPlotCB(int var){
   GLUTPOSTREDISPLAY;
   switch (var){
     char label[256];
@@ -1409,14 +1409,6 @@ void GenPlot2CB(int var){
       break;
   }
   ForceIdle();
-}
-
-/* ------------------ GenPlotCB ------------------------ */
-
-void GenPlotCB(int var){
-  LOCK_CSV_LOAD_CPP;
-  GenPlot2CB(var);
-  UNLOCK_CSV_LOAD_CPP;
 }
 
 /* ------------------ DeviceCB ------------------------ */
