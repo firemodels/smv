@@ -181,16 +181,14 @@ int ReadCSVFile(csvfiledata *csvfi, int flag){
   int len_buffer;
   int i;
 
+  LOCK_CSV_LOAD;
   for(i=0; i<csvfi->ncsvinfo; i++){
     csvdata *ci;
 
     ci = csvfi->csvinfo + i;
-    LOCK_CSV_LOAD;
     FREEMEMORY(ci->vals);
     FREEMEMORY(ci->vals_orig);
-    UNLOCK_CSV_LOAD;
   }
-  LOCK_CSV_LOAD;
   FREEMEMORY(csvfi->csvinfo);
   UNLOCK_CSV_LOAD;
   if(flag == UNLOAD)return CSV_UNDEFINED;
@@ -245,7 +243,6 @@ int ReadCSVFile(csvfiledata *csvfi, int flag){
   NewMemory((void **)&units,            nsize*sizeof(char *));
   NewMemory((void **)&vals,             nsize*sizeof(float));
   NewMemory((void **)&valids,           nsize*sizeof(int));
-  UNLOCK_CSV_LOAD;
 
   // initialize each column
   for(i=0; i<nsize; i++){
@@ -258,11 +255,10 @@ int ReadCSVFile(csvfiledata *csvfi, int flag){
       ci->nvals = nrows-4;
     }
 #endif
-    LOCK_CSV_LOAD;
     NewMemory((void **)&ci->vals,      MAX(1, ci->nvals)*sizeof(csvdata));
     NewMemory((void **)&ci->vals_orig, MAX(1, ci->nvals)*sizeof(csvdata));
-    UNLOCK_CSV_LOAD;
   }
+  UNLOCK_CSV_LOAD;
   CheckMemory;
 
   // setup labels and units
