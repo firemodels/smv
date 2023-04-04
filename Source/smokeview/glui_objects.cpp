@@ -30,6 +30,7 @@
 #ifdef pp_PLOT2DMAX
 #define GENPLOT_MAX_VALS            117
 #endif
+#define GENPLOT_PLOT_TMINMAX        118
 
 #define GENPLOT_CSV_FILETYPE        121
 #define GENPLOT_CURVE_UNIT          122
@@ -102,8 +103,8 @@ GLUI_Checkbox *CHECKBOX_show_curve_labels   = NULL;
 GLUI_Checkbox *CHECKBOX_show_xaxis_labels    = NULL;
 GLUI_Checkbox *CHECKBOX_show_yaxis_labels    = NULL;
 GLUI_Checkbox *CHECKBOX_show_curve_values   = NULL;
-GLUI_Checkbox *CHECKBOX_genplot_use_valmin[2];
-GLUI_Checkbox *CHECKBOX_genplot_use_valmax[2];
+GLUI_Checkbox *CHECKBOX_genplot_use_valmin[3];
+GLUI_Checkbox *CHECKBOX_genplot_use_valmax[3];
 GLUI_Checkbox *CHECKBOX_device_1=NULL;
 GLUI_Checkbox *CHECKBOX_showdevice_val=NULL;
 GLUI_Checkbox *CHECKBOX_device_3=NULL;
@@ -143,6 +144,7 @@ GLUI_Panel *PANEL_curve_factor = NULL;
 GLUI_Panel *PANEL_plot2d_label3 = NULL;
 GLUI_Panel *PANEL_bound1 = NULL;
 GLUI_Panel *PANEL_bound2 = NULL;
+GLUI_Panel *PANEL_bound3 = NULL;
 GLUI_Panel *PANEL_csv1 = NULL;
 GLUI_Panel *PANEL_curve_color = NULL;
 GLUI_Panel *PANEL_curve_usermin = NULL;
@@ -200,8 +202,8 @@ GLUI_Spinner *SPINNER_genplot_red = NULL;
 GLUI_Spinner *SPINNER_genplot_green = NULL;
 GLUI_Spinner *SPINNER_genplot_blue = NULL;
 GLUI_Spinner *SPINNER_genplot_linewidth = NULL;
-GLUI_Spinner *SPINNER_genplot_valmin[2];
-GLUI_Spinner *SPINNER_genplot_valmax[2];
+GLUI_Spinner *SPINNER_genplot_valmin[3];
+GLUI_Spinner *SPINNER_genplot_valmax[3];
 GLUI_Spinner *SPINNER_curve_factor = NULL;
 GLUI_Spinner *SPINNER_size_factor = NULL;
 GLUI_Spinner *SPINNER_plot2d_time_average = NULL;
@@ -940,6 +942,7 @@ void SetPlot2DBoundLabels(plot2ddata *plot2di){
     PANEL_bound2->set_name("bound2 (right axis)");
     PANEL_bound1->disable();
     PANEL_bound2->disable();
+    PANEL_bound3->disable();
     return;
   }
   for(i = 0; i < plot2di->ncurves; i++){
@@ -961,10 +964,12 @@ void SetPlot2DBoundLabels(plot2ddata *plot2di){
     strcpy(label, axis_left_unit);
     strcat(label, " (left axis)");
     PANEL_bound1->enable();
+    PANEL_bound3->enable();
   }
   else{
     strcpy(label, "bound (left axis)");
     PANEL_bound1->disable();
+    PANEL_bound3->disable();
   }
   PANEL_bound1->set_name(label);
 
@@ -972,6 +977,7 @@ void SetPlot2DBoundLabels(plot2ddata *plot2di){
     strcpy(label, axis_right_unit);
     strcat(label, " (right axis)");
     PANEL_bound2->enable();
+    PANEL_bound3->enable();
   }
   else{
     strcpy(label, "bound (right axis)");
@@ -1054,6 +1060,9 @@ void GenPlotCB(int var){
         SPINNER_genplot_valmin[i]->set_float_val(plot2dii->valmin[i]);
         SPINNER_genplot_valmax[i]->set_float_val(plot2dii->valmax[i]);
       }
+      break;
+    case GENPLOT_PLOT_TMINMAX:
+      UpdateBoundTbounds();
       break;
     case GENPLOT_PLOT_MINMAX:
       Glui2Plot2D(iplot2dinfo);
@@ -1720,6 +1729,19 @@ void UpdateCSVFileTypes(void){
   }
 }
 
+/* ------------------ UpdatePlot2DTbounds ------------------------ */
+
+extern "C" void UpdatePlot2DTbounds(void){
+  use_tload_end2 = use_tload_end;
+  use_tload_begin2 = use_tload_begin;
+  tload_end2 = tload_end;
+  tload_begin2 = tload_begin;
+  if(CHECKBOX_genplot_use_valmax[2]!=NULL)CHECKBOX_genplot_use_valmax[2]->set_int_val(use_tload_end2);
+  if(CHECKBOX_genplot_use_valmin[2]!=NULL)CHECKBOX_genplot_use_valmin[2]->set_int_val(use_tload_begin2);
+  if(SPINNER_genplot_valmax[2]!=NULL)SPINNER_genplot_valmax[2]->set_float_val(tload_end2);
+  if(SPINNER_genplot_valmin[2]!=NULL)SPINNER_genplot_valmin[2]->set_float_val(tload_begin2);
+}
+
 /* ------------------ GluiPlot2DSetup ------------------------ */
 
 extern "C" void GluiPlot2DSetup(int main_window){
@@ -1883,21 +1905,30 @@ extern "C" void GluiPlot2DSetup(int main_window){
     PANEL_plot_bounds = glui_plot2d->add_panel("plot bounds");
     PANEL_plot_bounds2 = glui_plot2d->add_panel_to_panel(PANEL_plot_bounds, "", 0);
 
+    PANEL_bound3 = glui_plot2d->add_panel_to_panel(PANEL_plot_bounds2, "time");
+
+    CHECKBOX_genplot_use_valmax[2] = glui_plot2d->add_checkbox_to_panel(PANEL_bound3, "use max",                 &use_tload_end2,   GENPLOT_PLOT_TMINMAX, GenPlotCB);
+    SPINNER_genplot_valmax[2]      = glui_plot2d->add_spinner_to_panel(PANEL_bound3,  "max", GLUI_SPINNER_FLOAT, &tload_end2,       GENPLOT_PLOT_TMINMAX, GenPlotCB);
+    CHECKBOX_genplot_use_valmin[2] = glui_plot2d->add_checkbox_to_panel(PANEL_bound3, "use min",                 &use_tload_begin2, GENPLOT_PLOT_TMINMAX, GenPlotCB);
+    SPINNER_genplot_valmin[2]      = glui_plot2d->add_spinner_to_panel(PANEL_bound3,  "min", GLUI_SPINNER_FLOAT, &tload_begin2,     GENPLOT_PLOT_TMINMAX, GenPlotCB);
+
+    glui_plot2d->add_column_to_panel(PANEL_plot_bounds2, false);
+
     PANEL_bound1 = glui_plot2d->add_panel_to_panel(PANEL_plot_bounds2, "bound1");
 
-    CHECKBOX_genplot_use_valmax[0] = glui_plot2d->add_checkbox_to_panel(PANEL_bound1, "use specified max", glui_plot2dinfo->use_valmax, GENPLOT_PLOT_MINMAX, GenPlotCB);
-    SPINNER_genplot_valmax[0] = glui_plot2d->add_spinner_to_panel(PANEL_bound1, "specify max", GLUI_SPINNER_FLOAT, glui_plot2dinfo->valmax, GENPLOT_PLOT_MINMAX, GenPlotCB);
-    CHECKBOX_genplot_use_valmin[0] = glui_plot2d->add_checkbox_to_panel(PANEL_bound1, "use specified min", glui_plot2dinfo->use_valmin, GENPLOT_PLOT_MINMAX, GenPlotCB);
-    SPINNER_genplot_valmin[0] = glui_plot2d->add_spinner_to_panel(PANEL_bound1, "specify min", GLUI_SPINNER_FLOAT, glui_plot2dinfo->valmin, GENPLOT_PLOT_MINMAX, GenPlotCB);
+    CHECKBOX_genplot_use_valmax[0] = glui_plot2d->add_checkbox_to_panel(PANEL_bound1, "use max",                 glui_plot2dinfo->use_valmax, GENPLOT_PLOT_MINMAX, GenPlotCB);
+    SPINNER_genplot_valmax[0]      = glui_plot2d->add_spinner_to_panel(PANEL_bound1,  "max", GLUI_SPINNER_FLOAT, glui_plot2dinfo->valmax,     GENPLOT_PLOT_MINMAX, GenPlotCB);
+    CHECKBOX_genplot_use_valmin[0] = glui_plot2d->add_checkbox_to_panel(PANEL_bound1, "use min",                 glui_plot2dinfo->use_valmin, GENPLOT_PLOT_MINMAX, GenPlotCB);
+    SPINNER_genplot_valmin[0]      = glui_plot2d->add_spinner_to_panel(PANEL_bound1,  "min", GLUI_SPINNER_FLOAT, glui_plot2dinfo->valmin,     GENPLOT_PLOT_MINMAX, GenPlotCB);
 
     glui_plot2d->add_column_to_panel(PANEL_plot_bounds2, false);
 
     PANEL_bound2 = glui_plot2d->add_panel_to_panel(PANEL_plot_bounds2, "bound2");
 
-    CHECKBOX_genplot_use_valmax[1] = glui_plot2d->add_checkbox_to_panel(PANEL_bound2, "use specified max", glui_plot2dinfo->use_valmax+1, GENPLOT_PLOT_MINMAX, GenPlotCB);
-    SPINNER_genplot_valmax[1] = glui_plot2d->add_spinner_to_panel(PANEL_bound2, "specify max", GLUI_SPINNER_FLOAT, glui_plot2dinfo->valmax+1, GENPLOT_PLOT_MINMAX, GenPlotCB);
-    CHECKBOX_genplot_use_valmin[1] = glui_plot2d->add_checkbox_to_panel(PANEL_bound2, "use specified min", glui_plot2dinfo->use_valmin+1, GENPLOT_PLOT_MINMAX, GenPlotCB);
-    SPINNER_genplot_valmin[1] = glui_plot2d->add_spinner_to_panel(PANEL_bound2, "specify min", GLUI_SPINNER_FLOAT, glui_plot2dinfo->valmin+1, GENPLOT_PLOT_MINMAX, GenPlotCB);
+    CHECKBOX_genplot_use_valmax[1] = glui_plot2d->add_checkbox_to_panel(PANEL_bound2, "use max",                 glui_plot2dinfo->use_valmax+1, GENPLOT_PLOT_MINMAX, GenPlotCB);
+    SPINNER_genplot_valmax[1]      = glui_plot2d->add_spinner_to_panel(PANEL_bound2,  "max", GLUI_SPINNER_FLOAT, glui_plot2dinfo->valmax+1,     GENPLOT_PLOT_MINMAX, GenPlotCB);
+    CHECKBOX_genplot_use_valmin[1] = glui_plot2d->add_checkbox_to_panel(PANEL_bound2, "use min",                 glui_plot2dinfo->use_valmin+1, GENPLOT_PLOT_MINMAX, GenPlotCB);
+    SPINNER_genplot_valmin[1]      = glui_plot2d->add_spinner_to_panel(PANEL_bound2,  "min", GLUI_SPINNER_FLOAT, glui_plot2dinfo->valmin+1,     GENPLOT_PLOT_MINMAX, GenPlotCB);
 
     BUTTON_reset_plot2d_bounds = glui_plot2d->add_button_to_panel(PANEL_plot_bounds, "Reset bounds", GENPLOT_RESET_BOUNDS, GenPlotCB);
 

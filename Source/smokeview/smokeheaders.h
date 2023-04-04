@@ -8,6 +8,8 @@
 EXTERNCPP void UpdatePartPointSize(void);
 EXTERNCPP float GetTime(void);
 EXTERNCPP void StartTimer(float *timerptr);
+EXTERNCPP void UpdatePlot2DTbounds(void);
+EXTERNCPP void UpdateBoundTbounds(void);
 
 // gen plot routines
 
