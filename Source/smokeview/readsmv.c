@@ -481,7 +481,6 @@ void ReadAllCSVFiles(void){
     }
   }
   if(all_loaded == 1&&show_timings==1){
-    printf("csv files loaded\n");
     PRINT_TIMER(csv_timer, "csv file loading");
   }
   UNLOCK_CSV_LOAD;
