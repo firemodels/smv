@@ -875,3 +875,12 @@ int main(int argc, char **argv){
 void SMV_EXIT(int code){
   exit(code);
 }
+
+/* ------------------ StartTimer ------------------------ */
+
+void StartTimer(float *timerptr){
+  float timer;
+
+  START_TIMER(timer);
+  *timerptr = timer;
+}

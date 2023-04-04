@@ -339,6 +339,7 @@ SVEXTERN int SVDECL(part_multithread, 0);
 SVEXTERN int SVDECL(csv_multithread,1);
 SVEXTERN int SVDECL(ncsv_threads, 1);
 #endif
+SVEXTERN float SVDECL(csv_timer, 0.0);
 #ifdef pp_SLICE_MULTI
 SVEXTERN int SVDECL(slice_multithread, 0);
 #endif

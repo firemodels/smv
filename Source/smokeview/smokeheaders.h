@@ -7,6 +7,7 @@
 
 EXTERNCPP void UpdatePartPointSize(void);
 EXTERNCPP float GetTime(void);
+EXTERNCPP void StartTimer(float *timerptr);
 
 // gen plot routines
 

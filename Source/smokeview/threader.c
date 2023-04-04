@@ -425,6 +425,7 @@ void UnLockCSV(void){
 /* ------------------ void ReadAllCSVFilesMT ------------------------ */
 
 void ReadAllCSVFilesMT(void){
+  StartTimer(&csv_timer);
 #ifdef pp_CSV_MULTI
   if(csv_multithread == 1){
     int i;

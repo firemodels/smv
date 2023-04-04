@@ -465,7 +465,6 @@ void ReadAllCSVFiles(void){
     ReadCSVFile(csvfi, LOAD);
     LOCK_CSV_LOAD;
     plot2d_max_columns = MAX(plot2d_max_columns, csvfi->ncsvinfo);
-    printf("%s loaded\n", csvfi->file);
     csvfi->defined = CSV_DEFINED;
     UpdateCSVFileTypes();
     UNLOCK_CSV_LOAD;
@@ -481,8 +480,9 @@ void ReadAllCSVFiles(void){
       break;
     }
   }
-  if(all_loaded == 1){
-    printf("all csv files loaded\n");
+  if(all_loaded == 1&&show_timings==1){
+    printf("csv files loaded\n");
+    PRINT_TIMER(csv_timer, "csv file loading");
   }
   UNLOCK_CSV_LOAD;
 }
