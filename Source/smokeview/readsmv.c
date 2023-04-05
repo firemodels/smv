@@ -12223,6 +12223,15 @@ int ReadIni2(char *inifile, int localfile){
       update_glui_devices = 1;
       continue;
     }
+    if(MatchINI(buffer, "SHOWGENPLOTXLABEL") == 1){
+      char *xlabelptr;
+      
+      fgets(buffer, 255, stream);
+      sscanf(buffer, " %i, %f", &plot2d_show_xaxis_labels, &plot2d_xaxis_position);
+      fgets(buffer, 255, stream);
+      xlabelptr = TrimFrontBack(buffer);
+      strcpy(plot2d_xaxis_label, xlabelptr);
+    }
     if(MatchINI(buffer, "SHOWGENPLOTS") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, " %i", &nplot2dini);
@@ -12235,7 +12244,8 @@ int ReadIni2(char *inifile, int localfile){
       fgets(buffer, 255, stream);
       sscanf(buffer, " %i %i %i %i %i %i %f",
              &plot2d_show_plot_title, &plot2d_show_curve_labels, &plot2d_show_curve_values,
-             &plot2d_show_xaxis_labels, &plot2d_show_yaxis_labels, &idevice_add, &plot2d_time_average);
+             &plot2d_show_xaxis_bounds, &plot2d_show_yaxis_labels, &idevice_add, &plot2d_time_average
+             );
       update_device_timeaverage = 1;
       UpdateDeviceAdd();
       for(i=0;i<nplot2dini;i++){
@@ -15791,11 +15801,15 @@ void WriteIniLocal(FILE *fileout){
           vis_device_plot, show_plot2d_xlabels, show_plot2d_ylabels, plot2d_size_factor, plot2d_line_width, plot2d_point_size,
           plot2d_xyz_offset[0], plot2d_xyz_offset[1], plot2d_xyz_offset[2], plot2d_font_spacing
   );
+  fprintf(fileout, "SHOWGENPLOTXLABEL\n");
+  fprintf(fileout, " %i, %f\n", plot2d_show_xaxis_labels, plot2d_xaxis_position);
+  fprintf(fileout, "%s\n", plot2d_xaxis_label);
+  
   fprintf(fileout, "SHOWGENPLOTS\n");
   fprintf(fileout, " %i\n", nplot2dinfo);
   fprintf(fileout, " %i %i %i %i %i %i %f\n",
          plot2d_show_plot_title, plot2d_show_curve_labels, plot2d_show_curve_values,
-         plot2d_show_xaxis_labels, plot2d_show_yaxis_labels, idevice_add, plot2d_time_average);
+         plot2d_show_xaxis_bounds, plot2d_show_yaxis_labels, idevice_add, plot2d_time_average);
   for(i=0; i<nplot2dinfo; i++){
     plot2ddata *plot2di;
     int j;

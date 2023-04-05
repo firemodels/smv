@@ -840,6 +840,8 @@ SVEXTERN int SVDECL(showdevice_val, 0), SVDECL(showvdevice_val, 0);
 SVEXTERN int SVDECL(show_plot2d_xlabels, 1), SVDECL(show_plot2d_ylabels, 1), SVDECL(show_plot2d_title, 1);
 SVEXTERN int SVDECL(colordevice_val, 0), SVDECL(showdevice_id, 0);
 SVEXTERN int SVDECL(select_device, 0);
+SVEXTERN char plot2d_xaxis_label[301];
+SVEXTERN float SVDECL(plot2d_xaxis_position, 0.0);
 SVEXTERN int SVDECL(showdevice_type,1), SVDECL(showdevice_unit,1);
 SVEXTERN float SVDECL(device_valmin,0.0), SVDECL(device_valmax,1.0);
 SVEXTERN devicedata SVDECL(**devicetypes,NULL);
@@ -851,6 +853,7 @@ SVEXTERN float plot2d_xyzstart[3], plot2d_xyzend[3];
 SVEXTERN int SVDECL(plot2d_show_plot_title,   1);
 SVEXTERN int SVDECL(plot2d_show_yaxis_labels, 1);
 SVEXTERN int SVDECL(plot2d_show_xaxis_labels, 1);
+SVEXTERN int SVDECL(plot2d_show_xaxis_bounds, 1);
 SVEXTERN int SVDECL(plot2d_show_curve_labels, 1);
 SVEXTERN int SVDECL(plot2d_show_curve_values, 0);
 
