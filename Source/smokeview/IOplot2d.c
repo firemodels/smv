@@ -103,7 +103,7 @@ void DrawGenCurve(int option, plot2ddata *plot2di, curvedata *curve, float size_
   itend = n - 1;
 
   float *xyz0, linewidth_arg;
-  int *plot_color, show_plot_title, show_curve_labels, show_curve_values, show_xaxis_labels, show_yaxis_labels;
+  int *plot_color, show_plot_title, show_curve_labels, show_curve_values, show_xaxis_bounds, show_yaxis_bounds, show_yaxis_units;
   char *title;
   float fplot_color[3];
   float curve_factor;
@@ -140,8 +140,9 @@ void DrawGenCurve(int option, plot2ddata *plot2di, curvedata *curve, float size_
   }
   title              = plot2di->plot_label;
   show_plot_title    = plot2d_show_plot_title;
-  show_yaxis_labels  = plot2d_show_yaxis_labels;
-  show_xaxis_labels  = plot2d_show_xaxis_labels;
+  show_yaxis_bounds  = plot2d_show_yaxis_bounds;
+  show_xaxis_bounds  = plot2d_show_xaxis_bounds;
+  show_yaxis_units   = plot2d_show_yaxis_units;
   show_curve_labels  = plot2d_show_curve_labels;
   show_curve_values  = plot2d_show_curve_values;
 
@@ -273,10 +274,10 @@ void DrawGenCurve(int option, plot2ddata *plot2di, curvedata *curve, float size_
       char c_tmin[32], c_tmax[32];
 
       Float2String(c_tmin, xmin, ndigits, force_fixedpoint);
-      if(show_xaxis_labels==1)Output3Text(foregroundcolor, xmin, 0.0, zmin - dz - dfont, c_tmin);
+      if(show_xaxis_bounds==1)Output3Text(foregroundcolor, xmin, 0.0, zmin - dz - dfont, c_tmin);
 
       Float2String(c_tmax, xmax, ndigits, force_fixedpoint);
-      if(show_xaxis_labels==1)Output3Text(foregroundcolor, xmax, 0.0, zmin - dz - dfont, c_tmax);
+      if(show_xaxis_bounds==1)Output3Text(foregroundcolor, xmax, 0.0, zmin - dz - dfont, c_tmax);
       SNIFF_ERRORS("after DrawGenCurve 4");
     }
     if(option==PLOT_ONLY_FRAME&&show_plot_title==1){
@@ -302,7 +303,7 @@ void DrawGenCurve(int option, plot2ddata *plot2di, curvedata *curve, float size_
           Output3Text(fplot_color, xmax+2.0*dx,
                       0.0, zmax-(0.5+plot2d_font_spacing*(float)position)*dfont, label2);
         }
-        if(show_yaxis_labels==1){
+        if(show_yaxis_bounds==1){
           Output3Text(foregroundcolor, xmax+2.0*dx, 0.0, zmin, c_zmin);
           Output3Text(foregroundcolor, xmax+2.0*dx, 0.0, zmax, c_zmax);
         }
@@ -312,14 +313,14 @@ void DrawGenCurve(int option, plot2ddata *plot2di, curvedata *curve, float size_
             Output3TextRight(fplot_color,      xmin - dx,
                              0.0, zmax - (0.5 + plot2d_font_spacing * (float)position) * dfont, label2, GetStringLength(label2));
         }
-        if(show_yaxis_labels==1){
+        if(show_yaxis_bounds==1){
           Output3TextRight(foregroundcolor, xmin - dx, 0.0, zmin,  c_zmin, GetStringLength(c_zmin));
           Output3TextRight(foregroundcolor, xmin - dx, 0.0, zmax , c_zmax, GetStringLength(c_zmax));
         }
       }
       SNIFF_ERRORS("after DrawGenCurve 5");
     }
-    if(option!=PLOT_ONLY_FRAME&&unit!=NULL&&show_yaxis_labels==1){
+    if(option!=PLOT_ONLY_FRAME&&unit!=NULL&&show_yaxis_units==1){
       if(axis_side == AXIS_LEFT){
         Output3Text(foregroundcolor, xmax + 2.0 * dx, 0.0, zmax - (0.5 + plot2d_font_spacing*(float)(position + 1))*dfont, unit);
       }

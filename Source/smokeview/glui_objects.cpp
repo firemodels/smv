@@ -103,7 +103,8 @@ GLUI_Checkbox *CHECKBOX_show_plot_title          = NULL;
 GLUI_Checkbox *CHECKBOX_show_curve_labels   = NULL;
 GLUI_Checkbox *CHECKBOX_show_xaxis_bounds    = NULL;
 GLUI_Checkbox *CHECKBOX_show_xaxis_labels    = NULL;
-GLUI_Checkbox *CHECKBOX_show_yaxis_labels    = NULL;
+GLUI_Checkbox *CHECKBOX_show_yaxis_bounds    = NULL;
+GLUI_Checkbox *CHECKBOX_show_yaxis_units     = NULL;
 GLUI_Checkbox *CHECKBOX_show_curve_values   = NULL;
 GLUI_Checkbox *CHECKBOX_genplot_use_valmin[3];
 GLUI_Checkbox *CHECKBOX_genplot_use_valmax[3];
@@ -1846,7 +1847,7 @@ extern "C" void GluiPlot2DSetup(int main_window){
 
     glui_plot2d->add_column_to_panel(PANEL_plotproperties1, false);
 
-    PANEL_plotother = glui_plot2d->add_panel_to_panel(PANEL_plotproperties1, "");
+    PANEL_plotother = glui_plot2d->add_panel_to_panel(PANEL_plotproperties1, "misc");
     glui_plot2d->add_spinner_to_panel(PANEL_plotother, _("frame line width"), GLUI_SPINNER_FLOAT, &plot2d_frame_width,                       GENPLOT_UPDATE,    GenPlotCB);
     SPINNER_size_factor = glui_plot2d->add_spinner_to_panel(PANEL_plotother, _("plot size(relative)"), GLUI_SPINNER_FLOAT, &plot2d_size_factor,   GENPLOT_PLOT_SIZE, GenPlotCB);
     glui_plot2d->add_spinner_to_panel(PANEL_plotother, _("vertical font spacing"), GLUI_SPINNER_FLOAT, &plot2d_font_spacing,                 GENPLOT_UPDATE,    GenPlotCB);
@@ -1874,7 +1875,8 @@ extern "C" void GluiPlot2DSetup(int main_window){
     PANEL_plot_ylabels = glui_plot2d->add_panel_to_panel(PANEL_plotproperties2, "y axis labels");
     PANEL_plot_labels2 = glui_plot2d->add_panel_to_panel(PANEL_plot_ylabels, "", 0);
 
-    CHECKBOX_show_yaxis_labels = glui_plot2d->add_checkbox_to_panel(PANEL_plot_labels2, "bounds",        &plot2d_show_yaxis_labels, GENPLOT_PLOT_LABEL, GenPlotCB);
+    CHECKBOX_show_yaxis_bounds = glui_plot2d->add_checkbox_to_panel(PANEL_plot_labels2, "bounds",        &plot2d_show_yaxis_bounds, GENPLOT_PLOT_LABEL, GenPlotCB);
+    CHECKBOX_show_yaxis_units  = glui_plot2d->add_checkbox_to_panel(PANEL_plot_labels2, "units",         &plot2d_show_yaxis_units,  GENPLOT_PLOT_LABEL, GenPlotCB);
     CHECKBOX_show_curve_labels = glui_plot2d->add_checkbox_to_panel(PANEL_plot_labels2, "quantity",      &plot2d_show_curve_labels, GENPLOT_PLOT_LABEL, GenPlotCB);
     CHECKBOX_show_curve_values = glui_plot2d->add_checkbox_to_panel(PANEL_plot_labels2, "values",        &plot2d_show_curve_values, GENPLOT_PLOT_LABEL, GenPlotCB);
 
