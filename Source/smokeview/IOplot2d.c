@@ -279,6 +279,9 @@ void DrawGenCurve(int option, plot2ddata *plot2di, curvedata *curve, float size_
       Float2String(c_tmax, xmax, ndigits, force_fixedpoint);
       if(show_xaxis_bounds==1)Output3Text(foregroundcolor, xmax, 0.0, zmin - dz - dfont, c_tmax);
       SNIFF_ERRORS("after DrawGenCurve 4");
+      if(plot2d_show_xaxis_labels == 1){
+        Output3Text(foregroundcolor, plot2d_xaxis_position, 0.0, zmin - dz - dfont, plot2d_xaxis_label);
+      }
     }
     if(option==PLOT_ONLY_FRAME&&show_plot_title==1){
       Output3Text(foregroundcolor, xmin, 0.0, zmax+1.5*dz, title);

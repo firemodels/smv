@@ -1866,10 +1866,14 @@ extern "C" void GluiPlot2DSetup(int main_window){
     glui_plot2d->add_column_to_panel(PANEL_plotproperties2, false);
     strcpy(plot2d_xaxis_label, "time");
     PANEL_plot_xlabels            = glui_plot2d->add_panel_to_panel(PANEL_plotproperties2, "x axis labels");
-    CHECKBOX_show_xaxis_bounds    = glui_plot2d->add_checkbox_to_panel(PANEL_plot_xlabels, "bounds", &plot2d_show_xaxis_bounds, GENPLOT_PLOT_LABEL, GenPlotCB);
-    CHECKBOX_show_xaxis_labels    = glui_plot2d->add_checkbox_to_panel(PANEL_plot_xlabels, "show label", &plot2d_show_xaxis_labels, GENPLOT_PLOT_LABEL, GenPlotCB);
-    EDIT_xaxis_label              = glui_plot2d->add_edittext_to_panel(PANEL_plot_xlabels, "label:", GLUI_EDITTEXT_TEXT, plot2d_xaxis_label);
-    SPINNER_plot2d_xaxis_position = glui_plot2d->add_spinner_to_panel(PANEL_plot_xlabels, "position", GLUI_SPINNER_FLOAT, &plot2d_xaxis_position);
+    CHECKBOX_show_xaxis_bounds    = glui_plot2d->add_checkbox_to_panel(PANEL_plot_xlabels, "bounds",
+                                    &plot2d_show_xaxis_bounds, GENPLOT_PLOT_LABEL, GenPlotCB);
+    CHECKBOX_show_xaxis_labels    = glui_plot2d->add_checkbox_to_panel(PANEL_plot_xlabels, "show label",
+                                    &plot2d_show_xaxis_labels, GENPLOT_PLOT_LABEL, GenPlotCB);
+    EDIT_xaxis_label              = glui_plot2d->add_edittext_to_panel(PANEL_plot_xlabels, "label:", GLUI_EDITTEXT_TEXT,
+                                    plot2d_xaxis_label,       GENPLOT_PLOT_LABEL, GenPlotCB);
+    SPINNER_plot2d_xaxis_position = glui_plot2d->add_spinner_to_panel(PANEL_plot_xlabels,  "position", GLUI_SPINNER_FLOAT,
+                                    &plot2d_xaxis_position,    GENPLOT_PLOT_LABEL, GenPlotCB);
 
     glui_plot2d->add_column_to_panel(PANEL_plotproperties2, false);
     PANEL_plot_ylabels = glui_plot2d->add_panel_to_panel(PANEL_plotproperties2, "y axis labels");
