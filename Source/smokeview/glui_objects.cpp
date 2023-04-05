@@ -235,6 +235,13 @@ GLUI_Spinner *SPINNER_plot2d_xaxis_position=NULL;
 procdata deviceprocinfo[4];
 int ndeviceprocinfo = 0;
 
+#define PLOT2D_NEW_ROLLOUT     0
+#define PLOT2D_CURVE_ROLLOUT   1
+#define PLOT2D_BOUNDS_ROLLOUT  2
+
+procdata plot2dprocinfo[3];
+int nplot2dprocinfo = 0;
+
 /* ------------------ UpdatePlot2DSize ------------------------ */
 
 extern "C" void UpdatePlot2DSize(void){
@@ -246,6 +253,12 @@ extern "C" void UpdatePlot2DSize(void){
 
 void Device_Rollout_CB(int var){
   ToggleRollout(deviceprocinfo, ndeviceprocinfo, var);
+}
+
+/* ------------------ Plot2D_Rollout_CB ------------------------ */
+
+void Plot2D_Rollout_CB(int var){
+  ToggleRollout(plot2dprocinfo, nplot2dprocinfo, var);
 }
 
 /* ------------------ UpdateDeviceTypes ------------------------ */
@@ -673,14 +686,14 @@ void UpdateCurveControls(char *unit){
 void EnableDisablePlot2D(void){
   if(plot2d_dialogs_defined == 0)return;
   if(nplot2dinfo == 0){
-    PANEL_plot_ylabels->disable();
-    ROLLOUT_curve_properties->disable();
     ROLLOUT_plotproperties->disable();
+    ROLLOUT_curve_properties->disable();
+    ROLLOUT_plot_bounds->disable();
   }
   else{
-    PANEL_add_curve->enable();
     ROLLOUT_plotproperties->enable();
-
+    PANEL_add_curve->enable();
+    ROLLOUT_plot_bounds->enable();
     if(glui_plot2dinfo->ncurves == 0){
       ROLLOUT_curve_properties->disable();
     }
@@ -1060,6 +1073,7 @@ void GenPlotCB(int var){
       plot2ddata *plot2dii;
       int i;
 
+      if(plot2dinfo == NULL)return;
       plot2dii = plot2dinfo + iplot2dinfo;
       GetPlot2DBounds(plot2dii, plot2dii->valmin, plot2dii->valmax);
       for(i=0;i<2;i++){
@@ -1825,7 +1839,11 @@ extern "C" void GluiPlot2DSetup(int main_window){
     GenPlotCB(GENPLOT_CSV_FILETYPE);
     GenPlotCB(GENPLOT_CURVE_UNIT);
 
-    ROLLOUT_plotproperties = glui_plot2d->add_rollout("plot properties");
+
+    ROLLOUT_plotproperties = glui_plot2d->add_rollout("plot properties(all plots)", false, PLOT2D_NEW_ROLLOUT, Plot2D_Rollout_CB);
+    INSERT_ROLLOUT(ROLLOUT_plotproperties, glui_plot2d);
+    ADDPROCINFO(plot2dprocinfo, nplot2dprocinfo, ROLLOUT_plotproperties, PLOT2D_NEW_ROLLOUT, glui_plot2d);
+
     PANEL_plotproperties1 = glui_plot2d->add_panel_to_panel(ROLLOUT_plotproperties, "", GLUI_PANEL_NONE);
     PANEL_plot_position = glui_plot2d->add_panel_to_panel(PANEL_plotproperties1, "position");
     SPINNER_genplot_x = glui_plot2d->add_spinner_to_panel(PANEL_plot_position, "x0", GLUI_SPINNER_FLOAT, glui_plot2dinfo->xyz+0, GENPLOT_XYZ, GenPlotCB);
@@ -1883,14 +1901,12 @@ extern "C" void GluiPlot2DSetup(int main_window){
     CHECKBOX_show_curve_labels = glui_plot2d->add_checkbox_to_panel(PANEL_plot_labels2, "quantity",      &plot2d_show_curve_labels, GENPLOT_PLOT_LABEL, GenPlotCB);
     CHECKBOX_show_curve_values = glui_plot2d->add_checkbox_to_panel(PANEL_plot_labels2, "values",        &plot2d_show_curve_values, GENPLOT_PLOT_LABEL, GenPlotCB);
 
-    if(nplot2dinfo==0){
-      if(PANEL_add_curve!=NULL)PANEL_add_curve->disable();
-      if(PANEL_plot_position!=NULL)PANEL_plot_position->disable();
-      if(PANEL_plot_ylabels!=NULL)PANEL_plot_ylabels->disable();
-    }
-
     memcpy(&glui_curve, &glui_curve_default, sizeof(curvedata));
-    ROLLOUT_curve_properties = glui_plot2d->add_rollout("curve properties");
+
+    ROLLOUT_curve_properties = glui_plot2d->add_rollout("curve properties", false, PLOT2D_CURVE_ROLLOUT, Plot2D_Rollout_CB);
+    INSERT_ROLLOUT(ROLLOUT_curve_properties, glui_plot2d);
+    ADDPROCINFO(plot2dprocinfo, nplot2dprocinfo, ROLLOUT_curve_properties, PLOT2D_CURVE_ROLLOUT, glui_plot2d);
+
     if(nplot2dinfo>0&&glui_plot2dinfo->ncurves==0)ROLLOUT_curve_properties->disable();
     LIST_plotcurves = glui_plot2d->add_listbox_to_panel(ROLLOUT_curve_properties, "select:", &glui_plot2dinfo->curve_index, GENPLOT_SELECT_CURVE, GenPlotCB);
     RemoveCurve(glui_plot2dinfo, -1);
@@ -1925,7 +1941,10 @@ extern "C" void GluiPlot2DSetup(int main_window){
     SPINNER_genplot_linewidth = glui_plot2d->add_spinner_to_panel(ROLLOUT_curve_properties, "line width", GLUI_SPINNER_FLOAT, &(glui_curve.linewidth), GENPLOT_XYZ, GenPlotCB);
     SPINNER_genplot_linewidth->set_float_limits(1.0, 10.0);
 
-    ROLLOUT_plot_bounds = glui_plot2d->add_rollout("plot bounds");
+    ROLLOUT_plot_bounds = glui_plot2d->add_rollout("plot bounds(all plots)", false, PLOT2D_BOUNDS_ROLLOUT, Plot2D_Rollout_CB);
+    INSERT_ROLLOUT(ROLLOUT_plot_bounds, glui_plot2d);
+    ADDPROCINFO(plot2dprocinfo, nplot2dprocinfo, ROLLOUT_plot_bounds, PLOT2D_BOUNDS_ROLLOUT, glui_plot2d);
+
     PANEL_plot_bounds2 = glui_plot2d->add_panel_to_panel(ROLLOUT_plot_bounds, "", 0);
 
     PANEL_bound3 = glui_plot2d->add_panel_to_panel(PANEL_plot_bounds2, "time");
