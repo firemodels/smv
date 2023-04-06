@@ -13,6 +13,7 @@ EXTERNCPP void UpdateBoundTbounds(void);
 
 // gen plot routines
 
+EXTERNCPP int HavePlot2D(float **times, int *ntimes);
 EXTERNCPP void UpdatePlot2DINI(void);
 EXTERNCPP void UpdatePlotLabel(void);
 EXTERNCPP char *GetPlotUnit2(plot2ddata *plot2di, curvedata *curve);

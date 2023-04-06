@@ -30,6 +30,7 @@ csvdata *GetCsvCurve(int col_index, csvfiledata **csvf_ptr){
 int GenDevShow(void){
   int i;
 
+  if(plot2d_show_plots == 0)return 0;
   for(i = 0; i < nplot2dinfo; i++){
     plot2ddata *plot2di;
 
@@ -50,6 +51,7 @@ int GenDevShow(void){
 int GenHrrShow(void){
   int i;
 
+  if(plot2d_show_plots == 0)return 0;
   for(i = 0; i < nplot2dinfo; i++){
     plot2ddata *plot2di;
 
@@ -569,6 +571,7 @@ void MaxAverageVals(float *times, float *vals, float *vals2, int nvals){
 int HavePlot2D(float **times, int *ntimes){
   int i;
 
+  if(plot2d_show_plots==0)return 0;
   for(i = 0; i < nplot2dinfo;i++){
     plot2ddata *plot2di;
     int j;
@@ -583,8 +586,8 @@ int HavePlot2D(float **times, int *ntimes){
       curve = plot2di->curve+j;
       if(curve==NULL)continue;
       csvi = GetCsvData(curve->csv_file_index, curve->csv_col_index, &csvfi);
-      *times = csvfi->time->vals;
-      *ntimes = csvi->nvals;
+      if(times!=NULL)*times = csvfi->time->vals;
+      if(ntimes!=NULL)*ntimes = csvi->nvals;
       return 1;
     }
   }

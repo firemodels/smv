@@ -1109,6 +1109,7 @@ void GenPlotCB(int var){
       GenPlotCB(GENPLOT_RESET_BOUNDS);
       SetPlot2DBoundLabels(plot2dinfo + iplot2dinfo);
       DeviceCB(DEVICE_TIMEAVERAGE);
+      plotstate = GetPlotState(DYNAMIC_PLOTS);
       update_times = 1;
       break;
     case GENPLOT_CSV_FILETYPE:
@@ -1148,6 +1149,8 @@ void GenPlotCB(int var){
       Glui2Plot2D(iplot2dinfo);
       EnableDisablePlot2D();
       SetPlot2DBoundLabels(plot2dinfo+iplot2dinfo);
+      plotstate = GetPlotState(DYNAMIC_PLOTS);
+      update_times = 1;
       break;
     case GENPLOT_REM_SELECTEDCURVE:
       glui_remove_selected_curve = 1;
@@ -1168,6 +1171,7 @@ void GenPlotCB(int var){
       update_times = 1;
       break;
     case GENPLOT_SHOW_PLOTS:
+      plotstate = GetPlotState(DYNAMIC_PLOTS);
       update_times = 1;
       break;
     case GENPLOT_USE_FOREGROUND_COLOR:
@@ -1409,6 +1413,8 @@ void GenPlotCB(int var){
       BUTTON_rem_plot->set_name(label);
       EnableDisablePlot2D();
       GenPlotCB(GENPLOT_SELECT_PLOT);
+      plotstate = GetPlotState(DYNAMIC_PLOTS);
+      update_times = 1;
       break;
     case GENPLOT_RESET_FUEL_1P0:
       SPINNER_curve_factor->set_float_val(1.0);

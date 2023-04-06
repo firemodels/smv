@@ -616,7 +616,7 @@ void UpdateShow(void){
   ReadPartFile = partflag;
 
   plot2dflag = 0;
-  if(GenDevShow() == 1 || GenHrrShow() == 1)plot2dflag = 1;
+  if(GenDevShow() == 1 || GenHrrShow() == 1 || HavePlot2D(NULL,NULL)==1)plot2dflag = 1;
 
   shooter_flag=0;
   if(visShooter!=0&&shooter_active==1){
@@ -1218,7 +1218,6 @@ void UpdateTimes(void){
   {
     float *times = NULL;
     int ntimes = 0;
-    int HavePlot2D(float **times, int *ntimes);
     
     if(HavePlot2D(&times, &ntimes)==1){
       MergeGlobalTimes(times, ntimes);
@@ -1668,7 +1667,7 @@ int GetPlotStateSub(int choice){
         stept = 1;
         return DYNAMIC_PLOTS;
       }
-      if(GenDevShow() == 1 || GenHrrShow() == 1){
+      if(GenDevShow() == 1 || GenHrrShow() == 1 || HavePlot2D(NULL,NULL)==1){
         stept = 1;
         return DYNAMIC_PLOTS;
       }
