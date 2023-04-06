@@ -26,13 +26,13 @@ int GetGridIndex(float val, int dir, float *plotxyz, int nplotxyz){
 
   switch(dir){
     case XDIR:
-      val=NORMALIZE_X(val);
+      val=FDS2SMV_X(val);
       break;
     case YDIR:
-      val=NORMALIZE_Y(val);
+      val=FDS2SMV_Y(val);
       break;
     case ZDIR:
-      val=NORMALIZE_Z(val);
+      val=FDS2SMV_Z(val);
       break;
     default:
       ASSERT(FFALSE);
@@ -1355,7 +1355,7 @@ void MoveGenSlice(int xm, int ym){
         yy = ym-mouse_down_xy0[1];
         yy = yy/(float)screenHeight;
 
-        gslice_xyz[2] = gslice_xyz0[2] - DENORMALIZE_Z(4*(xyzbox-NORMALIZE_Z(gslice_xyz0[2]))*yy);
+        gslice_xyz[2] = gslice_xyz0[2] - SMV2FDS_Z(4*(xyzbox-FDS2SMV_Z(gslice_xyz0[2]))*yy);
         UpdateGsliceParms();
       }
       break;

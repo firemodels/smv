@@ -809,8 +809,8 @@ float GetZCellValOffset(meshdata *meshi,float xval, float yval, int *loc){
     }
 
 // convert xval and yval to "user" units
-    xval = DENORMALIZE_X(xval);
-    yval = DENORMALIZE_Y(yval);
+    xval = SMV2FDS_X(xval);
+    yval = SMV2FDS_Y(yval);
 
     xplt = meshj->xplt_orig;
     yplt = meshj->yplt_orig;
@@ -1940,7 +1940,7 @@ void UpdateTerrain(int allocate_memory){
 
       for(j=0;j<=terri->jbar;j++){
         for(i=0;i<=terri->ibar;i++){
-          *znode_scaled = NORMALIZE_Z(*znode);
+          *znode_scaled = FDS2SMV_Z(*znode);
           if(*znode>=mesh_zmin&&*znode<=mesh_zmax){
             if(t_zmin>t_zmax){
               t_zmin = *znode;

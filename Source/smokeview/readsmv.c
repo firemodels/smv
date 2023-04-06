@@ -3141,12 +3141,12 @@ void GetBoxGeomCorners(void){
     zmax = MAX(xyz[2], zmax);
   }
 
-  xmin = NORMALIZE_X(xmin);
-  xmax = NORMALIZE_X(xmax);
-  ymin = NORMALIZE_Y(ymin);
-  ymax = NORMALIZE_Y(ymax);
-  zmin = NORMALIZE_Z(zmin);
-  zmax = NORMALIZE_Z(zmax);
+  xmin = FDS2SMV_X(xmin);
+  xmax = FDS2SMV_X(xmax);
+  ymin = FDS2SMV_Y(ymin);
+  ymax = FDS2SMV_Y(ymax);
+  zmin = FDS2SMV_Z(zmin);
+  zmax = FDS2SMV_Z(zmax);
 
   box_geom_corners[0][0] = xmin;
   box_geom_corners[0][1] = ymin;
@@ -3603,13 +3603,13 @@ void UpdateMeshCoords(void){
   // normalize various coordinates.
 
   for(nn=0;nn<factor;nn++){
-    xplts[nn]=NORMALIZE_X(xplts[nn]);
+    xplts[nn]=FDS2SMV_X(xplts[nn]);
   }
   for(nn=0;nn<factor;nn++){
-    yplts[nn]=NORMALIZE_Y(yplts[nn]);
+    yplts[nn]=FDS2SMV_Y(yplts[nn]);
   }
   for(nn=0;nn<factor;nn++){
-    zplts[nn]=NORMALIZE_Z(zplts[nn]);
+    zplts[nn]=FDS2SMV_Z(zplts[nn]);
   }
 
   /* rescale both global and local xbar, ybar and zbar */
@@ -3635,9 +3635,9 @@ void UpdateMeshCoords(void){
     patchout_tmax = 1.0;
   }
 
-  xbar = NORMALIZE_X(xbar);
-  ybar = NORMALIZE_Y(ybar);
-  zbar = NORMALIZE_Z(zbar);
+  xbar = FDS2SMV_X(xbar);
+  ybar = FDS2SMV_Y(ybar);
+  zbar = FDS2SMV_Z(zbar);
 
   GetBoxCorners(xbar, ybar, zbar);
 
@@ -3649,9 +3649,9 @@ void UpdateMeshCoords(void){
     meshi->xyzmaxdiff=MAX(MAX(meshi->xyz_bar[XXX]-meshi->xyz_bar0[XXX],meshi->xyz_bar[YYY]-meshi->xyz_bar0[YYY]),meshi->xyz_bar[ZZZ]-meshi->xyz_bar0[ZZZ]);
 
     NORMALIZE_XYZ(meshi->xyz_bar,meshi->xyz_bar);
-    meshi->xcen = NORMALIZE_X(meshi->xcen);
-    meshi->ycen = NORMALIZE_Y(meshi->ycen);
-    meshi->zcen = NORMALIZE_Z(meshi->zcen);
+    meshi->xcen = FDS2SMV_X(meshi->xcen);
+    meshi->ycen = FDS2SMV_Y(meshi->ycen);
+    meshi->zcen = FDS2SMV_Z(meshi->zcen);
   }
 
   for(i=0;i<noutlineinfo;i++){
@@ -3667,12 +3667,12 @@ void UpdateMeshCoords(void){
     z1 = outlinei->z1;
     z2 = outlinei->z2;
     for(j=0;j<outlinei->nlines;j++){
-      x1[j]=NORMALIZE_X(x1[j]);
-      x2[j]=NORMALIZE_X(x2[j]);
-      yy1[j]=NORMALIZE_Y(yy1[j]);
-      yy2[j]=NORMALIZE_Y(yy2[j]);
-      z1[j]=NORMALIZE_Z(z1[j]);
-      z2[j]=NORMALIZE_Z(z2[j]);
+      x1[j]=FDS2SMV_X(x1[j]);
+      x2[j]=FDS2SMV_X(x2[j]);
+      yy1[j]=FDS2SMV_Y(yy1[j]);
+      yy2[j]=FDS2SMV_Y(yy2[j]);
+      z1[j]=FDS2SMV_Z(z1[j]);
+      z2[j]=FDS2SMV_Z(z2[j]);
     }
   }
 
@@ -3732,15 +3732,15 @@ void UpdateMeshCoords(void){
 
     for(i=0;i<ibar+1;i++){
       xplt_orig[i]=xplt[i];
-      xplt[i]=NORMALIZE_X(xplt[i]);
+      xplt[i]=FDS2SMV_X(xplt[i]);
     }
     for(j=0;j<jbar+1;j++){
       yplt_orig[j]=yplt[j];
-      yplt[j]=NORMALIZE_Y(yplt[j]);
+      yplt[j]=FDS2SMV_Y(yplt[j]);
     }
     for(k=0;k<kbar+1;k++){
       zplt_orig[k]=zplt[k];
-      zplt[k]=NORMALIZE_Z(zplt[k]);
+      zplt[k]=FDS2SMV_Z(zplt[k]);
     }
 
     for(nn=0;nn<ibar;nn++){
@@ -3824,23 +3824,23 @@ void UpdateMeshCoords(void){
       bc->ymax += meshi->offset[YYY];
       bc->zmin += meshi->offset[ZZZ];
       bc->zmax += meshi->offset[ZZZ];
-      bc->xmin = NORMALIZE_X(bc->xmin);
-      bc->xmax = NORMALIZE_X(bc->xmax);
-      bc->ymin = NORMALIZE_Y(bc->ymin);
-      bc->ymax = NORMALIZE_Y(bc->ymax);
-      bc->zmin = NORMALIZE_Z(bc->zmin);
-      bc->zmax = NORMALIZE_Z(bc->zmax);
+      bc->xmin = FDS2SMV_X(bc->xmin);
+      bc->xmax = FDS2SMV_X(bc->xmax);
+      bc->ymin = FDS2SMV_Y(bc->ymin);
+      bc->ymax = FDS2SMV_Y(bc->ymax);
+      bc->zmin = FDS2SMV_Z(bc->zmin);
+      bc->zmax = FDS2SMV_Z(bc->zmax);
     }
     for(i=0;i<meshi->nvents+12;i++){
       ventdata *vi;
 
       vi=meshi->ventinfo+i;
-      vi->xmin = NORMALIZE_X(vi->xmin);
-      vi->xmax = NORMALIZE_X(vi->xmax);
-      vi->ymin = NORMALIZE_Y(vi->ymin);
-      vi->ymax = NORMALIZE_Y(vi->ymax);
-      vi->zmin = NORMALIZE_Z(vi->zmin);
-      vi->zmax = NORMALIZE_Z(vi->zmax);
+      vi->xmin = FDS2SMV_X(vi->xmin);
+      vi->xmax = FDS2SMV_X(vi->xmax);
+      vi->ymin = FDS2SMV_Y(vi->ymin);
+      vi->ymax = FDS2SMV_Y(vi->ymax);
+      vi->zmin = FDS2SMV_Z(vi->zmin);
+      vi->zmax = FDS2SMV_Z(vi->zmax);
     }
   }
   for(i=0;i<ncadgeom;i++){
@@ -3865,12 +3865,12 @@ void UpdateMeshCoords(void){
     roomdata *roomi;
 
     roomi = roominfo + n;
-    roomi->x0=NORMALIZE_X(roomi->x0);
-    roomi->y0=NORMALIZE_Y(roomi->y0);
-    roomi->z0=NORMALIZE_Z(roomi->z0);
-    roomi->x1=NORMALIZE_X(roomi->x1);
-    roomi->y1=NORMALIZE_Y(roomi->y1);
-    roomi->z1=NORMALIZE_Z(roomi->z1);
+    roomi->x0=FDS2SMV_X(roomi->x0);
+    roomi->y0=FDS2SMV_Y(roomi->y0);
+    roomi->z0=FDS2SMV_Z(roomi->z0);
+    roomi->x1=FDS2SMV_X(roomi->x1);
+    roomi->y1=FDS2SMV_Y(roomi->y1);
+    roomi->z1=FDS2SMV_Z(roomi->z1);
     roomi->dx=SCALE2SMV(roomi->dx);
     roomi->dy=SCALE2SMV(roomi->dy);
     roomi->dz=SCALE2SMV(roomi->dz);
@@ -3879,9 +3879,9 @@ void UpdateMeshCoords(void){
     firedata *firen;
 
     firen = fireinfo + n;
-    firen->absx=NORMALIZE_X(firen->absx);
-    firen->absy=NORMALIZE_Y(firen->absy);
-    firen->absz=NORMALIZE_Z(firen->absz);
+    firen->absx=FDS2SMV_X(firen->absx);
+    firen->absy=FDS2SMV_Y(firen->absy);
+    firen->absz=FDS2SMV_Z(firen->absz);
     firen->dz=SCALE2SMV(firen->dz);
   }
   for(n=0;n<nzvents;n++){
@@ -3889,12 +3889,12 @@ void UpdateMeshCoords(void){
 
     zvi = zventinfo + n;
 
-    zvi->x0 = NORMALIZE_X(zvi->x0);
-    zvi->x1 = NORMALIZE_X(zvi->x1);
-    zvi->y0 = NORMALIZE_Y(zvi->y0);
-    zvi->y1 = NORMALIZE_Y(zvi->y1);
-    zvi->z0 = NORMALIZE_Z(zvi->z0);
-    zvi->z1 = NORMALIZE_Z(zvi->z1);
+    zvi->x0 = FDS2SMV_X(zvi->x0);
+    zvi->x1 = FDS2SMV_X(zvi->x1);
+    zvi->y0 = FDS2SMV_Y(zvi->y0);
+    zvi->y1 = FDS2SMV_Y(zvi->y1);
+    zvi->z0 = FDS2SMV_Z(zvi->z0);
+    zvi->z1 = FDS2SMV_Z(zvi->z1);
   }
 
   for(i=0;i<nmeshes;i++){
@@ -3920,25 +3920,25 @@ void UpdateMeshCoords(void){
     yheat = meshi->yheat;
     zheat = meshi->zheat;
     for(n=0;n<meshi->nspr;n++){
-      xsprplot[n]=NORMALIZE_X(offset[XXX]+xspr[n]);
-      ysprplot[n]=NORMALIZE_Y(offset[YYY]+yspr[n]);
-      zsprplot[n]=NORMALIZE_Z(offset[ZZZ]+zspr[n]);
+      xsprplot[n]=FDS2SMV_X(offset[XXX]+xspr[n]);
+      ysprplot[n]=FDS2SMV_Y(offset[YYY]+yspr[n]);
+      zsprplot[n]=FDS2SMV_Z(offset[ZZZ]+zspr[n]);
     }
     for(n=0;n<meshi->nheat;n++){
-      xheatplot[n]=NORMALIZE_X(offset[XXX]+xheat[n]);
-      yheatplot[n]=NORMALIZE_Y(offset[YYY]+yheat[n]);
-      zheatplot[n]=NORMALIZE_Z(offset[ZZZ]+zheat[n]);
+      xheatplot[n]=FDS2SMV_X(offset[XXX]+xheat[n]);
+      yheatplot[n]=FDS2SMV_Y(offset[YYY]+yheat[n]);
+      zheatplot[n]=FDS2SMV_Z(offset[ZZZ]+zheat[n]);
     }
     for(n=0;n<meshi->nvents+12;n++){
       ventdata *vi;
 
       vi = meshi->ventinfo+n;
-      vi->xvent1plot=NORMALIZE_X(offset[XXX]+vi->xvent1);
-      vi->xvent2plot=NORMALIZE_X(offset[XXX]+vi->xvent2);
-      vi->yvent1plot=NORMALIZE_Y(offset[YYY]+vi->yvent1);
-      vi->yvent2plot=NORMALIZE_Y(offset[YYY]+vi->yvent2);
-      vi->zvent1plot=NORMALIZE_Z(offset[ZZZ]+vi->zvent1);
-      vi->zvent2plot=NORMALIZE_Z(offset[ZZZ]+vi->zvent2);
+      vi->xvent1plot=FDS2SMV_X(offset[XXX]+vi->xvent1);
+      vi->xvent2plot=FDS2SMV_X(offset[XXX]+vi->xvent2);
+      vi->yvent1plot=FDS2SMV_Y(offset[YYY]+vi->yvent1);
+      vi->yvent2plot=FDS2SMV_Y(offset[YYY]+vi->yvent2);
+      vi->zvent1plot=FDS2SMV_Z(offset[ZZZ]+vi->zvent1);
+      vi->zvent2plot=FDS2SMV_Z(offset[ZZZ]+vi->zvent2);
     }
   }
   UpdateVentOffset();
@@ -15935,15 +15935,15 @@ void WriteIniLocal(FILE *fileout){
         framei = framei->next;
         sprintf(buffer, "%f %f %f %f ",
                 framei->time,
-                DENORMALIZE_X(framei->xyz_smv[0]),
-                DENORMALIZE_Y(framei->xyz_smv[1]),
-                DENORMALIZE_Z(framei->xyz_smv[2]));
+                SMV2FDS_X(framei->xyz_smv[0]),
+                SMV2FDS_Y(framei->xyz_smv[1]),
+                SMV2FDS_Z(framei->xyz_smv[2]));
         TrimMZeros(buffer);
         fprintf(fileout, " %s %i ", buffer, 1);
         sprintf(buffer, "%f %f %f %f %f %f %f ",
-                DENORMALIZE_X(framei->view_smv[0]),
-                DENORMALIZE_Y(framei->view_smv[1]),
-                DENORMALIZE_Z(framei->view_smv[2]),
+                SMV2FDS_X(framei->view_smv[0]),
+                SMV2FDS_Y(framei->view_smv[1]),
+                SMV2FDS_Z(framei->view_smv[2]),
                 0.0, 0.0, 0.0,
                 1.0);
         TrimMZeros(buffer);

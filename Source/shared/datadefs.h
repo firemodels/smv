@@ -29,13 +29,13 @@
 #define REL_VAL(val, valmin, valmax) ((float)((val)-(valmin))/(float)((valmax)-(valmin)))
 #define SHIFT_VAL(val, valmin, valmax, shift_val) ((valmin) + ((valmax)-(valmin))*pow(REL_VAL((val),(valmin),(valmax)),(shift_val)))
 
-#define NORMALIZE_X(x) (((x)-xbar0)/xyzmaxdiff)
-#define NORMALIZE_Y(y) (((y)-ybar0)/xyzmaxdiff)
-#define NORMALIZE_Z(z) (((z)-zbar0)/xyzmaxdiff)
+#define FDS2SMV_X(x) (((x)-xbar0)/xyzmaxdiff)
+#define FDS2SMV_Y(y) (((y)-ybar0)/xyzmaxdiff)
+#define FDS2SMV_Z(z) (((z)-zbar0)/xyzmaxdiff)
 
-#define DENORMALIZE_X(x) (xbar0+(x)*xyzmaxdiff)
-#define DENORMALIZE_Y(y) (ybar0+(y)*xyzmaxdiff)
-#define DENORMALIZE_Z(z) (zbar0+(z)*xyzmaxdiff)
+#define SMV2FDS_X(x) (xbar0+(x)*xyzmaxdiff)
+#define SMV2FDS_Y(y) (ybar0+(y)*xyzmaxdiff)
+#define SMV2FDS_Z(z) (zbar0+(z)*xyzmaxdiff)
 
 #define VERT_AVG2(v1,v2,vavg) \
   vavg[0]=(v1[0]+v2[0])/2.0;\
@@ -60,21 +60,21 @@
   dist2=sqrt(dx*dx+dy*dy+dz*dz)
 
 #define DENORMALIZE_XYZ(XYZ_OUT,XYZ_IN)\
-(XYZ_OUT)[0] = DENORMALIZE_X((XYZ_IN)[0]);\
-(XYZ_OUT)[1] = DENORMALIZE_Y((XYZ_IN)[1]);\
-(XYZ_OUT)[2] = DENORMALIZE_Z((XYZ_IN)[2])
+(XYZ_OUT)[0] = SMV2FDS_X((XYZ_IN)[0]);\
+(XYZ_OUT)[1] = SMV2FDS_Y((XYZ_IN)[1]);\
+(XYZ_OUT)[2] = SMV2FDS_Z((XYZ_IN)[2])
 
 #define NORMALIZE_XYZ(XYZ_OUT,XYZ_IN)\
-(XYZ_OUT)[0] = NORMALIZE_X((XYZ_IN)[0]);\
-(XYZ_OUT)[1] = NORMALIZE_Y((XYZ_IN)[1]);\
-(XYZ_OUT)[2] = NORMALIZE_Z((XYZ_IN)[2])
+(XYZ_OUT)[0] = FDS2SMV_X((XYZ_IN)[0]);\
+(XYZ_OUT)[1] = FDS2SMV_Y((XYZ_IN)[1]);\
+(XYZ_OUT)[2] = FDS2SMV_Z((XYZ_IN)[2])
 
 #define INCIRCLE(x,y,z,incirc) \
 {\
   float ddx, ddy, ddz;\
-  ddx = DENORMALIZE_X(x)-cvi->origin[0];\
-  ddy = DENORMALIZE_Y(y)-cvi->origin[1];\
-  ddz = DENORMALIZE_Z(z)-cvi->origin[2];\
+  ddx = SMV2FDS_X(x)-cvi->origin[0];\
+  ddy = SMV2FDS_Y(y)-cvi->origin[1];\
+  ddz = SMV2FDS_Z(z)-cvi->origin[2];\
   incirc=( ddx*ddx + ddy*ddy + ddz*ddz <= cvi->radius*cvi->radius ? 1 : 0 );\
 }
 

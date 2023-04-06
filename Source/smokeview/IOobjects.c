@@ -7417,13 +7417,13 @@ void InitDevicePlane(devicedata *devicei){
     meshi = meshinfo + i;
 
     xx[0]=meshi->xyz_bar0[XXX];
-    xx[1]=DENORMALIZE_X(meshi->xyz_bar[XXX]);
+    xx[1]=SMV2FDS_X(meshi->xyz_bar[XXX]);
 
     yy[0]=meshi->xyz_bar0[YYY];
-    yy[1]=DENORMALIZE_Y(meshi->xyz_bar[YYY]);
+    yy[1]=SMV2FDS_Y(meshi->xyz_bar[YYY]);
 
     zz[0]=meshi->xyz_bar0[ZZZ];
-    zz[1]=DENORMALIZE_Z(meshi->xyz_bar[ZZZ]);
+    zz[1]=SMV2FDS_Z(meshi->xyz_bar[ZZZ]);
 
     for(j=0;j<8;j++){
       nodeindexes[j]=j;
@@ -7437,9 +7437,9 @@ void InitDevicePlane(devicedata *devicei){
     vals[6]= Dist2Plane(xx[1],yy[1],zz[1],devicei->xyz,devicei->xyznorm);
     vals[7]= Dist2Plane(xx[1],yy[0],zz[1],devicei->xyz,devicei->xyznorm);
 
-    xx[0]=NORMALIZE_X(meshi->xyz_bar0[XXX]);
-    yy[0]=NORMALIZE_Y(meshi->xyz_bar0[YYY]);
-    zz[0]=NORMALIZE_Z(meshi->xyz_bar0[ZZZ]);
+    xx[0]=FDS2SMV_X(meshi->xyz_bar0[XXX]);
+    yy[0]=FDS2SMV_Y(meshi->xyz_bar0[YYY]);
+    zz[0]=FDS2SMV_Z(meshi->xyz_bar0[ZZZ]);
     xx[1]=meshi->xyz_bar[XXX];
     yy[1]=meshi->xyz_bar[YYY];
     zz[1]=meshi->xyz_bar[ZZZ];
