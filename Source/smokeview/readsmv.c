@@ -1396,7 +1396,7 @@ void ReadSMVDynamic(char *file){
       char *ductname;
       hvacductdata *ducti;
       float *act_time, *act_times;
-      int *act_state, *act_states;
+      int *act_state, *act_states, dummy;
 
       ductname = strchr(buffer, ' ');
       if(ductname == NULL)continue;
@@ -1420,7 +1420,7 @@ void ReadSMVDynamic(char *file){
       act_state = act_states + ducti->nact_times -1;
 
       FGETS(buffer, 255, stream);
-      sscanf(buffer, "%f %i", act_time, act_state);
+      sscanf(buffer, "%i %f %i", &dummy, act_time, act_state);
       ONEORZERO(*act_state);
       ducti->act_times  = act_times;
       ducti->act_states = act_states;
