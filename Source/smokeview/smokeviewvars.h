@@ -853,7 +853,7 @@ SVEXTERN float plot2d_xyzstart[3], plot2d_xyzend[3];
 SVEXTERN int SVDECL(plot2d_show_plot_title,   1);
 SVEXTERN int SVDECL(plot2d_show_yaxis_bounds, 1);
 SVEXTERN int SVDECL(plot2d_show_yaxis_units,  1);
-SVEXTERN int SVDECL(plot2d_show_xaxis_labels, 1);
+SVEXTERN int SVDECL(plot2d_show_xaxis_labels, 0);
 SVEXTERN int SVDECL(plot2d_show_xaxis_bounds, 1);
 SVEXTERN int SVDECL(plot2d_show_curve_labels, 1);
 SVEXTERN int SVDECL(plot2d_show_curve_values, 0);
