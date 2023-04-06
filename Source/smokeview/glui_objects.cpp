@@ -686,12 +686,10 @@ void UpdateCurveControls(char *unit){
 void EnableDisablePlot2D(void){
   if(plot2d_dialogs_defined == 0)return;
   if(nplot2dinfo == 0){
-    ROLLOUT_plotproperties->disable();
     ROLLOUT_curve_properties->disable();
     ROLLOUT_plot_bounds->disable();
   }
   else{
-    ROLLOUT_plotproperties->enable();
     PANEL_add_curve->enable();
     ROLLOUT_plot_bounds->enable();
     if(glui_plot2dinfo->ncurves == 0){
@@ -1840,7 +1838,7 @@ extern "C" void GluiPlot2DSetup(int main_window){
     GenPlotCB(GENPLOT_CURVE_UNIT);
 
 
-    ROLLOUT_plotproperties = glui_plot2d->add_rollout("plot properties(all plots)", false, PLOT2D_NEW_ROLLOUT, Plot2D_Rollout_CB);
+    ROLLOUT_plotproperties = glui_plot2d->add_rollout("plot properties(all plots)", true, PLOT2D_NEW_ROLLOUT, Plot2D_Rollout_CB);
     INSERT_ROLLOUT(ROLLOUT_plotproperties, glui_plot2d);
     ADDPROCINFO(plot2dprocinfo, nplot2dprocinfo, ROLLOUT_plotproperties, PLOT2D_NEW_ROLLOUT, glui_plot2d);
 
