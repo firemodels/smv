@@ -31,6 +31,7 @@
 #define GENPLOT_MAX_VALS            117
 #endif
 #define GENPLOT_PLOT_TMINMAX        118
+#define GENPLOT_SHOW_PLOTS          119
 
 #define GENPLOT_CSV_FILETYPE        121
 #define GENPLOT_CURVE_UNIT          122
@@ -1057,6 +1058,20 @@ void UpdatePlotDevList(void){
   }
 }
 
+/* ------------------ SetPlot2DShowLabel ------------------------ */
+
+void SetPlot2DShowLabel(void){
+  if(iplot2dinfo >= 0&&iplot2dinfo<nplot2dinfo && CHECKBOX_show_genplot!=NULL){
+    plot2ddata *plot2di;
+    char show_label[100];
+
+    plot2di = plot2dinfo+iplot2dinfo;
+    strcpy(show_label, "show ");
+    strcat(show_label, plot2di->plot_label);
+    CHECKBOX_show_genplot->set_name(show_label);
+  }
+}
+
 /* ------------------ GenPlotCB ------------------------ */
 
 void GenPlotCB(int var){
@@ -1152,6 +1167,9 @@ void GenPlotCB(int var){
       plotstate = GetPlotState(DYNAMIC_PLOTS);
       update_times = 1;
       break;
+    case GENPLOT_SHOW_PLOTS:
+      update_times = 1;
+      break;
     case GENPLOT_USE_FOREGROUND_COLOR:
       if(glui_curve.use_foreground_color==1){
         glui_curve.color[0] = foregroundcolor[0]*255;
@@ -1202,6 +1220,7 @@ void GenPlotCB(int var){
         LIST_plots->set_int_val(iplot2dinfo_save);
       }
       DeviceCB(DEVICE_TIMEAVERAGE);
+      SetPlot2DShowLabel();
       break;
     case GENPLOT_SET_PLOTPOS:
       if(glui_plot2dinfo->curve_index<ndeviceinfo){
@@ -1275,6 +1294,7 @@ void GenPlotCB(int var){
         }
         PANEL_add_curve->set_name(label);
         SetPlot2DBoundLabels(plot2dinfo+iplot2dinfo);
+        SetPlot2DShowLabel();
       }
       break;
     case GENPLOT_REM_DEV_PLOTS:
@@ -1784,7 +1804,8 @@ extern "C" void GluiPlot2DSetup(int main_window){
     BUTTON_rem_plot = glui_plot2d->add_button_to_panel(PANEL_plots, _("Remove"), GENPLOT_REM_PLOT, GenPlotCB);
     LIST_plots = glui_plot2d->add_listbox_to_panel(PANEL_plots, "select:", &iplot2dinfo, GENPLOT_SELECT_PLOT, GenPlotCB);
     LIST_plots->add_item(-1, "");
-    CHECKBOX_show_genplot = glui_plot2d->add_checkbox_to_panel(PANEL_plots, "show", &(glui_plot2dinfo->show), GENPLOT_SHOW_PLOT, GenPlotCB);
+    CHECKBOX_show_genplot  = glui_plot2d->add_checkbox_to_panel(PANEL_plots, "show", &(glui_plot2dinfo->show), GENPLOT_SHOW_PLOT, GenPlotCB);
+    glui_plot2d->add_checkbox_to_panel(PANEL_plots, "show plots", &plot2d_show_plots, GENPLOT_SHOW_PLOTS, GenPlotCB);
 
     if(ndeviceinfo>0){
       ROLLOUT_devplots = glui_plot2d->add_rollout_to_panel(PANEL_plots, "add plots at device locations", 0);

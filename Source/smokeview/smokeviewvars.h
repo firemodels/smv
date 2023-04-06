@@ -857,6 +857,7 @@ SVEXTERN int SVDECL(plot2d_show_xaxis_labels, 0);
 SVEXTERN int SVDECL(plot2d_show_xaxis_bounds, 1);
 SVEXTERN int SVDECL(plot2d_show_curve_labels, 1);
 SVEXTERN int SVDECL(plot2d_show_curve_values, 0);
+SVEXTERN int SVDECL(plot2d_show_plots,        1);
 
 SVEXTERN int SVDECL(glui_remove_selected_curve, 0);
 SVEXTERN int SVDECL(glui_csv_file_index, 0);

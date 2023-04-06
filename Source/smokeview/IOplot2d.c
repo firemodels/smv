@@ -776,11 +776,12 @@ void DrawGenPlot(plot2ddata *plot2di){
 void DrawGenPlots(void){
   int i;
 
+  if(plot2d_show_plots == 0)return;
   for(i = 0; i < nplot2dinfo;i++){
     plot2ddata *plot2di;
 
     plot2di = plot2dinfo + i;
-    if(plot2di->show == 1&&plot2di->ncurves>0){
+    if(plot2di->show == 1){
       DrawGenPlot(plot2di);
     }
   }
