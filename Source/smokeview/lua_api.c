@@ -922,9 +922,9 @@ int initcsvdata(lua_State *L) {
   return 0;
 }
 
-void ReadCSV(csvfiledata *csvfi, int flag);
+void ReadCSVFile(csvfiledata *csvfi, int flag);
 void load_csv(csvfiledata *csventry) {
-  ReadCSV(csventry, LOAD);
+  ReadCSVFile(csventry, LOAD);
   csventry->loaded = 1;
 }
 
