@@ -87,12 +87,12 @@ void UpdateCameraYpos(cameradata *ci, int option){
 
 
   if(use_geom_factors==1&&have_geom_factors==1){
-    dx = NORMALIZE_X(geom_xmax) - NORMALIZE_X(geom_xmin);
-    dy = NORMALIZE_Y(geom_ymax) - NORMALIZE_Y(geom_ymin);
-    dz = NORMALIZE_Z(geom_zmax) - NORMALIZE_Z(geom_zmin);
-    ci->xcen = NORMALIZE_X((geom_xmin+geom_xmax)/2.0);
-    ci->ycen = NORMALIZE_Y((geom_ymin+geom_ymax)/2.0);
-    ci->zcen = NORMALIZE_Z((geom_zmin+geom_zmax)/2.0);
+    dx = FDS2SMV_X(geom_xmax) - FDS2SMV_X(geom_xmin);
+    dy = FDS2SMV_Y(geom_ymax) - FDS2SMV_Y(geom_ymin);
+    dz = FDS2SMV_Z(geom_zmax) - FDS2SMV_Z(geom_zmin);
+    ci->xcen = FDS2SMV_X((geom_xmin+geom_xmax)/2.0);
+    ci->ycen = FDS2SMV_Y((geom_ymin+geom_ymax)/2.0);
+    ci->zcen = FDS2SMV_Z((geom_zmin+geom_zmax)/2.0);
   }
   else{
     dx = xbar;

@@ -26,13 +26,13 @@ int GetGridIndex(float val, int dir, float *plotxyz, int nplotxyz){
 
   switch(dir){
     case XDIR:
-      val=NORMALIZE_X(val);
+      val=FDS2SMV_X(val);
       break;
     case YDIR:
-      val=NORMALIZE_Y(val);
+      val=FDS2SMV_Y(val);
       break;
     case ZDIR:
-      val=NORMALIZE_Z(val);
+      val=FDS2SMV_Z(val);
       break;
     default:
       ASSERT(FFALSE);
@@ -1355,7 +1355,7 @@ void MoveGenSlice(int xm, int ym){
         yy = ym-mouse_down_xy0[1];
         yy = yy/(float)screenHeight;
 
-        gslice_xyz[2] = gslice_xyz0[2] - DENORMALIZE_Z(4*(xyzbox-NORMALIZE_Z(gslice_xyz0[2]))*yy);
+        gslice_xyz[2] = gslice_xyz0[2] - SMV2FDS_Z(4*(xyzbox-FDS2SMV_Z(gslice_xyz0[2]))*yy);
         UpdateGsliceParms();
       }
       break;
@@ -3995,6 +3995,9 @@ void DoScript(void){
   int script_return_code;
 
   if(runscript == 1){
+  // csv files are read in the background.  the following line ensures that they will all be read in
+  // before the script begins. gpf
+      JOIN_CSV_FILES; 
       runscript = 0;
       PRINTF("running ssf script instruction\n");
       fflush(stdout);
@@ -4007,6 +4010,9 @@ void DoScript(void){
 #else
 void DoScript(void){
   SNIFF_ERRORS("DoScript: start");
+  if(runscript == 1){
+    JOIN_CSVFILES;
+  }
   if(runscript==1&&default_script!=NULL){
     ScriptMenu(default_script->id);
     runscript=2;

@@ -292,8 +292,8 @@ void DrawColorbarPathRGB(void){
     }
     glEnd();
 
-    xdenorm = DENORMALIZE_X(1.55);
-    ydenorm = DENORMALIZE_Y(0.0);
+    xdenorm = SMV2FDS_X(1.55);
+    ydenorm = SMV2FDS_Y(0.0);
     if(fontindex==SCALED_FONT)ScaleFont3D();
     glPushMatrix();
     glScalef(SCALE2SMV(1.0),SCALE2SMV(1.0),SCALE2SMV(1.0));
@@ -303,7 +303,7 @@ void DrawColorbarPathRGB(void){
       float dzpoint;
 
       dzpoint = (float)cbi->index_node[i]/255.0;
-      zdenorm = DENORMALIZE_Z(dzpoint);
+      zdenorm = SMV2FDS_Z(dzpoint);
       sprintf(cbuff,"%i",(int)cbi->index_node[i]);
       Output3Text(foregroundcolor, xdenorm,ydenorm,zdenorm, cbuff);
     }

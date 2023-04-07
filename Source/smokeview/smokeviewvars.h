@@ -335,6 +335,11 @@ SVEXTERN int SVDECL(part_multithread, 1);
 #else
 SVEXTERN int SVDECL(part_multithread, 0);
 #endif
+#ifdef pp_CSV_MULTI
+SVEXTERN int SVDECL(csv_multithread,1);
+SVEXTERN int SVDECL(ncsv_threads, 1);
+#endif
+SVEXTERN float SVDECL(csv_timer, 0.0);
 #ifdef pp_SLICE_MULTI
 SVEXTERN int SVDECL(slice_multithread, 0);
 #endif
@@ -835,6 +840,8 @@ SVEXTERN int SVDECL(showdevice_val, 0), SVDECL(showvdevice_val, 0);
 SVEXTERN int SVDECL(show_plot2d_xlabels, 1), SVDECL(show_plot2d_ylabels, 1), SVDECL(show_plot2d_title, 1);
 SVEXTERN int SVDECL(colordevice_val, 0), SVDECL(showdevice_id, 0);
 SVEXTERN int SVDECL(select_device, 0);
+SVEXTERN char plot2d_xaxis_label[301];
+SVEXTERN float SVDECL(plot2d_xaxis_position, 0.0);
 SVEXTERN int SVDECL(showdevice_type,1), SVDECL(showdevice_unit,1);
 SVEXTERN float SVDECL(device_valmin,0.0), SVDECL(device_valmax,1.0);
 SVEXTERN devicedata SVDECL(**devicetypes,NULL);
@@ -844,10 +851,13 @@ SVEXTERN int SVDECL(ndevicetypes,0);
 SVEXTERN int SVDECL(idevice_add, 0);
 SVEXTERN float plot2d_xyzstart[3], plot2d_xyzend[3];
 SVEXTERN int SVDECL(plot2d_show_plot_title,   1);
-SVEXTERN int SVDECL(plot2d_show_yaxis_labels, 1);
-SVEXTERN int SVDECL(plot2d_show_xaxis_labels, 1);
+SVEXTERN int SVDECL(plot2d_show_yaxis_bounds, 1);
+SVEXTERN int SVDECL(plot2d_show_yaxis_units,  1);
+SVEXTERN int SVDECL(plot2d_show_xaxis_labels, 0);
+SVEXTERN int SVDECL(plot2d_show_xaxis_bounds, 1);
 SVEXTERN int SVDECL(plot2d_show_curve_labels, 1);
 SVEXTERN int SVDECL(plot2d_show_curve_values, 0);
+SVEXTERN int SVDECL(plot2d_show_plots,        1);
 
 SVEXTERN int SVDECL(glui_remove_selected_curve, 0);
 SVEXTERN int SVDECL(glui_csv_file_index, 0);
@@ -1494,9 +1504,13 @@ SVEXTERN int SVDECL(use_geom_factors, 1), SVDECL(have_geom_factors, 0);
 SVEXTERN int SVDECL(transparent_state,ALL_SOLID);
 
 SVEXTERN float SVDECL(tload_begin, 0.0), SVDECL(tload_end, 0.0);
+SVEXTERN int SVDECL(use_tload_begin, 0), SVDECL(use_tload_end, 0);
+SVEXTERN float SVDECL(tload_begin2, 0.0), SVDECL(tload_end2, 0.0);
+SVEXTERN int SVDECL(use_tload_begin2, 0), SVDECL(use_tload_end2, 0);
+SVEXTERN int SVDECL(use_tload_skip, 0);
+
 SVEXTERN int SVDECL(tload_zipskip, 0), SVDECL(tload_zipstep, 1);
 SVEXTERN int SVDECL(tload_skip, 0), SVDECL(tload_step, 1);
-SVEXTERN int SVDECL(use_tload_begin, 0), SVDECL(use_tload_end, 0), SVDECL(use_tload_skip, 0);
 
 SVEXTERN float frameinterval;
 

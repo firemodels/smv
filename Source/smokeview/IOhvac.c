@@ -1030,6 +1030,7 @@ hvacnodedata *GetHVACNodeID(char *node_name){
 void DrawHVAC(hvacdata *hvaci){
   int i, frame_index=0;
   unsigned char uc_color[3];
+  unsigned char hvac_cell_color[3] = {128, 128, 128};
   float *last_color = NULL;
 
   if((hvacductvar_index >= 0||hvacnodevar_index>=0)&&global_times!=NULL){
@@ -1117,8 +1118,8 @@ void DrawHVAC(hvacdata *hvaci){
   SNIFF_ERRORS("after hvac duct lines");
 
   if(hvac_cell_view==1){
-    glColor3fv(foregroundcolor);
-    glPointSize(hvaci->node_size);
+    glColor3ubv(hvac_cell_color);
+    glPointSize(hvaci->cell_node_size);
     glBegin(GL_POINTS);
     for(i = 0; i < nhvacductinfo; i++){
       hvacductdata *ducti;
@@ -1136,7 +1137,7 @@ void DrawHVAC(hvacdata *hvaci){
         xyzs       = ducti->xyz_reg_cell;
         nxyzs      = ducti->nxyz_reg_cell-1;
       }
-      for(j = 0;j < nxyzs;j++){
+      for(j = 1;j < nxyzs-1;j++){
         float *xyz;
 
         xyz = xyzs + 3 * j;

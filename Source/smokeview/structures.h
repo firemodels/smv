@@ -52,6 +52,7 @@ typedef struct _csvdata{
 typedef struct _csvfiledata {
   char *file;
   csvdata *csvinfo, *time;
+  int defined, glui_defined;
   int ncsvinfo;
   int format;
   int loaded, display;
@@ -1325,7 +1326,7 @@ typedef struct _hvacdata {
   int display;
   int show_node_labels, show_duct_labels;
   int show_filters, show_component;
-  float node_size, component_size, duct_width, filter_size;
+  float cell_node_size, node_size, component_size, duct_width, filter_size;
   int duct_color[3], node_color[3];
 } hvacdata;
 

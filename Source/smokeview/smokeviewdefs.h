@@ -245,6 +245,14 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 #define STOP_TIMER(a) a = glutGet(GLUT_ELAPSED_TIME)/1000.0 - a
 #endif
 
+#ifndef INIT_PRINT_TIMER
+#define INIT_PRINT_TIMER(timer)   float timer;START_TIMER(timer)
+#endif
+#ifndef PRINT_TIMER
+#define PRINT_TIMER(timer, label) PrintTime(__FILE__, __LINE__, &timer, label)
+#endif
+
+
 #ifndef START_TICKS
 #define START_TICKS(a) a = glutGet(GLUT_ELAPSED_TIME)
 #endif
@@ -522,6 +530,10 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 #define CSV_EXP   2
 
 #define TEPS 0.00
+
+#define CSV_UNDEFINED 0
+#define CSV_DEFINED   1
+#define CSV_DEFINING  2
 
 #define PART_POINTS     1
 #define PART_SPHERES    2

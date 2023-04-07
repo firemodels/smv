@@ -750,9 +750,9 @@ int FDSPointInFrustum(float *xyz){
   int i;
   float xyz_smv[3];
 
-  xyz_smv[0] = NORMALIZE_X(xyz[0]);
-  xyz_smv[1] = NORMALIZE_Y(xyz[1]);
-  xyz_smv[2] = NORMALIZE_Z(xyz[2]);
+  xyz_smv[0] = FDS2SMV_X(xyz[0]);
+  xyz_smv[1] = FDS2SMV_Y(xyz[1]);
+  xyz_smv[2] = FDS2SMV_Z(xyz[2]);
 
   for(i = 0; i<6; i++){
     if(DOT3(frustum[i], xyz_smv)+frustum[i][3]<=0)return 0;
@@ -1447,12 +1447,12 @@ void InitClip(void){
   ci->clip_xmax=1;
   ci->clip_ymax=1;
   ci->clip_zmax=1;
-  ci->xmin=DENORMALIZE_X(2.0);
-  ci->ymin=DENORMALIZE_X(2.0);
-  ci->zmin=DENORMALIZE_Y(2.0);
-  ci->xmax=DENORMALIZE_Y(2.0);
-  ci->ymax=DENORMALIZE_Z(2.0);
-  ci->zmax=DENORMALIZE_Z(2.0);
+  ci->xmin=SMV2FDS_X(2.0);
+  ci->ymin=SMV2FDS_X(2.0);
+  ci->zmin=SMV2FDS_Y(2.0);
+  ci->xmax=SMV2FDS_Y(2.0);
+  ci->ymax=SMV2FDS_Z(2.0);
+  ci->zmax=SMV2FDS_Z(2.0);
 
   clip_i=0;
   clip_j=0;
@@ -1633,7 +1633,7 @@ void SetClipPlanes(clipdata *ci, int option){
     clipplane[1]=0.0;
     clipplane[2]=0.0;
     if(option==CLIP_ON_DENORMAL)clipplane[3]=-ci->xmin;
-    if(option==CLIP_ON)clipplane[3]=-NORMALIZE_X(ci->xmin);
+    if(option==CLIP_ON)clipplane[3]=-FDS2SMV_X(ci->xmin);
     glClipPlane(GL_CLIP_PLANE0,clipplane);
     glEnable(GL_CLIP_PLANE0);
   }
@@ -1648,7 +1648,7 @@ void SetClipPlanes(clipdata *ci, int option){
     clipplane[1]=0.0;
     clipplane[2]=0.0;
     if(option==CLIP_ON_DENORMAL)clipplane[3]=ci->xmax;
-    if(option==CLIP_ON)clipplane[3]=NORMALIZE_X(ci->xmax);
+    if(option==CLIP_ON)clipplane[3]=FDS2SMV_X(ci->xmax);
     glClipPlane(GL_CLIP_PLANE3,clipplane);
     glEnable(GL_CLIP_PLANE3);
   }
@@ -1663,7 +1663,7 @@ void SetClipPlanes(clipdata *ci, int option){
     clipplane[1]=1.0;
     clipplane[2]=0.0;
     if(option==CLIP_ON_DENORMAL)clipplane[3]=-ci->ymin;
-    if(option==CLIP_ON)clipplane[3]=-NORMALIZE_Y(ci->ymin);
+    if(option==CLIP_ON)clipplane[3]=-FDS2SMV_Y(ci->ymin);
     glClipPlane(GL_CLIP_PLANE1,clipplane);
     glEnable(GL_CLIP_PLANE1);
   }
@@ -1678,7 +1678,7 @@ void SetClipPlanes(clipdata *ci, int option){
     clipplane[1]=-1.0;
     clipplane[2]=0.0;
     if(option==CLIP_ON_DENORMAL)clipplane[3]=ci->ymax;
-    if(option==CLIP_ON)clipplane[3]=NORMALIZE_Y(ci->ymax);
+    if(option==CLIP_ON)clipplane[3]=FDS2SMV_Y(ci->ymax);
     glClipPlane(GL_CLIP_PLANE4,clipplane);
     glEnable(GL_CLIP_PLANE4);
   }
@@ -1693,7 +1693,7 @@ void SetClipPlanes(clipdata *ci, int option){
     clipplane[1]=0.0;
     clipplane[2]=1.0;
     if(option==CLIP_ON_DENORMAL)clipplane[3]=-ci->zmin;
-    if(option==CLIP_ON)clipplane[3]=-NORMALIZE_Z(ci->zmin);
+    if(option==CLIP_ON)clipplane[3]=-FDS2SMV_Z(ci->zmin);
     glClipPlane(GL_CLIP_PLANE2,clipplane);
     glEnable(GL_CLIP_PLANE2);
   }
@@ -1708,7 +1708,7 @@ void SetClipPlanes(clipdata *ci, int option){
     clipplane[1]=0.0;
     clipplane[2]=-1.0;
     if(option==CLIP_ON_DENORMAL)clipplane[3]=ci->zmax;
-    if(option==CLIP_ON)clipplane[3]=NORMALIZE_Z(ci->zmax);
+    if(option==CLIP_ON)clipplane[3]=FDS2SMV_Z(ci->zmax);
     glClipPlane(GL_CLIP_PLANE5,clipplane);
     glEnable(GL_CLIP_PLANE5);
   }

@@ -1093,12 +1093,12 @@ void SetCVentDirs(void){
         for(k=cvi->kmin;k<cvi->kmax;k++){
           float dz;
 
-          dz = zplt[k]-NORMALIZE_Z(cvi->origin[2]);
+          dz = zplt[k]-FDS2SMV_Z(cvi->origin[2]);
           for(j=cvi->jmin;j<cvi->jmax;j++){
             float dy;
             float drad;
 
-            dy = yplt[j]-NORMALIZE_Y(cvi->origin[1]);
+            dy = yplt[j]-FDS2SMV_Y(cvi->origin[1]);
             drad=sqrt(dy*dy+dz*dz);
             if(SCALE2SMV(drad)>cvi->radius){
               blank[IJCIRC(j-cvi->jmin,k-cvi->kmin)]=0;
@@ -1111,12 +1111,12 @@ void SetCVentDirs(void){
         for(k=cvi->kmin;k<cvi->kmax;k++){
           float dz;
 
-          dz = zplt[k]-NORMALIZE_Z(cvi->origin[2]);
+          dz = zplt[k]-FDS2SMV_Z(cvi->origin[2]);
           for(i=cvi->imin;i<cvi->imax;i++){
             float dx;
             float drad;
 
-            dx = xplt[i]-NORMALIZE_X(cvi->origin[0]);
+            dx = xplt[i]-FDS2SMV_X(cvi->origin[0]);
             drad=sqrt(dx*dx+dz*dz);
             if(SCALE2SMV(drad)>cvi->radius){
               blank[IJCIRC(i-cvi->imin,k-cvi->kmin)]=0;
@@ -1129,12 +1129,12 @@ void SetCVentDirs(void){
         for(j=cvi->jmin;j<cvi->jmax;j++){
           float dy;
 
-          dy = yplt[j]-NORMALIZE_Y(cvi->origin[1]);
+          dy = yplt[j]-FDS2SMV_Y(cvi->origin[1]);
           for(i=cvi->imin;i<cvi->imax;i++){
             float dx;
             float drad;
 
-            dx = xplt[i]-NORMALIZE_X(cvi->origin[0]);
+            dx = xplt[i]-FDS2SMV_X(cvi->origin[0]);
             drad=sqrt(dx*dx+dy*dy);
             if(SCALE2SMV(drad)>cvi->radius){
               blank[IJCIRC(i-cvi->imin,j-cvi->jmin)]=0;
@@ -1923,9 +1923,9 @@ void UpdateCADTextCoords(cadquad *quadi){
   for(i=0;i<4;i++){
     float qx, qy, qz;
 
-    qx=DENORMALIZE_X(xyz[3*i+0]) - t_origin[0];
-    qy=DENORMALIZE_Y(xyz[3*i+1]) - t_origin[1];
-    qz=DENORMALIZE_Z(xyz[3*i+2]) - t_origin[2];
+    qx=SMV2FDS_X(xyz[3*i+0]) - t_origin[0];
+    qy=SMV2FDS_Y(xyz[3*i+1]) - t_origin[1];
+    qz=SMV2FDS_Z(xyz[3*i+2]) - t_origin[2];
 
     if(l1!=0.0){
       txy[2*i]=(ny*qx-nx*qy)/l1;
@@ -2707,12 +2707,12 @@ void UpdateFaces(void){
 
 int ClipFace(clipdata *ci, facedata *facei){
   if(clip_mode==CLIP_OFF||clip_mode==CLIP_DATA)return 0;
-  if(ci->clip_xmin==1&&DENORMALIZE_X(facei->xmax)<ci->xmin)return 1;
-  if(ci->clip_xmax==1&&DENORMALIZE_X(facei->xmin)>ci->xmax)return 1;
-  if(ci->clip_ymin==1&&DENORMALIZE_Y(facei->ymax)<ci->ymin)return 1;
-  if(ci->clip_ymax==1&&DENORMALIZE_Y(facei->ymin)>ci->ymax)return 1;
-  if(ci->clip_zmin==1&&DENORMALIZE_Z(facei->zmax)<ci->zmin)return 1;
-  if(ci->clip_zmax==1&&DENORMALIZE_Z(facei->zmin)>ci->zmax)return 1;
+  if(ci->clip_xmin==1&&SMV2FDS_X(facei->xmax)<ci->xmin)return 1;
+  if(ci->clip_xmax==1&&SMV2FDS_X(facei->xmin)>ci->xmax)return 1;
+  if(ci->clip_ymin==1&&SMV2FDS_Y(facei->ymax)<ci->ymin)return 1;
+  if(ci->clip_ymax==1&&SMV2FDS_Y(facei->ymin)>ci->ymax)return 1;
+  if(ci->clip_zmin==1&&SMV2FDS_Z(facei->zmax)<ci->zmin)return 1;
+  if(ci->clip_zmax==1&&SMV2FDS_Z(facei->zmin)>ci->zmax)return 1;
   return 0;
 }
 
@@ -2735,12 +2735,12 @@ void SetCullVis(void){
       float xx[2], yy[2], zz[2];
 
       culli = meshi->cullgeominfo+iport;
-      xx[0] = NORMALIZE_X(culli->xbeg);
-      xx[1] = NORMALIZE_X(culli->xend);
-      yy[0] = NORMALIZE_Y(culli->ybeg);
-      yy[1] = NORMALIZE_Y(culli->yend);
-      zz[0] = NORMALIZE_Z(culli->zbeg);
-      zz[1] = NORMALIZE_Z(culli->zend);
+      xx[0] = FDS2SMV_X(culli->xbeg);
+      xx[1] = FDS2SMV_X(culli->xend);
+      yy[0] = FDS2SMV_Y(culli->ybeg);
+      yy[1] = FDS2SMV_Y(culli->yend);
+      zz[0] = FDS2SMV_Z(culli->zbeg);
+      zz[1] = FDS2SMV_Z(culli->zend);
       culli->vis = BoxInFrustum(xx,yy,zz);
     }
   }

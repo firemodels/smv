@@ -4360,6 +4360,7 @@ void TimeBoundCB(int var){
     SetTimeVal(glui_time);
     break;
   case TBOUNDS_USE:
+    UpdatePlot2DTbounds();
     if(use_tload_begin == 1){
       SPINNER_tload_begin->enable();
     }
@@ -4383,6 +4384,7 @@ void TimeBoundCB(int var){
     updatemenu = 1;
     break;
   case TBOUNDS:
+    UpdatePlot2DTbounds();
     UpdateTBounds();
     UpdateTimes();
     updatemenu = 1;
@@ -4577,6 +4579,19 @@ void ScriptCB(int var){
     ASSERT(FFALSE);
     break;
   }
+}
+
+/* ------------------ UpdateBoundTbounds ------------------------ */
+
+extern "C" void UpdateBoundTbounds(void){
+  use_tload_end   = use_tload_end2;
+  use_tload_begin = use_tload_begin2;
+  tload_end       = tload_end2;
+  tload_begin     = tload_begin2;
+  if(CHECKBOX_use_tload_begin!=NULL)CHECKBOX_use_tload_begin->set_int_val(use_tload_begin);
+  if(CHECKBOX_use_tload_end!=NULL)CHECKBOX_use_tload_end->set_int_val(use_tload_end);
+  if(SPINNER_tload_end!=NULL)SPINNER_tload_end->set_float_val(tload_end);
+  if(SPINNER_tload_begin!=NULL)SPINNER_tload_begin->set_float_val(tload_begin);
 }
 
 /* ------------------ UpdateSliceXYZ ------------------------ */

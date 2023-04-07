@@ -599,9 +599,9 @@ void GSliceCB(int var){
     gslice_norm[2] = sin(elev);
     break;
   case GSLICE_TRANSLATE:
-    gslice_xyz[0] = CLAMP(gslice_xyz[0], xbar0, DENORMALIZE_X(xbar));
-    gslice_xyz[1] = CLAMP(gslice_xyz[1], ybar0, DENORMALIZE_Y(ybar));
-    gslice_xyz[2] = CLAMP(gslice_xyz[2], zbar0, DENORMALIZE_Z(zbar));
+    gslice_xyz[0] = CLAMP(gslice_xyz[0], xbar0, SMV2FDS_X(xbar));
+    gslice_xyz[1] = CLAMP(gslice_xyz[1], ybar0, SMV2FDS_Y(ybar));
+    gslice_xyz[2] = CLAMP(gslice_xyz[2], zbar0, SMV2FDS_Z(zbar));
     break;
   default:
     ASSERT(FFALSE);
@@ -1236,15 +1236,15 @@ extern "C" void GluiMotionSetup(int main_window){
 
   PANEL_user_center = glui_motion->add_panel_to_panel(ROLLOUT_rotation_type, "rotation center");
   CHECKBOX_show_rotation_center=glui_motion->add_checkbox_to_panel(PANEL_user_center,_("Show"),&show_rotation_center, CLIP_SHOW_ROTATE, SceneMotionCB);
-  xcenCUSTOMsmv = DENORMALIZE_X(xcenCUSTOM);
-  ycenCUSTOMsmv = DENORMALIZE_Y(ycenCUSTOM);
-  zcenCUSTOMsmv = DENORMALIZE_Z(zcenCUSTOM);
+  xcenCUSTOMsmv = SMV2FDS_X(xcenCUSTOM);
+  ycenCUSTOMsmv = SMV2FDS_Y(ycenCUSTOM);
+  zcenCUSTOMsmv = SMV2FDS_Z(zcenCUSTOM);
   SPINNER_xcenCUSTOM=glui_motion->add_spinner_to_panel(PANEL_user_center,"x:",GLUI_SPINNER_FLOAT,&xcenCUSTOMsmv, CUSTOM_ROTATION_XYZ,SceneMotionCB);
   SPINNER_ycenCUSTOM=glui_motion->add_spinner_to_panel(PANEL_user_center,"y:",GLUI_SPINNER_FLOAT,&ycenCUSTOMsmv, CUSTOM_ROTATION_XYZ,SceneMotionCB);
   SPINNER_zcenCUSTOM=glui_motion->add_spinner_to_panel(PANEL_user_center,"z:",GLUI_SPINNER_FLOAT,&zcenCUSTOMsmv, CUSTOM_ROTATION_XYZ,SceneMotionCB);
-  SPINNER_xcenCUSTOM->set_float_limits(DENORMALIZE_X(0.0),DENORMALIZE_X(1.0));
-  SPINNER_ycenCUSTOM->set_float_limits(DENORMALIZE_Y(0.0),DENORMALIZE_Y(1.0));
-  SPINNER_zcenCUSTOM->set_float_limits(DENORMALIZE_Z(0.0),DENORMALIZE_Z(1.0));
+  SPINNER_xcenCUSTOM->set_float_limits(SMV2FDS_X(0.0),SMV2FDS_X(1.0));
+  SPINNER_ycenCUSTOM->set_float_limits(SMV2FDS_Y(0.0),SMV2FDS_Y(1.0));
+  SPINNER_zcenCUSTOM->set_float_limits(SMV2FDS_Z(0.0),SMV2FDS_Z(1.0));
 
   SceneMotionCB(ROTATE_ABOUT);
 
@@ -1307,18 +1307,18 @@ extern "C" void GluiMotionSetup(int main_window){
   ADDPROCINFO(motionprocinfo,nmotionprocinfo,ROLLOUT_gslice,SLICE_ROLLOUT, glui_motion);
 
   if(gslice_xyz[0]<-1000000.0&&gslice_xyz[1]<-1000000.0&&gslice_xyz[2]<-1000000.0){
-    gslice_xyz[0]=(xbar0+DENORMALIZE_X(xbar))/2.0;
-    gslice_xyz[1]=(ybar0+DENORMALIZE_Y(ybar))/2.0;
-    gslice_xyz[2]=(zbar0+DENORMALIZE_Z(zbar))/2.0;
+    gslice_xyz[0]=(xbar0+SMV2FDS_X(xbar))/2.0;
+    gslice_xyz[1]=(ybar0+SMV2FDS_Y(ybar))/2.0;
+    gslice_xyz[2]=(zbar0+SMV2FDS_Z(zbar))/2.0;
   }
 
   PANEL_gslice_center = glui_motion->add_panel_to_panel(ROLLOUT_gslice,_("rotation center"),true);
   SPINNER_gslice_center_x=glui_motion->add_spinner_to_panel(PANEL_gslice_center,"x:",GLUI_SPINNER_FLOAT,gslice_xyz,  GSLICE_TRANSLATE, GSliceCB);
   SPINNER_gslice_center_y=glui_motion->add_spinner_to_panel(PANEL_gslice_center,"y:",GLUI_SPINNER_FLOAT,gslice_xyz+1,GSLICE_TRANSLATE, GSliceCB);
   SPINNER_gslice_center_z=glui_motion->add_spinner_to_panel(PANEL_gslice_center,"z:",GLUI_SPINNER_FLOAT,gslice_xyz+2,GSLICE_TRANSLATE, GSliceCB);
-  SPINNER_gslice_center_x->set_float_limits(xbar0,DENORMALIZE_X(xbar),GLUI_LIMIT_CLAMP);
-  SPINNER_gslice_center_y->set_float_limits(ybar0,DENORMALIZE_Y(ybar),GLUI_LIMIT_CLAMP);
-  SPINNER_gslice_center_z->set_float_limits(zbar0,DENORMALIZE_Z(zbar),GLUI_LIMIT_CLAMP);
+  SPINNER_gslice_center_x->set_float_limits(xbar0,SMV2FDS_X(xbar),GLUI_LIMIT_CLAMP);
+  SPINNER_gslice_center_y->set_float_limits(ybar0,SMV2FDS_Y(ybar),GLUI_LIMIT_CLAMP);
+  SPINNER_gslice_center_z->set_float_limits(zbar0,SMV2FDS_Z(zbar),GLUI_LIMIT_CLAMP);
   GSliceCB(GSLICE_TRANSLATE);
 
   PANEL_gslice_normal = glui_motion->add_panel_to_panel(ROLLOUT_gslice,_("normal"),true);
@@ -1791,17 +1791,17 @@ extern "C" void UpdateRotationIndex(int val){
         camera_current->zcen = zcenCUSTOM;
       }
       else if(*rotation_index==ROTATE_ABOUT_FDS_CENTER){
-        camera_current->xcen = NORMALIZE_X((xbar0FDS + xbarFDS)/2.0);
-        camera_current->ycen = NORMALIZE_Y((ybar0FDS + ybarFDS)/2.0);
-        camera_current->zcen = NORMALIZE_Z((zbar0FDS + zbarFDS)/2.0);
+        camera_current->xcen = FDS2SMV_X((xbar0FDS + xbarFDS)/2.0);
+        camera_current->ycen = FDS2SMV_Y((ybar0FDS + ybarFDS)/2.0);
+        camera_current->zcen = FDS2SMV_Z((zbar0FDS + zbarFDS)/2.0);
       }
       else{
         camera_current->xcen = ((camera_current->clip_xmin == 1 ? clipinfo.xmin : xbar0ORIG) + (camera_current->clip_xmax == 1 ? clipinfo.xmax : xbarORIG)) / 2.0;
         camera_current->ycen = ((camera_current->clip_ymin == 1 ? clipinfo.ymin : ybar0ORIG) + (camera_current->clip_ymax == 1 ? clipinfo.ymax : ybarORIG)) / 2.0;
         camera_current->zcen = ((camera_current->clip_zmin == 1 ? clipinfo.zmin : zbar0ORIG) + (camera_current->clip_zmax == 1 ? clipinfo.zmax : zbarORIG)) / 2.0;
-        camera_current->xcen = NORMALIZE_X(camera_current->xcen);
-        camera_current->ycen = NORMALIZE_Y(camera_current->ycen);
-        camera_current->zcen = NORMALIZE_Z(camera_current->zcen);
+        camera_current->xcen = FDS2SMV_X(camera_current->xcen);
+        camera_current->ycen = FDS2SMV_Y(camera_current->ycen);
+        camera_current->zcen = FDS2SMV_Z(camera_current->zcen);
       }
     }
   }
@@ -1809,9 +1809,9 @@ extern "C" void UpdateRotationIndex(int val){
   xcenCUSTOM = camera_current->xcen;
   ycenCUSTOM = camera_current->ycen;
   zcenCUSTOM = camera_current->zcen;
-  xcenCUSTOMsmv = DENORMALIZE_X(xcenCUSTOM);
-  ycenCUSTOMsmv = DENORMALIZE_Y(ycenCUSTOM);
-  zcenCUSTOMsmv = DENORMALIZE_Z(zcenCUSTOM);
+  xcenCUSTOMsmv = SMV2FDS_X(xcenCUSTOM);
+  ycenCUSTOMsmv = SMV2FDS_Y(ycenCUSTOM);
+  zcenCUSTOMsmv = SMV2FDS_Z(zcenCUSTOM);
   if(SPINNER_xcenCUSTOM!=NULL)SPINNER_xcenCUSTOM->set_float_val(xcenCUSTOMsmv);
   if(SPINNER_ycenCUSTOM!=NULL)SPINNER_ycenCUSTOM->set_float_val(ycenCUSTOMsmv);
   if(SPINNER_zcenCUSTOM!=NULL)SPINNER_zcenCUSTOM->set_float_val(zcenCUSTOMsmv);
@@ -2201,9 +2201,9 @@ extern "C" void SceneMotionCB(int var){
       desired_view_height=0.6;
       break;
     case CUSTOM_ROTATION_XYZ:
-      xcenCUSTOM = NORMALIZE_X(xcenCUSTOMsmv);
-      ycenCUSTOM = NORMALIZE_Y(ycenCUSTOMsmv);
-      zcenCUSTOM = NORMALIZE_Z(zcenCUSTOMsmv);
+      xcenCUSTOM = FDS2SMV_X(xcenCUSTOMsmv);
+      ycenCUSTOM = FDS2SMV_Y(ycenCUSTOMsmv);
+      zcenCUSTOM = FDS2SMV_Z(zcenCUSTOMsmv);
       UpdateRotationIndex(ROTATE_ABOUT_USER_CENTER);
       break;
     case ROTATE_ABOUT:

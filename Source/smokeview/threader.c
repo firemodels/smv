@@ -8,6 +8,10 @@
 #include "IOvolsmoke.h"
 #include "smokestream.h"
 
+#ifndef pp_THREAD
+#undef pp_CSV_MULTI
+#endif
+
 /* ------------------ InitMultiThreading ------------------------ */
 
 void InitMultiThreading(void){
@@ -16,6 +20,7 @@ void InitMultiThreading(void){
 #ifdef pp_SLICE_MULTI
   pthread_mutex_init(&mutexSLICE_LOAD, NULL);
 #endif
+  pthread_mutex_init(&mutexCSV_LOAD, NULL);
   pthread_mutex_init(&mutexPART_LOAD, NULL);
   pthread_mutex_init(&mutexCOMPRESS,NULL);
   pthread_mutex_init(&mutexVOLLOAD,NULL);
@@ -233,6 +238,8 @@ void *MtReadAllGeom(void *arg){
   return NULL;
 }
 
+/* ------------------ ReadAllGeomMT ------------------------ */
+
 void ReadAllGeomMT(void){
   if(readallgeom_multithread==1){
     int i;
@@ -318,9 +325,7 @@ void *MtReadBufferi(void *arg){
   pthread_exit(NULL);
   return NULL;
 }
-#endif
 
-#ifdef pp_THREADBUFFER
 /* ------------------ ReadBuffer ------------------------ */
 
 int ReadBuffer(char *filename, int filesize, char *buffer, int nthreads, int use_multithread){
@@ -391,7 +396,66 @@ int ReadBuffer(char *filename, int filesize, char *buffer, int nthreads, int use
 }
 #endif
 
-  //***************************** multi threading triangle update ***********************************
+//***************************** multi threading read in csv file ***********************************
+
+/* ------------------ MtReadAllCSVFiles ------------------------ */
+
+#ifdef pp_THREAD
+void ReadAllCSVFiles(void);
+void *MtReadAllCSVFiles(void *arg){
+  ReadAllCSVFiles();
+  pthread_exit(NULL);
+  return NULL;
+}
+#endif
+
+/* ------------------ LockCSV ------------------------ */
+#ifdef pp_CSV_MULTI
+void LockCSV(void){
+  LOCK_CSV_LOAD;
+}
+
+/* ------------------ UnLockCSV ------------------------ */
+
+void UnLockCSV(void){
+  UNLOCK_CSV_LOAD;
+}
+#endif
+
+/* ------------------ void ReadAllCSVFilesMT ------------------------ */
+
+void ReadAllCSVFilesMT(void){
+  StartTimer(&csv_timer);
+#ifdef pp_CSV_MULTI
+  if(csv_multithread == 1){
+    int i;
+
+    for(i=0;i<ncsv_threads;i++){
+     pthread_create(csv_ids+i, NULL, MtReadAllCSVFiles, NULL);
+    }
+  }
+  else{
+    ReadAllCSVFiles();
+  }
+#else
+  ReadAllCSVFiles();
+#endif
+}
+
+/* ------------------ void FinishAllCSVFiles ------------------------ */
+
+#ifdef pp_CSV_MULTI
+void FinishAllCSVFiles(void){
+  int i;
+  if(csv_multithread == 1){
+    for(i = 0; i < ncsv_threads; i++){
+      pthread_join(csv_ids[i], NULL);
+    }
+  }
+}
+#endif
+
+//***************************** multi threading triangle update ***********************************
 
 /* ------------------ MtUpdateTriangles ------------------------ */
 

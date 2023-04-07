@@ -4716,9 +4716,9 @@ void ShowHideSortGeometry(int sort_geom, float *mm){
             xyz1 = tri->verts[0]->xyz;
             xyz2 = tri->verts[1]->xyz;
             xyz3 = tri->verts[2]->xyz;
-            xyz[0] = NORMALIZE_X((xyz1[0] + xyz2[0] + xyz3[0]) / 3.0);
-            xyz[1] = NORMALIZE_Y((xyz1[1] + xyz2[1] + xyz3[1]) / 3.0);
-            xyz[2] = NORMALIZE_Z((xyz1[2] + xyz2[2] + xyz3[2]) / 3.0);
+            xyz[0] = FDS2SMV_X((xyz1[0] + xyz2[0] + xyz3[0]) / 3.0);
+            xyz[1] = FDS2SMV_Y((xyz1[1] + xyz2[1] + xyz3[1]) / 3.0);
+            xyz[2] = FDS2SMV_Z((xyz1[2] + xyz2[2] + xyz3[2]) / 3.0);
 
             xyzeye[0] = mm[0] * xyz[0] + mm[4] * xyz[1] + mm[8] * xyz[2] + mm[12];
             xyzeye[1] = mm[1] * xyz[0] + mm[5] * xyz[1] + mm[9] * xyz[2] + mm[13];

@@ -839,13 +839,13 @@ void GetClipLabel(char *buffer, int flag){
         Float2String(buffer1, clipinfo.xmin, ngridloc_digits, FORCE_FIXEDPOINT_YES);
       }
       else{
-        Float2String(buffer1, DENORMALIZE_X(plotx_all[0]), ngridloc_digits, FORCE_FIXEDPOINT_YES);
+        Float2String(buffer1, SMV2FDS_X(plotx_all[0]), ngridloc_digits, FORCE_FIXEDPOINT_YES);
       }
       if(clipinfo.clip_xmax==1){
         Float2String(buffer2, clipinfo.xmax, ngridloc_digits, FORCE_FIXEDPOINT_YES);
       }
       else{
-        Float2String(buffer2, DENORMALIZE_X(plotx_all[nplotx_all-1]), ngridloc_digits, FORCE_FIXEDPOINT_YES);
+        Float2String(buffer2, SMV2FDS_X(plotx_all[nplotx_all-1]), ngridloc_digits, FORCE_FIXEDPOINT_YES);
       }
       strcpy(buffer, "x: ");
       break;
@@ -854,13 +854,13 @@ void GetClipLabel(char *buffer, int flag){
         Float2String(buffer1, clipinfo.ymin, ngridloc_digits, FORCE_FIXEDPOINT_YES);
       }
       else{
-        Float2String(buffer1, DENORMALIZE_Y(ploty_all[0]), ngridloc_digits, FORCE_FIXEDPOINT_YES);
+        Float2String(buffer1, SMV2FDS_Y(ploty_all[0]), ngridloc_digits, FORCE_FIXEDPOINT_YES);
       }
       if(clipinfo.clip_ymax==1){
         Float2String(buffer2, clipinfo.ymax, ngridloc_digits, FORCE_FIXEDPOINT_YES);
       }
       else{
-        Float2String(buffer2, DENORMALIZE_Y(ploty_all[nploty_all-1]), ngridloc_digits, FORCE_FIXEDPOINT_YES);
+        Float2String(buffer2, SMV2FDS_Y(ploty_all[nploty_all-1]), ngridloc_digits, FORCE_FIXEDPOINT_YES);
       }
       strcpy(buffer, "y: ");
       break;
@@ -869,13 +869,13 @@ void GetClipLabel(char *buffer, int flag){
         Float2String(buffer1, clipinfo.zmin, ngridloc_digits, FORCE_FIXEDPOINT_YES);
       }
       else{
-        Float2String(buffer1, DENORMALIZE_Z(plotz_all[0]), ngridloc_digits, FORCE_FIXEDPOINT_YES);
+        Float2String(buffer1, SMV2FDS_Z(plotz_all[0]), ngridloc_digits, FORCE_FIXEDPOINT_YES);
       }
       if(clipinfo.clip_zmax==1){
         Float2String(buffer2, clipinfo.zmax, ngridloc_digits, FORCE_FIXEDPOINT_YES);
       }
       else{
-        Float2String(buffer2, DENORMALIZE_Z(plotz_all[nplotz_all-1]), ngridloc_digits, FORCE_FIXEDPOINT_YES);
+        Float2String(buffer2, SMV2FDS_Z(plotz_all[nplotz_all-1]), ngridloc_digits, FORCE_FIXEDPOINT_YES);
       }
       strcpy(buffer, "z: ");
       break;
@@ -906,9 +906,9 @@ void ViewportInfo(int quad, GLint screen_left, GLint screen_down){
      ((showplot3d==1||visGrid!=NOGRID_NOPROBE)&&(visx_all==1||visy_all==1||visz_all==1))||
      visGrid==GRID_PROBE||
      visGrid==NOGRID_PROBE){
-    xyz[0]=DENORMALIZE_X(plotx_all[iplotx_all]);
-    xyz[1]=DENORMALIZE_Y(ploty_all[iploty_all]);
-    xyz[2]=DENORMALIZE_Z(plotz_all[iplotz_all]);
+    xyz[0]=SMV2FDS_X(plotx_all[iplotx_all]);
+    xyz[1]=SMV2FDS_Y(ploty_all[iploty_all]);
+    xyz[2]=SMV2FDS_Z(plotz_all[iplotz_all]);
     mesh_xyz= GetMeshNoFail(xyz);
   }
   if(clip_commandline==1||
@@ -2500,9 +2500,9 @@ void GetMinMaxDepth(float *min_depth, float *max_depth){
       for(keyj = (touri->first_frame).next; keyj->next!=NULL; keyj = keyj->next){
         float dist, dx, dy, dz;
 
-        dx = NORMALIZE_X(keyj->xyz_fds[0])-smv_eyepos[0];
-        dy = NORMALIZE_Y(keyj->xyz_fds[1])-smv_eyepos[1];
-        dz = NORMALIZE_Z(keyj->xyz_fds[2])-smv_eyepos[2];
+        dx = FDS2SMV_X(keyj->xyz_fds[0])-smv_eyepos[0];
+        dy = FDS2SMV_Y(keyj->xyz_fds[1])-smv_eyepos[1];
+        dz = FDS2SMV_Z(keyj->xyz_fds[2])-smv_eyepos[2];
         dist = sqrt(dx*dx+dy*dy+dz*dz);
         *min_depth = MIN(*min_depth, dist);
         *max_depth = MAX(*max_depth, dist);

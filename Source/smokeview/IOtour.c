@@ -462,16 +462,16 @@ void GetTourVal(float t, keyframe *kf1, keyframe *kf2, float *xyz){
     float p0, p1, m0, m1;
 
     if(i==0){
-      p0 = NORMALIZE_X(kf1->xyz_fds[i]);
-      p1 = NORMALIZE_X(kf2->xyz_fds[i]);
+      p0 = FDS2SMV_X(kf1->xyz_fds[i]);
+      p1 = FDS2SMV_X(kf2->xyz_fds[i]);
     }
     else if(i==1){
-      p0 = NORMALIZE_Y(kf1->xyz_fds[i]);
-      p1 = NORMALIZE_Y(kf2->xyz_fds[i]);
+      p0 = FDS2SMV_Y(kf1->xyz_fds[i]);
+      p1 = FDS2SMV_Y(kf2->xyz_fds[i]);
     }
     else{
-      p0 = NORMALIZE_Z(kf1->xyz_fds[i]);
-      p1 = NORMALIZE_Z(kf2->xyz_fds[i]);
+      p0 = FDS2SMV_Z(kf1->xyz_fds[i]);
+      p1 = FDS2SMV_Z(kf2->xyz_fds[i]);
     }
     m0 = kf1->xyz_tangent_right[i];
     m1 = kf2->xyz_tangent_left[i];
@@ -493,16 +493,16 @@ void HermiteXYZ(float t, keyframe *kf1, keyframe *kf2, float *xyz, float *slope)
     float p0, p1, m0, m1;
 
     if(i==0){
-      p0 = NORMALIZE_X(kf1->xyz_fds[i]);
-      p1 = NORMALIZE_X(kf2->xyz_fds[i]);
+      p0 = FDS2SMV_X(kf1->xyz_fds[i]);
+      p1 = FDS2SMV_X(kf2->xyz_fds[i]);
     }
     else if(i==1){
-      p0 = NORMALIZE_Y(kf1->xyz_fds[i]);
-      p1 = NORMALIZE_Y(kf2->xyz_fds[i]);
+      p0 = FDS2SMV_Y(kf1->xyz_fds[i]);
+      p1 = FDS2SMV_Y(kf2->xyz_fds[i]);
     }
     else{
-      p0 = NORMALIZE_Z(kf1->xyz_fds[i]);
-      p1 = NORMALIZE_Z(kf2->xyz_fds[i]);
+      p0 = FDS2SMV_Z(kf1->xyz_fds[i]);
+      p1 = FDS2SMV_Z(kf2->xyz_fds[i]);
     }
     m0 = kf1->xyz_tangent_right[i];
     m1 = kf2->xyz_tangent_left[i];

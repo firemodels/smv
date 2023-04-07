@@ -7,9 +7,13 @@
 
 EXTERNCPP void UpdatePartPointSize(void);
 EXTERNCPP float GetTime(void);
+EXTERNCPP void StartTimer(float *timerptr);
+EXTERNCPP void UpdatePlot2DTbounds(void);
+EXTERNCPP void UpdateBoundTbounds(void);
 
 // gen plot routines
 
+EXTERNCPP int HavePlot2D(float **times, int *ntimes);
 EXTERNCPP void UpdatePlot2DINI(void);
 EXTERNCPP void UpdatePlotLabel(void);
 EXTERNCPP char *GetPlotUnit2(plot2ddata *plot2di, curvedata *curve);
@@ -25,7 +29,6 @@ EXTERNCPP void DrawGenPlots(void);
 EXTERNCPP int HaveGenDev(void);
 EXTERNCPP int HaveGenHrr(void);
 EXTERNCPP void ShowPlot2D(void);
-EXTERNCPP void ReadAllCSV(int flag);
 EXTERNCPP char *GetPlotShortLabel(plot2ddata *plot2di, int curv_index);
 EXTERNCPP csvdata *GetCsvData(int file_index, int col_index, csvfiledata **csvf_ptr);
 EXTERNCPP csvdata *GetCsvCurve(int i, csvfiledata **csvf_ptr);
@@ -248,6 +251,14 @@ EXTERNCPP void InsertRollout(GLUI_Rollout *rollout, GLUI *dialog);
 EXTERNCPP void CloseRollouts(GLUI *dialog);
 #endif
 
+EXTERNCPP void ReadAllCSVFilesMT(void);
+EXTERNCPP void ReadAllCSVFiles(void);
+EXTERNCPP void UpdateCSVFileTypes(void);
+#ifdef pp_CSV_MULTI
+EXTERNCPP void FinishAllCSVFiles(void);
+EXTERNCPP void LockCSV(void);
+EXTERNCPP void UnLockCSV(void);
+#endif
 EXTERNCPP int HaveFireLoaded(void);
 EXTERNCPP int HaveSootLoaded(void);
 EXTERNCPP void Smoke3dCB(int var);

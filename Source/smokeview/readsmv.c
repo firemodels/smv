@@ -145,7 +145,7 @@ void UpdateHoc(void){
   }
 }
 
-/* ------------------ ReadCSV ------------------------ */
+/* ------------------ IsDimensionless ------------------------ */
 
 int IsDimensionless(char *unit){
 // unit is dimensionless if unit is NULL, unit is blank or
@@ -164,9 +164,9 @@ int IsDimensionless(char *unit){
   return 0;
 }
 
-/* ------------------ ReadCSV ------------------------ */
+/* ------------------ ReadCSVFile ------------------------ */
 
-int ReadCSV(csvfiledata *csvfi, int flag){
+int ReadCSVFile(csvfiledata *csvfi, int flag){
   FILE *stream;
   int nrows, ncols;
   int nunits, nlabels;
@@ -181,6 +181,7 @@ int ReadCSV(csvfiledata *csvfi, int flag){
   int len_buffer;
   int i;
 
+  LOCK_CSV_LOAD;
   for(i=0; i<csvfi->ncsvinfo; i++){
     csvdata *ci;
 
@@ -189,17 +190,19 @@ int ReadCSV(csvfiledata *csvfi, int flag){
     FREEMEMORY(ci->vals_orig);
   }
   FREEMEMORY(csvfi->csvinfo);
-  if(flag == UNLOAD)return 0;
+  UNLOCK_CSV_LOAD;
+  if(flag == UNLOAD)return CSV_UNDEFINED;
 
   stream = fopen(csvfi->file, "r");
-  if(stream == NULL)return 0;
+  if(stream == NULL)return CSV_UNDEFINED;
 
   len_buffer = GetRowCols(stream, &nrows, &ncols);
-  if(nrows==0||ncols==0)return 0;
+  if(nrows==0||ncols==0)return CSV_UNDEFINED;
   len_buffer = MAX(len_buffer + 100 + ncols, 1000);
   csvfi->ncsvinfo = ncols;
 
   // allocate memory
+  LOCK_CSV_LOAD;
   NewMemory((void **)&(buffer),        len_buffer);
   NewMemory((void **)&(buffer_labels), len_buffer);
   NewMemory((void **)&(buffer_units),  len_buffer);
@@ -207,28 +210,34 @@ int ReadCSV(csvfiledata *csvfi, int flag){
   NewMemory((void **)&(buffer_dummy),  len_buffer);
 #endif
   NewMemory((void **)&(buffer_temp),   len_buffer);
+  UNLOCK_CSV_LOAD;
 
   if(strcmp(csvfi->c_type, "ext") == 0){
     fgets(buffer, len_buffer, stream);
     if(feof(stream)){
+      LOCK_CSV_LOAD;
       FREEMEMORY(buffer);
       FREEMEMORY(buffer_labels);
       FREEMEMORY(buffer_units);
-      return 0;
+      UNLOCK_CSV_LOAD;
+      return CSV_UNDEFINED;
     }
     while(strstr(buffer, "//DATA") == NULL){
       fgets(buffer, len_buffer, stream);
       if(feof(stream)){
+        LOCK_CSV_LOAD;
         FREEMEMORY(buffer);
         FREEMEMORY(buffer_labels);
         FREEMEMORY(buffer_units);
-        return 0;
+        UNLOCK_CSV_LOAD;
+        return CSV_UNDEFINED;
       }
     }
   }
 
   int nsize;
   nsize = csvfi->ncsvinfo+1;
+  LOCK_CSV_LOAD;
   NewMemory((void **)&(csvfi->csvinfo), nsize*sizeof(csvdata));
   NewMemory((void **)&labels,           nsize*sizeof(char *));
   NewMemory((void **)&units,            nsize*sizeof(char *));
@@ -249,6 +258,7 @@ int ReadCSV(csvfiledata *csvfi, int flag){
     NewMemory((void **)&ci->vals,      MAX(1, ci->nvals)*sizeof(csvdata));
     NewMemory((void **)&ci->vals_orig, MAX(1, ci->nvals)*sizeof(csvdata));
   }
+  UNLOCK_CSV_LOAD;
   CheckMemory;
 
   // setup labels and units
@@ -400,7 +410,6 @@ int ReadCSV(csvfiledata *csvfi, int flag){
     SetLabels(&(cchirad->label), "-QRAD_I/HRR", "-QRAD_I/HRR", "");
     csvfi->ncsvinfo++;
   }
-  plot2d_max_columns = MAX(plot2d_max_columns, csvfi->ncsvinfo);
 
   //copy vals into vals_orig
   for(i=0; i<csvfi->ncsvinfo; i++){
@@ -411,6 +420,7 @@ int ReadCSV(csvfiledata *csvfi, int flag){
   }
 
   CheckMemory;
+  LOCK_CSV_LOAD;
   FREEMEMORY(units);
   FREEMEMORY(labels);
   FREEMEMORY(vals);
@@ -418,9 +428,10 @@ int ReadCSV(csvfiledata *csvfi, int flag){
   FREEMEMORY(buffer);
   FREEMEMORY(buffer_labels);
   FREEMEMORY(buffer_units);
+  UNLOCK_CSV_LOAD;
 
   fclose(stream);
-  return 1;
+  return CSV_DEFINED;
 }
 
 /* ------------------ CompareCSV ------------------------ */
@@ -434,27 +445,45 @@ int CompareCSV( const void *arg1, const void *arg2 ){
   return strcmp(csvi->c_type, csvj->c_type);
 }
 
+/* ------------------ ReadAllCSVFiles ------------------------ */
 
-/* ------------------ ReadAllCSV ------------------------ */
+void ReadAllCSVFiles(void){
+  int i;
 
-void ReadAllCSV(int flag){
-  int ifrom, ito;
-  csvfiledata *csvfilecopy=NULL;
+  if(ncsvfileinfo == 0)return;
+  for(i = 0; i < ncsvfileinfo; i++){
+    csvfiledata *csvfi;
 
-  if(ncsvfileinfo==0)return;
-  NewMemory((void **)&(csvfilecopy), ncsvfileinfo*sizeof(csvfiledata));
+    csvfi = csvfileinfo + i;
+    LOCK_CSV_LOAD;
+    if(csvfi->defined == CSV_DEFINING|| csvfi->defined == CSV_DEFINED){
+      UNLOCK_CSV_LOAD;
+      continue;
+    }
+    csvfi->defined = CSV_DEFINING;
+    UNLOCK_CSV_LOAD;
+    ReadCSVFile(csvfi, LOAD);
+    LOCK_CSV_LOAD;
+    plot2d_max_columns = MAX(plot2d_max_columns, csvfi->ncsvinfo);
+    csvfi->defined = CSV_DEFINED;
+    UpdateCSVFileTypes();
+    UNLOCK_CSV_LOAD;
+  }
+  LOCK_CSV_LOAD;
+  int all_loaded = 1;
+  for(i = 0; i < ncsvfileinfo; i++){
+    csvfiledata *csvfi;
 
-  for(ifrom=0,ito=0; ifrom<ncsvfileinfo; ifrom++){
-    if(ReadCSV(csvfileinfo+ifrom, flag)==1){
-      memcpy(csvfilecopy+ito, csvfileinfo+ifrom, sizeof(csvfiledata));
-      ito++;
+    csvfi = csvfileinfo + i;
+    if(csvfi->defined != CSV_DEFINED){
+      all_loaded = 0;
+      break;
     }
   }
-  ncsvfileinfo = ito;
-  if(ncsvfileinfo>0){
-    qsort((csvfiledata *)csvfilecopy, ncsvfileinfo, sizeof(csvfiledata), CompareCSV);
-    memcpy(csvfileinfo, csvfilecopy, ncsvfileinfo*sizeof(csvfiledata));
+  if(all_loaded == 1&&show_timings==1){
+    PRINT_TIMER(csv_timer, "csv file loading");
   }
+  UNLOCK_CSV_LOAD;
 }
 
 /* ------------------ ReadHRR ------------------------ */
@@ -1367,7 +1396,7 @@ void ReadSMVDynamic(char *file){
       char *ductname;
       hvacductdata *ducti;
       float *act_time, *act_times;
-      int *act_state, *act_states;
+      int *act_state, *act_states, dummy;
 
       ductname = strchr(buffer, ' ');
       if(ductname == NULL)continue;
@@ -1391,7 +1420,7 @@ void ReadSMVDynamic(char *file){
       act_state = act_states + ducti->nact_times -1;
 
       FGETS(buffer, 255, stream);
-      sscanf(buffer, "%f %i", act_time, act_state);
+      sscanf(buffer, "%i %f %i", &dummy, act_time, act_state);
       ONEORZERO(*act_state);
       ducti->act_times  = act_times;
       ducti->act_states = act_states;
@@ -3112,12 +3141,12 @@ void GetBoxGeomCorners(void){
     zmax = MAX(xyz[2], zmax);
   }
 
-  xmin = NORMALIZE_X(xmin);
-  xmax = NORMALIZE_X(xmax);
-  ymin = NORMALIZE_Y(ymin);
-  ymax = NORMALIZE_Y(ymax);
-  zmin = NORMALIZE_Z(zmin);
-  zmax = NORMALIZE_Z(zmax);
+  xmin = FDS2SMV_X(xmin);
+  xmax = FDS2SMV_X(xmax);
+  ymin = FDS2SMV_Y(ymin);
+  ymax = FDS2SMV_Y(ymax);
+  zmin = FDS2SMV_Z(zmin);
+  zmax = FDS2SMV_Z(zmax);
 
   box_geom_corners[0][0] = xmin;
   box_geom_corners[0][1] = ymin;
@@ -3574,13 +3603,13 @@ void UpdateMeshCoords(void){
   // normalize various coordinates.
 
   for(nn=0;nn<factor;nn++){
-    xplts[nn]=NORMALIZE_X(xplts[nn]);
+    xplts[nn]=FDS2SMV_X(xplts[nn]);
   }
   for(nn=0;nn<factor;nn++){
-    yplts[nn]=NORMALIZE_Y(yplts[nn]);
+    yplts[nn]=FDS2SMV_Y(yplts[nn]);
   }
   for(nn=0;nn<factor;nn++){
-    zplts[nn]=NORMALIZE_Z(zplts[nn]);
+    zplts[nn]=FDS2SMV_Z(zplts[nn]);
   }
 
   /* rescale both global and local xbar, ybar and zbar */
@@ -3606,9 +3635,9 @@ void UpdateMeshCoords(void){
     patchout_tmax = 1.0;
   }
 
-  xbar = NORMALIZE_X(xbar);
-  ybar = NORMALIZE_Y(ybar);
-  zbar = NORMALIZE_Z(zbar);
+  xbar = FDS2SMV_X(xbar);
+  ybar = FDS2SMV_Y(ybar);
+  zbar = FDS2SMV_Z(zbar);
 
   GetBoxCorners(xbar, ybar, zbar);
 
@@ -3620,9 +3649,9 @@ void UpdateMeshCoords(void){
     meshi->xyzmaxdiff=MAX(MAX(meshi->xyz_bar[XXX]-meshi->xyz_bar0[XXX],meshi->xyz_bar[YYY]-meshi->xyz_bar0[YYY]),meshi->xyz_bar[ZZZ]-meshi->xyz_bar0[ZZZ]);
 
     NORMALIZE_XYZ(meshi->xyz_bar,meshi->xyz_bar);
-    meshi->xcen = NORMALIZE_X(meshi->xcen);
-    meshi->ycen = NORMALIZE_Y(meshi->ycen);
-    meshi->zcen = NORMALIZE_Z(meshi->zcen);
+    meshi->xcen = FDS2SMV_X(meshi->xcen);
+    meshi->ycen = FDS2SMV_Y(meshi->ycen);
+    meshi->zcen = FDS2SMV_Z(meshi->zcen);
   }
 
   for(i=0;i<noutlineinfo;i++){
@@ -3638,12 +3667,12 @@ void UpdateMeshCoords(void){
     z1 = outlinei->z1;
     z2 = outlinei->z2;
     for(j=0;j<outlinei->nlines;j++){
-      x1[j]=NORMALIZE_X(x1[j]);
-      x2[j]=NORMALIZE_X(x2[j]);
-      yy1[j]=NORMALIZE_Y(yy1[j]);
-      yy2[j]=NORMALIZE_Y(yy2[j]);
-      z1[j]=NORMALIZE_Z(z1[j]);
-      z2[j]=NORMALIZE_Z(z2[j]);
+      x1[j]=FDS2SMV_X(x1[j]);
+      x2[j]=FDS2SMV_X(x2[j]);
+      yy1[j]=FDS2SMV_Y(yy1[j]);
+      yy2[j]=FDS2SMV_Y(yy2[j]);
+      z1[j]=FDS2SMV_Z(z1[j]);
+      z2[j]=FDS2SMV_Z(z2[j]);
     }
   }
 
@@ -3703,15 +3732,15 @@ void UpdateMeshCoords(void){
 
     for(i=0;i<ibar+1;i++){
       xplt_orig[i]=xplt[i];
-      xplt[i]=NORMALIZE_X(xplt[i]);
+      xplt[i]=FDS2SMV_X(xplt[i]);
     }
     for(j=0;j<jbar+1;j++){
       yplt_orig[j]=yplt[j];
-      yplt[j]=NORMALIZE_Y(yplt[j]);
+      yplt[j]=FDS2SMV_Y(yplt[j]);
     }
     for(k=0;k<kbar+1;k++){
       zplt_orig[k]=zplt[k];
-      zplt[k]=NORMALIZE_Z(zplt[k]);
+      zplt[k]=FDS2SMV_Z(zplt[k]);
     }
 
     for(nn=0;nn<ibar;nn++){
@@ -3795,23 +3824,23 @@ void UpdateMeshCoords(void){
       bc->ymax += meshi->offset[YYY];
       bc->zmin += meshi->offset[ZZZ];
       bc->zmax += meshi->offset[ZZZ];
-      bc->xmin = NORMALIZE_X(bc->xmin);
-      bc->xmax = NORMALIZE_X(bc->xmax);
-      bc->ymin = NORMALIZE_Y(bc->ymin);
-      bc->ymax = NORMALIZE_Y(bc->ymax);
-      bc->zmin = NORMALIZE_Z(bc->zmin);
-      bc->zmax = NORMALIZE_Z(bc->zmax);
+      bc->xmin = FDS2SMV_X(bc->xmin);
+      bc->xmax = FDS2SMV_X(bc->xmax);
+      bc->ymin = FDS2SMV_Y(bc->ymin);
+      bc->ymax = FDS2SMV_Y(bc->ymax);
+      bc->zmin = FDS2SMV_Z(bc->zmin);
+      bc->zmax = FDS2SMV_Z(bc->zmax);
     }
     for(i=0;i<meshi->nvents+12;i++){
       ventdata *vi;
 
       vi=meshi->ventinfo+i;
-      vi->xmin = NORMALIZE_X(vi->xmin);
-      vi->xmax = NORMALIZE_X(vi->xmax);
-      vi->ymin = NORMALIZE_Y(vi->ymin);
-      vi->ymax = NORMALIZE_Y(vi->ymax);
-      vi->zmin = NORMALIZE_Z(vi->zmin);
-      vi->zmax = NORMALIZE_Z(vi->zmax);
+      vi->xmin = FDS2SMV_X(vi->xmin);
+      vi->xmax = FDS2SMV_X(vi->xmax);
+      vi->ymin = FDS2SMV_Y(vi->ymin);
+      vi->ymax = FDS2SMV_Y(vi->ymax);
+      vi->zmin = FDS2SMV_Z(vi->zmin);
+      vi->zmax = FDS2SMV_Z(vi->zmax);
     }
   }
   for(i=0;i<ncadgeom;i++){
@@ -3836,12 +3865,12 @@ void UpdateMeshCoords(void){
     roomdata *roomi;
 
     roomi = roominfo + n;
-    roomi->x0=NORMALIZE_X(roomi->x0);
-    roomi->y0=NORMALIZE_Y(roomi->y0);
-    roomi->z0=NORMALIZE_Z(roomi->z0);
-    roomi->x1=NORMALIZE_X(roomi->x1);
-    roomi->y1=NORMALIZE_Y(roomi->y1);
-    roomi->z1=NORMALIZE_Z(roomi->z1);
+    roomi->x0=FDS2SMV_X(roomi->x0);
+    roomi->y0=FDS2SMV_Y(roomi->y0);
+    roomi->z0=FDS2SMV_Z(roomi->z0);
+    roomi->x1=FDS2SMV_X(roomi->x1);
+    roomi->y1=FDS2SMV_Y(roomi->y1);
+    roomi->z1=FDS2SMV_Z(roomi->z1);
     roomi->dx=SCALE2SMV(roomi->dx);
     roomi->dy=SCALE2SMV(roomi->dy);
     roomi->dz=SCALE2SMV(roomi->dz);
@@ -3850,9 +3879,9 @@ void UpdateMeshCoords(void){
     firedata *firen;
 
     firen = fireinfo + n;
-    firen->absx=NORMALIZE_X(firen->absx);
-    firen->absy=NORMALIZE_Y(firen->absy);
-    firen->absz=NORMALIZE_Z(firen->absz);
+    firen->absx=FDS2SMV_X(firen->absx);
+    firen->absy=FDS2SMV_Y(firen->absy);
+    firen->absz=FDS2SMV_Z(firen->absz);
     firen->dz=SCALE2SMV(firen->dz);
   }
   for(n=0;n<nzvents;n++){
@@ -3860,12 +3889,12 @@ void UpdateMeshCoords(void){
 
     zvi = zventinfo + n;
 
-    zvi->x0 = NORMALIZE_X(zvi->x0);
-    zvi->x1 = NORMALIZE_X(zvi->x1);
-    zvi->y0 = NORMALIZE_Y(zvi->y0);
-    zvi->y1 = NORMALIZE_Y(zvi->y1);
-    zvi->z0 = NORMALIZE_Z(zvi->z0);
-    zvi->z1 = NORMALIZE_Z(zvi->z1);
+    zvi->x0 = FDS2SMV_X(zvi->x0);
+    zvi->x1 = FDS2SMV_X(zvi->x1);
+    zvi->y0 = FDS2SMV_Y(zvi->y0);
+    zvi->y1 = FDS2SMV_Y(zvi->y1);
+    zvi->z0 = FDS2SMV_Z(zvi->z0);
+    zvi->z1 = FDS2SMV_Z(zvi->z1);
   }
 
   for(i=0;i<nmeshes;i++){
@@ -3891,25 +3920,25 @@ void UpdateMeshCoords(void){
     yheat = meshi->yheat;
     zheat = meshi->zheat;
     for(n=0;n<meshi->nspr;n++){
-      xsprplot[n]=NORMALIZE_X(offset[XXX]+xspr[n]);
-      ysprplot[n]=NORMALIZE_Y(offset[YYY]+yspr[n]);
-      zsprplot[n]=NORMALIZE_Z(offset[ZZZ]+zspr[n]);
+      xsprplot[n]=FDS2SMV_X(offset[XXX]+xspr[n]);
+      ysprplot[n]=FDS2SMV_Y(offset[YYY]+yspr[n]);
+      zsprplot[n]=FDS2SMV_Z(offset[ZZZ]+zspr[n]);
     }
     for(n=0;n<meshi->nheat;n++){
-      xheatplot[n]=NORMALIZE_X(offset[XXX]+xheat[n]);
-      yheatplot[n]=NORMALIZE_Y(offset[YYY]+yheat[n]);
-      zheatplot[n]=NORMALIZE_Z(offset[ZZZ]+zheat[n]);
+      xheatplot[n]=FDS2SMV_X(offset[XXX]+xheat[n]);
+      yheatplot[n]=FDS2SMV_Y(offset[YYY]+yheat[n]);
+      zheatplot[n]=FDS2SMV_Z(offset[ZZZ]+zheat[n]);
     }
     for(n=0;n<meshi->nvents+12;n++){
       ventdata *vi;
 
       vi = meshi->ventinfo+n;
-      vi->xvent1plot=NORMALIZE_X(offset[XXX]+vi->xvent1);
-      vi->xvent2plot=NORMALIZE_X(offset[XXX]+vi->xvent2);
-      vi->yvent1plot=NORMALIZE_Y(offset[YYY]+vi->yvent1);
-      vi->yvent2plot=NORMALIZE_Y(offset[YYY]+vi->yvent2);
-      vi->zvent1plot=NORMALIZE_Z(offset[ZZZ]+vi->zvent1);
-      vi->zvent2plot=NORMALIZE_Z(offset[ZZZ]+vi->zvent2);
+      vi->xvent1plot=FDS2SMV_X(offset[XXX]+vi->xvent1);
+      vi->xvent2plot=FDS2SMV_X(offset[XXX]+vi->xvent2);
+      vi->yvent1plot=FDS2SMV_Y(offset[YYY]+vi->yvent1);
+      vi->yvent2plot=FDS2SMV_Y(offset[YYY]+vi->yvent2);
+      vi->zvent1plot=FDS2SMV_Z(offset[ZZZ]+vi->zvent1);
+      vi->zvent2plot=FDS2SMV_Z(offset[ZZZ]+vi->zvent2);
     }
   }
   UpdateVentOffset();
@@ -6518,12 +6547,14 @@ void ReadSMVOrig(void){
   /* ------------------ InitCSV ------------------------ */
 
 void InitCSV(csvfiledata *csvi, char *file, char *type, int format){
-  csvi->loaded   = 0;
-  csvi->display  = 0;
-  csvi->time     = NULL;
-  csvi->ncsvinfo = 0;
-  csvi->csvinfo  = NULL;
-  csvi->format   = format;
+  csvi->loaded       = 0;
+  csvi->display      = 0;
+  csvi->defined      = 0;
+  csvi->glui_defined = 0;
+  csvi->time         = NULL;
+  csvi->ncsvinfo     = 0;
+  csvi->csvinfo      = NULL;
+  csvi->format       = format;
 
   NewMemory((void **)&csvi->file, strlen(file) + 1);
   strcpy(csvi->file, file);
@@ -6554,9 +6585,10 @@ void AddCfastCsvfi(char *suffix, char *type, int format){
   /* ------------------ AddCfastCsvf ------------------------ */
 
 void AddCfastCsvf(void){
-#define CFAST_CSV_MAX 9
+#define CFAST_CSV_MAX 10
   AddCfastCsvfi("_zone",         "zone",         CSV_FDS_FORMAT);
   AddCfastCsvfi("_compartments", "compartments", CSV_CFAST_FORMAT);
+  AddCfastCsvfi("_devices",      "devices",      CSV_CFAST_FORMAT);
   AddCfastCsvfi("_walls",        "walls",        CSV_CFAST_FORMAT);
   AddCfastCsvfi("_masses",       "masses",       CSV_CFAST_FORMAT);
   AddCfastCsvfi("_vents",        "vents",        CSV_CFAST_FORMAT);
@@ -7993,6 +8025,7 @@ int ReadSMV(bufferstreamdata *stream){
         hvaci->component_size    = 1.0;
         hvaci->filter_size       = 1.0;
         hvaci->node_size         = 8.0;
+        hvaci->cell_node_size    = 8.0;
         hvaci->duct_width        = 4.0;
         memcpy(hvaci->node_color, hvac_node_color, 3*sizeof(int));
         memcpy(hvaci->duct_color, hvac_duct_color, 3*sizeof(int));
@@ -11405,14 +11438,14 @@ typedef struct {
     if(strcmp(csvi->c_type, "devc")==0)ReadDeviceData(csvi->file,CSV_FDS,LOAD);
     if(strcmp(csvi->c_type, "ext") == 0)ReadDeviceData(csvi->file,CSV_EXP,LOAD);
   }
-  SetupDeviceData();
-  ReadAllCSV(LOAD);
-  SetupPlot2DUnitData();
-  if(nzoneinfo>0)SetupZoneDevs();
-
 #ifdef pp_THREAD
   InitMultiThreading();
 #endif
+
+  SetupDeviceData();
+  ReadAllCSVFilesMT();
+  SetupPlot2DUnitData();
+  if(nzoneinfo>0)SetupZoneDevs();
 
   InitPartProp();
 
@@ -11545,6 +11578,7 @@ typedef struct {
   MakeIBlankSmoke3D();
   MakeIBlankAll();
   if(runscript == 1){
+    JOIN_CSVFILES;
     JOIN_IBLANK
   }
   LOCK_IBLANK
@@ -12019,10 +12053,10 @@ int ReadIni2(char *inifile, int localfile){
 
         hvaci = hvacinfo + i;
         fgets(buffer, 255, stream);
-        sscanf(buffer, " %i %i %i %i %i %f %f %f %f",
+        sscanf(buffer, " %i %i %i %i %i %f %f %f %f %f",
           &hvaci->display,  &hvaci->show_node_labels, &hvaci->show_duct_labels,
           &hvaci->show_component, &hvaci->show_filters, &hvaci->duct_width,
-          &hvaci->node_size, &hvaci->component_size, &hvaci->filter_size);
+          &hvaci->node_size, &hvaci->component_size, &hvaci->filter_size, &hvaci->cell_node_size);
         fgets(buffer, 255, stream);
         sscanf(buffer, " %i %i %i %i %i %i", dc, dc + 1, dc + 2, nc, nc + 1, nc + 2);
         for(j=0;j<3;j++){
@@ -12030,7 +12064,8 @@ int ReadIni2(char *inifile, int localfile){
           hvaci->node_color[j] = CLAMP(nc[j], 0, 255);
         }
         hvaci->duct_width     = MAX(1.0, hvaci->duct_width);
-        hvaci->node_size      = MAX(1.0, hvaci->node_size);
+        hvaci->node_size     = MAX(1.0, hvaci->node_size);
+        hvaci->cell_node_size = MAX(1.0, hvaci->cell_node_size);
         hvaci->component_size = MAX(0.1, hvaci->component_size);
         hvaci->filter_size    = MAX(0.1, hvaci->filter_size);
         ONEORZERO(hvaci->show_node_labels);
@@ -12190,6 +12225,15 @@ int ReadIni2(char *inifile, int localfile){
       update_glui_devices = 1;
       continue;
     }
+    if(MatchINI(buffer, "SHOWGENPLOTXLABEL") == 1){
+      char *xlabelptr;
+      
+      fgets(buffer, 255, stream);
+      sscanf(buffer, " %i, %f", &plot2d_show_xaxis_labels, &plot2d_xaxis_position);
+      fgets(buffer, 255, stream);
+      xlabelptr = TrimFrontBack(buffer);
+      strcpy(plot2d_xaxis_label, xlabelptr);
+    }
     if(MatchINI(buffer, "SHOWGENPLOTS") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, " %i", &nplot2dini);
@@ -12200,9 +12244,11 @@ int ReadIni2(char *inifile, int localfile){
       NewMemory((void **)&plot2dini, nplot2dini*sizeof(plot2ddata));
 
       fgets(buffer, 255, stream);
-      sscanf(buffer, " %i %i %i %i %i %i %f",
+      sscanf(buffer, " %i %i %i %i %i %i %f %i %i",
              &plot2d_show_plot_title, &plot2d_show_curve_labels, &plot2d_show_curve_values,
-             &plot2d_show_xaxis_labels, &plot2d_show_yaxis_labels, &idevice_add, &plot2d_time_average);
+             &plot2d_show_xaxis_bounds, &plot2d_show_yaxis_bounds, &idevice_add, &plot2d_time_average,
+             &plot2d_show_yaxis_units, &plot2d_show_plots
+             );
       update_device_timeaverage = 1;
       UpdateDeviceAdd();
       for(i=0;i<nplot2dini;i++){
@@ -15758,11 +15804,16 @@ void WriteIniLocal(FILE *fileout){
           vis_device_plot, show_plot2d_xlabels, show_plot2d_ylabels, plot2d_size_factor, plot2d_line_width, plot2d_point_size,
           plot2d_xyz_offset[0], plot2d_xyz_offset[1], plot2d_xyz_offset[2], plot2d_font_spacing
   );
+  fprintf(fileout, "SHOWGENPLOTXLABEL\n");
+  fprintf(fileout, " %i, %f\n", plot2d_show_xaxis_labels, plot2d_xaxis_position);
+  fprintf(fileout, "%s\n", plot2d_xaxis_label);
+  
   fprintf(fileout, "SHOWGENPLOTS\n");
   fprintf(fileout, " %i\n", nplot2dinfo);
-  fprintf(fileout, " %i %i %i %i %i %i %f\n",
+  fprintf(fileout, " %i %i %i %i %i %i %f %i %i\n",
          plot2d_show_plot_title, plot2d_show_curve_labels, plot2d_show_curve_values,
-         plot2d_show_xaxis_labels, plot2d_show_yaxis_labels, idevice_add, plot2d_time_average);
+         plot2d_show_xaxis_bounds, plot2d_show_yaxis_bounds, idevice_add, plot2d_time_average,
+         plot2d_show_yaxis_units, plot2d_show_plots);
   for(i=0; i<nplot2dinfo; i++){
     plot2ddata *plot2di;
     int j;
@@ -15886,15 +15937,15 @@ void WriteIniLocal(FILE *fileout){
         framei = framei->next;
         sprintf(buffer, "%f %f %f %f ",
                 framei->time,
-                DENORMALIZE_X(framei->xyz_smv[0]),
-                DENORMALIZE_Y(framei->xyz_smv[1]),
-                DENORMALIZE_Z(framei->xyz_smv[2]));
+                SMV2FDS_X(framei->xyz_smv[0]),
+                SMV2FDS_Y(framei->xyz_smv[1]),
+                SMV2FDS_Z(framei->xyz_smv[2]));
         TrimMZeros(buffer);
         fprintf(fileout, " %s %i ", buffer, 1);
         sprintf(buffer, "%f %f %f %f %f %f %f ",
-                DENORMALIZE_X(framei->view_smv[0]),
-                DENORMALIZE_Y(framei->view_smv[1]),
-                DENORMALIZE_Z(framei->view_smv[2]),
+                SMV2FDS_X(framei->view_smv[0]),
+                SMV2FDS_Y(framei->view_smv[1]),
+                SMV2FDS_Z(framei->view_smv[2]),
                 0.0, 0.0, 0.0,
                 1.0);
         TrimMZeros(buffer);
@@ -16461,9 +16512,9 @@ void WriteIni(int flag,char *filename){
       hvaci = hvacinfo + i;
       dc = hvaci->duct_color;
       nc = hvaci->node_color;
-      fprintf(fileout, " %i %i %i %i %i %f %f %f %f\n",
+      fprintf(fileout, " %i %i %i %i %i %f %f %f %f %f\n",
         hvaci->display, hvaci->show_node_labels, hvaci->show_duct_labels, hvaci->show_component,
-        hvaci->show_filters, hvaci->duct_width, hvaci->node_size, hvaci->component_size, hvaci->filter_size);
+        hvaci->show_filters, hvaci->duct_width, hvaci->node_size, hvaci->component_size, hvaci->filter_size, hvaci->cell_node_size);
       fprintf(fileout, " %i %i %i %i %i %i\n", dc[0], dc[1], dc[2], nc[0], nc[1], nc[2]);
     }
   }

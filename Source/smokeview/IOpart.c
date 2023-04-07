@@ -1338,9 +1338,9 @@ void GetPartData(partdata *parti, int nf_all_arg, FILE_SIZE *file_size_arg){
             float xx_local, yy_local, zz_local;
             int factor_local=256*128-1;
 
-            xx_local = NORMALIZE_X(x_local[j])/xbar;
-            yy_local = NORMALIZE_Y(y_local[j])/ybar;
-            zz_local = NORMALIZE_Z(z_local[j])/zbar;
+            xx_local = FDS2SMV_X(x_local[j])/xbar;
+            yy_local = FDS2SMV_Y(y_local[j])/ybar;
+            zz_local = FDS2SMV_Z(z_local[j])/zbar;
 
             sx_local[j] = factor_local*xx_local;
             sy_local[j] = factor_local*yy_local;

@@ -1400,10 +1400,10 @@ void DrawZoneRoomGeom(void){
 
         glPushMatrix();
         if(zvi->wall==TOP_WALL){
-          glTranslatef(NORMALIZE_X(zvi->xcen), NORMALIZE_Y(zvi->ycen), z2);
+          glTranslatef(FDS2SMV_X(zvi->xcen), FDS2SMV_Y(zvi->ycen), z2);
 	}
 	else{
-          glTranslatef(NORMALIZE_X(zvi->xcen), NORMALIZE_Y(zvi->ycen), z1);
+          glTranslatef(FDS2SMV_X(zvi->xcen), FDS2SMV_Y(zvi->ycen), z1);
 	}
         uc_color[0] = zvi->color[0]*255;
         uc_color[1] = zvi->color[1]*255;
@@ -1645,8 +1645,8 @@ void DrawZoneVentDataSlab(void){
       int itslab;
       float dvent;
 
-      slab_bot = NORMALIZE_Z(zvi->slab_bot[islab]);
-      slab_top = NORMALIZE_Z(zvi->slab_top[islab]);
+      slab_bot = FDS2SMV_Z(zvi->slab_bot[islab]);
+      slab_top = FDS2SMV_Z(zvi->slab_top[islab]);
       tslab = zvi->slab_temp[islab];
       itslab = GetZoneColor(K2C(tslab), zonemin, zonemax, nrgb_full);
       tcolor = rgb_full[itslab];

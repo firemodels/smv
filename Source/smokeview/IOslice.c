@@ -2434,7 +2434,9 @@ void UpdateVectorSkipUniform(int skip){
 void UpdateVectorSkip(int skip){
   int i;
 
-  UpdateAllMeshSkips(skip);    
+  if(nsliceinfo > 0){
+    UpdateAllMeshSkips(skip);
+  }
   for(i = 0; i < nsliceinfo; i++){
     slicedata *slicei;
     meshdata *slicemesh;
@@ -5253,13 +5255,13 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
 
     meshj = meshinfo + sd->blocknumber;
 
-    meshj->slice_min[0] = DENORMALIZE_X(sd->xyz_min[0]);
-    meshj->slice_min[1] = DENORMALIZE_Y(sd->xyz_min[1]);
-    meshj->slice_min[2] = DENORMALIZE_Z(sd->xyz_min[2]);
+    meshj->slice_min[0] = SMV2FDS_X(sd->xyz_min[0]);
+    meshj->slice_min[1] = SMV2FDS_Y(sd->xyz_min[1]);
+    meshj->slice_min[2] = SMV2FDS_Z(sd->xyz_min[2]);
 
-    meshj->slice_max[0] = DENORMALIZE_X(sd->xyz_max[0]);
-    meshj->slice_max[1] = DENORMALIZE_Y(sd->xyz_max[1]);
-    meshj->slice_max[2] = DENORMALIZE_Z(sd->xyz_max[2]);
+    meshj->slice_max[0] = SMV2FDS_X(sd->xyz_max[0]);
+    meshj->slice_max[1] = SMV2FDS_Y(sd->xyz_max[1]);
+    meshj->slice_max[2] = SMV2FDS_Z(sd->xyz_max[2]);
 
 #ifdef pp_GPU
     if(gpuactive == 1){

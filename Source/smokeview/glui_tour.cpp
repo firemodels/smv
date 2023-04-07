@@ -362,12 +362,12 @@ extern "C" void SetGluiTourKeyframe(void){
   xyz_view = selected_frame->view_smv;
 
   glui_tour_time    = selected_frame->time;
-  glui_tour_xyz[0]  = TrimVal(DENORMALIZE_X(eye[0]));
-  glui_tour_xyz[1]  = TrimVal(DENORMALIZE_Y(eye[1]));
-  glui_tour_xyz[2]  = TrimVal(DENORMALIZE_Z(eye[2]));
-  glui_tour_view[0] = TrimVal(DENORMALIZE_X(xyz_view[0]));
-  glui_tour_view[1] = TrimVal(DENORMALIZE_Y(xyz_view[1]));
-  glui_tour_view[2] = TrimVal(DENORMALIZE_Z(xyz_view[2]));
+  glui_tour_xyz[0]  = TrimVal(SMV2FDS_X(eye[0]));
+  glui_tour_xyz[1]  = TrimVal(SMV2FDS_Y(eye[1]));
+  glui_tour_xyz[2]  = TrimVal(SMV2FDS_Z(eye[2]));
+  glui_tour_view[0] = TrimVal(SMV2FDS_X(xyz_view[0]));
+  glui_tour_view[1] = TrimVal(SMV2FDS_Y(xyz_view[1]));
+  glui_tour_view[2] = TrimVal(SMV2FDS_Z(xyz_view[2]));
   if(SPINNER_tour_time==NULL)return;
 
   {
@@ -648,14 +648,14 @@ void TourCB(int var){
       nextkey=thiskey->next;
       if(nextkey==&thistour->last_frame){
         lastkey=thiskey->prev;
-        key_xyz[0] = DENORMALIZE_X(2*thiskey->xyz_smv[0]-lastkey->xyz_smv[0]);
-        key_xyz[1] = DENORMALIZE_Y(2*thiskey->xyz_smv[1]-lastkey->xyz_smv[1]);
-        key_xyz[2] = DENORMALIZE_Z(2*thiskey->xyz_smv[2]-lastkey->xyz_smv[2]);
+        key_xyz[0] = SMV2FDS_X(2*thiskey->xyz_smv[0]-lastkey->xyz_smv[0]);
+        key_xyz[1] = SMV2FDS_Y(2*thiskey->xyz_smv[1]-lastkey->xyz_smv[1]);
+        key_xyz[2] = SMV2FDS_Z(2*thiskey->xyz_smv[2]-lastkey->xyz_smv[2]);
         key_time_in = thiskey->time;
         thiskey->time=(thiskey->time+lastkey->time)/2.0;
-        key_view[0] = DENORMALIZE_X(2*thiskey->view_smv[0]-lastkey->view_smv[0]);
-        key_view[1] = DENORMALIZE_Y(2*thiskey->view_smv[1]-lastkey->view_smv[1]);
-        key_view[2] = DENORMALIZE_Z(2*thiskey->view_smv[2]-lastkey->view_smv[2]);
+        key_view[0] = SMV2FDS_X(2*thiskey->view_smv[0]-lastkey->view_smv[0]);
+        key_view[1] = SMV2FDS_Y(2*thiskey->view_smv[1]-lastkey->view_smv[1]);
+        key_view[2] = SMV2FDS_Z(2*thiskey->view_smv[2]-lastkey->view_smv[2]);
       }
       else{
         float t_avg;

@@ -2842,6 +2842,7 @@ void ScriptMenu(int value){
   char newscriptfilename[1024];
 
   if(value==MENU_DUMMY)return;
+  JOIN_CSVFILES;
   updatemenu=1;
   GLUTPOSTREDISPLAY;
   switch(value){
