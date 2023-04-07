@@ -571,7 +571,7 @@ void ShowScene(int mode, int view_mode, int quad, GLint s_left, GLint s_down, sc
 
   /* ++++++++++++++++++++++++ update variables as needed +++++++++++++++++++++++++ */
 
-  INIT_TIMER(timer_showscene);
+  INIT_PRINT_TIMER(timer_showscene);
   UpdateShowScene();
   PRINT_TIMER(timer_showscene, "UpdateShowScene");
   if(stereotype == STEREO_NONE || stereotype == STEREO_TIME)ClearBuffers(mode);
