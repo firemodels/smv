@@ -1745,9 +1745,9 @@ SVEXTERN int SVDECL(runluascript,0);
 SVEXTERN int SVDECL(exit_on_script_crash,0);
 #endif
 #ifdef INMAIN
-SVEXTERN float slice_xyz[3]={0.0,0.0,0.0};
+SVEXTERN float slice_xyz[3]={0.0,0.0,0.0}, slice_dxyz[3] = {0.0, 0.0, 0.0};
 #else
-SVEXTERN float slice_xyz[3];
+SVEXTERN float slice_xyz[3], slice_dxyz[3];
 #endif
 SVEXTERN int   SVDECL(update_slice2device, 0);
 SVEXTERN int SVDECL(script_multislice,0), SVDECL(script_multivslice,0), SVDECL(script_iso,0);
