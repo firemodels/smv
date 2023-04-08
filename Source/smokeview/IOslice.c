@@ -7686,18 +7686,74 @@ int InSliceMesh(slicedata *slicei, float *xyz){
 
 void Slice2Device(void){
   int i;
+#ifdef pp_SLICE_PLOT2D
+#define NOFFSETS 5
+  int offsets[NOFFSETS*NOFFSETS*NOFFSETS];
+#endif
 
   if(vis_slice_plot==0)return;
   for(i = 0; i<nsliceinfo; i++){
     slicedata *slicei;
     devicedata *sdev;
     int j, offset;
-
+#ifdef pp_SLICE_PLOT2D
+    float xyz[3], dxyz[3];
+    int ii;
+#endif
     slicei = sliceinfo+i;
     sdev = &(slicei->vals2d);
     sdev->valid = 0;
     if(slicei->loaded==0||slicei->ntimes==0)continue;
+
+#ifdef pp_SLICE_PLOT2D
+    dxyz[0] = slice_xyz[0]/(float)(NOFFSETS-1);
+    dxyz[1] = slice_xyz[1]/(float)(NOFFSETS-1);
+    dxyz[2] = slice_xyz[2]/(float)(NOFFSETS-1);
+    int noffsets;
+    int noffset_i, noffset_j, noffset_k;
+
+    noffset_i = NOFFSETS;
+    noffset_j = NOFFSETS;
+    noffset_k = NOFFSETS;
+    if(dxyz[0]<0.0001)noffset_i = 1;
+    if(dxyz[1]<0.0001)noffset_j = 1;
+    if(dxyz[2]<0.0001)noffset_k = 1;
+
+    noffsets = 0;
+    for(ii=0;ii<noffset_i;ii++){
+      int jj;
+      
+      if(noffset_i==1)xyz[0] = slice_xyz[0];
+      if(noffset_i>1)xyz[0] = slice_xyz[0] - slice_dxyz[0]/2.0 + (float)ii*dxyz[0];
+      for(jj=0;jj<noffset_j;jj++){
+        int kk;
+
+        if(noffset_j==1)xyz[1] = slice_xyz[1];
+        if(noffset_j>1)xyz[1] = slice_xyz[1] - slice_dxyz[1]/2.0 + (float)jj*dxyz[1];
+        for(kk=0;kk<noffset_k;kk++){
+          int ll;
+          
+          if(noffset_k==1)xyz[2] = slice_xyz[2];
+          if(noffset_k>1)xyz[2] = slice_xyz[2] - slice_dxyz[2]/2.0 + (float)kk*dxyz[2];
+          if(InSliceMesh(slicei, xyz)==0)continue;
+          offsets[noffsets++] = GetSliceOffset(slicei, xyz, sdev->xyz);
+          int is_dup;
+
+          is_dup = 0;
+          for(ll=0;ll<noffsets-1;ll++){
+            if(offsets[ll] == offsets[noffsets-1]){
+              is_dup = 1;;
+              break;
+            }
+          }
+          if(is_dup==1)noffsets--;
+        }
+      }
+    }
+    if(noffsets==0)continue;
+#else
     if(InSliceMesh(slicei, slice_xyz)==0)continue;
+#endif
     sdev->valid = 1;
     FREEMEMORY(sdev->vals);
     FREEMEMORY(sdev->vals_orig);
@@ -7705,11 +7761,27 @@ void Slice2Device(void){
     NewMemory((void **)&(sdev->vals_orig), slicei->ntimes*sizeof(float));
     sdev->nvals = slicei->ntimes;
     sdev->times = slicei->times;
+#ifdef pp_SLICE_PLOT2D
+    for(j = 0; j<sdev->nvals; j++){
+      sdev->vals[j] = 0.0;
+    }
+    for(ii=0;ii<noffsets;ii++){
+      offset = offsets[ii];
+      for(j = 0; j<sdev->nvals; j++){
+        sdev->vals[j] += GetSliceVal(slicei, j, offset);
+      }
+    }
+    for(j = 0; j<sdev->nvals; j++){
+      sdev->vals[j] /= (float)noffsets;
+      sdev->vals_orig[j] = sdev->vals[j];
+    }
+#else
     offset = GetSliceOffset(slicei, slice_xyz, sdev->xyz);
     for(j = 0; j<sdev->nvals; j++){
       sdev->vals[j]      = GetSliceVal(slicei, j, offset);
       sdev->vals_orig[j] = sdev->vals[j];
     }
+#endif
   }
   for(i = 0; i<nslicebounds; i++){
     boundsdata *sb;
