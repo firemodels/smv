@@ -3340,7 +3340,8 @@ int      nhvacnodeprocinfo = 0;
 #define SLICE_DUP_ROLLOUT       6
 #define SLICE_SETTINGS_ROLLOUT  7
 #define SLICE_2D_PLOTS          8
-procdata  sliceprocinfo[9];
+#define SLICE_PLOT2D_ROLLOUT    9
+procdata  sliceprocinfo[10];
 int      nsliceprocinfo=0;
 
 //*** plot3dprocinfo entries
@@ -5151,7 +5152,6 @@ extern "C" void GluiBoundsSetup(int main_window){
     CHECKBOX_histogram_show_graph=glui_bounds->add_checkbox_to_panel(ROLLOUT_slice_histogram, _("graph"), &histogram_show_graph, INIT_HISTOGRAM, SliceBoundCB);
     CHECKBOX_histogram_show_outline=glui_bounds->add_checkbox_to_panel(ROLLOUT_slice_histogram, _("outline"), &histogram_show_outline);
 
-    glui_bounds->add_column_to_panel(PANEL_slice_buttonsA, false);
     ROLLOUT_slice_average=glui_bounds->add_rollout_to_panel(PANEL_slice_buttonsA,_("Average data"),false,SLICE_AVERAGE_ROLLOUT,SliceRolloutCB);
     INSERT_ROLLOUT(ROLLOUT_slice_average, glui_bounds);
     ADDPROCINFO(sliceprocinfo, nsliceprocinfo, ROLLOUT_slice_average, SLICE_AVERAGE_ROLLOUT, glui_bounds);
@@ -5161,13 +5161,9 @@ extern "C" void GluiBoundsSetup(int main_window){
     SPINNER_sliceaverage->set_float_limits(0.0,MAX(120.0,tour_tstop));
     glui_bounds->add_button_to_panel(ROLLOUT_slice_average,_("Reload"),FILE_RELOAD,SliceBoundCB);
 
-    glui_bounds->add_column_to_panel(PANEL_slice_buttonsA, false);
-
     ROLLOUT_line_contour = glui_bounds->add_rollout_to_panel(PANEL_slice_buttonsA, _("Line contours"), false, LINE_CONTOUR_ROLLOUT, SliceRolloutCB);
     INSERT_ROLLOUT(ROLLOUT_line_contour, glui_bounds);
     ADDPROCINFO(sliceprocinfo, nsliceprocinfo, ROLLOUT_line_contour, LINE_CONTOUR_ROLLOUT, glui_bounds);
-
-    glui_bounds->add_column_to_panel(PANEL_slice_buttonsA, false);
 
     slice_line_contour_min = 0.0;
     slice_line_contour_max=1.0;
@@ -5196,7 +5192,9 @@ extern "C" void GluiBoundsSetup(int main_window){
     }
 
     if(nsliceinfo>0){
-      ROLLOUT_plotslice = glui_bounds->add_rollout_to_panel(PANEL_slice_buttonsB, "2D plots", false);
+      ROLLOUT_plotslice = glui_bounds->add_rollout_to_panel(PANEL_slice_buttonsA, "2D plots", false, SLICE_PLOT2D_ROLLOUT, SliceRolloutCB);
+      INSERT_ROLLOUT(ROLLOUT_plotslice, glui_bounds);
+      ADDPROCINFO(sliceprocinfo, nsliceprocinfo, ROLLOUT_plotslice, SLICE_PLOT2D_ROLLOUT, glui_bounds);
       glui_bounds->add_checkbox_to_panel(ROLLOUT_plotslice, _("show"), &vis_slice_plot,                            SLICE_PLOT, SliceBoundCB);
       glui_bounds->add_checkbox_to_panel(ROLLOUT_plotslice, _("slice bounds"), &slice_plot_bound_option,           SLICE_PLOT, SliceBoundCB);
       SPINNER_slice_x = glui_bounds->add_spinner_to_panel(ROLLOUT_plotslice, "x", GLUI_SPINNER_FLOAT, slice_xyz+0, SLICE_PLOT, SliceBoundCB);
