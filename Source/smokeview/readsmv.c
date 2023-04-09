@@ -3648,7 +3648,7 @@ void UpdateMeshCoords(void){
     /* compute a local scaling factor for each block */
     meshi->xyzmaxdiff=MAX(MAX(meshi->xyz_bar[XXX]-meshi->xyz_bar0[XXX],meshi->xyz_bar[YYY]-meshi->xyz_bar0[YYY]),meshi->xyz_bar[ZZZ]-meshi->xyz_bar0[ZZZ]);
 
-    NORMALIZE_XYZ(meshi->xyz_bar,meshi->xyz_bar);
+    FDS2SMV_XYZ(meshi->xyz_bar,meshi->xyz_bar);
     meshi->xcen = FDS2SMV_X(meshi->xcen);
     meshi->ycen = FDS2SMV_Y(meshi->ycen);
     meshi->zcen = FDS2SMV_Z(meshi->zcen);
@@ -3766,9 +3766,9 @@ void UpdateMeshCoords(void){
     meshi->dcell3[0] = xplt[1]-xplt[0];
     meshi->dcell3[1] = yplt[1]-yplt[0];
     meshi->dcell3[2] = zplt[1]-zplt[0];
-    NORMALIZE_XYZ(meshi->boxmin_scaled,meshi->boxmin);
-    NORMALIZE_XYZ(meshi->boxmax_scaled,meshi->boxmax);
-    NORMALIZE_XYZ(meshi->boxmiddle_scaled, meshi->boxmiddle);
+    FDS2SMV_XYZ(meshi->boxmin_scaled,meshi->boxmin);
+    FDS2SMV_XYZ(meshi->boxmax_scaled,meshi->boxmax);
+    FDS2SMV_XYZ(meshi->boxmiddle_scaled, meshi->boxmiddle);
     meshi->x0 = xplt[0];
     meshi->x1 = xplt[ibar];
     meshi->y0 = yplt[0];
@@ -3854,7 +3854,7 @@ void UpdateMeshCoords(void){
 
       quadi = cd->quad+j;
       for(k=0;k<4;k++){
-        NORMALIZE_XYZ(quadi->xyzpoints+3*k,quadi->xyzpoints+3*k);
+        FDS2SMV_XYZ(quadi->xyzpoints+3*k,quadi->xyzpoints+3*k);
       }
       if(cd->version==2&&quadi->cadlookq->textureinfo.loaded==1){
         UpdateCADTextCoords(quadi);

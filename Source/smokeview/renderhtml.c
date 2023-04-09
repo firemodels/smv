@@ -953,7 +953,7 @@ void GetGeometryNodes(int option, int *offset, float *verts, float *norms, float
         }
         xyz_in = geomlisti->verts[j].xyz;
         norm_in = geomlisti->verts[j].vert_norm;
-        NORMALIZE_XYZ(xyz_out, xyz_in);
+        FDS2SMV_XYZ(xyz_out, xyz_in);
         *verts++ = xyz_out[0];
         *verts++ = xyz_out[1];
         *verts++ = xyz_out[2];
