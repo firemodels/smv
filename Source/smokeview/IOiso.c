@@ -535,7 +535,7 @@ void ReadIsoOrig(const char *file, int ifile, int flag, int *errorcode){
   highlight_mesh = blocknumber;
 
   factor = (SCALE2SMV(meshi->xyzmaxdiff))/65535.0;
-  NORMALIZE_XYZ(offset,meshi->xyz_bar0);
+  FDS2SMV_XYZ(offset,meshi->xyz_bar0);
 
   GetIsoSizes(file, ib->dataflag, &isostream, &nisopoints, &nisotriangles,
     &meshi->isolevels, &meshi->nisolevels, &meshi->niso_times,

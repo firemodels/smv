@@ -1683,7 +1683,7 @@ void GetEyePos(float *mm){
   smv_eyepos[0] = -(mm[0]*mm[12] + mm[1]*mm[13] +  mm[2]*mm[14])/mscale[0];
   smv_eyepos[1] = -(mm[4]*mm[12] + mm[5]*mm[13] +  mm[6]*mm[14])/mscale[1];
   smv_eyepos[2] = -(mm[8]*mm[12] + mm[9]*mm[13] + mm[10]*mm[14])/mscale[2];
-  DENORMALIZE_XYZ(fds_eyepos, smv_eyepos);
+  SMV2FDS_XYZ(fds_eyepos, smv_eyepos);
 
   for(i = 0; i<nmeshes; i++){
     meshdata *meshi;

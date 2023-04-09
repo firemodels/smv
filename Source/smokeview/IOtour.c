@@ -677,7 +677,7 @@ void GetTourProperties(tourdata *touri){
   for(keyj = (touri->first_frame).next, j = 0; keyj->next!=NULL; keyj = keyj->next, j++){
     touri->keyframe_list[j]  = keyj;
     touri->keyframe_times[j] = keyj->time;
-    NORMALIZE_XYZ(keyj->xyz_smv, keyj->xyz_fds);
+    FDS2SMV_XYZ(keyj->xyz_smv, keyj->xyz_fds);
   }
   touri->nkeyframes = j;
 
@@ -836,7 +836,7 @@ void CreateTourPaths(void){
 
     touri = tourinfo+i;
     for(keyj = (touri->first_frame).next, j = 0; keyj->next!=NULL; keyj = keyj->next, j++){
-      NORMALIZE_XYZ(keyj->xyz_smv, keyj->xyz_fds);
+      FDS2SMV_XYZ(keyj->xyz_smv, keyj->xyz_fds);
     }
     if(viewalltours==1)touri->display = 1;
     FREEMEMORY(touri->keyframe_list);
@@ -991,8 +991,8 @@ keyframe *AddFrame(keyframe *last_frame, float time_local, float *xyz, float vie
   next_frame->prev=this_frame;
   this_frame->prev=last_frame;
 
-  NORMALIZE_XYZ(feye, xyz);
-  NORMALIZE_XYZ(fxyz_view,view);
+  FDS2SMV_XYZ(feye, xyz);
+  FDS2SMV_XYZ(fxyz_view,view);
   this_frame->time=time_local;
 
   this_frame->view_smv[0] = fxyz_view[0];

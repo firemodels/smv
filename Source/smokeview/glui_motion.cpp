@@ -636,7 +636,7 @@ extern "C" void UpdateGluiSetViewXYZ(float *xyz){
   if(xyz==NULL)return;
   if(SPINNER_set_view_x==NULL||SPINNER_set_view_y==NULL||SPINNER_set_view_z==NULL)return;
 
-  DENORMALIZE_XYZ(set_view_xyz,xyz);
+  SMV2FDS_XYZ(set_view_xyz,xyz);
 
   SPINNER_set_view_x->set_float_val(set_view_xyz[0]);
   SPINNER_set_view_y->set_float_val(set_view_xyz[1]);
@@ -2390,7 +2390,7 @@ extern "C" void SceneMotionCB(int var){
       }
       break;
     case SET_VIEW_XYZ:
-      NORMALIZE_XYZ(eye_xyz,set_view_xyz);
+      FDS2SMV_XYZ(eye_xyz,set_view_xyz);
       eye_xyz0[0]=eye_xyz[0];
       eye_xyz0[1]=eye_xyz[1];
       eye_xyz0[2]=eye_xyz[2];

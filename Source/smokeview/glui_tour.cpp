@@ -581,7 +581,7 @@ void TourCB(int var){
       if(selected_tour-tourinfo==0)dirtycircletour=1;
       selected_tour->startup=0;
       xyz_view = selected_frame->view_smv;
-      NORMALIZE_XYZ(xyz_view,glui_tour_view);
+      FDS2SMV_XYZ(xyz_view,glui_tour_view);
 
       if(update_tour_path==1)CreateTourPaths();
       selected_frame->selected=1;
@@ -595,11 +595,11 @@ void TourCB(int var){
       eye = selected_frame->xyz_smv;
       xyz_view = selected_frame->view_smv;
 
-      NORMALIZE_XYZ(eye,glui_tour_xyz);
+      FDS2SMV_XYZ(eye,glui_tour_xyz);
       memcpy(selected_frame->xyz_fds,           glui_tour_xyz, 3*sizeof(float));
       memcpy(selected_frame->xyz_smv, eye,      3*sizeof(float));
 
-      NORMALIZE_XYZ(xyz_view,glui_tour_view);
+      FDS2SMV_XYZ(xyz_view,glui_tour_view);
       if(update_tour_path==1)CreateTourPaths();
       selected_frame->selected=1;
       TourCB(KEYFRAME_viewXYZ);
@@ -662,10 +662,10 @@ void TourCB(int var){
 
         t_avg = (thiskey->time+nextkey->time)/2.0;
         GetTourXYZ(t_avg,  thiskey, key_xyz);
-        DENORMALIZE_XYZ(key_xyz, key_xyz);
+        SMV2FDS_XYZ(key_xyz, key_xyz);
         key_time_in = (thiskey->time+nextkey->time)/2.0;
         GetTourView(t_avg, thiskey, key_view);
-        DENORMALIZE_XYZ(key_view, key_view);
+        SMV2FDS_XYZ(key_view, key_view);
       }
       newframe=AddFrame(selected_frame, key_time_in, key_xyz, key_view);
       CreateTourPaths();
