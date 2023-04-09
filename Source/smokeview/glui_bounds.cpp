@@ -5207,16 +5207,17 @@ extern "C" void GluiBoundsSetup(int main_window){
 
       PANEL_slice_plot2dd = glui_bounds->add_panel_to_panel(ROLLOUT_plotslice,"", false);
       PANEL_slice_plot2de = glui_bounds->add_panel_to_panel(PANEL_slice_plot2dd,"", false);
-      glui_bounds->add_checkbox_to_panel(PANEL_slice_plot2de, _("show plot"), &vis_slice_plot,                            SLICE_PLOT, SliceBoundCB);
-      glui_bounds->add_checkbox_to_panel(PANEL_slice_plot2de, _("slice bounds"), &slice_plot_bound_option,           SLICE_PLOT, SliceBoundCB);
-      SPINNER_size_factor2 = glui_bounds->add_spinner_to_panel(PANEL_slice_plot2de, _("size factor"), GLUI_SPINNER_FLOAT, &plot2d_size_factor, SLICE_SIZE, SliceBoundCB);
+      glui_bounds->add_checkbox_to_panel(PANEL_slice_plot2de, _("show plot"), &vis_slice_plot,                                                 SLICE_PLOT, SliceBoundCB);
+      glui_bounds->add_checkbox_to_panel(PANEL_slice_plot2de, _("use slice bounds"), &slice_plot_bound_option,                                     SLICE_PLOT, SliceBoundCB);
+      SPINNER_size_factor2 = glui_bounds->add_spinner_to_panel(PANEL_slice_plot2de, _("plot size(rel)"), GLUI_SPINNER_FLOAT, &plot2d_size_factor, SLICE_SIZE, SliceBoundCB);
       SPINNER_size_factor2->set_float_limits(0.0, 1.0);
 
       glui_bounds->add_column_to_panel(PANEL_slice_plot2dd, false);
       PANEL_slice_plot2de = glui_bounds->add_panel_to_panel(PANEL_slice_plot2dd,"", false);
       glui_bounds->add_checkbox_to_panel(PANEL_slice_plot2de, "show title",         &show_plot2d_title);
-      glui_bounds->add_checkbox_to_panel(PANEL_slice_plot2de, "show y axis labels", &show_plot2d_ylabels);
       glui_bounds->add_checkbox_to_panel(PANEL_slice_plot2de, "show x axis labels", &show_plot2d_xlabels);
+      glui_bounds->add_checkbox_to_panel(PANEL_slice_plot2de, "show y axis labels", &show_plot2d_ylabels);
+      glui_bounds->add_checkbox_to_panel(PANEL_slice_plot2de, "show data position", &show_plot2d_slice_position);
 
       PANEL_slice_plot2dc = glui_bounds->add_panel_to_panel(ROLLOUT_plotslice,"", false);
       PANEL_slice_plot2da = glui_bounds->add_panel_to_panel(PANEL_slice_plot2dc,"position");
@@ -5227,11 +5228,12 @@ extern "C" void GluiBoundsSetup(int main_window){
       SPINNER_slice_y->set_float_limits(ybar0FDS, ybarFDS);
       SPINNER_slice_z->set_float_limits(zbar0FDS, zbarFDS);
       glui_bounds->add_column_to_panel(PANEL_slice_plot2dc, false);
-      PANEL_slice_plot2db = glui_bounds->add_panel_to_panel(PANEL_slice_plot2dc,"region");
-      SPINNER_slice_dx = glui_bounds->add_spinner_to_panel(PANEL_slice_plot2db, "dx", GLUI_SPINNER_FLOAT, slice_dxyz + 0, SLICE_PLOT, SliceBoundCB);
-      SPINNER_slice_dy = glui_bounds->add_spinner_to_panel(PANEL_slice_plot2db, "dy", GLUI_SPINNER_FLOAT, slice_dxyz + 1, SLICE_PLOT, SliceBoundCB);
-      SPINNER_slice_dz = glui_bounds->add_spinner_to_panel(PANEL_slice_plot2db, "dz", GLUI_SPINNER_FLOAT, slice_dxyz + 2, SLICE_PLOT, SliceBoundCB);
-      SPINNER_plot2d_dt = glui_bounds->add_spinner_to_panel(PANEL_slice_plot2db, _("dt"), GLUI_SPINNER_FLOAT, &plot2d_time_average, SLICE_SIZE, SliceBoundCB);
+      PANEL_slice_plot2db = glui_bounds->add_panel_to_panel(PANEL_slice_plot2dc,"average data");
+      glui_bounds->add_checkbox_to_panel(PANEL_slice_plot2db, "average over dt,dx,dy,dz", &average_plot2d_slice_region, SLICE_PLOT, SliceBoundCB);
+      SPINNER_plot2d_dt = glui_bounds->add_spinner_to_panel(PANEL_slice_plot2db, "dt", GLUI_SPINNER_FLOAT, &plot2d_time_average, SLICE_SIZE, SliceBoundCB);
+      SPINNER_slice_dx = glui_bounds->add_spinner_to_panel(PANEL_slice_plot2db, "dx", GLUI_SPINNER_FLOAT, slice_dxyz + 0, SLICE_DPLOT, SliceBoundCB);
+      SPINNER_slice_dy = glui_bounds->add_spinner_to_panel(PANEL_slice_plot2db, "dy", GLUI_SPINNER_FLOAT, slice_dxyz + 1, SLICE_DPLOT, SliceBoundCB);
+      SPINNER_slice_dz = glui_bounds->add_spinner_to_panel(PANEL_slice_plot2db, "dz", GLUI_SPINNER_FLOAT, slice_dxyz + 2, SLICE_DPLOT, SliceBoundCB);
 
       BUTTON_OUTPUT_PLOT2D = glui_bounds->add_button_to_panel(ROLLOUT_plotslice, _("Output data"), SLICE_PLOT_CSV, SliceBoundCB);
       SliceBoundCB(SLICE_PLOT_LABEL);
@@ -6269,6 +6271,21 @@ extern "C" void SliceBoundCB(int var){
       UpdatePlot2DSize();
       break;
     case SLICE_PLOT:
+      Slice2Device();
+      break;
+    case SLICE_DPLOT:
+      if(slice_dxyz[0]<0.0){
+        slice_dxyz[0] = 0.0;
+        if(SPINNER_slice_dx!=NULL)SPINNER_slice_dx->set_float_val(0.0);
+      }
+      if(slice_dxyz[1]<0.0){
+        slice_dxyz[1] = 0.0;
+        if(SPINNER_slice_dy!=NULL)SPINNER_slice_dy->set_float_val(0.0);
+      }
+      if(slice_dxyz[2]<0.0){
+        slice_dxyz[2] = 0.0;
+        if(SPINNER_slice_dz!=NULL)SPINNER_slice_dz->set_float_val(0.0);
+      }
       Slice2Device();
       break;
     case SLICE_PLOT_CSV:

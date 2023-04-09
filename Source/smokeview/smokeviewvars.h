@@ -838,6 +838,7 @@ SVEXTERN int SVDECL(trainer_temp_n,0),SVDECL(trainer_oxy_n,0);
 SVEXTERN char SVDECL(*tr_name,NULL);
 SVEXTERN int SVDECL(showdevice_val, 0), SVDECL(showvdevice_val, 0);
 SVEXTERN int SVDECL(show_plot2d_xlabels, 1), SVDECL(show_plot2d_ylabels, 1), SVDECL(show_plot2d_title, 1);
+SVEXTERN int SVDECL(average_plot2d_slice_region, 0), SVDECL(show_plot2d_slice_position, 1);;
 SVEXTERN int SVDECL(colordevice_val, 0), SVDECL(showdevice_id, 0);
 SVEXTERN int SVDECL(select_device, 0);
 SVEXTERN char plot2d_xaxis_label[301];

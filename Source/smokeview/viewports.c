@@ -1327,7 +1327,11 @@ void ViewportSlicePlot(int quad, GLint screen_left, GLint screen_down) {
         valmax = sb->dev_max;
       }
       if(update_avg==1){
-        TimeAveragePlot2DData(devicei->times, devicei->vals_orig, devicei->vals, devicei->nvals, plot2d_time_average);
+        float time_average;
+
+        time_average = plot2d_time_average;
+        if(average_plot2d_slice_region == 0)time_average = 0.0;
+        TimeAveragePlot2DData(devicei->times, devicei->vals_orig, devicei->vals, devicei->nvals, time_average);
         update_avg = 0;
       }
       DrawPlot2D(PLOT_ALL, devicei->times, devicei->vals, NULL, devicei->nvals,

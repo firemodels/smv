@@ -24,7 +24,6 @@
 #define pp_SLICE_MULTI        // load slice files in parallel
 #define pp_PART_MULTI         // load particle files in parallel
 #define pp_CSV_MULTI          // read in csv files in parallel
-#define pp_SLICE_PLOT2D       // add option to plot slice data using selected region
 
 //#define pp_DPRINT             // turn on debug print (file, line number)
 

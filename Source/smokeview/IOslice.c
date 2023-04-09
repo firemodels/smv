@@ -7686,38 +7686,54 @@ int InSliceMesh(slicedata *slicei, float *xyz){
 
 void Slice2Device(void){
   int i;
-#ifdef pp_SLICE_PLOT2D
 #define NOFFSETS 5
   int offsets[NOFFSETS*NOFFSETS*NOFFSETS];
-#endif
 
   if(vis_slice_plot==0)return;
   for(i = 0; i<nsliceinfo; i++){
     slicedata *slicei;
     devicedata *sdev;
-    int j, offset;
-#ifdef pp_SLICE_PLOT2D
+    int offset;
     float xyz[3], dxyz[3];
     int ii;
-#endif
     slicei = sliceinfo+i;
     sdev = &(slicei->vals2d);
     sdev->valid = 0;
     if(slicei->loaded==0||slicei->ntimes==0)continue;
 
-#ifdef pp_SLICE_PLOT2D
-    dxyz[0] = slice_xyz[0]/(float)(NOFFSETS-1);
-    dxyz[1] = slice_xyz[1]/(float)(NOFFSETS-1);
-    dxyz[2] = slice_xyz[2]/(float)(NOFFSETS-1);
     int noffsets;
     int noffset_i, noffset_j, noffset_k;
 
-    noffset_i = NOFFSETS;
-    noffset_j = NOFFSETS;
-    noffset_k = NOFFSETS;
-    if(dxyz[0]<0.0001)noffset_i = 1;
-    if(dxyz[1]<0.0001)noffset_j = 1;
-    if(dxyz[2]<0.0001)noffset_k = 1;
+    if(average_plot2d_slice_region==1){
+      float slice_xb[6];
+
+      slice_xb[0] = MAX(slice_xyz[0] - slice_dxyz[0]/2.0, xbar0ORIG);
+      slice_xb[1] = MIN(slice_xyz[0] + slice_dxyz[0]/2.0, xbarORIG);
+      slice_xb[2] = MAX(slice_xyz[1] - slice_dxyz[1]/2.0, ybar0ORIG);
+      slice_xb[3] = MIN(slice_xyz[1] + slice_dxyz[1]/2.0, ybarORIG);
+      slice_xb[4] = MAX(slice_xyz[2] - slice_dxyz[2]/2.0, zbar0ORIG);
+      slice_xb[5] = MIN(slice_xyz[2] + slice_dxyz[2]/2.0, zbarORIG);
+
+      dxyz[0] = (slice_xb[1]-slice_xb[0])/(float)(NOFFSETS-1);
+      dxyz[1] = (slice_xb[3]-slice_xb[2])/(float)(NOFFSETS-1);
+      dxyz[2] = (slice_xb[5]-slice_xb[4])/(float)(NOFFSETS-1);
+
+      noffset_i = NOFFSETS;
+      noffset_j = NOFFSETS;
+      noffset_k = NOFFSETS;
+      if(dxyz[0]<0.0001)noffset_i = 1;
+      if(dxyz[1]<0.0001)noffset_j = 1;
+      if(dxyz[2]<0.0001)noffset_k = 1;
+      }
+    else{
+      dxyz[0] = 0.0;
+      dxyz[1] = 0.0;
+      dxyz[2] = 0.0;
+
+      noffset_i = 1;
+      noffset_j = 1;
+      noffset_k = 1;
+    }
 
     noffsets = 0;
     for(ii=0;ii<noffset_i;ii++){
@@ -7751,9 +7767,7 @@ void Slice2Device(void){
       }
     }
     if(noffsets==0)continue;
-#else
-    if(InSliceMesh(slicei, slice_xyz)==0)continue;
-#endif
+    offset = GetSliceOffset(slicei, slice_xyz, sdev->xyz);
     sdev->valid = 1;
     FREEMEMORY(sdev->vals);
     FREEMEMORY(sdev->vals_orig);
@@ -7761,7 +7775,9 @@ void Slice2Device(void){
     NewMemory((void **)&(sdev->vals_orig), slicei->ntimes*sizeof(float));
     sdev->nvals = slicei->ntimes;
     sdev->times = slicei->times;
-#ifdef pp_SLICE_PLOT2D
+
+    int j;
+
     for(j = 0; j<sdev->nvals; j++){
       sdev->vals[j] = 0.0;
     }
@@ -7775,13 +7791,6 @@ void Slice2Device(void){
       sdev->vals[j] /= (float)noffsets;
       sdev->vals_orig[j] = sdev->vals[j];
     }
-#else
-    offset = GetSliceOffset(slicei, slice_xyz, sdev->xyz);
-    for(j = 0; j<sdev->nvals; j++){
-      sdev->vals[j]      = GetSliceVal(slicei, j, offset);
-      sdev->vals_orig[j] = sdev->vals[j];
-    }
-#endif
   }
   for(i = 0; i<nslicebounds; i++){
     boundsdata *sb;
@@ -7821,12 +7830,15 @@ void Slice2Device(void){
   for(i = 0; i<nsliceinfo; i++){
     slicedata *slicei;
     devicedata *sdev;
+    float time_average;
 
     slicei = sliceinfo+i;
     sdev = &(slicei->vals2d);
     if(slicei->loaded==0||slicei->ntimes==0)continue;
     if(InSliceMesh(slicei, slice_xyz)==0)continue;
-    TimeAveragePlot2DData(sdev->times, sdev->vals_orig, sdev->vals, sdev->nvals, plot2d_time_average);
+    time_average = plot2d_time_average;
+    if(average_plot2d_slice_region==0)time_average = 0.0;
+    TimeAveragePlot2DData(sdev->times, sdev->vals_orig, sdev->vals, sdev->nvals, time_average);
   }
 }
 
@@ -7835,6 +7847,7 @@ void Slice2Device(void){
 void DrawSlicePlots(void){
   int i;
 
+  if(show_plot2d_slice_position==0)return;
   for(i = 0; i<nsliceinfo; i++){
     slicedata *slicei;
     devicedata *devicei;
@@ -7846,11 +7859,54 @@ void DrawSlicePlots(void){
     glPushMatrix();
     glScalef(SCALE2SMV(1.0),SCALE2SMV(1.0),vertical_factor*SCALE2SMV(1.0));
     glTranslatef(-xbar0,-ybar0,-zbar0);
-    glPointSize(10.0);
-    glBegin(GL_POINTS);
-    glColor3f(0.0,0.0,0.0);
-    glVertex3fv(devicei->xyz);
-    glEnd();
+    if(average_plot2d_slice_region==0||(slice_dxyz[0]<0.001&&slice_dxyz[1]<0.001&&slice_dxyz[2]<0.001)){
+      glPointSize(10.0);
+      glBegin(GL_POINTS);
+      glColor3f(0.0,0.0,0.0);
+      glVertex3fv(devicei->xyz);
+      glEnd();
+    }
+    else{
+      float slice_xb[6];
+
+      slice_xb[0] = MAX(devicei->xyz[0] - slice_dxyz[0]/2.0, xbar0ORIG);
+      slice_xb[1] = MIN(devicei->xyz[0] + slice_dxyz[0]/2.0, xbarORIG);
+      slice_xb[2] = MAX(devicei->xyz[1] - slice_dxyz[1]/2.0, ybar0ORIG);
+      slice_xb[3] = MIN(devicei->xyz[1] + slice_dxyz[1]/2.0, ybarORIG);
+      slice_xb[4] = MAX(devicei->xyz[2] - slice_dxyz[2]/2.0, zbar0ORIG);
+      slice_xb[5] = MIN(devicei->xyz[2] + slice_dxyz[2]/2.0, zbarORIG);
+
+      glLineWidth(gridlinewidth);
+      glBegin(GL_LINES);
+      glColor3fv(foregroundcolor);
+      glVertex3f(slice_xb[0], slice_xb[2], slice_xb[4]);
+      glVertex3f(slice_xb[0], slice_xb[2], slice_xb[5]);
+      glVertex3f(slice_xb[0], slice_xb[3], slice_xb[4]);
+      glVertex3f(slice_xb[0], slice_xb[3], slice_xb[5]);
+      glVertex3f(slice_xb[1], slice_xb[2], slice_xb[4]);
+      glVertex3f(slice_xb[1], slice_xb[2], slice_xb[5]);
+      glVertex3f(slice_xb[1], slice_xb[3], slice_xb[4]);
+      glVertex3f(slice_xb[1], slice_xb[3], slice_xb[5]);
+
+      glVertex3f(slice_xb[0], slice_xb[2], slice_xb[4]);
+      glVertex3f(slice_xb[0], slice_xb[3], slice_xb[4]);
+      glVertex3f(slice_xb[1], slice_xb[2], slice_xb[4]);
+      glVertex3f(slice_xb[1], slice_xb[3], slice_xb[4]);
+      glVertex3f(slice_xb[0], slice_xb[2], slice_xb[5]);
+      glVertex3f(slice_xb[0], slice_xb[3], slice_xb[5]);
+      glVertex3f(slice_xb[1], slice_xb[2], slice_xb[5]);
+      glVertex3f(slice_xb[1], slice_xb[3], slice_xb[5]);
+
+      glVertex3f(slice_xb[0], slice_xb[2], slice_xb[4]);
+      glVertex3f(slice_xb[1], slice_xb[2], slice_xb[4]);
+      glVertex3f(slice_xb[0], slice_xb[2], slice_xb[5]);
+      glVertex3f(slice_xb[1], slice_xb[2], slice_xb[5]);
+      glVertex3f(slice_xb[0], slice_xb[3], slice_xb[4]);
+      glVertex3f(slice_xb[1], slice_xb[3], slice_xb[4]);
+      glVertex3f(slice_xb[0], slice_xb[3], slice_xb[5]);
+      glVertex3f(slice_xb[1], slice_xb[3], slice_xb[5]);
+      glEnd();
+    }
     glPopMatrix();
   }
 }

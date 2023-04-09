@@ -71,6 +71,7 @@
 #define SLICE_PLOT_CSV           224
 #define SLICE_PLOT_LABEL         225
 #define SLICE_PLOT_FILENAME      226
+#define SLICE_DPLOT              227
 
 #define ISO_TRANSPARENT_CONSTANT 0
 #define ISO_TRANSPARENT_VARYING  1
