@@ -661,10 +661,10 @@ void TourCB(int var){
         float t_avg;
 
         t_avg = (thiskey->time+nextkey->time)/2.0;
-        GetTourXYZ(t_avg,  thiskey, key_xyz);
+        GetKeyXYZ(t_avg,  thiskey, key_xyz);
         SMV2FDS_XYZ(key_xyz, key_xyz);
         key_time_in = (thiskey->time+nextkey->time)/2.0;
-        GetTourView(t_avg, thiskey, key_view);
+        GetKeyView(t_avg, thiskey, key_view);
         SMV2FDS_XYZ(key_view, key_view);
       }
       newframe=AddFrame(selected_frame, key_time_in, key_xyz, key_view);
