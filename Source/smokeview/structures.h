@@ -901,7 +901,7 @@ typedef struct _keyframe {
   int selected, npoints;
   float time;
 #ifdef pp_TOUR
-  float pause;
+  float pause_time, cum_pause_time;
 #endif
   float view_smv[3], view2_smv[3];
   float xyz_fds[3], xyz_smv[3];

@@ -14681,11 +14681,6 @@ int ReadIni2(char *inifile, int localfile){
       continue;
     }
     {
-      int nkeyframes;
-      float key_time, key_xyz[3], key_az_path, key_view[3], zzoom;
-      int viewtype, uselocalspeed;
-      float *col;
-
       if(MatchINI(buffer, "SMOKECULL") == 1){
         if(fgets(buffer, 255, stream) == NULL)break;
         sscanf(buffer, "%i", &smokecullflag);
@@ -14823,8 +14818,6 @@ int ReadIni2(char *inifile, int localfile){
       }
       if(MatchINI(buffer, "TOUR_AVATAR") == 1){
         if(fgets(buffer, 255, stream) == NULL)break;
-        //        sscanf(buffer,"%i %f %f %f %f",&tourlocus_type,tourcol_avatar,tourcol_avatar+1,tourcol_avatar+2,&tourrad_avatar);
-        //        if(tourlocus_type!=0)tourlocus_type=1;
         continue;
       }
       if(MatchINI(buffer, "TOURCIRCLE") == 1){
@@ -14893,6 +14886,8 @@ int ReadIni2(char *inifile, int localfile){
       }
 
       if(MatchINI(buffer, "TOURCOLORS") == 1){
+        float *col;
+
         col = tourcol_selectedpathline;
         if(fgets(buffer, 255, stream) == NULL)break;
         sscanf(buffer, "%f %f %f", col, col + 1, col + 2);
@@ -15139,14 +15134,6 @@ int ReadIni2(char *inifile, int localfile){
       +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
       */
 
-      /*
-      typedef struct {
-      float begin[3],end[3],length;
-      float dxyz[3],dlength;
-      int dir,nbars;
-      } tickdata;
-      */
-
       if(MatchINI(buffer, "TICKS") == 1){
         ntickinfo++;
         if(tickinfo==NULL){
@@ -15313,6 +15300,12 @@ int ReadIni2(char *inifile, int localfile){
       }
       {
         int tours_flag;
+        int nkeyframes;
+        float key_time, key_xyz[3], key_az_path, key_view[3], zzoom;
+#ifdef pp_TOUR
+        float key_pause_time;
+#endif
+        int viewtype, uselocalspeed;
 
         tours_flag = 0;
         if(MatchINI(buffer, "TOURS") == 1)tours_flag = 1;
@@ -15382,6 +15375,8 @@ int ReadIni2(char *inifile, int localfile){
 #endif
               thisframe = &touri->first_frame;
               for(j = 0; j < nkeyframes; j++){
+                char *cpause;
+                
                 key_view[0] = 0.0;
                 key_view[1] = 0.0;
                 key_view[2] = 0.0;
@@ -15395,6 +15390,9 @@ int ReadIni2(char *inifile, int localfile){
                   &key_time,
                   key_xyz, key_xyz + 1, key_xyz + 2,
                   &viewtype);
+                cpause = strchr(buffer, '%');
+                key_pause_time = 0.0;
+                if(cpause!=NULL)sscanf(cpause+1,"%f", &key_pause_time);
 
                 if(viewtype == 0){
                   float dummy3[3];
@@ -15418,7 +15416,11 @@ int ReadIni2(char *inifile, int localfile){
                 }
                 if(zzoom<0.25)zzoom = 0.25;
                 if(zzoom>4.00)zzoom = 4.0;
+#ifdef pp_TOUR
+                addedframe = AddFrame(thisframe, key_time, key_pause_time, key_xyz, key_view);
+#else
                 addedframe = AddFrame(thisframe, key_time, key_xyz, key_view);
+#endif
                 thisframe = addedframe;
                 touri->keyframe_times[j] = key_time;
               }
@@ -15953,7 +15955,11 @@ void WriteIniLocal(FILE *fileout){
                 SMV2FDS_Y(framei->xyz_smv[1]),
                 SMV2FDS_Z(framei->xyz_smv[2]));
         TrimMZeros(buffer);
+#ifdef pp_TOUR
+        fprintf(fileout, " %s %i %s %f", buffer, 1, "%", framei->pause_time);
+#else
         fprintf(fileout, " %s %i ", buffer, 1);
+#endif
         sprintf(buffer, "%f %f %f %f %f %f %f ",
                 SMV2FDS_X(framei->view_smv[0]),
                 SMV2FDS_Y(framei->view_smv[1]),

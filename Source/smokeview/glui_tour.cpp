@@ -344,7 +344,7 @@ extern "C" void UpdateGluiKeyframe(void){
   glui_tour_time = selected_frame->time;
   SPINNER_tour_time->set_float_val(glui_tour_time);
 #ifdef pp_TOUR
-  glui_tour_pause_time = selected_frame->pause;
+  glui_tour_pause_time = selected_frame->pause_time;
   SPINNER_tour_pause_time->set_float_val(glui_tour_pause_time);
 #endif
   SPINNER_x->set_float_val(glui_tour_xyz[0]);
@@ -373,7 +373,7 @@ extern "C" void SetGluiTourKeyframe(void){
 
   glui_tour_time    = selected_frame->time;
 #ifdef pp_TOUR
-  glui_tour_pause_time = selected_frame->pause;
+  glui_tour_pause_time = selected_frame->pause_time;
 #endif
   glui_tour_xyz[0]  = TrimVal(SMV2FDS_X(eye[0]));
   glui_tour_xyz[1]  = TrimVal(SMV2FDS_Y(eye[1]));
@@ -615,7 +615,7 @@ void TourCB(int var){
       memcpy(selected_frame->xyz_fds,           glui_tour_xyz, 3*sizeof(float));
       memcpy(selected_frame->xyz_smv, eye,      3*sizeof(float));
 #ifdef pp_TOUR
-      selected_frame->pause = glui_tour_pause_time;
+      selected_frame->pause_time = glui_tour_pause_time;
 #endif
 
       FDS2SMV_XYZ(xyz_view,glui_tour_view);
@@ -671,7 +671,11 @@ void TourCB(int var){
         key_xyz[1] = SMV2FDS_Y(2*thiskey->xyz_smv[1]-lastkey->xyz_smv[1]);
         key_xyz[2] = SMV2FDS_Z(2*thiskey->xyz_smv[2]-lastkey->xyz_smv[2]);
         key_time_in = thiskey->time;
+#ifdef pp_TOUR
+        thiskey->time=(thiskey->time+thiskey->pause_time+lastkey->time)/2.0;
+#else
         thiskey->time=(thiskey->time+lastkey->time)/2.0;
+#endif
         key_view[0] = SMV2FDS_X(2*thiskey->view_smv[0]-lastkey->view_smv[0]);
         key_view[1] = SMV2FDS_Y(2*thiskey->view_smv[1]-lastkey->view_smv[1]);
         key_view[2] = SMV2FDS_Z(2*thiskey->view_smv[2]-lastkey->view_smv[2]);
@@ -686,7 +690,11 @@ void TourCB(int var){
         GetKeyView(t_avg, thiskey, key_view);
         SMV2FDS_XYZ(key_view, key_view);
       }
+#ifdef pp_TOUR
+      newframe = AddFrame(selected_frame, key_time_in, 0.0, key_xyz, key_view);
+#else
       newframe=AddFrame(selected_frame, key_time_in, key_xyz, key_view);
+#endif
       CreateTourPaths();
       NewSelect(newframe);
       SetGluiTourKeyframe();
