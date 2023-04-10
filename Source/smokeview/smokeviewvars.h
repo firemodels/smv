@@ -1542,6 +1542,9 @@ SVEXTERN float gslice_normal_xyz[3];
 SVEXTERN float gslice_normal_azelev[3];
 #endif
 SVEXTERN float SVDECL(glui_tour_time, 0.0);
+#ifdef pp_TOUR
+SVEXTERN float SVDECL(glui_tour_pause_time, 0.0);
+#endif
 
 SVEXTERN float gslice_xyz0[3],gslice_normal_azelev0[2];
 SVEXTERN int SVDECL(vis_gslice_data,0),SVDECL(SHOW_gslice_data,0),SVDECL(SHOW_gslice_data_old,0),SVDECL(show_gslice_triangles,0);

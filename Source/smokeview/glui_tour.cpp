@@ -42,6 +42,9 @@ GLUI_Checkbox *CHECKBOX_showintermediate = NULL;
 GLUI_Checkbox *CHECKBOX_tourhide=NULL;
 
 GLUI_Spinner *SPINNER_tour_time = NULL;
+#ifdef pp_TOUR
+GLUI_Spinner *SPINNER_tour_pause_time = NULL;
+#endif
 GLUI_Spinner *SPINNER_x = NULL;
 GLUI_Spinner *SPINNER_y = NULL;
 GLUI_Spinner *SPINNER_z = NULL;
@@ -226,6 +229,9 @@ extern "C" void GluiTourSetup(int main_window){
   PANEL_tourposition = glui_tour->add_panel_to_panel(PANEL_node, _("Node"));
 
   SPINNER_tour_time = glui_tour->add_spinner_to_panel(PANEL_tourposition, "t:", GLUI_SPINNER_FLOAT, &glui_tour_time, KEYFRAME_tXYZ, TourCB);
+#ifdef pp_TOUR
+  SPINNER_tour_pause_time = glui_tour->add_spinner_to_panel(PANEL_tourposition, "pause:", GLUI_SPINNER_FLOAT, &glui_tour_pause_time, KEYFRAME_tXYZ, TourCB);
+#endif
   SPINNER_x=glui_tour->add_spinner_to_panel(PANEL_tourposition,"x:",GLUI_SPINNER_FLOAT,glui_tour_xyz,  KEYFRAME_tXYZ,TourCB);
   SPINNER_y=glui_tour->add_spinner_to_panel(PANEL_tourposition,"y:",GLUI_SPINNER_FLOAT,glui_tour_xyz+1,KEYFRAME_tXYZ,TourCB);
   SPINNER_z=glui_tour->add_spinner_to_panel(PANEL_tourposition,"z:",GLUI_SPINNER_FLOAT,glui_tour_xyz+2,KEYFRAME_tXYZ,TourCB);
@@ -337,6 +343,10 @@ extern "C" float TrimVal(float val){
 extern "C" void UpdateGluiKeyframe(void){
   glui_tour_time = selected_frame->time;
   SPINNER_tour_time->set_float_val(glui_tour_time);
+#ifdef pp_TOUR
+  glui_tour_pause_time = selected_frame->pause;
+  SPINNER_tour_pause_time->set_float_val(glui_tour_pause_time);
+#endif
   SPINNER_x->set_float_val(glui_tour_xyz[0]);
   SPINNER_y->set_float_val(glui_tour_xyz[1]);
   SPINNER_z->set_float_val(glui_tour_xyz[2]);
@@ -362,6 +372,9 @@ extern "C" void SetGluiTourKeyframe(void){
   xyz_view = selected_frame->view_smv;
 
   glui_tour_time    = selected_frame->time;
+#ifdef pp_TOUR
+  glui_tour_pause_time = selected_frame->pause;
+#endif
   glui_tour_xyz[0]  = TrimVal(SMV2FDS_X(eye[0]));
   glui_tour_xyz[1]  = TrimVal(SMV2FDS_Y(eye[1]));
   glui_tour_xyz[2]  = TrimVal(SMV2FDS_Z(eye[2]));
@@ -379,6 +392,9 @@ extern "C" void SetGluiTourKeyframe(void){
     SPINNER_tour_time->set_float_val(glui_tour_time);
   }
 
+#ifdef pp_TOUR
+  SPINNER_tour_pause_time->set_float_val(glui_tour_pause_time);
+#endif
   SPINNER_tour_time->set_float_val(glui_tour_time);
   SPINNER_x->set_float_val(glui_tour_xyz[0]);
   SPINNER_y->set_float_val(glui_tour_xyz[1]);
@@ -598,6 +614,9 @@ void TourCB(int var){
       FDS2SMV_XYZ(eye,glui_tour_xyz);
       memcpy(selected_frame->xyz_fds,           glui_tour_xyz, 3*sizeof(float));
       memcpy(selected_frame->xyz_smv, eye,      3*sizeof(float));
+#ifdef pp_TOUR
+      selected_frame->pause = glui_tour_pause_time;
+#endif
 
       FDS2SMV_XYZ(xyz_view,glui_tour_view);
       if(update_tour_path==1)CreateTourPaths();

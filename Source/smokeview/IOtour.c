@@ -979,7 +979,7 @@ void CreateTourPaths(void){
       else{
         //assume non-uniform spacing but not working
 #define AVERAGE_SLOPE(last_dist, last_diff, next_dist, next_diff, val)\
-        val[0]=(next_dist*last_diff[0]  + last_dist*next_diff[0])/(last_dist+next_dist);\
+        val[0]=(next_dist*last_diff[0] + last_dist*next_diff[0])/(last_dist+next_dist);\
         val[1]=(next_dist*last_diff[1] + last_dist*next_diff[1])/(last_dist+next_dist);\
         val[2]=(next_dist*last_diff[2] + last_dist*next_diff[2])/(last_dist+next_dist)
 
@@ -1091,6 +1091,9 @@ keyframe *AddFrame(keyframe *last_frame, float time_local, float *xyz, float vie
   this_frame->xyz_fds[0] = xyz[0];
   this_frame->xyz_fds[1] = xyz[1];
   this_frame->xyz_fds[2] = xyz[2];
+#ifdef pp_TOUR
+  this_frame->pause = 0.0;
+#endif
 
   CheckMemory;
   return this_frame;
