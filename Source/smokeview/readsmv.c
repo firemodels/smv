@@ -15377,7 +15377,7 @@ int ReadIni2(char *inifile, int localfile){
                   &key_time, &key_pause_time, key_xyz, key_xyz + 1, key_xyz + 2);
 
                 fgets(buffer, 255, stream);
-                sscanf(buffer, "%f %f %f", &key_view, key_view + 1, key_view + 2);
+                sscanf(buffer, "%f %f %f", key_view, key_view + 1, key_view + 2);
                 addedframe = AddFrame(thisframe, key_time, key_pause_time, key_xyz, key_view);
                 thisframe = addedframe;
                 touri->keyframe_times[j] = key_time;
