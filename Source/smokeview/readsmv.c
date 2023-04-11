@@ -11918,6 +11918,7 @@ void SetSliceBounds(int set_valmin, float valmin, int set_valmax, float valmax, 
 int ReadIni2(char *inifile, int localfile){
   int i;
   FILE *stream;
+  int have_tours=0, have_tour7=0;
 
   updatemenu = 1;
   updatefacelists = 1;
@@ -15298,6 +15299,124 @@ int ReadIni2(char *inifile, int localfile){
         if(iplotz_all>nplotz_all - 1)iplotz_all = 0;
         continue;
       }
+#ifdef pp_TOUR
+      {
+        int tours_flag;
+        int nkeyframes;
+        float key_time, key_xyz[3], key_view[3];
+        float key_pause_time;
+
+        tours_flag = 0;
+    //TOUR7
+    // index
+    //   tourlabel
+    //   nkeyframes avatar_index display
+    //      time pause_time x y z
+    //      vx vy vz
+        if(have_tours==0&&MatchINI(buffer, "TOUR7") == 1)tours_flag = 1;
+        if(tours_flag == 1){
+          have_tour7 = 1;
+          if(ntourinfo > 0){
+            for(i = 0; i < ntourinfo; i++){
+              tourdata *touri;
+
+              touri = tourinfo + i;
+              FreeTour(touri);
+            }
+            FREEMEMORY(tourinfo);
+          }
+          ntourinfo = 0;
+
+          fgets(buffer, 255, stream);
+          sscanf(buffer, "%i", &ntourinfo);
+          ntourinfo++;
+          if(ntourinfo > 0){
+            if(NewMemory((void **)&tourinfo, ntourinfo*sizeof(tourdata)) == 0)return 2;
+            for(i = 0; i < ntourinfo; i++){
+              tourdata *touri;
+
+              touri = tourinfo + i;
+              touri->path_times = NULL;
+              touri->display = 0;
+            }
+          }
+          ReallocTourMemory();
+          InitCircularTour(tourinfo,ncircletournodes,INIT);
+          {
+            keyframe *thisframe, *addedframe;
+            tourdata *touri;
+            int glui_avatar_index_local;
+
+            for(i = 1; i < ntourinfo; i++){
+              int j;
+
+              touri = tourinfo + i;
+              InitTour(touri);
+              fgets(buffer, 255, stream);
+              TrimBack(buffer);
+              strcpy(touri->label, TrimFront(buffer));
+
+              fgets(buffer, 255, stream);
+              glui_avatar_index_local = 0;
+              sscanf(buffer, "%i %i %i", &nkeyframes, &glui_avatar_index_local, &touri->display2);
+              glui_avatar_index_local = CLAMP(glui_avatar_index_local, 0, navatar_types - 1);
+              touri->glui_avatar_index = glui_avatar_index_local;
+              if(touri->display2 != 1)touri->display2 = 0;
+              touri->nkeyframes = nkeyframes;
+
+              if(NewMemory((void **)&touri->keyframe_times, nkeyframes*sizeof(float)) == 0)return 2;
+              if(NewMemory((void **)&touri->path_times, tour_ntimes*sizeof(float)) == 0)return 2;
+              thisframe = &touri->first_frame;
+              for(j = 0; j < nkeyframes; j++){
+                key_pause_time = 0.0;
+                key_view[0] = 0.0;
+                key_view[1] = 0.0;
+                key_view[2] = 0.0;
+                fgets(buffer, 255, stream);
+                sscanf(buffer, "%f %f %f %f %f",
+                  &key_time, &key_pause_time, key_xyz, key_xyz + 1, key_xyz + 2);
+
+                fgets(buffer, 255, stream);
+                sscanf(buffer, "%f %f %f", &key_view, key_view + 1, key_view + 2);
+                addedframe = AddFrame(thisframe, key_time, key_pause_time, key_xyz, key_view);
+                thisframe = addedframe;
+                touri->keyframe_times[j] = key_time;
+              }
+            }
+          }
+          if(tours_flag == 1){
+            for(i = 0; i < ntourinfo; i++){
+              tourdata *touri;
+
+              touri = tourinfo + i;
+              touri->first_frame.next->prev = &touri->first_frame;
+              touri->last_frame.prev->next = &touri->last_frame;
+            }
+            UpdateTourMenuLabels();
+            CreateTourPaths();
+            UpdateTimes();
+            plotstate = GetPlotState(DYNAMIC_PLOTS);
+            selectedtour_index = TOURINDEX_MANUAL;
+            selected_frame = NULL;
+            selected_tour = NULL;
+            if(viewalltours == 1)TourMenu(MENU_TOUR_SHOWALL);
+          }
+          else{
+            ntourinfo = 0;
+          }
+          strcpy(buffer, "1.00000 1.00000 2.0000 0");
+          TrimMZeros(buffer);
+          continue;
+        }
+        if(MatchINI(buffer, "TOURINDEX")){
+          if(fgets(buffer, 255, stream) == NULL)break;
+          sscanf(buffer, "%i", &selectedtour_index_ini);
+          if(selectedtour_index_ini < 0)selectedtour_index_ini = -1;
+          update_selectedtour_index = 1;
+        }
+      }
+    }
+#endif
       {
         int tours_flag;
         int nkeyframes;
@@ -15308,8 +15427,9 @@ int ReadIni2(char *inifile, int localfile){
         int viewtype, uselocalspeed;
 
         tours_flag = 0;
-        if(MatchINI(buffer, "TOURS") == 1)tours_flag = 1;
+        if(have_tour7==0&&MatchINI(buffer, "TOURS") == 1)tours_flag = 1;
         if(tours_flag == 1){
+          have_tours = 1;
           if(ntourinfo > 0){
             for(i = 0; i < ntourinfo; i++){
               tourdata *touri;
@@ -15375,8 +15495,6 @@ int ReadIni2(char *inifile, int localfile){
 #endif
               thisframe = &touri->first_frame;
               for(j = 0; j < nkeyframes; j++){
-                char *cpause;
-                
                 key_view[0] = 0.0;
                 key_view[1] = 0.0;
                 key_view[2] = 0.0;
@@ -15390,9 +15508,7 @@ int ReadIni2(char *inifile, int localfile){
                   &key_time,
                   key_xyz, key_xyz + 1, key_xyz + 2,
                   &viewtype);
-                cpause = strchr(buffer, '%');
                 key_pause_time = 0.0;
-                if(cpause!=NULL)sscanf(cpause+1,"%f", &key_pause_time);
 
                 if(viewtype == 0){
                   float dummy3[3];
@@ -15457,7 +15573,6 @@ int ReadIni2(char *inifile, int localfile){
           update_selectedtour_index = 1;
         }
       }
-    }
   }
   fclose(stream);
   return 0;
@@ -15927,8 +16042,15 @@ void WriteIniLocal(FILE *fileout){
     touri = tourinfo + i;
     if(touri->startup == 1)startup_count++;
   }
+#ifdef pp_TOUR
   if(startup_count < ntourinfo){
-    fprintf(fileout, "TOURS\n");
+    //TOUR7
+    // index
+    //   tourlabel
+    //   nkeyframes avatar_index display
+    //      time pause_time x y z
+    //      vx vy vz
+    fprintf(fileout, "TOUR7\n");
     fprintf(fileout, " %i\n", ntourinfo - startup_count);
     for(i = 0; i < ntourinfo; i++){
       tourdata *touri;
@@ -15939,38 +16061,23 @@ void WriteIniLocal(FILE *fileout){
       if(touri->startup == 1)continue;
 
       TrimBack(touri->label);
-      fprintf(fileout, " %s\n", touri->label);
-      fprintf(fileout, " %i %i %f %i %i\n",
-        touri->nkeyframes, 1, 0.0, touri->glui_avatar_index, touri->display);
+      fprintf(fileout, "  %s\n", touri->label);
+      fprintf(fileout, "  %i %i %i\n", touri->nkeyframes, touri->glui_avatar_index, touri->display);
 
       framei = &touri->first_frame;
       for(j = 0; j<touri->nkeyframes; j++){
-        char buffer[1024];
-        int uselocalspeed = 0;
+        float xyz_smv[3], view_smv[3];
 
         framei = framei->next;
-        sprintf(buffer, "%f %f %f %f ",
-                framei->time,
-                SMV2FDS_X(framei->xyz_smv[0]),
-                SMV2FDS_Y(framei->xyz_smv[1]),
-                SMV2FDS_Z(framei->xyz_smv[2]));
-        TrimMZeros(buffer);
-#ifdef pp_TOUR
-        fprintf(fileout, " %s %i %s %f", buffer, 1, "%", framei->pause_time);
-#else
-        fprintf(fileout, " %s %i ", buffer, 1);
-#endif
-        sprintf(buffer, "%f %f %f %f %f %f %f ",
-                SMV2FDS_X(framei->view_smv[0]),
-                SMV2FDS_Y(framei->view_smv[1]),
-                SMV2FDS_Z(framei->view_smv[2]),
-                0.0, 0.0, 0.0,
-                1.0);
-        TrimMZeros(buffer);
-        fprintf(fileout, " %s %i\n", buffer, uselocalspeed);
+        SMV2FDS_XYZ(xyz_smv, framei->xyz_smv);
+        fprintf(fileout, "    %f %f %f %f %f\n", framei->time, framei->pause_time, xyz_smv[0], xyz_smv[1], xyz_smv[2]);
+
+        SMV2FDS_XYZ(view_smv, framei->view_smv);
+        fprintf(fileout, "    %f %f %f\n", view_smv[0], view_smv[1], view_smv[2]);
       }
     }
   }
+#endif
   fprintf(fileout, "USERTICKS\n");
   fprintf(fileout, " %i %i %i %i %i %i %f %i\n", visUSERticks, auto_user_tick_placement, user_tick_sub,
     user_tick_show_x, user_tick_show_y, user_tick_show_z, user_tick_direction, ntick_decimals);
