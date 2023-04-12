@@ -59,12 +59,12 @@
   dz=v1[2]-v2[2];\
   dist2=sqrt(dx*dx+dy*dy+dz*dz)
 
-#define DENORMALIZE_XYZ(XYZ_OUT,XYZ_IN)\
+#define SMV2FDS_XYZ(XYZ_OUT,XYZ_IN)\
 (XYZ_OUT)[0] = SMV2FDS_X((XYZ_IN)[0]);\
 (XYZ_OUT)[1] = SMV2FDS_Y((XYZ_IN)[1]);\
 (XYZ_OUT)[2] = SMV2FDS_Z((XYZ_IN)[2])
 
-#define NORMALIZE_XYZ(XYZ_OUT,XYZ_IN)\
+#define FDS2SMV_XYZ(XYZ_OUT,XYZ_IN)\
 (XYZ_OUT)[0] = FDS2SMV_X((XYZ_IN)[0]);\
 (XYZ_OUT)[1] = FDS2SMV_Y((XYZ_IN)[1]);\
 (XYZ_OUT)[2] = FDS2SMV_Z((XYZ_IN)[2])

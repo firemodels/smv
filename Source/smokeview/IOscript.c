@@ -3211,7 +3211,7 @@ void ScriptRGBtest(scriptdata *scripti){
   rgb_test_xyz[0] = scripti->fval;
   rgb_test_xyz[1] = scripti->fval2;
   rgb_test_xyz[2] = scripti->fval3;
-  NORMALIZE_XYZ(rgb_test_xyz, rgb_test_xyz);
+  FDS2SMV_XYZ(rgb_test_xyz, rgb_test_xyz);
   rgb_test_rgb[0] = scripti->ival;
   rgb_test_rgb[1] = scripti->ival2;
   rgb_test_rgb[2] = scripti->ival3;

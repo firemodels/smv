@@ -1327,7 +1327,11 @@ void ViewportSlicePlot(int quad, GLint screen_left, GLint screen_down) {
         valmax = sb->dev_max;
       }
       if(update_avg==1){
-        TimeAveragePlot2DData(devicei->times, devicei->vals_orig, devicei->vals, devicei->nvals, plot2d_time_average);
+        float time_average;
+
+        time_average = plot2d_time_average;
+        if(average_plot2d_slice_region == 0)time_average = 0.0;
+        TimeAveragePlot2DData(devicei->times, devicei->vals_orig, devicei->vals, devicei->nvals, time_average);
         update_avg = 0;
       }
       DrawPlot2D(PLOT_ALL, devicei->times, devicei->vals, NULL, devicei->nvals,
@@ -1679,7 +1683,7 @@ void GetEyePos(float *mm){
   smv_eyepos[0] = -(mm[0]*mm[12] + mm[1]*mm[13] +  mm[2]*mm[14])/mscale[0];
   smv_eyepos[1] = -(mm[4]*mm[12] + mm[5]*mm[13] +  mm[6]*mm[14])/mscale[1];
   smv_eyepos[2] = -(mm[8]*mm[12] + mm[9]*mm[13] + mm[10]*mm[14])/mscale[2];
-  DENORMALIZE_XYZ(fds_eyepos, smv_eyepos);
+  SMV2FDS_XYZ(fds_eyepos, smv_eyepos);
 
   for(i = 0; i<nmeshes; i++){
     meshdata *meshi;

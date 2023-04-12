@@ -838,6 +838,7 @@ SVEXTERN int SVDECL(trainer_temp_n,0),SVDECL(trainer_oxy_n,0);
 SVEXTERN char SVDECL(*tr_name,NULL);
 SVEXTERN int SVDECL(showdevice_val, 0), SVDECL(showvdevice_val, 0);
 SVEXTERN int SVDECL(show_plot2d_xlabels, 1), SVDECL(show_plot2d_ylabels, 1), SVDECL(show_plot2d_title, 1);
+SVEXTERN int SVDECL(average_plot2d_slice_region, 0), SVDECL(show_plot2d_slice_position, 1);;
 SVEXTERN int SVDECL(colordevice_val, 0), SVDECL(showdevice_id, 0);
 SVEXTERN int SVDECL(select_device, 0);
 SVEXTERN char plot2d_xaxis_label[301];
@@ -1541,6 +1542,9 @@ SVEXTERN float gslice_normal_xyz[3];
 SVEXTERN float gslice_normal_azelev[3];
 #endif
 SVEXTERN float SVDECL(glui_tour_time, 0.0);
+#ifdef pp_TOUR
+SVEXTERN float SVDECL(glui_tour_pause_time, 0.0);
+#endif
 
 SVEXTERN float gslice_xyz0[3],gslice_normal_azelev0[2];
 SVEXTERN int SVDECL(vis_gslice_data,0),SVDECL(SHOW_gslice_data,0),SVDECL(SHOW_gslice_data_old,0),SVDECL(show_gslice_triangles,0);
@@ -1745,9 +1749,9 @@ SVEXTERN int SVDECL(runluascript,0);
 SVEXTERN int SVDECL(exit_on_script_crash,0);
 #endif
 #ifdef INMAIN
-SVEXTERN float slice_xyz[3]={0.0,0.0,0.0};
+SVEXTERN float slice_xyz[3]={0.0,0.0,0.0}, slice_dxyz[3] = {0.0, 0.0, 0.0};
 #else
-SVEXTERN float slice_xyz[3];
+SVEXTERN float slice_xyz[3], slice_dxyz[3];
 #endif
 SVEXTERN int   SVDECL(update_slice2device, 0);
 SVEXTERN int SVDECL(script_multislice,0), SVDECL(script_multivslice,0), SVDECL(script_iso,0);
