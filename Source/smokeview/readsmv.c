@@ -15390,6 +15390,9 @@ int ReadIni2(char *inifile, int localfile){
               touri = tourinfo + i;
               touri->first_frame.next->prev = &touri->first_frame;
               touri->last_frame.prev->next = &touri->last_frame;
+#ifdef pp_TOUR
+              UpdateKeyframeDups(touri);
+#endif
             }
             UpdateTourMenuLabels();
             CreateTourPaths();
@@ -15531,6 +15534,9 @@ int ReadIni2(char *inifile, int localfile){
               touri = tourinfo + i;
               touri->first_frame.next->prev = &touri->first_frame;
               touri->last_frame.prev->next = &touri->last_frame;
+#ifdef pp_TOUR
+              UpdateKeyframeDups(touri);
+#endif
             }
             UpdateTourMenuLabels();
             CreateTourPaths();

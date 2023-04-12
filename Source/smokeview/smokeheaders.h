@@ -278,6 +278,9 @@ EXTERNCPP void GetKeyXYZ(float t, keyframe *this_key, float *xyz);
 EXTERNCPP void GetTourXYZ(float t, tourdata *this_tour, float *xyz);
 EXTERNCPP void GetKeyView(float t, keyframe *this_key, float *view);
 EXTERNCPP void GetTourView(float t, tourdata *this_tour, float *view);
+#ifdef pp_TOUR
+EXTERNCPP void UpdateKeyframeDups(tourdata *touri);
+#endif
 EXTERNCPP int GetTourFrame(tourdata *touri, int itime);
 EXTERNCPP int MeshConnect(meshdata *mesh_from, int val, meshdata *mesh_to);
 EXTERNCPP int IsBottomMesh(meshdata *mesh_from);
