@@ -1442,6 +1442,7 @@ SVEXTERN int SVDECL(outline_color_flag,0);
 SVEXTERN int SVDECL(solid_state,-1),SVDECL(outline_state,-1);
 SVEXTERN int visTransparentBlockage;
 SVEXTERN int SVDECL(blocklocation,BLOCKlocation_grid);
+SVEXTERN int SVDECL(blocklocation_menu, BLOCKlocation_grid);
 SVEXTERN int ncadgeom;
 SVEXTERN int visFloor, visFrame;
 SVEXTERN int visNormalEditColors;

@@ -2330,12 +2330,22 @@ void Keyboard(unsigned char key, int flag){
       update_chop_colors = 1;
       break;
     case 'q':
+      if(flag==FROM_SMOKEVIEW){
+        blocklocation=blocklocation_menu;
+      }
+      else{
+        blocklocation++;
+      }
+      if((ncadgeom==0&&blocklocation>BLOCKlocation_exact)||blocklocation>BLOCKlocation_cad){
+        blocklocation=BLOCKlocation_grid;
+      }
       if(ncgeominfo>0){
-        use_cfaces = 1-use_cfaces;
-        if(use_cfaces==1){
+        if(blocklocation==BLOCKlocation_grid){
+          use_cfaces = 1;
           printf("cfaces: ");
         }
         else{
+          use_cfaces = 0;
           printf("geometry: ");
         }
         if(show_faces_shaded==1) printf("shaded triangles ");
@@ -2343,11 +2353,6 @@ void Keyboard(unsigned char key, int flag){
         if(show_faces_shaded==0&&show_faces_outline==0)printf("hidden");
         printf("\n");
         UpdateGluiCfaces();
-      }
-      blocklocation++;
-      if((ncadgeom==0&&blocklocation>BLOCKlocation_exact)||
-                       blocklocation>BLOCKlocation_cad){
-        blocklocation=BLOCKlocation_grid;
       }
       if(blocklocation==BLOCKlocation_grid)printf("blocklocation: snapped to grid\n");
       if(blocklocation==BLOCKlocation_exact)printf("blocklocation: as input\n");

@@ -6140,7 +6140,18 @@ void BlockageMenu(int value){
    case BLOCKlocation_grid:
    case BLOCKlocation_exact:
    case BLOCKlocation_cad:
-     blocklocation=value;
+     if(ncadgeom == 0){
+       if(value == BLOCKlocation_grid){
+         blocklocation_menu = BLOCKlocation_exact;
+       }
+       else{
+         blocklocation_menu = BLOCKlocation_grid;
+       }
+     }
+     else{
+       blocklocation_menu = value;
+     }
+     Keyboard('q', FROM_SMOKEVIEW);
      break;
    case BLOCKtexture_cad:
      visCadTextures=1-visCadTextures;
@@ -7010,6 +7021,16 @@ void GeometryMenu(int value){
   updatefacelists=1;
   updatemenu=1;
   GLUTPOSTREDISPLAY;
+}
+
+/* ------------------ GeometryMainMenu ------------------------ */
+
+void GeometryMainMenu(int value){
+  if(value==BLOCKlocation_grid||value==BLOCKlocation_exact||value==BLOCKlocation_cad){
+    BlockageMenu(value);
+    return;
+  }
+  GeometryMenu(value);
 }
 
 /* ------------------ GetNumActiveDevices ------------------------ */
@@ -8978,57 +8999,6 @@ updatemenu=0;
       }
     }
   }
-  glutAddMenuEntry("-",MENU_DUMMY);
-  glutAddMenuEntry(_("Locations:"),MENU_DUMMY);
-  if(blocklocation==BLOCKlocation_grid){
-    glutAddMenuEntry(_("   *Actual"),BLOCKlocation_grid);
-  }
-  else{
-    glutAddMenuEntry(_("   Actual"),BLOCKlocation_grid);
-  }
-  if(blocklocation==BLOCKlocation_exact){
-    glutAddMenuEntry(_("   *Requested"),BLOCKlocation_exact);
-  }
-  else{
-    glutAddMenuEntry(_("   Requested"),BLOCKlocation_exact);
-  }
-  if(ncadgeom>0){
-    if(blocklocation==BLOCKlocation_cad){
-      glutAddMenuEntry(_("   *Cad"),BLOCKlocation_cad);
-    }
-    else{
-      glutAddMenuEntry(_("   Cad"),BLOCKlocation_cad);
-    }
-    {
-      cadgeomdata *cd;
-      cadlookdata *cdi;
-      int showtexturemenu;
-
-      showtexturemenu=0;
-      for(i=0;i<ncadgeom;i++){
-        int j;
-
-        cd = cadgeominfo + i;
-        for(j=0;j<cd->ncadlookinfo;j++){
-          cdi = cd->cadlookinfo+j;
-          if(cdi->textureinfo.loaded==1){
-            showtexturemenu=1;
-            break;
-          }
-        }
-        if(showtexturemenu==1)break;
-      }
-      if(showtexturemenu==1){
-        if(visCadTextures==1){
-          glutAddMenuEntry(_(" *Show CAD textures"),BLOCKtexture_cad);
-        }
-        else{
-          glutAddMenuEntry(_(" Show CAD textures"),BLOCKtexture_cad);
-        }
-      }
-    }
-  }
-
 
 /* --------------------------------level menu -------------------------- */
 
@@ -9795,7 +9765,7 @@ updatemenu=0;
 
   /* --------------------------------geometry menu -------------------------- */
 
-  CREATEMENU(geometrymenu,GeometryMenu);
+  CREATEMENU(geometrymenu,GeometryMainMenu);
   if(ntotal_blockages>0)GLUTADDSUBMENU(_("Obstacles"),blockagemenu);
   if(ngeominfo>0){
     GLUTADDSUBMENU(_("Immersed"), immersedmenu);
@@ -9825,6 +9795,59 @@ updatemenu=0;
   else{
     visFrame=0;
   }
+  if(ncadgeom == 0){
+    if(blocklocation == BLOCKlocation_grid){
+      glutAddMenuEntry("* actual locations",   BLOCKlocation_grid);
+    }
+    if(blocklocation == BLOCKlocation_exact){
+      glutAddMenuEntry("*requested locations", BLOCKlocation_exact);
+    }
+  }
+  else{
+    if(blocklocation == BLOCKlocation_grid){
+      glutAddMenuEntry("Locations:*actual",   BLOCKlocation_grid);
+      glutAddMenuEntry("Locations:requested", BLOCKlocation_exact);
+      glutAddMenuEntry("Locations:cad",       BLOCKlocation_cad);
+    }
+    if(blocklocation == BLOCKlocation_exact){
+      glutAddMenuEntry("Locations:actual",     BLOCKlocation_grid);
+      glutAddMenuEntry("Locations:*requested", BLOCKlocation_exact);
+      glutAddMenuEntry("Locations:cad",        BLOCKlocation_cad);
+    }
+    if(blocklocation == BLOCKlocation_cad){
+      glutAddMenuEntry("Locations:actual", BLOCKlocation_grid);
+      glutAddMenuEntry("Locations:requested", BLOCKlocation_exact);
+      glutAddMenuEntry("Locations:*cad", BLOCKlocation_cad);
+    }
+    {
+      cadgeomdata *cd;
+      cadlookdata *cdi;
+      int showtexturemenu;
+
+      showtexturemenu = 0;
+      for(i = 0; i < ncadgeom; i++){
+        int j;
+
+        cd = cadgeominfo + i;
+        for(j = 0; j < cd->ncadlookinfo; j++){
+          cdi = cd->cadlookinfo + j;
+          if(cdi->textureinfo.loaded == 1){
+            showtexturemenu = 1;
+            break;
+          }
+        }
+        if(showtexturemenu == 1)break;
+      }
+      if(showtexturemenu == 1){
+        if(visCadTextures == 1){
+          glutAddMenuEntry(_(" *Show CAD textures"), BLOCKtexture_cad);
+        }
+        else{
+          glutAddMenuEntry(_(" Show CAD textures"), BLOCKtexture_cad);
+        }
+      }
+    }
+  }  
   glutAddMenuEntry(_("Show all"), GEOM_ShowAll);
   glutAddMenuEntry(_("Hide all"), GEOM_HideAll);
 
