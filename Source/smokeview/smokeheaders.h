@@ -278,6 +278,9 @@ EXTERNCPP void GetKeyXYZ(float t, keyframe *this_key, float *xyz);
 EXTERNCPP void GetTourXYZ(float t, tourdata *this_tour, float *xyz);
 EXTERNCPP void GetKeyView(float t, keyframe *this_key, float *view);
 EXTERNCPP void GetTourView(float t, tourdata *this_tour, float *view);
+#ifdef pp_TOUR
+EXTERNCPP void UpdateKeyframeDups(tourdata *touri);
+#endif
 EXTERNCPP int GetTourFrame(tourdata *touri, int itime);
 EXTERNCPP int MeshConnect(meshdata *mesh_from, int val, meshdata *mesh_to);
 EXTERNCPP int IsBottomMesh(meshdata *mesh_from);
@@ -936,11 +939,7 @@ EXTERNCPP void InitCircularTour(tourdata *touri, int nkeyframes, int option);
 EXTERNCPP void DeleteTourFrames(tourdata *thistour);
 EXTERNCPP keyframe *DeleteFrame(keyframe *step);
 EXTERNCPP void ReallocTourMemory(void);
-#ifdef pp_TOUR
 EXTERNCPP keyframe *AddFrame(keyframe *framei, float time, float pause_time, float *xyz, float view[3]);
-#else
-EXTERNCPP keyframe *AddFrame(keyframe *framei, float time, float *xyz,float view[3]);
-#endif
 
 EXTERNCPP void GetBlockVals(float *xmin, float *xmax,
                    float *ymin, float *ymax,
