@@ -676,7 +676,7 @@ void RemapColorbarType(int cb_oldtype, char *cb_newname){
       strcpy(cb_newname,"Rainbow");
       break;
     case 1:
-      strcpy(cb_newname,"Rainbow 2");
+      strcpy(cb_newname,"Rainbow (Legacy)");
       break;
     case 2:
       strcpy(cb_newname,"yellow->red");
@@ -846,42 +846,7 @@ void InitDefaultColorbars(int nini){
 
   // rainbow colorbar
 
-
   strcpy(cbi->label,"Rainbow");
-  cbi->label_ptr=cbi->label;
-  cbi->nnodes=5;
-  cbi->nodehilight=0;
-
-  cbi->index_node[0]=0;
-  cbi->rgb_node[0]=0;
-  cbi->rgb_node[1]=0;
-  cbi->rgb_node[2]=255;
-
-  cbi->index_node[1]=64;
-  cbi->rgb_node[3]=0;
-  cbi->rgb_node[4]=255;
-  cbi->rgb_node[5]=255;
-
-  cbi->index_node[2]=128;
-  cbi->rgb_node[6]=0;
-  cbi->rgb_node[7]=255;
-  cbi->rgb_node[8]=0;
-
-  cbi->index_node[3]=192;
-  cbi->rgb_node[9]=255;
-  cbi->rgb_node[10]=255;
-  cbi->rgb_node[11]=0;
-
-  cbi->index_node[4]=255;
-  cbi->rgb_node[12]=255;
-  cbi->rgb_node[13]=0;
-  cbi->rgb_node[14]=0;
-  strcpy(cbi->type, "original");
-  cbi++;
-
-  // Rainbow 2 colorbar
-
-  strcpy(cbi->label,"Rainbow 2");
   cbi->label_ptr=cbi->label;
   cbi->nnodes=12;
   cbi->nodehilight=0;
@@ -945,6 +910,40 @@ void InitDefaultColorbars(int nini){
   cbi->rgb_node[33]=215;	
   cbi->rgb_node[34]=5;	
   cbi->rgb_node[35]=13;
+  strcpy(cbi->type, "original");
+  cbi++;
+
+  // rainbow colorbar
+  
+  strcpy(cbi->label,"Rainbow (Legacy)");
+  cbi->label_ptr=cbi->label;
+  cbi->nnodes=5;
+  cbi->nodehilight=0;
+
+  cbi->index_node[0]=0;
+  cbi->rgb_node[0]=0;
+  cbi->rgb_node[1]=0;
+  cbi->rgb_node[2]=255;
+
+  cbi->index_node[1]=64;
+  cbi->rgb_node[3]=0;
+  cbi->rgb_node[4]=255;
+  cbi->rgb_node[5]=255;
+
+  cbi->index_node[2]=128;
+  cbi->rgb_node[6]=0;
+  cbi->rgb_node[7]=255;
+  cbi->rgb_node[8]=0;
+
+  cbi->index_node[3]=192;
+  cbi->rgb_node[9]=255;
+  cbi->rgb_node[10]=255;
+  cbi->rgb_node[11]=0;
+
+  cbi->index_node[4]=255;
+  cbi->rgb_node[12]=255;
+  cbi->rgb_node[13]=0;
+  cbi->rgb_node[14]=0;
   strcpy(cbi->type, "original");
   cbi++;
 
