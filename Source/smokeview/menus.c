@@ -5455,6 +5455,41 @@ void LoadIsoMenu(int value){
 
 /* ------------------ LoadBoundaryMenu ------------------------ */
 
+int InPatchList(patchdata *patchj, patchdata *patchi){
+#ifdef pp_BNDF
+  char labelj[1000], labeli[1000];
+  char *endj, *endi;
+
+  strcpy(labelj, patchj->label.longlabel);
+  endj = strchr(labelj, '(');
+  if(endj!=NULL)*endj=0;
+  strcpy(labeli, patchi->label.longlabel);
+  endi = strchr(labeli, '(');
+  if(endi!=NULL)*endi=0;
+  if(strcmp(labelj,labeli)!=0)return 0;
+
+  if(patchj->patch_filetype!=PATCH_GEOMETRY_BOUNDARY){
+    if(strcmp(patchj->label.longlabel, patchi->label.longlabel)!=0)return 0;
+  }
+  if(patchj->patch_filetype==PATCH_STRUCTURED_NODE_CENTER){
+    if(patchi->patch_filetype==PATCH_STRUCTURED_NODE_CENTER)return 1;
+    return 0;
+  }
+  if(patchj->patch_filetype==PATCH_GEOMETRY_BOUNDARY){
+    if(patchi->patch_filetype==PATCH_STRUCTURED_CELL_CENTER)return 1;
+    if(patchi->patch_filetype==PATCH_GEOMETRY_BOUNDARY)return 1;
+    return 0;
+  }
+  if(patchj->patch_filetype!=patchi->patch_filetype)return 0;
+#else
+  if(strcmp(patchj->label.longlabel, patchi->label.longlabel)!=0)return 0;
+  if(patchj->patch_filetype!=patchi->patch_filetype)return 0;
+#endif
+  return 1;
+}
+
+/* ------------------ LoadBoundaryMenu ------------------------ */
+
 void LoadBoundaryMenu(int value){
   int errorcode;
   int i,ii;
@@ -5519,7 +5554,7 @@ void LoadBoundaryMenu(int value){
         patchdata *patchi;
 
         patchi = patchinfo+i;
-        if(strcmp(patchi->label.longlabel, patchj->label.longlabel)==0&&patchi->patch_filetype==patchj->patch_filetype){
+        if(InPatchList(patchj, patchi)==1){
           list[nlist++]=i;
         }
       }
@@ -5529,7 +5564,7 @@ void LoadBoundaryMenu(int value){
         patchdata *patchi;
 
         patchi = patchinfo+i;
-        if(strcmp(patchi->label.longlabel, patchj->label.longlabel)==0&&patchi->patch_filetype==patchj->patch_filetype){
+        if(InPatchList(patchj, patchi)==1){
           LOCK_COMPRESS;
           patchi->finalize = 1;
           UNLOCK_COMPRESS;
@@ -5540,7 +5575,7 @@ void LoadBoundaryMenu(int value){
         patchdata *patchi;
 
         patchi = patchinfo + i;
-        if(strcmp(patchi->label.longlabel,patchj->label.longlabel)==0&&patchi->patch_filetype==patchj->patch_filetype){
+        if(InPatchList(patchj, patchi)==1){
           LOCK_COMPRESS;
           if(patchi->structured == YES){
             PRINTF("Loading %s(%s)", patchi->file, patchi->label.shortlabel);
@@ -12311,6 +12346,9 @@ updatemenu=0;
           }
         }
 
+#ifdef pp_BNDF
+        if(patchi->have_geom==1)continue;
+#endif
         if(patchi->filetype_label==NULL||strcmp(patchi->filetype_label,"INCLUDE_GEOM")!=0){
           STRCPY(menulabel, "");
           if(patchi->loaded==1)STRCAT(menulabel,"*");
@@ -12459,6 +12497,9 @@ updatemenu=0;
               char menulabel[1024];
               int patch_load_state;
 
+#ifdef pp_BNDF
+              if(patchi->have_geom==1)continue;
+#endif
               PatchLoadState(patchi, &patch_load_state);
               strcpy(menulabel, "");
               if(patch_load_state==1)strcat(menulabel, "#");

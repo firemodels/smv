@@ -1639,6 +1639,9 @@ typedef struct _patchdata {
   char *filetype_label;
   geomdata *geominfo;
   int *geom_offsets;
+#ifdef pp_BNDF
+  int have_geom;
+#endif
   //int *patchsize;
   int skip,dir;
   float xyz_min[3], xyz_max[3];
