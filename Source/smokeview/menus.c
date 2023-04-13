@@ -9797,10 +9797,10 @@ updatemenu=0;
   }
   if(ncadgeom == 0){
     if(blocklocation == BLOCKlocation_grid){
-      glutAddMenuEntry("* actual locations",   BLOCKlocation_grid);
+      glutAddMenuEntry("Locations(*actual,requested)",   BLOCKlocation_grid);
     }
     if(blocklocation == BLOCKlocation_exact){
-      glutAddMenuEntry("*requested locations", BLOCKlocation_exact);
+      glutAddMenuEntry("Locations(actual,*requested)", BLOCKlocation_exact);
     }
   }
   else{
