@@ -899,10 +899,11 @@ typedef struct _culldata {
 
 typedef struct _keyframe {
   int selected, npoints;
-  float time;
 #ifdef pp_TOUR
-  float pause_time, cum_pause_time;
+  int is_dup;
 #endif
+  float time;
+  float pause_time, cum_pause_time;
   float view_smv[3], view2_smv[3];
   float xyz_fds[3], xyz_smv[3];
   float arc_dist, line_dist, xyz_diff[3], view_diff[3];
@@ -919,10 +920,6 @@ typedef struct _tourdata {
   int glui_avatar_index, display2;
   float *path_times,*keyframe_times;
   float xyz_smv[3], view_smv[3];
-#ifndef pp_TOUR
-  float *path_xyzs, *path_views;
-  struct _keyframe **path_keyframes;
-#endif
   float global_dist;
   int *timeslist;
   int ntimes, nkeyframes;
@@ -1642,6 +1639,9 @@ typedef struct _patchdata {
   char *filetype_label;
   geomdata *geominfo;
   int *geom_offsets;
+#ifdef pp_BNDF
+  int have_geom;
+#endif
   //int *patchsize;
   int skip,dir;
   float xyz_min[3], xyz_max[3];

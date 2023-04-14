@@ -11410,6 +11410,35 @@ typedef struct {
     }
   }
 
+#ifdef pp_BNDF
+  for(i = 0;i < npatchinfo;i++){
+    patchdata *patchi;
+    int j;
+    char labeli[1000], *endi;
+
+    patchi = patchinfo + i;
+    patchi->have_geom = 0;
+    if(patchi->patch_filetype != PATCH_STRUCTURED_CELL_CENTER)continue;
+    strcpy(labeli, patchi->label.longlabel);
+    endi = strchr(labeli, '(');
+    if(endi != NULL)*endi = 0;
+    for(j = 0;j < npatchinfo;j++){
+      patchdata *patchj;
+      char labelj[1000], *endj;
+
+      if(i == j)continue;
+      patchj = patchinfo + j;
+      if(patchj->patch_filetype != PATCH_GEOMETRY_BOUNDARY)continue;
+      strcpy(labelj, patchj->label.longlabel);
+      endj = strchr(labelj, '(');
+      if(endj != NULL)*endj = 0;
+      if(strcmp(labeli, labelj) != 0)continue;
+      patchi->have_geom = 1;
+      break;
+    }
+  }
+#endif
+
   CheckMemory;
   UpdateIsoColors();
   CheckMemory;
@@ -15299,7 +15328,6 @@ int ReadIni2(char *inifile, int localfile){
         if(iplotz_all>nplotz_all - 1)iplotz_all = 0;
         continue;
       }
-#ifdef pp_TOUR
       {
         int tours_flag;
         int nkeyframes;
@@ -15391,6 +15419,9 @@ int ReadIni2(char *inifile, int localfile){
               touri = tourinfo + i;
               touri->first_frame.next->prev = &touri->first_frame;
               touri->last_frame.prev->next = &touri->last_frame;
+#ifdef pp_TOUR
+              UpdateKeyframeDups(touri);
+#endif
             }
             UpdateTourMenuLabels();
             CreateTourPaths();
@@ -15416,14 +15447,11 @@ int ReadIni2(char *inifile, int localfile){
         }
       }
     }
-#endif
       {
         int tours_flag;
         int nkeyframes;
         float key_time, key_xyz[3], key_az_path, key_view[3], zzoom;
-#ifdef pp_TOUR
         float key_pause_time;
-#endif
         int viewtype, uselocalspeed;
 
         tours_flag = 0;
@@ -15452,11 +15480,6 @@ int ReadIni2(char *inifile, int localfile){
               touri = tourinfo + i;
               touri->path_times = NULL;
               touri->display = 0;
-#ifndef pp_TOUR
-              touri->path_keyframes = NULL;
-              touri->path_xyzs = NULL;
-              touri->path_views = NULL;
-#endif
             }
           }
           ReallocTourMemory();
@@ -15488,11 +15511,6 @@ int ReadIni2(char *inifile, int localfile){
 
               if(NewMemory((void **)&touri->keyframe_times, nkeyframes*sizeof(float)) == 0)return 2;
               if(NewMemory((void **)&touri->path_times, tour_ntimes*sizeof(float)) == 0)return 2;
-#ifndef pp_TOUR
-              if(NewMemory((void **)&touri->path_keyframes, tour_ntimes * sizeof(keyframe *)) == 0)return 2;
-              if(NewMemory((void **)&touri->path_xyzs, 3*tour_ntimes*sizeof(float))==0)return 2;
-              if(NewMemory((void **)&touri->path_views, 3*tour_ntimes*sizeof(float))==0)return 2;
-#endif
               thisframe = &touri->first_frame;
               for(j = 0; j < nkeyframes; j++){
                 key_view[0] = 0.0;
@@ -15532,11 +15550,7 @@ int ReadIni2(char *inifile, int localfile){
                 }
                 if(zzoom<0.25)zzoom = 0.25;
                 if(zzoom>4.00)zzoom = 4.0;
-#ifdef pp_TOUR
                 addedframe = AddFrame(thisframe, key_time, key_pause_time, key_xyz, key_view);
-#else
-                addedframe = AddFrame(thisframe, key_time, key_xyz, key_view);
-#endif
                 thisframe = addedframe;
                 touri->keyframe_times[j] = key_time;
               }
@@ -15549,6 +15563,9 @@ int ReadIni2(char *inifile, int localfile){
               touri = tourinfo + i;
               touri->first_frame.next->prev = &touri->first_frame;
               touri->last_frame.prev->next = &touri->last_frame;
+#ifdef pp_TOUR
+              UpdateKeyframeDups(touri);
+#endif
             }
             UpdateTourMenuLabels();
             CreateTourPaths();
@@ -16042,7 +16059,6 @@ void WriteIniLocal(FILE *fileout){
     touri = tourinfo + i;
     if(touri->startup == 1)startup_count++;
   }
-#ifdef pp_TOUR
   if(startup_count < ntourinfo){
     //TOUR7
     // index
@@ -16077,7 +16093,6 @@ void WriteIniLocal(FILE *fileout){
       }
     }
   }
-#endif
   fprintf(fileout, "USERTICKS\n");
   fprintf(fileout, " %i %i %i %i %i %i %f %i\n", visUSERticks, auto_user_tick_placement, user_tick_sub,
     user_tick_show_x, user_tick_show_y, user_tick_show_z, user_tick_direction, ntick_decimals);

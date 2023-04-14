@@ -1442,6 +1442,7 @@ SVEXTERN int SVDECL(outline_color_flag,0);
 SVEXTERN int SVDECL(solid_state,-1),SVDECL(outline_state,-1);
 SVEXTERN int visTransparentBlockage;
 SVEXTERN int SVDECL(blocklocation,BLOCKlocation_grid);
+SVEXTERN int SVDECL(blocklocation_menu, BLOCKlocation_grid);
 SVEXTERN int ncadgeom;
 SVEXTERN int visFloor, visFrame;
 SVEXTERN int visNormalEditColors;
@@ -1542,9 +1543,7 @@ SVEXTERN float gslice_normal_xyz[3];
 SVEXTERN float gslice_normal_azelev[3];
 #endif
 SVEXTERN float SVDECL(glui_tour_time, 0.0);
-#ifdef pp_TOUR
 SVEXTERN float SVDECL(glui_tour_pause_time, 0.0);
-#endif
 
 SVEXTERN float gslice_xyz0[3],gslice_normal_azelev0[2];
 SVEXTERN int SVDECL(vis_gslice_data,0),SVDECL(SHOW_gslice_data,0),SVDECL(SHOW_gslice_data_old,0),SVDECL(show_gslice_triangles,0);

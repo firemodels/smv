@@ -5455,6 +5455,41 @@ void LoadIsoMenu(int value){
 
 /* ------------------ LoadBoundaryMenu ------------------------ */
 
+int InPatchList(patchdata *patchj, patchdata *patchi){
+#ifdef pp_BNDF
+  char labelj[1000], labeli[1000];
+  char *endj, *endi;
+
+  strcpy(labelj, patchj->label.longlabel);
+  endj = strchr(labelj, '(');
+  if(endj!=NULL)*endj=0;
+  strcpy(labeli, patchi->label.longlabel);
+  endi = strchr(labeli, '(');
+  if(endi!=NULL)*endi=0;
+  if(strcmp(labelj,labeli)!=0)return 0;
+
+  if(patchj->patch_filetype!=PATCH_GEOMETRY_BOUNDARY){
+    if(strcmp(patchj->label.longlabel, patchi->label.longlabel)!=0)return 0;
+  }
+  if(patchj->patch_filetype==PATCH_STRUCTURED_NODE_CENTER){
+    if(patchi->patch_filetype==PATCH_STRUCTURED_NODE_CENTER)return 1;
+    return 0;
+  }
+  if(patchj->patch_filetype==PATCH_GEOMETRY_BOUNDARY){
+    if(patchi->patch_filetype==PATCH_STRUCTURED_CELL_CENTER)return 1;
+    if(patchi->patch_filetype==PATCH_GEOMETRY_BOUNDARY)return 1;
+    return 0;
+  }
+  if(patchj->patch_filetype!=patchi->patch_filetype)return 0;
+#else
+  if(strcmp(patchj->label.longlabel, patchi->label.longlabel)!=0)return 0;
+  if(patchj->patch_filetype!=patchi->patch_filetype)return 0;
+#endif
+  return 1;
+}
+
+/* ------------------ LoadBoundaryMenu ------------------------ */
+
 void LoadBoundaryMenu(int value){
   int errorcode;
   int i,ii;
@@ -5519,7 +5554,7 @@ void LoadBoundaryMenu(int value){
         patchdata *patchi;
 
         patchi = patchinfo+i;
-        if(strcmp(patchi->label.longlabel, patchj->label.longlabel)==0&&patchi->patch_filetype==patchj->patch_filetype){
+        if(InPatchList(patchj, patchi)==1){
           list[nlist++]=i;
         }
       }
@@ -5529,7 +5564,7 @@ void LoadBoundaryMenu(int value){
         patchdata *patchi;
 
         patchi = patchinfo+i;
-        if(strcmp(patchi->label.longlabel, patchj->label.longlabel)==0&&patchi->patch_filetype==patchj->patch_filetype){
+        if(InPatchList(patchj, patchi)==1){
           LOCK_COMPRESS;
           patchi->finalize = 1;
           UNLOCK_COMPRESS;
@@ -5540,7 +5575,7 @@ void LoadBoundaryMenu(int value){
         patchdata *patchi;
 
         patchi = patchinfo + i;
-        if(strcmp(patchi->label.longlabel,patchj->label.longlabel)==0&&patchi->patch_filetype==patchj->patch_filetype){
+        if(InPatchList(patchj, patchi)==1){
           LOCK_COMPRESS;
           if(patchi->structured == YES){
             PRINTF("Loading %s(%s)", patchi->file, patchi->label.shortlabel);
@@ -6105,7 +6140,18 @@ void BlockageMenu(int value){
    case BLOCKlocation_grid:
    case BLOCKlocation_exact:
    case BLOCKlocation_cad:
-     blocklocation=value;
+     if(ncadgeom == 0){
+       if(value == BLOCKlocation_grid){
+         blocklocation_menu = BLOCKlocation_exact;
+       }
+       else{
+         blocklocation_menu = BLOCKlocation_grid;
+       }
+     }
+     else{
+       blocklocation_menu = value;
+     }
+     Keyboard('q', FROM_SMOKEVIEW);
      break;
    case BLOCKtexture_cad:
      visCadTextures=1-visCadTextures;
@@ -6975,6 +7021,16 @@ void GeometryMenu(int value){
   updatefacelists=1;
   updatemenu=1;
   GLUTPOSTREDISPLAY;
+}
+
+/* ------------------ GeometryMainMenu ------------------------ */
+
+void GeometryMainMenu(int value){
+  if(value==BLOCKlocation_grid||value==BLOCKlocation_exact||value==BLOCKlocation_cad){
+    BlockageMenu(value);
+    return;
+  }
+  GeometryMenu(value);
 }
 
 /* ------------------ GetNumActiveDevices ------------------------ */
@@ -8943,57 +8999,6 @@ updatemenu=0;
       }
     }
   }
-  glutAddMenuEntry("-",MENU_DUMMY);
-  glutAddMenuEntry(_("Locations:"),MENU_DUMMY);
-  if(blocklocation==BLOCKlocation_grid){
-    glutAddMenuEntry(_("   *Actual"),BLOCKlocation_grid);
-  }
-  else{
-    glutAddMenuEntry(_("   Actual"),BLOCKlocation_grid);
-  }
-  if(blocklocation==BLOCKlocation_exact){
-    glutAddMenuEntry(_("   *Requested"),BLOCKlocation_exact);
-  }
-  else{
-    glutAddMenuEntry(_("   Requested"),BLOCKlocation_exact);
-  }
-  if(ncadgeom>0){
-    if(blocklocation==BLOCKlocation_cad){
-      glutAddMenuEntry(_("   *Cad"),BLOCKlocation_cad);
-    }
-    else{
-      glutAddMenuEntry(_("   Cad"),BLOCKlocation_cad);
-    }
-    {
-      cadgeomdata *cd;
-      cadlookdata *cdi;
-      int showtexturemenu;
-
-      showtexturemenu=0;
-      for(i=0;i<ncadgeom;i++){
-        int j;
-
-        cd = cadgeominfo + i;
-        for(j=0;j<cd->ncadlookinfo;j++){
-          cdi = cd->cadlookinfo+j;
-          if(cdi->textureinfo.loaded==1){
-            showtexturemenu=1;
-            break;
-          }
-        }
-        if(showtexturemenu==1)break;
-      }
-      if(showtexturemenu==1){
-        if(visCadTextures==1){
-          glutAddMenuEntry(_(" *Show CAD textures"),BLOCKtexture_cad);
-        }
-        else{
-          glutAddMenuEntry(_(" Show CAD textures"),BLOCKtexture_cad);
-        }
-      }
-    }
-  }
-
 
 /* --------------------------------level menu -------------------------- */
 
@@ -9760,7 +9765,7 @@ updatemenu=0;
 
   /* --------------------------------geometry menu -------------------------- */
 
-  CREATEMENU(geometrymenu,GeometryMenu);
+  CREATEMENU(geometrymenu,GeometryMainMenu);
   if(ntotal_blockages>0)GLUTADDSUBMENU(_("Obstacles"),blockagemenu);
   if(ngeominfo>0){
     GLUTADDSUBMENU(_("Immersed"), immersedmenu);
@@ -9790,6 +9795,59 @@ updatemenu=0;
   else{
     visFrame=0;
   }
+  if(ncadgeom == 0){
+    if(blocklocation == BLOCKlocation_grid){
+      glutAddMenuEntry("Locations(*actual,requested)",   BLOCKlocation_grid);
+    }
+    if(blocklocation == BLOCKlocation_exact){
+      glutAddMenuEntry("Locations(actual,*requested)", BLOCKlocation_exact);
+    }
+  }
+  else{
+    if(blocklocation == BLOCKlocation_grid){
+      glutAddMenuEntry("Locations:*actual",   BLOCKlocation_grid);
+      glutAddMenuEntry("Locations:requested", BLOCKlocation_exact);
+      glutAddMenuEntry("Locations:cad",       BLOCKlocation_cad);
+    }
+    if(blocklocation == BLOCKlocation_exact){
+      glutAddMenuEntry("Locations:actual",     BLOCKlocation_grid);
+      glutAddMenuEntry("Locations:*requested", BLOCKlocation_exact);
+      glutAddMenuEntry("Locations:cad",        BLOCKlocation_cad);
+    }
+    if(blocklocation == BLOCKlocation_cad){
+      glutAddMenuEntry("Locations:actual", BLOCKlocation_grid);
+      glutAddMenuEntry("Locations:requested", BLOCKlocation_exact);
+      glutAddMenuEntry("Locations:*cad", BLOCKlocation_cad);
+    }
+    {
+      cadgeomdata *cd;
+      cadlookdata *cdi;
+      int showtexturemenu;
+
+      showtexturemenu = 0;
+      for(i = 0; i < ncadgeom; i++){
+        int j;
+
+        cd = cadgeominfo + i;
+        for(j = 0; j < cd->ncadlookinfo; j++){
+          cdi = cd->cadlookinfo + j;
+          if(cdi->textureinfo.loaded == 1){
+            showtexturemenu = 1;
+            break;
+          }
+        }
+        if(showtexturemenu == 1)break;
+      }
+      if(showtexturemenu == 1){
+        if(visCadTextures == 1){
+          glutAddMenuEntry(_(" *Show CAD textures"), BLOCKtexture_cad);
+        }
+        else{
+          glutAddMenuEntry(_(" Show CAD textures"), BLOCKtexture_cad);
+        }
+      }
+    }
+  }  
   glutAddMenuEntry(_("Show all"), GEOM_ShowAll);
   glutAddMenuEntry(_("Hide all"), GEOM_HideAll);
 
@@ -12311,6 +12369,9 @@ updatemenu=0;
           }
         }
 
+#ifdef pp_BNDF
+        if(patchi->have_geom==1)continue;
+#endif
         if(patchi->filetype_label==NULL||strcmp(patchi->filetype_label,"INCLUDE_GEOM")!=0){
           STRCPY(menulabel, "");
           if(patchi->loaded==1)STRCAT(menulabel,"*");
@@ -12459,6 +12520,9 @@ updatemenu=0;
               char menulabel[1024];
               int patch_load_state;
 
+#ifdef pp_BNDF
+              if(patchi->have_geom==1)continue;
+#endif
               PatchLoadState(patchi, &patch_load_state);
               strcpy(menulabel, "");
               if(patch_load_state==1)strcat(menulabel, "#");
