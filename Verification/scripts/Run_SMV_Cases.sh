@@ -144,9 +144,9 @@ fi
 
 OS=`uname`
 if [ "$OS" == "Darwin" ]; then
-  PLATFORM=osx_64
+  PLATFORM=osx
 else
-  PLATFORM=linux_64
+  PLATFORM=linux
 fi
 
 if [ "$use_installed" == "1" ] ; then
