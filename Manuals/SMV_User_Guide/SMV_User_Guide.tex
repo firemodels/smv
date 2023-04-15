@@ -372,7 +372,7 @@ generated data files, are related.
 
 Smokeview is written in C~\cite{C:book}\ and C++\cite{Cpp17}. It consists
 of about \smvlines\ lines of code. The C portion visualizes the
-data, while the C++ portoin is used to implement dialog boxes. 
+data, while the C++ portoin is used to implement dialog boxes.
 Smokeview uses the 3D graphics
 library OpenGL~\cite{OpenGLRed}\ for generating the visualizations
 and the Graphics Library Utility Toolkit (GLUT)~\cite{OpenGLGlut}
@@ -484,7 +484,7 @@ has not been interpolated before being seen.
 
 \subsubsection{2D Plots}
 Spreadsheet data or csv files may be used to generate 2D plots of data (Chapter \ref{chap:2DPLOT}).  2D plots may
-also be generated from data at specified locations or regions in a slice file.   
+also be generated from data at specified locations or regions in a slice file.
 
 \subsubsection{Surfaces - 3D contours}
 Isosurface or 3D level surface animations (Section
@@ -572,7 +572,7 @@ cropped using the Render portion of the Motion/View/Render
 dialog box.
 
 \subsection{Automating the Visualization}
-\subsubsection{Virtual Tour}\   A series of checkpoints or key frames
+\subsubsection{Virtual Tour}\   A series of checkpoints or keyframes
 specifying position and view direction may be specified. (Chapter
 \ref{chapter:touring}) A smooth path is computed using
 Kochanek-Bartels splines~\cite{Moller:02}\ to go through these key
@@ -1228,7 +1228,7 @@ illustrates wind roses at several locations drawn in horizontal (xy) and vertica
 
 \begin{figure}[bph]
 \centerline{
-\includegraphics[width=1.5903in]{\SMVfigdir/figWINDROSE}
+\includegraphics[width=2.381944in]{\SMVfigdir/figWINDROSE}
 }
 \caption[Dialog box for setting wind rose options]
 {Dialog box for setting wind rose options}
@@ -1310,7 +1310,7 @@ FDS also outputs duplicate slices when two or more identical {\tt \&SLCF}\ entri
 
 \begin{figure}[bph]
 \centerline{
-\includegraphics[width=1.80554in]{\SMVfigdir/figsliceduplicate}
+\includegraphics[width=1.8055in]{\SMVfigdir/figsliceduplicate}
 }
 \caption[Dialog box for specifying duplicate slice visibility.]{Dialog box for specifying duplicate slice visibility.}
 \label{fig:sliceduplicate}
@@ -1543,7 +1543,7 @@ At $t=5.0$~s these components are active.  The fan is moving (when viewed with s
 
 \begin{figure}[bph]
 \begin{center}
-\includegraphics[width=3.125in]{\SMVfigdir/figHVACsettings}
+\includegraphics[width=3.7291in]{\SMVfigdir/figHVACsettings}
 \end{center}
 \caption[HVAC settings dialog box.]{HVAC settings dialog box.
 This dialog box allows the user to show and hide various components of an HVAC
@@ -1827,7 +1827,7 @@ the steps for generating a plot are:
 \begin{figure}[htbp]
 \begin{center}
 \begin{tabular}{c}
-\includegraphics[width=4.00in]{../../../fig/smv/figures/plot2d_dialog}
+\includegraphics[width=5.431in]{../../../fig/smv/figures/plot2d_dialog}
 \end{tabular}
 \end{center}
 \caption[2D Plotting Dialog Box.]{2D Plotting Dialog Box. To create a plot, click on the New plot
@@ -1953,7 +1953,7 @@ when mapping data to color indices.
 
 \begin{figure}[bph]
 \centerline{
-\includegraphics[width=3.60416in]{\SMVfigdir/figBOUNDset}}
+\includegraphics[width=5.4028in]{\SMVfigdir/figBOUNDset}}
 \caption[Dialog box for setting Slice file data bounds.]
 {Dialog box for setting Slice file data bounds.
 Select a variable and bound type (set, global  or percentile).  Enter a lower
@@ -2036,7 +2036,7 @@ The user may also specify the number files that are loaded simultaneously
 
 \begin{figure}[bph]
 \centerline{
-\includegraphics[width=5.35417in]{\SMVfigdir/figBOUNDSpart}
+\includegraphics[width=5.5345in]{\SMVfigdir/figBOUNDSpart}
 }\ \caption[Dialog box for setting Particle file
 options.] {Dialog box for setting Particle file
 options. Select a variable and bound type. Enter a lower
@@ -2048,7 +2048,7 @@ selecting the Fast loading checkbox and setting the number of files to load in p
 
 \section{3D Smoke Options}
 \begin{figure}[bph]
-\centerline{\includegraphics[width=4.875in]{\SMVfigdir/fig3DSmoke}
+\centerline{\includegraphics[width=7.195in]{\SMVfigdir/fig3DSmoke}
 }\ \caption[Dialog box for setting slice rendered 3D smoke options]
 {Dialog box for setting slice rendered 3D smoke options.  Fire color may be specified for hrrpuv values above a specified cutoff.
 Smoke color may be specified for hrrpuv values below the same cutoff. }
@@ -2284,7 +2284,7 @@ A skipping interval may be selected to generate fewer images using the {\em Wher
 
 \begin{figure}[bph]
 \begin{center}
-\includegraphics[width=2.5902777in]{\SMVfigdir/figRENDER}
+\includegraphics[width=2.3194in]{\SMVfigdir/figRENDER}
 \caption[Dialog box for creating images of the Smokeview scene.]
 {Dialog box for creating images of the Smokeview scene. The Render portion of the Motion/View/Render dialog box allows one to create images of the Smokeview scene. One may also clip or crop the rendered image.}
 \label{figMOTIONrender}
@@ -3108,11 +3108,24 @@ Option}\ \label{chapter:touring}
 \caption[Overhead view of the townhouse example showing the
 default {\em Circle}\ tour.]{Overhead view
 of townhouse example showing the default {\em Circle}\ tour.
-The square dots indicate the key frame
-locations. Key frames may be edited using the Touring
+The square dots indicate the keyframe
+locations. Keyframes may be edited using the Touring
 dialog box or by clicking and dragging with the mouse.}
  \label{figTOUREXAMPLE}
 \end{figure}
+
+The touring option allows one to specify paths or tours through a
+Smokeview scene.  One may then view a scene from the vantage point of an
+observer moving along one of these paths. Smokeview creates a tour surrounding
+the scene by default.  This tour is named {\em Circular}.
+An example for the townhouse case is illustrated
+in Fig. \ref{figTOUREXAMPLE}.
+The user may create a new tour (or modify an existing one) using the Tour
+dialog box illustrated in Fig. \ref{figTOUR}. The user creates a tour by
+defining two or more keyframes. Each keyframe defines a position, view direction and pause time.
+The default view direction is towards the position (0.0,0.0,0.0) or lower front left of the scene and the default pause time is 0.0~s.
+Smokeview creates a smooth
+path through these positions using piecewise cubic Hermite polynomials.
 
 \begin{figure}[bph]
 \begin{center}
@@ -3120,32 +3133,19 @@ dialog box or by clicking and dragging with the mouse.}
 \end{center}
 \caption[Touring dialog box.]{The Touring dialog
 box may be used to select tours or keyframes, change the
-position or view direction at each key frame and change the tension
+position or view direction at each keyframe and change the tension
 of the tour path. }
  \label{figTOUR}
 \end{figure}
 
-The touring option allows one to specify paths or tours through a
-Smokeview scene.  One may then view a scene from the vantage point of an
-observer moving along one of these paths. Smokeview creates a tour surrounding
-the scene by default.  This tour is given the name {\em Circular}.
-An example for the townhouse case is illustrated
-in Fig. \ref{figTOUREXAMPLE}.
-The user may create a new tour (or modify an existing one) using the Tour
-dialog box illustrated in Fig. \ref{figTOUR}. The user creates a tour by
-defining two or more key frames each with an associated view direction.
-The default view direction is towards the position (0.0,0.0,0.0) or lower front left of the scene.
-Smokeview creates a smooth
-path through these positions using piecewise cubic Hermite polynomials.
-
 \section{Tour Settings}
 A new tour is created
 by clicking the \frameit{New Tour}\ button in the Edit Tour dialog box.
-The newly created tour has two key frames.  The tour
+The newly created tour has two keyframes.  The tour
 goes through the middle of the Smokeview scene starting at the
 front left and finishing at the back right.
 A tour may be modified by selecting the {\em Edit Tour}\ checkbox.
-Tour characteristics such as key frame positions and view directions at those positions
+Tour characteristics such as keyframe positions and view directions at those positions
 are saved in the configuration file, {\tt casename.ini}.
 
 The {\em View From Tour Path}\ and  {\em
@@ -3153,65 +3153,59 @@ View From Selected Keyframe}\ checkboxes are used to control how one observes th
 scene using a Tour.  If {\em View From Tour Path}\ is checked then one moves through the
 scene along the currently specified tour.  If {\em
 View From Selected Keyframe}\ is checked then one sees the scene from the point of view of the
-currently selected key frame.  This allows one to observe how
+currently selected keyframe.  This allows one to observe how
 the position and view direction settings will affect the view.  Unchecking these options
 returns control of scene movement to the user allowing one to have a global view of the tour.
 
-The speed traversed along a tour is determined from the number of points along the path
-and by the time value
-assigned at each key frame.   If the {\em Constant Speed}\ checkbox
-is checked then the time at each key frame is determined so that
-the number of path points along the tour occur at a constant rate.
-The key frame times are determined so that the
-points between any two key frames are proportional to the path
-distance between these two key frames.
+Keyframe times are  proportional to the path length 
+between keyframes so that the speed traversed along the tour is constant.
 The start and stop times of the tour may also be specified using the {\em start time}\ and
 {\em stop time}\ entries in the dialog box.
 
 
-\section{Key frame Settings}
-A tour is created from a series of key frames.  One may specify
- the time, position and view direction at each key frame.  Smokeview then
-obtains positions and view directions between key frames by interpolating
+\section{Keyframe Settings}
+A tour is created from a series of keyframes.  One may specify
+ the position, view direction and pause time at each keyframe.  Smokeview then
+obtains positions and view directions between keyframes by interpolating
 using piecewise cubic Hermite cubic splines.
 A tour is created by pressing the
-\frameit{Add Tour}\ button.  This tour has two key frames located
-at opposite ends of the Smokeview scene.  Additional key frames may
+\frameit{Add Tour}\ button.  This tour has two keyframes located
+at opposite ends of the Smokeview scene.  Additional keyframes may
 be created by selected the \frameit{Add}\ button. A tour may also be
 created by pressing the \frameit{Copy} button which makes a copy of the
 currently selected tour.  A orientation of a tour may be reversed by selecting
 the \frameit{Reverse} button.
 
-The position and viewpoint of a key frame may be adjusted.  First
-it must be selected.  A key frame may be selected by either
+The position and viewpoint of a keyframe may be adjusted.  First
+it must be selected.  A keyframe may be selected by either
 clicking on it with the left mouse button or by {\em moving}\ through
-the key frames using the \frameit{Next}\ or \frameit{Previous}\
-buttons. The active key frame as drawn within the Smokeview scene changes color from red to green.
-Key frame positions may then be modified by changing
-data in the t, X, Y or Z edit boxes or dragging the key frame rectangle with the mouse.  A different view direction
+the keyframes using the \frameit{Next}\ or \frameit{Previous}\
+buttons. The active keyframe as drawn within the Smokeview scene changes color from red to green.
+Keyframe positions may then be modified by changing
+data in the X, Y or Z edit boxes or dragging the keyframe rectangle with the mouse.  A different view direction
 may also be set.
 
-A key frame may also be moved with the mouse.  Clicking on a
-key frame node then dragging the mouse left/right and up/down
-moves the key frame horizontally and vertically.  Pressing the
+A keyframe may also be moved with the mouse.  Clicking on a
+keyframe node then dragging the mouse left/right and up/down
+moves the keyframe horizontally and vertically.  Pressing the
 <CTRL> key while dragging the mouse
-restricts key frame movement to a horizontal direction (with respect to the mouse).
+restricts keyframe movement to a horizontal direction (with respect to the mouse).
 Pressing the <ALT> key while dragging the mouse
-restricts key frame movement to a vertical direction (again with respect to the mouse).
+restricts keyframe movement to a vertical direction (again with respect to the mouse).
 
-A new key frame is created by clicking the \frameit{Add}\ button.
+A new keyframe is created by clicking the \frameit{Add}\ button.
 It is formed by averaging the positions and view directions of the
-current and next key frames. If the selected key frame is the last
-one in the tour then a new key frame  is added beyond the last
-key frame.  A key frame may also be created by pressing the 'a' key.
+current and next keyframes. If the selected keyframe is the last
+one in the tour then a new keyframe  is added beyond the last
+keyframe.  A keyframe may also be created by pressing the 'a' key.
 
-A key frame may be deleted by clicking the \frameit{Delete}\
-button. The currently selected key frame may also be deleted by pressing the 'd' key.
+A keyframe may be deleted by clicking the \frameit{Delete}\
+button. The currently selected keyframe may also be deleted by pressing the 'd' key.
 There is no \frameit{Delete Tour}\ button. A tour may be
-deleted by either deleting all of its key frames or by deleting its
+deleted by either deleting all of its keyframes or by deleting its
 entry in the casename.ini file.
 
-A view direction may be defined at each key frame by either setting
+A view direction may be defined at each keyframe by either setting
 direction angles relative to the path (an azimuthal and an elevation
 angle) or by setting a direction relative to the scene geometry (a
 Cartesian (X,Y,Z) view direction).
@@ -3231,9 +3225,9 @@ the interval ({\em i.e., 4 data values}).
 \begin{tabular}{cc}
 \includegraphics[height=\figheightA]{SCRIPT_FIGURES/tour_start_tour}&
 \includegraphics[height=\figheightA]{SCRIPT_FIGURES/tour_example_tour1}\\
-a) Initial tour&b) First and last step set with 5 key frames\\
+a) Initial tour&b) First and last step set with 5 keyframes\\
 \includegraphics[height=\figheightA]{SCRIPT_FIGURES/tour_example_tour2}\\
-c) All key frame positions set
+c) All keyframe positions set
 \end{tabular}
 \end{center}
 \caption [Tutorial examples for Tour option.] {Tutorial examples for Tour option.}
@@ -3253,30 +3247,30 @@ which opens up the Edit Tours dialog box.
 \item  Click on the \frameit{New Tour}\ button in the Edit Tour dialog
 box. This creates a tour, illustrated in Fig.
 \ref{figTutorial}a, starting at the front left of the scene and
-ending at the back right. This tour has two key frames.  The
-elevation of each key frame is halfway between the bottom and top
+ending at the back right. This tour has two keyframes.  The
+elevation of each keyframe is halfway between the bottom and top
 of the scene.
 
 \item Click on the {\em Edit Tour Path}\ checkbox. This activates
 buttons that allows the user to edit the properties of each
-individual key frame. Click on the square dot at the back of the
-townhouse. This is the first key frame. Change the ``Z'' value to
+individual keyframe. Click on the square dot at the back of the
+townhouse. This is the first keyframe. Change the ``Z'' value to
 1.0.  Click on the second dot and change its ``Z'' value to 1.0.
 
 
 \item  Click on the \frameit{Add}\ button, found inside the {\em Edit
 Keyframe's Position}\ panel, three times. This will add three more
-key frames to the tour which will be needed so that the path bends
-up the stairs. You should now have five key frames.
+keyframes to the tour which will be needed so that the path bends
+up the stairs. You should now have five keyframes.
 
-\item Move the first key frame at the back of the townhouse near the
+\item Move the first keyframe at the back of the townhouse near the
 double door by setting X, Y, Z positions to (3.8,-1.0,1.6).
-Move the last key frame to the top
+Move the last keyframe to the top
 of the steps by setting X, Y, Z positions to (6.1,3.6,4.1).
 The path should now look like
 Figure \ref{figTutorial}b.
 
-\item Move the second, third and fourth key frames to positions
+\item Move the second, third and fourth keyframes to positions
 (4.0,4.0,1.6), (4.4,6.8,1.6) and (5.9,6.1,2.0).  The path should
 now look like Fig. \ref{figTutorial}c.
 
@@ -4489,7 +4483,7 @@ or as specified in the input file.
 
 \begin{figure}[bph]
 \centerline{
-\centerline{\includegraphics[width=4.0625in]{\SMVfigdir/figEDIT}\ }
+\centerline{\includegraphics[width=4.597in]{\SMVfigdir/figEDIT}\ }
 }\ \caption{Examine blockages dialog box.}
  \label{figEDITBLOCKS}
 \label{figEDIT}
@@ -6615,10 +6609,10 @@ be drawn.  (default: 0)
 TOURS
 ntours - number of tours
 label for tour
-nkeyframes - number of key frames for first tour
+nkeyframes - number of keyframes for first tour
 time xpos ypos zpos 1 az elev bias continuity tension zoom localspeedflag
 ...
-time xpos ... for last key frame
+time xpos ... for last keyframe
 nkeyframes for 2nd tour
 ...
 ...
