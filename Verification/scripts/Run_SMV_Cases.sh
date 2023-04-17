@@ -145,8 +145,10 @@ fi
 OS=`uname`
 if [ "$OS" == "Darwin" ]; then
   PLATFORM=osx_64
+  FDSPLATFORM=osx
 else
   PLATFORM=linux_64
+  FDSPLATFORM=osx
 fi
 
 if [ "$use_installed" == "1" ] ; then
@@ -156,9 +158,9 @@ else
   export WIND2FDS=$SVNROOT/smv/Build/wind2fds/${COMPILER}_$PLATFORM/wind2fds_$PLATFORM
   export BACKGROUND_PROG=$SVNROOT/smv/Build/background/${COMPILER}_$PLATFORM/background_$PLATFORM
 fi
-export FDSEXE=$SVNROOT/fds/Build/${INTEL}mpi_${COMPILER}_$PLATFORM$DEBUG/fds_${INTEL}mpi_${COMPILER}_$PLATFORM$DEBUG
+export FDSEXE=$SVNROOT/fds/Build/${INTEL}mpi_${COMPILER}_$FDSPLATFORM$DEBUG/fds_${INTEL}mpi_${COMPILER}_$FDSPLATFORM$DEBUG
 export FDS=$FDSEXE
-export FDSMPI=$SVNROOT/fds/Build/${INTEL}mpi_${COMPILER}_$PLATFORM$DEBUG/fds_${INTEL}mpi_${COMPILER}_$PLATFORM$DEBUG
+export FDSMPI=$SVNROOT/fds/Build/${INTEL}mpi_${COMPILER}_$FDSPLATFORM$DEBUG/fds_${INTEL}mpi_${COMPILER}_$FDSPLATFORM$DEBUG
 export CFAST=$CFASTREPO/Build/CFAST/${COMPILER}_$PLATFORM/cfast7_$PLATFORM
 
 QFDSSH="$SVNROOT/fds/Utilities/Scripts/qfds.sh -j $JOBPREFIX"
