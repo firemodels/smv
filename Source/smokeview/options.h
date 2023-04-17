@@ -25,7 +25,7 @@
 #define pp_PART_MULTI         // load particle files in parallel
 #define pp_CSV_MULTI          // read in csv files in parallel
 
-#define pp_TOUR               // handle duplicate keyframes
+//#define pp_TOUR               // handle duplicate keyframes
 //#define pp_BNDF               // merge geometry and structured boundary files in load menus
 
 //#define pp_DPRINT             // turn on debug print (file, line number)
