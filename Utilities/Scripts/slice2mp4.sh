@@ -743,7 +743,7 @@ ROOTDIR=`pwd`
 SMVREPO=$ROOTDIR/smv
 BOTREPO=$ROOTDIR/bot
 cd $CURDIR
-SMOKEVIEWBINDIR=$BOTREPO/Bundle/smv/for_bundle
+SMOKEVIEWBINDIR=$BOTREPO/Bundlebot/smv/for_bundle
 SMOKEVIEW=$SMVREPO/Build/smokeview/intel_linux_64/smokeview_linux_64
 if [ ! -e $SMOKEVIEW ]; then
   SMOKEVIEW=$SMVREPO/Build/smokeview/intel_linux_64/smokeview_linux_test_64
