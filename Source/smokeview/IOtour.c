@@ -502,16 +502,7 @@ void HermiteXYZ(float t, keyframe *kf1, keyframe *kf2, float *xyz, float *slope)
     m0 = kf1->xyz_tangent_right[i];
     m1 = kf2->xyz_tangent_left[i];
 
-#ifdef pp_TOUR
-    if(kf1->is_dup==1){
-      xyz[i] = p0;
-    }
-    else{
-      xyz[i] = HERMVAL(p0,p1,m0,m1);
-    }
-#else
     xyz[i] = HERMVAL(p0,p1,m0,m1);
-#endif
     if(i != 2&&slope!=NULL)slope[i] = HERMDERIV(p0,p1,m0,m1);
   }
 }
@@ -531,16 +522,7 @@ void HermiteView(float t, keyframe *kf1, keyframe *kf2, float *view){
     m1 = kf2->view_tangent_left[i];
     t2 = t*t;
     t3 = t2*t;
-#ifdef pp_TOUR
-    if(kf1->is_dup==1){
-      view[i] = p0;
-    }
-    else{
       view[i] = HERMVAL(p0,p1,m0,m1);
-    }
-#else
-      view[i] = HERMVAL(p0,p1,m0,m1);
-#endif
   }
 }
 
@@ -548,23 +530,6 @@ void HermiteView(float t, keyframe *kf1, keyframe *kf2, float *view){
 
 #ifdef pp_TOUR
 void UpdateKeyframeDups(tourdata *touri){
-  keyframe *first_key, *last_key, *this_key;
-
-  first_key = touri->first_frame.next;
-  last_key = touri->last_frame.prev;
-  last_key->is_dup = 0;
-  for(this_key = first_key; this_key != last_key; this_key = this_key->next){
-    keyframe *next_key;
-    float *xyz, *xyz2;
-
-    next_key = this_key->next;
-    xyz      = this_key->xyz_fds;
-    xyz2     = next_key->xyz_fds;
-    this_key->is_dup = 0;
-    if(ABS(xyz[0] - xyz2[0]) < 0.001 && 
-       ABS(xyz[1] - xyz2[1]) < 0.001 && 
-       ABS(xyz[2] - xyz2[2]) < 0.001)this_key->is_dup = 1;
-  }
 }
 #endif
 
