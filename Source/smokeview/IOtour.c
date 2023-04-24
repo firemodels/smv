@@ -781,7 +781,7 @@ void GetTourProperties(tourdata *touri){
   tourdist = 0.0;
 #endif
   for(j=0;j<tour_ntimes;j++){
-    float f1, vtime, dist;
+    float f1, vtime;
 
     f1 = 0.0;
     if(tour_ntimes>1)f1 = (float)j/(float)(tour_ntimes - 1);
@@ -789,6 +789,7 @@ void GetTourProperties(tourdata *touri){
     tour_times[j]        = vtime;
     touri->path_times[j] = vtime;
 #ifdef pp_TOUR_ADJUST
+    float dist;
     GetTourXYZ0(vtime, touri, thisxyz);
     if(j == 0){
       dist = 0.0;
