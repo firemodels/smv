@@ -481,6 +481,40 @@ void DrawColorbarPathHSL(void){
 
 }
 
+/* ------------------ DrawColorbarPathCIE ------------------------ */
+#ifdef pp_COLOR_CIE
+void DrawColorbarPathCIE(void){
+  int i;
+  colorbardata *cbi;
+
+  if(show_firecolormap == 0){
+    cbi = colorbarinfo + colorbartype;
+  }
+  else{
+    cbi = colorbarinfo + fire_colorbar_index;
+  }
+  glPointSize(5.0);
+  glBegin(GL_POINTS);
+  for(i = 0; i < 255; i++){
+    float *rgbi, csi[3], xyz[3];
+    unsigned char rgb255[3];
+
+    rgbi = cbi->colorbar + 3 * i;
+    rgb255[0] = rgbi[0] * 255.0;
+    rgb255[1] = rgbi[1] * 255.0;
+    rgb255[2] = rgbi[2] * 255.0;
+    glColor3fv(rgbi);
+    void Rgb2CIE(unsigned char *rgb, float *cie);
+    Rgb2CIE(rgb255, csi);
+    xyz[0] = csi[0] / 100.0;
+    xyz[1] = (csi[1]+87.9)/183.28;
+    xyz[2] = (csi[2]+126.39)/211.11;
+    glVertex3fv(xyz);
+  }
+  glEnd();
+}
+#endif
+
 /* ------------------ GetColorbar ------------------------ */
 
 colorbardata *GetColorbar(char *label){
@@ -3619,48 +3653,68 @@ void DrawVerticalColorbarRegLabels(void){
 
 /* ------------------ fcie ------------------------ */
 
-#ifdef pp_COLOR_DIFFS
+#ifdef pp_COLOR_CIE
 float fcie(float t){
-  float val;
+  float val, eps, kappa;
 
-  if(t > 0.008856){
+  eps = 216.0 / 24389.0;
+  kappa = 24389.0 / 27.0;
+  if(t > eps){
     val = pow(t, 1.0 / 3.0);
   }
   else{
-    val = 7.787 * t + 16.0 / 116.0;
+    val = kappa * t/116.0 + 16.0 / 116.0;
   }
   return val;
 }
 
 /* ------------------ Rgb2CIE ------------------------ */
+#define GETV(f) ((f)<=0.04045 ? (f)/12.92 : pow( ((f)+0.055)/1.055,3.0) )
+void Rgb2CIE(unsigned char *rgb, float *cie){
+  // http://www.brucelindbloom.com/
+  float Xn = 0.9642, Yn = 1.0, Zn = 0.8249;
 
-void Rgb2CIE(unsigned char *rgbvals255, float *cies){
+  float x, y, z;
+  float lstar, astar, bstar;
+  float frgb[3];
+
+  frgb[0] = GETV(( float )rgb[0] / 255.0);
+  frgb[1] = GETV(( float )rgb[1] / 255.0);
+  frgb[2] = GETV(( float )rgb[2] / 255.0);
+  x = 0.4124564 * frgb[0] + 0.3575761 * frgb[1] + 0.1804375 * frgb[2];
+  y = 0.2126729 * frgb[0] + 0.7151522 * frgb[1] + 0.0721750 * frgb[2];
+  z = 0.0193339 * frgb[0] + 0.1191920 * frgb[1] + 0.9503041 * frgb[2];
+
+  x /= Xn;
+  y /= Yn;
+  z /= Zn;
+
+  lstar = 116.0 * fcie(y) - 16.0;
+  astar = 500.0 * (fcie(x) - fcie(y));
+  bstar = 200.0 * (fcie(y) - fcie(z));
+
+  cie[0] = lstar;
+  cie[1] = astar;
+  cie[2] = bstar;
+}
+
+/* ------------------ Rgb2CIEs ------------------------ */
+
+void Rgb2CIEs(unsigned char *rgbs255, float *cies){
   int i;
-  float Xn = 96.42, Yn = 100.00, Zn = 82.49;
 
-  for(i = 0;i < 255;i++){
+  for(i = 0; i < 255; i++){
     unsigned char *rgb;
-    float x, y, z;
     float *cie;
-    float lstar, astar, bstar;
 
-    rgb = rgbvals255 + 3 * i;
-    x = (0.412453 * rgb[0] + 0.357580 * rgb[1] + 0.180423 * rgb[2])/255.0;
-    y = (0.212671 * rgb[0] + 0.715160 * rgb[1] + 0.072169 * rgb[2])/255.0;
-    z = (0.019334 * rgb[0] + 0.119193 * rgb[1] + 0.950227 * rgb[2])/255.0;
-
-    lstar = 116.0 * pow(y, 1.0 / 3.0) - 16.0;
-    astar = 500.0 * (fcie(x / Xn) - fcie(y / Yn));
-    bstar = 200.0 * (fcie(y / Yn) - fcie(z / Zn));
+    rgb = rgbs255 + 3 * i;
 
     cie = cies + 3 * i;
-    cie[0] = lstar;
-    cie[1] = astar;
-    cie[2] = bstar;
+    Rgb2CIE(rgb, cie);
   }
 }
 
-/* ------------------ Rgb2CIE ------------------------ */
+/* ------------------ CIE2Rgb ------------------------ */
 
 void CIE2Rgb(unsigned char *rgbvals255, float *cies){
   int i;
@@ -3725,7 +3779,7 @@ void CIEDiff(unsigned char *rgbs){
   int i;
   float cies[255*3];
 
-  Rgb2CIE(rgbs, cies);
+  Rgb2CIEs(rgbs, cies);
   printf("diffs: ");
   for(i = 1;i < 255;i++){
     float *cie, d0, d1, d2, diff;
@@ -3738,6 +3792,40 @@ void CIEDiff(unsigned char *rgbs){
     printf("%f ", diff);
   }
   printf("\n");
+#ifdef COLOR_CIE_MINMAX
+  unsigned char rgb[3];
+  float cie[3], ciemin[3], ciemax[3];
+
+  rgb[0] = 0;
+  rgb[1] = 0;
+  rgb[2] = 0;
+  Rgb2CIE(rgb, cie);
+  memcpy(ciemin, cie, 3 * sizeof(float));
+  memcpy(ciemax, cie, 3 * sizeof(float));
+
+  for(i = 0; i < 256; i++){
+    int j;
+
+    for(j = 0; j < 256; j++){
+      int k;
+
+      for(k = 0; k < 256; k++){
+        rgb[0] = i;
+        rgb[1] = j;
+        rgb[2] = k;
+        Rgb2CIE(rgb, cie);
+        ciemin[0] = MIN(ciemin[0], cie[0]);
+        ciemin[1] = MIN(ciemin[1], cie[1]);
+        ciemin[2] = MIN(ciemin[2], cie[2]);
+        ciemax[0] = MAX(ciemax[0], cie[0]);
+        ciemax[1] = MAX(ciemax[1], cie[1]);
+        ciemax[2] = MAX(ciemax[2], cie[2]);
+      }
+    }
+  }
+  printf("ciemin = % f % f % f\n", ciemin[0], ciemin[1], ciemin[2]);
+  printf("ciemax = % f % f % f\n", ciemax[0], ciemax[1], ciemax[2]);
+#endif
 }
 #endif
 /* ------------------ Rgb2Hsl ------------------------ */

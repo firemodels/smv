@@ -1279,15 +1279,19 @@ void UpdateRGBColors(int colorbar_index){
     }
     UpdateSmokeColormap(RENDER_SLICE);
     UpdateSmokeColormap(RENDER_VOLUME);
-#ifdef pp_COLOR_DIFFS
+#ifdef pp_COLOR_CIE
     unsigned char rgb_temp[3*256];
     for(n=0;n<256;n++){
       rgb_temp[3*n+0] = 255*rgb_full[n][0];
       rgb_temp[3*n+1] = 255*rgb_full[n][1];
       rgb_temp[3*n+2] = 255*rgb_full[n][2];
     }
+    void Rgb2CIEs(unsigned char *rgb_temp, float *cie);
+    Rgb2CIEs(rgb_temp, cbi->cie);
+#ifdef pp_COLOR_DIFF_OUT
     void CIEDiff(unsigned char *rgbs);
     CIEDiff(rgb_temp);
+#endif
 #endif
   }
   else{

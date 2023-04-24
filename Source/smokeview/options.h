@@ -15,7 +15,7 @@
 //#define pp_COLORBAR_DEBUG     // output colorbar debug info
 #define pp_COLORBARS_CSV      // add csv colorbars//
 //#define pp_COLORBAR_CONSTANT  // make colorbar brightness constant in colorbar dialog box
-//define pp_COLORBAR_HSL        // add option to display color bar in terms of HSL (hue, saturation, lightness)
+//#define pp_COLORBAR_HSL        // add option to display color bar in terms of HSL (hue, saturation, lightness)
 
 //#define pp_PLOT2DMAX // add option to plot 2d max vals
 #define pp_CFAST_CSV // look for cfast spreadsheet files
@@ -25,7 +25,10 @@
 #define pp_PART_MULTI         // load particle files in parallel
 #define pp_CSV_MULTI          // read in csv files in parallel
 
-//#define pp_COLOR_DIFFS        // output color diffs
+//#define pp_COLOR_CIE        // output color diffs
+//#define COLOR_CIE_MINMAX    // compute min/max of cie color coordinates
+//#define pp_COLOR_DIFF_OUT   // output cie differences
+
 
 //#define pp_TOUR_ADJUST        // adjust tour times
 #define pp_TOUR_DUP             // handle duplicate keyframes

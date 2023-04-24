@@ -59,8 +59,9 @@ GLUI_Button *BUTTON_constant_brightness = NULL;
 GLUI_Button *BUTTON_reset_colorbar = NULL;
 #endif
 
+GLUI_RadioGroup *RADIO_colorbar_hsl;
+
 GLUI_Checkbox *CHECKBOX_hidesv=NULL;
-GLUI_Checkbox *CHECKBOX_colorbar_hsl= NULL;
 
 GLUI_EditText *EDITTEXT_colorbar_label=NULL;
 
@@ -414,7 +415,12 @@ extern "C" void GluiColorbarSetup(int main_window){
   colorbar_hidescene=1;
   CHECKBOX_hidesv = glui_colorbar->add_checkbox_to_panel(PANEL_cb2R2,_("Hide scene"),&colorbar_hidescene);
 #ifdef pp_COLORBAR_HSL
-  CHECKBOX_colorbar_hsl = glui_colorbar->add_checkbox_to_panel(PANEL_cb2R2, _("HSL"), &colorbar_hsl);
+  RADIO_colorbar_hsl = glui_colorbar->add_radiogroup_to_panel(PANEL_cb2R2, &colorbar_hsl);
+  glui_colorbar->add_radiobutton_to_group(RADIO_colorbar_hsl, "rgb");
+  glui_colorbar->add_radiobutton_to_group(RADIO_colorbar_hsl, "hsl");
+#ifdef pp_COLOR_CIE
+  glui_colorbar->add_radiobutton_to_group(RADIO_colorbar_hsl, "cie");
+#endif
 #endif
   PANEL_cb1 = glui_colorbar->add_panel(_("Colorbar"));
   if(ncolorbars>0){
