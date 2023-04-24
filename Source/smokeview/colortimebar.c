@@ -3617,6 +3617,129 @@ void DrawVerticalColorbarRegLabels(void){
   }
 }
 
+/* ------------------ fcie ------------------------ */
+
+#ifdef pp_COLOR_DIFFS
+float fcie(float t){
+  float val;
+
+  if(t > 0.008856){
+    val = pow(t, 1.0 / 3.0);
+  }
+  else{
+    val = 7.787 * t + 16.0 / 116.0;
+  }
+  return val;
+}
+
+/* ------------------ Rgb2CIE ------------------------ */
+
+void Rgb2CIE(unsigned char *rgbvals255, float *cies){
+  int i;
+  float Xn = 96.42, Yn = 100.00, Zn = 82.49;
+
+  for(i = 0;i < 255;i++){
+    unsigned char *rgb;
+    float x, y, z;
+    float *cie;
+    float lstar, astar, bstar;
+
+    rgb = rgbvals255 + 3 * i;
+    x = (0.412453 * rgb[0] + 0.357580 * rgb[1] + 0.180423 * rgb[2])/255.0;
+    y = (0.212671 * rgb[0] + 0.715160 * rgb[1] + 0.072169 * rgb[2])/255.0;
+    z = (0.019334 * rgb[0] + 0.119193 * rgb[1] + 0.950227 * rgb[2])/255.0;
+
+    lstar = 116.0 * pow(y, 1.0 / 3.0) - 16.0;
+    astar = 500.0 * (fcie(x / Xn) - fcie(y / Yn));
+    bstar = 200.0 * (fcie(y / Yn) - fcie(z / Zn));
+
+    cie = cies + 3 * i;
+    cie[0] = lstar;
+    cie[1] = astar;
+    cie[2] = bstar;
+  }
+}
+
+/* ------------------ Rgb2CIE ------------------------ */
+
+void CIE2Rgb(unsigned char *rgbvals255, float *cies){
+  int i;
+  float Xn = 96.42, Yn = 100.00, Zn = 82.49;
+
+  for(i = 0;i < 255;i++){
+    unsigned char *rgb;
+    float *cie;
+    float lstar, astar, bstar;
+    float x, y, z;
+    float r, g, b;
+
+    rgb = rgbvals255 + 3 * i;
+    cie = cies + 3 * i;
+    lstar = cie[0];
+    astar = cie[1];
+    bstar = cie[2];
+
+    y = (lstar + 16.0) / 116.0;
+    x = astar / 500.0 + y;
+    z = y - bstar / 200.0;
+
+    if(y*y*y > 0.008856){
+      y = y * y * y;
+    }
+    else{
+      y = (y - 16.0 / 116.0) / 7.787;
+    }
+
+    if(x * x * x > 0.008856){
+      x = x * x * x;
+    }
+    else{
+      x = (x - 16.0 / 116.0) / 7.787;
+    }
+
+    if(z * z * z > 0.008856){
+      z = z * z * z;
+    }
+    else{
+      z = (z - 16.0 / 116.0) / 7.787;
+    }
+
+    x *= Xn;
+    y *= Yn;
+    z *= Zn;
+
+    r =  3.240479*x - 1.537150*y - 0.498535*z;
+    g = -0.969256*x + 1.875992*y + 0.041556*z;
+    b =  0.055648*x - 0.204043*y + 1.057311*z;
+
+    rgb[0] = CLAMP(r*255, 0, 255);
+    rgb[1] = CLAMP(g*255, 0, 255);
+    rgb[2] = CLAMP(b*255, 0, 255);
+  }
+}
+
+
+/* ------------------ CIEDiff ------------------------ */
+
+void CIEDiff(unsigned char *rgbs){
+  int i;
+  float cies[255*3];
+
+  Rgb2CIE(rgbs, cies);
+  printf("diffs: ");
+  for(i = 1;i < 255;i++){
+    float *cie, d0, d1, d2, diff;
+
+    cie = cies + 3 * i;
+    d0 = cie[0] - cie[0 - 3];
+    d1 = cie[1] - cie[1 - 3];
+    d2 = cie[2] - cie[2 - 3];
+    diff = sqrt(d0 * d0 + d1 * d1 + d2 * d2);
+    printf("%f ", diff);
+  }
+  printf("\n");
+}
+#endif
 /* ------------------ Rgb2Hsl ------------------------ */
 
 void Rgb2Hsl(unsigned char *rgbvals255, float *hslvals){

@@ -25,6 +25,8 @@
 #define pp_PART_MULTI         // load particle files in parallel
 #define pp_CSV_MULTI          // read in csv files in parallel
 
+#define pp_COLOR_DIFFS        // output color diffs
+
 //#define pp_TOUR_ADJUST        // adjust tour times
 #define pp_TOUR_DUP             // handle duplicate keyframes
 //#define pp_BNDF               // merge geometry and structured boundary files in load menus
