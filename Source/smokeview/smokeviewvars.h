@@ -395,6 +395,11 @@ SVEXTERN float SVDECL(geomboundary_linewidth, 5.0);
 
 SVEXTERN int SVDECL(smoke3d_only, 0);
 SVEXTERN int SVDECL(update_tour_path,1);
+#ifdef pp_TOUR_ADJUST
+SVEXTERN int SVDECL(adjust_tour_time, 1);
+#else
+SVEXTERN int SVDECL(adjust_tour_time, 0);
+#endif
 SVEXTERN int SVDECL(tour_circular_index, -1);
 SVEXTERN float tour_circular_center[3], tour_circular_radius, tour_circular_view[3], SVDECL(tour_circular_angle0,0.0);
 SVEXTERN float tour_circular_center_default[3], tour_circular_radius_default, tour_circular_view_default[3];

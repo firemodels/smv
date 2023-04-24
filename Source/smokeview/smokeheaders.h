@@ -278,7 +278,7 @@ EXTERNCPP void GetKeyXYZ(float t, keyframe *this_key, float *xyz);
 EXTERNCPP void GetTourXYZ(float t, tourdata *this_tour, float *xyz);
 EXTERNCPP void GetKeyView(float t, keyframe *this_key, float *view);
 EXTERNCPP void GetTourView(float t, tourdata *this_tour, float *view);
-#ifdef pp_TOUR
+#ifdef pp_TOUR_DUP
 EXTERNCPP void UpdateKeyframeDups(tourdata *touri);
 #endif
 EXTERNCPP int GetTourFrame(tourdata *touri, int itime);
