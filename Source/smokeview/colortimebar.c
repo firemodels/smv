@@ -3670,7 +3670,7 @@ float fcie(float t){
 
 /* ------------------ Rgb2CIE ------------------------ */
 #define GETV(f) ((f)<=0.04045 ? (f)/12.92 : pow( ((f)+0.055)/1.055,3.0) )
-void Rgb2CIE(unsigned char *rgb, float *cie){
+void Rgb2CIE(unsigned char *rgb_arg, float *cie){
   // http://www.brucelindbloom.com/
   float Xn = 0.9642, Yn = 1.0, Zn = 0.8249;
 
@@ -3678,9 +3678,9 @@ void Rgb2CIE(unsigned char *rgb, float *cie){
   float lstar, astar, bstar;
   float frgb[3];
 
-  frgb[0] = GETV(( float )rgb[0] / 255.0);
-  frgb[1] = GETV(( float )rgb[1] / 255.0);
-  frgb[2] = GETV(( float )rgb[2] / 255.0);
+  frgb[0] = GETV(( float )rgb_arg[0] / 255.0);
+  frgb[1] = GETV(( float )rgb_arg[1] / 255.0);
+  frgb[2] = GETV(( float )rgb_arg[2] / 255.0);
   x = 0.4124564 * frgb[0] + 0.3575761 * frgb[1] + 0.1804375 * frgb[2];
   y = 0.2126729 * frgb[0] + 0.7151522 * frgb[1] + 0.0721750 * frgb[2];
   z = 0.0193339 * frgb[0] + 0.1191920 * frgb[1] + 0.9503041 * frgb[2];
@@ -3704,13 +3704,13 @@ void Rgb2CIEs(unsigned char *rgbs255, float *cies){
   int i;
 
   for(i = 0; i < 255; i++){
-    unsigned char *rgb;
+    unsigned char *rgb_local;
     float *cie;
 
-    rgb = rgbs255 + 3 * i;
+    rgb_local = rgbs255 + 3 * i;
 
     cie = cies + 3 * i;
-    Rgb2CIE(rgb, cie);
+    Rgb2CIE(rgb_local, cie);
   }
 }
 
@@ -3721,13 +3721,13 @@ void CIE2Rgb(unsigned char *rgbvals255, float *cies){
   float Xn = 96.42, Yn = 100.00, Zn = 82.49;
 
   for(i = 0;i < 255;i++){
-    unsigned char *rgb;
+    unsigned char *rgb_local;
     float *cie;
     float lstar, astar, bstar;
     float x, y, z;
     float r, g, b;
 
-    rgb = rgbvals255 + 3 * i;
+    rgb_local = rgbvals255 + 3 * i;
     cie = cies + 3 * i;
     lstar = cie[0];
     astar = cie[1];
@@ -3766,9 +3766,9 @@ void CIE2Rgb(unsigned char *rgbvals255, float *cies){
     g = -0.969256*x + 1.875992*y + 0.041556*z;
     b =  0.055648*x - 0.204043*y + 1.057311*z;
 
-    rgb[0] = CLAMP(r*255, 0, 255);
-    rgb[1] = CLAMP(g*255, 0, 255);
-    rgb[2] = CLAMP(b*255, 0, 255);
+    rgb_local[0] = CLAMP(r*255, 0, 255);
+    rgb_local[1] = CLAMP(g*255, 0, 255);
+    rgb_local[2] = CLAMP(b*255, 0, 255);
   }
 }
 
