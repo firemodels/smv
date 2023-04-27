@@ -6,7 +6,7 @@
 &MULT ID='mesh array', DX=0.8,DY=0.8,DZ=0.8, I_UPPER=1,J_UPPER=1,K_UPPER=3 /
 &MESH IJK=64,64,64, XB=0.0,0.8,0.0,0.8,0.0,0.8, MULT_ID='mesh array' /
 
-&MISC HRRPUV_MAX_SMV=1300.0,IBLANK_SMV=.TRUE.,HRRPUV_MAX_SMV=9500.0 /
+&MISC IBLANK_SMV=.TRUE. /
 
 &DUMP NFRAMES=300 DT_PL3D=2.0, DT_SL3D=0.03333 /
 
@@ -62,7 +62,7 @@
 &ISOF QUANTITY='TEMPERATURE',VALUE(1:2)=200.0,400.0 /  Show 3D contours of temperature at 200 C
 
 &PART ID='tracers',MASSLESS=.TRUE.,
-   QUANTITIES(1:3)='U-VELOCITY','V-VELOCITY','W-VELOCITY'
+   QUANTITIES(1:3)='PARTICLE U','PARTICLE V','PARTICLE W'
    SAMPLING_FACTOR=10 /  Description of massless tracer particles. Apply at a
                                                              solid surface with the PART_ID='tracers'
 
