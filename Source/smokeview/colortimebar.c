@@ -3685,25 +3685,17 @@ void DrawVerticalColorbarRegLabels(void){
 /* ------------------ fcie ------------------------ */
 
 #ifdef pp_COLOR_CIE
-float fcie(float t){
-  float val, eps, kappa;
-
-  eps = 216.0 / 24389.0;
-  kappa = 24389.0 / 27.0;
-  if(t > eps){
-    val = pow(t, 1.0 / 3.0);
-  }
-  else{
-    val = kappa * t/116.0 + 16.0 / 116.0;
-  }
-  return val;
-}
 
 /* ------------------ Rgb2CIE ------------------------ */
+#define FCIE(f) ((f)>eps ? pow((f),1.0/3.0) : (kappa*(f)+16.0)/116.0 )
 #define SRGBINV(f) ((f)<=0.04045 ? (f)/12.92 : pow( ((f)+0.055)/1.055,2.4) )
 void Rgb2CIE(unsigned char *rgb_arg, float *cie){
   // http://www.brucelindbloom.com/
   float Xn = 0.9642, Yn = 1.0, Zn = 0.8249;
+  float eps, kappa;
+
+  eps   = 216.0/24389.0;
+  kappa = 24389.0/27.0;
 
   float x, y, z;
   float lstar, astar, bstar;
@@ -3721,9 +3713,9 @@ void Rgb2CIE(unsigned char *rgb_arg, float *cie){
   y /= Yn;
   z /= Zn;
 
-  lstar = 116.0 * fcie(y) - 16.0;
-  astar = 500.0 * (fcie(x) - fcie(y));
-  bstar = 200.0 * (fcie(y) - fcie(z));
+  lstar = 116.0 * FCIE(y) - 16.0;
+  astar = 500.0 * (FCIE(x) - FCIE(y));
+  bstar = 200.0 * (FCIE(y) - FCIE(z));
 
   cie[0] = lstar;
   cie[1] = astar;
