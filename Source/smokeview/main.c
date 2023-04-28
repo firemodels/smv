@@ -756,6 +756,18 @@ int main(int argc, char **argv){
   int return_code;
   char *progname;
 
+#ifdef pp_COLOR_CIE
+  void CheckCIE(void);
+  //CheckCIE();
+  void Rgb2CIE(unsigned char *rgbval, float *cie);
+  unsigned char rgbval[3];
+  float cie[3];
+  rgbval[0] = 128;
+  rgbval[1] = 64;
+  rgbval[2] = 32;
+  Rgb2CIE(rgbval, cie);
+#endif
+
   START_TIMER(timer_startup);
 // #define pp_CRASH_TEST
 #ifdef pp_CRASH_TEST
