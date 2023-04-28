@@ -483,52 +483,39 @@ void GetTourVal(float t, keyframe *kf1, keyframe *kf2, float *xyz){
 /* ------------------ HermiteXYZ ------------------------ */
 
 void HermiteXYZ(float t, keyframe *kf1, keyframe *kf2, float *xyz, float *slope){
-  int i;
   float t3, t2;
-
+  float p0[3], p1[3], *m0, *m1;
   t2 = t*t;
   t3 = t2*t;
 
-  for(i = 0;i < 3;i++){
-    float p0, p1, m0, m1;
-
-    if(i==0){
-      p0 = FDS2SMV_X(kf1->xyz_fds[i]);
-      p1 = FDS2SMV_X(kf2->xyz_fds[i]);
-    }
-    else if(i==1){
-      p0 = FDS2SMV_Y(kf1->xyz_fds[i]);
-      p1 = FDS2SMV_Y(kf2->xyz_fds[i]);
-    }
-    else{
-      p0 = FDS2SMV_Z(kf1->xyz_fds[i]);
-      p1 = FDS2SMV_Z(kf2->xyz_fds[i]);
-    }
-    m0 = kf1->xyz_tangent_right[i];
-    m1 = kf2->xyz_tangent_left[i];
-
-    xyz[i] = HERMVAL(p0,p1,m0,m1);
-    if(i != 2&&slope!=NULL)slope[i] = HERMDERIV(p0,p1,m0,m1);
+  FDS2SMV_XYZ(p0, kf1->xyz_fds);
+  FDS2SMV_XYZ(p1, kf2->xyz_fds);
+  m0 = kf1->xyz_tangent_right;
+  m1 = kf2->xyz_tangent_left;
+  xyz[0] = HERMVAL(p0[0], p1[0], m0[0], m1[0]);
+  xyz[1] = HERMVAL(p0[1], p1[1], m0[1], m1[1]);
+  xyz[2] = HERMVAL(p0[2], p1[2], m0[2], m1[2]);
+  if(slope != NULL){
+    slope[0] = HERMDERIV(p0[0], p1[0], m0[0], m1[0]);
+    slope[1] = HERMDERIV(p0[1], p1[1], m0[1], m1[1]);
   }
 }
 
 /* ------------------ HermiteView ------------------------ */
 
 void HermiteView(float t, keyframe *kf1, keyframe *kf2, float *view){
-  int i;
+  float *p0, *p1, *m0, *m1;
+  float t3, t2;
 
-  for(i = 0;i < 3;i++){
-    float p0, p1, m0, m1;
-    float t3, t2;
-
-    p0 = kf1->view_smv[i];
-    p1 = kf2->view_smv[i];
-    m0 = kf1->view_tangent_right[i];
-    m1 = kf2->view_tangent_left[i];
-    t2 = t*t;
-    t3 = t2*t;
-      view[i] = HERMVAL(p0,p1,m0,m1);
-  }
+  t2 = t*t;
+  t3 = t2*t;
+  p0 = kf1->view_smv;
+  p1 = kf2->view_smv;
+  m0 = kf1->view_tangent_right;
+  m1 = kf2->view_tangent_left;
+  view[0] = HERMVAL(p0[0],p1[0],m0[0],m1[0]);
+  view[1] = HERMVAL(p0[1],p1[1],m0[1],m1[1]);
+  view[2] = HERMVAL(p0[2],p1[2],m0[2],m1[2]);
 }
 
 /* ------------------ UpdateTourKeyframeDups ------------------------ */
