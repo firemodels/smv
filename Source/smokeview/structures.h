@@ -899,9 +899,6 @@ typedef struct _culldata {
 
 typedef struct _keyframe {
   int selected, npoints;
-#ifdef pp_TOUR
-  int is_dup;
-#endif
   float time;
   float pause_time, cum_pause_time;
   float view_smv[3], view2_smv[3];
