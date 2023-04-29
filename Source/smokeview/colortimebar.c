@@ -3579,6 +3579,44 @@ void DrawVerticalColorbarRegLabels(void){
 
 #ifdef pp_COLOR_CIE
 
+void AdjustColorBar(colorbardata *cbi){
+  int i;
+
+  for(i = 0;i < cbi->nnodes;i++){
+    unsigned char *rgb_local;
+    float *cie;
+
+    rgb_local = cbi->rgb_node + 3 * i;
+    cie = cbi->cie + 3 * i;
+    Rgb2CIE(rgb_local, cie);
+  }
+  cbi->dist[0] = 0.0;
+  for(i = 1;i < cbi->nnodes;i++){
+    float *cie1, *cie2, dist;
+    float dx, dy, dz;
+
+    cie2 = cbi->cie + 3 * i;
+    cie1 = cie2 - 3;
+    DDIST3(cie1,cie2,dist);
+    cbi->dist[i] = cbi->dist[i-1] + dist;
+  }
+
+  float dist;
+  int nnodes;
+  
+  dist = cbi->dist[cbi->nnodes-1];
+  nnodes = cbi->index_node[cbi->nnodes-1];
+  
+
+  for(i = 1;i < cbi->nnodes-1;i++){
+    int inode;
+
+
+    inode = nnodes * (cbi->dist[i] / dist);
+    cbi->index_node[i] = inode;
+  }
+}
+
 /* ------------------ Rgb2CIE ------------------------ */
 
 void Rgb2CIE(unsigned char *rgb_arg, float *cie){

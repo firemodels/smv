@@ -291,7 +291,7 @@ typedef struct _colorbardata {
   unsigned char index_node[1024];  // colorbar index
   unsigned char splits[1024];
 #ifdef pp_COLOR_CIE
-  float cie[3*1024];
+  float cie[3*1024], dist[1024];
 #endif
   float colorbar[3*1024];
 } colorbardata;

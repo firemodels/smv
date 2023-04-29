@@ -44,6 +44,9 @@ GLUI_Button *BUTTON_node_next=NULL,*BUTTON_node_prev=NULL;
 GLUI_Button *BUTTON_next=NULL,*BUTTON_prev=NULL;
 GLUI_Button *BUTTON_new=NULL;
 GLUI_Button *BUTTON_delete=NULL;
+#ifdef pp_COLOR_CIE
+GLUI_Button *BUTTON_adjust = NULL;
+#endif
 GLUI_Button *BUTTON_addpoint=NULL;
 GLUI_Button *BUTTON_deletepoint=NULL;
 GLUI_Button *BUTTON_savesettings=NULL;
@@ -78,6 +81,9 @@ int cb_usecolorbar_extreme;
 #define COLORBAR_UNIFORM             17
 #define COLORBAR_PREV                21
 #define COLORBAR_NEXT                22
+#ifdef pp_COLOR_CIE
+#define COLORBAR_ADJUST              23
+#endif
 
 /* ------------------ UpdateColorbarList ------------------------ */
 
@@ -331,6 +337,12 @@ extern "C" void ColorbarCB(int var){
     AddColorbarList2(colorbartype, cbi->label);
     ColorbarCB(COLORBAR_LIST);
     break;
+#ifdef pp_COLOR_CIE
+  case COLORBAR_ADJUST:
+    AdjustColorBar(colorbarinfo + colorbartype);
+    ColorbarCB(COLORBAR_COLORINDEX);
+    break;
+#endif
   case COLORBAR_DELETE:
     if(colorbartype >= ndefaultcolorbars&&colorbartype < ncolorbars){
       colorbardata *cb_from, *cb_to;
@@ -386,9 +398,10 @@ extern "C" void GluiColorbarSetup(int main_window){
 
   PANEL_cb2R2 = glui_colorbar->add_panel("",GLUI_PANEL_NONE);
   BUTTON_new=glui_colorbar->add_button_to_panel(PANEL_cb2R2,_("New colorbar"),COLORBAR_NEW,ColorbarCB);
-  glui_colorbar->add_column_to_panel(PANEL_cb2R2,false);
   BUTTON_delete=glui_colorbar->add_button_to_panel(PANEL_cb2R2,_("Delete colorbar"),COLORBAR_DELETE,ColorbarCB);
-  glui_colorbar->add_column_to_panel(PANEL_cb2R2,false);
+#ifdef pp_COLOR_CIE
+  BUTTON_adjust = glui_colorbar->add_button_to_panel(PANEL_cb2R2, _("Adjust colorbar"), COLORBAR_ADJUST, ColorbarCB);
+#endif
   colorbar_hidescene=1;
   CHECKBOX_hidesv = glui_colorbar->add_checkbox_to_panel(PANEL_cb2R2,_("Hide scene"),&colorbar_hidescene);
 #ifdef pp_COLOR_CIE
