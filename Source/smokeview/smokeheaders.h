@@ -704,7 +704,6 @@ EXTERNCPP void ReloadMenu(int value);
 EXTERNCPP void ColorbarMenu(int val);
 EXTERNCPP void InitDefaultColorbars(int nini);
 EXTERNCPP void DrawColorbarPathRGB(void);
-EXTERNCPP void DrawColorbarPathHSL(void);
 EXTERNCPP void UpdateColorbarSplits(colorbardata *cbi);
 EXTERNCPP void UpdateColorbarNodes(colorbardata *cbi);
 EXTERNCPP void RemapColorbar(colorbardata *cbi);

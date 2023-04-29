@@ -747,10 +747,7 @@ SVEXTERN int SVDECL(use_glui_rotate,0);
 SVEXTERN int SVDECL(show_fed_area,1);
 SVEXTERN char default_fed_colorbar[255];
 
-#ifdef pp_COLORBAR_CONSTANT
-SVEXTERN int SVDECL(colorbar_brightness, 192);
-#endif
-SVEXTERN int SVDECL(colorbar_hsl, 0);
+SVEXTERN int SVDECL(colorbar_coord_type, 0);
 
 SVEXTERN int SVDECL(*meshvisptr,NULL);
 SVEXTERN smoke3ddata SVDECL(**smoke3dinfo_sorted,NULL);

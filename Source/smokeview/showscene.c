@@ -638,13 +638,9 @@ void ShowScene(int mode, int view_mode, int quad, GLint s_left, GLint s_down, sc
       SNIFF_ERRORS("after DrawSelectColorbars");
     }
     else{
-      if(colorbar_hsl==0){
+      if(colorbar_coord_type ==0){
         DrawColorbarPathRGB();
         SNIFF_ERRORS("after DrawColorbarPathRGB");
-      }
-      else if(colorbar_hsl==1){
-        DrawColorbarPathHSL();
-        SNIFF_ERRORS("after DrawColorbarPathHSL");
       }
 #ifdef pp_COLOR_CIE
       else{
