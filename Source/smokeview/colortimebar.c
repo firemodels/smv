@@ -744,7 +744,7 @@ void InitColorbar(colorbardata *cbptr, char *dir, char *file, char *type){
     sscanf(crgb, "%i", rgbscopy+1);
     crgb = strtok(NULL, ",");
     sscanf(crgb, "%i", rgbscopy+2);
-    cbptr->rgb_node[3 * i + 0] = (unsigned char)CLAMP(rgbscopy[0],0,255);
+    cbptr->rgb_node[3 * i + 0] = (unsigned char)CLAMP(rgbscopy[0], 0, 255);
     cbptr->rgb_node[3 * i + 1] = (unsigned char)CLAMP(rgbscopy[1], 0, 255);
     cbptr->rgb_node[3 * i + 2] = (unsigned char)CLAMP(rgbscopy[2], 0, 255);
     cbptr->index_node[i] = i;
