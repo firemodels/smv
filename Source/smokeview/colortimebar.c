@@ -3682,44 +3682,71 @@ void DrawVerticalColorbarRegLabels(void){
   }
 }
 
-/* ------------------ fcie ------------------------ */
-
 #ifdef pp_COLOR_CIE
 
 /* ------------------ Rgb2CIE ------------------------ */
-#define FCIE(f) ((f)>eps ? pow((f),1.0/3.0) : (kappa*(f)+16.0)/116.0 )
-#define SRGBINV(f) ((f)<=0.04045 ? (f)/12.92 : pow( ((f)+0.055)/1.055,2.4) )
+
 void Rgb2CIE(unsigned char *rgb_arg, float *cie){
-  // http://www.brucelindbloom.com/
-  float Xn = 0.9642, Yn = 1.0, Zn = 0.8249;
-  float eps, kappa;
 
-  eps   = 216.0/24389.0;
-  kappa = 24389.0/27.0;
+  // Convert RGB values to XYZ
+  float var_R = (float)rgb_arg[0] / 255.0f;
+  float var_G = (float)rgb_arg[1] / 255.0f;
+  float var_B = (float)rgb_arg[2] / 255.0f;
 
-  float x, y, z;
-  float lstar, astar, bstar;
-  float frgb[3];
+  if(var_R > 0.04045f) {
+    var_R = pow((var_R + 0.055f) / 1.055f, 2.4f);
+  }
+  else {
+    var_R = var_R / 12.92f;
+  }
+  if(var_G > 0.04045f) {
+    var_G = pow((var_G + 0.055f) / 1.055f, 2.4f);
+  }
+  else {
+    var_G = var_G / 12.92f;
+  }
+  if(var_B > 0.04045f) {
+    var_B = pow((var_B + 0.055f) / 1.055f, 2.4f);
+  }
+  else {
+    var_B = var_B / 12.92f;
+  }
 
-  frgb[0] = SRGBINV(( float )rgb_arg[0] / 255.0);
-  frgb[1] = SRGBINV(( float )rgb_arg[1] / 255.0);
-  frgb[2] = SRGBINV(( float )rgb_arg[2] / 255.0);
+  var_R = var_R * 100.0f;
+  var_G = var_G * 100.0f;
+  var_B = var_B * 100.0f;
 
-  x = 0.4124564 * frgb[0] + 0.3575761 * frgb[1] + 0.1804375 * frgb[2];
-  y = 0.2126729 * frgb[0] + 0.7151522 * frgb[1] + 0.0721750 * frgb[2];
-  z = 0.0193339 * frgb[0] + 0.1191920 * frgb[1] + 0.9503041 * frgb[2];
+  float X = var_R * 0.4124f + var_G * 0.3576f + var_B * 0.1805f;
+  float Y = var_R * 0.2126f + var_G * 0.7152f + var_B * 0.0722f;
+  float Z = var_R * 0.0193f + var_G * 0.1192f + var_B * 0.9505f;
 
-  x /= Xn;
-  y /= Yn;
-  z /= Zn;
+  // Convert XYZ to CIELAB
+  float var_X = X / 95.047f;
+  float var_Y = Y / 100.0f;
+  float var_Z = Z / 108.883f;
 
-  lstar = 116.0 * FCIE(y) - 16.0;
-  astar = 500.0 * (FCIE(x) - FCIE(y));
-  bstar = 200.0 * (FCIE(y) - FCIE(z));
+  if(var_X > 0.008856f) {
+    var_X = pow(var_X, 1.0f / 3.0f);
+  }
+  else {
+    var_X = (7.787f * var_X) + (16.0f / 116.0f);
+  }
+  if(var_Y > 0.008856f) {
+    var_Y = pow(var_Y, 1.0f / 3.0f);
+  }
+  else {
+    var_Y = (7.787f * var_Y) + (16.0f / 116.0f);
+  }
+  if(var_Z > 0.008856f) {
+    var_Z = pow(var_Z, 1.0f / 3.0f);
+  }
+  else {
+    var_Z = (7.787f * var_Z) + (16.0f / 116.0f);
+  }
 
-  cie[0] = lstar;
-  cie[1] = astar;
-  cie[2] = bstar;
+  cie[0] = (116.0f * var_Y) - 16.0f;
+  cie[1] = 500.0f * (var_X - var_Y);
+  cie[2] = 200.0f * (var_Y - var_Z);
 }
 
 /* ------------------ Rgb2CIEs ------------------------ */
@@ -3741,65 +3768,68 @@ void Rgb2CIEs(unsigned char *rgbs255, float *cies){
 /* ------------------ CIE2Rgb ------------------------ */
 
 void CIE2Rgb(unsigned char *rgb_arg, float *cie){
-  float Xn = 0.9642, Yn = 1.0, Zn = 0.8249;
+  float L, a, b;
 
-  float lstar, astar, bstar;
-  float fx, fy, fz;
-  float xr, yr, zr;
-  float x, y, z;
-  float r, g, b;
-  float kappa, eps;
+  L = cie[0];
+  a = cie[1];
+  b = cie[2];
+  
+  // Convert CIELAB to XYZ
+  float var_Y = (L + 16.0f) / 116.0f;
+  float var_X = a / 500.0f + var_Y;
+  float var_Z = var_Y - b / 200.0f;
 
-  lstar = cie[0];
-  astar = cie[1];
-  bstar = cie[2];
-  eps = 216.0/24389;
-  kappa = 24389.0/27.0;
-
-  fy = (lstar + 16.0) / 116.0;
-  fx = astar / 500.0 + fy;
-  fz = fy - bstar / 200.0;
-  if(lstar > kappa*eps){
-    yr = (lstar+16.0)/116.0;
-    yr = yr * yr * yr;
+  if(pow(var_Y, 3.0f) > 0.008856f) {
+    var_Y = pow(var_Y, 3.0f);
   }
-  else{
-    yr = lstar / kappa;
+  else {
+    var_Y = (var_Y - 16.0f / 116.0f) / 7.787f;
   }
-
-  if(fx*fx*fx > eps){
-    xr = fx*fx*fx;
+  if(pow(var_X, 3.0f) > 0.008856f) {
+    var_X = pow(var_X, 3.0f);
   }
-  else{
-    xr = (116.0*fx-16.0)/kappa;
+  else {
+    var_X = (var_X - 16.0f / 116.0f) / 7.787f;
+  }
+  if(pow(var_Z, 3.0f) > 0.008856f) {
+    var_Z = pow(var_Z, 3.0f);
+  }
+  else {
+    var_Z = (var_Z - 16.0f / 116.0f) / 7.787f;
   }
 
-  if(fz * fz * fz > eps){
-    zr = fz * fz * fz;
+  float X = var_X * 0.95047f;
+  float Y = var_Y * 1.0f;
+  float Z = var_Z * 1.08883f;
+
+  // Convert XYZ to RGB
+  float var_R = X * 3.2406f - Y * 1.5372f - Z * 0.4986f;
+  float var_G = -X * 0.9689f + Y * 1.8758f + Z * 0.0415f;
+  float var_B = X * 0.0557f - Y * 0.2040f + Z * 1.0570f;
+
+  if(var_R > 0.0031308f) {
+    var_R = 1.055f * pow(var_R, 1.0f / 2.4f) - 0.055f;
   }
-  else{
-    zr = (116.0 * fz - 16.0) / kappa;
+  else {
+    var_R = 12.92f * var_R;
+  }
+  if(var_G > 0.0031308f) {
+    var_G = 1.055f * pow(var_G, 1.0f / 2.4f) - 0.055f;
+  }
+  else {
+    var_G = 12.92f * var_G;
+  }
+  if(var_B > 0.0031308f) {
+    var_B = 1.055f * pow(var_B, 1.0f / 2.4f) - 0.055f;
+  }
+  else {
+    var_B = 12.92f * var_B;
   }
 
-  x = xr*Xn;
-  y = yr*Yn;
-  z = zr*Zn;
-
-  r =  3.240479*x - 1.537150*y - 0.498535*z;
-  g = -0.969256*x + 1.875992*y + 0.041556*z;
-  b =  0.055648*x - 0.204043*y + 1.057311*z;
-
-#define SRGB(xx) if(xx<0.0031308){xx*=12.92;}{xx=1.055*pow(xx,1.0/2.4)-0.055;}
-
-  SRGB(r);
-  SRGB(g);
-  SRGB(b);
-
-  rgb_arg[0] = CLAMP(r*255, 0, 255);
-  rgb_arg[1] = CLAMP(g*255, 0, 255);
-  rgb_arg[2] = CLAMP(b*255, 0, 255);
+  rgb_arg[0] = (unsigned char)CLAMP(var_R * 255.0f+0.5, 0, 255);
+  rgb_arg[1] = (unsigned char)CLAMP(var_G * 255.0f+0.5, 0, 255);
+  rgb_arg[2] = (unsigned char)CLAMP(var_B * 255.0f+0.5, 0, 255);
 }
-
 /* ------------------ CIE2Rgbs ------------------------ */
 
 void CIE2Rgbs(unsigned char *rgbs255, float *cies){
@@ -3819,10 +3849,16 @@ void CIE2Rgbs(unsigned char *rgbs255, float *cies){
 
 void CheckCIE(void){
   int i, diff;
+  int hist[256];
+
+  for(i = 0;i < 256;i++){
+    hist[i] = 0;
+  }
 
   for(i = 0; i < 256; i++){
     int j;
 
+    printf("i=%i\n", i);
     for(j = 0; j < 256; j++){
       int k;
 
@@ -3838,9 +3874,12 @@ void CheckCIE(void){
         diff = ABS(rgbval[0] - rgbnew[0]);
         diff = MAX(diff, ABS(rgbval[1] - rgbnew[1]));
         diff = MAX(diff, ABS(rgbval[2] - rgbnew[2]));
-        printf(" %i", diff);
+        hist[diff]++;
       }
     }
+  }
+  for(i = 0;i < 256;i++){
+    printf("%i ", hist[i]);
   }
   printf("\n");
 }
