@@ -238,7 +238,7 @@ void DrawColorbarPathRGB(void){
 
   glEnd();
 
-  // draw rgb color axese
+  // draw rgb color axes
 
   glLineWidth(5.0);
   glBegin(GL_LINES);
@@ -433,6 +433,39 @@ void DrawColorbarPathCIE(void){
     glVertex3fv(xyz);
   }
   glEnd();
+
+  for(i = 0; i < 256; i += 8){
+    float dist, cie2[3], *rgb2, *rgb1, cie1[3], xyz[3];
+    float dx, dy, dz;
+    unsigned char rgbb[3], rgba[3];
+
+    rgb2 = cbi->colorbar + 3 * i;
+    rgbb[0] = rgb2[0] * 255.0;
+    rgbb[1] = rgb2[1] * 255.0;
+    rgbb[2] = rgb2[2] * 255.0;
+    void Rgb2CIE(unsigned char *rgb, float *cie);
+    Rgb2CIE(rgbb, cie2);
+    if(i == 0){
+      dist = 0.0;
+    }
+    else{
+      rgb1 = cbi->colorbar + 3 * (i-8);
+      rgba[0] = rgb1[0] * 255.0;
+      rgba[1] = rgb1[1] * 255.0;
+      rgba[2] = rgb1[2] * 255.0;
+
+      Rgb2CIE(rgba, cie1);
+      DDIST3(cie1, cie2, dist);
+    }
+    char label[32];
+    sprintf(label, "%.2f", dist);
+    xyz[0] = cie2[0] / 100.0;
+    xyz[1] = (cie2[1] + 87.9) / 183.28;
+    xyz[2] = (cie2[2] + 126.39) / 211.11;
+    glVertex3fv(xyz);
+    Output3Text(foregroundcolor, xyz[0] + 0.05, xyz[1], xyz[2], label);
+  }
+
   glPointSize(10.0);
   glBegin(GL_POINTS);
   for(i = 0; i < 256; i+=8){
@@ -464,6 +497,93 @@ void DrawColorbarPathCIE(void){
   Output3Text(foregroundcolor, 1.05, 0.0, 0.0, "L*");
   Output3Text(foregroundcolor, 0.0, 1.05, 0.0, "a*");
   Output3Text(foregroundcolor, 0.0, 0.0, 1.05, "b*");
+
+  glPointSize(10.0);
+  glBegin(GL_POINTS);
+  for(i = 0;i < cbi->nnodes;i++){
+    float *rgbi;
+    float dzpoint;
+
+    rgbi = cbi->colorbar + 3 * cbi->index_node[i];
+    dzpoint = (float)cbi->index_node[i] / 255.0;
+    glColor3fv(rgbi);
+    glVertex3f(1.5, 0.0, dzpoint);
+  }
+  glEnd();
+
+  float xdenorm, ydenorm, zdenorm;
+  xdenorm = SMV2FDS_X(1.55);
+  ydenorm = SMV2FDS_Y(0.0);
+  if(fontindex == SCALED_FONT)ScaleFont3D();
+  glPushMatrix();
+  glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
+  glTranslatef(-xbar0, -ybar0, -zbar0);
+  for(i = 0;i < cbi->nnodes;i++){
+    char cbuff[1024];
+    float dzpoint;
+
+    dzpoint = (float)cbi->index_node[i] / 255.0;
+    zdenorm = SMV2FDS_Z(dzpoint);
+    sprintf(cbuff, "%i", (int)cbi->index_node[i]);
+    Output3Text(foregroundcolor, xdenorm, ydenorm, zdenorm, cbuff);
+  }
+  glPopMatrix();
+
+  int ncolors;
+  if(show_firecolormap!=0){
+    ncolors=MAXSMOKERGB-1;
+  }
+  else{
+    ncolors=MAXRGB-1;
+  }
+  glBegin(GL_TRIANGLES);
+  for(i=1;i<ncolors;i++){
+    float *rgbi;
+    float zbot, ztop;
+
+    if(show_firecolormap!=0){
+      rgbi=rgb_volsmokecolormap+4*i;
+    }
+    else{
+      rgbi=cbi->colorbar+3*i;
+    }
+    glColor3fv(rgbi);
+    zbot=(float)i/(float)ncolors;
+    ztop=(float)(i+1)/(float)ncolors;
+
+    glVertex3f(1.1,0.0,zbot);
+    glVertex3f(1.3,0.0,zbot);
+    glVertex3f(1.3,0.0,ztop);
+
+    glVertex3f(1.1,0.0,zbot);
+    glVertex3f(1.3,0.0,ztop);
+    glVertex3f(1.3,0.0,zbot);
+
+    glVertex3f(1.1,0.0,zbot);
+    glVertex3f(1.3,0.0,ztop);
+    glVertex3f(1.1,0.0,ztop);
+
+    glVertex3f(1.1,0.0,zbot);
+    glVertex3f(1.1,0.0,ztop);
+    glVertex3f(1.3,0.0,ztop);
+
+    glVertex3f(1.2,-0.1,zbot);
+    glVertex3f(1.2, 0.1,zbot);
+    glVertex3f(1.2, 0.1,ztop);
+
+    glVertex3f(1.2,-0.1,zbot);
+    glVertex3f(1.2, 0.1,ztop);
+    glVertex3f(1.2, 0.1,zbot);
+
+    glVertex3f(1.2,-0.1,zbot);
+    glVertex3f(1.2, 0.1,ztop);
+    glVertex3f(1.2,-0.1,ztop);
+
+    glVertex3f(1.2,-0.1,zbot);
+    glVertex3f(1.2,-0.1,ztop);
+    glVertex3f(1.2, 0.1,ztop);
+  }
+  glEnd();
 }
 #endif
 
@@ -3579,6 +3699,8 @@ void DrawVerticalColorbarRegLabels(void){
 
 #ifdef pp_COLOR_CIE
 
+/* ------------------ AdjustColorBar ------------------------ */
+
 void AdjustColorBar(colorbardata *cbi){
   int i;
 
@@ -3606,7 +3728,6 @@ void AdjustColorBar(colorbardata *cbi){
   
   dist = cbi->dist[cbi->nnodes-1];
   nnodes = cbi->index_node[cbi->nnodes-1];
-  
 
   for(i = 1;i < cbi->nnodes-1;i++){
     int inode;
@@ -3813,27 +3934,6 @@ void CheckCIE(void){
   }
   for(i = 0;i < 256;i++){
     printf("%i ", hist[i]);
-  }
-  printf("\n");
-}
-
-/* ------------------ CIEDiff ------------------------ */
-
-void CIEDiff(unsigned char *rgbs){
-  int i;
-  float cies[255*3];
-
-  Rgb2CIEs(rgbs, cies);
-  printf("diffs: ");
-  for(i = 1;i < 255;i++){
-    float *cie, d0, d1, d2, diff;
-
-    cie = cies + 3 * i;
-    d0 = cie[0] - cie[0 - 3];
-    d1 = cie[1] - cie[1 - 3];
-    d2 = cie[2] - cie[2 - 3];
-    diff = sqrt(d0 * d0 + d1 * d1 + d2 * d2);
-    printf("%f ", diff);
   }
   printf("\n");
 }

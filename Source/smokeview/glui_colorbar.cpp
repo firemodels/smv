@@ -340,7 +340,7 @@ extern "C" void ColorbarCB(int var){
 #ifdef pp_COLOR_CIE
   case COLORBAR_ADJUST:
     AdjustColorBar(colorbarinfo + colorbartype);
-    ColorbarCB(COLORBAR_COLORINDEX);
+    ColorbarCB(COLORBAR_RGB);
     break;
 #endif
   case COLORBAR_DELETE:

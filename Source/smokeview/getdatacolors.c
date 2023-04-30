@@ -1288,10 +1288,6 @@ void UpdateRGBColors(int colorbar_index){
     }
     void Rgb2CIEs(unsigned char *rgb_temp, float *cie);
     Rgb2CIEs(rgb_temp, cbi->cie);
-#ifdef pp_COLOR_DIFF_OUT
-    void CIEDiff(unsigned char *rgbs);
-    CIEDiff(rgb_temp);
-#endif
 #endif
   }
   else{
