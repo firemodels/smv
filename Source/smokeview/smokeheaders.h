@@ -701,6 +701,7 @@ EXTERNCPP void UpdatePartClassDepend(partclassdata *partclassi);
 #ifdef pp_COLOR_CIE
 EXTERNCPP void AdjustColorBar(colorbardata *cbi);
 EXTERNCPP void RevertColorBar(colorbardata *cbi);
+EXTERNCPP void Rgb2CIE(unsigned char *rgb, float *cie);
 #endif
 
 EXTERNCPP char *GetChid(char *file, char *buffer);
