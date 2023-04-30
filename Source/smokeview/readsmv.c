@@ -11389,6 +11389,9 @@ typedef struct {
  */
 
   INIT_PRINT_TIMER(total_wrapup_time);
+#ifdef pp_COLOR_CIE
+  update_colorbar_orig = 1;
+#endif
   if(update_filesizes==1){
     GetFileSizes();
     SMV_EXIT(0);

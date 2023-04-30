@@ -628,6 +628,248 @@ void UpdateCurrentColorbar(colorbardata *cb){
   if(is_fed_colorbar==1&&fed_loaded==1)SliceBoundCB(FILE_UPDATE);
 }
 
+#ifdef pp_COLOR_CIE
+
+/* ------------------ AdjustColorBar ------------------------ */
+
+void AdjustColorBar(colorbardata *cbi){
+  int i;
+
+  for(i = 0;i < cbi->nnodes;i++){
+    unsigned char *rgb_local;
+    float *cie;
+
+    rgb_local = cbi->rgb_node + 3 * i;
+    cie = cbi->cie + 3 * i;
+    Rgb2CIE(rgb_local, cie);
+  }
+  cbi->dist[0] = 0.0;
+  for(i = 1;i < cbi->nnodes;i++){
+    float *cie1, *cie2, dist;
+    float dx, dy, dz;
+
+    cie2 = cbi->cie + 3 * i;
+    cie1 = cie2 - 3;
+    DDIST3(cie1, cie2, dist);
+    cbi->dist[i] = cbi->dist[i - 1] + dist;
+  }
+
+  float dist;
+  int nnodes;
+
+  dist = cbi->dist[cbi->nnodes - 1];
+  nnodes = cbi->index_node[cbi->nnodes - 1];
+
+  for(i = 1;i < cbi->nnodes - 1;i++){
+    int inode;
+
+
+    inode = nnodes * (cbi->dist[i] / dist);
+    cbi->index_node[i] = inode;
+  }
+}
+
+/* ------------------ Rgb2CIE ------------------------ */
+
+void Rgb2CIE(unsigned char *rgb_arg, float *cie){
+
+  // Convert RGB values to XYZ
+  float var_R = (float)rgb_arg[0] / 255.0f;
+  float var_G = (float)rgb_arg[1] / 255.0f;
+  float var_B = (float)rgb_arg[2] / 255.0f;
+
+  if(var_R > 0.04045f) {
+    var_R = pow((var_R + 0.055f) / 1.055f, 2.4f);
+  }
+  else {
+    var_R = var_R / 12.92f;
+  }
+  if(var_G > 0.04045f) {
+    var_G = pow((var_G + 0.055f) / 1.055f, 2.4f);
+  }
+  else {
+    var_G = var_G / 12.92f;
+  }
+  if(var_B > 0.04045f) {
+    var_B = pow((var_B + 0.055f) / 1.055f, 2.4f);
+  }
+  else {
+    var_B = var_B / 12.92f;
+  }
+
+  var_R = var_R * 100.0f;
+  var_G = var_G * 100.0f;
+  var_B = var_B * 100.0f;
+
+  float X = var_R * 0.4124f + var_G * 0.3576f + var_B * 0.1805f;
+  float Y = var_R * 0.2126f + var_G * 0.7152f + var_B * 0.0722f;
+  float Z = var_R * 0.0193f + var_G * 0.1192f + var_B * 0.9505f;
+
+  // Convert XYZ to CIELAB
+  float var_X = X / 95.047f;
+  float var_Y = Y / 100.0f;
+  float var_Z = Z / 108.883f;
+
+  if(var_X > 0.008856f) {
+    var_X = pow(var_X, 1.0f / 3.0f);
+  }
+  else {
+    var_X = (7.787f * var_X) + (16.0f / 116.0f);
+  }
+  if(var_Y > 0.008856f) {
+    var_Y = pow(var_Y, 1.0f / 3.0f);
+  }
+  else {
+    var_Y = (7.787f * var_Y) + (16.0f / 116.0f);
+  }
+  if(var_Z > 0.008856f) {
+    var_Z = pow(var_Z, 1.0f / 3.0f);
+  }
+  else {
+    var_Z = (7.787f * var_Z) + (16.0f / 116.0f);
+  }
+
+  cie[0] = (116.0f * var_Y) - 16.0f;
+  cie[1] = 500.0f * (var_X - var_Y);
+  cie[2] = 200.0f * (var_Y - var_Z);
+}
+
+/* ------------------ Rgb2CIEs ------------------------ */
+
+void Rgb2CIEs(unsigned char *rgbs255, float *cies){
+  int i;
+
+  for(i = 0; i < 255; i++){
+    unsigned char *rgb_local;
+    float *cie;
+
+    rgb_local = rgbs255 + 3 * i;
+
+    cie = cies + 3 * i;
+    Rgb2CIE(rgb_local, cie);
+  }
+}
+
+/* ------------------ CIE2Rgb ------------------------ */
+
+void CIE2Rgb(unsigned char *rgb_arg, float *cie){
+  float L, a, b;
+
+  L = cie[0];
+  a = cie[1];
+  b = cie[2];
+
+  // Convert CIELAB to XYZ
+  float var_Y = (L + 16.0f) / 116.0f;
+  float var_X = a / 500.0f + var_Y;
+  float var_Z = var_Y - b / 200.0f;
+
+  if(pow(var_Y, 3.0f) > 0.008856f) {
+    var_Y = pow(var_Y, 3.0f);
+  }
+  else {
+    var_Y = (var_Y - 16.0f / 116.0f) / 7.787f;
+  }
+  if(pow(var_X, 3.0f) > 0.008856f) {
+    var_X = pow(var_X, 3.0f);
+  }
+  else {
+    var_X = (var_X - 16.0f / 116.0f) / 7.787f;
+  }
+  if(pow(var_Z, 3.0f) > 0.008856f) {
+    var_Z = pow(var_Z, 3.0f);
+  }
+  else {
+    var_Z = (var_Z - 16.0f / 116.0f) / 7.787f;
+  }
+
+  float X = var_X * 0.95047f;
+  float Y = var_Y * 1.0f;
+  float Z = var_Z * 1.08883f;
+
+  // Convert XYZ to RGB
+  float var_R = X * 3.2406f - Y * 1.5372f - Z * 0.4986f;
+  float var_G = -X * 0.9689f + Y * 1.8758f + Z * 0.0415f;
+  float var_B = X * 0.0557f - Y * 0.2040f + Z * 1.0570f;
+
+  if(var_R > 0.0031308f) {
+    var_R = 1.055f * pow(var_R, 1.0f / 2.4f) - 0.055f;
+  }
+  else {
+    var_R = 12.92f * var_R;
+  }
+  if(var_G > 0.0031308f) {
+    var_G = 1.055f * pow(var_G, 1.0f / 2.4f) - 0.055f;
+  }
+  else {
+    var_G = 12.92f * var_G;
+  }
+  if(var_B > 0.0031308f) {
+    var_B = 1.055f * pow(var_B, 1.0f / 2.4f) - 0.055f;
+  }
+  else {
+    var_B = 12.92f * var_B;
+  }
+
+  rgb_arg[0] = (unsigned char)CLAMP(var_R * 255.0f + 0.5, 0, 255);
+  rgb_arg[1] = (unsigned char)CLAMP(var_G * 255.0f + 0.5, 0, 255);
+  rgb_arg[2] = (unsigned char)CLAMP(var_B * 255.0f + 0.5, 0, 255);
+}
+/* ------------------ CIE2Rgbs ------------------------ */
+
+void CIE2Rgbs(unsigned char *rgbs255, float *cies){
+  int i;
+
+  for(i = 0; i < 255; i++){
+    unsigned char *rgb_local;
+    float *cie;
+
+    rgb_local = rgbs255 + 3 * i;
+    cie = cies + 3 * i;
+    CIE2Rgb(rgb_local, cie);
+  }
+}
+
+/* ------------------ CheckCIE ------------------------ */
+
+void CheckCIE(void){
+  int i, diff;
+  int hist[256];
+
+  for(i = 0;i < 256;i++){
+    hist[i] = 0;
+  }
+
+  for(i = 0; i < 256; i++){
+    int j;
+
+    printf("i=%i\n", i);
+    for(j = 0; j < 256; j++){
+      int k;
+
+      for(k = 0; k < 256; k++){
+        unsigned char rgbval[3], rgbnew[3];
+        float cie[3];
+
+        rgbval[0] = (unsigned char)k;
+        rgbval[1] = (unsigned char)j;
+        rgbval[2] = (unsigned char)i;
+        Rgb2CIE(rgbval, cie);
+        CIE2Rgb(rgbnew, cie);
+        diff = ABS(rgbval[0] - rgbnew[0]);
+        diff = MAX(diff, ABS(rgbval[1] - rgbnew[1]));
+        diff = MAX(diff, ABS(rgbval[2] - rgbnew[2]));
+        hist[diff]++;
+      }
+    }
+  }
+  for(i = 0;i < 256;i++){
+    printf("%i ", hist[i]);
+  }
+  printf("\n");
+}
+#endif
+
 /* ------------------ RemapColorbar ------------------------ */
 
 void RemapColorbar(colorbardata *cbi){
@@ -662,13 +904,43 @@ void RemapColorbar(colorbardata *cbi){
     i2 = cbi->index_node[i+1];
     if(i2==i1)continue;
     rgb_node = cbi->rgb_node+3*i;
+#ifdef pp_COLOR_CIE
+
+    float cie1[3], cie2[3];
+
+    if(interp_cielab==1){
+      Rgb2CIE(rgb_node,   cie1);
+      Rgb2CIE(rgb_node+3, cie2);
+    }
+#endif
     for(j=i1;j<i2;j++){
       float factor;
 
       factor = (float)(j-i1)/(float)(i2-i1);
+#ifdef pp_COLOR_CIE
+      float ciej[3];
+
+      if(interp_cielab == 1){
+        unsigned char rgb_val[3];
+
+        ciej[0]=MIX(factor,cie2[0],cie1[0]);
+        ciej[1]=MIX(factor,cie2[1],cie1[1]);
+        ciej[2]=MIX(factor,cie2[2],cie1[2]);
+        CIE2Rgb(rgb_val, ciej);
+        colorbar[0+3*j] = (float)rgb_val[0]/255.0;
+        colorbar[1+3*j] = (float)rgb_val[1]/255.0;
+        colorbar[2+3*j] = (float)rgb_val[2]/255.0;
+      }
+      else{
+        colorbar[0+3*j]=MIX(factor,rgb_node[3],rgb_node[0])/255.0;
+        colorbar[1+3*j]=MIX(factor,rgb_node[4],rgb_node[1])/255.0;
+        colorbar[2+3*j]=MIX(factor,rgb_node[5],rgb_node[2])/255.0;
+      }
+#else
       colorbar[0+3*j]=MIX(factor,rgb_node[3],rgb_node[0])/255.0;
       colorbar[1+3*j]=MIX(factor,rgb_node[4],rgb_node[1])/255.0;
       colorbar[2+3*j]=MIX(factor,rgb_node[5],rgb_node[2])/255.0;
+#endif
       if(
         (rgb_node[0]==0&&  rgb_node[1]==1&&  rgb_node[2]==2&&
          rgb_node[3]==0&&  rgb_node[4]==1&&  rgb_node[5]==2)||
@@ -876,6 +1148,30 @@ void InitColorbar(colorbardata *cbptr, char *dir, char *file, char *type){
   cbptr->nnodes = n;
   cbptr->nodehilight = 0;
   fclose(stream);
+}
+#endif
+
+#ifdef pp_COLOR_CIE
+
+/* ------------------ InitDefaultColorbars ------------------------ */
+
+void UpdateColorbarOrig(void){
+  int i;
+
+  for(i = 0;i < ncolorbars;i++){
+    colorbardata *cbi;
+
+    cbi = colorbarinfo + i;
+    cbi->nnodes_orig = cbi->nnodes;
+    memcpy(cbi->index_node_orig, cbi->index_node, cbi->nnodes * sizeof(int));
+  }
+}
+
+/* ------------------ RevertColorbar ------------------------ */
+
+void RevertColorBar(colorbardata *cbi){
+  cbi->nnodes = cbi->nnodes_orig;
+  memcpy(cbi->index_node, cbi->index_node_orig, cbi->nnodes * sizeof(int));
 }
 #endif
 
@@ -3697,244 +3993,3 @@ void DrawVerticalColorbarRegLabels(void){
   }
 }
 
-#ifdef pp_COLOR_CIE
-
-/* ------------------ AdjustColorBar ------------------------ */
-
-void AdjustColorBar(colorbardata *cbi){
-  int i;
-
-  for(i = 0;i < cbi->nnodes;i++){
-    unsigned char *rgb_local;
-    float *cie;
-
-    rgb_local = cbi->rgb_node + 3 * i;
-    cie = cbi->cie + 3 * i;
-    Rgb2CIE(rgb_local, cie);
-  }
-  cbi->dist[0] = 0.0;
-  for(i = 1;i < cbi->nnodes;i++){
-    float *cie1, *cie2, dist;
-    float dx, dy, dz;
-
-    cie2 = cbi->cie + 3 * i;
-    cie1 = cie2 - 3;
-    DDIST3(cie1,cie2,dist);
-    cbi->dist[i] = cbi->dist[i-1] + dist;
-  }
-
-  float dist;
-  int nnodes;
-  
-  dist = cbi->dist[cbi->nnodes-1];
-  nnodes = cbi->index_node[cbi->nnodes-1];
-
-  for(i = 1;i < cbi->nnodes-1;i++){
-    int inode;
-
-
-    inode = nnodes * (cbi->dist[i] / dist);
-    cbi->index_node[i] = inode;
-  }
-}
-
-/* ------------------ Rgb2CIE ------------------------ */
-
-void Rgb2CIE(unsigned char *rgb_arg, float *cie){
-
-  // Convert RGB values to XYZ
-  float var_R = (float)rgb_arg[0] / 255.0f;
-  float var_G = (float)rgb_arg[1] / 255.0f;
-  float var_B = (float)rgb_arg[2] / 255.0f;
-
-  if(var_R > 0.04045f) {
-    var_R = pow((var_R + 0.055f) / 1.055f, 2.4f);
-  }
-  else {
-    var_R = var_R / 12.92f;
-  }
-  if(var_G > 0.04045f) {
-    var_G = pow((var_G + 0.055f) / 1.055f, 2.4f);
-  }
-  else {
-    var_G = var_G / 12.92f;
-  }
-  if(var_B > 0.04045f) {
-    var_B = pow((var_B + 0.055f) / 1.055f, 2.4f);
-  }
-  else {
-    var_B = var_B / 12.92f;
-  }
-
-  var_R = var_R * 100.0f;
-  var_G = var_G * 100.0f;
-  var_B = var_B * 100.0f;
-
-  float X = var_R * 0.4124f + var_G * 0.3576f + var_B * 0.1805f;
-  float Y = var_R * 0.2126f + var_G * 0.7152f + var_B * 0.0722f;
-  float Z = var_R * 0.0193f + var_G * 0.1192f + var_B * 0.9505f;
-
-  // Convert XYZ to CIELAB
-  float var_X = X / 95.047f;
-  float var_Y = Y / 100.0f;
-  float var_Z = Z / 108.883f;
-
-  if(var_X > 0.008856f) {
-    var_X = pow(var_X, 1.0f / 3.0f);
-  }
-  else {
-    var_X = (7.787f * var_X) + (16.0f / 116.0f);
-  }
-  if(var_Y > 0.008856f) {
-    var_Y = pow(var_Y, 1.0f / 3.0f);
-  }
-  else {
-    var_Y = (7.787f * var_Y) + (16.0f / 116.0f);
-  }
-  if(var_Z > 0.008856f) {
-    var_Z = pow(var_Z, 1.0f / 3.0f);
-  }
-  else {
-    var_Z = (7.787f * var_Z) + (16.0f / 116.0f);
-  }
-
-  cie[0] = (116.0f * var_Y) - 16.0f;
-  cie[1] = 500.0f * (var_X - var_Y);
-  cie[2] = 200.0f * (var_Y - var_Z);
-}
-
-/* ------------------ Rgb2CIEs ------------------------ */
-
-void Rgb2CIEs(unsigned char *rgbs255, float *cies){
-  int i;
-
-  for(i = 0; i < 255; i++){
-    unsigned char *rgb_local;
-    float *cie;
-
-    rgb_local = rgbs255 + 3 * i;
-
-    cie = cies + 3 * i;
-    Rgb2CIE(rgb_local, cie);
-  }
-}
-
-/* ------------------ CIE2Rgb ------------------------ */
-
-void CIE2Rgb(unsigned char *rgb_arg, float *cie){
-  float L, a, b;
-
-  L = cie[0];
-  a = cie[1];
-  b = cie[2];
-  
-  // Convert CIELAB to XYZ
-  float var_Y = (L + 16.0f) / 116.0f;
-  float var_X = a / 500.0f + var_Y;
-  float var_Z = var_Y - b / 200.0f;
-
-  if(pow(var_Y, 3.0f) > 0.008856f) {
-    var_Y = pow(var_Y, 3.0f);
-  }
-  else {
-    var_Y = (var_Y - 16.0f / 116.0f) / 7.787f;
-  }
-  if(pow(var_X, 3.0f) > 0.008856f) {
-    var_X = pow(var_X, 3.0f);
-  }
-  else {
-    var_X = (var_X - 16.0f / 116.0f) / 7.787f;
-  }
-  if(pow(var_Z, 3.0f) > 0.008856f) {
-    var_Z = pow(var_Z, 3.0f);
-  }
-  else {
-    var_Z = (var_Z - 16.0f / 116.0f) / 7.787f;
-  }
-
-  float X = var_X * 0.95047f;
-  float Y = var_Y * 1.0f;
-  float Z = var_Z * 1.08883f;
-
-  // Convert XYZ to RGB
-  float var_R = X * 3.2406f - Y * 1.5372f - Z * 0.4986f;
-  float var_G = -X * 0.9689f + Y * 1.8758f + Z * 0.0415f;
-  float var_B = X * 0.0557f - Y * 0.2040f + Z * 1.0570f;
-
-  if(var_R > 0.0031308f) {
-    var_R = 1.055f * pow(var_R, 1.0f / 2.4f) - 0.055f;
-  }
-  else {
-    var_R = 12.92f * var_R;
-  }
-  if(var_G > 0.0031308f) {
-    var_G = 1.055f * pow(var_G, 1.0f / 2.4f) - 0.055f;
-  }
-  else {
-    var_G = 12.92f * var_G;
-  }
-  if(var_B > 0.0031308f) {
-    var_B = 1.055f * pow(var_B, 1.0f / 2.4f) - 0.055f;
-  }
-  else {
-    var_B = 12.92f * var_B;
-  }
-
-  rgb_arg[0] = (unsigned char)CLAMP(var_R * 255.0f+0.5, 0, 255);
-  rgb_arg[1] = (unsigned char)CLAMP(var_G * 255.0f+0.5, 0, 255);
-  rgb_arg[2] = (unsigned char)CLAMP(var_B * 255.0f+0.5, 0, 255);
-}
-/* ------------------ CIE2Rgbs ------------------------ */
-
-void CIE2Rgbs(unsigned char *rgbs255, float *cies){
-  int i;
-
-  for(i = 0; i < 255; i++){
-    unsigned char *rgb_local;
-    float *cie;
-
-    rgb_local = rgbs255 + 3 * i;
-    cie = cies + 3 * i;
-    CIE2Rgb(rgb_local, cie);
-  }
-}
-
-/* ------------------ CheckCIE ------------------------ */
-
-void CheckCIE(void){
-  int i, diff;
-  int hist[256];
-
-  for(i = 0;i < 256;i++){
-    hist[i] = 0;
-  }
-
-  for(i = 0; i < 256; i++){
-    int j;
-
-    printf("i=%i\n", i);
-    for(j = 0; j < 256; j++){
-      int k;
-
-      for(k = 0; k < 256; k++){
-        unsigned char rgbval[3], rgbnew[3];
-        float cie[3];
-
-        rgbval[0] = (unsigned char)k;
-        rgbval[1] = (unsigned char)j;
-        rgbval[2] = (unsigned char)i;
-        Rgb2CIE(rgbval, cie);
-        CIE2Rgb(rgbnew, cie);
-        diff = ABS(rgbval[0] - rgbnew[0]);
-        diff = MAX(diff, ABS(rgbval[1] - rgbnew[1]));
-        diff = MAX(diff, ABS(rgbval[2] - rgbnew[2]));
-        hist[diff]++;
-      }
-    }
-  }
-  for(i = 0;i < 256;i++){
-    printf("%i ", hist[i]);
-  }
-  printf("\n");
-}
-#endif

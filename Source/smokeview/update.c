@@ -1931,6 +1931,11 @@ int HaveSootLoaded(void) {
 void UpdateShowScene(void){
   have_fire  = HaveFireLoaded();
   have_smoke = HaveSootLoaded();
+
+  if(update_colorbar_orig == 1){
+    UpdateColorbarOrig();
+    update_colorbar_orig = 0;
+  }
   if(update_plot2dini == 1){
     update_plot2dini = 0;
     UpdatePlot2DINI();

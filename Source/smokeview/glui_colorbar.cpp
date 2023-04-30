@@ -67,8 +67,8 @@ int cb_usecolorbar_extreme;
 
 #define COLORBAR_LIST                 0
 #define COLORBAR_CLOSE                1
-#define COLORBAR_NODE_NEXT                 3
-#define COLORBAR_NODE_PREV                 4
+#define COLORBAR_NODE_NEXT            3
+#define COLORBAR_NODE_PREV            4
 #define COLORBAR_NEW                  5
 #define COLORBAR_ADDPOINT             7
 #define COLORBAR_DELETEPOINT          8
@@ -83,6 +83,7 @@ int cb_usecolorbar_extreme;
 #define COLORBAR_NEXT                22
 #ifdef pp_COLOR_CIE
 #define COLORBAR_ADJUST              23
+#define COLORBAR_REVERT              24
 #endif
 
 /* ------------------ UpdateColorbarList ------------------------ */
@@ -342,6 +343,10 @@ extern "C" void ColorbarCB(int var){
     AdjustColorBar(colorbarinfo + colorbartype);
     ColorbarCB(COLORBAR_RGB);
     break;
+  case COLORBAR_REVERT:
+    RevertColorBar(colorbarinfo + colorbartype);
+    ColorbarCB(COLORBAR_RGB);
+    break;
 #endif
   case COLORBAR_DELETE:
     if(colorbartype >= ndefaultcolorbars&&colorbartype < ncolorbars){
@@ -408,6 +413,8 @@ extern "C" void GluiColorbarSetup(int main_window){
   RADIO_colorbar_coord_type = glui_colorbar->add_radiogroup_to_panel(PANEL_cb2R2, &colorbar_coord_type);
   glui_colorbar->add_radiobutton_to_group(RADIO_colorbar_coord_type, "rgb");
   glui_colorbar->add_radiobutton_to_group(RADIO_colorbar_coord_type, "cielab");
+  glui_colorbar->add_checkbox_to_panel(PANEL_cb2R2, "interpolate using cielab", &interp_cielab, COLORBAR_ADJUST, ColorbarCB);
+  glui_colorbar->add_button_to_panel(PANEL_cb2R2,_("Revert CIE"), COLORBAR_REVERT, ColorbarCB);
 #endif
   PANEL_cb1 = glui_colorbar->add_panel(_("Colorbar"));
   if(ncolorbars>0){
