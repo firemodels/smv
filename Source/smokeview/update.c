@@ -1932,10 +1932,12 @@ void UpdateShowScene(void){
   have_fire  = HaveFireLoaded();
   have_smoke = HaveSootLoaded();
 
+#ifdef pp_COLOR_CIE
   if(update_colorbar_orig == 1){
     UpdateColorbarOrig();
     update_colorbar_orig = 0;
   }
+#endif
   if(update_plot2dini == 1){
     update_plot2dini = 0;
     UpdatePlot2DINI();

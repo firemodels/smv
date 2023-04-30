@@ -434,23 +434,23 @@ void DrawColorbarPathCIE(void){
   glEnd();
 
   for(i = 0; i < 256; i += 8){
-    float dist, cie2[3], *rgb2, *rgb1, cie1[3], xyz[3];
+    float dist, cie2[3], *rgb2val, *rgb1val, cie1[3], xyz[3];
     float dx, dy, dz;
     unsigned char rgbb[3], rgba[3];
 
-    rgb2 = cbi->colorbar + 3 * i;
-    rgbb[0] = rgb2[0] * 255.0;
-    rgbb[1] = rgb2[1] * 255.0;
-    rgbb[2] = rgb2[2] * 255.0;
+    rgb2val = cbi->colorbar + 3 * i;
+    rgbb[0] = rgb2val[0] * 255.0;
+    rgbb[1] = rgb2val[1] * 255.0;
+    rgbb[2] = rgb2val[2] * 255.0;
     Rgb2CIE(rgbb, cie2);
     if(i == 0){
       dist = 0.0;
     }
     else{
-      rgb1 = cbi->colorbar + 3 * (i-8);
-      rgba[0] = rgb1[0] * 255.0;
-      rgba[1] = rgb1[1] * 255.0;
-      rgba[2] = rgb1[2] * 255.0;
+      rgb1val = cbi->colorbar + 3 * (i-8);
+      rgba[0] = rgb1val[0] * 255.0;
+      rgba[1] = rgb1val[1] * 255.0;
+      rgba[2] = rgb1val[2] * 255.0;
 
       Rgb2CIE(rgba, cie1);
       DDIST3(cie1, cie2, dist);
