@@ -642,11 +642,11 @@ void RemapColorbar(colorbardata *cbi){
   alpha=cbi->alpha;
 
   for(i=0;i<cbi->index_node[0];i++){
-    colorbar[3*i]=rgb_node[0]/255.0;
+    colorbar[0+3*i]=rgb_node[0]/255.0;
     colorbar[1+3*i]=rgb_node[1]/255.0;
     colorbar[2+3*i]=rgb_node[2]/255.0;
     if(
-      (rgb_node[0]==0&&rgb_node[1]==1&&rgb_node[2]==2)||
+      (rgb_node[0]==  0&&rgb_node[1]==  1&&rgb_node[2]==  2)||
       (rgb_node[0]==253&&rgb_node[1]==254&&rgb_node[2]==255)
       ){
       alpha[i]=0;
@@ -666,12 +666,12 @@ void RemapColorbar(colorbardata *cbi){
       float factor;
 
       factor = (float)(j-i1)/(float)(i2-i1);
-      colorbar[3*j]=MIX(factor,rgb_node[3],rgb_node[0])/255.0;
+      colorbar[0+3*j]=MIX(factor,rgb_node[3],rgb_node[0])/255.0;
       colorbar[1+3*j]=MIX(factor,rgb_node[4],rgb_node[1])/255.0;
       colorbar[2+3*j]=MIX(factor,rgb_node[5],rgb_node[2])/255.0;
       if(
-        (rgb_node[0]==0&&rgb_node[1]==1&&rgb_node[2]==2&&
-        rgb_node[3]==0&&rgb_node[4]==1&&rgb_node[5]==2)||
+        (rgb_node[0]==0&&  rgb_node[1]==1&&  rgb_node[2]==2&&
+         rgb_node[3]==0&&  rgb_node[4]==1&&  rgb_node[5]==2)||
         (rgb_node[0]==253&&rgb_node[1]==254&&rgb_node[2]==255&&
          rgb_node[3]==253&&rgb_node[4]==254&&rgb_node[5]==255)
         ){
@@ -684,11 +684,11 @@ void RemapColorbar(colorbardata *cbi){
   }
   rgb_node = cbi->rgb_node+3*(cbi->nnodes-1);
   for(i=cbi->index_node[cbi->nnodes-1];i<256;i++){
-    colorbar[3*i]=rgb_node[0]/255.0;
+    colorbar[0+3*i]=rgb_node[0]/255.0;
     colorbar[1+3*i]=rgb_node[1]/255.0;
     colorbar[2+3*i]=rgb_node[2]/255.0;
     if(
-      (rgb_node[0]==0&&rgb_node[1]==1&&rgb_node[2]==2)||
+      (rgb_node[0]==  0&&rgb_node[1]==  1&&rgb_node[2]==  2)||
       (rgb_node[0]==253&&rgb_node[1]==254&&rgb_node[2]==255)
       )
     {
