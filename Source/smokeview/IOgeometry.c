@@ -3709,7 +3709,7 @@ void DrawGeomData(int flag, slicedata *sd, patchdata *patchi, int geom_type){
   float ttmin, ttmax;
 
   label = patchi->label.shortlabel;
-  GetMinMax(BOUND_PATCH, label, &set_valmin, &ttmin, &set_valmax, &ttmax);
+  GetOnlyMinMax(BOUND_PATCH, label, &set_valmin, &ttmin, &set_valmax, &ttmax);
 #define GEOMBOUNDCOLOR(val) CLAMP((int)(255.0*(val-ttmin)/(ttmax-ttmin)),0,255)
 #define GEOMBOUNDTEXTURE(val) CLAMP(((val-ttmin)/(ttmax-ttmin)),0.0,1.0)
 
