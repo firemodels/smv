@@ -11500,10 +11500,6 @@ typedef struct {
     NewMemory((void **)&slice_sorted_loaded_list, nsliceinfo*sizeof(int));
   }
 
-  FREEMEMORY(patch_loaded_list);
-  if(npatchinfo>0){
-    NewMemory((void **)&patch_loaded_list,npatchinfo*sizeof(int));
-  }
   UpdateLoadedLists();
   CheckMemory;
 
@@ -17183,15 +17179,10 @@ void UpdateLoadedLists(void){
     }
   }
 
-  npatch_loaded=0;
   ngeomslice_loaded = 0;
   for(i=0;i<npatchinfo;i++){
     patchi = patchinfo + i;
-    if(patchi->loaded==1){
-      patch_loaded_list[npatch_loaded]=i;
-      npatch_loaded++;
-      if(patchi->boundary == 0)ngeomslice_loaded++;
-    }
+    if(patchi->loaded==1&&patchi->boundary == 0)ngeomslice_loaded++;
   }
 
   nvolsmoke_loaded = 0;
