@@ -504,11 +504,11 @@ void UpdateShow(void){
         }
       }
     }
-    for(ii=0;ii<npatch_loaded;ii++){
+    for(i=0;i<npatchinfo;i++){
       patchdata *patchi;
 
-      i = patch_loaded_list[ii];
       patchi=patchinfo+i;
+      if(patchi->loaded == 0)continue;
       if(patchi->boundary == 0 && patchi->display == 1 && patchi->shortlabel_index == slicefile_labelindex){
         sliceflag = 1;
         slicecolorbarflag = 1;
@@ -573,8 +573,6 @@ void UpdateShow(void){
 
   patchflag=0;
   if(visTimeBoundary==1){
-    int ii;
-
     for (i = 0; i < ngeominfo; i++) {
       geomdata *geomi;
 
@@ -582,11 +580,11 @@ void UpdateShow(void){
       geomi->patchactive = 0;
     }
     wall_cell_color_flag=0;
-    for(ii=0;ii<npatch_loaded;ii++){
+    for(i=0;i<npatchinfo;i++){
       patchdata *patchi;
 
-      i = patch_loaded_list[ii];
       patchi=patchinfo+i;
+      if(patchi->loaded == 0)continue;
       if(patchi->boundary == 1 && patchi->display == 1 && patchi->shortlabel_index == iboundarytype){
         if (strcmp(patchi->label.shortlabel, "wc") == 0)wall_cell_color_flag = 1;
         patchflag = 1;
@@ -1699,10 +1697,11 @@ int GetPlotStateSub(int choice){
         if(vslicei->display==0||vslicei->vslicefile_labelindex!=slicefile_labelindex)continue;
         return DYNAMIC_PLOTS;
       }
-      for(i=0;i<npatch_loaded;i++){
+      for(i=0;i<npatchinfo;i++){
         patchdata *patchi;
 
-        patchi = patchinfo + patch_loaded_list[i];
+        patchi = patchinfo + i;
+        if(patchi->loaded == 0)continue;
         if (patchi->display == 1) {
           if(patchi->boundary == 1 && patchi->shortlabel_index == iboundarytype)return DYNAMIC_PLOTS;
           if(patchi->boundary == 0 && patchi->shortlabel_index == slicefile_labelindex)return DYNAMIC_PLOTS;
