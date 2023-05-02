@@ -3185,6 +3185,7 @@ void ReloadAllSliceFiles(void){
   float load_size = 0.0, load_time;
   slicedata **reload_slicelist;
 
+  if(nsliceinfo == 0)return;
   NewMemory((void **)&reload_slicelist, nsliceinfo*sizeof(slicedata *));
   slicefile_labelindex_save = slicefile_labelindex;
   START_TIMER(load_time);
@@ -3230,7 +3231,6 @@ void LoadHVACMenu(int value);
 void LoadUnloadMenu(int value){
   int errorcode;
   int i;
-  int ii;
   int file_count = 0;
   float load_size = 0.0, load_time;
 
@@ -3340,11 +3340,11 @@ void LoadUnloadMenu(int value){
 
     //*** reload boundary files
 
-    for(ii=0;ii<npatch_loaded;ii++){
+    for(i = 0;i < npatchinfo;i++){
       patchdata *patchi;
 
-      i = patch_loaded_list[ii];
-      patchi = patchinfo+i;
+      patchi = patchinfo + i;
+      if(patchi->loaded == 0)continue;
       PRINTF("Loading %s(%s)", patchi->file, patchi->label.shortlabel);
       ReadBoundary(i, load_mode,&errorcode);
     }
