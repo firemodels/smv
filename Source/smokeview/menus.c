@@ -3306,11 +3306,6 @@ void LoadUnloadMenu(int value){
     GLUTPOSTREDISPLAY;
   }
   if(value==RELOADALL||value==RELOAD_INCREMENTAL_ALL){
-    int load_mode;
-
-    if(value==RELOADALL)load_mode = LOAD;
-    if(value==RELOAD_INCREMENTAL_ALL)load_mode = RELOAD;
-
     LOCK_COMPRESS
     if(hrr_csv_filename!=NULL){
       ReadHRR(LOAD);
@@ -3357,16 +3352,24 @@ void LoadUnloadMenu(int value){
       patchdata *patchi;
 
       patchi = patchinfo + i;
-      if(patchi->loaded == 0)continue;
-      PRINTF("Loading %s(%s)", patchi->file, patchi->label.shortlabel);
-      ReadBoundary(i, load_mode,&errorcode);
+      patchi->loaded2 = patchi->loaded;
+      ASSERT(patchi->loaded==0||patchi->loaded==1);
+    }
+    for(i = 0;i < npatchinfo;i++){
+      patchdata *patchi;
+
+      patchi = patchinfo + i;
+      if(patchi->loaded2 == 1){
+        PRINTF("Loading %s(%s)", patchi->file, patchi->label.shortlabel);
+        ReadBoundary(i, LOAD,&errorcode);
+      }
     }
 
     //*** reload 3d smoke files
 
     for(i=0;i<nsmoke3dinfo;i++){
       if(smoke3dinfo[i].loaded==1||smoke3dinfo[i].request_load==1){
-        ReadSmoke3D(ALL_SMOKE_FRAMES, i, load_mode, FIRST_TIME, &errorcode);
+        ReadSmoke3D(ALL_SMOKE_FRAMES, i, LOAD, FIRST_TIME, &errorcode);
       }
     }
 
@@ -5492,18 +5495,18 @@ int InPatchList(patchdata *patchj, patchdata *patchi){
 
 void LoadBoundaryMenu(int value){
   int errorcode;
-  int i,ii;
+  int i;
   int boundarytypenew;
 
   GLUTSETCURSOR(GLUT_CURSOR_WAIT);
   if(value>=0){
     boundarytypenew=GetBoundaryType(patchinfo+value);
     if(boundarytypenew!=-1){
-      for(ii=0;ii<npatch_loaded;ii++){
+      for(i=0;i<npatchinfo;i++){
         patchdata *patchi;
 
-        i = patch_loaded_list[ii];
         patchi = patchinfo + i;
+        if(patchi->loaded == 0)continue;
         if(patchi->shortlabel_index !=boundarytypenew)ReadBoundary(i,UNLOAD,&errorcode);
       }
     }
@@ -5667,17 +5670,16 @@ void ShowBoundaryMenu(int value){
   updatefacelists=1;
   GLUTPOSTREDISPLAY;
   if(value>=1000){
-    int ii;
     patchdata *patchj;
+    int i;
 
     patchj = patchinfo + value-1000;
     patchj->display = 1 - patchj->display;
-    for(ii=0;ii<npatch_loaded;ii++){
+    for(i=0;i<npatchinfo;i++){
       patchdata *patchi;
-      int i;
 
-      i = patch_loaded_list[ii];
       patchi = patchinfo + i;
+      if(patchi->loaded == 0)continue;
       if(strcmp(patchi->label.longlabel,patchj->label.longlabel)==0)patchi->display=patchj->display;
     }
     UpdateBoundaryType();
@@ -5687,7 +5689,7 @@ void ShowBoundaryMenu(int value){
     UpdateChar();
   }
   if(value==GLUI_SHOWALL_BOUNDARY||value==GLUI_HIDEALL_BOUNDARY){
-    int ii;
+    int i;
 
     if(value == GLUI_SHOWALL_BOUNDARY){
       show_boundaryfiles = 1;
@@ -5695,18 +5697,17 @@ void ShowBoundaryMenu(int value){
     if(value == GLUI_HIDEALL_BOUNDARY){
       show_boundaryfiles = 0;
     }
-    for(ii=0;ii<npatch_loaded;ii++){
+    for(i=0;i<npatchinfo;i++){
       patchdata *patchi;
-      int i;
 
-      i = patch_loaded_list[ii];
       patchi = patchinfo + i;
+      if(patchi->loaded == 0)continue;
       if(patchi->structured == YES)patchi->display=show_boundaryfiles;
     }
   }
   if(value<0){
     if(value==ShowEXTERIORwallmenu||value==HideEXTERIORwallmenu){
-      int i,ii,val;
+      int i,val;
 
       if(value==ShowEXTERIORwallmenu){
         val = 1;
@@ -5714,13 +5715,14 @@ void ShowBoundaryMenu(int value){
       else{
         val = 0;
       }
-      for(ii = 0;ii < npatch_loaded;ii++){
+      for(i = 0;i < npatchinfo;i++){
         int n;
 
         patchdata *patchi;
         meshdata *meshi;
 
-        patchi = patchinfo + patch_loaded_list[ii];
+        patchi = patchinfo + i;
+        if(patchi->loaded == 0)continue;
         meshi = meshinfo + patchi->blocknumber;
         for(n = 0;n < meshi->npatches;n++){
           if(meshi->boundarytype[n] != INTERIORwall){
@@ -5733,17 +5735,19 @@ void ShowBoundaryMenu(int value){
       }
     }
     else if(value==INTERIORwallmenu){
-      int ii,val;
+      int val;
+      int i;
 
       allinterior = 1 - allinterior;
       val = allinterior;
       vis_boundary_type[INTERIORwall]=val;
-      for(ii = 0;ii < npatch_loaded;ii++){
+      for(i = 0;i < npatchinfo;i++){
         patchdata *patchi;
         meshdata *meshi;
         int n;
 
-        patchi = patchinfo + patch_loaded_list[ii];
+        patchi = patchinfo + i;
+        if(patchi->loaded == 0)continue;
         meshi = meshinfo + patchi->blocknumber;
         for(n = 0;n < meshi->npatches;n++){
           if(meshi->boundarytype[n] == INTERIORwall){
@@ -5753,15 +5757,16 @@ void ShowBoundaryMenu(int value){
       }
     }
     if(value==INI_EXTERIORwallmenu){
-      int ii;
+      int i;
 
-      for(ii = 0;ii < npatch_loaded;ii++){
+      for(i = 0;i < npatchinfo;i++){
         int n;
 
         patchdata *patchi;
         meshdata *meshi;
 
-        patchi = patchinfo + patch_loaded_list[ii];
+        patchi = patchinfo + i;
+        if(patchi->loaded == 0)continue;
         meshi = meshinfo + patchi->blocknumber;
         for(n = 0;n < meshi->npatches;n++){
           if(meshi->boundarytype[n] != INTERIORwall){
@@ -5771,15 +5776,16 @@ void ShowBoundaryMenu(int value){
       }
     }
     else if(value != DUMMYwallmenu){
-      int ii;
+      int i;
 
       value = -(value + 2); /* map xxxwallmenu to xxxwall */
-      for(ii = 0;ii < npatch_loaded;ii++){
+      for(i = 0;i < npatchinfo;i++){
         patchdata *patchi;
         meshdata *meshi;
         int n;
 
-        patchi = patchinfo + patch_loaded_list[ii];
+        patchi = patchinfo + i;
+        if(patchi->loaded == 0)continue;
         meshi = meshinfo + patchi->blocknumber;
         for(n = 0;n < meshi->npatches;n++){
           if(meshi->boundarytype[n] == value){
