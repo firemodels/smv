@@ -433,8 +433,8 @@ void DrawColorbarPathCIE(void){
   }
   glEnd();
 
-  for(i = 0; i < 256; i += 8){
-    float dist, cie2[3], *rgb2val, *rgb1val, cie1[3], xyz[3];
+  for(i = 7; i < 256; i += 8){
+    float dist, cie2[3], *rgb2val, *rgb1val, cie1[3], xyz1[3], xyz2[3];
     float dx, dy, dz;
     unsigned char rgbb[3], rgba[3];
 
@@ -443,25 +443,25 @@ void DrawColorbarPathCIE(void){
     rgbb[1] = rgb2val[1] * 255.0;
     rgbb[2] = rgb2val[2] * 255.0;
     Rgb2CIE(rgbb, cie2);
-    if(i == 0){
-      dist = 0.0;
-    }
-    else{
-      rgb1val = cbi->colorbar + 3 * (i-8);
-      rgba[0] = rgb1val[0] * 255.0;
-      rgba[1] = rgb1val[1] * 255.0;
-      rgba[2] = rgb1val[2] * 255.0;
+    rgb1val = cbi->colorbar + 3 * (i+1-8);
+    rgba[0] = rgb1val[0] * 255.0;
+    rgba[1] = rgb1val[1] * 255.0;
+    rgba[2] = rgb1val[2] * 255.0;
 
-      Rgb2CIE(rgba, cie1);
-      DDIST3(cie1, cie2, dist);
-    }
+    Rgb2CIE(rgba, cie1);
+    DDIST3(cie1, cie2, dist);
     char label[32];
     sprintf(label, "%.2f", dist);
-    xyz[0] = cie2[0] / 100.0;
-    xyz[1] = (cie2[1] + 87.9) / 183.28;
-    xyz[2] = (cie2[2] + 126.39) / 211.11;
-    glVertex3fv(xyz);
-    Output3Text(foregroundcolor, xyz[0] + 0.05, xyz[1], xyz[2], label);
+    xyz2[0] = cie2[0] / 100.0;
+    xyz2[1] = (cie2[1] + 87.9) / 183.28;
+    xyz2[2] = (cie2[2] + 126.39) / 211.11;
+    xyz1[0] =  cie1[0] / 100.0;
+    xyz1[1] = (cie1[1] + 87.9) / 183.28;
+    xyz1[2] = (cie1[2] + 126.39) / 211.11;
+    xyz1[0] = (xyz1[0] + xyz2[0]) / 2.0;
+    xyz1[1] = (xyz1[1] + xyz2[1]) / 2.0;
+    xyz1[2] = (xyz1[2] + xyz2[2]) / 2.0;
+    Output3Text(foregroundcolor, xyz1[0], xyz1[1], xyz1[2], label);
   }
 
   glPointSize(10.0);
@@ -680,24 +680,24 @@ void Rgb2CIE(unsigned char *rgb_arg, float *cie){
     var_R = pow((var_R + 0.055f) / 1.055f, 2.4f);
   }
   else {
-    var_R = var_R / 12.92f;
+    var_R /= 12.92f;
   }
   if(var_G > 0.04045f) {
     var_G = pow((var_G + 0.055f) / 1.055f, 2.4f);
   }
   else {
-    var_G = var_G / 12.92f;
+    var_G /= 12.92f;
   }
   if(var_B > 0.04045f) {
     var_B = pow((var_B + 0.055f) / 1.055f, 2.4f);
   }
   else {
-    var_B = var_B / 12.92f;
+    var_B /= 12.92f;
   }
 
-  var_R = var_R * 100.0f;
-  var_G = var_G * 100.0f;
-  var_B = var_B * 100.0f;
+  var_R *= 100.0f;
+  var_G *= 100.0f;
+  var_B *= 100.0f;
 
   float X = var_R * 0.4124f + var_G * 0.3576f + var_B * 0.1805f;
   float Y = var_R * 0.2126f + var_G * 0.7152f + var_B * 0.0722f;
@@ -782,31 +782,31 @@ void CIE2Rgb(unsigned char *rgb_arg, float *cie){
   }
 
   float X = var_X * 0.95047f;
-  float Y = var_Y * 1.0f;
+  float Y = var_Y;
   float Z = var_Z * 1.08883f;
 
   // Convert XYZ to RGB
-  float var_R = X * 3.2406f - Y * 1.5372f - Z * 0.4986f;
+  float var_R =  X * 3.2406f - Y * 1.5372f - Z * 0.4986f;
   float var_G = -X * 0.9689f + Y * 1.8758f + Z * 0.0415f;
-  float var_B = X * 0.0557f - Y * 0.2040f + Z * 1.0570f;
+  float var_B =  X * 0.0557f - Y * 0.2040f + Z * 1.0570f;
 
   if(var_R > 0.0031308f) {
     var_R = 1.055f * pow(var_R, 1.0f / 2.4f) - 0.055f;
   }
   else {
-    var_R = 12.92f * var_R;
+    var_R *= 12.92f;
   }
   if(var_G > 0.0031308f) {
     var_G = 1.055f * pow(var_G, 1.0f / 2.4f) - 0.055f;
   }
   else {
-    var_G = 12.92f * var_G;
+    var_G *= 12.92f;
   }
   if(var_B > 0.0031308f) {
     var_B = 1.055f * pow(var_B, 1.0f / 2.4f) - 0.055f;
   }
   else {
-    var_B = 12.92f * var_B;
+    var_B *= 12.92f;
   }
 
   rgb_arg[0] = (unsigned char)CLAMP(var_R * 255.0f + 0.5, 0, 255);
@@ -833,6 +833,7 @@ void CIE2Rgbs(unsigned char *rgbs255, float *cies){
 void CheckCIE(void){
   int i, diff;
   int hist[256];
+  float sum=0.0;
 
   for(i = 0;i < 256;i++){
     hist[i] = 0;
@@ -847,16 +848,21 @@ void CheckCIE(void){
 
       for(k = 0; k < 256; k++){
         unsigned char rgbval[3], rgbnew[3];
-        float cie[3];
+        float cie[3], cie2[3], dist2;
 
         rgbval[0] = (unsigned char)k;
         rgbval[1] = (unsigned char)j;
         rgbval[2] = (unsigned char)i;
         Rgb2CIE(rgbval, cie);
         CIE2Rgb(rgbnew, cie);
+        Rgb2CIE(rgbnew, cie2);
         diff = ABS(rgbval[0] - rgbnew[0]);
         diff = MAX(diff, ABS(rgbval[1] - rgbnew[1]));
         diff = MAX(diff, ABS(rgbval[2] - rgbnew[2]));
+        dist2 = ABS(cie2[0]-cie[0]);
+        dist2 = MAX(dist2, ABS(cie2[1] - cie[1]));
+        dist2 = MAX(dist2, ABS(cie2[2] - cie[2]));
+        sum += dist2;
         hist[diff]++;
       }
     }
@@ -865,6 +871,7 @@ void CheckCIE(void){
     printf("%i ", hist[i]);
   }
   printf("\n");
+  printf("cie avg diff=%f\n", sum / (float)(256 * 256 * 256));
 }
 #endif
 
