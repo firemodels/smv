@@ -292,10 +292,15 @@ void ShowScene2(int mode){
 
   /* ++++++++++++++++++++++++ draw terrain +++++++++++++++++++++++++ */
 
+#ifdef pp_TERRAIN_CFACES
+    CLIP_GEOMETRY;
+    DrawTerrainGeom(DRAW_OPAQUE);
+#else
   if(use_cfaces==0||ncgeominfo==0){
     CLIP_GEOMETRY;
     DrawTerrainGeom(DRAW_OPAQUE);
   }
+#endif
 
   if(visTerrainType != TERRAIN_HIDDEN&&nterraininfo>0&&ngeominfo==0 && geom_bounding_box_mousedown==0){
     int i;
@@ -425,10 +430,15 @@ void ShowScene2(int mode){
 
   /* ++++++++++++++++++++++++ draw terrain +++++++++++++++++++++++++ */
 
+#ifdef pp_TERRAIN_CFACES
+  CLIP_GEOMETRY;
+  DrawTerrainGeom(DRAW_TRANSPARENT);
+#else
   if(use_cfaces==0||ncgeominfo==0){
     CLIP_GEOMETRY;
     DrawTerrainGeom(DRAW_TRANSPARENT);
   }
+#endif
 
   /* ++++++++++++++++++++++++ draw transparent cfaces +++++++++++++++++++++++++ */
 

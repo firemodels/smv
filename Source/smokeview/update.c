@@ -1930,6 +1930,10 @@ int HaveSootLoaded(void) {
 void UpdateShowScene(void){
   have_fire  = HaveFireLoaded();
   have_smoke = HaveSootLoaded();
+  if(update_loadall_textures == 1){
+    update_loadall_textures = 0;
+    TextureShowMenu(MENU_TEXTURE_SHOWALL2);
+  }
   if(update_plot2dini == 1){
     update_plot2dini = 0;
     UpdatePlot2DINI();

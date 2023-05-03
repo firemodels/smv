@@ -528,6 +528,7 @@ SVEXTERN int SVDECL(histograms_defined,0), SVDECL(update_slice_hists, 0), SVDECL
 SVEXTERN histogramdata SVDECL(*hists256_slice, NULL), SVDECL(*hists12_slice, NULL);
 SVEXTERN histogramdata SVDECL(*full_part_histogram, NULL);
 SVEXTERN histogramdata SVDECL(*full_plot3D_histograms, NULL);
+SVEXTERN int SVDECL(update_loadall_textures, 1);
 
 SVEXTERN int SVDECL(color_vector_black, 0);
 SVEXTERN float SVDECL(geom_transparency, 0.5);

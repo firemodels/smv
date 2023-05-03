@@ -1073,8 +1073,9 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 #define MENU_TOUR_CLEARALL     -13
 #define MENU_TOUR_SETTINGS     -14
 
-#define MENU_TEXTURE_SHOWALL -1
-#define MENU_TEXTURE_HIDEALL -2
+#define MENU_TEXTURE_SHOWALL  -1
+#define MENU_TEXTURE_HIDEALL  -2
+#define MENU_TEXTURE_SHOWALL2 -3
 
 #define MENU_SHOWHIDE_FLIP 15
 

@@ -28,6 +28,8 @@
 //#define pp_TOUR               // handle duplicate keyframes
 //#define pp_BNDF               // merge geometry and structured boundary files in load menus
 
+#define pp_TERRAIN_CFACES       // draw terrain over cfaces and regular geometry
+
 //#define pp_DPRINT             // turn on debug print (file, line number)
 
 // streaming directives
