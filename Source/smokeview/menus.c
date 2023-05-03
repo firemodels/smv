@@ -2467,6 +2467,7 @@ void TextureShowMenu(int value){
   int i;
   int texturedisplay=0;
   int texture_flag=0;
+  int loadall_textures;
 
   updatefacelists=1;
   if(value>=0){
@@ -2486,6 +2487,18 @@ void TextureShowMenu(int value){
   }
   else{
     switch(value){
+    case MENU_TEXTURE_SHOWALL2:
+      // load all textures if none are loaded
+      loadall_textures = 1;
+      for(i = 0; i < ntextureinfo; i++){
+        texti = textureinfo + i;
+        if(texti->loaded == 1 && texti->used == 1&&texti->display==1){
+          loadall_textures = 0;
+          break;
+        }
+      }
+      // if loadall_textures==1 then fall through and run MENU_TEXTURE_SHOWALL block
+      if(loadall_textures == 0)break;
     case MENU_TEXTURE_SHOWALL:
       for(i=0;i<ntextureinfo;i++){
         texti = textureinfo + i;
