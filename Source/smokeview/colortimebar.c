@@ -417,7 +417,7 @@ void DrawColorbarPathCIE(void){
   glPointSize(5.0);
   glBegin(GL_POINTS);
   for(i = 0; i < 256; i++){
-    float *rgbi, csi[3], xyz[3];
+    float *rgbi, cie[3], xyz[3];
     unsigned char rgb255[3];
 
     rgbi = cbi->colorbar + 3 * i;
@@ -425,12 +425,27 @@ void DrawColorbarPathCIE(void){
     rgb255[1] = rgbi[1] * 255.0;
     rgb255[2] = rgbi[2] * 255.0;
     glColor3fv(rgbi);
-    Rgb2CIE(rgb255, csi);
-    xyz[0] = csi[0] / 100.0;
-    xyz[1] = (csi[1]+87.9)/183.28;
-    xyz[2] = (csi[2]+126.39)/211.11;
+    Rgb2CIE(rgb255, cie);
+    xyz[0] = cie[0] / 100.0;
+    xyz[1] = (cie[1]+87.9)/183.28;
+    xyz[2] = (cie[2]+126.39)/211.11;
     glVertex3fv(xyz);
   }
+#ifdef pp_COLOR_CIE_CHECK
+  for(i = 0; i < 17 * 17 * 17; i++){
+    float xyz[3], *cie;
+    unsigned char *ciergb;
+
+    cie = cielab_check_xyz       + 3*i;
+    ciergb = cielab_check_rgb255 + 3*i;
+
+    glColor3ubv(ciergb);
+    xyz[0] = cie[0] / 100.0;
+    xyz[1] = (cie[1] + 87.9) / 183.28;
+    xyz[2] = (cie[2] + 126.39) / 211.11;
+    glVertex3fv(xyz);
+  }
+#endif
   glEnd();
 
   for(i = 7; i < 256; i += 8){
@@ -829,16 +844,22 @@ void CIE2Rgbs(unsigned char *rgbs255, float *cies){
 }
 
 /* ------------------ CheckCIE ------------------------ */
-
+#ifdef pp_COLOR_CIE_CHECK
 void CheckCIE(void){
   int i, diff;
   int hist[256];
   float sum=0.0;
+  float *ciexyz;
+  unsigned char *ciergb;
 
   for(i = 0;i < 256;i++){
     hist[i] = 0;
   }
 
+  NewMemory((void **)&cielab_check_xyz, 3 * 17*17*17 * sizeof(float));
+  NewMemory((void **)&cielab_check_rgb255, 3 * 17*17*17);
+  ciexyz = cielab_check_xyz;
+  ciergb = cielab_check_rgb255;
   for(i = 0; i < 256; i++){
     int j;
 
@@ -867,12 +888,34 @@ void CheckCIE(void){
       }
     }
   }
+  for(i = 0; i <= 256; i+=16){
+    int j;
+
+    for(j = 0; j <= 256; j+=16){
+      int k;
+
+      for(k = 0; k<=256; k+=16){
+        unsigned char rgbval[3];
+        float cie[3];
+
+        rgbval[0] = MIN(( unsigned char )k,255);
+        rgbval[1] = MIN(( unsigned char )j,255);
+        rgbval[2] = MIN(( unsigned char )i,255);
+        Rgb2CIE(rgbval, cie);
+        memcpy(ciexyz, cie, 3 * sizeof(float));
+        memcpy(ciergb, rgbval, 3);
+        ciexyz += 3;
+        ciergb += 3;
+      }
+    }
+  }
   for(i = 0;i < 256;i++){
     printf("%i ", hist[i]);
   }
   printf("\n");
   printf("cie avg diff=%f\n", sum / (float)(256 * 256 * 256));
 }
+#endif
 #endif
 
 /* ------------------ RemapColorbar ------------------------ */

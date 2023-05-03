@@ -537,6 +537,10 @@ SVEXTERN histogramdata SVDECL(*full_plot3D_histograms, NULL);
 #ifdef pp_COLOR_CIE
 SVEXTERN int SVDECL(interp_cielab, 1);
 SVEXTERN int SVDECL(update_colorbar_orig, 0);
+SVEXTERN float SVDECL(*cielab_check_xyz, NULL);
+#ifdef pp_COLOR_CIE_CHECK
+SVEXTERN unsigned char SVDECL(*cielab_check_rgb255, NULL);
+#endif
 #endif
 SVEXTERN int SVDECL(color_vector_black, 0);
 SVEXTERN float SVDECL(geom_transparency, 0.5);
