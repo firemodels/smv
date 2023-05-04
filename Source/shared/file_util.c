@@ -525,6 +525,7 @@ int GetFileListSize(const char *path, char *filter){
   DIR *dp;
   int maxfiles=0;
 
+  if(path == NULL||filter==NULL)return maxfiles;
   dp = opendir(path);
   if(dp == NULL){
     perror("opendir");
@@ -601,7 +602,7 @@ int MakeFileList(const char *path, char *filter, int maxfiles, int sort_files, f
   // DT_DIR - is a directory
   // DT_REG - is a regular file
 
-  if (maxfiles == 0) {
+  if (maxfiles == 0||path==NULL||filter==NULL) {
     *filelist = NULL;
     return 0;
   }
