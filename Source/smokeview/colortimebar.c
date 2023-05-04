@@ -1233,11 +1233,8 @@ void InitDefaultColorbars(int nini){
 #ifdef pp_COLORBARS_CSV
   filelistdata *linear_filelist=NULL, *cyclic_filelist=NULL,*rainbow_filelist=NULL;
   char filter_linear[256], filter_cyclic[256], filter_rainbow[256];
-  FILE *stream_colorbar=NULL;
 
-  stream_colorbar = fopen(colorbarsdir, "r");
-  if(colorbarsdir!=NULL&&stream_colorbar!=NULL){
-    fclose(stream_colorbar);
+  if(colorbarsdir!=NULL){
     strcpy(filter_linear, "CET-L*.csv");
     nlinear_filelist = GetFileListSize(colorbarsdir, filter_linear);
     strcpy(filter_cyclic, "CET-C*.csv");
