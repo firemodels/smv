@@ -801,7 +801,9 @@ void DrawGeom(int flag, int timestate){
         int j;
 
         trianglei = tris[i];
+#ifndef pp_TERRAIN_CFACES
         if(use_cfaces==1&&trianglei->geomtype==GEOM_GEOM)continue;
+#endif
         if(trianglei->geomtype!=GEOM_ISO){
           if(trianglei->outside_domain==0&&showgeom_inside_domain==0)continue;
           if(trianglei->outside_domain==1&&showgeom_outside_domain==0)continue;
@@ -4307,6 +4309,7 @@ void DrawCGeom(int flag, geomdata *cgeom){
   int i;
   geomdata *geomi;
 
+  if(visGeomTextures == 1)return;
   if(show_geom_boundingbox==SHOW_BOUNDING_BOX_ALWAYS||geom_bounding_box_mousedown==1){
     if(flag==DRAW_OPAQUE&&have_geom_triangles==1){
       DrawGeomBoundingBox(NULL);
