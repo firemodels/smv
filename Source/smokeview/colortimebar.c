@@ -652,8 +652,8 @@ void AdjustColorBar(colorbardata *cbi){
     unsigned char *rgb_local;
     float *cie;
 
-    rgb_local = cbi->rgb_node + 3 * i;
-    cie = cbi->cie + 3 * i;
+    rgb_local = cbi->rgb_node + 3*i;
+    cie       = cbi->cie      + 3*i;
     Rgb2CIE(rgb_local, cie);
   }
   cbi->dist[0] = 0.0;
@@ -667,17 +667,16 @@ void AdjustColorBar(colorbardata *cbi){
     cbi->dist[i] = cbi->dist[i - 1] + dist;
   }
 
-  float dist;
+  float total_dist;
   int nnodes;
 
-  dist = cbi->dist[cbi->nnodes - 1];
+  total_dist = cbi->dist[cbi->nnodes - 1];
   nnodes = cbi->index_node[cbi->nnodes - 1];
 
   for(i = 1;i < cbi->nnodes - 1;i++){
     int inode;
 
-
-    inode = nnodes * (cbi->dist[i] / dist);
+    inode = nnodes * (cbi->dist[i] / total_dist);
     cbi->index_node[i] = inode;
   }
 }
