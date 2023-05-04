@@ -8349,10 +8349,10 @@ void MakeColorbarMenu(int *menuptr,
       strcpy(ccolorbarmenu, "  ");
       if(colorbartype == i){
         strcat(ccolorbarmenu, "*");
-        strcat(ccolorbarmenu, cbi->label);
+        strcat(ccolorbarmenu, cbi->menulabel);
       }
       else{
-        strcat(ccolorbarmenu, cbi->label);
+        strcat(ccolorbarmenu, cbi->menulabel);
       }
       glutAddMenuEntry(ccolorbarmenu, i);
     }
@@ -8369,10 +8369,10 @@ void MakeColorbarMenu(int *menuptr,
       strcpy(ccolorbarmenu, "  ");
       if(colorbartype == i){
         strcat(ccolorbarmenu, "*");
-        strcat(ccolorbarmenu, cbi->label);
+        strcat(ccolorbarmenu, cbi->menulabel);
       }
       else{
-        strcat(ccolorbarmenu, cbi->label);
+        strcat(ccolorbarmenu, cbi->menulabel);
       }
       glutAddMenuEntry(ccolorbarmenu, i);
     }
@@ -8389,10 +8389,10 @@ void MakeColorbarMenu(int *menuptr,
       strcpy(ccolorbarmenu, "  ");
       if(colorbartype == i){
         strcat(ccolorbarmenu, "*");
-        strcat(ccolorbarmenu, cbi->label);
+        strcat(ccolorbarmenu, cbi->menulabel);
       }
       else{
-        strcat(ccolorbarmenu, cbi->label);
+        strcat(ccolorbarmenu, cbi->menulabel);
       }
       glutAddMenuEntry(ccolorbarmenu, i);
     }

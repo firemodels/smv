@@ -1154,7 +1154,7 @@ void InitColorbar(colorbardata *cbptr, char *dir, char *file, char *type){
   char fullfile[1024];
 
   if(file == NULL || strlen(file) == 0)return;
-  if(dir == NULL || strlen(dir) == 0)return;
+  if(dir == NULL  || strlen(dir) == 0)return;
   strcpy(fullfile, dir);
   strcat(fullfile, dirseparator);
   strcat(fullfile, file);
@@ -1191,6 +1191,10 @@ void InitColorbar(colorbardata *cbptr, char *dir, char *file, char *type){
     rgbscopy += 3;
   }
   strcpy(cbptr->label, file);
+  strcpy(cbptr->menulabel, file);
+  char *ext;
+  ext = strrchr(cbptr->menulabel, '.');
+  if(ext != NULL)*ext = 0;
   cbptr->label_ptr = cbptr->label;
   cbptr->nnodes = n;
   cbptr->nodehilight = 0;
@@ -1235,11 +1239,11 @@ void InitDefaultColorbars(int nini){
   char filter_linear[256], filter_cyclic[256], filter_rainbow[256];
 
   if(colorbarsdir!=NULL){
-    strcpy(filter_linear, "CET-L*.csv");
+    strcpy(filter_linear, "linear*.csv");
     nlinear_filelist = GetFileListSize(colorbarsdir, filter_linear);
-    strcpy(filter_cyclic, "CET-C*.csv");
+    strcpy(filter_cyclic, "circular*.csv");
     ncyclic_filelist = GetFileListSize(colorbarsdir, filter_cyclic);
-    strcpy(filter_rainbow, "CET-R*.csv");
+    strcpy(filter_rainbow, "rainbow*.csv");
     nrainbow_filelist = GetFileListSize(colorbarsdir, filter_rainbow);
   }
 
@@ -1907,6 +1911,16 @@ void InitDefaultColorbars(int nini){
     InitColorbar(cbi, colorbarsdir, rainbow_filelist[i].file, "rainbow");
     cbi++;
   }
+#ifdef pp_COLOR_NEW
+  if(rainbow_filelist>0){
+    memcpy(colorbarinfo+1, colorbarinfo, sizeof(colorbardata));
+    strcpy(colorbarinfo[1].label, "Rainbow(original)");
+
+    memcpy(colorbarinfo, cbi - nrainbow_filelist, sizeof(colorbardata));
+    strcpy(colorbarinfo->label, "Rainbow");
+    strcpy(colorbarinfo->type, "original");
+  }
+#endif
 #endif
 
   // construct colormaps from color node info
