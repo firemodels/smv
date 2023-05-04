@@ -426,9 +426,9 @@ void DrawColorbarPathCIE(void){
     rgb255[2] = rgbi[2] * 255.0;
     glColor3fv(rgbi);
     Rgb2CIE(rgb255, cie);
-    xyz[0] = cie[0] / 100.0;
-    xyz[1] = (cie[1]+87.9)/183.28;
-    xyz[2] = (cie[2]+126.39)/211.11;
+    xyz[2] = cie[0] / 100.0;
+    xyz[0] = (cie[1]+87.9)/183.28;
+    xyz[1] = (cie[2]+126.39)/211.11;
     glVertex3fv(xyz);
   }
 #ifdef pp_COLOR_CIE_CHECK
@@ -440,9 +440,9 @@ void DrawColorbarPathCIE(void){
     ciergb = cielab_check_rgb255 + 3*i;
 
     glColor3ubv(ciergb);
-    xyz[0] = cie[0] / 100.0;
-    xyz[1] = (cie[1] + 87.9) / 183.28;
-    xyz[2] = (cie[2] + 126.39) / 211.11;
+    xyz[2] = cie[0] / 100.0;
+    xyz[0] = (cie[1] + 87.9) / 183.28;
+    xyz[1] = (cie[2] + 126.39) / 211.11;
     glVertex3fv(xyz);
   }
 #endif
@@ -476,7 +476,7 @@ void DrawColorbarPathCIE(void){
     xyz1[0] = (xyz1[0] + xyz2[0]) / 2.0;
     xyz1[1] = (xyz1[1] + xyz2[1]) / 2.0;
     xyz1[2] = (xyz1[2] + xyz2[2]) / 2.0;
-    Output3Text(foregroundcolor, xyz1[0], xyz1[1], xyz1[2], label);
+    Output3Text(foregroundcolor, xyz1[1], xyz1[2], xyz1[0], label);
   }
 
   glPointSize(10.0);
@@ -492,9 +492,9 @@ void DrawColorbarPathCIE(void){
     glColor3fv(rgbi);
     void Rgb2CIE(unsigned char *rgb, float *cie);
     Rgb2CIE(rgb255, csi);
-    xyz[0] = csi[0] / 100.0;
-    xyz[1] = (csi[1] + 87.9) / 183.28;
-    xyz[2] = (csi[2] + 126.39) / 211.11;
+    xyz[2] = csi[0] / 100.0;
+    xyz[0] = (csi[1] + 87.9) / 183.28;
+    xyz[1] = (csi[2] + 126.39) / 211.11;
     glVertex3fv(xyz);
   }
   glEnd();
@@ -507,9 +507,9 @@ void DrawColorbarPathCIE(void){
   glVertex3f(0.0, 0.0, 0.0);
   glVertex3f(0.0, 0.0, 1.0);
   glEnd();
-  Output3Text(foregroundcolor, 1.05, 0.0, 0.0, "L*");
-  Output3Text(foregroundcolor, 0.0, 1.05, 0.0, "a*");
-  Output3Text(foregroundcolor, 0.0, 0.0, 1.05, "b*");
+  Output3Text(foregroundcolor, 1.05, 0.0, 0.0, "a*");
+  Output3Text(foregroundcolor, 0.0, 1.05, 0.0, "b*");
+  Output3Text(foregroundcolor, 0.0, 0.0, 1.05, "L*");
 
   glPointSize(10.0);
   glBegin(GL_POINTS);
