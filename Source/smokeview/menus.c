@@ -2465,7 +2465,6 @@ void VectorSkipMenu(int value){
 void TextureShowMenu(int value){
   texturedata *texti;
   int i;
-  int texturedisplay=0;
   int texture_flag=0;
   int loadall_textures;
 
@@ -2473,13 +2472,12 @@ void TextureShowMenu(int value){
   if(value>=0){
     texti = textureinfo + value;
     texti->display = 1-texti->display;
-    if(texti->display==1)texturedisplay=1;
     for(i=0;i<ntextureinfo;i++){
       texti = textureinfo + i;
       if(texti->loaded==0||texti->used==0)continue;
       if(texti->display==0){
-        showall_textures=0;
-        texture_flag=1;
+        showall_textures = 0;
+        texture_flag =     1;
         break;
       }
     }
@@ -2504,7 +2502,6 @@ void TextureShowMenu(int value){
         texti = textureinfo + i;
         if(texti->loaded==0||texti->used==0)continue;
         texti->display=1;
-        texturedisplay=1;
       }
       showall_textures=1;
       break;
@@ -2522,32 +2519,36 @@ void TextureShowMenu(int value){
     }
   }
   visGeomTextures=0;
-  if(texturedisplay==1){
-    for(i=0;i<ngeominfo;i++){
-      geomdata *geomi;
-      surfdata *surf;
-      texturedata *textii=NULL;
+  for(i=0;i<ngeominfo;i++){
+    geomdata *geomi;
+    surfdata *surf;
+    texturedata *textii=NULL;
 
-      geomi = geominfo + i;
-      surf = geomi->surfgeom;
-      if(terrain_textures!=NULL){
-        textii = terrain_textures+iterrain_textures;
-      }
-      else{
-        if(surf!=NULL)textii = surf->textureinfo;
-      }
-      if(textii!=NULL&&textii->display==1){
-        visGeomTextures=1;
+    geomi = geominfo + i;
+    surf = geomi->surfgeom;
+    if(terrain_textures!=NULL){
+      textii = terrain_textures+iterrain_textures;
+    }
+    else{
+      if(surf!=NULL)textii = surf->textureinfo;
+    }
+    if(textii!=NULL&&textii->display==1){
+      visGeomTextures = 1;
+      break;
+    }
+  }
+
+  for(i=0;i<ntextureinfo;i++){
+    texti = textureinfo + i;
+    if(texti->loaded==1&&texti->used==1&&texti->display==1){
+      if(value!=visBLOCKOutline&&value!=visBLOCKSolidOutline&&value!=visBLOCKHide){
+        BlockageMenu(visBLOCKAsInput);
         break;
       }
-    }
-    if(value!=visBLOCKOutline&&value!=visBLOCKSolidOutline&&value!=visBLOCKHide){
-      BlockageMenu(visBLOCKAsInput);
     }
   }
   updatemenu=1;
   GLUTPOSTREDISPLAY;
-
 }
 
 /* ------------------ Plot3DShowMenu ------------------------ */
