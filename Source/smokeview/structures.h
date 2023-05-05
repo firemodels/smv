@@ -286,11 +286,14 @@ typedef struct _colorbardata {
   char label[1024], *label_ptr ;        // menu label
   char type[256];
   int nnodes,nodehilight,nsplits;
-  unsigned char rgb_node_orig[3 * 1024];
-  unsigned char rgb_node[3*1024];
+  unsigned char rgb_node_orig[3*1024], rgb_node[3*1024];
   unsigned char alpha[1024];
   unsigned char index_node[1024];  // colorbar index
   unsigned char splits[1024];
+#ifdef pp_COLOR_CIE
+  int nnodes_orig, index_node_orig[1024];
+  float cie[3*1024], dist[1024];
+#endif
   float colorbar[3*1024];
 } colorbardata;
 
@@ -916,6 +919,9 @@ typedef struct _tourdata {
   keyframe first_frame,last_frame, **keyframe_list;
   int glui_avatar_index, display2;
   float *path_times,*keyframe_times;
+#ifdef pp_TOUR_ADJUST
+  float *path_dists;
+#endif
   float xyz_smv[3], view_smv[3];
   float global_dist;
   int *timeslist;

@@ -395,6 +395,11 @@ SVEXTERN float SVDECL(geomboundary_linewidth, 5.0);
 
 SVEXTERN int SVDECL(smoke3d_only, 0);
 SVEXTERN int SVDECL(update_tour_path,1);
+#ifdef pp_TOUR_ADJUST
+SVEXTERN int SVDECL(adjust_tour_time, 1);
+#else
+SVEXTERN int SVDECL(adjust_tour_time, 0);
+#endif
 SVEXTERN int SVDECL(tour_circular_index, -1);
 SVEXTERN float tour_circular_center[3], tour_circular_radius, tour_circular_view[3], SVDECL(tour_circular_angle0,0.0);
 SVEXTERN float tour_circular_center_default[3], tour_circular_radius_default, tour_circular_view_default[3];
@@ -530,6 +535,14 @@ SVEXTERN histogramdata SVDECL(*full_part_histogram, NULL);
 SVEXTERN histogramdata SVDECL(*full_plot3D_histograms, NULL);
 SVEXTERN int SVDECL(update_loadall_textures, 1);
 
+#ifdef pp_COLOR_CIE
+SVEXTERN int SVDECL(interp_cielab, 1);
+SVEXTERN int SVDECL(update_colorbar_orig, 0);
+SVEXTERN float SVDECL(*cielab_check_xyz, NULL);
+#ifdef pp_COLOR_CIE_CHECK
+SVEXTERN unsigned char SVDECL(*cielab_check_rgb255, NULL);
+#endif
+#endif
 SVEXTERN int SVDECL(color_vector_black, 0);
 SVEXTERN float SVDECL(geom_transparency, 0.5);
 SVEXTERN int SVDECL(geom_force_transparent, 0);
@@ -743,10 +756,7 @@ SVEXTERN int SVDECL(use_glui_rotate,0);
 SVEXTERN int SVDECL(show_fed_area,1);
 SVEXTERN char default_fed_colorbar[255];
 
-#ifdef pp_COLORBAR_CONSTANT
-SVEXTERN int SVDECL(colorbar_brightness, 192);
-#endif
-SVEXTERN int SVDECL(colorbar_hsl, 0);
+SVEXTERN int SVDECL(colorbar_coord_type, 0);
 
 SVEXTERN int SVDECL(*meshvisptr,NULL);
 SVEXTERN smoke3ddata SVDECL(**smoke3dinfo_sorted,NULL);

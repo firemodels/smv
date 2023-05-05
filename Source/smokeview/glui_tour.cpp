@@ -258,7 +258,9 @@ extern "C" void GluiTourSetup(int main_window){
   glui_tour->add_spinner_to_panel(PANEL_path, _("start time"), GLUI_SPINNER_FLOAT, &tour_tstart, VIEW_times, TourCB);
   glui_tour->add_spinner_to_panel(PANEL_path, _("stop time:"), GLUI_SPINNER_FLOAT, &tour_tstop, VIEW_times, TourCB);
   glui_tour->add_spinner_to_panel(PANEL_path, _("points"),     GLUI_SPINNER_INT,   &tour_ntimes, VIEW_times, TourCB);
-
+#ifdef pp_TOUR_ADJUST
+  glui_tour->add_checkbox_to_panel(PANEL_path, _("Adjust tour times(experimental)"), &adjust_tour_time);
+#endif
   PANEL_misc = glui_tour->add_panel_to_panel(ROLLOUT_settings, "Misc", true);
   CHECKBOX_showintermediate = glui_tour->add_checkbox_to_panel(PANEL_misc, _("Show intermediate path nodes"), &show_path_knots);
   if(navatar_types > 0){
@@ -675,7 +677,7 @@ void TourCB(int var){
         SMV2FDS_XYZ(key_view, key_view);
       }
       newframe = AddFrame(selected_frame, key_time_in, 0.0, key_xyz, key_view);
-#ifdef pp_TOUR      
+#ifdef pp_TOUR_DUP      
       UpdateKeyframeDups(thistour);
 #endif
       CreateTourPaths();
@@ -689,7 +691,7 @@ void TourCB(int var){
       selected_frame=DeleteFrame(selected_frame);
       if(selected_frame!=NULL){
         selected_frame->selected=1;
-#ifdef pp_TOUR      
+#ifdef pp_TOUR_DUP     
         UpdateKeyframeDups(thistour);
 #endif
         CreateTourPaths();
@@ -771,7 +773,7 @@ void TourCB(int var){
   case TOUR_REVERSE:
     if(selectedtour_index>=0&&selectedtour_index<ntourinfo){
       ReverseTour(tourinfo[selectedtour_index].label);
-#ifdef pp_TOUR
+#ifdef pp_TOUR_DUP
       UpdateKeyframeDups(tourinfo + selectedtour_index);
 #endif
     }

@@ -39,14 +39,14 @@ GLUI_Spinner *SPINNER_valmin=NULL;
 GLUI_Spinner *SPINNER_valmax=NULL;
 GLUI_Spinner *SPINNER_val=NULL;
 GLUI_Spinner *SPINNER_colorindex=NULL;
-#ifdef pp_COLORBAR_CONSTANT
-GLUI_Spinner *SPINNER_colorbar_brightness=NULL;
-#endif
 
 GLUI_Button *BUTTON_node_next=NULL,*BUTTON_node_prev=NULL;
 GLUI_Button *BUTTON_next=NULL,*BUTTON_prev=NULL;
 GLUI_Button *BUTTON_new=NULL;
 GLUI_Button *BUTTON_delete=NULL;
+#ifdef pp_COLOR_CIE
+GLUI_Button *BUTTON_adjust = NULL;
+#endif
 GLUI_Button *BUTTON_addpoint=NULL;
 GLUI_Button *BUTTON_deletepoint=NULL;
 GLUI_Button *BUTTON_savesettings=NULL;
@@ -54,13 +54,10 @@ GLUI_Button *BUTTON_update=NULL;
 GLUI_Button *BUTTON_colorbar_save=NULL;
 GLUI_Button *BUTTON_colorbar_close=NULL;
 GLUI_Button *BUTTON_autonodes = NULL;
-#ifdef pp_COLORBAR_CONSTANT
-GLUI_Button *BUTTON_constant_brightness = NULL;
-GLUI_Button *BUTTON_reset_colorbar = NULL;
-#endif
+
+GLUI_RadioGroup *RADIO_colorbar_coord_type;
 
 GLUI_Checkbox *CHECKBOX_hidesv=NULL;
-GLUI_Checkbox *CHECKBOX_colorbar_hsl= NULL;
 
 GLUI_EditText *EDITTEXT_colorbar_label=NULL;
 
@@ -70,8 +67,8 @@ int cb_usecolorbar_extreme;
 
 #define COLORBAR_LIST                 0
 #define COLORBAR_CLOSE                1
-#define COLORBAR_NODE_NEXT                 3
-#define COLORBAR_NODE_PREV                 4
+#define COLORBAR_NODE_NEXT            3
+#define COLORBAR_NODE_PREV            4
 #define COLORBAR_NEW                  5
 #define COLORBAR_ADDPOINT             7
 #define COLORBAR_DELETEPOINT          8
@@ -82,12 +79,12 @@ int cb_usecolorbar_extreme;
 #define COLORBAR_DELETE              14
 #define COLORBAR_EXTREME             16
 #define COLORBAR_UNIFORM             17
-#ifdef pp_COLORBAR_CONSTANT
-#define COLORBAR_CONSTANT_BRIGHTNESS 19
-#define COLORBAR_CONSTANT_RESET      20
-#endif
 #define COLORBAR_PREV                21
 #define COLORBAR_NEXT                22
+#ifdef pp_COLOR_CIE
+#define COLORBAR_ADJUST              23
+#define COLORBAR_REVERT              24
+#endif
 
 /* ------------------ UpdateColorbarList ------------------------ */
 
@@ -157,18 +154,6 @@ extern "C" void ColorbarCB(int var){
   int i;
 
   switch(var){
-#ifdef pp_COLORBAR_CONSTANT
-  case COLORBAR_CONSTANT_BRIGHTNESS:
-    cbi = colorbarinfo + colorbartype;
-    void UpdateColorbarConstant(colorbardata *cbi, int grey);
-    UpdateColorbarConstant(cbi, colorbar_brightness);
-    break;
-  case COLORBAR_CONSTANT_RESET:
-    cbi = colorbarinfo + colorbartype;
-    void UpdateColorbarConstant(colorbardata *cbi, int grey);
-    UpdateColorbarConstant(cbi, -1);
-    break;
-#endif
   case COLORBAR_UNIFORM:
     if(colorbartype >= ndefaultcolorbars&&colorbartype < ncolorbars){
       cbi = colorbarinfo + colorbartype;
@@ -353,6 +338,16 @@ extern "C" void ColorbarCB(int var){
     AddColorbarList2(colorbartype, cbi->label);
     ColorbarCB(COLORBAR_LIST);
     break;
+#ifdef pp_COLOR_CIE
+  case COLORBAR_ADJUST:
+    AdjustColorBar(colorbarinfo + colorbartype);
+    ColorbarCB(COLORBAR_RGB);
+    break;
+  case COLORBAR_REVERT:
+    RevertColorBar(colorbarinfo + colorbartype);
+    ColorbarCB(COLORBAR_RGB);
+    break;
+#endif
   case COLORBAR_DELETE:
     if(colorbartype >= ndefaultcolorbars&&colorbartype < ncolorbars){
       colorbardata *cb_from, *cb_to;
@@ -408,13 +403,18 @@ extern "C" void GluiColorbarSetup(int main_window){
 
   PANEL_cb2R2 = glui_colorbar->add_panel("",GLUI_PANEL_NONE);
   BUTTON_new=glui_colorbar->add_button_to_panel(PANEL_cb2R2,_("New colorbar"),COLORBAR_NEW,ColorbarCB);
-  glui_colorbar->add_column_to_panel(PANEL_cb2R2,false);
   BUTTON_delete=glui_colorbar->add_button_to_panel(PANEL_cb2R2,_("Delete colorbar"),COLORBAR_DELETE,ColorbarCB);
-  glui_colorbar->add_column_to_panel(PANEL_cb2R2,false);
+#ifdef pp_COLOR_CIE
+  BUTTON_adjust = glui_colorbar->add_button_to_panel(PANEL_cb2R2, _("Adjust colorbar"), COLORBAR_ADJUST, ColorbarCB);
+#endif
   colorbar_hidescene=1;
   CHECKBOX_hidesv = glui_colorbar->add_checkbox_to_panel(PANEL_cb2R2,_("Hide scene"),&colorbar_hidescene);
-#ifdef pp_COLORBAR_HSL
-  CHECKBOX_colorbar_hsl = glui_colorbar->add_checkbox_to_panel(PANEL_cb2R2, _("HSL"), &colorbar_hsl);
+#ifdef pp_COLOR_CIE
+  RADIO_colorbar_coord_type = glui_colorbar->add_radiogroup_to_panel(PANEL_cb2R2, &colorbar_coord_type);
+  glui_colorbar->add_radiobutton_to_group(RADIO_colorbar_coord_type, "rgb");
+  glui_colorbar->add_radiobutton_to_group(RADIO_colorbar_coord_type, "cielab");
+  glui_colorbar->add_checkbox_to_panel(PANEL_cb2R2, "interpolate using cielab", &interp_cielab, COLORBAR_ADJUST, ColorbarCB);
+  glui_colorbar->add_button_to_panel(PANEL_cb2R2,_("Revert CIE"), COLORBAR_REVERT, ColorbarCB);
 #endif
   PANEL_cb1 = glui_colorbar->add_panel(_("Colorbar"));
   if(ncolorbars>0){
@@ -431,12 +431,6 @@ extern "C" void GluiColorbarSetup(int main_window){
   EDITTEXT_colorbar_label  = glui_colorbar->add_edittext_to_panel(PANEL_cb1,_("Label"),GLUI_EDITTEXT_TEXT,colorbar_label,COLORBAR_LABEL,ColorbarCB);
   BUTTON_update=glui_colorbar->add_button_to_panel(PANEL_cb1,_("Update label"),COLORBAR_UPDATE,ColorbarCB);
   BUTTON_autonodes=glui_colorbar->add_button_to_panel(PANEL_cb1,_("Distribute nodes uniformly"),COLORBAR_UNIFORM,ColorbarCB);
-#ifdef pp_COLORBAR_CONSTANT
-  BUTTON_constant_brightness = glui_colorbar->add_button_to_panel(PANEL_cb1, _("Constant brightness"), COLORBAR_CONSTANT_BRIGHTNESS, ColorbarCB);
-  BUTTON_reset_colorbar      = glui_colorbar->add_button_to_panel(PANEL_cb1, _("Reset colorbar"),      COLORBAR_CONSTANT_RESET,      ColorbarCB);
-  SPINNER_colorbar_brightness=  glui_colorbar->add_spinner_to_panel(PANEL_cb1,_("brightness"),  GLUI_SPINNER_INT,&colorbar_brightness,  COLORBAR_CONSTANT_BRIGHTNESS,ColorbarCB);
-  SPINNER_colorbar_brightness->set_int_limits(0,255);
-#endif
   PANEL_cb11r     = glui_colorbar->add_panel_to_panel(PANEL_cb1,"",GLUI_PANEL_NONE);
   BUTTON_prev     = glui_colorbar->add_button_to_panel(PANEL_cb11r, _("Previous"), COLORBAR_PREV, ColorbarCB);
   glui_colorbar->add_column_to_panel(PANEL_cb11r,false);

@@ -1930,6 +1930,13 @@ int HaveSootLoaded(void) {
 void UpdateShowScene(void){
   have_fire  = HaveFireLoaded();
   have_smoke = HaveSootLoaded();
+
+#ifdef pp_COLOR_CIE
+  if(update_colorbar_orig == 1){
+    UpdateColorbarOrig();
+    update_colorbar_orig = 0;
+  }
+#endif
   if(update_loadall_textures == 1){
     update_loadall_textures = 0;
     TextureShowMenu(MENU_TEXTURE_SHOWALL2);

@@ -648,14 +648,16 @@ void ShowScene(int mode, int view_mode, int quad, GLint s_left, GLint s_down, sc
       SNIFF_ERRORS("after DrawSelectColorbars");
     }
     else{
-      if(colorbar_hsl==0){
+      if(colorbar_coord_type ==0){
         DrawColorbarPathRGB();
         SNIFF_ERRORS("after DrawColorbarPathRGB");
       }
+#ifdef pp_COLOR_CIE
       else{
-        DrawColorbarPathHSL();
-        SNIFF_ERRORS("after DrawColorbarPathHSL");
+        void DrawColorbarPathCIE(void);
+        DrawColorbarPathCIE();
       }
+#endif
     }
   }
   if(viscolorbarpath==0||colorbar_hidescene==0)ShowScene2(mode);

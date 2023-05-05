@@ -278,7 +278,7 @@ EXTERNCPP void GetKeyXYZ(float t, keyframe *this_key, float *xyz);
 EXTERNCPP void GetTourXYZ(float t, tourdata *this_tour, float *xyz);
 EXTERNCPP void GetKeyView(float t, keyframe *this_key, float *view);
 EXTERNCPP void GetTourView(float t, tourdata *this_tour, float *view);
-#ifdef pp_TOUR
+#ifdef pp_TOUR_DUP
 EXTERNCPP void UpdateKeyframeDups(tourdata *touri);
 #endif
 EXTERNCPP int GetTourFrame(tourdata *touri, int itime);
@@ -698,13 +698,20 @@ EXTERNCPP sv_object *GetSmvObjectType2(char *label, sv_object *default_object);
 EXTERNCPP void FreeAllObjects(void);
 EXTERNCPP void UpdatePartClassDepend(partclassdata *partclassi);
 
+#ifdef pp_COLOR_CIE
+EXTERNCPP void AdjustColorBar(colorbardata *cbi);
+EXTERNCPP void RevertColorBar(colorbardata *cbi);
+EXTERNCPP void Rgb2CIE(unsigned char *rgb, float *cie);
+EXTERNCPP void Rgb2CIEs(unsigned char *rgbs255, float *cies);
+EXTERNCPP void UpdateColorbarOrig(void);
+#endif
+
 EXTERNCPP char *GetChid(char *file, char *buffer);
 EXTERNCPP void AddColorbar(int icolorbar);
 EXTERNCPP void ReloadMenu(int value);
 EXTERNCPP void ColorbarMenu(int val);
 EXTERNCPP void InitDefaultColorbars(int nini);
 EXTERNCPP void DrawColorbarPathRGB(void);
-EXTERNCPP void DrawColorbarPathHSL(void);
 EXTERNCPP void UpdateColorbarSplits(colorbardata *cbi);
 EXTERNCPP void UpdateColorbarNodes(colorbardata *cbi);
 EXTERNCPP void RemapColorbar(colorbardata *cbi);
