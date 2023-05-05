@@ -2883,12 +2883,26 @@ void Keyboard(unsigned char key, int flag){
       updatemenu = 1;
       break;
     case '<':
+      if(keystate == GLUT_ACTIVE_ALT){
+        colorbartype--;
+        if(colorbartype <= 0)colorbartype=ncolorbars-1;
+        ColorbarMenu(colorbartype);
+        updatemenu = 1;
+        break;
+      }
       vectorpointsize+=2;
       if(vectorpointsize>20.0)vectorpointsize = 1.0;
       UpdateVectorpointsize();
       updatemenu = 1;
       break;
     case '>':
+      if(keystate == GLUT_ACTIVE_ALT){
+        colorbartype++;
+        if(colorbartype >= ncolorbars)colorbartype = 0;
+        ColorbarMenu(colorbartype);
+        updatemenu = 1;
+        break;
+      }
       vectorpointsize-=2;
       if(vectorpointsize<1.0)vectorpointsize = 20.0;
       UpdateVectorpointsize();

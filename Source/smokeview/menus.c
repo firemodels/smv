@@ -1059,6 +1059,11 @@ void ColorbarMenu(int value){
     }
     IsoBoundCB(ISO_COLORS);
     SetLabelControls();
+    char *ext, cblabel[1024];
+    strcpy(cblabel,colorbarinfo[colorbartype].label);
+    ext = strrchr(cblabel,'.');
+    if(ext!=NULL)*ext=0;
+    printf("colorbar %i: %s\n", colorbartype + 1, cblabel);
   }
   if(value>-10){
     UpdateRGBColors(COLORBAR_INDEX_NONE);
@@ -8349,11 +8354,14 @@ void MakeColorbarMenu(int *menuptr,
       strcpy(ccolorbarmenu, "  ");
       if(colorbartype == i){
         strcat(ccolorbarmenu, "*");
-        strcat(ccolorbarmenu, cbi->menulabel);
+        strcat(ccolorbarmenu, cbi->label);
       }
       else{
-        strcat(ccolorbarmenu, cbi->menulabel);
+        strcat(ccolorbarmenu, cbi->label);
       }
+      char *ext;
+      ext = strrchr(ccolorbarmenu, '.');
+      if(ext != NULL)*ext = 0;
       glutAddMenuEntry(ccolorbarmenu, i);
     }
   }
@@ -8369,11 +8377,14 @@ void MakeColorbarMenu(int *menuptr,
       strcpy(ccolorbarmenu, "  ");
       if(colorbartype == i){
         strcat(ccolorbarmenu, "*");
-        strcat(ccolorbarmenu, cbi->menulabel);
+        strcat(ccolorbarmenu, cbi->label);
       }
       else{
-        strcat(ccolorbarmenu, cbi->menulabel);
+        strcat(ccolorbarmenu, cbi->label);
       }
+      char *ext;
+      ext = strrchr(ccolorbarmenu, '.');
+      if(ext != NULL)*ext = 0;
       glutAddMenuEntry(ccolorbarmenu, i);
     }
   }
@@ -8389,11 +8400,14 @@ void MakeColorbarMenu(int *menuptr,
       strcpy(ccolorbarmenu, "  ");
       if(colorbartype == i){
         strcat(ccolorbarmenu, "*");
-        strcat(ccolorbarmenu, cbi->menulabel);
+        strcat(ccolorbarmenu, cbi->label);
       }
       else{
-        strcat(ccolorbarmenu, cbi->menulabel);
+        strcat(ccolorbarmenu, cbi->label);
       }
+      char *ext;
+      ext = strrchr(ccolorbarmenu, '.');
+      if(ext != NULL)*ext = 0;
       glutAddMenuEntry(ccolorbarmenu, i);
     }
   }

@@ -1191,10 +1191,6 @@ void InitColorbar(colorbardata *cbptr, char *dir, char *file, char *type){
     rgbscopy += 3;
   }
   strcpy(cbptr->label, file);
-  strcpy(cbptr->menulabel, file);
-  char *ext;
-  ext = strrchr(cbptr->menulabel, '.');
-  if(ext != NULL)*ext = 0;
   cbptr->label_ptr = cbptr->label;
   cbptr->nnodes = n;
   cbptr->nodehilight = 0;

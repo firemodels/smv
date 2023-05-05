@@ -283,7 +283,7 @@ typedef struct _treedata {
 /* --------------------------  colorbardata ------------------------------------ */
 
 typedef struct _colorbardata {
-  char label[1024], menulabel[1024], *label_ptr ;        // menu label
+  char label[1024], *label_ptr ;        // menu label
   char type[256];
   int nnodes,nodehilight,nsplits;
   unsigned char rgb_node_orig[3*1024], rgb_node[3*1024];
