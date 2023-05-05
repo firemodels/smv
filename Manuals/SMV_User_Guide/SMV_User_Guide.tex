@@ -5132,18 +5132,22 @@ keyboard shortcuts.  These shortcuts are described here and are
 also briefly described under the {\em Help}\ menu item from within
 Smokeview.
 
-\section{alphanumeric shortcuts}
 \blist
+
 
 \kitem{a}Increase slice and PLOT3D vector length (use ALT a to decrease vector length).
 
 \kitem{a}When in {\em eye centered}\ movement mode, slide to the left.
+
+\kitem{ALT a}Shorten slice and PLOT3D vector lengths (use 'a' to lengthen vector lengths).
 
 \kitem{A}Switch 2D plot display between device, HRRPUV,  both device and HRRPUV and none.
 
 \kitem{b}Toggle boundary file visibility
 
 \kitem{B}Show geometry and blockage bounding box outlines when moving scene.
+
+\kitem{ALT b}Open the Bounds dialog box.
 
 \kitem{c}Toggle 2D contour display between banded, continuously
 shaded and line contours.
@@ -5153,15 +5157,21 @@ shaded and line contours.
 \kitem{C}Toggle 3D smoke culling.  If the scene is a zone fire modeling simulation,
 toggle zone fire modeling compartment highlighting.
 
+\kitem{ALT c}Open the Clipping dialog box.
+
 \kitem{d}Activates {\tt CTRL}\ key when moving the scene with the mouse.
 Pressing and releasing the {\tt d}\ key then moving the mouse causes the scene to go up and down until the
 mouse button is released.
 
 \kitem{D}Slide right when in {\em eye centered}\ movement mode.
 
+\kitem{ALT d, D}Open the Display dialog box.
+
 \kitem{e,E}Toggle how the scene is manipulated.  In {\em eye
 view}\ scene motion is relative to the observer.  In {\em world
 view}\ scene motion is relative to the scene center.
+
+\kitem{ALT e}Open the Blockage info dialog box.
 
 \kitem{f}Activates the {\tt ALT}\ key when moving the scene with the mouse.
 Pressing and releasing the {\tt f}\ key then moving the mouse causes the scene to go in and out until the
@@ -5175,6 +5185,8 @@ grid perpendicular to the x, y and z axes respectively.
 
 \kitem{G}Toggle the use of the GPU (if present).
 
+\kitem{ALT g}Open the Viewpoint dialog box.
+
 \kitem{h}Display the colorbar as a histogram..
 
 \kitem{H}Toggle slice and vector slice file  visibility.
@@ -5183,9 +5195,15 @@ grid perpendicular to the x, y and z axes respectively.
 
 \kitem{I}Toggle slice file visibility within obstacles.
 
+\kitem{ALT i}Toggle device visibility.
+
 \kitem{j,J}Increase size of Smokeview objects (use ALT j to decrease size).
 
+\kitem{ALT j}Decrease size of Smokeview objects (use 'j' to increase the size).
+
 \kitem{k,K}Toggle timebar visibility.
+
+\kitem{ALT k}Toggle device selection.
 
 \kitem{l}Reload all currently loaded files.
 
@@ -5201,6 +5219,8 @@ The lower case keys toggle the lower clipping plane.  The upper case
 keys toggle the upper clipping planes.
 The W key is used to toggle clipping modes.
 
+\kitem{ALT m}Open the Motion/View/Render dialog box.
+
 \kitem{n,N}Toggle cface normal vector visibility.
 
 \kitem{o}Switch between outline viewing modes. The modes are
@@ -5212,6 +5232,13 @@ The W key is used to toggle clipping modes.
 This option may be used with the {\em m}\ key to highlight all meshes in sequence of a case.
 
 \kitem{O}Toggle the blockage view state between 1) defined in input file and 2) outline only
+
+\kitem{ALT o}Switch between various blockage view states.  States are:
+1) defined in input file,
+2) defined in input file + outline,
+3) solid,
+4) outline only and
+5) hidden
 
 \kitem{p, P}Cycle through particle file types or Plot3D file types (if particles are not loaded).
 P will cycle through Plot3D file types if particles are loaded.
@@ -5232,6 +5259,11 @@ can be viewed in a web browser or inserted into a word processing
 document.  If {\tt R}\ is selected then the
 scene is rendered in with double the screen resolution (or greater if the image multiplier menu is selected).
 
+\kitem{ALT r}Toggle research mode.  Research mode uses global min
+and max bounds for coloring data and turns off smoothing when displaying colorbar labels.
+
+\kitem{ALT R}Display scene in 360$^\circ$ view mode - all view directions of the scene are displayed in a $1024\times 512$ image.
+
 \kitem{s}Increment the number of vectors skipped. This is useful
 for making vector displays more readable when grids are finely
 meshed.
@@ -5240,14 +5272,21 @@ meshed.
 
 \kitem{S}Change stereo modes (left/right, red/blue, none, etc.)
 
+\kitem{ALT s}Open the 3D Smoke dialog box.
+
 \kitem{t}Toggle the time stepping mode.  Time stepping mode allows
 one to step through the simulation one time step at a time.
 
 \kitem{T}Toggle the time bar time label between showing time as seconds
 and time as hour, minutes and seconds.
 
+\kitem{ALT t}Open the Edit Tours dialog box.
+
 \kitem{u,U}Reload currently loaded files.  This is useful when
 using Smokeview to display a case that FDS is currently running.
+
+\kitem{ALT u}\ Toggle the option to draw a coarse portion of a 2D
+slice file within an embedded mesh.
 
 \kitem{v}Toggle Plot3D vector visibility.  This option is only active
 when there are U, V and/or W velocity components present in the
@@ -5255,75 +5294,32 @@ Plot3D file.
 
 \kitem{V}Toggle volume rendered smoke visibility.
 
+\kitem{ALT v}Toggle the projection method used to visualize a
+scene. The two projection methods are size preserving and
+perspective.
+
 \kitem{w}Toggle visibility of 3D node centered general slice.
 When in {\em eye centered}\ movement
 mode, move forward.
 
 \kitem{W}Toggle between four clipping modes: 1) disabled, 2) blockages and data, 3) blockages and 4) data. The M key is used to toggle command line clipping on and off.
 
+\kitem{ALT w}Open the WUI dialog box.
+
 \kitem{x,X y,Y, z,Z}Toggle the visibility of the Plot3D data
 planes perpendicular to the x, y and z axes respectively (parallel
 to the yz, xz and xy planes).
+
+\kitem{ALT x}Close all dialog boxes.
+
+\kitem{ALT z}Open the Compress Files portion of the
+File/Bounds dialog box.
 
 \kitem{0}Reset a time dependent animation to the initial time.
 
 \kitem{1-9}Number of frames to skip when viewing an animation.
  \elist
 
- \section{ALT shortcuts}
-\blist
-\kitem{ALT a}Shorten slice and PLOT3D vector lengths (use 'a' to lengthen vector lengths).
-
-\kitem{ALT b}Open the Bounds dialog box.
-
-\kitem{ALT c}Open the Clipping dialog box.
-
-\kitem{ALT d, D}Open the Display dialog box.
-
-\kitem{ALT e}Open the Blockage info dialog box.
-
-\kitem{ALT g}Open the Viewpoint dialog box.
-
-\kitem{ALT i}Toggle device visibility.
-
-\kitem{ALT j}Decrease size of Smokeview objects (use 'j' to increase the size).
-
-\kitem{ALT k}Toggle device selection.
-
-\kitem{ALT m}Open the Motion/View/Render dialog box.
-
-\kitem{ALT o}Switch between various blockage view states.  States are:
-1) defined in input file,
-2) defined in input file + outline,
-3) solid,
-4) outline only and
-5) hidden
-
-\kitem{ALT r}Toggle research mode.  Research mode uses global min
-and max bounds for coloring data and turns off smoothing when displaying colorbar labels.
-
-\kitem{ALT R}Display scene in 360$^\circ$ view mode - all view directions of the scene are displayed in a $1024\times 512$ image.
-
-\kitem{ALT s}Open the 3D Smoke dialog box.
-
-\kitem{ALT t}Open the Edit Tours dialog box.
-
-\kitem{ALT u}\ Toggle the option to draw a coarse portion of a 2D
-slice file within an embedded mesh.
-
-\kitem{ALT v}Toggle the projection method used to visualize a
-scene. The two projection methods are size preserving and
-perspective.
-
-\kitem{ALT w}Open the WUI dialog box.
-
-\kitem{ALT x}Close all dialog boxes.
-
-\kitem{ALT z}Open the Compress Files portion of the
-File/Bounds dialog box.
- \elist
-
-\section{Special character short cuts}
 \blist
 
 \kitem{\~}Level scene.
@@ -5366,7 +5362,11 @@ and general slice planes).
 
 \kitem{<}Increase vector point size
 
+\kitem{ALT <}Use previous colorbar in list of colorbars.
+
 \kitem{>}Decrease vector point size
+
+\kitem{ALT >}Use next colorbar in list of colorbars.
 
 \kitem{;}Flip colorbar
 
