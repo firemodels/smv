@@ -2950,8 +2950,10 @@ void Keyboard(unsigned char key, int flag){
       break;
     case '&':
       if(keystate==GLUT_ACTIVE_ALT){
-        ToggleMetroMode();
-        PRINTF("HVAC metro view mode=%i\n",hvac_metro_view);
+        if(nhvacinfo > 0){
+          ToggleMetroMode();
+          PRINTF("HVAC metro view mode=%i\n", hvac_metro_view);
+        }
       }
       else{
         antialiasflag = 1 - antialiasflag;
