@@ -2885,7 +2885,7 @@ void Keyboard(unsigned char key, int flag){
     case '<':
       if(keystate == GLUT_ACTIVE_ALT){
         colorbartype--;
-        if(colorbartype <= 0)colorbartype=ncolorbars-1;
+        if(colorbartype < 0)colorbartype=ncolorbars-1;
         ColorbarMenu(colorbartype);
         updatemenu = 1;
         break;
