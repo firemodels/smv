@@ -8438,7 +8438,7 @@ void MakeColorbarMenu(int *menuptr,
     GLUTADDSUBMENU(_("linear"), submenu1);
   }
   if(ncyclic_filelist > 0){
-    GLUTADDSUBMENU(_("cyclic"), submenu2);
+    GLUTADDSUBMENU(_("circular"), submenu2);
   }
   if(nrainbow_filelist > 0){
     GLUTADDSUBMENU(_("rainbow"), submenu3);
