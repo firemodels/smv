@@ -1,19 +1,19 @@
---- @media camera
+--- @module 'camera'
 local camera = {}
 function camera.get()
     local camera = {
-        rotationType = camera_get_rotation_type(),
-        rotationIndex = camera_get_rotation_index(),
+        rotationType = smvlib.camera_get_rotation_type(),
+        rotationIndex = smvlib.camera_get_rotation_index(),
         eyePos = {
-            x = camera_get_eyex(),
-            y = camera_get_eyey(),
-            z = camera_get_eyez()
+            x = smvlib.camera_get_eyex(),
+            y = smvlib.camera_get_eyey(),
+            z = smvlib.camera_get_eyez()
         },
-        zoom = camera_get_zoom(),
-        viewDir = camera_get_viewdir(),
+        zoom = smvlib.camera_get_zoom(),
+        viewDir = smvlib.camera_get_viewdir(),
         zAngle = {
-            az = camera_get_az(),
-            elev = camera_get_elev()
+            az = smvlib.camera_get_az(),
+            elev = smvlib.camera_get_elev()
         }
     }
     return camera
@@ -81,34 +81,84 @@ function camera.print(camera)
         io.write(string.format("%f", clipping.z.max))
     end
     io.write("\n")
-        -- transformMatrix = {
-        --      1.000000 0.000000 0.000000 0.000000
-        --      0.000000 1.000000 0.000000 0.000000
-        --      0.000000 0.000000 1.000000 0.000000
-        --      0.000000 0.000000 0.000000 1.000000
-        -- },
+    -- transformMatrix = {
+    --      1.000000 0.000000 0.000000 0.000000
+    --      0.000000 1.000000 0.000000 0.000000
+    --      0.000000 0.000000 1.000000 0.000000
+    --      0.000000 0.000000 0.000000 1.000000
+    -- },
 end
 
-function camera.set(camera)
+function camera.set_projection(v)
+    if not (type(v) == "number" and (v == 0 or v == 1)) then
+        error("projection type: " .. v .. " invalid")
+    end
+    local errorcode = smvlib.camera_set_projection_type(v)
+    assert(errorcode == 0, string.format("set_projection_type errorcode: %d\n", errorcode))
+    return errorcode
+end
+
+function camera.set_orthographic()
+    return camera.set_projection(1)
+end
+
+--     get = function()
+--         return smvlib.camera_get_projection_type()
+--     end,
+--     set = function(v)
+--         if not (type(v) == "number" and (v == 0 or v == 1)) then
+--             error("projection type: " .. v .. " invalid")
+--         end
+--         local errorcode = smvlib.camera_set_projection_type(v)
+--         assert(errorcode == 0, string.format("set_projection_type errorcode: %d\n", errorcode))
+--         return errorcode
+--     end
+-- }
+function camera.set_az(az)
+    return smvlib.camera_set_az(az)
+end
+function camera.set_elev(az)
+    return smvlib.camera_set_elev(az)
+end
+function camera.zoom_to_fit()
+    return smvlib.camera_zoom_to_fit()
+end
+function camera.from_z_max()
+    -- TODO: Determine best rotation.
+    camera.set_orthographic()
+    camera.set_elev(90)
+    camera.set_az(90)
+    camera.zoom_to_fit()
+end
+function camera.from_y_min()
+    camera.set("YMIN")
+end
+function camera.set_ortho_preset(camera)
+    smvlib.set_ortho_preset(camera)
+end
+    function camera.set(camera)
     if camera == nil then
         error("camera.set: camera does not exist")
     end
     if type(camera) == "string" then
-        setviewpoint(camera)
+        smvlib.setviewpoint(camera)
         return
     end
-    camera_set_rotation_type(camera.rotationType)
-    camera_set_eyex(camera.eyePos.x)
-    camera_set_eyey(camera.eyePos.y)
-    camera_set_eyez(camera.eyePos.z)
-    camera_set_zoom(camera.zoom)
+    smvlib.camera_set_rotation_type(camera.rotationType)
+    smvlib.camera_set_projection_type(camera.projectionType)
+    smvlib.camera_set_az(camera.zAngle.az)
+    smvlib.camera_set_elev(camera.zAngle.elev)
+    smvlib.camera_set_zoom(camera.zoom)
+    smvlib.camera_set_eyex(camera.eyePos.x)
+    smvlib.camera_set_eyey(camera.eyePos.y)
+    smvlib.camera_set_eyez(camera.eyePos.z)
     -- TODO: viewAngle
     -- TODO: directionAngle
     -- TODO: elevationAngle
-    camera_set_viewdir(camera.viewDir.x, camera.viewDir.y, camera.viewDir.z)
-    camera_set_projection_type(camera.projectionType)
-    camera_set_elev(camera.zAngle.elev)
-    camera_set_az(camera.zAngle.az)
+    smvlib.camera_set_viewdir(camera.viewDir.x, camera.viewDir.y, camera.viewDir.z)
+    -- TODO: the below is nonsensical, but it helps
+    smvlib.settime(smvlib.gettime())
+
 end
 
 return camera

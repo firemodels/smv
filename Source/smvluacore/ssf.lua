@@ -1,7 +1,7 @@
---- @module ssf
+--- @module 'ssf'
 local ssf = {}
 
-ssf.parser = require "ssfparser"
+ssf.parser = require("ssfparser")
 
 -- TODO: the parser currently needs revision for the following items.
 -- function translate(v) =

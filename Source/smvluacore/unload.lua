@@ -1,12 +1,12 @@
---- @module unload
+--- @module 'unload'
 local unload = {}
 
 function unload.all()
-    unloadall()
+    smvlib.unloadall()
 end
 
 function unload.tour()
-    unloadtour()
+    smvlib.unloadtour()
 end
 
 return unload

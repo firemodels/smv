@@ -1,4 +1,4 @@
--- @module iniparser
+-- @module 'iniparser'
 local iniparser = {}
 
 local inioptions = require "inioptions"
