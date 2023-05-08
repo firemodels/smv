@@ -1,4 +1,4 @@
---- @module initoptions
+--- @module 'initoptions'
 local inioptions = {}
 
 function length(table)
