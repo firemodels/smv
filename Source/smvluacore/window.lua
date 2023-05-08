@@ -1,7 +1,8 @@
---- @module window
+--- @module 'window'
 local window = {}
+
 window.size = function(width, height)
-    setwindowsize(width, height)
+    smvlib.setwindowsize(width, height)
 end
 
 return window

@@ -1,17 +1,17 @@
---- @module ssfcommands
+--- @module 'ssfcommands'
 local ssfcommands = {}
 
-function length(table)
+local function length(table)
     local i = 0
     for key, val in pairs(table) do i = i + 1 end
     return i
 end
 
-function mockExec(name)
+local function mockExec(name)
     print("Executing: ", name)
 end
 
-commands =
+local commands =
     { CBARFLIP =    {nargs = 0, argTypes = {},
         func = function(args) return colorbarflip() end}
     , CBARNORMAL =  {nargs = 0, argTypes = {},

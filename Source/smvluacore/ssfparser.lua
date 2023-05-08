@@ -1,4 +1,4 @@
---- @module ssfparser
+--- @module 'ssfparser'
 local ssfparser = {}
 
 local ssfcommands = require "ssfcommands"
