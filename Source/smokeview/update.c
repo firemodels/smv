@@ -614,7 +614,7 @@ void UpdateShow(void){
   ReadPartFile = partflag;
 
   plot2dflag = 0;
-  if(GenDevShow() == 1 || GenHrrShow() == 1 || HavePlot2D(NULL,NULL)==1)plot2dflag = 1;
+  if(HavePlot2D(NULL,NULL)==1)plot2dflag = 1;
 
   shooter_flag=0;
   if(visShooter!=0&&shooter_active==1){
@@ -1221,12 +1221,6 @@ void UpdateTimes(void){
       MergeGlobalTimes(times, ntimes);
     }
   }
-  if(GenDevShow()==1){
-    MergeGlobalTimes(deviceinfo->times, deviceinfo->nvals);
-  }
-  if(GenHrrShow()==1){
-    MergeGlobalTimes(hrrinfo->vals, hrrinfo->nvals);
-  }
   if(showdevice_val==1||vis_device_plot!=DEVICE_PLOT_HIDDEN){
     for(i = 0; i<ndeviceinfo; i++){
       devicedata *devicei;
@@ -1665,7 +1659,7 @@ int GetPlotStateSub(int choice){
         stept = 1;
         return DYNAMIC_PLOTS;
       }
-      if(GenDevShow() == 1 || GenHrrShow() == 1 || HavePlot2D(NULL,NULL)==1){
+      if(HavePlot2D(NULL,NULL)==1){
         stept = 1;
         return DYNAMIC_PLOTS;
       }

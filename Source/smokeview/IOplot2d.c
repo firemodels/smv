@@ -25,48 +25,6 @@ csvdata *GetCsvCurve(int col_index, csvfiledata **csvf_ptr){
   return GetCsvData(glui_csv_file_index, col_index, csvf_ptr);
 }
 
-/* ------------------ GenDevShow ------------------------ */
-
-int GenDevShow(void){
-  int i;
-
-  if(plot2d_show_plots == 0)return 0;
-  for(i = 0; i < nplot2dinfo; i++){
-    plot2ddata *plot2di;
-
-    plot2di = plot2dinfo + i;
-    if(plot2di->show == 1){
-      int j;
-
-      for(j = 0; j < plot2di->ncurves; j++){
-        if(plot2di->curve[j].csv_col_index<ndeviceinfo)return 1;
-      }
-    }
-  }
-  return 0;
-}
-
-/* ------------------ GenHrrShow ------------------------ */
-
-int GenHrrShow(void){
-  int i;
-
-  if(plot2d_show_plots == 0)return 0;
-  for(i = 0; i < nplot2dinfo; i++){
-    plot2ddata *plot2di;
-
-    plot2di = plot2dinfo + i;
-    if(plot2di->show == 1){
-      int j;
-
-      for(j = 0; j < plot2di->ncurves; j++){
-        if(plot2di->curve[j].csv_col_index>=ndeviceinfo)return 1;
-      }
-    }
-  }
-  return 0;
-}
-
 /* ------------------ DrawGenCurve ------------------------ */
 #define AXIS_LEFT  0
 #define AXIS_RIGHT 1

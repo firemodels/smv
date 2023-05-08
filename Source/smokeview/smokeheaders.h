@@ -22,8 +22,6 @@ EXTERNCPP void GetPlot2DBounds(plot2ddata*plot2di, float *valmin, float *valmax)
 EXTERNCPP char *GetPlotUnit(plot2ddata * plot2di, int curv_index);
 EXTERNCPP void GenPlotCB(int var);
 EXTERNCPP void UpdateCurveControls(char *unit);
-EXTERNCPP int GenDevShow(void);
-EXTERNCPP int GenHrrShow(void);
 EXTERNCPP void InitPlot2D(plot2ddata *plot2di, int plot_index);
 EXTERNCPP void DrawGenPlots(void);
 EXTERNCPP void ShowPlot2D(void);
