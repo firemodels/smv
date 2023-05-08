@@ -25,7 +25,7 @@ csvdata *GetCsvCurve(int col_index, csvfiledata **csvf_ptr){
   return GetCsvData(glui_csv_file_index, col_index, csvf_ptr);
 }
 
-/* ------------------ HaveGenDevShow ------------------------ */
+/* ------------------ GenDevShow ------------------------ */
 
 int GenDevShow(void){
   int i;
@@ -46,7 +46,7 @@ int GenDevShow(void){
   return 0;
 }
 
-/* ------------------ HaveGenHrrShow ------------------------ */
+/* ------------------ GenHrrShow ------------------------ */
 
 int GenHrrShow(void){
   int i;
@@ -63,28 +63,6 @@ int GenHrrShow(void){
         if(plot2di->curve[j].csv_col_index>=ndeviceinfo)return 1;
       }
     }
-  }
-  return 0;
-}
-
-/* ------------------ HaveGenDev ------------------------ */
-
-int HaveGenDev(void){
-  int i;
-
-  for(i = 0; i<glui_plot2dinfo->ncurves; i++){
-    if(glui_plot2dinfo->curve[i].csv_col_index<ndeviceinfo)return 1;
-  }
-  return 0;
-}
-
-/* ------------------ HaveGenHrr ------------------------ */
-
-int HaveGenHrr(void){
-  int i;
-
-  for(i = 0; i<glui_plot2dinfo->ncurves; i++){
-    if(glui_plot2dinfo->curve[i].csv_col_index>=ndeviceinfo)return 1;
   }
   return 0;
 }

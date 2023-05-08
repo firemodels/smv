@@ -26,8 +26,6 @@ EXTERNCPP int GenDevShow(void);
 EXTERNCPP int GenHrrShow(void);
 EXTERNCPP void InitPlot2D(plot2ddata *plot2di, int plot_index);
 EXTERNCPP void DrawGenPlots(void);
-EXTERNCPP int HaveGenDev(void);
-EXTERNCPP int HaveGenHrr(void);
 EXTERNCPP void ShowPlot2D(void);
 EXTERNCPP char *GetPlotShortLabel(plot2ddata *plot2di, int curv_index);
 EXTERNCPP csvdata *GetCsvData(int file_index, int col_index, csvfiledata **csvf_ptr);
