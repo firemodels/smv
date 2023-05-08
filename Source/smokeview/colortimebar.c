@@ -838,6 +838,38 @@ void CIE2Rgbs(unsigned char *rgbs255, float *cies){
   }
 }
 
+/* ------------------ CIEdE2Csv ------------------------ */
+
+void CIEdE2Csv(char *file){
+  int i;
+  FILE *stream;
+
+  stream = fopen(file, "w");
+  fprintf(stream, "index,");
+  for(i = 0; i < ncolorbars - 1; i++){
+
+    colorbardata *cbi;
+
+    cbi = colorbarinfo + i;
+    fprintf(stream, "%s,", cbi->label);
+  }
+  fprintf(stream, "%s\n", colorbarinfo[ncolorbars-1].label);
+
+  for(i = 0; i < 254; i++){
+    int j;
+
+    fprintf(stream, "%i,",i);
+    for(j = 0; j < ncolorbars-1; j++){
+      colorbardata *cbj;
+
+      cbj = colorbarinfo + j;
+      fprintf(stream, "%f,", cbj->dE[i]);
+    }
+    fprintf(stream, "%f\n", colorbarinfo[ncolorbars-1].dE[254]);
+  }
+  fclose(stream);
+}
+
 /* ------------------ CheckCIE ------------------------ */
 #ifdef pp_COLOR_CIE_CHECK
 void CheckCIE(void){
