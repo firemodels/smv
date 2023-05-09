@@ -69,7 +69,6 @@ void Usage(char *prog,int option){
     PRINTF("%s\n", _(" -startframe n  - start rendering at frame n"));
     PRINTF("%s\n", _(" -stereo        - activate stereo mode"));
     PRINTF("%s\n", _(" -timings       - show startup timings"));
-    PRINTF("%s\n", _(" -update_bounds - calculate boundary file bounds and save to casename.binfo"));
     PRINTF("%s\n", _(" -update_slice  - calculate slice file parameters"));
     PRINTF("%s\n", _(" -update        - equivalent to -update_bounds and -update_slice"));
     PRINTF("%s\n", _(" -update_ini case.ini - update case.ini to the current format"));
@@ -281,11 +280,6 @@ char *ParseCommandline(int argc, char **argv){
   NewMemory((void **)&htmlslicecell_filename, len_casename+strlen("_slicecell.json")+1);
   STRCPY(htmlslicecell_filename, fdsprefix);
   STRCAT(htmlslicecell_filename, "_slicecell.json");
-
-  FREEMEMORY(boundinfo_filename);
-  NewMemory((void **)&boundinfo_filename, len_casename + strlen(".binfo") + 1);
-  STRCPY(boundinfo_filename, fdsprefix);
-  STRCAT(boundinfo_filename, ".binfo");
 
   FREEMEMORY(event_filename);
   NewMemory((void **)&event_filename, len_casename+strlen("_events.csv")+1);

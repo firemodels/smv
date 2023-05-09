@@ -163,8 +163,6 @@ void ReadBoundINI(void){
   FILE *stream = NULL;
   char *fullfilename = NULL;
 
-  if(boundinfo_filename == NULL)return;
-  fullfilename = GetFileName(smokeview_scratchdir, boundinfo_filename, NOT_FORCE_IN_DIR);
   if(fullfilename != NULL)stream = fopen(fullfilename, "r");
   if(stream == NULL || IsFileNewer(smv_filename, fullfilename) == 1){
     if(stream != NULL)fclose(stream);
@@ -202,8 +200,7 @@ void ReadBoundINI(void){
         patchi = patchinfo + i;
         if(lenbuffer2 != 0 &&
           strcmp(patchi->label.shortlabel, buffer2ptr) == 0 &&
-          patchi->patch_filetype == filetype&&
-          IfFirstLineBlank(boundinfo_filename) == 1){
+          patchi->patch_filetype == filetype){
           bounddata *boundi;
 
           boundi = &patchi->bounds;

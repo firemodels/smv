@@ -108,9 +108,6 @@ void WriteBoundIni(void){
   char *fullfilename = NULL;
   int i;
 
-  if(boundinfo_filename == NULL)return;
-  fullfilename = GetFileName(smokeview_scratchdir, boundinfo_filename, NOT_FORCE_IN_DIR);
-
   if(fullfilename == NULL)return;
 
   for(i = 0; i < npatchinfo; i++){
