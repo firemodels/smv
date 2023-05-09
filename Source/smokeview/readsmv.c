@@ -6556,8 +6556,18 @@ void InitCSV(csvfiledata *csvi, char *file, char *type, int format){
   csvi->csvinfo      = NULL;
   csvi->format       = format;
 
+#ifdef pp_COLOR_CIE
+  if(file != NULL){
+    NewMemory(( void ** )&csvi->file, strlen(file) + 1);
+    strcpy(csvi->file, file);
+  }
+  else{
+    csvi->file = file;
+  }
+#else
   NewMemory((void **)&csvi->file, strlen(file) + 1);
   strcpy(csvi->file, file);
+#endif
   strcpy(csvi->c_type, type);
 }
 
@@ -7462,11 +7472,11 @@ int ReadSMV(bufferstreamdata *stream){
  }
  if(nisoinfo>0&&nmeshes>0)nisos_per_mesh = MAX(nisoinfo / nmeshes,1);
 #ifdef pp_CFAST_CSV  
-  NewMemory((void **)&csvfileinfo,(ncsvfileinfo+CFAST_CSV_MAX)*sizeof(csvfiledata));
+  NewMemory((void **)&csvfileinfo,(ncsvfileinfo+CFAST_CSV_MAX+1)*sizeof(csvfiledata));
   ncsvfileinfo=0;
 #else
  if(ncsvfileinfo > 0){
-   NewMemory((void **)&csvfileinfo,ncsvfileinfo*sizeof(csvfiledata));
+   NewMemory((void **)&csvfileinfo,(ncsvfileinfo+1)*sizeof(csvfiledata));
    ncsvfileinfo=0;
  }
 #endif
@@ -9725,7 +9735,7 @@ int ReadSMV(bufferstreamdata *stream){
     int *nexp_devices=NULL;
     devicedata *devicecopy2;
 
-    NewMemory((void **)&nexp_devices,ncsvfileinfo*sizeof(int));
+    NewMemory((void **)&nexp_devices,(ncsvfileinfo+1)*sizeof(int));
     for(i=0;i<ncsvfileinfo;i++){
       csvfiledata *csvi;
 

@@ -648,35 +648,31 @@ void UpdateCurrentColorbar(colorbardata *cb){
 void AdjustColorBar(colorbardata *cbi){
   int i;
 
-  for(i = 0;i < cbi->nnodes;i++){
-    unsigned char *rgb_local;
-    float *cie;
-
-    rgb_local = cbi->rgb_node + 3*i;
-    cie       = cbi->cie      + 3*i;
-    Rgb2CIE(rgb_local, cie);
-  }
-  cbi->dist[0] = 0.0;
+  Rgb2CIE(cbi->rgb_node, cbi->cie_node);
+  cbi->dist_node[0] = 0.0;
   for(i = 1;i < cbi->nnodes;i++){
+    unsigned char *rgb2;
     float *cie1, *cie2, dist;
     float dx, dy, dz;
 
-    cie2 = cbi->cie + 3 * i;
+    rgb2 = cbi->rgb_node + 3*i;
+    cie2 = cbi->cie_node + 3 * i;
     cie1 = cie2 - 3;
+    Rgb2CIE(rgb2, cie2);
     DDIST3(cie1, cie2, dist);
-    cbi->dist[i] = cbi->dist[i - 1] + dist;
+    cbi->dist_node[i] = cbi->dist_node[i - 1] + dist;
   }
 
   float total_dist;
   int nnodes;
 
-  total_dist = cbi->dist[cbi->nnodes - 1];
+  total_dist = cbi->dist_node[cbi->nnodes - 1];
   nnodes = cbi->index_node[cbi->nnodes - 1];
 
   for(i = 1;i < cbi->nnodes - 1;i++){
     int inode;
 
-    inode = nnodes * (cbi->dist[i] / total_dist);
+    inode = nnodes * (cbi->dist_node[i] / total_dist);
     cbi->index_node[i] = inode;
   }
 }
@@ -842,6 +838,38 @@ void CIE2Rgbs(unsigned char *rgbs255, float *cies){
   }
 }
 
+/* ------------------ CIEdE2Csv ------------------------ */
+
+void CIEdE2Csv(char *file){
+  int i;
+  FILE *stream;
+
+  stream = fopen(file, "w");
+  fprintf(stream, "index,");
+  for(i = 0; i < ncolorbars - 1; i++){
+
+    colorbardata *cbi;
+
+    cbi = colorbarinfo + i;
+    fprintf(stream, "%s,", cbi->label);
+  }
+  fprintf(stream, "%s\n", colorbarinfo[ncolorbars-1].label);
+
+  for(i = 0; i < 254; i++){
+    int j;
+
+    fprintf(stream, "%i,",i);
+    for(j = 0; j < ncolorbars-1; j++){
+      colorbardata *cbj;
+
+      cbj = colorbarinfo + j;
+      fprintf(stream, "%f,", cbj->dE[i]);
+    }
+    fprintf(stream, "%f\n", colorbarinfo[ncolorbars-1].dE[254]);
+  }
+  fclose(stream);
+}
+
 /* ------------------ CheckCIE ------------------------ */
 #ifdef pp_COLOR_CIE_CHECK
 void CheckCIE(void){
@@ -924,10 +952,16 @@ void RemapColorbar(colorbardata *cbi){
   float *colorbar;
   unsigned char *rgb_node;
   unsigned char *alpha;
+#ifdef pp_COLOR_CIE
+  float *cie;
+#endif
 
   CheckMemory;
   colorbar=cbi->colorbar;
   rgb_node=cbi->rgb_node;
+#ifdef pp_COLOR_CIE
+  cie = cbi->cie_rgb;
+#endif
   alpha=cbi->alpha;
 
   for(i=0;i<cbi->index_node[0];i++){
@@ -965,14 +999,24 @@ void RemapColorbar(colorbardata *cbi){
 
       factor = (float)(j-i1)/(float)(i2-i1);
 #ifdef pp_COLOR_CIE
-      float ciej[3];
+      float *ciej, *ciej2;
 
+      ciej = cie + 3*j;
+      ciej2 = ciej - 3;
+      ciej[0]=MIX(factor,cie2[0],cie1[0]);
+      ciej[1]=MIX(factor,cie2[1],cie1[1]);
+      ciej[2]=MIX(factor,cie2[2],cie1[2]);
+      if(j > 0){
+        float *dE, dist;
+        float dx, dy, dz;
+
+        dE = cbi->dE + j - 1;
+        DDIST3(ciej, ciej2, dist);
+        *dE = dist;
+      }
       if(interp_cielab == 1){
         unsigned char rgb_val[3];
 
-        ciej[0]=MIX(factor,cie2[0],cie1[0]);
-        ciej[1]=MIX(factor,cie2[1],cie1[1]);
-        ciej[2]=MIX(factor,cie2[2],cie1[2]);
         CIE2Rgb(rgb_val, ciej);
         colorbar[0+3*j] = (float)rgb_val[0]/255.0;
         colorbar[1+3*j] = (float)rgb_val[1]/255.0;

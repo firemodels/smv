@@ -22,12 +22,8 @@ EXTERNCPP void GetPlot2DBounds(plot2ddata*plot2di, float *valmin, float *valmax)
 EXTERNCPP char *GetPlotUnit(plot2ddata * plot2di, int curv_index);
 EXTERNCPP void GenPlotCB(int var);
 EXTERNCPP void UpdateCurveControls(char *unit);
-EXTERNCPP int GenDevShow(void);
-EXTERNCPP int GenHrrShow(void);
 EXTERNCPP void InitPlot2D(plot2ddata *plot2di, int plot_index);
 EXTERNCPP void DrawGenPlots(void);
-EXTERNCPP int HaveGenDev(void);
-EXTERNCPP int HaveGenHrr(void);
 EXTERNCPP void ShowPlot2D(void);
 EXTERNCPP char *GetPlotShortLabel(plot2ddata *plot2di, int curv_index);
 EXTERNCPP csvdata *GetCsvData(int file_index, int col_index, csvfiledata **csvf_ptr);
@@ -704,6 +700,7 @@ EXTERNCPP void RevertColorBar(colorbardata *cbi);
 EXTERNCPP void Rgb2CIE(unsigned char *rgb, float *cie);
 EXTERNCPP void Rgb2CIEs(unsigned char *rgbs255, float *cies);
 EXTERNCPP void UpdateColorbarOrig(void);
+EXTERNCPP void CIEdE2Csv(char *file);
 #endif
 
 EXTERNCPP char *GetChid(char *file, char *buffer);

@@ -1283,7 +1283,7 @@ void UpdateRGBColors(int colorbar_index){
       rgb_temp[3*n+1] = 255*rgb_full[n][1];
       rgb_temp[3*n+2] = 255*rgb_full[n][2];
     }
-    Rgb2CIEs(rgb_temp, cbi->cie);
+    Rgb2CIEs(rgb_temp, cbi->cie_node);
 #endif
   }
   else{
