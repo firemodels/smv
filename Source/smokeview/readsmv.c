@@ -5568,7 +5568,6 @@ int ParseSLCFCount(int option, bufferstreamdata *stream, char *buffer, int *nsli
       }
       if((Match(buffer, "SLCF")==1)||
         (Match(buffer, "SLCC")==1)||
-        (Match(buffer, "SLCD")==1)||
         (Match(buffer, "SLCT")==1)||
         (Match(buffer, "BNDS")==1)
         ){
@@ -5606,7 +5605,7 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
   char buffers[6][256]){
   char *slicelabelptr, slicelabel[256], *sliceparms;
   float above_ground_level = 0.0;
-  int terrain = 0, cellcenter = 0, facecenter = 0;
+  int terrain = 0, cellcenter = 0;
   int slicegeom = 0;
   int slcf_index = 0;
   char *char_slcf_index;
@@ -5631,7 +5630,6 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
       }
       if( (Match(buffer, "SLCF") == 1)  ||
           (Match(buffer, "SLCC") == 1)  ||
-          (Match(buffer, "SLCD") == 1)  ||
           (Match(buffer, "SLCT") == 1)  ||
           (Match(buffer, "BNDS") == 1)
         ){
@@ -5684,10 +5682,6 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
   if(Match(buffer, "SLCC")==1){
     cellcenter_slice_active = 1;
     cellcenter = 1;
-  }
-  if(Match(buffer, "SLCD")==1){
-    facecenter_slice_active = 1;
-    facecenter = 1;
   }
   TrimBack(buffer);
   len = strlen(buffer);
@@ -5770,9 +5764,6 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
   }
   if(cellcenter==1){
     sd->slice_filetype = SLICE_CELL_CENTER;
-  }
-  if(facecenter==1){
-    sd->slice_filetype = SLICE_FACE_CENTER;
   }
 
   strcpy(zlib_file, bufferptr);
@@ -5871,9 +5862,6 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
       strcpy(geom_label, "");
     }
     if(ReadLabelsBNDS(&sd->label, stream, buffers[3], buffers[4], buffers[5], geom_label)==LABEL_ERR)return RETURN_TWO;
-  }
-  else if(sd->slice_filetype==SLICE_FACE_CENTER){
-    if(ReadLabels(&sd->label, stream, "(face centered)")==LABEL_ERR)return RETURN_TWO;
   }
   else{
     if(ReadLabels(&sd->label, stream, NULL)==LABEL_ERR)return RETURN_TWO;

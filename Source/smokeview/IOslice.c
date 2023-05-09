@@ -5476,9 +5476,6 @@ void DrawVolSliceCellFaceCenter(const slicedata *sd, int flag,
     case SLICE_CELL_CENTER:
       constval = (xplt[plotx] + xplt[plotxm1]) / 2.0;
       break;
-    case SLICE_FACE_CENTER:
-      constval = xplt[plotxm1];
-      break;
     default:
       constval = (xplt[plotx] + xplt[plotxm1]) / 2.0;
       ASSERT(FFALSE);
@@ -5547,9 +5544,6 @@ void DrawVolSliceCellFaceCenter(const slicedata *sd, int flag,
     case SLICE_CELL_CENTER:
       constval = (yplt[ploty] + yplt[ploty - 1]) / 2.0;
       break;
-    case SLICE_FACE_CENTER:
-      constval = yplt[ploty - 1];
-      break;
     default:
       constval = (yplt[ploty] + yplt[ploty - 1]) / 2.0;
       ASSERT(FFALSE);
@@ -5615,9 +5609,6 @@ void DrawVolSliceCellFaceCenter(const slicedata *sd, int flag,
     switch(flag){
     case SLICE_CELL_CENTER:
       constval = (zplt[plotz] + zplt[plotz - 1]) / 2.0;
-      break;
-    case SLICE_FACE_CENTER:
-      constval = zplt[plotz - 1];
       break;
     default:
       constval = (zplt[plotz] + zplt[plotz - 1]) / 2.0;
@@ -5903,9 +5894,6 @@ void DrawVolSliceCellFaceCenterValues(const slicedata *sd, int flag){
     case SLICE_CELL_CENTER:
       constval = (xplt[plotx] + xplt[plotxm1]) / 2.0;
       break;
-    case SLICE_FACE_CENTER:
-      constval = xplt[plotxm1];
-      break;
     default:
       constval = (xplt[plotx] + xplt[plotxm1]) / 2.0;
       ASSERT(FFALSE);
@@ -5962,9 +5950,6 @@ void DrawVolSliceCellFaceCenterValues(const slicedata *sd, int flag){
     switch(flag){
     case SLICE_CELL_CENTER:
       constval = (yplt[ploty] + yplt[ploty - 1]) / 2.0;
-      break;
-    case SLICE_FACE_CENTER:
-      constval = yplt[ploty - 1];
       break;
     default:
       constval = (yplt[ploty] + yplt[ploty - 1]) / 2.0;
@@ -6023,9 +6008,6 @@ void DrawVolSliceCellFaceCenterValues(const slicedata *sd, int flag){
     switch(flag){
     case SLICE_CELL_CENTER:
       constval = (zplt[plotz] + zplt[plotz - 1]) / 2.0;
-      break;
-    case SLICE_FACE_CENTER:
-      constval = zplt[plotz - 1];
       break;
     default:
       constval = (zplt[plotz] + zplt[plotz - 1]) / 2.0;
@@ -7915,7 +7897,7 @@ int SetupSlice(slicedata *sd){
   if(sd->display == 0){
     if(showvslice == 0)return 0;
     if((sd->slice_filetype == SLICE_NODE_CENTER || sd->slice_filetype == SLICE_TERRAIN) && show_node_slices_and_vectors == 0)return 0;
-    if(sd->slice_filetype == SLICE_CELL_CENTER || sd->slice_filetype == SLICE_FACE_CENTER){
+    if(sd->slice_filetype == SLICE_CELL_CENTER){
       if(show_cell_slices_and_vectors == 0)return 0;
     }
   }
@@ -8145,35 +8127,6 @@ void DrawSliceFrame(){
         if(show_slice_values[IN_SOLID_GLUI]==1||show_slice_values[IN_GAS_GLUI]==1){
           DrawVolSliceCellFaceCenterValues(sd, SLICE_CELL_CENTER);
           SNIFF_ERRORS("after DrawVolSliceVerts SLICE_CELL_CENTER");
-        }
-        break;
-      case SLICE_FACE_CENTER:
-        {
-          int is2;
-          
-          if(sd->volslice==1){
-            is2 = sd->is1 + sd->nslicei - 1;
-          }
-          else{
-            is2 = sd->is2;
-          }
-          if(sortslices==0||sd->volslice==1){
-            DrawVolSliceCellFaceCenter(sd, SLICE_FACE_CENTER,
-                                       sd->is1, is2, sd->js1, sd->js2, sd->ks1, sd->ks2, 0);
-          }
-        }
-        SNIFF_ERRORS("after DrawVolSliceCellFaceCenter SLICE_FACE_CENTER");
-        if(show_slice_outlines[IN_SOLID_GLUI]==1||show_slice_outlines[IN_GAS_GLUI]==1){
-          DrawVolSliceLines(sd);
-          SNIFF_ERRORS("after DrawVolSliceLines SLICE_FACE_CENTER");
-        }
-        if(show_slice_points[IN_SOLID_GLUI]==1||show_slice_points[IN_GAS_GLUI]==1){
-          DrawVolSliceVerts(sd);
-          SNIFF_ERRORS("after DrawVolSliceVerts SLICE_FACE_CENTER");
-        }
-        if(show_slice_values[IN_SOLID_GLUI]==1||show_slice_values[IN_GAS_GLUI]==1){
-          DrawVolSliceCellFaceCenterValues(sd, SLICE_FACE_CENTER);
-          SNIFF_ERRORS("after DrawVolSliceVerts SLICE_FACE_CENTER");
         }
         break;
       case SLICE_TERRAIN:
@@ -9977,8 +9930,7 @@ void SortSlices(void){
 
       if(slicej->loaded == 0 || slicej->blocknumber != i)continue;
       if(slicej->slice_filetype!=SLICE_NODE_CENTER&&
-         slicej->slice_filetype!=SLICE_CELL_CENTER&&
-         slicej->slice_filetype!=SLICE_FACE_CENTER)continue;
+         slicej->slice_filetype!=SLICE_CELL_CENTER)continue;
       if(slicej->volslice == 1){
         int plotx, ploty, plotz;
 
@@ -10153,11 +10105,6 @@ void DrawSortSlices(void){
       case SLICE_CELL_CENTER:
         DrawVolSliceCellFaceCenter(sd, SLICE_CELL_CENTER, 
                                    si->is1, si->is2, si->js1, si->js2, si->ks1, si->ks2, si->splitdir);
-        break;
-                                   
-      case SLICE_FACE_CENTER:
-        DrawVolSliceCellFaceCenter(sd, SLICE_FACE_CENTER,
-                                   sd->is1, si->is2, si->js1, si->js2, si->ks1, si->ks2, si->splitdir);
         break;
       default:
         ASSERT(FFALSE);
