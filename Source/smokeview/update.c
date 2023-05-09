@@ -464,12 +464,10 @@ void UpdateShow(void){
       updatemenu=1;
     }
     for(ii=0;ii<nslice_loaded;ii++){
-      meshdata *slicemesh;
       slicedata *sd;
 
       i=slice_loaded_list[ii];
       sd = sliceinfo+i;
-      slicemesh = meshinfo + sd->blocknumber;
       if(sd->display==0||sd->slicefile_labelindex!=slicefile_labelindex)continue;
       if(sd->constant_color!=NULL)continue;
       if(sd->ntimes>0){
@@ -554,13 +552,11 @@ void UpdateShow(void){
       break;
     }
     for(i=0;i<nvsliceinfo;i++){
-      meshdata *slicemesh;
       slicedata *sd;
       vslicedata *vd;
 
       vd = vsliceinfo+i;
       sd = sliceinfo + vd->ival;
-      slicemesh = meshinfo + sd->blocknumber;
       if(vd->loaded==0||vd->display==0)continue;
       if(sliceinfo[vd->ival].slicefile_labelindex!=slicefile_labelindex)continue;
       if(sd->constant_color!=NULL)continue;
