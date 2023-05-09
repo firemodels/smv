@@ -65,7 +65,7 @@ void ClosePartFiles(void){
   }
 }
 
-/* ------------------ GetEvacPartColor ------------------------ */
+/* ------------------ GetPartColor ------------------------ */
 
 int GetPartColor(float **color_handle, part5data*datacopy, int show_default, int j, int itype,
                      float valmin, float valmax){

@@ -471,7 +471,6 @@ void UpdateShow(void){
       sd = sliceinfo+i;
       slicemesh = meshinfo + sd->blocknumber;
       if(sd->display==0||sd->slicefile_labelindex!=slicefile_labelindex)continue;
-      if(sd->constant_color==NULL&&slicemesh->mesh_type!=0)continue;
       if(sd->constant_color!=NULL)continue;
       if(sd->ntimes>0){
         slicecolorbarflag=1;
@@ -564,7 +563,6 @@ void UpdateShow(void){
       slicemesh = meshinfo + sd->blocknumber;
       if(vd->loaded==0||vd->display==0)continue;
       if(sliceinfo[vd->ival].slicefile_labelindex!=slicefile_labelindex)continue;
-      if(sd->constant_color==NULL&&slicemesh->mesh_type!=0)continue;
       if(sd->constant_color!=NULL)continue;
       vslicecolorbarflag=1;
       break;

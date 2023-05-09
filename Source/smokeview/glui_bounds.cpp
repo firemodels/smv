@@ -3048,7 +3048,6 @@ GLUI_Button *BUTTON_ini_load=NULL;
 GLUI_Button *BUTTON_script_setsuffix=NULL;
 GLUI_Button *BUTTON_script_runscript=NULL;
 GLUI_Button *BUTTON_SETTIME=NULL;
-GLUI_Button *BUTTON_EVAC = NULL;
 GLUI_Button *BUTTON_PART = NULL;
 GLUI_Button *BUTTON_SLICE = NULL;
 GLUI_Button *BUTTON_VSLICE = NULL;
@@ -3314,7 +3313,6 @@ GLUI_RadioButton *RADIOBUTTON_zone_permax=NULL;
 #define BOUNDARY_ROLLOUT 2
 #define ISO_ROLLOUT      3
 #define PART_ROLLOUT     4
-#define EVAC_ROLLOUT     5
 #define PLOT3D_ROLLOUT   6
 #define SLICE_ROLLOUT    7
 #define HVACDUCT_ROLLOUT 8
@@ -3859,9 +3857,6 @@ extern "C" void UpdateScriptStep(void){
     BUTTON_step->disable();
   }
 }
-
-/* ------------------ UpdateEvacParms ------------------------ */
-
 
 /* ------------------ ColorTableCompare ------------------------ */
 

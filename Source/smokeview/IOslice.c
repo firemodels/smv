@@ -2962,7 +2962,6 @@ void UpdateFedinfo(void){
     sd->line_contours = NULL;
     sd->menu_show = 1;
     sd->constant_color = NULL;
-    sd->mesh_type = co2->mesh_type;
     sd->histograms = NULL;
     sd->nhistograms = 0;
     sd->have_bound_file = 0;
@@ -3323,7 +3322,6 @@ void GetSliceParams(void){
       float *xplt, *yplt, *zplt;
       float *xyz_min, *xyz_max;
 
-      sd->mesh_type=meshi->mesh_type;
       xplt = meshi->xplt;
       yplt = meshi->yplt;
       zplt = meshi->zplt;
@@ -3408,7 +3406,6 @@ void GetSliceParams(void){
           nmultisliceinfo++;
           mslicei++;
           mslicei->nslices=0;
-          mslicei->mesh_type=sd->mesh_type;
           mslicei->islices=NULL;
           NewMemory((void **)&mslicei->islices,sizeof(int)*nsliceinfo);
         }

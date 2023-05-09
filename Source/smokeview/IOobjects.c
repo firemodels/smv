@@ -3936,8 +3936,6 @@ void DrawSmvObject(sv_object *object_dev, int iframe_local, propdata *prop, int 
   if(prop != NULL){
     int i;
 
-    // copy time dependent evac data
-
     // copy static data from PROP line
 
     for(i = 0;i < prop->nvars_indep;i++){
@@ -7473,34 +7471,6 @@ void GetIndepVarIndices(sv_object *smv_object,
     var = var_indep_strings[i];
     index[i]= GetTokenLoc(var,obj_frame);
   }
-}
-
-/* ----------------------- GetEvacIndices ----------------------------- */
-
-void GetEvacIndices(sv_object *smv_object,int *evac_index,int *nevac_index){
-
-  int n;
-
-  sv_object_frame *obj_frame;
-
-  obj_frame=smv_object->obj_frames[0];
-
-  n=0;
-
-  evac_index[n++]= GetTokenLoc("W",obj_frame);
-  evac_index[n++]= GetTokenLoc("D",obj_frame);
-  evac_index[n++]= GetTokenLoc("H1",obj_frame);
-  evac_index[n++]= GetTokenLoc("SX",obj_frame);
-  evac_index[n++]= GetTokenLoc("SY",obj_frame);
-  evac_index[n++]= GetTokenLoc("SZ",obj_frame);
-  evac_index[n++]= GetTokenLoc("R",obj_frame);
-  evac_index[n++]= GetTokenLoc("G",obj_frame);
-  evac_index[n++]= GetTokenLoc("B",obj_frame);
-  evac_index[n++]= GetTokenLoc("HX",obj_frame);
-  evac_index[n++]= GetTokenLoc("HY",obj_frame);
-  evac_index[n++]= GetTokenLoc("HZ",obj_frame);
-
-  *nevac_index=n;
 }
 
 /* ----------------------- UpdatePartClassDepend ----------------------------- */
