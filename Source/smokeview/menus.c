@@ -135,14 +135,9 @@ float     part_load_time;
 #define MENU_SLICE_SETTINGS       -6
 #define MENU_PART_PARTFAST        -7
 
-#define MENU_EVAC_UNLOADALL -1
-#define MENU_EVAC_DUMMY -2
-
 #define MENU_PARTICLE_UNLOAD_ALL -1
 #define MENU_PARTICLE_DUMMY -2
 #define MENU_PARTICLE_ALLMESHES -11
-
-#define MENU_UNLOADEVAC_UNLOADALL -1
 
 #define MENU_AVATAR_DEFINED -1
 
@@ -238,7 +233,6 @@ float     part_load_time;
 //#define MENU_VIEW_ZMIN            -113
 //#define MENU_VIEW_ZMAX            -114
 
-#define MENU_SHOWHIDE_EVAC 13
 #define MENU_SHOWHIDE_PRINT 16
 #define MENU_SHOWHIDE_PARTICLES 1
 #define MENU_SHOWHIDE_SENSOR 9
@@ -1464,16 +1458,6 @@ void ShowHideMenu(int value){
    UpdateBackgroundFlip(background_flip);
    UpdateBackgroundFlip2(background_flip);
    break;
-  case MENU_SHOWHIDE_EVAC:
-    if(plotstate==DYNAMIC_PLOTS){
-      visEvac=1-visEvac;
-    }
-    else{
-      plotstate=DYNAMIC_PLOTS;
-      visEvac=1;
-    }
-    UpdateTimes();
-    break;
   case MENU_SHOWHIDE_PARTICLES:
     if(plotstate==DYNAMIC_PLOTS){
       visParticles=1-visParticles;
@@ -2223,16 +2207,6 @@ void ParticleShowMenu(int value){
         ASSERT(FFALSE);
         break;
     }
-    /*
-    for(i=0;i<npartinfo;i++){
-      parti = partinfo + i;
-      if(parti->loaded==0||parti->evac==1)continue;
-      parti->display_droplet=0;
-      parti->display_smoke=0;
-      if(visSmokePart!=0)parti->display_smoke=1;
-      if(visSprinkPart==1)parti->display_droplet=1;
-    }
-    */
     if(visSprinkPart==1||visSmokePart!=0){
       visParticles=1;
     }
@@ -2263,16 +2237,6 @@ void ParticleShowMenu(int value){
         ASSERT(FFALSE);
         break;
     }
-    /*
-    for(i=0;i<npartinfo;i++){
-      parti = partinfo + i;
-      if(parti->loaded==0||parti->evac==1)continue;
-      parti->display_droplet=0;
-      parti->display_smoke=0;
-      if(visSmokePart!=0)parti->display_smoke=1;
-      if(visSprinkPart==1)parti->display_droplet=1;
-    }
-    */
     if(visSmokePart!=0||visSprinkPart==1){
       visParticles=1;
     }
@@ -3896,12 +3860,9 @@ void LoadAllPartFiles(int partnum){
   }
 }
 
-#define PART 0
-#define EVAC 1
-
 /* ------------------ SetupPart ------------------------ */
 
-void SetupPart(int value, int option){
+void SetupPart(int value){
   int i;
 
 #define SETVALMIN 1
@@ -3952,9 +3913,9 @@ void SetupPart(int value, int option){
   }
 }
 
-/* ------------------ LoadParticleEvacMenu ------------------------ */
+/* ------------------ LoadParticleMenu ------------------------ */
 
-void LoadParticleEvacMenu(int value, int option){
+void LoadParticleMenu(int value){
   int errorcode,i;
 
   if(value==MENU_DUMMY)return;
@@ -3977,7 +3938,7 @@ void LoadParticleEvacMenu(int value, int option){
     npartframes_max=GetMinPartFrames(PARTFILE_RELOADALL);
     npartframes_max=MAX(GetMinPartFrames(value),npartframes_max);
     if(scriptoutstream==NULL||script_defer_loading==0){
-      SetupPart(value,option);                                                // load only particle file with index value
+      SetupPart(value);                                                // load only particle file with index value
       GetAllPartBoundsMT();
       LoadAllPartFilesMT(value);
       if(partinfo[value].file_size == 0.0)printf("***warning: particle file has no particles\n");
@@ -4004,7 +3965,7 @@ void LoadParticleEvacMenu(int value, int option){
         fprintf(scriptoutstream,"LOADPARTICLES\n");
       }
       if(value==PARTFILE_LOADALL){
-        SetupPart(value,option);
+        SetupPart(value);
         GetAllPartBoundsMT();
         npartframes_max=GetMinPartFrames(PARTFILE_LOADALL);
       }
@@ -4014,7 +3975,7 @@ void LoadParticleEvacMenu(int value, int option){
 
       if(scriptoutstream==NULL||script_defer_loading==0){
 
-        SetupPart(value,option);
+        SetupPart(value);
 
         // unload particle files
 
@@ -4059,18 +4020,6 @@ void LoadParticleEvacMenu(int value, int option){
   updatemenu=1;
   GLUTPOSTREDISPLAY;
   GLUTSETCURSOR(GLUT_CURSOR_LEFT_ARROW);
-}
-
-/* ------------------ LoadParticleMenu ------------------------ */
-
-void LoadParticleMenu(int value){
-  LoadParticleEvacMenu(value,PART);
-}
-
-/* ------------------ LoadEvacMenu ------------------------ */
-
-void LoadEvacMenu(int value){
-  LoadParticleEvacMenu(value,EVAC);
 }
 
 /* ------------------ ZoneMenu ------------------------ */
@@ -7645,15 +7594,9 @@ void InitLoadSliceMenu(int *loadslicemenuptr, int unloadslicemenu, int *loadsubs
     sd = sliceinfo + sliceorderindex[i];
     if(i>0)sdim1 = sliceinfo + sliceorderindex[i-1];
     if(i==0||strcmp(sd->label.longlabel,sdim1->label.longlabel)!=0){
-      char mlabel[1024],mlabel2[1024];
+      char mlabel[1024];
 
       STRCPY(mlabel,sd->label.longlabel);
-      if((i==0&&sd->mesh_type>0)||(i>0&&sd->mesh_type!=sdim1->mesh_type)){
-      if(sd->menu_show==1){
-          sprintf(mlabel2,"*** Evac type %i meshdata ***",sd->mesh_type);
-          glutAddMenuEntry(mlabel2,MENU_DUMMY);
-        }
-      }
       if(sd->menu_show==1)GLUTADDSUBMENU(mlabel,loadsubslicemenu[iloadsubslicemenu]);
       iloadsubslicemenu++;
     }
@@ -7845,13 +7788,9 @@ void InitLoadMultiSliceMenu(int *loadmultislicemenuptr, int *loadsubmslicemenu, 
     if(i>0)sdim1 = sliceinfo+(multisliceinfo+i-1)->islices[0];
 
     if(i==0||strcmp(sd->label.longlabel, sdim1->label.longlabel)!=0){
-      char mlabel[1024], mlabel2[1024];
+      char mlabel[1024];
 
       STRCPY(mlabel, sd->label.longlabel);
-      if((i==0&&sd->mesh_type>0)||(i>0&&sd->mesh_type!=sdim1->mesh_type)){
-        sprintf(mlabel2, "*** Evac type %i meshes ***", sd->mesh_type);
-        glutAddMenuEntry(mlabel2, MENU_DUMMY);
-      }
       GLUTADDSUBMENU(mlabel, loadsubmslicemenu[nloadsubmslicemenu]);
       nloadsubmslicemenu++;
     }
@@ -8060,13 +7999,9 @@ void InitVSliceLoadMenu(int *vsliceloadmenuptr, int *loadsubvslicemenu, int unlo
       sdm1 = sliceinfo+vdim1->ival;
     }
     if(ii==0||strcmp(sd->label.longlabel, sdm1->label.longlabel)!=0){
-      char mlabel[1024], mlabel2[1024];
+      char mlabel[1024];
 
       STRCPY(mlabel, sd->label.longlabel);
-      if((ii==0&&sd->mesh_type>0)||(ii>0&&sd->mesh_type!=sdm1->mesh_type)){
-        sprintf(mlabel2, "*** Evac type %i meshdata ***", sd->mesh_type);
-        glutAddMenuEntry(mlabel2, MENU_DUMMY);
-      }
       GLUTADDSUBMENU(mlabel, loadsubvslicemenu[nloadsubvslicemenu]);
       nloadsubvslicemenu++;
     }
@@ -8230,13 +8165,9 @@ void InitMultiVectorLoadMenu(int *loadmultivslicemenuptr, int *loadsubmvslicemen
       sim1 = sliceinfo+vim1->ival;
     }
     if(i==0||(i>0&&strcmp(si->label.longlabel, sim1->label.longlabel)!=0)){
-      char mlabel[1024], mlabel2[1024];
+      char mlabel[1024];
 
       STRCPY(mlabel, si->label.longlabel);
-      if((i==0&&si->mesh_type>0)||(i>0&&si->mesh_type!=sim1->mesh_type)){
-        sprintf(mlabel2, "*** Evac type %i meshes ***", si->mesh_type);
-        glutAddMenuEntry(mlabel2, MENU_DUMMY);
-      }
       GLUTADDSUBMENU(mlabel, loadsubmvslicemenu[nloadsubmvslicemenu]);
       nloadsubmvslicemenu++;
     }

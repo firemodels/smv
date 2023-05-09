@@ -596,8 +596,7 @@ int ReadSMV(bufferstreamdata *streamsmv, FILE *stream_out, casedata *smvcase){
        Match(buffer, "SMOKG3D") == 1 ||
 #endif
       Match(buffer, "PART") == 1 ||
-       Match(buffer,"EVAC")==1||
-       Match(buffer,"PRT5")==1||
+       Match(buffer,"PRT5")==1   ||
        Match(buffer,"EVA5")==1
        ){
       char comm[1024];

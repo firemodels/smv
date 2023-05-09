@@ -5986,7 +5986,6 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
     meshdata *meshi;
 
     meshi = meshinfo+blocknumber;
-    sd->mesh_type = meshi->mesh_type;
     sd->full_mesh = NO;
     if(sd->is2-sd->is1==meshi->ibar &&
       sd->js2-sd->js1==meshi->jbar &&
@@ -9039,7 +9038,6 @@ int ReadSMV(bufferstreamdata *stream){
   */
     if(MatchSMV(buffer,"GRID") == 1){
       meshdata *meshi;
-      int mesh_type=0;
       float *xp, *yp, *zp;
       float *xp2, *yp2, *zp2;
       float *xplt_cen, *yplt_cen,*zplt_cen;
@@ -9087,7 +9085,7 @@ int ReadSMV(bufferstreamdata *stream){
       }
       else{
         FGETS(buffer,255,stream);
-        sscanf(buffer,"%i %i %i %i",&ibartemp,&jbartemp,&kbartemp,&mesh_type);
+        sscanf(buffer,"%i %i %i",&ibartemp,&jbartemp,&kbartemp);
       }
       if(ibartemp<1)ibartemp=1;
       if(jbartemp<1)jbartemp=1;
@@ -9111,7 +9109,6 @@ int ReadSMV(bufferstreamdata *stream){
         NewMemory(( void ** )&kmap, sizeof(int) * (kbartemp + 1)) == 0
         )return 2;
       if(meshinfo!=NULL){
-        meshi->mesh_type=mesh_type;
         meshi->xplt=xp;
         meshi->yplt=yp;
         meshi->zplt=zp;
