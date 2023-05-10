@@ -236,6 +236,13 @@ char *ParseCommandline(int argc, char **argv){
   STRCPY(caseini_filename, fdsprefix);
   STRCAT(caseini_filename, ".ini");
 
+#ifdef pp_COLOR_CIE
+  FREEMEMORY(dEcsv_filename);
+  NewMemory(( void ** )&dEcsv_filename, len_casename + strlen("_dE.csv") + 1);
+  STRCPY(dEcsv_filename, fdsprefix);
+  STRCAT(dEcsv_filename, "_dE.csv");
+#endif
+
   FREEMEMORY(html_filename);
   NewMemory((void **)&html_filename, len_casename+strlen(".html")+1);
   STRCPY(html_filename, fdsprefix);

@@ -40,7 +40,6 @@ int ReadSMV(bufferstreamdata *streamsmv, FILE *stream_out, casedata *smvcase){
     if(
       Match(buffer,"SLCF") == 1||
       Match(buffer,"SLCC") == 1||
-      Match(buffer, "SLCD") == 1 ||
       Match(buffer,"SLCT") == 1
       ){
       nsliceinfo++;
@@ -386,7 +385,6 @@ int ReadSMV(bufferstreamdata *streamsmv, FILE *stream_out, casedata *smvcase){
     if(
       Match(buffer,"SLCF") == 1||
       Match(buffer,"SLCC") == 1||
-      Match(buffer, "SLCD") == 1 ||
       Match(buffer,"SLCT") == 1)
     {
       int version_local=0;
@@ -413,7 +411,7 @@ int ReadSMV(bufferstreamdata *streamsmv, FILE *stream_out, casedata *smvcase){
       if(Match(buffer,"SLCF") == 1){
         slicei->slicetype= SLICE_NODE_CENTER;
       }
-      if(Match(buffer,"SLCC") == 1||Match(buffer, "SLCD") == 1){
+      if(Match(buffer,"SLCC") == 1){
           slicei->slicetype = SLICE_CELL_CENTER;
       }
       if(Match(buffer,"SLCT") == 1){
@@ -596,8 +594,7 @@ int ReadSMV(bufferstreamdata *streamsmv, FILE *stream_out, casedata *smvcase){
        Match(buffer, "SMOKG3D") == 1 ||
 #endif
       Match(buffer, "PART") == 1 ||
-       Match(buffer,"EVAC")==1||
-       Match(buffer,"PRT5")==1||
+       Match(buffer,"PRT5")==1   ||
        Match(buffer,"EVA5")==1
        ){
       char comm[1024];

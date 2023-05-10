@@ -5568,7 +5568,6 @@ int ParseSLCFCount(int option, bufferstreamdata *stream, char *buffer, int *nsli
       }
       if((Match(buffer, "SLCF")==1)||
         (Match(buffer, "SLCC")==1)||
-        (Match(buffer, "SLCD")==1)||
         (Match(buffer, "SLCT")==1)||
         (Match(buffer, "BNDS")==1)
         ){
@@ -5606,7 +5605,7 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
   char buffers[6][256]){
   char *slicelabelptr, slicelabel[256], *sliceparms;
   float above_ground_level = 0.0;
-  int terrain = 0, cellcenter = 0, facecenter = 0;
+  int terrain = 0, cellcenter = 0;
   int slicegeom = 0;
   int slcf_index = 0;
   char *char_slcf_index;
@@ -5631,7 +5630,6 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
       }
       if( (Match(buffer, "SLCF") == 1)  ||
           (Match(buffer, "SLCC") == 1)  ||
-          (Match(buffer, "SLCD") == 1)  ||
           (Match(buffer, "SLCT") == 1)  ||
           (Match(buffer, "BNDS") == 1)
         ){
@@ -5684,10 +5682,6 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
   if(Match(buffer, "SLCC")==1){
     cellcenter_slice_active = 1;
     cellcenter = 1;
-  }
-  if(Match(buffer, "SLCD")==1){
-    facecenter_slice_active = 1;
-    facecenter = 1;
   }
   TrimBack(buffer);
   len = strlen(buffer);
@@ -5770,9 +5764,6 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
   }
   if(cellcenter==1){
     sd->slice_filetype = SLICE_CELL_CENTER;
-  }
-  if(facecenter==1){
-    sd->slice_filetype = SLICE_FACE_CENTER;
   }
 
   strcpy(zlib_file, bufferptr);
@@ -5871,9 +5862,6 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
       strcpy(geom_label, "");
     }
     if(ReadLabelsBNDS(&sd->label, stream, buffers[3], buffers[4], buffers[5], geom_label)==LABEL_ERR)return RETURN_TWO;
-  }
-  else if(sd->slice_filetype==SLICE_FACE_CENTER){
-    if(ReadLabels(&sd->label, stream, "(face centered)")==LABEL_ERR)return RETURN_TWO;
   }
   else{
     if(ReadLabels(&sd->label, stream, NULL)==LABEL_ERR)return RETURN_TWO;
@@ -5986,7 +5974,6 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
     meshdata *meshi;
 
     meshi = meshinfo+blocknumber;
-    sd->mesh_type = meshi->mesh_type;
     sd->full_mesh = NO;
     if(sd->is2-sd->is1==meshi->ibar &&
       sd->js2-sd->js1==meshi->jbar &&
@@ -6556,8 +6543,18 @@ void InitCSV(csvfiledata *csvi, char *file, char *type, int format){
   csvi->csvinfo      = NULL;
   csvi->format       = format;
 
+#ifdef pp_COLOR_CIE
+  if(file != NULL){
+    NewMemory(( void ** )&csvi->file, strlen(file) + 1);
+    strcpy(csvi->file, file);
+  }
+  else{
+    csvi->file = file;
+  }
+#else
   NewMemory((void **)&csvi->file, strlen(file) + 1);
   strcpy(csvi->file, file);
+#endif
   strcpy(csvi->c_type, type);
 }
 
@@ -7462,11 +7459,11 @@ int ReadSMV(bufferstreamdata *stream){
  }
  if(nisoinfo>0&&nmeshes>0)nisos_per_mesh = MAX(nisoinfo / nmeshes,1);
 #ifdef pp_CFAST_CSV  
-  NewMemory((void **)&csvfileinfo,(ncsvfileinfo+CFAST_CSV_MAX)*sizeof(csvfiledata));
+  NewMemory((void **)&csvfileinfo,(ncsvfileinfo+CFAST_CSV_MAX+1)*sizeof(csvfiledata));
   ncsvfileinfo=0;
 #else
  if(ncsvfileinfo > 0){
-   NewMemory((void **)&csvfileinfo,ncsvfileinfo*sizeof(csvfiledata));
+   NewMemory((void **)&csvfileinfo,(ncsvfileinfo+1)*sizeof(csvfiledata));
    ncsvfileinfo=0;
  }
 #endif
@@ -9029,7 +9026,6 @@ int ReadSMV(bufferstreamdata *stream){
   */
     if(MatchSMV(buffer,"GRID") == 1){
       meshdata *meshi;
-      int mesh_type=0;
       float *xp, *yp, *zp;
       float *xp2, *yp2, *zp2;
       float *xplt_cen, *yplt_cen,*zplt_cen;
@@ -9077,7 +9073,7 @@ int ReadSMV(bufferstreamdata *stream){
       }
       else{
         FGETS(buffer,255,stream);
-        sscanf(buffer,"%i %i %i %i",&ibartemp,&jbartemp,&kbartemp,&mesh_type);
+        sscanf(buffer,"%i %i %i",&ibartemp,&jbartemp,&kbartemp);
       }
       if(ibartemp<1)ibartemp=1;
       if(jbartemp<1)jbartemp=1;
@@ -9101,7 +9097,6 @@ int ReadSMV(bufferstreamdata *stream){
         NewMemory(( void ** )&kmap, sizeof(int) * (kbartemp + 1)) == 0
         )return 2;
       if(meshinfo!=NULL){
-        meshi->mesh_type=mesh_type;
         meshi->xplt=xp;
         meshi->yplt=yp;
         meshi->zplt=zp;
@@ -9725,7 +9720,7 @@ int ReadSMV(bufferstreamdata *stream){
     int *nexp_devices=NULL;
     devicedata *devicecopy2;
 
-    NewMemory((void **)&nexp_devices,ncsvfileinfo*sizeof(int));
+    NewMemory((void **)&nexp_devices,(ncsvfileinfo+1)*sizeof(int));
     for(i=0;i<ncsvfileinfo;i++){
       csvfiledata *csvi;
 

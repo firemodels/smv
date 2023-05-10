@@ -292,7 +292,7 @@ typedef struct _colorbardata {
   unsigned char splits[1024];
 #ifdef pp_COLOR_CIE
   int nnodes_orig, index_node_orig[1024];
-  float cie[3*1024], dist[1024];
+  float cie_node[3*1024], dist_node[1024], cie_rgb[3*1024], dE[1024];
 #endif
   float colorbar[3*1024];
 } colorbardata;
@@ -698,7 +698,6 @@ typedef struct _meshdata {
   float *znodes_complete;
   int nznodes;
   struct _meshdata *floor_mesh;
-  int mesh_type;
 #ifdef pp_GPU
   GLuint blockage_texture_id;
   struct _smoke3ddata *smoke3d_soot, *smoke3d_hrrpuv, *smoke3d_temp, *smoke3d_co2;
@@ -945,7 +944,7 @@ typedef struct _tokendata {
 } tokendata;
 
 /* --------------------------  sv_object_frame ------------------------------------ */
-#define NEVAC_TOKENS 12
+
 typedef struct _sv_object_frame {
   int use_bw;
   int error;
@@ -1379,7 +1378,6 @@ typedef struct _fileboundsdata {
 /* --------------------------  slicedata ------------------------------------ */
 
 typedef struct _slicedata {
-  int mesh_type;
   int seq_id, autoload;
   char *file, *size_file, *bound_file;
   int have_bound_file;
@@ -1474,7 +1472,6 @@ typedef struct _slicemenudata {
 /* --------------------------  multislicedata ------------------------------------ */
 
 typedef struct _multislicedata {
-  int mesh_type;
   int seq_id, autoload;
   int loaded, display;
   int ndirxyz[4];
@@ -1487,7 +1484,6 @@ typedef struct _multislicedata {
 /* --------------------------  multivslicedata ------------------------------------ */
 
 typedef struct _multivslicedata {
-  int mesh_type;
   int seq_id, autoload;
   int loaded,display,mvslicefile_labelindex;
   int nvslices;

@@ -464,14 +464,11 @@ void UpdateShow(void){
       updatemenu=1;
     }
     for(ii=0;ii<nslice_loaded;ii++){
-      meshdata *slicemesh;
       slicedata *sd;
 
       i=slice_loaded_list[ii];
       sd = sliceinfo+i;
-      slicemesh = meshinfo + sd->blocknumber;
       if(sd->display==0||sd->slicefile_labelindex!=slicefile_labelindex)continue;
-      if(sd->constant_color==NULL&&slicemesh->mesh_type!=0)continue;
       if(sd->constant_color!=NULL)continue;
       if(sd->ntimes>0){
         slicecolorbarflag=1;
@@ -555,16 +552,13 @@ void UpdateShow(void){
       break;
     }
     for(i=0;i<nvsliceinfo;i++){
-      meshdata *slicemesh;
       slicedata *sd;
       vslicedata *vd;
 
       vd = vsliceinfo+i;
       sd = sliceinfo + vd->ival;
-      slicemesh = meshinfo + sd->blocknumber;
       if(vd->loaded==0||vd->display==0)continue;
       if(sliceinfo[vd->ival].slicefile_labelindex!=slicefile_labelindex)continue;
-      if(sd->constant_color==NULL&&slicemesh->mesh_type!=0)continue;
       if(sd->constant_color!=NULL)continue;
       vslicecolorbarflag=1;
       break;
@@ -614,7 +608,7 @@ void UpdateShow(void){
   ReadPartFile = partflag;
 
   plot2dflag = 0;
-  if(GenDevShow() == 1 || GenHrrShow() == 1 || HavePlot2D(NULL,NULL)==1)plot2dflag = 1;
+  if(HavePlot2D(NULL,NULL)==1)plot2dflag = 1;
 
   shooter_flag=0;
   if(visShooter!=0&&shooter_active==1){
@@ -1221,12 +1215,6 @@ void UpdateTimes(void){
       MergeGlobalTimes(times, ntimes);
     }
   }
-  if(GenDevShow()==1){
-    MergeGlobalTimes(deviceinfo->times, deviceinfo->nvals);
-  }
-  if(GenHrrShow()==1){
-    MergeGlobalTimes(hrrinfo->vals, hrrinfo->nvals);
-  }
   if(showdevice_val==1||vis_device_plot!=DEVICE_PLOT_HIDDEN){
     for(i = 0; i<ndeviceinfo; i++){
       devicedata *devicei;
@@ -1665,7 +1653,7 @@ int GetPlotStateSub(int choice){
         stept = 1;
         return DYNAMIC_PLOTS;
       }
-      if(GenDevShow() == 1 || GenHrrShow() == 1 || HavePlot2D(NULL,NULL)==1){
+      if(HavePlot2D(NULL,NULL)==1){
         stept = 1;
         return DYNAMIC_PLOTS;
       }

@@ -202,9 +202,17 @@ int loadsmv(char *input_filename, char *input_filename_ext) {
 
   FREEMEMORY(part_globalbound_filename);
   NewMemory((void **)&part_globalbound_filename,
+#ifdef pp_PART_BOUND
+            strlen(fdsprefix) + strlen(".prt.gbnd") + 1);
+#else
             strlen(fdsprefix) + strlen(".prt5.gbnd") + 1);
+#endif
   STRCPY(part_globalbound_filename, fdsprefix);
+#ifdef pp_PART_BOUND
+  STRCAT(part_globalbound_filename, ".prt.gbnd");
+#else
   STRCAT(part_globalbound_filename, ".prt5.gbnd");
+#endif
   part_globalbound_filename = GetFileName(
       smokeview_scratchdir, part_globalbound_filename, NOT_FORCE_IN_DIR);
 
