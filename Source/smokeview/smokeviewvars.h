@@ -540,6 +540,8 @@ SVEXTERN int SVDECL(interp_cielab, 1);
 SVEXTERN int SVDECL(update_colorbar_orig, 0);
 SVEXTERN float SVDECL(*cielab_check_xyz, NULL);
 SVEXTERN char SVDECL(*dEcsv_filename, NULL);
+SVEXTERN float cb_lab2[3];
+SVEXTERN int cb_rgb2[3];
 #ifdef pp_COLOR_CIE_CHECK
 SVEXTERN unsigned char SVDECL(*cielab_check_rgb255, NULL);
 #endif
