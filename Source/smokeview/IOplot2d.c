@@ -698,12 +698,20 @@ void DrawGenPlot(plot2ddata *plot2di){
       memcpy(curve->vals, csvi->vals, csvi->nvals*sizeof(float));
     }
     if(global_times!=NULL){
+      float *vals;
 #ifdef pp_PLOT2DMAX
-      if(show_max_avg_vals == 1)vals = curve->vals2;
+      if(show_max_avg_vals == 1){
+        vals = curve->vals2;
+      }
+      else{
+        vals = curve->vals;
+      }
+#else
+      vals = curve->vals;
 #endif
       highlight_time = global_times[itimes];
-      highlight_val = GetCSVVal(global_times[itimes], csvfi->time->vals, curve->vals, csvi->nvals);
-      DrawGenCurve(option, plot2di, curve, plot2d_size_factor, csvfi->time->vals, curve->vals, csvi->nvals,
+      highlight_val = GetCSVVal(global_times[itimes], csvfi->time->vals, vals, csvi->nvals);
+      DrawGenCurve(option, plot2di, curve, plot2d_size_factor, csvfi->time->vals, vals, csvi->nvals,
                    highlight_time, highlight_val, valmin, valmax, side,
                    position, shortlabel, unit_display);
     }
