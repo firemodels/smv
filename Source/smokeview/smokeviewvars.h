@@ -542,7 +542,9 @@ SVEXTERN float SVDECL(*cielab_check_xyz, NULL);
 SVEXTERN char SVDECL(*dEcsv_filename, NULL);
 SVEXTERN float cb_lab2[3], cb_frgb2[3];
 SVEXTERN int cb_rgb2[3];
-SVEXTERN int SVDECL(index_rainbow1, -1), SVDECL(index_rainbow2, -1), SVDECL(index_rainbow3, -1);
+#ifdef pp_COLOR_TOGGLE
+SVEXTERN int SVDECL(index_colorbar1, 0), SVDECL(index_colorbar2, 1);
+#endif
 #ifdef pp_COLOR_CIE_CHECK
 SVEXTERN unsigned char SVDECL(*cielab_check_rgb255, NULL);
 #endif
