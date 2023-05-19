@@ -5433,6 +5433,11 @@ extern "C" void GluiBoundsSetup(int main_window){
     LIST_colorbar2->set_int_val(colorbartype);
     glui_bounds->add_button_to_panel(PANEL_colorbar_properties, _("Next"),     COLORBAR_LIST2_NEXT, SliceBoundCB);
     glui_bounds->add_button_to_panel(PANEL_colorbar_properties, _("Previous"), COLORBAR_LIST2_PREV, SliceBoundCB);
+#ifdef pp_COLOR_CIE
+    if(index_rainbow1>=0)glui_bounds->add_button_to_panel(PANEL_colorbar_properties, _("Rainbow"),    COLORBAR_RAINBOW1, ColorbarCB);
+    if(index_rainbow2>=0)glui_bounds->add_button_to_panel(PANEL_colorbar_properties, _("rainbow_02"), COLORBAR_RAINBOW2, ColorbarCB);
+    if(index_rainbow3>=0)glui_bounds->add_button_to_panel(PANEL_colorbar_properties, _("rainbow_04"), COLORBAR_RAINBOW3, ColorbarCB);
+#endif
   }
 
   CHECKBOX_visColorbarVertical2   = glui_bounds->add_checkbox_to_panel(PANEL_colorbar_properties, "vertical",   &visColorbarVertical,   LABELS_vcolorbar, LabelsCB);

@@ -130,6 +130,13 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 #define COLORBAR_SELECTION_WIDTH_MIN  1
 #define COLORBAR_SELECTION_WIDTH_MAX 10
 
+#ifdef pp_COLOR_CIE
+#define COLORBAR_RAINBOW1            28
+#define COLORBAR_RAINBOW2            29
+#define COLORBAR_RAINBOW3            30
+#endif
+
+
 #define MESH_INT  0
 #define MESH_EXT  1
 #define MESH_BOTH 2
