@@ -651,14 +651,14 @@ void AdjustColorBar(colorbardata *cbi){
   Rgb2CIE(cbi->rgb_node, cbi->cie_node);
   cbi->dist_node[0] = 0.0;
   for(i = 1;i < cbi->nnodes;i++){
-    unsigned char *rgb2;
+    unsigned char *rgb2_local;
     float *cie1, *cie2, dist;
     float dx, dy, dz;
 
-    rgb2 = cbi->rgb_node + 3*i;
+    rgb2_local = cbi->rgb_node + 3*i;
     cie2 = cbi->cie_node + 3 * i;
     cie1 = cie2 - 3;
-    Rgb2CIE(rgb2, cie2);
+    Rgb2CIE(rgb2_local, cie2);
     DDIST3(cie1, cie2, dist);
     cbi->dist_node[i] = cbi->dist_node[i - 1] + dist;
   }
