@@ -1294,27 +1294,36 @@ void InitDefaultColorbars(int nini){
 
 #ifdef pp_COLORBARS_CSV
   filelistdata *linear_filelist=NULL, *cyclic_filelist=NULL,*rainbow_filelist=NULL;
-  char filter_linear[256], filter_cyclic[256], filter_rainbow[256];
+  filelistdata *user_filelist = NULL;
+  char filter_linear[256], filter_cyclic[256], filter_rainbow[256], filter_user[256];
 
-  if(colorbarsdir!=NULL){
-    strcpy(filter_linear, "linear*.csv");
-    nlinear_filelist = GetFileListSize(colorbarsdir, filter_linear);
-    strcpy(filter_cyclic, "circular*.csv");
-    ncyclic_filelist = GetFileListSize(colorbarsdir, filter_cyclic);
-    strcpy(filter_rainbow, "rainbow*.csv");
-    nrainbow_filelist = GetFileListSize(colorbarsdir, filter_rainbow);
+  if(colorbars_userdir!=NULL){
+    strcpy(filter_user, "*.csv");
+    nuser_filelist = GetFileListSize(colorbars_userdir, filter_user);
   }
 
+  if(colorbars_smvdir!=NULL){
+    strcpy(filter_linear, "linear*.csv");
+    nlinear_filelist = GetFileListSize(colorbars_smvdir, filter_linear);
+    strcpy(filter_cyclic, "circular*.csv");
+    ncyclic_filelist = GetFileListSize(colorbars_smvdir, filter_cyclic);
+    strcpy(filter_rainbow, "rainbow*.csv");
+    nrainbow_filelist = GetFileListSize(colorbars_smvdir, filter_rainbow);
+  }
+
+  if(nuser_filelist > 0){
+    MakeFileList(colorbars_userdir, filter_user, nuser_filelist, NO, &user_filelist);
+  }
   if(nlinear_filelist > 0){
-    MakeFileList(colorbarsdir, filter_linear, nlinear_filelist, NO, &linear_filelist);
+    MakeFileList(colorbars_smvdir, filter_linear, nlinear_filelist, NO, &linear_filelist);
   }
   if(ncyclic_filelist > 0){
-    MakeFileList(colorbarsdir, filter_cyclic, ncyclic_filelist, NO, &cyclic_filelist);
+    MakeFileList(colorbars_smvdir, filter_cyclic, ncyclic_filelist, NO, &cyclic_filelist);
   }
   if(nrainbow_filelist > 0){
-    MakeFileList(colorbarsdir, filter_rainbow, nrainbow_filelist, NO, &rainbow_filelist);
+    MakeFileList(colorbars_smvdir, filter_rainbow, nrainbow_filelist, NO, &rainbow_filelist);
   }
-  ndefaultcolorbars+=nlinear_filelist+ncyclic_filelist +nrainbow_filelist;
+  ndefaultcolorbars+=nlinear_filelist + ncyclic_filelist + nrainbow_filelist + nuser_filelist;
 #endif
 
   ndefaultcolorbars+=18;
@@ -1958,15 +1967,19 @@ void InitDefaultColorbars(int nini){
 
 #ifdef pp_COLORBARS_CSV
   for(i = 0;i < nlinear_filelist;i++){
-    InitColorbar(cbi, colorbarsdir, linear_filelist[i].file, "linear");
+    InitColorbar(cbi, colorbars_smvdir,  linear_filelist[i].file,  "linear");
     cbi++;
   }
   for(i = 0;i < ncyclic_filelist;i++){
-    InitColorbar(cbi, colorbarsdir, cyclic_filelist[i].file, "cyclic");
+    InitColorbar(cbi, colorbars_smvdir,  cyclic_filelist[i].file,  "cyclic");
     cbi++;
   }
   for(i = 0;i < nrainbow_filelist;i++){
-    InitColorbar(cbi, colorbarsdir, rainbow_filelist[i].file, "rainbow");
+    InitColorbar(cbi, colorbars_smvdir,  rainbow_filelist[i].file, "rainbow");
+    cbi++;
+  }
+  for(i = 0;i < nuser_filelist;i++){
+    InitColorbar(cbi, colorbars_userdir, user_filelist[i].file,    "user");
     cbi++;
   }
 #ifdef pp_COLOR_NEW
