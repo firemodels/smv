@@ -701,6 +701,8 @@ EXTERNCPP void Rgb2CIE(unsigned char *rgb, float *cie);
 EXTERNCPP void Rgb2CIEs(unsigned char *rgbs255, float *cies);
 EXTERNCPP void UpdateColorbarOrig(void);
 EXTERNCPP void CIEdE2Csv(char *file);
+EXTERNCPP void CIE2Rgb(unsigned char *rgb255, float *frgb, float *cie);
+EXTERNCPP void FRgb2CIE(float *rgb_arg, float *cie);
 #endif
 
 EXTERNCPP char *GetChid(char *file, char *buffer);

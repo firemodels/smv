@@ -651,14 +651,14 @@ void AdjustColorBar(colorbardata *cbi){
   Rgb2CIE(cbi->rgb_node, cbi->cie_node);
   cbi->dist_node[0] = 0.0;
   for(i = 1;i < cbi->nnodes;i++){
-    unsigned char *rgb2;
+    unsigned char *rgb2_local;
     float *cie1, *cie2, dist;
     float dx, dy, dz;
 
-    rgb2 = cbi->rgb_node + 3*i;
+    rgb2_local = cbi->rgb_node + 3*i;
     cie2 = cbi->cie_node + 3 * i;
     cie1 = cie2 - 3;
-    Rgb2CIE(rgb2, cie2);
+    Rgb2CIE(rgb2_local, cie2);
     DDIST3(cie1, cie2, dist);
     cbi->dist_node[i] = cbi->dist_node[i - 1] + dist;
   }
@@ -677,14 +677,14 @@ void AdjustColorBar(colorbardata *cbi){
   }
 }
 
-/* ------------------ Rgb2CIE ------------------------ */
+/* ------------------ FRgb2CIE ------------------------ */
 
-void Rgb2CIE(unsigned char *rgb_arg, float *cie){
+void FRgb2CIE(float *rgb_arg, float *cie){
 
   // Convert RGB values to XYZ
-  float var_R = (float)rgb_arg[0] / 255.0f;
-  float var_G = (float)rgb_arg[1] / 255.0f;
-  float var_B = (float)rgb_arg[2] / 255.0f;
+  float var_R = rgb_arg[0] / 255.0f;
+  float var_G = rgb_arg[1] / 255.0f;
+  float var_B = rgb_arg[2] / 255.0f;
 
   if(var_R > 0.04045f) {
     var_R = pow((var_R + 0.055f) / 1.055f, 2.4f);
@@ -742,7 +742,19 @@ void Rgb2CIE(unsigned char *rgb_arg, float *cie){
   cie[2] = 200.0f * (var_Y - var_Z);
 }
 
-/* ------------------ Rgb2CIEs ------------------------ */
+
+/* ------------------ Rgb2CIE ------------------------ */
+
+void Rgb2CIE(unsigned char *rgb_arg, float *cie){
+  float frgb_arg[3];
+
+  frgb_arg[0] = (float)rgb_arg[0];
+  frgb_arg[1] = (float)rgb_arg[1];
+  frgb_arg[2] = (float)rgb_arg[2];
+  FRgb2CIE(frgb_arg, cie);
+}
+
+  /* ------------------ Rgb2CIEs ------------------------ */
 
 void Rgb2CIEs(unsigned char *rgbs255, float *cies){
   int i;
@@ -760,7 +772,7 @@ void Rgb2CIEs(unsigned char *rgbs255, float *cies){
 
 /* ------------------ CIE2Rgb ------------------------ */
 
-void CIE2Rgb(unsigned char *rgb_arg, float *cie){
+void CIE2Rgb(unsigned char *rgb_arg, float *frgb_arg, float *cie){
   float L, a, b;
 
   L = cie[0];
@@ -819,22 +831,27 @@ void CIE2Rgb(unsigned char *rgb_arg, float *cie){
     var_B *= 12.92f;
   }
 
-  rgb_arg[0] = (unsigned char)CLAMP(var_R * 255.0f + 0.5, 0, 255);
-  rgb_arg[1] = (unsigned char)CLAMP(var_G * 255.0f + 0.5, 0, 255);
-  rgb_arg[2] = (unsigned char)CLAMP(var_B * 255.0f + 0.5, 0, 255);
+  frgb_arg[0] = var_R * 255.0f;
+  frgb_arg[1] = var_G * 255.0f;
+  frgb_arg[2] = var_B * 255.0f;
+  rgb_arg[0] = (unsigned char)CLAMP(frgb_arg[0] + 0.5, 0, 255);
+  rgb_arg[1] = (unsigned char)CLAMP(frgb_arg[1] + 0.5, 0, 255);
+  rgb_arg[2] = (unsigned char)CLAMP(frgb_arg[2] + 0.5, 0, 255);
 }
 /* ------------------ CIE2Rgbs ------------------------ */
-
-void CIE2Rgbs(unsigned char *rgbs255, float *cies){
+// matches following website
+// http://colormine.org/convert/rgb-to-lab
+void CIE2Rgbs(unsigned char *rgbs255, float *frgbs, float *cies){
   int i;
 
   for(i = 0; i < 255; i++){
     unsigned char *rgb_local;
-    float *cie;
+    float *cie, *frgb;
 
     rgb_local = rgbs255 + 3 * i;
-    cie = cies + 3 * i;
-    CIE2Rgb(rgb_local, cie);
+    cie       = cies    + 3 * i;
+    frgb      = frgbs   + 3 * i;
+    CIE2Rgb(rgb_local, frgb, cie);
   }
 }
 
@@ -1016,8 +1033,9 @@ void RemapColorbar(colorbardata *cbi){
       }
       if(interp_cielab == 1){
         unsigned char rgb_val[3];
+        float frgb[3];
 
-        CIE2Rgb(rgb_val, ciej);
+        CIE2Rgb(rgb_val, frgb, ciej);
         colorbar[0+3*j] = (float)rgb_val[0]/255.0;
         colorbar[1+3*j] = (float)rgb_val[1]/255.0;
         colorbar[2+3*j] = (float)rgb_val[2]/255.0;
@@ -1276,27 +1294,36 @@ void InitDefaultColorbars(int nini){
 
 #ifdef pp_COLORBARS_CSV
   filelistdata *linear_filelist=NULL, *cyclic_filelist=NULL,*rainbow_filelist=NULL;
-  char filter_linear[256], filter_cyclic[256], filter_rainbow[256];
+  filelistdata *user_filelist = NULL;
+  char filter_linear[256], filter_cyclic[256], filter_rainbow[256], filter_user[256];
 
-  if(colorbarsdir!=NULL){
-    strcpy(filter_linear, "linear*.csv");
-    nlinear_filelist = GetFileListSize(colorbarsdir, filter_linear);
-    strcpy(filter_cyclic, "circular*.csv");
-    ncyclic_filelist = GetFileListSize(colorbarsdir, filter_cyclic);
-    strcpy(filter_rainbow, "rainbow*.csv");
-    nrainbow_filelist = GetFileListSize(colorbarsdir, filter_rainbow);
+  if(colorbars_userdir!=NULL){
+    strcpy(filter_user, "*.csv");
+    nuser_filelist = GetFileListSize(colorbars_userdir, filter_user);
   }
 
+  if(colorbars_smvdir!=NULL){
+    strcpy(filter_linear, "linear*.csv");
+    nlinear_filelist = GetFileListSize(colorbars_smvdir, filter_linear);
+    strcpy(filter_cyclic, "circular*.csv");
+    ncyclic_filelist = GetFileListSize(colorbars_smvdir, filter_cyclic);
+    strcpy(filter_rainbow, "rainbow*.csv");
+    nrainbow_filelist = GetFileListSize(colorbars_smvdir, filter_rainbow);
+  }
+
+  if(nuser_filelist > 0){
+    MakeFileList(colorbars_userdir, filter_user, nuser_filelist, NO, &user_filelist);
+  }
   if(nlinear_filelist > 0){
-    MakeFileList(colorbarsdir, filter_linear, nlinear_filelist, NO, &linear_filelist);
+    MakeFileList(colorbars_smvdir, filter_linear, nlinear_filelist, NO, &linear_filelist);
   }
   if(ncyclic_filelist > 0){
-    MakeFileList(colorbarsdir, filter_cyclic, ncyclic_filelist, NO, &cyclic_filelist);
+    MakeFileList(colorbars_smvdir, filter_cyclic, ncyclic_filelist, NO, &cyclic_filelist);
   }
   if(nrainbow_filelist > 0){
-    MakeFileList(colorbarsdir, filter_rainbow, nrainbow_filelist, NO, &rainbow_filelist);
+    MakeFileList(colorbars_smvdir, filter_rainbow, nrainbow_filelist, NO, &rainbow_filelist);
   }
-  ndefaultcolorbars+=nlinear_filelist+ncyclic_filelist +nrainbow_filelist;
+  ndefaultcolorbars+=nlinear_filelist + ncyclic_filelist + nrainbow_filelist + nuser_filelist;
 #endif
 
   ndefaultcolorbars+=18;
@@ -1940,15 +1967,19 @@ void InitDefaultColorbars(int nini){
 
 #ifdef pp_COLORBARS_CSV
   for(i = 0;i < nlinear_filelist;i++){
-    InitColorbar(cbi, colorbarsdir, linear_filelist[i].file, "linear");
+    InitColorbar(cbi, colorbars_smvdir,  linear_filelist[i].file,  "linear");
     cbi++;
   }
   for(i = 0;i < ncyclic_filelist;i++){
-    InitColorbar(cbi, colorbarsdir, cyclic_filelist[i].file, "cyclic");
+    InitColorbar(cbi, colorbars_smvdir,  cyclic_filelist[i].file,  "cyclic");
     cbi++;
   }
   for(i = 0;i < nrainbow_filelist;i++){
-    InitColorbar(cbi, colorbarsdir, rainbow_filelist[i].file, "rainbow");
+    InitColorbar(cbi, colorbars_smvdir,  rainbow_filelist[i].file, "rainbow");
+    cbi++;
+  }
+  for(i = 0;i < nuser_filelist;i++){
+    InitColorbar(cbi, colorbars_userdir, user_filelist[i].file,    "user");
     cbi++;
   }
 #ifdef pp_COLOR_NEW

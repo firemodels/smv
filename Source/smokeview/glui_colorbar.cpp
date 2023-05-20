@@ -11,30 +11,30 @@
 GLUI *glui_colorbar=NULL;
 
 GLUI_Panel *PANEL_cb1=NULL;
-GLUI_Panel *PANEL_cb2=NULL;
-GLUI_Panel *PANEL_cb2L=NULL;
-GLUI_Panel *PANEL_cb2R=NULL;
 GLUI_Panel *PANEL_cb2R2=NULL;
-GLUI_Panel *PANEL_cb3=NULL;
 GLUI_Panel *PANEL_cb4=NULL;
-GLUI_Panel *PANEL_cb4L=NULL;
-GLUI_Panel *PANEL_cb4R=NULL;
 GLUI_Panel *PANEL_point=NULL;
 GLUI_Panel *PANEL_cb5=NULL;
-GLUI_Panel *PANEL_cb5a=NULL;
-GLUI_Panel *PANEL_cb5b=NULL;
-GLUI_Panel *PANEL_cb6=NULL;
 GLUI_Panel *PANEL_cb10=NULL;
 GLUI_Panel *PANEL_cb11r=NULL;
+GLUI_Panel *PANEL_cb12 = NULL;
+#ifdef pp_COLOR_TOGGLE
+GLUI_Panel *PANEL_toggle_cb = NULL;
+#endif
 
 GLUI_Listbox *LISTBOX_colorbar=NULL;
+#ifdef pp_COLOR_TOGGLE
+GLUI_Listbox *LISTBOX_colorbar1 = NULL;
+GLUI_Listbox *LISTBOX_colorbar2 = NULL;
+extern GLUI_Listbox *LISTBOX_colorbar1a;
+extern GLUI_Listbox *LISTBOX_colorbar2a;
+#endif
 
-GLUI_Spinner *SPINNER_left_red=NULL;
-GLUI_Spinner *SPINNER_left_green=NULL;
-GLUI_Spinner *SPINNER_left_blue=NULL;
-GLUI_Spinner *SPINNER_right_red=NULL;
-GLUI_Spinner *SPINNER_right_green=NULL;
-GLUI_Spinner *SPINNER_right_blue=NULL;
+GLUI_Spinner *SPINNER_rgb[3];
+#ifdef pp_COLOR_CIE
+GLUI_Spinner *SPINNER_Lab2[3];
+GLUI_Spinner *SPINNER_rgb2[3];
+#endif
 GLUI_Spinner *SPINNER_valmin=NULL;
 GLUI_Spinner *SPINNER_valmax=NULL;
 GLUI_Spinner *SPINNER_val=NULL;
@@ -51,10 +51,19 @@ GLUI_Button *BUTTON_update=NULL;
 GLUI_Button *BUTTON_colorbar_save=NULL;
 GLUI_Button *BUTTON_colorbar_close=NULL;
 GLUI_Button *BUTTON_autonodes = NULL;
+#ifdef pp_COLOR_TOGGLE
+GLUI_Button *BUTTON_colorbar1 = NULL;
+GLUI_Button *BUTTON_colorbar2 = NULL;
+extern GLUI_Button *BUTTON_colorbar1a;
+extern GLUI_Button *BUTTON_colorbar2a;
+#endif
 
 GLUI_RadioGroup *RADIO_colorbar_coord_type;
 
 GLUI_Checkbox *CHECKBOX_hidesv=NULL;
+#ifdef pp_COLOR_CIE
+GLUI_Checkbox *CHECKBOX_cb_interp = NULL;
+#endif
 
 GLUI_EditText *EDITTEXT_colorbar_label=NULL;
 
@@ -82,6 +91,8 @@ int cb_usecolorbar_extreme;
 #define COLORBAR_ADJUST              23
 #define COLORBAR_REVERT              24
 #define COLORBAR_CIE_OUTPUT          25
+#define COLORBAR_LAB2                26
+#define COLORBAR_RGB2                27
 #endif
 
 /* ------------------ UpdateColorbarList ------------------------ */
@@ -150,6 +161,9 @@ extern "C" void ColorbarCB(int var){
   colorbardata *cbi;
   unsigned char *rgb_nodes;
   int i;
+#ifdef pp_COLOR_CIE
+  unsigned char rgb_local[3];
+#endif
 
   switch(var){
   case COLORBAR_UNIFORM:
@@ -270,6 +284,36 @@ extern "C" void ColorbarCB(int var){
     UpdateRGBColors(COLORBAR_INDEX_NONE);
     if(colorbarpoint == cbi->nnodes)colorbarpoint = cbi->nnodes - 1;
     break;
+#ifdef pp_COLOR_CIE
+  case COLORBAR_RGB2:
+    FRgb2CIE(cb_frgb2, cb_lab2);
+    SPINNER_Lab2[0]->set_float_val(cb_lab2[0]);
+    SPINNER_Lab2[1]->set_float_val(cb_lab2[1]);
+    SPINNER_Lab2[2]->set_float_val(cb_lab2[2]);
+    break;
+  case COLORBAR_LAB2:
+    CIE2Rgb(rgb_local, cb_frgb2, cb_lab2);
+    SPINNER_rgb2[0]->set_float_val(cb_frgb2[0]);
+    SPINNER_rgb2[1]->set_float_val(cb_frgb2[1]);
+    SPINNER_rgb2[2]->set_float_val(cb_frgb2[2]);
+    break;
+#ifdef pp_COLOR_TOGGLE
+  case COLORBAR_CB1:
+    interp_cielab = 0;
+    LISTBOX_colorbar->set_int_val(index_colorbar1);
+    ColorbarCB(COLORBAR_ADJUST);
+    ColorbarCB(COLORBAR_LIST);
+    CHECKBOX_cb_interp->set_int_val(interp_cielab);
+    break;
+  case COLORBAR_CB2:
+    interp_cielab = 1;
+    LISTBOX_colorbar->set_int_val(index_colorbar2);
+    ColorbarCB(COLORBAR_ADJUST);
+    ColorbarCB(COLORBAR_LIST);
+    CHECKBOX_cb_interp->set_int_val(interp_cielab);
+    break;
+#endif
+#endif
   case COLORBAR_RGB:
     show_colorbar_hint = 0;
     if(colorbartype < 0 || colorbartype >= ncolorbars)return;
@@ -295,6 +339,24 @@ extern "C" void ColorbarCB(int var){
     ColorbarMenu(selectedcolorbar_index2);
     ColorbarGlobal2Local();
     break;
+#ifdef pp_COLOR_TOGGLE
+  case COLORBAR_LISTA:
+    if(BUTTON_colorbar1 != NULL)BUTTON_colorbar1->set_name(colorbarinfo[index_colorbar1].label);
+    if(BUTTON_colorbar2 != NULL)BUTTON_colorbar2->set_name(colorbarinfo[index_colorbar2].label);
+    if(BUTTON_colorbar1a!=NULL)BUTTON_colorbar1a->set_name(colorbarinfo[index_colorbar1].label);
+    if(BUTTON_colorbar2a != NULL)BUTTON_colorbar2a->set_name(colorbarinfo[index_colorbar2].label);
+    if(LISTBOX_colorbar1!=NULL)LISTBOX_colorbar1->set_int_val(index_colorbar1);
+    if(LISTBOX_colorbar1a!=NULL)LISTBOX_colorbar1a->set_int_val(index_colorbar1);
+    break;
+  case COLORBAR_LISTB:
+    if(BUTTON_colorbar1 != NULL)BUTTON_colorbar1->set_name(colorbarinfo[index_colorbar1].label);
+    if(BUTTON_colorbar2 != NULL)BUTTON_colorbar2->set_name(colorbarinfo[index_colorbar2].label);
+    if(BUTTON_colorbar1a!=NULL)BUTTON_colorbar1a->set_name(colorbarinfo[index_colorbar1].label);
+    if(BUTTON_colorbar2a != NULL)BUTTON_colorbar2a->set_name(colorbarinfo[index_colorbar2].label);
+    if(LISTBOX_colorbar2!=NULL)LISTBOX_colorbar2->set_int_val(index_colorbar2);
+    if(LISTBOX_colorbar2a!=NULL)LISTBOX_colorbar2a->set_int_val(index_colorbar2);
+    break;
+#endif
   case COLORBAR_CLOSE:
     HideGluiColorbar();
     break;
@@ -415,7 +477,7 @@ extern "C" void GluiColorbarSetup(int main_window){
   RADIO_colorbar_coord_type = glui_colorbar->add_radiogroup_to_panel(PANEL_cb2R2, &colorbar_coord_type);
   glui_colorbar->add_radiobutton_to_group(RADIO_colorbar_coord_type, "rgb");
   glui_colorbar->add_radiobutton_to_group(RADIO_colorbar_coord_type, "cielab");
-  glui_colorbar->add_checkbox_to_panel(PANEL_cb2R2, "interpolate using cielab", &interp_cielab, COLORBAR_ADJUST, ColorbarCB);
+  CHECKBOX_cb_interp = glui_colorbar->add_checkbox_to_panel(PANEL_cb2R2, "interpolate using cielab", &interp_cielab, COLORBAR_ADJUST, ColorbarCB);
   glui_colorbar->add_button_to_panel(PANEL_cb2R2,_("Revert CIE"), COLORBAR_REVERT, ColorbarCB);
 #endif
   PANEL_cb1 = glui_colorbar->add_panel(_("Colorbar"));
@@ -437,6 +499,30 @@ extern "C" void GluiColorbarSetup(int main_window){
   BUTTON_prev     = glui_colorbar->add_button_to_panel(PANEL_cb11r, _("Previous"), COLORBAR_PREV, ColorbarCB);
   glui_colorbar->add_column_to_panel(PANEL_cb11r,false);
   BUTTON_next     = glui_colorbar->add_button_to_panel(PANEL_cb11r, _("Next"),     COLORBAR_NEXT, ColorbarCB);
+#ifdef pp_COLOR_TOGGLE
+  PANEL_toggle_cb = glui_colorbar->add_panel(_("toggle colorbars"));
+  LISTBOX_colorbar1=glui_colorbar->add_listbox_to_panel(PANEL_toggle_cb,"colorbar 1", &index_colorbar1, COLORBAR_LISTA, ColorbarCB);
+  for(i=0;i<ncolorbars;i++){
+    cbi = colorbarinfo + i;
+    cbi->label_ptr=cbi->label;
+    LISTBOX_colorbar1->add_item(i,cbi->label_ptr);
+  }
+  LISTBOX_colorbar1->set_int_val(index_colorbar1);
+
+  LISTBOX_colorbar2=glui_colorbar->add_listbox_to_panel(PANEL_toggle_cb,"colorbar 2",&index_colorbar2, COLORBAR_LISTB, ColorbarCB);
+  for(i=0;i<ncolorbars;i++){
+    cbi = colorbarinfo + i;
+    cbi->label_ptr=cbi->label;
+    LISTBOX_colorbar2->add_item(i,cbi->label_ptr);
+  }
+  LISTBOX_colorbar2->set_int_val(index_colorbar2);
+
+  BUTTON_colorbar1 = glui_colorbar->add_button_to_panel(PANEL_toggle_cb, _("colorbar 1"), COLORBAR_CB1, ColorbarCB);
+  ColorbarCB(COLORBAR_LISTA);
+
+  BUTTON_colorbar2 = glui_colorbar->add_button_to_panel(PANEL_toggle_cb, _("colorbar 2"), COLORBAR_CB2, ColorbarCB);
+  ColorbarCB(COLORBAR_LISTB);
+#endif
   PANEL_point = glui_colorbar->add_panel(_("Node"));
 
   PANEL_cb5 = glui_colorbar->add_panel_to_panel(PANEL_point,"",GLUI_PANEL_NONE);
@@ -452,14 +538,34 @@ extern "C" void GluiColorbarSetup(int main_window){
   PANEL_cb4 = glui_colorbar->add_panel_to_panel(PANEL_point,"",GLUI_PANEL_NONE);
   SPINNER_colorindex=  glui_colorbar->add_spinner_to_panel(PANEL_cb4,_("node index"),  GLUI_SPINNER_INT,&cb_colorindex,  COLORBAR_COLORINDEX,ColorbarCB);
   SPINNER_colorindex->set_int_limits(0,255);
-  SPINNER_right_red=  glui_colorbar->add_spinner_to_panel(PANEL_cb4,_("red"),  GLUI_SPINNER_INT,cb_rgb,COLORBAR_RGB,ColorbarCB);
-  SPINNER_right_green=glui_colorbar->add_spinner_to_panel(PANEL_cb4,_("green"),GLUI_SPINNER_INT,cb_rgb+1,COLORBAR_RGB,ColorbarCB);
-  SPINNER_right_blue= glui_colorbar->add_spinner_to_panel(PANEL_cb4,_("blue"), GLUI_SPINNER_INT,cb_rgb+2,COLORBAR_RGB,ColorbarCB);
+  SPINNER_rgb[0] = glui_colorbar->add_spinner_to_panel(PANEL_cb4, _("red"), GLUI_SPINNER_INT, cb_rgb, COLORBAR_RGB, ColorbarCB);
+  SPINNER_rgb[1] = glui_colorbar->add_spinner_to_panel(PANEL_cb4,_("green"),GLUI_SPINNER_INT,cb_rgb+1,COLORBAR_RGB,ColorbarCB);
+  SPINNER_rgb[2] = glui_colorbar->add_spinner_to_panel(PANEL_cb4,_("blue"), GLUI_SPINNER_INT,cb_rgb+2,COLORBAR_RGB,ColorbarCB);
 
-  SPINNER_right_red->set_int_limits(0,255);
-  SPINNER_right_green->set_int_limits(0,255);
-  SPINNER_right_blue->set_int_limits(0,255);
+  SPINNER_rgb[0]->set_int_limits(0,255);
+  SPINNER_rgb[1]->set_int_limits(0,255);
+  SPINNER_rgb[2]->set_int_limits(0,255);
 
+#ifdef pp_COLOR_CIE
+  PANEL_cb12 = glui_colorbar->add_panel("rgb<->CIELab");
+  cb_frgb2[0] = 0.0;
+  cb_frgb2[1] = 0.0;
+  cb_frgb2[2] = 0.0;
+  SPINNER_rgb2[0] = glui_colorbar->add_spinner_to_panel(PANEL_cb12, _("red"),   GLUI_SPINNER_FLOAT,   cb_frgb2,     COLORBAR_RGB2, ColorbarCB);
+  SPINNER_rgb2[1] = glui_colorbar->add_spinner_to_panel(PANEL_cb12, _("green"), GLUI_SPINNER_FLOAT,   cb_frgb2 + 1, COLORBAR_RGB2, ColorbarCB);
+  SPINNER_rgb2[2] = glui_colorbar->add_spinner_to_panel(PANEL_cb12, _("blue"),  GLUI_SPINNER_FLOAT,   cb_frgb2 + 2, COLORBAR_RGB2, ColorbarCB);
+  glui_colorbar->add_column_to_panel(PANEL_cb12,false);
+  SPINNER_Lab2[0] = glui_colorbar->add_spinner_to_panel(PANEL_cb12, _("L"),     GLUI_SPINNER_FLOAT, cb_lab2,     COLORBAR_LAB2, ColorbarCB);
+  SPINNER_Lab2[1] = glui_colorbar->add_spinner_to_panel(PANEL_cb12, _("a"),     GLUI_SPINNER_FLOAT, cb_lab2 + 1, COLORBAR_LAB2, ColorbarCB);
+  SPINNER_Lab2[2] = glui_colorbar->add_spinner_to_panel(PANEL_cb12, _("b"),     GLUI_SPINNER_FLOAT, cb_lab2 + 2, COLORBAR_LAB2, ColorbarCB);
+  ColorbarCB(COLORBAR_RGB2);
+  SPINNER_rgb2[0]->set_float_limits(0.0, 255.0);
+  SPINNER_rgb2[1]->set_float_limits(0.0, 255.0);
+  SPINNER_rgb2[2]->set_float_limits(0.0, 255.0);
+  SPINNER_Lab2[0]->set_float_limits(0.0,100.0);
+  SPINNER_Lab2[1]->set_float_limits(-128.0,128.0);
+  SPINNER_Lab2[2]->set_float_limits(-128.0,128.0);
+#endif
   ColorbarGlobal2Local();
 
   PANEL_cb10 = glui_colorbar->add_panel("",GLUI_PANEL_NONE);
@@ -498,9 +604,9 @@ extern "C" void ColorbarGlobal2Local(void){
     EDITTEXT_colorbar_label->enable();
     BUTTON_update->enable();
     BUTTON_autonodes->enable();
-    SPINNER_right_red->enable();
-    SPINNER_right_green->enable();
-    SPINNER_right_blue->enable();
+    SPINNER_rgb[0]->enable();
+    SPINNER_rgb[1]->enable();
+    SPINNER_rgb[2]->enable();
     BUTTON_addpoint->enable();
     BUTTON_deletepoint->enable();
     SPINNER_colorindex->enable();
@@ -510,17 +616,17 @@ extern "C" void ColorbarGlobal2Local(void){
     EDITTEXT_colorbar_label->disable();
     BUTTON_update->disable();
     BUTTON_autonodes->disable();
-    SPINNER_right_red->disable();
-    SPINNER_right_green->disable();
-    SPINNER_right_blue->disable();
+    SPINNER_rgb[0]->disable();
+    SPINNER_rgb[1]->disable();
+    SPINNER_rgb[2]->disable();
     BUTTON_addpoint->disable();
     BUTTON_deletepoint->disable();
     SPINNER_colorindex->disable();
   }
   rgb_local = cbi->rgb_node+3*colorbarpoint;
-  SPINNER_right_red->set_int_val(  (int)(rgb_local[0]));
-  SPINNER_right_green->set_int_val((int)(rgb_local[1]));
-  SPINNER_right_blue->set_int_val( (int)(rgb_local[2]));
+  SPINNER_rgb[0]->set_int_val(  (int)(rgb_local[0]));
+  SPINNER_rgb[1]->set_int_val((int)(rgb_local[1]));
+  SPINNER_rgb[2]->set_int_val( (int)(rgb_local[2]));
 
   UpdateExtremeVals();
 

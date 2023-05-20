@@ -540,6 +540,11 @@ SVEXTERN int SVDECL(interp_cielab, 1);
 SVEXTERN int SVDECL(update_colorbar_orig, 0);
 SVEXTERN float SVDECL(*cielab_check_xyz, NULL);
 SVEXTERN char SVDECL(*dEcsv_filename, NULL);
+SVEXTERN float cb_lab2[3], cb_frgb2[3];
+SVEXTERN int cb_rgb2[3];
+#ifdef pp_COLOR_TOGGLE
+SVEXTERN int SVDECL(index_colorbar1, 0), SVDECL(index_colorbar2, 1);
+#endif
 #ifdef pp_COLOR_CIE_CHECK
 SVEXTERN unsigned char SVDECL(*cielab_check_rgb255, NULL);
 #endif
@@ -1599,8 +1604,10 @@ SVEXTERN int max_screenWidth, max_screenHeight;
 SVEXTERN int saveW, saveH;
 SVEXTERN char SVDECL(*texturedir,NULL);
 #ifdef pp_COLORBARS_CSV
-SVEXTERN char SVDECL(*colorbarsdir, NULL);
+SVEXTERN char SVDECL(*colorbars_smvdir,  NULL);
+SVEXTERN char SVDECL(*colorbars_userdir, NULL);
 SVEXTERN int SVDECL(nlinear_filelist,0), SVDECL(ncyclic_filelist,0), SVDECL(nrainbow_filelist,0);
+SVEXTERN int SVDECL(nuser_filelist, 0);
 #endif
 SVEXTERN char release_title[1024];
 SVEXTERN char plot3d_title[1024];

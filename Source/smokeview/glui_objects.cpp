@@ -1895,7 +1895,7 @@ extern "C" void GluiPlot2DSetup(int main_window){
     glui_plot2d->add_spinner_to_panel(PANEL_plotother, _("vertical font spacing"), GLUI_SPINNER_FLOAT, &plot2d_font_spacing,                 GENPLOT_UPDATE,    GenPlotCB);
     SPINNER_plot2d_time_average = glui_plot2d->add_spinner_to_panel(PANEL_plotother, _("smoothing interval (s)"), GLUI_SPINNER_FLOAT, &plot2d_time_average, DEVICE_TIMEAVERAGE, DeviceCB);
 #ifdef pp_PLOT2DMAX
-    glui_plot2d->add_checkbox_to_panel(PANEL_plotother, "max vals", &show_max_avg_vals, GENPLOT_MAX_VALS, GenPlotCB);
+    glui_plot2d->add_checkbox_to_panel(PANEL_plotother, "max average", &show_max_avg_vals, GENPLOT_MAX_VALS, GenPlotCB);
 #endif
 
     PANEL_plotproperties2 = glui_plot2d->add_panel_to_panel(ROLLOUT_plotproperties, "", GLUI_PANEL_NONE);

@@ -432,6 +432,16 @@ void InitStartupDirs(void){
     MKDIR(smokeview_scratchdir);
   }
 
+  NewMemory((void **)&colorbars_userdir, strlen(homedir) + strlen(dirseparator) + strlen(".smokeview") + strlen(dirseparator) + strlen("colorbars") + 1);
+  strcpy(colorbars_userdir, homedir);
+  strcat(colorbars_userdir, dirseparator);
+  strcat(colorbars_userdir, ".smokeview");
+  strcat(colorbars_userdir, dirseparator);
+  strcat(colorbars_userdir, "colorbars");
+  if(FileExistsOrig(colorbars_userdir) == NO){
+    FREEMEMORY(colorbars_userdir);
+  }
+
   NewMemory((void **)&smokeviewini_filename, strlen(smokeview_scratchdir)+strlen(dirseparator)+strlen("smokeview.ini")+2);
   strcpy(smokeviewini_filename, smokeview_scratchdir);
   strcat(smokeviewini_filename, dirseparator);
@@ -1223,14 +1233,13 @@ void InitOpenGL(int option){
   /* ------------------ InitColorbarsDir ------------------------ */
 
   void InitColorbarsDir(void){
-    if(colorbarsdir != NULL)return;
-    if(smokeview_bindir != NULL){
+    if(colorbars_smvdir == NULL && smokeview_bindir != NULL){
       size_t colorbars_len;
 
       colorbars_len = strlen(smokeview_bindir) + strlen("colorbars");
-      NewMemory((void **)&colorbarsdir, colorbars_len + 2);
-      strcpy(colorbarsdir, smokeview_bindir);
-      strcat(colorbarsdir, "colorbars");
+      NewMemory((void **)&colorbars_smvdir, colorbars_len + 2);
+      strcpy(colorbars_smvdir, smokeview_bindir);
+      strcat(colorbars_smvdir, "colorbars");
     }
   }
 #endif
