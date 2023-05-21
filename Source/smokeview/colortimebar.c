@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
+#include <ctype.h>
 #include GLUT_H
 
 #include "smokeviewvars.h"
@@ -1257,7 +1258,6 @@ void InitColorbar(colorbardata *cbptr, char *dir, char *file, char *type){
 
   if(have_name==1)fgets(buffer, 255, stream);
   for(i=0;i<n;i++){
-    char buffer[255];
     char *crgb;
 
     if(fgets(buffer, 255, stream) == NULL)break;
