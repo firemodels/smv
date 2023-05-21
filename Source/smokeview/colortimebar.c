@@ -1214,6 +1214,9 @@ void InitColorbar(colorbardata *cbptr, char *dir, char *file, char *type){
   FILE *stream;
   int i,n=0;
   char fullfile[1024];
+  char buffer[255];
+  char *field1;
+  int have_name = 0;
 
   if(file == NULL || strlen(file) == 0)return;
   if(dir == NULL  || strlen(dir) == 0)return;
@@ -1222,9 +1225,28 @@ void InitColorbar(colorbardata *cbptr, char *dir, char *file, char *type){
   strcat(fullfile, file);
   stream = fopen(fullfile, "r");
   if(stream == NULL)return;
-  for(;;){
-    char buffer[255];
+  if(fgets(buffer, 255, stream) == NULL){
+    fclose(stream);
+    return;
+  }
 
+  strcpy(cbptr->label, file);
+  cbptr->label_ptr = cbptr->label;
+  cbptr->nodehilight = 0;
+
+  field1 = strtok(buffer, ",");
+  if(field1 != NULL && isalpha(field1[0])!=0){
+    char *field2;
+
+    have_name = 1;
+    field2 = strtok(NULL, ",");
+    if(field2 != NULL){
+      strcpy(cbptr->label, field2);
+    }
+  }
+  rewind(stream);
+  if(have_name == 1)fgets(buffer, 255, stream);
+  for(;;){
     if(fgets(buffer, 255, stream) == NULL)break;
     n++;
   }
@@ -1233,6 +1255,7 @@ void InitColorbar(colorbardata *cbptr, char *dir, char *file, char *type){
   NewMemory((void **)&rgbs, 3 * n * sizeof(int));
   rgbscopy = rgbs;
 
+  if(have_name==1)fgets(buffer, 255, stream);
   for(i=0;i<n;i++){
     char buffer[255];
     char *crgb;
@@ -1252,10 +1275,7 @@ void InitColorbar(colorbardata *cbptr, char *dir, char *file, char *type){
     strcpy(cbptr->type, type);
     rgbscopy += 3;
   }
-  strcpy(cbptr->label, file);
-  cbptr->label_ptr = cbptr->label;
   cbptr->nnodes = n;
-  cbptr->nodehilight = 0;
   fclose(stream);
 }
 #endif
