@@ -8261,8 +8261,8 @@ void InitPatchSubMenus(int **loadsubpatchmenu_sptr, int **nsubpatchmenus_sptr){
 
 /* ------------------ GetLabelPtr ------------------------ */
 
-char *GetLabelPtr(char *label, char *colorbar_label, char *type){
-  strcpy(label, colorbar_label);
+char *GetLabelPtr(char *label, char *clabel, char *type){
+  strcpy(label, clabel);
   if(strncmp(label, type, strlen(type))==0)return label + strlen(type);
   return label;
 }
