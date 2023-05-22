@@ -1057,7 +1057,6 @@ void ColorbarMenu(int value){
     strcpy(cblabel,colorbarinfo[colorbartype].label);
     ext = strrchr(cblabel,'.');
     if(ext!=NULL)*ext=0;
-    printf("colorbar %i: %s\n", colorbartype + 1, cblabel);
   }
   if(value>-10){
     UpdateRGBColors(COLORBAR_INDEX_NONE);
@@ -8203,73 +8202,82 @@ void InitPatchSubMenus(int **loadsubpatchmenu_sptr, int **nsubpatchmenus_sptr){
 
 // count patch submenus
 
-    have_geom_slice_menus=0;
-    nloadsubpatchmenu_s = 0;
-    for(ii = 0;ii<npatchinfo;ii++){
-      int im1;
-      patchdata *patchi, *patchim1;
-      int i;
+  have_geom_slice_menus=0;
+  nloadsubpatchmenu_s = 0;
+  for(ii = 0;ii<npatchinfo;ii++){
+    int im1;
+    patchdata *patchi, *patchim1;
+    int i;
 
-      i = patchorderindex[ii];
-      if(ii>0){
-        im1 = patchorderindex[ii-1];
-        patchim1 = patchinfo+im1;
-      }
-      patchi = patchinfo+i;
-      if(ii==0||strcmp(patchi->menulabel_base, patchim1->menulabel_base)!=0){
-        nloadsubpatchmenu_s++;
-      }
+    i = patchorderindex[ii];
+    if(ii>0){
+      im1 = patchorderindex[ii-1];
+      patchim1 = patchinfo+im1;
     }
+    patchi = patchinfo+i;
+    if(ii==0||strcmp(patchi->menulabel_base, patchim1->menulabel_base)!=0){
+      nloadsubpatchmenu_s++;
+    }
+  }
 
 // create patch submenus
 
-    if(nloadsubpatchmenu_s > 0){
-      NewMemory((void **)&loadsubpatchmenu_s, nloadsubpatchmenu_s * sizeof(int));
-      NewMemory((void **)&nsubpatchmenus_s, nloadsubpatchmenu_s * sizeof(int));
-      *loadsubpatchmenu_sptr = loadsubpatchmenu_s;
-      *nsubpatchmenus_sptr = nsubpatchmenus_s;
-    }
-    for(ii = 0;ii<nloadsubpatchmenu_s;ii++){
-      loadsubpatchmenu_s[ii] = 0;
-      nsubpatchmenus_s[ii] = 0;
-    }
+  if(nloadsubpatchmenu_s > 0){
+    NewMemory((void **)&loadsubpatchmenu_s, nloadsubpatchmenu_s * sizeof(int));
+    NewMemory((void **)&nsubpatchmenus_s, nloadsubpatchmenu_s * sizeof(int));
+    *loadsubpatchmenu_sptr = loadsubpatchmenu_s;
+    *nsubpatchmenus_sptr = nsubpatchmenus_s;
+  }
+  for(ii = 0;ii<nloadsubpatchmenu_s;ii++){
+    loadsubpatchmenu_s[ii] = 0;
+    nsubpatchmenus_s[ii] = 0;
+  }
 
-    iloadsubpatchmenu_s = 0;
-    for(ii = 0;ii<npatchinfo;ii++){
-      int im1, i;
-      patchdata *patchi, *patchim1;
+  iloadsubpatchmenu_s = 0;
+  for(ii = 0;ii<npatchinfo;ii++){
+    int im1, i;
+    patchdata *patchi, *patchim1;
 
-      i = patchorderindex[ii];
-      if(ii>0){
-        im1 = patchorderindex[ii-1];
-        patchim1 = patchinfo+im1;
-      }
-      patchi = patchinfo+i;
-      if(ii==0||strcmp(patchi->menulabel_base, patchim1->menulabel_base)!=0){
-        CREATEMENU(loadsubpatchmenu_s[iloadsubpatchmenu_s], LoadBoundaryMenu);
-        iloadsubpatchmenu_s++;
-      }
-      if(patchi->filetype_label==NULL||strcmp(patchi->filetype_label, "INCLUDE_GEOM")!=0)continue;
-      if(nsubpatchmenus_s[iloadsubpatchmenu_s - 1] == 0 ||
-        strcmp(patchi->menulabel_suffix, patchim1->menulabel_suffix) != 0){
-        nsubpatchmenus_s[iloadsubpatchmenu_s-1]++;
-        have_geom_slice_menus=1;
-        glutAddMenuEntry(patchi->menulabel_suffix, -i-10);
-      }
+    i = patchorderindex[ii];
+    if(ii>0){
+      im1 = patchorderindex[ii-1];
+      patchim1 = patchinfo+im1;
+    }
+    patchi = patchinfo+i;
+    if(ii==0||strcmp(patchi->menulabel_base, patchim1->menulabel_base)!=0){
+      CREATEMENU(loadsubpatchmenu_s[iloadsubpatchmenu_s], LoadBoundaryMenu);
+      iloadsubpatchmenu_s++;
+    }
+    if(patchi->filetype_label==NULL||strcmp(patchi->filetype_label, "INCLUDE_GEOM")!=0)continue;
+    if(nsubpatchmenus_s[iloadsubpatchmenu_s - 1] == 0 ||
+      strcmp(patchi->menulabel_suffix, patchim1->menulabel_suffix) != 0){
+      nsubpatchmenus_s[iloadsubpatchmenu_s-1]++;
+      have_geom_slice_menus=1;
+      glutAddMenuEntry(patchi->menulabel_suffix, -i-10);
     }
   }
+}
+
+/* ------------------ GetLabelPtr ------------------------ */
+
+char *GetLabelPtr(char *label, char *clabel, char *type){
+  strcpy(label, clabel);
+ // if(strncmp(label, type, strlen(type))==0)return label + strlen(type);
+  return label;
+}
 
 /* ------------------ InitMenus ------------------------ */
 
 void MakeColorbarMenu(int *menuptr,
 #ifdef pp_COLORBARS_CSV
-                      int *submenu1ptr, int *submenu2ptr, int *submenu3ptr, int *submenu4ptr,
+                      int *submenu1ptr, int *submenu2ptr, int *submenu3ptr, int *submenu4ptr, int *submenu5ptr,
 #endif
                       void (*CBMenu)(int)){
   int i;
   int menu = 0;
 #ifdef pp_COLORBARS_CSV
-  int submenu1=0, submenu2=0, submenu3=0, submenu4=0;
+  int submenu1=0, submenu2=0, submenu3=0, submenu4=0, submenu5=0;
+  char label[256], *labelptr;
 #endif
 
 #ifdef pp_COLORBARS_CSV
@@ -8282,13 +8290,14 @@ void MakeColorbarMenu(int *menuptr,
       cbi = colorbarinfo + i;
 
       if(strcmp(cbi->type, "linear") != 0)continue;
+      labelptr = GetLabelPtr(label, cbi->label, "linear_");
       strcpy(ccolorbarmenu, "  ");
       if(colorbartype == i){
         strcat(ccolorbarmenu, "*");
-        strcat(ccolorbarmenu, cbi->label);
+        strcat(ccolorbarmenu, labelptr);
       }
       else{
-        strcat(ccolorbarmenu, cbi->label);
+        strcat(ccolorbarmenu, labelptr);
       }
       char *ext;
       ext = strrchr(ccolorbarmenu, '.');
@@ -8296,7 +8305,7 @@ void MakeColorbarMenu(int *menuptr,
       glutAddMenuEntry(ccolorbarmenu, i);
     }
   }
-  if(ncyclic_filelist > 0){
+  if(ncircular_filelist > 0){
     CREATEMENU(submenu2, CBMenu);
     colorbardata *cbi;
     char ccolorbarmenu[256];
@@ -8304,14 +8313,15 @@ void MakeColorbarMenu(int *menuptr,
     for(i = 0; i < ncolorbars; i++){
       cbi = colorbarinfo + i;
 
-      if(strcmp(cbi->type, "cyclic") != 0)continue;
+      if(strcmp(cbi->type, "circular") != 0)continue;
+      labelptr = GetLabelPtr(label, cbi->label, "circular_");
       strcpy(ccolorbarmenu, "  ");
       if(colorbartype == i){
         strcat(ccolorbarmenu, "*");
-        strcat(ccolorbarmenu, cbi->label);
+        strcat(ccolorbarmenu, labelptr);
       }
       else{
-        strcat(ccolorbarmenu, cbi->label);
+        strcat(ccolorbarmenu, labelptr);
       }
       char *ext;
       ext = strrchr(ccolorbarmenu, '.');
@@ -8328,13 +8338,38 @@ void MakeColorbarMenu(int *menuptr,
       cbi = colorbarinfo + i;
 
       if(strcmp(cbi->type, "rainbow") != 0)continue;
+      labelptr = GetLabelPtr(label, cbi->label, "rainbow_");
       strcpy(ccolorbarmenu, "  ");
       if(colorbartype == i){
         strcat(ccolorbarmenu, "*");
-        strcat(ccolorbarmenu, cbi->label);
+        strcat(ccolorbarmenu, labelptr);
       }
       else{
-        strcat(ccolorbarmenu, cbi->label);
+        strcat(ccolorbarmenu, labelptr);
+      }
+      char *ext;
+      ext = strrchr(ccolorbarmenu, '.');
+      if(ext != NULL)*ext = 0;
+      glutAddMenuEntry(ccolorbarmenu, i);
+    }
+  }
+  if(ndivergent_filelist > 0){
+    CREATEMENU(submenu4, CBMenu);
+    colorbardata *cbi;
+    char ccolorbarmenu[256];
+
+    for(i = 0; i < ncolorbars; i++){
+      cbi = colorbarinfo + i;
+
+      if(strcmp(cbi->type, "divergent") != 0)continue;
+      labelptr = GetLabelPtr(label, cbi->label, "divergent_");
+      strcpy(ccolorbarmenu, "  ");
+      if(colorbartype == i){
+        strcat(ccolorbarmenu, "*");
+        strcat(ccolorbarmenu, labelptr);
+      }
+      else{
+        strcat(ccolorbarmenu, labelptr);
       }
       char *ext;
       ext = strrchr(ccolorbarmenu, '.');
@@ -8343,7 +8378,7 @@ void MakeColorbarMenu(int *menuptr,
     }
   }
   if(nuser_filelist > 0){
-    CREATEMENU(submenu4, CBMenu);
+    CREATEMENU(submenu5, CBMenu);
     colorbardata *cbi;
     char ccolorbarmenu[256];
 
@@ -8351,13 +8386,14 @@ void MakeColorbarMenu(int *menuptr,
       cbi = colorbarinfo + i;
 
       if(strcmp(cbi->type, "user") != 0)continue;
+      labelptr = GetLabelPtr(label, cbi->label, "user_");
       strcpy(ccolorbarmenu, "  ");
       if(colorbartype == i){
         strcat(ccolorbarmenu, "*");
-        strcat(ccolorbarmenu, cbi->label);
+        strcat(ccolorbarmenu, labelptr);
       }
       else{
-        strcat(ccolorbarmenu, cbi->label);
+        strcat(ccolorbarmenu, labelptr);
       }
       char *ext;
       ext = strrchr(ccolorbarmenu, '.');
@@ -8391,19 +8427,23 @@ void MakeColorbarMenu(int *menuptr,
   if(nlinear_filelist > 0){
     GLUTADDSUBMENU(_("linear"), submenu1);
   }
-  if(ncyclic_filelist > 0){
+  if(ncircular_filelist > 0){
     GLUTADDSUBMENU("circular",  submenu2);
   }
   if(nrainbow_filelist > 0){
     GLUTADDSUBMENU("rainbow",   submenu3);
   }
+  if(ndivergent_filelist > 0){
+    GLUTADDSUBMENU("divergent",   submenu4);
+  }
   if(nuser_filelist > 0){
-    GLUTADDSUBMENU("user",      submenu4);
+    GLUTADDSUBMENU("user",      submenu5);
   }
   *submenu1ptr = submenu1;
   *submenu2ptr = submenu2;
   *submenu3ptr = submenu3;
   *submenu4ptr = submenu4;
+  *submenu5ptr = submenu5;
 #endif
   *menuptr     = menu;
 }
@@ -8421,8 +8461,8 @@ static int filesdialogmenu = 0, viewdialogmenu = 0, datadialogmenu = 0, windowdi
 static int labelmenu=0, titlemenu=0, colorbarmenu=0, colorbarsmenu=0, colorbarshademenu, smokecolorbarmenu=0, showhidemenu=0,colorbardigitmenu=0;
 static int optionmenu=0, rotatetypemenu=0;
 #ifdef pp_COLORBARS_CSV
-static int colorbars_submenu1 = 0, colorbars_submenu2 = 0, colorbars_submenu3 = 0, colorbars_submenu4 = 0;
-static int smokecolorbars_submenu1=0, smokecolorbars_submenu2 = 0, smokecolorbars_submenu3 = 0, smokecolorbars_submenu4 = 0;
+static int colorbars_submenu1 = 0, colorbars_submenu2 = 0, colorbars_submenu3 = 0, colorbars_submenu4 = 0, colorbars_submenu5 = 0;
+static int smokecolorbars_submenu1=0, smokecolorbars_submenu2 = 0, smokecolorbars_submenu3 = 0, smokecolorbars_submenu4 = 0, smokecolorbars_submenu5 = 0;
 #endif
 static int resetmenu=0, defaultviewmenu=0, frameratemenu=0, rendermenu=0, smokeviewinimenu=0, inisubmenu=0, resolutionmultipliermenu=0;
 static int terrain_geom_showmenu = 0;
@@ -10442,7 +10482,7 @@ updatemenu=0;
   if(nsmoke3dloaded>0||nvolrenderinfo>0){
     MakeColorbarMenu(&smokecolorbarmenu,
 #ifdef pp_COLORBARS_CSV
-                     &smokecolorbars_submenu1, &smokecolorbars_submenu2, &smokecolorbars_submenu3, &smokecolorbars_submenu4,
+                     &smokecolorbars_submenu1, &smokecolorbars_submenu2, &smokecolorbars_submenu3, &smokecolorbars_submenu4, &smokecolorbars_submenu5,
 #endif
                      SmokeColorbarMenu);
 
@@ -10649,7 +10689,7 @@ updatemenu=0;
   }
   MakeColorbarMenu(&colorbarsmenu,
 #ifdef pp_COLORBARS_CSV
-                   &colorbars_submenu1, &colorbars_submenu2, &colorbars_submenu3, &colorbars_submenu4,
+                   &colorbars_submenu1, &colorbars_submenu2, &colorbars_submenu3, &colorbars_submenu4, &colorbars_submenu5,
 #endif
                    ColorbarMenu);
 

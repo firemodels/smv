@@ -1230,17 +1230,30 @@ void InitOpenGL(int option){
   }
 
 #ifdef pp_COLORBARS_CSV
+
+  /* ------------------ InitColorbarsSubDir ------------------------ */
+
+  char *InitColorbarsSubDir(char *subdir){
+    char *return_path = NULL;
+
+    if(smokeview_bindir == NULL || subdir==NULL)return return_path;
+    
+    NewMemory((void **)&return_path,
+              strlen(smokeview_bindir) + strlen("colorbars") + strlen(dirseparator) + strlen(subdir) + 2);
+    strcpy(return_path, smokeview_bindir);
+    strcat(return_path, "colorbars");
+    strcat(return_path, dirseparator);
+    strcat(return_path, subdir);
+    return return_path;
+  }
+
   /* ------------------ InitColorbarsDir ------------------------ */
 
   void InitColorbarsDir(void){
-    if(colorbars_smvdir == NULL && smokeview_bindir != NULL){
-      size_t colorbars_len;
-
-      colorbars_len = strlen(smokeview_bindir) + strlen("colorbars");
-      NewMemory((void **)&colorbars_smvdir, colorbars_len + 2);
-      strcpy(colorbars_smvdir, smokeview_bindir);
-      strcat(colorbars_smvdir, "colorbars");
-    }
+    colorbars_linear_dir    = InitColorbarsSubDir("linear");
+    colorbars_divergent_dir = InitColorbarsSubDir("divergent");
+    colorbars_rainbow_dir   = InitColorbarsSubDir("rainbow");
+    colorbars_circular_dir  = InitColorbarsSubDir("circular");
   }
 #endif
   /* ------------------ InitTextureDir ------------------------ */
