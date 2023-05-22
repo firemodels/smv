@@ -1057,7 +1057,6 @@ void ColorbarMenu(int value){
     strcpy(cblabel,colorbarinfo[colorbartype].label);
     ext = strrchr(cblabel,'.');
     if(ext!=NULL)*ext=0;
-    printf("colorbar %i: %s\n", colorbartype + 1, cblabel);
   }
   if(value>-10){
     UpdateRGBColors(COLORBAR_INDEX_NONE);
@@ -8263,7 +8262,7 @@ void InitPatchSubMenus(int **loadsubpatchmenu_sptr, int **nsubpatchmenus_sptr){
 
 char *GetLabelPtr(char *label, char *clabel, char *type){
   strcpy(label, clabel);
-  if(strncmp(label, type, strlen(type))==0)return label + strlen(type);
+ // if(strncmp(label, type, strlen(type))==0)return label + strlen(type);
   return label;
 }
 
@@ -8271,13 +8270,13 @@ char *GetLabelPtr(char *label, char *clabel, char *type){
 
 void MakeColorbarMenu(int *menuptr,
 #ifdef pp_COLORBARS_CSV
-                      int *submenu1ptr, int *submenu2ptr, int *submenu3ptr, int *submenu4ptr,
+                      int *submenu1ptr, int *submenu2ptr, int *submenu3ptr, int *submenu4ptr, int *submenu5ptr,
 #endif
                       void (*CBMenu)(int)){
   int i;
   int menu = 0;
 #ifdef pp_COLORBARS_CSV
-  int submenu1=0, submenu2=0, submenu3=0, submenu4=0;
+  int submenu1=0, submenu2=0, submenu3=0, submenu4=0, submenu5=0;
   char label[256], *labelptr;
 #endif
 
@@ -8354,8 +8353,32 @@ void MakeColorbarMenu(int *menuptr,
       glutAddMenuEntry(ccolorbarmenu, i);
     }
   }
-  if(nuser_filelist > 0){
+  if(ndivergent_filelist > 0){
     CREATEMENU(submenu4, CBMenu);
+    colorbardata *cbi;
+    char ccolorbarmenu[256];
+
+    for(i = 0; i < ncolorbars; i++){
+      cbi = colorbarinfo + i;
+
+      if(strcmp(cbi->type, "divergent") != 0)continue;
+      labelptr = GetLabelPtr(label, cbi->label, "divergent_");
+      strcpy(ccolorbarmenu, "  ");
+      if(colorbartype == i){
+        strcat(ccolorbarmenu, "*");
+        strcat(ccolorbarmenu, labelptr);
+      }
+      else{
+        strcat(ccolorbarmenu, labelptr);
+      }
+      char *ext;
+      ext = strrchr(ccolorbarmenu, '.');
+      if(ext != NULL)*ext = 0;
+      glutAddMenuEntry(ccolorbarmenu, i);
+    }
+  }
+  if(nuser_filelist > 0){
+    CREATEMENU(submenu5, CBMenu);
     colorbardata *cbi;
     char ccolorbarmenu[256];
 
@@ -8410,13 +8433,17 @@ void MakeColorbarMenu(int *menuptr,
   if(nrainbow_filelist > 0){
     GLUTADDSUBMENU("rainbow",   submenu3);
   }
+  if(ndivergent_filelist > 0){
+    GLUTADDSUBMENU("divergent",   submenu4);
+  }
   if(nuser_filelist > 0){
-    GLUTADDSUBMENU("user",      submenu4);
+    GLUTADDSUBMENU("user",      submenu5);
   }
   *submenu1ptr = submenu1;
   *submenu2ptr = submenu2;
   *submenu3ptr = submenu3;
   *submenu4ptr = submenu4;
+  *submenu5ptr = submenu5;
 #endif
   *menuptr     = menu;
 }
@@ -8434,8 +8461,8 @@ static int filesdialogmenu = 0, viewdialogmenu = 0, datadialogmenu = 0, windowdi
 static int labelmenu=0, titlemenu=0, colorbarmenu=0, colorbarsmenu=0, colorbarshademenu, smokecolorbarmenu=0, showhidemenu=0,colorbardigitmenu=0;
 static int optionmenu=0, rotatetypemenu=0;
 #ifdef pp_COLORBARS_CSV
-static int colorbars_submenu1 = 0, colorbars_submenu2 = 0, colorbars_submenu3 = 0, colorbars_submenu4 = 0;
-static int smokecolorbars_submenu1=0, smokecolorbars_submenu2 = 0, smokecolorbars_submenu3 = 0, smokecolorbars_submenu4 = 0;
+static int colorbars_submenu1 = 0, colorbars_submenu2 = 0, colorbars_submenu3 = 0, colorbars_submenu4 = 0, colorbars_submenu5 = 0;
+static int smokecolorbars_submenu1=0, smokecolorbars_submenu2 = 0, smokecolorbars_submenu3 = 0, smokecolorbars_submenu4 = 0, smokecolorbars_submenu5 = 0;
 #endif
 static int resetmenu=0, defaultviewmenu=0, frameratemenu=0, rendermenu=0, smokeviewinimenu=0, inisubmenu=0, resolutionmultipliermenu=0;
 static int terrain_geom_showmenu = 0;
@@ -10455,7 +10482,7 @@ updatemenu=0;
   if(nsmoke3dloaded>0||nvolrenderinfo>0){
     MakeColorbarMenu(&smokecolorbarmenu,
 #ifdef pp_COLORBARS_CSV
-                     &smokecolorbars_submenu1, &smokecolorbars_submenu2, &smokecolorbars_submenu3, &smokecolorbars_submenu4,
+                     &smokecolorbars_submenu1, &smokecolorbars_submenu2, &smokecolorbars_submenu3, &smokecolorbars_submenu4, &smokecolorbars_submenu5,
 #endif
                      SmokeColorbarMenu);
 
@@ -10662,7 +10689,7 @@ updatemenu=0;
   }
   MakeColorbarMenu(&colorbarsmenu,
 #ifdef pp_COLORBARS_CSV
-                   &colorbars_submenu1, &colorbars_submenu2, &colorbars_submenu3, &colorbars_submenu4,
+                   &colorbars_submenu1, &colorbars_submenu2, &colorbars_submenu3, &colorbars_submenu4, &colorbars_submenu5,
 #endif
                    ColorbarMenu);
 
