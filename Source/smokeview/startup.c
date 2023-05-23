@@ -1701,8 +1701,6 @@ void InitVars(void){
   hrrpuv_iso_color[2]=0.0;
   hrrpuv_iso_color[3]=1.0;
   showgluitrainer=0;
-  colorbartype=0;
-  colorbartype_ini=-1;
   UpdateCurrentColorbar(colorbarinfo);
   colorbartype_save=colorbartype;
   colorbartype_default=colorbartype;

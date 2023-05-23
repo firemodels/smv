@@ -1304,6 +1304,31 @@ void RevertColorBar(colorbardata *cbi){
 }
 #endif
 
+/* ------------------ CompareColorbars ------------------------ */
+
+int CompareColorbars(const void *arg1, const void *arg2){
+  colorbardata *cbi, *cbj;
+
+  cbi = *(colorbardata **)arg1;
+  cbj = *(colorbardata **)arg2;
+
+  return STRCMP(cbi->label_ptr, cbj->label_ptr);
+}
+
+/* ------------------ SortColorBars ------------------------ */
+
+void SortColorBars(void){
+  int i;
+
+  FREEMEMORY(colorbars_sorted);
+  NewMemory((void **)&colorbars_sorted, ncolorbars*sizeof(colorbardata *));
+  colorbartype_default = 0;
+  for(i = 0;i < ncolorbars;i++){
+    colorbars_sorted[i] = colorbarinfo + i;
+  }
+  qsort((colorbardata *)colorbars_sorted, (size_t)ncolorbars, sizeof(colorbardata *), CompareColorbars);
+}
+
 /* ------------------ InitDefaultColorbars ------------------------ */
 
 void InitDefaultColorbars(int nini){
@@ -1372,7 +1397,7 @@ void InitDefaultColorbars(int nini){
   cbi->rgb_node[12]=255;
   cbi->rgb_node[13]=0;
   cbi->rgb_node[14]=0;
-  strcpy(cbi->type, "original");
+  strcpy(cbi->type, "rainbow");
   cbi++;
 
   // Rainbow 2 colorbar
@@ -1441,7 +1466,7 @@ void InitDefaultColorbars(int nini){
   cbi->rgb_node[33]=215;	
   cbi->rgb_node[34]=5;	
   cbi->rgb_node[35]=13;
-  strcpy(cbi->type, "original");
+  strcpy(cbi->type, "rainbow");
   cbi++;
 
   // yellow/red
@@ -1460,7 +1485,7 @@ void InitDefaultColorbars(int nini){
   cbi->rgb_node[3]=255;
   cbi->rgb_node[4]=0;
   cbi->rgb_node[5]=0;
-  strcpy(cbi->type, "original");
+  strcpy(cbi->type, "linear");
   cbi++;
 
   // blue/green/red
@@ -1484,7 +1509,7 @@ void InitDefaultColorbars(int nini){
   cbi->rgb_node[6]=255;
   cbi->rgb_node[7]=0;
   cbi->rgb_node[8]=0;
-  strcpy(cbi->type, "original");
+  strcpy(cbi->type, "deprecated");
   cbi++;
 
   // blue/yellow/white
@@ -1517,7 +1542,7 @@ void InitDefaultColorbars(int nini){
   cbi->rgb_node[9]    = 255;
   cbi->rgb_node[10]   = 255;
   cbi->rgb_node[11]   = 255;
-  strcpy(cbi->type, "original");
+  strcpy(cbi->type, "deprecated");
   cbi++;
 
   // blue->red split
@@ -1547,7 +1572,7 @@ void InitDefaultColorbars(int nini){
   cbi->rgb_node[9]=255;
   cbi->rgb_node[10]=0;
   cbi->rgb_node[11]=0;
-  strcpy(cbi->type, "original");
+  strcpy(cbi->type, "divergent");
   cbi++;
 
   // black->white
@@ -1568,7 +1593,7 @@ void InitDefaultColorbars(int nini){
   cbi->rgb_node[3] =255;
   cbi->rgb_node[4]=255;
   cbi->rgb_node[5]=255;
-  strcpy(cbi->type, "original");
+  strcpy(cbi->type, "linear");
   cbi++;
 
   // FED
@@ -1608,7 +1633,7 @@ void InitDefaultColorbars(int nini){
   cbi->rgb_node[15]=255;
   cbi->rgb_node[16]=155;
   cbi->rgb_node[17]=0;
-  strcpy(cbi->type, "original");
+  strcpy(cbi->type, "blocked");
   cbi++;
 
   // fire (original)
@@ -1640,7 +1665,7 @@ void InitDefaultColorbars(int nini){
   cbi->rgb_node[9]=255;
   cbi->rgb_node[10]=128;
   cbi->rgb_node[11]=0;
-  strcpy(cbi->type, "original");
+  strcpy(cbi->type, "divergent");
   cbi++;
 
   // fire 2
@@ -1702,7 +1727,7 @@ void InitDefaultColorbars(int nini){
   cbi->rgb_node[27]=255;
   cbi->rgb_node[28]=255;
   cbi->rgb_node[29]=238;
-  strcpy(cbi->type, "original");
+  strcpy(cbi->type, "divergent");
   cbi++;
 
   // fire 3
@@ -1735,7 +1760,7 @@ void InitDefaultColorbars(int nini){
   cbi->rgb_node[9] = 255;
   cbi->rgb_node[10] = 255;
   cbi->rgb_node[11] = 255;
-  strcpy(cbi->type, "original");
+  strcpy(cbi->type, "linear");
   cbi++;
 
   // cool
@@ -1782,7 +1807,7 @@ void InitDefaultColorbars(int nini){
   cbi->rgb_node[18] = 255;
   cbi->rgb_node[19] = 255;
   cbi->rgb_node[20] = 255;
-  strcpy(cbi->type, "original");
+  strcpy(cbi->type, "deprecated");
   cbi++;
 
   // fire line (level set)
@@ -1823,9 +1848,8 @@ void InitDefaultColorbars(int nini){
   cbi->rgb_node[15]=0;
   cbi->rgb_node[16]=1;
   cbi->rgb_node[17]=2;
-  strcpy(cbi->type, "original");
+  strcpy(cbi->type, "blocked");
   cbi++;
-
 
   // fire line (wall thickness)
 
@@ -1855,7 +1879,7 @@ void InitDefaultColorbars(int nini){
   cbi->rgb_node[9]=253;
   cbi->rgb_node[10]=254;
   cbi->rgb_node[11]=255;
-  strcpy(cbi->type, "original");
+  strcpy(cbi->type, "blocked");
   cbi++;
 
   // split
@@ -1875,7 +1899,7 @@ void InitDefaultColorbars(int nini){
   for(i = 0; i < 12; i++){
     cbi->rgb_node[i] = colorsplit[i];
   }
-  strcpy(cbi->type, "original");
+  strcpy(cbi->type, "divergent");
   cbi++;
 
 
@@ -1906,7 +1930,7 @@ void InitDefaultColorbars(int nini){
   cbi->rgb_node[9] = 255;
   cbi->rgb_node[10] = 255;
   cbi->rgb_node[11] = 255;
-  strcpy(cbi->type, "original");
+  strcpy(cbi->type, "divergent");
   cbi++;
 
   // Propane
@@ -1941,7 +1965,7 @@ void InitDefaultColorbars(int nini){
   cbi->rgb_node[12] = 255;
   cbi->rgb_node[13] = 255;
   cbi->rgb_node[14] = 255;
-  strcpy(cbi->type, "original");
+  strcpy(cbi->type, "linear");
   cbi++;
 
   // CO2
@@ -1967,7 +1991,7 @@ void InitDefaultColorbars(int nini){
   cbi->rgb_node[6] = 255;
   cbi->rgb_node[7] = 255;
   cbi->rgb_node[8] = 255;
-  strcpy(cbi->type, "original");
+  strcpy(cbi->type, "linear");
   cbi++;
 
 #ifdef pp_COLORBARS_CSV
@@ -1991,16 +2015,6 @@ void InitDefaultColorbars(int nini){
     InitColorbar(cbi, colorbars_userdir, user_filelist[i].file,    "user");
     cbi++;
   }
-#ifdef pp_COLOR_NEW
-  if(rainbow_filelist>0){
-    memcpy(colorbarinfo+1, colorbarinfo, sizeof(colorbardata));
-    strcpy(colorbarinfo[1].label, "Rainbow(original)");
-
-    memcpy(colorbarinfo, cbi - nrainbow_filelist, sizeof(colorbardata));
-    strcpy(colorbarinfo->label, "Rainbow");
-    strcpy(colorbarinfo->type, "original");
-  }
-#endif
 #endif
 
   // construct colormaps from color node info
@@ -2012,6 +2026,26 @@ void InitDefaultColorbars(int nini){
     UpdateColorbarSplits(cbi);
     memcpy(cbi->rgb_node_orig, cbi->rgb_node, 3 * cbi->nnodes * sizeof(unsigned char));
   }
+  SortColorBars();
+  colorbartype       = colorbartype_default;
+  iso_colorbar_index = colorbartype_default;
+#ifdef pp_COLOR_NEW
+  if(rainbow_filelist>0){
+    int new_rainbow_index = -1;
+    for(i = 0;i < ncolorbars;i++){
+      if(strcmp(colorbarinfo[i].label, "CET-R2.csv")==0)new_rainbow_index = i;
+    }
+
+    if(new_rainbow_index>=0){
+      memcpy(colorbarinfo+1, colorbarinfo, sizeof(colorbardata));
+      strcpy(colorbarinfo[1].label, "Rainbow(original)");
+
+      memcpy(colorbarinfo, colorbarinfo + new_rainbow_index, sizeof(colorbardata));
+      strcpy(colorbarinfo->label, "Rainbow");
+      strcpy(colorbarinfo->type, "rainbow");
+    }
+  }
+#endif
 }
 
 /* ------------------ UpdateColorbarSplits ------------------------ */

@@ -8273,7 +8273,7 @@ void MakeColorbarMenu(int *menuptr,
                       int *submenu1ptr, int *submenu2ptr, int *submenu3ptr, int *submenu4ptr, int *submenu5ptr,
 #endif
                       void (*CBMenu)(int)){
-  int i;
+  int i, ii;
   int menu = 0;
 #ifdef pp_COLORBARS_CSV
   int submenu1=0, submenu2=0, submenu3=0, submenu4=0, submenu5=0;
@@ -8286,8 +8286,9 @@ void MakeColorbarMenu(int *menuptr,
     colorbardata *cbi;
     char ccolorbarmenu[256];
 
-    for(i = 0; i < ncolorbars; i++){
-      cbi = colorbarinfo + i;
+    for(ii = 0; ii < ncolorbars; ii++){
+      cbi = colorbars_sorted[ii];
+      i = cbi - colorbarinfo;
 
       if(strcmp(cbi->type, "linear") != 0)continue;
       labelptr = GetLabelPtr(label, cbi->label, "linear_");
@@ -8310,8 +8311,9 @@ void MakeColorbarMenu(int *menuptr,
     colorbardata *cbi;
     char ccolorbarmenu[256];
 
-    for(i = 0; i < ncolorbars; i++){
-      cbi = colorbarinfo + i;
+    for(ii = 0; ii < ncolorbars; ii++){
+      cbi = colorbars_sorted[ii];
+      i = cbi - colorbarinfo;
 
       if(strcmp(cbi->type, "circular") != 0)continue;
       labelptr = GetLabelPtr(label, cbi->label, "circular_");
@@ -8334,8 +8336,9 @@ void MakeColorbarMenu(int *menuptr,
     colorbardata *cbi;
     char ccolorbarmenu[256];
 
-    for(i = 0; i < ncolorbars; i++){
-      cbi = colorbarinfo + i;
+    for(ii = 0; ii < ncolorbars; ii++){
+      cbi = colorbars_sorted[ii];
+      i = cbi - colorbarinfo;
 
       if(strcmp(cbi->type, "rainbow") != 0)continue;
       labelptr = GetLabelPtr(label, cbi->label, "rainbow_");
@@ -8358,8 +8361,9 @@ void MakeColorbarMenu(int *menuptr,
     colorbardata *cbi;
     char ccolorbarmenu[256];
 
-    for(i = 0; i < ncolorbars; i++){
-      cbi = colorbarinfo + i;
+    for(ii = 0; ii < ncolorbars; ii++){
+      cbi = colorbars_sorted[ii];
+      i = cbi - colorbarinfo;
 
       if(strcmp(cbi->type, "divergent") != 0)continue;
       labelptr = GetLabelPtr(label, cbi->label, "divergent_");
@@ -8382,8 +8386,9 @@ void MakeColorbarMenu(int *menuptr,
     colorbardata *cbi;
     char ccolorbarmenu[256];
 
-    for(i = 0; i < ncolorbars; i++){
-      cbi = colorbarinfo + i;
+    for(ii = 0; ii < ncolorbars; ii++){
+      cbi = colorbars_sorted[ii];
+      i = cbi - colorbarinfo;
 
       if(strcmp(cbi->type, "user") != 0)continue;
       labelptr = GetLabelPtr(label, cbi->label, "user_");

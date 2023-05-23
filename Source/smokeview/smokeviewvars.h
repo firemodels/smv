@@ -1374,7 +1374,7 @@ SVEXTERN int SVDECL(*shooter_timeslist,NULL);
 SVEXTERN int SVDECL(shooter_itime,0);
 
 SVEXTERN int showgluitrainer;
-SVEXTERN int colorbartype,colorbartype_ini,colorbartype_default;
+SVEXTERN int SVDECL(colorbartype,0),SVDECL(colorbartype_ini,-1), SVDECL(colorbartype_default, 0);
 SVEXTERN char colorbarname[1024];
 SVEXTERN int SVDECL(update_colorbartype,0);
 SVEXTERN int colorbartype_save;
@@ -1883,6 +1883,7 @@ SVEXTERN int showall_textures;
 SVEXTERN int SVDECL(enable_texture_lighting,0);
 
 SVEXTERN int SVDECL(ncolorbars,0);
+SVEXTERN colorbardata SVDECL(**colorbars_sorted, NULL);
 SVEXTERN int ndefaultcolorbars;
 SVEXTERN colorbardata SVDECL(*colorbarinfo,NULL),SVDECL(*current_colorbar,NULL);
 

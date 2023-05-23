@@ -104,7 +104,7 @@ extern "C" void UpdateColorbarList(void){
 /* ------------------ UpdateColorbarType ------------------------ */
 
 extern "C" void UpdateColorbarType(void){
-  LISTBOX_colorbar->set_int_val(colorbartype);
+  if(LISTBOX_colorbar!=NULL)LISTBOX_colorbar->set_int_val(colorbartype);
 }
 
 /* ------------------ HideGluiColorbar ------------------------ */
