@@ -4606,6 +4606,29 @@ extern "C" void UpdateSliceXYZ(void){
   if(SPINNER_slice_z!=NULL)SPINNER_slice_z->set_float_val(slice_xyz[2]);
 }
 
+/* ------------------ AddColorbarList ------------------------ */
+
+void AddColorbarList(GLUI_Listbox *LIST_cbar, char *label_arg){
+  char cbar_type[256];
+  int ii;
+
+  strcpy(cbar_type, "***");
+  strcat(cbar_type, label_arg);
+  strcat(cbar_type, "***");
+  LIST_cbar->add_item(-1, cbar_type);
+  for(ii = 0; ii < ncolorbars; ii++){
+    colorbardata *cbi;
+    int i;
+
+    cbi = colorbars_sorted[ii];
+    i = cbi - colorbarinfo;
+
+    if(strcmp(cbi->type, label_arg) != 0)continue;
+    cbi->label_ptr = cbi->label;
+    LIST_colorbar2->add_item(i, cbi->label_ptr);
+  }
+}
+
 /* ------------------ GluiBoundsSetup ------------------------ */
 
 extern "C" void GluiBoundsSetup(int main_window){
@@ -5422,13 +5445,13 @@ extern "C" void GluiBoundsSetup(int main_window){
     selectedcolorbar_index2 = -1;
     LIST_colorbar2 = glui_bounds->add_listbox_to_panel(PANEL_colorbar_properties, "", &selectedcolorbar_index2, COLORBAR_LIST2, SliceBoundCB);
 
-    for(i = 0; i<ncolorbars; i++){
-      colorbardata *cbi;
+    AddColorbarList(LIST_colorbar2, "rainbow");
+    AddColorbarList(LIST_colorbar2, "linear");
+    AddColorbarList(LIST_colorbar2, "divergent");
+    AddColorbarList(LIST_colorbar2, "circular");
+    AddColorbarList(LIST_colorbar2, "deprecated");
+    AddColorbarList(LIST_colorbar2, "user");
 
-      cbi = colorbarinfo+i;
-      cbi->label_ptr = cbi->label;
-      LIST_colorbar2->add_item(i, cbi->label_ptr);
-    }
     LIST_colorbar2->set_int_val(colorbartype);
     glui_bounds->add_button_to_panel(PANEL_colorbar_properties, _("Next"),     COLORBAR_LIST2_NEXT, SliceBoundCB);
     glui_bounds->add_button_to_panel(PANEL_colorbar_properties, _("Previous"), COLORBAR_LIST2_PREV, SliceBoundCB);
@@ -6409,7 +6432,11 @@ extern "C" void SliceBoundCB(int var){
       GetZoneColors(zonetl, nzonetotal, izonetl, zonemin, zonemax, nrgb, nrgb_full, colorlabelzone, colorvalueszone, zonelevels256);
       break;
     case COLORBAR_LIST2:
-      selectedcolorbar_index = LIST_colorbar2->get_int_val();
+      int list_index;
+
+      list_index = LIST_colorbar2->get_int_val();
+      if(list_index<0)break;
+      selectedcolorbar_index = list_index;
       UpdateColorbarList();
       ColorbarMenu(selectedcolorbar_index);
       ColorbarGlobal2Local();

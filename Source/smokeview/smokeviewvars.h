@@ -1610,6 +1610,7 @@ SVEXTERN char SVDECL(*colorbars_divergent_dir, NULL);
 SVEXTERN char SVDECL(*colorbars_circular_dir, NULL);
 SVEXTERN char SVDECL(*colorbars_userdir, NULL);
 SVEXTERN int SVDECL(nlinear_filelist,0), SVDECL(ncircular_filelist,0), SVDECL(nrainbow_filelist,0), SVDECL(ndivergent_filelist,0);
+SVEXTERN int SVDECL(ndeprecated_filelist, 0);
 SVEXTERN int SVDECL(nuser_filelist, 0);
 #endif
 SVEXTERN char release_title[1024];

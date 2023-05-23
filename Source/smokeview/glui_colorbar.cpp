@@ -329,7 +329,11 @@ extern "C" void ColorbarCB(int var){
     UpdateRGBColors(COLORBAR_INDEX_NONE);
     break;
   case COLORBAR_LIST:
-    selectedcolorbar_index2 = LISTBOX_colorbar->get_int_val();
+    int list_index;
+
+    list_index = LISTBOX_colorbar->get_int_val();
+    if(list_index<0)break;
+    selectedcolorbar_index2 = list_index;
     if(show_firecolormap==0){
       colorbartype=selectedcolorbar_index2;
     }
@@ -441,6 +445,29 @@ extern "C" void ColorbarCB(int var){
   }
 }
 
+/* ------------------ AddColorbarList2 ------------------------ */
+
+void AddColorbarList2(GLUI_Listbox *LIST_cbar, char *label_arg){
+  char cbar_type[256];
+  int ii;
+
+  strcpy(cbar_type, "***");
+  strcat(cbar_type, label_arg);
+  strcat(cbar_type, "***");
+  LIST_cbar->add_item(-1, cbar_type);
+  for(ii = 0; ii < ncolorbars; ii++){
+    colorbardata *cbi;
+    int i;
+
+    cbi = colorbars_sorted[ii];
+    i = cbi - colorbarinfo;
+
+    if(strcmp(cbi->type, label_arg) != 0)continue;
+    cbi->label_ptr = cbi->label;
+    LIST_cbar->add_item(i, cbi->label_ptr);
+  }
+}
+
 /* ------------------ GluiColorbarSetup ------------------------ */
 
 extern "C" void GluiColorbarSetup(int main_window){
@@ -486,11 +513,12 @@ extern "C" void GluiColorbarSetup(int main_window){
     selectedcolorbar_index=-1;
     LISTBOX_colorbar=glui_colorbar->add_listbox_to_panel(PANEL_cb1,"",&selectedcolorbar_index,COLORBAR_LIST,ColorbarCB);
 
-    for(i=0;i<ncolorbars;i++){
-      cbi = colorbarinfo + i;
-      cbi->label_ptr=cbi->label;
-      LISTBOX_colorbar->add_item(i,cbi->label_ptr);
-    }
+    AddColorbarList2(LISTBOX_colorbar, "rainbow");
+    AddColorbarList2(LISTBOX_colorbar, "linear");
+    AddColorbarList2(LISTBOX_colorbar, "divergent");
+    AddColorbarList2(LISTBOX_colorbar, "circular");
+    AddColorbarList2(LISTBOX_colorbar, "deprecated");
+    AddColorbarList2(LISTBOX_colorbar, "user");
     LISTBOX_colorbar->set_int_val(colorbartype);
   }
   EDITTEXT_colorbar_label  = glui_colorbar->add_edittext_to_panel(PANEL_cb1,_("Label"),GLUI_EDITTEXT_TEXT,colorbar_label,COLORBAR_LABEL,ColorbarCB);
