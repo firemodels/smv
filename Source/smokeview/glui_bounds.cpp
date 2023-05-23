@@ -4625,7 +4625,9 @@ void AddColorbarList(GLUI_Listbox *LIST_cbar, char *label_arg){
 
     if(strcmp(cbi->type, label_arg) != 0)continue;
     cbi->label_ptr = cbi->label;
+#ifdef pp_COLOR_TOGGLE
     LIST_colorbar2->add_item(i, cbi->label_ptr);
+#endif
   }
 }
 

@@ -432,6 +432,7 @@ void InitStartupDirs(void){
     MKDIR(smokeview_scratchdir);
   }
 
+#ifdef pp_COLORBARS_CSV
   NewMemory((void **)&colorbars_userdir, strlen(homedir) + strlen(dirseparator) + strlen(".smokeview") + strlen(dirseparator) + strlen("colorbars") + 1);
   strcpy(colorbars_userdir, homedir);
   strcat(colorbars_userdir, dirseparator);
@@ -441,6 +442,7 @@ void InitStartupDirs(void){
   if(FileExistsOrig(colorbars_userdir) == NO){
     FREEMEMORY(colorbars_userdir);
   }
+#endif
 
   NewMemory((void **)&smokeviewini_filename, strlen(smokeview_scratchdir)+strlen(dirseparator)+strlen("smokeview.ini")+2);
   strcpy(smokeviewini_filename, smokeview_scratchdir);

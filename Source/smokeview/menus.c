@@ -8273,9 +8273,10 @@ void MakeColorbarMenu(int *menuptr,
                       int *submenu1ptr, int *submenu2ptr, int *submenu3ptr, int *submenu4ptr, int *submenu5ptr, int *submenu6ptr,
 #endif
                       void (*CBMenu)(int)){
-  int i, ii;
+  int i;
   int menu = 0;
 #ifdef pp_COLORBARS_CSV
+  int ii;
   int submenu1=0, submenu2=0, submenu3=0, submenu4=0, submenu5=0, submenu6=0;
   char label[256], *labelptr;
 #endif

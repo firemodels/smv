@@ -400,7 +400,9 @@ extern "C" void ColorbarCB(int var){
     cbi = colorbarinfo + colorbartype;  //AddColorbar resizes (and possibly moves) colorbarinfo
     LISTBOX_colorbar->add_item(colorbartype, cbi->label);
     LISTBOX_colorbar->set_int_val(colorbartype);
+#ifdef pp_COLOR_TOGGLE
     LISTBOX_colorbar2->add_item(colorbartype, cbi->label);
+#endif
     ColorbarCB(COLORBAR_LIST);
     break;
 #ifdef pp_COLOR_CIE
@@ -471,9 +473,6 @@ void AddColorbarList2(GLUI_Listbox *LIST_cbar, char *label_arg){
 /* ------------------ GluiColorbarSetup ------------------------ */
 
 extern "C" void GluiColorbarSetup(int main_window){
-  colorbardata *cbi;
-  int i;
-
   cb_valmin=0.0;
   cb_valmax=100.0;
   cb_val=50.0;
@@ -529,9 +528,13 @@ extern "C" void GluiColorbarSetup(int main_window){
   glui_colorbar->add_column_to_panel(PANEL_cb11r,false);
   BUTTON_next     = glui_colorbar->add_button_to_panel(PANEL_cb11r, _("Next"),     COLORBAR_NEXT, ColorbarCB);
 #ifdef pp_COLOR_TOGGLE
+  int i;
+
   PANEL_toggle_cb = glui_colorbar->add_panel(_("toggle colorbars"));
   LISTBOX_colorbar1=glui_colorbar->add_listbox_to_panel(PANEL_toggle_cb,"colorbar 1", &index_colorbar1, COLORBAR_LISTA, ColorbarCB);
   for(i=0;i<ncolorbars;i++){
+    colorbardata *cbi;
+
     cbi = colorbarinfo + i;
     cbi->label_ptr=cbi->label;
     LISTBOX_colorbar1->add_item(i,cbi->label_ptr);
@@ -540,6 +543,8 @@ extern "C" void GluiColorbarSetup(int main_window){
 
   LISTBOX_colorbar2=glui_colorbar->add_listbox_to_panel(PANEL_toggle_cb,"colorbar 2",&index_colorbar2, COLORBAR_LISTB, ColorbarCB);
   for(i=0;i<ncolorbars;i++){
+    colorbardata *cbi;
+
     cbi = colorbarinfo + i;
     cbi->label_ptr=cbi->label;
     LISTBOX_colorbar2->add_item(i,cbi->label_ptr);
