@@ -29,6 +29,7 @@ GLUI_Listbox *LISTBOX_colorbar2 = NULL;
 extern GLUI_Listbox *LISTBOX_colorbar1a;
 extern GLUI_Listbox *LISTBOX_colorbar2a;
 #endif
+extern GLUI_Listbox *LISTBOX_colorbar2a;
 
 GLUI_Spinner *SPINNER_rgb[3];
 #ifdef pp_COLOR_CIE
@@ -395,7 +396,7 @@ extern "C" void ColorbarCB(int var){
     cbi = colorbarinfo + colorbartype;  //AddColorbar resizes (and possibly moves) colorbarinfo
     LISTBOX_colorbar->add_item(colorbartype, cbi->label);
     LISTBOX_colorbar->set_int_val(colorbartype);
-    AddColorbarList2(colorbartype, cbi->label);
+    LISTBOX_colorbar2->add_item(colorbartype, cbi->label);
     ColorbarCB(COLORBAR_LIST);
     break;
 #ifdef pp_COLOR_CIE

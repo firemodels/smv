@@ -341,7 +341,6 @@ EXTERNCPP void ScriptCB(int var);
 EXTERNCPP void TourCB(int var);
 EXTERNCPP void SetClipControls(int val);
 EXTERNCPP void ExtremeCB(int var);
-EXTERNCPP void AddColorbarList2(int index, char *label);
 EXTERNCPP void UpdateExtremeVals(void);
 EXTERNCPP void PartBoundCB(int var);
 EXTERNCPP void ShowHideMenu(int val);
@@ -540,7 +539,6 @@ EXTERNCPP void UpdateSmokeColormap(int option);
 EXTERNCPP void UpdateCO2Colormap(void);
 EXTERNCPP void DefineVolsmokeTextures(void);
 EXTERNCPP void SetColorbarListIndex(int val);
-EXTERNCPP int  GetColorbarListIndex(void);
 EXTERNCPP int  GetColorbarIndex(int flag, int x, int y);
 EXTERNCPP void GetViewportInfo(void);
 

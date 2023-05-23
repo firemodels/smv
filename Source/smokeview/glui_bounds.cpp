@@ -3597,22 +3597,10 @@ extern "C" void UpdateExtreme(void){
   ExtremeCB(COLORBAR_EXTREME);
 }
 
-/* ------------------ GetColorbarListIndex ------------------------ */
-
-extern "C" int GetColorbarListIndex(void){
-  return LIST_colorbar2->get_int_val();
-}
-
 /* ------------------ UpdateColorbarList2 ------------------------ */
 
 extern "C" void UpdateColorbarList2(void){
   if(LIST_colorbar2!=NULL)LIST_colorbar2->set_int_val(selectedcolorbar_index2);
-}
-
-/* ------------------ AddColorbarList2 ------------------------ */
-
-extern "C" void AddColorbarList2(int index, char *label){
-  LIST_colorbar2->add_item(index, label);
 }
 
 /* ------------------ SetColorbarListIndex ------------------------ */
@@ -6421,7 +6409,7 @@ extern "C" void SliceBoundCB(int var){
       GetZoneColors(zonetl, nzonetotal, izonetl, zonemin, zonemax, nrgb, nrgb_full, colorlabelzone, colorvalueszone, zonelevels256);
       break;
     case COLORBAR_LIST2:
-      selectedcolorbar_index= GetColorbarListIndex();
+      selectedcolorbar_index = LIST_colorbar2->get_int_val();
       UpdateColorbarList();
       ColorbarMenu(selectedcolorbar_index);
       ColorbarGlobal2Local();
