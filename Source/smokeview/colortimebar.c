@@ -2037,12 +2037,18 @@ void InitDefaultColorbars(int nini){
   if(cb != NULL)new_rainbow_index = cb - colorbarinfo;
 
   if(rainbow_filelist>0&&rainbow2_index>=0&&new_rainbow_index>=0&&rainbow_index>=0){
-    memcpy(colorbarinfo + rainbow2_index, colorbarinfo+rainbow_index, sizeof(colorbardata));
-    strcpy(colorbarinfo[rainbow2_index].label, "Rainbow(original)");
+    colorbardata *cb_rainbow, *cb_rainbow2, *cb_new_rainbow;
 
-    memcpy(colorbarinfo+rainbow_index, colorbarinfo + new_rainbow_index, sizeof(colorbardata));
-    strcpy(colorbarinfo[rainbow_index].label, "Rainbow");
-    strcpy(colorbarinfo[rainbow_index].ctype, "rainbow");
+    cb_rainbow     = colorbarinfo + rainbow_index;
+    cb_rainbow2 = colorbarinfo + rainbow2_index;
+    cb_new_rainbow = colorbarinfo + new_rainbow_index;
+
+    strcpy(cb_new_rainbow->label, "Rainbow");
+    strcpy(cb_new_rainbow->ctype, "rainbow");
+
+    strcpy(cb_rainbow->ctype, "deprecated");
+    strcpy(cb_rainbow2->ctype, "deprecated");
+    SortColorBars();
   }
 #endif
 }

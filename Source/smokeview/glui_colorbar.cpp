@@ -450,8 +450,17 @@ extern "C" void ColorbarCB(int var){
 
 void AddColorbarList2(GLUI_Listbox *LIST_cbar, char *label_arg, int *max_index){
   char cbar_type[256];
-  int i;
+  int i, nitems=0;
 
+ 
+  for(i = 0; i < ncolorbars; i++){
+    colorbardata *cbi;
+
+    cbi = colorbarinfo + i;
+    if(strcmp(cbi->ctype, label_arg) != 0)continue;
+    nitems++;
+  }
+  if(nitems == 0)return;
   strcpy(cbar_type, "***");
   strcat(cbar_type, label_arg);
   strcat(cbar_type, "***");
