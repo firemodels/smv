@@ -535,6 +535,8 @@ SVEXTERN histogramdata SVDECL(*full_part_histogram, NULL);
 SVEXTERN histogramdata SVDECL(*full_plot3D_histograms, NULL);
 SVEXTERN int SVDECL(update_loadall_textures, 1);
 
+SVEXTERN int SVDECL(max_LIST_colorbar2, 0);
+SVEXTERN int SVDECL(max_LIST_colorbar, 0);
 #ifdef pp_COLOR_CIE
 SVEXTERN int SVDECL(interp_cielab, 1);
 SVEXTERN int SVDECL(update_colorbar_orig, 0);

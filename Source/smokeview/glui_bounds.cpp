@@ -4608,7 +4608,7 @@ extern "C" void UpdateSliceXYZ(void){
 
 /* ------------------ AddColorbarList ------------------------ */
 
-void AddColorbarList(GLUI_Listbox *LIST_cbar, char *label_arg){
+void AddColorbarList(GLUI_Listbox *LIST_cbar, char *label_arg, int *max_index){
   char cbar_type[256];
   int i;
 
@@ -4620,9 +4620,10 @@ void AddColorbarList(GLUI_Listbox *LIST_cbar, char *label_arg){
     colorbardata *cbi;
 
     cbi = colorbarinfo + i;
-    if(strcmp(cbi->type, label_arg) != 0)continue;
+    if(strcmp(cbi->ctype, label_arg) != 0)continue;
 #ifdef pp_COLOR_TOGGLE
     LIST_colorbar2->add_item(i, cbi->label);
+    *max_index = MAX(i, *max_index);
 #endif
   }
 }
@@ -5442,12 +5443,12 @@ extern "C" void GluiBoundsSetup(int main_window){
     selectedcolorbar_index2 = -1;
     LIST_colorbar2 = glui_bounds->add_listbox_to_panel(PANEL_colorbar_properties, "", &selectedcolorbar_index2, COLORBAR_LIST2, SliceBoundCB);
 
-    AddColorbarList(LIST_colorbar2, "rainbow");
-    AddColorbarList(LIST_colorbar2, "linear");
-    AddColorbarList(LIST_colorbar2, "divergent");
-    AddColorbarList(LIST_colorbar2, "circular");
-    AddColorbarList(LIST_colorbar2, "deprecated");
-    AddColorbarList(LIST_colorbar2, "user");
+    AddColorbarList(LIST_colorbar2, "rainbow",    &max_LIST_colorbar2);
+    AddColorbarList(LIST_colorbar2, "linear",     &max_LIST_colorbar2);
+    AddColorbarList(LIST_colorbar2, "divergent",  &max_LIST_colorbar2);
+    AddColorbarList(LIST_colorbar2, "circular",   &max_LIST_colorbar2);
+    AddColorbarList(LIST_colorbar2, "deprecated", &max_LIST_colorbar2);
+    AddColorbarList(LIST_colorbar2, "user",       &max_LIST_colorbar2);
 
     LIST_colorbar2->set_int_val(colorbartype_default);
     glui_bounds->add_button_to_panel(PANEL_colorbar_properties, _("Next"),     COLORBAR_LIST2_NEXT, SliceBoundCB);
@@ -6296,8 +6297,8 @@ extern "C" void SliceBoundCB(int var){
     case COLORBAR_LIST2_PREV:
       if(var==COLORBAR_LIST2_NEXT)selectedcolorbar_index2++;
       if(var==COLORBAR_LIST2_PREV)selectedcolorbar_index2--;
-      if(selectedcolorbar_index2<0)selectedcolorbar_index2=ncolorbars-1;
-      if(selectedcolorbar_index2>ncolorbars-1)selectedcolorbar_index2=0;
+      if(selectedcolorbar_index2<0)selectedcolorbar_index2= max_LIST_colorbar2;
+      if(selectedcolorbar_index2> max_LIST_colorbar2)selectedcolorbar_index2=0;
       LIST_colorbar2->set_int_val(selectedcolorbar_index2);
       SliceBoundCB(COLORBAR_LIST2);
       break;

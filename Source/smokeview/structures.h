@@ -282,10 +282,17 @@ typedef struct _treedata {
 
 /* --------------------------  colorbardata ------------------------------------ */
 
+#define CB_RAINBOW    0
+#define CB_LINEAR     1
+#define CB_DIVERGENT  2
+#define CB_CIRCULAR   3
+#define CB_DEPRECATED 4
+#define CB_USER       5
+#define CB_OTHER      6
 typedef struct _colorbardata {
   char label[1024];        // menu label
-  char type[256];
-  int nnodes,nodehilight,nsplits;
+  char ctype[256];
+  int nnodes,nodehilight,nsplits,type;
   unsigned char rgb_node_orig[3*1024], rgb_node[3*1024];
   unsigned char alpha[1024];
   unsigned char index_node[1024];  // colorbar index

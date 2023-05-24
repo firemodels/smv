@@ -8289,7 +8289,7 @@ void MakeColorbarMenu(int *menuptr,
       colorbardata *cbi;
 
       cbi = colorbarinfo + i;
-      if(strcmp(cbi->type, "linear") != 0)continue;
+      if(strcmp(cbi->ctype, "linear") != 0)continue;
       labelptr = GetLabelPtr(label, cbi->label, "linear_");
       strcpy(ccolorbarmenu, "  ");
       if(colorbartype == i){
@@ -8313,7 +8313,7 @@ void MakeColorbarMenu(int *menuptr,
       colorbardata *cbi;
 
       cbi = colorbarinfo + i;
-      if(strcmp(cbi->type, "circular") != 0)continue;
+      if(strcmp(cbi->ctype, "circular") != 0)continue;
       labelptr = GetLabelPtr(label, cbi->label, "circular_");
       strcpy(ccolorbarmenu, "  ");
       if(colorbartype == i){
@@ -8337,7 +8337,7 @@ void MakeColorbarMenu(int *menuptr,
       colorbardata *cbi;
 
       cbi = colorbarinfo + i;
-      if(strcmp(cbi->type, "rainbow") != 0)continue;
+      if(strcmp(cbi->ctype, "rainbow") != 0)continue;
       labelptr = GetLabelPtr(label, cbi->label, "rainbow_");
       strcpy(ccolorbarmenu, "  ");
       if(colorbartype == i){
@@ -8361,7 +8361,7 @@ void MakeColorbarMenu(int *menuptr,
       colorbardata *cbi;
 
       cbi = colorbarinfo + i;
-      if(strcmp(cbi->type, "divergent") != 0)continue;
+      if(strcmp(cbi->ctype, "divergent") != 0)continue;
       labelptr = GetLabelPtr(label, cbi->label, "divergent_");
       strcpy(ccolorbarmenu, "  ");
       if(colorbartype == i){
@@ -8385,7 +8385,7 @@ void MakeColorbarMenu(int *menuptr,
       colorbardata *cbi;
 
       cbi = colorbarinfo + i;
-      if(strcmp(cbi->type, "deprecated") != 0)continue;
+      if(strcmp(cbi->ctype, "deprecated") != 0)continue;
       labelptr = GetLabelPtr(label, cbi->label, "deprecated_");
       strcpy(ccolorbarmenu, "  ");
       if(colorbartype == i){
@@ -8409,7 +8409,7 @@ void MakeColorbarMenu(int *menuptr,
       colorbardata *cbi;
 
       cbi = colorbarinfo + i;
-      if(strcmp(cbi->type, "user") != 0)continue;
+      if(strcmp(cbi->ctype, "user") != 0)continue;
       labelptr = GetLabelPtr(label, cbi->label, "user_");
       strcpy(ccolorbarmenu, "  ");
       if(colorbartype == i){
@@ -8435,7 +8435,7 @@ void MakeColorbarMenu(int *menuptr,
       colorbardata *cbi;
 
       cbi = colorbarinfo + i;
-      if(strcmp(cbi->type, "original") != 0)continue;
+      if(strcmp(cbi->ctype, "original") != 0)continue;
       strcpy(ccolorbarmenu, "  ");
       if(colorbartype == i){
         strcat(ccolorbarmenu, "*");
