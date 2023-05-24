@@ -14889,7 +14889,6 @@ int ReadIni2(char *inifile, int localfile){
             cbi->nodehilight = 0;
           }
 
-          cbi->label_ptr = cbi->label;
           for(i = 0; i<cbi->nnodes; i++){
             int icbar;
             int nn;

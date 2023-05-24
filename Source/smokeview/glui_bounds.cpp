@@ -4610,23 +4610,19 @@ extern "C" void UpdateSliceXYZ(void){
 
 void AddColorbarList(GLUI_Listbox *LIST_cbar, char *label_arg){
   char cbar_type[256];
-  int ii;
+  int i;
 
   strcpy(cbar_type, "***");
   strcat(cbar_type, label_arg);
   strcat(cbar_type, "***");
   LIST_cbar->add_item(-1, cbar_type);
-  for(ii = 0; ii < ncolorbars; ii++){
+  for(i = 0; i < ncolorbars; i++){
     colorbardata *cbi;
-    int i;
 
-    cbi = colorbars_sorted[ii];
-    i = cbi - colorbarinfo;
-
+    cbi = colorbarinfo + i;
     if(strcmp(cbi->type, label_arg) != 0)continue;
-    cbi->label_ptr = cbi->label;
 #ifdef pp_COLOR_TOGGLE
-    LIST_colorbar2->add_item(i, cbi->label_ptr);
+    LIST_colorbar2->add_item(i, cbi->label);
 #endif
   }
 }
@@ -4983,8 +4979,7 @@ extern "C" void GluiBoundsSetup(int main_window){
         colorbardata *cbi;
 
         cbi = colorbarinfo+i;
-        cbi->label_ptr = cbi->label;
-        LIST_iso_colorbar->add_item(i, cbi->label_ptr);
+        LIST_iso_colorbar->add_item(i, cbi->label);
       }
       LIST_iso_colorbar->set_int_val(iso_colorbar_index);
       IsoBoundCB(ISO_COLORBAR_LIST);
@@ -5454,7 +5449,7 @@ extern "C" void GluiBoundsSetup(int main_window){
     AddColorbarList(LIST_colorbar2, "deprecated");
     AddColorbarList(LIST_colorbar2, "user");
 
-    LIST_colorbar2->set_int_val(colorbartype);
+    LIST_colorbar2->set_int_val(colorbartype_default);
     glui_bounds->add_button_to_panel(PANEL_colorbar_properties, _("Next"),     COLORBAR_LIST2_NEXT, SliceBoundCB);
     glui_bounds->add_button_to_panel(PANEL_colorbar_properties, _("Previous"), COLORBAR_LIST2_PREV, SliceBoundCB);
 #ifdef pp_COLOR_TOGGLE
@@ -5464,8 +5459,7 @@ extern "C" void GluiBoundsSetup(int main_window){
       colorbardata *cbi;
 
       cbi = colorbarinfo + i;
-      cbi->label_ptr = cbi->label;
-      LISTBOX_colorbar1a->add_item(i, cbi->label_ptr);
+      LISTBOX_colorbar1a->add_item(i, cbi->label);
     }
     LISTBOX_colorbar1a->set_int_val(index_colorbar1);
 
@@ -5474,8 +5468,7 @@ extern "C" void GluiBoundsSetup(int main_window){
       colorbardata *cbi;
 
       cbi = colorbarinfo + i;
-      cbi->label_ptr = cbi->label;
-      LISTBOX_colorbar2a->add_item(i, cbi->label_ptr);
+      LISTBOX_colorbar2a->add_item(i, cbi->label);
     }
     LISTBOX_colorbar2a->set_int_val(index_colorbar2);
 
@@ -6442,7 +6435,7 @@ extern "C" void SliceBoundCB(int var){
       UpdateColorbarList();
       ColorbarMenu(selectedcolorbar_index);
       ColorbarGlobal2Local();
-      if(selectedcolorbar_index2 == bw_colorbar_index){
+      if(selectedcolorbar_index2 == bw_colorbar_index&&bw_colorbar_index>=0){
         setbwdata = 1;
         ColorbarMenu(bw_colorbar_index);
       }

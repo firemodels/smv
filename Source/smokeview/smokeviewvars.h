@@ -1884,7 +1884,6 @@ SVEXTERN int showall_textures;
 SVEXTERN int SVDECL(enable_texture_lighting,0);
 
 SVEXTERN int SVDECL(ncolorbars,0);
-SVEXTERN colorbardata SVDECL(**colorbars_sorted, NULL);
 SVEXTERN int ndefaultcolorbars;
 SVEXTERN colorbardata SVDECL(*colorbarinfo,NULL),SVDECL(*current_colorbar,NULL);
 

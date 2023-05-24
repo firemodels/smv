@@ -1705,7 +1705,6 @@ void InitVars(void){
   showgluitrainer=0;
   UpdateCurrentColorbar(colorbarinfo);
   colorbartype_save=colorbartype;
-  colorbartype_default=colorbartype;
   colorbarpoint=0;
   vectorspresent=0;
 

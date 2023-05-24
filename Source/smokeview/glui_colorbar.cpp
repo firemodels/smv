@@ -426,7 +426,6 @@ extern "C" void ColorbarCB(int var){
         cb_to = colorbarinfo + i;
         cb_from = cb_to + 1;
         memcpy(cb_to, cb_from, sizeof(colorbardata));
-        cb_to->label_ptr = cb_to->label;
       }
       for(i = colorbartype;i < ncolorbars;i++){
         LISTBOX_colorbar->delete_item(i);
@@ -434,7 +433,7 @@ extern "C" void ColorbarCB(int var){
       ncolorbars--;
       for(i = colorbartype;i < ncolorbars;i++){
         cbi = colorbarinfo + i;
-        LISTBOX_colorbar->add_item(i, cbi->label_ptr);
+        LISTBOX_colorbar->add_item(i, cbi->label);
       }
       if(colorbartype == ncolorbars)colorbartype--;
       LISTBOX_colorbar->set_int_val(0);
@@ -451,22 +450,18 @@ extern "C" void ColorbarCB(int var){
 
 void AddColorbarList2(GLUI_Listbox *LIST_cbar, char *label_arg){
   char cbar_type[256];
-  int ii;
+  int i;
 
   strcpy(cbar_type, "***");
   strcat(cbar_type, label_arg);
   strcat(cbar_type, "***");
   LIST_cbar->add_item(-1, cbar_type);
-  for(ii = 0; ii < ncolorbars; ii++){
+  for(i = 0; i < ncolorbars; i++){
     colorbardata *cbi;
-    int i;
 
-    cbi = colorbars_sorted[ii];
-    i = cbi - colorbarinfo;
-
+    cbi = colorbarinfo + i;
     if(strcmp(cbi->type, label_arg) != 0)continue;
-    cbi->label_ptr = cbi->label;
-    LIST_cbar->add_item(i, cbi->label_ptr);
+    LIST_cbar->add_item(i, cbi->label);
   }
 }
 
@@ -536,8 +531,7 @@ extern "C" void GluiColorbarSetup(int main_window){
     colorbardata *cbi;
 
     cbi = colorbarinfo + i;
-    cbi->label_ptr=cbi->label;
-    LISTBOX_colorbar1->add_item(i,cbi->label_ptr);
+    LISTBOX_colorbar1->add_item(i,cbi->label);
   }
   LISTBOX_colorbar1->set_int_val(index_colorbar1);
 
@@ -546,8 +540,7 @@ extern "C" void GluiColorbarSetup(int main_window){
     colorbardata *cbi;
 
     cbi = colorbarinfo + i;
-    cbi->label_ptr=cbi->label;
-    LISTBOX_colorbar2->add_item(i,cbi->label_ptr);
+    LISTBOX_colorbar2->add_item(i,cbi->label);
   }
   LISTBOX_colorbar2->set_int_val(index_colorbar2);
 

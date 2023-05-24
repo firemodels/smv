@@ -1242,7 +1242,7 @@ extern "C" void LabelsCB(int var){
     InitRGB();
     break;
   case LABELS_shadedata:
-    if(setbwdata==1){
+    if(setbwdata==1 && bw_colorbar_index>=0){
       colorbartype_save=colorbartype;
       ColorbarMenu(bw_colorbar_index);
     }
