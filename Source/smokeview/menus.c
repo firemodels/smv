@@ -8258,176 +8258,89 @@ void InitPatchSubMenus(int **loadsubpatchmenu_sptr, int **nsubpatchmenus_sptr){
   }
 }
 
-/* ------------------ GetLabelPtr ------------------------ */
+/* ------------------ MakeSubColorbarMenu ------------------------ */
 
-char *GetLabelPtr(char *label, char *clabel, char *type){
-  strcpy(label, clabel);
- // if(strncmp(label, type, strlen(type))==0)return label + strlen(type);
-  return label;
+int MakeSubColorbarMenu(int *submenuptr, int *nmenusptr, char *ctype, void (*CBMenu)(int)){
+  int i, nitems=0, submenu, nmenus;
+
+  for(i = 0; i < ncolorbars; i++){
+    colorbardata *cbi;
+
+    cbi = colorbarinfo + i;
+    if(strcmp(cbi->ctype, ctype) != 0)continue;
+    nitems++;
+    break;
+  }
+  if(nitems == 0)return 0;
+
+  nmenus = *nmenusptr;
+  CREATEMENU(submenu, CBMenu);
+  *nmenusptr = nmenus;
+  *submenuptr = submenu;
+  char ccolorbarmenu[256];
+
+  for(i = 0; i < ncolorbars; i++){
+    colorbardata *cbi;
+
+    cbi = colorbarinfo + i;
+    if(strcmp(cbi->ctype, ctype) != 0)continue;
+    strcpy(ccolorbarmenu, "");
+    if(colorbartype == i){
+      strcat(ccolorbarmenu, "*");
+      strcat(ccolorbarmenu, cbi->label);
+    }
+    else{
+      strcat(ccolorbarmenu, cbi->label);
+    }
+    char *ext;
+    ext = strrchr(ccolorbarmenu, '.');
+    if(ext != NULL)*ext = 0;
+    glutAddMenuEntry(ccolorbarmenu, i);
+  }
+  return 1;
 }
 
-/* ------------------ InitMenus ------------------------ */
+/* ------------------ MakeColorbarMenu ------------------------ */
 
 void MakeColorbarMenu(int *menuptr,
 #ifdef pp_COLORBARS_CSV
-                      int *submenu1ptr, int *submenu2ptr, int *submenu3ptr, int *submenu4ptr, int *submenu5ptr, int *submenu6ptr,
+                      int *submenu1ptr, int *submenu2ptr, int *submenu3ptr, 
+                      int *submenu4ptr, int *submenu5ptr, int *submenu6ptr,
+                      int *submenu7ptr,
 #endif
                       void (*CBMenu)(int)){
-  int i;
   int menu = 0;
 #ifdef pp_COLORBARS_CSV
-  int submenu1=0, submenu2=0, submenu3=0, submenu4=0, submenu5=0, submenu6=0;
-  char label[256], *labelptr;
-#endif
+  int submenu1 = 0, submenu2 = 0, submenu3 = 0;
+  int submenu4 = 0, submenu5 = 0, submenu6 = 0;
+  int submenu7 = 0;
 
-#ifdef pp_COLORBARS_CSV
-  if(nlinear_filelist > 0){
-    CREATEMENU(submenu1, CBMenu);
-    char ccolorbarmenu[256];
-
-    for(i = 0; i < ncolorbars; i++){
-      colorbardata *cbi;
-
-      cbi = colorbarinfo + i;
-      if(strcmp(cbi->ctype, "linear") != 0)continue;
-      labelptr = GetLabelPtr(label, cbi->label, "linear_");
-      strcpy(ccolorbarmenu, "  ");
-      if(colorbartype == i){
-        strcat(ccolorbarmenu, "*");
-        strcat(ccolorbarmenu, labelptr);
-      }
-      else{
-        strcat(ccolorbarmenu, labelptr);
-      }
-      char *ext;
-      ext = strrchr(ccolorbarmenu, '.');
-      if(ext != NULL)*ext = 0;
-      glutAddMenuEntry(ccolorbarmenu, i);
-    }
-  }
-  if(ncircular_filelist > 0){
-    CREATEMENU(submenu2, CBMenu);
-    char ccolorbarmenu[256];
-
-    for(i = 0; i < ncolorbars; i++){
-      colorbardata *cbi;
-
-      cbi = colorbarinfo + i;
-      if(strcmp(cbi->ctype, "circular") != 0)continue;
-      labelptr = GetLabelPtr(label, cbi->label, "circular_");
-      strcpy(ccolorbarmenu, "  ");
-      if(colorbartype == i){
-        strcat(ccolorbarmenu, "*");
-        strcat(ccolorbarmenu, labelptr);
-      }
-      else{
-        strcat(ccolorbarmenu, labelptr);
-      }
-      char *ext;
-      ext = strrchr(ccolorbarmenu, '.');
-      if(ext != NULL)*ext = 0;
-      glutAddMenuEntry(ccolorbarmenu, i);
-    }
-  }
-  if(nrainbow_filelist > 0){
-    CREATEMENU(submenu3, CBMenu);
-    char ccolorbarmenu[256];
-
-    for(i = 0; i < ncolorbars; i++){
-      colorbardata *cbi;
-
-      cbi = colorbarinfo + i;
-      if(strcmp(cbi->ctype, "rainbow") != 0)continue;
-      labelptr = GetLabelPtr(label, cbi->label, "rainbow_");
-      strcpy(ccolorbarmenu, "  ");
-      if(colorbartype == i){
-        strcat(ccolorbarmenu, "*");
-        strcat(ccolorbarmenu, labelptr);
-      }
-      else{
-        strcat(ccolorbarmenu, labelptr);
-      }
-      char *ext;
-      ext = strrchr(ccolorbarmenu, '.');
-      if(ext != NULL)*ext = 0;
-      glutAddMenuEntry(ccolorbarmenu, i);
-    }
-  }
-  if(ndivergent_filelist > 0){
-    CREATEMENU(submenu4, CBMenu);
-    char ccolorbarmenu[256];
-
-    for(i = 0; i < ncolorbars; i++){
-      colorbardata *cbi;
-
-      cbi = colorbarinfo + i;
-      if(strcmp(cbi->ctype, "divergent") != 0)continue;
-      labelptr = GetLabelPtr(label, cbi->label, "divergent_");
-      strcpy(ccolorbarmenu, "  ");
-      if(colorbartype == i){
-        strcat(ccolorbarmenu, "*");
-        strcat(ccolorbarmenu, labelptr);
-      }
-      else{
-        strcat(ccolorbarmenu, labelptr);
-      }
-      char *ext;
-      ext = strrchr(ccolorbarmenu, '.');
-      if(ext != NULL)*ext = 0;
-      glutAddMenuEntry(ccolorbarmenu, i);
-    }
-  }
-  {
-    CREATEMENU(submenu6, CBMenu);
-    char ccolorbarmenu[256];
-
-    for(i = 0; i < ncolorbars; i++){
-      colorbardata *cbi;
-
-      cbi = colorbarinfo + i;
-      if(strcmp(cbi->ctype, "deprecated") != 0)continue;
-      labelptr = GetLabelPtr(label, cbi->label, "deprecated_");
-      strcpy(ccolorbarmenu, "  ");
-      if(colorbartype == i){
-        strcat(ccolorbarmenu, "*");
-        strcat(ccolorbarmenu, labelptr);
-      }
-      else{
-        strcat(ccolorbarmenu, labelptr);
-      }
-      char *ext;
-      ext = strrchr(ccolorbarmenu, '.');
-      if(ext != NULL)*ext = 0;
-      glutAddMenuEntry(ccolorbarmenu, i);
-    }
-  }
-  if(nuser_filelist > 0){
-    CREATEMENU(submenu5, CBMenu);
-    char ccolorbarmenu[256];
-
-    for(i = 0; i < ncolorbars; i++){
-      colorbardata *cbi;
-
-      cbi = colorbarinfo + i;
-      if(strcmp(cbi->ctype, "user") != 0)continue;
-      labelptr = GetLabelPtr(label, cbi->label, "user_");
-      strcpy(ccolorbarmenu, "  ");
-      if(colorbartype == i){
-        strcat(ccolorbarmenu, "*");
-        strcat(ccolorbarmenu, labelptr);
-      }
-      else{
-        strcat(ccolorbarmenu, labelptr);
-      }
-      char *ext;
-      ext = strrchr(ccolorbarmenu, '.');
-      if(ext != NULL)*ext = 0;
-      glutAddMenuEntry(ccolorbarmenu, i);
-    }
-  }
+  MakeSubColorbarMenu(&submenu1, &nmenus, "linear",     CBMenu);
+  MakeSubColorbarMenu(&submenu2, &nmenus, "circular",   CBMenu);
+  MakeSubColorbarMenu(&submenu3, &nmenus, "rainbow",    CBMenu);
+  MakeSubColorbarMenu(&submenu4, &nmenus, "divergent",  CBMenu);
+  MakeSubColorbarMenu(&submenu6, &nmenus, "deprecated", CBMenu);
+  MakeSubColorbarMenu(&submenu7, &nmenus, "original",   CBMenu);
+  MakeSubColorbarMenu(&submenu5, &nmenus, "user",       CBMenu);
 #endif
 
   CREATEMENU(menu, CBMenu);
+#ifdef pp_COLORBARS_CSV
+  if(submenu3 > 0)GLUTADDSUBMENU("rainbow",    submenu3);
+  if(submenu1 > 0)GLUTADDSUBMENU("linear",     submenu1);
+  if(submenu4 > 0)GLUTADDSUBMENU("divergent",  submenu4);
+  if(submenu3 > 0)GLUTADDSUBMENU("circular",   submenu2);
+  if(submenu7 > 0 )GLUTADDSUBMENU("original",  submenu7);
+  if(submenu6 > 0)GLUTADDSUBMENU("deprecated", submenu6);
+  if(submenu5 > 0)GLUTADDSUBMENU("user",       submenu5);
+  *submenu1ptr = submenu1;
+  *submenu2ptr = submenu2;
+  *submenu3ptr = submenu3;
+  *submenu4ptr = submenu4;
+  *submenu5ptr = submenu5;
+  *submenu6ptr = submenu6;
+  *submenu7ptr = submenu7;
+#else
   {
     char ccolorbarmenu[256];
 
@@ -8447,31 +8360,6 @@ void MakeColorbarMenu(int *menuptr,
       glutAddMenuEntry(ccolorbarmenu, i);
     }
   }
-#ifdef pp_COLORBARS_CSV
-  if(nrainbow_filelist > 0){
-    GLUTADDSUBMENU("rainbow", submenu3);
-  }
-  if(nlinear_filelist > 0){
-    GLUTADDSUBMENU(_("linear"), submenu1);
-  }
-  if(ndivergent_filelist > 0){
-    GLUTADDSUBMENU("divergent", submenu4);
-  }
-  if(ncircular_filelist > 0){
-    GLUTADDSUBMENU("circular", submenu2);
-  }
-  if(nrainbow_filelist > 0){
-    GLUTADDSUBMENU("deprecated", submenu6);
-  }
-  if(nuser_filelist > 0){
-    GLUTADDSUBMENU("user",      submenu5);
-  }
-  *submenu1ptr = submenu1;
-  *submenu2ptr = submenu2;
-  *submenu3ptr = submenu3;
-  *submenu4ptr = submenu4;
-  *submenu5ptr = submenu5;
-  *submenu6ptr = submenu6;
 #endif
   *menuptr     = menu;
 }
@@ -8491,8 +8379,10 @@ static int optionmenu=0, rotatetypemenu=0;
 #ifdef pp_COLORBARS_CSV
 static int colorbars_submenu1 = 0, colorbars_submenu2 = 0, colorbars_submenu3 = 0;
 static int colorbars_submenu4 = 0, colorbars_submenu5 = 0, colorbars_submenu6 = 0;
+static int colorbars_submenu7 = 0;
 static int smokecolorbars_submenu1 = 0, smokecolorbars_submenu2 = 0, smokecolorbars_submenu3 = 0;
 static int smokecolorbars_submenu4 = 0, smokecolorbars_submenu5 = 0, smokecolorbars_submenu6 = 0;
+static int smokecolorbars_submenu7 = 0;
 #endif
 static int resetmenu=0, defaultviewmenu=0, frameratemenu=0, rendermenu=0, smokeviewinimenu=0, inisubmenu=0, resolutionmultipliermenu=0;
 static int terrain_geom_showmenu = 0;
@@ -10514,6 +10404,7 @@ updatemenu=0;
 #ifdef pp_COLORBARS_CSV
                      &smokecolorbars_submenu1, &smokecolorbars_submenu2, &smokecolorbars_submenu3,
                      &smokecolorbars_submenu4, &smokecolorbars_submenu5, &smokecolorbars_submenu6,
+                     &smokecolorbars_submenu7,
 #endif
                      SmokeColorbarMenu);
 
@@ -10722,6 +10613,7 @@ updatemenu=0;
 #ifdef pp_COLORBARS_CSV
                    &colorbars_submenu1, &colorbars_submenu2, &colorbars_submenu3, 
                    &colorbars_submenu4, &colorbars_submenu5, &colorbars_submenu6,
+                   &colorbars_submenu7,
 #endif
                    ColorbarMenu);
 
