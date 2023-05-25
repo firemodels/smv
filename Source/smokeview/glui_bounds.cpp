@@ -4608,7 +4608,7 @@ extern "C" void UpdateSliceXYZ(void){
 
 /* ------------------ AddColorbarList ------------------------ */
 
-void AddColorbarList(GLUI_Listbox *LIST_cbar, char *label_arg, int *max_index){
+void AddColorbarList(GLUI_Listbox *LIST_cbar, int index, char *label_arg, int *max_index){
   char cbar_type[256];
   int i, nitems = 0;
 
@@ -4624,7 +4624,7 @@ void AddColorbarList(GLUI_Listbox *LIST_cbar, char *label_arg, int *max_index){
   strcpy(cbar_type, "***");
   strcat(cbar_type, label_arg);
   strcat(cbar_type, "***");
-  LIST_cbar->add_item(-1, cbar_type);
+  LIST_cbar->add_item(index, cbar_type);
   for(i = 0; i < ncolorbars; i++){
     colorbardata *cbi;
 
@@ -4635,6 +4635,23 @@ void AddColorbarList(GLUI_Listbox *LIST_cbar, char *label_arg, int *max_index){
     *max_index = MAX(i, *max_index);
 #endif
   }
+}
+
+/* ------------------ UpdateColorbarList2All ------------------------ */
+
+extern "C" void UpdateColorbarList2All(void){
+  int i;
+  
+  for(i=-7;i<ncolorbars;i++){
+   LIST_colorbar2->delete_item(i);
+  }
+  AddColorbarList(LIST_colorbar2, -1, "rainbow",    &max_LIST_colorbar2);
+  AddColorbarList(LIST_colorbar2, -2, "linear",     &max_LIST_colorbar2);
+  AddColorbarList(LIST_colorbar2, -3, "divergent",  &max_LIST_colorbar2);
+  AddColorbarList(LIST_colorbar2, -4, "circular",   &max_LIST_colorbar2);
+  AddColorbarList(LIST_colorbar2, -7, "original",   &max_LIST_colorbar2);
+  AddColorbarList(LIST_colorbar2, -5, "deprecated", &max_LIST_colorbar2);
+  AddColorbarList(LIST_colorbar2, -6, "user",       &max_LIST_colorbar2);
 }
 
 /* ------------------ GluiBoundsSetup ------------------------ */
@@ -5452,12 +5469,7 @@ extern "C" void GluiBoundsSetup(int main_window){
     selectedcolorbar_index2 = -1;
     LIST_colorbar2 = glui_bounds->add_listbox_to_panel(PANEL_colorbar_properties, "", &selectedcolorbar_index2, COLORBAR_LIST2, SliceBoundCB);
 
-    AddColorbarList(LIST_colorbar2, "rainbow",    &max_LIST_colorbar2);
-    AddColorbarList(LIST_colorbar2, "linear",     &max_LIST_colorbar2);
-    AddColorbarList(LIST_colorbar2, "divergent",  &max_LIST_colorbar2);
-    AddColorbarList(LIST_colorbar2, "circular",   &max_LIST_colorbar2);
-    AddColorbarList(LIST_colorbar2, "deprecated", &max_LIST_colorbar2);
-    AddColorbarList(LIST_colorbar2, "user",       &max_LIST_colorbar2);
+    UpdateColorbarList2All();
 
     LIST_colorbar2->set_int_val(colorbartype_default);
     glui_bounds->add_button_to_panel(PANEL_colorbar_properties, _("Next"),     COLORBAR_LIST2_NEXT, SliceBoundCB);

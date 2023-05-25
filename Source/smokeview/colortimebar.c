@@ -148,29 +148,6 @@ void DrawTimebar(float xleft, float xright, float ybot, float ytop){
   glEnd();
 }
 
-/* ------------------ AddColorbar ------------------------ */
-
-void AddColorbar(int icolorbar){
-  colorbardata *cb_to, *cb_from;
-
-  ncolorbars++;
-  CheckMemory;
-  ResizeMemory((void **)&colorbarinfo,ncolorbars*sizeof(colorbardata));
-  UpdateCurrentColorbar(colorbarinfo + colorbartype);
-
-  cb_from = colorbarinfo + icolorbar;
-  CheckMemory;
-
-      // new colorbar
-
-  cb_to=colorbarinfo+ncolorbars-1;
-
-  memcpy(cb_to,cb_from,sizeof(colorbardata));
-  strcpy(cb_to->label,"Copy of ");
-  strcat(cb_to->label,cb_from->label);
-  RemapColorbar(cb_to);
-}
-
 /* ------------------ DrawSelectColorbar ------------------------ */
 
 void DrawSelectColorbar(void){
@@ -1332,6 +1309,66 @@ void SortColorBars(void){
     if(strcmp(cbi->ctype, "user")==0)cbi->type = CB_USER;
   }
   qsort((colorbardata *)colorbarinfo, (size_t)ncolorbars, sizeof(colorbardata), CompareColorbars);
+
+  colorbardata *cb;
+  cb = GetColorbar("Rainbow");
+  if(cb != NULL)colorbartype_default = cb - colorbarinfo;
+
+  bw_colorbar_index = -1;
+  cb = GetColorbar("black->white");
+  if(cb != NULL)bw_colorbar_index = cb - colorbarinfo;
+
+  cb = GetColorbar("fire");
+  fire_colorbar_index=cb-colorbarinfo;
+  fire_colorbar=cb;
+
+  cb = GetColorbar("level set");
+  levelset_colorbar=cb-colorbarinfo;
+
+  cb = GetColorbar("split");
+  split_colorbar=cb;
+  split_colorbar_index = cb - colorbarinfo;
+
+  cb = GetColorbar("CO2");
+  co2_colorbar_index = cb - colorbarinfo;
+
+  colorbartype       = colorbartype_default;
+  iso_colorbar_index = colorbartype_default;
+}
+
+/* ------------------ AddColorbar ------------------------ */
+
+void AddColorbar(int icolorbar){
+  colorbardata *cb_to, *cb_from;
+  char cb_label[255];
+
+  ncolorbars++;
+  CheckMemory;
+  ResizeMemory((void **)&colorbarinfo, ncolorbars * sizeof(colorbardata));
+  UpdateCurrentColorbar(colorbarinfo + colorbartype);
+
+  cb_from = colorbarinfo + icolorbar;
+  CheckMemory;
+
+  // new colorbar
+
+  cb_to = colorbarinfo + ncolorbars - 1;
+
+  memcpy(cb_to, cb_from, sizeof(colorbardata));
+  strcpy(cb_to->label, "Copy of ");
+  strcat(cb_to->label, cb_from->label);
+  strcpy(cb_label, cb_to->label);
+  strcpy(cb_to->ctype, "user");
+  RemapColorbar(cb_to);
+  SortColorBars();
+  UpdateColorbarListAll();
+  UpdateColorbarList2All();
+
+  colorbardata *cbnew;
+
+  cbnew = GetColorbar(cb_label);
+  if(cbnew!=NULL)selectedcolorbar_index = cbnew - colorbarinfo;
+  UpdateColorbarList();
 }
 
 /* ------------------ InitDefaultColorbars ------------------------ */
@@ -1495,7 +1532,7 @@ void InitDefaultColorbars(int nini){
   cbi->rgb_node[3]=255;
   cbi->rgb_node[4]=0;
   cbi->rgb_node[5]=0;
-  strcpy(cbi->ctype, "linear");
+  strcpy(cbi->ctype, "original");
   cbi++;
 
   // blue/green/red
@@ -2008,30 +2045,6 @@ void InitDefaultColorbars(int nini){
   }
   SortColorBars();
 
-  colorbardata *cb;
-  cb = GetColorbar("Rainbow");
-  if(cb != NULL)colorbartype_default = cb - colorbarinfo;
-
-  bw_colorbar_index = -1;
-  cb = GetColorbar("black->white");
-  if(cb != NULL)bw_colorbar_index = cb - colorbarinfo;
-
-  cb = GetColorbar("fire");
-  fire_colorbar_index=cb-colorbarinfo;
-  fire_colorbar=cb;
-
-  cb = GetColorbar("level set");
-  levelset_colorbar=cb-colorbarinfo;
-
-  cb = GetColorbar("split");
-  split_colorbar=cb;
-  split_colorbar_index = cb - colorbarinfo;
-
-  cb = GetColorbar("CO2");
-  co2_colorbar_index = cb - colorbarinfo;
-
-  colorbartype       = colorbartype_default;
-  iso_colorbar_index = colorbartype_default;
 #ifdef pp_COLOR_NEW
   int rainbow2_index    = -1;
   int new_rainbow_index = -1;
@@ -2039,6 +2052,7 @@ void InitDefaultColorbars(int nini){
 
   rainbow_index = colorbartype_default;
 
+  colorbardata *cb;
   cb = GetColorbar("Rainbow 2");
   if(cb != NULL)rainbow2_index = cb - colorbarinfo;
 
@@ -2049,14 +2063,12 @@ void InitDefaultColorbars(int nini){
     colorbardata *cb_rainbow, *cb_rainbow2, *cb_new_rainbow;
 
     cb_rainbow     = colorbarinfo + rainbow_index;
-    cb_rainbow2 = colorbarinfo + rainbow2_index;
+    cb_rainbow2    = colorbarinfo + rainbow2_index;
     cb_new_rainbow = colorbarinfo + new_rainbow_index;
 
     strcpy(cb_new_rainbow->label, "Rainbow");
     strcpy(cb_new_rainbow->ctype, "rainbow");
 
-    strcpy(cb_rainbow->ctype, "deprecated");
-    strcpy(cb_rainbow2->ctype, "deprecated");
     SortColorBars();
   }
 #endif
