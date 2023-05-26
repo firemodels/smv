@@ -487,7 +487,9 @@ SVEXTERN int SVDECL(nvel_devices, 0);
 
 SVEXTERN int SVDECL(update_slice, 0);
 SVEXTERN int SVDECL(*windrosez_showhide, NULL), SVDECL(nwindrosez_showhide,0), SVDECL(update_windrose_showhide,0);
-SVEXTERN int SVDECL(vol_adaptive, 1);
+#ifdef pp_SMOKE_ADAPT
+SVEXTERN int SVDECL(vol_adaptive, 0);
+#endif
 #ifdef INMAIN
   SVEXTERN float smoke_test_color[4] = {0.0,0.0,0.0,1.0};
   SVEXTERN float smoke_test_target_color[4] = {1.0,0.0,0.0,1.0};
@@ -518,7 +520,9 @@ SVEXTERN float boxmin_global[3], boxmax_global[3], max_cell_length;
 SVEXTERN int SVDECL(update_boxbounds, 1);
 SVEXTERN int SVDECL(have_beam, 0), SVDECL(showbeam_as_line, 1), SVDECL(use_beamcolor,0), beam_color[3];
 SVEXTERN float SVDECL(beam_line_width, 4.0);
+#ifdef pp_SMOKE_LIGHT
 SVEXTERN int SVDECL(use_light, 0);
+#endif
 
 SVEXTERN float SVDECL(zone_hvac_diam, 0.05);
 SVEXTERN int SVDECL(setup_only, 0);
@@ -964,7 +968,10 @@ SVEXTERN int GPUzone_odl, GPUzone_odu;
 SVEXTERN int GPUvol_inside, GPUvol_eyepos, GPUvol_xyzmaxdiff, GPUvol_slicetype,GPUvol_dcell3;
 SVEXTERN int GPUvol_gpu_vol_factor;
 SVEXTERN int GPUvol_soot_density, GPUvol_fire, GPUvol_blockage;
-SVEXTERN int GPUvol_fire_opacity_factor,GPUvol_volbw,GPUvol_mass_extinct,GPUvol_vol_adaptive;
+SVEXTERN int GPUvol_fire_opacity_factor, GPUvol_volbw, GPUvol_mass_extinct;
+#ifdef pp_SMOKE_ADAPT
+SVEXTERN int GPUvol_vol_adaptive;
+#endif
 SVEXTERN int GPUvol_temperature_min,GPUvol_temperature_cutoff,GPUvol_temperature_max;
 SVEXTERN int GPUvol_boxmin, GPUvol_boxmax, GPUvol_drawsides;
 SVEXTERN int GPUvol_smokecolormap, GPUvol_dcell, GPUvol_havefire;

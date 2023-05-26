@@ -270,9 +270,15 @@ int SetVolSmokeShaders(){
     "uniform float temperature_min,temperature_cutoff,temperature_max;"
     "uniform float voltemp_factor, voltemp_offset;"
     "uniform float mass_extinct, light_intensity, scatter_param;"
-    "uniform int inside,havefire,volbw,slicetype,block_volsmoke,use_light;"
+    "uniform int inside,havefire,volbw,slicetype,block_volsmoke;"
+#ifdef pp_SMOKE_LIGHT
+    "uniform int use_light;"
+#endif
     "uniform int drawsides[7];"
-    "uniform int scatter_type,light_type,vol_adaptive;"
+    "uniform int scatter_type,light_type;"
+#ifdef pp_SMOKE_ADAPT
+    "uniform int vol_adaptive;"
+#endif
 
     "float color2bw(vec3 color){"
     " return 0.299*color.r+0.587*color.g+0.114*color.b;"
@@ -411,6 +417,7 @@ int SetVolSmokeShaders(){
     "    alphan = 1.0-taun;"
     "    color_total += alphai*taun*color_val*opacity_factor;"
     "    cos_angle=0.0;"
+#ifdef pp_SMOKE_LIGHT
     "    if(use_light==1){"
     "      fourpi=16.0*atan(1.0);"
     "      uvec=eyepos-fragpos;"
@@ -437,6 +444,8 @@ int SetVolSmokeShaders(){
     "      light_factor = alphai*light_intensity*light_fraction*scatter_fraction;"
     "      color_total += alphai*taun*light_factor*light_color/255.0;"
     "    }"
+#endif
+#ifdef pp_SMOKE_ADAPT
     "    if(vol_adaptive==1&&factor>factor0){"
     "      if(abs(tempval-last_tempval)>1.0&&dfactor>0.1/float(n_iter)){"
     "        dfactor/= 2.0;"
@@ -447,6 +456,7 @@ int SetVolSmokeShaders(){
     "        dstep *= 2.0;"
     "      }"
     "    }"
+#endif
     "    factor+=dfactor;"
     "    if(block_val2<0.5)break;"
     "    if(in_block==1){"
@@ -506,7 +516,9 @@ int SetVolSmokeShaders(){
   GPUvol_xyzmaxdiff = glGetUniformLocation(p_volsmoke,"xyzmaxdiff");
   GPUvol_gpu_vol_factor = glGetUniformLocation(p_volsmoke,"gpu_vol_factor");
   GPUvol_fire_opacity_factor = glGetUniformLocation(p_volsmoke,"fire_opacity_factor");
+#ifdef pp_SMOKE_ADAPT
   GPUvol_vol_adaptive = glGetUniformLocation(p_volsmoke, "vol_adaptive");
+#endif
   GPUvol_mass_extinct = glGetUniformLocation(p_volsmoke,"mass_extinct");
   GPUvol_volbw = glGetUniformLocation(p_volsmoke,"volbw");
   GPUvol_temperature_min = glGetUniformLocation(p_volsmoke,"temperature_min");

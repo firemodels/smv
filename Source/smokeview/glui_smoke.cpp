@@ -40,8 +40,10 @@ GLUI_RadioGroup *RADIO_render=NULL;
 GLUI_RadioGroup *RADIO_skipframes=NULL;
 GLUI_RadioGroup *RADIO_smokesensors=NULL;
 GLUI_RadioGroup *RADIO_loadvol=NULL;
+#ifdef pp_SMOKE_LIGHT
 GLUI_RadioGroup *RADIO_light_type = NULL;
 GLUI_RadioGroup *RADIO_scatter_type_glui = NULL;
+#endif
 
 GLUI_Spinner *SPINNER_smoke_num=NULL;
 GLUI_Spinner *SPINNER_startframe=NULL;
@@ -78,8 +80,10 @@ GLUI_Spinner *SPINNER_smoke3d_smoke_green=NULL;
 GLUI_Spinner *SPINNER_smoke3d_smoke_blue=NULL;
 GLUI_Spinner *SPINNER_load_3dsmoke = NULL;
 GLUI_Spinner *SPINNER_load_hrrpuv = NULL;
+#ifdef pp_SMOKE_LIGHT
 GLUI_Spinner *SPINNER_light_xyz[3];
 GLUI_Spinner *SPINNER_light_color[3];
+#endif
 GLUI_Spinner *SPINNER_smoke_test_color[4];
 GLUI_Spinner *SPINNER_smoke_test_range = NULL;
 GLUI_Spinner *SPINNER_smoke_test_nslices = NULL;
@@ -116,7 +120,9 @@ GLUI_Checkbox *CHECKBOX_smokeGPU = NULL;
 GLUI_Checkbox *CHECKBOX_zlib = NULL;
 GLUI_Checkbox **CHECKBOX_meshvisptr = NULL;
 GLUI_Checkbox *CHECKBOX_meshvis = NULL;
+#ifdef pp_SMOKE_LIGHT
 GLUI_Checkbox *CHECKBOX_show_light_position_direction = NULL;
+#endif
 GLUI_Checkbox *CHECKBOX_edit_colormap=NULL;
 GLUI_Checkbox *CHECKBOX_plane_normal=NULL;
 
@@ -143,9 +149,12 @@ GLUI_Panel *PANEL_fire_rgb = NULL;
 GLUI_Panel *PANEL_smokefire_rgb = NULL;
 
 GLUI_Rollout *ROLLOUT_opacity = NULL;
-GLUI_Rollout *ROLLOUT_light_color = NULL;
+#ifdef pp_SMOKE_LIGHT
 GLUI_Rollout *ROLLOUT_scatter = NULL;
 GLUI_Rollout *ROLLOUT_light_position = NULL;
+GLUI_Rollout *ROLLOUT_light = NULL;
+GLUI_Rollout *ROLLOUT_light_color = NULL;
+#endif
 GLUI_Rollout *ROLLOUT_voldisplay = NULL;
 GLUI_Rollout *ROLLOUT_volsmoke_move = NULL;
 GLUI_Rollout *ROLLOUT_slicehrrpuv = NULL;
@@ -153,7 +162,6 @@ GLUI_Rollout *ROLLOUT_firecolor = NULL;
 GLUI_Rollout *ROLLOUT_smokecolor = NULL;
 GLUI_Rollout *ROLLOUT_generate_images = NULL;
 GLUI_Rollout *ROLLOUT_loadframe = NULL;
-GLUI_Rollout *ROLLOUT_light = NULL;
 GLUI_Rollout *ROLLOUT_co2color = NULL;
 GLUI_Rollout *ROLLOUT_temperature_settings=NULL;
 GLUI_Rollout *ROLLOUT_meshvis = NULL;
@@ -638,7 +646,9 @@ extern "C" void Glui3dSmokeSetup(int main_window){
     SPINNER_fire_opacity_factor->set_float_limits(1.0, 50.0);
     SPINNER_mass_extinct = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_volsmoke_compute, _("Mass extinction coeff (m2/g)"), GLUI_SPINNER_FLOAT, &mass_extinct, MASS_EXTINCTION, Smoke3dCB);
     Smoke3dCB(MASS_EXTINCTION);
+#ifdef pp_SMOKE_ADAPT
     glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_volsmoke_compute, _("adaptive integration"), &vol_adaptive);
+#endif
     CHECKBOX_combine_meshes = glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_volsmoke_compute, _("Combine meshes"), &combine_meshes, COMBINE_MESHES, Smoke3dCB);
     SPINNER_nongpu_vol_factor = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_volsmoke_compute, _("non-gpu grid multiplier"), GLUI_SPINNER_FLOAT, &nongpu_vol_factor, NONGPU_VOL_FACTOR, Smoke3dCB);
     SPINNER_nongpu_vol_factor->set_float_limits(1.0, 10.0);
@@ -660,6 +670,7 @@ extern "C" void Glui3dSmokeSetup(int main_window){
 
     //*** light
 
+#ifdef pp_SMOKE_LIGHT
     ROLLOUT_light = glui_3dsmoke->add_rollout_to_panel(ROLLOUT_volume, _("Light"), false, VOLSMOKE_LIGHT_ROLLOUT, VolSmokeRolloutCB);
     INSERT_ROLLOUT(ROLLOUT_light, glui_3dsmoke);
     ADDPROCINFO(volsmokeprocinfo, nvolsmokeprocinfo, ROLLOUT_light, VOLSMOKE_LIGHT_ROLLOUT, glui_3dsmoke);
@@ -701,6 +712,7 @@ extern "C" void Glui3dSmokeSetup(int main_window){
     glui_3dsmoke->add_radiobutton_to_group(RADIO_scatter_type_glui,"Schlick");
     SPINNER_scatter_param  = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_scatter,   _("param"), GLUI_SPINNER_FLOAT, &scatter_param);
     SPINNER_scatter_param->set_float_limits(-1.0,1.0);
+#endif
 
     //*** generate images
 
