@@ -113,8 +113,10 @@ void GetSmokeColor(float *smoke_tran, float **smoke_color, float *scaled_intensi
   int ijkcell;
   float *xplt, *yplt, *zplt;
   int ibar, jbar, kbar;
-  float *smokedata_local, *firedata_local, *lightdata_local;
-  float light_fraction;
+  float *smokedata_local, *firedata_local;
+#ifdef pp_SMOKE_LIGHT
+  float *lightdata_local, light_fraction;
+#endif
   int index;
   float black[] = {0.0,0.0,0.0,1.0};
   int slicetype;
@@ -122,7 +124,9 @@ void GetSmokeColor(float *smoke_tran, float **smoke_color, float *scaled_intensi
 
   smokedata_local = meshi->volrenderinfo.smokedataptr;
   firedata_local  = meshi->volrenderinfo.firedataptr;
+#ifdef pp_SMOKE_LIGHT
   lightdata_local = meshi->volrenderinfo.lightdataptr;
+#endif
   slicetype = meshi->volrenderinfo.smokeslice->slice_filetype;
 
   if(slicetype==SLICE_NODE_CENTER){
@@ -192,6 +196,7 @@ void GetSmokeColor(float *smoke_tran, float **smoke_color, float *scaled_intensi
     if(firedata_local!=NULL&&index>MAXSMOKERGB/2)soot_density *= fire_opacity_factor;
     *smoke_tran = exp(-mass_extinct*soot_density*dlength);
   }
+#ifdef pp_SMOKE_LIGHT
   if(use_light&&lightdata_local!=NULL){
     INTERP3D(lightdata_local, light_fraction);
     *light_fractionptr = light_fraction;
@@ -199,6 +204,9 @@ void GetSmokeColor(float *smoke_tran, float **smoke_color, float *scaled_intensi
   else{
     *light_fractionptr = 1.0;
   }
+#else
+  *light_fractionptr = 1.0;
+#endif
 }
 
 /* ------------------ InitVolRenderSurface ------------------------ */
@@ -869,7 +877,7 @@ void InitVolRender(void){
     if(blocknumber<0||blocknumber>=nmeshes)continue;
     shortlabel = slicei->label.shortlabel;
     longlabel = slicei->label.longlabel;
-    if(STRCMP(shortlabel, "temp")!=0&&STRCMP(shortlabel, "rho_Soot")!=0&&STRCMP(shortlabel, "rho_C0.9H0.1")!=0&&STRCMP(shortlabel, "frac")!=0&&STRCMP(shortlabel, "X_CO2")!=0)continue;
+    if(STRCMP(shortlabel, "temp")!=0&&IsSootFile(shortlabel, longlabel)==0&&STRCMP(shortlabel, "frac")!=0&&STRCMP(shortlabel, "X_CO2")!=0)continue;
     if(slicei->full_mesh==NO)continue;
     if(FILE_EXISTS(slicei->reg_file)==NO)continue;
 
@@ -881,7 +889,7 @@ void InitVolRender(void){
       vr->fireslice=slicei;
      continue;
     }
-    if(STRCMP(shortlabel, "rho_Soot")==0||STRCMP(shortlabel, "rho_C0.9H0.1")==0||(strlen(longlabel)>=12&&strncmp(longlabel, "SOOT DENSITY",12)==0)){
+    if(IsSootFile(shortlabel, longlabel)==1){
       vr->smokeslice=slicei;
       continue;
     }
@@ -1037,7 +1045,10 @@ void IntegrateSmokeColors(float *integrated_smokecolor, float *xyzvert, float dl
   float xyzvals[3];
   char *blank_local;
   float xi, smoke_transparency, *smoke_color=NULL, smoke_light_fraction;
-  float last_xi, last_smoke_color[3], i_dlength;
+  float i_dlength;
+#ifdef pp_SMOKE_LIGHT
+  float last_xi, last_smoke_color[3];
+#endif
   float tauhat,alphahat;
   meshdata *xyz_mesh=NULL;
 
@@ -1144,10 +1155,12 @@ void IntegrateSmokeColors(float *integrated_smokecolor, float *xyzvert, float dl
   blank_local=NULL;
   if(block_volsmoke==1)blank_local=meshi->c_iblank_cell;
   VEC4EQCONS(integrated_smokecolor,0.0);
+#ifdef pp_SMOKE_LIGHT
   VEC3EQCONS(last_smoke_color,0.0);
+  last_xi = 0.5;
+#endif
   tauhat=1.0;
   alphahat=0.0;
-  last_xi = 0.5;
   for(xi = 0.5;xi+0.0001<(float)nsteps;){
     float factor, alphai, scaled_intensity;
     int inobst;
@@ -1171,6 +1184,7 @@ void IntegrateSmokeColors(float *integrated_smokecolor, float *xyzvert, float dl
       GetSmokeColor(&smoke_transparency,&smoke_color, &scaled_intensity, &smoke_light_fraction,
                          dlength, xyz, meshi, &inobst, blank_local);
     }
+#ifdef pp_SMOKE_ADAPT
     if(vol_adaptive==1&&xi>0.5){
       float diff_color;
 
@@ -1191,16 +1205,22 @@ void IntegrateSmokeColors(float *integrated_smokecolor, float *xyzvert, float dl
         continue;
       }
     }
+#endif
+#ifdef pp_SMOKE_LIGHT
     last_xi = xi;
+#endif
     xi+=i_dlength;
+#ifdef pp_SMOKE_LIGHT
     if(smoke_color!=NULL){
       VEC3EQ(last_smoke_color,smoke_color);
     }
+#endif
     if(blank_local!=NULL&&inobst==1)break;
 
     alphai = 1.0 - smoke_transparency;
     alphahat +=  alphai*tauhat;
 
+#ifdef pp_SMOKE_LIGHT
     if(use_light==1){
       float light_factor, scatter_fraction;
       float uvec[3], vvec[3];
@@ -1226,6 +1246,11 @@ void IntegrateSmokeColors(float *integrated_smokecolor, float *xyzvert, float dl
       integrated_smokecolor[1] += alphai*tauhat*scaled_intensity*smoke_color[1];
       integrated_smokecolor[2] += alphai*tauhat*scaled_intensity*smoke_color[2];
     }
+#else
+    integrated_smokecolor[0] += alphai * tauhat * scaled_intensity * smoke_color[0];
+    integrated_smokecolor[1] += alphai * tauhat * scaled_intensity * smoke_color[1];
+    integrated_smokecolor[2] += alphai * tauhat * scaled_intensity * smoke_color[2];
+#endif
     tauhat *= smoke_transparency;
   }
 
@@ -2162,13 +2187,17 @@ void DrawSmoke3DGPUVol(void){
   glUniform1f(GPUvol_light_intensity, light_intensity);
   glUniform1f(GPUvol_scatter_param, scatter_param);
   glUniform3f(GPUvol_light_color, (float)light_color[0], (float)light_color[1], (float)light_color[2]);
+#ifdef pp_SMOKE_LIGHT
   glUniform1i(GPUvol_use_light, use_light);
+#endif
 
   glUniform3f(GPUvol_eyepos,eye_position_fds[0],eye_position_fds[1],eye_position_fds[2]);
   glUniform1f(GPUvol_xyzmaxdiff,xyzmaxdiff);
   glUniform1f(GPUvol_gpu_vol_factor,gpu_vol_factor);
   glUniform1f(GPUvol_fire_opacity_factor,fire_opacity_factor);
+#ifdef pp_SMOKE_ADAPT
   glUniform1i(GPUvol_vol_adaptive, vol_adaptive);
+#endif
   glUniform1f(GPUvol_mass_extinct,mass_extinct);
   glUniform1i(GPUvol_volbw,volbw);
   glUniform1f(GPUvol_temperature_min, global_temp_min);

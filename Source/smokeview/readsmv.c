@@ -5532,11 +5532,8 @@ int ParseSMOKE3DProcess(bufferstreamdata *stream, char *buffer, int *nn_smoke3d_
       nsmoke3dinfo--;
     }
     if(extinct<0.0){
-      char *label;
-
-      label = smoke3di->label.shortlabel;
       extinct = 0.0;
-      if(Match(label, "soot")==1||Match(label, "rho_C")==1||Match(label, "rho_C0.9H0.1")==1)extinct = 8700.0;
+      if(IsSootFile(smoke3di->label.shortlabel, smoke3di->label.longlabel)==1)extinct = 8700.0;
     }
     smoke3di->extinct = extinct;
 

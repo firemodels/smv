@@ -768,6 +768,16 @@ char *GetProgDir(char *progname, char **svpath){
   return progpath;
 }
 
+/* ------------------ IsSootFile ------------------------ */
+
+int IsSootFile(char *shortlabel, char *longlabel){
+  if(STRCMP(shortlabel, "rho_C")==0)return 1;
+  if(STRCMP(shortlabel, "rho_Soot")==0)return 1;
+  if(STRCMP(shortlabel, "rho_C0.9H0.1")==0)return 1;
+  if(strlen(longlabel)>=12&&strncmp(longlabel, "SOOT DENSITY",12)==0)return 1;
+  return 0;
+}
+
 /* ------------------ getprogdirabs ------------------------ */
 
 #ifdef pp_LUA

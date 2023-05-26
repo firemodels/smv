@@ -130,6 +130,8 @@ EXTERNCPP time_t FileModtime(char *filename);
 EXTERNCPP int IsFileNewer(char *file1, char *file2);
 EXTERNCPP char *GetProgDir(char *progname, char **svpath);
 
+EXTERNCPP int IsSootFile(char *shortlabel, char *longlabel);
+
 #ifdef pp_LUA
 EXTERNCPP char *getprogdirabs(char *progname, char **svpath);
 #endif
