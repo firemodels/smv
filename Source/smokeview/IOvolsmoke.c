@@ -113,9 +113,9 @@ void GetSmokeColor(float *smoke_tran, float **smoke_color, float *scaled_intensi
   int ijkcell;
   float *xplt, *yplt, *zplt;
   int ibar, jbar, kbar;
-  float *smokedata_local, *firedata_local, *lightdata_local;
+  float *smokedata_local, *firedata_local;
 #ifdef pp_SMOKE_LIGHT
-  float light_fraction;
+  float *lightdata_local, light_fraction;
 #endif
   int index;
   float black[] = {0.0,0.0,0.0,1.0};
@@ -124,7 +124,9 @@ void GetSmokeColor(float *smoke_tran, float **smoke_color, float *scaled_intensi
 
   smokedata_local = meshi->volrenderinfo.smokedataptr;
   firedata_local  = meshi->volrenderinfo.firedataptr;
+#ifdef pp_SMOKE_LIGHT
   lightdata_local = meshi->volrenderinfo.lightdataptr;
+#endif
   slicetype = meshi->volrenderinfo.smokeslice->slice_filetype;
 
   if(slicetype==SLICE_NODE_CENTER){
@@ -1043,7 +1045,10 @@ void IntegrateSmokeColors(float *integrated_smokecolor, float *xyzvert, float dl
   float xyzvals[3];
   char *blank_local;
   float xi, smoke_transparency, *smoke_color=NULL, smoke_light_fraction;
-  float last_xi, last_smoke_color[3], i_dlength;
+  float i_dlength;
+#ifdef pp_SMOKE_LIGHT
+  float last_xi, last_smoke_color[3];
+#endif
   float tauhat,alphahat;
   meshdata *xyz_mesh=NULL;
 
@@ -1150,10 +1155,12 @@ void IntegrateSmokeColors(float *integrated_smokecolor, float *xyzvert, float dl
   blank_local=NULL;
   if(block_volsmoke==1)blank_local=meshi->c_iblank_cell;
   VEC4EQCONS(integrated_smokecolor,0.0);
+#ifdef pp_SMOKE_LIGHT
   VEC3EQCONS(last_smoke_color,0.0);
+  last_xi = 0.5;
+#endif
   tauhat=1.0;
   alphahat=0.0;
-  last_xi = 0.5;
   for(xi = 0.5;xi+0.0001<(float)nsteps;){
     float factor, alphai, scaled_intensity;
     int inobst;
@@ -1199,11 +1206,15 @@ void IntegrateSmokeColors(float *integrated_smokecolor, float *xyzvert, float dl
       }
     }
 #endif
+#ifdef pp_SMOKE_LIGHT
     last_xi = xi;
+#endif
     xi+=i_dlength;
+#ifdef pp_SMOKE_LIGHT
     if(smoke_color!=NULL){
       VEC3EQ(last_smoke_color,smoke_color);
     }
+#endif
     if(blank_local!=NULL&&inobst==1)break;
 
     alphai = 1.0 - smoke_transparency;
