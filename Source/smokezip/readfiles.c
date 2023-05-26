@@ -1145,7 +1145,6 @@ void InitVolRender(void){
   }
   for(i=0;i<nsliceinfo;i++){
     slicedata *slicei;
-    char *shortlabel;
     int blocknumber;
     meshdata *meshi;
     volrenderdata *vr;
@@ -1161,13 +1160,12 @@ void InitVolRender(void){
 
     if(ni!=meshi->ibar+1||nj!=meshi->jbar+1||nk!=meshi->kbar+1)continue;
     vr = &(meshi->volrenderinfo);
-    shortlabel = slicei->label.shortlabel;
 
-    if(STRCMP(shortlabel,"temp")==0){
+    if(STRCMP(slicei->label.shortlabel, "temp")==0){
       vr->fire=slicei;
      continue;
     }
-    if(STRCMP(shortlabel,"rho_Soot")==0||STRCMP(shortlabel, "rho_C0.9H0.1")==0){
+    if(IsSootFile(slicei->label.shortlabel, slicei->label.longlabel)==1){
       vr->smoke=slicei;
       continue;
     }
