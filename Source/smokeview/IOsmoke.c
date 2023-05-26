@@ -4493,6 +4493,7 @@ int UpdateSmoke3D(smoke3ddata *smoke3di){
 #endif
     countout = UnCompressRLE(buffer_in,countin,smoke3di->smokeframe_in);
     CheckMemory;
+    break;
   case ZLIB:
     UnCompressZLIB(smoke3di->smokeframe_in,&countout,smoke3di->smokeframe_comp_list[iframe_local],countin);
     break;
