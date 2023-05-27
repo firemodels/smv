@@ -1613,11 +1613,12 @@ SVEXTERN int max_screenWidth, max_screenHeight;
 SVEXTERN int saveW, saveH;
 SVEXTERN char SVDECL(*texturedir,NULL);
 #ifdef pp_COLORBARS_CSV
+SVEXTERN char SVDECL(*colorbars_dir, NULL);
 SVEXTERN char SVDECL(*colorbars_linear_dir,  NULL);
 SVEXTERN char SVDECL(*colorbars_rainbow_dir, NULL);
 SVEXTERN char SVDECL(*colorbars_divergent_dir, NULL);
 SVEXTERN char SVDECL(*colorbars_circular_dir, NULL);
-SVEXTERN char SVDECL(*colorbars_userdir, NULL);
+SVEXTERN char SVDECL(*colorbars_user_dir, NULL);
 SVEXTERN int SVDECL(nlinear_filelist,0), SVDECL(ncircular_filelist,0), SVDECL(nrainbow_filelist,0), SVDECL(ndivergent_filelist,0);
 SVEXTERN int SVDECL(ndeprecated_filelist, 0);
 SVEXTERN int SVDECL(nuser_filelist, 0);

@@ -873,9 +873,9 @@ void UpdateINIList(void){
   strcpy(filter,fdsprefix);
   strcat(filter,"*.ini");
   FreeFileList(ini_filelist,&nini_filelist);
-  nini_filelist=GetFileListSize(".",filter);
+  nini_filelist=GetFileListSize(".",filter, FILE_MODE);
   if(nini_filelist>0){
-    MakeFileList(".",filter,nini_filelist,NO,&ini_filelist);
+    MakeFileList(".",filter,nini_filelist,NO,&ini_filelist, FILE_MODE);
 
     for(i=0;i<nini_filelist;i++){
       filelistdata *filei;
@@ -4640,12 +4640,12 @@ void MakeFileLists(void){
 
   // create a list of all files in the current directory
 
-  nfilelist_casename = GetFileListSize(".", filter_casename);
-  MakeFileList(".", filter_casename, nfilelist_casename, YES, &filelist_casename);
+  nfilelist_casename = GetFileListSize(".", filter_casename, FILE_MODE);
+  MakeFileList(".", filter_casename, nfilelist_casename, YES, &filelist_casename, FILE_MODE);
 
   strcpy(filter_casedir, "");
-  nfilelist_casedir = GetFileListSize(".", filter_casedir);
-  MakeFileList(".", filter_casedir, nfilelist_casedir, YES, &filelist_casedir);
+  nfilelist_casedir = GetFileListSize(".", filter_casedir, FILE_MODE);
+  MakeFileList(".", filter_casedir, nfilelist_casedir, YES, &filelist_casedir, FILE_MODE);
 }
 
 #define RETURN_TWO        2

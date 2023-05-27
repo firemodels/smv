@@ -2357,11 +2357,11 @@ void OpenCB(int var){
         LIST_open->delete_item(label);
       }
       FreeFileList(gluiopen_filelist,&gluiopen_nfilelist);
-      gluiopen_nfilelist=GetFileListSize(gluiopen_path_dir,gluiopen_filter);
+      gluiopen_nfilelist=GetFileListSize(gluiopen_path_dir,gluiopen_filter,FILE_MODE);
       if(gluiopen_nfilelist==0){
         LIST_open->add_item(0,"");
       }
-      MakeFileList(gluiopen_path_dir, gluiopen_filter,gluiopen_nfilelist,NO,&gluiopen_filelist);
+      MakeFileList(gluiopen_path_dir, gluiopen_filter,gluiopen_nfilelist,NO,&gluiopen_filelist, FILE_MODE);
       if(gluiopen_nfilelist>0&&gluiopen_filelist[0].type==1){
         BUTTON_open_down->enable();
       }

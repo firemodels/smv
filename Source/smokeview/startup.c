@@ -433,14 +433,14 @@ void InitStartupDirs(void){
   }
 
 #ifdef pp_COLORBARS_CSV
-  NewMemory((void **)&colorbars_userdir, strlen(homedir) + strlen(dirseparator) + strlen(".smokeview") + strlen(dirseparator) + strlen("colorbars") + 1);
-  strcpy(colorbars_userdir, homedir);
-  strcat(colorbars_userdir, dirseparator);
-  strcat(colorbars_userdir, ".smokeview");
-  strcat(colorbars_userdir, dirseparator);
-  strcat(colorbars_userdir, "colorbars");
-  if(FileExistsOrig(colorbars_userdir) == NO){
-    FREEMEMORY(colorbars_userdir);
+  NewMemory((void **)&colorbars_user_dir, strlen(homedir) + strlen(dirseparator) + strlen(".smokeview") + strlen(dirseparator) + strlen("colorbars") + 1);
+  strcpy(colorbars_user_dir, homedir);
+  strcat(colorbars_user_dir, dirseparator);
+  strcat(colorbars_user_dir, ".smokeview");
+  strcat(colorbars_user_dir, dirseparator);
+  strcat(colorbars_user_dir, "colorbars");
+  if(FileExistsOrig(colorbars_user_dir) == NO){
+    FREEMEMORY(colorbars_user_dir);
   }
 #endif
 
@@ -1245,13 +1245,14 @@ void InitOpenGL(int option){
     strcpy(return_path, smokeview_bindir);
     strcat(return_path, "colorbars");
     strcat(return_path, dirseparator);
-    strcat(return_path, subdir);
+    if(strlen(subdir)>0)strcat(return_path, subdir);
     return return_path;
   }
 
   /* ------------------ InitColorbarsDir ------------------------ */
 
   void InitColorbarsDir(void){
+    colorbars_dir           = InitColorbarsSubDir("");
     colorbars_linear_dir    = InitColorbarsSubDir("linear");
     colorbars_divergent_dir = InitColorbarsSubDir("divergent");
     colorbars_rainbow_dir   = InitColorbarsSubDir("rainbow");
