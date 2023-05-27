@@ -90,8 +90,10 @@ int cb_usecolorbar_extreme;
 #define COLORBAR_NEXT                22
 #ifdef pp_COLOR_CIE
 #define COLORBAR_ADJUST              23
+#ifdef pp_COLOR_ADJUST
 #define COLORBAR_REVERT              24
 #define COLORBAR_CIE_OUTPUT          25
+#endif
 #define COLORBAR_LAB2                26
 #define COLORBAR_RGB2                27
 #endif
@@ -302,14 +304,18 @@ extern "C" void ColorbarCB(int var){
   case COLORBAR_CB1:
     interp_cielab = 0;
     LISTBOX_colorbar->set_int_val(index_colorbar1);
+#ifdef pp_COLOR_ADJUST
     ColorbarCB(COLORBAR_ADJUST);
+#endif
     ColorbarCB(COLORBAR_LIST);
     CHECKBOX_cb_interp->set_int_val(interp_cielab);
     break;
   case COLORBAR_CB2:
     interp_cielab = 1;
     LISTBOX_colorbar->set_int_val(index_colorbar2);
+#ifdef pp_COLOR_ADJUST
     ColorbarCB(COLORBAR_ADJUST);
+#endif
     ColorbarCB(COLORBAR_LIST);
     CHECKBOX_cb_interp->set_int_val(interp_cielab);
     break;
@@ -406,17 +412,23 @@ extern "C" void ColorbarCB(int var){
     ColorbarCB(COLORBAR_LIST);
     break;
 #ifdef pp_COLOR_CIE
+#ifdef pp_COLOR_ADJUST
   case COLORBAR_CIE_OUTPUT:
     CIEdE2Csv(dEcsv_filename);
     break;
+#endif
   case COLORBAR_ADJUST:
+#ifdef pp_COLOR_ADJUST
     AdjustColorBar(colorbarinfo + colorbartype);
+#endif
     ColorbarCB(COLORBAR_RGB);
     break;
+#ifdef pp_COLOR_ADJUST
   case COLORBAR_REVERT:
     RevertColorBar(colorbarinfo + colorbartype);
     ColorbarCB(COLORBAR_RGB);
     break;
+#endif
 #endif
   case COLORBAR_DELETE:
     if(colorbartype >= ndefaultcolorbars&&colorbartype < ncolorbars){
@@ -519,8 +531,10 @@ extern "C" void GluiColorbarSetup(int main_window){
   BUTTON_new=glui_colorbar->add_button_to_panel(PANEL_cb2R2,_("New colorbar"),COLORBAR_NEW,ColorbarCB);
   BUTTON_delete=glui_colorbar->add_button_to_panel(PANEL_cb2R2,_("Delete colorbar"),COLORBAR_DELETE,ColorbarCB);
 #ifdef pp_COLOR_CIE
+#ifdef pp_COLOR_ADJUST
   glui_colorbar->add_button_to_panel(PANEL_cb2R2, _("Adjust colorbar"), COLORBAR_ADJUST, ColorbarCB);
   glui_colorbar->add_button_to_panel(PANEL_cb2R2, _("Output CIElab distances"), COLORBAR_CIE_OUTPUT, ColorbarCB);
+#endif
 #endif
   colorbar_hidescene=1;
   CHECKBOX_hidesv = glui_colorbar->add_checkbox_to_panel(PANEL_cb2R2,_("Hide scene"),&colorbar_hidescene);
@@ -529,7 +543,9 @@ extern "C" void GluiColorbarSetup(int main_window){
   glui_colorbar->add_radiobutton_to_group(RADIO_colorbar_coord_type, "rgb");
   glui_colorbar->add_radiobutton_to_group(RADIO_colorbar_coord_type, "cielab");
   CHECKBOX_cb_interp = glui_colorbar->add_checkbox_to_panel(PANEL_cb2R2, "interpolate using cielab", &interp_cielab, COLORBAR_ADJUST, ColorbarCB);
+#ifdef pp_COLOR_ADJUST
   glui_colorbar->add_button_to_panel(PANEL_cb2R2,_("Revert CIE"), COLORBAR_REVERT, ColorbarCB);
+#endif
 #endif
   PANEL_cb1 = glui_colorbar->add_panel(_("Colorbar"));
   if(ncolorbars>0){

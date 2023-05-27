@@ -273,7 +273,9 @@ void DrawColorbarPathRGB(void){
     glPushMatrix();
     glScalef(SCALE2SMV(1.0),SCALE2SMV(1.0),SCALE2SMV(1.0));
     glTranslatef(-xbar0,-ybar0,-zbar0);
-    for(i=0;i<cbi->nnodes;i++){
+    int skip = 1;
+    if(cbi->nnodes > 20)skip = cbi->nnodes / 20;
+    for(i=0;i<cbi->nnodes;i+=skip){
       char cbuff[1024];
       float dzpoint;
 
@@ -506,7 +508,9 @@ void DrawColorbarPathCIE(void){
   glPushMatrix();
   glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
   glTranslatef(-xbar0, -ybar0, -zbar0);
-  for(i = 0;i < cbi->nnodes;i++){
+    int skip = 1;
+    if(cbi->nnodes > 20)skip = cbi->nnodes / 20;
+    for(i = 0;i < cbi->nnodes;i+=skip){
     char cbuff[1024];
     float dzpoint;
 
@@ -831,7 +835,7 @@ void CIE2Rgbs(unsigned char *rgbs255, float *frgbs, float *cies){
 }
 
 /* ------------------ CIEdE2Csv ------------------------ */
-
+#ifdef pp_COLOR_ADJUST
 void CIEdE2Csv(char *file){
   int i;
   FILE *stream;
@@ -861,6 +865,7 @@ void CIEdE2Csv(char *file){
   }
   fclose(stream);
 }
+#endif
 
 /* ------------------ CheckCIE ------------------------ */
 #ifdef pp_COLOR_CIE_CHECK
@@ -945,14 +950,14 @@ void RemapColorbar(colorbardata *cbi){
   unsigned char *rgb_node;
   unsigned char *alpha;
 #ifdef pp_COLOR_CIE
-  float *cie;
+  float *cie_rgb;
 #endif
 
   CheckMemory;
   colorbar=cbi->colorbar;
   rgb_node=cbi->rgb_node;
 #ifdef pp_COLOR_CIE
-  cie = cbi->cie_rgb;
+  cie_rgb = cbi->cie_rgb;
 #endif
   alpha=cbi->alpha;
 
@@ -991,21 +996,12 @@ void RemapColorbar(colorbardata *cbi){
 
       factor = (float)(j-i1)/(float)(i2-i1);
 #ifdef pp_COLOR_CIE
-      float *ciej, *ciej2;
+      float *ciej;
 
-      ciej = cie + 3*j;
-      ciej2 = ciej - 3;
+      ciej  = cie_rgb + 3*j;
       ciej[0]=MIX(factor,cie2[0],cie1[0]);
       ciej[1]=MIX(factor,cie2[1],cie1[1]);
       ciej[2]=MIX(factor,cie2[2],cie1[2]);
-      if(j > 0){
-        float *dE, dist;
-        float dx, dy, dz;
-
-        dE = cbi->dE + j - 1;
-        DDIST3(ciej, ciej2, dist);
-        *dE = dist;
-      }
       if(interp_cielab == 1){
         unsigned char rgb_val[3];
         float frgb[3];
@@ -1038,6 +1034,19 @@ void RemapColorbar(colorbardata *cbi){
       }
     }
   }
+#ifdef pp_COLOR_CIE
+  for(i=1;i<cbi->nnodes;i++){
+    float *ciei1, *ciei2;
+    float *dE, dist;
+    float dx, dy, dz;
+
+    ciei1  = cbi->cie_rgb + 3*i;
+    ciei2  = ciei1 - 3;
+    dE    = cbi->dE      + i - 1;
+    DDIST3(ciei1, ciei2, dist);
+    *dE = dist;
+  }
+#endif
   rgb_node = cbi->rgb_node+3*(cbi->nnodes-1);
   for(i=cbi->index_node[cbi->nnodes-1];i<256;i++){
     colorbar[0+3*i]=rgb_node[0]/255.0;
@@ -1185,7 +1194,7 @@ void RemapColorbarType(int cb_oldtype, char *cb_newname){
 #ifdef pp_COLORBARS_CSV
 /* ------------------ InitColorbar ------------------------ */
 
-void InitColorbar(colorbardata *cbptr, char *dir, char *file, char *ctype, int type){
+void ReadCSVColorbar(colorbardata *cbptr, char *dir, char *file, char *ctype, int type){
   FILE *stream;
   int i,n=0;
   char fullfile[1024];
@@ -2013,23 +2022,23 @@ void InitDefaultColorbars(int nini){
 
 #ifdef pp_COLORBARS_CSV
   for(i = 0;i < nlinear_filelist;i++){
-    InitColorbar(cbi, colorbars_linear_dir,  linear_filelist[i].file,      "linear",    CB_LINEAR);
+    ReadCSVColorbar(cbi, colorbars_linear_dir,  linear_filelist[i].file,      "linear",    CB_LINEAR);
     cbi++;
   }
   for(i = 0;i < ncircular_filelist;i++){
-    InitColorbar(cbi, colorbars_circular_dir,  circular_filelist[i].file,  "circular",  CB_CIRCULAR);
+    ReadCSVColorbar(cbi, colorbars_circular_dir,  circular_filelist[i].file,  "circular",  CB_CIRCULAR);
     cbi++;
   }
   for(i = 0;i < nrainbow_filelist;i++){
-    InitColorbar(cbi, colorbars_rainbow_dir,  rainbow_filelist[i].file,    "rainbow",   CB_RAINBOW);
+    ReadCSVColorbar(cbi, colorbars_rainbow_dir,  rainbow_filelist[i].file,    "rainbow",   CB_RAINBOW);
     cbi++;
   }
   for(i = 0;i < ndivergent_filelist;i++){
-    InitColorbar(cbi, colorbars_divergent_dir, divergent_filelist[i].file, "divergent", CB_DIVERGENT);
+    ReadCSVColorbar(cbi, colorbars_divergent_dir, divergent_filelist[i].file, "divergent", CB_DIVERGENT);
     cbi++;
   }
   for(i = 0;i < nuser_filelist;i++){
-    InitColorbar(cbi, colorbars_userdir, user_filelist[i].file,            "user",      CB_USER);
+    ReadCSVColorbar(cbi, colorbars_userdir, user_filelist[i].file,            "user",      CB_USER);
     cbi++;
   }
 #endif
