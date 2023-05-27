@@ -8261,7 +8261,7 @@ void InitPatchSubMenus(int **loadsubpatchmenu_sptr, int **nsubpatchmenus_sptr){
 /* ------------------ MakeSubColorbarMenu ------------------------ */
 
 int MakeSubColorbarMenu(int *submenuptr, int *nmenusptr, char *ctype, void (*CBMenu)(int)){
-  int i, nitems=0, submenu, nmenus;
+  int i, nitems=0, submenu;
 
   for(i = 0; i < ncolorbars; i++){
     colorbardata *cbi;
@@ -8273,9 +8273,7 @@ int MakeSubColorbarMenu(int *submenuptr, int *nmenusptr, char *ctype, void (*CBM
   }
   if(nitems == 0)return 0;
 
-  nmenus = *nmenusptr;
   CREATEMENU(submenu, CBMenu);
-  *nmenusptr = nmenus;
   *submenuptr = submenu;
   char ccolorbarmenu[256];
 

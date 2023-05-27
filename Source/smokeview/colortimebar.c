@@ -2069,10 +2069,8 @@ void InitDefaultColorbars(int nini){
   if(cb != NULL)new_rainbow_index = cb - colorbarinfo;
 
   if(rainbow_filelist>0&&rainbow2_index>=0&&new_rainbow_index>=0&&rainbow_index>=0){
-    colorbardata *cb_rainbow, *cb_rainbow2, *cb_new_rainbow;
+    colorbardata *cb_new_rainbow;
 
-    cb_rainbow     = colorbarinfo + rainbow_index;
-    cb_rainbow2    = colorbarinfo + rainbow2_index;
     cb_new_rainbow = colorbarinfo + new_rainbow_index;
 
     strcpy(cb_new_rainbow->label, "Rainbow");
