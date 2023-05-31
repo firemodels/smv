@@ -6000,47 +6000,6 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
   return RETURN_PROCEED;
 }
 
-/* ------------------ ReadSMVSLCF ------------------------ */
-
-int ReadSMVSLCF(bufferstreamdata *stream){
-  char buffer[256], buffers[6][256];
-  int nn_slice = 0, ioffset=0, nslicefiles=0;
-  slicedata *sliceinfo_copy=NULL;
-  patchdata *patchgeom;
-
-  for(;;){
-    int return_val;
-
-    return_val = ParseSLCFCount(SCAN, stream, buffer, &nslicefiles);
-    if(return_val==RETURN_BREAK){
-      BREAK;
-    }
-  }
-  REWIND(stream);
-  sliceinfo_copy = sliceinfo;
-  for(;;){
-    int return_val;
-
-    return_val = ParseSLCFProcess(SCAN, stream, buffer, &nn_slice, ioffset, &nslicefiles, &sliceinfo_copy, &patchgeom, buffers);
-    if(return_val==RETURN_BREAK){
-      BREAK;
-    }
-    else if(return_val==RETURN_CONTINUE){
-      continue;
-    }
-    else if(return_val==RETURN_TWO){
-      return 2;
-    }
-    else if(return_val==RETURN_PROCEED){
-    }
-    else{
-      ASSERT(FFALSE);
-    }
-  }
-  return 0;
-}
-
-
 /* ------------------ FreeSliceData ------------------------ */
 
 void FreeSliceData(void){
