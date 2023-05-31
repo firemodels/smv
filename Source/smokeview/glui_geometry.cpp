@@ -77,12 +77,9 @@ GLUI_Checkbox *CHECKBOX_show_cface_normals = NULL;
 GLUI_Checkbox *CHECKBOX_show_zlevel = NULL;
 GLUI_Checkbox *CHECKBOX_surface_solid=NULL, *CHECKBOX_surface_outline=NULL, *CHECKBOX_surface_points = NULL;
 GLUI_Checkbox *CHECKBOX_geom_force_transparent = NULL;
-GLUI_Checkbox *CHECKBOX_interior_solid=NULL, *CHECKBOX_interior_outline=NULL;
 GLUI_Checkbox *CHECKBOX_geomtest=NULL, *CHECKBOX_triangletest=NULL;
 GLUI_Checkbox *CHECKBOX_show_geom_normal = NULL;
 GLUI_Checkbox *CHECKBOX_smooth_geom_normal = NULL;
-GLUI_Checkbox *CHECKBOX_volumes_interior=NULL;
-GLUI_Checkbox *CHECKBOX_volumes_exterior=NULL;
 GLUI_Checkbox *CHECKBOX_show_texture_1dimage = NULL;
 GLUI_Checkbox *CHECKBOX_showonly_top = NULL;
 
@@ -248,8 +245,6 @@ extern "C" void UpdateShowOnlyTop(void){
 /* ------------------ UpdateWhereFaceVolumes ------------------------ */
 
 extern "C" void UpdateWhereFaceVolumes(void){
-  if(CHECKBOX_volumes_interior != NULL)CHECKBOX_volumes_interior->set_int_val(show_volumes_interior);
-  if(CHECKBOX_volumes_exterior != NULL)CHECKBOX_volumes_exterior->set_int_val(show_volumes_exterior);
   if(CHECKBOX_showgeom_inside_domain!=NULL)CHECKBOX_showgeom_inside_domain->set_int_val(showgeom_inside_domain);
   if(CHECKBOX_showgeom_outside_domain!=NULL)CHECKBOX_showgeom_outside_domain->set_int_val(showgeom_outside_domain);
 }
@@ -275,8 +270,6 @@ extern "C" void UpdateGeomBoundingBox(void){
 extern "C" void UpdateGeometryControls(void){
   if(CHECKBOX_surface_solid!=NULL)CHECKBOX_surface_solid->set_int_val(show_faces_shaded);
   if(CHECKBOX_surface_outline!=NULL)CHECKBOX_surface_outline->set_int_val(show_faces_outline);
-  if(CHECKBOX_interior_solid!=NULL)CHECKBOX_interior_solid->set_int_val(show_volumes_solid);
-  if(CHECKBOX_interior_outline!=NULL)CHECKBOX_interior_outline->set_int_val(show_volumes_outline);
 
   if(CHECKBOX_show_geom_normal != NULL)CHECKBOX_show_geom_normal->set_int_val(show_geom_normal);
   if(CHECKBOX_smooth_geom_normal != NULL)CHECKBOX_smooth_geom_normal->set_int_val(smooth_geom_normal);
@@ -892,12 +885,12 @@ extern "C" void GluiGeometrySetup(int main_window){
     PANEL_face_cface->set_alignment(GLUI_ALIGN_LEFT);
     PANEL_triangles = glui_geometry->add_panel_to_panel(PANEL_face_cface, "faces");
     PANEL_triangles->set_alignment(GLUI_ALIGN_LEFT);
-    CHECKBOX_surface_solid = glui_geometry->add_checkbox_to_panel(PANEL_triangles, "solid", &show_faces_shaded, VOL_SHOWHIDE, VolumeCB);
+    CHECKBOX_surface_solid = glui_geometry->add_checkbox_to_panel(PANEL_triangles,   "solid",   &show_faces_shaded,  VOL_SHOWHIDE, VolumeCB);
     CHECKBOX_surface_outline = glui_geometry->add_checkbox_to_panel(PANEL_triangles, "outline", &show_faces_outline, VOL_SHOWHIDE, VolumeCB);
-    CHECKBOX_surface_points = glui_geometry->add_checkbox_to_panel(PANEL_triangles, "points", &show_geom_verts, VOL_SHOWHIDE, VolumeCB);
+    CHECKBOX_surface_points = glui_geometry->add_checkbox_to_panel(PANEL_triangles,  "points",  &show_geom_verts,    VOL_SHOWHIDE, VolumeCB);
 
     if(ncgeominfo>0){
-      glui_geometry->add_column_to_panel(PANEL_face_cface, false);
+      glui_geometry->add_column_to_panel(PANEL_face_cface, false); 
       PANEL_cfaces = glui_geometry->add_panel_to_panel(PANEL_face_cface, "cfaces");
       PANEL_cfaces->set_alignment(GLUI_ALIGN_LEFT);
       CHECKBOX_cfaces = glui_geometry->add_checkbox_to_panel(PANEL_cfaces, "show", &glui_use_cfaces, VOL_USE_CFACES, VolumeCB);
@@ -939,14 +932,6 @@ extern "C" void GluiGeometrySetup(int main_window){
 
 
     glui_geometry->add_column_to_panel(PANEL_group1, false);
-
-    if(have_volumes==1){
-      PANEL_volumes = glui_geometry->add_panel_to_panel(PANEL_group1, "volumes");
-      CHECKBOX_volumes_interior = glui_geometry->add_checkbox_to_panel(PANEL_volumes, "interior", &show_volumes_interior);
-      CHECKBOX_volumes_exterior = glui_geometry->add_checkbox_to_panel(PANEL_volumes, "exterior", &show_volumes_exterior);
-      CHECKBOX_interior_solid = glui_geometry->add_checkbox_to_panel(PANEL_volumes, "shaded", &show_volumes_solid, VOL_SHOWHIDE, VolumeCB);
-      CHECKBOX_interior_outline = glui_geometry->add_checkbox_to_panel(PANEL_volumes, "outline", &show_volumes_outline, VOL_SHOWHIDE, VolumeCB);
-    }
 
     UpdateGeomAreas();
 

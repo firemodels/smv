@@ -919,86 +919,6 @@ void DrawGeom(int flag, int timestate){
       geomlisti = geomi->geomlistinfo+geomi->itime;
     }
 
-    if(geomlisti->nvolumes > 0 && show_volumes_solid == 1){
-
-      // draw volume solid
-
-      last_color = NULL;
-      glPushMatrix();
-      glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
-      glTranslatef(-xbar0, -ybar0, -zbar0);
-
-      glEnable(GL_NORMALIZE);
-      glShadeModel(GL_SMOOTH);
-      ENABLE_LIGHTING;
-      glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, iso_specular);
-      glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, iso_shininess);
-      glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, block_ambient2);
-      glEnable(GL_COLOR_MATERIAL);
-
-      last_color = NULL;
-      glBegin(GL_TRIANGLES);
-      for(j = 0; j < geomlisti->nvolumes; j++){
-        tetdata *volumei;
-        float *xyzptr[4];
-        int *exterior;
-        //
-        //             0
-        //            /  \
-        //           /   .3
-        //             .   \
-        //         / .      \
-        //         1--------2
-        //
-        int facelist[12] = {0, 1, 2, 0, 2, 3, 0, 3, 1, 1, 3, 2};
-        int k;
-
-        volumei = geomlisti->volumes + j;
-        exterior = volumei->exterior;
-        xyzptr[0] = volumei->verts[0]->xyz;
-        xyzptr[1] = volumei->verts[1]->xyz;
-        xyzptr[2] = volumei->verts[2]->xyz;
-        xyzptr[3] = volumei->verts[3]->xyz;
-
-
-        color = volumei->matl->color;
-        if(last_color != color){
-          glColor3fv(color);
-          last_color = color;
-        }
-
-        for(k = 0; k < 4; k++){
-          int kk;
-          float *v0, *v1, *v2;
-          float v1m0[3], v2m0[3], v2m1[3], vcross[3];
-          float v0delta[3], v1delta[3], v2delta[3];
-
-          if(show_volumes_exterior == 0 && exterior[k] == 1)continue;
-          if(show_volumes_interior == 0 && exterior[k] == 0)continue;
-          v0 = xyzptr[facelist[3 * k]];
-          v1 = xyzptr[facelist[3 * k + 1]];
-          v2 = xyzptr[facelist[3 * k + 2]];
-          VEC3DIFF(v1m0, v1, v0);
-          VEC3DIFF(v2m0, v2, v0);
-          VEC3DIFF(v2m1, v2, v1);
-          CROSS(vcross, v1m0, v2m0);
-
-          for(kk = 0; kk < 3; kk++){
-            v0delta[kk] = v0[kk] + face_factor*v1m0[kk] + face_factor*v2m0[kk];
-            v1delta[kk] = v1[kk] - face_factor*v1m0[kk] + face_factor*v2m1[kk];
-            v2delta[kk] = v2[kk] - face_factor*v2m0[kk] - face_factor*v2m1[kk];
-          }
-          glNormal3fv(vcross);
-          glVertex3fv(v0delta);
-          glVertex3fv(v1delta);
-          glVertex3fv(v2delta);
-        }
-      }
-      glEnd();
-      glDisable(GL_COLOR_MATERIAL);
-      DISABLE_LIGHTING;
-      glPopMatrix();
-    }
     if(show_surf_axis==1){
       glPushMatrix();
       glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
@@ -1059,65 +979,6 @@ void DrawGeom(int flag, int timestate){
         Output3Text(foregroundcolor, x0, y1, z0, "Y");
         Output3Text(foregroundcolor, x0, y0, z1, "Z");
       }
-      glPopMatrix();
-    }
-
-      // draw volume outline
-
-    if(geomlisti->nvolumes > 0 && show_volumes_outline == 1){
-      last_color = NULL;
-      glPushMatrix();
-      glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
-      glTranslatef(-xbar0, -ybar0, -zbar0);
-      glDisable(GL_COLOR_MATERIAL);
-      DISABLE_LIGHTING;
-      glLineWidth(20.0);
-      glBegin(GL_LINES);
-      for(j=0;j<geomlisti->nvolumes;j++){
-        tetdata *volumei;
-        float *xyzptr[4];
-        int *exterior;
-        //
-        //             0
-        //            /  \
-        //           /   .3
-        //             .   \
-        //         / .      \
-        //         1--------2
-        //
-        int facelist[12]={0,1,2, 0,2,3, 0,3,1, 1,3,2};
-        int k;
-
-        volumei = geomlisti->volumes+j;
-        exterior = volumei->exterior;
-        xyzptr[0] = volumei->verts[0]->xyz;
-        xyzptr[1] = volumei->verts[1]->xyz;
-        xyzptr[2] = volumei->verts[2]->xyz;
-        xyzptr[3] = volumei->verts[3]->xyz;
-
-        for(k=0;k<4;k++){
-          if(show_volumes_exterior == 0 && exterior[k] == 1)continue;
-          if(show_volumes_interior == 0 && exterior[k] == 0)continue;
-          if(show_volumes_solid==1){
-             color=black;
-          }
-          else{
-            color = volumei->matl->color;
-          }
-          if(last_color!=color){
-            glColor3fv(color);
-            last_color=color;
-          }
-          glVertex3fv(xyzptr[facelist[3*k]]);
-          glVertex3fv(xyzptr[facelist[3*k+1]]);
-          glVertex3fv(xyzptr[facelist[3*k+1]]);
-          glVertex3fv(xyzptr[facelist[3*k+2]]);
-          glVertex3fv(xyzptr[facelist[3*k+2]]);
-          glVertex3fv(xyzptr[facelist[3*k+0]]);
-        }
-      }
-      glEnd();
-
       glPopMatrix();
     }
 
@@ -2691,10 +2552,8 @@ void InitGeomlist(geomlistdata *geomlisti){
   geomlisti->triangles = NULL;
   geomlisti->triangleptrs = NULL;
   geomlisti->connected_triangles = NULL;
-  geomlisti->volumes = NULL;
   geomlisti->nverts = 0;
   geomlisti->ntriangles = 0;
-  geomlisti->nvolumes = 0;
   geomlisti->norms_defined = 0;
 }
 
@@ -2912,7 +2771,6 @@ FILE_SIZE ReadGeom2(geomdata *geomi, int load_flag, int type){
   int i;
   vertdata *verts;
   tridata *triangles;
-  tetdata *volumes;
   int version;
   int nvertfacesvolumes[3];
   int nheaders[3], nfloat_vals, nint_vals, first_frame_static;
@@ -2986,7 +2844,6 @@ FILE_SIZE ReadGeom2(geomdata *geomi, int load_flag, int type){
     nverts=nvertfacesvolumes[0];
     ntris=nvertfacesvolumes[1];
     nvolumes=nvertfacesvolumes[2];
-    if(nvolumes>0)have_volumes=1;
 
     if(nverts>0){
       int ii;
@@ -3289,40 +3146,8 @@ FILE_SIZE ReadGeom2(geomdata *geomi, int load_flag, int type){
       FREEMEMORY(texture_coords);
     }
     if(nvolumes>0){
-      int ii;
-      int *ijk;
-      int *matl_ind=NULL;
-
-      NewMemoryMemID((void **)&volumes,nvolumes*sizeof(tetdata),geomi->memory_id);
-      geomlisti->volumes=volumes;
-      NewMemory((void **)&ijk,4*nvolumes*sizeof(int));
-
-      FORTREADBR(ijk,4*nvolumes,stream);
-      return_filesize += 4+4*nvolumes*4+4;
-
-      for(ii=0;ii<nvolumes;ii++){
-        int k;
-
-        for(k=0;k<4;k++){
-          volumes[ii].verts[k]=verts+ijk[4*ii+k]-1;
-        }
-      }
-      FREEMEMORY(ijk);
-      NewMemory((void **)&matl_ind,nvolumes*sizeof(int));
-
-      FORTREADBR(matl_ind,nvolumes,stream);
-      return_filesize += 4+nvolumes*4+4;
-
-      for(ii=0;ii<nvolumes;ii++){
-        matldata *matli;
-        int index;
-
-        index = CLAMP(matl_ind[ii],0,nmatlinfo-1);
-        matli=matlinfo + index;
-        volumes[ii].matl=matli;
-      }
-      FREEMEMORY(matl_ind);
-      geomlisti->nvolumes=nvolumes;
+      FSEEK(stream, 4 + 4*nvolumes*sizeof(int) + 4, SEEK_CUR);
+      FSEEK(stream, 4 + nvolumes*sizeof(int) + 4,   SEEK_CUR);
     }
     if(geomi->have_cface_normals==CFACE_NORMALS_YES){
       int ncface_normals;
@@ -3458,38 +3283,6 @@ int CompareFaces(const void *arg1, const void *arg2){
   return 0;
 }
 
-/* ------------------ CompareVolumeFaces ------------------------ */
-
-int CompareVolumeFaces(const void *arg1, const void *arg2){
-  volfacedata *face1, *face2;
-  tetdata *vol1, *vol2;
-  int *verts1, *verts2;
-  int v1[3], v2[3];
-
-  face1  = (volfacedata *)arg1;
-  face2  = (volfacedata *)arg2;
-  vol1   = face1->vol;
-  vol2   = face2->vol;
-  verts1 = vol1->faces+3*face1->faceindex;
-  verts2 = vol2->faces+3*face2->faceindex;
-
-  v1[1]=MIN(verts1[1],verts1[2]);
-  v1[2]=MAX(verts1[1],verts1[2]);
-
-  v2[1]=MIN(verts2[1],verts2[2]);
-  v2[2]=MAX(verts2[1],verts2[2]);
-
-  if(verts1[0]<verts2[0])return -1;
-  if(verts1[0]>verts2[0])return 1;
-
-  if(v1[1]<v2[1])return -1;
-  if(v1[1]>v2[1])return 1;
-
-  if(v1[2]<v2[2])return -1;
-  if(v1[2]>v2[2])return 1;
-  return 0;
-}
-
 /* ------------------ GetEdge ------------------------ */
 
 edgedata *GetEdge(edgedata *edges, int nedges, int iv1, int iv2){
@@ -3540,7 +3333,7 @@ void ClassifyGeom(geomdata *geomi,int *geom_frame_index){
 
   for(i = -1; i<iend; i++){
     geomlistdata *geomlisti;
-    int nverts, nvolumes, ntriangles;
+    int nverts, ntriangles;
     int j;
     vertdata *vertbase;
 
@@ -3549,82 +3342,9 @@ void ClassifyGeom(geomdata *geomi,int *geom_frame_index){
     if(i!=-1&&geom_frame_index!=NULL)geomlisti = geomi->geomlistinfo+(*geom_frame_index);
 
     nverts=geomlisti->nverts;
-    nvolumes=geomlisti->nvolumes;
     ntriangles = geomlisti->ntriangles;
     if(nverts==0||geomlisti->verts==NULL)continue;
     vertbase = geomlisti->verts;
-    for(j=0;j<nvolumes;j++){
-      tetdata *tetrai;
-      int *vert_index;
-      vertdata **verts;
-      int *faces;
-
-      tetrai = geomlisti->volumes+j;
-      vert_index = tetrai->vert_index;
-      verts = tetrai->verts;
-      faces = tetrai->faces;
-      tetrai->exterior[0]=1;
-      tetrai->exterior[1]=1;
-      tetrai->exterior[2]=1;
-      tetrai->exterior[3]=1;
-      vert_index[0] = verts[0]-vertbase;
-      vert_index[1] = verts[1]-vertbase;
-      vert_index[2] = verts[2]-vertbase;
-      vert_index[3] = verts[3]-vertbase;
-
-      faces[0]=vert_index[0];
-      faces[1]=vert_index[1];
-      faces[2]=vert_index[2];
-      ReorderFace(faces);
-
-      faces[3]=vert_index[0];
-      faces[4]=vert_index[2];
-      faces[5]=vert_index[3];
-      ReorderFace(faces+3);
-
-      faces[6]=vert_index[0];
-      faces[7]=vert_index[3];
-      faces[8]=vert_index[1];
-      ReorderFace(faces+6);
-
-      faces[9]=vert_index[1];
-      faces[10]=vert_index[3];
-      faces[11]=vert_index[2];
-      ReorderFace(faces+9);
-    }
-    if(nvolumes>0){
-      int nfacelist_index;
-      volfacedata *facelist_ptr=NULL;
-
-      nfacelist_index=4*nvolumes;
-      NewMemory((void **)&facelist_ptr,4*nfacelist_index*sizeof(volfacedata));
-      for(j=0;j<nfacelist_index;j++){
-        volfacedata *facei;
-
-        facei            = facelist_ptr + j;
-        facei->faceindex = j%4;
-        facei->vol       = geomlisti->volumes + j/4;
-      }
-      qsort(facelist_ptr,nfacelist_index,sizeof(volfacedata), CompareVolumeFaces);
-      for(j=1;j<nfacelist_index;j++){
-        volfacedata *face1, *face2;
-        tetdata *vol1, *vol2;
-        int *verts1, *verts2;
-
-        face1=facelist_ptr + j-1;
-        face2=facelist_ptr + j;
-        vol1 = face1->vol;
-        vol2 = face2->vol;
-        verts1 = vol1->faces+3*face1->faceindex;
-        verts2 = vol2->faces+3*face2->faceindex;
-        if(verts1[0]!=verts2[0])continue;
-        if(MIN(verts1[1],verts1[2])!=MIN(verts2[1],verts2[2]))continue;
-        if(MAX(verts1[1],verts1[2])!=MAX(verts2[1],verts2[2]))continue;
-        vol1->exterior[face1->faceindex]=0;
-        vol2->exterior[face2->faceindex]=0;
-      }
-      FREEMEMORY(facelist_ptr);
-    }
     if(ntriangles > 0){
       int nfacelist_index;
       tridata **facelist_ptrs = NULL;

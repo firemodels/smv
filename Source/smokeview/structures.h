@@ -94,33 +94,15 @@ typedef struct _tridata {
   edgedata *edges[3];
 } tridata;
 
-/* --------------------------  tetdata ------------------------------------ */
-
-typedef struct _tetdata {
-  float distance, *color, face_norm[4];
-  int vert_index[4],exterior[4],faces[12];
-  struct _matldata *matl;
-  vertdata *verts[4];
-  edgedata *edges[4];
-} tetdata;
-
-/* --------------------------  volfacedata ------------------------------------ */
-
-typedef struct _volfacedata {
-  tetdata *vol;
-  int faceindex;
-} volfacedata;
-
 /* --------------------------  geomlistdata ------------------------------------ */
 
 typedef struct _geomlistdata {
-  int nverts,nedges,ntriangles,nvolumes,norms_defined;
+  int nverts,nedges,ntriangles,norms_defined;
   float *zORIG;
   vertdata *verts;
   float *vertvals;
   tridata *triangles, **triangleptrs, **connected_triangles;
   edgedata *edges;
-  tetdata *volumes;
 } geomlistdata;
 
 /* --------------------------  geomobjdata ------------------------------------ */
