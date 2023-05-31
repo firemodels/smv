@@ -4632,6 +4632,9 @@ void UpdateBoundaryMenuLabels(void){
         STRCAT(patchi->menulabel,", ");
         STRCAT(patchi->menulabel,patchi->file);
       }
+      if(patchi->compression_type==COMPRESSED_ZLIB){
+        STRCAT(patchi->menulabel," (ZLIB)");
+      }
     }
 
     FREEMEMORY(patchorderindex);
