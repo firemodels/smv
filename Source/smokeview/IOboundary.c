@@ -4599,7 +4599,8 @@ void UpdateBoundaryMenuLabels(void){
         sprintf(label,"%s",patchmesh->label);
         STRCAT(patchi->menulabel,label);
       }
-      if(patchi->structured == NO){
+    STRCPY(patchi->menulabel_suffix, patchi->label.longlabel);
+    if(patchi->structured == NO){
         if(patchi->filetype_label==NULL||strlen(patchi->filetype_label)==0||strcmp(patchi->filetype_label, "INCLUDE_GEOM")==0){
           if(strlen(patchi->gslicedir) != 0){
             STRCAT(patchi->menulabel, ", ");
@@ -4618,12 +4619,6 @@ void UpdateBoundaryMenuLabels(void){
             STRCAT(patchi->menulabel_suffix, "Cut cell faces");
           }
         }
-        if(strcmp(patchi->menulabel_suffix, "") == 0){
-          STRCPY(patchi->menulabel_suffix, patchi->label.longlabel);
-        }
-      }
-      else{
-        STRCPY(patchi->menulabel_suffix, patchi->label.longlabel);
       }
       if(FILE_EXISTS(patchi->comp_file)==YES){
         patchi->file=patchi->comp_file;
@@ -4636,9 +4631,6 @@ void UpdateBoundaryMenuLabels(void){
       if(showfiles==1){
         STRCAT(patchi->menulabel,", ");
         STRCAT(patchi->menulabel,patchi->file);
-      }
-      if(patchi->compression_type==COMPRESSED_ZLIB){
-        STRCAT(patchi->menulabel," (ZLIB)");
       }
     }
 
