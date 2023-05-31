@@ -518,12 +518,13 @@ void FreeFileList(filelistdata *filelist, int *nfilelist){
   *nfilelist=0;
 }
 
-  /* ------------------ get_nfilelist ------------------------ */
+/* ------------------ GetFileListSize ------------------------ */
 
-int GetFileListSize(const char *path, char *filter){
+int GetFileListSize(const char *path, char *filter, int mode){
   struct dirent *entry;
   DIR *dp;
   int maxfiles=0;
+  int d_type;
 
   if(path == NULL||filter==NULL)return maxfiles;
   dp = opendir(path);
@@ -531,8 +532,13 @@ int GetFileListSize(const char *path, char *filter){
     perror("opendir");
     return 0;
   }
+  d_type = DT_REG;
+  if(mode==DIR_MODE)d_type = DT_DIR;
   while( (entry = readdir(dp))!=NULL ){
-    if(((entry->d_type==DT_REG||entry->d_type==DT_UNKNOWN)&&MatchWild(entry->d_name,filter)==1))maxfiles++;
+    if(((entry->d_type==d_type||entry->d_type==DT_UNKNOWN)&&MatchWild(entry->d_name,filter)==1)){
+      if(strcmp(entry->d_name,".")==0||strcmp(entry->d_name,"..")==0)continue;
+      maxfiles++;
+    }
   }
   closedir(dp);
   return maxfiles;
@@ -574,7 +580,8 @@ int CompareFileList(const void *arg1, const void *arg2){
   return strcmp(x->file, y->file);
 }
 
-/* ------------------ getfile ------------------------ */
+/* ------------------ FileInList ------------------------ */
+
 filelistdata *FileInList(char *file, filelistdata *filelist, int nfiles, filelistdata *filelist2, int nfiles2){
   filelistdata *entry=NULL, fileitem;
 
@@ -593,11 +600,12 @@ filelistdata *FileInList(char *file, filelistdata *filelist, int nfiles, filelis
 
 /* ------------------ MakeFileList ------------------------ */
 
-int MakeFileList(const char *path, char *filter, int maxfiles, int sort_files, filelistdata **filelist){
+int MakeFileList(const char *path, char *filter, int maxfiles, int sort_files, filelistdata **filelist, int mode){
   struct dirent *entry;
   DIR *dp;
   int nfiles=0;
   filelistdata *flist;
+  int d_type;
 
   // DT_DIR - is a directory
   // DT_REG - is a regular file
@@ -613,14 +621,27 @@ int MakeFileList(const char *path, char *filter, int maxfiles, int sort_files, f
     return 0;
   }
   NewMemory((void **)&flist,maxfiles*sizeof(filelistdata));
+  d_type = DT_REG;
+  if(mode==DIR_MODE)d_type = DT_DIR;
   while( (entry = readdir(dp))!=NULL&&nfiles<maxfiles ){
-    if((entry->d_type==DT_REG||entry->d_type==DT_UNKNOWN)&&MatchWild(entry->d_name,filter)==1){
+    if((entry->d_type==d_type||entry->d_type==DT_UNKNOWN)&&MatchWild(entry->d_name,filter)==1){
       char *file;
       filelistdata *flisti;
 
+      if(strcmp(entry->d_name,".")==0||strcmp(entry->d_name,"..")==0)continue;
       flisti = flist + nfiles;
-      NewMemory((void **)&file,strlen(entry->d_name)+1);
-      strcpy(file,entry->d_name);
+      if(mode == DIR_MODE){
+        NewMemory((void **)&file, strlen(path)+1+strlen(entry->d_name) + 1);
+      }
+      else{
+        NewMemory((void **)&file, strlen(entry->d_name) + 1);
+      }
+      strcpy(file, "");
+      if(mode == DIR_MODE){
+        strcat(file, path);
+        strcat(file, dirseparator);
+      }
+      strcat(file,entry->d_name);
       flisti->file=file;
       flisti->type=0;
       nfiles++;
