@@ -3558,34 +3558,6 @@ int lua_set_smoothgeomnormal(lua_State *L) {
   return 1;
 }
 
-int lua_set_showvolumes_interior(lua_State *L) {
-  int v = lua_tonumber(L, 1);
-  int return_code = set_showvolumes_interior(v);
-  lua_pushnumber(L, return_code);
-  return 1;
-}
-
-int lua_set_showvolumes_exterior(lua_State *L) {
-  int v = lua_tonumber(L, 1);
-  int return_code = set_showvolumes_exterior(v);
-  lua_pushnumber(L, return_code);
-  return 1;
-}
-
-int lua_set_showvolumes_solid(lua_State *L) {
-  int v = lua_tonumber(L, 1);
-  int return_code = set_showvolumes_solid(v);
-  lua_pushnumber(L, return_code);
-  return 1;
-}
-
-int lua_set_showvolumes_outline(lua_State *L) {
-  int v = lua_tonumber(L, 1);
-  int return_code = set_showvolumes_outline(v);
-  lua_pushnumber(L, return_code);
-  return 1;
-}
-
 int lua_set_geomvertexag(lua_State *L) {
   int v = lua_tonumber(L, 1);
   int return_code = set_geomvertexag(v);
@@ -3905,14 +3877,6 @@ int lua_set_showstreak(lua_State *L) {
 int lua_set_showterrain(lua_State *L) {
   int v = lua_tonumber(L, 1);
   int return_code = set_showterrain(v);
-  lua_pushnumber(L, return_code);
-  return 1;
-}
-
-int lua_set_showtetras(lua_State *L) {
-  int a = lua_tonumber(L, 1);
-  int b = lua_tonumber(L, 2);
-  int return_code = set_showtetras(a, b);
   lua_pushnumber(L, return_code);
   return 1;
 }
@@ -5507,10 +5471,6 @@ static luaL_Reg const smvlib[] = {
     {"set_showfaces_solid", lua_set_showfaces_solid},
     {"set_showfaces_outline", lua_set_showfaces_outline},
     {"set_smoothgeomnormal", lua_set_smoothgeomnormal},
-    {"set_showvolumes_interior", lua_set_showvolumes_interior},
-    {"set_showvolumes_exterior", lua_set_showvolumes_exterior},
-    {"set_showvolumes_solid", lua_set_showvolumes_solid},
-    {"set_showvolumes_outline", lua_set_showvolumes_outline},
     {"set_geomvertexag", lua_set_geomvertexag},
     {"set_gversion", lua_set_gversion},
     {"set_isotran2", lua_set_isotran2},
@@ -5555,7 +5515,6 @@ static luaL_Reg const smvlib[] = {
     {"set_showsprinkpart", lua_set_showsprinkpart},
     {"set_showstreak", lua_set_showstreak},
     {"set_showterrain", lua_set_showterrain},
-    {"set_showtetras", lua_set_showterrain},
     {"set_showthreshold", lua_set_showthreshold},
     {"set_showticks", lua_set_showticks},
     {"set_showtimebar", lua_set_showtimebar},
