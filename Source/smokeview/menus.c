@@ -8458,7 +8458,7 @@ static int plot3dshowmenu=0, staticvariablemenu=0, helpmenu=0, webhelpmenu=0, ke
 static int vectorskipmenu=0,unitsmenu=0;
 static int isosurfacemenu=0, isovariablemenu=0, levelmenu=0;
 static int fontmenu=0, aperturemenu=0,dialogmenu=0,zoommenu=0;
-static int gridslicemenu=0, griddigitsmenu=0, blockagemenu=0, immersedmenu=0, immersedsurfacemenu=0, loadpatchmenu=0, ventmenu=0, circularventmenu=0;
+static int gridslicemenu=0, griddigitsmenu=0, blockagemenu=0, immersedmenu=0, loadpatchmenu=0, ventmenu=0, circularventmenu=0;
 static int loadpatchsinglemenu=0,loadsmoke3dsinglemenu=0,loadvolsmokesinglemenu=0,unloadsmoke3dsinglemenu=0, showvolsmokesinglemenu=0, includepatchmenu=0;
 static int plot3dshowsinglemeshmenu=0;
 static int showsingleslicemenu=0,plot3dsinglemeshmenu=0;
