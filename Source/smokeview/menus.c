@@ -5866,16 +5866,6 @@ void ImmersedMenu(int value){
       terrain_showonly_top = 1 - terrain_showonly_top;
       UpdateShowOnlyTop();
       break;
-    case GEOMETRY_INTERIOR_SOLID:
-      show_volumes_solid=1-show_volumes_solid;
-      break;
-    case GEOMETRY_INTERIOR_OUTLINE:
-      show_volumes_outline=1-show_volumes_outline;
-      break;
-    case GEOMETRY_TETRA_HIDE:
-      show_volumes_solid=0;
-      show_volumes_outline=0;
-      break;
     case GEOMETRY_SOLIDOUTLINE:
       if(show_faces_shaded==1&&show_faces_outline==1){
         show_faces_shaded=1;
@@ -5951,14 +5941,6 @@ void ImmersedMenu(int value){
       break;
     case GEOMETRY_OUTSIDE_DOMAIN:
       showgeom_outside_domain = 1 - showgeom_outside_domain;
-      UpdateWhereFaceVolumes();
-      break;
-    case GEOMETRY_VOLUMES_INTERIOR:
-      show_volumes_interior = 1 - show_volumes_interior;
-      UpdateWhereFaceVolumes();
-      break;
-    case GEOMETRY_VOLUMES_EXTERIOR:
-      show_volumes_exterior = 1 - show_volumes_exterior;
       UpdateWhereFaceVolumes();
       break;
     default:
@@ -8394,7 +8376,7 @@ static int plot3dshowmenu=0, staticvariablemenu=0, helpmenu=0, webhelpmenu=0, ke
 static int vectorskipmenu=0,unitsmenu=0;
 static int isosurfacemenu=0, isovariablemenu=0, levelmenu=0;
 static int fontmenu=0, aperturemenu=0,dialogmenu=0,zoommenu=0;
-static int gridslicemenu=0, griddigitsmenu=0, blockagemenu=0, immersedmenu=0, immersedinteriormenu=0, immersedsurfacemenu=0, loadpatchmenu=0, ventmenu=0, circularventmenu=0;
+static int gridslicemenu=0, griddigitsmenu=0, blockagemenu=0, immersedmenu=0, loadpatchmenu=0, ventmenu=0, circularventmenu=0;
 static int loadpatchsinglemenu=0,loadsmoke3dsinglemenu=0,loadvolsmokesinglemenu=0,unloadsmoke3dsinglemenu=0, showvolsmokesinglemenu=0, includepatchmenu=0;
 static int plot3dshowsinglemeshmenu=0;
 static int showsingleslicemenu=0,plot3dsinglemeshmenu=0;
@@ -8708,12 +8690,7 @@ updatemenu=0;
 
 /* --------------------------------surface menu -------------------------- */
 
-  if(have_volumes==1){
-    CREATEMENU(immersedsurfacemenu,ImmersedMenu);
-  }
-  else{
-    CREATEMENU(immersedmenu, ImmersedMenu);
-  }
+  CREATEMENU(immersedmenu, ImmersedMenu);
   glutAddMenuEntry(_("What"),GEOMETRY_DUMMY);
   if(show_faces_shaded==1&&show_faces_outline==1){
     glutAddMenuEntry(_("   *Solid and outline"),GEOMETRY_SOLIDOUTLINE);
@@ -8793,50 +8770,6 @@ updatemenu=0;
   }
   else{
     glutAddMenuEntry(_("Hilight skinny triangles"), GEOMETRY_HILIGHTSKINNY);
-  }
-
-/* --------------------------------interior geometry menu -------------------------- */
-
-  CREATEMENU(immersedinteriormenu,ImmersedMenu);
-  glutAddMenuEntry(_("How"),GEOMETRY_DUMMY);
-  if(have_volumes==1){
-    if(show_volumes_solid==1)glutAddMenuEntry(_("  *Solid"),GEOMETRY_INTERIOR_SOLID);
-    if(show_volumes_solid==0)glutAddMenuEntry(_("  Solid"),GEOMETRY_INTERIOR_SOLID);
-    if(show_volumes_outline==1)glutAddMenuEntry(_("  *Outline"),GEOMETRY_INTERIOR_OUTLINE);
-    if(show_volumes_outline==0)glutAddMenuEntry(_("  Outline"),GEOMETRY_INTERIOR_OUTLINE);
-    if(show_volumes_outline == 0 && show_volumes_solid == 0){
-      glutAddMenuEntry(_("  *Hide"),GEOMETRY_TETRA_HIDE);
-    }
-    else{
-      glutAddMenuEntry(_("  Hide"),GEOMETRY_TETRA_HIDE);
-    }
-  }
-  glutAddMenuEntry(_("Where"), GEOMETRY_DUMMY);
-  if(show_volumes_interior == 1){
-    glutAddMenuEntry(_("   *Interior"), GEOMETRY_VOLUMES_INTERIOR);
-  }
-  else{
-    glutAddMenuEntry(_("   Interior"), GEOMETRY_VOLUMES_INTERIOR);
-  }
-  if(show_volumes_exterior == 1){
-    glutAddMenuEntry(_("   *Exterior"), GEOMETRY_VOLUMES_EXTERIOR);
-  }
-  else{
-    glutAddMenuEntry(_("   Exterior"), GEOMETRY_VOLUMES_EXTERIOR);
-  }
-
-  /* --------------------------------surface geometry menu -------------------------- */
-
-  if(have_volumes==1){
-    CREATEMENU(immersedmenu,ImmersedMenu);
-    GLUTADDSUBMENU(_("Faces"),  immersedsurfacemenu);
-    GLUTADDSUBMENU(_("Volumes"),immersedinteriormenu);
-    if(show_faces_shaded == 0 && show_faces_outline == 0 && show_volumes_solid == 0){
-      glutAddMenuEntry(_("*Hide all"), GEOMETRY_HIDEALL);
-    }
-    else{
-      glutAddMenuEntry(_("Hide all"), GEOMETRY_HIDEALL);
-    }
   }
 
 /* --------------------------------blockage menu -------------------------- */
