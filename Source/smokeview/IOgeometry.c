@@ -3,8 +3,14 @@
 #include <string.h>
 #include <stdlib.h>
 #include <math.h>
+#include GLUT_H
 
 #include "smokeviewvars.h"
+#include "IOscript.h"
+
+#define MAX_FRAMES 1000000
+#define BUILD_GEOM_OFFSETS 0
+#define GET_GEOM_OFFSETS  -1
 
 void UpdateGeomTriangles(geomdata *geomi, int geom_type);
 
@@ -913,86 +919,6 @@ void DrawGeom(int flag, int timestate){
       geomlisti = geomi->geomlistinfo+geomi->itime;
     }
 
-    if(geomlisti->nvolumes > 0 && show_volumes_solid == 1){
-
-      // draw volume solid
-
-      last_color = NULL;
-      glPushMatrix();
-      glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
-      glTranslatef(-xbar0, -ybar0, -zbar0);
-
-      glEnable(GL_NORMALIZE);
-      glShadeModel(GL_SMOOTH);
-      ENABLE_LIGHTING;
-      glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, iso_specular);
-      glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, iso_shininess);
-      glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, block_ambient2);
-      glEnable(GL_COLOR_MATERIAL);
-
-      last_color = NULL;
-      glBegin(GL_TRIANGLES);
-      for(j = 0; j < geomlisti->nvolumes; j++){
-        tetdata *volumei;
-        float *xyzptr[4];
-        int *exterior;
-        //
-        //             0
-        //            /  \
-        //           /   .3
-        //             .   \
-        //         / .      \
-        //         1--------2
-        //
-        int facelist[12] = {0, 1, 2, 0, 2, 3, 0, 3, 1, 1, 3, 2};
-        int k;
-
-        volumei = geomlisti->volumes + j;
-        exterior = volumei->exterior;
-        xyzptr[0] = volumei->verts[0]->xyz;
-        xyzptr[1] = volumei->verts[1]->xyz;
-        xyzptr[2] = volumei->verts[2]->xyz;
-        xyzptr[3] = volumei->verts[3]->xyz;
-
-
-        color = volumei->matl->color;
-        if(last_color != color){
-          glColor3fv(color);
-          last_color = color;
-        }
-
-        for(k = 0; k < 4; k++){
-          int kk;
-          float *v0, *v1, *v2;
-          float v1m0[3], v2m0[3], v2m1[3], vcross[3];
-          float v0delta[3], v1delta[3], v2delta[3];
-
-          if(show_volumes_exterior == 0 && exterior[k] == 1)continue;
-          if(show_volumes_interior == 0 && exterior[k] == 0)continue;
-          v0 = xyzptr[facelist[3 * k]];
-          v1 = xyzptr[facelist[3 * k + 1]];
-          v2 = xyzptr[facelist[3 * k + 2]];
-          VEC3DIFF(v1m0, v1, v0);
-          VEC3DIFF(v2m0, v2, v0);
-          VEC3DIFF(v2m1, v2, v1);
-          CROSS(vcross, v1m0, v2m0);
-
-          for(kk = 0; kk < 3; kk++){
-            v0delta[kk] = v0[kk] + face_factor*v1m0[kk] + face_factor*v2m0[kk];
-            v1delta[kk] = v1[kk] - face_factor*v1m0[kk] + face_factor*v2m1[kk];
-            v2delta[kk] = v2[kk] - face_factor*v2m0[kk] - face_factor*v2m1[kk];
-          }
-          glNormal3fv(vcross);
-          glVertex3fv(v0delta);
-          glVertex3fv(v1delta);
-          glVertex3fv(v2delta);
-        }
-      }
-      glEnd();
-      glDisable(GL_COLOR_MATERIAL);
-      DISABLE_LIGHTING;
-      glPopMatrix();
-    }
     if(show_surf_axis==1){
       glPushMatrix();
       glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
@@ -1053,65 +979,6 @@ void DrawGeom(int flag, int timestate){
         Output3Text(foregroundcolor, x0, y1, z0, "Y");
         Output3Text(foregroundcolor, x0, y0, z1, "Z");
       }
-      glPopMatrix();
-    }
-
-      // draw volume outline
-
-    if(geomlisti->nvolumes > 0 && show_volumes_outline == 1){
-      last_color = NULL;
-      glPushMatrix();
-      glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
-      glTranslatef(-xbar0, -ybar0, -zbar0);
-      glDisable(GL_COLOR_MATERIAL);
-      DISABLE_LIGHTING;
-      glLineWidth(20.0);
-      glBegin(GL_LINES);
-      for(j=0;j<geomlisti->nvolumes;j++){
-        tetdata *volumei;
-        float *xyzptr[4];
-        int *exterior;
-        //
-        //             0
-        //            /  \
-        //           /   .3
-        //             .   \
-        //         / .      \
-        //         1--------2
-        //
-        int facelist[12]={0,1,2, 0,2,3, 0,3,1, 1,3,2};
-        int k;
-
-        volumei = geomlisti->volumes+j;
-        exterior = volumei->exterior;
-        xyzptr[0] = volumei->verts[0]->xyz;
-        xyzptr[1] = volumei->verts[1]->xyz;
-        xyzptr[2] = volumei->verts[2]->xyz;
-        xyzptr[3] = volumei->verts[3]->xyz;
-
-        for(k=0;k<4;k++){
-          if(show_volumes_exterior == 0 && exterior[k] == 1)continue;
-          if(show_volumes_interior == 0 && exterior[k] == 0)continue;
-          if(show_volumes_solid==1){
-             color=black;
-          }
-          else{
-            color = volumei->matl->color;
-          }
-          if(last_color!=color){
-            glColor3fv(color);
-            last_color=color;
-          }
-          glVertex3fv(xyzptr[facelist[3*k]]);
-          glVertex3fv(xyzptr[facelist[3*k+1]]);
-          glVertex3fv(xyzptr[facelist[3*k+1]]);
-          glVertex3fv(xyzptr[facelist[3*k+2]]);
-          glVertex3fv(xyzptr[facelist[3*k+2]]);
-          glVertex3fv(xyzptr[facelist[3*k+0]]);
-        }
-      }
-      glEnd();
-
       glPopMatrix();
     }
 
@@ -2074,6 +1941,503 @@ void ReadGeomHeader(geomdata *geomi, int *geom_frame_index, int *ntimes_local){
   }
 }
 
+
+/* ------------------ GetGeomDataSize ------------------------ */
+
+int GetGeomDataSize(char *filename, int *nvars, float *tmin, float *tmax, int time_frame,
+                    int *geom_offsets, int *geom_offset_flag, int *error){
+
+  float time;
+  int one, version;
+  int nvert_s, nvert_d, nface_s, nface_d;
+  FILE *stream=NULL;
+  int returncode=0;
+  int nvars_local, ntimes_local;
+  int first = 1;
+  int iframe;
+  int geom_offset_index=0, geom_offset = 0, frame_start;
+
+  *error=1;
+  *tmin = 0.0;
+  *tmax = 1.0;
+  *nvars = 0;
+  if(filename==NULL)return 0;
+  stream = fopen(filename,"rb");
+  if(stream==NULL)printf(" The boundary element file name, %s, does not exist",filename);
+
+  *error = 0;
+
+  FORTREAD(&one, 1, stream);
+  FORTREAD(&version, 1, stream);
+
+  geom_offset = 0;
+  ntimes_local = 0;
+  nvars_local = 0;
+  if(geom_offset_flag==NULL||*geom_offset_flag==BUILD_GEOM_OFFSETS||time_frame==ALL_FRAMES){
+    frame_start = 0;
+  }
+  else{
+    frame_start = time_frame;
+    fseek(stream, geom_offsets[time_frame], SEEK_CUR);
+  }
+  for(iframe=frame_start;;iframe++){
+    int nvals[4], nskip;
+
+    if(geom_offset_flag!=NULL&&*geom_offset_flag==BUILD_GEOM_OFFSETS)geom_offsets[geom_offset_index] = geom_offset;
+    FORTREAD(&time, 1, stream);
+    geom_offset += (4+4+4);
+    if(time_frame==ALL_FRAMES||time_frame==iframe){
+      if(first==1){
+        first = 0;
+        *tmin = time;
+      }
+      *tmax = time;
+    }
+    if(returncode==0)break;
+    FORTREAD(nvals, 4, stream);
+    geom_offset += (4+4*4+4);
+    if(returncode==0)break;
+    nvert_s = nvals[0];
+    nface_s = nvals[1];
+    nvert_d = nvals[2];
+    nface_d = nvals[3];
+    nskip = 0;
+    if(nvert_s>0)nskip += 4 + 4*nvert_s + 4;
+    if(nface_s>0)nskip += 4 + 4*nface_s + 4;
+    if(nvert_d>0)nskip += 4 + 4*nvert_d + 4;
+    if(nface_d>0)nskip += 4 + 4*nface_d + 4;
+    geom_offset += nskip;
+    if(time_frame==ALL_FRAMES||time_frame==iframe){
+      nvars_local += nvert_s+nvert_d+nface_s+nface_d;
+      ntimes_local++;
+    }
+    geom_offset_index++;
+    if(geom_offset_flag!=NULL&&*geom_offset_flag==GET_GEOM_OFFSETS&&time_frame==iframe)break;
+    if(fseek(stream, nskip, SEEK_CUR)!=0)break;
+  }
+  fclose(stream);
+  *nvars = nvars_local;
+  if(geom_offset_flag!=NULL&&*geom_offset_flag==BUILD_GEOM_OFFSETS)*geom_offset_flag = geom_offset_index;
+  return ntimes_local;
+}
+
+/* ------------------ GetGeomData------------------------ */
+
+FILE_SIZE GetGeomData(char *filename, int ntimes, int nvals, float *times, int *nstatics, int *ndynamics, float *vals,
+                      int time_frame, float *time_value, int *geom_offsets, int *error){
+  FILE_SIZE file_size;
+
+  int one, nvars;
+  int nvert_s, ntri_s, nvert_d, ntri_d;
+  int version;
+  int returncode=0;
+  int count;
+  float time;
+  int iframe, frame_start, frame_stop;
+
+  FILE *stream;
+
+  file_size = 0;
+  *error = 1;
+  if(filename==NULL)return 0;
+  stream = fopen(filename, "rb");
+  if(stream==NULL){
+    printf(" The boundary file name %s does not exist\n",filename);
+    return 0;
+  }
+
+  *error = 0;
+  FORTREAD(&one, 1, stream);
+  FORTREAD(&version, 1, stream);
+  file_size = 2*(4+4+4);
+  nvars = 0;
+  count = 0;
+  if(time_frame==ALL_FRAMES){
+    frame_start = 0;
+    frame_stop = ntimes;
+  }
+  else{
+    frame_start = time_frame;
+    frame_stop = time_frame+1;
+    fseek(stream, geom_offsets[time_frame], SEEK_CUR);
+  }
+  for(iframe = frame_start; iframe<frame_stop; iframe++){
+    int nvals_local[4];
+
+    FORTREAD(&time, 1, stream);
+    if(time_frame==ALL_FRAMES||time_frame==iframe)times[count] = time;
+    if(returncode==0)break;
+    file_size += (4+4+4);
+    FORTREAD(nvals_local, 4, stream);
+    nvert_s = nvals_local[0];
+    ntri_s = nvals_local[1];
+    nvert_d = nvals_local[2];
+    ntri_d = nvals_local[3];
+    file_size += (4+4*4+4);
+    if(time_frame==ALL_FRAMES||time_frame==iframe)nstatics[count] = nvert_s+ntri_s;
+
+    if(nvert_s>0){
+      if(time_frame==ALL_FRAMES||time_frame==iframe){
+        FORTREAD(vals+nvars, nvert_s, stream);
+        if(returncode==0)break;
+        file_size += (4+4*nvert_s+4);
+        nvars += nvert_s;
+      }
+      else{
+        fseek(stream, 4+4*nvert_s+4, SEEK_CUR);
+      }
+    }
+
+    if(ntri_s>0){
+      if(time_frame==ALL_FRAMES||time_frame==iframe){
+        FORTREAD(vals+nvars, ntri_s, stream);
+        if(returncode==0)break;
+        file_size += (4+4*ntri_s+4);
+        nvars += ntri_s;
+      }
+      else{
+        fseek(stream, (4+4*ntri_s+4), SEEK_CUR);
+      }
+    }
+
+    if(time_frame==ALL_FRAMES||time_frame==iframe)ndynamics[count] = nvert_d+ntri_d;
+    if(nvert_d>0){
+      if(time_frame==ALL_FRAMES||time_frame==iframe){
+        FORTREAD(vals+nvars, nvert_d, stream);
+        if(returncode==0)break;
+        file_size += (4+4*nvert_d+4);
+        nvars += nvert_d;
+      }
+      else{
+        fseek(stream, 4+4*nvert_d+4, SEEK_CUR);
+      }
+    }
+
+    if(ntri_d>0){
+      if(time_frame==ALL_FRAMES||time_frame==iframe){
+        FORTREAD(vals+nvars, ntri_d, stream);
+        if(returncode==0)break;
+        file_size += (4+4*ntri_d+4);
+        nvars += ntri_d;
+      }
+      else{
+        fseek(stream, 4+4*ntri_d+4, SEEK_CUR);
+      }
+    }
+    if(time_frame==iframe){
+      *time_value = times[count];
+      break;
+    }
+    if(time_frame==ALL_FRAMES)count++;
+  }
+  fclose(stream);
+  return file_size;
+}
+
+/* ------------------ ReadGeomData ------------------------ */
+
+FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int time_frame, float *time_value, int *errorcode){
+  char *file;
+  int ntimes_local;
+  int i;
+  int nvals;
+  int n;
+  int error;
+  FILE_SIZE return_filesize = 0;
+  float total_time;
+  float tmin_local, tmax_local;
+  int *geom_offsets=NULL, geom_offset_flag;
+
+  // 1
+  // time
+  // nstatic
+  // vals_1, ...vals_nstatic
+  // ndynamic
+  // vals_1, ... vals_ndyamic
+
+  if(patchi->structured == YES)return 0;
+
+  START_TIMER(total_time);
+  file = patchi->file;
+
+  patchi->loaded = 0;
+  patchi->display = 0;
+  if(slicei != NULL){
+    slicei->loaded = 0;
+    slicei->display = 0;
+    slicei->vloaded = 0;
+    slicei->ntimes = 0;
+    slicei->times = NULL;
+  }
+  patchi->bounds.defined=0;
+
+  FREEMEMORY(patchi->geom_nstatics);
+  FREEMEMORY(patchi->geom_ndynamics);
+  FREEMEMORY(patchi->geom_ivals_static);
+  FREEMEMORY(patchi->geom_ivals_dynamic);
+  FREEMEMORY(patchi->geom_vals_static);
+  FREEMEMORY(patchi->geom_vals_dynamic);
+  FREEMEMORY(patchi->geom_vals);
+  FREEMEMORY(patchi->geom_ivals);
+  FREEMEMORY(patchi->geom_times);
+  if(load_flag==UNLOAD){
+    plotstate = GetPlotState(DYNAMIC_PLOTS);
+    if(patchi->boundary==1)UpdateBoundaryType();
+    UpdateUnitDefs();
+    UpdateTimes();
+    update_draw_hist = 1;
+    PrintMemoryInfo;
+    return 0;
+  }
+  if(patchi->skip == 1)return 0;
+
+  //GetGeomDataHeader(file,&ntimes,&nvals);
+
+  if(time_value!=NULL){
+    NewMemory((void **)&geom_offsets, MAX_FRAMES*sizeof(int));
+    geom_offset_flag = BUILD_GEOM_OFFSETS;
+  }
+  else{
+    geom_offset_flag = GET_GEOM_OFFSETS;
+  }
+
+  ntimes_local = GetGeomDataSize(file, &nvals, &tmin_local, &tmax_local, time_frame, geom_offsets, &geom_offset_flag, &error);
+
+  if(time_value!=NULL){
+    if(geom_offset_flag>0){
+      ResizeMemory((void **)&geom_offsets, geom_offset_flag*sizeof(int));
+      if(patchi!=NULL)patchi->geom_offsets = geom_offsets;
+      if(slicei!=NULL)slicei->geom_offsets = geom_offsets;
+
+    }
+    else if(geom_offset_flag==0){
+      FREEMEMORY(geom_offsets);
+    }
+    else{
+      if(patchi!=NULL)geom_offsets = patchi->geom_offsets;
+      if(slicei!=NULL)geom_offsets = slicei->geom_offsets;
+    }
+  }
+
+  if(ntimes_local>0){
+    NewMemory((void **)&patchi->geom_nstatics, ntimes_local*sizeof(int));
+    NewMemory((void **)&patchi->geom_ndynamics, ntimes_local*sizeof(int));
+    NewMemory((void **)&patchi->geom_times, ntimes_local*sizeof(float));
+    NewMemory((void **)&patchi->geom_ivals_static, ntimes_local*sizeof(int *));
+    NewMemory((void **)&patchi->geom_ivals_dynamic, ntimes_local*sizeof(int *));
+    NewMemory((void **)&patchi->geom_vals_static, ntimes_local*sizeof(float *));
+    NewMemory((void **)&patchi->geom_vals_dynamic, ntimes_local*sizeof(float *));
+  }
+  if(nvals>0){
+    NewMemory((void **)&patchi->geom_vals, nvals*sizeof(float));
+    NewMemory((void **)&patchi->geom_ivals, nvals*sizeof(char));
+  }
+
+  if(load_flag == UPDATE_HIST){
+    GetGeomData(file, ntimes_local, nvals, patchi->geom_times,
+      patchi->geom_nstatics, patchi->geom_ndynamics, patchi->geom_vals, time_frame, time_value, geom_offsets, &error);
+    ResetHistogram(patchi->histogram, NULL, NULL);
+    UpdateHistogram(patchi->geom_vals, NULL, nvals, patchi->histogram);
+    CompleteHistogram(patchi->histogram);
+    return 0;
+  }
+  else{
+    int filesize;
+
+    if(current_script_command==NULL||current_script_command->command!=SCRIPT_LOADSLICERENDER){
+      PRINTF("Loading %s(%s)", file, patchi->label.shortlabel);
+    }
+    filesize=GetGeomData(file, ntimes_local, nvals, patchi->geom_times,
+      patchi->geom_nstatics, patchi->geom_ndynamics, patchi->geom_vals, time_frame, time_value, geom_offsets, &error);
+    return_filesize += filesize;
+  }
+
+  patchi->ngeom_times = ntimes_local;
+  patchi->geom_nvals = nvals;
+  patchi->geom_ivals_static[0] = patchi->geom_ivals;
+  patchi->geom_ivals_dynamic[0] = patchi->geom_ivals_static[0]+patchi->geom_nstatics[0];
+  for(i = 1;i<ntimes_local;i++){
+    patchi->geom_ivals_static[i]  = patchi->geom_ivals_dynamic[i-1] + patchi->geom_ndynamics[i-1];
+    patchi->geom_ivals_dynamic[i] = patchi->geom_ivals_static[i]    + patchi->geom_nstatics[i];
+  }
+
+  patchi->geom_vals_static[0]  = patchi->geom_vals;
+  patchi->geom_vals_dynamic[0] = patchi->geom_vals_static[0] + patchi->geom_nstatics[0];
+  for(i = 1; i<ntimes_local; i++){
+    patchi->geom_vals_static[i]  = patchi->geom_vals_dynamic[i-1] + patchi->geom_ndynamics[i-1];
+    patchi->geom_vals_dynamic[i] = patchi->geom_vals_static[i]    + patchi->geom_nstatics[i];
+  }
+
+  patchi->loaded = 1;
+  patchi->display = 1;
+
+  if(slicei == NULL){
+    if(colorlabelpatch != NULL){
+      for (n = 0; n < MAXRGB; n++){
+        FREEMEMORY(colorlabelpatch[n]);
+      }
+      FREEMEMORY(colorlabelpatch);
+    }
+    if(NewMemory((void **)&colorlabelpatch, MAXRGB * sizeof(char *)) == 0){
+      ReadGeomData(patchi, NULL, UNLOAD, time_frame, time_value,  &error);
+      return 0;
+    }
+    for (n = 0; n < MAXRGB; n++){
+      colorlabelpatch[n] = NULL;
+    }
+    for (n = 0; n < nrgb; n++){
+      if(NewMemory((void **)&colorlabelpatch[n], 11) == 0){
+        ReadGeomData(patchi, NULL, UNLOAD, time_frame, time_value, &error);
+        return 0;
+      }
+    }
+    int set_valmin, set_valmax;
+    float valmin, valmax;
+    char *label;
+
+    label = patchi->label.shortlabel;
+
+    GetMinMax(BOUND_PATCH, label, &set_valmin, &valmin, &set_valmax, &valmax);
+    GetBoundaryColors3(patchi, patchi->geom_vals, 0, patchi->geom_nvals, patchi->geom_ivals,
+      &valmin, &valmax,
+      nrgb, colorlabelpatch, colorvaluespatch, boundarylevels256,
+      &patchi->extreme_min, &patchi->extreme_max, 1);
+    if(cache_boundary_data==0){
+      FREEMEMORY(patchi->geom_vals);
+    }
+  }
+  else {
+    int slicetype;
+    boundsdata *sb;
+    float qmin, qmax;
+
+    slicetype = GetSliceBoundsIndex(slicei);
+    sb = slicebounds + slicetype;
+    sb->label = &(slicei->label);
+
+    HideSlices(slicei->label.longlabel);
+    slicei->loaded = 1;
+    slicei->display = 1;
+    slicei->ntimes = patchi->ngeom_times;
+    slicei->times = patchi->geom_times;
+
+    UpdateLoadedLists();
+    GetSliceDataBounds(slicei, &qmin, &qmax);
+    slicei->globalmin = qmin;
+    slicei->globalmax = qmax;
+    slicei->valmin_smv = qmin;
+    slicei->valmax_smv = qmax;
+    if(slice_average_flag==1){
+      int data_per_timestep, nvals2, ntimes;
+      float *vals, *times;
+
+      show_slice_average = 1;
+      vals = slicei->patchgeom->geom_vals;
+      nvals2 = slicei->patchgeom->geom_nvals;
+      times = patchi->geom_times;
+      ntimes = patchi->ngeom_times;
+      data_per_timestep = nvals2/ntimes;
+      if(TimeAverageData(vals, vals, nvals2, data_per_timestep, times, ntimes, slice_average_interval)==1){
+        show_slice_average = 0;
+      }
+    }
+    slicei->valmin = qmin;
+    slicei->valmax = qmax;
+    slicei->valmin_data = qmin;
+    slicei->valmax_data = qmax;
+    for (i = 0; i < 256; i++){
+      slicei->qval256[i] = (qmin*(255 - i) + qmax*i) / 255;
+    }
+    UpdateSliceBounds();
+    slicefile_labelindex = GetSliceBoundsIndexFromLabel(patchi->label.shortlabel);
+    UpdateAllSliceColors(slicefile_labelindex, errorcode);
+    list_slice_index = slicefile_labelindex;
+    SliceBounds2Glui(slicefile_labelindex);
+
+    GetSliceColors(patchi->geom_vals, patchi->geom_nvals, patchi->geom_ivals,
+      glui_slicemin, glui_slicemax, nrgb_full, nrgb,
+      sb->colorlabels, sb->colorvalues, sb->levels256,
+      &slicei->extreme_min, &slicei->extreme_max, 1
+    );
+  }
+
+  if(patchi->boundary == 1){
+    iboundarytype = GetBoundaryType(patchi);
+  }
+  else {
+    slicefile_labelindex = GetSliceBoundsIndexFromLabel(patchi->label.shortlabel);
+  }
+  if((slicei==NULL&&patchi->finalize==1)||(slicei!=NULL&&slicei->finalize==1)){
+    plotstate = GetPlotState(DYNAMIC_PLOTS);
+    if(patchi->boundary==1)UpdateBoundaryType();
+    cpp_boundsdata *bounds;
+    int bound_type;
+
+    if(patchi->boundary==1){
+      bound_type = BOUND_PATCH;
+    }
+    else{
+      bound_type = BOUND_SLICE;
+    }
+
+    bounds = GetBoundsData(bound_type);
+    if(bounds->set_valmin==BOUND_PERCENTILE_MIN||bounds->set_valmax==BOUND_PERCENTILE_MAX){
+      float global_min = 0.0, global_max = 1.0;
+
+      if(patchi->boundary==1){
+        GetGlobalBoundsMinMax(BOUND_PATCH, bounds->label, &global_min, &global_max);
+        ComputeLoadedPatchHist(bounds->label, &(bounds->hist), &global_min, &global_max);
+      }
+      else{
+        ComputeLoadedSliceHist(bounds->label, &(bounds->hist));
+      }
+      if(bounds->hist->defined==1){
+        if(bounds->set_valmin==BOUND_PERCENTILE_MIN){
+          float per_valmin;
+
+          GetHistogramValProc(bounds->hist, percentile_level_min, &per_valmin);
+          SetMin(bound_type, bounds->label, BOUND_PERCENTILE_MIN, per_valmin);
+        }
+        if(bounds->set_valmax==BOUND_PERCENTILE_MAX){
+          float per_valmax;
+
+          GetHistogramValProc(bounds->hist, percentile_level_max, &per_valmax);
+          SetMax(bound_type, bounds->label, BOUND_PERCENTILE_MAX, per_valmax);
+        }
+      }
+    }
+    if(bounds->set_valmin==BOUND_SET_MIN||bounds->set_valmax==BOUND_SET_MAX){
+      if(patchi->boundary==1){
+      }
+      else{
+        int set_valmin, set_valmax;
+        float valmin_dlg, valmax_dlg;
+
+        GetMinMax(BOUND_SLICE, bounds->label, &set_valmin, &valmin_dlg, &set_valmax, &valmax_dlg);
+      }
+    }
+    if(patchi->boundary==1){
+      PatchBoundsCPP_CB(BOUND_UPDATE_COLORS);
+    }
+    else{
+      SliceBoundsCPP_CB(BOUND_UPDATE_COLORS);
+    }
+    UpdateUnitDefs();
+    UpdateTimes();
+    force_redisplay = 1;
+    UpdateFrameNumber(1);
+  }
+  stept = 1;
+  force_redisplay = 1;
+  updatemenu = 1;
+  STOP_TIMER(total_time);
+  if(current_script_command==NULL||current_script_command->command!=SCRIPT_LOADSLICERENDER){
+    PRINTF(" - %.1f MB/%.1f s\n", (float)return_filesize/1000000., total_time);
+  }
+  PrintMemoryInfo;
+  return return_filesize;
+}
+
 /* ------------------ GetGeomDataHeader ------------------------ */
 
 void GetGeomDataHeader(char *file, int *ntimes_local, int *nvals){
@@ -2188,10 +2552,8 @@ void InitGeomlist(geomlistdata *geomlisti){
   geomlisti->triangles = NULL;
   geomlisti->triangleptrs = NULL;
   geomlisti->connected_triangles = NULL;
-  geomlisti->volumes = NULL;
   geomlisti->nverts = 0;
   geomlisti->ntriangles = 0;
-  geomlisti->nvolumes = 0;
   geomlisti->norms_defined = 0;
 }
 
@@ -2409,7 +2771,6 @@ FILE_SIZE ReadGeom2(geomdata *geomi, int load_flag, int type){
   int i;
   vertdata *verts;
   tridata *triangles;
-  tetdata *volumes;
   int version;
   int nvertfacesvolumes[3];
   int nheaders[3], nfloat_vals, nint_vals, first_frame_static;
@@ -2483,7 +2844,6 @@ FILE_SIZE ReadGeom2(geomdata *geomi, int load_flag, int type){
     nverts=nvertfacesvolumes[0];
     ntris=nvertfacesvolumes[1];
     nvolumes=nvertfacesvolumes[2];
-    if(nvolumes>0)have_volumes=1;
 
     if(nverts>0){
       int ii;
@@ -2786,40 +3146,8 @@ FILE_SIZE ReadGeom2(geomdata *geomi, int load_flag, int type){
       FREEMEMORY(texture_coords);
     }
     if(nvolumes>0){
-      int ii;
-      int *ijk;
-      int *matl_ind=NULL;
-
-      NewMemoryMemID((void **)&volumes,nvolumes*sizeof(tetdata),geomi->memory_id);
-      geomlisti->volumes=volumes;
-      NewMemory((void **)&ijk,4*nvolumes*sizeof(int));
-
-      FORTREADBR(ijk,4*nvolumes,stream);
-      return_filesize += 4+4*nvolumes*4+4;
-
-      for(ii=0;ii<nvolumes;ii++){
-        int k;
-
-        for(k=0;k<4;k++){
-          volumes[ii].verts[k]=verts+ijk[4*ii+k]-1;
-        }
-      }
-      FREEMEMORY(ijk);
-      NewMemory((void **)&matl_ind,nvolumes*sizeof(int));
-
-      FORTREADBR(matl_ind,nvolumes,stream);
-      return_filesize += 4+nvolumes*4+4;
-
-      for(ii=0;ii<nvolumes;ii++){
-        matldata *matli;
-        int index;
-
-        index = CLAMP(matl_ind[ii],0,nmatlinfo-1);
-        matli=matlinfo + index;
-        volumes[ii].matl=matli;
-      }
-      FREEMEMORY(matl_ind);
-      geomlisti->nvolumes=nvolumes;
+      FSEEK(stream, 4 + 4*nvolumes*sizeof(int) + 4, SEEK_CUR);
+      FSEEK(stream, 4 + nvolumes*sizeof(int) + 4,   SEEK_CUR);
     }
     if(geomi->have_cface_normals==CFACE_NORMALS_YES){
       int ncface_normals;
@@ -2955,38 +3283,6 @@ int CompareFaces(const void *arg1, const void *arg2){
   return 0;
 }
 
-/* ------------------ CompareVolumeFaces ------------------------ */
-
-int CompareVolumeFaces(const void *arg1, const void *arg2){
-  volfacedata *face1, *face2;
-  tetdata *vol1, *vol2;
-  int *verts1, *verts2;
-  int v1[3], v2[3];
-
-  face1  = (volfacedata *)arg1;
-  face2  = (volfacedata *)arg2;
-  vol1   = face1->vol;
-  vol2   = face2->vol;
-  verts1 = vol1->faces+3*face1->faceindex;
-  verts2 = vol2->faces+3*face2->faceindex;
-
-  v1[1]=MIN(verts1[1],verts1[2]);
-  v1[2]=MAX(verts1[1],verts1[2]);
-
-  v2[1]=MIN(verts2[1],verts2[2]);
-  v2[2]=MAX(verts2[1],verts2[2]);
-
-  if(verts1[0]<verts2[0])return -1;
-  if(verts1[0]>verts2[0])return 1;
-
-  if(v1[1]<v2[1])return -1;
-  if(v1[1]>v2[1])return 1;
-
-  if(v1[2]<v2[2])return -1;
-  if(v1[2]>v2[2])return 1;
-  return 0;
-}
-
 /* ------------------ GetEdge ------------------------ */
 
 edgedata *GetEdge(edgedata *edges, int nedges, int iv1, int iv2){
@@ -3037,7 +3333,7 @@ void ClassifyGeom(geomdata *geomi,int *geom_frame_index){
 
   for(i = -1; i<iend; i++){
     geomlistdata *geomlisti;
-    int nverts, nvolumes, ntriangles;
+    int nverts, ntriangles;
     int j;
     vertdata *vertbase;
 
@@ -3046,82 +3342,9 @@ void ClassifyGeom(geomdata *geomi,int *geom_frame_index){
     if(i!=-1&&geom_frame_index!=NULL)geomlisti = geomi->geomlistinfo+(*geom_frame_index);
 
     nverts=geomlisti->nverts;
-    nvolumes=geomlisti->nvolumes;
     ntriangles = geomlisti->ntriangles;
     if(nverts==0||geomlisti->verts==NULL)continue;
     vertbase = geomlisti->verts;
-    for(j=0;j<nvolumes;j++){
-      tetdata *tetrai;
-      int *vert_index;
-      vertdata **verts;
-      int *faces;
-
-      tetrai = geomlisti->volumes+j;
-      vert_index = tetrai->vert_index;
-      verts = tetrai->verts;
-      faces = tetrai->faces;
-      tetrai->exterior[0]=1;
-      tetrai->exterior[1]=1;
-      tetrai->exterior[2]=1;
-      tetrai->exterior[3]=1;
-      vert_index[0] = verts[0]-vertbase;
-      vert_index[1] = verts[1]-vertbase;
-      vert_index[2] = verts[2]-vertbase;
-      vert_index[3] = verts[3]-vertbase;
-
-      faces[0]=vert_index[0];
-      faces[1]=vert_index[1];
-      faces[2]=vert_index[2];
-      ReorderFace(faces);
-
-      faces[3]=vert_index[0];
-      faces[4]=vert_index[2];
-      faces[5]=vert_index[3];
-      ReorderFace(faces+3);
-
-      faces[6]=vert_index[0];
-      faces[7]=vert_index[3];
-      faces[8]=vert_index[1];
-      ReorderFace(faces+6);
-
-      faces[9]=vert_index[1];
-      faces[10]=vert_index[3];
-      faces[11]=vert_index[2];
-      ReorderFace(faces+9);
-    }
-    if(nvolumes>0){
-      int nfacelist_index;
-      volfacedata *facelist_ptr=NULL;
-
-      nfacelist_index=4*nvolumes;
-      NewMemory((void **)&facelist_ptr,4*nfacelist_index*sizeof(volfacedata));
-      for(j=0;j<nfacelist_index;j++){
-        volfacedata *facei;
-
-        facei            = facelist_ptr + j;
-        facei->faceindex = j%4;
-        facei->vol       = geomlisti->volumes + j/4;
-      }
-      qsort(facelist_ptr,nfacelist_index,sizeof(volfacedata), CompareVolumeFaces);
-      for(j=1;j<nfacelist_index;j++){
-        volfacedata *face1, *face2;
-        tetdata *vol1, *vol2;
-        int *verts1, *verts2;
-
-        face1=facelist_ptr + j-1;
-        face2=facelist_ptr + j;
-        vol1 = face1->vol;
-        vol2 = face2->vol;
-        verts1 = vol1->faces+3*face1->faceindex;
-        verts2 = vol2->faces+3*face2->faceindex;
-        if(verts1[0]!=verts2[0])continue;
-        if(MIN(verts1[1],verts1[2])!=MIN(verts2[1],verts2[2]))continue;
-        if(MAX(verts1[1],verts1[2])!=MAX(verts2[1],verts2[2]))continue;
-        vol1->exterior[face1->faceindex]=0;
-        vol2->exterior[face2->faceindex]=0;
-      }
-      FREEMEMORY(facelist_ptr);
-    }
     if(ntriangles > 0){
       int nfacelist_index;
       tridata **facelist_ptrs = NULL;

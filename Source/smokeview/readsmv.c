@@ -6000,47 +6000,6 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
   return RETURN_PROCEED;
 }
 
-/* ------------------ ReadSMVSLCF ------------------------ */
-
-int ReadSMVSLCF(bufferstreamdata *stream){
-  char buffer[256], buffers[6][256];
-  int nn_slice = 0, ioffset=0, nslicefiles=0;
-  slicedata *sliceinfo_copy=NULL;
-  patchdata *patchgeom;
-
-  for(;;){
-    int return_val;
-
-    return_val = ParseSLCFCount(SCAN, stream, buffer, &nslicefiles);
-    if(return_val==RETURN_BREAK){
-      BREAK;
-    }
-  }
-  REWIND(stream);
-  sliceinfo_copy = sliceinfo;
-  for(;;){
-    int return_val;
-
-    return_val = ParseSLCFProcess(SCAN, stream, buffer, &nn_slice, ioffset, &nslicefiles, &sliceinfo_copy, &patchgeom, buffers);
-    if(return_val==RETURN_BREAK){
-      BREAK;
-    }
-    else if(return_val==RETURN_CONTINUE){
-      continue;
-    }
-    else if(return_val==RETURN_TWO){
-      return 2;
-    }
-    else if(return_val==RETURN_PROCEED){
-    }
-    else{
-      ASSERT(FFALSE);
-    }
-  }
-  return 0;
-}
-
-
 /* ------------------ FreeSliceData ------------------------ */
 
 void FreeSliceData(void){
@@ -12208,7 +12167,7 @@ int ReadIni2(char *inifile, int localfile){
         &dummy, &dummy2, &show_faces_shaded, &show_faces_outline, &smooth_geom_normal,
         &geom_force_transparent, &geom_transparency,&geom_linewidth, &use_geom_factors, &show_cface_normals, &geom_pointsize, &geom_dz_offset, &geom_norm_offset);
       fgets(buffer, 255, stream);
-      sscanf(buffer, " %i %i %i %i", &show_volumes_interior, &show_volumes_exterior, &show_volumes_solid, &show_volumes_outline);
+      sscanf(buffer, " %i %i %i %i", &dummy, &dummy, &dummy, &dummy);
       fgets(buffer, 255, stream);
       sscanf(buffer, " %f %f %i %i %i %i", &geom_vert_exag, &rdummy, &dummy, &dummy2, &show_geom_boundingbox, &show_geom_bndf );
       continue;
@@ -12587,11 +12546,6 @@ int ReadIni2(char *inifile, int localfile){
     if(MatchINI(buffer, "ISOTRAN2") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%i ", &transparent_state);
-      continue;
-    }
-    if(MatchINI(buffer, "SHOWTETRAS") == 1){
-      fgets(buffer, 255, stream);
-      sscanf(buffer, "%i %i", &show_volumes_solid, &show_volumes_outline);
       continue;
     }
     if(MatchINI(buffer, "SHOWTRIANGLES") == 1){
@@ -16681,7 +16635,7 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %i %i %i %i %i %i %f %f %i %i %f %f %f\n",
      0, 1, show_faces_shaded, show_faces_outline, smooth_geom_normal,
      geom_force_transparent, geom_transparency, geom_linewidth, use_geom_factors, show_cface_normals, geom_pointsize, geom_dz_offset, geom_norm_offset);
-  fprintf(fileout, " %i %i %i %i\n", show_volumes_interior, show_volumes_exterior, show_volumes_solid, show_volumes_outline);
+  fprintf(fileout, " %i %i %i %i\n", 0, 0, 0, 0);
   fprintf(fileout, " %f %f %i %i %i %i\n", geom_vert_exag, 30.0, 0, 0, show_geom_boundingbox, show_geom_bndf);
 
   fprintf(fileout, "GVERSION\n");
@@ -16801,8 +16755,6 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %i %i %i %i\n", streak5show, streak5step, showstreakhead, streak_index);
   fprintf(fileout, "SHOWTERRAIN\n");
   fprintf(fileout, " %i %i\n", visTerrainType, terrain_slice_overlap);
-  fprintf(fileout, "SHOWTETRAS\n");
-  fprintf(fileout, " %i %i\n", show_volumes_solid, show_volumes_outline);
   fprintf(fileout, "SHOWTHRESHOLD\n");
   fprintf(fileout, " %i %i %f\n", vis_threshold, vis_onlythreshold, temp_threshold);
   fprintf(fileout, "SHOWTICKS\n");
