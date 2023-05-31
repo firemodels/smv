@@ -5,7 +5,6 @@
 // TODO: remove this as a public-facing API when possible
 int fortread(void *ptr, size_t size, size_t count, FILE *file);
 
-void getgeomdatasize(const char *filename, int *ntimes, int *nvars, int *error);
 void getzonesize(const char *zonefilename, int *nzonet, int *nrooms,
                  int *nfires, int *error);
 void getpatchsizes1(FILE **file, const char *patchfilename, int *npatch,
@@ -36,9 +35,6 @@ void getpartheader2(FILE *file, int nclasses, int *nquantities, int *size);
 void getpartdataframe(FILE *file, int nclasses, int *nquantities, int *npoints,
                       float *time, int *tagdata, float *pdata, int *size,
                       int *error);
-void getgeomdata(const char *filename, int ntimes, int nvals, float *times,
-                 int *nstatics, int *ndynamics, float *vals, int *file_size,
-                 int *error);
 void getzonedata(const char *zonefilename, int *nzonet, int *nrooms,
                  int *nfires, float *zonet, float *zoneqfire, float *zonepr,
                  float *zoneylay, float *zonetl, float *zonetu, int *error);

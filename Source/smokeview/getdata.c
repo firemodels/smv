@@ -121,53 +121,6 @@ int fortseek(FILE *file, size_t size, size_t count, int whence) {
                whence);
 }
 
-//  ------------------ getgeomdatasize ------------------------
-
-void getgeomdatasize(const char *filename, int *ntimes, int *nvars,
-                     int *error) {
-  float time, dummy;
-  int one, version;
-  int nvert_s, nvert_d, nface_s, nface_d;
-  FILE *file = FOPEN(filename, "rb");
-  if (file == NULL) {
-    printf(" The boundary element file name, %s does not exist\n", filename);
-    *error = 1;
-    return;
-  }
-
-  *error = 0;
-  *error = fortread(&one, 1, 1, file);
-  *error = fortread(&version, 1, 1, file);
-  *ntimes = 0;
-  *nvars = 0;
-  size_t error_local;
-  uint32_t counts[4] = {0};
-  while (1) {
-    error_local = fortread(&time, sizeof(time), 1, file);
-    if (error_local == 0) {
-      error_local = fortread(&counts, sizeof(*counts), 4, file);
-      nvert_s = counts[0];
-      nface_s = counts[1];
-      nvert_d = counts[2];
-      nface_d = counts[3];
-    }
-    if (error_local == 0 && nvert_s > 0)
-      error_local = fortread(&dummy, sizeof(dummy), nvert_s, file);
-    if (error_local == 0 && nvert_d > 0)
-      error_local = fortread(&dummy, sizeof(dummy), nvert_d, file);
-    if (error_local == 0 && nface_s > 0)
-      error_local = fortread(&dummy, sizeof(dummy), nface_s, file);
-    if (error_local == 0 && nface_d > 0)
-      error_local = fortread(&dummy, sizeof(dummy), nface_d, file);
-    if (error_local != 0) {
-      break;
-    }
-    *nvars += nvert_s + nvert_d + nface_s + nface_d;
-    ntimes++;
-  }
-  fclose(file);
-}
-
 //  ------------------ getzonesize ------------------------
 void getzonesize(const char *zonefilename, int *nzonet, int *nrooms,
                  int *nfires, int *error) {
@@ -694,82 +647,6 @@ void getpartdataframe(FILE *file, int nclasses, int *nquantities, int *npoints,
              4 * nparticles * nquantities[i];
   }
   *error = 0;
-  return;
-}
-
-// !  ------------------ getgeomdata ------------------------
-
-void getgeomdata(const char *filename, int ntimes, int nvals, float *times,
-                 int *nstatics, int *ndynamics, float *vals, int *file_size,
-                 int *error) {
-  int one, nvars;
-  int nvert_s, ntri_s, nvert_d, ntri_d;
-  int version;
-
-  *file_size = 0;
-  FILE *file = FOPEN(filename, "rb");
-  if (file == NULL) {
-    printf(" The boundary element file name, %s does not exist\n", filename);
-    *error = 1;
-    return;
-  }
-
-  *error = 0;
-  *error = fortread(&one, 1, 1, file);
-  if (*error != 0) goto end;
-  *error = fortread(&version, sizeof(version), 1, file);
-  if (*error != 0) goto end;
-  *file_size = 2 * (4 + 4 + 4);
-  nvars = 0;
-
-  int itime;
-  for (itime = 0; itime < ntimes; itime++) {
-
-    *error = fortread(&times[itime], sizeof(times[itime]), 1, file);
-    if (*error != 0) goto end;
-    *file_size += (4 + 4 + 4);
-
-    int counts[4] = {0};
-    *error = fortread(&counts, sizeof(*counts), 4, file);
-    nvert_s = counts[0];
-    ntri_s = counts[1];
-    nvert_d = counts[2];
-    ntri_d = counts[3];
-    *file_size += (4 + 4 * 4 + 4);
-    nstatics[itime] = nvert_s + ntri_s;
-
-    if (nvert_s > 0) {
-      *error = fortread(&vals[nvars], sizeof(vals[nvars]), nvert_s, file);
-      if (*error != 0) goto end;
-      *file_size += (4 + 4 * nvert_s + 4);
-    }
-    nvars = nvars + nvert_s;
-
-    if (ntri_s > 0) {
-      *error = fortread(&vals[nvars], sizeof(vals[nvars]), ntri_s, file);
-      if (*error != 0) goto end;
-      *file_size += (4 + 4 * ntri_s + 4);
-    }
-    nvars = nvars + ntri_s;
-
-    ndynamics[itime] = nvert_d + ntri_d;
-    if (nvert_d > 0) {
-      *error = fortread(&vals[nvars], sizeof(vals[nvars]), nvert_d, file);
-      if (*error != 0) goto end;
-      file_size += (4 + 4 * nvert_d + 4);
-    }
-    nvars = nvars + nvert_d;
-
-    if (ntri_d > 0) {
-      *error = fortread(&vals[nvars], sizeof(vals[nvars]), ntri_d, file);
-      if (*error != 0) goto end;
-      *file_size += (4 + 4 * ntri_d + 4);
-    }
-    nvars = nvars + ntri_d;
-  }
-
-end:
-  fclose(file);
   return;
 }
 
