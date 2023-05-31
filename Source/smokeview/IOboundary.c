@@ -4618,6 +4618,9 @@ void UpdateBoundaryMenuLabels(void){
             STRCAT(patchi->menulabel_suffix, "Cut cell faces");
           }
         }
+        if(strcmp(patchi->menulabel_suffix, "") == 0){
+          STRCPY(patchi->menulabel_suffix, patchi->label.longlabel);
+        }
       }
       else{
         STRCPY(patchi->menulabel_suffix, patchi->label.longlabel);
