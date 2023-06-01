@@ -369,10 +369,6 @@ int set_showfaces_exterior(int v);
 int set_showfaces_solid(int v);
 int set_showfaces_outline(int v);
 int set_smoothgeomnormal(int v);
-int set_showvolumes_interior(int v);
-int set_showvolumes_exterior(int v);
-int set_showvolumes_solid(int v);
-int set_showvolumes_outline(int v);
 int set_geomvertexag(int v);
 int set_geommaxangle(int v);
 int set_gversion(int v);                                // GVERSION
@@ -419,7 +415,6 @@ int set_showsmokepart(int v);        // SHOWSMOKEPART
 int set_showsprinkpart(int v);       // SHOWSPRINKPART
 int set_showstreak(int show, int step, int showhead, int index); // SHOWSTREAK
 int set_showterrain(int v);                                      // SHOWTERRAIN
-int set_showtetras(int a, int b);                                // SHOWTETRAS
 int set_showthreshold(int a, int b, float c); // SHOWTHRESHOLD
 int set_showticks(int v);                     // SHOWTICKS
 int set_showtimebar(int v);                   // SHOWTIMEBAR
