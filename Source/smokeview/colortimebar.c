@@ -1209,7 +1209,7 @@ void RemapColorbarType(int cb_oldtype, char *cb_newname){
 }
 
 #ifdef pp_COLORBARS_CSV
-/* ------------------ InitColorbar ------------------------ */
+/* ------------------ ReadCSVColorbar ------------------------ */
 
 void ReadCSVColorbar(colorbardata *cbptr, char *dir, char *file, char *ctype, int type){
   FILE *stream;

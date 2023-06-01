@@ -630,8 +630,18 @@ int MakeFileList(const char *path, char *filter, int maxfiles, int sort_files, f
 
       if(strcmp(entry->d_name,".")==0||strcmp(entry->d_name,"..")==0)continue;
       flisti = flist + nfiles;
-      NewMemory((void **)&file,strlen(entry->d_name)+1);
-      strcpy(file,entry->d_name);
+      if(mode == DIR_MODE){
+        NewMemory((void **)&file, strlen(path)+1+strlen(entry->d_name) + 1);
+      }
+      else{
+        NewMemory((void **)&file, strlen(entry->d_name) + 1);
+      }
+      strcpy(file, "");
+      if(mode == DIR_MODE){
+        strcat(file, path);
+        strcat(file, dirseparator);
+      }
+      strcat(file,entry->d_name);
       flisti->file=file;
       flisti->type=0;
       nfiles++;

@@ -125,7 +125,9 @@ EXTERNCPP int Writable(char *dir);
 EXTERNCPP   int FileExists(char *filename, filelistdata *filelist, int nfiles, filelistdata *filelist2, int nfiles2);
 EXTERNCPP filelistdata *FileInList(char *file, filelistdata *filelist, int nfiles, filelistdata *filelist2, int nfiles2);
 EXTERNCPP void FreeFileList(filelistdata *filelist, int *nfilelist);
-EXTERNCPP int GetFileListSize(const char *path, char *filter, int mode);
+#define FILE_MODE 0
+#define DIR_MODE  1
+EXTERNCPP int GetFileListSize(const char *path, char *filter, int mode) ;
 EXTERNCPP int MakeFileList(const char *path, char *filter, int maxfiles, int sort_files, filelistdata **filelist, int mode);
 EXTERNCPP char *Which(char *progname);
 EXTERNCPP FILE_SIZE GetFileSizeSMV(const char *filename);
