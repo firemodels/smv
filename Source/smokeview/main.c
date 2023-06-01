@@ -45,7 +45,6 @@ void Usage(char *prog,int option){
     PRINTF("%s\n", _(" -fast          - assume slice files exist in order to reduce startup time"));
     PRINTF("%s\n", _(" -fed           - pre-calculate all FED slice files"));
     PRINTF("%s\n", _(" -geominfo      - output information about geometry triangles"));
-    PRINTF("%s\n", _(" -html          - output html version of smokeview scene"));
     PRINTF("%s\n", _(" -info            generate casename.slcf and casename.viewpoint files containing slice file and viewpiont info"));
     PRINTF("%s\n", _(" -lang xx       - where xx is de, es, fr, it for German, Spanish, French or Italian"));
     PRINTF("%s\n", _(" -make_movie    - open the movie generating dialog box"));

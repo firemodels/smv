@@ -2773,22 +2773,6 @@ int set_smoothgeomnormal(int v) {
   smooth_geom_normal = v;
   return 0;
 }
-int set_showvolumes_interior(int v) {
-  show_volumes_interior = v;
-  return 0;
-}
-int set_showvolumes_exterior(int v) {
-  show_volumes_exterior = v;
-  return 0;
-}
-int set_showvolumes_solid(int v) {
-  show_volumes_solid = v;
-  return 0;
-}
-int set_showvolumes_outline(int v) {
-  show_volumes_outline = v;
-  return 0;
-}
 int set_geomvertexag(int v) {
   geom_vert_exag = v;
   return 0;
@@ -3024,12 +3008,6 @@ int set_showterrain(int v) {
   visTerrainType = v;
   return 0;
 } // SHOWTERRAIN
-
-int set_showtetras(int a, int b) {
-  show_volumes_solid = a;
-  show_volumes_outline = b;
-  return 0;
-} // SHOWTETRAS
 
 int set_showthreshold(int a, int b, float c) {
   vis_threshold = a;
