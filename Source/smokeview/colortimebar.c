@@ -274,7 +274,7 @@ void DrawColorbarPathRGB(void){
     glScalef(SCALE2SMV(1.0),SCALE2SMV(1.0),SCALE2SMV(1.0));
     glTranslatef(-xbar0,-ybar0,-zbar0);
     int skip = 1;
-    if(cbi->nnodes > 20)skip = cbi->nnodes / 20;
+    if(cbi->nnodes > 16)skip = cbi->nnodes / 16;
     for(i=0;i<cbi->nnodes;i+=skip){
       char cbuff[1024];
       float dzpoint;
@@ -384,6 +384,7 @@ void DrawColorbarPathRGB(void){
 void DrawColorbarPathCIE(void){
   int i;
   colorbardata *cbi;
+  float cie_dist[256], cie_last[3], ddist, current_dist=0.0;
 
   if(show_firecolormap == 0){
     cbi = colorbarinfo + colorbartype;
@@ -393,6 +394,7 @@ void DrawColorbarPathCIE(void){
   }
   glPointSize(5.0);
   glBegin(GL_POINTS);
+  cie_dist[0] = 0.0;
   for(i = 0; i < 256; i++){
     float *rgbi, cie[3], xyz[3];
     unsigned char rgb255[3];
@@ -406,8 +408,18 @@ void DrawColorbarPathCIE(void){
     xyz[2] = cie[0] / 100.0;
     xyz[0] = (cie[1]+87.9)/183.28;
     xyz[1] = (cie[2]+126.39)/211.11;
+    if(i > 0){
+      float dx, dy, dz;
+
+      dx = cie[0] - cie_last[0];
+      dy = cie[1] - cie_last[1];
+      dz = cie[2] - cie_last[2];
+      cie_dist[i] = cie_dist[i-1] + sqrt(dx * dx + dy * dy + dz * dz);
+    }
+    memcpy(cie_last, cie, 3 * sizeof(float));
     glVertex3fv(xyz);
   }
+  ddist = cie_dist[255] / 16.0;
 #ifdef pp_COLOR_CIE_CHECK
   for(i = 0; i < 17 * 17 * 17; i++){
     float xyz[3], *cie;
@@ -509,7 +521,7 @@ void DrawColorbarPathCIE(void){
   glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
   glTranslatef(-xbar0, -ybar0, -zbar0);
     int skip = 1;
-    if(cbi->nnodes > 20)skip = cbi->nnodes / 20;
+    if(cbi->nnodes > 16)skip = cbi->nnodes / 16;
     for(i = 0;i < cbi->nnodes;i+=skip){
     char cbuff[1024];
     float dzpoint;
@@ -532,12 +544,17 @@ void DrawColorbarPathCIE(void){
   for(i=1;i<ncolors;i++){
     float *rgbi;
     float zbot, ztop;
+    float black[3] = {0.0,0.0,0.0};
 
     if(show_firecolormap!=0){
       rgbi=rgb_volsmokecolormap+4*i;
     }
     else{
       rgbi=cbi->colorbar+3*i;
+    }
+    if(show_Lab_dist_bars==1&&ncolors == 255&&cie_dist[i]>current_dist){
+      rgbi = black;
+      current_dist+=ddist;
     }
     glColor3fv(rgbi);
     zbot=(float)i/(float)ncolors;
