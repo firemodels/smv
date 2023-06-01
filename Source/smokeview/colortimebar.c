@@ -1209,9 +1209,9 @@ void RemapColorbarType(int cb_oldtype, char *cb_newname){
 }
 
 #ifdef pp_COLORBARS_CSV
-/* ------------------ InitColorbar ------------------------ */
+/* ------------------ ReadColorbarCSV ------------------------ */
 
-void InitColorbar(colorbardata *cbptr, char *dir, char *file, char *type){
+void ReadColorbarCSV(colorbardata *cbptr, char *dir, char *file, char *type){
   FILE *stream;
   int i,n=0;
   char fullfile[1024];
@@ -1316,17 +1316,17 @@ void InitDefaultColorbars(int nini){
   filelistdata *linear_filelist=NULL, *circular_filelist=NULL, *rainbow_filelist=NULL, *divergent_filelist = NULL;
   filelistdata *user_filelist = NULL;
 
-  nuser_filelist      = GetFileListSize(colorbars_userdir,       "*.csv");
-  nlinear_filelist    = GetFileListSize(colorbars_linear_dir,    "*.csv");
-  ncircular_filelist  = GetFileListSize(colorbars_circular_dir,  "*.csv");
-  nrainbow_filelist   = GetFileListSize(colorbars_rainbow_dir,   "*.csv");
-  ndivergent_filelist = GetFileListSize(colorbars_divergent_dir, "*.csv");
+  nuser_filelist      = GetFileListSize(colorbars_userdir,       "*.csv", FILE_MODE);
+  nlinear_filelist    = GetFileListSize(colorbars_linear_dir,    "*.csv", FILE_MODE);
+  ncircular_filelist  = GetFileListSize(colorbars_circular_dir,  "*.csv", FILE_MODE);
+  nrainbow_filelist   = GetFileListSize(colorbars_rainbow_dir,   "*.csv", FILE_MODE);
+  ndivergent_filelist = GetFileListSize(colorbars_divergent_dir, "*.csv", FILE_MODE);
 
-  MakeFileList(colorbars_userdir,       "*.csv", nuser_filelist,      NO, &user_filelist);
-  MakeFileList(colorbars_linear_dir,    "*.csv", nlinear_filelist,    NO, &linear_filelist);
-  MakeFileList(colorbars_circular_dir,  "*.csv", ncircular_filelist,  NO, &circular_filelist);
-  MakeFileList(colorbars_rainbow_dir,   "*.csv", nrainbow_filelist,   NO, &rainbow_filelist);
-  MakeFileList(colorbars_divergent_dir, "*.csv", ndivergent_filelist, NO, &divergent_filelist);
+  MakeFileList(colorbars_userdir,       "*.csv", nuser_filelist,      NO, &user_filelist,      FILE_MODE);
+  MakeFileList(colorbars_linear_dir,    "*.csv", nlinear_filelist,    NO, &linear_filelist,    FILE_MODE);
+  MakeFileList(colorbars_circular_dir,  "*.csv", ncircular_filelist,  NO, &circular_filelist,  FILE_MODE);
+  MakeFileList(colorbars_rainbow_dir,   "*.csv", nrainbow_filelist,   NO, &rainbow_filelist,   FILE_MODE);
+  MakeFileList(colorbars_divergent_dir, "*.csv", ndivergent_filelist, NO, &divergent_filelist, FILE_MODE);
 
   ndefaultcolorbars+=nlinear_filelist + ncircular_filelist + nrainbow_filelist + ndivergent_filelist + nuser_filelist;
 #endif
@@ -1972,23 +1972,23 @@ void InitDefaultColorbars(int nini){
 
 #ifdef pp_COLORBARS_CSV
   for(i = 0;i < nlinear_filelist;i++){
-    InitColorbar(cbi, colorbars_linear_dir,  linear_filelist[i].file,  "linear");
+    ReadColorbarCSV(cbi, colorbars_linear_dir,  linear_filelist[i].file,  "linear");
     cbi++;
   }
   for(i = 0;i < ncircular_filelist;i++){
-    InitColorbar(cbi, colorbars_circular_dir,  circular_filelist[i].file,  "circular");
+    ReadColorbarCSV(cbi, colorbars_circular_dir,  circular_filelist[i].file,  "circular");
     cbi++;
   }
   for(i = 0;i < nrainbow_filelist;i++){
-    InitColorbar(cbi, colorbars_rainbow_dir,  rainbow_filelist[i].file, "rainbow");
+    ReadColorbarCSV(cbi, colorbars_rainbow_dir,  rainbow_filelist[i].file, "rainbow");
     cbi++;
   }
   for(i = 0;i < ndivergent_filelist;i++){
-    InitColorbar(cbi, colorbars_divergent_dir, divergent_filelist[i].file, "divergent");
+    ReadColorbarCSV(cbi, colorbars_divergent_dir, divergent_filelist[i].file, "divergent");
     cbi++;
   }
   for(i = 0;i < nuser_filelist;i++){
-    InitColorbar(cbi, colorbars_userdir, user_filelist[i].file,    "user");
+    ReadColorbarCSV(cbi, colorbars_userdir, user_filelist[i].file,    "user");
     cbi++;
   }
 #ifdef pp_COLOR_NEW
