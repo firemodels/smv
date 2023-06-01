@@ -1766,6 +1766,25 @@ void ReadGeomHeader0(geomdata *geomi, int *geom_frame_index, int *ntimes_local){
   int nverts=0, ntris=0;
   int icount;
 
+  //***format
+  // one  (endian)
+  // version  (version=1 for this file type, for isosurfaces)
+  // nfloats
+  // if(nfloats>0) float_1, ...., float_nfloats
+  // nints
+  // if(nints>0) int_1, ..., int_nints
+  //*** static verts and triangles (verts and triangles that appear at all time steps)
+  // nverts, ntris  
+  // vert_1, ..., vert_nverts   (each vert_i is a triple x_i,y_i,z_i of floats)
+  // tri_1a,tri_1b,tri_1c ..., tri_ntrisa,tri_ntrisb,tri_ntrisc 
+  // surf_1, ..., surf_ntris      (each tri_i is a triple I,J,K triangle int indices )
+  //*** for a time step
+  // time             (float)
+  // nverts, ntris    (int,int)
+  // vert_1, ..., vert_nverts   (each vert_i is a triple x_i,y_i,z_i of floats)
+  // tri_1a,tri_1b,tri_1c ..., tri_ntrisa,tri_ntrisb,tri_ntrisc 
+  // surf_1, ..., surf_ntris      (each tri_i is a triple I,J,K triangle int indices )
+
   stream = fopen(geomi->file,"rb");
   if(stream==NULL){
     *ntimes_local=-1;
@@ -1856,9 +1875,27 @@ void ReadGeomHeader2(geomdata *geomi, int *ntimes_local){
   int returncode=0;
   int version;
   int nverts=0, ntris=0, nvolumes=0;
-  int first_frame_static;
+  int first_frame_all;
   int header[3];
   float time_local;
+
+  //***format
+  // one  (endian)
+  // version  (version=1 for this file type - for isosurfaces)
+  // dummy,dummy,first_frame_all     (dummy's not used, if first_frame_all=1 then verts/tris
+  //                                  in first frame are displayed for all frames)
+  //*** for each time step:
+  // time             (float)
+  // nverts, ntris, dummy    (int,int,int)
+  // vert_1, ..., vert_nverts   (each vert_i is a triple x_i,y_i,z_i of floats)
+  // tri_1a,tri_1b,tri_1c ..., tri_ntrisa,tri_ntrisb,tri_ntrisc 
+  //*** if cfaces:
+  // loc_1, .., loc_ntris
+  // surf_1, ..., surf_ntris
+  // geom_1, ..., geom_ntris
+  //*** if not cfaces:
+  // surf_1, ..., surf_ntris
+  // texture_1, ..., texture_ntris
 
   stream = fopen(geomi->file,"rb");
   if(stream==NULL){
@@ -1869,10 +1906,10 @@ void ReadGeomHeader2(geomdata *geomi, int *ntimes_local){
   FORTREAD(&version,1,stream);
 
   FORTREAD(header,3,stream);
-  first_frame_static=header[2];
+  first_frame_all=header[2];
 
   nt=0;
-  if(first_frame_static==1)nt=-1;
+  if(first_frame_all==1)nt=-1;
   for(;;){
     FORTREADBR(&time_local,1,stream);
     FORTREADBR(nvertfacesvolumes,3,stream);
@@ -2035,6 +2072,17 @@ FILE_SIZE GetGeomData(char *filename, int ntimes, int nvals, float *times, int *
   float time;
   int iframe, frame_start, frame_stop;
 
+  //***format
+  // 1
+  // version
+  // for each time step:
+  // time
+  // nvert_static, ntri_static, nvert_dynamic, ntri_dynamic
+  // if(nvert_static>0) vals_1, ...vals_nvert_static
+  // if(ntri_static>0)  vals_1, ...vals_ntri_static
+  // if(nvert_dynamic>0)vals_1, ...vals_nvert_dynamic
+  // if(ntri_dynamic>0) vals_1, ...vals_ntri_dynamic
+
   FILE *stream;
 
   file_size = 0;
@@ -2148,13 +2196,6 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
   float tmin_local, tmax_local;
   int *geom_offsets=NULL, geom_offset_flag;
 
-  // 1
-  // time
-  // nstatic
-  // vals_1, ...vals_nstatic
-  // ndynamic
-  // vals_1, ... vals_ndyamic
-
   if(patchi->structured == YES)return 0;
 
   START_TIMER(total_time);
@@ -2190,8 +2231,6 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
     return 0;
   }
   if(patchi->skip == 1)return 0;
-
-  //GetGeomDataHeader(file,&ntimes,&nvals);
 
   if(time_value!=NULL){
     NewMemory((void **)&geom_offsets, MAX_FRAMES*sizeof(int));
@@ -2773,7 +2812,7 @@ FILE_SIZE ReadGeom2(geomdata *geomi, int load_flag, int type){
   tridata *triangles;
   int version;
   int nvertfacesvolumes[3];
-  int nheaders[3], nfloat_vals, nint_vals, first_frame_static;
+  int nheaders[3], nfloat_vals, nint_vals, first_frame_all;
   FILE_SIZE return_filesize = 0;
   float *bounding_box;
 
@@ -2812,7 +2851,7 @@ FILE_SIZE ReadGeom2(geomdata *geomi, int load_flag, int type){
 
   nfloat_vals=nheaders[0];
   nint_vals=nheaders[1];
-  first_frame_static=nheaders[2];
+  first_frame_all=nheaders[2];
 
   if(nfloat_vals>0)FSEEK(stream,4+nfloat_vals*4+4,SEEK_CUR);
   if(nint_vals>0)FSEEK(stream,4+nint_vals*4+4,SEEK_CUR);
@@ -2831,7 +2870,7 @@ FILE_SIZE ReadGeom2(geomdata *geomi, int load_flag, int type){
     geomlisti = geomi->geomlistinfo+i;
     InitGeomlist(geomlisti);
 
-    if(first_frame_static==0&&i==-1)continue;
+    if(first_frame_all==0&&i==-1)continue;
 
     FORTREADBR(&time_local,1,stream);
     return_filesize += 4+4+4;
