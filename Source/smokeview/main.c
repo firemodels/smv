@@ -20,8 +20,6 @@
 #include "lua_api.h"
 #endif
 
-static bool showbuild = false;
-
 /* ------------------ Usage ------------------------ */
 
 void Usage(char *prog,int option){
@@ -100,12 +98,11 @@ char *ParseCommandline(int argc, char **argv) {
 /// are parsed into @ref CommandlineArgs.
 /// @return The iput file name (the SMV file).
 char *ProcessCommandLine(CommandlineArgs *args) {
-  int i, len_casename;
+  int len_casename;
   int iarg;
   size_t len_memory;
   char *argi, *smv_ext;
   char SMVFILENAME[MAX_SMV_FILENAME_BUFFER];
-  int smv_parse;
   char *filename_local = NULL;
 
   CheckMemory;
