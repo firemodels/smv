@@ -3,6 +3,7 @@
 #define PATHS_H_DEFINED
 
 #include <stdbool.h>
+#include "options.h"
 
 /// @brief The parsed version of commandline arguments.
 typedef struct CommandlineArgs {

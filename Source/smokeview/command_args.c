@@ -9,6 +9,7 @@
 
 #include "MALLOCC.h"
 #include "command_args.h"
+#include "options.h"
 
 const char *CLE_Message(enum CommandLineError cle) {
   switch (cle) {
