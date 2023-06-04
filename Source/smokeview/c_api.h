@@ -181,6 +181,11 @@ void toggle_chid_visibility();
 // blockages
 void blockages_hide_all();
 
+// outlines
+void outlines_hide();
+void outlines_show();
+
+
 // surfaces
 void surfaces_hide_all();
 

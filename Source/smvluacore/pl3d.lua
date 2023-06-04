@@ -5,7 +5,6 @@ function pl3d.loadAndSumPL3DFrame(n)
     for i, v in ipairs(pl3d.frames[n].entries) do
         load.datafile(v.file)
     end
-    -- initsmvdata()
     local var1 = 0
     local var2 = 0
     local var3 = 0
@@ -30,7 +29,6 @@ function pl3d.loadAndSumPL3DFrameMesh(n, blocknumber)
     end
     local e = pl3d.frames[n].entries[blocknumber]
     load.datafile(e.file)
-    -- initsmvdata()
     local var1 = 0
     local var2 = 0
     local var3 = 0
@@ -55,7 +53,6 @@ function pl3d.loadAndSumPL3DFrameMeshBounded(n, blocknumber, i1, i2, j1, j2, k1,
     end
     local e = pl3d.frames[n].entries[blocknumber]
     load.datafile(e.file)
-    -- initsmvdata()
     local var1 = 0
     local var2 = 0
     local var3 = 0
@@ -81,7 +78,6 @@ function pl3d.loadAndMaxPL3DFrameMeshBounded(n, blocknumber, i1, i2, j1, j2, k1,
     end
     local e = pl3d.frames[n].entries[blocknumber]
     load.datafile(e.file)
-    -- initsmvdata()
     local var1 = 0
     local var2 = 0
     local var3 = 0

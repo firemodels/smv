@@ -78,7 +78,10 @@ local iniFile = lpeg.Ct(option^0) * junkLine^0 * -lpeg.P(1)
 
 local function parseINI(filepath)
     print("parsing:", filepath)
-    local f = io.open(filepath, "r")
+    local f,err = io.open(filepath, "r")
+    if f == nil then
+        error(err,1)
+    end
     local input = f:read("*all")
     local parsedIniFile = iniFile:match(input)
     io.close()

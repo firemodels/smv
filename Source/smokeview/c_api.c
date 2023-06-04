@@ -949,17 +949,10 @@ void blockages_show_all() {
 
 void ImmersedMenu(int value);
 void BlockageMenu(int value);
-void blockages_hide_all() {
-#define GEOMETRY_HIDEALL 8
-  visFrame = 0;
-  visFloor = 0;
-  visWalls = 0;
-  visCeiling = 0;
-  visVents = 0;
-  visGrid = NOGRID_NOPROBE;
-  BlockageMenu(visBLOCKHide);
-  ImmersedMenu(GEOMETRY_HIDEALL);
-}
+void blockages_hide_all() { BlockageMenu(visBLOCKHide); }
+// TODO: clarify behaviour under isZoneFireModel
+void outlines_hide() { if(isZoneFireModel==0)visFrame=1-visFrame;}
+void outlines_show() { if(isZoneFireModel==0)visFrame=1-visFrame; }
 
 void surfaces_hide_all() {
   visVents = 0;

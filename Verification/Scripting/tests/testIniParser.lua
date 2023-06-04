@@ -1,11 +1,11 @@
-print("Running script for " .. fdsprefix .. ".")
---hidewindow()
-print("Date: " .. os.date("%c"))
 package.path=package.path .. ";" .. "../../SMV/Build/gnu_linux_64/?.lua"
-smv = require "smv"
--- ssf = require "ssf"
-iniparser = require "iniparser"
-string = require "string"
+local smv = require("smv")
+local iniparser = require("iniparser")
+local string = require("string")
 
-parseINI("test.ini")
-exit()
+local instance, view, case = smv.load_default()
+print("Running script for " .. case.chid .. ".")
+print("Date: " .. os.date("%c"))
+
+iniparser.parseINI("test.ini")
+instance.exit()

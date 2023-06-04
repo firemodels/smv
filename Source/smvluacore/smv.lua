@@ -35,7 +35,7 @@ end
 function smv.load_default()
     local case = smvlib.load_default()
     rawset(case, "load_slice_std", function(self, slice_type, axis, distance)
-        smv.load.slice_std(self, slice_type, axis, distance)
+        return smv.load.slice_std(self, slice_type, axis, distance)
     end)
     rawset(case, "camera_bottom", function(self)
         local camera = basic_ortho_camera()
@@ -73,15 +73,10 @@ function smv.load_default()
         camera.zAngle.elev = 0.0
         return camera
     end)
-    return nil, nil, case
+    return smv, smv.view, case
 end
 
 smv.getfinalframe = function() return smvlib.get_nglobal_times() - 1 end
-
-function smv.settimeend()
-    local nframes = smvlib.get_nglobal_times()
-    smvlib.setframe(nframes - 1)
-end
 
 function smv.togglecolorbarflip()
     smvlib.setcolorbarflip(1 - smvlib.getcolorbarflip())
@@ -122,17 +117,7 @@ local timebar_mt = {
 setmetatable(smv.timebar, timebar_mt)
 
 local _smv = {
-    time = {
-        get = function()
-            return smvlib.gettime()
-        end,
-        set = function(v)
-            return smvlib.settime(v)
-        end,
-        -- toggle = function ()
-        --     timebar.visibility = not timebar.visibility
-        -- end
-    },
+
     -- clipping = {
     --     get = function()
     --         return _clipping.get()
@@ -143,6 +128,7 @@ local _smv = {
     --     end,
     -- },
 }
+
 local smv_mt = {
     -- get method
     __index = function(t, k)

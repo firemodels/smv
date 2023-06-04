@@ -65,7 +65,10 @@ end
 -- testComment = comment:match(exampleComment)
 -- print("testComment:", testComment)
 function parseSSF(filepath)
-    local f = io.open(filepath, "r")
+    local f,err = io.open(filepath, "r")
+    if f == nil then
+        error(err,1)
+    end
     local input = f:read("*all")
     local parsedScript = script:match(input)
 	io.close()
@@ -73,7 +76,7 @@ end
 
 runSSF = parseSSF
 
-function test()
+local function test()
     parseSSF("test.ssf")
 end
 
