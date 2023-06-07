@@ -252,6 +252,7 @@ EXTERNCPP void CloseRollouts(GLUI *dialog);
 
 EXTERNCPP void ReadAllCSVFilesMT(void);
 EXTERNCPP void ReadAllCSVFiles(void);
+EXTERNCPP int ReadCSVFile(csvfiledata *csvfi, int flag);
 EXTERNCPP void UpdateCSVFileTypes(void);
 #ifdef pp_CSV_MULTI
 EXTERNCPP void FinishAllCSVFiles(void);

@@ -822,7 +822,6 @@ int get_csvindex(const char *key) {
   return -1;
 }
 
-void ReadCSV(csvfiledata *csvfi, int flag);
 void load_csv(csvfiledata *csventry) {
   ReadCSVFile(csventry, LOAD);
   csventry->loaded = 1;
