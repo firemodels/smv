@@ -1,50 +1,47 @@
-print("Running script for " .. chid .. ".")
---hidewindow()
+package.path = package.path .. ";" .. "../../SMV/Build/gnu_linux_64/?.lua"
+local smv = require("smv")
+local instance, view, case = smv.load_default()
+print("Running script for " .. case.chid .. ".")
 print("Date: " .. os.date("%c"))
-package.path=package.path .. ";" .. "../../SMV/Build/gnu_linux_64/?.lua"
-print(package.path)
-smv = require "smv"
--- ssf = require "ssf"
--- ssfparser = require "ssfparser"
-string = require "string"
 
-redWrite = function(...)
+local function redWrite(...)
     io.stderr:write("\27[31m")
     io.stderr:write(...)
     io.stderr:write("\27[0m")
 end
-greenWrite = function(...)
+local function greenWrite(...)
     io.stderr:write("\27[32m")
     io.stderr:write(...)
     io.stderr:write("\27[0m")
 end
 
-tests = {run=0,passed=0,failed=0}
+local tests = { run = 0, passed = 0, failed = 0 }
 
-level = 0
-function writeLevelIndent()
-    for i=0,level,1 do
+local level = 0
+local function writeLevelIndent()
+    for i = 0, level, 1 do
         io.stderr:write("  ")
     end
 end
 
-function errorResponse()
+local function errorResponse()
     -- exit()
 end
 
-function display_test_results(tests)
+local function display_test_results(tests)
     io.stderr:write("\tRun\tPassed\tFailed\n")
     io.stderr:write(string.format("Tests\t%d\t\27[32m%d\27[0m\t\27[31m%d\27[0m\n",
         tests.run, tests.passed, tests.failed))
 end
+
 -- test is function that must not throw an exception
 -- if we won't to do some other test we simply place an assert within the
 -- function being tested
-function test (testName, test)
+local function test(testName, test)
     writeLevelIndent()
     io.stderr:write(testName .. "\n")
     level = level + 1
-    local flag,result = pcall(test)
+    local flag, result = pcall(test)
     tests.run = tests.run + 1
     writeLevelIndent()
     if flag then
@@ -69,7 +66,7 @@ function test (testName, test)
 end
 
 -- test is function that must return an exception
-function testException (testName, test)
+local function testException(testName, test)
     writeLevelIndent()
     io.stderr:write(testName .. "\n")
     level = level + 1
@@ -93,19 +90,19 @@ function testException (testName, test)
     level = level - 1
 end
 
-angledCam = {
-        rotationType = 0,
-        eyePos = { x = 0.481481, y= -1.278639, z = 0.222222},
-        zoom =  1.0,
-        viewAngle = 0,
-        directionAngle = 0,
-        elevationAngle = 0,
-        projectionType = 0, -- TODO: convert this to string
-        viewDir  = {x =  0.481481, y = 0.500000, z = 0.222222},
-        zAngle = {az = -51.000000, elev = 52.000000},
-        transformMatrix = nil,
-        clipping = nil
-    }
+local angledCam = {
+    rotationType    = 0,
+    eyePos          = { x = 0.481481, y = -1.278639, z = 0.222222 },
+    zoom            = 1.0,
+    viewAngle       = 0,
+    directionAngle  = 0,
+    elevationAngle  = 0,
+    projectionType  = 0,    -- TODO: convert this to string
+    viewDir         = { x = 0.481481, y = 0.500000, z = 0.222222 },
+    zAngle          = { az = -51.000000, elev = 52.000000 },
+    transformMatrix = nil,
+    clipping        = nil
+}
 
 test("determine if script is running from within smokeview", function()
     -- determine whether the script is running from within Smokeview
@@ -117,7 +114,7 @@ test("determine if script is running from within smokeview", function()
     assert(smokeviewEmbedded)
 end)
 
-testException("call error()", function()error("error")end)
+testException("call error()", function() error("error") end)
 test("print smokeview info", function()
     -- print information on smokeview
     io.write(string.format("Version: %s\n", smokeviewProgram.version))
@@ -130,12 +127,13 @@ test("print smokeview info", function()
     io.write(string.format("Texture Directory: %s\n", smokeviewProgram.texturedir))
 end)
 -- print information on the model
-function exists(name)
-    if type(name)~="string" then return false end
-    return os.rename(name,name) and true or false
+local function exists(name)
+    if type(name) ~= "string" then return false end
+    return os.rename(name, name) and true or false
 end
-function isFile(name)
-    if type(name)~="string" then return false end
+
+local function isFile(name)
+    if type(name) ~= "string" then return false end
     if not exists(name) then return false end
     local f = io.open(name)
     if f then
@@ -153,14 +151,14 @@ test("load unlisted data file", function()
     test("pre-reqs", function()
         -- does the necessary file exists for testing
         assert(isFile(file), "file " .. file .. " does not exist")
-        end)
+    end)
     test("load the listed file", function()
         load.datafile("room_fire_01.sf")
-        end)
+    end)
     unload.all()
     testException("attempt to load the unlisted file", function()
         load.datafile(file)
-        end)
+    end)
 end)
 test("load boundary file", function() load.datafile("room_fire_01.bf") end)
 test("load smoke3d file", function() load.datafile("room_fire_01.s3d") end)
@@ -175,20 +173,20 @@ testException("load particle vector file", function() load.vdatafile("room_fire_
 testException("load non-existant vector file", function() load.vdatafile("qwert.yu") end)
 -- TODO: try loading corrupt file and ensure the outputted errors are correct
 -- unload all the loaded data
-test("unload all data", function() unload.all()end)
-test("window.size()", function() window.size(1024,768)end)
+test("unload all data", function() unload.all() end)
+test("window.size()", function() window.size(1024, 768) end)
 test("render.dir", function()
     local testPath = "renders"
-    test("set", function () render.dir = testPath end)
-    test("get", function () return render.dir end)
-    test("get == set", function () return render.dir == testPath end)
+    test("set", function() render.dir = testPath end)
+    test("get", function() return render.dir end)
+    test("get == set", function() return render.dir == testPath end)
 end)
 test("bad render.dir", function()
     local firstPath = "renders"
     local badPath = "|renders"
-    test("set firstPath", function () render.dir = firstPath end)
-    testException("set badPath", function () render.dir = badPath end)
-    test("get == firstPath", function () return render.dir == firstPath end)
+    test("set firstPath", function() render.dir = firstPath end)
+    testException("set badPath", function() render.dir = badPath end)
+    test("get == firstPath", function() return render.dir == firstPath end)
 end)
 
 test("show/hide labels", function()
@@ -202,7 +200,7 @@ test("show/hide labels", function()
             test("toggle", function()
                 toggle_colorbar_visibility()
                 assert(get_colorbar_visibility() == false, "toggle fails")
-                end)
+            end)
         end)
         test("interface", function()
             -- io.stderr:write(type(view.colorbar.show) .. "\n")
@@ -220,7 +218,7 @@ test("show/hide labels", function()
             test("toggle", function()
                 toggle_colorbar_visibility()
                 assert(get_colorbar_visibility() == false, "toggle fails")
-                end)
+            end)
         end)
     end)
     test("timebar visibility", function()
@@ -232,7 +230,7 @@ test("show/hide labels", function()
         test("toggle", function()
             toggle_timebar_visibility()
             assert(get_timebar_visibility() == false, "toggle fails")
-            end)
+        end)
     end)
     test("title visibility", function()
         test("set", function() set_title_visibility(true) end)
@@ -243,7 +241,7 @@ test("show/hide labels", function()
         test("toggle", function()
             toggle_title_visibility()
             assert(get_title_visibility() == false, "toggle fails")
-            end)
+        end)
     end)
     test("axis visibility", function()
         test("set", function() set_axis_visibility(true) end)
@@ -254,7 +252,7 @@ test("show/hide labels", function()
         test("toggle", function()
             toggle_axis_visibility()
             assert(get_axis_visibility() == false, "toggle fails")
-            end)
+        end)
     end)
     test("frame label visibility", function()
         test("set", function() set_framelabel_visibility(true) end)
@@ -265,7 +263,7 @@ test("show/hide labels", function()
         test("toggle", function()
             toggle_framelabel_visibility()
             assert(get_framelabel_visibility() == false, "toggle fails")
-            end)
+        end)
     end)
 
     test("frame rate visibility", function()
@@ -277,7 +275,7 @@ test("show/hide labels", function()
         test("toggle", function()
             toggle_framerate_visibility()
             assert(get_framerate_visibility() == false, "toggle fails")
-            end)
+        end)
     end)
 
     test("grid locations visibility", function()
@@ -289,7 +287,7 @@ test("show/hide labels", function()
         test("toggle", function()
             toggle_gridloc_visibility()
             assert(get_gridloc_visibility() == false, "toggle fails")
-            end)
+        end)
     end)
 
     test("hrrpuv cutoff visibility", function()
@@ -301,7 +299,7 @@ test("show/hide labels", function()
         test("toggle", function()
             toggle_hrrcutoff_visibility()
             assert(get_hrrcutoff_visibility() == false, "toggle fails")
-            end)
+        end)
     end)
 
     test("hrrpuv label visibility", function()
@@ -313,7 +311,7 @@ test("show/hide labels", function()
         test("toggle", function()
             toggle_hrrlabel_visibility()
             assert(get_hrrlabel_visibility() == false, "toggle fails")
-            end)
+        end)
     end)
 
     test("mesh label visibility", function()
@@ -325,7 +323,7 @@ test("show/hide labels", function()
         test("toggle", function()
             toggle_meshlabel_visibility()
             assert(get_meshlabel_visibility() == false, "toggle fails")
-            end)
+        end)
     end)
 
     test("slice average visibility", function()
@@ -337,7 +335,7 @@ test("show/hide labels", function()
         test("toggle", function()
             toggle_slice_average_visibility()
             assert(get_slice_average_visibility() == false, "toggle fails")
-            end)
+        end)
     end)
 
     test("time visibility", function()
@@ -349,7 +347,7 @@ test("show/hide labels", function()
         test("toggle", function()
             toggle_time_visibility()
             assert(get_time_visibility() == false, "toggle fails")
-            end)
+        end)
     end)
     test("user settable ticks visibility", function()
         test("set", function() set_user_ticks_visibility(true) end)
@@ -360,7 +358,7 @@ test("show/hide labels", function()
         test("toggle", function()
             toggle_user_ticks_visibility()
             assert(get_user_ticks_visibility() == false, "toggle fails")
-            end)
+        end)
     end)
 
     test("version info visibility", function()
@@ -372,7 +370,7 @@ test("show/hide labels", function()
         test("toggle", function()
             toggle_version_info_visibility()
             assert(get_version_info_visibility() == false, "toggle fails")
-            end)
+        end)
     end)
 
     test("chid visibility", function()
@@ -384,11 +382,11 @@ test("show/hide labels", function()
         test("toggle", function()
             toggle_chid_visibility()
             assert(get_chid_visibility() == false, "toggle fails")
-            end)
+        end)
     end)
 
     test("add custom title lines", function()
-        test("pre-reqs", function()set_title_visibility(true)end)
+        test("pre-reqs", function() set_title_visibility(true) end)
         test("add line", function()
             view.titlebox.add_line(string.format("CHID Again: %s", chid))
         end)
@@ -401,7 +399,7 @@ test("show/hide labels", function()
         test("add again", function()
             view.titlebox.add_line(string.format("No. Meshes: %d", #case.meshes))
         end)
-        test("post-reqs", function()set_title_visibility(false)end)
+        test("post-reqs", function() set_title_visibility(false) end)
     end)
 
     test("set all labels visibility", function()
@@ -415,75 +413,75 @@ test("show/hide - geometry - obstacles", function()
     test("as_input raw", function()
         blockage_view_method(1)
         render("as_input raw")
-        end)
+    end)
     test("as_input interface", function()
         view.blockages.method = "as_input"
         render("as_input interface")
-        end)
+    end)
     -- reset
     blockage_view_method(1)
     test("solid raw", function()
         blockage_view_method(2)
         render("solid raw")
-        end)
+    end)
     test("solid interface", function()
         view.blockages.method = "solid"
         render("solid interface")
-        end)
+    end)
     -- reset
     blockage_view_method(1)
     test("outline_only raw", function()
         blockage_view_method(3)
         render("outline_only raw")
-        end)
+    end)
     test("outline_only interface", function()
         view.blockages.method = "outline_only"
         render("outline_only interface")
-        end)
+    end)
     -- reset
     blockage_view_method(1)
     test("outline_added raw", function()
         blockage_view_method(4)
         render("outline_added raw")
-        end)
+    end)
     test("outline_added interface", function()
         view.blockages.method = "outline_added"
         render("outline_added interface")
-        end)
+    end)
     -- reset
     blockage_view_method(1)
     test("hidden raw", function()
         blockage_view_method(5)
         render("hidden raw")
-        end)
+    end)
     test("hidden interface", function()
         view.blockages.method = "hidden"
         render("hidden interface")
-        end)
+    end)
     view.blockages.method = "outline_only"
     test("blockage color outline raw", function()
         blockage_outline_color(1)
         render("blockage color outline raw")
-        end)
+    end)
     test("blockage color outline interface", function()
         view.blockages.outline_color = "blockage"
         render("blockage color outline interface")
-        end)
+    end)
     test("foreground color outline raw", function()
         blockage_outline_color(2)
         render("foreground color outline raw")
-        end)
+    end)
     test("foreground color outline interface", function()
         view.blockages.outline_color = "foreground"
         render("foreground color outline interface")
-        end)
+    end)
     blockage_view_method(1)
     blockage_outline_color(1)
 end)
 
 -- the following tests depend on data not being loaded
 test("no loaded file tests", function()
-    test("pre-reqs", function()unload.all()end)
+    test("pre-reqs", function() unload.all() end)
     test("view.colorbar.flip1", function()
         test("set", function() view.colorbar.flip = true end)
         test("get", function() return view.colorbar.flip end)
@@ -529,7 +527,7 @@ test("no loaded file tests", function()
         test("get", function() return view.viewpoint end)
         test("equal", function()
             assert(view.viewpoint == x, "get does not match set\n get is: "
-                   .. tostring(view.viewpoint) .. "\n  set is: " .. tostring(x))
+                .. tostring(view.viewpoint) .. "\n  set is: " .. tostring(x))
         end)
     end)
     test("view.viewpoint2", function()
@@ -539,7 +537,7 @@ test("no loaded file tests", function()
         test("get", function() return view.viewpoint end)
         test("equal", function()
             assert(view.viewpoint == x, "get does not match set\n get is: "
-                   .. tostring(view.viewpoint) .. "\n  set is: " .. tostring(x))
+                .. tostring(view.viewpoint) .. "\n  set is: " .. tostring(x))
         end)
     end)
     -- test with a non-existing viewpoint
@@ -559,8 +557,8 @@ test("no loaded file tests", function()
         test("get", function() return view.framenumber end)
         test("equal", function()
             assert(view.framenumber == x, "get does not match set\n get is: "
-                   .. tostring(view.framenumber) .. "\n  set is: "
-                   .. tostring(x))
+                .. tostring(view.framenumber) .. "\n  set is: "
+                .. tostring(x))
         end)
     end)
     test("window.height", function()
@@ -575,9 +573,9 @@ test("no loaded file tests", function()
         test("get", function() return timebar.visibility end)
         test("equal", function()
             assert(timebar.visibility == true,
-                    "get does not match set\n get is: "
-                    .. tostring(timebar.visibility) .. "\n  set is: "
-                    .. tostring(true))
+                "get does not match set\n get is: "
+                .. tostring(timebar.visibility) .. "\n  set is: "
+                .. tostring(true))
         end)
     end)
     test("timebar.visibility2", function()
@@ -585,9 +583,9 @@ test("no loaded file tests", function()
         test("get", function() return timebar.visibility end)
         test("equal", function()
             assert(timebar.visibility == false,
-                    "get does not match set\n get is: "
-                    .. tostring(timebar.visibility) .. "\n  set is: "
-                    .. tostring(false))
+                "get does not match set\n get is: "
+                .. tostring(timebar.visibility) .. "\n  set is: "
+                .. tostring(false))
         end)
     end)
     -- test("timebar.visibility.toggle", function()
@@ -600,9 +598,9 @@ test("no loaded file tests", function()
         test("get", function() return get_hrrlabel_visibility() end)
         test("equal", function()
             assert(get_hrrlabel_visibility() == true,
-                    "get does not match set\n get is: "
-                    .. tostring(get_hrrlabel_visibility()) .. "\n  set is: "
-                    .. tostring(true))
+                "get does not match set\n get is: "
+                .. tostring(get_hrrlabel_visibility()) .. "\n  set is: "
+                .. tostring(true))
         end)
     end)
     test("hrrlabel visibility after unload", function()
@@ -612,9 +610,9 @@ test("no loaded file tests", function()
         test("get", function() return get_hrrlabel_visibility() end)
         test("equal", function()
             assert(get_hrrlabel_visibility() == true,
-                    "get does not match set\n get is: "
-                    .. tostring(get_hrrlabel_visibility()) .. "\n  set is: "
-                    .. tostring(true))
+                "get does not match set\n get is: "
+                .. tostring(get_hrrlabel_visibility()) .. "\n  set is: "
+                .. tostring(true))
         end)
     end)
     -- remember that this is being used with no data loaded
@@ -639,10 +637,10 @@ test("no loaded file tests", function()
         test("set", function() settime(t_value) end)
         test("get", function() return gettime() end)
         test("equal", function()
-            local ret_time =  math.floor(gettime() + 0.5) -- round to nearest
-                                                          -- whole number
+            local ret_time = math.floor(gettime() + 0.5)  -- round to nearest
+            -- whole number
             assert(ret_time == t_value, "time data should be " .. t_value .. " but is "
-                 .. ret_time)
+                .. ret_time)
         end)
     end)
     test("time data negative", function()
@@ -742,29 +740,28 @@ test("loaded file test", function()
     test("print slice info", function()
         print("printing slice info")
         print(case.slices)
-        for key,value in pairs(case.slices) do print(key,value.label) end
-        for key,value in pairs(case.slices) do print(key,value.file) end
+        for key, value in pairs(case.slices) do print(key, value.label) end
+        for key, value in pairs(case.slices) do print(key, value.file) end
     end)
-
 end)
 display_test_results(tests)
 
-if (tests.failed == 0) then exit() else error("tests failed") end
+if (tests.failed == 0) then instance.exit() else error("tests failed") end
 
 -- this is an example of the format for the camera specification
-oc = {
-    rotationType = 0,
+local oc = {
+    rotationType    = 0,
     -- rotationIndex = 20,
-    viewId = 0,
-    eyePos = {x = 0.194911, y = -0.574832, z = 0.017699},
-    zoom =  1.0,
+    viewId          = 0,
+    eyePos          = { x = 0.194911, y = -0.574832, z = 0.017699 },
+    zoom            = 1.0,
     -- zoomIndex = 2,
-    viewAngle = 0,
-    directionAngle = 0, -- azimuth &camera_ini->azimuth
-    elevationAngle = 0, -- elevation &camera_ini->elevation
-    projectionType = 0,
-    viewDir  = {x = 0.144911, y = 0.500000, z = 0.017699},
-    zAngle = {az = 62.000000, elev = 38.000000},
+    viewAngle       = 0,
+    directionAngle  = 0, -- azimuth &camera_ini->azimuth
+    elevationAngle  = 0, -- elevation &camera_ini->elevation
+    projectionType  = 0,
+    viewDir         = { x = 0.144911, y = 0.500000, z = 0.017699 },
+    zAngle          = { az = 62.000000, elev = 38.000000 },
     transformMatrix = nil,
     -- transformMatrix = {
     --      1.000000 0.000000 0.000000 0.000000
@@ -772,7 +769,7 @@ oc = {
     --      0.000000 0.000000 1.000000 0.000000
     --      0.000000 0.000000 0.000000 1.000000
     -- },
-    clipping = nil
+    clipping        = nil
     -- clipping = {
     --     mode = 0,
     --     x = {min = nil, max = nil},

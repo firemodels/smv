@@ -32,6 +32,7 @@
 
 //#define pp_SMOKE_LIGHT        // turn on smoke lighting
 //#define pp_SMOKE_ADAPT        // turn on volume render smoke adaptive integration
+#define pp_BGEOM                // parse BGEOM smv keywords
 
 //#define pp_TOUR_ADJUST        // adjust tour times
 #define pp_TOUR_DUP             // handle duplicate keyframes

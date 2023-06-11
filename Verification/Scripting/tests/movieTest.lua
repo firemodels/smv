@@ -1,14 +1,12 @@
-print("Running script for " .. fdsprefix .. ".")
---hidewindow()
-print("Date: " .. os.date("%c"))
 package.path=package.path .. ";" .. "../../SMV/Build/gnu_linux_64/?.lua"
-smv = require "smv"
--- ssf = require "ssf"
--- ssfparser = require "ssfparser"
-string = require "string"
+local smv = require("smv")
+local string = require("string")
+local instance, view, case = smv.load_default()
+print("Running script for " .. case.chid .. ".")
+print("Date: " .. os.date("%c"))
 
-function mkMovie()
-    local f = assert(io.popen("uname", r))
+local function mkMovie()
+    local f = assert(io.popen("uname", "r"))
     local sys = assert(f:read('*a'))
     f:close()
     local sep
@@ -91,4 +89,4 @@ function mkMovie()
     io.stderr:write("rendering complete\n")
 end
 mkMovie()
-exit()
+instance.exit()
