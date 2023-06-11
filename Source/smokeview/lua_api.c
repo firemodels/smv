@@ -2303,6 +2303,17 @@ int lua_blockages_hide_all(lua_State *L) {
   return 0;
 }
 
+// outlines
+int lua_outlines_hide(lua_State *L) {
+  outlines_hide();
+  return 0;
+}
+int lua_outlines_show(lua_State *L) {
+  outlines_show();
+  return 0;
+}
+
+
 // surfaces
 int lua_surfaces_hide_all(lua_State *L) {
   surfaces_hide_all();
@@ -5265,6 +5276,10 @@ static luaL_Reg const smvlib[] = {
     // {"get_chid_visibility", lua_get_chid_visibility},
     // {"toggle_chid_visibility", lua_toggle_chid_visibility},
 
+    // outlines
+    {"outlines_show",lua_outlines_show},
+    {"outlines_hide",lua_outlines_hide},
+
     // surfaces
     {"surfaces_hide_all", lua_surfaces_hide_all},
     // devices
@@ -5920,9 +5935,9 @@ int runLuaScript() {
   if (yieldOrOk == LUA_YIELD) {
     int nresults = 0;
 #if LUA_VERSION_NUM < 504
-    yieldOrOkSSF = lua_resume(L, NULL, 0);
+    yieldOrOk = lua_resume(L, NULL, 0);
 #else
-    yieldOrOkSSF = lua_resume(L, NULL, 0, &nresults);
+    yieldOrOk = lua_resume(L, NULL, 0, &nresults);
 #endif
     if (yieldOrOk == LUA_YIELD) {
       printf("  LUA_YIELD\n");

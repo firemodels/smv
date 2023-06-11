@@ -1,15 +1,10 @@
-print("Running script for " .. fdsprefix .. ".")
---hidewindow()
-print("Date: " .. os.date("%c"))
 package.path=package.path .. ";" .. "../../SMV/Build/gnu_linux_64/?.lua"
-smv = require "smv"
--- ssf = require "ssf"
--- ssfparser = require "ssfparser"
-string = require "string"
+local smv = require("smv")
+local instance, view, case = smv.load_default()
+print("Running script for " .. case.chid .. ".")
+print("Date: " .. os.date("%c"))
 
-initsmvdata()
-
-colors = {
+local colors = {
     {r = 0.000000, g = 0.000000, b = 1.000000},
     {r = 0.000000, g = 0.359375, b = 1.000000},
     {r = 0.000000, g = 0.718750, b = 1.000000},
@@ -27,7 +22,7 @@ colors = {
 set_colorbar_colors(12, colors)
 set_colorbar_colors(12, colors)
 view.colorbar.colors = colors
-colorsE = get_colorbar_colors()
+local colorsE = get_colorbar_colors()
 print(colorsE[4].b)
 print(view.colorbar.colors[4].b)
 -- view.colorbar.colors = colors
@@ -38,4 +33,4 @@ colorsE = get_color2bar_colors()
 print(colorsE[4].b)
 print(view.color2bar[4].b)
 -- view.color2bar = colors
-exit()
+instance.exit()

@@ -32,14 +32,14 @@ local function _renderF(...)
     -- TODO: return information about the file produced or something
 end
 
-function renderstart(startframe, skipframe)
+local function renderstart(startframe, skipframe)
     render_startframe = startframe
     render_skipframe = skipframe
 end
 
 -- TODO: we may need to shift this down to the c_api in order to get the best
 -- performance.
-function rendermany(start, final, interval, ...)
+local function rendermany(start, final, interval, ...)
     print("luascript: Rendering every " .. interval ..
         " frame(s) starting at frame " .. start .. " until " .. final .. "\n")
     local nframes = smvlib.get_nglobal_times()
@@ -51,7 +51,7 @@ function rendermany(start, final, interval, ...)
     end
 end
 
-function rendermanytime(start, final, interval, ...)
+local function rendermanytime(start, final, interval, ...)
     print("luascript: Rendering every " .. interval ..
         " seconds starting at time " .. start .. " until " .. final .. "\n")
     -- local nframes = get_nglobal_times()

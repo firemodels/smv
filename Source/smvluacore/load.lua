@@ -5,21 +5,18 @@ require("constants")
 
 -- Load all slices for which matchFunc returns true.
 function load.slice(case, matchFunc)
-    local nslices = 0
     local slice_indices = {}
     for key, value in pairs(case.slices) do
         if (matchFunc(value)) then
             load.datafile(value.file)
-            nslices = nslices + 1
             slice_indices[#slice_indices + 1] = key
         end
     end
-    if (nslices > 0) then
-        print(nslices .. " slice loaded")
-        return 0, slice_indices
+    if (#slice_indices < 1) then
+        print("No matching slices were found.")
     end
-    print("No matching slices were found.")
-    return 1
+    print(#slice_indices .. " slice loaded")
+    return slice_indices
 end
 
 -- Load all vector slices for which matchFunc returns true.
@@ -73,7 +70,7 @@ function load.slice_std(case, slice_type, axis, distance)
     assert(axis == 1 or axis == 2 or axis == 3, "axis must be 1, 2, or 3")
     assert(type(distance) == "number", "distance must be a number")
     -- Load applicable slices.
-    load.slice(case, function(slice)
+    return load.slice(case, function(slice)
         local meshnumber = slice.blocknumber
         local mesh = case.meshes[meshnumber]
         -- Find the cell size at the specified location.
