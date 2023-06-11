@@ -44,6 +44,4 @@ endif()
 
 if (WIN32)
     add_definitions(-D_CRT_SECURE_NO_WARNINGS)
-    # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-self-assign -Wno-misleading-indentation -Wno-sometimes-uninitialized -Wno-unused-variable -Wno-writable-strings -Wno-unused-variable")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 endif ()
