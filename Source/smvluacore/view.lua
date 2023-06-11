@@ -13,6 +13,14 @@ local _view = {
     --         end
     --     end
     -- },
+    render_directory = {
+        get = function()
+            return smvlib.getrenderdir()
+        end,
+        set = function(v)
+            return smvlib.setrenderdir(v)
+        end
+    },
     show_chid = {
         get = function()
             return smvlib.get_chid_visibility()
@@ -37,6 +45,14 @@ local _view = {
             return smvlib.set_smv_version_visibility(v)
         end
     },
+    show_kernel_version = {
+        get = function()
+            return smvlib.get_version_info_visibility()
+        end,
+        set = function(v)
+            return smvlib.set_version_info_visibility(v)
+        end
+    },
     framenumber = {
         get = function()
             return smvlib.getframe()
@@ -44,6 +60,17 @@ local _view = {
         set = function(v)
             return smvlib.setframe(v)
         end
+    },
+    time = {
+        get = function()
+            return smvlib.gettime()
+        end,
+        set = function(v)
+            return smvlib.settime(v)
+        end,
+        -- toggle = function ()
+        --     timebar.visibility = not timebar.visibility
+        -- end
     },
     viewpoint = {
         get = function()
@@ -63,7 +90,9 @@ local _view = {
             print("setting color2bar colors")
             return smvlib.set_color2bar_colors(#colors, colors)
         end
-    }
+    },
+    load = function(case)
+    end
 }
 local view_mt = {
     -- get method
@@ -82,6 +111,11 @@ local view_mt = {
         _view[k].set(v)
     end
 }
+function _view.set_time_end()
+    local nframes = smvlib.get_nglobal_times()
+    smvlib.setframe(nframes - 1)
+end
+
 setmetatable(view, view_mt)
 
 local _colorbar = {
@@ -115,7 +149,8 @@ local _colorbar = {
         end,
         set = function(setting)
             if (type(setting) == "boolean")
-            then smvlib.set_colorbar_visibility(setting)
+            then
+                smvlib.set_colorbar_visibility(setting)
             else
                 error("the argument of set_colorbar_visibility must be a boolean, but it is a " .. type(setting))
             end
@@ -155,6 +190,12 @@ local colorbar_mt = {
 }
 setmetatable(view.colorbar, colorbar_mt)
 
+local _titlebox = {
+    add_line = function(line)
+        return smvlib.add_title_line(line)
+    end
+
+}
 local titlebox_mt = {
     -- get method
     __index = function(t, k)
@@ -170,29 +211,10 @@ local titlebox_mt = {
     end
 }
 
-_titlebox = {
-    add_line = function(line)
-        return smvlib.add_title_line(line)
-    end
-
-}
 setmetatable(view.titlebox, titlebox_mt)
 
-local color_mt = {
-    -- get method
-    __index = function(t, k)
-        if type(_color[k]) == "function" then
-            return _color[k]
-        else
-            return _color[k].get()
-        end
-    end,
-    -- set method
-    __newindex = function(t, k, v)
-        _color[k].set(v)
-    end
-}
-_color = {
+
+local _color = {
     ambientlight = {
         -- get = function ()
         --     return getcolorbarflip()
@@ -266,6 +288,20 @@ _color = {
         end
     }
 }
+local color_mt = {
+    -- get method
+    __index = function(t, k)
+        if type(_color[k]) == "function" then
+            return _color[k]
+        else
+            return _color[k].get()
+        end
+    end,
+    -- set method
+    __newindex = function(t, k, v)
+        _color[k].set(v)
+    end
+}
 setmetatable(view.color, color_mt)
 
 -- View Method
@@ -292,8 +328,10 @@ local locationViewTable = {
 }
 local convertTo = function(table, strValue)
     local v = table[strValue]
-    if v == nil then error("invalid view method: " .. strValue)
-    else return v
+    if v == nil then
+        error("invalid view method: " .. strValue)
+    else
+        return v
     end
 end
 local convertFrom = function(table, intValue)
