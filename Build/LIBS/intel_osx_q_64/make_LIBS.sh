@@ -24,7 +24,7 @@ BUILDDIR=`pwd`
 
 if [[ "$target" == "all" ]] || [[ "$target" == "gd" ]]; then
 # GD
-echo "********** building GD" 
+echo "********** building GD"
 cd $SRCDIR/gd-2.0.15
 ./makelib.sh $OPTS >& $LIBDIR/gd.out
 cp libgd.a $LIBDIR/.
@@ -79,22 +79,4 @@ echo "********** building zlib"
 cd $SRCDIR/zlib128
 ./makelib.sh $OPTS >& $LIBDIR/zlib.out
 cp libz.a $LIBDIR/.
-fi
-
-if [[ "$target" == "all" ]] || [[ "$target" == "lua" ]]; then
-if [ "$LUA" == "lua" ]; then
-# Lua # Lua interpreter
-echo "********** building Lua"
-cd $SRCDIR/lua-5.3.1/src
-export TARGET=liblua.a
-./makelib.sh $OPTS >& $LIBDIR/lua.out
-cp liblua.a $LIBDIR/.
-
-# LPEG # Lua parsing libarary to parse SSF files
-echo "********** building lpeg"
-cd $SRCDIR/lpeg-1.0.0
-export TARGET=macosx
-./makelib.sh $OPTS >& $LIBDIR/lpeg.out
-cp lpeg.so $LIBDIR/.
-fi
 fi

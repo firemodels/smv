@@ -63,22 +63,10 @@ if NOT x%arg3% == xfreeglut goto skip_glui2
 cd %SRCDIR%\pthreads
 start %WAIT% makelib %OPTS% -copy libpthreads.a %LIBDIR%\pthreads.a
 
-if NOT x%arg2% == xlua goto skip_lua
-:: Lua interpreter
-cd %SRCDIR%\lua-5.3.1
-call makelib.bat
-copy src\liblua.a %LIBDIR%\liblua.a
-
-:: LPEG
-cd %SRCDIR%\lpeg-1.0.0
-call makelib.bat
-copy lpeg.a %LIBDIR%\lpeg.a
-:skip_lua
-
 :: FREEGLUT
 if NOT x%arg3% == xfreeglut goto skip_freeglut
 cd %BUILDDIR%\freeglut3.0.0\gnu_win_64
-call make_freeglut %OPTS% 
+call make_freeglut %OPTS%
 copy freeglut_staticd.a %LIBDIR%\freeglut_staticd.a
 :skip_freeglut
 
