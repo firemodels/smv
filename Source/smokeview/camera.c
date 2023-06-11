@@ -315,6 +315,26 @@ void InitCamera(cameradata *ci,char *name){
 
   }
 
+/* ------------------ CopyViewCamera ------------------------ */
+
+void CopyViewCamera(cameradata *to, cameradata *from){
+
+  memcpy(to,from,sizeof(cameradata));
+  if(to==camera_current){
+    zoom=camera_current->zoom;
+    UpdateGluiZoom();
+  }
+  to->dirty=1;
+  
+  Cam2Clip(to);
+  if(to==camera_current&&to->quat_defined==1){
+    quat_general[0]=to->quaternion[0];
+    quat_general[1]=to->quaternion[1];
+    quat_general[2]=to->quaternion[2];
+    quat_general[3]=to->quaternion[3];
+  }
+}
+
 /* ------------------ CopyCamera ------------------------ */
 
 void CopyCamera(cameradata *to, cameradata *from){
@@ -326,7 +346,7 @@ void CopyCamera(cameradata *to, cameradata *from){
   }
   to->dirty=1;
   if(to == camera_current && updateclipvals == 0){
-    if(clip_mode==0)Cam2Clip(camera_current);
+    if(clip_mode==CLIP_OFF)Cam2Clip(camera_current);
   }
   if(to==camera_current&&to->quat_defined==1){
     quat_general[0]=to->quaternion[0];

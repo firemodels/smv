@@ -860,6 +860,7 @@ EXTERNCPP void EnableResetSavedView(void);
 EXTERNCPP void ResetGluiView(int ival);
 EXTERNCPP void InitCamera(cameradata *camera_data,char *name);
 EXTERNCPP void CopyCamera(cameradata *to, cameradata *from);
+EXTERNCPP void CopyViewCamera(cameradata *to, cameradata *from);
 EXTERNCPP void UpdateCamera(cameradata *ca);
 EXTERNCPP void UpdateProjectionType(void);
 EXTERNCPP void UpdateClipAll(void);

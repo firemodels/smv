@@ -2162,7 +2162,7 @@ void Keyboard(unsigned char key, int flag){
       if(clip_commandline==1){
         visGrid = 0;
         Keyboard('g', FROM_SMOKEVIEW);
-        clip_mode = 0;
+        clip_mode = CLIP_OFF;
         Keyboard('W', FROM_SMOKEVIEW);
         visgridloc = 1;
         updatemenu = 1;
@@ -2646,23 +2646,23 @@ void Keyboard(unsigned char key, int flag){
       break;
     case 'W':
       clip_mode++;
-      if(clip_mode>CLIP_MAX)clip_mode=0;
+      if(clip_mode>CLIP_MAX)clip_mode=CLIP_OFF;
       switch(clip_mode){
-        case 0:
+        case CLIP_OFF:
           printf("Clipping disabled\n");
           break;
-        case 1:
+        case CLIP_BLOCKAGES_DATA:
           printf("Clip blockages and data\n");
           break;
-        case 2:
+        case CLIP_BLOCKAGES:
           printf("Clip blockages\n");
           break;
-        case 3:
+        case CLIP_DATA:
           printf("Clip data\n");
           break;
-	default:
-	  ASSERT(FFALSE);
-	  break;
+	    default:
+	      ASSERT(FFALSE);
+	      break;
       }
       UpdateClipAll();
       break;

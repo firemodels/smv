@@ -1424,7 +1424,7 @@ int MakeIBlank(void){
 void InitClip(void){
   clipdata *ci;
 
-  clip_mode_last=-1;
+  clip_mode_last=CLIP_UNDEFINED;
 
   ci = &clipinfo;
   ci->clip_xmin=0;
