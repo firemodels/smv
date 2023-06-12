@@ -429,12 +429,12 @@ LOAD3DSMOKE
  SOOT DENSITY
 LOAD3DSMOKE
  HRRPUV
-LOADINIFILE
- thouse5_clip_blockages.ini
 SETTIMEVAL
  30.000000
 SETVIEWPOINT
  external
+LOADINIFILE
+ thouse5_clip_blockages.ini
 RENDERONCE
  thouse5_smoke_clip_blockages
 
@@ -448,12 +448,12 @@ LOAD3DSMOKE
  SOOT DENSITY
 LOAD3DSMOKE
  HRRPUV
-LOADINIFILE
- thouse5_clip_blockages_data.ini
 SETTIMEVAL
  30.000000
 SETVIEWPOINT
  external
+LOADINIFILE
+ thouse5_clip_blockages_data.ini
 RENDERONCE
  thouse5_smoke_clip_blockages_data
 
