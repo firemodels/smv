@@ -433,8 +433,10 @@ SETTIMEVAL
  30.000000
 SETVIEWPOINT
  external
-LOADINIFILE
- thouse5_clip_blockages.ini
+SETCLIPMODE
+ 2
+SETCLIPX
+ 0 -0.0064 1 4.3438
 RENDERONCE
  thouse5_smoke_clip_blockages
 
@@ -452,10 +454,14 @@ SETTIMEVAL
  30.000000
 SETVIEWPOINT
  external
-LOADINIFILE
- thouse5_clip_blockages_data.ini
+SETCLIPMODE
+ 1
+SETCLIPX
+ 0 -0.0064 1 4.3438
 RENDERONCE
  thouse5_smoke_clip_blockages_data
+SETCLIPMODE
+ 0
 
 // render geometry with ticks
 
