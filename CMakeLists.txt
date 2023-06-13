@@ -330,7 +330,7 @@ if (LUA)
     endif()
 endif()
 
-if (WIN32)
+if (MSVC)
     # The headers in Source/glut_gl redefine some macros. Ideally those headers
     # could be removed but for now we just ignore the warning.
     target_compile_options(smokeview PRIVATE /wd4005)

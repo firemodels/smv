@@ -21,8 +21,10 @@ endif()
 
 if (WIN32)
     add_definitions(-D_CRT_SECURE_NO_WARNINGS -DWIN32)
+endif()
+if (MSVC)
     target_compile_options(gd_static PRIVATE /wd4133)
-endif ()
+endif()
 
 if (JPEG_FOUND)
     target_link_libraries(gd_static PRIVATE JPEG::JPEG)
