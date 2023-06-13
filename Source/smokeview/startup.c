@@ -1989,8 +1989,6 @@ void InitVars(void){
   mscale[0]=1.0;
   mscale[1]=1.0;
   mscale[2]=1.0;
-  nearclip=0.001,farclip=3.0;
-  updateclipvals=0;
   updateUpdateFrameRateMenu=0;
   nskyboxinfo=0;
 

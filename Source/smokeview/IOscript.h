@@ -86,6 +86,10 @@
 #define SCRIPT_PROJECTION        312
 #define SCRIPT_SETSLICEBOUNDS    314
 #define SCRIPT_SETBOUNDBOUNDS    315
+#define SCRIPT_SETCLIPX          316
+#define SCRIPT_SETCLIPY          317
+#define SCRIPT_SETCLIPZ          318
+#define SCRIPT_SETCLIPMODE       319
 
 #define SCRIPT_SLICE_FILE          0
 #define SCRIPT_BOUNDARY_FILE       1

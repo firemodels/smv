@@ -437,6 +437,7 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 #define TYPE_INI 1
 #endif
 
+#define CLIP_UNDEFINED      -1
 #define CLIP_OFF            0
 #define CLIP_BLOCKAGES_DATA 1
 #define CLIP_BLOCKAGES      2

@@ -6088,7 +6088,6 @@ int GetViewpoints(char *inifile, char ***viewpointlist_ptr){
     CheckMemory;
     if(fgets(buffer, 255, stream)==NULL)break;
     if(Match(buffer, "VIEWPOINT5")==1||Match(buffer, "VIEWPOINT6")==1){
-
       nviewpoints++;
     }
   }
@@ -6135,7 +6134,6 @@ int GetAllViewPoints(char *casenameini, char ***all_viewpoints_ptr){
   int i;
 #define NDEFAULT_VIEWS 1
   char *default_views[NDEFAULT_VIEWS] = {"external"};
-//  char *default_views[NDEFAULT_VIEWS] = {"external", "VIEWXMIN", "VIEWXMAX", "VIEWYMIN", "VIEWYMAX", "VIEWZMIN", "VIEWZMAX"};
 
   n1 = GetViewpoints(casenameini, &vp1);
   nall_viewpoints = 7+n1;
