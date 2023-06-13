@@ -822,7 +822,6 @@ int get_csvindex(const char *key) {
   return -1;
 }
 
-void ReadCSV(csvfiledata *csvfi, int flag);
 void load_csv(csvfiledata *csventry) {
   ReadCSVFile(csventry, LOAD);
   csventry->loaded = 1;
@@ -975,10 +974,6 @@ int lua_get_plot3dentry(lua_State *L) {
   lua_pushnumber(L, plot3dinfo[index].blocknumber);
   lua_setfield(L, -2, "blocknumber");
 
-  // The "loaded" value is accessed directly as it changes.
-  // lua_pushboolean(L, plot3dinfo[index].loaded);
-  // lua_setfield(L, -2, "loaded");
-
   lua_pushnumber(L, plot3dinfo[index].display);
   lua_setfield(L, -2, "display");
 
@@ -1007,25 +1002,6 @@ int lua_get_plot3dentry(lua_State *L) {
   // then set the metatable
   lua_setmetatable(L, -2);
 
-  // fprintf(stderr, "csventry->loaded: %d\n", csventry->loaded);
-  // lua_pushboolean(L, csventry->loaded);
-  // lua_setfield(L, -2, "loaded");
-
-  // fprintf(stderr, "csventry->display: %d\n", csventry->display);
-  // lua_pushboolean(L, csventry->display);
-  // lua_setfield(L, -2, "display");
-
-  // if(csventry->loaded) {
-  //   lua_createtable(L, 0, csventry->nvectors);
-  //   for (size_t j = 0; j < csventry->nvectors; j++) {
-  //     // Load vector data into lua.
-  //     // TODO: change to access indirectly rater than copying via stack
-  //     printf("adding: %s\n", csventry->vectors[j].y->name);
-  //     lua_create_vector(L, &(csventry->vectors[j]));
-  //     lua_setfield(L, -2, csventry->vectors[j].y->name);
-  //   }
-  //   lua_setfield(L, -2, "vectors");
-  // }
   return 1;
 }
 
@@ -1045,7 +1021,6 @@ int lua_get_qdata_sum(lua_State *L) {
   int meshnumber = lua_tonumber(L, 1);
   int vari, i, j, k;
   meshdata mesh = meshinfo[meshnumber];
-  // fprintf(stderr, "mesh label: %s\n", mesh.label);
   int ntotal = (mesh.ibar + 1) * (mesh.jbar + 1) * (mesh.kbar + 1);
   int vars = 5;
   float totals[5];
@@ -1068,7 +1043,6 @@ int lua_get_qdata_sum(lua_State *L) {
   }
   for (vari = 0; vari < vars; ++vari) {
     lua_pushnumber(L, totals[vari]);
-    // fprintf(stderr, "vartotal[%d] value: %.2f\n", vari,totals[vari]);
   }
   lua_pushnumber(L, ntotal);
   return vars + 1;
@@ -1086,7 +1060,6 @@ int lua_get_qdata_sum_bounded(lua_State *L) {
   k1 = lua_tonumber(L, 6);
   k2 = lua_tonumber(L, 7);
   meshdata mesh = meshinfo[meshnumber];
-  // fprintf(stderr, "mesh label: %s\n", mesh.label);
   int ntotal = (mesh.ibar + 1) * (mesh.jbar + 1) * (mesh.kbar + 1);
   int bounded_total = (i2 - i1 + 1) * (j2 - j1 + 1) * (k2 - k1 + 1);
   int vars = 5;
@@ -1111,7 +1084,6 @@ int lua_get_qdata_sum_bounded(lua_State *L) {
 
   for (vari = 0; vari < vars; ++vari) {
     lua_pushnumber(L, totals[vari]);
-    // fprintf(stderr, "vartotal[%d] value: %.2f\n", vari,totals[vari]);
   }
   lua_pushnumber(L, bounded_total);
   return vars + 1;
@@ -1129,7 +1101,6 @@ int lua_get_qdata_max_bounded(lua_State *L) {
   k1 = lua_tonumber(L, 6);
   k2 = lua_tonumber(L, 7);
   meshdata mesh = meshinfo[meshnumber];
-  // fprintf(stderr, "mesh label: %s\n", mesh.label);
   int ntotal = (mesh.ibar + 1) * (mesh.jbar + 1) * (mesh.kbar + 1);
   int bounded_total = (i2 - i1 + 1) * (j2 - j1 + 1) * (k2 - k1 + 1);
   int vars = 5;
@@ -4381,52 +4352,6 @@ int lua_set_firedepth(lua_State *L) {
   return 1;
 }
 
-// int set_gcolorbar(int ncolorbarini, ) {
-//   colorbardata *cbi;
-//   int r1, g1, b1;
-//   int n;
-
-//   initdefaultcolorbars();
-
-//   ncolorbars = ndefaultcolorbars + ncolorbarini;
-//   if(ncolorbarini>0)ResizeMemory((void **)&colorbarinfo,
-//   ncolorbars*sizeof(colorbardata));
-
-//   for(n = ndefaultcolorbars; n<ncolorbars; n++){
-//     char *cb_buffptr;
-
-//     cbi = colorbarinfo + n;
-//     fgets(buffer, 255, stream);
-//     trim_back(buffer);
-//     cb_buffptr = trim_front(buffer);
-//     strcpy(cbi->label, cb_buffptr);
-
-//     fgets(buffer, 255, stream);
-//     sscanf(buffer, "%i %i", &cbi->nnodes, &cbi->nodehilight);
-//     if(cbi->nnodes<0)cbi->nnodes = 0;
-//     if(cbi->nodehilight<0 || cbi->nodehilight >= cbi->nnodes){
-//       cbi->nodehilight = 0;
-//     }
-
-//     cbi->label_ptr = cbi->label;
-//     for(i = 0; i<cbi->nnodes; i++){
-//       int icbar;
-//       int nn;
-
-//       fgets(buffer, 255, stream);
-//       r1 = -1; g1 = -1; b1 = -1;
-//       sscanf(buffer, "%i %i %i %i", &icbar, &r1, &g1, &b1);
-//       cbi->index_node[i] = icbar;
-//       nn = 3 * i;
-//       cbi->rgb_node[nn] = r1;
-//       cbi->rgb_node[nn + 1] = g1;
-//       cbi->rgb_node[nn + 2] = b1;
-//     }
-//     remapcolorbar(cbi);
-//   }
-//   return 0;
-// } // GCOLORBAR
-
 int lua_set_showextremedata(lua_State *L) {
   int show_extremedata = lua_tonumber(L, 1);
   int below = lua_tonumber(L, 2);
@@ -4474,13 +4399,6 @@ int lua_set_smokerthick(lua_State *L) {
   return 1;
 }
 #endif
-
-// int lua_set_smokethick(lua_State *L) {
-//   int v = lua_tonumber(L, 1);
-//   int return_code = set_smokethick(v);
-//   lua_pushnumber(L, return_code);
-//   return 1;
-// }
 
 #ifdef pp_GPU
 int lua_set_usegpu(lua_State *L) {
@@ -4797,53 +4715,6 @@ int lua_set_compressauto(lua_State *L) {
   return 1;
 }
 
-// int set_part5propdisp(int vals[]) {
-//   char *token;
-
-//   for(i = 0; i<npart5prop; i++){
-//     partpropdata *propi;
-//     int j;
-
-//     propi = part5propinfo + i;
-//     fgets(buffer, 255, stream);
-
-//     trim_back(buffer);
-//     token = strtok(buffer, " ");
-//     j = 0;
-//     while(token != NULL&&j<npartclassinfo){
-//       int visval;
-
-//       sscanf(token, "%i", &visval);
-//       propi->class_vis[j] = visval;
-//       token = strtok(NULL, " ");
-//       j++;
-//     }
-//   }
-//   CheckMemory;
-//   continue;
-// } // PART5PROPDISP
-
-// int set_part5color(int n, int vals[]) {
-//   int i;
-//   for(i = 0; i<npart5prop; i++){
-//     partpropdata *propi;
-
-//     propi = part5propinfo + i;
-//     propi->display = 0;
-//   }
-//   part5colorindex = 0;
-//   i = n;
-//   if(i >= 0 && i<npart5prop){
-//     partpropdata *propi;
-
-//     part5colorindex = i;
-//     propi = part5propinfo + i;
-//     propi->display = 1;
-//   }
-//   continue;
-//   return 0;
-// } // PART5COLOR
-
 int lua_set_propindex(lua_State *L) {
   lua_pushnil(L);
   int n = 0;
@@ -4872,38 +4743,6 @@ int lua_set_propindex(lua_State *L) {
   lua_pushnumber(L, return_code);
   return 1;
 }
-
-// int set_shooter(float xyz[], float dxyz[], float uvw[],
-//                 float velmag, float veldir, float pointsize,
-//                 int fps, int vel_type, int nparts, int vis, int cont_update,
-//                 float duration, float v_inf) {
-//   shooter_xyz[0] = xyz[0];
-//   shooter_xyz[1] = xyz[1];
-//   shooter_xyz[2] = xyz[2];
-
-//   shooter_dxyz[0] = dxyz[0];
-//   shooter_dxyz[1] = dxyz[1];
-//   shooter_dxyz[2] = dxyz[2];
-
-//   shooter_uvw[0] = uvw[0];
-//   shooter_uvw[1] = uvw[1];
-//   shooter_uvw[2] = uvw[2];
-
-//   shooter_velmag = velmag;
-//   shooter_veldir = veldir;
-//   shooterpointsize = pointsize;
-
-//   shooter_fps = fps;
-//   shooter_vel_type = vel_type;
-//   shooter_nparts = nparts;
-//   visShooter = vis;
-//   shooter_cont_update = cont_update;
-
-//   shooter_duration = duration;
-//   shooter_v_inf = v_inf;
-
-//   return 0;
-// } // SHOOTER
 
 int lua_set_showdevices(lua_State *L) {
   lua_pushnil(L);
@@ -4953,36 +4792,6 @@ int lua_set_tourindex(lua_State *L) {
   lua_pushnumber(L, return_code);
   return 1;
 } // TOURINDEX
-
-// int set_userticks(int vis, int auto_place, int sub, float origin[],
-//                   float min[], float max[], float step[],
-//                   int show_x, int show_y, int show_z) {
-//   visUSERticks = vis;
-//   auto_user_tick_placement = auto_place;
-//   user_tick_sub = sub;
-
-//   user_tick_origin[0] = origin[0];
-//   user_tick_origin[1] = origin[1];
-//   user_tick_origin[2] = origin[2];
-
-//   user_tick_min[0] = min[0];
-//   user_tick_min[1] = min[1];
-//   user_tick_min[2] = min[2];
-
-//   user_tick_max[0] = max[0];
-//   user_tick_max[1] = max[1];
-//   user_tick_max[2] = max[2];
-
-//   user_tick_step[0] = step[0];
-//   user_tick_step[1] = step[1];
-//   user_tick_step[2] = step[2];
-
-//   user_tick_show_x = show_x;
-//   user_tick_show_y = show_y;
-//   user_tick_show_z = show_z;
-
-//   return 0;
-// } // USERTICKS
 
 int lua_set_c_particles(lua_State *L) {
   int minFlag = lua_tonumber(L, 1);
@@ -5682,10 +5491,6 @@ static luaL_Reg const smvlib[] = {
     // nglobal_times is the number of frames
     //  this cannot be set as a global at init as it will change
     //  on the loading of smokeview cases
-    //  TODO: possibly change this to initialise the value when a new
-    //  smokeview case is loaded, in which case we will have a lua_case_init
-    //  function, to initialise these types of variables
-    // {"initsmvdata", lua_initsmvdata},
     {NULL, NULL}};
 
 int smvlib_newindex(lua_State *L) {
@@ -5735,49 +5540,13 @@ lua_State *initLua() {
 
   lua_pushstring(L, script_dir_path);
   lua_setglobal(L, "current_script_dir");
-  // lua_pushstring(L, renderfile_dir);
-  // lua_setglobal(L, "current_render_dir");
 
   // a boolean value that determines if lua is running in smokeview
   lua_pushboolean(L, 1);
   lua_setglobal(L, "smokeviewEmbedded");
 
-  // luaL_requiref (L, "smv", luaopen_smv, 1)
-  int smv_loaded_err = luaL_dostring(L, "require(\"smv\")");
-  if (smv_loaded_err != LUA_OK) {
-    fprintf(stderr, "Failed to load smv (lua)\n");
-    lua_pop(L, 1);
-  }
-  // luaL_loadfile(L, "smv.lua");
-  // int luaL_1dofile (lua_State *L, const char *filename);
   return L;
 }
-
-// int luaopen_smv(lua_State *L){
-//  static const luaL_Reg Obj_lib[] = {
-//    { "method", &Obj_method },
-//    { NULL, NULL }
-//  };
-//
-//  static const luaL_Reg MyLib_lib[] = {
-//    { "MakeObj", &MyLib_MakeObj },
-//    { NULL, NULL }
-//  };
-//
-//  luaL_newlib(L, MyLib_lib);
-//
-//  // Stack: MyLib
-//  luaL_newmetatable(L, Obj_typename); // Stack: MyLib meta
-//  luaL_newlib(L, Obj_lib);
-//  lua_setfield(L, -2, "__index"); // Stack: MyLib meta
-//
-//  lua_pushstring(L, "__gc");
-//  lua_pushcfunction(L, Obj__gc); // Stack: MyLib meta "__gc" fptr
-//  lua_settable(L, -3); // Stack: MyLib meta
-//  lua_pop(L, 1); // Stack: MyLib
-//
-//  return 1;
-// }
 
 int runScriptString(char *string) { return luaL_dostring(L, string); }
 
