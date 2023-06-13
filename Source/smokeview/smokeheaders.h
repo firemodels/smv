@@ -131,6 +131,7 @@ EXTERNCPP FILE_SIZE LoadVSliceMenu2(int val);
 
 EXTERNCPP void UpdateDeviceShow(void);
 EXTERNCPP void UpdateClipbounds(int set_i0, int *i0, int set_i1, int *i1, int maxi);
+EXTERNCPP void ClipCB(int var);
 EXTERNCPP int CompareFloat(const void *arg1, const void *arg2);
 EXTERNCPP void ResetItimes0(void);
 EXTERNCPP void UpdateShow(void);
@@ -860,6 +861,7 @@ EXTERNCPP void EnableResetSavedView(void);
 EXTERNCPP void ResetGluiView(int ival);
 EXTERNCPP void InitCamera(cameradata *camera_data,char *name);
 EXTERNCPP void CopyCamera(cameradata *to, cameradata *from);
+EXTERNCPP void CopyViewCamera(cameradata *to, cameradata *from);
 EXTERNCPP void UpdateCamera(cameradata *ca);
 EXTERNCPP void UpdateProjectionType(void);
 EXTERNCPP void UpdateClipAll(void);

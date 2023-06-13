@@ -325,6 +325,10 @@ int GetScriptKeywordIndex(char *keyword){
   if(MatchSSF(keyword,"SETBOUNDBOUNDS")==MATCH)return SCRIPT_SETBOUNDBOUNDS;
   if(MatchSSF(keyword,"SETTOURVIEW") == MATCH)return SCRIPT_SETTOURVIEW;
   if(MatchSSF(keyword,"SETVIEWPOINT") == MATCH)return SCRIPT_SETVIEWPOINT;             // documented
+  if(MatchSSF(keyword,"SETCLIPX") == MATCH)return SCRIPT_SETCLIPX;
+  if(MatchSSF(keyword,"SETCLIPY") == MATCH)return SCRIPT_SETCLIPY;
+  if(MatchSSF(keyword,"SETCLIPZ") == MATCH)return SCRIPT_SETCLIPZ;
+  if(MatchSSF(keyword,"SETCLIPMODE") == MATCH)return SCRIPT_SETCLIPMODE;
   if(MatchSSF(keyword,"SHOWHVACDUCTVAL") == MATCH)return SCRIPT_SHOWHVACDUCTVAL;
   if(MatchSSF(keyword,"SHOWHVACNODEVAL") == MATCH)return SCRIPT_SHOWHVACNODEVAL;
   if(MatchSSF(keyword,"HIDEHVACVALS") == MATCH)return SCRIPT_HIDEHVACVALS;
@@ -866,6 +870,22 @@ NewMemory((void **)&scriptinfo, nscriptinfo*sizeof(scriptdata));
 // UNLOADTOUR
       case SCRIPT_UNLOADTOUR:
         scripti->cval=NULL;
+        break;
+
+// SETCLIPX
+// SETCLIPY
+// SETCLIPZ
+      case SCRIPT_SETCLIPX:
+      case SCRIPT_SETCLIPY:
+      case SCRIPT_SETCLIPZ:
+        SETbuffer;
+        sscanf(buffer, "%i %f %i %f", &scripti->ival, &scripti->fval, &scripti->ival2, &scripti->fval2);
+        break;
+
+// SETCLIPMODE
+      case SCRIPT_SETCLIPMODE:
+        SETbuffer;
+        sscanf(buffer, "%i", &scripti->ival);
         break;
 
 // SETVIEWPOINT
@@ -3220,6 +3240,50 @@ void ScriptRGBtest(scriptdata *scripti){
   update_use_lighting = 1;
 }
 
+/* ------------------ ScriptSetClipx ------------------------ */
+#define CLIP_xlower 0
+#define CLIP_ylower 1
+#define CLIP_zlower 2
+#define CLIP_xupper 3
+#define CLIP_yupper 4
+#define CLIP_zupper 5
+
+void ScriptSetClipx(scriptdata *scripti){
+  clipinfo.clip_xmin = scripti->ival;
+  clipinfo.clip_xmax = scripti->ival2;
+  clipinfo.xmin      = scripti->fval;
+  clipinfo.xmax      = scripti->fval2;
+  ClipCB(CLIP_xlower);  
+  ClipCB(CLIP_xupper);
+}
+
+/* ------------------ ScriptSetClipy ------------------------ */
+
+void ScriptSetClipy(scriptdata *scripti){
+  clipinfo.clip_ymin = scripti->ival;
+  clipinfo.clip_ymax = scripti->ival2;
+  clipinfo.ymin      = scripti->fval;
+  clipinfo.ymax      = scripti->fval2;
+  ClipCB(CLIP_ylower);  
+  ClipCB(CLIP_yupper);
+}
+
+/* ------------------ ScriptSetClipz ------------------------ */
+
+void ScriptSetClipz(scriptdata *scripti){
+  clipinfo.clip_zmin = scripti->ival;
+  clipinfo.clip_zmax = scripti->ival2;
+  clipinfo.zmin      = scripti->fval;
+  clipinfo.zmax      = scripti->fval2;
+  ClipCB(CLIP_zlower);  
+  ClipCB(CLIP_zupper);
+}
+
+/* ------------------ ScriptSetClipMode ------------------------ */
+
+void ScriptSetClipMode(scriptdata *scripti){
+  clip_mode = scripti->ival;
+}
 /* ------------------ ScriptSetViewpoint ------------------------ */
 
 void ScriptSetViewpoint(scriptdata *scripti){
@@ -3708,6 +3772,18 @@ int RunScriptCommand(scriptdata *script_command){
       break;
     case SCRIPT_SETTOURKEYFRAME:
       ScriptSetTourKeyFrame(scripti);
+      break;
+    case SCRIPT_SETCLIPX:
+      ScriptSetClipx(scripti);
+      break;
+    case SCRIPT_SETCLIPY:
+      ScriptSetClipy(scripti);
+      break;
+    case SCRIPT_SETCLIPZ:
+      ScriptSetClipz(scripti);
+      break;
+    case SCRIPT_SETCLIPMODE:
+      ScriptSetClipMode(scripti);
       break;
     case SCRIPT_SETVIEWPOINT:
       ScriptSetViewpoint(scripti);

@@ -150,7 +150,6 @@ int InDomain(float *v1, float *v2, float *v3){
 /* ------------------ DrawTerrainGeom ------------------------ */
 
 void DrawTerrainGeom(int option){
-// xyz, norm, color
   int i;
   float terrain_shininess = 100.0;
   float terrain_specular[4] = {0.8, 0.8, 0.8, 1.0};
@@ -158,7 +157,7 @@ void DrawTerrainGeom(int option){
   int draw_surface = 1, draw_texture=0;
   int showgeom_inside_domain_local;
 
-  if(terrain_nindices<=0)return;
+  if(terrain_nindices<=0||use_cfaces==1)return;
   if(show_geom_boundingbox==SHOW_BOUNDING_BOX_ALWAYS||geom_bounding_box_mousedown==1){
     DrawGeomBoundingBox(foregroundcolor);
     return;

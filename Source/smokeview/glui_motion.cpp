@@ -972,7 +972,7 @@ extern "C" void ViewpointCB(int var){
     }
 
     rotation_type_save = ca->rotation_type;
-    CopyCamera(camera_current, ca);
+    CopyViewCamera(camera_current, ca);
     if(rotation_type == ROTATION_3AXIS)Camera2Quat(camera_current, quat_general, quat_rotation);
     if(strcmp(ca->name, "external") == 0)updatezoommenu = 1;
     camera_current->rotation_type = rotation_type_save;
