@@ -11516,7 +11516,7 @@ updatemenu=0;
     char version_label[256];
 #endif
     char menulabel[1024];
-    char compiler_version_label[256];
+    char compiler_version_label[1024];
 
     sprintf(menulabel,"  Smokeview build: %s",smv_githash);
     glutAddMenuEntry(menulabel,1);
