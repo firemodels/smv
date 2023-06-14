@@ -7,9 +7,11 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "options.h"
 #include "MALLOCC.h"
 #include "command_args.h"
-#include "options.h"
+
+/* ------------------ CLE_Message ------------------------ */
 
 const char *CLE_Message(enum CommandLineError cle) {
   switch (cle) {
@@ -27,6 +29,8 @@ const char *CLE_Message(enum CommandLineError cle) {
     break;
   }
 }
+
+/* ------------------ ParseCommandlineNew ------------------------ */
 
 CommandlineArgs ParseCommandlineNew(int argc, char **argv,
                                     enum CommandLineError *error) {
@@ -310,6 +314,9 @@ CommandlineArgs ParseCommandlineNew(int argc, char **argv,
 /// @brief Free any allocated buffers in @ref CommandlineArgs. Performs
 /// null-checks on all buffers.
 /// @param args The previously parse command line arguments.
+
+/* ------------------ FreeCommandlineArgs ------------------------ */
+
 void FreeCommandlineArgs(CommandlineArgs *args) {
   FREEMEMORY(args->prog);
   FREEMEMORY(args->input_file);
