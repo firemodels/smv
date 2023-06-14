@@ -9,6 +9,7 @@
 
 #include "string_util.h"
 #include "smokeviewvars.h"
+#include "command_args.h"
 
 #ifdef WIN32
 #include <direct.h>
@@ -76,79 +77,64 @@ void Usage(char *prog,int option){
   }
 }
 
-/* ------------------ ParseCommandline ------------------------ */
+char *ProcessCommandLine(CommandlineArgs *args);
 
-char *ParseCommandline(int argc, char **argv){
-  int i, len_casename;
+char *ParseCommandline(int argc, char **argv) {
+  enum CommandLineError error;
+  CommandlineArgs args = ParseCommandlineNew(argc, argv, &error);
+  if (error != CLE_OK) {
+    const char *msg = CLE_Message(error);
+    if (msg != NULL) {
+      fprintf(stderr, "%s\n", msg);
+    }
+    SMV_EXIT(0);
+  }
+  return ProcessCommandLine(&args);
+}
+
+/// @brief Once the commandline arguments ahve been parsed, they can be passed
+/// to this function to update global settings and undertake various actions.
+/// @param args The args which were previously parsed. All commandline arguments
+/// are parsed into @ref CommandlineArgs.
+/// @return The iput file name (the SMV file).
+char *ProcessCommandLine(CommandlineArgs *args) {
+  int len_casename;
   int iarg;
   size_t len_memory;
   char *argi, *smv_ext;
-  char SMVFILENAME[1024];
-  int smv_parse;
+  char SMVFILENAME[MAX_SMV_FILENAME_BUFFER];
   char *filename_local = NULL;
 
   CheckMemory;
 
-  for(iarg = 1; iarg < argc; iarg++){
-    if(strncmp(argv[iarg], "-ini", 4)==0){
-      InitCameraList();
-      InitOpenGL(NO_PRINT);
-      UpdateRGBColors(COLORBAR_INDEX_NONE);
-      InitStartupDirs();
-      WriteIni(GLOBAL_INI, NULL);
-      SMV_EXIT(0);
-    }
-    if(strncmp(argv[iarg], "-ng_ini", 7)==0){
-      InitCameraList();
-      use_graphics = 0;
-      UpdateRGBColors(COLORBAR_INDEX_NONE);
-      InitStartupDirs();
-      WriteIni(GLOBAL_INI, NULL);
-      SMV_EXIT(0);
-    }
-    if(
-      strncmp(argv[iarg], "-volrender", 10)!=0&&(strncmp(argv[iarg], "-version", 8)==0||strncmp(argv[iarg], "-v", 2)==0)
-      ){
-      DisplayVersionInfo("Smokeview ");
-      SMV_EXIT(0);
-    }
+  if (args->ini) {
+    InitCameraList();
+    InitOpenGL(NO_PRINT);
+    UpdateRGBColors(COLORBAR_INDEX_NONE);
+    InitStartupDirs();
+    WriteIni(GLOBAL_INI, NULL);
+    SMV_EXIT(0);
+  }
+  if (args->ng_ini) {
+    InitCameraList();
+    use_graphics = 0;
+    UpdateRGBColors(COLORBAR_INDEX_NONE);
+    InitStartupDirs();
+    WriteIni(GLOBAL_INI, NULL);
+    SMV_EXIT(0);
+  }
+  if (args->print_version) {
+    DisplayVersionInfo("Smokeview ");
+    SMV_EXIT(0);
   }
   strcpy(SMVFILENAME, "");
-  smv_parse = 0;
-  for(iarg = 1; iarg < argc; iarg++){
-    argi = argv[iarg];
-    if(strncmp(argi, "-", 1) == 0){
-      if(
-        strncmp(argi, "-points", 7) == 0      ||
-        strncmp(argi, "-frames", 7) == 0      ||
-        strncmp(argi, "-lang", 5) == 0        ||
-        strncmp(argi, "-script", 7) == 0      ||
-        strncmp(argi, "-htmlscript", 11)==0   ||
-#ifdef pp_LUA
-        strncmp(argi, "-luascript", 10) == 0  ||
-#endif
-        strncmp(argi, "-startframe", 11) == 0 ||
-        strncmp(argi, "-skipframe", 10) == 0  ||
-        strncmp(argi, "-bindir", 7) == 0      ||
-        strncmp(argi, "-casedir", 8)==0       ||
-        strncmp(argi, "-threads", 8)==0       ||
-        strncmp(argi, "-update_ini", 11) == 0
-        ){
-        iarg++;
-      }
-      if(strncmp(argi, "-convert_ini", 12) == 0 ||
-         strncmp(argi, "-convert_ssf", 12) == 0){
-        iarg += 2;
-      }
-
-      if(smv_parse == 0)continue;
-      if(smv_parse == 1)break;
+  if (args->input_file != NULL) {
+    if (strlen(args->input_file) > MAX_SMV_FILENAME_BUFFER-1) {
+      fprintf(stderr, "*** Error: input filename exceeds maximum length of %d\n", MAX_SMV_FILENAME_BUFFER-1);
+      SMV_EXIT(1);
     }
-    if(smv_parse == 1)strcat(SMVFILENAME, " ");
-    smv_parse = 1;
-    strcat(SMVFILENAME, argi);
+    strcat(SMVFILENAME, args->input_file);
   }
-
 // strip .smv extension if present
   char *smvext;
   smvext = strstr(SMVFILENAME, ".smv");
@@ -376,182 +362,150 @@ char *ParseCommandline(int argc, char **argv){
     STRCAT(test_filename, ".svd");
   }
 
-  for(i = 1; i < argc; i++){
-    if(strncmp(argv[i], "-", 1) != 0)continue;
 #ifdef pp_OSX_HIGHRES
-    if(strncmp(argv[1], "-1x", 3) == 0){
+    if(args->x1){
       double_scale = 0;
       force_scale  = 1;
     }
-    else if(strncmp(argv[1], "-2x", 3)==0){
+    else if(args->x2){
       double_scale = 1;
       force_scale = 1;
     }
 #endif
-    else if(strncmp(argv[i], "-update_bounds", 14) == 0){
+    if(args->update_bounds){
       use_graphics = 0;
       update_bounds = 1;
     }
-    else if(strncmp(argv[i], "-no_graphics", 12)==0){
+    if(args->no_graphics){
       use_graphics = 0;
     }
-    else if(strncmp(argv[i], "-update_slice", 13)==0){
+    if(args->update_slice){
       use_graphics = 0;
       update_slice = 1;
     }
-    else if(strncmp(argv[i], "-update", 7)==0&&strncmp(argv[i], "-update_ini", 11)!=0){
-      if(strncmp(argv[i], "-update_slice", 13)!=0&&strncmp(argv[i], "-update_bounds", 14)!=0){
+    if(args->update){
         use_graphics = 0;
         update_slice = 1;
         update_bounds = 1;
-      }
     }
-    else if(strncmp(argv[i], "-nogpu", 6) == 0){
+    if(args->nogpu){
       disable_gpu = 1;
     }
-    else if(strncmp(argv[i], "-demo", 5) == 0){
+    if(args->demo){
       demo_option = 1;
     }
-    else if(strncmp(argv[i], "-info", 5)==0){
+    if(args->info){
       generate_info_from_commandline = 1;
       use_graphics = 0;
     }
-    else if(strncmp(argv[1], "-sizes", 6)==0){
+    if(args->sizes){
       update_filesizes = 1;
       use_graphics = 0;
     }
-    else if(strncmp(argv[i], "-stereo", 7) == 0){
+    if(args->stereo){
       stereoactive = 1;
       stereotype = STEREO_TIME;
       PRINTF("stereo option activated\n");
     }
-    else if(strncmp(argv[i], "-big", 4)==0){
+    if(args->big){
       show_geom_boundingbox = SHOW_BOUNDING_BOX_MOUSE_DOWN;
     }
-    else if(strncmp(argv[i], "-timings", 8)==0){
+    if(args->timings){
       show_timings = 1;
     }
-    else if(strncmp(argv[i], "-lang", 5) == 0){
-      ++i;
-      if(i < argc){
-        int langlen;
-        char *lang;
-
+    if(args->lang != NULL){
         FREEMEMORY(tr_name);
-        lang = argv[i];
-        langlen = strlen(lang);
-        NewMemory((void **)&tr_name, langlen + 48 + 1);
-        strcpy(tr_name, lang);
-      }
+        NewMemory((void **)&tr_name, strlen(args->lang)+1);
+        strcpy(tr_name, args->lang);
     }
-    else if(strncmp(argv[i], "-convert_ini", 12) == 0){
-      char *local_ini_from = NULL, *local_ini_to = NULL;
+    if(args->convert_ini){
+      if(args->ini_from != NULL&&args->ini_to != NULL){
+        NewMemory((void **)&ini_from, strlen(args->ini_from) + 1);
+        strcpy(ini_from, args->ini_from);
 
-      if(++i < argc)local_ini_from = argv[i];
-      if(++i < argc)local_ini_to = argv[i];
-      if(local_ini_from != NULL&&local_ini_to != NULL){
-        NewMemory((void **)&ini_from, strlen(local_ini_from) + 1);
-        strcpy(ini_from, local_ini_from);
-
-        NewMemory((void **)&ini_to, strlen(local_ini_to) + 1);
-        strcpy(ini_to, local_ini_to);
+        NewMemory((void **)&ini_to, strlen(args->ini_to) + 1);
+        strcpy(ini_to, args->ini_to);
         convert_ini = 1;
       }
     }
-    else if(strncmp(argv[i], "-convert_ssf", 12) == 0){
-      char *local_ssf_from = NULL, *local_ssf_to = NULL;
+    if(args->convert_ssf){
+      if(args->ssf_from != NULL&&args->ssf_to != NULL){
+        NewMemory((void **)&ssf_from, strlen(args->ssf_from) + 1);
+        strcpy(ssf_from, args->ssf_from);
 
-      if(++i < argc)local_ssf_from = argv[i];
-      if(++i < argc)local_ssf_to = argv[i];
-      if(local_ssf_from != NULL&&local_ssf_to != NULL){
-        NewMemory((void **)&ssf_from, strlen(local_ssf_from) + 1);
-        strcpy(ssf_from, local_ssf_from);
-
-        NewMemory((void **)&ssf_to, strlen(local_ssf_to) + 1);
-        strcpy(ssf_to, local_ssf_to);
+        NewMemory((void **)&ssf_to, strlen(args->ssf_to) + 1);
+        strcpy(ssf_to, args->ssf_to);
         convert_ssf = 1;
       }
     }
-    else if(strncmp(argv[i], "-update_ssf", 11) == 0){
+    if(args->update_ssf){
       update_ssf = 1;
     }
-    else if(strncmp(argv[i], "-update_ini", 11) == 0){
-      char *local_ini_from = NULL, *local_ini_to = NULL;
+    if(args->update_ini){
+      if(args->ini_from != NULL){
+        NewMemory((void **)&ini_from, strlen(args->ini_from) + 1);
+        strcpy(ini_from, args->ini_from);
 
-      if(++i < argc)local_ini_from = argv[i];
-      local_ini_to = local_ini_from;
-      if(local_ini_from != NULL){
-        NewMemory((void **)&ini_from, strlen(local_ini_from) + 1);
-        strcpy(ini_from, local_ini_from);
-
-        NewMemory((void **)&ini_to, strlen(local_ini_to) + 1);
-        strcpy(ini_to, local_ini_to);
+        NewMemory((void **)&ini_to, strlen(args->ini_from) + 1);
+        strcpy(ini_to, args->ini_from);
         convert_ini = 1;
       }
     }
-    else if(strncmp(argv[i], "-isotest", 8) == 0){
+    if(args->isotest){
       isotest = 1;
     }
-    else if(strncmp(argv[i], "-smoke3d", 8) == 0){
+    if(args->smoke3d){
       smoke3d_only = 1;
     }
-    else if(strncmp(argv[i], "-no_slcf", 8)==0){
+    if(args->no_slcf){
     handle_slice_files = 0;
     }
-    else if(strncmp(argv[i], "-h", 2) == 0&&strncmp(argv[i], "-help_all", 9)!=0&&strncmp(argv[1], "-html", 5)!=0){
-      Usage(argv[0],HELP_SUMMARY);
+    if(args->show_help_summary){
+      Usage(args->prog,HELP_SUMMARY);
       SMV_EXIT(0);
     }
-    else if(strncmp(argv[i], "-help_all", 9)==0){
-      Usage(argv[0],HELP_ALL);
+    if(args->show_help_all){
+      Usage(args->prog,HELP_ALL);
       SMV_EXIT(0);
     }
-    else if(strncmp(argv[i], "-noblank", 8) == 0){
+    if(args->noblank){
       iblank_set_on_commandline = 1;
       use_iblank = 0;
     }
-    else if(strncmp(argv[i], "-fed", 4) == 0){
+    if(args->fed){
       compute_fed = 1;
     }
-    else if(strncmp(argv[i], "-verbose", 8)==0){
+    if(args->verbose){
       verbose_output = 1;
     }
-    else if(strncmp(argv[i], "-outline", 8)==0){
+    if(args->outline){
       show_geom_boundingbox = SHOW_BOUNDING_BOX_ALWAYS;
     }
-    else if(strncmp(argv[i], "-make_movie", 11)==0){
+    if(args->make_movie){
       open_movie_dialog = 1;
     }
-    else if(strncmp(argv[i], "-geominfo", 9)==0){
+    if(args->geominfo){
       print_geominfo = 1;
     }
-    else if(strncmp(argv[i], "-fast", 5) == 0){
+    if(args->fast){
       fast_startup = 1;
       lookfor_compressed_slice = 0;
     }
-    else if(strncmp(argv[i], "-blank", 6) == 0){
+    if(args->blank){
       iblank_set_on_commandline = 1;
       use_iblank = 1;
     }
-    else if(strncmp(argv[i], "-gversion", 9) == 0){
+    if(args->gversion){
       vis_title_gversion = 1;
     }
-    else if(
-      strncmp(argv[i], "-volrender", 10) != 0 && (strncmp(argv[i], "-version", 8) == 0 || strncmp(argv[i], "-v", 2) == 0)
-      ){
-      DisplayVersionInfo("Smokeview ");
-      SMV_EXIT(0);
-    }
-    else if(
-      strncmp(argv[i], "-redirect", 9) == 0
-      ){
+    if(args->redirect){
       LOG_FILENAME = fopen(log_filename, "w");
       if(LOG_FILENAME != NULL){
         redirect = 1;
         SetStdOut(LOG_FILENAME);
       }
     }
-    else if(strncmp(argv[i], "-runscript", 10) == 0){
+    if(args->runscript){
       from_commandline = 1;
       iso_multithread=0;
 #ifdef pp_LUA
@@ -559,132 +513,110 @@ char *ParseCommandline(int argc, char **argv){
 #endif
       runscript = 1;
     }
-    else if(strncmp(argv[i], "-runhtmlscript", 14)==0){
+    if(args->runhtmlscript){
       from_commandline = 1;
       use_graphics = 0;
       iso_multithread = 0;
       runhtmlscript = 1;
     }
 #ifdef pp_LUA
-    else if(strncmp(argv[i], "-runluascript", 13) == 0){
+    if(args->runluascript){
       from_commandline = 1;
       iso_multithread=0;
       strcpy(luascript_filename, "");
-      strncpy(luascript_filename, fdsprefix, 1020);
+      strncpy(luascript_filename, fdsprefix, MAX_LUASCRIPT_FILENAME_BUFFER-5);
       strcat(luascript_filename, ".lua");
       runluascript = 1;
     }
-    else if(strncmp(argv[i], "-killscript", 11) == 0){
+    if(args->killscript){
       from_commandline = 1;
       exit_on_script_crash = 1;
     }
 #endif
-    else if(strncmp(argv[i], "-scriptrenderdir", 16)==0){
-      int nrenderdir;
-      char *renderdir;
-
-      i++;
-      if(i<argc){
-        renderdir = argv[i];
-        nrenderdir = strlen(renderdir);
-        if(nrenderdir>0){
-          NewMemory((void **)&script_renderdir_cmd, nrenderdir+1);
-          strcpy(script_renderdir_cmd, renderdir);
-        }
+    if(args->scriptrenderdir != NULL){
+      int nrenderdir = strlen(args->scriptrenderdir);
+      if(nrenderdir>0){
+        NewMemory((void **)&script_renderdir_cmd, nrenderdir+1);
+        strcpy(script_renderdir_cmd, args->scriptrenderdir);
       }
     }
-    else if(strncmp(argv[i], "-skipframe", 10) == 0){
+    if(args->skipframe_defined){
       from_commandline = 1;
-      ++i;
-      if(i < argc){
-        sscanf(argv[i], "%i", &render_skipframe0);
-      }
+      render_skipframe0 = args->skipframe;
     }
-    else if(strncmp(argv[i], "-startframe", 11) == 0){
+    if(args->startframe_defined){
       from_commandline = 1;
-      ++i;
-      if(i < argc){
-        sscanf(argv[i], "%i", &render_startframe0);
-      }
+      render_startframe0 = args->startframe;
     }
-    else if(strncmp(argv[i], "-volrender", 10) == 0){
+    if(args->volrender){
       from_commandline = 1;
       make_volrender_script = 1;
     }
-    else if(strncmp(argv[i], "-script", 7)==0||strncmp(argv[i], "-htmlscript", 11)==0){
-      int is_htmlscript;
-
-      is_htmlscript = strncmp(argv[i], "-htmlscript", 11);
-      if(is_htmlscript==0){
+    if(args->script!=NULL||args->htmlscript!=NULL){
+      bool is_htmlscript = args->htmlscript!=NULL;
+      if(is_htmlscript){
         use_graphics = 0;
         runhtmlscript = 1;
       }
       from_commandline = 1;
       iso_multithread=0;
-      ++i;
-      if(i < argc){
-        char scriptbuffer[256];
+        char scriptbuffer[MAX_SCRIPT_FILENAME_BUFFER];
         scriptfiledata *sfd;
-
-        strcpy(scriptbuffer, argv[i]);
+        if (args->script != NULL) {
+          if (strlen(args->script) > MAX_SCRIPT_FILENAME_BUFFER-1) {
+            fprintf(stderr, "*** Error: script filename exceeds maximum length of %d\n", MAX_SCRIPT_FILENAME_BUFFER-1);
+            SMV_EXIT(1);
+          }
+          strcpy(scriptbuffer, args->script);
+        } else {
+          if (strlen(args->htmlscript) > MAX_SCRIPT_FILENAME_BUFFER-1) {
+            fprintf(stderr, "*** Error: luascript filename exceeds maximum length of %d\n", MAX_SCRIPT_FILENAME_BUFFER-1);
+            SMV_EXIT(1);
+          }
+          strcpy(scriptbuffer, args->htmlscript);
+        }
         sfd = InsertScriptFile(scriptbuffer);
         if(sfd != NULL)default_script = sfd;
-        if(is_htmlscript!=0){
+        if(!is_htmlscript){
           runscript = 1;
         }
-      }
     }
 #ifdef pp_LUA
-    else if(strncmp(argv[i], "-luascript", 10) == 0){
+    if(args->luascript != NULL){
       from_commandline = 1;
       iso_multithread=0;
-      ++i;
-      if(i < argc){
-        strncpy(luascript_filename, argv[i], 1024);
-        runluascript = 1;
+      if (strlen(args->luascript) > MAX_LUASCRIPT_FILENAME_BUFFER-1) {
+        fprintf(stderr, "*** Error: luascript filename exceeds maximum length of %d\n", MAX_SMV_FILENAME_BUFFER-1);
+        SMV_EXIT(1);
       }
+      strncpy(luascript_filename, args->luascript, MAX_LUASCRIPT_FILENAME_BUFFER-1);
+      runluascript = 1;
     }
 #endif
-    else if(strncmp(argv[i], "-noexit", 7) == 0){
+    if(args->noexit){
       noexit = 1;
     }
-    else if(strncmp(argv[i], "-setup", 6) == 0){
+    if(args->setup){
       setup_only = 1;
     }
-    else if(strncmp(argv[i], "-bindir", 7) == 0){
-      ++i;
-      if(i < argc){
+    if(args->bindir != NULL){
         int len2;
 
-        len2 = strlen(argv[i]);
+        len2 = strlen(args->bindir);
         NewMemory((void **)&smokeview_bindir, len2 + 2);
-        strcpy(smokeview_bindir, argv[i]);
+        strcpy(smokeview_bindir, args->bindir);
         if(smokeview_bindir[len2 - 1] != dirseparator[0])strcat(smokeview_bindir, dirseparator);
-      }
     }
-    else if(strncmp(argv[i], "-casedir", 8)==0){
-      ++i;
-      if(i<argc){
+    if(args->casedir){
         int len2;
 
-        len2 = strlen(argv[i]);
+        len2 = strlen(args->casedir);
         NewMemory((void **)&smokeview_casedir, len2+2);
-        strcpy(smokeview_casedir, argv[i]);
-      }
+        strcpy(smokeview_casedir, args->casedir);
     }
-    else if(strncmp(argv[i], "-threads", 8)==0){
-      ++i;
-      if(i<argc){
-        sscanf(argv[i], "%i", &nreadallgeomthread_ids);
-        nreadallgeomthread_ids = CLAMP(nreadallgeomthread_ids, 1, 16);
-      }
+    if(args->threads_defined){
+        nreadallgeomthread_ids = CLAMP(args->threads, 1, 16);
     }
-    else{
-      fprintf(stderr, "*** Error: unknown option: %s\n", argv[i]);
-      printf("Use -help_all to see a list of valid options\n");
-      SMV_EXIT(1);
-    }
-  }
   if(update_ssf == 1){
     int len_prefix = 0;
 
