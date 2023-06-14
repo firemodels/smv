@@ -259,6 +259,7 @@ SYSTEM_LIBS_LINUX = -lpthread -lX11 -lXmu -lGLU -lGL -lm -lrt
 intel_linux_64 : DYNLIB_EXT = .so
 intel_linux_64 : LIB_DIR_PLAT = $(LIB_DIR)/intel_linux_64
 intel_linux_64 : CFLAGS    = -O0 -traceback -m64 -D pp_LINUX $(SMV_TESTFLAG) $(SMV_PROFILEFLAG) $(GITINFO) $(INTEL_COMPINFO)
+#intel_linux_64 : C_STANDARD    = -std=c99
 intel_linux_64 : LIBLUA    =
 ifeq ($(LUA_SCRIPTING),true)
 intel_linux_64 : CFLAGS    += -D pp_LUA
@@ -278,6 +279,7 @@ intel_linux_64 : $(obj) $(if $(LUA_SCRIPTING),smvluacore)
 intel_linux_64_db : CFLAGS    = -O0 -g -m64 $(SMV_TESTFLAG) -D _DEBUG -D pp_LINUX $(SMV_PROFILEFLAG) \
                                 -Wall -Wextra -Wuninitialized -Wunused-function -Wunused-variable -Wno-sign-compare \
                                 -Wno-unused-parameter $(GITINFO) $(INTEL_COMPINFO)
+#intel_linux_64_db : C_STANDARD    = -std=c99
 intel_linux_64_db : LFLAGS    = -m64 -static-intel $(INTEL_LIBS_LINUX) $(SMV_PROFILEFLAG)
 intel_linux_64_db : CC        = icx
 intel_linux_64_db : CPP       = icpx
