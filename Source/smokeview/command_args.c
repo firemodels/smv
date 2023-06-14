@@ -40,7 +40,8 @@ CommandlineArgs ParseCommandlineNew(int argc, char **argv,
     NewMemory((void **)&args.prog, strlen(argv[0]) + 1);
     strcpy(args.prog, argv[0]);
   }
-  for (int i = 1; i < argc; i++) {
+  int i;
+  for (i = 1; i < argc; i++) {
     if (strcmp(argv[i], "-ini") == 0) {
       args.ini = true;
     } else if (strcmp(argv[i], "-ng_ini") == 0) {
