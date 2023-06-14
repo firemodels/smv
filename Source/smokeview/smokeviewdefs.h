@@ -1087,5 +1087,10 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 
 #define MENU_SHOWHIDE_FLIP 15
 
-#endif
+#define MAX_SMV_FILENAME_BUFFER 1024
+#define MAX_LUASCRIPT_FILENAME_BUFFER 1024
+// TODO: this was set to 256 in some parts of the code, but should probably be
+// increase (or dynamically allocated).
+#define MAX_SCRIPT_FILENAME_BUFFER 256
 
+#endif

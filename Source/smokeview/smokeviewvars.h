@@ -1874,7 +1874,7 @@ SVEXTERN char SVDECL(*script_renderdir_cmd, NULL);
 SVEXTERN inifiledata first_inifile, last_inifile;
 SVEXTERN char script_filename[1024];
 #ifdef pp_LUA
-SVEXTERN char luascript_filename[1024];
+SVEXTERN char luascript_filename[MAX_LUASCRIPT_FILENAME_BUFFER];
 #endif
 SVEXTERN int highlight_block, highlight_mesh, highlight_flag;
 SVEXTERN int SVDECL(updategetobstlabels,1);

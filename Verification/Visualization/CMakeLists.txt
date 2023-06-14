@@ -12,4 +12,3 @@ foreach(smv_path ${TEST_CASES})
         add_test(NAME "Run script ${case_name}" COMMAND smokeview ${smv_path} -runscript WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/Verification/Visualization)
     endif ()
 endforeach()
-
