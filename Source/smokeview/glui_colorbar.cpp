@@ -492,17 +492,25 @@ void AddColorbarList2(GLUI_Listbox *LIST_cbar, int index, char *label_arg, int *
 
 extern "C" void UpdateColorbarListAll(void){
   int i;
+  char label[64];
 
   for(i=-7;i<ncolorbars;i++){
    LISTBOX_colorbar->delete_item(i);
   }
-  AddColorbarList2(LISTBOX_colorbar, -1, "rainbow",    &max_LIST_colorbar);
-  AddColorbarList2(LISTBOX_colorbar, -2, "linear",     &max_LIST_colorbar);
-  AddColorbarList2(LISTBOX_colorbar, -3, "divergent",  &max_LIST_colorbar);
-  AddColorbarList2(LISTBOX_colorbar, -4, "circular",   &max_LIST_colorbar);
-  AddColorbarList2(LISTBOX_colorbar, -7, "original",   &max_LIST_colorbar);
-  AddColorbarList2(LISTBOX_colorbar, -5, "deprecated", &max_LIST_colorbar);
-  AddColorbarList2(LISTBOX_colorbar, -6, "user",       &max_LIST_colorbar);
+  strcpy(label, "rainbow");
+  AddColorbarList2(LISTBOX_colorbar, -1, label, &max_LIST_colorbar);
+  strcpy(label, "linear");
+  AddColorbarList2(LISTBOX_colorbar, -2, label, &max_LIST_colorbar);
+  strcpy(label, "divergent");
+  AddColorbarList2(LISTBOX_colorbar, -3, label, &max_LIST_colorbar);
+  strcpy(label, "circular");
+  AddColorbarList2(LISTBOX_colorbar, -4, label, &max_LIST_colorbar);
+  strcpy(label, "original");
+  AddColorbarList2(LISTBOX_colorbar, -7, label, &max_LIST_colorbar);
+  strcpy(label, "deprecated");
+  AddColorbarList2(LISTBOX_colorbar, -5, label, &max_LIST_colorbar);
+  strcpy(label, "user");
+  AddColorbarList2(LISTBOX_colorbar, -6, label, &max_LIST_colorbar);
   LISTBOX_colorbar->set_int_val(colorbartype);
 }
 

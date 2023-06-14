@@ -4641,17 +4641,25 @@ void AddColorbarList(GLUI_Listbox *LIST_cbar, int index, char *label_arg, int *m
 
 extern "C" void UpdateColorbarList2All(void){
   int i;
+  char label[64];
   
   for(i=-7;i<ncolorbars;i++){
    LIST_colorbar2->delete_item(i);
   }
-  AddColorbarList(LIST_colorbar2, -1, "rainbow",    &max_LIST_colorbar2);
-  AddColorbarList(LIST_colorbar2, -2, "linear",     &max_LIST_colorbar2);
-  AddColorbarList(LIST_colorbar2, -3, "divergent",  &max_LIST_colorbar2);
-  AddColorbarList(LIST_colorbar2, -4, "circular",   &max_LIST_colorbar2);
-  AddColorbarList(LIST_colorbar2, -7, "original",   &max_LIST_colorbar2);
-  AddColorbarList(LIST_colorbar2, -5, "deprecated", &max_LIST_colorbar2);
-  AddColorbarList(LIST_colorbar2, -6, "user",       &max_LIST_colorbar2);
+  strcpy(label, "rainbow");
+  AddColorbarList(LIST_colorbar2, -1, label, &max_LIST_colorbar2);
+  strcpy(label, "linear");
+  AddColorbarList(LIST_colorbar2, -2, label, &max_LIST_colorbar2);
+  strcpy(label, "divergent");
+  AddColorbarList(LIST_colorbar2, -3, label, &max_LIST_colorbar2);
+  strcpy(label, "circular");
+  AddColorbarList(LIST_colorbar2, -4, label, &max_LIST_colorbar2);
+  strcpy(label, "original");
+  AddColorbarList(LIST_colorbar2, -7, label, &max_LIST_colorbar2);
+  strcpy(label, "deprecated");
+  AddColorbarList(LIST_colorbar2, -5, label, &max_LIST_colorbar2);
+  strcpy(label, "user");
+  AddColorbarList(LIST_colorbar2, -6, label, &max_LIST_colorbar2);
 }
 
 /* ------------------ GluiBoundsSetup ------------------------ */
