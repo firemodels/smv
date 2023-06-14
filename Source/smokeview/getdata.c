@@ -13,16 +13,20 @@
 #include "getdata.h"
 #include <ctype.h>
 #include <errno.h>
+#ifdef __STDC_VERSION__
 #if __STDC_VERSION__ >= 201112L
 #include <limits.h>
+#endif
 #endif
 
 // As with the Fortran code preceding this, it is assumed that a float is 4
 // bytes for serialization/deserialization purposes. With C11 we can check this
 // using static assertions.
+#ifdef __STDC_VERSION__
 #if __STDC_VERSION__ >= 201112L
 _Static_assert(CHAR_BIT == 8, "getdata.c assumes that CHAR_BIT == 8");
 _Static_assert(sizeof(float) == 4, "getdata.c assumes that float is 4 bytes");
+#endif
 #endif
 
 #ifdef WIN32
