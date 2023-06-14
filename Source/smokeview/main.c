@@ -99,7 +99,6 @@ char *ParseCommandline(int argc, char **argv) {
 /// @return The iput file name (the SMV file).
 char *ProcessCommandLine(CommandlineArgs *args) {
   int len_casename;
-  int iarg;
   size_t len_memory;
   char *argi, *smv_ext;
   char SMVFILENAME[MAX_SMV_FILENAME_BUFFER];
