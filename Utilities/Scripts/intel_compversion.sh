@@ -19,7 +19,7 @@ is_file_installed()
   exit
 }
 if [ "`uname`" == "Darwin" ]; then
-  ICC=icc
+  ICC="icc -diag-disable=10441"
 else
   ICC=icx
 fi
