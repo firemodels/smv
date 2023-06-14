@@ -1853,7 +1853,7 @@ extern "C" void GluiPlot2DSetup(int main_window){
       for(i = 0;i < nrooms;i++){
         char label[100];
 
-        sprintf(label, "%i", i + 1);
+        snprintf(label, sizeof(label), "%i", i + 1);
         LIST_curve_compartments->add_item(i, label);
       }
       LIST_curve_compartments->add_item(-1, "any");
