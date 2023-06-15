@@ -1387,8 +1387,8 @@ void AddColorbar(int icolorbar){
   strcpy(cb_to->ctype, "user");
   RemapColorbar(cb_to);
   SortColorBars();
-  UpdateColorbarListAll();
-  UpdateColorbarList2All();
+  UpdateColorbarListEdit(1,CB_DELETE);
+  UpdateColorbarListBound(1);
 
   colorbardata *cbnew;
 

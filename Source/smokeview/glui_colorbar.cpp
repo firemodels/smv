@@ -439,9 +439,9 @@ extern "C" void ColorbarCB(int var){
   }
 }
 
-/* ------------------ AddColorbarList2 ------------------------ */
+/* ------------------ AddColorbarListEdit ------------------------ */
 
-void AddColorbarList2(GLUI_Listbox *LIST_cbar, int index, char *label_arg, int *max_index){
+void AddColorbarListEdit(GLUI_Listbox *LIST_cbar, int index, char *label_arg, int *max_index){
   char cbar_type[256];
   int i, nitems=0;
 
@@ -469,30 +469,48 @@ void AddColorbarList2(GLUI_Listbox *LIST_cbar, int index, char *label_arg, int *
   }
 }
 
-/* ------------------ UpdateColorbarListAll ------------------------ */
+/* ------------------ UpdateColorbarListEdit ------------------------ */
 
-extern "C" void UpdateColorbarListAll(void){
+extern "C" void UpdateColorbarListEdit(int flag, int del){
   int i;
   char label[64];
+  GLUI_Listbox *LISTBOX_cb;
 
-  for(i=-7;i<ncolorbars;i++){
-   LISTBOX_colorbar->delete_item(i);
+  switch(flag){
+  case 1:
+    LISTBOX_cb = LISTBOX_colorbar;
+    break;
+  case 2:
+    LISTBOX_cb = LISTBOX_colorbar1;
+    break;
+  case 3:
+    LISTBOX_cb = LISTBOX_colorbar2;
+    break;
+  default:
+    LISTBOX_cb = LISTBOX_colorbar;
+    ASSERT(FFALSE);
+    break;
+  }
+
+  if(del == CB_DELETE){
+    for(i = -7; i < ncolorbars; i++){
+      LISTBOX_cb->delete_item(i);
+    }
   }
   strcpy(label, "rainbow");
-  AddColorbarList2(LISTBOX_colorbar, -1, label, &max_LIST_colorbar);
+  AddColorbarListEdit(LISTBOX_cb, -1, label, &max_LIST_colorbar);
   strcpy(label, "linear");
-  AddColorbarList2(LISTBOX_colorbar, -2, label, &max_LIST_colorbar);
+  AddColorbarListEdit(LISTBOX_cb, -2, label, &max_LIST_colorbar);
   strcpy(label, "divergent");
-  AddColorbarList2(LISTBOX_colorbar, -3, label, &max_LIST_colorbar);
+  AddColorbarListEdit(LISTBOX_cb, -3, label, &max_LIST_colorbar);
   strcpy(label, "circular");
-  AddColorbarList2(LISTBOX_colorbar, -4, label, &max_LIST_colorbar);
+  AddColorbarListEdit(LISTBOX_cb, -4, label, &max_LIST_colorbar);
   strcpy(label, "original");
-  AddColorbarList2(LISTBOX_colorbar, -7, label, &max_LIST_colorbar);
+  AddColorbarListEdit(LISTBOX_cb, -7, label, &max_LIST_colorbar);
   strcpy(label, "deprecated");
-  AddColorbarList2(LISTBOX_colorbar, -5, label, &max_LIST_colorbar);
+  AddColorbarListEdit(LISTBOX_cb, -5, label, &max_LIST_colorbar);
   strcpy(label, "user");
-  AddColorbarList2(LISTBOX_colorbar, -6, label, &max_LIST_colorbar);
-  LISTBOX_colorbar->set_int_val(colorbartype);
+  AddColorbarListEdit(LISTBOX_cb, -6, label, &max_LIST_colorbar);
 }
 
 /* ------------------ GluiColorbarSetup ------------------------ */
@@ -541,7 +559,7 @@ extern "C" void GluiColorbarSetup(int main_window){
   if(ncolorbars>0){
     selectedcolorbar_index=-1;
     LISTBOX_colorbar=glui_colorbar->add_listbox_to_panel(PANEL_cb1,"",&selectedcolorbar_index,COLORBAR_LIST,ColorbarCB);
-    UpdateColorbarListAll();
+    UpdateColorbarListEdit(1,CB_KEEP);
   }
   EDITTEXT_colorbar_label  = glui_colorbar->add_edittext_to_panel(PANEL_cb1,_("Label"),GLUI_EDITTEXT_TEXT,colorbar_label,COLORBAR_LABEL,ColorbarCB);
   BUTTON_update=glui_colorbar->add_button_to_panel(PANEL_cb1,_("Update label"),COLORBAR_UPDATE,ColorbarCB);
@@ -551,25 +569,13 @@ extern "C" void GluiColorbarSetup(int main_window){
   glui_colorbar->add_column_to_panel(PANEL_cb11r,false);
   BUTTON_next     = glui_colorbar->add_button_to_panel(PANEL_cb11r, _("Next"),     COLORBAR_NEXT, ColorbarCB);
 #ifdef pp_COLOR_TOGGLE
-  int i;
-
   PANEL_toggle_cb = glui_colorbar->add_panel(_("toggle colorbars"));
   LISTBOX_colorbar1=glui_colorbar->add_listbox_to_panel(PANEL_toggle_cb,"colorbar 1", &index_colorbar1, COLORBAR_LISTA, ColorbarCB);
-  for(i=0;i<ncolorbars;i++){
-    colorbardata *cbi;
-
-    cbi = colorbarinfo + i;
-    LISTBOX_colorbar1->add_item(i,cbi->label);
-  }
+  UpdateColorbarListEdit(2, CB_KEEP);
   LISTBOX_colorbar1->set_int_val(index_colorbar1);
 
   LISTBOX_colorbar2=glui_colorbar->add_listbox_to_panel(PANEL_toggle_cb,"colorbar 2",&index_colorbar2, COLORBAR_LISTB, ColorbarCB);
-  for(i=0;i<ncolorbars;i++){
-    colorbardata *cbi;
-
-    cbi = colorbarinfo + i;
-    LISTBOX_colorbar2->add_item(i,cbi->label);
-  }
+  UpdateColorbarListEdit(3, CB_KEEP);
   LISTBOX_colorbar2->set_int_val(index_colorbar2);
 
   BUTTON_toggle = glui_colorbar->add_button_to_panel(PANEL_toggle_cb, _("toggle"), COLORBAR_TOGGLE, ColorbarCB);

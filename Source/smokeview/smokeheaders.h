@@ -697,8 +697,8 @@ EXTERNCPP sv_object *GetSmvObjectType2(char *label, sv_object *default_object);
 EXTERNCPP void FreeAllObjects(void);
 EXTERNCPP void UpdatePartClassDepend(partclassdata *partclassi);
 
-EXTERNCPP void UpdateColorbarList2All(void);
-EXTERNCPP void UpdateColorbarListAll(void);
+EXTERNCPP void UpdateColorbarListBound(int flag);
+EXTERNCPP void UpdateColorbarListEdit(int flag,int del);
 
 #ifdef pp_COLOR_CIE
 EXTERNCPP void AdjustColorBar(colorbardata *cbi);

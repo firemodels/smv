@@ -134,6 +134,8 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 #define COLORBAR_TOGGLE              28
 #define COLORBAR_LISTA               30
 #define COLORBAR_LISTB               31
+#define CB_KEEP                 0
+#define CB_DELETE               1
 #endif
 
 
