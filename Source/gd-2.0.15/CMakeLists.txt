@@ -11,6 +11,7 @@ set(FILES
 
 include_directories(".")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}  -DHAVE_LIBPNG -DHAVE_LIBZ -DHAVE_LIBJPEG")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-incompatible-pointer-types")
 add_library(gd_static STATIC ${FILES})
 set_target_properties(gd_static PROPERTIES OUTPUT_NAME "gd")
 target_include_directories(gd_static PUBLIC .)

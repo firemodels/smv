@@ -3,6 +3,9 @@
 
 //*** options: all platforms
 
+#ifndef _DEFAULT_SOURCE
+#define _DEFAULT_SOURCE
+#endif
 #ifndef _DEBUG
 #define pp_HASH   // md5, sha1 and sha255 hashing
 #endif

@@ -10,7 +10,9 @@ include(FetchContent)
 set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 project(smv LANGUAGES C CXX)
 # Use C99
-set_property(GLOBAL PROPERTY C_STANDARD 99)
+set(CMAKE_C_STANDARD 99)
+set(CMAKE_C_STANDARD_REQUIRED ON)
+set(CMAKE_C_EXTENSIONS ON)
 # Requires adherence to this standard
 set(CMAKE_C_STANDARD_REQUIRED TRUE)
 # GNUInstallDirs is used to set the appropriate paths on linux (/usr/lib64 etc).
@@ -57,6 +59,7 @@ endif()
 if(STRICT_CHECKS)
     set(CMAKE_CXX_CLANG_TIDY "clang-tidy;-checks=clang-diagnostic-*,clang-analyzer-*,-clang-analyzer-security.insecureAPI.*")
     set(CMAKE_C_CLANG_TIDY "clang-tidy;-checks=clang-diagnostic-*,clang-analyzer-*,-clang-analyzer-security.insecureAPI.*")
+    set(CMAKE_COMPILE_WARNING_AS_ERROR ON)
     add_compile_options(-O2)
     add_compile_options(-flto=auto)
     add_compile_options(-ffat-lto-objects)
