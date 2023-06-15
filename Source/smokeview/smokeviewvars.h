@@ -551,6 +551,7 @@ SVEXTERN float cb_lab2[3], cb_frgb2[3];
 SVEXTERN int cb_rgb2[3];
 #ifdef pp_COLOR_TOGGLE
 SVEXTERN int SVDECL(index_colorbar1, 0), SVDECL(index_colorbar2, 1);
+SVEXTERN int SVDECL(colorbar_toggle, 1);
 #endif
 #ifdef pp_COLOR_CIE_CHECK
 SVEXTERN unsigned char SVDECL(*cielab_check_rgb255, NULL);

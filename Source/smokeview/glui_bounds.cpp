@@ -52,8 +52,7 @@ int update_hist_bounds;
 
 #ifdef pp_COLOR_TOGGLE
 GLUI_Panel *PANEL_toggle_cba = NULL;
-GLUI_Button *BUTTON_colorbar1a = NULL;
-GLUI_Button *BUTTON_colorbar2a = NULL;
+GLUI_Button *BUTTON_toggle2 = NULL;
 extern GLUI_Button *BUTTON_colorbar1;
 extern GLUI_Button *BUTTON_colorbar2;
 
@@ -5482,32 +5481,6 @@ extern "C" void GluiBoundsSetup(int main_window){
     LIST_colorbar2->set_int_val(colorbartype_default);
     glui_bounds->add_button_to_panel(PANEL_colorbar_properties, _("Next"),     COLORBAR_LIST2_NEXT, SliceBoundCB);
     glui_bounds->add_button_to_panel(PANEL_colorbar_properties, _("Previous"), COLORBAR_LIST2_PREV, SliceBoundCB);
-#ifdef pp_COLOR_TOGGLE
-    PANEL_toggle_cba = glui_bounds->add_panel_to_panel(ROLLOUT_coloring, _("toggle colorbars"));
-    LISTBOX_colorbar1a = glui_bounds->add_listbox_to_panel(PANEL_toggle_cba, "colorbar 1", &index_colorbar1, COLORBAR_LISTA, ColorbarCB);
-    for(i = 0; i < ncolorbars; i++){
-      colorbardata *cbi;
-
-      cbi = colorbarinfo + i;
-      LISTBOX_colorbar1a->add_item(i, cbi->label);
-    }
-    LISTBOX_colorbar1a->set_int_val(index_colorbar1);
-
-    LISTBOX_colorbar2a = glui_bounds->add_listbox_to_panel(PANEL_toggle_cba, "colorbar 2", &index_colorbar2, COLORBAR_LISTB, ColorbarCB);
-    for(i = 0; i < ncolorbars; i++){
-      colorbardata *cbi;
-
-      cbi = colorbarinfo + i;
-      LISTBOX_colorbar2a->add_item(i, cbi->label);
-    }
-    LISTBOX_colorbar2a->set_int_val(index_colorbar2);
-
-    BUTTON_colorbar1a = glui_bounds->add_button_to_panel(PANEL_toggle_cba, _("colorbar 1"), COLORBAR_CB1, ColorbarCB);
-    ColorbarCB(COLORBAR_LISTA);
-
-    BUTTON_colorbar2a = glui_bounds->add_button_to_panel(PANEL_toggle_cba, _("colorbar 2"), COLORBAR_CB2, ColorbarCB);
-    ColorbarCB(COLORBAR_LISTB);
-#endif
   }
 
   CHECKBOX_visColorbarVertical2   = glui_bounds->add_checkbox_to_panel(PANEL_colorbar_properties, "vertical",   &visColorbarVertical,   LABELS_vcolorbar, LabelsCB);
@@ -5544,6 +5517,31 @@ extern "C" void GluiBoundsSetup(int main_window){
   SPINNER_labels_transparency_data->set_w(0);
   SPINNER_labels_transparency_data->set_float_limits(0.0, 1.0, GLUI_LIMIT_CLAMP);
   CHECKBOX_use_lighting = glui_bounds->add_checkbox_to_panel(PANEL_coloring, _("Lighting"), &use_lighting, CB_USE_LIGHTING, LabelsCB);
+
+#ifdef pp_COLOR_TOGGLE
+    PANEL_toggle_cba = glui_bounds->add_panel_to_panel(PANEL_cb11, _("toggle colorbars"));
+    LISTBOX_colorbar1a = glui_bounds->add_listbox_to_panel(PANEL_toggle_cba, "", &index_colorbar1, COLORBAR_LISTA, ColorbarCB);
+    for(i = 0; i < ncolorbars; i++){
+      colorbardata *cbi;
+
+      cbi = colorbarinfo + i;
+      LISTBOX_colorbar1a->add_item(i, cbi->label);
+    }
+    LISTBOX_colorbar1a->set_int_val(index_colorbar1);
+
+    LISTBOX_colorbar2a = glui_bounds->add_listbox_to_panel(PANEL_toggle_cba, "", &index_colorbar2, COLORBAR_LISTB, ColorbarCB);
+    for(i = 0; i < ncolorbars; i++){
+      colorbardata *cbi;
+
+      cbi = colorbarinfo + i;
+      LISTBOX_colorbar2a->add_item(i, cbi->label);
+    }
+    LISTBOX_colorbar2a->set_int_val(index_colorbar2);
+
+    BUTTON_toggle2 = glui_bounds->add_button_to_panel(PANEL_toggle_cba, _("toggle"), COLORBAR_TOGGLE, ColorbarCB);
+    ColorbarCB(COLORBAR_LISTA);
+    ColorbarCB(COLORBAR_LISTB);
+#endif
 
   PANEL_extreme = glui_bounds->add_panel_to_panel(ROLLOUT_coloring, "", GLUI_PANEL_NONE);
 
