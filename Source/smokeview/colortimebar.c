@@ -1863,7 +1863,7 @@ void InitDefaultColorbars(int nini){
   cbi->rgb_node[18] = 255;
   cbi->rgb_node[19] = 255;
   cbi->rgb_node[20] = 255;
-  strcpy(cbi->ctype, "deprecated");
+  strcpy(cbi->ctype, "original");
   cbi++;
 
   // fire line (level set)
