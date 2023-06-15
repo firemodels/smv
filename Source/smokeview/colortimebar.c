@@ -1439,7 +1439,7 @@ void InitDefaultColorbars(int nini){
   // rainbow colorbar
 
 
-  strcpy(cbi->label,"Rainbow");
+  strcpy(cbi->label,"Rainbow(original)");
   cbi->nnodes=5;
   cbi->nodehilight=0;
 
