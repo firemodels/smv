@@ -1468,7 +1468,7 @@ void InitDefaultColorbars(int nini){
   cbi->rgb_node[13]=0;
   cbi->rgb_node[14]=0;
 #ifdef pp_COLOR_NEW
-  strcpy(cbi->ctype, "original");
+  strcpy(cbi->ctype, "deprecated");
 #else
   strcpy(cbi->ctype, "rainbow");
 #endif
@@ -1540,7 +1540,7 @@ void InitDefaultColorbars(int nini){
   cbi->rgb_node[34]=5;	
   cbi->rgb_node[35]=13;
 #ifdef pp_COLOR_NEW
-  strcpy(cbi->ctype, "original");
+  strcpy(cbi->ctype, "deprecated");
 #else
   strcpy(cbi->ctype, "rainbow");
 #endif
@@ -1616,7 +1616,7 @@ void InitDefaultColorbars(int nini){
   cbi->rgb_node[9]    = 255;
   cbi->rgb_node[10]   = 255;
   cbi->rgb_node[11]   = 255;
-  strcpy(cbi->ctype, "original");
+  strcpy(cbi->ctype, "deprecated");
   cbi++;
 
   // blue->red split
@@ -1644,7 +1644,7 @@ void InitDefaultColorbars(int nini){
   cbi->rgb_node[9]=255;
   cbi->rgb_node[10]=0;
   cbi->rgb_node[11]=0;
-  strcpy(cbi->ctype, "original");
+  strcpy(cbi->ctype, "deprecated");
   cbi++;
 
   // black->white
@@ -1731,7 +1731,7 @@ void InitDefaultColorbars(int nini){
   cbi->rgb_node[9]=255;
   cbi->rgb_node[10]=128;
   cbi->rgb_node[11]=0;
-  strcpy(cbi->ctype, "original");
+  strcpy(cbi->ctype, "deprecated");
   cbi++;
 
   // fire 2
@@ -1863,7 +1863,7 @@ void InitDefaultColorbars(int nini){
   cbi->rgb_node[18] = 255;
   cbi->rgb_node[19] = 255;
   cbi->rgb_node[20] = 255;
-  strcpy(cbi->ctype, "original");
+  strcpy(cbi->ctype, "deprecated");
   cbi++;
 
   // fire line (level set)
@@ -1949,7 +1949,7 @@ void InitDefaultColorbars(int nini){
   for(i = 0; i < 12; i++){
     cbi->rgb_node[i] = colorsplit[i];
   }
-  strcpy(cbi->ctype, "original");
+  strcpy(cbi->ctype, "deprecated");
   cbi++;
 
 
@@ -1979,7 +1979,7 @@ void InitDefaultColorbars(int nini){
   cbi->rgb_node[9] = 255;
   cbi->rgb_node[10] = 255;
   cbi->rgb_node[11] = 255;
-  strcpy(cbi->ctype, "original");
+  strcpy(cbi->ctype, "deprecated");
   cbi++;
 
   // Propane
@@ -2013,7 +2013,7 @@ void InitDefaultColorbars(int nini){
   cbi->rgb_node[12] = 255;
   cbi->rgb_node[13] = 255;
   cbi->rgb_node[14] = 255;
-  strcpy(cbi->ctype, "original");
+  strcpy(cbi->ctype, "deprecated");
   cbi++;
 
   // CO2
@@ -2037,7 +2037,7 @@ void InitDefaultColorbars(int nini){
   cbi->rgb_node[6] = 255;
   cbi->rgb_node[7] = 255;
   cbi->rgb_node[8] = 255;
-  strcpy(cbi->ctype, "original");
+  strcpy(cbi->ctype, "deprecated");
   cbi++;
 
 #ifdef pp_COLORBARS_CSV
