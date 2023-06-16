@@ -545,16 +545,6 @@ extern "C" void GluiColorbarSetup(int main_window){
 #endif
   colorbar_hidescene=1;
   CHECKBOX_hidesv = glui_colorbar->add_checkbox_to_panel(PANEL_cb2R2,_("Hide scene"),&colorbar_hidescene);
-#ifdef pp_COLOR_CIE
-  RADIO_colorbar_coord_type = glui_colorbar->add_radiogroup_to_panel(PANEL_cb2R2, &colorbar_coord_type);
-  glui_colorbar->add_radiobutton_to_group(RADIO_colorbar_coord_type, "rgb");
-  glui_colorbar->add_radiobutton_to_group(RADIO_colorbar_coord_type, "cielab");
-  CHECKBOX_cb_interp = glui_colorbar->add_checkbox_to_panel(PANEL_cb2R2, "interpolate using cielab", &interp_cielab, COLORBAR_ADJUST, ColorbarCB);
-  glui_colorbar->add_checkbox_to_panel(PANEL_cb2R2, "show equi-distance bars (cielab)", &show_Lab_dist_bars);
-#ifdef pp_COLOR_ADJUST
-  glui_colorbar->add_button_to_panel(PANEL_cb2R2,_("Revert CIE"), COLORBAR_REVERT, ColorbarCB);
-#endif
-#endif
   PANEL_cb1 = glui_colorbar->add_panel(_("Colorbar"));
   if(ncolorbars>0){
     selectedcolorbar_index=-1;
@@ -568,20 +558,6 @@ extern "C" void GluiColorbarSetup(int main_window){
   BUTTON_prev     = glui_colorbar->add_button_to_panel(PANEL_cb11r, _("Previous"), COLORBAR_PREV, ColorbarCB);
   glui_colorbar->add_column_to_panel(PANEL_cb11r,false);
   BUTTON_next     = glui_colorbar->add_button_to_panel(PANEL_cb11r, _("Next"),     COLORBAR_NEXT, ColorbarCB);
-#ifdef pp_COLOR_TOGGLE
-  PANEL_toggle_cb = glui_colorbar->add_panel(_("toggle colorbars"));
-  LISTBOX_colorbar1=glui_colorbar->add_listbox_to_panel(PANEL_toggle_cb,"colorbar 1", &index_colorbar1, COLORBAR_LISTA, ColorbarCB);
-  UpdateColorbarListEdit(2, CB_KEEP);
-  LISTBOX_colorbar1->set_int_val(index_colorbar1);
-
-  LISTBOX_colorbar2=glui_colorbar->add_listbox_to_panel(PANEL_toggle_cb,"colorbar 2",&index_colorbar2, COLORBAR_LISTB, ColorbarCB);
-  UpdateColorbarListEdit(3, CB_KEEP);
-  LISTBOX_colorbar2->set_int_val(index_colorbar2);
-
-  BUTTON_toggle = glui_colorbar->add_button_to_panel(PANEL_toggle_cb, _("toggle"), COLORBAR_TOGGLE, ColorbarCB);
-  ColorbarCB(COLORBAR_LISTA);
-  ColorbarCB(COLORBAR_LISTB);
-#endif
   PANEL_point = glui_colorbar->add_panel(_("Node"));
 
   PANEL_cb5 = glui_colorbar->add_panel_to_panel(PANEL_point,"",GLUI_PANEL_NONE);
@@ -606,6 +582,28 @@ extern "C" void GluiColorbarSetup(int main_window){
   SPINNER_rgb[2]->set_int_limits(0,255);
 
 #ifdef pp_COLOR_CIE
+  RADIO_colorbar_coord_type = glui_colorbar->add_radiogroup(&colorbar_coord_type);
+  glui_colorbar->add_radiobutton_to_group(RADIO_colorbar_coord_type, "rgb");
+  glui_colorbar->add_radiobutton_to_group(RADIO_colorbar_coord_type, "CIELab");
+  CHECKBOX_cb_interp = glui_colorbar->add_checkbox("interpolate using CIELab", &interp_cielab, COLORBAR_ADJUST, ColorbarCB);
+  glui_colorbar->add_checkbox("show equal distance bars in CIELab space", &show_Lab_dist_bars);
+#ifdef pp_COLOR_ADJUST
+  glui_colorbar->add_button(_("Revert CIE"), COLORBAR_REVERT, ColorbarCB);
+#endif
+#ifdef pp_COLOR_TOGGLE
+  PANEL_toggle_cb = glui_colorbar->add_panel(_("toggle colorbars"));
+  LISTBOX_colorbar1 = glui_colorbar->add_listbox_to_panel(PANEL_toggle_cb, "colorbar 1", &index_colorbar1, COLORBAR_LISTA, ColorbarCB);
+  UpdateColorbarListEdit(2, CB_KEEP);
+  LISTBOX_colorbar1->set_int_val(index_colorbar1);
+
+  LISTBOX_colorbar2 = glui_colorbar->add_listbox_to_panel(PANEL_toggle_cb, "colorbar 2", &index_colorbar2, COLORBAR_LISTB, ColorbarCB);
+  UpdateColorbarListEdit(3, CB_KEEP);
+  LISTBOX_colorbar2->set_int_val(index_colorbar2);
+
+  BUTTON_toggle = glui_colorbar->add_button_to_panel(PANEL_toggle_cb, _("toggle"), COLORBAR_TOGGLE, ColorbarCB);
+  ColorbarCB(COLORBAR_LISTA);
+  ColorbarCB(COLORBAR_LISTB);
+#endif
   PANEL_cb12 = glui_colorbar->add_panel("rgb<->CIELab");
   cb_frgb2[0] = 0.0;
   cb_frgb2[1] = 0.0;
