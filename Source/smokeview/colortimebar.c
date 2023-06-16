@@ -241,7 +241,7 @@ void DrawColorbarPathRGB(void){
     glColor3ubv(rgbleft);
     glVertex3f(rgbleft[0]/255.0,rgbleft[1]/255.0,rgbleft[2]/255.0);
     glEnd();
-    if(show_colorbar_hint==1){
+    if(colorbar_hidescene==1&&show_colorbar_hint==1){
       float xyz[3];
 
       xyz[0] = rgbleft[0] / 255.0 + 0.1;
