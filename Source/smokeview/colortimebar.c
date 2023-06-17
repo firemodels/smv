@@ -1438,8 +1438,7 @@ void InitDefaultColorbars(int nini){
 
   // rainbow colorbar
 
-
-  strcpy(cbi->label,"Rainbow(original)");
+  strcpy(cbi->label,"Rainbow");
   cbi->nnodes=5;
   cbi->nodehilight=0;
 
@@ -1467,11 +1466,7 @@ void InitDefaultColorbars(int nini){
   cbi->rgb_node[12]=255;
   cbi->rgb_node[13]=0;
   cbi->rgb_node[14]=0;
-#ifdef pp_COLOR_NEW
-  strcpy(cbi->ctype, "deprecated");
-#else
   strcpy(cbi->ctype, "rainbow");
-#endif
   cbi++;
 
   // Rainbow 2 colorbar
@@ -1539,11 +1534,7 @@ void InitDefaultColorbars(int nini){
   cbi->rgb_node[33]=215;	
   cbi->rgb_node[34]=5;	
   cbi->rgb_node[35]=13;
-#ifdef pp_COLOR_NEW
   strcpy(cbi->ctype, "deprecated");
-#else
-  strcpy(cbi->ctype, "rainbow");
-#endif
   cbi++;
 
   // yellow/red
@@ -2073,32 +2064,6 @@ void InitDefaultColorbars(int nini){
     memcpy(cbi->rgb_node_orig, cbi->rgb_node, 3 * cbi->nnodes * sizeof(unsigned char));
   }
   SortColorBars();
-
-#ifdef pp_COLOR_NEW
-  int rainbow2_index    = -1;
-  int new_rainbow_index = -1;
-  int rainbow_index=-1;
-
-  rainbow_index = colorbartype_default;
-
-  colorbardata *cb;
-  cb = GetColorbar("Rainbow 2");
-  if(cb != NULL)rainbow2_index = cb - colorbarinfo;
-
-  cb = GetColorbar("CET-R2.csv");
-  if(cb != NULL)new_rainbow_index = cb - colorbarinfo;
-
-  if(rainbow_filelist>0&&rainbow2_index>=0&&new_rainbow_index>=0&&rainbow_index>=0){
-    colorbardata *cb_new_rainbow;
-
-    cb_new_rainbow = colorbarinfo + new_rainbow_index;
-
-    strcpy(cb_new_rainbow->label, "Rainbow");
-    strcpy(cb_new_rainbow->ctype, "rainbow");
-
-    SortColorBars();
-  }
-#endif
 }
 
 /* ------------------ UpdateColorbarSplits ------------------------ */
