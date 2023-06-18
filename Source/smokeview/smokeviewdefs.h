@@ -130,6 +130,8 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 #define COLORBAR_SELECTION_WIDTH_MIN  1
 #define COLORBAR_SELECTION_WIDTH_MAX 10
 
+#define CB_DELETE               1
+#define CB_KEEP                 0
 #ifdef pp_COLOR_TOGGLE
 #define COLORBAR_TOGGLE              28
 #define COLORBAR_LISTA               30

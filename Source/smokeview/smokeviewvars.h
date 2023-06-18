@@ -539,8 +539,8 @@ SVEXTERN histogramdata SVDECL(*full_part_histogram, NULL);
 SVEXTERN histogramdata SVDECL(*full_plot3D_histograms, NULL);
 SVEXTERN int SVDECL(update_loadall_textures, 1);
 
-SVEXTERN int SVDECL(max_LIST_colorbar2, 0);
-SVEXTERN int SVDECL(max_LIST_colorbar, 0);
+SVEXTERN int SVDECL(max_LISTBOX_colorbar_bound, 0);
+SVEXTERN int SVDECL(max_LISTBOX_colorbar_edit, 0);
 #ifdef pp_COLOR_CIE
 SVEXTERN int SVDECL(show_Lab_dist_bars, 0);
 SVEXTERN int SVDECL(interp_cielab, 1);
@@ -1380,7 +1380,7 @@ SVEXTERN int SVDECL(*shooter_timeslist,NULL);
 SVEXTERN int SVDECL(shooter_itime,0);
 
 SVEXTERN int showgluitrainer;
-SVEXTERN int SVDECL(colorbartype,0),SVDECL(colorbartype_ini,-1), SVDECL(colorbartype_default, 0);
+SVEXTERN int SVDECL(colorbartype,0),SVDECL(colorbartype_ini,-1), SVDECL(colorbartype_default, 0), SVDECL(colorbartype_last, -1);
 SVEXTERN char colorbarname[1024];
 SVEXTERN int SVDECL(update_colorbartype,0);
 SVEXTERN int colorbartype_save;

@@ -265,6 +265,7 @@ void MouseEditColorbar(int x, int y){
   GLubyte r, g, b;
   colorbardata *cbi;
 
+  if(colorbar_hidescene==0)return; // don't edit colorbar with mouse if showing scene
   if(show_firecolormap==0){
     cbi = colorbarinfo + colorbartype;
   }
