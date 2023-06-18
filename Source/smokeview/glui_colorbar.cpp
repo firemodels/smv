@@ -49,7 +49,6 @@ GLUI_Button *BUTTON_addpoint=NULL;
 GLUI_Button *BUTTON_deletepoint=NULL;
 GLUI_Button *BUTTON_savesettings=NULL;
 GLUI_Button *BUTTON_update=NULL;
-GLUI_Button *BUTTON_colorbar_save=NULL;
 GLUI_Button *BUTTON_colorbar_close=NULL;
 GLUI_Button *BUTTON_autonodes = NULL;
 GLUI_RadioGroup *RADIO_colorbar_coord_type;
@@ -60,6 +59,7 @@ GLUI_Checkbox *CHECKBOX_cb_interp = NULL;
 #endif
 
 GLUI_EditText *EDITTEXT_colorbar_label=NULL;
+GLUI_EditText *EDITTEXT_colorbar_filename = NULL;
 
 GLUI_StaticText *STATICTEXT_left=NULL, *STATICTEXT_right=NULL;
 
@@ -72,7 +72,7 @@ int cb_usecolorbar_extreme;
 #define COLORBAR_NEW                  5
 #define COLORBAR_ADDPOINT             7
 #define COLORBAR_DELETEPOINT          8
-#define COLORBAR_SAVE                 9
+#define COLORBAR_SAVE_INI             9
 #define COLORBAR_LABEL               10
 #define COLORBAR_UPDATE              11
 #define COLORBAR_COLORINDEX          12
@@ -89,6 +89,7 @@ int cb_usecolorbar_extreme;
 #endif
 #define COLORBAR_LAB2                26
 #define COLORBAR_RGB2                27
+#define COLORBAR_SAVE                32
 #endif
 
 /* ------------------ UpdateColorbarEdit ------------------------ */
@@ -161,6 +162,28 @@ extern "C" void SetColorbarListEdit(int val){
   if(LISTBOX_colorbar_edit!=NULL)LISTBOX_colorbar_edit->set_int_val(val);
 }
 
+/* ------------------ Colorbar2File ------------------------ */
+
+void Colorbar2File(colorbardata *cbi, char *file, char *label){
+  FILE *stream=NULL;
+  int i;
+
+  if(file!=NULL&&strlen(file)>0&&label!=NULL&&strlen(label)>0)stream = fopen(file, "w");
+  if(stream==NULL)return;
+  fprintf(stream, "name,%s\n", label);
+  for(i=0;i<256;i++){
+    float *rgbi;
+    int rgb255[3];
+
+    rgbi=cbi->colorbar+3*i;
+    rgb255[0] = rgbi[0] * 255.0;
+    rgb255[1] = rgbi[1] * 255.0;
+    rgb255[2] = rgbi[2] * 255.0;
+    fprintf(stream, "%i,%i,%i\n",rgb255[0],rgb255[1],rgb255[2]);
+  }
+  fclose(stream);
+}
+
 /* ------------------ ColorbarCB ------------------------ */
 
 extern "C" void ColorbarCB(int var){
@@ -208,7 +231,7 @@ extern "C" void ColorbarCB(int var){
       updatemenu = 1;
     }
     break;
-  case COLORBAR_SAVE:
+  case COLORBAR_SAVE_INI:
     updatemenu = 1;
     WriteIni(LOCAL_INI, NULL);
     break;
@@ -410,6 +433,12 @@ extern "C" void ColorbarCB(int var){
     break;
 #endif
 #endif
+  case COLORBAR_SAVE:
+    if(colorbartype >= ndefaultcolorbars&&colorbartype < ncolorbars){
+      cbi = colorbarinfo + colorbartype;
+      Colorbar2File(cbi, colorbar_filename, colorbar_label);
+    }
+    break;
   case COLORBAR_DELETE:
     if(colorbartype >= ndefaultcolorbars&&colorbartype < ncolorbars){
       colorbardata *cb_from, *cb_to;
@@ -528,6 +557,9 @@ extern "C" void GluiColorbarSetup(int main_window){
   NewMemory((void **)&colorbar_label,sizeof(GLUI_String));
   strcpy(colorbar_label,_("New colorbar"));
 
+  NewMemory((void **)&colorbar_filename,sizeof(GLUI_String));
+  strcpy(colorbar_filename,"colorbar.csv");
+
   if(glui_colorbar!=NULL){
     glui_colorbar->close();
     glui_colorbar=NULL;
@@ -538,12 +570,6 @@ extern "C" void GluiColorbarSetup(int main_window){
   PANEL_cb2R2 = glui_colorbar->add_panel("",GLUI_PANEL_NONE);
   BUTTON_new=glui_colorbar->add_button_to_panel(PANEL_cb2R2,_("New colorbar"),COLORBAR_NEW,ColorbarCB);
   BUTTON_delete=glui_colorbar->add_button_to_panel(PANEL_cb2R2,_("Delete colorbar"),COLORBAR_DELETE,ColorbarCB);
-#ifdef pp_COLOR_CIE
-#ifdef pp_COLOR_ADJUST
-  glui_colorbar->add_button_to_panel(PANEL_cb2R2, _("Adjust colorbar"), COLORBAR_ADJUST, ColorbarCB);
-  glui_colorbar->add_button_to_panel(PANEL_cb2R2, _("Output CIElab distances"), COLORBAR_CIE_OUTPUT, ColorbarCB);
-#endif
-#endif
   colorbar_hidescene=1;
   CHECKBOX_hidesv = glui_colorbar->add_checkbox_to_panel(PANEL_cb2R2,_("Hide scene"),&colorbar_hidescene);
   PANEL_cb1 = glui_colorbar->add_panel(_("Colorbar"));
@@ -553,7 +579,8 @@ extern "C" void GluiColorbarSetup(int main_window){
     LISTBOX_colorbar_edit=glui_colorbar->add_listbox_to_panel(PANEL_cb1,"",&selectedcolorbar_index,COLORBAR_LIST,ColorbarCB);
     UpdateColorbarListEdit(1,CB_KEEP);
   }
-  EDITTEXT_colorbar_label  = glui_colorbar->add_edittext_to_panel(PANEL_cb1,_("Label"),GLUI_EDITTEXT_TEXT,colorbar_label,COLORBAR_LABEL,ColorbarCB);
+  EDITTEXT_colorbar_label  = glui_colorbar->add_edittext_to_panel(PANEL_cb1,_("Label:"),GLUI_EDITTEXT_TEXT,colorbar_label,COLORBAR_LABEL,ColorbarCB);
+  EDITTEXT_colorbar_label->set_w(200);
   BUTTON_update=glui_colorbar->add_button_to_panel(PANEL_cb1,_("Update label"),COLORBAR_UPDATE,ColorbarCB);
   BUTTON_autonodes=glui_colorbar->add_button_to_panel(PANEL_cb1,_("Distribute nodes uniformly"),COLORBAR_UNIFORM,ColorbarCB);
   PANEL_cb11r     = glui_colorbar->add_panel_to_panel(PANEL_cb1,"",GLUI_PANEL_NONE);
@@ -590,8 +617,13 @@ extern "C" void GluiColorbarSetup(int main_window){
   CHECKBOX_cb_interp = glui_colorbar->add_checkbox("interpolate using CIELab", &interp_cielab, COLORBAR_ADJUST, ColorbarCB);
   glui_colorbar->add_checkbox("show equal distance bars in CIELab space", &show_Lab_dist_bars);
 #ifdef pp_COLOR_ADJUST
-  glui_colorbar->add_button(_("Revert CIE"), COLORBAR_REVERT, ColorbarCB);
+  glui_colorbar->add_button(_("Output CIElab distances"),                      COLORBAR_CIE_OUTPUT, ColorbarCB);
+  glui_colorbar->add_button(_("Adjust colorbar to be perceptually uniform"),   COLORBAR_ADJUST,     ColorbarCB);
+  glui_colorbar->add_button(_("Revert colorbar"),                              COLORBAR_REVERT,     ColorbarCB);
 #endif
+  glui_colorbar->add_button(_("Save colorbar"),                                COLORBAR_SAVE,       ColorbarCB);
+  EDITTEXT_colorbar_filename = glui_colorbar->add_edittext("colorbar filename:",GLUI_EDITTEXT_TEXT,colorbar_filename);
+  EDITTEXT_colorbar_filename->set_w(200);
 #ifdef pp_COLOR_TOGGLE
   PANEL_toggle_cb = glui_colorbar->add_panel(_("toggle colorbars"));
   LISTBOX_colorbar_toggle_edit1 = glui_colorbar->add_listbox_to_panel(PANEL_toggle_cb, "", &index_colorbar1, COLORBAR_LISTA, ColorbarCB);
@@ -630,7 +662,7 @@ extern "C" void GluiColorbarSetup(int main_window){
   ColorbarGlobal2Local();
 
   PANEL_cb10 = glui_colorbar->add_panel("",GLUI_PANEL_NONE);
-  BUTTON_colorbar_save=glui_colorbar->add_button_to_panel(PANEL_cb10,_("Save settings"),COLORBAR_SAVE,ColorbarCB);
+  glui_colorbar->add_button_to_panel(PANEL_cb10,_("Save settings"),COLORBAR_SAVE_INI,ColorbarCB);
   glui_colorbar->add_column_to_panel(PANEL_cb10,false);
   BUTTON_colorbar_close=glui_colorbar->add_button_to_panel(PANEL_cb10,_("Close"),COLORBAR_CLOSE,ColorbarCB);
 #ifdef pp_CLOSEOFF
