@@ -52,12 +52,8 @@ int update_hist_bounds;
 
 #ifdef pp_COLOR_TOGGLE
 GLUI_Panel *PANEL_toggle_cba = NULL;
-GLUI_Button *BUTTON_toggle2 = NULL;
-extern GLUI_Button *BUTTON_colorbar1;
-extern GLUI_Button *BUTTON_colorbar2;
-
-GLUI_Listbox *LISTBOX_colorbar1a = NULL;
-GLUI_Listbox *LISTBOX_colorbar2a = NULL;
+GLUI_Listbox *LISTBOX_colorbar_toggle_bound1 = NULL;
+GLUI_Listbox *LISTBOX_colorbar_toggle_bound2 = NULL;
 #endif
 
 /* ------------------ bounds_dialog class ------------------------ */
@@ -3036,7 +3032,7 @@ extern GLUI *glui_shooter, *glui_tour, *glui_stereo, *glui_trainer;
 
 int cb_up_rgb[3], cb_down_rgb[3];
 
-GLUI_Listbox *LIST_colorbar2 = NULL;
+GLUI_Listbox *LISTBOX_colorbar_bound = NULL;
 
 GLUI_Rollout *ROLLOUT_zone_bound=NULL;
 GLUI_Rollout *ROLLOUT_coloring=NULL;
@@ -3596,16 +3592,20 @@ extern "C" void UpdateExtreme(void){
   ExtremeCB(COLORBAR_EXTREME);
 }
 
-/* ------------------ UpdateColorbarList2 ------------------------ */
+/* ------------------ UpdateColorbarBound ------------------------ */
 
-extern "C" void UpdateColorbarList2(void){
-  if(LIST_colorbar2!=NULL)LIST_colorbar2->set_int_val(selectedcolorbar_index2);
+extern "C" void UpdateColorbarBound(void){
+  if(LISTBOX_colorbar_bound != NULL)LISTBOX_colorbar_bound->set_int_val(selectedcolorbar_index2);
+#ifdef pp_COLOR_TOGGLE
+  if(LISTBOX_colorbar_toggle_bound1!=NULL)LISTBOX_colorbar_toggle_bound1->set_int_val(index_colorbar1);
+  if(LISTBOX_colorbar_toggle_bound2!=NULL)LISTBOX_colorbar_toggle_bound2->set_int_val(index_colorbar2);
+#endif
 }
 
-/* ------------------ SetColorbarListIndex ------------------------ */
+/* ------------------ SetColorbarListBound ------------------------ */
 
-extern "C" void SetColorbarListIndex(int val){
-  if(LIST_colorbar2!=NULL)LIST_colorbar2->set_int_val(val);
+extern "C" void SetColorbarListBound(int val){
+  if(LISTBOX_colorbar_bound!=NULL)LISTBOX_colorbar_bound->set_int_val(val);
 }
 
 /* ------------------ SetColorbarDigits ------------------------ */
@@ -4645,37 +4645,40 @@ extern "C" void UpdateColorbarListBound(int flag){
 
   switch (flag){
     case 1:
-     LIST_cb = LIST_colorbar2;
+     LIST_cb = LISTBOX_colorbar_bound;
      break;
+#ifdef pp_COLOR_TOGGLE
     case 2:
-     LIST_cb = LISTBOX_colorbar1a;
+     LIST_cb = LISTBOX_colorbar_toggle_bound1;
      break;
     case 3:
-     LIST_cb = LISTBOX_colorbar2a;
+     LIST_cb = LISTBOX_colorbar_toggle_bound2;
      break;
+#endif
     default:
-     LIST_cb = LIST_colorbar2;
+     LIST_cb = LISTBOX_colorbar_bound;
      ASSERT(FFALSE);
      break;
   }
   
+  if(LIST_cb == NULL)return;
   for(i=-7;i<ncolorbars;i++){
    LIST_cb->delete_item(i);
   }
   strcpy(label, "rainbow");
-  AddColorbarListBound(LIST_cb, -1, label, &max_LIST_colorbar2);
+  AddColorbarListBound(LIST_cb, -1, label, &max_LISTBOX_colorbar_bound);
   strcpy(label, "linear");
-  AddColorbarListBound(LIST_cb, -2, label, &max_LIST_colorbar2);
+  AddColorbarListBound(LIST_cb, -2, label, &max_LISTBOX_colorbar_bound);
   strcpy(label, "divergent");
-  AddColorbarListBound(LIST_cb, -3, label, &max_LIST_colorbar2);
+  AddColorbarListBound(LIST_cb, -3, label, &max_LISTBOX_colorbar_bound);
   strcpy(label, "circular");
-  AddColorbarListBound(LIST_cb, -4, label, &max_LIST_colorbar2);
+  AddColorbarListBound(LIST_cb, -4, label, &max_LISTBOX_colorbar_bound);
   strcpy(label, "original");
-  AddColorbarListBound(LIST_cb, -7, label, &max_LIST_colorbar2);
+  AddColorbarListBound(LIST_cb, -7, label, &max_LISTBOX_colorbar_bound);
   strcpy(label, "deprecated");
-  AddColorbarListBound(LIST_cb, -5, label, &max_LIST_colorbar2);
+  AddColorbarListBound(LIST_cb, -5, label, &max_LISTBOX_colorbar_bound);
   strcpy(label, "user");
-  AddColorbarListBound(LIST_cb, -6, label, &max_LIST_colorbar2);
+  AddColorbarListBound(LIST_cb, -6, label, &max_LISTBOX_colorbar_bound);
 }
 
 /* ------------------ GluiBoundsSetup ------------------------ */
@@ -5491,11 +5494,11 @@ extern "C" void GluiBoundsSetup(int main_window){
 
   if(ncolorbars>0){
     selectedcolorbar_index2 = -1;
-    LIST_colorbar2 = glui_bounds->add_listbox_to_panel(PANEL_colorbar_properties, "", &selectedcolorbar_index2, COLORBAR_LIST2, SliceBoundCB);
+    LISTBOX_colorbar_bound = glui_bounds->add_listbox_to_panel(PANEL_colorbar_properties, "", &selectedcolorbar_index2, COLORBAR_LIST2, SliceBoundCB);
 
     UpdateColorbarListBound(1);
 
-    LIST_colorbar2->set_int_val(colorbartype_default);
+    LISTBOX_colorbar_bound->set_int_val(colorbartype_default);
     glui_bounds->add_button_to_panel(PANEL_colorbar_properties, _("Next"),     COLORBAR_LIST2_NEXT, SliceBoundCB);
     glui_bounds->add_button_to_panel(PANEL_colorbar_properties, _("Previous"), COLORBAR_LIST2_PREV, SliceBoundCB);
   }
@@ -5537,19 +5540,19 @@ extern "C" void GluiBoundsSetup(int main_window){
 
 #ifdef pp_COLOR_TOGGLE
     PANEL_toggle_cba = glui_bounds->add_panel_to_panel(PANEL_cb11, _("toggle colorbars"));
-    LISTBOX_colorbar1a = glui_bounds->add_listbox_to_panel(PANEL_toggle_cba, "", &index_colorbar1, COLORBAR_LISTA, ColorbarCB);
+    LISTBOX_colorbar_toggle_bound1 = glui_bounds->add_listbox_to_panel(PANEL_toggle_cba, "", &index_colorbar1, COLORBAR_LISTA, ColorbarCB);
     UpdateColorbarListBound(2);
-    LISTBOX_colorbar1a->set_int_val(index_colorbar1);
+    LISTBOX_colorbar_toggle_bound1->set_int_val(index_colorbar1);
 
-    LISTBOX_colorbar2a = glui_bounds->add_listbox_to_panel(PANEL_toggle_cba, "", &index_colorbar2, COLORBAR_LISTB, ColorbarCB);
+    LISTBOX_colorbar_toggle_bound2 = glui_bounds->add_listbox_to_panel(PANEL_toggle_cba, "", &index_colorbar2, COLORBAR_LISTB, ColorbarCB);
     UpdateColorbarListBound(3);
-    LISTBOX_colorbar2a->set_int_val(index_colorbar2);
+    LISTBOX_colorbar_toggle_bound2->set_int_val(index_colorbar2);
 
-    BUTTON_toggle2 = glui_bounds->add_button_to_panel(PANEL_toggle_cba, _("toggle"), COLORBAR_TOGGLE, ColorbarCB);
+    glui_bounds->add_button_to_panel(PANEL_toggle_cba, _("toggle"), COLORBAR_TOGGLE, ColorbarCB);
     ColorbarCB(COLORBAR_LISTA);
     ColorbarCB(COLORBAR_LISTB);
 #endif
-
+    UpdateColorbarBound();
   PANEL_extreme = glui_bounds->add_panel_to_panel(ROLLOUT_coloring, "", GLUI_PANEL_NONE);
 
   if(use_data_extremes==1){
@@ -6331,9 +6334,9 @@ extern "C" void SliceBoundCB(int var){
     case COLORBAR_LIST2_PREV:
       if(var==COLORBAR_LIST2_NEXT)selectedcolorbar_index2++;
       if(var==COLORBAR_LIST2_PREV)selectedcolorbar_index2--;
-      if(selectedcolorbar_index2<0)selectedcolorbar_index2= max_LIST_colorbar2;
-      if(selectedcolorbar_index2> max_LIST_colorbar2)selectedcolorbar_index2=0;
-      LIST_colorbar2->set_int_val(selectedcolorbar_index2);
+      if(selectedcolorbar_index2<0)selectedcolorbar_index2= max_LISTBOX_colorbar_bound;
+      if(selectedcolorbar_index2> max_LISTBOX_colorbar_bound)selectedcolorbar_index2=0;
+      LISTBOX_colorbar_bound->set_int_val(selectedcolorbar_index2);
       SliceBoundCB(COLORBAR_LIST2);
       break;
     case SLICE_SIZE:
@@ -6464,10 +6467,10 @@ extern "C" void SliceBoundCB(int var){
     case COLORBAR_LIST2:
       int list_index;
 
-      list_index = LIST_colorbar2->get_int_val();
+      list_index = LISTBOX_colorbar_bound->get_int_val();
       if(list_index<0)break;
       selectedcolorbar_index = list_index;
-      UpdateColorbarList();
+      SetColorbarListEdit(selectedcolorbar_index);
       ColorbarMenu(selectedcolorbar_index);
       ColorbarGlobal2Local();
       if(selectedcolorbar_index2 == bw_colorbar_index&&bw_colorbar_index>=0){

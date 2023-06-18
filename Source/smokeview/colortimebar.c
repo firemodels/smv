@@ -1320,6 +1320,40 @@ int CompareColorbars(const void *arg1, const void *arg2){
 
 void SortColorBars(void){
   int i;
+  char label_bound[255], label_edit[255];
+#ifdef pp_COLOR_TOGGLE
+  char toggle_label1[255], toggle_label2[255];
+  char *toggle1, *toggle2;
+
+  toggle1 = GetToggleLabel(1);
+  toggle2 = GetToggleLabel(2);
+
+  strcpy(toggle_label1, "");
+  if(index_colorbar1 >= 0){
+    colorbardata *cbt1;
+    cbt1 = colorbarinfo + index_colorbar1;
+    strcpy(toggle_label1,cbt1->label);
+  }
+  strcpy(toggle_label2, "");
+  if(index_colorbar2 >= 0){
+    colorbardata *cbt2;
+
+    cbt2 = colorbarinfo + index_colorbar2;
+    strcpy(toggle_label2, cbt2->label);
+  }
+#endif
+  strcpy(label_edit, "");
+  if(selectedcolorbar_index >= 0){
+    colorbardata *cbt1;
+    cbt1 = colorbarinfo + selectedcolorbar_index;
+    strcpy(label_edit, cbt1->label);
+  }
+  strcpy(label_bound, "");
+  if(selectedcolorbar_index2 >= 0){
+    colorbardata *cbt1;
+    cbt1 = colorbarinfo + selectedcolorbar_index2;
+    strcpy(label_bound, cbt1->label);
+  }
 
   for(i=0; i<ncolorbars; i++){
     colorbardata *cbi;
@@ -1334,7 +1368,7 @@ void SortColorBars(void){
     if(strcmp(cbi->ctype, "original") == 0)cbi->type = CB_ORIGINAL;
     if(strcmp(cbi->ctype, "user")==0)cbi->type = CB_USER;
   }
-  qsort((colorbardata *)colorbarinfo, (size_t)ncolorbars, sizeof(colorbardata), CompareColorbars);
+  //qsort((colorbardata *)colorbarinfo, (size_t)ncolorbars, sizeof(colorbardata), CompareColorbars);
 
   colorbardata *cb;
   cb = GetColorbar("Rainbow");
@@ -1360,11 +1394,27 @@ void SortColorBars(void){
 
   colorbartype       = colorbartype_default;
   iso_colorbar_index = colorbartype_default;
+#ifdef pp_COLOR_TOGGLE
+  cb = NULL;
+  if(strlen(toggle_label1)>0)cb = GetColorbar(toggle_label1);
+  if(cb!=NULL)index_colorbar1 = cb - colorbarinfo;
+
+  cb = NULL;
+  if(strlen(toggle_label2) > 0)cb = GetColorbar(toggle_label2);
+  if(cb != NULL)index_colorbar2 = cb - colorbarinfo;
+#endif
+  cb = NULL;
+  if(strlen(label_edit) > 0)cb = GetColorbar(label_edit);
+  if(cb != NULL)selectedcolorbar_index = cb - colorbarinfo;
+
+  cb = NULL;
+  if(strlen(label_bound) > 0)cb = GetColorbar(label_bound);
+  if(cb != NULL)selectedcolorbar_index2= cb - colorbarinfo;
 }
 
 /* ------------------ AddColorbar ------------------------ */
 
-void AddColorbar(int icolorbar){
+int AddColorbar(int icolorbar){
   colorbardata *cb_to, *cb_from;
   char cb_label[255];
 
@@ -1387,14 +1437,28 @@ void AddColorbar(int icolorbar){
   strcpy(cb_to->ctype, "user");
   RemapColorbar(cb_to);
   SortColorBars();
-  UpdateColorbarListEdit(1,CB_DELETE);
+  UpdateColorbarListEdit(1, CB_DELETE);
   UpdateColorbarListBound(1);
+#ifdef pp_COLOR_TOGGLE
+  UpdateColorbarListEdit(2, CB_DELETE);
+  UpdateColorbarListEdit(3, CB_DELETE);
+  UpdateColorbarListBound(2);
+  UpdateColorbarListBound(3);
+#endif
+  UpdateColorbarBound();
+  UpdateColorbarEdit();
+
 
   colorbardata *cbnew;
 
   cbnew = GetColorbar(cb_label);
-  if(cbnew!=NULL)selectedcolorbar_index = cbnew - colorbarinfo;
-  UpdateColorbarList();
+  if(cbnew != NULL){
+    selectedcolorbar_index = cbnew - colorbarinfo;
+    selectedcolorbar_index2 = selectedcolorbar_index;
+  }
+  SetColorbarListEdit(selectedcolorbar_index);
+  SetColorbarListBound(selectedcolorbar_index2);
+  return selectedcolorbar_index;
 }
 
 /* ------------------ InitDefaultColorbars ------------------------ */
@@ -2064,6 +2128,16 @@ void InitDefaultColorbars(int nini){
     memcpy(cbi->rgb_node_orig, cbi->rgb_node, 3 * cbi->nnodes * sizeof(unsigned char));
   }
   SortColorBars();
+  UpdateColorbarListEdit(1, CB_DELETE);
+  UpdateColorbarListBound(1);
+#ifdef pp_COLOR_TOGGLE
+  UpdateColorbarListEdit(2, CB_DELETE);
+  UpdateColorbarListEdit(3, CB_DELETE);
+  UpdateColorbarListBound(2);
+  UpdateColorbarListBound(3);
+#endif
+  UpdateColorbarEdit();
+  UpdateColorbarBound();
 }
 
 /* ------------------ UpdateColorbarSplits ------------------------ */
