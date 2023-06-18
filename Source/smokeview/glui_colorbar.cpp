@@ -469,21 +469,6 @@ void AddColorbarListEdit(GLUI_Listbox *LIST_cbar, int index, char *label_arg, in
 }
 
 /* ------------------ UpdateColorbarListEdit ------------------------ */
-#ifdef pp_COLOR_TOGGLE
-extern "C" char *GetToggleLabel(int flag){
-  char *label=NULL;
-
-  if(flag == 1){
-    if(LISTBOX_colorbar_toggle_edit1!=NULL)label = LISTBOX_colorbar_toggle_edit1->curr_text;
-  }
-  else{
-    if(LISTBOX_colorbar_toggle_edit2 != NULL)label = LISTBOX_colorbar_toggle_edit2->curr_text;
-  }
-  return label;
-}
-#endif
-
-/* ------------------ UpdateColorbarListEdit ------------------------ */
 
 extern "C" void UpdateColorbarListEdit(int flag, int del){
   int i;

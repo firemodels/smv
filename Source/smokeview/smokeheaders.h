@@ -728,9 +728,6 @@ EXTERNCPP void InitOpenGL(int option);
 EXTERNCPP void TextureShowMenu(int value);
 EXTERNCPP void UpdateColorbarBound(void);
 EXTERNCPP void UpdateColorbarEdit(void);
-#ifdef pp_COLOR_TOGGLE
-EXTERNCPP char *GetToggleLabel(int flag);
-#endif
 
 EXTERNCPP void CopyArgs(int *argc, char **aargv, char ***argv_sv);
 EXTERNCPP void InitUserTicks(void);

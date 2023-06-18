@@ -552,7 +552,6 @@ SVEXTERN int cb_rgb2[3];
 #ifdef pp_COLOR_TOGGLE
 SVEXTERN int SVDECL(index_colorbar1, 0), SVDECL(index_colorbar2, 1);
 SVEXTERN int SVDECL(colorbar_toggle, 1);
-SVEXTERN char toggle_label1[256], toggle_label2[256];
 #endif
 #ifdef pp_COLOR_CIE_CHECK
 SVEXTERN unsigned char SVDECL(*cielab_check_rgb255, NULL);

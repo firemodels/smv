@@ -1323,10 +1323,6 @@ void SortColorBars(void){
   char label_bound[255], label_edit[255];
 #ifdef pp_COLOR_TOGGLE
   char toggle_label1[255], toggle_label2[255];
-  char *toggle1, *toggle2;
-
-  toggle1 = GetToggleLabel(1);
-  toggle2 = GetToggleLabel(2);
 
   strcpy(toggle_label1, "");
   if(index_colorbar1 >= 0){
