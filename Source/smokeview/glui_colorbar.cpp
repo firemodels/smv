@@ -574,7 +574,7 @@ extern "C" void GluiColorbarSetup(int main_window){
   CHECKBOX_hidesv = glui_colorbar->add_checkbox_to_panel(PANEL_cb2R2,_("Hide scene"),&colorbar_hidescene);
   PANEL_cb1 = glui_colorbar->add_panel(_("Colorbar"));
   if(ncolorbars>0){
-    selectedcolorbar_index=-1;
+    selectedcolorbar_index=0;
 
     LISTBOX_colorbar_edit=glui_colorbar->add_listbox_to_panel(PANEL_cb1,"",&selectedcolorbar_index,COLORBAR_LIST,ColorbarCB);
     UpdateColorbarListEdit(1,CB_KEEP);
