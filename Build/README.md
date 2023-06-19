@@ -59,6 +59,10 @@ Or, to build with Intel OneAPI:
   cmake --install cbuild --config Release --prefix dist
 ```
 
+Note that the scripts to build with Lua in the `Build/smokeview/${platform}`
+will automatically use the CMake commands as above. These scripts will also run
+all of the available tests.
+
 ### Enabling Lua Scripting Engine
 
 As an alternative to the *.ssf style scripts, Smokeview can also be built to
