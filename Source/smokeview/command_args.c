@@ -213,8 +213,8 @@ CommandlineArgs ParseCommandlineNew(int argc, char **argv,
     } else if (strcmp(argv[i], "-luascript") == 0) {
       ++i;
       if (i < argc) {
-        NewMemory((void **)&args.scriptrenderdir, strlen(argv[i]) + 1);
-        strcpy(args.scriptrenderdir, argv[i]);
+        NewMemory((void **)&args.luascript, strlen(argv[i]) + 1);
+        strcpy(args.luascript, argv[i]);
       } else {
         *error = CLE_ARGUMENT_EXPECTED;
         return args;
