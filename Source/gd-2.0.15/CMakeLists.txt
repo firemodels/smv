@@ -11,7 +11,6 @@ set(FILES
 
 include_directories(".")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}  -DHAVE_LIBPNG -DHAVE_LIBZ -DHAVE_LIBJPEG")
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-incompatible-pointer-types")
 add_library(gd_static STATIC ${FILES})
 set_target_properties(gd_static PROPERTIES OUTPUT_NAME "gd")
 target_include_directories(gd_static PUBLIC .)
@@ -47,3 +46,8 @@ endif()
 
 set(MAJOR_VERSION 2)
 set(VERSION 2.0.4)
+
+# IntelLLVM warnings
+target_compile_options(gd_static PRIVATE $<$<C_COMPILER_ID:IntelLLVM>: -Wno-incompatible-pointer-types>)
+target_compile_options(gd_static PRIVATE $<$<C_COMPILER_ID:IntelLLVM>: -Wno-sizeof-pointer-memaccess>)
+target_compile_options(gd_static PRIVATE $<$<C_COMPILER_ID:IntelLLVM>: -Wno-absolute-value>)

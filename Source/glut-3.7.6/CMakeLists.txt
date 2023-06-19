@@ -80,3 +80,9 @@ if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
     set(MACOSX TRUE)
     add_definitions(-Dpp_OSX)
 endif()
+
+# IntelLLVM warnings
+target_compile_options(glut32_static PRIVATE $<$<C_COMPILER_ID:IntelLLVM>: -Wno-bitwise-conditional-parentheses>)
+target_compile_options(glut32_static PRIVATE $<$<C_COMPILER_ID:IntelLLVM>: -Wno-pointer-to-int-cast>)
+target_compile_options(glut32_static PRIVATE $<$<C_COMPILER_ID:IntelLLVM>: -Wno-deprecated-declarations>)
+target_compile_options(glut32_static PRIVATE $<$<C_COMPILER_ID:IntelLLVM>: -Wno-pointer-sign>)

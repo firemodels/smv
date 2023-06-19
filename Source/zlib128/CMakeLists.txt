@@ -15,3 +15,8 @@ target_include_directories(zlib_static PUBLIC .)
 if (WIN32)
     add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 endif ()
+# IntelLLVM warnings
+target_compile_options(zlib_static PRIVATE $<$<C_COMPILER_ID:IntelLLVM>: -Wno-deprecated-non-prototype>)
+target_compile_options(zlib_static PRIVATE $<$<C_COMPILER_ID:IntelLLVM>: -Wno-writable-strings>)
+target_compile_options(zlib_static PRIVATE $<$<C_COMPILER_ID:IntelLLVM>: -Wno-shift-negative-value>)
+target_compile_options(zlib_static PRIVATE $<$<C_COMPILER_ID:IntelLLVM>: -Wno-deprecated-declarations>)

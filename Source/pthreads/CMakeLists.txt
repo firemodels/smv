@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.21)
 project(lua LANGUAGES C VERSION 5.2.1)
 
+
 set(FILES
     "pthread.c"
 )
@@ -15,3 +16,6 @@ add_compile_definitions(HAVE_STRUCT_TIMESPEC)
 include_directories(".")
 add_library(pthread_static STATIC ${FILES})
 set_target_properties(pthread_static PROPERTIES OUTPUT_NAME "pthread")
+# IntelLLVM warnings
+target_compile_options(pthread_static PRIVATE $<$<C_COMPILER_ID:IntelLLVM>: -Wno-single-bit-bitfield-constant-conversion>)
+target_compile_options(pthread_static PRIVATE $<$<C_COMPILER_ID:IntelLLVM>: -Wno-pointer-sign>)

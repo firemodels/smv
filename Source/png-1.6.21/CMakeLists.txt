@@ -24,3 +24,5 @@ endif()
 if (WIN32)
     add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 endif ()
+# IntelLLVM warnings
+target_compile_options(png_static PRIVATE $<$<C_COMPILER_ID:IntelLLVM>: -Wno-tautological-constant-out-of-range-compare>)

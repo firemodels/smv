@@ -42,8 +42,9 @@ else ()
   target_include_directories(glui_static PRIVATE ../glui_gl)
 endif()
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-write-strings")
-
 if (WIN32)
     add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 endif ()
+
+# IntelLLVM warnings
+target_compile_options(glui_static PRIVATE $<$<C_COMPILER_ID:IntelLLVM>: -Wno-write-strings>)
