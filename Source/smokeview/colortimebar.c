@@ -969,7 +969,9 @@ void RemapColorbar(colorbardata *cbi){
 #ifdef pp_COLOR_CIE
   float *cie_rgb;
 #endif
+  int interp_cielab;
 
+  interp_cielab = cbi->interp;
   CheckMemory;
   colorbar=cbi->colorbar;
   rgb_node=cbi->rgb_node;
@@ -1003,7 +1005,7 @@ void RemapColorbar(colorbardata *cbi){
 
     float cie1[3], cie2[3];
 
-    if(interp_cielab==1){
+    if(interp_cielab==INTERP_CIE){
       Rgb2CIE(rgb_node,   cie1);
       Rgb2CIE(rgb_node+3, cie2);
     }
@@ -1019,7 +1021,7 @@ void RemapColorbar(colorbardata *cbi){
       ciej[0]=MIX(factor,cie2[0],cie1[0]);
       ciej[1]=MIX(factor,cie2[1],cie1[1]);
       ciej[2]=MIX(factor,cie2[2],cie1[2]);
-      if(interp_cielab == 1){
+      if(interp_cielab==INTERP_CIE){
         unsigned char rgb_val[3];
         float frgb[3];
 
@@ -1447,6 +1449,7 @@ int AddColorbar(int icolorbar){
   strcat(cb_to->label, cb_from->label);
   strcpy(cb_label, cb_to->label);
   strcpy(cb_to->ctype, "user");
+  cb_to->interp = INTERP_CIE;
   RemapColorbar(cb_to);
   SortColorBars();
   UpdateColorbarListEdit(1, CB_DELETE);
@@ -2135,6 +2138,12 @@ void InitDefaultColorbars(int nini){
   for(i=0;i<ndefaultcolorbars;i++){
     cbi = colorbarinfo + i;
 
+    if(strlen(cbi->label) == 7 && strcmp(cbi->label, "Rainbow") == 0){
+      cbi->interp = INTERP_RGB;
+    }
+    else{
+      cbi->interp = INTERP_CIE;
+    }
     RemapColorbar(cbi);
     UpdateColorbarSplits(cbi);
     memcpy(cbi->rgb_node_orig, cbi->rgb_node, 3 * cbi->nnodes * sizeof(unsigned char));
@@ -2150,6 +2159,16 @@ void InitDefaultColorbars(int nini){
 #endif
   UpdateColorbarEdit();
   UpdateColorbarBound();
+
+  for(i = 0;i < ncolorbars;i++){
+    cbi = colorbarinfo + i;
+    if(strlen(cbi->label)==7&&strcmp(cbi->label, "Rainbow") == 0){
+      cbi->interp = INTERP_RGB;
+    }
+    else{
+      cbi->interp = INTERP_CIE;
+    }
+  }
 }
 
 /* ------------------ UpdateColorbarSplits ------------------------ */

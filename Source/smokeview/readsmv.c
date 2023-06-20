@@ -14842,6 +14842,7 @@ int ReadIni2(char *inifile, int localfile){
           strcpy(cbi->label, cb_buffptr);
           cbi->type = CB_USER;
           strcpy(cbi->ctype, "user");
+          cbi->interp = INTERP_CIE;
 
           fgets(buffer, 255, stream);
           sscanf(buffer, "%i %i", &cbi->nnodes, &cbi->nodehilight);
