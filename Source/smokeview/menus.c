@@ -8262,10 +8262,10 @@ int MakeSubColorbarMenu(int *submenuptr, int *nmenusptr, char *ctype, void (*CBM
   for(i = 0; i < ncolorbars; i++){
     colorbardata *cbi;
 
-    cbi = colorbarinfo + i;
+    cbi = colorbarinfo + colorbar_list_sorted[i];
     if(strcmp(cbi->ctype, ctype) != 0)continue;
     strcpy(ccolorbarmenu, "");
-    if(colorbartype == i){
+    if(colorbartype == colorbar_list_sorted[i]){
       strcat(ccolorbarmenu, "*");
       strcat(ccolorbarmenu, cbi->label);
     }
@@ -8275,7 +8275,7 @@ int MakeSubColorbarMenu(int *submenuptr, int *nmenusptr, char *ctype, void (*CBM
     char *ext;
     ext = strrchr(ccolorbarmenu, '.');
     if(ext != NULL)*ext = 0;
-    glutAddMenuEntry(ccolorbarmenu, i);
+    glutAddMenuEntry(ccolorbarmenu, colorbar_list_sorted[i]);
   }
   return 1;
 }

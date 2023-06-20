@@ -4627,11 +4627,11 @@ void AddColorbarListBound(GLUI_Listbox *LIST_cbar, int index, char *label_arg, i
   for(i = 0; i < ncolorbars; i++){
     colorbardata *cbi;
 
-    cbi = colorbarinfo + i;
+    cbi = colorbarinfo + colorbar_list_sorted[i];
     if(strcmp(cbi->ctype, label_arg) != 0)continue;
 #ifdef pp_COLOR_TOGGLE
-    LIST_cbar->add_item(i, cbi->label);
-    *max_index = MAX(i, *max_index);
+    LIST_cbar->add_item(colorbar_list_sorted[i], cbi->label);
+    *max_index = MAX(colorbar_list_sorted[i], *max_index);
 #endif
   }
 }
@@ -6332,10 +6332,12 @@ extern "C" void SliceBoundCB(int var){
   switch(var){
     case COLORBAR_LIST2_NEXT:
     case COLORBAR_LIST2_PREV:
+      selectedcolorbar_index2 = colorbar_list_inverse[selectedcolorbar_index2];
       if(var==COLORBAR_LIST2_NEXT)selectedcolorbar_index2++;
       if(var==COLORBAR_LIST2_PREV)selectedcolorbar_index2--;
       if(selectedcolorbar_index2<0)selectedcolorbar_index2= max_LISTBOX_colorbar_bound;
       if(selectedcolorbar_index2> max_LISTBOX_colorbar_bound)selectedcolorbar_index2=0;
+      selectedcolorbar_index2 = colorbar_list_sorted[selectedcolorbar_index2];
       LISTBOX_colorbar_bound->set_int_val(selectedcolorbar_index2);
       SliceBoundCB(COLORBAR_LIST2);
       break;

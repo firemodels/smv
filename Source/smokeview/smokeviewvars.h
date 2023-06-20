@@ -541,6 +541,8 @@ SVEXTERN int SVDECL(update_loadall_textures, 1);
 
 SVEXTERN int SVDECL(max_LISTBOX_colorbar_bound, 0);
 SVEXTERN int SVDECL(max_LISTBOX_colorbar_edit, 0);
+SVEXTERN int SVDECL(*colorbar_list_sorted, NULL);
+SVEXTERN int SVDECL(*colorbar_list_inverse, NULL);
 #ifdef pp_COLOR_CIE
 SVEXTERN int SVDECL(show_Lab_dist_bars, 0);
 SVEXTERN int SVDECL(interp_cielab, 1);

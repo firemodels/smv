@@ -389,10 +389,12 @@ extern "C" void ColorbarCB(int var){
     break;
   case COLORBAR_PREV:
   case COLORBAR_NEXT:
+    colorbartype = colorbar_list_inverse[colorbartype];
     if(var==COLORBAR_PREV)colorbartype--;
     if(var==COLORBAR_NEXT)colorbartype++;
     if(colorbartype<0)colorbartype= max_LISTBOX_colorbar_edit;
     if(colorbartype> max_LISTBOX_colorbar_edit)colorbartype=0;
+    colorbartype = colorbar_list_sorted[colorbartype];
     LISTBOX_colorbar_edit->set_int_val(colorbartype);
     ColorbarCB(COLORBAR_LIST);
     break;
@@ -508,10 +510,10 @@ void AddColorbarListEdit(GLUI_Listbox *LIST_cbar, int index, char *label_arg, in
   for(i = 0; i < ncolorbars; i++){
     colorbardata *cbi;
 
-    cbi = colorbarinfo + i;
+    cbi = colorbarinfo + colorbar_list_sorted[i];
     if(strcmp(cbi->ctype, label_arg) != 0)continue;
-    LIST_cbar->add_item(i, cbi->label);
-    *max_index = MAX(i, *max_index);
+    LIST_cbar->add_item(colorbar_list_sorted[i], cbi->label);
+    *max_index = MAX(colorbar_list_sorted[i], *max_index);
   }
 }
 

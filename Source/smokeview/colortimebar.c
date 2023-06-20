@@ -1242,10 +1242,14 @@ void ReadCSVColorbar(colorbardata *cbptr, char *dir, char *file, char *ctype, in
     field2 = strtok(NULL, ",");
     if(field2 != NULL){
       strcpy(cbptr->label, field2);
+      TrimBack(cbptr->label);
     }
   }
   rewind(stream);
-  if(have_name == 1)fgets(buffer, 255, stream);
+  if(have_name == 1){
+    fgets(buffer, 255, stream);
+    TrimBack(buffer);
+  }
   for(;;){
     if(fgets(buffer, 255, stream) == NULL)break;
     n++;
@@ -1255,7 +1259,10 @@ void ReadCSVColorbar(colorbardata *cbptr, char *dir, char *file, char *ctype, in
   NewMemory((void **)&rgbs, 3 * n * sizeof(int));
   rgbscopy = rgbs;
 
-  if(have_name==1)fgets(buffer, 255, stream);
+  if(have_name == 1){
+    fgets(buffer, 255, stream);
+    TrimBack(buffer);
+  }
   for(i=0;i<n;i++){
     char *crgb;
 
@@ -1308,9 +1315,12 @@ void RevertColorBar(colorbardata *cbi){
 
 int CompareColorbars(const void *arg1, const void *arg2){
   colorbardata *cbi, *cbj;
+  int *i, *j;
 
-  cbi = (colorbardata *)arg1;
-  cbj = (colorbardata *)arg2;
+  i = (int *)arg1;
+  j = (int *)arg2;
+  cbi = colorbarinfo + *i;
+  cbj = colorbarinfo + *j;
   if(cbi->type<cbj->type)return -1;
   if(cbi->type>cbj->type)return 1;
   return STRCMP(cbi->label, cbj->label);
@@ -1351,6 +1361,10 @@ void SortColorBars(void){
     strcpy(label_bound, cbt1->label);
   }
 
+  FREEMEMORY(colorbar_list_sorted);
+  NewMemory((void **)&colorbar_list_sorted, ncolorbars*sizeof(int));
+  FREEMEMORY(colorbar_list_inverse);
+  NewMemory((void **)&colorbar_list_inverse, ncolorbars*sizeof(int));
   for(i=0; i<ncolorbars; i++){
     colorbardata *cbi;
 
@@ -1363,8 +1377,12 @@ void SortColorBars(void){
     if(strcmp(cbi->ctype, "deprecated")==0)cbi->type = CB_DEPRECATED;
     if(strcmp(cbi->ctype, "original") == 0)cbi->type = CB_ORIGINAL;
     if(strcmp(cbi->ctype, "user")==0)cbi->type = CB_USER;
+    colorbar_list_sorted[i] = i;
   }
-  //qsort((colorbardata *)colorbarinfo, (size_t)ncolorbars, sizeof(colorbardata), CompareColorbars);
+  qsort((colorbardata *)colorbar_list_sorted, (size_t)ncolorbars, sizeof(int), CompareColorbars);
+  for(i=0; i<ncolorbars; i++){
+    colorbar_list_inverse[colorbar_list_sorted[i]] = i;
+  }
 
   colorbardata *cb;
   cb = GetColorbar("Rainbow");
