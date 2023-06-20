@@ -1479,7 +1479,9 @@ int AddColorbar(int icolorbar){
 void InitDefaultColorbars(int nini){
   int i;
   colorbardata *cbi;
+#ifdef pp_COLORBARS_CSV
   int ncolorbars_dirlist;
+#endif
 
   ndefaultcolorbars = 0;
 

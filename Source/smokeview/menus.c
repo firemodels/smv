@@ -8324,6 +8324,7 @@ void MakeColorbarMenu(int *menuptr,
   {
     char ccolorbarmenu[256];
 
+    int i;
     for(i = 0; i < ncolorbars; i++){
       colorbardata *cbi;
 
