@@ -1041,10 +1041,9 @@ void ColorbarMenu(int value){
     iso_colorbar = colorbarinfo + iso_colorbar_index;
     update_texturebar=1;
     UpdateListIsoColorobar();
-    selectedcolorbar_index2=colorbartype;
     UpdateCurrentColorbar(colorbarinfo+colorbartype);
     UpdateColorbarType();
-    SetColorbarListBound(selectedcolorbar_index2);
+    SetColorbarListBound(colorbartype);
     if(colorbartype == bw_colorbar_index&&bw_colorbar_index>=0){
       setbwdata = 1;
     }

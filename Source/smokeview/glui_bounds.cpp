@@ -3595,7 +3595,7 @@ extern "C" void UpdateExtreme(void){
 /* ------------------ UpdateColorbarBound ------------------------ */
 
 extern "C" void UpdateColorbarBound(void){
-  if(LISTBOX_colorbar_bound != NULL)LISTBOX_colorbar_bound->set_int_val(selectedcolorbar_index2);
+  if(LISTBOX_colorbar_bound != NULL)LISTBOX_colorbar_bound->set_int_val(colorbartype);
 #ifdef pp_COLOR_TOGGLE
   if(LISTBOX_colorbar_toggle_bound1!=NULL)LISTBOX_colorbar_toggle_bound1->set_int_val(index_colorbar1);
   if(LISTBOX_colorbar_toggle_bound2!=NULL)LISTBOX_colorbar_toggle_bound2->set_int_val(index_colorbar2);
@@ -5493,8 +5493,8 @@ extern "C" void GluiBoundsSetup(int main_window){
 
 
   if(ncolorbars>0){
-    selectedcolorbar_index2 = -1;
-    LISTBOX_colorbar_bound = glui_bounds->add_listbox_to_panel(PANEL_colorbar_properties, "", &selectedcolorbar_index2, COLORBAR_LIST2, SliceBoundCB);
+    colorbartype = -1;
+    LISTBOX_colorbar_bound = glui_bounds->add_listbox_to_panel(PANEL_colorbar_properties, "", &colorbartype, COLORBAR_LIST2, SliceBoundCB);
     UpdateColorbarListBound(1);
     LISTBOX_colorbar_bound->set_int_val(colorbartype_default);
 
@@ -6331,13 +6331,13 @@ extern "C" void SliceBoundCB(int var){
   switch(var){
     case COLORBAR_LIST2_NEXT:
     case COLORBAR_LIST2_PREV:
-      selectedcolorbar_index2 = colorbar_list_inverse[selectedcolorbar_index2];
-      if(var==COLORBAR_LIST2_NEXT)selectedcolorbar_index2++;
-      if(var==COLORBAR_LIST2_PREV)selectedcolorbar_index2--;
-      if(selectedcolorbar_index2<0)selectedcolorbar_index2= max_LISTBOX_colorbar_bound;
-      if(selectedcolorbar_index2> max_LISTBOX_colorbar_bound)selectedcolorbar_index2=0;
-      selectedcolorbar_index2 = colorbar_list_sorted[selectedcolorbar_index2];
-      LISTBOX_colorbar_bound->set_int_val(selectedcolorbar_index2);
+      colorbartype = colorbar_list_inverse[colorbartype];
+      if(var==COLORBAR_LIST2_NEXT)colorbartype++;
+      if(var==COLORBAR_LIST2_PREV)colorbartype--;
+      if(colorbartype<0)colorbartype= max_LISTBOX_colorbar_bound;
+      if(colorbartype> max_LISTBOX_colorbar_bound)colorbartype=0;
+      colorbartype = colorbar_list_sorted[colorbartype];
+      LISTBOX_colorbar_bound->set_int_val(colorbartype);
       SliceBoundCB(COLORBAR_LIST2);
       break;
     case SLICE_SIZE:
@@ -6470,11 +6470,11 @@ extern "C" void SliceBoundCB(int var){
 
       list_index = LISTBOX_colorbar_bound->get_int_val();
       if(list_index<0)break;
-      selectedcolorbar_index = list_index;
-      SetColorbarListEdit(selectedcolorbar_index);
-      ColorbarMenu(selectedcolorbar_index);
+      colorbartype = list_index;
+      SetColorbarListEdit(colorbartype);
+      ColorbarMenu(colorbartype);
       ColorbarGlobal2Local();
-      if(selectedcolorbar_index2 == bw_colorbar_index&&bw_colorbar_index>=0){
+      if(colorbartype == bw_colorbar_index&&bw_colorbar_index>=0){
         setbwdata = 1;
         ColorbarMenu(bw_colorbar_index);
       }

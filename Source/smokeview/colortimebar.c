@@ -1349,15 +1349,15 @@ void SortColorBars(void){
   }
 #endif
   strcpy(label_edit, "");
-  if(selectedcolorbar_index >= 0){
+  if(colorbartype >= 0){
     colorbardata *cbt1;
-    cbt1 = colorbarinfo + selectedcolorbar_index;
+    cbt1 = colorbarinfo + colorbartype;
     strcpy(label_edit, cbt1->label);
   }
   strcpy(label_bound, "");
-  if(selectedcolorbar_index2 >= 0){
+  if(colorbartype >= 0){
     colorbardata *cbt1;
-    cbt1 = colorbarinfo + selectedcolorbar_index2;
+    cbt1 = colorbarinfo + colorbartype;
     strcpy(label_bound, cbt1->label);
   }
 
@@ -1417,11 +1417,11 @@ void SortColorBars(void){
 #endif
   cb = NULL;
   if(strlen(label_edit) > 0)cb = GetColorbar(label_edit);
-  if(cb != NULL)selectedcolorbar_index = cb - colorbarinfo;
+  if(cb != NULL)colorbartype = cb - colorbarinfo;
 
   cb = NULL;
   if(strlen(label_bound) > 0)cb = GetColorbar(label_bound);
-  if(cb != NULL)selectedcolorbar_index2= cb - colorbarinfo;
+  if(cb != NULL)colorbartype= cb - colorbarinfo;
 }
 
 /* ------------------ AddColorbar ------------------------ */
@@ -1464,12 +1464,11 @@ int AddColorbar(int icolorbar){
 
   cbnew = GetColorbar(cb_label);
   if(cbnew != NULL){
-    selectedcolorbar_index = cbnew - colorbarinfo;
-    selectedcolorbar_index2 = selectedcolorbar_index;
+    colorbartype = cbnew - colorbarinfo;
   }
-  SetColorbarListEdit(selectedcolorbar_index);
-  SetColorbarListBound(selectedcolorbar_index2);
-  return selectedcolorbar_index;
+  SetColorbarListEdit(colorbartype);
+  SetColorbarListBound(colorbartype);
+  return colorbartype;
 }
 
 /* ------------------ InitDefaultColorbars ------------------------ */

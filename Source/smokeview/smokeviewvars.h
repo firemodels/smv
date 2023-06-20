@@ -1506,7 +1506,6 @@ SVEXTERN float linewidth, ventlinewidth, highlight_linewidth,solidlinewidth;
 SVEXTERN float SVDECL(sliceoffset_factor,0.1), SVDECL(ventoffset_factor,0.1);
 SVEXTERN int visBLOCKold;
 
-SVEXTERN int selectedcolorbar_index,selectedcolorbar_index2;
 SVEXTERN int planar_terrain_slice;
 SVEXTERN int  SVDECL(nrgb, NRGB);
 SVEXTERN int nrgb_ini;

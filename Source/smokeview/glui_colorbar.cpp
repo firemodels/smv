@@ -97,7 +97,7 @@ int cb_usecolorbar_extreme;
 /* ------------------ UpdateColorbarEdit ------------------------ */
 
 extern "C" void UpdateColorbarEdit(void){
-if(LISTBOX_colorbar_edit != NULL)LISTBOX_colorbar_edit->set_int_val(selectedcolorbar_index);
+if(LISTBOX_colorbar_edit != NULL)LISTBOX_colorbar_edit->set_int_val(colorbartype);
 #ifdef pp_COLOR_TOGGLE
   if(LISTBOX_colorbar_toggle_edit1!=NULL)LISTBOX_colorbar_toggle_edit1->set_int_val(index_colorbar1);
   if(LISTBOX_colorbar_toggle_edit2!=NULL)LISTBOX_colorbar_toggle_edit2->set_int_val(index_colorbar2);
@@ -369,15 +369,15 @@ extern "C" void ColorbarCB(int var){
 
     list_index = LISTBOX_colorbar_edit->get_int_val();
     if(list_index<0)break;
-    selectedcolorbar_index2 = list_index;
+    colorbartype = list_index;
     if(show_firecolormap==0){
-      colorbartype=selectedcolorbar_index2;
+      colorbartype=colorbartype;
     }
     else{
-      fire_colorbar_index= selectedcolorbar_index2;
+      fire_colorbar_index= colorbartype;
     }
-    SetColorbarListBound(selectedcolorbar_index2);
-    ColorbarMenu(selectedcolorbar_index2);
+    SetColorbarListBound(colorbartype);
+    ColorbarMenu(colorbartype);
     ColorbarGlobal2Local();
     break;
 #ifdef pp_COLOR_TOGGLE
@@ -597,9 +597,9 @@ extern "C" void GluiColorbarSetup(int main_window){
   CHECKBOX_hidesv = glui_colorbar->add_checkbox_to_panel(PANEL_cb2R2,_("Hide scene"),&colorbar_hidescene);
   PANEL_cb1 = glui_colorbar->add_panel(_("Colorbar"));
   if(ncolorbars>0){
-    selectedcolorbar_index=0;
+    colorbartype=0;
 
-    LISTBOX_colorbar_edit=glui_colorbar->add_listbox_to_panel(PANEL_cb1,"",&selectedcolorbar_index,COLORBAR_LIST,ColorbarCB);
+    LISTBOX_colorbar_edit=glui_colorbar->add_listbox_to_panel(PANEL_cb1,"",&colorbartype,COLORBAR_LIST,ColorbarCB);
     UpdateColorbarListEdit(1,CB_KEEP);
     LISTBOX_colorbar_edit->set_int_val(colorbartype_default);
   }

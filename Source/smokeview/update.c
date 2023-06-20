@@ -2512,8 +2512,7 @@ void UpdateDisplay(void){
         UpdateColorbarListBound(2);
         UpdateColorbarListBound(3);
 #endif
-        selectedcolorbar_index = colorbartype_default;
-        selectedcolorbar_index2 = colorbartype_default;
+        colorbartype = colorbartype_default;
         UpdateColorbarBound();
         UpdateColorbarEdit();
       }
