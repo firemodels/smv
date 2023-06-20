@@ -46,22 +46,3 @@ cp libpng.a $LIBDIR/.
 cd $SRCDIR/zlib128
 ./makelib.sh $OPTS
 cp libz.a $LIBDIR/.
-
-if [[ "$LUA_SCRIPTING" == "true" ]]; then
-# Lua # Lua interpreter
-cd $SRCDIR/lua-5.3.1/src
-export TARGET=liblua.a
-./makelib.sh $OPTS
-cp liblua.a $LIBDIR/.
-
-# LPEG # Lua parsing libarary to parse SSF files
-cd $SRCDIR/lpeg-1.0.0
-export TARGET=linux
-./makelib.sh $OPTS
-cp lpeg.so $LIBDIR/.
-
-# LFS # Lua library for interacting with the filesystem
-cd $SRCDIR/lfs
-./makelib.sh $OPTS
-cp luafilesystem-1_8_0/src/lfs.so $LIBDIR/.
-fi

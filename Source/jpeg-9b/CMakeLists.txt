@@ -27,8 +27,7 @@ set(JPEG_LIB_VERSION 62)
 include_directories(".")
 add_library(jpeg_static STATIC ${LIBOBJECTS})
 set_target_properties(jpeg_static PROPERTIES OUTPUT_NAME "jpeg")
-target_include_directories(jpeg_static PUBLIC "include")
-
+target_include_directories(jpeg_static PUBLIC .)
 
 if (WIN32)
     add_definitions(-D_CRT_SECURE_NO_WARNINGS)

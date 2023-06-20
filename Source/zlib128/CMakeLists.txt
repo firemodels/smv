@@ -10,9 +10,13 @@ set(FILES
 include_directories(".")
 add_library(zlib_static STATIC ${FILES})
 set_target_properties(zlib_static PROPERTIES OUTPUT_NAME "z")
+target_include_directories(zlib_static PUBLIC .)
 
 if (WIN32)
     add_definitions(-D_CRT_SECURE_NO_WARNINGS)
-    # set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-deprecated-declarations -Wno-shift-negative-value")
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}")
 endif ()
+# IntelLLVM warnings
+target_compile_options(zlib_static PRIVATE $<$<C_COMPILER_ID:IntelLLVM>: -Wno-deprecated-non-prototype>)
+target_compile_options(zlib_static PRIVATE $<$<C_COMPILER_ID:IntelLLVM>: -Wno-writable-strings>)
+target_compile_options(zlib_static PRIVATE $<$<C_COMPILER_ID:IntelLLVM>: -Wno-shift-negative-value>)
+target_compile_options(zlib_static PRIVATE $<$<C_COMPILER_ID:IntelLLVM>: -Wno-deprecated-declarations>)

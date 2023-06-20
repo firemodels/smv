@@ -9,25 +9,45 @@ set(FILES
     gd_wbmp.c gdhelpers.c gd_topal.c
 )
 
+include_directories(".")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}  -DHAVE_LIBPNG -DHAVE_LIBZ -DHAVE_LIBJPEG")
+add_library(gd_static STATIC ${FILES})
+set_target_properties(gd_static PROPERTIES OUTPUT_NAME "gd")
+target_include_directories(gd_static PUBLIC .)
+
 if(UNIX)
     set(STDINT "-DHAVE_STDINT_H")
 endif()
 
 if (WIN32)
     add_definitions(-D_CRT_SECURE_NO_WARNINGS -DWIN32)
-endif ()
+endif()
+if (MSVC)
+    target_compile_options(gd_static PRIVATE /wd4133)
+endif()
 
-include_directories(".")
-include_directories("../zlib128")
-include_directories("../jpeg-9b")
-include_directories("../png-1.6.21")
-# set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}  -DHAVE_LIBPNG -DHAVE_LIBZ -DHAVE_LIBJPEG -Wno-sizeof-pointer-memaccess -Wno-absolute-value")
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}  -DHAVE_LIBPNG -DHAVE_LIBZ -DHAVE_LIBJPEG")
-add_library(gd_static STATIC ${FILES})
-set_target_properties(gd_static PROPERTIES OUTPUT_NAME "gd")
-target_include_directories(gd_static PUBLIC "include")
+if (JPEG_FOUND)
+    target_link_libraries(gd_static PRIVATE JPEG::JPEG)
+else()
+    target_link_libraries(gd_static PRIVATE jpeg_static)
+endif()
 
-target_link_libraries(gd_static jpeg_static )
+if (PNG_FOUND)
+    target_link_libraries(gd_static PRIVATE PNG::PNG)
+else()
+    target_link_libraries(gd_static PRIVATE png_static)
+endif()
+
+if (ZLIB_FOUND)
+    target_link_libraries(gd_static PRIVATE ZLIB::ZLIB)
+else()
+    target_link_libraries(gd_static PRIVATE zlib_static)
+endif()
 
 set(MAJOR_VERSION 2)
 set(VERSION 2.0.4)
+
+# IntelLLVM warnings
+target_compile_options(gd_static PRIVATE $<$<C_COMPILER_ID:IntelLLVM>: -Wno-incompatible-pointer-types>)
+target_compile_options(gd_static PRIVATE $<$<C_COMPILER_ID:IntelLLVM>: -Wno-sizeof-pointer-memaccess>)
+target_compile_options(gd_static PRIVATE $<$<C_COMPILER_ID:IntelLLVM>: -Wno-absolute-value>)

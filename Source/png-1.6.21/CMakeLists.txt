@@ -7,17 +7,22 @@ set(FILES
     pngwtran.c pngmem.c pngerror.c pngpread.c
 )
 
-include_directories(".")
-include_directories("../zlib128")
 add_library(png_static STATIC ${FILES})
+target_include_directories(png_static PUBLIC .)
 set_target_properties(png_static PROPERTIES OUTPUT_NAME "png")
 set(LIBNAME libpng12)
 set(PNGMAJ 0)
 set(PNGMIN 1.2.5)
 set(PNGVER ${PNGMAJ}.${PNGMIN})
 
+if (ZLIB_FOUND)
+    target_link_libraries(png_static PRIVATE ZLIB::ZLIB)
+else()
+    target_link_libraries(png_static PRIVATE zlib_static)
+endif()
+
 if (WIN32)
     add_definitions(-D_CRT_SECURE_NO_WARNINGS)
-    # set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-deprecated-declarations -Wno-shift-negative-value -Wno-tautological-constant-out-of-range-compare")
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}")
 endif ()
+# IntelLLVM warnings
+target_compile_options(png_static PRIVATE $<$<C_COMPILER_ID:IntelLLVM>: -Wno-tautological-constant-out-of-range-compare>)

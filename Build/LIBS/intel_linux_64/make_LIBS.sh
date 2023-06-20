@@ -76,23 +76,3 @@ cd $SRCDIR/gd-2.0.15
 ./makelib.sh $OPTS >& $LIBDIR/gd.out
 cp libgd.a $LIBDIR/.
 fi
-
-if [[ "$target" == "all" ]] || [[ "$arg" == "lua" ]]; then
-# LUA variable is set by passing -l to this script (lower case L)
-if [ "$LUA" == "lua" ]; then
-
-# Lua # Lua interpreter
-cd $SRCDIR/lua-5.3.1/src
-export TARGET=liblua.a
-echo "********** building lua"
-./makelib.sh $OPTS >& $LIBDIR/lua.out
-cp liblua.a $LIBDIR/.
-
-# LPEG # Lua parsing libarary to parse SSF files
-cd $SRCDIR/lpeg-1.0.0
-export TARGET=linux
-echo "********** building lpeg"
-./makelib.sh $OPTS >& $LIBDIRE/lpeg.out
-cp lpeg.so $LIBDIR/.
-fi
-fi
