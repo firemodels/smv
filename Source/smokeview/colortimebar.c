@@ -1444,7 +1444,6 @@ int AddColorbar(int icolorbar){
   UpdateColorbarBound();
   UpdateColorbarEdit();
 
-
   colorbardata *cbnew;
 
   cbnew = GetColorbar(cb_label);
