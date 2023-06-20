@@ -61,7 +61,8 @@ GLUI_Checkbox *CHECKBOX_hidesv=NULL;
 GLUI_Checkbox *CHECKBOX_cb_interp = NULL;
 #endif
 
-GLUI_EditText *EDITTEXT_colorbar_label=NULL;
+GLUI_EditText *EDITTEXT_colorbar_label    =NULL;
+GLUI_EditText *EDITTEXT_colorbar_filename = NULL;
 
 GLUI_StaticText *STATICTEXT_left=NULL, *STATICTEXT_right=NULL;
 
@@ -166,32 +167,22 @@ extern "C" void SetColorbarListEdit(int val){
 
 /* ------------------ Colorbar2File ------------------------ */
 
-void Colorbar2File(colorbardata *cbi, char *label){
-  FILE *stream=NULL;
+void Colorbar2File(colorbardata *cbi, char *file, char *label){
+  FILE *stream = NULL;
   int i;
-  char file[256];
 
-  if(label == NULL || strlen(label) == 0)return;
-  strcpy(file, label);
-  int lenfile;
-
-  lenfile = strlen(file);
-  for(i = 0;i < lenfile; i++){
-    if(file[i] == ' ')file[i] = '_';
-  }
-  strcat(file, ".csv");
-  stream = fopen(file, "w");
-  if(stream==NULL)return;
+  if(file != NULL && strlen(file) > 0 && label != NULL && strlen(label) > 0)stream = fopen(file, "w");
+  if(stream == NULL)return;
   fprintf(stream, "name,%s\n", label);
-  for(i=0;i<256;i++){
+  for(i = 0;i < 256;i++){
     float *rgbi;
     int rgb255[3];
 
-    rgbi=cbi->colorbar+3*i;
+    rgbi = cbi->colorbar + 3 * i;
     rgb255[0] = rgbi[0] * 255.0;
     rgb255[1] = rgbi[1] * 255.0;
     rgb255[2] = rgbi[2] * 255.0;
-    fprintf(stream, "%i,%i,%i\n",rgb255[0],rgb255[1],rgb255[2]);
+    fprintf(stream, "%i,%i,%i\n", rgb255[0], rgb255[1], rgb255[2]);
   }
   fclose(stream);
 }
@@ -449,7 +440,7 @@ extern "C" void ColorbarCB(int var){
   case COLORBAR_SAVE:
     if(colorbartype >= ndefaultcolorbars&&colorbartype < ncolorbars){
       cbi = colorbarinfo + colorbartype;
-      Colorbar2File(cbi, colorbar_label);
+      Colorbar2File(cbi, colorbar_filename, colorbar_label);
     }
     break;
 #endif
@@ -583,6 +574,12 @@ extern "C" void GluiColorbarSetup(int main_window){
   NewMemory((void **)&colorbar_label,sizeof(GLUI_String));
   strcpy(colorbar_label,_("New colorbar"));
 
+  if(colorbar_filename != NULL){
+    FREEMEMORY(colorbar_filename);
+  }
+  NewMemory((void **)&colorbar_filename, sizeof(GLUI_String));
+  strcpy(colorbar_filename, "colorbar.csv");
+
   if(glui_colorbar!=NULL){
     glui_colorbar->close();
     glui_colorbar=NULL;
@@ -647,6 +644,8 @@ extern "C" void GluiColorbarSetup(int main_window){
   glui_colorbar->add_button_to_panel(PANEL_cb_display, "Revert colorbar",        COLORBAR_REVERT,     ColorbarCB);
 #endif
   glui_colorbar->add_button_to_panel(PANEL_cb_display, "Save colorbar",          COLORBAR_SAVE,       ColorbarCB);
+  EDITTEXT_colorbar_filename = glui_colorbar->add_edittext_to_panel(PANEL_cb_display, "colorbar filename:", GLUI_EDITTEXT_TEXT, colorbar_filename);
+  EDITTEXT_colorbar_filename->set_w(200);
 #ifdef pp_COLOR_TOGGLE
   PANEL_toggle_cb = glui_colorbar->add_panel(_("toggle colorbars"));
   LISTBOX_colorbar_toggle_edit1 = glui_colorbar->add_listbox_to_panel(PANEL_toggle_cb, "", &index_colorbar1, COLORBAR_LISTA, ColorbarCB);
