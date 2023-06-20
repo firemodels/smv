@@ -170,7 +170,10 @@ void Colorbar2File(colorbardata *cbi, char *label){
 
   if(label == NULL || strlen(label) == 0)return;
   strcpy(file, label);
-  for(i = 0;i < strlen(file);i++){
+  int lenfile;
+
+  lenfile = strlen(file);
+  for(i = 0;i < lenfile; i++){
     if(file[i] == ' ')file[i] = '_';
   }
   strcat(file, ".csv");
