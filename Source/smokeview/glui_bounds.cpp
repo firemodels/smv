@@ -5495,10 +5495,9 @@ extern "C" void GluiBoundsSetup(int main_window){
   if(ncolorbars>0){
     selectedcolorbar_index2 = -1;
     LISTBOX_colorbar_bound = glui_bounds->add_listbox_to_panel(PANEL_colorbar_properties, "", &selectedcolorbar_index2, COLORBAR_LIST2, SliceBoundCB);
-
     UpdateColorbarListBound(1);
-
     LISTBOX_colorbar_bound->set_int_val(colorbartype_default);
+
     glui_bounds->add_button_to_panel(PANEL_colorbar_properties, _("Next"),     COLORBAR_LIST2_NEXT, SliceBoundCB);
     glui_bounds->add_button_to_panel(PANEL_colorbar_properties, _("Previous"), COLORBAR_LIST2_PREV, SliceBoundCB);
   }

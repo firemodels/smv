@@ -2497,9 +2497,25 @@ void UpdateDisplay(void){
     cb = GetColorbar(colorbarname);
     if(cb != NULL){
       colorbartype = cb - colorbarinfo;
+      colorbartype_default = colorbartype;
       UpdateCurrentColorbar(cb);
       if(colorbartype != colorbartype_default){
         colorbartype_ini = colorbartype;
+      }
+      if(colorbarinfo != NULL){
+        SortColorBars();
+        UpdateColorbarListEdit(1, CB_DELETE);
+        UpdateColorbarListBound(1);
+#ifdef pp_COLOR_TOGGLE
+        UpdateColorbarListEdit(2, CB_DELETE);
+        UpdateColorbarListEdit(3, CB_DELETE);
+        UpdateColorbarListBound(2);
+        UpdateColorbarListBound(3);
+#endif
+        selectedcolorbar_index = colorbartype_default;
+        selectedcolorbar_index2 = colorbartype_default;
+        UpdateColorbarBound();
+        UpdateColorbarEdit();
       }
     }
     update_colorbartype = 0;

@@ -1385,8 +1385,6 @@ void SortColorBars(void){
   }
 
   colorbardata *cb;
-  cb = GetColorbar("Rainbow");
-  if(cb != NULL)colorbartype_default = cb - colorbarinfo;
 
   bw_colorbar_index = -1;
   cb = GetColorbar("black->white");

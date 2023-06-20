@@ -601,6 +601,7 @@ extern "C" void GluiColorbarSetup(int main_window){
 
     LISTBOX_colorbar_edit=glui_colorbar->add_listbox_to_panel(PANEL_cb1,"",&selectedcolorbar_index,COLORBAR_LIST,ColorbarCB);
     UpdateColorbarListEdit(1,CB_KEEP);
+    LISTBOX_colorbar_edit->set_int_val(colorbartype_default);
   }
   EDITTEXT_colorbar_label  = glui_colorbar->add_edittext_to_panel(PANEL_cb1,_("Label:"),GLUI_EDITTEXT_TEXT,colorbar_label,COLORBAR_LABEL,ColorbarCB);
   EDITTEXT_colorbar_label->set_w(200);
