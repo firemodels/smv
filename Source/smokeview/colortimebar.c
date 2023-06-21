@@ -1374,11 +1374,11 @@ void SortColorBars(void){
     cbi->type = CB_OTHER;
     if(strcmp(cbi->ctype, "rainbow")==0)cbi->type = CB_RAINBOW;
     if(strcmp(cbi->ctype, "linear")==0)cbi->type = CB_LINEAR;
-    if(strcmp(cbi->ctype, "divergent")==0)cbi->type = CB_DIVERGENT;
+    if(strcmp(cbi->ctype, "bent")==0)cbi->type = CB_DIVERGENT;
     if(strcmp(cbi->ctype, "circular")==0)cbi->type = CB_CIRCULAR;
     if(strcmp(cbi->ctype, "deprecated")==0)cbi->type = CB_DEPRECATED;
     if(strcmp(cbi->ctype, "original") == 0)cbi->type = CB_ORIGINAL;
-    if(strcmp(cbi->ctype, "user")==0)cbi->type = CB_USER;
+    if(strcmp(cbi->ctype, "user defined")==0)cbi->type = CB_USER;
     colorbar_list_sorted[i] = i;
   }
   qsort((colorbardata *)colorbar_list_sorted, (size_t)ncolorbars, sizeof(int), CompareColorbars);
@@ -1448,7 +1448,7 @@ int AddColorbar(int icolorbar){
   strcpy(cb_to->label, "Copy of ");
   strcat(cb_to->label, cb_from->label);
   strcpy(cb_label, cb_to->label);
-  strcpy(cb_to->ctype, "user");
+  strcpy(cb_to->ctype, "user defined");
   cb_to->interp = INTERP_CIE;
   RemapColorbar(cb_to);
   SortColorBars();
@@ -2124,11 +2124,11 @@ void InitDefaultColorbars(int nini){
     cbi++;
   }
   for(i = 0;i < ndivergent_filelist;i++){
-    ReadCSVColorbar(cbi, colorbars_divergent_dir, divergent_filelist[i].file, "divergent", CB_DIVERGENT);
+    ReadCSVColorbar(cbi, colorbars_divergent_dir, divergent_filelist[i].file, "bent", CB_DIVERGENT);
     cbi++;
   }
   for(i = 0;i < nuser_filelist;i++){
-    ReadCSVColorbar(cbi, colorbars_user_dir, user_filelist[i].file,            "user",      CB_USER);
+    ReadCSVColorbar(cbi, colorbars_user_dir, user_filelist[i].file,            "user defined",      CB_USER);
     cbi++;
   }
 #endif

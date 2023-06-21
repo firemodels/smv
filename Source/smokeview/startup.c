@@ -1254,7 +1254,7 @@ void InitOpenGL(int option){
   void InitColorbarsDir(void){
     colorbars_dir           = InitColorbarsSubDir("");
     colorbars_linear_dir    = InitColorbarsSubDir("linear");
-    colorbars_divergent_dir = InitColorbarsSubDir("divergent");
+    colorbars_divergent_dir = InitColorbarsSubDir("bent");
     colorbars_rainbow_dir   = InitColorbarsSubDir("rainbow");
     colorbars_circular_dir  = InitColorbarsSubDir("circular");
   }

@@ -14841,7 +14841,7 @@ int ReadIni2(char *inifile, int localfile){
           cb_buffptr = TrimFront(buffer);
           strcpy(cbi->label, cb_buffptr);
           cbi->type = CB_USER;
-          strcpy(cbi->ctype, "user");
+          strcpy(cbi->ctype, "user defined");
           cbi->interp = INTERP_CIE;
 
           fgets(buffer, 255, stream);

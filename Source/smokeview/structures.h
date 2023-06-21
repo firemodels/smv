@@ -265,10 +265,10 @@ typedef struct _treedata {
 /* --------------------------  colorbardata ------------------------------------ */
 
 #define CB_RAINBOW    0
-#define CB_LINEAR     1
-#define CB_DIVERGENT  2
-#define CB_CIRCULAR   3
-#define CB_ORIGINAL   4
+#define CB_ORIGINAL   1
+#define CB_LINEAR     2
+#define CB_DIVERGENT  3
+#define CB_CIRCULAR   4
 #define CB_DEPRECATED 5
 #define CB_USER       6
 #define CB_OTHER      7
