@@ -4620,9 +4620,9 @@ void AddColorbarListBound(GLUI_Listbox *LIST_cbar, int index, char *label_arg, i
     nitems++;
   }
   if(nitems == 0)return;
-  strcpy(cbar_type, "***");
+  strcpy(cbar_type, "----------");
   strcat(cbar_type, label_arg);
-  strcat(cbar_type, "***");
+  strcat(cbar_type, "----------");
   LIST_cbar->add_item(index, cbar_type);
   for(i = 0; i < ncolorbars; i++){
     colorbardata *cbi;
@@ -4665,20 +4665,13 @@ extern "C" void UpdateColorbarListBound(int flag){
   for(i=-7;i<ncolorbars;i++){
    LIST_cb->delete_item(i);
   }
-  strcpy(label, "rainbow");
-  AddColorbarListBound(LIST_cb, -1, label, &max_LISTBOX_colorbar_bound);
-  strcpy(label, "original");
-  AddColorbarListBound(LIST_cb, -2, label, &max_LISTBOX_colorbar_bound);
-  strcpy(label, "linear");
-  AddColorbarListBound(LIST_cb, -3, label, &max_LISTBOX_colorbar_bound);
-  strcpy(label, "bent");
-  AddColorbarListBound(LIST_cb, -4, label, &max_LISTBOX_colorbar_bound);
-  strcpy(label, "circular");
-  AddColorbarListBound(LIST_cb, -5, label, &max_LISTBOX_colorbar_bound);
-  strcpy(label, "deprecated");
-  AddColorbarListBound(LIST_cb, -6, label, &max_LISTBOX_colorbar_bound);
-  strcpy(label, "user defined");
-  AddColorbarListBound(LIST_cb, -7, label, &max_LISTBOX_colorbar_bound);
+  strcpy(label, "rainbow");      AddColorbarListBound(LIST_cb, -1, label, &max_LISTBOX_colorbar_bound);
+  strcpy(label, "original");     AddColorbarListBound(LIST_cb, -2, label, &max_LISTBOX_colorbar_bound);
+  strcpy(label, "linear");       AddColorbarListBound(LIST_cb, -3, label, &max_LISTBOX_colorbar_bound);
+  strcpy(label, "bent");         AddColorbarListBound(LIST_cb, -4, label, &max_LISTBOX_colorbar_bound);
+  strcpy(label, "circular");     AddColorbarListBound(LIST_cb, -5, label, &max_LISTBOX_colorbar_bound);
+  strcpy(label, "deprecated");   AddColorbarListBound(LIST_cb, -6, label, &max_LISTBOX_colorbar_bound);
+  strcpy(label, "user defined"); AddColorbarListBound(LIST_cb, -7, label, &max_LISTBOX_colorbar_bound);
 }
 
 /* ------------------ GluiBoundsSetup ------------------------ */
