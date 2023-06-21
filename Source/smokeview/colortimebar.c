@@ -964,8 +964,10 @@ void RemapColorbar(colorbardata *cbi){
   int interp_cielab;
 
   interp_cielab = cbi->interp;
-  if(interp_cielab == INTERP_RGB)printf("colorbar interpolation: cie\n");
-  if(interp_cielab == INTERP_CIE)printf("colorbar interpolation: rgb\n");
+#ifdef _DEBUG
+  if(interp_cielab == INTERP_RGB)printf("colorbar: %s, interpolation: rgb\n",cbi->label);
+  if(interp_cielab == INTERP_CIE)printf("colorbar: %s, interpolation: cie\n",cbi->label);
+#endif
   CheckMemory;
   colorbar=cbi->colorbar;
   rgb_node=cbi->rgb_node;
