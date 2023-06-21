@@ -634,7 +634,7 @@ extern "C" void GluiColorbarSetup(int main_window){
   glui_colorbar->add_button_to_panel(PANEL_cb_display, "Revert",        COLORBAR_REVERT,     ColorbarCB);
 #endif
   glui_colorbar->add_button_to_panel(PANEL_cb_display, "Save",          COLORBAR_SAVE,       ColorbarCB);
-  EDITTEXT_colorbar_filename = glui_colorbar->add_edittext_to_panel(PANEL_cb_display, "colorbar filename:", GLUI_EDITTEXT_TEXT, colorbar_filename);
+  EDITTEXT_colorbar_filename = glui_colorbar->add_edittext_to_panel(PANEL_cb_display, "filename:", GLUI_EDITTEXT_TEXT, colorbar_filename);
   EDITTEXT_colorbar_filename->set_w(200);
   UpdateColorbarEdit();
 
