@@ -429,6 +429,7 @@ void DrawColorbarPathCIE(void){
 #endif
   glEnd();
 
+#ifdef _DEBUG
   for(i = 7; i < 256; i += 8){
     float dist, cie2[3], *rgb2val, *rgb1val, cie1[3], xyz1[3], xyz2[3];
     float dx, dy, dz;
@@ -459,6 +460,7 @@ void DrawColorbarPathCIE(void){
     xyz1[2] = (xyz1[2] + xyz2[2]) / 2.0;
     Output3Text(foregroundcolor, xyz1[1], xyz1[2], xyz1[0], label);
   }
+#endif
 
   glPointSize(10.0);
   glBegin(GL_POINTS);
@@ -843,39 +845,6 @@ void CIE2Rgbs(unsigned char *rgbs255, float *frgbs, float *cies){
   }
 }
 
-/* ------------------ CIEdE2Csv ------------------------ */
-#ifdef pp_COLOR_ADJUST
-void CIEdE2Csv(char *file){
-  int i;
-  FILE *stream;
-
-  stream = fopen(file, "w");
-  fprintf(stream, "index,");
-  for(i = 0; i < ncolorbars - 1; i++){
-
-    colorbardata *cbi;
-
-    cbi = colorbarinfo + i;
-    fprintf(stream, "%s,", cbi->label);
-  }
-  fprintf(stream, "%s\n", colorbarinfo[ncolorbars-1].label);
-
-  for(i = 0; i < 254; i++){
-    int j;
-
-    fprintf(stream, "%i,",i);
-    for(j = 0; j < ncolorbars-1; j++){
-      colorbardata *cbj;
-
-      cbj = colorbarinfo + j;
-      fprintf(stream, "%f,", cbj->dE[i]);
-    }
-    fprintf(stream, "%f\n", colorbarinfo[ncolorbars-1].dE[254]);
-  }
-  fclose(stream);
-}
-#endif
-
 /* ------------------ CheckCIE ------------------------ */
 #ifdef pp_COLOR_CIE_CHECK
 void CheckCIE(void){
@@ -1089,43 +1058,6 @@ void RemapColorbar(colorbardata *cbi){
     colorbar[2+3*255]=rgb_above_max[2];
   }
   CheckMemory;
-}
-
-/* ------------------ UpdateColorbarNodes ------------------------ */
-
-void UpdateColorbarNodes(colorbardata *cbi){
-  float total_dist = 0.0;
-  int i;
-
-  for(i = 0;i<cbi->nnodes-1;i++){
-    unsigned char *node1, *node2;
-    float dist,dx,dy,dz;
-
-    node1 = cbi->rgb_node+3*i;
-    node2 = node1+3;
-    dx = node1[0]-node2[0];
-    dy = node1[1]-node2[1];
-    dz = node1[2]-node2[2];
-    dist = sqrt(dx*dx+dy*dy+dz*dz);
-    total_dist += dist;
-  }
-  cbi->index_node[0] = 0;
-  for(i = 1;i<cbi->nnodes-1;i++){
-    int index;
-    unsigned char *node1, *node2;
-    float dist, dx, dy, dz;
-
-    node1 = cbi->rgb_node+3*(i-1);
-    node2 = node1+3;
-    dx = node1[0]-node2[0];
-    dy = node1[1]-node2[1];
-    dz = node1[2]-node2[2];
-    dist = sqrt(dx*dx+dy*dy+dz*dz);
-    index = 255*dist/total_dist;
-    cbi->index_node[i] = CLAMP(cbi->index_node[i-1]+index,0,255);
-  }
-  cbi->index_node[cbi->nnodes-1] = 255;
-  RemapColorbar(cbi);
 }
 
 /* ------------------ RemapColorbarType ------------------------ */
