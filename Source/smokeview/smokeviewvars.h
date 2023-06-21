@@ -444,7 +444,6 @@ SVEXTERN char SVDECL(*script_error1_filename,NULL);
 SVEXTERN int SVDECL(render_firsttime, NO);
 SVEXTERN int SVDECL(solid_ht3d, 0);
 SVEXTERN int SVDECL(load_incremental, 0);
-SVEXTERN int SVDECL(show_colorbar_hint, 1);
 SVEXTERN int SVDECL(show_tour_hint, 1);
 SVEXTERN int cb_rgb[3];
 SVEXTERN float SVDECL(geom_linewidth, 2.0);

@@ -343,7 +343,6 @@ extern "C" void ColorbarCB(int var){
 #endif
 #endif
   case COLORBAR_RGB:
-    show_colorbar_hint = 0;
     if(colorbartype < 0 || colorbartype >= ncolorbars)return;
     cbi = colorbarinfo + colorbartype;
     if(colorbarpoint<0 || colorbarpoint>cbi->nnodes - 1)return;
@@ -399,7 +398,6 @@ extern "C" void ColorbarCB(int var){
   case COLORBAR_NODE_PREV:
   case COLORBAR_SET:
     if(colorbartype < 0 || colorbartype >= ncolorbars)return;
-    show_colorbar_hint = 0;
     cbi = colorbarinfo + colorbartype;
     if(var == COLORBAR_NODE_NEXT){
       colorbarpoint++;
