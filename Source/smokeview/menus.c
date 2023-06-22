@@ -8297,7 +8297,7 @@ void MakeColorbarMenu(int *menuptr,
   MakeSubColorbarMenu(&submenu3, &nmenus, "rainbow",      CBMenu);
   MakeSubColorbarMenu(&submenu7, &nmenus, "original",     CBMenu);
   MakeSubColorbarMenu(&submenu1, &nmenus, "linear",       CBMenu);
-  MakeSubColorbarMenu(&submenu4, &nmenus, "bent",         CBMenu);
+  MakeSubColorbarMenu(&submenu4, &nmenus, "divergent",    CBMenu);
   MakeSubColorbarMenu(&submenu2, &nmenus, "circular",     CBMenu);
   MakeSubColorbarMenu(&submenu6, &nmenus, "deprecated",   CBMenu);
   MakeSubColorbarMenu(&submenu5, &nmenus, "user defined", CBMenu);
@@ -8308,7 +8308,7 @@ void MakeColorbarMenu(int *menuptr,
   if(submenu3 > 0)GLUTADDSUBMENU("rainbow",      submenu3);
   if(submenu7 > 0)GLUTADDSUBMENU("original",     submenu7);
   if(submenu1 > 0)GLUTADDSUBMENU("linear",       submenu1);
-  if(submenu4 > 0)GLUTADDSUBMENU("bent",         submenu4);
+  if(submenu4 > 0)GLUTADDSUBMENU("divergent",    submenu4);
   if(submenu2 > 0)GLUTADDSUBMENU("circular",     submenu2);
   if(submenu6 > 0)GLUTADDSUBMENU("deprecated",   submenu6);
   if(submenu5 > 0)GLUTADDSUBMENU("user defined", submenu5);

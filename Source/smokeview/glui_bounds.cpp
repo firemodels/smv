@@ -4668,7 +4668,7 @@ extern "C" void UpdateColorbarListBound(int flag){
   strcpy(label, "rainbow");      AddColorbarListBound(LIST_cb, -1, label, &max_LISTBOX_colorbar_bound);
   strcpy(label, "original");     AddColorbarListBound(LIST_cb, -2, label, &max_LISTBOX_colorbar_bound);
   strcpy(label, "linear");       AddColorbarListBound(LIST_cb, -3, label, &max_LISTBOX_colorbar_bound);
-  strcpy(label, "bent");         AddColorbarListBound(LIST_cb, -4, label, &max_LISTBOX_colorbar_bound);
+  strcpy(label, "divergent");    AddColorbarListBound(LIST_cb, -4, label, &max_LISTBOX_colorbar_bound);
   strcpy(label, "circular");     AddColorbarListBound(LIST_cb, -5, label, &max_LISTBOX_colorbar_bound);
   strcpy(label, "deprecated");   AddColorbarListBound(LIST_cb, -6, label, &max_LISTBOX_colorbar_bound);
   strcpy(label, "user defined"); AddColorbarListBound(LIST_cb, -7, label, &max_LISTBOX_colorbar_bound);

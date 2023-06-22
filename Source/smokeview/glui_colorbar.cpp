@@ -528,7 +528,7 @@ extern "C" void UpdateColorbarListEdit(int flag, int del){
   strcpy(label, "rainbow");      AddColorbarListEdit(LISTBOX_cb, -1, label, &max_LISTBOX_colorbar_edit);
   strcpy(label, "original");     AddColorbarListEdit(LISTBOX_cb, -2, label, &max_LISTBOX_colorbar_edit);
   strcpy(label, "linear");       AddColorbarListEdit(LISTBOX_cb, -3, label, &max_LISTBOX_colorbar_edit);
-  strcpy(label, "bent");         AddColorbarListEdit(LISTBOX_cb, -4, label, &max_LISTBOX_colorbar_edit);
+  strcpy(label, "divergent");    AddColorbarListEdit(LISTBOX_cb, -4, label, &max_LISTBOX_colorbar_edit);
   strcpy(label, "circular");     AddColorbarListEdit(LISTBOX_cb, -5, label, &max_LISTBOX_colorbar_edit);
   strcpy(label, "deprecated");   AddColorbarListEdit(LISTBOX_cb, -6, label, &max_LISTBOX_colorbar_edit);
   strcpy(label, "user defined"); AddColorbarListEdit(LISTBOX_cb, -7, label, &max_LISTBOX_colorbar_edit);

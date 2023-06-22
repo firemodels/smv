@@ -406,7 +406,12 @@ void DrawColorbarPathCIE(void){
       dx = cie[0] - cie_last[0];
       dy = cie[1] - cie_last[1];
       dz = cie[2] - cie_last[2];
-      cie_dist[i] = cie_dist[i-1] + sqrt(dx * dx + dy * dy + dz * dz);
+      if(cbi->type == CB_RAINBOW){
+        cie_dist[i] = cie_dist[i - 1] + sqrt(dx * dx + dy * dy + dz * dz);
+      }
+      else{
+        cie_dist[i] = cie_dist[i - 1] + ABS(dx);
+      }
     }
     memcpy(cie_last, cie, 3 * sizeof(float));
     glVertex3fv(xyz);
@@ -643,13 +648,19 @@ void AdjustColorBar(colorbardata *cbi){
   for(i = 1;i < cbi->nnodes;i++){
     unsigned char *rgb2_local;
     float *cie1, *cie2, dist;
-    float dx, dy, dz;
 
     rgb2_local = cbi->rgb_node + 3*i;
     cie2 = cbi->cie_node + 3 * i;
     cie1 = cie2 - 3;
     Rgb2CIE(rgb2_local, cie2);
-    DDIST3(cie1, cie2, dist);
+    if(cbi->type == CB_RAINBOW){
+      float dx, dy, dz;
+
+      DDIST3(cie1, cie2, dist);
+    }
+    else{
+      dist = ABS(cie1[0] - cie2[0]);
+    }
     cbi->dist_node[i] = cbi->dist_node[i - 1] + dist;
   }
 
@@ -1302,7 +1313,7 @@ void SortColorBars(void){
     cbi->type = CB_OTHER;
     if(strcmp(cbi->ctype, "rainbow")==0)cbi->type = CB_RAINBOW;
     if(strcmp(cbi->ctype, "linear")==0)cbi->type = CB_LINEAR;
-    if(strcmp(cbi->ctype, "bent")==0)cbi->type = CB_DIVERGENT;
+    if(strcmp(cbi->ctype, "divergent")==0)cbi->type = CB_DIVERGENT;
     if(strcmp(cbi->ctype, "circular")==0)cbi->type = CB_CIRCULAR;
     if(strcmp(cbi->ctype, "deprecated")==0)cbi->type = CB_DEPRECATED;
     if(strcmp(cbi->ctype, "original") == 0)cbi->type = CB_ORIGINAL;
@@ -2052,7 +2063,7 @@ void InitDefaultColorbars(int nini){
     cbi++;
   }
   for(i = 0;i < ndivergent_filelist;i++){
-    ReadCSVColorbar(cbi, colorbars_divergent_dir, divergent_filelist[i].file, "bent", CB_DIVERGENT);
+    ReadCSVColorbar(cbi, colorbars_divergent_dir, divergent_filelist[i].file, "divergent", CB_DIVERGENT);
     cbi++;
   }
   for(i = 0;i < nuser_filelist;i++){
