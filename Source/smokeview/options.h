@@ -27,7 +27,6 @@
 #define pp_COLOR_CIE        // output color diffs
 #define pp_COLOR_TOGGLE     // add option to toggle colorbars
 //#define pp_COLOR_CIE_CHECK  // check cie conversion for every possible rgb value (0<=r<=255,0<=g<=255,0<=b<=255)
-#define pp_COLOR_ADJUST       // add button for adjusting and reverting colorbars
 //#define pp_COLOR_HIDE         // add checkbox to hide/unhide scene when editing a colorbar
 
 //#define pp_SMOKE_LIGHT        // turn on smoke lighting
