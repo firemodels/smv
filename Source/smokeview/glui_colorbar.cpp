@@ -348,12 +348,7 @@ extern "C" void ColorbarCB(int var){
     list_index = LISTBOX_colorbar_edit->get_int_val();
     if(list_index<0)break;
     colorbartype = list_index;
-    if(show_firecolormap==0){
-      colorbartype=colorbartype;
-    }
-    else{
-      fire_colorbar_index= colorbartype;
-    }
+    if(show_firecolormap!=0)fire_colorbar_index= colorbartype;
     SetColorbarListBound(colorbartype);
     ColorbarMenu(colorbartype);
     ColorbarGlobal2Local();
