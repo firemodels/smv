@@ -813,11 +813,9 @@ void set_colorbar(size_t value) {
   iso_colorbar = colorbarinfo + iso_colorbar_index;
   update_texturebar = 1;
   UpdateListIsoColorobar();
-  selectedcolorbar_index2 = colorbartype;
   UpdateCurrentColorbar(colorbarinfo + colorbartype);
   UpdateColorbarType();
-  UpdateColorbarList2();
-  if (colorbartype == bw_colorbar_index) {
+  if (colorbartype == bw_colorbar_index && bw_colorbar_index >= 0) {
     setbwdata = 1;
   } else {
     setbwdata = 0;
@@ -933,8 +931,12 @@ void ImmersedMenu(int value);
 void BlockageMenu(int value);
 void blockages_hide_all() { BlockageMenu(visBLOCKHide); }
 // TODO: clarify behaviour under isZoneFireModel
-void outlines_hide() { if(isZoneFireModel==0)visFrame=1-visFrame;}
-void outlines_show() { if(isZoneFireModel==0)visFrame=1-visFrame; }
+void outlines_hide() {
+  if (isZoneFireModel == 0) visFrame = 1 - visFrame;
+}
+void outlines_show() {
+  if (isZoneFireModel == 0) visFrame = 1 - visFrame;
+}
 
 void surfaces_hide_all() {
   visVents = 0;
