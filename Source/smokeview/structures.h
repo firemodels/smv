@@ -264,10 +264,22 @@ typedef struct _treedata {
 
 /* --------------------------  colorbardata ------------------------------------ */
 
+#define CB_RAINBOW    0
+#define CB_ORIGINAL   1
+#define CB_LINEAR     2
+#define CB_DIVERGENT  3
+#define CB_CIRCULAR   4
+#define CB_DEPRECATED 5
+#define CB_USER       6
+#define CB_OTHER      7
+#define INTERP_RGB    0
+#define INTERP_CIE    1
+#define COLOR_DIST_L   0
+#define COLOR_DIST_LAB 1
 typedef struct _colorbardata {
-  char label[1024], *label_ptr ;        // menu label
-  char type[256];
-  int nnodes,nodehilight,nsplits;
+  char label[1024];        // menu label
+  char ctype[256];
+  int nnodes,nodehilight,nsplits,type;
   unsigned char rgb_node_orig[3*1024], rgb_node[3*1024];
   unsigned char alpha[1024];
   unsigned char index_node[1024];  // colorbar index
@@ -276,6 +288,7 @@ typedef struct _colorbardata {
   int nnodes_orig, index_node_orig[1024];
   float cie_node[3*1024], frgb[3*1024], dist_node[1024], cie_rgb[3*1024], dE[1024];
 #endif
+  int interp,dist_type;
   float colorbar[3*1024];
 } colorbardata;
 

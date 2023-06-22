@@ -444,7 +444,6 @@ SVEXTERN char SVDECL(*script_error1_filename,NULL);
 SVEXTERN int SVDECL(render_firsttime, NO);
 SVEXTERN int SVDECL(solid_ht3d, 0);
 SVEXTERN int SVDECL(load_incremental, 0);
-SVEXTERN int SVDECL(show_colorbar_hint, 1);
 SVEXTERN int SVDECL(show_tour_hint, 1);
 SVEXTERN int cb_rgb[3];
 SVEXTERN float SVDECL(geom_linewidth, 2.0);
@@ -539,8 +538,12 @@ SVEXTERN histogramdata SVDECL(*full_part_histogram, NULL);
 SVEXTERN histogramdata SVDECL(*full_plot3D_histograms, NULL);
 SVEXTERN int SVDECL(update_loadall_textures, 1);
 
+SVEXTERN int SVDECL(max_LISTBOX_colorbar_bound, 0);
+SVEXTERN int SVDECL(max_LISTBOX_colorbar_edit, 0);
+SVEXTERN int SVDECL(*colorbar_list_sorted, NULL);
+SVEXTERN int SVDECL(*colorbar_list_inverse, NULL);
 #ifdef pp_COLOR_CIE
-SVEXTERN int SVDECL(interp_cielab, 1);
+SVEXTERN int SVDECL(show_Lab_dist_bars, 0);
 SVEXTERN int SVDECL(update_colorbar_orig, 0);
 SVEXTERN float SVDECL(*cielab_check_xyz, NULL);
 SVEXTERN char SVDECL(*dEcsv_filename, NULL);
@@ -548,6 +551,7 @@ SVEXTERN float cb_lab2[3], cb_frgb2[3];
 SVEXTERN int cb_rgb2[3];
 #ifdef pp_COLOR_TOGGLE
 SVEXTERN int SVDECL(index_colorbar1, 0), SVDECL(index_colorbar2, 1);
+SVEXTERN int SVDECL(colorbar_toggle, 1);
 #endif
 #ifdef pp_COLOR_CIE_CHECK
 SVEXTERN unsigned char SVDECL(*cielab_check_rgb255, NULL);
@@ -592,7 +596,6 @@ SVEXTERN unsigned int SVDECL(*screenmap360, NULL);
 SVEXTERN float SVDECL(*screenmap360IX, NULL), SVDECL(*screenmap360IY, NULL);
 
 SVEXTERN colorbardata SVDECL(*split_colorbar, NULL);
-SVEXTERN int split_colorbar_index;
 #ifdef INMAIN
 SVEXTERN float splitvals[3]={-1.0,0.0,1.0};
 #else
@@ -1202,7 +1205,9 @@ SVEXTERN int ncamera_list,i_view_list,SVDECL(init_camera_list, 1);
 SVEXTERN int camera_max_id;
 SVEXTERN int startup,startup_view_ini,selected_view;
 SVEXTERN char viewpoint_label_startup[256];
-SVEXTERN char SVDECL(*camera_label,NULL), SVDECL(*colorbar_label,NULL);
+SVEXTERN char SVDECL(*camera_label,NULL);
+SVEXTERN char SVDECL(*colorbar_label,NULL);
+SVEXTERN char SVDECL(*colorbar_filename, NULL);
 
 SVEXTERN int vis_boundary_type[7], SVDECL(update_ini_boundary_type,0);
 SVEXTERN int p3_extreme_min[MAXPLOT3DVARS], p3_extreme_max[MAXPLOT3DVARS];
@@ -1376,7 +1381,7 @@ SVEXTERN int SVDECL(*shooter_timeslist,NULL);
 SVEXTERN int SVDECL(shooter_itime,0);
 
 SVEXTERN int showgluitrainer;
-SVEXTERN int colorbartype,colorbartype_ini,colorbartype_default;
+SVEXTERN int SVDECL(colorbartype,0),SVDECL(colorbartype_ini,-1), SVDECL(colorbartype_default, 0), SVDECL(colorbartype_last, -1);
 SVEXTERN char colorbarname[1024];
 SVEXTERN int SVDECL(update_colorbartype,0);
 SVEXTERN int colorbartype_save;
@@ -1499,7 +1504,6 @@ SVEXTERN float linewidth, ventlinewidth, highlight_linewidth,solidlinewidth;
 SVEXTERN float SVDECL(sliceoffset_factor,0.1), SVDECL(ventoffset_factor,0.1);
 SVEXTERN int visBLOCKold;
 
-SVEXTERN int selectedcolorbar_index,selectedcolorbar_index2;
 SVEXTERN int planar_terrain_slice;
 SVEXTERN int  SVDECL(nrgb, NRGB);
 SVEXTERN int nrgb_ini;
@@ -1606,12 +1610,14 @@ SVEXTERN int max_screenWidth, max_screenHeight;
 SVEXTERN int saveW, saveH;
 SVEXTERN char SVDECL(*texturedir,NULL);
 #ifdef pp_COLORBARS_CSV
+SVEXTERN char SVDECL(*colorbars_dir, NULL);
 SVEXTERN char SVDECL(*colorbars_linear_dir,  NULL);
 SVEXTERN char SVDECL(*colorbars_rainbow_dir, NULL);
 SVEXTERN char SVDECL(*colorbars_divergent_dir, NULL);
 SVEXTERN char SVDECL(*colorbars_circular_dir, NULL);
-SVEXTERN char SVDECL(*colorbars_userdir, NULL);
+SVEXTERN char SVDECL(*colorbars_user_dir, NULL);
 SVEXTERN int SVDECL(nlinear_filelist,0), SVDECL(ncircular_filelist,0), SVDECL(nrainbow_filelist,0), SVDECL(ndivergent_filelist,0);
+SVEXTERN int SVDECL(ndeprecated_filelist, 0);
 SVEXTERN int SVDECL(nuser_filelist, 0);
 #endif
 SVEXTERN char release_title[1024];

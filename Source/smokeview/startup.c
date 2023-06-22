@@ -432,15 +432,17 @@ void InitStartupDirs(void){
     MKDIR(smokeview_scratchdir);
   }
 
-  NewMemory((void **)&colorbars_userdir, strlen(homedir) + strlen(dirseparator) + strlen(".smokeview") + strlen(dirseparator) + strlen("colorbars") + 1);
-  strcpy(colorbars_userdir, homedir);
-  strcat(colorbars_userdir, dirseparator);
-  strcat(colorbars_userdir, ".smokeview");
-  strcat(colorbars_userdir, dirseparator);
-  strcat(colorbars_userdir, "colorbars");
-  if(FileExistsOrig(colorbars_userdir) == NO){
-    FREEMEMORY(colorbars_userdir);
+#ifdef pp_COLORBARS_CSV
+  NewMemory((void **)&colorbars_user_dir, strlen(homedir) + strlen(dirseparator) + strlen(".smokeview") + strlen(dirseparator) + strlen("colorbars") + 1);
+  strcpy(colorbars_user_dir, homedir);
+  strcat(colorbars_user_dir, dirseparator);
+  strcat(colorbars_user_dir, ".smokeview");
+  strcat(colorbars_user_dir, dirseparator);
+  strcat(colorbars_user_dir, "colorbars");
+  if(FileExistsOrig(colorbars_user_dir) == NO){
+    FREEMEMORY(colorbars_user_dir);
   }
+#endif
 
   NewMemory((void **)&smokeviewini_filename, strlen(smokeview_scratchdir)+strlen(dirseparator)+strlen("smokeview.ini")+2);
   strcpy(smokeviewini_filename, smokeview_scratchdir);
@@ -1243,13 +1245,14 @@ void InitOpenGL(int option){
     strcpy(return_path, smokeview_bindir);
     strcat(return_path, "colorbars");
     strcat(return_path, dirseparator);
-    strcat(return_path, subdir);
+    if(strlen(subdir)>0)strcat(return_path, subdir);
     return return_path;
   }
 
   /* ------------------ InitColorbarsDir ------------------------ */
 
   void InitColorbarsDir(void){
+    colorbars_dir           = InitColorbarsSubDir("");
     colorbars_linear_dir    = InitColorbarsSubDir("linear");
     colorbars_divergent_dir = InitColorbarsSubDir("divergent");
     colorbars_rainbow_dir   = InitColorbarsSubDir("rainbow");
@@ -1701,11 +1704,8 @@ void InitVars(void){
   hrrpuv_iso_color[2]=0.0;
   hrrpuv_iso_color[3]=1.0;
   showgluitrainer=0;
-  colorbartype=0;
-  colorbartype_ini=-1;
   UpdateCurrentColorbar(colorbarinfo);
   colorbartype_save=colorbartype;
-  colorbartype_default=colorbartype;
   colorbarpoint=0;
   vectorspresent=0;
 

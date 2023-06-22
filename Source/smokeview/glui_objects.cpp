@@ -2357,7 +2357,7 @@ void OpenCB(int var){
         LIST_open->delete_item(label);
       }
       FreeFileList(gluiopen_filelist,&gluiopen_nfilelist);
-      gluiopen_nfilelist=GetFileListSize(gluiopen_path_dir,gluiopen_filter, FILE_MODE);
+      gluiopen_nfilelist=GetFileListSize(gluiopen_path_dir,gluiopen_filter,FILE_MODE);
       if(gluiopen_nfilelist==0){
         LIST_open->add_item(0,"");
       }

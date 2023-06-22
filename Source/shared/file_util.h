@@ -46,6 +46,9 @@ typedef struct {
 #define REPLACE_FILE 0
 #define APPEND_FILE 1
 
+#define FILE_MODE 0
+#define DIR_MODE  1
+
 #define NOT_FORCE_IN_DIR 0
 #define FORCE_IN_DIR 1
 

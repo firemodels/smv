@@ -346,7 +346,6 @@ EXTERNCPP void ScriptCB(int var);
 EXTERNCPP void TourCB(int var);
 EXTERNCPP void SetClipControls(int val);
 EXTERNCPP void ExtremeCB(int var);
-EXTERNCPP void AddColorbarList2(int index, char *label);
 EXTERNCPP void UpdateExtremeVals(void);
 EXTERNCPP void PartBoundCB(int var);
 EXTERNCPP void ShowHideMenu(int val);
@@ -544,8 +543,8 @@ EXTERNCPP void DrawCircVents(int option);
 EXTERNCPP void UpdateSmokeColormap(int option);
 EXTERNCPP void UpdateCO2Colormap(void);
 EXTERNCPP void DefineVolsmokeTextures(void);
-EXTERNCPP void SetColorbarListIndex(int val);
-EXTERNCPP int  GetColorbarListIndex(void);
+EXTERNCPP void SetColorbarListEdit(int val);
+EXTERNCPP void SetColorbarListBound(int val);
 EXTERNCPP int  GetColorbarIndex(int flag, int x, int y);
 EXTERNCPP void GetViewportInfo(void);
 
@@ -622,8 +621,6 @@ EXTERNCPP void UpdateTBounds(void);
 EXTERNCPP void UpdateGluiTimeBounds(float time_min, float time_max);
 EXTERNCPP void SetTimeVal(float timeval);
 EXTERNCPP void GetIndepVarIndices(sv_object *smv_object,char **var_indep_strings, int nvars_indep,int *index);
-EXTERNCPP void UpdateColorbarList(void);
-EXTERNCPP void UpdateColorbarList2(void);
 EXTERNCPP void UpdateColorbarFlip(void);
 
 EXTERNCPP void LoadSmokeFrame(int meshnum, int framenum);
@@ -699,30 +696,35 @@ EXTERNCPP sv_object *GetSmvObjectType2(char *label, sv_object *default_object);
 EXTERNCPP void FreeAllObjects(void);
 EXTERNCPP void UpdatePartClassDepend(partclassdata *partclassi);
 
+EXTERNCPP void UpdateColorbarListBound(int flag);
+EXTERNCPP void UpdateColorbarListEdit(int flag,int del);
+
 #ifdef pp_COLOR_CIE
-EXTERNCPP void AdjustColorBar(colorbardata *cbi);
+EXTERNCPP void AdjustColorBar(colorbardata *cbi, int option);
 EXTERNCPP void RevertColorBar(colorbardata *cbi);
 EXTERNCPP void Rgb2CIE(unsigned char *rgb, float *cie);
 EXTERNCPP void Rgb2CIEs(unsigned char *rgbs255, float *cies);
 EXTERNCPP void UpdateColorbarOrig(void);
-EXTERNCPP void CIEdE2Csv(char *file);
 EXTERNCPP void CIE2Rgb(unsigned char *rgb255, float *frgb, float *cie);
 EXTERNCPP void FRgb2CIE(float *rgb_arg, float *cie);
 #endif
 
 EXTERNCPP char *GetChid(char *file, char *buffer);
-EXTERNCPP void AddColorbar(int icolorbar);
+EXTERNCPP int AddColorbar(int icolorbar);
 EXTERNCPP void ReloadMenu(int value);
 EXTERNCPP void ColorbarMenu(int val);
 EXTERNCPP void InitDefaultColorbars(int nini);
 EXTERNCPP void DrawColorbarPathRGB(void);
 EXTERNCPP void UpdateColorbarSplits(colorbardata *cbi);
-EXTERNCPP void UpdateColorbarNodes(colorbardata *cbi);
 EXTERNCPP void RemapColorbar(colorbardata *cbi);
+EXTERNCPP void SortColorBars(void);
 EXTERNCPP colorbardata *GetColorbar(char *label);
 EXTERNCPP void RemapColorbarType(int cb_oldtype, char *cb_newname);
 EXTERNCPP void InitOpenGL(int option);
 EXTERNCPP void TextureShowMenu(int value);
+EXTERNCPP void UpdateColorbarBound(void);
+EXTERNCPP void UpdateColorbarEdit(void);
+
 EXTERNCPP void CopyArgs(int *argc, char **aargv, char ***argv_sv);
 EXTERNCPP void InitUserTicks(void);
 EXTERNCPP void DrawUserTicks(void);

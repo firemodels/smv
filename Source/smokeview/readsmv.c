@@ -14840,6 +14840,9 @@ int ReadIni2(char *inifile, int localfile){
           TrimBack(buffer);
           cb_buffptr = TrimFront(buffer);
           strcpy(cbi->label, cb_buffptr);
+          cbi->type = CB_USER;
+          strcpy(cbi->ctype, "user defined");
+          cbi->interp = INTERP_CIE;
 
           fgets(buffer, 255, stream);
           sscanf(buffer, "%i %i", &cbi->nnodes, &cbi->nodehilight);
@@ -14848,7 +14851,6 @@ int ReadIni2(char *inifile, int localfile){
             cbi->nodehilight = 0;
           }
 
-          cbi->label_ptr = cbi->label;
           for(i = 0; i<cbi->nnodes; i++){
             int icbar;
             int nn;
@@ -14864,7 +14866,20 @@ int ReadIni2(char *inifile, int localfile){
           }
           RemapColorbar(cbi);
           UpdateColorbarSplits(cbi);
+
+          SortColorBars();
+          UpdateColorbarListEdit(1, CB_DELETE);
+          UpdateColorbarListBound(1);
+#ifdef pp_COLOR_TOGGLE
+          UpdateColorbarListEdit(2, CB_DELETE);
+          UpdateColorbarListEdit(3, CB_DELETE);
+          UpdateColorbarListBound(2);
+          UpdateColorbarListBound(3);
+#endif
+          UpdateColorbarBound();
+          UpdateColorbarEdit();
         }
+
         continue;
       }
 

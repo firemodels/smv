@@ -148,32 +148,6 @@ void DrawTimebar(float xleft, float xright, float ybot, float ytop){
   glEnd();
 }
 
-/* ------------------ AddColorbar ------------------------ */
-
-void AddColorbar(int icolorbar){
-  colorbardata *cb_to, *cb_from;
-
-  ncolorbars++;
-  CheckMemory;
-  ResizeMemory((void **)&colorbarinfo,ncolorbars*sizeof(colorbardata));
-  UpdateCurrentColorbar(colorbarinfo + colorbartype);
-
-  cb_from = colorbarinfo + icolorbar;
-  CheckMemory;
-
-      // new colorbar
-
-  cb_to=colorbarinfo+ncolorbars-1;
-
-  memcpy(cb_to,cb_from,sizeof(colorbardata));
-  strcpy(cb_to->label,"Copy of ");
-  strcat(cb_to->label,cb_from->label);
-  cb_to->label_ptr=cb_to->label;
-
-  RemapColorbar(cb_to);
-
-}
-
 /* ------------------ DrawSelectColorbar ------------------------ */
 
 void DrawSelectColorbar(void){
@@ -267,14 +241,6 @@ void DrawColorbarPathRGB(void){
     glColor3ubv(rgbleft);
     glVertex3f(rgbleft[0]/255.0,rgbleft[1]/255.0,rgbleft[2]/255.0);
     glEnd();
-    if(show_colorbar_hint==1){
-      float xyz[3];
-
-      xyz[0] = rgbleft[0] / 255.0 + 0.1;
-      xyz[1] = rgbleft[1] / 255.0 + 0.1;
-      xyz[2] = rgbleft[2] / 255.0 + 0.1;
-      Output3Text(foregroundcolor, xyz[0], xyz[1], xyz[2], "click and drag to change colorbar node");
-    }
   }
 
   {
@@ -299,7 +265,9 @@ void DrawColorbarPathRGB(void){
     glPushMatrix();
     glScalef(SCALE2SMV(1.0),SCALE2SMV(1.0),SCALE2SMV(1.0));
     glTranslatef(-xbar0,-ybar0,-zbar0);
-    for(i=0;i<cbi->nnodes;i++){
+    int skip = 1;
+    if(cbi->nnodes > 16)skip = cbi->nnodes / 16;
+    for(i=0;i<cbi->nnodes;i+=skip){
       char cbuff[1024];
       float dzpoint;
 
@@ -408,6 +376,7 @@ void DrawColorbarPathRGB(void){
 void DrawColorbarPathCIE(void){
   int i;
   colorbardata *cbi;
+  float cie_dist[256], cie_last[3], ddist, current_dist=0.0;
 
   if(show_firecolormap == 0){
     cbi = colorbarinfo + colorbartype;
@@ -417,6 +386,7 @@ void DrawColorbarPathCIE(void){
   }
   glPointSize(5.0);
   glBegin(GL_POINTS);
+  cie_dist[0] = 0.0;
   for(i = 0; i < 256; i++){
     float *rgbi, cie[3], xyz[3];
     unsigned char rgb255[3];
@@ -430,8 +400,23 @@ void DrawColorbarPathCIE(void){
     xyz[2] = cie[0] / 100.0;
     xyz[0] = (cie[1]+87.9)/183.28;
     xyz[1] = (cie[2]+126.39)/211.11;
+    if(i > 0){
+      float dx, dy, dz;
+
+      dx = cie[0] - cie_last[0];
+      dy = cie[1] - cie_last[1];
+      dz = cie[2] - cie_last[2];
+      if(cbi->dist_type == COLOR_DIST_LAB){
+        cie_dist[i] = cie_dist[i - 1] + sqrt(dx * dx + dy * dy + dz * dz);
+      }
+      else{
+        cie_dist[i] = cie_dist[i - 1] + ABS(dx);
+      }
+    }
+    memcpy(cie_last, cie, 3 * sizeof(float));
     glVertex3fv(xyz);
   }
+  ddist = cie_dist[255] / 16.0;
 #ifdef pp_COLOR_CIE_CHECK
   for(i = 0; i < 17 * 17 * 17; i++){
     float xyz[3], *cie;
@@ -449,6 +434,7 @@ void DrawColorbarPathCIE(void){
 #endif
   glEnd();
 
+#ifdef _DEBUG
   for(i = 7; i < 256; i += 8){
     float dist, cie2[3], *rgb2val, *rgb1val, cie1[3], xyz1[3], xyz2[3];
     float dx, dy, dz;
@@ -479,6 +465,7 @@ void DrawColorbarPathCIE(void){
     xyz1[2] = (xyz1[2] + xyz2[2]) / 2.0;
     Output3Text(foregroundcolor, xyz1[1], xyz1[2], xyz1[0], label);
   }
+#endif
 
   glPointSize(10.0);
   glBegin(GL_POINTS);
@@ -532,7 +519,9 @@ void DrawColorbarPathCIE(void){
   glPushMatrix();
   glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
   glTranslatef(-xbar0, -ybar0, -zbar0);
-  for(i = 0;i < cbi->nnodes;i++){
+    int skip = 1;
+    if(cbi->nnodes > 16)skip = cbi->nnodes / 16;
+    for(i = 0;i < cbi->nnodes;i+=skip){
     char cbuff[1024];
     float dzpoint;
 
@@ -554,12 +543,17 @@ void DrawColorbarPathCIE(void){
   for(i=1;i<ncolors;i++){
     float *rgbi;
     float zbot, ztop;
+    float black[3] = {0.0,0.0,0.0};
 
     if(show_firecolormap!=0){
       rgbi=rgb_volsmokecolormap+4*i;
     }
     else{
       rgbi=cbi->colorbar+3*i;
+    }
+    if(show_Lab_dist_bars==1&&ncolors == 255&&cie_dist[i]>current_dist){
+      rgbi = black;
+      current_dist+=ddist;
     }
     glColor3fv(rgbi);
     zbot=(float)i/(float)ncolors;
@@ -646,21 +640,28 @@ void UpdateCurrentColorbar(colorbardata *cb){
 
 /* ------------------ AdjustColorBar ------------------------ */
 
-void AdjustColorBar(colorbardata *cbi){
+void AdjustColorBar(colorbardata *cbi, int option){
   int i;
 
   Rgb2CIE(cbi->rgb_node, cbi->cie_node);
+  cbi->dist_type = option;
   cbi->dist_node[0] = 0.0;
   for(i = 1;i < cbi->nnodes;i++){
     unsigned char *rgb2_local;
     float *cie1, *cie2, dist;
-    float dx, dy, dz;
 
     rgb2_local = cbi->rgb_node + 3*i;
     cie2 = cbi->cie_node + 3 * i;
     cie1 = cie2 - 3;
     Rgb2CIE(rgb2_local, cie2);
-    DDIST3(cie1, cie2, dist);
+    if(option == COLOR_DIST_LAB){
+      float dx, dy, dz;
+
+      DDIST3(cie1, cie2, dist);
+    }
+    else{
+      dist = ABS(cie1[0] - cie2[0]);
+    }
     cbi->dist_node[i] = cbi->dist_node[i - 1] + dist;
   }
 
@@ -856,38 +857,6 @@ void CIE2Rgbs(unsigned char *rgbs255, float *frgbs, float *cies){
   }
 }
 
-/* ------------------ CIEdE2Csv ------------------------ */
-
-void CIEdE2Csv(char *file){
-  int i;
-  FILE *stream;
-
-  stream = fopen(file, "w");
-  fprintf(stream, "index,");
-  for(i = 0; i < ncolorbars - 1; i++){
-
-    colorbardata *cbi;
-
-    cbi = colorbarinfo + i;
-    fprintf(stream, "%s,", cbi->label);
-  }
-  fprintf(stream, "%s\n", colorbarinfo[ncolorbars-1].label);
-
-  for(i = 0; i < 254; i++){
-    int j;
-
-    fprintf(stream, "%i,",i);
-    for(j = 0; j < ncolorbars-1; j++){
-      colorbardata *cbj;
-
-      cbj = colorbarinfo + j;
-      fprintf(stream, "%f,", cbj->dE[i]);
-    }
-    fprintf(stream, "%f\n", colorbarinfo[ncolorbars-1].dE[254]);
-  }
-  fclose(stream);
-}
-
 /* ------------------ CheckCIE ------------------------ */
 #ifdef pp_COLOR_CIE_CHECK
 void CheckCIE(void){
@@ -971,14 +940,20 @@ void RemapColorbar(colorbardata *cbi){
   unsigned char *rgb_node;
   unsigned char *alpha;
 #ifdef pp_COLOR_CIE
-  float *cie;
+  float *cie_rgb;
 #endif
+  int interp_cielab;
 
+  interp_cielab = cbi->interp;
+#ifdef _DEBUG
+  if(interp_cielab == INTERP_RGB)printf("colorbar: %s, interpolation: rgb\n",cbi->label);
+  if(interp_cielab == INTERP_CIE)printf("colorbar: %s, interpolation: cie\n",cbi->label);
+#endif
   CheckMemory;
   colorbar=cbi->colorbar;
   rgb_node=cbi->rgb_node;
 #ifdef pp_COLOR_CIE
-  cie = cbi->cie_rgb;
+  cie_rgb = cbi->cie_rgb;
 #endif
   alpha=cbi->alpha;
 
@@ -1007,7 +982,7 @@ void RemapColorbar(colorbardata *cbi){
 
     float cie1[3], cie2[3];
 
-    if(interp_cielab==1){
+    if(interp_cielab==INTERP_CIE){
       Rgb2CIE(rgb_node,   cie1);
       Rgb2CIE(rgb_node+3, cie2);
     }
@@ -1017,22 +992,13 @@ void RemapColorbar(colorbardata *cbi){
 
       factor = (float)(j-i1)/(float)(i2-i1);
 #ifdef pp_COLOR_CIE
-      float *ciej, *ciej2;
+      float *ciej;
 
-      ciej = cie + 3*j;
-      ciej2 = ciej - 3;
+      ciej  = cie_rgb + 3*j;
       ciej[0]=MIX(factor,cie2[0],cie1[0]);
       ciej[1]=MIX(factor,cie2[1],cie1[1]);
       ciej[2]=MIX(factor,cie2[2],cie1[2]);
-      if(j > 0){
-        float *dE, dist;
-        float dx, dy, dz;
-
-        dE = cbi->dE + j - 1;
-        DDIST3(ciej, ciej2, dist);
-        *dE = dist;
-      }
-      if(interp_cielab == 1){
+      if(interp_cielab==INTERP_CIE){
         unsigned char rgb_val[3];
         float frgb[3];
 
@@ -1064,6 +1030,19 @@ void RemapColorbar(colorbardata *cbi){
       }
     }
   }
+#ifdef pp_COLOR_CIE
+  for(i=1;i<cbi->nnodes;i++){
+    float *ciei1, *ciei2;
+    float *dE, dist;
+    float dx, dy, dz;
+
+    ciei1  = cbi->cie_rgb + 3*i;
+    ciei2  = ciei1 - 3;
+    dE    = cbi->dE      + i - 1;
+    DDIST3(ciei1, ciei2, dist);
+    *dE = dist;
+  }
+#endif
   rgb_node = cbi->rgb_node+3*(cbi->nnodes-1);
   for(i=cbi->index_node[cbi->nnodes-1];i<256;i++){
     colorbar[0+3*i]=rgb_node[0]/255.0;
@@ -1091,43 +1070,6 @@ void RemapColorbar(colorbardata *cbi){
     colorbar[2+3*255]=rgb_above_max[2];
   }
   CheckMemory;
-}
-
-/* ------------------ UpdateColorbarNodes ------------------------ */
-
-void UpdateColorbarNodes(colorbardata *cbi){
-  float total_dist = 0.0;
-  int i;
-
-  for(i = 0;i<cbi->nnodes-1;i++){
-    unsigned char *node1, *node2;
-    float dist,dx,dy,dz;
-
-    node1 = cbi->rgb_node+3*i;
-    node2 = node1+3;
-    dx = node1[0]-node2[0];
-    dy = node1[1]-node2[1];
-    dz = node1[2]-node2[2];
-    dist = sqrt(dx*dx+dy*dy+dz*dz);
-    total_dist += dist;
-  }
-  cbi->index_node[0] = 0;
-  for(i = 1;i<cbi->nnodes-1;i++){
-    int index;
-    unsigned char *node1, *node2;
-    float dist, dx, dy, dz;
-
-    node1 = cbi->rgb_node+3*(i-1);
-    node2 = node1+3;
-    dx = node1[0]-node2[0];
-    dy = node1[1]-node2[1];
-    dz = node1[2]-node2[2];
-    dist = sqrt(dx*dx+dy*dy+dz*dz);
-    index = 255*dist/total_dist;
-    cbi->index_node[i] = CLAMP(cbi->index_node[i-1]+index,0,255);
-  }
-  cbi->index_node[cbi->nnodes-1] = 255;
-  RemapColorbar(cbi);
 }
 
 /* ------------------ RemapColorbarType ------------------------ */
@@ -1211,7 +1153,7 @@ void RemapColorbarType(int cb_oldtype, char *cb_newname){
 #ifdef pp_COLORBARS_CSV
 /* ------------------ ReadCSVColorbar ------------------------ */
 
-void ReadCSVColorbar(colorbardata *cbptr, char *dir, char *file, char *type){
+void ReadCSVColorbar(colorbardata *cbptr, char *dir, char *file, char *ctype, int type){
   FILE *stream;
   int i,n=0;
   char fullfile[1024];
@@ -1232,7 +1174,6 @@ void ReadCSVColorbar(colorbardata *cbptr, char *dir, char *file, char *type){
   }
 
   strcpy(cbptr->label, file);
-  cbptr->label_ptr = cbptr->label;
   cbptr->nodehilight = 0;
 
   field1 = strtok(buffer, ",");
@@ -1243,10 +1184,14 @@ void ReadCSVColorbar(colorbardata *cbptr, char *dir, char *file, char *type){
     field2 = strtok(NULL, ",");
     if(field2 != NULL){
       strcpy(cbptr->label, field2);
+      TrimBack(cbptr->label);
     }
   }
   rewind(stream);
-  if(have_name == 1)fgets(buffer, 255, stream);
+  if(have_name == 1){
+    fgets(buffer, 255, stream);
+    TrimBack(buffer);
+  }
   for(;;){
     if(fgets(buffer, 255, stream) == NULL)break;
     n++;
@@ -1256,7 +1201,10 @@ void ReadCSVColorbar(colorbardata *cbptr, char *dir, char *file, char *type){
   NewMemory((void **)&rgbs, 3 * n * sizeof(int));
   rgbscopy = rgbs;
 
-  if(have_name==1)fgets(buffer, 255, stream);
+  if(have_name == 1){
+    fgets(buffer, 255, stream);
+    TrimBack(buffer);
+  }
   for(i=0;i<n;i++){
     char *crgb;
 
@@ -1272,7 +1220,8 @@ void ReadCSVColorbar(colorbardata *cbptr, char *dir, char *file, char *type){
     cbptr->rgb_node[3 * i + 1] = (unsigned char)CLAMP(rgbscopy[1], 0, 255);
     cbptr->rgb_node[3 * i + 2] = (unsigned char)CLAMP(rgbscopy[2], 0, 255);
     cbptr->index_node[i] = i;
-    strcpy(cbptr->type, type);
+    strcpy(cbptr->ctype, ctype);
+    cbptr->type = type;
     rgbscopy += 3;
   }
   cbptr->nnodes = n;
@@ -1304,25 +1253,190 @@ void RevertColorBar(colorbardata *cbi){
 }
 #endif
 
+/* ------------------ CompareColorbars ------------------------ */
+
+int CompareColorbars(const void *arg1, const void *arg2){
+  colorbardata *cbi, *cbj;
+  int *i, *j;
+
+  i = (int *)arg1;
+  j = (int *)arg2;
+  cbi = colorbarinfo + *i;
+  cbj = colorbarinfo + *j;
+  if(cbi->type<cbj->type)return -1;
+  if(cbi->type>cbj->type)return 1;
+  return STRCMP(cbi->label, cbj->label);
+}
+
+/* ------------------ SortColorBars ------------------------ */
+
+void SortColorBars(void){
+  int i;
+  char label_bound[255], label_edit[255];
+#ifdef pp_COLOR_TOGGLE
+  char toggle_label1[255], toggle_label2[255];
+
+  strcpy(toggle_label1, "");
+  if(index_colorbar1 >= 0){
+    colorbardata *cbt1;
+    cbt1 = colorbarinfo + index_colorbar1;
+    strcpy(toggle_label1,cbt1->label);
+  }
+  strcpy(toggle_label2, "");
+  if(index_colorbar2 >= 0){
+    colorbardata *cbt2;
+
+    cbt2 = colorbarinfo + index_colorbar2;
+    strcpy(toggle_label2, cbt2->label);
+  }
+#endif
+  strcpy(label_edit, "");
+  if(colorbartype >= 0){
+    colorbardata *cbt1;
+    cbt1 = colorbarinfo + colorbartype;
+    strcpy(label_edit, cbt1->label);
+  }
+  strcpy(label_bound, "");
+  if(colorbartype >= 0){
+    colorbardata *cbt1;
+    cbt1 = colorbarinfo + colorbartype;
+    strcpy(label_bound, cbt1->label);
+  }
+
+  FREEMEMORY(colorbar_list_sorted);
+  NewMemory((void **)&colorbar_list_sorted, ncolorbars*sizeof(int));
+  FREEMEMORY(colorbar_list_inverse);
+  NewMemory((void **)&colorbar_list_inverse, ncolorbars*sizeof(int));
+  for(i=0; i<ncolorbars; i++){
+    colorbardata *cbi;
+
+    cbi = colorbarinfo + i;
+    cbi->type = CB_OTHER;
+    if(strcmp(cbi->ctype, "rainbow")==0)cbi->type = CB_RAINBOW;
+    if(strcmp(cbi->ctype, "linear")==0)cbi->type = CB_LINEAR;
+    if(strcmp(cbi->ctype, "divergent")==0)cbi->type = CB_DIVERGENT;
+    if(strcmp(cbi->ctype, "circular")==0)cbi->type = CB_CIRCULAR;
+    if(strcmp(cbi->ctype, "deprecated")==0)cbi->type = CB_DEPRECATED;
+    if(strcmp(cbi->ctype, "original") == 0)cbi->type = CB_ORIGINAL;
+    if(strcmp(cbi->ctype, "user defined")==0)cbi->type = CB_USER;
+    colorbar_list_sorted[i] = i;
+  }
+  qsort((colorbardata *)colorbar_list_sorted, (size_t)ncolorbars, sizeof(int), CompareColorbars);
+  for(i=0; i<ncolorbars; i++){
+    colorbar_list_inverse[colorbar_list_sorted[i]] = i;
+  }
+
+  colorbardata *cb;
+
+  bw_colorbar_index = -1;
+  cb = GetColorbar("black->white");
+  if(cb != NULL)bw_colorbar_index = cb - colorbarinfo;
+
+  cb = GetColorbar("fire");
+  fire_colorbar_index=cb-colorbarinfo;
+  fire_colorbar=cb;
+
+  cb = GetColorbar("level set");
+  levelset_colorbar=cb-colorbarinfo;
+
+  cb = GetColorbar("split");
+  split_colorbar=cb;
+
+  cb = GetColorbar("CO2");
+  co2_colorbar_index = cb - colorbarinfo;
+
+  colorbartype       = colorbartype_default;
+  iso_colorbar_index = colorbartype_default;
+#ifdef pp_COLOR_TOGGLE
+  cb = NULL;
+  if(strlen(toggle_label1)>0)cb = GetColorbar(toggle_label1);
+  if(cb!=NULL)index_colorbar1 = cb - colorbarinfo;
+
+  cb = NULL;
+  if(strlen(toggle_label2) > 0)cb = GetColorbar(toggle_label2);
+  if(cb != NULL)index_colorbar2 = cb - colorbarinfo;
+#endif
+  cb = NULL;
+  if(strlen(label_edit) > 0)cb = GetColorbar(label_edit);
+  if(cb != NULL)colorbartype = cb - colorbarinfo;
+
+  cb = NULL;
+  if(strlen(label_bound) > 0)cb = GetColorbar(label_bound);
+  if(cb != NULL)colorbartype= cb - colorbarinfo;
+}
+
+/* ------------------ AddColorbar ------------------------ */
+
+int AddColorbar(int icolorbar){
+  colorbardata *cb_to, *cb_from;
+  char cb_label[255];
+
+  ncolorbars++;
+  CheckMemory;
+  ResizeMemory((void **)&colorbarinfo, ncolorbars * sizeof(colorbardata));
+  UpdateCurrentColorbar(colorbarinfo + colorbartype);
+
+  cb_from = colorbarinfo + icolorbar;
+  CheckMemory;
+
+  // new colorbar
+
+  cb_to = colorbarinfo + ncolorbars - 1;
+
+  memcpy(cb_to, cb_from, sizeof(colorbardata));
+  strcpy(cb_to->label, "Copy of ");
+  strcat(cb_to->label, cb_from->label);
+  strcpy(cb_label, cb_to->label);
+  strcpy(cb_to->ctype, "user defined");
+  cb_to->interp = INTERP_CIE;
+  RemapColorbar(cb_to);
+  SortColorBars();
+  UpdateColorbarListEdit(1, CB_DELETE);
+  UpdateColorbarListBound(1);
+#ifdef pp_COLOR_TOGGLE
+  UpdateColorbarListEdit(2, CB_DELETE);
+  UpdateColorbarListEdit(3, CB_DELETE);
+  UpdateColorbarListBound(2);
+  UpdateColorbarListBound(3);
+#endif
+  UpdateColorbarBound();
+  UpdateColorbarEdit();
+
+  colorbardata *cbnew;
+
+  cbnew = GetColorbar(cb_label);
+  if(cbnew != NULL){
+    colorbartype = cbnew - colorbarinfo;
+  }
+  SetColorbarListEdit(colorbartype);
+  SetColorbarListBound(colorbartype);
+  return colorbartype;
+}
+
 /* ------------------ InitDefaultColorbars ------------------------ */
 
 void InitDefaultColorbars(int nini){
   int i;
   colorbardata *cbi;
+#ifdef pp_COLORBARS_CSV
+  int ncolorbars_dirlist;
+#endif
 
   ndefaultcolorbars = 0;
 
 #ifdef pp_COLORBARS_CSV
   filelistdata *linear_filelist=NULL, *circular_filelist=NULL, *rainbow_filelist=NULL, *divergent_filelist = NULL;
-  filelistdata *user_filelist = NULL;
+  filelistdata *user_filelist = NULL, *colorbars_dirlist = NULL;
 
-  nuser_filelist      = GetFileListSize(colorbars_userdir,       "*.csv", FILE_MODE);
+  ncolorbars_dirlist  = GetFileListSize(colorbars_dir,           "*",     DIR_MODE);
+  nuser_filelist      = GetFileListSize(colorbars_user_dir,      "*.csv", FILE_MODE);
   nlinear_filelist    = GetFileListSize(colorbars_linear_dir,    "*.csv", FILE_MODE);
   ncircular_filelist  = GetFileListSize(colorbars_circular_dir,  "*.csv", FILE_MODE);
   nrainbow_filelist   = GetFileListSize(colorbars_rainbow_dir,   "*.csv", FILE_MODE);
   ndivergent_filelist = GetFileListSize(colorbars_divergent_dir, "*.csv", FILE_MODE);
 
-  MakeFileList(colorbars_userdir,       "*.csv", nuser_filelist,      NO, &user_filelist,      FILE_MODE);
+  MakeFileList(colorbars_dir,           "*",     ncolorbars_dirlist,  NO, &colorbars_dirlist,  DIR_MODE);
+  MakeFileList(colorbars_user_dir,      "*.csv", nuser_filelist,      NO, &user_filelist,      FILE_MODE);
   MakeFileList(colorbars_linear_dir,    "*.csv", nlinear_filelist,    NO, &linear_filelist,    FILE_MODE);
   MakeFileList(colorbars_circular_dir,  "*.csv", ncircular_filelist,  NO, &circular_filelist,  FILE_MODE);
   MakeFileList(colorbars_rainbow_dir,   "*.csv", nrainbow_filelist,   NO, &rainbow_filelist,   FILE_MODE);
@@ -1342,9 +1456,7 @@ void InitDefaultColorbars(int nini){
 
   // rainbow colorbar
 
-
   strcpy(cbi->label,"Rainbow");
-  cbi->label_ptr=cbi->label;
   cbi->nnodes=5;
   cbi->nodehilight=0;
 
@@ -1372,13 +1484,12 @@ void InitDefaultColorbars(int nini){
   cbi->rgb_node[12]=255;
   cbi->rgb_node[13]=0;
   cbi->rgb_node[14]=0;
-  strcpy(cbi->type, "original");
+  strcpy(cbi->ctype, "rainbow");
   cbi++;
 
   // Rainbow 2 colorbar
 
   strcpy(cbi->label,"Rainbow 2");
-  cbi->label_ptr=cbi->label;
   cbi->nnodes=12;
   cbi->nodehilight=0;
  
@@ -1441,13 +1552,12 @@ void InitDefaultColorbars(int nini){
   cbi->rgb_node[33]=215;	
   cbi->rgb_node[34]=5;	
   cbi->rgb_node[35]=13;
-  strcpy(cbi->type, "original");
+  strcpy(cbi->ctype, "deprecated");
   cbi++;
 
   // yellow/red
 
   strcpy(cbi->label,"yellow->red");
-  cbi->label_ptr=cbi->label;
   cbi->nnodes=2;
   cbi->nodehilight=0;
 
@@ -1460,13 +1570,12 @@ void InitDefaultColorbars(int nini){
   cbi->rgb_node[3]=255;
   cbi->rgb_node[4]=0;
   cbi->rgb_node[5]=0;
-  strcpy(cbi->type, "original");
+  strcpy(cbi->ctype, "original");
   cbi++;
 
   // blue/green/red
 
   strcpy(cbi->label,"blue->green->red");
-  cbi->label_ptr=cbi->label;
   cbi->nnodes=3;
   cbi->nodehilight=0;
 
@@ -1484,13 +1593,12 @@ void InitDefaultColorbars(int nini){
   cbi->rgb_node[6]=255;
   cbi->rgb_node[7]=0;
   cbi->rgb_node[8]=0;
-  strcpy(cbi->type, "original");
+  strcpy(cbi->ctype, "original");
   cbi++;
 
   // blue/yellow/white
 
   strcpy(cbi->label, "blue->yellow->white");
-  cbi->label_ptr = cbi->label;
   cbi->nnodes = 4;
   cbi->nodehilight = 0;
 
@@ -1517,14 +1625,12 @@ void InitDefaultColorbars(int nini){
   cbi->rgb_node[9]    = 255;
   cbi->rgb_node[10]   = 255;
   cbi->rgb_node[11]   = 255;
-  strcpy(cbi->type, "original");
+  strcpy(cbi->ctype, "deprecated");
   cbi++;
 
   // blue->red split
 
   strcpy(cbi->label,"blue->red split");
-  cbi->label_ptr=cbi->label;
-
   cbi->nnodes=4;
   cbi->nodehilight=0;
 
@@ -1547,14 +1653,12 @@ void InitDefaultColorbars(int nini){
   cbi->rgb_node[9]=255;
   cbi->rgb_node[10]=0;
   cbi->rgb_node[11]=0;
-  strcpy(cbi->type, "original");
+  strcpy(cbi->ctype, "deprecated");
   cbi++;
 
   // black->white
 
-  bw_colorbar_index = cbi - colorbarinfo;
   strcpy(cbi->label,"black->white");
-  cbi->label_ptr=cbi->label;
 
   cbi->nnodes=2;
   cbi->nodehilight=0;
@@ -1568,13 +1672,12 @@ void InitDefaultColorbars(int nini){
   cbi->rgb_node[3] =255;
   cbi->rgb_node[4]=255;
   cbi->rgb_node[5]=255;
-  strcpy(cbi->type, "original");
+  strcpy(cbi->ctype, "original");
   cbi++;
 
   // FED
 
   strcpy(cbi->label,"FED");
-  cbi->label_ptr=cbi->label;
 
   cbi->nnodes=6;
   cbi->nodehilight=0;
@@ -1608,15 +1711,12 @@ void InitDefaultColorbars(int nini){
   cbi->rgb_node[15]=255;
   cbi->rgb_node[16]=155;
   cbi->rgb_node[17]=0;
-  strcpy(cbi->type, "original");
+  strcpy(cbi->ctype, "original");
   cbi++;
 
   // fire (original)
 
-  fire_colorbar_index=cbi-colorbarinfo;
-  fire_colorbar=cbi;
   strcpy(cbi->label,"fire");
-  cbi->label_ptr=cbi->label;
 
   cbi->nnodes=4;
   cbi->nodehilight=0;
@@ -1640,15 +1740,12 @@ void InitDefaultColorbars(int nini){
   cbi->rgb_node[9]=255;
   cbi->rgb_node[10]=128;
   cbi->rgb_node[11]=0;
-  strcpy(cbi->type, "original");
+  strcpy(cbi->ctype, "original");
   cbi++;
 
   // fire 2
 
-  fire_colorbar_index=cbi-colorbarinfo;
-  fire_colorbar=cbi;
   strcpy(cbi->label,"fire 2");
-  cbi->label_ptr=cbi->label;
 
   cbi->nnodes=10;
   cbi->nodehilight=0;
@@ -1702,16 +1799,12 @@ void InitDefaultColorbars(int nini){
   cbi->rgb_node[27]=255;
   cbi->rgb_node[28]=255;
   cbi->rgb_node[29]=238;
-  strcpy(cbi->type, "original");
+  strcpy(cbi->ctype, "original");
   cbi++;
 
   // fire 3
 
-  fire_colorbar_index = cbi - colorbarinfo;
-  fire_colorbar = cbi;
   strcpy(cbi->label, "fire 3");
-  strcpy(cbi->type, "original");
-  cbi->label_ptr = cbi->label;
 
   cbi->nnodes = 4;
   cbi->nodehilight = 0;
@@ -1735,15 +1828,12 @@ void InitDefaultColorbars(int nini){
   cbi->rgb_node[9] = 255;
   cbi->rgb_node[10] = 255;
   cbi->rgb_node[11] = 255;
-  strcpy(cbi->type, "original");
+  strcpy(cbi->ctype, "original");
   cbi++;
 
   // cool
 
-  fire_colorbar_index = cbi - colorbarinfo;
-  fire_colorbar = cbi;
   strcpy(cbi->label, "cool");
-  cbi->label_ptr = cbi->label;
 
   cbi->nnodes = 7;
   cbi->nodehilight = 0;
@@ -1782,14 +1872,12 @@ void InitDefaultColorbars(int nini){
   cbi->rgb_node[18] = 255;
   cbi->rgb_node[19] = 255;
   cbi->rgb_node[20] = 255;
-  strcpy(cbi->type, "original");
+  strcpy(cbi->ctype, "deprecated");
   cbi++;
 
   // fire line (level set)
 
-  levelset_colorbar=cbi-colorbarinfo;
   strcpy(cbi->label,"fire line (level set)");
-  cbi->label_ptr=cbi->label;
 
   cbi->nnodes=6;
   cbi->nodehilight=0;
@@ -1823,15 +1911,13 @@ void InitDefaultColorbars(int nini){
   cbi->rgb_node[15]=0;
   cbi->rgb_node[16]=1;
   cbi->rgb_node[17]=2;
-  strcpy(cbi->type, "original");
+  strcpy(cbi->ctype, "original");
   cbi++;
-
 
   // fire line (wall thickness)
 
   wallthickness_colorbar=cbi-colorbarinfo;
   strcpy(cbi->label,"fire line (wall thickness)");
-  cbi->label_ptr=cbi->label;
 
   cbi->nnodes=4;
   cbi->nodehilight=0;
@@ -1855,15 +1941,12 @@ void InitDefaultColorbars(int nini){
   cbi->rgb_node[9]=253;
   cbi->rgb_node[10]=254;
   cbi->rgb_node[11]=255;
-  strcpy(cbi->type, "original");
+  strcpy(cbi->ctype, "original");
   cbi++;
 
   // split
 
-  split_colorbar_index = cbi - colorbarinfo;
-  split_colorbar = cbi;
   strcpy(cbi->label, "split");
-  cbi->label_ptr = cbi->label;
 
   cbi->nnodes = 4;
   cbi->nodehilight = 0;
@@ -1875,14 +1958,13 @@ void InitDefaultColorbars(int nini){
   for(i = 0; i < 12; i++){
     cbi->rgb_node[i] = colorsplit[i];
   }
-  strcpy(cbi->type, "original");
+  strcpy(cbi->ctype, "original");
   cbi++;
 
 
   // Methanol
 
   strcpy(cbi->label, "Methanol");
-  cbi->label_ptr = cbi->label;
 
   cbi->nnodes = 4;
   cbi->nodehilight = 0;
@@ -1906,13 +1988,12 @@ void InitDefaultColorbars(int nini){
   cbi->rgb_node[9] = 255;
   cbi->rgb_node[10] = 255;
   cbi->rgb_node[11] = 255;
-  strcpy(cbi->type, "original");
+  strcpy(cbi->ctype, "deprecated");
   cbi++;
 
   // Propane
 
   strcpy(cbi->label, "Propane");
-  cbi->label_ptr = cbi->label;
 
   cbi->nnodes = 5;
   cbi->nodehilight = 0;
@@ -1941,14 +2022,12 @@ void InitDefaultColorbars(int nini){
   cbi->rgb_node[12] = 255;
   cbi->rgb_node[13] = 255;
   cbi->rgb_node[14] = 255;
-  strcpy(cbi->type, "original");
+  strcpy(cbi->ctype, "deprecated");
   cbi++;
 
   // CO2
 
-  co2_colorbar_index = cbi - colorbarinfo;
   strcpy(cbi->label, "CO2");
-  cbi->label_ptr = cbi->label;
 
   cbi->nnodes = 3;
   cbi->nodehilight = 0;
@@ -1967,40 +2046,30 @@ void InitDefaultColorbars(int nini){
   cbi->rgb_node[6] = 255;
   cbi->rgb_node[7] = 255;
   cbi->rgb_node[8] = 255;
-  strcpy(cbi->type, "original");
+  strcpy(cbi->ctype, "original");
   cbi++;
 
 #ifdef pp_COLORBARS_CSV
   for(i = 0;i < nlinear_filelist;i++){
-    ReadCSVColorbar(cbi, colorbars_linear_dir,  linear_filelist[i].file,  "linear");
+    ReadCSVColorbar(cbi, colorbars_linear_dir,  linear_filelist[i].file,      "linear",    CB_LINEAR);
     cbi++;
   }
   for(i = 0;i < ncircular_filelist;i++){
-    ReadCSVColorbar(cbi, colorbars_circular_dir,  circular_filelist[i].file,  "circular");
+    ReadCSVColorbar(cbi, colorbars_circular_dir,  circular_filelist[i].file,  "circular",  CB_CIRCULAR);
     cbi++;
   }
   for(i = 0;i < nrainbow_filelist;i++){
-    ReadCSVColorbar(cbi, colorbars_rainbow_dir,  rainbow_filelist[i].file, "rainbow");
+    ReadCSVColorbar(cbi, colorbars_rainbow_dir,  rainbow_filelist[i].file,    "rainbow",   CB_RAINBOW);
     cbi++;
   }
   for(i = 0;i < ndivergent_filelist;i++){
-    ReadCSVColorbar(cbi, colorbars_divergent_dir, divergent_filelist[i].file, "divergent");
+    ReadCSVColorbar(cbi, colorbars_divergent_dir, divergent_filelist[i].file, "divergent", CB_DIVERGENT);
     cbi++;
   }
   for(i = 0;i < nuser_filelist;i++){
-    ReadCSVColorbar(cbi, colorbars_userdir, user_filelist[i].file,    "user");
+    ReadCSVColorbar(cbi, colorbars_user_dir, user_filelist[i].file,            "user defined",      CB_USER);
     cbi++;
   }
-#ifdef pp_COLOR_NEW
-  if(rainbow_filelist>0){
-    memcpy(colorbarinfo+1, colorbarinfo, sizeof(colorbardata));
-    strcpy(colorbarinfo[1].label, "Rainbow(original)");
-
-    memcpy(colorbarinfo, cbi - nrainbow_filelist, sizeof(colorbardata));
-    strcpy(colorbarinfo->label, "Rainbow");
-    strcpy(colorbarinfo->type, "original");
-  }
-#endif
 #endif
 
   // construct colormaps from color node info
@@ -2008,9 +2077,37 @@ void InitDefaultColorbars(int nini){
   for(i=0;i<ndefaultcolorbars;i++){
     cbi = colorbarinfo + i;
 
+    if(strlen(cbi->label) == 7 && strcmp(cbi->label, "Rainbow") == 0){
+      cbi->interp = INTERP_RGB;
+    }
+    else{
+      cbi->interp = INTERP_CIE;
+    }
+    cbi->dist_type = COLOR_DIST_LAB;
     RemapColorbar(cbi);
     UpdateColorbarSplits(cbi);
     memcpy(cbi->rgb_node_orig, cbi->rgb_node, 3 * cbi->nnodes * sizeof(unsigned char));
+  }
+  SortColorBars();
+  UpdateColorbarListEdit(1, CB_DELETE);
+  UpdateColorbarListBound(1);
+#ifdef pp_COLOR_TOGGLE
+  UpdateColorbarListEdit(2, CB_DELETE);
+  UpdateColorbarListEdit(3, CB_DELETE);
+  UpdateColorbarListBound(2);
+  UpdateColorbarListBound(3);
+#endif
+  UpdateColorbarEdit();
+  UpdateColorbarBound();
+
+  for(i = 0;i < ncolorbars;i++){
+    cbi = colorbarinfo + i;
+    if(strlen(cbi->label)==7&&strcmp(cbi->label, "Rainbow") == 0){
+      cbi->interp = INTERP_RGB;
+    }
+    else{
+      cbi->interp = INTERP_CIE;
+    }
   }
 }
 
