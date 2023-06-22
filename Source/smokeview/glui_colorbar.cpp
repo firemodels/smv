@@ -80,7 +80,8 @@ int cb_usecolorbar_extreme;
 #define COLORBAR_PREV                21
 #define COLORBAR_NEXT                22
 #ifdef pp_COLOR_CIE
-#define COLORBAR_ADJUST              23
+#define COLORBAR_ADJUST_LAB          23
+#define COLORBAR_ADJUST_L            33
 #ifdef pp_COLOR_ADJUST
 #define COLORBAR_REVERT              24
 #endif
@@ -406,9 +407,15 @@ extern "C" void ColorbarCB(int var){
     ColorbarCB(COLORBAR_LIST);
     break;
 #ifdef pp_COLOR_CIE
-  case COLORBAR_ADJUST:
+  case COLORBAR_ADJUST_LAB:
 #ifdef pp_COLOR_ADJUST
-    AdjustColorBar(colorbarinfo + colorbartype);
+    AdjustColorBar(colorbarinfo + colorbartype, COLOR_DIST_LAB);
+#endif
+    ColorbarCB(COLORBAR_RGB);
+    break;
+  case COLORBAR_ADJUST_L:
+#ifdef pp_COLOR_ADJUST
+    AdjustColorBar(colorbarinfo + colorbartype, COLOR_DIST_L);
 #endif
     ColorbarCB(COLORBAR_RGB);
     break;
@@ -630,7 +637,8 @@ extern "C" void GluiColorbarSetup(int main_window){
   glui_colorbar->add_radiobutton_to_group(RADIO_colorbar_coord_type, "CIELab");
   glui_colorbar->add_checkbox_to_panel(PANEL_cb_display,"Show CIELab equal distance bars", &show_Lab_dist_bars);
 #ifdef pp_COLOR_ADJUST
-  glui_colorbar->add_button_to_panel(PANEL_cb_display, "Adjust",        COLORBAR_ADJUST,     ColorbarCB);
+  glui_colorbar->add_button_to_panel(PANEL_cb_display, "Adjust Lab",    COLORBAR_ADJUST_LAB, ColorbarCB);
+  glui_colorbar->add_button_to_panel(PANEL_cb_display, "Adjust L",      COLORBAR_ADJUST_L,   ColorbarCB);
   glui_colorbar->add_button_to_panel(PANEL_cb_display, "Revert",        COLORBAR_REVERT,     ColorbarCB);
 #endif
   glui_colorbar->add_button_to_panel(PANEL_cb_display, "Save",          COLORBAR_SAVE,       ColorbarCB);

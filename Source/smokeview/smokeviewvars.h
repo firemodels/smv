@@ -596,7 +596,6 @@ SVEXTERN unsigned int SVDECL(*screenmap360, NULL);
 SVEXTERN float SVDECL(*screenmap360IX, NULL), SVDECL(*screenmap360IY, NULL);
 
 SVEXTERN colorbardata SVDECL(*split_colorbar, NULL);
-SVEXTERN int split_colorbar_index;
 #ifdef INMAIN
 SVEXTERN float splitvals[3]={-1.0,0.0,1.0};
 #else

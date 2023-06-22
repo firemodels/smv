@@ -700,7 +700,7 @@ EXTERNCPP void UpdateColorbarListBound(int flag);
 EXTERNCPP void UpdateColorbarListEdit(int flag,int del);
 
 #ifdef pp_COLOR_CIE
-EXTERNCPP void AdjustColorBar(colorbardata *cbi);
+EXTERNCPP void AdjustColorBar(colorbardata *cbi, int option);
 EXTERNCPP void RevertColorBar(colorbardata *cbi);
 EXTERNCPP void Rgb2CIE(unsigned char *rgb, float *cie);
 EXTERNCPP void Rgb2CIEs(unsigned char *rgbs255, float *cies);

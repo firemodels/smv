@@ -274,6 +274,8 @@ typedef struct _treedata {
 #define CB_OTHER      7
 #define INTERP_RGB    0
 #define INTERP_CIE    1
+#define COLOR_DIST_L   0
+#define COLOR_DIST_LAB 1
 typedef struct _colorbardata {
   char label[1024];        // menu label
   char ctype[256];
@@ -286,7 +288,7 @@ typedef struct _colorbardata {
   int nnodes_orig, index_node_orig[1024];
   float cie_node[3*1024], frgb[3*1024], dist_node[1024], cie_rgb[3*1024], dE[1024];
 #endif
-  int interp;
+  int interp,dist_type;
   float colorbar[3*1024];
 } colorbardata;
 

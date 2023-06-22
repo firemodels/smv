@@ -406,7 +406,7 @@ void DrawColorbarPathCIE(void){
       dx = cie[0] - cie_last[0];
       dy = cie[1] - cie_last[1];
       dz = cie[2] - cie_last[2];
-      if(cbi->type == CB_RAINBOW){
+      if(cbi->dist_type == COLOR_DIST_LAB){
         cie_dist[i] = cie_dist[i - 1] + sqrt(dx * dx + dy * dy + dz * dz);
       }
       else{
@@ -640,10 +640,11 @@ void UpdateCurrentColorbar(colorbardata *cb){
 
 /* ------------------ AdjustColorBar ------------------------ */
 
-void AdjustColorBar(colorbardata *cbi){
+void AdjustColorBar(colorbardata *cbi, int option){
   int i;
 
   Rgb2CIE(cbi->rgb_node, cbi->cie_node);
+  cbi->dist_type = option;
   cbi->dist_node[0] = 0.0;
   for(i = 1;i < cbi->nnodes;i++){
     unsigned char *rgb2_local;
@@ -653,7 +654,7 @@ void AdjustColorBar(colorbardata *cbi){
     cie2 = cbi->cie_node + 3 * i;
     cie1 = cie2 - 3;
     Rgb2CIE(rgb2_local, cie2);
-    if(cbi->type == CB_RAINBOW){
+    if(option == COLOR_DIST_LAB){
       float dx, dy, dz;
 
       DDIST3(cie1, cie2, dist);
@@ -1340,7 +1341,6 @@ void SortColorBars(void){
 
   cb = GetColorbar("split");
   split_colorbar=cb;
-  split_colorbar_index = cb - colorbarinfo;
 
   cb = GetColorbar("CO2");
   co2_colorbar_index = cb - colorbarinfo;
@@ -1740,7 +1740,7 @@ void InitDefaultColorbars(int nini){
   cbi->rgb_node[9]=255;
   cbi->rgb_node[10]=128;
   cbi->rgb_node[11]=0;
-  strcpy(cbi->ctype, "deprecated");
+  strcpy(cbi->ctype, "original");
   cbi++;
 
   // fire 2
@@ -1958,7 +1958,7 @@ void InitDefaultColorbars(int nini){
   for(i = 0; i < 12; i++){
     cbi->rgb_node[i] = colorsplit[i];
   }
-  strcpy(cbi->ctype, "deprecated");
+  strcpy(cbi->ctype, "original");
   cbi++;
 
 
@@ -2046,7 +2046,7 @@ void InitDefaultColorbars(int nini){
   cbi->rgb_node[6] = 255;
   cbi->rgb_node[7] = 255;
   cbi->rgb_node[8] = 255;
-  strcpy(cbi->ctype, "deprecated");
+  strcpy(cbi->ctype, "original");
   cbi++;
 
 #ifdef pp_COLORBARS_CSV
@@ -2083,6 +2083,7 @@ void InitDefaultColorbars(int nini){
     else{
       cbi->interp = INTERP_CIE;
     }
+    cbi->dist_type = COLOR_DIST_LAB;
     RemapColorbar(cbi);
     UpdateColorbarSplits(cbi);
     memcpy(cbi->rgb_node_orig, cbi->rgb_node, 3 * cbi->nnodes * sizeof(unsigned char));
