@@ -20,7 +20,6 @@
 //#define pp_COLOR_HIDE         // add checkbox to hide/unhide scene when editing a colorbar
 
 //#define pp_SMOKE_LIGHT        // turn on smoke lighting
-//#define pp_SMOKE_ADAPT        // turn on volume render smoke adaptive integration
 
 //#define pp_TOUR_ADJUST        // adjust tour times
 #define pp_TOUR_DUP             // handle duplicate keyframes
