@@ -1249,7 +1249,6 @@ int CompareColorbars(const void *arg1, const void *arg2){
 void SortColorBars(void){
   int i;
   char label_bound[255], label_edit[255];
-#ifdef pp_COLOR_TOGGLE
   char toggle_label1[255], toggle_label2[255];
 
   strcpy(toggle_label1, "");
@@ -1265,7 +1264,6 @@ void SortColorBars(void){
     cbt2 = colorbarinfo + index_colorbar2;
     strcpy(toggle_label2, cbt2->label);
   }
-#endif
   strcpy(label_edit, "");
   if(colorbartype >= 0){
     colorbardata *cbt1;
@@ -1323,7 +1321,6 @@ void SortColorBars(void){
 
   colorbartype       = colorbartype_default;
   iso_colorbar_index = colorbartype_default;
-#ifdef pp_COLOR_TOGGLE
   cb = NULL;
   if(strlen(toggle_label1)>0)cb = GetColorbar(toggle_label1);
   if(cb!=NULL)index_colorbar1 = cb - colorbarinfo;
@@ -1331,7 +1328,6 @@ void SortColorBars(void){
   cb = NULL;
   if(strlen(toggle_label2) > 0)cb = GetColorbar(toggle_label2);
   if(cb != NULL)index_colorbar2 = cb - colorbarinfo;
-#endif
   cb = NULL;
   if(strlen(label_edit) > 0)cb = GetColorbar(label_edit);
   if(cb != NULL)colorbartype = cb - colorbarinfo;
@@ -1347,12 +1343,10 @@ void UpdateColorbarDialogs(void){
   SortColorBars();
   UpdateColorbarListEdit(1, CB_DELETE);
   UpdateColorbarListBound(1);
-#ifdef pp_COLOR_TOGGLE
   UpdateColorbarListEdit(2, CB_DELETE);
   UpdateColorbarListEdit(3, CB_DELETE);
   UpdateColorbarListBound(2);
   UpdateColorbarListBound(3);
-#endif
   UpdateColorbarBound();
   UpdateColorbarEdit();
 }
