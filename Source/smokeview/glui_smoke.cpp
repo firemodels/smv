@@ -646,9 +646,6 @@ extern "C" void Glui3dSmokeSetup(int main_window){
     SPINNER_fire_opacity_factor->set_float_limits(1.0, 50.0);
     SPINNER_mass_extinct = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_volsmoke_compute, _("Mass extinction coeff (m2/g)"), GLUI_SPINNER_FLOAT, &mass_extinct, MASS_EXTINCTION, Smoke3dCB);
     Smoke3dCB(MASS_EXTINCTION);
-#ifdef pp_SMOKE_ADAPT
-    glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_volsmoke_compute, _("adaptive integration"), &vol_adaptive);
-#endif
     CHECKBOX_combine_meshes = glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_volsmoke_compute, _("Combine meshes"), &combine_meshes, COMBINE_MESHES, Smoke3dCB);
     SPINNER_nongpu_vol_factor = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_volsmoke_compute, _("non-gpu grid multiplier"), GLUI_SPINNER_FLOAT, &nongpu_vol_factor, NONGPU_VOL_FACTOR, Smoke3dCB);
     SPINNER_nongpu_vol_factor->set_float_limits(1.0, 10.0);

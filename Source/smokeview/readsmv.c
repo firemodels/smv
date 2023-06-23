@@ -7001,9 +7001,7 @@ int ReadSMV(bufferstreamdata *stream){
       continue;
     }
     if(MatchSMV(buffer, "GEOM") == 1 ||
-#ifdef pp_BGEOM
        MatchSMV(buffer, "BGEOM") == 1 ||
-#endif
        MatchSMV(buffer, "SGEOM") == 1){
       ngeominfo++;
       continue;
@@ -8064,9 +8062,7 @@ int ReadSMV(bufferstreamdata *stream){
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   */
     if(MatchSMV(buffer, "GEOM") == 1 ||
-#ifdef pp_BGEOM
        MatchSMV(buffer, "BGEOM") == 1 ||
-#endif
        MatchSMV(buffer, "SGEOM") == 1){
       geomdata *geomi;
       char *buff2;
@@ -8084,18 +8080,12 @@ int ReadSMV(bufferstreamdata *stream){
         buff2 = buffer+5;
         sscanf(buff2,"%i",&ngeomobjinfo);
       }
-#ifdef pp_BGEOM
       if(MatchSMV(buffer, "BGEOM") == 1){
         InitGeom(geomi, GEOM_BOUNDARY, NOT_FDSBLOCK, CFACE_NORMALS_NO);
       }
       else if(MatchSMV(buffer, "SGEOM") == 1){
         InitGeom(geomi, GEOM_SLICE, NOT_FDSBLOCK, CFACE_NORMALS_NO);
       }
-#else
-      if(MatchSMV(buffer, "SGEOM") == 1){
-        InitGeom(geomi, GEOM_SLICE, NOT_FDSBLOCK, CFACE_NORMALS_NO);
-      }
-#endif
       else{
         is_geom = 1;
         InitGeom(geomi, GEOM_GEOM, FDSBLOCK, CFACE_NORMALS_NO);
@@ -15284,9 +15274,6 @@ int ReadIni2(char *inifile, int localfile){
 
               touri = tourinfo + i;
               touri->path_times = NULL;
-#ifdef pp_TOUR_ADJUST
-              touri->path_dists = NULL;
-#endif
               touri->display = 0;
             }
           }
@@ -15316,9 +15303,6 @@ int ReadIni2(char *inifile, int localfile){
 
               if(NewMemory((void **)&touri->keyframe_times, nkeyframes*sizeof(float)) == 0)return 2;
               if(NewMemory((void **)&touri->path_times, tour_ntimes*sizeof(float)) == 0)return 2;
-#ifdef pp_TOUR_ADJUST
-              if(NewMemory((void **)&touri->path_dists, tour_ntimes * sizeof(float)) == 0)return 2;
-#endif
               thisframe = &touri->first_frame;
               for(j = 0; j < nkeyframes; j++){
                 key_pause_time = 0.0;
@@ -15344,9 +15328,6 @@ int ReadIni2(char *inifile, int localfile){
               touri = tourinfo + i;
               touri->first_frame.next->prev = &touri->first_frame;
               touri->last_frame.prev->next = &touri->last_frame;
-#ifdef pp_TOUR_DUP
-              UpdateKeyframeDups(touri);
-#endif
             }
             UpdateTourMenuLabels();
             CreateTourPaths();
@@ -15404,9 +15385,6 @@ int ReadIni2(char *inifile, int localfile){
 
               touri = tourinfo + i;
               touri->path_times = NULL;
-#ifdef pp_TOUR_ADJUST
-              touri->path_dists = NULL;
-#endif             
               touri->display = 0;
             }
           }
@@ -15439,9 +15417,6 @@ int ReadIni2(char *inifile, int localfile){
 
               if(NewMemory((void **)&touri->keyframe_times, nkeyframes*sizeof(float)) == 0)return 2;
               if(NewMemory((void **)&touri->path_times, tour_ntimes*sizeof(float)) == 0)return 2;
-#ifdef pp_TOUR_ADJUST
-              if(NewMemory((void **)&touri->path_dists, tour_ntimes * sizeof(float)) == 0)return 2;
-#endif
               thisframe = &touri->first_frame;
               for(j = 0; j < nkeyframes; j++){
                 key_view[0] = 0.0;
@@ -15494,9 +15469,6 @@ int ReadIni2(char *inifile, int localfile){
               touri = tourinfo + i;
               touri->first_frame.next->prev = &touri->first_frame;
               touri->last_frame.prev->next = &touri->last_frame;
-#ifdef pp_TOUR_DUP
-              UpdateKeyframeDups(touri);
-#endif
             }
             UpdateTourMenuLabels();
             CreateTourPaths();

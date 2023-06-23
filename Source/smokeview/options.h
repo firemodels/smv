@@ -17,16 +17,10 @@
 #define pp_PART_MULTI         // load particle files in parallel
 #define pp_CSV_MULTI          // read in csv files in parallel
 
-#define pp_PART_BOUND         // use .prt.bnd for global part bound file extension
-
 //#define pp_COLOR_HIDE         // add checkbox to hide/unhide scene when editing a colorbar
 
 //#define pp_SMOKE_LIGHT        // turn on smoke lighting
-//#define pp_SMOKE_ADAPT        // turn on volume render smoke adaptive integration
-#define pp_BGEOM                // parse BGEOM smv keywords
 
-//#define pp_TOUR_ADJUST        // adjust tour times
-#define pp_TOUR_DUP             // handle duplicate keyframes
 //#define pp_BNDF               // merge geometry and structured boundary files in load menus
 
 //#define pp_DPRINT             // turn on debug print (file, line number)

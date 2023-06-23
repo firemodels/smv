@@ -1184,28 +1184,6 @@ void IntegrateSmokeColors(float *integrated_smokecolor, float *xyzvert, float dl
       GetSmokeColor(&smoke_transparency,&smoke_color, &scaled_intensity, &smoke_light_fraction,
                          dlength, xyz, meshi, &inobst, blank_local);
     }
-#ifdef pp_SMOKE_ADAPT
-    if(vol_adaptive==1&&xi>0.5){
-      float diff_color;
-
-#define COLOREPS_MAX 0.04
-#define COLOREPS_MIN 0.0
-      diff_color = MAXDIFF3(smoke_color,last_smoke_color);
-      if(
-         (diff_color>COLOREPS_MAX&&i_dlength>0.125)||
-         (diff_color<COLOREPS_MIN&&i_dlength<4.0)
-        ){
-        float grid_factor;
-
-        grid_factor = 0.5;
-        if(diff_color<COLOREPS_MIN)grid_factor = 2.0;
-        i_dlength *= grid_factor;
-        dlength *= grid_factor;
-        xi = last_xi + i_dlength;
-        continue;
-      }
-    }
-#endif
 #ifdef pp_SMOKE_LIGHT
     last_xi = xi;
 #endif
@@ -2195,9 +2173,6 @@ void DrawSmoke3DGPUVol(void){
   glUniform1f(GPUvol_xyzmaxdiff,xyzmaxdiff);
   glUniform1f(GPUvol_gpu_vol_factor,gpu_vol_factor);
   glUniform1f(GPUvol_fire_opacity_factor,fire_opacity_factor);
-#ifdef pp_SMOKE_ADAPT
-  glUniform1i(GPUvol_vol_adaptive, vol_adaptive);
-#endif
   glUniform1f(GPUvol_mass_extinct,mass_extinct);
   glUniform1i(GPUvol_volbw,volbw);
   glUniform1f(GPUvol_temperature_min, global_temp_min);
