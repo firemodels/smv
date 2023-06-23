@@ -12,9 +12,6 @@
   #define PROGVERSION ""
 #endif
 
-
-//#define pp_PLOT2DMAX // add option to plot 2d max vals
-
 //*** parallel file loading
 #define pp_SLICE_MULTI        // load slice files in parallel
 #define pp_PART_MULTI         // load particle files in parallel

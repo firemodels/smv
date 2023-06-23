@@ -12256,9 +12256,6 @@ int ReadIni2(char *inifile, int localfile){
           curve->curve_factor              = factor;
           curve->apply_curve_factor        = apply_factor;
           curve->vals                      = NULL;
-#ifdef pp_PLOT2DMAX
-          curve->vals2                     = NULL;
-#endif
           curve->use_foreground_color      = use_foreground_color;
           if(strcmp(curve->c_type, "devc")==0){
             curve->quantity = csvfileinfo[file_index].csvinfo[col_index].label.longlabel;
