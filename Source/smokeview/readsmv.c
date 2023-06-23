@@ -6497,7 +6497,6 @@ void InitCSV(csvfiledata *csvi, char *file, char *type, int format){
   csvi->csvinfo      = NULL;
   csvi->format       = format;
 
-#ifdef pp_COLOR_CIE
   if(file != NULL){
     NewMemory(( void ** )&csvi->file, strlen(file) + 1);
     strcpy(csvi->file, file);
@@ -6505,10 +6504,6 @@ void InitCSV(csvfiledata *csvi, char *file, char *type, int format){
   else{
     csvi->file = file;
   }
-#else
-  NewMemory((void **)&csvi->file, strlen(file) + 1);
-  strcpy(csvi->file, file);
-#endif
   strcpy(csvi->c_type, type);
 }
 
@@ -11348,9 +11343,7 @@ typedef struct {
  */
 
   INIT_PRINT_TIMER(total_wrapup_time);
-#ifdef pp_COLOR_CIE
   update_colorbar_orig = 1;
-#endif
   if(update_filesizes==1){
     GetFileSizes();
     SMV_EXIT(0);

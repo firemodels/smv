@@ -542,7 +542,6 @@ SVEXTERN int SVDECL(max_LISTBOX_colorbar_bound, 0);
 SVEXTERN int SVDECL(max_LISTBOX_colorbar_edit, 0);
 SVEXTERN int SVDECL(*colorbar_list_sorted, NULL);
 SVEXTERN int SVDECL(*colorbar_list_inverse, NULL);
-#ifdef pp_COLOR_CIE
 SVEXTERN int SVDECL(show_Lab_dist_bars, 0);
 SVEXTERN int SVDECL(update_colorbar_orig, 0);
 SVEXTERN float SVDECL(*cielab_check_xyz, NULL);
@@ -555,7 +554,6 @@ SVEXTERN int SVDECL(colorbar_toggle, 1);
 #endif
 #ifdef pp_COLOR_CIE_CHECK
 SVEXTERN unsigned char SVDECL(*cielab_check_rgb255, NULL);
-#endif
 #endif
 SVEXTERN int SVDECL(color_vector_black, 0);
 SVEXTERN float SVDECL(geom_transparency, 0.5);
