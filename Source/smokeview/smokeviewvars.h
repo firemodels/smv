@@ -542,21 +542,14 @@ SVEXTERN int SVDECL(max_LISTBOX_colorbar_bound, 0);
 SVEXTERN int SVDECL(max_LISTBOX_colorbar_edit, 0);
 SVEXTERN int SVDECL(*colorbar_list_sorted, NULL);
 SVEXTERN int SVDECL(*colorbar_list_inverse, NULL);
-#ifdef pp_COLOR_CIE
 SVEXTERN int SVDECL(show_Lab_dist_bars, 0);
 SVEXTERN int SVDECL(update_colorbar_orig, 0);
 SVEXTERN float SVDECL(*cielab_check_xyz, NULL);
 SVEXTERN char SVDECL(*dEcsv_filename, NULL);
 SVEXTERN float cb_lab2[3], cb_frgb2[3];
 SVEXTERN int cb_rgb2[3];
-#ifdef pp_COLOR_TOGGLE
 SVEXTERN int SVDECL(index_colorbar1, 0), SVDECL(index_colorbar2, 1);
 SVEXTERN int SVDECL(colorbar_toggle, 1);
-#endif
-#ifdef pp_COLOR_CIE_CHECK
-SVEXTERN unsigned char SVDECL(*cielab_check_rgb255, NULL);
-#endif
-#endif
 SVEXTERN int SVDECL(color_vector_black, 0);
 SVEXTERN float SVDECL(geom_transparency, 0.5);
 SVEXTERN int SVDECL(geom_force_transparent, 0);
@@ -732,6 +725,7 @@ SVEXTERN char SVDECL(*volrender_scriptname,NULL);
 SVEXTERN float SVDECL(nongpu_vol_factor,1.0);
 SVEXTERN float SVDECL(gpu_vol_factor,1.0);
 SVEXTERN int SVDECL(disable_gpu,0);
+SVEXTERN int SVDECL(check_colorbar, 0);
 SVEXTERN int SVDECL(script_startframe,-1), SVDECL(script_skipframe,-1);
 SVEXTERN int SVDECL(vol_startframe0,-1), SVDECL(vol_skipframe0,-1);
 SVEXTERN int SVDECL(render_startframe0,-1), SVDECL(render_skipframe0,-1);
@@ -1609,7 +1603,6 @@ SVEXTERN menudata menuinfo[10000];
 SVEXTERN int max_screenWidth, max_screenHeight;
 SVEXTERN int saveW, saveH;
 SVEXTERN char SVDECL(*texturedir,NULL);
-#ifdef pp_COLORBARS_CSV
 SVEXTERN char SVDECL(*colorbars_dir, NULL);
 SVEXTERN char SVDECL(*colorbars_linear_dir,  NULL);
 SVEXTERN char SVDECL(*colorbars_rainbow_dir, NULL);
@@ -1619,7 +1612,6 @@ SVEXTERN char SVDECL(*colorbars_user_dir, NULL);
 SVEXTERN int SVDECL(nlinear_filelist,0), SVDECL(ncircular_filelist,0), SVDECL(nrainbow_filelist,0), SVDECL(ndivergent_filelist,0);
 SVEXTERN int SVDECL(ndeprecated_filelist, 0);
 SVEXTERN int SVDECL(nuser_filelist, 0);
-#endif
 SVEXTERN char release_title[1024];
 SVEXTERN char plot3d_title[1024];
 SVEXTERN char SVDECL(*partshortlabel,NULL),SVDECL(*partunitlabel,NULL);

@@ -1276,7 +1276,6 @@ void UpdateRGBColors(int colorbar_index){
     }
     UpdateSmokeColormap(RENDER_SLICE);
     UpdateSmokeColormap(RENDER_VOLUME);
-#ifdef pp_COLOR_CIE
     unsigned char rgb_temp[3*256];
     for(n=0;n<256;n++){
       rgb_temp[3*n+0] = 255*rgb_full[n][0];
@@ -1284,7 +1283,6 @@ void UpdateRGBColors(int colorbar_index){
       rgb_temp[3*n+2] = 255*rgb_full[n][2];
     }
     Rgb2CIEs(rgb_temp, cbi->cie_node);
-#endif
   }
   else{
     for(n=0;n<nrgb_full;n++){

@@ -372,7 +372,6 @@ void DrawColorbarPathRGB(void){
 }
 
 /* ------------------ DrawColorbarPathCIE ------------------------ */
-#ifdef pp_COLOR_CIE
 void DrawColorbarPathCIE(void){
   int i;
   colorbardata *cbi;
@@ -417,21 +416,6 @@ void DrawColorbarPathCIE(void){
     glVertex3fv(xyz);
   }
   ddist = cie_dist[255] / 16.0;
-#ifdef pp_COLOR_CIE_CHECK
-  for(i = 0; i < 17 * 17 * 17; i++){
-    float xyz[3], *cie;
-    unsigned char *ciergb;
-
-    cie = cielab_check_xyz       + 3*i;
-    ciergb = cielab_check_rgb255 + 3*i;
-
-    glColor3ubv(ciergb);
-    xyz[2] = cie[0] / 100.0;
-    xyz[0] = (cie[1] + 87.9) / 183.28;
-    xyz[1] = (cie[2] + 126.39) / 211.11;
-    glVertex3fv(xyz);
-  }
-#endif
   glEnd();
 
 #ifdef _DEBUG
@@ -593,7 +577,6 @@ void DrawColorbarPathCIE(void){
   }
   glEnd();
 }
-#endif
 
 /* ------------------ GetColorbar ------------------------ */
 
@@ -635,8 +618,6 @@ void UpdateCurrentColorbar(colorbardata *cb){
   }
   if(is_fed_colorbar==1&&fed_loaded==1)SliceBoundCB(FILE_UPDATE);
 }
-
-#ifdef pp_COLOR_CIE
 
 /* ------------------ AdjustColorBar ------------------------ */
 
@@ -858,13 +839,12 @@ void CIE2Rgbs(unsigned char *rgbs255, float *frgbs, float *cies){
 }
 
 /* ------------------ CheckCIE ------------------------ */
-#ifdef pp_COLOR_CIE_CHECK
 void CheckCIE(void){
   int i, diff;
   int hist[256];
   float sum=0.0;
   float *ciexyz;
-  unsigned char *ciergb;
+  unsigned char *ciergb, *cielab_check_rgb255;
 
   for(i = 0;i < 256;i++){
     hist[i] = 0;
@@ -883,13 +863,13 @@ void CheckCIE(void){
 
       for(k = 0; k < 256; k++){
         unsigned char rgbval[3], rgbnew[3];
-        float cie[3], cie2[3], dist2;
+        float cie[3], cie2[3], dist2, frgb[3];
 
         rgbval[0] = (unsigned char)k;
         rgbval[1] = (unsigned char)j;
         rgbval[2] = (unsigned char)i;
         Rgb2CIE(rgbval, cie);
-        CIE2Rgb(rgbnew, cie);
+        CIE2Rgb(rgbnew, frgb, cie);
         Rgb2CIE(rgbnew, cie2);
         diff = ABS(rgbval[0] - rgbnew[0]);
         diff = MAX(diff, ABS(rgbval[1] - rgbnew[1]));
@@ -928,9 +908,9 @@ void CheckCIE(void){
   }
   printf("\n");
   printf("cie avg diff=%f\n", sum / (float)(256 * 256 * 256));
+  FREEMEMORY(cielab_check_xyz);
+  FREEMEMORY(cielab_check_rgb255);
 }
-#endif
-#endif
 
 /* ------------------ RemapColorbar ------------------------ */
 
@@ -939,9 +919,7 @@ void RemapColorbar(colorbardata *cbi){
   float *colorbar;
   unsigned char *rgb_node;
   unsigned char *alpha;
-#ifdef pp_COLOR_CIE
   float *cie_rgb;
-#endif
   int interp_cielab;
 
   interp_cielab = cbi->interp;
@@ -952,9 +930,7 @@ void RemapColorbar(colorbardata *cbi){
   CheckMemory;
   colorbar=cbi->colorbar;
   rgb_node=cbi->rgb_node;
-#ifdef pp_COLOR_CIE
   cie_rgb = cbi->cie_rgb;
-#endif
   alpha=cbi->alpha;
 
   for(i=0;i<cbi->index_node[0];i++){
@@ -978,7 +954,6 @@ void RemapColorbar(colorbardata *cbi){
     i2 = cbi->index_node[i+1];
     if(i2==i1)continue;
     rgb_node = cbi->rgb_node+3*i;
-#ifdef pp_COLOR_CIE
 
     float cie1[3], cie2[3];
 
@@ -986,12 +961,10 @@ void RemapColorbar(colorbardata *cbi){
       Rgb2CIE(rgb_node,   cie1);
       Rgb2CIE(rgb_node+3, cie2);
     }
-#endif
     for(j=i1;j<i2;j++){
       float factor;
 
       factor = (float)(j-i1)/(float)(i2-i1);
-#ifdef pp_COLOR_CIE
       float *ciej;
 
       ciej  = cie_rgb + 3*j;
@@ -1012,11 +985,6 @@ void RemapColorbar(colorbardata *cbi){
         colorbar[1+3*j]=MIX(factor,rgb_node[4],rgb_node[1])/255.0;
         colorbar[2+3*j]=MIX(factor,rgb_node[5],rgb_node[2])/255.0;
       }
-#else
-      colorbar[0+3*j]=MIX(factor,rgb_node[3],rgb_node[0])/255.0;
-      colorbar[1+3*j]=MIX(factor,rgb_node[4],rgb_node[1])/255.0;
-      colorbar[2+3*j]=MIX(factor,rgb_node[5],rgb_node[2])/255.0;
-#endif
       if(
         (rgb_node[0]==0&&  rgb_node[1]==1&&  rgb_node[2]==2&&
          rgb_node[3]==0&&  rgb_node[4]==1&&  rgb_node[5]==2)||
@@ -1030,7 +998,6 @@ void RemapColorbar(colorbardata *cbi){
       }
     }
   }
-#ifdef pp_COLOR_CIE
   for(i=1;i<cbi->nnodes;i++){
     float *ciei1, *ciei2;
     float *dE, dist;
@@ -1042,7 +1009,6 @@ void RemapColorbar(colorbardata *cbi){
     DDIST3(ciei1, ciei2, dist);
     *dE = dist;
   }
-#endif
   rgb_node = cbi->rgb_node+3*(cbi->nnodes-1);
   for(i=cbi->index_node[cbi->nnodes-1];i<256;i++){
     colorbar[0+3*i]=rgb_node[0]/255.0;
@@ -1150,7 +1116,6 @@ void RemapColorbarType(int cb_oldtype, char *cb_newname){
   }
 }
 
-#ifdef pp_COLORBARS_CSV
 /* ------------------ ReadCSVColorbar ------------------------ */
 
 void ReadCSVColorbar(colorbardata *cbptr, char *dir, char *file, char *ctype, int type){
@@ -1227,9 +1192,6 @@ void ReadCSVColorbar(colorbardata *cbptr, char *dir, char *file, char *ctype, in
   cbptr->nnodes = n;
   fclose(stream);
 }
-#endif
-
-#ifdef pp_COLOR_CIE
 
 /* ------------------ InitDefaultColorbars ------------------------ */
 
@@ -1251,7 +1213,6 @@ void RevertColorBar(colorbardata *cbi){
   cbi->nnodes = cbi->nnodes_orig;
   memcpy(cbi->index_node, cbi->index_node_orig, cbi->nnodes * sizeof(int));
 }
-#endif
 
 /* ------------------ CompareColorbars ------------------------ */
 
@@ -1273,7 +1234,6 @@ int CompareColorbars(const void *arg1, const void *arg2){
 void SortColorBars(void){
   int i;
   char label_bound[255], label_edit[255];
-#ifdef pp_COLOR_TOGGLE
   char toggle_label1[255], toggle_label2[255];
 
   strcpy(toggle_label1, "");
@@ -1289,7 +1249,6 @@ void SortColorBars(void){
     cbt2 = colorbarinfo + index_colorbar2;
     strcpy(toggle_label2, cbt2->label);
   }
-#endif
   strcpy(label_edit, "");
   if(colorbartype >= 0){
     colorbardata *cbt1;
@@ -1347,7 +1306,6 @@ void SortColorBars(void){
 
   colorbartype       = colorbartype_default;
   iso_colorbar_index = colorbartype_default;
-#ifdef pp_COLOR_TOGGLE
   cb = NULL;
   if(strlen(toggle_label1)>0)cb = GetColorbar(toggle_label1);
   if(cb!=NULL)index_colorbar1 = cb - colorbarinfo;
@@ -1355,7 +1313,6 @@ void SortColorBars(void){
   cb = NULL;
   if(strlen(toggle_label2) > 0)cb = GetColorbar(toggle_label2);
   if(cb != NULL)index_colorbar2 = cb - colorbarinfo;
-#endif
   cb = NULL;
   if(strlen(label_edit) > 0)cb = GetColorbar(label_edit);
   if(cb != NULL)colorbartype = cb - colorbarinfo;
@@ -1363,6 +1320,20 @@ void SortColorBars(void){
   cb = NULL;
   if(strlen(label_bound) > 0)cb = GetColorbar(label_bound);
   if(cb != NULL)colorbartype= cb - colorbarinfo;
+}
+
+/* ------------------ UpdateColorbarDialogs ------------------------ */
+
+void UpdateColorbarDialogs(void){
+  SortColorBars();
+  UpdateColorbarListEdit(1, CB_DELETE);
+  UpdateColorbarListBound(1);
+  UpdateColorbarListEdit(2, CB_DELETE);
+  UpdateColorbarListEdit(3, CB_DELETE);
+  UpdateColorbarListBound(2);
+  UpdateColorbarListBound(3);
+  UpdateColorbarBound();
+  UpdateColorbarEdit();
 }
 
 /* ------------------ AddColorbar ------------------------ */
@@ -1390,17 +1361,7 @@ int AddColorbar(int icolorbar){
   strcpy(cb_to->ctype, "user defined");
   cb_to->interp = INTERP_CIE;
   RemapColorbar(cb_to);
-  SortColorBars();
-  UpdateColorbarListEdit(1, CB_DELETE);
-  UpdateColorbarListBound(1);
-#ifdef pp_COLOR_TOGGLE
-  UpdateColorbarListEdit(2, CB_DELETE);
-  UpdateColorbarListEdit(3, CB_DELETE);
-  UpdateColorbarListBound(2);
-  UpdateColorbarListBound(3);
-#endif
-  UpdateColorbarBound();
-  UpdateColorbarEdit();
+  UpdateColorbarDialogs();
 
   colorbardata *cbnew;
 
@@ -1418,13 +1379,10 @@ int AddColorbar(int icolorbar){
 void InitDefaultColorbars(int nini){
   int i;
   colorbardata *cbi;
-#ifdef pp_COLORBARS_CSV
   int ncolorbars_dirlist;
-#endif
 
   ndefaultcolorbars = 0;
 
-#ifdef pp_COLORBARS_CSV
   filelistdata *linear_filelist=NULL, *circular_filelist=NULL, *rainbow_filelist=NULL, *divergent_filelist = NULL;
   filelistdata *user_filelist = NULL, *colorbars_dirlist = NULL;
 
@@ -1443,7 +1401,6 @@ void InitDefaultColorbars(int nini){
   MakeFileList(colorbars_divergent_dir, "*.csv", ndivergent_filelist, NO, &divergent_filelist, FILE_MODE);
 
   ndefaultcolorbars+=nlinear_filelist + ncircular_filelist + nrainbow_filelist + ndivergent_filelist + nuser_filelist;
-#endif
 
   ndefaultcolorbars+=18;
 
@@ -2049,7 +2006,6 @@ void InitDefaultColorbars(int nini){
   strcpy(cbi->ctype, "original");
   cbi++;
 
-#ifdef pp_COLORBARS_CSV
   for(i = 0;i < nlinear_filelist;i++){
     ReadCSVColorbar(cbi, colorbars_linear_dir,  linear_filelist[i].file,      "linear",    CB_LINEAR);
     cbi++;
@@ -2070,7 +2026,6 @@ void InitDefaultColorbars(int nini){
     ReadCSVColorbar(cbi, colorbars_user_dir, user_filelist[i].file,            "user defined",      CB_USER);
     cbi++;
   }
-#endif
 
   // construct colormaps from color node info
 
@@ -2088,17 +2043,7 @@ void InitDefaultColorbars(int nini){
     UpdateColorbarSplits(cbi);
     memcpy(cbi->rgb_node_orig, cbi->rgb_node, 3 * cbi->nnodes * sizeof(unsigned char));
   }
-  SortColorBars();
-  UpdateColorbarListEdit(1, CB_DELETE);
-  UpdateColorbarListBound(1);
-#ifdef pp_COLOR_TOGGLE
-  UpdateColorbarListEdit(2, CB_DELETE);
-  UpdateColorbarListEdit(3, CB_DELETE);
-  UpdateColorbarListBound(2);
-  UpdateColorbarListBound(3);
-#endif
-  UpdateColorbarEdit();
-  UpdateColorbarBound();
+  UpdateColorbarDialogs();
 
   for(i = 0;i < ncolorbars;i++){
     cbi = colorbarinfo + i;

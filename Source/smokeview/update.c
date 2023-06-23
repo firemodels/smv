@@ -1919,12 +1919,14 @@ void UpdateShowScene(void){
   have_fire  = HaveFireLoaded();
   have_smoke = HaveSootLoaded();
 
-#ifdef pp_COLOR_CIE
+  if(check_colorbar == 1){
+    CheckCIE();
+    check_colorbar++;
+  }
   if(update_colorbar_orig == 1){
     UpdateColorbarOrig();
     update_colorbar_orig = 0;
   }
-#endif
   if(update_loadall_textures == 1){
     update_loadall_textures = 0;
     TextureShowMenu(MENU_TEXTURE_SHOWALL2);
@@ -2503,18 +2505,8 @@ void UpdateDisplay(void){
         colorbartype_ini = colorbartype;
       }
       if(colorbarinfo != NULL){
-        SortColorBars();
-        UpdateColorbarListEdit(1, CB_DELETE);
-        UpdateColorbarListBound(1);
-#ifdef pp_COLOR_TOGGLE
-        UpdateColorbarListEdit(2, CB_DELETE);
-        UpdateColorbarListEdit(3, CB_DELETE);
-        UpdateColorbarListBound(2);
-        UpdateColorbarListBound(3);
-#endif
         colorbartype = colorbartype_default;
-        UpdateColorbarBound();
-        UpdateColorbarEdit();
+        UpdateColorbarDialogs();
       }
     }
     update_colorbartype = 0;

@@ -132,11 +132,9 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 
 #define CB_DELETE               1
 #define CB_KEEP                 0
-#ifdef pp_COLOR_TOGGLE
 #define COLORBAR_TOGGLE              28
 #define COLORBAR_LISTA               30
 #define COLORBAR_LISTB               31
-#endif
 
 
 #define MESH_INT  0

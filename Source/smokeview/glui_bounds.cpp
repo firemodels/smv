@@ -50,11 +50,9 @@ GLUI *glui_bounds=NULL;
 
 int update_hist_bounds;
 
-#ifdef pp_COLOR_TOGGLE
 GLUI_Panel *PANEL_toggle_cba = NULL;
 GLUI_Listbox *LISTBOX_colorbar_toggle_bound1 = NULL;
 GLUI_Listbox *LISTBOX_colorbar_toggle_bound2 = NULL;
-#endif
 
 /* ------------------ bounds_dialog class ------------------------ */
 
@@ -3596,10 +3594,8 @@ extern "C" void UpdateExtreme(void){
 
 extern "C" void UpdateColorbarBound(void){
   if(LISTBOX_colorbar_bound != NULL)LISTBOX_colorbar_bound->set_int_val(colorbartype);
-#ifdef pp_COLOR_TOGGLE
   if(LISTBOX_colorbar_toggle_bound1!=NULL)LISTBOX_colorbar_toggle_bound1->set_int_val(index_colorbar1);
   if(LISTBOX_colorbar_toggle_bound2!=NULL)LISTBOX_colorbar_toggle_bound2->set_int_val(index_colorbar2);
-#endif
 }
 
 /* ------------------ SetColorbarListBound ------------------------ */
@@ -4629,10 +4625,8 @@ void AddColorbarListBound(GLUI_Listbox *LIST_cbar, int index, char *label_arg, i
 
     cbi = colorbarinfo + colorbar_list_sorted[i];
     if(strcmp(cbi->ctype, label_arg) != 0)continue;
-#ifdef pp_COLOR_TOGGLE
     LIST_cbar->add_item(colorbar_list_sorted[i], cbi->label);
     *max_index = MAX(colorbar_list_sorted[i], *max_index);
-#endif
   }
 }
 
@@ -4647,14 +4641,12 @@ extern "C" void UpdateColorbarListBound(int flag){
     case 1:
      LIST_cb = LISTBOX_colorbar_bound;
      break;
-#ifdef pp_COLOR_TOGGLE
     case 2:
      LIST_cb = LISTBOX_colorbar_toggle_bound1;
      break;
     case 3:
      LIST_cb = LISTBOX_colorbar_toggle_bound2;
      break;
-#endif
     default:
      LIST_cb = LISTBOX_colorbar_bound;
      ASSERT(FFALSE);
@@ -5530,7 +5522,6 @@ extern "C" void GluiBoundsSetup(int main_window){
   SPINNER_labels_transparency_data->set_float_limits(0.0, 1.0, GLUI_LIMIT_CLAMP);
   CHECKBOX_use_lighting = glui_bounds->add_checkbox_to_panel(PANEL_coloring, _("Lighting"), &use_lighting, CB_USE_LIGHTING, LabelsCB);
 
-#ifdef pp_COLOR_TOGGLE
     PANEL_toggle_cba = glui_bounds->add_panel_to_panel(PANEL_cb11, _("toggle colorbars"));
     LISTBOX_colorbar_toggle_bound1 = glui_bounds->add_listbox_to_panel(PANEL_toggle_cba, "", &index_colorbar1, COLORBAR_LISTA, ColorbarCB);
     UpdateColorbarListBound(2);
@@ -5543,7 +5534,6 @@ extern "C" void GluiBoundsSetup(int main_window){
     glui_bounds->add_button_to_panel(PANEL_toggle_cba, _("toggle"), COLORBAR_TOGGLE, ColorbarCB);
     ColorbarCB(COLORBAR_LISTA);
     ColorbarCB(COLORBAR_LISTB);
-#endif
     UpdateColorbarBound();
   PANEL_extreme = glui_bounds->add_panel_to_panel(ROLLOUT_coloring, "", GLUI_PANEL_NONE);
 

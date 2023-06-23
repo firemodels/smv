@@ -8282,14 +8282,11 @@ int MakeSubColorbarMenu(int *submenuptr, int *nmenusptr, char *ctype, void (*CBM
 /* ------------------ MakeColorbarMenu ------------------------ */
 
 void MakeColorbarMenu(int *menuptr,
-#ifdef pp_COLORBARS_CSV
                       int *submenu1ptr, int *submenu2ptr, int *submenu3ptr, 
                       int *submenu4ptr, int *submenu5ptr, int *submenu6ptr,
                       int *submenu7ptr,
-#endif
                       void (*CBMenu)(int)){
   int menu = 0;
-#ifdef pp_COLORBARS_CSV
   int submenu1 = 0, submenu2 = 0, submenu3 = 0;
   int submenu4 = 0, submenu5 = 0, submenu6 = 0;
   int submenu7 = 0;
@@ -8301,10 +8298,8 @@ void MakeColorbarMenu(int *menuptr,
   MakeSubColorbarMenu(&submenu2, &nmenus, "circular",     CBMenu);
   MakeSubColorbarMenu(&submenu6, &nmenus, "deprecated",   CBMenu);
   MakeSubColorbarMenu(&submenu5, &nmenus, "user defined", CBMenu);
-#endif
 
   CREATEMENU(menu, CBMenu);
-#ifdef pp_COLORBARS_CSV
   if(submenu3 > 0)GLUTADDSUBMENU("rainbow",      submenu3);
   if(submenu7 > 0)GLUTADDSUBMENU("original",     submenu7);
   if(submenu1 > 0)GLUTADDSUBMENU("linear",       submenu1);
@@ -8319,28 +8314,6 @@ void MakeColorbarMenu(int *menuptr,
   *submenu5ptr = submenu5;
   *submenu6ptr = submenu6;
   *submenu7ptr = submenu7;
-#else
-  {
-    char ccolorbarmenu[256];
-
-    int i;
-    for(i = 0; i < ncolorbars; i++){
-      colorbardata *cbi;
-
-      cbi = colorbarinfo + i;
-      if(strcmp(cbi->ctype, "original") != 0)continue;
-      strcpy(ccolorbarmenu, "  ");
-      if(colorbartype == i){
-        strcat(ccolorbarmenu, "*");
-        strcat(ccolorbarmenu, cbi->label);
-      }
-      else{
-        strcat(ccolorbarmenu, cbi->label);
-      }
-      glutAddMenuEntry(ccolorbarmenu, i);
-    }
-  }
-#endif
   *menuptr     = menu;
 }
 
@@ -8356,14 +8329,12 @@ void InitMenus(int unload){
 static int filesdialogmenu = 0, viewdialogmenu = 0, datadialogmenu = 0, windowdialogmenu=0;
 static int labelmenu=0, titlemenu=0, colorbarmenu=0, colorbarsmenu=0, colorbarshademenu, smokecolorbarmenu=0, showhidemenu=0,colorbardigitmenu=0;
 static int optionmenu=0, rotatetypemenu=0;
-#ifdef pp_COLORBARS_CSV
 static int colorbars_submenu1 = 0, colorbars_submenu2 = 0, colorbars_submenu3 = 0;
 static int colorbars_submenu4 = 0, colorbars_submenu5 = 0, colorbars_submenu6 = 0;
 static int colorbars_submenu7 = 0;
 static int smokecolorbars_submenu1 = 0, smokecolorbars_submenu2 = 0, smokecolorbars_submenu3 = 0;
 static int smokecolorbars_submenu4 = 0, smokecolorbars_submenu5 = 0, smokecolorbars_submenu6 = 0;
 static int smokecolorbars_submenu7 = 0;
-#endif
 static int resetmenu=0, defaultviewmenu=0, frameratemenu=0, rendermenu=0, smokeviewinimenu=0, inisubmenu=0, resolutionmultipliermenu=0;
 static int terrain_geom_showmenu = 0;
 static int render_resolutionmenu=0, render_filetypemenu=0, render_filesuffixmenu=0, render_skipmenu=0;
@@ -10332,11 +10303,9 @@ updatemenu=0;
 
   if(nsmoke3dloaded>0||nvolrenderinfo>0){
     MakeColorbarMenu(&smokecolorbarmenu,
-#ifdef pp_COLORBARS_CSV
                      &smokecolorbars_submenu1, &smokecolorbars_submenu2, &smokecolorbars_submenu3,
                      &smokecolorbars_submenu4, &smokecolorbars_submenu5, &smokecolorbars_submenu6,
                      &smokecolorbars_submenu7,
-#endif
                      SmokeColorbarMenu);
 
   }
@@ -10541,11 +10510,9 @@ updatemenu=0;
     glutAddMenuEntry(_("  Auto flip"), COLORBAR_AUTOFLIP);
   }
   MakeColorbarMenu(&colorbarsmenu,
-#ifdef pp_COLORBARS_CSV
                    &colorbars_submenu1, &colorbars_submenu2, &colorbars_submenu3, 
                    &colorbars_submenu4, &colorbars_submenu5, &colorbars_submenu6,
                    &colorbars_submenu7,
-#endif
                    ColorbarMenu);
 
 /* -------------------------------- colorbarmenu -------------------------- */

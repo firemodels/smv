@@ -220,12 +220,10 @@ char *ProcessCommandLine(CommandlineArgs *args) {
   STRCPY(caseini_filename, fdsprefix);
   STRCAT(caseini_filename, ".ini");
 
-#ifdef pp_COLOR_CIE
   FREEMEMORY(dEcsv_filename);
   NewMemory(( void ** )&dEcsv_filename, len_casename + strlen("_dE.csv") + 1);
   STRCPY(dEcsv_filename, fdsprefix);
   STRCAT(dEcsv_filename, "_dE.csv");
-#endif
 
   FREEMEMORY(html_filename);
   NewMemory((void **)&html_filename, len_casename+strlen(".html")+1);
@@ -389,6 +387,9 @@ char *ProcessCommandLine(CommandlineArgs *args) {
     }
     if(args->nogpu){
       disable_gpu = 1;
+    }
+    if(args->check_colorbar){
+      check_colorbar = 1;
     }
     if(args->demo){
       demo_option = 1;
@@ -712,11 +713,6 @@ int main(int argc, char **argv){
   InitRandAB(1000000);
   InitVars();
 
-#ifdef pp_COLOR_CIE_CHECK
-  void CheckCIE(void);
-  CheckCIE();
-#endif
-
   ParseCommonOptions(argc, argv);
   if(show_help==1){
     Usage("smokeview", HELP_SUMMARY);
@@ -752,9 +748,7 @@ int main(int argc, char **argv){
     SMV_EXIT(1);
   }
   InitTextureDir();
-#ifdef pp_COLORBARS_CSV
   InitColorbarsDir();
-#endif
   InitScriptErrorFiles();
   smokezippath= GetSmokeZipPath(smokeview_bindir);
 #ifdef WIN32
