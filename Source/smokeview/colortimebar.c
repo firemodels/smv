@@ -416,21 +416,6 @@ void DrawColorbarPathCIE(void){
     glVertex3fv(xyz);
   }
   ddist = cie_dist[255] / 16.0;
-#ifdef pp_COLOR_CIE_CHECK
-  for(i = 0; i < 17 * 17 * 17; i++){
-    float xyz[3], *cie;
-    unsigned char *ciergb;
-
-    cie = cielab_check_xyz       + 3*i;
-    ciergb = cielab_check_rgb255 + 3*i;
-
-    glColor3ubv(ciergb);
-    xyz[2] = cie[0] / 100.0;
-    xyz[0] = (cie[1] + 87.9) / 183.28;
-    xyz[1] = (cie[2] + 126.39) / 211.11;
-    glVertex3fv(xyz);
-  }
-#endif
   glEnd();
 
 #ifdef _DEBUG
@@ -854,13 +839,12 @@ void CIE2Rgbs(unsigned char *rgbs255, float *frgbs, float *cies){
 }
 
 /* ------------------ CheckCIE ------------------------ */
-#ifdef pp_COLOR_CIE_CHECK
 void CheckCIE(void){
   int i, diff;
   int hist[256];
   float sum=0.0;
   float *ciexyz;
-  unsigned char *ciergb;
+  unsigned char *ciergb, *cielab_check_rgb255;
 
   for(i = 0;i < 256;i++){
     hist[i] = 0;
@@ -879,13 +863,13 @@ void CheckCIE(void){
 
       for(k = 0; k < 256; k++){
         unsigned char rgbval[3], rgbnew[3];
-        float cie[3], cie2[3], dist2;
+        float cie[3], cie2[3], dist2, frgb[3];
 
         rgbval[0] = (unsigned char)k;
         rgbval[1] = (unsigned char)j;
         rgbval[2] = (unsigned char)i;
         Rgb2CIE(rgbval, cie);
-        CIE2Rgb(rgbnew, cie);
+        CIE2Rgb(rgbnew, frgb, cie);
         Rgb2CIE(rgbnew, cie2);
         diff = ABS(rgbval[0] - rgbnew[0]);
         diff = MAX(diff, ABS(rgbval[1] - rgbnew[1]));
@@ -924,8 +908,9 @@ void CheckCIE(void){
   }
   printf("\n");
   printf("cie avg diff=%f\n", sum / (float)(256 * 256 * 256));
+  FREEMEMORY(cielab_check_xyz);
+  FREEMEMORY(cielab_check_rgb255);
 }
-#endif
 
 /* ------------------ RemapColorbar ------------------------ */
 

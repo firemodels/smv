@@ -52,6 +52,8 @@ typedef struct CommandlineArgs {
   bool show_help_summary;
   bool show_help_all;
   bool noblank;
+  /// @brief check conversion between CIELabl and rgb color coordinates
+  bool check_colorbar;
   /// @brief pre-calculate all FED slice files
   bool fed;
   bool verbose;

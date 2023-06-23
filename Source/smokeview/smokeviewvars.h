@@ -550,9 +550,6 @@ SVEXTERN float cb_lab2[3], cb_frgb2[3];
 SVEXTERN int cb_rgb2[3];
 SVEXTERN int SVDECL(index_colorbar1, 0), SVDECL(index_colorbar2, 1);
 SVEXTERN int SVDECL(colorbar_toggle, 1);
-#ifdef pp_COLOR_CIE_CHECK
-SVEXTERN unsigned char SVDECL(*cielab_check_rgb255, NULL);
-#endif
 SVEXTERN int SVDECL(color_vector_black, 0);
 SVEXTERN float SVDECL(geom_transparency, 0.5);
 SVEXTERN int SVDECL(geom_force_transparent, 0);
@@ -728,6 +725,7 @@ SVEXTERN char SVDECL(*volrender_scriptname,NULL);
 SVEXTERN float SVDECL(nongpu_vol_factor,1.0);
 SVEXTERN float SVDECL(gpu_vol_factor,1.0);
 SVEXTERN int SVDECL(disable_gpu,0);
+SVEXTERN int SVDECL(check_colorbar, 0);
 SVEXTERN int SVDECL(script_startframe,-1), SVDECL(script_skipframe,-1);
 SVEXTERN int SVDECL(vol_startframe0,-1), SVDECL(vol_skipframe0,-1);
 SVEXTERN int SVDECL(render_startframe0,-1), SVDECL(render_skipframe0,-1);

@@ -1919,6 +1919,10 @@ void UpdateShowScene(void){
   have_fire  = HaveFireLoaded();
   have_smoke = HaveSootLoaded();
 
+  if(check_colorbar == 1){
+    CheckCIE();
+    check_colorbar++;
+  }
   if(update_colorbar_orig == 1){
     UpdateColorbarOrig();
     update_colorbar_orig = 0;

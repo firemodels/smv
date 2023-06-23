@@ -23,7 +23,6 @@
 
 #define pp_PART_BOUND         // use .prt.bnd for global part bound file extension
 
-//#define pp_COLOR_CIE_CHECK  // check cie conversion for every possible rgb value (0<=r<=255,0<=g<=255,0<=b<=255)
 //#define pp_COLOR_HIDE         // add checkbox to hide/unhide scene when editing a colorbar
 
 //#define pp_SMOKE_LIGHT        // turn on smoke lighting

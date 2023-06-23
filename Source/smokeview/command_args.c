@@ -72,6 +72,8 @@ CommandlineArgs ParseCommandlineNew(int argc, char **argv,
       args.update = true;
     } else if (strcmp(argv[i], "-nogpu") == 0) {
       args.nogpu = true;
+    } else if(strcmp(argv[i], "-check_colorbar") == 0) {
+      args.check_colorbar = true;
     } else if (strcmp(argv[i], "-demo") == 0) {
       args.demo = true;
     } else if (strcmp(argv[i], "-info") == 0) {

@@ -388,6 +388,9 @@ char *ProcessCommandLine(CommandlineArgs *args) {
     if(args->nogpu){
       disable_gpu = 1;
     }
+    if(args->check_colorbar){
+      check_colorbar = 1;
+    }
     if(args->demo){
       demo_option = 1;
     }
@@ -709,11 +712,6 @@ int main(int argc, char **argv){
   initMALLOC();
   InitRandAB(1000000);
   InitVars();
-
-#ifdef pp_COLOR_CIE_CHECK
-  void CheckCIE(void);
-  CheckCIE();
-#endif
 
   ParseCommonOptions(argc, argv);
   if(show_help==1){

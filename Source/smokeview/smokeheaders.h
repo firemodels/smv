@@ -698,6 +698,7 @@ EXTERNCPP void UpdatePartClassDepend(partclassdata *partclassi);
 
 EXTERNCPP void UpdateColorbarListBound(int flag);
 EXTERNCPP void UpdateColorbarListEdit(int flag,int del);
+EXTERNCPP void CheckCIE(void);
 
 EXTERNCPP void AdjustColorBar(colorbardata *cbi, int option);
 EXTERNCPP void RevertColorBar(colorbardata *cbi);
