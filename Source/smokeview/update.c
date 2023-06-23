@@ -2501,18 +2501,8 @@ void UpdateDisplay(void){
         colorbartype_ini = colorbartype;
       }
       if(colorbarinfo != NULL){
-        SortColorBars();
-        UpdateColorbarListEdit(1, CB_DELETE);
-        UpdateColorbarListBound(1);
-#ifdef pp_COLOR_TOGGLE
-        UpdateColorbarListEdit(2, CB_DELETE);
-        UpdateColorbarListEdit(3, CB_DELETE);
-        UpdateColorbarListBound(2);
-        UpdateColorbarListBound(3);
-#endif
         colorbartype = colorbartype_default;
-        UpdateColorbarBound();
-        UpdateColorbarEdit();
+        UpdateColorbarDialogs();
       }
     }
     update_colorbartype = 0;

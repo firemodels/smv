@@ -14859,18 +14859,7 @@ int ReadIni2(char *inifile, int localfile){
           }
           RemapColorbar(cbi);
           UpdateColorbarSplits(cbi);
-
-          SortColorBars();
-          UpdateColorbarListEdit(1, CB_DELETE);
-          UpdateColorbarListBound(1);
-#ifdef pp_COLOR_TOGGLE
-          UpdateColorbarListEdit(2, CB_DELETE);
-          UpdateColorbarListEdit(3, CB_DELETE);
-          UpdateColorbarListBound(2);
-          UpdateColorbarListBound(3);
-#endif
-          UpdateColorbarBound();
-          UpdateColorbarEdit();
+          UpdateColorbarDialogs();
         }
 
         continue;

@@ -1341,6 +1341,22 @@ void SortColorBars(void){
   if(cb != NULL)colorbartype= cb - colorbarinfo;
 }
 
+/* ------------------ UpdateColorbarDialogs ------------------------ */
+
+void UpdateColorbarDialogs(void){
+  SortColorBars();
+  UpdateColorbarListEdit(1, CB_DELETE);
+  UpdateColorbarListBound(1);
+#ifdef pp_COLOR_TOGGLE
+  UpdateColorbarListEdit(2, CB_DELETE);
+  UpdateColorbarListEdit(3, CB_DELETE);
+  UpdateColorbarListBound(2);
+  UpdateColorbarListBound(3);
+#endif
+  UpdateColorbarBound();
+  UpdateColorbarEdit();
+}
+
 /* ------------------ AddColorbar ------------------------ */
 
 int AddColorbar(int icolorbar){
@@ -1366,17 +1382,7 @@ int AddColorbar(int icolorbar){
   strcpy(cb_to->ctype, "user defined");
   cb_to->interp = INTERP_CIE;
   RemapColorbar(cb_to);
-  SortColorBars();
-  UpdateColorbarListEdit(1, CB_DELETE);
-  UpdateColorbarListBound(1);
-#ifdef pp_COLOR_TOGGLE
-  UpdateColorbarListEdit(2, CB_DELETE);
-  UpdateColorbarListEdit(3, CB_DELETE);
-  UpdateColorbarListBound(2);
-  UpdateColorbarListBound(3);
-#endif
-  UpdateColorbarBound();
-  UpdateColorbarEdit();
+  UpdateColorbarDialogs();
 
   colorbardata *cbnew;
 
@@ -2058,17 +2064,7 @@ void InitDefaultColorbars(int nini){
     UpdateColorbarSplits(cbi);
     memcpy(cbi->rgb_node_orig, cbi->rgb_node, 3 * cbi->nnodes * sizeof(unsigned char));
   }
-  SortColorBars();
-  UpdateColorbarListEdit(1, CB_DELETE);
-  UpdateColorbarListBound(1);
-#ifdef pp_COLOR_TOGGLE
-  UpdateColorbarListEdit(2, CB_DELETE);
-  UpdateColorbarListEdit(3, CB_DELETE);
-  UpdateColorbarListBound(2);
-  UpdateColorbarListBound(3);
-#endif
-  UpdateColorbarEdit();
-  UpdateColorbarBound();
+  UpdateColorbarDialogs();
 
   for(i = 0;i < ncolorbars;i++){
     cbi = colorbarinfo + i;

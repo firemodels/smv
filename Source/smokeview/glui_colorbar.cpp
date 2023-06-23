@@ -426,18 +426,7 @@ extern "C" void ColorbarCB(int var){
       if(colorbartype == ncolorbars)colorbartype--;
       LISTBOX_colorbar_edit->set_int_val(0);
       ColorbarCB(COLORBAR_LIST);
-
-      SortColorBars();
-      UpdateColorbarListEdit(1, CB_DELETE);
-      UpdateColorbarListBound(1);
-#ifdef pp_COLOR_TOGGLE
-      UpdateColorbarListEdit(2, CB_DELETE);
-      UpdateColorbarListEdit(3, CB_DELETE);
-      UpdateColorbarListBound(2);
-      UpdateColorbarListBound(3);
-#endif
-      UpdateColorbarBound();
-      UpdateColorbarEdit();
+      UpdateColorbarDialogs();
     }
     break;
   default:
