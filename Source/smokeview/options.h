@@ -22,7 +22,6 @@
 //#define pp_SMOKE_LIGHT        // turn on smoke lighting
 
 //#define pp_TOUR_ADJUST        // adjust tour times
-#define pp_TOUR_DUP             // handle duplicate keyframes
 //#define pp_BNDF               // merge geometry and structured boundary files in load menus
 
 //#define pp_DPRINT             // turn on debug print (file, line number)

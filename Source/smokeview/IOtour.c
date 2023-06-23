@@ -518,13 +518,6 @@ void HermiteView(float t, keyframe *kf1, keyframe *kf2, float *view){
   view[2] = HERMVAL(p0[2],p1[2],m0[2],m1[2]);
 }
 
-/* ------------------ UpdateTourKeyframeDups ------------------------ */
-
-#ifdef pp_TOUR_DUP
-void UpdateKeyframeDups(tourdata *touri){
-}
-#endif
-
 /* ------------------ GetKeyFrame ------------------------ */
 
 keyframe *GetKeyFrame(tourdata *touri, float time){
@@ -1220,9 +1213,6 @@ void InitCircularTour(tourdata *touri, int nkeyframes, int option){
   touri->last_frame.prev = thisframe;
   thisframe->next = &(touri->last_frame);
   selected_frame = touri->first_frame.next;
-#ifdef pp_TOUR_DUP
-  UpdateKeyframeDups(touri);
-#endif
 }
 
 
@@ -1384,9 +1374,6 @@ tourdata *AddTour(char *label){
   }
   updatemenu=1;
 
-#ifdef pp_TOUR_DUP
-  UpdateKeyframeDups(tourinfo + ntourinfo-1);
-#endif
   UpdateTourMenuLabels();
   CreateTourPaths();
   UpdateTimes();

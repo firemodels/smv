@@ -677,9 +677,6 @@ void TourCB(int var){
         SMV2FDS_XYZ(key_view, key_view);
       }
       newframe = AddFrame(selected_frame, key_time_in, 0.0, key_xyz, key_view);
-#ifdef pp_TOUR_DUP      
-      UpdateKeyframeDups(thistour);
-#endif
       CreateTourPaths();
       NewSelect(newframe);
       SetGluiTourKeyframe();
@@ -691,9 +688,6 @@ void TourCB(int var){
       selected_frame=DeleteFrame(selected_frame);
       if(selected_frame!=NULL){
         selected_frame->selected=1;
-#ifdef pp_TOUR_DUP     
-        UpdateKeyframeDups(thistour);
-#endif
         CreateTourPaths();
       }
       else{
@@ -773,9 +767,6 @@ void TourCB(int var){
   case TOUR_REVERSE:
     if(selectedtour_index>=0&&selectedtour_index<ntourinfo){
       ReverseTour(tourinfo[selectedtour_index].label);
-#ifdef pp_TOUR_DUP
-      UpdateKeyframeDups(tourinfo + selectedtour_index);
-#endif
     }
     break;
   case TOUR_INSERT_NEW:
