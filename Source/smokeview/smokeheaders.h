@@ -913,9 +913,7 @@ EXTERNCPP void HandleRotationType(int flag);
 EXTERNCPP void Rgb2Hsl(unsigned char *rgbvals, float *hslvals);
 EXTERNCPP void Hsl2Rgb(float *hslvals, unsigned char *rgbvals);
 
-#ifdef pp_COLORBARS_CSV
 EXTERNCPP void InitColorbarsDir(void);
-#endif
 EXTERNCPP void InitTextureDir(void);
 EXTERNCPP void GetRGB(unsigned int val, unsigned char *rr, unsigned char *gg, unsigned char *bb);
 EXTERNCPP unsigned char *ReadPicture(char *filename, int *width, int *height, int *is_transparent, int printflag);

@@ -1131,7 +1131,6 @@ void RemapColorbarType(int cb_oldtype, char *cb_newname){
   }
 }
 
-#ifdef pp_COLORBARS_CSV
 /* ------------------ ReadCSVColorbar ------------------------ */
 
 void ReadCSVColorbar(colorbardata *cbptr, char *dir, char *file, char *ctype, int type){
@@ -1208,7 +1207,6 @@ void ReadCSVColorbar(colorbardata *cbptr, char *dir, char *file, char *ctype, in
   cbptr->nnodes = n;
   fclose(stream);
 }
-#endif
 
 /* ------------------ InitDefaultColorbars ------------------------ */
 
@@ -1396,13 +1394,10 @@ int AddColorbar(int icolorbar){
 void InitDefaultColorbars(int nini){
   int i;
   colorbardata *cbi;
-#ifdef pp_COLORBARS_CSV
   int ncolorbars_dirlist;
-#endif
 
   ndefaultcolorbars = 0;
 
-#ifdef pp_COLORBARS_CSV
   filelistdata *linear_filelist=NULL, *circular_filelist=NULL, *rainbow_filelist=NULL, *divergent_filelist = NULL;
   filelistdata *user_filelist = NULL, *colorbars_dirlist = NULL;
 
@@ -1421,7 +1416,6 @@ void InitDefaultColorbars(int nini){
   MakeFileList(colorbars_divergent_dir, "*.csv", ndivergent_filelist, NO, &divergent_filelist, FILE_MODE);
 
   ndefaultcolorbars+=nlinear_filelist + ncircular_filelist + nrainbow_filelist + ndivergent_filelist + nuser_filelist;
-#endif
 
   ndefaultcolorbars+=18;
 
@@ -2027,7 +2021,6 @@ void InitDefaultColorbars(int nini){
   strcpy(cbi->ctype, "original");
   cbi++;
 
-#ifdef pp_COLORBARS_CSV
   for(i = 0;i < nlinear_filelist;i++){
     ReadCSVColorbar(cbi, colorbars_linear_dir,  linear_filelist[i].file,      "linear",    CB_LINEAR);
     cbi++;
@@ -2048,7 +2041,6 @@ void InitDefaultColorbars(int nini){
     ReadCSVColorbar(cbi, colorbars_user_dir, user_filelist[i].file,            "user defined",      CB_USER);
     cbi++;
   }
-#endif
 
   // construct colormaps from color node info
 

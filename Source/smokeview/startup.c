@@ -432,7 +432,6 @@ void InitStartupDirs(void){
     MKDIR(smokeview_scratchdir);
   }
 
-#ifdef pp_COLORBARS_CSV
   NewMemory((void **)&colorbars_user_dir, strlen(homedir) + strlen(dirseparator) + strlen(".smokeview") + strlen(dirseparator) + strlen("colorbars") + 1);
   strcpy(colorbars_user_dir, homedir);
   strcat(colorbars_user_dir, dirseparator);
@@ -442,7 +441,6 @@ void InitStartupDirs(void){
   if(FileExistsOrig(colorbars_user_dir) == NO){
     FREEMEMORY(colorbars_user_dir);
   }
-#endif
 
   NewMemory((void **)&smokeviewini_filename, strlen(smokeview_scratchdir)+strlen(dirseparator)+strlen("smokeview.ini")+2);
   strcpy(smokeviewini_filename, smokeview_scratchdir);
@@ -1231,8 +1229,6 @@ void InitOpenGL(int option){
     TrainerViewMenu(trainerview);
   }
 
-#ifdef pp_COLORBARS_CSV
-
   /* ------------------ InitColorbarsSubDir ------------------------ */
 
   char *InitColorbarsSubDir(char *subdir){
@@ -1258,7 +1254,6 @@ void InitOpenGL(int option){
     colorbars_rainbow_dir   = InitColorbarsSubDir("rainbow");
     colorbars_circular_dir  = InitColorbarsSubDir("circular");
   }
-#endif
   /* ------------------ InitTextureDir ------------------------ */
 
 void InitTextureDir(void){
