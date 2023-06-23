@@ -807,9 +807,6 @@ void DrawGeom(int flag, int timestate){
         int j;
 
         trianglei = tris[i];
-#ifndef pp_TERRAIN_CFACES
-        if(use_cfaces==1&&trianglei->geomtype==GEOM_GEOM)continue;
-#endif
         if(trianglei->geomtype!=GEOM_ISO){
           if(trianglei->outside_domain==0&&showgeom_inside_domain==0)continue;
           if(trianglei->outside_domain==1&&showgeom_outside_domain==0)continue;
