@@ -39,9 +39,6 @@ void FreeTour(tourdata *touri){
   FREEMEMORY(touri->keyframe_times);
   FREEMEMORY(touri->timeslist);
   FREEMEMORY(touri->path_times);
-#ifdef pp_TOUR_ADJUST
-  FREEMEMORY(touri->path_dists);
-#endif
 }
 
 /* ------------------ InitTour ------------------------ */
@@ -65,9 +62,6 @@ void InitTour(tourdata *touri){
   touri->keyframe_list=NULL;
   touri->timeslist=NULL;
   touri->path_times=NULL;
-#ifdef pp_TOUR_ADJUST
-  touri->path_dists = NULL;
-#endif
   touri->global_dist=0.0;
   touri->startup=0;
   touri->isDefault=0;
@@ -538,61 +532,12 @@ keyframe *GetKeyFrame(tourdata *touri, float time){
   return last_key->prev;
 }
 
-/* ------------------ GetTourXYZ0 ------------------------ */
-#ifdef pp_TOUR_ADJUST
-void GetTourXYZ0(float t, tourdata *this_tour, float *xyz){
-  keyframe *this_key;
-
-  this_key = GetKeyFrame(this_tour, t);
-  GetKeyXYZ(t, this_key, xyz);
-}
-
-/* ------------------ GetKeyXYZ ------------------------ */
-
-void GetTourXYZ(float t, tourdata *this_tour, float *xyz){
-  keyframe *this_key;
-  int i;
-  float factor, dt, tdist, tnew;
-
-//  int ISearch(float *list, int nlist, float key, int guess){
-  dt = this_tour->path_times[this_tour->ntimes - 1] - this_tour->path_times[0];
-  factor = 1.0;
-  if(dt>0.0){
-    factor *= this_tour->path_dists[this_tour->ntimes - 1];
-    factor /= this_tour->path_times[this_tour->ntimes - 1];
-  }
-  tdist = t * factor;
-  i = ISearch(this_tour->path_dists, this_tour->ntimes, tdist, 0);
-  if(i==this_tour->ntimes-1){
-    tnew = this_tour->path_times[this_tour->ntimes-1];
-  }
-  else{
-    float t1, t2, d1, d2;
-
-    d1 = this_tour->path_dists[i];
-    d2 = this_tour->path_dists[i+1];
-    t1 = this_tour->path_times[i];
-    t2 = this_tour->path_times[i + 1];
-    // (tdist - d1)/(d2-d1) = (t-t1)/(t2-t1)
-    if(d2-d1>0.0){
-      tnew = t1 + (t2 - t1) * (tdist - d1) / (d2 - d1);
-    }
-    else{
-      tnew = t1;
-    }
-  }
-  if(adjust_tour_time == 0)tnew = t;
-  this_key = GetKeyFrame(this_tour, tnew);
-  GetKeyXYZ(t, this_key, xyz);
-}
-#else
 void GetTourXYZ(float t, tourdata *this_tour, float *xyz){
   keyframe *this_key;
 
   this_key = GetKeyFrame(this_tour, t);
   GetKeyXYZ(t, this_key, xyz);
 }
-#endif
 
 
 /* ------------------ GetKeyXYZ ------------------------ */
@@ -755,11 +700,6 @@ void GetTourProperties(tourdata *touri){
   NewMemory((void **)&(xyzs),       3*tour_ntimes*sizeof(float));
   NewMemory((void **)&(views),      3*tour_ntimes*sizeof(float));
 
-#ifdef pp_TOUR_ADJUST
-  touri->path_dists[0]=0.0;
-  float lastxyz[3], thisxyz[3], tourdist;
-  tourdist = 0.0;
-#endif
   for(j=0;j<tour_ntimes;j++){
     float f1, vtime;
 
@@ -768,21 +708,6 @@ void GetTourProperties(tourdata *touri){
     vtime                = tour_tstart*(1.0-f1) + tour_tstop*f1;
     tour_times[j]        = vtime;
     touri->path_times[j] = vtime;
-#ifdef pp_TOUR_ADJUST
-    float dist;
-    GetTourXYZ0(vtime, touri, thisxyz);
-    if(j == 0){
-      dist = 0.0;
-    }
-    else{
-      float dx, dy, dz;
-
-      DDIST3(thisxyz, lastxyz, dist);
-    }
-    tourdist += dist;
-    touri->path_dists[j] = tourdist;
-    memcpy(lastxyz, thisxyz, 3 * sizeof(float));
-#endif
     {
       if(j==0){
         tour_times[j] = 0.0;
@@ -1158,9 +1083,6 @@ void InitCircularTour(tourdata *touri, int nkeyframes, int option){
   if(option == UPDATE){
     FREEMEMORY(touri->keyframe_times);
     FREEMEMORY(touri->path_times);
-#ifdef pp_TOUR_ADJUST
-    FREEMEMORY(touri->path_dists);
-#endif
   }
   InitTour(touri);
   touri->isDefault=1;
@@ -1170,9 +1092,6 @@ void InitCircularTour(tourdata *touri, int nkeyframes, int option){
   strcpy(touri->label,"Circular");
   NewMemory((void **)&touri->keyframe_times, nkeyframes*sizeof(float));
   NewMemory((void **)&touri->path_times,tour_ntimes*sizeof(float));
-#ifdef pp_TOUR_ADJUST
-  NewMemory((void **)&touri->path_dists, tour_ntimes * sizeof(float));
-#endif
   key_view[0]=tour_circular_view[0];
   key_view[1]=tour_circular_view[1];
   key_view[2]=tour_circular_view[2];
@@ -1309,9 +1228,6 @@ tourdata *AddTour(char *label){
 
   NewMemory((void **)&touri->keyframe_times, nkeyframes*sizeof(float));
   NewMemory((void **)&touri->path_times,tour_ntimes*sizeof(float));
-#ifdef pp_TOUR_ADJUST
-  NewMemory((void **)&touri->path_dists, tour_ntimes * sizeof(float));
-#endif
 
   if(itour==-1){
     VEC3EQCONS(key_view,0.0);
@@ -1443,9 +1359,6 @@ void ReallocTourMemory(void){
       touri = tourinfo + i;
       FREEMEMORY(touri->path_times);
       NewMemory((void **)&touri->path_times,tour_ntimes*sizeof(float));
-#ifdef pp_TOUR_ADJUST
-      NewMemory((void **)&touri->path_dists, tour_ntimes * sizeof(float));
-#endif
       touri->ntimes=tour_ntimes;
     }
     FREEMEMORY(tour_t);

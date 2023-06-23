@@ -916,9 +916,6 @@ typedef struct _tourdata {
   keyframe first_frame,last_frame, **keyframe_list;
   int glui_avatar_index, display2;
   float *path_times,*keyframe_times;
-#ifdef pp_TOUR_ADJUST
-  float *path_dists;
-#endif
   float xyz_smv[3], view_smv[3];
   float global_dist;
   int *timeslist;
