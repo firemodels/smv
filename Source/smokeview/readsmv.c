@@ -7001,7 +7001,6 @@ int ReadSMV(bufferstreamdata *stream){
       continue;
     }
     if(MatchSMV(buffer, "GEOM") == 1 ||
-       MatchSMV(buffer, "BGEOM") == 1 ||
        MatchSMV(buffer, "SGEOM") == 1){
       ngeominfo++;
       continue;
@@ -8062,7 +8061,6 @@ int ReadSMV(bufferstreamdata *stream){
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   */
     if(MatchSMV(buffer, "GEOM") == 1 ||
-       MatchSMV(buffer, "BGEOM") == 1 ||
        MatchSMV(buffer, "SGEOM") == 1){
       geomdata *geomi;
       char *buff2;
@@ -8080,10 +8078,7 @@ int ReadSMV(bufferstreamdata *stream){
         buff2 = buffer+5;
         sscanf(buff2,"%i",&ngeomobjinfo);
       }
-      if(MatchSMV(buffer, "BGEOM") == 1){
-        InitGeom(geomi, GEOM_BOUNDARY, NOT_FDSBLOCK, CFACE_NORMALS_NO);
-      }
-      else if(MatchSMV(buffer, "SGEOM") == 1){
+      if(MatchSMV(buffer, "SGEOM") == 1){
         InitGeom(geomi, GEOM_SLICE, NOT_FDSBLOCK, CFACE_NORMALS_NO);
       }
       else{
