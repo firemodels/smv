@@ -4,11 +4,6 @@
 #include <math.h>
 #include <string.h>
 
-#if defined(WIN32)
-#include <windows.h>
-#endif
-#include GL_H
-
 #include "datadefs.h"
 #include "smokeviewvars.h"
 
