@@ -4,6 +4,11 @@
 #include <math.h>
 #include <string.h>
 
+#if defined(WIN32)
+#include <windows.h>
+#endif
+#include GL_H
+
 #include "datadefs.h"
 #include "smokeviewvars.h"
 
@@ -366,9 +371,6 @@ void UpdateCurveBounds(plot2ddata *plot2di, int option){
       curve->curve_factor       = 1.0;
       curve->update_avg         = 0;
       curve->vals               = NULL;
-#ifdef pp_PLOT2DMAX
-      curve->vals2              = NULL;
-#endif
       strcpy(curve->scaled_label, "");
       strcpy(curve->scaled_unit,  "");
     }
@@ -419,88 +421,6 @@ void UpdateCurveBounds(plot2ddata *plot2di, int option){
     curve->vmax = 1.0;
   }
 }
-
-#ifdef pp_PLOT2DMAX
-/* ------------------ TimeAverageVals ------------------------ */
-
-void IntegrateVals(float *times, float *vals, float *vals_integral_arg, int nvals){
-  int i;
-
-  vals_integral_arg[0] = 0.0;
-  for(i = 1;i < nvals;i++){
-    float dt;
-
-    dt = times[i] - times[i - 1];
-    vals_integral_arg[i] = vals_integral_arg[i-1] + dt*(vals[i-1] + vals[i]) / 2.0;
-  }
-}
-  
-/* ------------------ IntegrateValsAB ------------------------ */
-
-float IntegrateValsAB(float *times, float *vals_integral_arg, int nvals, float tbeg, float tend){
-  int ibeg, iend;
-  float vbeg, vend;
-  float dt1, dt2, dt;
-  float integral;
-
-  ibeg = GetInterval(tbeg, times, nvals);
-  iend = GetInterval(tend, times, nvals);
-  dt1 = tbeg - times[ibeg];
-  dt2 = times[ibeg + 1] - tbeg;
-  dt = times[ibeg + 1] - times[ibeg];
-  vbeg = (dt1 * vals_integral_arg[ibeg + 1] + dt2 * vals_integral_arg[ibeg]) / dt;
-
-  dt1 = tend - times[iend];
-  dt2 = times[iend + 1] - tend;
-  dt = times[iend + 1] - times[iend];
-  vend = (dt1 * vals_integral_arg[iend + 1] + dt2 * vals_integral_arg[iend]) / dt;
-  integral = vend - vbeg;
-  return integral;
-}
-
-/* ------------------ MaxAverageVal ------------------------ */
-
-float MaxAverageVal(float *times, float *vals_integral_arg, int nvals, float delta_t){
-  int i;
-  float max_avg;
-  float tbeg, tend;
-
-  tbeg = times[0];
-  tend = tbeg + delta_t;
-
-  max_avg = IntegrateValsAB(times, vals_integral_arg, nvals, tbeg, tend) / delta_t;
-
-  for(i = 1;i < nvals;i++){
-    float val_avg;
-
-    tbeg = times[i];
-    tend = tbeg + delta_t;
-    if(tend > times[nvals - 1])break;
-    val_avg = IntegrateValsAB(times, vals_integral_arg, nvals, tbeg, tend) / delta_t;
-    max_avg = MAX(max_avg, val_avg);
-  }
-  return max_avg;
-}
-
-/* ------------------ MaxAverageVals ------------------------ */
-
-void MaxAverageVals(float *times, float *vals, float *vals2, int nvals){
-  int i;
-
-  FREEMEMORY(v_integral);
-  NewMemory((void **)&v_integral, nvals * sizeof(float));
-  IntegrateVals(times, vals, v_integral, nvals);
-  for(i = 1;i < nvals;i++){
-    float max_avg, delta_t;
-
-    delta_t = times[i] - times[0];
-    max_avg = MaxAverageVal(times, v_integral, nvals, delta_t);
-    vals2[i] = max_avg;
-  }
-  vals2[0] = vals2[1];
-  FREEMEMORY(v_integral);
-}
-#endif
 
 /* ------------------ HavePlot2D ------------------------ */
 
@@ -673,42 +593,18 @@ void DrawGenPlot(plot2ddata *plot2di){
     if(curve->vals==NULL){
       NewMemory((void **)&curve->vals, csvi->nvals * sizeof(devicedata *));
     }
-#ifdef pp_PLOT2DMAX
-    if(curve->vals2==NULL){
-      NewMemory((void **)&curve->vals2, csvi->nvals * sizeof(devicedata *));
-    }
-#endif
-    if(curve->update_avg==1||plot2d_time_average>0.0
-#ifdef pp_PLOT2DMAX
-    ||update_max_avg_vals==1
-#endif
-    ){
+    if(curve->update_avg==1||plot2d_time_average>0.0){
       if(curve->update_avg==1){
         curve->update_avg = 0;
         TimeAveragePlot2DData(csvfi->time->vals, csvi->vals, curve->vals, csvi->nvals, plot2d_time_average);
       }
-#ifdef pp_PLOT2DMAX
-      if(update_max_avg_vals==1){
-        update_max_avg_vals = 0;
-        MaxAverageVals(csvfi->time->vals, csvi->vals, curve->vals2, csvi->nvals);
-      }
-#endif
     }
     else{
       memcpy(curve->vals, csvi->vals, csvi->nvals*sizeof(float));
     }
     if(global_times!=NULL){
       float *vals;
-#ifdef pp_PLOT2DMAX
-      if(show_max_avg_vals == 1){
-        vals = curve->vals2;
-      }
-      else{
-        vals = curve->vals;
-      }
-#else
       vals = curve->vals;
-#endif
       highlight_time = global_times[itimes];
       highlight_val = GetCSVVal(global_times[itimes], csvfi->time->vals, vals, csvi->nvals);
       DrawGenCurve(option, plot2di, curve, plot2d_size_factor, csvfi->time->vals, vals, csvi->nvals,

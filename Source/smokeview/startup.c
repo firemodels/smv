@@ -146,9 +146,6 @@ void InitMisc(void){
   glui_curve_default.apply_curve_factor = 0;
   glui_curve_default.update_avg         = 0;
   glui_curve_default.vals               = NULL;
-#ifdef pp_PLOT2DMAX
-  glui_curve_default.vals2              = NULL;
-#endif
   memcpy(&glui_curve, &glui_curve_default, sizeof(curvedata));
   strcpy(glui_curve_default.scaled_label, "");
   strcpy(glui_curve_default.scaled_unit,  "");

@@ -26,12 +26,6 @@
 SVEXTERN int SVDECL(update_plot2dini, 0);
 SVEXTERN int SVDECL(update_device_timeaverage, 0);
 
-#ifdef pp_PLOT2DMAX
-SVEXTERN int SVDECL(show_max_avg_vals, 0);
-SVEXTERN int SVDECL(update_max_avg_vals, 0);
-SVEXTERN float SVDECL(*v_integral, NULL);
-#endif
-
 // hvac data
 SVEXTERN int SVDECL(hvacductvar_index, -1), SVDECL(hvacnodevar_index, -1);
 SVEXTERN int SVDECL(nhvacnodeinfo, 0), SVDECL(nhvacductinfo, 0), SVDECL(nhvacinfo, 0);
@@ -876,9 +870,7 @@ SVEXTERN int SVDECL(plot2d_show_plots,        1);
 SVEXTERN int SVDECL(glui_remove_selected_curve, 0);
 SVEXTERN int SVDECL(glui_csv_file_index, 0);
 SVEXTERN int SVDECL(icsv_cols, 0), SVDECL(icsv_units, 0);
-#ifdef pp_CFAST_CSV
 SVEXTERN int SVDECL(icsv_compartments, -1);
-#endif
 SVEXTERN int SVDECL(plot2d_max_columns, 0);
 SVEXTERN int SVDECL(deviceunits_index, 0);
 SVEXTERN int SVDECL(plot2d_dialogs_defined, 0);

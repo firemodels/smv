@@ -12,10 +12,6 @@
   #define PROGVERSION ""
 #endif
 
-
-//#define pp_PLOT2DMAX // add option to plot 2d max vals
-#define pp_CFAST_CSV // look for cfast spreadsheet files
-
 //*** parallel file loading
 #define pp_SLICE_MULTI        // load slice files in parallel
 #define pp_PART_MULTI         // load particle files in parallel
@@ -32,8 +28,6 @@
 //#define pp_TOUR_ADJUST        // adjust tour times
 #define pp_TOUR_DUP             // handle duplicate keyframes
 //#define pp_BNDF               // merge geometry and structured boundary files in load menus
-
-#define pp_TERRAIN_CFACES       // draw terrain over cfaces and regular geometry
 
 //#define pp_DPRINT             // turn on debug print (file, line number)
 
@@ -56,7 +50,6 @@
 //#define pp_CRASH_TEST       // test detection of division by zero or use of undefined pointer
 #define pp_GPU                // support the GPU
 #define pp_THREAD             // turn on multi-threading
-#define pp_DRAWISO            // turn on drawing routines
 //#define pp_LOAD_NEWDATA     // add button for loading new data
 
 #ifdef pp_GPU

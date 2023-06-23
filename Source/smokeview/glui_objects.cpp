@@ -27,9 +27,6 @@
 #define GENPLOT_RESET_BOUNDS        114
 #define GENPLOT_PLOT_DIST           115
 #define GENPLOT_UPDATE              116
-#ifdef pp_PLOT2DMAX
-#define GENPLOT_MAX_VALS            117
-#endif
 #define GENPLOT_PLOT_TMINMAX        118
 #define GENPLOT_SHOW_PLOTS          119
 
@@ -129,9 +126,7 @@ GLUI_EditText *EDIT_filter=NULL;
 GLUI_Listbox *LIST_csvfile = NULL;
 GLUI_Listbox *LIST_csvID    = NULL;
 GLUI_Listbox *LIST_curve_unit = NULL;
-#ifdef pp_CFAST_CSV
 GLUI_Listbox *LIST_curve_compartments = NULL;
-#endif
 GLUI_Listbox *LIST_plots = NULL;
 GLUI_Listbox *LIST_plotcurves = NULL;
 GLUI_Listbox *LIST_open=NULL;
@@ -401,12 +396,7 @@ void RemoveCurve(plot2ddata *plot2di, int index){
   }
   curve = plot2di->curve+index;
   if(index >= 0){
-#ifdef pp_PLOT2DMAX
     FREEMEMORY(curve->vals);
-    FREEMEMORY(curve->vals2);
-#else
-    FREEMEMORY(curve->vals);
-#endif
   }
 //    (0,...,i-1,i+1,...,n-1)
   if(plot2di->ncurves>index+1){
@@ -473,9 +463,6 @@ void AddCSVCurve(plot2ddata *plot2di, int index, int option){
       curve->curve_factor       = glui_curve_default.curve_factor;
       curve->apply_curve_factor = glui_curve_default.apply_curve_factor;
       curve->vals               = glui_curve_default.vals;
-#ifdef pp_PLOT2DMAX
-      curve->vals2               = glui_curve_default.vals2;
-#endif
       curve->update_avg         = glui_curve_default.update_avg;
 
       shortlabel = GetPlotShortLabel2(plot2di, curve);
@@ -745,9 +732,7 @@ void FilterList(void){
 
   char unit_label[256];
   int unit_id;
-#ifdef pp_CFAST_CSV
   int compartment_id;
-#endif
 
   LOCK_CSV_LOAD_CPP;
   for(i=0; i<plot2d_max_columns; i++){
@@ -771,11 +756,9 @@ void FilterList(void){
         strcpy(unit_label, "dimensionless");
       }
     }
-#ifdef pp_CFAST_CSV
     if(isZoneFireModel==1){
       compartment_id = LIST_curve_compartments->get_int_val();
     }
-#endif
     for(i = 0; i < csvfi->ncsvinfo; i++){
       csvdata *csvi;
       int doit;
@@ -787,8 +770,6 @@ void FilterList(void){
       if(doit==0&&csvi->dimensionless == 1 && strcmp(unit_label, "dimensionless")==0)doit = 1;
       if(doit==0&&csvi->dimensionless == 0 && strcmp(unit_label, csvi->label.unit) == 0)doit = 1;
       if(doit==0)continue;
-
-#ifdef pp_CFAST_CSV
       if(isZoneFireModel==1&&compartment_id>=0){
         if(
           strcmp(csvfi->c_type, "compartments") == 0 ||
@@ -811,7 +792,6 @@ void FilterList(void){
           
         }
       }
-#endif
       if(doit==1)LIST_csvID->add_item(i, csvi->label.shortlabel);
     }
   }
@@ -1452,11 +1432,6 @@ void GenPlotCB(int var){
       break;
     case GENPLOT_UPDATE:
       break;
-#ifdef pp_PLOT2DMAX
-    case GENPLOT_MAX_VALS:
-      update_max_avg_vals = 1;
-      break;
-#endif
     default:
       ASSERT(FFALSE);
       break;
@@ -1847,7 +1822,6 @@ extern "C" void GluiPlot2DSetup(int main_window){
     LIST_curve_unit = glui_plot2d->add_listbox_to_panel(PANEL_add_curve1, "unit:",    &icsv_units, GENPLOT_CURVE_UNIT, GenPlotCB);
     LIST_curve_unit->add_item(-1, "any");
 
-#ifdef pp_CFAST_CSV
     if(isZoneFireModel==1){
       LIST_curve_compartments = glui_plot2d->add_listbox_to_panel(PANEL_add_curve1, "compartment:", &icsv_compartments, GENPLOT_CURVE_UNIT, GenPlotCB);
       for(i = 0;i < nrooms;i++){
@@ -1859,7 +1833,6 @@ extern "C" void GluiPlot2DSetup(int main_window){
       LIST_curve_compartments->add_item(-1, "any");
       LIST_curve_compartments->set_int_val(-1);
     }
-#endif
 
     GenPlotCB(GENPLOT_CSV_FILETYPE);
     GenPlotCB(GENPLOT_CURVE_UNIT);
@@ -1894,9 +1867,6 @@ extern "C" void GluiPlot2DSetup(int main_window){
     SPINNER_size_factor = glui_plot2d->add_spinner_to_panel(PANEL_plotother, _("plot size(relative)"), GLUI_SPINNER_FLOAT, &plot2d_size_factor,   GENPLOT_PLOT_SIZE, GenPlotCB);
     glui_plot2d->add_spinner_to_panel(PANEL_plotother, _("vertical font spacing"), GLUI_SPINNER_FLOAT, &plot2d_font_spacing,                 GENPLOT_UPDATE,    GenPlotCB);
     SPINNER_plot2d_time_average = glui_plot2d->add_spinner_to_panel(PANEL_plotother, _("smoothing interval (s)"), GLUI_SPINNER_FLOAT, &plot2d_time_average, DEVICE_TIMEAVERAGE, DeviceCB);
-#ifdef pp_PLOT2DMAX
-    glui_plot2d->add_checkbox_to_panel(PANEL_plotother, "max average", &show_max_avg_vals, GENPLOT_MAX_VALS, GenPlotCB);
-#endif
 
     PANEL_plotproperties2 = glui_plot2d->add_panel_to_panel(ROLLOUT_plotproperties, "", GLUI_PANEL_NONE);
 

@@ -1,6 +1,11 @@
 #ifndef FLOWFILES_H_DEFINED
 #define FLOWFILES_H_DEFINED
 
+#if defined(WIN32)
+#include <windows.h>
+#endif
+#include GL_H
+
 #include "stdio_m.h"
 #include "string_util.h" // necessary for flowlabels
 #include "smokestream.h"
@@ -1032,9 +1037,6 @@ typedef struct _curvedata{
   float curve_factor;
   float vmin, vmax;
   float *vals;
-#ifdef pp_PLOT2DMAX
-  float *vals2;
-#endif
   int update_avg;
   float linewidth;
 } curvedata;

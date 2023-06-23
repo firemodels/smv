@@ -149,6 +149,18 @@
 #define GLUT_H <GL/glut.h>
 #endif
 
+#define GL_H <GL/gl.h>
+#ifdef pp_OSX
+#undef  GL_H
+#define GL_H <OpenGL/gl.h>
+#endif
+
+#define GLU_H <GL/glu.h>
+#ifdef pp_OSX
+#undef  GLU_H
+#define GLU_H <OpenGL/glu.h>
+#endif
+
 #include "lint.h"
 
 #endif
