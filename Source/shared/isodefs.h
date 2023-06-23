@@ -2,20 +2,6 @@
 #define ISODEFS_H_DEFINED
 #define INCPOINTS 100000
 
-#if defined(WIN32)
-#include <windows.h>
-#endif
-
-#ifdef pp_DRAWISO
-#ifdef pp_OSX
-#include <OpenGL/gl.h>
-#include <OpenGL/glu.h>
-#else
-#include <GL/gl.h>
-#include <GL/glu.h>
-#endif
-#endif
-
 #ifdef IN_ISOBOX
 #define SV_EXTERN
 #else

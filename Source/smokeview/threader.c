@@ -4,6 +4,11 @@
 #include <stdio.h>
 #include <string.h>
 
+#if defined(WIN32)
+#include <windows.h>
+#endif
+#include GL_H
+
 #include "smokeviewvars.h"
 #include "IOvolsmoke.h"
 #include "smokestream.h"
