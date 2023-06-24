@@ -93,7 +93,7 @@ jobs:
         run: |
           yum -y install epel-release
           yum -y install cmake3
-          yum -y install make gcc-c++ mesa-libGL-devel glut-devel libjpeg-devel libpng-devel gd-devel glew-devel libXmu-devel libXi-devel
+          yum -y install make gcc-c++ mesa-libGL-devel glut-devel libjpeg-devel libpng-devel gd-devel glew-devel libXmu-devel libXi-devel lua-devel
           yum -y install wget unzip git
       - name: set gcc
         shell: bash
@@ -139,7 +139,7 @@ jobs:
         run: |
           yum -y install epel-release
           yum -y install cmake3
-          yum -y install make gcc-c++ mesa-libGL-devel glut-devel libjpeg-devel libpng-devel gd-devel glew-devel libXmu-devel libXi-devel
+          yum -y install make gcc-c++ mesa-libGL-devel glut-devel libjpeg-devel libpng-devel gd-devel glew-devel libXmu-devel libXi-devel lua-devel
           yum -y install wget unzip git
       - name: Add intel RPM repo
         run: |
