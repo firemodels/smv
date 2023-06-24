@@ -4923,45 +4923,80 @@ int lua_clear_title_lines(lua_State *L) {
   return 1;
 }
 
-// add the smokeview bin directory to the Lua path variables
-void addLuaPaths(lua_State *L) {
+/// @brief Add paths for the Lua interpreter to find scripts and libraries that
+/// are written in Lua.
+/// @param L The Lua interpreter state
+void addScriptPath(lua_State *L) {
   // package.path is a path variable where Lua scripts and modules may be
-  // found, typiclly text based files with the .lua extension.
-
+  // found, typically text based files with the .lua extension.
   lua_getglobal(L, "package");
   lua_getfield(L, -1, "path");
-  const char *oldPath = lua_tostring(L, -1);
-  int newLength =
-      strlen(oldPath) + 1 + strlen(smokeview_bindir_abs) + 1 + 5 + 1;
-  char *newPath = malloc(sizeof(char) * newLength);
-  strcpy(newPath, oldPath);
-  strcat(newPath, ";");
-  strcat(newPath, smokeview_bindir_abs);
-  strcat(newPath, "/");
-  strcat(newPath, "?.lua");
-  lua_pushstring(L, newPath);
+  const char *original_path = lua_tostring(L, -1);
+  int new_length = strlen(original_path) + 1;
+#ifdef pp_LINUX
+  // Add script path for the linux install
+  char *linux_share_path = ";/usr/share/smokeview/?.lua";
+  new_length += strlen(linux_share_path);
+#endif
+  // Add the location of the smokeview binary as a place for scripts. This is
+  // mostly useful for running tests.
+  char *bin_path = malloc(sizeof(char) * (strlen(smokeview_bindir_abs) + 8));
+  sprintf(bin_path, ";%s/?.lua", smokeview_bindir_abs);
+  new_length += strlen(bin_path);
+  // Create the path.
+  char *new_path = malloc(sizeof(char) * new_length);
+  strcpy(new_path, original_path);
+#ifdef pp_LINUX
+  strcat(new_path, linux_share_path);
+#endif
+  strcat(new_path, bin_path);
+  lua_pushstring(L, new_path);
   lua_setfield(L, -3, "path");
   lua_pop(L, 1); // pop the now redundant "path" variable from the stack
-  free(newPath);
-  // package.cpath is a path variable where Lua modules may be found,
-  // typically binary (C based) files such as .dll or .so.
-  lua_getfield(L, -1, "cpath");
-  const char *oldCPath = lua_tostring(L, -1);
-  int newLengthC =
-      strlen(oldCPath) + 1 + 2 * strlen(smokeview_bindir_abs) + 2 * 1 + 10 + 1;
-  char *newCPath = malloc(sizeof(char) * newLengthC);
-  strcpy(newCPath, oldCPath);
-  strcat(newCPath, ";");
-  strcat(newCPath, smokeview_bindir_abs);
-  strcat(newCPath, "/");
-  strcat(newCPath, "?.dll;");
-  strcat(newCPath, smokeview_bindir_abs);
-  strcat(newCPath, "/");
-  strcat(newCPath, "?.so");
-  lua_pushstring(L, newCPath);
+  lua_pop(L, 1); // pop the now redundant "package" variable from the stack
+  free(new_path);
+  free(bin_path);
+}
+
+/// @brief Add paths for the Lua interpreter to find libraries that are compiled
+/// to shared libraries.
+/// @param L The Lua interpreter state
+void addCPath(lua_State *L) {
+  // package.path is a path variable where Lua scripts and modules may be
+  // found, typically text based files with the .lua extension.
+  lua_getglobal(L, "package");
+  lua_getfield(L, -1, "path");
+  const char *original_path = lua_tostring(L, -1);
+  int new_length = strlen(original_path) + 1;
+#ifdef pp_LINUX
+  char *so_extension = ".so";
+#else
+  char *so_extension = ".dll";
+#endif
+  // Add the location of the smokeview binary as a place for scripts. This is
+  // mostly useful for running tests.
+  char *bin_path = malloc(sizeof(char) * (strlen(smokeview_bindir_abs) + 8));
+  sprintf(bin_path, ";%s/?%s", smokeview_bindir_abs, so_extension);
+  new_length += strlen(bin_path);
+  // Create the path.
+  char *new_path = malloc(sizeof(char) * new_length);
+  strcpy(new_path, original_path);
+  strcat(new_path, bin_path);
+  lua_pushstring(L, new_path);
   lua_setfield(L, -3, "cpath");
-  lua_pop(L, 1); // pop the now redundant "cpath" variable from the stack
-  free(newCPath);
+  lua_pop(L, 1); // pop the now redundant "path" variable from the stack
+  lua_pop(L, 1); // pop the now redundant "package" variable from the stack
+  free(new_path);
+  free(bin_path);
+}
+
+/// @brief Add paths for the Lua interpreter to find scripts and libraries.
+/// @param L The Lua interpreter state
+void addLuaPaths(lua_State *L) {
+  // Add the paths for *.lua files.
+  addScriptPath(L);
+  // Ad the path for native (*.dll, and *.so) libs
+  addCPath(L);
   return;
 }
 
@@ -5077,8 +5112,8 @@ static luaL_Reg const smvlib[] = {
     // {"toggle_chid_visibility", lua_toggle_chid_visibility},
 
     // outlines
-    {"outlines_show",lua_outlines_show},
-    {"outlines_hide",lua_outlines_hide},
+    {"outlines_show", lua_outlines_show},
+    {"outlines_hide", lua_outlines_hide},
 
     // surfaces
     {"surfaces_hide_all", lua_surfaces_hide_all},
