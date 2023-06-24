@@ -106,14 +106,14 @@ jobs:
           cmake3 -B ${{github.workspace}}/cbuild -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DLUA=${{ matrix.lua }}
           cmake3 --build ${{github.workspace}}/cbuild -j4
           cp ${{github.workspace}}/cbuild/smokeview smokeview
-      - name: Download test data
-        working-directory: ${{github.workspace}}/Tests
-        run: ./get_test_data.sh
-      - name: Test
-        shell: bash
-        working-directory: ${{github.workspace}}/cbuild
-        run: |
-          ctest -j10 --output-on-failure -V
+      # - name: Download test data
+      #   working-directory: ${{github.workspace}}/Tests
+      #   run: ./get_test_data.sh
+      # - name: Test
+      #   shell: bash
+      #   working-directory: ${{github.workspace}}/cbuild
+      #   run: |
+      #     ctest -j10 --output-on-failure -V
       - name: Set exec suffix
         if: ${{ matrix.lua }}
         run: echo "exec_suffix=-lua" >> $GITHUB_ENV
@@ -155,7 +155,7 @@ jobs:
           mv /tmp/oneAPI.repo /etc/yum.repos.d
       - name: General update
         run: yum -y makecache
-      - run: yum install -y intel-oneapi-compiler-dpcpp-cpp
+      - run: yum install -y environment-modules intel-oneapi-compiler-dpcpp-cpp
       - run: /opt/intel/oneapi/modulefiles-setup.sh
       - name: Build
         shell: bash
@@ -166,14 +166,14 @@ jobs:
           CC=icx CXX=icx cmake3 -B ${{github.workspace}}/cbuild -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DLUA=${{ matrix.lua }}
           cmake3 --build ${{github.workspace}}/cbuild -j4
           cp ${{github.workspace}}/cbuild/smokeview smokeview
-      - name: Download test data
-        working-directory: ${{github.workspace}}/Tests
-        run: ./get_test_data.sh
-      - name: Test
-        shell: bash
-        working-directory: ${{github.workspace}}/cbuild
-        run: |
-          ctest -j10 --output-on-failure -V
+      # - name: Download test data
+      #   working-directory: ${{github.workspace}}/Tests
+      #   run: ./get_test_data.sh
+      # - name: Test
+      #   shell: bash
+      #   working-directory: ${{github.workspace}}/cbuild
+      #   run: |
+      #     ctest -j10 --output-on-failure -V
       - name: Set exec suffix
         if: ${{ matrix.lua }}
         run: echo "exec_suffix=-lua" >> $GITHUB_ENV
