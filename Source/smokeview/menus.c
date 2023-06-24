@@ -2922,38 +2922,6 @@ void ScriptMenu(int value){
   }
 }
 
-/* ------------------ ScriptMenu ------------------------ */
-#ifdef pp_LUA
-// prototype here rather than create a header file for lua_api
-int load_script(char *filename);
-void LuaScriptMenu(int value){
-  luascriptfiledata *luascriptfile;
-
-  if(value==MENU_DUMMY)return;
-  updatemenu=1;
-  GLUTPOSTREDISPLAY;
-  switch(value){
-    default:
-      for(luascriptfile=first_luascriptfile.next;luascriptfile->next!=NULL;luascriptfile=luascriptfile->next){
-        char *file;
-
-        file=luascriptfile->file;
-        if(file==NULL)continue;
-        if(luascriptfile->id!=value)continue;
-        // set the runluascript variable to true, this must be done before
-        // calling loadscript, as it both uses and modifies this variable
-        runluascript = 1;
-        // load the script
-        load_script(luascriptfile->file);
-        // let the display callback do its work, i.e. just return to the main
-        // loop, DisplayCB will run through the script.
-        break;
-      }
-      break;
-  }
-}
-#endif
-
 /* ------------------ ReLoadMenu ------------------------ */
 
 void ReloadMenu(int value){
@@ -8398,10 +8366,6 @@ static int scriptmenu=0;
 static int hvacmenu = 0, hvacnetworkmenu, showcomponentmenu = 0, showfiltermenu = 0, connectivitymenu = 0;
 static int hvacvaluemenu = 0, hvacnodevaluemenu = 0, hvacductvaluemenu = 0;
 static int scriptlistmenu=0,scriptsteplistmenu=0,scriptrecordmenu=0;
-#ifdef pp_LUA
-static int luascriptmenu=0;
-static int luascriptlistmenu=0;
-#endif
 static int loadplot3dmenu=0, unloadvslicemenu=0, unloadslicemenu=0;
 static int loadsmoke3dmenu = 0;
 static int loadvolsmoke3dmenu=0,showvolsmoke3dmenu=0;
@@ -12752,52 +12716,6 @@ updatemenu=0;
           }
         }
       }
-#ifdef pp_LUA
-    {
-      int nluascripts;
-
-      nluascripts=0;
-      // For Lua, the list of scripts is simply a list of filenames in the
-      // directory with the right extension.
-      luascriptfiledata *luascriptfile;
-      STRUCTSTAT luastatbuffer;
-
-      for(luascriptfile=first_luascriptfile.next;luascriptfile->next!=NULL;luascriptfile=luascriptfile->next){
-        char *file;
-        int len;
-
-        file=luascriptfile->file;
-        if(file==NULL)continue;
-        len = strlen(file);
-        if(len<=0)continue;
-        if(STAT(file,&luastatbuffer)!=0)continue;
-
-        nluascripts++;
-      }
-      if(nluascripts>0){
-        CREATEMENU(luascriptlistmenu,LuaScriptMenu);
-        for(luascriptfile=first_luascriptfile.next;luascriptfile->next!=NULL;luascriptfile=luascriptfile->next){
-          char *file;
-          int len;
-          char menulabel[1024];
-
-          file=luascriptfile->file;
-          if(file==NULL)continue;
-          len = strlen(file);
-          if(len<=0)continue;
-          if(STAT(file,&luastatbuffer)!=0)continue;
-
-          strcpy(menulabel,"  ");
-          strcat(menulabel,file);
-          glutAddMenuEntry(menulabel,luascriptfile->id);
-        }
-      }
-      CREATEMENU(luascriptmenu,LuaScriptMenu);
-      if(nluascripts>0){
-        GLUTADDSUBMENU(_("Run"),luascriptlistmenu);
-      }
-    }
-#endif
 
       CREATEMENU(scriptrecordmenu,ScriptMenu);
       if(script_recording==NULL){
@@ -12951,9 +12869,6 @@ updatemenu=0;
       }
       GLUTADDSUBMENU(_("Configuration files"),smokeviewinimenu);
       GLUTADDSUBMENU(_("Scripts"),scriptmenu);
-#ifdef pp_LUA
-      GLUTADDSUBMENU("Lua Scripts",luascriptmenu);
-#endif
 #ifdef pp_COMPRESS
       if(smokezippath!=NULL&&(npatchinfo>0||nsmoke3dinfo>0||nsliceinfo>0)){
         GLUTADDSUBMENU(_("Compression"),compressmenu);

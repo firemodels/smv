@@ -4004,8 +4004,7 @@ void DoStereo(void){
 void DoScriptLua(void){
   int script_return_code;
   if(runluascript == 1){
-    if(!luascript_loaded && strlen(luascript_filename)>0)
-      load_script(luascript_filename);
+    if(strlen(luascript_filename)>0) load_script(luascript_filename);
     runluascript = 0;
     PRINTF("running lua script section\n");
     fflush(stdout);

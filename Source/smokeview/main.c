@@ -57,7 +57,6 @@ void Usage(char *prog,int option){
     PRINTF("%s\n", _(" -setup         - only show geometry"));
     PRINTF("%s\n", _(" -script scriptfile - run the script file scriptfile"));
 #ifdef pp_LUA
-    PRINTF("%s\n", " -runluascript  - run the lua script file casename.lua");
     PRINTF("%s\n", " -luascript scriptfile - run the Lua script file scriptfile");
     PRINTF("%s\n", " -killscript    - exit smokeview (with an error code) if the script fails");
 #endif
@@ -281,17 +280,6 @@ char *ProcessCommandLine(CommandlineArgs *args) {
       default_script = InsertScriptFile(scriptbuffer);
     }
   }
-#ifdef pp_LUA
-  {
-    char luascriptbuffer[1024];
-
-    STRCPY(luascriptbuffer, fdsprefix);
-    STRCAT(luascriptbuffer, ".lua");
-    if(default_luascript == NULL&&FILE_EXISTS(luascriptbuffer) == YES){
-      default_luascript = insert_luascriptfile(luascriptbuffer);
-    }
-  }
-#endif
   if(filename_local!= NULL){
     FREEMEMORY(fds_filein);
     NewMemory((void **)&fds_filein, strlen(fdsprefix) + 6);
@@ -748,9 +736,6 @@ int main(int argc, char **argv){
   progname=argv[0];
 
   prog_fullpath = progname;
-#ifdef pp_LUA
-  smokeview_bindir_abs=getprogdirabs(progname,&smokeviewpath);
-#endif
   if(smokeview_bindir==NULL){
     smokeview_bindir = GetProgDir(progname, &smokeviewpath);
   }

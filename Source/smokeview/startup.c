@@ -1473,16 +1473,6 @@ void InitVars(void){
   last_scriptfile.prev=&first_scriptfile;
   last_scriptfile.next=NULL;
 
-#ifdef pp_LUA
-  first_luascriptfile.id=-1;
-  first_luascriptfile.prev=NULL;
-  first_luascriptfile.next=&last_luascriptfile;
-
-  last_luascriptfile.id=-1;
-  last_luascriptfile.prev=&first_luascriptfile;
-  last_luascriptfile.next=NULL;
-#endif
-
   first_inifile.id=-1;
   first_inifile.prev=NULL;
   first_inifile.next=&last_inifile;

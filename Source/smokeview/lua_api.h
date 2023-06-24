@@ -8,13 +8,13 @@ int lua_initsmvproginfo(lua_State *L);
 int lua_initsmvdata(lua_State *L);
 void addLuaPaths(lua_State *L);
 
-int load_script(char *filename);
-int loadLuaScript(char *filename);
+int load_script(const char *filename);
+int loadLuaScript(const char *filename);
 int runLuaScript();
-int loadSSFScript(char *filename);
+int loadSSFScript(const char *filename);
 int runSSFScript();
 
-int runScriptString(char *string);
+int runScriptString(const char *string);
 int lua_get_sliceinfo(lua_State *L);
 int lua_get_csvinfo(lua_State *L);
 int lua_initsmvdata(lua_State *L);

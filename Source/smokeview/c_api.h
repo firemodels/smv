@@ -468,7 +468,6 @@ int set_zaxisangles(float a, float b, float c);
 
 // --  *** 3D SMOKE INFO ***
 
-int set_adjustalpha(int v);                     // ADJUSTALPHA
 int set_colorbartype(int v, const char *label); // COLORBARTYPE
 int set_extremecolors(int a, int b, int c, int d, int e,
                       int f);                 // EXTREMECOLORS

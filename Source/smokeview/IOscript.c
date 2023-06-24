@@ -139,43 +139,6 @@ scriptfiledata *InsertScriptFile(char *file){
   return thisptr;
 }
 
-/* ------------------ insert_luascriptfile ------------------------ */
-
-#ifdef pp_LUA
-luascriptfiledata *insert_luascriptfile(char *file){
-  luascriptfiledata *thisptr,*prevptr,*nextptr;
-  int len;
-  luascriptfiledata *luascriptfile;
-  int idmax=-1;
-
-  for(luascriptfile=first_luascriptfile.next;luascriptfile->next!=NULL;luascriptfile=luascriptfile->next){
-    if(luascriptfile->id>idmax)idmax=luascriptfile->id;
-    if(luascriptfile->file==NULL)continue;
-    if(strcmp(file,luascriptfile->file)==0)return luascriptfile;
-  }
-
-  NewMemory((void **)&thisptr,sizeof(luascriptfiledata));
-  nextptr = &last_luascriptfile;
-  prevptr = nextptr->prev;
-  nextptr->prev=thisptr;
-  prevptr->next=thisptr;
-
-  thisptr->next=nextptr;
-  thisptr->prev=prevptr;
-  thisptr->file=NULL;
-  thisptr->id=idmax+1;
-
-  if(file!=NULL){
-    len = strlen(file);
-    if(len>0){
-      NewMemory((void **)&thisptr->file,len+1);
-      strcpy(thisptr->file,file);
-    }
-  }
-  return thisptr;
-}
-#endif
-
 /* ------------------ StartScript ------------------------ */
 
 void StartScript(void){

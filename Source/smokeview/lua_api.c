@@ -203,7 +203,7 @@ int RunLuaBranch(lua_State *L, int argc, char **argv) {
 /// callback (DisplayCB, in callbacks.c). These two loading routines are
 /// included to load the scripts early in the piece, before the display
 /// callback. Both runluascript and runscript are global.
-int load_script(char *filename) {
+int load_script(const char *filename) {
   if (runluascript == 1 && runscript == 1) {
     fprintf(stderr, "Both a Lua script and an SSF script cannot be run "
                     "simultaneously\n");
@@ -4299,14 +4299,6 @@ int lua_set_zaxisangles(lua_State *L) {
   return 1;
 }
 
-// *** 3D SMOKE INFO ***
-int lua_set_adjustalpha(lua_State *L) {
-  int v = lua_tonumber(L, 1);
-  int return_code = set_adjustalpha(v);
-  lua_pushnumber(L, return_code);
-  return 1;
-}
-
 int lua_set_colorbartype(lua_State *L) {
   int type = lua_tonumber(L, 1);
   const char *label = lua_tostring(L, 2);
@@ -5390,7 +5382,6 @@ static luaL_Reg const smvlib[] = {
     {"set_units", lua_set_units},
     {"set_unitclasses", lua_set_unitclasses},
     {"set_zaxisangles", lua_set_zaxisangles},
-    {"set_adjustalpha", lua_set_adjustalpha},
     {"set_colorbartype", lua_set_colorbartype},
     {"set_extremecolors", lua_set_extremecolors},
     {"set_firecolor", lua_set_firecolor},
@@ -5547,9 +5538,9 @@ lua_State *initLua() {
   return L;
 }
 
-int runScriptString(char *string) { return luaL_dostring(L, string); }
+int runScriptString(const char *string) { return luaL_dostring(L, string); }
 
-int loadLuaScript(char *filename) {
+int loadLuaScript(const char *filename) {
   // The display callback needs to be run once initially.
   // PROBLEM: the display CB does not work without a loaded case.
   runluascript = 0;
@@ -5600,7 +5591,7 @@ int loadLuaScript(char *filename) {
   return return_code;
 }
 
-int loadSSFScript(char *filename) {
+int loadSSFScript(const char *filename) {
   // char filename[1024];
   //   if (strlen(script_filename) == 0) {
   //       strncpy(filename, fdsprefix, 1020);
