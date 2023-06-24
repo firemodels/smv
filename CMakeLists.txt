@@ -1,9 +1,14 @@
 # We select CMake version 3.25 as it allows us to use the LINUX variable.
-cmake_minimum_required(VERSION 3.25)
+cmake_minimum_required(VERSION 3.17)
 # Set a policy to use the newer MSVC ABI selection
 cmake_policy(SET CMP0091 NEW)
 # Set a policy to use the newer approach to timestampes in FetchContent
-cmake_policy(SET CMP0135 NEW)
+if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.24")
+    cmake_policy(SET CMP0135 NEW)
+endif()
+if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.19")
+    cmake_policy(SET CMP0110 NEW)
+endif()
 # Use FetchContent, this is used mostly to pull in Lua via git
 include(FetchContent)
 # Selected the multithreaded runtime when using MSVC
@@ -43,6 +48,9 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
     set(MACOSX TRUE)
     add_definitions(-Dpp_OSX)
+endif()
+if (UNIX AND NOT MACOSX)
+    set(LINUX TRUE)
 endif()
 # Set flags for Windows
 if (WIN32)

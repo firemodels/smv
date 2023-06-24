@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.21)
+cmake_minimum_required(VERSION 3.17)
 project(jpeg LANGUAGES C VERSION 5.2.1)
 
 # Put here the object file name for the correct system-dependent memory

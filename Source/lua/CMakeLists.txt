@@ -1,6 +1,8 @@
-cmake_minimum_required(VERSION 3.21)
+cmake_minimum_required(VERSION 3.17)
 project(lua LANGUAGES C VERSION 5.2.1)
-cmake_policy(SET CMP0135 NEW)
+if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.24")
+    cmake_policy(SET CMP0135 NEW)
+endif()
 include(FetchContent)
 
 option(LUA_SUPPORT_DL "Support dynamic loading of compiled modules" ON)

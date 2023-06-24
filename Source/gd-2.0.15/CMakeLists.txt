@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.21)
+cmake_minimum_required(VERSION 3.17)
 project(gd LANGUAGES C VERSION 5.2.1)
 
 set(FILES
@@ -47,7 +47,11 @@ endif()
 set(MAJOR_VERSION 2)
 set(VERSION 2.0.4)
 
-# IntelLLVM warnings
-target_compile_options(gd_static PRIVATE $<$<C_COMPILER_ID:IntelLLVM>: -Wno-incompatible-pointer-types>)
-target_compile_options(gd_static PRIVATE $<$<C_COMPILER_ID:IntelLLVM>: -Wno-sizeof-pointer-memaccess>)
-target_compile_options(gd_static PRIVATE $<$<C_COMPILER_ID:IntelLLVM>: -Wno-absolute-value>)
+# IntelLLVM warnings, the IntelLLVM target needs CMake 3.20
+if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.20")
+    target_compile_options(gd_static PRIVATE $<$<C_COMPILER_ID:IntelLLVM>: -Wno-incompatible-pointer-types>)
+    target_compile_options(gd_static PRIVATE $<$<C_COMPILER_ID:IntelLLVM>: -Wno-sizeof-pointer-memaccess>)
+    target_compile_options(gd_static PRIVATE $<$<C_COMPILER_ID:IntelLLVM>: -Wno-absolute-value>)
+else()
+    target_compile_options(gd_static PRIVATE -Wno-incompatible-pointer-types)
+endif()
