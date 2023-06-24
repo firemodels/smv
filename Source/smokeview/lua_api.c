@@ -5663,7 +5663,9 @@ int yieldOrOkSSF = LUA_YIELD;
 int runSSFScript() {
   if (yieldOrOkSSF == LUA_YIELD) {
     int nresults = 0;
-#if LUA_VERSION_NUM < 504
+#if LUA_VERSION_NUM < 502
+    yieldOrOkSSF = lua_resume(L, 0);
+#elif LUA_VERSION_NUM < 504
     yieldOrOkSSF = lua_resume(L, NULL, 0);
 #else
     yieldOrOkSSF = lua_resume(L, NULL, 0, &nresults);
@@ -5702,7 +5704,9 @@ int yieldOrOk = LUA_YIELD;
 int runLuaScript() {
   if (yieldOrOk == LUA_YIELD) {
     int nresults = 0;
-#if LUA_VERSION_NUM < 504
+#if LUA_VERSION_NUM < 502
+    yieldOrOk = lua_resume(L, 0);
+#elif LUA_VERSION_NUM < 504
     yieldOrOk = lua_resume(L, NULL, 0);
 #else
     yieldOrOk = lua_resume(L, NULL, 0, &nresults);
@@ -5737,4 +5741,35 @@ int runLuaScript() {
   GLUTPOSTREDISPLAY;
   return yieldOrOk;
 }
+#if LUA_VERSION_NUM < 502
+LUA_API lua_Number lua_version (lua_State *L) {
+  UNUSED(L);
+  return LUA_VERSION_NUM;
+}
+
+LUALIB_API void luaL_checkversion_ (lua_State *L, lua_Number ver, size_t sz) {
+  lua_Number v = lua_version(L);
+  if (sz != LUAL_NUMSIZES)  /* check numeric types */
+    luaL_error(L, "core and library have incompatible numeric types");
+  else if (v != ver)
+    luaL_error(L, "version mismatch: app. needs %f, Lua core provides %f",
+                  (LUAI_UACNUMBER)ver, (LUAI_UACNUMBER)v);
+}
+
+LUALIB_API void luaL_setfuncs (lua_State *L, const luaL_Reg *l, int nup) {
+  luaL_checkstack(L, nup, "too many upvalues");
+  for (; l->name != NULL; l++) {  /* fill the table with given functions */
+    if (l->func == NULL)  /* place holder? */
+      lua_pushboolean(L, 0);
+    else {
+      int i;
+      for (i = 0; i < nup; i++)  /* copy upvalues to the top */
+        lua_pushvalue(L, -nup);
+      lua_pushcclosure(L, l->func, nup);  /* closure with those upvalues */
+    }
+    lua_setfield(L, -(nup + 2), l->name);
+  }
+  lua_pop(L, nup);  /* remove upvalues */
+}
+#endif
 #endif
