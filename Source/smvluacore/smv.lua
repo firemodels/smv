@@ -34,6 +34,7 @@ end
 
 function smv.load_default()
     local case = smvlib.load_default()
+    rawset(case, "load", smv.load)
     rawset(case, "load_slice_std", function(self, slice_type, axis, distance)
         return smv.load.slice_std(self, slice_type, axis, distance)
     end)

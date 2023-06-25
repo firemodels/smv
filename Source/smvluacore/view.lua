@@ -1,5 +1,6 @@
 --- @module 'view'
 local view = { colorbar = {}, blockages = {}, color = {}, titlebox = {}, surfaces = {}, devices = {}, outline = {} }
+view.camera = require("camera")
 local _view = {
     -- colorbar = {
     --     get = function()
