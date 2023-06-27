@@ -575,14 +575,9 @@ void GetKeyView(float t, keyframe *this_key, float *view){
 
   t_scaled = 0.0;
   next_key = this_key->next;
-  if(t < this_key->time + this_key->pause_time){
-    HermiteView(t_scaled, this_key, next_key, view);
-  }
-  else{
-    dt = next_key->time - this_key->time - this_key->pause_time;
-    if(dt > 0.0)t_scaled = CLAMP((t - this_key->time - this_key->pause_time)/dt, 0.0, 1.0);
-    HermiteView(t_scaled, this_key, next_key, view);
-  }
+  dt = next_key->time - this_key->time;
+  if(dt > 0.0)t_scaled = CLAMP((t - this_key->time)/dt, 0.0, 1.0);
+  HermiteView(t_scaled, this_key, next_key, view);
 }
 
 /* ------------------ GetTourVal ------------------------ */
