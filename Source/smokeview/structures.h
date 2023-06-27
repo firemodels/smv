@@ -291,6 +291,9 @@ typedef struct _colorbardata {
   unsigned char splits[1024];
   int nnodes_orig, index_node_orig[1024];
   float cie_node[3*1024], frgb[3*1024], dist_node[1024], cie_rgb[3*1024], dE[1024];
+#ifdef pp_COLOR_PLOT2D
+  float deltaCIE[1024];
+#endif
   int interp,dist_type;
   float colorbar[3*1024];
 } colorbardata;

@@ -5261,7 +5261,10 @@ extern "C" void GluiBoundsSetup(int main_window){
       PANEL_slice_plot2dd = glui_bounds->add_panel_to_panel(ROLLOUT_plotslice,"", false);
       PANEL_slice_plot2de = glui_bounds->add_panel_to_panel(PANEL_slice_plot2dd,"", false);
       glui_bounds->add_checkbox_to_panel(PANEL_slice_plot2de, _("show plot"), &vis_slice_plot,                                                 SLICE_PLOT, SliceBoundCB);
-      glui_bounds->add_checkbox_to_panel(PANEL_slice_plot2de, _("use slice bounds"), &slice_plot_bound_option,                                     SLICE_PLOT, SliceBoundCB);
+#ifdef pp_COLOR_PLOT2D
+      glui_bounds->add_checkbox_to_panel(PANEL_slice_plot2de, _("show CIE dist plot"), &vis_colorbar_dists_plot,                               SLICE_PLOT, SliceBoundCB);
+#endif
+      glui_bounds->add_checkbox_to_panel(PANEL_slice_plot2de, _("use slice bounds"), &slice_plot_bound_option,                                 SLICE_PLOT, SliceBoundCB);
       SPINNER_size_factor2 = glui_bounds->add_spinner_to_panel(PANEL_slice_plot2de, _("plot size(rel)"), GLUI_SPINNER_FLOAT, &plot2d_size_factor, SLICE_SIZE, SliceBoundCB);
       SPINNER_size_factor2->set_float_limits(0.0, 1.0);
 

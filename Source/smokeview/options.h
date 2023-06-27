@@ -18,6 +18,7 @@
 #define pp_CSV_MULTI          // read in csv files in parallel
 
 //#define pp_COLOR_HIDE         // add checkbox to hide/unhide scene when editing a colorbar
+#define pp_COLOR_PLOT2D     // add option to plot CIELab distances
 
 //#define pp_SMOKE_LIGHT        // turn on smoke lighting
 
