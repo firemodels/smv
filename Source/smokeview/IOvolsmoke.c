@@ -5,6 +5,7 @@
 #include <string.h>
 #include <math.h>
 #include <float.h>
+#include <openvkl/openvkl.h>
 #include GLUT_H
 
 #include "smokeviewvars.h"
@@ -63,6 +64,15 @@
       vv = data+IJKNODE(i+1, j+1, k+1);\
       value = *vv;\
     }
+
+/* ----------------------- InitVKL ----------------------------- */
+
+void InitVKL(void){
+  vklLoadModule("cpu_device");
+  VKLDevice device = vklNewDevice("cpu");
+  int width = vklGetNativeSIMDWidth(device);
+  vklReleaseDevice(device);
+}
 
 /* ----------------------- GetScatterFraction ----------------------------- */
 

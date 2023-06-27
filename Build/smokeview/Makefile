@@ -86,6 +86,8 @@ objwin = $(obj:.o=.obj)
 
 INC += -I $(SOURCE_DIR)/glui_v2_1_beta -I $(SOURCE_DIR)/gd-2.0.15 -I $(SOURCE_DIR)/shared -I $(SOURCE_DIR)/smokeview -I $(SOURCE_DIR)/glew -I $(SOURCE_DIR)/zlib128
 
+INC += -I "C:/Program Files (x86)/Intel/oneAPI/openvkl/latest/include/"
+
 # windows include directories
 
 ifeq ($(GLUT),freeglut)
@@ -150,6 +152,7 @@ else
   GLUT_WIN_LIB = $(SMV_WIN_LIBDIR)\glut32.lib
 endif
 SMV_LIBS_WIN = $(SMV_WIN_LIBDIR)\glui.lib $(GLUT_WIN_LIB) $(SMV_WIN_LIBDIR)\gd.lib $(SMV_WIN_LIBDIR)\jpeg.lib $(SMV_WIN_LIBDIR)\png.lib $(SMV_WIN_LIBDIR)\zlib.lib $(SMV_WIN_LIBDIR)\pthreads.lib
+SMV_LIBS_WIN += "C:/Program Files (x86)/Intel/oneAPI/openvkl/latest/lib/openvkl.lib"
 
 #--- gnu
 
