@@ -947,7 +947,7 @@ void GetColorDist(colorbardata *cbi, int option, float *min, float *max){
   }
   *min = cbi->deltaCIE[0];
   *max = *min;
-  for(i = 0; i < 255 - 1; i++){
+  for(i = 1; i < 255 - 1; i++){
     *min = MIN(*min, cbi->deltaCIE[i]);
     *max = MAX(*max, cbi->deltaCIE[i]);
   }
