@@ -104,6 +104,13 @@ EXTERNCPP int GetFontHeight(void);
 EXTERNCPP void UpdateShowColorbar(int *showcfast_arg, int *show_slice_colorbar_arg, 
   int *show_hvacduct_colorbar_arg, int *show_hvacnode_colorbar_arg);
 
+EXTERNCPP void DrawPlot2D(int option, float *x, float *z, float *z2, int n,
+  float highlight_x, float highlight_y, float highlight_y2, int valid, int position,
+  float global_valmin, float global_valmax, char *quantity, char *quantity2, char *unit,
+  float left, float right, float down, float top);
+
+
+
 EXTERNCPP void UpdateSliceSkip(void);
 
 EXTERNCPP void MergePartHistograms(void);

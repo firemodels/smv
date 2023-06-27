@@ -1046,6 +1046,167 @@ void DrawTreePlot(int first, int n){
   }
 }
 
+
+/* ------------------ DrawPlot2D ------------------------ */
+
+void DrawPlot2D(int option, float *x, float *z, float *z2, int n,
+  float highlight_x, float highlight_y, float highlight_y2, int valid, int position,
+  float global_valmin, float global_valmax, char *quantity, char *quantity2, char *unit,
+  float left, float right, float down, float top){
+  float xmin, xmax, zmin, zmax, dx;
+  float zmax_display;
+  int i;
+  char cvalmin[20], cvalmax[20], cval[20];
+  char tvalmin[20], tvalmax[20];
+  int ndigits = 3;
+
+  float dfont = ( float )GetFontHeight();
+
+  xmin = x[0];
+  xmax = xmin;
+  zmin = z[0];
+  zmax = zmin;
+  for(i = 1; i < n; i++){
+    xmin = MIN(xmin, x[i]);
+    xmax = MAX(xmax, x[i]);
+    zmin = MIN(zmin, z[i]);
+    zmax = MAX(zmax, z[i]);
+  }
+  if(xmax == xmin)xmax = xmin + 1.0;
+
+  if(global_valmin < global_valmax){
+    zmin = global_valmin;
+    zmax = global_valmax;
+  }
+  zmax_display = zmax;
+  if(zmax == zmin)zmax = zmin + 1.0;
+
+  Float2String(tvalmin, global_times[0], ndigits, force_fixedpoint);
+  Float2String(tvalmax, global_times[nglobal_times - 1], ndigits, force_fixedpoint);
+  Float2String(cvalmin, zmin, ndigits, force_fixedpoint);
+  Float2String(cvalmax, zmax_display, ndigits, force_fixedpoint);
+  Float2String(cval, highlight_y, ndigits, force_fixedpoint);
+
+  dx = (xmax - xmin) / 20.0;
+
+  glPushMatrix();
+
+  int plot_width = MAX(75, plot2d_size_factor * screenWidth);
+
+#define HSCALE2D(x) (5+(left) + plot_width*((x)-(xmin))/((xmax)-(xmin)))
+#define HSCALE2DLABEL(x) (10 + HSCALE2D(x))
+#define VSCALE2D(z) (dfont +(down) + plot_width*((z)-(zmin))/((zmax)-(zmin)))
+  glColor3fv(foregroundcolor);
+  glLineWidth(plot2d_line_width);
+  glBegin(GL_LINES);
+  for(i = 0; i < n - 1; i++){
+    float val, val2;
+
+    val = CLAMP(z[i], zmin, zmax);
+    val2 = CLAMP(z[i + 1], zmin, zmax);
+    glVertex2f(HSCALE2D(x[i]), VSCALE2D(val));
+    glVertex2f(HSCALE2D(x[i + 1]), VSCALE2D(val2));
+  }
+  if(z2 != NULL){
+    glColor3f(1.0, 0.0, 0.0);
+    for(i = 0; i < n - 1; i++){
+      float val, val2;
+
+      val = CLAMP(z[i], zmin, zmax);
+      val2 = CLAMP(z[i + 1], zmin, zmax);
+      glVertex2f(HSCALE2D(x[i]), VSCALE2D(val));
+      glVertex2f(HSCALE2D(x[i + 1]), VSCALE2D(val2));
+    }
+    glColor3fv(foregroundcolor);
+  }
+  if(option == PLOT_ALL){
+    glVertex2f(HSCALE2D(xmin), VSCALE2D(zmin));
+    glVertex2f(HSCALE2D(xmax), VSCALE2D(zmin));
+
+    glVertex2f(HSCALE2D(xmax), VSCALE2D(zmin));
+    glVertex2f(HSCALE2D(xmax), VSCALE2D(zmax));
+
+    glVertex2f(HSCALE2D(xmax), VSCALE2D(zmax));
+    glVertex2f(HSCALE2D(xmin), VSCALE2D(zmax));
+
+    glVertex2f(HSCALE2D(xmin), VSCALE2D(zmax));
+    glVertex2f(HSCALE2D(xmin), VSCALE2D(zmin));
+
+    glVertex2f(HSCALE2D(xmax), VSCALE2D(zmax));
+    glVertex2f(HSCALE2D(xmax + dx), VSCALE2D(zmax));
+
+    glVertex2f(HSCALE2D(xmax), VSCALE2D(zmin));
+    glVertex2f(HSCALE2D(xmax + dx), VSCALE2D(zmin));
+  }
+  glEnd();
+
+  if(option == PLOT_ALL && show_plot2d_title == 1){
+    float dy;
+
+#define DFONTY dfont/2.0
+    if(z2 != NULL){
+      dy = VSCALE2D(zmax) + DFONTY;
+      OutputTextColor(redcolor, HSCALE2DLABEL(xmin), dy, quantity2);
+      dy += 1.1 * dfont;
+      OutputTextColor(foregroundcolor, HSCALE2DLABEL(xmin), dy, quantity);
+    }
+    else{
+      dy = VSCALE2D(zmax) + DFONTY;
+      OutputText(HSCALE2DLABEL(xmin), dy, quantity);
+    }
+  }
+
+  if(option == PLOT_ALL && show_plot2d_ylabels == 1){
+    float dy;
+
+    dy = VSCALE2D(zmax) - 1.5 * dfont + DFONTY;
+    OutputText(HSCALE2DLABEL(xmax), dy, cvalmax);
+    dy -= 1.1 * dfont;
+    OutputText(HSCALE2DLABEL(xmax), dy, unit);
+    if(z2 == NULL){
+      dy -= 1.1 * dfont * (position + 1);
+      OutputText(HSCALE2DLABEL(xmax), dy, cval);
+    }
+    else{
+      char cval2[255];
+
+      dy -= 1.1 * dfont;
+      OutputText(HSCALE2DLABEL(xmax), dy, cval);
+      Float2String(cval2, highlight_y2, ndigits, force_fixedpoint);
+      dy -= 1.1 * dfont;
+      OutputTextColor(redcolor, HSCALE2DLABEL(xmax), dy, cval2);
+    }
+    OutputText(HSCALE2DLABEL(xmax), VSCALE2D(zmin), cvalmin);
+  }
+  if(option == PLOT_ALL && show_plot2d_xlabels == 1){
+    OutputText(HSCALE2DLABEL(xmin) - GetStringWidth("X"), VSCALE2D(zmin) - dfont, tvalmin);
+    OutputText(HSCALE2DLABEL(xmax) - GetStringWidth("X"), VSCALE2D(zmin) - dfont, tvalmax);
+  }
+
+  if(valid == 1){
+    glPointSize(plot2d_point_size);
+
+    float val, val2;
+
+    val = CLAMP(highlight_y, zmin, zmax);
+    val2 = CLAMP(highlight_y2, zmin, zmax);
+    glBegin(GL_POINTS);
+    if(z2 == NULL){
+      glColor3f(1.0, 0.0, 0.0);
+      glVertex2f(HSCALE2D(highlight_x), VSCALE2D(val));
+    }
+    else{
+      glColor3fv(foregroundcolor);
+      glVertex2f(HSCALE2D(highlight_x), VSCALE2D(val));
+      glColor3f(1.0, 0.0, 0.0);
+      glVertex2f(HSCALE2D(highlight_x), VSCALE2D(val2));
+    }
+    glColor3fv(foregroundcolor);
+    glEnd();
+  }
+  glPopMatrix();
+}
+
 /* ----------------------- DrawTreeDevicePlots ----------------------------- */
 
 void DrawTreeDevicePlots(void){
