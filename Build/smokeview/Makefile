@@ -7,6 +7,7 @@ SOURCE_DIR = ../../../Source/
 BUILD_DIR = ../../../Build
 LIB_DIR = $(BUILD_DIR)/LIBS
 VKL_DIR = ../../../../openvkl/build/install/
+VKL_LIB_DIR = ../../../../openvkl/build/install/lib64
 
 #placehoder, remove after begin applied to various targets
 #CPP_STANDARD = -libstd=c++
@@ -276,7 +277,7 @@ intel_linux_64 : CPP       = icpx
 intel_linux_64 : exe       = smokeview_linux_$(SMV_TESTSTRING)64$(SMV_PROFILESTRING)
 
 intel_linux_64 : $(obj) $(if $(LUA_SCRIPTING),smvluacore)
-	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS) -L$(LIB_DIR_PLAT) $(SMV_LIBS_LINUX) $(INTEL_LIBS_LINUX) $(SYSTEM_LIBS_LINUX) $(LIBLUA)
+	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS) -L$(VKL_LIB_DIR) -l openvkl -l rkcommon -L$(LIB_DIR_PLAT) $(SMV_LIBS_LINUX) $(INTEL_LIBS_LINUX) $(SYSTEM_LIBS_LINUX) $(LIBLUA)
 
 # ------------- intel_linux_64_db ----------------
 
