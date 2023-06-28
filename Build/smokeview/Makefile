@@ -6,6 +6,7 @@
 SOURCE_DIR = ../../../Source/
 BUILD_DIR = ../../../Build
 LIB_DIR = $(BUILD_DIR)/LIBS
+VKL_DIR = ../../../../openvkl/build/install/
 
 #placehoder, remove after begin applied to various targets
 #CPP_STANDARD = -libstd=c++
@@ -86,7 +87,7 @@ objwin = $(obj:.o=.obj)
 
 INC += -I $(SOURCE_DIR)/glui_v2_1_beta -I $(SOURCE_DIR)/gd-2.0.15 -I $(SOURCE_DIR)/shared -I $(SOURCE_DIR)/smokeview -I $(SOURCE_DIR)/glew -I $(SOURCE_DIR)/zlib128
 
-INC += -I "C:/Program Files (x86)/Intel/oneAPI/openvkl/latest/include/"
+INC += -I $(VKL_DIR)\include
 
 # windows include directories
 
@@ -152,7 +153,7 @@ else
   GLUT_WIN_LIB = $(SMV_WIN_LIBDIR)\glut32.lib
 endif
 SMV_LIBS_WIN = $(SMV_WIN_LIBDIR)\glui.lib $(GLUT_WIN_LIB) $(SMV_WIN_LIBDIR)\gd.lib $(SMV_WIN_LIBDIR)\jpeg.lib $(SMV_WIN_LIBDIR)\png.lib $(SMV_WIN_LIBDIR)\zlib.lib $(SMV_WIN_LIBDIR)\pthreads.lib
-SMV_LIBS_WIN += "C:/Program Files (x86)/Intel/oneAPI/openvkl/latest/lib/openvkl.lib"
+SMV_LIBS_WIN += $(VKL_DIR)\lib\openvkl.lib"
 
 #--- gnu
 
