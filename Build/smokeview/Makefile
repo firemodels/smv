@@ -7,7 +7,6 @@ SOURCE_DIR = ../../../Source/
 BUILD_DIR = ../../../Build
 LIB_DIR = $(BUILD_DIR)/LIBS
 VKL_DIR = ../../../../openvkl/build/install/
-VKL_LIB_DIR = ../../../../openvkl/build/install/lib64
 
 #placehoder, remove after begin applied to various targets
 #CPP_STANDARD = -libstd=c++
@@ -88,7 +87,7 @@ objwin = $(obj:.o=.obj)
 
 INC += -I $(SOURCE_DIR)/glui_v2_1_beta -I $(SOURCE_DIR)/gd-2.0.15 -I $(SOURCE_DIR)/shared -I $(SOURCE_DIR)/smokeview -I $(SOURCE_DIR)/glew -I $(SOURCE_DIR)/zlib128
 
-INC += -I $(VKL_DIR)\include
+INC += -I $(VKL_DIR)/include
 
 # windows include directories
 
@@ -277,7 +276,7 @@ intel_linux_64 : CPP       = icpx
 intel_linux_64 : exe       = smokeview_linux_$(SMV_TESTSTRING)64$(SMV_PROFILESTRING)
 
 intel_linux_64 : $(obj) $(if $(LUA_SCRIPTING),smvluacore)
-	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS) -L$(VKL_LIB_DIR) -l openvkl -l rkcommon -L$(LIB_DIR_PLAT) $(SMV_LIBS_LINUX) $(INTEL_LIBS_LINUX) $(SYSTEM_LIBS_LINUX) $(LIBLUA)
+	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS) -L$(VKL_DIR)/lib64 -l openvkl -l rkcommon -L$(LIB_DIR_PLAT) $(SMV_LIBS_LINUX) $(INTEL_LIBS_LINUX) $(SYSTEM_LIBS_LINUX) $(LIBLUA)
 
 # ------------- intel_linux_64_db ----------------
 
@@ -357,7 +356,7 @@ intel_osx_64 : CFLAGS    += -D pp_LUA
 intel_osx_64 : SMVLUACORE_FILES += $(LIB_DIR)/intel_osx_$(NOQUARTZ)64/lpeg.so
 intel_osx_64 : LIBLUA    += $(LIB_DIR)/intel_osx_$(NOQUARTZ)64/liblua.a -ldl
 endif
-intel_osx_64 : LFLAGS    = -m64 -L$(LIB_DIR)/intel_osx_$(NOQUARTZ)64 $(SMV_LIBS_OSX) -traceback -static-intel  -mmacosx-version-min=10.9  -diag-disable=10441
+intel_osx_64 : LFLAGS    = -m64 -L$(VKL_DIR)/lib -l openvkl -l rkcommon -L$(LIB_DIR)/intel_osx_$(NOQUARTZ)64 $(SMV_LIBS_OSX) -traceback -static-intel  -mmacosx-version-min=10.9  -diag-disable=10441
 ifeq ($(GLUT),freeglut)
 intel_osx_64 : LFLAGS   += -L /opt/X11/lib -lX11 -lXmu -lGLU -lGL
 else
