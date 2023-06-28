@@ -7,7 +7,7 @@ SOURCE_DIR = ../../../Source/
 BUILD_DIR = ../../../Build
 LIB_DIR = $(BUILD_DIR)/LIBS
 VKL_DIR = ../../../../openvkl/build/install/
-VKLOPTS=-L$(VKL_DIR)/lib64 -l openvkl -l rkcommon
+VKL_LIBS=-l openvkl -l rkcommon
 
 #placehoder, remove after begin applied to various targets
 #CPP_STANDARD = -libstd=c++
@@ -271,7 +271,7 @@ intel_linux_64 : CFLAGS    += -D pp_LUA
 intel_linux_64 : SMVLUACORE_FILES += $(LIB_DIR_PLAT)/lpeg.so
 intel_linux_64 : LIBLUA    += $(LIB_DIR_PLAT)/liblua.a -ldl
 endif
-intel_linux_64 : LFLAGS    = -m64 $(VKLOPTS) $(INTEL_LIBS_LINUX) $(SMV_PROFILEFLAG)
+intel_linux_64 : LFLAGS    = -m64 -L$(VKL_DIR)/lib64 $(VKL_LIBS) $(INTEL_LIBS_LINUX) $(SMV_PROFILEFLAG)
 intel_linux_64 : CC        = icx
 intel_linux_64 : CPP       = icpx
 intel_linux_64 : exe       = smokeview_linux_$(SMV_TESTSTRING)64$(SMV_PROFILESTRING)
@@ -285,7 +285,7 @@ intel_linux_64_db : CFLAGS    = -O0 -g -m64 $(SMV_TESTFLAG) -D _DEBUG -D pp_LINU
                                 -Wall -Wextra -Wuninitialized -Wunused-function -Wunused-variable -Wno-sign-compare \
                                 -Wno-unused-parameter $(GITINFO) $(INTEL_COMPINFO)
 intel_linux_64_db : C_STANDARD    = -std=gnu99
-intel_linux_64_db : LFLAGS    = -m64 $(VKLOPTS) -static-intel $(INTEL_LIBS_LINUX) $(SMV_PROFILEFLAG)
+intel_linux_64_db : LFLAGS    = -m64 -L$(VKL_DIR)/lib64 $(VKL_LIBS) -static-intel $(INTEL_LIBS_LINUX) $(SMV_PROFILEFLAG)
 intel_linux_64_db : CC        = icx
 intel_linux_64_db : CPP       = icpx
 intel_linux_64_db : exe       = smokeview_linux_$(SMV_TESTSTRING)64_db$(SMV_PROFILESTRING)
@@ -302,7 +302,7 @@ ifeq ($(LUA_SCRIPTING),true)
 gnu_linux_64_db : CFLAGS    += -D pp_LUA
 gnu_linux_64_db : SMVLUACORE_FILES += $(LIB_DIR_PLAT)/lpeg.so
 endif
-gnu_linux_64_db : LFLAGS    = -m64 $(VKLOPTS) $(SMV_PROFILEFLAG)
+gnu_linux_64_db : LFLAGS    = -m64 -L$(VKL_DIR)/lib64 $(VKL_LIBS) $(SMV_PROFILEFLAG)
 gnu_linux_64_db : CC        = gcc
 gnu_linux_64_db : CPP       = g++
 gnu_linux_64_db : exe       = smokeview_linux_$(SMV_TESTSTRING)64_db$(SMV_PROFILESTRING)
@@ -323,7 +323,7 @@ gnu_linux_64 : CFLAGS    += -D pp_LUA
 gnu_linux_64 : SMVLUACORE_FILES += $(LIB_DIR_PLAT)/lpeg.so
 gnu_linux_64 : SMVLUACORE_FILES += $(LIB_DIR_PLAT)/lua.so
 endif
-gnu_linux_64 : LFLAGS    = -m64 $(VKLOPTS) $(SMV_PROFILEFLAG)
+gnu_linux_64 : LFLAGS    = -m64 -L$(VKL_DIR)/lib64 $(VKL_LIBS) $(SMV_PROFILEFLAG)
 gnu_linux_64 : CC        = gcc
 gnu_linux_64 : CPP       = g++
 gnu_linux_64 : exe       = smokeview_linux_$(SMV_TESTSTRING)64$(SMV_PROFILESTRING)
@@ -357,7 +357,7 @@ intel_osx_64 : CFLAGS    += -D pp_LUA
 intel_osx_64 : SMVLUACORE_FILES += $(LIB_DIR)/intel_osx_$(NOQUARTZ)64/lpeg.so
 intel_osx_64 : LIBLUA    += $(LIB_DIR)/intel_osx_$(NOQUARTZ)64/liblua.a -ldl
 endif
-intel_osx_64 : LFLAGS    = -m64 $(VKLOPTS) -L$(LIB_DIR)/intel_osx_$(NOQUARTZ)64 $(SMV_LIBS_OSX) -traceback -static-intel  -mmacosx-version-min=10.9  -diag-disable=10441
+intel_osx_64 : LFLAGS    = -m64 -L$(VKL_DIR)/lib $(VKL_LIBS) -L$(LIB_DIR)/intel_osx_$(NOQUARTZ)64 $(SMV_LIBS_OSX) -traceback -static-intel  -mmacosx-version-min=10.9  -diag-disable=10441
 ifeq ($(GLUT),freeglut)
 intel_osx_64 : LFLAGS   += -L /opt/X11/lib -lX11 -lXmu -lGLU -lGL
 else
@@ -385,7 +385,7 @@ intel_osx_64_db : SMVLUACORE_FILES += $(LIB_DIR)/intel_osx_$(NOQUARTZ)64/lpeg.so
 intel_osx_64_db : LIBLUA    += $(LIB_DIR)/intel_osx_$(NOQUARTZ)64/liblua.a -ldl
 endif
 # remove following from LFLAGS line
-intel_osx_64_db : LFLAGS    = -m64 $(VKLOPTS) -L$(LIB_DIR)/intel_osx_$(NOQUARTZ)64 $(SMV_LIBS_OSX) -traceback -static-intel -mmacosx-version-min=10.9 -diag-disable=10441
+intel_osx_64_db : LFLAGS    = -m64 -L$(VKL_DIR)/lib $(VKL_LIBS) -L$(LIB_DIR)/intel_osx_$(NOQUARTZ)64 $(SMV_LIBS_OSX) -traceback -static-intel -mmacosx-version-min=10.9 -diag-disable=10441
 ifeq ($(GLUT),freeglut)
 intel_osx_64_db : LFLAGS   += -L /opt/X11/lib -lX11 -lXmu -lGLU -lGL
 else
@@ -406,7 +406,7 @@ intel_osx_64_db : $(obj) $(if $(LUA_SCRIPTING),smvluacore)
 
 gnu_osx_64_db : CFLAGS    = -O0 -ggdb -m64 -D _DEBUG -D pp_OSX -D pp_GCC $(SMV_TESTFLAG) -Wall -Wno-comment -Wno-deprecated-declarations $(GNU_COMPINFO) $(GITINFO) $(SMV_PROFILEFLAG)
 gnu_osx_64_db : C_STANDARD    = -std=gnu99
-gnu_osx_64_db : LFLAGS    = -m64 $(VKLOPTS) -L$(LIB_DIR)/gnu_osx_64 $(SMV_LIBS_OSX) $(GLIBDIROPT) $(SMV_PROFILEFLAG)
+gnu_osx_64_db : LFLAGS    = -m64 -L$(VKL_DIR)/lib $(VKL_LIBS) -L$(LIB_DIR)/gnu_osx_64 $(SMV_LIBS_OSX) $(GLIBDIROPT) $(SMV_PROFILEFLAG)
 ifeq ($(GLUT),freeglut)
 gnu_osx_64_db : LFLAGS   += -L /opt/X11/lib -lX11 -lXmu -lGLU -lGL
 gnu_osx_64_db : CFLAGS   += -D FREEGLUT_STATIC
@@ -428,7 +428,7 @@ gnu_osx_64_db : $(obj)
 
 gnu_osx_64 : CFLAGS    = -O0 -m64              -D pp_OSX -D pp_GCC $(SMV_TESTFLAG) -Wall -Wno-comment -Wno-deprecated-declarations -Wno-write-strings $(GNU_COMPINFO) $(GITINFO) $(SMV_PROFILEFLAG)
 gnu_osx_64 : C_STANDARD    = -std=gnu99
-gnu_osx_64 : LFLAGS    = -m64 $(VKLOPTS) -L$(LIB_DIR)/gnu_osx_64 $(SMV_LIBS_OSX) $(GLIBDIROPT) $(SMV_PROFILEFLAG)
+gnu_osx_64 : LFLAGS    = -m64 -L$(VKL_DIR)/lib $(VKL_LIBS) -L$(LIB_DIR)/gnu_osx_64 $(SMV_LIBS_OSX) $(GLIBDIROPT) $(SMV_PROFILEFLAG)
 ifeq ($(GLUT),freeglut)
 gnu_osx_64 : LFLAGS   += -L /opt/X11/lib -lX11 -lXmu -lGLU -lGL
 gnu_osx_64 : CFLAGS   += -D FREEGLUT_STATIC
