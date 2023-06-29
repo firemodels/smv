@@ -113,7 +113,7 @@ float GetScatterFraction(float *view_vec, float *light_vec,float param,int phase
 
 /* ----------------------- GetSmokeColor ----------------------------- */
 
-void GetSmokeColor(float *smoke_tran, float **smoke_color, float *scaled_intensity, float *light_fractionptr, float dlength, float xyz[3], meshdata *meshi, int *inobst, char *blank_local){
+void GetSmokeColor(float *smoke_tran, float **smoke_color_handle, float *scaled_intensity, float *light_fractionptr, float dlength, float xyz[3], meshdata *meshi, int *inobst, char *blank_local){
   int i, j, k;
   int ijk;
   float *vv;
@@ -198,10 +198,15 @@ void GetSmokeColor(float *smoke_tran, float **smoke_color, float *scaled_intensi
         *scaled_intensity = ratio*ratio*ratio*ratio;
       }
     }
-    *smoke_color = rgb_volsmokecolormap+4*index;
+    if(temperature>global_temp_cutoff){
+    *  smoke_color_handle = rgb_volsmokecolormap+4*index;
+    }
+    else{
+      *smoke_color_handle = GetColorPtr(black);
+    }
   }
   else{
-    *smoke_color = GetColorPtr(black);
+    *smoke_color_handle = GetColorPtr(black);
   }
   if(smokedata_local!=NULL){
     INTERP3D(smokedata_local, soot_density);
@@ -1046,10 +1051,10 @@ meshdata *GetMeshInSmesh(meshdata *mesh_guess, supermeshdata *smesh, float *xyz)
 /* ------------------ IntegrateSmokeColors ------------------------ */
 
 void IntegrateSmokeColors(float *integrated_smokecolor, float *xyzvert, float dlength, meshdata *meshi, int iwall){
-  float t_intersect, t_intersect_min=FLT_MAX, *boxmin, *boxmax;
+  float t_intersect_min, *boxmin, *boxmax;
   int i;
   int nsteps;
-  float dx, dy, dz;
+  float dxyz[3];
   float distseg, dxseg, dyseg, dzseg;
   float xyz[3];
   float *vert_beg, *vert_end;
@@ -1073,42 +1078,47 @@ void IntegrateSmokeColors(float *integrated_smokecolor, float *xyzvert, float dl
     boxmax = meshi->boxmax_scaled;
   }
 
-  // xyz(t) = xyzvert + t*(xyzvert - eye_position_smv )
-  // integrate from t=0 to t=t_intersect_min  (if outside mesh)
-  //     ie from vertex to nearest wall along a line from the eye position
-  //        intersecting the vertex position
-  // integrate from t=-1 to t=0 (if inside mesh)
-  //     ie from the eye position to the vertex position
-
   if(meshi->inside==1){
     vert_beg=eye_position_smv;
     vert_end=xyzvert;
   }
   else{
+    int first;
+
     vert_beg=xyzvert;
     vert_end=xyzvals;
 
-    dx = xyzvert[0] - eye_position_smv[0];
-    dy = xyzvert[1] - eye_position_smv[1];
-    dz = xyzvert[2] - eye_position_smv[2];
+    first = 1;
+    dxyz[0] = xyzvert[0] - eye_position_smv[0];
+    dxyz[1] = xyzvert[1] - eye_position_smv[1];
+    dxyz[2] = xyzvert[2] - eye_position_smv[2];
     for(i=1;i<4;i++){
       int ii;
-      float diffmin,diffmax,denom;
 
+      // xyz(t) = xyzvert + t*(xyzvert - eye_position_smv )
+      // xyzvert_ii + t*(xyzvert_ii - eye_position_smv_ii) = boxmin_ii
+      // t = (xyzvert_ii - boxmin_ii)/(xyzvert_ii-eye_position_smv_ii)
+      // 
+      // integrate from t=0 to t=t_intersect_min  (if outside mesh)
+      //     ie from vertex to nearest wall along a line from the eye position
+      //        intersecting the vertex position
+      // integrate from t=-1 to t=0 (if inside mesh)
+      //     ie from the eye position to the vertex position
       ii=i-1;
-      diffmin = boxmin[ii]-xyzvert[ii];
-      diffmax = boxmax[ii]-xyzvert[ii];
-      denom = xyzvert[ii]-eye_position_smv[ii];
-      if(iwall!=-i&&denom<0.0){
-        t_intersect = diffmin/denom;
-        if(t_intersect<t_intersect_min){
+      float t_intersect;
+
+      if(iwall!=-i&&dxyz[ii]<0.0){
+        t_intersect = (boxmin[ii]-xyzvert[ii])/dxyz[ii];
+        if(first==1||t_intersect<t_intersect_min){
+          first = 0;
           t_intersect_min=t_intersect;
           iwall_min=-i;
         }
       }
-      if(iwall!=i&&denom>0.0){
-        t_intersect = diffmax/denom;
-        if(t_intersect<t_intersect_min){
+      if(iwall!=i&&dxyz[ii]>0.0){
+        t_intersect = (boxmax[ii]-xyzvert[ii])/dxyz[ii];
+        if(first==1||t_intersect<t_intersect_min){
+          first = 0;
           t_intersect_min=t_intersect;
           iwall_min=i;
         }
@@ -1117,32 +1127,32 @@ void IntegrateSmokeColors(float *integrated_smokecolor, float *xyzvert, float dl
     switch(iwall_min){
       case XWALLMIN:
         vert_end[0] = boxmin[0];
-        vert_end[1] = CLAMP(xyzvert[1] + t_intersect_min*dy,boxmin[1],boxmax[1]);
-        vert_end[2] = CLAMP(xyzvert[2] + t_intersect_min*dz,boxmin[2],boxmax[2]);
+        vert_end[1] = CLAMP(xyzvert[1] + t_intersect_min*dxyz[1], boxmin[1], boxmax[1]);
+        vert_end[2] = CLAMP(xyzvert[2] + t_intersect_min*dxyz[2], boxmin[2], boxmax[2]);
         break;
       case XWALLMAX:
         vert_end[0] = boxmax[0];
-        vert_end[1] = CLAMP(xyzvert[1] + t_intersect_min*dy,boxmin[1],boxmax[1]);
-        vert_end[2] = CLAMP(xyzvert[2] + t_intersect_min*dz,boxmin[2],boxmax[2]);
+        vert_end[1] = CLAMP(xyzvert[1] + t_intersect_min* dxyz[1],boxmin[1],boxmax[1]);
+        vert_end[2] = CLAMP(xyzvert[2] + t_intersect_min* dxyz[2],boxmin[2],boxmax[2]);
         break;
       case YWALLMIN:
-        vert_end[0] = CLAMP(xyzvert[0] + t_intersect_min*dx,boxmin[0],boxmax[0]);
+        vert_end[0] = CLAMP(xyzvert[0] + t_intersect_min* dxyz[0],boxmin[0],boxmax[0]);
         vert_end[1] = boxmin[1];
-        vert_end[2] = CLAMP(xyzvert[2] + t_intersect_min*dz,boxmin[2],boxmax[2]);
+        vert_end[2] = CLAMP(xyzvert[2] + t_intersect_min* dxyz[2],boxmin[2],boxmax[2]);
         break;
       case YWALLMAX:
-        vert_end[0] = CLAMP(xyzvert[0] + t_intersect_min*dx,boxmin[0],boxmax[0]);
+        vert_end[0] = CLAMP(xyzvert[0] + t_intersect_min* dxyz[0],boxmin[0],boxmax[0]);
         vert_end[1] = boxmax[1];
-        vert_end[2] = CLAMP(xyzvert[2] + t_intersect_min*dz,boxmin[2],boxmax[2]);
+        vert_end[2] = CLAMP(xyzvert[2] + t_intersect_min* dxyz[2],boxmin[2],boxmax[2]);
         break;
       case ZWALLMIN:
-        vert_end[0] = CLAMP(xyzvert[0] + t_intersect_min*dx,boxmin[0],boxmax[0]);
-        vert_end[1] = CLAMP(xyzvert[1] + t_intersect_min*dy,boxmin[1],boxmax[1]);
+        vert_end[0] = CLAMP(xyzvert[0] + t_intersect_min* dxyz[0],boxmin[0],boxmax[0]);
+        vert_end[1] = CLAMP(xyzvert[1] + t_intersect_min* dxyz[1],boxmin[1],boxmax[1]);
         vert_end[2] = boxmin[2];
         break;
       case ZWALLMAX:
-        vert_end[0] = CLAMP(xyzvert[0] + t_intersect_min*dx,boxmin[0],boxmax[0]);
-        vert_end[1] = CLAMP(xyzvert[1] + t_intersect_min*dy,boxmin[1],boxmax[1]);
+        vert_end[0] = CLAMP(xyzvert[0] + t_intersect_min* dxyz[0],boxmin[0],boxmax[0]);
+        vert_end[1] = CLAMP(xyzvert[1] + t_intersect_min* dxyz[1],boxmin[1],boxmax[1]);
         vert_end[2] = boxmax[2];
         break;
       default:
@@ -1155,10 +1165,8 @@ void IntegrateSmokeColors(float *integrated_smokecolor, float *xyzvert, float dl
   dyseg = vert_end[1] - vert_beg[1];
   dzseg = vert_end[2] - vert_beg[2];
   distseg = sqrt(dxseg*dxseg+dyseg*dyseg+dzseg*dzseg);
-  if(distseg<0.001){
-    VEC4EQCONS(integrated_smokecolor,0.0);
-    return;
-  }
+  VEC4EQCONS(integrated_smokecolor,0.0);
+  if(distseg<0.001)return;
 
   nsteps = distseg/dlength;
   if(nsteps<1)nsteps=1;
@@ -1166,14 +1174,13 @@ void IntegrateSmokeColors(float *integrated_smokecolor, float *xyzvert, float dl
   i_dlength = 1.0;
   blank_local=NULL;
   if(block_volsmoke==1)blank_local=meshi->c_iblank_cell;
-  VEC4EQCONS(integrated_smokecolor,0.0);
 #ifdef pp_SMOKE_LIGHT
   VEC3EQCONS(last_smoke_color,0.0);
   last_xi = 0.5;
 #endif
   tauhat=1.0;
   alphahat=0.0;
-  for(xi = 0.5;xi+0.0001<(float)nsteps;){
+  for(xi = 0.5;xi+0.0001<(float)nsteps*10;){
     float factor, alphai, scaled_intensity;
     int inobst;
 
