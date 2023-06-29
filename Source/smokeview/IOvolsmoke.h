@@ -2,6 +2,9 @@
 #define IOVOLSMOKE_H_DEFINED
 #define GPU_VOLframemax 1.5
 
+#ifdef pp_OPENVKL
+VKLDevice InitVKL(int *width);
+#endif
 EXTERNCPP void UnloadVolsmokeFrameAllMeshes(int framenum);
 EXTERNCPP void ComputeAllSmokecolors(void);
 EXTERNCPP void DrawSmoke3DGPUVol(void);

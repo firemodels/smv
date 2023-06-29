@@ -5,7 +5,6 @@
 #include <string.h>
 #include <math.h>
 #include <float.h>
-#include <openvkl/openvkl.h>
 #include GLUT_H
 
 #include "smokeviewvars.h"
@@ -68,11 +67,11 @@
 /* ----------------------- InitVKL ----------------------------- */
 
 #ifdef pp_OPENVKL
-void InitVKL(void){
+VKLDevice InitVKL(int *width){
   vklLoadModule("cpu_device");
   VKLDevice device = vklNewDevice("cpu");
-  int width = vklGetNativeSIMDWidth(device);
-  vklReleaseDevice(device);
+  *width = vklGetNativeSIMDWidth(device);
+  return device;
 }
 #endif
 
