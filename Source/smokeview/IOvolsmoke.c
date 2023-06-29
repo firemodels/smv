@@ -67,12 +67,14 @@
 
 /* ----------------------- InitVKL ----------------------------- */
 
+#ifdef pp_OPENVKL
 void InitVKL(void){
   vklLoadModule("cpu_device");
   VKLDevice device = vklNewDevice("cpu");
   int width = vklGetNativeSIMDWidth(device);
   vklReleaseDevice(device);
 }
+#endif
 
 /* ----------------------- GetScatterFraction ----------------------------- */
 
