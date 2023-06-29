@@ -7386,7 +7386,7 @@ int CompareLoadedSliceList( const void *arg1, const void *arg2 ){
   dir = slicei->idir - 1;
   position_i = slicei->xyz_min[dir];
   position_j = slicej->xyz_min[dir];
-  if(eye_position_fds[dir] < position_i){
+  if(eye_position_smv[dir] < position_i){
     if(position_i > position_j)return -1;
     if(position_i < position_j)return 1;
   }
@@ -8018,7 +8018,7 @@ void DrawSliceFrame(){
         blend_mode=1;
         glBlendEquation(GL_MAX);
       }
-      if(slice_opacity_adjustment==1)ComputeOpacityCorrections(slicemesh, eye_position_fds, slice_normal);
+      if(slice_opacity_adjustment==1)ComputeOpacityCorrections(slicemesh, eye_position_smv, slice_normal);
     }
     else{
       blend_mode = 0;
