@@ -1623,9 +1623,9 @@ void GetVolSmokeDir(float *mm){
 
   if(freeze_volsmoke == 1)return;
 
-  eye_position_fds[0] = -DOT3(mm + 0, mm + 12) / mscale[0];
-  eye_position_fds[1] = -DOT3(mm + 4, mm + 12) / mscale[1];
-  eye_position_fds[2] = -DOT3(mm + 8, mm + 12) / mscale[2];
+  eye_position_smv[0] = -DOT3(mm + 0, mm + 12) / mscale[0];
+  eye_position_smv[1] = -DOT3(mm + 4, mm + 12) / mscale[1];
+  eye_position_smv[2] = -DOT3(mm + 8, mm + 12) / mscale[2];
 
   for(j = 0;j<nmeshes;j++){
     meshdata *meshj;
@@ -1651,9 +1651,9 @@ void GetVolSmokeDir(float *mm){
 
     *inside = 0;
     if(
-      eye_position_fds[0]> x0&&eye_position_fds[0]<x1&&
-      eye_position_fds[1]>yy0&&eye_position_fds[1]<yy1&&
-      eye_position_fds[2]> z0&&eye_position_fds[2]<z1
+      eye_position_smv[0]> x0&&eye_position_smv[0]<x1&&
+      eye_position_smv[1]>yy0&&eye_position_smv[1]<yy1&&
+      eye_position_smv[2]> z0&&eye_position_smv[2]<z1
       ){
       for(i = -3;i <= 3;i++){
         if(i == 0)continue;
@@ -1710,7 +1710,7 @@ void GetVolSmokeDir(float *mm){
         ASSERT(FFALSE);
         break;
       }
-      VEC3DIFF(eyedir, eye_position_fds, eyedir);
+      VEC3DIFF(eyedir, eye_position_smv, eyedir);
       Normalize(eyedir, 3);
       cosdir = CLAMP(DOT3(eyedir, norm), -1.0, 1.0);
       cosdir = acos(cosdir)*RAD2DEG;
@@ -1788,9 +1788,9 @@ void GetVolSmokeDir(float *mm){
       vi->iwall = j;
       xyz = meshi->face_centers + facemap[j + 3];
 
-      dx = xyz[0] - eye_position_fds[0];
-      dy = xyz[1] - eye_position_fds[1];
-      dz = xyz[2] - eye_position_fds[2];
+      dx = xyz[0] - eye_position_smv[0];
+      dy = xyz[1] - eye_position_smv[1];
+      dz = xyz[2] - eye_position_smv[2];
       vi->dist2 = dx*dx + dy*dy + dz*dz;
       vi->xyz = xyz;
       vi++;
@@ -1826,9 +1826,9 @@ void GetSmokeDir(float *mm){
   int j;
   float dx, dy, dz;
 
-  eye_position_fds[0] = -DOT3(mm + 0, mm + 12) / mscale[0];
-  eye_position_fds[1] = -DOT3(mm + 4, mm + 12) / mscale[1];
-  eye_position_fds[2] = -DOT3(mm + 8, mm + 12) / mscale[2];
+  eye_position_smv[0] = -DOT3(mm + 0, mm + 12) / mscale[0];
+  eye_position_smv[1] = -DOT3(mm + 4, mm + 12) / mscale[1];
+  eye_position_smv[2] = -DOT3(mm + 8, mm + 12) / mscale[2];
 
   for(j = 0;j<nmeshes;j++){
     meshdata  *meshj;
@@ -1837,9 +1837,9 @@ void GetSmokeDir(float *mm){
     int iminangle, alphadir, minalphadir;
 
     meshj = meshinfo + j;
-    dx = meshj->boxmiddle_scaled[0] - eye_position_fds[0];
-    dy = meshj->boxmiddle_scaled[1] - eye_position_fds[1];
-    dz = meshj->boxmiddle_scaled[2] - eye_position_fds[2];
+    dx = meshj->boxmiddle_scaled[0] - eye_position_smv[0];
+    dy = meshj->boxmiddle_scaled[1] - eye_position_smv[1];
+    dz = meshj->boxmiddle_scaled[2] - eye_position_smv[2];
     meshj->eyedist = sqrt(dx*dx + dy*dy + dz*dz);
 
     minalphadir = ALPHA_X;
@@ -2072,9 +2072,9 @@ void GetZoneSmokeDir(float *mm){
   float cosdir;
   float angles[7];
 
-  eye_position_fds[0] = -(mm[0] * mm[12] + mm[1] * mm[13] + mm[2] * mm[14]) / mscale[0];
-  eye_position_fds[1] = -(mm[4] * mm[12] + mm[5] * mm[13] + mm[6] * mm[14]) / mscale[1];
-  eye_position_fds[2] = -(mm[8] * mm[12] + mm[9] * mm[13] + mm[10] * mm[14]) / mscale[2];
+  eye_position_smv[0] = -(mm[0] * mm[12] + mm[1] * mm[13] + mm[2] * mm[14]) / mscale[0];
+  eye_position_smv[1] = -(mm[4] * mm[12] + mm[5] * mm[13] + mm[6] * mm[14]) / mscale[1];
+  eye_position_smv[2] = -(mm[8] * mm[12] + mm[9] * mm[13] + mm[10] * mm[14]) / mscale[2];
 
   for(j = 0;j<nrooms;j++){
     roomdata *roomj;
@@ -2083,9 +2083,9 @@ void GetZoneSmokeDir(float *mm){
 
     roomj->zoneinside = 0;
     if(
-      eye_position_fds[0]>roomj->x0&&eye_position_fds[0]<roomj->x1&&
-      eye_position_fds[1]>roomj->y0&&eye_position_fds[1]<roomj->y1&&
-      eye_position_fds[2]>roomj->z0&&eye_position_fds[2]<roomj->z1
+      eye_position_smv[0]>roomj->x0&&eye_position_smv[0]<roomj->x1&&
+      eye_position_smv[1]>roomj->y0&&eye_position_smv[1]<roomj->y1&&
+      eye_position_smv[2]>roomj->z0&&eye_position_smv[2]<roomj->z1
       ){
       for(i = -3;i <= 3;i++){
         if(i == 0)continue;
@@ -2142,9 +2142,9 @@ void GetZoneSmokeDir(float *mm){
         ASSERT(FFALSE);
         break;
       }
-      eyedir[0] = eye_position_fds[0] - eyedir[0];
-      eyedir[1] = eye_position_fds[1] - eyedir[1];
-      eyedir[2] = eye_position_fds[2] - eyedir[2];
+      eyedir[0] = eye_position_smv[0] - eyedir[0];
+      eyedir[1] = eye_position_smv[1] - eyedir[1];
+      eyedir[2] = eye_position_smv[2] - eyedir[2];
       Normalize(eyedir, 3);
       cosdir = (eyedir[0] * norm[0] + eyedir[1] * norm[1] + eyedir[2] * norm[2]);
       if(cosdir>1.0)cosdir = 1.0;

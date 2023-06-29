@@ -1836,7 +1836,7 @@ SVEXTERN int SVDECL(ntimes_buffer, 0);
 
 SVEXTERN int cpuframe;
 
-SVEXTERN float eye_position_fds[3],xeyedir[3], yeyedir[3], zeyedir[3];
+SVEXTERN float eye_position_smv[3],xeyedir[3], yeyedir[3], zeyedir[3];
 //#ifdef INMAIN
 //  SVEXTERN float eyzeyeorig_OLD[3]={-1.000000, -1.000000, -1.000000};
 // #else
