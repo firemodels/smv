@@ -1243,7 +1243,6 @@ void IntegrateSmokeColors(float *integrated_smokecolor, float *xyzvert, float dl
       sc[0] /= maxval;
       sc[1] /= maxval;
       sc[2] /= maxval;
-      alphahat *= maxval;
     }
     alphahat = CLAMP(alphahat, 0.0, 1.0);
     sc[3]=alphahat;
