@@ -1851,9 +1851,9 @@ float GetZoneThick(int dir, roomdata *roomi, float xyz[3]){
   alpha_min = 100000.0;
   ylay = roomi->z0 + roomi->ylay;
 
-  dx = xyz[0] - eye_position_fds[0];
-  dy = xyz[1] - eye_position_fds[1];
-  dz = xyz[2] - eye_position_fds[2];
+  dx = xyz[0] - eye_position_smv[0];
+  dy = xyz[1] - eye_position_smv[1];
+  dz = xyz[2] - eye_position_smv[2];
   L = sqrt(dx*dx+dy*dy+dz*dz);
 
   alpha_ylay = (ylay - xyz[2])/dz;
@@ -1900,7 +1900,7 @@ float GetZoneThick(int dir, roomdata *roomi, float xyz[3]){
         }
       }
     }
-    if(eye_position_fds[2]>ylay&&xyz[2]>ylay){
+    if(eye_position_smv[2]>ylay&&xyz[2]>ylay){
       if(alpha_ylay>0.0&&alpha_ylay<alpha_min){
         factor_U=alpha_ylay/odu;
         factor_L=(alpha_min-alpha_ylay)/odl;
@@ -1910,15 +1910,15 @@ float GetZoneThick(int dir, roomdata *roomi, float xyz[3]){
         factor_L=0.0;
       }
     }
-    if(eye_position_fds[2]>ylay&&xyz[2]<=ylay){
+    if(eye_position_smv[2]>ylay&&xyz[2]<=ylay){
       factor_U=0.0;
       factor_L=alpha_min/odl;
     }
-    if(eye_position_fds[2]<=ylay&&xyz[2]>ylay){
+    if(eye_position_smv[2]<=ylay&&xyz[2]>ylay){
       factor_U=alpha_min/odu;
       factor_L=0.0;
     }
-    if(eye_position_fds[2]<=ylay&&xyz[2]<=ylay){
+    if(eye_position_smv[2]<=ylay&&xyz[2]<=ylay){
       if(alpha_ylay>0.0&&alpha_ylay<alpha_min){
         factor_U=(alpha_min-alpha_ylay)/odu;
         factor_L=alpha_ylay/odl;
@@ -1930,19 +1930,19 @@ float GetZoneThick(int dir, roomdata *roomi, float xyz[3]){
     }
   }
   else{
-    if(eye_position_fds[2]>ylay&&xyz[2]>ylay){
+    if(eye_position_smv[2]>ylay&&xyz[2]>ylay){
       factor_U=1.0/odu;
       factor_L=0.0;
     }
-    if(eye_position_fds[2]>ylay&&xyz[2]<=ylay){
+    if(eye_position_smv[2]>ylay&&xyz[2]<=ylay){
       factor_U=(1.0+alpha_ylay)/odu;
       factor_L=-alpha_ylay/odl;
     }
-    if(eye_position_fds[2]<=ylay&&xyz[2]>ylay){
+    if(eye_position_smv[2]<=ylay&&xyz[2]>ylay){
       factor_U=-alpha_ylay/odu;
       factor_L=(1.0+alpha_ylay)/odl;
     }
-    if(eye_position_fds[2]<=ylay&&xyz[2]<=ylay){
+    if(eye_position_smv[2]<=ylay&&xyz[2]<=ylay){
       factor_U=0.0;
       factor_L=1.0/odl;
     }
@@ -1962,7 +1962,7 @@ void DrawZoneSmokeGpu(roomdata *roomi){
   int iwall;
   float dx, dy, dz;
 
-  glUniform3f(GPUzone_eyepos,eye_position_fds[0],eye_position_fds[1],eye_position_fds[2]);
+  glUniform3f(GPUzone_eyepos,eye_position_smv[0],eye_position_smv[1],eye_position_smv[2]);
   glUniform1i(GPUzone_zoneinside,roomi->zoneinside);
   glUniform1f(GPUzone_xyzmaxdiff,xyzmaxdiff);
   glUniform3f(GPUzone_boxmin,roomi->x0,roomi->y0,roomi->z0);
