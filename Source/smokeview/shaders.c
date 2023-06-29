@@ -498,6 +498,7 @@ int SetVolSmokeShaders(){
   GPUvol_block_volsmoke = glGetUniformLocation(p_volsmoke,"block_volsmoke");
   GPUvol_dcell = glGetUniformLocation(p_volsmoke,"dcell");
   GPUvol_dcell3 = glGetUniformLocation(p_volsmoke,"dcell3");
+  GPUvol_slicetype = glGetUniformLocation(p_volsmoke, "slicetype");
   GPUvol_xyzmaxdiff = glGetUniformLocation(p_volsmoke,"xyzmaxdiff");
   GPUvol_gpu_vol_factor = glGetUniformLocation(p_volsmoke,"gpu_vol_factor");
   GPUvol_fire_opacity_factor = glGetUniformLocation(p_volsmoke,"fire_opacity_factor");
