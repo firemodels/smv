@@ -3,6 +3,7 @@ SMV_MAKE_OPTS=
 TEST=
 SMV_MPI=
 TESTFLAG=
+OPENVKL=openvkl
 if [ "`uname`" == "Darwin" ]; then
   GLUT=
   GLIBDIROPT=
@@ -82,6 +83,7 @@ export SMV_MAKE_OPTS
 export GLUT
 export TEST
 export SMV_MPI
+export OPENVKL
 if [ "$NOQUARTZ" != "" ]; then
   TESTFLAG="$TESTFLAG -D pp_NOQUARTZ"
   SMV_MAKE_OPTS="$SMV_MAKE_OPTS NOQUARTZ=\"\" "
