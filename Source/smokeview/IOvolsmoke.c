@@ -1061,10 +1061,6 @@ void IntegrateSmokeColors(float *integrated_smokecolor, float *xyzvert, float dl
   float xyzvals[3];
   char *blank_local;
   float xi, smoke_transparency, *smoke_color=NULL, smoke_light_fraction;
-  float i_dlength;
-#ifdef pp_SMOKE_LIGHT
-  float last_xi, last_smoke_color[3];
-#endif
   float tauhat,alphahat;
   meshdata *xyz_mesh=NULL;
 
@@ -1167,22 +1163,18 @@ void IntegrateSmokeColors(float *integrated_smokecolor, float *xyzvert, float dl
   VEC4EQCONS(integrated_smokecolor,0.0);
   if(distseg<0.001)return;
 
-  nsteps = distseg/dlength;
+  nsteps = 2*distseg/dlength;
   if(nsteps<1)nsteps=1;
   dlength=SCALE2FDS(distseg/(float)nsteps);
-  i_dlength = 1.0;
   blank_local=NULL;
   if(block_volsmoke==1)blank_local=meshi->c_iblank_cell;
-#ifdef pp_SMOKE_LIGHT
-  VEC3EQCONS(last_smoke_color,0.0);
-  last_xi = 0.5;
-#endif
   tauhat=1.0;
   alphahat=0.0;
-  for(xi = 0.5;xi+0.0001<(float)nsteps*10;){
+  for(i=0;i<nsteps;i++){
     float factor, alphai, scaled_intensity;
     int inobst;
 
+    xi = 0.5 + (float)i;
     factor = xi/(float)nsteps;
     xyz[0] = MIX(factor,vert_end[0],vert_beg[0]);
     xyz[1] = MIX(factor,vert_end[1],vert_beg[1]);
@@ -1202,15 +1194,6 @@ void IntegrateSmokeColors(float *integrated_smokecolor, float *xyzvert, float dl
       GetSmokeColor(&smoke_transparency,&smoke_color, &scaled_intensity, &smoke_light_fraction,
                          dlength, xyz, meshi, &inobst, blank_local);
     }
-#ifdef pp_SMOKE_LIGHT
-    last_xi = xi;
-#endif
-    xi+=i_dlength;
-#ifdef pp_SMOKE_LIGHT
-    if(smoke_color!=NULL){
-      VEC3EQ(last_smoke_color,smoke_color);
-    }
-#endif
     if(blank_local!=NULL&&inobst==1)break;
 
     alphai = 1.0 - smoke_transparency;
