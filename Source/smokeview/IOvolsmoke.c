@@ -198,7 +198,7 @@ void GetSmokeColor(float *smoke_tran, float **smoke_color_handle, float *scaled_
       }
     }
     if(temperature>global_temp_cutoff){
-    *  smoke_color_handle = rgb_volsmokecolormap+4*index;
+      * smoke_color_handle = rgb_volsmokecolormap+4*index;
     }
     else{
       *smoke_color_handle = GetColorPtr(black);
