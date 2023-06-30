@@ -617,7 +617,7 @@ extern "C" void Glui3dSmokeSetup(int main_window){
 
     glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_volsmoke_move, _("Auto freeze"), &autofreeze_volsmoke);
     CHECKBOX_freeze = glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_volsmoke_move, _("Freeze"), &freeze_volsmoke);
-    glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_volsmoke_move, _("Show data while moving scene (GPU)"), &show_volsmoke_moving);
+    glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_volsmoke_move, _("Show data while moving scene"), &show_volsmoke_moving);
 
     //*** compute
 
