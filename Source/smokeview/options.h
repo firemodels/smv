@@ -20,8 +20,6 @@
 //#define pp_COLOR_HIDE         // add checkbox to hide/unhide scene when editing a colorbar
 #define pp_COLOR_PLOT2D     // add option to plot CIELab distances
 
-//#define pp_SMOKE_LIGHT        // turn on smoke lighting
-
 //#define pp_BNDF               // merge geometry and structured boundary files in load menus
 
 //#define pp_DPRINT             // turn on debug print (file, line number)
