@@ -775,9 +775,9 @@ SVEXTERN char startup_lang_code[3];
   SVEXTERN int SVDECL(GPUnframes,0),SVDECL(MOTIONnframes,0);
 #endif
 SVEXTERN int SVDECL(mouse_down,0);
-SVEXTERN int SVDECL(show_volsmoke_moving,0);
+SVEXTERN int SVDECL(show_volsmoke_moving,1);
 SVEXTERN int SVDECL(freeze_volsmoke,0);
-SVEXTERN int SVDECL(autofreeze_volsmoke, ON);
+SVEXTERN int SVDECL(autofreeze_volsmoke, 0);
 
 SVEXTERN int SVDECL(glui_show_vector_slice, 1);
 SVEXTERN int SVDECL(glui_show_slice_shaded,1);
