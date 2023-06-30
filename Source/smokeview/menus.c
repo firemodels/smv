@@ -3020,7 +3020,7 @@ void LoadVolsmoke3DMenu(int value){
     }
   }
   else if(value == UNLOAD_ALL){  // unload all
-#ifdef pp_OPENVKL
+#ifdef pp_OPENVKLxxx
     if(vkl_device!=NULL){
       vklReleaseDevice(vkl_device);
       vkl_device=NULL;
@@ -3041,7 +3041,7 @@ void LoadVolsmoke3DMenu(int value){
     }
   }
   else if(value == LOAD_ALL){  // load all
-#ifdef pp_OPENVKL
+#ifdef pp_OPENVKLxxx
     if(vkl_device != NULL){
       vklReleaseDevice(vkl_device);
       vkl_device = NULL;
