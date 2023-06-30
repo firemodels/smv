@@ -3,7 +3,7 @@ SMV_MAKE_OPTS=
 TEST=
 SMV_MPI=
 TESTFLAG=
-OPENVKL=openvkl
+#OPENVKL=openvkl
 if [ "`uname`" == "Darwin" ]; then
   GLUT=
   GLIBDIROPT=

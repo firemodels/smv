@@ -10,7 +10,7 @@ set SMV_PROFILEFLAG=
 set SMV_PROFILESTRING=
 set setglut=
 set stopscript=0
-set OPENVKL=openvkl
+#set OPENVKL=openvkl
 
 :: parse command line arguments
 
