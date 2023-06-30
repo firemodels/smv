@@ -1,6 +1,10 @@
 #ifndef SMOKEVIEWVARS_H_DEFINED
 #define SMOKEVIEWVARS_H_DEFINED
 #include <time.h>
+#ifdef pp_OPENVKL
+#include <openvkl/openvkl.h>
+#endif
+
 
 #include "MALLOCC.h"
 #ifdef CPP
@@ -505,9 +509,6 @@ SVEXTERN float boxmin_global[3], boxmax_global[3], max_cell_length;
 SVEXTERN int SVDECL(update_boxbounds, 1);
 SVEXTERN int SVDECL(have_beam, 0), SVDECL(showbeam_as_line, 1), SVDECL(use_beamcolor,0), beam_color[3];
 SVEXTERN float SVDECL(beam_line_width, 4.0);
-#ifdef pp_SMOKE_LIGHT
-SVEXTERN int SVDECL(use_light, 0);
-#endif
 
 SVEXTERN float SVDECL(zone_hvac_diam, 0.05);
 SVEXTERN int SVDECL(setup_only, 0);
@@ -774,9 +775,9 @@ SVEXTERN char startup_lang_code[3];
   SVEXTERN int SVDECL(GPUnframes,0),SVDECL(MOTIONnframes,0);
 #endif
 SVEXTERN int SVDECL(mouse_down,0);
-SVEXTERN int SVDECL(show_volsmoke_moving,0);
+SVEXTERN int SVDECL(show_volsmoke_moving,1);
 SVEXTERN int SVDECL(freeze_volsmoke,0);
-SVEXTERN int SVDECL(autofreeze_volsmoke, ON);
+SVEXTERN int SVDECL(autofreeze_volsmoke, 0);
 
 SVEXTERN int SVDECL(glui_show_vector_slice, 1);
 SVEXTERN int SVDECL(glui_show_slice_shaded,1);
@@ -960,6 +961,10 @@ SVEXTERN int GPUvol_voltemp_offset;
 SVEXTERN int GPUvol_voltemp_factor;
 #endif
 
+#ifdef pp_OPENVKL
+SVEXTERN VKLDevice SVDECL(vkl_device, NULL);
+SVEXTERN int vkl_width;
+#endif
 SVEXTERN int SVDECL(vis_device_plot, 0);
 SVEXTERN int SVDECL(vis_hrr_plot, 0);
 SVEXTERN int SVDECL(vis_slice_plot, 0);

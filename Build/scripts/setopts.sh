@@ -3,6 +3,7 @@ SMV_MAKE_OPTS=
 TEST=
 SMV_MPI=
 TESTFLAG=
+OPENVKL=
 if [ "`uname`" == "Darwin" ]; then
   GLUT=
   GLIBDIROPT=
@@ -22,7 +23,7 @@ if [ "$BUILD_ALL" == "1" ]; then
   FULL_BUILD="[default]"
 fi
 TESTOPT=
-while getopts 'AfhiLmpqQrtT' OPTION
+while getopts 'AfhiLmpqQrtvT' OPTION
 do
 case $OPTION in
   A)
@@ -40,6 +41,7 @@ case $OPTION in
   echo "-L - rebuild all libraries"
   echo "-p - build a profiling version of smokeview"
   echo "-t - build a test version of smokeview"
+  echo "-v - build smokeview using the openvkl library"
   echo "-T - same as -t"
   exit
   ;;
@@ -62,6 +64,9 @@ case $OPTION in
   Q)
    DUMMY=1
   ;;
+  v)
+   OPENVKL=openvkl
+  ;;
   r)
   ;;
   t)
@@ -82,6 +87,7 @@ export SMV_MAKE_OPTS
 export GLUT
 export TEST
 export SMV_MPI
+export OPENVKL
 if [ "$NOQUARTZ" != "" ]; then
   TESTFLAG="$TESTFLAG -D pp_NOQUARTZ"
   SMV_MAKE_OPTS="$SMV_MAKE_OPTS NOQUARTZ=\"\" "

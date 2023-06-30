@@ -10,6 +10,7 @@ set SMV_PROFILEFLAG=
 set SMV_PROFILESTRING=
 set setglut=
 set stopscript=0
+set OPENVKL=
 
 :: parse command line arguments
 
@@ -58,6 +59,10 @@ goto eof
    set valid=1
    set inc=inc
  )
+ if /I "%1" EQU "-openvkl" (
+   set valid=1
+   set OPENVKL=openvkl
+ )
  if /I "%1" EQU "-profile" (
    set valid=1
    set SMV_PROFILEFLAG=-pg
@@ -96,6 +101,7 @@ echo -help     - display this message
 echo -icon     - ceate an icon
 echo -inc      - incremental build
 echo -release  - release version
+echo -openvkl  - build using openvkl library (for volume rendering)
 echo -test     - build a test version of smokeview
 exit /b 0
 

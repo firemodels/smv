@@ -40,10 +40,6 @@ GLUI_RadioGroup *RADIO_render=NULL;
 GLUI_RadioGroup *RADIO_skipframes=NULL;
 GLUI_RadioGroup *RADIO_smokesensors=NULL;
 GLUI_RadioGroup *RADIO_loadvol=NULL;
-#ifdef pp_SMOKE_LIGHT
-GLUI_RadioGroup *RADIO_light_type = NULL;
-GLUI_RadioGroup *RADIO_scatter_type_glui = NULL;
-#endif
 
 GLUI_Spinner *SPINNER_smoke_num=NULL;
 GLUI_Spinner *SPINNER_startframe=NULL;
@@ -80,10 +76,6 @@ GLUI_Spinner *SPINNER_smoke3d_smoke_green=NULL;
 GLUI_Spinner *SPINNER_smoke3d_smoke_blue=NULL;
 GLUI_Spinner *SPINNER_load_3dsmoke = NULL;
 GLUI_Spinner *SPINNER_load_hrrpuv = NULL;
-#ifdef pp_SMOKE_LIGHT
-GLUI_Spinner *SPINNER_light_xyz[3];
-GLUI_Spinner *SPINNER_light_color[3];
-#endif
 GLUI_Spinner *SPINNER_smoke_test_color[4];
 GLUI_Spinner *SPINNER_smoke_test_range = NULL;
 GLUI_Spinner *SPINNER_smoke_test_nslices = NULL;
@@ -120,9 +112,6 @@ GLUI_Checkbox *CHECKBOX_smokeGPU = NULL;
 GLUI_Checkbox *CHECKBOX_zlib = NULL;
 GLUI_Checkbox **CHECKBOX_meshvisptr = NULL;
 GLUI_Checkbox *CHECKBOX_meshvis = NULL;
-#ifdef pp_SMOKE_LIGHT
-GLUI_Checkbox *CHECKBOX_show_light_position_direction = NULL;
-#endif
 GLUI_Checkbox *CHECKBOX_edit_colormap=NULL;
 GLUI_Checkbox *CHECKBOX_plane_normal=NULL;
 
@@ -149,12 +138,6 @@ GLUI_Panel *PANEL_fire_rgb = NULL;
 GLUI_Panel *PANEL_smokefire_rgb = NULL;
 
 GLUI_Rollout *ROLLOUT_opacity = NULL;
-#ifdef pp_SMOKE_LIGHT
-GLUI_Rollout *ROLLOUT_scatter = NULL;
-GLUI_Rollout *ROLLOUT_light_position = NULL;
-GLUI_Rollout *ROLLOUT_light = NULL;
-GLUI_Rollout *ROLLOUT_light_color = NULL;
-#endif
 GLUI_Rollout *ROLLOUT_voldisplay = NULL;
 GLUI_Rollout *ROLLOUT_volsmoke_move = NULL;
 GLUI_Rollout *ROLLOUT_slicehrrpuv = NULL;
@@ -634,7 +617,7 @@ extern "C" void Glui3dSmokeSetup(int main_window){
 
     glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_volsmoke_move, _("Auto freeze"), &autofreeze_volsmoke);
     CHECKBOX_freeze = glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_volsmoke_move, _("Freeze"), &freeze_volsmoke);
-    glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_volsmoke_move, _("Show data while moving scene (GPU)"), &show_volsmoke_moving);
+    glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_volsmoke_move, _("Show data while moving scene"), &show_volsmoke_moving);
 
     //*** compute
 
@@ -664,52 +647,6 @@ extern "C" void Glui3dSmokeSetup(int main_window){
       Smoke3dCB(LOAD_COMPRESSED_DATA);
     }
     glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_volsmoke_load, _("Load data only at render times"), &load_at_rendertimes);
-
-    //*** light
-
-#ifdef pp_SMOKE_LIGHT
-    ROLLOUT_light = glui_3dsmoke->add_rollout_to_panel(ROLLOUT_volume, _("Light"), false, VOLSMOKE_LIGHT_ROLLOUT, VolSmokeRolloutCB);
-    INSERT_ROLLOUT(ROLLOUT_light, glui_3dsmoke);
-    ADDPROCINFO(volsmokeprocinfo, nvolsmokeprocinfo, ROLLOUT_light, VOLSMOKE_LIGHT_ROLLOUT, glui_3dsmoke);
-
-    ROLLOUT_light_position = glui_3dsmoke->add_rollout_to_panel(ROLLOUT_light, "position",false, LIGHT_POSITION_ROLLOUT, SublightRolloutCB);
-    INSERT_ROLLOUT(ROLLOUT_light_position, glui_3dsmoke);
-    ADDPROCINFO(sublightprocinfo, nsublightprocinfo, ROLLOUT_light_position, LIGHT_POSITION_ROLLOUT, glui_3dsmoke);
-
-    RADIO_light_type = glui_3dsmoke->add_radiogroup_to_panel(ROLLOUT_light_position,&light_type_glui);
-    glui_3dsmoke->add_radiobutton_to_group(RADIO_light_type,_("position"));
-    glui_3dsmoke->add_radiobutton_to_group(RADIO_light_type,_("direction"));
-    CHECKBOX_show_light_position_direction = glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_light_position, _("Show position/direction"), &show_light_position_direction);
-    SPINNER_light_xyz[0] = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_light_position, "x:", GLUI_SPINNER_FLOAT, xyz_light_glui,   LIGHT_XYZ, Smoke3dCB);
-    SPINNER_light_xyz[1] = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_light_position, "y:", GLUI_SPINNER_FLOAT, xyz_light_glui+1, LIGHT_XYZ, Smoke3dCB);
-    SPINNER_light_xyz[2] = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_light_position, "z:", GLUI_SPINNER_FLOAT, xyz_light_glui+2, LIGHT_XYZ, Smoke3dCB);
-    glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_light_position, _("Use light"), &use_light);
-    glui_3dsmoke->add_button_to_panel(ROLLOUT_light_position, _("Update"), LIGHT_UPDATE, Smoke3dCB);
-
-    ROLLOUT_light_color = glui_3dsmoke->add_rollout_to_panel(ROLLOUT_light, _("color/intensity"),false, LIGHT_COLOR_ROLLOUT, SublightRolloutCB);
-    INSERT_ROLLOUT(ROLLOUT_light_color, glui_3dsmoke);
-    ADDPROCINFO(sublightprocinfo, nsublightprocinfo, ROLLOUT_light_color, LIGHT_COLOR_ROLLOUT, glui_3dsmoke);
-
-    SPINNER_light_color[0] = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_light_color,   _("red:"), GLUI_SPINNER_INT, light_color);
-    SPINNER_light_color[1] = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_light_color, _("green:"), GLUI_SPINNER_INT, light_color+1);
-    SPINNER_light_color[2] = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_light_color,  _("blue:"), GLUI_SPINNER_INT, light_color+2);
-    SPINNER_light_color[0]->set_int_limits(0, 255);
-    SPINNER_light_color[1]->set_int_limits(0, 255);
-    SPINNER_light_color[2]->set_int_limits(0, 255);
-    SPINNER_light_intensity = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_light_color, _("intensity:"), GLUI_SPINNER_FLOAT, &light_intensity);
-    SPINNER_light_intensity->set_float_limits(0.0,1000.0);
-
-    ROLLOUT_scatter = glui_3dsmoke->add_rollout_to_panel(ROLLOUT_light, _("scatter"),false, LIGHT_SCATTER_ROLLOUT, SublightRolloutCB);
-    INSERT_ROLLOUT(ROLLOUT_scatter, glui_3dsmoke);
-    ADDPROCINFO(sublightprocinfo, nsublightprocinfo, ROLLOUT_scatter, LIGHT_SCATTER_ROLLOUT, glui_3dsmoke);
-
-    RADIO_scatter_type_glui = glui_3dsmoke->add_radiogroup_to_panel(ROLLOUT_scatter,&scatter_type_glui);
-    glui_3dsmoke->add_radiobutton_to_group(RADIO_scatter_type_glui,_("isotropic"));
-    glui_3dsmoke->add_radiobutton_to_group(RADIO_scatter_type_glui,"Henjey-Greenstein");
-    glui_3dsmoke->add_radiobutton_to_group(RADIO_scatter_type_glui,"Schlick");
-    SPINNER_scatter_param  = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_scatter,   _("param"), GLUI_SPINNER_FLOAT, &scatter_param);
-    SPINNER_scatter_param->set_float_limits(-1.0,1.0);
-#endif
 
     //*** generate images
 
