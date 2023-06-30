@@ -529,7 +529,7 @@ int GetFileListSize(const char *path, char *filter, int mode){
   if(path == NULL||filter==NULL)return maxfiles;
   dp = opendir(path);
   if(dp == NULL){
-    perror("opendir");
+    printf("***warning: the directory %s failed to open\n",path);
     return 0;
   }
   d_type = DT_REG;
@@ -616,7 +616,7 @@ int MakeFileList(const char *path, char *filter, int maxfiles, int sort_files, f
   }
   dp = opendir(path);
   if(dp == NULL){
-    perror("opendir");
+    printf("***warning: the directory %s failed to open\n",path);
     *filelist=NULL;
     return 0;
   }
