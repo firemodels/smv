@@ -528,10 +528,7 @@ int GetFileListSize(const char *path, char *filter, int mode){
 
   if(path == NULL||filter==NULL)return maxfiles;
   dp = opendir(path);
-  if(dp == NULL){
-    printf("***warning: the directory %s failed to open\n",path);
-    return 0;
-  }
+  if(dp == NULL)return 0;
   d_type = DT_REG;
   if(mode==DIR_MODE)d_type = DT_DIR;
   while( (entry = readdir(dp))!=NULL ){
@@ -615,11 +612,8 @@ int MakeFileList(const char *path, char *filter, int maxfiles, int sort_files, f
     return 0;
   }
   dp = opendir(path);
-  if(dp == NULL){
-    printf("***warning: the directory %s failed to open\n",path);
-    *filelist=NULL;
-    return 0;
-  }
+  *filelist=NULL;
+  if(dp == NULL)return 0;
   NewMemory((void **)&flist,maxfiles*sizeof(filelistdata));
   d_type = DT_REG;
   if(mode==DIR_MODE)d_type = DT_DIR;
