@@ -771,9 +771,9 @@ int PointInFrustum(float *xyz){
   return 1;
 }
 
-/* ------------------ PointInTriangle ------------------------ */
+/* ------------------ TriangleInFrustum ------------------------ */
 
-int PointInTriangle(float *v1, float *v2, float *v3){
+int TriangleInFrustum(float *v1, float *v2, float *v3){
   if(PointInFrustum(v1)==1)return 1;
   if(PointInFrustum(v2)==1)return 1;
   if(PointInFrustum(v3)==1)return 1;
