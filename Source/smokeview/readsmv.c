@@ -11323,6 +11323,7 @@ typedef struct {
       break;
     }
   }
+  if(ntotal_blockages > 250000)show_geom_boundingbox = SHOW_BOUNDING_BOX_MOUSE_DOWN;
 
 #ifdef pp_BNDF
   for(i = 0;i < npatchinfo;i++){
