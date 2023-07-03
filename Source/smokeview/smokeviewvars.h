@@ -80,9 +80,7 @@ SVEXTERN char slice_plot_filename[256];
 SVEXTERN char slice_plot_label[256];
 SVEXTERN int SVDECL(update_plot_label, 0);
 
-#ifdef pp_TERRAIN_SKIP
 SVEXTERN int SVDECL(terrain_skip, 1);
-#endif
 SVEXTERN int nsmoke3dtypes, smoke3d_other;
 SVEXTERN smoke3dtypedata SVDECL(*smoke3dtypes, NULL);
 

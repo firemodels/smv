@@ -1642,26 +1642,28 @@ void DrawTerrainOBSTTexture(terraindata *terri){
   nycell = terri->jbar;
   x = terri->xplt;
   y = terri->yplt;
-  for(j=0;j<terri->jbar;j++){
+  for(j=0;j<terri->jbar;j+=terrain_skip){
     int jp1;
     float ty,typ1;
     unsigned char *uc_zn1, *uc_zn2, *uc_zn3, *uc_zn4;
 
-    jp1 = j + 1;
+    jp1 = j + terrain_skip;
+    if(jp1>terri->jbar)jp1=terri->jbar;
     ty = (y[j]-ybar0ORIG)/(ybarORIG-ybar0ORIG);
-    typ1 = (y[j+1]-ybar0ORIG)/(ybarORIG-ybar0ORIG);
+    typ1 = (y[jp1]-ybar0ORIG)/(ybarORIG-ybar0ORIG);
 
-    for(i=0;i<terri->ibar;i++){
+    for(i=0;i<terri->ibar;i+=terrain_skip){
       float *zn1, *zn2, *zn3, *zn4;
       float zval1, zval2, zval3, zval4;
       int ip1;
       float tx,txp1;
       int skip123=0, skip134=0;
 
-      ip1 = i + 1;
+      ip1 = i + terrain_skip;
+      if(ip1>terri->ibar)ip1=terri->ibar;
 
       tx = (x[i]-xbar0ORIG)/(xbarORIG-xbar0ORIG);
-      txp1 = (x[i+1]-xbar0ORIG)/(xbarORIG-xbar0ORIG);
+      txp1 = (x[ip1]-xbar0ORIG)/(xbarORIG-xbar0ORIG);
 
       uc_zn1 = uc_znormal+ijnode2(i,j);
       zn1 = GetNormalVectorPtr(wui_sphereinfo, (unsigned int)(*uc_zn1));
@@ -1694,12 +1696,12 @@ void DrawTerrainOBSTTexture(terraindata *terri){
 
         glNormal3fv(zn2);
         glTexCoord2f(txp1,ty);
-        glVertex3f(x[i+1],y[j],zval2);
+        glVertex3f(x[ip1],y[j],zval2);
 
 
         glNormal3fv(zn3);
         glTexCoord2f(txp1,typ1);
-        glVertex3f(x[i+1],y[j+1],zval3);
+        glVertex3f(x[ip1],y[jp1],zval3);
       }
 
       if(skip134==0){
@@ -1709,11 +1711,11 @@ void DrawTerrainOBSTTexture(terraindata *terri){
 
         glNormal3fv(zn3);
         glTexCoord2f(txp1,typ1);
-        glVertex3f(x[i+1],y[j+1],zval3);
+        glVertex3f(x[ip1],y[jp1],zval3);
 
         glNormal3fv(zn4);
         glTexCoord2f(tx,typ1);
-        glVertex3f(x[i],y[j+1],zval4);
+        glVertex3f(x[i],y[jp1],zval4);
       }
 
       if(terrain_showonly_top==1){
@@ -1724,11 +1726,11 @@ void DrawTerrainOBSTTexture(terraindata *terri){
 
           glNormal3fv(zn4);
           glTexCoord2f(tx,typ1);
-          glVertex3f(x[i],y[j+1],zval4);
+          glVertex3f(x[i],y[jp1],zval4);
 
           glNormal3fv(zn3);
           glTexCoord2f(txp1,typ1);
-          glVertex3f(x[i+1],y[j+1],zval3);
+          glVertex3f(x[ip1],y[jp1],zval3);
         }
 
         if(skip123==0){
@@ -1738,11 +1740,11 @@ void DrawTerrainOBSTTexture(terraindata *terri){
 
           glNormal3fv(zn3);
           glTexCoord2f(txp1,typ1);
-          glVertex3f(x[i+1],y[j+1],zval3);
+          glVertex3f(x[ip1],y[jp1],zval3);
 
           glNormal3fv(zn2);
           glTexCoord2f(txp1,ty);
-          glVertex3f(x[i+1],y[j],zval2);
+          glVertex3f(x[ip1],y[j],zval2);
         }
       }
     }
