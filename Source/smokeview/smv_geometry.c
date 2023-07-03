@@ -782,26 +782,46 @@ int TriangleInFrustum(float *v1, float *v2, float *v3){
 
 /* ------------------ BoxInFrustum ------------------------ */
 
-int BoxInFrustum(float *xx, float *yy, float *zz){
+int BoxInFrustum(float *xx, float *yy, float *zz, int n){
   int i;
   float xyz[3];
+  float dx, dy, dz;
 
-  for(i=0;i<2;i++){
+  dx = (xx[1] - xx[0]) / ( float )(n - 1);
+  dy = (yy[1] - yy[0]) / ( float )(n - 1);
+  dz = (zz[1] - zz[0]) / ( float )(n - 1);
+
+  for(i=0;i<n;i++){
     int j;
 
-    xyz[0] = xx[i];
-    for(j=0;j<2;j++){
+    xyz[0] = xx[0]+ (float)i*dx;
+    for(j=0;j<n;j++){
       int k;
 
-      xyz[1] = yy[j];
-      for(k=0;k<2;k++){
-        xyz[2] = zz[k];
+      xyz[1] = yy[0]+ (float)j*dy;
+      for(k=0;k<n;k++){
+        xyz[2] = zz[0]+(float)k*dz;
         if(PointInFrustum(xyz)==1)return 1;
       }
     }
   }
   return 0;
 }
+
+/* ------------------ MeshInFrustum ------------------------ */
+
+int MeshInFrustum(meshdata *meshi){
+  float xx[2], yy[2], zz[2];
+  
+  xx[0] = meshi->boxmin_scaled[0];
+  xx[1] = meshi->boxmax_scaled[0];
+  yy[0] = meshi->boxmin_scaled[1];
+  yy[1] = meshi->boxmax_scaled[1];
+  zz[0] = meshi->boxmin_scaled[2];
+  zz[1] = meshi->boxmax_scaled[2];
+  return BoxInFrustum(xx,yy,zz,5);
+}
+
 /* ------------------ RectangleInFrustum ------------------------ */
 
 int RectangleInFrustum( float *x11, float *x12, float *x22, float *x21){

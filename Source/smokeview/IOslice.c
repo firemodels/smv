@@ -6079,6 +6079,7 @@ void DrawVolSliceTerrain(const slicedata *sd){
 
   if(sd->have_agl_data==0)return;
   meshi = meshinfo + sd->blocknumber;
+  if(meshi->in_frustum == 0)return;
   nycell = meshi->jbar;
 
   xplt = meshi->xplt_orig;

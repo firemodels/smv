@@ -2730,6 +2730,8 @@ void SetCullVis(void){
     meshdata *meshi;
 
     meshi = meshinfo + imesh;
+    meshi->in_frustum = MeshInFrustum(meshi);
+    ntotal -= meshi->in_frustum;
     for(iport=0;iport<meshi->ncullgeominfo;iport++){
       culldata *culli;
       float xx[2], yy[2], zz[2];
@@ -2741,7 +2743,7 @@ void SetCullVis(void){
       yy[1] = FDS2SMV_Y(culli->yend);
       zz[0] = FDS2SMV_Z(culli->zbeg);
       zz[1] = FDS2SMV_Z(culli->zend);
-      culli->vis = BoxInFrustum(xx,yy,zz);
+      culli->vis = BoxInFrustum(xx,yy,zz,2);
     }
   }
 }

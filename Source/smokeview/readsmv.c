@@ -886,6 +886,7 @@ void InitMesh(meshdata *meshi){
   for(i = 0;i < 6;i++){
     meshi->skip_nabors[i]=NULL;
   }
+  meshi->in_frustum = 1;
   meshi->imap = NULL;
   meshi->jmap = NULL;
   meshi->kmap = NULL;
