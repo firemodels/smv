@@ -518,10 +518,10 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 #define SLICE_TERRAIN     4
 #define SLICE_GEOM        6
 
-#define TERRAIN_3D         0
+#define TERRAIN_SURFACE    0
 #define TERRAIN_2D_STEPPED 1
 #define TERRAIN_2D_LINE    2
-#define TERRAIN_3D_MAP     3
+#define TERRAIN_IMAGE      3
 #define TERRAIN_HIDDEN     4
 #define TERRAIN_TOP        6
 

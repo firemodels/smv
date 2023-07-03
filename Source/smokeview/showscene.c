@@ -317,13 +317,13 @@ void ShowScene2(int mode){
 
       terri = terraininfo + i;
       switch(visTerrainType){
-      case TERRAIN_3D:
+      case TERRAIN_SURFACE:
         DrawTerrainOBST(terri, flag);
         break;
       case TERRAIN_2D_STEPPED:
       case TERRAIN_2D_LINE:
         break;
-      case TERRAIN_3D_MAP:
+      case TERRAIN_IMAGE:
         if(terrain_textures != NULL&&terrain_textures[iterrain_textures].loaded == 1){
           DrawTerrainOBSTTexture(terri);
         }
@@ -336,7 +336,7 @@ void ShowScene2(int mode){
         break;
       }
     }
-    if(visTerrainType==TERRAIN_3D_MAP||visTerrainType==TERRAIN_3D){
+    if(visTerrainType==TERRAIN_IMAGE||visTerrainType==TERRAIN_SURFACE){
       if(terrain_showonly_top==0){
         for(i = 0; i<nmeshes; i++){
           meshdata *meshi;

@@ -6936,8 +6936,8 @@ void GeometryMenu(int value){
     terrain_showonly_top = 1 - terrain_showonly_top;
     updatemenu = 1;
     break;
-  case 17+TERRAIN_3D:
-  case 17+TERRAIN_3D_MAP:
+  case 17+TERRAIN_SURFACE:
+  case 17+TERRAIN_IMAGE:
   case 17+TERRAIN_HIDDEN:
     visTerrainType = value-17;
     if(visTerrainType == TERRAIN_HIDDEN){
@@ -6952,7 +6952,7 @@ void GeometryMenu(int value){
       }
       BlockageMenu(visBLOCKHide);
     }
-    if(visTerrainType==TERRAIN_3D){
+    if(visTerrainType==TERRAIN_SURFACE){
       planar_terrain_slice=0;
     }
     else{
@@ -9225,11 +9225,11 @@ updatemenu=0;
   CREATEMENU(terrain_obst_showmenu, GeometryMenu);
   if(terrain_showonly_top==1)glutAddMenuEntry(_("*Show only top surface"), 17 + TERRAIN_TOP);
   if(terrain_showonly_top==0)glutAddMenuEntry(_("Show only top surface"),  17 + TERRAIN_TOP);
-  if(visTerrainType==TERRAIN_3D)glutAddMenuEntry(_("*3D surface"),17+TERRAIN_3D);
-  if(visTerrainType!=TERRAIN_3D)glutAddMenuEntry(_("3D surface"),17+TERRAIN_3D);
+  if(visTerrainType==TERRAIN_SURFACE)glutAddMenuEntry(_("*3D surface"),17+TERRAIN_SURFACE);
+  if(visTerrainType!=TERRAIN_SURFACE)glutAddMenuEntry(_("3D surface"),17+TERRAIN_SURFACE);
   if(terrain_textures!=NULL){ // &&terrain_texture->loaded==1
-    if(visTerrainType==TERRAIN_3D_MAP)glutAddMenuEntry(_("*Image"),17+TERRAIN_3D_MAP);
-    if(visTerrainType!=TERRAIN_3D_MAP)glutAddMenuEntry(_("Image"),17+TERRAIN_3D_MAP);
+    if(visTerrainType==TERRAIN_IMAGE)glutAddMenuEntry(_("*Image"),17+TERRAIN_IMAGE);
+    if(visTerrainType!=TERRAIN_IMAGE)glutAddMenuEntry(_("Image"),17+TERRAIN_IMAGE);
   }
   if(visTerrainType==TERRAIN_HIDDEN)glutAddMenuEntry(_("*Hidden"),17+TERRAIN_HIDDEN);
   if(visTerrainType!=TERRAIN_HIDDEN)glutAddMenuEntry(_("Hidden"),17+TERRAIN_HIDDEN);
