@@ -2731,7 +2731,6 @@ void SetCullVis(void){
 
     meshi = meshinfo + imesh;
     meshi->in_frustum = MeshInFrustum(meshi);
-    ntotal -= meshi->in_frustum;
     for(iport=0;iport<meshi->ncullgeominfo;iport++){
       culldata *culli;
       float xx[2], yy[2], zz[2];
