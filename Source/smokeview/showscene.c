@@ -298,24 +298,24 @@ void ShowScene2(int mode){
   if(visTerrainType != TERRAIN_HIDDEN&&nterraininfo>0&&ngeominfo==0 && geom_bounding_box_mousedown==0){
     int i;
 
-    //shaded 17 0
+    //shaded  17 0
     //stepped 18 1
     //line    19 2
     //texture 20 3
-    //hidden 20 4
+    //hidden  20 4
 
+    int flag;
+    if(terrain_showonly_top==1){
+      flag = TERRAIN_BOTH_SIDES;
+    }
+    else{
+      flag = TERRAIN_TOP_SIDE;
+    }
     CLIP_GEOMETRY;
     for(i = 0;i<nterraininfo;i++){
       terraindata *terri;
-      int flag;
 
       terri = terraininfo + i;
-      if(terrain_showonly_top==1){
-        flag = TERRAIN_BOTH_SIDES;
-      }
-      else{
-        flag = TERRAIN_TOP_SIDE;
-      }
       switch(visTerrainType){
       case TERRAIN_3D:
         DrawTerrainOBST(terri, flag);

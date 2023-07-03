@@ -1757,8 +1757,6 @@ void DrawTerrainOBSTTexture(terraindata *terri){
   DISABLE_LIGHTING;
 
   glPopMatrix();
-  //if(terrain_showonly_top==1)DrawTerrainOBST(terri, TERRAIN_BOTTOM_SIDE);
-
 }
 
 /* ------------------ GetTerrainSize ------------------------ */
