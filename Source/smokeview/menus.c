@@ -6149,7 +6149,6 @@ void BlockageMenu(int value){
   }
   visBLOCKold=value;
   updatemenu=1;
- // updatefaces=1;
   updatefacelists=1;
   updatehiddenfaces=1;
   GLUTPOSTREDISPLAY;

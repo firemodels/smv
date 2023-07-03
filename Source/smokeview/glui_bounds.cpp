@@ -3169,6 +3169,7 @@ GLUI_Spinner *SPINNER_iso_colors[4];
 GLUI_Spinner *SPINNER_iso_transparency;
 GLUI_Spinner *SPINNER_transparent_level = NULL;
 GLUI_Spinner *SPINNER_slice_skip = NULL;
+GLUI_Spinner *SPINNER_terrain_skip = NULL;
 GLUI_Spinner *SPINNER_line_contour_num=NULL;
 GLUI_Spinner *SPINNER_line_contour_width=NULL;
 GLUI_Spinner *SPINNER_line_contour_min=NULL;
@@ -5415,6 +5416,8 @@ extern "C" void GluiBoundsSetup(int main_window){
 
     }
     SPINNER_slice_skip = glui_bounds->add_spinner_to_panel(PANEL_slice_misc, "data skip", GLUI_SPINNER_INT, &slice_skip, SLICE_SKIP, SliceBoundCB);
+    SPINNER_terrain_skip = glui_bounds->add_spinner_to_panel(PANEL_slice_misc, "terrain skip", GLUI_SPINNER_INT, &terrain_skip);
+    SPINNER_terrain_skip->set_int_limits(1, 10);
     SliceBoundCB(SLICE_SKIP);
     glui_bounds->add_checkbox_to_panel(PANEL_slice_misc, _("Output data (press r)"), &output_slicedata);
     if(nfedinfo>0){
