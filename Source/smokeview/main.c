@@ -606,6 +606,9 @@ char *ProcessCommandLine(CommandlineArgs *args) {
         NewMemory((void **)&smokeview_bindir, len2 + 2);
         strcpy(smokeview_bindir, args->bindir);
         if(smokeview_bindir[len2 - 1] != dirseparator[0])strcat(smokeview_bindir, dirseparator);
+#ifdef pp_BINDIR
+        have_bindir_arg = 1;
+#endif
     }
     if(args->casedir){
         int len2;
@@ -671,6 +674,19 @@ int CheckSMVFile(char *file, char *subdir){
   fclose(stream);
   return 1;
 }
+
+/* ------------------ IsInstallBinDir ------------------------ */
+#ifdef pp_BINDIR
+int IsInstallBinDir(char *bindir){
+  char smvfile[1024];
+
+  if(bindir == NULL)return 0;
+  strcpy(smvfile, bindir);
+  strcat(smvfile, dirseparator);
+  strcat(smvfile, ".smokeview_bin");
+  return FileExistsOrig(smvfile);
+}
+#endif
 
 /* ------------------ main ------------------------ */
 
@@ -739,6 +755,58 @@ int main(int argc, char **argv){
   if(smokeview_bindir==NULL){
     smokeview_bindir = GetProgDir(progname, &smokeviewpath);
   }
+#ifdef pp_BINDIR
+  int valid_bindir;
+
+  valid_bindir = have_bindir_arg;
+  if(valid_bindir == 0&&smokeview_bindir!=NULL&&IsInstallBinDir(smokeview_bindir)==0){
+    char new_bindir[1024];
+
+    strcpy(new_bindir, smokeview_bindir);
+    strcat(new_bindir, dirseparator);
+    strcat(new_bindir, "..");
+    strcat(new_bindir, dirseparator);
+    strcat(new_bindir, "..");
+    strcat(new_bindir, dirseparator);
+    strcat(new_bindir, "..");
+    strcat(new_bindir, dirseparator);
+    strcat(new_bindir, "..");
+    strcat(new_bindir, dirseparator);
+    strcat(new_bindir, "bot");
+    strcat(new_bindir, dirseparator);
+    strcat(new_bindir, "Bundlebot");
+    strcat(new_bindir, dirseparator);
+    strcat(new_bindir, "smv");
+    strcat(new_bindir, dirseparator);
+    strcat(new_bindir, "for_bundle");
+    strcat(new_bindir, dirseparator);
+    if(IsInstallBinDir(new_bindir) == 1){
+      FreeMemory(smokeview_bindir);
+
+      CHDIR(new_bindir);
+      GETCWD(new_bindir, 1024);
+      NewMemory((void **)&smokeview_bindir, strlen(new_bindir)+2);
+      strcpy(smokeview_bindir, new_bindir);
+      valid_bindir = 1;
+    }
+  }
+#ifdef WIN32
+  if(valid_bindir == 0){
+    char new_bindir[1024];
+
+    strcpy(new_bindir, "C:\\Program Files\\firemodels\\SMV6");
+    if(IsInstallBinDir(new_bindir) == 1){
+      FreeMemory(smokeview_bindir);
+
+      CHDIR(new_bindir);
+      GETCWD(new_bindir, 1024);
+      NewMemory(( void ** )&smokeview_bindir, strlen(new_bindir) + 2);
+      strcpy(smokeview_bindir, new_bindir);
+      valid_bindir = 1;
+    }
+  }
+#endif
+#endif
 
   if(show_version==1 || smv_filename==NULL){
     PRINTVERSION("smokeview", argv[0]);

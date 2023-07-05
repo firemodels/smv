@@ -147,6 +147,25 @@ int InDomain(float *v1, float *v2, float *v3){
   return 0;                                        // center is outside
 }
 
+/* ------------------ HaveTerrainTexture ------------------------ */
+
+int HaveTerrainTexture(int *draw_surfaceptr){
+  int draw_texture = 0, draw_surface = 1;
+  int i;
+
+  for(i = 0; i < nterrain_textures; i++){
+    texturedata *texti;
+
+    texti = terrain_textures + i;
+    if(texti->loaded == 1 && texti->display == 1){
+      draw_texture = 1;
+      if(texti->is_transparent == 0)draw_surface = 0; // don't draw a surface if we are drawing a texture
+    }
+  }
+  if(draw_surfaceptr!=NULL)*draw_surfaceptr = draw_surface;
+  return draw_texture;
+}
+
 /* ------------------ DrawTerrainGeom ------------------------ */
 
 void DrawTerrainGeom(int option){
@@ -157,21 +176,13 @@ void DrawTerrainGeom(int option){
   int draw_surface = 1, draw_texture=0;
   int showgeom_inside_domain_local;
 
-  if(terrain_nindices<=0||use_cfaces==1)return;
+  draw_texture = HaveTerrainTexture(&draw_surface);
+  if(terrain_nindices<=0)return;
   if(show_geom_boundingbox==SHOW_BOUNDING_BOX_ALWAYS||geom_bounding_box_mousedown==1){
     DrawGeomBoundingBox(foregroundcolor);
     return;
   }
 
-  for(i = 0; i<nterrain_textures; i++){
-    texturedata *texti;
-
-    texti = terrain_textures+i;
-    if(texti->loaded==1&&texti->display==1){
-      draw_texture = 1;
-      if(texti->is_transparent==0)draw_surface = 0; // don't draw a surface if we are drawing a texture
-    }
-  }
 
   showgeom_inside_domain_local = showgeom_inside_domain;
   if(drawing_boundary_files==1)showgeom_inside_domain_local = 0; // hide terrain within FDS domain if drawing boundary files
