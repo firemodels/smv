@@ -854,6 +854,7 @@ EXTERNCPP void SortSlices(void);
 EXTERNCPP void DrawSortSlices(void);
 EXTERNCPP void DrawSortSlicesDebug(void);
 EXTERNCPP void UpdateSortSlices(void);
+EXTERNCPP int HaveTerrainTexture(int *draw_surfaceptr);
 
 EXTERNCPP void DrawSmoke3DVol(void);
 EXTERNCPP void GetDrawingParms(int *drawing_transparent, int *drawing_blockage_transparent, int *drawing_vent_transparent);
