@@ -4568,7 +4568,7 @@ void DrawCGeom(int flag, geomdata *cgeom){
   int i;
   geomdata *geomi;
 
-  if(visGeomTextures == 1)return;
+  if(HaveTerrainTexture(NULL) == 1)return;
   if(show_geom_boundingbox==SHOW_BOUNDING_BOX_ALWAYS||geom_bounding_box_mousedown==1){
     if(flag==DRAW_OPAQUE&&have_geom_triangles==1){
       DrawGeomBoundingBox(NULL);
