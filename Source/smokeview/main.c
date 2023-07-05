@@ -781,10 +781,14 @@ int main(int argc, char **argv){
     strcat(new_bindir, "for_bundle");
     strcat(new_bindir, dirseparator);
     if(IsInstallBinDir(new_bindir) == 1){
+      char savedir[1024];
+
       FreeMemory(smokeview_bindir);
 
+      GETCWD(savedir, 1024);
       CHDIR(new_bindir);
       GETCWD(new_bindir, 1024);
+      CHDIR(savedir);
       NewMemory((void **)&smokeview_bindir, strlen(new_bindir)+2);
       strcpy(smokeview_bindir, new_bindir);
       valid_bindir = 1;
@@ -796,10 +800,14 @@ int main(int argc, char **argv){
 
     strcpy(new_bindir, "C:\\Program Files\\firemodels\\SMV6");
     if(IsInstallBinDir(new_bindir) == 1){
+      char savedir[1024];
+
       FreeMemory(smokeview_bindir);
 
+      GETCWD(savedir, 1024);
       CHDIR(new_bindir);
       GETCWD(new_bindir, 1024);
+      CHDIR(savedir);
       NewMemory(( void ** )&smokeview_bindir, strlen(new_bindir) + 2);
       strcpy(smokeview_bindir, new_bindir);
       valid_bindir = 1;
