@@ -320,9 +320,6 @@ void ShowScene2(int mode){
       case TERRAIN_SURFACE:
         DrawTerrainOBST(terri, flag);
         break;
-      case TERRAIN_2D_STEPPED:
-      case TERRAIN_2D_LINE:
-        break;
       case TERRAIN_IMAGE:
         if(terrain_textures != NULL&&terrain_textures[iterrain_textures].loaded == 1){
           DrawTerrainOBSTTexture(terri);

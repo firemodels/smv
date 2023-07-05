@@ -1596,6 +1596,17 @@ void DialogMenu(int value){
     }
     UpdateTrainerOutline();
     break;
+  case DIALOG_TERRAIN:
+    showedit_dialog = 1 - showedit_dialog;
+    if(showedit_dialog == 1){
+      ShowGluiTerrain();
+      visBlocks = visBLOCKNormal;
+    }
+    if(showedit_dialog == 0){
+      HideGluiTerrain();
+    }
+    UpdateTrainerOutline();
+    break;
   case DIALOG_SHRINKALL:
     ShrinkDialogs();
     break;
@@ -6934,7 +6945,6 @@ void GeometryMenu(int value){
     break;
   case 17+TERRAIN_TOP:
     terrain_showonly_top = 1 - terrain_showonly_top;
-    updatemenu = 1;
     break;
   case 17+TERRAIN_SURFACE:
   case 17+TERRAIN_IMAGE:
@@ -11267,6 +11277,9 @@ updatemenu=0;
     glutAddMenuEntry(_("Examine geometry...  "), DIALOG_GEOMETRY);
   }
 #endif
+  if(nterraininfo>0&&ngeominfo==0){
+    glutAddMenuEntry(_("Terrain..."), DIALOG_TERRAIN);
+  }
   if(nhvacinfo > 0){
     glutAddMenuEntry(_("HVAC settings..."), DIALOG_HVAC);
   }

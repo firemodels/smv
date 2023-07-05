@@ -519,11 +519,9 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 #define SLICE_GEOM        6
 
 #define TERRAIN_SURFACE    0
-#define TERRAIN_2D_STEPPED 1
-#define TERRAIN_2D_LINE    2
-#define TERRAIN_IMAGE      3
-#define TERRAIN_HIDDEN     4
-#define TERRAIN_TOP        6
+#define TERRAIN_IMAGE      1
+#define TERRAIN_HIDDEN     2
+#define TERRAIN_TOP        3
 
 #define TERRAIN_TOP_SIDE      0
 #define TERRAIN_BOTTOM_SIDE   1
@@ -1063,6 +1061,7 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 #define DIALOG_MOVIE_BATCH 45
 #define DIALOG_SHRINKALL -3
 #define DIALOG_HVAC      47
+#define DIALOG_TERRAIN   48
 
 #define UNLOAD_LAST -2
 

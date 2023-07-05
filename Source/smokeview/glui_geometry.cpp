@@ -13,8 +13,9 @@
 #define UNSTRUCTURED_ROLLOUT   1
 #define IMMERSED_DIAGNOSTICS   2
 #define HVAC_ROLLOUT           3
+#define TERRAIN_ROLLOUT        4
 
-procdata  geomprocinfo[4];
+procdata  geomprocinfo[5];
 int      ngeomprocinfo = 0;
 
 #define XMIN_SPIN             20
@@ -60,6 +61,10 @@ int      ngeomprocinfo = 0;
 #define HVACDUCT_SET_BOUNDS    -21
 #define HVACNODE_SET_BOUNDS    -22
 
+#define TERRAIN_TYPE      0
+#define TERRAIN_TOP_ONLY  1
+
+GLUI_Checkbox *CHECKBOX_terrain_top_surface    = NULL;
 GLUI_Checkbox **CHECKBOX_hvac_show_networks    = NULL;
 GLUI_Checkbox **CHECKBOX_hvac_show_connections = NULL;
 GLUI_Checkbox *CHECKBOX_hvac_show_connection   = NULL;
@@ -83,6 +88,7 @@ GLUI_Checkbox *CHECKBOX_smooth_geom_normal = NULL;
 GLUI_Checkbox *CHECKBOX_show_texture_1dimage = NULL;
 GLUI_Checkbox *CHECKBOX_showonly_top = NULL;
 
+GLUI_RadioGroup *RADIO_terrain_type = NULL;
 GLUI_RadioGroup *RADIO_select_geom = NULL;
 GLUI_RadioGroup *RADIO_cface_type = NULL;
 GLUI_RadioGroup *RADIO_show_geom_boundingbox = NULL;
@@ -186,6 +192,7 @@ GLUI_Panel *PANEL_geom_show = NULL;
 GLUI_Rollout *ROLLOUT_hvac = NULL;
 GLUI_Rollout *ROLLOUT_structured=NULL;
 GLUI_Rollout *ROLLOUT_unstructured=NULL;
+GLUI_Rollout *ROLLOUT_terrain = NULL;
 
 GLUI_Spinner *SPINNER_face_factor=NULL;
 
@@ -1087,6 +1094,19 @@ extern "C" void GluiGeometrySetup(int main_window){
     BUTTON_reset_zbounds = glui_geometry->add_button_to_panel(PANEL_elevation_color, _("Reset zmin/zmax"), RESET_ZBOUNDS, VolumeCB);
   }
 
+  if(nterraininfo>0&&ngeominfo==0){
+    ROLLOUT_terrain = glui_geometry->add_rollout("Terrain", false, TERRAIN_ROLLOUT, GeomRolloutCB);
+    INSERT_ROLLOUT(ROLLOUT_terrain, glui_geometry);
+    ADDPROCINFO(geomprocinfo, ngeomprocinfo, ROLLOUT_terrain, TERRAIN_ROLLOUT, glui_geometry);
+
+    CHECKBOX_terrain_top_surface = glui_geometry->add_checkbox_to_panel(ROLLOUT_terrain, "Show only top surface", 
+      &terrain_showonly_top, TERRAIN_TOP_ONLY, TerrainCB);
+    RADIO_terrain_type = glui_geometry->add_radiogroup_to_panel(ROLLOUT_terrain, &visTerrainType, TERRAIN_TYPE, TerrainCB);
+    glui_geometry->add_radiobutton_to_group(RADIO_terrain_type, "3D surface");
+    glui_geometry->add_radiobutton_to_group(RADIO_terrain_type, "Image");
+    glui_geometry->add_radiobutton_to_group(RADIO_terrain_type, "Hidden");
+  }
+
   PANEL_geom_close = glui_geometry->add_panel("", GLUI_PANEL_NONE);
 
   glui_geometry->add_button_to_panel(PANEL_geom_close, _("Save settings"), SAVE_SETTINGS_GEOM, BlockeditDlgCB);
@@ -1099,6 +1119,24 @@ extern "C" void GluiGeometrySetup(int main_window){
 #endif
 
   glui_geometry->set_main_gfx_window( main_window );
+}
+
+/* ------------------ TerrainCB ------------------------ */
+
+extern "C" void TerrainCB(int var){
+  switch (var){
+    case TERRAIN_TYPE:
+      GeometryMenu(17+visTerrainType);
+      break;
+    case TERRAIN_TOP_ONLY:
+      terrain_showonly_top = 1 - terrain_showonly_top;
+      GeometryMenu(17+TERRAIN_TOP);
+      UpdateShowOnlyTop();
+      break;
+    default:
+    ASSERT(FFALSE);
+    break;
+  }
 }
 
 /* ------------------ VolumeCB ------------------------ */
@@ -1291,6 +1329,25 @@ extern "C" void ShowGluiGeometry(void){
       ROLLOUT_structured->open();
     }
   }
+}
+
+/* ------------------ ShowGluiTerrain ------------------------ */
+
+extern "C" void ShowGluiTerrain(void){
+  showedit_dialog = 1;
+  if(glui_geometry != NULL){
+    glui_geometry->show();
+    if(ROLLOUT_terrain != NULL){
+      ROLLOUT_terrain->open();
+    }
+  }
+}
+
+/* ------------------ HideGluiTerrain ------------------------ */
+
+extern "C" void HideGluiTerrain(void){
+  CloseRollouts(glui_geometry);
+  editwindow_status = CLOSE_WINDOW;
 }
 
 /* ------------------ UpdateBlockVals ------------------------ */
