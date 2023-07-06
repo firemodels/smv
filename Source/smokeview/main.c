@@ -123,8 +123,7 @@ char *ProcessCommandLine(CommandlineArgs *args) {
     SMV_EXIT(0);
   }
   if (args->print_version) {
-    DisplayVersionInfo("Smokeview ");
-    SMV_EXIT(0);
+    show_version = 1;
   }
   strcpy(SMVFILENAME, "");
   if (args->input_file != NULL) {
@@ -744,11 +743,6 @@ int main(int argc, char **argv){
 
   progname=argv[0];
 
-  if(smv_filename==NULL){
-    DisplayVersionInfo("Smokeview ");
-    SMV_EXIT(0);
-  }
-
   prog_fullpath = progname;
 #ifdef pp_LUA
   smokeview_bindir_abs=getprogdirabs(progname,&smokeviewpath);
@@ -817,6 +811,10 @@ int main(int argc, char **argv){
 #endif
 #endif
 
+  if(smv_filename == NULL){
+    DisplayVersionInfo("Smokeview ");
+    SMV_EXIT(0);
+  }
   if(show_version==1 || smv_filename==NULL){
     PRINTVERSION("smokeview", argv[0]);
     return 1;
