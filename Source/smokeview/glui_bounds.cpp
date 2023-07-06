@@ -53,6 +53,7 @@ int update_hist_bounds;
 GLUI_Panel *PANEL_toggle_cba = NULL;
 GLUI_Listbox *LISTBOX_colorbar_toggle_bound1 = NULL;
 GLUI_Listbox *LISTBOX_colorbar_toggle_bound2 = NULL;
+extern GLUI_Spinner *SPINNER_slice_skip2;
 
 /* ------------------ bounds_dialog class ------------------------ */
 
@@ -3169,7 +3170,6 @@ GLUI_Spinner *SPINNER_iso_colors[4];
 GLUI_Spinner *SPINNER_iso_transparency;
 GLUI_Spinner *SPINNER_transparent_level = NULL;
 GLUI_Spinner *SPINNER_slice_skip = NULL;
-GLUI_Spinner *SPINNER_terrain_skip = NULL;
 GLUI_Spinner *SPINNER_line_contour_num=NULL;
 GLUI_Spinner *SPINNER_line_contour_width=NULL;
 GLUI_Spinner *SPINNER_line_contour_min=NULL;
@@ -5416,8 +5416,6 @@ extern "C" void GluiBoundsSetup(int main_window){
 
     }
     SPINNER_slice_skip = glui_bounds->add_spinner_to_panel(PANEL_slice_misc, "data skip", GLUI_SPINNER_INT, &slice_skip, SLICE_SKIP, SliceBoundCB);
-    SPINNER_terrain_skip = glui_bounds->add_spinner_to_panel(PANEL_slice_misc, "terrain skip", GLUI_SPINNER_INT, &terrain_skip);
-    SPINNER_terrain_skip->set_int_limits(1, 10);
     SliceBoundCB(SLICE_SKIP);
     glui_bounds->add_checkbox_to_panel(PANEL_slice_misc, _("Output data (press r)"), &output_slicedata);
     if(nfedinfo>0){
@@ -6515,6 +6513,7 @@ extern "C" void SliceBoundCB(int var){
     case SLICE_SKIP:
       slice_skip = CLAMP(slice_skip,1,max_slice_skip);
       SPINNER_slice_skip->set_int_val(slice_skip);
+      if(SPINNER_slice_skip2!=NULL)SPINNER_slice_skip2->set_int_val(slice_skip);
       slice_skipx = slice_skip;
       slice_skipy = slice_skip;
       slice_skipz = slice_skip;

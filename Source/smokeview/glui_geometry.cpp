@@ -131,6 +131,8 @@ GLUI_Panel *PANEL_geom_close = NULL;
 GLUI_Panel *PANEL_geom_transparency = NULL;
 GLUI_Panel *PANEL_normals = NULL;
 
+GLUI_Spinner *SPINNER_terrain_skip        = NULL;
+GLUI_Spinner *SPINNER_slice_skip2         = NULL;
 GLUI_Spinner *SPINNER_geom_transparency   = NULL;
 GLUI_Spinner *SPINNER_hvac_duct_width     = NULL;
 GLUI_Spinner *SPINNER_hvac_node_size      = NULL;
@@ -1113,6 +1115,11 @@ extern "C" void GluiGeometrySetup(int main_window){
     glui_geometry->add_radiobutton_to_group(RADIO_terrain_type, "3D surface");
     glui_geometry->add_radiobutton_to_group(RADIO_terrain_type, "Image");
     glui_geometry->add_radiobutton_to_group(RADIO_terrain_type, "Hidden");
+    SPINNER_terrain_skip = glui_geometry->add_spinner_to_panel(ROLLOUT_terrain, "terrain skip", GLUI_SPINNER_INT, &terrain_skip);
+    SPINNER_terrain_skip->set_int_limits(1, 10);
+#define SLICE_SKIP 124
+    SPINNER_slice_skip2 = glui_geometry->add_spinner_to_panel(ROLLOUT_terrain, "slice data skip", GLUI_SPINNER_INT, &slice_skip, SLICE_SKIP, SliceBoundCB);
+    SliceBoundCB(SLICE_SKIP);
   }
 
   PANEL_geom_close = glui_geometry->add_panel("", GLUI_PANEL_NONE);
