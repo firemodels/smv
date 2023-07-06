@@ -157,16 +157,18 @@ char *ProcessCommandLine(CommandlineArgs *args) {
   }
   else{
 #ifdef WIN32
-    int openfile, filelength;
+    if(show_version == 0){
+      int openfile, filelength;
 
-    openfile=0;
-    filelength = 1024;
-    NewMemory((void **)&filename_local, (unsigned int)filelength);
-    OpenSMVFile(filename_local,filelength,&openfile);
-    if(openfile==1&&ResizeMemory((void **)&filename_local,strlen(filename_local)+1)!=0){
-    }
-    else{
-      FREEMEMORY(filename_local);
+      openfile = 0;
+      filelength = 1024;
+      NewMemory((void **)&filename_local, (unsigned int)filelength);
+      OpenSMVFile(filename_local, filelength, &openfile);
+      if(openfile == 1 && ResizeMemory((void **)&filename_local, strlen(filename_local) + 1) != 0){
+      }
+      else{
+        FREEMEMORY(filename_local);
+      }
     }
 #endif
     if(filename_local==NULL)return NULL;
@@ -735,7 +737,6 @@ int main(int argc, char **argv){
     return 1;
   }
   if(show_help==2){
-    printf("showing help 2\n");
     Usage("smokeview", HELP_ALL);
     return 1;
   }
