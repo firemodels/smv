@@ -49,10 +49,7 @@ CommandlineArgs ParseCommandlineNew(int argc, char **argv,
     } else if (strcmp(argv[i], "-volrender") == 0) {
       args.volrender = true;
     }
-    // We don't show the version if volrender is set? This is probably an
-    // unecesary hack
-    else if (strcmp(argv[i], "-volrender") != 0 &&
-             (strcmp(argv[i], "-version") == 0 || strcmp(argv[i], "-v") == 0)) {
+    else if (strcmp(argv[i], "-version") == 0 || strcmp(argv[i], "-v") == 0) {
       args.print_version = true;
     }
 #ifdef pp_OSX_HIGHRES
