@@ -251,5 +251,8 @@ void DisplayVersionInfo(char *progname){
   if(texturedir!=NULL){
     if(verbose_output==1)PRINTF("Texture directory: %s\n",texturedir);
   }
+  if(smokeview_bindir != NULL){
+    PRINTF("Bin directory    : %s\n", smokeview_bindir);
+  }
 }
 
