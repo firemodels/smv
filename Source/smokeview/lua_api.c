@@ -64,10 +64,9 @@ int ProgramSetupLua(lua_State *L, int argc, char **argv) {
   if (smokeview_bindir == NULL) {
     smokeview_bindir = GetProgDir(progname, &smokeviewpath);
   }
-
-  if (show_version == 1 || smv_filename == NULL) {
-    PRINTVERSION("smokeview", argv[0]);
-    return 1;
+  if(show_version == 1 || smv_filename == NULL){
+    DisplayVersionInfo("Smokeview ");
+    SMV_EXIT(0);
   }
   if (CheckSMVFile(smv_filename, smokeview_casedir) == 0) {
     SMV_EXIT(1);
