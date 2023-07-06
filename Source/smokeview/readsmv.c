@@ -7057,7 +7057,7 @@ int ReadSMV(bufferstreamdata *stream){
           visOtherVents=0;
         }
       }
-
+      update_terrain_type = 1;
       FGETS(buffer,255,stream);
       buff2 = TrimFront(buffer);
       TrimBack(buff2);

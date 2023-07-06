@@ -454,6 +454,14 @@ extern "C" void HVAC2Glui(int index){
   RADIO_hvac_show_filters->set_int_val(glui_hvac->show_filters);
 }
 
+/* ------------------ UpdateTerrainGlui ------------------------ */
+
+extern "C" void UpdateTerrainGlui(void){
+  if(CHECKBOX_terrain_top_surface!=NULL)CHECKBOX_terrain_top_surface->set_int_val(terrain_showonly_top);
+  if(CHECKBOX_showonly_top != NULL)CHECKBOX_showonly_top->set_int_val(terrain_showonly_top);
+  if(RADIO_terrain_type!=NULL)RADIO_terrain_type->set_int_val(visTerrainType);
+}
+
 /* ------------------ UpdateHVACVarLists ------------------------ */
 
 extern "C" void UpdateHVACVarLists(void){
@@ -1334,7 +1342,7 @@ extern "C" void ShowGluiGeometry(void){
 /* ------------------ ShowGluiTerrain ------------------------ */
 
 extern "C" void ShowGluiTerrain(void){
-  showedit_dialog = 1;
+  showterrain_dialog = 1;
   if(glui_geometry != NULL){
     glui_geometry->show();
     if(ROLLOUT_terrain != NULL){
@@ -1346,6 +1354,7 @@ extern "C" void ShowGluiTerrain(void){
 /* ------------------ HideGluiTerrain ------------------------ */
 
 extern "C" void HideGluiTerrain(void){
+  showterrain_dialog = 0;
   CloseRollouts(glui_geometry);
   editwindow_status = CLOSE_WINDOW;
 }

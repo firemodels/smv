@@ -1597,15 +1597,13 @@ void DialogMenu(int value){
     UpdateTrainerOutline();
     break;
   case DIALOG_TERRAIN:
-    showedit_dialog = 1 - showedit_dialog;
-    if(showedit_dialog == 1){
+    showterrain_dialog = 1 - showterrain_dialog;
+    if(showterrain_dialog == 1){
       ShowGluiTerrain();
-      visBlocks = visBLOCKNormal;
     }
-    if(showedit_dialog == 0){
+    else{
       HideGluiTerrain();
     }
-    UpdateTrainerOutline();
     break;
   case DIALOG_SHRINKALL:
     ShrinkDialogs();
@@ -6945,11 +6943,13 @@ void GeometryMenu(int value){
     break;
   case 17+TERRAIN_TOP:
     terrain_showonly_top = 1 - terrain_showonly_top;
+    UpdateTerrainGlui();
     break;
   case 17+TERRAIN_SURFACE:
   case 17+TERRAIN_IMAGE:
   case 17+TERRAIN_HIDDEN:
     visTerrainType = value-17;
+    UpdateTerrainGlui();
     if(visTerrainType == TERRAIN_HIDDEN){
       if(visOtherVents!=visOtherVentsSAVE){
         visOtherVents=visOtherVentsSAVE;
