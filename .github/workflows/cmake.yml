@@ -41,7 +41,7 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update
-          sudo apt-get install build-essential freeglut3-dev libx11-dev libxmu-dev libxi-dev
+          sudo apt-get install build-essential freeglut3-dev libx11-dev libxmu-dev libxi-dev libglew-dev libgd-dev liblua5.4-dev
       - name: set macos gcc
         if: runner.os == 'macOS'
         shell: bash
@@ -93,7 +93,7 @@ jobs:
         run: |
           yum -y install epel-release
           yum -y install cmake3
-          yum -y install make gcc-c++ mesa-libGL-devel glut-devel libjpeg-devel libpng-devel gd-devel glew-devel libXmu-devel libXi-devel
+          yum -y install make gcc-c++ mesa-libGL-devel glut-devel libjpeg-devel libpng-devel gd-devel glew-devel libXmu-devel libXi-devel lua-devel
           yum -y install wget unzip git
       - name: set gcc
         shell: bash
@@ -139,7 +139,7 @@ jobs:
         run: |
           yum -y install epel-release
           yum -y install cmake3
-          yum -y install make gcc-c++ mesa-libGL-devel glut-devel libjpeg-devel libpng-devel gd-devel glew-devel libXmu-devel libXi-devel
+          yum -y install make gcc-c++ mesa-libGL-devel glut-devel libjpeg-devel libpng-devel gd-devel glew-devel libXmu-devel libXi-devel lua-devel
           yum -y install wget unzip git
       - name: Add intel RPM repo
         run: |
@@ -238,7 +238,7 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update
-          sudo apt-get install build-essential freeglut3-dev libx11-dev libxmu-dev libxi-dev libgl1-mesa-dev
+          sudo apt-get install build-essential freeglut3-dev libx11-dev libxmu-dev libxi-dev libgl1-mesa-dev libglew-dev libgd-dev liblua5.4-dev
       - name: Build
         shell: bash
         run: |
