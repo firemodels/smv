@@ -1596,6 +1596,15 @@ void DialogMenu(int value){
     }
     UpdateTrainerOutline();
     break;
+  case DIALOG_TERRAIN:
+    showterrain_dialog = 1 - showterrain_dialog;
+    if(showterrain_dialog == 1){
+      ShowGluiTerrain();
+    }
+    else{
+      HideGluiTerrain();
+    }
+    break;
   case DIALOG_SHRINKALL:
     ShrinkDialogs();
     break;
@@ -5992,6 +6001,24 @@ void BlockageMenu(int value){
   if(solid_state<0)solid_state=visBlocks;
   if(outline_state<0)outline_state=OUTLINE_NONE;
   switch(value){
+    case GEOM_BOUNDING_BOX_ALWAYS:
+      if(show_geom_boundingbox==SHOW_BOUNDING_BOX_ALWAYS){
+        show_geom_boundingbox = SHOW_BOUNDING_BOX_NEVER;
+      }
+      else{
+        show_geom_boundingbox = SHOW_BOUNDING_BOX_ALWAYS;
+      }
+      UpdateGeomBoundingBox();
+      break;
+    case GEOM_BOUNDING_BOX_MOUSE_DOWN:
+      if(show_geom_boundingbox==SHOW_BOUNDING_BOX_MOUSE_DOWN){
+        show_geom_boundingbox = SHOW_BOUNDING_BOX_NEVER;
+      }
+      else{
+        show_geom_boundingbox = SHOW_BOUNDING_BOX_MOUSE_DOWN;
+      }
+      UpdateGeomBoundingBox();
+      break;
     case visBLOCKOutlineColor:
       outline_color_flag = 1 - outline_color_flag;
       updatefaces=1;
@@ -6131,7 +6158,6 @@ void BlockageMenu(int value){
   }
   visBLOCKold=value;
   updatemenu=1;
- // updatefaces=1;
   updatefacelists=1;
   updatehiddenfaces=1;
   GLUTPOSTREDISPLAY;
@@ -6917,12 +6943,13 @@ void GeometryMenu(int value){
     break;
   case 17+TERRAIN_TOP:
     terrain_showonly_top = 1 - terrain_showonly_top;
-    updatemenu = 1;
+    UpdateTerrainGlui();
     break;
-  case 17+TERRAIN_3D:
-  case 17+TERRAIN_3D_MAP:
+  case 17+TERRAIN_SURFACE:
+  case 17+TERRAIN_IMAGE:
   case 17+TERRAIN_HIDDEN:
     visTerrainType = value-17;
+    UpdateTerrainGlui();
     if(visTerrainType == TERRAIN_HIDDEN){
       if(visOtherVents!=visOtherVentsSAVE){
         visOtherVents=visOtherVentsSAVE;
@@ -6935,7 +6962,7 @@ void GeometryMenu(int value){
       }
       BlockageMenu(visBLOCKHide);
     }
-    if(visTerrainType==TERRAIN_3D){
+    if(visTerrainType==TERRAIN_SURFACE){
       planar_terrain_slice=0;
     }
     else{
@@ -8818,6 +8845,10 @@ updatemenu=0;
     glutAddMenuEntry(_("   Light faces"), visLightFaces);
   }
   glutAddMenuEntry("-",MENU_DUMMY);
+  if(show_geom_boundingbox == SHOW_BOUNDING_BOX_ALWAYS)glutAddMenuEntry(_("*bounding box(always)"), GEOM_BOUNDING_BOX_ALWAYS);
+  if(show_geom_boundingbox != SHOW_BOUNDING_BOX_ALWAYS)glutAddMenuEntry(_("bounding box(always)"), GEOM_BOUNDING_BOX_ALWAYS);
+  if(show_geom_boundingbox == SHOW_BOUNDING_BOX_MOUSE_DOWN)glutAddMenuEntry(_("*bounding box(mouse down)"), GEOM_BOUNDING_BOX_MOUSE_DOWN);
+  if(show_geom_boundingbox != SHOW_BOUNDING_BOX_MOUSE_DOWN)glutAddMenuEntry(_("bounding box(mouse down)"), GEOM_BOUNDING_BOX_MOUSE_DOWN);
   glutAddMenuEntry(_(" Outline color:"),MENU_DUMMY);
   if(outline_color_flag==1){
     glutAddMenuEntry(_("   use blockage"),visBLOCKOutlineColor);
@@ -9204,11 +9235,11 @@ updatemenu=0;
   CREATEMENU(terrain_obst_showmenu, GeometryMenu);
   if(terrain_showonly_top==1)glutAddMenuEntry(_("*Show only top surface"), 17 + TERRAIN_TOP);
   if(terrain_showonly_top==0)glutAddMenuEntry(_("Show only top surface"),  17 + TERRAIN_TOP);
-  if(visTerrainType==TERRAIN_3D)glutAddMenuEntry(_("*3D surface"),17+TERRAIN_3D);
-  if(visTerrainType!=TERRAIN_3D)glutAddMenuEntry(_("3D surface"),17+TERRAIN_3D);
+  if(visTerrainType==TERRAIN_SURFACE)glutAddMenuEntry(_("*3D surface"),17+TERRAIN_SURFACE);
+  if(visTerrainType!=TERRAIN_SURFACE)glutAddMenuEntry(_("3D surface"),17+TERRAIN_SURFACE);
   if(terrain_textures!=NULL){ // &&terrain_texture->loaded==1
-    if(visTerrainType==TERRAIN_3D_MAP)glutAddMenuEntry(_("*Image"),17+TERRAIN_3D_MAP);
-    if(visTerrainType!=TERRAIN_3D_MAP)glutAddMenuEntry(_("Image"),17+TERRAIN_3D_MAP);
+    if(visTerrainType==TERRAIN_IMAGE)glutAddMenuEntry(_("*Image"),17+TERRAIN_IMAGE);
+    if(visTerrainType!=TERRAIN_IMAGE)glutAddMenuEntry(_("Image"),17+TERRAIN_IMAGE);
   }
   if(visTerrainType==TERRAIN_HIDDEN)glutAddMenuEntry(_("*Hidden"),17+TERRAIN_HIDDEN);
   if(visTerrainType!=TERRAIN_HIDDEN)glutAddMenuEntry(_("Hidden"),17+TERRAIN_HIDDEN);
@@ -11246,6 +11277,9 @@ updatemenu=0;
     glutAddMenuEntry(_("Examine geometry...  "), DIALOG_GEOMETRY);
   }
 #endif
+  if(nterraininfo>0&&ngeominfo==0){
+    glutAddMenuEntry(_("Terrain..."), DIALOG_TERRAIN);
+  }
   if(nhvacinfo > 0){
     glutAddMenuEntry(_("HVAC settings..."), DIALOG_HVAC);
   }

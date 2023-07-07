@@ -1919,6 +1919,10 @@ void UpdateShowScene(void){
   have_fire  = HaveFireLoaded();
   have_smoke = HaveSootLoaded();
 
+  if(update_terrain_type == 1){
+    update_terrain_type = 0;
+    UpdateTerrainGlui();
+  }
   if(check_colorbar == 1){
     CheckCIE();
     check_colorbar++;

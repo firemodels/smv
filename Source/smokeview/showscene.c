@@ -258,7 +258,7 @@ void ShowScene2(int mode){
   /* ++++++++++++++++++++++++ draw blockages +++++++++++++++++++++++++ */
 
   CLIP_GEOMETRY;
-  if(geom_bounding_box_mousedown==0){
+  if(show_geom_boundingbox!=SHOW_BOUNDING_BOX_ALWAYS&&geom_bounding_box_mousedown==0){
     DrawBlockages(mode, DRAW_OPAQUE);
     SNIFF_ERRORS("DrawBlockages");
   }
@@ -298,32 +298,29 @@ void ShowScene2(int mode){
   if(visTerrainType != TERRAIN_HIDDEN&&nterraininfo>0&&ngeominfo==0 && geom_bounding_box_mousedown==0){
     int i;
 
-    //shaded 17 0
+    //shaded  17 0
     //stepped 18 1
     //line    19 2
     //texture 20 3
-    //hidden 20 4
+    //hidden  20 4
 
+    int flag;
+    if(terrain_showonly_top==1){
+      flag = TERRAIN_BOTH_SIDES;
+    }
+    else{
+      flag = TERRAIN_TOP_SIDE;
+    }
     CLIP_GEOMETRY;
     for(i = 0;i<nterraininfo;i++){
       terraindata *terri;
-      int flag;
 
       terri = terraininfo + i;
-      if(terrain_showonly_top==1){
-        flag = TERRAIN_BOTH_SIDES;
-      }
-      else{
-        flag = TERRAIN_TOP_SIDE;
-      }
       switch(visTerrainType){
-      case TERRAIN_3D:
+      case TERRAIN_SURFACE:
         DrawTerrainOBST(terri, flag);
         break;
-      case TERRAIN_2D_STEPPED:
-      case TERRAIN_2D_LINE:
-        break;
-      case TERRAIN_3D_MAP:
+      case TERRAIN_IMAGE:
         if(terrain_textures != NULL&&terrain_textures[iterrain_textures].loaded == 1){
           DrawTerrainOBSTTexture(terri);
         }
@@ -336,7 +333,7 @@ void ShowScene2(int mode){
         break;
       }
     }
-    if(visTerrainType==TERRAIN_3D_MAP||visTerrainType==TERRAIN_3D){
+    if(visTerrainType==TERRAIN_IMAGE||visTerrainType==TERRAIN_SURFACE){
       if(terrain_showonly_top==0){
         for(i = 0; i<nmeshes; i++){
           meshdata *meshi;
@@ -533,7 +530,7 @@ void ShowScene2(int mode){
   //  DrawDemo(20,20);
   //  DrawDemo2();
   CLIP_GEOMETRY;
-  if(geom_bounding_box_mousedown==0){
+  if(show_geom_boundingbox!=SHOW_BOUNDING_BOX_ALWAYS&&geom_bounding_box_mousedown==0){
     DrawBlockages(mode, DRAW_TRANSPARENT);
     SNIFF_ERRORS("after drawBlockages");
   }

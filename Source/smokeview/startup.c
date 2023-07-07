@@ -1890,7 +1890,6 @@ void InitVars(void){
   apertures[2]=60.;
   apertures[3]=75.;
   apertures[3]=90.;
-  planar_terrain_slice=0;
 
   zooms[0] = 0.25;
   zooms[1] = 0.5;

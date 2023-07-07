@@ -886,6 +886,7 @@ void InitMesh(meshdata *meshi){
   for(i = 0;i < 6;i++){
     meshi->skip_nabors[i]=NULL;
   }
+  meshi->in_frustum = 1;
   meshi->imap = NULL;
   meshi->jmap = NULL;
   meshi->kmap = NULL;
@@ -7056,7 +7057,7 @@ int ReadSMV(bufferstreamdata *stream){
           visOtherVents=0;
         }
       }
-
+      update_terrain_type = 1;
       FGETS(buffer,255,stream);
       buff2 = TrimFront(buffer);
       TrimBack(buff2);
@@ -11323,6 +11324,7 @@ typedef struct {
       break;
     }
   }
+  if(ntotal_blockages > 250000)show_geom_boundingbox = SHOW_BOUNDING_BOX_MOUSE_DOWN;
 
 #ifdef pp_BNDF
   for(i = 0;i < npatchinfo;i++){

@@ -80,9 +80,8 @@ SVEXTERN char slice_plot_filename[256];
 SVEXTERN char slice_plot_label[256];
 SVEXTERN int SVDECL(update_plot_label, 0);
 
-#ifdef pp_TERRAIN_SKIP
 SVEXTERN int SVDECL(terrain_skip, 1);
-#endif
+SVEXTERN int SVDECL(update_terrain_type, 0);
 SVEXTERN int nsmoke3dtypes, smoke3d_other;
 SVEXTERN smoke3dtypedata SVDECL(*smoke3dtypes, NULL);
 
@@ -1346,6 +1345,7 @@ SVEXTERN int SVDECL(p3dsurfacetype,SURFACE_SOLID);
 SVEXTERN int parttype;
 SVEXTERN int allinterior;
 SVEXTERN int SVDECL(showedit_dialog,0);
+SVEXTERN int SVDECL(showterrain_dialog, 0);
 SVEXTERN int SVDECL(showhvac_dialog, 0);
 SVEXTERN int SVDECL(showcolorbar_dialog,0);
 SVEXTERN int SVDECL(showtour_dialog,0),SVDECL(showtrainer_dialog,0);
@@ -1487,7 +1487,7 @@ SVEXTERN float linewidth, ventlinewidth, highlight_linewidth,solidlinewidth;
 SVEXTERN float SVDECL(sliceoffset_factor,0.1), SVDECL(ventoffset_factor,0.1);
 SVEXTERN int visBLOCKold;
 
-SVEXTERN int planar_terrain_slice;
+SVEXTERN int SVDECL(planar_terrain_slice,0);
 SVEXTERN int  SVDECL(nrgb, NRGB);
 SVEXTERN int nrgb_ini;
 SVEXTERN int nrgb2_ini;

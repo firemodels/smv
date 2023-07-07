@@ -53,6 +53,7 @@ int update_hist_bounds;
 GLUI_Panel *PANEL_toggle_cba = NULL;
 GLUI_Listbox *LISTBOX_colorbar_toggle_bound1 = NULL;
 GLUI_Listbox *LISTBOX_colorbar_toggle_bound2 = NULL;
+extern GLUI_Spinner *SPINNER_slice_skip2;
 
 /* ------------------ bounds_dialog class ------------------------ */
 
@@ -6512,6 +6513,7 @@ extern "C" void SliceBoundCB(int var){
     case SLICE_SKIP:
       slice_skip = CLAMP(slice_skip,1,max_slice_skip);
       SPINNER_slice_skip->set_int_val(slice_skip);
+      if(SPINNER_slice_skip2!=NULL)SPINNER_slice_skip2->set_int_val(slice_skip);
       slice_skipx = slice_skip;
       slice_skipy = slice_skip;
       slice_skipz = slice_skip;
