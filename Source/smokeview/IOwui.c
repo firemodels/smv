@@ -166,6 +166,30 @@ int HaveTerrainTexture(int *draw_surfaceptr){
   return draw_texture;
 }
 
+/* ------------------ GetNTerrainTexturesLoaded ------------------------ */
+
+int GetNTerrainTexturesLoaded(void){
+  int count;
+
+  count = 0;
+  for(ii = -1; ii<nterrain_textures; ii++){
+    float dz;
+    texturedata *texti;
+
+    if(ii==-1){
+      if(opaque_texture_index==-1)continue;
+      texti = terrain_textures+opaque_texture_index;
+    }
+    else{
+      if(ii==opaque_texture_index)continue;
+      texti = terrain_textures+ii;
+    }
+    if(texti->loaded==0||texti->display==0)continue;
+    count++;
+  }
+  return count;
+}
+
 /* ------------------ DrawTerrainGeom ------------------------ */
 
 void DrawTerrainGeom(int option){
@@ -550,7 +574,7 @@ void DrawTerrainGeom(int option){
     glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
     glEnable(GL_TEXTURE_2D);
 
-    int count = 1;
+    int count = 0;
     int is_transparent=0;
     TransparentOff();
     for(ii = -1; ii<nterrain_textures; ii++){
