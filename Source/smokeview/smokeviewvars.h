@@ -1350,6 +1350,7 @@ SVEXTERN int SVDECL(showhvac_dialog, 0);
 SVEXTERN int SVDECL(showcolorbar_dialog,0);
 SVEXTERN int SVDECL(showtour_dialog,0),SVDECL(showtrainer_dialog,0);
 SVEXTERN int SVDECL(showtours,0);
+SVEXTERN int SVDECL(large_case, 0);
 
 SVEXTERN float shooter_xyz[3], shooter_dxyz[3], shooter_uvw[3], SVDECL(shooterpointsize,4.0);
 SVEXTERN float shooter_velx, shooter_vely, shooter_velz, shooter_time, shooter_time_max;

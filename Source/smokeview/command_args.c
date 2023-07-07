@@ -271,6 +271,8 @@ CommandlineArgs ParseCommandlineNew(int argc, char **argv,
       args.noexit = true;
     } else if (strcmp(argv[i], "-setup") == 0) {
       args.setup = true;
+    } else if(strcmp(argv[i], "-large") == 0) {
+      args.large_case = true;
     } else if (strcmp(argv[i], "-bindir") == 0) {
       ++i;
       if (i < argc) {

@@ -1530,7 +1530,7 @@ void UpdateTriangles(int flag,int update){
         verti = trianglei->verts[2];
         verti->triangles[verti->itriangle++]=trianglei;
       }
-      SmoothGeomNormals(geomlisti,geomi->geomtype);
+      if(large_case==0)SmoothGeomNormals(geomlisti,geomi->geomtype);
     }
   }
 
@@ -1609,47 +1609,49 @@ void UpdateTriangles(int flag,int update){
 
         // average normals
 
-        for(iii = 0; iii<nsurface_verts; iii++){
-          int jjj;
-          vertdata *verti;
-          float *xyzi, *normi;
-          float avgnorm[3];
+        if(large_case==0){
+          for(iii = 0; iii < nsurface_verts; iii++){
+            int jjj;
+            vertdata *verti;
+            float *xyzi, *normi;
+            float avgnorm[3];
 
-          if(match_verts[iii]>=0)continue;
-          verti = surface_verts[iii];
-          xyzi = verti->xyz;
-          normi = verti->vert_norm;
-          avgnorm[0] = normi[0];
-          avgnorm[1] = normi[1];
-          avgnorm[2] = normi[2];
-          match_verts[iii] = iii;
-          for(jjj = iii+1; jjj<nsurface_verts; jjj++){
-            vertdata *vertj;
-            float *xyzj, *normj;
-
-            if(match_verts[jjj]>=0)continue;
-            vertj = surface_verts[jjj];
-            xyzj = vertj->xyz;
-            normj = vertj->vert_norm;
-#define POINTEPS 0.001
-            if(ABS(xyzi[0]-xyzj[0])<POINTEPS&&ABS(xyzi[1]-xyzj[1])<POINTEPS&&ABS(xyzi[2]-xyzj[2])<POINTEPS){
-              match_verts[jjj] = iii;
-              avgnorm[0] += normj[0];
-              avgnorm[1] += normj[1];
-              avgnorm[2] += normj[2];
-            }
-          }
-          ReduceToUnit(avgnorm);
-          for(jjj = iii; jjj<nsurface_verts; jjj++){
-            if(match_verts[jjj] == match_verts[iii]){
+            if(match_verts[iii] >= 0)continue;
+            verti = surface_verts[iii];
+            xyzi = verti->xyz;
+            normi = verti->vert_norm;
+            avgnorm[0] = normi[0];
+            avgnorm[1] = normi[1];
+            avgnorm[2] = normi[2];
+            match_verts[iii] = iii;
+            for(jjj = iii + 1; jjj < nsurface_verts; jjj++){
               vertdata *vertj;
-              float *normj;
+              float *xyzj, *normj;
 
+              if(match_verts[jjj] >= 0)continue;
               vertj = surface_verts[jjj];
+              xyzj = vertj->xyz;
               normj = vertj->vert_norm;
-              normj[0] = avgnorm[0];
-              normj[1] = avgnorm[1];
-              normj[2] = avgnorm[2];
+#define POINTEPS 0.001
+              if(ABS(xyzi[0] - xyzj[0]) < POINTEPS && ABS(xyzi[1] - xyzj[1]) < POINTEPS && ABS(xyzi[2] - xyzj[2]) < POINTEPS){
+                match_verts[jjj] = iii;
+                avgnorm[0] += normj[0];
+                avgnorm[1] += normj[1];
+                avgnorm[2] += normj[2];
+              }
+            }
+            ReduceToUnit(avgnorm);
+            for(jjj = iii; jjj < nsurface_verts; jjj++){
+              if(match_verts[jjj] == match_verts[iii]){
+                vertdata *vertj;
+                float *normj;
+
+                vertj = surface_verts[jjj];
+                normj = vertj->vert_norm;
+                normj[0] = avgnorm[0];
+                normj[1] = avgnorm[1];
+                normj[2] = avgnorm[2];
+              }
             }
           }
         }

@@ -17,6 +17,7 @@ typedef struct CommandlineArgs {
   /// and exit.
   bool print_version;
   bool update_bounds;
+  bool large_case;
   bool no_graphics;
   /// @brief calculate slice file parameters
   bool update_slice;

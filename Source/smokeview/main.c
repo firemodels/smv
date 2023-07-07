@@ -48,6 +48,7 @@ void Usage(char *prog,int option){
     PRINTF("%s\n", _(" -geominfo      - output information about geometry triangles"));
     PRINTF("%s\n", _(" -info            generate casename.slcf and casename.viewpoint files containing slice file and viewpiont info"));
     PRINTF("%s\n", _(" -lang xx       - where xx is de, es, fr, it for German, Spanish, French or Italian"));
+    PRINTF("%s\n", _(" -large         - take some shortcuts when reading in large geometry cases"));
     PRINTF("%s\n", _(" -make_movie    - open the movie generating dialog box"));
     PRINTF("%s\n", _(" -outline       - show geometry bound boxes instead of geometry"));
     PRINTF("%s\n", _(" -ng_ini        - non-graphics version of -ini."));
@@ -376,6 +377,9 @@ char *ProcessCommandLine(CommandlineArgs *args) {
     }
     if(args->no_graphics){
       use_graphics = 0;
+    }
+    if(args->large_case){
+      large_case = 1;
     }
     if(args->update_slice){
       use_graphics = 0;
