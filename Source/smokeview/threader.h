@@ -105,6 +105,10 @@
   #define JOIN_SAMPLE
 #endif
 
+#define JOIN_CSVFILES
+#define LOCK_CSV_LOAD_CPP
+#define UNLOCK_CSV_LOAD_CPP
+
 #define JOIN_PART_HIST
 #endif
 
