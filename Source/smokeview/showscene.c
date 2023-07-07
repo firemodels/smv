@@ -292,8 +292,8 @@ void ShowScene2(int mode){
 
   /* ++++++++++++++++++++++++ draw terrain +++++++++++++++++++++++++ */
 
-    CLIP_GEOMETRY;
-    DrawTerrainGeom(DRAW_OPAQUE);
+  CLIP_GEOMETRY;
+  DrawTerrainGeom(DRAW_OPAQUE);
 
   if(visTerrainType != TERRAIN_HIDDEN&&nterraininfo>0&&ngeominfo==0 && geom_bounding_box_mousedown==0){
     int i;
