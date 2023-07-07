@@ -169,20 +169,29 @@ int HaveTerrainTexture(int *draw_surfaceptr){
 /* ------------------ GetNTerrainTexturesLoaded ------------------------ */
 
 int GetNTerrainTexturesLoaded(void){
-  int count;
-
-  count = 0;
-  for(ii = -1; ii<nterrain_textures; ii++){
-    float dz;
+  int count, i, opaque_texture_index = -1;
+  
+  for(i = 0; i < nterrain_textures; i++){
     texturedata *texti;
 
-    if(ii==-1){
+    texti = terrain_textures + i;
+    if(texti->loaded == 1 && texti->display == 1 && texti->is_transparent == 0){
+      opaque_texture_index = i;
+      break;
+    }
+  }
+
+  count = 0;
+  for(i = -1; i<nterrain_textures; i++){
+    texturedata *texti;
+
+    if(i==-1){
       if(opaque_texture_index==-1)continue;
       texti = terrain_textures+opaque_texture_index;
     }
     else{
-      if(ii==opaque_texture_index)continue;
-      texti = terrain_textures+ii;
+      if(i==opaque_texture_index)continue;
+      texti = terrain_textures+i;
     }
     if(texti->loaded==0||texti->display==0)continue;
     count++;
