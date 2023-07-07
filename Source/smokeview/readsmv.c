@@ -11596,7 +11596,7 @@ typedef struct {
   radius_windrose = 0.2*xyzmaxdiff;
   PRINT_TIMER(timer_readsmv, "InitVolRender");
 
-  ClassifyAllGeomMT();
+  if(large_case==0)ClassifyAllGeomMT();
 
   PRINT_TIMER(timer_readsmv, "null");
   UpdateTriangles(GEOM_STATIC,GEOM_UPDATE_ALL);
