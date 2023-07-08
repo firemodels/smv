@@ -94,6 +94,11 @@ local _view = {
             return smvlib.set_color2bar_colors(#colors, colors)
         end
     },
+    window = {
+        size = function(width, height)
+            smvlib.setwindowsize(width, height)
+        end
+    },
     load = function(case)
     end
 }
@@ -102,7 +107,7 @@ local view_mt = {
     __index = function(t, k)
         if type(_view[k]) == "function" then
             return _view[k]
-        elseif k == "render" or k == "bounds" then
+        elseif k == "render" or k == "bounds" or k == "window" then
                 return _view[k]
         else
             return _view[k].get()

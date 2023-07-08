@@ -317,7 +317,7 @@ if (LUA)
         Source/smvluacore/unload.lua Source/smvluacore/constants.lua
         Source/smvluacore/gnuplot.lua Source/smvluacore/plot.lua
         Source/smvluacore/pl3d.lua Source/smvluacore/json.lua
-        Source/smvluacore/camera.lua Source/smvluacore/window.lua
+        Source/smvluacore/camera.lua
     )
     install(
         FILES
@@ -330,7 +330,7 @@ if (LUA)
         Source/smvluacore/unload.lua Source/smvluacore/constants.lua
         Source/smvluacore/gnuplot.lua Source/smvluacore/plot.lua
         Source/smvluacore/pl3d.lua Source/smvluacore/json.lua
-        Source/smvluacore/camera.lua Source/smvluacore/window.lua
+        Source/smvluacore/camera.lua
         DESTINATION ${CMAKE_INSTALL_DATADIR}/smokeview/scripts
     )
     if (VENDOR_LFS)

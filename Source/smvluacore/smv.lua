@@ -9,7 +9,6 @@ smv.render = require("render")
 smv.view = require("view")
 smv.tour = require("tour")
 smv.camera = require("camera")
-smv.window = require("window")
 smv.exit = smvlib.exit
 smv.yieldscript = smvlib.yieldscript
 
