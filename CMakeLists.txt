@@ -331,7 +331,7 @@ if (LUA)
         Source/smvluacore/gnuplot.lua Source/smvluacore/plot.lua
         Source/smvluacore/pl3d.lua Source/smvluacore/json.lua
         Source/smvluacore/camera.lua Source/smvluacore/window.lua
-        DESTINATION ${CMAKE_INSTALL_DATADIR}/smokeview
+        DESTINATION ${CMAKE_INSTALL_DATADIR}/smokeview/scripts
     )
     if (VENDOR_LFS)
         add_subdirectory(Source/lfs)

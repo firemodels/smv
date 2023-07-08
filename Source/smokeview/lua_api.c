@@ -570,6 +570,19 @@ int lua_get_global_times(lua_State *L) {
   return 1;
 }
 
+/// @brief Given a frame number return the time.
+/// @param L The lua interpreter
+/// @return Number of stack items left on stack.
+int lua_get_global_time(lua_State *L) {
+  int frame_number = lua_tonumber(L, 1);
+  if (frame_number >= 0 && frame_number < nglobal_times) {
+    lua_pushnumber(L, global_times[frame_number]);
+  } else {
+    lua_pushnil(L);
+  }
+  return 1;
+}
+
 /// @brief Get the number of (global) frames available to smokeview.
 /// @param L
 /// @return
@@ -5490,6 +5503,7 @@ static luaL_Reg const smvlib[] = {
     {"clear_title_lines", lua_clear_title_lines},
 
     {"get_nglobal_times", lua_get_nglobal_times},
+    {"get_global_time", lua_get_global_time},
     {"get_npartinfo", lua_get_npartinfo},
 
     {"get_slice", lua_get_slice},

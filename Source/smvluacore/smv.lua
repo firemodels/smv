@@ -75,6 +75,16 @@ function smv.load_default()
         return camera
     end)
     rawset(case, "unload", require("unload"))
+    rawset(case, "global_times", {})
+    setmetatable(case.global_times, {
+        -- get method
+        __index = function(t, k)
+            return smvlib.get_global_time(k-1)
+        end,
+        -- set method
+        __newindex = function(t, k, v)
+        end
+    })
     return smv, smv.view, case
 end
 

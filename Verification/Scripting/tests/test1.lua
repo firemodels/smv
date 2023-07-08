@@ -551,13 +551,13 @@ test("no loaded file tests", function()
             assert(window.width == 1234, "get does not match set")
         end)
     end)
-    test("view.framenumber", function()
+    test("view.frame", function()
         local x = 33
-        test("set", function() view.framenumber = x end)
-        test("get", function() return view.framenumber end)
+        test("set", function() view.frame = x end)
+        test("get", function() return view.frame end)
         test("equal", function()
-            assert(view.framenumber == x, "get does not match set\n get is: "
-                .. tostring(view.framenumber) .. "\n  set is: "
+            assert(view.frame == x, "get does not match set\n get is: "
+                .. tostring(view.frame) .. "\n  set is: "
                 .. tostring(x))
         end)
     end)

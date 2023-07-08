@@ -75,6 +75,7 @@ Validation/*/FDS_Output_Files/*.csv
 # Build directory for CMake
 cbuild/
 dist/
+dist-debug/
 
 # Local config for some editors
 .vscode/

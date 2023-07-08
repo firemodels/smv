@@ -56,7 +56,7 @@ local _view = {
             return smvlib.set_version_info_visibility(v)
         end
     },
-    framenumber = {
+    frame = {
         get = function()
             return smvlib.getframe()
         end,
@@ -100,7 +100,6 @@ local _view = {
 local view_mt = {
     -- get method
     __index = function(t, k)
-        print("view k",k)
         if type(_view[k]) == "function" then
             return _view[k]
         elseif k == "render" or k == "bounds" then
