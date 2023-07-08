@@ -7247,18 +7247,44 @@ void InitObjectDefs(void){
 
   svofile_exists = 0;
 
+  // There are 5 places to retrieve object definitions from:
+  //
+  //   1. A file within the same directory as the smokeview executable named
+  //      "objects.svo".
+  //   2. A file in the current directory named "objects.svo".
+  //   3. A file in the current directory named "${fdsprefix}.svo".
+  //   4. A file pointed to by SMOKEVIEW_OBJECT_DEFS_PATH.
+  //   5. A file pointed to be envar SMOKEVIEW_OBJECT_DEFS.
+  //
+  // Last definition wins.
+
+  // Read "objects.svo" from bin dir
   if(smokeview_bindir!=NULL){
     strcpy(objectfile,smokeview_bindir);
     strcat(objectfile,"objects.svo");
     ReadObjectDefs(objectfile);
   }
 
+  // Read "objects.svo" from the current directory.
   strcpy(objectfile,"objects.svo");
   ReadObjectDefs(objectfile);
 
+  // Read "${fdsprefix}.svo" from the current directory
   strcpy(objectfile,fdsprefix);
   strcat(objectfile,".svo");
   ReadObjectDefs(objectfile);
+
+#ifdef SMOKEVIEW_OBJECT_DEFS_PATH
+  // Read objects file pointed to be macro SMOKEVIEW_OBJECT_DEFS_PATH. Useful
+  // when install paths differ per platform.
+  ReadObjectDefs(SMOKEVIEW_OBJECT_DEFS_PATH);
+#endif
+
+  // Read objects file from the envar SMOKEVIEW_OBJECT_DEFS
+  char *envar_object_path = getenv("SMOKEVIEW_OBJECT_DEFS");
+  if (envar_object_path != NULL) {
+    ReadObjectDefs(envar_object_path);
+  }
 
   InitAvatar();
 
