@@ -22,6 +22,8 @@ local _view = {
             return smvlib.setrenderdir(v)
         end
     },
+    render = require("render"),
+    bounds = require("bounds"),
     show_chid = {
         get = function()
             return smvlib.get_chid_visibility()
@@ -98,10 +100,11 @@ local _view = {
 local view_mt = {
     -- get method
     __index = function(t, k)
+        print("view k",k)
         if type(_view[k]) == "function" then
             return _view[k]
-            -- elseif type(_view[k]) == "table" then
-            --       return _view[k]
+        elseif k == "render" or k == "bounds" then
+                return _view[k]
         else
             return _view[k].get()
         end

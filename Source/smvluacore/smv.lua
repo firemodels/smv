@@ -74,6 +74,7 @@ function smv.load_default()
         camera.zAngle.elev = 0.0
         return camera
     end)
+    rawset(case, "unload", require("unload"))
     return smv, smv.view, case
 end
 
