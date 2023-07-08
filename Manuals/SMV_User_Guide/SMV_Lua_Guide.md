@@ -2,12 +2,15 @@
 
 ## Overview
 
-There are two scripting engines within Smokeview that allow it to be
-programmatically controlled. This allows for analysis such as rendering of
-visualisations and post-processing to be performed automatically and
-reproducibly. This guide does not cover the functionality of Smokeview itself,
-only how to access that functionalilty programmatically, as well as any
-additional features provided by the Lua engine.
+There are two scripting engines within Smokeview: the default scripting engine
+(SSF) and the Lua scripting engine, which is only available when Smokeview is
+built with certain flags.
+
+Both engines allow for analysis such as rendering of visualisations and
+post-processing to be performed automatically and reproducibly. This guide does
+not cover the functionality of Smokeview itself, only how to access that
+functionalilty programmatically, as well as any additional features provided by
+the Lua engine.
 
 The Lua engine is designed to post-process all data produced by FDS (and also
 CFAST) and is not limited to what is visually represented by Smokeview.
@@ -17,37 +20,124 @@ use Lua as a configuration file format.
 
 ## Getting Started
 
-There are three important concepts/objects in Lua scripts:
+When opening a Smokeview case a Lua script can optionally be passed to
+smokeview. E.g.:
 
-- **Instance:** The instance of smokeview.
-- **View:** The rendering/viewing item. Usually this is a window,
-  but could be any framebuffer device. This controls how data is displayed. If
-  no data is being displayed this might not exist.
-- **Case:** The simulation data itself. This holds all of the
-  information about the model and provides access to the data.
+```sh
+smokview couch.fds --luascript ../post-process.lua --killscript
+```
 
-The Lua scripting within smokeview is structured in this way to allow for
-flexibility and forwards compatibility. Currently, each of the three items above
-can only be instantiated all at once (and is controlled mostly from the way
-smokeview is started). This is shown below using the `load_default`
-function.
+The `--killscript` paramater causes Smokeview to exit if the script encounters
+an error. It is not possible to access Lua scripts via the GUI.
 
-First we load the smokeview Lua library, then the three items above.This loads
-the single smokeview instance that is executing this script, the current window,
-and the case that has already been loaded.
+Generally, each Lua script will start the same:
 
 ```lua
     -- Load the smokeview library.
     local smv = require("smv")
     -- Load a case into smokeview. load_default loads the case specified on the
-    -- commandline. instance is not likely to be needed much in these contexts.
+    -- commandline.
     local instance, view, case = smv.load_default()
 ```
 
+In the code above there are four key objects (tables in Lua parlance):
+
+  - **Smokeview Library:** This is what gives as access to all of the code of
+    Smokeview. Generally it is only used to call `load_default`, after which the
+    next three objects are used.
+  - **Instance:** This is the running instance of Smokeview itself. The control
+    of the program itself is via this object. Currently the most common use case
+    is being able to call `instance.exit()` to end the script and exit
+    Smokeview.
+  - **View:** The rendering/viewing object. Usually this is a window, but could
+    be another output like a framebuffer device. Its primary role is to control
+    how data is displayed. If no data is being displayed this might not exist.
+  - **Case:** The simulation data itself. This holds all of the
+    information about the model and provides access to the data.
+
+The Lua scripting within Smokeview is structured in this way to allow for
+flexibility and forwards compatibility. Currently, each of the three non-library
+objects above can only be instantiated all at once (and is controlled mostly
+from the way smokeview is started). This is the above example using the
+`load_default` function.
+
+Now that we have loaded the case and we are showing a window, we need to load
+some data that we will render, which in this case will be a temperature slice.
+The `case` object contains all of the information about the slices, but it
+doesn't have any of the data loaded, that still sits on disk.
+
+To load data from disk into the case object we use the `case.load` functions. Thankfully we've given our temperature slice an `ID='tempz'` parameter so we can simply do this:
+
+```lua
+case.load.namedslice("tempz")
+```
+
+By default this will also show this data in the rendering window.
+
+Next we need to select the right frame to render. Now that the data is loaded we
+can get the rendering window to show whichever frame we choose and we want to
+render the data at 100 s.
+
+```lua
+view.time = 100
+```
+
+This will set the time to frame which is closest to 100 s. Next we set the
+viewpoint:
+
+```lua
+-- Show the model from the top down.
+view.camera.from_z_max()
+```
+
+Then we render. While a default output filename will be generated, it is
+normally good practice to set a specific name within the script. The render
+function takes a name as its first argument, but also accepts formatting
+arguments (as per the lua `print` function) so we can add the time of the data
+to the filename
+
+```lua
+view.render("Temperature - 2 m AFFL - %.0fs", view.time)
+```
+
+And we have successfully rendered our temperature slice to a PNG file. The whole
+script together is as follows:
+
+```lua
+local smv = require("smv")
+local instance, view, case = smv.load_default()
+case.load.namedslice("tempz")
+view.time = 100
+view.camera.from_z_max()
+view.render("Temperature - 2 m AFFL - %.0fs", view.time)
+```
+
+
 ## Controlling the Window and View
 
-Window specific control is done via the `window` table. To set the size
-of the window use the `window.size(width,height)` command.
+The example above rendered the desired data, but only with everything at the
+default settings. It's quite likely that we want to adjust how the data is
+displayed before we render it.
+
+```lua
+-- We're going to render in greyscale, so let's set the colorbar to
+-- "black->white" preset.
+view.colorbar.preset = "black->white"
+-- Set the window size to 800×500
+view.window.size(800, 500)
+-- Show the CHID of the model
+view.show_chid = true
+-- We just want to show some slice data in isolation, so let's turn of the
+--- display of all the geometry itself  (outlines, blockages, surfaces, and
+-- devices).
+view.outlines.hide_all()
+view.blockages.hide_all()
+view.surfaces.hide_all()
+view.devices.hide_all()
+```
+
+Window specific control is done via the `view.window` table. To set the size
+of the window use the `view.window.size(width,height)` command.
 
 The rest of the view control is done via the `view` table. This
 doesn't control any of the content of the model or data being viewed, but
@@ -178,6 +268,7 @@ Note that the various cameras are not managed internally by the Smokeview camera
 mechanism when using this technique, and are just stored as Lua variables
 containing the data necessary to set up the cameras.
 
+
 ### Colour
 
 The `view.color` table includes a number of options governing colour
@@ -197,6 +288,7 @@ There are a large number of view options in Smokeview, most of which are
 included in the `view` table. All view options that can be controlled via the
 menus or `.ini` config files are available. Here a few of the more common
 options:
+
 
 ## Data Loading
 
@@ -263,11 +355,11 @@ view.render()
 -- Render to '$RENDERDIR/testimage.png'
 view.render('testimage')
 -- Render to to a file with the time appended.
-view.render("test image at %.2f s", view.time)
+view.render("test image at %.2f s (#%d)", view.time, view.frame)
 ```
 
 The directory to which Smokeview renders images can also be retrieved or
-modified via the `render.dir` variable.
+modified via the `view.render.dir` variable.
 
 ```lua
 -- Print the current render directory to stdout.
@@ -288,39 +380,42 @@ table match the MESH indices (i.e. from 1). For example, if we want to look at
 the what meshes we have in our mesh we could use the following script:
 
 ```lua
-    print(string.format("CHID: %s", case.chid))
-    print(string.format("----------------------------------------------------------------"))
-    print(string.format("#\t|\tMeshId.\t|\t# Cells\t|\tI-J-K"))
-    print(string.format("----------------------------------------------------------------"))
-    local totalCells = 0
-    for k,mesh in ipairs(case.meshes) do
-        local nCells = mesh.ibar * mesh.jbar * mesh.kbar
-        totalCells = totalCells + nCells
-        print(string.format("%d\t|\t%s\t|\t%d\t|\t%d-%d-%d", k, mesh.label, nCells,
-                            mesh.ibar, mesh.jbar, mesh.kbar))
-    end
-    print(string.format("----------------------------------------------------------------"))
-    print(string.format("Total\t|\t    \t|\t%d\t|", totalCells))
-    print(string.format("----------------------------------------------------------------"))
+local smv = require("smv")
+local instance, view, case = smv.load_default()
+print(string.format("CHID: %s", case.chid))
+print(string.format("----------------------------------------------------------------"))
+print(string.format("#\t|\tMeshId.\t|\t# Cells\t|\tI-J-K"))
+print(string.format("----------------------------------------------------------------"))
+local totalCells = 0
+for k,mesh in ipairs(case.meshes) do
+    local nCells = mesh.ibar * mesh.jbar * mesh.kbar
+    totalCells = totalCells + nCells
+    print(string.format("%d\t|\t%s\t|\t%d\t|\t%d-%d-%d", k, mesh.label, nCells,
+                        mesh.ibar, mesh.jbar, mesh.kbar))
+end
+print(string.format("----------------------------------------------------------------"))
+print(string.format("Total\t|\t    \t|\t%d\t|", totalCells))
+print(string.format("----------------------------------------------------------------"))
+instance.exit()
 ```
 
 An example result of this script might be:
 
 ```
-    CHID: ExampleModel
-    ----------------------------------------------------------------
-    #       |       MeshId. |       # Cells |       I-J-K
-    ----------------------------------------------------------------
-    1       |       Mesh02  |       275808  |       102-52-52
-    2       |       Mesh03  |       102752  |       38-52-52
-    3       |       Mesh04  |       65520   |       63-40-26
-    4       |       Mesh05  |       70434   |       63-43-26
-    5       |       Mesh06  |       75166   |       49-59-26
-    6       |       Mesh07  |       308672  |       106-56-52
-    7       |       Mesh08  |       110656  |       38-56-52
-    ----------------------------------------------------------------
-    Total   |               |       1009008 |
-    ----------------------------------------------------------------
+CHID: ExampleModel
+----------------------------------------------------------------
+#       |       MeshId. |       # Cells |       I-J-K
+----------------------------------------------------------------
+1       |       Mesh02  |       275808  |       102-52-52
+2       |       Mesh03  |       102752  |       38-52-52
+3       |       Mesh04  |       65520   |       63-40-26
+4       |       Mesh05  |       70434   |       63-43-26
+5       |       Mesh06  |       75166   |       49-59-26
+6       |       Mesh07  |       308672  |       106-56-52
+7       |       Mesh08  |       110656  |       38-56-52
+----------------------------------------------------------------
+Total   |               |       1009008 |
+----------------------------------------------------------------
 ```
 
 Information on slices is stored in the `case.slices` table, and the
@@ -348,14 +443,11 @@ local hrrDV = case.csvs['hrr'].vectors['HRR']
 plot.DV(plotDir, hrrDV, "HRR")
 ```
 
-This code accesses the CHID_hrr.csv file (the `case.csvs['hrr']` part) and takes
-the 'HRR' vector from that file (the `.vectors['HRR']` part), and then plots it
-using the funciton plotDV. The CSV API assumes that the first vector of every
-CSV file is the 'x' vector, which for FDS is usualy Time.
+This code accesses the CHID\_hrr.csv file (the `case.csvs['hrr']` part) and
+takes the 'HRR' vector from that file (the `.vectors['HRR']` part), and then
+plots it using the funciton plotDV. The CSV API assumes that the first vector of
+every CSV file is the 'x' vector, which for FDS is usualy Time.
 
-The plotDV funciton is not currently included by default with Smokeview in order
-to not push a particular plotting library, but as the Lua engine executes a full
-programming language, any plotting software can be called, with the Lua engine
-providing the relevant data.
+By default the plot library will use gnuplot if it is available on your system.
 
 As full programming engine all kinds of other post processing can occur.
