@@ -3222,12 +3222,6 @@ int set_zaxisangles(float a, float b, float c) {
   return 0;
 }
 
-// *** 3D SMOKE INFO ***
-int set_adjustalpha(int v) {
-  adjustalphaflag = v;
-  return 0;
-} // ADJUSTALPHA
-
 int set_colorbartype(int type, const char *label) {
   update_colorbartype = 1;
   colorbartype = type;

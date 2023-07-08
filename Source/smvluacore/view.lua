@@ -1,5 +1,6 @@
 --- @module 'view'
 local view = { colorbar = {}, blockages = {}, color = {}, titlebox = {}, surfaces = {}, devices = {}, outline = {} }
+view.camera = require("camera")
 local _view = {
     -- colorbar = {
     --     get = function()
@@ -21,6 +22,8 @@ local _view = {
             return smvlib.setrenderdir(v)
         end
     },
+    render = require("render"),
+    bounds = require("bounds"),
     show_chid = {
         get = function()
             return smvlib.get_chid_visibility()
@@ -53,7 +56,7 @@ local _view = {
             return smvlib.set_version_info_visibility(v)
         end
     },
-    framenumber = {
+    frame = {
         get = function()
             return smvlib.getframe()
         end,
@@ -91,6 +94,11 @@ local _view = {
             return smvlib.set_color2bar_colors(#colors, colors)
         end
     },
+    window = {
+        size = function(width, height)
+            smvlib.setwindowsize(width, height)
+        end
+    },
     load = function(case)
     end
 }
@@ -99,8 +107,8 @@ local view_mt = {
     __index = function(t, k)
         if type(_view[k]) == "function" then
             return _view[k]
-            -- elseif type(_view[k]) == "table" then
-            --       return _view[k]
+        elseif k == "render" or k == "bounds" or k == "window" then
+                return _view[k]
         else
             return _view[k].get()
         end

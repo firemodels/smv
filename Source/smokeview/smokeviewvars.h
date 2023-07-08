@@ -1739,17 +1739,9 @@ SVEXTERN char SVDECL(*smokeview_bindir,NULL);
 SVEXTERN int SVDECL(have_bindir_arg, 0);
 #endif
 SVEXTERN char SVDECL(*smokeview_casedir, NULL);
-#ifdef pp_LUA
-SVEXTERN char SVDECL(*smokeview_bindir_abs,NULL);
-SVEXTERN int  SVDECL(adjustalphaflag, 3);
-#endif
 SVEXTERN int SVDECL(update_vectorskip, 0);
 SVEXTERN int SVDECL(smoke_offaxis, 0), SVDECL(smoke_adjust, 1);
 SVEXTERN scriptfiledata first_scriptfile, last_scriptfile, SVDECL(*default_script,NULL);
-#ifdef pp_LUA
-SVEXTERN luascriptfiledata first_luascriptfile, last_luascriptfile, SVDECL(*default_luascript,NULL);
-SVEXTERN int SVDECL(luascript_loaded,0);
-#endif
 SVEXTERN scriptdata SVDECL(*scriptinfo,NULL), SVDECL(*current_script_command,NULL);
 SVEXTERN char SVDECL(*script_dir_path,NULL), SVDECL(*script_htmldir_path, NULL);
 SVEXTERN int SVDECL(nscriptinfo,0);
@@ -1759,6 +1751,7 @@ SVEXTERN int SVDECL(runhtmlscript, 0);
 #ifdef pp_LUA
 SVEXTERN int SVDECL(runluascript,0);
 SVEXTERN int SVDECL(exit_on_script_crash,0);
+SVEXTERN char SVDECL(*smokeview_bindir_abs,NULL);
 #endif
 #ifdef INMAIN
 SVEXTERN float slice_xyz[3]={0.0,0.0,0.0}, slice_dxyz[3] = {0.0, 0.0, 0.0};

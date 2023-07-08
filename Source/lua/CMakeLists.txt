@@ -84,9 +84,9 @@ if(LUA_BUILD_BINARY)
     if (UNIX AND NOT(EMSCRIPTEN))
         target_link_libraries(lua_exe PUBLIC ${LIBM})
     endif()
+    set_target_properties(lua_exe PROPERTIES OUTPUT_NAME lua)
     install(
         TARGETS lua_exe
-        RENAME lua
         DESTINATION ${CMAKE_INSTALL_BINDIR}
     )
 endif()

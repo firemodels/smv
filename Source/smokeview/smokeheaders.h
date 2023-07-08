@@ -644,9 +644,6 @@ EXTERNCPP int RunScriptCommand(scriptdata *script_command);
 EXTERNCPP void DoScriptHtml(void);
 EXTERNCPP int  CompileScript(char *scriptfile);
 EXTERNCPP scriptfiledata *InsertScriptFile(char *file);
-#ifdef pp_LUA
-EXTERNCPP luascriptfiledata *insert_luascriptfile(char *file);
-#endif
 EXTERNCPP char *GetIniFileName(int id);
 EXTERNCPP char *GetScriptFileName(int id);
 EXTERNCPP inifiledata *InsertIniFile(char *file);

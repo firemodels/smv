@@ -117,7 +117,7 @@ SMVLUACORE_FILES = $(SMVLUACORE_DIR)/smv.lua $(SMVLUACORE_DIR)/ssf.lua \
 	$(SMVLUACORE_DIR)/unload.lua $(SMVLUACORE_DIR)/constants.lua \
 	$(SMVLUACORE_DIR)/gnuplot.lua $(SMVLUACORE_DIR)/plot.lua \
 	$(SMVLUACORE_DIR)/pl3d.lua \
-	$(SMVLUACORE_DIR)/camera.lua $(SMVLUACORE_DIR)/window.lua
+	$(SMVLUACORE_DIR)/camera.lua
 SMVLUALIB_FILES = $(LIB_DIR_PLAT)/lfs$(DYNLIB_EXT)
 
 smvluacore: $(SMVLUACORE_FILES) $(SMVLUALIB_FILES)

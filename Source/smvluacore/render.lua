@@ -127,6 +127,7 @@ local render_mt = {
     end,
     -- get method
     __index = function(t, k)
+        print("k",k)
         if type(_render[k]) == "function" then
             return _render[k]
         else

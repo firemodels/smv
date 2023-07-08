@@ -9,7 +9,6 @@ smv.render = require("render")
 smv.view = require("view")
 smv.tour = require("tour")
 smv.camera = require("camera")
-smv.window = require("window")
 smv.exit = smvlib.exit
 smv.yieldscript = smvlib.yieldscript
 
@@ -34,6 +33,7 @@ end
 
 function smv.load_default()
     local case = smvlib.load_default()
+    rawset(case, "load", smv.load)
     rawset(case, "load_slice_std", function(self, slice_type, axis, distance)
         return smv.load.slice_std(self, slice_type, axis, distance)
     end)
@@ -73,6 +73,17 @@ function smv.load_default()
         camera.zAngle.elev = 0.0
         return camera
     end)
+    rawset(case, "unload", require("unload"))
+    rawset(case, "global_times", {})
+    setmetatable(case.global_times, {
+        -- get method
+        __index = function(t, k)
+            return smvlib.get_global_time(k-1)
+        end,
+        -- set method
+        __newindex = function(t, k, v)
+        end
+    })
     return smv, smv.view, case
 end
 
