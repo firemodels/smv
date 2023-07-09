@@ -12,8 +12,6 @@
 #define BUILD_GEOM_OFFSETS 0
 #define GET_GEOM_OFFSETS  -1
 
-void UpdateGeomTriangles(geomdata *geomi, int geom_type);
-
 /* ------------------ GetTriangleNormal ------------------------ */
 
 void GetTriangleNormal(float *v1, float *v2, float *v3, float *normal, float *area){
@@ -2527,6 +2525,110 @@ void SetupReadAllGeom(void){
   }
 }
 
+/* ------------------ UpdateGeomTriangles ------------------------ */
+
+void UpdateGeomTriangles(geomdata *geomi, int geom_type){
+  geomlistdata *geomlisti;
+  tridata **connected_triangles;
+  int ntris, nverts, nconnected_triangles = 0;
+  int j;
+
+  if(geomi == NULL || geomi->display == 0 || geomi->loaded == 0)return;
+  if(geom_type == GEOM_STATIC){
+    geomlisti = geomi->geomlistinfo - 1;
+  }
+  else{
+    geomlisti = geomi->geomlistinfo + geomi->itime;
+  }
+
+  // initialize
+
+  ntris = geomlisti->ntriangles;
+  nverts = geomlisti->nverts;
+
+  for(j = 0; j < nverts; j++){
+    vertdata *vert;
+
+    vert = geomlisti->verts + j;
+    vert->ntriangles = 0;
+    vert->itriangle = 0;
+  }
+
+  // compute normal vector for each triangle
+
+  for(j = 0; j < ntris; j++){
+    tridata *trianglei;
+    vertdata **verts;
+
+    trianglei = geomlisti->triangles + j;
+    verts = trianglei->verts;
+    verts[0]->ntriangles++;
+    verts[1]->ntriangles++;
+    verts[2]->ntriangles++;
+    GetTriangleNormal(verts[0]->xyz, verts[1]->xyz, verts[2]->xyz, trianglei->vert_norm, &trianglei->area);
+  }
+
+  // allocate memory for total number of connected triangles
+
+  nconnected_triangles = 3 * ntris;
+  if(nconnected_triangles > 0){
+    NewMemory((void **)&connected_triangles, nconnected_triangles * sizeof(tridata *));
+    geomlisti->connected_triangles = connected_triangles;
+  }
+
+  // associate assign triangle to each vertex
+
+  for(j = 0; j < nverts; j++){
+    vertdata *vert;
+
+    vert = geomlisti->verts + j;
+    vert->triangles = connected_triangles;
+    connected_triangles += vert->ntriangles;
+  }
+  for(j = 0; j < ntris; j++){
+    tridata *trianglei;
+    vertdata **verts;
+
+    trianglei = geomlisti->triangles + j;
+    verts = trianglei->verts;
+    verts[0]->triangles[verts[0]->itriangle++] = trianglei;
+    verts[1]->triangles[verts[1]->itriangle++] = trianglei;
+    verts[2]->triangles[verts[2]->itriangle++] = trianglei;
+  }
+
+  // average normals for each vertex
+
+  for(j = 0; j < nverts; j++){
+    vertdata *vert;
+    float *vert_norm;
+
+    vert = geomlisti->verts + j;
+    vert_norm = vert->vert_norm;
+    if(vert->ntriangles > 0){
+      int k;
+
+      vert_norm[0] = 0.0;
+      vert_norm[1] = 0.0;
+      vert_norm[2] = 0.0;
+      for(k = 0; k < vert->ntriangles; k++){
+        tridata *tri;
+
+        tri = vert->triangles[k];
+        vert_norm[0] += tri->area * tri->vert_norm[0];
+        vert_norm[1] += tri->area * tri->vert_norm[1];
+        vert_norm[2] += tri->area * tri->vert_norm[2];
+      }
+      ReduceToUnit(vert_norm);
+    }
+    else{
+      vert_norm[0] = 0.0;
+      vert_norm[1] = 0.0;
+      vert_norm[2] = 1.0;
+    }
+  }
+  geomlisti->norms_defined = 1;
+}
+
 /* ------------------ ReadAllGeom ------------------------ */
 
 void ReadAllGeom(void){
@@ -3617,110 +3719,6 @@ FILE_SIZE ReadGeom(geomdata *geomi, int load_flag, int type, int *geom_frame_ind
   }
   PrintMemoryInfo;
   return return_filesize;
-}
-
-/* ------------------ UpdateGeomTriangles ------------------------ */
-
-void UpdateGeomTriangles(geomdata *geomi, int geom_type){
-  geomlistdata *geomlisti;
-  tridata **connected_triangles;
-  int ntris, nverts, nconnected_triangles = 0;
-  int j;
-
-  if(geomi==NULL||geomi->display==0||geomi->loaded==0)return;
-  if(geom_type==GEOM_STATIC){
-    geomlisti = geomi->geomlistinfo-1;
-  }
-  else{
-    geomlisti = geomi->geomlistinfo+geomi->itime;
-  }
-
-    // initialize
-
-  ntris = geomlisti->ntriangles;
-  nverts = geomlisti->nverts;
-
-  for(j = 0; j<nverts; j++){
-    vertdata *vert;
-
-    vert = geomlisti->verts+j;
-    vert->ntriangles=0;
-    vert->itriangle = 0;
-  }
-
-    // compute normal vector for each triangle
-
-  for(j = 0; j<ntris; j++){
-    tridata *trianglei;
-    vertdata **verts;
-
-    trianglei = geomlisti->triangles+j;
-    verts = trianglei->verts;
-    verts[0]->ntriangles++;
-    verts[1]->ntriangles++;
-    verts[2]->ntriangles++;
-    GetTriangleNormal(verts[0]->xyz, verts[1]->xyz, verts[2]->xyz, trianglei->vert_norm, &trianglei->area);
-  }
-
-    // allocate memory for total number of connected triangles
-
-  nconnected_triangles = 3*ntris;
-  if(nconnected_triangles>0){
-    NewMemory((void **)&connected_triangles,nconnected_triangles*sizeof(tridata *));
-    geomlisti->connected_triangles = connected_triangles;
-  }
-
-    // associate assign triangle to each vertex
-
-  for(j = 0; j<nverts; j++){
-    vertdata *vert;
-
-    vert = geomlisti->verts+j;
-    vert->triangles = connected_triangles;
-    connected_triangles += vert->ntriangles;
-  }
-  for(j = 0; j<ntris; j++){
-    tridata *trianglei;
-    vertdata **verts;
-
-    trianglei = geomlisti->triangles+j;
-    verts = trianglei->verts;
-    verts[0]->triangles[verts[0]->itriangle++] = trianglei;
-    verts[1]->triangles[verts[1]->itriangle++] = trianglei;
-    verts[2]->triangles[verts[2]->itriangle++] = trianglei;
-  }
-
-    // average normals for each vertex
-
-  for(j = 0; j<nverts; j++){
-    vertdata *vert;
-    float *vert_norm;
-
-    vert = geomlisti->verts+j;
-    vert_norm = vert->vert_norm;
-    if(vert->ntriangles>0){
-      int k;
-
-      vert_norm[0] = 0.0;
-      vert_norm[1] = 0.0;
-      vert_norm[2] = 0.0;
-      for(k = 0; k<vert->ntriangles; k++){
-        tridata *tri;
-
-        tri = vert->triangles[k];
-        vert_norm[0] += tri->area*tri->vert_norm[0];
-        vert_norm[1] += tri->area*tri->vert_norm[1];
-        vert_norm[2] += tri->area*tri->vert_norm[2];
-      }
-      ReduceToUnit(vert_norm);
-    }
-    else{
-      vert_norm[0] = 0.0;
-      vert_norm[1] = 0.0;
-      vert_norm[2] = 1.0;
-    }
-  }
-  geomlisti->norms_defined = 1;
 }
 
 /* ------------------ UpdatePatchGeomTriangles ------------------------ */
