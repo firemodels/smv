@@ -593,15 +593,13 @@ char *ProcessCommandLine(CommandlineArgs *args) {
       setup_only = 1;
     }
     if(args->bindir != NULL){
-        int len2;
+      int len2;
 
-        len2 = strlen(args->bindir);
-        NewMemory((void **)&smokeview_bindir, len2 + 2);
-        strcpy(smokeview_bindir, args->bindir);
-        if(smokeview_bindir[len2 - 1] != dirseparator[0])strcat(smokeview_bindir, dirseparator);
-#ifdef pp_BINDIR
-        have_bindir_arg = 1;
-#endif
+      len2 = strlen(args->bindir);
+      NewMemory((void **)&smokeview_bindir, len2 + 2);
+      strcpy(smokeview_bindir, args->bindir);
+      if(smokeview_bindir[len2 - 1] != dirseparator[0])strcat(smokeview_bindir, dirseparator);
+      have_bindir_arg = 1;
     }
     if(args->casedir){
         int len2;
@@ -669,7 +667,7 @@ int CheckSMVFile(char *file, char *subdir){
 }
 
 /* ------------------ IsInstallBinDir ------------------------ */
-#ifdef pp_BINDIR
+
 int IsInstallBinDir(char *bindir){
   char smvfile[1024];
 
@@ -679,7 +677,6 @@ int IsInstallBinDir(char *bindir){
   strcat(smvfile, ".smokeview_bin");
   return FileExistsOrig(smvfile);
 }
-#endif
 
 /* ------------------ main ------------------------ */
 
@@ -739,7 +736,6 @@ int main(int argc, char **argv){
   if(smokeview_bindir==NULL){
     smokeview_bindir = GetProgDir(progname, &smokeviewpath);
   }
-#ifdef pp_BINDIR
   int valid_bindir;
 
   valid_bindir = have_bindir_arg;
@@ -808,7 +804,6 @@ int main(int argc, char **argv){
       valid_bindir = 1;
     }
   }
-#endif
 #endif
 
   if(smv_filename == NULL){
