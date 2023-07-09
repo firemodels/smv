@@ -5,7 +5,7 @@
 #include "svdiff.h"
 #include "MALLOCC.h"
 #include "file_util.h"
-#include "../smokeview/getdata.h"
+#include "getdata.h"
 
 /* ------------------ setup_slice ------------------------ */
 

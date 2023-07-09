@@ -7,7 +7,7 @@
 #include "MALLOCC.h"
 #include "datadefs.h"
 #include "file_util.h"
-#include "../smokeview/getdata.h"
+#include "getdata.h"
 
 /* ------------------ SetupPlot3D ------------------------ */
 

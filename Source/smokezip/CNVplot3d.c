@@ -8,7 +8,7 @@
 #include "svzip.h"
 #include "MALLOCC.h"
 #include "compress.h"
-#include "../smokeview/getdata.h"
+#include "getdata.h"
 
 /* ------------------ convert_plot3d ------------------------ */
 
