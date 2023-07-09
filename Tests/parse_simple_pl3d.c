@@ -1,6 +1,6 @@
 #include "options.h"
 // TODO: sort out imports
-#include "../Source/smokeview/getdata.h"
+#include "getdata.h"
 #include "MALLOCC.h"
 #include <stdint.h>
 #include <stdlib.h>
