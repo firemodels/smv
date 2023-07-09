@@ -15532,6 +15532,19 @@ int ReadIni(char *inifile){
   char smvprogini[1024];
   char *smvprogini_ptr=NULL;
 
+  // There are 7 places to retrieve configuration file from:
+  //
+  //   1. A file within the same directory as the smokeview executable named
+  //      "smokeview.ini".
+  //   2. A file in the user's config directory named "smokeview.ini".
+  //   3. A file in the current directory named "smokeview.ini".
+  //   4. A file in the current directory named "${fdsprefix}.ini".
+  //   5. A file in the scratch directory named "${fdsprefix}.ini".
+  //   6. A file pointed to by SMOKEVIEW_CONFIG_PATH.
+  //   7. A file pointed to be envar SMOKEVIEW_CONFIG.
+  //
+  // Last definition wins.
+
   ntickinfo=ntickinfo_smv;
   strcpy(smvprogini,"");
   if(smokeview_bindir!=NULL)strcat(smvprogini,smokeview_bindir);
@@ -15545,10 +15558,7 @@ int ReadIni(char *inifile){
 #endif
   }
 
-  //*** read in config files if they exist
-
-  // smokeview.ini ini in install directory
-
+  // Read "smokeview.ini" from bin dir
   if(smvprogini_ptr!=NULL){
     int returnval;
 
@@ -15560,8 +15570,8 @@ int ReadIni(char *inifile){
     UpdateTerrainOptions();
   }
 
-  // smokeview.ini in $HOME/.smokeview (Linux, OSX) or %userprofile%\.smokeview (Windows)
-
+  // Read "smokeview.ini" from the user's config dir $HOME/.smokeview (Linux,
+  //  OSX) or %userprofile%\.smokeview (Windows)
   {
     int returnval;
 
@@ -15572,8 +15582,7 @@ int ReadIni(char *inifile){
     }
   }
 
-  // smokeview.ini in current directory
-
+  // Read "smokeview.ini" from the current dir
   {
     int returnval;
     char smokeviewini_localfilename[100];
@@ -15586,8 +15595,7 @@ int ReadIni(char *inifile){
     }
   }
 
-  // casename.ini
-
+  // Read "${fdsprefix}.ini" from the current directory
   if(caseini_filename!=NULL){
     int returnval;
     char localdir[10];
@@ -15598,7 +15606,7 @@ int ReadIni(char *inifile){
     strcpy(localdir, ".");
     if(Writable(localdir)==0){
       char *scratch_ini_filename;
-
+      // Read "${fdsprefix}.ini" from the scratch directory
       NewMemory((void **)&scratch_ini_filename, strlen(smokeview_scratchdir)+1+strlen(caseini_filename)+1);
       strcpy(scratch_ini_filename, smokeview_scratchdir);
       strcat(scratch_ini_filename, dirseparator);
@@ -15612,8 +15620,7 @@ int ReadIni(char *inifile){
     }
   }
 
-  // ini file specified in script
-
+  // Read file specified in the SSF script
   if(inifile!=NULL){
     int return_code;
 
@@ -15634,6 +15641,31 @@ int ReadIni(char *inifile){
 
     UpdateRGBColors(COLORBAR_INDEX_NONE);
   }
+
+#ifdef SMOKEVIEW_CONFIG_PATH
+  {
+    // Read objects file pointed to be macro SMOKEVIEW_CONFIG_PATH. Useful
+    // when install paths differ per platform.
+    int returnval = ReadIni2(SMOKEVIEW_CONFIG_PATH, 0);
+    if (returnval == 2) return 2;
+    if (returnval == 0 && readini_output == 1) {
+      if (verbose_output == 1) PRINTF("- complete\n");
+    }
+  }
+#endif
+
+  // Read objects file from the envar SMOKEVIEW_CONFIG
+  {
+    char *envar_config_path = getenv("SMOKEVIEW_CONFIG");
+    if (envar_config_path != NULL) {
+      int returnval = ReadIni2(envar_config_path, 0);
+      if (returnval == 2) return 2;
+      if (returnval == 0 && readini_output == 1) {
+        if (verbose_output == 1) PRINTF("- complete\n");
+      }
+    }
+  }
+
   if(use_graphics==1){
     if(showall_textures==1)TextureShowMenu(MENU_TEXTURE_SHOWALL);
   }
