@@ -186,8 +186,8 @@ add_executable(smokeview
     Source/shared/stdio_m.c
     Source/shared/stdio_buffer.c
     Source/smokeview/gsmv.c
-    Source/smokeview/getdata.c
-    Source/smokeview/color2rgb.c
+    Source/shared/getdata.c
+    Source/shared/color2rgb.c
     Source/smokeview/colortable.c
     Source/smokeview/command_args.c
 )
