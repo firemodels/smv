@@ -11,7 +11,7 @@ include ../../scripts/intel_compiler.mak
 
 SMV_TESTFLAG=
 
-VPATH = $(SOURCE_DIR)/smokediff ../../../../FDS/Source $(SOURCE_DIR)/shared $(SOURCE_DIR)/smokeview
+VPATH = $(SOURCE_DIR)/smokediff $(SOURCE_DIR)/shared
 bin = .
 
 ifeq ($(shell echo "check_quotes"),"check_quotes")
@@ -37,7 +37,7 @@ GNU_COMPINFO=-Dpp_COMPVER=\"$(GNU_COMPVERSION)\"
 
 obj = assert.o dmalloc.o histogram.o IOdboundary.o IOdplot.o IOdslice.o main.o readsmv.o\
       file_util.o string_util.o utilities.o  md5.o sha1.o sha256.o stdio_buffer.o\
-      gsmv.o getdata.o color2rgb.o
+      getdata.o color2rgb.o
 objwin = $(obj:.o=.obj)
 
 #*** General Purpose Rules ***

@@ -7,7 +7,7 @@
 #include "svzip.h"
 #include "MALLOCC.h"
 #include "stdio_buffer.h"
-#include "../smokeview/getdata.h"
+#include "getdata.h"
 
 int ReadSMV(char *smvfile){
   FILE *stream = NULL;

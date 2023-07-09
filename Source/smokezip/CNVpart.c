@@ -11,7 +11,7 @@
 #include "MALLOCC.h"
 #include "isodefs.h"
 #include "compress.h"
-#include "../smokeview/getdata.h"
+#include "getdata.h"
 
 
 void part2iso(part *parti,int *thread_index);

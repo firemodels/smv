@@ -5,8 +5,7 @@
 #include <math.h>
 #include "svdiff.h"
 #include "MALLOCC.h"
-// TODO: Fix this by moving to shared
-#include "../smokeview/getdata.h"
+#include "getdata.h"
 
 /* ------------------ ReadSMV ------------------------ */
 

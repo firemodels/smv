@@ -185,9 +185,8 @@ add_executable(smokeview
     Source/shared/sha256.c
     Source/shared/stdio_m.c
     Source/shared/stdio_buffer.c
-    Source/smokeview/gsmv.c
-    Source/smokeview/getdata.c
-    Source/smokeview/color2rgb.c
+    Source/shared/getdata.c
+    Source/shared/color2rgb.c
     Source/smokeview/colortable.c
     Source/smokeview/command_args.c
 )
@@ -379,9 +378,8 @@ add_executable(smokediff
     Source/shared/sha1.c
     Source/shared/sha256.c
     Source/shared/stdio_buffer.c
-    Source/smokeview/gsmv.c
-    Source/smokeview/getdata.c
-    Source/smokeview/color2rgb.c
+    Source/shared/getdata.c
+    Source/shared/color2rgb.c
 )
 target_include_directories(smokediff PRIVATE
     Source/smokediff
@@ -428,8 +426,7 @@ add_executable(smokezip
     Source/shared/sha1.c
     Source/shared/sha256.c
     Source/shared/stdio_buffer.c
-    Source/smokeview/gsmv.c
-    Source/smokeview/getdata.c
+    Source/shared/getdata.c
 )
 
 target_include_directories(smokezip PRIVATE

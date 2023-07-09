@@ -8,7 +8,7 @@
 #include "svzip.h"
 #include "MALLOCC.h"
 #include "compress.h"
-#include "../smokeview/getdata.h"
+#include "getdata.h"
 
 void mt_update_slice_hist(void);
 
