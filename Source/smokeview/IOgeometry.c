@@ -34,10 +34,10 @@ void GetVertType(int nverts, int *triangles, int ntriangles, int *vert_type){
   int *trii;
 
   // ! count number of triangles connected to each vertex
-  int *triangle_count;
+  int *tri_count;
 
-  NewMemory((void **)&triangle_count, nverts*sizeof(int));
-  memset(triangle_count, 0, nverts * sizeof(*triangle_count));
+  NewMemory((void **)&tri_count, nverts*sizeof(int));
+  memset(tri_count, 0, nverts * sizeof(*tri_count));
 
   int i;
   for (i = 0; i < ntriangles; i++){
@@ -47,15 +47,15 @@ void GetVertType(int nverts, int *triangles, int ntriangles, int *vert_type){
     for (j = 0; j < 3; j++){
       int vertj_index = trii[j];
 
-      if(vertj_index >= 1 && vertj_index <= nverts)triangle_count[vertj_index]++;
+      if(vertj_index >= 1 && vertj_index <= nverts)tri_count[vertj_index]++;
     }
   }
 
-  int maxcount = triangle_count[0];
+  int maxcount = tri_count[0];
   for (i = 1; i < nverts; i++){
-    maxcount = MAX(maxcount, triangle_count[i]);
+    maxcount = MAX(maxcount, tri_count[i]);
   }
-  FREEMEMORY(triangle_count);
+  FREEMEMORY(tri_count);
 
   // ! construct a list of triangles connected to each vertex
   // ! vert_trilist(I,1) contains number of triangles connected to vertex I
@@ -280,13 +280,13 @@ void DecimateGeom(float *verts, int *nvertsptr, int *faces, int *nfacesptr,
   int ito;
   float vavg[3];
 
-  bool have_small = true;
+  int have_small = 1;
   int max_iter = 4;
   int iter = 0;
-  while (have_small &&
+  while (have_small==1 &&
          iter < max_iter){ // iterate until no further changes are made (or 10
                             // times whichever comes first)
-    have_small = false;
+    have_small = 0;
 
     // ! vert_state
     // !    V_MERGE =   -1  -  merged vertex
@@ -322,7 +322,7 @@ void DecimateGeom(float *verts, int *nvertsptr, int *faces, int *nfacesptr,
       float d23 = Distance3(v2, v3);
       if(d12 > delta && d13 > delta && d23 > delta)continue; // triangle too large, do not combine verts
 
-      have_small = true;
+      have_small = 1;
       if(d12 < delta && d13 > delta && d23 > delta){ // combine verts 1 and 2 leave 3 alone
         vert_state[tri_i[0]] = V_MERGED;
         vert_state[tri_i[1]] = V_DISCARD;
