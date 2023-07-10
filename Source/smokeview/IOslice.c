@@ -5143,7 +5143,7 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
 
     update_slicefile_bounds = 1; // temporary fix to make sure bounds are always up to date
     update_slice2device = 1;
-    if(update_slicefile_bounds==1){
+    if(update_slicefile_bounds==0){
       update_slicefile_bounds = 0;
       GetGlobalSliceBounds(sd->label.shortlabel);
       SetLoadedSliceBounds(NULL, 0);
