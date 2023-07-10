@@ -2838,7 +2838,8 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
         ComputeLoadedPatchHist(bounds->label, &(bounds->hist), &global_min, &global_max);
       }
       else{
-        ComputeLoadedSliceHist(bounds->label, &(bounds->hist));
+        ComputeLoadedSliceHist(bounds->label);
+        MergeLoadedSliceHist(bounds->label, &(bounds->hist));
       }
       if(bounds->hist->defined==1){
         if(bounds->set_valmin==BOUND_PERCENTILE_MIN){

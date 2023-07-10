@@ -1724,8 +1724,7 @@ void GetAllSliceHists(void){
 
 /* ------------------ ComputeLoadedSliceHist ------------------------ */
 
-void ComputeLoadedSliceHist(char *label, histogramdata **histptr){
-  histogramdata *hist;
+void ComputeLoadedSliceHist(char *label){
   int i, have_data=0;
 
   for(i = 0; i<nsliceinfo; i++){
@@ -1737,12 +1736,6 @@ void ComputeLoadedSliceHist(char *label, histogramdata **histptr){
   }
   if(have_data==0)return;
 
-  hist = *histptr;
-  if(*histptr!=NULL)FreeHistogram(*histptr);
-  NewMemory((void **)&hist, sizeof(histogramdata));
-  *histptr = hist;
-
-  InitHistogram(hist, NHIST_BUCKETS, NULL, NULL);
   for(i = 0; i<nsliceinfo; i++){
     slicedata *slicei;
 
@@ -1756,6 +1749,26 @@ void ComputeLoadedSliceHist(char *label, histogramdata **histptr){
         GetSliceHists(slicei);
       }
     }
+  }
+}
+
+/* ------------------ MergeLoadedSliceHist ------------------------ */
+
+void MergeLoadedSliceHist(char *label, histogramdata **histptr){
+  histogramdata *hist;
+  int i;
+
+  hist = *histptr;
+  if(*histptr != NULL)FreeHistogram(*histptr);
+  NewMemory((void **)&hist, sizeof(histogramdata));
+  *histptr = hist;
+
+  InitHistogram(hist, NHIST_BUCKETS, NULL, NULL);
+  for(i = 0; i < nsliceinfo; i++){
+    slicedata *slicei;
+
+    slicei = sliceinfo + i;
+    if(slicei->loaded == 0 || strcmp(slicei->label.shortlabel, label) != 0)continue;
     MergeHistogram(hist, slicei->histograms, MERGE_BOUNDS);
   }
 }
@@ -5153,7 +5166,8 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
       cpp_boundsdata *bounds;
 
       bounds = GetBoundsData(BOUND_SLICE);
-      ComputeLoadedSliceHist(bounds->label, &(bounds->hist));
+      ComputeLoadedSliceHist(bounds->label);
+      MergeLoadedSliceHist(bounds->label, &(bounds->hist));
       if(bounds->hist!=NULL&&bounds->hist->defined==1){
         if(set_valmin==BOUND_PERCENTILE_MIN){
           GetHistogramValProc(bounds->hist, percentile_level_min, &qmin);
