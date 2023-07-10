@@ -515,7 +515,7 @@ void GetLoadedPlot3dBounds(int *compute_loaded, float *loaded_min, float *loaded
 
 /* ------------------ GetGlobalSliceBounds ------------------------ */
 
-void GetGlobalSliceBounds(void){
+void GetGlobalSliceBounds(char *type){
   int i;
 
   if(nsliceinfo==0)return;
@@ -523,6 +523,7 @@ void GetGlobalSliceBounds(void){
     boundsdata *boundi;
 
     boundi = slicebounds+i;
+    if(type != NULL && strcmp(type, boundi->label->shortlabel) != 0)continue;
     boundi->dlg_global_valmin = 1.0;
     boundi->dlg_global_valmax = 0.0;
   }
@@ -533,6 +534,8 @@ void GetGlobalSliceBounds(void){
 
     slicei = sliceinfo+i;
     if(slicei->is_fed==1)continue;
+    if(type != NULL && strcmp(type, slicei->label.shortlabel) != 0)continue;
+
     if(slicei->valmin_fds>slicei->valmax_fds ||
        current_script_command==NULL||current_script_command->command!=SCRIPT_LOADSLICERENDER){
       if(GetBounds(slicei->bound_file, &valmin, &valmax, &sliceboundsinfo, &nsliceboundsinfo)==1){
@@ -562,6 +565,7 @@ void GetGlobalSliceBounds(void){
     boundsdata *boundi;
 
     boundi = slicebounds+i;
+    if(type != NULL && strcmp(type, boundi->label->shortlabel) != 0)continue;
     boundi->dlg_valmin = boundi->dlg_global_valmin;
     boundi->dlg_valmax = boundi->dlg_global_valmax;
   }
@@ -574,6 +578,7 @@ void GetGlobalSliceBounds(void){
 
       boundscppi = slicebounds_cpp + i;
       boundi     = slicebounds + i;
+      if(type != NULL && strcmp(type, boundi->label->shortlabel) != 0)continue;
       strcpy(boundscppi->label, boundi->shortlabel);
       strcpy(boundscppi->unit, boundi->label->unit);
 
