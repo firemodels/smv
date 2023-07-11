@@ -4122,9 +4122,9 @@ extern "C" void ImmersedBoundCB(int var){
         case OUTLINE_HIDDEN:
           show_slice_outlines[i]=0;
           break;
-	default:
-	  ASSERT(FFALSE);
-	  break;
+	      default:
+	        ASSERT(FFALSE);
+	        break;
       }
     }
     if(RADIO_slice_edgetype!=NULL)RADIO_slice_edgetype->set_int_val(glui_slice_edgetype);
