@@ -378,7 +378,6 @@ EXTERNCPP void TerrainCB(int var);
 EXTERNCPP void GeometryMenu(int var);
 EXTERNCPP void Smoke3dCB(int var);
 EXTERNCPP void InitAllLightFractions(float *xyz_light, int light_type);
-EXTERNCPP void GetAllSliceHists(void);
 EXTERNCPP void UpdateHistogramType(void);
 EXTERNCPP void UpdateSliceHist(void);
 EXTERNCPP void Enable360Zoom(void);

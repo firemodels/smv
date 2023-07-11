@@ -1700,47 +1700,17 @@ void GetSliceGeomHists(slicedata *sd){
   CopyVals2Histogram(sd->patchgeom->geom_vals, NULL, NULL, sd->patchgeom->geom_nvals, sd->histograms);
 }
 
-/* ------------------ GetAllSliceHists ------------------------ */
-
-void GetAllSliceHists(void){
-  int ii;
-
-  for(ii = 0; ii < nslice_loaded; ii++){
-    slicedata *sdi;
-    int i;
-
-    i = slice_loaded_list[ii];
-    sdi = sliceinfo + i;
-    if(sdi->histograms==NULL){
-      if(sdi->slice_filetype==SLICE_GEOM){
-        GetSliceGeomHists(sdi);
-      }
-      else{
-        GetSliceHists(sdi);
-      }
-    }
-  }
-}
-
 /* ------------------ ComputeLoadedSliceHist ------------------------ */
 
 void ComputeLoadedSliceHist(char *label){
-  int i, have_data=0;
+  int i;
 
   for(i = 0; i<nsliceinfo; i++){
     slicedata *slicei;
 
     slicei = sliceinfo+i;
-    if(slicei->loaded==0||strcmp(slicei->label.shortlabel, label)!=0)continue;
-    have_data = 1;
-  }
-  if(have_data==0)return;
-
-  for(i = 0; i<nsliceinfo; i++){
-    slicedata *slicei;
-
-    slicei = sliceinfo+i;
-    if(slicei->loaded==0||strcmp(slicei->label.shortlabel, label)!=0)continue;
+    if(slicei->loaded == 0)continue;
+    if(label!=NULL&&strcmp(slicei->label.shortlabel, label)!=0)continue;
     if(slicei->histograms==NULL){
       if(slicei->slice_filetype==SLICE_GEOM){
         GetSliceGeomHists(slicei);
@@ -1781,7 +1751,7 @@ void UpdateSliceHist(void){
   int is_fed = 0;
 
   histograms_defined = 1;
-  GetAllSliceHists();
+  ComputeLoadedSliceHist(NULL);
   if(hists256_slice != NULL){
     for(i = 0; i < nhists256_slice; i++){
       FreeHistogram(hists256_slice + i);
