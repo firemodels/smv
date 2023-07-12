@@ -594,8 +594,8 @@ SVEXTERN int SVDECL(force_UpdateHistograms, 1);
 SVEXTERN float SVDECL(geom_vert_exag, 1.0);
 SVEXTERN float SVDECL(geom_vecfactor, .030);
 SVEXTERN int SVDECL(geom_ivecfactor, 30);
-SVEXTERN float SVDECL(geom_norm_offset,0.01);
-SVEXTERN float SVDECL(geom_dz_offset,0.001);
+SVEXTERN float SVDECL(geom_norm_offset,0.0);
+SVEXTERN float SVDECL(geom_dz_offset,0.0);
 SVEXTERN int SVDECL(iso_outline_ioffset, 1);
 SVEXTERN float SVDECL(iso_outline_offset, 0.001);
 SVEXTERN int SVDECL(update_setvents, 0);
@@ -1740,9 +1740,7 @@ SVEXTERN char SVDECL(*sliceinfo_filename,NULL);
 SVEXTERN char SVDECL(*deviceinfo_filename, NULL);
 SVEXTERN char SVDECL(*database_filename,NULL),SVDECL(*iso_filename,NULL);
 SVEXTERN char SVDECL(*smokeview_bindir,NULL);
-#ifdef pp_BINDIR
 SVEXTERN int SVDECL(have_bindir_arg, 0);
-#endif
 SVEXTERN char SVDECL(*smokeview_casedir, NULL);
 SVEXTERN int SVDECL(update_vectorskip, 0);
 SVEXTERN int SVDECL(smoke_offaxis, 0), SVDECL(smoke_adjust, 1);

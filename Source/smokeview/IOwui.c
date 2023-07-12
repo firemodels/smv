@@ -216,7 +216,6 @@ void DrawTerrainGeom(int option){
     return;
   }
 
-
   showgeom_inside_domain_local = showgeom_inside_domain;
   if(drawing_boundary_files==1)showgeom_inside_domain_local = 0; // hide terrain within FDS domain if drawing boundary files
 
@@ -337,7 +336,7 @@ void DrawTerrainGeom(int option){
 
         float *v1, *v2, *v3;
         float v1o[3], v2o[3], v3o[3];
-        float *n1, *n2, *n3;
+        float *n1;
         unsigned int *ind;
 
         ind = terrain_indices+3*i;
@@ -355,14 +354,12 @@ void DrawTerrainGeom(int option){
         if(showgeom_outside_domain==0&&outside_domain==1)continue;
 
         n1 = v1+3;
-        n2 = v2+3;
-        n3 = v3+3;
         if(terrain_showonly_top==1&&n1[2]<0.0)continue;
 
         for(j = 0; j<3; j++){
-          v1o[j] = v1[j]+SCALE2FDS(FDS_OFFSET*n1[j]);
-          v2o[j] = v2[j]+SCALE2FDS(FDS_OFFSET*n2[j]);
-          v3o[j] = v3[j]+SCALE2FDS(FDS_OFFSET*n3[j]);
+          v1o[j] = v1[j];
+          v2o[j] = v2[j];
+          v3o[j] = v3[j];
           if(j==2){
             v1o[j] = terrain_zmin+geom_vert_exag*(v1o[j]-terrain_zmin);
             v2o[j] = terrain_zmin+geom_vert_exag*(v2o[j]-terrain_zmin);
@@ -399,7 +396,7 @@ void DrawTerrainGeom(int option){
 
         float *v1, *v2, *v3;
         float v1o[3], v2o[3], v3o[3];
-        float *n1, *n2, *n3;
+        float *n1;
         unsigned int *ind;
 
         ind = terrain_indices+3*i;
@@ -417,14 +414,12 @@ void DrawTerrainGeom(int option){
         if(showgeom_outside_domain==0&&outside_domain==1)continue;
 
         n1 = v1+3;
-        n2 = v2+3;
-        n3 = v3+3;
         if(terrain_showonly_top==1&&n1[2]<0.0)continue;
 
         for(j = 0; j<3; j++){
-          v1o[j] = v1[j]+SCALE2FDS(FDS_OFFSET*n1[j]);
-          v2o[j] = v2[j]+SCALE2FDS(FDS_OFFSET*n2[j]);
-          v3o[j] = v3[j]+SCALE2FDS(FDS_OFFSET*n3[j]);
+          v1o[j] = v1[j];
+          v2o[j] = v2[j];
+          v3o[j] = v3[j];
           if(j==2){
             v1o[j] = terrain_zmin+geom_vert_exag*(v1o[j]-terrain_zmin);
             v2o[j] = terrain_zmin+geom_vert_exag*(v2o[j]-terrain_zmin);

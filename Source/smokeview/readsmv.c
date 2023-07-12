@@ -3013,7 +3013,7 @@ void UpdateBoundInfo(void){
   }
   UpdateChar();
   GetGlobalPartBounds(ALL_FILES);
-  GetGlobalSliceBounds();
+  GetGlobalSliceBounds(NULL);
   GetGlobalPatchBounds();
   GetGlobalHVACDuctBounds(0);
   GetGlobalHVACNodeBounds(0);

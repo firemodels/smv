@@ -1700,54 +1700,17 @@ void GetSliceGeomHists(slicedata *sd){
   CopyVals2Histogram(sd->patchgeom->geom_vals, NULL, NULL, sd->patchgeom->geom_nvals, sd->histograms);
 }
 
-/* ------------------ GetAllSliceHists ------------------------ */
-
-void GetAllSliceHists(void){
-  int ii;
-
-  for(ii = 0; ii < nslice_loaded; ii++){
-    slicedata *sdi;
-    int i;
-
-    i = slice_loaded_list[ii];
-    sdi = sliceinfo + i;
-    if(sdi->histograms==NULL){
-      if(sdi->slice_filetype==SLICE_GEOM){
-        GetSliceGeomHists(sdi);
-      }
-      else{
-        GetSliceHists(sdi);
-      }
-    }
-  }
-}
-
 /* ------------------ ComputeLoadedSliceHist ------------------------ */
 
-void ComputeLoadedSliceHist(char *label, histogramdata **histptr){
-  histogramdata *hist;
-  int i, have_data=0;
+void ComputeLoadedSliceHist(char *label){
+  int i;
 
   for(i = 0; i<nsliceinfo; i++){
     slicedata *slicei;
 
     slicei = sliceinfo+i;
-    if(slicei->loaded==0||strcmp(slicei->label.shortlabel, label)!=0)continue;
-    have_data = 1;
-  }
-  if(have_data==0)return;
-
-  hist = *histptr;
-  if(*histptr!=NULL)FreeHistogram(*histptr);
-  NewMemory((void **)&hist, sizeof(histogramdata));
-  *histptr = hist;
-
-  InitHistogram(hist, NHIST_BUCKETS, NULL, NULL);
-  for(i = 0; i<nsliceinfo; i++){
-    slicedata *slicei;
-
-    slicei = sliceinfo+i;
-    if(slicei->loaded==0||strcmp(slicei->label.shortlabel, label)!=0)continue;
+    if(slicei->loaded == 0)continue;
+    if(label!=NULL&&strcmp(slicei->label.shortlabel, label)!=0)continue;
     if(slicei->histograms==NULL){
       if(slicei->slice_filetype==SLICE_GEOM){
         GetSliceGeomHists(slicei);
@@ -1756,6 +1719,26 @@ void ComputeLoadedSliceHist(char *label, histogramdata **histptr){
         GetSliceHists(slicei);
       }
     }
+  }
+}
+
+/* ------------------ MergeLoadedSliceHist ------------------------ */
+
+void MergeLoadedSliceHist(char *label, histogramdata **histptr){
+  histogramdata *hist;
+  int i;
+
+  hist = *histptr;
+  if(*histptr != NULL)FreeHistogram(*histptr);
+  NewMemory((void **)&hist, sizeof(histogramdata));
+  *histptr = hist;
+
+  InitHistogram(hist, NHIST_BUCKETS, NULL, NULL);
+  for(i = 0; i < nsliceinfo; i++){
+    slicedata *slicei;
+
+    slicei = sliceinfo + i;
+    if(slicei->loaded == 0 || strcmp(slicei->label.shortlabel, label) != 0)continue;
     MergeHistogram(hist, slicei->histograms, MERGE_BOUNDS);
   }
 }
@@ -1768,7 +1751,7 @@ void UpdateSliceHist(void){
   int is_fed = 0;
 
   histograms_defined = 1;
-  GetAllSliceHists();
+  ComputeLoadedSliceHist(NULL);
   if(hists256_slice != NULL){
     for(i = 0; i < nhists256_slice; i++){
       FreeHistogram(hists256_slice + i);
@@ -5143,9 +5126,9 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
 
     update_slicefile_bounds = 1; // temporary fix to make sure bounds are always up to date
     update_slice2device = 1;
-    if(update_slicefile_bounds==1){
+    if(update_slicefile_bounds==0){
       update_slicefile_bounds = 0;
-      GetGlobalSliceBounds();
+      GetGlobalSliceBounds(sd->label.shortlabel);
       SetLoadedSliceBounds(NULL, 0);
     }
     GetMinMax(BOUND_SLICE, sd->label.shortlabel, &set_valmin, &qmin, &set_valmax, &qmax);
@@ -5153,7 +5136,8 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
       cpp_boundsdata *bounds;
 
       bounds = GetBoundsData(BOUND_SLICE);
-      ComputeLoadedSliceHist(bounds->label, &(bounds->hist));
+      ComputeLoadedSliceHist(bounds->label);
+      MergeLoadedSliceHist(bounds->label, &(bounds->hist));
       if(bounds->hist!=NULL&&bounds->hist->defined==1){
         if(set_valmin==BOUND_PERCENTILE_MIN){
           GetHistogramValProc(bounds->hist, percentile_level_min, &qmin);
@@ -6063,8 +6047,6 @@ void DrawVolSliceCellFaceCenterValues(const slicedata *sd, int flag){
 
 }
 
-#define FDS_OFFSET 0.01
-
 /* ------------------ DrawVolSliceTerrain ------------------------ */
 
 void DrawVolSliceTerrain(const slicedata *sd){
@@ -6118,7 +6100,7 @@ void DrawVolSliceTerrain(const slicedata *sd){
       voffset = agl_smv;
     }
     else{
-      voffset = MAX(agl_smv, SCALE2FDS(FDS_OFFSET))+slice_dz;
+      voffset = MAX(agl_smv, slice_dz);
     }
 
     zmin = meshi->zplt_orig[0];
@@ -8645,7 +8627,7 @@ void DrawVVolSliceTerrain(const vslicedata *vd){
       voffset = agl_smv;
     }
     else{
-      voffset = MAX(agl_smv, SCALE2FDS(FDS_OFFSET))+slice_dz;
+      voffset = MAX(agl_smv, slice_dz);
     }
 
     zmin  = meshi->zplt_orig[0];

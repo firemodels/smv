@@ -1987,7 +1987,8 @@ extern "C" void SliceBoundsCPP_CB(int var){
     case BOUND_COMPUTE_ONLY_PERCENTILES:
       bounds = GetBoundsData(BOUND_SLICE);
       if(var==BOUND_COMPUTE_PERCENTILES||bounds->hist==NULL){
-        ComputeLoadedSliceHist(bounds->label,&(bounds->hist));
+        ComputeLoadedSliceHist(bounds->label);
+        MergeLoadedSliceHist(bounds->label, &(bounds->hist));
       }
       if(bounds->hist!=NULL&&bounds->hist->defined==1){
         float per_00, per_50, per_100;
@@ -2010,7 +2011,8 @@ extern "C" void SliceBoundsCPP_CB(int var){
       if(GetPercentileDraw(BOUND_SLICE)==1){
         bounds = GetBoundsData(BOUND_SLICE);
         if(bounds->hist==NULL){
-          ComputeLoadedSliceHist(bounds->label,&(bounds->hist));
+          ComputeLoadedSliceHist(bounds->label);
+          MergeLoadedSliceHist(bounds->label, &(bounds->hist));
         }
         if(bounds->hist!=NULL&&bounds->hist->defined==1){
           float hist_min, hist_max;
@@ -4120,9 +4122,9 @@ extern "C" void ImmersedBoundCB(int var){
         case OUTLINE_HIDDEN:
           show_slice_outlines[i]=0;
           break;
-	default:
-	  ASSERT(FFALSE);
-	  break;
+	      default:
+	        ASSERT(FFALSE);
+	        break;
       }
     }
     if(RADIO_slice_edgetype!=NULL)RADIO_slice_edgetype->set_int_val(glui_slice_edgetype);

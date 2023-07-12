@@ -12,9 +12,519 @@
 #define BUILD_GEOM_OFFSETS 0
 #define GET_GEOM_OFFSETS  -1
 
-void UpdateGeomTriangles(geomdata *geomi, int geom_type);
+// !  ------------------ PtInTriangle ------------------------
 
-/* ------------------ GetTriangleNormal ------------------------ */
+int PtInTriangle(float *xy, float *v0, float *v1, float *v2, float *zval){
+  float l[3];
+  float denom;
+
+  // (   1   1   1 ) ( l0 )    ( 1 )
+  // ( v00 v10 v20 ) ( l1 ) =  ( x )
+  // ( v01 v11 v21 ) ( l2 )    ( y )
+
+  //      |   1   1   1 |
+  // l0 = |   x v10 v20 | / denom
+  //      |   y v11 v21 |
+
+  //      |   1   1   1 |
+  // l1 = |   v00 x v20 | / denom
+  //      |   v01 y v21 |
+
+  //      |   1   1   1 |
+  // l2 = |   v00 v10 x | / denom
+  //      |   v01 v11 y |
+
+  denom = (v1[0]*v2[1]-v1[1]*v2[0]) - (v0[0]*v2[1]-v0[1]*v2[0]) + (v0[0]*v1[1]-v0[1]*v1[0]);
+  if(denom == 0.0)return 0;
+
+  l[0] = (v1[0]*v2[1]-v1[1]*v2[0]) - (xy[0]*v2[1]-xy[1]*v2[0]) + (xy[0]*v1[1]-xy[1]*v1[0]);
+  l[0] /= denom;
+  if(ABS(l[0]) > 1.0)return 0;
+
+  l[1] = (xy[0]*v2[1]-xy[1]*v2[0]) - (v0[0]*v2[1]-v0[1]*v2[0]) + (v0[0]*xy[1]-v0[1]*xy[0]);
+  l[1] /= denom;
+  if(ABS(l[1]) > 1.0)return 0;
+
+  l[2] = (v1[0]*xy[1]-v1[1]*xy[0]) - (v0[0]*xy[1]-v0[1]*xy[0]) + (v0[0]*v1[1]-v0[1]*v1[0]);
+  l[2] /= denom;
+  if(ABS(l[2]) > 1.0)return 0;
+
+  *zval = l[0]*v0[2] + l[1]*v1[2] + l[2]*v2[2];
+  return 1;
+}
+
+// !  ------------------ Geom2Ter ------------------------
+
+void Geom2Ter(float *verts, int nverts, int *triangles, int ntriangles, float *xb, int nx, int ny, float *zvals){
+  int i, nvals;
+  unsigned char *set;
+  float dx, dy;
+  float xmin, xmax, ymin, ymax;
+
+  xmin = xb[0];
+  ymin = xb[2];
+  xmax = xb[1];
+  ymax = xb[3];
+
+  nvals = nx*ny;
+  NewMemory((void **)&set, nvals);
+  for(i = 0;i < nvals;i++){
+    set[i] = 0;
+  }
+  dx = (xmax - xmin) / (float)nx;
+  dy = (ymax - ymin) / (float)ny;
+  for(i = 0;i < ntriangles;i++){
+    int *trii;
+    float *v0, *v1, *v2;
+    float xtmin, xtmax, ytmin, ytmax;
+    int imin, imax, jmin, jmax;
+    int ii;
+    float xy[2];
+
+    trii = triangles + 3*i;
+    v0 = verts + 3*trii[0];
+    v1 = verts + 3*trii[1];
+    v2 = verts + 3*trii[2];
+    xtmin = MIN(MIN(v0[0], v1[0]), v2[0]);
+    xtmax = MAX(MAX(v0[0], v1[0]), v2[0]);
+    ytmin = MIN(MIN(v0[1], v1[1]), v2[1]);
+    ytmax = MAX(MAX(v0[1], v1[1]), v2[1]);
+    imin = (xtmin - xmin) / dx;
+    imax = (xtmax - xmin) / dx+1;
+    jmin = (ytmin - ymin) / dy;
+    jmax = (ytmax - ymin) / dy+1;
+    for(ii = imin;ii <= imax;ii++){
+      int jj;
+
+      xy[0] = ymin + (float)ii*dx;
+
+      for(jj = jmin;jj <= jmax;jj++){
+        float zval;
+
+        xy[1] = ymax + (float)jj*dy;
+        if(PtInTriangle(xy, v0, v1, v2, &zval)==1){
+          zvals[jj*nx+ii] = zval;
+          set[jj*nx+ii] = 1;
+        }
+      }
+    }
+  }
+}
+
+// !  ------------------ Distance3 ------------------------
+
+float Distance3(float v1[3], float v2[3]){
+  float dx = v1[0] - v2[0];
+  float dy = v1[1] - v2[1];
+  float dz = v1[2] - v2[2];
+  return sqrt(dx * dx + dy * dy + dz * dz);
+}
+
+// !  ------------------ GetVertType ------------------------
+
+void GetVertType(int nverts, int *triangles, int ntriangles, int *vert_type){
+  // ! classify each vertex in a geometry as either interior or exterior
+  // ! a vertex VI is interior if the vertices connected to I form a cycle or
+  // loop ! ie VI is connected to v1, v2, v3 and v1 -> v2 -> v3 -> v1 ! if they
+  // don't form a loop then it is an exterior vertex
+
+  // ! exterior vertices (connected to a blockage or mesh boundary) won't be
+  // moved or deleted
+  int *trii;
+
+  // ! count number of triangles connected to each vertex
+  int *tri_count;
+
+  NewMemory((void **)&tri_count, nverts*sizeof(int));
+  memset(tri_count, 0, nverts * sizeof(*tri_count));
+
+  int i;
+  for (i = 0; i < ntriangles; i++){
+    trii = triangles + 3*i;
+
+    int j;
+    for (j = 0; j < 3; j++){
+      int vertj_index = trii[j];
+
+      if(vertj_index >= 1 && vertj_index <= nverts)tri_count[vertj_index]++;
+    }
+  }
+
+  int maxcount = tri_count[0];
+  for (i = 1; i < nverts; i++){
+    maxcount = MAX(maxcount, tri_count[i]);
+  }
+  FREEMEMORY(tri_count);
+
+  // ! construct a list of triangles connected to each vertex
+  // ! vert_trilist(I,1) contains number of triangles connected to vertex I
+  // ! vert_trilist(I,2-> ) contains the triangle indices
+
+  int *vert_trilist;
+  NewMemory((void **)&vert_trilist, nverts * (maxcount + 1)*sizeof(int));
+  memset(vert_trilist, 0, nverts * (maxcount + 1) * sizeof(*vert_trilist));
+
+  for (i = 0; i < ntriangles; i++){
+    trii = &triangles[3 * i];
+
+    int j;
+    for (j = 0; j < 3; j++){
+      int vertj_index = trii[j];
+      if(vertj_index >= 1 && vertj_index <= nverts){
+        vert_trilist[vertj_index * nverts +
+                     1]++; // bump triangle count by 1 for vertex j
+        int k = vert_trilist[vertj_index * nverts + 1] + 1;
+        vert_trilist[vertj_index * nverts + k] =
+            i; // put triangle index into triangle count + 1
+      }
+    }
+  }
+
+  memset(vert_type, 1, nverts * sizeof(*vert_type));
+
+  int *vert_count;
+  NewMemory((void **)&vert_count, nverts*sizeof(int));
+  memset(vert_count, 0, nverts * sizeof(*vert_count));
+
+  // ! count vertices connected to each vertex
+  for (i = 1; i < nverts; i++){
+    memset(vert_count, 0, nverts * sizeof(*vert_count));
+
+    int j;
+    for (j = 1; j <= vert_trilist[i * nverts + 1];
+         j++){ // loop over triangles connected to vertex I
+      int trij_index = vert_trilist[i * nverts + j];
+
+      int k;
+      for (k = 1; k <= 3; k++){ // loop over vertices of triangle J
+        int vertk_index = triangles[3 * trij_index - 3 + k];
+        if(vertk_index != i) vert_count[vertk_index]++;
+      }
+    }
+    for (j = 1; j < nverts; j++){
+      if(vert_count[j] == 1){ // consider all vertices that are connected to vertex I
+        vert_type[i] = 0; // if all of these neighbors have two neighbors among
+                          // this set then I is interior
+        break; // if at least one of these neighbors has only one neigbor
+                    // among this set then I is on the exterior
+      }
+    }
+  }
+
+  FREEMEMORY(vert_trilist);
+  FREEMEMORY(vert_count);
+}
+
+// !  ------------------ AverageVerts2 ------------------------
+
+void AverageVerts2(float v1[3], int v1type, float v2[3], int v2type,
+                    float mesh_bounds[6], float *vavg){
+  float BOXEPS = 0.001;
+
+  if(v1type == 0){
+    vavg[0] = v1[0];
+    vavg[1] = v1[1];
+    vavg[2] = v1[2];
+    return;
+  }
+
+  if(v2type == 0){
+    vavg[0] = v2[0];
+    vavg[1] = v2[1];
+    vavg[2] = v2[2];
+    return;
+  }
+
+  if(fabs(v1[0] - mesh_bounds[0]) < BOXEPS ||
+      fabs(v1[0] - mesh_bounds[1]) < BOXEPS){
+    vavg[0] = v1[0];
+  }
+  else if(fabs(v2[0] - mesh_bounds[0]) < BOXEPS ||
+             fabs(v2[0] - mesh_bounds[1]) < BOXEPS){
+    vavg[0] = v2[0];
+  }
+  else{
+    vavg[0] = (v1[0] + v2[0]) / 2.0;
+  }
+
+  if(fabs(v1[1] - mesh_bounds[2]) < BOXEPS ||
+      fabs(v1[1] - mesh_bounds[4 - 1]) < BOXEPS){
+    vavg[1] = v1[1];
+  }
+  else if(fabs(v2[1] - mesh_bounds[2]) < BOXEPS ||
+             fabs(v2[1] - mesh_bounds[4 - 1]) < BOXEPS){
+    vavg[1] = v2[1];
+  }
+  else{
+    vavg[1] = (v1[1] + v2[1]) / 2.0;
+  }
+
+  if(fabs(v1[2] - mesh_bounds[5 - 1]) < BOXEPS ||
+      fabs(v1[2] - mesh_bounds[6 - 1]) < BOXEPS){
+    vavg[2] = v1[2];
+  }
+  else if(fabs(v2[2] - mesh_bounds[5 - 1]) < BOXEPS ||
+             fabs(v2[2] - mesh_bounds[6 - 1]) < BOXEPS){
+    vavg[2] = v2[2];
+  }
+  else{
+    vavg[2] = (v1[2] + v2[2]) / 2.0;
+  }
+}
+
+// !  ------------------ AverageVerts3 ------------------------
+
+void AverageVerts3(float v1[3], int v1type, float v2[3], int v2type,
+                    float v3[3], int v3type, float mesh_bounds[6],
+                    float *vavg){
+  float BOXEPS = 0.001;
+
+  if(v1type == 0){
+    vavg[0] = v1[0];
+    vavg[1] = v1[1];
+    vavg[2] = v1[2];
+    return;
+  }
+
+  if(v2type == 0){
+    vavg[0] = v2[0];
+    vavg[1] = v2[1];
+    vavg[2] = v2[2];
+    return;
+  }
+
+  if(v3type == 0){
+    vavg[0] = v3[0];
+    vavg[1] = v3[1];
+    vavg[2] = v3[2];
+    return;
+  }
+
+  if(fabs(v1[0] - mesh_bounds[0]) < BOXEPS ||
+      fabs(v1[0] - mesh_bounds[1]) < BOXEPS){
+    vavg[0] = v1[0];
+  }
+  else if(fabs(v2[0] - mesh_bounds[0]) < BOXEPS ||
+             fabs(v2[0] - mesh_bounds[1]) < BOXEPS){
+    vavg[0] = v2[0];
+  }
+  else if(fabs(v3[0] - mesh_bounds[0]) < BOXEPS ||
+             fabs(v3[0] - mesh_bounds[1]) < BOXEPS){
+    vavg[0] = v3[0];
+  }
+  else{
+    vavg[0] = (v1[0] + v2[0] + v3[0]) / 3.0;
+  }
+
+  if(fabs(v1[1] - mesh_bounds[2]) < BOXEPS ||
+      fabs(v1[1] - mesh_bounds[4 - 1]) < BOXEPS){
+    vavg[1] = v1[1];
+  }
+  else if(fabs(v2[1] - mesh_bounds[2]) < BOXEPS ||
+             fabs(v2[1] - mesh_bounds[4 - 1]) < BOXEPS){
+    vavg[1] = v2[1];
+  }
+  else if(fabs(v3[1] - mesh_bounds[2]) < BOXEPS ||
+             fabs(v3[1] - mesh_bounds[4 - 1]) < BOXEPS){
+    vavg[1] = v3[1];
+  }
+  else{
+    vavg[1] = (v1[1] + v2[1] + v3[1]) / 3.0;
+  }
+
+  if(fabs(v1[2] - mesh_bounds[5 - 1]) < BOXEPS ||
+      fabs(v1[2] - mesh_bounds[6 - 1]) < BOXEPS){
+    vavg[2] = v1[2];
+  }
+  else if(fabs(v2[2] - mesh_bounds[5 - 1]) < BOXEPS ||
+             fabs(v2[2] - mesh_bounds[6 - 1]) < BOXEPS){
+    vavg[2] = v2[2];
+  }
+  else if(fabs(v3[2] - mesh_bounds[5 - 1]) < BOXEPS ||
+             fabs(v3[2] - mesh_bounds[6 - 1]) < BOXEPS){
+    vavg[2] = v3[2];
+  }
+  else{
+    vavg[2] = (v1[2] + v2[2] + v3[2]) / 3.0;
+  }
+}
+
+/* ------------------ DecimateGeom ------------------------ */
+
+void DecimateGeom(float *verts, int *nvertsptr, int *faces, int *nfacesptr,
+              float mesh_bounds[6], float delta){
+  // This routine reduces the size of a geometry by
+  //  1) merging vertices that are "close" together
+  //  2) eliminating redundant vertices
+  //  3) eliminating "singular" triangles
+#define V_MERGED -1
+#define V_DISCARD 0
+#define V_ORIGINAL 1
+
+  int *vert_state, *vert_map, *vert_type;
+  int nverts, nfaces;
+
+  nverts = *nvertsptr;
+  nfaces = *nfacesptr;
+
+  NewMemory((void **)&vert_state, nverts*sizeof(int));
+  NewMemory((void **)&vert_map, nverts * sizeof(int));
+  NewMemory((void **)&vert_type, nverts * sizeof(int));
+
+  float *v1, *v2, *v3;
+  float *vert_from, *vert_to;
+
+  int *tri_from, *tri_to;
+  int tri_new[3];
+  int ito;
+  float vavg[3];
+
+  int have_small = 1;
+  int max_iter = 4;
+  int iter = 0;
+  while (have_small==1 &&
+         iter < max_iter){ // iterate until no further changes are made (or 10
+                            // times whichever comes first)
+    have_small = 0;
+
+    // ! vert_state
+    // !    V_MERGE =   -1  -  merged vertex
+    // !    V_DISCARD =  0  -  discard vertex
+    // !    V_ORIGINAL = 1  -  vertex kept and not changed
+
+    memset(vert_state, V_ORIGINAL, nverts * sizeof(*vert_state));
+
+    int i;
+    for (i = 0; i < nverts; i++){
+      vert_map[i] = i;
+    }
+
+    iter++;
+
+    GetVertType(nverts, faces, nfaces, vert_type);
+
+    // ! combine vertices that are close together
+
+    for (i = 0; i < nfaces; i++){
+      int *tri_i = faces + 3*i;
+      v1 = verts + 3 * tri_i[0];
+      v2 = verts + 3 * tri_i[1];
+      v3 = verts + 3 * tri_i[2];
+
+      // only look at triangles that have not changed
+      if(vert_state[tri_i[0]] != V_ORIGINAL || 
+         vert_state[tri_i[1]] != V_ORIGINAL || 
+         vert_state[tri_i[2]] != V_ORIGINAL)continue;
+
+      float d12 = Distance3(v1, v2);
+      float d13 = Distance3(v1, v3);
+      float d23 = Distance3(v2, v3);
+      if(d12 > delta && d13 > delta && d23 > delta)continue; // triangle too large, do not combine verts
+
+      have_small = 1;
+      if(d12 < delta && d13 > delta && d23 > delta){ // combine verts 1 and 2 leave 3 alone
+        vert_state[tri_i[0]] = V_MERGED;
+        vert_state[tri_i[1]] = V_DISCARD;
+        AverageVerts2(v1, vert_type[tri_i[0]], v2, vert_type[tri_i[1]], mesh_bounds, vavg);
+        v1[0] = vavg[0];
+        v1[1] = vavg[1];
+        v1[2] = vavg[2];
+        vert_map[tri_i[1]] = tri_i[0];
+        tri_i[1] = tri_i[0];
+      } 
+      else if(d13 < delta && d12 > delta && d23 > delta){ // combine verts 1 and 3
+        vert_state[tri_i[0]] = V_MERGED;
+        vert_state[tri_i[2]] = V_DISCARD;
+        AverageVerts2(v1, vert_type[tri_i[0]], v3, vert_type[tri_i[2]],
+                       mesh_bounds, vavg);
+        v1[0] = vavg[0];
+        v1[1] = vavg[1];
+        v1[2] = vavg[2];
+        vert_map[tri_i[2]] = tri_i[0];
+        tri_i[2] = tri_i[0];
+      } 
+      else if(d23 < delta && d12 > delta && d13 > delta){ // combine verts 2 and 3
+        vert_state[tri_i[1]] = V_MERGED;
+        vert_state[tri_i[2]] = V_DISCARD;
+        AverageVerts2(v2, vert_type[tri_i[1]], v3, vert_type[tri_i[2]],
+                       mesh_bounds, vavg);
+        v2[0] = vavg[0];
+        v2[1] = vavg[1];
+        v2[2] = vavg[2];
+        vert_map[tri_i[2]] = tri_i[1];
+        tri_i[2] = tri_i[1];
+      } 
+      else{ // combine verts 1, 2 and 3
+        vert_state[tri_i[0]] = V_MERGED;
+        vert_state[tri_i[1]] = V_DISCARD;
+        vert_state[tri_i[2]] = V_DISCARD;
+        AverageVerts3(v1, vert_type[tri_i[0]], v2, vert_type[tri_i[1]], v3,
+                       vert_type[tri_i[2]], mesh_bounds, vavg);
+        v1[0] = vavg[0];
+        v1[1] = vavg[1];
+        v1[2] = vavg[2];
+        vert_map[tri_i[1]] = tri_i[0];
+        vert_map[tri_i[2]] = tri_i[0];
+        tri_i[1] = tri_i[0];
+        tri_i[2] = tri_i[0];
+      }
+    }
+
+    // ! remap triangle vertices
+
+    for (i = 0; i < nfaces; i++){
+      int *tri_i = faces + 3*i;
+
+      tri_i[0] = vert_map[tri_i[0]];
+      tri_i[1] = vert_map[tri_i[1]];
+      tri_i[2] = vert_map[tri_i[2]];
+    }
+
+    // ! construct new vertex list skipping over vertices that have been removed
+
+    ito = 0;
+    int ifrom;
+    for (ifrom = 0; ifrom < nverts; ifrom++){
+      if(vert_state[ifrom] != V_DISCARD){
+        ito++;
+        vert_from  = verts + 3*ifrom;
+        vert_to    = verts + 3*ito;
+        vert_to[0] = vert_from[0];
+        vert_to[1] = vert_from[1];
+        vert_to[2] = vert_from[2];
+      }
+      vert_map[ifrom] = ito;
+    }
+    nverts = ito;
+    *nvertsptr = nverts;
+
+    // ! eliminate singular triangles (as a result of merged vertices)
+
+    ito = 0;
+    for (ifrom = 0; ifrom < nfaces; ifrom++){
+      tri_from = faces + 3*ifrom;
+      if(tri_from[0] != tri_from[1] && tri_from[0] != tri_from[2] && tri_from[1] != tri_from[2]){
+        tri_new[0] = vert_map[tri_from[0]];
+        tri_new[1] = vert_map[tri_from[1]];
+        tri_new[2] = vert_map[tri_from[2]];
+        if(tri_new[0] != 0 && tri_new[1] != 0 && tri_new[2] != 0){
+          ito = ito + 1;
+          tri_to = faces + 3*ito;
+          tri_to[0] = tri_new[0];
+          tri_to[1] = tri_new[1];
+          tri_to[2] = tri_new[2];
+        }
+      }
+    }
+    nfaces = ito;
+    *nfacesptr = nfaces;
+  }
+  FREEMEMORY(vert_state);
+  FREEMEMORY(vert_map);
+  FREEMEMORY(vert_state);
+}
+  
+  /* ------------------ GetTriangleNormal ------------------------ */
 
 void GetTriangleNormal(float *v1, float *v2, float *v3, float *normal, float *area){
   double u[3], v[3], normal_local[3];
@@ -2344,7 +2854,7 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
       FREEMEMORY(patchi->geom_vals);
     }
   }
-  else {
+  else{
     int slicetype;
     boundsdata *sb;
     float qmin, qmax;
@@ -2402,7 +2912,7 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
   if(patchi->boundary == 1){
     iboundarytype = GetBoundaryType(patchi);
   }
-  else {
+  else{
     slicefile_labelindex = GetSliceBoundsIndexFromLabel(patchi->label.shortlabel);
   }
   if((slicei==NULL&&patchi->finalize==1)||(slicei!=NULL&&slicei->finalize==1)){
@@ -2427,7 +2937,8 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
         ComputeLoadedPatchHist(bounds->label, &(bounds->hist), &global_min, &global_max);
       }
       else{
-        ComputeLoadedSliceHist(bounds->label, &(bounds->hist));
+        ComputeLoadedSliceHist(bounds->label);
+        MergeLoadedSliceHist(bounds->label, &(bounds->hist));
       }
       if(bounds->hist->defined==1){
         if(bounds->set_valmin==BOUND_PERCENTILE_MIN){
@@ -2525,6 +3036,110 @@ void SetupReadAllGeom(void){
     geomi = cgeominfo+i;
     geomi->read_status = 0;
   }
+}
+
+/* ------------------ UpdateGeomTriangles ------------------------ */
+
+void UpdateGeomTriangles(geomdata *geomi, int geom_type){
+  geomlistdata *geomlisti;
+  tridata **connected_triangles;
+  int ntris, nverts, nconnected_triangles = 0;
+  int j;
+
+  if(geomi == NULL || geomi->display == 0 || geomi->loaded == 0)return;
+  if(geom_type == GEOM_STATIC){
+    geomlisti = geomi->geomlistinfo - 1;
+  }
+  else{
+    geomlisti = geomi->geomlistinfo + geomi->itime;
+  }
+
+  // initialize
+
+  ntris = geomlisti->ntriangles;
+  nverts = geomlisti->nverts;
+
+  for(j = 0; j < nverts; j++){
+    vertdata *vert;
+
+    vert = geomlisti->verts + j;
+    vert->ntriangles = 0;
+    vert->itriangle = 0;
+  }
+
+  // compute normal vector for each triangle
+
+  for(j = 0; j < ntris; j++){
+    tridata *trianglei;
+    vertdata **verts;
+
+    trianglei = geomlisti->triangles + j;
+    verts = trianglei->verts;
+    verts[0]->ntriangles++;
+    verts[1]->ntriangles++;
+    verts[2]->ntriangles++;
+    GetTriangleNormal(verts[0]->xyz, verts[1]->xyz, verts[2]->xyz, trianglei->vert_norm, &trianglei->area);
+  }
+
+  // allocate memory for total number of connected triangles
+
+  nconnected_triangles = 3 * ntris;
+  if(nconnected_triangles > 0){
+    NewMemory((void **)&connected_triangles, nconnected_triangles * sizeof(tridata *));
+    geomlisti->connected_triangles = connected_triangles;
+  }
+
+  // associate assign triangle to each vertex
+
+  for(j = 0; j < nverts; j++){
+    vertdata *vert;
+
+    vert = geomlisti->verts + j;
+    vert->triangles = connected_triangles;
+    connected_triangles += vert->ntriangles;
+  }
+  for(j = 0; j < ntris; j++){
+    tridata *trianglei;
+    vertdata **verts;
+
+    trianglei = geomlisti->triangles + j;
+    verts = trianglei->verts;
+    verts[0]->triangles[verts[0]->itriangle++] = trianglei;
+    verts[1]->triangles[verts[1]->itriangle++] = trianglei;
+    verts[2]->triangles[verts[2]->itriangle++] = trianglei;
+  }
+
+  // average normals for each vertex
+
+  for(j = 0; j < nverts; j++){
+    vertdata *vert;
+    float *vert_norm;
+
+    vert = geomlisti->verts + j;
+    vert_norm = vert->vert_norm;
+    if(vert->ntriangles > 0){
+      int k;
+
+      vert_norm[0] = 0.0;
+      vert_norm[1] = 0.0;
+      vert_norm[2] = 0.0;
+      for(k = 0; k < vert->ntriangles; k++){
+        tridata *tri;
+
+        tri = vert->triangles[k];
+        vert_norm[0] += tri->area * tri->vert_norm[0];
+        vert_norm[1] += tri->area * tri->vert_norm[1];
+        vert_norm[2] += tri->area * tri->vert_norm[2];
+      }
+      ReduceToUnit(vert_norm);
+    }
+    else{
+      vert_norm[0] = 0.0;
+      vert_norm[1] = 0.0;
+      vert_norm[2] = 1.0;
+    }
+  }
+  geomlisti->norms_defined = 1;
 }
 
 /* ------------------ ReadAllGeom ------------------------ */
@@ -3617,110 +4232,6 @@ FILE_SIZE ReadGeom(geomdata *geomi, int load_flag, int type, int *geom_frame_ind
   }
   PrintMemoryInfo;
   return return_filesize;
-}
-
-/* ------------------ UpdateGeomTriangles ------------------------ */
-
-void UpdateGeomTriangles(geomdata *geomi, int geom_type){
-  geomlistdata *geomlisti;
-  tridata **connected_triangles;
-  int ntris, nverts, nconnected_triangles = 0;
-  int j;
-
-  if(geomi==NULL||geomi->display==0||geomi->loaded==0)return;
-  if(geom_type==GEOM_STATIC){
-    geomlisti = geomi->geomlistinfo-1;
-  }
-  else{
-    geomlisti = geomi->geomlistinfo+geomi->itime;
-  }
-
-    // initialize
-
-  ntris = geomlisti->ntriangles;
-  nverts = geomlisti->nverts;
-
-  for(j = 0; j<nverts; j++){
-    vertdata *vert;
-
-    vert = geomlisti->verts+j;
-    vert->ntriangles=0;
-    vert->itriangle = 0;
-  }
-
-    // compute normal vector for each triangle
-
-  for(j = 0; j<ntris; j++){
-    tridata *trianglei;
-    vertdata **verts;
-
-    trianglei = geomlisti->triangles+j;
-    verts = trianglei->verts;
-    verts[0]->ntriangles++;
-    verts[1]->ntriangles++;
-    verts[2]->ntriangles++;
-    GetTriangleNormal(verts[0]->xyz, verts[1]->xyz, verts[2]->xyz, trianglei->vert_norm, &trianglei->area);
-  }
-
-    // allocate memory for total number of connected triangles
-
-  nconnected_triangles = 3*ntris;
-  if(nconnected_triangles>0){
-    NewMemory((void **)&connected_triangles,nconnected_triangles*sizeof(tridata *));
-    geomlisti->connected_triangles = connected_triangles;
-  }
-
-    // associate assign triangle to each vertex
-
-  for(j = 0; j<nverts; j++){
-    vertdata *vert;
-
-    vert = geomlisti->verts+j;
-    vert->triangles = connected_triangles;
-    connected_triangles += vert->ntriangles;
-  }
-  for(j = 0; j<ntris; j++){
-    tridata *trianglei;
-    vertdata **verts;
-
-    trianglei = geomlisti->triangles+j;
-    verts = trianglei->verts;
-    verts[0]->triangles[verts[0]->itriangle++] = trianglei;
-    verts[1]->triangles[verts[1]->itriangle++] = trianglei;
-    verts[2]->triangles[verts[2]->itriangle++] = trianglei;
-  }
-
-    // average normals for each vertex
-
-  for(j = 0; j<nverts; j++){
-    vertdata *vert;
-    float *vert_norm;
-
-    vert = geomlisti->verts+j;
-    vert_norm = vert->vert_norm;
-    if(vert->ntriangles>0){
-      int k;
-
-      vert_norm[0] = 0.0;
-      vert_norm[1] = 0.0;
-      vert_norm[2] = 0.0;
-      for(k = 0; k<vert->ntriangles; k++){
-        tridata *tri;
-
-        tri = vert->triangles[k];
-        vert_norm[0] += tri->area*tri->vert_norm[0];
-        vert_norm[1] += tri->area*tri->vert_norm[1];
-        vert_norm[2] += tri->area*tri->vert_norm[2];
-      }
-      ReduceToUnit(vert_norm);
-    }
-    else{
-      vert_norm[0] = 0.0;
-      vert_norm[1] = 0.0;
-      vert_norm[2] = 1.0;
-    }
-  }
-  geomlisti->norms_defined = 1;
 }
 
 /* ------------------ UpdatePatchGeomTriangles ------------------------ */
