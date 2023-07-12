@@ -922,6 +922,9 @@ extern "C" void GluiGeometrySetup(int main_window){
 
     PANEL_geom_offset_outline = glui_geometry->add_panel_to_panel(PANEL_group1, "offset outline/points");
     PANEL_geom_offset_outline->set_alignment(GLUI_ALIGN_LEFT);
+#define FDS_OFFSET 0.005
+ //   geom_norm_offset = (float)((int)(SCALE2FDS(FDS_OFFSET)));
+ //   geom_dz_offset = ( float )(( int )(SCALE2FDS(FDS_OFFSET)));
     glui_geometry->add_spinner_to_panel(PANEL_geom_offset_outline, "normal", GLUI_SPINNER_FLOAT, &geom_norm_offset);
     glui_geometry->add_spinner_to_panel(PANEL_geom_offset_outline, "vertical", GLUI_SPINNER_FLOAT, &geom_dz_offset);
 

@@ -6047,8 +6047,6 @@ void DrawVolSliceCellFaceCenterValues(const slicedata *sd, int flag){
 
 }
 
-#define FDS_OFFSET 0.01
-
 /* ------------------ DrawVolSliceTerrain ------------------------ */
 
 void DrawVolSliceTerrain(const slicedata *sd){
@@ -6102,7 +6100,7 @@ void DrawVolSliceTerrain(const slicedata *sd){
       voffset = agl_smv;
     }
     else{
-      voffset = MAX(agl_smv, SCALE2FDS(FDS_OFFSET))+slice_dz;
+      voffset = MAX(agl_smv, slice_dz);
     }
 
     zmin = meshi->zplt_orig[0];
@@ -8629,7 +8627,7 @@ void DrawVVolSliceTerrain(const vslicedata *vd){
       voffset = agl_smv;
     }
     else{
-      voffset = MAX(agl_smv, SCALE2FDS(FDS_OFFSET))+slice_dz;
+      voffset = MAX(agl_smv, slice_dz);
     }
 
     zmin  = meshi->zplt_orig[0];

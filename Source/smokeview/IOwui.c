@@ -216,7 +216,6 @@ void DrawTerrainGeom(int option){
     return;
   }
 
-
   showgeom_inside_domain_local = showgeom_inside_domain;
   if(drawing_boundary_files==1)showgeom_inside_domain_local = 0; // hide terrain within FDS domain if drawing boundary files
 
@@ -360,9 +359,9 @@ void DrawTerrainGeom(int option){
         if(terrain_showonly_top==1&&n1[2]<0.0)continue;
 
         for(j = 0; j<3; j++){
-          v1o[j] = v1[j]+SCALE2FDS(FDS_OFFSET*n1[j]);
-          v2o[j] = v2[j]+SCALE2FDS(FDS_OFFSET*n2[j]);
-          v3o[j] = v3[j]+SCALE2FDS(FDS_OFFSET*n3[j]);
+          v1o[j] = v1[j];
+          v2o[j] = v2[j];
+          v3o[j] = v3[j];
           if(j==2){
             v1o[j] = terrain_zmin+geom_vert_exag*(v1o[j]-terrain_zmin);
             v2o[j] = terrain_zmin+geom_vert_exag*(v2o[j]-terrain_zmin);
@@ -422,9 +421,9 @@ void DrawTerrainGeom(int option){
         if(terrain_showonly_top==1&&n1[2]<0.0)continue;
 
         for(j = 0; j<3; j++){
-          v1o[j] = v1[j]+SCALE2FDS(FDS_OFFSET*n1[j]);
-          v2o[j] = v2[j]+SCALE2FDS(FDS_OFFSET*n2[j]);
-          v3o[j] = v3[j]+SCALE2FDS(FDS_OFFSET*n3[j]);
+          v1o[j] = v1[j];
+          v2o[j] = v2[j];
+          v3o[j] = v3[j];
           if(j==2){
             v1o[j] = terrain_zmin+geom_vert_exag*(v1o[j]-terrain_zmin);
             v2o[j] = terrain_zmin+geom_vert_exag*(v2o[j]-terrain_zmin);
