@@ -12,6 +12,105 @@
 #define BUILD_GEOM_OFFSETS 0
 #define GET_GEOM_OFFSETS  -1
 
+// !  ------------------ PtInTriangle ------------------------
+
+int PtInTriangle(float *xy, float *v0, float *v1, float *v2, float *zval){
+  float l[3];
+  float denom;
+
+  // (   1   1   1 ) ( l0 )    ( 1 )
+  // ( v00 v10 v20 ) ( l1 ) =  ( x )
+  // ( v01 v11 v21 ) ( l2 )    ( y )
+
+  //      |   1   1   1 |
+  // l0 = |   x v10 v20 | / denom
+  //      |   y v11 v21 |
+
+  //      |   1   1   1 |
+  // l1 = |   v00 x v20 | / denom
+  //      |   v01 y v21 |
+
+  //      |   1   1   1 |
+  // l2 = |   v00 v10 x | / denom
+  //      |   v01 v11 y |
+
+  denom = (v1[0]*v2[1]-v1[1]*v2[0]) - (v0[0]*v2[1]-v0[1]*v2[0]) + (v0[0]*v1[1]-v0[1]*v1[0]);
+  if(denom == 0.0)return 0;
+
+  l[0] = (v1[0]*v2[1]-v1[1]*v2[0]) - (xy[0]*v2[1]-xy[1]*v2[0]) + (xy[0]*v1[1]-xy[1]*v1[0]);
+  l[0] /= denom;
+  if(ABS(l[0]) > 1.0)return 0;
+
+  l[1] = (xy[0]*v2[1]-xy[1]*v2[0]) - (v0[0]*v2[1]-v0[1]*v2[0]) + (v0[0]*xy[1]-v0[1]*xy[0]);
+  l[1] /= denom;
+  if(ABS(l[1]) > 1.0)return 0;
+
+  l[2] = (v1[0]*xy[1]-v1[1]*xy[0]) - (v0[0]*xy[1]-v0[1]*xy[0]) + (v0[0]*v1[1]-v0[1]*v1[0]);
+  l[2] /= denom;
+  if(ABS(l[2]) > 1.0)return 0;
+
+  *zval = l[0]*v0[2] + l[1]*v1[2] + l[2]*v2[2];
+  return 1;
+}
+
+// !  ------------------ Geom2Ter ------------------------
+
+void Geom2Ter(float *verts, int nverts, int *triangles, int ntriangles, float *xb, int nx, int ny, float *zvals){
+  int i, nvals;
+  unsigned char *set;
+  float dx, dy;
+  float xmin, xmax, ymin, ymax;
+
+  xmin = xb[0];
+  ymin = xb[2];
+  xmax = xb[1];
+  ymax = xb[3];
+
+  nvals = nx*ny;
+  NewMemory((void **)&set, nvals);
+  for(i = 0;i < nvals;i++){
+    set[i] = 0;
+  }
+  dx = (xmax - xmin) / (float)nx;
+  dy = (ymax - ymin) / (float)ny;
+  for(i = 0;i < ntriangles;i++){
+    int *trii;
+    float *v0, *v1, *v2;
+    float xtmin, xtmax, ytmin, ytmax;
+    int imin, imax, jmin, jmax;
+    int ii;
+    float xy[2];
+
+    trii = triangles + 3*i;
+    v0 = verts + 3*trii[0];
+    v1 = verts + 3*trii[1];
+    v2 = verts + 3*trii[2];
+    xtmin = MIN(MIN(v0[0], v1[0]), v2[0]);
+    xtmax = MAX(MAX(v0[0], v1[0]), v2[0]);
+    ytmin = MIN(MIN(v0[1], v1[1]), v2[1]);
+    ytmax = MAX(MAX(v0[1], v1[1]), v2[1]);
+    imin = (xtmin - xmin) / dx;
+    imax = (xtmax - xmin) / dx+1;
+    jmin = (ytmin - ymin) / dy;
+    jmax = (ytmax - ymin) / dy+1;
+    for(ii = imin;ii <= imax;ii++){
+      int jj;
+
+      xy[0] = ymin + (float)ii*dx;
+
+      for(jj = jmin;jj <= jmax;jj++){
+        float zval;
+
+        xy[1] = ymax + (float)jj*dy;
+        if(PtInTriangle(xy, v0, v1, v2, &zval)==1){
+          zvals[jj*nx+ii] = zval;
+          set[jj*nx+ii] = 1;
+        }
+      }
+    }
+  }
+}
+
 // !  ------------------ Distance3 ------------------------
 
 float Distance3(float v1[3], float v2[3]){
