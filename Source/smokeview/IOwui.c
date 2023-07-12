@@ -322,7 +322,7 @@ void DrawTerrainGeom(int option){
 
     //*** edges
 
-    if(show_faces_outline==1){
+    if(use_cfaces==0&&show_faces_outline==1){
       glPushMatrix();
       glTranslatef(0.0, 0.0, geom_dz_offset);
       glLineWidth(geom_linewidth);
