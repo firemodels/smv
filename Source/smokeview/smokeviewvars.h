@@ -1576,7 +1576,7 @@ SVEXTERN float backgroundbasecolor[4]  = {0.0, 0.0, 0.0, 1.0};
 SVEXTERN float backgroundcolor[4]      = {0.0, 0.0, 0.0, 1.0};
 SVEXTERN float foregroundbasecolor[4]  = {1.0, 1.0, 1.0, 1.0};
 SVEXTERN float foregroundcolor[4]      = {1.0, 1.0, 1.0, 1.0};
-SVEXTERN int   glui_outlinecolor[4]    = {0, 0, 255, 255};
+SVEXTERN int   glui_outlinecolor[4]    = {0, 255, 255, 255};
 #else
 SVEXTERN float backgroundbasecolor[4];
 SVEXTERN float backgroundcolor[4];
