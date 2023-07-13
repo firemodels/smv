@@ -3124,82 +3124,12 @@ void GetBoxGeomCorners(void){
     zmin = MIN(xyz[2], zmin);
     zmax = MAX(xyz[2], zmax);
   }
-
-  xmin = FDS2SMV_X(xmin);
-  xmax = FDS2SMV_X(xmax);
-  ymin = FDS2SMV_Y(ymin);
-  ymax = FDS2SMV_Y(ymax);
-  zmin = FDS2SMV_Z(zmin);
-  zmax = FDS2SMV_Z(zmax);
-
-  box_geom_corners[0][0] = xmin;
-  box_geom_corners[0][1] = ymin;
-  box_geom_corners[0][2] = zmin;
-
-  box_geom_corners[1][0] = xmax;
-  box_geom_corners[1][1] = ymin;
-  box_geom_corners[1][2] = zmin;
-
-  box_geom_corners[2][0] = xmin;
-  box_geom_corners[2][1] = ymax;
-  box_geom_corners[2][2] = zmin;
-
-  box_geom_corners[3][0] = xmax;
-  box_geom_corners[3][1] = ymax;
-  box_geom_corners[3][2] = zmin;
-
-  box_geom_corners[4][0] = xmin;
-  box_geom_corners[4][1] = ymin;
-  box_geom_corners[4][2] = zmax;
-
-  box_geom_corners[5][0] = xmax;
-  box_geom_corners[5][1] = ymin;
-  box_geom_corners[5][2] = zmax;
-
-  box_geom_corners[6][0] = xmin;
-  box_geom_corners[6][1] = ymax;
-  box_geom_corners[6][2] = zmax;
-
-  box_geom_corners[7][0] = xmax;
-  box_geom_corners[7][1] = ymax;
-  box_geom_corners[7][2] = zmax;
-
-}
-
-  /* ------------------ GetBoxCorners ------------------------ */
-
-void GetBoxCorners(float xbar_local, float ybar_local, float zbar_local){
-  box_corners[0][0] = 0.0;
-  box_corners[0][1] = 0.0;
-  box_corners[0][2] = 0.0;
-
-  box_corners[1][0] = xbar_local;
-  box_corners[1][1] = 0.0;
-  box_corners[1][2] = 0.0;
-
-  box_corners[2][0] = 0.0;
-  box_corners[2][1] = ybar_local;
-  box_corners[2][2] = 0.0;
-
-  box_corners[3][0] = xbar_local;
-  box_corners[3][1] = ybar_local;
-  box_corners[3][2] = 0.0;
-
-  box_corners[4][0] = 0.0;
-  box_corners[4][1] = 0.0;
-  box_corners[4][2] = zbar_local;
-
-  box_corners[5][0] = xbar_local;
-  box_corners[5][1] = 0.0;
-  box_corners[5][2] = zbar_local;
-
-  box_corners[6][0] = 0.0;
-  box_corners[6][1] = ybar_local;
-  box_corners[6][2] = zbar_local;
-
-  box_corners[7][0] = xbar_local;
-  box_corners[7][1] = ybar_local;
-  box_corners[7][2] = zbar_local;
+  xb_geom_smv[0] = FDS2SMV_X(xmin);
+  xb_geom_smv[1] = FDS2SMV_X(xmax);
+  xb_geom_smv[2] = FDS2SMV_Y(ymin);
+  xb_geom_smv[3] = FDS2SMV_Y(ymax);
+  xb_geom_smv[4] = FDS2SMV_Z(zmin);
+  xb_geom_smv[5] = FDS2SMV_Z(zmax);
 }
 
 /* ------------------ UpdateMeshBoxBounds ------------------------ */
@@ -3622,8 +3552,6 @@ void UpdateMeshCoords(void){
   xbar = FDS2SMV_X(xbar);
   ybar = FDS2SMV_Y(ybar);
   zbar = FDS2SMV_Z(zbar);
-
-  GetBoxCorners(xbar, ybar, zbar);
 
   for(i=0;i<nmeshes;i++){
     meshdata *meshi;
