@@ -3559,6 +3559,16 @@ void UpdateMeshCoords(void){
   xb_case_smv[4] = 0.0;
   xb_case_smv[5] = zbar;
 
+  float offset;
+  offset = (meshinfo->zplt[1] - meshinfo->zplt[0]) / 10.0;
+  if(is_terrain_case==1){
+    geom_dz_offset = offset;
+    geom_norm_offset = 0.0;
+  }
+  else{
+    geom_dz_offset = 0.0;
+    geom_norm_offset = offset;
+  }
 
   for(i=0;i<nmeshes;i++){
     meshdata *meshi;
