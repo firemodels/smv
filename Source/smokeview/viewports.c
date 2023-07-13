@@ -2209,71 +2209,13 @@ float DistPointLineSeg(float *point, float *xyz1, float *xyz2){
   return -1.0;
 }
 
-#define ALL_IN_FRUSTUM  0
-#define SOME_IN_FRUSTUM 1
-#define NONE_IN_FRUSTUM 2
-/* ------------------ GetMinMaxDist  ------------------------ */
-
-void GetMinMaxDist(float *point, float *xb, int n, float *minval, float *maxval, int *in_frustum){
-  float dx, dy, dz;
-  int k;
-  int all_in_frustum=1;
-  int none_in_frustum=1;
-
-  dx = (xb[1] - xb[0])/(float)(n-1);
-  dy = (xb[3] - xb[2])/(float)(n-1);
-  dz = (xb[5] - xb[4])/(float)(n-1);
-  *minval = 1.0;
-  *maxval = 0.0;
-  for(k = 0; k<n; k++){
-    float xyz[3];
-    int j;
-
-    xyz[2] = xb[4] + k * dz;
-    for(j = 0; j<n; j++){
-      int i;
-
-      xyz[1] = xb[2] + j * dy;
-      for(i = 0; i<n; i++){
-        float dist;
-
-        xyz[0] = xb[0] + i * dx;
-        if(SMVPointInFrustum(xyz)==0){
-          all_in_frustum=0;
-          continue;
-        }
-        else{
-          none_in_frustum = 0;
-        }
-        dist   = DistPtXYZ(point, xyz[0], xyz[1], xyz[2]);
-        if(*minval>*maxval){
-          *minval = dist;
-          *maxval = dist;
-        }
-        else{
-          *minval = MIN(*minval, dist);
-          *maxval = MAX(*maxval, dist);
-        }
-      }
-    }
-  }
-  if(all_in_frustum==1){
-    *in_frustum = ALL_IN_FRUSTUM;
-  }
-  else if(none_in_frustum==1){
-    *in_frustum = NONE_IN_FRUSTUM;
-  }
-  else{
-    *in_frustum = SOME_IN_FRUSTUM;
-  }
-}
-
 /* ------------------ DistPointBox  ------------------------ */
 
-void DistPointBox(float *point, float *xb, float *mindist, float *maxdist){
-  int i;
+void DistPointBox(float *point, float corners[8][3], float *mindist, float *maxdist){
+  int i, j, k;
   float xmin, xmax, ymin, ymax, zmin, zmax;
   float minval, maxval;
+  float dx, dy, dz;
 
   //         6------------7
   //        /|           /|
@@ -2287,17 +2229,44 @@ void DistPointBox(float *point, float *xb, float *mindist, float *maxdist){
   //   |/           |/
   //   0------------1
 
-  xmin = xb[0];
-  xmax = xb[1];
-  ymin = xb[2];
-  ymax = xb[3];
-  zmin = xb[4];
-  zmax = xb[5];
-  int in_frustum;
+  xmin = corners[0][0];
+  xmax = corners[1][0];
+  ymin = corners[0][1];
+  ymax = corners[2][1];
+  zmin = corners[0][2];
+  zmax = corners[4][2];
 
-  GetMinMaxDist(point, xb, 2, &minval, &maxval, &in_frustum);
-  if(in_frustum!=ALL_IN_FRUSTUM)GetMinMaxDist(point, xb, 10, &minval, &maxval, &in_frustum);
-  if(in_frustum!=NONE_IN_FRUSTUM){
+#define NIJK 10
+
+  dx = (xmax - xmin)/(float)(NIJK-1);
+  dy = (ymax - ymin)/(float)(NIJK-1);
+  dz = (zmax - zmin)/(float)(NIJK-1);
+  minval = 1.0;
+  maxval = 0.0;
+  for(k = 0; k<NIJK; k++){
+    float xyz[3];
+
+    xyz[2] = zmin+k*dz;
+    for(j = 0; j<NIJK; j++){
+      xyz[1] = ymin+j*dy;
+      for(i = 0; i<NIJK; i++){
+        float dist;
+
+        xyz[0] = xmin+i*dx;
+     //   if(SMVPointInFrustum(xyz)==0)continue;
+        dist   = DistPtXYZ(point, xyz[0], xyz[1], xyz[2]);
+        if(minval>maxval){
+          minval = dist;
+          maxval = dist;
+        }
+        else{
+          minval = MIN(minval, dist);
+          maxval = MAX(maxval, dist);
+        }
+      }
+    }
+  }
+  if(minval<=maxval){
     *mindist = minval;
     *maxdist = maxval;
   }
@@ -2321,67 +2290,73 @@ void DistPointBox(float *point, float *xb, float *mindist, float *maxdist){
   }
 }
 
-/* ------------------ GetGeomMinMax ------------------------ */
+/* ------------------ SetBoxCorners  ------------------------ */
 
-void GetGeomMinMax(float *geom_min, float *geom_max){
-  int i;
-  float *xyz;
-  geomdata *geomi;
-  vertdata *verti;
-  geomlistdata *geomlisti;
+void SetBoxCorners(float box[8][3], float xmin, float xmax, float ymin, float ymax, float zmin, float zmax){
+  box[0][0] = xmin;
+  box[0][1] = ymin;
+  box[0][2] = zmin;
 
-  if(geominfo == NULL || geominfo->geomlistinfo == NULL || geominfo == 0)return;
+  box[1][0] = xmax;
+  box[1][1] = ymin;
+  box[1][2] = zmin;
 
-  geomi = geominfo;
-  geomlisti = geomi->geomlistinfo - 1;
-  if(geomlisti->nverts <= 0)return;
+  box[2][0] = xmin;
+  box[2][1] = ymax;
+  box[2][2] = zmin;
 
-  verti = geomlisti->verts;
-  xyz = verti->xyz;
+  box[3][0] = xmax;
+  box[3][1] = ymax;
+  box[3][2] = zmin;
 
-  for(i = 0; i < geomlisti->nverts; i++){
-    float xyz_smv[3];
+  box[4][0] = xmin;
+  box[4][1] = ymin;
+  box[4][2] = zmax;
 
-    verti = geomlisti->verts + i;
-    xyz = verti->xyz;
-    xyz_smv[0] = FDS2SMV_X(xyz[0]);
-    xyz_smv[1] = FDS2SMV_Y(xyz[1]);
-    xyz_smv[2] = FDS2SMV_Z(xyz[2]);
-    if(SMVPointInFrustum(xyz_smv)==1){
-      float dist;
+  box[5][0] = xmax;
+  box[5][1] = ymin;
+  box[5][2] = zmax;
 
-      dist = DistPtXYZ(smv_eyepos, xyz_smv[0], xyz_smv[1], xyz_smv[2]);
-      *geom_min = MIN(*geom_min, dist);
-      *geom_max = MAX(*geom_max,dist);
-    }
-  }
+  box[6][0] = xmin;
+  box[6][1] = ymax;
+  box[6][2] = zmax;
+
+  box[7][0] = xmax;
+  box[7][1] = ymax;
+  box[7][2] = zmax;
 }
-
 
 /* ------------------ GetMinMaxDepth  ------------------------ */
 
 void GetMinMaxDepth(float *min_depth, float *max_depth){
 
-  DistPointBox(smv_eyepos, xb_case_smv, min_depth, max_depth);
-  GetGeomMinMax(min_depth, max_depth);
-//  printf("min=%f max=%f\n", *min_depth, *max_depth);
+  DistPointBox(smv_eyepos, box_corners, min_depth, max_depth);
 
   if(viscolorbarpath==1){
-    float xb_color[6], mn_depth, mx_depth;
+    float box[8][3], mn_depth, mx_depth;
+    float xmin, xmax, ymin, ymax, zmin, zmax;
 #define BMIN -0.2
 #define BMAX 1.5
-    xb_color[0] = BMIN;
-    xb_color[1] = BMAX;
-    xb_color[2] = BMIN;
-    xb_color[3] = BMAX;
-    xb_color[4] = BMIN;
-    xb_color[5] = BMAX;
-    DistPointBox(smv_eyepos, xb_color, &mn_depth, &mx_depth);
+    xmin = BMIN;
+    xmax = BMAX;
+    ymin = BMIN;
+    ymax = BMAX;
+    zmin = BMIN;
+    zmax = BMAX;
+    SetBoxCorners(box, xmin, xmax, ymin, ymax, zmin, zmax);
+    DistPointBox(smv_eyepos, box, &mn_depth, &mx_depth);
 
     *min_depth = MIN(mn_depth, *min_depth);
     *max_depth = MAX(mx_depth, *max_depth);
   }
 
+  if(have_box_geom_corners==1){
+    float mindist, maxdist;
+
+    DistPointBox(smv_eyepos, box_geom_corners, &mindist, &maxdist);
+    *min_depth = MIN(*min_depth, mindist);
+    *max_depth = MAX(*max_depth, maxdist);
+  }
 
   // get distance to each tour node
 
