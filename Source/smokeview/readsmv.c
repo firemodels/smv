@@ -3552,6 +3552,13 @@ void UpdateMeshCoords(void){
   xbar = FDS2SMV_X(xbar);
   ybar = FDS2SMV_Y(ybar);
   zbar = FDS2SMV_Z(zbar);
+  xb_case_smv[0] = 0.0;
+  xb_case_smv[1] = xbar;
+  xb_case_smv[2] = 0.0;
+  xb_case_smv[3] = ybar;
+  xb_case_smv[4] = 0.0;
+  xb_case_smv[5] = zbar;
+
 
   for(i=0;i<nmeshes;i++){
     meshdata *meshi;
