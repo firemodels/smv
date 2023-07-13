@@ -16,6 +16,7 @@
 #include "IOvolsmoke.h"
 #include "stdio_buffer.h"
 #include "glui_motion.h"
+#include "getdata.h"
 
 #define BREAK break
 #define BREAK2 \
@@ -5899,7 +5900,7 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
   if(read_slice_header==1){
     int error;
 
-    GetSliceFileHeader(sd->file, &ii1, &ii2, &jj1, &jj2, &kk1, &kk2, &error);
+    getsliceheader(sd->file, &ii1, &ii2, &jj1, &jj2, &kk1, &kk2, &error);
   }
   if(cellcenter==1){
     ii1 = MAX(ii1, 1);

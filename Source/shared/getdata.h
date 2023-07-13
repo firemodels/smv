@@ -43,8 +43,8 @@ void getpatchdata(FILE *file, int npatch, int *pi1, int *pi2, int *pj1,
                   int *pj2, int *pk1, int *pk2, float *patchtime, float *pqq,
                   int *npqq, int *file_size, int *error);
 void getdata1(FILE *file, int *ipart, int *error) ;
-void getslicefiledirection(int *is1, int *is2, int *iis1, int *iis2, int *js1,
-                           int *js2, int *ks1, int *ks2, int *idir, int *joff,
+void getslicefiledirection(int is1, int *is2, int *iis1, int *iis2, int js1,
+                           int *js2, int ks1, int *ks2, int *idir, int *joff,
                            int *koff, int *volslice);
 void writeslicedata(const char *slicefilename, int is1, int is2, int js1,
                     int js2, int ks1, int ks2, float *qdata, float *times,

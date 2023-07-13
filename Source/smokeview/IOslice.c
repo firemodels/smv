@@ -3166,7 +3166,7 @@ void GetSliceParams(void){
         js2=sd->js2;
         ks1=sd->ks1;
         ks2=sd->ks2;
-        getslicefiledirection(&is1, &is2, &iis1, &iis2, &js1, &js2, &ks1, &ks2, &idir, &joff, &koff,&volslice);
+        getslicefiledirection(is1, &is2, &iis1, &iis2, js1, &js2, ks1, &ks2, &idir, &joff, &koff,&volslice);
         if(volslice == 1){
           is1 = iis1;
           is2 = iis2;
@@ -4233,54 +4233,6 @@ void InitSlice3DTexture(meshdata *meshi){
 }
 #endif
 
-/* ------------------ GetSliceFileDirection ------------------------ */
-
-void GetSliceFileDirection(int is1, int *is2ptr, int *iis1ptr, int *iis2ptr, int js1, int *js2ptr, int ks1, int *ks2ptr, int *idirptr, int *joffptr, int *koffptr, int *volsliceptr){
-  int nxsp, nysp, nzsp;
-  int imin;
-
-  nxsp = *is2ptr+1-is1;
-  nysp = *js2ptr+1-js1;
-  nzsp = *ks2ptr+1-ks1;
-  *joffptr = 0;
-  *koffptr = 0;
-  *volsliceptr = 0;
-  *iis1ptr = is1;
-  *iis2ptr = *is2ptr;
-  if(is1!=*is2ptr&&js1!=*js2ptr&&ks1!=*ks2ptr){
-    *idirptr = 1;
-    *is2ptr = is1;
-    *volsliceptr = 1;
-    return;
-  }
-  imin = MIN(nxsp, nysp);
-  imin = MIN(imin, nzsp);
-  if(nxsp==imin){
-    *idirptr = 1;
-    *is2ptr = is1;
-  }
-  else if(nysp==imin){
-    *idirptr = 2;
-    *js2ptr = js1;
-  }
-  else{
-    *idirptr = 3;
-    *ks2ptr = ks1;
-  }
-  if(is1==*is2ptr&&js1==*js2ptr){
-    *idirptr = 1;
-    *joffptr = 1;
-  }
-  else if(is1==*is2ptr&&ks1==*ks2ptr){
-    *idirptr = 1;
-    *koffptr = 1;
-  }
-  else if(js1==*js2ptr&&ks1==*ks2ptr){
-    *idirptr = 2;
-    *koffptr = 1;
-  }
-}
-
 /* ------------------ GetSliceSizes ------------------------ */
 
 void GetSliceSizes(slicedata *sd, const char *slicefilenameptr, int time_frame, int *nsliceiptr, int *nslicejptr, int *nslicekptr, int *ntimesptr, int tload_step_arg,
@@ -4324,7 +4276,7 @@ void GetSliceSizes(slicedata *sd, const char *slicefilenameptr, int time_frame, 
   nysp = jp2 + 1 - jp1;
   nzsp = kp2 + 1 - kp1;
 
-  GetSliceFileDirection(ip1, &ip2, &iip1, &iip2, jp1, &jp2, kp1, &kp2, &idir, &joff, &koff, &volslice);
+  getslicefiledirection(ip1, &ip2, &iip1, &iip2, jp1, &jp2, kp1, &kp2, &idir, &joff, &koff, &volslice);
   *nsliceiptr = nxsp;
   *nslicejptr = nysp + joff;
   *nslicekptr = nzsp + koff;
@@ -4368,33 +4320,6 @@ void GetSliceSizes(slicedata *sd, const char *slicefilenameptr, int time_frame, 
   }
   *errorptr = 0;
   FCLOSE_SLICE(SLICEFILE);
-}
-
-/* ------------------ GetSliceFileHeader ------------------------ */
-
-void GetSliceFileHeader(char *file, int *ip1, int *ip2, int *jp1, int *jp2, int *kp1, int *kp2, int *error){
-  FILE *stream = NULL;
-  int vals[6];
-
-  stream = fopen(file, "rb");
-  *error = 1;
-  *ip1 = 0;
-  *ip2 = 0;
-  *jp1 = 0;
-  *jp2 = 0;
-  *kp1 = 0;
-  *kp2 = 0;
-  if(stream==NULL)return;
-  fseek(stream, 3*(4+30+4), SEEK_CUR);
-  fseek(stream, 4, SEEK_CUR); fread(vals, sizeof(int), 6, stream);
-  *ip1 = vals[0];
-  *ip2 = vals[1];
-  *jp1 = vals[2];
-  *jp2 = vals[3];
-  *kp1 = vals[4];
-  *kp2 = vals[5];
-  *error = 0;
-  fclose(stream);
 }
 
 /* ------------------ GetSliceData ------------------------ */
@@ -4466,7 +4391,7 @@ FILE_SIZE GetSliceData(slicedata *sd, const char *slicefilename, int time_frame,
   ny = nysp;
   nxy = nx*ny;
 
-  GetSliceFileDirection(*is1ptr, is2ptr, &iis1, &iis2, *js1ptr, js2ptr, *ks1ptr, ks2ptr, idirptr, &joff, &koff, &volslice);
+  getslicefiledirection(*is1ptr, is2ptr, &iis1, &iis2, *js1ptr, js2ptr, *ks1ptr, ks2ptr, idirptr, &joff, &koff, &volslice);
   sd->iis1 = *is1ptr;
   NewMemory((void **)&qq, nxsp*(nysp+joff)*(nzsp+koff)*sizeof(float));
 
@@ -4643,7 +4568,7 @@ int GetNSliceFrames(char *file, float *stime_min, float *stime_max){
   int header_size = 3*(4+30+4)+4+6*4+4;
   FILE_SIZE file_size = GetFileSizeSMV(file);
 
-  GetSliceFileHeader(file, &is1, &is2, &js1, &js2, &ks1, &ks2, &error);
+  getsliceheader(file, &is1, &is2, &js1, &js2, &ks1, &ks2, &error);
   int frame_size = 12;
   frame_size += 8+(is2+1-is1)*(js2+1-js1)*(ks2+1-ks1)*4;
   int nframes = (file_size-header_size)/frame_size;

@@ -298,7 +298,7 @@ void getsliceparms(const char *slicefilename, int *ip1, int *ip2, int *jp1,
   } else {
     *slice3d = 1;
   }
-  getslicefiledirection(ip1, ip2, &iip1, &iip2, jp1, jp2, kp1, kp2, &idir,
+  getslicefiledirection(*ip1, ip2, &iip1, &iip2, *jp1, jp2, *kp1, kp2, &idir,
                         &joff, &koff, &volslice);
 
   return;
@@ -379,7 +379,7 @@ void getslicesizes(const char *slicefilename, int *nslicei, int *nslicej,
   nysp = jp2 + 1 - jp1;
   nzsp = kp2 + 1 - kp1;
 
-  getslicefiledirection(&ip1, &ip2, &iip1, &iip2, &jp1, &jp2, &kp1, &kp2, &idir,
+  getslicefiledirection(ip1, &ip2, &iip1, &iip2, jp1, &jp2, kp1, &kp2, &idir,
                         &joff, &koff, &volslice);
   *nslicei = nxsp;
   *nslicej = nysp + joff;
@@ -807,43 +807,43 @@ void getdata1(FILE *file, int *ipart, int *error) {
 }
 
 // !  ------------------ getslicefiledirection ------------------------
-void getslicefiledirection(int *is1, int *is2, int *iis1, int *iis2, int *js1,
-                           int *js2, int *ks1, int *ks2, int *idir, int *joff,
+void getslicefiledirection(int is1, int *is2, int *iis1, int *iis2, int js1,
+                           int *js2, int ks1, int *ks2, int *idir, int *joff,
                            int *koff, int *volslice) {
   int nxsp, nysp, nzsp;
 
-  nxsp = *is2 + 1 - *is1;
-  nysp = *js2 + 1 - *js1;
-  nzsp = *ks2 + 1 - *ks1;
+  nxsp = *is2 + 1 - is1;
+  nysp = *js2 + 1 - js1;
+  nzsp = *ks2 + 1 - ks1;
   *joff = 0;
   *koff = 0;
   *volslice = 0;
-  *iis1 = *is1;
+  *iis1 = is1;
   *iis2 = *is2;
-  if (*is1 != *is2 && *js1 != *js2 && *ks1 != *ks2) {
+  if (is1 != *is2 && js1 != *js2 && ks1 != *ks2) {
     *idir = 1;
-    *is2 = *is1;
+    *is2 = is1;
     *volslice = 1;
     return;
   }
   int imin = MIN(MIN(nxsp, nysp), nzsp);
   if (nxsp == imin) {
     *idir = 1;
-    *is2 = *is1;
+    *is2 = is1;
   } else if (nysp == imin) {
     *idir = 2;
-    *js2 = *js1;
+    *js2 = js1;
   } else {
     *idir = 3;
-    *ks2 = *ks1;
+    *ks2 = ks1;
   }
-  if (*is1 == *is2 && *js1 == *js2) {
+  if (is1 == *is2 && js1 == *js2) {
     *idir = 1;
     *joff = 1;
-  } else if (*is1 == *is2 && *ks1 == *ks2) {
+  } else if (is1 == *is2 && ks1 == *ks2) {
     *idir = 1;
     *koff = 1;
-  } else if (*js1 == *js2 && *ks1 == *ks2) {
+  } else if (js1 == *js2 && ks1 == *ks2) {
     *idir = 2;
     *koff = 1;
   }
