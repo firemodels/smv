@@ -1054,6 +1054,7 @@ void DrawGeomBoundingBox(float *boundingbox_color){
 void DrawGeom(int flag, int timestate){
   int i;
   unsigned char black[]={0,0,0,255};
+  float black01[] = {0.0, 0.0, 0.0, 255};
   float blue[]={0.0,0.0,1.0,1.0};
   float skinny_color[]={1.0,0.0,0.0,1.0};
   float *last_color=NULL;
@@ -1510,10 +1511,12 @@ void DrawGeom(int flag, int timestate){
       glBegin(GL_LINES);
 
       unsigned char outlinecolor_uc[4];
-      outlinecolor_uc[0] = (unsigned char)glui_outlinecolor[0];
-      outlinecolor_uc[1] = (unsigned char)glui_outlinecolor[1];
-      outlinecolor_uc[2] = (unsigned char)glui_outlinecolor[2];
-      outlinecolor_uc[3] = (unsigned char)glui_outlinecolor[3];
+      if(geomi->geomtype != GEOM_ISO){
+        outlinecolor_uc[0] = (unsigned char)glui_outlinecolor[0];
+        outlinecolor_uc[1] = (unsigned char)glui_outlinecolor[1];
+        outlinecolor_uc[2] = (unsigned char)glui_outlinecolor[2];
+        outlinecolor_uc[3] = (unsigned char)glui_outlinecolor[3];
+      }
       glColor4ubv(outlinecolor_uc);
       for(j=0;j<geomlisti->ntriangles;j++){
         tridata *trianglei;
@@ -1530,16 +1533,18 @@ void DrawGeom(int flag, int timestate){
           if(show_iso_outline == 0)continue;
         }
 
-//        if(show_iso_shaded==1){
-//          color = black;
-//        }
-//        else{
-//          color = trianglei->geomsurf->color;
-//        }
-//        if(last_color!=color){
-//          glColor3fv(color);
-//          last_color=color;
-//        }
+        if(geomi->geomtype == GEOM_ISO){
+          if(show_iso_shaded == 1){
+            color = black01;
+          }
+          else{
+            color = trianglei->geomsurf->color;
+          }
+          if(last_color != color){
+            glColor3fv(color);
+            last_color = color;
+          }
+        }
         {
           float vert2a[3], vert2b[3], vert2c[3];
           float     *xyz0,     *xyz1,     *xyz2;
