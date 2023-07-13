@@ -1363,7 +1363,7 @@ void DrawGeom(int flag, int timestate){
               tx[j] = tvertj[0];
               ty[j] = tvertj[1];
             }
-            // textures on a sphereare periodic
+            // textures on a sphere are periodic
             if(trianglei->geomobj!=NULL && trianglei->geomobj->texture_mapping==TEXTURE_SPHERICAL){
               if(MAX(tx[0],tx[2])>0.8&&tx[1]<0.2){
                 tx[1]+=1.0;
