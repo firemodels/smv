@@ -41,6 +41,7 @@ int      ngeomprocinfo = 0;
 #define SURF_GET              50
 #define SHOWONLY_TOP          51
 #define GEOM_FDS_DOMAIN       52
+#define GEOM_OUTLINECOLOR     53
 
 #define HVAC_PROPS            -1
 #define HVAC_SHOWALL_NETWORK  -2
@@ -121,6 +122,7 @@ GLUI_Panel *PANEL_hvac_connections = NULL;
 GLUI_Panel *PANEL_hvac_group1 = NULL;
 GLUI_Panel *PANEL_hvac_group2 = NULL;
 
+GLUI_Panel *PANEL_outlinecolor=NULL;
 GLUI_Panel *PANEL_surf_color = NULL;
 GLUI_Panel *PANEL_surf_axis = NULL;
 GLUI_Panel *PANEL_surf_coloraxis = NULL;
@@ -142,6 +144,9 @@ GLUI_Spinner *SPINNER_hvac_filter_size    = NULL;
 GLUI_Spinner *SPINNER_hvac_duct_color[3];
 GLUI_Spinner *SPINNER_hvac_node_color[3];
 
+GLUI_Spinner *SPINNER_outlinecolor_red = NULL;
+GLUI_Spinner *SPINNER_outlinecolor_green = NULL;
+GLUI_Spinner *SPINNER_outlinecolor_blue = NULL;
 GLUI_Spinner *SPINNER_geom_ivecfactor = NULL;
 GLUI_Spinner *SPINNER_geom_vert_exag=NULL;
 GLUI_Spinner *SPINNER_geom_zmin = NULL, *SPINNER_geom_zmax = NULL, *SPINNER_geom_zlevel=NULL;
@@ -950,6 +955,13 @@ extern "C" void GluiGeometrySetup(int main_window){
     SPINNER_geom_ivecfactor = glui_geometry->add_spinner_to_panel(PANEL_normals, "length", GLUI_SPINNER_INT, &geom_ivecfactor, GEOM_IVECFACTOR, VolumeCB);
     SPINNER_geom_ivecfactor->set_int_limits(0, 200);
 
+    PANEL_outlinecolor = glui_geometry->add_panel_to_panel(PANEL_group1, "outline color");
+    SPINNER_outlinecolor_red   = glui_geometry->add_spinner_to_panel(PANEL_outlinecolor, "red",   GLUI_SPINNER_INT, glui_outlinecolor  , GEOM_OUTLINECOLOR, VolumeCB);
+    SPINNER_outlinecolor_green = glui_geometry->add_spinner_to_panel(PANEL_outlinecolor, "green", GLUI_SPINNER_INT, glui_outlinecolor+1, GEOM_OUTLINECOLOR, VolumeCB);
+    SPINNER_outlinecolor_blue  = glui_geometry->add_spinner_to_panel(PANEL_outlinecolor, "blue",  GLUI_SPINNER_INT, glui_outlinecolor+2, GEOM_OUTLINECOLOR, VolumeCB);
+    SPINNER_outlinecolor_red->set_int_limits(0, 255);
+    SPINNER_outlinecolor_green->set_int_limits(0, 255);
+    SPINNER_outlinecolor_blue->set_int_limits(0, 255);
 
     glui_geometry->add_column_to_panel(PANEL_group1, false);
 
@@ -1278,6 +1290,8 @@ extern "C" void VolumeCB(int var){
       }
       updatemenu = 1;
     }
+    break;
+  case GEOM_OUTLINECOLOR:
     break;
   case GEOM_IVECFACTOR:
     geom_vecfactor = (float)geom_ivecfactor/1000.0;

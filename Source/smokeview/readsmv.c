@@ -13401,6 +13401,14 @@ int ReadIni2(char *inifile, int localfile){
       sscanf(buffer, "%i %f %i %f %s", &settargetmin, &targetmin, &settargetmax, &targetmax, buffer2);
       continue;
     }
+    if(MatchINI(buffer, "OUTLINECOLOR") == 1){
+      fgets(buffer, 255, stream);
+      sscanf(buffer, "%i %i %i", glui_outlinecolor, glui_outlinecolor + 1, glui_outlinecolor + 2);
+      glui_outlinecolor[0] = CLAMP(glui_outlinecolor[0], 0, 255);
+      glui_outlinecolor[1] = CLAMP(glui_outlinecolor[1], 0, 255);
+      glui_outlinecolor[2] = CLAMP(glui_outlinecolor[2], 0, 255);
+      continue;
+    }
     if(MatchINI(buffer, "ZONEVIEW") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%f", &zone_hvac_diam);
@@ -16355,6 +16363,8 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, "LIGHTPROP\n");
   fprintf(fileout, " %f %f %f\n", ambientlight[0], ambientlight[1], ambientlight[2]);
   fprintf(fileout, " %f %f %f\n", diffuselight[0], diffuselight[1], diffuselight[2]);
+  fprintf(fileout, "OUTLINECOLOR\n");
+  fprintf(fileout, " %i %i %i\n", glui_outlinecolor[0], glui_outlinecolor[1], glui_outlinecolor[2]);
   fprintf(fileout, "SENSORCOLOR\n");
   fprintf(fileout, " %f %f %f\n", sensorcolor[0], sensorcolor[1], sensorcolor[2]);
   fprintf(fileout, "SENSORNORMCOLOR\n");
