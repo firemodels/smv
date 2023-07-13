@@ -2334,6 +2334,14 @@ void Keyboard(unsigned char key, int flag){
       if(flag==FROM_SMOKEVIEW){
         blocklocation=blocklocation_menu;
       }
+      else if(flag == FROM_GEOM_DIALOG){
+        if(glui_use_cfaces == 1){
+          blocklocation = BLOCKlocation_grid;
+        }
+        else{
+          blocklocation = BLOCKlocation_exact;
+        }
+      }
       else{
         blocklocation++;
       }
@@ -2347,6 +2355,7 @@ void Keyboard(unsigned char key, int flag){
         }
         else{
           use_cfaces = 0;
+          blocklocation = BLOCKlocation_exact;
           printf("geometry: ");
         }
         if(show_faces_shaded==1) printf("shaded triangles ");

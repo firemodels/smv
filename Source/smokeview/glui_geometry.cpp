@@ -1293,9 +1293,7 @@ extern "C" void VolumeCB(int var){
     break;
   case VOL_USE_CFACES:
     VolumeCB(VOL_SHOWHIDE);
-    blocklocation--;
-    use_cfaces = 1 - glui_use_cfaces;
-    Keyboard('q',FROM_SMOKEVIEW);
+    Keyboard('q',FROM_GEOM_DIALOG);
     break;
   case GEOM_BOUNDING_BOX:
     updatemenu=1;

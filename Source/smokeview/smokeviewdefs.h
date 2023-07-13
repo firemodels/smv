@@ -503,6 +503,7 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 #define FROM_CALLBACK      1
 #define FROM_SCRIPT        2
 #define FROM_SMOKEVIEW_ALT 3
+#define FROM_GEOM_DIALOG   4
 
 #define STEPS_PER_DEG 10.0
 
