@@ -332,12 +332,39 @@ void getsliceheader(const char *slicefilename, int *ip1, int *ip2, int *jp1,
   fclose(file);
 }
 
-// !  ------------------ getslicesizes ------------------------
-
-void getslicesizes(const char *slicefilename, int *nslicei, int *nslicej,
-                   int *nslicek, int *nsteps, int sliceframestep, int *error,
-                   int settmin_s, int settmax_s, float tmin_s, float tmax_s,
-                   int *headersize, int *framesize) {
+/// @brief Obtain various dimensions of the slice file. This reads the xyz
+/// dimensions from the header and iterates along the entire slice file reading
+/// the time from each frame. While it doesn't parse the data
+/// it each frame this function does require iterating over the entire slice
+/// file.
+/// @param slicefilename[in] The path of the slice file to read.
+/// @param time_frame[in] Read only the n-th frame where n is time_frame. If -1
+/// read all frames. Note that this accounts for stride, so if the stride
+/// (sliceframestep) is 4 and time_frame is 3, the function will only read the
+/// 4*(3-1) 8th frame and then exit.
+/// @param nslicei[out] The number of values along the x-axis.
+/// @param nslicej[out] The number of values along the y-axis.
+/// @param nslicek[out] The number of values along the z-axis.
+/// @param nsteps[out] The number of frames read by this function (note that
+/// this may be less than the total number of frames in the file as it can skip
+/// some frames).
+/// @param sliceframestep[in] Set the stride the function takes. That is, how
+/// many frames to skip. 1 reads every frame, 2 every second frame, and so on.
+/// @param error[out] An error code. Zero signals success.
+/// @param settmin_s[in] Is the value @ref tmin_s set and should it be adhere
+/// to?
+/// @param settmax_s[in] Is the value @ref tmax_s set and should it be adhere
+/// to?
+/// @param tmin_s[in] The lower time bound to read.
+/// @param tmax_s[in] The upper time bound to read.
+/// @param headersize[out] The size of the slice file's header in bytes
+/// (including any record markers/formatting).
+/// @param framesize[out] The size of each frame in bytes
+/// (including any record markers/formatting).
+void getslicesizes(const char *slicefilename, int time_frame, int *nslicei,
+                   int *nslicej, int *nslicek, int *nsteps, int sliceframestep,
+                   int *error, int settmin_s, int settmax_s, float tmin_s,
+                   float tmax_s, int *headersize, int *framesize) {
   int ip1, ip2, jp1, jp2, kp1, kp2;
   int iip1, iip2;
   int nxsp, nysp, nzsp;
@@ -345,7 +372,7 @@ void getslicesizes(const char *slicefilename, int *nslicei, int *nslicej,
   float timeval, time_max;
   bool load; // boolean
   int idir, joff, koff, volslice;
-  int count;
+  int count, countskip;
 
   *error = 0;
   *nsteps = 0;
@@ -388,22 +415,40 @@ void getslicesizes(const char *slicefilename, int *nslicei, int *nslicej,
   *framesize = 4 * (1 + nxsp * nysp * nzsp) + 16;
 
   count = -1;
+  countskip = -1;
   time_max = -1000000.0;
-  while (1) {
+  while (true) {
+    load = false;
+    // Read the time value of the frame and store it in timeval.
     *error = fortread(&timeval, sizeof(timeval), 1, file);
     if (*error != 0) break;
+    // If the lower bounds have been set, and the time value lies
+    // outside of these bounds, skip the loading of this frame.
     if ((settmin_s != 0 && timeval < tmin_s) || timeval <= time_max) {
-      load = false;
     } else {
-      load = true;
+      // Only set load to true if we are read all frames.
+      if (time_frame == -1) load = true;
       time_max = timeval;
     }
+    // If the upper bounds have been set, and the time value lies
+    // outside of these bounds, finish iterating.
     if (settmax_s != 0 && timeval > tmax_s) break;
+    // Seek forward one frame.
     *error = fortseek(file, sizeof(float), nxsp * nysp * nzsp, SEEK_CUR);
-    count = count + 1;
-    if ((count % sliceframestep) != 0) load = false;
-    if (*error != 0) break;
+    // If the frame is aligned with the stride, read it.
+    if ((count % sliceframestep) == 0) {
+      countskip++;
+      if (time_frame >= 0 && time_frame == countskip) {
+        (*nsteps)++;
+        fclose(file);
+        *error = 0;
+        return;
+      }
+    } else {
+      load = false;
+    }
     if (load) (*nsteps)++;
+    count++;
   }
   *error = 0;
   fclose(file);
@@ -888,7 +933,7 @@ void writeslicedata(const char *slicefilename, int is1, int is2, int js1,
   int i;
   for (i = 0; i < ntimes; i++) {
     fortwrite(times + i, sizeof(float), 1, file);
-    fortwrite(qdata + i*nframe, sizeof(float), nframe, file);
+    fortwrite(qdata + i * nframe, sizeof(float), nframe, file);
   }
 
   fclose(file);
@@ -973,7 +1018,7 @@ void getsliceframe(FILE *file, int is1, int is2, int js1, int js2, int ks1,
       for (j = 0; j < nysp; j++) {
         float jj = 2.0 * ((nysp - 1) / 2.0 - j) / (nysp - 1.0);
 
-	size_t i;
+        size_t i;
         for (i = 0; i < nxsp; i++) {
           float ii = 2.0 * ((nxsp - 1) / 2.0 - i) / (nxsp - 1.0);
           float val =
@@ -1127,14 +1172,14 @@ void getplot3dq(const char *qfilename, int nx, int ny, int nz, float *qq,
     } else {
       *error = 1;
       printf(" *** Fatal error in getplot3dq ***\n");
-      printf(" Grid size found in plot3d file was: %d,%d,%d\n", (int)nxpts, (int)nypts, (int)nzpts);
+      printf(" Grid size found in plot3d file was: %d,%d,%d\n", (int)nxpts,
+             (int)nypts, (int)nzpts);
       printf(" Was expecting: %d,%d,%d\n", nx, ny, nz);
       exit(1);
     }
   end:
     fclose(file);
-  }
-  else {
+  } else {
     int i;
     for (i = 0; i < nx; i++) {
 

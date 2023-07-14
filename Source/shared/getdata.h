@@ -17,10 +17,10 @@ void getsliceparms(const char *slicefilename, int *ip1, int *ip2, int *jp1,
                    int *slice3d, int *error);
 void getsliceheader(const char *slicefilename, int *ip1, int *ip2, int *jp1,
                     int *jp2, int *kp1, int *kp2, int *error);
-void getslicesizes(const char *slicefilename, int *nslicei, int *nslicej,
-                   int *nslicek, int *nsteps, int sliceframestep, int *error,
-                   int settmin_s, int settmax_s, float tmin_s, float tmax_s,
-                   int *headersize, int *framesize);
+void getslicesizes(const char *slicefilename, int time_frame, int *nslicei,
+                   int *nslicej, int *nslicek, int *nsteps, int sliceframestep,
+                   int *error, int settmin_s, int settmax_s, float tmin_s,
+                   float tmax_s, int *headersize, int *framesize);
 FILE *openpart(const char *partfilename, int *error);
 void openslice(const char *slicefilename, FILE **file, int *is1, int *is2,
                int *js1, int *js2, int *ks1, int *ks2, int *error);
