@@ -678,6 +678,25 @@ int IsInstallBinDir(char *bindir){
   return FileExistsOrig(smvfile);
 }
 
+#ifdef WIN32
+int SetBinDir(char *new_bindir){
+  if(IsInstallBinDir(new_bindir) == 1){
+    char savedir[1024];
+
+    GETCWD(savedir, 1024);
+    CHDIR(new_bindir);
+    GETCWD(new_bindir, 1024);
+    strcat(new_bindir, "\\");
+    CHDIR(savedir);
+    FREEMEMORY(smokeview_bindir);
+    NewMemory(( void ** )&smokeview_bindir, strlen(new_bindir) + 2);
+    strcpy(smokeview_bindir, new_bindir);
+    return 1;
+  }
+  return 0;
+}
+#endif
+
 /* ------------------ main ------------------------ */
 
 int main(int argc, char **argv){
@@ -771,38 +790,14 @@ int main(int argc, char **argv){
   if(valid_bindir == 0){
     char new_bindir[1024];
 
-    strcpy(new_bindir, "C:\\Program Files\\firemodels\\SMV6");
-    if(IsInstallBinDir(new_bindir) == 1){
-      char savedir[1024];
-
-      FreeMemory(smokeview_bindir);
-
-      GETCWD(savedir, 1024);
-      CHDIR(new_bindir);
-      GETCWD(new_bindir, 1024);
-      CHDIR(savedir);
-      NewMemory(( void ** )&smokeview_bindir, strlen(new_bindir) + 2);
-      strcpy(smokeview_bindir, new_bindir);
-      valid_bindir = 1;
-    }
+    strcpy(new_bindir, "C:\\Program Files\\firemodels\\SMV6\\");
+    valid_bindir = SetBinDir(new_bindir);
   }
   if(valid_bindir == 0){
     char new_bindir[1024];
 
     strcpy(new_bindir, "C:\\Program Files\\firemodels\\SMV7");
-    if(IsInstallBinDir(new_bindir) == 1){
-      char savedir[1024];
-
-      FreeMemory(smokeview_bindir);
-
-      GETCWD(savedir, 1024);
-      CHDIR(new_bindir);
-      GETCWD(new_bindir, 1024);
-      CHDIR(savedir);
-      NewMemory(( void ** )&smokeview_bindir, strlen(new_bindir) + 2);
-      strcpy(smokeview_bindir, new_bindir);
-      valid_bindir = 1;
-    }
+    valid_bindir = SetBinDir(new_bindir);
   }
 #endif
 
