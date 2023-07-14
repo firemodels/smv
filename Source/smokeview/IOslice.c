@@ -5124,9 +5124,9 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
   if(sd->finalize==1){
     int set_valmin, set_valmax;
 
-    update_slicefile_bounds = 1; // temporary fix to make sure bounds are always up to date
+    update_slicefile_bounds = 0; // if set to 1, temporary fix to make sure bounds are always up to date
     update_slice2device = 1;
-    if(update_slicefile_bounds==0){
+    if(update_slicefile_bounds==1){
       update_slicefile_bounds = 0;
       GetGlobalSliceBounds(sd->label.shortlabel);
       SetLoadedSliceBounds(NULL, 0);
@@ -5225,7 +5225,7 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
     if(strcmp(sd->label.shortlabel, "thick") == 0){
       ColorbarMenu(wallthickness_colorbar);
     }
-    if(strcmp(sd->label.shortlabel, "phifield") == 0){
+    if(strcmp(sd->label.shortlabel, "phi") == 0){
       ColorbarMenu(levelset_colorbar);
     }
   }
