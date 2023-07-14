@@ -2253,7 +2253,7 @@ void DistPointBox(float *point, float corners[8][3], float *mindist, float *maxd
         float dist;
 
         xyz[0] = xmin+i*dx;
-     //   if(PointInFrustum(xyz)==0)continue;
+     //   if(SMVPointInFrustum(xyz)==0)continue;
         dist   = DistPtXYZ(point, xyz[0], xyz[1], xyz[2]);
         if(minval>maxval){
           minval = dist;

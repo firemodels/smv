@@ -1053,7 +1053,8 @@ void DrawGeomBoundingBox(float *boundingbox_color){
 
 void DrawGeom(int flag, int timestate){
   int i;
-  float black[]={0.0,0.0,0.0,1.0};
+  unsigned char black[]={0,0,0,255};
+  float black01[] = {0.0, 0.0, 0.0, 255};
   float blue[]={0.0,0.0,1.0,1.0};
   float skinny_color[]={1.0,0.0,0.0,1.0};
   float *last_color=NULL;
@@ -1363,7 +1364,7 @@ void DrawGeom(int flag, int timestate){
               tx[j] = tvertj[0];
               ty[j] = tvertj[1];
             }
-            // textures on a sphereare periodic
+            // textures on a sphere are periodic
             if(trianglei->geomobj!=NULL && trianglei->geomobj->texture_mapping==TEXTURE_SPHERICAL){
               if(MAX(tx[0],tx[2])>0.8&&tx[1]<0.2){
                 tx[1]+=1.0;
@@ -1508,6 +1509,15 @@ void DrawGeom(int flag, int timestate){
         line_offset = geom_norm_offset;
       }
       glBegin(GL_LINES);
+
+      unsigned char outlinecolor_uc[4];
+      if(geomi->geomtype != GEOM_ISO){
+        outlinecolor_uc[0] = (unsigned char)glui_outlinecolor[0];
+        outlinecolor_uc[1] = (unsigned char)glui_outlinecolor[1];
+        outlinecolor_uc[2] = (unsigned char)glui_outlinecolor[2];
+        outlinecolor_uc[3] = (unsigned char)glui_outlinecolor[3];
+      }
+      glColor4ubv(outlinecolor_uc);
       for(j=0;j<geomlisti->ntriangles;j++){
         tridata *trianglei;
 
@@ -1523,15 +1533,17 @@ void DrawGeom(int flag, int timestate){
           if(show_iso_outline == 0)continue;
         }
 
-        if(show_iso_shaded==1){
-          color = black;
-        }
-        else{
-          color = trianglei->geomsurf->color;
-        }
-        if(last_color!=color){
-          glColor3fv(color);
-          last_color=color;
+        if(geomi->geomtype == GEOM_ISO){
+          if(show_iso_shaded == 1){
+            color = black01;
+          }
+          else{
+            color = trianglei->geomsurf->color;
+          }
+          if(last_color != color){
+            glColor3fv(color);
+            last_color = color;
+          }
         }
         {
           float vert2a[3], vert2b[3], vert2c[3];
@@ -1689,7 +1701,7 @@ void DrawGeom(int flag, int timestate){
 
       glPointSize(geom_pointsize);  // draw verts at end of vector
       glBegin(GL_POINTS);
-      glColor3fv(black);
+      glColor4ubv(black);
       for(j=0;j<geomlisti->ntriangles;j++){
         float *v1, *v2, *v3;
         float *xyznorm;
@@ -1762,7 +1774,7 @@ void DrawGeom(int flag, int timestate){
       glEnd();
       glPointSize(geom_pointsize);  // draw verts at end of vector
       glBegin(GL_POINTS);
-      glColor3fv(black);
+      glColor4ubv(black);
       for(j = 0; j < geomlisti->ntriangles; j++){
         tridata *trianglei;
         int k;
@@ -5220,7 +5232,12 @@ void DrawCGeom(int flag, geomdata *cgeom){
             insolid16 = trianglei->insolid&16;
             if(insolid16==16)show_edge3 = 0;
           }
-          glColor4fv(foregroundcolor);
+          unsigned char outlinecolor_uc[4];
+          outlinecolor_uc[0] = (unsigned char)glui_outlinecolor[0];
+          outlinecolor_uc[1] = (unsigned char)glui_outlinecolor[1];
+          outlinecolor_uc[2] = (unsigned char)glui_outlinecolor[2];
+          outlinecolor_uc[3] = (unsigned char)glui_outlinecolor[3];
+          glColor4ubv(outlinecolor_uc);
 
           norm0 = trianglei->verts[0]->vert_norm;
           norm1 = trianglei->verts[1]->vert_norm;

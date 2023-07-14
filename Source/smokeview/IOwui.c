@@ -329,7 +329,12 @@ void DrawTerrainGeom(int option){
       glBegin(GL_LINES);
 
       // lines
-      glColor3fv(foregroundcolor);
+      unsigned char outlinecolor_uc[4];
+      outlinecolor_uc[0] = (unsigned char)glui_outlinecolor[0];
+      outlinecolor_uc[1] = (unsigned char)glui_outlinecolor[1];
+      outlinecolor_uc[2] = (unsigned char)glui_outlinecolor[2];
+      outlinecolor_uc[3] = (unsigned char)glui_outlinecolor[3];
+      glColor4ubv(outlinecolor_uc);
       for(i = 0; i<terrain_nfaces; i++){
         int j;
         int inside_domain=0, outside_domain=1;

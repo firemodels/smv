@@ -744,25 +744,9 @@ void ExtractFrustum(void){
    }
 }
 
-/* ------------------ FDSPointInFrustum ------------------------ */
+/* ------------------ SMVPointInFrustum ------------------------ */
 
-int FDSPointInFrustum(float *xyz){
-  int i;
-  float xyz_smv[3];
-
-  xyz_smv[0] = FDS2SMV_X(xyz[0]);
-  xyz_smv[1] = FDS2SMV_Y(xyz[1]);
-  xyz_smv[2] = FDS2SMV_Z(xyz[2]);
-
-  for(i = 0; i<6; i++){
-    if(DOT3(frustum[i], xyz_smv)+frustum[i][3]<=0)return 0;
-  }
-  return 1;
-}
-
-/* ------------------ PointInFrustum ------------------------ */
-
-int PointInFrustum(float *xyz){
+int SMVPointInFrustum(float *xyz){
   int i;
 
   for(i = 0; i<6; i++){
@@ -771,12 +755,23 @@ int PointInFrustum(float *xyz){
   return 1;
 }
 
+/* ------------------ FDSPointInFrustum ------------------------ */
+
+int FDSPointInFrustum(float *xyz){
+  float xyz_smv[3];
+
+  xyz_smv[0] = FDS2SMV_X(xyz[0]);
+  xyz_smv[1] = FDS2SMV_Y(xyz[1]);
+  xyz_smv[2] = FDS2SMV_Z(xyz[2]);
+  return SMVPointInFrustum(xyz_smv);
+}
+
 /* ------------------ TriangleInFrustum ------------------------ */
 
 int TriangleInFrustum(float *v1, float *v2, float *v3){
-  if(PointInFrustum(v1)==1)return 1;
-  if(PointInFrustum(v2)==1)return 1;
-  if(PointInFrustum(v3)==1)return 1;
+  if(SMVPointInFrustum(v1)==1)return 1;
+  if(SMVPointInFrustum(v2)==1)return 1;
+  if(SMVPointInFrustum(v3)==1)return 1;
   return 0;
 }
 
@@ -801,7 +796,7 @@ int BoxInFrustum(float *xx, float *yy, float *zz, int n){
       xyz[1] = yy[0]+ (float)j*dy;
       for(k=0;k<n;k++){
         xyz[2] = zz[0]+(float)k*dz;
-        if(PointInFrustum(xyz)==1)return 1;
+        if(SMVPointInFrustum(xyz)==1)return 1;
       }
     }
   }
