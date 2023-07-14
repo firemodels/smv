@@ -1652,7 +1652,7 @@ void InitDefaultColorbars(int nini){
   cbi->rgb_node[9]=255;
   cbi->rgb_node[10]=0;
   cbi->rgb_node[11]=0;
-  strcpy(cbi->ctype, "deprecated");
+  strcpy(cbi->ctype, "divergent");
   cbi++;
 
   // black->white
