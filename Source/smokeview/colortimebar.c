@@ -1337,7 +1337,7 @@ void SortColorBars(void){
   fire_colorbar_index=cb-colorbarinfo;
   fire_colorbar=cb;
 
-  cb = GetColorbar("level set");
+  cb = GetColorbar("fire line (level set)");
   levelset_colorbar=cb-colorbarinfo;
 
   cb = GetColorbar("split");
