@@ -952,11 +952,7 @@ extern "C" void GluiGeometrySetup(int main_window){
     SPINNER_geom_ivecfactor = glui_geometry->add_spinner_to_panel(PANEL_normals, "length", GLUI_SPINNER_INT, &geom_ivecfactor, GEOM_IVECFACTOR, VolumeCB);
     SPINNER_geom_ivecfactor->set_int_limits(0, 200);
 
-#ifdef pp_GEOM_OUTLINECOLOR
     PANEL_outlinecolor = glui_geometry->add_panel_to_panel(PANEL_group1, "outline color when grid is shown");
-#else
-    PANEL_outlinecolor = glui_geometry->add_panel_to_panel(PANEL_group1, "outline color");
-#endif
     SPINNER_outlinecolor_red   = glui_geometry->add_spinner_to_panel(PANEL_outlinecolor, "red",   GLUI_SPINNER_INT, glui_outlinecolor  , GEOM_OUTLINECOLOR, VolumeCB);
     SPINNER_outlinecolor_green = glui_geometry->add_spinner_to_panel(PANEL_outlinecolor, "green", GLUI_SPINNER_INT, glui_outlinecolor+1, GEOM_OUTLINECOLOR, VolumeCB);
     SPINNER_outlinecolor_blue  = glui_geometry->add_spinner_to_panel(PANEL_outlinecolor, "blue",  GLUI_SPINNER_INT, glui_outlinecolor+2, GEOM_OUTLINECOLOR, VolumeCB);

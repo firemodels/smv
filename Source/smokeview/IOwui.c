@@ -330,7 +330,6 @@ void DrawTerrainGeom(int option){
 
       // lines
       unsigned char outlinecolor_uc[4];
-#ifdef pp_GEOM_OUTLINECOLOR
       if(visGrid != 0){
         outlinecolor_uc[0] = (unsigned char)glui_outlinecolor[0];
         outlinecolor_uc[1] = (unsigned char)glui_outlinecolor[1];
@@ -343,12 +342,6 @@ void DrawTerrainGeom(int option){
         outlinecolor_uc[2] = 0;
         outlinecolor_uc[3] = 255;
       }
-#else
-      outlinecolor_uc[0] = (unsigned char)glui_outlinecolor[0];
-      outlinecolor_uc[1] = (unsigned char)glui_outlinecolor[1];
-      outlinecolor_uc[2] = (unsigned char)glui_outlinecolor[2];
-      outlinecolor_uc[3] = (unsigned char)glui_outlinecolor[3];
-#endif
       glColor4ubv(outlinecolor_uc);
       for(i = 0; i<terrain_nfaces; i++){
         int j;

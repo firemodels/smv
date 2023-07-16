@@ -1512,7 +1512,6 @@ void DrawGeom(int flag, int timestate){
 
       unsigned char outlinecolor_uc[4];
       if(geomi->geomtype != GEOM_ISO){
-#ifdef pp_GEOM_OUTLINECOLOR
         if(visGrid != 0){
           outlinecolor_uc[0] = (unsigned char)glui_outlinecolor[0];
           outlinecolor_uc[1] = (unsigned char)glui_outlinecolor[1];
@@ -1525,12 +1524,6 @@ void DrawGeom(int flag, int timestate){
           outlinecolor_uc[2] = 0;
           outlinecolor_uc[3] = 255;
         }
-#else
-        outlinecolor_uc[0] = (unsigned char)glui_outlinecolor[0];
-        outlinecolor_uc[1] = (unsigned char)glui_outlinecolor[1];
-        outlinecolor_uc[2] = (unsigned char)glui_outlinecolor[2];
-        outlinecolor_uc[3] = (unsigned char)glui_outlinecolor[3];
-#endif
       }
       glColor4ubv(outlinecolor_uc);
       for(j=0;j<geomlisti->ntriangles;j++){
@@ -5248,7 +5241,6 @@ void DrawCGeom(int flag, geomdata *cgeom){
             if(insolid16==16)show_edge3 = 0;
           }
           unsigned char outlinecolor_uc[4];
-#ifdef pp_GEOM_OUTLINECOLOR
           if(visGrid != 0){
             outlinecolor_uc[0] = (unsigned char)glui_outlinecolor[0];
             outlinecolor_uc[1] = (unsigned char)glui_outlinecolor[1];
@@ -5261,12 +5253,6 @@ void DrawCGeom(int flag, geomdata *cgeom){
             outlinecolor_uc[2] = 0;
             outlinecolor_uc[3] = 255;
           }
-#else
-          outlinecolor_uc[0] = (unsigned char)glui_outlinecolor[0];
-          outlinecolor_uc[1] = (unsigned char)glui_outlinecolor[1];
-          outlinecolor_uc[2] = (unsigned char)glui_outlinecolor[2];
-          outlinecolor_uc[3] = (unsigned char)glui_outlinecolor[3];
-#endif
           glColor4ubv(outlinecolor_uc);
 
           norm0 = trianglei->verts[0]->vert_norm;
