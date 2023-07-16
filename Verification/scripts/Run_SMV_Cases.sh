@@ -11,7 +11,6 @@ nthreads=1
 RUN_SMV=1
 RUN_WUI=1
 STOPFDS=
-CFASTREPO=~/cfastgitclean
 COMPILER="intel"
 WAIT=0
 INTEL=
@@ -22,6 +21,10 @@ CUR=`pwd`
 SCRIPTDIR=`dirname $0`
 cd $SCRIPTDIR/..
 VDIR=`pwd`
+
+cd $SCRIPTDIR/../../../cfast
+CFASTREPO=`pwd`
+
 cd $CUR
 
 wait_cases_end()
