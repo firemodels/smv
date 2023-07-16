@@ -18,6 +18,12 @@ INTEL=
 INTEL2=
 QFDS_COUNT=/tmp/qfds_count_`whoami`
 
+CUR=`pwd`
+SCRIPTDIR=`dirname $0`
+cd $SCRIPTDIR/..
+VDIR=`pwd`
+cd $CUR
+
 wait_cases_end()
 {
    if [[ "$QUEUE" == "none" ]]
@@ -184,8 +190,8 @@ export BASEDIR=`pwd`
 # Remove output files (unless stop option is used)
 if [[ ! $stop_cases ]] ; then
   echo "Removing FDS/CFAST output files"
-  export RUNCFAST="$SVNROOT/smv/Verification/scripts/Remove_CFAST_Files.sh"
-  export QFDS="$SVNROOT/fds/Verification/scripts/Remove_FDS_Files.sh"
+  export RUNCFAST="$VDIR/scripts/Remove_CFAST_Files.sh"
+  export QFDS="$VDIR/scripts/Remove_FDS_Files.sh"
   scripts/SMV_Cases.sh
   scripts/WUI_Cases.sh
   echo "FDS/CFAST output files removed"
@@ -202,7 +208,7 @@ if [[ ! $stop_cases ]] ; then
   if [ "$FDS_DEBUG" == "0" ] ; then
     if [ "$RUN_WUI" == "1" ] ; then
       is_file_installed $WIND2FDS
-      cd $SVNROOT/smv/Verification/WUI
+      cd $VDIR/WUI
       echo Converting wind data
       $WIND2FDS -prefix sd11 -offset " 100.0  100.0 0.0" wind_data1a.csv
     fi
@@ -210,11 +216,11 @@ if [[ ! $stop_cases ]] ; then
 fi
 
 if [ "$RUN_SMV" == "1" ] ; then
-  cd $SVNROOT/smv/Verification
+  cd $VDIR
   scripts/SMV_Cases.sh
 fi
 if [ "$RUN_WUI" == "1" ] ; then
-  cd $SVNROOT/smv/Verification
+  cd $VDIR
   scripts/WUI_Cases.sh
 fi
 if [ "$WAIT" == "1" ] ; then
