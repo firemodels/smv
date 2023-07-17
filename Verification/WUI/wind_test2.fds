@@ -6,8 +6,14 @@
 cMESH IJK=50,50,25, XB=0,50,-25,25,0,25 /
 
 - 2 Computational grids
-&MESH IJK=50,25,25, XB=0,50,-25, 0,0,25 /
-&MESH IJK=50,25,25, XB=0,50,  0,25,0,25 /
+cMESH IJK=50,25,25, XB=0,50,-25, 0,0,25 /
+cMESH IJK=50,25,25, XB=0,50,  0,25,0,25 /
+
+- 4 Computational grids
+&MESH IJK=25,25,25, XB= 0,25,-25, 0,0,25 /
+&MESH IJK=25,25,25, XB=25,50,-25, 0,0,25 /
+&MESH IJK=25,25,25, XB= 0,25,  0,25,0,25 /
+&MESH IJK=25,25,25, XB=25,50,  0,25,0,25 /
 
 &REAC ID='WOOD'
       FUEL='WOOD'
