@@ -852,13 +852,8 @@ int CReadSlice_frame(int frame_index_local,int sd_index,int flag){
     if(sd->compression_type==UNCOMPRESSED){
 
 
-#ifdef pp_GETSLICESIZES
-        GetSliceSizes(sd->file, ALL_FRAMES, &sd->nslicei, &sd->nslicej, &sd->nslicek, &sd->ntimes, tload_step, &error,
-          use_tload_begin, use_tload_end, tload_begin, tload_end, &headersize, &framesize);
-#else
-        getslicesizes(sd->file, &sd->nslicei, &sd->nslicej, &sd->nslicek, &sd->ntimes, tload_step, &error,
-        use_tload_begin, use_tload_end, tload_begin, tload_end, &headersize, &framesize);
-#endif
+      GetSliceSizes(sd->file, ALL_FRAMES, &sd->nslicei, &sd->nslicej, &sd->nslicek, &sd->ntimes, tload_step, &error,
+                    use_tload_begin, use_tload_end, tload_begin, tload_end, &headersize, &framesize);
     }
     else if(sd->compression_type!=UNCOMPRESSED){
       if(
