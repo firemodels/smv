@@ -334,6 +334,7 @@ void getsliceheader(const char *slicefilename, int *ip1, int *ip2, int *jp1,
 
 // !  ------------------ getslicesizes ------------------------
 
+#ifndef pp_GETSLICESIZES
 void getslicesizes(const char *slicefilename, int *nslicei, int *nslicej,
                    int *nslicek, int *nsteps, int sliceframestep, int *error,
                    int settmin_s, int settmax_s, float tmin_s, float tmax_s,
@@ -409,6 +410,7 @@ void getslicesizes(const char *slicefilename, int *nslicei, int *nslicej,
   fclose(file);
   return;
 }
+#endif
 
 // !  ------------------ openpart ------------------------
 

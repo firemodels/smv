@@ -851,8 +851,14 @@ int CReadSlice_frame(int frame_index_local,int sd_index,int flag){
   if(frame_index_local==first_frame_index){
     if(sd->compression_type==UNCOMPRESSED){
 
-      getslicesizes(sd->file, &sd->nslicei, &sd->nslicej, &sd->nslicek, &sd->ntimes, tload_step,&error,
+
+#ifdef pp_GETSLICESIZES
+        GetSliceSizes(sd->file, ALL_FRAMES, &sd->nslicei, &sd->nslicej, &sd->nslicek, &sd->ntimes, tload_step, &error,
+          use_tload_begin, use_tload_end, tload_begin, tload_end, &headersize, &framesize);
+#else
+        getslicesizes(sd->file, &sd->nslicei, &sd->nslicej, &sd->nslicek, &sd->ntimes, tload_step, &error,
         use_tload_begin, use_tload_end, tload_begin, tload_end, &headersize, &framesize);
+#endif
     }
     else if(sd->compression_type!=UNCOMPRESSED){
       if(
@@ -4283,7 +4289,7 @@ void GetSliceFileDirection(int is1, int *is2ptr, int *iis1ptr, int *iis2ptr, int
 
 /* ------------------ GetSliceSizes ------------------------ */
 
-void GetSliceSizes(slicedata *sd, const char *slicefilenameptr, int time_frame, int *nsliceiptr, int *nslicejptr, int *nslicekptr, int *ntimesptr, int tload_step_arg,
+void GetSliceSizes(const char *slicefilenameptr, int time_frame, int *nsliceiptr, int *nslicejptr, int *nslicekptr, int *ntimesptr, int tload_step_arg,
   int *errorptr, int settmin_s_arg, int settmax_s_arg, float tmin_s_arg, float tmax_s_arg, int *headersizeptr, int *framesizeptr){
 
   int ip1, ip2, jp1, jp2, kp1, kp2;
@@ -4884,7 +4890,7 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
 
     if(sd->compression_type == UNCOMPRESSED){
       sd->ntimes_old = sd->ntimes;
-      GetSliceSizes(sd, file, time_frame, &sd->nslicei, &sd->nslicej, &sd->nslicek, &sd->ntimes, tload_step, &error,
+      GetSliceSizes(file, time_frame, &sd->nslicei, &sd->nslicej, &sd->nslicek, &sd->ntimes, tload_step, &error,
                     use_tload_begin, use_tload_end, tload_begin, tload_end, &headersize, &framesize);
     }
     else if(sd->compression_type != UNCOMPRESSED){

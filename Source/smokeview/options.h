@@ -22,6 +22,7 @@
 #define pp_COLOR_PLOT2D     // add option to plot CIELab distances
 
 //#define pp_BNDF               // merge geometry and structured boundary files in load menus
+#define pp_GETSLICESIZES
 
 //#define pp_DPRINT             // turn on debug print (file, line number)
 
