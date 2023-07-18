@@ -159,7 +159,7 @@ EXTERNCPP void ScriptLoadSliceRender(scriptdata*scripti);
 EXTERNCPP int GetNSliceFrames(char *file, float *stime_min, float *stime_max);
 EXTERNCPP void GenerateSliceMenu(int from_commandline);
 void DrawTerrainGeom(int option);
-void GenerateTerrainGeom(float **vertices_arg, int *sizeof_vertices_arg, unsigned int **indices_arg, int *sizeof_indices_arg, int *nindices_arg);
+void GenerateTerrainGeom(float **vertices_arg, unsigned int **indices_arg, int *nindices_arg);
 
 #ifdef pp_REFRESH
 EXTERNCPP void RefreshGluiDialogs(void);

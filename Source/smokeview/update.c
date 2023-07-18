@@ -1974,12 +1974,10 @@ void UpdateShowScene(void){
     }
   }
   if(terrain_update_normals==1&&ngeominfo>0){
-    int sizeof_vertices, sizeof_indices;
-
     terrain_update_normals = 0;
     UpdateAllGeomTriangles();
     if(auto_terrain==1){
-      GenerateTerrainGeom(&terrain_vertices, &sizeof_vertices, &terrain_indices, &sizeof_indices, &terrain_nindices);
+      GenerateTerrainGeom(&terrain_vertices, &terrain_indices, &terrain_nindices);
     }
   }
   if(update_smokefire_colors==1){

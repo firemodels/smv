@@ -16,12 +16,11 @@
 
 /* ------------------ GenerateTerrainGeom ------------------------ */
 
-void GenerateTerrainGeom(float **vertices_arg, int *sizeof_vertices_arg, unsigned int **indices_arg, int *sizeof_indices_arg, int *nindices_arg){
+void GenerateTerrainGeom(float **vertices_arg, unsigned int **indices_arg, int *nindices_arg){
   geomlistdata *terrain;
   int i, sizeof_indices, sizeof_vertices, sizeof_tvertices, terrain_nindices_local;
   float terrain_xmin, terrain_xmax, terrain_ymin, terrain_ymax;
   int first = 1;
-
 
   if(geominfo->geomlistinfo==NULL)return;
   terrain = geominfo->geomlistinfo - 1;
@@ -113,9 +112,7 @@ void GenerateTerrainGeom(float **vertices_arg, int *sizeof_vertices_arg, unsigne
   terrain_nindices_local = 3*terrain->ntriangles;
   terrain_nfaces = terrain->ntriangles;
   *vertices_arg = terrain_vertices;
-  *sizeof_vertices_arg = sizeof_vertices;
   *indices_arg = terrain_indices;
-  *sizeof_indices_arg = sizeof_indices;
   *nindices_arg = terrain_nindices_local;
 }
 
