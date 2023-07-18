@@ -1660,8 +1660,13 @@ void ScriptLoadParticles(scriptdata *scripti){
   }
   for(i = npartinfo-1;i>=0;i--){
     partdata *parti;
+    int nf_all_local;
+    int have_particles;
 
     parti = partinfo+i;
+#define NOT_FORCE 0
+    have_particles = GetPartHeader(parti, &nf_all_local, NOT_FORCE, 1);
+    if(have_particles == 0)continue;
     parti->finalize = 1;
     break;
   }
