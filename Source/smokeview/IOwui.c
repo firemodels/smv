@@ -29,25 +29,20 @@ void GenerateTerrainGeom(float **vertices_arg, unsigned int **indices_arg, int *
   sizeof_tvertices = 2*terrain->nverts*sizeof(float);
   NewMemory((void **)&terrain_vertices, sizeof_vertices);
   NewMemory((void **)&terrain_tvertices, sizeof_tvertices);
-  for(i = 0; i<terrain->nverts; i++){
+  terrain_xmin = terrain->verts[0].xyz[0];
+  terrain_xmax = terrain_xmin;
+  terrain_ymin = terrain->verts[0].xyz[1];
+  terrain_ymax = terrain_ymin;
+  for(i = 1; i<terrain->nverts; i++){
     vertdata *verti;
     float *xyz;
 
     verti = terrain->verts+i;
     xyz = verti->xyz;
-    if(first==1){
-      first = 0;
-      terrain_xmin = xyz[0];
-      terrain_xmax = xyz[0];
-      terrain_ymin = xyz[1];
-      terrain_ymax = xyz[1];
-    }
-    else{
-      terrain_xmin = MIN(terrain_xmin, xyz[0]);
-      terrain_xmax = MAX(terrain_xmax, xyz[0]);
-      terrain_ymin = MIN(terrain_ymin, xyz[1]);
-      terrain_ymax = MAX(terrain_ymax, xyz[1]);
-    }
+    terrain_xmin = MIN(terrain_xmin, xyz[0]);
+    terrain_xmax = MAX(terrain_xmax, xyz[0]);
+    terrain_ymin = MIN(terrain_ymin, xyz[1]);
+    terrain_ymax = MAX(terrain_ymax, xyz[1]);
   }
   for(i = 0; i<terrain->nverts; i++){
     vertdata *verti;
