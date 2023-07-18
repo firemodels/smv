@@ -157,7 +157,7 @@ if [ "$OS" == "Darwin" ]; then
   FDSPLATFORM=osx
 else
   PLATFORM=linux_64
-  FDSPLATFORM=osx
+  FDSPLATFORM=linux
 fi
 
 if [ "$use_installed" == "1" ] ; then

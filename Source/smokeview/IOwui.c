@@ -16,12 +16,11 @@
 
 /* ------------------ GenerateTerrainGeom ------------------------ */
 
-void GenerateTerrainGeom(float **vertices_arg, int *sizeof_vertices_arg, unsigned int **indices_arg, int *sizeof_indices_arg, int *nindices_arg){
+void GenerateTerrainGeom(float **vertices_arg, unsigned int **indices_arg, int *nindices_arg){
   geomlistdata *terrain;
   int i, sizeof_indices, sizeof_vertices, sizeof_tvertices, terrain_nindices_local;
   float terrain_xmin, terrain_xmax, terrain_ymin, terrain_ymax;
   int first = 1;
-
 
   if(geominfo->geomlistinfo==NULL)return;
   terrain = geominfo->geomlistinfo - 1;
@@ -30,25 +29,20 @@ void GenerateTerrainGeom(float **vertices_arg, int *sizeof_vertices_arg, unsigne
   sizeof_tvertices = 2*terrain->nverts*sizeof(float);
   NewMemory((void **)&terrain_vertices, sizeof_vertices);
   NewMemory((void **)&terrain_tvertices, sizeof_tvertices);
-  for(i = 0; i<terrain->nverts; i++){
+  terrain_xmin = terrain->verts[0].xyz[0];
+  terrain_xmax = terrain_xmin;
+  terrain_ymin = terrain->verts[0].xyz[1];
+  terrain_ymax = terrain_ymin;
+  for(i = 1; i<terrain->nverts; i++){
     vertdata *verti;
     float *xyz;
 
     verti = terrain->verts+i;
     xyz = verti->xyz;
-    if(first==1){
-      first = 0;
-      terrain_xmin = xyz[0];
-      terrain_xmax = xyz[0];
-      terrain_ymin = xyz[1];
-      terrain_ymax = xyz[1];
-    }
-    else{
-      terrain_xmin = MIN(terrain_xmin, xyz[0]);
-      terrain_xmax = MAX(terrain_xmax, xyz[0]);
-      terrain_ymin = MIN(terrain_ymin, xyz[1]);
-      terrain_ymax = MAX(terrain_ymax, xyz[1]);
-    }
+    terrain_xmin = MIN(terrain_xmin, xyz[0]);
+    terrain_xmax = MAX(terrain_xmax, xyz[0]);
+    terrain_ymin = MIN(terrain_ymin, xyz[1]);
+    terrain_ymax = MAX(terrain_ymax, xyz[1]);
   }
   for(i = 0; i<terrain->nverts; i++){
     vertdata *verti;
@@ -58,22 +52,13 @@ void GenerateTerrainGeom(float **vertices_arg, int *sizeof_vertices_arg, unsigne
     verti = terrain->verts+i;
     xyz = verti->xyz;
 
-    terrain_vertices[9*i+0] = xyz[0];
-    terrain_vertices[9*i+1] = xyz[1];
-    terrain_vertices[9*i+2] = xyz[2];
-    terrain_vertices[9*i+3] = verti->vert_norm[0];
-    terrain_vertices[9*i+4] = verti->vert_norm[1];
-    terrain_vertices[9*i+5] = verti->vert_norm[2];
+    memcpy(terrain_vertices + 9*i,     xyz,              3*sizeof(float));
+    memcpy(terrain_vertices + 9*i + 3, verti->vert_norm, 3*sizeof(float));
     terrain_tvertices[2*i+0] = (xyz[0]-terrain_xmin)/(terrain_xmax-terrain_xmin);
     terrain_tvertices[2*i+1] = (xyz[1]-terrain_ymin)/(terrain_ymax-terrain_ymin);
     geomsurf = verti->triangles[0]->geomsurf;
     if(geomsurf!=NULL){
-      float *color;
-
-      color = geomsurf->color;
-      terrain_vertices[9*i+6] = color[0];
-      terrain_vertices[9*i+7] = color[1];
-      terrain_vertices[9*i+8] = color[2];
+      memcpy(terrain_vertices + 9*i + 6, geomsurf->color, 3*sizeof(float));
     }
     else{
       terrain_vertices[9*i+6] = 0.0;
@@ -100,9 +85,7 @@ void GenerateTerrainGeom(float **vertices_arg, int *sizeof_vertices_arg, unsigne
     terrain_indices[3*i+1] = i1;
     terrain_indices[3*i+2] = i2;
     if(geomsurf!=NULL){
-      terrain_colors[3*i+0] = geomsurf->color[0];
-      terrain_colors[3*i+1] = geomsurf->color[1];
-      terrain_colors[3*i+2] = geomsurf->color[2];
+      memcpy(terrain_colors + 3*i, geomsurf->color, 3*sizeof(float));
     }
     else{
       terrain_colors[3*i+0] = 0.0;
@@ -113,9 +96,7 @@ void GenerateTerrainGeom(float **vertices_arg, int *sizeof_vertices_arg, unsigne
   terrain_nindices_local = 3*terrain->ntriangles;
   terrain_nfaces = terrain->ntriangles;
   *vertices_arg = terrain_vertices;
-  *sizeof_vertices_arg = sizeof_vertices;
   *indices_arg = terrain_indices;
-  *sizeof_indices_arg = sizeof_indices;
   *nindices_arg = terrain_nindices_local;
 }
 
