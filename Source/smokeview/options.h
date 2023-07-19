@@ -23,8 +23,6 @@
 
 //#define pp_BNDF               // merge geometry and structured boundary files in load menus
 
-//#define pp_DPRINT             // turn on debug print (file, line number)
-
 // streaming directives
 
 //#define pp_SMOKE3DSTREAM      // stream smoke3d data
