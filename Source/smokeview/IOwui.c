@@ -20,7 +20,6 @@ void GenerateTerrainGeom(float **vertices_arg, unsigned int **indices_arg, int *
   geomlistdata *terrain;
   int i, sizeof_indices, sizeof_vertices, sizeof_tvertices, terrain_nindices_local;
   float terrain_xmin, terrain_xmax, terrain_ymin, terrain_ymax;
-  int first = 1;
 
   if(geominfo->geomlistinfo==NULL)return;
   terrain = geominfo->geomlistinfo - 1;
