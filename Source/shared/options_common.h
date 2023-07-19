@@ -35,13 +35,6 @@
 #endif
 #endif
 
-#ifdef pp_DPRINT
-#define DPRINT printf("file=%s line=%i\n",__FILE__,__LINE__)
-#else
-#define DPRINT
-#endif
-
-
 // Microsofts MSVC has timespec defined
 #ifdef _MSC_VER
 #ifndef HAVE_STRUCT_TIMESPEC
