@@ -16128,7 +16128,7 @@ void WriteIniLocal(FILE *fileout){
 
       label = patchi->label.shortlabel;
 
-      GetMinMax(BOUND_PATCH, label, &set_valmin, &valmin, &set_valmax, &valmax);
+      GetOnlyMinMax(BOUND_PATCH, label, &set_valmin, &valmin, &set_valmax, &valmax);
       fprintf(fileout, "V2_BOUNDARY\n");
       fprintf(fileout, " %i %f %i %f %s\n", set_valmin, valmin, set_valmax, valmax, label);
     }
@@ -16155,7 +16155,7 @@ void WriteIniLocal(FILE *fileout){
 
       label = propi->label->shortlabel;
 
-      GetMinMax(BOUND_PART, label, &set_valmin, &valmin, &set_valmax, &valmax);
+      GetOnlyMinMax(BOUND_PART, label, &set_valmin, &valmin, &set_valmax, &valmax);
       fprintf(fileout, " %i %f %i %f %s\n", set_valmin, valmin, set_valmax, valmax, label);
     }
   }
@@ -16176,7 +16176,7 @@ void WriteIniLocal(FILE *fileout){
       char *label;
 
       label = plot3dinfo[0].label[i].shortlabel;
-      GetMinMax(BOUND_PLOT3D, label, &set_valmin, &valmin, &set_valmax, &valmax);
+      GetOnlyMinMax(BOUND_PLOT3D, label, &set_valmin, &valmin, &set_valmax, &valmax);
       fprintf(fileout, " %i %i %f %i %f %s\n", i+1, set_valmin, valmin, set_valmax, valmax, label);
     }
     }
@@ -16189,7 +16189,7 @@ void WriteIniLocal(FILE *fileout){
       char *label;
 
       label = hvacductbounds[i].label->shortlabel;
-      GetMinMax(BOUND_HVACDUCT, label, &set_valmin, &valmin, &set_valmax, &valmax);
+      GetOnlyMinMax(BOUND_HVACDUCT, label, &set_valmin, &valmin, &set_valmax, &valmax);
       fprintf(fileout, " %i %f %i %f %s\n", set_valmin, valmin, set_valmax, valmax, label);
     }
   }
@@ -16201,7 +16201,7 @@ void WriteIniLocal(FILE *fileout){
       char *label;
 
       label = hvacnodebounds[i].label->shortlabel;
-      GetMinMax(BOUND_HVACNODE, label, &set_valmin, &valmin, &set_valmax, &valmax);
+      GetOnlyMinMax(BOUND_HVACNODE, label, &set_valmin, &valmin, &set_valmax, &valmax);
       fprintf(fileout, " %i %f %i %f %s\n", set_valmin, valmin, set_valmax, valmax, label);
     }
   }
@@ -16213,7 +16213,7 @@ void WriteIniLocal(FILE *fileout){
       char *label;
 
       label = slicebounds[i].label->shortlabel;
-      GetMinMax(BOUND_SLICE, label, &set_valmin, &valmin, &set_valmax, &valmax);
+      GetOnlyMinMax(BOUND_SLICE, label, &set_valmin, &valmin, &set_valmax, &valmax);
       fprintf(fileout, " %i %f %i %f %s : %f %f %i\n", set_valmin, valmin, set_valmax, valmax, label,
         slicebounds[i].line_contour_min, slicebounds[i].line_contour_max, slicebounds[i].line_contour_num
         );
