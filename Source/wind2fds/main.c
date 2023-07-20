@@ -25,7 +25,7 @@ void Usage(char *prog, int option){
   printf("wind2fds %s(%s) - %s\n", prog_version, githash, __DATE__);
   printf("  Convert spreadsheets containing wind data to files compatible with Smokeview:\n\n");
   printf("  %s", GetBaseFileName(buffer, prog));
-  printf(" prog [-prefix label] [-offset x y z] datafile\n\n");
+  printf(" prog [-prefix label] [-offset x y z] input_file [output_file]\n\n");
 
   printf("where\n\n");
 
@@ -69,7 +69,7 @@ int gettokens(char *tokens, char **tokenptrs){
 
 int main(int argc, char **argv){
   char *arg,*csv,*argin=NULL,*argout=NULL;
-  char file_in[256],file_out[256];
+  char in_file[256],out_file[256];
   FILE *stream_in=NULL, *stream_out=NULL;
   int buffer_len, nrows, ncols;
   char *buffer,*labels,**labelptrs;
@@ -221,34 +221,33 @@ int main(int argc, char **argv){
     stream_in=stdin;
   }
   else{
-    csv=strstr(argin,".csv");
-    if(csv!=NULL)*csv=0;
-    strcpy(file_in,argin);
-    strcat(file_in,".csv");
-    stream_in=fopen(file_in,"r");
+    strcpy(in_file,argin);
+    stream_in=fopen(in_file,"r");
   }
   if(stream_in==NULL){
-    fprintf(stderr,"*** Error: The file %s could not be opened for input\n",file_in);
+    fprintf(stderr,"*** Error: The file %s could not be opened for input\n",in_file);
     if(stream_out!=NULL)fclose(stream_out);
     return 1;
   }
 
   if(argout==NULL){
     if(strcmp(argin,"-")==0){
-      strcpy(file_out,"stdin_exp.csv");
+      strcpy(out_file,"stdin_exp.csv");
     }
     else{
-      strcpy(file_out,argin);
-      strcat(file_out,"_exp.csv");
+      strcpy(out_file,argin);
+      csv=strstr(out_file,".csv");
+      if(csv!=NULL)*csv=0;
+      strcat(out_file,"_exp.csv");
     }
   }
   else{
-    strcpy(file_out,argout);
+    strcpy(out_file, argout);
   }
 
-  stream_out=fopen(file_out,"w");
+  stream_out=fopen(out_file,"w");
   if(stream_out==NULL){
-    fprintf(stderr,"*** Error: The file %s could not be opened for output\n",file_out);
+    fprintf(stderr,"*** Error: The file %s could not be opened for output\n",out_file);
     if(stream_in!=NULL&&stream_in!=stdin)fclose(stream_in);
     return 1;
   }
@@ -267,7 +266,7 @@ int main(int argc, char **argv){
   NewMemory((void **)&zdev,buffer_len*sizeof(float));
 
   if(fgets(labels,buffer_len,stream_in)==NULL){
-    fprintf(stderr,"*** Error: The file %s is empty\n",file_in);
+    fprintf(stderr,"*** Error: The file %s is empty\n",in_file);
     if(stream_in!=NULL&&stream_in!=stdin)fclose(stream_in);
     if(stream_out!=NULL)fclose(stream_out);
     return 1;
@@ -275,7 +274,7 @@ int main(int argc, char **argv){
   if(is_sodar_file==1){
     while(strncmp(labels,"Sodar",5)==0){
       if(fgets(labels,buffer_len,stream_in)==NULL){
-        fprintf(stderr,"*** Error: The file %s is empty\n",file_in);
+        fprintf(stderr,"*** Error: The file %s is empty\n",in_file);
         if(stream_in!=NULL&&stream_in!=stdin)fclose(stream_in);
         if(stream_out!=NULL)fclose(stream_out);
         return 1;
@@ -284,7 +283,7 @@ int main(int argc, char **argv){
   }
   else{
     if(fgets(labels,buffer_len,stream_in)==NULL){
-      fprintf(stderr,"*** Error: The file %s is empty\n",file_in);
+      fprintf(stderr,"*** Error: The file %s is empty\n",in_file);
       if(stream_in!=NULL&&stream_in!=stdin)fclose(stream_in);
       if(stream_out!=NULL)fclose(stream_out);
       return 1;
@@ -428,12 +427,12 @@ int main(int argc, char **argv){
   }
   if(is_sodar_file==0){
     if(fgets(labels,buffer_len,stream_in)==NULL){
-      fprintf(stderr,"*** Error: The file %s is empty\n",file_in);
+      fprintf(stderr,"*** Error: The file %s is empty\n",in_file);
       fclose(stream_out);
       return 1;
     }
     if(fgets(labels,buffer_len,stream_in)==NULL){
-      fprintf(stderr,"*** Error: The file %s is empty\n",file_in);
+      fprintf(stderr,"*** Error: The file %s is empty\n",in_file);
       fclose(stream_out);
       return 1;
     }

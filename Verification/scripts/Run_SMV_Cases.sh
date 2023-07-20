@@ -213,7 +213,7 @@ if [[ ! $stop_cases ]] ; then
       is_file_installed $WIND2FDS
       cd $VDIR/WUI
       echo Converting wind data
-      $WIND2FDS -prefix sd11 -offset " 100.0  100.0 0.0" wind_data1a.csv
+      $WIND2FDS -prefix sd11 -offset " 100.0  100.0 0.0" wind_data1a.csv wind_test1_exp.csv
     fi
   fi
 fi
