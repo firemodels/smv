@@ -7398,8 +7398,8 @@ int ReadSMV(bufferstreamdata *stream){
    strcpy(fds_githash,"unknown");
  }
  if(nisoinfo>0&&nmeshes>0)nisos_per_mesh = MAX(nisoinfo / nmeshes,1);
-  NewMemory((void **)&csvfileinfo,(ncsvfileinfo+CFAST_CSV_MAX+1)*sizeof(csvfiledata));
-  ncsvfileinfo=0;
+ NewMemory((void **)&csvfileinfo,(ncsvfileinfo+CFAST_CSV_MAX+2)*sizeof(csvfiledata));
+ ncsvfileinfo=0;
  if(ngeominfo>0){
    NewMemory((void **)&geominfo,ngeominfo*sizeof(geomdata));
    ngeominfo=0;
@@ -9250,6 +9250,17 @@ int ReadSMV(bufferstreamdata *stream){
   }
   ndeviceinfo=0;
   REWIND(stream);
+
+  if(FILE_EXISTS_CASEDIR(expcsv_filename)==YES){
+    csvfiledata *csvi;
+    char csv_type[256];
+
+    csvi = csvfileinfo + ncsvfileinfo;
+    strcpy(csv_type, "ext");
+    InitCSV(csvi, expcsv_filename, csv_type, CSV_FDS_FORMAT);
+    ncsvfileinfo++;
+  }
+
   PRINTF("%s","  pass 3\n");
   PRINT_TIMER(timer_readsmv, "pass 2");
 
