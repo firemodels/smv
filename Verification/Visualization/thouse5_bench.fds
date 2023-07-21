@@ -1,6 +1,7 @@
 &HEAD CHID='thouse5_bench',TITLE='Town House Kitchen Fire' /
 
-&MESH IJK=24,40,24, XB=0.0,6.4,0.0,8.0,0.0,4.8 /
+&MESH IJK=24,20,24, XB=0.0,6.4,0.0,4.0,0.0,4.8 /
+&MESH IJK=24,20,24, XB=0.0,6.4,4.0,8.0,0.0,4.8 /
 
 &TIME T_END=61. /
 &DUMP NFRAMES=2,DT_DEVC=0.1,SMOKE3D=.FALSE. /
