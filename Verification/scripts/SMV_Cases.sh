@@ -40,7 +40,7 @@ $QFDS -d Visualization smoke_test_geom.fds
 $QFDS -d Visualization sprinkler_many.fds
 $QFDS -d Visualization testsort.fds
 $QFDS -p 2 -d Visualization thouse5.fds
-$QFDS -d Visualization thouse5delta.fds
+$QFDS -p 2 -d Visualization thouse5delta.fds
 $QFDS -d Visualization tour.fds
 $QFDS -d Visualization transparency.fds
 $QFDS -d Visualization vcirctest.fds
