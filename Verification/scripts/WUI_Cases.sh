@@ -3,7 +3,6 @@
 # add -A to any case that you wish to be a part of the benchmark timing suite
 
 $QFDS -d WUI -t -A wind_test2_bench.fds
-$QFDS -d WUI -t -A hill_structure_bench.fds
 
 #$QFDS -p 16 -n 8 -d WUI BT10m_2x2km_LS.fds
 $QFDS -p 2  -d WUI hill_structure.fds
