@@ -579,8 +579,6 @@ RENDERONCE
 
 LOADINIFILE
  plume5c_allvents.ini
-SETVIEWPOINT
- external
 RENDERONCE
  plume5c_allvents
 
