@@ -661,6 +661,8 @@ char *ProcessCommandLine(CommandlineArgs *args) {
 #ifdef WIN32
       SetBinDirAlways(args->bindir);
 #else
+      int len2;
+
       len2 = strlen(args->bindir);
       NewMemory((void **)&smokeview_bindir, len2 + 2);
       strcpy(smokeview_bindir, args->bindir);
@@ -668,10 +670,10 @@ char *ProcessCommandLine(CommandlineArgs *args) {
 #endif
     }
     if(args->casedir){
-        int len2;
+        int len3;
 
-        len2 = strlen(args->casedir);
-        NewMemory((void **)&smokeview_casedir, len2+2);
+        len3 = strlen(args->casedir);
+        NewMemory((void **)&smokeview_casedir, len3+2);
         strcpy(smokeview_casedir, args->casedir);
     }
     if(args->threads_defined){
