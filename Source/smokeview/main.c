@@ -20,6 +20,46 @@
 #include "lua_api.h"
 #endif
 
+/* ------------------ IsInstallBinDir ------------------------ */
+
+int IsInstallBinDir(char *bindir){
+  char smvfile[1024];
+
+  if(bindir == NULL)return 0;
+  strcpy(smvfile, bindir);
+  strcat(smvfile, dirseparator);
+  strcat(smvfile, ".smokeview_bin");
+  return FileExistsOrig(smvfile);
+}
+
+#ifdef WIN32
+
+/* ------------------ SetBinDir ------------------------ */
+
+void SetBinDirAlways(char *new_bindir){
+  char savedir[1024], new_bindir_local[1024];
+
+  GETCWD(savedir, 1024);
+  CHDIR(new_bindir);
+  GETCWD(new_bindir_local, 1024);
+  CHDIR(savedir);
+  FREEMEMORY(smokeview_bindir);
+  NewMemory((void **)&smokeview_bindir, strlen(new_bindir_local) + 2);
+  strcpy(smokeview_bindir, new_bindir_local);
+  if(smokeview_bindir[strlen(smokeview_bindir) - 1] != dirseparator[0])strcat(smokeview_bindir, dirseparator);
+}
+
+/* ------------------ SetBinDir ------------------------ */
+
+int SetBinDir(char *new_bindir){
+  if(IsInstallBinDir(new_bindir) == 1){
+    SetBinDirAlways(new_bindir);
+    return 1;
+  }
+  return 0;
+}
+#endif
+
 /* ------------------ Usage ------------------------ */
 
 void Usage(char *prog,int option){
@@ -96,14 +136,18 @@ char *ParseCommandline(int argc, char **argv) {
     have_bindir_arg = 0;
   }
   else{
+    have_bindir_arg = 1;
+#ifdef WIN32
+    SetBinDirAlways(args.bindir);
+#else
     int len2;
 
-    have_bindir_arg = 1;
     FREEMEMORY(smokeview_bindir);
     len2 = strlen(args.bindir);
     NewMemory((void **)&smokeview_bindir, len2 + 2);
     strcpy(smokeview_bindir, args.bindir);
-    if(smokeview_bindir[len2 - 1] != dirseparator[0])strcat(smokeview_bindir, dirseparator);
+#endif
+    if(smokeview_bindir[strlen(smokeview_bindir) - 1] != dirseparator[0])strcat(smokeview_bindir, dirseparator);
   }
   return return_val;
 }
@@ -614,13 +658,14 @@ char *ProcessCommandLine(CommandlineArgs *args) {
       setup_only = 1;
     }
     if(args->bindir != NULL){
-      int len2;
-
+#ifdef WIN32
+      SetBinDirAlways(args->bindir);
+#else
       len2 = strlen(args->bindir);
       NewMemory((void **)&smokeview_bindir, len2 + 2);
       strcpy(smokeview_bindir, args->bindir);
       if(smokeview_bindir[len2 - 1] != dirseparator[0])strcat(smokeview_bindir, dirseparator);
-      have_bindir_arg = 1;
+#endif
     }
     if(args->casedir){
         int len2;
@@ -686,37 +731,6 @@ int CheckSMVFile(char *file, char *subdir){
   fclose(stream);
   return 1;
 }
-
-/* ------------------ IsInstallBinDir ------------------------ */
-
-int IsInstallBinDir(char *bindir){
-  char smvfile[1024];
-
-  if(bindir == NULL)return 0;
-  strcpy(smvfile, bindir);
-  strcat(smvfile, dirseparator);
-  strcat(smvfile, ".smokeview_bin");
-  return FileExistsOrig(smvfile);
-}
-
-#ifdef WIN32
-int SetBinDir(char *new_bindir){
-  if(IsInstallBinDir(new_bindir) == 1){
-    char savedir[1024];
-
-    GETCWD(savedir, 1024);
-    CHDIR(new_bindir);
-    GETCWD(new_bindir, 1024);
-    strcat(new_bindir, "\\");
-    CHDIR(savedir);
-    FREEMEMORY(smokeview_bindir);
-    NewMemory(( void ** )&smokeview_bindir, strlen(new_bindir) + 2);
-    strcpy(smokeview_bindir, new_bindir);
-    return 1;
-  }
-  return 0;
-}
-#endif
 
 /* ------------------ main ------------------------ */
 
