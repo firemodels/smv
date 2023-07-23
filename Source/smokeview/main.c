@@ -661,20 +661,14 @@ char *ProcessCommandLine(CommandlineArgs *args) {
 #ifdef WIN32
       SetBinDirAlways(args->bindir);
 #else
-      int len2;
-
-      len2 = strlen(args->bindir);
-      NewMemory((void **)&smokeview_bindir, len2 + 2);
+      NewMemory((void **)&smokeview_bindir, strlen(args->bindir) + 2);
       strcpy(smokeview_bindir, args->bindir);
-      if(smokeview_bindir[len2 - 1] != dirseparator[0])strcat(smokeview_bindir, dirseparator);
+      if(smokeview_bindir[strlen(smokeview_bindir) - 1] != dirseparator[0])strcat(smokeview_bindir, dirseparator);
 #endif
     }
     if(args->casedir){
-        int len3;
-
-        len3 = strlen(args->casedir);
-        NewMemory((void **)&smokeview_casedir, len3+2);
-        strcpy(smokeview_casedir, args->casedir);
+      NewMemory((void **)&smokeview_casedir, strlen(args->casedir) +2);
+      strcpy(smokeview_casedir, args->casedir);
     }
     if(args->threads_defined){
         nreadallgeomthread_ids = CLAMP(args->threads, 1, 16);
