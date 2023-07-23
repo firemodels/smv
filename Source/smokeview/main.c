@@ -81,6 +81,8 @@ char *ProcessCommandLine(CommandlineArgs *args);
 
 char *ParseCommandline(int argc, char **argv) {
   enum CommandLineError error;
+  char *return_val;
+
   CommandlineArgs args = ParseCommandlineNew(argc, argv, &error);
   if (error != CLE_OK) {
     const char *msg = CLE_Message(error);
@@ -89,7 +91,21 @@ char *ParseCommandline(int argc, char **argv) {
     }
     SMV_EXIT(0);
   }
-  return ProcessCommandLine(&args);
+  return_val = ProcessCommandLine(&args);
+  if(args.bindir == NULL){
+    have_bindir_arg = 0;
+  }
+  else{
+    int len2;
+
+    have_bindir_arg = 1;
+    FREEMEMORY(smokeview_bindir);
+    len2 = strlen(args.bindir);
+    NewMemory((void **)&smokeview_bindir, len2 + 2);
+    strcpy(smokeview_bindir, args.bindir);
+    if(smokeview_bindir[len2 - 1] != dirseparator[0])strcat(smokeview_bindir, dirseparator);
+  }
+  return return_val;
 }
 
 /// @brief Once the commandline arguments ahve been parsed, they can be passed
