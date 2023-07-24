@@ -219,30 +219,10 @@ void InitVolrenderScript(char *prefix, char *tour_label, int startframe, int ski
 
 void DisplayVersionInfo(char *progname){
   PRINTVERSION(progname,prog_fullpath);
-  PRINTF("\n");
   if(fds_version!=NULL){
     PRINTF("FDS Build        : %s\n",fds_githash);
   }
-  if(smokeviewpath!=NULL){
-#ifdef WIN32
-    PRINTF("Smokeview        : %s\n",smokeviewpath);
-#else
-    {
-      char *smv2, smokeviewpath_copy[256];
-
-      strcpy(smokeviewpath_copy, smokeviewpath);
-      smv2 = strstr(smokeviewpath_copy, "Build");
-      if(smv2==NULL){
-        PRINTF("Smokeview        : %s\n", smokeviewpath);
-      }
-      else{
-        smv2[-1] = 0;
-        PRINTF("Smokeview        : %s/\n", smokeviewpath_copy);
-        PRINTF("                   %s\n", smv2);
-      }
-    }
-#endif
-  }
+  PRINTF("Smokeview        : %s\n",smokeview_progname);
 #ifdef pp_COMPRESS
   if(smokezippath!=NULL){
     if(verbose_output==1)PRINTF("Smokezip         : %s\n",smokezippath);
