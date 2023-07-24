@@ -7398,8 +7398,8 @@ int ReadSMV(bufferstreamdata *stream){
    strcpy(fds_githash,"unknown");
  }
  if(nisoinfo>0&&nmeshes>0)nisos_per_mesh = MAX(nisoinfo / nmeshes,1);
-  NewMemory((void **)&csvfileinfo,(ncsvfileinfo+CFAST_CSV_MAX+1)*sizeof(csvfiledata));
-  ncsvfileinfo=0;
+ NewMemory((void **)&csvfileinfo,(ncsvfileinfo+CFAST_CSV_MAX+2)*sizeof(csvfiledata));
+ ncsvfileinfo=0;
  if(ngeominfo>0){
    NewMemory((void **)&geominfo,ngeominfo*sizeof(geomdata));
    ngeominfo=0;
@@ -9250,6 +9250,17 @@ int ReadSMV(bufferstreamdata *stream){
   }
   ndeviceinfo=0;
   REWIND(stream);
+
+  if(FILE_EXISTS_CASEDIR(expcsv_filename)==YES){
+    csvfiledata *csvi;
+    char csv_type[256];
+
+    csvi = csvfileinfo + ncsvfileinfo;
+    strcpy(csv_type, "ext");
+    InitCSV(csvi, expcsv_filename, csv_type, CSV_FDS_FORMAT);
+    ncsvfileinfo++;
+  }
+
   PRINTF("%s","  pass 3\n");
   PRINT_TIMER(timer_readsmv, "pass 2");
 
@@ -16128,7 +16139,7 @@ void WriteIniLocal(FILE *fileout){
 
       label = patchi->label.shortlabel;
 
-      GetMinMax(BOUND_PATCH, label, &set_valmin, &valmin, &set_valmax, &valmax);
+      GetOnlyMinMax(BOUND_PATCH, label, &set_valmin, &valmin, &set_valmax, &valmax);
       fprintf(fileout, "V2_BOUNDARY\n");
       fprintf(fileout, " %i %f %i %f %s\n", set_valmin, valmin, set_valmax, valmax, label);
     }
@@ -16155,7 +16166,7 @@ void WriteIniLocal(FILE *fileout){
 
       label = propi->label->shortlabel;
 
-      GetMinMax(BOUND_PART, label, &set_valmin, &valmin, &set_valmax, &valmax);
+      GetOnlyMinMax(BOUND_PART, label, &set_valmin, &valmin, &set_valmax, &valmax);
       fprintf(fileout, " %i %f %i %f %s\n", set_valmin, valmin, set_valmax, valmax, label);
     }
   }
@@ -16176,7 +16187,7 @@ void WriteIniLocal(FILE *fileout){
       char *label;
 
       label = plot3dinfo[0].label[i].shortlabel;
-      GetMinMax(BOUND_PLOT3D, label, &set_valmin, &valmin, &set_valmax, &valmax);
+      GetOnlyMinMax(BOUND_PLOT3D, label, &set_valmin, &valmin, &set_valmax, &valmax);
       fprintf(fileout, " %i %i %f %i %f %s\n", i+1, set_valmin, valmin, set_valmax, valmax, label);
     }
     }
@@ -16189,7 +16200,7 @@ void WriteIniLocal(FILE *fileout){
       char *label;
 
       label = hvacductbounds[i].label->shortlabel;
-      GetMinMax(BOUND_HVACDUCT, label, &set_valmin, &valmin, &set_valmax, &valmax);
+      GetOnlyMinMax(BOUND_HVACDUCT, label, &set_valmin, &valmin, &set_valmax, &valmax);
       fprintf(fileout, " %i %f %i %f %s\n", set_valmin, valmin, set_valmax, valmax, label);
     }
   }
@@ -16201,7 +16212,7 @@ void WriteIniLocal(FILE *fileout){
       char *label;
 
       label = hvacnodebounds[i].label->shortlabel;
-      GetMinMax(BOUND_HVACNODE, label, &set_valmin, &valmin, &set_valmax, &valmax);
+      GetOnlyMinMax(BOUND_HVACNODE, label, &set_valmin, &valmin, &set_valmax, &valmax);
       fprintf(fileout, " %i %f %i %f %s\n", set_valmin, valmin, set_valmax, valmax, label);
     }
   }
@@ -16213,7 +16224,7 @@ void WriteIniLocal(FILE *fileout){
       char *label;
 
       label = slicebounds[i].label->shortlabel;
-      GetMinMax(BOUND_SLICE, label, &set_valmin, &valmin, &set_valmax, &valmax);
+      GetOnlyMinMax(BOUND_SLICE, label, &set_valmin, &valmin, &set_valmax, &valmax);
       fprintf(fileout, " %i %f %i %f %s : %f %f %i\n", set_valmin, valmin, set_valmax, valmax, label,
         slicebounds[i].line_contour_min, slicebounds[i].line_contour_max, slicebounds[i].line_contour_num
         );

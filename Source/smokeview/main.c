@@ -20,6 +20,43 @@
 #include "lua_api.h"
 #endif
 
+/* ------------------ IsInstallBinDir ------------------------ */
+
+int IsInstallBinDir(char *bindir){
+  char smvfile[1024];
+
+  if(bindir == NULL)return 0;
+  strcpy(smvfile, bindir);
+  strcat(smvfile, dirseparator);
+  strcat(smvfile, ".smokeview_bin");
+  return FileExistsOrig(smvfile);
+}
+
+/* ------------------ SetBinDirAlways ------------------------ */
+
+void SetBinDirAlways(char *new_bindir){
+  char savedir[1024], new_bindir_local[1024];
+
+  GETCWD(savedir, 1024);
+  CHDIR(new_bindir);
+  GETCWD(new_bindir_local, 1024);
+  CHDIR(savedir);
+  FREEMEMORY(smokeview_bindir);
+  NewMemory((void **)&smokeview_bindir, strlen(new_bindir_local) + 2);
+  strcpy(smokeview_bindir, new_bindir_local);
+  if(smokeview_bindir[strlen(smokeview_bindir) - 1] != dirseparator[0])strcat(smokeview_bindir, dirseparator);
+}
+
+/* ------------------ SetBinDir ------------------------ */
+
+int SetBinDir(char *new_bindir){
+  if(IsInstallBinDir(new_bindir) == 1){
+    SetBinDirAlways(new_bindir);
+    return 1;
+  }
+  return 0;
+}
+
 /* ------------------ Usage ------------------------ */
 
 void Usage(char *prog,int option){
@@ -81,6 +118,8 @@ char *ProcessCommandLine(CommandlineArgs *args);
 
 char *ParseCommandline(int argc, char **argv) {
   enum CommandLineError error;
+  char *return_val;
+
   CommandlineArgs args = ParseCommandlineNew(argc, argv, &error);
   if (error != CLE_OK) {
     const char *msg = CLE_Message(error);
@@ -89,7 +128,16 @@ char *ParseCommandline(int argc, char **argv) {
     }
     SMV_EXIT(0);
   }
-  return ProcessCommandLine(&args);
+  return_val = ProcessCommandLine(&args);
+  if(args.bindir == NULL){
+    have_bindir_arg = 0;
+  }
+  else{
+    have_bindir_arg = 1;
+    SetBinDirAlways(args.bindir);
+    if(smokeview_bindir[strlen(smokeview_bindir) - 1] != dirseparator[0])strcat(smokeview_bindir, dirseparator);
+  }
+  return return_val;
 }
 
 /// @brief Once the commandline arguments ahve been parsed, they can be passed
@@ -220,6 +268,11 @@ char *ProcessCommandLine(CommandlineArgs *args) {
   NewMemory((void **)&caseini_filename, len_casename + strlen(".ini") + 1);
   STRCPY(caseini_filename, fdsprefix);
   STRCAT(caseini_filename, ".ini");
+
+  FREEMEMORY(expcsv_filename);
+  NewMemory((void **)&expcsv_filename, len_casename + strlen("_exp.csv") + 1);
+  STRCPY(expcsv_filename, fdsprefix);
+  STRCAT(expcsv_filename, "_exp.csv");
 
   FREEMEMORY(dEcsv_filename);
   NewMemory(( void ** )&dEcsv_filename, len_casename + strlen("_dE.csv") + 1);
@@ -593,20 +646,11 @@ char *ProcessCommandLine(CommandlineArgs *args) {
       setup_only = 1;
     }
     if(args->bindir != NULL){
-      int len2;
-
-      len2 = strlen(args->bindir);
-      NewMemory((void **)&smokeview_bindir, len2 + 2);
-      strcpy(smokeview_bindir, args->bindir);
-      if(smokeview_bindir[len2 - 1] != dirseparator[0])strcat(smokeview_bindir, dirseparator);
-      have_bindir_arg = 1;
+      SetBinDirAlways(args->bindir);
     }
     if(args->casedir){
-        int len2;
-
-        len2 = strlen(args->casedir);
-        NewMemory((void **)&smokeview_casedir, len2+2);
-        strcpy(smokeview_casedir, args->casedir);
+      NewMemory((void **)&smokeview_casedir, strlen(args->casedir) +2);
+      strcpy(smokeview_casedir, args->casedir);
     }
     if(args->threads_defined){
         nreadallgeomthread_ids = CLAMP(args->threads, 1, 16);
@@ -666,37 +710,6 @@ int CheckSMVFile(char *file, char *subdir){
   return 1;
 }
 
-/* ------------------ IsInstallBinDir ------------------------ */
-
-int IsInstallBinDir(char *bindir){
-  char smvfile[1024];
-
-  if(bindir == NULL)return 0;
-  strcpy(smvfile, bindir);
-  strcat(smvfile, dirseparator);
-  strcat(smvfile, ".smokeview_bin");
-  return FileExistsOrig(smvfile);
-}
-
-#ifdef WIN32
-int SetBinDir(char *new_bindir){
-  if(IsInstallBinDir(new_bindir) == 1){
-    char savedir[1024];
-
-    GETCWD(savedir, 1024);
-    CHDIR(new_bindir);
-    GETCWD(new_bindir, 1024);
-    strcat(new_bindir, "\\");
-    CHDIR(savedir);
-    FREEMEMORY(smokeview_bindir);
-    NewMemory(( void ** )&smokeview_bindir, strlen(new_bindir) + 2);
-    strcpy(smokeview_bindir, new_bindir);
-    return 1;
-  }
-  return 0;
-}
-#endif
-
 /* ------------------ main ------------------------ */
 
 int main(int argc, char **argv){
@@ -747,9 +760,11 @@ int main(int argc, char **argv){
     Usage("smokeview", HELP_ALL);
     return 1;
   }
-  smv_filename = ParseCommandline(argc, argv);
 
   progname=argv[0];
+  strcpy(smokeview_progname, progname);
+  GetProgFullPath(smokeview_progname, 1024);
+  smv_filename = ParseCommandline(argc, argv);
 
   prog_fullpath = progname;
   if(smokeview_bindir==NULL){

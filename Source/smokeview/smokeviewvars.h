@@ -1742,6 +1742,7 @@ SVEXTERN char SVDECL(*sliceinfo_filename,NULL);
 SVEXTERN char SVDECL(*deviceinfo_filename, NULL);
 SVEXTERN char SVDECL(*database_filename,NULL),SVDECL(*iso_filename,NULL);
 SVEXTERN char SVDECL(*smokeview_bindir,NULL);
+SVEXTERN char smokeview_progname[1024];
 SVEXTERN int SVDECL(have_bindir_arg, 0);
 SVEXTERN char SVDECL(*smokeview_casedir, NULL);
 SVEXTERN int SVDECL(update_vectorskip, 0);
@@ -1773,6 +1774,7 @@ SVEXTERN char SVDECL(*hrr_csv_filename,NULL),SVDECL(*devc_csv_filename,NULL),SVD
 SVEXTERN char SVDECL(*smokezippath,NULL),SVDECL(*smokeviewpath,NULL);
 SVEXTERN char SVDECL(*INI_fds_filein,NULL), SVDECL(*fds_filein,NULL);
 SVEXTERN char SVDECL(*caseini_filename,NULL);
+SVEXTERN char SVDECL(*expcsv_filename, NULL);
 SVEXTERN char SVDECL(*event_filename, NULL);
 SVEXTERN int SVDECL(event_file_exists,0);
 SVEXTERN char SVDECL(*zonelonglabels,NULL), SVDECL(*zoneshortlabels,NULL), SVDECL(*zoneunits,NULL);
