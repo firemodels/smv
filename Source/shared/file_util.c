@@ -884,6 +884,38 @@ time_t FileModtime(char *filename){
   return return_val;
 }
 
+/* ------------------ GetProgFullPath ------------------------ */
+
+void GetProgFullPath(char *progexe, int maxlen_progexe){
+  char *end, savedir[1024], tempdir[1024], *tempexe;
+
+  strcpy(tempdir, progexe);
+  end = strrchr(tempdir, dirseparator[0]);
+  if(end == NULL){
+    char *progpath;
+
+    progpath = Which(progexe);
+    if(progpath != NULL){
+      char copy[1024];
+
+      strcpy(copy, progexe);
+      strcpy(progexe, progpath);
+      if(progexe[strlen(progexe) - 1] != dirseparator[0])strcat(progexe, dirseparator);
+      strcat(progexe, copy);
+    }
+  }
+  else{
+    end[0] = 0;
+    tempexe = end + 1;
+    GETCWD(savedir, 1024);
+    CHDIR(tempdir);
+    GETCWD(progexe, maxlen_progexe);
+    if(progexe[strlen(progexe) - 1] != dirseparator[0])strcat(progexe, dirseparator);
+    strcat(progexe, tempexe);
+    CHDIR(savedir);
+  }
+}
+
 /* ------------------ Which ------------------------ */
 
 char *Which(char *progname){

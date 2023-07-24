@@ -225,7 +225,7 @@ void DisplayVersionInfo(char *progname){
   }
   if(smokeviewpath!=NULL){
 #ifdef WIN32
-    PRINTF("Smokeview        : %s\n",smokeviewpath);
+    PRINTF("Smokeview        : %s\n",smokeview_progname);
 #else
     {
       char *smv2, smokeviewpath_copy[256];

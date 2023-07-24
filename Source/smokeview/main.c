@@ -33,7 +33,6 @@ int IsInstallBinDir(char *bindir){
 }
 
 #ifdef WIN32
-
 /* ------------------ SetBinDir ------------------------ */
 
 void SetBinDirAlways(char *new_bindir){
@@ -778,9 +777,11 @@ int main(int argc, char **argv){
     Usage("smokeview", HELP_ALL);
     return 1;
   }
-  smv_filename = ParseCommandline(argc, argv);
 
   progname=argv[0];
+  strcpy(smokeview_progname, progname);
+  GetProgFullPath(smokeview_progname, 1024);
+  smv_filename = ParseCommandline(argc, argv);
 
   prog_fullpath = progname;
   if(smokeview_bindir==NULL){
