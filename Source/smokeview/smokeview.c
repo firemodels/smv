@@ -223,9 +223,7 @@ void DisplayVersionInfo(char *progname){
   if(fds_version!=NULL){
     PRINTF("FDS Build        : %s\n",fds_githash);
   }
-  if(smokeviewpath!=NULL){
-    PRINTF("Smokeview        : %s\n",smokeview_progname);
-  }
+  PRINTF("Smokeview        : %s\n",smokeview_progname);
 #ifdef pp_COMPRESS
   if(smokezippath!=NULL){
     if(verbose_output==1)PRINTF("Smokezip         : %s\n",smokezippath);

@@ -32,8 +32,7 @@ int IsInstallBinDir(char *bindir){
   return FileExistsOrig(smvfile);
 }
 
-#ifdef WIN32
-/* ------------------ SetBinDir ------------------------ */
+/* ------------------ SetBinDirAlways ------------------------ */
 
 void SetBinDirAlways(char *new_bindir){
   char savedir[1024], new_bindir_local[1024];
@@ -57,7 +56,6 @@ int SetBinDir(char *new_bindir){
   }
   return 0;
 }
-#endif
 
 /* ------------------ Usage ------------------------ */
 
@@ -136,16 +134,7 @@ char *ParseCommandline(int argc, char **argv) {
   }
   else{
     have_bindir_arg = 1;
-#ifdef WIN32
     SetBinDirAlways(args.bindir);
-#else
-    int len2;
-
-    FREEMEMORY(smokeview_bindir);
-    len2 = strlen(args.bindir);
-    NewMemory((void **)&smokeview_bindir, len2 + 2);
-    strcpy(smokeview_bindir, args.bindir);
-#endif
     if(smokeview_bindir[strlen(smokeview_bindir) - 1] != dirseparator[0])strcat(smokeview_bindir, dirseparator);
   }
   return return_val;
@@ -657,13 +646,7 @@ char *ProcessCommandLine(CommandlineArgs *args) {
       setup_only = 1;
     }
     if(args->bindir != NULL){
-#ifdef WIN32
       SetBinDirAlways(args->bindir);
-#else
-      NewMemory((void **)&smokeview_bindir, strlen(args->bindir) + 2);
-      strcpy(smokeview_bindir, args->bindir);
-      if(smokeview_bindir[strlen(smokeview_bindir) - 1] != dirseparator[0])strcat(smokeview_bindir, dirseparator);
-#endif
     }
     if(args->casedir){
       NewMemory((void **)&smokeview_casedir, strlen(args->casedir) +2);
