@@ -224,9 +224,10 @@ void DisplayVersionInfo(char *progname){
     PRINTF("FDS Build        : %s\n",fds_githash);
   }
   if(smokeviewpath!=NULL){
-#ifdef WIN32
+//#ifdef WIN32
     PRINTF("Smokeview        : %s\n",smokeview_progname);
-#else
+//#else
+/*
     {
       char *smv2, smokeviewpath_copy[256];
 
@@ -241,7 +242,8 @@ void DisplayVersionInfo(char *progname){
         PRINTF("                   %s\n", smv2);
       }
     }
-#endif
+    */
+//#endif
   }
 #ifdef pp_COMPRESS
   if(smokezippath!=NULL){
