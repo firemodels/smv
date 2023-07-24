@@ -1742,6 +1742,7 @@ SVEXTERN char SVDECL(*sliceinfo_filename,NULL);
 SVEXTERN char SVDECL(*deviceinfo_filename, NULL);
 SVEXTERN char SVDECL(*database_filename,NULL),SVDECL(*iso_filename,NULL);
 SVEXTERN char SVDECL(*smokeview_bindir,NULL);
+SVEXTERN char smokeview_progname[1024];
 SVEXTERN int SVDECL(have_bindir_arg, 0);
 SVEXTERN char SVDECL(*smokeview_casedir, NULL);
 SVEXTERN int SVDECL(update_vectorskip, 0);
