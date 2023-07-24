@@ -1081,8 +1081,14 @@ void DrawPlot2D(int option, float *x, float *z, float *z2, int n,
   zmax_display = zmax;
   if(zmax == zmin)zmax = zmin + 1.0;
 
-  Float2String(tvalmin, global_times[0], ndigits, force_fixedpoint);
-  Float2String(tvalmax, global_times[nglobal_times - 1], ndigits, force_fixedpoint);
+  if(vis_slice_plot==1&&vis_colorbar_dists_plot == 1){
+    strcpy(tvalmin, "0");
+    strcpy(tvalmax, "255");
+  }
+  else{
+    Float2String(tvalmin, global_times[0], ndigits, force_fixedpoint);
+    Float2String(tvalmax, global_times[nglobal_times - 1], ndigits, force_fixedpoint);
+  }
   Float2String(cvalmin, zmin, ndigits, force_fixedpoint);
   Float2String(cvalmax, zmax_display, ndigits, force_fixedpoint);
   Float2String(cval, highlight_y, ndigits, force_fixedpoint);
@@ -1182,7 +1188,6 @@ void DrawPlot2D(int option, float *x, float *z, float *z2, int n,
     OutputText(HSCALE2DLABEL(xmin) - GetStringWidth("X"), VSCALE2D(zmin) - dfont, tvalmin);
     OutputText(HSCALE2DLABEL(xmax) - GetStringWidth("X"), VSCALE2D(zmin) - dfont, tvalmax);
   }
-
   if(valid == 1){
     glPointSize(plot2d_point_size);
 
