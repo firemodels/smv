@@ -525,7 +525,7 @@ extern "C" void GluiColorbarSetup(int main_window){
   PANEL_cb2R2 = glui_colorbar->add_panel_to_panel(PANEL_cb1,"",GLUI_PANEL_NONE);
   BUTTON_delete=glui_colorbar->add_button_to_panel(PANEL_cb2R2,"Delete",COLORBAR_DELETE,ColorbarCB);
   glui_colorbar->add_column_to_panel(PANEL_cb2R2, false);
-  BUTTON_new=glui_colorbar->add_button_to_panel(PANEL_cb2R2,"Copy Tour",COLORBAR_NEW,ColorbarCB);
+  BUTTON_new=glui_colorbar->add_button_to_panel(PANEL_cb2R2,"Copy Colorbar",COLORBAR_NEW,ColorbarCB);
   colorbar_hidescene=1;
 #ifdef pp_COLOR_HIDE
   glui_colorbar->add_checkbox_to_panel(PANEL_cb2R2,_("Hide scene"),&colorbar_hidescene);
