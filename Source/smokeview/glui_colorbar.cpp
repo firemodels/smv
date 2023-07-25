@@ -153,18 +153,26 @@ void Colorbar2File(colorbardata *cbi, char *file, char *label){
   FILE *stream = NULL;
   int i;
 
+  // values consistent with http://colormine.org/convert/rgb-to-lab
+
   if(file != NULL && strlen(file) > 0 && label != NULL && strlen(label) > 0)stream = fopen(file, "w");
   if(stream == NULL)return;
   fprintf(stream, "name,%s\n", label);
   for(i = 0;i < 256;i++){
     float *rgbi;
     int rgb255[3];
+    float cie[3];
+    unsigned char rgbc[3];
 
     rgbi = cbi->colorbar + 3 * i;
     rgb255[0] = rgbi[0] * 255.0;
     rgb255[1] = rgbi[1] * 255.0;
     rgb255[2] = rgbi[2] * 255.0;
-    fprintf(stream, "%i,%i,%i\n", rgb255[0], rgb255[1], rgb255[2]);
+    rgbc[0] = (unsigned char)CLAMP(rgb255[0], 0, 255);
+    rgbc[1] = (unsigned char)CLAMP(rgb255[1], 0, 255);
+    rgbc[2] = (unsigned char)CLAMP(rgb255[2], 0, 255);
+    Rgb2CIE(rgbc, cie);
+    fprintf(stream, "%i,%i,%i,%f,%f,%f\n", rgb255[0], rgb255[1], rgb255[2], cie[0], cie[1], cie[2]);
   }
   fclose(stream);
 }
@@ -393,10 +401,8 @@ extern "C" void ColorbarCB(int var){
     ColorbarCB(COLORBAR_RGB);
     break;
   case COLORBAR_SAVE:
-    if(colorbartype >= ndefaultcolorbars&&colorbartype < ncolorbars){
-      cbi = colorbarinfo + colorbartype;
-      Colorbar2File(cbi, colorbar_filename, colorbar_label);
-    }
+    cbi = colorbarinfo + colorbartype;
+    Colorbar2File(cbi, colorbar_filename, colorbar_label);
     break;
   case COLORBAR_DELETE:
     if(colorbartype >= ndefaultcolorbars&&colorbartype < ncolorbars){
