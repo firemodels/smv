@@ -1081,6 +1081,7 @@ void DrawPlot2D(int option, float *x, float *z, float *z2, int n,
   zmax_display = zmax;
   if(zmax == zmin)zmax = zmin + 1.0;
 
+#ifdef pp_COLOR_PLOT2D
   if(vis_slice_plot==1&&vis_colorbar_dists_plot == 1){
     strcpy(tvalmin, "0");
     strcpy(tvalmax, "255");
@@ -1089,6 +1090,10 @@ void DrawPlot2D(int option, float *x, float *z, float *z2, int n,
     Float2String(tvalmin, global_times[0], ndigits, force_fixedpoint);
     Float2String(tvalmax, global_times[nglobal_times - 1], ndigits, force_fixedpoint);
   }
+#else
+  Float2String(tvalmin, global_times[0], ndigits, force_fixedpoint);
+  Float2String(tvalmax, global_times[nglobal_times - 1], ndigits, force_fixedpoint);
+#endif
   Float2String(cvalmin, zmin, ndigits, force_fixedpoint);
   Float2String(cvalmax, zmax_display, ndigits, force_fixedpoint);
   Float2String(cval, highlight_y, ndigits, force_fixedpoint);
