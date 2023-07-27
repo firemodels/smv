@@ -463,7 +463,6 @@ void DrawColorbarPathCIE(void){
     rgb255[1] = rgbi[1] * 255.0;
     rgb255[2] = rgbi[2] * 255.0;
     glColor3fv(rgbi);
-    void Rgb2CIE(unsigned char *rgb, float *cie);
     Rgb2CIE(rgb255, csi);
     xyz[2] = csi[0] / 100.0;
     xyz[0] = (csi[1] + 87.9) / 183.28;
