@@ -1099,10 +1099,10 @@ extern "C" void GluiGeometrySetup(int main_window){
     PANEL_elevation_color = glui_geometry->add_panel_to_panel(PANEL_group1, "color by elevation");
     PANEL_elevation_color->set_alignment(GLUI_ALIGN_LEFT);
     CHECKBOX_show_texture_1dimage = glui_geometry->add_checkbox_to_panel(PANEL_elevation_color, "show elevation colors", &show_texture_1dimage, SHOW_TEXTURE_1D_IMAGE, VolumeCB);
+    GetGeomZBounds(&terrain_zmin, &terrain_zmax);
     terrain_zlevel = (terrain_zmin+terrain_zmax)/2.0;
     CHECKBOX_show_zlevel = glui_geometry->add_checkbox_to_panel(PANEL_elevation_color, "hilight elevation", &show_zlevel, SHOW_ZLEVEL, VolumeCB);
 
-    GetGeomZBounds(&terrain_zmin, &terrain_zmax);
     SPINNER_geom_zmin = glui_geometry->add_spinner_to_panel(PANEL_elevation_color, "zmin", GLUI_SPINNER_FLOAT, &terrain_zmin, TERRAIN_ZMIN, VolumeCB);
     SPINNER_geom_zmin->set_float_limits(zbar0ORIG, zbarORIG);
 
@@ -1113,7 +1113,7 @@ extern "C" void GluiGeometrySetup(int main_window){
     SPINNER_geom_zlevel->set_float_limits(zbar0ORIG, zbarORIG);
 
     VolumeCB(GEOM_VERT_EXAG);
-    BUTTON_reset_zbounds = glui_geometry->add_button_to_panel(PANEL_elevation_color, _("Reset zmin/zmax"), RESET_ZBOUNDS, VolumeCB);
+    BUTTON_reset_zbounds = glui_geometry->add_button_to_panel(PANEL_elevation_color, _("Reset"), RESET_ZBOUNDS, VolumeCB);
   }
 
   if(nterraininfo>0&&ngeominfo==0){
@@ -1163,6 +1163,36 @@ extern "C" void TerrainCB(int var){
     default:
     ASSERT(FFALSE);
     break;
+  }
+}
+
+/* ------------------ GetGeomZBounds ------------------------ */
+
+void GetGeomZBounds(float *zmin, float *zmax){
+  int i;
+  geomlistdata *terrain;
+  int first = 1;
+
+  if(geominfo->geomlistinfo == NULL)return;
+  terrain = geominfo->geomlistinfo - 1;
+
+  for(i = 0; i < terrain->nverts; i++){
+    vertdata *verti;
+    float zval;
+
+    verti = terrain->verts + i;
+    zval = terrain->zORIG[i];
+    if(terrain_showonly_top == 0 || verti->vert_norm[2] > 0.0){
+      if(first == 1){
+        *zmin = zval;
+        *zmax = zval;
+        first = 0;
+      }
+      else{
+        *zmin = MIN(*zmin, zval);
+        *zmax = MAX(*zmax, zval);
+      }
+    }
   }
 }
 
@@ -1263,6 +1293,8 @@ extern "C" void VolumeCB(int var){
   break;
   case RESET_ZBOUNDS:
     GetGeomZBounds(&terrain_zmin, &terrain_zmax);
+    terrain_zlevel = (terrain_zmin+terrain_zmax)/2.0;
+    SPINNER_geom_zlevel->set_float_val(terrain_zlevel);
     SPINNER_geom_zmin->set_float_val(terrain_zmin);
     SPINNER_geom_zmax->set_float_val(terrain_zmax);
     SPINNER_geom_zlevel->set_float_limits(terrain_zmin, terrain_zmax);
