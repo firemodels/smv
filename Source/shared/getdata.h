@@ -47,10 +47,6 @@ void GetSliceFileDirection(int is1, int *is2ptr, int *iis1ptr, int *iis2ptr, int
 void writeslicedata(const char *slicefilename, int is1, int is2, int js1,
                     int js2, int ks1, int ks2, float *qdata, float *times,
                     int ntimes, int redirect_flag);
-void writeslicedata2(const char *slicefilename, const char *longlabel,
-                     const char *shortlabel, const char *unitlabel, int is1,
-                     int is2, int js1, int js2, int ks1, int ks2, float *qdata,
-                     float *times, int ntimes);
 void getsliceframe(FILE *file, int is1, int is2, int js1, int js2, int ks1,
                    int ks2, float *time, float *qframe, int testslice,
                    int *error);

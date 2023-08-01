@@ -11,6 +11,7 @@
 #include "MALLOCC.h"
 #include "datadefs.h"
 #include "getdata.h"
+#include "string_util.h"
 #include <ctype.h>
 #include <errno.h>
 #ifdef __STDC_VERSION__
@@ -36,31 +37,6 @@ FILE *FOPEN(const char *file, const char *mode) {
 #else
 FILE *FOPEN(const char *file, const char *mode) { return fopen(file, mode); }
 #endif
-
-/// TrimFrontConst duplicated here due to dependency problems.
-const char *TrimFrontConst_(const char *line) {
-  const char *c;
-
-  for (c = line; c <= line + strlen(line) - 1; c++) {
-    if (!isspace((unsigned char)(*c))) return c;
-  }
-  return line;
-}
-
-/// TrimBack duplicated here due to dependency problems.
-void TrimBack_(char *line) {
-  char *c;
-
-  if (line == NULL) return;
-  size_t len = strlen(line);
-  if (len == 0) return;
-  for (c = line + len - 1; c >= line; c--) {
-    if (isspace((unsigned char)(*c))) continue;
-    *(c + 1) = '\0';
-    return;
-  }
-  *line = '\0';
-}
 
 int fortread(void *ptr, size_t size, size_t count, FILE *file) {
   // TODO: check endianess, currently little-endian is assumed
@@ -786,59 +762,6 @@ void writeslicedata(const char *slicefilename, int is1, int is2, int js1,
   for (i = 0; i < ntimes; i++) {
     fortwrite(times + i, sizeof(float), 1, file);
     fortwrite(qdata + i*nframe, sizeof(float), nframe, file);
-  }
-
-  fclose(file);
-
-  return;
-}
-
-// !  ------------------ writeslicedata2 ------------------------
-
-void writeslicedata2(const char *slicefilename, const char *longlabel,
-                     const char *shortlabel, const char *unitlabel, int is1,
-                     int is2, int js1, int js2, int ks1, int ks2, float *qdata,
-                     float *times, int ntimes) {
-  char longlabel30[31] = {0};
-  char shortlabel30[31] = {0};
-  char unitlabel30[31] = {0};
-  int ibeg, iend, nframe;
-
-  FILE *file = FOPEN(slicefilename, "wb");
-
-  // Copy labels into smaller buffers, truncating if necessary. The separate
-  // TrimFront and TrimBack steps are intentionally separate steps.
-  strncpy(longlabel30, TrimFrontConst_(longlabel), 30);
-  TrimBack_(longlabel30);
-  strncpy(shortlabel30, TrimFrontConst_(shortlabel), 30);
-  TrimBack_(shortlabel30);
-  strncpy(unitlabel30, TrimFrontConst_(unitlabel), 30);
-  TrimBack_(unitlabel30);
-
-  fortwrite(longlabel30, 30, 1, file);
-  fortwrite(shortlabel30, 30, 1, file);
-  fortwrite(unitlabel30, 30, 1, file);
-
-  uint32_t ijk[6] = {0};
-  ijk[0] = is1;
-  ijk[1] = is2;
-  ijk[2] = js1;
-  ijk[3] = js2;
-  ijk[4] = ks1;
-  ijk[5] = ks2;
-  fortwrite(ijk, sizeof(*ijk), 6, file);
-
-  int nxsp = is2 + 1 - is1;
-  int nysp = js2 + 1 - js1;
-  int nzsp = ks2 + 1 - ks1;
-  nframe = nxsp * nysp * nzsp;
-
-  int i;
-  for (i = 0; i < ntimes; i++) {
-    fortwrite(&times[i], sizeof(times[i]), 1, file);
-    ibeg = 1 + (i - 1) * nframe;
-    iend = i * nframe;
-    fortwrite(&qdata[ibeg], sizeof(qdata[ibeg]), iend - ibeg, file);
   }
 
   fclose(file);

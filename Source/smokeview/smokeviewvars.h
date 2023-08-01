@@ -498,7 +498,7 @@ SVEXTERN int SVDECL(smoke_test_nslices,3);
 SVEXTERN float SVDECL(light_intensity, 1.0);
 SVEXTERN int SVDECL(show_light_position_direction,0);
 SVEXTERN int SVDECL(light_type_glui, INFINITE_LIGHT);
-SVEXTERN int SVDECL(light_type_global, INFINITE_LIGHT), SVDECL(update_vol_lights, 0);
+SVEXTERN int SVDECL(light_type_global, INFINITE_LIGHT);
 SVEXTERN int SVDECL(scatter_type_glui,ISOTROPIC);
 SVEXTERN float SVDECL(scatter_param, 0.5);
 

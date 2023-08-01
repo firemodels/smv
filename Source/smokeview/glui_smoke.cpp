@@ -79,7 +79,6 @@ GLUI_Spinner *SPINNER_load_hrrpuv = NULL;
 GLUI_Spinner *SPINNER_smoke_test_color[4];
 GLUI_Spinner *SPINNER_smoke_test_range = NULL;
 GLUI_Spinner *SPINNER_smoke_test_nslices = NULL;
-GLUI_Spinner *SPINNER_light_intensity = NULL;
 GLUI_Spinner *SPINNER_scatter_param = NULL;
 GLUI_Spinner *SPINNER_smokeloadframe = NULL;
 GLUI_Spinner *SPINNER_globalloadframe = NULL;
@@ -166,8 +165,8 @@ GLUI_StaticText *STATIC_timelimit_max = NULL;
 #define SLICERENDER_ROLLOUT 1
 #define MESH_ROLLOUT        2
 
-procdata smokeprocinfo[3], volsmokeprocinfo[7], colorprocinfo[3], sublightprocinfo[3];
-int nsmokeprocinfo = 0, nvolsmokeprocinfo=0, ncolorprocinfo = 0, nsublightprocinfo=0;
+procdata smokeprocinfo[3], volsmokeprocinfo[6], colorprocinfo[3];
+int nsmokeprocinfo = 0, nvolsmokeprocinfo=0, ncolorprocinfo = 0;
 
 #define FIRECOLOR_ROLLOUT   0
 #define FIREOPACITY_ROLLOUT 1
@@ -177,17 +176,12 @@ int nsmokeprocinfo = 0, nvolsmokeprocinfo=0, ncolorprocinfo = 0, nsublightprocin
 #define VOLSMOKE_MOVEMENT          1
 #define VOLSMOKE_COMPUTE_ROLLOUT   2
 #define VOLSMOKE_LOAD_ROLLOUT      3
-#define VOLSMOKE_LIGHT_ROLLOUT     4
-#define VOLSMOKE_IMAGES_ROLLOUT    5
-#define VOLSMOKE_LOADFRAME_ROLLOUT 6
+#define VOLSMOKE_IMAGES_ROLLOUT    4
+#define VOLSMOKE_LOADFRAME_ROLLOUT 5
 
 #define SLICESMOKE_LOAD_ROLLOUT 0
 #define SLICESMOKE_ORIG_ROLLOUT 1
 #define SLICESMOKE_TEST_ROLLOUT 2
-
-#define LIGHT_POSITION_ROLLOUT 0
-#define LIGHT_COLOR_ROLLOUT    1
-#define LIGHT_SCATTER_ROLLOUT  2
 
 /* ------------------ UpdateFireAlpha ------------------------ */
 
@@ -261,12 +255,6 @@ extern "C" void UpdateTimeFrameBounds(float time_min, float time_max){
     SPINNER_timeloadframe->set_float_val(time_min);
   }
   SPINNER_timeloadframe->set_float_limits(time_min,time_max);
-}
-
-/* ------------------ SublightRolloutCB ------------------------ */
-
-void SublightRolloutCB(int var){
-  ToggleRollout(sublightprocinfo, nsublightprocinfo, var);
 }
 
 /* ------------------ VolSmokeRolloutCB ------------------------ */
@@ -888,13 +876,6 @@ extern "C" void Smoke3dCB(int var){
     break;
   case LOAD_TIMEFRAME:
     LoadTimeFrame(-1, time_frameval);
-    break;
-  case LIGHT_XYZ:
-    break;
-  case LIGHT_UPDATE:
-    VEC3EQ(xyz_light_global,xyz_light_glui);
-    update_vol_lights = 1;
-    light_type_global = light_type_glui;
     break;
   case VOL_UNLOAD_ALL:
     UnLoadVolsmoke3DMenu(-1);
