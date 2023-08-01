@@ -12,9 +12,9 @@ void getpatchsizes1(FILE **file, const char *patchfilename, int *npatch,
 void getpatchsizes2(FILE *file, int version, int npatch, int *npatchsize,
                     int *pi1, int *pi2, int *pj1, int *pj2, int *pk1, int *pk2,
                     int *patchdir, int *headersize, int *framesize);
-void getsliceparms(const char *slicefilename, int *ip1, int *ip2, int *jp1,
-                   int *jp2, int *kp1, int *kp2, int *ni, int *nj, int *nk,
-                   int *slice3d, int *error);
+void GetSliceParms(const char *slicefilename, int *ip1, int *ip2, int *jp1,
+  int *jp2, int *kp1, int *kp2, int *ni, int *nj, int *nk,
+  int *slice3d, int *error);
 void getslicesizes(const char *slicefilename, int *nslicei, int *nslicej,
                    int *nslicek, int *nsteps, int sliceframestep, int *error,
                    int settmin_s, int settmax_s, float tmin_s, float tmax_s,

@@ -470,8 +470,6 @@ void ShowScene2(int mode){
     DrawVolSmokeFrame();
   }
 
-  if(show_light_position_direction == 1)DrawLightDirections();
-
   if(active_smokesensors == 1 && show_smokesensors != SMOKESENSORS_HIDDEN && geom_bounding_box_mousedown==0){
     CLIP_VALS;
     GetSmokeSensors();

@@ -75,41 +75,6 @@ VKLDevice InitVKL(int *width){
 }
 #endif
 
-/* ----------------------- GetScatterFraction ----------------------------- */
-
-float GetScatterFraction(float *view_vec, float *light_vec,float param,int phase_type){
-  float phase=0.0;
-  float fourpi = 16.0*atan(1.0);
-  float cos_angle=0.0;
-
-  if(phase_type != ISOTROPIC&&view_vec != NULL&&light_vec != NULL){
-    float length_view, length_light;
-
-    length_view = NORM3(view_vec);
-    length_light = NORM3(light_vec);
-    if(length_view > 0.0&&length_light > 0.0){
-      cos_angle = DOT3(view_vec, light_vec) / (length_view*length_light);
-      cos_angle = CLAMP(cos_angle, -1.0, 1.0);
-    }
-  }
-
-  switch(phase_type){
-  case ISOTROPIC:
-    phase = 1.0/fourpi;
-    break;
-  case HENYEY_GREENSTEIN:
-    phase = (1.0-param*param)/(fourpi*pow(1.0+param*param-2.0*param*cos_angle,1.5));
-    break;
-  case SCHLICK:
-    phase = (1.0-param*param)/(fourpi*pow(1.0+param*cos_angle, 2.0));
-    break;
-  default:
-    ASSERT(FFALSE);
-    break;
-  }
-  return phase;
-}
-
 /* ----------------------- GetSmokeColor ----------------------------- */
 
 void GetSmokeColor(float *smoke_tran, float **smoke_color_handle, float *scaled_intensity, float *light_fractionptr, float dlength, float xyz[3], meshdata *meshi, int *inobst, char *blank_local){
@@ -1363,92 +1328,6 @@ void ComputeAllSmokecolors(void){
   }
 }
 
-/* ------------------ GetPos ------------------------ */
-
-void GetPos(float *xyz1, float *dir_in, float *xyz2){
-  float dir[3];
-
-  if(dir_in==NULL){
-    VEC3DIFF(dir, xyz_light_glui, xyz1);
-    if(NORM3(dir)>1.0){
-      NORMALIZE3(dir);
-    }
-  }
-  else{
-    VEC3EQ(dir, dir_in);
-    NORMALIZE3(dir);
-  }
-  VEC3ADD(xyz2, xyz1, dir);
-}
-
-/* ------------------ DrawLightDirections ------------------------ */
-
-void DrawLightDirections(void){
-  int i;
-  float pos[24], pos2[24];
-
-  glPushMatrix();
-  glScalef(SCALE2SMV(1.0),SCALE2SMV(1.0),SCALE2SMV(1.0));
-  glTranslatef(-xbar0,-ybar0,-zbar0);
-
-  glColor3fv(foregroundcolor);
-  for(i = 0;i<nmeshes;i++){
-    meshdata *meshi;
-    float *boxmin, *boxmax;
-    float *direction;
-    int j;
-
-    meshi = meshinfo+i;
-    boxmin = meshi->boxmin;
-    boxmax = meshi->boxmax;
-
-    glBegin(GL_LINES);
-    if(light_type_glui==LOCAL_LIGHT){
-      direction = NULL;
-    }
-    else{
-      direction = xyz_light_glui;
-    }
-
-    pos[ 0] = boxmin[0], pos[ 1] = boxmin[1], pos[ 2] = boxmin[2];
-    pos[ 3] = boxmax[0], pos[ 4] = boxmin[1], pos[ 5] = boxmin[2];
-    pos[ 6] = boxmin[0], pos[ 7] = boxmax[1], pos[ 8] = boxmin[2];
-    pos[ 9] = boxmax[0], pos[10] = boxmax[1], pos[11] = boxmin[2];
-    pos[12] = boxmin[0], pos[13] = boxmin[1], pos[14] = boxmax[2];
-    pos[15] = boxmax[0], pos[16] = boxmin[1], pos[17] = boxmax[2];
-    pos[18] = boxmin[0], pos[19] = boxmax[1], pos[20] = boxmax[2];
-    pos[21] = boxmax[0], pos[22] = boxmax[1], pos[23] = boxmax[2];
-
-    for(j=0;j<8;j++){
-      GetPos(pos+3*j   , direction, pos2+3*j);
-      glVertex3fv( pos+3*j);
-      glVertex3fv(pos2+3*j);
-    }
-    glEnd();
-
-    glPointSize(5.0);
-    glBegin(GL_POINTS);
-    if(light_type_glui==LOCAL_LIGHT){
-      for(j=0;j<8;j++){
-        glVertex3fv(pos+3*j);
-      }
-    }
-    else{
-      for(j=0;j<8;j++){
-        glVertex3fv(pos2+3*j);
-      }
-    }
-    glEnd();
-  }
-  if(light_type_glui==LOCAL_LIGHT){
-    glPointSize(10.0);
-    glBegin(GL_POINTS);
-    glVertex3fv(xyz_light_glui);
-    glEnd();
-  }
-  glPopMatrix();
-}
-
   /* ------------------ DrawSmoke3dVolDebug ------------------------ */
 
 void DrawSmoke3dVolDebug(void){
@@ -1964,14 +1843,6 @@ void DrawSmoke3DGPUVol(void){
   if(mouse_down==1&&show_volsmoke_moving==0){
     return;
   }
-  glUniform3f(GPUvol_light_position, xyz_light_glui[0],xyz_light_glui[1],xyz_light_glui[2]);
-  glUniform1i(GPUvol_light_type, light_type_glui);
-  glUniform1f(GPUvol_scatter_param, scatter_param);
-  glUniform1i(GPUvol_scatter_type_glui, scatter_type_glui);
-  glUniform1f(GPUvol_light_intensity, light_intensity);
-  glUniform1f(GPUvol_scatter_param, scatter_param);
-  glUniform3f(GPUvol_light_color, (float)light_color[0], (float)light_color[1], (float)light_color[2]);
-
   glUniform3f(GPUvol_eyepos,eye_position_smv[0],eye_position_smv[1],eye_position_smv[2]);
   glUniform1f(GPUvol_xyzmaxdiff,xyzmaxdiff);
   glUniform1f(GPUvol_gpu_vol_factor,gpu_vol_factor);
@@ -2077,7 +1948,6 @@ void DrawSmoke3DGPUVol(void){
       glUniform1i(GPUvol_fire,         1);  // firedata_local
       glUniform1i(GPUvol_smokecolormap,2);  // rgb_volsmokecolormap
       glUniform1i(GPUvol_blockage,     3);  // meshi->f_iblank_cell
-      glUniform1i(GPUvol_light, 5);         // meshi->light_fraction
       if(mouse_down==1){
         glUniform1f(GPUvol_dcell,8.0*dcell);
       }

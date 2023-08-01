@@ -283,46 +283,6 @@ void UpdateOpacityMap(void){
     glVertex3f(XX,YY,ZZ+z_offset[mm]);                                \
   }
 
-  /* ------------------ GetLightLimit ------------------------ */
-
-void GetLightLimit(float *xyz1, float *dxyz, float *xyz_light, int light_type, float *xyz2, float *length){
-  float tval = TMAX, length3[3];
-  int i;
-
-  // shoot a ray from xyz1 in direction dxyz and intersect with bounding box of all meshes.  return intersection in xyz2
-  // if light position is within bounding box then return its position in xyz2
-
-  for(i = 0; i < 3; i++){
-    if(dxyz[i] != 0.0){
-      float tval1;
-
-      if(dxyz[i]>0.0){
-        tval1 = (boxmax_global[i] - xyz1[i]) / dxyz[i];
-        if(tval1 >= 0.0&&tval1 <= tval)tval = tval1;
-      }
-      else{
-        tval1 = (boxmin_global[i] - xyz1[i]) / dxyz[i];
-        if(tval1 >= 0.0&&tval1 <= tval)tval = tval1;
-      }
-    }
-  }
-  if(tval >= TMAX) tval = 0.0;
-  xyz2[0] = xyz1[0] + tval*dxyz[0];
-  xyz2[1] = xyz1[1] + tval*dxyz[1];
-  xyz2[2] = xyz1[2] + tval*dxyz[2];
-
-  if(light_type == LOCAL_LIGHT){
-    float dxyz2[3], dxyzlight[3];
-
-    VEC3DIFF(dxyz2, xyz2, xyz1);
-    VEC3DIFF(dxyzlight, xyz_light, xyz1);
-    if(DOT3(dxyzlight,dxyzlight) < DOT3(dxyz2,dxyz2)){
-      VEC3EQ(xyz2, xyz_light);
-    }
-  }
-  VEC3DIFF(length3, xyz2, xyz1);
-  *length = NORM3(length3);
-}
 
 /* ------------------ GetCellindex ------------------------ */
 

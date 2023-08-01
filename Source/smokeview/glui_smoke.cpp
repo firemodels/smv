@@ -79,7 +79,6 @@ GLUI_Spinner *SPINNER_load_hrrpuv = NULL;
 GLUI_Spinner *SPINNER_smoke_test_color[4];
 GLUI_Spinner *SPINNER_smoke_test_range = NULL;
 GLUI_Spinner *SPINNER_smoke_test_nslices = NULL;
-GLUI_Spinner *SPINNER_scatter_param = NULL;
 GLUI_Spinner *SPINNER_smokeloadframe = NULL;
 GLUI_Spinner *SPINNER_globalloadframe = NULL;
 GLUI_Spinner *SPINNER_timeloadframe = NULL;
