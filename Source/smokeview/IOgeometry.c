@@ -709,53 +709,6 @@ void GetFaceInfo(void){
   }
 }
 
-  /* ------------------ GetGeomZBounds ------------------------ */
-
-void GetGeomZBounds(float *zmin, float *zmax){
-  int j;
-  int first = 1;
-
-  for(j = 0; j < ngeominfoptrs; j++){
-    geomdata *geomi;
-    int iend, ii;
-
-    geomi = geominfoptrs[j];
-    if(geomi->loaded == 0 || geomi->display == 0)continue;
-    if(geomi->geomtype != GEOM_GEOM&&geomi->geomtype != GEOM_ISO)continue;
-
-    iend = geomi->ntimes;
-    if(geomi->currentframe != NULL)iend = 1;
-
-    for(ii = -1; ii < iend; ii++){
-      geomlistdata *geomlisti;
-      int k;
-
-      if(ii == -1 || geomi->currentframe == NULL){
-        geomlisti = geomi->geomlistinfo + ii;
-      }
-      else{
-        geomlisti = geomi->currentframe;
-      }
-      for(k = 0; k < geomlisti->nverts; k++){
-        float zval;
-        vertdata *vertk;
-
-        vertk = geomlisti->verts + k;
-        zval = vertk->xyz[2];
-        if(first == 1){
-          *zmin = zval;
-          *zmax = zval;
-          first = 0;
-        }
-        else{
-          *zmin = MIN(*zmin, zval);
-          *zmax = MAX(*zmax, zval);
-        }
-      }
-    }
-  }
-}
-
 /* ------------------ TextureOff ------------------------ */
 
 int TextureOff(void){
