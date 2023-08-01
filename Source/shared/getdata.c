@@ -249,19 +249,67 @@ void getpatchsizes2(FILE *file, int version, int npatch, int *npatchsize,
   return;
 }
 
-// !  ------------------ getsliceparms ------------------------
+/* ------------------ GetSliceFileDirection ------------------------ */
 
-void getsliceparms(const char *slicefilename, int *ip1, int *ip2, int *jp1,
-                   int *jp2, int *kp1, int *kp2, int *ni, int *nj, int *nk,
-                   int *slice3d, int *error) {
+void GetSliceFileDirection(int is1, int *is2ptr, int *iis1ptr, int *iis2ptr, int js1, int *js2ptr, int ks1, int *ks2ptr, int *idirptr, int *joffptr, int *koffptr, int *volsliceptr){
+  int nxsp, nysp, nzsp;
+  int imin;
+
+  nxsp = *is2ptr + 1 - is1;
+  nysp = *js2ptr + 1 - js1;
+  nzsp = *ks2ptr + 1 - ks1;
+  *joffptr = 0;
+  *koffptr = 0;
+  *volsliceptr = 0;
+  *iis1ptr = is1;
+  *iis2ptr = *is2ptr;
+  if(is1 != *is2ptr && js1 != *js2ptr && ks1 != *ks2ptr){
+    *idirptr = 1;
+    *is2ptr = is1;
+    *volsliceptr = 1;
+    return;
+  }
+  imin = MIN(nxsp, nysp);
+  imin = MIN(imin, nzsp);
+  if(nxsp == imin){
+    *idirptr = 1;
+    *is2ptr = is1;
+  }
+  else if(nysp == imin){
+    *idirptr = 2;
+    *js2ptr = js1;
+  }
+  else{
+    *idirptr = 3;
+    *ks2ptr = ks1;
+  }
+  if(is1 == *is2ptr && js1 == *js2ptr){
+    *idirptr = 1;
+    *joffptr = 1;
+  }
+  else if(is1 == *is2ptr && ks1 == *ks2ptr){
+    *idirptr = 1;
+    *koffptr = 1;
+  }
+  else if(js1 == *js2ptr && ks1 == *ks2ptr){
+    *idirptr = 2;
+    *koffptr = 1;
+  }
+}
+
+/* ------------------ GetSliceParms ------------------------ */
+
+void GetSliceParms(const char *slicefilename, int *ip1, int *ip2, int *jp1,
+  int *jp2, int *kp1, int *kp2, int *ni, int *nj, int *nk,
+  int *slice3d, int *error) {
   int idir, joff, koff, volslice;
   char longlbl[31] = {0};
   char shortlbl[31] = {0};
   char unitlbl[31] = {0};
   int iip1, iip2;
 
-  if (*ip1 == -1 || *ip2 == -1 || *jp1 == -1 || *jp2 == -1 || *kp1 == -1 ||
-      *kp2 == -1) {
+  if(*ip1 == -1 || *ip2 == -1 || *jp1 == -1 || *jp2 == -1 || *kp1 == -1 ||
+    *kp2 == -1) {
     *ip1 = 0;
     *ip2 = 0;
     *jp1 = 0;
@@ -271,7 +319,7 @@ void getsliceparms(const char *slicefilename, int *ip1, int *ip2, int *jp1,
     *error = 0;
 
     FILE *file = FOPEN(slicefilename, "rb");
-    if (file == NULL) {
+    if(file == NULL) {
       *error = 1;
       return;
     }
@@ -293,14 +341,13 @@ void getsliceparms(const char *slicefilename, int *ip1, int *ip2, int *jp1,
   *ni = *ip2 + 1 - *ip1;
   *nj = *jp2 + 1 - *jp1;
   *nk = *kp2 + 1 - *kp1;
-  if (ip1 == ip2 || jp1 == jp2 || kp1 == kp2) {
+  if(ip1 == ip2 || jp1 == jp2 || kp1 == kp2) {
     *slice3d = 0;
-  } else {
+  }
+  else {
     *slice3d = 1;
   }
-  getslicefiledirection(ip1, ip2, &iip1, &iip2, jp1, jp2, kp1, kp2, &idir,
-                        &joff, &koff, &volslice);
-
+  GetSliceFileDirection(*ip1, ip2, &iip1, &iip2, *jp1, jp2, *kp1, kp2, &idir, &joff, &koff, &volslice);
   return;
 }
 
@@ -697,50 +744,6 @@ void getdata1(FILE *file, int *ipart, int *error) {
     if (*error != 0) return;
   }
 
-  return;
-}
-
-// !  ------------------ getslicefiledirection ------------------------
-void getslicefiledirection(int *is1, int *is2, int *iis1, int *iis2, int *js1,
-                           int *js2, int *ks1, int *ks2, int *idir, int *joff,
-                           int *koff, int *volslice) {
-  int nxsp, nysp, nzsp;
-
-  nxsp = *is2 + 1 - *is1;
-  nysp = *js2 + 1 - *js1;
-  nzsp = *ks2 + 1 - *ks1;
-  *joff = 0;
-  *koff = 0;
-  *volslice = 0;
-  *iis1 = *is1;
-  *iis2 = *is2;
-  if (*is1 != *is2 && *js1 != *js2 && *ks1 != *ks2) {
-    *idir = 1;
-    *is2 = *is1;
-    *volslice = 1;
-    return;
-  }
-  int imin = MIN(MIN(nxsp, nysp), nzsp);
-  if (nxsp == imin) {
-    *idir = 1;
-    *is2 = *is1;
-  } else if (nysp == imin) {
-    *idir = 2;
-    *js2 = *js1;
-  } else {
-    *idir = 3;
-    *ks2 = *ks1;
-  }
-  if (*is1 == *is2 && *js1 == *js2) {
-    *idir = 1;
-    *joff = 1;
-  } else if (*is1 == *is2 && *ks1 == *ks2) {
-    *idir = 1;
-    *koff = 1;
-  } else if (*js1 == *js2 && *ks1 == *ks2) {
-    *idir = 2;
-    *koff = 1;
-  }
   return;
 }
 
