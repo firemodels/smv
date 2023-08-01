@@ -304,34 +304,6 @@ void getsliceparms(const char *slicefilename, int *ip1, int *ip2, int *jp1,
   return;
 }
 
-// !  ------------------ getsliceheader ------------------------
-
-void getsliceheader(const char *slicefilename, int *ip1, int *ip2, int *jp1,
-                    int *jp2, int *kp1, int *kp2, int *error) {
-
-  *error = 0;
-  FILE *file = FOPEN(slicefilename, "rb");
-  if (file == NULL) {
-    *error = 1;
-    return;
-  }
-  // skip over long, short and unit labels (each 30 characters in length);
-  *error = fortseek(file, sizeof(char), 30, SEEK_SET);
-  *error = fortseek(file, sizeof(char), 30, SEEK_CUR);
-  *error = fortseek(file, sizeof(char), 30, SEEK_CUR);
-
-  uint32_t ijkp[6] = {0};
-  *error = fortread(ijkp, sizeof(*ijkp), 6, file);
-  *ip1 = ijkp[0];
-  *ip2 = ijkp[1];
-  *jp1 = ijkp[2];
-  *jp2 = ijkp[3];
-  *kp1 = ijkp[4];
-  *kp2 = ijkp[5];
-
-  fclose(file);
-}
-
 // !  ------------------ openpart ------------------------
 
 FILE *openpart(const char *partfilename, int *error) {
@@ -906,17 +878,6 @@ void getsliceframe(FILE *file, int is1, int is2, int js1, int js2, int ks1,
       }
     }
   }
-  return;
-}
-
-// !  ------------------ endianout ------------------------
-
-void endianout(const char *endianfilename) {
-  int one;
-  FILE *file = FOPEN(endianfilename, "rb");
-  one = 1;
-  fortwrite(&one, sizeof(one), 1, file);
-  fclose(file);
   return;
 }
 

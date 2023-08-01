@@ -15,8 +15,6 @@ void getpatchsizes2(FILE *file, int version, int npatch, int *npatchsize,
 void getsliceparms(const char *slicefilename, int *ip1, int *ip2, int *jp1,
                    int *jp2, int *kp1, int *kp2, int *ni, int *nj, int *nk,
                    int *slice3d, int *error);
-void getsliceheader(const char *slicefilename, int *ip1, int *ip2, int *jp1,
-                    int *jp2, int *kp1, int *kp2, int *error);
 void getslicesizes(const char *slicefilename, int *nslicei, int *nslicej,
                    int *nslicek, int *nsteps, int sliceframestep, int *error,
                    int settmin_s, int settmax_s, float tmin_s, float tmax_s,
@@ -56,7 +54,6 @@ void writeslicedata2(const char *slicefilename, const char *longlabel,
 void getsliceframe(FILE *file, int is1, int is2, int js1, int js2, int ks1,
                    int ks2, float *time, float *qframe, int testslice,
                    int *error);
-void endianout(const char *endianfilename);
 void outsliceheader(const char *slicefilename, FILE **file, int ip1, int ip2,
                     int jp1, int jp2, int kp1, int kp2, int *error);
 void outsliceframe(FILE *file, int is1, int is2, int js1, int js2, int ks1,
