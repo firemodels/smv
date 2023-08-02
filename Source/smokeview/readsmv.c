@@ -905,8 +905,6 @@ void InitMesh(meshdata *meshi){
   meshi->smokeplaneinfo = NULL;
   meshi->nsmokeplaneinfo = 0;
   meshi->opacity_adjustments = NULL;
-  meshi->light_fraction = NULL;
-  meshi->uc_light_fraction = NULL;
   for(i = 0; i<6; i++){
     meshi->is_extface[i] = MESH_EXT;
   }

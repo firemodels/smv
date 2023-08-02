@@ -438,7 +438,7 @@ int ReadSMV(bufferstreamdata *streamsmv, FILE *stream_out, casedata *smvcase){
           break;
         }
         slicei->filesize=filesize;
-        getsliceparms(full_file,&is1,&is2,&js1,&js2,&ks1,&ks2,&ni,&nj,&nk,&slicei->volslice,&error);
+        GetSliceParms(full_file,&is1,&is2,&js1,&js2,&ks1,&ks2,&ni,&nj,&nk,&slicei->volslice,&error);
         slicei->is1=is1;
         slicei->is2=is2;
         slicei->js1=js1;

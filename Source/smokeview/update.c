@@ -2566,10 +2566,6 @@ void UpdateDisplay(void){
     update_slice_hists = 0;
     UpdateSliceHist();
   }
-  if(update_vol_lights==1){
-    update_vol_lights = 0;
-    InitAllLightFractions(xyz_light_global, light_type_global);
-  }
   if(update_windrose_showhide==1){
     UpdateWindRoseDevices(UPDATE_WINDROSE_DEVICE);
   }

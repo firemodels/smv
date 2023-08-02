@@ -851,8 +851,9 @@ int CReadSlice_frame(int frame_index_local,int sd_index,int flag){
   if(frame_index_local==first_frame_index){
     if(sd->compression_type==UNCOMPRESSED){
 
-      getslicesizes(sd->file, &sd->nslicei, &sd->nslicej, &sd->nslicek, &sd->ntimes, tload_step,&error,
-        use_tload_begin, use_tload_end, tload_begin, tload_end, &headersize, &framesize);
+
+      GetSliceSizes(sd->file, ALL_FRAMES, &sd->nslicei, &sd->nslicej, &sd->nslicek, &sd->ntimes, tload_step, &error,
+                    use_tload_begin, use_tload_end, tload_begin, tload_end, &headersize, &framesize);
     }
     else if(sd->compression_type!=UNCOMPRESSED){
       if(
@@ -3166,7 +3167,7 @@ void GetSliceParams(void){
         js2=sd->js2;
         ks1=sd->ks1;
         ks2=sd->ks2;
-        getslicefiledirection(&is1, &is2, &iis1, &iis2, &js1, &js2, &ks1, &ks2, &idir, &joff, &koff,&volslice);
+        GetSliceFileDirection(is1, &is2, &iis1, &iis2, js1, &js2, ks1, &ks2, &idir, &joff, &koff, &volslice);
         if(volslice == 1){
           is1 = iis1;
           is2 = iis2;
@@ -4232,54 +4233,6 @@ void InitSlice3DTexture(meshdata *meshi){
   FFLUSH();
 }
 #endif
-
-/* ------------------ GetSliceFileDirection ------------------------ */
-
-void GetSliceFileDirection(int is1, int *is2ptr, int *iis1ptr, int *iis2ptr, int js1, int *js2ptr, int ks1, int *ks2ptr, int *idirptr, int *joffptr, int *koffptr, int *volsliceptr){
-  int nxsp, nysp, nzsp;
-  int imin;
-
-  nxsp = *is2ptr+1-is1;
-  nysp = *js2ptr+1-js1;
-  nzsp = *ks2ptr+1-ks1;
-  *joffptr = 0;
-  *koffptr = 0;
-  *volsliceptr = 0;
-  *iis1ptr = is1;
-  *iis2ptr = *is2ptr;
-  if(is1!=*is2ptr&&js1!=*js2ptr&&ks1!=*ks2ptr){
-    *idirptr = 1;
-    *is2ptr = is1;
-    *volsliceptr = 1;
-    return;
-  }
-  imin = MIN(nxsp, nysp);
-  imin = MIN(imin, nzsp);
-  if(nxsp==imin){
-    *idirptr = 1;
-    *is2ptr = is1;
-  }
-  else if(nysp==imin){
-    *idirptr = 2;
-    *js2ptr = js1;
-  }
-  else{
-    *idirptr = 3;
-    *ks2ptr = ks1;
-  }
-  if(is1==*is2ptr&&js1==*js2ptr){
-    *idirptr = 1;
-    *joffptr = 1;
-  }
-  else if(is1==*is2ptr&&ks1==*ks2ptr){
-    *idirptr = 1;
-    *koffptr = 1;
-  }
-  else if(js1==*js2ptr&&ks1==*ks2ptr){
-    *idirptr = 2;
-    *koffptr = 1;
-  }
-}
 
 /* ------------------ GetSliceSizes ------------------------ */
 

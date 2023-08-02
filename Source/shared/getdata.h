@@ -12,15 +12,9 @@ void getpatchsizes1(FILE **file, const char *patchfilename, int *npatch,
 void getpatchsizes2(FILE *file, int version, int npatch, int *npatchsize,
                     int *pi1, int *pi2, int *pj1, int *pj2, int *pk1, int *pk2,
                     int *patchdir, int *headersize, int *framesize);
-void getsliceparms(const char *slicefilename, int *ip1, int *ip2, int *jp1,
-                   int *jp2, int *kp1, int *kp2, int *ni, int *nj, int *nk,
-                   int *slice3d, int *error);
-void getsliceheader(const char *slicefilename, int *ip1, int *ip2, int *jp1,
-                    int *jp2, int *kp1, int *kp2, int *error);
-void getslicesizes(const char *slicefilename, int *nslicei, int *nslicej,
-                   int *nslicek, int *nsteps, int sliceframestep, int *error,
-                   int settmin_s, int settmax_s, float tmin_s, float tmax_s,
-                   int *headersize, int *framesize);
+void GetSliceParms(const char *slicefilename, int *ip1, int *ip2, int *jp1,
+  int *jp2, int *kp1, int *kp2, int *ni, int *nj, int *nk,
+  int *slice3d, int *error);
 FILE *openpart(const char *partfilename, int *error);
 void openslice(const char *slicefilename, FILE **file, int *is1, int *is2,
                int *js1, int *js2, int *ks1, int *ks2, int *error);
@@ -43,20 +37,15 @@ void getpatchdata(FILE *file, int npatch, int *pi1, int *pi2, int *pj1,
                   int *pj2, int *pk1, int *pk2, float *patchtime, float *pqq,
                   int *npqq, int *file_size, int *error);
 void getdata1(FILE *file, int *ipart, int *error) ;
-void getslicefiledirection(int *is1, int *is2, int *iis1, int *iis2, int *js1,
-                           int *js2, int *ks1, int *ks2, int *idir, int *joff,
-                           int *koff, int *volslice);
+void GetSliceFileDirection(int is1, int *is2ptr, int *iis1ptr, int *iis2ptr, int js1,
+                           int *js2ptr, int ks1, int *ks2ptr, int *idirptr, int *joffptr,
+                           int *koffptr, int *volsliceptr);
 void writeslicedata(const char *slicefilename, int is1, int is2, int js1,
                     int js2, int ks1, int ks2, float *qdata, float *times,
                     int ntimes, int redirect_flag);
-void writeslicedata2(const char *slicefilename, const char *longlabel,
-                     const char *shortlabel, const char *unitlabel, int is1,
-                     int is2, int js1, int js2, int ks1, int ks2, float *qdata,
-                     float *times, int ntimes);
 void getsliceframe(FILE *file, int is1, int is2, int js1, int js2, int ks1,
                    int ks2, float *time, float *qframe, int testslice,
                    int *error);
-void endianout(const char *endianfilename);
 void outsliceheader(const char *slicefilename, FILE **file, int ip1, int ip2,
                     int jp1, int jp2, int kp1, int kp2, int *error);
 void outsliceframe(FILE *file, int is1, int is2, int js1, int js2, int ks1,

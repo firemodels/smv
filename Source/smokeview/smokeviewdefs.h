@@ -269,13 +269,6 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 
 #define TOBW(col) ( 0.299*(col)[0] + 0.587*(col)[1] + 0.114*(col)[2])
 
-#define ISOTROPIC         0
-#define HENYEY_GREENSTEIN 1
-#define SCHLICK           2
-
-#define LOCAL_LIGHT     0
-#define INFINITE_LIGHT  1
-
 #define TMAX 1000000000.0
 
 #define PARTFILE_LOADALL   -11

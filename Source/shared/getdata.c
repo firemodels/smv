@@ -11,6 +11,7 @@
 #include "MALLOCC.h"
 #include "datadefs.h"
 #include "getdata.h"
+#include "string_util.h"
 #include <ctype.h>
 #include <errno.h>
 #ifdef __STDC_VERSION__
@@ -36,31 +37,6 @@ FILE *FOPEN(const char *file, const char *mode) {
 #else
 FILE *FOPEN(const char *file, const char *mode) { return fopen(file, mode); }
 #endif
-
-/// TrimFrontConst duplicated here due to dependency problems.
-const char *TrimFrontConst_(const char *line) {
-  const char *c;
-
-  for (c = line; c <= line + strlen(line) - 1; c++) {
-    if (!isspace((unsigned char)(*c))) return c;
-  }
-  return line;
-}
-
-/// TrimBack duplicated here due to dependency problems.
-void TrimBack_(char *line) {
-  char *c;
-
-  if (line == NULL) return;
-  size_t len = strlen(line);
-  if (len == 0) return;
-  for (c = line + len - 1; c >= line; c--) {
-    if (isspace((unsigned char)(*c))) continue;
-    *(c + 1) = '\0';
-    return;
-  }
-  *line = '\0';
-}
 
 int fortread(void *ptr, size_t size, size_t count, FILE *file) {
   // TODO: check endianess, currently little-endian is assumed
@@ -249,19 +225,67 @@ void getpatchsizes2(FILE *file, int version, int npatch, int *npatchsize,
   return;
 }
 
-// !  ------------------ getsliceparms ------------------------
+/* ------------------ GetSliceFileDirection ------------------------ */
 
-void getsliceparms(const char *slicefilename, int *ip1, int *ip2, int *jp1,
-                   int *jp2, int *kp1, int *kp2, int *ni, int *nj, int *nk,
-                   int *slice3d, int *error) {
+void GetSliceFileDirection(int is1, int *is2ptr, int *iis1ptr, int *iis2ptr, int js1, int *js2ptr, int ks1, int *ks2ptr, int *idirptr, int *joffptr, int *koffptr, int *volsliceptr){
+  int nxsp, nysp, nzsp;
+  int imin;
+
+  nxsp = *is2ptr + 1 - is1;
+  nysp = *js2ptr + 1 - js1;
+  nzsp = *ks2ptr + 1 - ks1;
+  *joffptr = 0;
+  *koffptr = 0;
+  *volsliceptr = 0;
+  *iis1ptr = is1;
+  *iis2ptr = *is2ptr;
+  if(is1 != *is2ptr && js1 != *js2ptr && ks1 != *ks2ptr){
+    *idirptr = 1;
+    *is2ptr = is1;
+    *volsliceptr = 1;
+    return;
+  }
+  imin = MIN(nxsp, nysp);
+  imin = MIN(imin, nzsp);
+  if(nxsp == imin){
+    *idirptr = 1;
+    *is2ptr = is1;
+  }
+  else if(nysp == imin){
+    *idirptr = 2;
+    *js2ptr = js1;
+  }
+  else{
+    *idirptr = 3;
+    *ks2ptr = ks1;
+  }
+  if(is1 == *is2ptr && js1 == *js2ptr){
+    *idirptr = 1;
+    *joffptr = 1;
+  }
+  else if(is1 == *is2ptr && ks1 == *ks2ptr){
+    *idirptr = 1;
+    *koffptr = 1;
+  }
+  else if(js1 == *js2ptr && ks1 == *ks2ptr){
+    *idirptr = 2;
+    *koffptr = 1;
+  }
+}
+
+/* ------------------ GetSliceParms ------------------------ */
+
+void GetSliceParms(const char *slicefilename, int *ip1, int *ip2, int *jp1,
+  int *jp2, int *kp1, int *kp2, int *ni, int *nj, int *nk,
+  int *slice3d, int *error) {
   int idir, joff, koff, volslice;
   char longlbl[31] = {0};
   char shortlbl[31] = {0};
   char unitlbl[31] = {0};
   int iip1, iip2;
 
-  if (*ip1 == -1 || *ip2 == -1 || *jp1 == -1 || *jp2 == -1 || *kp1 == -1 ||
-      *kp2 == -1) {
+  if(*ip1 == -1 || *ip2 == -1 || *jp1 == -1 || *jp2 == -1 || *kp1 == -1 ||
+    *kp2 == -1) {
     *ip1 = 0;
     *ip2 = 0;
     *jp1 = 0;
@@ -271,7 +295,7 @@ void getsliceparms(const char *slicefilename, int *ip1, int *ip2, int *jp1,
     *error = 0;
 
     FILE *file = FOPEN(slicefilename, "rb");
-    if (file == NULL) {
+    if(file == NULL) {
       *error = 1;
       return;
     }
@@ -293,120 +317,13 @@ void getsliceparms(const char *slicefilename, int *ip1, int *ip2, int *jp1,
   *ni = *ip2 + 1 - *ip1;
   *nj = *jp2 + 1 - *jp1;
   *nk = *kp2 + 1 - *kp1;
-  if (ip1 == ip2 || jp1 == jp2 || kp1 == kp2) {
+  if(ip1 == ip2 || jp1 == jp2 || kp1 == kp2) {
     *slice3d = 0;
-  } else {
+  }
+  else {
     *slice3d = 1;
   }
-  getslicefiledirection(ip1, ip2, &iip1, &iip2, jp1, jp2, kp1, kp2, &idir,
-                        &joff, &koff, &volslice);
-
-  return;
-}
-
-// !  ------------------ getsliceheader ------------------------
-
-void getsliceheader(const char *slicefilename, int *ip1, int *ip2, int *jp1,
-                    int *jp2, int *kp1, int *kp2, int *error) {
-
-  *error = 0;
-  FILE *file = FOPEN(slicefilename, "rb");
-  if (file == NULL) {
-    *error = 1;
-    return;
-  }
-  // skip over long, short and unit labels (each 30 characters in length);
-  *error = fortseek(file, sizeof(char), 30, SEEK_SET);
-  *error = fortseek(file, sizeof(char), 30, SEEK_CUR);
-  *error = fortseek(file, sizeof(char), 30, SEEK_CUR);
-
-  uint32_t ijkp[6] = {0};
-  *error = fortread(ijkp, sizeof(*ijkp), 6, file);
-  *ip1 = ijkp[0];
-  *ip2 = ijkp[1];
-  *jp1 = ijkp[2];
-  *jp2 = ijkp[3];
-  *kp1 = ijkp[4];
-  *kp2 = ijkp[5];
-
-  fclose(file);
-}
-
-// !  ------------------ getslicesizes ------------------------
-
-void getslicesizes(const char *slicefilename, int *nslicei, int *nslicej,
-                   int *nslicek, int *nsteps, int sliceframestep, int *error,
-                   int settmin_s, int settmax_s, float tmin_s, float tmax_s,
-                   int *headersize, int *framesize) {
-  int ip1, ip2, jp1, jp2, kp1, kp2;
-  int iip1, iip2;
-  int nxsp, nysp, nzsp;
-
-  float timeval, time_max;
-  bool load; // boolean
-  int idir, joff, koff, volslice;
-  int count;
-
-  *error = 0;
-  *nsteps = 0;
-
-  FILE *file = FOPEN(slicefilename, "rb");
-  if (file == NULL) {
-    *error = 1;
-    return;
-  }
-
-  *headersize = 3 * (4 + 30 + 4);
-
-  // skip over long, short and unit labels (each 30 characters in length);
-  *error = fortseek(file, sizeof(char), 30, SEEK_SET);
-  *error = fortseek(file, sizeof(char), 30, SEEK_CUR);
-  *error = fortseek(file, sizeof(char), 30, SEEK_CUR);
-
-  uint32_t ijkp[6] = {0};
-  *error = fortread(ijkp, sizeof(*ijkp), 6, file);
-  ip1 = ijkp[0];
-  ip2 = ijkp[1];
-  jp1 = ijkp[2];
-  jp2 = ijkp[3];
-  kp1 = ijkp[4];
-  kp2 = ijkp[5];
-
-  *headersize += 4 + 6 * 4 + 4;
-  if (*error != 0) return;
-
-  nxsp = ip2 + 1 - ip1;
-  nysp = jp2 + 1 - jp1;
-  nzsp = kp2 + 1 - kp1;
-
-  getslicefiledirection(&ip1, &ip2, &iip1, &iip2, &jp1, &jp2, &kp1, &kp2, &idir,
-                        &joff, &koff, &volslice);
-  *nslicei = nxsp;
-  *nslicej = nysp + joff;
-  *nslicek = nzsp + koff;
-
-  *framesize = 4 * (1 + nxsp * nysp * nzsp) + 16;
-
-  count = -1;
-  time_max = -1000000.0;
-  while (1) {
-    *error = fortread(&timeval, sizeof(timeval), 1, file);
-    if (*error != 0) break;
-    if ((settmin_s != 0 && timeval < tmin_s) || timeval <= time_max) {
-      load = false;
-    } else {
-      load = true;
-      time_max = timeval;
-    }
-    if (settmax_s != 0 && timeval > tmax_s) break;
-    *error = fortseek(file, sizeof(float), nxsp * nysp * nzsp, SEEK_CUR);
-    count = count + 1;
-    if ((count % sliceframestep) != 0) load = false;
-    if (*error != 0) break;
-    if (load) (*nsteps)++;
-  }
-  *error = 0;
-  fclose(file);
+  GetSliceFileDirection(*ip1, ip2, &iip1, &iip2, *jp1, jp2, *kp1, kp2, &idir, &joff, &koff, &volslice);
   return;
 }
 
@@ -806,50 +723,6 @@ void getdata1(FILE *file, int *ipart, int *error) {
   return;
 }
 
-// !  ------------------ getslicefiledirection ------------------------
-void getslicefiledirection(int *is1, int *is2, int *iis1, int *iis2, int *js1,
-                           int *js2, int *ks1, int *ks2, int *idir, int *joff,
-                           int *koff, int *volslice) {
-  int nxsp, nysp, nzsp;
-
-  nxsp = *is2 + 1 - *is1;
-  nysp = *js2 + 1 - *js1;
-  nzsp = *ks2 + 1 - *ks1;
-  *joff = 0;
-  *koff = 0;
-  *volslice = 0;
-  *iis1 = *is1;
-  *iis2 = *is2;
-  if (*is1 != *is2 && *js1 != *js2 && *ks1 != *ks2) {
-    *idir = 1;
-    *is2 = *is1;
-    *volslice = 1;
-    return;
-  }
-  int imin = MIN(MIN(nxsp, nysp), nzsp);
-  if (nxsp == imin) {
-    *idir = 1;
-    *is2 = *is1;
-  } else if (nysp == imin) {
-    *idir = 2;
-    *js2 = *js1;
-  } else {
-    *idir = 3;
-    *ks2 = *ks1;
-  }
-  if (*is1 == *is2 && *js1 == *js2) {
-    *idir = 1;
-    *joff = 1;
-  } else if (*is1 == *is2 && *ks1 == *ks2) {
-    *idir = 1;
-    *koff = 1;
-  } else if (*js1 == *js2 && *ks1 == *ks2) {
-    *idir = 2;
-    *koff = 1;
-  }
-  return;
-}
-
 // !  ------------------ writeslicedata ------------------------
 
 void writeslicedata(const char *slicefilename, int is1, int is2, int js1,
@@ -896,59 +769,6 @@ void writeslicedata(const char *slicefilename, int is1, int is2, int js1,
   return;
 }
 
-// !  ------------------ writeslicedata2 ------------------------
-
-void writeslicedata2(const char *slicefilename, const char *longlabel,
-                     const char *shortlabel, const char *unitlabel, int is1,
-                     int is2, int js1, int js2, int ks1, int ks2, float *qdata,
-                     float *times, int ntimes) {
-  char longlabel30[31] = {0};
-  char shortlabel30[31] = {0};
-  char unitlabel30[31] = {0};
-  int ibeg, iend, nframe;
-
-  FILE *file = FOPEN(slicefilename, "wb");
-
-  // Copy labels into smaller buffers, truncating if necessary. The separate
-  // TrimFront and TrimBack steps are intentionally separate steps.
-  strncpy(longlabel30, TrimFrontConst_(longlabel), 30);
-  TrimBack_(longlabel30);
-  strncpy(shortlabel30, TrimFrontConst_(shortlabel), 30);
-  TrimBack_(shortlabel30);
-  strncpy(unitlabel30, TrimFrontConst_(unitlabel), 30);
-  TrimBack_(unitlabel30);
-
-  fortwrite(longlabel30, 30, 1, file);
-  fortwrite(shortlabel30, 30, 1, file);
-  fortwrite(unitlabel30, 30, 1, file);
-
-  uint32_t ijk[6] = {0};
-  ijk[0] = is1;
-  ijk[1] = is2;
-  ijk[2] = js1;
-  ijk[3] = js2;
-  ijk[4] = ks1;
-  ijk[5] = ks2;
-  fortwrite(ijk, sizeof(*ijk), 6, file);
-
-  int nxsp = is2 + 1 - is1;
-  int nysp = js2 + 1 - js1;
-  int nzsp = ks2 + 1 - ks1;
-  nframe = nxsp * nysp * nzsp;
-
-  int i;
-  for (i = 0; i < ntimes; i++) {
-    fortwrite(&times[i], sizeof(times[i]), 1, file);
-    ibeg = 1 + (i - 1) * nframe;
-    iend = i * nframe;
-    fortwrite(&qdata[ibeg], sizeof(qdata[ibeg]), iend - ibeg, file);
-  }
-
-  fclose(file);
-
-  return;
-}
-
 // !  ------------------ getsliceframe ------------------------
 
 void getsliceframe(FILE *file, int is1, int is2, int js1, int js2, int ks1,
@@ -984,17 +804,6 @@ void getsliceframe(FILE *file, int is1, int is2, int js1, int js2, int ks1,
       }
     }
   }
-  return;
-}
-
-// !  ------------------ endianout ------------------------
-
-void endianout(const char *endianfilename) {
-  int one;
-  FILE *file = FOPEN(endianfilename, "rb");
-  one = 1;
-  fortwrite(&one, sizeof(one), 1, file);
-  fclose(file);
   return;
 }
 

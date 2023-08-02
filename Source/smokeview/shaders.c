@@ -263,16 +263,15 @@ int SetVolSmokeShaders(){
   const GLchar *FragmentShaderSource[] = {
     "#version 120\n"
     "uniform sampler1D smokecolormap;"
-    "uniform sampler3D soot_density_texture,fire_texture,light_texture,blockage_texture;"
-    "uniform vec3 eyepos,boxmin,boxmax,dcell3,light_color,light_position;"
+    "uniform sampler3D soot_density_texture,fire_texture,blockage_texture;"
+    "uniform vec3 eyepos,boxmin,boxmax,dcell3;"
     "varying vec3 fragpos;"
     "uniform float xyzmaxdiff,dcell,fire_opacity_factor,gpu_vol_factor;"
     "uniform float temperature_min,temperature_cutoff,temperature_max;"
     "uniform float voltemp_factor, voltemp_offset;"
-    "uniform float mass_extinct, light_intensity, scatter_param;"
+    "uniform float mass_extinct;"
     "uniform int inside,havefire,volbw,slicetype,block_volsmoke;"
     "uniform int drawsides[7];"
-    "uniform int scatter_type,light_type;"
 
     "float color2bw(vec3 color){"
     " return 0.299*color.r+0.587*color.g+0.114*color.b;"
@@ -286,7 +285,6 @@ int SetVolSmokeShaders(){
     "  float colorindex,last_tempval,tempval,gray;"
     "  float taui, alphai;"
     "  float taun, alphan;"
-    "  float light_fraction, light_factor, scatter_fraction;"
     "  float dstep;"
     "  int i,n_iter;"
     "  int side,in_fire;"
@@ -468,16 +466,6 @@ int SetVolSmokeShaders(){
   GPUvol_soot_density = glGetUniformLocation(p_volsmoke,"soot_density_texture");
   GPUvol_blockage = glGetUniformLocation(p_volsmoke,"blockage_texture");
   GPUvol_fire = glGetUniformLocation(p_volsmoke,"fire_texture");
-
-  GPUvol_use_light = glGetUniformLocation(p_volsmoke, "use_light");
-  GPUvol_light_color = glGetUniformLocation(p_volsmoke, "light_color");
-  GPUvol_light_intensity = glGetUniformLocation(p_volsmoke, "light_intensity");
-  GPUvol_scatter_param = glGetUniformLocation(p_volsmoke, "scatter_param");
-  GPUvol_light = glGetUniformLocation(p_volsmoke,"light_texture");
-  GPUvol_scatter_param = glGetUniformLocation(p_volsmoke, "scatter_param");
-  GPUvol_light_position = glGetUniformLocation(p_volsmoke, "light_position");
-  GPUvol_light_type = glGetUniformLocation(p_volsmoke, "light_type");
-  GPUvol_scatter_type_glui = glGetUniformLocation(p_volsmoke, "scatter_type");
 
   GPUvol_havefire = glGetUniformLocation(p_volsmoke,"havefire");
   GPUvol_smokecolormap = glGetUniformLocation(p_volsmoke,"smokecolormap");

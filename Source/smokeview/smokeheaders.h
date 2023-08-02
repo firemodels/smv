@@ -378,7 +378,6 @@ EXTERNCPP void VolumeCB(int var);
 EXTERNCPP void TerrainCB(int var);
 EXTERNCPP void GeometryMenu(int var);
 EXTERNCPP void Smoke3dCB(int var);
-EXTERNCPP void InitAllLightFractions(float *xyz_light, int light_type);
 EXTERNCPP void UpdateHistogramType(void);
 EXTERNCPP void UpdateSliceHist(void);
 EXTERNCPP void Enable360Zoom(void);
@@ -834,7 +833,6 @@ EXTERNCPP int  RectangleInFrustum( float *x11, float *x12, float *x22, float *x2
 EXTERNCPP int UpdateSmoke3D(smoke3ddata *smoke3di);
 EXTERNCPP void DrawSmokeFrame(void);
 EXTERNCPP void DrawVolSmokeFrame(void);
-EXTERNCPP void DrawLightDirections(void);
 EXTERNCPP void DrawPartFrame(void);
 EXTERNCPP void DrawPlot3dFrame(void);
 EXTERNCPP void DrawVSliceFrame(void);
