@@ -228,39 +228,32 @@ extern "C" void ColorbarCB(int var){
     cbi->nnodes++;
     if(colorbarpoint < 1)colorbarpoint = 1;
     cbi->nodehilight = colorbarpoint;
-    for(i = cbi->nnodes - 1;i >= colorbarpoint + 1;i--){
-      unsigned char *rgb1, *rgb2_local;
+    
+    int nsize;
 
-      rgb2_local = cbi->rgb_node + 3 * i;
-      rgb1 = rgb2_local - 3;
-      rgb2_local[0] = rgb1[0];
-      rgb2_local[1] = rgb1[1];
-      rgb2_local[2] = rgb1[2];
-
-      rgb2_local = cbi->rgb_node_orig + 3 * i;
-      rgb1 = rgb2_local - 3;
-      rgb2_local[0] = rgb1[0];
-      rgb2_local[1] = rgb1[1];
-      rgb2_local[2] = rgb1[2];
-      cbi->index_node[i] = cbi->index_node[i - 1];
-    }
+    nsize = (cbi->nnodes - colorbarpoint - 1);
+    memmove(cbi->index_node + colorbarpoint + 1, cbi->index_node + colorbarpoint, nsize);
+    memmove(cbi->rgb_node + 3*colorbarpoint + 3, cbi->rgb_node + 3*colorbarpoint, 3*nsize);
     {
-      unsigned char *rnew, *rbef, *raft;
+      unsigned char *rnew;
       unsigned char *inew, *ibef, *iaft;
+      float cie1[3], cie2[3], cienew[3], fnew[3];
 
       rnew = cbi->rgb_node + 3 * colorbarpoint;
-      rbef = rnew - 3;
-      raft = rnew + 3;
-      rnew[0] = (int)(((float)rbef[0] + (float)raft[0]) / 2.0);
-      rnew[1] = (int)(((float)rbef[1] + (float)raft[1]) / 2.0);
-      rnew[2] = (int)(((float)rbef[2] + (float)raft[2]) / 2.0);
+      Rgb2CIE(rnew-3,cie1);
+      Rgb2CIE(rnew+3,cie2);
+      cienew[0] = (cie1[0]+cie2[0])/2.0;
+      cienew[1] = (cie1[1]+cie2[1])/2.0;
+      cienew[2] = (cie1[2]+cie2[2])/2.0;
+      CIE2Rgb(rnew, fnew, cienew);
 
-      rnew = cbi->rgb_node_orig + 3 * colorbarpoint;
-      rbef = rnew - 3;
-      raft = rnew + 3;
-      rnew[0] = (int)(((float)rbef[0] + (float)raft[0]) / 2.0);
-      rnew[1] = (int)(((float)rbef[1] + (float)raft[1]) / 2.0);
-      rnew[2] = (int)(((float)rbef[2] + (float)raft[2]) / 2.0);
+      rnew = cbi->rgb_node_orig + 3*colorbarpoint;
+      Rgb2CIE(rnew-3,cie1);
+      Rgb2CIE(rnew+3,cie2);
+      cienew[0] = (cie1[0]+cie2[0])/2.0;
+      cienew[1] = (cie1[1]+cie2[1])/2.0;
+      cienew[2] = (cie1[2]+cie2[2])/2.0;
+      CIE2Rgb(rnew, fnew, cienew);
 
       inew = cbi->index_node + colorbarpoint;
       ibef = inew - 1;
