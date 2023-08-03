@@ -327,9 +327,7 @@ extern "C" void ColorbarCB(int var){
     if(colorbarpoint<0 || colorbarpoint>cbi->nnodes - 1)return;
     rgb_nodes = cbi->rgb_node + 3 * colorbarpoint;
 
-    for(i = 0;i < 3;i++){
-      rgb_nodes[i] = cb_rgb[i];
-    }
+    memcpy(rgb_nodes, cb_rgb, 3);
     RemapColorbar(cbi);
     UpdateRGBColors(COLORBAR_INDEX_NONE);
     break;
