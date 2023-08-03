@@ -1067,17 +1067,6 @@ void RemapColorbar(colorbardata *cbi){
       }
     }
   }
-  for(i=1;i<cbi->nnodes;i++){
-    float *ciei1, *ciei2;
-    float *dE, dist;
-    float dx, dy, dz;
-
-    ciei1  = cbi->cie_rgb + 3*i;
-    ciei2  = ciei1 - 3;
-    dE    = cbi->dE      + i - 1;
-    DDIST3(ciei1, ciei2, dist);
-    *dE = dist;
-  }
   rgb_node = cbi->rgb_node+3*(cbi->nnodes-1);
   for(i=cbi->index_node[cbi->nnodes-1];i<256;i++){
     colorbar[0+3*i]=rgb_node[0]/255.0;
