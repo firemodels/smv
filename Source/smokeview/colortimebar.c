@@ -376,12 +376,41 @@ void DrawColorbarPathRGB(void){
   }
 }
 
+/* ------------------ Rgb2CIE ------------------------ */
+
+void Rgb2CIE(unsigned char *rgb_arg, float *cie){
+  float frgb_arg[3];
+
+  frgb_arg[0] = (float)rgb_arg[0];
+  frgb_arg[1] = (float)rgb_arg[1];
+  frgb_arg[2] = (float)rgb_arg[2];
+  FRgb2CIE(frgb_arg, cie);
+}
+
+/* ------------------ Rgbf2CIE ------------------------ */
+
+void Rgbf2CIE(float *rgbf_arg, float *cie){
+  float frgb_arg[3];
+
+  frgb_arg[0] = rgbf_arg[0] * 255.0;
+  frgb_arg[1] = rgbf_arg[1] * 255.0;
+  frgb_arg[2] = rgbf_arg[2] * 255.0;
+  FRgb2CIE(frgb_arg, cie);
+}
+
+/* ------------------ Cie2XYZ ------------------------ */
+
+void Cie2XYZ(float *xyz, float *cie){
+  xyz[0] = cie[0] / 100.0;
+  xyz[1] = (cie[1] + 87.9) / 183.28;
+  xyz[2] = (cie[2] + 126.39) / 211.11;
+}
+
 /* ------------------ DrawColorbarPathCIE ------------------------ */
 
 void DrawColorbarPathCIE(void){
   int i;
   colorbardata *cbi;
-  float cie_dist[256], cie_last[3], ddist;
 
   if(show_firecolormap == 0){
     cbi = colorbarinfo + colorbartype;
@@ -391,65 +420,29 @@ void DrawColorbarPathCIE(void){
   }
   glPointSize(5.0);
   glBegin(GL_POINTS);
-  cie_dist[0] = 0.0;
   for(i = 0; i < 256; i++){
     float *rgbi, cie[3], xyz[3];
-    unsigned char rgb255[3];
 
     rgbi = cbi->colorbar + 3 * i;
-    rgb255[0] = rgbi[0] * 255.0;
-    rgb255[1] = rgbi[1] * 255.0;
-    rgb255[2] = rgbi[2] * 255.0;
     glColor3fv(rgbi);
-    Rgb2CIE(rgb255, cie);
-    xyz[2] = cie[0] / 100.0;
-    xyz[0] = (cie[1]+87.9)/183.28;
-    xyz[1] = (cie[2]+126.39)/211.11;
-    if(i > 0){
-      float dx, dy, dz;
-
-      dx = cie[0] - cie_last[0];
-      dy = cie[1] - cie_last[1];
-      dz = cie[2] - cie_last[2];
-      if(cbi->dist_type == COLOR_DIST_LAB){
-        cie_dist[i] = cie_dist[i - 1] + sqrt(dx * dx + dy * dy + dz * dz);
-      }
-      else{
-        cie_dist[i] = cie_dist[i - 1] + ABS(dx);
-      }
-    }
-    memcpy(cie_last, cie, 3 * sizeof(float));
-    glVertex3fv(xyz);
+    Rgbf2CIE(rgbi, cie);
+    Cie2XYZ(xyz, cie);
+    glVertex3f(xyz[1], xyz[2], xyz[0]);
   }
-  ddist = cie_dist[255] / 16.0;
   glEnd();
 
 #ifdef _DEBUG
   for(i = 7; i < 256; i += 8){
-    float dist, cie2[3], *rgb2val, *rgb1val, cie1[3], xyz1[3], xyz2[3];
-    float dx, dy, dz;
-    unsigned char rgbb[3], rgba[3];
-
-    rgb2val = cbi->colorbar + 3 * i;
-    rgbb[0] = rgb2val[0] * 255.0;
-    rgbb[1] = rgb2val[1] * 255.0;
-    rgbb[2] = rgb2val[2] * 255.0;
-    Rgb2CIE(rgbb, cie2);
-    rgb1val = cbi->colorbar + 3 * (i+1-8);
-    rgba[0] = rgb1val[0] * 255.0;
-    rgba[1] = rgb1val[1] * 255.0;
-    rgba[2] = rgb1val[2] * 255.0;
-
-    Rgb2CIE(rgba, cie1);
-    DDIST3(cie1, cie2, dist);
+    float cie2[3], *rgb2, *rgb1, cie1[3], xyz1[3], xyz2[3];
     char label[32];
-    sprintf(label, "%.2f", dist);
-    xyz2[0] = cie2[0] / 100.0;
-    xyz2[1] = (cie2[1] + 87.9) / 183.28;
-    xyz2[2] = (cie2[2] + 126.39) / 211.11;
-    xyz1[0] =  cie1[0] / 100.0;
-    xyz1[1] = (cie1[1] + 87.9) / 183.28;
-    xyz1[2] = (cie1[2] + 126.39) / 211.11;
+
+    rgb2 = cbi->colorbar + 3 * i;
+    rgb1 = cbi->colorbar + 3 * (i + 1 - 8);
+    Rgbf2CIE(rgb2, cie2);
+    Rgbf2CIE(rgb1, cie1);
+    sprintf(label, "%.2f", cbi->dist[i]-cbi->dist[i-7]);
+    Cie2XYZ(xyz2, cie2);
+    Cie2XYZ(xyz1, cie1);
     xyz1[0] = (xyz1[0] + xyz2[0]) / 2.0;
     xyz1[1] = (xyz1[1] + xyz2[1]) / 2.0;
     xyz1[2] = (xyz1[2] + xyz2[2]) / 2.0;
@@ -461,18 +454,12 @@ void DrawColorbarPathCIE(void){
   glBegin(GL_POINTS);
   for(i = 0; i < 256; i+=8){
     float *rgbi, csi[3], xyz[3];
-    unsigned char rgb255[3];
 
     rgbi = cbi->colorbar + 3 * i;
-    rgb255[0] = rgbi[0] * 255.0;
-    rgb255[1] = rgbi[1] * 255.0;
-    rgb255[2] = rgbi[2] * 255.0;
     glColor3fv(rgbi);
-    Rgb2CIE(rgb255, csi);
-    xyz[2] = csi[0] / 100.0;
-    xyz[0] = (csi[1] + 87.9) / 183.28;
-    xyz[1] = (csi[2] + 126.39) / 211.11;
-    glVertex3fv(xyz);
+    Rgbf2CIE(rgbi, csi);
+    Cie2XYZ(xyz, csi);
+    glVertex3f(xyz[1],xyz[2],xyz[0]);
   }
   glEnd();
   glColor3fv(foregroundcolor);
@@ -728,30 +715,6 @@ void FRgb2CIE(float *rgb_arg, float *cie){
   cie[1] = 500.0f * (var_X - var_Y);
   cie[2] = 200.0f * (var_Y - var_Z);
 }
-
-
-/* ------------------ Rgb2CIE ------------------------ */
-
-void Rgb2CIE(unsigned char *rgb_arg, float *cie){
-  float frgb_arg[3];
-
-  frgb_arg[0] = (float)rgb_arg[0];
-  frgb_arg[1] = (float)rgb_arg[1];
-  frgb_arg[2] = (float)rgb_arg[2];
-  FRgb2CIE(frgb_arg, cie);
-}
-
-/* ------------------ Rgbf2CIE ------------------------ */
-
-void Rgbf2CIE(float *rgbf_arg, float *cie){
-  float frgb_arg[3];
-
-  frgb_arg[0] = rgbf_arg[0]*255.0;
-  frgb_arg[1] = rgbf_arg[1]*255.0;
-  frgb_arg[2] = rgbf_arg[2]*255.0;
-  FRgb2CIE(frgb_arg, cie);
-}
-
 
 /* ------------------ Rgb2Dist ------------------------ */
 
