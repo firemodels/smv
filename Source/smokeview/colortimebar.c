@@ -325,12 +325,16 @@ void DrawColorbarPathRGB(void){
     for(i=1;i<ncolors;i++){
       float *rgbi;
       float zbot, ztop;
+      float black[3] = {0.0, 0.0, 0.0};
 
       if(show_firecolormap!=0){
         rgbi=rgb_volsmokecolormap+4*i;
       }
       else{
         rgbi=cbi->colorbar+3*i;
+      }
+      if(show_Lab_dist_bars == 1 && ncolors == 255 && cbi->dist_ind[i] == 1){
+        rgbi = black;
       }
       glColor3fv(rgbi);
       zbot=(float)i/(float)ncolors;
@@ -373,10 +377,11 @@ void DrawColorbarPathRGB(void){
 }
 
 /* ------------------ DrawColorbarPathCIE ------------------------ */
+
 void DrawColorbarPathCIE(void){
   int i;
   colorbardata *cbi;
-  float cie_dist[256], cie_last[3], ddist, current_dist=0.0;
+  float cie_dist[256], cie_last[3], ddist;
 
   if(show_firecolormap == 0){
     cbi = colorbarinfo + colorbartype;
@@ -535,9 +540,8 @@ void DrawColorbarPathCIE(void){
     else{
       rgbi=cbi->colorbar+3*i;
     }
-    if(show_Lab_dist_bars==1&&ncolors == 255&&cie_dist[i]>current_dist){
+    if(show_Lab_dist_bars==1&&ncolors == 255&&cbi->dist_ind[i]==1){
       rgbi = black;
-      current_dist+=ddist;
     }
     glColor3fv(rgbi);
     zbot=(float)i/(float)ncolors;
@@ -737,7 +741,70 @@ void Rgb2CIE(unsigned char *rgb_arg, float *cie){
   FRgb2CIE(frgb_arg, cie);
 }
 
-  /* ------------------ Rgb2CIEs ------------------------ */
+/* ------------------ Rgbf2CIE ------------------------ */
+
+void Rgbf2CIE(float *rgbf_arg, float *cie){
+  float frgb_arg[3];
+
+  frgb_arg[0] = rgbf_arg[0]*255.0;
+  frgb_arg[1] = rgbf_arg[1]*255.0;
+  frgb_arg[2] = rgbf_arg[2]*255.0;
+  FRgb2CIE(frgb_arg, cie);
+}
+
+
+/* ------------------ Rgb2Dist ------------------------ */
+
+void Rgb2Dist(colorbardata *cbi){
+  int i;
+
+  float total_dist, *dist;
+  int jstart, *dist_ind;
+
+  dist = cbi->dist;
+  dist_ind   = cbi->dist_ind;
+
+  dist[0]     = 0.0;
+  for(i = 1;i < 256;i++){
+    float distcie, cie2[3], *rgb1f, *rgb2f, cie1[3];
+    float dx, dy, dz;
+
+    rgb1f = cbi->colorbar + 3*(i - 1);
+    rgb2f = cbi->colorbar + 3*i;
+    Rgbf2CIE(rgb1f, cie1);
+    Rgbf2CIE(rgb2f, cie2);
+    if(cbi->dist_type==COLOR_DIST_LAB){
+      DDIST3(cie1, cie2, distcie);
+    }
+    else{
+      distcie = ABS(cie1[0]-cie2[0]);
+    }
+    dist[i] = dist[i - 1] + distcie;
+  }
+  total_dist = dist[255];
+
+  dist_ind[0] = 1;
+  dist_ind[255] = 1;
+  for(i=1;i<255;i++){
+    dist_ind[i] = 0;
+  }
+  jstart = 0;
+  for(i = 1;i < 16;i++){
+    float val;
+    int j;
+
+    val = (float)i* total_dist / 16.0;
+    for(j=jstart;j<255;j++){
+      if(dist[j]<=val&&val<=dist[j+1]){
+        dist_ind[j] = 1;
+        jstart = j;
+        break;
+      }
+    }
+  }
+}
+
+/* ------------------ Rgb2CIEs ------------------------ */
 
 void Rgb2CIEs(unsigned char *rgbs255, float *cies){
   int i;
@@ -990,14 +1057,12 @@ void RemapColorbar(colorbardata *cbi){
   }
   for(i=0;i<cbi->nnodes-1;i++){
     int i1,i2,j;
+    float cie1[3], cie2[3];
 
     i1 = cbi->index_node[i];
     i2 = cbi->index_node[i+1];
     if(i2==i1)continue;
     rgb_node = cbi->rgb_node+3*i;
-
-    float cie1[3], cie2[3];
-
     if(interp_cielab==INTERP_CIE){
       Rgb2CIE(rgb_node,   cie1);
       Rgb2CIE(rgb_node+3, cie2);
@@ -1076,6 +1141,7 @@ void RemapColorbar(colorbardata *cbi){
     colorbar[1+3*255]=rgb_above_max[1];
     colorbar[2+3*255]=rgb_above_max[2];
   }
+  Rgb2Dist(cbi);
   CheckMemory;
 }
 
