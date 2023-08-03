@@ -949,30 +949,7 @@ void GetColorDist(colorbardata *cbi, int option, float *min, float *max){
   int i;
 
   for(i = 1; i < 255;i++){
-    float CIEi[3], CIEim1[3];
-    unsigned char rgbi[3], rgbim1[3];
-    float *frgbi, *frgbim1;
-    float dx, dy, dz;
-
-    frgbi = cbi->colorbar + 3*i;
-    frgbim1 = frgbi - 3;
-    rgbi[0] = frgbi[0]*255;
-    rgbi[1] = frgbi[1]*255;
-    rgbi[2] = frgbi[2]*255;
-    rgbim1[0] = frgbim1[0] * 255;
-    rgbim1[1] = frgbim1[1] * 255;
-    rgbim1[2] = frgbim1[2] * 255;
-    Rgb2CIE(rgbi,   CIEi);
-    Rgb2CIE(rgbim1, CIEim1);
-    dx = CIEi[0] - CIEim1[0];
-    dy = CIEi[1] - CIEim1[1];
-    dz = CIEi[2] - CIEim1[2];
-    if(option == 1){
-      cbi->deltaCIE[i - 1] = sqrt(dx * dx + dy * dy + dz * dz);
-    }
-    else{
-      cbi->deltaCIE[i - 1] = ABS(dx);
-    }
+    cbi->deltaCIE[i - 1] = cbi->dist[i] - cbi->dist[i - 1];
   }
   *min = cbi->deltaCIE[0];
   *max = *min;

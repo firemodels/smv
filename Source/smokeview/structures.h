@@ -290,7 +290,7 @@ typedef struct _colorbardata {
   unsigned char index_node[1024];  // colorbar index
   unsigned char splits[1024];
   int nnodes_orig, index_node_orig[1024];
-  float cie_node[3*1024], frgb[3*1024], dist_node[1024], cie_rgb[3*1024];
+  float cie_node[3*1024], dist_node[1024], cie_rgb[3*1024];
   float dist[256];
   int dist_ind[256];
 #ifdef pp_COLOR_PLOT2D
