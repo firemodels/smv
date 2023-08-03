@@ -62,12 +62,11 @@ int cb_usecolorbar_extreme;
 #define COLORBAR_CLOSE                1
 #define COLORBAR_NODE_NEXT            3
 #define COLORBAR_NODE_PREV            4
-#define COLORBAR_NEW                  5
+#define COLORBAR_COPY                 5
 #define COLORBAR_ADDPOINT             7
 #define COLORBAR_DELETEPOINT          8
 #define COLORBAR_SAVE_INI             9
 #define COLORBAR_LABEL               10
-#define COLORBAR_UPDATE              11
 #define COLORBAR_COLORINDEX          12
 #define COLORBAR_DELETE              14
 #define COLORBAR_EXTREME             16
@@ -79,6 +78,7 @@ int cb_usecolorbar_extreme;
 #define COLORBAR_LAB2                26
 #define COLORBAR_RGB2                27
 #define COLORBAR_SAVE                32
+#define COLORBAR_NEW                 34
 
 /* ------------------ UpdateColorbarEdit ------------------------ */
 
@@ -200,9 +200,6 @@ extern "C" void ColorbarCB(int var){
       UpdateRGBColors(COLORBAR_INDEX_NONE);
     }
     break;
-  case COLORBAR_UPDATE:
-    ColorbarCB(COLORBAR_LABEL);
-    break;
   case COLORBAR_LABEL:
     if(colorbartype >= ndefaultcolorbars&&colorbartype < ncolorbars){
       char *clabel;
@@ -212,8 +209,10 @@ extern "C" void ColorbarCB(int var){
       strcpy(cbi->label, clabel);
       LISTBOX_colorbar_edit->delete_item(colorbartype);
       LISTBOX_colorbar_edit->add_item(colorbartype, colorbar_label);
+      int save;
+      save = colorbartype;
       LISTBOX_colorbar_edit->set_int_val(0);
-      LISTBOX_colorbar_edit->set_int_val(colorbartype);
+      LISTBOX_colorbar_edit->set_int_val(save);
       updatemenu = 1;
     }
     break;
@@ -382,12 +381,19 @@ extern "C" void ColorbarCB(int var){
     cbi->nodehilight = colorbarpoint;
     ColorbarGlobal2Local();
     break;
-  case COLORBAR_NEW:
+  case COLORBAR_COPY:
     if(colorbartype < 0 || colorbartype >= ncolorbars)return;
     colorbartype = AddColorbar(colorbartype);
     UpdateCurrentColorbar(colorbarinfo + colorbartype);
     UpdateColorbarSplits(current_colorbar);
     ColorbarCB(COLORBAR_LIST);
+    break;
+  case COLORBAR_NEW:
+    colorbartype = bw_colorbar_index;
+    ColorbarCB(COLORBAR_COPY);
+    EDITTEXT_colorbar_label->set_text("new");
+    ColorbarCB(COLORBAR_LABEL);
+    UpdateColorbarType();
     break;
   case COLORBAR_ADJUST_LAB:
     AdjustColorBar(colorbarinfo + colorbartype, COLOR_DIST_LAB);
@@ -532,7 +538,9 @@ extern "C" void GluiColorbarSetup(int main_window){
   PANEL_cb2R2 = glui_colorbar->add_panel_to_panel(PANEL_cb1,"",GLUI_PANEL_NONE);
   BUTTON_delete=glui_colorbar->add_button_to_panel(PANEL_cb2R2,"Delete",COLORBAR_DELETE,ColorbarCB);
   glui_colorbar->add_column_to_panel(PANEL_cb2R2, false);
-  BUTTON_new=glui_colorbar->add_button_to_panel(PANEL_cb2R2,"Copy Colorbar",COLORBAR_NEW,ColorbarCB);
+  glui_colorbar->add_button_to_panel(PANEL_cb2R2,"Copy",COLORBAR_COPY,ColorbarCB);
+  glui_colorbar->add_column_to_panel(PANEL_cb2R2, false);
+  glui_colorbar->add_button_to_panel(PANEL_cb2R2,"New",COLORBAR_NEW,ColorbarCB);
   colorbar_hidescene=1;
 #ifdef pp_COLOR_HIDE
   glui_colorbar->add_checkbox_to_panel(PANEL_cb2R2,_("Hide scene"),&colorbar_hidescene);
@@ -548,7 +556,7 @@ extern "C" void GluiColorbarSetup(int main_window){
   EDITTEXT_colorbar_label  = glui_colorbar->add_edittext_to_panel(PANEL_cb13,_("Label:"),GLUI_EDITTEXT_TEXT,colorbar_label,COLORBAR_LABEL,ColorbarCB);
   EDITTEXT_colorbar_label->set_w(200);
   glui_colorbar->add_column_to_panel(PANEL_cb13, false);
-  BUTTON_update=glui_colorbar->add_button_to_panel(PANEL_cb13,_("Update label"),COLORBAR_UPDATE,ColorbarCB);
+  BUTTON_update=glui_colorbar->add_button_to_panel(PANEL_cb13,_("Update label"),COLORBAR_LABEL,ColorbarCB);
   PANEL_cb11r     = glui_colorbar->add_panel_to_panel(PANEL_cb1,"",GLUI_PANEL_NONE);
   BUTTON_prev     = glui_colorbar->add_button_to_panel(PANEL_cb11r, _("Previous"), COLORBAR_PREV, ColorbarCB);
   glui_colorbar->add_column_to_panel(PANEL_cb11r,false);
