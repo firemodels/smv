@@ -1022,9 +1022,9 @@ void RemapColorbar(colorbardata *cbi){
         float frgb[3];
 
         CIE2Rgb(rgb_val, frgb, ciej);
-        colorbar[0+3*j] = (float)rgb_val[0]/255.0;
-        colorbar[1+3*j] = (float)rgb_val[1]/255.0;
-        colorbar[2+3*j] = (float)rgb_val[2]/255.0;
+        colorbar[0+3*j] = frgb[0]/255.0;
+        colorbar[1+3*j] = frgb[1]/255.0;
+        colorbar[2+3*j] = frgb[2]/255.0;
       }
       else{
         colorbar[0+3*j]=MIX(factor,rgb_node[3],rgb_node[0])/255.0;
