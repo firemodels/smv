@@ -420,29 +420,24 @@ void DrawColorbarPathCIE(void){
   }
   glPointSize(5.0);
   glBegin(GL_POINTS);
-  for(i = 0; i < 256; i++){
-    float *rgbi, cie[3], xyz[3];
+  for(i = 0; i < 255; i++){
+    float *rgbi, xyz[3];
 
     rgbi = cbi->colorbar_rgb + 3 * i;
     glColor3fv(rgbi);
-    Rgbf2CIE(rgbi, cie);
-    Cie2XYZ(xyz, cie);
+    Cie2XYZ(xyz, cbi->colorbar_lab + 3*i);
     glVertex3f(xyz[1], xyz[2], xyz[0]);
   }
   glEnd();
 
 #ifdef _DEBUG
-  for(i = 7; i < 256; i += 8){
-    float cie2[3], *rgb2, *rgb1, cie1[3], xyz1[3], xyz2[3];
+  for(i = 7; i < 255; i += 8){
+    float xyz1[3], xyz2[3];
     char label[32];
 
-    rgb2 = cbi->colorbar_rgb + 3 * i;
-    rgb1 = cbi->colorbar_rgb + 3 * (i + 1 - 8);
-    Rgbf2CIE(rgb2, cie2);
-    Rgbf2CIE(rgb1, cie1);
     sprintf(label, "%.2f", cbi->dist[i]-cbi->dist[i-7]);
-    Cie2XYZ(xyz2, cie2);
-    Cie2XYZ(xyz1, cie1);
+    Cie2XYZ(xyz2, cbi->colorbar_lab + 3 * i);
+    Cie2XYZ(xyz1, cbi->colorbar_lab + 3 * (i + 1 - 8));
     xyz1[0] = (xyz1[0] + xyz2[0]) / 2.0;
     xyz1[1] = (xyz1[1] + xyz2[1]) / 2.0;
     xyz1[2] = (xyz1[2] + xyz2[2]) / 2.0;
@@ -453,12 +448,11 @@ void DrawColorbarPathCIE(void){
   glPointSize(10.0);
   glBegin(GL_POINTS);
   for(i = 0; i < 256; i+=8){
-    float *rgbi, csi[3], xyz[3];
+    float *rgbi, xyz[3];
 
     rgbi = cbi->colorbar_rgb + 3 * i;
     glColor3fv(rgbi);
-    Rgbf2CIE(rgbi, csi);
-    Cie2XYZ(xyz, csi);
+    Cie2XYZ(xyz, cbi->colorbar_lab + 3*i);
     glVertex3f(xyz[1],xyz[2],xyz[0]);
   }
   glEnd();
@@ -495,9 +489,9 @@ void DrawColorbarPathCIE(void){
   glPushMatrix();
   glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
   glTranslatef(-xbar0, -ybar0, -zbar0);
-    int skip = 1;
-    if(cbi->nnodes > 16)skip = cbi->nnodes / 16;
-    for(i = 0;i < cbi->nnodes;i+=skip){
+  int skip = 1;
+  if(cbi->nnodes > 16)skip = cbi->nnodes / 16;
+  for(i = 0;i < cbi->nnodes;i+=skip){
     char cbuff[1024];
     float dzpoint;
 

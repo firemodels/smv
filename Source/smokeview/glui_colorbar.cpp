@@ -234,14 +234,16 @@ extern "C" void ColorbarCB(int var){
     nsize = (cbi->nnodes - colorbarpoint - 1);
     memmove(cbi->index_node + colorbarpoint + 1, cbi->index_node + colorbarpoint, nsize);
     memmove(cbi->rgb_node + 3*colorbarpoint + 3, cbi->rgb_node + 3*colorbarpoint, 3*nsize);
+    memmove(cbi->cie_node + 3*colorbarpoint + 3, cbi->cie_node + 3*colorbarpoint, 3*nsize*sizeof(float));
     {
       unsigned char *rnew;
       unsigned char *inew, *ibef, *iaft;
-      float cie1[3], cie2[3], cienew[3], fnew[3];
+      float cie1[3], cie2[3], *cienew, fnew[3];
 
       rnew = cbi->rgb_node + 3 * colorbarpoint;
-      Rgb2CIE(rnew-3,cie1);
-      Rgb2CIE(rnew+3,cie2);
+      cienew = cbi->cie_node + 3 * colorbarpoint;
+      memcpy(cie1, cienew-3, 3*sizeof(float));
+      memcpy(cie2, cienew+3, 3*sizeof(float));
       cienew[0] = (cie1[0]+cie2[0])/2.0;
       cienew[1] = (cie1[1]+cie2[1])/2.0;
       cienew[2] = (cie1[2]+cie2[2])/2.0;
