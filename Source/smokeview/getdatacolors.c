@@ -1089,7 +1089,7 @@ void UpdateCO2Colormap(void){
 
   if(use_transparency_data==1)transparent_level_local=transparent_level;
 
-  co2_cb = colorbarinfo[co2_colorbar_index].colorbar;
+  co2_cb = colorbarinfo[co2_colorbar_index].colorbar_rgb;
   rgb_colormap = rgb_sliceco2colormap_01;
 
   switch(co2_colormap_type){
@@ -1145,7 +1145,7 @@ void UpdateSmokeColormap(int option){
   if(use_transparency_data==1)transparent_level_local=transparent_level;
 
   alpha = colorbarinfo[colorbartype].alpha;
-  fire_cb = colorbarinfo[fire_colorbar_index].colorbar;
+  fire_cb = colorbarinfo[fire_colorbar_index].colorbar_rgb;
 
   switch(fire_colormap_type){
     case FIRECOLORMAP_DIRECT:
@@ -1264,9 +1264,9 @@ void UpdateRGBColors(int colorbar_index){
 
     alpha = colorbarinfo[colorbartype].alpha;
     for(n=0;n<nrgb_full;n++){
-      rgb_full[n][0]=cbi->colorbar[3*n];
-      rgb_full[n][1]=cbi->colorbar[3*n+1];
-      rgb_full[n][2]=cbi->colorbar[3*n+2];
+      rgb_full[n][0]=cbi->colorbar_rgb[3*n];
+      rgb_full[n][1]=cbi->colorbar_rgb[3*n+1];
+      rgb_full[n][2]=cbi->colorbar_rgb[3*n+2];
       if(alpha[n]==0){
         rgb_full[n][3]=0.0;
       }

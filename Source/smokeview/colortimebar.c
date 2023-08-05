@@ -194,7 +194,7 @@ void DrawColorbarPathRGB(void){
   for(i=0;i<255;i++){
     float *rgbi;
 
-    rgbi=cbi->colorbar+3*i;
+    rgbi=cbi->colorbar_rgb+3*i;
     glColor3fv(rgbi);
     glVertex3fv(rgbi);
   }
@@ -253,7 +253,7 @@ void DrawColorbarPathRGB(void){
       float *rgbi;
       float dzpoint;
 
-      rgbi = cbi->colorbar+3*cbi->index_node[i];
+      rgbi = cbi->colorbar_rgb+3*cbi->index_node[i];
       dzpoint = (float)cbi->index_node[i]/255.0;
       glColor3fv(rgbi);
       glVertex3f(1.5,0.0,dzpoint);
@@ -285,7 +285,7 @@ void DrawColorbarPathRGB(void){
 
       glPointSize(20.0);
       glBegin(GL_POINTS);
-      rgbi = cbi->colorbar+3*cbi->index_node[colorbarpoint];
+      rgbi = cbi->colorbar_rgb+3*cbi->index_node[colorbarpoint];
       dzpoint = (float)cbi->index_node[colorbarpoint]/255.0;
       glColor3fv(rgbi);
       glVertex3f(1.5,0.0,dzpoint);
@@ -331,7 +331,7 @@ void DrawColorbarPathRGB(void){
         rgbi=rgb_volsmokecolormap+4*i;
       }
       else{
-        rgbi=cbi->colorbar+3*i;
+        rgbi=cbi->colorbar_rgb+3*i;
       }
       if(show_Lab_dist_bars == 1 && ncolors == 255 && cbi->dist_ind[i] == 1){
         rgbi = black;
@@ -423,7 +423,7 @@ void DrawColorbarPathCIE(void){
   for(i = 0; i < 256; i++){
     float *rgbi, cie[3], xyz[3];
 
-    rgbi = cbi->colorbar + 3 * i;
+    rgbi = cbi->colorbar_rgb + 3 * i;
     glColor3fv(rgbi);
     Rgbf2CIE(rgbi, cie);
     Cie2XYZ(xyz, cie);
@@ -436,8 +436,8 @@ void DrawColorbarPathCIE(void){
     float cie2[3], *rgb2, *rgb1, cie1[3], xyz1[3], xyz2[3];
     char label[32];
 
-    rgb2 = cbi->colorbar + 3 * i;
-    rgb1 = cbi->colorbar + 3 * (i + 1 - 8);
+    rgb2 = cbi->colorbar_rgb + 3 * i;
+    rgb1 = cbi->colorbar_rgb + 3 * (i + 1 - 8);
     Rgbf2CIE(rgb2, cie2);
     Rgbf2CIE(rgb1, cie1);
     sprintf(label, "%.2f", cbi->dist[i]-cbi->dist[i-7]);
@@ -455,7 +455,7 @@ void DrawColorbarPathCIE(void){
   for(i = 0; i < 256; i+=8){
     float *rgbi, csi[3], xyz[3];
 
-    rgbi = cbi->colorbar + 3 * i;
+    rgbi = cbi->colorbar_rgb + 3 * i;
     glColor3fv(rgbi);
     Rgbf2CIE(rgbi, csi);
     Cie2XYZ(xyz, csi);
@@ -481,7 +481,7 @@ void DrawColorbarPathCIE(void){
     float *rgbi;
     float dzpoint;
 
-    rgbi = cbi->colorbar + 3 * cbi->index_node[i];
+    rgbi = cbi->colorbar_rgb + 3 * cbi->index_node[i];
     dzpoint = (float)cbi->index_node[i] / 255.0;
     glColor3fv(rgbi);
     glVertex3f(1.5, 0.0, dzpoint);
@@ -525,7 +525,7 @@ void DrawColorbarPathCIE(void){
       rgbi=rgb_volsmokecolormap+4*i;
     }
     else{
-      rgbi=cbi->colorbar+3*i;
+      rgbi=cbi->colorbar_rgb+3*i;
     }
     if(show_Lab_dist_bars==1&&ncolors == 255&&cbi->dist_ind[i]==1){
       rgbi = black;
@@ -732,8 +732,8 @@ void Rgb2Dist(colorbardata *cbi){
     float distcie, cie2[3], *rgb1f, *rgb2f, cie1[3];
     float dx, dy, dz;
 
-    rgb1f = cbi->colorbar + 3*(i - 1);
-    rgb2f = cbi->colorbar + 3*i;
+    rgb1f = cbi->colorbar_rgb + 3*(i - 1);
+    rgb2f = cbi->colorbar_rgb + 3*i;
     Rgbf2CIE(rgb1f, cie1);
     Rgbf2CIE(rgb2f, cie2);
     if(cbi->dist_type==COLOR_DIST_LAB){
@@ -844,9 +844,9 @@ void CIE2Rgb(unsigned char *rgb_arg, float *frgb_arg, float *cie){
     var_B *= 12.92f;
   }
 
-  frgb_arg[0] = var_R * 255.0f;
-  frgb_arg[1] = var_G * 255.0f;
-  frgb_arg[2] = var_B * 255.0f;
+  frgb_arg[0] = CLAMP(var_R * 255.0f, 0.0, 255.0f);
+  frgb_arg[1] = CLAMP(var_G * 255.0f, 0.0, 255.0f);
+  frgb_arg[2] = CLAMP(var_B * 255.0f, 0.0, 255.0f);
   rgb_arg[0] = (unsigned char)CLAMP(frgb_arg[0] + 0.5, 0, 255);
   rgb_arg[1] = (unsigned char)CLAMP(frgb_arg[1] + 0.5, 0, 255);
   rgb_arg[2] = (unsigned char)CLAMP(frgb_arg[2] + 0.5, 0, 255);
@@ -964,10 +964,10 @@ void GetColorDist(colorbardata *cbi, int option, float *min, float *max){
 
 void RemapColorbar(colorbardata *cbi){
   int i;
-  float *colorbar;
+  float *colorbar_rgb;
   unsigned char *rgb_node;
   unsigned char *alpha;
-  float *cie_rgb;
+  float *colorbar_lab;
   int interp_cielab;
 
   interp_cielab = cbi->interp;
@@ -976,15 +976,15 @@ void RemapColorbar(colorbardata *cbi){
   if(interp_cielab == INTERP_CIE)printf("colorbar: %s, interpolation: cie\n",cbi->label);
 #endif
   CheckMemory;
-  colorbar=cbi->colorbar;
-  rgb_node=cbi->rgb_node;
-  cie_rgb = cbi->cie_rgb;
-  alpha=cbi->alpha;
+  colorbar_rgb = cbi->colorbar_rgb;
+  rgb_node     = cbi->rgb_node;
+  colorbar_lab = cbi->colorbar_lab;
+  alpha        = cbi->alpha;
 
   for(i=0;i<cbi->index_node[0];i++){
-    colorbar[0+3*i]=rgb_node[0]/255.0;
-    colorbar[1+3*i]=rgb_node[1]/255.0;
-    colorbar[2+3*i]=rgb_node[2]/255.0;
+    colorbar_rgb[0+3*i]=rgb_node[0]/255.0;
+    colorbar_rgb[1+3*i]=rgb_node[1]/255.0;
+    colorbar_rgb[2+3*i]=rgb_node[2]/255.0;
     if(
       (rgb_node[0]==  0&&rgb_node[1]==  1&&rgb_node[2]==  2)||
       (rgb_node[0]==253&&rgb_node[1]==254&&rgb_node[2]==255)
@@ -1011,25 +1011,25 @@ void RemapColorbar(colorbardata *cbi){
       float factor;
 
       factor = (float)(j-i1)/(float)(i2-i1);
-      float *ciej;
+      float *labj;
 
-      ciej  = cie_rgb + 3*j;
-      ciej[0]=MIX(factor,cie2[0],cie1[0]);
-      ciej[1]=MIX(factor,cie2[1],cie1[1]);
-      ciej[2]=MIX(factor,cie2[2],cie1[2]);
+      labj  = colorbar_lab + 3*j;
+      labj[0]=MIX(factor,cie2[0],cie1[0]);
+      labj[1]=MIX(factor,cie2[1],cie1[1]);
+      labj[2]=MIX(factor,cie2[2],cie1[2]);
       if(interp_cielab==INTERP_CIE){
         unsigned char rgb_val[3];
         float frgb[3];
 
-        CIE2Rgb(rgb_val, frgb, ciej);
-        colorbar[0+3*j] = frgb[0]/255.0;
-        colorbar[1+3*j] = frgb[1]/255.0;
-        colorbar[2+3*j] = frgb[2]/255.0;
+        CIE2Rgb(rgb_val, frgb, labj);
+        colorbar_rgb[0+3*j] = frgb[0]/255.0;
+        colorbar_rgb[1+3*j] = frgb[1]/255.0;
+        colorbar_rgb[2+3*j] = frgb[2]/255.0;
       }
       else{
-        colorbar[0+3*j]=MIX(factor,rgb_node[3],rgb_node[0])/255.0;
-        colorbar[1+3*j]=MIX(factor,rgb_node[4],rgb_node[1])/255.0;
-        colorbar[2+3*j]=MIX(factor,rgb_node[5],rgb_node[2])/255.0;
+        colorbar_rgb[0+3*j]=MIX(factor,rgb_node[3],rgb_node[0])/255.0;
+        colorbar_rgb[1+3*j]=MIX(factor,rgb_node[4],rgb_node[1])/255.0;
+        colorbar_rgb[2+3*j]=MIX(factor,rgb_node[5],rgb_node[2])/255.0;
       }
       if(
         (rgb_node[0]==0&&  rgb_node[1]==1&&  rgb_node[2]==2&&
@@ -1046,9 +1046,9 @@ void RemapColorbar(colorbardata *cbi){
   }
   rgb_node = cbi->rgb_node+3*(cbi->nnodes-1);
   for(i=cbi->index_node[cbi->nnodes-1];i<256;i++){
-    colorbar[0+3*i]=rgb_node[0]/255.0;
-    colorbar[1+3*i]=rgb_node[1]/255.0;
-    colorbar[2+3*i]=rgb_node[2]/255.0;
+    colorbar_rgb[0+3*i]=rgb_node[0]/255.0;
+    colorbar_rgb[1+3*i]=rgb_node[1]/255.0;
+    colorbar_rgb[2+3*i]=rgb_node[2]/255.0;
     if(
       (rgb_node[0]==  0&&rgb_node[1]==  1&&rgb_node[2]==  2)||
       (rgb_node[0]==253&&rgb_node[1]==254&&rgb_node[2]==255)
@@ -1061,14 +1061,14 @@ void RemapColorbar(colorbardata *cbi){
     }
   }
   if(show_extreme_mindata==1){
-    colorbar[0]=rgb_below_min[0];
-    colorbar[1]=rgb_below_min[1];
-    colorbar[2]=rgb_below_min[2];
+    colorbar_rgb[0]=rgb_below_min[0];
+    colorbar_rgb[1]=rgb_below_min[1];
+    colorbar_rgb[2]=rgb_below_min[2];
   }
   if(show_extreme_maxdata==1){
-    colorbar[0+3*255]=rgb_above_max[0];
-    colorbar[1+3*255]=rgb_above_max[1];
-    colorbar[2+3*255]=rgb_above_max[2];
+    colorbar_rgb[0+3*255]=rgb_above_max[0];
+    colorbar_rgb[1+3*255]=rgb_above_max[1];
+    colorbar_rgb[2+3*255]=rgb_above_max[2];
   }
   Rgb2Dist(cbi);
   CheckMemory;

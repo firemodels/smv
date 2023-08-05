@@ -1340,7 +1340,7 @@ void ViewportTimebar(int quad, GLint screen_left, GLint screen_down) {
         icolor = 255*(global_hrrpuv_cutoff-global_hrrpuv_min)/(global_hrrpuv_max-global_hrrpuv_min);
         icolor = CLAMP((icolor + 1), 0, 255);
       }
-      colors = fire_colorbar->colorbar;
+      colors = fire_colorbar->colorbar_rgb;
       f_red = colors[3*icolor + 0];
       f_green = colors[3*icolor + 1];
       f_blue = colors[3*icolor + 2];

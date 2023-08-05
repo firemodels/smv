@@ -165,7 +165,7 @@ void Colorbar2File(colorbardata *cbi, char *file, char *label){
     float cie[3];
     unsigned char rgbc[3];
 
-    rgbi = cbi->colorbar + 3 * i;
+    rgbi = cbi->colorbar_rgb + 3 * i;
     rgb255[0] = rgbi[0] * 255.0;
     rgb255[1] = rgbi[1] * 255.0;
     rgb255[2] = rgbi[2] * 255.0;

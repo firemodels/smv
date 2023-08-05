@@ -557,7 +557,7 @@ unsigned char *GetDeviceColor(devicedata *devicei, unsigned char *colorval,float
   if(valid!=1)return NULL;
   val = (val-valmin)/(valmax-valmin);
   colorindex=CLAMP(255*val,1,254);
-  rgb_local=current_colorbar->colorbar+3*colorindex;
+  rgb_local=current_colorbar->colorbar_rgb+3*colorindex;
   colorval[0]=255*rgb_local[0];
   colorval[1]=255*rgb_local[1];
   colorval[2]=255*rgb_local[2];
