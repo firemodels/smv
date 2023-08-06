@@ -86,7 +86,7 @@ int GetPartColor(float **color_handle, part5data*datacopy, int show_default, int
      int colorj;
       float rval;
 
-      rval = CLAMP(254.0*(rvals[j]-valmin)/(valmax-valmin), 0.0, 254.0);
+      rval = CLAMP(255.0*(rvals[j]-valmin)/(valmax-valmin), 0.0, 255.0);
       colorj = rval;
       colorptr = rgb_part + 4*colorj;
     }
@@ -305,7 +305,7 @@ void DrawPart(const partdata *parti){
                   if(vis[j] == 1){
                     int colorj;
                     float rval;
-                    rval = CLAMP(254.0*(rvals[j]-valmin)/(valmax-valmin), 0.0, 254.0);
+                    rval = CLAMP(255.0*(rvals[j]-valmin)/(valmax-valmin), 0.0, 255.0);
                     colorj = rval;
                     if(current_property != NULL && (colorj > current_property->imax || colorj < current_property->imin))continue;
                     if(rgb_part[4*colorj+3]==0.0)continue;
@@ -342,7 +342,7 @@ void DrawPart(const partdata *parti){
                   float *rvals, rval;
 
                   rvals = datacopy->rvals+itype*datacopy->npoints;
-                  rval = CLAMP(254.0*(rvals[j]-valmin)/(valmax-valmin), 0.0, 254.0);
+                  rval = CLAMP(255.0*(rvals[j]-valmin)/(valmax-valmin), 0.0, 255.0);
                   colorptr = rgb_full[(int)rval];
                 }
                 prop = datacopy->partclassbase->prop;
