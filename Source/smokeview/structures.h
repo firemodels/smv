@@ -285,19 +285,19 @@ typedef struct _colorbardata {
   char label[1024];        // menu label
   char ctype[256];
   int nnodes,nodehilight,nsplits,type;
-  unsigned char rgb_node_orig[3*1024], rgb_node[3*1024];
+  unsigned char node_rgb_orig[3*1024], node_rgb[3*1024];
   unsigned char alpha[1024];
   unsigned char index_node[1024];  // colorbar index
   unsigned char splits[1024];
   int nnodes_orig, index_node_orig[1024];
-  float cie_node[3*1024], dist_node[1024];
+  float node_lab[3*1024], dist_node[1024];
   float dist[256];
   int dist_ind[256];
 #ifdef pp_COLOR_PLOT2D
   float deltaCIE[1024];
 #endif
   int interp,dist_type;
-  float colorbar_rgb[3*1024], colorbar_lab[3 * 1024];
+  float colorbar_rgb[3*1024], colorbar_lab[3*1024];
 } colorbardata;
 
 /* --------------------------  colortabledata ------------------------------------ */

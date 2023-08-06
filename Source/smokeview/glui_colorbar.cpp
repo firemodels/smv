@@ -182,7 +182,7 @@ void Colorbar2File(colorbardata *cbi, char *file, char *label){
 
 extern "C" void ColorbarCB(int var){
   colorbardata *cbi;
-  unsigned char *rgb_nodes;
+  unsigned char *nodes_rgb;
   int i;
   unsigned char rgb_local[3];
 
@@ -233,15 +233,15 @@ extern "C" void ColorbarCB(int var){
 
     nsize = (cbi->nnodes - colorbarpoint - 1);
     memmove(cbi->index_node + colorbarpoint + 1, cbi->index_node + colorbarpoint, nsize);
-    memmove(cbi->rgb_node + 3*colorbarpoint + 3, cbi->rgb_node + 3*colorbarpoint, 3*nsize);
-    memmove(cbi->cie_node + 3*colorbarpoint + 3, cbi->cie_node + 3*colorbarpoint, 3*nsize*sizeof(float));
+    memmove(cbi->node_rgb + 3*colorbarpoint + 3, cbi->node_rgb + 3*colorbarpoint, 3*nsize);
+    memmove(cbi->node_lab + 3*colorbarpoint + 3, cbi->node_lab + 3*colorbarpoint, 3*nsize*sizeof(float));
     {
       unsigned char *rnew;
       unsigned char *inew, *ibef, *iaft;
       float cie1[3], cie2[3], *cienew, fnew[3];
 
-      rnew = cbi->rgb_node + 3 * colorbarpoint;
-      cienew = cbi->cie_node + 3 * colorbarpoint;
+      rnew = cbi->node_rgb + 3 * colorbarpoint;
+      cienew = cbi->node_lab + 3 * colorbarpoint;
       memcpy(cie1, cienew-3, 3*sizeof(float));
       memcpy(cie2, cienew+3, 3*sizeof(float));
       cienew[0] = (cie1[0]+cie2[0])/2.0;
@@ -249,7 +249,7 @@ extern "C" void ColorbarCB(int var){
       cienew[2] = (cie1[2]+cie2[2])/2.0;
       CIE2Rgb(rnew, fnew, cienew);
 
-      rnew = cbi->rgb_node_orig + 3*colorbarpoint;
+      rnew = cbi->node_rgb_orig + 3*colorbarpoint;
       Rgb2CIE(rnew-3,cie1);
       Rgb2CIE(rnew+3,cie2);
       cienew[0] = (cie1[0]+cie2[0])/2.0;
@@ -280,7 +280,7 @@ extern "C" void ColorbarCB(int var){
       unsigned char *rgb1, *rgb2_local;
 
       cbi->index_node[i - 1] = cbi->index_node[i];
-      rgb2_local = cbi->rgb_node + 3 * i;
+      rgb2_local = cbi->node_rgb + 3 * i;
       rgb1 = rgb2_local - 3;
       rgb1[0] = rgb2_local[0];
       rgb1[1] = rgb2_local[1];
@@ -319,10 +319,10 @@ extern "C" void ColorbarCB(int var){
     if(colorbartype < 0 || colorbartype >= ncolorbars)return;
     cbi = colorbarinfo + colorbartype;
     if(colorbarpoint<0 || colorbarpoint>cbi->nnodes - 1)return;
-    rgb_nodes = cbi->rgb_node + 3 * colorbarpoint;
+    nodes_rgb = cbi->node_rgb + 3 * colorbarpoint;
 
     for(i = 0;i < 3;i++){
-      rgb_nodes[i] = cb_rgb[i];
+      nodes_rgb[i] = cb_rgb[i];
     }
     RemapColorbar(cbi);
     UpdateRGBColors(COLORBAR_INDEX_NONE);
@@ -681,7 +681,7 @@ extern "C" void ColorbarGlobal2Local(void){
     BUTTON_deletepoint->disable();
     SPINNER_colorindex->disable();
   }
-  rgb_local = cbi->rgb_node+3*colorbarpoint;
+  rgb_local = cbi->node_rgb+3*colorbarpoint;
   SPINNER_rgb[0]->set_int_val(  (int)(rgb_local[0]));
   SPINNER_rgb[1]->set_int_val((int)(rgb_local[1]));
   SPINNER_rgb[2]->set_int_val( (int)(rgb_local[2]));

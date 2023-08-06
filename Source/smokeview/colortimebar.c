@@ -170,7 +170,7 @@ void DrawSelectColorbar(void){
     GetRGB(i+1, &r, &g, &b);
     glColor3ub(r, g, b);
 
-    rrgb=cbi->rgb_node+3*i;
+    rrgb=cbi->node_rgb+3*i;
     glVertex3f(rrgb[0]/255.0,rrgb[1]/255.0,rrgb[2]/255.0);
   }
   glEnd();
@@ -205,7 +205,7 @@ void DrawColorbarPathRGB(void){
   for(i=0;i<cbi->nnodes;i++){
     unsigned char *rrgb;
 
-    rrgb=cbi->rgb_node+3*i;
+    rrgb=cbi->node_rgb+3*i;
     glColor3ubv(rrgb);
     glVertex3f(rrgb[0]/255.0,rrgb[1]/255.0,rrgb[2]/255.0);
   }
@@ -235,7 +235,7 @@ void DrawColorbarPathRGB(void){
   if(colorbarpoint>=0&&colorbarpoint<cbi->nnodes){
     unsigned char *rgbleft;
 
-    rgbleft = cbi->rgb_node+3*colorbarpoint;
+    rgbleft = cbi->node_rgb+3*colorbarpoint;
 
     glPointSize(20.0);
     glBegin(GL_POINTS);
@@ -609,15 +609,15 @@ void UpdateCurrentColorbar(colorbardata *cb){
 void AdjustColorBar(colorbardata *cbi, int option){
   int i;
 
-  Rgb2CIE(cbi->rgb_node, cbi->cie_node);
+  Rgb2CIE(cbi->node_rgb, cbi->node_lab);
   cbi->dist_type = option;
   cbi->dist_node[0] = 0.0;
   for(i = 1;i < cbi->nnodes;i++){
     unsigned char *rgb2_local;
     float *cie1, *cie2, dist;
 
-    rgb2_local = cbi->rgb_node + 3*i;
-    cie2 = cbi->cie_node + 3 * i;
+    rgb2_local = cbi->node_rgb + 3*i;
+    cie2 = cbi->node_lab + 3 * i;
     cie1 = cie2 - 3;
     Rgb2CIE(rgb2_local, cie2);
     if(option == COLOR_DIST_LAB){
@@ -959,7 +959,7 @@ void GetColorDist(colorbardata *cbi, int option, float *min, float *max){
 void RemapColorbar(colorbardata *cbi){
   int i;
   float *colorbar_rgb;
-  unsigned char *rgb_node;
+  unsigned char *node_rgb;
   unsigned char *alpha;
   float *colorbar_lab;
   int interp_cielab;
@@ -971,17 +971,17 @@ void RemapColorbar(colorbardata *cbi){
 #endif
   CheckMemory;
   colorbar_rgb = cbi->colorbar_rgb;
-  rgb_node     = cbi->rgb_node;
+  node_rgb     = cbi->node_rgb;
   colorbar_lab = cbi->colorbar_lab;
   alpha        = cbi->alpha;
 
   for(i=0;i<cbi->index_node[0];i++){
-    colorbar_rgb[0+3*i]=rgb_node[0]/255.0;
-    colorbar_rgb[1+3*i]=rgb_node[1]/255.0;
-    colorbar_rgb[2+3*i]=rgb_node[2]/255.0;
+    colorbar_rgb[0+3*i]=node_rgb[0]/255.0;
+    colorbar_rgb[1+3*i]=node_rgb[1]/255.0;
+    colorbar_rgb[2+3*i]=node_rgb[2]/255.0;
     if(
-      (rgb_node[0]==  0&&rgb_node[1]==  1&&rgb_node[2]==  2)||
-      (rgb_node[0]==253&&rgb_node[1]==254&&rgb_node[2]==255)
+      (node_rgb[0]==  0&&node_rgb[1]==  1&&node_rgb[2]==  2)||
+      (node_rgb[0]==253&&node_rgb[1]==254&&node_rgb[2]==255)
       ){
       alpha[i]=0;
     }
@@ -996,10 +996,10 @@ void RemapColorbar(colorbardata *cbi){
     i1 = cbi->index_node[i];
     i2 = cbi->index_node[i+1];
     if(i2==i1)continue;
-    rgb_node = cbi->rgb_node+3*i;
+    node_rgb = cbi->node_rgb+3*i;
     if(interp_cielab==INTERP_CIE){
-      Rgb2CIE(rgb_node,   cie1);
-      Rgb2CIE(rgb_node+3, cie2);
+      Rgb2CIE(node_rgb,   cie1);
+      Rgb2CIE(node_rgb+3, cie2);
     }
     for(j=i1;j<i2;j++){
       float factor;
@@ -1021,15 +1021,15 @@ void RemapColorbar(colorbardata *cbi){
         colorbar_rgb[2+3*j] = frgb[2]/255.0;
       }
       else{
-        colorbar_rgb[0+3*j]=MIX(factor,rgb_node[3],rgb_node[0])/255.0;
-        colorbar_rgb[1+3*j]=MIX(factor,rgb_node[4],rgb_node[1])/255.0;
-        colorbar_rgb[2+3*j]=MIX(factor,rgb_node[5],rgb_node[2])/255.0;
+        colorbar_rgb[0+3*j]=MIX(factor,node_rgb[3],node_rgb[0])/255.0;
+        colorbar_rgb[1+3*j]=MIX(factor,node_rgb[4],node_rgb[1])/255.0;
+        colorbar_rgb[2+3*j]=MIX(factor,node_rgb[5],node_rgb[2])/255.0;
       }
       if(
-        (rgb_node[0]==0&&  rgb_node[1]==1&&  rgb_node[2]==2&&
-         rgb_node[3]==0&&  rgb_node[4]==1&&  rgb_node[5]==2)||
-        (rgb_node[0]==253&&rgb_node[1]==254&&rgb_node[2]==255&&
-         rgb_node[3]==253&&rgb_node[4]==254&&rgb_node[5]==255)
+        (node_rgb[0]==0&&  node_rgb[1]==1&&  node_rgb[2]==2&&
+         node_rgb[3]==0&&  node_rgb[4]==1&&  node_rgb[5]==2)||
+        (node_rgb[0]==253&&node_rgb[1]==254&&node_rgb[2]==255&&
+         node_rgb[3]==253&&node_rgb[4]==254&&node_rgb[5]==255)
         ){
         alpha[j]=0;
       }
@@ -1038,14 +1038,14 @@ void RemapColorbar(colorbardata *cbi){
       }
     }
   }
-  rgb_node = cbi->rgb_node+3*(cbi->nnodes-1);
+  node_rgb = cbi->node_rgb+3*(cbi->nnodes-1);
   for(i=cbi->index_node[cbi->nnodes-1];i<256;i++){
-    colorbar_rgb[0+3*i]=rgb_node[0]/255.0;
-    colorbar_rgb[1+3*i]=rgb_node[1]/255.0;
-    colorbar_rgb[2+3*i]=rgb_node[2]/255.0;
+    colorbar_rgb[0+3*i]=node_rgb[0]/255.0;
+    colorbar_rgb[1+3*i]=node_rgb[1]/255.0;
+    colorbar_rgb[2+3*i]=node_rgb[2]/255.0;
     if(
-      (rgb_node[0]==  0&&rgb_node[1]==  1&&rgb_node[2]==  2)||
-      (rgb_node[0]==253&&rgb_node[1]==254&&rgb_node[2]==255)
+      (node_rgb[0]==  0&&node_rgb[1]==  1&&node_rgb[2]==  2)||
+      (node_rgb[0]==253&&node_rgb[1]==254&&node_rgb[2]==255)
       )
     {
       alpha[i]=0;
@@ -1211,9 +1211,9 @@ void ReadCSVColorbar(colorbardata *cbptr, char *dir, char *file, char *ctype, in
     sscanf(crgb, "%i", rgbscopy+1);
     crgb = strtok(NULL, ",");
     sscanf(crgb, "%i", rgbscopy+2);
-    cbptr->rgb_node[3 * i + 0] = (unsigned char)CLAMP(rgbscopy[0], 0, 255);
-    cbptr->rgb_node[3 * i + 1] = (unsigned char)CLAMP(rgbscopy[1], 0, 255);
-    cbptr->rgb_node[3 * i + 2] = (unsigned char)CLAMP(rgbscopy[2], 0, 255);
+    cbptr->node_rgb[3 * i + 0] = (unsigned char)CLAMP(rgbscopy[0], 0, 255);
+    cbptr->node_rgb[3 * i + 1] = (unsigned char)CLAMP(rgbscopy[1], 0, 255);
+    cbptr->node_rgb[3 * i + 2] = (unsigned char)CLAMP(rgbscopy[2], 0, 255);
     cbptr->index_node[i] = i;
     strcpy(cbptr->ctype, ctype);
     cbptr->type = type;
@@ -1448,29 +1448,29 @@ void InitDefaultColorbars(int nini){
   cbi->nodehilight=0;
 
   cbi->index_node[0]=0;
-  cbi->rgb_node[0]=0;
-  cbi->rgb_node[1]=0;
-  cbi->rgb_node[2]=255;
+  cbi->node_rgb[0]=0;
+  cbi->node_rgb[1]=0;
+  cbi->node_rgb[2]=255;
 
   cbi->index_node[1]=64;
-  cbi->rgb_node[3]=0;
-  cbi->rgb_node[4]=255;
-  cbi->rgb_node[5]=255;
+  cbi->node_rgb[3]=0;
+  cbi->node_rgb[4]=255;
+  cbi->node_rgb[5]=255;
 
   cbi->index_node[2]=128;
-  cbi->rgb_node[6]=0;
-  cbi->rgb_node[7]=255;
-  cbi->rgb_node[8]=0;
+  cbi->node_rgb[6]=0;
+  cbi->node_rgb[7]=255;
+  cbi->node_rgb[8]=0;
 
   cbi->index_node[3]=192;
-  cbi->rgb_node[9]=255;
-  cbi->rgb_node[10]=255;
-  cbi->rgb_node[11]=0;
+  cbi->node_rgb[9]=255;
+  cbi->node_rgb[10]=255;
+  cbi->node_rgb[11]=0;
 
   cbi->index_node[4]=255;
-  cbi->rgb_node[12]=255;
-  cbi->rgb_node[13]=0;
-  cbi->rgb_node[14]=0;
+  cbi->node_rgb[12]=255;
+  cbi->node_rgb[13]=0;
+  cbi->node_rgb[14]=0;
   strcpy(cbi->ctype, "rainbow");
   cbi++;
 
@@ -1481,64 +1481,64 @@ void InitDefaultColorbars(int nini){
   cbi->nodehilight=0;
  
   cbi->index_node[0]=0;	
-  cbi->rgb_node[0]=4;	
-  cbi->rgb_node[1]=0;	
-  cbi->rgb_node[2]=108;
+  cbi->node_rgb[0]=4;	
+  cbi->node_rgb[1]=0;	
+  cbi->node_rgb[2]=108;
   
   cbi->index_node[1]=20;	
-  cbi->rgb_node[3]=6;	
-  cbi->rgb_node[4]=3;	
-  cbi->rgb_node[5]=167;
+  cbi->node_rgb[3]=6;	
+  cbi->node_rgb[4]=3;	
+  cbi->node_rgb[5]=167;
   
   cbi->index_node[2]=60;	
-  cbi->rgb_node[6]=24;	
-  cbi->rgb_node[7]=69;	
-  cbi->rgb_node[8]=240;
+  cbi->node_rgb[6]=24;	
+  cbi->node_rgb[7]=69;	
+  cbi->node_rgb[8]=240;
   
   cbi->index_node[3]=70;	
-  cbi->rgb_node[9]=31;	
-  cbi->rgb_node[10]=98;	
-  cbi->rgb_node[11]=214;
+  cbi->node_rgb[9]=31;	
+  cbi->node_rgb[10]=98;	
+  cbi->node_rgb[11]=214;
   
   cbi->index_node[4]=80;	
-  cbi->rgb_node[12]=5;	
-  cbi->rgb_node[13]=125;	
-  cbi->rgb_node[14]=170;
+  cbi->node_rgb[12]=5;	
+  cbi->node_rgb[13]=125;	
+  cbi->node_rgb[14]=170;
   
   cbi->index_node[5]=96;	
-  cbi->rgb_node[15]=48;	
-  cbi->rgb_node[16]=155;	
-  cbi->rgb_node[17]=80;
+  cbi->node_rgb[15]=48;	
+  cbi->node_rgb[16]=155;	
+  cbi->node_rgb[17]=80;
   
   cbi->index_node[6]=112;	
-  cbi->rgb_node[18]=82;	
-  cbi->rgb_node[19]=177;	
-  cbi->rgb_node[20]=8;
+  cbi->node_rgb[18]=82;	
+  cbi->node_rgb[19]=177;	
+  cbi->node_rgb[20]=8;
   
   cbi->index_node[7]=163;	
-  cbi->rgb_node[21]=240;	
-  cbi->rgb_node[22]=222;	
-  cbi->rgb_node[23]=3;
+  cbi->node_rgb[21]=240;	
+  cbi->node_rgb[22]=222;	
+  cbi->node_rgb[23]=3;
   
   cbi->index_node[8]=170;	
-  cbi->rgb_node[24]=249;	
-  cbi->rgb_node[25]=214;	
-  cbi->rgb_node[26]=7;
+  cbi->node_rgb[24]=249;	
+  cbi->node_rgb[25]=214;	
+  cbi->node_rgb[26]=7;
   
   cbi->index_node[9]=200;	
-  cbi->rgb_node[27]=252;	
-  cbi->rgb_node[28]=152;	
-  cbi->rgb_node[29]=22;
+  cbi->node_rgb[27]=252;	
+  cbi->node_rgb[28]=152;	
+  cbi->node_rgb[29]=22;
   
   cbi->index_node[10]=230;	
-  cbi->rgb_node[30]=254;	
-  cbi->rgb_node[31]=67;	
-  cbi->rgb_node[32]=13;
+  cbi->node_rgb[30]=254;	
+  cbi->node_rgb[31]=67;	
+  cbi->node_rgb[32]=13;
   
   cbi->index_node[11]=255;	
-  cbi->rgb_node[33]=215;	
-  cbi->rgb_node[34]=5;	
-  cbi->rgb_node[35]=13;
+  cbi->node_rgb[33]=215;	
+  cbi->node_rgb[34]=5;	
+  cbi->node_rgb[35]=13;
   strcpy(cbi->ctype, "deprecated");
   cbi++;
 
@@ -1549,14 +1549,14 @@ void InitDefaultColorbars(int nini){
   cbi->nodehilight=0;
 
   cbi->index_node[0]=0;
-  cbi->rgb_node[0]=255;
-  cbi->rgb_node[1]=255;
-  cbi->rgb_node[2]=0;
+  cbi->node_rgb[0]=255;
+  cbi->node_rgb[1]=255;
+  cbi->node_rgb[2]=0;
 
   cbi->index_node[1]=255;
-  cbi->rgb_node[3]=255;
-  cbi->rgb_node[4]=0;
-  cbi->rgb_node[5]=0;
+  cbi->node_rgb[3]=255;
+  cbi->node_rgb[4]=0;
+  cbi->node_rgb[5]=0;
   strcpy(cbi->ctype, "original");
   cbi++;
 
@@ -1567,19 +1567,19 @@ void InitDefaultColorbars(int nini){
   cbi->nodehilight=0;
 
   cbi->index_node[0]=0;
-  cbi->rgb_node[0]=0;
-  cbi->rgb_node[1]=0;
-  cbi->rgb_node[2]=255;
+  cbi->node_rgb[0]=0;
+  cbi->node_rgb[1]=0;
+  cbi->node_rgb[2]=255;
 
   cbi->index_node[1]=128;
-  cbi->rgb_node[3]=0;
-  cbi->rgb_node[4]=255;
-  cbi->rgb_node[5]=0;
+  cbi->node_rgb[3]=0;
+  cbi->node_rgb[4]=255;
+  cbi->node_rgb[5]=0;
 
   cbi->index_node[2]=255;
-  cbi->rgb_node[6]=255;
-  cbi->rgb_node[7]=0;
-  cbi->rgb_node[8]=0;
+  cbi->node_rgb[6]=255;
+  cbi->node_rgb[7]=0;
+  cbi->node_rgb[8]=0;
   strcpy(cbi->ctype, "original");
   cbi++;
 
@@ -1591,27 +1591,27 @@ void InitDefaultColorbars(int nini){
 
   cbi->index_node[0]  =   0;
 
-  cbi->rgb_node[0]    =   0;
-  cbi->rgb_node[1]    = 151;
-  cbi->rgb_node[2]    = 255;
+  cbi->node_rgb[0]    =   0;
+  cbi->node_rgb[1]    = 151;
+  cbi->node_rgb[2]    = 255;
 
   cbi->index_node[1]  = 113;
 
-  cbi->rgb_node[3]    = 255;
-  cbi->rgb_node[4]    =   0;
-  cbi->rgb_node[5]    =   0;
+  cbi->node_rgb[3]    = 255;
+  cbi->node_rgb[4]    =   0;
+  cbi->node_rgb[5]    =   0;
 
   cbi->index_node[2]  = 212;
 
-  cbi->rgb_node[6]    = 255;
-  cbi->rgb_node[7]    = 255;
-  cbi->rgb_node[8]    =   0;
+  cbi->node_rgb[6]    = 255;
+  cbi->node_rgb[7]    = 255;
+  cbi->node_rgb[8]    =   0;
 
   cbi->index_node[3]  = 255;
 
-  cbi->rgb_node[9]    = 255;
-  cbi->rgb_node[10]   = 255;
-  cbi->rgb_node[11]   = 255;
+  cbi->node_rgb[9]    = 255;
+  cbi->node_rgb[10]   = 255;
+  cbi->node_rgb[11]   = 255;
   strcpy(cbi->ctype, "deprecated");
   cbi++;
 
@@ -1622,24 +1622,24 @@ void InitDefaultColorbars(int nini){
   cbi->nodehilight=0;
 
   cbi->index_node[0]=0;
-  cbi->rgb_node[0]=0;
-  cbi->rgb_node[1]=0;
-  cbi->rgb_node[2]=255;
+  cbi->node_rgb[0]=0;
+  cbi->node_rgb[1]=0;
+  cbi->node_rgb[2]=255;
 
   cbi->index_node[1]=128;
-  cbi->rgb_node[3]=0;
-  cbi->rgb_node[4]=255;
-  cbi->rgb_node[5]=255;
+  cbi->node_rgb[3]=0;
+  cbi->node_rgb[4]=255;
+  cbi->node_rgb[5]=255;
 
   cbi->index_node[2]=128;
-  cbi->rgb_node[6]=255;
-  cbi->rgb_node[7]=255;
-  cbi->rgb_node[8]=0;
+  cbi->node_rgb[6]=255;
+  cbi->node_rgb[7]=255;
+  cbi->node_rgb[8]=0;
 
   cbi->index_node[3]=255;
-  cbi->rgb_node[9]=255;
-  cbi->rgb_node[10]=0;
-  cbi->rgb_node[11]=0;
+  cbi->node_rgb[9]=255;
+  cbi->node_rgb[10]=0;
+  cbi->node_rgb[11]=0;
   strcpy(cbi->ctype, "divergent");
   cbi++;
 
@@ -1651,14 +1651,14 @@ void InitDefaultColorbars(int nini){
   cbi->nodehilight=0;
 
   cbi->index_node[0]=0;
-  cbi->rgb_node[0]=0;
-  cbi->rgb_node[1]=0;
-  cbi->rgb_node[2]=0;
+  cbi->node_rgb[0]=0;
+  cbi->node_rgb[1]=0;
+  cbi->node_rgb[2]=0;
 
   cbi->index_node[1]=255;
-  cbi->rgb_node[3] =255;
-  cbi->rgb_node[4]=255;
-  cbi->rgb_node[5]=255;
+  cbi->node_rgb[3] =255;
+  cbi->node_rgb[4]=255;
+  cbi->node_rgb[5]=255;
   strcpy(cbi->ctype, "original");
   cbi++;
 
@@ -1670,34 +1670,34 @@ void InitDefaultColorbars(int nini){
   cbi->nodehilight=0;
 
   cbi->index_node[0]=0;
-  cbi->rgb_node[0]=96;
-  cbi->rgb_node[1]=96;
-  cbi->rgb_node[2]=255;
+  cbi->node_rgb[0]=96;
+  cbi->node_rgb[1]=96;
+  cbi->node_rgb[2]=255;
 
   cbi->index_node[1]=26; // 0.295276,0.307087
-  cbi->rgb_node[3]=96;
-  cbi->rgb_node[4]=96;
-  cbi->rgb_node[5]=255;
+  cbi->node_rgb[3]=96;
+  cbi->node_rgb[4]=96;
+  cbi->node_rgb[5]=255;
 
   cbi->index_node[2]=26;
-  cbi->rgb_node[6]=255;
-  cbi->rgb_node[7]=255;
-  cbi->rgb_node[8]=0;
+  cbi->node_rgb[6]=255;
+  cbi->node_rgb[7]=255;
+  cbi->node_rgb[8]=0;
 
   cbi->index_node[3]=85; // 0.992126,1.003937
-  cbi->rgb_node[9]=255;
-  cbi->rgb_node[10]=255;
-  cbi->rgb_node[11]=0;
+  cbi->node_rgb[9]=255;
+  cbi->node_rgb[10]=255;
+  cbi->node_rgb[11]=0;
 
   cbi->index_node[4]=85;
-  cbi->rgb_node[12]=255;
-  cbi->rgb_node[13]=155;
-  cbi->rgb_node[14]=0;
+  cbi->node_rgb[12]=255;
+  cbi->node_rgb[13]=155;
+  cbi->node_rgb[14]=0;
 
   cbi->index_node[5]=255;
-  cbi->rgb_node[15]=255;
-  cbi->rgb_node[16]=155;
-  cbi->rgb_node[17]=0;
+  cbi->node_rgb[15]=255;
+  cbi->node_rgb[16]=155;
+  cbi->node_rgb[17]=0;
   strcpy(cbi->ctype, "original");
   cbi++;
 
@@ -1709,24 +1709,24 @@ void InitDefaultColorbars(int nini){
   cbi->nodehilight=0;
 
   cbi->index_node[0]=0;
-  cbi->rgb_node[0]=0;
-  cbi->rgb_node[1]=0;
-  cbi->rgb_node[2]=0;
+  cbi->node_rgb[0]=0;
+  cbi->node_rgb[1]=0;
+  cbi->node_rgb[2]=0;
 
   cbi->index_node[1]=127;
-  cbi->rgb_node[3]=0;
-  cbi->rgb_node[4]=0;
-  cbi->rgb_node[5]=0;
+  cbi->node_rgb[3]=0;
+  cbi->node_rgb[4]=0;
+  cbi->node_rgb[5]=0;
 
   cbi->index_node[2]=128;
-  cbi->rgb_node[6]=255;
-  cbi->rgb_node[7]=128;
-  cbi->rgb_node[8]=0;
+  cbi->node_rgb[6]=255;
+  cbi->node_rgb[7]=128;
+  cbi->node_rgb[8]=0;
 
   cbi->index_node[3]=255;
-  cbi->rgb_node[9]=255;
-  cbi->rgb_node[10]=128;
-  cbi->rgb_node[11]=0;
+  cbi->node_rgb[9]=255;
+  cbi->node_rgb[10]=128;
+  cbi->node_rgb[11]=0;
   strcpy(cbi->ctype, "original");
   cbi++;
 
@@ -1738,54 +1738,54 @@ void InitDefaultColorbars(int nini){
   cbi->nodehilight=0;
 
   cbi->index_node[0]=0;
-  cbi->rgb_node[0]=0;
-  cbi->rgb_node[1]=0;
-  cbi->rgb_node[2]=0;
+  cbi->node_rgb[0]=0;
+  cbi->node_rgb[1]=0;
+  cbi->node_rgb[2]=0;
 
   cbi->index_node[1]=127;
-  cbi->rgb_node[3]=38;
-  cbi->rgb_node[4]=0;
-  cbi->rgb_node[5]=0;
+  cbi->node_rgb[3]=38;
+  cbi->node_rgb[4]=0;
+  cbi->node_rgb[5]=0;
 
   cbi->index_node[2]=128;
-  cbi->rgb_node[6]=219;
-  cbi->rgb_node[7]=68;
-  cbi->rgb_node[8]=21;
+  cbi->node_rgb[6]=219;
+  cbi->node_rgb[7]=68;
+  cbi->node_rgb[8]=21;
 
   cbi->index_node[3]=160;
-  cbi->rgb_node[9]=255;
-  cbi->rgb_node[10]=125;
-  cbi->rgb_node[11]=36;
+  cbi->node_rgb[9]=255;
+  cbi->node_rgb[10]=125;
+  cbi->node_rgb[11]=36;
 
   cbi->index_node[4]=183;
-  cbi->rgb_node[12]=255;
-  cbi->rgb_node[13]=157;
-  cbi->rgb_node[14]=52;
+  cbi->node_rgb[12]=255;
+  cbi->node_rgb[13]=157;
+  cbi->node_rgb[14]=52;
 
   cbi->index_node[5]=198;
-  cbi->rgb_node[15]=255;
-  cbi->rgb_node[16]=170;
-  cbi->rgb_node[17]=63;
+  cbi->node_rgb[15]=255;
+  cbi->node_rgb[16]=170;
+  cbi->node_rgb[17]=63;
 
   cbi->index_node[6]=214;
-  cbi->rgb_node[18]=255;
-  cbi->rgb_node[19]=198;
-  cbi->rgb_node[20]=93;
+  cbi->node_rgb[18]=255;
+  cbi->node_rgb[19]=198;
+  cbi->node_rgb[20]=93;
 
   cbi->index_node[7]=229;
-  cbi->rgb_node[21]=255;
-  cbi->rgb_node[22]=208;
-  cbi->rgb_node[23]=109;
+  cbi->node_rgb[21]=255;
+  cbi->node_rgb[22]=208;
+  cbi->node_rgb[23]=109;
 
   cbi->index_node[8]=244;
-  cbi->rgb_node[24]=255;
-  cbi->rgb_node[25]=234;
-  cbi->rgb_node[26]=161;
+  cbi->node_rgb[24]=255;
+  cbi->node_rgb[25]=234;
+  cbi->node_rgb[26]=161;
 
   cbi->index_node[9]=255;
-  cbi->rgb_node[27]=255;
-  cbi->rgb_node[28]=255;
-  cbi->rgb_node[29]=238;
+  cbi->node_rgb[27]=255;
+  cbi->node_rgb[28]=255;
+  cbi->node_rgb[29]=238;
   strcpy(cbi->ctype, "original");
   cbi++;
 
@@ -1797,24 +1797,24 @@ void InitDefaultColorbars(int nini){
   cbi->nodehilight = 0;
 
   cbi->index_node[0] = 0;
-  cbi->rgb_node[0] = 0;
-  cbi->rgb_node[1] = 0;
-  cbi->rgb_node[2] = 0;
+  cbi->node_rgb[0] = 0;
+  cbi->node_rgb[1] = 0;
+  cbi->node_rgb[2] = 0;
 
   cbi->index_node[1] = 108;
-  cbi->rgb_node[3] = 255;
-  cbi->rgb_node[4] = 127;
-  cbi->rgb_node[5] = 0;
+  cbi->node_rgb[3] = 255;
+  cbi->node_rgb[4] = 127;
+  cbi->node_rgb[5] = 0;
 
   cbi->index_node[2] = 156;
-  cbi->rgb_node[6] = 255;
-  cbi->rgb_node[7] = 255;
-  cbi->rgb_node[8] = 0;
+  cbi->node_rgb[6] = 255;
+  cbi->node_rgb[7] = 255;
+  cbi->node_rgb[8] = 0;
 
   cbi->index_node[3] = 255;
-  cbi->rgb_node[9] = 255;
-  cbi->rgb_node[10] = 255;
-  cbi->rgb_node[11] = 255;
+  cbi->node_rgb[9] = 255;
+  cbi->node_rgb[10] = 255;
+  cbi->node_rgb[11] = 255;
   strcpy(cbi->ctype, "original");
   cbi++;
 
@@ -1826,39 +1826,39 @@ void InitDefaultColorbars(int nini){
   cbi->nodehilight = 0;
 
   cbi->index_node[0] = 0;
-  cbi->rgb_node[0] = 0;
-  cbi->rgb_node[1] = 0;
-  cbi->rgb_node[2] = 0;
+  cbi->node_rgb[0] = 0;
+  cbi->node_rgb[1] = 0;
+  cbi->node_rgb[2] = 0;
 
   cbi->index_node[1] = 90;
-  cbi->rgb_node[3] = 64;
-  cbi->rgb_node[4] = 64;
-  cbi->rgb_node[5] = 255;
+  cbi->node_rgb[3] = 64;
+  cbi->node_rgb[4] = 64;
+  cbi->node_rgb[5] = 255;
 
   cbi->index_node[2] = 110;
-  cbi->rgb_node[6] = 155;
-  cbi->rgb_node[7] = 35;
-  cbi->rgb_node[8] = 33;
+  cbi->node_rgb[6] = 155;
+  cbi->node_rgb[7] = 35;
+  cbi->node_rgb[8] = 33;
 
   cbi->index_node[3] = 120;
-  cbi->rgb_node[9] = 108;
-  cbi->rgb_node[10] = 19;
-  cbi->rgb_node[11] = 43;
+  cbi->node_rgb[9] = 108;
+  cbi->node_rgb[10] = 19;
+  cbi->node_rgb[11] = 43;
 
   cbi->index_node[4] = 130;
-  cbi->rgb_node[12] = 208;
-  cbi->rgb_node[13] = 93;
-  cbi->rgb_node[14] = 40;
+  cbi->node_rgb[12] = 208;
+  cbi->node_rgb[13] = 93;
+  cbi->node_rgb[14] = 40;
 
   cbi->index_node[5] = 160;
-  cbi->rgb_node[15] = 255;
-  cbi->rgb_node[16] = 178;
-  cbi->rgb_node[17] = 0;
+  cbi->node_rgb[15] = 255;
+  cbi->node_rgb[16] = 178;
+  cbi->node_rgb[17] = 0;
 
   cbi->index_node[6] = 255;
-  cbi->rgb_node[18] = 255;
-  cbi->rgb_node[19] = 255;
-  cbi->rgb_node[20] = 255;
+  cbi->node_rgb[18] = 255;
+  cbi->node_rgb[19] = 255;
+  cbi->node_rgb[20] = 255;
   strcpy(cbi->ctype, "deprecated");
   cbi++;
 
@@ -1870,34 +1870,34 @@ void InitDefaultColorbars(int nini){
   cbi->nodehilight=0;
 
   cbi->index_node[0]=0;
-  cbi->rgb_node[0]=0;
-  cbi->rgb_node[1]=1;
-  cbi->rgb_node[2]=2;
+  cbi->node_rgb[0]=0;
+  cbi->node_rgb[1]=1;
+  cbi->node_rgb[2]=2;
 
   cbi->index_node[1]=120;
-  cbi->rgb_node[3]=0;
-  cbi->rgb_node[4]=1;
-  cbi->rgb_node[5]=2;
+  cbi->node_rgb[3]=0;
+  cbi->node_rgb[4]=1;
+  cbi->node_rgb[5]=2;
 
   cbi->index_node[2]=120;
-  cbi->rgb_node[6]=255;
-  cbi->rgb_node[7]=0;
-  cbi->rgb_node[8]=0;
+  cbi->node_rgb[6]=255;
+  cbi->node_rgb[7]=0;
+  cbi->node_rgb[8]=0;
 
   cbi->index_node[3]=136;
-  cbi->rgb_node[9]=255;
-  cbi->rgb_node[10]=0;
-  cbi->rgb_node[11]=0;
+  cbi->node_rgb[9]=255;
+  cbi->node_rgb[10]=0;
+  cbi->node_rgb[11]=0;
 
   cbi->index_node[4]=136;
-  cbi->rgb_node[12]=64;
-  cbi->rgb_node[13]=64;
-  cbi->rgb_node[14]=64;
+  cbi->node_rgb[12]=64;
+  cbi->node_rgb[13]=64;
+  cbi->node_rgb[14]=64;
 
   cbi->index_node[5]=255;
-  cbi->rgb_node[15]=64;
-  cbi->rgb_node[16]=64;
-  cbi->rgb_node[17]=64;
+  cbi->node_rgb[15]=64;
+  cbi->node_rgb[16]=64;
+  cbi->node_rgb[17]=64;
   strcpy(cbi->ctype, "original");
   cbi++;
 
@@ -1910,24 +1910,24 @@ void InitDefaultColorbars(int nini){
   cbi->nodehilight=0;
 
   cbi->index_node[0]=0;
-  cbi->rgb_node[0]=0;
-  cbi->rgb_node[1]=0;
-  cbi->rgb_node[2]=0;
+  cbi->node_rgb[0]=0;
+  cbi->node_rgb[1]=0;
+  cbi->node_rgb[2]=0;
 
   cbi->index_node[1]=32;
-  cbi->rgb_node[3]=0;
-  cbi->rgb_node[4]=0;
-  cbi->rgb_node[5]=0;
+  cbi->node_rgb[3]=0;
+  cbi->node_rgb[4]=0;
+  cbi->node_rgb[5]=0;
 
   cbi->index_node[2]=32;
-  cbi->rgb_node[6]=253;
-  cbi->rgb_node[7]=254;
-  cbi->rgb_node[8]=255;
+  cbi->node_rgb[6]=253;
+  cbi->node_rgb[7]=254;
+  cbi->node_rgb[8]=255;
 
   cbi->index_node[3]=255;
-  cbi->rgb_node[9]=253;
-  cbi->rgb_node[10]=254;
-  cbi->rgb_node[11]=255;
+  cbi->node_rgb[9]=253;
+  cbi->node_rgb[10]=254;
+  cbi->node_rgb[11]=255;
   strcpy(cbi->ctype, "original");
   cbi++;
 
@@ -1943,7 +1943,7 @@ void InitDefaultColorbars(int nini){
   cbi->index_node[2] = 127;
   cbi->index_node[3] = 255;
   for(i = 0; i < 12; i++){
-    cbi->rgb_node[i] = colorsplit[i];
+    cbi->node_rgb[i] = colorsplit[i];
   }
   strcpy(cbi->ctype, "original");
   cbi++;
@@ -1957,24 +1957,24 @@ void InitDefaultColorbars(int nini){
   cbi->nodehilight = 0;
 
   cbi->index_node[0] = 0;
-  cbi->rgb_node[0] = 9;
-  cbi->rgb_node[1] = 160;
-  cbi->rgb_node[2] = 255;
+  cbi->node_rgb[0] = 9;
+  cbi->node_rgb[1] = 160;
+  cbi->node_rgb[2] = 255;
 
   cbi->index_node[1] = 192;
-  cbi->rgb_node[3] = 9;
-  cbi->rgb_node[4] = 160;
-  cbi->rgb_node[5] = 255;
+  cbi->node_rgb[3] = 9;
+  cbi->node_rgb[4] = 160;
+  cbi->node_rgb[5] = 255;
 
   cbi->index_node[2] = 200;
-  cbi->rgb_node[6] = 255;
-  cbi->rgb_node[7] = 255;
-  cbi->rgb_node[8] = 255;
+  cbi->node_rgb[6] = 255;
+  cbi->node_rgb[7] = 255;
+  cbi->node_rgb[8] = 255;
 
   cbi->index_node[3] = 255;
-  cbi->rgb_node[9] = 255;
-  cbi->rgb_node[10] = 255;
-  cbi->rgb_node[11] = 255;
+  cbi->node_rgb[9] = 255;
+  cbi->node_rgb[10] = 255;
+  cbi->node_rgb[11] = 255;
   strcpy(cbi->ctype, "deprecated");
   cbi++;
 
@@ -1986,29 +1986,29 @@ void InitDefaultColorbars(int nini){
   cbi->nodehilight = 0;
 
   cbi->index_node[0] = 0;
-  cbi->rgb_node[0] = 0;
-  cbi->rgb_node[1] = 0;
-  cbi->rgb_node[2] = 0;
+  cbi->node_rgb[0] = 0;
+  cbi->node_rgb[1] = 0;
+  cbi->node_rgb[2] = 0;
 
   cbi->index_node[1] = 140;
-  cbi->rgb_node[3] = 235;
-  cbi->rgb_node[4] = 120;
-  cbi->rgb_node[5] = 0;
+  cbi->node_rgb[3] = 235;
+  cbi->node_rgb[4] = 120;
+  cbi->node_rgb[5] = 0;
 
   cbi->index_node[2] = 160;
-  cbi->rgb_node[6] = 250;
-  cbi->rgb_node[7] = 180;
-  cbi->rgb_node[8] = 0;
+  cbi->node_rgb[6] = 250;
+  cbi->node_rgb[7] = 180;
+  cbi->node_rgb[8] = 0;
 
   cbi->index_node[3] = 190;
-  cbi->rgb_node[9] = 252;
-  cbi->rgb_node[10] = 248;
-  cbi->rgb_node[11] = 70;
+  cbi->node_rgb[9] = 252;
+  cbi->node_rgb[10] = 248;
+  cbi->node_rgb[11] = 70;
 
   cbi->index_node[4] = 255;
-  cbi->rgb_node[12] = 255;
-  cbi->rgb_node[13] = 255;
-  cbi->rgb_node[14] = 255;
+  cbi->node_rgb[12] = 255;
+  cbi->node_rgb[13] = 255;
+  cbi->node_rgb[14] = 255;
   strcpy(cbi->ctype, "deprecated");
   cbi++;
 
@@ -2020,19 +2020,19 @@ void InitDefaultColorbars(int nini){
   cbi->nodehilight = 0;
 
   cbi->index_node[0] = 0;
-  cbi->rgb_node[0] = 0;
-  cbi->rgb_node[1] = 0;
-  cbi->rgb_node[2] = 255;
+  cbi->node_rgb[0] = 0;
+  cbi->node_rgb[1] = 0;
+  cbi->node_rgb[2] = 255;
 
   cbi->index_node[1] = 192;
-  cbi->rgb_node[3] = 0;
-  cbi->rgb_node[4] = 0;
-  cbi->rgb_node[5] = 255;
+  cbi->node_rgb[3] = 0;
+  cbi->node_rgb[4] = 0;
+  cbi->node_rgb[5] = 255;
 
   cbi->index_node[2] = 255;
-  cbi->rgb_node[6] = 255;
-  cbi->rgb_node[7] = 255;
-  cbi->rgb_node[8] = 255;
+  cbi->node_rgb[6] = 255;
+  cbi->node_rgb[7] = 255;
+  cbi->node_rgb[8] = 255;
   strcpy(cbi->ctype, "original");
   cbi++;
 
@@ -2071,7 +2071,7 @@ void InitDefaultColorbars(int nini){
     cbi->dist_type = COLOR_DIST_LAB;
     RemapColorbar(cbi);
     UpdateColorbarSplits(cbi);
-    memcpy(cbi->rgb_node_orig, cbi->rgb_node, 3 * cbi->nnodes * sizeof(unsigned char));
+    memcpy(cbi->node_rgb_orig, cbi->node_rgb, 3 * cbi->nnodes * sizeof(unsigned char));
   }
   UpdateColorbarDialogs();
 

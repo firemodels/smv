@@ -14834,9 +14834,9 @@ int ReadIni2(char *inifile, int localfile){
             sscanf(buffer, "%i %i %i %i", &icbar, &r1, &g1, &b1);
             cbi->index_node[i] = icbar;
             nn = 3 * i;
-            cbi->rgb_node[nn] = r1;
-            cbi->rgb_node[nn + 1] = g1;
-            cbi->rgb_node[nn + 2] = b1;
+            cbi->node_rgb[nn]     = r1;
+            cbi->node_rgb[nn + 1] = g1;
+            cbi->node_rgb[nn + 2] = b1;
           }
           RemapColorbar(cbi);
           UpdateColorbarSplits(cbi);
@@ -16954,7 +16954,7 @@ void WriteIni(int flag,char *filename){
       fprintf(fileout, " %s\n", cbi->label);
       fprintf(fileout, " %i %i\n", cbi->nnodes, cbi->nodehilight);
       for(i = 0; i < cbi->nnodes; i++){
-        rrgb = cbi->rgb_node + 3 * i;
+        rrgb = cbi->node_rgb + 3 * i;
         fprintf(fileout, " %i %i %i %i\n", (int)cbi->index_node[i], (int)rrgb[0], (int)rrgb[1], (int)rrgb[2]);
       }
     }

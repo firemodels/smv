@@ -3552,7 +3552,7 @@ extern "C" void SplitCB(int var){
     split_colorbar->index_node[2] = isplit+1;
 
     for(i = 0; i<12; i++){
-      split_colorbar->rgb_node[i] = colorsplit[i]&0xFF;
+      split_colorbar->node_rgb[i] = colorsplit[i]&0xFF;
     }
     RemapColorbar(split_colorbar);
     UpdateColorbarSplits(split_colorbar);
