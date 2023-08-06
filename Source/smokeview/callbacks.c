@@ -777,10 +777,7 @@ int ColorbarClick(int x, int y){
 
   colorbar_index = GetColorbarIndex(1,x,y);
   if(colorbar_index>=0){
-    int state;
-
     colorbar_select_index=colorbar_index;
-    state=GLUTGETMODIFIERS();
     colorbar_drag=1;
     UpdateRGBColors(colorbar_index);
     return 1;
