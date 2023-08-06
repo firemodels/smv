@@ -435,7 +435,7 @@ void DrawColorbarPathCIE(void){
     float xyz1[3], xyz2[3];
     char label[32];
 
-    sprintf(label, "%.2f", cbi->dist[i]-cbi->dist[i-7]);
+    sprintf(label, "%.2f", cbi->colorbar_dist[i]-cbi->colorbar_dist[i-7]);
     Cie2XYZ(xyz2, cbi->colorbar_lab + 3 * i);
     Cie2XYZ(xyz1, cbi->colorbar_lab + 3 * (i + 1 - 8));
     xyz1[0] = (xyz1[0] + xyz2[0]) / 2.0;
@@ -715,13 +715,13 @@ void FRgb2CIE(float *rgb_arg, float *cie){
 void Rgb2Dist(colorbardata *cbi){
   int i;
 
-  float total_dist, *dist;
+  float total_dist, *colorbar_dist;
   int jstart, *dist_ind;
 
-  dist = cbi->dist;
+  colorbar_dist = cbi->colorbar_dist;
   dist_ind   = cbi->dist_ind;
 
-  dist[0]     = 0.0;
+  colorbar_dist[0]     = 0.0;
   for(i = 1;i < 256;i++){
     float distcie, cie2[3], *rgb1f, *rgb2f, cie1[3];
     float dx, dy, dz;
@@ -736,9 +736,9 @@ void Rgb2Dist(colorbardata *cbi){
     else{
       distcie = ABS(cie1[0]-cie2[0]);
     }
-    dist[i] = dist[i - 1] + distcie;
+    colorbar_dist[i] = colorbar_dist[i - 1] + distcie;
   }
-  total_dist = dist[255];
+  total_dist = colorbar_dist[255];
 
   dist_ind[0] = 1;
   dist_ind[255] = 1;
@@ -752,7 +752,7 @@ void Rgb2Dist(colorbardata *cbi){
 
     val = (float)i* total_dist / 16.0;
     for(j=jstart;j<255;j++){
-      if(dist[j]<=val&&val<=dist[j+1]){
+      if(colorbar_dist[j]<=val&&val<= colorbar_dist[j+1]){
         dist_ind[j] = 1;
         jstart = j;
         break;
@@ -943,13 +943,13 @@ void GetColorDist(colorbardata *cbi, int option, float *min, float *max){
   int i;
 
   for(i = 1; i < 255;i++){
-    cbi->deltaCIE[i - 1] = cbi->dist[i] - cbi->dist[i - 1];
+    cbi->colorbar_dist_delta[i - 1] = cbi->colorbar_dist[i] - cbi->colorbar_dist[i - 1];
   }
-  *min = cbi->deltaCIE[0];
+  *min = cbi->colorbar_dist_delta[0];
   *max = *min;
   for(i = 1; i < 255 - 1; i++){
-    *min = MIN(*min, cbi->deltaCIE[i]);
-    *max = MAX(*max, cbi->deltaCIE[i]);
+    *min = MIN(*min, cbi->colorbar_dist_delta[i]);
+    *max = MAX(*max, cbi->colorbar_dist_delta[i]);
   }
 }
 #endif

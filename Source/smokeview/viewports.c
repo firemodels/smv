@@ -1161,8 +1161,8 @@ void ViewportSlicePlot(int quad, GLint screen_left, GLint screen_down) {
 
     void GetColorDist(colorbardata *cbi, int option, float *min, float *max);
     GetColorDist(colorbarinfo + colorbartype, 1, &valmin, &valmax);
-    DrawPlot2D(PLOT_ALL, xvals, cbi->deltaCIE, NULL, 254,
-      0.0, cbi->deltaCIE[0], 0.0, 1, position, valmin, valmax,
+    DrawPlot2D(PLOT_ALL, xvals, cbi->colorbar_dist_delta, NULL, 254,
+      0.0, cbi->colorbar_dist_delta[0], 0.0, 1, position, valmin, valmax,
       label, NULL, "",
       VP_slice_plot.left, VP_slice_plot.right, VP_slice_plot.down, VP_slice_plot.top);
   }
