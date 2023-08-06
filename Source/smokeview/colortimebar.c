@@ -960,7 +960,7 @@ void RemapColorbar(colorbardata *cbi){
   int i;
   float *colorbar_rgb;
   unsigned char *node_rgb;
-  unsigned char *alpha;
+  unsigned char *alpha_rgb;
   float *colorbar_lab;
   int interp_cielab;
 
@@ -973,7 +973,7 @@ void RemapColorbar(colorbardata *cbi){
   colorbar_rgb = cbi->colorbar_rgb;
   node_rgb     = cbi->node_rgb;
   colorbar_lab = cbi->colorbar_lab;
-  alpha        = cbi->alpha;
+  alpha_rgb    = cbi->alpha_rgb;
 
   for(i=0;i<cbi->node_index[0];i++){
     colorbar_rgb[0+3*i]=node_rgb[0]/255.0;
@@ -983,10 +983,10 @@ void RemapColorbar(colorbardata *cbi){
       (node_rgb[0]==  0&&node_rgb[1]==  1&&node_rgb[2]==  2)||
       (node_rgb[0]==253&&node_rgb[1]==254&&node_rgb[2]==255)
       ){
-      alpha[i]=0;
+      alpha_rgb[i]=0;
     }
     else{
-      alpha[i]=255;
+      alpha_rgb[i]=255;
     }
   }
   for(i=0;i<cbi->nnodes-1;i++){
@@ -1031,10 +1031,10 @@ void RemapColorbar(colorbardata *cbi){
         (node_rgb[0]==253&&node_rgb[1]==254&&node_rgb[2]==255&&
          node_rgb[3]==253&&node_rgb[4]==254&&node_rgb[5]==255)
         ){
-        alpha[j]=0;
+        alpha_rgb[j]=0;
       }
       else{
-        alpha[j]=255;
+        alpha_rgb[j]=255;
       }
     }
   }
@@ -1048,10 +1048,10 @@ void RemapColorbar(colorbardata *cbi){
       (node_rgb[0]==253&&node_rgb[1]==254&&node_rgb[2]==255)
       )
     {
-      alpha[i]=0;
+      alpha_rgb[i]=0;
     }
     else{
-      alpha[i]=255;
+      alpha_rgb[i]=255;
     }
   }
   if(show_extreme_mindata==1){
