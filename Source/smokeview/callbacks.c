@@ -1193,8 +1193,8 @@ void ColorbarSplitDrag(int xm, int ym){
     if(colorbar_index>250)colorbar_index=250;
     if(colorbar_index<5)colorbar_index=5;
     ii=current_colorbar->splits[0];
-    current_colorbar->index_node[ii]=colorbar_index;
-    current_colorbar->index_node[ii-1]=colorbar_index;
+    current_colorbar->node_index[ii]=colorbar_index;
+    current_colorbar->node_index[ii-1]=colorbar_index;
     RemapColorbar(current_colorbar);
     UpdateRGBColors(COLORBAR_INDEX_NONE);
     UpdateColorbarSplits(current_colorbar);

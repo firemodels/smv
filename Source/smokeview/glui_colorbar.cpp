@@ -192,7 +192,7 @@ extern "C" void ColorbarCB(int var){
       cbi = colorbarinfo + colorbartype;
       UpdateCurrentColorbar(cbi);
 
-      cbi->index_node[colorbarpoint] = cb_colorindex;
+      cbi->node_index[colorbarpoint] = cb_colorindex;
 
       ColorbarGlobal2Local();
       UpdateColorbarSplits(current_colorbar);
@@ -232,7 +232,7 @@ extern "C" void ColorbarCB(int var){
     int nsize;
 
     nsize = (cbi->nnodes - colorbarpoint - 1);
-    memmove(cbi->index_node + colorbarpoint + 1, cbi->index_node + colorbarpoint, nsize);
+    memmove(cbi->node_index + colorbarpoint + 1, cbi->node_index + colorbarpoint, nsize);
     memmove(cbi->node_rgb + 3*colorbarpoint + 3, cbi->node_rgb + 3*colorbarpoint, 3*nsize);
     memmove(cbi->node_lab + 3*colorbarpoint + 3, cbi->node_lab + 3*colorbarpoint, 3*nsize*sizeof(float));
     {
@@ -257,7 +257,7 @@ extern "C" void ColorbarCB(int var){
       cienew[2] = (cie1[2]+cie2[2])/2.0;
       CIE2Rgb(rnew, fnew, cienew);
 
-      inew = cbi->index_node + colorbarpoint;
+      inew = cbi->node_index + colorbarpoint;
       ibef = inew - 1;
       iaft = inew + 1;
       *inew = (*ibef + *iaft) / 2;
@@ -279,7 +279,7 @@ extern "C" void ColorbarCB(int var){
     for(i = colorbarpoint + 1;i < cbi->nnodes;i++){
       unsigned char *rgb1, *rgb2_local;
 
-      cbi->index_node[i - 1] = cbi->index_node[i];
+      cbi->node_index[i - 1] = cbi->node_index[i];
       rgb2_local = cbi->node_rgb + 3 * i;
       rgb1 = rgb2_local - 3;
       rgb1[0] = rgb2_local[0];
@@ -650,7 +650,7 @@ extern "C" void ColorbarGlobal2Local(void){
   cbi = colorbarinfo + colorbartype;
   colorbarpoint=cbi->nodehilight;
 
-  SPINNER_colorindex->set_int_val(cbi->index_node[colorbarpoint]);
+  SPINNER_colorindex->set_int_val(cbi->node_index[colorbarpoint]);
 
   BUTTON_node_next->enable();
   BUTTON_node_prev->enable();

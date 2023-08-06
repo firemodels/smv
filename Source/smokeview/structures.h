@@ -287,10 +287,10 @@ typedef struct _colorbardata {
   int nnodes,nodehilight,nsplits,type;
   unsigned char node_rgb_orig[3*1024], node_rgb[3*1024];
   unsigned char alpha[1024];
-  unsigned char index_node[1024];  // colorbar index
+  unsigned char node_index[1024];  // colorbar index
   unsigned char splits[1024];
-  int nnodes_orig, index_node_orig[1024];
-  float node_lab[3*1024], dist_node[1024];
+  int nnodes_orig, node_index_orig[1024];
+  float node_lab[3*1024], node_dist[1024];
   float dist[256];
   int dist_ind[256];
 #ifdef pp_COLOR_PLOT2D

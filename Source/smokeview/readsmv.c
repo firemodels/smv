@@ -14832,7 +14832,7 @@ int ReadIni2(char *inifile, int localfile){
             fgets(buffer, 255, stream);
             r1 = -1; g1 = -1; b1 = -1;
             sscanf(buffer, "%i %i %i %i", &icbar, &r1, &g1, &b1);
-            cbi->index_node[i] = icbar;
+            cbi->node_index[i] = icbar;
             nn = 3 * i;
             cbi->node_rgb[nn]     = r1;
             cbi->node_rgb[nn + 1] = g1;
@@ -16955,7 +16955,7 @@ void WriteIni(int flag,char *filename){
       fprintf(fileout, " %i %i\n", cbi->nnodes, cbi->nodehilight);
       for(i = 0; i < cbi->nnodes; i++){
         rrgb = cbi->node_rgb + 3 * i;
-        fprintf(fileout, " %i %i %i %i\n", (int)cbi->index_node[i], (int)rrgb[0], (int)rrgb[1], (int)rrgb[2]);
+        fprintf(fileout, " %i %i %i %i\n", (int)cbi->node_index[i], (int)rrgb[0], (int)rrgb[1], (int)rrgb[2]);
       }
     }
   }

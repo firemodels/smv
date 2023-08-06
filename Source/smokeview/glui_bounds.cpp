@@ -3548,8 +3548,8 @@ extern "C" void SplitCB(int var){
     denom = splitvals[2]-splitvals[0];
     if(denom==0.0)denom = 1.0;
     isplit = CLAMP(255*(splitvals[1]-splitvals[0])/denom, 0, 254);
-    split_colorbar->index_node[1] = isplit;
-    split_colorbar->index_node[2] = isplit+1;
+    split_colorbar->node_index[1] = isplit;
+    split_colorbar->node_index[2] = isplit+1;
 
     for(i = 0; i<12; i++){
       split_colorbar->node_rgb[i] = colorsplit[i]&0xFF;
