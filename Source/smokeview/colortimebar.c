@@ -965,10 +965,6 @@ void RemapColorbar(colorbardata *cbi){
   int interp_cielab;
 
   interp_cielab = cbi->interp;
-#ifdef _DEBUG
-  if(interp_cielab == INTERP_RGB)printf("colorbar: %s, interpolation: rgb\n",cbi->label);
-  if(interp_cielab == INTERP_CIE)printf("colorbar: %s, interpolation: cie\n",cbi->label);
-#endif
   CheckMemory;
   colorbar_rgb = cbi->colorbar_rgb;
   node_rgb     = cbi->node_rgb;
@@ -979,15 +975,7 @@ void RemapColorbar(colorbardata *cbi){
     colorbar_rgb[0+3*i]=node_rgb[0]/255.0;
     colorbar_rgb[1+3*i]=node_rgb[1]/255.0;
     colorbar_rgb[2+3*i]=node_rgb[2]/255.0;
-    if(
-      (node_rgb[0]==  0&&node_rgb[1]==  1&&node_rgb[2]==  2)||
-      (node_rgb[0]==253&&node_rgb[1]==254&&node_rgb[2]==255)
-      ){
-      alpha_rgb[i]=0;
-    }
-    else{
-      alpha_rgb[i]=255;
-    }
+    alpha_rgb[i]=255;
   }
   for(i=0;i<cbi->nnodes-1;i++){
     int i1,i2,j;
@@ -1025,17 +1013,7 @@ void RemapColorbar(colorbardata *cbi){
         colorbar_rgb[1+3*j]=MIX(factor,node_rgb[4],node_rgb[1])/255.0;
         colorbar_rgb[2+3*j]=MIX(factor,node_rgb[5],node_rgb[2])/255.0;
       }
-      if(
-        (node_rgb[0]==0&&  node_rgb[1]==1&&  node_rgb[2]==2&&
-         node_rgb[3]==0&&  node_rgb[4]==1&&  node_rgb[5]==2)||
-        (node_rgb[0]==253&&node_rgb[1]==254&&node_rgb[2]==255&&
-         node_rgb[3]==253&&node_rgb[4]==254&&node_rgb[5]==255)
-        ){
-        alpha_rgb[j]=0;
-      }
-      else{
-        alpha_rgb[j]=255;
-      }
+      alpha_rgb[j]=255;
     }
   }
   node_rgb = cbi->node_rgb+3*(cbi->nnodes-1);
@@ -1043,16 +1021,7 @@ void RemapColorbar(colorbardata *cbi){
     colorbar_rgb[0+3*i]=node_rgb[0]/255.0;
     colorbar_rgb[1+3*i]=node_rgb[1]/255.0;
     colorbar_rgb[2+3*i]=node_rgb[2]/255.0;
-    if(
-      (node_rgb[0]==  0&&node_rgb[1]==  1&&node_rgb[2]==  2)||
-      (node_rgb[0]==253&&node_rgb[1]==254&&node_rgb[2]==255)
-      )
-    {
-      alpha_rgb[i]=0;
-    }
-    else{
-      alpha_rgb[i]=255;
-    }
+    alpha_rgb[i]=255;
   }
   if(show_extreme_mindata==1){
     colorbar_rgb[0]=rgb_below_min[0];
@@ -1066,84 +1035,6 @@ void RemapColorbar(colorbardata *cbi){
   }
   Rgb2Dist(cbi);
   CheckMemory;
-}
-
-/* ------------------ RemapColorbarType ------------------------ */
-
-void RemapColorbarType(int cb_oldtype, char *cb_newname){
-  switch(cb_oldtype){
-    case 0:
-      strcpy(cb_newname,"Rainbow");
-      break;
-    case 1:
-      strcpy(cb_newname,"Rainbow 2");
-      break;
-    case 2:
-      strcpy(cb_newname,"yellow->red");
-      break;
-    case 3:
-      strcpy(cb_newname,"blue->green->red");
-      break;
-    case 4:
-      strcpy(cb_newname,"blue->red split");
-      break;
-    case 5:
-      strcpy(cb_newname,"FED");
-      break;
-    case 6:
-      //strcpy(cb_newname,"fire (original)");
-      strcpy(cb_newname,"fire 2");
-      break;
-    case 7:
-     // strcpy(cb_newname,"fire (black->orange)");
-      strcpy(cb_newname,"fire 2");
-      break;
-    case 8:
-      //strcpy(cb_newname,"fire (new)");
-      strcpy(cb_newname,"fire 2");
-      break;
-    case 9:
-      //strcpy(cb_newname,"fire (new2)");
-      strcpy(cb_newname,"fire 2");
-      break;
-    case 10:
-      //strcpy(cb_newname,"fire (custom)");
-      strcpy(cb_newname,"fire 2");
-      break;
-    case 11:
-      strcpy(cb_newname,"fire line (level set)");
-      break;
-    case 12:
-      strcpy(cb_newname,"fire line (wall thickness)");
-      break;
-    case 13:
-      strcpy(cb_newname,"black->white");
-      break;
-    case 14:
-      strcpy(cb_newname, "Methanol");
-      break;
-    case 15:
-      strcpy(cb_newname, "Propane");
-      break;
-    case 16:
-      strcpy(cb_newname, "CO2");
-      break;
-    default:
-#define NCOLORBARS_PREV 17
-      if(cb_oldtype>=NCOLORBARS_PREV){
-        cb_oldtype -= (NCOLORBARS_PREV-ndefaultcolorbars);
-      }
-      if(cb_oldtype>=0&&cb_oldtype<ncolorbars){
-        colorbardata *cb;
-
-        cb = colorbarinfo + cb_oldtype;
-        strcpy(cb_newname,cb->label);
-      }
-      else{
-        strcpy(cb_newname,"Rainbow");
-      }
-      break;
-  }
 }
 
 /* ------------------ ReadCSVColorbar ------------------------ */

@@ -12679,14 +12679,10 @@ int ReadIni2(char *inifile, int localfile){
     if(MatchINI(buffer, "COLORBARTYPE") == 1){
       char *label;
 
-      update_colorbartype = 1;
       fgets(buffer, 255, stream);
       label = strchr(buffer, '%');
-      if(label == NULL){
-        sscanf(buffer, "%i", &colorbartype);
-        RemapColorbarType(colorbartype, colorbarname);
-      }
-      else{
+      if(label != NULL){
+        update_colorbartype = 1;
         label++;
         TrimBack(label);
         label = TrimFront(label);

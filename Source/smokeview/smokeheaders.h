@@ -720,7 +720,6 @@ EXTERNCPP void DrawColorbarPathRGB(void);
 EXTERNCPP void RemapColorbar(colorbardata *cbi);
 EXTERNCPP void SortColorBars(void);
 EXTERNCPP colorbardata *GetColorbar(char *label);
-EXTERNCPP void RemapColorbarType(int cb_oldtype, char *cb_newname);
 EXTERNCPP void InitOpenGL(int option);
 EXTERNCPP void TextureShowMenu(int value);
 EXTERNCPP void UpdateColorbarBound(void);
