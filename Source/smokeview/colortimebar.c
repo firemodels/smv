@@ -1432,7 +1432,7 @@ void InitDefaultColorbars(int nini){
 
   ndefaultcolorbars+=nlinear_filelist + ncircular_filelist + nrainbow_filelist + ndivergent_filelist + nuser_filelist;
 
-  ndefaultcolorbars+=18;
+  ndefaultcolorbars+=17;
 
   FREEMEMORY(colorbarinfo);
   ncolorbars=ndefaultcolorbars;
@@ -1931,24 +1931,6 @@ void InitDefaultColorbars(int nini){
   strcpy(cbi->ctype, "original");
   cbi++;
 
-  // split
-
-  strcpy(cbi->label, "split");
-
-  cbi->nnodes = 4;
-  cbi->nodehilight = 0;
-
-  cbi->node_index[0] = 0;
-  cbi->node_index[1] = 127;
-  cbi->node_index[2] = 127;
-  cbi->node_index[3] = 255;
-  for(i = 0; i < 12; i++){
-    cbi->node_rgb[i] = colorsplit[i];
-  }
-  strcpy(cbi->ctype, "original");
-  cbi++;
-
-
   // Methanol
 
   strcpy(cbi->label, "Methanol");
@@ -2070,7 +2052,6 @@ void InitDefaultColorbars(int nini){
     }
     cbi->dist_type = COLOR_DIST_LAB;
     RemapColorbar(cbi);
-    UpdateColorbarSplits(cbi);
     memcpy(cbi->node_rgb_orig, cbi->node_rgb, 3 * cbi->nnodes * sizeof(unsigned char));
   }
   UpdateColorbarDialogs();
@@ -2082,20 +2063,6 @@ void InitDefaultColorbars(int nini){
     }
     else{
       cbi->interp = INTERP_CIE;
-    }
-  }
-}
-
-/* ------------------ UpdateColorbarSplits ------------------------ */
-
-void UpdateColorbarSplits(colorbardata *cbi){
-  int i;
-
-  cbi->nsplits=0;
-  for(i=1;i<cbi->nnodes;i++){
-    if(cbi->node_index[i]==cbi->node_index[i-1]){
-      cbi->splits[cbi->nsplits]=i;
-      cbi->nsplits++;
     }
   }
 }

@@ -32,8 +32,6 @@ EXTERNCPP void SetupPlot2DUnitData(void);
 
 EXTERNCPP void TimeAveragePlot2DData(float *times, float *vals, float *vals_avg, int nvals, float time_interval);
 
-EXTERNCPP void SplitCB(int var);
-
 EXTERNCPP void HVACDuctBoundsCPP_CB(int var);
 EXTERNCPP void HVACNodeBoundsCPP_CB(int var);
 EXTERNCPP void SetHVACInfo(void);
@@ -719,7 +717,6 @@ EXTERNCPP void ReloadMenu(int value);
 EXTERNCPP void ColorbarMenu(int val);
 EXTERNCPP void InitDefaultColorbars(int nini);
 EXTERNCPP void DrawColorbarPathRGB(void);
-EXTERNCPP void UpdateColorbarSplits(colorbardata *cbi);
 EXTERNCPP void RemapColorbar(colorbardata *cbi);
 EXTERNCPP void SortColorBars(void);
 EXTERNCPP colorbardata *GetColorbar(char *label);

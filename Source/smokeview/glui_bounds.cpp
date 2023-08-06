@@ -3099,8 +3099,6 @@ GLUI_Rollout *ROLLOUT_particle_settings=NULL;
 GLUI_Rollout *ROLLOUT_particle_histogram = NULL;
 GLUI_Panel *PANEL_keep_bound_data = NULL;
 GLUI_Panel *PANEL_keep_plot3d_data = NULL;
-GLUI_Rollout *ROLLOUT_extreme2 = NULL;
-GLUI_Rollout *ROLLOUT_split = NULL;
 GLUI_Rollout *ROLLOUT_files = NULL;
 GLUI_Panel *PANEL_vector1=NULL, *PANEL_vector2=NULL;
 
@@ -3202,7 +3200,6 @@ GLUI_Spinner *SPINNER_colorbar_selection_width = NULL;
 GLUI_Spinner *SPINNER_labels_transparency_data = NULL;
 GLUI_Spinner *SPINNER_down_red = NULL, *SPINNER_down_green = NULL, *SPINNER_down_blue = NULL;
 GLUI_Spinner *SPINNER_up_red = NULL, *SPINNER_up_green = NULL, *SPINNER_up_blue = NULL;
-GLUI_Spinner *SPINNER_colorsplit[12];
 GLUI_Spinner *SPINNER_valsplit[3];
 
 GLUI_Listbox *LIST_scriptlist=NULL;
@@ -3535,35 +3532,6 @@ extern "C" void ExtremeCB(int var){
     break;
   }
 }
-
-/* ------------------ SplitCB ------------------------ */
-
-extern "C" void SplitCB(int var){
-  int isplit, i;
-  float denom;
-
-  switch(var){
-  case SPLIT_COLORBAR:
-    if(split_colorbar==NULL)break;
-    denom = splitvals[2]-splitvals[0];
-    if(denom==0.0)denom = 1.0;
-    isplit = CLAMP(255*(splitvals[1]-splitvals[0])/denom, 0, 254);
-    split_colorbar->node_index[1] = isplit;
-    split_colorbar->node_index[2] = isplit+1;
-
-    for(i = 0; i<12; i++){
-      split_colorbar->node_rgb[i] = colorsplit[i]&0xFF;
-    }
-    RemapColorbar(split_colorbar);
-    UpdateColorbarSplits(split_colorbar);
-    UpdateRGBColors(COLORBAR_INDEX_NONE);
-    break;
-  default:
-    ASSERT(FFALSE);
-    break;
-  }
-}
-
 
 /* ------------------ UpdateExtremeVals ------------------------ */
 
@@ -5541,18 +5509,9 @@ extern "C" void GluiBoundsSetup(int main_window){
     ColorbarCB(COLORBAR_LISTA);
     ColorbarCB(COLORBAR_LISTB);
     UpdateColorbarBound();
-  PANEL_extreme = glui_bounds->add_panel_to_panel(ROLLOUT_coloring, "", GLUI_PANEL_NONE);
+  PANEL_extreme = glui_bounds->add_panel_to_panel(PANEL_cb11, "Highlight extreme data");
 
-  if(use_data_extremes==1){
-    ROLLOUT_extreme2 = glui_bounds->add_rollout_to_panel(PANEL_extreme, "Highlight extreme data", false);
-    INSERT_ROLLOUT(ROLLOUT_extreme2, glui_bounds);
-  }
-  else{
-    ROLLOUT_extreme2 = glui_bounds->add_rollout_to_panel(PANEL_extreme, "Highlight extreme data (not supported with OpenGL 1.x)", false);
-    INSERT_ROLLOUT(ROLLOUT_extreme2, glui_bounds);
-  }
-
-  PANEL_extreme_min = glui_bounds->add_panel_to_panel(ROLLOUT_extreme2, "", GLUI_PANEL_NONE);
+  PANEL_extreme_min = glui_bounds->add_panel_to_panel(PANEL_extreme, "", GLUI_PANEL_NONE);
   CHECKBOX_show_extreme_mindata = glui_bounds->add_checkbox_to_panel(PANEL_extreme_min, _("Color below min"), &show_extreme_mindata, COLORBAR_EXTREME, ExtremeCB);
 
   SPINNER_down_red = glui_bounds->add_spinner_to_panel(PANEL_extreme_min, _("red"), GLUI_SPINNER_INT, cb_down_rgb, COLORBAR_EXTREME_RGB, ExtremeCB);
@@ -5562,9 +5521,9 @@ extern "C" void GluiBoundsSetup(int main_window){
   SPINNER_down_green->set_int_limits(0, 255);
   SPINNER_down_blue->set_int_limits(0, 255);
 
-  glui_bounds->add_column_to_panel(ROLLOUT_extreme2, false);
+  glui_bounds->add_column_to_panel(PANEL_extreme, false);
 
-  PANEL_extreme_max = glui_bounds->add_panel_to_panel(ROLLOUT_extreme2, "", GLUI_PANEL_NONE);
+  PANEL_extreme_max = glui_bounds->add_panel_to_panel(PANEL_extreme, "", GLUI_PANEL_NONE);
 
   CHECKBOX_show_extreme_maxdata = glui_bounds->add_checkbox_to_panel(PANEL_extreme_max, _("Color above max"), &show_extreme_maxdata, COLORBAR_EXTREME, ExtremeCB);
 
@@ -5576,53 +5535,11 @@ extern "C" void GluiBoundsSetup(int main_window){
   SPINNER_up_blue->set_int_limits(0, 255);
 
   if(use_data_extremes==0){
-    ROLLOUT_extreme2->disable();
     CHECKBOX_show_extreme_maxdata->set_int_val(0);
     CHECKBOX_show_extreme_mindata->set_int_val(0);
     ExtremeCB(COLORBAR_EXTREME_RGB);
   }
   ColorbarGlobal2Local();
-
-  ROLLOUT_split = glui_bounds->add_rollout_to_panel(ROLLOUT_coloring, "Define split colorbar", false);
-  INSERT_ROLLOUT(ROLLOUT_split, glui_bounds);
-  PANEL_split1H = glui_bounds->add_panel_to_panel(ROLLOUT_split, "color below split");
-
-  SPINNER_colorsplit[3] = glui_bounds->add_spinner_to_panel(PANEL_split1H, _("red"), GLUI_SPINNER_INT, colorsplit+3, SPLIT_COLORBAR, SplitCB);
-  SPINNER_colorsplit[4] = glui_bounds->add_spinner_to_panel(PANEL_split1H, _("green"), GLUI_SPINNER_INT, colorsplit+4, SPLIT_COLORBAR, SplitCB);
-  SPINNER_colorsplit[5] = glui_bounds->add_spinner_to_panel(PANEL_split1H, _("blue"), GLUI_SPINNER_INT, colorsplit+5, SPLIT_COLORBAR, SplitCB);
-
-  PANEL_split1L = glui_bounds->add_panel_to_panel(ROLLOUT_split, "min color");
-
-  SPINNER_colorsplit[0] = glui_bounds->add_spinner_to_panel(PANEL_split1L, _("red"), GLUI_SPINNER_INT, colorsplit, SPLIT_COLORBAR, SplitCB);
-  SPINNER_colorsplit[1] = glui_bounds->add_spinner_to_panel(PANEL_split1L, _("green"), GLUI_SPINNER_INT, colorsplit+1, SPLIT_COLORBAR, SplitCB);
-  SPINNER_colorsplit[2] = glui_bounds->add_spinner_to_panel(PANEL_split1L, _("blue"), GLUI_SPINNER_INT, colorsplit+2, SPLIT_COLORBAR, SplitCB);
-
-  glui_bounds->add_column_to_panel(ROLLOUT_split, false);
-
-  PANEL_split2H = glui_bounds->add_panel_to_panel(ROLLOUT_split, "max color");
-
-  SPINNER_colorsplit[9] = glui_bounds->add_spinner_to_panel(PANEL_split2H, _("red"), GLUI_SPINNER_INT, colorsplit+9, SPLIT_COLORBAR, SplitCB);
-  SPINNER_colorsplit[10] = glui_bounds->add_spinner_to_panel(PANEL_split2H, _("green"), GLUI_SPINNER_INT, colorsplit+10, SPLIT_COLORBAR, SplitCB);
-  SPINNER_colorsplit[11] = glui_bounds->add_spinner_to_panel(PANEL_split2H, _("blue"), GLUI_SPINNER_INT, colorsplit+11, SPLIT_COLORBAR, SplitCB);
-
-  PANEL_split2L = glui_bounds->add_panel_to_panel(ROLLOUT_split, "color above split");
-
-  SPINNER_colorsplit[6] = glui_bounds->add_spinner_to_panel(PANEL_split2L, _("red"), GLUI_SPINNER_INT, colorsplit+6, SPLIT_COLORBAR, SplitCB);
-  SPINNER_colorsplit[7] = glui_bounds->add_spinner_to_panel(PANEL_split2L, _("green"), GLUI_SPINNER_INT, colorsplit+7, SPLIT_COLORBAR, SplitCB);
-  SPINNER_colorsplit[8] = glui_bounds->add_spinner_to_panel(PANEL_split2L, _("blue"), GLUI_SPINNER_INT, colorsplit+8, SPLIT_COLORBAR, SplitCB);
-
-  glui_bounds->add_column_to_panel(ROLLOUT_split, false);
-
-  PANEL_split3 = glui_bounds->add_panel_to_panel(ROLLOUT_split, "vals");
-
-  glui_bounds->add_spinner_to_panel(PANEL_split3, _("max"), GLUI_SPINNER_FLOAT, splitvals+2, SPLIT_COLORBAR, SplitCB);
-  glui_bounds->add_spinner_to_panel(PANEL_split3, _("split"), GLUI_SPINNER_FLOAT, splitvals+1, SPLIT_COLORBAR, SplitCB);
-  glui_bounds->add_spinner_to_panel(PANEL_split3, _("min"), GLUI_SPINNER_FLOAT, splitvals, SPLIT_COLORBAR, SplitCB);
-
-  for(i = 0; i<12; i++){
-    SPINNER_colorsplit[i]->set_int_limits(0, 255);
-  }
-  SplitCB(SPLIT_COLORBAR);
 
   // ----------------------------------- Memory check ----------------------------------------
 

@@ -195,7 +195,6 @@ extern "C" void ColorbarCB(int var){
       cbi->node_index[colorbarpoint] = cb_colorindex;
 
       ColorbarGlobal2Local();
-      UpdateColorbarSplits(current_colorbar);
       RemapColorbar(cbi);
       UpdateRGBColors(COLORBAR_INDEX_NONE);
     }
@@ -264,7 +263,6 @@ extern "C" void ColorbarCB(int var){
     }
 
     ColorbarGlobal2Local();
-    UpdateColorbarSplits(current_colorbar);
     RemapColorbar(cbi);
     UpdateRGBColors(COLORBAR_INDEX_NONE);
 
@@ -287,8 +285,6 @@ extern "C" void ColorbarCB(int var){
       rgb1[2] = rgb2_local[2];
     }
     cbi->nnodes--;
-    //UpdateColorbarSplits(current_colorbar);
-    UpdateColorbarSplits(cbi);
     RemapColorbar(cbi);
     UpdateRGBColors(COLORBAR_INDEX_NONE);
     if(colorbarpoint == cbi->nnodes)colorbarpoint = cbi->nnodes - 1;
@@ -380,7 +376,6 @@ extern "C" void ColorbarCB(int var){
     if(colorbartype < 0 || colorbartype >= ncolorbars)return;
     colorbartype = AddColorbar(colorbartype);
     UpdateCurrentColorbar(colorbarinfo + colorbartype);
-    UpdateColorbarSplits(current_colorbar);
     ColorbarCB(COLORBAR_LIST);
     break;
   case COLORBAR_NEW:

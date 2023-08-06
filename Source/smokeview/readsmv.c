@@ -12093,27 +12093,6 @@ int ReadIni2(char *inifile, int localfile){
       vis_ztree = CLAMP(vis_ztree, 0, 1);
       continue;
     }
-    if(MatchINI(buffer, "COLORBAR_SPLIT") == 1){
-      int ii;
-
-      fgets(buffer, 255, stream);
-      sscanf(buffer, " %i %i %i %i %i %i ", colorsplit    , colorsplit + 1, colorsplit + 2, colorsplit + 3, colorsplit +  4, colorsplit +  5);
-      fgets(buffer, 255, stream);
-      sscanf(buffer, " %i %i %i %i %i %i ", colorsplit + 6, colorsplit + 7, colorsplit + 8, colorsplit + 9, colorsplit + 10, colorsplit + 11);
-      fgets(buffer, 255, stream);
-      sscanf(buffer, " %f %f %f ", splitvals, splitvals + 1, splitvals + 2);
-
-      for(ii=0;ii<12;ii++){
-        colorsplit[ii] = CLAMP(colorsplit[ii],0,255);
-      }
-      if(scriptinfo==NULL){
-        update_splitcolorbar = 1;
-      }
-      else{
-        SplitCB(SPLIT_COLORBAR);
-      }
-      continue;
-    }
     if(MatchINI(buffer, "SHOWGRAVVECTOR") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, " %i", &showgravity_vector);
@@ -14839,7 +14818,6 @@ int ReadIni2(char *inifile, int localfile){
             cbi->node_rgb[nn + 2] = b1;
           }
           RemapColorbar(cbi);
-          UpdateColorbarSplits(cbi);
           UpdateColorbarDialogs();
         }
 
@@ -16325,10 +16303,6 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout," %f %f %f :black  \n",rgb2[7][0],rgb2[7][1],rgb2[7][2]);
   fprintf(fileout, "COLORBAR_FLIP\n");
   fprintf(fileout, " %i %i\n", colorbar_flip,colorbar_autoflip);
-  fprintf(fileout, "COLORBAR_SPLIT\n");
-  fprintf(fileout, " %i %i %i %i %i %i\n", colorsplit[0], colorsplit[1], colorsplit[2], colorsplit[3], colorsplit[4], colorsplit[5]);
-  fprintf(fileout, " %i %i %i %i %i %i\n", colorsplit[6], colorsplit[7], colorsplit[8], colorsplit[9], colorsplit[10], colorsplit[11]);
-  fprintf(fileout, " %f %f %f\n", splitvals[0], splitvals[1], splitvals[2]);
   fprintf(fileout,"CO2COLOR\n");
   fprintf(fileout," %i %i %i\n", co2_color_int255[0],co2_color_int255[1],co2_color_int255[2]);
   fprintf(fileout, "DIRECTIONCOLOR\n");

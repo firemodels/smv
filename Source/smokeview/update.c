@@ -1986,10 +1986,6 @@ void UpdateShowScene(void){
     Smoke3dCB(UPDATE_SMOKEFIRE_COLORS2);
     Smoke3dCB(USE_OPACITY_DEPTH);
   }
-  if(update_splitcolorbar==1){
-    SplitCB(SPLIT_COLORBAR);
-    update_splitcolorbar = 0;
-  }
   if(update_generate_part_histograms==1){
     update_generate_part_histograms = 0;
     GeneratePartHistogramsMT();

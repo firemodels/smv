@@ -284,11 +284,10 @@ typedef struct _treedata {
 typedef struct _colorbardata {
   char label[1024];        // menu label
   char ctype[256];
-  int nnodes,nodehilight,nsplits,type;
+  int nnodes,nodehilight,type;
   unsigned char node_rgb_orig[3*1024], node_rgb[3*1024];
   unsigned char alpha[1024];
   unsigned char node_index[1024];  // colorbar index
-  unsigned char splits[1024];
   int nnodes_orig, node_index_orig[1024];
   float node_lab[3*1024], node_dist[1024];
   float dist[256];
