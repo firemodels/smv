@@ -3311,6 +3311,7 @@ GLUI_RadioButton *RADIOBUTTON_zone_permax=NULL;
 #define COLORBAR_EXTREME_RGB  15
 #define COLORBAR_EXTREME      16
 // #define SPLIT_COLORBAR         1 now defined in smokeviewdefs.h
+#define COLORBAR_SHOWSPLIT    17
 
 //*** boundprocinfo entries
 #define ZONE_ROLLOUT     0
@@ -3486,6 +3487,12 @@ extern "C" void SplitCB(int var){
   float denom;
 
   switch(var){
+  case COLORBAR_SHOWSPLIT:
+    LISTBOX_colorbar_bound->set_int_val(split_colorbar_index);
+    SliceBoundCB(COLORBAR_LIST2);
+    visColorbarVertical = 1;
+    updatemenu = 1;
+    break;
   case SPLIT_COLORBAR:
     if(split_colorbar == NULL)break;
     denom = splitvals[2] - splitvals[0];
@@ -5577,7 +5584,7 @@ extern "C" void GluiBoundsSetup(int main_window){
   SPINNER_colorsplit[4] = glui_bounds->add_spinner_to_panel(PANEL_split1H, _("green"), GLUI_SPINNER_INT, colorsplit+7, SPLIT_COLORBAR, SplitCB);
   SPINNER_colorsplit[5] = glui_bounds->add_spinner_to_panel(PANEL_split1H, _("blue"),  GLUI_SPINNER_INT, colorsplit+8, SPLIT_COLORBAR, SplitCB);
 
-  PANEL_split1L = glui_bounds->add_panel_to_panel(ROLLOUT_split, "min color");
+  PANEL_split1L = glui_bounds->add_panel_to_panel(ROLLOUT_split, "color at min");
 
   SPINNER_colorsplit[0] = glui_bounds->add_spinner_to_panel(PANEL_split1L, _("red"),   GLUI_SPINNER_INT, colorsplit,   SPLIT_COLORBAR, SplitCB);
   SPINNER_colorsplit[1] = glui_bounds->add_spinner_to_panel(PANEL_split1L, _("green"), GLUI_SPINNER_INT, colorsplit+1, SPLIT_COLORBAR, SplitCB);
@@ -5585,7 +5592,7 @@ extern "C" void GluiBoundsSetup(int main_window){
 
   glui_bounds->add_column_to_panel(ROLLOUT_split, false);
 
-  PANEL_split2H = glui_bounds->add_panel_to_panel(ROLLOUT_split, "max color");
+  PANEL_split2H = glui_bounds->add_panel_to_panel(ROLLOUT_split, "color at max");
 
   SPINNER_colorsplit[9]  = glui_bounds->add_spinner_to_panel(PANEL_split2H, _("red"),   GLUI_SPINNER_INT, colorsplit+9,  SPLIT_COLORBAR, SplitCB);
   SPINNER_colorsplit[10] = glui_bounds->add_spinner_to_panel(PANEL_split2H, _("green"), GLUI_SPINNER_INT, colorsplit+10, SPLIT_COLORBAR, SplitCB);
@@ -5601,9 +5608,10 @@ extern "C" void GluiBoundsSetup(int main_window){
 
   PANEL_split3 = glui_bounds->add_panel_to_panel(ROLLOUT_split, "vals");
 
-  glui_bounds->add_spinner_to_panel(PANEL_split3, _("max"),   GLUI_SPINNER_FLOAT, splitvals+2, SPLIT_COLORBAR, SplitCB);
+  glui_bounds->add_spinner_to_panel(PANEL_split3, _("max val"),   GLUI_SPINNER_FLOAT, splitvals+2, SPLIT_COLORBAR, SplitCB);
   glui_bounds->add_spinner_to_panel(PANEL_split3, _("split val"), GLUI_SPINNER_FLOAT, splitvals+1, SPLIT_COLORBAR, SplitCB);
-  glui_bounds->add_spinner_to_panel(PANEL_split3, _("min"),   GLUI_SPINNER_FLOAT, splitvals,   SPLIT_COLORBAR, SplitCB);
+  glui_bounds->add_spinner_to_panel(PANEL_split3, _("min val"),   GLUI_SPINNER_FLOAT, splitvals,   SPLIT_COLORBAR, SplitCB);
+  glui_bounds->add_button_to_panel(ROLLOUT_split, _("Show split colorbar"), COLORBAR_SHOWSPLIT, SplitCB);
 
   for(i = 0; i<12; i++){
     SPINNER_colorsplit[i]->set_int_limits(0, 255);

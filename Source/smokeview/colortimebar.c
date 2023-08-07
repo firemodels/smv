@@ -1231,8 +1231,10 @@ void SortColorBars(void){
   cb = GetColorbar("fire line (level set)");
   levelset_colorbar=cb-colorbarinfo;
 
+  split_colorbar_index = -1;
   cb = GetColorbar("split");
   split_colorbar=cb;
+  if(cb != NULL)split_colorbar_index = cb - colorbarinfo;
 
   cb = GetColorbar("CO2");
   co2_colorbar_index = cb - colorbarinfo;
