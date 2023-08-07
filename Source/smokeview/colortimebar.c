@@ -956,6 +956,18 @@ void GetColorDist(colorbardata *cbi, int option, float *min, float *max){
 
 /* ------------------ RemapColorbar ------------------------ */
 
+unsigned char SetAlpha(unsigned char *node_rgb){
+  if(
+    (node_rgb[0] ==   0 && node_rgb[1] ==   1 && node_rgb[2] ==   2) ||
+    (node_rgb[0] == 253 && node_rgb[1] == 254 && node_rgb[2] == 255)
+    ){
+    return 0;
+  }
+  return 255;
+}
+
+/* ------------------ RemapColorbar ------------------------ */
+
 void RemapColorbar(colorbardata *cbi){
   int i;
   float *colorbar_rgb;
@@ -975,7 +987,7 @@ void RemapColorbar(colorbardata *cbi){
     colorbar_rgb[0+3*i]=node_rgb[0]/255.0;
     colorbar_rgb[1+3*i]=node_rgb[1]/255.0;
     colorbar_rgb[2+3*i]=node_rgb[2]/255.0;
-    alpha_rgb[i]=255;
+    alpha_rgb[i] = SetAlpha(node_rgb);
   }
   for(i=0;i<cbi->nnodes-1;i++){
     int i1,i2,j;
@@ -1013,7 +1025,7 @@ void RemapColorbar(colorbardata *cbi){
         colorbar_rgb[1+3*j]=MIX(factor,node_rgb[4],node_rgb[1])/255.0;
         colorbar_rgb[2+3*j]=MIX(factor,node_rgb[5],node_rgb[2])/255.0;
       }
-      alpha_rgb[j]=255;
+      alpha_rgb[j]=SetAlpha(node_rgb);
     }
   }
   node_rgb = cbi->node_rgb+3*(cbi->nnodes-1);
@@ -1021,7 +1033,7 @@ void RemapColorbar(colorbardata *cbi){
     colorbar_rgb[0+3*i]=node_rgb[0]/255.0;
     colorbar_rgb[1+3*i]=node_rgb[1]/255.0;
     colorbar_rgb[2+3*i]=node_rgb[2]/255.0;
-    alpha_rgb[i]=255;
+    alpha_rgb[i]=SetAlpha(node_rgb);
   }
   if(show_extreme_mindata==1){
     colorbar_rgb[0]=rgb_below_min[0];
