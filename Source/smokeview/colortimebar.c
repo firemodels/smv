@@ -1335,7 +1335,7 @@ void InitDefaultColorbars(int nini){
 
   ndefaultcolorbars+=nlinear_filelist + ncircular_filelist + nrainbow_filelist + ndivergent_filelist + nuser_filelist;
 
-  ndefaultcolorbars+=17;
+  ndefaultcolorbars+=18;
 
   FREEMEMORY(colorbarinfo);
   ncolorbars=ndefaultcolorbars;
@@ -1831,6 +1831,23 @@ void InitDefaultColorbars(int nini){
   cbi->node_rgb[9]=253;
   cbi->node_rgb[10]=254;
   cbi->node_rgb[11]=255;
+  strcpy(cbi->colorbar_type, "original");
+  cbi++;
+
+  // split
+
+  strcpy(cbi->menu_label, "split");
+
+  cbi->nnodes = 4;
+  cbi->nodehilight = 0;
+
+  cbi->node_index[0] = 0;
+  cbi->node_index[1] = 127;
+  cbi->node_index[2] = 127;
+  cbi->node_index[3] = 255;
+  for(i = 0; i < 12; i++){
+    cbi->node_rgb[i] = colorsplit[i];
+  }
   strcpy(cbi->colorbar_type, "original");
   cbi++;
 

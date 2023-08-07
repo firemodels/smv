@@ -60,6 +60,7 @@ SVEXTERN int SVDECL(histogram_nframes, 40);
 SVEXTERN int SVDECL(glui_surf_index, 0);
 SVEXTERN int SVDECL(clip_commandline, 0), SVDECL(special_modifier, 0);
 SVEXTERN int SVDECL(update_slicexyz, 0);
+SVEXTERN int SVDECL(update_splitcolorbar, 0);
 SVEXTERN int SVDECL(slice_plot_bound_option, 1);
 #ifdef INMAIN
 SVEXTERN float obst_bounding_box[6] = {1.0,0.0,1.0,0.0,1.0,0.0};
@@ -564,6 +565,11 @@ SVEXTERN colorbardata SVDECL(*split_colorbar, NULL);
 SVEXTERN float splitvals[3]={-1.0,0.0,1.0};
 #else
 SVEXTERN float splitvals[3];
+#endif
+#ifdef INMAIN
+SVEXTERN int colorsplit[12] = {0,0,0,  64,64,255,  0,192,0,  255,0,0};
+#else
+SVEXTERN int colorsplit[12];
 #endif
 
 SVEXTERN int SVDECL(show_zlevel, 0);
