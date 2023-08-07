@@ -416,7 +416,7 @@ extern "C" void Glui3dSmokeSetup(int main_window){
       colorbardata *cbi;
 
       cbi = colorbarinfo + i;
-      LISTBOX_smoke_colorbar->add_item(i, cbi->label);
+      LISTBOX_smoke_colorbar->add_item(i, cbi->menu_label);
     }
     LISTBOX_smoke_colorbar->set_int_val(fire_colorbar_index);
     glui_3dsmoke->add_column_to_panel(PANEL_colormap3,false);
@@ -497,7 +497,7 @@ extern "C" void Glui3dSmokeSetup(int main_window){
         colorbardata *cbi;
 
         cbi = colorbarinfo+i;
-        LISTBOX_co2_colorbar->add_item(i, cbi->label);
+        LISTBOX_co2_colorbar->add_item(i, cbi->menu_label);
       }
       LISTBOX_co2_colorbar->set_int_val(co2_colorbar_index);
     }

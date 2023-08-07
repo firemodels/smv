@@ -205,7 +205,7 @@ extern "C" void ColorbarCB(int var){
 
       cbi = colorbarinfo + colorbartype;
       clabel = EDITTEXT_colorbar_label->get_text();
-      strcpy(cbi->label, clabel);
+      strcpy(cbi->menu_label, clabel);
       LISTBOX_colorbar_edit->delete_item(colorbartype);
       LISTBOX_colorbar_edit->add_item(colorbartype, colorbar_label);
       int save;
@@ -418,7 +418,7 @@ extern "C" void ColorbarCB(int var){
       ncolorbars--;
       for(i = colorbartype;i < ncolorbars;i++){
         cbi = colorbarinfo + i;
-        LISTBOX_colorbar_edit->add_item(i, cbi->label);
+        LISTBOX_colorbar_edit->add_item(i, cbi->menu_label);
       }
       if(colorbartype == ncolorbars)colorbartype--;
       LISTBOX_colorbar_edit->set_int_val(0);
@@ -443,7 +443,7 @@ void AddColorbarListEdit(GLUI_Listbox *LIST_cbar, int index, char *label_arg, in
     colorbardata *cbi;
 
     cbi = colorbarinfo + i;
-    if(strcmp(cbi->ctype, label_arg) != 0)continue;
+    if(strcmp(cbi->colorbar_type, label_arg) != 0)continue;
     nitems++;
     break;
   }
@@ -456,8 +456,8 @@ void AddColorbarListEdit(GLUI_Listbox *LIST_cbar, int index, char *label_arg, in
     colorbardata *cbi;
 
     cbi = colorbarinfo + colorbar_list_sorted[i];
-    if(strcmp(cbi->ctype, label_arg) != 0)continue;
-    LIST_cbar->add_item(colorbar_list_sorted[i], cbi->label);
+    if(strcmp(cbi->colorbar_type, label_arg) != 0)continue;
+    LIST_cbar->add_item(colorbar_list_sorted[i], cbi->menu_label);
     *max_index = MAX(colorbar_list_sorted[i], *max_index);
   }
 }
@@ -652,7 +652,7 @@ extern "C" void ColorbarGlobal2Local(void){
   BUTTON_node_next->enable();
   BUTTON_node_prev->enable();
 
-  strcpy(colorbar_label,cbi->label);
+  strcpy(colorbar_label,cbi->menu_label);
   EDITTEXT_colorbar_label->set_text(colorbar_label);
   icolorbar=LISTBOX_colorbar_edit->get_int_val();
 
