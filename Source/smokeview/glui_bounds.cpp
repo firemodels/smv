@@ -4583,7 +4583,7 @@ void AddColorbarListBound(GLUI_Listbox *LIST_cbar, int index, char *label_arg, i
     colorbardata *cbi;
 
     cbi = colorbarinfo + i;
-    if(strcmp(cbi->ctype, label_arg) != 0)continue;
+    if(strcmp(cbi->colorbar_type, label_arg) != 0)continue;
     nitems++;
   }
   if(nitems == 0)return;
@@ -4595,8 +4595,8 @@ void AddColorbarListBound(GLUI_Listbox *LIST_cbar, int index, char *label_arg, i
     colorbardata *cbi;
 
     cbi = colorbarinfo + colorbar_list_sorted[i];
-    if(strcmp(cbi->ctype, label_arg) != 0)continue;
-    LIST_cbar->add_item(colorbar_list_sorted[i], cbi->label);
+    if(strcmp(cbi->colorbar_type, label_arg) != 0)continue;
+    LIST_cbar->add_item(colorbar_list_sorted[i], cbi->menu_label);
     *max_index = MAX(colorbar_list_sorted[i], *max_index);
   }
 }
@@ -4989,7 +4989,7 @@ extern "C" void GluiBoundsSetup(int main_window){
         colorbardata *cbi;
 
         cbi = colorbarinfo+i;
-        LIST_iso_colorbar->add_item(i, cbi->label);
+        LIST_iso_colorbar->add_item(i, cbi->menu_label);
       }
       LIST_iso_colorbar->set_int_val(iso_colorbar_index);
       IsoBoundCB(ISO_COLORBAR_LIST);

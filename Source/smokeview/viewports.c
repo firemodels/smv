@@ -1152,7 +1152,7 @@ void ViewportSlicePlot(int quad, GLint screen_left, GLint screen_down) {
     position = 0;
 
     cbi = colorbarinfo + colorbartype;
-    strcpy(label, cbi->label);
+    strcpy(label, cbi->menu_label);
     strcat(label, "/CIE delta");
 
     for(i=0;i<255;i++){
@@ -1329,10 +1329,10 @@ void ViewportTimebar(int quad, GLint screen_left, GLint screen_down) {
       float *colors;
       int icolor;
 
-      if(strcmp(fire_colorbar->label, "fire") == 0){
+      if(strcmp(fire_colorbar->menu_label, "fire") == 0){
         icolor = 192;
       }
-      else if(strcmp(fire_colorbar->label, "fire 2") == 0){
+      else if(strcmp(fire_colorbar->menu_label, "fire 2") == 0){
         icolor = 128 + 127*(global_hrrpuv_cutoff - global_hrrpuv_min) / (global_hrrpuv_max - global_hrrpuv_min);
         icolor = CLAMP((icolor + 1), 0, 255);
       }

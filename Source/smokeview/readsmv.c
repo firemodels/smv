@@ -14788,9 +14788,9 @@ int ReadIni2(char *inifile, int localfile){
           fgets(buffer, 255, stream);
           TrimBack(buffer);
           cb_buffptr = TrimFront(buffer);
-          strcpy(cbi->label, cb_buffptr);
+          strcpy(cbi->menu_label, cb_buffptr);
           cbi->type = CB_USER;
-          strcpy(cbi->ctype, "user defined");
+          strcpy(cbi->colorbar_type, "user defined");
           cbi->interp = INTERP_CIE;
 
           fgets(buffer, 255, stream);
@@ -16891,7 +16891,7 @@ void WriteIni(int flag,char *filename){
     cb = colorbarinfo + colorbartype;
     strcpy(percen, "%");
     fprintf(fileout, "COLORBARTYPE\n");
-    fprintf(fileout, " %i %s %s \n", colorbartype, percen, cb->label);
+    fprintf(fileout, " %i %s %s \n", colorbartype, percen, cb->menu_label);
   }
   fprintf(fileout, "CO2COLORMAP\n");
   fprintf(fileout, " %i %i\n", co2_colormap_type, co2_colorbar_index);
@@ -16921,7 +16921,7 @@ void WriteIni(int flag,char *filename){
     fprintf(fileout, " %i\n", ncolorbars - ndefaultcolorbars);
     for(n = ndefaultcolorbars; n < ncolorbars; n++){
       cbi = colorbarinfo + n;
-      fprintf(fileout, " %s\n", cbi->label);
+      fprintf(fileout, " %s\n", cbi->menu_label);
       fprintf(fileout, " %i %i\n", cbi->nnodes, cbi->nodehilight);
       for(i = 0; i < cbi->nnodes; i++){
         rrgb = cbi->node_rgb + 3 * i;

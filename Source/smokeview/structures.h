@@ -282,8 +282,8 @@ typedef struct _treedata {
 #define COLOR_DIST_L   0
 #define COLOR_DIST_LAB 1
 typedef struct _colorbardata {
-  char label[1024];        // menu label
-  char ctype[256];
+  char menu_label[1024];        // menu label
+  char colorbar_type[256];      // rainbow, linear, divergent, etc
   int nnodes, nnodes_orig, node_index_orig[1024], nodehilight, type;
   unsigned char node_rgb_orig[3*1024], node_rgb[3*1024], colorbar_alpha[1024];
   unsigned char node_index[1024];  // colorbar index
