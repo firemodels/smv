@@ -1144,7 +1144,7 @@ void UpdateSmokeColormap(int option){
 
   if(use_transparency_data==1)transparent_level_local=transparent_level;
 
-  alpha_rgb = colorbarinfo[colorbartype].alpha_rgb;
+  alpha_rgb = colorbarinfo[colorbartype].colorbar_alpha;
   fire_cb = colorbarinfo[fire_colorbar_index].colorbar_rgb;
 
   switch(fire_colormap_type){
@@ -1262,7 +1262,7 @@ void UpdateRGBColors(int colorbar_index){
 
     cbi = colorbarinfo + colorbartype;
 
-    alpha_rgb = colorbarinfo[colorbartype].alpha_rgb;
+    alpha_rgb = colorbarinfo[colorbartype].colorbar_alpha;
     for(n=0;n<nrgb_full;n++){
       rgb_full[n][0]=cbi->colorbar_rgb[3*n];
       rgb_full[n][1]=cbi->colorbar_rgb[3*n+1];
