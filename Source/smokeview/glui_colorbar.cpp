@@ -592,7 +592,7 @@ extern "C" void GluiColorbarSetup(int main_window){
   PANEL_cb_display = glui_colorbar->add_panel("Display");
   RADIO_colorbar_coord_type = glui_colorbar->add_radiogroup_to_panel(PANEL_cb_display,&colorbar_coord_type);
   glui_colorbar->add_radiobutton_to_group(RADIO_colorbar_coord_type, "rgb");
-  glui_colorbar->add_radiobutton_to_group(RADIO_colorbar_coord_type, "CIELab");
+  glui_colorbar->add_radiobutton_to_group(RADIO_colorbar_coord_type, "Lab");
   glui_colorbar->add_checkbox_to_panel(PANEL_cb_display,"Show CIELab equal distance bars", &show_Lab_dist_bars);
   PANEL_cb14 = glui_colorbar->add_panel_to_panel(PANEL_cb_display,"", GLUI_PANEL_NONE);
   glui_colorbar->add_button_to_panel(PANEL_cb14, "Equal Lab distance",    COLORBAR_ADJUST_LAB, ColorbarCB);
