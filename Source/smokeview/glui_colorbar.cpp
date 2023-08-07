@@ -381,7 +381,9 @@ extern "C" void ColorbarCB(int var){
   case COLORBAR_NEW:
     colorbartype = bw_colorbar_index;
     ColorbarCB(COLORBAR_COPY);
-    EDITTEXT_colorbar_label->set_text("new");
+    char newlabel[sizeof(GLUI_String)];
+    strcpy(newlabel, "new");
+    EDITTEXT_colorbar_label->set_text(newlabel);
     ColorbarCB(COLORBAR_LABEL);
     UpdateColorbarType();
     break;
