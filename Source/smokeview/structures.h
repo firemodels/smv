@@ -1606,7 +1606,7 @@ typedef struct _smoke3ddata {
   int *nchars_compressed_smoke, *nchars_compressed_smoke_full;
 #ifdef pp_SMOKE16
   unsigned short *val16s;
-  float *val16_mins, *val16_maxs;
+  float *val16_mins, *val16_maxs, *times16;
 #endif
   float maxval;
   unsigned char *smokeframe_in, *smokeframe_out, **smokeframe_comp_list;

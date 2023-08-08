@@ -3808,7 +3808,6 @@ void SmokeWrapup(void){
   Smoke3dCB(UPDATE_SMOKEFIRE_COLORS);
   smoke_render_option = RENDER_SLICE;
   update_fire_alpha = 1;
-#define USE_OPACITY_MULTIPLIER 94
   have_fire  = HaveFireLoaded();
   have_smoke = HaveSootLoaded();
   Smoke3dCB(USE_OPACITY_MULTIPLIER);
@@ -3832,8 +3831,14 @@ void ReadSmoke16(smoke3ddata *smoke3di, int flag){
   int sizebuffer;
   unsigned short *val16s;
   int nframes;
-  float *times, *val16_mins, *val16_maxs;
+  float *times16, *val16_mins, *val16_maxs;
   int i;
+
+  FREEMEMORY(smoke3di->val16s);
+  FREEMEMORY(smoke3di->times16);
+  FREEMEMORY(smoke3di->val16_mins);
+  FREEMEMORY(smoke3di->val16_maxs);
+  if(flag == UNLOAD)return;
 
   stream = fopen(smoke3di->s16_file, "rb");
   if(stream == NULL)return;
@@ -3841,17 +3846,19 @@ void ReadSmoke16(smoke3ddata *smoke3di, int flag){
   ibarp1 = vals[3];
   jbarp1 = vals[4];
   kbarp1 = vals[5];
-  sizebuffer = ibarp1 * jbarp1 * kbarp1;
+  sizebuffer = ibarp1*jbarp1*kbarp1;
   file_size = GetFileSizeSMV(smoke3di->s16_file);
-  nframes = (file_size - 32) / (12 + 8 + sizebuffer * sizeof(unsigned short));
+  // header size: 8 + 6*4
+  // frame size 8+4 (time) + 8+sizebuffer*sizeof(unsigned short) (data size)
+  nframes = (file_size - (8+6*4)) / (8+4 + 8+sizebuffer*sizeof(unsigned short));
   NewMemory((void **)&val16s, nframes * sizebuffer * sizeof(unsigned short));
-  NewMemory((void **)&times, nframes * sizeof(float));
+  NewMemory((void **)&times16, nframes * sizeof(float));
   NewMemory((void **)&val16_mins, nframes * sizeof(float));
   NewMemory((void **)&val16_maxs, nframes * sizeof(float));
-  smoke3di->times = times;
+  smoke3di->times16    = times16;
   smoke3di->val16_mins = val16_mins;
   smoke3di->val16_maxs = val16_maxs;
-  smoke3di->val16s = val16s;
+  smoke3di->val16s     = val16s;
 
   for(i = 0;i < nframes;i++){
     float time;
@@ -3864,9 +3871,9 @@ void ReadSmoke16(smoke3ddata *smoke3di, int flag){
     FORTREAD(buffer4, 1, 16, stream);
     float valmin, valmax;
 
-    memcpy(&valmin, buffer4 + 8, sizeof(float));
+    memcpy(&valmin, buffer4 + 8,  sizeof(float));
     memcpy(&valmax, buffer4 + 12, sizeof(float));
-    times[i] = time;
+    times16[i] = time;
     val16_mins[i] = valmin;
     val16_maxs[i] = valmax;
     FORTREAD(val16s, 2, sizebuffer, stream);

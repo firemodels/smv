@@ -555,6 +555,8 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 #define LOCAL_INI  2
 #define SCRIPT_INI 3
 
+#define USE_OPACITY_MULTIPLIER 94
+
 #define RESTORE_EXTERIOR_VIEW      0
 #define SAVE_VIEW                  3
 #define TOGGLE_TITLE_SAFE          5
