@@ -18,6 +18,8 @@
 #define pp_PART_MULTI         // load particle files in parallel
 #define pp_CSV_MULTI          // read in csv files in parallel
 
+//#define pp_SMOKE16            // load 16 bit smoke files
+
 //#define pp_COLOR_HIDE         // add checkbox to hide/unhide scene when editing a colorbar
 #define pp_COLOR_PLOT2D     // add option to plot CIELab distances
 

@@ -573,6 +573,10 @@ SVEXTERN int colorsplit[12] = {0,0,0,  64,64,255,  0,192,0,  255,0,0};
 SVEXTERN int colorsplit[12];
 #endif
 
+#ifdef pp_SMOKE16
+SVEXTERN int SVDECL(load_smoke16, 0);
+SVEXTERN int SVDECL(have_smoke16, 0);
+#endif
 SVEXTERN int SVDECL(show_zlevel, 0);
 SVEXTERN float terrain_zlevel;
 SVEXTERN float terrain_zmin, terrain_zmax;

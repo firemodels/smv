@@ -98,6 +98,10 @@ GLUI_Checkbox *CHECKBOX_use_fire_colormap = NULL;
 GLUI_Checkbox *CHECKBOX_use_fire_rgb = NULL;
 GLUI_Checkbox *CHECKBOX_use_co2_rgb = NULL;
 GLUI_Checkbox *CHECKBOX_smoke_flip=NULL;
+GLUI_Checkbox *CHECKBOX_load_parallel=NULL;
+#ifdef pp_SMOKE16
+GLUI_Checkbox *CHECKBOX_load_smoke16=NULL;
+#endif
 GLUI_Checkbox *CHECKBOX_smoke_getvals=NULL;
 GLUI_Checkbox *CHECKBOX_update_smokeplanes = NULL;
 GLUI_Checkbox *CHECKBOX_plane_single = NULL;
@@ -207,6 +211,14 @@ extern "C" void UpdateFireColorbarList(void){
 extern "C" void UpdateBackgroundFlip2(int flip) {
   if(CHECKBOX_smoke_flip!=NULL)CHECKBOX_smoke_flip->set_int_val(flip);
 }
+
+/* ------------------ UpdateSmoke16 ------------------------ */
+
+#ifdef pp_SMOKE16
+extern "C" void UpdateSmoke16(void) {
+  if(CHECKBOX_load_smoke16 != NULL)CHECKBOX_load_smoke16->set_int_val(load_smoke16);
+}
+#endif
 
 /* ------------------ UpdateFreeze ------------------------ */
 
@@ -350,11 +362,15 @@ extern "C" void Glui3dSmokeSetup(int main_window){
   CHECKBOX_smokeGPU=glui_3dsmoke->add_checkbox_to_panel(PANEL_overall,_("Use GPU"),&usegpu,VOL_SMOKE,Smoke3dCB);
 #endif
   glui_3dsmoke->add_checkbox_to_panel(PANEL_overall, _("max blending"), &hrrpuv_max_blending);
-  CHECKBOX_smoke_flip = glui_3dsmoke->add_checkbox_to_panel(PANEL_overall, _("flip background"), &background_flip,BACKGROUND_FLIP, Smoke3dCB);
-  CHECKBOX_smoke_flip = glui_3dsmoke->add_checkbox_to_panel(PANEL_overall, _("load in parallel"), &use_smoke_thread);
+  CHECKBOX_smoke_flip    = glui_3dsmoke->add_checkbox_to_panel(PANEL_overall, _("flip background"), &background_flip,BACKGROUND_FLIP, Smoke3dCB);
+  CHECKBOX_load_parallel = glui_3dsmoke->add_checkbox_to_panel(PANEL_overall, _("load in parallel"), &use_smoke_thread);
+#ifdef pp_SMOKE16
+  if(have_smoke16 == 1){
+    CHECKBOX_load_smoke16       = glui_3dsmoke->add_checkbox_to_panel(PANEL_overall, _("load 16 bit files"), &load_smoke16, SMOKE_16, Smoke3dCB);
+  }
+#endif
   SPINNER_smoke3d_threads = glui_3dsmoke->add_spinner_to_panel(PANEL_overall, _("threads"), GLUI_SPINNER_INT, &nsmoke_threads);
   SPINNER_smoke3d_threads->set_int_limits(1, 16);
-
 
   if(active_smokesensors==1){
     PANEL_smokesensor = glui_3dsmoke->add_panel_to_panel(PANEL_overall,_("Visibility"));
@@ -805,6 +821,11 @@ extern "C" void Smoke3dCB(int var){
     ShowHideMenu(MENU_SHOWHIDE_FLIP);
     updatemenu = 1;
     break;
+#ifdef pp_SMOKE16
+  case SMOKE_16:
+    updatemenu = 1;
+    break;
+#endif
   case SMOKE_BLACK:
     break;
   case SMOKE_SKIP:
