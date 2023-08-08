@@ -5606,7 +5606,7 @@ extern "C" void GluiBoundsSetup(int main_window){
 
   glui_bounds->add_column_to_panel(ROLLOUT_split, false);
 
-  PANEL_split3 = glui_bounds->add_panel_to_panel(ROLLOUT_split, "vals");
+  PANEL_split3 = glui_bounds->add_panel_to_panel(ROLLOUT_split, "set split location");
 
   glui_bounds->add_spinner_to_panel(PANEL_split3, _("max val"),   GLUI_SPINNER_FLOAT, splitvals+2, SPLIT_COLORBAR, SplitCB);
   glui_bounds->add_spinner_to_panel(PANEL_split3, _("split val"), GLUI_SPINNER_FLOAT, splitvals+1, SPLIT_COLORBAR, SplitCB);

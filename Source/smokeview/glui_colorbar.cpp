@@ -178,6 +178,35 @@ void Colorbar2File(colorbardata *cbi, char *file, char *label){
   fclose(stream);
 }
 
+/* ------------------ GetNewColorbarName ------------------------ */
+
+void GetNewColorbarName(char *base, char *label){
+  int i;
+
+  for(i = 1;;i++){
+    int j;
+
+    if(i == 1){
+      sprintf(label, "%s", base);
+    }
+    else{
+      sprintf(label, "%s %i", base, i);
+    }
+
+    int dup = 0;
+    for(j = 0;j < ncolorbars;j++){
+      colorbardata *cbj;
+
+      cbj = colorbarinfo + j;
+      if(strcmp(label, cbj->menu_label) == 0){
+        dup = 1;
+        break;
+      }
+    }
+    if(dup == 0)return;
+  }
+}
+
 /* ------------------ ColorbarCB ------------------------ */
 
 extern "C" void ColorbarCB(int var){
@@ -382,7 +411,7 @@ extern "C" void ColorbarCB(int var){
     colorbartype = bw_colorbar_index;
     ColorbarCB(COLORBAR_COPY);
     char newlabel[sizeof(GLUI_String)];
-    strcpy(newlabel, "new");
+    GetNewColorbarName("new", newlabel);
     EDITTEXT_colorbar_label->set_text(newlabel);
     ColorbarCB(COLORBAR_LABEL);
     UpdateColorbarType();
@@ -554,7 +583,7 @@ extern "C" void GluiColorbarSetup(int main_window){
   glui_colorbar->add_column_to_panel(PANEL_cb11r,false);
   BUTTON_next     = glui_colorbar->add_button_to_panel(PANEL_cb11r, _("Next"),     COLORBAR_NEXT, ColorbarCB);
 
-  PANEL_point = glui_colorbar->add_panel(_("Node"));
+  PANEL_point = glui_colorbar->add_panel(_("Show node color"));
   PANEL_cb5 = glui_colorbar->add_panel_to_panel(PANEL_point,"",GLUI_PANEL_NONE);
 
   BUTTON_node_prev=glui_colorbar->add_button_to_panel(PANEL_cb5,_("Previous"),COLORBAR_NODE_PREV,ColorbarCB);
@@ -593,7 +622,7 @@ extern "C" void GluiColorbarSetup(int main_window){
   RADIO_colorbar_coord_type = glui_colorbar->add_radiogroup_to_panel(PANEL_cb_display,&colorbar_coord_type);
   glui_colorbar->add_radiobutton_to_group(RADIO_colorbar_coord_type, "rgb");
   glui_colorbar->add_radiobutton_to_group(RADIO_colorbar_coord_type, "Lab");
-  glui_colorbar->add_checkbox_to_panel(PANEL_cb_display,"Show CIELab equal distance bars", &show_Lab_dist_bars);
+  glui_colorbar->add_checkbox_to_panel(PANEL_cb_display,"Show 'Lab' equal distance bars", &show_Lab_dist_bars);
   PANEL_cb14 = glui_colorbar->add_panel_to_panel(PANEL_cb_display,"", GLUI_PANEL_NONE);
   glui_colorbar->add_button_to_panel(PANEL_cb14, "Equal Lab distance",    COLORBAR_ADJUST_LAB, ColorbarCB);
   glui_colorbar->add_button_to_panel(PANEL_cb14, "Revert",                COLORBAR_REVERT,     ColorbarCB);
@@ -604,7 +633,7 @@ extern "C" void GluiColorbarSetup(int main_window){
   EDITTEXT_colorbar_filename->set_w(200);
   UpdateColorbarEdit();
 
-  PANEL_cb12 = glui_colorbar->add_panel("rgb<->CIELab");
+  PANEL_cb12 = glui_colorbar->add_panel("rgb<->Lab");
   cb_frgb2[0] = 0.0;
   cb_frgb2[1] = 0.0;
   cb_frgb2[2] = 0.0;
@@ -656,6 +685,8 @@ extern "C" void ColorbarGlobal2Local(void){
   EDITTEXT_colorbar_label->set_text(colorbar_label);
   icolorbar=LISTBOX_colorbar_edit->get_int_val();
 
+  char colorbar_label_show[sizeof(GLUI_String)]="show node color";
+  char colorbar_label_edit[sizeof(GLUI_String)] = "edit node color";
   if(icolorbar>=ndefaultcolorbars){
     BUTTON_delete->enable();
     EDITTEXT_colorbar_label->enable();
@@ -666,6 +697,7 @@ extern "C" void ColorbarGlobal2Local(void){
     BUTTON_addpoint->enable();
     BUTTON_deletepoint->enable();
     SPINNER_colorindex->enable();
+    PANEL_point->set_name(colorbar_label_edit);
   }
   else{
     BUTTON_delete->disable();
@@ -677,6 +709,7 @@ extern "C" void ColorbarGlobal2Local(void){
     BUTTON_addpoint->disable();
     BUTTON_deletepoint->disable();
     SPINNER_colorindex->disable();
+    PANEL_point->set_name(colorbar_label_show);
   }
   rgb_local = cbi->node_rgb+3*colorbarpoint;
   SPINNER_rgb[0]->set_int_val(  (int)(rgb_local[0]));
