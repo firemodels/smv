@@ -1074,21 +1074,51 @@ void Smoke3DShowMenu(int value){
     switch(value){
     case SHOW_ALL:
       plotstate=DYNAMIC_PLOTS;
-      show_3dsmokefiles=1;
+      show_3dsmoke=1;
+#ifdef pp_SMOKE16
+      show_3dsmoke_16bit = 0;
+      show_3dsmoke_8bit = 1;
+#endif
       Smoke3DShowMenu(SET_SMOKE3D);
       break;
     case HIDE_ALL:
-      show_3dsmokefiles=0;
+      show_3dsmoke=0;
+#ifdef pp_SMOKE16
+      show_3dsmoke_16bit = 0;
+      show_3dsmoke_8bit = 0;
+#endif
       Smoke3DShowMenu(SET_SMOKE3D);
       break;
-    case TOGGLE_SMOKE3D:
-      show_3dsmokefiles=1-show_3dsmokefiles;
+#ifdef pp_SMOKE16
+    case TOGGLE_SMOKE3D_16BIT:
+    case TOGGLE_SMOKE3D_8BIT:
+      if(value == TOGGLE_SMOKE3D_16BIT){
+        show_3dsmoke_16bit = 1 - show_3dsmoke_16bit;
+        if(show_3dsmoke_16bit == 1 && show_3dsmoke_8bit == 1)show_3dsmoke_8bit = 0;
+      }
+      if(value == TOGGLE_SMOKE3D_8BIT){
+        show_3dsmoke_8bit = 1 - show_3dsmoke_8bit;
+        if(show_3dsmoke_16bit == 1 && show_3dsmoke_8bit == 1)show_3dsmoke_16bit = 0;
+      }
+      if(show_3dsmoke_16bit == 1 || show_3dsmoke_8bit == 1){
+        show_3dsmoke = 1;
+      }
+      else{
+        show_3dsmoke = 0;
+      }
       Smoke3DShowMenu(SET_SMOKE3D);
-    break;
+      UpdateSmoke16();
+      break;
+#else
+    case TOGGLE_SMOKE3D:
+      show_3dsmoke = 1 - show_3dsmoke;
+      Smoke3DShowMenu(SET_SMOKE3D);
+      break;
+#endif
     case SET_SMOKE3D:
       for(i=0;i<nsmoke3dinfo;i++){
         smoke3di = smoke3dinfo + i;
-        if(smoke3di->loaded==1)smoke3di->display=show_3dsmokefiles;
+        if(smoke3di->loaded==1)smoke3di->display=show_3dsmoke;
       }
     break;
     default:
@@ -10347,8 +10377,15 @@ updatemenu=0;
           glutAddMenuEntry(menulabel,i);
         }
         CREATEMENU(smoke3dshowmenu, Smoke3DShowMenu);
-        if(show_3dsmokefiles==1)glutAddMenuEntry(_("*Show"), TOGGLE_SMOKE3D);
-        if(show_3dsmokefiles==0)glutAddMenuEntry(_("Show"), TOGGLE_SMOKE3D);
+#ifdef pp_SMOKE16
+        if(show_3dsmoke_8bit == 1)glutAddMenuEntry(_("*Show 8 bit"),   TOGGLE_SMOKE3D_8BIT);
+        if(show_3dsmoke_8bit == 0)glutAddMenuEntry(_("Show 8 bit"),    TOGGLE_SMOKE3D_8BIT);
+        if(show_3dsmoke_16bit == 1)glutAddMenuEntry(_("*Show 16 bit"), TOGGLE_SMOKE3D_16BIT);
+        if(show_3dsmoke_16bit == 0)glutAddMenuEntry(_("Show 16 bit"),  TOGGLE_SMOKE3D_16BIT);
+#else
+        if(show_3dsmoke_8bit==1)glutAddMenuEntry(_("*Show"), TOGGLE_SMOKE3D);
+        if(show_3dsmoke_8bit==0)glutAddMenuEntry(_("Show"), TOGGLE_SMOKE3D);
+#endif
         GLUTADDSUBMENU(_("Smoke colorbar"),smokecolorbarmenu);
         GLUTADDSUBMENU(_("Mesh"), smoke3dshowsinglemenu);
       }
