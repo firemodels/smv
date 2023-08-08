@@ -2229,7 +2229,7 @@ void UpdateTriangles(int flag,int update){
 }
 
 #define FORTREADBR(var,count,STREAM) \
-                       FORTREAD(var,(count),STREAM);\
+                       FORTREAD(var,4, (count),STREAM);\
                        if(returncode==0)break;
 
 /* ------------------ ReadGeomHeader0 ------------------------ */
@@ -2273,31 +2273,31 @@ void ReadGeomHeader0(geomdata *geomi, int *geom_frame_index, int *ntimes_local){
     return;
   }
   FSEEK(stream,4,SEEK_CUR);fread(&one,4,1,stream);FSEEK(stream,4,SEEK_CUR);
-  FORTREAD(&version,1,stream);
+  FORTREAD(&version,4,1,stream);
 
 // floating point header
 
-  FORTREAD(&nfloat_vals,1,stream);
+  FORTREAD(&nfloat_vals,4,1,stream);
   if(nfloat_vals>0){
     NewMemoryMemID((void **)&float_vals,nfloat_vals*sizeof(float),geomi->memory_id);
-    FORTREAD(float_vals,nfloat_vals,stream);
+    FORTREAD(float_vals,4, nfloat_vals,stream);
     geomi->float_vals=float_vals;
     geomi->nfloat_vals=nfloat_vals;
   }
 
   // integer header
 
-  FORTREAD(&nint_vals,1,stream);
+  FORTREAD(&nint_vals,4,1,stream);
   if(nint_vals>0){
     NewMemoryMemID((void **)&int_vals,nint_vals*sizeof(float),geomi->memory_id);
-    FORTREAD(int_vals,nint_vals,stream);
+    FORTREAD(int_vals,4,nint_vals,stream);
     geomi->int_vals=int_vals;
     geomi->nint_vals=nint_vals;
   }
 
 // static verts
 
-  FORTREAD(nvertfaces,2,stream);
+  FORTREAD(nvertfaces,4, 2,stream);
   nverts=nvertfaces[0];
   ntris=nvertfaces[1];
 
@@ -2385,9 +2385,9 @@ void ReadGeomHeader2(geomdata *geomi, int *ntimes_local){
     return;
   }
   FSEEK(stream,4,SEEK_CUR);fread(&one,4,1,stream);FSEEK(stream,4,SEEK_CUR);
-  FORTREAD(&version,1,stream);
+  FORTREAD(&version,4,1,stream);
 
-  FORTREAD(header,3,stream);
+  FORTREAD(header,4,3,stream);
   first_frame_all=header[2];
 
   nt=0;
@@ -2449,7 +2449,7 @@ void ReadGeomHeader(geomdata *geomi, int *geom_frame_index, int *ntimes_local){
     return;
   }
   FSEEK(stream,4,SEEK_CUR);fread(&one,4,1,stream);FSEEK(stream,4,SEEK_CUR);
-  FORTREAD(&version,1,stream);
+  FORTREAD(&version,4,1,stream);
   fclose(stream);
 
   if(version<=1){
@@ -2486,8 +2486,8 @@ int GetGeomDataSize(char *filename, int *nvars, float *tmin, float *tmax, int ti
 
   *error = 0;
 
-  FORTREAD(&one, 1, stream);
-  FORTREAD(&version, 1, stream);
+  FORTREAD(&one, 4, 1, stream);
+  FORTREAD(&version, 4, 1, stream);
 
   geom_offset = 0;
   ntimes_local = 0;
@@ -2503,7 +2503,7 @@ int GetGeomDataSize(char *filename, int *nvars, float *tmin, float *tmax, int ti
     int nvals[4], nskip;
 
     if(geom_offset_flag!=NULL&&*geom_offset_flag==BUILD_GEOM_OFFSETS)geom_offsets[geom_offset_index] = geom_offset;
-    FORTREAD(&time, 1, stream);
+    FORTREAD(&time, 4, 1, stream);
     geom_offset += (4+4+4);
     if(time_frame==ALL_FRAMES||time_frame==iframe){
       if(first==1){
@@ -2513,7 +2513,7 @@ int GetGeomDataSize(char *filename, int *nvars, float *tmin, float *tmax, int ti
       *tmax = time;
     }
     if(returncode==0)break;
-    FORTREAD(nvals, 4, stream);
+    FORTREAD(nvals, 4, 4, stream);
     geom_offset += (4+4*4+4);
     if(returncode==0)break;
     nvert_s = nvals[0];
@@ -2577,8 +2577,8 @@ FILE_SIZE GetGeomData(char *filename, int ntimes, int nvals, float *times, int *
   }
 
   *error = 0;
-  FORTREAD(&one, 1, stream);
-  FORTREAD(&version, 1, stream);
+  FORTREAD(&one, 4, 1, stream);
+  FORTREAD(&version, 4, 1, stream);
   file_size = 2*(4+4+4);
   nvars = 0;
   count = 0;
@@ -2594,11 +2594,11 @@ FILE_SIZE GetGeomData(char *filename, int ntimes, int nvals, float *times, int *
   for(iframe = frame_start; iframe<frame_stop; iframe++){
     int nvals_local[4];
 
-    FORTREAD(&time, 1, stream);
+    FORTREAD(&time, 4, 1, stream);
     if(time_frame==ALL_FRAMES||time_frame==iframe)times[count] = time;
     if(returncode==0)break;
     file_size += (4+4+4);
-    FORTREAD(nvals_local, 4, stream);
+    FORTREAD(nvals_local, 4, 4, stream);
     nvert_s = nvals_local[0];
     ntri_s = nvals_local[1];
     nvert_d = nvals_local[2];
@@ -2608,7 +2608,7 @@ FILE_SIZE GetGeomData(char *filename, int ntimes, int nvals, float *times, int *
 
     if(nvert_s>0){
       if(time_frame==ALL_FRAMES||time_frame==iframe){
-        FORTREAD(vals+nvars, nvert_s, stream);
+        FORTREAD(vals+nvars, 4, nvert_s, stream);
         if(returncode==0)break;
         file_size += (4+4*nvert_s+4);
         nvars += nvert_s;
@@ -2620,7 +2620,7 @@ FILE_SIZE GetGeomData(char *filename, int ntimes, int nvals, float *times, int *
 
     if(ntri_s>0){
       if(time_frame==ALL_FRAMES||time_frame==iframe){
-        FORTREAD(vals+nvars, ntri_s, stream);
+        FORTREAD(vals+nvars, 4, ntri_s, stream);
         if(returncode==0)break;
         file_size += (4+4*ntri_s+4);
         nvars += ntri_s;
@@ -2633,7 +2633,7 @@ FILE_SIZE GetGeomData(char *filename, int ntimes, int nvals, float *times, int *
     if(time_frame==ALL_FRAMES||time_frame==iframe)ndynamics[count] = nvert_d+ntri_d;
     if(nvert_d>0){
       if(time_frame==ALL_FRAMES||time_frame==iframe){
-        FORTREAD(vals+nvars, nvert_d, stream);
+        FORTREAD(vals+nvars, 4, nvert_d, stream);
         if(returncode==0)break;
         file_size += (4+4*nvert_d+4);
         nvars += nvert_d;
@@ -2645,7 +2645,7 @@ FILE_SIZE GetGeomData(char *filename, int ntimes, int nvals, float *times, int *
 
     if(ntri_d>0){
       if(time_frame==ALL_FRAMES||time_frame==iframe){
-        FORTREAD(vals+nvars, ntri_d, stream);
+        FORTREAD(vals+nvars, 4, ntri_d, stream);
         if(returncode==0)break;
         file_size += (4+4*ntri_d+4);
         nvars += ntri_d;
@@ -3215,10 +3215,10 @@ FILE_SIZE ReadGeom0(geomdata *geomi, int load_flag, int type, int *geom_frame_in
 
   FSEEK(stream,4,SEEK_CUR);fread(&one,4,1,stream);FSEEK(stream,4,SEEK_CUR);
 
-  FORTREAD(&version,1,stream);
+  FORTREAD(&version,4,1,stream);
   return_filesize = 2*(4+4+4);
 
-  FORTREAD(&nfloat_vals,1,stream);
+  FORTREAD(&nfloat_vals,4,1,stream);
   return_filesize += (4+4+4);
 
   if(nfloat_vals>0){
@@ -3226,7 +3226,7 @@ FILE_SIZE ReadGeom0(geomdata *geomi, int load_flag, int type, int *geom_frame_in
     return_filesize += 4+nfloat_vals*4+4;
   }
 
-  FORTREAD(&nint_vals,1,stream);
+  FORTREAD(&nint_vals,4,1,stream);
   return_filesize += (4+4+4);
 
   if(nint_vals>0){
@@ -3430,10 +3430,10 @@ FILE_SIZE ReadGeom2(geomdata *geomi, int load_flag, int type){
 
   FSEEK(stream,4,SEEK_CUR);fread(&one,4,1,stream);FSEEK(stream,4,SEEK_CUR);
 
-  FORTREAD(&version,1,stream);
+  FORTREAD(&version,4,1,stream);
   return_filesize += 2*(4+4+4);
 
-  FORTREAD(nheaders,3,stream);
+  FORTREAD(nheaders,4,3,stream);
   return_filesize += 4+3*4+4;
 
   nfloat_vals=nheaders[0];
@@ -4193,7 +4193,7 @@ FILE_SIZE ReadGeom(geomdata *geomi, int load_flag, int type, int *geom_frame_ind
   stream = fopen(geomi->file,"rb");
   if(stream==NULL)return 0;
   FSEEK(stream,4,SEEK_CUR);fread(&one,4,1,stream);FSEEK(stream,4,SEEK_CUR);
-  FORTREAD(&version,1,stream);
+  FORTREAD(&version,4,1,stream);
   fclose(stream);
   return_filesize = 2*(4+4+4);
 
