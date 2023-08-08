@@ -1187,8 +1187,13 @@ EXTERNCPP void UpdateTrianglesMT(void);
 EXTERNCPP void CancelUpdateTriangles(void);
 EXTERNCPP void FinishUpdateTriangles(void);
 
-#ifndef CPP
-#include "smokefortheaders.h"
-#endif
+#define HEADER_SIZE 4
+#define TRAILER_SIZE 4
+
+#define FORTREAD(var,size,count,STREAM) \
+                           FSEEK(STREAM,HEADER_SIZE,SEEK_CUR);\
+                           returncode=fread(var,size,count,STREAM);\
+                           if(returncode!=count)returncode=0;\
+                           FSEEK(STREAM,TRAILER_SIZE,SEEK_CUR)
 
 #endif

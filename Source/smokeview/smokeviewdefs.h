@@ -555,6 +555,8 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 #define LOCAL_INI  2
 #define SCRIPT_INI 3
 
+#define USE_OPACITY_MULTIPLIER 94
+
 #define RESTORE_EXTERIOR_VIEW      0
 #define SAVE_VIEW                  3
 #define TOGGLE_TITLE_SAFE          5
@@ -826,7 +828,12 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 #define HIDEALL_SMOKE3D     HIDE_ALL
 #define HIDEALL_VSLICE      HIDE_ALL
 #define SHOWALL_VSLICE      SHOW_ALL
+#ifdef pp_SMOKE16
+#define TOGGLE_SMOKE3D_8BIT      -3
+#define TOGGLE_SMOKE3D_16BIT     -5
+#else
 #define TOGGLE_SMOKE3D      -3
+#endif
 #define SET_SMOKE3D         -4
 #define GLUI_SHOWALL_VSLICE GLUI_SHOWALL
 #define GLUI_HIDEALL_VSLICE GLUI_HIDEALL

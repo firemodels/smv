@@ -101,6 +101,8 @@ GLUI_Checkbox *CHECKBOX_smoke_flip=NULL;
 GLUI_Checkbox *CHECKBOX_load_parallel=NULL;
 #ifdef pp_SMOKE16
 GLUI_Checkbox *CHECKBOX_load_smoke16=NULL;
+GLUI_Checkbox *CHECKBOX_show_smoke16=NULL;
+GLUI_Checkbox *CHECKBOX_show_smoke8=NULL;
 #endif
 GLUI_Checkbox *CHECKBOX_smoke_getvals=NULL;
 GLUI_Checkbox *CHECKBOX_update_smokeplanes = NULL;
@@ -217,6 +219,8 @@ extern "C" void UpdateBackgroundFlip2(int flip) {
 #ifdef pp_SMOKE16
 extern "C" void UpdateSmoke16(void) {
   if(CHECKBOX_load_smoke16 != NULL)CHECKBOX_load_smoke16->set_int_val(load_smoke16);
+  if(CHECKBOX_show_smoke16 != NULL)CHECKBOX_show_smoke16->set_int_val(show_3dsmoke_16bit);
+  if(CHECKBOX_show_smoke8  != NULL)CHECKBOX_show_smoke8->set_int_val(show_3dsmoke_8bit);
 }
 #endif
 
@@ -366,7 +370,9 @@ extern "C" void Glui3dSmokeSetup(int main_window){
   CHECKBOX_load_parallel = glui_3dsmoke->add_checkbox_to_panel(PANEL_overall, _("load in parallel"), &use_smoke_thread);
 #ifdef pp_SMOKE16
   if(have_smoke16 == 1){
-    CHECKBOX_load_smoke16       = glui_3dsmoke->add_checkbox_to_panel(PANEL_overall, _("load 16 bit files"), &load_smoke16, SMOKE_16, Smoke3dCB);
+    CHECKBOX_load_smoke16 = glui_3dsmoke->add_checkbox_to_panel(PANEL_overall, _("load 16 bit files"), &load_smoke16,       SMOKE_LOAD16, Smoke3dCB);
+    CHECKBOX_show_smoke16 = glui_3dsmoke->add_checkbox_to_panel(PANEL_overall, _("show 16 bit files"), &show_3dsmoke_16bit, SMOKE_SHOW16, Smoke3dCB);
+    CHECKBOX_show_smoke8 = glui_3dsmoke->add_checkbox_to_panel(PANEL_overall,  _("show 8 bit files"),  &show_3dsmoke_8bit,  SMOKE_SHOW8,  Smoke3dCB);
   }
 #endif
   SPINNER_smoke3d_threads = glui_3dsmoke->add_spinner_to_panel(PANEL_overall, _("threads"), GLUI_SPINNER_INT, &nsmoke_threads);
@@ -822,7 +828,21 @@ extern "C" void Smoke3dCB(int var){
     updatemenu = 1;
     break;
 #ifdef pp_SMOKE16
-  case SMOKE_16:
+  case SMOKE_LOAD16:
+    updatemenu = 1;
+    break;
+  case SMOKE_SHOW16:
+    if(show_3dsmoke_16bit==1&&show_3dsmoke_8bit==1){
+      show_3dsmoke_8bit = 0;
+      CHECKBOX_show_smoke8->set_int_val(0);
+    }
+    updatemenu = 1;
+    break;
+  case SMOKE_SHOW8:
+    if(show_3dsmoke_16bit==1&&show_3dsmoke_8bit==1){
+      show_3dsmoke_16bit = 0;
+      CHECKBOX_show_smoke16->set_int_val(0);
+    }
     updatemenu = 1;
     break;
 #endif

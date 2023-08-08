@@ -63,7 +63,9 @@
 #define SMOKE_SKIP_XYZ 86
 #define SMOKE_BLACK 75
 #ifdef pp_SMOKE16
-#define SMOKE_16 101
+#define SMOKE_LOAD16 101
+#define SMOKE_SHOW16 102
+#define SMOKE_SHOW8  103
 #endif
 #define SMOKE_DELTA_PAR 76
 #define SMOKE_NEW 77
@@ -73,7 +75,7 @@
 #define BACKGROUND_FLIP 81
 #define USE_FIRE_ALPHA 84
 #define USE_OPACITY_DEPTH 93
-#define USE_OPACITY_MULTIPLIER 94
+// #define USE_OPACITY_MULTIPLIER 94 // defined now in smokeviewdefs.h
 #define USE_OPACITY_DEPTH_CHECK 99
 #define USE_OPACITY_MULTIPLIER_CHECK 100
 #define SMOKE_EXTINCT 95

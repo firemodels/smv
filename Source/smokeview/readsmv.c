@@ -5462,8 +5462,12 @@ int ParseSMOKE3DProcess(bufferstreamdata *stream, char *buffer, int *nn_smoke3d_
     smoke3di->ntimes_old = 0;
     smoke3di->filetype = filetype;
     smoke3di->is_zlib = 0;
-#ifdef pp_SMOKE17
-    smoke3di->is_s16 = 0;
+#ifdef pp_SMOKE16
+    smoke3di->is_s16     = 0;
+    smoke3di->val16s     = NULL;
+    smoke3di->val16_mins = NULL;
+    smoke3di->val16_maxs = NULL;
+    smoke3di->times16    = NULL;
 #endif
     smoke3di->seq_id = nn_smoke3d;
     smoke3di->autoload = 0;

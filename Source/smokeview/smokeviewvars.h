@@ -457,7 +457,11 @@ SVEXTERN float SVDECL(slicehrrpuv_upper, 0.1), SVDECL(slicehrrpuv_middle, 0.5), 
 SVEXTERN float SVDECL(slicehrrpuv_cut1, 0.8), SVDECL(slicehrrpuv_cut2, 0.9);
 SVEXTERN float SVDECL(slicehrrpuv_offset, 0.0);
 SVEXTERN float SVDECL(voltemp_factor, 300.0), SVDECL(voltemp_offset, 0.0);
-SVEXTERN int SVDECL(show_volsmokefiles, 1), SVDECL(show_3dsmokefiles,1);
+SVEXTERN int SVDECL(show_volsmokefiles, 1), SVDECL(show_3dsmoke,1);
+#ifdef pp_SMOKE16
+SVEXTERN int SVDECL(show_3dsmoke_8bit, 1);
+SVEXTERN int SVDECL(show_3dsmoke_16bit, 0);
+#endif
 SVEXTERN int SVDECL(show_plot3dfiles, 1), SVDECL(show_isofiles,1);
 SVEXTERN int SVDECL(show_boundaryfiles, 1);
 

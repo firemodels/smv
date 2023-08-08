@@ -3808,12 +3808,80 @@ void SmokeWrapup(void){
   Smoke3dCB(UPDATE_SMOKEFIRE_COLORS);
   smoke_render_option = RENDER_SLICE;
   update_fire_alpha = 1;
-#define USE_OPACITY_MULTIPLIER 94
   have_fire  = HaveFireLoaded();
   have_smoke = HaveSootLoaded();
   Smoke3dCB(USE_OPACITY_MULTIPLIER);
   ForceIdle();
 }
+
+#ifdef pp_SMOKE16
+
+/* ------------------ ReadSmoke16 ------------------------ */
+
+void ReadSmoke16(smoke3ddata *smoke3di, int flag){
+  // one, version, ibarp1, jbarp1, kbar+1
+  // time
+  // nvals, nvals16_out, valmin, valmax
+  // (2**16 - 1)(val - valmin) / (valmax - valmin)
+  // BUFFER16_IN(I), I = 1, 2 * NVALS)
+  FILE *stream = NULL;
+  int returncode;
+  FILE_SIZE file_size;
+  int vals[6], ibarp1, jbarp1, kbarp1;
+  int sizebuffer;
+  unsigned short *val16s;
+  int nframes;
+  float *times16, *val16_mins, *val16_maxs;
+  int i;
+
+  FREEMEMORY(smoke3di->val16s);
+  FREEMEMORY(smoke3di->times16);
+  FREEMEMORY(smoke3di->val16_mins);
+  FREEMEMORY(smoke3di->val16_maxs);
+  if(flag == UNLOAD)return;
+
+  stream = fopen(smoke3di->s16_file, "rb");
+  if(stream == NULL)return;
+  FORTREAD(vals, 4, 6, stream);
+  ibarp1 = vals[3];
+  jbarp1 = vals[4];
+  kbarp1 = vals[5];
+  sizebuffer = ibarp1*jbarp1*kbarp1;
+  file_size = GetFileSizeSMV(smoke3di->s16_file);
+  // header size: 8 + 6*4
+  // frame size 8+4 (time) + 8+sizebuffer*sizeof(unsigned short) (data size)
+  nframes = (file_size - (8+6*4)) / (8+4 + 8+sizebuffer*sizeof(unsigned short));
+  NewMemory((void **)&val16s, nframes * sizebuffer * sizeof(unsigned short));
+  NewMemory((void **)&times16, nframes * sizeof(float));
+  NewMemory((void **)&val16_mins, nframes * sizeof(float));
+  NewMemory((void **)&val16_maxs, nframes * sizeof(float));
+  smoke3di->times16    = times16;
+  smoke3di->val16_mins = val16_mins;
+  smoke3di->val16_maxs = val16_maxs;
+  smoke3di->val16s     = val16s;
+
+  for(i = 0;i < nframes;i++){
+    float time;
+    char buffer4[16];
+    // time
+    // nvals, nvals16_out, valmin, valmax
+    // (2**16 - 1)(val - valmin) / (valmax - valmin)
+    // BUFFER16_IN(I), I = 1, 2 * NVALS)
+    FORTREAD(&time, 4, 1, stream);
+    FORTREAD(buffer4, 1, 16, stream);
+    float valmin, valmax;
+
+    memcpy(&valmin, buffer4 + 8,  sizeof(float));
+    memcpy(&valmax, buffer4 + 12, sizeof(float));
+    times16[i] = time;
+    val16_mins[i] = valmin;
+    val16_maxs[i] = valmax;
+    FORTREAD(val16s, 2, sizebuffer, stream);
+    val16s += sizebuffer;
+  }
+  fclose(stream);
+}
+#endif
 
 #define READSMOKE3D_CONTINUE_ON 0
 #define READSMOKE3D_RETURN      1
@@ -4046,6 +4114,12 @@ FILE_SIZE ReadSmoke3D(int iframe_arg,int ifile_arg,int flag_arg, int first_time,
   ASSERT(ifile_arg>=0&&ifile_arg<nsmoke3dinfo);
   smoke3di = smoke3dinfo + ifile_arg;
   if(smoke3di->filetype==FORTRAN_GENERATED&&smoke3di->is_zlib==0)fortran_skip=4;
+
+#ifdef pp_SMOKE16
+  if(load_smoke16==1||flag_arg==UNLOAD ){
+    ReadSmoke16(smoke3di, flag_arg);
+  }
+#endif
 
   if(first_time == FIRST_TIME){
     if(SetupSmoke3D(smoke3di, flag_arg,iframe_arg, errorcode_arg)==READSMOKE3D_RETURN){

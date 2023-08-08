@@ -73,7 +73,7 @@ obj = assert.o callbacks.o camera.o color2rgb.o colortimebar.o compress.o cspher
 incs = compress.h contourdefs.h csphere.h datadefs.h dirent_win.h file_util.h glui_bounds.h \
        glui_motion.h glui_smoke.h glui_tour.h histogram.h infoheader.h interp.h isodefs.h \
        IOobjects.h IOscript.h IOvolsmoke.h lint.h lua_api.h MALLOCC.h options.h options_common.h \
-       pragmas.h smokefortheaders.h smokeheaders.h smokeviewdefs.h smokeviewvars.h smv_assert.h \
+       pragmas.h smokeheaders.h smokeviewdefs.h smokeviewvars.h smv_assert.h \
        stdio_buffer.h stdio_m.h string_util.h structures.h translate.h threader.h viewports.h command_args.h
 
 ifeq ($(ICON),icon)
