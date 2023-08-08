@@ -3828,7 +3828,7 @@ void ReadSmoke16(smoke3ddata *smoke3di, int flag){
   FILE *stream = NULL;
   int returncode;
   FILE_SIZE file_size;
-  int vals[5], ibarp1, jbarp1, kbarp1;
+  int vals[6], ibarp1, jbarp1, kbarp1;
   int sizebuffer;
   unsigned short *val16s;
   int nframes;
@@ -3837,13 +3837,13 @@ void ReadSmoke16(smoke3ddata *smoke3di, int flag){
 
   stream = fopen(smoke3di->s16_file, "rb");
   if(stream == NULL)return;
-  FORTREAD(vals, 4, 5, stream);
-  ibarp1 = vals[2];
-  jbarp1 = vals[3];
-  kbarp1 = vals[4];
+  FORTREAD(vals, 4, 6, stream);
+  ibarp1 = vals[3];
+  jbarp1 = vals[4];
+  kbarp1 = vals[5];
   sizebuffer = ibarp1 * jbarp1 * kbarp1;
   file_size = GetFileSizeSMV(smoke3di->s16_file);
-  nframes = (file_size - 28) / (12 + 8 + sizebuffer * sizeof(unsigned short));
+  nframes = (file_size - 32) / (12 + 8 + sizebuffer * sizeof(unsigned short));
   NewMemory((void **)&val16s, nframes * sizebuffer * sizeof(unsigned short));
   NewMemory((void **)&times, nframes * sizeof(float));
   NewMemory((void **)&val16_mins, nframes * sizeof(float));
