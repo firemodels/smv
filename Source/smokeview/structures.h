@@ -1569,9 +1569,15 @@ typedef struct _smoke3ddata {
   char *size_file;
 #endif
   char *comp_file, *reg_file;
+#ifdef pp_SMOKE16
+  char *s16_file;
+#endif
   int filetype;
   int loaded, finalize, display, request_load, primary_file;
   int is_zlib;
+#ifdef pp_SMOKE16
+  int is_s16;
+#endif
   smokestatedata *smokestate;
   int blocknumber;
   int type;

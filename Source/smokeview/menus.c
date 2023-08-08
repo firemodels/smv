@@ -4566,6 +4566,9 @@ void LoadSmoke3DMenu(int value){
 #define MENU_DUMMY_SMOKE           -9
 #define MENU_SMOKE_SETTINGS        -4
 #define MENU_SMOKE_FILE_SIZES     -10
+#ifdef pp_SMOKE16
+#define MENU_SMOKE_16             -11
+#endif
 
   if(value == MENU_DUMMY_SMOKE)return;
 #ifndef pp_SMOKE3DSTREAM
@@ -4613,11 +4616,17 @@ void LoadSmoke3DMenu(int value){
   else if(value == MENU_SMOKE_SETTINGS){
     ShowBoundsDialog(DLG_3DSMOKE);
   }
-    else if(value ==MENU_SMOKE_FILE_SIZES){
-      compute_smoke3d_file_sizes = 1-compute_smoke3d_file_sizes;
-      updatemenu = 1;
-    }
-
+  else if(value ==MENU_SMOKE_FILE_SIZES){
+    compute_smoke3d_file_sizes = 1-compute_smoke3d_file_sizes;
+    updatemenu = 1;
+  }
+#ifdef pp_SMOKE16
+  else if(value ==MENU_SMOKE_16){
+    load_smoke16 = 1-load_smoke16;
+    UpdateSmoke16();
+    updatemenu = 1;
+  }
+#endif
   else if(value<=-100){
     smoke3ddata *smoke3di;
 
@@ -11953,6 +11962,16 @@ updatemenu=0;
         }
 
         glutAddMenuEntry("-", MENU_DUMMY3);
+#ifdef pp_SMOKE16
+        if(have_smoke16==1){
+          if(load_smoke16==1){
+            glutAddMenuEntry(_("*Load 16 bit files"), MENU_SMOKE_16);
+          }
+          else{
+            glutAddMenuEntry(_("Load 16 bit files"), MENU_SMOKE_16);
+          }
+        }
+#endif
         if(compute_smoke3d_file_sizes==1){
           glutAddMenuEntry(_("*Show 3D smoke file size"), MENU_SMOKE_FILE_SIZES);
         }
