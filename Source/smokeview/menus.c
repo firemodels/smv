@@ -10383,8 +10383,8 @@ updatemenu=0;
         if(show_3dsmoke_16bit == 1)glutAddMenuEntry(_("*Show 16 bit"), TOGGLE_SMOKE3D_16BIT);
         if(show_3dsmoke_16bit == 0)glutAddMenuEntry(_("Show 16 bit"),  TOGGLE_SMOKE3D_16BIT);
 #else
-        if(show_3dsmoke_8bit==1)glutAddMenuEntry(_("*Show"), TOGGLE_SMOKE3D);
-        if(show_3dsmoke_8bit==0)glutAddMenuEntry(_("Show"), TOGGLE_SMOKE3D);
+        if(show_3dsmoke==1)glutAddMenuEntry(_("*Show"), TOGGLE_SMOKE3D);
+        if(show_3dsmoke==0)glutAddMenuEntry(_("Show"), TOGGLE_SMOKE3D);
 #endif
         GLUTADDSUBMENU(_("Smoke colorbar"),smokecolorbarmenu);
         GLUTADDSUBMENU(_("Mesh"), smoke3dshowsinglemenu);
