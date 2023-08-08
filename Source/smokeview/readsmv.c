@@ -5462,6 +5462,9 @@ int ParseSMOKE3DProcess(bufferstreamdata *stream, char *buffer, int *nn_smoke3d_
     smoke3di->ntimes_old = 0;
     smoke3di->filetype = filetype;
     smoke3di->is_zlib = 0;
+#ifdef pp_SMOKE17
+    smoke3di->is_s16 = 0;
+#endif
     smoke3di->seq_id = nn_smoke3d;
     smoke3di->autoload = 0;
     smoke3di->compression_type = UNKNOWN;
@@ -5508,6 +5511,23 @@ int ParseSMOKE3DProcess(bufferstreamdata *stream, char *buffer, int *nn_smoke3d_
     else{
       smoke3di->file = smoke3di->reg_file;
     }
+
+#ifdef pp_SMOKE16
+    char buffer16[256];
+    char *ext;
+
+    strcpy(buffer16, bufferptr);
+    ext = strrchr(buffer16, '.');
+    if(ext != NULL)*ext = 0;
+    strcat(buffer16, ".s16");
+    if(NewMemory((void **)&smoke3di->s16_file, (unsigned int)(strlen(buffer16) + 1)) == 0)return RETURN_TWO;
+    STRCPY(smoke3di->s16_file, buffer16);
+    if(FILE_EXISTS_CASEDIR(smoke3di->s16_file)==YES){
+      smoke3di->is_s16 = 1;
+      have_smoke16 = 1;
+    }
+#endif
+
     if(FILE_EXISTS_CASEDIR(smoke3di->file)==YES){
       if(ReadLabels(&smoke3di->label, stream, NULL)==LABEL_ERR)return RETURN_TWO;
       if(strcmp(smoke3di->label.longlabel, "HRRPUV")==0){
@@ -13459,7 +13479,11 @@ int ReadIni2(char *inifile, int localfile){
     }
     if(MatchINI(buffer, "SMOKELOAD")==1){
       fgets(buffer, 255, stream);
+#ifdef pp_SMOKE16
+      sscanf(buffer, "%i %i %i", &use_smoke_thread, &nsmoke_threads, &load_smoke16);
+#else
       sscanf(buffer, "%i %i", &use_smoke_thread, &nsmoke_threads);
+#endif
       continue;
     }
     if(MatchINI(buffer, "LOADINC") == 1){
@@ -16555,7 +16579,11 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, "SLICEAVERAGE\n");
   fprintf(fileout, " %i %f %i\n", slice_average_flag, slice_average_interval, vis_slice_average);
   fprintf(fileout, "SMOKELOAD\n");
+#ifdef pp_SMOKE16
+  fprintf(fileout, " %i %i %i\n", use_smoke_thread, nsmoke_threads, load_smoke16);
+#else
   fprintf(fileout, " %i %i\n", use_smoke_thread, nsmoke_threads);
+#endif
   fprintf(fileout, "SLICEDATAOUT\n");
   fprintf(fileout, " %i \n", output_slicedata);
   fprintf(fileout, "USER_ROTATE\n");

@@ -10,6 +10,7 @@
 
 GLUI *glui_colorbar=NULL;
 
+GLUI_Panel *PANEL_toggle = NULL;
 GLUI_Panel *PANEL_cb_display = NULL;
 GLUI_Panel *PANEL_cb1=NULL;
 GLUI_Panel *PANEL_cb2R2=NULL;
@@ -552,18 +553,6 @@ extern "C" void GluiColorbarSetup(int main_window){
   BUTTON_prev     = glui_colorbar->add_button_to_panel(PANEL_cb11r, _("Previous"), COLORBAR_PREV, ColorbarCB);
   glui_colorbar->add_column_to_panel(PANEL_cb11r,false);
   BUTTON_next     = glui_colorbar->add_button_to_panel(PANEL_cb11r, _("Next"),     COLORBAR_NEXT, ColorbarCB);
-  glui_colorbar->add_separator_to_panel(PANEL_cb1);
-  LISTBOX_colorbar_toggle_edit1 = glui_colorbar->add_listbox_to_panel(PANEL_cb1, "", &index_colorbar1, COLORBAR_LISTA, ColorbarCB);
-  UpdateColorbarListEdit(2, CB_KEEP);
-  LISTBOX_colorbar_toggle_edit1->set_int_val(index_colorbar1);
-
-  LISTBOX_colorbar_toggle_edit2 = glui_colorbar->add_listbox_to_panel(PANEL_cb1, "", &index_colorbar2, COLORBAR_LISTB, ColorbarCB);
-  UpdateColorbarListEdit(3, CB_KEEP);
-  LISTBOX_colorbar_toggle_edit2->set_int_val(index_colorbar2);
-
-  glui_colorbar->add_button_to_panel(PANEL_cb1, _("toggle"), COLORBAR_TOGGLE, ColorbarCB);
-  ColorbarCB(COLORBAR_LISTA);
-  ColorbarCB(COLORBAR_LISTB);
 
   PANEL_point = glui_colorbar->add_panel(_("Node"));
   PANEL_cb5 = glui_colorbar->add_panel_to_panel(PANEL_point,"",GLUI_PANEL_NONE);
@@ -587,16 +576,29 @@ extern "C" void GluiColorbarSetup(int main_window){
   SPINNER_rgb[1]->set_int_limits(0,255);
   SPINNER_rgb[2]->set_int_limits(0,255);
 
+  PANEL_toggle = glui_colorbar->add_panel("Toggle colorbar");
+  LISTBOX_colorbar_toggle_edit1 = glui_colorbar->add_listbox_to_panel(PANEL_toggle, "", &index_colorbar1, COLORBAR_LISTA, ColorbarCB);
+  UpdateColorbarListEdit(2, CB_KEEP);
+  LISTBOX_colorbar_toggle_edit1->set_int_val(index_colorbar1);
+
+  LISTBOX_colorbar_toggle_edit2 = glui_colorbar->add_listbox_to_panel(PANEL_toggle, "", &index_colorbar2, COLORBAR_LISTB, ColorbarCB);
+  UpdateColorbarListEdit(3, CB_KEEP);
+  LISTBOX_colorbar_toggle_edit2->set_int_val(index_colorbar2);
+
+  glui_colorbar->add_button_to_panel(PANEL_toggle, _("toggle"), COLORBAR_TOGGLE, ColorbarCB);
+  ColorbarCB(COLORBAR_LISTA);
+  ColorbarCB(COLORBAR_LISTB);
+
   PANEL_cb_display = glui_colorbar->add_panel("Display");
   RADIO_colorbar_coord_type = glui_colorbar->add_radiogroup_to_panel(PANEL_cb_display,&colorbar_coord_type);
   glui_colorbar->add_radiobutton_to_group(RADIO_colorbar_coord_type, "rgb");
   glui_colorbar->add_radiobutton_to_group(RADIO_colorbar_coord_type, "CIELab");
   glui_colorbar->add_checkbox_to_panel(PANEL_cb_display,"Show CIELab equal distance bars", &show_Lab_dist_bars);
   PANEL_cb14 = glui_colorbar->add_panel_to_panel(PANEL_cb_display,"", GLUI_PANEL_NONE);
-  glui_colorbar->add_button_to_panel(PANEL_cb14, "Adjust Lab",    COLORBAR_ADJUST_LAB, ColorbarCB);
-  glui_colorbar->add_button_to_panel(PANEL_cb14, "Revert",        COLORBAR_REVERT,     ColorbarCB);
+  glui_colorbar->add_button_to_panel(PANEL_cb14, "Equal Lab distance",    COLORBAR_ADJUST_LAB, ColorbarCB);
+  glui_colorbar->add_button_to_panel(PANEL_cb14, "Revert",                COLORBAR_REVERT,     ColorbarCB);
   glui_colorbar->add_column_to_panel(PANEL_cb14, false);
-  glui_colorbar->add_button_to_panel(PANEL_cb14, "Adjust L",      COLORBAR_ADJUST_L,   ColorbarCB);
+  glui_colorbar->add_button_to_panel(PANEL_cb14, "Equal L distance",      COLORBAR_ADJUST_L,   ColorbarCB);
   glui_colorbar->add_button_to_panel(PANEL_cb14, "Save",          COLORBAR_SAVE,       ColorbarCB);
   EDITTEXT_colorbar_filename = glui_colorbar->add_edittext_to_panel(PANEL_cb_display, "filename:", GLUI_EDITTEXT_TEXT, colorbar_filename);
   EDITTEXT_colorbar_filename->set_w(200);
