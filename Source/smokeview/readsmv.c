@@ -5389,9 +5389,6 @@ int ParseSMOKE3DProcess(bufferstreamdata *stream, char *buffer, int *nn_smoke3d_
   int filetype = C_GENERATED;
   int blocknumber;
   char buffer2[256];
-#ifdef pp_SMOKE16
-  char buffer3[256];
-#endif
   char *bufferptr;
   float extinct = -1.0;
 
@@ -5516,13 +5513,15 @@ int ParseSMOKE3DProcess(bufferstreamdata *stream, char *buffer, int *nn_smoke3d_
     }
 
 #ifdef pp_SMOKE16
-    strcpy(buffer3, bufferptr);
+    char buffer16[256];
     char *ext;
-    ext = strrchr(buffer3, '.');
+
+    strcpy(buffer16, bufferptr);
+    ext = strrchr(buffer16, '.');
     if(ext != NULL)*ext = 0;
-    strcat(buffer3, ".s16");
-    if(NewMemory((void **)&smoke3di->s16_file, (unsigned int)(strlen(buffer3) + 1)) == 0)return RETURN_TWO;
-    STRCPY(smoke3di->s16_file, buffer3);
+    strcat(buffer16, ".s16");
+    if(NewMemory((void **)&smoke3di->s16_file, (unsigned int)(strlen(buffer16) + 1)) == 0)return RETURN_TWO;
+    STRCPY(smoke3di->s16_file, buffer16);
     if(FILE_EXISTS_CASEDIR(smoke3di->s16_file)==YES){
       smoke3di->is_s16 = 1;
       have_smoke16 = 1;
