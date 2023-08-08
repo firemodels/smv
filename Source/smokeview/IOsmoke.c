@@ -4116,7 +4116,7 @@ FILE_SIZE ReadSmoke3D(int iframe_arg,int ifile_arg,int flag_arg, int first_time,
   if(smoke3di->filetype==FORTRAN_GENERATED&&smoke3di->is_zlib==0)fortran_skip=4;
 
 #ifdef pp_SMOKE16
-  if(load_smoke16==1){
+  if(load_smoke16==1||flag_arg==UNLOAD ){
     ReadSmoke16(smoke3di, flag_arg);
   }
 #endif
