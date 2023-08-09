@@ -6703,35 +6703,39 @@ extern "C" void SliceBoundCB(int var){
 /* ------------------ ShowGluiBounds ------------------------ */
 
 extern "C" void ShowGluiBounds(int menu_id){
-  if(menu_id==DIALOG_BOUNDS){
-
+  switch (menu_id){
+  case DIALOG_BOUNDS:
     UpdateChar();
     FileRolloutCB(FILEBOUNDS_ROLLOUT);
-  }
-  else if(menu_id == DIALOG_SHOWFILES){
+    break;
+  case DIALOG_SHOWFILES:
     FileRolloutCB(SHOWHIDE_ROLLOUT);
-  }
-  else if(menu_id==DIALOG_CONFIG){
+    break;
+  case DIALOG_CONFIG:
     FileRolloutCB(CONFIG_ROLLOUT);
-  }
-  else if(menu_id==DIALOG_AUTOLOAD){
+    break;
+  case DIALOG_AUTOLOAD:
     FileRolloutCB(LOAD_ROLLOUT);
-  }
-  else if(menu_id==DIALOG_TIME){
+    break;
+  case DIALOG_TIME:
     FileRolloutCB(TIME_ROLLOUT);
-  }
-  else if(menu_id==DIALOG_SCRIPT){
+    break;
+  case DIALOG_SCRIPT:
     FileRolloutCB(SCRIPT_ROLLOUT);
-  }
-  else if(menu_id == DIALOG_SMOKEZIP){
+    break;
+  case DIALOG_SMOKEZIP:
     FileRolloutCB(COMPRESS_ROLLOUT);
-  }
-  else if(menu_id == DIALOG_3DSMOKE){
+    break;
+  case DIALOG_3DSMOKE:
     FileRolloutCB(FILEBOUNDS_ROLLOUT);
     BoundRolloutCB(SMOKE3D_ROLLOUT);
-  }
-  else if(menu_id == DIALOG_COLORING){
+    break;
+  case DIALOG_COLORING:
     FileRolloutCB(COLORING_ROLLOUT);
+    break;
+  default:
+    ASSERT(FFALSE);
+    break;
   }
   glui_bounds->show();
 }
