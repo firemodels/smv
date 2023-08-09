@@ -6730,6 +6730,9 @@ extern "C" void ShowGluiBounds(int menu_id){
     FileRolloutCB(FILEBOUNDS_ROLLOUT);
     BoundRolloutCB(SMOKE3D_ROLLOUT);
   }
+  else if(menu_id == DIALOG_COLORING){
+    FileRolloutCB(COLORING_ROLLOUT);
+  }
   glui_bounds->show();
 }
 

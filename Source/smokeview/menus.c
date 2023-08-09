@@ -1030,6 +1030,9 @@ void ColorbarMenu(int value){
    case COLORBAR_VERTICAL:
      LabelMenu(MENU_LABEL_colorbar_vertical);
      break;
+   case MENU_COLORBAR_SETTINGS:
+     ShowGluiBounds(DIALOG_COLORING);
+     break;
    default:
      ASSERT(FFALSE);
      break;
