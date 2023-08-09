@@ -376,7 +376,7 @@ void DrawColorbarPathRGB(void){
   }
 }
 
-/* ------------------ Rgb2CIE ------------------------ */
+/* ------------------ Rgb2Lab ------------------------ */
 
 void Rgb2Lab(unsigned char *rgb_arg, float *lab){
   float frgb_arg[3];
@@ -387,7 +387,7 @@ void Rgb2Lab(unsigned char *rgb_arg, float *lab){
   FRgb2Lab(frgb_arg, lab);
 }
 
-/* ------------------ Rgbf2CIE ------------------------ */
+/* ------------------ Rgbf2Lab ------------------------ */
 
 void Rgbf2Lab(float *rgbf_arg, float *lab){
   float frgb_arg[3];
@@ -406,9 +406,9 @@ void Lab2XYZ(float *xyz, float *lab){
   xyz[2] = (lab[2] + 126.39) / 211.11;
 }
 
-/* ------------------ DrawColorbarPathCIE ------------------------ */
+/* ------------------ DrawColorbarPathLab ------------------------ */
 
-void DrawColorbarPathCIE(void){
+void DrawColorbarPathLab(void){
   int i;
   colorbardata *cbi;
 
@@ -609,16 +609,15 @@ void UpdateCurrentColorbar(colorbardata *cb){
 void AdjustColorBar(colorbardata *cbi, int option){
   int i;
 
-  Rgb2Lab(cbi->node_rgb, cbi->node_lab);
   cbi->dist_type = option;
   cbi->node_dist[0] = 0.0;
   for(i = 1;i < cbi->nnodes;i++){
-    unsigned char *rgb2_local;
-    float *lab1, *lab2, dist;
+    unsigned char *rgb1_local, *rgb2_local;
+    float lab1[3], lab2[3], dist;
 
     rgb2_local = cbi->node_rgb + 3*i;
-    lab2 = cbi->node_lab + 3 * i;
-    lab1 = lab2 - 3;
+    rgb1_local = rgb2_local - 3;
+    Rgb2Lab(rgb1_local, lab1);
     Rgb2Lab(rgb2_local, lab2);
     if(option == COLOR_DIST_LAB){
       float dx, dy, dz;
@@ -645,7 +644,7 @@ void AdjustColorBar(colorbardata *cbi, int option){
   }
 }
 
-/* ------------------ FRgb2CIE ------------------------ */
+/* ------------------ FRgb2Lab ------------------------ */
 
 void FRgb2Lab(float *rgb_arg, float *lab){
 
@@ -761,23 +760,7 @@ void Rgb2Dist(colorbardata *cbi){
   }
 }
 
-/* ------------------ Rgb2Labs ------------------------ */
-
-void Rgb2Labs(unsigned char *rgbs255, float *labs){
-  int i;
-
-  for(i = 0; i < 255; i++){
-    unsigned char *rgb_local;
-    float *lab;
-
-    rgb_local = rgbs255 + 3 * i;
-
-    lab = labs + 3 * i;
-    Rgb2Lab(rgb_local, lab);
-  }
-}
-
-/* ------------------ CIE2Rgb ------------------------ */
+/* ------------------ Lab2Rgb ------------------------ */
 
 void Lab2Rgb(unsigned char *rgb_arg, float *frgb_arg, float *lab){
   float L, a, b;
@@ -845,22 +828,9 @@ void Lab2Rgb(unsigned char *rgb_arg, float *frgb_arg, float *lab){
   rgb_arg[1] = (unsigned char)CLAMP(frgb_arg[1] + 0.5, 0, 255);
   rgb_arg[2] = (unsigned char)CLAMP(frgb_arg[2] + 0.5, 0, 255);
 }
-/* ------------------ CIE2Rgbs ------------------------ */
+
 // matches following website
 // http://colormine.org/convert/rgb-to-lab
-void Lab2Rgbs(unsigned char *rgbs255, float *frgbs, float *labs){
-  int i;
-
-  for(i = 0; i < 255; i++){
-    unsigned char *rgb_local;
-    float *lab, *frgb;
-
-    rgb_local = rgbs255 + 3 * i;
-    lab       = labs    + 3 * i;
-    frgb      = frgbs   + 3 * i;
-    Lab2Rgb(rgb_local, frgb, lab);
-  }
-}
 
 /* ------------------ CheckLab ------------------------ */
 void CheckLab(void){
@@ -997,7 +967,7 @@ void RemapColorbar(colorbardata *cbi){
     i2 = cbi->node_index[i+1];
     if(i2==i1)continue;
     node_rgb = cbi->node_rgb+3*i;
-    if(interp_lab==INTERP_CIE){
+    if(interp_lab==INTERP_LAB){
       Rgb2Lab(node_rgb,   lab1);
       Rgb2Lab(node_rgb+3, lab2);
     }
@@ -1011,7 +981,7 @@ void RemapColorbar(colorbardata *cbi){
       labj[0]=MIX(factor,lab2[0],lab1[0]);
       labj[1]=MIX(factor,lab2[1],lab1[1]);
       labj[2]=MIX(factor,lab2[2],lab1[2]);
-      if(interp_lab==INTERP_CIE){
+      if(interp_lab==INTERP_LAB){
         unsigned char rgb_val[3];
         float frgb[3];
 
@@ -1294,7 +1264,7 @@ int AddColorbar(int icolorbar){
   strcat(cb_to->menu_label, cb_from->menu_label);
   strcpy(cb_label, cb_to->menu_label);
   strcpy(cb_to->colorbar_type, "user defined");
-  cb_to->interp = INTERP_CIE;
+  cb_to->interp = INTERP_LAB;
   RemapColorbar(cb_to);
   UpdateColorbarDialogs();
 
@@ -1970,7 +1940,7 @@ void InitDefaultColorbars(int nini){
       cbi->interp = INTERP_RGB;
     }
     else{
-      cbi->interp = INTERP_CIE;
+      cbi->interp = INTERP_LAB;
     }
     cbi->dist_type = COLOR_DIST_LAB;
     RemapColorbar(cbi);
@@ -1984,7 +1954,7 @@ void InitDefaultColorbars(int nini){
       cbi->interp = INTERP_RGB;
     }
     else{
-      cbi->interp = INTERP_CIE;
+      cbi->interp = INTERP_LAB;
     }
   }
 }

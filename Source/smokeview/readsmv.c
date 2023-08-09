@@ -14840,7 +14840,7 @@ int ReadIni2(char *inifile, int localfile){
           strcpy(cbi->menu_label, cb_buffptr);
           cbi->type = CB_USER;
           strcpy(cbi->colorbar_type, "user defined");
-          cbi->interp = INTERP_CIE;
+          cbi->interp = INTERP_LAB;
 
           fgets(buffer, 255, stream);
           sscanf(buffer, "%i %i", &cbi->nnodes, &cbi->nodehilight);

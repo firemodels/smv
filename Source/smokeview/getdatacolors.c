@@ -1276,13 +1276,6 @@ void UpdateRGBColors(int colorbar_index){
     }
     UpdateSmokeColormap(RENDER_SLICE);
     UpdateSmokeColormap(RENDER_VOLUME);
-    unsigned char rgb_temp[3*256];
-    for(n=0;n<256;n++){
-      rgb_temp[3*n+0] = 255*rgb_full[n][0];
-      rgb_temp[3*n+1] = 255*rgb_full[n][1];
-      rgb_temp[3*n+2] = 255*rgb_full[n][2];
-    }
-    Rgb2Labs(rgb_temp, cbi->node_lab);
   }
   else{
     for(n=0;n<nrgb_full;n++){

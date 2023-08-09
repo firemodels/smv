@@ -278,7 +278,7 @@ typedef struct _treedata {
 #define CB_USER       6
 #define CB_OTHER      7
 #define INTERP_RGB    0
-#define INTERP_CIE    1
+#define INTERP_LAB    1
 #define COLOR_DIST_L   0
 #define COLOR_DIST_LAB 1
 typedef struct _colorbardata {
@@ -287,7 +287,7 @@ typedef struct _colorbardata {
   int nnodes, nnodes_orig, node_index_orig[1024], nodehilight, type;
   unsigned char node_rgb_orig[3*1024], node_rgb[3*1024], colorbar_alpha[1024];
   unsigned char node_index[1024];  // colorbar index
-  float node_lab[3*1024], node_dist[1024];
+  float node_dist[1024];
   float colorbar_dist[256];
   int dist_ind[256];
 #ifdef pp_COLOR_PLOT2D
