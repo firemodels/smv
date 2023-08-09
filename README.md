@@ -8,7 +8,7 @@ Here are some other useful links:
 
 [Smokeview Downloads](https://github.com/firemodels/smv/releases)
 
-[Discussion Forum](https://groups.google.com/forum/#!forum/fds-smv)
+[Discussion Forums](https://groups.google.com/forum/#!forum/fds-smv)
 
 [Smokeview Issues](https://github.com/firemodels/smv/issues)
 
