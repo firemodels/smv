@@ -172,7 +172,7 @@ void Colorbar2File(colorbardata *cbi, char *file, char *label){
     rgbc[0] = (unsigned char)CLAMP(rgb255[0], 0, 255);
     rgbc[1] = (unsigned char)CLAMP(rgb255[1], 0, 255);
     rgbc[2] = (unsigned char)CLAMP(rgb255[2], 0, 255);
-    Rgb2CIE(rgbc, cie);
+    Rgb2Lab(rgbc, cie);
     fprintf(stream, "%i,%i,%i,%f,%f,%f\n", rgb255[0], rgb255[1], rgb255[2], cie[0], cie[1], cie[2]);
   }
   fclose(stream);
@@ -275,15 +275,15 @@ extern "C" void ColorbarCB(int var){
       cienew[0] = (cie1[0]+cie2[0])/2.0;
       cienew[1] = (cie1[1]+cie2[1])/2.0;
       cienew[2] = (cie1[2]+cie2[2])/2.0;
-      CIE2Rgb(rnew, fnew, cienew);
+      Lab2Rgb(rnew, fnew, cienew);
 
       rnew = cbi->node_rgb_orig + 3*colorbarpoint;
-      Rgb2CIE(rnew-3,cie1);
-      Rgb2CIE(rnew+3,cie2);
+      Rgb2Lab(rnew-3,cie1);
+      Rgb2Lab(rnew+3,cie2);
       cienew[0] = (cie1[0]+cie2[0])/2.0;
       cienew[1] = (cie1[1]+cie2[1])/2.0;
       cienew[2] = (cie1[2]+cie2[2])/2.0;
-      CIE2Rgb(rnew, fnew, cienew);
+      Lab2Rgb(rnew, fnew, cienew);
 
       inew = cbi->node_index + colorbarpoint;
       ibef = inew - 1;
@@ -319,13 +319,13 @@ extern "C" void ColorbarCB(int var){
     if(colorbarpoint == cbi->nnodes)colorbarpoint = cbi->nnodes - 1;
     break;
   case COLORBAR_RGB2:
-    FRgb2CIE(cb_frgb2, cb_lab2);
+    FRgb2Lab(cb_frgb2, cb_lab2);
     SPINNER_Lab2[0]->set_float_val(cb_lab2[0]);
     SPINNER_Lab2[1]->set_float_val(cb_lab2[1]);
     SPINNER_Lab2[2]->set_float_val(cb_lab2[2]);
     break;
   case COLORBAR_LAB2:
-    CIE2Rgb(rgb_local, cb_frgb2, cb_lab2);
+    Lab2Rgb(rgb_local, cb_frgb2, cb_lab2);
     SPINNER_rgb2[0]->set_float_val(cb_frgb2[0]);
     SPINNER_rgb2[1]->set_float_val(cb_frgb2[1]);
     SPINNER_rgb2[2]->set_float_val(cb_frgb2[2]);
@@ -553,7 +553,7 @@ extern "C" void GluiColorbarSetup(int main_window){
     glui_colorbar->close();
     glui_colorbar=NULL;
   }
-  glui_colorbar = GLUI_Master.create_glui(_("Customize Colorbar"),0,0,0);
+  glui_colorbar = GLUI_Master.create_glui(_("Edit Colorbar"),0,0,0);
   if(showcolorbar_dialog==0)glui_colorbar->hide();
 
   PANEL_cb1 = glui_colorbar->add_panel(_("Colorbar"));

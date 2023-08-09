@@ -378,29 +378,29 @@ void DrawColorbarPathRGB(void){
 
 /* ------------------ Rgb2CIE ------------------------ */
 
-void Rgb2CIE(unsigned char *rgb_arg, float *cie){
+void Rgb2Lab(unsigned char *rgb_arg, float *cie){
   float frgb_arg[3];
 
   frgb_arg[0] = (float)rgb_arg[0];
   frgb_arg[1] = (float)rgb_arg[1];
   frgb_arg[2] = (float)rgb_arg[2];
-  FRgb2CIE(frgb_arg, cie);
+  FRgb2Lab(frgb_arg, cie);
 }
 
 /* ------------------ Rgbf2CIE ------------------------ */
 
-void Rgbf2CIE(float *rgbf_arg, float *cie){
+void Rgbf2Lab(float *rgbf_arg, float *cie){
   float frgb_arg[3];
 
   frgb_arg[0] = rgbf_arg[0] * 255.0;
   frgb_arg[1] = rgbf_arg[1] * 255.0;
   frgb_arg[2] = rgbf_arg[2] * 255.0;
-  FRgb2CIE(frgb_arg, cie);
+  FRgb2Lab(frgb_arg, cie);
 }
 
-/* ------------------ Cie2XYZ ------------------------ */
+/* ------------------ Lab2XYZ ------------------------ */
 
-void Cie2XYZ(float *xyz, float *cie){
+void Lab2XYZ(float *xyz, float *cie){
   xyz[0] = cie[0] / 100.0;
   xyz[1] = (cie[1] + 87.9) / 183.28;
   xyz[2] = (cie[2] + 126.39) / 211.11;
@@ -425,7 +425,7 @@ void DrawColorbarPathCIE(void){
 
     rgbi = cbi->colorbar_rgb + 3 * i;
     glColor3fv(rgbi);
-    Cie2XYZ(xyz, cbi->colorbar_lab + 3*i);
+    Lab2XYZ(xyz, cbi->colorbar_lab + 3*i);
     glVertex3f(xyz[1], xyz[2], xyz[0]);
   }
   glEnd();
@@ -436,8 +436,8 @@ void DrawColorbarPathCIE(void){
     char label[32];
 
     sprintf(label, "%.2f", cbi->colorbar_dist[i]-cbi->colorbar_dist[i-7]);
-    Cie2XYZ(xyz2, cbi->colorbar_lab + 3 * i);
-    Cie2XYZ(xyz1, cbi->colorbar_lab + 3 * (i + 1 - 8));
+    Lab2XYZ(xyz2, cbi->colorbar_lab + 3 * i);
+    Lab2XYZ(xyz1, cbi->colorbar_lab + 3 * (i + 1 - 8));
     xyz1[0] = (xyz1[0] + xyz2[0]) / 2.0;
     xyz1[1] = (xyz1[1] + xyz2[1]) / 2.0;
     xyz1[2] = (xyz1[2] + xyz2[2]) / 2.0;
@@ -452,7 +452,7 @@ void DrawColorbarPathCIE(void){
 
     rgbi = cbi->colorbar_rgb + 3 * i;
     glColor3fv(rgbi);
-    Cie2XYZ(xyz, cbi->colorbar_lab + 3*i);
+    Lab2XYZ(xyz, cbi->colorbar_lab + 3*i);
     glVertex3f(xyz[1],xyz[2],xyz[0]);
   }
   glEnd();
@@ -609,7 +609,7 @@ void UpdateCurrentColorbar(colorbardata *cb){
 void AdjustColorBar(colorbardata *cbi, int option){
   int i;
 
-  Rgb2CIE(cbi->node_rgb, cbi->node_lab);
+  Rgb2Lab(cbi->node_rgb, cbi->node_lab);
   cbi->dist_type = option;
   cbi->node_dist[0] = 0.0;
   for(i = 1;i < cbi->nnodes;i++){
@@ -619,7 +619,7 @@ void AdjustColorBar(colorbardata *cbi, int option){
     rgb2_local = cbi->node_rgb + 3*i;
     cie2 = cbi->node_lab + 3 * i;
     cie1 = cie2 - 3;
-    Rgb2CIE(rgb2_local, cie2);
+    Rgb2Lab(rgb2_local, cie2);
     if(option == COLOR_DIST_LAB){
       float dx, dy, dz;
 
@@ -647,7 +647,7 @@ void AdjustColorBar(colorbardata *cbi, int option){
 
 /* ------------------ FRgb2CIE ------------------------ */
 
-void FRgb2CIE(float *rgb_arg, float *cie){
+void FRgb2Lab(float *rgb_arg, float *cie){
 
   // Convert RGB values to XYZ
   float var_R = rgb_arg[0] / 255.0f;
@@ -728,8 +728,8 @@ void Rgb2Dist(colorbardata *cbi){
 
     rgb1f = cbi->colorbar_rgb + 3*(i - 1);
     rgb2f = cbi->colorbar_rgb + 3*i;
-    Rgbf2CIE(rgb1f, cie1);
-    Rgbf2CIE(rgb2f, cie2);
+    Rgbf2Lab(rgb1f, cie1);
+    Rgbf2Lab(rgb2f, cie2);
     if(cbi->dist_type==COLOR_DIST_LAB){
       DDIST3(cie1, cie2, distcie);
     }
@@ -761,9 +761,9 @@ void Rgb2Dist(colorbardata *cbi){
   }
 }
 
-/* ------------------ Rgb2CIEs ------------------------ */
+/* ------------------ Rgb2Labs ------------------------ */
 
-void Rgb2CIEs(unsigned char *rgbs255, float *cies){
+void Rgb2Labs(unsigned char *rgbs255, float *cies){
   int i;
 
   for(i = 0; i < 255; i++){
@@ -773,13 +773,13 @@ void Rgb2CIEs(unsigned char *rgbs255, float *cies){
     rgb_local = rgbs255 + 3 * i;
 
     cie = cies + 3 * i;
-    Rgb2CIE(rgb_local, cie);
+    Rgb2Lab(rgb_local, cie);
   }
 }
 
 /* ------------------ CIE2Rgb ------------------------ */
 
-void CIE2Rgb(unsigned char *rgb_arg, float *frgb_arg, float *cie){
+void Lab2Rgb(unsigned char *rgb_arg, float *frgb_arg, float *cie){
   float L, a, b;
 
   L = cie[0];
@@ -848,7 +848,7 @@ void CIE2Rgb(unsigned char *rgb_arg, float *frgb_arg, float *cie){
 /* ------------------ CIE2Rgbs ------------------------ */
 // matches following website
 // http://colormine.org/convert/rgb-to-lab
-void CIE2Rgbs(unsigned char *rgbs255, float *frgbs, float *cies){
+void Lab2Rgbs(unsigned char *rgbs255, float *frgbs, float *cies){
   int i;
 
   for(i = 0; i < 255; i++){
@@ -858,12 +858,12 @@ void CIE2Rgbs(unsigned char *rgbs255, float *frgbs, float *cies){
     rgb_local = rgbs255 + 3 * i;
     cie       = cies    + 3 * i;
     frgb      = frgbs   + 3 * i;
-    CIE2Rgb(rgb_local, frgb, cie);
+    Lab2Rgb(rgb_local, frgb, cie);
   }
 }
 
-/* ------------------ CheckCIE ------------------------ */
-void CheckCIE(void){
+/* ------------------ CheckLab ------------------------ */
+void CheckLab(void){
   int i, diff;
   int hist[256];
   float sum=0.0;
@@ -892,9 +892,9 @@ void CheckCIE(void){
         rgbval[0] = (unsigned char)k;
         rgbval[1] = (unsigned char)j;
         rgbval[2] = (unsigned char)i;
-        Rgb2CIE(rgbval, cie);
-        CIE2Rgb(rgbnew, frgb, cie);
-        Rgb2CIE(rgbnew, cie2);
+        Rgb2Lab(rgbval, cie);
+        Lab2Rgb(rgbnew, frgb, cie);
+        Rgb2Lab(rgbnew, cie2);
         diff = ABS(rgbval[0] - rgbnew[0]);
         diff = MAX(diff, ABS(rgbval[1] - rgbnew[1]));
         diff = MAX(diff, ABS(rgbval[2] - rgbnew[2]));
@@ -919,7 +919,7 @@ void CheckCIE(void){
         rgbval[0] = MIN(( unsigned char )k,255);
         rgbval[1] = MIN(( unsigned char )j,255);
         rgbval[2] = MIN(( unsigned char )i,255);
-        Rgb2CIE(rgbval, cie);
+        Rgb2Lab(rgbval, cie);
         memcpy(ciexyz, cie, 3 * sizeof(float));
         memcpy(ciergb, rgbval, 3);
         ciexyz += 3;
@@ -998,8 +998,8 @@ void RemapColorbar(colorbardata *cbi){
     if(i2==i1)continue;
     node_rgb = cbi->node_rgb+3*i;
     if(interp_cielab==INTERP_CIE){
-      Rgb2CIE(node_rgb,   cie1);
-      Rgb2CIE(node_rgb+3, cie2);
+      Rgb2Lab(node_rgb,   cie1);
+      Rgb2Lab(node_rgb+3, cie2);
     }
     for(j=i1;j<i2;j++){
       float factor;
@@ -1015,7 +1015,7 @@ void RemapColorbar(colorbardata *cbi){
         unsigned char rgb_val[3];
         float frgb[3];
 
-        CIE2Rgb(rgb_val, frgb, labj);
+        Lab2Rgb(rgb_val, frgb, labj);
         colorbar_rgb[0+3*j] = frgb[0]/255.0;
         colorbar_rgb[1+3*j] = frgb[1]/255.0;
         colorbar_rgb[2+3*j] = frgb[2]/255.0;

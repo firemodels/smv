@@ -1924,7 +1924,7 @@ void UpdateShowScene(void){
     UpdateTerrainGlui();
   }
   if(check_colorbar == 1){
-    CheckCIE();
+    CheckLab();
     check_colorbar++;
   }
   if(update_colorbar_orig == 1){

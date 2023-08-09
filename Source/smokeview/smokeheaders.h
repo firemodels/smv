@@ -703,15 +703,15 @@ EXTERNCPP void UpdatePartClassDepend(partclassdata *partclassi);
 
 EXTERNCPP void UpdateColorbarListBound(int flag);
 EXTERNCPP void UpdateColorbarListEdit(int flag,int del);
-EXTERNCPP void CheckCIE(void);
+EXTERNCPP void CheckLab(void);
 
 EXTERNCPP void AdjustColorBar(colorbardata *cbi, int option);
 EXTERNCPP void RevertColorBar(colorbardata *cbi);
-EXTERNCPP void Rgb2CIE(unsigned char *rgb, float *cie);
-EXTERNCPP void Rgb2CIEs(unsigned char *rgbs255, float *cies);
+EXTERNCPP void Rgb2Lab(unsigned char *rgb, float *cie);
+EXTERNCPP void Rgb2Labs(unsigned char *rgbs255, float *cies);
 EXTERNCPP void UpdateColorbarOrig(void);
-EXTERNCPP void CIE2Rgb(unsigned char *rgb255, float *frgb, float *cie);
-EXTERNCPP void FRgb2CIE(float *rgb_arg, float *cie);
+EXTERNCPP void Lab2Rgb(unsigned char *rgb255, float *frgb, float *cie);
+EXTERNCPP void FRgb2Lab(float *rgb_arg, float *cie);
 
 EXTERNCPP char *GetChid(char *file, char *buffer);
 EXTERNCPP int AddColorbar(int icolorbar);
