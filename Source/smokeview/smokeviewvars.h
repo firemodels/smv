@@ -520,7 +520,7 @@ SVEXTERN int SVDECL(*colorbar_list_sorted, NULL);
 SVEXTERN int SVDECL(*colorbar_list_inverse, NULL);
 SVEXTERN int SVDECL(show_Lab_dist_bars, 0);
 SVEXTERN int SVDECL(update_colorbar_orig, 0);
-SVEXTERN float SVDECL(*cielab_check_xyz, NULL);
+SVEXTERN float SVDECL(*lab_check_xyz, NULL);
 SVEXTERN char SVDECL(*dEcsv_filename, NULL);
 SVEXTERN float cb_lab2[3], cb_frgb2[3];
 SVEXTERN int cb_rgb2[3];

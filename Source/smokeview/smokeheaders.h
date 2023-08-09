@@ -707,11 +707,11 @@ EXTERNCPP void CheckLab(void);
 
 EXTERNCPP void AdjustColorBar(colorbardata *cbi, int option);
 EXTERNCPP void RevertColorBar(colorbardata *cbi);
-EXTERNCPP void Rgb2Lab(unsigned char *rgb, float *cie);
-EXTERNCPP void Rgb2Labs(unsigned char *rgbs255, float *cies);
+EXTERNCPP void Rgb2Lab(unsigned char *rgb, float *lab);
+EXTERNCPP void Rgb2Labs(unsigned char *rgbs255, float *labs);
 EXTERNCPP void UpdateColorbarOrig(void);
-EXTERNCPP void Lab2Rgb(unsigned char *rgb255, float *frgb, float *cie);
-EXTERNCPP void FRgb2Lab(float *rgb_arg, float *cie);
+EXTERNCPP void Lab2Rgb(unsigned char *rgb255, float *frgb, float *lab);
+EXTERNCPP void FRgb2Lab(float *rgb_arg, float *lab);
 
 EXTERNCPP char *GetChid(char *file, char *buffer);
 EXTERNCPP int AddColorbar(int icolorbar);

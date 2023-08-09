@@ -162,7 +162,7 @@ void Colorbar2File(colorbardata *cbi, char *file, char *label){
   for(i = 0;i < 256;i++){
     float *rgbi;
     int rgb255[3];
-    float cie[3];
+    float lab[3];
     unsigned char rgbc[3];
 
     rgbi = cbi->colorbar_rgb + 3 * i;
@@ -172,8 +172,8 @@ void Colorbar2File(colorbardata *cbi, char *file, char *label){
     rgbc[0] = (unsigned char)CLAMP(rgb255[0], 0, 255);
     rgbc[1] = (unsigned char)CLAMP(rgb255[1], 0, 255);
     rgbc[2] = (unsigned char)CLAMP(rgb255[2], 0, 255);
-    Rgb2Lab(rgbc, cie);
-    fprintf(stream, "%i,%i,%i,%f,%f,%f\n", rgb255[0], rgb255[1], rgb255[2], cie[0], cie[1], cie[2]);
+    Rgb2Lab(rgbc, lab);
+    fprintf(stream, "%i,%i,%i,%f,%f,%f\n", rgb255[0], rgb255[1], rgb255[2], lab[0], lab[1], lab[2]);
   }
   fclose(stream);
 }
@@ -266,24 +266,24 @@ extern "C" void ColorbarCB(int var){
     {
       unsigned char *rnew;
       unsigned char *inew, *ibef, *iaft;
-      float cie1[3], cie2[3], *cienew, fnew[3];
+      float lab1[3], lab2[3], *labnew, fnew[3];
 
       rnew = cbi->node_rgb + 3 * colorbarpoint;
-      cienew = cbi->node_lab + 3 * colorbarpoint;
-      memcpy(cie1, cienew-3, 3*sizeof(float));
-      memcpy(cie2, cienew+3, 3*sizeof(float));
-      cienew[0] = (cie1[0]+cie2[0])/2.0;
-      cienew[1] = (cie1[1]+cie2[1])/2.0;
-      cienew[2] = (cie1[2]+cie2[2])/2.0;
-      Lab2Rgb(rnew, fnew, cienew);
+      labnew = cbi->node_lab + 3 * colorbarpoint;
+      memcpy(lab1, labnew -3, 3*sizeof(float));
+      memcpy(lab2, labnew +3, 3*sizeof(float));
+      labnew[0] = (lab1[0] + lab2[0])/2.0;
+      labnew[1] = (lab1[1] + lab2[1])/2.0;
+      labnew[2] = (lab1[2] + lab2[2])/2.0;
+      Lab2Rgb(rnew, fnew, labnew);
 
       rnew = cbi->node_rgb_orig + 3*colorbarpoint;
-      Rgb2Lab(rnew-3,cie1);
-      Rgb2Lab(rnew+3,cie2);
-      cienew[0] = (cie1[0]+cie2[0])/2.0;
-      cienew[1] = (cie1[1]+cie2[1])/2.0;
-      cienew[2] = (cie1[2]+cie2[2])/2.0;
-      Lab2Rgb(rnew, fnew, cienew);
+      Rgb2Lab(rnew-3,lab1);
+      Rgb2Lab(rnew+3,lab2);
+      labnew[0] = (lab1[0]+lab2[0])/2.0;
+      labnew[1] = (lab1[1]+lab2[1])/2.0;
+      labnew[2] = (lab1[2]+lab2[2])/2.0;
+      Lab2Rgb(rnew, fnew, labnew);
 
       inew = cbi->node_index + colorbarpoint;
       ibef = inew - 1;
