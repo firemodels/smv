@@ -1605,6 +1605,27 @@ void UpdateChopColors(void){
       rgb_patch[4*i+3]=0.0;
     }
   }
+  if(showall_3dslices==1){
+    int slice3d_loaded = 0;
+
+    for(i=0;i<nsliceinfo;i++){
+      slicedata *slicei;
+
+      slicei = sliceinfo + i;
+      if(slicei->volslice==1&&slicei->loaded==1&&slicei->display==1){
+        slice3d_loaded = 1;
+        break;
+      }
+    }
+    if(slice3d_loaded==1){
+      for(i = 0; i < nrgb_full; i++){
+        float factor;
+
+        factor = (float)i/255.0;
+        rgb_slice[4 * i + 3] = transparent_level_local*factor*factor;
+      }
+    }
+  }
   {
     float smin, smax;
     int chop_patch_local;
