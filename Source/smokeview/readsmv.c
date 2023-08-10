@@ -3274,8 +3274,8 @@ int CompareSmoketypes( const void *arg1, const void *arg2 ){
   if(Match(labeli, "HRRPUV")==1)return -1;
   if(Match(labelj, "HRRPUV")==1)return  1;
 
-  if(Match(labeli, "TEMPERATURE")==1)return  -1;
-  if(Match(labelj, "TEMPERATURE")==1)return   1;
+  if(strstr(labeli, "TEMPERATURE")!=NULL)return  -1;
+  if(strstr(labelj, "TEMPERATURE")!=NULL)return   1;
 
   return strcmp(labeli, labelj);
 }
@@ -5537,7 +5537,7 @@ int ParseSMOKE3DProcess(bufferstreamdata *stream, char *buffer, int *nn_smoke3d_
       if(strcmp(smoke3di->label.longlabel, "HRRPUV")==0){
         show_hrrcutoff_active = 1;
       }
-      if(strcmp(smoke3di->label.longlabel, "TEMPERATURE")==0){
+      if(strstr(smoke3di->label.longlabel, "TEMPERATURE") !=NULL){
         show_tempcutoff_active = 1;
       }
       ismoke3d++;
