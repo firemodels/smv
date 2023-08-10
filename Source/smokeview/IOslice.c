@@ -7998,7 +7998,7 @@ void DrawSliceFrame(){
           else{
             is2 = sd->is2;
           }
-          if(sortslices==0){
+          if(sortslices==0||(sd->volslice == 1 && showall_3dslices == 1)){
             DrawVolSliceTexture(sd, sd->is1, is2, sd->js1, sd->js2, sd->ks1, sd->ks2, 0);
           }
           SNIFF_ERRORS("after DrawVolSliceTexture");
