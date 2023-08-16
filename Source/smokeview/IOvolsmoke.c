@@ -77,7 +77,7 @@ VKLDevice InitVKL(int *width){
 
 /* ----------------------- GetSmokeColor ----------------------------- */
 
-void GetSmokeColor(float *smoke_tran, float **smoke_color_handle, float *scaled_intensity, float *light_fractionptr, float dlength, float xyz[3], meshdata *meshi, int *inobst, char *blank_local){
+void GetSmokeColor(float *smoke_tran, float **smoke_color_handle, float *scaled_intensity, float dlength, float xyz[3], meshdata *meshi, int *inobst, char *blank_local){
   int i, j, k;
   int ijk;
   float *vv;
@@ -171,7 +171,6 @@ void GetSmokeColor(float *smoke_tran, float **smoke_color_handle, float *scaled_
     if(firedata_local!=NULL&&index>MAXSMOKERGB/2)soot_density *= fire_opacity_factor;
     *smoke_tran = exp(-mass_extinct*soot_density*dlength);
   }
-  *light_fractionptr = 1.0;
 }
 
 /* ------------------ InitVolRenderSurface ------------------------ */
@@ -1009,7 +1008,7 @@ void IntegrateSmokeColors(float *integrated_smokecolor, float *xyzvert, float dl
   int iwall_min=0;
   float xyzvals[3];
   char *blank_local;
-  float xi, taui, *smoke_color=NULL, smoke_light_fraction;
+  float xi, taui, *smoke_color=NULL;
   float taun,alphan;
   meshdata *xyz_mesh=NULL;
 
@@ -1138,14 +1137,12 @@ void IntegrateSmokeColors(float *integrated_smokecolor, float *xyzvert, float dl
       if(xyz_mesh==NULL)break;
       blank_local = NULL;
       if(block_volsmoke==1)blank_local=xyz_mesh->c_iblank_cell;
-      GetSmokeColor(&taui,&smoke_color, &scaled_intensity, &smoke_light_fraction,
-                         dlength,xyz, xyz_mesh, &inobst, blank_local);
+      GetSmokeColor(&taui, &smoke_color, &scaled_intensity, dlength,xyz, xyz_mesh, &inobst, blank_local);
     }
     else{
       blank_local = NULL;
       if(block_volsmoke==1)blank_local=meshi->c_iblank_cell;
-      GetSmokeColor(&taui,&smoke_color, &scaled_intensity, &smoke_light_fraction,
-                         dlength, xyz, meshi, &inobst, blank_local);
+      GetSmokeColor(&taui, &smoke_color, &scaled_intensity, dlength, xyz, meshi, &inobst, blank_local);
     }
     if(blank_local!=NULL&&inobst==1)break;
 
