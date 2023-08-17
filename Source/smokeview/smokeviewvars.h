@@ -429,6 +429,10 @@ SVEXTERN int SVDECL(nsmoke3d_co2, 0);
 SVEXTERN int SVDECL(update_zaxis_custom, 0);
 SVEXTERN int SVDECL(from_DisplayCB, 0);
 SVEXTERN int SVDECL(ngeom_data, 0);
+#ifdef pp_BLACKBODY
+#define MAXFIRERGB 256
+SVEXTERN float firergbs[3 * MAXFIRERGB];
+#endif
 
 SVEXTERN int SVDECL(have_geom_slice_menus, 0), SVDECL(geom_slice_loaded,0);
 SVEXTERN FILE SVDECL(*stderr2,NULL);

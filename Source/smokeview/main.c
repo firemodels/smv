@@ -827,6 +827,10 @@ int main(int argc, char **argv){
   if(CheckSMVFile(smv_filename, smokeview_casedir)==0){
     SMV_EXIT(1);
   }
+#ifdef pp_BLACKBODY
+  MakeFireColors();
+#endif
+
   InitTextureDir();
   InitColorbarsDir();
   InitScriptErrorFiles();

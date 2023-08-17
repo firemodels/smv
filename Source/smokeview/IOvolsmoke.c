@@ -64,6 +64,145 @@
       value = *vv;\
     }
 
+#ifdef pp_BLACKBODY
+/* ----------------------- Gaussian ----------------------------- */
+
+float Gaussian(float x, float mu, float sigma1, float sigma2){
+  float return_val, arg;
+
+  if(x < mu){
+    arg = (x - mu) / sigma1;
+  }
+  else{
+    arg = (x - mu) / sigma2;
+  }
+  arg = -arg * arg / 2.0;
+  return_val = exp(arg);
+  return return_val;
+}
+// https://en.wikipedia.org/wiki/CIE_1931_color_space
+/* ----------------------- ColorMatchRed ----------------------------- */
+
+float ColorMatchRed(float lambda){
+  float return_val;
+  // units
+  // lambda: nm
+
+  return_val  = 1.056*Gaussian(lambda, 599.8, 37.9, 31.0);
+  return_val += 0.362*Gaussian(lambda, 442.0, 16.0, 26.7);
+  return_val -= 0.065*Gaussian(lambda, 501.1, 20.4, 26.2);
+  return return_val;
+}
+
+/* ----------------------- ColorMatchGreen ----------------------------- */
+
+float ColorMatchGreen(float lambda){
+  float return_val;
+  // units
+  // lambda: nm
+
+  return_val  = 0.821*Gaussian(lambda, 568.8, 46.9, 40.5);
+  return_val += 0.286*Gaussian(lambda, 530.9, 16.3, 31.1);
+  return return_val;
+}
+
+
+/* ----------------------- ColorMatchBlue ----------------------------- */
+
+float ColorMatchBlue(float lambda){
+  float return_val;
+  // units
+  // lambda: nm
+
+  return_val  = 1.217*Gaussian(lambda, 437.0, 11.8, 36.0);
+  return_val += 0.681*Gaussian(lambda, 459.0, 26.0, 13.8);
+  return return_val;
+}
+/* ----------------------- GetPlankVal ----------------------------- */
+
+float GetPlankVal(float lambda, float temp){
+  // units
+  // lambda: m
+  // temp:   K
+  // https://en.wikipedia.org/wiki/Planck%27s_law
+  // https://www.fourmilab.ch/documents/specrend/
+  float c1, c2;
+  // (c1/lambda^5)/(exp(c2/(lambda*T)-1)
+  //c1 = 2 pi hc^2 = 3.74183 * 10^-16 W m2
+  //c2 = hc/k = 0.014388 m K
+  c1 = 3.74183 * pow(10.0, -16);
+  c2 = 0.014388;
+  float return_val = (c1 / pow(lambda, 5.0)) / (exp(c2 / (lambda * temp)) - 1.0);;
+  return return_val;
+}
+
+/* ----------------------- GetRGBFireVal ----------------------------- */
+
+void GetRGBFireVal(float temp, float *rgb){
+  // units
+  // temp C
+  int i, n;
+  float valmin, valmax, dval;
+
+  temp += 273.15;
+  valmin = 380.0;
+  valmax = 780.0;
+  n = 81;
+  dval = (valmax - valmin)/(float)(n-1);;
+  rgb[0] = 0.0;
+  rgb[1] = 0.0;
+  rgb[2] = 0.0;
+  for(i = 0;i < n;i++){
+    float plank_val, lambda_nano, lambda_m;
+    float rgb_val[3];
+
+    lambda_nano = valmin + i*dval;
+    lambda_m    = lambda_nano/pow(10.0,9.0);
+    plank_val   = GetPlankVal(lambda_m, temp);
+    rgb_val[0]  = ColorMatchRed(lambda_nano)*plank_val;
+    rgb_val[1]  = ColorMatchGreen(lambda_nano)*plank_val;
+    rgb_val[2]  = ColorMatchBlue(lambda_nano)*plank_val;
+    if(i == 0 || i == n - 1){
+      rgb[0] += rgb_val[0];
+      rgb[1] += rgb_val[1];
+      rgb[2] += rgb_val[2];
+    }
+    else{
+      rgb[0] += 2.0*rgb_val[0];
+      rgb[1] += 2.0*rgb_val[1];
+      rgb[2] += 2.0*rgb_val[2];
+    }
+  }
+  rgb[0] *= 0.5*dval;
+  rgb[1] *= 0.5*dval;
+  rgb[2] *= 0.5*dval;
+}
+
+/* ----------------------- MakeFireColors ----------------------------- */
+
+void MakeFireColors(void){
+  int i;
+
+#ifdef pp_BLACKBODY_OUT  
+  FILE *stream;
+#endif
+  stream = fopen("testfire.csv", "w");
+  for(i = 0;i < MAXFIRERGB;i++){
+    float temp, firergb[3];
+
+    temp = (float)i * 15.0;
+    GetRGBFireVal(temp, firergb);
+    memcpy(firergbs + 3 * i, firergb, 3 * sizeof(float));
+#ifdef pp_BLACKBODY_OUT  
+    fprintf(stream, "%f,%f,%f,%f\n", temp, firergb[0], firergb[1], firergb[2]);
+#endif
+  }
+#ifdef pp_BLACKBODY_OUT  
+  fclose(stream);
+#endif
+}
+#endif
+
 /* ----------------------- InitVKL ----------------------------- */
 
 #ifdef pp_OPENVKL
