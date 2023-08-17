@@ -138,7 +138,7 @@ float GetPlankVal(float lambda, float temp){
 
 /* ----------------------- GetRGBFireVal ----------------------------- */
 
-void GetRGBFireVal(float temp, float *rgb){
+void GetRGBFireVal(float temp, float *rgb_arg){
   // units
   // temp C
   int i, n;
@@ -149,9 +149,9 @@ void GetRGBFireVal(float temp, float *rgb){
   valmax = 780.0;
   n = 81;
   dval = (valmax - valmin)/(float)(n-1);;
-  rgb[0] = 0.0;
-  rgb[1] = 0.0;
-  rgb[2] = 0.0;
+  rgb_arg[0] = 0.0;
+  rgb_arg[1] = 0.0;
+  rgb_arg[2] = 0.0;
   for(i = 0;i < n;i++){
     float plank_val, lambda_nano, lambda_m;
     float rgb_val[3];
@@ -163,19 +163,19 @@ void GetRGBFireVal(float temp, float *rgb){
     rgb_val[1]  = ColorMatchGreen(lambda_nano)*plank_val;
     rgb_val[2]  = ColorMatchBlue(lambda_nano)*plank_val;
     if(i == 0 || i == n - 1){
-      rgb[0] += rgb_val[0];
-      rgb[1] += rgb_val[1];
-      rgb[2] += rgb_val[2];
+      rgb_arg[0] += rgb_val[0];
+      rgb_arg[1] += rgb_val[1];
+      rgb_arg[2] += rgb_val[2];
     }
     else{
-      rgb[0] += 2.0*rgb_val[0];
-      rgb[1] += 2.0*rgb_val[1];
-      rgb[2] += 2.0*rgb_val[2];
+      rgb_arg[0] += 2.0*rgb_val[0];
+      rgb_arg[1] += 2.0*rgb_val[1];
+      rgb_arg[2] += 2.0*rgb_val[2];
     }
   }
-  rgb[0] *= 0.5*dval;
-  rgb[1] *= 0.5*dval;
-  rgb[2] *= 0.5*dval;
+  rgb_arg[0] *= 0.5*dval;
+  rgb_arg[1] *= 0.5*dval;
+  rgb_arg[2] *= 0.5*dval;
 }
 
 /* ----------------------- MakeFireColors ----------------------------- */
