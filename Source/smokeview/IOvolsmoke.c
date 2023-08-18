@@ -142,11 +142,12 @@ void GetRGBFireVal(float temp, float *rgb_arg){
   // units
   // temp C
   int i, n;
-  float valmin, valmax, dval;
+  float valmin, valmax, dval, factor;
 
   temp += 273.15;
   valmin = 380.0;
   valmax = 780.0;
+  factor = pow(10.0, 9.0);
   n = 81;
   dval = (valmax - valmin)/(float)(n-1);;
   rgb_arg[0] = 0.0;
@@ -157,11 +158,11 @@ void GetRGBFireVal(float temp, float *rgb_arg){
     float rgb_val[3];
 
     lambda_nano = valmin + i*dval;
-    lambda_m    = lambda_nano/pow(10.0,9.0);
+    lambda_m    = lambda_nano/factor;
     plank_val   = GetPlankVal(lambda_m, temp);
-    rgb_val[0]  = ColorMatchRed(lambda_nano)*plank_val;
-    rgb_val[1]  = ColorMatchGreen(lambda_nano)*plank_val;
-    rgb_val[2]  = ColorMatchBlue(lambda_nano)*plank_val;
+    rgb_val[0]  = plank_val*ColorMatchRed(lambda_nano);
+    rgb_val[1]  = plank_val*ColorMatchGreen(lambda_nano);
+    rgb_val[2]  = plank_val*ColorMatchBlue(lambda_nano);
     if(i == 0 || i == n - 1){
       rgb_arg[0] += rgb_val[0];
       rgb_arg[1] += rgb_val[1];
@@ -180,17 +181,19 @@ void GetRGBFireVal(float temp, float *rgb_arg){
 
 /* ----------------------- MakeFireColors ----------------------------- */
 
-void MakeFireColors(void){
+void MakeFireColors(float temp_min, float temp_max){
   int i;
+  float dtemp;
 
 #ifdef pp_BLACKBODY_OUT  
   FILE *stream;
-#endif
   stream = fopen("testfire.csv", "w");
+#endif
+  dtemp = (temp_max - temp_min)/(float)(MAXFIRERGB-1);
   for(i = 0;i < MAXFIRERGB;i++){
     float temp, firergb[3];
 
-    temp = (float)i * 15.0;
+    temp = temp_min + (float)i * dtemp;
     GetRGBFireVal(temp, firergb);
     memcpy(firergbs + 3 * i, firergb, 3 * sizeof(float));
 #ifdef pp_BLACKBODY_OUT  
