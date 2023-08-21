@@ -66,6 +66,8 @@
 
 #ifdef pp_BLACKBODY
 
+// https://www.fourmilab.ch/documents/specrend/specrend.c
+
 /* A colour system is defined by the CIE x and y coordinates of
    its three primary illuminants and the x and y coordinates of
    the white point. */
