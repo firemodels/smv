@@ -106,6 +106,9 @@ HDTVsystem = {"HDTV",               0.670,  0.330,  0.210,  0.710,  0.150,  0.06
 CIEsystem = {"CIE",                0.7355, 0.2645, 0.2658, 0.7243, 0.1669, 0.0085, IlluminantE,    GAMMA_REC709},
 Rec709system = {"CIE REC 709",        0.64,   0.33,   0.30,   0.60,   0.15,   0.06,   IlluminantD65,  GAMMA_REC709};
 #endif
+//static struct colourSystem SMPTEsystem = {"SMPTE",              0.630,  0.340,  0.310,  0.595,  0.155,  0.070,  IlluminantD65,  GAMMA_REC709};
+static struct colourSystem CIEsystem = {"CIE",                0.7355, 0.2645, 0.2658, 0.7243, 0.1669, 0.0085, IlluminantE,    GAMMA_REC709};
+//static struct colourSystem NTSCsystem = {"NTSC",               0.67,   0.33,   0.21,   0.71,   0.14,   0.08,   IlluminantC,    GAMMA_REC709};
 
 /*                             XYZ_TO_RGB
 
@@ -118,17 +121,16 @@ Rec709system = {"CIE REC 709",        0.64,   0.33,   0.30,   0.60,   0.15,   0.
     the Maxwell  triangle (colour gamut) formed by the three
     primaries, one of the r, g, or b weights will be negative.
 
-    Caller can use constrain_rgb() to desaturate an
+    Caller can use ConstrainRgb() to desaturate an
     outside-gamut colour to the closest representation within
     the available gamut and/or norm_rgb to normalise the RGB
     components so the largest nonzero component has value 1.
 
 */
 
-void xyz_to_rgb(struct colourSystem *cs,
-  float xc, float yc, float zc,
-  float *r, float *g, float *b)
-{
+/* ----------------------- Xyz2Rgb ----------------------------- */
+
+void Xyz2Rgb(struct colourSystem *cs, float *xyz_c, float *rgb_arg){
   float xr, yr, zr, xg, yg, zg, xb, yb, zb;
   float xw, yw, zw;
   float rx, ry, rz, gx, gy, gz, bx, by, bz;
@@ -161,9 +163,9 @@ void xyz_to_rgb(struct colourSystem *cs,
 
   /* rgb of the desired point */
 
-  *r = (rx * xc) + (ry * yc) + (rz * zc);
-  *g = (gx * xc) + (gy * yc) + (gz * zc);
-  *b = (bx * xc) + (by * yc) + (bz * zc);
+  rgb_arg[0] = (rx * xyz_c[0]) + (ry * xyz_c[1]) + (rz * xyz_c[2]);
+  rgb_arg[1] = (gx * xyz_c[0]) + (gy * xyz_c[1]) + (gz * xyz_c[2]);
+  rgb_arg[2] = (bx * xyz_c[0]) + (by * xyz_c[1]) + (bz * xyz_c[2]);
 }
 
 /*                            INSIDE_GAMUT
@@ -173,9 +175,10 @@ void xyz_to_rgb(struct colourSystem *cs,
      system.  This amounts simply to testing whether all the
      primary weights are non-negative. */
 
-int inside_gamut(float r, float g, float b)
-{
-  return (r >= 0) && (g >= 0) && (b >= 0);
+/* ----------------------- InsideGamut ----------------------------- */
+
+int InsideGamut(float *rgb_arg){
+  return (rgb_arg[0] >= 0.0) && (rgb_arg[1] >= 0.0) && (rgb_arg[2] >= 0.0);
 }
 
 /*                          CONSTRAIN_RGB
@@ -189,21 +192,22 @@ int inside_gamut(float r, float g, float b)
 
 */
 
-int constrain_rgb(float *r, float *g, float *b)
-{
+/* ----------------------- ConstrainRgb ----------------------------- */
+
+int ConstrainRgb(float *rgb_arg){
   float w;
 
   /* Amount of white needed is w = - min(0, *r, *g, *b) */
 
-  w = (0 < *r)?0:*r;
-  w = (w < *g)?w:*g;
-  w = (w < *b)?w:*b;
+  w = (0 < rgb_arg[0])?0:rgb_arg[0];
+  w = (w < rgb_arg[1])?w:rgb_arg[1];
+  w = (w < rgb_arg[2])?w:rgb_arg[2];
   w = -w;
 
   /* Add just enough white to make r, g, b all positive. */
 
   if(w > 0) {
-    *r += w;  *g += w; *b += w;
+    rgb_arg[0] += w;  rgb_arg[1] += w; rgb_arg[2] += w;
     return 1;                     /* Colour modified to fit RGB gamut */
   }
 
@@ -222,8 +226,9 @@ int constrain_rgb(float *r, float *g, float *b)
        http://www.poynton.com/GammaFAQ.html
 */
 
-void gamma_correct(const struct colourSystem *cs, float *c)
-{
+/* ----------------------- GammaCorrect ----------------------------- */
+
+void GammaCorrect(const struct colourSystem *cs, float *c){
   float gamma;
 
   gamma = cs->gamma;
@@ -245,11 +250,12 @@ void gamma_correct(const struct colourSystem *cs, float *c)
   }
 }
 
-void gamma_correct_rgb(const struct colourSystem *cs, float *r, float *g, float *b)
-{
-  gamma_correct(cs, r);
-  gamma_correct(cs, g);
-  gamma_correct(cs, b);
+/* ----------------------- GammaCorrectRgb ----------------------------- */
+
+void GammaCorrectRgb(const struct colourSystem *cs, float *rgb_arg){
+  GammaCorrect(cs, rgb_arg);
+  GammaCorrect(cs, rgb_arg+1);
+  GammaCorrect(cs, rgb_arg+2);
 }
 
 /*                          NORM_RGB
@@ -259,17 +265,30 @@ void gamma_correct_rgb(const struct colourSystem *cs, float *r, float *g, float 
 
 */
 
-void norm_rgb(float *r, float *g, float *b)
-{
-#define Max(a, b)   (((a) > (b)) ? (a) : (b))
-  float greatest = Max(*r, Max(*g, *b));
+/* ----------------------- NormRgb ----------------------------- */
+
+void NormRgb(float *rgb_arg){
+  float greatest = MAX(rgb_arg[0], MAX(rgb_arg[1], rgb_arg[2]));
 
   if(greatest > 0) {
-    *r /= greatest;
-    *g /= greatest;
-    *b /= greatest;
+    rgb_arg[0] /= greatest;
+    rgb_arg[1] /= greatest;
+    rgb_arg[2] /= greatest;
   }
-#undef Max
+}
+
+/*                            BB_SPECTRUM
+
+    Calculate, by Planck's radiation law, the emittance of a black body
+    of temperature bbTemp at the given wavelength (in metres).  */
+
+    /* ----------------------- BlackBodySpectrum ----------------------------- */
+
+float BlackBodySpectrum(float wavelength, float temperature){
+  float wlm = wavelength * 1e-9;   /* Wavelength in meters */
+
+  return (3.74183e-16 * pow(wlm, -5.0)) /
+    (exp(1.4388e-2 / (wlm * temperature)) - 1.0);
 }
 
 /*                          SPECTRUM_TO_XYZ
@@ -286,9 +305,9 @@ void norm_rgb(float *r, float *g, float *b)
             x + y + z = 1.
 */
 
-void spectrum_to_xyz(float (*spec_intens)(float wavelength),
-  float *x, float *y, float *z)
-{
+/* ----------------------- Spectrum2Xyz ----------------------------- */
+
+void Spectrum2Xyz(float temperature, float *xyz){
   int i;
   float lambda, X = 0, Y = 0, Z = 0, XYZ;
 
@@ -340,32 +359,16 @@ void spectrum_to_xyz(float (*spec_intens)(float wavelength),
   for(i = 0, lambda = 380; lambda < 780.1; i++, lambda += 5) {
     float Me;
 
-    Me = (*spec_intens)(lambda);
+    Me = BlackBodySpectrum(lambda, temperature);
     X += Me * cie_colour_match[i][0];
     Y += Me * cie_colour_match[i][1];
     Z += Me * cie_colour_match[i][2];
   }
   XYZ = (X + Y + Z);
-  *x = X / XYZ;
-  *y = Y / XYZ;
-  *z = Z / XYZ;
+  xyz[0] = X / XYZ;
+  xyz[1] = Y / XYZ;
+  xyz[2] = Z / XYZ;
 }
-
-/*                            BB_SPECTRUM
-
-    Calculate, by Planck's radiation law, the emittance of a black body
-    of temperature bbTemp at the given wavelength (in metres).  */
-
-float bbTemp = 5000;                 /* Hidden temperature argument
-                                         to BB_SPECTRUM. */
-float bb_spectrum(float wavelength)
-{
-  float wlm = wavelength * 1e-9;   /* Wavelength in meters */
-
-  return (3.74183e-16 * pow(wlm, -5.0)) /
-    (exp(1.4388e-2 / (wlm * bbTemp)) - 1.0);
-}
-
 
 /* ----------------------- Gaussian ----------------------------- */
 
@@ -483,7 +486,7 @@ void GetRGBFireVal(float temp, float *rgb_arg){
 
 /* ----------------------- MakeFireColors ----------------------------- */
 
-void MakeFireColors(float temp_min, float temp_max, int nfire_colors_arg){
+void MakeFireColorsNew(float temp_min, float temp_max, int nfire_colors_arg){
   int i;
   float dtemp;
 
@@ -495,10 +498,47 @@ void MakeFireColors(float temp_min, float temp_max, int nfire_colors_arg){
   FREEMEMORY(fire_rgbs);
   NewMemory((void **)&fire_rgbs,3*nfire_colors_arg*sizeof(float));
   for(i = 0;i < nfire_colors_arg;i++){
+    float temp, fire_rgb[3], xyz[3];
+
+    temp = temp_min + (float)i * dtemp + 273.15;
+    Spectrum2Xyz(temp, xyz);
+    Xyz2Rgb(&CIEsystem, xyz, fire_rgb);
+// SMPTEsystem
+// CIEsystem
+// NTSCsystem
+    ConstrainRgb(fire_rgb);
+    memcpy(fire_rgbs + 3 * i, fire_rgb, 3 * sizeof(float));
+#ifdef pp_BLACKBODY_OUT  
+    fprintf(stream, "%f,%f,%f,%f\n", temp, fire_rgb[0], fire_rgb[1], fire_rgb[2]);
+#endif
+  }
+#ifdef pp_BLACKBODY_OUT  
+  fclose(stream);
+#endif
+}
+
+/* ----------------------- MakeFireColors ----------------------------- */
+
+void MakeFireColors(float temp_min, float temp_max, int nfire_colors_arg){
+  int i;
+  float dtemp;
+
+#ifdef pp_BLACKBODY_OUT  
+  FILE *stream;
+  stream = fopen("testfire.csv", "w");
+#endif
+  dtemp = (temp_max - temp_min) / ( float )(nfire_colors_arg - 1);
+  FREEMEMORY(fire_rgbs);
+  NewMemory(( void ** )&fire_rgbs, 3 * nfire_colors_arg * sizeof(float));
+  for(i = 0; i < nfire_colors_arg; i++){
     float temp, fire_rgb[3];
 
-    temp = temp_min + (float)i * dtemp;
+    temp = temp_min + ( float )i * dtemp;
+    float xyz[3];
     GetRGBFireVal(temp, fire_rgb);
+    //Xyz2Rgb(&CIEsystem, xyz, fire_rgb);
+    //ConstrainRgb(fire_rgb);
+    GammaCorrectRgb(&CIEsystem, fire_rgb);
     memcpy(fire_rgbs + 3 * i, fire_rgb, 3 * sizeof(float));
 #ifdef pp_BLACKBODY_OUT  
     fprintf(stream, "%f,%f,%f,%f\n", temp, fire_rgb[0], fire_rgb[1], fire_rgb[2]);
