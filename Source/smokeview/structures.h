@@ -643,16 +643,6 @@ typedef struct _isodata {
 typedef struct _volrenderdata {
   char *rendermeshlabel;
   int is_compressed;
-#ifdef pp_VOLCO2
-  struct _slicedata   *smokeslice,            *fireslice,            *lightslice,            *co2slice;
-  unsigned char *c_smokedata_view,      *c_firedata_view,      *c_lightdata_view,      *c_co2data_view;
-  int      *nsmokedata_compressed, *nfiredata_compressed, *nlightdata_compressed, *nco2data_compressed;
-  float           *smokedata_full,        *firedata_full,        *lightdata_full,        *co2data_full;
-  float           *smokedata_view,        *firedata_view,        *lightdata_view,        *co2data_view;
-  LINT                  *smokepos,              *firepos,              *lightpos,              *co2pos;
-  void              *smokedataptr,          *firedataptr,          *lightdataptr,          *co2dataptr;
-  void            **smokedataptrs,        **firedataptrs,        **lightdataptrs,        **co2dataptrs;
-#else
   struct _slicedata   *smokeslice,            *fireslice,            *lightslice;
   unsigned char *c_smokedata_view,      *c_firedata_view,      *c_lightdata_view;
   int      *nsmokedata_compressed, *nfiredata_compressed, *nlightdata_compressed;
@@ -661,7 +651,6 @@ typedef struct _volrenderdata {
   LINT                  *smokepos,              *firepos,              *lightpos;
   void              *smokedataptr,          *firedataptr,          *lightdataptr;
   void            **smokedataptrs,        **firedataptrs,        **lightdataptrs;
-#endif
   float *times;
   int *dataready;
   int itime, ntimes, times_defined;

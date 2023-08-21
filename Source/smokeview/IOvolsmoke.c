@@ -1300,16 +1300,10 @@ void InitVolRender(void){
     vr->fireslice=NULL;
     vr->smokeslice=NULL;
     vr->lightslice = NULL;
-#ifdef pp_VOLCO2
-    vr->co2slice = NULL;
-#endif
 
     vr->firepos = NULL;
     vr->smokepos = NULL;
     vr->lightpos = NULL;
-#ifdef pp_VOLCO2
-    vr->co2pos = NULL;
-#endif
 
     vr->timeslist=NULL;
 
@@ -1350,12 +1344,6 @@ void InitVolRender(void){
       vr->lightslice = slicei;
       continue;
     }
-#ifdef pp_VOLCO2
-    if(STRCMP(shortlabel, "X_CO2")==0){
-      vr->co2slice = slicei;
-      continue;
-    }
-#endif
   }
   for(i=0;i<nmeshes;i++){
     meshdata *meshi;
@@ -1368,16 +1356,10 @@ void InitVolRender(void){
     vr->firedata_full=NULL;
     vr->smokedata_full=NULL;
     vr->lightdata_full = NULL;
-#ifdef pp_VOLCO2
-    vr->co2data_full = NULL;
-#endif
 
     vr->c_firedata_view=NULL;
     vr->c_smokedata_view=NULL;
     vr->c_lightdata_view = NULL;
-#ifdef pp_VOLCO2
-    vr->c_co2data_view = NULL;
-#endif
 
     if(vr->smokeslice!=NULL){
       int j;
@@ -1391,45 +1373,27 @@ void InitVolRender(void){
         NewMemory((void **)&vr->firepos,vr->ntimes*sizeof(LINT));
         NewMemory((void **)&vr->smokepos,vr->ntimes*sizeof(LINT));
         NewMemory((void **)&vr->lightpos, vr->ntimes*sizeof(LINT));
-#ifdef pp_VOLCO2
-        NewMemory((void **)&vr->co2pos, vr->ntimes*sizeof(LINT));
-#endif
 
         NewMemory((void **)&vr->firedataptrs,vr->ntimes*sizeof(float *));
         NewMemory((void **)&vr->smokedataptrs,vr->ntimes*sizeof(float *));
         NewMemory((void **)&vr->lightdataptrs, vr->ntimes*sizeof(float *));
-#ifdef pp_VOLCO2
-        NewMemory((void **)&vr->co2dataptrs, vr->ntimes*sizeof(float *));
-#endif
 
         NewMemory((void **)&vr->nfiredata_compressed,vr->ntimes*sizeof(int));
         NewMemory((void **)&vr->nsmokedata_compressed,vr->ntimes*sizeof(int));
         NewMemory((void **)&vr->nlightdata_compressed, vr->ntimes*sizeof(int));
-#ifdef pp_VOLCO2
-        NewMemory((void **)&vr->nco2data_compressed, vr->ntimes*sizeof(int));
-#endif
 
         vr->firedataptr = NULL;
         vr->smokedataptr = NULL;
         vr->lightdataptr = NULL;
-#ifdef pp_VOLCO2
-        vr->co2dataptr = NULL;
-#endif
 
         for(j=0;j<vr->ntimes;j++){
           vr->firedataptrs[j]  = NULL;
           vr->smokedataptrs[j] = NULL;
           vr->lightdataptrs[j] = NULL;
-#ifdef pp_VOLCO2
-          vr->co2dataptrs[j] = NULL;
-#endif
 
           vr->nfiredata_compressed[j]  = 0;
           vr->nsmokedata_compressed[j] = 0;
           vr->nlightdata_compressed[j] = 0;
-#ifdef pp_VOLCO2
-          vr->nco2data_compressed[j] = 0;
-#endif
 
           vr->dataready[j]=0;
         }
@@ -2698,24 +2662,14 @@ void FreeVolsmokeFrame(volrenderdata *vr, int framenum){
 /* ------------------ ReadVolsmokeFrame ------------------------ */
 #define VOL_OFFSET 32
 void ReadVolsmokeFrame(volrenderdata *vr, int framenum, int *first){
-#ifdef pp_VOLCO2
-  slicedata *fireslice, *smokeslice, *lightslice, *co2slice;
-#else
   slicedata *fireslice, *smokeslice, *lightslice;
-#endif
   FILE *SLICEFILE;
   int framesize,framesize2;
   LINT skip_local;
   float time_local, *smokeframe_data=NULL, *fireframe_data=NULL, *lightframe_data=NULL;
-#ifdef pp_VOLCO2
-  unsigned char *c_smokedata_compressed=NULL, *c_firedata_compressed=NULL, *c_lightdata_compressed=NULL, *c_co2data_compressed = NULL;
-  unsigned char *c_firedata_compressed2=NULL, *c_lightdata_compressed2=NULL, *c_co2data_compressed2 = NULL;
-  uLongf              n_smokedata_compressed,     n_firedata_compressed, n_lightdata_compressed, n_co2data_compressed;
-#else
   unsigned char *c_smokedata_compressed=NULL, *c_firedata_compressed=NULL, *c_lightdata_compressed=NULL;
   unsigned char *c_firedata_compressed2=NULL, *c_lightdata_compressed2=NULL;
   uLongf              n_smokedata_compressed,     n_firedata_compressed, n_lightdata_compressed;
-#endif
   unsigned int size_before=0, size_after=0;
   FILE *volstream=NULL;
   int print = 0;
@@ -2725,9 +2679,6 @@ void ReadVolsmokeFrame(volrenderdata *vr, int framenum, int *first){
   smokeslice = vr->smokeslice;
   fireslice  = vr->fireslice;
   lightslice = vr->lightslice;
-#ifdef pp_VOLCO2
-  co2slice   = vr->co2slice;
-#endif
 
   framesize = smokeslice->nslicei*smokeslice->nslicej*smokeslice->nslicek;
   framesize2 = framesize+VOL_OFFSET;
@@ -2769,27 +2720,11 @@ void ReadVolsmokeFrame(volrenderdata *vr, int framenum, int *first){
       NewMemory((void **)&c_lightdata_compressed2, n_lightdata_compressed);
       lightframe_data = vr->lightdata_full;
     }
-#ifdef pp_VOLCO2
-    if(co2slice!=NULL){
-      n_co2data_compressed = 1.01*framesize2+600;
-      if(vr->co2data_full==NULL){
-        NewMemory((void **)&vr->co2data_full, framesize*sizeof(float));
-        NewMemory((void **)&vr->co2data_view, framesize*sizeof(float));
-        NewMemory((void **)&vr->c_co2data_view, framesize2);
-      }
-      NewMemory((void **)&c_co2data_compressed, n_co2data_compressed);
-      NewMemory((void **)&c_co2data_compressed2, n_co2data_compressed);
-      co2frame_data = vr->co2data_full;
-    }
-#endif
   }
   else{
     NewMemory((void **)&smokeframe_data, framesize*sizeof(float));
     NewMemory((void **)&fireframe_data,  framesize*sizeof(float));
     NewMemory((void **)&lightframe_data, framesize*sizeof(float));
-#ifdef pp_VOLCO2
-    NewMemory((void **)&co2frame_data,   framesize*sizeof(float));
-#endif
   }
 
   if(load_volcompressed==1&&vr->smokeslice->vol_file!=NULL){
@@ -2969,61 +2904,6 @@ void ReadVolsmokeFrame(volrenderdata *vr, int framenum, int *first){
       volstream = NULL;
     }
   }
-#ifdef pp_VOLCO2
-  if(co2slice!=NULL){
-    if(load_volcompressed==1&&vr->co2slice->vol_file!=NULL){
-      volstream = fopen(vr->co2slice->vol_file, "rb");
-    }
-    if(volstream==NULL){
-      SLICEFILE = fopen(co2slice->reg_file, "rb");
-      if(SLICEFILE!=NULL){
-        FSEEK(SLICEFILE, skip_local, SEEK_SET); // skip from beginning of file
-
-        FORTVOLSLICEREAD(&time_local, 1);
-        vr->times[framenum] = time_local;
-        FORTVOLSLICEREAD(co2frame_data, framesize);
-        CheckMemory;
-        size_before += sizeof(float)*framesize;
-        if(vr->is_compressed==1){
-          float valmin = 20.0, valmax = 1400.0;
-
-          CompressVolSliceFrame(co2frame_data, framesize, time_local, &valmin, &valmax,
-            &c_co2data_compressed, &n_co2data_compressed);
-          size_after += n_co2data_compressed;
-          vr->co2dataptrs[framenum] = c_co2data_compressed;
-          vr->nco2data_compressed[framenum] = n_co2data_compressed;
-        }
-        else{
-          vr->co2dataptrs[framenum] = co2frame_data;
-        }
-        vr->co2dataptr = vr->co2dataptrs[framenum];
-        if(print==1)PRINTF(", co2");
-        fclose(SLICEFILE);
-      }
-    }
-    else{
-      unsigned char buffer[32];
-      int ncompressed;
-
-      // 1,completion,version
-      // 1,version,n_data_compressedm32,nbytes,n_data_in,time_local,valmin,valmax,data ....
-      FSEEK(volstream, vr->co2pos[framenum], SEEK_SET);
-      fread(buffer, 8, 4, volstream);
-      ncompressed = *(int *)(buffer+8);
-      time_local = *(float *)(buffer+20);
-      FSEEK(volstream, vr->co2pos[framenum], SEEK_SET);
-      NewMemory((void **)&c_co2data_compressed, ncompressed);
-      fread(c_co2data_compressed, 1, ncompressed, volstream);
-      vr->co2dataptrs[framenum] = c_co2data_compressed;
-      vr->co2dataptr = vr->co2dataptrs[framenum];
-
-      vr->times[framenum] = time_local;
-      if(print==1)PRINTF(", co2");
-      fclose(volstream);
-      volstream = NULL;
-    }
-  }
-#endif
   CheckMemory;
   vr->dataready[framenum]=1;
   if(vr->is_compressed==1&&load_volcompressed==0){
