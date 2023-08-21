@@ -181,7 +181,7 @@ void GetRGBFireVal(float temp, float *rgb_arg){
 
 /* ----------------------- MakeFireColors ----------------------------- */
 
-void MakeFireColors(float temp_min, float temp_max){
+void MakeFireColors(float temp_min, float temp_max, int nfire_colors_arg){
   int i;
   float dtemp;
 
@@ -189,20 +189,47 @@ void MakeFireColors(float temp_min, float temp_max){
   FILE *stream;
   stream = fopen("testfire.csv", "w");
 #endif
-  dtemp = (temp_max - temp_min)/(float)(MAXFIRERGB-1);
-  for(i = 0;i < MAXFIRERGB;i++){
-    float temp, firergb[3];
+  dtemp = (temp_max - temp_min)/(float)(nfire_colors_arg -1);
+  FREEMEMORY(fire_rgbs);
+  NewMemory((void **)&fire_rgbs,3*nfire_colors_arg*sizeof(float));
+  for(i = 0;i < nfire_colors_arg;i++){
+    float temp, fire_rgb[3];
 
     temp = temp_min + (float)i * dtemp;
-    GetRGBFireVal(temp, firergb);
-    memcpy(firergbs + 3 * i, firergb, 3 * sizeof(float));
+    GetRGBFireVal(temp, fire_rgb);
+    memcpy(fire_rgbs + 3 * i, fire_rgb, 3 * sizeof(float));
 #ifdef pp_BLACKBODY_OUT  
-    fprintf(stream, "%f,%f,%f,%f\n", temp, firergb[0], firergb[1], firergb[2]);
+    fprintf(stream, "%f,%f,%f,%f\n", temp, fire_rgb[0], fire_rgb[1], fire_rgb[2]);
 #endif
   }
 #ifdef pp_BLACKBODY_OUT  
   fclose(stream);
 #endif
+}
+
+/* ----------------------- Temperature2RGB ----------------------------- */
+
+void Temperature2RGB(float temperature, float *rgb_arg){
+  int index;
+  float factor, *rgb_bef, *rgb_aft, temp_bef, temp_aft;
+
+  if(temperature<=fire_temp_min){
+    memcpy(rgb_arg, fire_rgbs, 3 * sizeof(float));
+    return;
+  }
+  if(temperature>=fire_temp_max){
+    memcpy(rgb_arg, fire_rgbs+3*(nfire_colors-1), 3 * sizeof(float));
+    return;
+  }
+  index = nfire_colors*(temperature - fire_temp_min) / (fire_temp_max - fire_temp_min);
+  rgb_bef = fire_rgbs+3*index;
+  rgb_aft = rgb_bef + 3;
+  temp_bef = fire_temp_min + (float)index*(fire_temp_max-fire_temp_min)/(float)(nfire_colors -1);
+  temp_aft = fire_temp_min + (float)(index+1)*(fire_temp_max-fire_temp_min)/(float)(nfire_colors -1);
+  factor = (temperature-temp_bef)/(temp_aft-temp_bef);
+  rgb_arg[0] = (1.0-factor)*rgb_bef[0] + factor*rgb_aft[0];
+  rgb_arg[1] = (1.0-factor)*rgb_bef[1] + factor*rgb_aft[1];
+  rgb_arg[2] = (1.0-factor)*rgb_bef[2] + factor*rgb_aft[2];
 }
 #endif
 
@@ -217,9 +244,9 @@ VKLDevice InitVKL(int *width){
 }
 #endif
 
-/* ----------------------- GetSmokeColor ----------------------------- */
+/* ----------------------- GetFireColor ----------------------------- */
 
-void GetSmokeColor(float *smoke_tran, float **smoke_color_handle, float *scaled_intensity, float dlength, float xyz[3], meshdata *meshi, int *inobst, char *blank_local){
+void GetFireColor(float *smoke_tran, float *fire_color, float dlength, float xyz[3], meshdata *meshi, int *inobst, char *blank_local){
   int i, j, k;
   int ijk;
   float *vv;
@@ -232,7 +259,6 @@ void GetSmokeColor(float *smoke_tran, float **smoke_color_handle, float *scaled_
   float *xplt, *yplt, *zplt;
   int ibar, jbar, kbar;
   float *smokedata_local, *firedata_local;
-  int index;
   float black[] = {0.0,0.0,0.0,1.0};
   int slicetype;
   float soot_density, temperature;
@@ -258,8 +284,6 @@ void GetSmokeColor(float *smoke_tran, float **smoke_color_handle, float *scaled_
   dxbar = xplt[1]-xplt[0];
   dybar = yplt[1]-yplt[0];
   dzbar = zplt[1]-zplt[0];
-  xyz[0] -= dxbar/2.0; // offset x and y position by half a grid cell
-  xyz[1] -= dybar/2.0; // z position does not need to be offset
 
   nx = ibar+1;
   ny = jbar+1;
@@ -278,40 +302,19 @@ void GetSmokeColor(float *smoke_tran, float **smoke_color_handle, float *scaled_
     *inobst = 0;
   }
 
-  *scaled_intensity = 1.0;
   if(firedata_local!=NULL){
-    float dtemp;
-
     INTERP3D(firedata_local, temperature);
-    if(temperature<global_temp_cutoff){
-      dtemp = (global_temp_cutoff- global_temp_min)/(MAXSMOKERGB/2);
-      index = GETINDEX(temperature, global_temp_min, dtemp, (MAXSMOKERGB/2));
-    }
-    else{
-      float ratio;
-
-      dtemp = (global_temp_max- global_temp_cutoff)/(MAXSMOKERGB/2);
-      index = GETINDEX(temperature+voltemp_offset, global_temp_cutoff, dtemp, (MAXSMOKERGB/2));
-      index += (MAXSMOKERGB/2);
-      if(temperature>voltemp_factor){
-        ratio = (273.0+temperature)/(273.0+voltemp_factor);
-        *scaled_intensity = ratio*ratio*ratio*ratio;
-      }
-    }
-    if(temperature>global_temp_cutoff){
-      * smoke_color_handle = rgb_volsmokecolormap+4*index;
-    }
-    else{
-      *smoke_color_handle = GetColorPtr(black);
-    }
+    Temperature2RGB(temperature, fire_color);
   }
   else{
-    *smoke_color_handle = GetColorPtr(black);
+    memcpy(fire_color, black, 3*sizeof(float));
   }
   if(smokedata_local!=NULL){
     INTERP3D(smokedata_local, soot_density);
-    if(firedata_local!=NULL&&index>MAXSMOKERGB/2)soot_density *= fire_opacity_factor;
-    *smoke_tran = exp(-mass_extinct*soot_density*dlength);
+    float tran;
+
+    tran = exp(-mass_extinct*soot_density*dlength);
+    *smoke_tran = tran;
   }
 }
 
@@ -1137,9 +1140,9 @@ meshdata *GetMeshInSmesh(meshdata *mesh_guess, supermeshdata *smesh, float *xyz)
   return NULL;
 }
 
-/* ------------------ IntegrateSmokeColors ------------------------ */
+/* ------------------ IntegrateFireColors ------------------------ */
 
-void IntegrateSmokeColors(float *integrated_smokecolor, float *xyzvert, float dlength, meshdata *meshi, int iwall){
+void IntegrateFireColors(float *integrated_firecolor, float *xyzvert, float dlength, meshdata *meshi, int iwall){
   float t_intersect_min, *boxmin, *boxmax;
   int i;
   int nsteps;
@@ -1150,7 +1153,7 @@ void IntegrateSmokeColors(float *integrated_smokecolor, float *xyzvert, float dl
   int iwall_min=0;
   float xyzvals[3];
   char *blank_local;
-  float xi, taui, *smoke_color=NULL;
+  float xi, taui, fire_color[3];
   float taun,alphan;
   meshdata *xyz_mesh=NULL;
 
@@ -1250,10 +1253,10 @@ void IntegrateSmokeColors(float *integrated_smokecolor, float *xyzvert, float dl
   dyseg = vert_end[1] - vert_beg[1];
   dzseg = vert_end[2] - vert_beg[2];
   distseg = sqrt(dxseg*dxseg+dyseg*dyseg+dzseg*dzseg);
-  integrated_smokecolor[0] = 0.0;
-  integrated_smokecolor[1] = 0.0;
-  integrated_smokecolor[2] = 0.0;
-  integrated_smokecolor[3] = 0.0;
+  integrated_firecolor[0] = 0.0;
+  integrated_firecolor[1] = 0.0;
+  integrated_firecolor[2] = 0.0;
+  integrated_firecolor[3] = 0.0;
 
   if(distseg<0.001)return;
 
@@ -1265,7 +1268,7 @@ void IntegrateSmokeColors(float *integrated_smokecolor, float *xyzvert, float dl
   taun=1.0;
   alphan=0.0;
   for(i=0;i<nsteps;i++){
-    float factor, alphai, scaled_intensity;
+    float factor, alphai;
     int inobst;
 
     xi = 0.5 + (float)i;
@@ -1279,12 +1282,12 @@ void IntegrateSmokeColors(float *integrated_smokecolor, float *xyzvert, float dl
       if(xyz_mesh==NULL)break;
       blank_local = NULL;
       if(block_volsmoke==1)blank_local=xyz_mesh->c_iblank_cell;
-      GetSmokeColor(&taui, &smoke_color, &scaled_intensity, dlength,xyz, xyz_mesh, &inobst, blank_local);
+      GetFireColor(&taui, fire_color, dlength, xyz, xyz_mesh, &inobst, blank_local);
     }
     else{
       blank_local = NULL;
       if(block_volsmoke==1)blank_local=meshi->c_iblank_cell;
-      GetSmokeColor(&taui, &smoke_color, &scaled_intensity, dlength, xyz, meshi, &inobst, blank_local);
+      GetFireColor(&taui, fire_color, dlength, xyz, meshi, &inobst, blank_local);
     }
     if(blank_local!=NULL&&inobst==1)break;
 
@@ -1299,28 +1302,32 @@ void IntegrateSmokeColors(float *integrated_smokecolor, float *xyzvert, float dl
     alphan = 1.0 - taun;
 
     //    "    color_total += alphai*taun*color_val*opacity_factor;"
-    integrated_smokecolor[0] += alphai * taun * smoke_color[0];
-    integrated_smokecolor[1] += alphai * taun * smoke_color[1];
-    integrated_smokecolor[2] += alphai * taun * smoke_color[2];
+    integrated_firecolor[0] += alphai * taun * fire_color[0];
+    integrated_firecolor[1] += alphai * taun * fire_color[1];
+    integrated_firecolor[2] += alphai * taun * fire_color[2];
   }
 
   if(alphan>0.0){
     alphan = CLAMP(alphan, 0.0, 1.0);
-    integrated_smokecolor[0] /= alphan;
-    integrated_smokecolor[1] /= alphan;
-    integrated_smokecolor[2] /= alphan;
-    integrated_smokecolor[3]=alphan;
+    float max_rgb;
+
+    max_rgb = MAX(integrated_firecolor[0], integrated_firecolor[1]); 
+    max_rgb = MAX(max_rgb, integrated_firecolor[2]); 
+    integrated_firecolor[0] /= (max_rgb);
+    integrated_firecolor[1] /= (max_rgb);
+    integrated_firecolor[2] /= (max_rgb);
+    integrated_firecolor[3] = alphan;
     if(volbw==1){
       float gray;
 
-      gray = TOBW(integrated_smokecolor);
-      integrated_smokecolor[0] = gray;
-      integrated_smokecolor[1] = gray;
-      integrated_smokecolor[2] = gray;
+      gray = TOBW(integrated_firecolor);
+      integrated_firecolor[0] = gray;
+      integrated_firecolor[1] = gray;
+      integrated_firecolor[2] = gray;
     }
   }
   else{
-    VEC4EQCONS(integrated_smokecolor,0.0);
+    VEC4EQCONS(integrated_firecolor,0.0);
   }
 }
 
@@ -1389,7 +1396,7 @@ void ComputeAllSmokecolors(void){
               xyz[1] = y[i];
               for(j=0;j<=kbar;j++){
                 xyz[2] = z[j];
-                IntegrateSmokeColors(smokecolor,xyz,dlength,meshi,iwall);
+                IntegrateFireColors(smokecolor,xyz,dlength,meshi,iwall);
                 smokecolor+=4;
               }
             }
@@ -1421,7 +1428,7 @@ void ComputeAllSmokecolors(void){
               xyz[0] = x[i];
               for(j=0;j<=kbar;j++){
                 xyz[2] = z[j];
-                IntegrateSmokeColors(smokecolor,xyz,dlength,meshi,iwall);
+                IntegrateFireColors(smokecolor,xyz,dlength,meshi,iwall);
                 smokecolor+=4;
               }
             }
@@ -1453,7 +1460,7 @@ void ComputeAllSmokecolors(void){
               xyz[0] = x[i];
               for(j=0;j<=jbar;j++){
                 xyz[1] = y[j];
-                IntegrateSmokeColors(smokecolor,xyz,dlength,meshi,iwall);
+                IntegrateFireColors(smokecolor,xyz,dlength,meshi,iwall);
                 smokecolor+=4;
               }
             }
@@ -1644,6 +1651,52 @@ void DrawSmoke3DVol(void){
   int ii;
 
   if(use_transparency_data==1)TransparentOn();
+  if(show_blackbody_colormap == 1){
+    int i;
+
+    glBegin(GL_QUADS);
+    for(i = 0;i < nfire_colors;i++){
+      float fire_rgb[3], zmin, zmax, maxrgb;
+
+      memcpy(fire_rgb, fire_rgbs + 3 * i, 3*sizeof(float));
+      maxrgb = MAX(fire_rgb[0], fire_rgb[1]);
+      maxrgb = MAX(maxrgb, fire_rgb[2]);
+      if(maxrgb>0.0){
+        fire_rgb[0] /= maxrgb;
+        fire_rgb[1] /= maxrgb;
+        fire_rgb[2] /= maxrgb;
+      }
+      
+      glColor3fv(fire_rgb);
+      zmin = (float)i / (float)nfire_colors;
+      zmax = (float)(i + 1) / (float)nfire_colors;
+      glVertex3f(0.9, 0.5, zmin);
+      glVertex3f(1.0, 0.5, zmin);
+      glVertex3f(1.0, 0.5, zmax);
+      glVertex3f(0.9, 0.5, zmax);
+
+      glVertex3f(0.9, 0.5, zmin);
+      glVertex3f(0.9, 0.5, zmax);
+      glVertex3f(1.0, 0.5, zmax);
+      glVertex3f(1.0, 0.5, zmin);
+    }
+    glEnd();
+    glLineWidth(vectorlinewidth);
+    glBegin(GL_LINES);
+    glColor3fv(foregroundcolor);
+    glVertex3f(0.9, 0.5, 0.0);
+    glVertex3f(1.0, 0.5, 0.0);
+
+    glVertex3f(1.0, 0.5, 0.0);
+    glVertex3f(1.0, 0.5, 1.0);
+
+    glVertex3f(1.0, 0.5, 1.0);
+    glVertex3f(0.9, 0.5, 1.0);
+
+    glVertex3f(0.9, 0.5, 1.0);
+    glVertex3f(0.9, 0.5, 0.0);
+    glEnd();
+  }
   for(ii=0;ii<nvolfacelistinfo;ii++){
     volfacelistdata *vi;
     meshdata *meshi;

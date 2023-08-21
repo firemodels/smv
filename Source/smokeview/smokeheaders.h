@@ -1184,7 +1184,7 @@ EXTERNCPP int SVimage2var(int rendertype, int woffset, int width, int hoffset, i
 #endif
 
 #ifdef pp_BLACKBODY
-EXTERNCPP void MakeFireColors(float temp_min, float temp_max);
+EXTERNCPP void MakeFireColors(float temp_min, float temp_max, int nfire_colors_arg);
 #endif
 
 EXTERNCPP void UpdateShowHideButtons(void);

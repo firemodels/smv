@@ -828,8 +828,7 @@ int main(int argc, char **argv){
     SMV_EXIT(1);
   }
 #ifdef pp_BLACKBODY
-  float temp_min = 20.0, temp_max = 3000.0;
-  MakeFireColors(temp_min, temp_max);
+  MakeFireColors(fire_temp_min, fire_temp_max, nfire_colors);
 #endif
 
   InitTextureDir();

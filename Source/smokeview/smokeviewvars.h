@@ -430,8 +430,11 @@ SVEXTERN int SVDECL(update_zaxis_custom, 0);
 SVEXTERN int SVDECL(from_DisplayCB, 0);
 SVEXTERN int SVDECL(ngeom_data, 0);
 #ifdef pp_BLACKBODY
-#define MAXFIRERGB 256
-SVEXTERN float firergbs[3 * MAXFIRERGB];
+SVEXTERN float SVDECL(*fire_rgbs, NULL);
+SVEXTERN int SVDECL(nfire_colors, 256);
+SVEXTERN float SVDECL(fire_temp_min, 20.0), SVDECL(fire_temp_max, 3000.0);
+SVEXTERN float SVDECL(fire_temp_data_min, 1.0), SVDECL(fire_temp_data_max, 0.0);
+SVEXTERN int SVDECL(show_blackbody_colormap, 0);
 #endif
 
 SVEXTERN int SVDECL(have_geom_slice_menus, 0), SVDECL(geom_slice_loaded,0);

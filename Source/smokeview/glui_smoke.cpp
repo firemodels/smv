@@ -49,6 +49,11 @@ GLUI_Spinner *SPINNER_nongpu_vol_factor=NULL;
 GLUI_Spinner *SPINNER_gpu_vol_factor=NULL;
 GLUI_Spinner *SPINNER_smoke3d_threads = NULL;
 
+#ifdef pp_BLACKBODY
+GLUI_Spinner *SPINNER_fire_temp_min = NULL;
+GLUI_Spinner *SPINNER_fire_temp_max = NULL;
+GLUI_Spinner *SPINNER_nfire_colors  = NULL;
+#endif
 GLUI_Spinner *SPINNER_temperature_min=NULL;
 GLUI_Spinner *SPINNER_temperature_cutoff=NULL;
 GLUI_Spinner *SPINNER_temperature_max=NULL;
@@ -127,6 +132,9 @@ GLUI_Panel *PANEL_smoke_outline_type = NULL;
 GLUI_Panel *PANEL_smokealg = NULL;
 GLUI_Panel *PANEL_gridres = NULL;
 GLUI_Panel *PANEL_fire_cutoff = NULL;
+#ifdef pp_BLACKBODY
+GLUI_Panel *PANEL_blackbody = NULL;
+#endif
 GLUI_Panel *PANEL_overall = NULL;
 GLUI_Panel *PANEL_colormap2 = NULL;
 GLUI_Panel *PANEL_smokesensor = NULL;
@@ -459,6 +467,14 @@ extern "C" void Glui3dSmokeSetup(int main_window){
       &global_temp_cutoff, TEMP_CUTOFF, Smoke3dCB);
   }
   BUTTON_cutoff_defaults = glui_3dsmoke->add_button_to_panel(PANEL_fire_cutoff, "Reset", CUTOFF_RESET, Smoke3dCB);
+
+#ifdef pp_BLACKBODY
+  PANEL_blackbody = glui_3dsmoke->add_panel_to_panel(ROLLOUT_firecolor, "Black body colors");
+  SPINNER_fire_temp_min = glui_3dsmoke->add_spinner_to_panel(PANEL_blackbody, "min temperature", GLUI_SPINNER_FLOAT, &fire_temp_min, BLACKBODY_TEMPS, Smoke3dCB);
+  SPINNER_fire_temp_max = glui_3dsmoke->add_spinner_to_panel(PANEL_blackbody, "max temperature", GLUI_SPINNER_FLOAT, &fire_temp_max, BLACKBODY_TEMPS, Smoke3dCB);
+  SPINNER_nfire_colors  = glui_3dsmoke->add_spinner_to_panel(PANEL_blackbody, "n temperatures",  GLUI_SPINNER_INT,   &nfire_colors,  BLACKBODY_TEMPS, Smoke3dCB);
+  glui_3dsmoke->add_checkbox_to_panel(PANEL_blackbody, "show blackbody colormap", &show_blackbody_colormap);
+#endif
 
   ROLLOUT_opacity = glui_3dsmoke->add_rollout_to_panel(PANEL_overall, "smoke/fire opacity",false, FIREOPACITY_ROLLOUT, ColorRolloutCB);
   INSERT_ROLLOUT(ROLLOUT_opacity, glui_3dsmoke);
@@ -1006,6 +1022,28 @@ extern "C" void Smoke3dCB(int var){
     SPINNER_temperature_cutoff->set_float_val(global_temp_cutoff);
     SPINNER_hrrpuv_cutoff->set_float_val(global_hrrpuv_cutoff);
     break;
+#ifdef pp_BLACKBODY
+  case BLACKBODY_TEMPS:
+    if(nfire_colors<256){
+      nfire_colors = 256;
+      SPINNER_nfire_colors->set_int_val(nfire_colors);
+    }
+    if(nfire_colors>4096){
+      nfire_colors = 4096;
+      SPINNER_nfire_colors->set_int_val(nfire_colors);
+    }
+    if(fire_temp_min<20.0){
+      fire_temp_min = 20.0;
+      SPINNER_fire_temp_min->set_float_val(fire_temp_min);     
+    }
+    if(fire_temp_min>fire_temp_max){
+      fire_temp_max = fire_temp_min + 1500.0;
+      SPINNER_fire_temp_min->set_float_val(fire_temp_min);     
+      SPINNER_fire_temp_max->set_float_val(fire_temp_max);     
+    }
+    MakeFireColors(fire_temp_min, fire_temp_max, nfire_colors);
+    break;
+#endif
   case TEMP_CUTOFF:
     temp_min = (float)(10*(int)(global_temp_min/10.0) + 10.0);
     temp_max = (float)(10*(int)(global_temp_max/10.0) - 10.0);
