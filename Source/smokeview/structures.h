@@ -691,8 +691,8 @@ typedef struct _meshdata {
 #ifdef pp_GPU
   GLuint blockage_texture_id;
   struct _smoke3ddata *smoke3d_soot, *smoke3d_hrrpuv, *smoke3d_temp, *smoke3d_co2;
-  GLuint     volsmoke_texture_id,     volfire_texture_id,     vollight_texture_id;
-  float *volsmoke_texture_buffer,*volfire_texture_buffer,*vollight_texture_buffer;
+  GLuint     volsmoke_texture_id,     volfire_texture_id;
+  float *volsmoke_texture_buffer,*volfire_texture_buffer;
   GLuint slice3d_texture_id;
   float *slice3d_c_buffer;
 #ifdef pp_WINGPU
@@ -856,8 +856,8 @@ typedef struct _meshdata {
 typedef struct _supermeshdata {
 #ifdef pp_GPU
   GLuint blockage_texture_id;
-  GLuint volsmoke_texture_id,         volfire_texture_id,     vollight_texture_id;
-  float *volsmoke_texture_buffer,*volfire_texture_buffer,*vollight_texture_buffer;
+  GLuint volsmoke_texture_id,         volfire_texture_id;
+  float *volsmoke_texture_buffer,*volfire_texture_buffer;
 #endif
   float *f_iblank_cell;
   float boxmin_scaled[3], boxmax_scaled[3];
@@ -1604,7 +1604,7 @@ typedef struct _smoke3ddata {
   unsigned char *frame_all_zeros;
   FILE_SIZE file_size;
   float *smoke_boxmin, *smoke_boxmax;
-  smokedata smoke, light;
+  smokedata smoke;
 #ifdef pp_SMOKE3DSTREAM
   streamdata *smoke_stream;
 #endif
