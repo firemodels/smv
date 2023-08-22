@@ -5851,7 +5851,6 @@ void VentMenu(int value){
 #define GEOMETRY_INTERIOR_SOLID         23
 #define GEOMETRY_INTERIOR_OUTLINE       24
 #define GEOMETRY_HIDE                    7
-#define GEOMETRY_TETRA_HIDE             11
 #define GEOMETRY_SHOWNORMAL              3
 #define GEOMETRY_SORTFACES               6
 #define GEOMETRY_SMOOTHNORMAL            4
@@ -5959,7 +5958,6 @@ void ImmersedMenu(int value){
       break;
     case GEOMETRY_HIDEALL:
       ImmersedMenu(GEOMETRY_HIDE);
-      ImmersedMenu(GEOMETRY_TETRA_HIDE);
       show_geom_normal = 0;
       break;
     case MENU_DUMMY:
@@ -6978,21 +6976,18 @@ void GeometryMenu(int value){
     break;
   case GEOM_ShowAll:
     if(isZoneFireModel)visFrame=1;
-    /*
-    visFloor=1;
-    visWalls=1;
-    visCeiling=1;
-    */
     show_faces_shaded=1;
-    visVents=1;
+    visFloor = 1;
+    visFrame = 1;
     BlockageMenu(visBLOCKAsInput);
+    VentMenu(SHOW_ALL_VENTS);
     break;
   case GEOM_HideAll:
     visFrame=0;
     visFloor=0;
     visWalls=0;
     visCeiling=0;
-    visVents=0;
+    VentMenu(HIDE_ALL_VENTS);
     visGrid = NOGRID_NOPROBE;
     BlockageMenu(visBLOCKHide);
     ImmersedMenu(GEOMETRY_HIDEALL);
