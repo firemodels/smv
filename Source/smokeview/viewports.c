@@ -2374,9 +2374,9 @@ void GetMinMaxDepth(float *min_depth, float *max_depth){
       for(keyj = (touri->first_frame).next; keyj->next!=NULL; keyj = keyj->next){
         float dist, dx, dy, dz;
 
-        dx = FDS2SMV_X(keyj->xyz_fds[0])-smv_eyepos[0];
-        dy = FDS2SMV_Y(keyj->xyz_fds[1])-smv_eyepos[1];
-        dz = FDS2SMV_Z(keyj->xyz_fds[2])-smv_eyepos[2];
+        dx = (FDS2SMV_X(keyj->xyz_fds[0]) - smv_eyepos[0])*mscale[0];
+        dy = (FDS2SMV_Y(keyj->xyz_fds[1]) - smv_eyepos[1])*mscale[1];
+        dz = (FDS2SMV_Z(keyj->xyz_fds[2]) - smv_eyepos[2])*mscale[2];
         dist = sqrt(dx*dx+dy*dy+dz*dz);
         *min_depth = MIN(*min_depth, dist);
         *max_depth = MAX(*max_depth, dist);
