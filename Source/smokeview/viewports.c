@@ -2173,9 +2173,9 @@ void GetZoneSmokeDir(float *mm){
 float DistPtXYZ(float *pt, float x, float y, float z){
   float dx, dy, dz;
 
-  dx = pt[0] - x;
-  dy = pt[1] - y;
-  dz = pt[2] - z;
+  dx = (pt[0] - x)*mscale[0];
+  dy = (pt[1] - y)*mscale[1];
+  dz = (pt[2] - z)*mscale[2];
   return sqrt(dx*dx + dy*dy + dz*dz);
 }
 

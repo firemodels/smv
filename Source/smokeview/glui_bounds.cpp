@@ -6546,6 +6546,7 @@ extern "C" void SliceBoundCB(int var){
       else{
         CHECKBOX_transparentflag->set_int_val(1);
       }
+      GLUTPOSTREDISPLAY;
       break;
     case LINE_CONTOUR_VALUE:
       if(slice_line_contour_num<1){
