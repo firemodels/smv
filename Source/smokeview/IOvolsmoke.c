@@ -109,7 +109,8 @@ CIEsystem = {"CIE",                0.7355, 0.2645, 0.2658, 0.7243, 0.1669, 0.008
 Rec709system = {"CIE REC 709",        0.64,   0.33,   0.30,   0.60,   0.15,   0.06,   IlluminantD65,  GAMMA_REC709};
 #endif
 //static struct colourSystem SMPTEsystem = {"SMPTE",              0.630,  0.340,  0.310,  0.595,  0.155,  0.070,  IlluminantD65,  GAMMA_REC709};
-static struct colourSystem CIEsystem = {"CIE",                0.7355, 0.2645, 0.2658, 0.7243, 0.1669, 0.0085, IlluminantE,    GAMMA_REC709};
+//static struct colourSystem CIEsystem = {"CIE",                0.7355, 0.2645, 0.2658, 0.7243, 0.1669, 0.0085, IlluminantE,    GAMMA_REC709};
+static struct colourSystem HDTVsystem = {"HDTV",               0.670,  0.330,  0.210,  0.710,  0.150,  0.060,  IlluminantD65,  GAMMA_REC709};
 //static struct colourSystem NTSCsystem = {"NTSC",               0.67,   0.33,   0.21,   0.71,   0.14,   0.08,   IlluminantC,    GAMMA_REC709};
 
 /*                             XYZ_TO_RGB
@@ -208,11 +209,10 @@ int ConstrainRgb(float *rgb_arg){
 
   /* Add just enough white to make r, g, b all positive. */
 
-  if(w > 0) {
+  if(w > 0){
     rgb_arg[0] += w;  rgb_arg[1] += w; rgb_arg[2] += w;
     return 1;                     /* Colour modified to fit RGB gamut */
   }
-
   return 0;                         /* Colour within RGB gamut */
 }
 
@@ -235,18 +235,18 @@ void GammaCorrect(const struct colourSystem *cs, float *c){
 
   gamma = cs->gamma;
 
-  if(gamma == GAMMA_REC709) {
+  if(gamma == GAMMA_REC709){
     /* Rec. 709 gamma correction. */
     float cc = 0.018;
 
-    if(*c < cc) {
+    if(*c < cc){
       *c *= ((1.099 * pow(cc, 0.45)) - 0.099) / cc;
     }
-    else {
+    else{
       *c = (1.099 * pow(*c, 0.45)) - 0.099;
     }
   }
-  else {
+  else{
     /* Nonlinear colour = (Linear colour)^(1/gamma) */
     *c = pow(*c, 1.0 / gamma);
   }
@@ -272,7 +272,7 @@ void GammaCorrectRgb(const struct colourSystem *cs, float *rgb_arg){
 void NormRgb(float *rgb_arg){
   float greatest = MAX(rgb_arg[0], MAX(rgb_arg[1], rgb_arg[2]));
 
-  if(greatest > 0) {
+  if(greatest > 0){
     rgb_arg[0] /= greatest;
     rgb_arg[1] /= greatest;
     rgb_arg[2] /= greatest;
@@ -358,7 +358,7 @@ void Spectrum2Xyz(float temperature, float *xyz){
       {0.0001,0.0000,0.0000}, {0.0001,0.0000,0.0000}, {0.0000,0.0000,0.0000}
   };
 
-  for(i = 0, lambda = 380; lambda < 780.1; i++, lambda += 5) {
+  for(i = 0, lambda = 380; lambda < 780.1; i++, lambda += 5){
     float Me;
 
     Me = BlackBodySpectrum(lambda, temperature);
@@ -504,7 +504,7 @@ void MakeFireColorsNew(float temp_min, float temp_max, int nfire_colors_arg){
 
     temp = temp_min + (float)i * dtemp + 273.15;
     Spectrum2Xyz(temp, xyz);
-    Xyz2Rgb(&CIEsystem, xyz, fire_rgb);
+    Xyz2Rgb(&HDTVsystem, xyz, fire_rgb);
 // SMPTEsystem
 // CIEsystem
 // NTSCsystem
@@ -538,9 +538,9 @@ void MakeFireColors(float temp_min, float temp_max, int nfire_colors_arg){
     temp = temp_min + ( float )i * dtemp;
     //float xyz[3];
     GetRGBFireVal(temp, fire_rgb);
-    //Xyz2Rgb(&CIEsystem, xyz, fire_rgb);
+    //Xyz2Rgb(&HDTVsystem, xyz, fire_rgb);
     //ConstrainRgb(fire_rgb);
-    GammaCorrectRgb(&CIEsystem, fire_rgb);
+    if(gamma_correction==1)GammaCorrectRgb(&HDTVsystem, fire_rgb);
     memcpy(fire_rgbs + 3 * i, fire_rgb, 3 * sizeof(float));
 #ifdef pp_BLACKBODY_OUT  
     fprintf(stream, "%f,%f,%f,%f\n", temp, fire_rgb[0], fire_rgb[1], fire_rgb[2]);
