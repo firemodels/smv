@@ -4473,7 +4473,7 @@ void UnLoadVolsmoke3DMenu(int value){
 
     meshi = meshinfo + value;
     vr = &(meshi->volrenderinfo);
-    if(vr->fireslice!=NULL||vr->smokeslice!=NULL||vr->lightslice!=NULL){
+    if(vr->fireslice!=NULL||vr->smokeslice!=NULL){
       UnloadVolsmokeAllFrames(vr);
     }
   }

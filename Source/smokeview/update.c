@@ -49,14 +49,13 @@ void UpdateFrameNumber(int changetime){
       for(imesh=0;imesh<nmeshes;imesh++){
         meshdata *meshi;
         volrenderdata *vr;
-        slicedata *fireslice, *smokeslice, *lightslice;
+        slicedata *fireslice, *smokeslice;
         int j;
 
         meshi = meshinfo + imesh;
         vr = &(meshi->volrenderinfo);
         fireslice=vr->fireslice;
         smokeslice=vr->smokeslice;
-        lightslice=vr->lightslice;
         if(fireslice==NULL||smokeslice==NULL)continue;
         if(vr->loaded==0||vr->display==0)continue;
         vr->itime = vr->timeslist[itimes];
@@ -102,27 +101,6 @@ void UpdateFrameNumber(int changetime){
           }
           else{
             if(runscript==0)vr->firedataptr = vr->firedataptrs[vr->itime];
-          }
-          CheckMemory;
-        }
-
-        if(lightslice!=NULL&&vr->itime>=0){
-          if(vr->is_compressed==1||load_volcompressed==1){
-            unsigned char *c_lightdata_compressed;
-            uLongf framesize;
-            float timeval;
-
-            c_lightdata_compressed = vr->lightdataptrs[vr->itime];
-            framesize = lightslice->nslicei*lightslice->nslicej*lightslice->nslicek;
-            UnCompressVolSliceFrame(c_lightdata_compressed,
-                           vr->lightdata_view, framesize, &timeval,
-                           vr->c_lightdata_view);
-
-            vr->lightdataptr = vr->lightdata_view;
-            CheckMemory;
-          }
-          else{
-            if(runscript==0)vr->lightdataptr = vr->lightdataptrs[vr->itime];
           }
           CheckMemory;
         }

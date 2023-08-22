@@ -536,7 +536,7 @@ void MakeFireColors(float temp_min, float temp_max, int nfire_colors_arg){
     float temp, fire_rgb[3];
 
     temp = temp_min + ( float )i * dtemp;
-    float xyz[3];
+    //float xyz[3];
     GetRGBFireVal(temp, fire_rgb);
     //Xyz2Rgb(&CIEsystem, xyz, fire_rgb);
     //ConstrainRgb(fire_rgb);
@@ -1299,11 +1299,9 @@ void InitVolRender(void){
 
     vr->fireslice=NULL;
     vr->smokeslice=NULL;
-    vr->lightslice = NULL;
 
     vr->firepos = NULL;
     vr->smokepos = NULL;
-    vr->lightpos = NULL;
 
     vr->timeslist=NULL;
 
@@ -1340,10 +1338,6 @@ void InitVolRender(void){
       vr->smokeslice=slicei;
       continue;
     }
-    if(STRCMP(shortlabel, "frac")==0){
-      vr->lightslice = slicei;
-      continue;
-    }
   }
   for(i=0;i<nmeshes;i++){
     meshdata *meshi;
@@ -1355,11 +1349,9 @@ void InitVolRender(void){
 
     vr->firedata_full=NULL;
     vr->smokedata_full=NULL;
-    vr->lightdata_full = NULL;
 
     vr->c_firedata_view=NULL;
     vr->c_smokedata_view=NULL;
-    vr->c_lightdata_view = NULL;
 
     if(vr->smokeslice!=NULL){
       int j;
@@ -1372,28 +1364,22 @@ void InitVolRender(void){
 
         NewMemory((void **)&vr->firepos,vr->ntimes*sizeof(LINT));
         NewMemory((void **)&vr->smokepos,vr->ntimes*sizeof(LINT));
-        NewMemory((void **)&vr->lightpos, vr->ntimes*sizeof(LINT));
 
         NewMemory((void **)&vr->firedataptrs,vr->ntimes*sizeof(float *));
         NewMemory((void **)&vr->smokedataptrs,vr->ntimes*sizeof(float *));
-        NewMemory((void **)&vr->lightdataptrs, vr->ntimes*sizeof(float *));
 
         NewMemory((void **)&vr->nfiredata_compressed,vr->ntimes*sizeof(int));
         NewMemory((void **)&vr->nsmokedata_compressed,vr->ntimes*sizeof(int));
-        NewMemory((void **)&vr->nlightdata_compressed, vr->ntimes*sizeof(int));
 
         vr->firedataptr = NULL;
         vr->smokedataptr = NULL;
-        vr->lightdataptr = NULL;
 
         for(j=0;j<vr->ntimes;j++){
           vr->firedataptrs[j]  = NULL;
           vr->smokedataptrs[j] = NULL;
-          vr->lightdataptrs[j] = NULL;
 
           vr->nfiredata_compressed[j]  = 0;
           vr->nsmokedata_compressed[j] = 0;
-          vr->nlightdata_compressed[j] = 0;
 
           vr->dataready[j]=0;
         }
@@ -2228,26 +2214,6 @@ void UpdateVolsmokeSupertexture(supermeshdata *smesh){
   // light texture
 
   glActiveTexture(GL_TEXTURE5);
-  for(i = 0;i<smesh->nmeshes;i++){
-    meshdata *meshi;
-    int *s_offset;
-    float *lightdataptr;
-
-    meshi = smesh->meshes[i];
-    lightdataptr = meshi->volrenderinfo.lightdataptr;
-    if(lightdataptr==NULL)continue;
-
-    s_offset = meshi->s_offset;
-
-    ni = meshi->ibar+1;
-    nj = meshi->jbar+1;
-    nk = meshi->kbar+1;
-#ifdef pp_GPUTHROTTLE
-    GPUnframes += 3*ni*nj*nk;
-#endif
-
-    glTexSubImage3D(GL_TEXTURE_3D, 0, s_offset[0], s_offset[1], s_offset[2], ni, nj, nk, GL_RED, GL_FLOAT, lightdataptr);
-  }
 
   // blockage texture
 
@@ -2279,12 +2245,11 @@ void UpdateVolsmokeTexture(meshdata *meshi){
   GLsizei ni, nj, nk;
   int ijk_offset[3]={0,0,0};
   volrenderdata *vr;
-  float *smokedata_local, *firedata_local, *lightdata_local;
+  float *smokedata_local, *firedata_local;
 
   vr = &meshi->volrenderinfo;
   smokedata_local = vr->smokedataptr;
   firedata_local  = vr->firedataptr;
-  lightdata_local = vr->lightdataptr;
 
   //  glGetIntegerv(GL_MAX_TEXTURE_COORDS,&ntextures);
   ni = meshi->ibar+1;
@@ -2299,11 +2264,6 @@ void UpdateVolsmokeTexture(meshdata *meshi){
   if(firedata_local!=NULL){
     glActiveTexture(GL_TEXTURE1);
     glTexSubImage3D(GL_TEXTURE_3D,0,ijk_offset[0],ijk_offset[1],ijk_offset[2],ni,nj,nk,GL_RED, GL_FLOAT, firedata_local);
-  }
-
-  if(lightdata_local!=NULL){
-    glActiveTexture(GL_TEXTURE5);
-    glTexSubImage3D(GL_TEXTURE_3D, 0, ijk_offset[0], ijk_offset[1], ijk_offset[2], ni, nj, nk, GL_RED, GL_FLOAT, lightdata_local);
   }
 
   if(meshi->f_iblank_cell!=NULL){
@@ -2617,23 +2577,6 @@ void GetVolsmokeAllTimes(volrenderdata *vr){
       }
       fclose(volstream);
     }
-
-// light positions
-
-    volstream = NULL;
-    if(vr->lightslice->vol_file!=NULL)volstream = fopen(vr->lightslice->vol_file, "rb");
-    if(volstream!=NULL){
-      FSEEK(volstream, 12, SEEK_SET);
-      for(ii = 0;ii<vr->ntimes;ii++){
-        int ncompressed;
-
-        vr->lightpos[ii] = FTELL(volstream);
-        if(fread(buffer, 1, 32, volstream)!=32)break;
-        ncompressed = *(int *)(buffer+8)-32;
-        if(FSEEK(volstream, ncompressed, SEEK_CUR)!=0)break;
-      }
-      fclose(volstream);
-    }
   }
 }
 
@@ -2643,7 +2586,7 @@ void FreeVolsmokeFrame(volrenderdata *vr, int framenum){
   int i;
 
   for(i=0;i<framenum;i++){
-    void *smokedataptr, *firedataptr, *lightdataptr;
+    void *smokedataptr, *firedataptr;
 
     smokedataptr=vr->smokedataptrs[i];
     FREEMEMORY(smokedataptr);
@@ -2652,24 +2595,20 @@ void FreeVolsmokeFrame(volrenderdata *vr, int framenum){
     firedataptr=vr->firedataptrs[i];
     FREEMEMORY(firedataptr);
     vr->firedataptrs[i]=NULL;
-
-    lightdataptr = vr->lightdataptrs[i];
-    FREEMEMORY(lightdataptr);
-    vr->lightdataptrs[i] = NULL;
   }
 }
 
 /* ------------------ ReadVolsmokeFrame ------------------------ */
 #define VOL_OFFSET 32
 void ReadVolsmokeFrame(volrenderdata *vr, int framenum, int *first){
-  slicedata *fireslice, *smokeslice, *lightslice;
+  slicedata *fireslice, *smokeslice;
   FILE *SLICEFILE;
   int framesize,framesize2;
   LINT skip_local;
   float time_local, *smokeframe_data=NULL, *fireframe_data=NULL, *lightframe_data=NULL;
   unsigned char *c_smokedata_compressed=NULL, *c_firedata_compressed=NULL, *c_lightdata_compressed=NULL;
   unsigned char *c_firedata_compressed2=NULL, *c_lightdata_compressed2=NULL;
-  uLongf              n_smokedata_compressed,     n_firedata_compressed, n_lightdata_compressed;
+  uLongf              n_smokedata_compressed,     n_firedata_compressed;
   unsigned int size_before=0, size_after=0;
   FILE *volstream=NULL;
   int print = 0;
@@ -2678,7 +2617,6 @@ void ReadVolsmokeFrame(volrenderdata *vr, int framenum, int *first){
 
   smokeslice = vr->smokeslice;
   fireslice  = vr->fireslice;
-  lightslice = vr->lightslice;
 
   framesize = smokeslice->nslicei*smokeslice->nslicej*smokeslice->nslicek;
   framesize2 = framesize+VOL_OFFSET;
@@ -2707,18 +2645,6 @@ void ReadVolsmokeFrame(volrenderdata *vr, int framenum, int *first){
       NewMemory((void **)&c_firedata_compressed,n_firedata_compressed);
       NewMemory((void **)&c_firedata_compressed2,n_firedata_compressed);
       fireframe_data=vr->firedata_full;
-    }
-
-    if(lightslice!=NULL){
-      n_lightdata_compressed = 1.01*framesize2+600;
-      if(vr->lightdata_full==NULL){
-        NewMemory((void **)&vr->lightdata_full, framesize*sizeof(float));
-        NewMemory((void **)&vr->lightdata_view, framesize*sizeof(float));
-        NewMemory((void **)&vr->c_lightdata_view, framesize2);
-      }
-      NewMemory((void **)&c_lightdata_compressed, n_lightdata_compressed);
-      NewMemory((void **)&c_lightdata_compressed2, n_lightdata_compressed);
-      lightframe_data = vr->lightdata_full;
     }
   }
   else{
@@ -2851,59 +2777,6 @@ void ReadVolsmokeFrame(volrenderdata *vr, int framenum, int *first){
       volstream=NULL;
     }
   }
-  if(lightslice!=NULL){
-    if(load_volcompressed==1&&vr->lightslice->vol_file!=NULL){
-      volstream = fopen(vr->lightslice->vol_file, "rb");
-    }
-    if(volstream==NULL){
-      SLICEFILE = fopen(lightslice->reg_file, "rb");
-      if(SLICEFILE!=NULL){
-        FSEEK(SLICEFILE, skip_local, SEEK_SET); // skip from beginning of file
-
-        FORTVOLSLICEREAD(&time_local, 1);
-        vr->times[framenum] = time_local;
-        FORTVOLSLICEREAD(lightframe_data, framesize);
-        CheckMemory;
-        size_before += sizeof(float)*framesize;
-        if(vr->is_compressed==1){
-          float valmin = 20.0, valmax = 1400.0;
-
-          CompressVolSliceFrame(lightframe_data, framesize, time_local, &valmin, &valmax,
-            &c_lightdata_compressed, &n_lightdata_compressed);
-          size_after += n_lightdata_compressed;
-          vr->lightdataptrs[framenum] = c_lightdata_compressed;
-          vr->nlightdata_compressed[framenum] = n_lightdata_compressed;
-        }
-        else{
-          vr->lightdataptrs[framenum] = lightframe_data;
-        }
-        vr->lightdataptr = vr->lightdataptrs[framenum];
-        if(print==1)PRINTF(", light");
-        fclose(SLICEFILE);
-      }
-    }
-    else{
-      unsigned char buffer[32];
-      int ncompressed;
-
-      // 1,completion,version
-      // 1,version,n_data_compressedm32,nbytes,n_data_in,time_local,valmin,valmax,data ....
-      FSEEK(volstream, vr->lightpos[framenum], SEEK_SET);
-      fread(buffer, 8, 4, volstream);
-      ncompressed = *(int *)(buffer+8);
-      time_local = *(float *)(buffer+20);
-      FSEEK(volstream, vr->lightpos[framenum], SEEK_SET);
-      NewMemory((void **)&c_lightdata_compressed, ncompressed);
-      fread(c_lightdata_compressed, 1, ncompressed, volstream);
-      vr->lightdataptrs[framenum] = c_lightdata_compressed;
-      vr->lightdataptr = vr->lightdataptrs[framenum];
-
-      vr->times[framenum] = time_local;
-      if(print==1)PRINTF(", light");
-      fclose(volstream);
-      volstream = NULL;
-    }
-  }
   CheckMemory;
   vr->dataready[framenum]=1;
   if(vr->is_compressed==1&&load_volcompressed==0){
@@ -2965,12 +2838,10 @@ void ReadVolsmokeAllFrames(volrenderdata *vr){
   if(vr->is_compressed==1||load_volcompressed==1){//xyz BEGIN
     vr->smokedataptr = vr->smokedata_view;
     vr->firedataptr = vr->firedata_view;
-    vr->lightdataptr = vr->lightdata_view;
   }
   else{
     vr->smokedataptr = vr->smokedataptrs[0];  //*** hack
     vr->firedataptr = vr->firedataptrs[0];
-    vr->lightdataptr = vr->lightdataptrs[0];
   }
   vr->loaded=1;
   vr->display=1;
@@ -3025,12 +2896,10 @@ void ReadVolsmokeFrameAllMeshes(int framenum, supermeshdata *smesh){
       if(vr->is_compressed==1||load_volcompressed==1){
         vr->smokedataptr = vr->smokedata_view;  //*** hack
         vr->firedataptr  = vr->firedata_view;    //*** hack
-        vr->lightdataptr = vr->lightdata_view;  //*** hack
       }
       else{
         vr->smokedataptr = vr->smokedataptrs[0];  //*** hack
         vr->firedataptr  = vr->firedataptrs[0];
-        vr->lightdataptr = vr->lightdataptrs[0];
       }
     }
     vr->loaded=1;
