@@ -20,8 +20,9 @@
 
 //#define pp_SMOKE16            // load 16 bit smoke files
 
+//#define pp_GAMMA            // show gamma correction checkbox
 #define pp_BLACKBODY        // use blackbody theory for generating fire colors
-#define pp_BLACKBODY_OUT    // output generated blackbody color data 
+#// pp_BLACKBODY_OUT    // output generated blackbody color data 
 //#define pp_COLOR_HIDE       // add checkbox to hide/unhide scene when editing a colorbar
 //#define pp_COLOR_PLOT2D     // add option to plot CIELab distances
 

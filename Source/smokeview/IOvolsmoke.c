@@ -147,16 +147,16 @@ void Xyz2Rgb(struct colourSystem *cs, float *xyz_c, float *rgb_arg){
 
   /* xyz -> rgb matrix, before scaling to white. */
 
-  rx = (yg * zb) - (yb * zg);  ry = (xb * zg) - (xg * zb);  rz = (xg * yb) - (xb * yg);
-  gx = (yb * zr) - (yr * zb);  gy = (xr * zb) - (xb * zr);  gz = (xb * yr) - (xr * yb);
-  bx = (yr * zg) - (yg * zr);  by = (xg * zr) - (xr * zg);  bz = (xr * yg) - (xg * yr);
+  rx = (yg*zb) - (yb*zg);  ry = (xb*zg) - (xg*zb);  rz = (xg*yb) - (xb*yg);
+  gx = (yb*zr) - (yr*zb);  gy = (xr*zb) - (xb*zr);  gz = (xb*yr) - (xr*yb);
+  bx = (yr*zg) - (yg*zr);  by = (xg*zr) - (xr*zg);  bz = (xr*yg) - (xg*yr);
 
   /* White scaling factors.
      Dividing by yw scales the white luminance to unity, as conventional. */
 
-  rw = ((rx * xw) + (ry * yw) + (rz * zw)) / yw;
-  gw = ((gx * xw) + (gy * yw) + (gz * zw)) / yw;
-  bw = ((bx * xw) + (by * yw) + (bz * zw)) / yw;
+  rw = ((rx*xw) + (ry*yw) + (rz*zw)) / yw;
+  gw = ((gx*xw) + (gy*yw) + (gz*zw)) / yw;
+  bw = ((bx*xw) + (by*yw) + (bz*zw)) / yw;
 
   /* xyz -> rgb matrix, correctly scaled to white. */
 
@@ -166,9 +166,9 @@ void Xyz2Rgb(struct colourSystem *cs, float *xyz_c, float *rgb_arg){
 
   /* rgb of the desired point */
 
-  rgb_arg[0] = (rx * xyz_c[0]) + (ry * xyz_c[1]) + (rz * xyz_c[2]);
-  rgb_arg[1] = (gx * xyz_c[0]) + (gy * xyz_c[1]) + (gz * xyz_c[2]);
-  rgb_arg[2] = (bx * xyz_c[0]) + (by * xyz_c[1]) + (bz * xyz_c[2]);
+  rgb_arg[0] = (rx*xyz_c[0]) + (ry*xyz_c[1]) + (rz*xyz_c[2]);
+  rgb_arg[1] = (gx*xyz_c[0]) + (gy*xyz_c[1]) + (gz*xyz_c[2]);
+  rgb_arg[2] = (bx*xyz_c[0]) + (by*xyz_c[1]) + (bz*xyz_c[2]);
 }
 
 /*                            INSIDE_GAMUT
@@ -228,6 +228,7 @@ int ConstrainRgb(float *rgb_arg){
        http://www.poynton.com/GammaFAQ.html
 */
 
+#ifdef pp_GAMMA
 /* ----------------------- GammaCorrect ----------------------------- */
 
 void GammaCorrect(const struct colourSystem *cs, float *c){
@@ -240,10 +241,13 @@ void GammaCorrect(const struct colourSystem *cs, float *c){
     float cc = 0.018;
 
     if(*c < cc){
-      *c *= ((1.099 * pow(cc, 0.45)) - 0.099) / cc;
+      float factor;
+
+      factor = ((1.099*pow(cc, 0.45)) - 0.099) / cc;
+      *c *= factor;
     }
     else{
-      *c = (1.099 * pow(*c, 0.45)) - 0.099;
+      *c = (1.099*pow(*c, 0.45)) - 0.099;
     }
   }
   else{
@@ -256,28 +260,10 @@ void GammaCorrect(const struct colourSystem *cs, float *c){
 
 void GammaCorrectRgb(const struct colourSystem *cs, float *rgb_arg){
   GammaCorrect(cs, rgb_arg);
-  GammaCorrect(cs, rgb_arg+1);
-  GammaCorrect(cs, rgb_arg+2);
+  GammaCorrect(cs, rgb_arg + 1);
+  GammaCorrect(cs, rgb_arg + 2);
 }
-
-/*                          NORM_RGB
-
-    Normalise RGB components so the most intense (unless all
-    are zero) has a value of 1.
-
-*/
-
-/* ----------------------- NormRgb ----------------------------- */
-
-void NormRgb(float *rgb_arg){
-  float greatest = MAX(rgb_arg[0], MAX(rgb_arg[1], rgb_arg[2]));
-
-  if(greatest > 0){
-    rgb_arg[0] /= greatest;
-    rgb_arg[1] /= greatest;
-    rgb_arg[2] /= greatest;
-  }
-}
+#endif
 
 /*                            BB_SPECTRUM
 
@@ -287,10 +273,10 @@ void NormRgb(float *rgb_arg){
     /* ----------------------- BlackBodySpectrum ----------------------------- */
 
 float BlackBodySpectrum(float wavelength, float temperature){
-  float wlm = wavelength * 1e-9;   /* Wavelength in meters */
+  float wlm = wavelength*1e-9;   /* Wavelength in meters */
 
-  return (3.74183e-16 * pow(wlm, -5.0)) /
-    (exp(1.4388e-2 / (wlm * temperature)) - 1.0);
+  return (3.74183e-16*pow(wlm, -5.0)) /
+    (exp(1.4388e-2 / (wlm*temperature)) - 1.0);
 }
 
 /*                          SPECTRUM_TO_XYZ
@@ -362,9 +348,9 @@ void Spectrum2Xyz(float temperature, float *xyz){
     float Me;
 
     Me = BlackBodySpectrum(lambda, temperature);
-    X += Me * cie_colour_match[i][0];
-    Y += Me * cie_colour_match[i][1];
-    Z += Me * cie_colour_match[i][2];
+    X += Me*cie_colour_match[i][0];
+    Y += Me*cie_colour_match[i][1];
+    Z += Me*cie_colour_match[i][2];
   }
   XYZ = (X + Y + Z);
   xyz[0] = X / XYZ;
@@ -383,7 +369,7 @@ float Gaussian(float x, float mu, float sigma1, float sigma2){
   else{
     arg = (x - mu) / sigma2;
   }
-  arg = -arg * arg / 2.0;
+  arg = -arg*arg / 2.0;
   return_val = exp(arg);
   return return_val;
 }
@@ -435,11 +421,11 @@ float GetPlankVal(float lambda, float temp){
   // https://www.fourmilab.ch/documents/specrend/
   float c1, c2;
   // (c1/lambda^5)/(exp(c2/(lambda*T)-1)
-  //c1 = 2 pi hc^2 = 3.74183 * 10^-16 W m2
+  //c1 = 2 pi hc^2 = 3.74183*10^-16 W m2
   //c2 = hc/k = 0.014388 m K
-  c1 = 3.74183 * pow(10.0, -16);
+  c1 = 3.74183*pow(10.0, -16);
   c2 = 0.014388;
-  float return_val = (c1 / pow(lambda, 5.0)) / (exp(c2 / (lambda * temp)) - 1.0);;
+  float return_val = (c1 / pow(lambda, 5.0)) / (exp(c2 / (lambda*temp)) - 1.0);;
   return return_val;
 }
 
@@ -450,6 +436,36 @@ void GetRGBFireVal(float temp, float *rgb_arg){
   // temp C
   int i, n;
   float valmin, valmax, dval, factor;
+
+  static float cie_colour_match[81][3] = {
+    {0.0014, 0.0000, 0.0065}, {0.0022, 0.0001, 0.0105}, {0.0042, 0.0001, 0.0201},
+    {0.0076, 0.0002, 0.0362}, {0.0143, 0.0004, 0.0679}, {0.0232, 0.0006, 0.1102},
+    {0.0435, 0.0012, 0.2074}, {0.0776, 0.0022, 0.3713}, {0.1344, 0.0040, 0.6456},
+    {0.2148, 0.0073, 1.0391}, {0.2839, 0.0116, 1.3856}, {0.3285, 0.0168, 1.6230},
+    {0.3483, 0.0230, 1.7471}, {0.3481, 0.0298, 1.7826}, {0.3362, 0.0380, 1.7721},
+    {0.3187, 0.0480, 1.7441}, {0.2908, 0.0600, 1.6692}, {0.2511, 0.0739, 1.5281},
+    {0.1954, 0.0910, 1.2876}, {0.1421, 0.1126, 1.0419}, {0.0956, 0.1390, 0.8130},
+    {0.0580, 0.1693, 0.6162}, {0.0320, 0.2080, 0.4652}, {0.0147, 0.2586, 0.3533},
+    {0.0049, 0.3230, 0.2720}, {0.0024, 0.4073, 0.2123}, {0.0093, 0.5030, 0.1582},
+    {0.0291, 0.6082, 0.1117}, {0.0633, 0.7100, 0.0782}, {0.1096, 0.7932, 0.0573},
+    {0.1655, 0.8620, 0.0422}, {0.2257, 0.9149, 0.0298}, {0.2904, 0.9540, 0.0203},
+    {0.3597, 0.9803, 0.0134}, {0.4334, 0.9950, 0.0087}, {0.5121, 1.0000, 0.0057},
+    {0.5945, 0.9950, 0.0039}, {0.6784, 0.9786, 0.0027}, {0.7621, 0.9520, 0.0021},
+    {0.8425, 0.9154, 0.0018}, {0.9163, 0.8700, 0.0017}, {0.9786, 0.8163, 0.0014},
+    {1.0263, 0.7570, 0.0011}, {1.0567, 0.6949, 0.0010}, {1.0622, 0.6310, 0.0008},
+    {1.0456, 0.5668, 0.0006}, {1.0026, 0.5030, 0.0003}, {0.9384, 0.4412, 0.0002},
+    {0.8544, 0.3810, 0.0002}, {0.7514, 0.3210, 0.0001}, {0.6424, 0.2650, 0.0000},
+    {0.5419, 0.2170, 0.0000}, {0.4479, 0.1750, 0.0000}, {0.3608, 0.1382, 0.0000},
+    {0.2835, 0.1070, 0.0000}, {0.2187, 0.0816, 0.0000}, {0.1649, 0.0610, 0.0000},
+    {0.1212, 0.0446, 0.0000}, {0.0874, 0.0320, 0.0000}, {0.0636, 0.0232, 0.0000},
+    {0.0468, 0.0170, 0.0000}, {0.0329, 0.0119, 0.0000}, {0.0227, 0.0082, 0.0000},
+    {0.0158, 0.0057, 0.0000}, {0.0114, 0.0041, 0.0000}, {0.0081, 0.0029, 0.0000},
+    {0.0058, 0.0021, 0.0000}, {0.0041, 0.0015, 0.0000}, {0.0029, 0.0010, 0.0000},
+    {0.0020, 0.0007, 0.0000}, {0.0014, 0.0005, 0.0000}, {0.0010, 0.0004, 0.0000},
+    {0.0007, 0.0002, 0.0000}, {0.0005, 0.0002, 0.0000}, {0.0003, 0.0001, 0.0000},
+    {0.0002, 0.0001, 0.0000}, {0.0002, 0.0001, 0.0000}, {0.0001, 0.0000, 0.0000},
+    {0.0001, 0.0000, 0.0000}, {0.0001, 0.0000, 0.0000}, {0.0000, 0.0000, 0.0000}
+  };
 
   temp += 273.15;
   valmin = 380.0;
@@ -467,9 +483,9 @@ void GetRGBFireVal(float temp, float *rgb_arg){
     lambda_nano = valmin + i*dval;
     lambda_m    = lambda_nano/factor;
     plank_val   = GetPlankVal(lambda_m, temp);
-    rgb_val[0]  = plank_val*ColorMatchRed(lambda_nano);
-    rgb_val[1]  = plank_val*ColorMatchGreen(lambda_nano);
-    rgb_val[2]  = plank_val*ColorMatchBlue(lambda_nano);
+    rgb_val[0]  = plank_val*cie_colour_match[i][0];
+    rgb_val[1]  = plank_val*cie_colour_match[i][1];
+    rgb_val[2]  = plank_val*cie_colour_match[i][2];
     if(i == 0 || i == n - 1){
       rgb_arg[0] += rgb_val[0];
       rgb_arg[1] += rgb_val[1];
@@ -502,14 +518,14 @@ void MakeFireColorsNew(float temp_min, float temp_max, int nfire_colors_arg){
   for(i = 0;i < nfire_colors_arg;i++){
     float temp, fire_rgb[3], xyz[3];
 
-    temp = temp_min + (float)i * dtemp + 273.15;
+    temp = temp_min + (float)i*dtemp + 273.15;
     Spectrum2Xyz(temp, xyz);
     Xyz2Rgb(&HDTVsystem, xyz, fire_rgb);
 // SMPTEsystem
 // CIEsystem
 // NTSCsystem
     ConstrainRgb(fire_rgb);
-    memcpy(fire_rgbs + 3 * i, fire_rgb, 3 * sizeof(float));
+    memcpy(fire_rgbs + 3*i, fire_rgb, 3*sizeof(float));
 #ifdef pp_BLACKBODY_OUT  
     fprintf(stream, "%f,%f,%f,%f\n", temp, fire_rgb[0], fire_rgb[1], fire_rgb[2]);
 #endif
@@ -531,38 +547,42 @@ void MakeFireColors(float temp_min, float temp_max, int nfire_colors_arg){
 #endif
   dtemp = (temp_max - temp_min) / ( float )(nfire_colors_arg - 1);
   FREEMEMORY(fire_rgbs);
-  NewMemory(( void ** )&fire_rgbs, 3 * nfire_colors_arg * sizeof(float));
+  NewMemory(( void ** )&fire_rgbs, 3*nfire_colors_arg*sizeof(float));
   for(i = 0; i < nfire_colors_arg; i++){
-    float temp, fire_rgb[3];
+    float temp, fire_emission[3];
 
-    temp = temp_min + ( float )i * dtemp;
+    temp = temp_min + ( float )i*dtemp;
     //float xyz[3];
-    GetRGBFireVal(temp, fire_rgb);
+    GetRGBFireVal(temp, fire_emission);
     //Xyz2Rgb(&HDTVsystem, xyz, fire_rgb);
     //ConstrainRgb(fire_rgb);
-    if(gamma_correction==1)GammaCorrectRgb(&HDTVsystem, fire_rgb);
-    memcpy(fire_rgbs + 3 * i, fire_rgb, 3 * sizeof(float));
-#ifdef pp_BLACKBODY_OUT  
-    fprintf(stream, "%f,%f,%f,%f\n", temp, fire_rgb[0], fire_rgb[1], fire_rgb[2]);
+    memcpy(fire_rgbs + 3*i, fire_emission, 3*sizeof(float));
+#ifdef pp_BLACKBODY_OUT
+    if(stream != NULL){
+      float norm;
+
+      norm = sqrt(fire_emission[0]*fire_emission[0] + fire_emission[0]*fire_emission[0] + fire_emission[0]*fire_emission[0]);
+      fprintf(stream, "%f,%f,%f,%f,%f\n", temp, fire_emission[0], fire_emission[1], fire_emission[2], norm);
+    }
 #endif
   }
 #ifdef pp_BLACKBODY_OUT  
-  fclose(stream);
+  if(stream!=NULL)fclose(stream);
 #endif
 }
 
-/* ----------------------- Temperature2RGB ----------------------------- */
+/* ----------------------- Temperature2Emission ----------------------------- */
 
-void Temperature2RGB(float temperature, float *rgb_arg){
+void Temperature2Emission(float temperature, float *emission){
   int index;
   float factor, *rgb_bef, *rgb_aft, temp_bef, temp_aft;
 
   if(temperature<=fire_temp_min){
-    memcpy(rgb_arg, fire_rgbs, 3 * sizeof(float));
+    memcpy(emission, fire_rgbs, 3*sizeof(float));
     return;
   }
   if(temperature>=fire_temp_max){
-    memcpy(rgb_arg, fire_rgbs+3*(nfire_colors-1), 3 * sizeof(float));
+    memcpy(emission, fire_rgbs+3*(nfire_colors-1), 3*sizeof(float));
     return;
   }
   index = nfire_colors*(temperature - fire_temp_min) / (fire_temp_max - fire_temp_min);
@@ -571,9 +591,9 @@ void Temperature2RGB(float temperature, float *rgb_arg){
   temp_bef = fire_temp_min + (float)index*(fire_temp_max-fire_temp_min)/(float)(nfire_colors -1);
   temp_aft = fire_temp_min + (float)(index+1)*(fire_temp_max-fire_temp_min)/(float)(nfire_colors -1);
   factor = (temperature-temp_bef)/(temp_aft-temp_bef);
-  rgb_arg[0] = (1.0-factor)*rgb_bef[0] + factor*rgb_aft[0];
-  rgb_arg[1] = (1.0-factor)*rgb_bef[1] + factor*rgb_aft[1];
-  rgb_arg[2] = (1.0-factor)*rgb_bef[2] + factor*rgb_aft[2];
+  emission[0] = (1.0-factor)*rgb_bef[0] + factor*rgb_aft[0];
+  emission[1] = (1.0-factor)*rgb_bef[1] + factor*rgb_aft[1];
+  emission[2] = (1.0-factor)*rgb_bef[2] + factor*rgb_aft[2];
 }
 #endif
 
@@ -588,9 +608,9 @@ VKLDevice InitVKL(int *width){
 }
 #endif
 
-/* ----------------------- GetFireColor ----------------------------- */
+/* ----------------------- GetFireEmission ----------------------------- */
 
-void GetFireColor(float *smoke_tran, float *fire_color, float dlength, float xyz[3], meshdata *meshi, int *inobst, char *blank_local){
+void GetFireEmission(float *smoke_tran, float *fire_emission, float dlength, float xyz[3], meshdata *meshi, int *inobst, char *blank_local){
   int i, j, k;
   int ijk;
   float *vv;
@@ -648,17 +668,51 @@ void GetFireColor(float *smoke_tran, float *fire_color, float dlength, float xyz
 
   if(firedata_local!=NULL){
     INTERP3D(firedata_local, temperature);
-    Temperature2RGB(temperature, fire_color);
+    if(use_blackbody_colors == 1){
+      Temperature2Emission(temperature, fire_emission);
+    }
+    else{
+      if(temperature > global_temp_cutoff){
+        int index;
+        float dtemp;
+
+        dtemp = (global_temp_max - global_temp_cutoff) / (MAXSMOKERGB / 2);
+        index = GETINDEX(temperature + voltemp_offset, global_temp_cutoff, dtemp, (MAXSMOKERGB / 2));
+        index += (MAXSMOKERGB/2);
+        memcpy(fire_emission, rgb_volsmokecolormap + 4 * index, 3*sizeof(float));
+      }
+      else{
+        memcpy(fire_emission, black, 3 * sizeof(float));
+      }
+    }
   }
   else{
-    memcpy(fire_color, black, 3*sizeof(float));
+    memcpy(fire_emission, black, 3*sizeof(float));
   }
   if(smokedata_local!=NULL){
     INTERP3D(smokedata_local, soot_density);
-    float tran;
+    *smoke_tran = exp(-mass_extinct*soot_density*dlength);
+    if(firedata_local!=NULL&&temperature<global_temp_cutoff){
+      float factor;
 
-    tran = exp(-mass_extinct*soot_density*dlength);
-    *smoke_tran = tran;
+      factor = CLAMP((global_temp_cutoff - temperature) / 50.0, 0.0, 1.0);
+      fire_emission[0] = (1.0 - factor)*fire_emission[0];
+      fire_emission[1] = (1.0 - factor)*fire_emission[1];
+      fire_emission[2] = (1.0 - factor)*fire_emission[2];
+    }
+  }
+  if(firedata_local!=NULL&&temperature>global_temp_cutoff){
+    if(use_opacity_depth==1){
+      *smoke_tran = pow(0.5, dlength/fire_halfdepth);
+    }
+    if(use_opacity_multiplier==1&&smokedata_local!=NULL){
+      float absorb, trans;
+
+      absorb = 1.0 - *smoke_tran;
+      absorb *= emission_factor;
+      trans = CLAMP(1.0 - absorb, 0.0, 1.0);
+      *smoke_tran = trans;
+    }
   }
 }
 
@@ -1073,27 +1127,27 @@ void InitNabors(void){
     meshi = meshinfo + i;
     memcpy(xyzmid, meshi->boxmiddle, 3*sizeof(float)); 
 
-    memcpy(xyz, xyzmid, 3 * sizeof(float));
+    memcpy(xyz, xyzmid, 3*sizeof(float));
     xyz[0] = meshi->boxmin[0]- meshi->boxeps_fds[0];
     meshi->skip_nabors[MLEFT] = GetMesh(xyz, NULL);
 
-    memcpy(xyz, xyzmid, 3 * sizeof(float));
+    memcpy(xyz, xyzmid, 3*sizeof(float));
     xyz[0] = meshi->boxmax[0] + meshi->boxeps_fds[0];
     meshi->skip_nabors[MRIGHT] = GetMesh(xyz, NULL);
 
-    memcpy(xyz, xyzmid, 3 * sizeof(float));
+    memcpy(xyz, xyzmid, 3*sizeof(float));
     xyz[1] = meshi->boxmin[1] - meshi->boxeps_fds[1];
     meshi->skip_nabors[MFRONT] = GetMesh(xyz, NULL);
 
-    memcpy(xyz, xyzmid, 3 * sizeof(float));
+    memcpy(xyz, xyzmid, 3*sizeof(float));
     xyz[1] = meshi->boxmax[0] + meshi->boxeps_fds[1];
     meshi->skip_nabors[MBACK] = GetMesh(xyz, NULL);
 
-    memcpy(xyz, xyzmid, 3 * sizeof(float));
+    memcpy(xyz, xyzmid, 3*sizeof(float));
     xyz[2] = meshi->boxmin[2] - meshi->boxeps_fds[2];
     meshi->skip_nabors[MDOWN] = GetMesh(xyz, NULL);
 
-    memcpy(xyz, xyzmid, 3 * sizeof(float));
+    memcpy(xyz, xyzmid, 3*sizeof(float));
     xyz[2] = meshi->boxmax[2] + meshi->boxeps_fds[2];
     meshi->skip_nabors[MUP] = GetMesh(xyz, NULL);
   }
@@ -1427,8 +1481,7 @@ void IntegrateFireColors(float *integrated_firecolor, float *xyzvert, float dlen
   int iwall_min=0;
   float xyzvals[3];
   char *blank_local;
-  float xi, taui, fire_color[3];
-  float taun,alphan;
+  float taun, alphan;
   meshdata *xyz_mesh=NULL;
 
   if(combine_meshes==1){
@@ -1542,54 +1595,72 @@ void IntegrateFireColors(float *integrated_firecolor, float *xyzvert, float dlen
   taun=1.0;
   alphan=0.0;
   for(i=0;i<nsteps;i++){
-    float factor, alphai;
     int inobst;
+    float factor;
+    float fire_emission[3];
+    float alphai, taui, xi;
 
     xi = 0.5 + (float)i;
     factor = xi/(float)nsteps;
-    xyz[0] = MIX(factor,vert_end[0],vert_beg[0]);
-    xyz[1] = MIX(factor,vert_end[1],vert_beg[1]);
-    xyz[2] = MIX(factor,vert_end[2],vert_beg[2]);
+    xyz[0] = factor*vert_end[0] + (1.0 - factor)*vert_beg[0];
+    xyz[1] = factor*vert_end[1] + (1.0 - factor)*vert_beg[1];
+    xyz[2] = factor*vert_end[2] + (1.0 - factor)*vert_beg[2];
 
     if(combine_meshes==1){
       xyz_mesh = GetMeshInSmesh(xyz_mesh,meshi->super,xyz);
       if(xyz_mesh==NULL)break;
       blank_local = NULL;
       if(block_volsmoke==1)blank_local=xyz_mesh->c_iblank_cell;
-      GetFireColor(&taui, fire_color, dlength, xyz, xyz_mesh, &inobst, blank_local);
+      GetFireEmission(&taui, fire_emission, dlength, xyz, xyz_mesh, &inobst, blank_local);
     }
     else{
       blank_local = NULL;
       if(block_volsmoke==1)blank_local=meshi->c_iblank_cell;
-      GetFireColor(&taui, fire_color, dlength, xyz, meshi, &inobst, blank_local);
+      GetFireEmission(&taui, fire_emission, dlength, xyz, meshi, &inobst, blank_local);
     }
-    if(blank_local!=NULL&&inobst==1)break;
+    if(blank_local!=NULL&&inobst==1)break; // terminate ray when a blockage is encountered
 
-//    "    taui = exp(-mass_extinct*soot_val*dstep);"
-//    "    alphai = 1.0 - taui;"
-//    "    taun *= taui;"
-//    "    alphan = 1.0-taun;"
-//    "    color_total += alphai*taun*color_val*opacity_factor;"
+//         taui = exp(-mass_extinct*soot_val*dstep);
+//         new_color = taui*current_color + old_color
 
-    alphai = 1.0 - taui;
     taun *= taui;
+    alphai = 1.0 - taui;
     alphan = 1.0 - taun;
-
-    //    "    color_total += alphai*taun*color_val*opacity_factor;"
-    integrated_firecolor[0] += alphai * taun * fire_color[0];
-    integrated_firecolor[1] += alphai * taun * fire_color[1];
-    integrated_firecolor[2] += alphai * taun * fire_color[2];
+    
+    if(hrrpuv_max_blending==1){
+      integrated_firecolor[0] = MAX(integrated_firecolor[0], fire_emission[0]);
+      integrated_firecolor[1] = MAX(integrated_firecolor[1], fire_emission[1]);
+      integrated_firecolor[2] = MAX(integrated_firecolor[2], fire_emission[2]);
+    }
+    // https://developer.nvidia.com/sites/all/modules/custom/gpugems/books/GPUGems/gpugems_ch39.html
+    // equation 6 - integrate forward
+    else{
+      integrated_firecolor[0] = taun*alphai*fire_emission[0] + integrated_firecolor[0];
+      integrated_firecolor[1] = taun*alphai*fire_emission[1] + integrated_firecolor[1];
+      integrated_firecolor[2] = taun*alphai*fire_emission[2] + integrated_firecolor[2];
+    }
   }
 
   if(alphan>0.0){
     alphan = CLAMP(alphan, 0.0, 1.0);
     float max_rgb;
 
-    max_rgb = MAX(integrated_firecolor[0], integrated_firecolor[1]); 
-    max_rgb = MAX(max_rgb, integrated_firecolor[2]); 
-    integrated_firecolor[0] /= (max_rgb);
-    integrated_firecolor[1] /= (max_rgb);
-    integrated_firecolor[2] /= (max_rgb);
+    max_rgb = MAX(integrated_firecolor[0], MAX(integrated_firecolor[1], integrated_firecolor[2]));
+    if(max_rgb>0.0){
+      integrated_firecolor[0] /= max_rgb;
+      integrated_firecolor[1] /= max_rgb;
+      integrated_firecolor[2] /= max_rgb;
+    }
+
+    
+ //   float fire_rgb_from[3], fire_rgb_to[3];
+ //   memcpy(fire_rgb_from, integrated_firecolor, 3*sizeof(float));
+ //   Xyz2Rgb(&HDTVsystem, fire_rgb_from, fire_rgb_to);
+ //   ConstrainRgb(fire_rgb_to);
+#ifdef pp_GAMMA
+    if(gamma_correction==1)GammaCorrectRgb(&HDTVsystem, integrated_firecolor);
+#endif
+ //    memcpy(integrated_firecolor, fire_rgb_to, 3*sizeof(float));
     integrated_firecolor[3] = alphan;
     if(volbw==1){
       float gray;
@@ -1932,7 +2003,7 @@ void DrawSmoke3DVol(void){
     for(i = 0;i < nfire_colors;i++){
       float fire_rgb[3], zmin, zmax, maxrgb;
 
-      memcpy(fire_rgb, fire_rgbs + 3 * i, 3*sizeof(float));
+      memcpy(fire_rgb, fire_rgbs + 3*i, 3*sizeof(float));
       maxrgb = MAX(fire_rgb[0], fire_rgb[1]);
       maxrgb = MAX(maxrgb, fire_rgb[2]);
       if(maxrgb>0.0){
