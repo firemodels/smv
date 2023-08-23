@@ -4786,6 +4786,7 @@ int ParseISOFProcess(bufferstreamdata *stream, char *buffer, int *iiso_in, int *
       strcat(isoi->surface_label.longlabel, skip_label);
     }
     if(geomflag==1){
+      int ntimes_local;
       geomdata *geomi;
       float **colorlevels, *levels;
 
@@ -4793,6 +4794,7 @@ int ParseISOFProcess(bufferstreamdata *stream, char *buffer, int *iiso_in, int *
       geomi->file = isoi->file;
       geomi->topo_file = isoi->topo_file;
       geomi->file = isoi->file;
+      ReadGeomHeader(geomi, NULL, &ntimes_local);
       isoi->nlevels = geomi->nfloat_vals;
       if(isoi->nlevels>0){
         NewMemory((void **)&levels, isoi->nlevels*sizeof(float));
