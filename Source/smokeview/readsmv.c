@@ -5885,7 +5885,7 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
     sd->colorbar_autoflip = 0;
   }
 
-
+#ifdef pp_VOLCOMPRESS
   {
     char volfile[1024];
 
@@ -5898,6 +5898,7 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
       have_volcompressed = 1;
     }
   }
+#endif
 
   NewMemory((void **)&sd->size_file, (unsigned int)(len+3+1));
   STRCPY(sd->size_file, bufferptr);

@@ -19,6 +19,7 @@
 #define pp_CSV_MULTI          // read in csv files in parallel
 
 //#define pp_SMOKE16            // load 16 bit smoke files
+//#define pp_VOLSMOKE          // add option to compress volume rendered data
 
 
 //#define pp_COLOR_HIDE         // add checkbox to hide/unhide scene when editing a colorbar

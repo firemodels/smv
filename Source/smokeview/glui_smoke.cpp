@@ -39,8 +39,9 @@ GLUI_RadioGroup *RADIO_newsmoke = NULL;
 GLUI_RadioGroup *RADIO_render=NULL;
 GLUI_RadioGroup *RADIO_skipframes=NULL;
 GLUI_RadioGroup *RADIO_smokesensors=NULL;
+#ifdef pp_VOLCOMPRESS
 GLUI_RadioGroup *RADIO_loadvol=NULL;
-
+#endif
 GLUI_Spinner *SPINNER_smoke_num=NULL;
 GLUI_Spinner *SPINNER_startframe=NULL;
 GLUI_Spinner *SPINNER_skipframe=NULL;
@@ -599,11 +600,13 @@ extern "C" void Glui3dSmokeSetup(int main_window){
     INSERT_ROLLOUT(ROLLOUT_volume, glui_3dsmoke);
     ADDPROCINFO(smokeprocinfo, nsmokeprocinfo, ROLLOUT_volume, VOLRENDER_ROLLOUT, glui_3dsmoke);
 
+#ifdef pp_VOLCOMPRESS
     if(have_volcompressed == 1){
       RADIO_loadvol = glui_3dsmoke->add_radiogroup_to_panel(ROLLOUT_volume, &glui_load_volcompressed, LOAD_COMPRESSED_DATA, Smoke3dCB);
       glui_3dsmoke->add_radiobutton_to_group(RADIO_loadvol, _("Load full data"));
       glui_3dsmoke->add_radiobutton_to_group(RADIO_loadvol, _("Load compressed data"));
     }
+#endif
 
     //*** display
 
@@ -651,10 +654,12 @@ extern "C" void Glui3dSmokeSetup(int main_window){
     ADDPROCINFO(volsmokeprocinfo, nvolsmokeprocinfo, ROLLOUT_volsmoke_load, VOLSMOKE_LOAD_ROLLOUT, glui_3dsmoke);
 
     glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_volsmoke_load, _("Load data in background"), &use_multi_threading);
+#ifdef pp_VOLCOMPRESS
     CHECKBOX_compress_volsmoke = glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_volsmoke_load, _("Compress data while loading"), &glui_compress_volsmoke);
     if(have_volcompressed == 1){
       Smoke3dCB(LOAD_COMPRESSED_DATA);
     }
+#endif
     glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_volsmoke_load, _("Load data only at render times"), &load_at_rendertimes);
 
     //*** generate images
