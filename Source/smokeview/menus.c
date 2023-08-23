@@ -5353,6 +5353,10 @@ FILE_SIZE LoadIsoI(int value){
   float total_time;
 
   START_TIMER(total_time);
+  if(setup_isosurfaces == 0){
+    SetupAllIsosurfaces();
+    setup_isosurfaces = 1;
+  }
   ReadIsoFile=1;
   isoi = isoinfo + value;
   file=isoi->file;
@@ -5402,6 +5406,10 @@ void LoadIsoMenu(int value){
   int i;
   int ii;
 
+  if(setup_isosurfaces == 0){
+    SetupAllIsosurfaces();
+    setup_isosurfaces = 1;
+  }
   if(value==MENU_DUMMY3)return;
   GLUTSETCURSOR(GLUT_CURSOR_WAIT);
   if(value>=0){
