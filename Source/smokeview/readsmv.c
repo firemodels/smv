@@ -4656,7 +4656,6 @@ void ParseISOFCount(void){
 
 int ParseISOFProcess(bufferstreamdata *stream, char *buffer, int *iiso_in, int *ioffset_in, int *nn_iso_in, int nisos_per_mesh_in){
   isodata *isoi;
-  int get_isolevels;
   int dataflag = 0, geomflag = 0;
   char tbuffer[255], *tbufferptr;
   int blocknumber;
@@ -4727,6 +4726,7 @@ int ParseISOFProcess(bufferstreamdata *stream, char *buffer, int *iiso_in, int *
   isoi->geom_times = NULL;
   isoi->geom_vals = NULL;
   isoi->histogram = NULL;
+  isoi->get_isolevels = 0;
 
   isoi->normaltable = NULL;
   isoi->color_label.longlabel = NULL;
@@ -4755,7 +4755,7 @@ int ParseISOFProcess(bufferstreamdata *stream, char *buffer, int *iiso_in, int *
   STRCPY(isoi->size_file, bufferptr);
   STRCAT(isoi->size_file, ".sz");
 
-  if(dataflag==1&&geomflag==1){
+  if(isoi->dataflag==1&&isoi->geomflag==1){
     if(FGETS(tbuffer, 255, stream)==NULL){
       nisoinfo--;
       return RETURN_BREAK;
@@ -4767,7 +4767,7 @@ int ParseISOFProcess(bufferstreamdata *stream, char *buffer, int *iiso_in, int *
   }
 
   if(fast_startup==1||FILE_EXISTS_CASEDIR(isoi->reg_file)==YES){
-    get_isolevels = 1;
+    isoi->get_isolevels = 1;
     isoi->file = isoi->reg_file;
     if(ReadLabels(&isoi->surface_label, stream, NULL)==LABEL_ERR)return 2;
     if(isoi->fds_delta>0.0){  // only append delete parameter if it is > 0.0
@@ -4785,7 +4785,7 @@ int ParseISOFProcess(bufferstreamdata *stream, char *buffer, int *iiso_in, int *
       sprintf(skip_label, "/%i", isoi->fds_skip);
       strcat(isoi->surface_label.longlabel, skip_label);
     }
-    if(geomflag==1){
+    if(isoi->geomflag==1){
       int ntimes_local;
       geomdata *geomi;
       float **colorlevels, *levels;
@@ -4808,23 +4808,23 @@ int ParseISOFProcess(bufferstreamdata *stream, char *buffer, int *iiso_in, int *
       }
     }
     else{
-      GetIsoLevels(isoi->file, dataflag, &isoi->levels, &isoi->colorlevels, &isoi->nlevels);
+      GetIsoLevels(isoi->file, isoi->dataflag, &isoi->levels, &isoi->colorlevels, &isoi->nlevels);
     }
-    if(dataflag==1){
+    if(isoi->dataflag==1){
       if(ReadLabels(&isoi->color_label, stream, NULL)==LABEL_ERR)return 2;
     }
     iiso++;
     *iiso_in = iiso;
   }
   else{
-    get_isolevels = 0;
+    isoi->get_isolevels = 0;
     if(ReadLabels(&isoi->surface_label, stream, NULL)==LABEL_ERR)return 2;
-    if(dataflag==1){
+    if(isoi->dataflag==1){
       if(ReadLabels(&isoi->color_label, stream, NULL)==LABEL_ERR)return 2;
     }
     nisoinfo--;
   }
-  if(get_isolevels==1){
+  if(isoi->get_isolevels==1){
     int len_clevels;
     char clevels[1024];
 
@@ -4837,14 +4837,14 @@ int ParseISOFProcess(bufferstreamdata *stream, char *buffer, int *iiso_in, int *
       long_label = isoi->surface_label.longlabel;
       unit_label = isoi->surface_label.unit;
       len_long = strlen(long_label)+strlen(unit_label)+len_clevels+3+1;
-      if(dataflag==1)len_long += (strlen(isoi->color_label.longlabel)+15+1);
+      if(isoi->dataflag==1)len_long += (strlen(isoi->color_label.longlabel)+15+1);
       ResizeMemory((void **)&long_label, (unsigned int)len_long);
       isoi->surface_label.longlabel = long_label;
       strcat(long_label, ": ");
       strcat(long_label, clevels);
       strcat(long_label, " ");
       strcat(long_label, unit_label);
-      if(dataflag==1){
+      if(isoi->dataflag==1){
         strcat(long_label, " (Colored by: ");
         strcat(long_label, isoi->color_label.longlabel);
         strcat(long_label, ")");
