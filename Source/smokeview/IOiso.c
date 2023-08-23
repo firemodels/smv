@@ -253,7 +253,7 @@ FILE_SIZE ReadIsoGeom(int ifile, int load_flag, int *geom_frame_index, int *erro
   surfdata *surfi;
   FILE_SIZE return_filesize=0;
 
-  if(setup_isosurfaces == 0){
+  if(load_flag==LOAD&&setup_isosurfaces == 0){
     SetupAllIsosurfaces();
     setup_isosurfaces = 1;
   }
@@ -509,7 +509,7 @@ void ReadIsoOrig(const char *file, int ifile, int flag, int *errorcode){
   isodata *ib;
 
   START_TIMER(total_time);
-  if(setup_isosurfaces == 0){
+  if(flag==LOAD&&setup_isosurfaces == 0){
     SetupAllIsosurfaces();
     setup_isosurfaces = 1;
   }
