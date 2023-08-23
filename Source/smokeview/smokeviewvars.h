@@ -2065,6 +2065,7 @@ SVEXTERN int nboundarytypes;
 SVEXTERN char SVDECL(**patchlabellist,NULL);
 SVEXTERN int SVDECL(*patchlabellist_index,NULL);
 SVEXTERN int SVDECL(*isoindex,NULL);
+SVEXTERN int SVDECL(setup_isosurfaces, 0);
 
 SVEXTERN int have_vents_int;
 SVEXTERN int nface_outlines, nface_textures, nface_transparent;
