@@ -4710,7 +4710,7 @@ void SetupIsosurface(isodata *isoi){
 void SetupAllIsosurfaces(void){
   int i;
 
-  for(i=0; i<nisoinfo; i++){
+  for(i=0; i<nisoinfo-nfediso; i++){
     isodata *isoi;
 
     isoi = isoinfo + i;

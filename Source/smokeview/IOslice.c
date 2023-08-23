@@ -2772,7 +2772,7 @@ void UpdateVSliceDups(void){
 
 void UpdateFedinfo(void){
   int i;
-  int nfediso = 0, ifediso = 0;
+  int ifediso = 0;
   FILE *stream_fedsmv = NULL;
 
   nfedinfo = 0;

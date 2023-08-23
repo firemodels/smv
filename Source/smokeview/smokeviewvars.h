@@ -508,6 +508,7 @@ SVEXTERN int SVDECL(setup_only, 0);
 SVEXTERN int SVDECL(timearray_test, 0);
 SVEXTERN char SVDECL(*updatetimes_debug, NULL);
 SVEXTERN int SVDECL(*fed_areas, NULL);
+SVEXTERN int SVDECL(nfediso, 0);
 SVEXTERN int SVDECL(slice_time, 0);
 SVEXTERN float SVDECL(histogram_width_factor,25.0);
 SVEXTERN int SVDECL(histogram_show_graph, 0), SVDECL(histogram_show_numbers, 0);
