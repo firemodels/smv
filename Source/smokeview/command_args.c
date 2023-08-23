@@ -193,6 +193,8 @@ CommandlineArgs ParseCommandlineNew(int argc, char **argv,
       args.geominfo = true;
     } else if (strcmp(argv[i], "-fast") == 0) {
       args.fast = true;
+    } else if(strcmp(argv[i], "-full") == 0) {
+      args.full = true;
     } else if (strcmp(argv[i], "-blank") == 0) {
       args.blank = true;
     } else if (strcmp(argv[i], "-gversion") == 0) {

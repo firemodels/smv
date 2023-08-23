@@ -613,7 +613,7 @@ typedef struct _isodata {
   float fds_delta;
   int nnormaltable;
   char *file,*tfile;
-  int dataflag,geomflag;
+  int dataflag,geomflag,get_isolevels;
   int is_fed;
   feddata *fedptr;
   int type;

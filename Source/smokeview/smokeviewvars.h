@@ -485,7 +485,11 @@ SVEXTERN int SVDECL(light_faces, 1);
 SVEXTERN char SVDECL(*prog_fullpath, NULL);
 SVEXTERN int SVDECL(nwindrosez_checkboxes, 0);
 SVEXTERN float startup_time, read_time_elapsed;
+#ifdef pp_FAST
+SVEXTERN int SVDECL(fast_startup, 1), SVDECL(lookfor_compressed_slice,0);
+#else
 SVEXTERN int SVDECL(fast_startup, 0), SVDECL(lookfor_compressed_slice,1);
+#endif
 SVEXTERN int SVDECL(alt_ctrl_key_state, KEY_NONE);
 SVEXTERN devicedata SVDECL(**vel_devices, NULL);
 SVEXTERN int SVDECL(nvel_devices, 0);
@@ -514,6 +518,7 @@ SVEXTERN int SVDECL(setup_only, 0);
 SVEXTERN int SVDECL(timearray_test, 0);
 SVEXTERN char SVDECL(*updatetimes_debug, NULL);
 SVEXTERN int SVDECL(*fed_areas, NULL);
+SVEXTERN int SVDECL(nfediso, 0);
 SVEXTERN int SVDECL(slice_time, 0);
 SVEXTERN float SVDECL(histogram_width_factor,25.0);
 SVEXTERN int SVDECL(histogram_show_graph, 0), SVDECL(histogram_show_numbers, 0);
@@ -832,7 +837,9 @@ SVEXTERN int SVDECL(slice_celltype, 0);
 SVEXTERN int SVDECL(show_geom_normal, 0), SVDECL(smooth_geom_normal, 1);
 
 SVEXTERN geomlistdata SVDECL(*geomlistinfo, NULL);
+#ifdef pp_VOLCOMPRESS
 SVEXTERN int SVDECL(have_volcompressed,0);
+#endif
 SVEXTERN int SVDECL(glui_load_volcompressed,0),SVDECL(load_volcompressed,0);
 SVEXTERN int SVDECL(use_multi_threading,1);
 SVEXTERN int SVDECL(load_at_rendertimes,1);
@@ -2069,6 +2076,7 @@ SVEXTERN int nboundarytypes;
 SVEXTERN char SVDECL(**patchlabellist,NULL);
 SVEXTERN int SVDECL(*patchlabellist_index,NULL);
 SVEXTERN int SVDECL(*isoindex,NULL);
+SVEXTERN int SVDECL(setup_isosurfaces, 0);
 
 SVEXTERN int have_vents_int;
 SVEXTERN int nface_outlines, nface_textures, nface_transparent;
