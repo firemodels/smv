@@ -66,6 +66,7 @@ typedef struct CommandlineArgs {
   bool geominfo;
   /// @brief assume slice files exist in order to reduce startup time
   bool fast;
+  bool full;
   bool blank;
   bool gversion;
   bool redirect;

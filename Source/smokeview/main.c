@@ -81,6 +81,7 @@ void Usage(char *prog,int option){
     PRINTF("%s\n", _("                  and save the results into case2.ini"));
     PRINTF("%s\n", _(" -demo          - use demonstrator mode of Smokeview"));
     PRINTF("%s\n", _(" -fast          - assume slice files exist in order to reduce startup time"));
+    PRINTF("%s\n", _(" -full          - full startup - check if files exist"));
     PRINTF("%s\n", _(" -fed           - pre-calculate all FED slice files"));
     PRINTF("%s\n", _(" -geominfo      - output information about geometry triangles"));
     PRINTF("%s\n", _(" -info            generate casename.slcf and casename.viewpoint files containing slice file and viewpiont info"));
@@ -536,6 +537,10 @@ char *ProcessCommandLine(CommandlineArgs *args) {
     if(args->fast){
       fast_startup = 1;
       lookfor_compressed_slice = 0;
+    }
+    if(args->full){
+      fast_startup = 0;
+      lookfor_compressed_slice = 1;
     }
     if(args->blank){
       iblank_set_on_commandline = 1;
