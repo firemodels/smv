@@ -19,7 +19,7 @@
 
 /* ------------------ PrintTime ------------------------ */
 
-void PrintTime(const char *filepath, int line, float *timer, const char *label){
+void PrintTime(const char *filepath, int line, float *timer, const char *label, int stop_flag){
   char *file;
 
   if(show_timings==0)return;
@@ -32,7 +32,7 @@ void PrintTime(const char *filepath, int line, float *timer, const char *label){
     file++;
   }
   if(label!=NULL){
-    STOP_TIMER(*timer);
+    if(stop_flag==1)STOP_TIMER(*timer);
     if(*timer>0.1)printf("%s/%i/%s %.1f s\n", file, line, label, *timer);
   }
   START_TIMER(*timer);

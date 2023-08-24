@@ -9792,6 +9792,9 @@ int ReadSMV(bufferstreamdata *stream){
    ************************************************************************
  */
 
+  float ISOF_timer, SLCF_timer, BNDF_timer, SMOKE3D_timer, PRT5_timer;
+  float cum_ISOF_timer=0.0, cum_SLCF_timer=0.0, cum_BNDF_timer=0.0, cum_SMOKE3D_timer=0.0, cum_PRT5_timer=0.0;
+
   REWIND(stream);
   PRINTF("%s","  pass 4\n");
   startpass=1;
@@ -11081,7 +11084,9 @@ typedef struct {
       MatchSMV(buffer, "SMOKG3D") == 1){
       int return_val;
 
+      START_TIMER(SMOKE3D_timer);
       return_val = ParseSMOKE3DProcess(stream, buffer, &nn_smoke3d, &ioffset, &ismoke3dcount, &ismoke3d);
+      CUM_TIMER(SMOKE3D_timer, cum_SMOKE3D_timer);
       if(return_val==RETURN_BREAK){
         BREAK;
       }
@@ -11105,7 +11110,9 @@ typedef struct {
       ){
       int return_val;
 
+      START_TIMER(PRT5_timer);
       return_val = ParsePRT5Process(stream, buffer, &nn_part, &ipart, &ioffset);
+      CUM_TIMER(PRT5_timer, cum_PRT5_timer);
       if(return_val==RETURN_BREAK){
         BREAK;
       }
@@ -11133,7 +11140,9 @@ typedef struct {
       ){
       int return_val;
 
+      START_TIMER(SLCF_timer);
       return_val = ParseSLCFProcess(NO_SCAN, stream, buffer, &nn_slice, ioffset, &nslicefiles, &sliceinfo_copy, &patchgeom, buffers);
+      CUM_TIMER(SLCF_timer, cum_SLCF_timer);
       if(return_val==RETURN_BREAK){
         BREAK;
       }
@@ -11161,7 +11170,9 @@ typedef struct {
       ){
       int return_val;
 
+      START_TIMER(BNDF_timer);
       return_val = ParseBNDFProcess(stream, buffer, &nn_patch, &ioffset, &patchgeom, &ipatch, buffers);
+      CUM_TIMER(BNDF_timer, cum_BNDF_timer);
       if(return_val==RETURN_BREAK){
         BREAK;
       }
@@ -11189,7 +11200,9 @@ typedef struct {
        MatchSMV(buffer, "TISOG")==1){
       int return_val;
 
+      START_TIMER(ISOF_timer);
       return_val = ParseISOFProcess(stream, buffer, &iiso, &ioffset, &nn_iso, nisos_per_mesh);
+      CUM_TIMER(ISOF_timer, cum_ISOF_timer);
       if(return_val==RETURN_BREAK){
         BREAK;
       }
@@ -11218,6 +11231,12 @@ typedef struct {
     nOBST=0;
     iobst=0;
   }
+  
+  PRINT_CUM_TIMER(cum_BNDF_timer, "BNDF");
+  PRINT_CUM_TIMER(cum_ISOF_timer, "ISOF");
+  PRINT_CUM_TIMER(cum_PRT5_timer, "PRT5");
+  PRINT_CUM_TIMER(cum_SLCF_timer, "SLCF");
+  PRINT_CUM_TIMER(cum_SMOKE3D_timer, "SMOKE3D");
   PRINT_TIMER(timer_readsmv, "pass 4");
 
   /*

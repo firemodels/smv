@@ -60,7 +60,7 @@ EXTERNCPP void GeneratePartHistograms(void);
 EXTERNCPP void GeneratePartHistogramsMT(void);
 FILE_SIZE LoadAllMSlicesMT(int last_slice, multislicedata *mslicei, int *fcount);
 
-EXTERNCPP void PrintTime(const char *tag, int line, float *timer, const char *label);
+EXTERNCPP void PrintTime(const char *tag, int line, float *timer, const char *label, int stop_flag);
 
 EXTERNCPP void DrawObstBoundingBox(void);
 EXTERNCPP void DrawGeomBoundingBox(float *boundingbox_color);
