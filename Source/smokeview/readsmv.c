@@ -2785,7 +2785,9 @@ void InitTextures(int use_graphics_arg){
 
 void UpdateBoundInfo(void){
   int i,n;
+  float bound_timer;
 
+  START_TIMER(bound_timer);
   if(nisoinfo>0){
     FREEMEMORY(isoindex);
     FREEMEMORY(isobounds);
@@ -2827,6 +2829,7 @@ void UpdateBoundInfo(void){
       }
     }
   }
+  PRINT_TIMER(bound_timer, "isobounds");
 
   if(nsliceinfo > 0){
     FREEMEMORY(slicebounds);
@@ -2871,6 +2874,7 @@ void UpdateBoundInfo(void){
       }
     }
   }
+  PRINT_TIMER(bound_timer, "slicebounds");
 
   canshow_threshold=0;
   if(npatchinfo>0){
@@ -2934,6 +2938,7 @@ void UpdateBoundInfo(void){
       }
     }
   }
+  PRINT_TIMER(bound_timer, "boundary file bounds");
 
   int nhvacboundsmax = 0;
   if(hvacductvalsinfo != NULL)nhvacboundsmax += hvacductvalsinfo->n_duct_vars;
@@ -3009,12 +3014,19 @@ void UpdateBoundInfo(void){
       }
     }
   }
+  PRINT_TIMER(bound_timer, "hvacbounds");
   UpdateChar();
+  PRINT_TIMER(bound_timer, "UpdateChar");
   GetGlobalPartBounds(ALL_FILES);
+  PRINT_TIMER(bound_timer, "GetGlobalPartBounds");
   GetGlobalSliceBounds(NULL);
+  PRINT_TIMER(bound_timer, "GetGlobalSliceBounds");
   GetGlobalPatchBounds();
+  PRINT_TIMER(bound_timer, "GetGlobalPatchBounds");
   GetGlobalHVACDuctBounds(0);
+  PRINT_TIMER(bound_timer, "GetGlobalHVACDuctBounds");
   GetGlobalHVACNodeBounds(0);
+  PRINT_TIMER(bound_timer, "GetGlobalHVACNodeBounds");
 }
 
 /*
