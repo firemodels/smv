@@ -41,6 +41,7 @@ typedef struct CommandlineArgs {
 #endif
   /// @brief show startup timings
   bool timings;
+  bool compress;
   bool convert_ini;
   bool convert_ssf;
   /// @brief update case.ini to the current format

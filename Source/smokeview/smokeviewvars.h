@@ -89,6 +89,7 @@ SVEXTERN int SOOT_index, HRRPUV_index, TEMP_index, CO2_index;
 
 SVEXTERN int SVDECL(agl_offset_actual, 1);
 
+SVEXTERN int SVDECL(CHECKFILES_thread, 1), SVDECL(have_compressed_files, 0);
 SVEXTERN int SVDECL(use_ffmpeg_thread, 1);
 SVEXTERN int SVDECL(nsmoke_threads, 1), SVDECL(use_smoke_thread, 0);
 SVEXTERN int SVDECL(force_gray_smoke, 1);
@@ -157,6 +158,7 @@ SVEXTERN int SVDECL(nztreedeviceinfo, 0);
 
 SVEXTERN int SVDECL(readini_output, 0);
 SVEXTERN int SVDECL(show_timings, 0);
+SVEXTERN int SVDECL(use_compressed_files, 0);
 
 SVEXTERN float SVDECL(pixel_dens, 1.0);
 

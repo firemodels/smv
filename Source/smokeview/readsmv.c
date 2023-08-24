@@ -11413,6 +11413,14 @@ typedef struct {
   }
   if(ntotal_blockages > 250000)show_geom_boundingbox = SHOW_BOUNDING_BOX_MOUSE_DOWN;
 
+#ifdef pp_THREAD
+  InitMultiThreading();
+#endif
+#ifndef pp_CHECK_FILES
+  CheckFilesMT();
+  PRINT_TIMER(timer_readsmv, "CheckFilesMT");
+#endif
+
 #ifdef pp_BNDF
   for(i = 0;i < npatchinfo;i++){
     patchdata *patchi;
@@ -11440,6 +11448,7 @@ typedef struct {
       break;
     }
   }
+  PRINT_TIMER(timer_readsmv, "bound labels");
 #endif
 
   CheckMemory;
@@ -11474,9 +11483,6 @@ typedef struct {
     if(strcmp(csvi->c_type, "ext") == 0)ReadDeviceData(csvi->file,CSV_EXP,LOAD);
   }
   PRINT_TIMER(timer_readsmv, "ReadDeviceData");
-#ifdef pp_THREAD
-  InitMultiThreading();
-#endif
 
   SetupDeviceData();
   PRINT_TIMER(timer_readsmv, "SetupDeviceData");
@@ -11751,6 +11757,11 @@ typedef struct {
 
     PRINTF("   wrap up: %.1f s\n", wrapup_time);
     PRINTF("\n");
+  }
+  if(use_compressed_files==1){
+    START_TIMER(timer_readsmv);
+    JOIN_CHECKFILES;
+    PRINT_TIMER(timer_readsmv, "CheckFilesMT");
   }
   STOP_TIMER(timer_startup);
   START_TIMER(timer_render);
