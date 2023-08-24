@@ -5267,6 +5267,7 @@ int ParseBNDFProcess(bufferstreamdata *stream, char *buffer, int *nn_patch_in, i
   STRCPY(patchi->size_file, bufferptr);
   //      STRCAT(patchi->size_file,".szz"); when we actully use file check both .sz and .szz extensions
 
+#ifdef pp_CHECK_FILES
   if(FILE_EXISTS_CASEDIR(patchi->comp_file)==YES){
     patchi->compression_type = COMPRESSED_ZLIB;
     patchi->file = patchi->comp_file;
@@ -5275,6 +5276,10 @@ int ParseBNDFProcess(bufferstreamdata *stream, char *buffer, int *nn_patch_in, i
     patchi->compression_type = UNCOMPRESSED;
     patchi->file = patchi->reg_file;
   }
+#else
+  patchi->compression_type = UNCOMPRESSED;
+  patchi->file = patchi->reg_file;
+#endif
 
   patchi->geominfo = NULL;
   if(patchi->structured==NO){
@@ -5526,6 +5531,7 @@ int ParseSMOKE3DProcess(bufferstreamdata *stream, char *buffer, int *nn_smoke3d_
     if(NewMemory((void **)&smoke3di->comp_file, (unsigned int)(len+1))==0)return RETURN_TWO;
     STRCPY(smoke3di->comp_file, buffer2);
 
+#ifdef pp_CHECK_FILES
     if(FILE_EXISTS_CASEDIR(smoke3di->comp_file)==YES){
       smoke3di->file = smoke3di->comp_file;
       smoke3di->is_zlib = 1;
@@ -5534,6 +5540,9 @@ int ParseSMOKE3DProcess(bufferstreamdata *stream, char *buffer, int *nn_smoke3d_
     else{
       smoke3di->file = smoke3di->reg_file;
     }
+#else
+    smoke3di->file = smoke3di->reg_file;
+#endif
 
 #ifdef pp_SMOKE16
     char buffer16[256];
@@ -6584,7 +6593,7 @@ void AddCfastCsvf(void){
 int ReadSMV(bufferstreamdata *stream){
 
 /* read the .smv file */
-  float read_time, processing_time, wrapup_time, getfilelist_time;
+  float processing_time, wrapup_time, getfilelist_time;
   float pass0_time, pass1_time, pass2_time, pass3_time, pass4_time, pass5_time;
   int have_zonevents,nzventsnew=0;
   devicedata *devicecopy;
@@ -6615,10 +6624,6 @@ int ReadSMV(bufferstreamdata *stream){
   STOP_TIMER(getfilelist_time);
 
   START_TIMER(pass0_time);
-  START_TIMER(read_time);
-
-  STOP_TIMER(read_time);
-  STOP_TIMER(read_time_elapsed);
 
   npropinfo=1; // the 0'th prop is the default human property
 
@@ -9792,6 +9797,9 @@ int ReadSMV(bufferstreamdata *stream){
    ************************************************************************
  */
 
+  float ISOF_timer, SLCF_timer, BNDF_timer, SMOKE3D_timer, PRT5_timer;
+  float cum_ISOF_timer=0.0, cum_SLCF_timer=0.0, cum_BNDF_timer=0.0, cum_SMOKE3D_timer=0.0, cum_PRT5_timer=0.0;
+
   REWIND(stream);
   PRINTF("%s","  pass 4\n");
   startpass=1;
@@ -11081,7 +11089,9 @@ typedef struct {
       MatchSMV(buffer, "SMOKG3D") == 1){
       int return_val;
 
+      START_TIMER(SMOKE3D_timer);
       return_val = ParseSMOKE3DProcess(stream, buffer, &nn_smoke3d, &ioffset, &ismoke3dcount, &ismoke3d);
+      CUM_TIMER(SMOKE3D_timer, cum_SMOKE3D_timer);
       if(return_val==RETURN_BREAK){
         BREAK;
       }
@@ -11105,7 +11115,9 @@ typedef struct {
       ){
       int return_val;
 
+      START_TIMER(PRT5_timer);
       return_val = ParsePRT5Process(stream, buffer, &nn_part, &ipart, &ioffset);
+      CUM_TIMER(PRT5_timer, cum_PRT5_timer);
       if(return_val==RETURN_BREAK){
         BREAK;
       }
@@ -11133,7 +11145,9 @@ typedef struct {
       ){
       int return_val;
 
+      START_TIMER(SLCF_timer);
       return_val = ParseSLCFProcess(NO_SCAN, stream, buffer, &nn_slice, ioffset, &nslicefiles, &sliceinfo_copy, &patchgeom, buffers);
+      CUM_TIMER(SLCF_timer, cum_SLCF_timer);
       if(return_val==RETURN_BREAK){
         BREAK;
       }
@@ -11161,7 +11175,9 @@ typedef struct {
       ){
       int return_val;
 
+      START_TIMER(BNDF_timer);
       return_val = ParseBNDFProcess(stream, buffer, &nn_patch, &ioffset, &patchgeom, &ipatch, buffers);
+      CUM_TIMER(BNDF_timer, cum_BNDF_timer);
       if(return_val==RETURN_BREAK){
         BREAK;
       }
@@ -11189,7 +11205,9 @@ typedef struct {
        MatchSMV(buffer, "TISOG")==1){
       int return_val;
 
+      START_TIMER(ISOF_timer);
       return_val = ParseISOFProcess(stream, buffer, &iiso, &ioffset, &nn_iso, nisos_per_mesh);
+      CUM_TIMER(ISOF_timer, cum_ISOF_timer);
       if(return_val==RETURN_BREAK){
         BREAK;
       }
@@ -11218,6 +11236,12 @@ typedef struct {
     nOBST=0;
     iobst=0;
   }
+  
+  PRINT_CUM_TIMER(cum_BNDF_timer, "BNDF");
+  PRINT_CUM_TIMER(cum_ISOF_timer, "ISOF");
+  PRINT_CUM_TIMER(cum_PRT5_timer, "PRT5");
+  PRINT_CUM_TIMER(cum_SLCF_timer, "SLCF");
+  PRINT_CUM_TIMER(cum_SMOKE3D_timer, "SMOKE3D");
   PRINT_TIMER(timer_readsmv, "pass 4");
 
   /*
@@ -11420,15 +11444,20 @@ typedef struct {
 
   CheckMemory;
   UpdateIsoColors();
+  PRINT_TIMER(timer_readsmv, "UpdateIsoColors");
   CheckMemory;
 
   UpdateSmoke3dFileParms();
+  PRINT_TIMER(timer_readsmv, "UpdateSmoke3dFileParms");
 
   AddCfastCsvf();
+  PRINT_TIMER(timer_readsmv, "AddCfastCsvf");
 
   //RemoveDupBlockages();
   InitCullGeom(cullgeom);
+  PRINT_TIMER(timer_readsmv, "InitCullGeom");
   UpdateINIList();
+  PRINT_TIMER(timer_readsmv, "UpdateINIList");
 
   if(meshinfo!=NULL&&meshinfo->jbar==1)force_isometric=1;
 
@@ -11444,18 +11473,23 @@ typedef struct {
     if(strcmp(csvi->c_type, "devc")==0)ReadDeviceData(csvi->file,CSV_FDS,LOAD);
     if(strcmp(csvi->c_type, "ext") == 0)ReadDeviceData(csvi->file,CSV_EXP,LOAD);
   }
+  PRINT_TIMER(timer_readsmv, "ReadDeviceData");
 #ifdef pp_THREAD
   InitMultiThreading();
 #endif
 
   SetupDeviceData();
+  PRINT_TIMER(timer_readsmv, "SetupDeviceData");
   ReadAllCSVFilesMT();
   SetupPlot2DUnitData();
+  PRINT_TIMER(timer_readsmv, "SetupPlot2DUnitData");
   if(nzoneinfo>0)SetupZoneDevs();
 
   InitPartProp();
+  PRINT_TIMER(timer_readsmv, "InitPartProp");
 
   InitClip();
+  PRINT_TIMER(timer_readsmv, "InitClip");
 
   if(noutlineinfo>0){
     highlight_flag=2;
@@ -11464,6 +11498,7 @@ typedef struct {
     highlight_flag=1;
   }
   InitCadColors();
+  PRINT_TIMER(timer_readsmv, "InitCadColors");
 
   // update loaded lists
 
@@ -11478,10 +11513,11 @@ typedef struct {
   }
 
   UpdateLoadedLists();
+  PRINT_TIMER(timer_readsmv, "UpdateLoadedLists");
   CheckMemory;
 
   UpdateMeshBoxBounds();
-  PRINT_TIMER(timer_readsmv, "UpdateMesnTerrain");
+  PRINT_TIMER(timer_readsmv, "UpdateMeshBoxBounds");
   ReadAllGeomMT();
   PRINT_TIMER(timer_readsmv, "ReadAllGeomMT");
 
@@ -11583,6 +11619,7 @@ typedef struct {
     JOIN_CSVFILES;
     JOIN_IBLANK
   }
+  SetupFFMT();
   LOCK_IBLANK
   SetVentDirs();
   UNLOCK_IBLANK
@@ -11597,8 +11634,10 @@ typedef struct {
 
   PRINT_TIMER(timer_readsmv, "UpdateFileBoundList");
   UpdateBoundInfo();
+  PRINT_TIMER(timer_readsmv, "UpdateBoundInfo");
 
   UpdateObjectUsed();
+  PRINT_TIMER(timer_readsmv, "UpdateObjectUsed");
 
   // close .smv file
 
@@ -11620,14 +11659,21 @@ typedef struct {
   UpdateTerrainColors();
   PRINT_TIMER(timer_readsmv, "UpdateTerrain");
   UpdateSmoke3dMenuLabels();
+  PRINT_TIMER(timer_readsmv, "UpdateSmoke3dMenuLabels");
   UpdateVSliceBoundIndexes();
+  PRINT_TIMER(timer_readsmv, "UpdateVSliceBoundIndexes");
   UpdateBoundaryMenuLabels();
+  PRINT_TIMER(timer_readsmv, "UpdateBoundaryMenuLabels");
   UpdateIsoMenuLabels();
+  PRINT_TIMER(timer_readsmv, "UpdateIsoMenuLabels");
   UpdatePartMenuLabels();
+  PRINT_TIMER(timer_readsmv, "UpdatePartMenuLabels");
   UpdateTourMenuLabels();
+  PRINT_TIMER(timer_readsmv, "UpdateTourMenuLabels");
   SetupCircularTourNodes();
+  PRINT_TIMER(timer_readsmv, "SetupCircularTourNodes");
   InitUserTicks();
-  PRINT_TIMER(timer_readsmv, "update menu labels");
+  PRINT_TIMER(timer_readsmv, "InitUserTicks");
 
   clip_I=ibartemp; clip_J=jbartemp; clip_K=kbartemp;
 
@@ -11694,9 +11740,7 @@ typedef struct {
     PRINTF("---------------------\n");
 
 
-    PRINTF(".smv file(net): %.1f s\n", read_time);
     PRINTF("      filelist: %.1f s\n", getfilelist_time);
-    PRINTF(".smv file(cum): %.1f s\n", read_time_elapsed);
     PRINTF("         setup: %.1f s\n", pass0_time);
     PRINTF("        pass 1: %.1f s\n", pass1_time);
     PRINTF("        pass 2: %.1f s\n", pass2_time);
