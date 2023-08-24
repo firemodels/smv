@@ -6584,7 +6584,7 @@ void AddCfastCsvf(void){
 int ReadSMV(bufferstreamdata *stream){
 
 /* read the .smv file */
-  float read_time, processing_time, wrapup_time, getfilelist_time;
+  float processing_time, wrapup_time, getfilelist_time;
   float pass0_time, pass1_time, pass2_time, pass3_time, pass4_time, pass5_time;
   int have_zonevents,nzventsnew=0;
   devicedata *devicecopy;
@@ -6615,10 +6615,6 @@ int ReadSMV(bufferstreamdata *stream){
   STOP_TIMER(getfilelist_time);
 
   START_TIMER(pass0_time);
-  START_TIMER(read_time);
-
-  STOP_TIMER(read_time);
-  STOP_TIMER(read_time_elapsed);
 
   npropinfo=1; // the 0'th prop is the default human property
 
@@ -11714,9 +11710,7 @@ typedef struct {
     PRINTF("---------------------\n");
 
 
-    PRINTF(".smv file(net): %.1f s\n", read_time);
     PRINTF("      filelist: %.1f s\n", getfilelist_time);
-    PRINTF(".smv file(cum): %.1f s\n", read_time_elapsed);
     PRINTF("         setup: %.1f s\n", pass0_time);
     PRINTF("        pass 1: %.1f s\n", pass1_time);
     PRINTF("        pass 2: %.1f s\n", pass2_time);

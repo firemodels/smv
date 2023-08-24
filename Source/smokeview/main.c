@@ -839,7 +839,6 @@ int main(int argc, char **argv){
   DisplayVersionInfo("Smokeview ");
   SetupGlut(argc,argv);
   START_TIMER(startup_time);
-  START_TIMER(read_time_elapsed);
 
   return_code= SetupCase(smv_filename);
   if(return_code==0&&update_bounds==1){
