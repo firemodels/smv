@@ -21,6 +21,7 @@
 //#define pp_SMOKE16            // load 16 bit smoke files
 //#define pp_VOLSMOKE          // add option to compress volume rendered data
 #define pp_FAST                /// set fast startup by default
+//#define pp_CHECK_FILES         // check if compressed files exist at startup
 
 //#define pp_GAMMA            // show gamma correction checkbox
 #define pp_BLACKBODY        // use blackbody theory for generating fire colors

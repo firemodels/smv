@@ -11257,17 +11257,15 @@ updatemenu=0;
 #endif
   glutAddMenuEntry(_("Save/load configuration files..."), DIALOG_CONFIG);
   glutAddMenuEntry(_("Render images..."), DIALOG_RENDER);
-  if(have_slurm==1){
-    if(have_ffmpeg==1){
-      glutAddMenuEntry(_("Make movies(local)..."), DIALOG_MOVIE);
-    }
+  LOCK_SETUPFF;
+  if(have_slurm==1&&have_ffmpeg==1){
+    glutAddMenuEntry(_("Make movies(local)..."), DIALOG_MOVIE);
     glutAddMenuEntry(_("Make movies(cluster)..."), DIALOG_MOVIE_BATCH);
   }
-  else{
-    if(have_ffmpeg==1){
-      glutAddMenuEntry(_("Make movies..."), DIALOG_MOVIE);
-    }
-    }
+  if(have_slurm==0&&have_ffmpeg==1){
+    glutAddMenuEntry(_("Make movies..."), DIALOG_MOVIE);
+  }
+  UNLOCK_SETUPFF;
   glutAddMenuEntry(_("Record/run scripts..."), DIALOG_SCRIPT);
 
   /* --------------------------------viewdialog menu -------------------------- */
