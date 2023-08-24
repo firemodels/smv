@@ -160,7 +160,6 @@ int RunLuaBranch(lua_State *L, int argc, char **argv) {
   lua_pushlightuserdata(L, argv);
   lua_SetupGLUT(L);
   START_TIMER(startup_time);
-  START_TIMER(read_time_elapsed);
   // Load information about smokeview into the lua interpreter.
   lua_initsmvproginfo(L);
 
