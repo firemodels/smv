@@ -11602,6 +11602,7 @@ typedef struct {
     JOIN_CSVFILES;
     JOIN_IBLANK
   }
+  SetupFFMT();
   LOCK_IBLANK
   SetVentDirs();
   UNLOCK_IBLANK

@@ -598,6 +598,7 @@ SVEXTERN float SVDECL(geom_dz_offset,0.0);
 SVEXTERN int SVDECL(iso_outline_ioffset, 1);
 SVEXTERN float SVDECL(iso_outline_offset, 0.001);
 SVEXTERN int SVDECL(update_setvents, 0);
+SVEXTERN int SVDECL(update_ff, 0);
 SVEXTERN int SVDECL(use_set_slicecolor, 1);
 SVEXTERN int SVDECL(cvents_defined, 0);
 SVEXTERN int SVDECL(boundaryslicedup_option, SLICEDUP_KEEPFINE);

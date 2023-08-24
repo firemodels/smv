@@ -25,6 +25,7 @@ void InitMultiThreading(void){
   pthread_mutex_init(&mutexCOMPRESS,NULL);
   pthread_mutex_init(&mutexVOLLOAD,NULL);
   pthread_mutex_init(&mutexIBLANK, NULL);
+  pthread_mutex_init(&mutexSETUPFF, NULL);
 #ifdef pp_STREAM
   pthread_mutex_init(&mutexSTREAM, NULL);
 #endif
@@ -258,7 +259,7 @@ void ReadAllGeomMT(void){
   }
 }
 
-/* ------------------ MtReadAllGeom ------------------------ */
+/* ------------------ MTGeneratePartHistograms ------------------------ */
 
 void *MTGeneratePartHistograms(void *arg){
   GeneratePartHistograms();
@@ -515,7 +516,6 @@ void FinishUpdateTriangles(void){
 /* ------------------ MtMakeIBlank ------------------------ */
 #ifdef pp_THREAD
 void *MtMakeIBlank(void *arg){
-
   MakeIBlank();
   SetCVentDirs();
   LOCK_IBLANK
@@ -525,6 +525,38 @@ void *MtMakeIBlank(void *arg){
   return NULL;
 }
 #endif
+
+/* ------------------ MtSetupFF ------------------------ */
+
+void *MtSetupFF(void *arg){
+  int have_ffmpeg_local, have_ffplay_local;
+
+#ifdef WIN32
+  have_ffmpeg_local = HaveProg("ffmpeg -version> Nul 2>Nul");
+  have_ffplay_local = HaveProg("ffplay -version> Nul 2>Nul");
+#else
+  have_ffmpeg_local = HaveProg("ffmpeg -version >/dev/null 2>/dev/null");
+  have_ffplay_local = HaveProg("ffplay -version >/dev/null 2>/dev/null");
+#endif
+
+  LOCK_SETUPFF
+  update_ff = 1;
+  have_ffmpeg = have_ffmpeg_local;
+  have_ffplay = have_ffplay_local;
+  UNLOCK_SETUPFF
+#ifdef pp_THREAD
+  pthread_exit(NULL);
+#endif
+  return NULL;
+}
+
+void SetupFFMT(void){
+#ifdef pp_THREAD
+  pthread_create(&setupff_thread_id, NULL, MtSetupFF, NULL);
+#else
+  MtSetupFF();
+#endif
+}
 
 /* ------------------ Sample ------------------------ */
 

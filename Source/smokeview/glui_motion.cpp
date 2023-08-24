@@ -512,9 +512,9 @@ void UpdateRenderStartButton(void){
   }
 }
 
-/* ------------------ EnableDisablePlayMovie ------------------------ */
+/* ------------------ EnableDisablePlayMovieCPP ------------------------ */
 
-void EnableDisablePlayMovie(void){
+extern "C" void EnableDisablePlayMovieCPP(void){
   char moviefile_path[1024];
 
   if(BUTTON_play_movie != NULL){
@@ -529,14 +529,14 @@ void EnableDisablePlayMovie(void){
 
 /* ------------------ EnableDisableMakeMovie ------------------------ */
 
-void EnableDisableMakeMovie(int onoff){
-  if(onoff == ON){
-    if(BUTTON_make_movie != NULL)BUTTON_make_movie->enable();
-    if(BUTTON_play_movie != NULL)BUTTON_play_movie->enable();
-  }
-  else{
-    if(BUTTON_make_movie != NULL)BUTTON_make_movie->enable();
-    if(BUTTON_play_movie != NULL)BUTTON_play_movie->disable();
+extern "C" void EnableDisableMakeMovieCPP(int onoff){
+  if(BUTTON_make_movie!=NULL){
+    if(onoff == ON){
+      BUTTON_make_movie->enable();
+    }
+    else{
+      BUTTON_make_movie->disable();
+    }
   }
 }
 
@@ -1578,42 +1578,38 @@ extern "C" void GluiMotionSetup(int main_window){
 
   CHECKBOX_clip_rendered_scene = glui_motion->add_checkbox_to_panel(ROLLOUT_scene_clip, "clip rendered scene", &clip_rendered_scene);
 
-  if(have_ffmpeg == 1){
-    if(have_slurm==1){
-      ROLLOUT_make_movie = glui_motion->add_rollout("Movie(local)", false, MOVIE_ROLLOUT, MVRRolloutCB);
-    }
-    else{
-      ROLLOUT_make_movie = glui_motion->add_rollout("Movie", false, MOVIE_ROLLOUT, MVRRolloutCB);
-    }
-    INSERT_ROLLOUT(ROLLOUT_make_movie, glui_motion);
-    ADDPROCINFO(mvrprocinfo,nmvrprocinfo,ROLLOUT_make_movie,MOVIE_ROLLOUT, glui_motion);
-
-    CHECKBOX_overwrite_movie = glui_motion->add_checkbox_to_panel(ROLLOUT_make_movie, "Overwrite movie", &overwrite_movie);
-    glui_motion->add_button_to_panel(ROLLOUT_make_movie, _("Render normal"), RENDER_START_NORMAL, RenderCB);
-    BUTTON_make_movie = glui_motion->add_button_to_panel(ROLLOUT_make_movie, "Make movie", MAKE_MOVIE, RenderCB);
-    if(have_ffplay==1){
-      BUTTON_play_movie = glui_motion->add_button_to_panel(ROLLOUT_make_movie, "Play movie", PLAY_MOVIE, RenderCB);
-      EnableDisablePlayMovie();
-    }
-    glui_motion->add_separator_to_panel(ROLLOUT_make_movie);
-
-    EDIT_movie_name = glui_motion->add_edittext_to_panel(ROLLOUT_make_movie, "Movie prefix:", GLUI_EDITTEXT_TEXT, movie_name, MOVIE_NAME, RenderCB);
-    EDIT_movie_name->set_w(200);
-    PANEL_movie_type = glui_motion->add_panel_to_panel(ROLLOUT_make_movie, "Movie type:", true);
-    RADIO_movie_type = glui_motion->add_radiogroup_to_panel(PANEL_movie_type, &movie_filetype, MOVIE_FILETYPE, RenderCB);
-    RADIOBUTTON_movie_type[0]=glui_motion->add_radiobutton_to_group(RADIO_movie_type, "avi");
-    RADIOBUTTON_movie_type[1]=glui_motion->add_radiobutton_to_group(RADIO_movie_type, "mp4");
-    RADIOBUTTON_movie_type[2]=glui_motion->add_radiobutton_to_group(RADIO_movie_type, "wmv");
-    RADIOBUTTON_movie_type[3]=glui_motion->add_radiobutton_to_group(RADIO_movie_type, "mov");
-    SPINNER_framerate = glui_motion->add_spinner_to_panel(ROLLOUT_make_movie, "Frame rate", GLUI_SPINNER_INT, &movie_framerate);
-    SPINNER_framerate->set_int_limits(1, 100);
-    SPINNER_movie_crf = glui_motion->add_spinner_to_panel(ROLLOUT_make_movie, "quality", GLUI_SPINNER_INT, &movie_crf);
-    SPINNER_movie_crf->set_int_limits(0,51);
-    SPINNER_bitrate = glui_motion->add_spinner_to_panel(ROLLOUT_make_movie, "Bit rate (Kb/s)", GLUI_SPINNER_INT, &movie_bitrate);
-    SPINNER_bitrate->set_int_limits(1, 100000);
-    glui_motion->add_button_to_panel(ROLLOUT_make_movie, "Output ffmpeg command", OUTPUT_FFMPEG, RenderCB);
-    RenderCB(MOVIE_FILETYPE);
+  if(have_slurm==1){
+    ROLLOUT_make_movie = glui_motion->add_rollout("Movie(local)", false, MOVIE_ROLLOUT, MVRRolloutCB);
   }
+  else{
+    ROLLOUT_make_movie = glui_motion->add_rollout("Movie", false, MOVIE_ROLLOUT, MVRRolloutCB);
+  }
+  INSERT_ROLLOUT(ROLLOUT_make_movie, glui_motion);
+  ADDPROCINFO(mvrprocinfo,nmvrprocinfo,ROLLOUT_make_movie,MOVIE_ROLLOUT, glui_motion);
+
+  CHECKBOX_overwrite_movie = glui_motion->add_checkbox_to_panel(ROLLOUT_make_movie, "Overwrite movie", &overwrite_movie);
+  glui_motion->add_button_to_panel(ROLLOUT_make_movie, _("Render normal"), RENDER_START_NORMAL, RenderCB);
+  BUTTON_make_movie = glui_motion->add_button_to_panel(ROLLOUT_make_movie, "Make movie", MAKE_MOVIE, RenderCB);
+  BUTTON_play_movie = glui_motion->add_button_to_panel(ROLLOUT_make_movie, "Play movie", PLAY_MOVIE, RenderCB);
+  EnableDisablePlayMovie();
+  glui_motion->add_separator_to_panel(ROLLOUT_make_movie);
+
+  EDIT_movie_name = glui_motion->add_edittext_to_panel(ROLLOUT_make_movie, "Movie prefix:", GLUI_EDITTEXT_TEXT, movie_name, MOVIE_NAME, RenderCB);
+  EDIT_movie_name->set_w(200);
+  PANEL_movie_type = glui_motion->add_panel_to_panel(ROLLOUT_make_movie, "Movie type:", true);
+  RADIO_movie_type = glui_motion->add_radiogroup_to_panel(PANEL_movie_type, &movie_filetype, MOVIE_FILETYPE, RenderCB);
+  RADIOBUTTON_movie_type[0]=glui_motion->add_radiobutton_to_group(RADIO_movie_type, "avi");
+  RADIOBUTTON_movie_type[1]=glui_motion->add_radiobutton_to_group(RADIO_movie_type, "mp4");
+  RADIOBUTTON_movie_type[2]=glui_motion->add_radiobutton_to_group(RADIO_movie_type, "wmv");
+  RADIOBUTTON_movie_type[3]=glui_motion->add_radiobutton_to_group(RADIO_movie_type, "mov");
+  SPINNER_framerate = glui_motion->add_spinner_to_panel(ROLLOUT_make_movie, "Frame rate", GLUI_SPINNER_INT, &movie_framerate);
+  SPINNER_framerate->set_int_limits(1, 100);
+  SPINNER_movie_crf = glui_motion->add_spinner_to_panel(ROLLOUT_make_movie, "quality", GLUI_SPINNER_INT, &movie_crf);
+  SPINNER_movie_crf->set_int_limits(0,51);
+  SPINNER_bitrate = glui_motion->add_spinner_to_panel(ROLLOUT_make_movie, "Bit rate (Kb/s)", GLUI_SPINNER_INT, &movie_bitrate);
+  SPINNER_bitrate->set_int_limits(1, 100000);
+  glui_motion->add_button_to_panel(ROLLOUT_make_movie, "Output ffmpeg command", OUTPUT_FFMPEG, RenderCB);
+  RenderCB(MOVIE_FILETYPE);
 
   if(have_slurm==1&&nmovie_queues>0){
     ROLLOUT_make_movie_batch = glui_motion->add_rollout("Movie(cluster)", false, MOVIE_ROLLOUT_BATCH, MVRRolloutCB);
@@ -2610,12 +2606,7 @@ void RenderCB(int var){
       MakeMovieBashScript();
       break;
     case MAKE_MOVIE:
-      if(have_ffmpeg == 0){
-        PRINTF("*** Error: The movie generating program ffmpeg is not available\n");
-        break;
-      }
-      EnableDisableMakeMovie(OFF);
-      update_makemovie = 1;
+      HandleMakeMovie();
       break;
     case RENDER_SKIP:
     case RENDER_LABEL:

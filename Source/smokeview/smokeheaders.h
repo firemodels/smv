@@ -408,9 +408,13 @@ EXTERNCPP char *GetMovieFilePath(char *moviefile_path);
 #ifdef CPP
 EXTERNCPP void ToggleRollout(procdata *procinfo, int nprocinfo, int motion_id);
 #endif
-EXTERNCPP void EnableDisablePlayMovie(void);
-EXTERNCPP void UpdateRenderStartButton(void);
 EXTERNCPP void EnableDisableMakeMovie(int onoff);
+EXTERNCPP void EnableDisablePlayMovie(void);
+EXTERNCPP void EnableDisableMakeMovieCPP(int onoff);
+EXTERNCPP void EnableDisablePlayMovieCPP(void);
+EXTERNCPP void HandleMakeMovie(void);
+EXTERNCPP void SetupFFMT(void);
+EXTERNCPP void UpdateRenderStartButton(void);
 EXTERNCPP void MakeMovie(void);
 EXTERNCPP void PlayMovie(void);
 EXTERNCPP void UpdateRenderType(int type);
