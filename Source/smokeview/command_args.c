@@ -83,9 +83,6 @@ CommandlineArgs ParseCommandlineNew(int argc, char **argv,
       args.big = true;
     } else if (strcmp(argv[i], "-timings") == 0) {
       args.timings = true;
-    }
-    else if(strcmp(argv[i], "-compress") == 0) {
-      args.compress = true;
     } else if (strcmp(argv[i], "-lang") == 0) {
       // The next argument is a language name
       ++i;

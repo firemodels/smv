@@ -11770,11 +11770,9 @@ typedef struct {
     PRINTF("   wrap up: %.1f s\n", wrapup_time);
     PRINTF("\n");
   }
-  if(use_compressed_files==1){
-    START_TIMER(timer_readsmv);
-    JOIN_CHECKFILES;
-    PRINT_TIMER(timer_readsmv, "CheckFilesMT");
-  }
+  START_TIMER(timer_readsmv);
+  JOIN_CHECKFILES;
+  PRINT_TIMER(timer_readsmv, "CheckFilesMT");
   STOP_TIMER(timer_startup);
   START_TIMER(timer_render);
   PRINT_TIMER(total_wrapup_time, "total wrapup time");

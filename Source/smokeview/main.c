@@ -77,7 +77,6 @@ void Usage(char *prog,int option){
 #endif
     PRINTF("%s\n", _(" -big           - hide scene and data when moving scene or selecting menus"));
     PRINTF("%s\n", _(" -casedir dir   - specify location of case (if different than current directory)"));
-    PRINTF("%s\n", _(" -compress      - view compressed files if they exist"));
     PRINTF("%s\n", _(" -convert_ini case1.ini case2.ini - update case1.ini to the current format"));
     PRINTF("%s\n", _("                  and save the results into case2.ini"));
     PRINTF("%s\n", _(" -demo          - use demonstrator mode of Smokeview"));
@@ -460,9 +459,6 @@ char *ProcessCommandLine(CommandlineArgs *args) {
     }
     if(args->timings){
       show_timings = 1;
-    }
-    if(args->compress){
-      use_compressed_files = 1;
     }
     if(args->lang != NULL){
         FREEMEMORY(tr_name);
