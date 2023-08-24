@@ -89,6 +89,7 @@ SVEXTERN int SOOT_index, HRRPUV_index, TEMP_index, CO2_index;
 
 SVEXTERN int SVDECL(agl_offset_actual, 1);
 
+SVEXTERN int SVDECL(use_ffmpeg_thread, 1);
 SVEXTERN int SVDECL(nsmoke_threads, 1), SVDECL(use_smoke_thread, 0);
 SVEXTERN int SVDECL(force_gray_smoke, 1);
 SVEXTERN int SVDECL(startup, 1);

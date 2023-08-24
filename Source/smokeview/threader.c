@@ -528,6 +528,24 @@ void *MtMakeIBlank(void *arg){
 
 /* ------------------ MtSetupFF ------------------------ */
 
+void SetupFF(void){
+  int have_ffmpeg_local, have_ffplay_local;
+
+#ifdef WIN32
+  have_ffmpeg_local = HaveProg("ffmpeg -version> Nul 2>Nul");
+  have_ffplay_local = HaveProg("ffplay -version> Nul 2>Nul");
+#else
+  have_ffmpeg_local = HaveProg("ffmpeg -version >/dev/null 2>/dev/null");
+  have_ffplay_local = HaveProg("ffplay -version >/dev/null 2>/dev/null");
+#endif
+
+  update_ff = 1;
+  have_ffmpeg = have_ffmpeg_local;
+  have_ffplay = have_ffplay_local;
+}
+
+/* ------------------ MtSetupFF ------------------------ */
+
 void *MtSetupFF(void *arg){
   int have_ffmpeg_local, have_ffplay_local;
 
@@ -550,11 +568,18 @@ void *MtSetupFF(void *arg){
   return NULL;
 }
 
+/* ------------------ SetupFFMT ------------------------ */
+
 void SetupFFMT(void){
 #ifdef pp_THREAD
-  pthread_create(&setupff_thread_id, NULL, MtSetupFF, NULL);
+  if(use_ffmpeg_thread == 1){
+    pthread_create(&setupff_thread_id, NULL, MtSetupFF, NULL);
+  }
+  else{
+    SetupFF();
+  }
 #else
-  MtSetupFF();
+  SetupFF();
 #endif
 }
 
