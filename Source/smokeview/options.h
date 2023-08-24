@@ -21,6 +21,7 @@
 //#define pp_SMOKE16            // load 16 bit smoke files
 //#define pp_VOLSMOKE          // add option to compress volume rendered data
 #define pp_FAST                /// set fast startup by default
+//#define pp_CHECK_FILES         // check if compressed files exist at startup
 
 
 //#define pp_COLOR_HIDE         // add checkbox to hide/unhide scene when editing a colorbar

@@ -5267,6 +5267,7 @@ int ParseBNDFProcess(bufferstreamdata *stream, char *buffer, int *nn_patch_in, i
   STRCPY(patchi->size_file, bufferptr);
   //      STRCAT(patchi->size_file,".szz"); when we actully use file check both .sz and .szz extensions
 
+#ifdef pp_CHECK_FILES
   if(FILE_EXISTS_CASEDIR(patchi->comp_file)==YES){
     patchi->compression_type = COMPRESSED_ZLIB;
     patchi->file = patchi->comp_file;
@@ -5275,6 +5276,10 @@ int ParseBNDFProcess(bufferstreamdata *stream, char *buffer, int *nn_patch_in, i
     patchi->compression_type = UNCOMPRESSED;
     patchi->file = patchi->reg_file;
   }
+#else
+  patchi->compression_type = UNCOMPRESSED;
+  patchi->file = patchi->reg_file;
+#endif
 
   patchi->geominfo = NULL;
   if(patchi->structured==NO){
@@ -5526,6 +5531,7 @@ int ParseSMOKE3DProcess(bufferstreamdata *stream, char *buffer, int *nn_smoke3d_
     if(NewMemory((void **)&smoke3di->comp_file, (unsigned int)(len+1))==0)return RETURN_TWO;
     STRCPY(smoke3di->comp_file, buffer2);
 
+#ifdef pp_CHECK_FILES
     if(FILE_EXISTS_CASEDIR(smoke3di->comp_file)==YES){
       smoke3di->file = smoke3di->comp_file;
       smoke3di->is_zlib = 1;
@@ -5534,6 +5540,9 @@ int ParseSMOKE3DProcess(bufferstreamdata *stream, char *buffer, int *nn_smoke3d_
     else{
       smoke3di->file = smoke3di->reg_file;
     }
+#else
+    smoke3di->file = smoke3di->reg_file;
+#endif
 
 #ifdef pp_SMOKE16
     char buffer16[256];
@@ -11435,15 +11444,20 @@ typedef struct {
 
   CheckMemory;
   UpdateIsoColors();
+  PRINT_TIMER(timer_readsmv, "UpdateIsoColors");
   CheckMemory;
 
   UpdateSmoke3dFileParms();
+  PRINT_TIMER(timer_readsmv, "UpdateSmoke3dFileParms");
 
   AddCfastCsvf();
+  PRINT_TIMER(timer_readsmv, "AddCfastCsvf");
 
   //RemoveDupBlockages();
   InitCullGeom(cullgeom);
+  PRINT_TIMER(timer_readsmv, "InitCullGeom");
   UpdateINIList();
+  PRINT_TIMER(timer_readsmv, "UpdateINIList");
 
   if(meshinfo!=NULL&&meshinfo->jbar==1)force_isometric=1;
 
@@ -11459,18 +11473,23 @@ typedef struct {
     if(strcmp(csvi->c_type, "devc")==0)ReadDeviceData(csvi->file,CSV_FDS,LOAD);
     if(strcmp(csvi->c_type, "ext") == 0)ReadDeviceData(csvi->file,CSV_EXP,LOAD);
   }
+  PRINT_TIMER(timer_readsmv, "ReadDeviceData");
 #ifdef pp_THREAD
   InitMultiThreading();
 #endif
 
   SetupDeviceData();
+  PRINT_TIMER(timer_readsmv, "SetupDeviceData");
   ReadAllCSVFilesMT();
   SetupPlot2DUnitData();
+  PRINT_TIMER(timer_readsmv, "SetupPlot2DUnitData");
   if(nzoneinfo>0)SetupZoneDevs();
 
   InitPartProp();
+  PRINT_TIMER(timer_readsmv, "InitPartProp");
 
   InitClip();
+  PRINT_TIMER(timer_readsmv, "InitClip");
 
   if(noutlineinfo>0){
     highlight_flag=2;
@@ -11479,6 +11498,7 @@ typedef struct {
     highlight_flag=1;
   }
   InitCadColors();
+  PRINT_TIMER(timer_readsmv, "InitCadColors");
 
   // update loaded lists
 
@@ -11493,10 +11513,11 @@ typedef struct {
   }
 
   UpdateLoadedLists();
+  PRINT_TIMER(timer_readsmv, "UpdateLoadedLists");
   CheckMemory;
 
   UpdateMeshBoxBounds();
-  PRINT_TIMER(timer_readsmv, "UpdateMesnTerrain");
+  PRINT_TIMER(timer_readsmv, "UpdateMeshBoxBounds");
   ReadAllGeomMT();
   PRINT_TIMER(timer_readsmv, "ReadAllGeomMT");
 
@@ -11613,8 +11634,10 @@ typedef struct {
 
   PRINT_TIMER(timer_readsmv, "UpdateFileBoundList");
   UpdateBoundInfo();
+  PRINT_TIMER(timer_readsmv, "UpdateBoundInfo");
 
   UpdateObjectUsed();
+  PRINT_TIMER(timer_readsmv, "UpdateObjectUsed");
 
   // close .smv file
 
@@ -11636,14 +11659,21 @@ typedef struct {
   UpdateTerrainColors();
   PRINT_TIMER(timer_readsmv, "UpdateTerrain");
   UpdateSmoke3dMenuLabels();
+  PRINT_TIMER(timer_readsmv, "UpdateSmoke3dMenuLabels");
   UpdateVSliceBoundIndexes();
+  PRINT_TIMER(timer_readsmv, "UpdateVSliceBoundIndexes");
   UpdateBoundaryMenuLabels();
+  PRINT_TIMER(timer_readsmv, "UpdateBoundaryMenuLabels");
   UpdateIsoMenuLabels();
+  PRINT_TIMER(timer_readsmv, "UpdateIsoMenuLabels");
   UpdatePartMenuLabels();
+  PRINT_TIMER(timer_readsmv, "UpdatePartMenuLabels");
   UpdateTourMenuLabels();
+  PRINT_TIMER(timer_readsmv, "UpdateTourMenuLabels");
   SetupCircularTourNodes();
+  PRINT_TIMER(timer_readsmv, "SetupCircularTourNodes");
   InitUserTicks();
-  PRINT_TIMER(timer_readsmv, "update menu labels");
+  PRINT_TIMER(timer_readsmv, "InitUserTicks");
 
   clip_I=ibartemp; clip_J=jbartemp; clip_K=kbartemp;
 

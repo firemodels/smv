@@ -4120,6 +4120,7 @@ void UpdateBoundaryMenuLabels(void){
           }
         }
       }
+#ifdef pp_CHECK_FILES
       if(FILE_EXISTS(patchi->comp_file)==YES){
         patchi->file=patchi->comp_file;
         patchi->compression_type=COMPRESSED_ZLIB;
@@ -4128,6 +4129,10 @@ void UpdateBoundaryMenuLabels(void){
         patchi->file=patchi->reg_file;
         patchi->compression_type=UNCOMPRESSED;
       }
+#else
+      patchi->file=patchi->reg_file;
+      patchi->compression_type=UNCOMPRESSED;
+#endif
       if(showfiles==1){
         STRCAT(patchi->menulabel,", ");
         STRCAT(patchi->menulabel,patchi->file);
