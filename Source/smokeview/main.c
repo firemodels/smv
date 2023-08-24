@@ -836,17 +836,9 @@ int main(int argc, char **argv){
   InitColorbarsDir();
   InitScriptErrorFiles();
   smokezippath= GetSmokeZipPath(smokeview_bindir);
-#ifdef WIN32
-  have_ffmpeg = HaveProg("ffmpeg -version> Nul 2>Nul");
-  have_ffplay = HaveProg("ffplay -version> Nul 2>Nul");
-#else
-  have_ffmpeg = HaveProg("ffmpeg -version >/dev/null 2>/dev/null");
-  have_ffplay = HaveProg("ffplay -version >/dev/null 2>/dev/null");
-#endif
   DisplayVersionInfo("Smokeview ");
   SetupGlut(argc,argv);
   START_TIMER(startup_time);
-  START_TIMER(read_time_elapsed);
 
   return_code= SetupCase(smv_filename);
   if(return_code==0&&update_bounds==1){
