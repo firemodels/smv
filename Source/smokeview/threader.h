@@ -67,6 +67,7 @@
 
   #define LOCK_SETUPFF      pthread_mutex_lock(&mutexSETUPFF);
   #define UNLOCK_SETUPFF    pthread_mutex_unlock(&mutexSETUPFF);
+  #define JOIN_SETUPFF      pthread_join(setupff_thread_id,NULL);
 
   #define LOCK_CHECKFILES   pthread_mutex_lock(&mutexCHECKFILES);
   #define UNLOCK_CHECKFILES pthread_mutex_unlock(&mutexCHECKFILES);
@@ -116,6 +117,7 @@
 
   #define LOCK_SETUPFF
   #define UNLOCK_SETUPFF
+  #define JOIN_SETUPFF
 
   #define LOCK_CHECKFILES
   #define UNLOCK_CHECKFILES

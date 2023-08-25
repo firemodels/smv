@@ -11635,17 +11635,18 @@ typedef struct {
   MakeIBlankAll();
   GetGlobalSliceBoundsMT();
   GetGlobalPatchBoundsMT();
+  SetupFFMT();
+  LOCK_IBLANK
+  SetVentDirs();
+  UNLOCK_IBLANK
   if(runscript == 1){
     JOIN_SLICEBOUNDS;
     JOIN_PATCHBOUNDS;
     JOIN_CHECKFILES;
     JOIN_CSVFILES;
-    JOIN_IBLANK
+    JOIN_IBLANK;
+    JOIN_SETUPFF;
   }
-  SetupFFMT();
-  LOCK_IBLANK
-  SetVentDirs();
-  UNLOCK_IBLANK
   PRINT_TIMER(timer_readsmv, "make blanks");
   UpdateFaces();
   PRINT_TIMER(timer_readsmv, "UpdateFaces");
