@@ -11439,7 +11439,12 @@ typedef struct {
   InitMultiThreading();
 #endif
 #ifndef pp_CHECK_FILES
-  CheckFilesMT();
+  if(runscript==1){
+    CheckFiles();
+  }
+  else{
+    CheckFilesMT();
+  }
   PRINT_TIMER(timer_readsmv, "CheckFilesMT");
 #endif
 
