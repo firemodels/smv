@@ -11654,7 +11654,6 @@ typedef struct {
   SetVentDirs();
   UNLOCK_IBLANK
   if(runscript == 1){
-    JOIN_CHECKFILES;
     JOIN_CSVFILES;
     JOIN_IBLANK;
     JOIN_SETUPFF;
