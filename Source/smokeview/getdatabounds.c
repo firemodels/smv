@@ -372,6 +372,20 @@ void GetGlobalPatchBounds(int flag){
   }
 }
 
+/* ------------------ GetGlobalPatchBoundsFull ------------------------ */
+
+void GetGlobalPatchBoundsFull(void){
+  LOCK_PATCHBOUNDS;
+  GetGlobalPatchBounds(1);
+  UNLOCK_PATCHBOUNDS;
+}
+
+/* ------------------ GetGlobalPatchBoundsReduced ------------------------ */
+
+void GetGlobalPatchBoundsReduced(void){
+  GetGlobalPatchBounds(0);
+}
+
 /* ------------------ GetPlot3DFileBounds ------------------------ */
 
 void GetPlot3DFileBounds(char *file, float *valmin, float *valmax){
@@ -526,7 +540,7 @@ void GetLoadedPlot3dBounds(int *compute_loaded, float *loaded_min, float *loaded
 
 /* ------------------ GetGlobalSliceBounds ------------------------ */
 
-void GetGlobalSliceBounds(char *type, int flag){
+void GetGlobalSliceBounds(int flag){
   int i;
 
   if(nsliceinfo==0)return;
@@ -534,7 +548,6 @@ void GetGlobalSliceBounds(char *type, int flag){
     boundsdata *boundi;
 
     boundi = slicebounds+i;
-    if(type != NULL && strcmp(type, boundi->label->shortlabel) != 0)continue;
     boundi->dlg_global_valmin = 1.0;
     boundi->dlg_global_valmax = 0.0;
   }
@@ -546,8 +559,6 @@ void GetGlobalSliceBounds(char *type, int flag){
 
     slicei = sliceinfo+i;
     if(slicei->is_fed==1)continue;
-    if(type != NULL && strcmp(type, slicei->label.shortlabel) != 0)continue;
-
     if(slicei->valmin_fds>slicei->valmax_fds ||
        current_script_command==NULL||current_script_command->command!=SCRIPT_LOADSLICERENDER)doit=1;
      if(flag==0){
@@ -585,7 +596,6 @@ void GetGlobalSliceBounds(char *type, int flag){
     boundsdata *boundi;
 
     boundi = slicebounds+i;
-    if(type != NULL && strcmp(type, boundi->label->shortlabel) != 0)continue;
     boundi->dlg_valmin = boundi->dlg_global_valmin;
     boundi->dlg_valmax = boundi->dlg_global_valmax;
   }
@@ -600,7 +610,6 @@ void GetGlobalSliceBounds(char *type, int flag){
 
       boundscppi = slicebounds_cpp + i;
       boundi     = slicebounds + i;
-      if(type != NULL && strcmp(type, boundi->label->shortlabel) != 0)continue;
       strcpy(boundscppi->label, boundi->shortlabel);
       strcpy(boundscppi->unit, boundi->label->unit);
 
@@ -629,6 +638,20 @@ void GetGlobalSliceBounds(char *type, int flag){
   }
 }
 
+/* ------------------ GetGlobalSliceBoundsFull ------------------------ */
+
+void GetGlobalSliceBoundsFull(void){
+  LOCK_SLICEBOUNDS;
+  GetGlobalSliceBounds(1);
+  UNLOCK_SLICEBOUNDS;
+}
+
+
+/* ------------------ GetGlobalSliceBoundsReduced ------------------------ */
+
+void GetGlobalSliceBoundsReduced(void){
+  GetGlobalSliceBounds(0);
+}
 /* ------------------ GetHVACDuctBounds ------------------------ */
 
 void GetHVACDuctBounds(char *shortlabel, float *valminptr, float *valmaxptr){

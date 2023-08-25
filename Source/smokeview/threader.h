@@ -72,7 +72,15 @@
   #define UNLOCK_CHECKFILES pthread_mutex_unlock(&mutexCHECKFILES);
   #define JOIN_CHECKFILES   pthread_join(CHECKFILES_thread_id,NULL);
 
-  #define JOIN_PART_HIST    pthread_join(generate_part_histogram_id,NULL);
+  #define LOCK_SLICEBOUNDS    pthread_mutex_lock(&mutexSLICEBOUNDS);
+  #define UNLOCK_SLICEBOUNDS  pthread_mutex_unlock(&mutexSLICEBOUNDS);
+  #define JOIN_SLICEBOUNDS    pthread_join(SLICEBOUNDS_thread_id,NULL);
+
+  #define LOCK_PATCHBOUNDS    pthread_mutex_lock(&mutexPATCHBOUNDS);
+  #define UNLOCK_PATCHBOUNDS  pthread_mutex_unlock(&mutexPATCHBOUNDS);
+  #define JOIN_PATCHBOUNDS    pthread_join(PATCHBOUNDS_thread_id,NULL);
+
+#define JOIN_PART_HIST    pthread_join(generate_part_histogram_id,NULL);
 #ifdef pp_SAMPLE
   #define LOCK_SAMPLE     pthread_mutex_lock(&mutexSAMPLE);
   #define UNLOCK_SAMPLE   pthread_mutex_unlock(&mutexSAMPLE);
@@ -113,6 +121,14 @@
   #define UNLOCK_CHECKFILES
   #define JOIN_CHECKFILES
 
+  #define LOCK_SLICEBOUNDS
+  #define UNLOCK_SLICEBOUNDS
+  #define JOIN_SLICEBOUNDS
+
+  #define LOCK_PATCHBOUNDS
+  #define UNLOCK_PATCHBOUNDS
+  #define JOIN_PATCHBOUNDS
+
 #ifdef pp_SAMPLE
   #define LOCK_SAMPLE
   #define UNLOCK_SAMPLE
@@ -146,6 +162,8 @@ MT_EXTERN pthread_mutex_t mutexVOLLOAD;
 MT_EXTERN pthread_mutex_t mutexCOMPRESS;
 MT_EXTERN pthread_mutex_t mutexSETUPFF;
 MT_EXTERN pthread_mutex_t mutexCHECKFILES;
+MT_EXTERN pthread_mutex_t mutexSLICEBOUNDS;
+MT_EXTERN pthread_mutex_t mutexPATCHBOUNDS;
 #ifdef pp_STREAM
 MT_EXTERN pthread_mutex_t mutexSTREAM;
 #endif
@@ -158,6 +176,8 @@ MT_EXTERN pthread_t stream_thread_id;
 #endif
 MT_EXTERN pthread_t makeiblank_thread_id;
 MT_EXTERN pthread_t setupff_thread_id;
+MT_EXTERN pthread_t PATCHBOUNDS_thread_id;
+MT_EXTERN pthread_t SLICEBOUNDS_thread_id;
 MT_EXTERN pthread_t CHECKFILES_thread_id;
 MT_EXTERN pthread_t system_thread_id;
 MT_EXTERN pthread_t compress_thread_id;

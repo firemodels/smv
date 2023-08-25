@@ -5078,8 +5078,9 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
     int set_valmin, set_valmax;
 
     update_slice2device = 1;
+    JOIN_SLICEBOUNDS;
     if(slice_bounds_defined==0){
-      GetGlobalSliceBounds(NULL, 1);
+      GetGlobalSliceBounds(1);
       SetLoadedSliceBounds(NULL, 0);
     }
     GetMinMax(BOUND_SLICE, sd->label.shortlabel, &set_valmin, &qmin, &set_valmax, &qmax);

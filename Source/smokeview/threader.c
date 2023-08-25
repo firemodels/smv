@@ -27,6 +27,8 @@ void InitMultiThreading(void){
   pthread_mutex_init(&mutexIBLANK, NULL);
   pthread_mutex_init(&mutexSETUPFF, NULL);
   pthread_mutex_init(&mutexCHECKFILES, NULL);
+  pthread_mutex_init(&mutexSLICEBOUNDS, NULL);
+  pthread_mutex_init(&mutexPATCHBOUNDS, NULL);
 #ifdef pp_STREAM
   pthread_mutex_init(&mutexSTREAM, NULL);
 #endif
@@ -644,6 +646,7 @@ void CheckFiles(void){
   UNLOCK_CHECKFILES;
 }
 #endif
+
 /* ------------------ MtCheckFiles ------------------------ */
 
 #ifdef pp_THREAD
@@ -664,6 +667,52 @@ void CheckFilesMT(void){
 #else
 void CheckFilesMT(void){
   CheckFiles();
+}
+#endif
+
+/* ------------------ MtGetGlobalSliceBounds ------------------------ */
+
+#ifdef pp_THREAD
+void *MtGetGlobalSliceBounds(void *arg){
+  GetGlobalSliceBoundsFull();
+  pthread_exit(NULL);
+  return NULL;
+}
+
+void GetGlobalSliceBoundsMT(void){
+  if(slicebounds_thread == 1){
+    pthread_create(&SLICEBOUNDS_thread_id, NULL, MtGetGlobalSliceBounds, NULL);
+  }
+  else{
+    GetGlobalSliceBoundsFull();
+  }
+}
+#else
+void GetGlobalSliceBoundsMT(void){
+  GetGlobalSliceBounds();
+}
+#endif
+
+/* ------------------ MtGetGlobalPatchBounds ------------------------ */
+
+#ifdef pp_THREAD
+void *MtGetGlobalPatchBounds(void *arg){
+  GetGlobalPatchBoundsFull();
+  pthread_exit(NULL);
+  return NULL;
+}
+
+void GetGlobalPatchBoundsMT(void){
+  if(patchbounds_thread == 1){
+    pthread_create(&PATCHBOUNDS_thread_id, NULL, MtGetGlobalPatchBounds, NULL);
+  }
+  else{
+    GetGlobalPatchBoundsFull();
+  }
+}
+#else
+void GetGlobalPatchBoundsMT(void){
+  GetGlobalPatchBounds();
 }
 #endif
 
