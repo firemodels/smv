@@ -248,15 +248,25 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 #ifndef START_TIMER
 #define START_TIMER(a) a = glutGet(GLUT_ELAPSED_TIME)/1000.0
 #endif
+
 #ifndef STOP_TIMER
 #define STOP_TIMER(a) a = glutGet(GLUT_ELAPSED_TIME)/1000.0 - a
+#endif
+
+#ifndef CUM_TIMER
+#define CUM_TIMER(a,b) b += (glutGet(GLUT_ELAPSED_TIME)/1000.0 - a)
 #endif
 
 #ifndef INIT_PRINT_TIMER
 #define INIT_PRINT_TIMER(timer)   float timer;START_TIMER(timer)
 #endif
+
 #ifndef PRINT_TIMER
-#define PRINT_TIMER(timer, label) PrintTime(__FILE__, __LINE__, &timer, label)
+#define PRINT_TIMER(timer, label) PrintTime(__FILE__, __LINE__, &timer, label, 1)
+#endif
+
+#ifndef PRINT_CUM_TIMER
+#define PRINT_CUM_TIMER(timer, label) PrintTime(__FILE__, __LINE__, &timer, label, 0)
 #endif
 
 

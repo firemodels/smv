@@ -65,6 +65,9 @@
   #define UNLOCK_IBLANK     pthread_mutex_unlock(&mutexIBLANK);
   #define JOIN_IBLANK       pthread_join(makeiblank_thread_id,NULL);
 
+  #define LOCK_SETUPFF      pthread_mutex_lock(&mutexSETUPFF);
+  #define UNLOCK_SETUPFF    pthread_mutex_unlock(&mutexSETUPFF);
+
   #define JOIN_PART_HIST    pthread_join(generate_part_histogram_id,NULL);
 #ifdef pp_SAMPLE
   #define LOCK_SAMPLE     pthread_mutex_lock(&mutexSAMPLE);
@@ -99,6 +102,9 @@
   #define UNLOCK_IBLANK
   #define JOIN_IBLANK
 
+  #define LOCK_SETUPFF
+  #define UNLOCK_SETUPFF
+
 #ifdef pp_SAMPLE
   #define LOCK_SAMPLE
   #define UNLOCK_SAMPLE
@@ -130,6 +136,7 @@ MT_EXTERN pthread_mutex_t mutexPART_LOAD;
 MT_EXTERN pthread_mutex_t mutexIBLANK;
 MT_EXTERN pthread_mutex_t mutexVOLLOAD;
 MT_EXTERN pthread_mutex_t mutexCOMPRESS;
+MT_EXTERN pthread_mutex_t mutexSETUPFF;
 #ifdef pp_STREAM
 MT_EXTERN pthread_mutex_t mutexSTREAM;
 #endif
@@ -141,6 +148,7 @@ MT_EXTERN pthread_mutex_t mutexSAMPLE;
 MT_EXTERN pthread_t stream_thread_id;
 #endif
 MT_EXTERN pthread_t makeiblank_thread_id;
+MT_EXTERN pthread_t setupff_thread_id;
 MT_EXTERN pthread_t system_thread_id;
 MT_EXTERN pthread_t compress_thread_id;
 MT_EXTERN pthread_t update_all_patch_bounds_id;
