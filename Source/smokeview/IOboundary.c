@@ -2484,7 +2484,9 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
 #define BOUND_COMPUTE_PERCENTILES 116
     cpp_boundsdata *bounds;
 
-    JOIN_PATCHBOUNDS;
+    if(runscript == 0){
+      JOIN_PATCHBOUNDS;
+    }
     if(patch_bounds_defined==0){
       GetGlobalPatchBounds(1);
       SetLoadedPatchBounds(NULL, 0);
