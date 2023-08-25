@@ -11440,6 +11440,7 @@ typedef struct {
 #endif
 #ifndef pp_CHECK_FILES
   if(runscript==1){
+    void CheckFiles(void);
     CheckFiles();
   }
   else{
