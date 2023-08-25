@@ -3019,9 +3019,19 @@ void UpdateBoundInfo(void){
   PRINT_TIMER(bound_timer, "UpdateChar");
   GetGlobalPartBounds(ALL_FILES);
   PRINT_TIMER(bound_timer, "GetGlobalPartBounds");
-  GetGlobalSliceBoundsReduced();
+  if(runscript == 1){
+    GetGlobalSliceBoundsFull();
+  }
+  else{
+    GetGlobalSliceBoundsReduced();
+  }
   PRINT_TIMER(bound_timer, "GetGlobalSliceBounds");
-  GetGlobalPatchBoundsReduced();
+  if(runscript == 1){
+    GetGlobalPatchBoundsFull();
+  }
+  else{
+    GetGlobalPatchBoundsReduced();
+  }
   PRINT_TIMER(bound_timer, "GetGlobalPatchBounds");
   GetGlobalHVACDuctBounds(0);
   PRINT_TIMER(bound_timer, "GetGlobalHVACDuctBounds");
@@ -11633,15 +11643,11 @@ typedef struct {
   MakeIBlankCarve();
   MakeIBlankSmoke3D();
   MakeIBlankAll();
-  GetGlobalSliceBoundsMT();
-  GetGlobalPatchBoundsMT();
   SetupFFMT();
   LOCK_IBLANK
   SetVentDirs();
   UNLOCK_IBLANK
   if(runscript == 1){
-    JOIN_SLICEBOUNDS;
-    JOIN_PATCHBOUNDS;
     JOIN_CHECKFILES;
     JOIN_CSVFILES;
     JOIN_IBLANK;
