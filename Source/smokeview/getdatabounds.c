@@ -266,7 +266,7 @@ int GetBounds(char *file, float *valmin, float *valmax,
 
 /* ------------------ GetGlobalPatchBounds ------------------------ */
 
-void GetGlobalPatchBounds(void){
+void GetGlobalPatchBounds(int flag){
   int i;
 
   if(npatchinfo==0)return;
@@ -281,15 +281,24 @@ void GetGlobalPatchBounds(void){
     patchdata *patchi;
     float valmin, valmax;
     boundsdata *boundi;
+    int doit;
 
     patchi = patchinfo + i;
 
-    if(patchi->valmin_fds>patchi->valmax_fds||
-       current_script_command==NULL||current_script_command->command!=SCRIPT_LOADSLICERENDER){
+    doit = 0;
+    if(patchi->valmin_fds > patchi->valmax_fds ||
+      current_script_command == NULL || current_script_command->command != SCRIPT_LOADSLICERENDER)doit = 1;
+    if(flag == 0){
+      doit = 0;
+      patchi->valmin_fds = 0.0;
+      patchi->valmax_fds = 1.0;
+    }
+    if(doit==1){
       if(GetBounds(patchi->bound_file, &valmin, &valmax, &patchboundsinfo, &npatchboundsinfo)==1)patchi->have_bound_file = YES;
       if(valmin > valmax)continue;
       patchi->valmin_fds = valmin;
       patchi->valmax_fds = valmax;
+      patch_bounds_defined = 1;
     }
     else{
       valmin = patchi->valmin_fds;
@@ -325,8 +334,10 @@ void GetGlobalPatchBounds(void){
   }
 
   npatchbounds_cpp = npatchbounds;
-  if(npatchbounds_cpp>0&&patchbounds_cpp==NULL){ // only initialize once
-    NewMemory((void **)&patchbounds_cpp, npatchbounds_cpp*sizeof(cpp_boundsdata));
+  if(npatchbounds_cpp>0){
+    if(patchbounds_cpp == NULL){
+      NewMemory((void **)&patchbounds_cpp, npatchbounds_cpp * sizeof(cpp_boundsdata));
+    }
     for(i = 0; i<npatchbounds_cpp; i++){
       cpp_boundsdata *boundscppi;
       boundsdata *boundi;

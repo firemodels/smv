@@ -174,7 +174,7 @@ EXTERNCPP void UpdateBlockType(void);
 boundsdata *GetSliceBoundsInfo(char *shortlabel);
 boundsdata *GetPatchBoundsInfo(char *shortlabel);
 EXTERNCPP int GetGlobalPartBounds(int flag);
-EXTERNCPP void GetGlobalPatchBounds(void);
+EXTERNCPP void GetGlobalPatchBounds(int flag);
 EXTERNCPP void GetLoadedPlot3dBounds(int *compute_loaded, float *loaded_min, float *loaded_max);
 EXTERNCPP void GetGlobalPlot3DBounds(void);
 EXTERNCPP void GetGlobalSliceBounds(char *type, int flag);

@@ -3021,7 +3021,7 @@ void UpdateBoundInfo(void){
   PRINT_TIMER(bound_timer, "GetGlobalPartBounds");
   GetGlobalSliceBounds(NULL, 0);
   PRINT_TIMER(bound_timer, "GetGlobalSliceBounds");
-  GetGlobalPatchBounds();
+  GetGlobalPatchBounds(0);
   PRINT_TIMER(bound_timer, "GetGlobalPatchBounds");
   GetGlobalHVACDuctBounds(0);
   PRINT_TIMER(bound_timer, "GetGlobalHVACDuctBounds");

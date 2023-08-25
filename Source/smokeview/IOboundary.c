@@ -2450,7 +2450,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
     if(patchi->have_bound_file==NO){
       if(WriteFileBounds(patchi->bound_file, patchmin_global, patchmax_global)==1){
         patchi->have_bound_file = YES;
-        update_patchfile_bounds = 1;
+        patch_bounds_defined = 0;
       }
     }
     GetBoundaryColors3(patchi, meshi->patchval, patchstart, npatchvals, meshi->cpatchval,
@@ -2484,10 +2484,8 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
 #define BOUND_COMPUTE_PERCENTILES 116
     cpp_boundsdata *bounds;
 
-    update_patchfile_bounds = 1; // temporary fix to make sure bounds are up to date
-    if(update_patchfile_bounds==1){
-      update_patchfile_bounds = 0;
-      GetGlobalPatchBounds();
+    if(patch_bounds_defined==0){
+      GetGlobalPatchBounds(1);
       SetLoadedPatchBounds(NULL, 0);
       PatchBoundsCPP_CB(BOUND_DONTUPDATE_COLORS);
     }
