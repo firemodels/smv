@@ -177,7 +177,7 @@ EXTERNCPP int GetGlobalPartBounds(int flag);
 EXTERNCPP void GetGlobalPatchBounds(void);
 EXTERNCPP void GetLoadedPlot3dBounds(int *compute_loaded, float *loaded_min, float *loaded_max);
 EXTERNCPP void GetGlobalPlot3DBounds(void);
-EXTERNCPP void GetGlobalSliceBounds(char *type);
+EXTERNCPP void GetGlobalSliceBounds(char *type, int flag);
 EXTERNCPP void GetGlobalHVACDuctBounds(int flag);
 EXTERNCPP void GetGlobalHVACNodeBounds(int flag);
 EXTERNCPP void UpdateHVACDuctType(void);

@@ -3019,7 +3019,7 @@ void UpdateBoundInfo(void){
   PRINT_TIMER(bound_timer, "UpdateChar");
   GetGlobalPartBounds(ALL_FILES);
   PRINT_TIMER(bound_timer, "GetGlobalPartBounds");
-  GetGlobalSliceBounds(NULL);
+  GetGlobalSliceBounds(NULL, 0);
   PRINT_TIMER(bound_timer, "GetGlobalSliceBounds");
   GetGlobalPatchBounds();
   PRINT_TIMER(bound_timer, "GetGlobalPatchBounds");
@@ -11756,8 +11756,6 @@ typedef struct {
   if(show_timings==1){
     PRINTF(".smv Processing Times\n");
     PRINTF("---------------------\n");
-
-
     PRINTF("      filelist: %.1f s\n", getfilelist_time);
     PRINTF("         setup: %.1f s\n", pass0_time);
     PRINTF("        pass 1: %.1f s\n", pass1_time);
@@ -11766,7 +11764,6 @@ typedef struct {
     PRINTF("        pass 4: %.1f s\n", pass4_time);
     PRINTF("        pass 5: %.1f s\n", pass5_time);
     PRINTF("all passes: %.1f s\n", processing_time);
-
     PRINTF("   wrap up: %.1f s\n", wrapup_time);
     PRINTF("\n");
   }

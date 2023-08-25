@@ -233,7 +233,7 @@ int GetFileBounds(char *file, float *valmin, float *valmax){
   return 1;
 }
 
-/* ------------------ GetSliceBounds ------------------------ */
+/* ------------------ GetBounds ------------------------ */
 
 int GetBounds(char *file, float *valmin, float *valmax,
                    fileboundsdata **boundsinfoptr, int *nboundsinfoptr){
@@ -515,7 +515,7 @@ void GetLoadedPlot3dBounds(int *compute_loaded, float *loaded_min, float *loaded
 
 /* ------------------ GetGlobalSliceBounds ------------------------ */
 
-void GetGlobalSliceBounds(char *type){
+void GetGlobalSliceBounds(char *type, int flag){
   int i;
 
   if(nsliceinfo==0)return;
@@ -531,19 +531,28 @@ void GetGlobalSliceBounds(char *type){
     slicedata *slicei;
     float valmin, valmax;
     boundsdata *boundi;
+    int doit;
 
     slicei = sliceinfo+i;
     if(slicei->is_fed==1)continue;
     if(type != NULL && strcmp(type, slicei->label.shortlabel) != 0)continue;
 
     if(slicei->valmin_fds>slicei->valmax_fds ||
-       current_script_command==NULL||current_script_command->command!=SCRIPT_LOADSLICERENDER){
+       current_script_command==NULL||current_script_command->command!=SCRIPT_LOADSLICERENDER)doit=1;
+     if(flag==0){
+       doit = 0;
+       slicei->valmin_fds = 0.0;
+       slicei->valmax_fds = 1.0;
+     }
+
+    if(doit==1){
       if(GetBounds(slicei->bound_file, &valmin, &valmax, &sliceboundsinfo, &nsliceboundsinfo)==1){
         slicei->have_bound_file = YES;
       }
       if(valmin>valmax)continue;
       slicei->valmin_fds = valmin;
       slicei->valmax_fds = valmax;
+      slice_bounds_defined = 1;
     }
     else{
       valmin = slicei->valmin_fds;
@@ -570,8 +579,10 @@ void GetGlobalSliceBounds(char *type){
     boundi->dlg_valmax = boundi->dlg_global_valmax;
   }
   nslicebounds_cpp = nslicebounds;
-  if(nslicebounds_cpp>0&&slicebounds_cpp==NULL){ // only initialize once
-    NewMemory((void **)&slicebounds_cpp, nslicebounds_cpp*sizeof(cpp_boundsdata));
+  if(nslicebounds_cpp>0){
+    if(slicebounds_cpp==NULL){
+      NewMemory((void **)&slicebounds_cpp, nslicebounds_cpp*sizeof(cpp_boundsdata));
+    }
     for(i = 0; i<nslicebounds_cpp; i++){
       cpp_boundsdata *boundscppi;
       boundsdata *boundi;

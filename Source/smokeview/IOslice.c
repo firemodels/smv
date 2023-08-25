@@ -4939,7 +4939,7 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
         if(sd->have_bound_file==NO){
           if(WriteFileBounds(sd->bound_file, qmin, qmax)==1){
             sd->have_bound_file = YES;
-            update_slicefile_bounds = 1;
+            slice_bounds_defined=0;
           }
         }
       }
@@ -5077,11 +5077,9 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
   if(sd->finalize==1){
     int set_valmin, set_valmax;
 
-    update_slicefile_bounds = 0; // if set to 1, temporary fix to make sure bounds are always up to date
     update_slice2device = 1;
-    if(update_slicefile_bounds==1){
-      update_slicefile_bounds = 0;
-      GetGlobalSliceBounds(sd->label.shortlabel);
+    if(slice_bounds_defined==0){
+      GetGlobalSliceBounds(NULL, 1);
       SetLoadedSliceBounds(NULL, 0);
     }
     GetMinMax(BOUND_SLICE, sd->label.shortlabel, &set_valmin, &qmin, &set_valmax, &qmax);
