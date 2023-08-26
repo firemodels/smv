@@ -290,7 +290,7 @@ int loadsmv(char *input_filename, char *input_filename_ext) {
   InitMisc();
   GluiTrainerSetup(mainwindow_id);
   glutDetachMenu(GLUT_RIGHT_BUTTON);
-  InitMenus(LOAD);
+  InitMenus();
   glutAttachMenu(GLUT_RIGHT_BUTTON);
   if (trainer_mode == 1) {
     ShowGluiTrainer();

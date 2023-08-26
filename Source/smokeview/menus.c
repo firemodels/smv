@@ -8373,7 +8373,7 @@ void MakeColorbarMenu(int *menuptr,
 
 /* ------------------ InitMenus ------------------------ */
 
-void InitMenus(int unload){
+void InitMenus(void){
   int i;
   int nmultisliceloaded;
   int showhide_data = 0;
@@ -8544,7 +8544,6 @@ updatemenu=0;
   if(nloadsubplot3dmenu>0){
     FREEMEMORY(loadsubplot3dmenu);
   }
-  if(unload==UNLOAD)return;
 
   patchgeom_slice_showhide = 0;
   for(i=0;i<npatchinfo;i++){

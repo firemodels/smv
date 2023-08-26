@@ -1830,26 +1830,26 @@ void InitDefaultColorbars(int nini){
   cbi->nnodes = 4;
   cbi->nodehilight = 0;
 
-  cbi->node_index[0] = 0;
-  cbi->node_rgb[0] = 9;
-  cbi->node_rgb[1] = 160;
-  cbi->node_rgb[2] = 255;
+  cbi->index_node[0] = 0;
+  cbi->rgb_node[0] = 9;
+  cbi->rgb_node[1] = 190;
+  cbi->rgb_node[2] = 255;
 
-  cbi->node_index[1] = 192;
-  cbi->node_rgb[3] = 9;
-  cbi->node_rgb[4] = 160;
-  cbi->node_rgb[5] = 255;
+  cbi->index_node[1] = 192;
+  cbi->rgb_node[3] = 9;
+  cbi->rgb_node[4] = 190;
+  cbi->rgb_node[5] = 255;
 
-  cbi->node_index[2] = 200;
-  cbi->node_rgb[6] = 255;
-  cbi->node_rgb[7] = 255;
-  cbi->node_rgb[8] = 255;
+  cbi->index_node[2] = 200;
+  cbi->rgb_node[6] = 9;
+  cbi->rgb_node[7] = 190;
+  cbi->rgb_node[8] = 255;
 
-  cbi->node_index[3] = 255;
-  cbi->node_rgb[9] = 255;
-  cbi->node_rgb[10] = 255;
-  cbi->node_rgb[11] = 255;
-  strcpy(cbi->colorbar_type, "deprecated");
+  cbi->index_node[3] = 255;
+  cbi->rgb_node[9] = 9;
+  cbi->rgb_node[10] = 190;
+  cbi->rgb_node[11] = 255;
+  strcpy(cbi->ctype, "original");
   cbi++;
 
   // Propane

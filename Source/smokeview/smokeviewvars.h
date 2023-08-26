@@ -89,6 +89,9 @@ SVEXTERN int SOOT_index, HRRPUV_index, TEMP_index, CO2_index;
 
 SVEXTERN int SVDECL(agl_offset_actual, 1);
 
+SVEXTERN int SVDECL(slicebounds_thread, 1);
+SVEXTERN int SVDECL(patchbounds_thread, 1);
+SVEXTERN int SVDECL(CHECKFILES_thread, 1), SVDECL(have_compressed_files, 0);
 SVEXTERN int SVDECL(use_ffmpeg_thread, 1);
 SVEXTERN int SVDECL(nsmoke_threads, 1), SVDECL(use_smoke_thread, 0);
 SVEXTERN int SVDECL(force_gray_smoke, 1);
@@ -214,9 +217,6 @@ SVEXTERN char *crender_skips[NRENDER_SKIPS];
 
 SVEXTERN int SVDECL(bounds_each_mesh, 0);
 SVEXTERN int SVDECL(show_bound_diffs, 0);
-
-SVEXTERN int SVDECL(update_slicefile_bounds, 0);
-SVEXTERN int SVDECL(update_patchfile_bounds, 0);
 
 SVEXTERN slicemenudata SVDECL(*slicemenuinfo, NULL);
 SVEXTERN int SVDECL(generate_info_from_commandline, 0);
@@ -486,6 +486,7 @@ SVEXTERN devicedata SVDECL(**vel_devices, NULL);
 SVEXTERN int SVDECL(nvel_devices, 0);
 
 SVEXTERN int SVDECL(update_slice, 0);
+SVEXTERN int SVDECL(slice_bounds_defined, 0), SVDECL(patch_bounds_defined, 0);
 SVEXTERN int SVDECL(*windrosez_showhide, NULL), SVDECL(nwindrosez_showhide,0), SVDECL(update_windrose_showhide,0);
 #ifdef INMAIN
   SVEXTERN float smoke_test_color[4] = {0.0,0.0,0.0,1.0};
