@@ -1196,6 +1196,10 @@ EXTERNCPP int  SmokeviewImage2File(char *directory, char *GIFfilename, int rende
 EXTERNCPP int SVimage2var(int rendertype, int woffset, int width, int hoffset, int height, gdImagePtr *RENDERimage);
 #endif
 
+#ifdef pp_BLACKBODY
+EXTERNCPP void MakeFireColors(float temp_min, float temp_max, int nfire_colors_arg);
+#endif
+
 EXTERNCPP void UpdateShowHideButtons(void);
 EXTERNCPP void UpdateTriangles(int time_flag, int update);
 EXTERNCPP void UpdateTrianglesMT(void);

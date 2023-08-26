@@ -430,7 +430,17 @@ SVEXTERN int SVDECL(nsmoke3d_co2, 0);
 SVEXTERN int SVDECL(update_zaxis_custom, 0);
 SVEXTERN int SVDECL(from_DisplayCB, 0);
 SVEXTERN int SVDECL(ngeom_data, 0);
-
+#ifdef pp_BLACKBODY
+SVEXTERN float SVDECL(*fire_rgbs, NULL);
+SVEXTERN int SVDECL(nfire_colors, 256);
+SVEXTERN float SVDECL(fire_temp_min, 100.0), SVDECL(fire_temp_max, 3000.0);
+SVEXTERN float SVDECL(fire_temp_data_min, 1.0), SVDECL(fire_temp_data_max, 0.0);
+SVEXTERN int SVDECL(show_blackbody_colormap, 0);
+SVEXTERN int SVDECL(use_blackbody_colors, 0);
+#ifdef pp_GAMMA
+SVEXTERN int SVDECL(gamma_correction, 0);
+#endif
+#endif
 SVEXTERN int SVDECL(have_geom_slice_menus, 0), SVDECL(geom_slice_loaded,0);
 SVEXTERN FILE SVDECL(*stderr2,NULL);
 SVEXTERN char SVDECL(*script_error1_filename,NULL);
