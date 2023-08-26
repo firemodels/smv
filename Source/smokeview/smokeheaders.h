@@ -174,10 +174,16 @@ EXTERNCPP void UpdateBlockType(void);
 boundsdata *GetSliceBoundsInfo(char *shortlabel);
 boundsdata *GetPatchBoundsInfo(char *shortlabel);
 EXTERNCPP int GetGlobalPartBounds(int flag);
-EXTERNCPP void GetGlobalPatchBounds(void);
+EXTERNCPP void GetGlobalPatchBounds(int flag);
+EXTERNCPP void GetGlobalPatchBoundsFull(void);
+EXTERNCPP void GetGlobalPatchBoundsReduced(void);
+EXTERNCPP void GetGlobalPatchBoundsMT(void);
 EXTERNCPP void GetLoadedPlot3dBounds(int *compute_loaded, float *loaded_min, float *loaded_max);
 EXTERNCPP void GetGlobalPlot3DBounds(void);
-EXTERNCPP void GetGlobalSliceBounds(char *type);
+EXTERNCPP void GetGlobalSliceBounds(int flag);
+EXTERNCPP void GetGlobalSliceBoundsMT(void);
+EXTERNCPP void GetGlobalSliceBoundsFull(void);
+EXTERNCPP void GetGlobalSliceBoundsReduced(void);
 EXTERNCPP void GetGlobalHVACDuctBounds(int flag);
 EXTERNCPP void GetGlobalHVACNodeBounds(int flag);
 EXTERNCPP void UpdateHVACDuctType(void);
@@ -902,6 +908,8 @@ EXTERNCPP void MakeIBlankSmoke3D(void);
 EXTERNCPP void GetUnitInfo(const char *unitlabel, int *unitclass, int *unittype);
 EXTERNCPP float GetUnitVal(const char *unitlabel, float oldval, int ndecimals);
 
+EXTERNCPP void CheckFilesMT(void);
+
 EXTERNCPP void UpdateUnitDefs(void);
 
 EXTERNCPP void SmoothIsoSurface(isosurface *surfacedata);
@@ -1116,7 +1124,7 @@ EXTERNCPP FILE_SIZE ReadIso(const char *file, int ifile, int flag, int *geom_fra
 
 EXTERNCPP void GetGlobalDeviceBounds(int type);
 EXTERNCPP float GetDeviceVal(float time_local, devicedata *devicei, int *valid);
-EXTERNCPP void InitMenus(int unload);
+EXTERNCPP void InitMenus(void);
 
 EXTERNCPP int ReadSMV(bufferstreamdata *stream);
 EXTERNCPP void ReadSMVOrig(void);
