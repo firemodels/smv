@@ -2554,7 +2554,9 @@ void UpdateDisplay(void){
   }
   if(updatemenu == 1 && usemenu == 1 && menustatus == GLUT_MENU_NOT_IN_USE){
     glutDetachMenu(GLUT_RIGHT_BUTTON);
-    InitMenus(LOAD);
+    LOCK_CHECKFILES;
+    InitMenus();
+    UNLOCK_CHECKFILES;
     glutAttachMenu(GLUT_RIGHT_BUTTON);
     updatemenu = 0;
   }

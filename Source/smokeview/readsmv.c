@@ -2782,7 +2782,9 @@ void InitTextures(int use_graphics_arg){
 
 void UpdateBoundInfo(void){
   int i,n;
+  float bound_timer;
 
+  START_TIMER(bound_timer);
   if(nisoinfo>0){
     FREEMEMORY(isoindex);
     FREEMEMORY(isobounds);
@@ -2824,6 +2826,7 @@ void UpdateBoundInfo(void){
       }
     }
   }
+  PRINT_TIMER(bound_timer, "isobounds");
 
   if(nsliceinfo > 0){
     FREEMEMORY(slicebounds);
@@ -2868,6 +2871,7 @@ void UpdateBoundInfo(void){
       }
     }
   }
+  PRINT_TIMER(bound_timer, "slicebounds");
 
   canshow_threshold=0;
   if(npatchinfo>0){
@@ -2931,6 +2935,7 @@ void UpdateBoundInfo(void){
       }
     }
   }
+  PRINT_TIMER(bound_timer, "boundary file bounds");
 
   int nhvacboundsmax = 0;
   if(hvacductvalsinfo != NULL)nhvacboundsmax += hvacductvalsinfo->n_duct_vars;
@@ -3006,12 +3011,29 @@ void UpdateBoundInfo(void){
       }
     }
   }
+  PRINT_TIMER(bound_timer, "hvacbounds");
   UpdateChar();
+  PRINT_TIMER(bound_timer, "UpdateChar");
   GetGlobalPartBounds(ALL_FILES);
-  GetGlobalSliceBounds(NULL);
-  GetGlobalPatchBounds();
+  PRINT_TIMER(bound_timer, "GetGlobalPartBounds");
+  if(runscript == 1){
+    GetGlobalSliceBoundsFull();
+  }
+  else{
+    GetGlobalSliceBoundsReduced();
+  }
+  PRINT_TIMER(bound_timer, "GetGlobalSliceBounds");
+  if(runscript == 1){
+    GetGlobalPatchBoundsFull();
+  }
+  else{
+    GetGlobalPatchBoundsReduced();
+  }
+  PRINT_TIMER(bound_timer, "GetGlobalPatchBounds");
   GetGlobalHVACDuctBounds(0);
+  PRINT_TIMER(bound_timer, "GetGlobalHVACDuctBounds");
   GetGlobalHVACNodeBounds(0);
+  PRINT_TIMER(bound_timer, "GetGlobalHVACNodeBounds");
 }
 
 /*
@@ -11410,6 +11432,20 @@ typedef struct {
   }
   if(ntotal_blockages > 250000)show_geom_boundingbox = SHOW_BOUNDING_BOX_MOUSE_DOWN;
 
+#ifdef pp_THREAD
+  InitMultiThreading();
+#endif
+#ifndef pp_CHECK_FILES
+  if(runscript==1){
+    void CheckFiles(void);
+    CheckFiles();
+  }
+  else{
+    CheckFilesMT();
+  }
+  PRINT_TIMER(timer_readsmv, "CheckFilesMT");
+#endif
+
 #ifdef pp_BNDF
   for(i = 0;i < npatchinfo;i++){
     patchdata *patchi;
@@ -11437,6 +11473,7 @@ typedef struct {
       break;
     }
   }
+  PRINT_TIMER(timer_readsmv, "bound labels");
 #endif
 
   CheckMemory;
@@ -11471,9 +11508,6 @@ typedef struct {
     if(strcmp(csvi->c_type, "ext") == 0)ReadDeviceData(csvi->file,CSV_EXP,LOAD);
   }
   PRINT_TIMER(timer_readsmv, "ReadDeviceData");
-#ifdef pp_THREAD
-  InitMultiThreading();
-#endif
 
   SetupDeviceData();
   PRINT_TIMER(timer_readsmv, "SetupDeviceData");
@@ -11612,14 +11646,15 @@ typedef struct {
   MakeIBlankCarve();
   MakeIBlankSmoke3D();
   MakeIBlankAll();
-  if(runscript == 1){
-    JOIN_CSVFILES;
-    JOIN_IBLANK
-  }
   SetupFFMT();
   LOCK_IBLANK
   SetVentDirs();
   UNLOCK_IBLANK
+  if(runscript == 1){
+    JOIN_CSVFILES;
+    JOIN_IBLANK;
+    JOIN_SETUPFF;
+  }
   PRINT_TIMER(timer_readsmv, "make blanks");
   UpdateFaces();
   PRINT_TIMER(timer_readsmv, "UpdateFaces");
@@ -11735,8 +11770,6 @@ typedef struct {
   if(show_timings==1){
     PRINTF(".smv Processing Times\n");
     PRINTF("---------------------\n");
-
-
     PRINTF("      filelist: %.1f s\n", getfilelist_time);
     PRINTF("         setup: %.1f s\n", pass0_time);
     PRINTF("        pass 1: %.1f s\n", pass1_time);
@@ -11745,10 +11778,11 @@ typedef struct {
     PRINTF("        pass 4: %.1f s\n", pass4_time);
     PRINTF("        pass 5: %.1f s\n", pass5_time);
     PRINTF("all passes: %.1f s\n", processing_time);
-
     PRINTF("   wrap up: %.1f s\n", wrapup_time);
     PRINTF("\n");
   }
+  START_TIMER(timer_readsmv);
+  PRINT_TIMER(timer_readsmv, "CheckFilesMT");
   STOP_TIMER(timer_startup);
   START_TIMER(timer_render);
   PRINT_TIMER(total_wrapup_time, "total wrapup time");

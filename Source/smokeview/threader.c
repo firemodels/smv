@@ -26,6 +26,9 @@ void InitMultiThreading(void){
   pthread_mutex_init(&mutexVOLLOAD,NULL);
   pthread_mutex_init(&mutexIBLANK, NULL);
   pthread_mutex_init(&mutexSETUPFF, NULL);
+  pthread_mutex_init(&mutexCHECKFILES, NULL);
+  pthread_mutex_init(&mutexSLICEBOUNDS, NULL);
+  pthread_mutex_init(&mutexPATCHBOUNDS, NULL);
 #ifdef pp_STREAM
   pthread_mutex_init(&mutexSTREAM, NULL);
 #endif
@@ -582,6 +585,136 @@ void SetupFFMT(void){
   SetupFF();
 #endif
 }
+
+/* ------------------ CheckCompressionFiles ------------------------ */
+
+#ifndef pp_CHECK_FILES
+void CheckFiles(void){
+  int i;
+
+  LOCK_CHECKFILES;
+  have_compressed_files = 0;
+  UNLOCK_CHECKFILES;
+  for(i=0;i<npatchinfo;i++){
+    patchdata *patchi;
+    int have_file;
+
+    patchi = patchinfo + i;
+    have_file = FILE_EXISTS_CASEDIR(patchi->comp_file);
+    LOCK_CHECKFILES;
+    if(have_file==YES){
+      patchi->compression_type_temp = COMPRESSED_ZLIB;
+      have_compressed_files = 1;
+    }
+    UNLOCK_CHECKFILES;
+  }
+  for(i=0;i<nsmoke3dinfo;i++){
+    smoke3ddata *smoke3di;
+    int have_file;
+
+    smoke3di = smoke3dinfo + i;
+    have_file = FILE_EXISTS_CASEDIR(smoke3di->comp_file);
+    LOCK_CHECKFILES;
+    if(have_file==YES){
+      smoke3di->compression_type_temp = COMPRESSED_ZLIB;
+      have_compressed_files = 1;
+    }
+    UNLOCK_CHECKFILES;
+  }
+  if(have_compressed_files==0)return;
+  LOCK_CHECKFILES;
+  for(i = 0; i < npatchinfo; i++){
+    patchdata *patchi;
+
+    patchi = patchinfo + i;
+    if(patchi->compression_type_temp==COMPRESSED_ZLIB){
+      patchi->compression_type = COMPRESSED_ZLIB;
+      patchi->file             = patchi->comp_file;
+    }
+  }
+  for(i = 0; i < nsmoke3dinfo; i++){
+    smoke3ddata *smoke3di;
+
+    smoke3di = smoke3dinfo + i;
+    if(smoke3di->compression_type_temp==COMPRESSED_ZLIB){
+      smoke3di->file             = smoke3di->comp_file;
+      smoke3di->is_zlib          = 1;
+      smoke3di->compression_type = COMPRESSED_ZLIB;
+    }
+  }
+  updatemenu = 1;
+  UNLOCK_CHECKFILES;
+}
+#endif
+
+/* ------------------ MtCheckFiles ------------------------ */
+
+#ifdef pp_THREAD
+void *MtCheckFiles(void *arg){
+  CheckFiles();
+  pthread_exit(NULL);
+  return NULL;
+}
+
+void CheckFilesMT(void){
+  if(CHECKFILES_thread==1){
+    pthread_create(&CHECKFILES_thread_id, NULL, MtCheckFiles, NULL);
+  }
+  else{
+    CheckFiles();
+  }
+}
+#else
+void CheckFilesMT(void){
+  CheckFiles();
+}
+#endif
+
+/* ------------------ MtGetGlobalSliceBounds ------------------------ */
+
+#ifdef pp_THREAD
+void *MtGetGlobalSliceBounds(void *arg){
+  GetGlobalSliceBoundsFull();
+  pthread_exit(NULL);
+  return NULL;
+}
+
+void GetGlobalSliceBoundsMT(void){
+  if(slicebounds_thread == 1){
+    pthread_create(&SLICEBOUNDS_thread_id, NULL, MtGetGlobalSliceBounds, NULL);
+  }
+  else{
+    GetGlobalSliceBoundsFull();
+  }
+}
+#else
+void GetGlobalSliceBoundsMT(void){
+  GetGlobalSliceBounds();
+}
+#endif
+
+/* ------------------ MtGetGlobalPatchBounds ------------------------ */
+
+#ifdef pp_THREAD
+void *MtGetGlobalPatchBounds(void *arg){
+  GetGlobalPatchBoundsFull();
+  pthread_exit(NULL);
+  return NULL;
+}
+
+void GetGlobalPatchBoundsMT(void){
+  if(patchbounds_thread == 1){
+    pthread_create(&PATCHBOUNDS_thread_id, NULL, MtGetGlobalPatchBounds, NULL);
+  }
+  else{
+    GetGlobalPatchBoundsFull();
+  }
+}
+#else
+void GetGlobalPatchBoundsMT(void){
+  GetGlobalPatchBounds();
+}
+#endif
 
 /* ------------------ Sample ------------------------ */
 

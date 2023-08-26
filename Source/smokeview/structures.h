@@ -1571,7 +1571,7 @@ typedef struct _smoke3ddata {
   int blocknumber;
   int type;
   int is1, is2, js1, js2, ks1, ks2;
-  int compression_type;
+  int compression_type, compression_type_temp;
   flowlabels label;
   char menulabel[128];
   float *times;
@@ -1644,7 +1644,7 @@ typedef struct _patchdata {
   int boundary;
   int inuse,inuse_getbounds;
   int firstshort;
-  int compression_type;
+  int compression_type, compression_type_temp;
   int setvalmin, setvalmax;
   float valmin_fds, valmax_fds;   // read in from .bnd files
   float valmin_smv, valmax_smv;   // computed by smokeview
