@@ -82,5 +82,8 @@
 #define CUTOFF_RESET 96
 #define EXTINCTION_RESET_FDS 97
 #define EXTINCTION_RESET_SMV 98
+#ifdef pp_BLACKBODY
+#define BLACKBODY_TEMPS      101
+#endif
 #endif
 

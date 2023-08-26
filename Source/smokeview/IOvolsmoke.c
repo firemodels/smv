@@ -64,6 +64,539 @@
       value = *vv;\
     }
 
+#ifdef pp_BLACKBODY
+
+// https://www.fourmilab.ch/documents/specrend/specrend.c
+
+/* A colour system is defined by the CIE x and y coordinates of
+   its three primary illuminants and the x and y coordinates of
+   the white point. */
+
+struct colourSystem{
+  char *name;                     /* Colour system name */
+  float xRed, yRed,              /* Red x, y */
+    xGreen, yGreen,          /* Green x, y */
+    xBlue, yBlue,            /* Blue x, y */
+    xWhite, yWhite,          /* White point x, y */
+    gamma;                   /* Gamma correction for system */
+};
+
+/* White point chromaticities. */
+
+#define IlluminantC     0.3101, 0.3162          /* For NTSC television */
+#define IlluminantD65   0.3127, 0.3291          /* For EBU and SMPTE */
+#define IlluminantE     0.33333333, 0.33333333  /* CIE equal-energy illuminant */
+
+/*  Gamma of nonlinear correction.
+
+    See Charles Poynton's ColorFAQ Item 45 and GammaFAQ Item 6 at:
+
+       http://www.poynton.com/ColorFAQ.html
+       http://www.poynton.com/GammaFAQ.html
+
+*/
+
+#define GAMMA_REC709    0               /* Rec. 709 */
+
+#ifdef pp_BLACKBODY_SYSTEM
+static struct colourSystem
+/* Name                  xRed    yRed    xGreen  yGreen  xBlue  yBlue    White point        Gamma   */
+NTSCsystem = {"NTSC",               0.67,   0.33,   0.21,   0.71,   0.14,   0.08,   IlluminantC,    GAMMA_REC709},
+EBUsystem = {"EBU (PAL/SECAM)",    0.64,   0.33,   0.29,   0.60,   0.15,   0.06,   IlluminantD65,  GAMMA_REC709},
+SMPTEsystem = {"SMPTE",              0.630,  0.340,  0.310,  0.595,  0.155,  0.070,  IlluminantD65,  GAMMA_REC709},
+HDTVsystem = {"HDTV",               0.670,  0.330,  0.210,  0.710,  0.150,  0.060,  IlluminantD65,  GAMMA_REC709},
+CIEsystem = {"CIE",                0.7355, 0.2645, 0.2658, 0.7243, 0.1669, 0.0085, IlluminantE,    GAMMA_REC709},
+Rec709system = {"CIE REC 709",        0.64,   0.33,   0.30,   0.60,   0.15,   0.06,   IlluminantD65,  GAMMA_REC709};
+#endif
+//static struct colourSystem SMPTEsystem = {"SMPTE",              0.630,  0.340,  0.310,  0.595,  0.155,  0.070,  IlluminantD65,  GAMMA_REC709};
+//static struct colourSystem CIEsystem = {"CIE",                0.7355, 0.2645, 0.2658, 0.7243, 0.1669, 0.0085, IlluminantE,    GAMMA_REC709};
+static struct colourSystem HDTVsystem = {"HDTV",               0.670,  0.330,  0.210,  0.710,  0.150,  0.060,  IlluminantD65,  GAMMA_REC709};
+//static struct colourSystem NTSCsystem = {"NTSC",               0.67,   0.33,   0.21,   0.71,   0.14,   0.08,   IlluminantC,    GAMMA_REC709};
+
+/*                             XYZ_TO_RGB
+
+    Given an additive tricolour system CS, defined by the CIE x
+    and y chromaticities of its three primaries (z is derived
+    trivially as 1-(x+y)), and a desired chromaticity (XC, YC,
+    ZC) in CIE space, determine the contribution of each
+    primary in a linear combination which sums to the desired
+    chromaticity.  If the  requested chromaticity falls outside
+    the Maxwell  triangle (colour gamut) formed by the three
+    primaries, one of the r, g, or b weights will be negative.
+
+    Caller can use ConstrainRgb() to desaturate an
+    outside-gamut colour to the closest representation within
+    the available gamut and/or norm_rgb to normalise the RGB
+    components so the largest nonzero component has value 1.
+
+*/
+
+/* ----------------------- Xyz2Rgb ----------------------------- */
+
+void Xyz2Rgb(struct colourSystem *cs, float *xyz_c, float *rgb_arg){
+  float xr, yr, zr, xg, yg, zg, xb, yb, zb;
+  float xw, yw, zw;
+  float rx, ry, rz, gx, gy, gz, bx, by, bz;
+  float rw, gw, bw;
+
+  xr = cs->xRed;    yr = cs->yRed;    zr = 1 - (xr + yr);
+  xg = cs->xGreen;  yg = cs->yGreen;  zg = 1 - (xg + yg);
+  xb = cs->xBlue;   yb = cs->yBlue;   zb = 1 - (xb + yb);
+
+  xw = cs->xWhite;  yw = cs->yWhite;  zw = 1 - (xw + yw);
+
+  /* xyz -> rgb matrix, before scaling to white. */
+
+  rx = (yg*zb) - (yb*zg);  ry = (xb*zg) - (xg*zb);  rz = (xg*yb) - (xb*yg);
+  gx = (yb*zr) - (yr*zb);  gy = (xr*zb) - (xb*zr);  gz = (xb*yr) - (xr*yb);
+  bx = (yr*zg) - (yg*zr);  by = (xg*zr) - (xr*zg);  bz = (xr*yg) - (xg*yr);
+
+  /* White scaling factors.
+     Dividing by yw scales the white luminance to unity, as conventional. */
+
+  rw = ((rx*xw) + (ry*yw) + (rz*zw)) / yw;
+  gw = ((gx*xw) + (gy*yw) + (gz*zw)) / yw;
+  bw = ((bx*xw) + (by*yw) + (bz*zw)) / yw;
+
+  /* xyz -> rgb matrix, correctly scaled to white. */
+
+  rx = rx / rw;  ry = ry / rw;  rz = rz / rw;
+  gx = gx / gw;  gy = gy / gw;  gz = gz / gw;
+  bx = bx / bw;  by = by / bw;  bz = bz / bw;
+
+  /* rgb of the desired point */
+
+  rgb_arg[0] = (rx*xyz_c[0]) + (ry*xyz_c[1]) + (rz*xyz_c[2]);
+  rgb_arg[1] = (gx*xyz_c[0]) + (gy*xyz_c[1]) + (gz*xyz_c[2]);
+  rgb_arg[2] = (bx*xyz_c[0]) + (by*xyz_c[1]) + (bz*xyz_c[2]);
+}
+
+/*                            INSIDE_GAMUT
+
+     Test whether a requested colour is within the gamut
+     achievable with the primaries of the current colour
+     system.  This amounts simply to testing whether all the
+     primary weights are non-negative. */
+
+/* ----------------------- InsideGamut ----------------------------- */
+
+int InsideGamut(float *rgb_arg){
+  return (rgb_arg[0] >= 0.0) && (rgb_arg[1] >= 0.0) && (rgb_arg[2] >= 0.0);
+}
+
+/*                          CONSTRAIN_RGB
+
+    If the requested RGB shade contains a negative weight for
+    one of the primaries, it lies outside the colour gamut
+    accessible from the given triple of primaries.  Desaturate
+    it by adding white, equal quantities of R, G, and B, enough
+    to make RGB all positive.  The function returns 1 if the
+    components were modified, zero otherwise.
+
+*/
+
+/* ----------------------- ConstrainRgb ----------------------------- */
+
+int ConstrainRgb(float *rgb_arg){
+  float w;
+
+  /* Amount of white needed is w = - min(0, *r, *g, *b) */
+
+  w = (0 < rgb_arg[0])?0:rgb_arg[0];
+  w = (w < rgb_arg[1])?w:rgb_arg[1];
+  w = (w < rgb_arg[2])?w:rgb_arg[2];
+  w = -w;
+
+  /* Add just enough white to make r, g, b all positive. */
+
+  if(w > 0){
+    rgb_arg[0] += w;  rgb_arg[1] += w; rgb_arg[2] += w;
+    return 1;                     /* Colour modified to fit RGB gamut */
+  }
+  return 0;                         /* Colour within RGB gamut */
+}
+
+/*                          GAMMA_CORRECT_RGB
+
+    Transform linear RGB values to nonlinear RGB values. Rec.
+    709 is ITU-R Recommendation BT. 709 (1990) ``Basic
+    Parameter Values for the HDTV Standard for the Studio and
+    for International Programme Exchange'', formerly CCIR Rec.
+    709. For details see
+
+       http://www.poynton.com/ColorFAQ.html
+       http://www.poynton.com/GammaFAQ.html
+*/
+
+#ifdef pp_GAMMA
+/* ----------------------- GammaCorrect ----------------------------- */
+
+void GammaCorrect(const struct colourSystem *cs, float *c){
+  float gamma;
+
+  gamma = cs->gamma;
+
+  if(gamma == GAMMA_REC709){
+    /* Rec. 709 gamma correction. */
+    float cc = 0.018;
+
+    if(*c < cc){
+      float factor;
+
+      factor = ((1.099*pow(cc, 0.45)) - 0.099) / cc;
+      *c *= factor;
+    }
+    else{
+      *c = (1.099*pow(*c, 0.45)) - 0.099;
+    }
+  }
+  else{
+    /* Nonlinear colour = (Linear colour)^(1/gamma) */
+    *c = pow(*c, 1.0 / gamma);
+  }
+}
+
+/* ----------------------- GammaCorrectRgb ----------------------------- */
+
+void GammaCorrectRgb(const struct colourSystem *cs, float *rgb_arg){
+  GammaCorrect(cs, rgb_arg);
+  GammaCorrect(cs, rgb_arg + 1);
+  GammaCorrect(cs, rgb_arg + 2);
+}
+#endif
+
+/*                            BB_SPECTRUM
+
+    Calculate, by Planck's radiation law, the emittance of a black body
+    of temperature bbTemp at the given wavelength (in metres).  */
+
+    /* ----------------------- BlackBodySpectrum ----------------------------- */
+
+float BlackBodySpectrum(float wavelength, float temperature){
+  float wlm = wavelength*1e-9;   /* Wavelength in meters */
+
+  return (3.74183e-16*pow(wlm, -5.0)) /
+    (exp(1.4388e-2 / (wlm*temperature)) - 1.0);
+}
+
+/*                          SPECTRUM_TO_XYZ
+
+    Calculate the CIE X, Y, and Z coordinates corresponding to
+    a light source with spectral distribution given by  the
+    function SPEC_INTENS, which is called with a series of
+    wavelengths between 380 and 780 nm (the argument is
+    expressed in meters), which returns emittance at  that
+    wavelength in arbitrary units.  The chromaticity
+    coordinates of the spectrum are returned in the x, y, and z
+    arguments which respect the identity:
+
+            x + y + z = 1.
+*/
+
+/* ----------------------- Spectrum2Xyz ----------------------------- */
+
+void Spectrum2Xyz(float temperature, float *xyz){
+  int i;
+  float lambda, X = 0, Y = 0, Z = 0, XYZ;
+
+  /* CIE colour matching functions xBar, yBar, and zBar for
+     wavelengths from 380 through 780 nanometers, every 5
+     nanometers.  For a wavelength lambda in this range:
+
+          cie_colour_match[(lambda - 380) / 5][0] = xBar
+          cie_colour_match[(lambda - 380) / 5][1] = yBar
+          cie_colour_match[(lambda - 380) / 5][2] = zBar
+
+      To save memory, this table can be declared as floats
+      rather than doubles; (IEEE) float has enough
+      significant bits to represent the values. It's declared
+      as a double here to avoid warnings about "conversion
+      between floating-point types" from certain persnickety
+      compilers. */
+
+  static float cie_colour_match[81][3] = {
+      {0.0014,0.0000,0.0065}, {0.0022,0.0001,0.0105}, {0.0042,0.0001,0.0201},
+      {0.0076,0.0002,0.0362}, {0.0143,0.0004,0.0679}, {0.0232,0.0006,0.1102},
+      {0.0435,0.0012,0.2074}, {0.0776,0.0022,0.3713}, {0.1344,0.0040,0.6456},
+      {0.2148,0.0073,1.0391}, {0.2839,0.0116,1.3856}, {0.3285,0.0168,1.6230},
+      {0.3483,0.0230,1.7471}, {0.3481,0.0298,1.7826}, {0.3362,0.0380,1.7721},
+      {0.3187,0.0480,1.7441}, {0.2908,0.0600,1.6692}, {0.2511,0.0739,1.5281},
+      {0.1954,0.0910,1.2876}, {0.1421,0.1126,1.0419}, {0.0956,0.1390,0.8130},
+      {0.0580,0.1693,0.6162}, {0.0320,0.2080,0.4652}, {0.0147,0.2586,0.3533},
+      {0.0049,0.3230,0.2720}, {0.0024,0.4073,0.2123}, {0.0093,0.5030,0.1582},
+      {0.0291,0.6082,0.1117}, {0.0633,0.7100,0.0782}, {0.1096,0.7932,0.0573},
+      {0.1655,0.8620,0.0422}, {0.2257,0.9149,0.0298}, {0.2904,0.9540,0.0203},
+      {0.3597,0.9803,0.0134}, {0.4334,0.9950,0.0087}, {0.5121,1.0000,0.0057},
+      {0.5945,0.9950,0.0039}, {0.6784,0.9786,0.0027}, {0.7621,0.9520,0.0021},
+      {0.8425,0.9154,0.0018}, {0.9163,0.8700,0.0017}, {0.9786,0.8163,0.0014},
+      {1.0263,0.7570,0.0011}, {1.0567,0.6949,0.0010}, {1.0622,0.6310,0.0008},
+      {1.0456,0.5668,0.0006}, {1.0026,0.5030,0.0003}, {0.9384,0.4412,0.0002},
+      {0.8544,0.3810,0.0002}, {0.7514,0.3210,0.0001}, {0.6424,0.2650,0.0000},
+      {0.5419,0.2170,0.0000}, {0.4479,0.1750,0.0000}, {0.3608,0.1382,0.0000},
+      {0.2835,0.1070,0.0000}, {0.2187,0.0816,0.0000}, {0.1649,0.0610,0.0000},
+      {0.1212,0.0446,0.0000}, {0.0874,0.0320,0.0000}, {0.0636,0.0232,0.0000},
+      {0.0468,0.0170,0.0000}, {0.0329,0.0119,0.0000}, {0.0227,0.0082,0.0000},
+      {0.0158,0.0057,0.0000}, {0.0114,0.0041,0.0000}, {0.0081,0.0029,0.0000},
+      {0.0058,0.0021,0.0000}, {0.0041,0.0015,0.0000}, {0.0029,0.0010,0.0000},
+      {0.0020,0.0007,0.0000}, {0.0014,0.0005,0.0000}, {0.0010,0.0004,0.0000},
+      {0.0007,0.0002,0.0000}, {0.0005,0.0002,0.0000}, {0.0003,0.0001,0.0000},
+      {0.0002,0.0001,0.0000}, {0.0002,0.0001,0.0000}, {0.0001,0.0000,0.0000},
+      {0.0001,0.0000,0.0000}, {0.0001,0.0000,0.0000}, {0.0000,0.0000,0.0000}
+  };
+
+  for(i = 0, lambda = 380; lambda < 780.1; i++, lambda += 5){
+    float Me;
+
+    Me = BlackBodySpectrum(lambda, temperature);
+    X += Me*cie_colour_match[i][0];
+    Y += Me*cie_colour_match[i][1];
+    Z += Me*cie_colour_match[i][2];
+  }
+  XYZ = (X + Y + Z);
+  xyz[0] = X / XYZ;
+  xyz[1] = Y / XYZ;
+  xyz[2] = Z / XYZ;
+}
+
+/* ----------------------- Gaussian ----------------------------- */
+
+float Gaussian(float x, float mu, float sigma1, float sigma2){
+  float return_val, arg;
+
+  if(x < mu){
+    arg = (x - mu) / sigma1;
+  }
+  else{
+    arg = (x - mu) / sigma2;
+  }
+  arg = -arg*arg / 2.0;
+  return_val = exp(arg);
+  return return_val;
+}
+// https://en.wikipedia.org/wiki/CIE_1931_color_space
+/* ----------------------- ColorMatchRed ----------------------------- */
+
+float ColorMatchRed(float lambda){
+  float return_val;
+  // units
+  // lambda: nm
+
+  return_val  = 1.056*Gaussian(lambda, 599.8, 37.9, 31.0);
+  return_val += 0.362*Gaussian(lambda, 442.0, 16.0, 26.7);
+  return_val -= 0.065*Gaussian(lambda, 501.1, 20.4, 26.2);
+  return return_val;
+}
+
+/* ----------------------- ColorMatchGreen ----------------------------- */
+
+float ColorMatchGreen(float lambda){
+  float return_val;
+  // units
+  // lambda: nm
+
+  return_val  = 0.821*Gaussian(lambda, 568.8, 46.9, 40.5);
+  return_val += 0.286*Gaussian(lambda, 530.9, 16.3, 31.1);
+  return return_val;
+}
+
+
+/* ----------------------- ColorMatchBlue ----------------------------- */
+
+float ColorMatchBlue(float lambda){
+  float return_val;
+  // units
+  // lambda: nm
+
+  return_val  = 1.217*Gaussian(lambda, 437.0, 11.8, 36.0);
+  return_val += 0.681*Gaussian(lambda, 459.0, 26.0, 13.8);
+  return return_val;
+}
+/* ----------------------- GetPlankVal ----------------------------- */
+
+float GetPlankVal(float lambda, float temp){
+  // units
+  // lambda: m
+  // temp:   K
+  // https://en.wikipedia.org/wiki/Planck%27s_law
+  // https://www.fourmilab.ch/documents/specrend/
+  float c1, c2;
+  // (c1/lambda^5)/(exp(c2/(lambda*T)-1)
+  //c1 = 2 pi hc^2 = 3.74183*10^-16 W m2
+  //c2 = hc/k = 0.014388 m K
+  c1 = 3.74183*pow(10.0, -16);
+  c2 = 0.014388;
+  float return_val = (c1 / pow(lambda, 5.0)) / (exp(c2 / (lambda*temp)) - 1.0);;
+  return return_val;
+}
+
+/* ----------------------- GetRGBFireVal ----------------------------- */
+
+void GetRGBFireVal(float temp, float *rgb_arg){
+  // units
+  // temp C
+  int i, n;
+  float valmin, valmax, dval, factor;
+
+  static float cie_colour_match[81][3] = {
+    {0.0014, 0.0000, 0.0065}, {0.0022, 0.0001, 0.0105}, {0.0042, 0.0001, 0.0201},
+    {0.0076, 0.0002, 0.0362}, {0.0143, 0.0004, 0.0679}, {0.0232, 0.0006, 0.1102},
+    {0.0435, 0.0012, 0.2074}, {0.0776, 0.0022, 0.3713}, {0.1344, 0.0040, 0.6456},
+    {0.2148, 0.0073, 1.0391}, {0.2839, 0.0116, 1.3856}, {0.3285, 0.0168, 1.6230},
+    {0.3483, 0.0230, 1.7471}, {0.3481, 0.0298, 1.7826}, {0.3362, 0.0380, 1.7721},
+    {0.3187, 0.0480, 1.7441}, {0.2908, 0.0600, 1.6692}, {0.2511, 0.0739, 1.5281},
+    {0.1954, 0.0910, 1.2876}, {0.1421, 0.1126, 1.0419}, {0.0956, 0.1390, 0.8130},
+    {0.0580, 0.1693, 0.6162}, {0.0320, 0.2080, 0.4652}, {0.0147, 0.2586, 0.3533},
+    {0.0049, 0.3230, 0.2720}, {0.0024, 0.4073, 0.2123}, {0.0093, 0.5030, 0.1582},
+    {0.0291, 0.6082, 0.1117}, {0.0633, 0.7100, 0.0782}, {0.1096, 0.7932, 0.0573},
+    {0.1655, 0.8620, 0.0422}, {0.2257, 0.9149, 0.0298}, {0.2904, 0.9540, 0.0203},
+    {0.3597, 0.9803, 0.0134}, {0.4334, 0.9950, 0.0087}, {0.5121, 1.0000, 0.0057},
+    {0.5945, 0.9950, 0.0039}, {0.6784, 0.9786, 0.0027}, {0.7621, 0.9520, 0.0021},
+    {0.8425, 0.9154, 0.0018}, {0.9163, 0.8700, 0.0017}, {0.9786, 0.8163, 0.0014},
+    {1.0263, 0.7570, 0.0011}, {1.0567, 0.6949, 0.0010}, {1.0622, 0.6310, 0.0008},
+    {1.0456, 0.5668, 0.0006}, {1.0026, 0.5030, 0.0003}, {0.9384, 0.4412, 0.0002},
+    {0.8544, 0.3810, 0.0002}, {0.7514, 0.3210, 0.0001}, {0.6424, 0.2650, 0.0000},
+    {0.5419, 0.2170, 0.0000}, {0.4479, 0.1750, 0.0000}, {0.3608, 0.1382, 0.0000},
+    {0.2835, 0.1070, 0.0000}, {0.2187, 0.0816, 0.0000}, {0.1649, 0.0610, 0.0000},
+    {0.1212, 0.0446, 0.0000}, {0.0874, 0.0320, 0.0000}, {0.0636, 0.0232, 0.0000},
+    {0.0468, 0.0170, 0.0000}, {0.0329, 0.0119, 0.0000}, {0.0227, 0.0082, 0.0000},
+    {0.0158, 0.0057, 0.0000}, {0.0114, 0.0041, 0.0000}, {0.0081, 0.0029, 0.0000},
+    {0.0058, 0.0021, 0.0000}, {0.0041, 0.0015, 0.0000}, {0.0029, 0.0010, 0.0000},
+    {0.0020, 0.0007, 0.0000}, {0.0014, 0.0005, 0.0000}, {0.0010, 0.0004, 0.0000},
+    {0.0007, 0.0002, 0.0000}, {0.0005, 0.0002, 0.0000}, {0.0003, 0.0001, 0.0000},
+    {0.0002, 0.0001, 0.0000}, {0.0002, 0.0001, 0.0000}, {0.0001, 0.0000, 0.0000},
+    {0.0001, 0.0000, 0.0000}, {0.0001, 0.0000, 0.0000}, {0.0000, 0.0000, 0.0000}
+  };
+
+  temp += 273.15;
+  valmin = 380.0;
+  valmax = 780.0;
+  factor = pow(10.0, 9.0);
+  n = 81;
+  dval = (valmax - valmin)/(float)(n-1);;
+  rgb_arg[0] = 0.0;
+  rgb_arg[1] = 0.0;
+  rgb_arg[2] = 0.0;
+  for(i = 0;i < n;i++){
+    float plank_val, lambda_nano, lambda_m;
+    float rgb_val[3];
+
+    lambda_nano = valmin + i*dval;
+    lambda_m    = lambda_nano/factor;
+    plank_val   = GetPlankVal(lambda_m, temp);
+    rgb_val[0]  = plank_val*cie_colour_match[i][0];
+    rgb_val[1]  = plank_val*cie_colour_match[i][1];
+    rgb_val[2]  = plank_val*cie_colour_match[i][2];
+    if(i == 0 || i == n - 1){
+      rgb_arg[0] += rgb_val[0];
+      rgb_arg[1] += rgb_val[1];
+      rgb_arg[2] += rgb_val[2];
+    }
+    else{
+      rgb_arg[0] += 2.0*rgb_val[0];
+      rgb_arg[1] += 2.0*rgb_val[1];
+      rgb_arg[2] += 2.0*rgb_val[2];
+    }
+  }
+  rgb_arg[0] *= 0.5*dval;
+  rgb_arg[1] *= 0.5*dval;
+  rgb_arg[2] *= 0.5*dval;
+}
+
+/* ----------------------- MakeFireColors ----------------------------- */
+
+void MakeFireColorsNew(float temp_min, float temp_max, int nfire_colors_arg){
+  int i;
+  float dtemp;
+
+#ifdef pp_BLACKBODY_OUT  
+  FILE *stream;
+  stream = fopen("testfire.csv", "w");
+#endif
+  dtemp = (temp_max - temp_min)/(float)(nfire_colors_arg -1);
+  FREEMEMORY(fire_rgbs);
+  NewMemory((void **)&fire_rgbs,3*nfire_colors_arg*sizeof(float));
+  for(i = 0;i < nfire_colors_arg;i++){
+    float temp, fire_rgb[3], xyz[3];
+
+    temp = temp_min + (float)i*dtemp + 273.15;
+    Spectrum2Xyz(temp, xyz);
+    Xyz2Rgb(&HDTVsystem, xyz, fire_rgb);
+// SMPTEsystem
+// CIEsystem
+// NTSCsystem
+    ConstrainRgb(fire_rgb);
+    memcpy(fire_rgbs + 3*i, fire_rgb, 3*sizeof(float));
+#ifdef pp_BLACKBODY_OUT  
+    fprintf(stream, "%f,%f,%f,%f\n", temp, fire_rgb[0], fire_rgb[1], fire_rgb[2]);
+#endif
+  }
+#ifdef pp_BLACKBODY_OUT  
+  fclose(stream);
+#endif
+}
+
+/* ----------------------- MakeFireColors ----------------------------- */
+
+void MakeFireColors(float temp_min, float temp_max, int nfire_colors_arg){
+  int i;
+  float dtemp;
+
+#ifdef pp_BLACKBODY_OUT  
+  FILE *stream;
+  stream = fopen("testfire.csv", "w");
+#endif
+  dtemp = (temp_max - temp_min) / ( float )(nfire_colors_arg - 1);
+  FREEMEMORY(fire_rgbs);
+  NewMemory(( void ** )&fire_rgbs, 3*nfire_colors_arg*sizeof(float));
+  for(i = 0; i < nfire_colors_arg; i++){
+    float temp, fire_emission[3];
+
+    temp = temp_min + ( float )i*dtemp;
+    //float xyz[3];
+    GetRGBFireVal(temp, fire_emission);
+    //Xyz2Rgb(&HDTVsystem, xyz, fire_rgb);
+    //ConstrainRgb(fire_rgb);
+    memcpy(fire_rgbs + 3*i, fire_emission, 3*sizeof(float));
+#ifdef pp_BLACKBODY_OUT
+    if(stream != NULL){
+      float norm;
+
+      norm = sqrt(fire_emission[0]*fire_emission[0] + fire_emission[0]*fire_emission[0] + fire_emission[0]*fire_emission[0]);
+      fprintf(stream, "%f,%f,%f,%f,%f\n", temp, fire_emission[0], fire_emission[1], fire_emission[2], norm);
+    }
+#endif
+  }
+#ifdef pp_BLACKBODY_OUT  
+  if(stream!=NULL)fclose(stream);
+#endif
+}
+
+/* ----------------------- Temperature2Emission ----------------------------- */
+
+void Temperature2Emission(float temperature, float *emission){
+  int index;
+  float factor, *rgb_bef, *rgb_aft, temp_bef, temp_aft;
+
+  if(temperature<=fire_temp_min){
+    memcpy(emission, fire_rgbs, 3*sizeof(float));
+    return;
+  }
+  if(temperature>=fire_temp_max){
+    memcpy(emission, fire_rgbs+3*(nfire_colors-1), 3*sizeof(float));
+    return;
+  }
+  index = nfire_colors*(temperature - fire_temp_min) / (fire_temp_max - fire_temp_min);
+  rgb_bef = fire_rgbs+3*index;
+  rgb_aft = rgb_bef + 3;
+  temp_bef = fire_temp_min + (float)index*(fire_temp_max-fire_temp_min)/(float)(nfire_colors -1);
+  temp_aft = fire_temp_min + (float)(index+1)*(fire_temp_max-fire_temp_min)/(float)(nfire_colors -1);
+  factor = (temperature-temp_bef)/(temp_aft-temp_bef);
+  emission[0] = (1.0-factor)*rgb_bef[0] + factor*rgb_aft[0];
+  emission[1] = (1.0-factor)*rgb_bef[1] + factor*rgb_aft[1];
+  emission[2] = (1.0-factor)*rgb_bef[2] + factor*rgb_aft[2];
+}
+#endif
+
 /* ----------------------- InitVKL ----------------------------- */
 
 #ifdef pp_OPENVKL
@@ -75,9 +608,9 @@ VKLDevice InitVKL(int *width){
 }
 #endif
 
-/* ----------------------- GetSmokeColor ----------------------------- */
+/* ----------------------- GetFireEmission ----------------------------- */
 
-void GetSmokeColor(float *smoke_tran, float **smoke_color_handle, float *scaled_intensity, float *light_fractionptr, float dlength, float xyz[3], meshdata *meshi, int *inobst, char *blank_local){
+void GetFireEmission(float *smoke_tran, float *fire_emission, float dlength, float xyz[3], meshdata *meshi, int *inobst, char *blank_local){
   int i, j, k;
   int ijk;
   float *vv;
@@ -90,7 +623,6 @@ void GetSmokeColor(float *smoke_tran, float **smoke_color_handle, float *scaled_
   float *xplt, *yplt, *zplt;
   int ibar, jbar, kbar;
   float *smokedata_local, *firedata_local;
-  int index;
   float black[] = {0.0,0.0,0.0,1.0};
   int slicetype;
   float soot_density, temperature;
@@ -116,8 +648,6 @@ void GetSmokeColor(float *smoke_tran, float **smoke_color_handle, float *scaled_
   dxbar = xplt[1]-xplt[0];
   dybar = yplt[1]-yplt[0];
   dzbar = zplt[1]-zplt[0];
-  xyz[0] -= dxbar/2.0; // offset x and y position by half a grid cell
-  xyz[1] -= dybar/2.0; // z position does not need to be offset
 
   nx = ibar+1;
   ny = jbar+1;
@@ -136,42 +666,54 @@ void GetSmokeColor(float *smoke_tran, float **smoke_color_handle, float *scaled_
     *inobst = 0;
   }
 
-  *scaled_intensity = 1.0;
   if(firedata_local!=NULL){
-    float dtemp;
-
     INTERP3D(firedata_local, temperature);
-    if(temperature<global_temp_cutoff){
-      dtemp = (global_temp_cutoff- global_temp_min)/(MAXSMOKERGB/2);
-      index = GETINDEX(temperature, global_temp_min, dtemp, (MAXSMOKERGB/2));
+    if(use_blackbody_colors == 1){
+      Temperature2Emission(temperature, fire_emission);
     }
     else{
-      float ratio;
+      if(temperature > global_temp_cutoff){
+        int index;
+        float dtemp;
 
-      dtemp = (global_temp_max- global_temp_cutoff)/(MAXSMOKERGB/2);
-      index = GETINDEX(temperature+voltemp_offset, global_temp_cutoff, dtemp, (MAXSMOKERGB/2));
-      index += (MAXSMOKERGB/2);
-      if(temperature>voltemp_factor){
-        ratio = (273.0+temperature)/(273.0+voltemp_factor);
-        *scaled_intensity = ratio*ratio*ratio*ratio;
+        dtemp = (global_temp_max - global_temp_cutoff) / (MAXSMOKERGB / 2);
+        index = GETINDEX(temperature + voltemp_offset, global_temp_cutoff, dtemp, (MAXSMOKERGB / 2));
+        index += (MAXSMOKERGB/2);
+        memcpy(fire_emission, rgb_volsmokecolormap + 4 * index, 3*sizeof(float));
       }
-    }
-    if(temperature>global_temp_cutoff){
-      * smoke_color_handle = rgb_volsmokecolormap+4*index;
-    }
-    else{
-      *smoke_color_handle = GetColorPtr(black);
+      else{
+        memcpy(fire_emission, black, 3 * sizeof(float));
+      }
     }
   }
   else{
-    *smoke_color_handle = GetColorPtr(black);
+    memcpy(fire_emission, black, 3*sizeof(float));
   }
   if(smokedata_local!=NULL){
     INTERP3D(smokedata_local, soot_density);
-    if(firedata_local!=NULL&&index>MAXSMOKERGB/2)soot_density *= fire_opacity_factor;
     *smoke_tran = exp(-mass_extinct*soot_density*dlength);
+    if(firedata_local!=NULL&&temperature<global_temp_cutoff){
+      float factor;
+
+      factor = CLAMP((global_temp_cutoff - temperature) / 50.0, 0.0, 1.0);
+      fire_emission[0] = (1.0 - factor)*fire_emission[0];
+      fire_emission[1] = (1.0 - factor)*fire_emission[1];
+      fire_emission[2] = (1.0 - factor)*fire_emission[2];
+    }
   }
-  *light_fractionptr = 1.0;
+  if(firedata_local!=NULL&&temperature>global_temp_cutoff){
+    if(use_opacity_depth==1){
+      *smoke_tran = pow(0.5, dlength/fire_halfdepth);
+    }
+    if(use_opacity_multiplier==1&&smokedata_local!=NULL){
+      float absorb, trans;
+
+      absorb = 1.0 - *smoke_tran;
+      absorb *= emission_factor;
+      trans = CLAMP(1.0 - absorb, 0.0, 1.0);
+      *smoke_tran = trans;
+    }
+  }
 }
 
 /* ------------------ InitVolRenderSurface ------------------------ */
@@ -302,24 +844,6 @@ void InitVolsmokeSuperTexture(supermeshdata *smesh){
   glTexImage3D(GL_TEXTURE_3D, 0, GL_R32F,
     nx, ny, nz, border_size,
     GL_RED, GL_FLOAT, smesh->volfire_texture_buffer);
-
-  glActiveTexture(GL_TEXTURE5);
-  if(smesh->vollight_texture_id==0)glGenTextures(1, &smesh->vollight_texture_id);
-  glBindTexture(GL_TEXTURE_3D, smesh->vollight_texture_id);
-  glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-  glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-  glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-  if(smesh->vollight_texture_buffer==NULL){
-    NewMemory((void **)&smesh->vollight_texture_buffer, nx*ny*nz*sizeof(float));
-  }
-  for(i = 0;i<nx*ny*nz;i++){
-    smesh->vollight_texture_buffer[i] = 1.0;
-  }
-  glTexImage3D(GL_TEXTURE_3D, 0, GL_R32F,
-    nx, ny, nz, border_size,
-    GL_RED, GL_FLOAT, smesh->vollight_texture_buffer);
 
   if(volsmoke_colormap_id_defined==-1){
     volsmoke_colormap_id_defined = 1;
@@ -603,27 +1127,27 @@ void InitNabors(void){
     meshi = meshinfo + i;
     memcpy(xyzmid, meshi->boxmiddle, 3*sizeof(float)); 
 
-    memcpy(xyz, xyzmid, 3 * sizeof(float));
+    memcpy(xyz, xyzmid, 3*sizeof(float));
     xyz[0] = meshi->boxmin[0]- meshi->boxeps_fds[0];
     meshi->skip_nabors[MLEFT] = GetMesh(xyz, NULL);
 
-    memcpy(xyz, xyzmid, 3 * sizeof(float));
+    memcpy(xyz, xyzmid, 3*sizeof(float));
     xyz[0] = meshi->boxmax[0] + meshi->boxeps_fds[0];
     meshi->skip_nabors[MRIGHT] = GetMesh(xyz, NULL);
 
-    memcpy(xyz, xyzmid, 3 * sizeof(float));
+    memcpy(xyz, xyzmid, 3*sizeof(float));
     xyz[1] = meshi->boxmin[1] - meshi->boxeps_fds[1];
     meshi->skip_nabors[MFRONT] = GetMesh(xyz, NULL);
 
-    memcpy(xyz, xyzmid, 3 * sizeof(float));
+    memcpy(xyz, xyzmid, 3*sizeof(float));
     xyz[1] = meshi->boxmax[0] + meshi->boxeps_fds[1];
     meshi->skip_nabors[MBACK] = GetMesh(xyz, NULL);
 
-    memcpy(xyz, xyzmid, 3 * sizeof(float));
+    memcpy(xyz, xyzmid, 3*sizeof(float));
     xyz[2] = meshi->boxmin[2] - meshi->boxeps_fds[2];
     meshi->skip_nabors[MDOWN] = GetMesh(xyz, NULL);
 
-    memcpy(xyz, xyzmid, 3 * sizeof(float));
+    memcpy(xyz, xyzmid, 3*sizeof(float));
     xyz[2] = meshi->boxmax[2] + meshi->boxeps_fds[2];
     meshi->skip_nabors[MUP] = GetMesh(xyz, NULL);
   }
@@ -677,11 +1201,9 @@ void InitSuperMesh(void){
 
     smesh->volfire_texture_buffer = NULL;
     smesh->volsmoke_texture_buffer = NULL;
-    smesh->vollight_texture_buffer = NULL;
 
     smesh->volfire_texture_id = 0;
     smesh->volsmoke_texture_id = 0;
-    smesh->vollight_texture_id = 0;
 
     smesh->blockage_texture_id = 0;
 
@@ -811,17 +1333,9 @@ void InitVolRender(void){
 
     vr->fireslice=NULL;
     vr->smokeslice=NULL;
-    vr->lightslice = NULL;
-#ifdef pp_VOLCO2
-    vr->co2slice = NULL;
-#endif
 
     vr->firepos = NULL;
     vr->smokepos = NULL;
-    vr->lightpos = NULL;
-#ifdef pp_VOLCO2
-    vr->co2pos = NULL;
-#endif
 
     vr->timeslist=NULL;
 
@@ -858,16 +1372,6 @@ void InitVolRender(void){
       vr->smokeslice=slicei;
       continue;
     }
-    if(STRCMP(shortlabel, "frac")==0){
-      vr->lightslice = slicei;
-      continue;
-    }
-#ifdef pp_VOLCO2
-    if(STRCMP(shortlabel, "X_CO2")==0){
-      vr->co2slice = slicei;
-      continue;
-    }
-#endif
   }
   for(i=0;i<nmeshes;i++){
     meshdata *meshi;
@@ -879,17 +1383,9 @@ void InitVolRender(void){
 
     vr->firedata_full=NULL;
     vr->smokedata_full=NULL;
-    vr->lightdata_full = NULL;
-#ifdef pp_VOLCO2
-    vr->co2data_full = NULL;
-#endif
 
     vr->c_firedata_view=NULL;
     vr->c_smokedata_view=NULL;
-    vr->c_lightdata_view = NULL;
-#ifdef pp_VOLCO2
-    vr->c_co2data_view = NULL;
-#endif
 
     if(vr->smokeslice!=NULL){
       int j;
@@ -902,46 +1398,22 @@ void InitVolRender(void){
 
         NewMemory((void **)&vr->firepos,vr->ntimes*sizeof(LINT));
         NewMemory((void **)&vr->smokepos,vr->ntimes*sizeof(LINT));
-        NewMemory((void **)&vr->lightpos, vr->ntimes*sizeof(LINT));
-#ifdef pp_VOLCO2
-        NewMemory((void **)&vr->co2pos, vr->ntimes*sizeof(LINT));
-#endif
 
         NewMemory((void **)&vr->firedataptrs,vr->ntimes*sizeof(float *));
         NewMemory((void **)&vr->smokedataptrs,vr->ntimes*sizeof(float *));
-        NewMemory((void **)&vr->lightdataptrs, vr->ntimes*sizeof(float *));
-#ifdef pp_VOLCO2
-        NewMemory((void **)&vr->co2dataptrs, vr->ntimes*sizeof(float *));
-#endif
 
         NewMemory((void **)&vr->nfiredata_compressed,vr->ntimes*sizeof(int));
         NewMemory((void **)&vr->nsmokedata_compressed,vr->ntimes*sizeof(int));
-        NewMemory((void **)&vr->nlightdata_compressed, vr->ntimes*sizeof(int));
-#ifdef pp_VOLCO2
-        NewMemory((void **)&vr->nco2data_compressed, vr->ntimes*sizeof(int));
-#endif
 
         vr->firedataptr = NULL;
         vr->smokedataptr = NULL;
-        vr->lightdataptr = NULL;
-#ifdef pp_VOLCO2
-        vr->co2dataptr = NULL;
-#endif
 
         for(j=0;j<vr->ntimes;j++){
           vr->firedataptrs[j]  = NULL;
           vr->smokedataptrs[j] = NULL;
-          vr->lightdataptrs[j] = NULL;
-#ifdef pp_VOLCO2
-          vr->co2dataptrs[j] = NULL;
-#endif
 
           vr->nfiredata_compressed[j]  = 0;
           vr->nsmokedata_compressed[j] = 0;
-          vr->nlightdata_compressed[j] = 0;
-#ifdef pp_VOLCO2
-          vr->nco2data_compressed[j] = 0;
-#endif
 
           vr->dataready[j]=0;
         }
@@ -996,9 +1468,9 @@ meshdata *GetMeshInSmesh(meshdata *mesh_guess, supermeshdata *smesh, float *xyz)
   return NULL;
 }
 
-/* ------------------ IntegrateSmokeColors ------------------------ */
+/* ------------------ IntegrateFireColors ------------------------ */
 
-void IntegrateSmokeColors(float *integrated_smokecolor, float *xyzvert, float dlength, meshdata *meshi, int iwall){
+void IntegrateFireColors(float *integrated_firecolor, float *xyzvert, float dlength, meshdata *meshi, int iwall){
   float t_intersect_min, *boxmin, *boxmax;
   int i;
   int nsteps;
@@ -1009,8 +1481,7 @@ void IntegrateSmokeColors(float *integrated_smokecolor, float *xyzvert, float dl
   int iwall_min=0;
   float xyzvals[3];
   char *blank_local;
-  float xi, taui, *smoke_color=NULL, smoke_light_fraction;
-  float taun,alphan;
+  float taun, alphan;
   meshdata *xyz_mesh=NULL;
 
   if(combine_meshes==1){
@@ -1109,10 +1580,10 @@ void IntegrateSmokeColors(float *integrated_smokecolor, float *xyzvert, float dl
   dyseg = vert_end[1] - vert_beg[1];
   dzseg = vert_end[2] - vert_beg[2];
   distseg = sqrt(dxseg*dxseg+dyseg*dyseg+dzseg*dzseg);
-  integrated_smokecolor[0] = 0.0;
-  integrated_smokecolor[1] = 0.0;
-  integrated_smokecolor[2] = 0.0;
-  integrated_smokecolor[3] = 0.0;
+  integrated_firecolor[0] = 0.0;
+  integrated_firecolor[1] = 0.0;
+  integrated_firecolor[2] = 0.0;
+  integrated_firecolor[3] = 0.0;
 
   if(distseg<0.001)return;
 
@@ -1124,64 +1595,84 @@ void IntegrateSmokeColors(float *integrated_smokecolor, float *xyzvert, float dl
   taun=1.0;
   alphan=0.0;
   for(i=0;i<nsteps;i++){
-    float factor, alphai, scaled_intensity;
     int inobst;
+    float factor;
+    float fire_emission[3];
+    float alphai, taui, xi;
 
     xi = 0.5 + (float)i;
     factor = xi/(float)nsteps;
-    xyz[0] = MIX(factor,vert_end[0],vert_beg[0]);
-    xyz[1] = MIX(factor,vert_end[1],vert_beg[1]);
-    xyz[2] = MIX(factor,vert_end[2],vert_beg[2]);
+    xyz[0] = factor*vert_end[0] + (1.0 - factor)*vert_beg[0];
+    xyz[1] = factor*vert_end[1] + (1.0 - factor)*vert_beg[1];
+    xyz[2] = factor*vert_end[2] + (1.0 - factor)*vert_beg[2];
 
     if(combine_meshes==1){
       xyz_mesh = GetMeshInSmesh(xyz_mesh,meshi->super,xyz);
       if(xyz_mesh==NULL)break;
       blank_local = NULL;
       if(block_volsmoke==1)blank_local=xyz_mesh->c_iblank_cell;
-      GetSmokeColor(&taui,&smoke_color, &scaled_intensity, &smoke_light_fraction,
-                         dlength,xyz, xyz_mesh, &inobst, blank_local);
+      GetFireEmission(&taui, fire_emission, dlength, xyz, xyz_mesh, &inobst, blank_local);
     }
     else{
       blank_local = NULL;
       if(block_volsmoke==1)blank_local=meshi->c_iblank_cell;
-      GetSmokeColor(&taui,&smoke_color, &scaled_intensity, &smoke_light_fraction,
-                         dlength, xyz, meshi, &inobst, blank_local);
+      GetFireEmission(&taui, fire_emission, dlength, xyz, meshi, &inobst, blank_local);
     }
-    if(blank_local!=NULL&&inobst==1)break;
+    if(blank_local!=NULL&&inobst==1)break; // terminate ray when a blockage is encountered
 
-//    "    taui = exp(-mass_extinct*soot_val*dstep);"
-//    "    alphai = 1.0 - taui;"
-//    "    taun *= taui;"
-//    "    alphan = 1.0-taun;"
-//    "    color_total += alphai*taun*color_val*opacity_factor;"
+//         taui = exp(-mass_extinct*soot_val*dstep);
+//         new_color = taui*current_color + old_color
 
-    alphai = 1.0 - taui;
     taun *= taui;
+    alphai = 1.0 - taui;
     alphan = 1.0 - taun;
-
-    //    "    color_total += alphai*taun*color_val*opacity_factor;"
-    integrated_smokecolor[0] += alphai * taun * smoke_color[0];
-    integrated_smokecolor[1] += alphai * taun * smoke_color[1];
-    integrated_smokecolor[2] += alphai * taun * smoke_color[2];
+    
+    if(hrrpuv_max_blending==1){
+      integrated_firecolor[0] = MAX(integrated_firecolor[0], fire_emission[0]);
+      integrated_firecolor[1] = MAX(integrated_firecolor[1], fire_emission[1]);
+      integrated_firecolor[2] = MAX(integrated_firecolor[2], fire_emission[2]);
+    }
+    // https://developer.nvidia.com/sites/all/modules/custom/gpugems/books/GPUGems/gpugems_ch39.html
+    // equation 6 - integrate forward
+    else{
+      integrated_firecolor[0] = taun*alphai*fire_emission[0] + integrated_firecolor[0];
+      integrated_firecolor[1] = taun*alphai*fire_emission[1] + integrated_firecolor[1];
+      integrated_firecolor[2] = taun*alphai*fire_emission[2] + integrated_firecolor[2];
+    }
   }
 
   if(alphan>0.0){
     alphan = CLAMP(alphan, 0.0, 1.0);
-    integrated_smokecolor[0] /= alphan;
-    integrated_smokecolor[1] /= alphan;
-    integrated_smokecolor[2] /= alphan;
-    integrated_smokecolor[3]=alphan;
+    float max_rgb;
+
+    max_rgb = MAX(integrated_firecolor[0], MAX(integrated_firecolor[1], integrated_firecolor[2]));
+    if(max_rgb>0.0){
+      integrated_firecolor[0] /= max_rgb;
+      integrated_firecolor[1] /= max_rgb;
+      integrated_firecolor[2] /= max_rgb;
+    }
+
+    
+ //   float fire_rgb_from[3], fire_rgb_to[3];
+ //   memcpy(fire_rgb_from, integrated_firecolor, 3*sizeof(float));
+ //   Xyz2Rgb(&HDTVsystem, fire_rgb_from, fire_rgb_to);
+ //   ConstrainRgb(fire_rgb_to);
+#ifdef pp_GAMMA
+    if(gamma_correction==1)GammaCorrectRgb(&HDTVsystem, integrated_firecolor);
+#endif
+ //    memcpy(integrated_firecolor, fire_rgb_to, 3*sizeof(float));
+    integrated_firecolor[3] = alphan;
     if(volbw==1){
       float gray;
 
-      gray = TOBW(integrated_smokecolor);
-      integrated_smokecolor[0] = gray;
-      integrated_smokecolor[1] = gray;
-      integrated_smokecolor[2] = gray;
+      gray = TOBW(integrated_firecolor);
+      integrated_firecolor[0] = gray;
+      integrated_firecolor[1] = gray;
+      integrated_firecolor[2] = gray;
     }
   }
   else{
-    VEC4EQCONS(integrated_smokecolor,0.0);
+    VEC4EQCONS(integrated_firecolor,0.0);
   }
 }
 
@@ -1250,7 +1741,7 @@ void ComputeAllSmokecolors(void){
               xyz[1] = y[i];
               for(j=0;j<=kbar;j++){
                 xyz[2] = z[j];
-                IntegrateSmokeColors(smokecolor,xyz,dlength,meshi,iwall);
+                IntegrateFireColors(smokecolor,xyz,dlength,meshi,iwall);
                 smokecolor+=4;
               }
             }
@@ -1282,7 +1773,7 @@ void ComputeAllSmokecolors(void){
               xyz[0] = x[i];
               for(j=0;j<=kbar;j++){
                 xyz[2] = z[j];
-                IntegrateSmokeColors(smokecolor,xyz,dlength,meshi,iwall);
+                IntegrateFireColors(smokecolor,xyz,dlength,meshi,iwall);
                 smokecolor+=4;
               }
             }
@@ -1314,7 +1805,7 @@ void ComputeAllSmokecolors(void){
               xyz[0] = x[i];
               for(j=0;j<=jbar;j++){
                 xyz[1] = y[j];
-                IntegrateSmokeColors(smokecolor,xyz,dlength,meshi,iwall);
+                IntegrateFireColors(smokecolor,xyz,dlength,meshi,iwall);
                 smokecolor+=4;
               }
             }
@@ -1505,6 +1996,52 @@ void DrawSmoke3DVol(void){
   int ii;
 
   if(use_transparency_data==1)TransparentOn();
+  if(show_blackbody_colormap == 1){
+    int i;
+
+    glBegin(GL_QUADS);
+    for(i = 0;i < nfire_colors;i++){
+      float fire_rgb[3], zmin, zmax, maxrgb;
+
+      memcpy(fire_rgb, fire_rgbs + 3*i, 3*sizeof(float));
+      maxrgb = MAX(fire_rgb[0], fire_rgb[1]);
+      maxrgb = MAX(maxrgb, fire_rgb[2]);
+      if(maxrgb>0.0){
+        fire_rgb[0] /= maxrgb;
+        fire_rgb[1] /= maxrgb;
+        fire_rgb[2] /= maxrgb;
+      }
+      
+      glColor3fv(fire_rgb);
+      zmin = (float)i / (float)nfire_colors;
+      zmax = (float)(i + 1) / (float)nfire_colors;
+      glVertex3f(0.9, 0.5, zmin);
+      glVertex3f(1.0, 0.5, zmin);
+      glVertex3f(1.0, 0.5, zmax);
+      glVertex3f(0.9, 0.5, zmax);
+
+      glVertex3f(0.9, 0.5, zmin);
+      glVertex3f(0.9, 0.5, zmax);
+      glVertex3f(1.0, 0.5, zmax);
+      glVertex3f(1.0, 0.5, zmin);
+    }
+    glEnd();
+    glLineWidth(vectorlinewidth);
+    glBegin(GL_LINES);
+    glColor3fv(foregroundcolor);
+    glVertex3f(0.9, 0.5, 0.0);
+    glVertex3f(1.0, 0.5, 0.0);
+
+    glVertex3f(1.0, 0.5, 0.0);
+    glVertex3f(1.0, 0.5, 1.0);
+
+    glVertex3f(1.0, 0.5, 1.0);
+    glVertex3f(0.9, 0.5, 1.0);
+
+    glVertex3f(0.9, 0.5, 1.0);
+    glVertex3f(0.9, 0.5, 0.0);
+    glEnd();
+  }
   for(ii=0;ii<nvolfacelistinfo;ii++){
     volfacelistdata *vi;
     meshdata *meshi;
@@ -1728,26 +2265,6 @@ void UpdateVolsmokeSupertexture(supermeshdata *smesh){
   // light texture
 
   glActiveTexture(GL_TEXTURE5);
-  for(i = 0;i<smesh->nmeshes;i++){
-    meshdata *meshi;
-    int *s_offset;
-    float *lightdataptr;
-
-    meshi = smesh->meshes[i];
-    lightdataptr = meshi->volrenderinfo.lightdataptr;
-    if(lightdataptr==NULL)continue;
-
-    s_offset = meshi->s_offset;
-
-    ni = meshi->ibar+1;
-    nj = meshi->jbar+1;
-    nk = meshi->kbar+1;
-#ifdef pp_GPUTHROTTLE
-    GPUnframes += 3*ni*nj*nk;
-#endif
-
-    glTexSubImage3D(GL_TEXTURE_3D, 0, s_offset[0], s_offset[1], s_offset[2], ni, nj, nk, GL_RED, GL_FLOAT, lightdataptr);
-  }
 
   // blockage texture
 
@@ -1779,12 +2296,11 @@ void UpdateVolsmokeTexture(meshdata *meshi){
   GLsizei ni, nj, nk;
   int ijk_offset[3]={0,0,0};
   volrenderdata *vr;
-  float *smokedata_local, *firedata_local, *lightdata_local;
+  float *smokedata_local, *firedata_local;
 
   vr = &meshi->volrenderinfo;
   smokedata_local = vr->smokedataptr;
   firedata_local  = vr->firedataptr;
-  lightdata_local = vr->lightdataptr;
 
   //  glGetIntegerv(GL_MAX_TEXTURE_COORDS,&ntextures);
   ni = meshi->ibar+1;
@@ -1799,11 +2315,6 @@ void UpdateVolsmokeTexture(meshdata *meshi){
   if(firedata_local!=NULL){
     glActiveTexture(GL_TEXTURE1);
     glTexSubImage3D(GL_TEXTURE_3D,0,ijk_offset[0],ijk_offset[1],ijk_offset[2],ni,nj,nk,GL_RED, GL_FLOAT, firedata_local);
-  }
-
-  if(lightdata_local!=NULL){
-    glActiveTexture(GL_TEXTURE5);
-    glTexSubImage3D(GL_TEXTURE_3D, 0, ijk_offset[0], ijk_offset[1], ijk_offset[2], ni, nj, nk, GL_RED, GL_FLOAT, lightdata_local);
   }
 
   if(meshi->f_iblank_cell!=NULL){
@@ -2117,23 +2628,6 @@ void GetVolsmokeAllTimes(volrenderdata *vr){
       }
       fclose(volstream);
     }
-
-// light positions
-
-    volstream = NULL;
-    if(vr->lightslice->vol_file!=NULL)volstream = fopen(vr->lightslice->vol_file, "rb");
-    if(volstream!=NULL){
-      FSEEK(volstream, 12, SEEK_SET);
-      for(ii = 0;ii<vr->ntimes;ii++){
-        int ncompressed;
-
-        vr->lightpos[ii] = FTELL(volstream);
-        if(fread(buffer, 1, 32, volstream)!=32)break;
-        ncompressed = *(int *)(buffer+8)-32;
-        if(FSEEK(volstream, ncompressed, SEEK_CUR)!=0)break;
-      }
-      fclose(volstream);
-    }
   }
 }
 
@@ -2143,7 +2637,7 @@ void FreeVolsmokeFrame(volrenderdata *vr, int framenum){
   int i;
 
   for(i=0;i<framenum;i++){
-    void *smokedataptr, *firedataptr, *lightdataptr;
+    void *smokedataptr, *firedataptr;
 
     smokedataptr=vr->smokedataptrs[i];
     FREEMEMORY(smokedataptr);
@@ -2152,34 +2646,20 @@ void FreeVolsmokeFrame(volrenderdata *vr, int framenum){
     firedataptr=vr->firedataptrs[i];
     FREEMEMORY(firedataptr);
     vr->firedataptrs[i]=NULL;
-
-    lightdataptr = vr->lightdataptrs[i];
-    FREEMEMORY(lightdataptr);
-    vr->lightdataptrs[i] = NULL;
   }
 }
 
 /* ------------------ ReadVolsmokeFrame ------------------------ */
 #define VOL_OFFSET 32
 void ReadVolsmokeFrame(volrenderdata *vr, int framenum, int *first){
-#ifdef pp_VOLCO2
-  slicedata *fireslice, *smokeslice, *lightslice, *co2slice;
-#else
-  slicedata *fireslice, *smokeslice, *lightslice;
-#endif
+  slicedata *fireslice, *smokeslice;
   FILE *SLICEFILE;
   int framesize,framesize2;
   LINT skip_local;
-  float time_local, *smokeframe_data=NULL, *fireframe_data=NULL, *lightframe_data=NULL;
-#ifdef pp_VOLCO2
-  unsigned char *c_smokedata_compressed=NULL, *c_firedata_compressed=NULL, *c_lightdata_compressed=NULL, *c_co2data_compressed = NULL;
-  unsigned char *c_firedata_compressed2=NULL, *c_lightdata_compressed2=NULL, *c_co2data_compressed2 = NULL;
-  uLongf              n_smokedata_compressed,     n_firedata_compressed, n_lightdata_compressed, n_co2data_compressed;
-#else
-  unsigned char *c_smokedata_compressed=NULL, *c_firedata_compressed=NULL, *c_lightdata_compressed=NULL;
-  unsigned char *c_firedata_compressed2=NULL, *c_lightdata_compressed2=NULL;
-  uLongf              n_smokedata_compressed,     n_firedata_compressed, n_lightdata_compressed;
-#endif
+  float time_local, *smokeframe_data=NULL, *fireframe_data=NULL;
+  unsigned char *c_smokedata_compressed=NULL, *c_firedata_compressed=NULL;
+  unsigned char *c_firedata_compressed2=NULL;
+  uLongf              n_smokedata_compressed,     n_firedata_compressed;
   unsigned int size_before=0, size_after=0;
   FILE *volstream=NULL;
   int print = 0;
@@ -2188,10 +2668,6 @@ void ReadVolsmokeFrame(volrenderdata *vr, int framenum, int *first){
 
   smokeslice = vr->smokeslice;
   fireslice  = vr->fireslice;
-  lightslice = vr->lightslice;
-#ifdef pp_VOLCO2
-  co2slice   = vr->co2slice;
-#endif
 
   framesize = smokeslice->nslicei*smokeslice->nslicej*smokeslice->nslicek;
   framesize2 = framesize+VOL_OFFSET;
@@ -2221,39 +2697,10 @@ void ReadVolsmokeFrame(volrenderdata *vr, int framenum, int *first){
       NewMemory((void **)&c_firedata_compressed2,n_firedata_compressed);
       fireframe_data=vr->firedata_full;
     }
-
-    if(lightslice!=NULL){
-      n_lightdata_compressed = 1.01*framesize2+600;
-      if(vr->lightdata_full==NULL){
-        NewMemory((void **)&vr->lightdata_full, framesize*sizeof(float));
-        NewMemory((void **)&vr->lightdata_view, framesize*sizeof(float));
-        NewMemory((void **)&vr->c_lightdata_view, framesize2);
-      }
-      NewMemory((void **)&c_lightdata_compressed, n_lightdata_compressed);
-      NewMemory((void **)&c_lightdata_compressed2, n_lightdata_compressed);
-      lightframe_data = vr->lightdata_full;
-    }
-#ifdef pp_VOLCO2
-    if(co2slice!=NULL){
-      n_co2data_compressed = 1.01*framesize2+600;
-      if(vr->co2data_full==NULL){
-        NewMemory((void **)&vr->co2data_full, framesize*sizeof(float));
-        NewMemory((void **)&vr->co2data_view, framesize*sizeof(float));
-        NewMemory((void **)&vr->c_co2data_view, framesize2);
-      }
-      NewMemory((void **)&c_co2data_compressed, n_co2data_compressed);
-      NewMemory((void **)&c_co2data_compressed2, n_co2data_compressed);
-      co2frame_data = vr->co2data_full;
-    }
-#endif
   }
   else{
     NewMemory((void **)&smokeframe_data, framesize*sizeof(float));
     NewMemory((void **)&fireframe_data,  framesize*sizeof(float));
-    NewMemory((void **)&lightframe_data, framesize*sizeof(float));
-#ifdef pp_VOLCO2
-    NewMemory((void **)&co2frame_data,   framesize*sizeof(float));
-#endif
   }
 
   if(load_volcompressed==1&&vr->smokeslice->vol_file!=NULL){
@@ -2380,114 +2827,6 @@ void ReadVolsmokeFrame(volrenderdata *vr, int framenum, int *first){
       volstream=NULL;
     }
   }
-  if(lightslice!=NULL){
-    if(load_volcompressed==1&&vr->lightslice->vol_file!=NULL){
-      volstream = fopen(vr->lightslice->vol_file, "rb");
-    }
-    if(volstream==NULL){
-      SLICEFILE = fopen(lightslice->reg_file, "rb");
-      if(SLICEFILE!=NULL){
-        FSEEK(SLICEFILE, skip_local, SEEK_SET); // skip from beginning of file
-
-        FORTVOLSLICEREAD(&time_local, 1);
-        vr->times[framenum] = time_local;
-        FORTVOLSLICEREAD(lightframe_data, framesize);
-        CheckMemory;
-        size_before += sizeof(float)*framesize;
-        if(vr->is_compressed==1){
-          float valmin = 20.0, valmax = 1400.0;
-
-          CompressVolSliceFrame(lightframe_data, framesize, time_local, &valmin, &valmax,
-            &c_lightdata_compressed, &n_lightdata_compressed);
-          size_after += n_lightdata_compressed;
-          vr->lightdataptrs[framenum] = c_lightdata_compressed;
-          vr->nlightdata_compressed[framenum] = n_lightdata_compressed;
-        }
-        else{
-          vr->lightdataptrs[framenum] = lightframe_data;
-        }
-        vr->lightdataptr = vr->lightdataptrs[framenum];
-        if(print==1)PRINTF(", light");
-        fclose(SLICEFILE);
-      }
-    }
-    else{
-      unsigned char buffer[32];
-      int ncompressed;
-
-      // 1,completion,version
-      // 1,version,n_data_compressedm32,nbytes,n_data_in,time_local,valmin,valmax,data ....
-      FSEEK(volstream, vr->lightpos[framenum], SEEK_SET);
-      fread(buffer, 8, 4, volstream);
-      ncompressed = *(int *)(buffer+8);
-      time_local = *(float *)(buffer+20);
-      FSEEK(volstream, vr->lightpos[framenum], SEEK_SET);
-      NewMemory((void **)&c_lightdata_compressed, ncompressed);
-      fread(c_lightdata_compressed, 1, ncompressed, volstream);
-      vr->lightdataptrs[framenum] = c_lightdata_compressed;
-      vr->lightdataptr = vr->lightdataptrs[framenum];
-
-      vr->times[framenum] = time_local;
-      if(print==1)PRINTF(", light");
-      fclose(volstream);
-      volstream = NULL;
-    }
-  }
-#ifdef pp_VOLCO2
-  if(co2slice!=NULL){
-    if(load_volcompressed==1&&vr->co2slice->vol_file!=NULL){
-      volstream = fopen(vr->co2slice->vol_file, "rb");
-    }
-    if(volstream==NULL){
-      SLICEFILE = fopen(co2slice->reg_file, "rb");
-      if(SLICEFILE!=NULL){
-        FSEEK(SLICEFILE, skip_local, SEEK_SET); // skip from beginning of file
-
-        FORTVOLSLICEREAD(&time_local, 1);
-        vr->times[framenum] = time_local;
-        FORTVOLSLICEREAD(co2frame_data, framesize);
-        CheckMemory;
-        size_before += sizeof(float)*framesize;
-        if(vr->is_compressed==1){
-          float valmin = 20.0, valmax = 1400.0;
-
-          CompressVolSliceFrame(co2frame_data, framesize, time_local, &valmin, &valmax,
-            &c_co2data_compressed, &n_co2data_compressed);
-          size_after += n_co2data_compressed;
-          vr->co2dataptrs[framenum] = c_co2data_compressed;
-          vr->nco2data_compressed[framenum] = n_co2data_compressed;
-        }
-        else{
-          vr->co2dataptrs[framenum] = co2frame_data;
-        }
-        vr->co2dataptr = vr->co2dataptrs[framenum];
-        if(print==1)PRINTF(", co2");
-        fclose(SLICEFILE);
-      }
-    }
-    else{
-      unsigned char buffer[32];
-      int ncompressed;
-
-      // 1,completion,version
-      // 1,version,n_data_compressedm32,nbytes,n_data_in,time_local,valmin,valmax,data ....
-      FSEEK(volstream, vr->co2pos[framenum], SEEK_SET);
-      fread(buffer, 8, 4, volstream);
-      ncompressed = *(int *)(buffer+8);
-      time_local = *(float *)(buffer+20);
-      FSEEK(volstream, vr->co2pos[framenum], SEEK_SET);
-      NewMemory((void **)&c_co2data_compressed, ncompressed);
-      fread(c_co2data_compressed, 1, ncompressed, volstream);
-      vr->co2dataptrs[framenum] = c_co2data_compressed;
-      vr->co2dataptr = vr->co2dataptrs[framenum];
-
-      vr->times[framenum] = time_local;
-      if(print==1)PRINTF(", co2");
-      fclose(volstream);
-      volstream = NULL;
-    }
-  }
-#endif
   CheckMemory;
   vr->dataready[framenum]=1;
   if(vr->is_compressed==1&&load_volcompressed==0){
@@ -2549,12 +2888,10 @@ void ReadVolsmokeAllFrames(volrenderdata *vr){
   if(vr->is_compressed==1||load_volcompressed==1){//xyz BEGIN
     vr->smokedataptr = vr->smokedata_view;
     vr->firedataptr = vr->firedata_view;
-    vr->lightdataptr = vr->lightdata_view;
   }
   else{
     vr->smokedataptr = vr->smokedataptrs[0];  //*** hack
     vr->firedataptr = vr->firedataptrs[0];
-    vr->lightdataptr = vr->lightdataptrs[0];
   }
   vr->loaded=1;
   vr->display=1;
@@ -2609,12 +2946,10 @@ void ReadVolsmokeFrameAllMeshes(int framenum, supermeshdata *smesh){
       if(vr->is_compressed==1||load_volcompressed==1){
         vr->smokedataptr = vr->smokedata_view;  //*** hack
         vr->firedataptr  = vr->firedata_view;    //*** hack
-        vr->lightdataptr = vr->lightdata_view;  //*** hack
       }
       else{
         vr->smokedataptr = vr->smokedataptrs[0];  //*** hack
         vr->firedataptr  = vr->firedataptrs[0];
-        vr->lightdataptr = vr->lightdataptrs[0];
       }
     }
     vr->loaded=1;
@@ -2732,24 +3067,6 @@ void InitVolsmokeTexture(meshdata *meshi){
     GL_RED, GL_FLOAT, meshi->volfire_texture_buffer);
 
 // define light texture
-
-  glActiveTexture(GL_TEXTURE5);
-  glGenTextures(1, &meshi->vollight_texture_id);
-  glBindTexture(GL_TEXTURE_3D, meshi->vollight_texture_id);
-  glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-  glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-  glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-  if(meshi->vollight_texture_buffer==NULL){
-    NewMemory((void **)&meshi->vollight_texture_buffer, nx*ny*nz*sizeof(float));
-  }
-  for(i = 0;i<nx*ny*nz;i++){
-    meshi->vollight_texture_buffer[i] = 1.0;
-  }
-  glTexImage3D(GL_TEXTURE_3D, 0, GL_R32F,
-    nx, ny, nz, border_size,
-    GL_RED, GL_FLOAT, meshi->vollight_texture_buffer);
 
   if(volsmoke_colormap_id_defined==-1){
     volsmoke_colormap_id_defined = 1;

@@ -25,7 +25,10 @@
 
 
 //#define pp_COLOR_HIDE         // add checkbox to hide/unhide scene when editing a colorbar
-#define pp_COLOR_PLOT2D     // add option to plot CIELab distances
+//#define pp_COLOR_PLOT2D     // add option to plot CIELab distances
+//#define pp_GAMMA            // show gamma correction checkbox
+#define pp_BLACKBODY        // use blackbody theory for generating fire colors
+// pp_BLACKBODY_OUT    // output generated blackbody color data 
 
 //#define pp_BNDF               // merge geometry and structured boundary files in load menus
 
