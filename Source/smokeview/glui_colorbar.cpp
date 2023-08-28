@@ -61,7 +61,7 @@ GLUI_Checkbox *CHECKBOX_cb_interp = NULL;
 GLUI_EditText *EDITTEXT_colorbar_label    =NULL;
 GLUI_EditText *EDITTEXT_colorbar_filename = NULL;
 
-GLUI_StaticText *STATICTEXT_left=NULL, *STATICTEXT_right=NULL;
+GLUI_StaticText *STATICTEXT_left=NULL, *STATICTEXT_right=NULL, *STATICTEXT_node_label=NULL;
 
 int cb_usecolorbar_extreme;
 
@@ -95,6 +95,10 @@ int cb_usecolorbar_extreme;
 
 void ColorbarGeneral2Simple(colorbardata *cbi){
   int i;
+  char label_nodes[sizeof(GLUI_String)];
+
+  sprintf(label_nodes, "nodes: %i", cbi->nnodes); 
+  STATICTEXT_node_label->set_name(label_nodes);
 
   if(cbi->nnodes > 5||cbi->nnodes<2){
     for(i = 0;i < 15;i++){
@@ -105,8 +109,12 @@ void ColorbarGeneral2Simple(colorbardata *cbi){
     return;
   }
   ROLLOUT_simple_point->open();
-  ROLLOUT_general_point->close();
   colorbar_simple_type = cbi->nnodes - 1;
+  if(cbi->nnodes == 4){
+    if(cbi->node_index[1] == 127 && cbi->node_index[2] == 128){
+      colorbar_simple_type = 5;
+    }
+  }
   switch(cbi->nnodes){
   case 2:
     for(i = 0;i < 3;i++){
@@ -903,6 +911,12 @@ extern "C" void GluiColorbarSetup(int main_window){
   SPINNER_rgb[0] = glui_colorbar->add_spinner_to_panel(PANEL_cb4, _("red"), GLUI_SPINNER_INT, cb_rgb, COLORBAR_RGB, ColorbarCB);
   SPINNER_rgb[1] = glui_colorbar->add_spinner_to_panel(PANEL_cb4,_("green"),GLUI_SPINNER_INT,cb_rgb+1,COLORBAR_RGB,ColorbarCB);
   SPINNER_rgb[2] = glui_colorbar->add_spinner_to_panel(PANEL_cb4,_("blue"), GLUI_SPINNER_INT,cb_rgb+2,COLORBAR_RGB,ColorbarCB);
+  
+  char label_nodes[sizeof(GLUI_String)];
+  
+  strcpy(label_nodes, "nodes");
+  STATICTEXT_node_label = glui_colorbar->add_statictext_to_panel(PANEL_cb4, label_nodes);
+
 
   SPINNER_rgb[0]->set_int_limits(0,255);
   SPINNER_rgb[1]->set_int_limits(0,255);

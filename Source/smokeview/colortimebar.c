@@ -1501,7 +1501,7 @@ void InitDefaultColorbars(int nini){
   cbi->node_rgb[1]=0;
   cbi->node_rgb[2]=255;
 
-  cbi->node_index[1]=128;
+  cbi->node_index[1]=127;
   cbi->node_rgb[3]=0;
   cbi->node_rgb[4]=255;
   cbi->node_rgb[5]=255;
@@ -1815,7 +1815,7 @@ void InitDefaultColorbars(int nini){
 
   cbi->node_index[0] = 0;
   cbi->node_index[1] = 127;
-  cbi->node_index[2] = 127;
+  cbi->node_index[2] = 128;
   cbi->node_index[3] = 255;
   for(i = 0; i < 12; i++){
     cbi->node_rgb[i] = colorsplit[i];
