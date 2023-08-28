@@ -116,6 +116,9 @@ void ColorbarGeneral2Simple(colorbardata *cbi){
     }
   }
   switch(cbi->nnodes){
+  default:
+    ASSERT(FFALSE);
+    break;
   case 2:
     for(i = 0;i < 3;i++){
       cb_simple_rgb[i] = (int)cbi->node_rgb[i];
