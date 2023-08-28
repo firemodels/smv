@@ -445,7 +445,7 @@ extern "C" void ColorbarCB(int var){
     cbi = colorbarinfo + colorbartype;
     if(colorbarpoint<0 || colorbarpoint>cbi->nnodes - 1)return;
 
-    if(cbi->nnodes < 2)return;
+    if(cbi->nnodes <= 1)return;
     for(i = colorbarpoint + 1;i < cbi->nnodes;i++){
       unsigned char *rgb1, *rgb2_local;
 
