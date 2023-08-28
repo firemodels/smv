@@ -449,6 +449,8 @@ SVEXTERN int SVDECL(solid_ht3d, 0);
 SVEXTERN int SVDECL(load_incremental, 0);
 SVEXTERN int SVDECL(show_tour_hint, 1);
 SVEXTERN int cb_rgb[3];
+SVEXTERN int cb_simple_rgb[15];
+SVEXTERN int SVDECL(colorbar_simple_type, 0);
 SVEXTERN float SVDECL(geom_linewidth, 2.0);
 SVEXTERN float SVDECL(geom_pointsize, 6.0);
 SVEXTERN int SVDECL(slice_opacity_adjustment, 0);
