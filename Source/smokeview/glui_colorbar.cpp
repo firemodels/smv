@@ -351,6 +351,9 @@ extern "C" void ColorbarCB(int var){
     break;
   case COLORBAR_SIMPLE_TYPE:
     switch(colorbar_simple_type){
+      default:
+      ASSERT(FFALSE);
+      break;
       case 0:
       for(type=0;type<5;type++){
         for(i=0;i<3;i++){
@@ -828,7 +831,6 @@ extern "C" void GluiColorbarSetup(int main_window){
 extern "C" void ColorbarGlobal2Local(void){
   colorbardata *cbi;
   unsigned char *rgb_local;
-  int icolorbar;
 
   if(colorbartype<0||colorbartype>=ncolorbars)return;
 
@@ -842,7 +844,6 @@ extern "C" void ColorbarGlobal2Local(void){
 
   strcpy(colorbar_label,cbi->menu_label);
   EDITTEXT_colorbar_label->set_text(colorbar_label);
-  icolorbar=LISTBOX_colorbar_edit->get_int_val();
 
   BUTTON_delete->enable();
   EDITTEXT_colorbar_label->enable();
