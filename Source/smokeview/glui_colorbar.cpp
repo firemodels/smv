@@ -689,11 +689,11 @@ extern "C" void ColorbarCB(int var){
     break;
   case COLORBAR_SAVE:
     if(colorbartype < ndefaultcolorbars){
-      int colorbartype_save;
+      int cb_save;
 
-      colorbartype_save = colorbartype;
+      cb_save = colorbartype;
       ColorbarCB(COLORBAR_COPY);
-      memcpy(colorbarinfo + colorbartype_save, colorbarcopyinfo + colorbartype_save, sizeof(colorbardata));
+      memcpy(colorbarinfo + cb_save, colorbarcopyinfo + cb_save, sizeof(colorbardata));
     }
     break;
   case COLORBAR_ADJUST_LAB:
