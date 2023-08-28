@@ -88,6 +88,61 @@ int cb_usecolorbar_extreme;
 #define COLORBAR_NEW                 34
 #define COLORBAR_SIMPLE_RGB          35
 #define COLORBAR_SIMPLE_TYPE         36
+#define COLORBAR_SIMPLE_ABLE         37
+
+
+/* ------------------ ColorbarSimple2General ------------------------ */
+
+void ColorbarGeneral2Simple(colorbardata *cbi){
+  int i;
+
+  if(cbi->nnodes > 5||cbi->nnodes<2){
+    for(i = 0;i < 15;i++){
+      SPINNER_simple_rgb[i]->disable();
+    }
+    ROLLOUT_simple_point->close();
+    ROLLOUT_general_point->open();
+    return;
+  }
+  ROLLOUT_simple_point->open();
+  ROLLOUT_general_point->close();
+  colorbar_simple_type = cbi->nnodes - 1;
+  switch(cbi->nnodes){
+  case 2:
+    for(i = 0;i < 3;i++){
+      cb_simple_rgb[i] = (int)cbi->node_rgb[i];
+    }
+    for(i = 0;i < 3;i++){
+      cb_simple_rgb[12+i] = (int)cbi->node_rgb[3+i];
+    }
+    break;
+  case 3:
+    for(i = 0;i < 6;i++){
+      cb_simple_rgb[i] = (int)cbi->node_rgb[i];
+    }
+    for(i = 0;i < 3;i++){
+      cb_simple_rgb[12 + i] = (int)cbi->node_rgb[6+i];
+    }
+    break;
+  case 4:
+    for(i = 0;i < 9;i++){
+      cb_simple_rgb[i] = (int)cbi->node_rgb[i];
+    }
+    for(i = 0;i < 3;i++){
+      cb_simple_rgb[12 + i] = (int)cbi->node_rgb[9+i];
+    }
+    break;
+  case 5:
+    for(i = 0;i < 15;i++){
+      cb_simple_rgb[i] = (int)cbi->node_rgb[i];
+    }
+    break;
+  }
+  for(i = 0;i < 15;i++){
+    SPINNER_simple_rgb[i]->set_int_val(cb_simple_rgb[i]);
+  }
+  RADIO_colorbar_simple_type->set_int_val(colorbar_simple_type);
+}
 
 /* ------------------ ColorbarSimple2General ------------------------ */
 
@@ -137,7 +192,7 @@ void ColorbarSimple2General(colorbardata *cbi){
     cbi->node_index[1] = 64;
     cbi->node_index[2] = 128;
     cbi->node_index[3] = 192;
-    cbi->node_index[3] = 255;
+    cbi->node_index[4] = 255;
     break;
   case 5: // split
     cbi->nnodes = 4;
@@ -158,7 +213,6 @@ void ColorbarSimple2General(colorbardata *cbi){
     cbi->node_rgb[i] = (unsigned char)node_rgb[i];
   }
   if(SPINNER_colorindex==NULL)return;
-  ColorbarCB(COLORBAR_LIST);
 }
 
 /* ------------------ UpdateColorbarEdit ------------------------ */
@@ -375,6 +429,8 @@ extern "C" void ColorbarCB(int var){
     UpdateRGBColors(COLORBAR_INDEX_NONE);
 
     if(colorbarpoint == cbi->nnodes)colorbarpoint = cbi->nnodes - 1;
+    ColorbarGeneral2Simple(colorbarinfo + colorbartype);
+    ColorbarCB(COLORBAR_SIMPLE_ABLE);
     break;
   case COLORBAR_DELETEPOINT:
     if(colorbartype < ndefaultcolorbars || colorbartype >= ncolorbars)return;
@@ -396,6 +452,8 @@ extern "C" void ColorbarCB(int var){
     RemapColorbar(cbi);
     UpdateRGBColors(COLORBAR_INDEX_NONE);
     if(colorbarpoint == cbi->nnodes)colorbarpoint = cbi->nnodes - 1;
+    ColorbarGeneral2Simple(colorbarinfo + colorbartype);
+    ColorbarCB(COLORBAR_SIMPLE_ABLE);
     break;
   case COLORBAR_RGB2:
     FRgb2Lab(cb_frgb2, cb_lab2);
@@ -419,7 +477,8 @@ extern "C" void ColorbarCB(int var){
     }
     ColorbarCB(COLORBAR_LIST);
     break;
-  case COLORBAR_SIMPLE_TYPE:
+  case COLORBAR_SIMPLE_ABLE:
+    if(colorbarinfo[colorbartype].nnodes > 5)break;
     switch(colorbar_simple_type){
       default:
       ASSERT(FFALSE);
@@ -428,7 +487,7 @@ extern "C" void ColorbarCB(int var){
       for(type=0;type<5;type++){
         for(i=0;i<3;i++){
           int ii;
-          
+
           ii = 3*type + i;
           if(type==0){
             SPINNER_simple_rgb[ii]->enable();
@@ -438,13 +497,12 @@ extern "C" void ColorbarCB(int var){
           }
         }
       }
-      
       break;
       case 1:
       for(type = 0;type < 5;type++){
         for(i=0;i<3;i++){
           int ii;
-          
+
           ii = 3*type + i;
           if(type==0||type==4){
             SPINNER_simple_rgb[ii]->enable();
@@ -459,7 +517,7 @@ extern "C" void ColorbarCB(int var){
       for(type = 0;type < 5;type++){
         for(i=0;i<3;i++){
           int ii;
-          
+
           ii = 3*type + i;
           if(type == 0 || type==1||type == 4){
             SPINNER_simple_rgb[ii]->enable();
@@ -474,7 +532,7 @@ extern "C" void ColorbarCB(int var){
       for(type=0;type<5;type++){
         for(i=0;i<3;i++){
           int ii;
-          
+
           ii = 3*type + i;
           if(type == 0 || type==1||type==2||type == 4){
             SPINNER_simple_rgb[ii]->enable();
@@ -489,7 +547,7 @@ extern "C" void ColorbarCB(int var){
       for(type = 0;type < 5;type++){
         for(i=0;i<3;i++){
           int ii;
-          
+
           ii = 3*type + i;
           if(type<=4){
             SPINNER_simple_rgb[ii]->enable();
@@ -504,7 +562,7 @@ extern "C" void ColorbarCB(int var){
       for(type = 0;type < 5;type++){
         for(i=0;i<3;i++){
           int ii;
-          
+
           ii = 3*type + i;
           if(type<=3){
             SPINNER_simple_rgb[ii]->enable();
@@ -516,7 +574,11 @@ extern "C" void ColorbarCB(int var){
       }
       break;
     }
+    break;
+  case COLORBAR_SIMPLE_TYPE:
+    ColorbarCB(COLORBAR_SIMPLE_ABLE);
     ColorbarSimple2General(colorbarinfo + colorbartype);
+    ColorbarCB(COLORBAR_LIST);
     break;
   case COLORBAR_SIMPLE_RGB:
     ColorbarSimple2General(colorbarinfo + colorbartype);
@@ -543,6 +605,8 @@ extern "C" void ColorbarCB(int var){
     SetColorbarListBound(colorbartype);
     ColorbarMenu(colorbartype);
     ColorbarGlobal2Local();
+    ColorbarGeneral2Simple(colorbarinfo + colorbartype);
+    ColorbarCB(COLORBAR_SIMPLE_ABLE);
     break;
   case COLORBAR_LISTA:
     if(LISTBOX_colorbar_toggle_edit1!=NULL)LISTBOX_colorbar_toggle_edit1->set_int_val(index_colorbar1);
@@ -710,6 +774,15 @@ extern "C" void UpdateColorbarListEdit(int flag, int del){
   strcpy(label, "user defined"); AddColorbarListEdit(LISTBOX_cb, -7, label, &max_LISTBOX_colorbar_edit);
 }
 
+/* ------------------ UpdateColorbarList ------------------------ */
+
+extern "C" void UpdateColorbarList(void){
+  ColorbarCB(COLORBAR_LIST);
+  ColorbarCB(COLORBAR_LISTA);
+  ColorbarCB(COLORBAR_LISTB);
+  ColorbarCB(COLORBAR_SIMPLE_TYPE);
+}
+
 /* ------------------ GluiColorbarSetup ------------------------ */
 
 extern "C" void GluiColorbarSetup(int main_window){
@@ -780,29 +853,26 @@ extern "C" void GluiColorbarSetup(int main_window){
 
   strcpy(column_label, "               red");
   glui_colorbar->add_statictext_to_panel(PANEL_simple_2, column_label);
-  SPINNER_simple_rgb[0]  = glui_colorbar->add_spinner_to_panel(PANEL_simple_2, "", GLUI_SPINNER_INT, cb_simple_rgb+0, COLORBAR_SIMPLE_RGB, ColorbarCB);
-  SPINNER_simple_rgb[3]  = glui_colorbar->add_spinner_to_panel(PANEL_simple_2, "", GLUI_SPINNER_INT, cb_simple_rgb+3, COLORBAR_SIMPLE_RGB, ColorbarCB);
-  SPINNER_simple_rgb[6]  = glui_colorbar->add_spinner_to_panel(PANEL_simple_2, "", GLUI_SPINNER_INT, cb_simple_rgb+6, COLORBAR_SIMPLE_RGB, ColorbarCB);
-  SPINNER_simple_rgb[9]  = glui_colorbar->add_spinner_to_panel(PANEL_simple_2, "", GLUI_SPINNER_INT, cb_simple_rgb+9, COLORBAR_SIMPLE_RGB, ColorbarCB);
-  SPINNER_simple_rgb[12] = glui_colorbar->add_spinner_to_panel(PANEL_simple_2, "", GLUI_SPINNER_INT, cb_simple_rgb+12, COLORBAR_SIMPLE_RGB, ColorbarCB);
+  for(i=12;i>=0;i-=3){
+    char cb_label[sizeof(GLUI_String)];
+
+    sprintf(cb_label, "node %i", i/3 + 1);
+    SPINNER_simple_rgb[i] = glui_colorbar->add_spinner_to_panel(PANEL_simple_2, cb_label, GLUI_SPINNER_INT, cb_simple_rgb+i, COLORBAR_SIMPLE_RGB, ColorbarCB);
+  }
 
   glui_colorbar->add_column_to_panel(PANEL_simple_2,false);
   strcpy(column_label, "               green");
   glui_colorbar->add_statictext_to_panel(PANEL_simple_2, column_label);
-  SPINNER_simple_rgb[1]  = glui_colorbar->add_spinner_to_panel(PANEL_simple_2, "", GLUI_SPINNER_INT, cb_simple_rgb + 1, COLORBAR_SIMPLE_RGB, ColorbarCB);
-  SPINNER_simple_rgb[4]  = glui_colorbar->add_spinner_to_panel(PANEL_simple_2, "", GLUI_SPINNER_INT, cb_simple_rgb + 4, COLORBAR_SIMPLE_RGB, ColorbarCB);
-  SPINNER_simple_rgb[7]  = glui_colorbar->add_spinner_to_panel(PANEL_simple_2, "", GLUI_SPINNER_INT, cb_simple_rgb + 7, COLORBAR_SIMPLE_RGB, ColorbarCB);
-  SPINNER_simple_rgb[10] = glui_colorbar->add_spinner_to_panel(PANEL_simple_2, "", GLUI_SPINNER_INT, cb_simple_rgb + 10, COLORBAR_SIMPLE_RGB, ColorbarCB);
-  SPINNER_simple_rgb[13] = glui_colorbar->add_spinner_to_panel(PANEL_simple_2, "", GLUI_SPINNER_INT, cb_simple_rgb + 13, COLORBAR_SIMPLE_RGB, ColorbarCB);
+  for(i=13;i>=1;i-=3){
+    SPINNER_simple_rgb[i] = glui_colorbar->add_spinner_to_panel(PANEL_simple_2, "", GLUI_SPINNER_INT, cb_simple_rgb+i, COLORBAR_SIMPLE_RGB, ColorbarCB);
+  }
 
   glui_colorbar->add_column_to_panel(PANEL_simple_2,false);
   strcpy(column_label, "               blue");
   glui_colorbar->add_statictext_to_panel(PANEL_simple_2, column_label);
-  SPINNER_simple_rgb[2]  = glui_colorbar->add_spinner_to_panel(PANEL_simple_2, "", GLUI_SPINNER_INT, cb_simple_rgb + 2, COLORBAR_SIMPLE_RGB, ColorbarCB);
-  SPINNER_simple_rgb[5]  = glui_colorbar->add_spinner_to_panel(PANEL_simple_2, "", GLUI_SPINNER_INT, cb_simple_rgb + 5, COLORBAR_SIMPLE_RGB, ColorbarCB);
-  SPINNER_simple_rgb[8]  = glui_colorbar->add_spinner_to_panel(PANEL_simple_2, "", GLUI_SPINNER_INT, cb_simple_rgb + 8, COLORBAR_SIMPLE_RGB, ColorbarCB);
-  SPINNER_simple_rgb[11] = glui_colorbar->add_spinner_to_panel(PANEL_simple_2, "", GLUI_SPINNER_INT, cb_simple_rgb + 11, COLORBAR_SIMPLE_RGB, ColorbarCB);
-  SPINNER_simple_rgb[14] = glui_colorbar->add_spinner_to_panel(PANEL_simple_2, "", GLUI_SPINNER_INT, cb_simple_rgb + 14, COLORBAR_SIMPLE_RGB, ColorbarCB);
+  for(i=14;i>=2;i-=3){
+    SPINNER_simple_rgb[i] = glui_colorbar->add_spinner_to_panel(PANEL_simple_2, "", GLUI_SPINNER_INT, cb_simple_rgb+i, COLORBAR_SIMPLE_RGB, ColorbarCB);
+  }
 
   glui_colorbar->add_column_to_panel(PANEL_simple_2, false);
   strcpy(column_label, "               ");
@@ -814,8 +884,6 @@ extern "C" void GluiColorbarSetup(int main_window){
   glui_colorbar->add_radiobutton_to_group(RADIO_colorbar_simple_type, "4 nodes");
   glui_colorbar->add_radiobutton_to_group(RADIO_colorbar_simple_type, "5 nodes");
   glui_colorbar->add_radiobutton_to_group(RADIO_colorbar_simple_type, "split");
-
-  ColorbarCB(COLORBAR_SIMPLE_TYPE);
 
   ROLLOUT_general_point = glui_colorbar->add_rollout_to_panel(PANEL_edit_colorbar, "General(arbitrary number of nodes)");
   ROLLOUT_general_point->close();
@@ -850,8 +918,7 @@ extern "C" void GluiColorbarSetup(int main_window){
   LISTBOX_colorbar_toggle_edit2->set_int_val(index_colorbar2);
 
   glui_colorbar->add_button_to_panel(PANEL_toggle, _("toggle"), COLORBAR_TOGGLE, ColorbarCB);
-  ColorbarCB(COLORBAR_LISTA);
-  ColorbarCB(COLORBAR_LISTB);
+  update_colorbar_list = 1;
 
   PANEL_cb_display = glui_colorbar->add_panel("Display");
   RADIO_colorbar_coord_type = glui_colorbar->add_radiogroup_to_panel(PANEL_cb_display,&colorbar_coord_type);
@@ -910,6 +977,7 @@ extern "C" void ColorbarGlobal2Local(void){
   cbi = colorbarinfo + colorbartype;
   colorbarpoint=cbi->nodehilight;
 
+  if(SPINNER_colorindex == NULL)return;
   SPINNER_colorindex->set_int_val(cbi->node_index[colorbarpoint]);
 
   BUTTON_node_next->enable();

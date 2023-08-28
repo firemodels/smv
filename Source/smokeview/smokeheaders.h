@@ -41,6 +41,8 @@ EXTERNCPP void InitHvacData(hvacvaldata *hi);
 EXTERNCPP void ReadHVACData(int flag);
 EXTERNCPP int IsHVACVisible(void);
 EXTERNCPP void UpdateHVACDuctColorLabels(int index);
+EXTERNCPP void UpdateColorbarList(void);
+
 EXTERNCPP void UpdateHVACNodeColorLabels(int index);
 EXTERNCPP void UpdateAllHVACColorLabels(void);
 

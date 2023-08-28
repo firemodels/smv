@@ -2487,6 +2487,10 @@ void UpdateDisplay(void){
     update_glui_bounds = 0;
     UpdateGluiBounds();
   }
+  if(update_colorbar_list == 1){
+    UpdateColorbarList();
+    update_colorbar_list = 0;
+  }
   if(update_glui_bounds==1){
     update_glui_bounds = 0;
     UpdateGluiBounds();
