@@ -1260,8 +1260,8 @@ int AddColorbar(int icolorbar){
   cb_to = colorbarinfo + ncolorbars - 1;
 
   memcpy(cb_to, cb_from, sizeof(colorbardata));
-  strcpy(cb_to->menu_label, "Copy of ");
-  strcat(cb_to->menu_label, cb_from->menu_label);
+  strcpy(cb_to->menu_label, cb_from->menu_label);
+  strcat(cb_to->menu_label, "_copy");
   strcpy(cb_label, cb_to->menu_label);
   strcpy(cb_to->colorbar_type, "user defined");
   cb_to->interp = INTERP_LAB;
@@ -1312,6 +1312,7 @@ void InitDefaultColorbars(int nini){
   FREEMEMORY(colorbarinfo);
   ncolorbars=ndefaultcolorbars;
   NewMemory((void **)&colorbarinfo,(ncolorbars+nini)*sizeof(colorbardata));
+  NewMemory(( void ** )&colorbarcopyinfo, (ncolorbars + nini) * sizeof(colorbardata));
   UpdateCurrentColorbar(colorbarinfo + colorbartype);
 
   cbi = colorbarinfo;
@@ -1965,6 +1966,7 @@ void InitDefaultColorbars(int nini){
       cbi->interp = INTERP_LAB;
     }
   }
+  memcpy(colorbarcopyinfo, colorbarinfo, ncolorbars * sizeof(colorbardata));
 }
 
 /* ------------------ DrawColorbarHist ------------------------ */
