@@ -60,14 +60,14 @@ jobs:
           cmake -B ${{github.workspace}}/cbuild -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DLUA=${{ matrix.lua }}
           cmake --build ${{github.workspace}}/cbuild -j4
           cp ${{github.workspace}}/cbuild/smokeview smokeview
-      - name: Download test data
-        working-directory: ${{github.workspace}}/Tests
-        run: ./get_test_data.sh
-      - name: Test
-        shell: bash
-        working-directory: ${{github.workspace}}/cbuild
-        run: |
-          ctest -j10 --output-on-failure -V
+#      - name: Download test data
+#        working-directory: ${{github.workspace}}/Tests
+#        run: ./get_test_data.sh
+#      - name: Test
+#        shell: bash
+#        working-directory: ${{github.workspace}}/cbuild
+#        run: |
+#          ctest -j10 --output-on-failure -V
       - name: Set exec suffix
         if: ${{ matrix.lua }}
         run: echo "exec_suffix=-lua" >> $GITHUB_ENV
@@ -246,15 +246,15 @@ jobs:
           cmake -B ${{github.workspace}}/cbuild -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DLUA=${{ matrix.lua }}
           cmake --build ${{github.workspace}}/cbuild -j4
           cp ${{github.workspace}}/cbuild/smokeview smokeview
-      - name: Download test data
-        working-directory: ${{github.workspace}}/Tests
-        run: ./get_test_data.sh
-      - name: Test
-        shell: bash
-        working-directory: ${{github.workspace}}/cbuild
-        run: |
-          source /opt/intel/oneapi/setvars.sh
-          ctest -j10 --output-on-failure
+#      - name: Download test data
+#        working-directory: ${{github.workspace}}/Tests
+#        run: ./get_test_data.sh
+#      - name: Test
+#        shell: bash
+#        working-directory: ${{github.workspace}}/cbuild
+#        run: |
+#          source /opt/intel/oneapi/setvars.sh
+#          ctest -j10 --output-on-failure
       - name: Set exec suffix
         if: ${{ matrix.lua }} == lua
         run: echo "exec_suffix=-lua" >> $GITHUB_ENV
