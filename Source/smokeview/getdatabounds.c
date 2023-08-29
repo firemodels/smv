@@ -293,6 +293,7 @@ void GetGlobalPatchBounds(int flag){
       patchi->valmin_fds = 0.0;
       patchi->valmax_fds = 1.0;
     }
+    if(force_bound_update == 1)doit = 1;
     if(doit==1){
       if(GetBounds(patchi->bound_file, &valmin, &valmax, &patchboundsinfo, &npatchboundsinfo)==1)patchi->have_bound_file = YES;
       if(valmin > valmax)continue;
@@ -566,6 +567,7 @@ void GetGlobalSliceBounds(int flag){
        slicei->valmin_fds = 0.0;
        slicei->valmax_fds = 1.0;
      }
+     if(force_bound_update == 1)doit = 1;
 
     if(doit==1){
       if(GetBounds(slicei->bound_file, &valmin, &valmax, &sliceboundsinfo, &nsliceboundsinfo)==1){
