@@ -44,7 +44,7 @@ GLUI_Spinner *SPINNER_val=NULL;
 GLUI_Spinner *SPINNER_colorindex=NULL;
 
 GLUI_Button *BUTTON_node_next=NULL,*BUTTON_node_prev=NULL;
-GLUI_Button *BUTTON_next=NULL,*BUTTON_prev=NULL,*BUTTON_cb_save=NULL;
+GLUI_Button *BUTTON_next=NULL,*BUTTON_prev=NULL,*BUTTON_cb_save_as=NULL;
 GLUI_Button *BUTTON_new=NULL;
 GLUI_Button *BUTTON_delete=NULL;
 GLUI_Button *BUTTON_addpoint=NULL;
@@ -89,7 +89,7 @@ int cb_usecolorbar_extreme;
 #define COLORBAR_SIMPLE_RGB          35
 #define COLORBAR_SIMPLE_TYPE         36
 #define COLORBAR_SIMPLE_ABLE         37
-#define COLORBAR_SAVE                38
+#define COLORBAR_SAVE_AS             38
 
 
 /* ------------------ ColorbarSimple2General ------------------------ */
@@ -620,17 +620,21 @@ extern "C" void ColorbarCB(int var){
     ColorbarGlobal2Local();
     ColorbarGeneral2Simple(colorbarinfo + colorbartype);
     ColorbarCB(COLORBAR_SIMPLE_ABLE);
+
+    char button_label[sizeof(GLUI_String)];
+    strcpy(button_label, "Copy to ");
+    strcat(button_label, colorbarinfo[colorbartype].menu_label);
+    strcat(button_label, "_copy");
+    BUTTON_cb_save_as->set_name(button_label);
     if(colorbartype < ndefaultcolorbars){
-      char button_label[sizeof(GLUI_String)];
-      strcpy(button_label, "Save as ");
-      strcat(button_label, colorbarinfo[colorbartype].menu_label);
-      strcat(button_label, "_copy");
-      BUTTON_cb_save->set_name(button_label);
-      BUTTON_cb_save->enable();
+      BUTTON_delete ->disable();
+      EDITTEXT_colorbar_label->disable();
+      BUTTON_update->disable();
     }
     else{
-      BUTTON_cb_save->set_name("Save");
-      BUTTON_cb_save->disable();
+      BUTTON_delete ->enable();
+      EDITTEXT_colorbar_label->enable();
+      BUTTON_update->enable();
     }
     break;
   case COLORBAR_LISTA:
@@ -687,7 +691,7 @@ extern "C" void ColorbarCB(int var){
     ColorbarCB(COLORBAR_LABEL);
     UpdateColorbarType();
     break;
-  case COLORBAR_SAVE:
+  case COLORBAR_SAVE_AS:
     if(colorbartype < ndefaultcolorbars){
       int cb_save;
 
@@ -848,7 +852,7 @@ extern "C" void GluiColorbarSetup(int main_window){
   PANEL_cb2R2 = glui_colorbar->add_panel_to_panel(PANEL_cb1,"",GLUI_PANEL_NONE);
   BUTTON_delete=glui_colorbar->add_button_to_panel(PANEL_cb2R2,"Delete",COLORBAR_DELETE,ColorbarCB);
   glui_colorbar->add_column_to_panel(PANEL_cb2R2, false);
-  glui_colorbar->add_button_to_panel(PANEL_cb2R2,"Copy",COLORBAR_COPY,ColorbarCB);
+  BUTTON_cb_save_as = glui_colorbar->add_button_to_panel(PANEL_cb2R2, _("Save"),      COLORBAR_SAVE_AS, ColorbarCB);
   glui_colorbar->add_column_to_panel(PANEL_cb2R2, false);
   glui_colorbar->add_button_to_panel(PANEL_cb2R2,"New",COLORBAR_NEW,ColorbarCB);
   colorbar_hidescene=1;
@@ -868,8 +872,6 @@ extern "C" void GluiColorbarSetup(int main_window){
   glui_colorbar->add_column_to_panel(PANEL_cb13, false);
   BUTTON_update=glui_colorbar->add_button_to_panel(PANEL_cb13,_("Update label"),COLORBAR_LABEL,ColorbarCB);
   PANEL_cb11r     = glui_colorbar->add_panel_to_panel(PANEL_cb1,"",GLUI_PANEL_NONE);
-  BUTTON_cb_save = glui_colorbar->add_button_to_panel(PANEL_cb11r, _("Save"),      COLORBAR_SAVE, ColorbarCB);
-  glui_colorbar->add_column_to_panel(PANEL_cb11r, false);
   BUTTON_prev     = glui_colorbar->add_button_to_panel(PANEL_cb11r, _("Previous"), COLORBAR_PREV, ColorbarCB);
   glui_colorbar->add_column_to_panel(PANEL_cb11r,false);
   BUTTON_next     = glui_colorbar->add_button_to_panel(PANEL_cb11r, _("Next"),     COLORBAR_NEXT, ColorbarCB);
