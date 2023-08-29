@@ -11565,22 +11565,23 @@ updatemenu=0;
   CREATEMENU(keyboardhelpmenu,HelpMenu);
   if(plotstate==DYNAMIC_PLOTS){
     glutAddMenuEntry(_("Animation"),MENU_DUMMY);
-    glutAddMenuEntry(_("  t: set/unset single time step mode"), MENU_DUMMY);
     glutAddMenuEntry(_("  0: reset animation to the initial time"), MENU_DUMMY);
+    glutAddMenuEntry(_("  1-9: number of frames to skip"), MENU_DUMMY);
+    glutAddMenuEntry(_("  H: toggle  visibility of slice and vector slice files"), MENU_DUMMY);
+    glutAddMenuEntry(_("  I: toggle  visibility of slices in blockages"), MENU_DUMMY);
+    glutAddMenuEntry(_("  L: unload last slice file loaded"), MENU_DUMMY);
+    glutAddMenuEntry(_("  N: force bound update when loading files (assume fds is running)"), MENU_DUMMY);
     glutAddMenuEntry(_("  p,P: increment particle variable displayed"), MENU_DUMMY);
-    glutAddMenuEntry(_("  [,]: decreease/increase particle size"), MENU_DUMMY);
+    glutAddMenuEntry(_("  t: set/unset single time step mode"), MENU_DUMMY);
     glutAddMenuEntry(_("  T: time display between 'Time s' and 'h:m:s'"), MENU_DUMMY);
     if(cellcenter_slice_active==1){
       glutAddMenuEntry(_("     (also, toggles cell center display on/off)"), MENU_DUMMY);
       glutAddMenuEntry(_("  @: display FDS values in cell centered slices"), MENU_DUMMY);
     }
+    glutAddMenuEntry(_("  u: reload files"), MENU_DUMMY);
+    glutAddMenuEntry(_("  [,]: decrease/increase particle size"), MENU_DUMMY);
     glutAddMenuEntry(_("  ,: toggle colorbar display (vertical, horizontal, hidden)"), MENU_DUMMY);
     glutAddMenuEntry(_("  :: toggle timebar region overlap (always, never, only if timebar/horizontal colorbar hidden)"), MENU_DUMMY);
-    glutAddMenuEntry(_("  u: reload files"), MENU_DUMMY);
-    glutAddMenuEntry(_("  H: toggle  visibility of slice and vector slice files"), MENU_DUMMY);
-    glutAddMenuEntry(_("  I: toggle  visibility of slices in blockages"), MENU_DUMMY);
-    glutAddMenuEntry(_("  L: unload last slice file loaded"), MENU_DUMMY);
-    glutAddMenuEntry(_("  1-9: number of frames to skip"), MENU_DUMMY);
   }
   if(rotation_type==EYE_CENTERED){
     glutAddMenuEntry(_("Motion"), MENU_DUMMY);
@@ -11594,53 +11595,53 @@ updatemenu=0;
   }
   if(plotstate==STATIC_PLOTS){
     glutAddMenuEntry(_("Plot3D"), MENU_DUMMY);
-    glutAddMenuEntry(_("  x,y,z: toggle contour plot visibility along x, y and z axis"), MENU_DUMMY);
-    glutAddMenuEntry(_("  p,P: increment plot3d variable displayed"), MENU_DUMMY);
-    glutAddMenuEntry(_("  v: toggle flow vector visiblity"), MENU_DUMMY);
     glutAddMenuEntry(_("  a/ALT a: increase/decrease flow vector length by 1.5"), MENU_DUMMY);
-    glutAddMenuEntry(_("  s: change interval between adjacent vectors"), MENU_DUMMY);
     glutAddMenuEntry(_("  c: toggle between continuous and 2D stepped contours"), MENU_DUMMY);
     glutAddMenuEntry(_("  i: toggle iso-surface visibility"), MENU_DUMMY);
+    glutAddMenuEntry(_("  p,P: increment plot3d variable displayed"), MENU_DUMMY);
+    glutAddMenuEntry(_("  s: change interval between adjacent vectors"), MENU_DUMMY);
+    glutAddMenuEntry(_("  v: toggle flow vector visiblity"), MENU_DUMMY);
+    glutAddMenuEntry(_("  x,y,z: toggle contour plot visibility along x, y and z axis"), MENU_DUMMY);
     glutAddMenuEntry(_("  {: load previous time Plot3D files"), MENU_DUMMY);
     glutAddMenuEntry(_("  }: load next time Plot3D files"), MENU_DUMMY);
   }
   glutAddMenuEntry(_("Misc"), MENU_DUMMY);
   glutAddMenuEntry(_("  A: toggle between plot types (device and HRRPUV)"), MENU_DUMMY);
+  glutAddMenuEntry(_("  e: toggle between view rotation types: scene centered 2 axis, 1 axis, 3 axis and eye centered"), MENU_DUMMY);
+  if(ntotal_blockages>0||isZoneFireModel==1){
+    glutAddMenuEntry(_("  g: toggle grid visibility"), MENU_DUMMY);
+  }
+  if(ndeviceinfo > 0 && GetNumActiveDevices() > 0){
+    glutAddMenuEntry("  j/ALT j: increase/decrease object size", MENU_DUMMY);
+  }
+  if(have_cface_normals == CFACE_NORMALS_YES){
+    glutAddMenuEntry(_("  n: display cface normal vectors"), MENU_DUMMY);
+  }
+  glutAddMenuEntry(_("  M: toggle command line clipping"), MENU_DUMMY);
+  if(ntotal_blockages > 0){
+    glutAddMenuEntry(_("  O: toggle blockage view (normal <--> outline)"), MENU_DUMMY);
+    glutAddMenuEntry(_("  ALT o: cycle between all blockage view types"), MENU_DUMMY);
+  }
+  glutAddMenuEntry(_("  q: display blockage locations as specified by user or by FDS"), MENU_DUMMY);
   glutAddMenuEntry(_("  r/R: render the current scene to an image file"), MENU_DUMMY);
   glutAddMenuEntry("             r: image has the same resolution as the scene", MENU_DUMMY);
   {
     char render_label[1024];
-    unsigned char deg360[] = {'3','6','0',0};
+    unsigned char deg360[] = {'3', '6', '0', 0};
 
-    sprintf(render_label, "            R: image has %i times the resolution of of scene", MAX(2,resolution_multiplier));
+    sprintf(render_label, "            R: image has %i times the resolution of of scene", MAX(2, resolution_multiplier));
     glutAddMenuEntry(render_label, MENU_DUMMY);
     sprintf(render_label, "    ALT R: %s view - all view directions are shown in a 1024x512 image", deg360);
     glutAddMenuEntry(render_label, MENU_DUMMY);
   }
-  if(ntotal_blockages>0||isZoneFireModel==1){
-    glutAddMenuEntry(_("  g: toggle grid visibility"), MENU_DUMMY);
-  }
-  glutAddMenuEntry(_("  e: toggle between view rotation types: scene centered 2 axis, 1 axis, 3 axis and eye centered"), MENU_DUMMY);
-  glutAddMenuEntry(_("  q: display blockage locations as specified by user or by FDS"), MENU_DUMMY);
-  if(ntotal_blockages>0){
-    glutAddMenuEntry(_("  O: toggle blockage view (normal <--> outline)"), MENU_DUMMY);
-    glutAddMenuEntry(_("  ALT o: cycle between all blockage view types"), MENU_DUMMY);
-  }
-  if(ndeviceinfo>0&&GetNumActiveDevices()>0){
-    glutAddMenuEntry("  j/ALT j: increase/decrease object size", MENU_DUMMY);
-  }
-  if(have_cface_normals==CFACE_NORMALS_YES){
-    glutAddMenuEntry(_("  n: display cface normal vectors"), MENU_DUMMY);
-  }
   glutAddMenuEntry("  ALT r: toggle research mode (global min/max for coloring data, turn off axis label smoothing)", MENU_DUMMY);
-  glutAddMenuEntry(_("  M: toggle command line clipping"), MENU_DUMMY);
   glutAddMenuEntry(_("  W: toggle clipping modes - use Options/Clip menu to specify clipping planes"), MENU_DUMMY);
   glutAddMenuEntry(_("  -/space bar: decrement/increment time step, 2D contour planes, 3D contour levels"), MENU_DUMMY);
   glutAddMenuEntry("", MENU_DUMMY);
-  glutAddMenuEntry(_("  ALT v: toggle projection  method (between perspective and size preserving)"), MENU_DUMMY);
-  if(n_embedded_meshes>0){
+  if(n_embedded_meshes > 0){
     glutAddMenuEntry(_("  ALT u: toggle coarse slice display in embedded mesh"), MENU_DUMMY);
   }
+  glutAddMenuEntry(_("  ALT v: toggle projection  method (between perspective and size preserving)"), MENU_DUMMY);
   if(clip_commandline==1){
     glutAddMenuEntry(_("  x/y/z: toggle lower x/y/z clip planes"), MENU_DUMMY);
     glutAddMenuEntry(_("  X/Y/Z: toggle upper x/y/z clip planes"), MENU_DUMMY);

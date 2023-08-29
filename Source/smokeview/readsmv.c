@@ -3021,6 +3021,7 @@ void UpdateBoundInfo(void){
   }
   else{
     GetGlobalSliceBoundsReduced();
+    GetGlobalSliceBoundsMT();
   }
   PRINT_TIMER(bound_timer, "GetGlobalSliceBounds");
   if(runscript == 1){
@@ -3028,6 +3029,7 @@ void UpdateBoundInfo(void){
   }
   else{
     GetGlobalPatchBoundsReduced();
+    GetGlobalPatchBoundsMT();
   }
   PRINT_TIMER(bound_timer, "GetGlobalPatchBounds");
   GetGlobalHVACDuctBounds(0);
