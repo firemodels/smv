@@ -2192,7 +2192,6 @@ void Keyboard(unsigned char key, int flag){
       }
       break;
     case 'n':
-    case 'N':
       show_cface_normals = 1-show_cface_normals;
       if(show_cface_normals==1){
         printf("show cface normals\n");
@@ -2201,6 +2200,11 @@ void Keyboard(unsigned char key, int flag){
         printf("hide cface normals\n");
       }
       UpdateGluiCfaces();
+      break;
+    case 'N':
+      force_bound_update = 1 - force_bound_update;
+      if(force_bound_update == 1)printf("bound updates: always\n");
+      if(force_bound_update == 0)printf("bound updates: only when bound files have change\n");
       break;
     case 'O':
     if(ncgeominfo>0){

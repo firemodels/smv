@@ -5081,7 +5081,7 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
     if(runscript == 0){
       JOIN_SLICEBOUNDS;
     }
-    if(slice_bounds_defined==0){
+    if(force_bound_update==1||slice_bounds_defined==0){
       GetGlobalSliceBounds(1);
       SetLoadedSliceBounds(NULL, 0);
     }
