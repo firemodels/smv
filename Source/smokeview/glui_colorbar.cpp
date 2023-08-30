@@ -90,6 +90,11 @@ int cb_usecolorbar_extreme;
 #define COLORBAR_SIMPLE_TYPE         36
 #define COLORBAR_SIMPLE_ABLE         37
 #define COLORBAR_SAVE_AS             38
+#define COLORBAR_S0_RGB              39
+#define COLORBAR_S1_RGB              40
+#define COLORBAR_S2_RGB              41
+#define COLORBAR_S3_RGB              42
+#define COLORBAR_S4_RGB              43
 
 
 /* ------------------ ColorbarSimple2General ------------------------ */
@@ -354,6 +359,20 @@ void GetNewColorbarName(char *base, char *label){
   }
 }
 
+/* ------------------ ColorbarSimple ------------------------ */
+
+void ColorbarSimple(int node){  
+  ColorbarSimple2General(colorbarinfo + colorbartype);
+  colorbarpoint = node;
+  memcpy(cb_rgb, cb_simple_rgb + 3*colorbarpoint, 3*sizeof(int));
+  SPINNER_rgb[0]->set_int_val(cb_rgb[0]);
+  SPINNER_rgb[1]->set_int_val(cb_rgb[1]);
+  SPINNER_rgb[2]->set_int_val(cb_rgb[2]);
+  cb_colorindex = colorbarinfo[colorbartype].node_index[colorbarpoint];
+  SPINNER_colorindex->set_int_val(cb_colorindex);
+  ColorbarCB(COLORBAR_RGB);
+}
+
 /* ------------------ ColorbarCB ------------------------ */
 
 extern "C" void ColorbarCB(int var){
@@ -361,6 +380,7 @@ extern "C" void ColorbarCB(int var){
   unsigned char *nodes_rgb;
   int i, type;
   unsigned char rgb_local[3];
+  int simple_node = 0;
 
   switch(var){
   case COLORBAR_COLORINDEX:
@@ -592,21 +612,37 @@ extern "C" void ColorbarCB(int var){
     ColorbarSimple2General(colorbarinfo + colorbartype);
     ColorbarCB(COLORBAR_LIST);
     break;
-  case COLORBAR_SIMPLE_RGB:
-    ColorbarSimple2General(colorbarinfo + colorbartype);
-    ColorbarCB(COLORBAR_RGB);
-    break;
   case COLORBAR_RGB:
     if(colorbartype < 0 || colorbartype >= ncolorbars)return;
     cbi = colorbarinfo + colorbartype;
     if(colorbarpoint<0 || colorbarpoint>cbi->nnodes - 1)return;
+    if(colorbarpoint<=4){
+      memcpy(cb_simple_rgb + 3*colorbarpoint, cb_rgb, 3*sizeof(int));
+      SPINNER_simple_rgb[3*colorbarpoint + 0]->set_int_val(cb_rgb[0]);
+      SPINNER_simple_rgb[3*colorbarpoint + 1]->set_int_val(cb_rgb[1]);
+      SPINNER_simple_rgb[3*colorbarpoint + 2]->set_int_val(cb_rgb[2]);
+    }
     nodes_rgb = cbi->node_rgb + 3 * colorbarpoint;
-
     for(i = 0;i < 3;i++){
       nodes_rgb[i] = cb_rgb[i];
     }
     RemapColorbar(cbi);
     UpdateRGBColors(COLORBAR_INDEX_NONE);
+    break;
+  case COLORBAR_S0_RGB:
+    ColorbarSimple(0);
+    break;
+  case COLORBAR_S1_RGB:
+    ColorbarSimple(1);
+    break;
+  case COLORBAR_S2_RGB:
+    ColorbarSimple(2);
+    break;
+  case COLORBAR_S3_RGB:
+    ColorbarSimple(3);
+    break;
+  case COLORBAR_S4_RGB:
+    ColorbarSimple(4);
     break;
   case COLORBAR_LIST:
     int list_index;
@@ -891,26 +927,30 @@ extern "C" void GluiColorbarSetup(int main_window){
 
   strcpy(column_label, "               red");
   glui_colorbar->add_statictext_to_panel(PANEL_simple_2, column_label);
-  for(i=12;i>=0;i-=3){
-    char cb_label[sizeof(GLUI_String)];
 
-    sprintf(cb_label, "node %i", i/3 + 1);
-    SPINNER_simple_rgb[i] = glui_colorbar->add_spinner_to_panel(PANEL_simple_2, cb_label, GLUI_SPINNER_INT, cb_simple_rgb+i, COLORBAR_SIMPLE_RGB, ColorbarCB);
-  }
+  SPINNER_simple_rgb[12] = glui_colorbar->add_spinner_to_panel(PANEL_simple_2, "node 5", GLUI_SPINNER_INT, cb_simple_rgb + 12, COLORBAR_S4_RGB, ColorbarCB);
+  SPINNER_simple_rgb[9]  = glui_colorbar->add_spinner_to_panel(PANEL_simple_2, "node 4", GLUI_SPINNER_INT, cb_simple_rgb + 9 , COLORBAR_S3_RGB, ColorbarCB);
+  SPINNER_simple_rgb[6]  = glui_colorbar->add_spinner_to_panel(PANEL_simple_2, "node 3", GLUI_SPINNER_INT, cb_simple_rgb + 6,  COLORBAR_S2_RGB, ColorbarCB);
+  SPINNER_simple_rgb[3]  = glui_colorbar->add_spinner_to_panel(PANEL_simple_2, "node 2", GLUI_SPINNER_INT, cb_simple_rgb + 3,  COLORBAR_S1_RGB, ColorbarCB);
+  SPINNER_simple_rgb[0]  = glui_colorbar->add_spinner_to_panel(PANEL_simple_2,  "node 1", GLUI_SPINNER_INT, cb_simple_rgb + 0, COLORBAR_S0_RGB, ColorbarCB);
 
   glui_colorbar->add_column_to_panel(PANEL_simple_2,false);
   strcpy(column_label, "               green");
   glui_colorbar->add_statictext_to_panel(PANEL_simple_2, column_label);
-  for(i=13;i>=1;i-=3){
-    SPINNER_simple_rgb[i] = glui_colorbar->add_spinner_to_panel(PANEL_simple_2, "", GLUI_SPINNER_INT, cb_simple_rgb+i, COLORBAR_SIMPLE_RGB, ColorbarCB);
-  }
+  SPINNER_simple_rgb[13] = glui_colorbar->add_spinner_to_panel(PANEL_simple_2, "", GLUI_SPINNER_INT, cb_simple_rgb + 13, COLORBAR_S4_RGB, ColorbarCB);
+  SPINNER_simple_rgb[10] = glui_colorbar->add_spinner_to_panel(PANEL_simple_2, "", GLUI_SPINNER_INT, cb_simple_rgb + 10, COLORBAR_S3_RGB, ColorbarCB);
+  SPINNER_simple_rgb[7]  = glui_colorbar->add_spinner_to_panel(PANEL_simple_2, "", GLUI_SPINNER_INT, cb_simple_rgb + 7,  COLORBAR_S2_RGB, ColorbarCB);
+  SPINNER_simple_rgb[4]  = glui_colorbar->add_spinner_to_panel(PANEL_simple_2, "", GLUI_SPINNER_INT, cb_simple_rgb + 4,  COLORBAR_S1_RGB, ColorbarCB);
+  SPINNER_simple_rgb[1]  = glui_colorbar->add_spinner_to_panel(PANEL_simple_2, "", GLUI_SPINNER_INT, cb_simple_rgb + 1,  COLORBAR_S0_RGB, ColorbarCB);
 
   glui_colorbar->add_column_to_panel(PANEL_simple_2,false);
   strcpy(column_label, "               blue");
   glui_colorbar->add_statictext_to_panel(PANEL_simple_2, column_label);
-  for(i=14;i>=2;i-=3){
-    SPINNER_simple_rgb[i] = glui_colorbar->add_spinner_to_panel(PANEL_simple_2, "", GLUI_SPINNER_INT, cb_simple_rgb+i, COLORBAR_SIMPLE_RGB, ColorbarCB);
-  }
+  SPINNER_simple_rgb[14] = glui_colorbar->add_spinner_to_panel(PANEL_simple_2, "", GLUI_SPINNER_INT, cb_simple_rgb + 14, COLORBAR_S4_RGB, ColorbarCB);
+  SPINNER_simple_rgb[11] = glui_colorbar->add_spinner_to_panel(PANEL_simple_2, "", GLUI_SPINNER_INT, cb_simple_rgb + 11, COLORBAR_S3_RGB, ColorbarCB);
+  SPINNER_simple_rgb[8]  = glui_colorbar->add_spinner_to_panel(PANEL_simple_2, "", GLUI_SPINNER_INT, cb_simple_rgb + 8,  COLORBAR_S2_RGB, ColorbarCB);
+  SPINNER_simple_rgb[5]  = glui_colorbar->add_spinner_to_panel(PANEL_simple_2, "", GLUI_SPINNER_INT, cb_simple_rgb + 5,  COLORBAR_S1_RGB, ColorbarCB);
+  SPINNER_simple_rgb[2]  = glui_colorbar->add_spinner_to_panel(PANEL_simple_2, "", GLUI_SPINNER_INT, cb_simple_rgb + 2,  COLORBAR_S0_RGB, ColorbarCB);
 
   glui_colorbar->add_column_to_panel(PANEL_simple_2, false);
   strcpy(column_label, "               ");
@@ -936,11 +976,11 @@ extern "C" void GluiColorbarSetup(int main_window){
   BUTTON_addpoint=glui_colorbar->add_button_to_panel(PANEL_cb5,_("Insert Before"),COLORBAR_ADDPOINT,ColorbarCB);
 
   PANEL_cb4 = glui_colorbar->add_panel_to_panel(ROLLOUT_general_point,"",GLUI_PANEL_NONE);
-  SPINNER_colorindex=  glui_colorbar->add_spinner_to_panel(PANEL_cb4,_("node index"),  GLUI_SPINNER_INT,&cb_colorindex,  COLORBAR_COLORINDEX,ColorbarCB);
+  SPINNER_colorindex=  glui_colorbar->add_spinner_to_panel(PANEL_cb4,_("node index"),  GLUI_SPINNER_INT, &cb_colorindex,  COLORBAR_COLORINDEX,ColorbarCB);
   SPINNER_colorindex->set_int_limits(0,255);
-  SPINNER_rgb[0] = glui_colorbar->add_spinner_to_panel(PANEL_cb4, _("red"), GLUI_SPINNER_INT, cb_rgb, COLORBAR_RGB, ColorbarCB);
-  SPINNER_rgb[1] = glui_colorbar->add_spinner_to_panel(PANEL_cb4,_("green"),GLUI_SPINNER_INT,cb_rgb+1,COLORBAR_RGB,ColorbarCB);
-  SPINNER_rgb[2] = glui_colorbar->add_spinner_to_panel(PANEL_cb4,_("blue"), GLUI_SPINNER_INT,cb_rgb+2,COLORBAR_RGB,ColorbarCB);
+  SPINNER_rgb[0] = glui_colorbar->add_spinner_to_panel(PANEL_cb4, _("red"),  GLUI_SPINNER_INT, cb_rgb,   COLORBAR_RGB, ColorbarCB);
+  SPINNER_rgb[1] = glui_colorbar->add_spinner_to_panel(PANEL_cb4,_("green"), GLUI_SPINNER_INT, cb_rgb+1, COLORBAR_RGB, ColorbarCB);
+  SPINNER_rgb[2] = glui_colorbar->add_spinner_to_panel(PANEL_cb4,_("blue"),  GLUI_SPINNER_INT, cb_rgb+2, COLORBAR_RGB, ColorbarCB);
   
   char label_nodes[sizeof(GLUI_String)];
   
