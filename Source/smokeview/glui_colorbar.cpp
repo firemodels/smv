@@ -382,7 +382,7 @@ extern "C" void ColorbarCB(int var){
 
   switch(var){
   case COLORBAR_COLORINDEX:
-    if(colorbartype >= ndefaultcolorbars&&colorbartype < ncolorbars){
+    if(colorbartype < ncolorbars){
       cbi = colorbarinfo + colorbartype;
       UpdateCurrentColorbar(cbi);
 
@@ -394,7 +394,7 @@ extern "C" void ColorbarCB(int var){
     }
     break;
   case COLORBAR_LABEL:
-    if(colorbartype >= ndefaultcolorbars&&colorbartype < ncolorbars){
+    if(colorbartype < ncolorbars){
       char *clabel;
 
       cbi = colorbarinfo + colorbartype;
@@ -406,6 +406,7 @@ extern "C" void ColorbarCB(int var){
       save = colorbartype;
       LISTBOX_colorbar_edit->set_int_val(0);
       LISTBOX_colorbar_edit->set_int_val(save);
+      UpdateColorbarDialogs();
       updatemenu = 1;
     }
     break;
@@ -414,7 +415,7 @@ extern "C" void ColorbarCB(int var){
     WriteIni(LOCAL_INI, NULL);
     break;
   case COLORBAR_ADDPOINT:
-    if(colorbartype < ndefaultcolorbars || colorbartype >= ncolorbars)return;
+    if(colorbartype >= ncolorbars)return;
     cbi = colorbarinfo + colorbartype;
     if(colorbarpoint <= 0 || colorbarpoint > cbi->nnodes - 1)return;
 
@@ -463,7 +464,7 @@ extern "C" void ColorbarCB(int var){
     ColorbarCB(COLORBAR_SIMPLE_ABLE);
     break;
   case COLORBAR_DELETEPOINT:
-    if(colorbartype < ndefaultcolorbars || colorbartype >= ncolorbars)return;
+    if(colorbartype >= ncolorbars)return;
     cbi = colorbarinfo + colorbartype;
     if(colorbarpoint<0 || colorbarpoint>cbi->nnodes - 1)return;
 
@@ -662,13 +663,9 @@ extern "C" void ColorbarCB(int var){
     BUTTON_cb_save_as->set_name(button_label);
     if(colorbartype < ndefaultcolorbars){
       BUTTON_delete ->disable();
-      EDITTEXT_colorbar_label->disable();
-      BUTTON_update->disable();
     }
     else{
       BUTTON_delete ->enable();
-      EDITTEXT_colorbar_label->enable();
-      BUTTON_update->enable();
     }
     break;
   case COLORBAR_LISTA:
