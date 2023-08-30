@@ -23,9 +23,13 @@ env:
 
 jobs:
   build_unix_gcc:
+    # Set the name of this build, variable depending on the OS and whether it
+    # includes the lua engine
     name: build ${{ matrix.os }} - lua=${{ matrix.lua }} - gcc
     strategy:
       fail-fast: false
+      # The matrix sets all the different combinations of builds, e.g. platforms
+      # and build configurations
       matrix:
         os:
           - ubuntu-latest
@@ -33,44 +37,57 @@ jobs:
         lua:
           - on
           - off
+    # Set the platform to build on
     runs-on: ${{ matrix.os }}
     steps:
+      # Check out the smv repo
       - name: Checkout code
         uses: actions/checkout@v2
+      # If we are currently building on Linux (ubuntu) install all the native
+      # pre-requisites
       - name: Install linux deps
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update
           sudo apt-get install build-essential freeglut3-dev libx11-dev libxmu-dev libxi-dev libglew-dev libgd-dev liblua5.4-dev
+      # If we are building on macos configure the environment to use gcc11 as
+      # the compiler
       - name: set macos gcc
         if: runner.os == 'macOS'
         shell: bash
         run: |
           echo "CC=gcc-11" >> $GITHUB_ENV
           echo "CXX=g++-11" >> $GITHUB_ENV
+      # If we are building on linux configure the environment to use gcc as the
+      # compiler
       - name: set linux gcc
         if: runner.os == 'Linux'
         shell: bash
         run: |
           echo "CC=gcc" >> $GITHUB_ENV
           echo "CXX=g++" >> $GITHUB_ENV
+      # Run cmake to build smokeview
       - name: Build
         shell: bash
         run: |
           cmake -B ${{github.workspace}}/cbuild -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DLUA=${{ matrix.lua }}
           cmake --build ${{github.workspace}}/cbuild -j4
           cp ${{github.workspace}}/cbuild/smokeview smokeview
+      # Download a snaphot of the fig repo and use that as test data.
       - name: Download test data
         working-directory: ${{github.workspace}}/Tests
         run: ./get_test_data.sh
+      # Run the CMake-based tests
       - name: Test
         shell: bash
         working-directory: ${{github.workspace}}/cbuild
         run: |
           ctest -j10 --output-on-failure -V
+      # Set a suffix based on whether lua is included
       - name: Set exec suffix
         if: ${{ matrix.lua }}
         run: echo "exec_suffix=-lua" >> $GITHUB_ENV
+      # Archive the smokeview executable
       - name: Archive production artifacts
         uses: actions/upload-artifact@v2
         with:
