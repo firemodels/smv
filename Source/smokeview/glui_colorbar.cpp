@@ -380,7 +380,6 @@ extern "C" void ColorbarCB(int var){
   unsigned char *nodes_rgb;
   int i, type;
   unsigned char rgb_local[3];
-  int simple_node = 0;
 
   switch(var){
   case COLORBAR_COLORINDEX:
