@@ -95,6 +95,7 @@ int cb_usecolorbar_extreme;
 #define COLORBAR_S2_RGB              41
 #define COLORBAR_S3_RGB              42
 #define COLORBAR_S4_RGB              43
+#define COLORBAR_LAB2GEN             44
 
 
 /* ------------------ ColorbarSimple2General ------------------------ */
@@ -647,6 +648,16 @@ extern "C" void ColorbarCB(int var){
   case COLORBAR_S4_RGB:
     ColorbarSimple(4);
     break;
+  case COLORBAR_LAB2GEN:
+    cb_rgb[0] = CLAMP(( int )(cb_frgb2[0] + 0.5), 0, 255);
+    cb_rgb[1] = CLAMP(( int )(cb_frgb2[1] + 0.5), 0, 255);
+    cb_rgb[2] = CLAMP(( int )(cb_frgb2[2] + 0.5), 0, 255);
+    SPINNER_rgb[0]->set_int_val(cb_rgb[0]);
+    SPINNER_rgb[1]->set_int_val(cb_rgb[1]);
+    SPINNER_rgb[2]->set_int_val(cb_rgb[2]);
+    ColorbarCB(COLORBAR_RGB);
+    ROLLOUT_general_point->open();
+    break;
   case COLORBAR_LIST:
     int list_index;
 
@@ -986,7 +997,6 @@ extern "C" void GluiColorbarSetup(int main_window){
   strcpy(label_nodes, "nodes");
   STATICTEXT_node_label = glui_colorbar->add_statictext_to_panel(PANEL_cb4, label_nodes);
 
-
   SPINNER_rgb[0]->set_int_limits(0,255);
   SPINNER_rgb[1]->set_int_limits(0,255);
   SPINNER_rgb[2]->set_int_limits(0,255);
@@ -1014,11 +1024,12 @@ extern "C" void GluiColorbarSetup(int main_window){
   cb_frgb2[0] = 0.0;
   cb_frgb2[1] = 0.0;
   cb_frgb2[2] = 0.0;
-  SPINNER_rgb2[0] = glui_colorbar->add_spinner_to_panel(PANEL_cb12, _("red"), GLUI_SPINNER_FLOAT, cb_frgb2, COLORBAR_RGB2, ColorbarCB);
+  SPINNER_rgb2[0] = glui_colorbar->add_spinner_to_panel(PANEL_cb12, _("red"),   GLUI_SPINNER_FLOAT, cb_frgb2,     COLORBAR_RGB2, ColorbarCB);
   SPINNER_rgb2[1] = glui_colorbar->add_spinner_to_panel(PANEL_cb12, _("green"), GLUI_SPINNER_FLOAT, cb_frgb2 + 1, COLORBAR_RGB2, ColorbarCB);
-  SPINNER_rgb2[2] = glui_colorbar->add_spinner_to_panel(PANEL_cb12, _("blue"), GLUI_SPINNER_FLOAT, cb_frgb2 + 2, COLORBAR_RGB2, ColorbarCB);
+  SPINNER_rgb2[2] = glui_colorbar->add_spinner_to_panel(PANEL_cb12, _("blue"),  GLUI_SPINNER_FLOAT, cb_frgb2 + 2, COLORBAR_RGB2, ColorbarCB);
+  glui_colorbar->add_button_to_panel(PANEL_cb12, "Copy rgb", COLORBAR_LAB2GEN, ColorbarCB);
   glui_colorbar->add_column_to_panel(PANEL_cb12, false);
-  SPINNER_Lab2[0] = glui_colorbar->add_spinner_to_panel(PANEL_cb12, _("L"), GLUI_SPINNER_FLOAT, cb_lab2, COLORBAR_LAB2, ColorbarCB);
+  SPINNER_Lab2[0] = glui_colorbar->add_spinner_to_panel(PANEL_cb12, _("L"), GLUI_SPINNER_FLOAT, cb_lab2,     COLORBAR_LAB2, ColorbarCB);
   SPINNER_Lab2[1] = glui_colorbar->add_spinner_to_panel(PANEL_cb12, _("a"), GLUI_SPINNER_FLOAT, cb_lab2 + 1, COLORBAR_LAB2, ColorbarCB);
   SPINNER_Lab2[2] = glui_colorbar->add_spinner_to_panel(PANEL_cb12, _("b"), GLUI_SPINNER_FLOAT, cb_lab2 + 2, COLORBAR_LAB2, ColorbarCB);
   ColorbarCB(COLORBAR_RGB2);
