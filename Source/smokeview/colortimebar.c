@@ -967,10 +967,8 @@ void RemapColorbar(colorbardata *cbi){
     i2 = cbi->node_index[i+1];
     if(i2==i1)continue;
     node_rgb = cbi->node_rgb+3*i;
-    if(interp_lab==INTERP_LAB){
-      Rgb2Lab(node_rgb,   lab1);
-      Rgb2Lab(node_rgb+3, lab2);
-    }
+    Rgb2Lab(node_rgb,   lab1);
+    Rgb2Lab(node_rgb+3, lab2);
     for(j=i1;j<i2;j++){
       float factor;
 

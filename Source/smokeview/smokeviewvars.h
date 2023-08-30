@@ -1897,7 +1897,7 @@ SVEXTERN colorbardata SVDECL(*colorbarcopyinfo, NULL);
 SVEXTERN int SVDECL(ncolortableinfo, 0);
 SVEXTERN colortabledata SVDECL(*colortableinfo, NULL);
 SVEXTERN int SVDECL(i_colortable_list,0);
-
+SVEXTERN int SVDECL(toggle_on, 0);
 SVEXTERN int SVDECL(update_load_files, 0);
 SVEXTERN int do_threshold;
 SVEXTERN int ntotal_blockages;

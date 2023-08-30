@@ -110,7 +110,7 @@ void ColorbarGeneral2Simple(colorbardata *cbi){
     for(i = 0;i < 15;i++){
       SPINNER_simple_rgb[i]->disable();
     }
-    ROLLOUT_simple_point->close();
+    if(toggle_on==0)ROLLOUT_simple_point->close();
     ROLLOUT_general_point->open();
     return;
   }
@@ -499,6 +499,9 @@ extern "C" void ColorbarCB(int var){
     SPINNER_rgb2[2]->set_float_val(cb_frgb2[2]);
     break;
   case COLORBAR_TOGGLE:
+    toggle_on = 1;
+    ROLLOUT_general_point->open();
+    ROLLOUT_simple_point->open();
     colorbar_toggle = 1 - colorbar_toggle;
     if(colorbar_toggle == 0){
       LISTBOX_colorbar_edit->set_int_val(index_colorbar1);
@@ -507,6 +510,7 @@ extern "C" void ColorbarCB(int var){
       LISTBOX_colorbar_edit->set_int_val(index_colorbar2);
     }
     ColorbarCB(COLORBAR_LIST);
+    toggle_on = 0;
     break;
   case COLORBAR_SIMPLE_ABLE:
     if(colorbarinfo[colorbartype].nnodes > 5)break;
