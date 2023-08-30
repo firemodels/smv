@@ -169,7 +169,7 @@ void ColorbarSimple2General(colorbardata *cbi){
 
   switch(colorbar_simple_type){
   case 0: // constant (1 node)
-    cbi->nnodes = 2;
+    cbi->nnodes = 1;
     memcpy(node_rgb,   cb_simple_rgb, 3 * sizeof(int));
     memcpy(node_rgb+3, cb_simple_rgb, 3 * sizeof(int));
     cbi->node_index[0] = 0;
@@ -229,7 +229,6 @@ void ColorbarSimple2General(colorbardata *cbi){
   for(i=0;i<3*cbi->nnodes;i++){
     cbi->node_rgb[i] = (unsigned char)node_rgb[i];
   }
-  if(SPINNER_colorindex==NULL)return;
 }
 
 /* ------------------ UpdateColorbarEdit ------------------------ */
