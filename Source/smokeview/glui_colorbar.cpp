@@ -431,7 +431,7 @@ extern "C" void ColorbarCB(int var){
     {
       unsigned char *rnew;
       unsigned char *inew, *ibef, *iaft;
-      float lab1[3], lab2[3], labnew[3], labnew2[3], fnew[3];
+      float lab1[3], lab2[3], labnew[3], fnew[3];
 
       rnew = cbi->node_rgb + 3 * colorbarpoint;
       Rgb2Lab(rnew - 3, lab1);
@@ -440,14 +440,6 @@ extern "C" void ColorbarCB(int var){
       labnew[1] = (lab1[1] + lab2[1])/2.0;
       labnew[2] = (lab1[2] + lab2[2])/2.0;
       Lab2Rgb(rnew, fnew, labnew);
-
-      rnew = cbi->node_rgb_orig + 3*colorbarpoint;
-      Rgb2Lab(rnew-3,lab1);
-      Rgb2Lab(rnew+3,lab2);
-      labnew2[0] = (lab1[0]+lab2[0])/2.0;
-      labnew2[1] = (lab1[1]+lab2[1])/2.0;
-      labnew2[2] = (lab1[2]+lab2[2])/2.0;
-      Lab2Rgb(rnew, fnew, labnew2);
 
       inew = cbi->node_index + colorbarpoint;
       ibef = inew - 1;
