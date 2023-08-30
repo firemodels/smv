@@ -620,10 +620,18 @@ extern "C" void ColorbarCB(int var){
     cbi = colorbarinfo + colorbartype;
     if(colorbarpoint<0 || colorbarpoint>cbi->nnodes - 1)return;
     if(colorbarpoint<=4){
-      memcpy(cb_simple_rgb + 3*colorbarpoint, cb_rgb, 3*sizeof(int));
-      SPINNER_simple_rgb[3*colorbarpoint + 0]->set_int_val(cb_rgb[0]);
-      SPINNER_simple_rgb[3*colorbarpoint + 1]->set_int_val(cb_rgb[1]);
-      SPINNER_simple_rgb[3*colorbarpoint + 2]->set_int_val(cb_rgb[2]);
+      int index;
+
+      if(colorbarpoint == cbi->nnodes - 1){
+        index = 4;
+      }
+      else{
+        index = colorbarpoint;
+      }
+      memcpy(cb_simple_rgb + 3*index, cb_rgb, 3*sizeof(int));
+      SPINNER_simple_rgb[3*index + 0]->set_int_val(cb_rgb[0]);
+      SPINNER_simple_rgb[3*index + 1]->set_int_val(cb_rgb[1]);
+      SPINNER_simple_rgb[3*index + 2]->set_int_val(cb_rgb[2]);
     }
     nodes_rgb = cbi->node_rgb + 3 * colorbarpoint;
     for(i = 0;i < 3;i++){
