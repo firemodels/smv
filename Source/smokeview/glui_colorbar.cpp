@@ -927,7 +927,7 @@ extern "C" void GluiColorbarSetup(int main_window){
   SPINNER_simple_rgb[9]  = glui_colorbar->add_spinner_to_panel(PANEL_simple_2, "node 4", GLUI_SPINNER_INT, cb_simple_rgb + 9 , COLORBAR_S3_RGB, ColorbarCB);
   SPINNER_simple_rgb[6]  = glui_colorbar->add_spinner_to_panel(PANEL_simple_2, "node 3", GLUI_SPINNER_INT, cb_simple_rgb + 6,  COLORBAR_S2_RGB, ColorbarCB);
   SPINNER_simple_rgb[3]  = glui_colorbar->add_spinner_to_panel(PANEL_simple_2, "node 2", GLUI_SPINNER_INT, cb_simple_rgb + 3,  COLORBAR_S1_RGB, ColorbarCB);
-  SPINNER_simple_rgb[0]  = glui_colorbar->add_spinner_to_panel(PANEL_simple_2,  "node 1", GLUI_SPINNER_INT, cb_simple_rgb + 0, COLORBAR_S0_RGB, ColorbarCB);
+  SPINNER_simple_rgb[0]  = glui_colorbar->add_spinner_to_panel(PANEL_simple_2, "node 1", GLUI_SPINNER_INT, cb_simple_rgb + 0,  COLORBAR_S0_RGB, ColorbarCB);
 
   glui_colorbar->add_column_to_panel(PANEL_simple_2,false);
   strcpy(column_label, "               green");
