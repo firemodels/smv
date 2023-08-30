@@ -1945,12 +1945,7 @@ void InitDefaultColorbars(int nini){
   for(i=0;i<ndefaultcolorbars;i++){
     cbi = colorbarinfo + i;
 
-    if(strlen(cbi->menu_label) == 7 && strcmp(cbi->menu_label, "Rainbow") == 0){
-      cbi->interp = INTERP_RGB;
-    }
-    else{
-      cbi->interp = INTERP_LAB;
-    }
+    cbi->interp = INTERP_LAB; // note: was using INTERP_RGB for the Rainbow colorbar
     cbi->dist_type = COLOR_DIST_LAB;
     RemapColorbar(cbi);
     memcpy(cbi->node_rgb_orig, cbi->node_rgb, 3 * cbi->nnodes * sizeof(unsigned char));
@@ -1959,12 +1954,7 @@ void InitDefaultColorbars(int nini){
 
   for(i = 0;i < ncolorbars;i++){
     cbi = colorbarinfo + i;
-    if(strlen(cbi->menu_label)==7&&strcmp(cbi->menu_label, "Rainbow") == 0){
-      cbi->interp = INTERP_RGB;
-    }
-    else{
-      cbi->interp = INTERP_LAB;
-    }
+    cbi->interp = INTERP_LAB;
   }
   memcpy(colorbarcopyinfo, colorbarinfo, ncolorbars * sizeof(colorbardata));
 }
