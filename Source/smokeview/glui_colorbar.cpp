@@ -744,7 +744,7 @@ extern "C" void ColorbarCB(int var){
     break;
   case COLORBAR_REVERT:
     RevertColorBar(colorbarinfo + colorbartype);
-    ColorbarCB(COLORBAR_RGB);
+    ColorbarCB(COLORBAR_LIST);
     break;
   case COLORBAR_SAVE_CSV:
     cbi = colorbarinfo + colorbartype;

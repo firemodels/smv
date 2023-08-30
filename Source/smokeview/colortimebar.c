@@ -1106,7 +1106,8 @@ void UpdateColorbarOrig(void){
 
     cbi = colorbarinfo + i;
     cbi->nnodes_orig = cbi->nnodes;
-    memcpy(cbi->node_index_orig, cbi->node_index, cbi->nnodes * sizeof(int));
+    memcpy(cbi->node_index_orig, cbi->node_index, cbi->nnodes*sizeof(int));
+    memcpy(cbi->node_rgb_orig,   cbi->node_rgb,   cbi->nnodes*sizeof(int));
   }
 }
 
@@ -1114,7 +1115,8 @@ void UpdateColorbarOrig(void){
 
 void RevertColorBar(colorbardata *cbi){
   cbi->nnodes = cbi->nnodes_orig;
-  memcpy(cbi->node_index, cbi->node_index_orig, cbi->nnodes * sizeof(int));
+  memcpy(cbi->node_index, cbi->node_index_orig, cbi->nnodes*sizeof(int));
+  memcpy(cbi->node_rgb,   cbi->node_rgb_orig,   cbi->nnodes*sizeof(int));
 }
 
 /* ------------------ CompareColorbars ------------------------ */
