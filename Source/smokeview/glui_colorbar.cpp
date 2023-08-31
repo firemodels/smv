@@ -472,6 +472,7 @@ extern "C" void ColorbarCB(int var){
     if(colorbartype >= ncolorbars)return;
     cbi = colorbarinfo + colorbartype;
     if(colorbarpoint<0 || colorbarpoint>cbi->nnodes - 1)return;
+    if(cbi->nnodes <= 2)return;
 
     if(cbi->nnodes <= 1)return;
     for(i = colorbarpoint + 1;i < cbi->nnodes;i++){
@@ -485,9 +486,13 @@ extern "C" void ColorbarCB(int var){
       rgb1[2] = rgb2_local[2];
     }
     cbi->nnodes--;
+    if(colorbarpoint == cbi->nnodes){
+      colorbarpoint = cbi->nnodes - 1;
+      cbi->node_index[colorbarpoint] = 255;
+    }
+    if(colorbarpoint == 0)cbi->node_index[colorbarpoint] = 0;
     RemapColorbar(cbi);
     UpdateRGBColors(COLORBAR_INDEX_NONE);
-    if(colorbarpoint == cbi->nnodes)colorbarpoint = cbi->nnodes - 1;
     nodes_rgb = cbi->node_rgb + 3 * colorbarpoint;
     for(i = 0;i < 3;i++){
       cb_rgb[i] = nodes_rgb[i];
