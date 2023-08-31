@@ -279,8 +279,6 @@ typedef struct _treedata {
 #define CB_OTHER      7
 #define INTERP_RGB    0
 #define INTERP_LAB    1
-#define COLOR_DIST_L   0
-#define COLOR_DIST_LAB 1
 typedef struct _colorbardata {
   char menu_label[1024];        // menu label
   char colorbar_type[256];      // rainbow, linear, divergent, etc
@@ -294,7 +292,6 @@ typedef struct _colorbardata {
   float colorbar_dist_delta[1024];
 #endif
   int interp;   // (LAB or RGB)
-  int dist_type; // (LAB or L)
   int can_adjust;
   float colorbar_rgb[3*1024], colorbar_lab[3*1024];
 } colorbardata;

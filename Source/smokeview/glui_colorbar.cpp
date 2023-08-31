@@ -61,7 +61,10 @@ GLUI_Checkbox *CHECKBOX_cb_interp = NULL;
 GLUI_EditText *EDITTEXT_colorbar_label    =NULL;
 GLUI_EditText *EDITTEXT_colorbar_filename = NULL;
 
-GLUI_StaticText *STATICTEXT_left=NULL, *STATICTEXT_right=NULL, *STATICTEXT_node_label=NULL;
+GLUI_StaticText *STATICTEXT_left = NULL, *STATICTEXT_right = NULL, *STATICTEXT_node_label = NULL;
+#ifdef pp_ADJUSTED
+GLUI_StaticText *STATICTEXT_adjustable = NULL;
+#endif
 
 int cb_usecolorbar_extreme;
 
@@ -80,7 +83,6 @@ int cb_usecolorbar_extreme;
 #define COLORBAR_PREV                21
 #define COLORBAR_NEXT                22
 #define COLORBAR_ADJUST_LAB          23
-#define COLORBAR_ADJUST_L            33
 #define COLORBAR_REVERT              24
 #define COLORBAR_LAB2                26
 #define COLORBAR_RGB2                27
@@ -106,6 +108,16 @@ void ColorbarGeneral2Simple(colorbardata *cbi){
 
   sprintf(label_nodes, "nodes: %i", cbi->nnodes); 
   STATICTEXT_node_label->set_name(label_nodes);
+#ifdef pp_ADJUSTED
+  if(cbi->can_adjust == 1){
+    strcpy(label_nodes, "adjusted: yes");
+    STATICTEXT_adjustable->set_name(label_nodes);
+  }
+  else{
+    strcpy(label_nodes, "adjusted: no");
+    STATICTEXT_adjustable->set_name(label_nodes);
+  }
+#endif
 
   if(cbi->nnodes > 5||cbi->nnodes<2){
     for(i = 0;i < 15;i++){
@@ -637,7 +649,6 @@ extern "C" void ColorbarCB(int var){
     for(i = 0;i < 3;i++){
       nodes_rgb[i] = cb_rgb[i];
     }
- //   AdjustColorBarLab(cbi);
     RemapColorbar(cbi);
     UpdateRGBColors(COLORBAR_INDEX_NONE);
     break;
@@ -755,11 +766,7 @@ extern "C" void ColorbarCB(int var){
     }
     break;
   case COLORBAR_ADJUST_LAB:
-    AdjustColorBar(colorbarinfo + colorbartype, COLOR_DIST_LAB);
-    ColorbarCB(COLORBAR_RGB);
-    break;
-  case COLORBAR_ADJUST_L:
-    AdjustColorBar(colorbarinfo + colorbartype, COLOR_DIST_L);
+    AdjustColorBar(colorbarinfo + colorbartype);
     ColorbarCB(COLORBAR_RGB);
     break;
   case COLORBAR_REVERT:
@@ -1004,6 +1011,10 @@ extern "C" void GluiColorbarSetup(int main_window){
   
   strcpy(label_nodes, "nodes");
   STATICTEXT_node_label = glui_colorbar->add_statictext_to_panel(PANEL_cb4, label_nodes);
+#ifdef pp_ADJUSTED
+  STATICTEXT_adjustable = glui_colorbar->add_statictext_to_panel(PANEL_cb4, "");
+#endif
+
 
   SPINNER_rgb[0]->set_int_limits(0,255);
   SPINNER_rgb[1]->set_int_limits(0,255);
@@ -1035,7 +1046,7 @@ extern "C" void GluiColorbarSetup(int main_window){
   SPINNER_rgb2[0] = glui_colorbar->add_spinner_to_panel(PANEL_cb12, _("red"),   GLUI_SPINNER_FLOAT, cb_frgb2,     COLORBAR_RGB2, ColorbarCB);
   SPINNER_rgb2[1] = glui_colorbar->add_spinner_to_panel(PANEL_cb12, _("green"), GLUI_SPINNER_FLOAT, cb_frgb2 + 1, COLORBAR_RGB2, ColorbarCB);
   SPINNER_rgb2[2] = glui_colorbar->add_spinner_to_panel(PANEL_cb12, _("blue"),  GLUI_SPINNER_FLOAT, cb_frgb2 + 2, COLORBAR_RGB2, ColorbarCB);
-  glui_colorbar->add_button_to_panel(PANEL_cb12, "Copy rgb", COLORBAR_LAB2GEN, ColorbarCB);
+  glui_colorbar->add_button_to_panel(PANEL_cb12, "Copy rgb to colorbar", COLORBAR_LAB2GEN, ColorbarCB);
   glui_colorbar->add_column_to_panel(PANEL_cb12, false);
   SPINNER_Lab2[0] = glui_colorbar->add_spinner_to_panel(PANEL_cb12, _("L"), GLUI_SPINNER_FLOAT, cb_lab2,     COLORBAR_LAB2, ColorbarCB);
   SPINNER_Lab2[1] = glui_colorbar->add_spinner_to_panel(PANEL_cb12, _("a"), GLUI_SPINNER_FLOAT, cb_lab2 + 1, COLORBAR_LAB2, ColorbarCB);
@@ -1050,12 +1061,12 @@ extern "C" void GluiColorbarSetup(int main_window){
   ColorbarGlobal2Local();
 
   PANEL_cb14 = glui_colorbar->add_panel_to_panel(ROLLOUT_cb_display,"", GLUI_PANEL_NONE);
-  glui_colorbar->add_button_to_panel(PANEL_cb14, "Equal Lab distance",    COLORBAR_ADJUST_LAB, ColorbarCB);
-  glui_colorbar->add_button_to_panel(PANEL_cb14, "Revert",                COLORBAR_REVERT,     ColorbarCB);
+  glui_colorbar->add_button_to_panel(PANEL_cb14, "Equilibrate colorbar",    COLORBAR_ADJUST_LAB, ColorbarCB);
   glui_colorbar->add_column_to_panel(PANEL_cb14, false);
-  glui_colorbar->add_button_to_panel(PANEL_cb14, "Equal L distance",      COLORBAR_ADJUST_L,   ColorbarCB);
-  glui_colorbar->add_button_to_panel(PANEL_cb14, "Save csv",              COLORBAR_SAVE_CSV,       ColorbarCB);
-  EDITTEXT_colorbar_filename = glui_colorbar->add_edittext_to_panel(ROLLOUT_cb_display, "filename:", GLUI_EDITTEXT_TEXT, colorbar_filename);
+  glui_colorbar->add_button_to_panel(PANEL_cb14, "Revert colorbar",                COLORBAR_REVERT,     ColorbarCB);
+  glui_colorbar->add_column_to_panel(PANEL_cb14, false);
+  glui_colorbar->add_button_to_panel(PANEL_cb14, "Save colorbar as csv file",              COLORBAR_SAVE_CSV,       ColorbarCB);
+  EDITTEXT_colorbar_filename = glui_colorbar->add_edittext_to_panel(ROLLOUT_cb_display, "csv filename:", GLUI_EDITTEXT_TEXT, colorbar_filename);
   EDITTEXT_colorbar_filename->set_w(200);
   UpdateColorbarEdit();
 

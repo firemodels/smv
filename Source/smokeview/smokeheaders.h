@@ -717,7 +717,7 @@ EXTERNCPP void UpdateColorbarListBound(int flag);
 EXTERNCPP void UpdateColorbarListEdit(int flag,int del);
 EXTERNCPP void CheckLab(void);
 
-EXTERNCPP void AdjustColorBar(colorbardata *cbi, int option);
+EXTERNCPP void AdjustColorBar(colorbardata *cbi);
 EXTERNCPP void AdjustColorBarLab(colorbardata *cbi);
 EXTERNCPP void RevertColorBar(colorbardata *cbi);
 EXTERNCPP void Rgb2Lab(unsigned char *rgb, float *lab);

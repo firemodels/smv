@@ -606,10 +606,9 @@ void UpdateCurrentColorbar(colorbardata *cb){
 
 /* ------------------ AdjustColorBar ------------------------ */
 
-void AdjustColorBar(colorbardata *cbi, int option){
+void AdjustColorBar(colorbardata *cbi){
   int i;
 
-  cbi->dist_type = option;
   cbi->node_dist[0] = 0.0;
   for(i = 1;i < cbi->nnodes;i++){
     unsigned char *rgb1_local, *rgb2_local;
@@ -619,14 +618,9 @@ void AdjustColorBar(colorbardata *cbi, int option){
     rgb1_local = rgb2_local - 3;
     Rgb2Lab(rgb1_local, lab1);
     Rgb2Lab(rgb2_local, lab2);
-    if(option == COLOR_DIST_LAB){
-      float dx, dy, dz;
+    float dx, dy, dz;
 
-      DDIST3(lab1, lab2, dist);
-    }
-    else{
-      dist = ABS(lab1[0] - lab2[0]);
-    }
+    DDIST3(lab1, lab2, dist);
     cbi->node_dist[i] = cbi->node_dist[i - 1] + dist;
   }
 
@@ -648,7 +642,7 @@ void AdjustColorBar(colorbardata *cbi, int option){
 
 void AdjustColorBarLab(colorbardata *cbi){
   if(cbi->can_adjust == 0)return;
-  AdjustColorBar(cbi, COLOR_DIST_LAB);
+  AdjustColorBar(cbi);
 }
 
 /* ------------------ FRgb2Lab ------------------------ */
@@ -736,12 +730,7 @@ void Rgb2Dist(colorbardata *cbi){
     rgb2f = cbi->colorbar_rgb + 3*i;
     Rgbf2Lab(rgb1f, lab1);
     Rgbf2Lab(rgb2f, lab2);
-    if(cbi->dist_type==COLOR_DIST_LAB){
-      DDIST3(lab1, lab2, dist_lab);
-    }
-    else{
-      dist_lab = ABS(lab1[0]-lab2[0]);
-    }
+    DDIST3(lab1, lab2, dist_lab);
     colorbar_dist[i] = colorbar_dist[i - 1] + dist_lab;
   }
   total_dist = colorbar_dist[255];
@@ -1981,8 +1970,7 @@ void InitDefaultColorbars(int nini){
   for(i=0;i<ndefaultcolorbars;i++){
     cbi = colorbarinfo + i;
 
-    cbi->interp = INTERP_LAB; // note: was using INTERP_RGB for the Rainbow colorbar
-    cbi->dist_type = COLOR_DIST_LAB;
+    cbi->interp = INTERP_LAB;
     RemapColorbar(cbi);
     memcpy(cbi->node_rgb_orig, cbi->node_rgb, 3 * cbi->nnodes * sizeof(unsigned char));
   }
@@ -1992,7 +1980,7 @@ void InitDefaultColorbars(int nini){
     cbi = colorbarinfo + i;
     cbi->interp = INTERP_LAB;
     if(cbi->can_adjust==1){
-      AdjustColorBar(cbi, COLOR_DIST_LAB);
+      AdjustColorBar(cbi);
     }
   }
   memcpy(colorbarcopyinfo, colorbarinfo, ncolorbars * sizeof(colorbardata));
