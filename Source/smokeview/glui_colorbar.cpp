@@ -630,6 +630,7 @@ extern "C" void ColorbarCB(int var){
     for(i = 0;i < 3;i++){
       nodes_rgb[i] = cb_rgb[i];
     }
+ //   AdjustColorBarLab(cbi);
     RemapColorbar(cbi);
     UpdateRGBColors(COLORBAR_INDEX_NONE);
     break;

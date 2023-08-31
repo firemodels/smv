@@ -295,6 +295,7 @@ typedef struct _colorbardata {
 #endif
   int interp;   // (LAB or RGB)
   int dist_type; // (LAB or L)
+  int can_adjust;
   float colorbar_rgb[3*1024], colorbar_lab[3*1024];
 } colorbardata;
 

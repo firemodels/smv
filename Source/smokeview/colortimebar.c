@@ -644,6 +644,13 @@ void AdjustColorBar(colorbardata *cbi, int option){
   }
 }
 
+/* ------------------ AdjustColorBarLab ------------------------ */
+
+void AdjustColorBarLab(colorbardata *cbi){
+  if(cbi->can_adjust == 0)return;
+  AdjustColorBar(cbi, COLOR_DIST_LAB);
+}
+
 /* ------------------ FRgb2Lab ------------------------ */
 
 void FRgb2Lab(float *rgb_arg, float *lab){
@@ -952,6 +959,8 @@ void RemapColorbar(colorbardata *cbi){
   node_rgb       = cbi->node_rgb;
   colorbar_lab   = cbi->colorbar_lab;
   colorbar_alpha = cbi->colorbar_alpha;
+
+  AdjustColorBarLab(cbi);
 
   for(i=0;i<cbi->node_index[0];i++){
     colorbar_rgb[0+3*i] = node_rgb[0]/255.0;
@@ -1265,6 +1274,7 @@ int AddColorbar(int icolorbar){
   strcpy(cb_label, cb_to->menu_label);
   strcpy(cb_to->colorbar_type, "user defined");
   cb_to->interp = INTERP_LAB;
+  cb_to->can_adjust = 1;
   RemapColorbar(cb_to);
   UpdateColorbarDialogs();
 
@@ -1314,6 +1324,11 @@ void InitDefaultColorbars(int nini){
   NewMemory((void **)&colorbarinfo,(ncolorbars+nini)*sizeof(colorbardata));
   NewMemory(( void ** )&colorbarcopyinfo, (ncolorbars + nini) * sizeof(colorbardata));
   UpdateCurrentColorbar(colorbarinfo + colorbartype);
+
+  for(i=0;i<ncolorbars;i++){
+    cbi = colorbarinfo + i;
+    cbi->can_adjust = 1;
+  }
 
   cbi = colorbarinfo;
 
@@ -1516,6 +1531,8 @@ void InitDefaultColorbars(int nini){
   cbi->node_rgb[9]=255;
   cbi->node_rgb[10]=0;
   cbi->node_rgb[11]=0;
+
+  cbi->can_adjust = 0;
   strcpy(cbi->colorbar_type, "divergent");
   cbi++;
 
@@ -1574,6 +1591,8 @@ void InitDefaultColorbars(int nini){
   cbi->node_rgb[15]=255;
   cbi->node_rgb[16]=155;
   cbi->node_rgb[17]=0;
+
+  cbi->can_adjust = 0;
   strcpy(cbi->colorbar_type, "original");
   cbi++;
 
@@ -1603,6 +1622,8 @@ void InitDefaultColorbars(int nini){
   cbi->node_rgb[9]=255;
   cbi->node_rgb[10]=128;
   cbi->node_rgb[11]=0;
+
+  cbi->can_adjust = 0;
   strcpy(cbi->colorbar_type, "original");
   cbi++;
 
@@ -1662,6 +1683,8 @@ void InitDefaultColorbars(int nini){
   cbi->node_rgb[27]=255;
   cbi->node_rgb[28]=255;
   cbi->node_rgb[29]=238;
+
+  cbi->can_adjust = 0;
   strcpy(cbi->colorbar_type, "original");
   cbi++;
 
@@ -1774,6 +1797,8 @@ void InitDefaultColorbars(int nini){
   cbi->node_rgb[15]=64;
   cbi->node_rgb[16]=64;
   cbi->node_rgb[17]=64;
+
+  cbi->can_adjust = 0;
   strcpy(cbi->colorbar_type, "original");
   cbi++;
 
@@ -1804,6 +1829,8 @@ void InitDefaultColorbars(int nini){
   cbi->node_rgb[9]=253;
   cbi->node_rgb[10]=254;
   cbi->node_rgb[11]=255;
+
+  cbi->can_adjust = 0;
   strcpy(cbi->colorbar_type, "original");
   cbi++;
 
@@ -1821,6 +1848,8 @@ void InitDefaultColorbars(int nini){
   for(i = 0; i < 12; i++){
     cbi->node_rgb[i] = colorsplit[i];
   }
+
+  cbi->can_adjust = 0;
   strcpy(cbi->colorbar_type, "original");
   cbi++;
 
@@ -1892,6 +1921,8 @@ void InitDefaultColorbars(int nini){
   cbi->node_rgb[12] = 255;
   cbi->node_rgb[13] = 255;
   cbi->node_rgb[14] = 255;
+
+  cbi->can_adjust = 0;
   strcpy(cbi->colorbar_type, "original");
   cbi++;
 
@@ -1917,22 +1948,27 @@ void InitDefaultColorbars(int nini){
   cbi->node_rgb[7] = 255;
   cbi->node_rgb[8] = 255;
   strcpy(cbi->colorbar_type, "original");
+  cbi->can_adjust = 0;
   cbi++;
 
   for(i = 0;i < nlinear_filelist;i++){
     ReadCSVColorbar(cbi, colorbars_linear_dir,  linear_filelist[i].file,      "linear",    CB_LINEAR);
+    cbi->can_adjust = 1;
     cbi++;
   }
   for(i = 0;i < ncircular_filelist;i++){
     ReadCSVColorbar(cbi, colorbars_circular_dir,  circular_filelist[i].file,  "circular",  CB_CIRCULAR);
+    cbi->can_adjust = 1;
     cbi++;
   }
   for(i = 0;i < nrainbow_filelist;i++){
     ReadCSVColorbar(cbi, colorbars_rainbow_dir,  rainbow_filelist[i].file,    "rainbow",   CB_RAINBOW);
+    cbi->can_adjust = 1;
     cbi++;
   }
   for(i = 0;i < ndivergent_filelist;i++){
     ReadCSVColorbar(cbi, colorbars_divergent_dir, divergent_filelist[i].file, "divergent", CB_DIVERGENT);
+    cbi->can_adjust = 1;
     cbi++;
   }
   for(i = 0;i < nuser_filelist;i++){
@@ -1955,6 +1991,9 @@ void InitDefaultColorbars(int nini){
   for(i = 0;i < ncolorbars;i++){
     cbi = colorbarinfo + i;
     cbi->interp = INTERP_LAB;
+    if(cbi->can_adjust==1){
+      AdjustColorBar(cbi, COLOR_DIST_LAB);
+    }
   }
   memcpy(colorbarcopyinfo, colorbarinfo, ncolorbars * sizeof(colorbardata));
 }
