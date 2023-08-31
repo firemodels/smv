@@ -2562,7 +2562,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
    PRINTF(" - %.0f kB in %.1f s\n", (float)return_filesize / 1000., total_time);
   }
 
-  if(hist_update_time>0.0){
+  if(show_timings==1&&hist_update_time>0.0){
     PRINTF(" data distribution update time: %.1f s\n", hist_update_time);
   }
   update_patch_bounds = ifile;
