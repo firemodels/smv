@@ -231,6 +231,9 @@ void DrawColorbarPathRGB(void){
   glVertex3f(PLEFT2,PLEFT2,PRIGHT2);
 
   glEnd();
+  Output3Text(foregroundcolor, PRIGHT2, PLEFT2,  PLEFT2,  "R");
+  Output3Text(foregroundcolor, PLEFT2,  PRIGHT2, PLEFT2,  "G");
+  Output3Text(foregroundcolor, PLEFT2,  PLEFT2,  PRIGHT2, "B");
 
   if(colorbarpoint>=0&&colorbarpoint<cbi->nnodes){
     unsigned char *rgbleft;
@@ -455,19 +458,21 @@ void DrawColorbarPathLab(void){
     Lab2XYZ(xyz, cbi->colorbar_lab + 3*i);
     glVertex3f(xyz[1],xyz[2],xyz[0]);
   }
-  glEnd();
   glColor3fv(foregroundcolor);
+  glLineWidth(5.0);
   glBegin(GL_LINES);
-  glVertex3f(0.0,0.0,0.0);
-  glVertex3f(1.0, 0.0, 0.0);
-  glVertex3f(0.0, 0.0, 0.0);
-  glVertex3f(0.0, 1.0, 0.0);
-  glVertex3f(0.0, 0.0, 0.0);
-  glVertex3f(0.0, 0.0, 1.0);
+  glVertex3f(PLEFT2, PLEFT2, PLEFT2);
+  glVertex3f(PRIGHT2, PLEFT2, PLEFT2);
+
+  glVertex3f(PLEFT2, PLEFT2, PLEFT2);
+  glVertex3f(PLEFT2, PRIGHT2, PLEFT2);
+
+  glVertex3f(PLEFT2, PLEFT2, PLEFT2);
+  glVertex3f(PLEFT2, PLEFT2, PRIGHT2);
   glEnd();
-  Output3Text(foregroundcolor, 1.05, 0.0, 0.0, "a*");
-  Output3Text(foregroundcolor, 0.0, 1.05, 0.0, "b*");
-  Output3Text(foregroundcolor, 0.0, 0.0, 1.05, "L*");
+  Output3Text(foregroundcolor, PRIGHT2, PLEFT2,  PLEFT2,  "a*");
+  Output3Text(foregroundcolor, PLEFT2,  PRIGHT2, PLEFT2,  "b*");
+  Output3Text(foregroundcolor, PLEFT2,  PLEFT2,  PRIGHT2, "L*");
 
   glPointSize(10.0);
   glBegin(GL_POINTS);
