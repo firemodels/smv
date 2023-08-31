@@ -476,6 +476,13 @@ extern "C" void ColorbarCB(int var){
     RemapColorbar(cbi);
     UpdateRGBColors(COLORBAR_INDEX_NONE);
     if(colorbarpoint == cbi->nnodes)colorbarpoint = cbi->nnodes - 1;
+    nodes_rgb = cbi->node_rgb + 3 * colorbarpoint;
+    for(i = 0;i < 3;i++){
+      cb_rgb[i] = nodes_rgb[i];
+      SPINNER_rgb[i]->set_int_val(cb_rgb[i]);
+    }
+    SPINNER_colorindex->set_int_val(cbi->node_index[colorbarpoint]);
+    cb_colorindex = cbi->node_index[colorbarpoint];
     ColorbarGeneral2Simple(colorbarinfo + colorbartype);
     ColorbarCB(COLORBAR_SIMPLE_ABLE);
     break;
