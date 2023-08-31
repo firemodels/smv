@@ -911,7 +911,7 @@ extern "C" void GluiColorbarSetup(int main_window){
     glui_colorbar->close();
     glui_colorbar=NULL;
   }
-  glui_colorbar = GLUI_Master.create_glui(_("Edit Colorbar nodes"),0,0,0);
+  glui_colorbar = GLUI_Master.create_glui(_("Edit Colorbar"),0,0,0);
   if(showcolorbar_dialog==0)glui_colorbar->hide();
 
   PANEL_cb1 = glui_colorbar->add_panel(_("Colorbar"));
@@ -942,7 +942,7 @@ extern "C" void GluiColorbarSetup(int main_window){
   glui_colorbar->add_column_to_panel(PANEL_cb11r,false);
   BUTTON_next     = glui_colorbar->add_button_to_panel(PANEL_cb11r, _("Next"),     COLORBAR_NEXT, ColorbarCB);
 
-  PANEL_edit_colorbar = glui_colorbar->add_panel("Edit colorbar");
+  PANEL_edit_colorbar = glui_colorbar->add_panel("Edit colorbar nodes");
 
   ROLLOUT_simple_point = glui_colorbar->add_rollout_to_panel(PANEL_edit_colorbar, "1->5 nodes");
   char column_label[sizeof(GLUI_String)];
