@@ -2994,9 +2994,76 @@ void ReloadMenu(int value){
   }
 }
 
+/* ------------------ MemoryTest ------------------------ */
+
+#define GIGA 1073741824
+#define MEGA 1048576
+void MemoryTest(void){
+  unsigned char *buffer1 = NULL, *buffer2 = NULL;
+  int i;
+  int value=1;
+
+  NewMemory((void **)&buffer1, GIGA);
+  NewMemory((void **)&buffer2, GIGA);
+  memset(buffer1, value, GIGA);
+  for(i = 1;i <= 4;i++){
+    FILE *stream;
+    float mem_timer, disk_timer;
+    float mem_rate, disk_rate;
+    int j;
+
+    START_TIMER(mem_timer);
+    for(j=0;j<i;j++){
+      memcpy(buffer2, buffer1, GIGA);
+    }
+    STOP_TIMER(mem_timer);
+
+    stream = fopen("test.bin", "wb");
+    if(stream != NULL){
+      START_TIMER(disk_timer);
+      for(j=0;j<i;j++){
+        fwrite(buffer1, 1, GIGA, stream);
+      }
+      STOP_TIMER(disk_timer);
+    }
+    mem_rate = (float)i * (float)GIGA * (float)8 / mem_timer;
+    if(mem_rate > (float)GIGA){
+      printf("memory size: %i GB, time: %f s, rate: %f Gb/s\n", i, mem_timer, mem_rate / (float)GIGA);
+    }
+    else if(mem_rate > (float)MEGA){
+      printf("memory size: %i GB, time: %f s, rate: %f Mb/s\n", i, mem_timer, mem_rate/(float)MEGA);
+    }
+    else{
+      printf("memory size: %i GB, time: %f s, rate: %f b/s\n", i, mem_timer, mem_rate);
+    }
+    if(stream!=NULL){
+      disk_rate = (float)i*(float)GIGA*(float)8/disk_timer;
+      if(disk_rate > (float)GIGA){
+        printf("disk size: %i GB, time: %f s, rate: %f Gb/s\n", i, disk_timer, disk_rate / (float)GIGA);
+      }
+      else if(disk_rate > (float)MEGA){
+        printf("disk size: %i GB, time: %f s, rate: %f Mb/s\n", i, disk_timer, disk_rate / (float)MEGA);
+      }
+      else{
+        printf("disk size: %i GB, time: %f s, rate: %f b/s\n", i, disk_timer, disk_rate);
+      }
+      fclose(stream);
+      stream = fopen("test.bin", "wb");
+      if(stream != NULL){
+        fwrite(buffer1, 1, 1, stream);
+        fclose(stream);
+      }
+    }
+    printf("\n");
+  }
+  FREEMEMORY(buffer1);
+  FREEMEMORY(buffer2);
+}
+
 /* ------------------ AboutMenu ------------------------ */
 
 void AboutMenu(int value){
+  if(value == 2)MemoryTest();
 }
 
 /* ------------------ LoadVolsmoke3DMenu ------------------------ */
@@ -11526,6 +11593,7 @@ updatemenu=0;
     glutAddMenuEntry("  Platform: LINUX64", 1);
 #endif
     GLUTADDSUBMENU(_("Disclaimer"),disclaimermenu);
+    glutAddMenuEntry("Data transfer test", 2);
   }
 
   /* --------------------------------web help menu -------------------------- */
