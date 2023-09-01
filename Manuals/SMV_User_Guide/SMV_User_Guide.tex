@@ -4172,7 +4172,7 @@ color with data.  A colorbar is represented in Smokeview as a table of 256 rows 
 of red, green and blue color components, each component ranging from 0 to 255.
 When constructing a colorbar, it is convenient to associate these components with x, y and z spatial coordinates where a cube side corresponds to a color component.  A colorbar
 may then be thought of as a path within this cube.
-The lower left front corner 
+The lower left front corner
 is colored black (all components are 0) and the upper right back corner is colored
 white (all components are 255).  Other corners are colored red, green, blue, cyan, magenta and
 yellow.
@@ -4180,7 +4180,7 @@ Figure \ref{figCOLORBAR_EXAMPLES}\ gives several examples of colorbars pre-defin
 by Smokeview.
 
 To construct a colorbar, one defines a set of nodes forming a path
-within the color cube.  Smokeview then interpolates colors between these nodes 
+within the color cube.  Smokeview then interpolates colors between these nodes
 to form the colorbar.  Though most colorbars paths are continuous, a colorbar
 path need not be.  Discontinuous or split colorbars
 are useful for highlighting regions in a simulation with a particular
@@ -4190,18 +4190,18 @@ Figure \ref{figCOLORBAR_EXAMPLES}c
 gives an example of a colorbar with a break.  This colorbar jumps in the
 middle from a shade of cyan to a shade of yellow.
 
-A goal in constructing a colorbar is for an equal change in data to correspond to 
-an equal change in color. Problems occur when large changes in data correspond 
+A goal in constructing a colorbar is for an equal change in data to correspond to
+an equal change in color. Problems occur when large changes in data correspond
 to small changes in color (flat spots in the colorbar, details in the data are obscured)
-or when small changes in data correspond to large changes in color 
+or when small changes in data correspond to large changes in color
 (hilights appear that are not present in the data).
-One can minimize these problems by using perceptually uniform colorbars.\cite{kovesi2015good}
+One can minimize these problems by using perceptually uniform colorbars\cite{kovesi2015good}.
 To aid in constructing colorbars with this property, the CIELab colorspace is used to interpolate
 between color nodes and to choose spacing of colors between nodes
 since it was designed so that distances between points in this spaces correspond to perception
-color difference (greater the distance greater the perceived color difference). 
+color difference (greater the distance greater the perceived color difference).
 Colorbars (except for those colorbars that are discontinuous)
-are generated so that the distances between each point in CIELab space are equal. 
+are generated so that the distances between each point in CIELab space are equal.
 
 \begin{figure}[bph]
 \begin{center}
@@ -4252,15 +4252,15 @@ The colorbar may displayed using either rgb or CIELab units.
 The Colorbar Editor dialog box, illustrated in Figures \ref{figCOLORBAR},
 is opened by selecting the {\em Dialogs$>$View$>$Edit colorbar}\ menu entry. When this menu item is
 selected, a spatial representation of the currently selected
-colorbar is displayed along with the Colorbar Editor dialog box.  
-Simple colorbars (up to 5 nodes) can be edited using the `1->5`.  
+colorbar is displayed along with the Colorbar Editor dialog box.
+Simple colorbars (up to 5 nodes) can be edited using the `1->5`.
 The `General(2->256)` tab is used to edit
-colorbars with more nodes. 
-The `Display` tab is used to 
-change the coordinate system used to view the colorbar (RGB or CIELab), 
+colorbars with more nodes.
+The `Display` tab is used to
+change the coordinate system used to view the colorbar (RGB or CIELab),
 to toggle between colorbars allowing one to more easily view colorbar differences,
-to revert a colorbar back to its original state and 
-to output a colorbar to a csv file for examining in a spreadsheet program. 
+to revert a colorbar back to its original state and
+to output a colorbar to a csv file for examining in a spreadsheet program.
 
 A colorbar is represented visually in several ways.  First, a series
 of colored nodes and lines within a cube. The cube has three axes:
@@ -4281,7 +4281,7 @@ new colorbar is created initially by making a copy of the
 currently selected colorbar. Once created, it may be altered by
 adding/deleting nodes with the \frameit{Add/Delete}\ buttons and
 altering color with the red, green, blue spinners. The colorbar
-nodes when viewed in RGB mode (not CIELab) may also 
+nodes when viewed in RGB mode (not CIELab) may also
 be selected with the mouse and dragged to change
 their position and hence their value. If the {\tt CTRL}\ key is
 pressed when dragging then the node only moves along a horizontal
