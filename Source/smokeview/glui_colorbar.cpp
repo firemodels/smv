@@ -1028,7 +1028,7 @@ extern "C" void GluiColorbarSetup(int main_window){
   ROLLOUT_cb_display = glui_colorbar->add_rollout("Display");
   ROLLOUT_cb_display->close();
   RADIO_colorbar_coord_type = glui_colorbar->add_radiogroup_to_panel(ROLLOUT_cb_display,&colorbar_coord_type);
-  glui_colorbar->add_radiobutton_to_group(RADIO_colorbar_coord_type, "rgb");
+  glui_colorbar->add_radiobutton_to_group(RADIO_colorbar_coord_type, "RGB");
   glui_colorbar->add_radiobutton_to_group(RADIO_colorbar_coord_type, "CIELab");
   glui_colorbar->add_checkbox_to_panel(ROLLOUT_cb_display,"Show 'CIELab' equal distance bars", &show_Lab_dist_bars);
 
@@ -1044,14 +1044,14 @@ extern "C" void GluiColorbarSetup(int main_window){
   glui_colorbar->add_button_to_panel(PANEL_toggle, _("toggle"), COLORBAR_TOGGLE, ColorbarCB);
   update_colorbar_list = 1;
 
-  PANEL_cb12 = glui_colorbar->add_panel_to_panel(ROLLOUT_cb_display, "rgb<->CIELab");
+  PANEL_cb12 = glui_colorbar->add_panel_to_panel(ROLLOUT_cb_display, "RGB<->CIELab");
   cb_frgb2[0] = 0.0;
   cb_frgb2[1] = 0.0;
   cb_frgb2[2] = 0.0;
   SPINNER_rgb2[0] = glui_colorbar->add_spinner_to_panel(PANEL_cb12, _("red"),   GLUI_SPINNER_FLOAT, cb_frgb2,     COLORBAR_RGB2, ColorbarCB);
   SPINNER_rgb2[1] = glui_colorbar->add_spinner_to_panel(PANEL_cb12, _("green"), GLUI_SPINNER_FLOAT, cb_frgb2 + 1, COLORBAR_RGB2, ColorbarCB);
   SPINNER_rgb2[2] = glui_colorbar->add_spinner_to_panel(PANEL_cb12, _("blue"),  GLUI_SPINNER_FLOAT, cb_frgb2 + 2, COLORBAR_RGB2, ColorbarCB);
-  glui_colorbar->add_button_to_panel(PANEL_cb12, "Copy rgb to colorbar", COLORBAR_LAB2GEN, ColorbarCB);
+  glui_colorbar->add_button_to_panel(PANEL_cb12, "Copy red/green/blue to colorbar", COLORBAR_LAB2GEN, ColorbarCB);
   glui_colorbar->add_column_to_panel(PANEL_cb12, false);
   SPINNER_Lab2[0] = glui_colorbar->add_spinner_to_panel(PANEL_cb12, _("L"), GLUI_SPINNER_FLOAT, cb_lab2,     COLORBAR_LAB2, ColorbarCB);
   SPINNER_Lab2[1] = glui_colorbar->add_spinner_to_panel(PANEL_cb12, _("a"), GLUI_SPINNER_FLOAT, cb_lab2 + 1, COLORBAR_LAB2, ColorbarCB);
@@ -1066,11 +1066,13 @@ extern "C" void GluiColorbarSetup(int main_window){
   ColorbarGlobal2Local();
 
   PANEL_cb14 = glui_colorbar->add_panel_to_panel(ROLLOUT_cb_display,"", GLUI_PANEL_NONE);
+#ifdef pp_EQUILIBRATE
   glui_colorbar->add_button_to_panel(PANEL_cb14, "Equilibrate colorbar",    COLORBAR_ADJUST_LAB, ColorbarCB);
+#endif
   glui_colorbar->add_column_to_panel(PANEL_cb14, false);
-  glui_colorbar->add_button_to_panel(PANEL_cb14, "Revert colorbar",                COLORBAR_REVERT,     ColorbarCB);
+  glui_colorbar->add_button_to_panel(PANEL_cb14, "Revert",                COLORBAR_REVERT,     ColorbarCB);
   glui_colorbar->add_column_to_panel(PANEL_cb14, false);
-  glui_colorbar->add_button_to_panel(PANEL_cb14, "Save colorbar as csv file",              COLORBAR_SAVE_CSV,       ColorbarCB);
+  glui_colorbar->add_button_to_panel(PANEL_cb14, "Save as csv file",              COLORBAR_SAVE_CSV,       ColorbarCB);
   EDITTEXT_colorbar_filename = glui_colorbar->add_edittext_to_panel(ROLLOUT_cb_display, "csv filename:", GLUI_EDITTEXT_TEXT, colorbar_filename);
   EDITTEXT_colorbar_filename->set_w(200);
   UpdateColorbarEdit();

@@ -26,6 +26,7 @@
 
 #ifdef _DEBUG
 #define pp_ADJUSTED          // show whether a colorbar has been adjusted
+#define pp_EQUILIBRATE       // show equilibrate button
 #endif
 
 //#define pp_COLOR_HIDE         // add checkbox to hide/unhide scene when editing a colorbar
