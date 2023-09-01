@@ -3780,18 +3780,21 @@ then Smokeview uses vector\_length set the PLOT3D vector length
 \end{itemize}
 
 \hitemssf{SHOWPLOT3DDATA}Specifies a particular Plot3D plot to be
-displayed (mesh number, whether visible or not, orientation and position)
+displayed (mesh number, orientation, variable, whether visible or not, and position)
 Usage:
 \begin{lstlisting}
 SHOWPLOT3DDATA
-  mesh number (int) plane orientation (int)  display show/hide (0/1) (int) position (float)
+  mesh number (int) plane orientation (int)  plot3d variable (int) show/hide (0/1) (int) position (float)
 \end{lstlisting}
 where
 \begin{itemize}
 \item mesh number - the mesh number (ranges from 1 to the number of meshes),
-\item orientation - direction or orientation of the plane being plotted, 1 for YZ planes, 2 for XZ planes and 3 for XY planes
+\item orientation - direction or orientation of the plane being plotted, 1 for YZ planes, 2 for XZ planes and 3 for XY planes .  
+An orientation of 4 indicates that an isosurface is drawn.
+\item Plot3D variable index (1 to 6).  There are only 5 components in a Plot3D file.  
+If 6 is specified then smokeview constructs a velocity component if any of the U, V or W velocity components are present.
 \item display - 0 if Plot3D plane is hidden, 1 if it is displayed
-\item position - position of Plot3D plane
+\item position - position of Plot3D plane.  If an orientation of 4 is specified then position is an integer index representing the isosurface level.
 \end{itemize}
 \elist
 
