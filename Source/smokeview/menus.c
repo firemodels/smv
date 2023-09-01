@@ -3020,7 +3020,6 @@ void MemoryTest(void){
       START_TIMER(disk_timer);
       for(j=0;j<i;j++){
         fwrite(buffer1, 1, GIGA, stream);
-        rewind(stream);
       }
       STOP_TIMER(disk_timer);
     }
@@ -3046,6 +3045,11 @@ void MemoryTest(void){
         printf("disk size: %i GB, time: %f s, rate: %f b/s\n", i, disk_timer, disk_rate);
       }
       fclose(stream);
+      stream = fopen("test.bin", "wb");
+      if(stream != NULL){
+        fwrite(buffer1, 1, 1, stream);
+        fclose(stream);
+      }
     }
     printf("\n");
   }
