@@ -1029,8 +1029,8 @@ extern "C" void GluiColorbarSetup(int main_window){
   ROLLOUT_cb_display->close();
   RADIO_colorbar_coord_type = glui_colorbar->add_radiogroup_to_panel(ROLLOUT_cb_display,&colorbar_coord_type);
   glui_colorbar->add_radiobutton_to_group(RADIO_colorbar_coord_type, "rgb");
-  glui_colorbar->add_radiobutton_to_group(RADIO_colorbar_coord_type, "Lab");
-  glui_colorbar->add_checkbox_to_panel(ROLLOUT_cb_display,"Show 'Lab' equal distance bars", &show_Lab_dist_bars);
+  glui_colorbar->add_radiobutton_to_group(RADIO_colorbar_coord_type, "CIELab");
+  glui_colorbar->add_checkbox_to_panel(ROLLOUT_cb_display,"Show 'CIELab' equal distance bars", &show_Lab_dist_bars);
 
   PANEL_toggle = glui_colorbar->add_panel_to_panel(ROLLOUT_cb_display, "Toggle");
   LISTBOX_colorbar_toggle_edit1 = glui_colorbar->add_listbox_to_panel(PANEL_toggle, "", &index_colorbar1, COLORBAR_LISTA, ColorbarCB);
@@ -1044,7 +1044,7 @@ extern "C" void GluiColorbarSetup(int main_window){
   glui_colorbar->add_button_to_panel(PANEL_toggle, _("toggle"), COLORBAR_TOGGLE, ColorbarCB);
   update_colorbar_list = 1;
 
-  PANEL_cb12 = glui_colorbar->add_panel_to_panel(ROLLOUT_cb_display, "rgb<->Lab");
+  PANEL_cb12 = glui_colorbar->add_panel_to_panel(ROLLOUT_cb_display, "rgb<->CIELab");
   cb_frgb2[0] = 0.0;
   cb_frgb2[1] = 0.0;
   cb_frgb2[2] = 0.0;
