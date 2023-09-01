@@ -3789,9 +3789,9 @@ SHOWPLOT3DDATA
 where
 \begin{itemize}
 \item mesh number - the mesh number (ranges from 1 to the number of meshes),
-\item orientation - direction or orientation of the plane being plotted, 1 for YZ planes, 2 for XZ planes and 3 for XY planes .  
+\item orientation - direction or orientation of the plane being plotted, 1 for YZ planes, 2 for XZ planes and 3 for XY planes .
 An orientation of 4 indicates that an isosurface is drawn.
-\item Plot3D variable index (1 to 6).  There are only 5 components in a Plot3D file.  
+\item Plot3D variable index (1 to 6).  There are only 5 components in a Plot3D file.
 If 6 is specified then smokeview constructs a velocity component if any of the U, V or W velocity components are present.
 \item display - 0 if Plot3D plane is hidden, 1 if it is displayed
 \item position - position of Plot3D plane.  If an orientation of 4 is specified then position is an integer index representing the isosurface level.
@@ -4167,28 +4167,24 @@ SETTOURKEYFRAME
 \chapter{Coloring Data}
 \label{chap:colorbar}
 \section{Overview}
-A colorbar is used to link
-colors with data values.  A colorbar is normally visualized as a rectangle
-with 256 rows and 3 columns.  The three columns in each row contain the red, green
-glue color components for a data value.
-When editing a colorbar, it is convenient to visualize it
-by thinking of colors spatially by associating red, green and
+A colorbar is used to associate
+colors with data.  A colorbar is represented in Smokeview as a table with 256 rows and 3 columns
+of red, green and blue color components, each component ranging from 0 to 255.
+When constructing a colorbar, it is convenient to associate the red, green and
 blue color components with x, y and z spatial coordinates.  A colorbar
-may then be thought of as a path within a cube where the three axes of the cube
-are red, green and blue.
-The lower left bottom of this cube
-is then colored black and the upper right top corner is colored
-white.  Other corners are colored red, green, blue, cyan, magenta and
-yellow depending on their color components present.
+may then be thought of as a path within a cube.
+The lower left front of this cube
+is colored black (all components are 0) and the upper right back corner is colored
+white (all components are 255).  Other corners are colored red, green, blue, cyan, magenta and
+yellow.
 Figure \ref{figCOLORBAR_EXAMPLES}\ gives several examples of colorbars pre-defined
-by Smokeview.  Each image was generated using the colorbar editor
-illustrated in Fig. \ref{figCOLORBAR}.
+by Smokeview.
 
-A colorbar in Smokeview consists of a set of color nodes forming a path
+A colorbar in Smokeview consists of a set of nodes forming a path
 within a cube.  This way of visualizing it is helpful in defining new
 colorbars by allowing one to more easily judge changes in color within the
 colorbar.  Though most colorbars paths are continuous, a colorbar
-path need not be.  Discontinuous colorbars
+path need not be.  Discontinuous or split colorbars
 are useful for highlighting regions in a simulation with a particular
 property, for example where the temperature exceeds the boiling point of
 water or in a topographic map where a shoreline with zero elevation occurs.
@@ -4225,7 +4221,7 @@ The other three colobars are continuous.
 \begin{center}
 \includegraphics[width=4.236111in]{\SMVfigdir/figCOLORBAR_EDITOR}
 \end{center}
-\caption[Colorbar node editing.]{ Colorbar node editing. 
+\caption[Colorbar node editing.]{ Colorbar node editing.
 One may create or edit an existing colorbar  by
 specifying red, green and/or blue node components each ranging from 0 to 255.  }\ \label{figCOLORBAR}
 \end{figure}
@@ -4241,26 +4237,26 @@ The colorbar may displayed using either rgb or CIELab units.
 
 \section{Using the Colorbar Editor}
 \label{section:colorbar}
-The Colorbar Editor dialog box is opened by selecting the {\em
-Dialogs$>$View$>$Edit colorbar}\ menu entry. When this menu item is
-selected, a spatial representation of the currently selected
-colorbar is displayed within the Smokeview scene along with the
-Colorbar Editor dialog box.  The FDS simulation scene is hidden
-by default but may be shown along with the colorbar display by
-un-checking the {\em Hide scene}\ checkbox.
 
-The colorbar is represented visually in two ways.  First, a series
+The Colorbar Editor dialog box, illustrated in Figures \ref{figCOLORBAR} and \ref{figCOLORBAR2},
+is opened by selecting the {\em Dialogs$>$View$>$Edit colorbar}\ menu entry. When this menu item is
+selected, a spatial representation of the currently selected
+colorbar is displayed along with the Colorbar Editor dialog box.  The `1->5` nodes tab is used
+to edit simple colorbars containing only a few nodes.  The `General(2->256)` tab is used to edit
+colorbars with up to 256 nodes. The `Display` tab is used to change color coordinate systems between
+RGB and CIELab, to toggle colorbars allowing one to easily compare colorbars and to output
+a colorbar to a csv file. 
+
+A colorbar is represented visually in several ways.  First, a series
 of colored nodes and lines within a cube. The cube has three axes:
-red along the x direction), green along the y direction and blue along the z direction.
-The nodes and lines are a spatial representation of the colorbar where as
-stated earlier the red, green, blue color components are mapped to x, y, z spatial
-coordinates.
-The second way a colorbar is represented is as a rectangle with a series of colored squares and numbered
-indices
-displayed along the side. This rectangle is equivalent to the colorbar
+red, green and blue
+or L (lightness), a (red/green) and b (yellow/blue) if the CIELab color space is selected.
+The nodes and lines are a spatial representation of the colors.
+The color components (whether RGB or CIELab) are mapped to x, y, z spatial coordinates.
+The second way a colorbar is represented is as a rectangle with a series of colored squares and numbered indices displayed along the side. This rectangle is equivalent to the colorbar
 displayed beside a regular Smokeview scene.  The numbered indices indicate
 the position in the colorbar , from 0 to 255, where the node color occurs.
-Once the node indices and colors are defined, Smokeview interpolates to
+Once the node indices and colors are defined, Smokeview interpolates them to
 form a table of colors. This table has  256 rows and 3 columns.
 
 The Colorbar Editor dialog box contains a list of colorbars
