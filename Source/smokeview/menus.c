@@ -2991,12 +2991,30 @@ void ReloadMenu(int value){
   }
 }
 
-/* ------------------ MemoryTest ------------------------ */
+/* ------------------ OutputTImingStats ------------------------ */
 
 #define GIGA 1073741824
 #define MEGA 1048576
+void OutputTimingStats(int i, float timer, char *label){
+  float rate;
+
+  rate = (float)i * (float)GIGA * (float)8 / timer;
+  if(rate > (float)GIGA){
+    printf("%s stats: time: %f s, rate: %f Gb/s\n", label, timer, rate / (float)GIGA);
+  }
+  else if(rate > (float)MEGA){
+    printf("%s stats: time: %f s, rate: %f Mb/s\n", label, timer, rate/(float)MEGA);
+  }
+  else{
+    printf("%s stats: time: %f s, rate: %f b/s\n",  label, timer, rate);
+  }
+}
+
+/* ------------------ MemoryTest ------------------------ */
+
 void MemoryTest(void){
   unsigned char *buffer1 = NULL, *buffer2 = NULL;
+  int diskread = 0, diskwrite = 1;
   int i;
   int value=1;
 
@@ -3005,8 +3023,7 @@ void MemoryTest(void){
   memset(buffer1, value, GIGA);
   for(i = 1;i <= 4;i++){
     FILE *stream;
-    float mem_timer, disk_timer;
-    float mem_rate, disk_rate;
+    float mem_timer, diskwrite_timer, diskread_timer;
     int j;
 
     START_TIMER(mem_timer);
@@ -3017,33 +3034,32 @@ void MemoryTest(void){
 
     stream = fopen("test.bin", "wb");
     if(stream != NULL){
-      START_TIMER(disk_timer);
+      diskwrite = 1;
+      START_TIMER(diskwrite_timer);
       for(j=0;j<i;j++){
         fwrite(buffer1, 1, GIGA, stream);
       }
-      STOP_TIMER(disk_timer);
+      STOP_TIMER(diskwrite_timer);
+      fclose(stream);
+      stream = fopen("test.bin", "rb");
+      if(stream != NULL){
+        diskread = 1;
+        START_TIMER(diskread_timer);
+        for(j = 0;j < i;j++){
+          fread(buffer1, 1, GIGA, stream);
+        }
+        STOP_TIMER(diskread_timer);
+      }
     }
-    mem_rate = (float)i * (float)GIGA * (float)8 / mem_timer;
-    if(mem_rate > (float)GIGA){
-      printf("memory size: %i GB, time: %f s, rate: %f Gb/s\n", i, mem_timer, mem_rate / (float)GIGA);
+    printf("%i GB\n", i);
+    OutputTimingStats(i, mem_timer, "memory");
+    if(diskread == 1){
+      OutputTimingStats(i, diskread_timer, "disk read");
     }
-    else if(mem_rate > (float)MEGA){
-      printf("memory size: %i GB, time: %f s, rate: %f Mb/s\n", i, mem_timer, mem_rate/(float)MEGA);
-    }
-    else{
-      printf("memory size: %i GB, time: %f s, rate: %f b/s\n", i, mem_timer, mem_rate);
+    if(diskwrite == 1){
+      OutputTimingStats(i, diskwrite_timer, "disk write");
     }
     if(stream!=NULL){
-      disk_rate = (float)i*(float)GIGA*(float)8/disk_timer;
-      if(disk_rate > (float)GIGA){
-        printf("disk size: %i GB, time: %f s, rate: %f Gb/s\n", i, disk_timer, disk_rate / (float)GIGA);
-      }
-      else if(disk_rate > (float)MEGA){
-        printf("disk size: %i GB, time: %f s, rate: %f Mb/s\n", i, disk_timer, disk_rate / (float)MEGA);
-      }
-      else{
-        printf("disk size: %i GB, time: %f s, rate: %f b/s\n", i, disk_timer, disk_rate);
-      }
       fclose(stream);
       stream = fopen("test.bin", "wb");
       if(stream != NULL){
