@@ -1,0 +1,25 @@
+RENDERDIR
+ ..\..\Manuals\SMV_User_Guide\SCRIPT_FIGURES
+
+SHOWCBAREDIT
+
+SETCBAR
+ Rainbow
+RENDERONCE
+  colorbar2_rainbow
+  
+SETCBAR
+ blue->green->red
+RENDERONCE
+  colorbar2_blue_green_red
+  
+SETCBAR
+ split
+RENDERONCE
+  colorbar2_split
+  
+SETCBAR
+ black->white
+RENDERONCE
+  colorbar2_black_white
+
