@@ -295,6 +295,9 @@ int GetScriptKeywordIndex(char *keyword){
   if(MatchSSF(keyword,"SHOWHVACDUCTVAL") == MATCH)return SCRIPT_SHOWHVACDUCTVAL;
   if(MatchSSF(keyword,"SHOWHVACNODEVAL") == MATCH)return SCRIPT_SHOWHVACNODEVAL;
   if(MatchSSF(keyword,"HIDEHVACVALS") == MATCH)return SCRIPT_HIDEHVACVALS;
+  if(MatchSSF(keyword,"SHOWCBAREDIT") == MATCH)return SCRIPT_SHOWCBAREDIT;
+  if(MatchSSF(keyword,"HIDECBAREDIT") == MATCH)return SCRIPT_HIDECBAREDIT;
+  if(MatchSSF(keyword,"SETCBAR") == MATCH)return SCRIPT_SETCBAR;
   if(MatchSSF(keyword, "SHOWALLDEVS") == MATCH)return SCRIPT_SHOWALLDEVS;              // documented
   if(MatchSSF(keyword, "HIDEALLDEVS") == MATCH)return SCRIPT_HIDEALLDEVS;              // documented
   if(MatchSSF(keyword, "SHOWDEV") == MATCH)return SCRIPT_SHOWDEV;                      // documented
@@ -584,6 +587,19 @@ NewMemory((void **)&scriptinfo, nscriptinfo*sizeof(scriptdata));
         SETcval;
         break;
 
+// SHOWCBAREDIT
+     case SCRIPT_SHOWCBAREDIT:
+       break;
+        
+// HIDECBAREDIT
+     case SCRIPT_HIDECBAREDIT:
+       break;
+       
+// SETCBAR
+     case SCRIPT_SETCBAR:
+       SETcval;
+       break;
+       
 // SHOWHVACNODEVAL
       case SCRIPT_SHOWHVACNODEVAL:
         SETcval;
@@ -2579,6 +2595,35 @@ void ScriptPlot3dProps(scriptdata *scripti){
   }
 }
 
+/* ------------------ ScriptShowCbarEdit ------------------------ */
+
+void ScriptShowCbarEdit(scriptdata *scripti){
+  showcolorbar_dialog=0;
+  DialogMenu(DIALOG_COLORBAR);
+}
+
+/* ------------------ ScriptHideCbarEdit ------------------------ */
+
+void ScriptHideCbarEdit(scriptdata *scripti){
+  showcolorbar_dialog=1;
+  DialogMenu(DIALOG_COLORBAR);
+}
+
+/* ------------------ ScriptSetCbar ------------------------ */
+
+void ScriptSetCbar(scriptdata *scripti){
+  colorbardata *cb;
+  int cb_index;
+
+  if(scripti->cval!=NULL){
+    cb = GetColorbar(scripti->cval);
+    if(cb != NULL){
+      cb_index = cb - colorbarinfo;
+      ColorbarMenu(cb_index);
+    }
+  }
+}
+
 /* ------------------ ScriptShowHVACDuctVAL ------------------------ */
 
 void ScriptShowHVACDuctVal(scriptdata *scripti){
@@ -3622,6 +3667,15 @@ int RunScriptCommand(scriptdata *script_command){
       break;
     case SCRIPT_SHOWHVACDUCTVAL:
       ScriptShowHVACDuctVal(scripti);
+      break;
+    case SCRIPT_SHOWCBAREDIT:
+      ScriptShowCbarEdit(scripti);
+      break;
+    case SCRIPT_HIDECBAREDIT:
+      ScriptHideCbarEdit(scripti);
+      break;
+    case SCRIPT_SETCBAR:
+      ScriptSetCbar(scripti);
       break;
     case SCRIPT_SHOWHVACNODEVAL:
       ScriptShowHVACNodeVal(scripti);
