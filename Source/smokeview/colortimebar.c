@@ -1357,8 +1357,6 @@ void InitDefaultColorbars(int nini){
   cbi->node_rgb[13]=0;
   cbi->node_rgb[14]=0;
   strcpy(cbi->colorbar_type, "rainbow");
-  cbi->can_adjust = 0;
-
   cbi++;
 
   // Rainbow 2 colorbar
