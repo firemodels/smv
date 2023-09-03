@@ -4207,20 +4207,20 @@ by Smokeview.
 
 To construct a colorbar, one defines a set of nodes forming a path
 within the color cube.  Smokeview then interpolates colors between these nodes
-to form the colorbar.  Though most colorbars paths used by smokeview are continuous, a colorbar
+to form the colorbar.  Though most colorbar paths used by smokeview are continuous, a colorbar
 path need not be.  Discontinuous or split colorbars
 are useful for hilighting regions in a simulation with a particular
 property, for example where the temperature exceeds the boiling point of
 water or in a terrain map where a shoreline with zero elevation occurs.
 Figure \ref{figCOLORBAR_EXAMPLES}c
 gives an example of a colorbar with a break.  This colorbar jumps in the
-middle from  cyan to  yellow.
+middle from  blue to  green.
 
 A goal in constructing a colorbar is to have an equal change in data correspond to
 an equal change in color. Problems occur when large changes in data correspond
 to small changes in color (flat spots in the colorbar, details in the data are obscured)
 or when small changes in data correspond to large changes in color
-(hilights in the visualization appear that are not present in the data).
+(artifacts occur in the visualization that are not present in the data).
 One can minimize these problems by using perceptually uniform colorbars\cite{kovesi2015good}.
 To aid in constructing colorbars with this property, the CIELab colorspace is used to interpolate
 between color nodes and to choose spacing of colors between nodes
@@ -4232,8 +4232,8 @@ Using the terminology of Kovesi\cite{kovesi2015good} colorbars are grouped in sm
 Other groups used in smokeview are original (colorbars that existed in the previous versions of smokeview),
 deprecated (colorbars likely to be
 removed in future versions of smokeview) and user (colorbars created by users). Several of the rainbow, linear and divergent
-colorbars were obtained from \cite{ColorCET}.  All of these colorbars except for those with split in the name were adjusted
-so that they are perceptually uniform.
+colorbars were obtained from Ref. \cite{ColorCET}.  All of these colorbars except for those with split in the name were adjusted
+so that they are perceptually uniform, distances between adjacent colorbar colors in CIELab space are the same.
 
 \begin{figure}[bph]
 \begin{center}
