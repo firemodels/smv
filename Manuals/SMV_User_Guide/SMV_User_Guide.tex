@@ -4299,29 +4299,36 @@ direction.  If the {\tt ALT}\ key is pressed when dragging
 the node is constrained along a vertical direction.
 
 \section{Examples}
+The following examples were created using the Edit Colorbar dialog box which is 
+opened by selecting the Dialogs>View>Edit Colorbar menu item. 
 \subsection{Constant Colorbar}
 
-To create a constant colorbar:
+To create a constant colorbar, a colorbar with just one color:
 \begin{enumerate}
-\item Open the \frameit{1-5 nodes} tab of the Edit colobar dialog box.
-\item Press the \frameit{New} button in the Colorbar tab.
+\item Press the \frameit{New} button in the Colorbar tab. This creates a 2 node colorbar with colors ranging
+from black to white.
 \item select the \frameit{constant} radio button.
-\item Specify the red, green, blue color components for nodes 1.
-\item Specify label and press \frameit{Update label} button in Colorbar panel.
-\item Press \frameit{Save settings} button.
+\item Specify red, green, blue color components for node 1.
+\item Specify a label. Name it constant, and press \frameit{Update label} button in Colorbar panel.
+\item Press the \frameit{Save settings} button. This saves the colorbar just created to the casename.ini
+configuration file.  The next time casename.smv is open, the colorbar constant will appear under user.
 \end{enumerate}
+
+The steps for creating other types of colorbars are similar.
 
 \subsection{Linear Colorbar}
 
-A linear colorbar is a colorbar with two nodes that transitions from tne node 1 color to the node 2 color.
-The node 1 and node 2 colors are converted CIELab coordinates. The coordinates are then interpolated
-linearly.  Finally the interpolated CIELab colors are then converted back to RGB. 
+A linear colorbar is a colorbar with two nodes that transition smoothly 
+from one color at node 1 to a second color at node 2.
+Node 1 and node 2 colors are converted from RGB to CIELab coordinates internally in smokeview. 
+These coordinates are then interpolated
+linearly between nodes 1 and 2 to create 256 CIELab coorindates.  
+Finally these 256 CIELab coordinates are converted back to RGB to form the colorbar.
 To create a linear colorbar:
 \begin{enumerate}
-\item Open the \frameit{1-5 nodes} tab of the Edit colobar dialog box
 \item Press the \frameit{New} button in the Colorbar tab.
-\item select the \frameit{linear (2 nodes)} radio button.
-\item Specify the red, green, blue color components for nodes 1 and 5.
+\item If not already selected, select the \frameit{linear (2 nodes)} radio button.
+\item Specify red, green, and blue color components for nodes 1 and 5.
 \item Specify a label and press \frameit{Update label} button in Colorbar panel.
 \item Press \frameit{Save settings} Button
 \end{enumerate}
@@ -4332,11 +4339,10 @@ A divergent colorbar can be thought of as colorbar with a sharp bend or abrupt c
 viewed as a path in a color space.
 To create a divergent colorbar:
 \begin{enumerate}
-\item Open the \frameit{1-5 nodes} tab of the Edit colobar dialog box
 \item Press the \frameit{New} button in the Colorbar tab.
 \item select the \frameit{3 nodes} radio button. (the 4 or 5 node radio button could also have been selected). 
-\item Specify the red, green, blue color components for nodes 1, 2 and 5. 
-These three nodes should not occur in a straight line.
+\item Specify red, green and blue color components for nodes 1, 2 and 5. 
+These three nodes should not occur in a straight line if you want a divergent colorbar.
 \item Specify a label and press the \frameit{Update label} button in Colorbar panel.
 \item Press \frameit{Save settings} Button
 \end{enumerate}
@@ -4346,12 +4352,11 @@ These three nodes should not occur in a straight line.
 A split colorbar has a discontinuity or abrupt change in the middle between nodes 127 and 128. 
 To create a split colorbar:
 \begin{enumerate}
-\item Open the \frameit{1-5 nodes} tab of the Edit colobar dialog box
 \item Press the \frameit{New} button in the Colorbar tab.
 \item select the \frameit{split} radio button.
-\item Specify the red, green, blue color components for nodes 1 through 4.
-Colors will smoothly transition between nodes 1 and 2 and between nodes 3 and 4.
-Color will abruptly change between nodes 2 and 3.
+\item Specify red, green and blue color components for nodes 1 through 4.
+Colors will smoothly transition between nodes 1 and 2, change abruptly between nodes 2 and 3
+and smoothly transition between nodes 3 and 4.
 \item Specify a label and press \frameit{Update label} button in Colorbar panel.
 \item Press \frameit{Save settings} Button
 \end{enumerate}
