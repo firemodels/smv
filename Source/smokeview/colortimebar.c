@@ -643,10 +643,22 @@ void AdjustColorBar(colorbardata *cbi){
   }
 }
 
+/* ------------------ IsColorbarSplit ------------------------ */
+
+int IsColorbarSplit(colorbardata *cbi){
+  int i;
+
+  for(i = 0;i < cbi->nnodes - 1;i++){
+    if(cbi->node_index[i] + 1 == cbi->node_index[i + 1])return 1;
+    if(cbi->node_index[i]     == cbi->node_index[i + 1])return 1;
+  }
+  return 0;
+}
+
 /* ------------------ AdjustColorBarLab ------------------------ */
 
 void AdjustColorBarLab(colorbardata *cbi){
-  if(cbi->can_adjust == 0)return;
+  if(cbi->can_adjust==0||IsColorbarSplit(cbi)==1)return;
   AdjustColorBar(cbi);
 }
 

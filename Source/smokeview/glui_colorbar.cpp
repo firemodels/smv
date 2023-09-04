@@ -53,8 +53,9 @@ GLUI_Button *BUTTON_savesettings=NULL;
 GLUI_Button *BUTTON_update=NULL;
 GLUI_Button *BUTTON_colorbar_close=NULL;
 
-GLUI_RadioGroup *RADIO_colorbar_coord_type;
-GLUI_RadioGroup *RADIO_colorbar_simple_type;
+GLUI_RadioGroup *RADIO_colorbar_coord_type  = NULL;
+GLUI_RadioGroup *RADIO_colorbar_simple_type = NULL;
+GLUI_RadioButton *RADIOBUTTON_gtr_5nodes    = NULL;
 
 GLUI_Checkbox *CHECKBOX_cb_interp = NULL;
 
@@ -99,6 +100,22 @@ int cb_usecolorbar_extreme;
 #define COLORBAR_S4_RGB              43
 #define COLORBAR_LAB2GEN             44
 
+/* ------------------ UpdateAjustLabel ------------------------ */
+
+#ifdef pp_ADJUSTED
+void UpdateAjustLabel(colorbardata *cbi){
+  char label_nodes[sizeof(GLUI_String)];
+
+  if(cbi->can_adjust == 1 && IsColorbarSplit(cbi) == 0){
+    strcpy(label_nodes, "adjusted: yes");
+    STATICTEXT_adjustable->set_name(label_nodes);
+  }
+  else{
+    strcpy(label_nodes, "adjusted: no");
+    STATICTEXT_adjustable->set_name(label_nodes);
+  }
+}
+#endif
 
 /* ------------------ ColorbarSimple2General ------------------------ */
 
@@ -109,31 +126,31 @@ void ColorbarGeneral2Simple(colorbardata *cbi){
   sprintf(label_nodes, "nodes: %i", cbi->nnodes); 
   STATICTEXT_node_label->set_name(label_nodes);
 #ifdef pp_ADJUSTED
-  if(cbi->can_adjust == 1){
-    strcpy(label_nodes, "adjusted: yes");
-    STATICTEXT_adjustable->set_name(label_nodes);
-  }
-  else{
-    strcpy(label_nodes, "adjusted: no");
-    STATICTEXT_adjustable->set_name(label_nodes);
-  }
+  UpdateAjustLabel(cbi);
 #endif
 
   if(cbi->nnodes > 5||cbi->nnodes<2){
     for(i = 0;i < 15;i++){
       SPINNER_simple_rgb[i]->disable();
     }
-    if(toggle_on==0)ROLLOUT_simple_point->close();
     ROLLOUT_general_point->open();
+    if(cbi->nnodes > 5){
+      colorbar_simple_type = 6;
+      RADIO_colorbar_simple_type->set_int_val(colorbar_simple_type);
+    }
     return;
   }
   ROLLOUT_simple_point->open();
-  colorbar_simple_type = cbi->nnodes - 1;
-  if(cbi->nnodes == 4){
-    if(cbi->node_index[1] == 127 && cbi->node_index[2] == 128){
-      colorbar_simple_type = 5;
-    }
+  if(cbi->nnodes == 4 && colorbar_simple_type == 5){
+    cbi->node_index[0] = 0;
+    cbi->node_index[1] = 127;
+    cbi->node_index[2] = 128;
+    cbi->node_index[3] = 255;
   }
+  else{
+    colorbar_simple_type = cbi->nnodes - 1;
+  }
+
   switch(cbi->nnodes){
   default:
     ASSERT(FFALSE);
@@ -631,6 +648,8 @@ extern "C" void ColorbarCB(int var){
     ColorbarCB(COLORBAR_SIMPLE_ABLE);
     ColorbarSimple2General(colorbarinfo + colorbartype);
     ColorbarCB(COLORBAR_LIST);
+    ColorbarSimple(0);
+    GLUTPOSTREDISPLAY;
     break;
   case COLORBAR_RGB:
     if(colorbartype < 0 || colorbartype >= ncolorbars)return;
@@ -684,15 +703,17 @@ extern "C" void ColorbarCB(int var){
     break;
   case COLORBAR_LIST:
     int list_index;
+    colorbardata *cbi;
 
     list_index = LISTBOX_colorbar_edit->get_int_val();
     if(list_index<0)break;
     colorbartype = list_index;
+    cbi = colorbarinfo + colorbartype;
     if(show_firecolormap!=0)fire_colorbar_index= colorbartype;
     SetColorbarListBound(colorbartype);
     ColorbarMenu(colorbartype);
     ColorbarGlobal2Local();
-    ColorbarGeneral2Simple(colorbarinfo + colorbartype);
+    ColorbarGeneral2Simple(cbi);
     ColorbarCB(COLORBAR_SIMPLE_ABLE);
 
     char button_label[sizeof(GLUI_String)];
@@ -992,7 +1013,9 @@ extern "C" void GluiColorbarSetup(int main_window){
   glui_colorbar->add_radiobutton_to_group(RADIO_colorbar_simple_type, "4 nodes");
   glui_colorbar->add_radiobutton_to_group(RADIO_colorbar_simple_type, "5 nodes");
   glui_colorbar->add_radiobutton_to_group(RADIO_colorbar_simple_type, "split");
-
+  RADIOBUTTON_gtr_5nodes = glui_colorbar->add_radiobutton_to_group(RADIO_colorbar_simple_type, ">5 nodes");
+  RADIOBUTTON_gtr_5nodes->disable();
+ 
   ROLLOUT_general_point = glui_colorbar->add_rollout_to_panel(PANEL_edit_colorbar, "General(2->256 nodes)");
   ROLLOUT_general_point->close();
   PANEL_cb5 = glui_colorbar->add_panel_to_panel(ROLLOUT_general_point,"",GLUI_PANEL_NONE);
