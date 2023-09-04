@@ -4301,50 +4301,56 @@ the node is constrained along a vertical direction.
 \section{Examples}
 \subsection{Constant Colorbar}
 
-To create a colorbar with contstant color, 
+To create a constant colorbar:
 \begin{enumerate}
 \item Open the \frameit{1-5 nodes} tab of the Edit colobar dialog box.
+\item Press the \frameit{New} button in the Colorbar tab.
 \item select the \frameit{constant} radio button.
-\item select desired red, green, blue color components for node 1.
+\item Specify the red, green, blue color components for nodes 1.
 \item Specify label and press \frameit{Update label} button in Colorbar panel.
 \item Press \frameit{Save settings} button.
 \end{enumerate}
 
 \subsection{Linear Colorbar}
 
-A linear colorbar is a colorbar than transitions from one color to another. 
-The transition occurs in CIELab colorspace. To create a linear colorbar:
+A linear colorbar is a colorbar with two nodes that transitions from tne node 1 color to the node 2 color.
+The node 1 and node 2 colors are converted CIELab coordinates. The coordinates are then interpolated
+linearly.  Finally the interpolated CIELab colors are then converted back to RGB. 
+To create a linear colorbar:
 \begin{enumerate}
 \item Open the \frameit{1-5 nodes} tab of the Edit colobar dialog box
+\item Press the \frameit{New} button in the Colorbar tab.
 \item select the \frameit{linear (2 nodes)} radio button.
-\item select the desired red, green, blue color components for nodes 1 and node 2.
+\item Specify the red, green, blue color components for nodes 1 and 5.
 \item Specify a label and press \frameit{Update label} button in Colorbar panel.
 \item Press \frameit{Save settings} Button
 \end{enumerate}
 
 \subsection{Divergent Colorbar}
 
-A divergent colorbar can be thought of as colorbar with a sharp bend or abrubut change in the middle as 
+A divergent colorbar can be thought of as colorbar with a sharp bend or abrupt change in the middle as 
 viewed as a path in a color space.
-To create a linear colorbar:
+To create a divergent colorbar:
 \begin{enumerate}
 \item Open the \frameit{1-5 nodes} tab of the Edit colobar dialog box
+\item Press the \frameit{New} button in the Colorbar tab.
 \item select the \frameit{3 nodes} radio button. (the 4 or 5 node radio button could also have been selected). 
-\item select the desired red, green, blue color components for nodes 1, 2 and 3. 
+\item Specify the red, green, blue color components for nodes 1, 2 and 5. 
 These three nodes should not occur in a straight line.
-\item Specify a label and press \frameit{Update label} button in Colorbar panel.
+\item Specify a label and press the \frameit{Update label} button in Colorbar panel.
 \item Press \frameit{Save settings} Button
 \end{enumerate}
 
 \subsection{Split Colorbar}
 
-A split colorbar has a discontinutiy in the middle. 
-To create a splitr colorbar:
+A split colorbar has a discontinuity or abrupt change in the middle between nodes 127 and 128. 
+To create a split colorbar:
 \begin{enumerate}
 \item Open the \frameit{1-5 nodes} tab of the Edit colobar dialog box
+\item Press the \frameit{New} button in the Colorbar tab.
 \item select the \frameit{split} radio button.
-\item select the desired red, green, blue color components for nodes 1, 2 and 3 and 5.
-Colors will smoothly transition between nodes 1 and 2 and between nodes 3 and 5.
+\item Specify the red, green, blue color components for nodes 1 through 4.
+Colors will smoothly transition between nodes 1 and 2 and between nodes 3 and 4.
 Color will abruptly change between nodes 2 and 3.
 \item Specify a label and press \frameit{Update label} button in Colorbar panel.
 \item Press \frameit{Save settings} Button
