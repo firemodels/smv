@@ -703,7 +703,6 @@ extern "C" void ColorbarCB(int var){
     break;
   case COLORBAR_LIST:
     int list_index;
-    colorbardata *cbi;
 
     list_index = LISTBOX_colorbar_edit->get_int_val();
     if(list_index<0)break;
