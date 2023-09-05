@@ -458,6 +458,8 @@ void DrawColorbarPathLab(void){
     Lab2XYZ(xyz, cbi->colorbar_lab + 3*i);
     glVertex3f(xyz[1],xyz[2],xyz[0]);
   }
+  glEnd();
+
   glColor3fv(foregroundcolor);
   glLineWidth(5.0);
   glBegin(GL_LINES);
