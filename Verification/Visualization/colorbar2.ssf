@@ -23,3 +23,41 @@ SETCBAR
 RENDERONCE
   colorbar2_black_white
 
+SETCBAR
+ constant_01
+SETCBARRGB
+RENDERONCE
+  colorbar2_constant_rgb
+SETCBARLAB
+RENDERONCE
+  colorbar2_constant_lab
+
+SETCBAR
+ linear_01
+SETCBARRGB
+RENDERONCE
+  colorbar2_linear
+SETCBARLAB
+RENDERONCE
+  colorbar2_linear_lab
+
+SETCBAR
+ divergent_01
+SETCBARRGB
+RENDERONCE
+  colorbar2_divergent
+SETCBARLAB
+RENDERONCE
+  colorbar2_divergent_lab
+
+SETCBAR
+ split_01
+SETCBARRGB
+RENDERONCE
+  colorbar2_split
+SETCBARLAB
+RENDERONCE
+  colorbar2_split_lab
+
+
+

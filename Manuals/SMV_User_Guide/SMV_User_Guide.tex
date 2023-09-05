@@ -4299,12 +4299,30 @@ direction.  If the {\tt ALT}\ key is pressed when dragging
 the node is constrained along a vertical direction.
 
 \section{Examples}
-The following examples were created using the Edit Colorbar dialog box which is 
-opened by selecting the Dialogs>View>Edit Colorbar menu item. 
+The examples in this section were created using the Edit Colorbar dialog box which is
+opened by selecting the Dialogs>View>Edit Colorbar menu item.
+
 \subsection{Constant Colorbar}
+
+\begin{figure}[bph]
+\begin{center}
+\begin{tabular}{cc}
+\includegraphics[width=3.25in]{SCRIPT_FIGURES/colorbar2_constant}&
+\includegraphics[width=3.25in]{SCRIPT_FIGURES/colorbar2_constant_lab}\\
+RGB&CIELab\\
+\end{tabular}
+\end{center}
+\caption[Constant Colorbar]{
+Constant Colorbar.
+}\
+\label{fig:colorbar_constant}
+\end{figure}
 
 To create a constant colorbar, a colorbar with just one color:
 \begin{enumerate}
+ \setlength{\itemsep}{1pt}
+  \setlength{\parskip}{0pt}
+  \setlength{\parsep}{0pt}
 \item Press the \frameit{New} button in the Colorbar tab. This creates a 2 node colorbar with colors ranging
 from black to white.
 \item Select the \frameit{constant} radio button.
@@ -4315,18 +4333,36 @@ configuration file.  The next time this case is opened, the colorbar constant wi
 colorbar.
 \end{enumerate}
 
+A constant colorbar using (0,0,255) for node 1 is illustrated in Figure \ref{fig:colorbar_constant}.
 The steps for creating other types of colorbars are similar.
 
 \subsection{Linear Colorbar}
 
-A linear colorbar is a colorbar with two nodes that transition smoothly 
+\begin{figure}[bph]
+\begin{center}
+\begin{tabular}{cc}
+\includegraphics[width=3.25in]{SCRIPT_FIGURES/colorbar2_linear}&
+\includegraphics[width=3.25in]{SCRIPT_FIGURES/colorbar2_linear_lab}\\
+RGB&CIELab\\
+\end{tabular}
+\end{center}
+\caption[Linear Colorbar]{
+Linear Colorbar.
+}\
+\label{fig:colorbar_linear}
+\end{figure}
+
+A linear colorbar is a colorbar with two nodes that transition smoothly
 from one color at node 1 to a second color at node 2.
-Node 1 and node 2 colors are converted from RGB to CIELab coordinates internally in smokeview. 
+Node 1 and node 2 colors are converted from RGB to CIELab coordinates internally in smokeview.
 These coordinates are then interpolated
-linearly between nodes 1 and 2 to create 256 CIELab coorindates.  
+linearly between nodes 1 and 2 to create 256 CIELab coorindates.
 Finally these 256 CIELab coordinates are converted back to RGB to form the colorbar.
 To create a linear colorbar:
 \begin{enumerate}
+ \setlength{\itemsep}{1pt}
+  \setlength{\parskip}{0pt}
+  \setlength{\parsep}{0pt}
 \item Press the \frameit{New} button in the Colorbar tab.
 \item If not already selected, select the \frameit{linear (2 nodes)} radio button.
 \item Specify red, green, and blue color components for nodes 1 and 5.
@@ -4334,25 +4370,61 @@ To create a linear colorbar:
 \item Press the \frameit{Save settings} button.
 \end{enumerate}
 
+A linear colorbar using (0,0,255) for node 1 and (255,0,0) for node 5 is illustrated in Figure \ref{fig:colorbar_linear}.
+
 \subsection{Divergent Colorbar}
 
-A divergent colorbar can be thought of as colorbar with a sharp bend in the middle when 
+\begin{figure}[bph]
+\begin{center}
+\begin{tabular}{cc}
+\includegraphics[width=3.25in]{SCRIPT_FIGURES/colorbar2_divergent}&
+\includegraphics[width=3.25in]{SCRIPT_FIGURES/colorbar2_divergent_lab}\\
+RGB&CIELab\\
+\end{tabular}
+\end{center}
+\caption[Divergent Colorbar]{
+Divergent Colorbar.
+}\
+\label{fig:colorbar_divergent}
+\end{figure}
+A divergent colorbar can be thought of as colorbar with a sharp bend in the middle when
 viewed as a path in a color space.
 To create a divergent colorbar:
 \begin{enumerate}
+ \setlength{\itemsep}{1pt}
+  \setlength{\parskip}{0pt}
+  \setlength{\parsep}{0pt}
 \item Press the \frameit{New} button in the Colorbar tab.
-\item Select the \frameit{3 nodes} radio button. (the 4 or 5 node radio button could also have been selected). 
-\item Specify red, green and blue color components for nodes 1, 2 and 5. 
+\item Select the \frameit{3 nodes} radio button. (the 4 or 5 node radio button could also have been selected).
+\item Specify red, green and blue color components for nodes 1, 2 and 5.
 These three nodes should not occur in a straight line if you want a divergent colorbar.
 \item Specify a label and press the \frameit{Update label} button in the Colorbar panel.
 \item Press the \frameit{Save settings} button.
 \end{enumerate}
 
+A divergent colorbar using (64,0,192) for node 1, (192,192,192) for node 2 and (192,0,64) for node 5 is illustrated in Figure \ref{fig:colorbar_divergent}.
+
 \subsection{Split Colorbar}
 
-A split colorbar has a discontinuity or abrupt change in the middle between nodes 127 and 128. 
+\begin{figure}[bph]
+\begin{center}
+\begin{tabular}{cc}
+\includegraphics[width=3.25in]{SCRIPT_FIGURES/colorbar2_split}&
+\includegraphics[width=3.25in]{SCRIPT_FIGURES/colorbar2_split_lab}\\
+RGB&CIELab\\
+\end{tabular}
+\end{center}
+\caption[Split Colorbar]{
+Split Colorbar.
+}\
+\label{fig:colorbar_split}
+\end{figure}
+A split colorbar has a discontinuity or abrupt change in the middle between nodes 127 and 128.
 To create a split colorbar:
 \begin{enumerate}
+ \setlength{\itemsep}{1pt}
+  \setlength{\parskip}{0pt}
+  \setlength{\parsep}{0pt}
 \item Press the \frameit{New} button in the Colorbar tab.
 \item Select the \frameit{split} radio button.
 \item Specify red, green and blue color components for nodes 1 through 4.
@@ -4361,6 +4433,8 @@ and smoothly transition between nodes 3 and 4.
 \item Specify a label and press the \frameit{Update label} button in the Colorbar panel.
 \item Press the \frameit{Save settings} button.
 \end{enumerate}
+
+A split colorbar using (0,0,255) for node 1, (192,255,255) for node 2 (255,255,0) for node 3 and (255,0,0) for node 5 is illustrated in Figure \ref{fig:colorbar_split}.
 
 \chapter{Smokeview - Demonstrator Mode}
 A simplified version of Smokeview may be invoked in order to present a fire
