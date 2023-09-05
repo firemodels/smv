@@ -36,7 +36,7 @@ SETCBAR
  linear_01
 SETCBARRGB
 RENDERONCE
-  colorbar2_linear
+  colorbar2_linear_rgb
 SETCBARLAB
 RENDERONCE
   colorbar2_linear_lab
@@ -45,7 +45,7 @@ SETCBAR
  divergent_01
 SETCBARRGB
 RENDERONCE
-  colorbar2_divergent
+  colorbar2_divergent_rgb
 SETCBARLAB
 RENDERONCE
   colorbar2_divergent_lab
@@ -54,7 +54,7 @@ SETCBAR
  split_01
 SETCBARRGB
 RENDERONCE
-  colorbar2_split
+  colorbar2_split_rgb
 SETCBARLAB
 RENDERONCE
   colorbar2_split_lab
