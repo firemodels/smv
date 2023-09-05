@@ -298,6 +298,8 @@ int GetScriptKeywordIndex(char *keyword){
   if(MatchSSF(keyword,"SHOWCBAREDIT") == MATCH)return SCRIPT_SHOWCBAREDIT;
   if(MatchSSF(keyword,"HIDECBAREDIT") == MATCH)return SCRIPT_HIDECBAREDIT;
   if(MatchSSF(keyword,"SETCBAR") == MATCH)return SCRIPT_SETCBAR;
+  if(MatchSSF(keyword, "SETCBARLAB") == MATCH)return SCRIPT_SETCBARLAB;
+  if(MatchSSF(keyword, "SETCBARRGB") == MATCH)return SCRIPT_SETCBARRGB;
   if(MatchSSF(keyword, "SHOWALLDEVS") == MATCH)return SCRIPT_SHOWALLDEVS;              // documented
   if(MatchSSF(keyword, "HIDEALLDEVS") == MATCH)return SCRIPT_HIDEALLDEVS;              // documented
   if(MatchSSF(keyword, "SHOWDEV") == MATCH)return SCRIPT_SHOWDEV;                      // documented
@@ -588,18 +590,26 @@ NewMemory((void **)&scriptinfo, nscriptinfo*sizeof(scriptdata));
         break;
 
 // SHOWCBAREDIT
-     case SCRIPT_SHOWCBAREDIT:
-       break;
+       case SCRIPT_SHOWCBAREDIT:
+         break;
         
 // HIDECBAREDIT
-     case SCRIPT_HIDECBAREDIT:
-       break;
+       case SCRIPT_HIDECBAREDIT:
+         break;
        
 // SETCBAR
-     case SCRIPT_SETCBAR:
-       SETcval;
-       break;
+       case SCRIPT_SETCBAR:
+         SETcval;
+         break;
        
+// SETCBARLAB
+       case SCRIPT_SETCBARLAB:
+         break;
+
+// SETCBARRGB
+       case SCRIPT_SETCBARRGB:
+         break;
+
 // SHOWHVACNODEVAL
       case SCRIPT_SHOWHVACNODEVAL:
         SETcval;
@@ -2609,6 +2619,18 @@ void ScriptHideCbarEdit(scriptdata *scripti){
   DialogMenu(DIALOG_COLORBAR);
 }
 
+/* ------------------ ScriptSetCbarLab ------------------------ */
+
+void ScriptSetCbarLab(scriptdata *scripti){
+  colorbar_coord_type=1;
+}
+
+/* ------------------ ScriptSetCbarRgb ------------------------ */
+
+void ScriptSetCbarRgb(scriptdata *scripti){
+  colorbar_coord_type=0;
+}
+
 /* ------------------ ScriptSetCbar ------------------------ */
 
 void ScriptSetCbar(scriptdata *scripti){
@@ -3673,6 +3695,12 @@ int RunScriptCommand(scriptdata *script_command){
       break;
     case SCRIPT_HIDECBAREDIT:
       ScriptHideCbarEdit(scripti);
+      break;
+    case SCRIPT_SETCBARLAB:
+      ScriptSetCbarLab(scripti);
+      break;
+    case SCRIPT_SETCBARRGB:
+      ScriptSetCbarRgb(scripti);
       break;
     case SCRIPT_SETCBAR:
       ScriptSetCbar(scripti);
