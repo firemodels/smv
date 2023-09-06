@@ -5348,6 +5348,44 @@ void UpdateMenu(void){
   GLUTSETCURSOR(GLUT_CURSOR_LEFT_ARROW);
 }
 
+/* ------------------ LoadAllPlot3D ------------------------ */
+
+int LoadAllPlot3D(float time){
+  int i;
+  int errorcode;
+  int count=0;
+
+  for(i = 0; i < nplot3dinfo; i++){
+    if(plot3dinfo[i].loaded == 1){
+      ReadPlot3D("", i, UNLOAD, &errorcode);
+    }
+  }
+  for(i = 0; i < nplot3dinfo; i++){
+    plot3ddata *plot3di;
+
+    plot3di = plot3dinfo + i;
+    plot3di->finalize = 0;
+  }
+  for(i = nplot3dinfo - 1; i >=0; i--){
+    plot3ddata *plot3di;
+
+    plot3di = plot3dinfo + i;
+    if(ABS(plot3di->time - time) < 0.5){
+      plot3di->finalize = 1;
+      break;
+    }
+  }
+  for(i = 0; i < nplot3dinfo; i++){
+    plot3ddata *plot3di;
+
+    plot3di = plot3dinfo + i;
+    if(ABS(plot3di->time - time) > 0.5)continue;;
+    ReadPlot3D(plot3di->file, plot3di - plot3dinfo, LOAD, &errorcode);
+    if(errorcode==0)count++;
+  }
+  return count;
+}
+
 /* ------------------ LoadPlot3DMenu ------------------------ */
 
 void LoadPlot3dMenu(int value){

@@ -3751,12 +3751,18 @@ PARTCLASSTYPE
 
 \subsubsection{PLOT3D Files}
 \blist
-\hitemssf{LOADPLOT3D}Load a Plot3D file for a given mesh at a specified time.
+\hitemssf{LOADPLOT3D}Load a Plot3D file for a given mesh at a specified time. 
 Usage:
 \begin{lstlisting}
 LOADPLOT3D
-  mesh number (an integer from 1 to the number of meshes) time (float)
+  mesh number (int) time (float)
 \end{lstlisting}
+where
+\begin{itemize}
+\item mesh index - is an integer from 0 to the number of meshes.  If 0 is specified then all meshes at a given time are loaded.
+If 1 to the number of meshes is specified then the mesh with that mesh index is loaded.
+\item time - time within 0.5 s of mesh to load 
+\end{itemize}
 
 \hitemssf{PLOT3DPROPS}Specifies Plot3D plot properties that
 apply to all Plot3D plots currently being displayed.
