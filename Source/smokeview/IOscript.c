@@ -2915,14 +2915,19 @@ void ScriptLoadPlot3D(scriptdata *scripti){
   time_local = scripti->fval;
   blocknum = scripti->ival-1;
 
-  for(i=0;i<nplot3dinfo;i++){
-    plot3ddata *plot3di;
+  if(blocknum >= 0){
+    for(i = 0;i < nplot3dinfo;i++){
+      plot3ddata *plot3di;
 
-    plot3di = plot3dinfo + i;
-    if(plot3di->blocknumber==blocknum&&ABS(plot3di->time-time_local)<0.5){
-      count++;
-      LoadPlot3dMenu(i);
+      plot3di = plot3dinfo + i;
+      if(plot3di->blocknumber == blocknum && ABS(plot3di->time - time_local) < 0.5){
+        count++;
+        LoadPlot3dMenu(i);
+      }
     }
+  }
+  else{
+    count = LoadAllPlot3D(time_local);
   }
   UpdateRGBColors(COLORBAR_INDEX_NONE);
   SetLabelControls();

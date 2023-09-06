@@ -1169,6 +1169,7 @@ EXTERNCPP void GetZoneColors(const float *t, int nt, unsigned char *it,
                char **zonelabels, float zonevalues[12], float *tvals256
                );
 
+EXTERNCPP int LoadAllPlot3D(float time);
 EXTERNCPP void UpdatePlot3DColors(plot3ddata *plot3di, int flag, int *errorcode);
 EXTERNCPP void UpdateAllPlot3DColors(int flag);
 EXTERNCPP void GetPlot3DColors(int iplot, float *ttmin, float *ttmax,
