@@ -987,22 +987,21 @@ void RemapColorbar(colorbardata *cbi){
     i2 = cbi->node_index[i+1];
     if(i2==i1)continue;
     node_rgb = cbi->node_rgb+3*i;
-    if(interp == INTERP_LAB){
-      Rgb2Lab(node_rgb,   lab1);
-      Rgb2Lab(node_rgb+3, lab2);
-    }
+    Rgb2Lab(node_rgb,   lab1);
+    Rgb2Lab(node_rgb+3, lab2);
     for(j=i1;j<i2;j++){
       float factor;
 
-      factor = (float)(j - i1) / (float)(i2 - i1);
+      factor = (float)(j-i1)/(float)(i2-i1);
+      float *labj;
+
+      labj  = colorbar_lab + 3*j;
+      labj[0]=MIX(factor,lab2[0],lab1[0]);
+      labj[1]=MIX(factor,lab2[1],lab1[1]);
+      labj[2]=MIX(factor,lab2[2],lab1[2]);
       if(interp==INTERP_LAB){
         unsigned char rgb_val[3];
-        float frgb[3], *labj;
-
-        labj  = colorbar_lab + 3*j;
-        labj[0]=MIX(factor,lab2[0],lab1[0]);
-        labj[1]=MIX(factor,lab2[1],lab1[1]);
-        labj[2]=MIX(factor,lab2[2],lab1[2]);
+        float frgb[3];
 
         Lab2Rgb(rgb_val, frgb, labj);
         colorbar_rgb[0+3*j] = frgb[0]/255.0;
@@ -2028,11 +2027,6 @@ void InitDefaultColorbars(int nini){
     cbi = colorbarinfo + i;
 
     cbi->interp = INTERP_LAB;
-#ifdef pp_RAINBOW_RGB
-    if(strcmp(cbi->menu_label, "Rainbow") == 0){
-      cbi->interp = INTERP_RGB;
-    }
-#endif
     RemapColorbar(cbi);
     memcpy(cbi->node_rgb_orig, cbi->node_rgb, 3 * cbi->nnodes * sizeof(unsigned char));
   }
