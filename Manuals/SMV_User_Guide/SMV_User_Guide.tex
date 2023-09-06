@@ -3751,7 +3751,7 @@ PARTCLASSTYPE
 
 \subsubsection{PLOT3D Files}
 \blist
-\hitemssf{LOADPLOT3D}Load a Plot3D file for a given mesh at a specified time. 
+\hitemssf{LOADPLOT3D}Load a Plot3D file for a given mesh at a specified time.
 Usage:
 \begin{lstlisting}
 LOADPLOT3D
@@ -3761,7 +3761,7 @@ where
 \begin{itemize}
 \item mesh index - is an integer from 0 to the number of meshes.  If 0 is specified then all meshes at a given time are loaded.
 If 1 to the number of meshes is specified then the mesh with that mesh index is loaded.
-\item time - time within 0.5 s of mesh to load 
+\item time - time within 0.5 s of mesh to load
 \end{itemize}
 
 \hitemssf{PLOT3DPROPS}Specifies Plot3D plot properties that
@@ -4176,11 +4176,11 @@ SETTOURKEYFRAME
 \begin{figure}[bph]
 \begin{center}
 \begin{tabular}{cc}
-\includegraphics[width=3.25in]{SCRIPT_FIGURES/colorbar2_rainbow}&
-\includegraphics[width=3.25in]{SCRIPT_FIGURES/colorbar2_blue_green_red}\\
+\includegraphics[width=3.5in]{SCRIPT_FIGURES/colorbar2_rainbow}&
+\includegraphics[width=3.5in]{SCRIPT_FIGURES/colorbar2_blue_green_red}\\
 a) Rainbow&b) blue-$>$green-$>$red\\
-\includegraphics[width=3.25in]{SCRIPT_FIGURES/colorbar2_split}&
-\includegraphics[width=3.25in]{SCRIPT_FIGURES/colorbar2_black_white}\\
+\includegraphics[width=3.5in]{SCRIPT_FIGURES/colorbar2_split}&
+\includegraphics[width=3.5in]{SCRIPT_FIGURES/colorbar2_black_white}\\
 c) split&d) black-$>$white
 \end{tabular}
 \end{center}
@@ -4214,7 +4214,8 @@ by Smokeview.
 To construct a colorbar, one defines a set of nodes forming a path
 within the color cube.  Smokeview then interpolates colors between these nodes
 to form the colorbar.  Though most colorbar paths used by smokeview are continuous, a colorbar
-path need not be.  Discontinuous or split colorbars
+path need not be.  A colorbar path may have a large break or jump (split colorbar)
+or an abrupt change of direction (divergent colorbar).  Split colorbars
 are useful for hilighting regions in a simulation with a particular
 property, for example where the temperature exceeds the boiling point of
 water or in a terrain map where a shoreline with zero elevation occurs.
@@ -4222,11 +4223,11 @@ Figure \ref{figCOLORBAR_EXAMPLES}c
 gives an example of a colorbar with a break.  This colorbar jumps in the
 middle from  blue to  green.
 
-A goal in constructing a colorbar is to have an equal change in data correspond to
-an equal change in color. Problems occur when large changes in data correspond
+A goal in constructing a colorbar is for equal changes in data to correspond to
+equal changes in color. Problems occur when large changes in data correspond
 to small changes in color. This results in flat spots in the colorbar with details in the data  obscured.
 The opposite problem occurs when small changes in data correspond to large changes in color.
-Features occur in the visualization that are not present in the data.
+Features or artifacts occur in the visualization that are not present in the data.
 One can minimize these problems by using perceptually uniform colorbars\cite{kovesi2015good}.
 To aid in constructing colorbars with this property, the CIELab colorspace is used to interpolate
 between color nodes and to choose color spacing between nodes
@@ -4310,7 +4311,7 @@ opened by selecting the Dialogs>View>Edit Colorbar menu item.
 
 \subsection{Constant Colorbar}
 
-\newcommand{\cbsize}{3.0in}
+\newcommand{\cbsize}{3.25in}
 \begin{figure}[bph]
 \begin{center}
 \begin{tabular}{cc}
@@ -4439,7 +4440,7 @@ To create a divergent colorbar:
 \item Select the \frameit{split/divergent} radio button.
 \item Specify red, green and blue color components for nodes 1, 2, 3 and 5.
 Select the same components for nodes 2 and 3.  The split and divergent colorbar dialog forces the discontinuity or sharp bend
-to occur in the middle of the color bar.  
+to occur in the middle of the color bar.
 These nodes should not occur in a straight line if you want a divergent colorbar.
 \item Specify a label, say divergent\_01. Press the \frameit{Update label} button in the Colorbar panel.
 \item Press the \frameit{Save settings} button to save the colorbar divergent\_01 to the .ini file.
