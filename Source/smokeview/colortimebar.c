@@ -1330,7 +1330,7 @@ void InitDefaultColorbars(int nini){
 
   ndefaultcolorbars+=nlinear_filelist + ncircular_filelist + nrainbow_filelist + ndivergent_filelist + nuser_filelist;
 
-  ndefaultcolorbars+=18;
+  ndefaultcolorbars+=19;
 
   FREEMEMORY(colorbarinfo);
   ncolorbars=ndefaultcolorbars;
@@ -1358,6 +1358,39 @@ void InitDefaultColorbars(int nini){
 
   cbi->node_index[1]=64;
   cbi->node_rgb[3]=0;
+  cbi->node_rgb[4]=192;
+  cbi->node_rgb[5]=192;
+
+  cbi->node_index[2]=128;
+  cbi->node_rgb[6]=0;
+  cbi->node_rgb[7]=255;
+  cbi->node_rgb[8]=0;
+
+  cbi->node_index[3]=192;
+  cbi->node_rgb[9]=192;
+  cbi->node_rgb[10]=192;
+  cbi->node_rgb[11]=0;
+
+  cbi->node_index[4]=255;
+  cbi->node_rgb[12]=255;
+  cbi->node_rgb[13]=0;
+  cbi->node_rgb[14]=0;
+  strcpy(cbi->colorbar_type, "rainbow");
+  cbi++;
+
+  // original rainbow colorbar
+
+  strcpy(cbi->menu_label,"Rainbow_orig");
+  cbi->nnodes=5;
+  cbi->nodehilight=0;
+
+  cbi->node_index[0]=0;
+  cbi->node_rgb[0]=0;
+  cbi->node_rgb[1]=0;
+  cbi->node_rgb[2]=255;
+
+  cbi->node_index[1]=64;
+  cbi->node_rgb[3]=0;
   cbi->node_rgb[4]=255;
   cbi->node_rgb[5]=255;
 
@@ -1375,7 +1408,7 @@ void InitDefaultColorbars(int nini){
   cbi->node_rgb[12]=255;
   cbi->node_rgb[13]=0;
   cbi->node_rgb[14]=0;
-  strcpy(cbi->colorbar_type, "rainbow");
+  strcpy(cbi->colorbar_type, "original");
   cbi++;
 
   // Rainbow 2 colorbar
