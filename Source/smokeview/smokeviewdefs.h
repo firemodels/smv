@@ -209,6 +209,7 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 
 #define COLORBAR_SET 18
 #define COLORBAR_RGB  2
+#define COLORBAR_LIST 0
 
 #define DLG_3DSMOKE  0
 #define DLG_BOUNDARY 1

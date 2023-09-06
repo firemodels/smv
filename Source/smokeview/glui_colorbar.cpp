@@ -69,7 +69,7 @@ GLUI_StaticText *STATICTEXT_adjustable = NULL;
 
 int cb_usecolorbar_extreme;
 
-#define COLORBAR_LIST                 0
+//#define COLORBAR_LIST                 0 // defined in smokeviewdefs.h
 #define COLORBAR_CLOSE                1
 #define COLORBAR_NODE_NEXT            3
 #define COLORBAR_NODE_PREV            4
@@ -99,6 +99,7 @@ int cb_usecolorbar_extreme;
 #define COLORBAR_S3_RGB              42
 #define COLORBAR_S4_RGB              43
 #define COLORBAR_LAB2GEN             44
+#define COLORBAR_CAN_ADJUST          45
 
 /* ------------------ UpdateAjustLabel ------------------------ */
 
@@ -117,6 +118,17 @@ void UpdateAjustLabel(colorbardata *cbi){
 }
 #endif
 
+/* ------------------ GetCBSimpleType ------------------------ */
+
+int GetCBSimpleType(colorbardata *cbi){
+  if(cbi->nnodes > 5)return 6;
+  if(cbi->nnodes == 4){
+    if(cbi->node_index[1] == cbi->node_index[2])return 5;
+    if(cbi->node_index[1] == cbi->node_index[2]-1)return 5;
+  }
+  return cbi->nnodes - 1;
+}
+
 /* ------------------ ColorbarSimple2General ------------------------ */
 
 void ColorbarGeneral2Simple(colorbardata *cbi){
@@ -134,22 +146,13 @@ void ColorbarGeneral2Simple(colorbardata *cbi){
       SPINNER_simple_rgb[i]->disable();
     }
     ROLLOUT_general_point->open();
-    if(cbi->nnodes > 5){
-      colorbar_simple_type = 6;
-      RADIO_colorbar_simple_type->set_int_val(colorbar_simple_type);
-    }
+    if(cbi->nnodes > 5)colorbar_simple_type = 6;
+    if(cbi->nnodes < 2 )colorbar_simple_type = 0;
+    RADIO_colorbar_simple_type->set_int_val(colorbar_simple_type);
     return;
   }
   ROLLOUT_simple_point->open();
-  if(cbi->nnodes == 4 && colorbar_simple_type == 5){
-    cbi->node_index[0] = 0;
-    cbi->node_index[1] = 127;
-    cbi->node_index[2] = 128;
-    cbi->node_index[3] = 255;
-  }
-  else{
-    colorbar_simple_type = cbi->nnodes - 1;
-  }
+  colorbar_simple_type = GetCBSimpleType(cbi);
 
   switch(cbi->nnodes){
   default:
@@ -417,10 +420,12 @@ extern "C" void ColorbarCB(int var){
       UpdateCurrentColorbar(cbi);
 
       cbi->node_index[colorbarpoint] = cb_colorindex;
+      cbi->can_adjust = 0;
 
       ColorbarGlobal2Local();
       RemapColorbar(cbi);
       UpdateRGBColors(COLORBAR_INDEX_NONE);
+      ColorbarGeneral2Simple(cbi);
     }
     break;
   case COLORBAR_LABEL:
@@ -633,7 +638,7 @@ extern "C" void ColorbarCB(int var){
           int ii;
 
           ii = 3*type + i;
-          if(type<=3){
+          if(type<=2||type==4){
             SPINNER_simple_rgb[ii]->enable();
           }
           else{
@@ -691,6 +696,12 @@ extern "C" void ColorbarCB(int var){
   case COLORBAR_S4_RGB:
     ColorbarSimple(4);
     break;
+  case COLORBAR_CAN_ADJUST:
+    if(colorbartype >= ncolorbars)return;
+    cbi = colorbarinfo + colorbartype;
+    cbi->can_adjust = 1;
+    AdjustColorBar(cbi);
+    break;
   case COLORBAR_LAB2GEN:
     cb_rgb[0] = CLAMP(( int )(cb_frgb2[0] + 0.5), 0, 255);
     cb_rgb[1] = CLAMP(( int )(cb_frgb2[1] + 0.5), 0, 255);
@@ -704,6 +715,7 @@ extern "C" void ColorbarCB(int var){
   case COLORBAR_LIST:
     int list_index;
 
+    if(LISTBOX_colorbar_edit == NULL)break;
     list_index = LISTBOX_colorbar_edit->get_int_val();
     if(list_index<0)break;
     colorbartype = list_index;
@@ -1011,7 +1023,7 @@ extern "C" void GluiColorbarSetup(int main_window){
   glui_colorbar->add_radiobutton_to_group(RADIO_colorbar_simple_type, "3 nodes");
   glui_colorbar->add_radiobutton_to_group(RADIO_colorbar_simple_type, "4 nodes");
   glui_colorbar->add_radiobutton_to_group(RADIO_colorbar_simple_type, "5 nodes");
-  glui_colorbar->add_radiobutton_to_group(RADIO_colorbar_simple_type, "split");
+  glui_colorbar->add_radiobutton_to_group(RADIO_colorbar_simple_type, "split/divergent");
   RADIOBUTTON_gtr_5nodes = glui_colorbar->add_radiobutton_to_group(RADIO_colorbar_simple_type, ">5 nodes");
   RADIOBUTTON_gtr_5nodes->disable();
  
@@ -1021,6 +1033,7 @@ extern "C" void GluiColorbarSetup(int main_window){
 
   BUTTON_node_prev=glui_colorbar->add_button_to_panel(PANEL_cb5,_("Previous"),COLORBAR_NODE_PREV,ColorbarCB);
   BUTTON_deletepoint=glui_colorbar->add_button_to_panel(PANEL_cb5,_("Delete"),COLORBAR_DELETEPOINT,ColorbarCB);
+  glui_colorbar->add_button_to_panel(PANEL_cb5, _("Can Equilibrate"), COLORBAR_CAN_ADJUST, ColorbarCB);
 
   glui_colorbar->add_column_to_panel(PANEL_cb5,false);
 
@@ -1106,6 +1119,9 @@ extern "C" void GluiColorbarSetup(int main_window){
 #ifdef pp_CLOSEOFF
   BUTTON_colorbar_close->disable();
 #endif
+  if(ncolorbars > 0){
+    ColorbarCB(COLORBAR_LIST);
+  }
 
   glui_colorbar->set_main_gfx_window( main_window );
 }

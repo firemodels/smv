@@ -1256,6 +1256,7 @@ void UpdateColorbarDialogs(void){
   UpdateColorbarListBound(3);
   UpdateColorbarBound();
   UpdateColorbarEdit();
+  ColorbarCB(COLORBAR_LIST);
 }
 
 /* ------------------ AddColorbar ------------------------ */
