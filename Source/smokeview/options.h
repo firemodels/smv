@@ -14,22 +14,35 @@
 #endif
 
 //*** parallel file loading
-#define pp_SLICE_MULTI        // load slice files in parallel
-#define pp_PART_MULTI         // load particle files in parallel
-#define pp_CSV_MULTI          // read in csv files in parallel
+#define pp_SLICE_MULTI    // load slice files in parallel
+#define pp_PART_MULTI     // load particle files in parallel
+#define pp_CSV_MULTI      // read in csv files in parallel
 
-//#define pp_SMOKE16            // load 16 bit smoke files
-//#define pp_VOLSMOKE          // add option to compress volume rendered data
-#define pp_FAST                /// set fast startup by default
-//#define pp_CHECK_FILES         // check if compressed files exist at startup
+//#define pp_SMOKE16      // load 16 bit smoke files
+//#define pp_VOLSMOKE     // add option to compress volume rendered data
+#define pp_FAST           // set fast startup by default
+//#define pp_CHECK_FILES  // check if compressed files exist at startup
 
-//#define pp_GAMMA            // show gamma correction checkbox
-#define pp_BLACKBODY        // use blackbody theory for generating fire colors
-#// pp_BLACKBODY_OUT    // output generated blackbody color data 
-//#define pp_COLOR_HIDE       // add checkbox to hide/unhide scene when editing a colorbar
-//#define pp_COLOR_PLOT2D     // add option to plot CIELab distances
 
-//#define pp_BNDF               // merge geometry and structured boundary files in load menus
+#ifdef _DEBUG
+#define pp_ADJUSTED       // show whether a colorbar has been adjusted
+#endif
+#define pp_EQUILIBRATE    // show equilibrate button
+
+//#define pp_COLOR_HIDE   // add checkbox to hide/unhide scene when editing a colorbar
+//#define pp_COLOR_PLOT2D // add option to plot CIELab distances
+//#define pp_RAINBOW_RGB    // interpolate rainbow colorbar using rgb
+//#define pp_GAMMA        // show gamma correction checkbox
+#define pp_BLACKBODY      // use blackbody theory for generating fire colors
+// pp_BLACKBODY_OUT       // output generated blackbody color data 
+
+//#define pp_BNDF         // merge geometry and structured boundary files in load menus
+
+#define pp_BINDIR         // search for an installation bin directory if smokeview is not in one
+//#define pp_GEOMTERRAIN  // convert bingeom data structures to terrain data structures
+                          // make terrain more efficient
+
+//#define pp_DPRINT       // turn on debug print (file, line number)
 
 // streaming directives
 

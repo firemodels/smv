@@ -1,0 +1,20 @@
+&HEAD CHID='colorbar2', TITLE='generate colorbars' / 
+
+&MESH IJK=20,10,10, XB=0.0,2.0,0.0,1.0,0.0,1.0 /
+
+&TIME T_END=0.0 / 
+
+&RADI RADIATION=.FALSE./
+
+        
+&VENT MB='XMAX', SURF_ID='OPEN' /
+&VENT MB='YMAX', SURF_ID='OPEN' /
+&VENT MB='ZMAX', SURF_ID='OPEN' /
+&VENT MB='XMIN', SURF_ID='OPEN' /
+&VENT MB='YMIN', SURF_ID='OPEN' /
+&VENT MB='ZMIN', SURF_ID='OPEN' /
+
+
+
+&TAIL /
+

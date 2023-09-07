@@ -209,6 +209,7 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 
 #define COLORBAR_SET 18
 #define COLORBAR_RGB  2
+#define COLORBAR_LIST 0
 
 #define DLG_3DSMOKE  0
 #define DLG_BOUNDARY 1
@@ -1073,6 +1074,7 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 #define DIALOG_SHRINKALL -3
 #define DIALOG_HVAC      47
 #define DIALOG_TERRAIN   48
+#define DIALOG_COLORING  49
 
 #define UNLOAD_LAST -2
 

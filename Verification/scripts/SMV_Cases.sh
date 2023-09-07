@@ -9,6 +9,7 @@ $QFDS -p 2 -d Visualization -t -A thouse5_bench.fds
 $QFDS -d Visualization cell_test.fds
 $RUNCFAST -d Visualization cfast_test.in
 $QFDS -d Visualization colorbar.fds
+$QFDS -d Visualization colorbar2.fds
 $QFDS -d Visualization colorconv.fds
 $QFDS -d Visualization hvac_comp.fds
 $QFDS -d Visualization fed_test.fds

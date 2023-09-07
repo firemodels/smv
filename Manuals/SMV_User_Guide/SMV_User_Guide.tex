@@ -3751,7 +3751,7 @@ PARTCLASSTYPE
 
 \subsubsection{PLOT3D Files}
 \blist
-\hitemssf{LOADPLOT3D}Load a Plot3D file for a given mesh at a specified time. 
+\hitemssf{LOADPLOT3D}Load a Plot3D file for a given mesh at a specified time.
 Usage:
 \begin{lstlisting}
 LOADPLOT3D
@@ -3761,7 +3761,7 @@ where
 \begin{itemize}
 \item mesh index - is an integer from 0 to the number of meshes.  If 0 is specified then all meshes at a given time are loaded.
 If 1 to the number of meshes is specified then the mesh with that mesh index is loaded.
-\item time - time within 0.5 s of mesh to load 
+\item time - time within 0.5 s of mesh to load
 \end{itemize}
 
 \hitemssf{PLOT3DPROPS}Specifies Plot3D plot properties that
@@ -4170,47 +4170,18 @@ SETTOURKEYFRAME
 \part{Miscellaneous Topics}
 
 
-\chapter{Coloring Data}
+\chapter{Customizing Colorbars}
 \label{chap:colorbar}
 \section{Overview}
-A colorbar is used to link
-colors with data values.  A colorbar is normally visualized as a rectangle
-with 256 rows and 3 columns.  The three columns in each row contain the red, green
-glue color components for a data value.
-When editing a colorbar, it is convenient to visualize it
-by thinking of colors spatially by associating red, green and
-blue color components with x, y and z spatial coordinates.  A colorbar
-may then be thought of as a path within a cube where the three axes of the cube
-are red, green and blue.
-The lower left bottom of this cube
-is then colored black and the upper right top corner is colored
-white.  Other corners are colored red, green, blue, cyan, magenta and
-yellow depending on their color components present.
-Figure \ref{figCOLORBAR_EXAMPLES}\ gives several examples of colorbars pre-defined
-by Smokeview.  Each image was generated using the colorbar editor
-illustrated in Fig. \ref{figCOLORBAR}.
-
-A colorbar in Smokeview consists of a set of color nodes forming a path
-within a cube.  This way of visualizing it is helpful in defining new
-colorbars by allowing one to more easily judge changes in color within the
-colorbar.  Though most colorbars paths are continuous, a colorbar
-path need not be.  Discontinuous colorbars
-are useful for highlighting regions in a simulation with a particular
-property, for example where the temperature exceeds the boiling point of
-water or in a topographic map where a shoreline with zero elevation occurs.
-Figure \ref{figCOLORBAR_EXAMPLES}c
-gives an example of a colorbar with a break.  This colorbar jumps in the
-middle from a shade of cyan to a shade of yellow.
-
 \begin{figure}[bph]
 \begin{center}
 \begin{tabular}{cc}
-\includegraphics[width=3.25in]{\SMVfigdir/colorbar_rainbow}&
-\includegraphics[width=3.25in]{\SMVfigdir/colorbar_bluered}\\
-a) rainbow&b) blue-$>$red\\
-\includegraphics[width=3.25in]{\SMVfigdir/colorbar_split}&
-\includegraphics[width=3.25in]{\SMVfigdir/colorbar_whiteblack}\\
-c) blue-$>$red split&d) white-$>$black
+\includegraphics[width=3.5in]{SCRIPT_FIGURES/colorbar2_rainbow}&
+\includegraphics[width=3.5in]{SCRIPT_FIGURES/colorbar2_blue_green_red}\\
+a) Rainbow&b) blue-$>$green-$>$red\\
+\includegraphics[width=3.5in]{SCRIPT_FIGURES/colorbar2_split}&
+\includegraphics[width=3.5in]{SCRIPT_FIGURES/colorbar2_black_white}\\
+c) split&d) black-$>$white
 \end{tabular}
 \end{center}
 \caption[Colorbar Examples]{
@@ -4227,91 +4198,255 @@ The other three colobars are continuous.
 \label{figCOLORBAR_EXAMPLES}
 \end{figure}
 
+A colorbar is used to associate
+data with color.  A colorbar is represented in Smokeview as a table of 256 rows and 3 columns
+of red, green and blue color components, each component ranging from 0 to 255.
+When constructing a colorbar, it is useful to represent these components as spatial coordinates within a cube
+where the distance along a cube side corresponds to a color component value.  A colorbar
+may then be thought of as a path within this cube.
+The lower left front corner
+is colored black (all components are 0) and the upper right back corner is colored
+white (all components are 255).  Other corners are colored red, green, blue, cyan, magenta and
+yellow.
+Figure \ref{figCOLORBAR_EXAMPLES}\ gives several examples of colorbars defined
+by Smokeview.
+
+To construct a colorbar, one defines a set of nodes forming a path
+within the color cube.  Smokeview then interpolates colors between these nodes
+to form the colorbar.  Though most colorbar paths used by smokeview are continuous, a colorbar
+path need not be.  A colorbar path may have a large break or jump (split colorbar)
+or an abrupt change of direction (divergent colorbar).  Split colorbars
+are useful for hilighting regions in a simulation with a particular
+property, for example where the temperature exceeds the boiling point of
+water or in a terrain map where a shoreline with zero elevation occurs.
+Figure \ref{figCOLORBAR_EXAMPLES}c
+gives an example of a colorbar with a break.  This colorbar jumps in the
+middle from  blue to  green.
+
+A goal in constructing a colorbar is for equal changes in data to correspond to
+equal changes in color. Problems occur when large changes in data correspond
+to small changes in color. This results in flat spots in the colorbar with details in the data  obscured.
+The opposite problem occurs when small changes in data correspond to large changes in color.
+Features or artifacts occur in the visualization that are not present in the data.
+One can minimize these problems by using perceptually uniform colorbars\cite{kovesi2015good}.
+To aid in constructing colorbars with this property, the CIELab colorspace is used to interpolate
+between color nodes and to choose color spacing between nodes
+since this color space was designed so that equal distances between data correspond to equal differences in color perception (greater the data distance greater the perceived color difference).
+Colorbars (except for those colorbars that are discontinuous)
+are generated so that the distances between each point in CIELab space are equal.
+
+Colorbars are grouped in smokeview menus as rainbow, linear and divergent.
+Other groups used are original (colorbars that existed in the previous versions of smokeview),
+deprecated (colorbars likely to be
+removed in future versions of smokeview) and user (colorbars created by users). Several of the rainbow, linear and divergent
+colorbars were obtained from Ref. \cite{ColorCET}.  All of these colorbars except for those with split in the name were adjusted
+so that they are perceptually uniform, distances between adjacent colorbar colors in CIELab space are the same.
+
 \begin{figure}[bph]
 \begin{center}
-\includegraphics[width=3.319444in]{\SMVfigdir/figCOLORBAR_EDITOR}
+\includegraphics[width=4.236111in]{\SMVfigdir/figCOLORBAR_EDITOR}
 \end{center}
-\caption[Colorbar Editor dialog box.]{ Colorbar
-Editor dialog box. One may create a new colorabr or edit an existing one by
-specifying one or more colorbar node indices ranging from 0 to 255 and
-red, green, blue color components for that indice again ranging from 0 to 255.  }\ \label{figCOLORBAR}
+\caption[Colorbar node editing.]{ Colorbar node editing.
+Dialog box for editing simple colorbars (1 to 5 nodes) or colorbars with more nodes.
+One may create or edit an existing colorbar  by
+specifying red, green and/or blue node components each ranging from 0 to 255.  }\ \label{figCOLORBAR}
 \end{figure}
+
 
 \section{Using the Colorbar Editor}
 \label{section:colorbar}
-The Colorbar Editor dialog box is opened by selecting the {\em
-Dialogs$>$View$>$Edit colorbar}\ menu entry. When this menu item is
-selected, a spatial representation of the currently selected
-colorbar is displayed within the Smokeview scene along with the
-Colorbar Editor dialog box.  The FDS simulation scene is hidden
-by default but may be shown along with the colorbar display by
-un-checking the {\em Hide scene}\ checkbox.
 
-The colorbar is represented visually in two ways.  First, a series
-of colored nodes and lines within a cube. The cube has three axes:
-red along the x direction), green along the y direction and blue along the z direction.
-The nodes and lines are a spatial representation of the colorbar where as
-stated earlier the red, green, blue color components are mapped to x, y, z spatial
-coordinates.
-The second way a colorbar is represented is as a rectangle with a series of colored squares and numbered
-indices
-displayed along the side. This rectangle is equivalent to the colorbar
+The Colorbar Editor dialog box, illustrated in Figures \ref{figCOLORBAR},
+is opened by selecting the {\em Dialogs$>$View$>$Edit colorbar}\ menu entry. When this menu item is
+selected, a spatial representation of the currently selected
+colorbar is displayed along with the Colorbar Editor dialog box.
+Simple colorbars with up to 5 nodes can be edited using the 1->5 tab.
+The General(2->256) tab is used to edit
+colorbars with more nodes or if one wishes to delete or add nodes.
+\begin{figure}[bph]
+\begin{center}
+\includegraphics[width=4.236111in]{\SMVfigdir/figCOLORBAR_EDITOR2}
+\end{center}
+\caption[Colorbar Editor display.]{Colorbar Editor display.
+Dialog box for specifying the color space (RGB or CIELab) used to display a colorbar or to
+convert between RGB and CIELab color coordinates.
+}\ \label{figCOLORBAR2}
+\end{figure}
+The Display tab illustrated in Figure \ref{figCOLORBAR2} is used to
+change the coordinate system used to view the colorbar (RGB or CIELab),
+to toggle between colorbars allowing one to more easily view colorbar differences,
+to revert a colorbar back to its original state and
+to output a colorbar to a csv file for examining in a spreadsheet program.
+
+A colorbar is represented visually in several ways.  First, as a series
+of colored nodes and lines within a cube. The cube has three axes which are
+red, green and blue if the RGB color space is selected or
+or L (lightness), a (red/green) and b (yellow/blue) if the CIELab color space is selected.
+The nodes and lines are a spatial representation of the colors.
+The color components (whether RGB or CIELab) are mapped to x, y, z spatial coordinates.
+The second way a colorbar is represented is as a rectangle with a series of colored squares and numbered indices displayed along the side. This rectangle is equivalent to the colorbar
 displayed beside a regular Smokeview scene.  The numbered indices indicate
-the position in the colorbar , from 0 to 255, where the node color occurs.
-Once the node indices and colors are defined, Smokeview interpolates to
+a position within the colorbar , from 0 to 255, where the node color occurs.
+Once the node indices and colors are defined, Smokeview interpolates between them to
 form a table of colors. This table has  256 rows and 3 columns.
 
 The Colorbar Editor dialog box contains a list of colorbars
-pre-defined by Smokeview and others if defined by the user. A new
+defined by Smokeview and others if defined by the user (and read in from the .ini file). A new
 colorbar is created by selecting the \frameit{New}\ button. The
-new colorbar is created initially by making a copy of the
-currently selected colorbar. Once created, it may be altered by
+new colorbar is created initially with two nodes.
+The first node is black (0,0,0) and the second node is white (255,255,255).
+Once created, it may be altered by
 adding/deleting nodes with the \frameit{Add/Delete}\ buttons and
 altering color with the red, green, blue spinners. The colorbar
-nodes may also be selected with the mouse and dragged to change
-their position and hence their value. If the {\tt CTRL}\ key is
-pressed when dragging then the node only moves along a horizontal
-direction.  If the {\tt ALT}\ key is pressed when dragging then
-the node is constrained along a vertical direction. Note that only
-colorbars created by a user may be changed. The {\em Add/Delete}\
-and other buttons for modifying colorbar characteristics are only
-enabled for user defined colorbars.  They are disabled for
-Smokeview predefined colorbars. Colorbar definitions (only
-colorbars created by the user) are saved in the Smokeview
-configuration (.ini) file.  The \frameit{Distribute nodes uniformly}\
-button is used as the name infers to distribute the individual colors
-of the colorbar uniformly along the colorbar path.
+nodes when viewed in RGB mode (not CIELab) may also
+be selected with the mouse and dragged to change
+its position and hence its value. If the {\tt CTRL}\ key is
+pressed when dragging the node only moves along a horizontal
+direction.  If the {\tt ALT}\ key is pressed when dragging
+the node is constrained along a vertical direction.
 
-A colorbar may also be created by adding a {\tt GCOLORBAR}\ entry to the {\tt casename.ini}\ file.
-The {\tt GCOLORBAR}\ keyword is documented in Appendix~\ref{sect:iniview}. {\tt GCOLORBAR}\
-entries used to define colorbars in Figure \ref{figCOLORBAR_EXAMPLES} are given by
-\begin{lstlisting}
-GCOLORBAR
- 4
- Rainbow
- 5 0
-   0   0   0 255
-  64   0 255 255
- 128   0 255   0
- 192 255 255   0
- 255 255   0   0
- blue->red
- 3 0
-   0   0   0 255
- 128   0 255   0
- 255 255   0   0
- blue->red split
- 4 0
-   0   0   0 255
- 128   0 255 255
- 128 255 255   0
- 255 255   0   0
- white->black
- 2 0
-   0   0   0   0
- 255 255 255 255
-\end{lstlisting}
+\section{Examples}
+The examples in this section were created using the Edit Colorbar dialog box which is
+opened by selecting the Dialogs>View>Edit Colorbar menu item.
 
+\subsection{Constant Colorbar}
+
+\newcommand{\cbsize}{3.25in}
+\begin{figure}[bph]
+\begin{center}
+\begin{tabular}{cc}
+\includegraphics[width=\cbsize]{SCRIPT_FIGURES/colorbar2_constant_rgb}&
+\includegraphics[width=\cbsize]{SCRIPT_FIGURES/colorbar2_constant_lab}\\
+RGB&CIELab\\
+\end{tabular}
+\end{center}
+\caption[Constant Colorbar]{
+Constant Colorbar.
+}\
+\label{fig:colorbar_constant}
+\end{figure}
+
+To create a constant colorbar, a colorbar with just one color:
+\begin{enumerate}
+ \setlength{\itemsep}{1pt}
+  \setlength{\parskip}{0pt}
+  \setlength{\parsep}{0pt}
+\item Press the \frameit{New} button in the Colorbar panel. This creates a 2 node colorbar with colors ranging
+from black to white.
+\item Select the \frameit{constant} radio button.
+\item Specify red, green and blue color components for node 1.
+\item Specify a label, say constant\_01. Press the \frameit{Update label} button in the Colorbar panel.
+\item Press the \frameit{Save settings} button. This saves the colorbar just created to the casename.ini
+configuration file.  The next time this case is opened, the colorbar constant\_01 will appear as a user defined
+colorbar.
+\end{enumerate}
+
+A constant colorbar using (0,0,255) for node 1 is illustrated in Figure \ref{fig:colorbar_constant}.
+The steps for creating other types of colorbars are similar.
+
+\subsection{Linear Colorbar}
+
+\begin{figure}[bph]
+\begin{center}
+\begin{tabular}{cc}
+\includegraphics[width=\cbsize]{SCRIPT_FIGURES/colorbar2_linear_rgb}&
+\includegraphics[width=\cbsize]{SCRIPT_FIGURES/colorbar2_linear_lab}\\
+RGB&CIELab\\
+\end{tabular}
+\end{center}
+\caption[Linear Colorbar]{
+Linear Colorbar.
+}\
+\label{fig:colorbar_linear}
+\end{figure}
+
+A linear colorbar is a colorbar with two nodes that transition smoothly
+from one color at node 1 to a second color at node 5.
+Node 1 and node 5 colors are converted from RGB to CIELab coordinates internally in smokeview.
+These coordinates are then interpolated
+linearly between nodes 1 and 5 to create 256 CIELab coorindates.
+Since the linear interpolation occurs in CIELab space the paths are straight lines in the CIELab
+images while curved in the RGB images.
+Finally these 256 CIELab coordinates are converted back to RGB to form the colorbar.
+To create a linear colorbar:
+\begin{enumerate}
+ \setlength{\itemsep}{1pt}
+  \setlength{\parskip}{0pt}
+  \setlength{\parsep}{0pt}
+\item Press the \frameit{New} button in the Colorbar panel.
+\item If not already selected, select the \frameit{linear (2 nodes)} radio button.
+\item Specify red, green, and blue color components for nodes 1 and 5.
+\item Specify a label, say linear\_01. Press the \frameit{Update label} button in the Colorbar panel.
+\item Press the \frameit{Save settings} button to save the colorbar linear\_01 to the .ini file.
+\end{enumerate}
+
+A linear colorbar using (0,0,255) for node 1 and (255,0,0) for node 5 is illustrated in Figure \ref{fig:colorbar_linear}.
+
+\subsection{Split Colorbar}
+
+\begin{figure}[bph]
+\begin{center}
+\begin{tabular}{cc}
+\includegraphics[width=\cbsize]{SCRIPT_FIGURES/colorbar2_split_rgb}&
+\includegraphics[width=\cbsize]{SCRIPT_FIGURES/colorbar2_split_lab}\\
+RGB&CIELab\\
+\end{tabular}
+\end{center}
+\caption[Split Colorbar]{
+Split Colorbar.
+}\
+\label{fig:colorbar_split}
+\end{figure}
+
+A split colorbar has a discontinuity or abrupt change in the middle.
+To create a split colorbar:
+\begin{enumerate}
+ \setlength{\itemsep}{1pt}
+  \setlength{\parskip}{0pt}
+  \setlength{\parsep}{0pt}
+\item Press the \frameit{New} button in the Colorbar panel.
+\item Select the \frameit{split/divergent} radio button.
+\item Specify red, green and blue color components for nodes 1, 2, 3 and 5.
+Colors will smoothly transition between nodes 1 and 2, change abruptly between nodes 2 and 3
+and smoothly transition between nodes 3 and 5.
+\item Specify a label, say split\_01. Press the \frameit{Update label} button in the Colorbar panel.
+\item Press the \frameit{Save settings} button to save the colorbar split\_01 to the .ini file.
+\end{enumerate}
+
+A split colorbar using (64,0,0) for node 1, (0,0,255) for node 2 (255,0,0) for node 3 and (255,255,0) for node 5 is illustrated in Figure \ref{fig:colorbar_split}.
+
+\subsection{Divergent Colorbar}
+
+\begin{figure}[bph]
+\begin{center}
+\begin{tabular}{cc}
+\includegraphics[width=\cbsize]{SCRIPT_FIGURES/colorbar2_divergent_rgb}&
+\includegraphics[width=\cbsize]{SCRIPT_FIGURES/colorbar2_divergent_lab}\\
+RGB&CIELab\\
+\end{tabular}
+\end{center}
+\caption[Divergent Colorbar]{
+Divergent Colorbar.
+}\
+\label{fig:colorbar_divergent}
+\end{figure}
+A divergent colorbar is similar to a split colorbar.  It it continuous but has a sharp bend or change in direction in the middle when viewed as a path in a color space.
+To create a divergent colorbar:
+\begin{enumerate}
+ \setlength{\itemsep}{1pt}
+  \setlength{\parskip}{0pt}
+  \setlength{\parsep}{0pt}
+\item Press the \frameit{New} button in the Colorbar panel.
+\item Select the \frameit{split/divergent} radio button.
+\item Specify red, green and blue color components for nodes 1, 2, 3 and 5.
+Select the same components for nodes 2 and 3.  The split and divergent colorbar dialog forces the discontinuity or sharp bend
+to occur in the middle of the color bar.
+These nodes should not occur in a straight line if you want a divergent colorbar.
+\item Specify a label, say divergent\_01. Press the \frameit{Update label} button in the Colorbar panel.
+\item Press the \frameit{Save settings} button to save the colorbar divergent\_01 to the .ini file.
+\end{enumerate}
+
+A divergent colorbar using (64,0,192) for node 1, (192,192,192) for node 2 and (192,0,64) for node 5 is illustrated in Figure \ref{fig:colorbar_divergent}.
 
 \chapter{Smokeview - Demonstrator Mode}
 A simplified version of Smokeview may be invoked in order to present a fire

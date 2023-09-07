@@ -29,6 +29,7 @@
 
 SVEXTERN int SVDECL(update_plot2dini, 0);
 SVEXTERN int SVDECL(update_device_timeaverage, 0);
+SVEXTERN int SVDECL(update_colorbar_list, 0);
 SVEXTERN int SVDECL(force_bound_update, 0);
 
 // hvac data
@@ -450,6 +451,8 @@ SVEXTERN int SVDECL(solid_ht3d, 0);
 SVEXTERN int SVDECL(load_incremental, 0);
 SVEXTERN int SVDECL(show_tour_hint, 1);
 SVEXTERN int cb_rgb[3];
+SVEXTERN int cb_simple_rgb[15];
+SVEXTERN int SVDECL(colorbar_simple_type, 0);
 SVEXTERN float SVDECL(geom_linewidth, 2.0);
 SVEXTERN float SVDECL(geom_pointsize, 6.0);
 SVEXTERN int SVDECL(slice_opacity_adjustment, 0);
@@ -538,7 +541,7 @@ SVEXTERN int SVDECL(*colorbar_list_sorted, NULL);
 SVEXTERN int SVDECL(*colorbar_list_inverse, NULL);
 SVEXTERN int SVDECL(show_Lab_dist_bars, 0);
 SVEXTERN int SVDECL(update_colorbar_orig, 0);
-SVEXTERN float SVDECL(*cielab_check_xyz, NULL);
+SVEXTERN float SVDECL(*lab_check_xyz, NULL);
 SVEXTERN char SVDECL(*dEcsv_filename, NULL);
 SVEXTERN float cb_lab2[3], cb_frgb2[3];
 SVEXTERN int cb_rgb2[3];
@@ -583,13 +586,14 @@ SVEXTERN unsigned int SVDECL(*screenmap360, NULL);
 SVEXTERN float SVDECL(*screenmap360IX, NULL), SVDECL(*screenmap360IY, NULL);
 
 SVEXTERN colorbardata SVDECL(*split_colorbar, NULL);
+SVEXTERN int SVDECL(split_colorbar_index, -1);
 #ifdef INMAIN
 SVEXTERN float splitvals[3]={-1.0,0.0,1.0};
 #else
 SVEXTERN float splitvals[3];
 #endif
 #ifdef INMAIN
-SVEXTERN int colorsplit[12] = {  0,0,0,  64,64,255,  0,192,0,  255,0,0 };
+SVEXTERN int colorsplit[12] = {0,0,0,  64,64,255,  0,192,0,  255,0,0};
 #else
 SVEXTERN int colorsplit[12];
 #endif
@@ -1888,11 +1892,12 @@ SVEXTERN int SVDECL(enable_texture_lighting,0);
 SVEXTERN int SVDECL(ncolorbars,0);
 SVEXTERN int ndefaultcolorbars;
 SVEXTERN colorbardata SVDECL(*colorbarinfo,NULL),SVDECL(*current_colorbar,NULL);
+SVEXTERN colorbardata SVDECL(*colorbarcopyinfo, NULL);
 
 SVEXTERN int SVDECL(ncolortableinfo, 0);
 SVEXTERN colortabledata SVDECL(*colortableinfo, NULL);
 SVEXTERN int SVDECL(i_colortable_list,0);
-
+SVEXTERN int SVDECL(toggle_on, 0);
 SVEXTERN int SVDECL(update_load_files, 0);
 SVEXTERN int do_threshold;
 SVEXTERN int ntotal_blockages;

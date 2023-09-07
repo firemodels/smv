@@ -1,0 +1,63 @@
+RENDERDIR
+ ..\..\Manuals\SMV_User_Guide\SCRIPT_FIGURES
+
+SHOWCBAREDIT
+
+SETCBAR
+ Rainbow
+RENDERONCE
+  colorbar2_rainbow
+  
+SETCBAR
+ blue->green->red
+RENDERONCE
+  colorbar2_blue_green_red
+  
+SETCBAR
+ split
+RENDERONCE
+  colorbar2_split
+  
+SETCBAR
+ black->white
+RENDERONCE
+  colorbar2_black_white
+
+SETCBAR
+ constant_01
+SETCBARRGB
+RENDERONCE
+  colorbar2_constant_rgb
+SETCBARLAB
+RENDERONCE
+  colorbar2_constant_lab
+
+SETCBAR
+ linear_01
+SETCBARRGB
+RENDERONCE
+  colorbar2_linear_rgb
+SETCBARLAB
+RENDERONCE
+  colorbar2_linear_lab
+
+SETCBAR
+ divergent_01
+SETCBARRGB
+RENDERONCE
+  colorbar2_divergent_rgb
+SETCBARLAB
+RENDERONCE
+  colorbar2_divergent_lab
+
+SETCBAR
+ split_01
+SETCBARRGB
+RENDERONCE
+  colorbar2_split_rgb
+SETCBARLAB
+RENDERONCE
+  colorbar2_split_lab
+
+
+

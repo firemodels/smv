@@ -797,7 +797,7 @@ ERROR_CODE set_named_colorbar(const char *name) {
 
 ERROR_CODE get_named_colorbar(const char *name, size_t *index) {
   for (size_t i = 0; i < ncolorbars; i++) {
-    if (strcmp(colorbarinfo[i].label, name) == 0) {
+    if (strcmp(colorbarinfo[i].menu_label, name) == 0) {
       *index = i;
       return 0;
     }

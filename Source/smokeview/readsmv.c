@@ -12218,16 +12218,16 @@ int ReadIni2(char *inifile, int localfile){
       int ii;
 
       fgets(buffer, 255, stream);
-      sscanf(buffer, " %i %i %i %i %i %i ", colorsplit    , colorsplit + 1, colorsplit + 2, colorsplit + 3, colorsplit +  4, colorsplit +  5);
+      sscanf(buffer, " %i %i %i %i %i %i ", colorsplit, colorsplit + 1, colorsplit + 2, colorsplit + 3, colorsplit + 4, colorsplit + 5);
       fgets(buffer, 255, stream);
       sscanf(buffer, " %i %i %i %i %i %i ", colorsplit + 6, colorsplit + 7, colorsplit + 8, colorsplit + 9, colorsplit + 10, colorsplit + 11);
       fgets(buffer, 255, stream);
       sscanf(buffer, " %f %f %f ", splitvals, splitvals + 1, splitvals + 2);
 
-      for(ii=0;ii<12;ii++){
-        colorsplit[ii] = CLAMP(colorsplit[ii],0,255);
+      for(ii = 0; ii < 12; ii++){
+        colorsplit[ii] = CLAMP(colorsplit[ii], 0, 255);
       }
-      if(scriptinfo==NULL){
+      if(scriptinfo == NULL){
         update_splitcolorbar = 1;
       }
       else{
@@ -12821,14 +12821,10 @@ int ReadIni2(char *inifile, int localfile){
     if(MatchINI(buffer, "COLORBARTYPE") == 1){
       char *label;
 
-      update_colorbartype = 1;
       fgets(buffer, 255, stream);
       label = strchr(buffer, '%');
-      if(label == NULL){
-        sscanf(buffer, "%i", &colorbartype);
-        RemapColorbarType(colorbartype, colorbarname);
-      }
-      else{
+      if(label != NULL){
+        update_colorbartype = 1;
         label++;
         TrimBack(label);
         label = TrimFront(label);
@@ -14938,10 +14934,10 @@ int ReadIni2(char *inifile, int localfile){
           fgets(buffer, 255, stream);
           TrimBack(buffer);
           cb_buffptr = TrimFront(buffer);
-          strcpy(cbi->label, cb_buffptr);
+          strcpy(cbi->menu_label, cb_buffptr);
           cbi->type = CB_USER;
-          strcpy(cbi->ctype, "user defined");
-          cbi->interp = INTERP_CIE;
+          strcpy(cbi->colorbar_type, "user defined");
+          cbi->interp = INTERP_LAB;
 
           fgets(buffer, 255, stream);
           sscanf(buffer, "%i %i", &cbi->nnodes, &cbi->nodehilight);
@@ -14957,14 +14953,13 @@ int ReadIni2(char *inifile, int localfile){
             fgets(buffer, 255, stream);
             r1 = -1; g1 = -1; b1 = -1;
             sscanf(buffer, "%i %i %i %i", &icbar, &r1, &g1, &b1);
-            cbi->index_node[i] = icbar;
+            cbi->node_index[i] = icbar;
             nn = 3 * i;
-            cbi->rgb_node[nn] = r1;
-            cbi->rgb_node[nn + 1] = g1;
-            cbi->rgb_node[nn + 2] = b1;
+            cbi->node_rgb[nn]     = r1;
+            cbi->node_rgb[nn + 1] = g1;
+            cbi->node_rgb[nn + 2] = b1;
           }
           RemapColorbar(cbi);
-          UpdateColorbarSplits(cbi);
           UpdateColorbarDialogs();
         }
 
@@ -17050,7 +17045,7 @@ void WriteIni(int flag,char *filename){
     cb = colorbarinfo + colorbartype;
     strcpy(percen, "%");
     fprintf(fileout, "COLORBARTYPE\n");
-    fprintf(fileout, " %i %s %s \n", colorbartype, percen, cb->label);
+    fprintf(fileout, " %i %s %s \n", colorbartype, percen, cb->menu_label);
   }
   fprintf(fileout, "CO2COLORMAP\n");
   fprintf(fileout, " %i %i\n", co2_colormap_type, co2_colorbar_index);
@@ -17080,11 +17075,11 @@ void WriteIni(int flag,char *filename){
     fprintf(fileout, " %i\n", ncolorbars - ndefaultcolorbars);
     for(n = ndefaultcolorbars; n < ncolorbars; n++){
       cbi = colorbarinfo + n;
-      fprintf(fileout, " %s\n", cbi->label);
+      fprintf(fileout, " %s\n", cbi->menu_label);
       fprintf(fileout, " %i %i\n", cbi->nnodes, cbi->nodehilight);
       for(i = 0; i < cbi->nnodes; i++){
-        rrgb = cbi->rgb_node + 3 * i;
-        fprintf(fileout, " %i %i %i %i\n", (int)cbi->index_node[i], (int)rrgb[0], (int)rrgb[1], (int)rrgb[2]);
+        rrgb = cbi->node_rgb + 3 * i;
+        fprintf(fileout, " %i %i %i %i\n", (int)cbi->node_index[i], (int)rrgb[0], (int)rrgb[1], (int)rrgb[2]);
       }
     }
   }

@@ -777,17 +777,9 @@ int ColorbarClick(int x, int y){
 
   colorbar_index = GetColorbarIndex(1,x,y);
   if(colorbar_index>=0){
-    int state;
-
     colorbar_select_index=colorbar_index;
-    state=GLUTGETMODIFIERS();
-    if(state==GLUT_ACTIVE_CTRL&&current_colorbar!=NULL&&current_colorbar->nsplits==1){
-      colorbar_splitdrag=1;
-    }
-    else{
-      colorbar_drag=1;
-      UpdateRGBColors(colorbar_index);
-    }
+    colorbar_drag=1;
+    UpdateRGBColors(colorbar_index);
     return 1;
   }
   else if(colorbar_index==CB_SELECT_CONTINUE){
@@ -1181,26 +1173,6 @@ void ColorbarDrag(int xm, int ym){
   }
 }
 
-/* ------------------ ColorbarSplitDrag ------------------------ */
-
-void ColorbarSplitDrag(int xm, int ym){
-  int colorbar_index;
-
-  colorbar_index = GetColorbarIndex(0,xm,ym);
-  if(colorbar_index>=0){
-    int ii;
-
-    if(colorbar_index>250)colorbar_index=250;
-    if(colorbar_index<5)colorbar_index=5;
-    ii=current_colorbar->splits[0];
-    current_colorbar->index_node[ii]=colorbar_index;
-    current_colorbar->index_node[ii-1]=colorbar_index;
-    RemapColorbar(current_colorbar);
-    UpdateRGBColors(COLORBAR_INDEX_NONE);
-    UpdateColorbarSplits(current_colorbar);
-  }
-}
-
 /* ------------------ DragColorbarEditNode ------------------------ */
 
 void DragColorbarEditNode(int xm, int ym){
@@ -1529,12 +1501,6 @@ void MouseDragCB(int xm, int ym){
 
   if( colorbar_drag==1&&(showtime==1 || showplot3d==1)){
     ColorbarDrag(xm,ym);
-    return;
-  }
-  if(
-    colorbar_splitdrag==1&&
-    (showtime==1 || showplot3d==1)&&current_colorbar!=NULL&&current_colorbar->nsplits==1){
-    ColorbarSplitDrag(xm,ym);
     return;
   }
   if(timebar_drag==1){

@@ -1152,7 +1152,7 @@ void ViewportSlicePlot(int quad, GLint screen_left, GLint screen_down) {
     position = 0;
 
     cbi = colorbarinfo + colorbartype;
-    strcpy(label, cbi->label);
+    strcpy(label, cbi->menu_label);
     strcat(label, "/CIE delta");
 
     for(i=0;i<255;i++){
@@ -1161,8 +1161,8 @@ void ViewportSlicePlot(int quad, GLint screen_left, GLint screen_down) {
 
     void GetColorDist(colorbardata *cbi, int option, float *min, float *max);
     GetColorDist(colorbarinfo + colorbartype, 1, &valmin, &valmax);
-    DrawPlot2D(PLOT_ALL, xvals, cbi->deltaCIE, NULL, 254,
-      0.0, cbi->deltaCIE[0], 0.0, 1, position, valmin, valmax,
+    DrawPlot2D(PLOT_ALL, xvals, cbi->colorbar_dist_delta, NULL, 254,
+      0.0, cbi->colorbar_dist_delta[0], 0.0, 1, position, valmin, valmax,
       label, NULL, "",
       VP_slice_plot.left, VP_slice_plot.right, VP_slice_plot.down, VP_slice_plot.top);
   }
@@ -1329,10 +1329,10 @@ void ViewportTimebar(int quad, GLint screen_left, GLint screen_down) {
       float *colors;
       int icolor;
 
-      if(strcmp(fire_colorbar->label, "fire") == 0){
+      if(strcmp(fire_colorbar->menu_label, "fire") == 0){
         icolor = 192;
       }
-      else if(strcmp(fire_colorbar->label, "fire 2") == 0){
+      else if(strcmp(fire_colorbar->menu_label, "fire 2") == 0){
         icolor = 128 + 127*(global_hrrpuv_cutoff - global_hrrpuv_min) / (global_hrrpuv_max - global_hrrpuv_min);
         icolor = CLAMP((icolor + 1), 0, 255);
       }
@@ -1340,7 +1340,7 @@ void ViewportTimebar(int quad, GLint screen_left, GLint screen_down) {
         icolor = 255*(global_hrrpuv_cutoff-global_hrrpuv_min)/(global_hrrpuv_max-global_hrrpuv_min);
         icolor = CLAMP((icolor + 1), 0, 255);
       }
-      colors = fire_colorbar->colorbar;
+      colors = fire_colorbar->colorbar_rgb;
       f_red = colors[3*icolor + 0];
       f_green = colors[3*icolor + 1];
       f_blue = colors[3*icolor + 2];

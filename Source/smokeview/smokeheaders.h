@@ -32,8 +32,6 @@ EXTERNCPP void SetupPlot2DUnitData(void);
 
 EXTERNCPP void TimeAveragePlot2DData(float *times, float *vals, float *vals_avg, int nvals, float time_interval);
 
-EXTERNCPP void SplitCB(int var);
-
 EXTERNCPP void HVACDuctBoundsCPP_CB(int var);
 EXTERNCPP void HVACNodeBoundsCPP_CB(int var);
 EXTERNCPP void SetHVACInfo(void);
@@ -43,6 +41,12 @@ EXTERNCPP void InitHvacData(hvacvaldata *hi);
 EXTERNCPP void ReadHVACData(int flag);
 EXTERNCPP int IsHVACVisible(void);
 EXTERNCPP void UpdateHVACDuctColorLabels(int index);
+EXTERNCPP void UpdateColorbarList(void);
+EXTERNCPP int IsColorbarSplit(colorbardata *cbi);
+#ifdef pp_ADJUSTED
+void UpdateAjustLabel(colorbardata *cbi);
+#endif
+
 EXTERNCPP void UpdateHVACNodeColorLabels(int index);
 EXTERNCPP void UpdateAllHVACColorLabels(void);
 
@@ -100,6 +104,8 @@ EXTERNCPP void UpdateDeviceTypes(int val);
 EXTERNCPP void InitStartupDirs(void);
 
 EXTERNCPP int GetFontHeight(void);
+
+EXTERNCPP void SplitCB(int var);
 
 EXTERNCPP void UpdateShowColorbar(int *showcfast_arg, int *show_slice_colorbar_arg, 
   int *show_hvacduct_colorbar_arg, int *show_hvacnode_colorbar_arg);
@@ -713,15 +719,16 @@ EXTERNCPP void UpdatePartClassDepend(partclassdata *partclassi);
 
 EXTERNCPP void UpdateColorbarListBound(int flag);
 EXTERNCPP void UpdateColorbarListEdit(int flag,int del);
-EXTERNCPP void CheckCIE(void);
+EXTERNCPP void CheckLab(void);
 
-EXTERNCPP void AdjustColorBar(colorbardata *cbi, int option);
+EXTERNCPP void AdjustColorBar(colorbardata *cbi);
+EXTERNCPP void AdjustColorBarLab(colorbardata *cbi);
 EXTERNCPP void RevertColorBar(colorbardata *cbi);
-EXTERNCPP void Rgb2CIE(unsigned char *rgb, float *cie);
-EXTERNCPP void Rgb2CIEs(unsigned char *rgbs255, float *cies);
+EXTERNCPP void Rgb2Lab(unsigned char *rgb, float *lab);
+EXTERNCPP void Rgb2Labs(unsigned char *rgbs255, float *labs);
 EXTERNCPP void UpdateColorbarOrig(void);
-EXTERNCPP void CIE2Rgb(unsigned char *rgb255, float *frgb, float *cie);
-EXTERNCPP void FRgb2CIE(float *rgb_arg, float *cie);
+EXTERNCPP void Lab2Rgb(unsigned char *rgb255, float *frgb, float *lab);
+EXTERNCPP void FRgb2Lab(float *rgb_arg, float *lab);
 
 EXTERNCPP char *GetChid(char *file, char *buffer);
 EXTERNCPP int AddColorbar(int icolorbar);
@@ -729,11 +736,9 @@ EXTERNCPP void ReloadMenu(int value);
 EXTERNCPP void ColorbarMenu(int val);
 EXTERNCPP void InitDefaultColorbars(int nini);
 EXTERNCPP void DrawColorbarPathRGB(void);
-EXTERNCPP void UpdateColorbarSplits(colorbardata *cbi);
 EXTERNCPP void RemapColorbar(colorbardata *cbi);
 EXTERNCPP void SortColorBars(void);
 EXTERNCPP colorbardata *GetColorbar(char *label);
-EXTERNCPP void RemapColorbarType(int cb_oldtype, char *cb_newname);
 EXTERNCPP void InitOpenGL(int option);
 EXTERNCPP void TextureShowMenu(int value);
 EXTERNCPP void UpdateColorbarBound(void);

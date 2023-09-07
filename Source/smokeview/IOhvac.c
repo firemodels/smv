@@ -13,7 +13,7 @@
 
 unsigned char hvac_off_color[3] = {0, 255, 0}, hvac_on_color[3] = {255, 0, 0};
 unsigned char *hvac_color_states[2] = {hvac_off_color, hvac_on_color};
-#define HVACCOLORCONV(v,min,max) max < min ? 0 : CLAMP(255*((v)-min)/(max-min),0,254)
+#define HVACCOLORCONV(v,min,max) max < min ? 0 : CLAMP(255*((v)-min)/(max-min),0,255)
 
 #define NODE_XYZ 0.1
 

@@ -1030,6 +1030,9 @@ void ColorbarMenu(int value){
    case COLORBAR_VERTICAL:
      LabelMenu(MENU_LABEL_colorbar_vertical);
      break;
+   case MENU_COLORBAR_SETTINGS:
+     ShowGluiBounds(DIALOG_COLORING);
+     break;
    default:
      ASSERT(FFALSE);
      break;
@@ -1053,7 +1056,7 @@ void ColorbarMenu(int value){
     IsoBoundCB(ISO_COLORS);
     SetLabelControls();
     char *ext, cblabel[1024];
-    strcpy(cblabel,colorbarinfo[colorbartype].label);
+    strcpy(cblabel,colorbarinfo[colorbartype].menu_label);
     ext = strrchr(cblabel,'.');
     if(ext!=NULL)*ext=0;
   }
@@ -8420,7 +8423,7 @@ int MakeSubColorbarMenu(int *submenuptr, int *nmenusptr, char *ctype, void (*CBM
     colorbardata *cbi;
 
     cbi = colorbarinfo + i;
-    if(strcmp(cbi->ctype, ctype) != 0)continue;
+    if(strcmp(cbi->colorbar_type, ctype) != 0)continue;
     nitems++;
     break;
   }
@@ -8434,14 +8437,14 @@ int MakeSubColorbarMenu(int *submenuptr, int *nmenusptr, char *ctype, void (*CBM
     colorbardata *cbi;
 
     cbi = colorbarinfo + colorbar_list_sorted[i];
-    if(strcmp(cbi->ctype, ctype) != 0)continue;
+    if(strcmp(cbi->colorbar_type, ctype) != 0)continue;
     strcpy(ccolorbarmenu, "");
     if(colorbartype == colorbar_list_sorted[i]){
       strcat(ccolorbarmenu, "*");
-      strcat(ccolorbarmenu, cbi->label);
+      strcat(ccolorbarmenu, cbi->menu_label);
     }
     else{
-      strcat(ccolorbarmenu, cbi->label);
+      strcat(ccolorbarmenu, cbi->menu_label);
     }
     char *ext;
     ext = strrchr(ccolorbarmenu, '.');

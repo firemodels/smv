@@ -278,24 +278,22 @@ typedef struct _treedata {
 #define CB_USER       6
 #define CB_OTHER      7
 #define INTERP_RGB    0
-#define INTERP_CIE    1
-#define COLOR_DIST_L   0
-#define COLOR_DIST_LAB 1
+#define INTERP_LAB    1
 typedef struct _colorbardata {
-  char label[1024];        // menu label
-  char ctype[256];
-  int nnodes,nodehilight,nsplits,type;
-  unsigned char rgb_node_orig[3*1024], rgb_node[3*1024];
-  unsigned char alpha[1024];
-  unsigned char index_node[1024];  // colorbar index
-  unsigned char splits[1024];
-  int nnodes_orig, index_node_orig[1024];
-  float cie_node[3*1024], frgb[3*1024], dist_node[1024], cie_rgb[3*1024], dE[1024];
+  char menu_label[1024];        // menu label
+  char colorbar_type[256];      // rainbow, linear, divergent, etc
+  int nnodes, nnodes_orig, node_index_orig[1024], nodehilight, type;
+  unsigned char node_rgb_orig[3*1024], node_rgb[3*1024], colorbar_alpha[1024];
+  unsigned char node_index[1024];  // colorbar index
+  float node_dist[1024];
+  float colorbar_dist[256];
+  int dist_ind[256];
 #ifdef pp_COLOR_PLOT2D
-  float deltaCIE[1024];
+  float colorbar_dist_delta[1024];
 #endif
-  int interp,dist_type;
-  float colorbar[3*1024];
+  int interp;   // (LAB or RGB)
+  int can_adjust;
+  float colorbar_rgb[3*1024], colorbar_lab[3*1024];
 } colorbardata;
 
 /* --------------------------  colortabledata ------------------------------------ */

@@ -71,6 +71,11 @@
 #define SCRIPT_SHOWDEV           240
 #define SCRIPT_HIDEDEV           241
 #define SCRIPT_UNLOADPLOT2D      242
+#define SCRIPT_SHOWCBAREDIT      243
+#define SCRIPT_HIDECBAREDIT      244
+#define SCRIPT_SETCBAR           245
+#define SCRIPT_SETCBARLAB        246
+#define SCRIPT_SETCBARRGB        247
 
 #define SCRIPT_SETTIMEVAL        301
 #define SCRIPT_SETVIEWPOINT      302
