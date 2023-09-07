@@ -31,6 +31,7 @@ SVEXTERN int SVDECL(update_plot2dini, 0);
 SVEXTERN int SVDECL(update_device_timeaverage, 0);
 SVEXTERN int SVDECL(update_colorbar_list, 0);
 SVEXTERN int SVDECL(force_bound_update, 0);
+SVEXTERN int SVDECL(update_colorbar_dialog, 1);
 
 // hvac data
 SVEXTERN int SVDECL(hvacductvar_index, -1), SVDECL(hvacnodevar_index, -1);

@@ -23,12 +23,6 @@
 #define pp_FAST           // set fast startup by default
 //#define pp_CHECK_FILES  // check if compressed files exist at startup
 
-
-#ifdef _DEBUG
-#define pp_ADJUSTED       // show whether a colorbar has been adjusted
-#endif
-#define pp_EQUILIBRATE    // show equilibrate button
-
 //#define pp_COLOR_HIDE   // add checkbox to hide/unhide scene when editing a colorbar
 //#define pp_COLOR_PLOT2D // add option to plot CIELab distances
 //#define pp_RAINBOW_RGB    // interpolate rainbow colorbar using rgb

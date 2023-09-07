@@ -2518,6 +2518,10 @@ void UpdateDisplay(void){
     update_smokecolorbar = 0;
     SmokeColorbarMenu(fire_colorbar_index);
   }
+  if(update_colorbar_dialog == 1){
+    UpdateNodeLabel(colorbarinfo + colorbartype);
+    update_colorbar_dialog = 0;
+  }
   if(update_colorbartype == 1){
     colorbardata *cb;
 
