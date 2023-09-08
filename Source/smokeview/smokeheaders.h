@@ -44,7 +44,6 @@ EXTERNCPP void UpdateHVACDuctColorLabels(int index);
 EXTERNCPP void UpdateColorbarList(void);
 EXTERNCPP void UpdateNodeLabel(colorbardata *cbi);
 EXTERNCPP int IsColorbarSplit(colorbardata *cbi);
-void UpdateAjustLabel(colorbardata *cbi);
 
 EXTERNCPP void UpdateHVACNodeColorLabels(int index);
 EXTERNCPP void UpdateAllHVACColorLabels(void);
