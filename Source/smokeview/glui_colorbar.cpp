@@ -1088,7 +1088,11 @@ extern "C" void GluiColorbarSetup(int main_window){
   RADIO_cb_coord_type = glui_colorbar->add_radiogroup_to_panel(ROLLOUT_cb_display,&colorbar_coord_type);
   glui_colorbar->add_radiobutton_to_group(RADIO_cb_coord_type, "RGB");
   glui_colorbar->add_radiobutton_to_group(RADIO_cb_coord_type, "CIELab");
-  glui_colorbar->add_checkbox_to_panel(ROLLOUT_cb_display,"Show 'CIELab' equal distance bars", &show_Lab_dist_bars);
+  glui_colorbar->add_checkbox_to_panel(ROLLOUT_cb_display,"Show CIELab equal distance bars", &show_Lab_dist_bars);
+#ifdef pp_COLOR_PLOT2D
+#define SLICE_PLOT 221
+  glui_colorbar->add_checkbox_to_panel(ROLLOUT_cb_display, _("Show CIELab distance plot"), &vis_colorbar_dists_plot, SLICE_PLOT, SliceBoundCB);
+#endif
 
   PANEL_cb_toggle = glui_colorbar->add_panel_to_panel(ROLLOUT_cb_display, "Toggle");
   LISTBOX_cb_toggle_edit1 = glui_colorbar->add_listbox_to_panel(PANEL_cb_toggle, "", &index_colorbar1, COLORBAR_LISTA, ColorbarCB);
