@@ -3529,6 +3529,7 @@ void GetSmoke3dTimesSizes(char *file, float **times_ptr, int **frame_sizes_ptr, 
     frame_sizes[i]+=36; // add in space for time
   }
   *nframes_ptr = i;
+  fclose(stream);
 }
 
 /* ------------------ GetSmoke3DSizes ------------------------ */
