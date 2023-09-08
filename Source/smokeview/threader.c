@@ -514,21 +514,6 @@ void FinishUpdateTriangles(void){
 }
 #endif
 
-//***************************** multi threaded blank creation ***********************************
-
-/* ------------------ MtMakeIBlank ------------------------ */
-#ifdef pp_THREAD
-void *MtMakeIBlank(void *arg){
-  MakeIBlank();
-  SetCVentDirs();
-  LOCK_IBLANK
-  update_setvents = 1;
-  UNLOCK_IBLANK
-  pthread_exit(NULL);
-  return NULL;
-}
-#endif
-
 /* ------------------ MtSetupFF ------------------------ */
 
 void SetupFF(void){
@@ -812,16 +797,38 @@ void StreamReadListMT(streamlistargdata *arg){
 #endif
 #endif
 
-/* ------------------ makeiblank_all ------------------------ */
+//***************************** multi threaded blank creation ***********************************
 
 #ifdef pp_THREAD
+/* ------------------ MtMakeIBlank ------------------------ */
+
+void *MtMakeIBlank(void *arg){
+  MakeIBlank();
+  SetCVentDirs();
+  LOCK_IBLANK
+  update_setvents = 1;
+  UNLOCK_IBLANK
+  pthread_exit(NULL);
+  return NULL;
+}
+
+/* ------------------ makeiblank_all ------------------------ */
+
 void MakeIBlankAll(void){
-  pthread_create(&makeiblank_thread_id, NULL, MtMakeIBlank, NULL);
+  if(runscript==0){
+    pthread_create(&makeiblank_thread_id, NULL, MtMakeIBlank, NULL);
+  }
+  else{
+    MakeIBlank();
+    SetCVentDirs();
+    update_setvents = 1;
+  }
 }
 #else
 void MakeIBlankAll(void){
   MakeIBlank();
   SetCVentDirs();
+  update_setvents = 1;
 }
 #endif
 
