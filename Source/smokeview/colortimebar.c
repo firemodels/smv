@@ -643,6 +643,8 @@ void AdjustColorBar(colorbardata *cbi){
     inode = nnodes * (cbi->node_dist[i] / total_dist);
     cbi->node_index[i] = inode;
   }
+  cbi->adjusted = 1;
+  update_colorbar_dialog = 1;
 }
 
 /* ------------------ IsColorbarSplit ------------------------ */
@@ -1340,7 +1342,9 @@ void InitDefaultColorbars(int nini){
   for(i=0;i<ncolorbars;i++){
     cbi = colorbarinfo + i;
     cbi->can_adjust = 1;
+    cbi->adjusted   = 0;
   }
+  update_colorbar_dialog = 0;
 
   cbi = colorbarinfo;
 

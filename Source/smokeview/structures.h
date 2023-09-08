@@ -292,7 +292,7 @@ typedef struct _colorbardata {
   float colorbar_dist_delta[1024];
 #endif
   int interp;   // (LAB or RGB)
-  int can_adjust;
+  int can_adjust, adjusted;
   float colorbar_rgb[3*1024], colorbar_lab[3*1024];
 } colorbardata;
 

@@ -31,6 +31,7 @@ SVEXTERN int SVDECL(update_plot2dini, 0);
 SVEXTERN int SVDECL(update_device_timeaverage, 0);
 SVEXTERN int SVDECL(update_colorbar_list, 0);
 SVEXTERN int SVDECL(force_bound_update, 0);
+SVEXTERN int SVDECL(update_colorbar_dialog, 1);
 
 // hvac data
 SVEXTERN int SVDECL(hvacductvar_index, -1), SVDECL(hvacnodevar_index, -1);
@@ -535,8 +536,8 @@ SVEXTERN histogramdata SVDECL(*full_part_histogram, NULL);
 SVEXTERN histogramdata SVDECL(*full_plot3D_histograms, NULL);
 SVEXTERN int SVDECL(update_loadall_textures, 1);
 
-SVEXTERN int SVDECL(max_LISTBOX_colorbar_bound, 0);
-SVEXTERN int SVDECL(max_LISTBOX_colorbar_edit, 0);
+SVEXTERN int SVDECL(max_LISTBOX_cb_bound, 0);
+SVEXTERN int SVDECL(max_LISTBOX_cb_edit, 0);
 SVEXTERN int SVDECL(*colorbar_list_sorted, NULL);
 SVEXTERN int SVDECL(*colorbar_list_inverse, NULL);
 SVEXTERN int SVDECL(show_Lab_dist_bars, 0);
