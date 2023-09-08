@@ -985,10 +985,6 @@ extern "C" void GluiColorbarSetup(int main_window){
   BUTTON_cb_save_as = glui_colorbar->add_button_to_panel(PANEL_cb_select1, _("Save"),      COLORBAR_SAVE_AS, ColorbarCB);
   glui_colorbar->add_column_to_panel(PANEL_cb_select1, false);
   glui_colorbar->add_button_to_panel(PANEL_cb_select1,"New",COLORBAR_NEW,ColorbarCB);
-  colorbar_hidescene=1;
-#ifdef pp_COLOR_HIDE
-  glui_colorbar->add_checkbox_to_panel(PANEL_cb_select1,_("Hide scene"),&colorbar_hidescene);
-#endif
   if(ncolorbars>0){
     colorbartype=0;
 
