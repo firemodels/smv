@@ -61,9 +61,9 @@
   #define LOCK_VOLLOAD      pthread_mutex_lock(&mutexVOLLOAD);
   #define UNLOCK_VOLLOAD    pthread_mutex_unlock(&mutexVOLLOAD);
 
-  #define LOCK_IBLANK       pthread_mutex_lock(&mutexIBLANK);
-  #define UNLOCK_IBLANK     pthread_mutex_unlock(&mutexIBLANK);
-  #define JOIN_IBLANK       pthread_join(makeiblank_thread_id,NULL);
+  #define LOCK_IBLANK       if(runscript==0){pthread_mutex_lock(&mutexIBLANK);}
+  #define UNLOCK_IBLANK     if(runscript==0){pthread_mutex_unlock(&mutexIBLANK);}
+  #define JOIN_IBLANK       if(runscript==0){pthread_join(makeiblank_thread_id,NULL);}
 
   #define LOCK_SETUPFF      pthread_mutex_lock(&mutexSETUPFF);
   #define UNLOCK_SETUPFF    pthread_mutex_unlock(&mutexSETUPFF);
