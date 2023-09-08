@@ -5,6 +5,7 @@
 #include <string.h>
 #include GLUT_H
 #include <math.h>
+#include <ctype.h>
 
 #include "smokeviewvars.h"
 
@@ -403,25 +404,27 @@ void ColorbarSimple(int node){
 
 void FilterCSVFilename(char *file){
   char *csv, *newfile;
-  int i, newlen=0;
+  int i, lenfile;
 
 
+  lenfile = strlen(file);
   {
     char *c;
 
     c = file + strlen(file) - 1;
-    if(isalpha(*c) == 0 && isdigit(*c) == 0)*c=0;
+    if(isalnum(*c) == 0)*c=0;
   }
-  for(i = 0;i < strlen(file);i++){
+  for(i = 0;i < lenfile;i++){
     char *c;
 
     c = file + i;
     if(i==0&&isalpha(*c) == 0)*c = 'a';
-    if(i>0&&isalpha(*c) == 0 && isdigit(*c) == 0&&*c !='.')*c = '_';
+    if(i>0&&isalnum(*c) == 0 && *c !='.')*c = '_';
   }
   newfile = file;
   *newfile++ = file[0];
-  for(i = 1;i < strlen(file);i++){
+  lenfile = strlen(file);
+  for(i = 1;i < lenfile;i++){
     if(file[i - 1] != '_')*newfile++ = file[i];
     if(file[i - 1] == '_' && file[i]!='_')*newfile++ = file[i];
   }
