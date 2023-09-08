@@ -1802,23 +1802,26 @@ void ScriptLoad3dSmoke(scriptdata *scripti){
   FREEMEMORY(loaded_file);
   PRINTF("script: loading smoke3d files of type: %s\n\n",scripti->cval);
 
-  for(i = nsmoke3dinfo-1;i >=0;i--){
+  for(i = 0; i < nsmoke3dinfo; i++){
+    smoke3ddata *smoke3di;
+
+    smoke3di = smoke3dinfo + i;
+    smoke3di->finalize = 0;
+  }
+  for(i = nsmoke3dinfo - 1; i >= 0; i--){
     smoke3ddata *smoke3di;
 
     smoke3di = smoke3dinfo + i;
     if(MatchUpper(smoke3di->label.longlabel, scripti->cval) == MATCH){
-      lastsmoke = i;
+      smoke3di->finalize = 1;
       break;
     }
   }
-
   for(i=0;i<nsmoke3dinfo;i++){
     smoke3ddata *smoke3di;
 
     smoke3di = smoke3dinfo + i;
     if(MatchUpper(smoke3di->label.longlabel,scripti->cval) == MATCH){
-      smoke3di->finalize = 0;
-      if(lastsmoke == i)smoke3di->finalize = 1;
       ReadSmoke3D(ALL_SMOKE_FRAMES, i, LOAD, FIRST_TIME, &errorcode);
       if(scripti->cval!=NULL&&strlen(scripti->cval)>0){
         FREEMEMORY(loaded_file);

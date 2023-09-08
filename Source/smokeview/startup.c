@@ -1146,7 +1146,7 @@ void InitOpenGL(int option){
     if(update_readiso_geom_wrapup == UPDATE_ISO_ALL_NOW)ReadIsoGeomWrapup(BACKGROUND);
     update_readiso_geom_wrapup = UPDATE_ISO_OFF;
 
-    int lastslice;
+    int lastslice=0;
     for(i = nvsliceinfo-1; i>=0; i--){
       vslicedata *vslicei;
 

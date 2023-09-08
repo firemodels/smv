@@ -886,6 +886,7 @@ int CReadSlice_frame(int frame_index_local,int sd_index,int flag){
   if(frame_index_local==first_frame_index){
     if(NewMemory((void **)&sd->qslicedata,2*frame_size*sizeof(float))==0||
        NewMemory((void **)&sd->times,sizeof(float))==0){
+      FCLOSE_SLICE(SLICEFILE);
       return -1;
     }
   }
