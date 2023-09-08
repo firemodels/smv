@@ -24,7 +24,6 @@
 //#define pp_CHECK_FILES  // check if compressed files exist at startup
 
 //#define pp_COLOR_PLOT2D // add option to plot CIELab distances
-//#define pp_RAINBOW_RGB    // interpolate rainbow colorbar using rgb
 //#define pp_GAMMA        // show gamma correction checkbox
 #define pp_BLACKBODY      // use blackbody theory for generating fire colors
 // pp_BLACKBODY_OUT       // output generated blackbody color data 

@@ -964,9 +964,6 @@ void RemapColorbar(colorbardata *cbi){
   int interp;
 
   interp = cbi->interp;
-#ifdef pp_RAINBOW_RGB
-  if(strcmp(cbi->menu_label, "Rainbow")==0)interp = INTERP_RGB;
-#endif
   CheckMemory;
   colorbar_rgb   = cbi->colorbar_rgb;
   node_rgb       = cbi->node_rgb;
