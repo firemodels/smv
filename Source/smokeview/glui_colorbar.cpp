@@ -401,22 +401,36 @@ void ColorbarSimple(int node){
 
 /* ------------------ FilterCSVFilename ------------------------ */
 
-void FilterCSVFilename(char *filename){
-  char *csv;
-  int i;
+void FilterCSVFilename(char *file){
+  char *csv, *newfile;
+  int i, newlen=0;
 
-  for(i = 0;i < strlen(filename);i++){
+
+  {
     char *c;
 
-    c = filename + i;
+    c = file + strlen(file) - 1;
+    if(isalpha(*c) == 0 && isdigit(*c) == 0)*c=0;
+  }
+  for(i = 0;i < strlen(file);i++){
+    char *c;
+
+    c = file + i;
     if(i==0&&isalpha(*c) == 0)*c = 'a';
-    if(i>0&&isalpha(*c) == 0 && isdigit(*c) == 0)*c = '_';
+    if(i>0&&isalpha(*c) == 0 && isdigit(*c) == 0&&*c !='.')*c = '_';
   }
-  csv = strstr(filename, ".csv");
+  newfile = file;
+  *newfile++ = file[0];
+  for(i = 1;i < strlen(file);i++){
+    if(file[i - 1] != '_')*newfile++ = file[i];
+    if(file[i - 1] == '_' && file[i]!='_')*newfile++ = file[i];
+  }
+  *newfile = 0;
+  csv = strstr(file, ".csv");
   if(csv==NULL){
-    strcat(filename, ".csv");
+    strcat(file, ".csv");
   }
-  EDITTEXT_cb_filename->set_text(filename);
+  EDITTEXT_cb_filename->set_text(file);
 }
 
 /* ------------------ ColorbarCB ------------------------ */
@@ -1112,7 +1126,7 @@ extern "C" void GluiColorbarSetup(int main_window){
 
   PANEL_cb_eqcsv = glui_colorbar->add_panel_to_panel(ROLLOUT_cb_display,"", GLUI_PANEL_NONE);
   PANEL_cb_csv = glui_colorbar->add_panel_to_panel(PANEL_cb_eqcsv,"");
-  glui_colorbar->add_button_to_panel(PANEL_cb_csv, "Save as csv file",              COLORBAR_SAVE_CSV,       ColorbarCB);
+  glui_colorbar->add_button_to_panel(PANEL_cb_csv, "Save colorbar as csv file",              COLORBAR_SAVE_CSV,       ColorbarCB);
   EDITTEXT_cb_filename = glui_colorbar->add_edittext_to_panel(PANEL_cb_csv, "csv filename:", GLUI_EDITTEXT_TEXT, colorbar_filename, COLORBAR_CSV_FILENAME, ColorbarCB);
   EDITTEXT_cb_filename->set_w(200);
 
