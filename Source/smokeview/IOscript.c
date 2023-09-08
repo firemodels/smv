@@ -1797,7 +1797,6 @@ void ScriptLoad3dSmoke(scriptdata *scripti){
   int i;
   int errorcode;
   int count=0;
-  int lastsmoke;
 
   FREEMEMORY(loaded_file);
   PRINTF("script: loading smoke3d files of type: %s\n\n",scripti->cval);
