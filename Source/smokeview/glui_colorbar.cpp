@@ -7,9 +7,7 @@
 #include <math.h>
 #include <ctype.h>
 #include "smokeviewvars.h"
-#ifdef pp_COLOR_PLOT2D
 #include "glui_bounds.h"
-#endif
 
 GLUI *glui_colorbar=NULL;
 
@@ -783,6 +781,9 @@ extern "C" void ColorbarCB(int var){
     if(LISTBOX_cb_toggle_bound2!=NULL)LISTBOX_cb_toggle_bound2->set_int_val(index_colorbar2);
     break;
   case COLORBAR_CLOSE:
+    vis_colorbar_dists_plot = 0;
+    CHECKBOX_cb_plot_dist->set_int_val(0);
+    SliceBoundCB(COLORBAR_PLOT2D);
     HideGluiColorbar();
     break;
   case COLORBAR_PREV:
@@ -1092,9 +1093,7 @@ extern "C" void GluiColorbarSetup(int main_window){
   glui_colorbar->add_radiobutton_to_group(RADIO_cb_coord_type, "RGB");
   glui_colorbar->add_radiobutton_to_group(RADIO_cb_coord_type, "CIELab");
   glui_colorbar->add_checkbox_to_panel(ROLLOUT_cb_display,"Show CIELab equal distance bars", &show_Lab_dist_bars);
-#ifdef pp_COLOR_PLOT2D
   CHECKBOX_cb_plot_dist = glui_colorbar->add_checkbox_to_panel(ROLLOUT_cb_display, _("Show CIELab distance plot"), &vis_colorbar_dists_plot, COLORBAR_PLOT2D, SliceBoundCB);
-#endif
 
   PANEL_cb_toggle = glui_colorbar->add_panel_to_panel(ROLLOUT_cb_display, "Toggle");
   LISTBOX_cb_toggle_edit1 = glui_colorbar->add_listbox_to_panel(PANEL_cb_toggle, "", &index_colorbar1, COLORBAR_LISTA, ColorbarCB);

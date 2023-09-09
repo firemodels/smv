@@ -987,9 +987,7 @@ SVEXTERN int vkl_width;
 SVEXTERN int SVDECL(vis_device_plot, 0);
 SVEXTERN int SVDECL(vis_hrr_plot, 0);
 SVEXTERN int SVDECL(vis_slice_plot, 0);
-#ifdef pp_COLOR_PLOT2D
 SVEXTERN int SVDECL(vis_colorbar_dists_plot, 0);
-#endif
 
 SVEXTERN fueldata SVDECL(*fuelinfo, NULL);
 SVEXTERN int SVDECL(nfuelinfo, 0);

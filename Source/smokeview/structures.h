@@ -288,9 +288,7 @@ typedef struct _colorbardata {
   float node_dist[1024];
   float colorbar_dist[256];
   int dist_ind[256];
-#ifdef pp_COLOR_PLOT2D
   float colorbar_dist_delta[1024];
-#endif
   int interp;   // (LAB or RGB)
   int can_adjust, adjusted;
   float colorbar_rgb[3*1024], colorbar_lab[3*1024];

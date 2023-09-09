@@ -26,8 +26,6 @@
 #define pp_BLACKBODY      // use blackbody theory for generating fire colors
 // pp_BLACKBODY_OUT       // output generated blackbody color data 
 
-#define pp_COLOR_PLOT2D // add option to plot CIELab distances
-
 //#define pp_BNDF         // merge geometry and structured boundary files in load menus
 
 #define pp_BINDIR         // search for an installation bin directory if smokeview is not in one

@@ -1141,7 +1141,6 @@ void ViewportSlicePlot(int quad, GLint screen_left, GLint screen_down) {
   SNIFF_ERRORS("111");
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
-#ifdef pp_COLOR_PLOT2D
   ASSERT(vis_colorbar_dists_plot ==0||vis_slice_plot==0);
   if(vis_colorbar_dists_plot == 1){
     float valmin, valmax;
@@ -1169,9 +1168,6 @@ void ViewportSlicePlot(int quad, GLint screen_left, GLint screen_down) {
       VP_slice_plot.left, VP_slice_plot.right, VP_slice_plot.down, VP_slice_plot.top);
   }
   if(vis_colorbar_dists_plot ==0&&vis_slice_plot==1&&global_times!=NULL){
-#else
-  if(vis_slice_plot==1&&global_times!=NULL){
-#endif
     int i, position;
 
     position = 0;

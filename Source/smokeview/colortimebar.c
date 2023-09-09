@@ -923,7 +923,6 @@ void CheckLab(void){
   FREEMEMORY(lab_check_rgb255);
 }
 
-#ifdef pp_COLOR_PLOT2D
 /* ------------------ GetColorDist ------------------------ */
 
 void GetColorDist(colorbardata *cbi, int option, float *min, float *max){
@@ -939,7 +938,6 @@ void GetColorDist(colorbardata *cbi, int option, float *min, float *max){
     *max = MAX(*max, cbi->colorbar_dist_delta[i]);
   }
 }
-#endif
 
 /* ------------------ RemapColorbar ------------------------ */
 
