@@ -1193,6 +1193,7 @@ int MakeIBlankCarve(void){
           break;
         }
       }
+      k1 = 0;
       for(kk=0;kk<nz;kk++){
         if(zplt[kk]<=meshj->boxmin[2]&&meshj->boxmin[2]<zplt[kk+1]){
           k1=kk;
