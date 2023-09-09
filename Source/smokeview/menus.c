@@ -3239,7 +3239,7 @@ void ReloadAllVectorSliceFiles(void){
       ReadVSlice(i, ALL_FRAMES, NULL, UNLOAD, DEFER_SLICECOLOR, &errorcode);
     }
   }
-  int lastslice;
+  int lastslice=0;
 
   for(i = nvsliceinfo-1; i>=0; i--){
     vslicedata *vslicei;
@@ -4161,7 +4161,7 @@ void UnloadVSliceMenu(int value){
     ReadVSlice(value,ALL_FRAMES, NULL, UNLOAD, SET_SLICECOLOR, &errorcode);
   }
   else if(value==UNLOAD_ALL){
-    int lastslice;
+    int lastslice=0;
 
     for(i = nvsliceinfo-1; i>=0; i--){
       vslicedata *vslicei;
@@ -4279,7 +4279,7 @@ FILE_SIZE LoadVSliceMenu2(int value){
   if(value==MENU_DUMMY)return 0;
   GLUTSETCURSOR(GLUT_CURSOR_WAIT);
   if(value==UNLOAD_ALL){
-    int lastslice;
+    int lastslice=0;
 
     for(i=nvsliceinfo-1;i>=0;i--){
       vslicedata *vslicei;
@@ -4330,7 +4330,7 @@ FILE_SIZE LoadVSliceMenu2(int value){
     int dir;
     int file_count = 0;
     float load_size = 0.0, load_time;
-    int lastslice;
+    int lastslice=0;
 
     value = -(1000 + value);
     submenutype=value/4;
