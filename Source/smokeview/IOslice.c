@@ -7870,7 +7870,7 @@ void DrawSliceFrame(){
   int jjj, nslicemax, blend_mode;
   int draw_slice;
 
-  if(vis_slice_plot==1){
+  if(vis_slice_plot==1||vis_colorbar_dists_plot==1){
     DrawSlicePlots();
   }
 

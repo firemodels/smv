@@ -1082,7 +1082,7 @@ void DrawPlot2D(int option, float *x, float *z, float *z2, int n,
   if(zmax == zmin)zmax = zmin + 1.0;
 
 #ifdef pp_COLOR_PLOT2D
-  if(vis_slice_plot==1&&vis_colorbar_dists_plot == 1){
+  if(vis_colorbar_dists_plot == 1){
     strcpy(tvalmin, "0");
     strcpy(tvalmax, "255");
   }

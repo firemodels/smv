@@ -6,8 +6,10 @@
 #include GLUT_H
 #include <math.h>
 #include <ctype.h>
-
 #include "smokeviewvars.h"
+#ifdef pp_COLOR_PLOT2D
+#include "glui_bounds.h"
+#endif
 
 GLUI *glui_colorbar=NULL;
 
@@ -60,7 +62,8 @@ GLUI_RadioGroup *RADIO_cb_coord_type        = NULL;
 GLUI_RadioGroup *RADIO_cb_simple_type       = NULL;
 GLUI_RadioButton *RADIOBUTTON_cb_gtr_5nodes = NULL;
 
-GLUI_Checkbox *CHECKBOX_cb_interp = NULL;
+GLUI_Checkbox *CHECKBOX_cb_interp    = NULL;
+GLUI_Checkbox *CHECKBOX_cb_plot_dist = NULL;
 
 GLUI_EditText *EDITTEXT_cb_label    = NULL;
 GLUI_EditText *EDITTEXT_cb_filename = NULL;
@@ -1090,8 +1093,7 @@ extern "C" void GluiColorbarSetup(int main_window){
   glui_colorbar->add_radiobutton_to_group(RADIO_cb_coord_type, "CIELab");
   glui_colorbar->add_checkbox_to_panel(ROLLOUT_cb_display,"Show CIELab equal distance bars", &show_Lab_dist_bars);
 #ifdef pp_COLOR_PLOT2D
-#define SLICE_PLOT 221
-  glui_colorbar->add_checkbox_to_panel(ROLLOUT_cb_display, _("Show CIELab distance plot"), &vis_colorbar_dists_plot, SLICE_PLOT, SliceBoundCB);
+  CHECKBOX_cb_plot_dist = glui_colorbar->add_checkbox_to_panel(ROLLOUT_cb_display, _("Show CIELab distance plot"), &vis_colorbar_dists_plot, COLORBAR_PLOT2D, SliceBoundCB);
 #endif
 
   PANEL_cb_toggle = glui_colorbar->add_panel_to_panel(ROLLOUT_cb_display, "Toggle");
