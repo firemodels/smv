@@ -167,8 +167,14 @@ void getpatchsizes1(FILE **file, const char *patchfilename, int *npatch,
                     int *headersize, int *error) {
 
   *error = 0;
+  ASSERT(file!=NULL);  
+  if(file == NULL){
+    printf("***Error: null pointer in getpatchsizes1 routine\n");
+    *error = 1;
+    return;
+  }
   *file = FOPEN(patchfilename, "rb");
-  if (file == NULL) {
+  if (*file == NULL) {
     printf(" The boundary file name, %s does not exist\n", patchfilename);
     *error = 1;
     return;
