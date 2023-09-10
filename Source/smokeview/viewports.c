@@ -1167,7 +1167,7 @@ void ViewportSlicePlot(int quad, GLint screen_left, GLint screen_down) {
       label, NULL, "",
       VP_slice_plot.left, VP_slice_plot.right, VP_slice_plot.down, VP_slice_plot.top);
   }
-  if(vis_colorbar_dists_plot ==0&&vis_slice_plot==1&&global_times!=NULL){
+  if(vis_slice_plot==1&&global_times!=NULL){
     int i, position;
 
     position = 0;
