@@ -256,66 +256,6 @@ void WindowStatus(int state){
   }
 }
 
-
-/* ------------------ MouseEditColorbar ------------------------ */
-
-void MouseEditColorbar(int x, int y){
-  int val;
-  int mouse_x, mouse_y;
-  GLubyte r, g, b;
-  colorbardata *cbi;
-
-  if(colorbar_hidescene==0)return; // don't edit colorbar with mouse if showing scene
-  if(show_firecolormap==0){
-    cbi = colorbarinfo + colorbartype;
-  }
-  else{
-    cbi = colorbarinfo+fire_colorbar_index;
-  }
-
-  mouse_x = x;
-  mouse_y = screenHeight-y;
-
-  glDisable(GL_BLEND);
-  glShadeModel(GL_FLAT);
-  DISABLE_LIGHTING;
-  glDisable(GL_DITHER);
-  glDisable(GL_FOG);
-  glDisable(GL_TEXTURE_1D);
-  glDisable(GL_TEXTURE_2D);
-
-  ShowScene(SELECTOBJECT, VIEW_CENTER, 0, 0, 0, NULL);
-  glReadBuffer(GL_BACK);
-  glReadPixels(mouse_x, mouse_y, 1, 1, GL_RED,   GL_UNSIGNED_BYTE, &r);
-  glReadPixels(mouse_x, mouse_y, 1, 1, GL_GREEN, GL_UNSIGNED_BYTE, &g);
-  glReadPixels(mouse_x, mouse_y, 1, 1, GL_BLUE,  GL_UNSIGNED_BYTE, &b);
-
-  r = r>>nredshift;
-  g = g>>ngreenshift;
-  b = b>>nblueshift;
-
-  val = (r<<(nbluebits+ngreenbits))|(g<<nbluebits)|b;
-  colorbaredit_drag = 0;
-  if(val>0&&val<=cbi->nnodes){
-
-    /* need to start colors at 1 so that black (color 0,0,0) is not interpreted as a blockage */
-
-    val--;
-    colorbaredit_drag = 1;
-    colorbarpoint = val;
-    ColorbarCB(COLORBAR_SET);
-  }
-  glEnable(GL_BLEND);
-  ENABLE_LIGHTING;
-  glShadeModel(GL_SMOOTH);
-  glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, &block_shininess);
-  glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, block_specular2);
-  glEnable(GL_COLOR_MATERIAL);
-  glEnable(GL_DITHER);
-  glEnable(GL_TEXTURE_1D);
-  glEnable(GL_TEXTURE_2D);
-}
-
 /* ------------------ MouseEditTour ------------------------ */
 
 void MouseEditTour(int x, int y){
@@ -1095,7 +1035,6 @@ void MouseCB(int button, int state, int xm, int ym){
         if(structured_isopen == 1 && unstructured_isopen == 0)MouseEditBlockage(xm, ym);
       }
       if(edittour==1&&blockageSelect==0)MouseEditTour(xm,ym);
-      if(viscolorbarpath==1)MouseEditColorbar(xm, ym);
       if(select_avatar==1)MouseSelectAvatar(xm,ym);
       if(select_device==1)MouseSelectDevice(xm,ym);
       if(select_geom!=GEOM_PROP_NONE)MouseSelectGeom(xm, ym);
