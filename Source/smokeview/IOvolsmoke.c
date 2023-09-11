@@ -25,6 +25,7 @@
       float val001, val101, val011, val111;\
       float  val00, val01, val10, val11;\
       float val0, val1;\
+      float *vv;\
 \
       ijk = IJKNODE(i, j, k);\
 \
@@ -36,30 +37,31 @@
       dz = CLAMP(dz, 0.0, 1.0);                  \
 \
       vv = data+ijk;                             \
-      val000 = vv[0];                 /* i,j,k     */  \
+      val000 = vv[0];                 /* i,  j,k     */  \
       val100 = vv[1];                 /* i+1,j,k   */  \
 \
       vv += nx;\
-      val010 = vv[0];                 /* i,j+1,k   */  \
+      val010 = vv[0];                 /* i,  j+1,k   */  \
       val110 = vv[1];                 /* i+1,j+1,k */  \
 \
       vv += (nxy-nx);\
-      val001 = vv[0];                 /* i,j,k+1   */  \
+      val001 = vv[0];                 /* i,  j,k+1   */  \
       val101 = vv[1];                 /* i+1,j,k+1 */  \
 \
       vv += nx;\
-      val011 = vv[0];                /* i,j+1,k+1  */ \
+      val011 = vv[0];                /* i,  j+1,k+1  */ \
       val111 = vv[1];                /* i+1,j+1,k+1  */ \
 \
-      val00 = MIX(dx, val100, val000);\
-      val10 = MIX(dx, val110, val010);\
-      val01 = MIX(dx, val101, val001);\
-      val11 = MIX(dx, val111, val011);\
-       val0 = MIX(dy, val10, val00);\
-       val1 = MIX(dy, val11, val01);\
-      value = MIX(dz, val1, val0);\
+      val00 = (1.0-dx)*val000 + dx*val100;\
+      val10 = (1.0-dx)*val010 + dx*val110;\
+      val01 = (1.0-dx)*val001 + dx*val101;\
+      val11 = (1.0-dx)*val011 + dx*val111;\
+       val0 = (1.0-dy)*val00  + dy*val10;\
+       val1 = (1.0-dy)*val01  + dy*val11;\
+      value = (1.0-dz)*val0   + dz*val1;\
     }\
     else{\
+      float *vv;\
       vv = data+IJKNODE(i+1, j+1, k+1);\
       value = *vv;\
     }
@@ -613,7 +615,6 @@ VKLDevice InitVKL(int *width){
 void GetFireEmission(float *smoke_tran, float *fire_emission, float dlength, float xyz[3], meshdata *meshi, int *inobst, char *blank_local){
   int i, j, k;
   int ijk;
-  float *vv;
 
   int nx, ny, nxy;
 
