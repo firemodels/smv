@@ -624,7 +624,7 @@ void ShowScene(int mode, int view_mode, int quad, GLint s_left, GLint s_down, sc
 
   if(viscolorbarpath == 1){
     DISABLE_LIGHTING
-    UNCLIP;
+    if(colorbar_hidescene == 1)UNCLIP;
     if(mode==SELECTOBJECT){
       DrawSelectColorbar();
       SNIFF_ERRORS("after DrawSelectColorbars");
@@ -642,7 +642,7 @@ void ShowScene(int mode, int view_mode, int quad, GLint s_left, GLint s_down, sc
     }
     ENABLE_LIGHTING;
   }
-  if(viscolorbarpath==0)ShowScene2(mode);
+  if(viscolorbarpath==0||colorbar_hidescene==0)ShowScene2(mode);
 
 /* ++++++++++++++++++++++++ render scene +++++++++++++++++++++++++ */
 // if rendering is not working remove following comment
