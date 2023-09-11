@@ -1081,8 +1081,7 @@ void DrawPlot2D(int option, float *x, float *z, float *z2, int n,
   zmax_display = zmax;
   if(zmax == zmin)zmax = zmin + 1.0;
 
-#ifdef pp_COLOR_PLOT2D
-  if(vis_slice_plot==1&&vis_colorbar_dists_plot == 1){
+  if(vis_colorbar_dists_plot == 1){
     strcpy(tvalmin, "0");
     strcpy(tvalmax, "255");
   }
@@ -1090,10 +1089,6 @@ void DrawPlot2D(int option, float *x, float *z, float *z2, int n,
     Float2String(tvalmin, global_times[0], ndigits, force_fixedpoint);
     Float2String(tvalmax, global_times[nglobal_times - 1], ndigits, force_fixedpoint);
   }
-#else
-  Float2String(tvalmin, global_times[0], ndigits, force_fixedpoint);
-  Float2String(tvalmax, global_times[nglobal_times - 1], ndigits, force_fixedpoint);
-#endif
   Float2String(cvalmin, zmin, ndigits, force_fixedpoint);
   Float2String(cvalmax, zmax_display, ndigits, force_fixedpoint);
   Float2String(cval, highlight_y, ndigits, force_fixedpoint);
@@ -1107,9 +1102,9 @@ void DrawPlot2D(int option, float *x, float *z, float *z2, int n,
 #define HSCALE2D(x) (5+(left) + plot_width*((x)-(xmin))/((xmax)-(xmin)))
 #define HSCALE2DLABEL(x) (10 + HSCALE2D(x))
 #define VSCALE2D(z) (dfont +(down) + plot_width*((z)-(zmin))/((zmax)-(zmin)))
-  glColor3fv(foregroundcolor);
   glLineWidth(plot2d_line_width);
   glBegin(GL_LINES);
+  glColor3fv(foregroundcolor);
   for(i = 0; i < n - 1; i++){
     float val, val2;
 

@@ -3225,6 +3225,8 @@ GLUI_Checkbox *CHECKBOX_show_vector_slice = NULL;
 GLUI_Checkbox *CHECKBOX_show_slice_outlines = NULL;
 GLUI_Checkbox *CHECKBOX_show_slice_points = NULL;
 GLUI_Checkbox *CHECKBOX_show_slice_values = NULL;
+GLUI_Checkbox *CHECKBOX_vis_slice_plot = NULL;
+extern GLUI_Checkbox *CHECKBOX_cb_plot_dist;
 
 GLUI_Checkbox *CHECKBOX_show_iso_shaded=NULL;
 GLUI_Checkbox *CHECKBOX_show_iso_outline=NULL;
@@ -5266,11 +5268,8 @@ extern "C" void GluiBoundsSetup(int main_window){
 
       PANEL_slice_plot2dd = glui_bounds->add_panel_to_panel(ROLLOUT_plotslice,"", false);
       PANEL_slice_plot2de = glui_bounds->add_panel_to_panel(PANEL_slice_plot2dd,"", false);
-      glui_bounds->add_checkbox_to_panel(PANEL_slice_plot2de, _("show plot"), &vis_slice_plot,                                                 SLICE_PLOT, SliceBoundCB);
-#ifdef pp_COLOR_PLOT2D
-      glui_bounds->add_checkbox_to_panel(PANEL_slice_plot2de, _("show CIE dist plot"), &vis_colorbar_dists_plot,                               SLICE_PLOT, SliceBoundCB);
-#endif
-      glui_bounds->add_checkbox_to_panel(PANEL_slice_plot2de, _("use specified min/max"), &slice_plot_bound_option,                                 SLICE_PLOT, SliceBoundCB);
+      CHECKBOX_vis_slice_plot = glui_bounds->add_checkbox_to_panel(PANEL_slice_plot2de, _("show plot"), &vis_slice_plot,                          SLICE_PLOT2D, SliceBoundCB);
+      glui_bounds->add_checkbox_to_panel(PANEL_slice_plot2de, _("use specified min/max"), &slice_plot_bound_option,                               SLICE_PLOT2D, SliceBoundCB);
       SPINNER_size_factor2 = glui_bounds->add_spinner_to_panel(PANEL_slice_plot2de, _("plot size(rel)"), GLUI_SPINNER_FLOAT, &plot2d_size_factor, SLICE_SIZE, SliceBoundCB);
       SPINNER_size_factor2->set_float_limits(0.0, 1.0);
 
@@ -5283,15 +5282,15 @@ extern "C" void GluiBoundsSetup(int main_window){
 
       PANEL_slice_plot2dc = glui_bounds->add_panel_to_panel(ROLLOUT_plotslice,"", false);
       PANEL_slice_plot2da = glui_bounds->add_panel_to_panel(PANEL_slice_plot2dc,"position");
-      SPINNER_slice_x = glui_bounds->add_spinner_to_panel(PANEL_slice_plot2da, "x", GLUI_SPINNER_FLOAT, slice_xyz+0, SLICE_PLOT, SliceBoundCB);
-      SPINNER_slice_y = glui_bounds->add_spinner_to_panel(PANEL_slice_plot2da, "y", GLUI_SPINNER_FLOAT, slice_xyz+1, SLICE_PLOT, SliceBoundCB);
-      SPINNER_slice_z = glui_bounds->add_spinner_to_panel(PANEL_slice_plot2da, "z", GLUI_SPINNER_FLOAT, slice_xyz+2, SLICE_PLOT, SliceBoundCB);
+      SPINNER_slice_x = glui_bounds->add_spinner_to_panel(PANEL_slice_plot2da, "x", GLUI_SPINNER_FLOAT, slice_xyz+0, SLICE_PLOT2D, SliceBoundCB);
+      SPINNER_slice_y = glui_bounds->add_spinner_to_panel(PANEL_slice_plot2da, "y", GLUI_SPINNER_FLOAT, slice_xyz+1, SLICE_PLOT2D, SliceBoundCB);
+      SPINNER_slice_z = glui_bounds->add_spinner_to_panel(PANEL_slice_plot2da, "z", GLUI_SPINNER_FLOAT, slice_xyz+2, SLICE_PLOT2D, SliceBoundCB);
       SPINNER_slice_x->set_float_limits(xbar0FDS, xbarFDS);
       SPINNER_slice_y->set_float_limits(ybar0FDS, ybarFDS);
       SPINNER_slice_z->set_float_limits(zbar0FDS, zbarFDS);
       glui_bounds->add_column_to_panel(PANEL_slice_plot2dc, false);
       PANEL_slice_plot2db = glui_bounds->add_panel_to_panel(PANEL_slice_plot2dc,"average data");
-      glui_bounds->add_checkbox_to_panel(PANEL_slice_plot2db, "average over dt,dx,dy,dz", &average_plot2d_slice_region, SLICE_PLOT, SliceBoundCB);
+      glui_bounds->add_checkbox_to_panel(PANEL_slice_plot2db, "average over dt,dx,dy,dz", &average_plot2d_slice_region, SLICE_PLOT2D, SliceBoundCB);
       SPINNER_plot2d_dt = glui_bounds->add_spinner_to_panel(PANEL_slice_plot2db, "dt", GLUI_SPINNER_FLOAT, &plot2d_time_average, SLICE_SIZE, SliceBoundCB);
       SPINNER_slice_dx = glui_bounds->add_spinner_to_panel(PANEL_slice_plot2db, "dx", GLUI_SPINNER_FLOAT, slice_dxyz + 0, SLICE_DPLOT, SliceBoundCB);
       SPINNER_slice_dy = glui_bounds->add_spinner_to_panel(PANEL_slice_plot2db, "dy", GLUI_SPINNER_FLOAT, slice_dxyz + 1, SLICE_DPLOT, SliceBoundCB);
@@ -6332,7 +6331,17 @@ extern "C" void SliceBoundCB(int var){
       }
       UpdatePlot2DSize();
       break;
-    case SLICE_PLOT:
+    case COLORBAR_PLOT2D:
+      if(vis_colorbar_dists_plot==1&&vis_slice_plot == 1){
+        vis_slice_plot = 0;
+        CHECKBOX_vis_slice_plot->set_int_val(vis_slice_plot);
+      }
+      break;
+    case SLICE_PLOT2D:
+      if(vis_colorbar_dists_plot==1&&vis_slice_plot == 1){
+        vis_colorbar_dists_plot = 0;
+        CHECKBOX_cb_plot_dist->set_int_val(vis_colorbar_dists_plot);
+      }
       Slice2Device();
       break;
     case SLICE_DPLOT:

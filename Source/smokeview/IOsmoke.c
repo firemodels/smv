@@ -65,46 +65,6 @@ void UpdateSmoke3dFileParms(void){
   }
 }
 
-/* ------------------ UpdateOpacityMap ------------------------ */
-
-void UpdateOpacityMap(void){
-  int i;
-
-  unsigned char alpha;
-  int ival0, ival1, ival2, ival3;
-  float dx, *xplt;
-  float ods[3];
-
-  update_opacity_map=0;
-
-  ods[0]  = slicehrrpuv_lower;
-  ods[1]  = slicehrrpuv_middle;
-  ods[2]  = slicehrrpuv_upper;
-
-  ival0 = 0;
-  ival1 = slicehrrpuv_cut1;
-  ival2 = slicehrrpuv_cut2;
-  ival3 = 256;
-
-  xplt = meshinfo->xplt_orig;
-  dx = xplt[1] - xplt[0];
-
-  alpha = CLAMP(255*(1.0-pow(0.5, dx/MAX(ods[0],0.001))), 0, 255);
-  for(i = ival0;i<ival1;i++){
-    opacity_map[i] = alpha;
-  }
-
-  alpha = CLAMP(255*(1.0-pow(0.5, dx/MAX(ods[1],0.001))), 0, 255);
-  for(i = ival1;i<ival2;i++){
-    opacity_map[i] = alpha;
-  }
-
-  alpha = CLAMP(255*(1.0-pow(0.5, dx/MAX(ods[2],0.001))), 0, 255);
-  for(i = ival2;i<ival3;i++){
-    opacity_map[i] = alpha;
-  }
-}
-
 // -------------------------- ADJUSTALPHA ----------------------------------
 
 // alpha correction done in alpha_map (different map for each direction, x, y, z, xy, xz, yz)
@@ -4435,14 +4395,12 @@ void MergeSmoke3DColors(smoke3ddata *smoke3dset){
     unsigned char *firecolor_data,*smokecolor_data,*co2color_data;
     unsigned char *mergecolor,*mergealpha;
     unsigned char smokeval_uc[3], co2val_uc[3];
-    int i_hrrpuv_offset=0;
 
     smoke3di = smoke3dinfo + i;
     if(smoke3dset!=NULL&&smoke3dset!=smoke3di)continue;
     if(smoke3di->loaded==0||smoke3di->primary_file==0)continue;
     mesh_smoke3d = meshinfo+smoke3di->blocknumber;
     if(IsSmokeComponentPresent(smoke3di)==0)continue;
-    if(smoke3d_testsmoke==1)i_hrrpuv_offset = 254*slicehrrpuv_offset/hrrpuv_max_smv;
 
     if(fire_halfdepth<=0.0){
       smoke3di->fire_alpha=255;
@@ -4526,7 +4484,7 @@ void MergeSmoke3DColors(smoke3ddata *smoke3dset){
 
       alpha_fire_local = 0.0;
       if(firecolor_data!=NULL){
-        fire_index = CLAMP(firecolor_data[j]+i_hrrpuv_offset,0,254);
+        fire_index = CLAMP(firecolor_data[j],0,254);
         firecolor_ptr = rgb_slicesmokecolormap_0255+4*fire_index;
         if(firecolor_data[j]>=i_smoke3d_cutoff){
           alpha_fire_local = smoke3di->fire_alphas[firecolor_data[j]];
@@ -4539,7 +4497,7 @@ void MergeSmoke3DColors(smoke3ddata *smoke3dset){
       smokecolor_ptr = smokeval_uc;
       if(smokecolor_data!=NULL){
         if(firecolor_data!=NULL && firecolor_data[j]>=i_smoke3d_cutoff){
-          fire_index = CLAMP(firecolor_data[j]+i_hrrpuv_offset,0,254);
+          fire_index = CLAMP(firecolor_data[j],0,254);
           smokecolor_ptr = rgb_slicesmokecolormap_0255+4*fire_index;
           if(use_fire_alpha==1){
             alpha_smoke_local = smoke3di->fire_alpha;

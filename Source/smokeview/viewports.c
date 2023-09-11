@@ -298,14 +298,15 @@ void GetViewportInfo(void){
   }
   VP_slice_plot.down += text_height;
   VP_slice_plot.top         = VP_slice_plot.down + v_space + plot_width  + 4*GetFontHeight();
-  VP_slice_plot.doit        = vis_slice_plot;
   VP_slice_plot.text_height = text_height;
   VP_slice_plot.text_width  = text_width;
-  if(vis_slice_plot==1){
+  if(vis_slice_plot==1||vis_colorbar_dists_plot==1){
+    VP_slice_plot.doit   = 1;
     VP_slice_plot.width  = VP_slice_plot.right-VP_slice_plot.left;
     VP_slice_plot.height = VP_slice_plot.top-VP_slice_plot.down;
   }
   else{
+    VP_slice_plot.doit   = 0;
     VP_slice_plot.width  = 0;
     VP_slice_plot.height = 0;
   }
@@ -324,7 +325,7 @@ void GetViewportInfo(void){
   if(show_horizontal_colorbar == 1||visAvailmemory==1)doit=1;
 
   VP_timebar.left = titlesafe_offset;
-  if(vis_hrr_plot==1 || vis_slice_plot==1)VP_timebar.left = VP_hrr_plot.right;
+  if(vis_hrr_plot==1 || vis_slice_plot==1||vis_colorbar_dists_plot==1)VP_timebar.left = VP_hrr_plot.right;
   VP_timebar.down = titlesafe_offset;
   VP_timebar.doit=doit;
   VP_timebar.text_height = text_height;
@@ -341,7 +342,7 @@ void GetViewportInfo(void){
   }
 #endif
     VP_timebar.width  = screenWidth-VP_info.width-2*titlesafe_offset;
-    if(vis_hrr_plot==1 || vis_slice_plot==1)VP_timebar.width -= (VP_hrr_plot.right - titlesafe_offset);
+    if(vis_hrr_plot==1 || vis_slice_plot==1||vis_colorbar_dists_plot==1)VP_timebar.width -= (VP_hrr_plot.right - titlesafe_offset);
     temp_height = text_height + v_space;
     if(visFramelabel==1||vis_hrr_label==1||visAvailmemory==1)temp_height += (text_height+v_space);
     VP_timebar.height = MAX(timebar_height + 2*v_space, temp_height);
@@ -1000,7 +1001,7 @@ void ViewportInfo(int quad, GLint screen_left, GLint screen_down){
 
 /* ------------------------ ViewportHrrPlot ------------------------- */
 
-void ViewportHrrPlot(int quad, GLint screen_left, GLint screen_down) {
+void ViewportHrrPlot(int quad, GLint screen_left, GLint screen_down){
   if(SubPortOrtho2(quad, &VP_hrr_plot, screen_left, screen_down)==0)return;
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
@@ -1135,13 +1136,12 @@ void OutputSlicePlot(char *file){
 
 /* ------------------------ ViewportSlicePlot ------------------------- */
 
-void ViewportSlicePlot(int quad, GLint screen_left, GLint screen_down) {
+void ViewportSlicePlot(int quad, GLint screen_left, GLint screen_down){
   if(SubPortOrtho2(quad, &VP_slice_plot, screen_left, screen_down)==0)return;
-  SNIFF_ERRORS("111");
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
-#ifdef pp_COLOR_PLOT2D
-  if(vis_slice_plot==1&&vis_colorbar_dists_plot == 1){
+  ASSERT(vis_colorbar_dists_plot ==0||vis_slice_plot==0);
+  if(vis_colorbar_dists_plot == 1){
     float valmin, valmax;
     float xvals[255];
     int i;
@@ -1166,10 +1166,7 @@ void ViewportSlicePlot(int quad, GLint screen_left, GLint screen_down) {
       label, NULL, "",
       VP_slice_plot.left, VP_slice_plot.right, VP_slice_plot.down, VP_slice_plot.top);
   }
-  if(vis_colorbar_dists_plot ==0&&vis_slice_plot==1&&global_times!=NULL){
-#else
   if(vis_slice_plot==1&&global_times!=NULL){
-#endif
     int i, position;
 
     position = 0;
@@ -1221,7 +1218,7 @@ void ViewportSlicePlot(int quad, GLint screen_left, GLint screen_down) {
 
 /* ------------------------ ViewportTimebar ------------------------- */
 
-void ViewportTimebar(int quad, GLint screen_left, GLint screen_down) {
+void ViewportTimebar(int quad, GLint screen_left, GLint screen_down){
 #ifdef pp_memstatus
   unsigned int availmemory;
   char percen[] = "%";
@@ -1238,7 +1235,7 @@ void ViewportTimebar(int quad, GLint screen_left, GLint screen_down) {
   }
 #endif
 
-  if (SubPortOrtho2(quad, &VP_timebar, screen_left, screen_down) == 0)return;
+  if(SubPortOrtho2(quad, &VP_timebar, screen_left, screen_down) == 0)return;
 
   timebar_right_width = 0;
   if(visFramerate==1&&showtime==1)framerate_width = GetStringWidth("Frame rate: 99.99");
@@ -1266,7 +1263,7 @@ void ViewportTimebar(int quad, GLint screen_left, GLint screen_down) {
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
 
-  if (visColorbarHorizontal == 1 && num_colorbars > 0 && (showtime == 1 || showplot3d == 1)){
+  if(visColorbarHorizontal == 1 && num_colorbars > 0 && (showtime == 1 || showplot3d == 1)){
     DrawHorizontalColorbarRegLabels();
     DrawHorizontalColorbars();
   }
