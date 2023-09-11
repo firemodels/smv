@@ -1006,9 +1006,8 @@ extern "C" void GluiColorbarSetup(int main_window){
   glui_colorbar->add_column_to_panel(PANEL_cb_select3,false);
   BUTTON_cb_next     = glui_colorbar->add_button_to_panel(PANEL_cb_select3, _("Next"),     COLORBAR_NEXT, ColorbarCB);
 
-#ifdef pp_COLOR_HIDE
   glui_colorbar->add_checkbox_to_panel(PANEL_cb_select, _("Show scene"), &colorbar_showscene);
-#endif
+
   char label_nodes[sizeof(GLUI_String)];
   strcpy(label_nodes, "nodes");
   STATICTEXT_cb_node_label = glui_colorbar->add_statictext_to_panel(PANEL_cb_select, label_nodes);

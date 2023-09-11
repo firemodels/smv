@@ -20,13 +20,14 @@
 
 //#define pp_SMOKE16      // load 16 bit smoke files
 //#define pp_VOLSMOKE     // add option to compress volume rendered data
-#define pp_FAST           // set fast startup by default
-//#define pp_CHECK_FILES  // check if compressed files exist at startup
-#define pp_COLOR_HIDE     // add checkbox to hide/unhide scene when editing a colorbar
-//#define pp_COLOR_PLOT     /  add checkbox for showing CIELab colorbar delta distance plot
 //#define pp_GAMMA        // show gamma correction checkbox
 #define pp_BLACKBODY      // use blackbody theory for generating fire colors
 // pp_BLACKBODY_OUT       // output generated blackbody color data 
+//#define pp_CHECK_FILES  // check if compressed files exist at startup
+
+#define pp_FAST           // set fast startup by default
+
+//#define pp_COLOR_PLOT     /  add checkbox for showing CIELab colorbar delta distance plot
 
 //#define pp_BNDF         // merge geometry and structured boundary files in load menus
 
