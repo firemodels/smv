@@ -1102,9 +1102,9 @@ void DrawPlot2D(int option, float *x, float *z, float *z2, int n,
 #define HSCALE2D(x) (5+(left) + plot_width*((x)-(xmin))/((xmax)-(xmin)))
 #define HSCALE2DLABEL(x) (10 + HSCALE2D(x))
 #define VSCALE2D(z) (dfont +(down) + plot_width*((z)-(zmin))/((zmax)-(zmin)))
-  glColor3fv(foregroundcolor);
   glLineWidth(plot2d_line_width);
   glBegin(GL_LINES);
+  glColor3fv(foregroundcolor);
   for(i = 0; i < n - 1; i++){
     float val, val2;
 
