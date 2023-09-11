@@ -632,14 +632,15 @@ void GetFireEmission(float *smoke_tran, float *fire_emission, float dlength, flo
   slicetype = meshi->volrenderinfo.smokeslice->slice_filetype;
 
   if(slicetype==SLICE_NODE_CENTER){
-    xplt = meshi->xplt_cen;
-    yplt = meshi->yplt_cen;
-    zplt = meshi->zplt_cen;
-  }
-  else{
+    // check this
     xplt = meshi->xplt;
     yplt = meshi->yplt;
     zplt = meshi->zplt;
+  }
+  else{
+    xplt = meshi->xplt_cen;
+    yplt = meshi->yplt_cen;
+    zplt = meshi->zplt_cen;
   }
   ibar = meshi->ibar;
   jbar = meshi->jbar;
@@ -1989,6 +1990,8 @@ void DrawSmoke3dVolDebug(void){
   glEnd();
 }
 
+#define GETSMOKECOLORPTR(valptr, i, j, nj) (valptr + 4*((i)*(nj) + (j)))
+
 /* ------------------ DrawSmoke3dVol ------------------------ */
 
 void DrawSmoke3DVol(void){
@@ -2071,15 +2074,17 @@ void DrawSmoke3DVol(void){
 
     glBegin(GL_TRIANGLES);
     switch(iwall){
+      float *smokecolor_base;
+
       case XWALLMIN:
       case XWALLMAX:
         if(iwall<0){
           xx = meshi->x0;
-          smokecolor = vr->smokecolor_yz0;
+          smokecolor_base = vr->smokecolor_yz0;
         }
         else{
           xx=meshi->x1;
-          smokecolor = vr->smokecolor_yz1;
+          smokecolor_base = vr->smokecolor_yz1;
         }
         n00 = 0;
         n01 = 4;
@@ -2089,6 +2094,7 @@ void DrawSmoke3DVol(void){
           y[0] = yplt[i];
           y[1] = yplt[i+1];
           for(j=0;j<kbar;j++){
+            smokecolor = GETSMOKECOLORPTR(smokecolor_base, i, j, kbar + 1);
             z[0] = zplt[j];
             z[1] = zplt[j+1];
             if((meshi->inside==0&&iwall>0)||(meshi->inside!=0&&iwall<0)){
@@ -2109,9 +2115,7 @@ void DrawSmoke3DVol(void){
               glColor4fv(smokecolor+n01); glVertex3f(xx,y[0],z[1]);
               glColor4fv(smokecolor+n11); glVertex3f(xx,y[1],z[1]);
             }
-            smokecolor+=4;
           }
-          smokecolor+=4;
         }
         break;
       case YWALLMIN:
@@ -2121,17 +2125,18 @@ void DrawSmoke3DVol(void){
         n10 = 4*(kbar+1);
         n11 = 4*(1 + kbar+1);
         if(iwall<0){
-          smokecolor = vr->smokecolor_xz0;
+          smokecolor_base = vr->smokecolor_xz0;
           yy=meshi->y0;
         }
         else{
-          smokecolor = vr->smokecolor_xz1;
+          smokecolor_base = vr->smokecolor_xz1;
           yy=meshi->y1;
         }
         for(i=0;i<ibar;i++){
           x[0] = xplt[i];
           x[1] = xplt[i+1];
           for(j=0;j<kbar;j++){
+            smokecolor = GETSMOKECOLORPTR(smokecolor_base, i, j, kbar + 1);
             z[0] = zplt[j];
             z[1] = zplt[j+1];
             if((meshi->inside==0&&iwall>0)||(meshi->inside!=0&&iwall<0)){
@@ -2152,9 +2157,7 @@ void DrawSmoke3DVol(void){
               glColor4fv(smokecolor+n11); glVertex3f(x[1],yy,z[1]);
               glColor4fv(smokecolor+n01); glVertex3f(x[0],yy,z[1]);
             }
-            smokecolor+=4;
           }
-          smokecolor+=4;
         }
         break;
       case ZWALLMIN:
@@ -2164,17 +2167,18 @@ void DrawSmoke3DVol(void){
         n10 = 4*(jbar+1);
         n11 = 4*(1 + jbar+1);
        if(iwall<0){
-          smokecolor = vr->smokecolor_xy0;
+          smokecolor_base = vr->smokecolor_xy0;
           zz=meshi->z0;
         }
         else{
-          smokecolor = vr->smokecolor_xy1;
+          smokecolor_base = vr->smokecolor_xy1;
           zz=meshi->z1;
         }
         for(i=0;i<ibar;i++){
           x[0] = xplt[i];
           x[1] = xplt[i+1];
           for(j=0;j<jbar;j++){
+            smokecolor = GETSMOKECOLORPTR(smokecolor_base, i, j, jbar + 1);
             y[0] = yplt[j];
             y[1] = yplt[j+1];
             if((meshi->inside==0&&iwall>0)||(meshi->inside!=0&&iwall<0)){
@@ -2196,9 +2200,7 @@ void DrawSmoke3DVol(void){
               glColor4fv(smokecolor+n01); glVertex3f(x[0],y[1],zz);
               glColor4fv(smokecolor+n11); glVertex3f(x[1],y[1],zz);
             }
-            smokecolor+=4;
           }
-          smokecolor+=4;
         }
         break;
       default:
