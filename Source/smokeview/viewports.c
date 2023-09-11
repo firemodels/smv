@@ -1001,7 +1001,7 @@ void ViewportInfo(int quad, GLint screen_left, GLint screen_down){
 
 /* ------------------------ ViewportHrrPlot ------------------------- */
 
-void ViewportHrrPlot(int quad, GLint screen_left, GLint screen_down) {
+void ViewportHrrPlot(int quad, GLint screen_left, GLint screen_down){
   if(SubPortOrtho2(quad, &VP_hrr_plot, screen_left, screen_down)==0)return;
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
@@ -1136,9 +1136,8 @@ void OutputSlicePlot(char *file){
 
 /* ------------------------ ViewportSlicePlot ------------------------- */
 
-void ViewportSlicePlot(int quad, GLint screen_left, GLint screen_down) {
+void ViewportSlicePlot(int quad, GLint screen_left, GLint screen_down){
   if(SubPortOrtho2(quad, &VP_slice_plot, screen_left, screen_down)==0)return;
-  SNIFF_ERRORS("111");
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
   ASSERT(vis_colorbar_dists_plot ==0||vis_slice_plot==0);
@@ -1219,7 +1218,7 @@ void ViewportSlicePlot(int quad, GLint screen_left, GLint screen_down) {
 
 /* ------------------------ ViewportTimebar ------------------------- */
 
-void ViewportTimebar(int quad, GLint screen_left, GLint screen_down) {
+void ViewportTimebar(int quad, GLint screen_left, GLint screen_down){
 #ifdef pp_memstatus
   unsigned int availmemory;
   char percen[] = "%";
@@ -1236,7 +1235,7 @@ void ViewportTimebar(int quad, GLint screen_left, GLint screen_down) {
   }
 #endif
 
-  if (SubPortOrtho2(quad, &VP_timebar, screen_left, screen_down) == 0)return;
+  if(SubPortOrtho2(quad, &VP_timebar, screen_left, screen_down) == 0)return;
 
   timebar_right_width = 0;
   if(visFramerate==1&&showtime==1)framerate_width = GetStringWidth("Frame rate: 99.99");
@@ -1264,7 +1263,7 @@ void ViewportTimebar(int quad, GLint screen_left, GLint screen_down) {
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
 
-  if (visColorbarHorizontal == 1 && num_colorbars > 0 && (showtime == 1 || showplot3d == 1)){
+  if(visColorbarHorizontal == 1 && num_colorbars > 0 && (showtime == 1 || showplot3d == 1)){
     DrawHorizontalColorbarRegLabels();
     DrawHorizontalColorbars();
   }
