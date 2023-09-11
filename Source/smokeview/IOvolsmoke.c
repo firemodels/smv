@@ -677,9 +677,8 @@ void GetFireEmission(float *smoke_tran, float *fire_emission, float dlength, flo
         int index;
         float dtemp;
 
-        dtemp = (global_temp_max - global_temp_cutoff) / (MAXSMOKERGB / 2);
-        index = GETINDEX(temperature + voltemp_offset, global_temp_cutoff, dtemp, (MAXSMOKERGB / 2));
-        index += (MAXSMOKERGB/2);
+        dtemp = (global_temp_max - global_temp_min) / MAXSMOKERGB;
+        index = GETINDEX(temperature, global_temp_min, dtemp, MAXSMOKERGB);
         memcpy(fire_emission, rgb_volsmokecolormap + 4 * index, 3*sizeof(float));
       }
       else{
@@ -693,13 +692,10 @@ void GetFireEmission(float *smoke_tran, float *fire_emission, float dlength, flo
   if(smokedata_local!=NULL){
     INTERP3D(smokedata_local, soot_density);
     *smoke_tran = exp(-mass_extinct*soot_density*dlength);
-    if(firedata_local!=NULL&&temperature<global_temp_cutoff){
-      float factor;
-
-      factor = CLAMP((global_temp_cutoff - temperature) / 50.0, 0.0, 1.0);
-      fire_emission[0] = (1.0 - factor)*fire_emission[0];
-      fire_emission[1] = (1.0 - factor)*fire_emission[1];
-      fire_emission[2] = (1.0 - factor)*fire_emission[2];
+    if(firedata_local!=NULL&&temperature<=global_temp_cutoff){
+      fire_emission[0] = 0.0;
+      fire_emission[1] = 0.0;
+      fire_emission[2] = 0.0;
     }
   }
   if(firedata_local!=NULL&&temperature>global_temp_cutoff){
@@ -1636,9 +1632,9 @@ void IntegrateFireColors(float *integrated_firecolor, float *xyzvert, float dlen
     // https://developer.nvidia.com/sites/all/modules/custom/gpugems/books/GPUGems/gpugems_ch39.html
     // equation 6 - integrate forward
     else{
-      integrated_firecolor[0] = taun*alphai*fire_emission[0] + integrated_firecolor[0];
-      integrated_firecolor[1] = taun*alphai*fire_emission[1] + integrated_firecolor[1];
-      integrated_firecolor[2] = taun*alphai*fire_emission[2] + integrated_firecolor[2];
+      integrated_firecolor[0] += taun*alphai*fire_emission[0];
+      integrated_firecolor[1] += taun*alphai*fire_emission[1];
+      integrated_firecolor[2] += taun*alphai*fire_emission[2];
     }
   }
 
@@ -2367,7 +2363,6 @@ void DrawSmoke3DGPUVol(void){
   glUniform1f(GPUvol_temperature_max, global_temp_max);
   glUniform1i(GPUvol_block_volsmoke,block_volsmoke);
   glUniform1f(GPUvol_voltemp_factor, voltemp_factor);
-  glUniform1f(GPUvol_voltemp_offset, voltemp_offset);
 
   SNIFF_ERRORS("after DrawSmoke3dGpuVol before update textures");
   if(use_transparency_data==1)TransparentOn();

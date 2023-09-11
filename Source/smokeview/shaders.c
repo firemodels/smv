@@ -268,7 +268,7 @@ int SetVolSmokeShaders(){
     "varying vec3 fragpos;"
     "uniform float xyzmaxdiff,dcell,fire_opacity_factor,gpu_vol_factor;"
     "uniform float temperature_min,temperature_cutoff,temperature_max;"
-    "uniform float voltemp_factor, voltemp_offset;"
+    "uniform float voltemp_factor;"
     "uniform float mass_extinct;"
     "uniform int inside,havefire,volbw,slicetype,block_volsmoke;"
     "uniform int drawsides[7];"
@@ -447,7 +447,6 @@ int SetVolSmokeShaders(){
 
   GPUvol_inside = glGetUniformLocation(p_volsmoke,"inside");
   GPUvol_eyepos = glGetUniformLocation(p_volsmoke,"eyepos");
-  GPUvol_voltemp_offset = glGetUniformLocation(p_volsmoke, "voltemp_offset");
   GPUvol_voltemp_factor = glGetUniformLocation(p_volsmoke, "voltemp_factor");
   GPUvol_block_volsmoke = glGetUniformLocation(p_volsmoke,"block_volsmoke");
   GPUvol_dcell = glGetUniformLocation(p_volsmoke,"dcell");

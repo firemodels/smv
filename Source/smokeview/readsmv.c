@@ -12084,11 +12084,12 @@ int ReadIni2(char *inifile, int localfile){
       sscanf(buffer, " %i %i,%i", &slices3d_max_blending, &hrrpuv_max_blending,&showall_3dslices);
     }
     if(MatchINI(buffer, "FIREPARAMS")==1){
+      float dummy;
+
       fgets(buffer, 255, stream);
       sscanf(buffer, " %f %f %f %f %f %f %f %f",
-      &slicehrrpuv_lower, &slicehrrpuv_middle, &slicehrrpuv_upper,
-      &slicehrrpuv_cut1, &slicehrrpuv_cut2, &slicehrrpuv_offset,
-      &voltemp_factor,&voltemp_offset);
+      &slicehrrpuv_lower, &slicehrrpuv_middle, &slicehrrpuv_upper, &slicehrrpuv_cut1, &slicehrrpuv_cut2, &slicehrrpuv_offset,
+      &voltemp_factor,&dummy);
       continue;
     }
     if(MatchINI(buffer, "FREEZEVOLSMOKE")==1){
@@ -16718,7 +16719,7 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %f %f %f %f %f %f %f %f\n",
       slicehrrpuv_lower, slicehrrpuv_middle, slicehrrpuv_upper,
       slicehrrpuv_cut1, slicehrrpuv_cut2, slicehrrpuv_offset,
-      voltemp_factor,voltemp_offset);
+      voltemp_factor,0.0);
   fprintf(fileout, "FRAMERATEVALUE\n");
   fprintf(fileout, " %i\n", frameratevalue);
   fprintf(fileout, "FREEZEVOLSMOKE\n");
