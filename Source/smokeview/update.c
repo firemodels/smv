@@ -2006,9 +2006,6 @@ void UpdateShowScene(void){
     ColorbarMenu(USE_LIGHTING);
     update_use_lighting = 0;
   }
-  if(update_opacity_map==1){
-    UpdateOpacityMap();
-  }
   if(update_playmovie==1){
     EnableDisablePlayMovie();
     update_playmovie = 0;
