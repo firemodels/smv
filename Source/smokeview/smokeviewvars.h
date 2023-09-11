@@ -460,19 +460,12 @@ SVEXTERN int SVDECL(slice_opacity_adjustment, 0);
 SVEXTERN int SVDECL(showall_3dslices, 0);
 SVEXTERN int SVDECL(slices3d_max_blending, 0);
 SVEXTERN int SVDECL(hrrpuv_max_blending, 0);
-SVEXTERN int SVDECL(update_opacity_map, 1);
-SVEXTERN unsigned char opacity_map[256];
 SVEXTERN int SVDECL(nplotx_list,0), SVDECL(nploty_list,0), SVDECL(nplotz_list,0);
 SVEXTERN int SVDECL(*plotx_list, NULL);
 SVEXTERN int SVDECL(*ploty_list, NULL);
 SVEXTERN int SVDECL(*plotz_list, NULL);
 SVEXTERN int SVDECL(colorbar_autonode, 1);
 SVEXTERN float SVDECL(*blackbody_colors, NULL);
-SVEXTERN int SVDECL(smoke3d_testsmoke, 0);
-SVEXTERN float SVDECL(slicehrrpuv_upper, 0.1), SVDECL(slicehrrpuv_middle, 0.5), SVDECL(slicehrrpuv_lower, 1.0);
-SVEXTERN float SVDECL(slicehrrpuv_cut1, 0.8), SVDECL(slicehrrpuv_cut2, 0.9);
-SVEXTERN float SVDECL(slicehrrpuv_offset, 0.0);
-SVEXTERN float SVDECL(voltemp_factor, 300.0);
 SVEXTERN int SVDECL(show_volsmokefiles, 1), SVDECL(show_3dsmoke,1);
 #ifdef pp_SMOKE16
 SVEXTERN int SVDECL(show_3dsmoke_8bit, 1);
@@ -976,7 +969,6 @@ SVEXTERN int GPU3dslice_val_min,GPU3dslice_val_max;
 SVEXTERN int GPU3dslice_boxmin, GPU3dslice_boxmax;
 SVEXTERN int GPU3dslice_transparent_level;
 SVEXTERN int GPUvol_block_volsmoke;
-SVEXTERN int GPUvol_voltemp_factor;
 #endif
 
 #ifdef pp_OPENVKL

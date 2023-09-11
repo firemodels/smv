@@ -88,12 +88,6 @@ GLUI_Spinner *SPINNER_smoke_test_nslices = NULL;
 GLUI_Spinner *SPINNER_smokeloadframe = NULL;
 GLUI_Spinner *SPINNER_globalloadframe = NULL;
 GLUI_Spinner *SPINNER_timeloadframe = NULL;
-GLUI_Spinner *SPINNER_slicehrrpuv_upper = NULL;
-GLUI_Spinner *SPINNER_slicehrrpuv_middle = NULL;
-GLUI_Spinner *SPINNER_slicehrrpuv_lower = NULL;
-GLUI_Spinner *SPINNER_slicehrrpuv_cut2 = NULL;
-GLUI_Spinner *SPINNER_slicehrrpuv_cut1 = NULL;
-GLUI_Spinner *SPINNER_hrrpuvoffset=NULL;
 GLUI_Spinner *SPINNER_co2color[3];
 GLUI_Spinner *SPINNER_emission_factor=NULL;
 
@@ -898,41 +892,6 @@ extern "C" void Smoke3dCB(int var){
     UpdateCO2Colormap();
     Smoke3dCB(CO2COLORMAP_TYPE);
     Smoke3dCB(UPDATE_SMOKECOLORS);
-    glutPostRedisplay();
-    break;
-  case UPDATE_HRRPUV_CONTROLS:
-    if(
-      SPINNER_slicehrrpuv_upper != NULL&&
-      SPINNER_slicehrrpuv_middle != NULL&&
-      SPINNER_slicehrrpuv_lower != NULL&&
-      SPINNER_slicehrrpuv_cut1 != NULL&&
-      SPINNER_slicehrrpuv_cut2 != NULL){
-      if(smoke3d_testsmoke == 0){
-        SPINNER_slicehrrpuv_upper->disable();
-        SPINNER_slicehrrpuv_middle->disable();
-        SPINNER_slicehrrpuv_lower->disable();
-        SPINNER_slicehrrpuv_cut1->disable();
-        SPINNER_slicehrrpuv_cut2->disable();
-        SPINNER_hrrpuvoffset->disable();
-      }
-      else{
-        if(SPINNER_slicehrrpuv_upper != NULL)SPINNER_slicehrrpuv_upper->enable();
-        SPINNER_slicehrrpuv_middle->enable();
-        SPINNER_slicehrrpuv_lower->enable();
-        SPINNER_slicehrrpuv_cut1->enable();
-        SPINNER_slicehrrpuv_cut2->enable();
-        SPINNER_hrrpuvoffset->enable();
-      }
-    }
-    break;
-  case UPDATE_FACTOROFFSETS:
-    for(i = 0;i<nmeshes;i++){
-      meshdata *meshi;
-
-      meshi = meshinfo+i;
-      meshi->update_smoke3dcolors = 1;
-    }
-    UpdateOpacityMap();
     glutPostRedisplay();
     break;
   case LOAD_SMOKEFRAME:

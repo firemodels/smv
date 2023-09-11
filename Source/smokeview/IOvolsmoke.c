@@ -2362,7 +2362,6 @@ void DrawSmoke3DGPUVol(void){
   glUniform1f(GPUvol_temperature_cutoff, global_temp_cutoff);
   glUniform1f(GPUvol_temperature_max, global_temp_max);
   glUniform1i(GPUvol_block_volsmoke,block_volsmoke);
-  glUniform1f(GPUvol_voltemp_factor, voltemp_factor);
 
   SNIFF_ERRORS("after DrawSmoke3dGpuVol before update textures");
   if(use_transparency_data==1)TransparentOn();
