@@ -27,7 +27,7 @@
 
 #define pp_FAST           // set fast startup by default
 
-//#define pp_COLOR_PLOT     /  add checkbox for showing CIELab colorbar delta distance plot
+#define pp_COLOR_PLOT     /  add checkbox for showing CIELab colorbar delta distance plot
 
 //#define pp_BNDF         // merge geometry and structured boundary files in load menus
 
