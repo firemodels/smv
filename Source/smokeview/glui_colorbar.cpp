@@ -782,7 +782,7 @@ extern "C" void ColorbarCB(int var){
     break;
   case COLORBAR_CLOSE:
     vis_colorbar_dists_plot = 0;
-    CHECKBOX_cb_plot_dist->set_int_val(0);
+    if(CHECKBOX_cb_plot_dist!=NULL)CHECKBOX_cb_plot_dist->set_int_val(0);
     SliceBoundCB(COLORBAR_PLOT2D);
     HideGluiColorbar();
     break;
