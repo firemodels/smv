@@ -676,10 +676,8 @@ void GetFireEmission(float *smoke_tran, float *fire_emission, float dlength, flo
     else{
       if(temperature > global_temp_cutoff){
         int index;
-        float dtemp;
 
-        dtemp = (global_temp_max - global_temp_min) / MAXSMOKERGB;
-        index = GETINDEX(temperature, global_temp_min, dtemp, MAXSMOKERGB);
+        index = GETINDEX2(temperature, global_temp_min, global_temp_max, MAXSMOKERGB);
         memcpy(fire_emission, rgb_volsmokecolormap + 4 * index, 3*sizeof(float));
       }
       else{
