@@ -171,11 +171,12 @@ float     part_load_time;
 #define MENU_ISOSHOW_MINSOLID 96
 #define MENU_ISOSHOW_MAXSOLID 97
 
-#define MENU_ISOSHOW_SOLID 1
+#define MENU_ISOSHOW_SOLID   1
 #define MENU_ISOSHOW_OUTLINE 2
-#define MENU_ISOSHOW_POINTS 3
-#define MENU_ISOSHOW_SMOOTH 4
+#define MENU_ISOSHOW_POINTS  3
+#define MENU_ISOSHOW_SMOOTH  4
 #define MENU_ISOSHOW_NORMALS 5
+#define MENU_ISOSHOW_OUTPUT  6
 
 #define MENU_ZONE_2DTEMP2 21
 #define MENU_ZONE_2DTEMP 6
@@ -1153,6 +1154,9 @@ void IsoShowMenu(int value){
   switch(value){
   case  MENU_ISOSHOW_SMOOTH:
     smooth_iso_normal=1-smooth_iso_normal;
+    break;
+  case MENU_ISOSHOW_OUTPUT:
+    OutputAllIsoBounds();
     break;
   case MENU_ISOSHOW_NORMALS:
     show_iso_normal = 1 - show_iso_normal;
@@ -10624,6 +10628,7 @@ updatemenu=0;
       }
       if(show_iso_normal == 1)glutAddMenuEntry(_("*Show normals"), MENU_ISOSHOW_NORMALS);
       if(show_iso_normal == 0)glutAddMenuEntry(_("Show normals"), MENU_ISOSHOW_NORMALS);
+      glutAddMenuEntry(_("Output bounds"), MENU_ISOSHOW_OUTPUT);
       GLUTADDSUBMENU(_("Mesh"), isoshowsubmenu);
     }
   }
