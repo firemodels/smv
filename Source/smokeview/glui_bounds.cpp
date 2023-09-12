@@ -5058,6 +5058,7 @@ extern "C" void GluiBoundsSetup(int main_window){
 #endif
     CHECKBOX_smooth2 = glui_bounds->add_checkbox_to_panel(ROLLOUT_iso_settings, _("Smooth isosurfaces"), &smooth_iso_normal, SMOOTH_SURFACES, SliceBoundCB);
     glui_bounds->add_checkbox_to_panel(ROLLOUT_iso_settings, _("wrapup in background"), &iso_multithread);
+    glui_bounds->add_button_to_panel(ROLLOUT_iso_settings, "Output isosurface bounds", ISO_BOUNDS_OUTPUT, SliceBoundCB);
   }
 
   /* Particle File Bounds  */
@@ -6487,6 +6488,9 @@ extern "C" void SliceBoundCB(int var){
       if(research_mode==1)PRINTF("\nresearch mode on, using global bounds\n\n");
       if(research_mode==0)PRINTF("research mode off\n");
       SliceBoundCB(FILE_UPDATE);
+      break;
+    case ISO_BOUNDS_OUTPUT:
+      OutputAllIsoBounds();
       break;
     case SMOOTH_SURFACES:
       CHECKBOX_smooth2->set_int_val(smooth_iso_normal);

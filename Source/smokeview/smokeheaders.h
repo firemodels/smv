@@ -915,6 +915,7 @@ EXTERNCPP void CheckFilesMT(void);
 
 EXTERNCPP void UpdateUnitDefs(void);
 
+EXTERNCPP void OutputAllIsoBounds(void);
 EXTERNCPP void SmoothIsoSurface(isosurface *surfacedata);
 EXTERNCPP void UpdateSliceFilenum(void);
 EXTERNCPP void DrawStaticIso(const isosurface *asurface,int surfacetype,

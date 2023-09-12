@@ -242,6 +242,73 @@ void GetIsoDataBounds(isodata *isod, float *pmin, float *pmax){
   }
 }
 
+/* ------------------ OutputIsoBounds ------------------------ */
+
+void OutputIsoBounds(isodata *isoi){
+  FILE *stream;
+  char file[256];
+  int i;
+  geomdata *geomi;
+
+  geomi = isoi->geominfo;
+  strcpy(file, geomi->file);
+  strcat(file, ".csv");
+  stream = fopen(file, "w");
+  if(stream == NULL)return;
+  if(geomi->ntimes <= 0){
+    fclose(stream);
+    return;
+  }
+  fprintf(stream,"%s\n", isoi->surface_label.longlabel);
+  fprintf(stream, "t,xmin,xmax,ymin,ymax,zmin,zmaz\n");
+  for(i = 0;i < geomi->ntimes;i++){
+    int j;
+    float xmin, xmax, ymin, ymax, zmin, zmax;
+    geomlistdata *geomlisti;
+    float *xyz;
+
+    geomlisti = geomi->geomlistinfo + i;
+    if(geomlisti->nverts>0){
+      xyz = geomlisti->verts->xyz;
+
+      xmin = xyz[0];
+      xmax = xmin;
+      ymin = xyz[1];
+      ymax = ymin;
+      zmin = xyz[2];
+      zmax = zmin;
+      for(j = 1;j < geomlisti->nverts;j++){
+        vertdata *vertj;
+
+        vertj = geomlisti->verts+j;
+        xyz = vertj->xyz;
+        xmin = MIN(xyz[0], xmin);
+        xmax = MAX(xyz[0], xmax);
+        ymin = MIN(xyz[1], ymin);
+        ymax = MAX(xyz[1], ymax);
+        zmin = MIN(xyz[2], zmin);
+        zmax = MAX(xyz[2], zmax);
+      }
+      fprintf(stream, "%f,%f,%f,%f,%f,%f,%f\n", geomi->times[i], xmin, xmax, ymin, ymax, zmin, zmax);
+    }
+  }
+  fclose(stream);
+}
+
+/* ------------------ OutputAllIsoBounds ------------------------ */
+
+void OutputAllIsoBounds(void){
+  int i;
+
+  for(i = 0;i < nisoinfo;i++){
+    isodata *isoi;
+
+    isoi = isoinfo + i;
+    if(isoi->loaded == 0||isoi->geominfo==NULL)continue;
+    OutputIsoBounds(isoi);
+  }
+}
+
 /* ------------------ ReadIsoGeom ------------------------ */
 
 FILE_SIZE ReadIsoGeom(int ifile, int load_flag, int *geom_frame_index, int *errorcode){
