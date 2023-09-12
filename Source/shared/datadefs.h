@@ -261,6 +261,10 @@
 #define GETINDEX(xval,xmin,dx,nx) CLAMP(((xval)-(xmin))/(dx),0,(nx)-1)
 #endif
 
+#ifndef GETINDEX2
+#define GETINDEX2(xval,xmin,xmax,nx) CLAMP( ((xval)-(xmin))/ ((xmax)-(xmin))/(nx)  ,0,(nx)-1)
+#endif
+
 #ifndef IJCIRC
 #define IJCIRC(i,j) ((i)+1+((j)+1)*nx)
 #endif
