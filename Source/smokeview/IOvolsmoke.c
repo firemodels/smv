@@ -616,7 +616,7 @@ void GetFireEmission(float *smoke_tran, float *fire_emission, float dlength, flo
   int i, j, k;
   int ijk;
 
-  int nx, ny, nxy;
+  int nx, ny, nz, nxy;
 
   float dxbar, dybar, dzbar;
 
@@ -653,7 +653,63 @@ void GetFireEmission(float *smoke_tran, float *fire_emission, float dlength, flo
 
   nx = ibar+1;
   ny = jbar+1;
+  nz = kbar + 1;
   nxy = nx*ny;
+  if(meshi->voltest_update == 1){
+    float zmin, zmax;
+
+    zmin = voltest_center[2] - voltest_r1;
+    zmax = voltest_center[2] + voltest_r2;
+
+    
+    for(k=0;k<nz;k++){
+      float dz;
+
+      dz = voltest_center[2] - SMV2FDS_Z(zplt[k]);
+      for(j = 0;j < ny;j++){
+        float dy;
+
+        dy = voltest_center[1] - SMV2FDS_Y(yplt[j]);
+        for(i = 0;i < nx;i++){
+          float dx, rad, rad_inner;
+          float smoke_val, fire_val;
+
+          dx = voltest_center[0] - SMV2FDS_X(xplt[i]);
+          rad = sqrt(dx*dx + dy*dy + dz*dz);
+          rad_inner = sqrt(dx*dx + dy*dy);
+          if(rad < voltest_r1){
+            smoke_val = voltest_soot1;
+          }
+          else if(rad >= voltest_r1 && rad <= voltest_r2){
+            smoke_val = voltest_soot2;
+          }
+          else{
+            smoke_val = 0.0;
+          }
+          if(rad_inner < voltest_r3){
+            fire_val = (voltest_temp2 * (SMV2FDS_Z(zplt[k]) - zmin) + voltest_temp1 * (zmax - SMV2FDS_Z(zplt[k]))) / (zmax-zmin);
+          }
+          else{
+            fire_val = voltest_temp1;
+          }
+          int ijk;
+          int ii;
+
+          ijk = IJKNODE(i, j, k);
+          for(ii = 0;ii < meshi->volrenderinfo.ntimes;ii++){
+            float *smokevals, *firevals;
+
+            smokevals = meshi->volrenderinfo.smokedataptrs[ii];
+            firevals = meshi->volrenderinfo.firedataptrs[ii];
+
+            if(smokevals!=NULL)smokevals[ijk] = smoke_val;
+            if(firevals!=NULL)firevals[ijk] = fire_val;
+          }
+        }
+      }
+    }
+    meshi->voltest_update = 0;
+  }
 
   i = GETINDEX(xyz[0], xplt[0], dxbar, ibar);
   j = GETINDEX(xyz[1], yplt[0], dybar, jbar);

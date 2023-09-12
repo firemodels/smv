@@ -83,5 +83,7 @@
 #ifdef pp_BLACKBODY
 #define BLACKBODY_TEMPS      101
 #endif
+#define VOLTEST_DEPTH 102
+#define VOLTEST_UPDATE 103
 #endif
 

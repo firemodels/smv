@@ -467,6 +467,15 @@ SVEXTERN int SVDECL(*plotz_list, NULL);
 SVEXTERN int SVDECL(colorbar_autonode, 1);
 SVEXTERN float SVDECL(*blackbody_colors, NULL);
 SVEXTERN int SVDECL(show_volsmokefiles, 1), SVDECL(show_3dsmoke,1);
+SVEXTERN float SVDECL(voltest_temp1, 20.0), SVDECL(voltest_temp2, 620.0);
+SVEXTERN float SVDECL(voltest_soot1, 0.5), SVDECL(voltest_soot2, 1.2);
+SVEXTERN float SVDECL(voltest_depth1, 0.3), SVDECL(voltest_depth2, 0.6);
+SVEXTERN float SVDECL(voltest_r1, 0.4), SVDECL(voltest_r2, 0.6), SVDECL(voltest_r3, 0.2);
+#ifdef INMAIN
+SVEXTERN float voltest_center[3] = {0.8, 0.8, 1.0};
+#else
+SVEXTERN float voltest_center[3];
+#endif
 #ifdef pp_SMOKE16
 SVEXTERN int SVDECL(show_3dsmoke_8bit, 1);
 SVEXTERN int SVDECL(show_3dsmoke_16bit, 0);

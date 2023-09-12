@@ -934,6 +934,7 @@ void InitMesh(meshdata *meshi){
 
   meshi->volsmoke_texture_buffer = NULL;
   meshi->volsmoke_texture_id = 0;
+  meshi->voltest_update = 0;
 
   meshi->volfire_texture_buffer = NULL;
   meshi->volfire_texture_id = 0;

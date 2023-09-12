@@ -55,6 +55,8 @@ GLUI_Spinner *SPINNER_fire_temp_min = NULL;
 GLUI_Spinner *SPINNER_fire_temp_max = NULL;
 GLUI_Spinner *SPINNER_nfire_colors  = NULL;
 #endif
+GLUI_Spinner *SPINNER_voltest_depth1  = NULL;
+GLUI_Spinner *SPINNER_voltest_depth2  = NULL;
 GLUI_Spinner *SPINNER_temperature_min=NULL;
 GLUI_Spinner *SPINNER_temperature_cutoff=NULL;
 GLUI_Spinner *SPINNER_temperature_max=NULL;
@@ -144,6 +146,7 @@ GLUI_Panel *PANEL_smoke_rgb = NULL;
 GLUI_Panel *PANEL_fire_rgb = NULL;
 GLUI_Panel *PANEL_smokefire_rgb = NULL;
 
+GLUI_Rollout *ROLLOUT_voltest = NULL;
 GLUI_Rollout *ROLLOUT_opacity = NULL;
 GLUI_Rollout *ROLLOUT_voldisplay = NULL;
 GLUI_Rollout *ROLLOUT_volsmoke_move = NULL;
@@ -633,6 +636,21 @@ extern "C" void Glui3dSmokeSetup(int main_window){
     glui_3dsmoke->add_checkbox_to_panel(PANEL_blackbody, "gamma correction", &gamma_correction, BLACKBODY_TEMPS, Smoke3dCB);
 #endif
 #endif
+    ROLLOUT_voltest = glui_3dsmoke->add_rollout_to_panel(ROLLOUT_voldisplay, "volrender test data");
+    ROLLOUT_voltest->close();
+    glui_3dsmoke->add_spinner_to_panel(ROLLOUT_voltest, "temp 1",  GLUI_SPINNER_FLOAT, &voltest_temp1);
+    glui_3dsmoke->add_spinner_to_panel(ROLLOUT_voltest, "temp 2",  GLUI_SPINNER_FLOAT, &voltest_temp2);
+    SPINNER_voltest_depth1 = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_voltest, "depth 1", GLUI_SPINNER_FLOAT, &voltest_depth1, VOLTEST_DEPTH, Smoke3dCB);
+    SPINNER_voltest_depth2 = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_voltest, "depth 2", GLUI_SPINNER_FLOAT, &voltest_depth2, VOLTEST_DEPTH, Smoke3dCB);
+    glui_3dsmoke->add_spinner_to_panel(ROLLOUT_voltest, "rad 1",   GLUI_SPINNER_FLOAT, &voltest_r1);
+    glui_3dsmoke->add_spinner_to_panel(ROLLOUT_voltest, "rad 2",   GLUI_SPINNER_FLOAT, &voltest_r2);
+    glui_3dsmoke->add_spinner_to_panel(ROLLOUT_voltest, "x",       GLUI_SPINNER_FLOAT, voltest_center  +0);
+    glui_3dsmoke->add_spinner_to_panel(ROLLOUT_voltest, "y",       GLUI_SPINNER_FLOAT, voltest_center + 1);
+    glui_3dsmoke->add_spinner_to_panel(ROLLOUT_voltest, "z",       GLUI_SPINNER_FLOAT, voltest_center + 2);
+    glui_3dsmoke->add_button_to_panel(ROLLOUT_voltest, "Update volume render test data", VOLTEST_UPDATE, Smoke3dCB);
+    SPINNER_voltest_depth1->set_float_limits(0.01, 20.0);
+    SPINNER_voltest_depth2->set_float_limits(0.01, 20.0);
+    Smoke3dCB(VOLTEST_DEPTH);
 
     //*** scene movement
 
@@ -988,6 +1006,19 @@ extern "C" void Smoke3dCB(int var){
     global_temp_cutoff = global_temp_cutoff_default;
     SPINNER_temperature_cutoff->set_float_val(global_temp_cutoff);
     SPINNER_hrrpuv_cutoff->set_float_val(global_hrrpuv_cutoff);
+    break;
+  case VOLTEST_DEPTH:
+    voltest_soot1 = log(2.0)/(mass_extinct*voltest_depth1);
+    voltest_soot2 = log(2.0)/(mass_extinct*voltest_depth2);
+    break;
+  case VOLTEST_UPDATE:
+    for(i=0;i<nmeshes;i++){
+      meshdata *meshi;
+
+      meshi = meshinfo + i;
+      if(meshi->volrenderinfo.loaded == 0)continue;
+      meshi->voltest_update = 1;
+    }
     break;
 #ifdef pp_BLACKBODY
   case BLACKBODY_TEMPS:
