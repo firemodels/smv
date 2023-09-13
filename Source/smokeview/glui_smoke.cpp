@@ -644,7 +644,8 @@ extern "C" void Glui3dSmokeSetup(int main_window){
     SPINNER_voltest_depth2 = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_voltest, "depth 2", GLUI_SPINNER_FLOAT, &voltest_depth2, VOLTEST_DEPTH, Smoke3dCB);
     glui_3dsmoke->add_spinner_to_panel(ROLLOUT_voltest, "rad 1",   GLUI_SPINNER_FLOAT, &voltest_r1);
     glui_3dsmoke->add_spinner_to_panel(ROLLOUT_voltest, "rad 2",   GLUI_SPINNER_FLOAT, &voltest_r2);
-    glui_3dsmoke->add_spinner_to_panel(ROLLOUT_voltest, "x",       GLUI_SPINNER_FLOAT, voltest_center  +0);
+    glui_3dsmoke->add_spinner_to_panel(ROLLOUT_voltest, "rad 3",   GLUI_SPINNER_FLOAT, &voltest_r3);
+    glui_3dsmoke->add_spinner_to_panel(ROLLOUT_voltest, "x",       GLUI_SPINNER_FLOAT, voltest_center + 0);
     glui_3dsmoke->add_spinner_to_panel(ROLLOUT_voltest, "y",       GLUI_SPINNER_FLOAT, voltest_center + 1);
     glui_3dsmoke->add_spinner_to_panel(ROLLOUT_voltest, "z",       GLUI_SPINNER_FLOAT, voltest_center + 2);
     glui_3dsmoke->add_button_to_panel(ROLLOUT_voltest, "Update volume render test data", VOLTEST_UPDATE, Smoke3dCB);
