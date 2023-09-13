@@ -314,7 +314,7 @@ SVEXTERN int SVDECL(have_vr, 0), SVDECL(use_vr,0);
 SVEXTERN int SVDECL(use_fire_alpha, 0);
 SVEXTERN int SVDECL(glui_use_fire_alpha, 1);
 SVEXTERN int SVDECL(update_fire_alpha, 0);
-SVEXTERN float SVDECL(emission_factor, 10.0);
+SVEXTERN float SVDECL(emission_factor, 1.0);
 #ifdef pp_OSX
 SVEXTERN int SVDECL(monitor_screen_height, -1);
 #endif
