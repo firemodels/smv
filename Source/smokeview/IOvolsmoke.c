@@ -692,18 +692,18 @@ void GetFireEmission(float *smoke_tran, float *fire_emission, float dlength, flo
           else{
             fire_val = voltest_temp1;
           }
-          int ijk;
+          int ijk_index;
           int ii;
 
-          ijk = IJKNODE(i, j, k);
+          ijk_index = IJKNODE(i, j, k);
           for(ii = 0;ii < meshi->volrenderinfo.ntimes;ii++){
             float *smokevals, *firevals;
 
             smokevals = meshi->volrenderinfo.smokedataptrs[ii];
             firevals = meshi->volrenderinfo.firedataptrs[ii];
 
-            if(smokevals!=NULL)smokevals[ijk] = smoke_val;
-            if(firevals!=NULL)firevals[ijk] = fire_val;
+            if(smokevals!=NULL)smokevals[ijk_index] = smoke_val;
+            if(firevals!=NULL)firevals[ijk_index] = fire_val;
           }
         }
       }
@@ -736,7 +736,7 @@ void GetFireEmission(float *smoke_tran, float *fire_emission, float dlength, flo
 
         temp_factor = (float)MAXSMOKERGB/(global_temp_max - global_temp_min);
         index = CLAMP(temp_factor*(temperature - global_temp_min), 0, MAXSMOKERGB - 1);
-        memcpy(fire_emission, rgb_volsmokecolormap + 4 * index, 3sizeof(float));
+        memcpy(fire_emission, rgb_volsmokecolormap + 4 * index, 3*sizeof(float));
       }
       else{
         memcpy(fire_emission, black, 3 * sizeof(float));
@@ -2046,19 +2046,19 @@ void DrawSmoke3dVolDebug(void){
 #define GETSMOKECOLORPTR(valptr, i, j, nj) (valptr + 4*((i)*(nj) + (j)))
 
 #define DRAWXPLANE(v1,v2,v3) \
-                glColor4fv(smokecolor + valindex[v1]); glVertex3f(xx, y[yindex[v1]], z[zindex[v1]]);\
-                glColor4fv(smokecolor + valindex[v2]); glVertex3f(xx, y[yindex[v2]], z[zindex[v2]]);\
-                glColor4fv(smokecolor + valindex[v3]); glVertex3f(xx, y[yindex[v3]], z[zindex[v3]])
+                glColor4fv(smokecolor + val_index[v1]); glVertex3f(xx, y[yindex[v1]], z[zindex[v1]]);\
+                glColor4fv(smokecolor + val_index[v2]); glVertex3f(xx, y[yindex[v2]], z[zindex[v2]]);\
+                glColor4fv(smokecolor + val_index[v3]); glVertex3f(xx, y[yindex[v3]], z[zindex[v3]])
 
 #define DRAWYPLANE(v1,v2,v3) \
-                glColor4fv(smokecolor + valindex[v1]); glVertex3f(x[xindex[v1]], yy, z[zindex[v1]]);\
-                glColor4fv(smokecolor + valindex[v2]); glVertex3f(x[xindex[v2]], yy, z[zindex[v2]]);\
-                glColor4fv(smokecolor + valindex[v3]); glVertex3f(x[xindex[v3]], yy, z[zindex[v3]])
+                glColor4fv(smokecolor + val_index[v1]); glVertex3f(x[xindex[v1]], yy, z[zindex[v1]]);\
+                glColor4fv(smokecolor + val_index[v2]); glVertex3f(x[xindex[v2]], yy, z[zindex[v2]]);\
+                glColor4fv(smokecolor + val_index[v3]); glVertex3f(x[xindex[v3]], yy, z[zindex[v3]])
 
 #define DRAWZPLANE(v1,v2,v3) \
-                glColor4fv(smokecolor + valindex[v1]); glVertex3f(x[xindex[v1]], y[yindex[v1]], zz);\
-                glColor4fv(smokecolor + valindex[v2]); glVertex3f(x[xindex[v2]], y[yindex[v2]], zz);\
-                glColor4fv(smokecolor + valindex[v3]); glVertex3f(x[xindex[v3]], y[yindex[v3]], zz)
+                glColor4fv(smokecolor + val_index[v1]); glVertex3f(x[xindex[v1]], y[yindex[v1]], zz);\
+                glColor4fv(smokecolor + val_index[v2]); glVertex3f(x[xindex[v2]], y[yindex[v2]], zz);\
+                glColor4fv(smokecolor + val_index[v3]); glVertex3f(x[xindex[v3]], y[yindex[v3]], zz)
 /* ------------------ DrawSmoke3dVol ------------------------ */
 
 void DrawSmoke3DVol(void){
@@ -2123,7 +2123,7 @@ void DrawSmoke3DVol(void){
     float *xplt, *yplt, *zplt;
     int ibar, jbar, kbar;
     float *smokecolor;
-    int valindex[4];
+    int val_index[4];
     int xindex[4], yindex[4], zindex[4];
 
     vi = volfacelistinfoptrs[ii];
@@ -2159,10 +2159,10 @@ void DrawSmoke3DVol(void){
         n01 = 4;
         n10 = 4*(kbar+1);
         n11 = 4*(1 + kbar+1);
-        valindex[0]=n00;
-        valindex[1]=n10;
-        valindex[2]=n11;
-        valindex[3]=n01;
+        val_index[0]=n00;
+        val_index[1]=n10;
+        val_index[2]=n11;
+        val_index[3]=n01;
         yindex[0] = 0;
         yindex[1] = 1;
         yindex[2] = 1;
@@ -2212,10 +2212,10 @@ void DrawSmoke3DVol(void){
         n01 = 4;
         n10 = 4*(kbar+1);
         n11 = 4*(1 + kbar+1);
-        valindex[0]=n00;
-        valindex[1]=n10;
-        valindex[2]=n11;
-        valindex[3]=n01;
+        val_index[0]=n00;
+        val_index[1]=n10;
+        val_index[2]=n11;
+        val_index[3]=n01;
         xindex[0] = 0;
         xindex[1] = 1;
         xindex[2] = 1;
@@ -2273,10 +2273,10 @@ void DrawSmoke3DVol(void){
         n01 = 4;
         n10 = 4*(jbar+1);
         n11 = 4*(1 + jbar+1);
-        valindex[0]=n00;
-        valindex[1]=n10;
-        valindex[2]=n11;
-        valindex[3]=n01;
+        val_index[0]=n00;
+        val_index[1]=n10;
+        val_index[2]=n11;
+        val_index[3]=n01;
         xindex[0] = 0;
         xindex[1] = 1;
         xindex[2] = 1;
