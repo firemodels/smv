@@ -732,9 +732,11 @@ void GetFireEmission(float *smoke_tran, float *fire_emission, float dlength, flo
     else{
       if(temperature > global_temp_cutoff){
         int index;
+        float temp_factor;
 
-        index = GETINDEX2(temperature, global_temp_min, global_temp_max, MAXSMOKERGB);
-        memcpy(fire_emission, rgb_volsmokecolormap + 4 * index, 3*sizeof(float));
+        temp_factor = (float)MAXSMOKERGB/(global_temp_max - global_temp_min);
+        index = CLAMP(temp_factor*(temperature - global_temp_min), 0, MAXSMOKERGB - 1);
+        memcpy(fire_emission, rgb_volsmokecolormap + 4 * index, 3sizeof(float));
       }
       else{
         memcpy(fire_emission, black, 3 * sizeof(float));
@@ -2043,6 +2045,20 @@ void DrawSmoke3dVolDebug(void){
 
 #define GETSMOKECOLORPTR(valptr, i, j, nj) (valptr + 4*((i)*(nj) + (j)))
 
+#define DRAWXPLANE(v1,v2,v3) \
+                glColor4fv(smokecolor + valindex[v1]); glVertex3f(xx, y[yindex[v1]], z[zindex[v1]]);\
+                glColor4fv(smokecolor + valindex[v2]); glVertex3f(xx, y[yindex[v2]], z[zindex[v2]]);\
+                glColor4fv(smokecolor + valindex[v3]); glVertex3f(xx, y[yindex[v3]], z[zindex[v3]])
+
+#define DRAWYPLANE(v1,v2,v3) \
+                glColor4fv(smokecolor + valindex[v1]); glVertex3f(x[xindex[v1]], yy, z[zindex[v1]]);\
+                glColor4fv(smokecolor + valindex[v2]); glVertex3f(x[xindex[v2]], yy, z[zindex[v2]]);\
+                glColor4fv(smokecolor + valindex[v3]); glVertex3f(x[xindex[v3]], yy, z[zindex[v3]])
+
+#define DRAWZPLANE(v1,v2,v3) \
+                glColor4fv(smokecolor + valindex[v1]); glVertex3f(x[xindex[v1]], y[yindex[v1]], zz);\
+                glColor4fv(smokecolor + valindex[v2]); glVertex3f(x[xindex[v2]], y[yindex[v2]], zz);\
+                glColor4fv(smokecolor + valindex[v3]); glVertex3f(x[xindex[v3]], y[yindex[v3]], zz)
 /* ------------------ DrawSmoke3dVol ------------------------ */
 
 void DrawSmoke3DVol(void){
@@ -2107,6 +2123,8 @@ void DrawSmoke3DVol(void){
     float *xplt, *yplt, *zplt;
     int ibar, jbar, kbar;
     float *smokecolor;
+    int valindex[4];
+    int xindex[4], yindex[4], zindex[4];
 
     vi = volfacelistinfoptrs[ii];
     iwall=vi->iwall;
@@ -2141,6 +2159,18 @@ void DrawSmoke3DVol(void){
         n01 = 4;
         n10 = 4*(kbar+1);
         n11 = 4*(1 + kbar+1);
+        valindex[0]=n00;
+        valindex[1]=n10;
+        valindex[2]=n11;
+        valindex[3]=n01;
+        yindex[0] = 0;
+        yindex[1] = 1;
+        yindex[2] = 1;
+        yindex[3] = 0;
+        zindex[0] = 0;
+        zindex[1] = 0;
+        zindex[2] = 1;
+        zindex[3] = 1;
         for(i=0;i<jbar;i++){
           y[0] = yplt[i];
           y[1] = yplt[i+1];
@@ -2148,23 +2178,30 @@ void DrawSmoke3DVol(void){
             smokecolor = GETSMOKECOLORPTR(smokecolor_base, i, j, kbar + 1);
             z[0] = zplt[j];
             z[1] = zplt[j+1];
+            float *c00, *c01, *c10, *c11;
+            c00 = smokecolor + n00;
+            c01 = smokecolor + n01;
+            c10 = smokecolor + n10;
+            c11 = smokecolor + n11;
             if((meshi->inside==0&&iwall>0)||(meshi->inside!=0&&iwall<0)){
-              glColor4fv(smokecolor+n00); glVertex3f(xx,y[0],z[0]);
-              glColor4fv(smokecolor+n11); glVertex3f(xx,y[1],z[1]);
-              glColor4fv(smokecolor+n01); glVertex3f(xx,y[0],z[1]);
-
-              glColor4fv(smokecolor+n00); glVertex3f(xx,y[0],z[0]);
-              glColor4fv(smokecolor+n10); glVertex3f(xx,y[1],z[0]);
-              glColor4fv(smokecolor+n11); glVertex3f(xx,y[1],z[1]);
+              if(ABS(c00[0] - c11[0]) <  ABS(c01[0] - c10[0])){
+                DRAWXPLANE(0,2,3);
+                DRAWXPLANE(0,1,2);
+              }
+              else{
+                DRAWXPLANE(0,1,3);
+                DRAWXPLANE(1,2,3);
+              }
             }
             else{
-              glColor4fv(smokecolor+n00); glVertex3f(xx,y[0],z[0]);
-              glColor4fv(smokecolor+n01); glVertex3f(xx,y[0],z[1]);
-              glColor4fv(smokecolor+n10); glVertex3f(xx,y[1],z[0]);
-
-              glColor4fv(smokecolor+n10); glVertex3f(xx,y[1],z[0]);
-              glColor4fv(smokecolor+n01); glVertex3f(xx,y[0],z[1]);
-              glColor4fv(smokecolor+n11); glVertex3f(xx,y[1],z[1]);
+              if(ABS(c00[0] - c11[0]) > ABS(c01[0] - c10[0])){
+                DRAWXPLANE(0,3,1);
+                DRAWXPLANE(1,3,2);
+              }
+              else{
+                DRAWXPLANE(0,2,1);
+                DRAWXPLANE(0,3,2);
+              }
             }
           }
         }
@@ -2175,6 +2212,18 @@ void DrawSmoke3DVol(void){
         n01 = 4;
         n10 = 4*(kbar+1);
         n11 = 4*(1 + kbar+1);
+        valindex[0]=n00;
+        valindex[1]=n10;
+        valindex[2]=n11;
+        valindex[3]=n01;
+        xindex[0] = 0;
+        xindex[1] = 1;
+        xindex[2] = 1;
+        xindex[3] = 0;
+        zindex[0] = 0;
+        zindex[1] = 0;
+        zindex[2] = 1;
+        zindex[3] = 1;
         if(iwall<0){
           smokecolor_base = vr->smokecolor_xz0;
           yy=meshi->y0;
@@ -2190,23 +2239,30 @@ void DrawSmoke3DVol(void){
             smokecolor = GETSMOKECOLORPTR(smokecolor_base, i, j, kbar + 1);
             z[0] = zplt[j];
             z[1] = zplt[j+1];
+            float *c00, *c01, *c10, *c11;
+            c00 = smokecolor + n00;
+            c01 = smokecolor + n01;
+            c10 = smokecolor + n10;
+            c11 = smokecolor + n11;
             if((meshi->inside==0&&iwall>0)||(meshi->inside!=0&&iwall<0)){
-              glColor4fv(smokecolor+n00); glVertex3f(x[0],yy,z[0]);
-              glColor4fv(smokecolor+n01); glVertex3f(x[0],yy,z[1]);
-              glColor4fv(smokecolor+n10); glVertex3f(x[1],yy,z[0]);
-
-              glColor4fv(smokecolor+n10); glVertex3f(x[1],yy,z[0]);
-              glColor4fv(smokecolor+n01); glVertex3f(x[0],yy,z[1]);
-              glColor4fv(smokecolor+n11); glVertex3f(x[1],yy,z[1]);
+              if(ABS(c00[0] - c11[0]) >  ABS(c01[0] - c10[0])){
+                DRAWYPLANE(0,3,1);
+                DRAWYPLANE(1,3,2);
+              }
+              else{
+                DRAWYPLANE(0,3,2);
+                DRAWYPLANE(0,2,1);
+              }
             }
             else{
-              glColor4fv(smokecolor+n00); glVertex3f(x[0],yy,z[0]);
-              glColor4fv(smokecolor+n10); glVertex3f(x[1],yy,z[0]);
-              glColor4fv(smokecolor+n11); glVertex3f(x[1],yy,z[1]);
-
-              glColor4fv(smokecolor+n00); glVertex3f(x[0],yy,z[0]);
-              glColor4fv(smokecolor+n11); glVertex3f(x[1],yy,z[1]);
-              glColor4fv(smokecolor+n01); glVertex3f(x[0],yy,z[1]);
+              if(ABS(c00[0] - c11[0]) <  ABS(c01[0] - c10[0])){
+                DRAWYPLANE(0,1,2);
+                DRAWYPLANE(0,2,3);
+              }
+              else{
+                DRAWYPLANE(0,1,3);
+                DRAWYPLANE(1,2,3);
+              }
             }
           }
         }
@@ -2217,6 +2273,18 @@ void DrawSmoke3DVol(void){
         n01 = 4;
         n10 = 4*(jbar+1);
         n11 = 4*(1 + jbar+1);
+        valindex[0]=n00;
+        valindex[1]=n10;
+        valindex[2]=n11;
+        valindex[3]=n01;
+        xindex[0] = 0;
+        xindex[1] = 1;
+        xindex[2] = 1;
+        xindex[3] = 0;
+        yindex[0] = 0;
+        yindex[1] = 0;
+        yindex[2] = 1;
+        yindex[3] = 1;
        if(iwall<0){
           smokecolor_base = vr->smokecolor_xy0;
           zz=meshi->z0;
@@ -2232,24 +2300,30 @@ void DrawSmoke3DVol(void){
             smokecolor = GETSMOKECOLORPTR(smokecolor_base, i, j, jbar + 1);
             y[0] = yplt[j];
             y[1] = yplt[j+1];
+            float *c00, *c01, *c10, *c11;
+            c00 = smokecolor + n00;
+            c01 = smokecolor + n01;
+            c10 = smokecolor + n10;
+            c11 = smokecolor + n11;
             if((meshi->inside==0&&iwall>0)||(meshi->inside!=0&&iwall<0)){
-              glColor4fv(smokecolor+n00); glVertex3f(x[0],y[0],zz);
-              glColor4fv(smokecolor+n10); glVertex3f(x[1],y[0],zz);
-              glColor4fv(smokecolor+n01); glVertex3f(x[0],y[1],zz);
-
-              glColor4fv(smokecolor+n10); glVertex3f(x[1],y[0],zz);
-              glColor4fv(smokecolor+n11); glVertex3f(x[1],y[1],zz);
-              glColor4fv(smokecolor+n01); glVertex3f(x[0],y[1],zz);
+              if(ABS(c00[0] - c11[0]) >  ABS(c01[0] - c10[0])){
+                DRAWZPLANE(0,1,3);
+                DRAWZPLANE(1,2,3);
+              }
+              else{
+                DRAWZPLANE(0,1,2);
+                DRAWZPLANE(0,2,3);
+              }
             }
             else{
-              glColor4fv(smokecolor+n00); glVertex3f(x[0],y[0],zz);
-              glColor4fv(smokecolor+n01); glVertex3f(x[0],y[1],zz);
-              glColor4fv(smokecolor+n10); glVertex3f(x[1],y[0],zz);
-
-
-              glColor4fv(smokecolor+n10); glVertex3f(x[1],y[0],zz);
-              glColor4fv(smokecolor+n01); glVertex3f(x[0],y[1],zz);
-              glColor4fv(smokecolor+n11); glVertex3f(x[1],y[1],zz);
+              if(ABS(c00[0] - c11[0]) >  ABS(c01[0] - c10[0])){
+                DRAWZPLANE(0,3,1);
+                DRAWZPLANE(1,3,2);
+              }
+              else{
+                DRAWZPLANE(0,3,2);
+                DRAWZPLANE(0,2,1);
+              }
             }
           }
         }
