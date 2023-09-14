@@ -18,6 +18,7 @@ echo "Make_SMV_Pictures.sh [-d -h -r]"
 echo "Generates figures for Smokeview verification suite"
 echo ""
 echo "Options"
+echo "-C - use gnu compiled version of smokeview"
 echo "-d - use debug version of smokeview"
 echo "-h - display this message"
 echo "-i - use installed version of smokeview"
@@ -100,9 +101,12 @@ RUN_SMV=1
 RUN_WUI=1
 QUEUE=batch
 
-while getopts 'dghij:q:tWY' OPTION
+while getopts 'Cdghij:q:tWY' OPTION
 do
 case $OPTION  in
+  C)
+   COMPILER=gnu
+   ;;
   d)
    DEBUG=_db
    ;;
