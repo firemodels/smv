@@ -51,6 +51,7 @@ echo "Runs Smokeview verification suite"
 echo ""
 echo "Options"
 echo "-c - cfast repo directory"
+echo "-C - use gnu compilers"
 echo "-d - use debug version of FDS"
 echo "-h - display this message"
 echo "-j p - specify a job prefix"
@@ -91,11 +92,14 @@ SVNROOT=`pwd`
 cd $CURDIR/..
 
 use_installed="0"
-while getopts 'c:dhj:Jm:o:q:rsS:uWwY' OPTION
+while getopts 'c:Cdhj:Jm:o:q:rsS:uWwY' OPTION
 do
 case $OPTION in
   c)
    CFASTREPO="$OPTARG"
+   ;;
+  C)
+   COMPILER=gnu
    ;;
   d)
    DEBUG=_db
