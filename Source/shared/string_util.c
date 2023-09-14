@@ -126,7 +126,7 @@ void ParseCSV(char *buffer, char *buffer_temp, char **tokens, int *ntokens){
     if(in_quote==1)continue;
     if(buffer[i] == ','){
       buffer[i] = 0;
-      if(i<lenbuffer-1)tokens[nt++] = buffer + i + 1;
+      tokens[nt++] = buffer + i + 1;
     }
   }
   for(i=0;i<nt;i++){
