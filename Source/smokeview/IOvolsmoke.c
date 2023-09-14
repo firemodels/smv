@@ -736,23 +736,22 @@ void GetFireEmission(float *smoke_tran, float *fire_emission, float dlength, flo
 
         temp_factor = (float)MAXSMOKERGB/(global_temp_max - global_temp_min);
         index = CLAMP(temp_factor*(temperature - global_temp_min), 0, MAXSMOKERGB - 1);
-        memcpy(fire_emission, rgb_volsmokecolormap + 4 * index, 3*sizeof(float));
+        memcpy(fire_emission, rgb_volsmokecolormap + 4*index, 3*sizeof(float));
       }
       else{
-        memcpy(fire_emission, black, 3 * sizeof(float));
+        memcpy(fire_emission, black, 3*sizeof(float));
       }
     }
   }
   else{
     memcpy(fire_emission, black, 3*sizeof(float));
   }
+  *smoke_tran = 1.0;
   if(smokedata_local!=NULL){
     INTERP3D(smokedata_local, soot_density);
     *smoke_tran = exp(-mass_extinct*soot_density*dlength);
     if(firedata_local!=NULL&&temperature<=global_temp_cutoff){
-      fire_emission[0] = 0.0;
-      fire_emission[1] = 0.0;
-      fire_emission[2] = 0.0;
+      memcpy(fire_emission, black, 3*sizeof(float));
     }
   }
   if(firedata_local!=NULL&&temperature>global_temp_cutoff){
@@ -1700,12 +1699,11 @@ void IntegrateFireColors(float *integrated_firecolor, float *xyzvert, float dlen
     float max_rgb;
 
     max_rgb = MAX(integrated_firecolor[0], MAX(integrated_firecolor[1], integrated_firecolor[2]));
-    if(max_rgb>0.0){
+    if(max_rgb>1.0){
       integrated_firecolor[0] /= max_rgb;
       integrated_firecolor[1] /= max_rgb;
       integrated_firecolor[2] /= max_rgb;
     }
-
     
  //   float fire_rgb_from[3], fire_rgb_to[3];
  //   memcpy(fire_rgb_from, integrated_firecolor, 3*sizeof(float));
