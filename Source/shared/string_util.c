@@ -104,6 +104,42 @@ char *TrimQuotesFrontBack(char *buffer){
   return buffer;
 }
 
+#ifdef pp_PARSE_NEW
+/* ----------------------- ParseCSV ----------------------------- */
+
+void ParseCSV(char *buffer, char *buffer_temp, char **tokens, int *ntokens){
+
+//  copy comma delimited values from buffer into character array tokens
+//  returning number of values found in ntokens
+
+  int nt=0, i, in_quote, lenbuffer;
+
+  in_quote = 0;
+  TrimBack(buffer);
+  lenbuffer = strlen(buffer);
+  tokens[nt++] = buffer;
+  for(i=0;i<lenbuffer;i++){
+    if(buffer[i] == '"'){
+      in_quote = 1 - in_quote;
+      continue;
+    }
+    if(in_quote==1)continue;
+    if(buffer[i] == ','){
+      buffer[i] = 0;
+      if(i<lenbuffer-1)tokens[nt++] = buffer + i + 1;
+    }
+  }
+  for(i=0;i<nt;i++){
+    char *tok;
+
+    tok = tokens[i];
+    tok = TrimQuotesFrontBack(tok);
+    tokens[i] = tok;
+  }
+  *ntokens=nt;
+}
+#else
+
 /* ----------------------- ParseCSV ----------------------------- */
 
 void ParseCSV(char *buffer, char *buffer_temp, char **tokens, int *ntokens){
@@ -139,6 +175,7 @@ void ParseCSV(char *buffer, char *buffer_temp, char **tokens, int *ntokens){
   }
   *ntokens=nt;
 }
+#endif
 
 /* ------------------ GetRowCols ------------------------ */
 

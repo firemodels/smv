@@ -35,7 +35,9 @@
 //#define pp_GEOMTERRAIN  // convert bingeom data structures to terrain data structures
                           // make terrain more efficient
 
-//#define pp_DPRINT       // turn on debug print (file, line number)
+#define pp_PARSE_NEW      // test new string parsing routine
+
+#define pp_DPRINT       // turn on debug print (file, line number)
 
 // streaming directives
 
