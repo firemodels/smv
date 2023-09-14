@@ -623,24 +623,15 @@ void ShowScene(int mode, int view_mode, int quad, GLint s_left, GLint s_down, sc
   /* ++++++++++++++++++++++++ draw colorbar path using rgb as physical coordinates +++++++++++++++++++++++++ */
 
   if(viscolorbarpath == 1){
-    DISABLE_LIGHTING
-    if(colorbar_showscene == 0)UNCLIP;
-    if(mode==SELECTOBJECT){
-      DrawSelectColorbar();
-      SNIFF_ERRORS("after DrawSelectColorbars");
+    if(colorbar_coord_type ==0){
+      DrawColorbarPathRGB();
+      SNIFF_ERRORS("after DrawColorbarPathRGB");
     }
     else{
-      if(colorbar_coord_type ==0){
-        DrawColorbarPathRGB();
-        SNIFF_ERRORS("after DrawColorbarPathRGB");
-      }
-      else{
-        void DrawColorbarPathLab(void);
-        DrawColorbarPathLab();
-        SNIFF_ERRORS("after DrawColorbarPathLab");
-      }
+      void DrawColorbarPathCIELab(void);
+      DrawColorbarPathCIELab();
+      SNIFF_ERRORS("after DrawColorbarPathCIELab");
     }
-    ENABLE_LIGHTING;
   }
   if(viscolorbarpath==0||colorbar_showscene==1)ShowScene2(mode);
 

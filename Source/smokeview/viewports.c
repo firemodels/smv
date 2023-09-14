@@ -1153,7 +1153,7 @@ void ViewportSlicePlot(int quad, GLint screen_left, GLint screen_down){
 
     cbi = colorbarinfo + colorbartype;
     strcpy(label, cbi->menu_label);
-    strcat(label, "/CIE delta");
+    strcat(label, "/CIELab delta");
 
     for(i=0;i<255;i++){
       xvals[i] = (float)i;
@@ -1165,6 +1165,7 @@ void ViewportSlicePlot(int quad, GLint screen_left, GLint screen_down){
       0.0, cbi->colorbar_dist_delta[0], 0.0, 1, position, valmin, valmax,
       label, NULL, "",
       VP_slice_plot.left, VP_slice_plot.right, VP_slice_plot.down, VP_slice_plot.top);
+    SNIFF_ERRORS("2D colorbar dist plots");
   }
   if(vis_slice_plot==1&&global_times!=NULL){
     int i, position;

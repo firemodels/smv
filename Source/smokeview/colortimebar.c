@@ -409,9 +409,9 @@ void Lab2XYZ(float *xyz, float *lab){
   xyz[2] = (lab[2] + 126.39) / 211.11;
 }
 
-/* ------------------ DrawColorbarPathLab ------------------------ */
+/* ------------------ DrawColorbarPathCIELab ------------------------ */
 
-void DrawColorbarPathLab(void){
+void DrawColorbarPathCIELab(void){
   int i;
   colorbardata *cbi;
 
@@ -1406,6 +1406,7 @@ void InitDefaultColorbars(int nini){
   cbi->node_rgb[12]=255;
   cbi->node_rgb[13]=0;
   cbi->node_rgb[14]=0;
+  cbi->can_adjust = 0;
   strcpy(cbi->colorbar_type, "original");
   cbi++;
 
