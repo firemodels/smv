@@ -37,7 +37,7 @@
 
 #define pp_PARSE_NEW      // test new string parsing routine
 
-#define pp_DPRINT       // turn on debug print (file, line number)
+//#define pp_DPRINT       // turn on debug print (file, line number)
 
 // streaming directives
 
