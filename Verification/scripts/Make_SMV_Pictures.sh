@@ -4,11 +4,19 @@
 
 wait_cases_end()
 {
-  while [[ `qstat -a | awk '{print $2 $4 $10}' | grep $(whoami) | grep $JOBPREFIX | grep -v 'C$'` != '' ]]; do
-     JOBS_REMAINING=`qstat -a | awk '{print $2 $4 $10}' | grep $(whoami) | grep $JOBPREFIX | grep -v 'C$' | wc -l`
-     echo "Waiting for ${JOBS_REMAINING} cases to complete."
-     sleep 15
-  done
+  if [ "$QUEUE" == "none" ]; then
+    while [[ `ps -u $USER -f | fgrep .fds | grep -v grep` != '' ]]; do
+        JOBS_REMAINING=`ps -u $USER -f | fgrep .fds | grep -v grep | wc -l`
+        echo "Waiting for ${JOBS_REMAINING} cases to complete."
+        sleep 15
+     done
+  else
+    while [[ `qstat -a | awk '{print $2 $4 $10}' | grep $(whoami) | grep $JOBPREFIX | grep -v 'C$'` != '' ]]; do
+       JOBS_REMAINING=`qstat -a | awk '{print $2 $4 $10}' | grep $(whoami) | grep $JOBPREFIX | grep -v 'C$' | wc -l`
+       echo "Waiting for ${JOBS_REMAINING} cases to complete."
+       sleep 15
+    done
+  fi
 }
 
 # --------------------- usage -----------------------------
@@ -180,7 +188,11 @@ echo smokeview : $SMV
 echo smokezip  : $SMOKEZIP
 echo
 
-RUNSMV="$SVNROOT/smv/Utilities/Scripts/qsmv.sh -j $JOBPREFIX $use_installed -q $QUEUE"
+if [ "$QUEUE" == "none" ]; then
+  RUNSMV="$SVNROOT/smv/Utilities/Scripts/background.sh -e $SMV"
+else
+  RUNSMV="$SVNROOT/smv/Utilities/Scripts/qsmv.sh -j $JOBPREFIX $use_installed -q $QUEUE"
+fi
 export QFDS=$RUNSMV
 export RUNCFAST=$RUNSMV
 
@@ -207,42 +219,45 @@ $SMV -version > smokeview.version
 if [ "$RUN_SMV" == "1" ]; then
 
 # precompute FED slices
+  if [ "$QUEUE" != "none" ]; then
+    cd $SVNROOT/smv/Verification
+    $QFDS -f -d Visualization plume5c
+    $QFDS -f -d Visualization plume5cdelta
+    $QFDS -f -d Visualization thouse5
+    $QFDS -f -d Visualization thouse5delta
 
-  cd $SVNROOT/smv/Verification
-  $QFDS -f -d Visualization plume5c
-  $QFDS -f -d Visualization plume5cdelta
-  $QFDS -f -d Visualization thouse5
-  $QFDS -f -d Visualization thouse5delta
-
-  wait_cases_end
+    wait_cases_end
 
 # compute isosurface from particles
 
-  cd $SVNROOT/smv/Verification/Visualization
-  echo Converting particles to isosurfaces in case plumeiso
-  $SMOKEZIP -f -part2iso plumeiso
+    cd $SVNROOT/smv/Verification/Visualization
+    echo Converting particles to isosurfaces in case plumeiso
+    $SMOKEZIP -f -part2iso plumeiso
 
-  cd $SVNROOT/smv/Verification/WUI
-  echo Converting particles to isosurfaces in case pine_tree
-  if  [ -e pine_tree.smv ]; then
-    $SMOKEZIP -f -part2iso pine_tree
-  fi
+    cd $SVNROOT/smv/Verification/WUI
+    echo Converting particles to isosurfaces in case pine_tree
+    if  [ -e pine_tree.smv ]; then
+      $SMOKEZIP -f -part2iso pine_tree
+    fi
 
 # difference plume5c and thouse5
 
-  cd $SVNROOT/smv/Verification/Visualization
-  echo Differencing cases plume5c and plume5cdelta
-  $SMOKEDIFF -w -r plume5c plume5cdelta
-  echo Differencing cases thouse5 and thouse5delta
-  $SMOKEDIFF -w -r thouse5 thouse5delta
+    cd $SVNROOT/smv/Verification/Visualization
+    echo Differencing cases plume5c and plume5cdelta
+    $SMOKEDIFF -w -r plume5c plume5cdelta
+    echo Differencing cases thouse5 and thouse5delta
+    $SMOKEDIFF -w -r thouse5 thouse5delta
+  fi
 
   echo Generating images
 
-  cd $SVNROOT/smv/Verification
-  scripts/SMV_Cases.sh
-  cd $SVNROOT/smv/Verification
-  scripts/SMV_DIFF_Cases.sh
-  cd $CURDIDR
+  if [ "$RUN_SMV" == "1" ]; then
+    cd $SVNROOT/smv/Verification
+    scripts/SMV_Cases.sh
+    cd $SVNROOT/smv/Verification
+    scripts/SMV_DIFF_Cases.sh
+    cd $CURDIDR
+  fi
 
 fi
 
