@@ -102,6 +102,7 @@ case $OPTION in
    ;;
   C)
    COMPILER=gnu
+   INTEL=o
    ;;
   d)
    DEBUG=_db
@@ -189,6 +190,9 @@ QFDSSH="$SVNROOT/fds/Utilities/Scripts/qfds.sh -j $JOBPREFIX"
 if [ "$DEBUG" != "" ]; then
   QFDSSH="$QFDSSH -T db "
 fi
+if [ "$QUEUE" == "none" ]; then
+  QFDSSH="$SVNROOT/smv/Utilities/Scripts/background.sh"
+fi
 FDSPARM=
 
 # Set queue to submit cases to
@@ -197,8 +201,9 @@ if [ "$QUEUE" != "" ]; then
    if [ "$QUEUE" == "none" ]; then
       is_file_installed $BACKGROUND_PROG
       echo 0 > $QFDS_COUNT
+   else
+     QUEUE="-q $QUEUE"
    fi
-   QUEUE="-q $QUEUE"
 fi
 
 export BASEDIR=`pwd`
@@ -215,8 +220,15 @@ fi
 
 # run cases    
 
-export  RUNCFAST="$QFDSSH $INTEL2 -e $CFAST $QUEUE $STOPFDS"
-export      QFDS="$QFDSSH $INTEL2 $FDSPARM $OPENMPOPTS $QUEUE $STOPFDS"
+if [ "$QUEUE" == "none" ]; then
+  export  RUNCFAST="$QFDSSH -e $CFAST $STOPFDS"
+  export      QFDS="$QFDSSH -e $FDS $STOPFDS"
+else
+  export  RUNCFAST="$QFDSSH $INTEL2 -e $CFAST $QUEUE $STOPFDS"
+  export      QFDS="$QFDSSH $INTEL2 $FDSPARM $OPENMPOPTS $QUEUE $STOPFDS"
+fi
+echo QFDS=$QFDS
+echo "*************************************************"
 
 echo "" | $FDSEXE 2> $SVNROOT/smv/Manuals/SMV_User_Guide/SCRIPT_FIGURES/fds.version
 

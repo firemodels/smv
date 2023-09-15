@@ -35,7 +35,7 @@ EXE=
 
 #*** read in parameters from command line
 
-while getopts 'd:hp:v' OPTION
+while getopts 'd:e:hp:q:v' OPTION
 do
 case $OPTION  in
   d)
@@ -49,6 +49,9 @@ case $OPTION  in
    exit
    ;;
   p)
+   dummy="${OPTARG}"
+   ;;
+  q)
    dummy="${OPTARG}"
    ;;
   v)
@@ -72,5 +75,5 @@ infile=${in%.*}
 if [ "$DIR" != "" ]; then
   cd $DIR
 fi
-background -u 50 $EXE $infile
+background -d 5 -u 50 $EXE $in
  
