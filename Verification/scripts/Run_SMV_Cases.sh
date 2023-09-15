@@ -10,6 +10,7 @@ FDS_DEBUG=0
 nthreads=1
 RUN_SMV=1
 RUN_WUI=1
+RUN_LITE=0
 STOPFDS=
 COMPILER="intel"
 WAIT=0
@@ -56,6 +57,7 @@ echo "-d - use debug version of FDS"
 echo "-h - display this message"
 echo "-j p - specify a job prefix"
 echo "-J - use Intel MPI version of FDS"
+echo "-L - run smokebot in lite mode - run a subset of cases, don't build manuals"
 echo "-m max_iterations - stop FDS runs after a specifed number of iterations (delayed stop)"
 echo "     example: an option of 10 would cause FDS to stop after 10 iterations"
 echo "-o nthreads - run OpenMP version of FDS with a specified number of threads [default: $nthreads]"
@@ -92,7 +94,7 @@ SVNROOT=`pwd`
 cd $CURDIR/..
 
 use_installed="0"
-while getopts 'c:Cdhj:Jm:o:q:rsS:uWwY' OPTION
+while getopts 'c:Cdhj:JLm:o:q:rsS:uWwY' OPTION
 do
 case $OPTION in
   c)
@@ -114,6 +116,11 @@ case $OPTION in
   J)
    INTEL=i
    INTEL2="-I"
+   ;;
+  L)
+   RUN_LITE=1
+   RUN_SMV=0
+   RUN_WUI=0
    ;;
   m)
    export STOPFDSMAXITER="$OPTARG"
@@ -141,10 +148,12 @@ case $OPTION in
   W)
    RUN_SMV=0
    RUN_WUI=1
+   RUN_LITE=0
    ;;
   Y)
    RUN_SMV=1
    RUN_WUI=1
+   RUN_LITE=0
 esac
 #shift
 done
@@ -225,6 +234,10 @@ fi
 if [ "$RUN_SMV" == "1" ] ; then
   cd $VDIR
   scripts/SMV_Cases.sh
+fi
+if [ "$RUN_LITE" == "1" ] ; then
+  cd $VDIR
+  scripts/LITE_Cases.sh
 fi
 if [ "$RUN_WUI" == "1" ] ; then
   cd $VDIR

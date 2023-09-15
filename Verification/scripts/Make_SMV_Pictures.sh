@@ -99,9 +99,10 @@ TEST=
 use_installed=
 RUN_SMV=1
 RUN_WUI=1
+RUN_LITE=0
 QUEUE=batch
 
-while getopts 'Cdghij:q:tWY' OPTION
+while getopts 'Cdghij:Lq:tWY' OPTION
 do
 case $OPTION  in
   C)
@@ -119,6 +120,11 @@ case $OPTION  in
   j)
    JOBPREFIX="$OPTARG" 
    ;;
+  L)
+   RUN_LITE=1
+   RUN_SMV=0
+   RUN_WUI=0
+   ;;
   q)
    QUEUE="$OPTARG" 
    ;;
@@ -126,10 +132,12 @@ case $OPTION  in
    TEST=_test
   ;;
   W)
+   RUN_LITE=0
    RUN_SMV=0
    RUN_WUI=1
    ;;
   Y)
+   RUN_LITE=0
    RUN_SMV=1
    RUN_WUI=1
    ;;
@@ -243,6 +251,13 @@ fi
 if [ "$RUN_WUI" == "1" ] ; then
   cd $SVNROOT/smv/Verification
   scripts/WUI_Cases.sh
+fi
+
+# generate subset case images
+
+if [ "$RUN_LITE" == "1" ] ; then
+  cd $SVNROOT/smv/Verification
+  scripts/LITE_Cases.sh
 fi
 wait_cases_end
 
