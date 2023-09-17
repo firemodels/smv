@@ -34,7 +34,7 @@ no_target:
 
 # ------------- intel win 64 ----------------
 
-intel_win_64 : CFLAGS    = -Od -D WIN32 /nologo $(GITINFO) $(INTEL_COMPINFO)
+intel_win_64 : CFLAGS    = -Od -D WIN32 /nologo
 intel_win_64 : CC        = $(I_CC)
 intel_win_64 : exe       = test_win_64.exe
 
@@ -43,7 +43,7 @@ intel_win_64 : $(objwin)
 
 # ------------- gnu win 64 ----------------
 
-gnu_win_64 : CFLAGS    = -O0 -m64 -D WIN32 -D _WIN32 -D GLEW_STATIC -D MINGW
+gnu_win_64 : CFLAGS    = -O0 -m64
 gnu_win_64 : CC        = gcc
 gnu_win_64 : exe       = test_win_64.exe
 
@@ -53,37 +53,37 @@ gnu_win_64 : $(obj)
 # ------------- gnu linux 64----------------
 
 gnu_linux_64 : LIB_DIR_PLAT = $(LIB_DIR)/gnu_linux_64
-gnu_linux_64 : CFLAGS    = -O2 -m64 -Wall -D pp_GCC -D pp_LINUX $(GITINFO) $(GNU_COMPINFO)
+gnu_linux_64 : CFLAGS    = -O2 -m64 -Wall
 gnu_linux_64 : LFLAGS    =
 gnu_linux_64 : CC        = gcc
 gnu_linux_64 : exe       = test_linux_64
 
 gnu_linux_64: $(obj)
-	$(CC) -m64 -o $(bin)/$(exe) $(obj) $(LFLAGS) -L$(LIB_DIR_PLAT) $(LIBS_LINUX)  -lm
+	$(CC) -m64 -o $(bin)/$(exe) $(obj)
 
 # ------------- intel linux 64 ----------------
 
 intel_linux_64 : LIB_DIR_PLAT = $(LIB_DIR)/intel_linux_64
-intel_linux_64 : CFLAGS    = -O2 -m64 -D pp_LINUX $(GITINFO) $(INTEL_COMPINFO)
+intel_linux_64 : CFLAGS    = -O2 -m64
 intel_linux_64 : CC        = $(I_ICC)
 intel_linux_64 : exe       = test_linux_64
 
 intel_linux_64 : $(obj)
-	$(CC) -o $(bin)/$(exe) $(obj) -L$(LIB_DIR_PLAT) $(LIBS_LINUX) $(LFLAGS)
+	$(CC) -o $(bin)/$(exe) $(obj)
 
 # ------------- intel osx 64 ----------------
 
-intel_osx_64 : CFLAGS    = -O2 -m64 -D pp_OSX $(GITINFO) $(INTEL_COMPINFO)
+intel_osx_64 : CFLAGS    = -O2 -m64
 intel_osx_64 : CC        = icc
 intel_osx_64 : exe       = test_osx_64
 
 intel_osx_64 : $(obj)
-	$(CC) -o $(bin)/$(exe) -m64 $(obj) -L $(LIB_DIR)/intel_osx_64  $(LIBS_OSX)
+	$(CC) -o $(bin)/$(exe) -m64 $(obj)
 
 # ------------- gnu osx 64 ----------------
 
-gnu_osx_64 : CFLAGS    = -O0 -m64 -D pp_GCC -D  pp_OSX $(GITINFO)
-gnu_osx_64 : LFLAGS    = -m64 -L $(LIB_DIR)/gnu_osx_64 $(LIBS_OSX)
+gnu_osx_64 : CFLAGS    = -O0 -m64
+gnu_osx_64 : LFLAGS    = -m64
 gnu_osx_64 : CC        = gcc
 gnu_osx_64 : CPP       = g++
 gnu_osx_64 : exe       = test_osx_64
