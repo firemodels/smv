@@ -57,7 +57,7 @@ echo "-d - use debug version of FDS"
 echo "-h - display this message"
 echo "-j p - specify a job prefix"
 echo "-J - use Intel MPI version of FDS"
-echo "-L - run smokebot in lite mode - run a subset of cases, don't build manuals"
+echo "-L - run cases in lite mode, run a subset of the full set of cases"
 echo "-m max_iterations - stop FDS runs after a specifed number of iterations (delayed stop)"
 echo "     example: an option of 10 would cause FDS to stop after 10 iterations"
 echo "-o nthreads - run OpenMP version of FDS with a specified number of threads [default: $nthreads]"
@@ -191,7 +191,7 @@ if [ "$DEBUG" != "" ]; then
   QFDSSH="$QFDSSH -T db "
 fi
 if [ "$QUEUE" == "none" ]; then
-  QFDSSH="$SVNROOT/smv/Utilities/Scripts/background.sh"
+  QFDSSH="$SVNROOT/smv/Utilities/Scripts/background.sh -I"
 fi
 FDSPARM=
 

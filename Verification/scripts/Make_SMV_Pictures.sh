@@ -30,6 +30,7 @@ echo "-C - use gnu compiled version of smokeview"
 echo "-d - use debug version of smokeview"
 echo "-h - display this message"
 echo "-i - use installed version of smokeview"
+echo "-L - use LITE_cases.sh to make picture, a subset of the full set of cases"
 echo "-q q - queue used to generate images"
 echo "-t - use test version of smokeview"
 echo "-W - only generate WUI case images"
@@ -163,6 +164,7 @@ CURDIR=`pwd`
 cd ../../..
 export SVNROOT=`pwd`
 cd $CURDIR/..
+export BASEDIR=`pwd`
 
 if [ "$use_installed" == "1" ] ; then
   export SMV=smokeview
@@ -170,13 +172,19 @@ if [ "$use_installed" == "1" ] ; then
   export SMOKEDIFF=smokediff
   export WIND2FDS=wind2fds
   export BACKGROUND=background
+  export SMVBINDIR=`which smokeview`
+  if [ "$SMVBINDIR" != "" ]; then
+    SMVBINDIR=${SMVBINDIR%/*}
+  fi
 else
   export SMV=$SVNROOT/smv/Build/smokeview/${COMPILER}_$VERSION2/smokeview_$VERSION
   export SMOKEZIP=$SVNROOT/smv/Build/smokezip/${COMPILER}_$VERSION2/smokezip_$VERSION2
   export SMOKEDIFF=$SVNROOT/smv/Build/smokediff/${COMPILER}_$VERSION2/smokediff_$VERSION2
   export WIND2FDS=$SVNROOT/smv/Build/wind2fds/${COMPILER}_$VERSION2/wind2fds_$VERSION2
   export BACKGROUND=$SVNROOT/smv/Build/background/${COMPILER}_$VERSION2/background_$VERSION2
+  export SMVBINDIR=$SVNROOT/bot/Bundlebot/smv/for_bundle
 fi
+
 SMOKEBOT=$SVNROOT/bot/Smokebot/run_smokebot.sh
 FIREBOT=$SVNROOT/bot/Firebot/run_firebot.sh
 CFASTBOT=$SVNROOT/bot/Cfastbot/run_cfastbot.sh
@@ -189,10 +197,11 @@ echo smokezip  : $SMOKEZIP
 echo
 
 if [ "$QUEUE" == "none" ]; then
-  RUNSMV="$SVNROOT/smv/Utilities/Scripts/background.sh -e $SMV"
+  RUNSMV="$SVNROOT/smv/Utilities/Scripts/runsmv.sh"
 else
   RUNSMV="$SVNROOT/smv/Utilities/Scripts/qsmv.sh -j $JOBPREFIX $use_installed -q $QUEUE"
 fi
+echo RUNSMV=$RUNSMV
 export QFDS=$RUNSMV
 export RUNCFAST=$RUNSMV
 
