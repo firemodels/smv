@@ -84,5 +84,10 @@ fi
 if [ "$DIR" != "" ]; then
   cd $DIR
 fi
-background -d 5 -u 50 $EXE $input
+if [ "$STOPFDSMAXITER" != "" ]; then
+  echo $STOPFDSMAXITER > ${input}.stop
+else
+  rm -f ${input}.stop
+fi
+background -d 2 -u 50 $EXE $input
  
