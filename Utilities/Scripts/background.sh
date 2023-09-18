@@ -85,9 +85,9 @@ if [ "$DIR" != "" ]; then
   cd $DIR
 fi
 if [ "$STOPFDSMAXITER" != "" ]; then
-  echo $STOPFDSMAXITER > ${input}.stop
+  echo $STOPFDSMAXITER > ${infile}.stop
 else
-  rm -f ${input}.stop
+  rm -f ${infile}.stop
 fi
 background -d 2 -u 50 $EXE $input
  
