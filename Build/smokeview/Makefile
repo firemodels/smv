@@ -60,15 +60,24 @@ bin = .
 
 # Definition of the object variables
 
-obj = assert.o callbacks.o camera.o color2rgb.o colortimebar.o compress.o csphere.o dmalloc.o \
-      drawGeometry.o file_util.o getdata.o getdatabounds.o getdatacolors.o glew.o glui_bounds.o \
-      glui_clip.o glui_colorbar.o glui_display.o glui_geometry.o glui_motion.o glui_objects.o \
-      glui_shooter.o glui_smoke.o glui_stereo.o glui_tour.o glui_trainer.o histogram.o infoheader.o \
-      IOboundary.o IOgeometry.o IOhvac.o IOiso.o IOobjects.o IOpart.o IOplot2d.o IOplot3d.o \
-      IOscript.o IOshooter.o IOslice.o IOsmoke.o IOtour.o IOvolsmoke.o IOwui.o IOzone.o isobox.o \
-      main.o md5.o menus.o output.o readsmv.o renderhtml.o renderimage.o scontour2d.o sha1.o \
-      sha256.o shaders.o showscene.o skybox.o smokestream.o smokeview.o smv_geometry.o startup.o \
-      stdio_buffer.o stdio_m.o string_util.o threader.o translate.o unit.o update.o viewports.o colortable.o command_args.o
+csrc = assert.c callbacks.c camera.c color2rgb.c colortimebar.c compress.c csphere.c dmalloc.c \
+      drawGeometry.c file_util.c getdata.c getdatabounds.c getdatacolors.c glew.c  \
+      histogram.c infoheader.c \
+      IOboundary.c IOgeometry.c IOhvac.c IOiso.c IOobjects.c IOpart.c IOplot2d.c IOplot3d.c \
+      IOscript.c IOshooter.c IOslice.c IOsmoke.c IOtour.c IOvolsmoke.c IOwui.c IOzone.c isobox.c \
+      main.c md5.c menus.c output.c readsmv.c renderhtml.c renderimage.c scontour2d.c sha1.c \
+      sha256.c shaders.c showscene.c skybox.c smokestream.c smokeview.c smv_geometry.c startup.c \
+      stdio_buffer.c stdio_m.c string_util.c threader.c translate.c unit.c update.c viewports.c colortable.c command_args.c
+
+cppsrc = glui_bounds.o \
+     glui_clip.cpp glui_colorbar.cpp glui_display.cpp glui_geometry.cpp glui_motion.cpp glui_objects.cpp \
+      glui_shooter.cpp glui_smoke.cpp glui_stereo.cpp glui_tour.cpp glui_trainer.cpp
+
+src = $(csrc) $(cppsrc)
+
+cobj = $(csrc:.c=.o)
+cppobj = $(cppsrc:.cpp=.o)
+obj = $(cobj) $(cppobj)
 
 incs = compress.h contourdefs.h csphere.h datadefs.h dirent_win.h file_util.h glui_bounds.h \
        glui_motion.h glui_smoke.h glui_tour.h histogram.h infoheader.h interp.h isodefs.h \
@@ -350,6 +359,13 @@ gnu_linux_64 : $(obj) $(if $(LUA_SCRIPTING),smvluacore)
 	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS) -L $(LIB_DIR_PLAT) \
 		$(SMV_LIBS_LINUX) $(SYSTEM_LIBS_LINUX) \
 		$(if $(LUA_SCRIPTING),$(LIB_DIR_PLAT)/liblua.a -ldl)
+
+# ------------- gnu_linux_64_check ----------------
+
+gnu_linux_64_check : CFLAGS    = -O2 -m64 -Wall
+gnu_linux_64_check: $(src)
+	clang-tidy $^ --  $(CFLAGS) $(INC)
+
 
 # VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
 # VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV   OSX   VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
