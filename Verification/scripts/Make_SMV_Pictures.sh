@@ -4,11 +4,19 @@
 
 wait_cases_end()
 {
-  while [[ `qstat -a | awk '{print $2 $4 $10}' | grep $(whoami) | grep $JOBPREFIX | grep -v 'C$'` != '' ]]; do
-     JOBS_REMAINING=`qstat -a | awk '{print $2 $4 $10}' | grep $(whoami) | grep $JOBPREFIX | grep -v 'C$' | wc -l`
-     echo "Waiting for ${JOBS_REMAINING} cases to complete."
-     sleep 15
-  done
+  if [ "$QUEUE" == "none" ]; then
+    while [[ `ps -u $USER -f | fgrep .fds | grep -v grep` != '' ]]; do
+        JOBS_REMAINING=`ps -u $USER -f | fgrep .fds | grep -v grep | wc -l`
+        echo "Waiting for ${JOBS_REMAINING} cases to complete."
+        sleep 15
+     done
+  else
+    while [[ `qstat -a | awk '{print $2 $4 $10}' | grep $(whoami) | grep $JOBPREFIX | grep -v 'C$'` != '' ]]; do
+       JOBS_REMAINING=`qstat -a | awk '{print $2 $4 $10}' | grep $(whoami) | grep $JOBPREFIX | grep -v 'C$' | wc -l`
+       echo "Waiting for ${JOBS_REMAINING} cases to complete."
+       sleep 15
+    done
+  fi
 }
 
 # --------------------- usage -----------------------------
@@ -22,6 +30,7 @@ echo "-C - use gnu compiled version of smokeview"
 echo "-d - use debug version of smokeview"
 echo "-h - display this message"
 echo "-i - use installed version of smokeview"
+echo "-L - use LITE_cases.sh to make picture, a subset of the full set of cases"
 echo "-q q - queue used to generate images"
 echo "-t - use test version of smokeview"
 echo "-W - only generate WUI case images"
@@ -41,9 +50,9 @@ is_file_installed()
   fi
 }
 
-# --------------------- make_helpinfo_files ----------------------------
+# --------------------- erase_helpinfo_files ----------------------------
 
-make_helpinfo_files()
+erase_helpinfo_files()
 {
   dir=$1
 
@@ -65,6 +74,16 @@ make_helpinfo_files()
   rm -f cfastbot.help
   rm -f firebot.help
   rm -f smokebot.help
+}
+
+
+# --------------------- make_helpinfo_files ----------------------------
+
+make_helpinfo_files()
+{
+  dir=$1
+
+  cd $dir
 
   $SMV        -help_all > smokeview.help
   $SMOKEZIP   -help     > smokezip.help
@@ -155,6 +174,7 @@ CURDIR=`pwd`
 cd ../../..
 export SVNROOT=`pwd`
 cd $CURDIR/..
+export BASEDIR=`pwd`
 
 if [ "$use_installed" == "1" ] ; then
   export SMV=smokeview
@@ -162,13 +182,19 @@ if [ "$use_installed" == "1" ] ; then
   export SMOKEDIFF=smokediff
   export WIND2FDS=wind2fds
   export BACKGROUND=background
+  export SMVBINDIR=`which smokeview`
+  if [ "$SMVBINDIR" != "" ]; then
+    SMVBINDIR=${SMVBINDIR%/*}
+  fi
 else
   export SMV=$SVNROOT/smv/Build/smokeview/${COMPILER}_$VERSION2/smokeview_$VERSION
   export SMOKEZIP=$SVNROOT/smv/Build/smokezip/${COMPILER}_$VERSION2/smokezip_$VERSION2
   export SMOKEDIFF=$SVNROOT/smv/Build/smokediff/${COMPILER}_$VERSION2/smokediff_$VERSION2
   export WIND2FDS=$SVNROOT/smv/Build/wind2fds/${COMPILER}_$VERSION2/wind2fds_$VERSION2
   export BACKGROUND=$SVNROOT/smv/Build/background/${COMPILER}_$VERSION2/background_$VERSION2
+  export SMVBINDIR=$SVNROOT/bot/Bundlebot/smv/for_bundle
 fi
+
 SMOKEBOT=$SVNROOT/bot/Smokebot/run_smokebot.sh
 FIREBOT=$SVNROOT/bot/Firebot/run_firebot.sh
 CFASTBOT=$SVNROOT/bot/Cfastbot/run_cfastbot.sh
@@ -180,7 +206,12 @@ echo smokeview : $SMV
 echo smokezip  : $SMOKEZIP
 echo
 
-RUNSMV="$SVNROOT/smv/Utilities/Scripts/qsmv.sh -j $JOBPREFIX $use_installed -q $QUEUE"
+if [ "$QUEUE" == "none" ]; then
+  RUNSMV="$SVNROOT/smv/Utilities/Scripts/runsmv.sh"
+else
+  RUNSMV="$SVNROOT/smv/Utilities/Scripts/qsmv.sh -j $JOBPREFIX $use_installed -q $QUEUE"
+fi
+echo RUNSMV=$RUNSMV
 export QFDS=$RUNSMV
 export RUNCFAST=$RUNSMV
 
@@ -195,54 +226,66 @@ is_file_installed $SMOKEDIFF
 is_file_installed $BACKGROUND
 is_file_installed $WIND2FDS
 
-make_helpinfo_files $SMVUG/SCRIPT_FIGURES
+erase_helpinfo_files $SMVUG/SCRIPT_FIGURES
 
 rm -f $SUMMARY/images/*.png
 
 cd $SMVVG/SCRIPT_FIGURES
 rm -f *.version
 rm -f *.png
+
+if [ "$RUN_LITE" != "" ]; then
+  cd $SVNROOT/smv/Manuals/scripts
+  ./Copy_Smokebot_FiguresGH.sh
+  cd $SMVVG/SCRIPT_FIGURES
+fi
+
+make_helpinfo_files $SMVUG/SCRIPT_FIGURES
+
 $SMV -version > smokeview.version
 
 if [ "$RUN_SMV" == "1" ]; then
 
 # precompute FED slices
+  if [ "$QUEUE" != "none" ]; then
+    cd $SVNROOT/smv/Verification
+    $QFDS -f -d Visualization plume5c
+    $QFDS -f -d Visualization plume5cdelta
+    $QFDS -f -d Visualization thouse5
+    $QFDS -f -d Visualization thouse5delta
 
-  cd $SVNROOT/smv/Verification
-  $QFDS -f -d Visualization plume5c
-  $QFDS -f -d Visualization plume5cdelta
-  $QFDS -f -d Visualization thouse5
-  $QFDS -f -d Visualization thouse5delta
-
-  wait_cases_end
+    wait_cases_end
 
 # compute isosurface from particles
 
-  cd $SVNROOT/smv/Verification/Visualization
-  echo Converting particles to isosurfaces in case plumeiso
-  $SMOKEZIP -f -part2iso plumeiso
+    cd $SVNROOT/smv/Verification/Visualization
+    echo Converting particles to isosurfaces in case plumeiso
+    $SMOKEZIP -f -part2iso plumeiso
 
-  cd $SVNROOT/smv/Verification/WUI
-  echo Converting particles to isosurfaces in case pine_tree
-  if  [ -e pine_tree.smv ]; then
-    $SMOKEZIP -f -part2iso pine_tree
-  fi
+    cd $SVNROOT/smv/Verification/WUI
+    echo Converting particles to isosurfaces in case pine_tree
+    if  [ -e pine_tree.smv ]; then
+      $SMOKEZIP -f -part2iso pine_tree
+    fi
 
 # difference plume5c and thouse5
 
-  cd $SVNROOT/smv/Verification/Visualization
-  echo Differencing cases plume5c and plume5cdelta
-  $SMOKEDIFF -w -r plume5c plume5cdelta
-  echo Differencing cases thouse5 and thouse5delta
-  $SMOKEDIFF -w -r thouse5 thouse5delta
+    cd $SVNROOT/smv/Verification/Visualization
+    echo Differencing cases plume5c and plume5cdelta
+    $SMOKEDIFF -w -r plume5c plume5cdelta
+    echo Differencing cases thouse5 and thouse5delta
+    $SMOKEDIFF -w -r thouse5 thouse5delta
+  fi
 
   echo Generating images
 
-  cd $SVNROOT/smv/Verification
-  scripts/SMV_Cases.sh
-  cd $SVNROOT/smv/Verification
-  scripts/SMV_DIFF_Cases.sh
-  cd $CURDIDR
+  if [ "$RUN_SMV" == "1" ]; then
+    cd $SVNROOT/smv/Verification
+    scripts/SMV_Cases.sh
+    cd $SVNROOT/smv/Verification
+    scripts/SMV_DIFF_Cases.sh
+    cd $CURDIDR
+  fi
 
 fi
 

@@ -32,10 +32,11 @@ commandline=`echo $* | sed 's/-V//' | sed 's/-v//'`
 
 DIR=
 EXE=
+USE_FULL=
 
 #*** read in parameters from command line
 
-while getopts 'd:hp:v' OPTION
+while getopts 'd:e:hIp:q:v' OPTION
 do
 case $OPTION  in
   d)
@@ -48,7 +49,13 @@ case $OPTION  in
    usage
    exit
    ;;
+  I)
+   USE_FULL=1
+   ;;
   p)
+   dummy="${OPTARG}"
+   ;;
+  q)
    dummy="${OPTARG}"
    ;;
   v)
@@ -68,9 +75,19 @@ fi
 
 in=$1
 infile=${in%.*}
+if [ "$USE_FULL" == "1" ]; then
+  input=$in
+else
+  input=$infile
+fi
 
 if [ "$DIR" != "" ]; then
   cd $DIR
 fi
-background -u 50 $EXE $infile
+if [ "$STOPFDSMAXITER" != "" ]; then
+  echo $STOPFDSMAXITER > ${infile}.stop
+else
+  rm -f ${infile}.stop
+fi
+background -d 2 -u 50 $EXE $input
  
