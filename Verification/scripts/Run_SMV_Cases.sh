@@ -10,6 +10,7 @@ FDS_DEBUG=0
 nthreads=1
 RUN_SMV=1
 RUN_WUI=1
+RUN_LITE=0
 STOPFDS=
 COMPILER="intel"
 WAIT=0
@@ -51,10 +52,12 @@ echo "Runs Smokeview verification suite"
 echo ""
 echo "Options"
 echo "-c - cfast repo directory"
+echo "-C - use gnu compiled version of fds"
 echo "-d - use debug version of FDS"
 echo "-h - display this message"
 echo "-j p - specify a job prefix"
 echo "-J - use Intel MPI version of FDS"
+echo "-L - run cases in lite mode, run a subset of the full set of cases"
 echo "-m max_iterations - stop FDS runs after a specifed number of iterations (delayed stop)"
 echo "     example: an option of 10 would cause FDS to stop after 10 iterations"
 echo "-o nthreads - run OpenMP version of FDS with a specified number of threads [default: $nthreads]"
@@ -91,11 +94,15 @@ SVNROOT=`pwd`
 cd $CURDIR/..
 
 use_installed="0"
-while getopts 'c:dhj:Jm:o:q:rsS:uWwY' OPTION
+while getopts 'c:Cdhj:JLm:o:q:rsS:uWwY' OPTION
 do
 case $OPTION in
   c)
    CFASTREPO="$OPTARG"
+   ;;
+  C)
+   COMPILER=gnu
+   INTEL=o
    ;;
   d)
    DEBUG=_db
@@ -110,6 +117,11 @@ case $OPTION in
   J)
    INTEL=i
    INTEL2="-I"
+   ;;
+  L)
+   RUN_LITE=1
+   RUN_SMV=0
+   RUN_WUI=0
    ;;
   m)
    export STOPFDSMAXITER="$OPTARG"
@@ -137,10 +149,12 @@ case $OPTION in
   W)
    RUN_SMV=0
    RUN_WUI=1
+   RUN_LITE=0
    ;;
   Y)
    RUN_SMV=1
    RUN_WUI=1
+   RUN_LITE=0
 esac
 #shift
 done
@@ -176,6 +190,9 @@ QFDSSH="$SVNROOT/fds/Utilities/Scripts/qfds.sh -j $JOBPREFIX"
 if [ "$DEBUG" != "" ]; then
   QFDSSH="$QFDSSH -T db "
 fi
+if [ "$QUEUE" == "none" ]; then
+  QFDSSH="$SVNROOT/smv/Utilities/Scripts/background.sh -I"
+fi
 FDSPARM=
 
 # Set queue to submit cases to
@@ -184,8 +201,9 @@ if [ "$QUEUE" != "" ]; then
    if [ "$QUEUE" == "none" ]; then
       is_file_installed $BACKGROUND_PROG
       echo 0 > $QFDS_COUNT
+   else
+     QUEUE="-q $QUEUE"
    fi
-   QUEUE="-q $QUEUE"
 fi
 
 export BASEDIR=`pwd`
@@ -202,8 +220,15 @@ fi
 
 # run cases    
 
-export  RUNCFAST="$QFDSSH $INTEL2 -e $CFAST $QUEUE $STOPFDS"
-export      QFDS="$QFDSSH $INTEL2 $FDSPARM $OPENMPOPTS $QUEUE $STOPFDS"
+if [ "$QUEUE" == "none" ]; then
+  export  RUNCFAST="$QFDSSH -e $CFAST $STOPFDS"
+  export      QFDS="$QFDSSH -e $FDS $STOPFDS"
+else
+  export  RUNCFAST="$QFDSSH $INTEL2 -e $CFAST $QUEUE $STOPFDS"
+  export      QFDS="$QFDSSH $INTEL2 $FDSPARM $OPENMPOPTS $QUEUE $STOPFDS"
+fi
+echo QFDS=$QFDS
+echo "*************************************************"
 
 echo "" | $FDSEXE 2> $SVNROOT/smv/Manuals/SMV_User_Guide/SCRIPT_FIGURES/fds.version
 
@@ -221,6 +246,10 @@ fi
 if [ "$RUN_SMV" == "1" ] ; then
   cd $VDIR
   scripts/SMV_Cases.sh
+fi
+if [ "$RUN_LITE" == "1" ] ; then
+  cd $VDIR
+  scripts/LITE_Cases.sh
 fi
 if [ "$RUN_WUI" == "1" ] ; then
   cd $VDIR
