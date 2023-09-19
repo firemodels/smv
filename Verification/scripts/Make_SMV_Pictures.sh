@@ -50,9 +50,9 @@ is_file_installed()
   fi
 }
 
-# --------------------- make_helpinfo_files ----------------------------
+# --------------------- erase_helpinfo_files ----------------------------
 
-make_helpinfo_files()
+erase_helpinfo_files()
 {
   dir=$1
 
@@ -74,6 +74,16 @@ make_helpinfo_files()
   rm -f cfastbot.help
   rm -f firebot.help
   rm -f smokebot.help
+}
+
+
+# --------------------- make_helpinfo_files ----------------------------
+
+make_helpinfo_files()
+{
+  dir=$1
+
+  cd $dir
 
   $SMV        -help_all > smokeview.help
   $SMOKEZIP   -help     > smokezip.help
@@ -216,13 +226,22 @@ is_file_installed $SMOKEDIFF
 is_file_installed $BACKGROUND
 is_file_installed $WIND2FDS
 
-make_helpinfo_files $SMVUG/SCRIPT_FIGURES
+erase_helpinfo_files $SMVUG/SCRIPT_FIGURES
 
 rm -f $SUMMARY/images/*.png
 
 cd $SMVVG/SCRIPT_FIGURES
 rm -f *.version
 rm -f *.png
+
+if [ "$RUN_LITE" != "" ]; then
+  cd $SVNROOT/smv/Manuals/scripts
+  ./Copy_Smokebot_FiguresGH.sh
+  cd $SMVVG/SCRIPT_FIGURES
+fi
+
+make_helpinfo_files $SMVUG/SCRIPT_FIGURES
+
 $SMV -version > smokeview.version
 
 if [ "$RUN_SMV" == "1" ]; then
