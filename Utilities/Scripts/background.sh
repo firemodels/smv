@@ -89,5 +89,5 @@ if [ "$STOPFDSMAXITER" != "" ]; then
 else
   rm -f ${infile}.stop
 fi
-background -d 2 -u 50 $EXE $input
+background -d 2 -u 75 $EXE $input
  
