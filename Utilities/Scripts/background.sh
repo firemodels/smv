@@ -37,9 +37,12 @@ nprocs=1
 
 #*** read in parameters from command line
 
-while getopts 'd:e:hIp:q:v' OPTION
+while getopts 'Ad:e:hIn:p:q:tv' OPTION
 do
 case $OPTION  in
+  A)
+   dummy=
+   ;;
   d)
    DIR="$OPTARG"
    ;;
@@ -53,11 +56,17 @@ case $OPTION  in
   I)
    USE_FULL=1
    ;;
+  n)
+   dummy="${OPTARG}"
+   ;;
   p)
    nprocs="${OPTARG}"
    ;;
   q)
    dummy="${OPTARG}"
+   ;;
+  t)
+   dummy=
    ;;
   v)
    showinput=1
