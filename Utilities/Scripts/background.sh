@@ -8,6 +8,7 @@ function usage {
   echo "runs background prog"
   echo ""
   echo "options:"
+  echo " -b background - patth for background program"
   echo " -d dir - specify directory where the case is found [default: .]"
   echo ""
   exit
@@ -34,14 +35,18 @@ DIR=
 EXE=
 USE_FULL=
 nprocs=1
+BACKGROUND=background
 
 #*** read in parameters from command line
 
-while getopts 'Ad:e:hIn:p:q:tv' OPTION
+while getopts 'Ab:d:e:hIn:p:q:tv' OPTION
 do
 case $OPTION  in
   A)
    dummy=
+   ;;
+  b)
+   BACKGROUND="$OPTARG"
    ;;
   d)
    DIR="$OPTARG"
@@ -105,4 +110,4 @@ ncores=`grep processor /proc/cpuinfo | wc -l`
 if [[ $nprocs -gt 1 ]] && [[ $ncores -ge $nproces ]] && [[ "`uname`" != "Darwin" ]]; then
   MPIEXEC="mpiexec -n $nprocs "
 fi
-background -d 2 -u 75 $MPIEXEC $EXE $input
+$BACKGROUND -d 2 -u 75 $MPIEXEC $EXE $input
