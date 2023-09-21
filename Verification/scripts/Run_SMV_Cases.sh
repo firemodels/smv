@@ -183,7 +183,7 @@ if [ "$use_installed" == "1" ] ; then
   export BACKGROUND_PROG=background
 else
   export WIND2FDS=$SVNROOT/smv/Build/wind2fds/${COMPILER}_$PLATFORM/wind2fds_$PLATFORM
-  if [ "$BACKGROUNDEXE == "" ]; then
+  if [ "$BACKGROUNDEXE" == "" ]; then
     export BACKGROUND_PROG=$SVNROOT/smv/Build/background/${COMPILER}_$PLATFORM/background_$PLATFORM
   else
     export BACKGROUND_PROG=$BACKGROUNDEXE
