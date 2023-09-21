@@ -33,6 +33,7 @@ commandline=`echo $* | sed 's/-V//' | sed 's/-v//'`
 DIR=
 EXE=
 USE_FULL=
+nprocs=1
 
 #*** read in parameters from command line
 
@@ -53,7 +54,7 @@ case $OPTION  in
    USE_FULL=1
    ;;
   p)
-   dummy="${OPTARG}"
+   nprocs="${OPTARG}"
    ;;
   q)
    dummy="${OPTARG}"
@@ -89,5 +90,11 @@ if [ "$STOPFDSMAXITER" != "" ]; then
 else
   rm -f ${infile}.stop
 fi
-background -d 2 -u 75 $EXE $input
+
+MPIEXEC=
+ncores=`grep processors /proc/cpuinfo | wc -l`
+if [[ $nprocs -gt 1 ]] && [[ $ncores -ge $nproces ]] && [[ "`uname`" != "Darwin" ]]; then
+  MPIEXEC="mpiexec -n $nprocs "
+fi
+background -d 2 -u 75 $MPIEXEC $EXE $input
  
