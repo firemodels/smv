@@ -106,8 +106,8 @@ else
 fi
 
 MPIEXEC=
-ncores=`grep processor /proc/cpuinfo | wc -l`
-if [[ $nprocs -gt 1 ]] && [[ $ncores -ge $nproces ]] && [[ "`uname`" != "Darwin" ]]; then
-  MPIEXEC="mpiexec -n $nprocs "
-fi
+#ncores=`grep processor /proc/cpuinfo | wc -l`
+#if [[ $nprocs -gt 1 ]] && [[ $ncores -ge $nproces ]] && [[ "`uname`" != "Darwin" ]]; then
+#  MPIEXEC="mpiexec -n $nprocs "
+#fi
 $BACKGROUND -d 2 -u 75 $MPIEXEC $EXE $input
