@@ -90,13 +90,17 @@ cd ..
 SVNROOT=`pwd`/../..
 cd $SVNROOT
 SVNROOT=`pwd`
+BACKGROUNDEXE=
 
 cd $CURDIR/..
 
 use_installed="0"
-while getopts 'c:Cdhj:JLm:o:q:rsS:uWwY' OPTION
+while getopts 'b:c:Cdhj:JLm:o:q:rsS:uWwY' OPTION
 do
 case $OPTION in
+  b)
+   BACKGROUNDEXE="$OPTARG"
+   ;;
   c)
    CFASTREPO="$OPTARG"
    ;;
@@ -179,7 +183,11 @@ if [ "$use_installed" == "1" ] ; then
   export BACKGROUND_PROG=background
 else
   export WIND2FDS=$SVNROOT/smv/Build/wind2fds/${COMPILER}_$PLATFORM/wind2fds_$PLATFORM
-  export BACKGROUND_PROG=$SVNROOT/smv/Build/background/${COMPILER}_$PLATFORM/background_$PLATFORM
+  if [ "$BACKGROUNDEXE == "" ]; then
+    export BACKGROUND_PROG=$SVNROOT/smv/Build/background/${COMPILER}_$PLATFORM/background_$PLATFORM
+  else
+    export BACKGROUND_PROG=$BACKGROUNDEXE
+  fi
 fi
 export FDSEXE=$SVNROOT/fds/Build/${INTEL}mpi_${COMPILER}_$FDSPLATFORM$DEBUG/fds_${INTEL}mpi_${COMPILER}_$FDSPLATFORM$DEBUG
 export FDS=$FDSEXE
@@ -199,7 +207,9 @@ FDSPARM=
 
 if [ "$QUEUE" != "" ]; then
    if [ "$QUEUE" == "none" ]; then
-      is_file_installed $BACKGROUND_PROG
+      if [ "$BACKGROUNDEXE" == "" ]; then
+        is_file_installed $BACKGROUND_PROG
+      fi
       echo 0 > $QFDS_COUNT
    else
      QUEUE="-q $QUEUE"
