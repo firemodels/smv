@@ -3,12 +3,12 @@
 # ---------------------------- usage ----------------------------------
 
 function usage {
-  echo "Usage: background.sh"
+  echo "Usage: background.sh [-d dir -e exepath] input"
   echo ""
   echo "runs background prog"
   echo ""
   echo "options:"
-  echo " -b background - path for background program"
+  echo " -b background - path for background program [default: background]"
   echo " -d dir - specify directory where the case is found [default: .]"
   echo " -e exe - path for executable to run"
   echo " -h     - display this message"
