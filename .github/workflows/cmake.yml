@@ -365,7 +365,7 @@ jobs:
         shell: cmd
         run: |
           cmake --version
-          cmake -B ${{github.workspace}}\cbuild -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DLUA=${{ matrix.lua }}
+          cmake -B ${{github.workspace}}\cbuild -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DLUA_UTIL_LIBS=ON -DLUA=${{ matrix.lua }} -DLUA_BUILD_BINARY=${{ matrix.lua }} -DVCPKG_TARGET_TRIPLET=x64-windows-static -DCMAKE_TOOLCHAIN_FILE=%VCPKG_INSTALLATION_ROOT%/scripts/buildsystems/vcpkg.cmake -DLUA_BUILD_BINARY=ON
           cmake --build ${{github.workspace}}\cbuild -j4 --config ${{env.BUILD_TYPE}}
           copy ${{github.workspace}}\cbuild\Release\smokeview.exe smokeview.exe
       - name: Download test data
