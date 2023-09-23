@@ -1704,7 +1704,7 @@ void IntegrateFireColors(float *integrated_firecolor, float *xyzvert, float dlen
       integrated_firecolor[1] /= max_rgb;
       integrated_firecolor[2] /= max_rgb;
     }
-    
+
  //   float fire_rgb_from[3], fire_rgb_to[3];
  //   memcpy(fire_rgb_from, integrated_firecolor, 3*sizeof(float));
  //   Xyz2Rgb(&HDTVsystem, fire_rgb_from, fire_rgb_to);

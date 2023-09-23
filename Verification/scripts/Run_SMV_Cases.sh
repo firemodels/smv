@@ -51,6 +51,7 @@ echo "Run_SMV_Cases.sh [-d -h -m max_iterations -o nthreads -p -q queue -s ]"
 echo "Runs Smokeview verification suite"
 echo ""
 echo "Options"
+echo "-b batch_path - specity background program path"
 echo "-c - cfast repo directory"
 echo "-C - use gnu compiled version of fds"
 echo "-d - use debug version of FDS"
@@ -90,13 +91,17 @@ cd ..
 SVNROOT=`pwd`/../..
 cd $SVNROOT
 SVNROOT=`pwd`
+BACKGROUNDEXE=
 
 cd $CURDIR/..
 
 use_installed="0"
-while getopts 'c:Cdhj:JLm:o:q:rsS:uWwY' OPTION
+while getopts 'b:c:Cdhj:JLm:o:q:rsS:uWwY' OPTION
 do
 case $OPTION in
+  b)
+   BACKGROUNDEXE="$OPTARG"
+   ;;
   c)
    CFASTREPO="$OPTARG"
    ;;
@@ -176,10 +181,13 @@ fi
 
 if [ "$use_installed" == "1" ] ; then
   export WIND2FDS=wind2fds
-  export BACKGROUND_PROG=background
 else
   export WIND2FDS=$SVNROOT/smv/Build/wind2fds/${COMPILER}_$PLATFORM/wind2fds_$PLATFORM
-  export BACKGROUND_PROG=$SVNROOT/smv/Build/background/${COMPILER}_$PLATFORM/background_$PLATFORM
+  if [ "$BACKGROUNDEXE" == "" ]; then
+    BACKGROUND_PROG=$SVNROOT/smv/Build/background/${COMPILER}_$PLATFORM/background_$PLATFORM
+  else
+    BACKGROUND_PROG=$BACKGROUNDEXE
+  fi
 fi
 export FDSEXE=$SVNROOT/fds/Build/${INTEL}mpi_${COMPILER}_$FDSPLATFORM$DEBUG/fds_${INTEL}mpi_${COMPILER}_$FDSPLATFORM$DEBUG
 export FDS=$FDSEXE
@@ -192,6 +200,9 @@ if [ "$DEBUG" != "" ]; then
 fi
 if [ "$QUEUE" == "none" ]; then
   QFDSSH="$SVNROOT/smv/Utilities/Scripts/background.sh -I"
+  if [ "$BACKGROUND_PROG" != ""  ]; then
+    QFDSSH="$QFDSSH -b $BACKGROUND_PROG"
+  fi
 fi
 FDSPARM=
 
@@ -199,7 +210,13 @@ FDSPARM=
 
 if [ "$QUEUE" != "" ]; then
    if [ "$QUEUE" == "none" ]; then
-      is_file_installed $BACKGROUND_PROG
+      if [ "$BACKGROUND_PROG" == "" ]; then
+        is_file_installed background
+      else
+        if [ ! -e $BACKGROUND_PROG ]; then
+          echo "***error: the program $BACKGROUND_PROG does not exist"
+        fi
+      fi
       echo 0 > $QFDS_COUNT
    else
      QUEUE="-q $QUEUE"

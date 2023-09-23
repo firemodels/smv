@@ -3,12 +3,15 @@
 # ---------------------------- usage ----------------------------------
 
 function usage {
-  echo "Usage: background.sh"
+  echo "Usage: background.sh [-d dir -e exepath] input"
   echo ""
   echo "runs background prog"
   echo ""
   echo "options:"
+  echo " -b background - path for background program [default: background]"
   echo " -d dir - specify directory where the case is found [default: .]"
+  echo " -e exe - path for executable to run"
+  echo " -h     - display this message"
   echo ""
   exit
 }
@@ -33,12 +36,20 @@ commandline=`echo $* | sed 's/-V//' | sed 's/-v//'`
 DIR=
 EXE=
 USE_FULL=
+nprocs=1
+BACKGROUND=background
 
 #*** read in parameters from command line
 
-while getopts 'd:e:hIp:q:v' OPTION
+while getopts 'Ab:d:e:hIn:p:q:tv' OPTION
 do
 case $OPTION  in
+  A)
+   dummy=
+   ;;
+  b)
+   BACKGROUND="$OPTARG"
+   ;;
   d)
    DIR="$OPTARG"
    ;;
@@ -52,11 +63,17 @@ case $OPTION  in
   I)
    USE_FULL=1
    ;;
-  p)
+  n)
    dummy="${OPTARG}"
+   ;;
+  p)
+   nprocs="${OPTARG}"
    ;;
   q)
    dummy="${OPTARG}"
+   ;;
+  t)
+   dummy=
    ;;
   v)
    showinput=1
@@ -89,5 +106,11 @@ if [ "$STOPFDSMAXITER" != "" ]; then
 else
   rm -f ${infile}.stop
 fi
-background -d 2 -u 50 $EXE $input
- 
+
+MPIEXEC=
+#ncores=`grep processor /proc/cpuinfo | wc -l`
+#if [[ $nprocs -gt 1 ]] && [[ $ncores -ge $nprocs ]] && [[ "`uname`" != "Darwin" ]]; then
+#  MPIEXEC="mpiexec -n $nprocs "
+#fi
+#echo $MPIEXEC
+$BACKGROUND -d 2 -u 75 $MPIEXEC $EXE $input
