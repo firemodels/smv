@@ -8,8 +8,10 @@ function usage {
   echo "runs background prog"
   echo ""
   echo "options:"
-  echo " -b background - patth for background program"
+  echo " -b background - path for background program"
   echo " -d dir - specify directory where the case is found [default: .]"
+  echo " -e exe - path for executable to run"
+  echo " -h     - display this message"
   echo ""
   exit
 }
