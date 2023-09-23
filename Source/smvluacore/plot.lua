@@ -90,7 +90,8 @@ local function createDVNamed(cols, colXName, colYName, name)
 end
 
 function plot.DV(dir, dvs, title, opts)
-    if type(dvs) ~= "table" then error("dvs must be a table")
+    if type(dvs) ~= "table" then
+        error("dvs must be a table")
     elseif dvs.x and dvs.y then
         plot.MultiDV(dir, { dvs }, title, opts)
     else
@@ -123,8 +124,8 @@ function plot.MultiDV(dir, dvs, title, opts)
     recursive_mkdir(dir)
     local g = gp {
         -- All optional, with sane defaults.
-        width  = 800,
-        height = 500,
+        width  = 1600,
+        height = 1000,
         xlabel = dvs[1].x.name .. " (" .. dvs[1].x.units .. ")",
         ylabel = dvs[1].y.name .. " (" .. dvs[1].y.units .. ")",
         key    = "top left",
@@ -133,7 +134,7 @@ function plot.MultiDV(dir, dvs, title, opts)
         --     gamma = 2.5
         -- },
 
-        data = {}
+        data   = {}
 
     }
     if opts then
@@ -145,18 +146,18 @@ function plot.MultiDV(dir, dvs, title, opts)
         g.fname = "Arial"
     end
     if (not opts) or (not opts.fsize) then
-        g.fsize = 8
+        g.fsize = 12
     end
     for i, dv in ipairs(dvs) do
         local arr = { -- plot from an 'array-like' thing in memory. Could be a
             -- numlua matrix, for example.
             {
                 dv.x.values, -- x
-                dv.y.values -- y
+                dv.y.values  -- y
             },
 
             title = dv.y.name, -- optional
-            using = { 1, 2 } -- optional
+            using = { 1, 2 }   -- optional
         }
         if dv.name then arr.title = dv.name else arr.title = dv.y.name end
         if (dv.with) then arr.with = dv.with else arr.with = 'linespoints' end
@@ -191,14 +192,26 @@ local function createStdHRRCurves(dv, offset)
         if v > maxHRR then maxHRR = v end
     end
     if maxHRR == 0 then maxHRR = 1 end
-    local slowDV = { name = "Slow HRR", x = { name = "Time", units = "s", values = {} },
-        y = { name = "Slow HRR", units = "kW", values = {} } }
-    local mediumDV = { name = "Medium HRR", x = { name = "Time", units = "s", values = {} },
-        y = { name = "Medium HRR", units = "kW", values = {} } }
-    local fastDV = { name = "Fast HRR", x = { name = "Time", units = "s", values = {} },
-        y = { name = "Fast HRR", units = "kW", values = {} } }
-    local ultrafastDV = { name = "Ultrafast HRR", x = { name = "Time", units = "s", values = {} },
-        y = { name = "Ultrafast HRR", units = "kW", values = {} } }
+    local slowDV = {
+        name = "Slow HRR",
+        x = { name = "Time", units = "s", values = {} },
+        y = { name = "Slow HRR", units = "kW", values = {} }
+    }
+    local mediumDV = {
+        name = "Medium HRR",
+        x = { name = "Time", units = "s", values = {} },
+        y = { name = "Medium HRR", units = "kW", values = {} }
+    }
+    local fastDV = {
+        name = "Fast HRR",
+        x = { name = "Time", units = "s", values = {} },
+        y = { name = "Fast HRR", units = "kW", values = {} }
+    }
+    local ultrafastDV = {
+        name = "Ultrafast HRR",
+        x = { name = "Time", units = "s", values = {} },
+        y = { name = "Ultrafast HRR", units = "kW", values = {} }
+    }
     for i, v in ipairs(dv.x.values) do
         local slowVal = stdGrowthRate(slowAlpha, v - offset)
         local mediumVal = stdGrowthRate(mediumAlpha, v - offset)
@@ -228,8 +241,14 @@ local function createStdHRRCurves(dv, offset)
     return slowDV, mediumDV, fastDV, ultrafastDV
 end
 
-function plot.plotHRRDV(plotDir, hrrDV, name, offset, config)
+function plot.plotHRRDV(plotDir, hrrDV, name, config)
     local vecs
+    local offset
+    if config and config.offset then
+        offset = config.offset
+    else
+        offset = 0
+    end
     if hrrDV.x and hrrDV.y then
         print(hrrDV.name)
         local slowDV, mediumDV, fastDV, ultrafastDV = createStdHRRCurves(hrrDV, offset)
@@ -257,6 +276,21 @@ function plot.printVec(vec)
     for i, v in ipairs(vec.x.values) do
         print(string.format("  x: %.2f y: %.2f", vec.x.values[i], vec.y.values[i]))
     end
+end
+
+function plot.sumVec(dvs)
+    local resultVec
+    for i = 1, #dvs do
+        local vec = dvs[i]
+        if vec then
+            if not resultVec then
+                resultVec = vec
+            else
+                resultVec = plot.addDVs({ resultVec, vec }, resultVec.name)
+            end
+        end
+    end
+    return resultVec
 end
 
 function plot.avgVec(dv, window)
