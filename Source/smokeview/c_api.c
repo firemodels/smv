@@ -25,6 +25,10 @@
 #define snprintf _snprintf
 #endif
 
+#ifdef WIN32
+#include <windows.h>
+#endif
+
 // function prototypes for functions drawn from other areas of smokeview
 // from startup.c
 void ReadBoundINI(void);
@@ -552,9 +556,6 @@ char *form_filename(int view_mode, char *renderfile_name, char *renderfile_dir,
     }
     if (stereotype == STEREO_LR &&
         (view_mode == VIEW_LEFT || view_mode == VIEW_RIGHT)) {
-      hoffset = screenHeight / 4;
-      screenH = screenHeight / 2;
-      if (view_mode == VIEW_RIGHT) woffset = screenWidth;
     }
 
     snprintf(renderfile_name, 1024, "%s%s%s", chidfilebase, view_suffix,
@@ -2198,7 +2199,7 @@ int set_boundcolor(float r, float g, float b) {
 //   return usetexturebar;
 // }
 
-int set_colorbar_colors(int ncolors, float colors[][3]) {
+int set_colorbar_colors(int ncolors, float *colors) {
 
   float *rgb_ini_copy;
   float *rgb_ini_copy_p;
@@ -2210,9 +2211,9 @@ int set_colorbar_colors(int ncolors, float colors[][3]) {
     float *r = rgb_ini_copy_p;
     float *g = rgb_ini_copy_p + 1;
     float *b = rgb_ini_copy_p + 2;
-    *r = colors[i][0];
-    *g = colors[i][1];
-    *b = colors[i][2];
+    *r = colors[i * 3];
+    *g = colors[i * 3 + 1];
+    *b = colors[i * 3 + 2];
     rgb_ini_copy_p += 3;
   }
 
@@ -2223,8 +2224,7 @@ int set_colorbar_colors(int ncolors, float colors[][3]) {
   return 0;
 }
 
-int set_color2bar_colors(int ncolors, float colors[][3]) {
-
+int set_color2bar_colors(int ncolors, float *colors) {
   float *rgb_ini_copy;
   float *rgb_ini_copy_p;
   CheckMemory;
@@ -2236,9 +2236,9 @@ int set_color2bar_colors(int ncolors, float colors[][3]) {
     float *r = rgb_ini_copy_p;
     float *g = rgb_ini_copy_p + 1;
     float *b = rgb_ini_copy_p + 2;
-    *r = colors[i][0];
-    *g = colors[i][1];
-    *b = colors[i][2];
+    *r = colors[i * 3];
+    *g = colors[i * 3 + 1];
+    *b = colors[i * 3 + 2];
     rgb_ini_copy_p += 3;
   }
 
@@ -2770,10 +2770,8 @@ int set_scaledfont(int height2d, float height2dwidth, int thickness2d,
                    int height3d, float height3dwidth, int thickness3d) {
   scaled_font2d_height = scaled_font2d_height;
   scaled_font2d_height2width = scaled_font2d_height2width;
-  thickness2d = scaled_font2d_thickness;
   scaled_font3d_height = scaled_font3d_height;
   scaled_font3d_height2width = scaled_font3d_height2width;
-  thickness3d = scaled_font3d_thickness;
   return 0;
 } // SCALEDFONT
 
