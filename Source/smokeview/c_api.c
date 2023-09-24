@@ -111,6 +111,8 @@ int set_slice_bounds(const char *slice_type, int set_valmin, float valmin,
   slicebounds[slice_type_index].dlg_valmin = valmin;
   slicebounds[slice_type_index].dlg_valmax = valmax;
   int error = 0;
+  SetMinMax(BOUND_SLICE, slicebounds[slice_type_index].shortlabel, set_valmin,
+            valmin, set_valmax, valmax);
   // Update the colors given the bounds set above
   UpdateAllSliceColors(slice_type_index, &error);
   return 0;
@@ -2677,7 +2679,7 @@ int set_eyez(float v) {
 } // EYEZ
 
 int set_fontsize(int v) {
-  fontindex = v;
+  FontMenu(v);
   return 0;
 } // FONTSIZE
 
@@ -2776,6 +2778,15 @@ int set_scaledfont(int height2d, float height2dwidth, int thickness2d,
   thickness3d = scaled_font3d_thickness;
   return 0;
 } // SCALEDFONT
+
+int get_scaledfont_height2d() {
+  return scaled_font2d_height;
+}
+
+int set_scaledfont_height2d(int height2d) {
+  scaled_font2d_height = height2d;
+  return 0;
+}
 
 int set_showalltextures(int v) {
   showall_textures = v;
