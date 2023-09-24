@@ -31,6 +31,8 @@ int lua_displayCB(lua_State *L);
 
 #ifdef WIN32
 #define snprintf _snprintf
+#else
+#include <unistd.h>
 #endif
 
 char *ParseCommandline(int argc, char **argv);
@@ -4300,17 +4302,21 @@ int lua_set_unitclasses(lua_State *L) {
     lua_pop(L, 1);
     n++;
   }
-  int *indices = malloc(sizeof(int) * n);
-  lua_pushnil(L);
-  while (lua_next(L, -2) != 0) {
-    indices[i] = lua_tonumber(L, -1);
-    lua_pop(L, 1);
-    i++;
+  if (n > 0) {
+    int *indices = malloc(sizeof(int) * n);
+    lua_pushnil(L);
+    while (lua_next(L, -2) != 0) {
+      indices[i] = lua_tonumber(L, -1);
+      lua_pop(L, 1);
+      i++;
+    }
+    int return_code = set_unitclasses(n, indices);
+    lua_pushnumber(L, return_code);
+    free(indices);
+    return 1;
+  } else {
+    return 0;
   }
-  int return_code = set_unitclasses(n, indices);
-  lua_pushnumber(L, return_code);
-  free(indices);
-  return 1;
 }
 
 int lua_set_zaxisangles(lua_State *L) {
