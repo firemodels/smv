@@ -104,19 +104,8 @@ else
 fi
 
 
-LOCKBASE=`whoami`_fdslock
-LOCKFILE=/tmp/${input}_${LOCKBASE}$$
-
-if [ "$SLEEP" != "" ]; then
-  NPROCS=`grep processors /proc/cpuinfo | wc -l`
-  NJOBS=`ls -l /tmp/*${LOCKFILES}* | wc -l`
-
-  while [ $NJOBS -GT $NPROCS ]; do
-   sleep 10
-  done
-  sleep 1
+if [ "$SLEEP" == "" ]; then
+  $EXE $input
+else
+  $REPOROOT/smv/Utilities/Scripts/run_prog.sh $EXE $input &
 fi
-
-touch $LOCKFILE
-$EXE $input
-rm $LOCKFILE

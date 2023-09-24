@@ -189,7 +189,7 @@ if [ "$DEBUG" != "" ]; then
   QFDSSH="$QFDSSH -T db "
 fi
 if [ "$QUEUE" == "none" ]; then
-  QFDSSH="$SVNROOT/smv/Utilities/Scripts/background.sh -I"
+  QFDSSH="$SVNROOT/smv/Utilities/Scripts/background.sh -I -s"
 fi
 FDSPARM=
 
