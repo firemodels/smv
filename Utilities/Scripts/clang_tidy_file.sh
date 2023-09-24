@@ -10,4 +10,4 @@ base_dir="$(realpath "$script_dir/../..")"
 source_dir="$(realpath "$base_dir/Source")"
 # The absoulte path to the directory of the file we're analysing
 file_dir="$(dirname "$file")"
-clang-tidy "$file" -- -I"$source_dir"/shared -I"$file_dir" -I"$source_dir"/glew -I"$source_dir"/glut_gl -I"$source_dir"/pthreads -I"$source_dir"/zlib128 --config-file="$base_dir"/.clang-tidy -D_CRT_SECURE_NO_WARNINGS >& "$outfile"
+clang-tidy "$file" --config-file="$base_dir"/.clang-tidy -- -I"$source_dir"/shared -I"$file_dir" -I"$source_dir"/glew -I"$source_dir"/glut_gl -I"$source_dir"/pthreads -I"$source_dir"/zlib128 -D_CRT_SECURE_NO_WARNINGS >& "$outfile"
