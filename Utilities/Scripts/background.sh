@@ -113,4 +113,4 @@ MPIEXEC=
 #  MPIEXEC="mpiexec -n $nprocs "
 #fi
 #echo $MPIEXEC
-$BACKGROUND -d 2 -u 75 $MPIEXEC $EXE $input
+$BACKGROUND -d 2 -u 50 $MPIEXEC $EXE $input
