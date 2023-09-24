@@ -1,5 +1,3 @@
-#!/bin/bash
-
 # ---------------------------- usage ----------------------------------
 
 function usage {
@@ -8,10 +6,10 @@ function usage {
   echo "runs background prog"
   echo ""
   echo "options:"
-  echo " -b background - path for background program [default: background]"
   echo " -d dir - specify directory where the case is found [default: .]"
   echo " -e exe - path for executable to run"
   echo " -h     - display this message"
+  echo " -s     - sleep until the number of jobs owned by user is less than the number of availab cores"
   echo ""
   exit
 }
@@ -31,24 +29,19 @@ if [ $# -lt 1 ]; then
   usage
 fi
 
-commandline=`echo $* | sed 's/-V//' | sed 's/-v//'`
-
 DIR=
 EXE=
 USE_FULL=
 nprocs=1
-BACKGROUND=background
+SLEEP=
 
 #*** read in parameters from command line
 
-while getopts 'Ab:d:e:hIn:p:q:tv' OPTION
+while getopts 'Ad:e:hIn:p:q:stv' OPTION
 do
 case $OPTION  in
   A)
    dummy=
-   ;;
-  b)
-   BACKGROUND="$OPTARG"
    ;;
   d)
    DIR="$OPTARG"
@@ -71,6 +64,9 @@ case $OPTION  in
    ;;
   q)
    dummy="${OPTARG}"
+   ;;
+  s)
+   SLEEP=1
    ;;
   t)
    dummy=
@@ -107,10 +103,20 @@ else
   rm -f ${infile}.stop
 fi
 
-MPIEXEC=
-#ncores=`grep processor /proc/cpuinfo | wc -l`
-#if [[ $nprocs -gt 1 ]] && [[ $ncores -ge $nprocs ]] && [[ "`uname`" != "Darwin" ]]; then
-#  MPIEXEC="mpiexec -n $nprocs "
-#fi
-#echo $MPIEXEC
-$BACKGROUND -d 2 -u 50 $MPIEXEC $EXE $input
+
+LOCKBASE=`whoami`_fdslock
+LOCKFILE=/tmp/${input}_${LOCKBASE}$$
+
+if [ "$SLEEP" != "" ]; then
+  NPROCS=`grep processors /proc/cpuinfo | wc -l`
+  NJOBS=`ls -l /tmp/*${LOCKFILES}* | wc -l`
+
+  while [ $NJOBS -GT $NPROCS ]; do
+   sleep 10
+  done
+  sleep 1
+fi
+
+touch $LOCKFILE
+$EXE $input
+rm $LOCKFILE
