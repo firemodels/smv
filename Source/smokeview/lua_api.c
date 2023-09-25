@@ -64,7 +64,7 @@ int ProgramSetupLua(lua_State *L, int argc, char **argv) {
   if (smokeview_bindir == NULL) {
     smokeview_bindir = GetProgDir(progname, &smokeviewpath);
   }
-  if(show_version == 1 || smv_filename == NULL){
+  if (show_version == 1 || smv_filename == NULL) {
     DisplayVersionInfo("Smokeview ");
     SMV_EXIT(0);
   }
@@ -2294,7 +2294,6 @@ int lua_outlines_show(lua_State *L) {
   outlines_show();
   return 0;
 }
-
 
 // surfaces
 int lua_surfaces_hide_all(lua_State *L) {
@@ -5005,7 +5004,7 @@ void addCPath(lua_State *L) {
   // package.path is a path variable where Lua scripts and modules may be
   // found, typically text based files with the .lua extension.
   lua_getglobal(L, "package");
-  lua_getfield(L, -1, "path");
+  lua_getfield(L, -1, "cpath");
   const char *original_path = lua_tostring(L, -1);
   int new_length = strlen(original_path) + 1;
 #ifdef pp_LINUX
@@ -5811,34 +5810,34 @@ int runLuaScript() {
   return yieldOrOk;
 }
 #if LUA_VERSION_NUM < 502
-LUA_API lua_Number lua_version (lua_State *L) {
+LUA_API lua_Number lua_version(lua_State *L) {
   UNUSED(L);
   return LUA_VERSION_NUM;
 }
 
-LUALIB_API void luaL_checkversion_ (lua_State *L, lua_Number ver, size_t sz) {
+LUALIB_API void luaL_checkversion_(lua_State *L, lua_Number ver, size_t sz) {
   lua_Number v = lua_version(L);
-  if (sz != LUAL_NUMSIZES)  /* check numeric types */
+  if (sz != LUAL_NUMSIZES) /* check numeric types */
     luaL_error(L, "core and library have incompatible numeric types");
   else if (v != ver)
     luaL_error(L, "version mismatch: app. needs %f, Lua core provides %f",
-                  (LUAI_UACNUMBER)ver, (LUAI_UACNUMBER)v);
+               (LUAI_UACNUMBER)ver, (LUAI_UACNUMBER)v);
 }
 
-LUALIB_API void luaL_setfuncs (lua_State *L, const luaL_Reg *l, int nup) {
+LUALIB_API void luaL_setfuncs(lua_State *L, const luaL_Reg *l, int nup) {
   luaL_checkstack(L, nup, "too many upvalues");
-  for (; l->name != NULL; l++) {  /* fill the table with given functions */
-    if (l->func == NULL)  /* place holder? */
+  for (; l->name != NULL; l++) { /* fill the table with given functions */
+    if (l->func == NULL)         /* place holder? */
       lua_pushboolean(L, 0);
     else {
       int i;
-      for (i = 0; i < nup; i++)  /* copy upvalues to the top */
+      for (i = 0; i < nup; i++) /* copy upvalues to the top */
         lua_pushvalue(L, -nup);
-      lua_pushcclosure(L, l->func, nup);  /* closure with those upvalues */
+      lua_pushcclosure(L, l->func, nup); /* closure with those upvalues */
     }
     lua_setfield(L, -(nup + 2), l->name);
   }
-  lua_pop(L, nup);  /* remove upvalues */
+  lua_pop(L, nup); /* remove upvalues */
 }
 #endif
 #endif
