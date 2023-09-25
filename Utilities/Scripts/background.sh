@@ -109,6 +109,7 @@ if [ "$SLEEP" == "" ]; then
 else
   LOCKBASE=`whoami`_fdslock
   LOCKFILE=/tmp/${input}_${LOCKBASE}$$
+  LSOUT=/tmp/lsout$$
 
   NPROCS=`grep processor /proc/cpuinfo | wc -l`
   NJOBS=0
@@ -127,4 +128,5 @@ else
   done
   sleep 5
   $REPOROOT/smv/Utilities/Scripts/run_prog.sh $EXE $input &
+  rm $LSOUT
 fi
