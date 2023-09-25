@@ -1,6 +1,7 @@
 #ifdef pp_LUA
 
 #include <float.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -30,6 +31,8 @@ int lua_displayCB(lua_State *L);
 
 #ifdef WIN32
 #define snprintf _snprintf
+#else
+#include <unistd.h>
 #endif
 
 char *ParseCommandline(int argc, char **argv);
@@ -64,7 +67,7 @@ int ProgramSetupLua(lua_State *L, int argc, char **argv) {
   if (smokeview_bindir == NULL) {
     smokeview_bindir = GetProgDir(progname, &smokeviewpath);
   }
-  if(show_version == 1 || smv_filename == NULL){
+  if (show_version == 1 || smv_filename == NULL) {
     DisplayVersionInfo("Smokeview ");
     SMV_EXIT(0);
   }
@@ -1224,7 +1227,6 @@ int lua_case_index(lua_State *L) {
 
 int lua_case_newindex(lua_State *L) {
   const char *field = lua_tostring(L, 2);
-  const char *value = lua_tostring(L, 3);
   if (strcmp(field, "chid") == 0) {
     luaL_error(L, "case.chid is read-only");
     // lua_pushstring(L, value);
@@ -2295,7 +2297,6 @@ int lua_outlines_show(lua_State *L) {
   return 0;
 }
 
-
 // surfaces
 int lua_surfaces_hide_all(lua_State *L) {
   surfaces_hide_all();
@@ -2762,10 +2763,6 @@ int lua_set_ambientlight(lua_State *L) {
 }
 
 int lua_get_backgroundcolor(lua_State *L) {
-  float r = lua_tonumber(L, 1);
-  float g = lua_tonumber(L, 2);
-  float b = lua_tonumber(L, 3);
-
   lua_createtable(L, 0, 3);
 
   lua_pushnumber(L, backgroundbasecolor[0]);
@@ -2847,7 +2844,7 @@ float getcolorfield(lua_State *L, int stack_index, const char *key) {
   return result;
 }
 
-int get_color(lua_State *L, int stack_index, float color[3]) {
+int get_color(lua_State *L, int stack_index, float *color) {
   if (!lua_istable(L, stack_index)) {
     fprintf(stderr, "color table is not present\n");
     return 1;
@@ -2872,18 +2869,21 @@ int lua_set_colorbar_colors(lua_State *L) {
     ncolors++;
     lua_pop(L, 1);
   }
-  int i;
-  float(*colors)[3] = malloc(sizeof(float) * ncolors * 3);
-  for (i = 1; i <= ncolors; i++) {
-    lua_pushnumber(L, i);
-    lua_gettable(L, 1);
-    get_color(L, -1, colors[i - 1]);
-  }
+  if (ncolors > 0) {
+    float *colors = malloc(sizeof(float) * ncolors * 3);
+    for (int i = 1; i <= ncolors; i++) {
+      lua_pushnumber(L, i);
+      lua_gettable(L, 1);
+      get_color(L, -1, &colors[i - 1]);
+    }
 
-  int return_code = set_colorbar_colors(ncolors, colors);
-  lua_pushnumber(L, return_code);
-  free(colors);
-  return 1;
+    int return_code = set_colorbar_colors(ncolors, colors);
+    lua_pushnumber(L, return_code);
+    free(colors);
+    return 1;
+  } else {
+    return 0;
+  }
 }
 
 int lua_get_colorbar_colors(lua_State *L) {
@@ -2916,18 +2916,21 @@ int lua_set_color2bar_colors(lua_State *L) {
     fprintf(stderr, "colorbar table is not present\n");
     return 1;
   }
-  int i;
-  float(*colors)[3] = malloc(sizeof(float) * ncolors * 3);
-  for (i = 1; i <= ncolors; i++) {
-    lua_pushnumber(L, i);
-    lua_gettable(L, -2);
-    get_color(L, -1, colors[i - 1]);
-  }
+  if (ncolors > 0) {
+    float *colors = malloc(sizeof(float) * ncolors * 3);
+    for (size_t i = 1; i <= ncolors; i++) {
+      lua_pushnumber(L, i);
+      lua_gettable(L, -2);
+      get_color(L, -1, &colors[i - 1]);
+    }
 
-  int return_code = set_color2bar_colors(ncolors, colors);
-  lua_pushnumber(L, return_code);
-  free(colors);
-  return 1;
+    int return_code = set_color2bar_colors(ncolors, colors);
+    lua_pushnumber(L, return_code);
+    free(colors);
+    return 1;
+  } else {
+    return 0;
+  }
 }
 
 int lua_get_color2bar_colors(lua_State *L) {
@@ -2985,10 +2988,6 @@ int lua_get_flip(lua_State *L) {
 }
 
 int lua_get_foregroundcolor(lua_State *L) {
-  float r = lua_tonumber(L, 1);
-  float g = lua_tonumber(L, 2);
-  float b = lua_tonumber(L, 3);
-
   lua_createtable(L, 0, 3);
 
   lua_pushnumber(L, foregroundbasecolor[0]);
@@ -3071,22 +3070,24 @@ int lua_set_colortable(lua_State *L) {
     lua_pop(L, 1); // remove value (leave key for next iteration)
     ncolors++;
   }
-  // initialise arrays using the above count info
-  float *colors = malloc(sizeof(float) * ncolors * 3);
-  // char *names = malloc(sizeof(char)*ncolors*255);
-  // char **names = malloc(sizeof(char*));
-  /* table is in the stack at index 't' */
-  lua_pushnil(L); /* first key */
-  while (lua_next(L, 1) != 0) {
-    /* uses 'key' (at index -2) and 'value' (at index -1) */
-    // strncpy(names[i], lua_tostring(L, -2), 255);
-    get_color(L, -1, &colors[i]);
-    /* removes 'value'; keeps 'key' for next iteration */
-    lua_pop(L, 1);
-    i++;
+  if (ncolors > 0) {
+    // initialise arrays using the above count info
+    float *colors = malloc(sizeof(float) * ncolors * 3);
+    // char *names = malloc(sizeof(char)*ncolors*255);
+    // char **names = malloc(sizeof(char*));
+    /* table is in the stack at index 't' */
+    lua_pushnil(L); /* first key */
+    while (lua_next(L, 1) != 0) {
+      /* uses 'key' (at index -2) and 'value' (at index -1) */
+      // strncpy(names[i], lua_tostring(L, -2), 255);
+      get_color(L, -1, &colors[i]);
+      /* removes 'value'; keeps 'key' for next iteration */
+      lua_pop(L, 1);
+      i++;
+    }
+    free(colors);
+    // free(names);
   }
-  free(colors);
-  // free(names);
   return 0;
 }
 
@@ -3581,19 +3582,23 @@ int lua_set_meshvis(lua_State *L) {
     lua_pop(L, 1); // remove value (leave key for next iteration)
     n++;
   }
-  // initialise arrays using the above count info
-  int *vals = malloc(sizeof(int) * n);
-  /* table is in the stack at index 't' */
-  lua_pushnil(L); /* first key */
-  while (lua_next(L, 1) != 0) {
-    vals[i] = lua_tonumber(L, -2);
-    /* removes 'value'; keeps 'key' for next iteration */
-    lua_pop(L, 1);
-    i++;
+  if (n > 0) {
+    // initialise arrays using the above count info
+    int *vals = malloc(sizeof(int) * n);
+    /* table is in the stack at index 't' */
+    lua_pushnil(L); /* first key */
+    while (lua_next(L, 1) != 0) {
+      vals[i] = lua_tonumber(L, -2);
+      /* removes 'value'; keeps 'key' for next iteration */
+      lua_pop(L, 1);
+      i++;
+    }
+    int return_code = set_meshvis(n, vals);
+    lua_pushnumber(L, return_code);
+    return 1;
+  } else {
+    return 0;
   }
-  int return_code = set_meshvis(n, vals);
-  lua_pushnumber(L, return_code);
-  return 1;
 }
 
 int lua_set_meshoffset(lua_State *L) {
@@ -4254,25 +4259,33 @@ int lua_get_units(lua_State *L) {
 }
 
 int lua_set_units(lua_State *L) {
-  int i;
   const char *unitclassname = lua_tostring(L, 1);
   const char *unitname = lua_tostring(L, 2);
 
-  int unitclass_index;
-  int unit_index;
-  for (i = 0; i < nunitclasses_default; i++) {
+  size_t unitclass_index;
+  bool unit_class_found = false;
+  size_t unit_index;
+  bool unit_index_found = false;
+  for (size_t i = 0; i < nunitclasses_default; i++) {
     if (strcmp(unitclasses[i].unitclass, unitclassname) == 0) {
       unitclass_index = i;
+      unit_class_found = true;
       break;
     }
   }
-  for (i = 0; i < unitclasses[unitclass_index].nunits; i++) {
+  if (!unit_class_found) {
+    return luaL_error(L, "unit class index not found");
+  }
+  for (size_t i = 0; i < unitclasses[unitclass_index].nunits; i++) {
     if (strcmp(unitclasses[unitclass_index].units[i].unit, unitname) == 0) {
       unit_index = i;
+      unit_index_found = true;
       break;
     }
   }
-
+  if (!unit_index_found) {
+    return luaL_error(L, "unit index not found");
+  }
   set_units(unitclass_index, unit_index);
   return 0;
 }
@@ -4289,17 +4302,21 @@ int lua_set_unitclasses(lua_State *L) {
     lua_pop(L, 1);
     n++;
   }
-  int *indices = malloc(sizeof(int) * n);
-  lua_pushnil(L);
-  while (lua_next(L, -2) != 0) {
-    indices[i] = lua_tonumber(L, -1);
-    lua_pop(L, 1);
-    i++;
+  if (n > 0) {
+    int *indices = malloc(sizeof(int) * n);
+    lua_pushnil(L);
+    while (lua_next(L, -2) != 0) {
+      indices[i] = lua_tonumber(L, -1);
+      lua_pop(L, 1);
+      i++;
+    }
+    int return_code = set_unitclasses(n, indices);
+    lua_pushnumber(L, return_code);
+    free(indices);
+    return 1;
+  } else {
+    return 0;
   }
-  int return_code = set_unitclasses(n, indices);
-  lua_pushnumber(L, return_code);
-  free(indices);
-  return 1;
 }
 
 int lua_set_zaxisangles(lua_State *L) {
@@ -4543,48 +4560,6 @@ int lua_set_viewtourfrompath(lua_State *L) {
   return 1;
 }
 
-int *lua_get_int_array(lua_State *L, int snumber) {
-  // count the length of vals
-  int nvals = 0;
-  lua_pushnil(L);
-  while (lua_next(L, snumber) != 0) {
-    nvals++;
-    lua_pop(L, 1);
-  }
-  // create array of vals
-  int *vals;
-  vals = (int *)calloc(nvals, sizeof(int));
-  int i = 0;
-  lua_pushnil(L);
-  while (lua_next(L, snumber) != 0) {
-    vals[i] = lua_tonumber(L, -1);
-    i++;
-    lua_pop(L, 1);
-  }
-  return vals;
-}
-
-float *lua_get_float_array(lua_State *L, int snumber) {
-  // count the length of vals
-  int nvals = 0;
-  lua_pushnil(L);
-  while (lua_next(L, snumber) != 0) {
-    nvals++;
-    lua_pop(L, 1);
-  }
-  // create array of vals
-  float *vals;
-  vals = (float *)calloc(nvals, sizeof(float));
-  int i = 0;
-  lua_pushnil(L);
-  while (lua_next(L, snumber) != 0) {
-    vals[i] = lua_tonumber(L, -1);
-    i++;
-    lua_pop(L, 1);
-  }
-  return vals;
-}
-
 int lua_set_devicevectordimensions(lua_State *L) {
   float baselength = lua_tonumber(L, 1);
   float basediameter = lua_tonumber(L, 2);
@@ -4676,18 +4651,22 @@ int lua_set_sliceauto(lua_State *L) {
     lua_pop(L, 1);
     n++;
   }
-  int i = 0;
-  int *vals = malloc(sizeof(int) * n);
-  lua_pushnil(L);
-  while (lua_next(L, -2) != 0) {
-    vals[i] = lua_tonumber(L, -1);
-    lua_pop(L, 1);
-    i++;
+  if (n > 0) {
+    int i = 0;
+    int *vals = malloc(sizeof(int) * n);
+    lua_pushnil(L);
+    while (lua_next(L, -2) != 0) {
+      vals[i] = lua_tonumber(L, -1);
+      lua_pop(L, 1);
+      i++;
+    }
+    int return_code = set_sliceauto(n, vals);
+    lua_pushnumber(L, return_code);
+    free(vals);
+    return 1;
+  } else {
+    return 0;
   }
-  int return_code = set_sliceauto(n, vals);
-  lua_pushnumber(L, return_code);
-  free(vals);
-  return 1;
 }
 
 int lua_set_msliceauto(lua_State *L) {
@@ -4697,18 +4676,22 @@ int lua_set_msliceauto(lua_State *L) {
     lua_pop(L, 1);
     n++;
   }
-  int i = 0;
-  int *vals = malloc(sizeof(int) * n);
-  lua_pushnil(L);
-  while (lua_next(L, -2) != 0) {
-    vals[i] = lua_tonumber(L, -1);
-    lua_pop(L, 1);
-    i++;
+  if (n > 0) {
+    int i = 0;
+    int *vals = malloc(sizeof(int) * n);
+    lua_pushnil(L);
+    while (lua_next(L, -2) != 0) {
+      vals[i] = lua_tonumber(L, -1);
+      lua_pop(L, 1);
+      i++;
+    }
+    int return_code = set_msliceauto(n, vals);
+    lua_pushnumber(L, return_code);
+    free(vals);
+    return 1;
+  } else {
+    return 0;
   }
-  int return_code = set_msliceauto(n, vals);
-  lua_pushnumber(L, return_code);
-  free(vals);
-  return 1;
 }
 
 int lua_set_compressauto(lua_State *L) {
@@ -4725,26 +4708,30 @@ int lua_set_propindex(lua_State *L) {
     lua_pop(L, 1);
     n++;
   }
-  int i = 0;
-  int *vals = malloc(sizeof(int) * n * PROPINDEX_STRIDE);
-  lua_pushnil(L);
-  while (lua_next(L, -2) != 0) {
-    lua_pushnumber(L, 1);
-    lua_gettable(L, -2);
-    *(vals + (i * PROPINDEX_STRIDE + 0)) = lua_tonumber(L, -1);
-    lua_pop(L, 1);
+  if (n > 0) {
+    int i = 0;
+    int *vals = malloc(sizeof(int) * n * PROPINDEX_STRIDE);
+    lua_pushnil(L);
+    while (lua_next(L, -2) != 0) {
+      lua_pushnumber(L, 1);
+      lua_gettable(L, -2);
+      *(vals + (i * PROPINDEX_STRIDE + 0)) = lua_tonumber(L, -1);
+      lua_pop(L, 1);
 
-    lua_pushnumber(L, 1);
-    lua_gettable(L, -2);
-    *(vals + (i * PROPINDEX_STRIDE + 1)) = lua_tonumber(L, -1);
-    lua_pop(L, 1);
+      lua_pushnumber(L, 1);
+      lua_gettable(L, -2);
+      *(vals + (i * PROPINDEX_STRIDE + 1)) = lua_tonumber(L, -1);
+      lua_pop(L, 1);
 
-    lua_pop(L, 1);
-    i++;
+      lua_pop(L, 1);
+      i++;
+    }
+    int return_code = set_propindex(n, vals);
+    lua_pushnumber(L, return_code);
+    return 1;
+  } else {
+    return 0;
   }
-  int return_code = set_propindex(n, vals);
-  lua_pushnumber(L, return_code);
-  return 1;
 }
 
 int lua_set_showdevices(lua_State *L) {
@@ -4754,18 +4741,22 @@ int lua_set_showdevices(lua_State *L) {
     lua_pop(L, 1);
     n++;
   }
-  int i = 0;
-  const char **names = malloc(sizeof(char *) * n);
-  lua_pushnil(L);
-  while (lua_next(L, -2) != 0) {
-    names[i] = lua_tostring(L, -1);
-    lua_pop(L, 1);
-    i++;
+  if (n > 0) {
+    int i = 0;
+    const char **names = malloc(sizeof(char *) * n);
+    lua_pushnil(L);
+    while (lua_next(L, -2) != 0) {
+      names[i] = lua_tostring(L, -1);
+      lua_pop(L, 1);
+      i++;
+    }
+    int return_code = set_showdevices(n, names);
+    lua_pushnumber(L, return_code);
+    free(names);
+    return 1;
+  } else {
+    return 0;
   }
-  int return_code = set_showdevices(n, names);
-  lua_pushnumber(L, return_code);
-  free(names);
-  return 1;
 } // SHOWDEVICES
 
 int lua_set_showdevicevals(lua_State *L) {
@@ -5781,34 +5772,34 @@ int runLuaScript() {
   return yieldOrOk;
 }
 #if LUA_VERSION_NUM < 502
-LUA_API lua_Number lua_version (lua_State *L) {
+LUA_API lua_Number lua_version(lua_State *L) {
   UNUSED(L);
   return LUA_VERSION_NUM;
 }
 
-LUALIB_API void luaL_checkversion_ (lua_State *L, lua_Number ver, size_t sz) {
+LUALIB_API void luaL_checkversion_(lua_State *L, lua_Number ver, size_t sz) {
   lua_Number v = lua_version(L);
-  if (sz != LUAL_NUMSIZES)  /* check numeric types */
+  if (sz != LUAL_NUMSIZES) /* check numeric types */
     luaL_error(L, "core and library have incompatible numeric types");
   else if (v != ver)
     luaL_error(L, "version mismatch: app. needs %f, Lua core provides %f",
-                  (LUAI_UACNUMBER)ver, (LUAI_UACNUMBER)v);
+               (LUAI_UACNUMBER)ver, (LUAI_UACNUMBER)v);
 }
 
-LUALIB_API void luaL_setfuncs (lua_State *L, const luaL_Reg *l, int nup) {
+LUALIB_API void luaL_setfuncs(lua_State *L, const luaL_Reg *l, int nup) {
   luaL_checkstack(L, nup, "too many upvalues");
-  for (; l->name != NULL; l++) {  /* fill the table with given functions */
-    if (l->func == NULL)  /* place holder? */
+  for (; l->name != NULL; l++) { /* fill the table with given functions */
+    if (l->func == NULL)         /* place holder? */
       lua_pushboolean(L, 0);
     else {
       int i;
-      for (i = 0; i < nup; i++)  /* copy upvalues to the top */
+      for (i = 0; i < nup; i++) /* copy upvalues to the top */
         lua_pushvalue(L, -nup);
-      lua_pushcclosure(L, l->func, nup);  /* closure with those upvalues */
+      lua_pushcclosure(L, l->func, nup); /* closure with those upvalues */
     }
     lua_setfield(L, -(nup + 2), l->name);
   }
-  lua_pop(L, nup);  /* remove upvalues */
+  lua_pop(L, nup); /* remove upvalues */
 }
 #endif
 #endif

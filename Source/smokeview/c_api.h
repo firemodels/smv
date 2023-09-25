@@ -1,3 +1,4 @@
+#include "options_common.h"
 #include "gd.h"
 
 // Verified, the declarations below are part of the verified and test API.
@@ -9,12 +10,11 @@ typedef struct _simple_bounds {
   float min, max;
 } simple_bounds;
 
-
 void set_colorbar(size_t value);
 ERROR_CODE set_named_colorbar(const char *name);
 ERROR_CODE get_named_colorbar(const char *name, size_t *index);
-ERROR_CODE set_slice_bounds(const char *slice_type, int set_min, float value_min,
-                     int set_max, float value_max);
+ERROR_CODE set_slice_bounds(const char *slice_type, int set_min,
+                            float value_min, int set_max, float value_max);
 ERROR_CODE set_slice_bound_min(const char *slice_type, int set, float value);
 ERROR_CODE set_slice_bound_max(const char *slice_type, int set, float value);
 ERROR_CODE get_slice_bounds(const char *slice_type, simple_bounds *bounds);
@@ -23,9 +23,6 @@ int getframe();
 void setframe(int framenumber);
 float gettime();
 int settime(float timeval);
-
-
-
 
 // Non-Verified, the declarations below are of variable quality.
 int loadsmvall(const char *input_filepath);
@@ -185,7 +182,6 @@ void blockages_hide_all();
 void outlines_hide();
 void outlines_show();
 
-
 // surfaces
 void surfaces_hide_all();
 
@@ -284,8 +280,8 @@ int set_boundcolor(float r, float g, float b);      // BOUNDCOLOR
 int set_colorbar_textureflag(int v);
 int get_colorbar_textureflag();
 int set_colorbar_contourvalue(int v);
-int set_colorbar_colors(int ncolors, float colors[][3]);
-int set_color2bar_colors(int ncolors, float colors[][3]);
+int set_colorbar_colors(int ncolors, float *colors);
+int set_color2bar_colors(int ncolors, float *colors);
 int set_diffuselight(float r, float g, float b);   // DIFFUSELIGHT
 int set_directioncolor(float r, float g, float b); // DIRECTIONCOLOR
 int set_flip(int setting);                         // FLIP
