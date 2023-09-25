@@ -384,6 +384,8 @@ int set_sbatstart(int v);                               // SBATSTART
 int set_scaledfont(int height2d, float height2dwidth, int thickness2d,
                    int height3d, float height3dwidth,
                    int thickness3d); // SCALEDFONT
+int get_scaledfont_height2d();
+int set_scaledfont_height2d(int height2d);
 int set_showalltextures(int v);      // SHOWALLTEXTURES
 int set_showaxislabels(int v);       // SHOWAXISLABELS
 int set_showblocklabel(int v);       // SHOWBLOCKLABEL

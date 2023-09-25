@@ -1,5 +1,6 @@
 --- @module 'view'
-local view = { colorbar = {}, blockages = {}, color = {}, titlebox = {}, surfaces = {}, devices = {}, outline = {} }
+local view = { colorbar = {}, font = {}, blockages = {}, color = {}, titlebox = {}, surfaces = {}, devices = {},
+    outline = {} }
 view.camera = require("camera")
 local _view = {
     -- colorbar = {
@@ -107,8 +108,8 @@ local view_mt = {
     __index = function(t, k)
         if type(_view[k]) == "function" then
             return _view[k]
-        elseif k == "render" or k == "bounds" or k == "window" then
-                return _view[k]
+        elseif k == "render" or k == "bounds" or k == "window" or k == "font" then
+            return _view[k]
         else
             return _view[k].get()
         end
@@ -197,6 +198,42 @@ local colorbar_mt = {
     end
 }
 setmetatable(view.colorbar, colorbar_mt)
+
+
+local _font = {
+    size = {
+        get = function()
+            return smvlib.get_fontsize()
+        end,
+        set = function(v)
+            if v == "small" then
+                return smvlib.set_fontsize(0)
+            elseif v == "large" then
+                return smvlib.set_fontsize(1)
+            elseif type(v) == "number" then
+                smvlib.set_scaledfont_height2d(v)
+                return smvlib.set_fontsize(2)
+            else
+                error("invalid font size")
+            end
+        end
+    }
+}
+local font_mt = {
+    -- get method
+    __index = function(t, k)
+        if type(_font[k]) == "function" then
+            return _font[k]
+        else
+            return _font[k].get()
+        end
+    end,
+    -- set method
+    __newindex = function(t, k, v)
+        _font[k].set(v)
+    end
+}
+setmetatable(view.font, font_mt)
 
 local _titlebox = {
     add_line = function(line)
