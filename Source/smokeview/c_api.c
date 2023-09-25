@@ -111,8 +111,7 @@ int set_slice_bounds(const char *slice_type, int set_valmin, float valmin,
   slicebounds[slice_type_index].dlg_valmin = valmin;
   slicebounds[slice_type_index].dlg_valmax = valmax;
   int error = 0;
-  SetMinMax(BOUND_SLICE, slicebounds[slice_type_index].shortlabel, set_valmin,
-            valmin, set_valmax, valmax);
+  SetMinMax(BOUND_SLICE, slicebounds[slice_type_index].shortlabel, set_valmin, valmin, set_valmax, valmax);
   // Update the colors given the bounds set above
   UpdateAllSliceColors(slice_type_index, &error);
   return 0;
