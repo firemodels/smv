@@ -41,7 +41,7 @@ jobs:
           - wind2fds
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: prepare for cache restore
         run: |
           sudo mkdir -p /opt/intel
@@ -83,7 +83,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: prepare for cache restore
         run: |
           sudo mkdir -p /opt/intel
@@ -128,7 +128,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Build
         shell: bash
         run: |
@@ -166,7 +166,7 @@ jobs:
         shell: bash
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: cache install
         id: cache-install
         uses: actions/cache@v2
@@ -212,4 +212,3 @@ jobs:
         if: steps.cache-install.outputs.cache-hit != 'true'
         shell:  bash
         run: .github/workflows/cache_exclude_windows.sh
-
