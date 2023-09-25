@@ -13,6 +13,7 @@ if [ "`grep 'No such' $LSOUT`" == "" ]; then
   NJOBS=`ls -l /tmp/*${LOCKBASE}* | wc -l`
 fi
 
+echo "input=$input,NJOBS=$NJOBS, NPROCS=$NPROCS" >> /tmp/`whoami`_jobsummary
 while [ $NJOBS -gt $NPROCS ]; do
   sleep 5
   NJOBS=0
@@ -20,6 +21,7 @@ while [ $NJOBS -gt $NPROCS ]; do
   if [ "`grep 'No such' $LSOUT`" == "" ]; then
     NJOBS=`ls -l /tmp/*${LOCKBASE}* | wc -l`
   fi
+echo "111input=$input,NJOBS=$NJOBS, NPROCS=$NPROCS" >> /tmp/`whoami`_jobsummary
 done
 sleep 5
 
