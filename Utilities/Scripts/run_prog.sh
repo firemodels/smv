@@ -8,8 +8,9 @@ LOCKFILE=/tmp/${input}_${LOCKBASE}$$
 NPROCS=`grep processor /proc/cpuinfo | wc -l`
 NJOBS=`ls -l /tmp/*${LOCKBASE}* | wc -l`
 
+sleep 5
 while [ $NJOBS -gt $NPROCS ]; do
-  sleep 10
+  sleep 5
   NJOBS=`ls -l /tmp/*${LOCKBASE}* | wc -l`
 done
 sleep 5

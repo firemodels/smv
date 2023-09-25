@@ -108,4 +108,5 @@ if [ "$SLEEP" == "" ]; then
   $EXE $input
 else
   $REPOROOT/smv/Utilities/Scripts/run_prog.sh $EXE $input &
+  sleep 5
 fi
