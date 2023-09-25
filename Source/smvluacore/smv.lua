@@ -31,6 +31,63 @@ local function basic_ortho_camera()
     }
 end
 
+function smv.deepCopy(value, cache, promises, copies)
+    cache    = cache or {}
+    promises = promises or {}
+    copies   = copies or {}
+    local copy
+    if type(value) == 'table' then
+        if (cache[value]) then
+            copy = cache[value]
+        else
+            promises[value] = promises[value] or {}
+            copy = {}
+            for k, v in next, value, nil do
+                local nKey     = promises[k] or smv.deepCopy(k, cache, promises, copies)
+                local nValue   = promises[v] or smv.deepCopy(v, cache, promises, copies)
+                copies[nKey]   = type(k) == "table" and k or nil
+                copies[nValue] = type(v) == "table" and v or nil
+                copy[nKey]     = nValue
+            end
+            local mt = getmetatable(value)
+            if mt then
+                setmetatable(copy, mt.__immutable and mt or smv.deepCopy(mt, cache, promises, copies))
+            end
+            cache[value] = copy
+        end
+    else -- number, string, boolean, etc
+        copy = value
+    end
+    for k, v in pairs(copies) do
+        if k == cache[v] then
+            copies[k] = nil
+        end
+    end
+    local function correctRec(tbl)
+        if type(tbl) ~= "table" then return tbl end
+        if copies[tbl] and cache[copies[tbl]] then
+            return cache[copies[tbl]]
+        end
+        local new = {}
+        for k, v in pairs(tbl) do
+            local oldK = k
+            k, v = correctRec(k), correctRec(v)
+            if k ~= oldK then
+                tbl[oldK] = nil
+                new[k] = v
+            else
+                tbl[k] = v
+            end
+        end
+        for k, v in pairs(new) do
+            tbl[k] = v
+        end
+        return tbl
+    end
+    correctRec(copy)
+    return copy
+end
+
 function smv.load_default()
     local case = smvlib.load_default()
     rawset(case, "load", smv.load)

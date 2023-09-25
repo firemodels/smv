@@ -4996,7 +4996,7 @@ void addCPath(lua_State *L) {
   // package.path is a path variable where Lua scripts and modules may be
   // found, typically text based files with the .lua extension.
   lua_getglobal(L, "package");
-  lua_getfield(L, -1, "path");
+  lua_getfield(L, -1, "cpath");
   const char *original_path = lua_tostring(L, -1);
   int new_length = strlen(original_path) + 1;
 #ifdef pp_LINUX
