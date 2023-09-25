@@ -90,7 +90,8 @@ local function createDVNamed(cols, colXName, colYName, name)
 end
 
 function plot.DV(dir, dvs, title, opts)
-    if type(dvs) ~= "table" then error("dvs must be a table")
+    if type(dvs) ~= "table" then
+        error("dvs must be a table")
     elseif dvs.x and dvs.y then
         plot.MultiDV(dir, { dvs }, title, opts)
     else
@@ -123,8 +124,8 @@ function plot.MultiDV(dir, dvs, title, opts)
     recursive_mkdir(dir)
     local g = gp {
         -- All optional, with sane defaults.
-        width  = 800,
-        height = 500,
+        width  = 1600,
+        height = 1000,
         xlabel = dvs[1].x.name .. " (" .. dvs[1].x.units .. ")",
         ylabel = dvs[1].y.name .. " (" .. dvs[1].y.units .. ")",
         key    = "top left",
@@ -133,7 +134,7 @@ function plot.MultiDV(dir, dvs, title, opts)
         --     gamma = 2.5
         -- },
 
-        data = {}
+        data   = {}
 
     }
     if opts then
@@ -145,18 +146,18 @@ function plot.MultiDV(dir, dvs, title, opts)
         g.fname = "Arial"
     end
     if (not opts) or (not opts.fsize) then
-        g.fsize = 8
+        g.fsize = 12
     end
     for i, dv in ipairs(dvs) do
         local arr = { -- plot from an 'array-like' thing in memory. Could be a
             -- numlua matrix, for example.
             {
                 dv.x.values, -- x
-                dv.y.values -- y
+                dv.y.values  -- y
             },
 
             title = dv.y.name, -- optional
-            using = { 1, 2 } -- optional
+            using = { 1, 2 }   -- optional
         }
         if dv.name then arr.title = dv.name else arr.title = dv.y.name end
         if (dv.with) then arr.with = dv.with else arr.with = 'linespoints' end
@@ -191,14 +192,26 @@ local function createStdHRRCurves(dv, offset)
         if v > maxHRR then maxHRR = v end
     end
     if maxHRR == 0 then maxHRR = 1 end
-    local slowDV = { name = "Slow HRR", x = { name = "Time", units = "s", values = {} },
-        y = { name = "Slow HRR", units = "kW", values = {} } }
-    local mediumDV = { name = "Medium HRR", x = { name = "Time", units = "s", values = {} },
-        y = { name = "Medium HRR", units = "kW", values = {} } }
-    local fastDV = { name = "Fast HRR", x = { name = "Time", units = "s", values = {} },
-        y = { name = "Fast HRR", units = "kW", values = {} } }
-    local ultrafastDV = { name = "Ultrafast HRR", x = { name = "Time", units = "s", values = {} },
-        y = { name = "Ultrafast HRR", units = "kW", values = {} } }
+    local slowDV = {
+        name = "Slow HRR",
+        x = { name = "Time", units = "s", values = {} },
+        y = { name = "Slow HRR", units = "kW", values = {} }
+    }
+    local mediumDV = {
+        name = "Medium HRR",
+        x = { name = "Time", units = "s", values = {} },
+        y = { name = "Medium HRR", units = "kW", values = {} }
+    }
+    local fastDV = {
+        name = "Fast HRR",
+        x = { name = "Time", units = "s", values = {} },
+        y = { name = "Fast HRR", units = "kW", values = {} }
+    }
+    local ultrafastDV = {
+        name = "Ultrafast HRR",
+        x = { name = "Time", units = "s", values = {} },
+        y = { name = "Ultrafast HRR", units = "kW", values = {} }
+    }
     for i, v in ipairs(dv.x.values) do
         local slowVal = stdGrowthRate(slowAlpha, v - offset)
         local mediumVal = stdGrowthRate(mediumAlpha, v - offset)
@@ -228,8 +241,14 @@ local function createStdHRRCurves(dv, offset)
     return slowDV, mediumDV, fastDV, ultrafastDV
 end
 
-function plot.plotHRRDV(plotDir, hrrDV, name, offset, config)
+function plot.plotHRRDV(plotDir, hrrDV, name, config)
     local vecs
+    local offset
+    if config and config.offset then
+        offset = config.offset
+    else
+        offset = 0
+    end
     if hrrDV.x and hrrDV.y then
         print(hrrDV.name)
         local slowDV, mediumDV, fastDV, ultrafastDV = createStdHRRCurves(hrrDV, offset)
@@ -248,6 +267,12 @@ function plot.plotHRRDV(plotDir, hrrDV, name, offset, config)
             print(i, v.name)
         end
     end
+    do
+        local filteredVec = smv.deepCopy(hrrDV)
+        plot.wma(filteredVec, 20)
+        filteredVec.name = "Time-Averaged (WMA)"
+        vecs[#vecs + 1] = filteredVec
+    end
     return plot.DV(plotDir, vecs, name, config)
 end
 
@@ -257,6 +282,21 @@ function plot.printVec(vec)
     for i, v in ipairs(vec.x.values) do
         print(string.format("  x: %.2f y: %.2f", vec.x.values[i], vec.y.values[i]))
     end
+end
+
+function plot.sumVec(dvs)
+    local resultVec
+    for i = 1, #dvs do
+        local vec = dvs[i]
+        if vec then
+            if not resultVec then
+                resultVec = vec
+            else
+                resultVec = plot.addDVs({ resultVec, vec }, resultVec.name)
+            end
+        end
+    end
+    return resultVec
 end
 
 function plot.avgVec(dv, window)
@@ -270,6 +310,46 @@ function plot.avgVec(dv, window)
             n = n + 1
         end
         dv.y.values[i] = val / n
+    end
+    return dv
+end
+
+-- Weighted moving average
+function plot.wma(dv, window)
+    if #dv.y.values <= 1 then
+        -- The weighted average of an empty vector or a vector that has a
+        -- single element is just the same vector
+        error("cannot average empty vector")
+    end
+    for i, v in ipairs(dv.y.values) do
+        local val = 0
+        local n = 0
+        -- The total sum
+        local sum = 0;
+        -- First the actual value is fully weighted
+        sum = sum + v * window
+        local totalWeight = window
+        for j = 1, window do
+            local weight = window - j
+            local valueBehind = dv.y.values[i - j]
+            if valueBehind == nil then
+                -- If the window covers an area "before" before the start of the
+                -- vector, just use the first value. We know this exists as th
+                -- vector is not empty.
+                valueBehind = dv.y.values[1]
+            end
+            local valueAhead = dv.y.values[i + j]
+            if valueAhead == nil then
+                -- If the window covers an area "after" before the end of the
+                -- vector, just use the last value. We know this exists as th
+                -- vector is not empty.
+                valueAhead = dv.y.values[#dv.y.values]
+            end
+            sum = sum + valueBehind * weight
+            sum = sum + valueAhead * weight
+            totalWeight = totalWeight + weight * 2
+        end
+        dv.y.values[i] = sum / totalWeight
     end
     return dv
 end

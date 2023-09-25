@@ -9,12 +9,11 @@ typedef struct _simple_bounds {
   float min, max;
 } simple_bounds;
 
-
 void set_colorbar(size_t value);
 ERROR_CODE set_named_colorbar(const char *name);
 ERROR_CODE get_named_colorbar(const char *name, size_t *index);
-ERROR_CODE set_slice_bounds(const char *slice_type, int set_min, float value_min,
-                     int set_max, float value_max);
+ERROR_CODE set_slice_bounds(const char *slice_type, int set_min,
+                            float value_min, int set_max, float value_max);
 ERROR_CODE set_slice_bound_min(const char *slice_type, int set, float value);
 ERROR_CODE set_slice_bound_max(const char *slice_type, int set, float value);
 ERROR_CODE get_slice_bounds(const char *slice_type, simple_bounds *bounds);
@@ -23,9 +22,6 @@ int getframe();
 void setframe(int framenumber);
 float gettime();
 int settime(float timeval);
-
-
-
 
 // Non-Verified, the declarations below are of variable quality.
 int loadsmvall(const char *input_filepath);
@@ -184,7 +180,6 @@ void blockages_hide_all();
 // outlines
 void outlines_hide();
 void outlines_show();
-
 
 // surfaces
 void surfaces_hide_all();
