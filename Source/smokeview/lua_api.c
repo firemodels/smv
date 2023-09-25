@@ -3626,6 +3626,7 @@ int lua_set_outlinemode(lua_State *L) {
   int outline = lua_tonumber(L, 2);
   int return_code = set_outlinemode(highlight, outline);
   lua_pushnumber(L, return_code);
+  ;
   return 1;
 }
 
@@ -3652,6 +3653,33 @@ int lua_set_scaledfont(lua_State *L) {
   int thickness3d = lua_tonumber(L, 6);
   int return_code = set_scaledfont(height2d, height2dwidth, thickness2d,
                                    height3d, height3dwidth, thickness3d);
+  lua_pushnumber(L, return_code);
+  return 1;
+}
+
+int lua_get_fontsize(lua_State *L) {
+  switch (fontindex) {
+  case SMALL_FONT:
+    lua_pushstring(L, "small");
+    return 1;
+    break;
+  case LARGE_FONT:
+    lua_pushstring(L, "large");
+    return 1;
+    break;
+  case SCALED_FONT:
+    lua_pushnumber(L, scaled_font2d_height);
+    return 1;
+    break;
+  default:
+    return luaL_error(L, "font size is invalid");
+    break;
+  }
+}
+
+int lua_set_scaledfont_height2d(lua_State *L) {
+  int height2d = lua_tonumber(L, 1);
+  int return_code = set_scaledfont_height2d(height2d);
   lua_pushnumber(L, return_code);
   return 1;
 }
@@ -5328,6 +5356,7 @@ static luaL_Reg const smvlib[] = {
     {"set_eyex", lua_set_eyex},
     {"set_eyey", lua_set_eyey},
     {"set_eyez", lua_set_eyez},
+    {"get_fontsize", lua_get_fontsize},
     {"set_fontsize", lua_set_fontsize},
     {"set_frameratevalue", lua_set_frameratevalue},
     {"set_showfaces_solid", lua_set_showfaces_solid},
@@ -5345,6 +5374,7 @@ static luaL_Reg const smvlib[] = {
     {"set_p3dsurfacetype", lua_set_p3dsurfacetype},
     {"set_p3dsurfacesmooth", lua_set_p3dsurfacesmooth},
     {"set_scaledfont", lua_set_scaledfont},
+    {"set_scaledfont_height2d", lua_set_scaledfont_height2d},
     {"set_showalltextures", lua_set_showalltextures},
     {"set_showaxislabels", lua_set_showaxislabels},
     {"set_showblocklabel", lua_set_showblocklabel},

@@ -42,7 +42,7 @@ jobs:
     steps:
       # Check out the smv repo
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       # If we are currently building on Linux (ubuntu) install all the native
       # pre-requisites
       - name: Install linux deps
@@ -89,7 +89,7 @@ jobs:
         run: echo "exec_suffix=-lua" >> $GITHUB_ENV
       # Archive the smokeview executable
       - name: Archive production artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: smokeview-${{ runner.os }}-${{ env.exec_suffix }}
           path: smokeview
@@ -105,7 +105,7 @@ jobs:
           - off
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Install linux deps
         run: |
           yum -y install epel-release
@@ -135,7 +135,7 @@ jobs:
         if: ${{ matrix.lua }}
         run: echo "exec_suffix=-lua" >> $GITHUB_ENV
       - name: Archive production artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: smokeview-${{ runner.os }}-${{ env.exec_suffix }}
           path: smokeview
@@ -151,7 +151,7 @@ jobs:
           - off
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Install linux deps
         run: |
           yum -y install epel-release
@@ -195,7 +195,7 @@ jobs:
         if: ${{ matrix.lua }}
         run: echo "exec_suffix=-lua" >> $GITHUB_ENV
       - name: Archive production artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: smokeview-${{ runner.os }}-${{ env.exec_suffix }}
           path: smokeview
@@ -213,7 +213,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: prepare for cache restore
         run: |
           sudo mkdir -p /opt/intel
@@ -276,7 +276,7 @@ jobs:
         if: ${{ matrix.lua }} == lua
         run: echo "exec_suffix=-lua" >> $GITHUB_ENV
       - name: Archive production artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: smokeview-${{ runner.os }}-${{ env.exec_suffix }}
           path: smokeview
@@ -296,7 +296,7 @@ jobs:
         shell: bash
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: cache install
         id: cache-install
         uses: actions/cache@v2
@@ -340,7 +340,7 @@ jobs:
         shell:  bash
         run: .github/workflows/cache_exclude_windows.sh
       - name: Archive production artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: smokeview-windows${{ env.exec_suffix }}
           path: smokeview.exe
@@ -360,12 +360,12 @@ jobs:
         shell: bash
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
-      - name: build smokeview lua
+        uses: actions/checkout@v3
+      - name: build smokeview
         shell: cmd
         run: |
           cmake --version
-          cmake -B ${{github.workspace}}\cbuild -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DLUA=${{ matrix.lua }}
+          cmake -B ${{github.workspace}}\cbuild -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DLUA_UTIL_LIBS=ON -DLUA=${{ matrix.lua }} -DLUA_BUILD_BINARY=${{ matrix.lua }} -DVCPKG_TARGET_TRIPLET=x64-windows-static -DCMAKE_TOOLCHAIN_FILE=%VCPKG_INSTALLATION_ROOT%/scripts/buildsystems/vcpkg.cmake -DLUA_BUILD_BINARY=ON
           cmake --build ${{github.workspace}}\cbuild -j4 --config ${{env.BUILD_TYPE}}
           copy ${{github.workspace}}\cbuild\Release\smokeview.exe smokeview.exe
       - name: Download test data
@@ -383,7 +383,7 @@ jobs:
         if: ${{ matrix.lua }}
         run: echo "exec_suffix=-lua" >> $GITHUB_ENV
       - name: Archive production artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: smokeview-windows-msvc-${{ env.exec_suffix }}
           path: smokeview.exe
