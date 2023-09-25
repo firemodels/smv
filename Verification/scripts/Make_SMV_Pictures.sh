@@ -247,45 +247,41 @@ $SMV -version > smokeview.version
 if [ "$RUN_SMV" == "1" ]; then
 
 # precompute FED slices
-  if [ "$QUEUE" != "none" ]; then
-    cd $SVNROOT/smv/Verification
-    $QFDS -f -d Visualization plume5c
-    $QFDS -f -d Visualization plume5cdelta
-    $QFDS -f -d Visualization thouse5
-    $QFDS -f -d Visualization thouse5delta
+  cd $SVNROOT/smv/Verification
+  $QFDS -f -d Visualization plume5c
+  $QFDS -f -d Visualization plume5cdelta
+  $QFDS -f -d Visualization thouse5
+  $QFDS -f -d Visualization thouse5delta
 
-    wait_cases_end
+  wait_cases_end
 
 # compute isosurface from particles
 
-    cd $SVNROOT/smv/Verification/Visualization
-    echo Converting particles to isosurfaces in case plumeiso
-    $SMOKEZIP -f -part2iso plumeiso
+  cd $SVNROOT/smv/Verification/Visualization
+  echo Converting particles to isosurfaces in case plumeiso
+  $SMOKEZIP -f -part2iso plumeiso
 
-    cd $SVNROOT/smv/Verification/WUI
-    echo Converting particles to isosurfaces in case pine_tree
-    if  [ -e pine_tree.smv ]; then
-      $SMOKEZIP -f -part2iso pine_tree
-    fi
+  cd $SVNROOT/smv/Verification/WUI
+  echo Converting particles to isosurfaces in case pine_tree
+  if  [ -e pine_tree.smv ]; then
+    $SMOKEZIP -f -part2iso pine_tree
+  fi
 
 # difference plume5c and thouse5
 
-    cd $SVNROOT/smv/Verification/Visualization
-    echo Differencing cases plume5c and plume5cdelta
-    $SMOKEDIFF -w -r plume5c plume5cdelta
-    echo Differencing cases thouse5 and thouse5delta
-    $SMOKEDIFF -w -r thouse5 thouse5delta
-  fi
+  cd $SVNROOT/smv/Verification/Visualization
+  echo Differencing cases plume5c and plume5cdelta
+  $SMOKEDIFF -w -r plume5c plume5cdelta
+  echo Differencing cases thouse5 and thouse5delta
+  $SMOKEDIFF -w -r thouse5 thouse5delta
 
   echo Generating images
 
-  if [ "$RUN_SMV" == "1" ]; then
-    cd $SVNROOT/smv/Verification
-    scripts/SMV_Cases.sh
-    cd $SVNROOT/smv/Verification
-    scripts/SMV_DIFF_Cases.sh
-    cd $CURDIDR
-  fi
+  cd $SVNROOT/smv/Verification
+  scripts/SMV_Cases.sh
+  cd $SVNROOT/smv/Verification
+  scripts/SMV_DIFF_Cases.sh
+  cd $CURDIDR
 
 fi
 
