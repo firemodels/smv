@@ -6,7 +6,7 @@ RUNSCRIPT=
 ssffile=
 dummy=
 
-while getopts 'Ad:fl:mnp:t' OPTION
+while getopts 'Ad:fl:mn:p:t' OPTION
 do
 case $OPTION in
   A) # passthrough option
