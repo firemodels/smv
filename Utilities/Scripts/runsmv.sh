@@ -76,5 +76,5 @@ cd $fulldir
 if [ "$SMVBINDIR" != "" ]; then
   SMVBINDIR="-bindir $SMVBINDIR"
 fi
-echo $SMV $FED $SMVBINDIR           $RUNSCRIPT $in
-     $SMV $FED $SMVBINDIR -redirect $RUNSCRIPT $in
+echo "$SMV $FED $SMVBINDIR -redirect $RUNSCRIPT $in"
+      $SMV $FED $SMVBINDIR -redirect $RUNSCRIPT $in
