@@ -10,7 +10,7 @@ FDS_DEBUG=0
 nthreads=1
 RUN_SMV=1
 RUN_WUI=1
-RUN_LITE=0
+RUN_LITE=
 STOPFDS=
 COMPILER="intel"
 WAIT=0
@@ -149,12 +149,12 @@ case $OPTION in
   W)
    RUN_SMV=0
    RUN_WUI=1
-   RUN_LITE=0
+   RUN_LITE=
    ;;
   Y)
    RUN_SMV=1
    RUN_WUI=1
-   RUN_LITE=0
+   RUN_LITE=
 esac
 #shift
 done

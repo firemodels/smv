@@ -118,7 +118,7 @@ TEST=
 use_installed=
 RUN_SMV=1
 RUN_WUI=1
-RUN_LITE=0
+RUN_LITE=
 QUEUE=batch
 
 while getopts 'Cdghij:Lq:tWY' OPTION
@@ -151,12 +151,12 @@ case $OPTION  in
    TEST=_test
   ;;
   W)
-   RUN_LITE=0
+   RUN_LITE=
    RUN_SMV=0
    RUN_WUI=1
    ;;
   Y)
-   RUN_LITE=0
+   RUN_LITE=
    RUN_SMV=1
    RUN_WUI=1
    ;;
@@ -294,7 +294,7 @@ fi
 
 # generate subset case images
 
-if [ "$RUN_LITE" == "1" ] ; then
+if [ "$RUN_LITE" != "" ] ; then
   cd $SVNROOT/smv/Verification
   scripts/LITE_Cases.sh
 fi
