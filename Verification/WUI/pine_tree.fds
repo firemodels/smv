@@ -31,7 +31,7 @@ MESH IJK=20,20,40, XB=-1.0,1.0,-1.0,1.0,0.0,4.0 /
       SPECIFIC_HEAT= 1.0
       N_REACTIONS = 1
       REFERENCE_TEMPERATURE = 300.
-      NU_SPEC = 0.8
+      NU_SPEC = 1.0
       SPEC_ID = 'GLUCOSE'
       HEAT_OF_REACTION = 1000. /
  
