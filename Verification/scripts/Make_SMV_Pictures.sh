@@ -211,7 +211,6 @@ if [ "$QUEUE" == "none" ]; then
 else
   RUNSMV="$SVNROOT/smv/Utilities/Scripts/qsmv.sh -j $JOBPREFIX $use_installed -q $QUEUE"
 fi
-echo RUNSMV=$RUNSMV
 export QFDS=$RUNSMV
 export RUNCFAST=$RUNSMV
 
