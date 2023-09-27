@@ -112,7 +112,9 @@ else
   LSOUT=/tmp/lsout$$
 
   NPROCS=`grep processor /proc/cpuinfo | wc -l`
-  NPROCS=4
+  if [ $NPROC -gt 4 ]; then
+    NPROCS=4
+  fi
   NJOBS=0
   ls -l /tmp/*${LOCKBASE}* >& $LSOUT
   if [ "`grep 'No such' $LSOUT`" == "" ]; then
