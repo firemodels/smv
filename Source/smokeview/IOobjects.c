@@ -281,7 +281,7 @@ void RGBTest(void){
   max_err = MAX(dr, dg);
   max_err = MAX(max_err, db);
   if(max_err<=rgb_test_delta){
-    printf("found color (%i,%i,%i) at (%f,%f,%f) - within error bounds\n",
+    printf("found color (%i,%i,%i) at (%f,%f,%f) - within bounds\n",
       rgbcolor[0], rgbcolor[1], rgbcolor[2],
       rgb_test_xyz[0], rgb_test_xyz[1], rgb_test_xyz[2]);
   }
