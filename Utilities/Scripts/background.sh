@@ -112,7 +112,7 @@ else
   LSOUT=/tmp/lsout$$
 
   NPROCS=`grep processor /proc/cpuinfo | wc -l`
-  if [ $NPROC -gt 4 ]; then
+  if [ $NPROCS -gt 4 ]; then
     NPROCS=4
   fi
   NJOBS=0
