@@ -176,6 +176,20 @@ export SVNROOT=`pwd`
 cd $CURDIR/..
 export BASEDIR=`pwd`
 
+if [ "$QUEUE" == "none" ]; then
+  PREFIX=i
+  FDSEXE=$SVNROOT/fds/Build/${PREFIX}mpi_${COMPILER}_$PLATFORM/fds_${PREFIX}mpi_${COMPILER}_$PLATFORM
+  if [ ! -e $FDSEXE ]; then
+    PREFIX=o  
+    FDSEXE=$SVNROOT/fds/Build/${PREFIX}mpi_${COMPILER}_$PLATFORM/fds_${PREFIX}mpi_${COMPILER}_$PLATFORM
+  fi
+  if [ -e $FDSEXE ]; then
+    echo "" | $FDSEXE 2> $SVNROOT/smv/Manuals/SMV_User_Guide/SCRIPT_FIGURES/fds.version
+  else
+    echo "FDS version: unknown" $SVNROOT/smv/Manuals/SMV_User_Guide/SCRIPT_FIGURES/fds.version
+  fi
+fi
+
 if [ "$use_installed" == "1" ] ; then
   export SMV=smokeview
   export SMOKEZIP=smokediff
