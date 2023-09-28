@@ -11519,7 +11519,12 @@ typedef struct {
 
   SetupDeviceData();
   PRINT_TIMER(timer_readsmv, "SetupDeviceData");
-  ReadAllCSVFilesMT();
+  if(startup_multi == 1){
+    ReadAllCSVFilesMT();
+  }
+  else{
+    ReadAllCSVFiles();
+  }
   SetupPlot2DUnitData();
   PRINT_TIMER(timer_readsmv, "SetupPlot2DUnitData");
   if(nzoneinfo>0)SetupZoneDevs();
@@ -11557,7 +11562,13 @@ typedef struct {
 
   UpdateMeshBoxBounds();
   PRINT_TIMER(timer_readsmv, "UpdateMeshBoxBounds");
+  if(startup_multi==1){
   ReadAllGeomMT();
+  }
+  else{
+    SetupReadAllGeom();
+    ReadAllGeom();
+  }
   PRINT_TIMER(timer_readsmv, "ReadAllGeomMT");
 
   UpdateMeshCoords();
@@ -11745,7 +11756,15 @@ typedef struct {
   radius_windrose = 0.2*xyzmaxdiff;
   PRINT_TIMER(timer_readsmv, "InitVolRender");
 
-  if(large_case==0)ClassifyAllGeomMT();
+  if(large_case == 0){
+    if(startup_multi==1){
+      ClassifyAllGeomMT();
+    }
+    else{
+      SetupReadAllGeom();
+      ClassifyAllGeom();
+    }
+  }
 
   PRINT_TIMER(timer_readsmv, "null");
   UpdateTriangles(GEOM_STATIC,GEOM_UPDATE_ALL);
