@@ -10,7 +10,6 @@ FDS_DEBUG=0
 nthreads=1
 RUN_SMV=1
 RUN_WUI=1
-RUN_LITE=
 STOPFDS=
 COMPILER="intel"
 WAIT=0
@@ -94,7 +93,7 @@ SVNROOT=`pwd`
 cd $CURDIR/..
 
 use_installed="0"
-while getopts 'c:Cdhj:JLm:o:q:rsS:uWwY' OPTION
+while getopts 'c:Cdhj:Jm:o:q:rsS:uWwY' OPTION
 do
 case $OPTION in
   c)
@@ -117,11 +116,6 @@ case $OPTION in
   J)
    INTEL=i
    INTEL2="-I"
-   ;;
-  L)
-   RUN_LITE=1
-   RUN_SMV=0
-   RUN_WUI=0
    ;;
   m)
    export STOPFDSMAXITER="$OPTARG"
@@ -149,12 +143,10 @@ case $OPTION in
   W)
    RUN_SMV=0
    RUN_WUI=1
-   RUN_LITE=
    ;;
   Y)
    RUN_SMV=1
    RUN_WUI=1
-   RUN_LITE=
 esac
 #shift
 done
@@ -241,10 +233,6 @@ fi
 if [ "$RUN_SMV" == "1" ] ; then
   cd $VDIR
   scripts/SMV_Cases.sh
-fi
-if [ "$RUN_LITE" == "1" ] ; then
-  cd $VDIR
-  scripts/LITE_Cases.sh
 fi
 if [ "$RUN_WUI" == "1" ] ; then
   cd $VDIR

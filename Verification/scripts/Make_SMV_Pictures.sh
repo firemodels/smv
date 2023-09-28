@@ -30,7 +30,6 @@ echo "-C - use gnu compiled version of smokeview"
 echo "-d - use debug version of smokeview"
 echo "-h - display this message"
 echo "-i - use installed version of smokeview"
-echo "-L - use LITE_cases.sh to make picture, a subset of the full set of cases"
 echo "-q q - queue used to generate images"
 echo "-t - use test version of smokeview"
 echo "-W - only generate WUI case images"
@@ -118,10 +117,9 @@ TEST=
 use_installed=
 RUN_SMV=1
 RUN_WUI=1
-RUN_LITE=
 QUEUE=batch
 
-while getopts 'Cdghij:Lq:tWY' OPTION
+while getopts 'Cdghij:q:tWY' OPTION
 do
 case $OPTION  in
   C)
@@ -139,11 +137,6 @@ case $OPTION  in
   j)
    JOBPREFIX="$OPTARG" 
    ;;
-  L)
-   RUN_LITE=1
-   RUN_SMV=0
-   RUN_WUI=0
-   ;;
   q)
    QUEUE="$OPTARG" 
    ;;
@@ -151,12 +144,10 @@ case $OPTION  in
    TEST=_test
   ;;
   W)
-   RUN_LITE=
    RUN_SMV=0
    RUN_WUI=1
    ;;
   Y)
-   RUN_LITE=
    RUN_SMV=1
    RUN_WUI=1
    ;;
@@ -247,12 +238,6 @@ cd $SMVVG/SCRIPT_FIGURES
 rm -f *.version
 rm -f *.png
 
-if [ "$RUN_LITE" != "" ]; then
-  cd $SVNROOT/smv/Manuals/scripts
-  ./Copy_Smokebot_FiguresGH.sh
-  cd $SMVVG/SCRIPT_FIGURES
-fi
-
 make_helpinfo_files $SMVUG/SCRIPT_FIGURES
 
 $SMV -version > smokeview.version
@@ -309,12 +294,6 @@ if [ "$RUN_WUI" == "1" ] ; then
   scripts/WUI_Cases.sh
 fi
 
-# generate subset case images
-
-if [ "$RUN_LITE" != "" ] ; then
-  cd $SVNROOT/smv/Verification
-  scripts/LITE_Cases.sh
-fi
 wait_cases_end
 
 # copy generated images to web summary directory
