@@ -2781,7 +2781,7 @@ void InitTextures(int use_graphics_arg){
 
   /* ------------------ UpdateBoundInfo ------------------------ */
 
-void UpdateBoundInfo(void){
+void UpdateBoundInfo(int startup_multi_arg){
   int i,n;
   float bound_timer;
 
@@ -3017,7 +3017,7 @@ void UpdateBoundInfo(void){
   PRINT_TIMER(bound_timer, "UpdateChar");
   GetGlobalPartBounds(ALL_FILES);
   PRINT_TIMER(bound_timer, "GetGlobalPartBounds");
-  if(runscript == 1){
+  if(startup_multi_arg == 0){
     GetGlobalSliceBoundsFull();
   }
   else{
@@ -3025,7 +3025,7 @@ void UpdateBoundInfo(void){
     GetGlobalSliceBoundsMT();
   }
   PRINT_TIMER(bound_timer, "GetGlobalSliceBounds");
-  if(runscript == 1){
+  if(startup_multi_arg == 0){
     GetGlobalPatchBoundsFull();
   }
   else{
@@ -11438,8 +11438,13 @@ typedef struct {
 #ifdef pp_THREAD
   InitMultiThreading();
 #endif
+
+  int startup_multi = 1;
+  if(runscript == 1)startup_multi = 0;
+  if(compute_fed == 1)startup_multi = 0;
+
 #ifndef pp_CHECK_FILES
-  if(runscript==1){
+  if(startup_multi == 0){
     void CheckFiles(void);
     CheckFiles();
   }
@@ -11653,7 +11658,7 @@ typedef struct {
   LOCK_IBLANK
   SetVentDirs();
   UNLOCK_IBLANK
-  if(runscript == 1){
+  if(startup_multi == 1){
     JOIN_CSVFILES;
     JOIN_IBLANK;
     JOIN_SETUPFF;
@@ -11668,7 +11673,7 @@ typedef struct {
   glui_rotation_index = ROTATE_ABOUT_FDS_CENTER;
 
   PRINT_TIMER(timer_readsmv, "UpdateFileBoundList");
-  UpdateBoundInfo();
+  UpdateBoundInfo(startup_multi);
   PRINT_TIMER(timer_readsmv, "UpdateBoundInfo");
 
   UpdateObjectUsed();
