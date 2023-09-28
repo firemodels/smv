@@ -247,7 +247,11 @@ if [ "$RUN_SMV" == "1" ]; then
 
 # precompute FED slices
   cd $SVNROOT/smv/Verification
-  $QFDS -f -d Visualization plume5c
+  if [ "$QUEUE" == "none" ]; then
+    $QFDS -d Visualization plume5c
+  else
+    $QFDS -f -d Visualization plume5c
+  fi
   $QFDS -f -d Visualization plume5cdelta
   $QFDS -f -d Visualization thouse5
   $QFDS -f -d Visualization thouse5delta
