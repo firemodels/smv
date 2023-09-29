@@ -599,17 +599,6 @@ void Temperature2Emission(float temperature, float *emission){
 }
 #endif
 
-/* ----------------------- InitVKL ----------------------------- */
-
-#ifdef pp_OPENVKL
-VKLDevice InitVKL(int *width){
-  vklLoadModule("cpu_device");
-  VKLDevice device = vklNewDevice("cpu");
-  *width = vklGetNativeSIMDWidth(device);
-  return device;
-}
-#endif
-
 /* ----------------------- GetFireEmission ----------------------------- */
 
 void GetFireEmission(float *smoke_tran, float *fire_emission, float dlength, float xyz[3], meshdata *meshi, int *inobst, char *blank_local){

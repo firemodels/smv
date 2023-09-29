@@ -451,10 +451,9 @@ void ReadAllCSVFilesMT(void){
 #ifdef pp_CSV_MULTI
 void FinishAllCSVFiles(void){
   int i;
-  if(csv_multithread == 1){
-    for(i = 0; i < ncsv_threads; i++){
-      pthread_join(csv_ids[i], NULL);
-    }
+
+  for(i = 0; i < ncsv_threads; i++){
+    pthread_join(csv_ids[i], NULL);
   }
 }
 #endif
@@ -560,7 +559,7 @@ void *MtSetupFF(void *arg){
 
 void SetupFFMT(void){
 #ifdef pp_THREAD
-  if(use_ffmpeg_thread == 1){
+  if(ffmpeg_multithread == 1){
     pthread_create(&setupff_thread_id, NULL, MtSetupFF, NULL);
   }
   else{
@@ -642,8 +641,8 @@ void *MtCheckFiles(void *arg){
 }
 
 void CheckFilesMT(void){
-  if(CHECKFILES_thread==1){
-    pthread_create(&CHECKFILES_thread_id, NULL, MtCheckFiles, NULL);
+  if(checkfiles_multithread==1){
+    pthread_create(&checkfiles_multithread_id, NULL, MtCheckFiles, NULL);
   }
   else{
     CheckFiles();
@@ -814,8 +813,8 @@ void *MtMakeIBlank(void *arg){
 
 /* ------------------ makeiblank_all ------------------------ */
 
-void MakeIBlankAll(void){
-  if(runscript==0){
+void MakeIBlankAllMT(void){
+  if(iblank_multithread == 1){
     pthread_create(&makeiblank_thread_id, NULL, MtMakeIBlank, NULL);
   }
   else{
@@ -825,7 +824,7 @@ void MakeIBlankAll(void){
   }
 }
 #else
-void MakeIBlankAll(void){
+void MakeIBlankAllMT(void){
   MakeIBlank();
   SetCVentDirs();
   update_setvents = 1;

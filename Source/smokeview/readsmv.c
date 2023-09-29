@@ -3017,21 +3017,11 @@ void UpdateBoundInfo(void){
   PRINT_TIMER(bound_timer, "UpdateChar");
   GetGlobalPartBounds(ALL_FILES);
   PRINT_TIMER(bound_timer, "GetGlobalPartBounds");
-  if(runscript == 1){
-    GetGlobalSliceBoundsFull();
-  }
-  else{
-    GetGlobalSliceBoundsReduced();
-    GetGlobalSliceBoundsMT();
-  }
+  GetGlobalSliceBoundsReduced();
+  GetGlobalSliceBoundsMT();
   PRINT_TIMER(bound_timer, "GetGlobalSliceBounds");
-  if(runscript == 1){
-    GetGlobalPatchBoundsFull();
-  }
-  else{
-    GetGlobalPatchBoundsReduced();
-    GetGlobalPatchBoundsMT();
-  }
+  GetGlobalPatchBoundsReduced();
+  GetGlobalPatchBoundsMT();
   PRINT_TIMER(bound_timer, "GetGlobalPatchBounds");
   GetGlobalHVACDuctBounds(0);
   PRINT_TIMER(bound_timer, "GetGlobalHVACDuctBounds");
@@ -11438,14 +11428,17 @@ typedef struct {
 #ifdef pp_THREAD
   InitMultiThreading();
 #endif
+
+  if(runscript == 1||compute_fed == 1){
+    checkfiles_multithread  = 0;
+    csv_multithread         = 0;
+    iblank_multithread      = 0;
+    ffmpeg_multithread      = 0;
+    readallgeom_multithread = 0;
+  }
+
 #ifndef pp_CHECK_FILES
-  if(runscript==1){
-    void CheckFiles(void);
-    CheckFiles();
-  }
-  else{
-    CheckFilesMT();
-  }
+  CheckFilesMT();
   PRINT_TIMER(timer_readsmv, "CheckFilesMT");
 #endif
 
@@ -11648,16 +11641,16 @@ typedef struct {
   PRINT_TIMER(timer_readsmv, "null");
   MakeIBlankCarve();
   MakeIBlankSmoke3D();
-  MakeIBlankAll();
+  MakeIBlankAllMT();
   SetupFFMT();
   LOCK_IBLANK
   SetVentDirs();
   UNLOCK_IBLANK
-  if(runscript == 1){
-    JOIN_CSVFILES;
-    JOIN_IBLANK;
-    JOIN_SETUPFF;
-  }
+
+  JOIN_CSVFILES;
+  JOIN_IBLANK;
+  JOIN_SETUPFF;
+
   PRINT_TIMER(timer_readsmv, "make blanks");
   UpdateFaces();
   PRINT_TIMER(timer_readsmv, "UpdateFaces");
@@ -11668,6 +11661,7 @@ typedef struct {
   glui_rotation_index = ROTATE_ABOUT_FDS_CENTER;
 
   PRINT_TIMER(timer_readsmv, "UpdateFileBoundList");
+
   UpdateBoundInfo();
   PRINT_TIMER(timer_readsmv, "UpdateBoundInfo");
 
@@ -11740,7 +11734,9 @@ typedef struct {
   radius_windrose = 0.2*xyzmaxdiff;
   PRINT_TIMER(timer_readsmv, "InitVolRender");
 
-  if(large_case==0)ClassifyAllGeomMT();
+  if(large_case == 0){
+    ClassifyAllGeomMT();
+  }
 
   PRINT_TIMER(timer_readsmv, "null");
   UpdateTriangles(GEOM_STATIC,GEOM_UPDATE_ALL);

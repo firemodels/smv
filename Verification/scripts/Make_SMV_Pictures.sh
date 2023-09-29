@@ -30,7 +30,6 @@ echo "-C - use gnu compiled version of smokeview"
 echo "-d - use debug version of smokeview"
 echo "-h - display this message"
 echo "-i - use installed version of smokeview"
-echo "-L - use LITE_cases.sh to make picture, a subset of the full set of cases"
 echo "-q q - queue used to generate images"
 echo "-t - use test version of smokeview"
 echo "-W - only generate WUI case images"
@@ -118,10 +117,9 @@ TEST=
 use_installed=
 RUN_SMV=1
 RUN_WUI=1
-RUN_LITE=0
 QUEUE=batch
 
-while getopts 'Cdghij:Lq:tWY' OPTION
+while getopts 'Cdghij:q:tWY' OPTION
 do
 case $OPTION  in
   C)
@@ -139,11 +137,6 @@ case $OPTION  in
   j)
    JOBPREFIX="$OPTARG" 
    ;;
-  L)
-   RUN_LITE=1
-   RUN_SMV=0
-   RUN_WUI=0
-   ;;
   q)
    QUEUE="$OPTARG" 
    ;;
@@ -151,12 +144,10 @@ case $OPTION  in
    TEST=_test
   ;;
   W)
-   RUN_LITE=0
    RUN_SMV=0
    RUN_WUI=1
    ;;
   Y)
-   RUN_LITE=0
    RUN_SMV=1
    RUN_WUI=1
    ;;
@@ -175,6 +166,20 @@ cd ../../..
 export SVNROOT=`pwd`
 cd $CURDIR/..
 export BASEDIR=`pwd`
+
+if [ "$QUEUE" == "none" ]; then
+  PREFIX=i
+  FDSEXE=$SVNROOT/fds/Build/${PREFIX}mpi_${COMPILER}_$PLATFORM/fds_${PREFIX}mpi_${COMPILER}_$PLATFORM
+  if [ ! -e $FDSEXE ]; then
+    PREFIX=o  
+    FDSEXE=$SVNROOT/fds/Build/${PREFIX}mpi_${COMPILER}_$PLATFORM/fds_${PREFIX}mpi_${COMPILER}_$PLATFORM
+  fi
+  if [ -e $FDSEXE ]; then
+    echo "" | $FDSEXE 2> $SVNROOT/smv/Manuals/SMV_User_Guide/SCRIPT_FIGURES/fds.version
+  else
+    echo "FDS version: unknown" $SVNROOT/smv/Manuals/SMV_User_Guide/SCRIPT_FIGURES/fds.version
+  fi
+fi
 
 if [ "$use_installed" == "1" ] ; then
   export SMV=smokeview
@@ -211,7 +216,6 @@ if [ "$QUEUE" == "none" ]; then
 else
   RUNSMV="$SVNROOT/smv/Utilities/Scripts/qsmv.sh -j $JOBPREFIX $use_installed -q $QUEUE"
 fi
-echo RUNSMV=$RUNSMV
 export QFDS=$RUNSMV
 export RUNCFAST=$RUNSMV
 
@@ -234,12 +238,6 @@ cd $SMVVG/SCRIPT_FIGURES
 rm -f *.version
 rm -f *.png
 
-if [ "$RUN_LITE" != "" ]; then
-  cd $SVNROOT/smv/Manuals/scripts
-  ./Copy_Smokebot_FiguresGH.sh
-  cd $SMVVG/SCRIPT_FIGURES
-fi
-
 make_helpinfo_files $SMVUG/SCRIPT_FIGURES
 
 $SMV -version > smokeview.version
@@ -247,45 +245,45 @@ $SMV -version > smokeview.version
 if [ "$RUN_SMV" == "1" ]; then
 
 # precompute FED slices
-  if [ "$QUEUE" != "none" ]; then
-    cd $SVNROOT/smv/Verification
+  cd $SVNROOT/smv/Verification
+  if [ "$QUEUE" == "none" ]; then
+    $QFDS -d Visualization plume5c
+  else
     $QFDS -f -d Visualization plume5c
-    $QFDS -f -d Visualization plume5cdelta
-    $QFDS -f -d Visualization thouse5
-    $QFDS -f -d Visualization thouse5delta
+  fi
+  $QFDS -f -d Visualization plume5cdelta
+  $QFDS -f -d Visualization thouse5
+  $QFDS -f -d Visualization thouse5delta
 
-    wait_cases_end
+  wait_cases_end
 
 # compute isosurface from particles
 
-    cd $SVNROOT/smv/Verification/Visualization
-    echo Converting particles to isosurfaces in case plumeiso
-    $SMOKEZIP -f -part2iso plumeiso
+  cd $SVNROOT/smv/Verification/Visualization
+  echo Converting particles to isosurfaces in case plumeiso
+  $SMOKEZIP -f -part2iso plumeiso
 
-    cd $SVNROOT/smv/Verification/WUI
-    echo Converting particles to isosurfaces in case pine_tree
-    if  [ -e pine_tree.smv ]; then
-      $SMOKEZIP -f -part2iso pine_tree
-    fi
+  cd $SVNROOT/smv/Verification/WUI
+  echo Converting particles to isosurfaces in case pine_tree
+  if  [ -e pine_tree.smv ]; then
+    $SMOKEZIP -f -part2iso pine_tree
+  fi
 
 # difference plume5c and thouse5
 
-    cd $SVNROOT/smv/Verification/Visualization
-    echo Differencing cases plume5c and plume5cdelta
-    $SMOKEDIFF -w -r plume5c plume5cdelta
-    echo Differencing cases thouse5 and thouse5delta
-    $SMOKEDIFF -w -r thouse5 thouse5delta
-  fi
+  cd $SVNROOT/smv/Verification/Visualization
+  echo Differencing cases plume5c and plume5cdelta
+  $SMOKEDIFF -w -r plume5c plume5cdelta
+  echo Differencing cases thouse5 and thouse5delta
+  $SMOKEDIFF -w -r thouse5 thouse5delta
 
   echo Generating images
 
-  if [ "$RUN_SMV" == "1" ]; then
-    cd $SVNROOT/smv/Verification
-    scripts/SMV_Cases.sh
-    cd $SVNROOT/smv/Verification
-    scripts/SMV_DIFF_Cases.sh
-    cd $CURDIDR
-  fi
+  cd $SVNROOT/smv/Verification
+  scripts/SMV_Cases.sh
+  cd $SVNROOT/smv/Verification
+  scripts/SMV_DIFF_Cases.sh
+  cd $CURDIDR
 
 fi
 
@@ -296,12 +294,6 @@ if [ "$RUN_WUI" == "1" ] ; then
   scripts/WUI_Cases.sh
 fi
 
-# generate subset case images
-
-if [ "$RUN_LITE" == "1" ] ; then
-  cd $SVNROOT/smv/Verification
-  scripts/LITE_Cases.sh
-fi
 wait_cases_end
 
 # copy generated images to web summary directory
