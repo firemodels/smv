@@ -107,6 +107,29 @@ fi
 if [ "$SLEEP" == "" ]; then
   $EXE $input
 else
-  $REPOROOT/smv/Utilities/Scripts/run_prog.sh $EXE $input &
+  LOCKBASE=`whoami`_fdslock
+  LOCKFILE=/tmp/${input}_${LOCKBASE}$$
+  LSOUT=/tmp/lsout$$
+
+  NPROCS=`grep processor /proc/cpuinfo | wc -l`
+  if [ $NPROCS -gt 4 ]; then
+    NPROCS=4
+  fi
+  NJOBS=0
+  ls -l /tmp/*${LOCKBASE}* >& $LSOUT
+  if [ "`grep 'No such' $LSOUT`" == "" ]; then
+    NJOBS=`ls -l /tmp/*${LOCKBASE}* | wc -l`
+  fi
+
+  while [ $NJOBS -gt $NPROCS ]; do
+    sleep 5
+    NJOBS=0
+    ls -l /tmp/*${LOCKBASE}* >& $LSOUT
+    if [ "`grep 'No such' $LSOUT`" == "" ]; then
+      NJOBS=`ls -l /tmp/*${LOCKBASE}* | wc -l`
+    fi
+  done
   sleep 5
+  $REPOROOT/smv/Utilities/Scripts/run_prog.sh $EXE $input &
+  rm $LSOUT
 fi

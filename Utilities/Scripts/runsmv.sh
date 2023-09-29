@@ -6,7 +6,7 @@ RUNSCRIPT=
 ssffile=
 dummy=
 
-while getopts 'Ad:fl:mp:t' OPTION
+while getopts 'Ad:fl:mn:p:t' OPTION
 do
 case $OPTION in
   A) # passthrough option
@@ -22,6 +22,9 @@ case $OPTION in
    ;;
   m)
    MOVIE="y"
+   ;;
+  n)
+   dummy="$OPTARG"
    ;;
   p)
    dummy="$OPTARG"
@@ -73,5 +76,5 @@ cd $fulldir
 if [ "$SMVBINDIR" != "" ]; then
   SMVBINDIR="-bindir $SMVBINDIR"
 fi
-echo $SMV $FED $SMVBINDIR           $RUNSCRIPT $in
-     $SMV $FED $SMVBINDIR -redirect $RUNSCRIPT $in
+echo "$SMV $FED $SMVBINDIR -redirect $RUNSCRIPT $in"
+      $SMV $FED $SMVBINDIR -redirect $RUNSCRIPT $in
