@@ -1,11 +1,6 @@
 #ifndef SMOKEVIEWVARS_H_DEFINED
 #define SMOKEVIEWVARS_H_DEFINED
 #include <time.h>
-#ifdef pp_OPENVKL
-#include <openvkl/openvkl.h>
-#endif
-
-
 #include "MALLOCC.h"
 #ifdef CPP
 #include "glui.h"
@@ -981,10 +976,6 @@ SVEXTERN int GPU3dslice_transparent_level;
 SVEXTERN int GPUvol_block_volsmoke;
 #endif
 
-#ifdef pp_OPENVKL
-SVEXTERN VKLDevice SVDECL(vkl_device, NULL);
-SVEXTERN int vkl_width;
-#endif
 SVEXTERN int SVDECL(vis_device_plot, 0);
 SVEXTERN int SVDECL(vis_hrr_plot, 0);
 SVEXTERN int SVDECL(vis_slice_plot, 0);
