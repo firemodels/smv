@@ -562,12 +562,12 @@ void GetGlobalSliceBounds(int flag){
     if(slicei->is_fed==1)continue;
     if(slicei->valmin_fds>slicei->valmax_fds ||
        current_script_command==NULL||current_script_command->command!=SCRIPT_LOADSLICERENDER)doit=1;
-     if(flag==0){
+    if(flag==0){
        doit = 0;
        slicei->valmin_fds = 0.0;
        slicei->valmax_fds = 1.0;
-     }
-     if(force_bound_update == 1)doit = 1;
+    }
+    if(force_bound_update == 1||nzoneinfo>0)doit = 1;
 
     if(doit==1){
       if(GetBounds(slicei->bound_file, &valmin, &valmax, &sliceboundsinfo, &nsliceboundsinfo)==1){
