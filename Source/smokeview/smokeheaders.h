@@ -397,7 +397,7 @@ EXTERNCPP void DrawScreenInfo(void);
 EXTERNCPP void SliceInObstMenu2Dialog(int var);
 EXTERNCPP void SliceInObstDialog2Menu(void);
 EXTERNCPP void GetGeomZBounds(float *zmin, float *zmax);
-EXTERNCPP void MakeIBlankAll(void);
+EXTERNCPP void MakeIBlankAllMT(void);
 EXTERNCPP void UpdateSliceDupDialog(void);
 EXTERNCPP void DrawNorth(void);
 EXTERNCPP void DrawGeomValues(slicedata *sd, patchdata *patchi, int geom_type);

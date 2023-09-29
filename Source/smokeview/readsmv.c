@@ -2781,7 +2781,7 @@ void InitTextures(int use_graphics_arg){
 
   /* ------------------ UpdateBoundInfo ------------------------ */
 
-void UpdateBoundInfo(int startup_multi_arg){
+void UpdateBoundInfo(void){
   int i,n;
   float bound_timer;
 
@@ -3017,21 +3017,11 @@ void UpdateBoundInfo(int startup_multi_arg){
   PRINT_TIMER(bound_timer, "UpdateChar");
   GetGlobalPartBounds(ALL_FILES);
   PRINT_TIMER(bound_timer, "GetGlobalPartBounds");
-  if(startup_multi_arg == 0){
-    GetGlobalSliceBoundsFull();
-  }
-  else{
-    GetGlobalSliceBoundsReduced();
-    GetGlobalSliceBoundsMT();
-  }
+  GetGlobalSliceBoundsReduced();
+  GetGlobalSliceBoundsMT();
   PRINT_TIMER(bound_timer, "GetGlobalSliceBounds");
-  if(startup_multi_arg == 0){
-    GetGlobalPatchBoundsFull();
-  }
-  else{
-    GetGlobalPatchBoundsReduced();
-    GetGlobalPatchBoundsMT();
-  }
+  GetGlobalPatchBoundsReduced();
+  GetGlobalPatchBoundsMT();
   PRINT_TIMER(bound_timer, "GetGlobalPatchBounds");
   GetGlobalHVACDuctBounds(0);
   PRINT_TIMER(bound_timer, "GetGlobalHVACDuctBounds");
@@ -11439,18 +11429,16 @@ typedef struct {
   InitMultiThreading();
 #endif
 
-  int startup_multi = 1;
-  if(runscript == 1)startup_multi = 0;
-  if(compute_fed == 1)startup_multi = 0;
+  if(runscript == 1||compute_fed == 1){
+    checkfiles_multithread  = 0;
+    csv_multithread         = 0;
+    iblank_multithread      = 0;
+    ffmpeg_multithread      = 0;
+    readallgeom_multithread = 0;
+  }
 
 #ifndef pp_CHECK_FILES
-  if(startup_multi == 0){
-    void CheckFiles(void);
-    CheckFiles();
-  }
-  else{
-    CheckFilesMT();
-  }
+  CheckFilesMT();
   PRINT_TIMER(timer_readsmv, "CheckFilesMT");
 #endif
 
@@ -11519,12 +11507,7 @@ typedef struct {
 
   SetupDeviceData();
   PRINT_TIMER(timer_readsmv, "SetupDeviceData");
-  if(startup_multi == 1){
-    ReadAllCSVFilesMT();
-  }
-  else{
-    ReadAllCSVFiles();
-  }
+  ReadAllCSVFilesMT();
   SetupPlot2DUnitData();
   PRINT_TIMER(timer_readsmv, "SetupPlot2DUnitData");
   if(nzoneinfo>0)SetupZoneDevs();
@@ -11562,13 +11545,7 @@ typedef struct {
 
   UpdateMeshBoxBounds();
   PRINT_TIMER(timer_readsmv, "UpdateMeshBoxBounds");
-  if(startup_multi==1){
   ReadAllGeomMT();
-  }
-  else{
-    SetupReadAllGeom();
-    ReadAllGeom();
-  }
   PRINT_TIMER(timer_readsmv, "ReadAllGeomMT");
 
   UpdateMeshCoords();
@@ -11664,16 +11641,16 @@ typedef struct {
   PRINT_TIMER(timer_readsmv, "null");
   MakeIBlankCarve();
   MakeIBlankSmoke3D();
-  MakeIBlankAll();
+  MakeIBlankAllMT();
   SetupFFMT();
   LOCK_IBLANK
   SetVentDirs();
   UNLOCK_IBLANK
-  if(startup_multi == 1){
-    JOIN_CSVFILES;
-    JOIN_IBLANK;
-    JOIN_SETUPFF;
-  }
+
+  JOIN_CSVFILES;
+  JOIN_IBLANK;
+  JOIN_SETUPFF;
+
   PRINT_TIMER(timer_readsmv, "make blanks");
   UpdateFaces();
   PRINT_TIMER(timer_readsmv, "UpdateFaces");
@@ -11684,7 +11661,8 @@ typedef struct {
   glui_rotation_index = ROTATE_ABOUT_FDS_CENTER;
 
   PRINT_TIMER(timer_readsmv, "UpdateFileBoundList");
-  UpdateBoundInfo(startup_multi);
+
+  UpdateBoundInfo();
   PRINT_TIMER(timer_readsmv, "UpdateBoundInfo");
 
   UpdateObjectUsed();
@@ -11757,13 +11735,7 @@ typedef struct {
   PRINT_TIMER(timer_readsmv, "InitVolRender");
 
   if(large_case == 0){
-    if(startup_multi==1){
-      ClassifyAllGeomMT();
-    }
-    else{
-      SetupReadAllGeom();
-      ClassifyAllGeom();
-    }
+    ClassifyAllGeomMT();
   }
 
   PRINT_TIMER(timer_readsmv, "null");

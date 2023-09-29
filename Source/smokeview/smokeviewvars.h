@@ -94,8 +94,8 @@ SVEXTERN int SVDECL(agl_offset_actual, 1);
 
 SVEXTERN int SVDECL(slicebounds_thread, 1);
 SVEXTERN int SVDECL(patchbounds_thread, 1);
-SVEXTERN int SVDECL(CHECKFILES_thread, 1), SVDECL(have_compressed_files, 0);
-SVEXTERN int SVDECL(use_ffmpeg_thread, 1);
+SVEXTERN int SVDECL(checkfiles_multithread, 1), SVDECL(have_compressed_files, 0);
+SVEXTERN int SVDECL(ffmpeg_multithread, 1);
 SVEXTERN int SVDECL(nsmoke_threads, 1), SVDECL(use_smoke_thread, 0);
 SVEXTERN int SVDECL(force_gray_smoke, 1);
 SVEXTERN int SVDECL(startup, 1);
@@ -331,6 +331,7 @@ SVEXTERN int SVDECL(update_device, 0);
 SVEXTERN int SVDECL(cancel_update_triangles, 0);
 SVEXTERN int SVDECL(updating_triangles, 0);
 SVEXTERN int SVDECL(iso_multithread, 0), SVDECL(iso_multithread_save,0);
+SVEXTERN int SVDECL(iblank_multithread, 1);
 #ifdef pp_PART_MULTI
 SVEXTERN int SVDECL(part_multithread, 1);
 #else
