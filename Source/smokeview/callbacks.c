@@ -3644,6 +3644,7 @@ void SetScreenSize(int *width, int *height){
   }
 }
 
+#ifndef pp_RESHAPE
 /* ------------------ AdjustY ------------------------ */
 
 void AdjustY(cameradata *ca){
@@ -3672,6 +3673,7 @@ void AdjustY(cameradata *ca){
     ResetDefaultMenu(selected_view);
   }
 }
+#endif
 
 /* ------------------ ReshapeCB ------------------------ */
 
