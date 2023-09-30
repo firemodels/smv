@@ -25,6 +25,8 @@
 // pp_BLACKBODY_OUT       // output generated blackbody color data 
 //#define pp_CHECK_FILES  // check if compressed files exist at startup
 
+#define pp_RESHAPE        // fix to Reshape call back (preserve scene orientaion and location when window is resized)
+
 #define pp_FAST           // set fast startup by default
 
 #define pp_COLOR_PLOT     /  add checkbox for showing CIELab colorbar delta distance plot
