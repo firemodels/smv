@@ -3644,6 +3644,7 @@ void SetScreenSize(int *width, int *height){
   }
 }
 
+#ifndef pp_RESHAPE
 /* ------------------ AdjustY ------------------------ */
 
 void AdjustY(cameradata *ca){
@@ -3672,9 +3673,26 @@ void AdjustY(cameradata *ca){
     ResetDefaultMenu(selected_view);
   }
 }
+#endif
 
 /* ------------------ ReshapeCB ------------------------ */
 
+#ifdef pp_RESHAPE
+void ReshapeCB(int width, int height){
+  START_TIMER(timer_reshape);
+  if(disable_reshape==1)return;
+  updatemenu=1;
+  if(update_reshape==0){
+    CopyCamera(camera_save,camera_current);
+  }
+  SetScreenSize(&width,&height);
+  windowresized=1;
+  CopyCamera(camera_current,camera_save);
+  windowsize_pointer_old = -1;
+  UpdateWindowSizeList();
+  update_reshape = 2;
+ }
+#else
 void ReshapeCB(int width, int height){
   START_TIMER(timer_reshape);
   if(disable_reshape==1)return;
@@ -3697,6 +3715,7 @@ void ReshapeCB(int width, int height){
   if(current_script_command==NULL)update_adjust_y = 2;
   update_reshape = 2;
  }
+#endif
 
 /* ------------------ ResetGLTime ------------------------ */
 
