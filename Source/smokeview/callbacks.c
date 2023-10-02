@@ -2023,8 +2023,14 @@ void Keyboard(unsigned char key, int flag){
         updatemenu = 1;
       }
       break;
-    case 'k':
     case 'K':
+      fix_window_aspect = 1 - fix_window_aspect;
+      if(fix_window_aspect == 1)printf("fix window aspect ratio: on\n");
+      if(fix_window_aspect == 0)printf("fix window aspect ratio: off\n");
+      SceneMotionCB(WINDOW_PRESERVE);
+      UpdateWindowAspect();
+      break;
+    case 'k':
       if(keystate==GLUT_ACTIVE_ALT){ // toggle device selection
         select_device = 1-select_device;
         updatemenu = 1;
@@ -3685,7 +3691,15 @@ void ReshapeCB(int width, int height){
   if(update_reshape==0){
     CopyCamera(camera_save,camera_current);
   }
-  SetScreenSize(&width,&height);
+  if(fix_window_aspect==1){
+    glui_screenWidth=width;
+    glui_screenHeight=glui_screenWidth*window_aspect;
+    SceneMotionCB(WINDOW_RESIZE);
+  }
+  else{
+    SetScreenSize(&width,&height);
+  }
+
   windowresized=1;
   CopyCamera(camera_current,camera_save);
   windowsize_pointer_old = -1;

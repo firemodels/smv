@@ -1258,7 +1258,10 @@ SVEXTERN int smokeskip,smokeskipm1;
 SVEXTERN int nrooms,nzoneinfo, nfires;
 SVEXTERN float SVDECL(scene_aspect_ratio,1.0);
 
+SVEXTERN int SVDECL(fix_window_aspect, 0);
+SVEXTERN float SVDECL(window_aspect,640.0/480.0);
 SVEXTERN int SVDECL(screenWidth,640), SVDECL(screenHeight,480);
+SVEXTERN int screenWidth_save, screenHeight_save;
 SVEXTERN int SVDECL(screenWidthINI,640), SVDECL(screenHeightINI,480);
 SVEXTERN int SVDECL(glui_screenWidth,640), SVDECL(glui_screenHeight,480);
 SVEXTERN int windowsize_pointer;
