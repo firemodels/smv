@@ -3820,8 +3820,6 @@ void DoStereo(void){
       screeni = NULL;
       if(render_mode == RENDER_360 && render_status == RENDER_ON)screeni = screeninfo + i;
       if(stereotype_frame==LEFT_EYE||stereotype_frame==BOTH_EYES){
-        int screenWidth_save;
-
         screenWidth_save=screenWidth;
         screenWidth/=2;
         screenWidth = MAX(screenWidth, 1);
@@ -3829,8 +3827,6 @@ void DoStereo(void){
         screenWidth=screenWidth_save;
       }
       if(stereotype_frame==RIGHT_EYE||stereotype_frame==BOTH_EYES){
-        int screenWidth_save;
-
         screenWidth_save=screenWidth;
         screenWidth/=2;
         screenWidth = MAX(screenWidth, 1);
