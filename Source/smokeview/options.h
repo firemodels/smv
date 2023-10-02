@@ -26,6 +26,7 @@
 //#define pp_CHECK_FILES  // check if compressed files exist at startup
 
 #define pp_RESHAPE        // fix to Reshape call back (preserve scene orientaion and location when window is resized)
+#define pp_SCRIPTY        // update y postion when setting viewpoints in a script
 
 #define pp_FAST           // set fast startup by default
 
