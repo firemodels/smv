@@ -34,6 +34,9 @@
 #define CURSOR                13
 #define SAVE_SETTINGS_MOTION  14
 #define WINDOW_RESIZE         16
+#define WINDOW_RESIZE_WIDTH   50
+#define WINDOW_RESIZE_HEIGHT  51
+#define WINDOW_PRESERVE       52
 #define WINDOWSIZE_LIST       17
 #define SNAPSCENE             21
 #define SET_VIEW_XYZ          22

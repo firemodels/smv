@@ -94,6 +94,8 @@ EXTERNCPP void AdjustY(cameradata *ca);
 
 EXTERNCPP void UpdateFrameTimelabel(void);
 
+EXTERNCPP void UpdateWindowAspect(void);
+
 EXTERNCPP void ScriptViewXYZMINMAXOrtho(int option);
 EXTERNCPP void SetCameraView(cameradata *ca, int option);
 EXTERNCPP void SetCameraViewPersp(cameradata *ca, int option);

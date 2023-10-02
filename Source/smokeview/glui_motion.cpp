@@ -125,6 +125,7 @@ GLUI_Spinner *SPINNER_background_red=NULL;
 GLUI_Spinner *SPINNER_background_green=NULL;
 GLUI_Spinner *SPINNER_background_blue=NULL;
 
+GLUI_Checkbox *CHECKBOX_fix_window_aspect = NULL;
 GLUI_Checkbox *CHECKBOX_use_geom_factors = NULL;
 GLUI_Checkbox *CHECKBOX_use_customview=NULL;
 GLUI_Checkbox *CHECKBOX_custom_view = NULL;
@@ -180,7 +181,6 @@ GLUI_Button *BUTTON_snap=NULL;
 GLUI_Button *BUTTON_render_start=NULL ;
 GLUI_Button *BUTTON_motion_1=NULL;
 GLUI_Button *BUTTON_motion_2=NULL;
-GLUI_Button *BUTTON_window_update=NULL;
 GLUI_Button *BUTTON_make_movie = NULL;
 GLUI_Button *BUTTON_play_movie = NULL;
 #ifdef pp_RENDER360_DEBUG
@@ -1065,6 +1065,12 @@ extern "C" void UpdateGluiFileLabel(int var){
   }
 }
 
+/* ------------------ UpdateWindowAspect ------------------------ */
+
+extern "C" void UpdateWindowAspect(void){
+  if(CHECKBOX_fix_window_aspect != NULL)CHECKBOX_fix_window_aspect->set_int_val(fix_window_aspect);
+}
+
 /* ------------------ UpdateGluiZoom ------------------------ */
 
 extern "C" void UpdateGluiZoom(void){
@@ -1394,10 +1400,11 @@ extern "C" void GluiMotionSetup(int main_window){
   if(max_screenWidth >= 1920 && max_screenHeight >= 1080)  LIST_windowsize->add_item(8, "1920x1080");
   UpdateWindowSizeList();
 
-  SPINNER_window_width = glui_motion->add_spinner_to_panel(ROLLOUT_projection, _("width"), GLUI_SPINNER_INT, &glui_screenWidth);
+  SPINNER_window_width = glui_motion->add_spinner_to_panel(ROLLOUT_projection, _("width"),   GLUI_SPINNER_INT, &glui_screenWidth,  WINDOW_RESIZE_WIDTH,  SceneMotionCB);
   SPINNER_window_width->set_int_limits(100, max_screenWidth);
-  SPINNER_window_height = glui_motion->add_spinner_to_panel(ROLLOUT_projection, _("height"), GLUI_SPINNER_INT, &glui_screenHeight);
+  SPINNER_window_height = glui_motion->add_spinner_to_panel(ROLLOUT_projection, _("height"), GLUI_SPINNER_INT, &glui_screenHeight, WINDOW_RESIZE_HEIGHT, SceneMotionCB);
   SPINNER_window_height->set_int_limits(100, max_screenHeight);
+  CHECKBOX_fix_window_aspect = glui_motion->add_checkbox_to_panel(ROLLOUT_projection, "fix width/height", &fix_window_aspect, WINDOW_PRESERVE, SceneMotionCB);
 
   PANEL_colors = glui_motion->add_panel_to_panel(ROLLOUT_projection, "Colors", true);
 
@@ -1420,8 +1427,6 @@ extern "C" void GluiMotionSetup(int main_window){
   SPINNER_background_blue->set_int_limits(0, 255);
 
   BUTTON_flip = glui_motion->add_button_to_panel(PANEL_colors, _("Flip"), COLOR_FLIP, SceneMotionCB);
-
-  BUTTON_window_update = glui_motion->add_button_to_panel(ROLLOUT_projection, _("Apply"), WINDOW_RESIZE, SceneMotionCB);
 
   ROLLOUT_scale = glui_motion->add_rollout_to_panel(ROLLOUT_viewA,_("Scaling"),false,SCALING_ROLLOUT,MotionRolloutCB);
   INSERT_ROLLOUT(ROLLOUT_scale, glui_motion);
@@ -2171,6 +2176,30 @@ extern "C" void SceneMotionCB(int var){
     case SNAPSCENE:
       SnapScene();
       break;
+    case WINDOW_PRESERVE:
+      if(fix_window_aspect==1){
+        float width, height;
+        
+        width  = (float)glutGet(GLUT_WINDOW_WIDTH);
+        height = (float)glutGet(GLUT_WINDOW_HEIGHT);
+        window_aspect = 1.0;
+        if(width>0.0&&height>0.0)window_aspect = height/width;
+      }
+      break;
+    case WINDOW_RESIZE_WIDTH:
+    case WINDOW_RESIZE_HEIGHT:
+      if(fix_window_aspect==1){
+        if(var==WINDOW_RESIZE_WIDTH){
+          glui_screenHeight = window_aspect*glui_screenWidth;
+          SPINNER_window_height->set_int_val(glui_screenHeight);
+        }
+        else{
+          glui_screenWidth = glui_screenHeight/window_aspect;
+          SPINNER_window_width->set_int_val(glui_screenWidth);
+        }
+      }
+      SceneMotionCB(WINDOW_RESIZE);
+      break;
     case WINDOW_RESIZE:
 #ifdef pp_OSX
 #ifndef pp_QUART
@@ -2420,6 +2449,9 @@ extern "C" void SceneMotionCB(int var){
     case FLOORLEVEL:
     case PROJECTION:
     case WINDOW_RESIZE:
+    case WINDOW_RESIZE_WIDTH:
+    case WINDOW_RESIZE_HEIGHT:
+    case WINDOW_PRESERVE:
     case WINDOWSIZE_LIST:
     case SNAPSCENE:
     case CUSTOM_ROTATION_XYZ:

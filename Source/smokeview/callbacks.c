@@ -2023,8 +2023,14 @@ void Keyboard(unsigned char key, int flag){
         updatemenu = 1;
       }
       break;
-    case 'k':
     case 'K':
+      fix_window_aspect = 1 - fix_window_aspect;
+      if(fix_window_aspect == 1)printf("fix window aspect ratio: on\n");
+      if(fix_window_aspect == 0)printf("fix window aspect ratio: off\n");
+      SceneMotionCB(WINDOW_PRESERVE);
+      UpdateWindowAspect();
+      break;
+    case 'k':
       if(keystate==GLUT_ACTIVE_ALT){ // toggle device selection
         select_device = 1-select_device;
         updatemenu = 1;
@@ -3685,7 +3691,15 @@ void ReshapeCB(int width, int height){
   if(update_reshape==0){
     CopyCamera(camera_save,camera_current);
   }
-  SetScreenSize(&width,&height);
+  if(fix_window_aspect==1){
+    glui_screenWidth=width;
+    glui_screenHeight=glui_screenWidth*window_aspect;
+    SceneMotionCB(WINDOW_RESIZE);
+  }
+  else{
+    SetScreenSize(&width,&height);
+  }
+
   windowresized=1;
   CopyCamera(camera_current,camera_save);
   windowsize_pointer_old = -1;
@@ -3806,8 +3820,6 @@ void DoStereo(void){
       screeni = NULL;
       if(render_mode == RENDER_360 && render_status == RENDER_ON)screeni = screeninfo + i;
       if(stereotype_frame==LEFT_EYE||stereotype_frame==BOTH_EYES){
-        int screenWidth_save;
-
         screenWidth_save=screenWidth;
         screenWidth/=2;
         screenWidth = MAX(screenWidth, 1);
@@ -3815,8 +3827,6 @@ void DoStereo(void){
         screenWidth=screenWidth_save;
       }
       if(stereotype_frame==RIGHT_EYE||stereotype_frame==BOTH_EYES){
-        int screenWidth_save;
-
         screenWidth_save=screenWidth;
         screenWidth/=2;
         screenWidth = MAX(screenWidth, 1);
