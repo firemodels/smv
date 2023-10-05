@@ -266,36 +266,13 @@ SYSTEM_LIBS_LINUX = -lpthread -lX11 -lXmu -lGLU -lGL -lm -lrt
 # 2.  run case as usual
 # 3.  type: gprof smokeview_application_name > results.out
 
-# ------------- intel_linux_64t ----------------
-
-intel_linux_64t : DYNLIB_EXT = .so
-intel_linux_64t : LIB_DIR_PLAT = $(LIB_DIR)/intel_linux_64
-intel_linux_64t : CFLAGS    = -O0 -traceback -m64 -D pp_LINUX $(SMV_TESTFLAG) $(VKLFLAG) $(SMV_PROFILEFLAG) $(GITINFO) $(INTEL_COMPINFO)
-intel_linux_64t : C_STANDARD    = -std=gnu99
-intel_linux_64t : LIBLUA    =
-intel_linux_64t : INC += -I $(SOURCE_DIR)/smokeview/include/glut
-ifeq ($(LUA_SCRIPTING),true)
-intel_linux_64t : CFLAGS    += -D pp_LUA
-intel_linux_64t : SMVLUACORE_FILES += $(LIB_DIR_PLAT)/lpeg.so
-intel_linux_64t : LIBLUA    += $(LIB_DIR_PLAT)/liblua.a -ldl
-endif
-intel_linux_64t : LFLAGS    = -m64 $(INTEL_LIBS_LINUX) $(SMV_PROFILEFLAG)
-ifeq ($(OPENVKL),openvkl)
-intel_linux_64t : LFLAGS    += -L$(VKL_DIR)/lib64 $(VKL_LIBS)
-endif
-intel_linux_64t : CC        = icx
-intel_linux_64t : CPP       = icpx
-intel_linux_64t : exe       = smokeview_linux_$(SMV_TESTSTRING)64$(SMV_PROFILESTRING)
-
-intel_linux_64t : $(obj) $(if $(LUA_SCRIPTING),smvluacore)
-	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS) -L$(LIB_DIR_PLAT) $(SMV_LIBS_LINUX) $(INTEL_LIBS_LINUX) $(SYSTEM_LIBS_LINUX) $(LIBLUA)
-
 # ------------- intel_linux_64 ----------------
 
 intel_linux_64 : DYNLIB_EXT = .so
 intel_linux_64 : LIB_DIR_PLAT = $(LIB_DIR)/intel_linux_64
 intel_linux_64 : CFLAGS    = -O0 -traceback -m64 -D pp_LINUX $(SMV_TESTFLAG) $(VKLFLAG) $(SMV_PROFILEFLAG) $(GITINFO) $(INTEL_COMPINFO)
 intel_linux_64 : C_STANDARD    = -std=gnu99
+intel_linux_64 : INC += -I $(SOURCE_DIR)/freeglut3.0.0/include
 intel_linux_64 : LIBLUA    =
 ifeq ($(LUA_SCRIPTING),true)
 intel_linux_64 : CFLAGS    += -D pp_LUA
@@ -319,6 +296,7 @@ intel_linux_64_db : CFLAGS    = -O0 -g -m64 $(SMV_TESTFLAG) -D _DEBUG -D pp_LINU
                                 -Wall -Wextra -Wuninitialized -Wunused-function -Wunused-variable -Wno-sign-compare \
                                 -Wno-unused-parameter $(GITINFO) $(INTEL_COMPINFO)
 intel_linux_64_db : C_STANDARD    = -std=gnu99
+intel_linux_64 : INC += -I $(SOURCE_DIR)/freeglut3.0.0/include
 intel_linux_64_db : LFLAGS    = -m64 -static-intel $(INTEL_LIBS_LINUX) $(SMV_PROFILEFLAG)
 ifeq ($(OPENVKL),openvkl)
 intel_linux_64_db : LFLAGS   += -L$(VKL_DIR)/lib64 $(VKL_LIBS)
