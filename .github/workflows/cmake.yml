@@ -172,7 +172,7 @@ jobs:
           mv /tmp/oneAPI.repo /etc/yum.repos.d
       - name: General update
         run: yum -y makecache
-      - run: yum install -y environment-modules intel-oneapi-compiler-dpcpp-cpp-2023.1.0
+      - run: yum install -y environment-modules intel-oneapi-compiler-dpcpp-cpp-2023.2.1
       - run: /opt/intel/oneapi/modulefiles-setup.sh
       - name: Build
         shell: bash
