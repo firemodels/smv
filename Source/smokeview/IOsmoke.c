@@ -3364,7 +3364,11 @@ FILE *GetSmokeFileSize(char *smokefile, int fortran_skip, int version){
     strcpy(smoke_sizefilename, smoke_sizefilename2);
     SMOKE_SIZE = fopen(smoke_sizefilename, "w");
   }
-  if(SMOKE_SIZE == NULL)return NULL;  // can't write size file in temp directory so give up
+  if(SMOKE_SIZE == NULL){
+    printf("***error: was not able to read the size file for %s\n", smokefile);
+    printf("          and was not able to create a new size file: %s\n", smoke_sizefilename);
+    return NULL;  // can't write size file in temp directory so give up
+  }
   SMOKE3DFILE = FOPEN_SMOKE(smokefile, "rb", nsmoke_threads, use_smoke_thread);
   if(SMOKE3DFILE == NULL){
     fclose(SMOKE_SIZE);
@@ -3510,8 +3514,15 @@ int GetSmoke3DSizes(int fortran_skip, char *smokefile, int version, float **time
   int ntimes_full2;
   int iii;
 
+  if(smokefile==NULL){
+    printf("***error: smokefile pointer is NULL\n");
+    return 1;
+  }
   SMOKE_SIZE = GetSmokeFileSize(smokefile,fortran_skip,version);
-  if(SMOKE_SIZE == NULL)return 1;
+  if(SMOKE_SIZE == NULL){
+    printf("***warning: failed to open 3D smoke size file: %s\n", smokefile);
+    return 1;
+  }
   nframes_found = 0;
   iframe_local = -1;
   time_max = -1000000.0;
@@ -3534,6 +3545,7 @@ int GetSmoke3DSizes(int fortran_skip, char *smokefile, int version, float **time
     *ntimes_found = 0;
     *ntimes_full = 0;
     fclose(SMOKE_SIZE);
+    printf("***warning: nnsmoke frames found=%i <= 0\n",nframes_found);
     return 1;
   }
   *ntimes_found = nframes_found;
