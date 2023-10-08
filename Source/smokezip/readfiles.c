@@ -59,7 +59,7 @@ int ReadSMV(char *smvfile){
     ++++++++++++++++++++++ BNDF ++++++++++++++++++++++++++++++
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   */
-    if(Match(buffer,"BNDF") == 1){
+    if(Match(buffer, "BNDF") == 1 || Match(buffer, "BNDC") == 1){
       npatchinfo++;
       continue;
     }
@@ -528,7 +528,7 @@ int ReadSMV(char *smvfile){
     ++++++++++++++++++++++ BNDF ++++++++++++++++++++++++++++++
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   */
-    if(Match(buffer,"BNDF") == 1){
+    if(Match(buffer,"BNDF") == 1|| Match(buffer, "BNDC") == 1){
       int version_local=0,dummy;
       char *buffer2;
       int len;
