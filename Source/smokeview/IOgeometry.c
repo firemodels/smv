@@ -2759,7 +2759,7 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
       patchi->geom_nstatics, patchi->geom_ndynamics, patchi->geom_vals, time_frame, time_value, geom_offsets, &error);
     ResetHistogram(patchi->histogram, NULL, NULL);
     UpdateHistogram(patchi->geom_vals, NULL, nvals, patchi->histogram);
-    CompleteHistogram(patchi->histogram);
+    patchi->histogram->complete=  1;
     return 0;
   }
   else{

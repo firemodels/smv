@@ -160,6 +160,9 @@ void UpdateBoundaryBounds(patchdata *patchi){
     patchdata *patchj;
 
     patchj=patchinfo+j;
+#ifdef pp_PATCH_HIST
+    if(patchj->loaded == 0)continue;
+#endif
     if(patchi->boundary != patchj->boundary)continue;
     if(patchi->patch_filetype == PATCH_GEOMETRY_SLICE || patchj->patch_filetype == PATCH_GEOMETRY_SLICE)continue;
     if(patchj->shortlabel_index != patchi->shortlabel_index)continue; // dont consider file type for now (node/cell centered, structdured/unstructured etc)

@@ -1385,6 +1385,30 @@ int GetPatchNTimes(char *file){
   return count;
 }
 
+#ifdef pp_PATCH_HIST
+/* ------------------ UpdateBoundaryHist ------------------------ */
+
+float UpdateBoundaryHist(patchdata *patchi){
+  float hist_time = 0.0;
+
+  if(patchi->loaded == 0)return 0.0;
+  START_TIMER(hist_time);
+  ResetHistogram(patchi->histogram, NULL, NULL);
+  if(patchi->structured == YES){
+    int npatchvals;
+    meshdata *meshi;
+
+    meshi = meshinfo + patchi->blocknumber;
+    npatchvals = meshi->npatch_times*meshi->npatchsize;
+    UpdateHistogram(meshi->patchval, NULL, npatchvals, patchi->histogram);
+  }
+  else{
+    UpdateHistogram(patchi->geom_vals, NULL, patchi->geom_nvals, patchi->histogram);
+  }
+  STOP_TIMER(hist_time);
+  return hist_time;
+}
+#else
 /* ------------------ UpdateBoundaryHist ------------------------ */
 
 float UpdateBoundaryHist(patchdata *patchj){
@@ -1486,7 +1510,7 @@ float UpdateBoundaryHist(patchdata *patchj){
       FREEMEMORY(pk2);
       FREEMEMORY(patchdir);
       FREEMEMORY(patchsize);
-      CompleteHistogram(patchi->histogram);
+      patchi->histogram->complete = 1;
     }
     else{
       int error_code;
@@ -1502,6 +1526,7 @@ float UpdateBoundaryHist(patchdata *patchj){
   }
   return hist_time;
 }
+#endif
 
 /* ------------------ ReadBoundaryBndf ------------------------ */
 
@@ -1528,7 +1553,9 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
   int npatchvals;
   char patchcsvfile[1024];
   int framestart;
+#ifndef pp_PATCH_HIST
   float hist_update_time;
+#endif
 
   int nn;
   int filenum;
@@ -1744,7 +1771,11 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
     meshi->npatchsize=nnsize;
     loadpatchbysteps=COMPRESSED_ALLFRAMES;
   }
+#ifdef pp_PATCH_HIST
+  update_boundary_hist = 1;
+#else
   hist_update_time = UpdateBoundaryHist(patchi);
+#endif
 
   if(meshi->npatchsize>0){
     if(
@@ -2562,9 +2593,11 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
    PRINTF(" - %.0f kB in %.1f s\n", (float)return_filesize / 1000., total_time);
   }
 
+#ifndef pp_PATCH_HIST
   if(show_timings==1&&hist_update_time>0.0){
     PRINTF(" data distribution update time: %.1f s\n", hist_update_time);
   }
+#endif
   update_patch_bounds = ifile;
 
   GLUTPOSTREDISPLAY;
@@ -2602,7 +2635,11 @@ FILE_SIZE ReadBoundary(int ifile, int load_flag, int *errorcode){
   if(patchi->structured == NO){
     ASSERT(ifile>=0&&ifile<ngeominfo);
     if(load_flag == LOAD){
+#ifdef pp_PATCH_HIST
+      update_boundary_hist = 1;
+#else
       UpdateBoundaryHist(patchi);
+#endif
     }
     return_filesize=ReadGeomData(patchi,NULL, load_flag,ALL_FRAMES, NULL, errorcode);
   }

@@ -56,15 +56,6 @@ float GetHistogramVal(histogramdata *histogram, float cdf){
   return histogram->val_max;
 }
 
-/* ------------------ CompleteHistogram ------------------------ */
-
-void CompleteHistogram(histogramdata *histogram){
-
-// set variable indicating that histogram is complete
-
-  histogram->complete=1;
-}
-
 /* ------------------ ResetHistogram ------------------------ */
 
 void ResetHistogram(histogramdata *histogram, float *valmin, float *valmax){
