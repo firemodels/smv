@@ -480,6 +480,9 @@ SVEXTERN int SVDECL(show_3dsmoke_16bit, 0);
 #endif
 SVEXTERN int SVDECL(show_plot3dfiles, 1), SVDECL(show_isofiles,1);
 SVEXTERN int SVDECL(show_boundaryfiles, 1);
+#ifdef pp_PATCH_HIST
+SVEXTERN int SVDECL(update_boundary_hist, 0);
+#endif
 
 SVEXTERN int SVDECL(smoke_framenumber, 0);
 SVEXTERN float SVDECL(time_frameval, 0.0), SVDECL(time_framemax,0.0), SVDECL(time_framemin,1.0);
