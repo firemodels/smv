@@ -265,7 +265,7 @@ if [ "$smv_script" != "" ]; then
   smv_script="-script_file $smv_script"
 else
   smokeview_script_file=${infile}.ssf
-  smv_script=-script
+  smv_script=-runscript
 fi
 if [ "$FED" != "" ]; then
   smv_script=
