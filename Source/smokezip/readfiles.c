@@ -59,7 +59,7 @@ int ReadSMV(char *smvfile){
     ++++++++++++++++++++++ BNDF ++++++++++++++++++++++++++++++
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   */
-    if(Match(buffer,"BNDF") == 1){
+    if(Match(buffer, "BNDF") == 1 || Match(buffer, "BNDC") == 1){
       npatchinfo++;
       continue;
     }
@@ -528,7 +528,7 @@ int ReadSMV(char *smvfile){
     ++++++++++++++++++++++ BNDF ++++++++++++++++++++++++++++++
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   */
-    if(Match(buffer,"BNDF") == 1){
+    if(Match(buffer,"BNDF") == 1|| Match(buffer, "BNDC") == 1){
       int version_local=0,dummy;
       char *buffer2;
       int len;
@@ -903,15 +903,22 @@ void ReadINI2(char *inifile){
 
   while(!feof(stream)){
     if(fgets(buffer,BUFFERSIZE,stream)==NULL)break;
+    TrimBack(buffer);
 
-    if(Match(buffer,"V_SLICE")==1){
+    if(Match(buffer,"V_SLICE")==1|| Match(buffer, "V2_SLICE") == 1){
       int setslicemin, setslicemax;
       float slicemin, slicemax;
       slicedata *slicei;
+      int type=0;
 
+      if(Match(buffer, "V2_SLICE") == 1)type = 1;
       fgets(buffer,BUFFERSIZE,stream);
       strcpy(buffer2,"");
       sscanf(buffer,"%i %f %i %f %s",&setslicemin,&slicemin,&setslicemax,&slicemax,buffer2);
+      if(type == 1){
+        if(setslicemin == 0)setslicemin = 1;
+        if(setslicemax == 0)setslicemax = 1;
+      }
       type_buffer=TrimFront(buffer2);
       TrimBack(type_buffer);
       slicei= GetSlice(type_buffer);
@@ -923,14 +930,16 @@ void ReadINI2(char *inifile){
       }
       continue;
     }
-    if(Match(buffer,"V_PLOT3D")==1){
+    if(Match(buffer,"V_PLOT3D")==1|| Match(buffer, "V2_PLOT3D") == 1){
       int nplot3d_vars;
       plot3d *plot3di;
       int i;
+      int type = 0;
 
       if(plot3dinfo==NULL)continue;
       plot3di = plot3dinfo;
 
+      if(Match(buffer, "V2_PLOT3D") == 1)type = 1;
       fgets(buffer,BUFFERSIZE,stream);
       nplot3d_vars=5;
       sscanf(buffer,"%i",&nplot3d_vars);
@@ -944,6 +953,10 @@ void ReadINI2(char *inifile){
 
         fgets(buffer,BUFFERSIZE,stream);
         sscanf(buffer,"%i %i %f %i %f",&iplot3d,&setvalmin,&valmin,&setvalmax,&valmax);
+        if(type == 1){
+          if(setvalmin == 0)setvalmin = 1;
+          if(setvalmax == 0)setvalmax = 1;
+        }
         iplot3d--;
         if(iplot3d>=0&&iplot3d<5){
           plot3di->bounds[iplot3d].setvalmin=setvalmin;
@@ -973,13 +986,19 @@ void ReadINI2(char *inifile){
       }
       continue;
     }
-    if(Match(buffer,"V_BOUNDARY")==1){
+    if(Match(buffer,"V_BOUNDARY")==1|| Match(buffer, "V2_BOUNDARY") == 1){
       int setpatchmin, setpatchmax;
       float patchmin, patchmax;
+      int type=0;
 
+      if(Match(buffer, "V2_BOUNDARY") == 1)type = 1;
       fgets(buffer,BUFFERSIZE,stream);
       strcpy(buffer2,"");
       sscanf(buffer,"%i %f %i %f %s",&setpatchmin,&patchmin,&setpatchmax,&patchmax,buffer2);
+      if(type == 1){
+        if(setpatchmin == 0)setpatchmin = 1;
+        if(setpatchmax == 0)setpatchmax = 1;
+      }
       type_buffer=TrimFront(buffer2);
       TrimBack(type_buffer);
       patchi=getpatch(type_buffer);
@@ -1011,14 +1030,21 @@ void ReadINI2(char *inifile){
     }
 
 #ifdef pp_PART
-    if(Match(buffer,"V_PARTICLES")==1){
+    if(Match(buffer,"V_PARTICLES")==1||Match(buffer,"V2_PARTICLES")==1){
       int setpartmin, setpartmax;
       float partmin, partmax;
       partpropdata *partpropi;
+      int type=1;
 
+      
+      if(Match(buffer,"V2_PARTICLES")==1)type = 1;
       fgets(buffer,BUFFERSIZE,stream);
       strcpy(buffer2,"");
       sscanf(buffer,"%i %f %i %f %s",&setpartmin,&partmin,&setpartmax,&partmax,buffer2);
+      if(type == 1){
+        if(setpartmin == 0)setpartmin = 1;
+        if(setpartmax == 0)setpartmax = 1;
+      }
       type_buffer=TrimFront(buffer2);
       TrimBack(type_buffer);
       partpropi=getpartprop(type_buffer);

@@ -2030,6 +2030,13 @@ void UpdateShowScene(void){
     SetCurrentViewPoint(viewpoint_label_saved);
     update_saving_viewpoint--;
   }
+#ifdef pp_PATCH_HIST
+  if(update_boundary_hist==1){
+    //UpdateAllBoundaryBounds();
+    UpdateAllBoundaryBounds();
+    update_boundary_hist = 0;
+  }
+#endif
   if(update_viewpoint_script>0){
     SetCurrentViewPoint(viewpoint_script);
     update_viewpoint_script--;

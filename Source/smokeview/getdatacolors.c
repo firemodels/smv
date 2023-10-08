@@ -160,6 +160,9 @@ void UpdateBoundaryBounds(patchdata *patchi){
     patchdata *patchj;
 
     patchj=patchinfo+j;
+#ifdef pp_PATCH_HIST
+    if(patchj->loaded == 0)continue;
+#endif
     if(patchi->boundary != patchj->boundary)continue;
     if(patchi->patch_filetype == PATCH_GEOMETRY_SLICE || patchj->patch_filetype == PATCH_GEOMETRY_SLICE)continue;
     if(patchj->shortlabel_index != patchi->shortlabel_index)continue; // dont consider file type for now (node/cell centered, structdured/unstructured etc)
@@ -305,6 +308,7 @@ void UpdateAllBoundaryColors(int flag){
         switch(patchi->patch_filetype){
           case PATCH_STRUCTURED_NODE_CENTER:
           case PATCH_STRUCTURED_CELL_CENTER:
+#ifndef pp_PATCH_HIST
             if(patchi->blocknumber>=0){
               meshdata *meshi;
               int npatchvals;
@@ -316,13 +320,16 @@ void UpdateAllBoundaryColors(int flag){
                                  nrgb, colorlabelpatch, colorvaluespatch, boundarylevels256,
                                  &patchi->extreme_min, &patchi->extreme_max, flag);
             }
+#endif
             break;
           case PATCH_GEOMETRY_BOUNDARY:
           case PATCH_GEOMETRY_SLICE:
+#ifndef pp_PATCH_HIST
             GetBoundaryColors3(patchi, patchi->geom_vals, 0, patchi->geom_nvals, patchi->geom_ivals,
                                &valmin, &valmax,
                                nrgb, colorlabelpatch, colorvaluespatch, boundarylevels256,
                                &patchi->extreme_min, &patchi->extreme_max, flag);
+#endif
             break;
           default:
             ASSERT(FFALSE);
