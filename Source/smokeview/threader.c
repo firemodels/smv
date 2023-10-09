@@ -570,9 +570,9 @@ void SetupFFMT(void){
 #endif
 }
 
-/* ------------------ CheckCompressionFiles ------------------------ */
+#ifndef pp_CHECK
+/* ------------------ CheckFiles ------------------------ */
 
-#ifndef pp_CHECK_FILES
 void CheckFiles(void){
   int i;
 
@@ -629,7 +629,6 @@ void CheckFiles(void){
   updatemenu = 1;
   UNLOCK_CHECKFILES;
 }
-#endif
 
 /* ------------------ MtCheckFiles ------------------------ */
 
@@ -675,6 +674,7 @@ void GetGlobalSliceBoundsMT(void){
 void GetGlobalSliceBoundsMT(void){
   GetGlobalSliceBounds();
 }
+#endif
 #endif
 
 /* ------------------ MtGetGlobalPatchBounds ------------------------ */
