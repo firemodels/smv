@@ -3387,36 +3387,6 @@ int OutSideDomain(vertdata **verts){
   return 0;
 }
 
-/* ------------------ Geom2Terrain ------------------------ */
-
-#ifdef pp_GEOMTERRAIN
-void Geom2Terrain(geomdata *geomi){
-  int i;
-  geomlistdata *geomlisti;
-
-  geomlisti = geomi->geomlistinfo;
-  for(i=0;i<geomlisti->ntriangles;i++){
-    tridata *tri;
-    vertdata *vert1, *vert2, *vert3;
-    float *xyz1, *xyz2, *xyz3;
-    int j;
-
-    tri = geomlisti->triangles + i;
-    vert1 = tri->verts[0];
-    vert2 = tri->verts[1];
-    vert3 = tri->verts[2];
-    xyz1 = vert1->xyz;
-    xyz2 = vert2->xyz;
-    xyz3 = vert3->xyz;
-    for(j = 0;j < nmeshes;j++){
-      meshdata *meshj;
-
-      meshj = meshinfo + j;
-    }
-  }
-}
-#endif
-
 /* ------------------ ReadGeom2 ------------------------ */
 
 FILE_SIZE ReadGeom2(geomdata *geomi, int load_flag, int type){

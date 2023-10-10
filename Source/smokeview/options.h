@@ -34,9 +34,6 @@
 
 //#define pp_BNDF         // merge geometry and structured boundary files in load menus
 
-//#define pp_GEOMTERRAIN  // convert bingeom data structures to terrain data structures
-                          // make terrain more efficient
-
 //#define pp_DPRINT       // turn on debug print (file, line number)
 
 //#define pp_CRASH_TEST       // test detection of division by zero or use of undefined pointer
