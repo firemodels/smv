@@ -25,7 +25,7 @@ void InitMultiThreading(void){
   pthread_mutex_init(&mutexCOMPRESS,NULL);
   pthread_mutex_init(&mutexVOLLOAD,NULL);
   pthread_mutex_init(&mutexIBLANK, NULL);
-  pthread_mutex_init(&mutexSETUPFF, NULL);
+  pthread_mutex_init(&mutexSETUP_FFMPEG, NULL);
   pthread_mutex_init(&mutexCHECKFILES, NULL);
   pthread_mutex_init(&mutexSLICEBOUNDS, NULL);
   pthread_mutex_init(&mutexPATCHBOUNDS, NULL);
@@ -544,11 +544,11 @@ void *MtSetupFF(void *arg){
   have_ffplay_local = HaveProg("ffplay -version >/dev/null 2>/dev/null");
 #endif
 
-  LOCK_SETUPFF
+  LOCK_SETUP_FFMPEG
   update_ff = 1;
   have_ffmpeg = have_ffmpeg_local;
   have_ffplay = have_ffplay_local;
-  UNLOCK_SETUPFF
+  UNLOCK_SETUP_FFMPEG
 #ifdef pp_THREAD
   pthread_exit(NULL);
 #endif
