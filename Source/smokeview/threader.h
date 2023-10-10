@@ -57,9 +57,9 @@
   #define UNLOCK_IBLANK     if(iblank_multithread==1){pthread_mutex_unlock(&mutexIBLANK);}
   #define JOIN_IBLANK       if(iblank_multithread==1){pthread_join(makeiblank_thread_id,NULL);}
 
-  #define LOCK_SETUPFF      if(ffmpeg_multithread==1)pthread_mutex_lock(&mutexSETUPFF);
-  #define UNLOCK_SETUPFF    if(ffmpeg_multithread==1)pthread_mutex_unlock(&mutexSETUPFF);
-  #define JOIN_SETUPFF      if(ffmpeg_multithread==1)pthread_join(setupff_thread_id,NULL);
+  #define LOCK_SETUP_FFMPEG      if(ffmpeg_multithread==1)pthread_mutex_lock(&mutexSETUP_FFMPEG);
+  #define UNLOCK_SETUP_FFMPEG    if(ffmpeg_multithread==1)pthread_mutex_unlock(&mutexSETUP_FFMPEG);
+  #define JOIN_SETUP_FFMPEG      if(ffmpeg_multithread==1)pthread_join(setupff_thread_id,NULL);
 
   #define LOCK_CHECKFILES   if(checkfiles_multithread==1)pthread_mutex_lock(&mutexCHECKFILES);
   #define UNLOCK_CHECKFILES if(checkfiles_multithread==1)pthread_mutex_unlock(&mutexCHECKFILES);
@@ -103,9 +103,9 @@
   #define UNLOCK_IBLANK
   #define JOIN_IBLANK
 
-  #define LOCK_SETUPFF
-  #define UNLOCK_SETUPFF
-  #define JOIN_SETUPFF
+  #define LOCK_SETUP_FFMPEG
+  #define UNLOCK_SETUP_FFMPEG
+  #define JOIN_SETUP_FFMPEG
 
   #define LOCK_CHECKFILES
   #define UNLOCK_CHECKFILES
@@ -150,7 +150,7 @@ MT_EXTERN pthread_mutex_t mutexPART_LOAD;
 MT_EXTERN pthread_mutex_t mutexIBLANK;
 MT_EXTERN pthread_mutex_t mutexVOLLOAD;
 MT_EXTERN pthread_mutex_t mutexCOMPRESS;
-MT_EXTERN pthread_mutex_t mutexSETUPFF;
+MT_EXTERN pthread_mutex_t mutexSETUP_FFMPEG;
 MT_EXTERN pthread_mutex_t mutexCHECKFILES;
 MT_EXTERN pthread_mutex_t mutexSLICEBOUNDS;
 MT_EXTERN pthread_mutex_t mutexPATCHBOUNDS;

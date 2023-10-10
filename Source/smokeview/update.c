@@ -2404,31 +2404,31 @@ void OutputBounds(void){
 /* ------------------ HandleMakeMovie ------------------------ */
 
 void HandleMakeMovie(void){
-  LOCK_SETUPFF
+  LOCK_SETUP_FFMPEG
   if(have_ffmpeg == 0){
     PRINTF("*** Error: The movie generating program ffmpeg is not available\n");
-    UNLOCK_SETUPFF
+    UNLOCK_SETUP_FFMPEG
     return;
   }
   EnableDisableMakeMovieCPP(OFF);
   update_makemovie = 1;
-  UNLOCK_SETUPFF
+  UNLOCK_SETUP_FFMPEG
 }
 
 /* ------------------ EnableDisableMakeMovie ------------------------ */
 
 void EnableDisableMakeMovie(int onoff){
-  LOCK_SETUPFF
+  LOCK_SETUP_FFMPEG
   EnableDisableMakeMovieCPP(onoff);
-  UNLOCK_SETUPFF
+  UNLOCK_SETUP_FFMPEG
 }
 
 /* ------------------ EnableDisablePlayMovie ------------------------ */
 
 void EnableDisablePlayMovie(void){
-  LOCK_SETUPFF
+  LOCK_SETUP_FFMPEG
   EnableDisablePlayMovieCPP();
-  UNLOCK_SETUPFF
+  UNLOCK_SETUP_FFMPEG
 }
 
 /* ------------------ UpdateDisplay ------------------------ */
@@ -2456,7 +2456,7 @@ void UpdateDisplay(void){
     update_setvents=0;
   }
   UNLOCK_IBLANK
-  LOCK_SETUPFF
+  LOCK_SETUP_FFMPEG
   if(update_ff == 1){
     update_ff = 0;
     if(have_ffmpeg == 1){
@@ -2466,7 +2466,7 @@ void UpdateDisplay(void){
       EnableDisableMakeMovieCPP(OFF);
     }
   }
-  UNLOCK_SETUPFF
+  UNLOCK_SETUP_FFMPEG
   if(update_ini==1){
     update_ini = 0;
     ReadIni(NULL);
