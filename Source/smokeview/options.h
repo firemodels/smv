@@ -25,9 +25,9 @@
 //#define pp_GAMMA        // show gamma correction checkbox
 #define pp_BLACKBODY      // use blackbody theory for generating fire colors
 // pp_BLACKBODY_OUT       // output generated blackbody color data 
-#define pp_CHECK_FILES  // check if compressed files exist at startup
 //#define pp_BOUND_HIST_ON // turn on boundary file histograms
 
+#define pp_CHECK_FILES  // check if compressed files exist at startup
 //#define pp_FAST           // set fast startup by default
 
 #define pp_COLOR_PLOT     /  add checkbox for showing CIELab colorbar delta distance plot
