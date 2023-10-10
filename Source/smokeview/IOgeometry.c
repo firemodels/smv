@@ -349,179 +349,103 @@ void AverageVerts3(float v1[3], int v1type, float v2[3], int v2type,
   }
 }
 
+#define TERRAIN_INTERIOR 0
+#define TERRAIN_EDGE     1
+#define TERRAIN_CORNER   2
+
+/* ------------------ GetMinInd ------------------------ */
+
+int GetMinInd(int *inds, unsigned char *vert_type){
+  int have_corner, have_edge, min_ind;
+
+  have_corner = 0;
+  have_edge = 0;
+  min_ind = MIN(MIN(inds[0], inds[1]), inds[2]);
+  if(vert_type[inds[0]] == TERRAIN_CORNER){
+    have_corner = 1;
+    min_ind = inds[0];
+  }
+  if(have_corner == 0 && vert_type[inds[1]] == TERRAIN_CORNER){
+    have_corner = 1;
+    min_ind = inds[1];
+  }
+  if(have_corner == 0 && vert_type[inds[2]] == TERRAIN_CORNER){
+    have_corner = 1;
+    min_ind = inds[2];
+  }
+  if(have_corner == 0){
+    if(vert_type[inds[0]] == TERRAIN_EDGE){
+      have_edge = 1;
+      min_ind = inds[0];
+    }
+    if(vert_type[inds[1]] == TERRAIN_EDGE){
+      if(have_edge = 1){
+        min_ind = MIN(min_ind, inds[1]);
+      }
+      else{
+        min_ind = inds[1];
+      }
+    }
+    if(vert_type[inds[2]] == TERRAIN_EDGE){
+      if(have_edge = 1){
+        min_ind = MIN(min_ind, inds[2]);
+      }
+      else{
+        min_ind = inds[2];
+      }
+    }
+  }
+  return min_ind;
+}
+
 /* ------------------ DecimateGeom ------------------------ */
 
-void DecimateGeom(float *verts, int *nvertsptr, int *faces, int *nfacesptr,
-              float mesh_bounds[6], float delta){
-  // This routine reduces the size of a geometry by
-  //  1) merging vertices that are "close" together
-  //  2) eliminating redundant vertices
-  //  3) eliminating "singular" triangles
-#define V_MERGED -1
-#define V_DISCARD 0
-#define V_ORIGINAL 1
+void DecimateTerrain(float *verts, int nverts, int *faces, int nfaces, float *box, float face_eps, float box_eps){
+  unsigned char *vert_type;
+  int *vert_map;
+  int i;
 
-  int *vert_state, *vert_map, *vert_type;
-  int nverts, nfaces;
+  if(nverts <= 0)return;
+  NewMemory((void **)&vert_map, nverts*sizeof(int));
+  NewMemory((void **)&vert_type, nverts);
+  for(i = 0;i < nverts;i++){
+    int count;
+    float *xyz;
 
-  nverts = *nvertsptr;
-  nfaces = *nfacesptr;
-
-  NewMemory((void **)&vert_state, nverts*sizeof(int));
-  NewMemory((void **)&vert_map, nverts * sizeof(int));
-  NewMemory((void **)&vert_type, nverts * sizeof(int));
-
-  float *v1, *v2, *v3;
-  float *vert_from, *vert_to;
-
-  int *tri_from, *tri_to;
-  int tri_new[3];
-  int ito;
-  float vavg[3];
-
-  int have_small = 1;
-  int max_iter = 4;
-  int iter = 0;
-  while (have_small==1 &&
-         iter < max_iter){ // iterate until no further changes are made (or 10
-                            // times whichever comes first)
-    have_small = 0;
-
-    // ! vert_state
-    // !    V_MERGE =   -1  -  merged vertex
-    // !    V_DISCARD =  0  -  discard vertex
-    // !    V_ORIGINAL = 1  -  vertex kept and not changed
-
-    memset(vert_state, V_ORIGINAL, nverts * sizeof(*vert_state));
-
-    int i;
-    for (i = 0; i < nverts; i++){
-      vert_map[i] = i;
-    }
-
-    iter++;
-
-    GetVertType(nverts, faces, nfaces, vert_type);
-
-    // ! combine vertices that are close together
-
-    for (i = 0; i < nfaces; i++){
-      int *tri_i = faces + 3*i;
-      v1 = verts + 3 * tri_i[0];
-      v2 = verts + 3 * tri_i[1];
-      v3 = verts + 3 * tri_i[2];
-
-      // only look at triangles that have not changed
-      if(vert_state[tri_i[0]] != V_ORIGINAL || 
-         vert_state[tri_i[1]] != V_ORIGINAL || 
-         vert_state[tri_i[2]] != V_ORIGINAL)continue;
-
-      float d12 = Distance3(v1, v2);
-      float d13 = Distance3(v1, v3);
-      float d23 = Distance3(v2, v3);
-      if(d12 > delta && d13 > delta && d23 > delta)continue; // triangle too large, do not combine verts
-
-      have_small = 1;
-      if(d12 < delta && d13 > delta && d23 > delta){ // combine verts 1 and 2 leave 3 alone
-        vert_state[tri_i[0]] = V_MERGED;
-        vert_state[tri_i[1]] = V_DISCARD;
-        AverageVerts2(v1, vert_type[tri_i[0]], v2, vert_type[tri_i[1]], mesh_bounds, vavg);
-        v1[0] = vavg[0];
-        v1[1] = vavg[1];
-        v1[2] = vavg[2];
-        vert_map[tri_i[1]] = tri_i[0];
-        tri_i[1] = tri_i[0];
-      } 
-      else if(d13 < delta && d12 > delta && d23 > delta){ // combine verts 1 and 3
-        vert_state[tri_i[0]] = V_MERGED;
-        vert_state[tri_i[2]] = V_DISCARD;
-        AverageVerts2(v1, vert_type[tri_i[0]], v3, vert_type[tri_i[2]],
-                       mesh_bounds, vavg);
-        v1[0] = vavg[0];
-        v1[1] = vavg[1];
-        v1[2] = vavg[2];
-        vert_map[tri_i[2]] = tri_i[0];
-        tri_i[2] = tri_i[0];
-      } 
-      else if(d23 < delta && d12 > delta && d13 > delta){ // combine verts 2 and 3
-        vert_state[tri_i[1]] = V_MERGED;
-        vert_state[tri_i[2]] = V_DISCARD;
-        AverageVerts2(v2, vert_type[tri_i[1]], v3, vert_type[tri_i[2]],
-                       mesh_bounds, vavg);
-        v2[0] = vavg[0];
-        v2[1] = vavg[1];
-        v2[2] = vavg[2];
-        vert_map[tri_i[2]] = tri_i[1];
-        tri_i[2] = tri_i[1];
-      } 
-      else{ // combine verts 1, 2 and 3
-        vert_state[tri_i[0]] = V_MERGED;
-        vert_state[tri_i[1]] = V_DISCARD;
-        vert_state[tri_i[2]] = V_DISCARD;
-        AverageVerts3(v1, vert_type[tri_i[0]], v2, vert_type[tri_i[1]], v3,
-                       vert_type[tri_i[2]], mesh_bounds, vavg);
-        v1[0] = vavg[0];
-        v1[1] = vavg[1];
-        v1[2] = vavg[2];
-        vert_map[tri_i[1]] = tri_i[0];
-        vert_map[tri_i[2]] = tri_i[0];
-        tri_i[1] = tri_i[0];
-        tri_i[2] = tri_i[0];
-      }
-    }
-
-    // ! remap triangle vertices
-
-    for (i = 0; i < nfaces; i++){
-      int *tri_i = faces + 3*i;
-
-      tri_i[0] = vert_map[tri_i[0]];
-      tri_i[1] = vert_map[tri_i[1]];
-      tri_i[2] = vert_map[tri_i[2]];
-    }
-
-    // ! construct new vertex list skipping over vertices that have been removed
-
-    ito = 0;
-    int ifrom;
-    for (ifrom = 0; ifrom < nverts; ifrom++){
-      if(vert_state[ifrom] != V_DISCARD){
-        ito++;
-        vert_from  = verts + 3*ifrom;
-        vert_to    = verts + 3*ito;
-        vert_to[0] = vert_from[0];
-        vert_to[1] = vert_from[1];
-        vert_to[2] = vert_from[2];
-      }
-      vert_map[ifrom] = ito;
-    }
-    nverts = ito;
-    *nvertsptr = nverts;
-
-    // ! eliminate singular triangles (as a result of merged vertices)
-
-    ito = 0;
-    for (ifrom = 0; ifrom < nfaces; ifrom++){
-      tri_from = faces + 3*ifrom;
-      if(tri_from[0] != tri_from[1] && tri_from[0] != tri_from[2] && tri_from[1] != tri_from[2]){
-        tri_new[0] = vert_map[tri_from[0]];
-        tri_new[1] = vert_map[tri_from[1]];
-        tri_new[2] = vert_map[tri_from[2]];
-        if(tri_new[0] != 0 && tri_new[1] != 0 && tri_new[2] != 0){
-          ito = ito + 1;
-          tri_to = faces + 3*ito;
-          tri_to[0] = tri_new[0];
-          tri_to[1] = tri_new[1];
-          tri_to[2] = tri_new[2];
-        }
-      }
-    }
-    nfaces = ito;
-    *nfacesptr = nfaces;
+    vert_type[i] = TERRAIN_INTERIOR;
+    vert_map[i] = i;
+    xyz = verts + 3 * i;
+    count = 0;
+    if(ABS(xyz[0] - box[0]) < box_eps)count++;
+    if(ABS(xyz[0] - box[1]) < box_eps)count++;
+    if(ABS(xyz[1] - box[2]) < box_eps)count++;
+    if(ABS(xyz[1] - box[3]) < box_eps)count++;
+    if(count == 1)vert_type[i] = TERRAIN_EDGE;
+    if(count >= 2)vert_type[i] = TERRAIN_CORNER;
   }
-  FREEMEMORY(vert_state);
+  for(i = 0;i < nfaces;i++){
+    int *inds, indsmap[3], min_ind;
+    float *xyz1, *xyz2, *xyz3;
+
+    inds = faces + 3 * i;
+    indsmap[0] = vert_map[inds[0]];
+    indsmap[1] = vert_map[inds[1]];
+    indsmap[2] = vert_map[inds[2]];
+    xyz1 = verts + 3 * indsmap[0];
+    xyz2 = verts + 3 * indsmap[1];
+    xyz3 = verts + 3 * indsmap[2];
+    if(DIST2(xyz1, xyz2) < face_eps || DIST2(xyz1, xyz3) < face_eps || DIST2(xyz2, xyz3) < face_eps){
+      min_ind = GetMinInd(inds, vert_type);
+      vert_map[indsmap[0]] = min_ind;
+      vert_map[indsmap[1]] = min_ind;
+      vert_map[indsmap[2]] = min_ind;
+      inds[0] = min_ind;
+      inds[1] = min_ind;
+      inds[2] = min_ind;
+    }
+  }
   FREEMEMORY(vert_map);
-  FREEMEMORY(vert_state);
+
 }
   
   /* ------------------ GetTriangleNormal ------------------------ */
