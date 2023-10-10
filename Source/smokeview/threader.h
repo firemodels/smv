@@ -133,6 +133,7 @@
 #endif
 
 #ifdef pp_THREAD
+void *MtReadBufferi(void *arg);
 void MtReadVolsmokeAllFramesAllMeshes2(void);
 #endif
 
