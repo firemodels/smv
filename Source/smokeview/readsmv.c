@@ -5357,7 +5357,10 @@ int ParseBNDFProcess(bufferstreamdata *stream, char *buffer, int *nn_patch_in, i
   patchi->setchopmax = 0;
   patchi->chopmax = 0.0;
   meshinfo[blocknumber].patchfilenum = -1;
-  if(fast_startup==1||FILE_EXISTS_CASEDIR(patchi->file)==YES){
+#ifdef pp_CHECK_FILES
+  if(fast_startup==1||FILE_EXISTS_CASEDIR(patchi->file)==YES)
+#endif
+  {
     char geomlabel2[256], *geomptr = NULL;
 
     strcpy(geomlabel2, "");
@@ -5400,10 +5403,12 @@ int ParseBNDFProcess(bufferstreamdata *stream, char *buffer, int *nn_patch_in, i
       *ipatch_in = ipatch;
     }
   }
+#ifdef pp_CHECK_FILES
   else{
     if(ReadLabels(&patchi->label, stream, NULL)==LABEL_ERR)return RETURN_TWO;
     npatchinfo--;
   }
+#endif
   return RETURN_CONTINUE;
 }
 
@@ -5561,7 +5566,10 @@ int ParseSMOKE3DProcess(bufferstreamdata *stream, char *buffer, int *nn_smoke3d_
     }
 #endif
 
-    if(FILE_EXISTS_CASEDIR(smoke3di->file)==YES){
+#ifdef pp_CHECK_FILES
+    if(FILE_EXISTS_CASEDIR(smoke3di->file)==YES)
+#endif
+    {
       if(ReadLabels(&smoke3di->label, stream, NULL)==LABEL_ERR)return RETURN_TWO;
       if(strcmp(smoke3di->label.longlabel, "HRRPUV")==0){
         show_hrrcutoff_active = 1;
@@ -5572,10 +5580,12 @@ int ParseSMOKE3DProcess(bufferstreamdata *stream, char *buffer, int *nn_smoke3d_
       ismoke3d++;
       *ismoke3d_in = ismoke3d;
     }
+#ifdef pp_CHECK_FILES
     else{
       if(ReadLabels(&smoke3di->label, stream, NULL)==LABEL_ERR)return RETURN_TWO;
       nsmoke3dinfo--;
     }
+#endif
     if(extinct<0.0){
       extinct = 0.0;
       if(IsSootFile(smoke3di->label.shortlabel, smoke3di->label.longlabel)==1)extinct = 8700.0;
@@ -11638,7 +11648,6 @@ typedef struct {
 
   JOIN_CSVFILES;
   JOIN_IBLANK;
-  JOIN_SETUP_FFMPEG;
 
   PRINT_TIMER(timer_readsmv, "make blanks");
   UpdateFaces();
