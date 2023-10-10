@@ -379,7 +379,7 @@ int GetMinInd(int *inds, unsigned char *vert_type){
       min_ind = inds[0];
     }
     if(vert_type[inds[1]] == TERRAIN_EDGE){
-      if(have_edge = 1){
+      if(have_edge == 1){
         min_ind = MIN(min_ind, inds[1]);
       }
       else{
@@ -387,7 +387,7 @@ int GetMinInd(int *inds, unsigned char *vert_type){
       }
     }
     if(vert_type[inds[2]] == TERRAIN_EDGE){
-      if(have_edge = 1){
+      if(have_edge == 1){
         min_ind = MIN(min_ind, inds[2]);
       }
       else{
