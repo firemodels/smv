@@ -37,7 +37,6 @@
 
 //#define pp_BNDF         // merge geometry and structured boundary files in load menus
 
-#define pp_BINDIR         // search for an installation bin directory if smokeview is not in one
 //#define pp_GEOMTERRAIN  // convert bingeom data structures to terrain data structures
                           // make terrain more efficient
 
