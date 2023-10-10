@@ -25,41 +25,19 @@
 //#define pp_GAMMA        // show gamma correction checkbox
 #define pp_BLACKBODY      // use blackbody theory for generating fire colors
 // pp_BLACKBODY_OUT       // output generated blackbody color data 
+//#define pp_BOUND_HIST_ON // turn on boundary file histograms
+
 //#define pp_CHECK_FILES  // check if compressed files exist at startup
-
-#define pp_RESHAPE        // fix to Reshape call back (preserve scene orientaion and location when window is resized)
-#define pp_SCRIPTY        // update y postion when setting viewpoints in a script
-
 #define pp_FAST           // set fast startup by default
 
 #define pp_COLOR_PLOT     /  add checkbox for showing CIELab colorbar delta distance plot
 
 //#define pp_BNDF         // merge geometry and structured boundary files in load menus
 
-#define pp_BINDIR         // search for an installation bin directory if smokeview is not in one
-//#define pp_GEOMTERRAIN  // convert bingeom data structures to terrain data structures
-                          // make terrain more efficient
-
-#define pp_PARSE_NEW      // test new string parsing routine
-
 //#define pp_DPRINT       // turn on debug print (file, line number)
 
-// streaming directives
+#define pp_READBUFFER_THREAD // use pthreads in ReadBuffer routine (don't use pthreads when used in smokezip and smokediff)
 
-//#define pp_SMOKE3DSTREAM      // stream smoke3d data
-//#define pp_PARTSTREAM         // stream particle data
-
-// turn on pp_STREAM if streaming is on for any file type
-
-#ifdef pp_SMOKE3DSTREAM
-#define pp_STREAM
-#endif
-#ifdef pp_PARTSTREAM
-#undef pp_STREAM
-#define pp_STREAM
-#endif
-
-#define pp_THREADBUFFER
 //#define pp_CRASH_TEST       // test detection of division by zero or use of undefined pointer
 #define pp_GPU                // support the GPU
 #define pp_THREAD             // turn on multi-threading

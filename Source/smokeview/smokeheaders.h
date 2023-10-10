@@ -88,10 +88,6 @@ EXTERNCPP void UpdateShowHRRPUVPlot(int val);
 
 EXTERNCPP void UpdateUseGeomFactors(void);
 
-#ifndef pp_RESHAPE
-EXTERNCPP void AdjustY(cameradata *ca);
-#endif
-
 EXTERNCPP void UpdateFrameTimelabel(void);
 
 EXTERNCPP void UpdateWindowAspect(void);

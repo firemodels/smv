@@ -81,9 +81,6 @@ void UpdateCameraYpos(cameradata *ci, int option){
   float dx, dy, dz;
 
   if(update_saving_viewpoint>0)return;
-#ifndef pp_SCRIPTY
-  if(update_viewpoint_script>0)return;
-#endif
   local_aperture_default = Zoom2Aperture(1.0);
   if(VP_scene.width==0||VP_scene.height==0)GetViewportInfo();
   if(VP_scene.height!=0)asp = (float)VP_scene.width/(float)VP_scene.height;

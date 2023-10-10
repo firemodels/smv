@@ -2128,9 +2128,6 @@ int camera_zoom_to_fit() {
   camera_current->eye[1] += offset * 2;
   eye_xyz0[1] = camera_current->eye[1];
   in_external = 0;
-#ifndef pp_RESHAPE
-  update_adjust_y = 0;
-#endif
   first_display = 0;
   return 0;
 }
