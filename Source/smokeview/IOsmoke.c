@@ -4250,13 +4250,13 @@ int UpdateSmoke3D(smoke3ddata *smoke3di){
   countout=smoke3di->nchars_uncompressed;
   switch(smoke3di->compression_type){
     unsigned char *buffer_in;
-    case COMPRESSED_RLE:
+    case RLE:
 
     buffer_in = smoke3di->smokeframe_comp_list[iframe_local];
     countout = UnCompressRLE(buffer_in,countin,smoke3di->smokeframe_in);
     CheckMemory;
     break;
-  case COMPRESSED_ZLIB:
+  case ZLIB:
     UnCompressZLIB(smoke3di->smokeframe_in,&countout,smoke3di->smokeframe_comp_list[iframe_local],countin);
     break;
   default:
@@ -4681,9 +4681,9 @@ void UpdateSmoke3dMenuLabels(void){
     case UNKNOWN:
       // compression type not determined yet
       break;
-    case COMPRESSED_RLE: // 3d smoke files are rle compressed by default
+    case RLE: // 3d smoke files are rle compressed by default
       break;
-    case COMPRESSED_ZLIB:
+    case ZLIB:
       STRCAT(smoke3di->menulabel," (ZLIB) ");
       break;
     default:
