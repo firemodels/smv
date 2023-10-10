@@ -3650,40 +3650,8 @@ void SetScreenSize(int *width, int *height){
   }
 }
 
-#ifndef pp_RESHAPE
-/* ------------------ AdjustY ------------------------ */
-
-void AdjustY(cameradata *ca){
-
-  if(projection_type!=PROJECTION_PERSPECTIVE||update_saving_viewpoint>0||update_viewpoint_script>0)return;
-  switch(selected_view){
-    case 0:
-    case -1:
-      UpdateCameraYpos(ca, 1);
-      break;
-    case 1:
-    case -2:
-    case -3:
-      UpdateCameraYpos(ca, 2);
-      break;
-    case -4:
-    case -5:
-      UpdateCameraYpos(ca, 3);
-      break;
-    default:
-      UpdateCameraYpos(ca, 2);
-      break;
-  }
-  if(selected_view<=1&&selected_view>-5){
-    void ResetDefaultMenu(int var);
-    ResetDefaultMenu(selected_view);
-  }
-}
-#endif
-
 /* ------------------ ReshapeCB ------------------------ */
 
-#ifdef pp_RESHAPE
 void ReshapeCB(int width, int height){
   START_TIMER(timer_reshape);
   if(disable_reshape==1)return;
@@ -3706,30 +3674,6 @@ void ReshapeCB(int width, int height){
   UpdateWindowSizeList();
   update_reshape = 2;
  }
-#else
-void ReshapeCB(int width, int height){
-  START_TIMER(timer_reshape);
-  if(disable_reshape==1)return;
-  updatemenu=1;
-  if(strcmp(camera_current->name,"external")!=0||in_external==0){
-    CopyCamera(camera_save,camera_current);
-  }
-  SetScreenSize(&width,&height);
-  windowresized=1;
-  UpdateCameraYpos(camera_external, 2);
-  if(strcmp(camera_current->name,"external")==0&&in_external==1){
-    SetViewPoint(RESTORE_EXTERIOR_VIEW);
-  }
-  else{
-    CopyCamera(camera_current,camera_save);
-  }
-  if(current_script_command==NULL)AdjustY(camera_current);
-  windowsize_pointer_old = -1;
-  UpdateWindowSizeList();
-  if(current_script_command==NULL)update_adjust_y = 2;
-  update_reshape = 2;
- }
-#endif
 
 /* ------------------ ResetGLTime ------------------------ */
 

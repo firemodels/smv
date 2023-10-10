@@ -2439,12 +2439,6 @@ void UpdateDisplay(void){
     SortSlices();
   }
   LOCK_IBLANK
-#ifndef pp_RESHAPE
-  if(update_adjust_y>0){
-    AdjustY(camera_current);
-    update_adjust_y--;
-  }
-#endif
   if(update_ini_boundary_type==1){
     update_ini_boundary_type = 0;
     ShowBoundaryMenu(INI_EXTERIORwallmenu);

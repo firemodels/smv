@@ -149,9 +149,6 @@ SVEXTERN int SVDECL(handle_slice_files, 1);
 SVEXTERN int SVDECL(plot_option, 0);
 SVEXTERN float hrr_valmin, hrr_valmax;
 SVEXTERN int SVDECL(is_terrain_case, 0);
-#ifndef pp_RESHAPE
-SVEXTERN int SVDECL(update_adjust_y, 2);
-#endif
 SVEXTERN int SVDECL(visFrameTimelabel, 1);
 SVEXTERN int SVDECL(rotation_axis, 1);
 SVEXTERN ztreedevicedata SVDECL(*ztreedeviceinfo, NULL);
