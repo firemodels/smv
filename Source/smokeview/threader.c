@@ -336,11 +336,9 @@ int ReadBuffer(char *filename, int filesize, char *buffer, int nthreads, int use
   filesizei = filesize/nthreads;
 
   NewMemory((void **)&readbufferinfo, nthreads*sizeof(readbufferdata));
-#ifdef pp_THREAD
   if(use_multithread==1&&nthreads>1){
     NewMemory((void **)&readbuffer_ids, nthreads*sizeof(pthread_t));
   }
-#endif
 
   for(i = 0; i<nthreads; i++){
     readbufferdata *readbufferi;
@@ -360,7 +358,6 @@ int ReadBuffer(char *filename, int filesize, char *buffer, int nthreads, int use
     readbufferi->filename = filename;
     readbufferi->start = start;
     readbufferi->size = end-start;
-#ifdef pp_THREAD
     if(use_multithread==1&&nthreads>1){
       pthread_create(readbuffer_ids+i, NULL, MtReadBufferi, readbufferi);
     }
@@ -373,10 +370,6 @@ int ReadBuffer(char *filename, int filesize, char *buffer, int nthreads, int use
       pthread_join(readbuffer_ids[i], NULL);
     }
   }
-#else
-    ReadBufferi(readbufferi);
-  }
-#endif
   for(i = 0; i<nthreads; i++){
     readbufferdata *readbufferi;
 
@@ -387,11 +380,9 @@ int ReadBuffer(char *filename, int filesize, char *buffer, int nthreads, int use
     }
   }
   FREEMEMORY(readbufferinfo);
-#ifdef pp_THREAD
   if(use_multithread==1&&nthreads>1){
     FREEMEMORY(readbuffer_ids);
   }
-#endif
   return returnval;
 }
 #endif
