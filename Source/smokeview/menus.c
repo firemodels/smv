@@ -4597,19 +4597,6 @@ FILE_SIZE LoadSmoke3D(int type, int *count){
     break;
     }
   }
-#ifdef pp_SMOKE3DSTREAM
-  int nstreams = 0;
-  streamdata **streams = NULL;
-
-  for(i = 0; i<nsmoke3dinfo; i++){
-    smoke3ddata *smoke3di;
-
-    smoke3di = smoke3dinfo+i;
-    if(smoke3di->type==type&&compute_smoke3d_file_sizes!=1)nstreams++;
-  }
-  if(nstreams>0)NewMemory((void **)&streams, nstreams*sizeof(streamdata *));
-  nstreams = 0;
-#endif
   total_size = 0;
   for(i=0;i<nsmoke3dinfo;i++){
     smoke3ddata *smoke3di;
@@ -4625,23 +4612,9 @@ FILE_SIZE LoadSmoke3D(int type, int *count){
       }
       else{
         load_size += ReadSmoke3D(ALL_SMOKE_FRAMES, i, LOAD, FIRST_TIME, &errorcode);
-#ifdef pp_SMOKE3DSTREAM
-        if(smoke3di->smoke_stream!=NULL)streams[nstreams++] = smoke3di->smoke_stream;
-#endif
       }
     }
   }
-#ifdef pp_SMOKE3DSTREAM
-  if(nstreams>0){
-    if(streamlistarg==NULL){
-      NewMemory((void **)&streamlistarg, sizeof(streamlistargdata));
-    }
-    streamlistarg->streams  = streams;
-    streamlistarg->nstreams = nstreams;
-    StreamReadListMT(streamlistarg, 1);
-    //StreamReadList(streams, nstreams);
-  }
-#endif
   if(compute_smoke3d_file_sizes==1){
     PRINTF(" file size: ");
     if(total_size>1000000000){
@@ -4665,9 +4638,7 @@ FILE_SIZE LoadSmoke3D(int type, int *count){
 void LoadSmoke3DMenu(int value){
   int i,errorcode;
   int file_count;
-#ifndef pp_SMOKE3DSTREAM
   float load_time, load_size;
-#endif
 
 #define MENU_DUMMY_SMOKE           -9
 #define MENU_SMOKE_SETTINGS        -4
@@ -4677,10 +4648,8 @@ void LoadSmoke3DMenu(int value){
 #endif
 
   if(value == MENU_DUMMY_SMOKE)return;
-#ifndef pp_SMOKE3DSTREAM
   START_TIMER(load_time);
   load_size = 0.0;
-#endif
   file_count=0;
   GLUTSETCURSOR(GLUT_CURSOR_WAIT);
   if(value>=0){
@@ -4758,18 +4727,14 @@ void LoadSmoke3DMenu(int value){
         }
         if(add_blank==1)printf("\n");
       }
-#ifndef pp_SMOKE3DSTREAM
       load_size=
-#endif
 	      LoadSmoke3D(smoke3di->type, &file_count);
     }
   }
-#ifndef pp_SMOKE3DSTREAM
   STOP_TIMER(load_time);
   if(compute_smoke3d_file_sizes==0){
     PRINT_LOADTIMES(file_count, load_size, load_time);
   }
-#endif
   updatemenu=1;
   GLUTPOSTREDISPLAY;
   GLUTSETCURSOR(GLUT_CURSOR_LEFT_ARROW);
