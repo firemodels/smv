@@ -6,7 +6,6 @@
 
 #include "smokeviewvars.h"
 #include "IOvolsmoke.h"
-#include "smokestream.h"
 
 #ifndef pp_THREAD
 #undef pp_CSV_MULTI
@@ -29,9 +28,6 @@ void InitMultiThreading(void){
   pthread_mutex_init(&mutexCHECKFILES, NULL);
   pthread_mutex_init(&mutexSLICEBOUNDS, NULL);
   pthread_mutex_init(&mutexPATCHBOUNDS, NULL);
-#ifdef pp_STREAM
-  pthread_mutex_init(&mutexSTREAM, NULL);
-#endif
 #endif
 }
 
@@ -329,75 +325,6 @@ void *MtReadBufferi(void *arg){
   pthread_exit(NULL);
   return NULL;
 }
-
-/* ------------------ ReadBuffer ------------------------ */
-
-int ReadBuffer(char *filename, int filesize, char *buffer, int nthreads, int use_multithread){
-  int i, filesizei, returnval;
-  readbufferdata *readbufferinfo;
-
-  returnval = 1;
-  filesizei = filesize/nthreads;
-
-  NewMemory((void **)&readbufferinfo, nthreads*sizeof(readbufferdata));
-#ifdef pp_THREAD
-  if(use_multithread==1&&nthreads>1){
-    NewMemory((void **)&readbuffer_ids, nthreads*sizeof(pthread_t));
-  }
-#endif
-
-  for(i = 0; i<nthreads; i++){
-    readbufferdata *readbufferi;
-    int start, end;
-
-    start = i*filesizei;
-    if(i==nthreads-1){
-      end = filesize;
-    }
-    else{
-      end = start+filesizei;
-    }
-    if(end>filesize)end = filesize;
-
-    readbufferi = readbufferinfo+i;
-    readbufferi->buffer = buffer;
-    readbufferi->filename = filename;
-    readbufferi->start = start;
-    readbufferi->size = end-start;
-#ifdef pp_THREAD
-    if(use_multithread==1&&nthreads>1){
-      pthread_create(readbuffer_ids+i, NULL, MtReadBufferi, readbufferi);
-    }
-    else{
-      ReadBufferi(readbufferi);
-    }
-  }
-  if(use_multithread==1&&nthreads>1){
-    for(i = 0; i<nthreads; i++){
-      pthread_join(readbuffer_ids[i], NULL);
-    }
-  }
-#else
-    ReadBufferi(readbufferi);
-  }
-#endif
-  for(i = 0; i<nthreads; i++){
-    readbufferdata *readbufferi;
-
-    readbufferi = readbufferinfo+i;
-    if(readbufferi->returnval==0){
-      returnval = 0;
-      break;
-    }
-  }
-  FREEMEMORY(readbufferinfo);
-#ifdef pp_THREAD
-  if(use_multithread==1&&nthreads>1){
-    FREEMEMORY(readbuffer_ids);
-  }
-#endif
-  return returnval;
-}
 #endif
 
 //***************************** multi threading read in csv file ***********************************
@@ -570,9 +497,9 @@ void SetupFFMT(void){
 #endif
 }
 
-/* ------------------ CheckCompressionFiles ------------------------ */
+#ifndef pp_CHECK
+/* ------------------ CheckFiles ------------------------ */
 
-#ifndef pp_CHECK_FILES
 void CheckFiles(void){
   int i;
 
@@ -629,7 +556,6 @@ void CheckFiles(void){
   updatemenu = 1;
   UNLOCK_CHECKFILES;
 }
-#endif
 
 /* ------------------ MtCheckFiles ------------------------ */
 
@@ -675,6 +601,7 @@ void GetGlobalSliceBoundsMT(void){
 void GetGlobalSliceBoundsMT(void){
   GetGlobalSliceBounds();
 }
+#endif
 #endif
 
 /* ------------------ MtGetGlobalPatchBounds ------------------------ */
@@ -725,73 +652,6 @@ void SampleMT(void){
 #else
 void SampleMT(void){
   Sample();
-}
-#endif
-#endif
-
-/* ------------------ I/O streaming ------------------------ */
-
-#ifdef pp_STREAM
-
-#ifdef pp_THREAD
-
-/* ------------------ MtStreamReadList ------------------------ */
-
-void *MtStreamReadList(void *arg){
-  streamlistargdata *streamlist;
-  streamdata **streams;
-  int nstreams;
-
-  streamlist = (streamlistargdata *)arg;
-
-  streams  = streamlist->streams;
-  nstreams = streamlist->nstreams;
-
-  StreamReadList(streams, nstreams);
-  pthread_exit(NULL);
-  return NULL;
-}
-
-/* ------------------ GetThreads ------------------------ */
-
-pthread_t *GetThreads(int nthreads){
-  pthread_t *threads = NULL;
-
-  if(nthreads<=0)return NULL;
-  NewMemory((void **)&threads, nthreads*sizeof(pthread_t));
-  return threads;
-}
-
-/* ------------------ StreamReadListMT ------------------------ */
-
-void StreamReadListMT(streamlistargdata *arg, int nthreads){
-  pthread_t *threads=NULL;
-
-  if(nthreads>0&&stream_multithread==1)threads = GetThreads(nthreads);
-  if(threads!=NULL){
-    int i;
-
-    for(i=0;i<nthreads;i++){
-      pthread_create(threads+i, NULL, MtStreamReadList, (void *)arg);
-    }
-  }
-  else{
-    streamdata **streams;
-    int nstreams;
-
-    streams = arg->streams;
-    nstreams = arg->nstreams;
-    StreamReadList(streams, nstreams);
-  }
-}
-#else
-void StreamReadListMT(streamlistargdata *arg){
-  streamdata **streams;
-  int nstreams;
-
-  streams = arg->streams;
-  nstreams = arg->nstreams;
-  StreamReadList(streams, nstreams);
 }
 #endif
 #endif

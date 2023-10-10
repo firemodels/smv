@@ -4988,9 +4988,6 @@ int ParsePRT5Process(bufferstreamdata *stream, char *buffer, int *nn_part_in, in
   parti->valmin_smv = NULL;
   parti->valmax_smv = NULL;
   parti->stream     = NULL;
-#ifdef pp_PARTSTREAM
-  parti->part_stream = NULL;
-#endif
   if(FGETS(buffer, 255, stream)==NULL){
     npartinfo--;
     return RETURN_BREAK;
@@ -5360,7 +5357,10 @@ int ParseBNDFProcess(bufferstreamdata *stream, char *buffer, int *nn_patch_in, i
   patchi->setchopmax = 0;
   patchi->chopmax = 0.0;
   meshinfo[blocknumber].patchfilenum = -1;
-  if(fast_startup==1||FILE_EXISTS_CASEDIR(patchi->file)==YES){
+#ifdef pp_CHECK_FILES
+  if(fast_startup==1||FILE_EXISTS_CASEDIR(patchi->file)==YES)
+#endif
+  {
     char geomlabel2[256], *geomptr = NULL;
 
     strcpy(geomlabel2, "");
@@ -5403,10 +5403,12 @@ int ParseBNDFProcess(bufferstreamdata *stream, char *buffer, int *nn_patch_in, i
       *ipatch_in = ipatch;
     }
   }
+#ifdef pp_CHECK_FILES
   else{
     if(ReadLabels(&patchi->label, stream, NULL)==LABEL_ERR)return RETURN_TWO;
     npatchinfo--;
   }
+#endif
   return RETURN_CONTINUE;
 }
 
@@ -5482,11 +5484,6 @@ int ParseSMOKE3DProcess(bufferstreamdata *stream, char *buffer, int *nn_smoke3d_
 
     if(NewMemory((void **)&smoke3di->reg_file, (unsigned int)(len+1))==0)return RETURN_TWO;
     STRCPY(smoke3di->reg_file, bufferptr);
-#ifdef pp_SMOKE3DSTREAM
-    if(NewMemory((void **)&smoke3di->size_file, (unsigned int)(len+3+1))==0)return RETURN_TWO;
-    STRCPY(smoke3di->size_file, bufferptr);
-    strcat(smoke3di->size_file, ".sz");
-#endif
 
     for(i=0; i<6; i++){
       unsigned char *alpha_dir;
@@ -5507,7 +5504,7 @@ int ParseSMOKE3DProcess(bufferstreamdata *stream, char *buffer, int *nn_smoke3d_
 #endif
     smoke3di->seq_id = nn_smoke3d;
     smoke3di->autoload = 0;
-    smoke3di->compression_type = UNKNOWN;
+    smoke3di->compression_type = COMPRESSED_UNKNOWN;
     smoke3di->file = NULL;
     smoke3di->smokeframe_in = NULL;
     smoke3di->smokeframe_comp_list = NULL;
@@ -5532,9 +5529,6 @@ int ParseSMOKE3DProcess(bufferstreamdata *stream, char *buffer, int *nn_smoke3d_
     smoke3di->blocknumber = blocknumber;
     smoke3di->lastiframe = -999;
     smoke3di->ismoke3d_time = 0;
-#ifdef pp_SMOKE3DSTREAM
-    smoke3di->smoke_stream = NULL;
-#endif
 
     STRCPY(buffer2, bufferptr);
     STRCAT(buffer2, ".svz");
@@ -5572,7 +5566,10 @@ int ParseSMOKE3DProcess(bufferstreamdata *stream, char *buffer, int *nn_smoke3d_
     }
 #endif
 
-    if(FILE_EXISTS_CASEDIR(smoke3di->file)==YES){
+#ifdef pp_CHECK_FILES
+    if(FILE_EXISTS_CASEDIR(smoke3di->file)==YES)
+#endif
+    {
       if(ReadLabels(&smoke3di->label, stream, NULL)==LABEL_ERR)return RETURN_TWO;
       if(strcmp(smoke3di->label.longlabel, "HRRPUV")==0){
         show_hrrcutoff_active = 1;
@@ -5583,10 +5580,12 @@ int ParseSMOKE3DProcess(bufferstreamdata *stream, char *buffer, int *nn_smoke3d_
       ismoke3d++;
       *ismoke3d_in = ismoke3d;
     }
+#ifdef pp_CHECK_FILES
     else{
       if(ReadLabels(&smoke3di->label, stream, NULL)==LABEL_ERR)return RETURN_TWO;
       nsmoke3dinfo--;
     }
+#endif
     if(extinct<0.0){
       extinct = 0.0;
       if(IsSootFile(smoke3di->label.shortlabel, smoke3di->label.longlabel)==1)extinct = 8700.0;
@@ -11649,7 +11648,6 @@ typedef struct {
 
   JOIN_CSVFILES;
   JOIN_IBLANK;
-  JOIN_SETUP_FFMPEG;
 
   PRINT_TIMER(timer_readsmv, "make blanks");
   UpdateFaces();

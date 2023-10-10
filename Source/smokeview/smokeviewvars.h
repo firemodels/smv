@@ -149,9 +149,6 @@ SVEXTERN int SVDECL(handle_slice_files, 1);
 SVEXTERN int SVDECL(plot_option, 0);
 SVEXTERN float hrr_valmin, hrr_valmax;
 SVEXTERN int SVDECL(is_terrain_case, 0);
-#ifndef pp_RESHAPE
-SVEXTERN int SVDECL(update_adjust_y, 2);
-#endif
 SVEXTERN int SVDECL(visFrameTimelabel, 1);
 SVEXTERN int SVDECL(rotation_axis, 1);
 SVEXTERN ztreedevicedata SVDECL(*ztreedeviceinfo, NULL);
@@ -300,10 +297,6 @@ SVEXTERN FILE_SIZE  SVDECL(global_part_boundsize, 0);
 SVEXTERN int SVDECL(npartthread_ids, 2);
 #ifdef pp_SLICE_MULTI
 SVEXTERN int SVDECL(nslicethread_ids, 4);
-#endif
-#ifdef pp_STREAM
-SVEXTERN int SVDECL(stream_multithread, 1);
-SVEXTERN streamlistargdata SVDECL(*streamlistarg, NULL);
 #endif
 SVEXTERN int SVDECL(nreadallgeomthread_ids, 4);
 SVEXTERN int SVDECL(partfast, 1);
