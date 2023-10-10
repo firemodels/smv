@@ -11649,7 +11649,7 @@ typedef struct {
 
   JOIN_CSVFILES;
   JOIN_IBLANK;
-  JOIN_SETUPFF;
+  JOIN_SETUP_FFMPEG;
 
   PRINT_TIMER(timer_readsmv, "make blanks");
   UpdateFaces();
