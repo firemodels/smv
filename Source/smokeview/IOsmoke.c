@@ -3957,7 +3957,7 @@ int SetupSmoke3D(smoke3ddata *smoke3di, int flag_arg, int iframe_arg, int *error
     }
   }
 
-  if(smoke3di->compression_type==UNKNOWN){
+  if(smoke3di->compression_type==COMPRESSED_UNKNOWN){
     smoke3di->compression_type = GetSmoke3DVersion(smoke3di);
     UpdateSmoke3dMenuLabels();
   }
@@ -4250,13 +4250,13 @@ int UpdateSmoke3D(smoke3ddata *smoke3di){
   countout=smoke3di->nchars_uncompressed;
   switch(smoke3di->compression_type){
     unsigned char *buffer_in;
-    case RLE:
+    case COMPRESSED_RLE:
 
     buffer_in = smoke3di->smokeframe_comp_list[iframe_local];
     countout = UnCompressRLE(buffer_in,countin,smoke3di->smokeframe_in);
     CheckMemory;
     break;
-  case ZLIB:
+  case COMPRESSED_ZLIB:
     UnCompressZLIB(smoke3di->smokeframe_in,&countout,smoke3di->smokeframe_comp_list[iframe_local],countin);
     break;
   default:
@@ -4678,12 +4678,12 @@ void UpdateSmoke3dMenuLabels(void){
       STRCAT(smoke3di->menulabel,smoke3di->file);
     }
     switch(smoke3di->compression_type){
-    case UNKNOWN:
+    case COMPRESSED_UNKNOWN:
       // compression type not determined yet
       break;
-    case RLE: // 3d smoke files are rle compressed by default
+    case COMPRESSED_RLE: // 3d smoke files are rle compressed by default
       break;
-    case ZLIB:
+    case COMPRESSED_ZLIB:
       STRCAT(smoke3di->menulabel," (ZLIB) ");
       break;
     default:

@@ -317,9 +317,10 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 #define UNCOMPRESSED_ALLFRAMES 0
 #define COMPRESSED_ALLFRAMES   1
 
-#define UNCOMPRESSED    0
-#define COMPRESSED_ZLIB 1
-#define COMPRESSED_RLE  2
+#define COMPRESSED_UNKNOWN -1
+#define UNCOMPRESSED        2
+#define COMPRESSED_RLE      0 // 3d smoke file format assumes rle parameter is 0
+#define COMPRESSED_ZLIB     1 // 3d smoke file format assumes zlib parameter is 1
 
 #define DISABLE 0
 #define ENABLE  1
@@ -513,10 +514,6 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 
 #define FED_SLICE 0
 #define FED_ISO   1
-
-#define UNKNOWN -1
-#define RLE      0
-#define ZLIB     1
 
 #define SLICE_NODE_CENTER 1
 #define SLICE_CELL_CENTER 2

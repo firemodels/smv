@@ -5504,7 +5504,7 @@ int ParseSMOKE3DProcess(bufferstreamdata *stream, char *buffer, int *nn_smoke3d_
 #endif
     smoke3di->seq_id = nn_smoke3d;
     smoke3di->autoload = 0;
-    smoke3di->compression_type = UNKNOWN;
+    smoke3di->compression_type = COMPRESSED_UNKNOWN;
     smoke3di->file = NULL;
     smoke3di->smokeframe_in = NULL;
     smoke3di->smokeframe_comp_list = NULL;
