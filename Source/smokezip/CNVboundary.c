@@ -644,10 +644,12 @@ void Get_Boundary_Bounds(void){
 
     patchi = patchinfo + i;
     if(patchi->dup==1)continue;
+    if(patchi->is_geom == 1)continue;
     for(j=i+1;j<npatchinfo;j++){
       patch *patchj;
 
       patchj = patchinfo + j;
+      if(patchj->is_geom == 1)continue;
       if(strcmp(patchi->label.shortlabel,patchj->label.shortlabel)!=0)continue;
       MergeHistogram(patchi->histogram,patchj->histogram,MERGE_BOUNDS);
     }
@@ -659,6 +661,7 @@ void Get_Boundary_Bounds(void){
       patch *patchj;
 
       patchj = patchinfo + j;
+      if(patchj->is_geom == 1)continue;
       if(strcmp(patchi->label.shortlabel,patchj->label.shortlabel)!=0)continue;
       patchj->valmax=patchi->valmax;
       patchj->valmin=patchi->valmin;
@@ -670,6 +673,7 @@ void Get_Boundary_Bounds(void){
     patch *patchi;
 
     patchi = patchinfo + i;
+    if(patchi->is_geom == 1)continue;
     FREEMEMORY(patchi->histogram->buckets);
     FREEMEMORY(patchi->histogram->buckets_polar);
     FREEMEMORY(patchi->histogram);
