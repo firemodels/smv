@@ -204,8 +204,6 @@ typedef struct {
   int seq_id, autozip;
   int nx, ny, nz, filesize;
   meshdata *smokemesh;
-  unsigned char *compressed_lightingbuffer;
-  uLongf ncompressed_lighting_zlib;
 } smoke3d;
 
 #ifdef pp_PART
@@ -338,7 +336,6 @@ EXTERN int GLOBdoit_smoke3d, GLOBdoit_boundary, GLOBdoit_slice, GLOBdoit_plot3d,
 EXTERN int GLOBdoit_particle;
 #endif
 
-EXTERN int GLOBdoit_lighting;
 EXTERN FILE *SMZLOG_STREAM;
 
 EXTERN int GLOBfirst_initsphere,GLOBfirst_slice,GLOBfirst_patch,GLOBfirst_plot3d,GLOBfirst_part2iso,GLOBfirst_part2iso_smvopen;

@@ -5,7 +5,6 @@
 #include <math.h>
 #include "zlib.h"
 #include "svzip.h"
-#include "lightsmoke.h"
 #include "file_util.h"
 #include "MALLOCC.h"
 #include "compress.h"
@@ -34,8 +33,6 @@ void convert_3dsmoke(smoke3d *smoke3di, int *thread_index){
   LINT data_loc;
   char *smoke3dfile;
   float time_max;
-  radiancedata radianceinfo;
-  unsigned char *radiance, *opacity;
 
   smoke3dfile=smoke3di->file;
   smoke3di->compressed=0;
@@ -163,40 +160,14 @@ void convert_3dsmoke(smoke3d *smoke3di, int *thread_index){
   smoke3di->nx=nx;
   smoke3di->ny=ny;
   smoke3di->nz=nz;
-  smoke3di->ncompressed_lighting_zlib=buffersize;
-
   NewMemory((void **)&full_alphabuffer,buffersize);
   NewMemory((void **)&compressed_alphabuffer,buffersize);
-
-  {
-    float xyzbar0[3], xyzbar[3], dxyz[3];
-    int ijkbar[3];
-
-    opacity=full_alphabuffer;
-    radiance = opacity + nx*ny*nz;
-
-    ijkbar[0]=nx;
-    ijkbar[1]=ny;
-    ijkbar[2]=nz;
-    xyzbar0[0]=smoke3di->smokemesh->xbar0;
-    xyzbar0[1]=smoke3di->smokemesh->ybar0;
-    xyzbar0[2]=smoke3di->smokemesh->zbar0;
-    xyzbar[0]=smoke3di->smokemesh->xbar;
-    xyzbar[1]=smoke3di->smokemesh->ybar;
-    xyzbar[2]=smoke3di->smokemesh->zbar;
-    dxyz[0]=smoke3di->smokemesh->dx;
-    dxyz[1]=smoke3di->smokemesh->dy;
-    dxyz[2]=smoke3di->smokemesh->dz;
-    setup_radiancemap(&radianceinfo,ijkbar,xyzbar0,xyzbar,dxyz,radiance,opacity);
-  }
 
   count=-1;
   sizebefore=8;
   sizeafter=8;
   time_max=-1000000.0;
   for(;;){
-    int nlight_data;
-
     FORTSMOKEREADBR(&time_local, 4, 1, SMOKE3DFILE, smoke3di->file_type);
     FORTSMOKEREADBR(nchars, 4,2, SMOKE3DFILE,smoke3di->file_type);
 
@@ -223,11 +194,6 @@ void convert_3dsmoke(smoke3d *smoke3di, int *thread_index){
     CheckMemory;
     if(nfull_file!=nfull_data){
       fprintf(stderr,"*** Warning frame size expected=%i frame size found=%i\n",nfull_file,nfull_data);
-    }
-
-    if(GLOBdoit_lighting==1&&smoke3di->is_soot==1){
-      build_radiancemap(&radianceinfo);
-      nfull_data+=nx*ny*nz;
     }
 
     // compress frame data (into ZLIB format)
@@ -260,21 +226,15 @@ void convert_3dsmoke(smoke3d *smoke3di, int *thread_index){
     // write out new entries in the size (sz) file
 
     nchars[0]=nfull_data;
-    if(GLOBdoit_lighting==1&&smoke3di->is_soot==1){
-      nchars[1]=-ncompressed_zlib;
-    }
-    else{
-      nchars[1]=ncompressed_zlib;
-    }
+    nchars[1]=ncompressed_zlib;
     fwrite(&time_local,4,1,smoke3dstream);
     fwrite(nchars,4,2,smoke3dstream);
     if(ncompressed_zlib>0)fwrite(compressed_alphabuffer,1,ncompressed_zlib,smoke3dstream);
     sizeafter+=12+ncompressed_zlib;
 
-// time, nframeboth, ncompressed_rle, ncompressed_zlib, nlightdata
-    nlight_data=nfull_data-nfull_file;
-    if(GLOBdoit_lighting==1&&smoke3di->is_soot==1)nlight_data=-nlight_data;
-    fprintf(smoke3dsizestream,"%f %i %i %i %i\n",time_local,nfull_data,ncompressed_rle,(int)ncompressed_zlib,nlight_data);
+// time, nframeboth, ncompressed_rle, ncompressed_zlib, 0
+    int dummy=0;
+    fprintf(smoke3dsizestream,"%f %i %i %i %i\n",time_local,nfull_data,ncompressed_rle,(int)ncompressed_zlib,dummy);
   }
 #ifdef pp_THREAD
   {

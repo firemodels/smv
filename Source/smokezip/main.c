@@ -123,7 +123,6 @@ int main(int argc, char **argv){
     return 0;
   }
 
-  GLOBdoit_lighting=0;
   GLOBdoit_smoke3d=1;
   GLOBdoit_boundary=1;
   GLOBdoit_slice=1;
@@ -249,9 +248,6 @@ int main(int argc, char **argv){
         }
         break;
 #endif
-      case 'l':
-        GLOBdoit_lighting=1;
-        break;
       case 'n':
         if(strcmp(arg,"-n3")==0){
           GLOBdoit_smoke3d=0;
