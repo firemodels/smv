@@ -38,7 +38,7 @@
 #ifdef pp_BETA
 #define PROGVERSION "Test"
 #else
-#define PROGVERSION "Release"
+#define PROGVERSION ""
 #endif
 
 
