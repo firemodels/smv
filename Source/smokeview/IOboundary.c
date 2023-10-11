@@ -2537,7 +2537,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
 #ifdef pp_BOUND_HIST_ON
         ComputeLoadedPatchHist(bounds->label, &bound_hist, &global_min, &global_max);
 #endif
-        if(bound_hist->defined==1){
+        if(bound_hist!=NULL&&bound_hist->defined==1){
           if(bounds->set_valmin==BOUND_PERCENTILE_MIN){
            float per_valmin;
 
