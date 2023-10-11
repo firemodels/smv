@@ -82,9 +82,15 @@ int clean_boundary(patch *patchi){
   return 0;
 }
 
-/* ------------------ convert_boundary ------------------------ */
+/* ------------------ ConvertBoundaryGEOM ------------------------ */
 
-int convert_boundary(patch *patchi, int *thread_index){
+int ConvertBoundaryGEOM(patch *patchi, int *thread_index){
+  return 1;
+}
+
+/* ------------------ ConvertBoundaryBNDF ------------------------ */
+
+int ConvertBoundaryBNDF(patch *patchi, int *thread_index){
   FILE *BOUNDARYFILE=NULL;
   char boundaryfile_svz[1024], boundarysizefile_svz[1024];
   FILE *boundarystream=NULL,*boundarysizestream=NULL;
@@ -525,7 +531,12 @@ void *compress_patches(void *arg){
       patchi->inuse=1;
       UNLOCK_PATCH;
 
-      convert_boundary(patchi,thread_index);
+      if(patchi->is_geom == 0){
+        ConvertBoundaryBNDF(patchi, thread_index);
+      }
+      else{
+        ConvertBoundaryGEOM(patchi, thread_index);
+      }
     }
     else{
       PRINTF("%s not compressed\n",patchi->file);
