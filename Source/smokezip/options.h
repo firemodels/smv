@@ -8,15 +8,6 @@
 //#undef pp_BETA
 //#define pp_BETA
 
-//*** define smokezip title
-
-#ifdef pp_BETA
-  #define PROGVERSION "Test"
-#else
-  #define PROGVERSION "Release"
-#endif
-
-
 #include "lint.h"
 
 //*** options: all platforms

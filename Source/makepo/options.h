@@ -9,13 +9,4 @@
 //#undef pp_BETA
 //#define pp_BETA
 
-
-//*** define makepo title
-
-#ifdef pp_BETA
-  #define PROGVERSION "Test"
-#else
-  #define PROGVERSION "1.0.0"
-#endif
-
 #endif

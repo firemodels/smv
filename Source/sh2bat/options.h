@@ -7,16 +7,4 @@
 //#undef pp_BETA
 //#define pp_BETA
 
-//*** define sh2fds title
-
-#ifdef pp_BETA
-#define PROGVERSION "Test"
-#else
-#define PROGVERSION "1.0.2"
 #endif
-
-#endif
-
-
-
-
