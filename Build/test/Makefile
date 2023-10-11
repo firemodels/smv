@@ -16,7 +16,8 @@ bin = .
 
 # Definition of the object variables
 
-obj =    main.o
+srcs =    main.c
+obj = $(srcs:.c=.o)
 objwin = $(obj:.o=.obj)
 
 #*** General Purpose Rules ***
@@ -60,6 +61,13 @@ gnu_linux_64 : exe       = test_linux_64
 
 gnu_linux_64: $(obj)
 	$(CC) -m64 -o $(bin)/$(exe) $(obj)
+
+gnu_linux_64_check : CFLAGS    = -O2 -m64 -Wall
+gnu_linux_64_check: $(srcs)
+	clang-tidy $^ --  $(CFLAGS) $(INC)
+
+gnu_linux_64_format: $(srcs)
+	clang-format -i $^
 
 # ------------- intel linux 64 ----------------
 
