@@ -1,3 +1,4 @@
+#include "options_common.h"
 #include "gd.h"
 
 // Verified, the declarations below are part of the verified and test API.
@@ -279,8 +280,8 @@ int set_boundcolor(float r, float g, float b);      // BOUNDCOLOR
 int set_colorbar_textureflag(int v);
 int get_colorbar_textureflag();
 int set_colorbar_contourvalue(int v);
-int set_colorbar_colors(int ncolors, float colors[][3]);
-int set_color2bar_colors(int ncolors, float colors[][3]);
+int set_colorbar_colors(int ncolors, float *colors);
+int set_color2bar_colors(int ncolors, float *colors);
 int set_diffuselight(float r, float g, float b);   // DIFFUSELIGHT
 int set_directioncolor(float r, float g, float b); // DIRECTIONCOLOR
 int set_flip(int setting);                         // FLIP

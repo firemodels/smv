@@ -1,0 +1,9 @@
+---
+Checks: "clang-diagnostic-*,clang-analyzer-*,-clang-analyzer-security.insecureAPI.strcpy,-clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling,readability-identifier-naming"
+WarningsAsErrors: ""
+HeaderFilterRegex: ""
+AnalyzeTemporaryDtors: false
+CheckOptions:
+  - { key: readability-identifier-naming.FunctionCase, value: CamelCase }
+  - { key: readability-identifier-naming.VariableCase, value: lower_case }
+  - { key: readability-identifier-naming.GlobalConstantCase, value: UPPER_CASE }
