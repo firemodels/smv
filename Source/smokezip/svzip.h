@@ -119,6 +119,7 @@ typedef struct {
   char summary[1024];
   int compressed;
   int filesize;
+  int is_geom;
   int inuse,inuse_getbounds;
   int seq_id, autozip;
   int doit, done;

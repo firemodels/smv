@@ -514,6 +514,7 @@ void *compress_patches(void *arg){
   for(i=0;i<npatchinfo;i++){
     patchi = patchinfo + i;
     if(GLOBautozip==1&&patchi->autozip==0)continue;
+    if(patchi->is_geom == 0)continue;
 
     if(patchi->doit==1){
       LOCK_PATCH;

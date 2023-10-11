@@ -59,7 +59,10 @@ int ReadSMV(char *smvfile){
     ++++++++++++++++++++++ BNDF ++++++++++++++++++++++++++++++
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   */
-    if(Match(buffer, "BNDF") == 1 || Match(buffer, "BNDC") == 1){
+    if(
+      Match(buffer, "BNDF") == 1 || Match(buffer, "BNDC") == 1 ||
+      Match(buffer, "BNDE") == 1 || Match(buffer, "BNDS") == 1
+      ){
       npatchinfo++;
       continue;
     }
@@ -528,7 +531,10 @@ int ReadSMV(char *smvfile){
     ++++++++++++++++++++++ BNDF ++++++++++++++++++++++++++++++
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   */
-    if(Match(buffer,"BNDF") == 1|| Match(buffer, "BNDC") == 1){
+    if(
+      Match(buffer, "BNDF") == 1 || Match(buffer, "BNDC") == 1 ||
+      Match(buffer, "BNDE") == 1 || Match(buffer, "BNDS") == 1
+      ){
       int version_local=0,dummy;
       char *buffer2;
       int len;
@@ -548,6 +554,8 @@ int ReadSMV(char *smvfile){
       patchi->inuse=0;
       patchi->compressed=0;
       patchi->version=version_local;
+      patchi->is_geom = 0;
+      if(Match(buffer, "BNDE") == 1 || Match(buffer, "BNDS") == 1)patchi->is_geom = 1;
 
       if(FGETS(buffer,BUFFERSIZE,streamsmv)==NULL)break;
       TrimBack(buffer);
@@ -567,12 +575,15 @@ int ReadSMV(char *smvfile){
         else{
           STRCPY(patchi->file,buffer2);
         }
+        if(patchi->is_geom == 1){
+          if(FGETS(buffer, BUFFERSIZE, streamsmv) == NULL)break;
+        }
         if(ReadLabels(&patchi->label,streamsmv,NULL)==LABEL_ERR){
           fprintf(stderr,"*** Warning: problem reading BNDF entry\n");
           break;
         }
         patchi->filesize=filesize;
-        if(GLOBget_boundary_bounds==1){
+        if(patchi->is_geom==0&&GLOBget_boundary_bounds==1){
           int npatches, error;
           FILE *boundaryunitnumber;
 
