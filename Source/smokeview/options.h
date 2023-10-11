@@ -7,10 +7,7 @@
 //*** define smokeview title
 
 #ifdef pp_BETA
-  #define PROGVERSION "Test"
-  #define pp_DEBUG_SUBMENU       // debug output and testing for building menus
-#else
-  #define PROGVERSION ""
+#define pp_DEBUG_SUBMENU       // debug output and testing for building menus
 #endif
 
 //*** parallel file loading
