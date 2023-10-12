@@ -320,8 +320,8 @@ void ReadINI2(char *file2);
 #ifdef pp_PART
 void Get_Part_Bounds(void);
 #endif
-void convert_3dsmoke(smoke3d *smoke3di, int *thread_index);
-void *compress_smoke3ds(void *arg);
+void Convert3DSmoke(smoke3d *smoke3di, int *thread_index);
+void *Compress3DSmokes(void *arg);
 void Normal(unsigned short *v1, unsigned short *v2, unsigned short *v3, float *normal, float *area);
 float atan3(float y, float x);
 void initvolrender(void);

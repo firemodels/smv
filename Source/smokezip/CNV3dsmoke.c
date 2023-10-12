@@ -9,9 +9,9 @@
 #include "MALLOCC.h"
 #include "compress.h"
 
-/* ------------------ convert_3dsmoke ------------------------ */
+/* ------------------ Convert3DSmoke ------------------------ */
 
-void convert_3dsmoke(smoke3d *smoke3di, int *thread_index){
+void Convert3DSmoke(smoke3d *smoke3di, int *thread_index){
   unsigned char *full_alphabuffer=NULL, *compressed_alphabuffer=NULL;
   FILE *smoke3dstream=NULL,*smoke3dsizestream=NULL;
   FILE *SMOKE3DFILE=NULL;
@@ -275,7 +275,7 @@ void convert_3dsmoke(smoke3d *smoke3di, int *thread_index){
 
 /* ------------------ convert_smoke3ds ------------------------ */
 
-void *compress_smoke3ds(void *arg){
+void *Compress3DSmokes(void *arg){
   int i;
   smoke3d *smoke3di;
   int *thread_index;
@@ -292,7 +292,7 @@ void *compress_smoke3ds(void *arg){
     }
     smoke3di->inuse=1;
     UNLOCK_SMOKE;
-    convert_3dsmoke(smoke3di,thread_index);
+    Convert3DSmoke(smoke3di,thread_index);
     CheckMemory;
   }
   return NULL;
