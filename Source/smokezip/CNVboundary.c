@@ -85,6 +85,255 @@ int clean_boundary(patch *patchi){
 /* ------------------ ConvertBoundaryGEOM ------------------------ */
 
 int ConvertBoundaryGEOM(patch *patchi, int *thread_index){
+  FILE *BOUNDARYFILE = NULL, *boundarystream = NULL, *boundarysizestream = NULL;
+  char boundaryfile_svz[1024], boundarysizefile_svz[1024], *boundary_file;
+  unsigned char *cvals=NULL, *compressed_vals=NULL;
+  float *vals=NULL, time_local;
+  uLongf ncompressed_vals;
+  int one = 1, zero = 0;
+  unsigned int sizebefore = 0, sizeafter = 0;
+  int percent_done, percent_next = 10;
+  int returncode;
+  LINT data_loc;
+
+  printf("compressing GEOM file %i\n", (int)(patchi - patchinfo));
+  boundary_file = patchi->file;
+  patchi->compressed = 0;
+
+#ifdef pp_THREAD
+  {
+    int fileindex;
+
+    fileindex = patchi + 1 - patchinfo;
+    sprintf(threadinfo[*thread_index].label, "bf %i", fileindex);
+  }
+#endif
+
+  // check if boundary file is accessible
+
+  if(GetFileInfo(boundary_file, NULL, NULL) != 0){
+    fprintf(stderr, "*** Warning: The file %s does not exist\n", boundary_file);
+    return 0;
+  }
+
+  BOUNDARYFILE = fopen(boundary_file, "rb");
+  if(BOUNDARYFILE == NULL){
+    fprintf(stderr, "*** Warning: The file %s could not be opened\n", boundary_file);
+    return 0;
+  }
+
+  // set up boundary compressed file
+
+  if(GLOBdestdir != NULL){
+    strcpy(boundaryfile_svz, GLOBdestdir);
+    strcat(boundaryfile_svz, patchi->filebase);
+  }
+  else{
+    strcpy(boundaryfile_svz, patchi->file);
+  }
+  strcat(boundaryfile_svz, ".svz");
+
+  if(GLOBdestdir != NULL){
+    strcpy(boundarysizefile_svz, GLOBdestdir);
+    strcat(boundarysizefile_svz, patchi->filebase);
+  }
+  else{
+    strcpy(boundarysizefile_svz, patchi->file);
+  }
+  strcat(boundarysizefile_svz, ".szz");
+
+  if(GLOBoverwrite_b == 0){
+    boundarystream = fopen(boundaryfile_svz, "rb");
+    if(boundarystream != NULL){
+      if(boundarystream != NULL){
+        fclose(boundarystream);
+        fprintf(stderr, "*** Warning: The file %s exists.\n", boundaryfile_svz);
+        fprintf(stderr, "     Use the -f option to overwrite smokezip compressed files\n");
+      }
+      fclose(BOUNDARYFILE);
+      return 0;
+    }
+  }
+
+  boundarystream = fopen(boundaryfile_svz, "wb");
+  boundarysizestream = fopen(boundarysizefile_svz, "w");
+  if(boundarystream == NULL || boundarysizestream == NULL){
+    if(boundarystream == NULL){
+      fprintf(stderr, "*** Warning: The file %s could not be opened for writing\n", boundaryfile_svz);
+    }
+    if(boundarysizestream == NULL){
+      fprintf(stderr, "*** Warning: The file %s could not be opened for writing\n", boundarysizefile_svz);
+    }
+    if(boundarystream != NULL)fclose(boundarystream);
+    if(boundarysizestream != NULL)fclose(boundarysizestream);
+    fclose(BOUNDARYFILE);
+    return 0;
+  }
+
+#ifndef pp_THREAD
+  char *shortlabel;
+  char *unit, units[256], cval[256], char filetype[256];
+
+  strcpy(filetype, "");
+  shortlabel = patchi->label.shortlabel;
+  if(strlen(shortlabel) > 0)strcat(filetype, shortlabel);
+  TrimBack(filetype);
+
+  PRINTF("Compressing %s (%s)\n", boundary_file, filetype);
+
+  strcpy(units, "");
+  unit = patchi->label.unit;
+  if(strlen(unit) > 0)strcat(units, unit);
+  TrimBack(units);
+  sprintf(cval, "%f", patchi->valmin);
+  TrimZeros(cval);
+  PRINTF("  using min=%s %s", cval, units);
+  sprintf(cval, "%f", patchi->valmax);
+  TrimZeros(cval);
+  PRINTF(" max=%s %s\n", cval, units);
+#endif
+  int endian, version;
+
+  FORTREAD(&endian,  1);
+  FORTREAD(&version, 1);
+
+  int fileversion = 0;
+  fwrite(&one,           4, 1, boundarystream); // write out a 1 to determine "endianness" when file is read in later
+  fwrite(&zero,          4, 1, boundarystream); // write out a zero now, then a one just before file is closed
+  fwrite(&fileversion,   4, 1, boundarystream); // write out compressed fileversion in case file format changes later
+  sizeafter = 16;
+  float denom, valmin, valmax, valminmax[2];
+
+
+  valmin = patchi->valmin;
+  valmax = patchi->valmax;
+  denom = valmax - valmin;
+  if(denom <= 0.0){
+    valmin = 0.0;
+    valmax = 1.0;
+    denom = 1.0;
+  }
+  valminmax[0] = valmin;
+  valminmax[1] = valmax;
+  fwrite(valminmax, 4, 2, boundarystream);
+
+  //***format
+  // INPUT
+  // 1
+  // version
+  // for each time step:
+  // time
+  // nvert_static, ntri_static, nvert_dynamic, ntri_dynamic
+  // if(nvert_static>0) vals_1, ...vals_nvert_static
+  // if(ntri_static>0)  vals_1, ...vals_ntri_static
+  // if(nvert_dynamic>0)vals_1, ...vals_nvert_dynamic
+  // if(ntri_dynamic>0) vals_1, ...vals_ntri_dynamic
+
+  // OUTPUT
+  // 1
+  // completion (0/1)
+  // fileversion (compressed format)
+  // min max (used to perform conversion)
+  // ...
+
+#ifndef pp_THREAD
+    PRINTF(" ");
+#endif
+    int MAXVALS = 0;
+    while(feof(BOUNDARYFILE) == 0){
+      int nvals[4], offset[4];
+
+      FORTREAD(&time_local, 1);
+      if(returncode == 0)break;
+
+      FORTREAD(nvals, 4);
+      if(returncode == 0)break;
+
+      int ntotal;
+      ntotal = nvals[0] + nvals[1] + nvals[2] + nvals[3];
+      offset[0] = 0;
+      offset[1] = offset[0] + nvals[0];
+      offset[2] = offset[1] + nvals[1];
+      offset[3] = offset[2] + nvals[2];
+      if(ntotal > MAXVALS){
+        MAXVALS = ntotal+1000;
+        FREEMEMORY(vals);
+        FREEMEMORY(cvals);
+        FREEMEMORY(compressed_vals);
+        NewMemory(( void ** )&vals, MAXVALS * sizeof(float));
+        NewMemory(( void ** )&cvals, MAXVALS);
+        NewMemory(( void ** )&compressed_vals, (1.01* MAXVALS +12));
+      }
+      if(ntotal > 0){
+        int i;
+        int exit_loop;
+
+        exit_loop = 0;
+        for(i = 0; i < 4; i++){
+          if(nvals[i] > 0){
+            FORTREAD(vals + offset[i], nvals[i]);
+            if(returncode==0){
+              exit_loop = 1;
+              break;
+            }
+          }
+        }
+        if(exit_loop==1)break;
+        for(i = 0; i < ntotal; i++){
+          float val;
+
+          val = (vals[i] - valmin) / denom;
+          cvals[i] = (unsigned char)CLAMP(255.0 * val, 0.0, 255.0);
+
+        }
+        returncode = CompressZLIB(compressed_vals, &ncompressed_vals, cvals, ntotal);
+      }
+
+      fprintf(boundarysizestream, "%f %i %i\n", time_local, ( int )ntotal, ( int )ncompressed_vals);
+      fwrite(&time_local,       4, 1,                boundarystream); // write out time_local
+      fwrite(&ncompressed_vals, 4, 1,                boundarystream); // write out compressed size of frame
+      fwrite(compressed_vals,   1, ncompressed_vals, boundarystream); // write out compressed buffer
+      data_loc = FTELL(BOUNDARYFILE);
+      percent_done = 100.0 * ( float )data_loc / ( float )patchi->filesize;
+#ifdef pp_THREAD
+      threadinfo[*thread_index].stat = percent_done;
+      if(percent_done > percent_next){
+        LOCK_PRINT;
+        print_thread_stats();
+        UNLOCK_PRINT;
+        percent_next += 10;
+      }
+#else
+      if(percent_done > percent_next){
+        PRINTF(" %i%s", percent_next, GLOBpp);
+        FFLUSH();
+        percent_next += 10;
+      }
+#endif
+    }
+#ifndef pp_THREAD
+    PRINTF(" 100%s completed\n", GLOBpp);
+#endif
+
+  fclose(BOUNDARYFILE);
+  FSEEK(boundarystream, 8, SEEK_SET);
+  fwrite(&one, 4, 1, boundarystream);  // write completion code
+  fclose(boundarystream);
+  fclose(boundarysizestream);
+  {
+    char before_label[256], after_label[256];
+    GetFileSizeLabel(sizebefore, before_label);
+    GetFileSizeLabel(sizeafter, after_label);
+#ifdef pp_THREAD
+    patchi->compressed = 1;
+    sprintf(patchi->summary, "%s -> %s (%4.1f%s)", before_label, after_label, ( float )sizebefore / ( float )sizeafter, GLOBx);
+    threadinfo[*thread_index].stat = -1;
+#else
+    PRINTF("  records=%i, ", count);
+    PRINTF("Sizes: original=%s, ", before_label);
+    PRINTF("compressed=%s (%4.1f%s)\n\n", after_label, ( float )sizebefore / ( float )sizeafter, GLOBx);
+#endif
+  }
   return 1;
 }
 
@@ -121,6 +370,7 @@ int ConvertBoundaryBNDF(patch *patchi, int *thread_index){
   int zero=0;
   float time_max;
 
+  printf("compressing BNDF file %i\n", (int)(patchi - patchinfo));
   boundary_file=patchi->file;
   version_local=patchi->version;
   patchi->compressed=0;
@@ -520,7 +770,6 @@ void *compress_patches(void *arg){
   for(i=0;i<npatchinfo;i++){
     patchi = patchinfo + i;
     if(GLOBautozip==1&&patchi->autozip==0)continue;
-    if(patchi->is_geom == 0)continue;
 
     if(patchi->doit==1){
       LOCK_PATCH;
