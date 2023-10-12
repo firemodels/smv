@@ -10,8 +10,6 @@
 #include "compress.h"
 #include "getdata.h"
 
-void mt_update_slice_hist(void);
-
 #define FORTSLICEREAD(var,size) FSEEK(SLICEFILE,4,SEEK_CUR);\
                            returncode=fread(var,4,size,SLICEFILE);\
                            FSEEK(SLICEFILE,4,SEEK_CUR)
@@ -761,6 +759,78 @@ void *CompressVolSlices(void *arg){
   return NULL;
 }
 
+/* ------------------ UpdateSliceHist ------------------------ */
+
+void UpdateSliceHist(void){
+  int i;
+
+  for(i = 0;i < nsliceinfo;i++){
+    slicedata *slicei;
+    FILE *unit1;
+    int error1;
+    float slicetime1, *sliceframe;
+    int sliceframesize;
+    int is1, is2, js1, js2, ks1, ks2;
+    int testslice;
+
+    slicei = sliceinfo + i;
+
+    LOCK_SLICE_BOUND;
+    if(slicei->inuse_getbounds == 1){
+      UNLOCK_SLICE_BOUND;
+      continue;
+    }
+    slicei->inuse_getbounds = 1;
+    UNLOCK_SLICE_BOUND;
+    PRINTF("  Examining %s\n", slicei->file);
+
+    LOCK_COMPRESS;
+    openslice(slicei->file, &unit1, &is1, &is2, &js1, &js2, &ks1, &ks2, &error1);
+    UNLOCK_COMPRESS;
+
+    sliceframesize = (is2 + 1 - is1) * (js2 + 1 - js1) * (ks2 + 1 - ks1);
+    NewMemory((void **)&sliceframe, sliceframesize * sizeof(float));
+    ResetHistogram(slicei->histogram, NULL, NULL);
+    testslice = 0;
+    while(error1 == 0){
+      getsliceframe(unit1, is1, is2, js1, js2, ks1, ks2, &slicetime1, sliceframe, testslice, &error1);
+      UpdateHistogram(sliceframe, NULL, sliceframesize, slicei->histogram);
+    }
+    FREEMEMORY(sliceframe);
+
+    LOCK_COMPRESS;
+    closefortranfile(unit1);
+    UNLOCK_COMPRESS;
+  }
+}
+
+#ifdef pp_THREAD
+/* ------------------ MTUpdateSliceHist ------------------------ */
+
+void *MTUpdateSliceHist(void *arg){
+  UpdateSliceHist();
+  return NULL;
+}
+
+/* ------------------ UpdateSliceHistMT ------------------------ */
+
+void UpdateSliceHistMT(void){
+  pthread_t *thread_ids;
+  int i;
+
+  NewMemory((void **)&thread_ids, mt_nthreads * sizeof(pthread_t));
+
+  for(i = 0;i < mt_nthreads;i++){
+    pthread_create(&thread_ids[i], NULL, MTUpdateSliceHist, NULL);
+  }
+
+  for(i = 0;i < mt_nthreads;i++){
+    pthread_join(thread_ids[i], NULL);
+  }
+  FREEMEMORY(thread_ids);
+}
+#endif
+
 /* ------------------ GetSliceBounds ------------------------ */
 
 void GetSliceBounds(void){
@@ -774,7 +844,7 @@ void GetSliceBounds(void){
     slicei->inuse_getbounds = 0;
   }
 #ifdef pp_THREAD
-  mt_update_slice_hist();
+  UpdateSliceHistMT();
 #else
   UpdateSliceHist();
 #endif
@@ -974,77 +1044,6 @@ int SliceDup(slicedata *slicej, int islice){
   }
   return 0;
 }
-
-/* ------------------ UpdateSliceHist ------------------------ */
-
-void UpdateSliceHist(void){
-  int i;
-
-  for(i=0;i<nsliceinfo;i++){
-    slicedata *slicei;
-    FILE *unit1;
-    int error1;
-    float slicetime1, *sliceframe;
-    int sliceframesize;
-    int is1, is2, js1, js2, ks1, ks2;
-    int testslice;
-
-    slicei = sliceinfo + i;
-
-    LOCK_SLICE_BOUND;
-    if(slicei->inuse_getbounds==1){
-      UNLOCK_SLICE_BOUND;
-      continue;
-    }
-    slicei->inuse_getbounds=1;
-    UNLOCK_SLICE_BOUND;
-    PRINTF("  Examining %s\n",slicei->file);
-
-    LOCK_COMPRESS;
-    openslice(slicei->file,&unit1,&is1,&is2,&js1,&js2,&ks1,&ks2,&error1);
-    UNLOCK_COMPRESS;
-
-    sliceframesize=(is2+1-is1)*(js2+1-js1)*(ks2+1-ks1);
-    NewMemory((void **)&sliceframe,sliceframesize*sizeof(float));
-    ResetHistogram(slicei->histogram,NULL,NULL);
-    testslice=0;
-    while(error1==0){
-      getsliceframe(unit1, is1, is2, js1, js2, ks1, ks2, &slicetime1, sliceframe, testslice,&error1);
-      UpdateHistogram(sliceframe,NULL,sliceframesize,slicei->histogram);
-    }
-    FREEMEMORY(sliceframe);
-
-    LOCK_COMPRESS;
-    closefortranfile(unit1);
-    UNLOCK_COMPRESS;
-  }
-}
-#ifdef pp_THREAD
-/* ------------------ MT_update_slice_hist ------------------------ */
-
-void *MT_update_slice_hist(void *arg){
-  UpdateSliceHist();
-  return NULL;
-}
-
-/* ------------------ mt_update_slice_hist ------------------------ */
-
-void mt_update_slice_hist(void){
-  pthread_t *thread_ids;
-  int i;
-
-  NewMemory((void **)&thread_ids,mt_nthreads*sizeof(pthread_t));
-
-  for(i=0;i<mt_nthreads;i++){
-    pthread_create(&thread_ids[i],NULL,MT_update_slice_hist,NULL);
-  }
-
-  for(i=0;i<mt_nthreads;i++){
-    pthread_join(thread_ids[i],NULL);
-  }
-  FREEMEMORY(thread_ids);
-}
-#endif
 
 /* ------------------ GetSliceParmsC ------------------------ */
 
