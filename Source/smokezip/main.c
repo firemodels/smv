@@ -562,15 +562,19 @@ void makesvd(char *in_dir, char *smvfile){
 void print_summary(void){
   int i;
   int nsum;
+  int nsum2;
 
   PRINTF("\n");
   nsum=0;
+  nsum2=0;
   for(i=0;i<nsliceinfo;i++){
     slicedata *slicei;
 
     slicei = sliceinfo + i;
     if(slicei->compressed==1)nsum++;
+    if(slicei->vol_compressed==1)nsum2++;
   }
+  if(nsum>0||nsum2>0)PRINTF("*** slice files ***\n");
   if(nsum>0){
     for(i=0;i<nsliceinfo;i++){
       slicedata *slicei;
@@ -579,7 +583,7 @@ void print_summary(void){
       slicei = sliceinfo + i;
       if(slicei->compressed==0)continue;
       label=&slicei->label;
-      PRINTF("%s  (%s)\n %s\n",slicei->file,label->longlabel,slicei->summary);
+      PRINTF("%s  (%s): %s\n",slicei->file,label->longlabel,slicei->summary);
       PRINTF("  min=%f %s, max=%f %s \n",slicei->valmin,label->unit,slicei->valmax,label->unit);
     }
   }
@@ -602,6 +606,7 @@ void print_summary(void){
       PRINTF("%s (%s)\n  %s\n",slicei->file,label->longlabel,slicei->volsummary);
     }
   }
+  if(nsum>0||nsum2>0)PRINTF("\n");
 
   nsum=0;
   for(i=0;i<nsmoke3dinfo;i++){
@@ -611,13 +616,15 @@ void print_summary(void){
     if(smoke3di->compressed==1)nsum++;
   }
   if(nsum>0){
+    PRINTF("*** 3D smoke/fire files ***\n");
     for(i=0;i<nsmoke3dinfo;i++){
       smoke3d *smoke3di;
 
       smoke3di = smoke3dinfo + i;
       if(smoke3di->compressed==0)continue;
-      PRINTF("%s\n  %s\n",smoke3di->file,smoke3di->summary);
+      PRINTF("%s:  %s\n",smoke3di->file,smoke3di->summary);
     }
+    PRINTF("\n");
   }
 
   nsum=0;
@@ -628,6 +635,7 @@ void print_summary(void){
     if(patchi->compressed==1)nsum++;
   }
   if(nsum>0){
+    PRINTF("*** boundary files ***\n");
     for(i=0;i<npatchinfo;i++){
       patch *patchi;
       flowlabels *label;
@@ -635,9 +643,10 @@ void print_summary(void){
       patchi = patchinfo + i;
       if(patchi->compressed==0)continue;
       label=&patchi->label;
-      PRINTF("%s (%s)\n  %s\n",patchi->file,label->longlabel,patchi->summary);
+      PRINTF("%s (%s):  %s\n",patchi->file,label->longlabel,patchi->summary);
       PRINTF("  min=%f %s, max=%f %s \n",patchi->valmin,label->unit,patchi->valmax,label->unit);
     }
+    PRINTF("\n");
   }
 
   nsum=0;
@@ -648,6 +657,7 @@ void print_summary(void){
     if(parti->compressed2==1)nsum++;
   }
   if(nsum>0){
+    PRINTF("*** particle files ***\n");
     for(i=0;i<npartinfo;i++){
       int j;
       part *parti;
@@ -661,6 +671,7 @@ void print_summary(void){
       }
       PRINTF("\n");
     }
+    PRINTF("\n");
   }
 
 }
