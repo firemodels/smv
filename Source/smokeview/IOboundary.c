@@ -3726,7 +3726,7 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
         for(icol = 0;icol<ncol-1;icol++){
           unsigned char cval;
 
-          cval = 255*BOUNDCONVERT(IJKBF(irow, icol), ttmin, ttmax);
+          cval = CLAMP(255*BOUNDCONVERT(IJKBF(irow, icol), ttmin, ttmax), 0, 255);
           if(rgb_patch[4*cval+3]==0.0){
             patchblank1++;
             patchblank2++;
@@ -3826,7 +3826,7 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
         for(icol = 0;icol<ncol-1;icol++){
           unsigned char cval;
 
-          cval = 255*BOUNDCONVERT(IJKBF(irow, icol), ttmin, ttmax);
+          cval = CLAMP(255*BOUNDCONVERT(IJKBF(irow, icol), ttmin, ttmax), 0, 255);
           if(rgb_patch[4*cval+3]==0.0){
             patchblank1++;
             patchblank2++;
@@ -3924,7 +3924,7 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
         for(icol = 0;icol<ncol-1;icol++){
           unsigned char cval;
 
-          cval = 255*BOUNDCONVERT(IJKBF(irow, icol), ttmin, ttmax);
+          cval = CLAMP(255*BOUNDCONVERT(IJKBF(irow, icol), ttmin, ttmax), 0, 255);
           if(rgb_patch[4*cval+3]==0.0){
             patchblank1++;
             patchblank2++;
