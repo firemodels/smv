@@ -304,13 +304,13 @@ void makesvd(char *destdir, char *smvfile);
 void getpdf(float *vals, int nvals, pdfdata *pdf);
 void mergepdf(pdfdata *pdf1, pdfdata *pdf2, pdfdata *pdfmerge);
 #ifdef pp_PART
-void compress_parts(void *arg);
-void *convert_parts2iso(void *arg);
+void CompressParts(void *arg);
+void *ConvertParts2Iso(void *arg);
 part *getpart(char *string);
-partpropdata *getpartprop(char *string);
-int getpartprop_index(char *string);
-void convert_part(part *parti, int *thread_index);
-int convertable_part(part *parti);
+partpropdata *GetPartProp(char *string);
+int GetPartPropIndex(char *string);
+void ConvertPart(part *parti, int *thread_index);
+int ConvertablePart(part *parti);
 #endif
 void *CompressPatches(void *arg);
 patch *GetPatch(char *string);

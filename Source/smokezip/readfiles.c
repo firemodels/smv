@@ -434,7 +434,7 @@ int ReadSMV(char *smvfile){
           labelj->shortlabel=NULL;
           labelj->unit=NULL;
           ReadLabels(labelj,streamsmv,NULL);
-          part5propi=getpartprop(labelj->shortlabel);
+          part5propi=GetPartProp(labelj->shortlabel);
           if(part5propi==NULL){
             part5propi = part5propinfo + npart5propinfo;
             part5propi->label.longlabel=labelj->longlabel;
@@ -1058,7 +1058,7 @@ void ReadINI2(char *inifile){
       }
       type_buffer=TrimFront(buffer2);
       TrimBack(type_buffer);
-      partpropi=getpartprop(type_buffer);
+      partpropi=GetPartProp(type_buffer);
       if(partpropi!=NULL){
         partpropi->setvalmax=setpartmax;
         partpropi->setvalmin=setpartmin;

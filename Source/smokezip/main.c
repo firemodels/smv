@@ -528,9 +528,9 @@ void *compress_all(void *arg){
 #ifdef pp_PLOT3D
   if(GLOBdoit_plot3d==1)compress_plot3ds(thread_index);
 #endif
-  convert_parts2iso(thread_index);
+  ConvertParts2Iso(thread_index);
 #ifdef pp_PART2
-  if(GLOBdoit_particle)compress_parts(NULL);
+  if(GLOBdoit_particle)CompressParts(NULL);
 #endif
   return NULL;
 }

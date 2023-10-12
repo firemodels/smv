@@ -14,12 +14,12 @@
 #include "getdata.h"
 
 
-void part2iso(part *parti,int *thread_index);
+void Part2Iso(part *parti,int *thread_index);
 
 
-/* ------------------ getpartprop_index ------------------------ */
+/* ------------------ GetPartPropIndex ------------------------ */
 
-int getpartprop_index(char *string){
+int GetPartPropIndex(char *string){
   int i;
   partpropdata *partpropi;
 
@@ -30,9 +30,9 @@ int getpartprop_index(char *string){
   return -1;
 }
 
-/* ------------------ getpartprop ------------------------ */
+/* ------------------ GetPartProp ------------------------ */
 
-partpropdata *getpartprop(char *string){
+partpropdata *GetPartProp(char *string){
   int i;
   partpropdata *partpropi;
 
@@ -43,9 +43,9 @@ partpropdata *getpartprop(char *string){
   return NULL;
 }
 
-/* ------------------ compress_parts ------------------------ */
+/* ------------------ CompressParts ------------------------ */
 
-void compress_parts(void *arg){
+void CompressParts(void *arg){
   int i;
   int needbounds=0;
   int convertable=0;
@@ -57,7 +57,7 @@ void compress_parts(void *arg){
     part *parti;
 
     parti = partinfo + i;
-    if(convertable_part(parti)==1){
+    if(ConvertablePart(parti)==1){
       convertable=1;
       break;
     }
@@ -82,13 +82,13 @@ void compress_parts(void *arg){
 
     parti = partinfo + i;
     if(GLOBautozip==1&&parti->autozip==0)continue;
-    convert_part(parti,thread_index);
+    ConvertPart(parti,thread_index);
   }
 }
 
-/* ------------------ compress_part2iso ------------------------ */
+/* ------------------ ConvertParts2Iso ------------------------ */
 
-void *convert_parts2iso(void *arg){
+void *ConvertParts2Iso(void *arg){
   int i;
   int *thread_index;
 
@@ -160,15 +160,15 @@ void *convert_parts2iso(void *arg){
       parti->inuse_part2iso=1;
       UNLOCK_PART2ISO;
 
-      part2iso(parti,thread_index);
+      Part2Iso(parti,thread_index);
     }
   }
   return NULL;
 }
 
-/* ------------------ convertable_part ------------------------ */
+/* ------------------ ConvertablePart ------------------------ */
 
-int convertable_part(part *parti){
+int ConvertablePart(part *parti){
   char partfile_svz[256];
   char *partfile;
   FILE *stream;
@@ -194,9 +194,9 @@ int convertable_part(part *parti){
   return 1;
 }
 
-/* ------------------ compress_part ------------------------ */
+/* ------------------ ConvertPart ------------------------ */
 
-void convert_part(part *parti, int *thread_index){
+void ConvertPart(part *parti, int *thread_index){
   FILE *PARTFILEstream,*partstream,*partsizestream;
   char *partfile, partfile_svz[256], partsizefile_svz[256];
   FILE *unit;
@@ -437,7 +437,7 @@ void convert_part(part *parti, int *thread_index){
         int cval,kk;
         float denom;
 
-        propi=getpartprop(classi->labels[k].shortlabel);
+        propi=GetPartProp(classi->labels[k].shortlabel);
         denom=propi->valmax-propi->valmin;
         if(denom<=0.0)denom=1.0;
 
@@ -608,7 +608,7 @@ void Get_Part_Bounds(void){
         for(k=0;k<nquantities[j];k++){
           partpropdata *propi;
 
-          propi=getpartprop(classj->labels[k].shortlabel);
+          propi=GetPartProp(classj->labels[k].shortlabel);
           UpdateHistogram(vals,NULL,npoints[j],propi->histogram);
 
           vals += npoints[j];
@@ -645,9 +645,9 @@ void Get_Part_Bounds(void){
 
 #define IJKVAL(ix,iy,iz) ((ix) + (iy)*nx2 + (iz)*nx2*ny2)
 
-  /* ------------------ part2iso ------------------------ */
+  /* ------------------ Part2Iso ------------------------ */
 
-void part2iso(part *parti, int *thread_index){
+void Part2Iso(part *parti, int *thread_index){
   float *pdata;
   int *tagdata;
   int fdsversion;
@@ -758,7 +758,7 @@ void part2iso(part *parti, int *thread_index){
       partpropdata *propi;
 
       classj=parti->classptr[j];
-      propi=part5propinfo_copy+getpartprop_index(classj->labels[k].shortlabel);
+      propi=part5propinfo_copy+GetPartPropIndex(classj->labels[k].shortlabel);
       propi->used=1;
     }
   }
@@ -900,7 +900,7 @@ void part2iso(part *parti, int *thread_index){
       for(k=0;k<nquantities[j];k++){
         partpropdata *propi;
 
-        propi=part5propinfo_copy+getpartprop_index(classj->labels[k].shortlabel);
+        propi=part5propinfo_copy+GetPartPropIndex(classj->labels[k].shortlabel);
 
         for(i=0;i<npoints[j];i++){
           int ijkval;
@@ -998,9 +998,9 @@ void part2iso(part *parti, int *thread_index){
   }
 }
 
-/* ------------------ part2object ------------------------ */
+/* ------------------ Part2Object ------------------------ */
 
-void part2object(part *parti, int *thread_index){
+void Part2Object(part *parti, int *thread_index){
   float *pdata;
   int *tagdata;
   int fdsversion;
@@ -1111,7 +1111,7 @@ void part2object(part *parti, int *thread_index){
       partpropdata *propi;
 
       classj=parti->classptr[j];
-      propi=part5propinfo_copy+getpartprop_index(classj->labels[k].shortlabel);
+      propi=part5propinfo_copy+GetPartPropIndex(classj->labels[k].shortlabel);
       propi->used=1;
     }
   }
@@ -1253,7 +1253,7 @@ void part2object(part *parti, int *thread_index){
       for(k=0;k<nquantities[j];k++){
         partpropdata *propi;
 
-        propi=part5propinfo_copy+getpartprop_index(classj->labels[k].shortlabel);
+        propi=part5propinfo_copy+GetPartPropIndex(classj->labels[k].shortlabel);
 
         for(i=0;i<npoints[j];i++){
           int ijkval;
