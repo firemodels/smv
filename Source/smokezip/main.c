@@ -467,7 +467,7 @@ int main(int argc, char **argv){
       plot3di = plot3dinfo + i;
 
       plot3di->dup=0;
-      plot3ddup(plot3di,i);
+      IsPlot3DDup(plot3di,i);
     }
   }
 #endif
@@ -526,7 +526,7 @@ void *compress_all(void *arg){
   if(GLOBdoit_volslice==1)CompressVolSlices(thread_index);
   if(GLOBdoit_smoke3d==1)Compress3DSmokes(thread_index);
 #ifdef pp_PLOT3D
-  if(GLOBdoit_plot3d==1)compress_plot3ds(thread_index);
+  if(GLOBdoit_plot3d==1)CompressPlot3Ds(thread_index);
 #endif
   ConvertParts2Iso(thread_index);
 #ifdef pp_PART2

@@ -218,7 +218,7 @@ int ConvertPlot3D(plot3d *plot3di){
 
 }
 
-/* ------------------ getplot3d ------------------------ */
+/* ------------------ GetPlot3D ------------------------ */
 
 plot3d *GetPlot3D(char *string){
   int i;
@@ -232,9 +232,9 @@ plot3d *GetPlot3D(char *string){
   return NULL;
 }
 
-/* ------------------ compress_plot3ds ------------------------ */
+/* ------------------ CompressPlot3Ds ------------------------ */
 
-void *compress_plot3ds(void *arg){
+void *CompressPlot3Ds(void *arg){
   int i, j;
   plot3d *plot3di, *pb;
 
@@ -289,9 +289,9 @@ void *compress_plot3ds(void *arg){
   return NULL;
 }
 
-/* ------------------ plot3ddup ------------------------ */
+/* ------------------ IsPlot3DDup ------------------------ */
 
-int plot3ddup(plot3d *plot3dj, int iplot3d){
+int IsPlot3DDup(plot3d *plot3dj, int iplot3d){
   int i;
   plot3d *plot3di;
 
