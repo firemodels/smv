@@ -92,7 +92,7 @@ int ConvertBoundaryGEOM(patch *patchi, int *thread_index){
   uLongf ncompressed_vals;
   int one = 1, zero = 0;
   unsigned int sizebefore = 0, sizeafter = 0;
-  int percent_done, percent_next = 10;
+  int percent_done, percent_next = PERCENT_SKIP;
   int returncode;
   LINT data_loc;
 
@@ -301,13 +301,13 @@ int ConvertBoundaryGEOM(patch *patchi, int *thread_index){
         LOCK_PRINT;
         print_thread_stats();
         UNLOCK_PRINT;
-        percent_next += 10;
+        percent_next += PERCENT_SKIP;
       }
 #else
       if(percent_done > percent_next){
         PRINTF(" %i%s", percent_next, GLOBpp);
         FFLUSH();
-        percent_next += 10;
+        percent_next += PERCENT_SKIP;
       }
 #endif
     }
@@ -365,7 +365,7 @@ int ConvertBoundaryBNDF(patch *patchi, int *thread_index){
   float minmax[2];
   char cval[256];
   int percent_done;
-  int percent_next=10;
+  int percent_next = PERCENT_SKIP;
   LINT data_loc;
   int zero=0;
   float time_max;
@@ -631,13 +631,13 @@ int ConvertBoundaryBNDF(patch *patchi, int *thread_index){
         LOCK_PRINT;
         print_thread_stats();
         UNLOCK_PRINT;
-        percent_next+=10;
+        percent_next += PERCENT_SKIP;
       }
 #else
       if(percent_done>percent_next){
         PRINTF(" %i%s",percent_next,GLOBpp);
         FFLUSH();
-        percent_next+=10;
+        percent_next += PERCENT_SKIP;
       }
 #endif
     }

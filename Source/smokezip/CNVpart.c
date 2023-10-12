@@ -215,7 +215,7 @@ void convert_part(part *parti, int *thread_index){
   float xmin, xmax,  ymin, ymax, zmin, zmax;
   uLongf ncompressed_zlib;
   int percent_done;
-  int percent_next=10;
+  int percent_next = PERCENT_SKIP;
   int data_loc;
   int count=0;
   int compression_level;
@@ -498,7 +498,7 @@ void convert_part(part *parti, int *thread_index){
       LOCK_COMPRESS;
       FFLUSH();
       UNLOCK_COMPRESS;
-      percent_next+=10;
+      percent_next += PERCENT_SKIP;
     }
     count++;
   }
@@ -677,7 +677,7 @@ void part2iso(part *parti, int *thread_index){
   partpropdata *part5propinfo_copy;
   int percent_done;
   float file_size;
-  int percent_next=10;
+  int percent_next = PERCENT_SKIP;
 
   parti->compressed2=0;
 #ifdef pp_THREAD
@@ -848,13 +848,13 @@ void part2iso(part *parti, int *thread_index){
       LOCK_PRINT;
       print_thread_stats();
       UNLOCK_PRINT;
-      percent_next+=10;
+      percent_next += PERCENT_SKIP;
     }
 #else
     if(percent_done>percent_next){
       PRINTF(" %i%s",percent_next,GLOBpp);
       FFLUSH();
-      percent_next+=10;
+      percent_next += PERCENT_SKIP;
     }
 #endif
     if(error!=0)break;
@@ -1030,7 +1030,7 @@ void part2object(part *parti, int *thread_index){
   partpropdata *part5propinfo_copy;
   int percent_done;
   float file_size;
-  int percent_next=10;
+  int percent_next = PERCENT_SKIP;
 
   parti->compressed2=0;
 #ifdef pp_THREAD
@@ -1201,13 +1201,13 @@ void part2object(part *parti, int *thread_index){
       LOCK_PRINT;
       print_thread_stats();
       UNLOCK_PRINT;
-      percent_next+=10;
+      percent_next+= PERCENT_SKIP;
     }
 #else
     if(percent_done>percent_next){
       PRINTF(" %i%s",percent_next,GLOBpp);
       FFLUSH();
-      percent_next+=10;
+      percent_next+= PERCENT_SKIP;
     }
 #endif
     if(error!=0)break;

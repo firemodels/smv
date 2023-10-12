@@ -65,6 +65,8 @@
 #define FORTRAN_FILE 1
 #endif
 
+#define PERCENT_SKIP 25
+
 #define FORTSMOKEREAD(var,size, count,STREAM,option) \
                            if(option==1){FSEEK(STREAM,4,SEEK_CUR);}\
                            fread(var,size,count,STREAM);\

@@ -30,7 +30,7 @@ int ConvertVolSlice(slicedata *slicei, int *thread_index){
   int returncode=0;
   LINT data_loc;
   int percent_done;
-  int percent_next=10;
+  int percent_next = PERCENT_SKIP;
 #ifndef pp_THREAD
   int count=0;
 #endif
@@ -204,13 +204,13 @@ int ConvertVolSlice(slicedata *slicei, int *thread_index){
         LOCK_PRINT;
         print_thread_stats();
         UNLOCK_PRINT;
-        percent_next+=10;
+        percent_next += PERCENT_SKIP;
       }
 #else
       if(percent_done>percent_next){
         PRINTF(" %i%s",percent_next,GLOBpp);
         FFLUSH();
-        percent_next+=10;
+        percent_next += PERCENT_SKIP;
       }
 #endif
 
@@ -279,7 +279,7 @@ int ConvertSlice(slicedata *slicei, int *thread_index){
   float time_local;
   LINT data_loc;
   int percent_done;
-  int percent_next=10;
+  int percent_next = PERCENT_SKIP;
   float valmin, valmax, denom;
   int chop_min, chop_max;
   uLongf ncompressed_zlib;
@@ -608,13 +608,13 @@ int ConvertSlice(slicedata *slicei, int *thread_index){
         LOCK_PRINT;
         print_thread_stats();
         UNLOCK_PRINT;
-        percent_next+=10;
+        percent_next += PERCENT_SKIP;
       }
 #else
       if(percent_done>percent_next){
         PRINTF(" %i%s",percent_next,GLOBpp);
         FFLUSH();
-        percent_next+=10;
+        percent_next += PERCENT_SKIP;
       }
 #endif
       for(i=0;i<framesize;i++){

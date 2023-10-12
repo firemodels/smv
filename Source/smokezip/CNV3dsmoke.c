@@ -29,7 +29,7 @@ void convert_3dsmoke(smoke3d *smoke3di, int *thread_index){
   uLongf ncompressed_zlib;
   int returncode=0;
   int percent_done;
-  int percent_next=10;
+  int percent_next = PERCENT_SKIP;
   LINT data_loc;
   char *smoke3dfile;
   float time_max;
@@ -213,13 +213,13 @@ void convert_3dsmoke(smoke3d *smoke3di, int *thread_index){
       LOCK_PRINT;
       print_thread_stats();
       UNLOCK_PRINT;
-      percent_next+=10;
+      percent_next += PERCENT_SKIP;
     }
 #else
     if(percent_done>percent_next){
       PRINTF(" %i%s",percent_next,GLOBpp);
       FFLUSH();
-      percent_next+=10;
+      percent_next += PERCENT_SKIP;
     }
 #endif
 
