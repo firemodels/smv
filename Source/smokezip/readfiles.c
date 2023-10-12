@@ -1012,7 +1012,7 @@ void ReadINI2(char *inifile){
       }
       type_buffer=TrimFront(buffer2);
       TrimBack(type_buffer);
-      patchi=getpatch(type_buffer);
+      patchi= GetPatch(type_buffer);
       if(patchi!=NULL){
         patchi->setvalmax=setpatchmax;
         patchi->setvalmin=setpatchmin;

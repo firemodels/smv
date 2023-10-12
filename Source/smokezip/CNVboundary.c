@@ -16,9 +16,9 @@ pdfdata pdfmerge,pdfframe;
                            returncode=fread(var,4,size,BOUNDARYFILE);\
                            FSEEK(BOUNDARYFILE,4,SEEK_CUR)
 
-/* ------------------ clean_boundary ------------------------ */
+/* ------------------ CleanBoundary ------------------------ */
 
-int clean_boundary(patch *patchi){
+int CleanBoundary(patch *patchi){
   FILE *BOUNDARYFILE=NULL;
   char boundaryfile_svz[1024], boundarysizefile_svz[1024];
   FILE *boundarystream=NULL,*boundarysizestream=NULL;
@@ -95,6 +95,9 @@ int ConvertBoundaryGEOM(patch *patchi, int *thread_index){
   int percent_done, percent_next = PERCENT_SKIP;
   int returncode;
   LINT data_loc;
+#ifndef pp_THREAD
+  int count;
+#endif
 
   printf("compressing GEOM file %i\n", (int)(patchi - patchinfo));
   boundary_file = patchi->file;
@@ -172,7 +175,8 @@ int ConvertBoundaryGEOM(patch *patchi, int *thread_index){
 
 #ifndef pp_THREAD
   char *shortlabel;
-  char *unit, units[256], cval[256], char filetype[256];
+  char *unit, units[256], cval[256];
+  char filetype[256];
 
   strcpy(filetype, "");
   shortlabel = patchi->label.shortlabel;
@@ -675,9 +679,9 @@ wrapup:
 
 }
 
-/* ------------------ patchdup ------------------------ */
+/* ------------------ PatchDup ------------------------ */
 
-int patchdup(patch *patchj, int ipatch){
+int PatchDup(patch *patchj, int ipatch){
   int i;
   patch *patchi;
 
@@ -692,9 +696,9 @@ int patchdup(patch *patchj, int ipatch){
   return 0;
 }
 
-/* ------------------ getpatch ------------------------ */
+/* ------------------ GetPatch ------------------------ */
 
-patch *getpatch(char *string){
+patch *GetPatch(char *string){
   int i;
   patch *patchi;
 
@@ -706,9 +710,155 @@ patch *getpatch(char *string){
   return NULL;
 }
 
-/* ------------------ compress_patches ------------------------ */
+/* ------------------ UpdatePatchHist ------------------------ */
 
-void *compress_patches(void *arg){
+void UpdatePatchHist(void){
+  int i;
+
+  for(i = 0;i < npatchinfo;i++){
+    patch *patchi;
+    FILE *unit1;
+    int error1;
+    int *pi1, *pi2, *pj1, *pj2, *pk1, *pk2;
+    float patchtime1, *patchframe;
+    int patchframesize;
+    int j;
+
+    patchi = patchinfo + i;
+    LOCK_PATCH_BOUND;
+    if(patchi->inuse_getbounds == 1){
+      UNLOCK_PATCH_BOUND;
+      continue;
+    }
+    patchi->inuse_getbounds = 1;
+    UNLOCK_PATCH_BOUND;
+
+    PRINTF("  Examining %s\n", patchi->file);
+    pi1 = patchi->pi1;
+    pi2 = patchi->pi2;
+    pj1 = patchi->pj1;
+    pj2 = patchi->pj2;
+    pk1 = patchi->pk1;
+    pk2 = patchi->pk2;
+
+    LOCK_COMPRESS;
+    unit1 = openboundary(patchi->file, patchi->version, &error1);
+    UNLOCK_COMPRESS;
+
+    patchframesize = 0;
+    for(j = 0;j < patchi->npatches;j++){
+      patchframesize += patchi->patchsize[j];
+    }
+    NewMemory((void **)&patchframe, patchframesize * sizeof(float));
+    ResetHistogram(patchi->histogram, NULL, NULL);
+    while(error1 == 0){
+      int ndummy;
+      int file_size;
+
+      getpatchdata(unit1, patchi->npatches,
+        pi1, pi2, pj1, pj2, pk1, pk2, &patchtime1, patchframe, &ndummy, &file_size, &error1);
+      UpdateHistogram(patchframe, NULL, patchframesize, patchi->histogram);
+    }
+    LOCK_COMPRESS;
+    closefortranfile(unit1);
+    UNLOCK_COMPRESS;
+    FREEMEMORY(patchframe);
+  }
+#ifndef pp_THREAD
+  PRINTF("\n");
+#endif
+}
+
+#ifdef pp_THREAD
+/* ------------------ MTUpdatePatchHist ------------------------ */
+
+void *MTUpdatePatchHist(void *arg){
+  UpdatePatchHist();
+  return NULL;
+}
+
+/* ------------------ UpdatePatchHistMT ------------------------ */
+
+void UpdatePatchHistMT(void){
+  pthread_t *thread_ids;
+  int i;
+
+  NewMemory((void **)&thread_ids, mt_nthreads * sizeof(pthread_t));
+
+  for(i = 0;i < mt_nthreads;i++){
+    pthread_create(&thread_ids[i], NULL, MTUpdatePatchHist, NULL);
+  }
+
+  for(i = 0;i < mt_nthreads;i++){
+    pthread_join(thread_ids[i], NULL);
+  }
+  FREEMEMORY(thread_ids);
+}
+#endif
+
+/* ------------------ GetBoundaryBounds ------------------------ */
+
+void GetBoundaryBounds(void){
+  int i;
+
+  PRINTF("Determining boundary file bounds\n");
+  for(i = 0;i < npatchinfo;i++){
+    patch *patchi;
+
+    patchi = patchinfo + i;
+    patchi->inuse_getbounds = 0;
+  }
+#ifdef pp_THREAD
+  UpdatePatchHistMT();
+#else
+  UpdatePatchHist();
+#endif
+  for(i = 0;i < npatchinfo;i++){
+    patch *patchi;
+    int j;
+
+    patchi = patchinfo + i;
+    if(patchi->dup == 1)continue;
+    if(patchi->is_geom == 1)continue;
+    for(j = i + 1;j < npatchinfo;j++){
+      patch *patchj;
+
+      patchj = patchinfo + j;
+      if(patchj->is_geom == 1)continue;
+      if(strcmp(patchi->label.shortlabel, patchj->label.shortlabel) != 0)continue;
+      MergeHistogram(patchi->histogram, patchj->histogram, MERGE_BOUNDS);
+    }
+    patchi->valmax = GetHistogramVal(patchi->histogram, 0.99);
+    patchi->valmin = GetHistogramVal(patchi->histogram, 0.01);
+    patchi->setvalmax = 1;
+    patchi->setvalmin = 1;
+    for(j = i + 1;j < npatchinfo;j++){
+      patch *patchj;
+
+      patchj = patchinfo + j;
+      if(patchj->is_geom == 1)continue;
+      if(strcmp(patchi->label.shortlabel, patchj->label.shortlabel) != 0)continue;
+      patchj->valmax = patchi->valmax;
+      patchj->valmin = patchi->valmin;
+      patchj->setvalmax = 1;
+      patchj->setvalmin = 1;
+    }
+  }
+  for(i = 0;i < npatchinfo;i++){
+    patch *patchi;
+
+    patchi = patchinfo + i;
+    if(patchi->is_geom == 1)continue;
+    FREEMEMORY(patchi->histogram->buckets);
+    FREEMEMORY(patchi->histogram->buckets_polar);
+    FREEMEMORY(patchi->histogram);
+  }
+
+}
+
+/* ------------------ CompressPatches ------------------------ */
+
+void *CompressPatches(void *arg){
   int i;
   patch *patchi;
   patch *pb;
@@ -724,7 +874,7 @@ void *compress_patches(void *arg){
     if(GLOBcleanfiles==1){
       for(i=0;i<npatchinfo;i++){
         patchi = patchinfo + i;
-        clean_boundary(patchi);
+        CleanBoundary(patchi);
       }
       UNLOCK_PATCH;
       return NULL;
@@ -733,7 +883,7 @@ void *compress_patches(void *arg){
       patchi = patchinfo + i;
       if(GLOBautozip==1&&patchi->autozip==0)continue;
 
-      pb=getpatch(patchi->label.shortlabel);
+      pb= GetPatch(patchi->label.shortlabel);
       if(pb!=NULL){
         patchi->setvalmax=pb->setvalmax;
         patchi->setvalmin=pb->setvalmin;
@@ -749,7 +899,7 @@ void *compress_patches(void *arg){
   // find bounds
 
     if(GLOBget_boundary_bounds==1){
-      Get_Boundary_Bounds();
+      GetBoundaryBounds();
     }
     for(i=0;i<npatchinfo;i++){
       patchi = patchinfo + i;
@@ -793,150 +943,4 @@ void *compress_patches(void *arg){
     }
   }
   return NULL;
-}
-
-/* ------------------ update_patch_hist ------------------------ */
-
-void update_patch_hist(void){
-  int i;
-
-  for(i=0;i<npatchinfo;i++){
-    patch *patchi;
-    FILE *unit1;
-    int error1;
-    int *pi1, *pi2, *pj1, *pj2, *pk1, *pk2;
-    float patchtime1, *patchframe;
-    int patchframesize;
-    int j;
-
-    patchi = patchinfo + i;
-    LOCK_PATCH_BOUND;
-    if(patchi->inuse_getbounds==1){
-      UNLOCK_PATCH_BOUND;
-      continue;
-    }
-    patchi->inuse_getbounds=1;
-    UNLOCK_PATCH_BOUND;
-
-    PRINTF("  Examining %s\n",patchi->file);
-    pi1 = patchi->pi1;
-    pi2 = patchi->pi2;
-    pj1 = patchi->pj1;
-    pj2 = patchi->pj2;
-    pk1 = patchi->pk1;
-    pk2 = patchi->pk2;
-
-    LOCK_COMPRESS;
-    unit1 = openboundary(patchi->file,patchi->version,&error1);
-    UNLOCK_COMPRESS;
-
-    patchframesize=0;
-    for(j=0;j<patchi->npatches;j++){
-      patchframesize+=patchi->patchsize[j];
-    }
-    NewMemory((void **)&patchframe,patchframesize*sizeof(float));
-    ResetHistogram(patchi->histogram,NULL,NULL);
-    while(error1==0){
-      int ndummy;
-      int file_size;
-
-      getpatchdata(unit1, patchi->npatches,
-        pi1, pi2, pj1, pj2, pk1, pk2, &patchtime1, patchframe, &ndummy,&file_size, &error1);
-      UpdateHistogram(patchframe, NULL,patchframesize, patchi->histogram);
-    }
-    LOCK_COMPRESS;
-    closefortranfile(unit1);
-    UNLOCK_COMPRESS;
-    FREEMEMORY(patchframe);
-  }
-#ifndef pp_THREAD
-  PRINTF("\n");
-#endif
-}
-
-#ifdef pp_THREAD
-/* ------------------ MT_update_patch_hist ------------------------ */
-
-void *MT_update_patch_hist(void *arg){
-  update_patch_hist();
-  return NULL;
-}
-
-/* ------------------ mt_update_patch_hist ------------------------ */
-
-void mt_update_patch_hist(void){
-  pthread_t *thread_ids;
-  int i;
-
-  NewMemory((void **)&thread_ids,mt_nthreads*sizeof(pthread_t));
-
-  for(i=0;i<mt_nthreads;i++){
-    pthread_create(&thread_ids[i],NULL,MT_update_patch_hist,NULL);
-  }
-
-  for(i=0;i<mt_nthreads;i++){
-    pthread_join(thread_ids[i],NULL);
-  }
-  FREEMEMORY(thread_ids);
-}
-#endif
-
-/* ------------------ Get_Boundary_Bounds ------------------------ */
-
-void Get_Boundary_Bounds(void){
-  int i;
-
-  PRINTF("Determining boundary file bounds\n");
-  for(i=0;i<npatchinfo;i++){
-    patch *patchi;
-
-    patchi = patchinfo + i;
-    patchi->inuse_getbounds=0;
-  }
-#ifdef pp_THREAD
-  mt_update_patch_hist();
-#else
-  update_patch_hist();
-#endif
-  for(i=0;i<npatchinfo;i++){
-    patch *patchi;
-    int j;
-
-    patchi = patchinfo + i;
-    if(patchi->dup==1)continue;
-    if(patchi->is_geom == 1)continue;
-    for(j=i+1;j<npatchinfo;j++){
-      patch *patchj;
-
-      patchj = patchinfo + j;
-      if(patchj->is_geom == 1)continue;
-      if(strcmp(patchi->label.shortlabel,patchj->label.shortlabel)!=0)continue;
-      MergeHistogram(patchi->histogram,patchj->histogram,MERGE_BOUNDS);
-    }
-    patchi->valmax=GetHistogramVal(patchi->histogram,0.99);
-    patchi->valmin=GetHistogramVal(patchi->histogram,0.01);
-    patchi->setvalmax=1;
-    patchi->setvalmin=1;
-    for(j=i+1;j<npatchinfo;j++){
-      patch *patchj;
-
-      patchj = patchinfo + j;
-      if(patchj->is_geom == 1)continue;
-      if(strcmp(patchi->label.shortlabel,patchj->label.shortlabel)!=0)continue;
-      patchj->valmax=patchi->valmax;
-      patchj->valmin=patchi->valmin;
-      patchj->setvalmax=1;
-      patchj->setvalmin=1;
-    }
-  }
-  for(i=0;i<npatchinfo;i++){
-    patch *patchi;
-
-    patchi = patchinfo + i;
-    if(patchi->is_geom == 1)continue;
-    FREEMEMORY(patchi->histogram->buckets);
-    FREEMEMORY(patchi->histogram->buckets_polar);
-    FREEMEMORY(patchi->histogram);
-  }
-
 }

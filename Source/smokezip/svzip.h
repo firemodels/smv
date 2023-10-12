@@ -312,12 +312,11 @@ int getpartprop_index(char *string);
 void convert_part(part *parti, int *thread_index);
 int convertable_part(part *parti);
 #endif
-void *compress_patches(void *arg);
-patch *getpatch(char *string);
-int patchdup(patch *patchj, int ipatch);
+void *CompressPatches(void *arg);
+patch *GetPatch(char *string);
+int PatchDup(patch *patchj, int ipatch);
 void ReadINI(char *file);
 void ReadINI2(char *file2);
-void Get_Boundary_Bounds(void);
 #ifdef pp_PART
 void Get_Part_Bounds(void);
 #endif

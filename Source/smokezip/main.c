@@ -479,7 +479,7 @@ int main(int argc, char **argv){
       patchi = patchinfo + i;
 
       patchi->dup=0;
-      patchdup(patchi,i);
+      PatchDup(patchi,i);
     }
   }
   if(nsliceinfo>0){
@@ -521,7 +521,7 @@ void *compress_all(void *arg){
   int *thread_index;
 
   thread_index=(int *)(arg);
-  if(GLOBdoit_boundary==1)compress_patches(thread_index);
+  if(GLOBdoit_boundary==1)CompressPatches(thread_index);
   if(GLOBdoit_slice==1)CompressSlices(thread_index);
   if(GLOBdoit_volslice==1)CompressVolSlices(thread_index);
   if(GLOBdoit_smoke3d==1)compress_smoke3ds(thread_index);
