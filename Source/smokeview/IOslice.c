@@ -6737,10 +6737,10 @@ void DrawVolSliceLines(const slicedata *sd){
           val[1] = SLICECOLOR(IJK_SLICE(plotx, j,  k2));
           val[2] = SLICECOLOR(IJK_SLICE(plotx, j2, k2));
           val[3] = SLICECOLOR(IJK_SLICE(plotx, j2, k));
-          slice_color   = rgb_slice + 4 * val[0];
-          slice_color13 = rgb_slice + 4 * val[1];
-          slice_color33 = rgb_slice + 4 * val[2];
-          slice_color31 = rgb_slice + 4 * val[3];
+          slice_color   = rgb_slice + val[0];
+          slice_color13 = rgb_slice + val[1];
+          slice_color33 = rgb_slice + val[2];
+          slice_color31 = rgb_slice + val[3];
         }
         z1 = zplt[k];
         z3 = zplt[k2];
@@ -6835,10 +6835,10 @@ void DrawVolSliceLines(const slicedata *sd){
           val[1] = SLICECOLOR(IJK_SLICE(i,  ploty,  k2));
           val[2] = SLICECOLOR(IJK_SLICE(i2, ploty,  k2));
           val[3] = SLICECOLOR(IJK_SLICE(i2, ploty,  k));
-          slice_color   = rgb_slice + 4 * val[0];
-          slice_color13 = rgb_slice + 4 * val[1];
-          slice_color33 = rgb_slice + 4 * val[2];
-          slice_color31 = rgb_slice + 4 * val[3];
+          slice_color   = rgb_slice + val[0];
+          slice_color13 = rgb_slice + val[1];
+          slice_color33 = rgb_slice + val[2];
+          slice_color31 = rgb_slice + val[3];
         }
         /*
         n+1 (x1,z3)   n2+1 (x3,z3)
@@ -6926,10 +6926,10 @@ void DrawVolSliceLines(const slicedata *sd){
           val[1] = SLICECOLOR(IJK_SLICE(i,  j2, plotz));
           val[2] = SLICECOLOR(IJK_SLICE(i2, j2, plotz));
           val[3] = SLICECOLOR(IJK_SLICE(i2, j,  plotz));
-          slice_color   = rgb_slice + 4 * val[0];
-          slice_color13 = rgb_slice + 4 * val[1];
-          slice_color33 = rgb_slice + 4 * val[2];
-          slice_color31 = rgb_slice + 4 * val[3];
+          slice_color   = rgb_slice + val[0];
+          slice_color13 = rgb_slice + val[1];
+          slice_color33 = rgb_slice + val[2];
+          slice_color31 = rgb_slice + val[3];
         }
         /*
         n+nk (x1,y3)   n2+nk (x3,y3)
@@ -7073,10 +7073,10 @@ void DrawVolSliceVerts(const slicedata *sd){
           val[1] = SLICECOLOR(IJK_SLICE(plotx,  j,   k2));
           val[2] = SLICECOLOR(IJK_SLICE(plotx,  j2,  k2));
           val[3] = SLICECOLOR(IJK_SLICE(plotx,  j2,  k));
-          slice_color   = rgb_slice + 4 * val[0];
-          slice_color13 = rgb_slice + 4 * val[1];
-          slice_color33 = rgb_slice + 4 * val[2];
-          slice_color31 = rgb_slice + 4 * val[3];
+          slice_color   = rgb_slice + val[0];
+          slice_color13 = rgb_slice + val[1];
+          slice_color33 = rgb_slice + val[2];
+          slice_color31 = rgb_slice + val[3];
         }
         z1 = zplt[k];
         z3 = zplt[k2];
@@ -7244,10 +7244,10 @@ void DrawVolSliceVerts(const slicedata *sd){
           val[1] = SLICECOLOR(IJK_SLICE(i,  j2, plotz));
           val[2] = SLICECOLOR(IJK_SLICE(i2, j2, plotz));
           val[3] = SLICECOLOR(IJK_SLICE(i2, j,  plotz));
-          slice_color   = rgb_slice + 4 * val[0];
-          slice_color13 = rgb_slice + 4 * val[1];
-          slice_color33 = rgb_slice + 4 * val[2];
-          slice_color31 = rgb_slice + 4 * val[3];
+          slice_color   = rgb_slice + val[0];
+          slice_color13 = rgb_slice + val[1];
+          slice_color33 = rgb_slice + val[2];
+          slice_color31 = rgb_slice + val[3];
         }
         /*
         n+nk (x1,y3)   n2+nk (x3,y3)
@@ -8622,7 +8622,7 @@ void DrawVVolSliceTerrain(const vslicedata *vd){
             int i11;
 
             i11 = SLICECOLOR(n11);
-            rgb_ptr = rgb_slice + 4 * i11;
+            rgb_ptr = rgb_slice + i11;
           }
           else{
             rgb_ptr = foregroundcolor;
@@ -8667,7 +8667,7 @@ void DrawVVolSliceTerrain(const vslicedata *vd){
             int i11;
 
             i11 = SLICECOLOR(n11);
-            rgb_ptr = rgb_slice + 4 * i11;
+            rgb_ptr = rgb_slice + i11;
           }
           else{
             rgb_ptr = foregroundcolor;
@@ -8712,7 +8712,7 @@ void DrawVVolSliceTerrain(const vslicedata *vd){
             int i11;
 
             i11 = SLICECOLOR(n11);
-            rgb_ptr = rgb_slice + 4 * i11;
+            rgb_ptr = rgb_slice + i11;
           }
           else{
             rgb_ptr = foregroundcolor;
@@ -8826,7 +8826,7 @@ void DrawVVolSlice(const vslicedata *vd){
         if(color_vector_black == 0 && show_node_slices_and_vectors == 0){
           if(sd->constant_color == NULL){
             i11 = SLICECOLOR(n);
-            rgb_ptr = rgb_slice + 4 * i11;
+            rgb_ptr = rgb_slice + i11;
           }
           else{
             rgb_ptr = sd->constant_color;
@@ -8871,7 +8871,7 @@ void DrawVVolSlice(const vslicedata *vd){
         if(color_vector_black == 0 && show_node_slices_and_vectors == 0){
           if(sd->constant_color == NULL){
             i11 = SLICECOLOR(n);
-            rgb_ptr = rgb_slice + 4 * i11;
+            rgb_ptr = rgb_slice + i11;
           }
           else{
             rgb_ptr = sd->constant_color;
@@ -8917,7 +8917,7 @@ void DrawVVolSlice(const vslicedata *vd){
         if(color_vector_black == 0 && show_node_slices_and_vectors == 0){
           if(sd->constant_color == NULL){
             i11 = SLICECOLOR(n);
-            rgb_ptr = rgb_slice + 4 * i11;
+            rgb_ptr = rgb_slice + i11;
           }
           else{
             rgb_ptr = sd->constant_color;
@@ -8961,7 +8961,7 @@ void DrawVVolSlice(const vslicedata *vd){
         if(color_vector_black == 0 && show_node_slices_and_vectors == 0){
           if(sd->constant_color == NULL){
             i11 = SLICECOLOR(n);
-            rgb_ptr = rgb_slice + 4 * i11;
+            rgb_ptr = rgb_slice + i11;
           }
           else{
             rgb_ptr = sd->constant_color;
@@ -9007,7 +9007,7 @@ void DrawVVolSlice(const vslicedata *vd){
         if(color_vector_black == 0 && show_node_slices_and_vectors == 0){
           if(sd->constant_color == NULL){
             i11 = SLICECOLOR(n);
-            rgb_ptr = rgb_slice + 4 * i11;
+            rgb_ptr = rgb_slice + i11;
           }
           else{
             rgb_ptr = sd->constant_color;
@@ -9052,7 +9052,7 @@ void DrawVVolSlice(const vslicedata *vd){
         if(color_vector_black == 0 && show_node_slices_and_vectors == 0){
           if(sd->constant_color == NULL){
             i11 = SLICECOLOR(n);
-            rgb_ptr = rgb_slice + 4 * i11;
+            rgb_ptr = rgb_slice + i11;
           }
           else{
             rgb_ptr = sd->constant_color;
