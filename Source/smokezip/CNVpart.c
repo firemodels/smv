@@ -81,7 +81,6 @@ void CompressParts(void *arg){
     part *parti;
 
     parti = partinfo + i;
-    if(GLOBautozip==1&&parti->autozip==0)continue;
     ConvertPart(parti,thread_index);
   }
 }

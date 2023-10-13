@@ -284,7 +284,6 @@ void *Compress3DSmokes(void *arg){
 
   for(i=0;i<nsmoke3dinfo;i++){
     smoke3di = smoke3dinfo + i;
-    if(GLOBautozip==1&&smoke3di->autozip==0)continue;
     LOCK_SMOKE;
     if(smoke3di->inuse==1){
       UNLOCK_SMOKE;

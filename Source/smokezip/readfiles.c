@@ -15,13 +15,7 @@ int ReadSMV(char *smvfile){
   int ioffset;
   int unit_start=15;
   int igrid,ipdim;
-  int ipatch,ipatch_seq;
-  int iplot3d, iplot3d_seq;
-  int ismoke3d, ismoke3d_seq;
-  int islice, islice_seq;
-#ifdef pp_PART
-  int ipart_seq;
-#endif
+  int ipatch, iplot3d, ismoke3d, islice;
 #define BUFFERSIZE 255
   char buffer[BUFFERSIZE];
 
@@ -254,21 +248,16 @@ int ReadSMV(char *smvfile){
 
   ioffset=0;
   ipatch=0;
-  ipatch_seq=0;
 #ifdef pp_PART
-  ipart_seq=0;
   npartclassinfo=0;
   npart5propinfo=0;
   npartinfo=0;
 #endif
   iplot3d=0;
-  iplot3d_seq=0;
   islice=0;
-  islice_seq=0;
   ipdim=0;
   igrid=0;
   ismoke3d=0;
-  ismoke3d_seq=0;
   REWIND(streamsmv);
 #ifndef pp_THREAD
   if(GLOBcleanfiles==0)PRINTF("Compressing .bf, .iso, .s3d, and .sf data files referenced in %s\n\n",smvfile);
@@ -348,9 +337,6 @@ int ReadSMV(char *smvfile){
 
       smoke3di = smoke3dinfo + ismoke3d;
       smoke3di->unit_start=unit_start++;
-      ismoke3d_seq++;
-      smoke3di->seq_id = ismoke3d_seq;
-      smoke3di->autozip = 0;
       smoke3di->inuse=0;
       smoke3di->compressed=0;
       smoke3di->smokemesh=meshinfo + ioffset - 1;
@@ -476,9 +462,6 @@ int ReadSMV(char *smvfile){
       parti = partinfo + npartinfo;
       parti->unit_start=unit_start++;
       parti->partmesh = meshinfo + meshindex;
-      ipart_seq++;
-      parti->seq_id = ipart_seq;
-      parti->autozip = 0;
       parti->inuse=0;
       parti->compressed=0;
       parti->compressed2=0;
@@ -548,9 +531,6 @@ int ReadSMV(char *smvfile){
 
       patchi = patchinfo + ipatch;
       patchi->unit_start = unit_start++;
-      ipatch_seq++;
-      patchi->seq_id = ipatch;
-      patchi->autozip = 0;
       patchi->inuse=0;
       patchi->compressed=0;
       patchi->version=version_local;
@@ -666,13 +646,10 @@ int ReadSMV(char *smvfile){
         blocknumber--;
       }
 
-      islice_seq++;
       slicei = sliceinfo + islice;
       slicei->blocknumber=blocknumber;
       slicei->unit_start=unit_start++;
       slicei->version=version_local;
-      slicei->seq_id = islice_seq;
-      slicei->autozip = 0;
       slicei->inuse=0;
       slicei->involuse=0;
       slicei->compressed=0;
@@ -752,9 +729,6 @@ int ReadSMV(char *smvfile){
 
       plot3di = plot3dinfo + iplot3d;
       plot3di->unit_start=unit_start++;
-      iplot3d_seq++;
-      plot3di->seq_id = iplot3d;
-      plot3di->autozip = 0;
       plot3di->version=version_local;
       plot3di->plot3d_mesh=meshinfo + blocknumber;
       plot3di->time=time_local;
@@ -1068,101 +1042,10 @@ void ReadINI2(char *inifile){
       continue;
     }
 #endif
-    if(Match(buffer,"SLICEAUTO")==1){
-      int nslice_auto=0;
-      int i;
-      int seq_id;
-
-      fgets(buffer,BUFFERSIZE,stream);
-      sscanf(buffer,"%i",&nslice_auto);
-      for(i=0;i<nslice_auto;i++){
-        fgets(buffer,BUFFERSIZE,stream);
-        sscanf(buffer,"%i",&seq_id);
-        GetStartupSlice(seq_id);
-      }
-      continue;
-    }
-    if(Match(buffer,"S3DAUTO")==1){
-      int n3dsmokes=0;
-      int i;
-      int seq_id;
-
-      fgets(buffer,BUFFERSIZE,stream);
-      sscanf(buffer,"%i",&n3dsmokes);
-      for(i=0;i<n3dsmokes;i++){
-        fgets(buffer,BUFFERSIZE,stream);
-        sscanf(buffer,"%i",&seq_id);
-        GetStartupSmoke(seq_id);
-      }
-      continue;
-    }
-    if(Match(buffer,"PATCHAUTO")==1){
-      int n3dsmokes=0;
-      int i;
-      int seq_id;
-
-      fgets(buffer,BUFFERSIZE,stream);
-      sscanf(buffer,"%i",&n3dsmokes);
-      for(i=0;i<n3dsmokes;i++){
-        fgets(buffer,BUFFERSIZE,stream);
-        sscanf(buffer,"%i",&seq_id);
-        GetStartupBoundary(seq_id);
-      }
-      continue;
-    }
   }
   fclose(stream);
   return;
-
 }
-
- /* ------------------ GetStartupBoundary ------------------------ */
-
-  void GetStartupBoundary(int seq_id){
-    int i;
-    for(i=0;i<npatchinfo;i++){
-      patch *patchi;
-
-      patchi = patchinfo + i;
-      if(patchi->seq_id==seq_id){
-        patchi->autozip=1;
-        return;
-      }
-    }
-  }
-
- /* ------------------ GetStartupSmoke ------------------------ */
-
-  void GetStartupSmoke(int seq_id){
-    int i;
-    for(i=0;i<nsmoke3dinfo;i++){
-      smoke3d *smoke3di;
-
-      smoke3di = smoke3dinfo + i;
-
-      if(smoke3di->seq_id==seq_id){
-        smoke3di->autozip=1;
-        return;
-      }
-    }
-  }
-
- /* ------------------ GetStartupSlice ------------------------ */
-
-  void GetStartupSlice(int seq_id){
-    int i;
-    for(i=0;i<nsliceinfo;i++){
-      slicedata *slicei;
-
-      slicei = sliceinfo + i;
-
-      if(slicei->seq_id==seq_id){
-        slicei->autozip=1;
-        return;
-      }
-    }
-  }
-
 
 /* ------------------ InitVolRender ------------------------ */
 

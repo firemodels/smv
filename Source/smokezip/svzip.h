@@ -123,7 +123,6 @@ typedef struct {
   int filesize;
   int is_geom;
   int inuse,inuse_getbounds;
-  int seq_id, autozip;
   int doit, done;
   int *pi1, *pi2, *pj1, *pj2, *pk1, *pk2, *patchdir, *patchsize;
   int npatches;
@@ -147,7 +146,6 @@ typedef struct _slicedata {
   int compressed,vol_compressed;
   int inuse,involuse,inuse_getbounds;
   int filesize;
-  int seq_id,autozip;
   int doit, done, count;
   int setvalmin, setvalmax;
   float valmin, valmax;
@@ -178,7 +176,6 @@ typedef struct {
   int blocknumber;
   meshdata *plot3d_mesh;
   int filesize;
-  int seq_id,autozip;
   int doit, done, count;
   bounddata bounds[5];
   int version;
@@ -203,7 +200,6 @@ typedef struct {
   char summary[1024];
   int compressed;
   int inuse,is_soot;
-  int seq_id, autozip;
   int nx, ny, nz, filesize;
   meshdata *smokemesh;
 } smoke3d;
@@ -251,7 +247,6 @@ typedef struct {
   int compressed,compressed2;
   int inuse,inuse_part2iso;
   int filesize;
-  int seq_id, autozip;
   int setvalmin, setvalmax;
   float valmin, valmax;
   flowlabels *label;
@@ -286,9 +281,6 @@ void RandABsdir(float xyz[3], int dir);
 float Rand1D(float xmin, float xmax);
 void Rand2D(float xy[2], float xmin, float xmax, float ymin, float ymax);
 void Rand3D(float xyz[3], float xmin, float xmax, float ymin, float ymax, float zmin, float zmax);
-void GetStartupSlice(int seq_id);
-void GetStartupSmoke(int seq_id);
-void GetStartupBoundary(int seq_id);
 unsigned int UnCompressRLE(unsigned char *buffer_in, int nchars_in, unsigned char *buffer_out);
 int ReadSMV(char *file);
 slicedata *GetSlice(char *string);
@@ -369,7 +361,7 @@ EXTERN int GLOBsmoke3dzipstep, GLOBboundzipstep, GLOBslicezipstep;
 EXTERN int GLOBfilesremoved;
 EXTERN int GLOBsyst;
 EXTERN char *GLOBendianfile;
-EXTERN int GLOBautozip, GLOBmake_demo;
+EXTERN int GLOBmake_demo;
 EXTERN int GLOBget_bounds, GLOBget_slice_bounds, GLOBget_plot3d_bounds, GLOBget_boundary_bounds;
 #ifdef pp_PART
 EXTERN int GLOBget_part_bounds;

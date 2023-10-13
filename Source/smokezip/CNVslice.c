@@ -957,7 +957,6 @@ void *CompressSlices(void *arg){
     }
     for(i=0;i<nsliceinfo;i++){
       slicei = sliceinfo + i;
-      if(GLOBautozip==1&&slicei->autozip==0)continue;
       slicei->count=0;
     }
     if(GLOBget_slice_bounds==1){
@@ -967,7 +966,6 @@ void *CompressSlices(void *arg){
       char *label;
 
       slicei = sliceinfo + i;
-      if(GLOBautozip==1&&slicei->autozip==0)continue;
       slicei->doit=1;
 
       sb=GetSlice(slicei->label.shortlabel);
@@ -1008,7 +1006,6 @@ void *CompressSlices(void *arg){
 
   for(i=0;i<nsliceinfo;i++){
     slicei = sliceinfo + i;
-    if(GLOBautozip==1&&slicei->autozip==0)continue;
     LOCK_SLICE;
     if(slicei->inuse==1){
       UNLOCK_SLICE;

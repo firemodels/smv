@@ -243,12 +243,10 @@ void *CompressPlot3Ds(void *arg){
     GLOBfirst_plot3d=0;
     for(i=0;i<nplot3dinfo;i++){
       plot3di = plot3dinfo + i;
-      if(GLOBautozip==1&&plot3di->autozip==0)continue;
       plot3di->count=0;
     }
     for(i=0;i<nplot3dinfo;i++){
       plot3di = plot3dinfo + i;
-      if(GLOBautozip==1&&plot3di->autozip==0)continue;
       plot3di->doit=1;
 
       pb=plot3dinfo;
@@ -267,7 +265,6 @@ void *CompressPlot3Ds(void *arg){
 
   for(i=0;i<nplot3dinfo;i++){
     plot3di = plot3dinfo + i;
-    if(GLOBautozip==1&&plot3di->autozip==0)continue;
     LOCK_PLOT3D;
     if(plot3di->inuse==1){
       UNLOCK_PLOT3D;

@@ -75,10 +75,9 @@ void Usage(char *prog, int option){
     PRINTF("  -yP - compress particle files\n");
 #endif
     PRINTF("output options:\n");
-    PRINTF("  -auto - compress only files that are auto-loaded by Smokeview\n");
     PRINTF("  -d destdir - copies compressed files (and files needed by Smokeview\n");
     PRINTF("        to view the case) to the directory destdir\n");
-    PRINTF("  -s GLOBsourcedir - specifies directory containing source files\n");
+    PRINTF("  -s sourcedir - specifies directory containing source files\n");
     PRINTF("  -demo - Creates the files (compressed and .svd ) needed by the\n");
     PRINTF("        Smokeview demonstrator mode.  Compresses files that are autoloaded, \n");
     PRINTF("        uses (20.0,620.0) and (0.0,0.23) for temperature and oxygen bounds\n");
@@ -149,7 +148,6 @@ int main(int argc, char **argv){
 #endif
   GLOBframeskip=-1;
   GLOBno_chop=0;
-  GLOBautozip=0;
   GLOBmake_demo=0;
   GLOBsyst=0;
   GLOBendianfile=NULL;
@@ -206,9 +204,6 @@ int main(int argc, char **argv){
     lenarg=strlen(arg);
     if(arg[0]=='-'&&lenarg>1){
       switch(arg[1]){
-      case 'a':
-        GLOBautozip=1;
-        break;
       case 'b':
         if(strcmp(arg,"-bounds")==0){
           GLOBget_bounds=1;
@@ -344,7 +339,6 @@ int main(int argc, char **argv){
         break;
       case 'd':
         if(strcmp(arg,"-demo")==0){
-          GLOBautozip=1;
           GLOBmake_demo=1;
           break;
         }
