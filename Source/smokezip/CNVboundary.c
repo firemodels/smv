@@ -90,6 +90,7 @@ int ConvertBoundaryGEOM(patch *patchi, int *thread_index){
   unsigned char *cvals=NULL, *compressed_vals=NULL;
   float *vals=NULL, time_local;
   uLongf ncompressed_vals;
+  uLong ntotal;
   int one = 1, zero = 0;
   unsigned int sizebefore = 0, sizeafter = 0;
   int percent_done, percent_next = PERCENT_SKIP;
@@ -200,12 +201,13 @@ int ConvertBoundaryGEOM(patch *patchi, int *thread_index){
 
   FORTREAD(&endian,  1);
   FORTREAD(&version, 1);
+  sizebefore = 24;
 
   int fileversion = 0;
   fwrite(&one,           4, 1, boundarystream); // write out a 1 to determine "endianness" when file is read in later
   fwrite(&zero,          4, 1, boundarystream); // write out a zero now, then a one just before file is closed
   fwrite(&fileversion,   4, 1, boundarystream); // write out compressed fileversion in case file format changes later
-  sizeafter = 16;
+  sizeafter = 12;
   float denom, valmin, valmax, valminmax[2];
 
 
@@ -220,6 +222,7 @@ int ConvertBoundaryGEOM(patch *patchi, int *thread_index){
   valminmax[0] = valmin;
   valminmax[1] = valmax;
   fwrite(valminmax, 4, 2, boundarystream);
+  sizeafter += 8;
 
   //***format
   // INPUT
@@ -244,16 +247,18 @@ int ConvertBoundaryGEOM(patch *patchi, int *thread_index){
     PRINTF(" ");
 #endif
     int MAXVALS = 0;
+    int MAXCOMPRESSEDVALS;    
     while(feof(BOUNDARYFILE) == 0){
       int nvals[4], offset[4];
 
       FORTREAD(&time_local, 1);
+      sizebefore += 12;
       if(returncode == 0)break;
 
       FORTREAD(nvals, 4);
+      sizebefore += 8 + 4 * 4;
       if(returncode == 0)break;
 
-      int ntotal;
       ntotal = nvals[0] + nvals[1] + nvals[2] + nvals[3];
       offset[0] = 0;
       offset[1] = offset[0] + nvals[0];
@@ -261,12 +266,13 @@ int ConvertBoundaryGEOM(patch *patchi, int *thread_index){
       offset[3] = offset[2] + nvals[2];
       if(ntotal > MAXVALS){
         MAXVALS = ntotal+1000;
+        MAXCOMPRESSEDVALS = 1.01*MAXVALS+600;
         FREEMEMORY(vals);
         FREEMEMORY(cvals);
         FREEMEMORY(compressed_vals);
         NewMemory(( void ** )&vals, MAXVALS * sizeof(float));
         NewMemory(( void ** )&cvals, MAXVALS);
-        NewMemory(( void ** )&compressed_vals, (1.01* MAXVALS +12));
+        NewMemory(( void ** )&compressed_vals, MAXCOMPRESSEDVALS);
       }
       if(ntotal > 0){
         int i;
@@ -276,6 +282,7 @@ int ConvertBoundaryGEOM(patch *patchi, int *thread_index){
         for(i = 0; i < 4; i++){
           if(nvals[i] > 0){
             FORTREAD(vals + offset[i], nvals[i]);
+            sizebefore += 8 + 4*nvals[i];
             if(returncode==0){
               exit_loop = 1;
               break;
@@ -286,17 +293,17 @@ int ConvertBoundaryGEOM(patch *patchi, int *thread_index){
         for(i = 0; i < ntotal; i++){
           float val;
 
-          val = (vals[i] - valmin) / denom;
-          cvals[i] = (unsigned char)CLAMP(255.0 * val, 0.0, 255.0);
-
+          val      = CLAMP((vals[i] - valmin) / denom, 0.0, 1.0);
+          cvals[i] = CLAMP((unsigned char)(255.0 * val), 0, 255);
         }
+        ncompressed_vals = MAXCOMPRESSEDVALS;
         returncode = CompressZLIB(compressed_vals, &ncompressed_vals, cvals, ntotal);
       }
-
       fprintf(boundarysizestream, "%f %i %i\n", time_local, ( int )ntotal, ( int )ncompressed_vals);
       fwrite(&time_local,       4, 1,                boundarystream); // write out time_local
       fwrite(&ncompressed_vals, 4, 1,                boundarystream); // write out compressed size of frame
       fwrite(compressed_vals,   1, ncompressed_vals, boundarystream); // write out compressed buffer
+      sizeafter += 8 + ncompressed_vals;
       data_loc = FTELL(BOUNDARYFILE);
       percent_done = 100.0 * ( float )data_loc / ( float )patchi->filesize;
 #ifdef pp_THREAD
@@ -318,7 +325,6 @@ int ConvertBoundaryGEOM(patch *patchi, int *thread_index){
 #ifndef pp_THREAD
     PRINTF(" 100%s completed\n", GLOBpp);
 #endif
-
   fclose(BOUNDARYFILE);
   FSEEK(boundarystream, 8, SEEK_SET);
   fwrite(&one, 4, 1, boundarystream);  // write completion code

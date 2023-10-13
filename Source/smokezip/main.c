@@ -565,6 +565,8 @@ void PrintSummary(void){
   int nsum2;
 
   PRINTF("\n");
+  PRINTF("********* Summary **************\n");
+  PRINTF("\n");
   nsum=0;
   nsum2=0;
   for(i=0;i<nsliceinfo;i++){
