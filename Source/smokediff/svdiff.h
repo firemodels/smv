@@ -106,20 +106,20 @@ typedef struct {
 
 //************************** headers ****************************************
 
-int mesh_Match(meshdata *mesh1, meshdata *mesh2);
+int MeshMatch(meshdata *mesh1, meshdata *mesh2);
 int ReadSMV(bufferstreamdata *streamsmv, FILE *stream_out, casedata *smvcase);
-void setup_boundary(FILE *stream_out);
-void setup_slice(FILE *stream_out);
+void SetupBoundary(FILE *stream_out);
+void SetupSlice(FILE *stream_out);
 void SetupPlot3D(FILE *stream_out);
 plot3d *GetPlot3D(plot3d *plot3din, casedata *case2);
-slice *getslice(slice *slicein, casedata *case2);
-boundary *getboundary(boundary *boundaryin, casedata *case2);
-void diff_boundaryes(FILE *stream_out);
-void diff_slices(FILE *stream_out);
-void diff_plot3ds(FILE *stream_out);
-int similar_grid(meshdata *mesh1, meshdata *mesh2, int *factor);
-int exact_grid(meshdata *mesh1, meshdata *mesh2, int *factor);
-int getpatchindex(int in1, boundary *boundaryin, boundary *boundaryout);
+slice *GetSlice(slice *slicein, casedata *case2);
+boundary *GetBoundary(boundary *boundaryin, casedata *case2);
+void DiffBoundarYes(FILE *stream_out);
+void DiffSlices(FILE *stream_out);
+void DiffPlot3Ds(FILE *stream_out);
+int SimilarGrid(meshdata *mesh1, meshdata *mesh2, int *factor);
+int ExactGrid(meshdata *mesh1, meshdata *mesh2, int *factor);
+int GetPatchIndex(int in1, boundary *boundaryin, boundary *boundaryout);
 
 //************************** global variables ****************************************
 

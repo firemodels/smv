@@ -9,9 +9,9 @@
 #include "file_util.h"
 #include "getdata.h"
 
-/* ------------------ setup_slice ------------------------ */
+/* ------------------ SetupSlice ------------------------ */
 
-void setup_slice(FILE *stream_out){
+void SetupSlice(FILE *stream_out){
   casedata *case1, *case2;
   int i;
 
@@ -22,7 +22,7 @@ void setup_slice(FILE *stream_out){
     slice *slicei;
 
     slicei = case1->sliceinfo + i;
-    slicei->slice2 = getslice(slicei,case2);
+    slicei->slice2 = GetSlice(slicei,case2);
     if(slicei->slice2!=NULL&&stream_out!=NULL){
       char outfile[1024];
 
@@ -36,9 +36,9 @@ void setup_slice(FILE *stream_out){
   }
 }
 
-/* ------------------ getslice ------------------------ */
+/* ------------------ GetSlice ------------------------ */
 
-slice *getslice(slice *slicein, casedata *case2){
+slice *GetSlice(slice *slicein, casedata *case2){
   int i;
   float dx, dy, dz;
 
@@ -60,15 +60,15 @@ slice *getslice(slice *slicein, casedata *case2){
     if(ABS(slicein->ymax-sliceout->ymax)>dy)continue;
     if(ABS(slicein->zmin-sliceout->zmin)>dz)continue;
     if(ABS(slicein->zmax-sliceout->zmax)>dz)continue;
-    if(similar_grid(slicein->slicemesh,sliceout->slicemesh,slicein->factor)==0)continue;
+    if(SimilarGrid(slicein->slicemesh,sliceout->slicemesh,slicein->factor)==0)continue;
     return sliceout;
   }
   return NULL;
 }
 
-/* ------------------ diff_slices ------------------------ */
+/* ------------------ DiffSlices ------------------------ */
 
-void diff_slices(FILE *stream_out){
+void DiffSlices(FILE *stream_out){
   int j;
 
   for(j=0;j<caseinfo->nsliceinfo;j++){

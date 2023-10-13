@@ -397,7 +397,7 @@ int main(int argc, char **argv){
     return 1;
   }
 #ifdef pp_THREAD
-  init_pthread_mutexes();
+  InitPthreadMutexes();
 #endif
   filelen=strlen(filebase);
   if(filelen>4){
@@ -496,9 +496,9 @@ int main(int argc, char **argv){
   ReadINI(inifile);
 
 #ifdef pp_THREAD
-  mt_compress_all();
+  CompressAllMT();
 #else
-  compress_all(NULL);
+  CompressAll(NULL);
 #endif
 
   if(GLOBcleanfiles==0&&GLOBdestdir!=NULL){
@@ -510,14 +510,14 @@ int main(int argc, char **argv){
     PRINTF("No compressed files were removed\n");
   }
   if(GLOBmake_demo==1){
-    makesvd(GLOBdestdir,smvfile);
+    MakeSVD(GLOBdestdir,smvfile);
   }
   return 0;
 }
 
-/* ------------------ compress_all ------------------------ */
+/* ------------------ CompressAll ------------------------ */
 
-void *compress_all(void *arg){
+void *CompressAll(void *arg){
   int *thread_index;
 
   thread_index=(int *)(arg);
@@ -535,9 +535,9 @@ void *compress_all(void *arg){
   return NULL;
 }
 
-/* ------------------ makesvd ------------------------ */
+/* ------------------ MakeSVD ------------------------ */
 
-void makesvd(char *in_dir, char *smvfile){
+void MakeSVD(char *in_dir, char *smvfile){
   char *file_out=NULL,*svd;
 
   if(smvfile==NULL)return;
@@ -557,13 +557,15 @@ void makesvd(char *in_dir, char *smvfile){
 
 }
 
-/* ------------------ print_summary ------------------------ */
+/* ------------------ PrintSummary ------------------------ */
 
-void print_summary(void){
+void PrintSummary(void){
   int i;
   int nsum;
   int nsum2;
 
+  PRINTF("\n");
+  PRINTF("********* Summary **************\n");
   PRINTF("\n");
   nsum=0;
   nsum2=0;

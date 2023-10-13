@@ -38,19 +38,6 @@ void Normal(unsigned short *v1, unsigned short *v2, unsigned short *v3, float *n
   normal[2]/=norm2;
 }
 
-/* ------------------ atan3 ------------------------ */
-
-float atan3(float dy,float dx){
-  if(dx!=0.0)return atan(dy/dx);
-
-  // dx is zero so atan(dy/dx) is PI/2 or -PI/2 depending on sign dy
-
-  if(dy>0.0)return 2.0*atan(1.0);
-  if(dy<0.0)return -2.0*atan(1.0);
-  return 0.0;
-}
-
-
 /* ------------------ RandABsdir ------------------------ */
 
 void RandABsdir(float xyz[3], int dir){
@@ -75,37 +62,6 @@ void RandABsdir(float xyz[3], int dir){
       xyz[-dir]=-ABS(xyz[-dir]);
     }
   }
-}
-
-/* ------------------ rand_dir ------------------------ */
-
-void rand_cone_dir(float xyz[3], float conedir[3], float mincosangle){
-  float cosangle=2.0;
-
-  while(cosangle<mincosangle){
-    rand_sphere_dir(xyz);
-    cosangle = xyz[0]*conedir[0]+xyz[1]*conedir[1]+xyz[2]*conedir[2];
-  }
-
-  return;
-}
-/* ------------------ rand_dir ------------------------ */
-
-void rand_sphere_dir(float xyz[3]){
-  float x=1.0, y=1.0, z=1.0;
-  float sum,sqsum;
-
-  sum=x*x+y*y+z*z;
-  while(sum>1.0||sum==0.0){
-    x = Rand1D(-1.0,1.0);
-    y = Rand1D(-1.0,1.0);
-    z = Rand1D(-1.0,1.0);
-    sum=x*x+y*y+z*z;
-  }
-  sqsum=sqrt(sum);
-  xyz[0]=x/sqsum;
-  xyz[1]=y/sqsum;
-  xyz[2]=z/sqsum;
 }
 
 /* ------------------ Rand1D ------------------------ */
