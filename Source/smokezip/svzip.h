@@ -279,12 +279,10 @@ typedef struct {
 //***********************
 
 void InitVolRender(void);
-void print_summary(void);
-void *compress_all(void *arg);
-void mt_compress_all(void);
+void PrintSummary(void);
+void *CompressAll(void *arg);
+void CompressAllMT(void);
 void RandABsdir(float xyz[3], int dir);
-void rand_cone_dir(float xyz[3], float dir[3], float mincosangle);
-void rand_sphere_dir(float xyz[3]);
 float Rand1D(float xmin, float xmax);
 void Rand2D(float xy[2], float xmin, float xmax, float ymin, float ymax);
 void Rand3D(float xyz[3], float xmin, float xmax, float ymin, float ymax, float zmin, float zmax);
@@ -299,14 +297,10 @@ void *CompressVolSlices(void *arg);
 int IsPlot3DDup(plot3d *plot3dj, int iplot3d);
 int SliceDup(slicedata *slicej, int islice);
 void *CompressPlot3Ds(void *arg);
-void initpdf(pdfdata *pdf);
-void makesvd(char *destdir, char *smvfile);
-void getpdf(float *vals, int nvals, pdfdata *pdf);
-void mergepdf(pdfdata *pdf1, pdfdata *pdf2, pdfdata *pdfmerge);
+void MakeSVD(char *destdir, char *smvfile);
 #ifdef pp_PART
 void CompressParts(void *arg);
 void *ConvertParts2Iso(void *arg);
-part *getpart(char *string);
 partpropdata *GetPartProp(char *string);
 int GetPartPropIndex(char *string);
 void ConvertPart(part *parti, int *thread_index);
@@ -323,8 +317,6 @@ void Get_Part_Bounds(void);
 void Convert3DSmoke(smoke3d *smoke3di, int *thread_index);
 void *Compress3DSmokes(void *arg);
 void Normal(unsigned short *v1, unsigned short *v2, unsigned short *v3, float *normal, float *area);
-float atan3(float y, float x);
-void initvolrender(void);
 void GetSliceParmsC(char *file, int *ni, int *nj, int *nk);
 
 //***********************

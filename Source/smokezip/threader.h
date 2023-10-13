@@ -88,8 +88,8 @@ MT_EXTERN pthread_mutex_t mutexSLICE_BOUND,mutexPATCH_BOUND,mutexPART2ISO,mutexP
 #endif
 #endif
 
-void init_pthread_mutexes(void);
-void print_thread_stats(void);
+void InitPthreadMutexes(void);
+void PrintThreadStats(void);
 
 #define NTHREADS_MAX 16
 

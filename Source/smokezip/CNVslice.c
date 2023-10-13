@@ -200,7 +200,7 @@ int ConvertVolSlice(slicedata *slicei, int *thread_index){
       threadinfo[*thread_index].stat=percent_done;
       if(percent_done>percent_next){
         LOCK_PRINT;
-        print_thread_stats();
+        PrintThreadStats();
         UNLOCK_PRINT;
         percent_next += PERCENT_SKIP;
       }
@@ -604,7 +604,7 @@ int ConvertSlice(slicedata *slicei, int *thread_index){
       threadinfo[*thread_index].stat=percent_done;
       if(percent_done>percent_next){
         LOCK_PRINT;
-        print_thread_stats();
+        PrintThreadStats();
         UNLOCK_PRINT;
         percent_next += PERCENT_SKIP;
       }

@@ -211,7 +211,7 @@ void Convert3DSmoke(smoke3d *smoke3di, int *thread_index){
     threadinfo[*thread_index].stat=percent_done;
     if(percent_done>percent_next){
       LOCK_PRINT;
-      print_thread_stats();
+      PrintThreadStats();
       UNLOCK_PRINT;
       percent_next += PERCENT_SKIP;
     }
