@@ -26,7 +26,7 @@ void CompressAllMT(void){
   for(i=0;i<mt_nthreads;i++){
     pthread_join(thread_ids[i],NULL);
   }
-  PRINTF("********* compression completed("********* n");
+  PRINTF("********* compression completed ********* \n");
 
   PrintSummary();
   FREEMEMORY(thread_ids);
