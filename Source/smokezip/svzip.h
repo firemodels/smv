@@ -255,16 +255,10 @@ void InitVolRender(void);
 void PrintSummary(void);
 void *CompressAll(void *arg);
 void CompressAllMT(void);
-void RandABsdir(float xyz[3], int dir);
-float Rand1D(float xmin, float xmax);
-void Rand2D(float xy[2], float xmin, float xmax, float ymin, float ymax);
-void Rand3D(float xyz[3], float xmin, float xmax, float ymin, float ymax, float zmin, float zmax);
 unsigned int UnCompressRLE(unsigned char *buffer_in, int nchars_in, unsigned char *buffer_out);
 int ReadSMV(char *file);
-slicedata *GetSlice(char *string);
 void *CompressSlices(void *arg);
 void *CompressVolSlices(void *arg);
-int SliceDup(slicedata *slicej, int islice);
 void MakeSVD(char *destdir, char *smvfile);
 void *ConvertParts2Iso(void *arg);
 partpropdata *GetPartProp(char *string);
@@ -274,7 +268,6 @@ void ReadINI(char *file);
 void ReadINI2(char *file2);
 void Convert3DSmoke(smoke3d *smoke3di, int *thread_index);
 void *Compress3DSmokes(void *arg);
-void Normal(unsigned short *v1, unsigned short *v2, unsigned short *v3, float *normal, float *area);
 void GetSliceParmsC(char *file, int *ni, int *nj, int *nk);
 
 //***********************
