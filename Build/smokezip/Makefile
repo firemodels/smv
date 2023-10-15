@@ -127,6 +127,17 @@ gnu_osx_64_db : $(obj)
 
 # ------------- intel linux 64 ----------------
 
+intel_linux_64_db : CFLAGS    = -O2 -m64 ${INC_DIR} -Wall -Wextra -Wuninitialized -Wunused-function \
+                                -Wunused-variable -Wno-sign-compare -Wno-unused-parameter -Wno-string-concatenation -D pp_LINUX \
+                                $(GITINFO) $(INTEL_COMPINFO) $(SMV_TESTFLAG)
+intel_linux_64_db : LFLAGS    = -L $(LIB_DIR)/intel_linux_64 -lz -lpthread -static-intel
+intel_linux_64_db : CC        = $(I_ICC)
+intel_linux_64_db : exe       = smokezip_linux_64_db
+
+intel_linux_64_db : $(obj)
+	$(CC) -o $(bin)/$(exe) $(obj) $(LFLAGS)
+
+# ------------- intel linux 64 ----------------
 intel_linux_64 : CFLAGS    = -O2 -m64 ${INC_DIR} -D pp_LINUX $(GITINFO) $(INTEL_COMPINFO) $(SMV_TESTFLAG)
 intel_linux_64 : LFLAGS    = -L $(LIB_DIR)/intel_linux_64 -lz -lpthread -static-intel
 intel_linux_64 : CC        = $(I_ICC)
