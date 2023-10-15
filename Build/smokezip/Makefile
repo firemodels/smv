@@ -39,7 +39,7 @@ GNU_COMPINFO=-Dpp_COMPVER=\"$(GNU_COMPVERSION)\"
 # Definition of the object variables
 
 obj =    assert.o CNV3dsmoke.o CNVboundary.o CNVpart.o CNVslice.o  \
-         color2rgb.o compress.o dmalloc.o file_util.o getdata.o \
+         compress.o dmalloc.o file_util.o getdata.o \
          isobox.o main.o md5.o readfiles.o sha1.o sha256.o stdio_buffer.o \
          string_util.o threader.o utilities.o 
 	    
