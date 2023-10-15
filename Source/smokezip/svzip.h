@@ -16,7 +16,6 @@
 #include "histogram.h"
 #include "threader.h"
 
-#ifdef pp_PART
 #define rgb_white 12
 #define rgb_yellow 13
 #define rgb_blue 14
@@ -25,7 +24,6 @@
 #define rgb_magenta 17
 #define rgb_cyan 18
 #define rgb_black 19
-#endif
 
 #ifndef MAX
 #define MAX(a,b)  ((a)>(b) ? (a) : (b))
@@ -201,8 +199,6 @@ typedef struct {
   meshdata *smokemesh;
 } smoke3d;
 
-#ifdef pp_PART
-
 /* --------------------------  partpropdata ------------------------------------ */
 
 typedef struct {
@@ -253,7 +249,6 @@ typedef struct {
   partclassdata **classptr;
   part5data *data5;
 } part;
-#endif
 
 #define PDFMAX 100000
 typedef struct {
@@ -292,13 +287,9 @@ int IsPlot3DDup(plot3d *plot3dj, int iplot3d);
 int SliceDup(slicedata *slicej, int islice);
 void *CompressPlot3Ds(void *arg);
 void MakeSVD(char *destdir, char *smvfile);
-#ifdef pp_PART
-void CompressParts(void *arg);
 void *ConvertParts2Iso(void *arg);
 partpropdata *GetPartProp(char *string);
 int GetPartPropIndex(char *string);
-void ConvertPart(part *parti, int *thread_index);
-#endif
 void *CompressPatches(void *arg);
 void ReadINI(char *file);
 void ReadINI2(char *file2);
@@ -337,18 +328,12 @@ EXTERN int npatchinfo, nsliceinfo, nplot3dinfo, npartinfo;
 EXTERN int npatchbounds, nslicebounds;
 EXTERN int npartclassinfo;
 EXTERN int nsmoke3dinfo;
-#ifdef pp_PART
 EXTERN int maxpart5propinfo, npart5propinfo;
-#endif
-
 
 EXTERN int nmeshes;
 EXTERN int GLOBoverwrite_slice;
 EXTERN int GLOBoverwrite_volslice;
 EXTERN int GLOBoverwrite_plot3d;
-#ifdef pp_PART
-EXTERN int GLOBoverwrite_part;
-#endif
 EXTERN int GLOBoverwrite_b,GLOBoverwrite_s;
 EXTERN int GLOBcleanfiles;
 EXTERN char *GLOBdestdir,*GLOBsourcedir;
@@ -359,9 +344,7 @@ EXTERN int GLOBsyst;
 EXTERN char *GLOBendianfile;
 EXTERN int GLOBmake_demo;
 EXTERN int GLOBget_bounds, GLOBget_slice_bounds, GLOBget_plot3d_bounds, GLOBget_boundary_bounds;
-#ifdef pp_PART
 EXTERN int GLOBpartfile2iso;
-#endif
 EXTERN char GLOBsmvisofile[1024];
 
 #endif

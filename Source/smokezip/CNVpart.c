@@ -1,6 +1,5 @@
 #include "options.h"
 
-#ifdef pp_PART
 #include "zlib.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -831,5 +830,3 @@ void Part2Object(part *parti, int *thread_index){
     FREEMEMORY(part5propinfo_copy);
   }
 }
-
-#endif

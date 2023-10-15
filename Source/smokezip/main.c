@@ -44,9 +44,7 @@ void Usage(char *prog, int option){
 #ifdef pp_PLOT3D
     PRINTF("  -p  - overwrites PLOT3D files\n");
 #endif
-#ifdef pp_PART
     PRINTF("  -part2iso - generate isosurfaces from particle data\n");
-#endif
     PRINTF("bound options:\n");
     PRINTF("  -bounds - estimate data bounds for all file types\n");
     PRINTF("  -bb - estimate data bounds for boundary files\n");
@@ -146,9 +144,7 @@ int main(int argc, char **argv){
   GLOBget_slice_bounds=0;
   GLOBget_plot3d_bounds=0;
   GLOBget_boundary_bounds=0;
-#ifdef pp_PART
   GLOBpartfile2iso=0;
-#endif
   GLOBoverwrite_slice=0;
   GLOBoverwrite_volslice=0;
   GLOBoverwrite_plot3d=0;
@@ -160,14 +156,12 @@ int main(int argc, char **argv){
 
   npatchinfo=0;
   nsmoke3dinfo=0;
-#ifdef pp_PART
   npartinfo=0;
   npartclassinfo=0;
   partinfo=NULL;
   partclassinfo=NULL;
   maxpart5propinfo=0;
   npart5propinfo=0;
-#endif
   nsliceinfo=0;
   sliceinfo=NULL;
   nmeshes=0;

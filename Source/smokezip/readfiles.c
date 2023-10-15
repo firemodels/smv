@@ -71,7 +71,6 @@ int ReadSMV(char *smvfile){
       nplot3dinfo++;
       continue;
     }
-#ifdef pp_PART
   /*
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     ++++++++++++++++++++++ CLASS_OF_PARTICLES++++++++++++++++++++
@@ -100,7 +99,6 @@ int ReadSMV(char *smvfile){
       npartinfo++;
       continue;
     }
-#endif
   /*
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     ++++++++++++++++++++++ SLCF ++++++++++++++++++++++++++++++
@@ -224,7 +222,6 @@ int ReadSMV(char *smvfile){
 
   // allocate memory for particle file info
 
-#ifdef pp_PART
   if(npartinfo>0){
     part *parti;
     int i;
@@ -246,17 +243,14 @@ int ReadSMV(char *smvfile){
   if(maxpart5propinfo>0){
     NewMemory((void **)&part5propinfo,maxpart5propinfo*sizeof(partpropdata));
   }
-#endif
 
   // read in smv file a second time_local to compress files
 
   ioffset=0;
   ipatch=0;
-#ifdef pp_PART
   npartclassinfo=0;
   npart5propinfo=0;
   npartinfo=0;
-#endif
   iplot3d=0;
   islice=0;
   ipdim=0;
@@ -386,7 +380,6 @@ int ReadSMV(char *smvfile){
       }
       continue;
     }
-#ifdef pp_PART
   /*
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     ++++++++++++++++++ CLASS_OF_PARTICLES +++++++++++++++++++++++
@@ -510,7 +503,6 @@ int ReadSMV(char *smvfile){
       }
       continue;
     }
-#endif
   /*
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     ++++++++++++++++++++++ BNDF ++++++++++++++++++++++++++++++
@@ -1003,7 +995,6 @@ void ReadINI2(char *inifile){
       continue;
     }
 
-#ifdef pp_PART
     if(Match(buffer,"V_PARTICLES")==1||Match(buffer,"V2_PARTICLES")==1){
       int setpartmin, setpartmax;
       float partmin, partmax;
@@ -1030,7 +1021,6 @@ void ReadINI2(char *inifile){
       }
       continue;
     }
-#endif
   }
   fclose(stream);
   return;

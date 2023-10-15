@@ -12,8 +12,6 @@
 
 //*** options: all platforms
 
-#define pp_PART
-
 //*** options: options being tested
 
 #define pp_SMOKE3D_FORT
