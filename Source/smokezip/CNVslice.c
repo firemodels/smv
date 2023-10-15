@@ -813,51 +813,6 @@ void *CompressVolSlices(void *arg){
   return NULL;
 }
 
-/* ------------------ UpdateSliceHist ------------------------ */
-
-void UpdateSliceHist(void){
-  int i;
-
-  for(i = 0;i < nsliceinfo;i++){
-    slicedata *slicei;
-    FILE *unit1;
-    int error1;
-    float slicetime1, *sliceframe;
-    int sliceframesize;
-    int is1, is2, js1, js2, ks1, ks2;
-    int testslice;
-
-    slicei = sliceinfo + i;
-
-    LOCK_SLICE_BOUND;
-    if(slicei->inuse_getbounds == 1){
-      UNLOCK_SLICE_BOUND;
-      continue;
-    }
-    slicei->inuse_getbounds = 1;
-    UNLOCK_SLICE_BOUND;
-    PRINTF("  Examining %s\n", slicei->file);
-
-    LOCK_COMPRESS;
-    openslice(slicei->file, &unit1, &is1, &is2, &js1, &js2, &ks1, &ks2, &error1);
-    UNLOCK_COMPRESS;
-
-    sliceframesize = (is2 + 1 - is1) * (js2 + 1 - js1) * (ks2 + 1 - ks1);
-    NewMemory((void **)&sliceframe, sliceframesize * sizeof(float));
-    ResetHistogram(slicei->histogram, NULL, NULL);
-    testslice = 0;
-    while(error1 == 0){
-      getsliceframe(unit1, is1, is2, js1, js2, ks1, ks2, &slicetime1, sliceframe, testslice, &error1);
-      UpdateHistogram(sliceframe, NULL, sliceframesize, slicei->histogram);
-    }
-    FREEMEMORY(sliceframe);
-
-    LOCK_COMPRESS;
-    closefortranfile(unit1);
-    UNLOCK_COMPRESS;
-  }
-}
-
 /* ------------------ GetGlobalSliceBounds ------------------------ */
 
 void GetGlobalSliceBounds(char *label){

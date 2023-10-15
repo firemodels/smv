@@ -658,12 +658,6 @@ int ReadSMV(char *smvfile){
       slicei->compressed=0;
       slicei->vol_compressed=0;
 
-      if(GLOBget_slice_bounds==1){
-        NewMemory((void **)&slicei->histogram,sizeof(histogramdata));
-        slicei->histogram->buckets = NULL;
-        slicei->histogram->buckets_polar = NULL;
-      }
-
       if(FGETS(buffer,BUFFERSIZE,streamsmv)==NULL)break;
       TrimBack(buffer);
       buffer2=TrimFront(buffer);

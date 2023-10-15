@@ -150,7 +150,6 @@ typedef struct _slicedata {
   int setchopvalmin, setchopvalmax;
   float chopvalmin, chopvalmax;
   int version;
-  histogramdata *histogram;
   flowlabels label;
 } slicedata;
 
