@@ -5039,26 +5039,14 @@ int ParsePRT5Process(bufferstreamdata *stream, char *buffer, int *nn_part_in, in
     STRCAT(parti->hist_file, ".hist");
   }
 
-  parti->comp_file = NULL;
-  if(NewMemory((void **)&parti->comp_file, (unsigned int)(len+1+4))==0)return RETURN_TWO;
-  STRCPY(parti->comp_file, bufferptr);
-  STRCAT(parti->comp_file, ".svz");
-
-  if(FILE_EXISTS_CASEDIR(parti->comp_file)==YES){
-    parti->compression_type = COMPRESSED_ZLIB;
-    parti->file = parti->comp_file;
+  parti->compression_type = UNCOMPRESSED;
+  if(FILE_EXISTS_CASEDIR(parti->reg_file)==YES){
+    parti->file = parti->reg_file;
   }
   else{
-    parti->compression_type = UNCOMPRESSED;
-    if(FILE_EXISTS_CASEDIR(parti->reg_file)==YES){
-      parti->file = parti->reg_file;
-    }
-    else{
-      FREEMEMORY(parti->reg_file);
-      FREEMEMORY(parti->comp_file);
-      FREEMEMORY(parti->size_file);
-      parti->file = NULL;
-    }
+    FREEMEMORY(parti->reg_file);
+    FREEMEMORY(parti->size_file);
+    parti->file = NULL;
   }
   parti->compression_type = UNCOMPRESSED;
   parti->loaded = 0;
@@ -6844,7 +6832,6 @@ int ReadSMV(bufferstreamdata *stream){
     for(i=0;i<npartinfo;i++){
       FREEMEMORY(partinfo[i].partclassptr);
       FREEMEMORY(partinfo[i].reg_file);
-      FREEMEMORY(partinfo[i].comp_file);
       FREEMEMORY(partinfo[i].size_file);
     }
     FREEMEMORY(partinfo);

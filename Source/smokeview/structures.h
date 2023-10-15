@@ -1208,7 +1208,7 @@ typedef struct _part5data {
 typedef struct _partdata {
   FILE_m *stream;
 
-  char *file, *comp_file, *size_file, *reg_file, *hist_file, *bound_file;
+  char *file, *size_file, *reg_file, *hist_file, *bound_file;
   int have_bound_file;
   int seq_id, autoload, loaded, skipload, request_load, display, reload, finalize;
   int loadstatus, boundstatus;
