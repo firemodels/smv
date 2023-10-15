@@ -1666,10 +1666,8 @@ typedef struct _patchdata {
 
 typedef struct _plot3ddata {
   int seq_id, autoload;
-  char *file,*reg_file,*comp_file;
-  char *bound_file;
+  char *file, *reg_file,  *bound_file;
   int have_bound_file;
-  int compression_type;
   int finalize;
   int memory_id;
   float time;

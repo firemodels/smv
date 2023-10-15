@@ -1180,7 +1180,6 @@ void ReadSMVDynamic(char *file){
         FreeLabels(&plot3di->label[n]);
       }
       FREEMEMORY(plot3di->reg_file);
-      FREEMEMORY(plot3di->comp_file);
     }
 //    FREEMEMORY(plot3dinfo);
   }
@@ -1657,20 +1656,6 @@ void ReadSMVDynamic(char *file){
       STRCAT(plot3di->bound_file, ".bnd");
       plot3di->have_bound_file = NO;
 
-      NewMemory((void **)&plot3di->comp_file,(unsigned int)(len+4+1));
-      STRCPY(plot3di->comp_file,bufferptr);
-      STRCAT(plot3di->comp_file,".svz");
-
-   //   if(FILE_EXISTS_CASEDIR(plot3di->comp_file)==YES){
-   //     plot3di->compression_type=COMPRESSED_ZLIB;
-   //     plot3di->file=plot3di->comp_file;
-   //   }
-   //   else{
-   //     plot3di->compression_type=UNCOMPRESSED;
-   //     plot3di->file=plot3di->reg_file;
-   //   }
-      //disable compression for now
-      plot3di->compression_type=UNCOMPRESSED;
       plot3di->file=plot3di->reg_file;
 
       if(fast_startup==1||FILE_EXISTS_CASEDIR(plot3di->file)==YES){
