@@ -43,8 +43,6 @@ typedef struct {
 #define UNLOCK_ISOS        pthread_mutex_unlock(&mutexISOS);
 #define LOCK_SMOKE         pthread_mutex_lock(&mutexSMOKE);
 #define UNLOCK_SMOKE       pthread_mutex_unlock(&mutexSMOKE);
-#define LOCK_PLOT3D        pthread_mutex_lock(&mutexPLOT3D);
-#define UNLOCK_PLOT3D      pthread_mutex_unlock(&mutexPLOT3D);
 #define LOCK_PART2ISO      pthread_mutex_lock(&mutexPART2ISO);
 #define UNLOCK_PART2ISO    pthread_mutex_unlock(&mutexPART2ISO);
 #define LOCK_PRINT         pthread_mutex_lock(&mutexPRINT);
@@ -66,11 +64,9 @@ typedef struct {
 #define UNLOCK_ISOS
 #define LOCK_SMOKE
 #define UNLOCK_SMOKE
-#define LOCK_PLOT3D
-#define UNLOCK_PLOT3D
-#define   LOCK_PART2ISO
+#define LOCK_PART2ISO
 #define UNLOCK_PART2ISO
-#define   LOCK_PRINT
+#define LOCK_PRINT
 #define UNLOCK_PRINT
 #endif
 
@@ -83,7 +79,7 @@ MT_EXTERN int mt_nthreads;
 
 #ifndef CPP
 #ifdef pp_THREAD
-MT_EXTERN pthread_mutex_t mutexCOMPRESS,mutexPATCH,mutexSLICE,mutexISOS,mutexSMOKE,mutexPLOT3D,mutexVOLSLICE;
+MT_EXTERN pthread_mutex_t mutexCOMPRESS,mutexPATCH,mutexSLICE,mutexISOS,mutexSMOKE,mutexVOLSLICE;
 MT_EXTERN pthread_mutex_t mutexSLICE_BOUND,mutexPATCH_BOUND,mutexPART2ISO,mutexPRINT;
 #endif
 #endif

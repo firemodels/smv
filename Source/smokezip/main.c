@@ -41,9 +41,6 @@ void Usage(char *prog, int option){
     PRINTF("  -2  - overwrites 2d slice compressed files\n");
     PRINTF("  -3  - overwrites 3d smoke files\n");
     PRINTF("  -b  - overwrites boundary compressed files\n");
-#ifdef pp_PLOT3D
-    PRINTF("  -p  - overwrites PLOT3D files\n");
-#endif
     PRINTF("  -part2iso - generate isosurfaces from particle data\n");
     PRINTF("bound options:\n");
     PRINTF("  -bounds - estimate data bounds for all file types\n");
@@ -52,15 +49,9 @@ void Usage(char *prog, int option){
     PRINTF("  -no_chop - do not chop or truncate slice data.  Smokezip compresses\n");
     PRINTF("        slice data truncating data above and below chop values\n");
     PRINTF("        specified in the .ini file\n");
-#ifdef pp_PLOT3D
-    PRINTF("  -bp - estimate data bounds for plot3d files\n");
-#endif
     PRINTF("compress options:\n");
     PRINTF("  -n3 - do not compress 3d smoke files\n");
     PRINTF("  -nb - do not compress boundary files\n");
-#ifdef pp_PLOT3D
-    PRINTF("  -np - do not compress PLOT3D files\n");
-#endif
     PRINTF("  -ns - do not compress slice files\n");
     PRINTF("output options:\n");
     PRINTF("  -d destdir - copies compressed files (and files needed by Smokeview\n");
@@ -114,18 +105,12 @@ int main(int argc, char **argv){
   GLOBdoit_boundary=1;
   GLOBdoit_slice=1;
   GLOBdoit_volslice=1;
-#ifdef pp_PLOT3D
-  GLOBdoit_plot3d=1;
-#else
-  GLOBdoit_plot3d=0;
-#endif
 
   strcpy(GLOBpp,"%");
   strcpy(GLOBx,"X");
   GLOBfirst_initsphere=1;
   GLOBfirst_slice=1;
   GLOBfirst_patch=1;
-  GLOBfirst_plot3d=1;
   GLOBfirst_part2iso=1;
   GLOBfirst_part2iso_smvopen=1;
 #ifdef pp_THREAD
@@ -142,12 +127,10 @@ int main(int argc, char **argv){
   GLOBoverwrite_s=0;
   GLOBget_bounds=0;
   GLOBget_slice_bounds=0;
-  GLOBget_plot3d_bounds=0;
   GLOBget_boundary_bounds=0;
   GLOBpartfile2iso=0;
   GLOBoverwrite_slice=0;
   GLOBoverwrite_volslice=0;
-  GLOBoverwrite_plot3d=0;
   GLOBcleanfiles=0;
   GLOBsmoke3dzipstep=1;
   GLOBboundzipstep=1;
@@ -188,9 +171,6 @@ int main(int argc, char **argv){
         if(strcmp(arg,"-bounds")==0){
           GLOBget_bounds=1;
           GLOBget_slice_bounds=1;
-#ifdef pp_PLOT3D
-          GLOBget_plot3d_bounds=1;
-#endif
           GLOBget_boundary_bounds=1;
         }
         else if(strcmp(arg,"-bb")==0){
@@ -199,11 +179,6 @@ int main(int argc, char **argv){
         else if(strcmp(arg,"-bs")==0){
           GLOBget_slice_bounds=1;
         }
-#ifdef pp_PLOT3D
-        else if(strcmp(arg,"-bp")==0){
-          GLOBget_plot3d_bounds=1;
-        }
-#endif
         else{
           GLOBoverwrite_b=1;
         }
@@ -215,11 +190,6 @@ int main(int argc, char **argv){
         else if(strcmp(arg,"-nb")==0){
           GLOBdoit_boundary=0;
         }
-#ifdef pp_PLOT3D
-        else if(strcmp(arg,"-np")==0){
-          GLOBdoit_plot3d=0;
-        }
-#endif
         else if(strcmp(arg,"-ns")==0){
           GLOBdoit_slice=0;
         }
@@ -241,20 +211,12 @@ int main(int argc, char **argv){
         if(strcmp(arg,"-part2iso")==0){
           GLOBpartfile2iso=1;
         }
-#ifdef pp_PLOT3D
-        else{
-          GLOBoverwrite_plot3d=1;
-        }
-#endif
         break;
       case 'f':
         GLOBoverwrite_b=1;
         GLOBoverwrite_s=1;
         GLOBoverwrite_slice=1;
         GLOBoverwrite_volslice=1;
-#ifdef pp_PLOT3D
-        GLOBoverwrite_plot3d=1;
-#endif
         break;
       case 'c':
         GLOBcleanfiles=1;
@@ -404,19 +366,6 @@ int main(int argc, char **argv){
 
   if(ReadSMV(smvfile)!=0)return 1;
 
-#ifdef pp_PLOT3D
-  if(nplot3dinfo>0){
-    plot3dinfo[0].dup=0;
-    for(i=1;i<nplot3dinfo;i++){
-      plot3d *plot3di;
-
-      plot3di = plot3dinfo + i;
-
-      plot3di->dup=0;
-      IsPlot3DDup(plot3di,i);
-    }
-  }
-#endif
   ReadINI(inifile);
 
 #ifdef pp_THREAD
@@ -449,9 +398,6 @@ void *CompressAll(void *arg){
   if(GLOBdoit_slice==1)CompressSlices(thread_index);
   if(GLOBdoit_volslice==1)CompressVolSlices(thread_index);
   if(GLOBdoit_smoke3d==1)Compress3DSmokes(thread_index);
-#ifdef pp_PLOT3D
-  if(GLOBdoit_plot3d==1)CompressPlot3Ds(thread_index);
-#endif
   ConvertParts2Iso(thread_index);
   return NULL;
 }

@@ -47,7 +47,6 @@ void InitPthreadMutexes(void){
   pthread_mutex_init(&mutexSLICE_BOUND,NULL);
   pthread_mutex_init(&mutexISOS,NULL);
   pthread_mutex_init(&mutexSMOKE,NULL);
-  pthread_mutex_init(&mutexPLOT3D,NULL);
   pthread_mutex_init(&mutexPART2ISO,NULL);
   pthread_mutex_init(&mutexPRINT,NULL);
 #endif

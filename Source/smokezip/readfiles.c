@@ -17,7 +17,7 @@ int ReadSMV(char *smvfile){
   int ioffset;
   int unit_start=15;
   int igrid,ipdim;
-  int ipatch, iplot3d, ismoke3d, islice;
+  int ipatch, ismoke3d, islice;
 #define BUFFERSIZE 255
   char buffer[BUFFERSIZE];
 
@@ -60,15 +60,6 @@ int ReadSMV(char *smvfile){
       Match(buffer, "BNDE") == 1 || Match(buffer, "BNDS") == 1
       ){
       npatchinfo++;
-      continue;
-    }
-  /*
-    +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    ++++++++++++++++++++++ PL3D ++++++++++++++++++++++++++++++
-    +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  */
-    if(Match(buffer,"PL3D") == 1){
-      nplot3dinfo++;
       continue;
     }
   /*
@@ -166,28 +157,6 @@ int ReadSMV(char *smvfile){
     }
   }
 
-  // allocate memory for plot3d file info
-
-  if(nplot3dinfo>0){
-    int i;
-
-    NewMemory((void **)&plot3dinfo,nplot3dinfo*sizeof(plot3d));
-    for(i=0;i<nplot3dinfo;i++){
-      int j;
-      plot3d *plot3di;
-
-      plot3di = plot3dinfo + i;
-      plot3di->file=NULL;
-      plot3di->filebase=NULL;
-      for(j=0;j<5;j++){
-        plot3di->bounds[j].setvalmin=0;
-        plot3di->bounds[j].setvalmax=0;
-        plot3di->bounds[j].valmin=0.0;
-        plot3di->bounds[j].valmax=1.0;
-      }
-    }
-  }
-
   if(nmeshes>0&&nmeshes==ipdim){
     NewMemory((void **)&meshinfo,nmeshes*sizeof(meshdata));
   }
@@ -251,7 +220,6 @@ int ReadSMV(char *smvfile){
   npartclassinfo=0;
   npart5propinfo=0;
   npartinfo=0;
-  iplot3d=0;
   islice=0;
   ipdim=0;
   igrid=0;
@@ -686,84 +654,6 @@ int ReadSMV(char *smvfile){
       }
       continue;
     }
-  /*
-    +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    ++++++++++++++++++++++ PL3D ++++++++++++++++++++++++++++++
-    +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  */
-    if(Match(buffer,"PL3D") == 1){
-      int version_local=0;
-      char *buffer2;
-      FILE_SIZE filesize;
-      plot3d *plot3di;
-      int blocknumber;
-      float time_local;
-      int blocktemp;
-
-      if(nmeshes>1){
-        blocknumber=igrid-1;
-      }
-      else{
-        blocknumber=0;
-      }
-      if(strlen(buffer)>5){
-        buffer2 = buffer+5;
-        blocktemp=1;
-        sscanf(buffer2,"%s %f %i",buffer2,&time_local,&blocktemp);
-        if(blocktemp>0&&blocktemp<=nmeshes)blocknumber = blocktemp-1;
-      }
-      else{
-        time_local=-1.0;
-      }
-
-      plot3di = plot3dinfo + iplot3d;
-      plot3di->unit_start=unit_start++;
-      plot3di->version=version_local;
-      plot3di->plot3d_mesh=meshinfo + blocknumber;
-      plot3di->time=time_local;
-      plot3di->inuse=0;
-      plot3di->compressed=0;
-
-      if(FGETS(buffer,BUFFERSIZE,streamsmv)==NULL)break;
-      TrimBack(buffer);
-      buffer2=TrimFront(buffer);
-      if(strlen(buffer2)==0)break;
-      if(GetFileInfo(buffer2,GLOBsourcedir,&filesize)==0){
-        int lendir=0;
-
-        if(GLOBsourcedir!=NULL)lendir=strlen(GLOBsourcedir);
-        NewMemory((void **)&plot3di->file,(unsigned int)(strlen(buffer2)+lendir+1));
-        NewMemory((void **)&plot3di->filebase,(unsigned int)(strlen(buffer2)+1));
-        STRCPY(plot3di->filebase,buffer2);
-        if(GLOBsourcedir!=NULL){
-          STRCPY(plot3di->file,GLOBsourcedir);
-        }
-        else{
-          STRCPY(plot3di->file,"");
-        }
-        STRCAT(plot3di->file,buffer2);
-        if(ReadLabels(&plot3di->labels[0],streamsmv,NULL)==LABEL_ERR||
-           ReadLabels(&plot3di->labels[1],streamsmv,NULL)==LABEL_ERR||
-           ReadLabels(&plot3di->labels[2],streamsmv,NULL)==LABEL_ERR||
-           ReadLabels(&plot3di->labels[3],streamsmv,NULL)==LABEL_ERR||
-           ReadLabels(&plot3di->labels[4],streamsmv,NULL)==LABEL_ERR){
-          fprintf(stderr,"*** Warning: problem reading PL3D entry\n");
-          break;
-        }
-        plot3di->filesize=filesize;
-        iplot3d++;
-      }
-      else{
-        fprintf(stderr,"*** Warning: the file, %s, does not exist.\n",buffer);
-        if(ReadLabels(&plot3dinfo[iplot3d].labels[0],streamsmv,NULL)==LABEL_ERR)break;
-        if(ReadLabels(&plot3dinfo[iplot3d].labels[1],streamsmv,NULL)==LABEL_ERR)break;
-        if(ReadLabels(&plot3dinfo[iplot3d].labels[2],streamsmv,NULL)==LABEL_ERR)break;
-        if(ReadLabels(&plot3dinfo[iplot3d].labels[3],streamsmv,NULL)==LABEL_ERR)break;
-        if(ReadLabels(&plot3dinfo[iplot3d].labels[4],streamsmv,NULL)==LABEL_ERR)break;
-        nplot3dinfo--;
-      }
-      continue;
-    }
   }
   {
     int i;
@@ -905,43 +795,6 @@ void ReadINI2(char *inifile){
         if(setslicemax == 1){
           pb->setvalmax = 1;
           pb->valmax = slicemax;
-        }
-      }
-      continue;
-    }
-    if(Match(buffer,"V_PLOT3D")==1|| Match(buffer, "V2_PLOT3D") == 1){
-      int nplot3d_vars;
-      plot3d *plot3di;
-      int i;
-      int type = 0;
-
-      if(plot3dinfo==NULL)continue;
-      plot3di = plot3dinfo;
-
-      if(Match(buffer, "V2_PLOT3D") == 1)type = 1;
-      fgets(buffer,BUFFERSIZE,stream);
-      nplot3d_vars=5;
-      sscanf(buffer,"%i",&nplot3d_vars);
-      if(nplot3d_vars<0)nplot3d_vars=0;
-      if(nplot3d_vars>5)nplot3d_vars=5;
-
-      for(i=0;i<nplot3d_vars;i++){
-        int iplot3d;
-        int setvalmin, setvalmax;
-        float valmin, valmax;
-
-        fgets(buffer,BUFFERSIZE,stream);
-        sscanf(buffer,"%i %i %f %i %f",&iplot3d,&setvalmin,&valmin,&setvalmax,&valmax);
-        if(type == 1){
-          if(setvalmin == 0)setvalmin = 1;
-          if(setvalmax == 0)setvalmax = 1;
-        }
-        iplot3d--;
-        if(iplot3d>=0&&iplot3d<5){
-          plot3di->bounds[iplot3d].setvalmin=setvalmin;
-          plot3di->bounds[iplot3d].setvalmax=setvalmax;
-          plot3di->bounds[iplot3d].valmin=valmin;
-          plot3di->bounds[iplot3d].valmax=valmax;
         }
       }
       continue;

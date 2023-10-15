@@ -159,25 +159,6 @@ typedef struct {
   float valmin, valmax;
 } bounddata;
 
-/* --------------------------  plot3d ------------------------------------ */
-
-typedef struct {
-  char *file,*filebase;
-  int unit_start;
-  char summary[1024];
-  int compressed;
-  int inuse;
-  float time;
-  int blocknumber;
-  meshdata *plot3d_mesh;
-  int filesize;
-  int doit, done, count;
-  bounddata bounds[5];
-  int version;
-  flowlabels labels[5];
-  int dup;
-} plot3d;
-
 /* --------------------------  vert ------------------------------------ */
 
 typedef struct {
@@ -283,9 +264,7 @@ int ReadSMV(char *file);
 slicedata *GetSlice(char *string);
 void *CompressSlices(void *arg);
 void *CompressVolSlices(void *arg);
-int IsPlot3DDup(plot3d *plot3dj, int iplot3d);
 int SliceDup(slicedata *slicej, int islice);
-void *CompressPlot3Ds(void *arg);
 void MakeSVD(char *destdir, char *smvfile);
 void *ConvertParts2Iso(void *arg);
 partpropdata *GetPartProp(char *string);
@@ -303,11 +282,11 @@ void GetSliceParmsC(char *file, int *ni, int *nj, int *nk);
 //***********************
 
 EXTERN int nvolrenderinfo;
-EXTERN int GLOBdoit_smoke3d, GLOBdoit_boundary, GLOBdoit_slice, GLOBdoit_plot3d, GLOBdoit_volslice;
+EXTERN int GLOBdoit_smoke3d, GLOBdoit_boundary, GLOBdoit_slice, GLOBdoit_volslice;
 
 EXTERN FILE *SMZLOG_STREAM;
 
-EXTERN int GLOBfirst_initsphere,GLOBfirst_slice,GLOBfirst_patch,GLOBfirst_plot3d,GLOBfirst_part2iso,GLOBfirst_part2iso_smvopen;
+EXTERN int GLOBfirst_initsphere,GLOBfirst_slice,GLOBfirst_patch,GLOBfirst_part2iso,GLOBfirst_part2iso_smvopen;
 EXTERN int GLOBframeskip;
 EXTERN int GLOBno_chop;
 
@@ -317,14 +296,13 @@ EXTERN bounddata *slicebounds;
 EXTERN meshdata *meshinfo;
 EXTERN smoke3d *smoke3dinfo;
 EXTERN slicedata *sliceinfo;
-EXTERN plot3d *plot3dinfo;
 EXTERN part *partinfo;
 EXTERN partclassdata *partclassinfo;
 EXTERN partpropdata *part5propinfo;
 EXTERN threaddata *threadinfo;
 EXTERN spherepoints sphereinfo;
 
-EXTERN int npatchinfo, nsliceinfo, nplot3dinfo, npartinfo;
+EXTERN int npatchinfo, nsliceinfo, npartinfo;
 EXTERN int npatchbounds, nslicebounds;
 EXTERN int npartclassinfo;
 EXTERN int nsmoke3dinfo;
@@ -333,7 +311,6 @@ EXTERN int maxpart5propinfo, npart5propinfo;
 EXTERN int nmeshes;
 EXTERN int GLOBoverwrite_slice;
 EXTERN int GLOBoverwrite_volslice;
-EXTERN int GLOBoverwrite_plot3d;
 EXTERN int GLOBoverwrite_b,GLOBoverwrite_s;
 EXTERN int GLOBcleanfiles;
 EXTERN char *GLOBdestdir,*GLOBsourcedir;
@@ -343,7 +320,7 @@ EXTERN int GLOBfilesremoved;
 EXTERN int GLOBsyst;
 EXTERN char *GLOBendianfile;
 EXTERN int GLOBmake_demo;
-EXTERN int GLOBget_bounds, GLOBget_slice_bounds, GLOBget_plot3d_bounds, GLOBget_boundary_bounds;
+EXTERN int GLOBget_bounds, GLOBget_slice_bounds, GLOBget_boundary_bounds;
 EXTERN int GLOBpartfile2iso;
 EXTERN char GLOBsmvisofile[1024];
 
