@@ -144,7 +144,7 @@ typedef struct _slicedata {
   int compressed,vol_compressed;
   int inuse,involuse,inuse_getbounds;
   int filesize;
-  int doit, done, count;
+  int doit, done;
   int setvalmin, setvalmax;
   float valmin, valmax;
   int setchopvalmin, setchopvalmax;
@@ -152,7 +152,6 @@ typedef struct _slicedata {
   int version;
   histogramdata *histogram;
   flowlabels label;
-  int dup;
 } slicedata;
 
 /* --------------------------  bound ------------------------------------ */
@@ -272,6 +271,8 @@ typedef struct {
 //************* headers
 //***********************
 
+void InitSliceBounds(void);
+bounddata *GetSliceBoundInfo(char *label);
 void InitBoundaryBounds(void);
 bounddata *GetPatchBoundInfo(char *label);
 int GetFileBounds(char *file, float *valmin, float *valmax);
@@ -329,6 +330,7 @@ EXTERN int GLOBno_chop;
 
 EXTERN patchdata *patchinfo;
 EXTERN bounddata *patchbounds;
+EXTERN bounddata *slicebounds;
 EXTERN meshdata *meshinfo;
 EXTERN smoke3d *smoke3dinfo;
 EXTERN slicedata *sliceinfo;
@@ -340,7 +342,7 @@ EXTERN threaddata *threadinfo;
 EXTERN spherepoints sphereinfo;
 
 EXTERN int npatchinfo, nsliceinfo, nplot3dinfo, npartinfo;
-EXTERN int npatchbounds;
+EXTERN int npatchbounds, nslicebounds;
 EXTERN int npartclassinfo;
 EXTERN int nsmoke3dinfo;
 #ifdef pp_PART

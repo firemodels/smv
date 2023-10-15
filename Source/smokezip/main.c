@@ -465,17 +465,6 @@ int main(int argc, char **argv){
     }
   }
 #endif
-  if(nsliceinfo>0){
-    sliceinfo[0].dup=0;
-    for(i=1;i<nsliceinfo;i++){
-      slicedata *slicei;
-
-      slicei = sliceinfo + i;
-
-      slicei->dup=0;
-      SliceDup(slicei,i);
-    }
-  }
   ReadINI(inifile);
 
 #ifdef pp_THREAD

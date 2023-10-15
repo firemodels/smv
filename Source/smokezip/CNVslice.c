@@ -14,6 +14,75 @@
                            returncode=fread(var,4,size,SLICEFILE);\
                            FSEEK(SLICEFILE,4,SEEK_CUR)
 
+/* ------------------ GetPatchBoundInfo ------------------------ */
+
+bounddata *GetSliceBoundInfo(char *label){
+  int i;
+
+  for(i = 0; i < nslicebounds; i++){
+    bounddata *boundi;
+    char *labeli;
+
+    boundi = slicebounds + i;
+    labeli = boundi->label;
+    if(strcmp(label, labeli) == 0)return boundi;
+  }
+  return NULL;
+}
+
+/* ------------------ InitSliceBounds ------------------------ */
+
+void InitSliceBounds(void){
+  int i;
+
+  nslicebounds = 0;
+  for(i = 0; i < nsliceinfo; i++){
+    slicedata *slicei;
+    bounddata *pb;
+
+    slicei = sliceinfo + i;
+    if(GetSliceBoundInfo(slicei->label.shortlabel) == NULL){
+      pb = slicebounds + nslicebounds;
+      strcpy(pb->label, slicei->label.shortlabel);
+      pb->valmin = 1000000000.0;
+      pb->valmax = -pb->valmin;
+      pb->setvalmin = 0;
+      pb->setvalmax = 0;
+      nslicebounds++;
+    }
+  }
+}
+
+/* ------------------ GetSliceBounds ------------------------ */
+
+void GetSliceBounds(void){
+  int i;
+
+  for(i = 0;i < nslicebounds;i++){
+    bounddata *pbi;
+    int j;
+    int have_bound = 0;
+
+    pbi = slicebounds + i;
+    if(pbi->setvalmin == 1 && pbi->setvalmax == 1)continue; // bound obtained from ini file
+    for(j = 0;j < nsliceinfo;j++){  // bound computed from .bnd files
+      slicedata *slicej;
+
+      slicej = sliceinfo + j;
+      if(strcmp(pbi->label, slicej->label.shortlabel) != 0)continue;
+      if(GetFileBounds(slicej->boundfile, &(slicej->valmin), &(slicej->valmax)) == 1){
+        pbi->valmin = MIN(pbi->valmin, slicej->valmin);
+        pbi->valmax = MAX(pbi->valmax, slicej->valmax);
+        have_bound = 1;
+      }
+    }
+    if(have_bound == 1){
+      pbi->setvalmin = 1;
+      pbi->setvalmax = 1;
+    }
+  }
+}
+
 /* ------------------ ConvertVolSlice ------------------------ */
 
 int ConvertVolSlice(slicedata *slicei, int *thread_index){
@@ -711,21 +780,6 @@ wrapup:
   return 1;
 }
 
-/* ------------------ getslice ------------------------ */
-
-slicedata *GetSlice(char *string){
-  int i;
-  slicedata *slicei;
-
-  for(i=0;i<nsliceinfo;i++){
-    slicei = sliceinfo + i;
-    if(slicei->dup==1)continue;
-    if(strcmp(slicei->label.shortlabel,string)==0)return slicei;
-  }
-  return NULL;
-}
-
-
 /* ------------------ CompressVolSlices ------------------------ */
 
 void *CompressVolSlices(void *arg){
@@ -804,87 +858,6 @@ void UpdateSliceHist(void){
   }
 }
 
-#ifdef pp_THREAD
-/* ------------------ MTUpdateSliceHist ------------------------ */
-
-void *MTUpdateSliceHist(void *arg){
-  UpdateSliceHist();
-  return NULL;
-}
-
-/* ------------------ UpdateSliceHistMT ------------------------ */
-
-void UpdateSliceHistMT(void){
-  pthread_t *thread_ids;
-  int i;
-
-  NewMemory((void **)&thread_ids, mt_nthreads * sizeof(pthread_t));
-
-  for(i = 0;i < mt_nthreads;i++){
-    pthread_create(&thread_ids[i], NULL, MTUpdateSliceHist, NULL);
-  }
-
-  for(i = 0;i < mt_nthreads;i++){
-    pthread_join(thread_ids[i], NULL);
-  }
-  FREEMEMORY(thread_ids);
-}
-#endif
-
-/* ------------------ GetSliceBounds ------------------------ */
-
-void GetSliceBounds(void){
-  int i;
-
-  PRINTF("Determining slice file bounds\n");
-  for(i = 0;i<nsliceinfo;i++){
-    slicedata *slicei;
-
-    slicei = sliceinfo+i;
-    slicei->inuse_getbounds = 0;
-  }
-#ifdef pp_THREAD
-  UpdateSliceHistMT();
-#else
-  UpdateSliceHist();
-#endif
-  for(i = 0;i<nsliceinfo;i++){
-    slicedata *slicei;
-    int j;
-
-    slicei = sliceinfo+i;
-    if(slicei->dup==1)continue;
-    for(j = i+1;j<nsliceinfo;j++){
-      slicedata *slicej;
-
-      slicej = sliceinfo+j;
-      if(strcmp(slicei->label.shortlabel, slicej->label.shortlabel)!=0)continue;
-      MergeHistogram(slicei->histogram, slicej->histogram, MERGE_BOUNDS);
-    }
-    slicei->valmax = GetHistogramVal(slicei->histogram, 0.99);
-    slicei->valmin = GetHistogramVal(slicei->histogram, 0.01);
-    slicei->setvalmax = 1;
-    slicei->setvalmin = 1;
-    for(j = i+1;j<nsliceinfo;j++){
-      slicedata *slicej;
-
-      slicej = sliceinfo+j;
-      if(strcmp(slicei->label.shortlabel, slicej->label.shortlabel)!=0)continue;
-      slicej->valmax = slicei->valmax;
-      slicej->valmin = slicei->valmin;
-      slicej->setvalmax = 1;
-      slicej->setvalmin = 1;
-    }
-  }
-  for(i = 0;i<nsliceinfo;i++){
-    slicedata *slicei;
-
-    slicei = sliceinfo+i;
-    FREEMEMORY(slicei->histogram);
-  }
-
-}
-
 /* ------------------ GetGlobalSliceBounds ------------------------ */
 
 void GetGlobalSliceBounds(char *label){
@@ -937,7 +910,7 @@ void GetGlobalSliceBounds(char *label){
 
 void *CompressSlices(void *arg){
   int i;
-  slicedata *slicei, *sb;
+  slicedata *slicei;
   int *thread_index;
 
   thread_index = (int *)arg;
@@ -955,47 +928,8 @@ void *CompressSlices(void *arg){
       UNLOCK_SLICE;
       return NULL;
     }
-    for(i=0;i<nsliceinfo;i++){
-      slicei = sliceinfo + i;
-      slicei->count=0;
-    }
     if(GLOBget_slice_bounds==1){
       GetSliceBounds();
-    }
-    for(i=0;i<nsliceinfo;i++){
-      char *label;
-
-      slicei = sliceinfo + i;
-      slicei->doit=1;
-
-      sb=GetSlice(slicei->label.shortlabel);
-      if(sb==NULL)slicei->doit=0;
-      label = slicei->label.longlabel;
-      if(GLOBmake_demo==1&&(strcmp(label,"TEMPERATURE")==0||strcmp(label,"oxygen")==0)){
-        slicei->setvalmax=1;
-        slicei->setvalmin=1;
-        if(strcmp(label,"TEMPERATURE")==0){
-          slicei->valmax=620.0;
-          slicei->valmin=20.0;
-        }
-        else{
-          slicei->valmax=0.23;
-          slicei->valmin=0.0;
-        }
-      }
-      else{
-        if(sb!=NULL){
-          if(sb->setvalmax!=1||sb->setvalmin!=1)slicei->doit=0;
-          slicei->setvalmax=sb->setvalmax;
-          slicei->setvalmin=sb->setvalmin;
-          slicei->valmax=sb->valmax;
-          slicei->valmin=sb->valmin;
-          if(slicei->doit==0){
-            GetGlobalSliceBounds(slicei->label.shortlabel);
-          }
-        }
-      }
-      sb->count++;
     }
   }
   UNLOCK_SLICE;
@@ -1015,6 +949,18 @@ void *CompressSlices(void *arg){
     UNLOCK_SLICE;
 
     if(slicei->doit==1){
+      if(GLOBmake_demo==1&&(strcmp(slicei->label.longlabel,"TEMPERATURE")==0||strcmp(slicei->label.longlabel,"oxygen")==0)){
+        slicei->setvalmax=1;
+        slicei->setvalmin=1;
+        if(strcmp(slicei->label.longlabel,"TEMPERATURE")==0){
+          slicei->valmax=620.0;
+          slicei->valmin=20.0;
+        }
+        else{
+          slicei->valmax=0.23;
+          slicei->valmin=0.0;
+        }
+      }
       ConvertSlice(slicei,thread_index);
     }
     else{
@@ -1023,23 +969,6 @@ void *CompressSlices(void *arg){
     }
   }
   return NULL;
-}
-
-/* ------------------ SliceDup ------------------------ */
-
-int SliceDup(slicedata *slicej, int islice){
-  int i;
-  slicedata *slicei;
-
-  for(i=0;i<islice;i++){
-    slicei = sliceinfo + i;
-    if(slicei->dup==1)continue;
-    if(strcmp(slicei->label.shortlabel,slicej->label.shortlabel)==0){
-      slicej->dup=1;
-      return 1;
-    }
-  }
-  return 0;
 }
 
 /* ------------------ GetSliceParmsC ------------------------ */

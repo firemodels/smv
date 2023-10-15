@@ -201,7 +201,8 @@ int ReadSMV(char *smvfile){
     slicedata *slicei;
     int i;
 
-    NewMemory((void **)&sliceinfo,nsliceinfo*sizeof(slicedata));
+    NewMemory((void **)&slicebounds, nsliceinfo*sizeof(bounddata));
+    NewMemory((void **)&sliceinfo,   nsliceinfo*sizeof(slicedata));
     for(i=0;i<nsliceinfo;i++){
       slicei = sliceinfo + i;
       slicei->file=NULL;
@@ -850,6 +851,7 @@ int ReadSMV(char *smvfile){
   }
   InitVolRender();
   InitBoundaryBounds();
+  InitSliceBounds();
   return 0;
 }
 
@@ -894,7 +896,6 @@ void ReadINI2(char *inifile){
     if(Match(buffer,"V_SLICE")==1|| Match(buffer, "V2_SLICE") == 1){
       int setslicemin, setslicemax;
       float slicemin, slicemax;
-      slicedata *slicei;
       int type=0;
 
       if(Match(buffer, "V2_SLICE") == 1)type = 1;
@@ -906,13 +907,19 @@ void ReadINI2(char *inifile){
         if(setslicemax == 0)setslicemax = 1;
       }
       type_buffer=TrimFront(buffer2);
-      TrimBack(type_buffer);
-      slicei= GetSlice(type_buffer);
-      if(slicei!=NULL){
-        slicei->setvalmax=setslicemax;
-        slicei->setvalmin=setslicemin;
-        slicei->valmax=slicemax;
-        slicei->valmin=slicemin;
+
+      bounddata *pb;
+
+      pb = GetSliceBoundInfo(type_buffer);
+      if(pb != NULL){
+        if(setslicemin == 1){
+          pb->setvalmin = 1;
+          pb->valmin = slicemin;
+        }
+        if(setslicemax == 1){
+          pb->setvalmax = 1;
+          pb->valmax = slicemax;
+        }
       }
       continue;
     }
@@ -950,25 +957,6 @@ void ReadINI2(char *inifile){
           plot3di->bounds[iplot3d].valmin=valmin;
           plot3di->bounds[iplot3d].valmax=valmax;
         }
-      }
-      continue;
-    }
-    if(Match(buffer,"C_SLICE")==1){
-      int setchopslicemin, setchopslicemax;
-      float chopslicemin, chopslicemax;
-      slicedata *slicei;
-
-      fgets(buffer,BUFFERSIZE,stream);
-      strcpy(buffer2,"");
-      sscanf(buffer,"%i %f %i %f %s",&setchopslicemin,&chopslicemin,&setchopslicemax,&chopslicemax,buffer2);
-      type_buffer=TrimFront(buffer2);
-      TrimBack(type_buffer);
-      slicei= GetSlice(type_buffer);
-      if(slicei!=NULL){
-        slicei->setchopvalmax=setchopslicemax;
-        slicei->setchopvalmin=setchopslicemin;
-        slicei->chopvalmax=chopslicemax;
-        slicei->chopvalmin=chopslicemin;
       }
       continue;
     }
