@@ -1642,10 +1642,11 @@ typedef struct _patchdata {
   int blocknumber,loaded,loaded2,display;
   float *geom_times, *geom_vals;
   int *geom_timeslist,geom_itime;
-  unsigned char *geom_ivals, **geom_ivals_static, **geom_ivals_dynamic;
+  unsigned char *geom_ivals;
+  int *geom_ivals_static_offset, *geom_ivals_dynamic_offset;
+  int *geom_vals_static_offset,  *geom_vals_dynamic_offset;
   unsigned char *geom_ival_static, *geom_ival_dynamic;
-  float **geom_vals_static, **geom_vals_dynamic;
-  float  *geom_val_static,   *geom_val_dynamic;
+  float         *geom_val_static,  *geom_val_dynamic;
   int geom_nval_static, geom_nval_dynamic;
   int *geom_nstatics, *geom_ndynamics;
   int geom_vert2tri;

@@ -2620,10 +2620,10 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
 
   FREEMEMORY(patchi->geom_nstatics);
   FREEMEMORY(patchi->geom_ndynamics);
-  FREEMEMORY(patchi->geom_ivals_static);
-  FREEMEMORY(patchi->geom_ivals_dynamic);
-  FREEMEMORY(patchi->geom_vals_static);
-  FREEMEMORY(patchi->geom_vals_dynamic);
+  FREEMEMORY(patchi->geom_ivals_static_offset);
+  FREEMEMORY(patchi->geom_ivals_dynamic_offset);
+  FREEMEMORY(patchi->geom_vals_static_offset);
+  FREEMEMORY(patchi->geom_vals_dynamic_offset);
   FREEMEMORY(patchi->geom_vals);
   FREEMEMORY(patchi->geom_ivals);
   FREEMEMORY(patchi->geom_times);
@@ -2665,13 +2665,13 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
   }
 
   if(ntimes_local>0){
-    NewMemory((void **)&patchi->geom_nstatics, ntimes_local*sizeof(int));
-    NewMemory((void **)&patchi->geom_ndynamics, ntimes_local*sizeof(int));
-    NewMemory((void **)&patchi->geom_times, ntimes_local*sizeof(float));
-    NewMemory((void **)&patchi->geom_ivals_static, ntimes_local*sizeof(int *));
-    NewMemory((void **)&patchi->geom_ivals_dynamic, ntimes_local*sizeof(int *));
-    NewMemory((void **)&patchi->geom_vals_static, ntimes_local*sizeof(float *));
-    NewMemory((void **)&patchi->geom_vals_dynamic, ntimes_local*sizeof(float *));
+    NewMemory((void **)&patchi->geom_nstatics,             ntimes_local*sizeof(int));
+    NewMemory((void **)&patchi->geom_ndynamics,            ntimes_local*sizeof(int));
+    NewMemory((void **)&patchi->geom_times,                ntimes_local*sizeof(float));
+    NewMemory((void **)&patchi->geom_ivals_static_offset,  ntimes_local*sizeof(int));
+    NewMemory((void **)&patchi->geom_ivals_dynamic_offset, ntimes_local*sizeof(int));
+    NewMemory((void **)&patchi->geom_vals_static_offset,   ntimes_local*sizeof(int));
+    NewMemory((void **)&patchi->geom_vals_dynamic_offset,  ntimes_local*sizeof(int));
   }
   if(nvals>0){
     NewMemory((void **)&patchi->geom_vals, nvals*sizeof(float));
@@ -2699,18 +2699,18 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
 
   patchi->ngeom_times = ntimes_local;
   patchi->geom_nvals = nvals;
-  patchi->geom_ivals_static[0] = patchi->geom_ivals;
-  patchi->geom_ivals_dynamic[0] = patchi->geom_ivals_static[0]+patchi->geom_nstatics[0];
+  patchi->geom_ivals_static_offset[0] = 0;
+  patchi->geom_ivals_dynamic_offset[0] = patchi->geom_ivals_static_offset[0] + patchi->geom_nstatics[0];
   for(i = 1;i<ntimes_local;i++){
-    patchi->geom_ivals_static[i]  = patchi->geom_ivals_dynamic[i-1] + patchi->geom_ndynamics[i-1];
-    patchi->geom_ivals_dynamic[i] = patchi->geom_ivals_static[i]    + patchi->geom_nstatics[i];
+    patchi->geom_ivals_static_offset[i]  = patchi->geom_ivals_dynamic_offset[i-1] + patchi->geom_ndynamics[i-1];
+    patchi->geom_ivals_dynamic_offset[i] = patchi->geom_ivals_static_offset[i]    + patchi->geom_nstatics[i];
   }
 
-  patchi->geom_vals_static[0]  = patchi->geom_vals;
-  patchi->geom_vals_dynamic[0] = patchi->geom_vals_static[0] + patchi->geom_nstatics[0];
+  patchi->geom_vals_static_offset[0]  = 0;
+  patchi->geom_vals_dynamic_offset[0] = patchi->geom_vals_static_offset[0] + patchi->geom_nstatics[0];
   for(i = 1; i<ntimes_local; i++){
-    patchi->geom_vals_static[i]  = patchi->geom_vals_dynamic[i-1] + patchi->geom_ndynamics[i-1];
-    patchi->geom_vals_dynamic[i] = patchi->geom_vals_static[i]    + patchi->geom_nstatics[i];
+    patchi->geom_vals_static_offset[i]  = patchi->geom_vals_dynamic_offset[i-1] + patchi->geom_ndynamics[i-1];
+    patchi->geom_vals_dynamic_offset[i] = patchi->geom_vals_static_offset[i]    + patchi->geom_nstatics[i];
   }
 
   patchi->loaded = 1;
@@ -2805,7 +2805,6 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
       &slicei->extreme_min, &slicei->extreme_max, 1
     );
   }
-
   if(patchi->boundary == 1){
     iboundarytype = GetBoundaryType(patchi);
   }
@@ -4370,6 +4369,8 @@ void DrawGeomVData(vslicedata *vd){
 
   /* ------------------ DrawGeomData ------------------------ */
 
+#define GEOMTEXTURE(val, vmin, vmax) CLAMP(((val-vmin)/(vmax-vmin)),0.0,1.0)
+
 void DrawGeomData(int flag, slicedata *sd, patchdata *patchi, int geom_type){
   int i;
   unsigned char *ivals;
@@ -4382,8 +4383,6 @@ void DrawGeomData(int flag, slicedata *sd, patchdata *patchi, int geom_type){
 
   label = patchi->label.shortlabel;
   GetOnlyMinMax(BOUND_PATCH, label, &set_valmin, &ttmin, &set_valmax, &ttmax);
-#define GEOMBOUNDCOLOR(val) CLAMP((int)(255.0*(val-ttmin)/(ttmax-ttmin)),0,255)
-#define GEOMBOUNDTEXTURE(val) CLAMP(((val-ttmin)/(ttmax-ttmin)),0.0,1.0)
 
   float rvals[3];
   float valmin, valmax;
@@ -4395,12 +4394,10 @@ void DrawGeomData(int flag, slicedata *sd, patchdata *patchi, int geom_type){
       valmax = 1.0;
     }
   }
-#define GEOMSLICECOLOR(val) CLAMP((int)(255.0*(val-valmin)/(valmax-valmin)),0,255)
-#define GEOMSLICETEXTURE(val) CLAMP(((val-valmin)/(valmax-valmin)),0.0,1.0)
 
-if(strcmp(patchi->label.shortlabel, "ccell")==0)is_ccell = 1;
+  if(strcmp(patchi->label.shortlabel, "ccell")==0)is_ccell = 1;
   if(geom_type==GEOM_STATIC){
-    vals = patchi->geom_vals_static[patchi->geom_itime];
+    vals = patchi->geom_vals + patchi->geom_vals_static_offset[patchi->geom_itime];
     ivals = patchi->geom_ival_static;
   }
   else{
@@ -4473,10 +4470,10 @@ if(strcmp(patchi->label.shortlabel, "ccell")==0)is_ccell = 1;
 
           trianglei = geomlisti->triangles + j;
           if(patchi->patch_filetype==PATCH_GEOMETRY_BOUNDARY){
-            rvals[0] = GEOMBOUNDTEXTURE(vals[j]);
+            rvals[0] = GEOMTEXTURE(vals[j], ttmin, ttmax);
           }
           else if(patchi->patch_filetype==PATCH_GEOMETRY_SLICE){
-            rvals[0] = GEOMSLICETEXTURE(vals[j]);
+            rvals[0] = GEOMTEXTURE(vals[j], valmin, valmax);
           }
           else{
             rvals[0] = (float)ivals[j]/255.0;
@@ -4543,7 +4540,7 @@ if(strcmp(patchi->label.shortlabel, "ccell")==0)is_ccell = 1;
 
           if(sd==NULL||sd->cell_center==1){
             if(sd!=NULL){
-              rvals[0] = GEOMSLICETEXTURE(vals[j]);
+              rvals[0] = GEOMTEXTURE(vals[j], valmin, valmax);
             }
             else{
               rvals[0] = (float)ivals[j]/255.0;
@@ -4552,9 +4549,9 @@ if(strcmp(patchi->label.shortlabel, "ccell")==0)is_ccell = 1;
             rvals[2] = rvals[0];
           }
           else{
-            rvals[0] = GEOMSLICETEXTURE(vals[trianglei->vert_index[0]]);
-            rvals[1] = GEOMSLICETEXTURE(vals[trianglei->vert_index[1]]);
-            rvals[2] = GEOMSLICETEXTURE(vals[trianglei->vert_index[2]]);
+            rvals[0] = GEOMTEXTURE(vals[trianglei->vert_index[0]], valmin, valmax);
+            rvals[1] = GEOMTEXTURE(vals[trianglei->vert_index[1]], valmin, valmax);
+            rvals[2] = GEOMTEXTURE(vals[trianglei->vert_index[2]], valmin, valmax);
           }
 
           xyzptr[0] = trianglei->verts[0]->xyz;

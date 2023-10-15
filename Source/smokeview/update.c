@@ -133,11 +133,11 @@ void UpdateFrameNumber(int changetime){
           else{
             patchi->geom_itime = patchi->geom_timeslist[itimes];
           }
-          patchi->geom_val_static   = patchi->geom_vals_static[patchi->geom_itime];
-          patchi->geom_ival_static  = patchi->geom_ivals_static[patchi->geom_itime];
-          patchi->geom_ival_dynamic = patchi->geom_ivals_dynamic[patchi->geom_itime];
-          patchi->geom_val_static   = patchi->geom_vals_static[patchi->geom_itime];
-          patchi->geom_val_dynamic  = patchi->geom_vals_dynamic[patchi->geom_itime];
+          patchi->geom_val_static   = patchi->geom_vals  + patchi->geom_vals_static_offset[patchi->geom_itime];
+          patchi->geom_ival_static  = patchi->geom_ivals + patchi->geom_ivals_static_offset[patchi->geom_itime];
+          patchi->geom_ival_dynamic = patchi->geom_ivals + patchi->geom_ivals_dynamic_offset[patchi->geom_itime];
+          patchi->geom_val_static   = patchi->geom_vals  + patchi->geom_vals_static_offset[patchi->geom_itime];
+          patchi->geom_val_dynamic  = patchi->geom_vals  + patchi->geom_vals_dynamic_offset[patchi->geom_itime];
           patchi->geom_nval_static  = patchi->geom_nstatics[patchi->geom_itime];
           patchi->geom_nval_dynamic = patchi->geom_ndynamics[patchi->geom_itime];
           sd->itime                 = patchi->geom_timeslist[itimes];
@@ -155,11 +155,11 @@ void UpdateFrameNumber(int changetime){
         patchi = patchinfo + i;
         if(patchi->structured == YES || patchi->boundary == 1 || patchi->geom_times == NULL || patchi->geom_timeslist == NULL)continue;
         patchi->geom_itime = patchi->geom_timeslist[itimes];
-        patchi->geom_ival_static = patchi->geom_ivals_static[patchi->geom_itime];
-        patchi->geom_ival_dynamic = patchi->geom_ivals_dynamic[patchi->geom_itime];
-        patchi->geom_val_static  = patchi->geom_vals_static[patchi->geom_itime];
-        patchi->geom_val_dynamic = patchi->geom_vals_dynamic[patchi->geom_itime];
-        patchi->geom_nval_static = patchi->geom_nstatics[patchi->geom_itime];
+        patchi->geom_ival_static  = patchi->geom_ivals + patchi->geom_ivals_static_offset[patchi->geom_itime];
+        patchi->geom_ival_dynamic = patchi->geom_ivals + patchi->geom_ivals_dynamic_offset[patchi->geom_itime];
+        patchi->geom_val_static   = patchi->geom_vals  + patchi->geom_vals_static_offset[patchi->geom_itime];
+        patchi->geom_val_dynamic  = patchi->geom_vals  + patchi->geom_vals_dynamic_offset[patchi->geom_itime];
+        patchi->geom_nval_static  = patchi->geom_nstatics[patchi->geom_itime];
         patchi->geom_nval_dynamic = patchi->geom_ndynamics[patchi->geom_itime];
       }
     }
@@ -188,9 +188,9 @@ void UpdateFrameNumber(int changetime){
         patchi = patchinfo + i;
         if(patchi->structured == YES||patchi->boundary==0||patchi->geom_times==NULL||patchi->geom_timeslist==NULL)continue;
         patchi->geom_itime=patchi->geom_timeslist[itimes];
-        patchi->geom_ival_static = patchi->geom_ivals_static[patchi->geom_itime];
-        patchi->geom_ival_dynamic = patchi->geom_ivals_dynamic[patchi->geom_itime];
-        patchi->geom_nval_static = patchi->geom_nstatics[patchi->geom_itime];
+        patchi->geom_ival_static  = patchi->geom_ivals + patchi->geom_ivals_static_offset[patchi->geom_itime];
+        patchi->geom_ival_dynamic = patchi->geom_ivals + patchi->geom_ivals_dynamic_offset[patchi->geom_itime];
+        patchi->geom_nval_static  = patchi->geom_nstatics[patchi->geom_itime];
         patchi->geom_nval_dynamic = patchi->geom_ndynamics[patchi->geom_itime];
       }
       for(i=0;i<nmeshes;i++){
