@@ -508,11 +508,18 @@ void PrintSummary(void){
     for(i=0;i<npatchinfo;i++){
       patchdata *patchi;
       flowlabels *label;
+      char type[32];
 
       patchi = patchinfo + i;
       if(patchi->compressed==0)continue;
       label=&patchi->label;
-      PRINTF("%s (%s):  %s\n",patchi->file,label->longlabel,patchi->summary);
+      if(patchi->is_geom){
+        strcpy(type, "GEOM");
+      }
+      else{
+        strcpy(type, "BNDF");
+      }
+      PRINTF("%s (%s/%s):  %s\n",patchi->file,label->longlabel,type,patchi->summary);
       PRINTF("  min=%f %s, max=%f %s \n",patchi->valmin,label->unit,patchi->valmax,label->unit);
     }
     PRINTF("\n");
