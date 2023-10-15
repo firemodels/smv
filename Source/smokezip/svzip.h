@@ -251,7 +251,6 @@ bounddata *GetSliceBoundInfo(char *label);
 void InitBoundaryBounds(void);
 bounddata *GetPatchBoundInfo(char *label);
 int GetFileBounds(char *file, float *valmin, float *valmax);
-void InitVolRender(void);
 void PrintSummary(void);
 void *CompressAll(void *arg);
 void CompressAllMT(void);

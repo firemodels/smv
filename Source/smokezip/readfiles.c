@@ -9,6 +9,68 @@
 #include "stdio_buffer.h"
 #include "getdata.h"
 
+/* ------------------ InitVolRender ------------------------ */
+
+void InitVolRender(void){
+  int i;
+
+  nvolrenderinfo = 0;
+  for(i = 0;i < nmeshes;i++){
+    meshdata *meshi;
+    volrenderdata *vr;
+
+    meshi = meshinfo + i;
+    vr = &(meshi->volrenderinfo);
+    vr->rendermesh = meshi;
+    vr->fire = NULL;
+    vr->smoke = NULL;
+  }
+  for(i = 0;i < nsliceinfo;i++){
+    slicedata *slicei;
+    int blocknumber;
+    meshdata *meshi;
+    volrenderdata *vr;
+    int ni, nj, nk;
+
+    slicei = sliceinfo + i;
+    slicei->isvolslice = 0;
+    slicei->voltype = 0;
+    blocknumber = slicei->blocknumber;
+    if(blocknumber < 0 || blocknumber >= nmeshes)continue;
+    meshi = meshinfo + blocknumber;
+    GetSliceParmsC(slicei->file, &ni, &nj, &nk);
+
+    if(ni != meshi->ibar + 1 || nj != meshi->jbar + 1 || nk != meshi->kbar + 1)continue;
+    vr = &(meshi->volrenderinfo);
+
+    if(STRCMP(slicei->label.shortlabel, "temp") == 0){
+      vr->fire = slicei;
+      continue;
+    }
+    if(IsSootFile(slicei->label.shortlabel, slicei->label.longlabel) == 1){
+      vr->smoke = slicei;
+      continue;
+    }
+  }
+  nvolrenderinfo = 0;
+  for(i = 0;i < nmeshes;i++){
+    meshdata *meshi;
+    volrenderdata *vr;
+
+    meshi = meshinfo + i;
+    vr = &(meshi->volrenderinfo);
+    if(vr->smoke != NULL){
+      nvolrenderinfo++;
+      vr->smoke->isvolslice = 1;
+      vr->smoke->voltype = 1;
+      if(vr->fire != NULL){
+        vr->fire->isvolslice = 1;
+        vr->fire->voltype = 2;
+      }
+    }
+  }
+}
+
 /* ------------------ ReadSMV ------------------------ */
 
 int ReadSMV(char *smvfile){
@@ -877,66 +939,4 @@ void ReadINI2(char *inifile){
   }
   fclose(stream);
   return;
-}
-
-/* ------------------ InitVolRender ------------------------ */
-
-void InitVolRender(void){
-  int i;
-
-  nvolrenderinfo=0;
-  for(i=0;i<nmeshes;i++){
-    meshdata *meshi;
-    volrenderdata *vr;
-
-    meshi = meshinfo + i;
-    vr = &(meshi->volrenderinfo);
-    vr->rendermesh=meshi;
-    vr->fire=NULL;
-    vr->smoke=NULL;
-  }
-  for(i=0;i<nsliceinfo;i++){
-    slicedata *slicei;
-    int blocknumber;
-    meshdata *meshi;
-    volrenderdata *vr;
-    int ni, nj, nk;
-
-    slicei = sliceinfo + i;
-    slicei->isvolslice=0;
-    slicei->voltype=0;
-    blocknumber = slicei->blocknumber;
-    if(blocknumber<0||blocknumber>=nmeshes)continue;
-    meshi = meshinfo + blocknumber;
-    GetSliceParmsC(slicei->file,&ni,&nj,&nk);
-
-    if(ni!=meshi->ibar+1||nj!=meshi->jbar+1||nk!=meshi->kbar+1)continue;
-    vr = &(meshi->volrenderinfo);
-
-    if(STRCMP(slicei->label.shortlabel, "temp")==0){
-      vr->fire=slicei;
-     continue;
-    }
-    if(IsSootFile(slicei->label.shortlabel, slicei->label.longlabel)==1){
-      vr->smoke=slicei;
-      continue;
-    }
-  }
-  nvolrenderinfo=0;
-  for(i=0;i<nmeshes;i++){
-    meshdata *meshi;
-    volrenderdata *vr;
-
-    meshi = meshinfo + i;
-    vr = &(meshi->volrenderinfo);
-    if(vr->smoke!=NULL){
-      nvolrenderinfo++;
-      vr->smoke->isvolslice=1;
-      vr->smoke->voltype=1;
-      if(vr->fire!=NULL){
-        vr->fire->isvolslice=1;
-        vr->fire->voltype=2;
-      }
-    }
-  }
 }
