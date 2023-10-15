@@ -18,10 +18,6 @@
 
 #define pp_SMOKE3D_FORT
 
-#ifdef pp_BETA
-  #define pp_PART2
-#endif
-
 //*** options: Windows
 
 #ifdef WIN32

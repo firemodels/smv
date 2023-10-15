@@ -44,9 +44,6 @@ void Usage(char *prog, int option){
 #ifdef pp_PLOT3D
     PRINTF("  -p  - overwrites PLOT3D files\n");
 #endif
-#ifdef pp_PART2
-    PRINTF("  -P  - overwrites particle files\n");
-#endif
 #ifdef pp_PART
     PRINTF("  -part2iso - generate isosurfaces from particle data\n");
 #endif
@@ -60,9 +57,6 @@ void Usage(char *prog, int option){
 #ifdef pp_PLOT3D
     PRINTF("  -bp - estimate data bounds for plot3d files\n");
 #endif
-#ifdef pp_PART2
-    PRINTF("  -bP - estimate data bounds for particle files\n");
-#endif
     PRINTF("compress options:\n");
     PRINTF("  -n3 - do not compress 3d smoke files\n");
     PRINTF("  -nb - do not compress boundary files\n");
@@ -70,10 +64,6 @@ void Usage(char *prog, int option){
     PRINTF("  -np - do not compress PLOT3D files\n");
 #endif
     PRINTF("  -ns - do not compress slice files\n");
-#ifdef pp_PART2
-    PRINTF("  -nP - do not compress particle files\n");
-    PRINTF("  -yP - compress particle files\n");
-#endif
     PRINTF("output options:\n");
     PRINTF("  -d destdir - copies compressed files (and files needed by Smokeview\n");
     PRINTF("        to view the case) to the directory destdir\n");
@@ -131,9 +121,6 @@ int main(int argc, char **argv){
 #else
   GLOBdoit_plot3d=0;
 #endif
-#ifdef pp_PART2
-  GLOBdoit_particle=0;
-#endif
 
   strcpy(GLOBpp,"%");
   strcpy(GLOBx,"X");
@@ -160,7 +147,6 @@ int main(int argc, char **argv){
   GLOBget_plot3d_bounds=0;
   GLOBget_boundary_bounds=0;
 #ifdef pp_PART
-  GLOBget_part_bounds=0;
   GLOBpartfile2iso=0;
 #endif
   GLOBoverwrite_slice=0;
@@ -212,9 +198,6 @@ int main(int argc, char **argv){
           GLOBget_plot3d_bounds=1;
 #endif
           GLOBget_boundary_bounds=1;
-#ifdef pp_PART
-          GLOBget_part_bounds=1;
-#endif
         }
         else if(strcmp(arg,"-bb")==0){
           GLOBget_boundary_bounds=1;
@@ -227,22 +210,10 @@ int main(int argc, char **argv){
           GLOBget_plot3d_bounds=1;
         }
 #endif
-#ifdef pp_PART2
-        else if(strcmp(arg,"-bP")==0){
-          GLOBget_part_bounds=1;
-        }
-#endif
         else{
           GLOBoverwrite_b=1;
         }
         break;
-#ifdef pp_PART2
-      case 'y':
-        if(strcmp(arg,"-yP")==0){
-          GLOBdoit_particle=1;
-        }
-        break;
-#endif
       case 'n':
         if(strcmp(arg,"-n3")==0){
           GLOBdoit_smoke3d=0;
@@ -253,11 +224,6 @@ int main(int argc, char **argv){
 #ifdef pp_PLOT3D
         else if(strcmp(arg,"-np")==0){
           GLOBdoit_plot3d=0;
-        }
-#endif
-#ifdef pp_PART2
-        else if(strcmp(arg,"-nP")==0){
-          GLOBdoit_particle=0;
         }
 #endif
         else if(strcmp(arg,"-ns")==0){
@@ -277,11 +243,6 @@ int main(int argc, char **argv){
         GLOBoverwrite_volslice=1;
         GLOBoverwrite_s=1;
         break;
-#ifdef  pp_PART2
-      case 'P':
-        GLOBoverwrite_part=1;
-        break;
-#endif
       case 'p':
         if(strcmp(arg,"-part2iso")==0){
           GLOBpartfile2iso=1;
@@ -299,9 +260,6 @@ int main(int argc, char **argv){
         GLOBoverwrite_volslice=1;
 #ifdef pp_PLOT3D
         GLOBoverwrite_plot3d=1;
-#endif
-#ifdef pp_PART2
-        GLOBoverwrite_part=1;
 #endif
         break;
       case 'c':
@@ -501,9 +459,6 @@ void *CompressAll(void *arg){
   if(GLOBdoit_plot3d==1)CompressPlot3Ds(thread_index);
 #endif
   ConvertParts2Iso(thread_index);
-#ifdef pp_PART2
-  if(GLOBdoit_particle)CompressParts(NULL);
-#endif
   return NULL;
 }
 

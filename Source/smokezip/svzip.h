@@ -298,14 +298,10 @@ void *ConvertParts2Iso(void *arg);
 partpropdata *GetPartProp(char *string);
 int GetPartPropIndex(char *string);
 void ConvertPart(part *parti, int *thread_index);
-int ConvertablePart(part *parti);
 #endif
 void *CompressPatches(void *arg);
 void ReadINI(char *file);
 void ReadINI2(char *file2);
-#ifdef pp_PART
-void Get_Part_Bounds(void);
-#endif
 void Convert3DSmoke(smoke3d *smoke3di, int *thread_index);
 void *Compress3DSmokes(void *arg);
 void Normal(unsigned short *v1, unsigned short *v2, unsigned short *v3, float *normal, float *area);
@@ -317,9 +313,6 @@ void GetSliceParmsC(char *file, int *ni, int *nj, int *nk);
 
 EXTERN int nvolrenderinfo;
 EXTERN int GLOBdoit_smoke3d, GLOBdoit_boundary, GLOBdoit_slice, GLOBdoit_plot3d, GLOBdoit_volslice;
-#ifdef pp_PART2
-EXTERN int GLOBdoit_particle;
-#endif
 
 EXTERN FILE *SMZLOG_STREAM;
 
@@ -367,7 +360,6 @@ EXTERN char *GLOBendianfile;
 EXTERN int GLOBmake_demo;
 EXTERN int GLOBget_bounds, GLOBget_slice_bounds, GLOBget_plot3d_bounds, GLOBget_boundary_bounds;
 #ifdef pp_PART
-EXTERN int GLOBget_part_bounds;
 EXTERN int GLOBpartfile2iso;
 #endif
 EXTERN char GLOBsmvisofile[1024];
