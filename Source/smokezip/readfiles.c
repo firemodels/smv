@@ -9,6 +9,8 @@
 #include "stdio_buffer.h"
 #include "getdata.h"
 
+/* ------------------ ReadSMV ------------------------ */
+
 int ReadSMV(char *smvfile){
   FILE *stream = NULL;
   bufferstreamdata *streamsmv;
@@ -150,10 +152,11 @@ int ReadSMV(char *smvfile){
   // allocate memory for boundary file info
 
   if(npatchinfo>0){
-    patch *patchi;
+    patchdata *patchi;
     int i;
 
-    NewMemory((void **)&patchinfo,npatchinfo*sizeof(patch));
+    NewMemory((void **)&patchinfo,  npatchinfo*sizeof(patchdata));
+    NewMemory((void **)&patchbounds,npatchinfo*sizeof(bounddata));
     for(i=0;i<npatchinfo;i++){
       patchi = patchinfo + i;
       patchi->file=NULL;
@@ -267,8 +270,6 @@ int ReadSMV(char *smvfile){
     PRINTF("   (Each removal occurs only if the corresponding uncompressed file exists)\n\n");
   }
   while(!FEOF(streamsmv)){
-    patch *patchi;
-
     if(FGETS(buffer,BUFFERSIZE,streamsmv)==NULL)break;
     CheckMemory;
     if(strncmp(buffer," ",1)==0)continue;
@@ -522,6 +523,7 @@ int ReadSMV(char *smvfile){
       char *buffer2;
       int len;
       FILE_SIZE filesize;
+      patchdata *patchi;
 
       len=strlen(buffer);
       if(len>4){
@@ -545,6 +547,7 @@ int ReadSMV(char *smvfile){
         int lendir=0;
 
         if(GLOBsourcedir!=NULL)lendir=strlen(GLOBsourcedir);
+        NewMemory(( void ** )&patchi->boundfile, ( unsigned int )(strlen(buffer2) + lendir +strlen(".bnd") + 1));
         NewMemory((void **)&patchi->file,(unsigned int)(strlen(buffer2)+lendir+1));
         NewMemory((void **)&patchi->filebase,(unsigned int)(strlen(buffer2)+1));
         STRCPY(patchi->filebase,buffer2);
@@ -555,6 +558,8 @@ int ReadSMV(char *smvfile){
         else{
           STRCPY(patchi->file,buffer2);
         }
+        STRCPY(patchi->boundfile, patchi->file);
+        STRCAT(patchi->boundfile, ".bnd");
         if(patchi->is_geom == 1){
           if(FGETS(buffer, BUFFERSIZE, streamsmv) == NULL)break;
         }
@@ -567,9 +572,6 @@ int ReadSMV(char *smvfile){
           int npatches, error;
           FILE *boundaryunitnumber;
 
-          NewMemory((void **)&patchi->histogram,sizeof(histogramdata));
-          patchi->histogram->buckets = NULL;
-          patchi->histogram->buckets_polar = NULL;
           // TODO: why was this unit set to 15?
           // boundaryunitnumber=15;
           getboundaryheader1(patchi->file,&boundaryunitnumber, &npatches, &error);
@@ -847,9 +849,9 @@ int ReadSMV(char *smvfile){
     }
   }
   InitVolRender();
+  InitBoundaryBounds();
   return 0;
 }
-
 
 /* ------------------ ReadINI ------------------------ */
 
@@ -881,7 +883,6 @@ void ReadINI2(char *inifile){
   char buffer[255],buffer2[255];
   char *type_buffer;
   FILE *stream;
-  patch *patchi;
 
   stream=fopen(inifile,"r");
   if(stream==NULL)return;
@@ -986,12 +987,18 @@ void ReadINI2(char *inifile){
       }
       type_buffer=TrimFront(buffer2);
       TrimBack(type_buffer);
-      patchi= GetPatch(type_buffer);
-      if(patchi!=NULL){
-        patchi->setvalmax=setpatchmax;
-        patchi->setvalmin=setpatchmin;
-        patchi->valmax=patchmax;
-        patchi->valmin=patchmin;
+      bounddata *pb;
+
+      pb = GetPatchBoundInfo(type_buffer);
+      if(pb != NULL){
+        if(setpatchmin == 1){
+          pb->setvalmin = 1;
+          pb->valmin = patchmin;
+        }
+        if(setpatchmax == 1){
+          pb->setvalmax = 1;
+          pb->valmax = patchmax;
+        }
       }
       continue;
     }

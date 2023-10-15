@@ -113,10 +113,10 @@ typedef struct _meshdata {
   volrenderdata volrenderinfo;
 } meshdata;
 
-/* --------------------------  patch ------------------------------------ */
+/* --------------------------  patchdata ------------------------------------ */
 
 typedef struct {
-  char *file,*filebase;
+  char *file,*filebase,*boundfile;
   int unit_start;
   char summary[1024];
   int compressed;
@@ -129,10 +129,8 @@ typedef struct {
   int setvalmin, setvalmax;
   float valmin, valmax;
   int version;
-  histogramdata *histogram;
   flowlabels label;
-  int dup;
-} patch;
+} patchdata;
 
 /* --------------------------  slice ------------------------------------ */
 
@@ -160,6 +158,7 @@ typedef struct _slicedata {
 /* --------------------------  bound ------------------------------------ */
 
 typedef struct {
+  char label[64];
   int setvalmin, setvalmax;
   float valmin, valmax;
 } bounddata;
@@ -273,6 +272,9 @@ typedef struct {
 //************* headers
 //***********************
 
+void InitBoundaryBounds(void);
+bounddata *GetPatchBoundInfo(char *label);
+int GetFileBounds(char *file, float *valmin, float *valmax);
 void InitVolRender(void);
 void PrintSummary(void);
 void *CompressAll(void *arg);
@@ -299,8 +301,6 @@ void ConvertPart(part *parti, int *thread_index);
 int ConvertablePart(part *parti);
 #endif
 void *CompressPatches(void *arg);
-patch *GetPatch(char *string);
-int PatchDup(patch *patchj, int ipatch);
 void ReadINI(char *file);
 void ReadINI2(char *file2);
 #ifdef pp_PART
@@ -327,7 +327,8 @@ EXTERN int GLOBfirst_initsphere,GLOBfirst_slice,GLOBfirst_patch,GLOBfirst_plot3d
 EXTERN int GLOBframeskip;
 EXTERN int GLOBno_chop;
 
-EXTERN patch *patchinfo;
+EXTERN patchdata *patchinfo;
+EXTERN bounddata *patchbounds;
 EXTERN meshdata *meshinfo;
 EXTERN smoke3d *smoke3dinfo;
 EXTERN slicedata *sliceinfo;
@@ -339,6 +340,7 @@ EXTERN threaddata *threadinfo;
 EXTERN spherepoints sphereinfo;
 
 EXTERN int npatchinfo, nsliceinfo, nplot3dinfo, npartinfo;
+EXTERN int npatchbounds;
 EXTERN int npartclassinfo;
 EXTERN int nsmoke3dinfo;
 #ifdef pp_PART

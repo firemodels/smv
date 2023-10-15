@@ -465,17 +465,6 @@ int main(int argc, char **argv){
     }
   }
 #endif
-  if(npatchinfo>0){
-    patchinfo->dup=0;
-    for(i=1;i<npatchinfo;i++){
-      patch *patchi;
-
-      patchi = patchinfo + i;
-
-      patchi->dup=0;
-      PatchDup(patchi,i);
-    }
-  }
   if(nsliceinfo>0){
     sliceinfo[0].dup=0;
     for(i=1;i<nsliceinfo;i++){
@@ -612,7 +601,7 @@ void PrintSummary(void){
     if(smoke3di->compressed==1)nsum++;
   }
   if(nsum>0){
-    PRINTF("*** 3D smoke/fire files ***\n");
+    PRINTF("\n*** 3D smoke/fire files ***\n");
     for(i=0;i<nsmoke3dinfo;i++){
       smoke3d *smoke3di;
 
@@ -625,7 +614,7 @@ void PrintSummary(void){
 
   nsum=0;
   for(i=0;i<npatchinfo;i++){
-    patch *patchi;
+    patchdata *patchi;
 
     patchi = patchinfo + i;
     if(patchi->compressed==1)nsum++;
@@ -633,7 +622,7 @@ void PrintSummary(void){
   if(nsum>0){
     PRINTF("*** boundary files ***\n");
     for(i=0;i<npatchinfo;i++){
-      patch *patchi;
+      patchdata *patchi;
       flowlabels *label;
 
       patchi = patchinfo + i;
