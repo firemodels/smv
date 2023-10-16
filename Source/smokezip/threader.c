@@ -26,9 +26,10 @@ void CompressAllMT(void){
   for(i=0;i<mt_nthreads;i++){
     pthread_join(thread_ids[i],NULL);
   }
-  PRINTF("********* compression completed ********* \n");
-
-  PrintSummary();
+  if(GLOBcleanfiles == 0){
+    PRINTF("********* compression completed ********* \n");
+    PrintSummary();
+  }
   FREEMEMORY(thread_ids);
   FREEMEMORY(index);
   FREEMEMORY(threadinfo);
