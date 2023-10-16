@@ -207,7 +207,12 @@ void UpdateFrameNumber(int changetime){
           meshi->patchval_iframe  = meshi->patchval+meshi->patch_itime*meshi->npatchsize;
         }
         else{
-          UncompressBoundaryDataFrame(meshi,meshi->patch_itime);
+          if(patchi->structured == NO){
+            UncompressBoundaryDataBNDF(meshi, meshi->patch_itime);
+          }
+          else{
+            UncompressBoundaryDataGEOM(patchi, meshi->patch_itime);
+          }
         }
       }
     }

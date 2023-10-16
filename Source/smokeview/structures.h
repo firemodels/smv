@@ -1628,6 +1628,9 @@ typedef struct _patchdata {
   int version;
   int patch_filetype, structured;
   int shortlabel_index;
+  int *cvals_offsets, *cvals_sizes;
+  unsigned char *cbuffer;
+  int cbuffer_size;
   int boundary;
   int inuse,inuse_getbounds;
   int firstshort;
