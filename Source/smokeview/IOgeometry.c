@@ -2424,7 +2424,6 @@ int GetGeomDataSize(char *filename, int *nvars, int time_frame,
   FILE *stream=NULL;
   int returncode=0;
   int nvars_local, ntimes_local;
-  int first = 1;
   int iframe;
   int geom_offset_index=0, geom_offset = 0, frame_start;
 
