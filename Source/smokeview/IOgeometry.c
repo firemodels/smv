@@ -2384,25 +2384,56 @@ void ReadGeomHeader(geomdata *geomi, int *geom_frame_index, int *ntimes_local){
   }
 }
 
+/* ------------------ GetGeomDataSizeFixed ------------------------ */
+
+int GetGeomDataSizeFixed(patchdata *patchi, int *nvars, int time_frame, int *geom_offsets, int *geom_offset_flag, int *error){
+  int ntimes_local = 0;
+  FILE_SIZE file_size;
+  int frame_size, header_size;
+  int nvars_per_frame;
+  int i;
+
+  *error = 0;
+  file_size = GetFileSizeSMV(patchi->file);
+  if(file_size == 0)return 0;
+
+  header_size = 2*(4 + 4 + 4);
+  frame_size  = 12; // time
+  frame_size += 24; // nval1, nval2, nval3, nval4
+  nvars_per_frame = patchi->geominfo->geomlistinfo_0->ntriangles;
+  frame_size += 8 + nvars_per_frame * sizeof(float); // data
+  if(frame_size > 0){
+    ntimes_local = (file_size - header_size) / frame_size;
+  }
+  if(geom_offset_flag != NULL && *geom_offset_flag == GET_GEOM_OFFSETS){
+    *nvars = ntimes_local * nvars_per_frame;
+  }
+  else{
+    *nvars = nvars_per_frame;
+    ntimes_local = 1;
+    if(geom_offsets != NULL)geom_offsets[0] = header_size;
+  }
+  if(geom_offsets!=NULL&&geom_offset_flag != NULL && *geom_offset_flag == BUILD_GEOM_OFFSETS){
+    for(i = 0;i < ntimes_local;i++){
+      geom_offsets[i] = header_size + i * frame_size;
+    }
+  }
+  return ntimes_local;
+}
 
 /* ------------------ GetGeomDataSize ------------------------ */
 
-int GetGeomDataSize(char *filename, int *nvars, float *tmin, float *tmax, int time_frame,
-                    int *geom_offsets, int *geom_offset_flag, int *error){
-
+int GetGeomDataSize(char *filename, int *nvars, int time_frame, int *geom_offsets, int *geom_offset_flag, int *error){
   float time;
   int one, version;
   int nvert_s, nvert_d, nface_s, nface_d;
   FILE *stream=NULL;
   int returncode=0;
   int nvars_local, ntimes_local;
-  int first = 1;
   int iframe;
   int geom_offset_index=0, geom_offset = 0, frame_start;
 
   *error=1;
-  *tmin = 0.0;
-  *tmax = 1.0;
   *nvars = 0;
   if(filename==NULL)return 0;
   stream = fopen(filename,"rb");
@@ -2429,13 +2460,6 @@ int GetGeomDataSize(char *filename, int *nvars, float *tmin, float *tmax, int ti
     if(geom_offset_flag!=NULL&&*geom_offset_flag==BUILD_GEOM_OFFSETS)geom_offsets[geom_offset_index] = geom_offset;
     FORTREAD(&time, 4, 1, stream);
     geom_offset += (4+4+4);
-    if(time_frame==ALL_FRAMES||time_frame==iframe){
-      if(first==1){
-        first = 0;
-        *tmin = time;
-      }
-      *tmax = time;
-    }
     if(returncode==0)break;
     FORTREAD(nvals, 4, 4, stream);
     geom_offset += (4+4*4+4);
@@ -2590,7 +2614,7 @@ FILE_SIZE GetGeomData(char *filename, int ntimes, int nvals, float *times, int *
 
 /* ------------------ ReadGeomData ------------------------ */
 
-FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int time_frame, float *time_value, int *errorcode){
+FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int time_frame, float *time_value, int flag, int *errorcode){
   char *file;
   int ntimes_local;
   int i;
@@ -2599,7 +2623,6 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
   int error;
   FILE_SIZE return_filesize = 0;
   float total_time;
-  float tmin_local, tmax_local;
   int *geom_offsets=NULL, geom_offset_flag;
 
   if(patchi->structured == YES)return 0;
@@ -2646,7 +2669,12 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
     geom_offset_flag = GET_GEOM_OFFSETS;
   }
 
-  ntimes_local = GetGeomDataSize(file, &nvals, &tmin_local, &tmax_local, time_frame, geom_offsets, &geom_offset_flag, &error);
+  if(flag==1){
+    ntimes_local = GetGeomDataSizeFixed(patchi, &nvals, time_frame, geom_offsets, &geom_offset_flag, &error);
+  }
+  else{
+    ntimes_local = GetGeomDataSize(file, &nvals, time_frame, geom_offsets, &geom_offset_flag, &error);
+  }
 
   if(time_value!=NULL){
     if(geom_offset_flag>0){
@@ -2724,7 +2752,7 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
       FREEMEMORY(colorlabelpatch);
     }
     if(NewMemory((void **)&colorlabelpatch, MAXRGB * sizeof(char *)) == 0){
-      ReadGeomData(patchi, NULL, UNLOAD, time_frame, time_value,  &error);
+      ReadGeomData(patchi, NULL, UNLOAD, time_frame, time_value,  0, &error);
       return 0;
     }
     for (n = 0; n < MAXRGB; n++){
@@ -2732,7 +2760,7 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
     }
     for (n = 0; n < nrgb; n++){
       if(NewMemory((void **)&colorlabelpatch[n], 11) == 0){
-        ReadGeomData(patchi, NULL, UNLOAD, time_frame, time_value, &error);
+        ReadGeomData(patchi, NULL, UNLOAD, time_frame, time_value, 0, &error);
         return 0;
       }
     }
@@ -2743,10 +2771,12 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
     label = patchi->label.shortlabel;
 
     GetMinMax(BOUND_PATCH, label, &set_valmin, &valmin, &set_valmax, &valmax);
+    int convert = 0;
+    if(patchi->patch_filetype != PATCH_GEOMETRY_BOUNDARY && patchi->patch_filetype != PATCH_GEOMETRY_SLICE)convert = 0;
     GetBoundaryColors3(patchi, patchi->geom_vals, 0, patchi->geom_nvals, patchi->geom_ivals,
       &valmin, &valmax,
       nrgb, colorlabelpatch, colorvaluespatch, boundarylevels256,
-      &patchi->extreme_min, &patchi->extreme_max, 1);
+      &patchi->extreme_min, &patchi->extreme_max, convert);
     if(cache_boundary_data==0){
       FREEMEMORY(patchi->geom_vals);
     }
