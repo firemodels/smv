@@ -2176,7 +2176,7 @@ int GetNSliceGeomFrames(scriptdata *scripti){
         if(slicei->slice_filetype==SLICE_GEOM){
           int nvals, error;
 
-          slicei->nframes = GetGeomDataSize(slicei->file, &nvals, &scripti->fval2, &scripti->fval3, ALL_FRAMES, NULL, NULL,  &error);
+          slicei->nframes = GetGeomDataSize(slicei->file, &nvals, ALL_FRAMES, NULL, NULL,  &error);
         }
         else{
           slicei->nframes = GetNSliceFrames(slicei->file, &scripti->fval2, &scripti->fval3);

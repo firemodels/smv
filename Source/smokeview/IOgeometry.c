@@ -2415,7 +2415,7 @@ int GetGeomDataSizeFixed(patchdata *patchi, int *nvars, int time_frame, int *geo
 
 /* ------------------ GetGeomDataSize ------------------------ */
 
-int GetGeomDataSize(char *filename, int *nvars, float *tmin, float *tmax, int time_frame,
+int GetGeomDataSize(char *filename, int *nvars, int time_frame,
                     int *geom_offsets, int *geom_offset_flag, int *error){
 
   float time;
@@ -2429,8 +2429,6 @@ int GetGeomDataSize(char *filename, int *nvars, float *tmin, float *tmax, int ti
   int geom_offset_index=0, geom_offset = 0, frame_start;
 
   *error=1;
-  *tmin = 0.0;
-  *tmax = 1.0;
   *nvars = 0;
   if(filename==NULL)return 0;
   stream = fopen(filename,"rb");
@@ -2457,13 +2455,6 @@ int GetGeomDataSize(char *filename, int *nvars, float *tmin, float *tmax, int ti
     if(geom_offset_flag!=NULL&&*geom_offset_flag==BUILD_GEOM_OFFSETS)geom_offsets[geom_offset_index] = geom_offset;
     FORTREAD(&time, 4, 1, stream);
     geom_offset += (4+4+4);
-    if(time_frame==ALL_FRAMES||time_frame==iframe){
-      if(first==1){
-        first = 0;
-        *tmin = time;
-      }
-      *tmax = time;
-    }
     if(returncode==0)break;
     FORTREAD(nvals, 4, 4, stream);
     geom_offset += (4+4*4+4);
@@ -2627,7 +2618,6 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
   int error;
   FILE_SIZE return_filesize = 0;
   float total_time;
-  float tmin_local, tmax_local;
   int *geom_offsets=NULL, geom_offset_flag;
 
   if(patchi->structured == YES)return 0;
@@ -2674,7 +2664,7 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
     geom_offset_flag = GET_GEOM_OFFSETS;
   }
 
-  ntimes_local = GetGeomDataSize(file, &nvals, &tmin_local, &tmax_local, time_frame, geom_offsets, &geom_offset_flag, &error);
+  ntimes_local = GetGeomDataSize(file, &nvals, time_frame, geom_offsets, &geom_offset_flag, &error);
 
   if(time_value!=NULL){
     if(geom_offset_flag>0){

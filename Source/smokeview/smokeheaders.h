@@ -75,7 +75,7 @@ EXTERNCPP void SetTimeState(void);
 
 EXTERNCPP void SetCurrentViewPoint(char *viewpoint_label);
 
-EXTERNCPP int GetGeomDataSize(char *file, int *nvals, float *tmin, float *tmax, int time_frame,
+EXTERNCPP int GetGeomDataSize(char *file, int *nvals, int time_frame,
                               int *geom_offsets, int *geom_offset_flag, int *error);
 EXTERNCPP FILE_SIZE GetGeomData(char *filename, int ntimes, int nvals, float *times, int *nstatics, int *ndynamics, float *vals,
   int time_frame, float *time_value, int *geom_offsets, int *error);
