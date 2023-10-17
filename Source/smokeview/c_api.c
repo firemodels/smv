@@ -1714,10 +1714,10 @@ void unloadslice(int value) {
 
     if (slicei->slice_filetype == SLICE_GEOM) {
       ReadGeomData(slicei->patchgeom, slicei, UNLOAD, ALL_FRAMES, NULL,
-                   &errorcode);
+                   0, &errorcode);
     } else {
       ReadSlice("", value, ALL_FRAMES, NULL, UNLOAD, SET_SLICECOLOR,
-                &errorcode);
+                0, &errorcode);
     }
   }
   if (value <= -3) {
@@ -1730,7 +1730,7 @@ void unloadslice(int value) {
         slicei = sliceinfo + i;
         if (slicei->slice_filetype == SLICE_GEOM) {
           ReadGeomData(slicei->patchgeom, slicei, UNLOAD, ALL_FRAMES, NULL,
-                       &errorcode);
+                       0, &errorcode);
         } else {
           ReadSlice("", i, ALL_FRAMES, NULL, UNLOAD, DEFER_SLICECOLOR,
                     &errorcode);
@@ -1755,7 +1755,7 @@ void unloadslice(int value) {
         slicei = sliceinfo + unload_index;
         if (slicei->slice_filetype == SLICE_GEOM) {
           ReadGeomData(slicei->patchgeom, slicei, UNLOAD, ALL_FRAMES, NULL,
-                       &errorcode);
+                       0, &errorcode);
         } else {
           ReadSlice("", unload_index, ALL_FRAMES, NULL, UNLOAD, SET_SLICECOLOR,
                     &errorcode);
@@ -1785,7 +1785,7 @@ int unloadall() {
     if (slicei->loaded == 1) {
       if (slicei->slice_filetype == SLICE_GEOM) {
         ReadGeomData(slicei->patchgeom, slicei, UNLOAD, ALL_FRAMES, NULL,
-                     &errorcode);
+                     0, &errorcode);
       } else {
         ReadSlice(slicei->file, i, ALL_FRAMES, NULL, UNLOAD, DEFER_SLICECOLOR,
                   &errorcode);
