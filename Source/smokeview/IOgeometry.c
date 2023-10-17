@@ -2386,20 +2386,28 @@ void ReadGeomHeader(geomdata *geomi, int *geom_frame_index, int *ntimes_local){
 
 /* ------------------ GetGeomDataSizeFixed ------------------------ */
 
-int GetGeomDataSizeFixed(patchdata *patchi){
+int GetGeomDataSizeFixed(patchdata *patchi, int *nvars, int time_frame, int *geom_offsets, int *geom_offset_flag, int *error){
   int ntimes_local = 0;
   FILE_SIZE file_size;
   int frame_size, header_size;
+  int nvars_per_frame;
+  int i;
 
+  *error = 0;
   file_size = GetFileSizeSMV(patchi->file);
   if(file_size == 0)return 0;
 
   header_size = 2*(4 + 4 + 4);
   frame_size  = 12; // time
   frame_size += 24; // nval1, nval2, nval3, nval4
-  frame_size += 8 + patchi->geominfo->geomlistinfo_0->ntriangles * sizeof(float); // data
+  nvars_per_frame = patchi->geominfo->geomlistinfo_0->ntriangles;
+  frame_size += 8 + nvars_per_frame * sizeof(float); // data
   if(frame_size > 0){
     ntimes_local = (file_size - header_size) / frame_size;
+  }
+  *nvars = ntimes_local * nvars_per_frame;
+  for(i = 0;i < ntimes_local;i++){
+    geom_offsets[i] = header_size + i * frame_size;
   }
   return ntimes_local;
 }
