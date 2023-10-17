@@ -2771,10 +2771,12 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
     label = patchi->label.shortlabel;
 
     GetMinMax(BOUND_PATCH, label, &set_valmin, &valmin, &set_valmax, &valmax);
+    int convert = 0;
+    if(patchi->patch_filetype != PATCH_GEOMETRY_BOUNDARY && patchi->patch_filetype != PATCH_GEOMETRY_SLICE)convert = 0;
     GetBoundaryColors3(patchi, patchi->geom_vals, 0, patchi->geom_nvals, patchi->geom_ivals,
       &valmin, &valmax,
       nrgb, colorlabelpatch, colorvaluespatch, boundarylevels256,
-      &patchi->extreme_min, &patchi->extreme_max, 1);
+      &patchi->extreme_min, &patchi->extreme_max, convert);
     if(cache_boundary_data==0){
       FREEMEMORY(patchi->geom_vals);
     }
