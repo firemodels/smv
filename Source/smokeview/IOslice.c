@@ -1296,7 +1296,7 @@ FILE_SIZE ReadVSlice(int ivslice, int time_frame, float *time_value, int flag, i
       display=u->display;
       if(u->loaded==1){
         if(u->slice_filetype == SLICE_GEOM){
-          return_filesize = ReadGeomData(u->patchgeom, u, UNLOAD, time_frame, time_value, errorcode);
+          return_filesize = ReadGeomData(u->patchgeom, u, UNLOAD, time_frame, time_value, 0, errorcode);
         }
         else{
           return_filesize+=ReadSlice(u->file, vd->iu, time_frame,NULL,UNLOAD, DEFER_SLICECOLOR, errorcode);
@@ -1312,7 +1312,7 @@ FILE_SIZE ReadVSlice(int ivslice, int time_frame, float *time_value, int flag, i
       display=v->display;
       if(v->loaded==1){
         if(v->slice_filetype == SLICE_GEOM){
-          return_filesize = ReadGeomData(v->patchgeom, v, UNLOAD, time_frame, time_value, errorcode);
+          return_filesize = ReadGeomData(v->patchgeom, v, UNLOAD, time_frame, time_value, 0, errorcode);
         }
         else{
           return_filesize+=ReadSlice(v->file, vd->iv, time_frame,NULL,UNLOAD, DEFER_SLICECOLOR, errorcode);
@@ -1328,7 +1328,7 @@ FILE_SIZE ReadVSlice(int ivslice, int time_frame, float *time_value, int flag, i
       display=w->display;
       if(w->loaded==1){
         if(w->slice_filetype == SLICE_GEOM){
-          return_filesize = ReadGeomData(w->patchgeom, w, UNLOAD, time_frame, time_value, errorcode);
+          return_filesize = ReadGeomData(w->patchgeom, w, UNLOAD, time_frame, time_value, 0, errorcode);
         }
         else{
           return_filesize+=ReadSlice(w->file, vd->iw, time_frame,NULL,UNLOAD, DEFER_SLICECOLOR, errorcode);
@@ -1344,7 +1344,7 @@ FILE_SIZE ReadVSlice(int ivslice, int time_frame, float *time_value, int flag, i
       display=val->display;
       if(val->loaded==1){
         if(val->slice_filetype == SLICE_GEOM){
-          return_filesize = ReadGeomData(val->patchgeom, val, UNLOAD, time_frame, time_value, errorcode);
+          return_filesize = ReadGeomData(val->patchgeom, val, UNLOAD, time_frame, time_value, 0, errorcode);
         }
         else{
           return_filesize+=ReadSlice(val->file, vd->ival, time_frame,NULL,UNLOAD, set_slicecolor, errorcode);
@@ -1373,7 +1373,7 @@ FILE_SIZE ReadVSlice(int ivslice, int time_frame, float *time_value, int flag, i
     vd->u=u;
     if(scriptoutstream==NULL||script_defer_loading==0){
       if(u->slice_filetype == SLICE_GEOM){
-        return_filesize += ReadGeomData(u->patchgeom, u, LOAD, time_frame, time_value, errorcode);
+        return_filesize += ReadGeomData(u->patchgeom, u, LOAD, time_frame, time_value, 0, errorcode);
       }
       else{
         return_filesize += ReadSlice(u->file, vd->iu, time_frame,time_value, flag, set_slicecolor, errorcode);
@@ -1400,7 +1400,7 @@ FILE_SIZE ReadVSlice(int ivslice, int time_frame, float *time_value, int flag, i
     vd->v=v;
     if(scriptoutstream==NULL||script_defer_loading==0){
       if(v->slice_filetype == SLICE_GEOM){
-        return_filesize += ReadGeomData(v->patchgeom, v, LOAD, time_frame, time_value, errorcode);
+        return_filesize += ReadGeomData(v->patchgeom, v, LOAD, time_frame, time_value, 0, errorcode);
       }
       else{
         return_filesize += ReadSlice(v->file, vd->iv, time_frame,time_value,flag, set_slicecolor, errorcode);
@@ -1428,7 +1428,7 @@ FILE_SIZE ReadVSlice(int ivslice, int time_frame, float *time_value, int flag, i
     vd->w=w;
     if(scriptoutstream==NULL||script_defer_loading==0){
       if(w->slice_filetype == SLICE_GEOM){
-        return_filesize += ReadGeomData(w->patchgeom, w, LOAD, time_frame, time_value, errorcode);
+        return_filesize += ReadGeomData(w->patchgeom, w, LOAD, time_frame, time_value, 0, errorcode);
       }
       else{
         return_filesize += ReadSlice(w->file, vd->iw, time_frame,time_value,flag, set_slicecolor, errorcode);
@@ -1457,7 +1457,7 @@ FILE_SIZE ReadVSlice(int ivslice, int time_frame, float *time_value, int flag, i
     vd->val=val;
     if(scriptoutstream==NULL||script_defer_loading==0){
       if(val->slice_filetype == SLICE_GEOM){
-        return_filesize += ReadGeomData(val->patchgeom, val, LOAD, time_frame, time_value, errorcode);
+        return_filesize += ReadGeomData(val->patchgeom, val, LOAD, time_frame, time_value, 0, errorcode);
       }
       else{
         return_filesize += ReadSlice(val->file, vd->ival, time_frame,time_value,flag, set_slicecolor, errorcode);

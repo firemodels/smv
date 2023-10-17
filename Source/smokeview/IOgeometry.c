@@ -2405,13 +2405,21 @@ int GetGeomDataSizeFixed(patchdata *patchi, int *nvars, int time_frame, int *geo
   if(frame_size > 0){
     ntimes_local = (file_size - header_size) / frame_size;
   }
-  *nvars = ntimes_local * nvars_per_frame;
-  for(i = 0;i < ntimes_local;i++){
-    geom_offsets[i] = header_size + i * frame_size;
+  if(geom_offset_flag != NULL && *geom_offset_flag == GET_GEOM_OFFSETS){
+    *nvars = ntimes_local * nvars_per_frame;
+  }
+  else{
+    *nvars = nvars_per_frame;
+    ntimes_local = 1;
+    if(geom_offsets != NULL)geom_offsets[0] = header_size;
+  }
+  if(geom_offsets!=NULL&&geom_offset_flag != NULL && *geom_offset_flag == BUILD_GEOM_OFFSETS){
+    for(i = 0;i < ntimes_local;i++){
+      geom_offsets[i] = header_size + i * frame_size;
+    }
   }
   return ntimes_local;
 }
-
 
 /* ------------------ GetGeomDataSize ------------------------ */
 
@@ -2606,7 +2614,7 @@ FILE_SIZE GetGeomData(char *filename, int ntimes, int nvals, float *times, int *
 
 /* ------------------ ReadGeomData ------------------------ */
 
-FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int time_frame, float *time_value, int *errorcode){
+FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int time_frame, float *time_value, int flag, int *errorcode){
   char *file;
   int ntimes_local;
   int i;
@@ -2661,7 +2669,12 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
     geom_offset_flag = GET_GEOM_OFFSETS;
   }
 
-  ntimes_local = GetGeomDataSize(file, &nvals, time_frame, geom_offsets, &geom_offset_flag, &error);
+  if(flag==1){
+    ntimes_local = GetGeomDataSizeFixed(patchi, &nvals, time_frame, geom_offsets, &geom_offset_flag, &error);
+  }
+  else{
+    ntimes_local = GetGeomDataSize(file, &nvals, time_frame, geom_offsets, &geom_offset_flag, &error);
+  }
 
   if(time_value!=NULL){
     if(geom_offset_flag>0){
@@ -2739,7 +2752,7 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
       FREEMEMORY(colorlabelpatch);
     }
     if(NewMemory((void **)&colorlabelpatch, MAXRGB * sizeof(char *)) == 0){
-      ReadGeomData(patchi, NULL, UNLOAD, time_frame, time_value,  &error);
+      ReadGeomData(patchi, NULL, UNLOAD, time_frame, time_value,  0, &error);
       return 0;
     }
     for (n = 0; n < MAXRGB; n++){
@@ -2747,7 +2760,7 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
     }
     for (n = 0; n < nrgb; n++){
       if(NewMemory((void **)&colorlabelpatch[n], 11) == 0){
-        ReadGeomData(patchi, NULL, UNLOAD, time_frame, time_value, &error);
+        ReadGeomData(patchi, NULL, UNLOAD, time_frame, time_value, 0, &error);
         return 0;
       }
     }
