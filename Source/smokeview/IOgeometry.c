@@ -2473,7 +2473,6 @@ int GetGeomDataSize(char *filename, int *nvars, float *tmin, float *tmax, int ti
     if(returncode==0)break;
     if(is_compressed==1){
       int ncvals;
-      int nvals[4];
       int ntotal;
 
       fread(nvals, 4, 4, stream);
