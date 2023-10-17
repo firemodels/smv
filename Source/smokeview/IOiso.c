@@ -347,11 +347,8 @@ FILE_SIZE ReadIsoGeom(int ifile, int load_flag, int *geom_frame_index, int *erro
     int filesize;
     int ntimes_local;
     float *valptr;
-    float tmin_local, tmax_local;
 
-
-    ntimes_local = GetGeomDataSize(isoi->tfile, &isoi->geom_nvals, &tmin_local, &tmax_local, ALL_FRAMES, NULL, NULL, NULL, NULL, NULL, &error);
-
+    ntimes_local = GetGeomDataSize(isoi->tfile, &isoi->geom_nvals, ALL_FRAMES, NULL, NULL, NULL, NULL, NULL, &error);
     if(isoi->geom_nvals>0&&ntimes_local>0){
       NewMemoryMemID((void **)&isoi->geom_nstatics,  ntimes_local*sizeof(int),       isoi->memory_id);
       NewMemoryMemID((void **)&isoi->geom_ndynamics, ntimes_local*sizeof(int),       isoi->memory_id);
@@ -360,7 +357,8 @@ FILE_SIZE ReadIsoGeom(int ifile, int load_flag, int *geom_frame_index, int *erro
     }
 
     filesize = GetGeomData(isoi->tfile, ntimes_local, isoi->geom_nvals, isoi->geom_times,
-      isoi->geom_nstatics, isoi->geom_ndynamics, isoi->geom_vals, ALL_FRAMES, NULL, NULL, &error);
+                           isoi->geom_nstatics, isoi->geom_ndynamics, isoi->geom_vals,
+                           ALL_FRAMES, NULL, NULL, &error);
     return_filesize += filesize;
     FREEMEMORY(isoi->geom_nstatics);
     FREEMEMORY(isoi->geom_times);

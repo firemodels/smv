@@ -1518,8 +1518,8 @@ float UpdateBoundaryHist(patchdata *patchj){
     else{
       int error_code;
 
-      ReadGeomData(patchi, NULL, UPDATE_HIST, ALL_FRAMES, NULL, &error_code);
-      ReadGeomData(patchi, NULL, UNLOAD, ALL_FRAMES, NULL, &error_code);
+      ReadGeomData(patchi, NULL, UPDATE_HIST, ALL_FRAMES, NULL, 0, &error_code);
+      ReadGeomData(patchi, NULL, UNLOAD,      ALL_FRAMES, NULL, 0, &error_code);
     }
   }
   if(hist_updated == 1){
@@ -2646,7 +2646,7 @@ FILE_SIZE ReadBoundary(int ifile, int load_flag, int *errorcode){
       UpdateBoundaryHist(patchi);
 #endif
     }
-    return_filesize=ReadGeomData(patchi,NULL, load_flag,ALL_FRAMES, NULL, errorcode);
+    return_filesize=ReadGeomData(patchi,NULL, load_flag,ALL_FRAMES, NULL, 1, errorcode);
   }
   else{
     ASSERT(ifile>=0&&ifile<npatchinfo);

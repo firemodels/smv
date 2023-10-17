@@ -75,11 +75,12 @@ EXTERNCPP void SetTimeState(void);
 
 EXTERNCPP void SetCurrentViewPoint(char *viewpoint_label);
 
-EXTERNCPP int GetGeomDataSize(char *file, int *nvals, float *tmin, float *tmax, int time_frame,
-                              int *geom_offsets, int *cvals_offsets, int *cvals_sizes, int *geom_offset_flag, int *max_buffer_size, int *error);
-EXTERNCPP FILE_SIZE GetGeomData(char *filename, int ntimes, int nvals, float *times, int *nstatics, int *ndynamics, float *vals,
-  int time_frame, float *time_value, int *geom_offsets, int *error);
-
+EXTERNCPP int GetGeomDataSize(char *file, int *nvals, int time_frame,
+              int *cvals_offsets, int *cvals_sizes, int *geom_offsets, int *geom_offset_flag,
+              int *max_buffer_size, int *error);
+EXTERNCPP FILE_SIZE GetGeomData(char *filename, int ntimes, int nvals, float *times,
+              int *nstatics, int *ndynamics, float *vals, int time_frame, float *time_value,
+              int *geom_offsets, int *error);
 
 EXTERNCPP void UpdateMovieParms(void);
 
@@ -320,7 +321,7 @@ EXTERNCPP int IsSmokeComponentPresent(smoke3ddata *smoke3di);
 EXTERNCPP void GetSliceDataBounds(slicedata *sd, float *pmin, float *pmax);
 EXTERNCPP void UpdateAllSliceColors(int slicetype, int *errorcode);
 EXTERNCPP void UpdateSliceBounds(void);
-EXTERNCPP FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int time_frame, float *time_value, int *errorcode);
+EXTERNCPP FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int time_frame, float *time_value, int flag, int *errorcode);
 EXTERNCPP void UpdateWhereFaceVolumes(void);
 EXTERNCPP void UpdateTimebarOverlap(void);
 EXTERNCPP void UpdateRenderRadioButtons(int width_low, int height_low, int width_high, int height_high);
