@@ -1717,7 +1717,7 @@ void unloadslice(int value) {
                    0, &errorcode);
     } else {
       ReadSlice("", value, ALL_FRAMES, NULL, UNLOAD, SET_SLICECOLOR,
-                0, &errorcode);
+                &errorcode);
     }
   }
   if (value <= -3) {
