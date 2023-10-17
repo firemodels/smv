@@ -2415,9 +2415,7 @@ int GetGeomDataSizeFixed(patchdata *patchi, int *nvars, int time_frame, int *geo
 
 /* ------------------ GetGeomDataSize ------------------------ */
 
-int GetGeomDataSize(char *filename, int *nvars, int time_frame,
-                    int *geom_offsets, int *geom_offset_flag, int *error){
-
+int GetGeomDataSize(char *filename, int *nvars, int time_frame, int *geom_offsets, int *geom_offset_flag, int *error){
   float time;
   int one, version;
   int nvert_s, nvert_d, nface_s, nface_d;
