@@ -37,14 +37,32 @@ float     part_load_time;
 
 #define PRINT_LOADTIMES(file_count,load_size,load_time) \
   if(file_count>1){\
+    float rate;\
+    char crate[32];\
+    strcpy(crate,"");\
+    if(load_time>0.0){\
+      rate = load_size * 8.0 / load_time;\
+      if(rate>1000000000.0){\
+        rate /= 1000000000.0;\
+        sprintf(crate, "%.1f Gbs", rate); \
+      }\
+      else if(rate > 1000000.0){\
+          rate /= 1000000.0;\
+        sprintf(crate, "%.1f Mbs", rate);\
+      }\
+      else{\
+        rate /= 1000.0;\
+        sprintf(crate, "%.1f Kbs", rate);\
+      }\
+    }\
     if(load_size>1000000000){\
-      PRINTF("Loaded %.1f GB in %.1f s\n",(float)load_size/1000000000.,load_time);\
+      PRINTF("Loaded %.1f GB in %.1f s (%s)\n",(float)load_size/1000000000.,load_time,crate);\
     }\
     else if(load_size>1000000){\
-      PRINTF("Loaded %.1f MB in %.1f s\n",(float)load_size/1000000.,load_time);\
+      PRINTF("Loaded %.1f MB in %.1f s (%s)\n",(float)load_size/1000000.,load_time,crate);\
     }\
     else{\
-      PRINTF("Loaded %.0f kB in %.1f s\n",(float)load_size/1000.,load_time);\
+      PRINTF("Loaded %.0f kB in %.1f s (%s)\n",(float)load_size/1000.,load_time,crate);\
     }\
     printf("\n");\
   }
