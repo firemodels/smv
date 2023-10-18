@@ -100,7 +100,6 @@ int ConvertBoundaryGEOM(patchdata *patchi, int *thread_index){
   int count;
 #endif
 
-  printf("compressing GEOM file %i\n", (int)(patchi - patchinfo));
   boundary_file = patchi->file;
   patchi->compressed = 0;
 
@@ -385,7 +384,6 @@ int ConvertBoundaryBNDF(patchdata *patchi, int *thread_index){
   int zero=0;
   float time_max;
 
-  printf("compressing BNDF file %i\n", (int)(patchi - patchinfo));
   boundary_file=patchi->file;
   version_local=patchi->version;
   patchi->compressed=0;
