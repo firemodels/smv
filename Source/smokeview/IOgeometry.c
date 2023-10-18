@@ -3575,8 +3575,6 @@ FILE_SIZE ReadGeom2(geomdata *geomi, int load_flag, int type){
     nverts=nvertfacesvolumes[0];
     ntris=nvertfacesvolumes[1];
     nvolumes=nvertfacesvolumes[2];
-    printf("vertices: %i triangles: %i\n", nverts, ntris);
-
     if(nverts>0){
       int ii;
       float *xyz=NULL;
