@@ -5320,6 +5320,7 @@ int ParseBNDFProcess(bufferstreamdata *stream, char *buffer, int *nn_patch_in, i
   patchi->cvals_sizes = NULL;
   patchi->cbuffer = NULL;
   patchi->cbuffer_size = 0;
+  patchi->is_compressed = 0;
   patchi->histogram = NULL;
   patchi->blocknumber = blocknumber;
   patchi->seq_id = nn_patch;

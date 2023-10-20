@@ -192,6 +192,7 @@ void UpdateFrameNumber(int changetime){
         patchi->geom_ival_dynamic = patchi->geom_ivals + patchi->geom_ivals_dynamic_offset[patchi->geom_itime];
         patchi->geom_nval_static  = patchi->geom_nstatics[patchi->geom_itime];
         patchi->geom_nval_dynamic = patchi->geom_ndynamics[patchi->geom_itime];
+        if(patchi->is_compressed==1)UncompressBoundaryDataGEOM(patchi, patchi->geom_itime);
       }
       for(i=0;i<nmeshes;i++){
         patchdata *patchi;
@@ -207,12 +208,7 @@ void UpdateFrameNumber(int changetime){
           meshi->patchval_iframe  = meshi->patchval+meshi->patch_itime*meshi->npatchsize;
         }
         else{
-          if(patchi->structured == NO){
-            UncompressBoundaryDataBNDF(meshi, meshi->patch_itime);
-          }
-          else{
-            UncompressBoundaryDataGEOM(patchi, meshi->patch_itime);
-          }
+          UncompressBoundaryDataBNDF(meshi, meshi->patch_itime);
         }
       }
     }

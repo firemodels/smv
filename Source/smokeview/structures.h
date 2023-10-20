@@ -1621,7 +1621,6 @@ typedef struct _patchdata {
 #ifdef pp_BNDF
   int have_geom;
 #endif
-  //int *patchsize;
   int skip,dir;
   float xyz_min[3], xyz_max[3];
   int ntimes, ntimes_old;
@@ -1630,6 +1629,7 @@ typedef struct _patchdata {
   int shortlabel_index;
   int *cvals_offsets, *cvals_sizes;
   unsigned char *cbuffer;
+  int is_compressed;
   int cbuffer_size;
   int boundary;
   int inuse,inuse_getbounds;
