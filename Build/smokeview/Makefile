@@ -289,7 +289,7 @@ intel_linux_64_db : CFLAGS    = -O0 -g -m64 $(SMV_TESTFLAG) -D _DEBUG -D pp_LINU
                                 -Wall -Wextra -Wuninitialized -Wunused-function -Wunused-variable -Wno-sign-compare \
                                 -Wno-unused-parameter $(GITINFO) $(INTEL_COMPINFO)
 intel_linux_64_db : C_STANDARD    = -std=gnu99
-intel_linux_64 : INC += -I $(SOURCE_DIR)/freeglut3.0.0/include
+intel_linux_64_db : INC += -I $(SOURCE_DIR)/freeglut3.0.0/include
 intel_linux_64_db : LFLAGS    = -m64 -static-intel $(INTEL_LIBS_LINUX) $(SMV_PROFILEFLAG)
 intel_linux_64_db : CC        = icx
 intel_linux_64_db : CPP       = icpx
