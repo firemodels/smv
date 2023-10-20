@@ -2785,15 +2785,12 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
   if(patchi->skip == 1)return 0;
 
   char *ext = NULL;
-  int is_compressed = 0;
   ext = strrchr(patchi->file, '.');
-  if(ext != NULL && strcmp(ext, ".svz") == 0)is_compressed = 1;
-  if(is_compressed == 1){
+  if(ext != NULL && strcmp(ext, ".svz") == 0){
     patchi->is_compressed = 1;
     NewMemory((void **)&cvals_offsets, MAX_FRAMES * sizeof(int));
     NewMemory((void **)&cvals_sizes,   MAX_FRAMES * sizeof(int));
   }
-
   if(time_value != NULL){
     NewMemory((void **)&geom_offsets, MAX_FRAMES * sizeof(int));
     geom_offset_flag = BUILD_GEOM_OFFSETS;
@@ -2802,7 +2799,7 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
     geom_offset_flag = GET_GEOM_OFFSETS;
   }
 
-  if(flag==1&&is_compressed==0){
+  if(flag==1&&patchi->is_compressed==0){
     ntimes_local = GetGeomDataSizeFixed(patchi, &nvals, time_frame, geom_offsets, &geom_offset_flag, &max_buffer_size, &error);
   }
   else{
@@ -2845,12 +2842,8 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
     NewMemory((void **)&patchi->geom_vals_dynamic_offset,  ntimes_local*sizeof(int));
   }
   if(nvals>0){
-    char *ext;
-    int is_compressed = 0;
-
-    ext = strrchr(patchi->file, '.');
-    if(ext != NULL && strcmp(ext, ".svz") == 0)is_compressed = 1;
-    if(is_compressed == 1){
+    if(patchi->is_compressed==1){
+      patchi->is_compressed = 1;
       NewMemory((void **)&patchi->geom_vals, nvals*sizeof(char));
     }
     else{
@@ -2858,7 +2851,6 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
       NewMemory((void **)&patchi->geom_ivals, nvals * sizeof(char));
     }
   }
-
   if(load_flag == UPDATE_HIST){
     GetGeomData(patchi->file, ntimes_local, nvals, patchi->geom_times,
       patchi->geom_nstatics, patchi->geom_ndynamics, patchi->geom_vals, time_frame, time_value, geom_offsets, &error);
