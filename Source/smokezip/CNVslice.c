@@ -323,11 +323,28 @@ int ConvertVolSlice(slicedata *slicei, int *thread_index){
 
 /* ------------------ ConvertSlice ------------------------ */
 
+void MakeSliceFile(char *slicefile, slicedata *slicei, char *ext){
+  if(GLOBdestdir!=NULL){
+    strcpy(slicefile, GLOBdestdir);
+    strcat(slicefile, slicei->filebase);
+  }
+  else{
+    strcpy(slicefile, slicei->file);
+  }
+  char *ex;
+
+    ex = strrchr(slicefile, '.');
+    if(ext!=NULL&&strcmp(ext,".rle")==0)*ext=0;
+    strcat(slicefile,ext);
+}
+
+/* ------------------ ConvertSlice ------------------------ */
+
 // unsigned int UnCompressRLE(unsigned char *buffer_in, int nchars_in, unsigned char *buffer_out)
 
 int ConvertSlice(slicedata *slicei, int *thread_index){
 
-  char slicefile_svz[1024], slicesizefile_svz[1024];
+  char slicefile_svz[1024], slicesizefile_svz[1024], slicefile_svv[1024];
   int fileversion, one, zero;
   char *slice_file;
   int version_local;
@@ -398,51 +415,9 @@ int ConvertSlice(slicedata *slicei, int *thread_index){
 
   // set up slice compressed file
 
-  if(GLOBdestdir!=NULL){
-    strcpy(slicefile_svz,GLOBdestdir);
-    strcat(slicefile_svz,slicei->filebase);
-  }
-  else{
-    strcpy(slicefile_svz,slicei->file);
-  }
-  {
-
-    char *ext;
-    int lensvz;
-
-    lensvz = strlen(slicefile_svz);
-
-    if(lensvz>4){
-      ext = slicefile_svz + lensvz - 4;
-      if(strcmp(ext,".rle")==0){
-        slicefile_svz[lensvz-4]=0;
-      }
-      strcat(slicefile_svz,".svz");
-    }
-  }
-
-  if(GLOBdestdir!=NULL){
-    strcpy(slicesizefile_svz,GLOBdestdir);
-    strcat(slicesizefile_svz,slicei->filebase);
-  }
-  else{
-    strcpy(slicesizefile_svz,slicei->file);
-  }
-  {
-
-    char *ext;
-    int lensvz;
-
-    lensvz = strlen(slicesizefile_svz);
-
-    if(lensvz>4){
-      ext = slicesizefile_svz + lensvz - 4;
-      if(strcmp(ext,".rle")==0){
-        slicesizefile_svz[lensvz-4]=0;
-      }
-      strcat(slicesizefile_svz,".sz");
-    }
-  }
+  MakeSliceFile(slicefile_svz,     slicei, ".svz");
+  MakeSliceFile(slicefile_svv,     slicei, ".svv");
+  MakeSliceFile(slicesizefile_svz, slicei, ".sz");
 
   if(GLOBcleanfiles==1){
     slicestream=fopen(slicefile_svz,"rb");
@@ -450,6 +425,15 @@ int ConvertSlice(slicedata *slicei, int *thread_index){
       fclose(slicestream);
       PRINTF("  Removing %s\n",slicefile_svz);
       UNLINK(slicefile_svz);
+      LOCK_COMPRESS;
+      GLOBfilesremoved++;
+      UNLOCK_COMPRESS;
+    }
+    slicestream=fopen(slicefile_svv,"rb");
+    if(slicestream!=NULL){
+      fclose(slicestream);
+      PRINTF("  Removing %s\n",slicefile_svv);
+      UNLINK(slicefile_svv);
       LOCK_COMPRESS;
       GLOBfilesremoved++;
       UNLOCK_COMPRESS;
