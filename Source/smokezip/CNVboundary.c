@@ -304,9 +304,11 @@ int ConvertBoundaryGEOM(patchdata *patchi, int *thread_index){
       }
       fprintf(boundarysizestream, "%f %i %i\n", time_local, ( int )ntotal, ( int )ncompressed_vals);
       fwrite(&time_local,       4, 1,                boundarystream); // write out time_local
-      fwrite(&nvals, 4, 4, boundarystream);                           // write out nvals
+      fwrite(&nvals,            4, 4,                boundarystream); // write out nvals
       fwrite(&ncompressed_vals, 4, 1,                boundarystream); // write out compressed size of frame
-      fwrite(compressed_vals,   1, ncompressed_vals, boundarystream); // write out compressed buffer
+      if(ncompressed_vals>0){
+        fwrite(compressed_vals, 1, ncompressed_vals, boundarystream); // write out compressed buffer
+      }
       sizeafter += 8 + 16 + ncompressed_vals;
       data_loc = FTELL(BOUNDARYFILE);
       percent_done = 100.0 * ( float )data_loc / ( float )patchi->filesize;
