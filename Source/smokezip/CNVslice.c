@@ -61,24 +61,33 @@ void GetSliceBounds(void){
   for(i = 0;i < nslicebounds;i++){
     bounddata *pbi;
     int j;
-    int have_bound = 0;
 
     pbi = slicebounds + i;
-    if(pbi->setvalmin == 1 && pbi->setvalmax == 1)continue; // bound obtained from ini file
-    for(j = 0;j < nsliceinfo;j++){  // bound computed from .bnd files
-      slicedata *slicej;
+    if(pbi->setvalmin == 0 || pbi->setvalmax == 0){
+      for(j = 0;j < nsliceinfo;j++){  // bound computed from .bnd files
+        slicedata *slicej;
 
-      slicej = sliceinfo + j;
+        slicej = sliceinfo + j;
       if(strcmp(pbi->label, slicej->label.shortlabel) != 0)continue;
-      if(GetFileBounds(slicej->boundfile, &(slicej->valmin), &(slicej->valmax)) == 1){
-        pbi->valmin = MIN(pbi->valmin, slicej->valmin);
-        pbi->valmax = MAX(pbi->valmax, slicej->valmax);
-        have_bound = 1;
+        if(GetFileBounds(slicej->boundfile, &(slicej->valmin), &(slicej->valmax)) == 1){
+          pbi->valmin = MIN(pbi->valmin, slicej->valmin);
+          pbi->valmax = MAX(pbi->valmax, slicej->valmax);
+          pbi->setvalmin = 1;
+          pbi->setvalmax = 1;
+        }
       }
     }
-    if(have_bound == 1){
-      pbi->setvalmin = 1;
-      pbi->setvalmax = 1;
+    if(pbi->setvalmin == 1 && pbi->setvalmax == 1){
+      for(j = 0;j < nsliceinfo;j++){  // bound computed from .bnd files
+        slicedata *slicej;
+
+        slicej = sliceinfo + j;
+        if(strcmp(pbi->label, slicej->label.shortlabel) != 0)continue;
+        slicej->setvalmin = 1;
+        slicej->setvalmax = 1;
+        slicej->valmin = pbi->valmin;
+        slicej->valmax = pbi->valmax;
+      }
     }
   }
 }
