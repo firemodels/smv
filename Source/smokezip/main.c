@@ -293,6 +293,9 @@ int main(int argc, char **argv){
       filelen=strlen(filebase);
     }
   }
+  NewMemory((void **)&smvzip_filename, (unsigned int)(strlen(filebase) + strlen(".smvzip") + 1));
+  STRCPY(smvzip_filename, filebase);
+  STRCAT(smvzip_filename, ".smvzip");
   if(GLOBsourcedir==NULL){
     strcpy(smvfile,filebase);
     strcpy(smzlogfile,filebase);
@@ -352,6 +355,20 @@ int main(int argc, char **argv){
   CompressAll(NULL);
 #endif
 
+  if(GLOBcleanfiles==1){
+    if(FileExistsOrig(smvzip_filename)==1){
+      UNLINK(smvzip_filename);
+    }
+  }
+  else{
+    FILE *stream;
+
+    stream = fopen(smvzip_filename, "w");
+    if(stream!=NULL){
+      fprintf(stream, "1\n");
+      fclose(stream);
+    }
+  }
   if(GLOBcleanfiles==0&&GLOBdestdir!=NULL){
     PRINTF("Copying .smv, .ini and .end files to %s directory\n",GLOBdestdir);
     CopyFILE(GLOBdestdir,smvfile,smvfilebase,REPLACE_FILE);

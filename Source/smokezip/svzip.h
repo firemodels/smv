@@ -293,6 +293,7 @@ EXTERN partclassdata *partclassinfo;
 EXTERN partpropdata *part5propinfo;
 EXTERN threaddata *threadinfo;
 EXTERN spherepoints sphereinfo;
+EXTERN char *smvzip_filename;
 
 EXTERN int npatchinfo, nsliceinfo, npartinfo;
 EXTERN int npatchbounds, nslicebounds;
