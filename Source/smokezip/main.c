@@ -44,7 +44,6 @@ void Usage(char *prog, int option){
     PRINTF("  -part2iso - generate isosurfaces from particle data\n");
     PRINTF("bound options:\n");
     PRINTF("  -bounds - estimate data bounds for all file types\n");
-    PRINTF("  -bb - estimate data bounds for boundary files\n");
     PRINTF("  -bs - estimate data bounds for slice files\n");
     PRINTF("  -no_chop - do not chop or truncate slice data.  Smokezip compresses\n");
     PRINTF("        slice data truncating data above and below chop values\n");
@@ -127,7 +126,6 @@ int main(int argc, char **argv){
   GLOBoverwrite_s=0;
   GLOBget_bounds=0;
   GLOBget_slice_bounds=0;
-  GLOBget_boundary_bounds=0;
   GLOBpartfile2iso=0;
   GLOBoverwrite_slice=0;
   GLOBoverwrite_volslice=0;
@@ -171,10 +169,6 @@ int main(int argc, char **argv){
         if(strcmp(arg,"-bounds")==0){
           GLOBget_bounds=1;
           GLOBget_slice_bounds=1;
-          GLOBget_boundary_bounds=1;
-        }
-        else if(strcmp(arg,"-bb")==0){
-          GLOBget_boundary_bounds=1;
         }
         else if(strcmp(arg,"-bs")==0){
           GLOBget_slice_bounds=1;

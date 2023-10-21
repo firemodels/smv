@@ -591,7 +591,7 @@ int ReadSMV(char *smvfile){
           break;
         }
         patchi->filesize=filesize;
-        if(patchi->is_geom==0&&GLOBget_boundary_bounds==1){
+        if(patchi->is_geom==0){
           int npatches, error;
           FILE *boundaryunitnumber;
 
