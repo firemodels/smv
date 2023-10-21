@@ -222,7 +222,6 @@ int SetupCase(char *filename){
   char *input_file;
 
   return_code=-1;
-
   FREEMEMORY(part_globalbound_filename);
   NewMemory((void **)&part_globalbound_filename, strlen(fdsprefix)+strlen(".prt.gbnd")+1);
   STRCPY(part_globalbound_filename, fdsprefix);
@@ -246,6 +245,9 @@ int SetupCase(char *filename){
     bufferstreamdata *smv_streaminfo = NULL;
 
     PRINTF("reading  %s\n", input_file);
+    if(FileExistsOrig(smvzip_filename) == 1){
+      lookfor_compressed_files = 1;
+    }
     smv_streaminfo = GetSMVBuffer(iso_filename, input_file);
 
     return_code = ReadSMV(smv_streaminfo);
