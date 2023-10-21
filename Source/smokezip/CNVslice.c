@@ -342,9 +342,9 @@ void MakeSliceFile(char *slicefile, slicedata *slicei, char *ext){
   }
   char *ex;
 
-    ex = strrchr(slicefile, '.');
-    if(ext!=NULL&&strcmp(ext,".rle")==0)*ext=0;
-    strcat(slicefile,ext);
+  ex = strrchr(slicefile, '.');
+  if(ex!=NULL&&strcmp(ex,".rle")==0)*ex=0;
+  strcat(slicefile,ext);
 }
 
 /* ------------------ ConvertSlice ------------------------ */
