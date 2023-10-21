@@ -867,9 +867,7 @@ void *CompressSlices(void *arg){
       UNLOCK_SLICE;
       return NULL;
     }
-    if(GLOBget_slice_bounds==1){
-      GetSliceBounds();
-    }
+    GetSliceBounds();
   }
   UNLOCK_SLICE;
 

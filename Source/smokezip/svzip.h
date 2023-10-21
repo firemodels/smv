@@ -312,7 +312,7 @@ EXTERN int GLOBfilesremoved;
 EXTERN int GLOBsyst;
 EXTERN char *GLOBendianfile;
 EXTERN int GLOBmake_demo;
-EXTERN int GLOBget_bounds, GLOBget_slice_bounds;
+EXTERN int GLOBget_bounds;
 EXTERN int GLOBpartfile2iso;
 EXTERN char GLOBsmvisofile[1024];
 
