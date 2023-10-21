@@ -1556,7 +1556,7 @@ void UncompressSliceDataFrame(slicedata *sd, int iframe_local){
   if(sd->compression_type == COMPRESSED_ZLIB){
     UnCompressZLIB(sd->slicecomplevel, &countout, compressed_data, countin);
   }
-  if(sd->compression_type == COMPRESSED_RLE){
+  else if(sd->compression_type == COMPRESSED_RLE){
     countout = UnCompressRLE(compressed_data, countin, sd->slicecomplevel);
   }
   CheckMemory;
