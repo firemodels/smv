@@ -801,9 +801,7 @@ void *CompressPatches(void *arg){
 
   // find bounds
 
-    if(GLOBget_boundary_bounds==1){
-      GetBoundaryBounds();
-    }
+    GetBoundaryBounds();
     for(i=0;i<npatchinfo;i++){
       patchi = patchinfo + i;
       if(patchi->setvalmin==1&&patchi->setvalmax==1){
