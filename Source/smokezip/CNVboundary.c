@@ -755,6 +755,16 @@ void GetBoundaryBounds(void){
     if(have_bound==1){
       pbi->setvalmin = 1;
       pbi->setvalmax = 1;
+      for(j = 0;j < npatchinfo;j++){  // bound computed from .bnd files
+        patchdata *patchj;
+
+        patchj = patchinfo + j;
+        if(strcmp(pbi->label, patchj->label.shortlabel) != 0)continue;
+        patchj->setvalmin = 1;
+        patchj->setvalmax = 1;
+        patchj->valmin    = pbi->valmin;
+        patchj->valmax    = pbi->valmax;
+      }
     }
   }
 }
