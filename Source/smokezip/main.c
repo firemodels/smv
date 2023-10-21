@@ -43,7 +43,6 @@ void Usage(char *prog, int option){
     PRINTF("  -b  - overwrites boundary compressed files\n");
     PRINTF("  -part2iso - generate isosurfaces from particle data\n");
     PRINTF("bound options:\n");
-    PRINTF("  -bounds - estimate data bounds for all file types\n");
     PRINTF("  -no_chop - do not chop or truncate slice data.  Smokezip compresses\n");
     PRINTF("        slice data truncating data above and below chop values\n");
     PRINTF("        specified in the .ini file\n");
@@ -123,7 +122,6 @@ int main(int argc, char **argv){
   GLOBsourcedir=NULL;
   GLOBoverwrite_b=0;
   GLOBoverwrite_s=0;
-  GLOBget_bounds=0;
   GLOBpartfile2iso=0;
   GLOBoverwrite_slice=0;
   GLOBoverwrite_volslice=0;
@@ -163,14 +161,6 @@ int main(int argc, char **argv){
     lenarg=strlen(arg);
     if(arg[0]=='-'&&lenarg>1){
       switch(arg[1]){
-      case 'b':
-        if(strcmp(arg,"-bounds")==0){
-          GLOBget_bounds=1;
-        }
-        else{
-          GLOBoverwrite_b=1;
-        }
-        break;
       case 'n':
         if(strcmp(arg,"-n3")==0){
           GLOBdoit_smoke3d=0;
