@@ -7847,6 +7847,9 @@ void InitLoadMultiSubMenu(int **loadsubmslicemenuptr, int *nmultisliceloadedptr)
     if(mslicei->slice_filetype==SLICE_GEOM){
       strcat(menulabel, " - geometry");
     }
+    if(sd->compression_type == COMPRESSED_ZLIB){
+      strcat(menulabel, "(ZLIB)");
+    }
     glutAddMenuEntry(menulabel, i);
     if(i==nmultisliceinfo-1||strcmp(sd->label.longlabel, sdip1->label.longlabel)!=0){
       if(mslicei->ndirxyz[1] + mslicei->ndirxyz[2] + mslicei->ndirxyz[3] > 1){
@@ -8247,6 +8250,9 @@ void InitMultiVectorSubMenu(int **loadsubmvslicemenuptr){
     if(si->slicelabel!=NULL){
       STRCAT(menulabel, " - ");
       STRCAT(menulabel, si->slicelabel);
+    }
+    if(si->compression_type == COMPRESSED_ZLIB){
+      STRCAT(menulabel, "(ZLIB)");
     }
     glutAddMenuEntry(menulabel, i);
     if(i==nmultivsliceinfo-1||strcmp(si->label.longlabel, sip1->label.longlabel)!=0){
@@ -12006,16 +12012,28 @@ updatemenu=0;
         }
         CREATEMENU(unloadsmoke3dmenu,UnLoadSmoke3DMenu);
         for(i = 0; i<nsmoke3dtypes; i++){
-          int j, doit;
+          int j, doit, is_zlib;
 
           doit = 0;
+          is_zlib = 0;
           for(j = 0; j<nsmoke3dinfo; j++){
             if(smoke3dinfo[j].loaded==1&&smoke3dinfo[j].type==i){
+              if(smoke3dinfo[j].compression_type == COMPRESSED_ZLIB){
+                is_zlib = 1;
+              }
               doit = 1;
               break;
             }
           }
-          if(doit==1)glutAddMenuEntry(smoke3dtypes[i].longlabel, -(i+1));
+          if(doit == 1){
+            char smvmenulabel[256];
+
+            strcpy(smvmenulabel, smoke3dtypes[i].longlabel);
+            if(is_zlib == 1){
+              strcat(smvmenulabel, "(ZLIB)");
+            }
+            glutAddMenuEntry(smvmenulabel, -(i + 1));
+          }
         }
         GLUTADDSUBMENU(_("Mesh"), unloadsmoke3dsinglemenu);
       }
@@ -12032,7 +12050,7 @@ updatemenu=0;
           }
           for(i = 0; i<nsmoke3dinfo; i++){
             char menulabel[256];
-	        smoke3ddata *smoke3di;
+            smoke3ddata *smoke3di;
 
             smoke3di = smoke3dinfo+i;
             if(smoke3di->type!=ii)continue;
@@ -12075,13 +12093,18 @@ updatemenu=0;
           for(ii = 0; ii<nsmoke3dtypes; ii++){
             int jj;
             int ntotal, nloaded;
-	    char menulabel[256];
+            char menulabel[256];
+            int is_zlib;
 
             ntotal=0;
             nloaded=0;
+            is_zlib = 0;
             for(jj=0;jj<nsmoke3dinfo;jj++){
               if(smoke3dinfo[jj].type==ii){
                 if(smoke3dinfo[jj].loaded==1)nloaded++;
+                if(smoke3dinfo[jj].compression_type == COMPRESSED_ZLIB){
+                  is_zlib = 1;
+                }
                 ntotal++;
               }
             }
@@ -12094,6 +12117,9 @@ updatemenu=0;
             }
             strcat(menulabel, smoke3dtypes[ii].longlabel);
             strcat(menulabel, smoke3dtypes[ii].smoke3d->cextinct);
+            if(is_zlib == 1){
+              strcat(menulabel, "(ZLIB)");
+            }
             glutAddMenuEntry(menulabel,-ii-100);
           }
         }
@@ -12498,8 +12524,14 @@ updatemenu=0;
           }
           if(ii==0||strcmp(patchi->menulabel_suffix,patchim1->menulabel_suffix)!=0){
             if(patchi->filetype_label==NULL||strcmp(patchi->filetype_label,"INCLUDE_GEOM")!=0){
+              char menulabel[256];
+
               nsubpatchmenus_b[iloadsubpatchmenu_b-1]++;
-              glutAddMenuEntry(patchi->menulabel_suffix,-i-10);
+              strcpy(menulabel, patchi->menulabel_suffix);
+              if(patchi->compression_type == COMPRESSED_ZLIB){
+                strcat(menulabel, "(ZLIB)");
+              }
+              glutAddMenuEntry(menulabel,-i-10);
             }
           }
         }
@@ -12537,6 +12569,9 @@ updatemenu=0;
               if(patch_load_state==1)strcat(menulabel, "#");
               if(patch_load_state==2)strcat(menulabel, "*");
               strcat(menulabel, patchi->label.longlabel);
+              if(patchi->compression_type == COMPRESSED_ZLIB){
+                strcat(menulabel, "(ZLIB)");
+              }
               glutAddMenuEntry(menulabel,-i-10);
             }
             iloadsubpatchmenu_b++;
