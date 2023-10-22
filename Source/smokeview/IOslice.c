@@ -1113,6 +1113,12 @@ void ReadFed(int file_index, int time_frame, float *time_value, int flag, int fi
     fed_slice->plotx = co->plotx;
     fed_slice->ploty = co->ploty;
     fed_slice->plotz = co->plotz;
+    fed_slice->ijk_min[0] = co->is1;
+    fed_slice->ijk_min[1] = co->js1;
+    fed_slice->ijk_min[2] = co->ks1;
+    fed_slice->ijk_max[0] = co->is2;
+    fed_slice->ijk_max[1] = co->js2;
+    fed_slice->ijk_max[2] = co->ks2;
     if(fed_slice->volslice==1){
       if(fed_slice->nslicei!=fed_slice->is2+1-fed_slice->is1)fed_slice->is2=fed_slice->nslicei+fed_slice->is1-1;
       if(fed_slice->nslicej!=fed_slice->js2+1-fed_slice->js1)fed_slice->js2=fed_slice->nslicej+fed_slice->js1-1;
