@@ -42,10 +42,8 @@ void Usage(char *prog, int option){
     PRINTF("  -3  - overwrites 3d smoke files\n");
     PRINTF("  -b  - overwrites boundary compressed files\n");
     PRINTF("  -part2iso - generate isosurfaces from particle data\n");
-    PRINTF("bound options:\n");
     PRINTF("  -no_chop - do not chop or truncate slice data.  Smokezip compresses\n");
-    PRINTF("        slice data truncating data above and below chop values\n");
-    PRINTF("        specified in the .ini file\n");
+    PRINTF("        slice data ignoring chop values specified in the ini file\n");
     PRINTF("compress options:\n");
     PRINTF("  -n3 - do not compress 3d smoke files\n");
     PRINTF("  -nb - do not compress boundary files\n");
