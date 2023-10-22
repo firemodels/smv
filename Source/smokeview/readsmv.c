@@ -5249,16 +5249,6 @@ int ParseBNDFProcess(bufferstreamdata *stream, char *buffer, int *nn_patch_in, i
   STRCPY(patchi->size_file, bufferptr);
   //      STRCAT(patchi->size_file,".szz"); when we actully use file check both .sz and .szz extensions
 
-#ifdef pp_CHECK_FILES
-  if(FILE_EXISTS_CASEDIR(patchi->comp_file)==YES){
-    patchi->compression_type = COMPRESSED_ZLIB;
-    patchi->file = patchi->comp_file;
-  }
-  else{
-    patchi->compression_type = UNCOMPRESSED;
-    patchi->file = patchi->reg_file;
-  }
-#else
   if(lookfor_compressed_files==1&&FILE_EXISTS_CASEDIR(patchi->comp_file) == YES){
     patchi->compression_type = COMPRESSED_ZLIB;
     patchi->file             = patchi->comp_file;
@@ -5267,8 +5257,6 @@ int ParseBNDFProcess(bufferstreamdata *stream, char *buffer, int *nn_patch_in, i
     patchi->compression_type = UNCOMPRESSED;
     patchi->file             = patchi->reg_file;
   }
-#endif
-
   patchi->geominfo = NULL;
   if(patchi->structured==NO){
     int igeom;
@@ -5341,9 +5329,6 @@ int ParseBNDFProcess(bufferstreamdata *stream, char *buffer, int *nn_patch_in, i
   patchi->setchopmax = 0;
   patchi->chopmax = 0.0;
   meshinfo[blocknumber].patchfilenum = -1;
-#ifdef pp_CHECK_FILES
-  if(fast_startup==1||FILE_EXISTS_CASEDIR(patchi->file)==YES)
-#endif
   {
     char geomlabel2[256], *geomptr = NULL;
 
@@ -5387,12 +5372,6 @@ int ParseBNDFProcess(bufferstreamdata *stream, char *buffer, int *nn_patch_in, i
       *ipatch_in = ipatch;
     }
   }
-#ifdef pp_CHECK_FILES
-  else{
-    if(ReadLabels(&patchi->label, stream, NULL)==LABEL_ERR)return RETURN_TWO;
-    npatchinfo--;
-  }
-#endif
   return RETURN_CONTINUE;
 }
 
@@ -5521,8 +5500,7 @@ int ParseSMOKE3DProcess(bufferstreamdata *stream, char *buffer, int *nn_smoke3d_
     if(NewMemory((void **)&smoke3di->comp_file, (unsigned int)(len+1))==0)return RETURN_TWO;
     STRCPY(smoke3di->comp_file, buffer2);
 
-#ifdef pp_CHECK_FILES
-    if(FILE_EXISTS_CASEDIR(smoke3di->comp_file)==YES){
+    if(have_compressed_files==1&&FILE_EXISTS_CASEDIR(smoke3di->comp_file) == YES){
       smoke3di->file = smoke3di->comp_file;
       smoke3di->is_zlib = 1;
       smoke3di->compression_type = COMPRESSED_ZLIB;
@@ -5530,9 +5508,6 @@ int ParseSMOKE3DProcess(bufferstreamdata *stream, char *buffer, int *nn_smoke3d_
     else{
       smoke3di->file = smoke3di->reg_file;
     }
-#else
-    smoke3di->file = smoke3di->reg_file;
-#endif
 
 #ifdef pp_SMOKE16
     char buffer16[256];
@@ -5550,9 +5525,6 @@ int ParseSMOKE3DProcess(bufferstreamdata *stream, char *buffer, int *nn_smoke3d_
     }
 #endif
 
-#ifdef pp_CHECK_FILES
-    if(FILE_EXISTS_CASEDIR(smoke3di->file)==YES)
-#endif
     {
       if(ReadLabels(&smoke3di->label, stream, NULL)==LABEL_ERR)return RETURN_TWO;
       if(strcmp(smoke3di->label.longlabel, "HRRPUV")==0){
@@ -5564,12 +5536,6 @@ int ParseSMOKE3DProcess(bufferstreamdata *stream, char *buffer, int *nn_smoke3d_
       ismoke3d++;
       *ismoke3d_in = ismoke3d;
     }
-#ifdef pp_CHECK_FILES
-    else{
-      if(ReadLabels(&smoke3di->label, stream, NULL)==LABEL_ERR)return RETURN_TWO;
-      nsmoke3dinfo--;
-    }
-#endif
     if(extinct<0.0){
       extinct = 0.0;
       if(IsSootFile(smoke3di->label.shortlabel, smoke3di->label.longlabel)==1)extinct = 8700.0;
@@ -11419,10 +11385,8 @@ typedef struct {
     readallgeom_multithread = 0;
   }
 
-#ifndef pp_CHECK_FILES
   CheckFilesMT();
   PRINT_TIMER(timer_readsmv, "CheckFilesMT");
-#endif
 
 #ifdef pp_BNDF
   for(i = 0;i < npatchinfo;i++){
