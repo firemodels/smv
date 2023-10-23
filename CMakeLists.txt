@@ -410,10 +410,7 @@ add_executable(smokezip
     Source/smokezip/CNVpart.c
     Source/smokezip/CNVslice.c
     Source/shared/assert.c
-    Source/shared/csphere.c
     Source/shared/dmalloc.c
-    Source/smokezip/lightsmoke.c
-    Source/shared/histogram.c
     Source/smokezip/readfiles.c
     Source/smokezip/utilities.c
     Source/shared/isobox.c
