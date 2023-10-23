@@ -4766,7 +4766,7 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
 // reset slice variables to an unloaded state
 
     if(flag == UNLOAD){
-      int ii, i;
+      int ii;
 
       update_flipped_colorbar = 1;
       sd->ntimes_old = 0;
@@ -4778,16 +4778,16 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
       plotstate = GetPlotState(DYNAMIC_PLOTS);
       ReadVolSlice = 0;
       for(ii = 0; ii<nslice_loaded; ii++){
-        int i;
         slicedata *sdi;
+	int i;
 
         i = slice_loaded_list[ii];
         sdi = sliceinfo + i;
         if(sdi->volslice == 1)ReadVolSlice = 1;
       }
       for(ii = 0; ii<nslice_loaded; ii++){
-        int i;
         slicedata *sdi;
+	int i;
 
         i = slice_loaded_list[ii];
         sdi = sliceinfo + i;
@@ -4800,7 +4800,7 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
       if(flag2 == 0){
         for(ii = 0; ii<nslice_loaded; ii++){
           slicedata *sdi;
-          int i;
+	  int i;
 
           i = slice_loaded_list[ii];
           sdi = sliceinfo + i;
@@ -4816,6 +4816,7 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
         slicefile_labelindex = 0;
       }
 
+      int i;
       for(i = 0; i<nvsliceinfo; i++){
         vd = vsliceinfo + i;
         if(vd->iu == ifile)vd->u = NULL;
