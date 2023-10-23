@@ -9,10 +9,4 @@
 
 //*** define env2mod title
 
-#ifdef pp_BETA
-#define PROGVERSION "Test"
-#else
-#define PROGVERSION "0.1"
-#endif
-
 #endif

@@ -9,7 +9,7 @@
 
 /* ------------------ setup_slice ------------------------ */
 
-void setup_boundary(FILE *stream_out){
+void SetupBoundary(FILE *stream_out){
   casedata *case1, *case2;
   int i;
 
@@ -20,7 +20,7 @@ void setup_boundary(FILE *stream_out){
     boundary *boundaryi;
 
     boundaryi = case1->boundaryinfo + i;
-    boundaryi->boundary2 = getboundary(boundaryi,case2);
+    boundaryi->boundary2 = GetBoundary(boundaryi,case2);
     if(boundaryi->boundary2!=NULL&&stream_out!=NULL){
       char outfile[1024];
 
@@ -36,7 +36,7 @@ void setup_boundary(FILE *stream_out){
 
 /* ------------------ getboundary ------------------------ */
 
-boundary *getboundary(boundary *boundaryin, casedata *case2){
+boundary *GetBoundary(boundary *boundaryin, casedata *case2){
   int i,j;
 
   if(strlen(type_label)>0&&strcmp(type_label,boundaryin->label.shortlabel)!=0){
@@ -50,10 +50,10 @@ boundary *getboundary(boundary *boundaryin, casedata *case2){
     boundaryout = case2->boundaryinfo + i;
     if(boundaryin->boundarytype!=boundaryout->boundarytype)continue;
     if(strcmp(boundaryin->label.longlabel,boundaryout->label.longlabel)!=0)continue;
-    if(mesh_Match(boundaryin->boundarymesh,boundaryout->boundarymesh)==0)continue;
+    if(MeshMatch(boundaryin->boundarymesh,boundaryout->boundarymesh)==0)continue;
     patch2index=boundaryin->patch2index;
     for(j=0;j<boundaryin->npatches;j++){
-      patch2index[j]=getpatchindex(j,boundaryin,boundaryout);
+      patch2index[j]=GetPatchIndex(j,boundaryin,boundaryout);
       if(patch2index[j]!=-1)nmatches++;
     }
     if(nmatches==0)continue;
@@ -65,7 +65,7 @@ boundary *getboundary(boundary *boundaryin, casedata *case2){
 
 /* ------------------ getpatchindex ------------------------ */
 
-int getpatchindex(int in1, boundary *boundaryin, boundary *boundaryout){
+int GetPatchIndex(int in1, boundary *boundaryin, boundary *boundaryout){
   int j;
   int i1, i2, j1, j2, k1, k2;
   int *pi1, *pi2, *pj1, *pj2, *pk1, *pk2;
@@ -99,7 +99,7 @@ int getpatchindex(int in1, boundary *boundaryin, boundary *boundaryout){
 
 /* ------------------ diff_slices ------------------------ */
 
-void diff_boundaryes(FILE *stream_out){
+void DiffBoundarYes(FILE *stream_out){
   int j;
   int file_size;
 

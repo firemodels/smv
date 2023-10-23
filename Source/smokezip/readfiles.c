@@ -9,19 +9,77 @@
 #include "stdio_buffer.h"
 #include "getdata.h"
 
+/* ------------------ InitVolRender ------------------------ */
+
+void InitVolRender(void){
+  int i;
+
+  nvolrenderinfo = 0;
+  for(i = 0;i < nmeshes;i++){
+    meshdata *meshi;
+    volrenderdata *vr;
+
+    meshi = meshinfo + i;
+    vr = &(meshi->volrenderinfo);
+    vr->rendermesh = meshi;
+    vr->fire = NULL;
+    vr->smoke = NULL;
+  }
+  for(i = 0;i < nsliceinfo;i++){
+    slicedata *slicei;
+    int blocknumber;
+    meshdata *meshi;
+    volrenderdata *vr;
+    int ni, nj, nk;
+
+    slicei = sliceinfo + i;
+    slicei->isvolslice = 0;
+    slicei->voltype = 0;
+    blocknumber = slicei->blocknumber;
+    if(blocknumber < 0 || blocknumber >= nmeshes)continue;
+    meshi = meshinfo + blocknumber;
+    GetSliceParmsC(slicei->file, &ni, &nj, &nk);
+
+    if(ni != meshi->ibar + 1 || nj != meshi->jbar + 1 || nk != meshi->kbar + 1)continue;
+    vr = &(meshi->volrenderinfo);
+
+    if(STRCMP(slicei->label.shortlabel, "temp") == 0){
+      vr->fire = slicei;
+      continue;
+    }
+    if(IsSootFile(slicei->label.shortlabel, slicei->label.longlabel) == 1){
+      vr->smoke = slicei;
+      continue;
+    }
+  }
+  nvolrenderinfo = 0;
+  for(i = 0;i < nmeshes;i++){
+    meshdata *meshi;
+    volrenderdata *vr;
+
+    meshi = meshinfo + i;
+    vr = &(meshi->volrenderinfo);
+    if(vr->smoke != NULL){
+      nvolrenderinfo++;
+      vr->smoke->isvolslice = 1;
+      vr->smoke->voltype = 1;
+      if(vr->fire != NULL){
+        vr->fire->isvolslice = 1;
+        vr->fire->voltype = 2;
+      }
+    }
+  }
+}
+
+/* ------------------ ReadSMV ------------------------ */
+
 int ReadSMV(char *smvfile){
   FILE *stream = NULL;
   bufferstreamdata *streamsmv;
   int ioffset;
   int unit_start=15;
   int igrid,ipdim;
-  int ipatch,ipatch_seq;
-  int iplot3d, iplot3d_seq;
-  int ismoke3d, ismoke3d_seq;
-  int islice, islice_seq;
-#ifdef pp_PART
-  int ipart_seq;
-#endif
+  int ipatch, ismoke3d, islice;
 #define BUFFERSIZE 255
   char buffer[BUFFERSIZE];
 
@@ -59,20 +117,13 @@ int ReadSMV(char *smvfile){
     ++++++++++++++++++++++ BNDF ++++++++++++++++++++++++++++++
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   */
-    if(Match(buffer, "BNDF") == 1 || Match(buffer, "BNDC") == 1){
+    if(
+      Match(buffer, "BNDF") == 1 || Match(buffer, "BNDC") == 1 ||
+      Match(buffer, "BNDE") == 1 || Match(buffer, "BNDS") == 1
+      ){
       npatchinfo++;
       continue;
     }
-  /*
-    +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    ++++++++++++++++++++++ PL3D ++++++++++++++++++++++++++++++
-    +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  */
-    if(Match(buffer,"PL3D") == 1){
-      nplot3dinfo++;
-      continue;
-    }
-#ifdef pp_PART
   /*
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     ++++++++++++++++++++++ CLASS_OF_PARTICLES++++++++++++++++++++
@@ -101,7 +152,6 @@ int ReadSMV(char *smvfile){
       npartinfo++;
       continue;
     }
-#endif
   /*
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     ++++++++++++++++++++++ SLCF ++++++++++++++++++++++++++++++
@@ -153,10 +203,11 @@ int ReadSMV(char *smvfile){
   // allocate memory for boundary file info
 
   if(npatchinfo>0){
-    patch *patchi;
+    patchdata *patchi;
     int i;
 
-    NewMemory((void **)&patchinfo,npatchinfo*sizeof(patch));
+    NewMemory((void **)&patchinfo,  npatchinfo*sizeof(patchdata));
+    NewMemory((void **)&patchbounds,npatchinfo*sizeof(bounddata));
     for(i=0;i<npatchinfo;i++){
       patchi = patchinfo + i;
       patchi->file=NULL;
@@ -165,28 +216,6 @@ int ReadSMV(char *smvfile){
       patchi->setvalmax=0;
       patchi->valmin=0.0;
       patchi->valmax=1.0;
-    }
-  }
-
-  // allocate memory for plot3d file info
-
-  if(nplot3dinfo>0){
-    int i;
-
-    NewMemory((void **)&plot3dinfo,nplot3dinfo*sizeof(plot3d));
-    for(i=0;i<nplot3dinfo;i++){
-      int j;
-      plot3d *plot3di;
-
-      plot3di = plot3dinfo + i;
-      plot3di->file=NULL;
-      plot3di->filebase=NULL;
-      for(j=0;j<5;j++){
-        plot3di->bounds[j].setvalmin=0;
-        plot3di->bounds[j].setvalmax=0;
-        plot3di->bounds[j].valmin=0.0;
-        plot3di->bounds[j].valmax=1.0;
-      }
     }
   }
 
@@ -201,7 +230,8 @@ int ReadSMV(char *smvfile){
     slicedata *slicei;
     int i;
 
-    NewMemory((void **)&sliceinfo,nsliceinfo*sizeof(slicedata));
+    NewMemory((void **)&slicebounds, nsliceinfo*sizeof(bounddata));
+    NewMemory((void **)&sliceinfo,   nsliceinfo*sizeof(slicedata));
     for(i=0;i<nsliceinfo;i++){
       slicei = sliceinfo + i;
       slicei->file=NULL;
@@ -223,7 +253,6 @@ int ReadSMV(char *smvfile){
 
   // allocate memory for particle file info
 
-#ifdef pp_PART
   if(npartinfo>0){
     part *parti;
     int i;
@@ -245,27 +274,18 @@ int ReadSMV(char *smvfile){
   if(maxpart5propinfo>0){
     NewMemory((void **)&part5propinfo,maxpart5propinfo*sizeof(partpropdata));
   }
-#endif
 
   // read in smv file a second time_local to compress files
 
   ioffset=0;
   ipatch=0;
-  ipatch_seq=0;
-#ifdef pp_PART
-  ipart_seq=0;
   npartclassinfo=0;
   npart5propinfo=0;
   npartinfo=0;
-#endif
-  iplot3d=0;
-  iplot3d_seq=0;
   islice=0;
-  islice_seq=0;
   ipdim=0;
   igrid=0;
   ismoke3d=0;
-  ismoke3d_seq=0;
   REWIND(streamsmv);
 #ifndef pp_THREAD
   if(GLOBcleanfiles==0)PRINTF("Compressing .bf, .iso, .s3d, and .sf data files referenced in %s\n\n",smvfile);
@@ -275,8 +295,6 @@ int ReadSMV(char *smvfile){
     PRINTF("   (Each removal occurs only if the corresponding uncompressed file exists)\n\n");
   }
   while(!FEOF(streamsmv)){
-    patch *patchi;
-
     if(FGETS(buffer,BUFFERSIZE,streamsmv)==NULL)break;
     CheckMemory;
     if(strncmp(buffer," ",1)==0)continue;
@@ -345,9 +363,6 @@ int ReadSMV(char *smvfile){
 
       smoke3di = smoke3dinfo + ismoke3d;
       smoke3di->unit_start=unit_start++;
-      ismoke3d_seq++;
-      smoke3di->seq_id = ismoke3d_seq;
-      smoke3di->autozip = 0;
       smoke3di->inuse=0;
       smoke3di->compressed=0;
       smoke3di->smokemesh=meshinfo + ioffset - 1;
@@ -395,7 +410,6 @@ int ReadSMV(char *smvfile){
       }
       continue;
     }
-#ifdef pp_PART
   /*
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     ++++++++++++++++++ CLASS_OF_PARTICLES +++++++++++++++++++++++
@@ -431,7 +445,7 @@ int ReadSMV(char *smvfile){
           labelj->shortlabel=NULL;
           labelj->unit=NULL;
           ReadLabels(labelj,streamsmv,NULL);
-          part5propi=getpartprop(labelj->shortlabel);
+          part5propi=GetPartProp(labelj->shortlabel);
           if(part5propi==NULL){
             part5propi = part5propinfo + npart5propinfo;
             part5propi->label.longlabel=labelj->longlabel;
@@ -473,9 +487,6 @@ int ReadSMV(char *smvfile){
       parti = partinfo + npartinfo;
       parti->unit_start=unit_start++;
       parti->partmesh = meshinfo + meshindex;
-      ipart_seq++;
-      parti->seq_id = ipart_seq;
-      parti->autozip = 0;
       parti->inuse=0;
       parti->compressed=0;
       parti->compressed2=0;
@@ -522,17 +533,20 @@ int ReadSMV(char *smvfile){
       }
       continue;
     }
-#endif
   /*
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     ++++++++++++++++++++++ BNDF ++++++++++++++++++++++++++++++
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   */
-    if(Match(buffer,"BNDF") == 1|| Match(buffer, "BNDC") == 1){
+    if(
+      Match(buffer, "BNDF") == 1 || Match(buffer, "BNDC") == 1 ||
+      Match(buffer, "BNDE") == 1 || Match(buffer, "BNDS") == 1
+      ){
       int version_local=0,dummy;
       char *buffer2;
       int len;
       FILE_SIZE filesize;
+      patchdata *patchi;
 
       len=strlen(buffer);
       if(len>4){
@@ -542,12 +556,11 @@ int ReadSMV(char *smvfile){
 
       patchi = patchinfo + ipatch;
       patchi->unit_start = unit_start++;
-      ipatch_seq++;
-      patchi->seq_id = ipatch;
-      patchi->autozip = 0;
       patchi->inuse=0;
       patchi->compressed=0;
       patchi->version=version_local;
+      patchi->is_geom = 0;
+      if(Match(buffer, "BNDE") == 1 || Match(buffer, "BNDS") == 1)patchi->is_geom = 1;
 
       if(FGETS(buffer,BUFFERSIZE,streamsmv)==NULL)break;
       TrimBack(buffer);
@@ -557,6 +570,7 @@ int ReadSMV(char *smvfile){
         int lendir=0;
 
         if(GLOBsourcedir!=NULL)lendir=strlen(GLOBsourcedir);
+        NewMemory(( void ** )&patchi->boundfile, ( unsigned int )(strlen(buffer2) + lendir +strlen(".bnd") + 1));
         NewMemory((void **)&patchi->file,(unsigned int)(strlen(buffer2)+lendir+1));
         NewMemory((void **)&patchi->filebase,(unsigned int)(strlen(buffer2)+1));
         STRCPY(patchi->filebase,buffer2);
@@ -567,18 +581,20 @@ int ReadSMV(char *smvfile){
         else{
           STRCPY(patchi->file,buffer2);
         }
+        STRCPY(patchi->boundfile, patchi->file);
+        STRCAT(patchi->boundfile, ".bnd");
+        if(patchi->is_geom == 1){
+          if(FGETS(buffer, BUFFERSIZE, streamsmv) == NULL)break;
+        }
         if(ReadLabels(&patchi->label,streamsmv,NULL)==LABEL_ERR){
           fprintf(stderr,"*** Warning: problem reading BNDF entry\n");
           break;
         }
         patchi->filesize=filesize;
-        if(GLOBget_boundary_bounds==1){
+        if(patchi->is_geom==0){
           int npatches, error;
           FILE *boundaryunitnumber;
 
-          NewMemory((void **)&patchi->histogram,sizeof(histogramdata));
-          patchi->histogram->buckets = NULL;
-          patchi->histogram->buckets_polar = NULL;
           // TODO: why was this unit set to 15?
           // boundaryunitnumber=15;
           getboundaryheader1(patchi->file,&boundaryunitnumber, &npatches, &error);
@@ -655,23 +671,14 @@ int ReadSMV(char *smvfile){
         blocknumber--;
       }
 
-      islice_seq++;
       slicei = sliceinfo + islice;
       slicei->blocknumber=blocknumber;
       slicei->unit_start=unit_start++;
       slicei->version=version_local;
-      slicei->seq_id = islice_seq;
-      slicei->autozip = 0;
       slicei->inuse=0;
       slicei->involuse=0;
       slicei->compressed=0;
       slicei->vol_compressed=0;
-
-      if(GLOBget_slice_bounds==1){
-        NewMemory((void **)&slicei->histogram,sizeof(histogramdata));
-        slicei->histogram->buckets = NULL;
-        slicei->histogram->buckets_polar = NULL;
-      }
 
       if(FGETS(buffer,BUFFERSIZE,streamsmv)==NULL)break;
       TrimBack(buffer);
@@ -706,87 +713,6 @@ int ReadSMV(char *smvfile){
         fprintf(stderr,"*** Warning: the file, %s, does not exist.\n",buffer2);
         if(ReadLabels(&sliceinfo[islice].label,streamsmv,NULL)==LABEL_ERR)break;
         nsliceinfo--;
-      }
-      continue;
-    }
-  /*
-    +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    ++++++++++++++++++++++ PL3D ++++++++++++++++++++++++++++++
-    +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  */
-    if(Match(buffer,"PL3D") == 1){
-      int version_local=0;
-      char *buffer2;
-      FILE_SIZE filesize;
-      plot3d *plot3di;
-      int blocknumber;
-      float time_local;
-      int blocktemp;
-
-      if(nmeshes>1){
-        blocknumber=igrid-1;
-      }
-      else{
-        blocknumber=0;
-      }
-      if(strlen(buffer)>5){
-        buffer2 = buffer+5;
-        blocktemp=1;
-        sscanf(buffer2,"%s %f %i",buffer2,&time_local,&blocktemp);
-        if(blocktemp>0&&blocktemp<=nmeshes)blocknumber = blocktemp-1;
-      }
-      else{
-        time_local=-1.0;
-      }
-
-      plot3di = plot3dinfo + iplot3d;
-      plot3di->unit_start=unit_start++;
-      iplot3d_seq++;
-      plot3di->seq_id = iplot3d;
-      plot3di->autozip = 0;
-      plot3di->version=version_local;
-      plot3di->plot3d_mesh=meshinfo + blocknumber;
-      plot3di->time=time_local;
-      plot3di->inuse=0;
-      plot3di->compressed=0;
-
-      if(FGETS(buffer,BUFFERSIZE,streamsmv)==NULL)break;
-      TrimBack(buffer);
-      buffer2=TrimFront(buffer);
-      if(strlen(buffer2)==0)break;
-      if(GetFileInfo(buffer2,GLOBsourcedir,&filesize)==0){
-        int lendir=0;
-
-        if(GLOBsourcedir!=NULL)lendir=strlen(GLOBsourcedir);
-        NewMemory((void **)&plot3di->file,(unsigned int)(strlen(buffer2)+lendir+1));
-        NewMemory((void **)&plot3di->filebase,(unsigned int)(strlen(buffer2)+1));
-        STRCPY(plot3di->filebase,buffer2);
-        if(GLOBsourcedir!=NULL){
-          STRCPY(plot3di->file,GLOBsourcedir);
-        }
-        else{
-          STRCPY(plot3di->file,"");
-        }
-        STRCAT(plot3di->file,buffer2);
-        if(ReadLabels(&plot3di->labels[0],streamsmv,NULL)==LABEL_ERR||
-           ReadLabels(&plot3di->labels[1],streamsmv,NULL)==LABEL_ERR||
-           ReadLabels(&plot3di->labels[2],streamsmv,NULL)==LABEL_ERR||
-           ReadLabels(&plot3di->labels[3],streamsmv,NULL)==LABEL_ERR||
-           ReadLabels(&plot3di->labels[4],streamsmv,NULL)==LABEL_ERR){
-          fprintf(stderr,"*** Warning: problem reading PL3D entry\n");
-          break;
-        }
-        plot3di->filesize=filesize;
-        iplot3d++;
-      }
-      else{
-        fprintf(stderr,"*** Warning: the file, %s, does not exist.\n",buffer);
-        if(ReadLabels(&plot3dinfo[iplot3d].labels[0],streamsmv,NULL)==LABEL_ERR)break;
-        if(ReadLabels(&plot3dinfo[iplot3d].labels[1],streamsmv,NULL)==LABEL_ERR)break;
-        if(ReadLabels(&plot3dinfo[iplot3d].labels[2],streamsmv,NULL)==LABEL_ERR)break;
-        if(ReadLabels(&plot3dinfo[iplot3d].labels[3],streamsmv,NULL)==LABEL_ERR)break;
-        if(ReadLabels(&plot3dinfo[iplot3d].labels[4],streamsmv,NULL)==LABEL_ERR)break;
-        nplot3dinfo--;
       }
       continue;
     }
@@ -862,9 +788,10 @@ int ReadSMV(char *smvfile){
     }
   }
   InitVolRender();
+  InitBoundaryBounds();
+  InitSliceBounds();
   return 0;
 }
-
 
 /* ------------------ ReadINI ------------------------ */
 
@@ -896,7 +823,6 @@ void ReadINI2(char *inifile){
   char buffer[255],buffer2[255];
   char *type_buffer;
   FILE *stream;
-  patch *patchi;
 
   stream=fopen(inifile,"r");
   if(stream==NULL)return;
@@ -908,7 +834,6 @@ void ReadINI2(char *inifile){
     if(Match(buffer,"V_SLICE")==1|| Match(buffer, "V2_SLICE") == 1){
       int setslicemin, setslicemax;
       float slicemin, slicemax;
-      slicedata *slicei;
       int type=0;
 
       if(Match(buffer, "V2_SLICE") == 1)type = 1;
@@ -920,69 +845,19 @@ void ReadINI2(char *inifile){
         if(setslicemax == 0)setslicemax = 1;
       }
       type_buffer=TrimFront(buffer2);
-      TrimBack(type_buffer);
-      slicei= GetSlice(type_buffer);
-      if(slicei!=NULL){
-        slicei->setvalmax=setslicemax;
-        slicei->setvalmin=setslicemin;
-        slicei->valmax=slicemax;
-        slicei->valmin=slicemin;
-      }
-      continue;
-    }
-    if(Match(buffer,"V_PLOT3D")==1|| Match(buffer, "V2_PLOT3D") == 1){
-      int nplot3d_vars;
-      plot3d *plot3di;
-      int i;
-      int type = 0;
 
-      if(plot3dinfo==NULL)continue;
-      plot3di = plot3dinfo;
+      bounddata *pb;
 
-      if(Match(buffer, "V2_PLOT3D") == 1)type = 1;
-      fgets(buffer,BUFFERSIZE,stream);
-      nplot3d_vars=5;
-      sscanf(buffer,"%i",&nplot3d_vars);
-      if(nplot3d_vars<0)nplot3d_vars=0;
-      if(nplot3d_vars>5)nplot3d_vars=5;
-
-      for(i=0;i<nplot3d_vars;i++){
-        int iplot3d;
-        int setvalmin, setvalmax;
-        float valmin, valmax;
-
-        fgets(buffer,BUFFERSIZE,stream);
-        sscanf(buffer,"%i %i %f %i %f",&iplot3d,&setvalmin,&valmin,&setvalmax,&valmax);
-        if(type == 1){
-          if(setvalmin == 0)setvalmin = 1;
-          if(setvalmax == 0)setvalmax = 1;
+      pb = GetSliceBoundInfo(type_buffer);
+      if(pb != NULL){
+        if(setslicemin == 1){
+          pb->setvalmin = 1;
+          pb->valmin = slicemin;
         }
-        iplot3d--;
-        if(iplot3d>=0&&iplot3d<5){
-          plot3di->bounds[iplot3d].setvalmin=setvalmin;
-          plot3di->bounds[iplot3d].setvalmax=setvalmax;
-          plot3di->bounds[iplot3d].valmin=valmin;
-          plot3di->bounds[iplot3d].valmax=valmax;
+        if(setslicemax == 1){
+          pb->setvalmax = 1;
+          pb->valmax = slicemax;
         }
-      }
-      continue;
-    }
-    if(Match(buffer,"C_SLICE")==1){
-      int setchopslicemin, setchopslicemax;
-      float chopslicemin, chopslicemax;
-      slicedata *slicei;
-
-      fgets(buffer,BUFFERSIZE,stream);
-      strcpy(buffer2,"");
-      sscanf(buffer,"%i %f %i %f %s",&setchopslicemin,&chopslicemin,&setchopslicemax,&chopslicemax,buffer2);
-      type_buffer=TrimFront(buffer2);
-      TrimBack(type_buffer);
-      slicei= GetSlice(type_buffer);
-      if(slicei!=NULL){
-        slicei->setchopvalmax=setchopslicemax;
-        slicei->setchopvalmin=setchopslicemin;
-        slicei->chopvalmax=chopslicemax;
-        slicei->chopvalmin=chopslicemin;
       }
       continue;
     }
@@ -1001,12 +876,18 @@ void ReadINI2(char *inifile){
       }
       type_buffer=TrimFront(buffer2);
       TrimBack(type_buffer);
-      patchi=getpatch(type_buffer);
-      if(patchi!=NULL){
-        patchi->setvalmax=setpatchmax;
-        patchi->setvalmin=setpatchmin;
-        patchi->valmax=patchmax;
-        patchi->valmin=patchmin;
+      bounddata *pb;
+
+      pb = GetPatchBoundInfo(type_buffer);
+      if(pb != NULL){
+        if(setpatchmin == 1){
+          pb->setvalmin = 1;
+          pb->valmin = patchmin;
+        }
+        if(setpatchmax == 1){
+          pb->setvalmax = 1;
+          pb->valmax = patchmax;
+        }
       }
       continue;
     }
@@ -1029,7 +910,6 @@ void ReadINI2(char *inifile){
       continue;
     }
 
-#ifdef pp_PART
     if(Match(buffer,"V_PARTICLES")==1||Match(buffer,"V2_PARTICLES")==1){
       int setpartmin, setpartmax;
       float partmin, partmax;
@@ -1047,7 +927,7 @@ void ReadINI2(char *inifile){
       }
       type_buffer=TrimFront(buffer2);
       TrimBack(type_buffer);
-      partpropi=getpartprop(type_buffer);
+      partpropi=GetPartProp(type_buffer);
       if(partpropi!=NULL){
         partpropi->setvalmax=setpartmax;
         partpropi->setvalmin=setpartmin;
@@ -1056,161 +936,7 @@ void ReadINI2(char *inifile){
       }
       continue;
     }
-#endif
-    if(Match(buffer,"SLICEAUTO")==1){
-      int nslice_auto=0;
-      int i;
-      int seq_id;
-
-      fgets(buffer,BUFFERSIZE,stream);
-      sscanf(buffer,"%i",&nslice_auto);
-      for(i=0;i<nslice_auto;i++){
-        fgets(buffer,BUFFERSIZE,stream);
-        sscanf(buffer,"%i",&seq_id);
-        GetStartupSlice(seq_id);
-      }
-      continue;
-    }
-    if(Match(buffer,"S3DAUTO")==1){
-      int n3dsmokes=0;
-      int i;
-      int seq_id;
-
-      fgets(buffer,BUFFERSIZE,stream);
-      sscanf(buffer,"%i",&n3dsmokes);
-      for(i=0;i<n3dsmokes;i++){
-        fgets(buffer,BUFFERSIZE,stream);
-        sscanf(buffer,"%i",&seq_id);
-        GetStartupSmoke(seq_id);
-      }
-      continue;
-    }
-    if(Match(buffer,"PATCHAUTO")==1){
-      int n3dsmokes=0;
-      int i;
-      int seq_id;
-
-      fgets(buffer,BUFFERSIZE,stream);
-      sscanf(buffer,"%i",&n3dsmokes);
-      for(i=0;i<n3dsmokes;i++){
-        fgets(buffer,BUFFERSIZE,stream);
-        sscanf(buffer,"%i",&seq_id);
-        GetStartupBoundary(seq_id);
-      }
-      continue;
-    }
   }
   fclose(stream);
   return;
-
-}
-
- /* ------------------ GetStartupBoundary ------------------------ */
-
-  void GetStartupBoundary(int seq_id){
-    int i;
-    for(i=0;i<npatchinfo;i++){
-      patch *patchi;
-
-      patchi = patchinfo + i;
-      if(patchi->seq_id==seq_id){
-        patchi->autozip=1;
-        return;
-      }
-    }
-  }
-
- /* ------------------ GetStartupSmoke ------------------------ */
-
-  void GetStartupSmoke(int seq_id){
-    int i;
-    for(i=0;i<nsmoke3dinfo;i++){
-      smoke3d *smoke3di;
-
-      smoke3di = smoke3dinfo + i;
-
-      if(smoke3di->seq_id==seq_id){
-        smoke3di->autozip=1;
-        return;
-      }
-    }
-  }
-
- /* ------------------ GetStartupSlice ------------------------ */
-
-  void GetStartupSlice(int seq_id){
-    int i;
-    for(i=0;i<nsliceinfo;i++){
-      slicedata *slicei;
-
-      slicei = sliceinfo + i;
-
-      if(slicei->seq_id==seq_id){
-        slicei->autozip=1;
-        return;
-      }
-    }
-  }
-
-
-/* ------------------ InitVolRender ------------------------ */
-
-void InitVolRender(void){
-  int i;
-
-  nvolrenderinfo=0;
-  for(i=0;i<nmeshes;i++){
-    meshdata *meshi;
-    volrenderdata *vr;
-
-    meshi = meshinfo + i;
-    vr = &(meshi->volrenderinfo);
-    vr->rendermesh=meshi;
-    vr->fire=NULL;
-    vr->smoke=NULL;
-  }
-  for(i=0;i<nsliceinfo;i++){
-    slicedata *slicei;
-    int blocknumber;
-    meshdata *meshi;
-    volrenderdata *vr;
-    int ni, nj, nk;
-
-    slicei = sliceinfo + i;
-    slicei->isvolslice=0;
-    slicei->voltype=0;
-    blocknumber = slicei->blocknumber;
-    if(blocknumber<0||blocknumber>=nmeshes)continue;
-    meshi = meshinfo + blocknumber;
-    GetSliceParmsC(slicei->file,&ni,&nj,&nk);
-
-    if(ni!=meshi->ibar+1||nj!=meshi->jbar+1||nk!=meshi->kbar+1)continue;
-    vr = &(meshi->volrenderinfo);
-
-    if(STRCMP(slicei->label.shortlabel, "temp")==0){
-      vr->fire=slicei;
-     continue;
-    }
-    if(IsSootFile(slicei->label.shortlabel, slicei->label.longlabel)==1){
-      vr->smoke=slicei;
-      continue;
-    }
-  }
-  nvolrenderinfo=0;
-  for(i=0;i<nmeshes;i++){
-    meshdata *meshi;
-    volrenderdata *vr;
-
-    meshi = meshinfo + i;
-    vr = &(meshi->volrenderinfo);
-    if(vr->smoke!=NULL){
-      nvolrenderinfo++;
-      vr->smoke->isvolslice=1;
-      vr->smoke->voltype=1;
-      if(vr->fire!=NULL){
-        vr->fire->isvolslice=1;
-        vr->fire->voltype=2;
-      }
-    }
-  }
 }

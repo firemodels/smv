@@ -1,6 +1,5 @@
 #include "options.h"
 
-#ifdef pp_PART
 #include "zlib.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -14,12 +13,12 @@
 #include "getdata.h"
 
 
-void part2iso(part *parti,int *thread_index);
+void Part2Iso(part *parti,int *thread_index);
 
 
-/* ------------------ getpartprop_index ------------------------ */
+/* ------------------ GetPartPropIndex ------------------------ */
 
-int getpartprop_index(char *string){
+int GetPartPropIndex(char *string){
   int i;
   partpropdata *partpropi;
 
@@ -30,9 +29,9 @@ int getpartprop_index(char *string){
   return -1;
 }
 
-/* ------------------ getpartprop ------------------------ */
+/* ------------------ GetPartProp ------------------------ */
 
-partpropdata *getpartprop(char *string){
+partpropdata *GetPartProp(char *string){
   int i;
   partpropdata *partpropi;
 
@@ -43,52 +42,10 @@ partpropdata *getpartprop(char *string){
   return NULL;
 }
 
-/* ------------------ compress_parts ------------------------ */
 
-void compress_parts(void *arg){
-  int i;
-  int needbounds=0;
-  int convertable=0;
-  int *thread_index;
+/* ------------------ ConvertParts2Iso ------------------------ */
 
-  thread_index=(int *)arg;
-
-  for(i=0;i<npartinfo;i++){
-    part *parti;
-
-    parti = partinfo + i;
-    if(convertable_part(parti)==1){
-      convertable=1;
-      break;
-    }
-  }
-
-  for(i=0;i<npart5propinfo;i++){
-    partpropdata *propi;
-
-    propi = part5propinfo + i;
-    if(propi->setvalmax!=1||propi->setvalmin!=1){
-      needbounds=1;
-      break;
-    }
-  }
-
-  if(convertable==1&&needbounds==1&&GLOBget_part_bounds==1){
-    Get_Part_Bounds();
-  }
-
-  for(i=0;i<npartinfo;i++){
-    part *parti;
-
-    parti = partinfo + i;
-    if(GLOBautozip==1&&parti->autozip==0)continue;
-    convert_part(parti,thread_index);
-  }
-}
-
-/* ------------------ compress_part2iso ------------------------ */
-
-void *convert_parts2iso(void *arg){
+void *ConvertParts2Iso(void *arg){
   int i;
   int *thread_index;
 
@@ -160,494 +117,17 @@ void *convert_parts2iso(void *arg){
       parti->inuse_part2iso=1;
       UNLOCK_PART2ISO;
 
-      part2iso(parti,thread_index);
+      Part2Iso(parti,thread_index);
     }
   }
   return NULL;
 }
 
-/* ------------------ convertable_part ------------------------ */
-
-int convertable_part(part *parti){
-  char partfile_svz[256];
-  char *partfile;
-  FILE *stream;
-
-  partfile=parti->file;
-
-  if(GetFileInfo(partfile,NULL,NULL)!=0)return 0;
-
-  stream=fopen(partfile,"rb");
-  if(stream==NULL)return 0;
-  fclose(stream);
-
-  // set up compressed particle file
-
-  strcpy(partfile_svz,"");
-  if(GLOBdestdir!=NULL){
-    strcpy(partfile_svz,GLOBdestdir);
-  }
-  strcat(partfile_svz,partfile);
-  strcat(partfile_svz,".svz");
-  stream=fopen(partfile_svz,"wb");
-  if(stream==NULL)return 0;
-  return 1;
-}
-
-/* ------------------ compress_part ------------------------ */
-
-void convert_part(part *parti, int *thread_index){
-  FILE *PARTFILEstream,*partstream,*partsizestream;
-  char *partfile, partfile_svz[256], partsizefile_svz[256];
-  FILE *unit;
-  int nclasses;
-  int *nquantities, *npoints;
-  float time_local;
-  int error;
-  int *tagdata;
-  float *pdata;
-  int sizebefore=0, sizeafter=0, size;
-  int one=1, zero=0, fileversion=0, fdsversion;
-  unsigned int *int_buffer_uncompressed;
-  unsigned char *int_buffer_compressed;
-  unsigned char *char_buffer_uncompressed,*char_buffer_compressed;
-  meshdata *partmesh;
-  float xmin, xmax,  ymin, ymax, zmin, zmax;
-  uLongf ncompressed_zlib;
-  int percent_done;
-  int percent_next=10;
-  int data_loc;
-  int count=0;
-  int compression_level;
-
-   //*** PARTICLE FILE FORMATS
-
-  //*** FDS FORMAT (FORTRAN - each FORTRAN record has a 4 byte header and a 4 byte trailer surrounding the data)
-
-
-
-  //*** ZLIB format (C - no extra bytes surrounding data)
-
-  //*** header
-  // endian
-  // completion (0/1)
-  // fileversion (compressed particle file format version)
-  // fds version
-  // compression level
-  // global min max (used to perform conversion)
-  // nclasses
-  // quantities_1, ..., quantities_nclasses
-
-  //*** data frame
-  // time_local
-  // points_1, ..., points_nclasses
-  // ntotal_int, ntotal_char
-  // ncompressedpoints
-  // xyz_1, ..., xyz_ncompressedpoints
-  // ncompresseddata
-  // data_1, ..., data_ncompresseddata
-
-
-#ifdef pp_THREAD
-  {
-    int fileindex;
-
-    fileindex = parti + 1 - partinfo;
-    sprintf(threadinfo[*thread_index].label,"prt5 %i",fileindex);
-  }
-#endif
-
-  partfile=parti->file;
-  partmesh=parti->partmesh;
-  xmin = partmesh->xbar0;
-  xmax = partmesh->xbar;
-  ymin = partmesh->ybar0;
-  ymax = partmesh->ybar;
-  zmin = partmesh->zbar0;
-  zmax = partmesh->zbar;
-
-#define COMPRESSION_LEVEL 1024
-  compression_level=COMPRESSION_LEVEL;
-
-  // check if part file is accessible
-
-  if(GetFileInfo(partfile,NULL,NULL)!=0){
-    fprintf(stderr,"*** Warning: The particle file %s does not exist\n",partfile);
-    return;
-  }
-
-  PARTFILEstream=fopen(partfile,"rb");
-  if(PARTFILEstream==NULL){
-    fprintf(stderr,"*** Warning: The particle file %s could not be opened\n",partfile);
-    return;
-  }
-
-  // set up compressed particle file
-
-  strcpy(partfile_svz,"");
-  if(GLOBdestdir!=NULL){
-    strcpy(partfile_svz,GLOBdestdir);
-  }
-  strcat(partfile_svz,partfile);
-  strcat(partfile_svz,".svz");
-  partstream=fopen(partfile_svz,"wb");
-  if(partstream==NULL){
-    fprintf(stderr,"*** Warning: The file %s could not be opened for writing\n",partfile_svz);
-    fclose(PARTFILEstream);
-    return;
-  }
-
-  // set up compressed particle size file
-
-  strcpy(partsizefile_svz,"");
-  if(GLOBdestdir!=NULL){
-    strcpy(partsizefile_svz,GLOBdestdir);
-  }
-  strcpy(partsizefile_svz,partfile);
-  strcat(partsizefile_svz,".szz");
-  partsizestream=fopen(partsizefile_svz,"w");
-
-  if(partsizestream==NULL){
-    fprintf(stderr,"*** Warning: The file %s could not be opened for writing\n",partsizefile_svz);
-    fclose(PARTFILEstream);
-    fclose(partstream);
-    return;
-  }
-
-  if(GLOBcleanfiles==1){
-    partstream=fopen(partfile_svz,"rb");
-    if(partstream!=NULL){
-      fclose(partstream);
-      PRINTF("  Removing %s\n",partfile_svz);
-      UNLINK(partfile_svz);
-      LOCK_COMPRESS;
-      GLOBfilesremoved++;
-      UNLOCK_COMPRESS;
-    }
-    partsizestream=fopen(partsizefile_svz,"rb");
-    if(partsizestream!=NULL){
-      fclose(partsizestream);
-      PRINTF("  Removing %s\n",partsizefile_svz);
-      UNLINK(partsizefile_svz);
-      LOCK_COMPRESS;
-      GLOBfilesremoved++;
-      UNLOCK_COMPRESS;
-    }
-    return;
-  }
-
-  if(GLOBoverwrite_part==0){
-    partstream=fopen(partfile_svz,"rb");
-    if(partstream!=NULL){
-      fclose(partstream);
-      fprintf(stderr,"** Warning: The file %s exists.\n",partfile_svz);
-      fprintf(stderr,"     Use the -f option to overwrite smokezip compressed files\n");
-      return;
-    }
-  }
-
-  PRINTF("  Compressing %s\n\n",parti->file);
-
-#define BUFFER_SIZE 1000000
-  NewMemory((void **)&pdata,BUFFER_SIZE*sizeof(float));
-  NewMemory((void **)&tagdata,BUFFER_SIZE*sizeof(int));
-  NewMemory((void **)&int_buffer_uncompressed,BUFFER_SIZE*sizeof(unsigned int));
-  NewMemory((void **)&int_buffer_compressed,BUFFER_SIZE*sizeof(unsigned char));
-  NewMemory((void **)&char_buffer_uncompressed,BUFFER_SIZE*sizeof(unsigned char));
-  NewMemory((void **)&char_buffer_compressed,BUFFER_SIZE*sizeof(unsigned char));
-
-  LOCK_COMPRESS;
-  unit = openpart(parti->file,&error);
-  UNLOCK_COMPRESS;
-
-  getpartheader1(unit,&nclasses,&fdsversion,&size);
-  NewMemory((void **)&nquantities,nclasses*sizeof(int));
-  NewMemory((void **)&npoints,nclasses*sizeof(int));
-  sizebefore+=size;
-
-  getpartheader2(unit,nclasses,nquantities,&size);
-  sizebefore+=size;
-
-  fwrite(&one,4,1,partstream);           // write out a 1 to determine "endianness" when file is read in later
-  fwrite(&zero,4,1,partstream);          // write out a zero now, then a one just before file is closed
-  fwrite(&fileversion,4,1,partstream);   // write out compressed fileversion in case file format changes later
-  fwrite(&fdsversion,4,1,partstream);    // fds file version
-  fwrite(&compression_level,4,1,partstream);
-  sizeafter=20;
-  fwrite(&nclasses,4,1,partstream);      // compression level
-  fwrite(nquantities,4,nclasses,partstream);
-  sizeafter+=4*(1+nclasses);
-
-  error=0;
-  for(;;){
-    float *x, *y, *z, *vals;
-    int j;
-    unsigned int *xbuff, *ybuff, *zbuff, *tbuff, *tagdataptr, ntotal_int, ntotal_char;
-    unsigned char *cbuff;
-    int ncompressed_int, ncompressed_char;
-
-    getpartdataframe(unit,nclasses,nquantities,npoints,&time_local,tagdata,pdata,&size,&error);
-    if(error!=0)break;
-
-    fwrite(&time_local,4,1,partstream);
-    fwrite(npoints,4,nclasses,partstream);
-    sizeafter+=4*(1+nclasses);
-    sizebefore+=size;
-
-//    fprintf(partsizestream,"%f\n",time_local);
-
-    vals=pdata;
-    tagdataptr=(unsigned int *)tagdata;
-    xbuff = int_buffer_uncompressed;
-    cbuff = char_buffer_uncompressed;
-    ntotal_int=0;
-    ntotal_char=0;
-    for(j=0;j<nclasses;j++){
-      partclassdata *classi;
-      int k;
-
-//      fprintf(partsizestream," %i ",npoints[j]);
-  //    if(j<nclasses-1){
-  //      fprintf(partsizestream," \n");
-  //    }
-
-      if(npoints[j]==0)continue;
-      ybuff = xbuff + npoints[j];
-      zbuff = ybuff + npoints[j];
-      tbuff = zbuff + npoints[j];
-      classi=parti->classptr[j];
-      x = vals;
-      y = x + npoints[j];
-      z = y + npoints[j];
-
-      for(k=0;k<npoints[j];k++){
-        xbuff[k] = compression_level*(x[k]-xmin)/(xmax-xmin);
-        ybuff[k] = compression_level*(y[k]-ymin)/(ymax-ymin);
-        zbuff[k] = compression_level*(z[k]-zmin)/(zmax-zmin);
-        tbuff[k] = tagdataptr[k];
-      }
-      ntotal_int+=4*npoints[j];
-      xbuff = tbuff + npoints[j];
-      vals = z + npoints[j];
-      tagdataptr += npoints[j];
-      ntotal_char+=nquantities[j]*npoints[j];
-
-      for(k=0;k<nquantities[j];k++){
-        partpropdata *propi;
-        int cval,kk;
-        float denom;
-
-        propi=getpartprop(classi->labels[k].shortlabel);
-        denom=propi->valmax-propi->valmin;
-        if(denom<=0.0)denom=1.0;
-
-        for(kk=0;kk<npoints[j];kk++){
-          if(vals[kk]<propi->valmin){
-            cval=0;
-          }
-          else if(vals[kk]>propi->valmax){
-            cval=255;
-          }
-          else{
-            cval = 1+253*(vals[kk]-propi->valmin)/denom;
-            if(cval<1){
-              cval=1;
-            }
-            else if(cval>254){
-              cval=254;
-            }
-          }
-          cbuff[kk]=cval;
-        }
-        cbuff += npoints[j];
-        vals += npoints[j];
-      }
-    }
-
-    // compress data
-
-    fwrite(&ntotal_int,4,1,partstream);
-    fwrite(&ntotal_char,4,1,partstream);
-
-    ncompressed_int=0;
-    if(ntotal_int>0){
-      ncompressed_zlib=BUFFER_SIZE;
-      CompressZLIB(int_buffer_compressed, &ncompressed_zlib, (unsigned char *)int_buffer_uncompressed, 4*ntotal_int);
-      ncompressed_int = ncompressed_zlib;
-      sizeafter+=(4+ncompressed_int);
-      fwrite(&ncompressed_int,4,1,partstream);
-      fwrite(&int_buffer_compressed,1,ncompressed_int,partstream);
-    }
-
-    ncompressed_char=0;
-    if(ntotal_char>0){
-      ncompressed_zlib=BUFFER_SIZE;
-      CompressZLIB(char_buffer_compressed, &ncompressed_zlib, char_buffer_uncompressed, ntotal_char);
-      ncompressed_char = ncompressed_zlib;
-      sizeafter+=(4+ncompressed_char);
-      fwrite(&ncompressed_char,4,1,partstream);
-      fwrite(&char_buffer_compressed,1,ncompressed_char,partstream);
-    }
-
-//    fprintf(partsizestream," %i %i %i %i\n",(int)ntotal_int,(int)ntotal_char,ncompressed_int,ncompressed_char);
-
-    data_loc=sizebefore;
-    percent_done=100.0*(float)data_loc/(float)parti->filesize;
-    if(percent_done>percent_next){
-      PRINTF(" %i%s",percent_next,GLOBpp);
-      LOCK_COMPRESS;
-      FFLUSH();
-      UNLOCK_COMPRESS;
-      percent_next+=10;
-    }
-    count++;
-  }
-
-  PRINTF(" 100%s completed\n",GLOBpp);
-  FREEMEMORY(nquantities);
-  FREEMEMORY(npoints);
-  FREEMEMORY(pdata);
-  FREEMEMORY(tagdata);
-  FREEMEMORY(int_buffer_uncompressed);
-  FREEMEMORY(int_buffer_compressed);
-  FREEMEMORY(char_buffer_uncompressed);
-  FREEMEMORY(char_buffer_compressed);
-
-  LOCK_COMPRESS;
-  closefortranfile(unit);
-  UNLOCK_COMPRESS;
-  fclose(partstream);
-//  fclose(partsizestream);
-  {
-    char before_label[256],after_label[256];
-
-    GetFileSizeLabel(sizebefore,before_label);
-    GetFileSizeLabel(sizeafter,after_label);
-    PRINTF("    records=%i, ",count);
-    PRINTF("Sizes: original=%s, ",before_label);
-    PRINTF("compressed=%s (%4.1f%s)\n",after_label,(float)sizebefore/(float)sizeafter,GLOBx);
-  }
-
-}
-
-/* ------------------ Get_Part_Bounds ------------------------ */
-
-void Get_Part_Bounds(void){
-  int i;
-  float *pdata;
-  int *tagdata;
-  int fdsversion;
-
-  PRINTF("Determining particle file bounds\n");
-
-  for(i=0;i<npart5propinfo;i++){
-    partpropdata *propi;
-
-    propi = part5propinfo + i;
-
-    NewMemory((void **)&propi->histogram,sizeof(histogramdata));
-    InitHistogram(propi->histogram,NHIST_BUCKETS, NULL, NULL);
-  }
-
-  NewMemory((void **)&pdata,1000000*sizeof(float));
-  NewMemory((void **)&tagdata,1000000*sizeof(int));
-
-  for(i=0;i<npartinfo;i++){
-    part *parti;
-    FILE *unit;
-    int error1;
-    int nclasses;
-    int *nquantities, *npoints;
-    float time_local;
-    int error, size;
-    int nquantities_total;
-    int j;
-
-    parti = partinfo + i;
-    PRINTF("  Examining %s\n",parti->file);
-    LOCK_COMPRESS;
-    unit = openpart(parti->file,&error1);
-    UNLOCK_COMPRESS;
-
-    getpartheader1(unit,&nclasses,&fdsversion,&size);
-    NewMemory((void **)&nquantities,nclasses*sizeof(int));
-    NewMemory((void **)&npoints,nclasses*sizeof(int));
-
-    getpartheader2(unit,nclasses,nquantities,&size);
-    nquantities_total=0;
-    for(j=0;j<nclasses;j++){
-      nquantities_total+=nquantities[j];
-    }
-    if(nquantities_total==0){
-      FREEMEMORY(nquantities);
-      FREEMEMORY(npoints);
-      LOCK_COMPRESS;
-      closefortranfile(unit);
-      UNLOCK_COMPRESS;
-      continue;
-    }
-
-    error=0;
-    for(;;){
-      float *x, *y, *z, *vals;
-      int k;
-
-      getpartdataframe(unit,nclasses,nquantities,npoints,&time_local,tagdata,pdata,&size,&error);
-      if(error!=0)break;
-
-      vals=pdata;
-      for(j=0;j<nclasses;j++){
-        partclassdata *classj;
-
-        if(npoints[j]==0)continue;
-        classj=parti->classptr[j];
-        x = vals;
-        y = x + npoints[j];
-        z = y + npoints[j];
-        vals = z + npoints[j];
-        for(k=0;k<nquantities[j];k++){
-          partpropdata *propi;
-
-          propi=getpartprop(classj->labels[k].shortlabel);
-          UpdateHistogram(vals,NULL,npoints[j],propi->histogram);
-
-          vals += npoints[j];
-        }
-      }
-    }
-
-    FREEMEMORY(nquantities);
-    FREEMEMORY(npoints);
-
-    LOCK_COMPRESS;
-    closefortranfile(unit);
-    UNLOCK_COMPRESS;
-  }
-
-  FREEMEMORY(pdata);
-  FREEMEMORY(tagdata);
-
-  for(i=0;i<npart5propinfo;i++){
-    partpropdata *propi;
-
-    propi = part5propinfo + i;
-
-    propi->valmax=GetHistogramVal(propi->histogram,0.99);
-    propi->valmin=GetHistogramVal(propi->histogram,0.01);
-    propi->setvalmax=1;
-    propi->setvalmin=1;
-    PRINTF(" %s min: %f max: %f\n",propi->label.shortlabel,propi->valmin,propi->valmax);
-    FREEMEMORY(propi->histogram->buckets);
-    FREEMEMORY(propi->histogram->buckets_polar);
-    FREEMEMORY(propi->histogram);
-  }
-}
-
 #define IJKVAL(ix,iy,iz) ((ix) + (iy)*nx2 + (iz)*nx2*ny2)
 
-  /* ------------------ part2iso ------------------------ */
+  /* ------------------ Part2Iso ------------------------ */
 
-void part2iso(part *parti, int *thread_index){
+void Part2Iso(part *parti, int *thread_index){
   float *pdata;
   int *tagdata;
   int fdsversion;
@@ -677,7 +157,7 @@ void part2iso(part *parti, int *thread_index){
   partpropdata *part5propinfo_copy;
   int percent_done;
   float file_size;
-  int percent_next=10;
+  int percent_next = PERCENT_SKIP;
 
   parti->compressed2=0;
 #ifdef pp_THREAD
@@ -758,7 +238,7 @@ void part2iso(part *parti, int *thread_index){
       partpropdata *propi;
 
       classj=parti->classptr[j];
-      propi=part5propinfo_copy+getpartprop_index(classj->labels[k].shortlabel);
+      propi=part5propinfo_copy+GetPartPropIndex(classj->labels[k].shortlabel);
       propi->used=1;
     }
   }
@@ -846,15 +326,15 @@ void part2iso(part *parti, int *thread_index){
     threadinfo[*thread_index].stat=percent_done;
     if(percent_done>percent_next){
       LOCK_PRINT;
-      print_thread_stats();
+      PrintThreadStats();
       UNLOCK_PRINT;
-      percent_next+=10;
+      percent_next += PERCENT_SKIP;
     }
 #else
     if(percent_done>percent_next){
       PRINTF(" %i%s",percent_next,GLOBpp);
       FFLUSH();
-      percent_next+=10;
+      percent_next += PERCENT_SKIP;
     }
 #endif
     if(error!=0)break;
@@ -900,7 +380,7 @@ void part2iso(part *parti, int *thread_index){
       for(k=0;k<nquantities[j];k++){
         partpropdata *propi;
 
-        propi=part5propinfo_copy+getpartprop_index(classj->labels[k].shortlabel);
+        propi=part5propinfo_copy+GetPartPropIndex(classj->labels[k].shortlabel);
 
         for(i=0;i<npoints[j];i++){
           int ijkval;
@@ -998,9 +478,9 @@ void part2iso(part *parti, int *thread_index){
   }
 }
 
-/* ------------------ part2object ------------------------ */
+/* ------------------ Part2Object ------------------------ */
 
-void part2object(part *parti, int *thread_index){
+void Part2Object(part *parti, int *thread_index){
   float *pdata;
   int *tagdata;
   int fdsversion;
@@ -1030,7 +510,7 @@ void part2object(part *parti, int *thread_index){
   partpropdata *part5propinfo_copy;
   int percent_done;
   float file_size;
-  int percent_next=10;
+  int percent_next = PERCENT_SKIP;
 
   parti->compressed2=0;
 #ifdef pp_THREAD
@@ -1111,7 +591,7 @@ void part2object(part *parti, int *thread_index){
       partpropdata *propi;
 
       classj=parti->classptr[j];
-      propi=part5propinfo_copy+getpartprop_index(classj->labels[k].shortlabel);
+      propi=part5propinfo_copy+GetPartPropIndex(classj->labels[k].shortlabel);
       propi->used=1;
     }
   }
@@ -1199,15 +679,15 @@ void part2object(part *parti, int *thread_index){
     threadinfo[*thread_index].stat=percent_done;
     if(percent_done>percent_next){
       LOCK_PRINT;
-      print_thread_stats();
+      PrintThreadStats();
       UNLOCK_PRINT;
-      percent_next+=10;
+      percent_next+= PERCENT_SKIP;
     }
 #else
     if(percent_done>percent_next){
       PRINTF(" %i%s",percent_next,GLOBpp);
       FFLUSH();
-      percent_next+=10;
+      percent_next+= PERCENT_SKIP;
     }
 #endif
     if(error!=0)break;
@@ -1253,7 +733,7 @@ void part2object(part *parti, int *thread_index){
       for(k=0;k<nquantities[j];k++){
         partpropdata *propi;
 
-        propi=part5propinfo_copy+getpartprop_index(classj->labels[k].shortlabel);
+        propi=part5propinfo_copy+GetPartPropIndex(classj->labels[k].shortlabel);
 
         for(i=0;i<npoints[j];i++){
           int ijkval;
@@ -1350,5 +830,3 @@ void part2object(part *parti, int *thread_index){
     FREEMEMORY(part5propinfo_copy);
   }
 }
-
-#endif

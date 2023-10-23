@@ -2351,7 +2351,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
       {
 
         nn=0;
-        if(loadpatchbysteps==COMPRESSED_ALLFRAMES)UncompressBoundaryDataFrame(meshi,ii);
+        if(loadpatchbysteps==COMPRESSED_ALLFRAMES)UncompressBoundaryDataBNDF(meshi,ii);
         for(n=0;n<meshi->npatches;n++){
           meshdata *meshblock;
           float dval;
@@ -4323,9 +4323,26 @@ void GetBoundaryParams(void){
   nboundaryslicedups = CountBoundarySliceDups();
 }
 
-/* ------------------ UncompressBoundaryDataFrame ------------------------ */
+/* ------------------ UncompressBoundaryDataGEOM ------------------------ */
 
-void UncompressBoundaryDataFrame(meshdata *meshi,int local_iframe){
+void UncompressBoundaryDataGEOM(patchdata *patchi, int local_iframe){
+  unsigned int n_compressed_data;
+  uLongf n_uncompressed_data;
+  unsigned char *compressed_data, *uncompressed_data;
+  float *geom_vals;
+
+  geom_vals         = patchi->geom_vals;
+  compressed_data   = (unsigned char*)geom_vals + patchi->cvals_offsets[local_iframe];
+  uncompressed_data = patchi->cbuffer;
+
+  n_compressed_data   = patchi->cvals_sizes[local_iframe];
+  n_uncompressed_data = patchi->cbuffer_size;
+  UnCompressZLIB(uncompressed_data, &n_uncompressed_data, compressed_data, n_compressed_data);
+}
+
+/* ------------------ UncompressBoundaryDataBNDF ------------------------ */
+
+void UncompressBoundaryDataBNDF(meshdata *meshi,int local_iframe){
   unsigned int countin;
   uLongf countout;
   unsigned char *compressed_data;
@@ -4333,9 +4350,7 @@ void UncompressBoundaryDataFrame(meshdata *meshi,int local_iframe){
   compressed_data = meshi->cpatchval_zlib+meshi->zipoffset[local_iframe];
   countin = meshi->zipsize[local_iframe];
   countout=meshi->npatchsize;
-
   UnCompressZLIB(meshi->cpatchval_iframe_zlib,&countout,compressed_data,countin);
-
 }
 
 /* ------------------ UpdateHideBoundarySurface ------------------------ */

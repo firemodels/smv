@@ -363,6 +363,11 @@ char *ProcessCommandLine(CommandlineArgs *args) {
     STRCPY(stop_filename, fdsprefix);
     STRCAT(stop_filename, ".stop");
   }
+  if(smvzip_filename == NULL){
+    NewMemory((void **)&smvzip_filename, (unsigned int)(len_casename + strlen(".smvzip") + 1));
+    STRCPY(smvzip_filename, fdsprefix);
+    STRCAT(smvzip_filename, ".smvzip");
+  }
   if(sliceinfo_filename == NULL){
     NewMemory((void **)&sliceinfo_filename, strlen(fdsprefix) + strlen(".sinfo") + 1);
     STRCPY(sliceinfo_filename, fdsprefix);
@@ -536,11 +541,11 @@ char *ProcessCommandLine(CommandlineArgs *args) {
     }
     if(args->fast){
       fast_startup = 1;
-      lookfor_compressed_slice = 0;
+      lookfor_compressed_files = 0;
     }
     if(args->full){
       fast_startup = 0;
-      lookfor_compressed_slice = 1;
+      lookfor_compressed_files = 1;
     }
     if(args->blank){
       iblank_set_on_commandline = 1;
@@ -820,7 +825,6 @@ int main(int argc, char **argv){
     valid_bindir = SetBinDir(new_bindir);
   }
 #endif
-
   if(smv_filename == NULL){
     DisplayVersionInfo("Smokeview ");
     SMV_EXIT(0);

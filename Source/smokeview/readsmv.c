@@ -1180,7 +1180,6 @@ void ReadSMVDynamic(char *file){
         FreeLabels(&plot3di->label[n]);
       }
       FREEMEMORY(plot3di->reg_file);
-      FREEMEMORY(plot3di->comp_file);
     }
 //    FREEMEMORY(plot3dinfo);
   }
@@ -1657,20 +1656,6 @@ void ReadSMVDynamic(char *file){
       STRCAT(plot3di->bound_file, ".bnd");
       plot3di->have_bound_file = NO;
 
-      NewMemory((void **)&plot3di->comp_file,(unsigned int)(len+4+1));
-      STRCPY(plot3di->comp_file,bufferptr);
-      STRCAT(plot3di->comp_file,".svz");
-
-   //   if(FILE_EXISTS_CASEDIR(plot3di->comp_file)==YES){
-   //     plot3di->compression_type=COMPRESSED_ZLIB;
-   //     plot3di->file=plot3di->comp_file;
-   //   }
-   //   else{
-   //     plot3di->compression_type=UNCOMPRESSED;
-   //     plot3di->file=plot3di->reg_file;
-   //   }
-      //disable compression for now
-      plot3di->compression_type=UNCOMPRESSED;
       plot3di->file=plot3di->reg_file;
 
       if(fast_startup==1||FILE_EXISTS_CASEDIR(plot3di->file)==YES){
@@ -5039,26 +5024,14 @@ int ParsePRT5Process(bufferstreamdata *stream, char *buffer, int *nn_part_in, in
     STRCAT(parti->hist_file, ".hist");
   }
 
-  parti->comp_file = NULL;
-  if(NewMemory((void **)&parti->comp_file, (unsigned int)(len+1+4))==0)return RETURN_TWO;
-  STRCPY(parti->comp_file, bufferptr);
-  STRCAT(parti->comp_file, ".svz");
-
-  if(FILE_EXISTS_CASEDIR(parti->comp_file)==YES){
-    parti->compression_type = COMPRESSED_ZLIB;
-    parti->file = parti->comp_file;
+  parti->compression_type = UNCOMPRESSED;
+  if(FILE_EXISTS_CASEDIR(parti->reg_file)==YES){
+    parti->file = parti->reg_file;
   }
   else{
-    parti->compression_type = UNCOMPRESSED;
-    if(FILE_EXISTS_CASEDIR(parti->reg_file)==YES){
-      parti->file = parti->reg_file;
-    }
-    else{
-      FREEMEMORY(parti->reg_file);
-      FREEMEMORY(parti->comp_file);
-      FREEMEMORY(parti->size_file);
-      parti->file = NULL;
-    }
+    FREEMEMORY(parti->reg_file);
+    FREEMEMORY(parti->size_file);
+    parti->file = NULL;
   }
   parti->compression_type = UNCOMPRESSED;
   parti->loaded = 0;
@@ -5276,20 +5249,14 @@ int ParseBNDFProcess(bufferstreamdata *stream, char *buffer, int *nn_patch_in, i
   STRCPY(patchi->size_file, bufferptr);
   //      STRCAT(patchi->size_file,".szz"); when we actully use file check both .sz and .szz extensions
 
-#ifdef pp_CHECK_FILES
-  if(FILE_EXISTS_CASEDIR(patchi->comp_file)==YES){
+  if(lookfor_compressed_files==1&&FILE_EXISTS_CASEDIR(patchi->comp_file) == YES){
     patchi->compression_type = COMPRESSED_ZLIB;
-    patchi->file = patchi->comp_file;
+    patchi->file             = patchi->comp_file;
   }
   else{
     patchi->compression_type = UNCOMPRESSED;
-    patchi->file = patchi->reg_file;
+    patchi->file             = patchi->reg_file;
   }
-#else
-  patchi->compression_type = UNCOMPRESSED;
-  patchi->file = patchi->reg_file;
-#endif
-
   patchi->geominfo = NULL;
   if(patchi->structured==NO){
     int igeom;
@@ -5332,17 +5299,22 @@ int ParseBNDFProcess(bufferstreamdata *stream, char *buffer, int *nn_patch_in, i
   patchi->modtime = 0;
   patchi->geom_timeslist = NULL;
   patchi->geom_offsets = NULL;
-  patchi->geom_ivals_dynamic = NULL;
-  patchi->geom_ivals_static = NULL;
-  patchi->geom_vals_static = NULL;
+  patchi->geom_ivals_dynamic_offset = NULL;
+  patchi->geom_ivals_static_offset  = NULL;
+  patchi->geom_vals_static_offset   = NULL;
+  patchi->geom_vals_dynamic_offset  = NULL;
   patchi->geom_vert2tri = 0;
-  patchi->geom_vals_dynamic = NULL;
   patchi->geom_ndynamics = NULL;
   patchi->geom_nstatics = NULL;
   patchi->geom_times = NULL;
   patchi->geom_vals = NULL;
   patchi->geom_ivals = NULL;
   patchi->geom_nvals = 0;
+  patchi->cvals_offsets = NULL;
+  patchi->cvals_sizes = NULL;
+  patchi->cbuffer = NULL;
+  patchi->cbuffer_size = 0;
+  patchi->is_compressed = 0;
   patchi->histogram = NULL;
   patchi->blocknumber = blocknumber;
   patchi->seq_id = nn_patch;
@@ -5357,9 +5329,6 @@ int ParseBNDFProcess(bufferstreamdata *stream, char *buffer, int *nn_patch_in, i
   patchi->setchopmax = 0;
   patchi->chopmax = 0.0;
   meshinfo[blocknumber].patchfilenum = -1;
-#ifdef pp_CHECK_FILES
-  if(fast_startup==1||FILE_EXISTS_CASEDIR(patchi->file)==YES)
-#endif
   {
     char geomlabel2[256], *geomptr = NULL;
 
@@ -5403,12 +5372,6 @@ int ParseBNDFProcess(bufferstreamdata *stream, char *buffer, int *nn_patch_in, i
       *ipatch_in = ipatch;
     }
   }
-#ifdef pp_CHECK_FILES
-  else{
-    if(ReadLabels(&patchi->label, stream, NULL)==LABEL_ERR)return RETURN_TWO;
-    npatchinfo--;
-  }
-#endif
   return RETURN_CONTINUE;
 }
 
@@ -5537,8 +5500,7 @@ int ParseSMOKE3DProcess(bufferstreamdata *stream, char *buffer, int *nn_smoke3d_
     if(NewMemory((void **)&smoke3di->comp_file, (unsigned int)(len+1))==0)return RETURN_TWO;
     STRCPY(smoke3di->comp_file, buffer2);
 
-#ifdef pp_CHECK_FILES
-    if(FILE_EXISTS_CASEDIR(smoke3di->comp_file)==YES){
+    if(have_compressed_files==1&&FILE_EXISTS_CASEDIR(smoke3di->comp_file) == YES){
       smoke3di->file = smoke3di->comp_file;
       smoke3di->is_zlib = 1;
       smoke3di->compression_type = COMPRESSED_ZLIB;
@@ -5546,9 +5508,6 @@ int ParseSMOKE3DProcess(bufferstreamdata *stream, char *buffer, int *nn_smoke3d_
     else{
       smoke3di->file = smoke3di->reg_file;
     }
-#else
-    smoke3di->file = smoke3di->reg_file;
-#endif
 
 #ifdef pp_SMOKE16
     char buffer16[256];
@@ -5566,9 +5525,6 @@ int ParseSMOKE3DProcess(bufferstreamdata *stream, char *buffer, int *nn_smoke3d_
     }
 #endif
 
-#ifdef pp_CHECK_FILES
-    if(FILE_EXISTS_CASEDIR(smoke3di->file)==YES)
-#endif
     {
       if(ReadLabels(&smoke3di->label, stream, NULL)==LABEL_ERR)return RETURN_TWO;
       if(strcmp(smoke3di->label.longlabel, "HRRPUV")==0){
@@ -5580,12 +5536,6 @@ int ParseSMOKE3DProcess(bufferstreamdata *stream, char *buffer, int *nn_smoke3d_
       ismoke3d++;
       *ismoke3d_in = ismoke3d;
     }
-#ifdef pp_CHECK_FILES
-    else{
-      if(ReadLabels(&smoke3di->label, stream, NULL)==LABEL_ERR)return RETURN_TWO;
-      nsmoke3dinfo--;
-    }
-#endif
     if(extinct<0.0){
       extinct = 0.0;
       if(IsSootFile(smoke3di->label.shortlabel, smoke3di->label.longlabel)==1)extinct = 8700.0;
@@ -5825,8 +5775,8 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
 
   has_reg = NO;
   compression_type = UNCOMPRESSED;
-  if(lookfor_compressed_slice==1){
-    if(FILE_EXISTS_CASEDIR(rle_file)==YES)compression_type = COMPRESSED_RLE;
+  if(lookfor_compressed_files==1){
+    if(FILE_EXISTS_CASEDIR(rle_file)==YES)compression_type  = COMPRESSED_RLE;
     if(FILE_EXISTS_CASEDIR(zlib_file)==YES)compression_type = COMPRESSED_ZLIB;
   }
   if(compression_type==UNCOMPRESSED&&(fast_startup==1||FILE_EXISTS_CASEDIR(bufferptr)==YES))has_reg = YES;
@@ -6844,7 +6794,6 @@ int ReadSMV(bufferstreamdata *stream){
     for(i=0;i<npartinfo;i++){
       FREEMEMORY(partinfo[i].partclassptr);
       FREEMEMORY(partinfo[i].reg_file);
-      FREEMEMORY(partinfo[i].comp_file);
       FREEMEMORY(partinfo[i].size_file);
     }
     FREEMEMORY(partinfo);
@@ -11436,10 +11385,8 @@ typedef struct {
     readallgeom_multithread = 0;
   }
 
-#ifndef pp_CHECK_FILES
   CheckFilesMT();
   PRINT_TIMER(timer_readsmv, "CheckFilesMT");
-#endif
 
 #ifdef pp_BNDF
   for(i = 0;i < npatchinfo;i++){

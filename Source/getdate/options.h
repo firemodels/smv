@@ -7,12 +7,4 @@
 //#undef pp_BETA
 //#define pp_BETA
 
-//*** define getdate title
-
-#ifdef pp_BETA
-  #define PROGVERSION "Test"
-#else
-  #define PROGVERSION "1.0.1"
-#endif
-
 #endif
