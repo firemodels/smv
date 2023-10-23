@@ -979,9 +979,6 @@ int lua_get_plot3dentry(lua_State *L) {
   lua_pushnumber(L, plot3dinfo[index].nvars);
   lua_setfield(L, -2, "nvars");
 
-  lua_pushnumber(L, plot3dinfo[index].compression_type);
-  lua_setfield(L, -2, "compression_type");
-
   lua_pushnumber(L, plot3dinfo[index].blocknumber);
   lua_setfield(L, -2, "blocknumber");
 
