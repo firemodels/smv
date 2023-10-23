@@ -118,9 +118,7 @@ int ReadSMV(char *smvfile){
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   */
     if(
-      Match(buffer, "BNDF") == 1 || Match(buffer, "BNDC") == 1 ||
-      Match(buffer, "BNDE") == 1 || Match(buffer, "BNDS") == 1
-      ){
+      Match(buffer, "BNDF") == 1 || Match(buffer, "BNDC") == 1 || Match(buffer, "BNDE") == 1){
       npatchinfo++;
       continue;
     }
@@ -539,9 +537,7 @@ int ReadSMV(char *smvfile){
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   */
     if(
-      Match(buffer, "BNDF") == 1 || Match(buffer, "BNDC") == 1 ||
-      Match(buffer, "BNDE") == 1 || Match(buffer, "BNDS") == 1
-      ){
+      Match(buffer, "BNDF") == 1 || Match(buffer, "BNDC") == 1 || Match(buffer, "BNDE") == 1){
       int version_local=0,dummy;
       char *buffer2;
       int len;
@@ -560,7 +556,7 @@ int ReadSMV(char *smvfile){
       patchi->compressed=0;
       patchi->version=version_local;
       patchi->is_geom = 0;
-      if(Match(buffer, "BNDE") == 1 || Match(buffer, "BNDS") == 1)patchi->is_geom = 1;
+      if(Match(buffer, "BNDE") == 1)patchi->is_geom = 1;
 
       if(FGETS(buffer,BUFFERSIZE,streamsmv)==NULL)break;
       TrimBack(buffer);
