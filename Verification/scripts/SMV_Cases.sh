@@ -39,6 +39,8 @@ $QFDS -d Visualization smokex080.fds
 $QFDS -d Visualization smokex160.fds
 $QFDS -d Visualization smoke_test_geom.fds
 $QFDS -d Visualization sprinkler_many.fds
+$QFDS -p 6 -d Visualization sphere_propaneu.fds
+$QFDS -p 6 -d Visualization sphere_propanec.fds
 $QFDS -d Visualization testsort.fds
 $QFDS -p 2 -d Visualization thouse5.fds
 $QFDS -p 2 -d Visualization thouse5delta.fds
