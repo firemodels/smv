@@ -41,44 +41,17 @@ void Usage(char *prog, int option){
     PRINTF("  -2  - overwrites 2d slice compressed files\n");
     PRINTF("  -3  - overwrites 3d smoke files\n");
     PRINTF("  -b  - overwrites boundary compressed files\n");
-#ifdef pp_PLOT3D
-    PRINTF("  -p  - overwrites PLOT3D files\n");
-#endif
-#ifdef pp_PART2
-    PRINTF("  -P  - overwrites particle files\n");
-#endif
-#ifdef pp_PART
     PRINTF("  -part2iso - generate isosurfaces from particle data\n");
-#endif
-    PRINTF("bound options:\n");
-    PRINTF("  -bounds - estimate data bounds for all file types\n");
-    PRINTF("  -bb - estimate data bounds for boundary files\n");
-    PRINTF("  -bs - estimate data bounds for slice files\n");
     PRINTF("  -no_chop - do not chop or truncate slice data.  Smokezip compresses\n");
-    PRINTF("        slice data truncating data above and below chop values\n");
-    PRINTF("        specified in the .ini file\n");
-#ifdef pp_PLOT3D
-    PRINTF("  -bp - estimate data bounds for plot3d files\n");
-#endif
-#ifdef pp_PART2
-    PRINTF("  -bP - estimate data bounds for particle files\n");
-#endif
+    PRINTF("        slice data ignoring chop values specified in the ini file\n");
     PRINTF("compress options:\n");
     PRINTF("  -n3 - do not compress 3d smoke files\n");
     PRINTF("  -nb - do not compress boundary files\n");
-#ifdef pp_PLOT3D
-    PRINTF("  -np - do not compress PLOT3D files\n");
-#endif
     PRINTF("  -ns - do not compress slice files\n");
-#ifdef pp_PART2
-    PRINTF("  -nP - do not compress particle files\n");
-    PRINTF("  -yP - compress particle files\n");
-#endif
     PRINTF("output options:\n");
-    PRINTF("  -auto - compress only files that are auto-loaded by Smokeview\n");
     PRINTF("  -d destdir - copies compressed files (and files needed by Smokeview\n");
     PRINTF("        to view the case) to the directory destdir\n");
-    PRINTF("  -s GLOBsourcedir - specifies directory containing source files\n");
+    PRINTF("  -s sourcedir - specifies directory containing source files\n");
     PRINTF("  -demo - Creates the files (compressed and .svd ) needed by the\n");
     PRINTF("        Smokeview demonstrator mode.  Compresses files that are autoloaded, \n");
     PRINTF("        uses (20.0,620.0) and (0.0,0.23) for temperature and oxygen bounds\n");
@@ -123,26 +96,16 @@ int main(int argc, char **argv){
     return 0;
   }
 
-  GLOBdoit_lighting=0;
   GLOBdoit_smoke3d=1;
   GLOBdoit_boundary=1;
   GLOBdoit_slice=1;
   GLOBdoit_volslice=1;
-#ifdef pp_PLOT3D
-  GLOBdoit_plot3d=1;
-#else
-  GLOBdoit_plot3d=0;
-#endif
-#ifdef pp_PART2
-  GLOBdoit_particle=0;
-#endif
 
   strcpy(GLOBpp,"%");
   strcpy(GLOBx,"X");
   GLOBfirst_initsphere=1;
   GLOBfirst_slice=1;
   GLOBfirst_patch=1;
-  GLOBfirst_plot3d=1;
   GLOBfirst_part2iso=1;
   GLOBfirst_part2iso_smvopen=1;
 #ifdef pp_THREAD
@@ -150,7 +113,6 @@ int main(int argc, char **argv){
 #endif
   GLOBframeskip=-1;
   GLOBno_chop=0;
-  GLOBautozip=0;
   GLOBmake_demo=0;
   GLOBsyst=0;
   GLOBendianfile=NULL;
@@ -158,17 +120,9 @@ int main(int argc, char **argv){
   GLOBsourcedir=NULL;
   GLOBoverwrite_b=0;
   GLOBoverwrite_s=0;
-  GLOBget_bounds=0;
-  GLOBget_slice_bounds=0;
-  GLOBget_plot3d_bounds=0;
-  GLOBget_boundary_bounds=0;
-#ifdef pp_PART
-  GLOBget_part_bounds=0;
   GLOBpartfile2iso=0;
-#endif
   GLOBoverwrite_slice=0;
   GLOBoverwrite_volslice=0;
-  GLOBoverwrite_plot3d=0;
   GLOBcleanfiles=0;
   GLOBsmoke3dzipstep=1;
   GLOBboundzipstep=1;
@@ -177,14 +131,12 @@ int main(int argc, char **argv){
 
   npatchinfo=0;
   nsmoke3dinfo=0;
-#ifdef pp_PART
   npartinfo=0;
   npartclassinfo=0;
   partinfo=NULL;
   partclassinfo=NULL;
   maxpart5propinfo=0;
   npart5propinfo=0;
-#endif
   nsliceinfo=0;
   sliceinfo=NULL;
   nmeshes=0;
@@ -207,51 +159,6 @@ int main(int argc, char **argv){
     lenarg=strlen(arg);
     if(arg[0]=='-'&&lenarg>1){
       switch(arg[1]){
-      case 'a':
-        GLOBautozip=1;
-        break;
-      case 'b':
-        if(strcmp(arg,"-bounds")==0){
-          GLOBget_bounds=1;
-          GLOBget_slice_bounds=1;
-#ifdef pp_PLOT3D
-          GLOBget_plot3d_bounds=1;
-#endif
-          GLOBget_boundary_bounds=1;
-#ifdef pp_PART
-          GLOBget_part_bounds=1;
-#endif
-        }
-        else if(strcmp(arg,"-bb")==0){
-          GLOBget_boundary_bounds=1;
-        }
-        else if(strcmp(arg,"-bs")==0){
-          GLOBget_slice_bounds=1;
-        }
-#ifdef pp_PLOT3D
-        else if(strcmp(arg,"-bp")==0){
-          GLOBget_plot3d_bounds=1;
-        }
-#endif
-#ifdef pp_PART2
-        else if(strcmp(arg,"-bP")==0){
-          GLOBget_part_bounds=1;
-        }
-#endif
-        else{
-          GLOBoverwrite_b=1;
-        }
-        break;
-#ifdef pp_PART2
-      case 'y':
-        if(strcmp(arg,"-yP")==0){
-          GLOBdoit_particle=1;
-        }
-        break;
-#endif
-      case 'l':
-        GLOBdoit_lighting=1;
-        break;
       case 'n':
         if(strcmp(arg,"-n3")==0){
           GLOBdoit_smoke3d=0;
@@ -259,16 +166,6 @@ int main(int argc, char **argv){
         else if(strcmp(arg,"-nb")==0){
           GLOBdoit_boundary=0;
         }
-#ifdef pp_PLOT3D
-        else if(strcmp(arg,"-np")==0){
-          GLOBdoit_plot3d=0;
-        }
-#endif
-#ifdef pp_PART2
-        else if(strcmp(arg,"-nP")==0){
-          GLOBdoit_particle=0;
-        }
-#endif
         else if(strcmp(arg,"-ns")==0){
           GLOBdoit_slice=0;
         }
@@ -286,32 +183,16 @@ int main(int argc, char **argv){
         GLOBoverwrite_volslice=1;
         GLOBoverwrite_s=1;
         break;
-#ifdef  pp_PART2
-      case 'P':
-        GLOBoverwrite_part=1;
-        break;
-#endif
       case 'p':
         if(strcmp(arg,"-part2iso")==0){
           GLOBpartfile2iso=1;
         }
-#ifdef pp_PLOT3D
-        else{
-          GLOBoverwrite_plot3d=1;
-        }
-#endif
         break;
       case 'f':
         GLOBoverwrite_b=1;
         GLOBoverwrite_s=1;
         GLOBoverwrite_slice=1;
         GLOBoverwrite_volslice=1;
-#ifdef pp_PLOT3D
-        GLOBoverwrite_plot3d=1;
-#endif
-#ifdef pp_PART2
-        GLOBoverwrite_part=1;
-#endif
         break;
       case 'c':
         GLOBcleanfiles=1;
@@ -348,7 +229,6 @@ int main(int argc, char **argv){
         break;
       case 'd':
         if(strcmp(arg,"-demo")==0){
-          GLOBautozip=1;
           GLOBmake_demo=1;
           break;
         }
@@ -401,7 +281,7 @@ int main(int argc, char **argv){
     return 1;
   }
 #ifdef pp_THREAD
-  init_pthread_mutexes();
+  InitPthreadMutexes();
 #endif
   filelen=strlen(filebase);
   if(filelen>4){
@@ -411,6 +291,9 @@ int main(int argc, char **argv){
       filelen=strlen(filebase);
     }
   }
+  NewMemory((void **)&smvzip_filename, (unsigned int)(strlen(filebase) + strlen(".smvzip") + 1));
+  STRCPY(smvzip_filename, filebase);
+  STRCAT(smvzip_filename, ".smvzip");
   if(GLOBsourcedir==NULL){
     strcpy(smvfile,filebase);
     strcpy(smzlogfile,filebase);
@@ -462,49 +345,28 @@ int main(int argc, char **argv){
 
   if(ReadSMV(smvfile)!=0)return 1;
 
-#ifdef pp_PLOT3D
-  if(nplot3dinfo>0){
-    plot3dinfo[0].dup=0;
-    for(i=1;i<nplot3dinfo;i++){
-      plot3d *plot3di;
-
-      plot3di = plot3dinfo + i;
-
-      plot3di->dup=0;
-      plot3ddup(plot3di,i);
-    }
-  }
-#endif
-  if(npatchinfo>0){
-    patchinfo->dup=0;
-    for(i=1;i<npatchinfo;i++){
-      patch *patchi;
-
-      patchi = patchinfo + i;
-
-      patchi->dup=0;
-      patchdup(patchi,i);
-    }
-  }
-  if(nsliceinfo>0){
-    sliceinfo[0].dup=0;
-    for(i=1;i<nsliceinfo;i++){
-      slicedata *slicei;
-
-      slicei = sliceinfo + i;
-
-      slicei->dup=0;
-      SliceDup(slicei,i);
-    }
-  }
   ReadINI(inifile);
 
 #ifdef pp_THREAD
-  mt_compress_all();
+  CompressAllMT();
 #else
-  compress_all(NULL);
+  CompressAll(NULL);
 #endif
 
+  if(GLOBcleanfiles==1){
+    if(FileExistsOrig(smvzip_filename)==1){
+      UNLINK(smvzip_filename);
+    }
+  }
+  else{
+    FILE *stream;
+
+    stream = fopen(smvzip_filename, "w");
+    if(stream!=NULL){
+      fprintf(stream, "1\n");
+      fclose(stream);
+    }
+  }
   if(GLOBcleanfiles==0&&GLOBdestdir!=NULL){
     PRINTF("Copying .smv, .ini and .end files to %s directory\n",GLOBdestdir);
     CopyFILE(GLOBdestdir,smvfile,smvfilebase,REPLACE_FILE);
@@ -514,34 +376,28 @@ int main(int argc, char **argv){
     PRINTF("No compressed files were removed\n");
   }
   if(GLOBmake_demo==1){
-    makesvd(GLOBdestdir,smvfile);
+    MakeSVD(GLOBdestdir,smvfile);
   }
   return 0;
 }
 
-/* ------------------ compress_all ------------------------ */
+/* ------------------ CompressAll ------------------------ */
 
-void *compress_all(void *arg){
+void *CompressAll(void *arg){
   int *thread_index;
 
   thread_index=(int *)(arg);
-  if(GLOBdoit_boundary==1)compress_patches(thread_index);
+  if(GLOBdoit_boundary==1)CompressPatches(thread_index);
   if(GLOBdoit_slice==1)CompressSlices(thread_index);
   if(GLOBdoit_volslice==1)CompressVolSlices(thread_index);
-  if(GLOBdoit_smoke3d==1)compress_smoke3ds(thread_index);
-#ifdef pp_PLOT3D
-  if(GLOBdoit_plot3d==1)compress_plot3ds(thread_index);
-#endif
-  convert_parts2iso(thread_index);
-#ifdef pp_PART2
-  if(GLOBdoit_particle)compress_parts(NULL);
-#endif
+  if(GLOBdoit_smoke3d==1)Compress3DSmokes(thread_index);
+  ConvertParts2Iso(thread_index);
   return NULL;
 }
 
-/* ------------------ makesvd ------------------------ */
+/* ------------------ MakeSVD ------------------------ */
 
-void makesvd(char *in_dir, char *smvfile){
+void MakeSVD(char *in_dir, char *smvfile){
   char *file_out=NULL,*svd;
 
   if(smvfile==NULL)return;
@@ -561,20 +417,26 @@ void makesvd(char *in_dir, char *smvfile){
 
 }
 
-/* ------------------ print_summary ------------------------ */
+/* ------------------ PrintSummary ------------------------ */
 
-void print_summary(void){
+void PrintSummary(void){
   int i;
   int nsum;
+  int nsum2;
 
   PRINTF("\n");
+  PRINTF("********* Summary **************\n");
+  PRINTF("\n");
   nsum=0;
+  nsum2=0;
   for(i=0;i<nsliceinfo;i++){
     slicedata *slicei;
 
     slicei = sliceinfo + i;
     if(slicei->compressed==1)nsum++;
+    if(slicei->vol_compressed==1)nsum2++;
   }
+  if(nsum>0||nsum2>0)PRINTF("*** slice files ***\n");
   if(nsum>0){
     for(i=0;i<nsliceinfo;i++){
       slicedata *slicei;
@@ -583,7 +445,7 @@ void print_summary(void){
       slicei = sliceinfo + i;
       if(slicei->compressed==0)continue;
       label=&slicei->label;
-      PRINTF("%s  (%s)\n %s\n",slicei->file,label->longlabel,slicei->summary);
+      PRINTF("%s  (%s): %s\n",slicei->file,label->longlabel,slicei->summary);
       PRINTF("  min=%f %s, max=%f %s \n",slicei->valmin,label->unit,slicei->valmax,label->unit);
     }
   }
@@ -606,6 +468,7 @@ void print_summary(void){
       PRINTF("%s (%s)\n  %s\n",slicei->file,label->longlabel,slicei->volsummary);
     }
   }
+  if(nsum>0||nsum2>0)PRINTF("\n");
 
   nsum=0;
   for(i=0;i<nsmoke3dinfo;i++){
@@ -615,33 +478,44 @@ void print_summary(void){
     if(smoke3di->compressed==1)nsum++;
   }
   if(nsum>0){
+    PRINTF("\n*** 3D smoke/fire files ***\n");
     for(i=0;i<nsmoke3dinfo;i++){
       smoke3d *smoke3di;
 
       smoke3di = smoke3dinfo + i;
       if(smoke3di->compressed==0)continue;
-      PRINTF("%s\n  %s\n",smoke3di->file,smoke3di->summary);
+      PRINTF("%s:  %s\n",smoke3di->file,smoke3di->summary);
     }
+    PRINTF("\n");
   }
 
   nsum=0;
   for(i=0;i<npatchinfo;i++){
-    patch *patchi;
+    patchdata *patchi;
 
     patchi = patchinfo + i;
     if(patchi->compressed==1)nsum++;
   }
   if(nsum>0){
+    PRINTF("*** boundary files ***\n");
     for(i=0;i<npatchinfo;i++){
-      patch *patchi;
+      patchdata *patchi;
       flowlabels *label;
+      char type[32];
 
       patchi = patchinfo + i;
       if(patchi->compressed==0)continue;
       label=&patchi->label;
-      PRINTF("%s (%s)\n  %s\n",patchi->file,label->longlabel,patchi->summary);
+      if(patchi->is_geom){
+        strcpy(type, "GEOM");
+      }
+      else{
+        strcpy(type, "BNDF");
+      }
+      PRINTF("%s (%s/%s):  %s\n",patchi->file,label->longlabel,type,patchi->summary);
       PRINTF("  min=%f %s, max=%f %s \n",patchi->valmin,label->unit,patchi->valmax,label->unit);
     }
+    PRINTF("\n");
   }
 
   nsum=0;
@@ -652,6 +526,7 @@ void print_summary(void){
     if(parti->compressed2==1)nsum++;
   }
   if(nsum>0){
+    PRINTF("*** particle files ***\n");
     for(i=0;i<npartinfo;i++){
       int j;
       part *parti;
@@ -665,6 +540,7 @@ void print_summary(void){
       }
       PRINTF("\n");
     }
+    PRINTF("\n");
   }
 
 }

@@ -7,14 +7,6 @@
 //#undef pp_BETA
 //#define pp_BETA
 
-//*** define set_path title
-
-#ifdef pp_BETA
-#define PROGVERSION "Test"
-#else
-#define PROGVERSION "1.0.1"
-#endif
-
 int reg_path(int setget, int pathtype, char *path);
 #define REG_GET 0
 #define REG_SET 1

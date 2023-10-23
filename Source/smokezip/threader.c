@@ -6,9 +6,9 @@
 #include "zlib.h"
 #include "svzip.h"
 
-/* ------------------ mt_compress_all ------------------------ */
+/* ------------------ CompressAllMT ------------------------ */
 #ifdef pp_THREAD
-void mt_compress_all(void){
+void CompressAllMT(void){
   int i;
   pthread_t *thread_ids;
   int *index;
@@ -19,15 +19,17 @@ void mt_compress_all(void){
 
   for(i=0;i<mt_nthreads;i++){
     index[i]=i;
-    pthread_create(&thread_ids[i],NULL,compress_all,&index[i]);
+    pthread_create(&thread_ids[i],NULL,CompressAll,&index[i]);
     threadinfo[i].stat=-1;
   }
 
   for(i=0;i<mt_nthreads;i++){
     pthread_join(thread_ids[i],NULL);
   }
-
-  print_summary();
+  if(GLOBcleanfiles == 0){
+    PRINTF("********* compression completed ********* \n");
+    PrintSummary();
+  }
   FREEMEMORY(thread_ids);
   FREEMEMORY(index);
   FREEMEMORY(threadinfo);
@@ -36,7 +38,7 @@ void mt_compress_all(void){
 
 /* ------------------ init_all_threads ------------------------ */
 
-void init_pthread_mutexes(void){
+void InitPthreadMutexes(void){
 #ifdef pp_THREAD
   pthread_mutex_init(&mutexCOMPRESS,NULL);
   pthread_mutex_init(&mutexPATCH,NULL);
@@ -46,15 +48,14 @@ void init_pthread_mutexes(void){
   pthread_mutex_init(&mutexSLICE_BOUND,NULL);
   pthread_mutex_init(&mutexISOS,NULL);
   pthread_mutex_init(&mutexSMOKE,NULL);
-  pthread_mutex_init(&mutexPLOT3D,NULL);
   pthread_mutex_init(&mutexPART2ISO,NULL);
   pthread_mutex_init(&mutexPRINT,NULL);
 #endif
 }
 
-/* ------------------ print_thread_stats ------------------------ */
+/* ------------------ PrintThreadStats ------------------------ */
 
-void print_thread_stats(void){
+void PrintThreadStats(void){
 #ifdef pp_THREAD
   int i;
   int sum;

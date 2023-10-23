@@ -1113,6 +1113,12 @@ void ReadFed(int file_index, int time_frame, float *time_value, int flag, int fi
     fed_slice->plotx = co->plotx;
     fed_slice->ploty = co->ploty;
     fed_slice->plotz = co->plotz;
+    fed_slice->ijk_min[0] = co->is1;
+    fed_slice->ijk_min[1] = co->js1;
+    fed_slice->ijk_min[2] = co->ks1;
+    fed_slice->ijk_max[0] = co->is2;
+    fed_slice->ijk_max[1] = co->js2;
+    fed_slice->ijk_max[2] = co->ks2;
     if(fed_slice->volslice==1){
       if(fed_slice->nslicei!=fed_slice->is2+1-fed_slice->is1)fed_slice->is2=fed_slice->nslicei+fed_slice->is1-1;
       if(fed_slice->nslicej!=fed_slice->js2+1-fed_slice->js1)fed_slice->js2=fed_slice->nslicej+fed_slice->js1-1;
@@ -1556,7 +1562,7 @@ void UncompressSliceDataFrame(slicedata *sd, int iframe_local){
   if(sd->compression_type == COMPRESSED_ZLIB){
     UnCompressZLIB(sd->slicecomplevel, &countout, compressed_data, countin);
   }
-  if(sd->compression_type == COMPRESSED_RLE){
+  else if(sd->compression_type == COMPRESSED_RLE){
     countout = UnCompressRLE(compressed_data, countin, sd->slicecomplevel);
   }
   CheckMemory;
@@ -2832,6 +2838,11 @@ void UpdateFedinfo(void){
       break;
     }
     if(fedi->o2_index == -1)continue;
+#ifdef pp_FED_COMPRESS
+    if(fedi->co_index  != -1 && sliceinfo[fedi->co_index].compression_type  == COMPRESSED_ZLIB)continue;
+    if(fedi->co2_index != -1 && sliceinfo[fedi->co2_index].compression_type == COMPRESSED_ZLIB)continue;
+    if(fedi->o2_index  != -1 && sliceinfo[fedi->o2_index].compression_type  == COMPRESSED_ZLIB)continue;
+#endif
     fedi->fed_index = nsliceinfo + nfedinfo;
     if(sliceinfo[fedi->co_index].volslice == 1)nfediso++;
     nfedinfo++;
@@ -4689,7 +4700,7 @@ void GetSliceTimes(char *file, float *times, int ntimes){
 
 FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_value, int flag, int set_slicecolor, int *errorcode){
   float *xplt_local, *yplt_local, *zplt_local, offset, qmin, qmax, read_time, total_time;
-  int blocknumber, error, i, ii, headersize, framesize, flag2 = 0;
+  int blocknumber, error, headersize, framesize, flag2 = 0;
   slicedata *sd;
   int ntimes_slice_old;
 
@@ -4746,6 +4757,8 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
       FREEMEMORY(sd->slicecomplevel);
 
       if(sd->histograms!=NULL){
+        int i;
+
         for(i = 0; i<sd->nhistograms; i++){
           FreeHistogram(sd->histograms+i);
         }
@@ -4758,6 +4771,8 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
 // reset slice variables to an unloaded state
 
     if(flag == UNLOAD){
+      int ii;
+
       update_flipped_colorbar = 1;
       sd->ntimes_old = 0;
       sd->ntimes = 0;
@@ -4769,6 +4784,7 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
       ReadVolSlice = 0;
       for(ii = 0; ii<nslice_loaded; ii++){
         slicedata *sdi;
+	int i;
 
         i = slice_loaded_list[ii];
         sdi = sliceinfo + i;
@@ -4776,6 +4792,7 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
       }
       for(ii = 0; ii<nslice_loaded; ii++){
         slicedata *sdi;
+	int i;
 
         i = slice_loaded_list[ii];
         sdi = sliceinfo + i;
@@ -4788,6 +4805,7 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
       if(flag2 == 0){
         for(ii = 0; ii<nslice_loaded; ii++){
           slicedata *sdi;
+	  int i;
 
           i = slice_loaded_list[ii];
           sdi = sliceinfo + i;
@@ -4803,6 +4821,7 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
         slicefile_labelindex = 0;
       }
 
+      int i;
       for(i = 0; i<nvsliceinfo; i++){
         vd = vsliceinfo + i;
         if(vd->iu == ifile)vd->u = NULL;
@@ -5120,7 +5139,10 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
     //if(flag!=RESETBOUNDS)update_research_mode=1;
     if(use_set_slicecolor==0||set_slicecolor==SET_SLICECOLOR){
       if(sd->compression_type==UNCOMPRESSED){
+        int i;
+
         for(i = 0; i<nsliceinfo; i++){
+          int ii;
           slicedata *slicei;
 
           slicei = sliceinfo+i;
@@ -5148,6 +5170,13 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
 
         UpdateAllSliceLabels(slicefile_labelindex, errorcode);
         MakeColorLabels(sb->colorlabels, sb->colorvalues, qmin, qmax, nrgb);
+      }
+    }
+    if(sd->compression_type == COMPRESSED_ZLIB){
+      int ii;
+
+      for(ii = 0; ii < 256; ii++){
+        sd->qval256[ii] = (qmin * (255 - ii) + qmax * ii) / 255;
       }
     }
     CheckMemory;

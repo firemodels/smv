@@ -1461,63 +1461,6 @@ int ReadLabels(flowlabels *flowlabel, BFILE *stream, char *suffix_label){
   return return_val;
 }
 
-#ifdef pp_PLOT3D_STATIC
-/* ------------------ ReadPlotLabels ------------------------ */
-
-int ReadPlot3DLabels(flowlabels *flowlabel, BFILE *stream, char *suffix_label, char *labels_static){
-  char buffer2[255], *buffer;
-  size_t len;
-  int len_suffix_label = 0;
-  int len_skip_label = 10;  // add extra space to label in case there is an isosurface skip parameter
-  int return_val = LABEL_OK;
-
-  if(FGETS(buffer2,255,stream)==NULL){
-    strcpy(buffer2,"*");
-    return_val =  LABEL_ERR;
-  }
-
-  len=strlen(buffer2);
-  buffer=TrimFront(buffer2);
-  TrimBack(buffer);
-  len=strlen(buffer);
-  if(suffix_label!=NULL)len_suffix_label = strlen(suffix_label);
-  if(flowlabel!=NULL){
-    flowlabel->longlabel = labels_static;
-    STRCPY(flowlabel->longlabel, buffer);
-    if(suffix_label!=NULL&&strlen(suffix_label)>0)STRCAT(flowlabel->longlabel, suffix_label);
-  }
-
-  if(FGETS(buffer2,255,stream)==NULL){
-    strcpy(buffer2,"**");
-    return_val = LABEL_ERR;
-  }
-
-  len=strlen(buffer2);
-  buffer=TrimFront(buffer2);
-  TrimBack(buffer);
-  len=strlen(buffer);
-  if(flowlabel!=NULL){
-    flowlabel->shortlabel = labels_static + MAXPLOT3DLABELSIZE;
-    STRCPY(flowlabel->shortlabel, buffer);
-  }
-
-  if(FGETS(buffer2,255,stream)==NULL){
-    strcpy(buffer2,"***");
-    return_val = LABEL_ERR;
-  }
-
-  len=strlen(buffer2);
-  buffer=TrimFront(buffer2);
-  TrimBack(buffer);
-  len=strlen(buffer)+1;// allow room for deg C symbol in case it is present
-  if(flowlabel!=NULL){
-    flowlabel->unit = labels_static + 2*MAXPLOT3DLABELSIZE;
-    STRCPY(flowlabel->unit, buffer);
-  }
-  return return_val;
-}
-#endif
-
 /* ------------------ Date2Day ------------------------ */
 
 unsigned int Date2Day(char *tokenorig){

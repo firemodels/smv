@@ -1208,7 +1208,7 @@ typedef struct _part5data {
 typedef struct _partdata {
   FILE_m *stream;
 
-  char *file, *comp_file, *size_file, *reg_file, *hist_file, *bound_file;
+  char *file, *size_file, *reg_file, *hist_file, *bound_file;
   int have_bound_file;
   int seq_id, autoload, loaded, skipload, request_load, display, reload, finalize;
   int loadstatus, boundstatus;
@@ -1621,13 +1621,16 @@ typedef struct _patchdata {
 #ifdef pp_BNDF
   int have_geom;
 #endif
-  //int *patchsize;
   int skip,dir;
   float xyz_min[3], xyz_max[3];
   int ntimes, ntimes_old;
   int version;
   int patch_filetype, structured;
   int shortlabel_index;
+  int *cvals_offsets, *cvals_sizes;
+  unsigned char *cbuffer;
+  int is_compressed;
+  int cbuffer_size;
   int boundary;
   int inuse,inuse_getbounds;
   int firstshort;
@@ -1642,10 +1645,11 @@ typedef struct _patchdata {
   int blocknumber,loaded,loaded2,display;
   float *geom_times, *geom_vals;
   int *geom_timeslist,geom_itime;
-  unsigned char *geom_ivals, **geom_ivals_static, **geom_ivals_dynamic;
+  unsigned char *geom_ivals;
+  int *geom_ivals_static_offset, *geom_ivals_dynamic_offset;
+  int *geom_vals_static_offset,  *geom_vals_dynamic_offset;
   unsigned char *geom_ival_static, *geom_ival_dynamic;
-  float **geom_vals_static, **geom_vals_dynamic;
-  float  *geom_val_static,   *geom_val_dynamic;
+  float         *geom_val_static,  *geom_val_dynamic;
   int geom_nval_static, geom_nval_dynamic;
   int *geom_nstatics, *geom_ndynamics;
   int geom_vert2tri;
@@ -1666,10 +1670,8 @@ typedef struct _patchdata {
 
 typedef struct _plot3ddata {
   int seq_id, autoload;
-  char *file,*reg_file,*comp_file;
-  char *bound_file;
+  char *file, *reg_file,  *bound_file;
   int have_bound_file;
-  int compression_type;
   int finalize;
   int memory_id;
   float time;

@@ -9,9 +9,6 @@
 #include "MALLOCC.h"
 #include "stdio_buffer.h"
 
-//dummy change to bump version number to 1.0.10
-//dummy change to force githash change
-
 /* ------------------ usage ------------------------ */
 
 void Usage(char *prog, int option){
@@ -291,16 +288,16 @@ int main(int argc, char **argv){
   FCLOSE(smv_buffer2);
 
   if(no_slice==0){
-    setup_slice(stream_out);
-    diff_slices(stream_out);
+    SetupSlice(stream_out);
+    DiffSlices(stream_out);
   }
   if(no_boundary==0){
-    setup_boundary(stream_out);
-    diff_boundaryes(stream_out);
+    SetupBoundary(stream_out);
+    DiffBoundarYes(stream_out);
   }
   if(no_plot3d==0){
     SetupPlot3D(stream_out);
-    diff_plot3ds(stream_out);
+    DiffPlot3Ds(stream_out);
   }
 
   fclose(stream_out);

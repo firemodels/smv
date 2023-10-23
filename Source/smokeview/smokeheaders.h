@@ -76,10 +76,11 @@ EXTERNCPP void SetTimeState(void);
 EXTERNCPP void SetCurrentViewPoint(char *viewpoint_label);
 
 EXTERNCPP int GetGeomDataSize(char *file, int *nvals, int time_frame,
-                              int *geom_offsets, int *geom_offset_flag, int *error);
-EXTERNCPP FILE_SIZE GetGeomData(char *filename, int ntimes, int nvals, float *times, int *nstatics, int *ndynamics, float *vals,
-  int time_frame, float *time_value, int *geom_offsets, int *error);
-
+              int *cvals_offsets, int *cvals_sizes, int *geom_offsets, int *geom_offset_flag,
+              int *max_buffer_size, int *error);
+EXTERNCPP FILE_SIZE GetGeomData(char *filename, int ntimes, int nvals, float *times,
+              int *nstatics, int *ndynamics, float *vals, int time_frame, float *time_value,
+              int *geom_offsets, int *error);
 
 EXTERNCPP void UpdateMovieParms(void);
 
@@ -829,7 +830,8 @@ EXTERNCPP void GetNewPos(float *oldpos, float dx, float dy, float dz, float spee
 EXTERNCPP void FreeSkybox(void);
 EXTERNCPP void DrawSkybox(void);
 EXTERNCPP void LoadSkyTexture(char *filebase, texturedata *texti);
-EXTERNCPP void UncompressBoundaryDataFrame(meshdata *meshi,int frame_index);
+EXTERNCPP void UncompressBoundaryDataGEOM(patchdata *patchi, int frame_index);
+EXTERNCPP void UncompressBoundaryDataBNDF(meshdata *meshi,int frame_index);
 EXTERNCPP void RGBTest(void);
 EXTERNCPP void UpdateCADTextCoords(cadquad *quadi);
 EXTERNCPP void UpdateIndexColors(void);

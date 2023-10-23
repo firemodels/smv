@@ -568,7 +568,7 @@ void GetSliceGeomVerts(int option, int option2, int *offset, float *verts, unsig
       // preliminary code for obtaining geometry vertices and triangles
 
       patchi = slicei->patchgeom;
-      ivals = patchi->geom_ivals_dynamic[itime];
+      ivals = patchi->geom_ivals + patchi->geom_ivals_dynamic_offset[itime];
       geomi = slicei->patchgeom->geominfo;
       geomlisti = geomi->geomlistinfo-1;
       if(itime==ibeg){

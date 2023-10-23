@@ -16,9 +16,9 @@ pdfdata pdfmerge,pdfframe;
                            returncode=fread(var,4,size,BOUNDARYFILE);\
                            FSEEK(BOUNDARYFILE,4,SEEK_CUR)
 
-/* ------------------ clean_boundary ------------------------ */
+/* ------------------ CleanBoundary ------------------------ */
 
-int clean_boundary(patch *patchi){
+int CleanBoundary(patchdata *patchi){
   FILE *BOUNDARYFILE=NULL;
   char boundaryfile_svz[1024], boundarysizefile_svz[1024];
   FILE *boundarystream=NULL,*boundarysizestream=NULL;
@@ -82,9 +82,280 @@ int clean_boundary(patch *patchi){
   return 0;
 }
 
-/* ------------------ convert_boundary ------------------------ */
+/* ------------------ ConvertBoundaryGEOM ------------------------ */
 
-int convert_boundary(patch *patchi, int *thread_index){
+int ConvertBoundaryGEOM(patchdata *patchi, int *thread_index){
+  FILE *BOUNDARYFILE = NULL, *boundarystream = NULL, *boundarysizestream = NULL;
+  char boundaryfile_svz[1024], boundarysizefile_svz[1024], *boundary_file;
+  unsigned char *cvals=NULL, *compressed_vals=NULL;
+  float *vals=NULL, time_local;
+  uLongf ncompressed_vals;
+  uLong ntotal;
+  int one = 1, zero = 0;
+  unsigned int sizebefore = 0, sizeafter = 0;
+  int percent_done, percent_next = PERCENT_SKIP;
+  int returncode;
+  LINT data_loc;
+#ifndef pp_THREAD
+  int count;
+#endif
+
+  boundary_file = patchi->file;
+  patchi->compressed = 0;
+
+#ifdef pp_THREAD
+  {
+    int fileindex;
+
+    fileindex = patchi + 1 - patchinfo;
+    sprintf(threadinfo[*thread_index].label, "bf %i", fileindex);
+  }
+#endif
+
+  // check if boundary file is accessible
+
+  if(GetFileInfo(boundary_file, NULL, NULL) != 0){
+    fprintf(stderr, "*** Warning: The file %s does not exist\n", boundary_file);
+    return 0;
+  }
+
+  BOUNDARYFILE = fopen(boundary_file, "rb");
+  if(BOUNDARYFILE == NULL){
+    fprintf(stderr, "*** Warning: The file %s could not be opened\n", boundary_file);
+    return 0;
+  }
+
+  // set up boundary compressed file
+
+  if(GLOBdestdir != NULL){
+    strcpy(boundaryfile_svz, GLOBdestdir);
+    strcat(boundaryfile_svz, patchi->filebase);
+  }
+  else{
+    strcpy(boundaryfile_svz, patchi->file);
+  }
+  strcat(boundaryfile_svz, ".svz");
+
+  if(GLOBdestdir != NULL){
+    strcpy(boundarysizefile_svz, GLOBdestdir);
+    strcat(boundarysizefile_svz, patchi->filebase);
+  }
+  else{
+    strcpy(boundarysizefile_svz, patchi->file);
+  }
+  strcat(boundarysizefile_svz, ".szz");
+
+  if(GLOBoverwrite_b == 0){
+    boundarystream = fopen(boundaryfile_svz, "rb");
+    if(boundarystream != NULL){
+      if(boundarystream != NULL){
+        fclose(boundarystream);
+        fprintf(stderr, "*** Warning: The file %s exists.\n", boundaryfile_svz);
+        fprintf(stderr, "     Use the -f option to overwrite smokezip compressed files\n");
+      }
+      fclose(BOUNDARYFILE);
+      return 0;
+    }
+  }
+
+  boundarystream = fopen(boundaryfile_svz, "wb");
+  boundarysizestream = fopen(boundarysizefile_svz, "w");
+  if(boundarystream == NULL || boundarysizestream == NULL){
+    if(boundarystream == NULL){
+      fprintf(stderr, "*** Warning: The file %s could not be opened for writing\n", boundaryfile_svz);
+    }
+    if(boundarysizestream == NULL){
+      fprintf(stderr, "*** Warning: The file %s could not be opened for writing\n", boundarysizefile_svz);
+    }
+    if(boundarystream != NULL)fclose(boundarystream);
+    if(boundarysizestream != NULL)fclose(boundarysizestream);
+    fclose(BOUNDARYFILE);
+    return 0;
+  }
+
+#ifndef pp_THREAD
+  char *shortlabel;
+  char *unit, units[256], cval[256];
+  char filetype[256];
+
+  strcpy(filetype, "");
+  shortlabel = patchi->label.shortlabel;
+  if(strlen(shortlabel) > 0)strcat(filetype, shortlabel);
+  TrimBack(filetype);
+
+  PRINTF("Compressing %s (%s)\n", boundary_file, filetype);
+
+  strcpy(units, "");
+  unit = patchi->label.unit;
+  if(strlen(unit) > 0)strcat(units, unit);
+  TrimBack(units);
+  sprintf(cval, "%f", patchi->valmin);
+  TrimZeros(cval);
+  PRINTF("  using min=%s %s", cval, units);
+  sprintf(cval, "%f", patchi->valmax);
+  TrimZeros(cval);
+  PRINTF(" max=%s %s\n", cval, units);
+#endif
+  int endian, version;
+
+  FORTREAD(&endian,  1);
+  FORTREAD(&version, 1);
+  sizebefore = 24;
+
+  int fileversion = 0;
+  fwrite(&one,           4, 1, boundarystream); // write out a 1 to determine "endianness" when file is read in later
+  fwrite(&zero,          4, 1, boundarystream); // write out a zero now, then a one just before file is closed
+  fwrite(&fileversion,   4, 1, boundarystream); // write out compressed fileversion in case file format changes later
+  sizeafter = 12;
+  float denom, valmin, valmax, valminmax[2];
+
+
+  valmin = patchi->valmin;
+  valmax = patchi->valmax;
+  denom = valmax - valmin;
+  if(denom <= 0.0){
+    valmin = 0.0;
+    valmax = 1.0;
+    denom = 1.0;
+  }
+  valminmax[0] = valmin;
+  valminmax[1] = valmax;
+  fwrite(valminmax, 4, 2, boundarystream);
+  sizeafter += 8;
+
+  //***format
+  // INPUT
+  // 1
+  // version
+  // for each time step:
+  // time
+  // nvert_static, ntri_static, nvert_dynamic, ntri_dynamic
+  // if(nvert_static>0) vals_1, ...vals_nvert_static
+  // if(ntri_static>0)  vals_1, ...vals_ntri_static
+  // if(nvert_dynamic>0)vals_1, ...vals_nvert_dynamic
+  // if(ntri_dynamic>0) vals_1, ...vals_ntri_dynamic
+
+  // OUTPUT
+  // 1
+  // completion (0/1)
+  // fileversion (compressed format)
+  // min max (used to perform conversion)
+  // for each time step
+  // time
+  // nval1,nval2,nval3,nval4
+  // ncompressed
+  // compressed_1,...,compressed_ncompressed
+
+#ifndef pp_THREAD
+    PRINTF(" ");
+#endif
+    int MAXVALS = 0;
+    int MAXCOMPRESSEDVALS;    
+    while(feof(BOUNDARYFILE) == 0){
+      int nvals[4], offset[4];
+
+      FORTREAD(&time_local, 1);
+      sizebefore += 12;
+      if(returncode == 0)break;
+
+      FORTREAD(nvals, 4);
+      sizebefore += 8 + 4 * 4;
+      if(returncode == 0)break;
+
+      ntotal = nvals[0] + nvals[1] + nvals[2] + nvals[3];
+      offset[0] = 0;
+      offset[1] = offset[0] + nvals[0];
+      offset[2] = offset[1] + nvals[1];
+      offset[3] = offset[2] + nvals[2];
+      if(ntotal > MAXVALS){
+        MAXVALS = ntotal+1000;
+        MAXCOMPRESSEDVALS = 1.01*MAXVALS+600;
+        FREEMEMORY(vals);
+        FREEMEMORY(cvals);
+        FREEMEMORY(compressed_vals);
+        NewMemory(( void ** )&vals, MAXVALS * sizeof(float));
+        NewMemory(( void ** )&cvals, MAXVALS);
+        NewMemory(( void ** )&compressed_vals, MAXCOMPRESSEDVALS);
+      }
+      if(ntotal > 0){
+        int i;
+        int exit_loop;
+
+        exit_loop = 0;
+        for(i = 0; i < 4; i++){
+          if(nvals[i] > 0){
+            FORTREAD(vals + offset[i], nvals[i]);
+            sizebefore += 8 + 4*nvals[i];
+            if(returncode==0){
+              exit_loop = 1;
+              break;
+            }
+          }
+        }
+        if(exit_loop==1)break;
+        for(i = 0; i < ntotal; i++){
+          float val;
+
+          val      = CLAMP((vals[i] - valmin) / denom, 0.0, 1.0);
+          cvals[i] = CLAMP((unsigned char)(255.0 * val), 0, 255);
+        }
+        ncompressed_vals = MAXCOMPRESSEDVALS;
+        returncode = CompressZLIB(compressed_vals, &ncompressed_vals, cvals, ntotal);
+      }
+      fprintf(boundarysizestream, "%f %i %i\n", time_local, ( int )ntotal, ( int )ncompressed_vals);
+      fwrite(&time_local,       4, 1,                boundarystream); // write out time_local
+      fwrite(&nvals,            4, 4,                boundarystream); // write out nvals
+      fwrite(&ncompressed_vals, 4, 1,                boundarystream); // write out compressed size of frame
+      if(ncompressed_vals>0){
+        fwrite(compressed_vals, 1, ncompressed_vals, boundarystream); // write out compressed buffer
+      }
+      sizeafter += 8 + 16 + ncompressed_vals;
+      data_loc = FTELL(BOUNDARYFILE);
+      percent_done = 100.0 * ( float )data_loc / ( float )patchi->filesize;
+#ifdef pp_THREAD
+      threadinfo[*thread_index].stat = percent_done;
+      if(percent_done > percent_next){
+        LOCK_PRINT;
+        PrintThreadStats();
+        UNLOCK_PRINT;
+        percent_next += PERCENT_SKIP;
+      }
+#else
+      if(percent_done > percent_next){
+        PRINTF(" %i%s", percent_next, GLOBpp);
+        FFLUSH();
+        percent_next += PERCENT_SKIP;
+      }
+#endif
+    }
+#ifndef pp_THREAD
+    PRINTF(" 100%s completed\n", GLOBpp);
+#endif
+  fclose(BOUNDARYFILE);
+  FSEEK(boundarystream, 8, SEEK_SET);
+  fwrite(&one, 4, 1, boundarystream);  // write completion code
+  fclose(boundarystream);
+  fclose(boundarysizestream);
+  {
+    char before_label[256], after_label[256];
+    GetFileSizeLabel(sizebefore, before_label);
+    GetFileSizeLabel(sizeafter, after_label);
+#ifdef pp_THREAD
+    patchi->compressed = 1;
+    sprintf(patchi->summary, "%s -> %s (%4.1f%s)", before_label, after_label, ( float )sizebefore / ( float )sizeafter, GLOBx);
+    threadinfo[*thread_index].stat = -1;
+#else
+    PRINTF("  records=%i, ", count);
+    PRINTF("Sizes: original=%s, ", before_label);
+    PRINTF("compressed=%s (%4.1f%s)\n\n", after_label, ( float )sizebefore / ( float )sizeafter, GLOBx);
+#endif
+  }
+  return 1;
+}
+
+/* ------------------ ConvertBoundaryBNDF ------------------------ */
+
+int ConvertBoundaryBNDF(patchdata *patchi, int *thread_index){
   FILE *BOUNDARYFILE=NULL;
   char boundaryfile_svz[1024], boundarysizefile_svz[1024];
   FILE *boundarystream=NULL,*boundarysizestream=NULL;
@@ -110,7 +381,7 @@ int convert_boundary(patch *patchi, int *thread_index){
   float minmax[2];
   char cval[256];
   int percent_done;
-  int percent_next=10;
+  int percent_next = PERCENT_SKIP;
   LINT data_loc;
   int zero=0;
   float time_max;
@@ -373,15 +644,15 @@ int convert_boundary(patch *patchi, int *thread_index){
       threadinfo[*thread_index].stat=percent_done;
       if(percent_done>percent_next){
         LOCK_PRINT;
-        print_thread_stats();
+        PrintThreadStats();
         UNLOCK_PRINT;
-        percent_next+=10;
+        percent_next += PERCENT_SKIP;
       }
 #else
       if(percent_done>percent_next){
         PRINTF(" %i%s",percent_next,GLOBpp);
         FFLUSH();
-        percent_next+=10;
+        percent_next += PERCENT_SKIP;
       }
 #endif
     }
@@ -419,43 +690,90 @@ wrapup:
 
 }
 
-/* ------------------ patchdup ------------------------ */
+/* ------------------ GetPatchBoundInfo ------------------------ */
 
-int patchdup(patch *patchj, int ipatch){
+bounddata *GetPatchBoundInfo(char *label){
   int i;
-  patch *patchi;
 
-  for(i=0;i<ipatch;i++){
-    patchi = patchinfo + i;
-    if(patchi->dup==1)continue;
-    if(strcmp(patchi->label.shortlabel,patchj->label.shortlabel)==0){
-      patchj->dup=1;
-      return 1;
-    }
-  }
-  return 0;
-}
+  for(i = 0; i < npatchbounds; i++){
+    bounddata *boundi;
+    char *labeli;
 
-/* ------------------ getpatch ------------------------ */
-
-patch *getpatch(char *string){
-  int i;
-  patch *patchi;
-
-  for(i=0;i<npatchinfo;i++){
-    patchi = patchinfo + i;
-    if(patchi->dup==1)continue;
-    if(strcmp(patchi->label.shortlabel,string)==0)return patchi;
+    boundi = patchbounds + i;
+    labeli = boundi->label;
+    if(strcmp(label, labeli) == 0)return boundi;
   }
   return NULL;
 }
 
-/* ------------------ compress_patches ------------------------ */
+/* ------------------ InitBoundaryBounds ------------------------ */
 
-void *compress_patches(void *arg){
+void InitBoundaryBounds(void){
   int i;
-  patch *patchi;
-  patch *pb;
+
+  npatchbounds = 0;
+  for(i = 0; i < npatchinfo; i++){
+    patchdata *patchi;
+    bounddata *pb;
+
+    patchi = patchinfo + i;
+    if(GetPatchBoundInfo(patchi->label.shortlabel) == NULL){
+      pb = patchbounds + npatchbounds;
+      strcpy(pb->label, patchi->label.shortlabel);
+      pb->valmin = 1000000000.0;
+      pb->valmax = -pb->valmin;
+      pb->setvalmin = 0;
+      pb->setvalmax = 0;
+      npatchbounds++;
+    }
+  }
+}
+
+/* ------------------ GetBoundaryBounds ------------------------ */
+
+void GetBoundaryBounds(void){
+  int i;
+
+  for(i=0;i<npatchbounds;i++){
+    bounddata *pbi;
+    int j;
+    int have_bound=0;
+
+    pbi = patchbounds + i;
+    if(pbi->setvalmin==1&&pbi->setvalmax==1)continue; // bound obtained from ini file
+    for(j=0;j<npatchinfo;j++){  // bound computed from .bnd files
+      patchdata *patchj;
+
+      patchj = patchinfo + j;
+      if(strcmp(pbi->label, patchj->label.shortlabel)!=0)continue;
+      if(GetFileBounds(patchj->boundfile, &(patchj->valmin), &(patchj->valmax))==1){
+        pbi->valmin = MIN(pbi->valmin, patchj->valmin);
+        pbi->valmax = MAX(pbi->valmax, patchj->valmax);
+        have_bound = 1;
+      }
+    }
+    if(have_bound==1){
+      pbi->setvalmin = 1;
+      pbi->setvalmax = 1;
+      for(j = 0;j < npatchinfo;j++){  // bound computed from .bnd files
+        patchdata *patchj;
+
+        patchj = patchinfo + j;
+        if(strcmp(pbi->label, patchj->label.shortlabel) != 0)continue;
+        patchj->setvalmin = 1;
+        patchj->setvalmax = 1;
+        patchj->valmin    = pbi->valmin;
+        patchj->valmax    = pbi->valmax;
+      }
+    }
+  }
+}
+
+/* ------------------ CompressPatches ------------------------ */
+
+void *CompressPatches(void *arg){
+  int i;
+  patchdata *patchi;
   int *thread_index;
 
   thread_index = (int *)arg;
@@ -468,33 +786,32 @@ void *compress_patches(void *arg){
     if(GLOBcleanfiles==1){
       for(i=0;i<npatchinfo;i++){
         patchi = patchinfo + i;
-        clean_boundary(patchi);
+        CleanBoundary(patchi);
       }
       UNLOCK_PATCH;
       return NULL;
     }
-    for(i=0;i<npatchinfo;i++){
-      patchi = patchinfo + i;
-      if(GLOBautozip==1&&patchi->autozip==0)continue;
+    for(i=0;i<npatchbounds;i++){
+      bounddata *pbi;
+      int j;
 
-      pb=getpatch(patchi->label.shortlabel);
-      if(pb!=NULL){
-        patchi->setvalmax=pb->setvalmax;
-        patchi->setvalmin=pb->setvalmin;
-        patchi->valmax=pb->valmax;
-        patchi->valmin=pb->valmin;
-      }
-      else{
-        patchi->setvalmax=1;
-        patchi->setvalmin=1;
+      pbi = patchbounds + i;
+      for(j = 0; j < npatchinfo; j++){
+        patchdata *patchj;
+
+        patchj = patchinfo + j;
+        if(strcmp(patchj->label.shortlabel, pbi->label) == 0){
+          patchj->setvalmax = pbi->setvalmax;
+          patchj->setvalmin = pbi->setvalmin;
+          patchj->valmax    = pbi->valmax;
+          patchj->valmin    = pbi->valmin;
+        }
       }
     }
 
   // find bounds
 
-    if(GLOBget_boundary_bounds==1){
-      Get_Boundary_Bounds();
-    }
+    GetBoundaryBounds();
     for(i=0;i<npatchinfo;i++){
       patchi = patchinfo + i;
       if(patchi->setvalmin==1&&patchi->setvalmax==1){
@@ -513,7 +830,6 @@ void *compress_patches(void *arg){
 
   for(i=0;i<npatchinfo;i++){
     patchi = patchinfo + i;
-    if(GLOBautozip==1&&patchi->autozip==0)continue;
 
     if(patchi->doit==1){
       LOCK_PATCH;
@@ -524,7 +840,12 @@ void *compress_patches(void *arg){
       patchi->inuse=1;
       UNLOCK_PATCH;
 
-      convert_boundary(patchi,thread_index);
+      if(patchi->is_geom == 0){
+        ConvertBoundaryBNDF(patchi, thread_index);
+      }
+      else{
+        ConvertBoundaryGEOM(patchi, thread_index);
+      }
     }
     else{
       PRINTF("%s not compressed\n",patchi->file);
@@ -532,146 +853,4 @@ void *compress_patches(void *arg){
     }
   }
   return NULL;
-}
-
-/* ------------------ update_patch_hist ------------------------ */
-
-void update_patch_hist(void){
-  int i;
-
-  for(i=0;i<npatchinfo;i++){
-    patch *patchi;
-    FILE *unit1;
-    int error1;
-    int *pi1, *pi2, *pj1, *pj2, *pk1, *pk2;
-    float patchtime1, *patchframe;
-    int patchframesize;
-    int j;
-
-    patchi = patchinfo + i;
-    LOCK_PATCH_BOUND;
-    if(patchi->inuse_getbounds==1){
-      UNLOCK_PATCH_BOUND;
-      continue;
-    }
-    patchi->inuse_getbounds=1;
-    UNLOCK_PATCH_BOUND;
-
-    PRINTF("  Examining %s\n",patchi->file);
-    pi1 = patchi->pi1;
-    pi2 = patchi->pi2;
-    pj1 = patchi->pj1;
-    pj2 = patchi->pj2;
-    pk1 = patchi->pk1;
-    pk2 = patchi->pk2;
-
-    LOCK_COMPRESS;
-    unit1 = openboundary(patchi->file,patchi->version,&error1);
-    UNLOCK_COMPRESS;
-
-    patchframesize=0;
-    for(j=0;j<patchi->npatches;j++){
-      patchframesize+=patchi->patchsize[j];
-    }
-    NewMemory((void **)&patchframe,patchframesize*sizeof(float));
-    ResetHistogram(patchi->histogram,NULL,NULL);
-    while(error1==0){
-      int ndummy;
-      int file_size;
-
-      getpatchdata(unit1, patchi->npatches,
-        pi1, pi2, pj1, pj2, pk1, pk2, &patchtime1, patchframe, &ndummy,&file_size, &error1);
-      UpdateHistogram(patchframe, NULL,patchframesize, patchi->histogram);
-    }
-    LOCK_COMPRESS;
-    closefortranfile(unit1);
-    UNLOCK_COMPRESS;
-    FREEMEMORY(patchframe);
-  }
-#ifndef pp_THREAD
-  PRINTF("\n");
-#endif
-}
-
-#ifdef pp_THREAD
-/* ------------------ MT_update_patch_hist ------------------------ */
-
-void *MT_update_patch_hist(void *arg){
-  update_patch_hist();
-  return NULL;
-}
-
-/* ------------------ mt_update_patch_hist ------------------------ */
-
-void mt_update_patch_hist(void){
-  pthread_t *thread_ids;
-  int i;
-
-  NewMemory((void **)&thread_ids,mt_nthreads*sizeof(pthread_t));
-
-  for(i=0;i<mt_nthreads;i++){
-    pthread_create(&thread_ids[i],NULL,MT_update_patch_hist,NULL);
-  }
-
-  for(i=0;i<mt_nthreads;i++){
-    pthread_join(thread_ids[i],NULL);
-  }
-  FREEMEMORY(thread_ids);
-}
-#endif
-
-/* ------------------ Get_Boundary_Bounds ------------------------ */
-
-void Get_Boundary_Bounds(void){
-  int i;
-
-  PRINTF("Determining boundary file bounds\n");
-  for(i=0;i<npatchinfo;i++){
-    patch *patchi;
-
-    patchi = patchinfo + i;
-    patchi->inuse_getbounds=0;
-  }
-#ifdef pp_THREAD
-  mt_update_patch_hist();
-#else
-  update_patch_hist();
-#endif
-  for(i=0;i<npatchinfo;i++){
-    patch *patchi;
-    int j;
-
-    patchi = patchinfo + i;
-    if(patchi->dup==1)continue;
-    for(j=i+1;j<npatchinfo;j++){
-      patch *patchj;
-
-      patchj = patchinfo + j;
-      if(strcmp(patchi->label.shortlabel,patchj->label.shortlabel)!=0)continue;
-      MergeHistogram(patchi->histogram,patchj->histogram,MERGE_BOUNDS);
-    }
-    patchi->valmax=GetHistogramVal(patchi->histogram,0.99);
-    patchi->valmin=GetHistogramVal(patchi->histogram,0.01);
-    patchi->setvalmax=1;
-    patchi->setvalmin=1;
-    for(j=i+1;j<npatchinfo;j++){
-      patch *patchj;
-
-      patchj = patchinfo + j;
-      if(strcmp(patchi->label.shortlabel,patchj->label.shortlabel)!=0)continue;
-      patchj->valmax=patchi->valmax;
-      patchj->valmin=patchi->valmin;
-      patchj->setvalmax=1;
-      patchj->setvalmin=1;
-    }
-  }
-  for(i=0;i<npatchinfo;i++){
-    patch *patchi;
-
-    patchi = patchinfo + i;
-    FREEMEMORY(patchi->histogram->buckets);
-    FREEMEMORY(patchi->histogram->buckets_polar);
-    FREEMEMORY(patchi->histogram);
-  }
-
 }

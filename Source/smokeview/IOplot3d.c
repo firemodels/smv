@@ -298,12 +298,10 @@ void ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
   windex = plot3dinfo[ifile].w;
   if(uindex!=-1||vindex!=-1||windex!=-1)numplot3dvars=plot3dinfo[ifile].nvars;
 
-  if(p->compression_type==UNCOMPRESSED){
-    if(NewMemoryMemID((void **)&meshi->qdata,numplot3dvars*ntotal*sizeof(float), p->memory_id)==0){
-      *errorcode=1;
-      ReadPlot3D("",ifile,UNLOAD,&error);
-      return;
-    }
+  if(NewMemoryMemID((void **)&meshi->qdata,numplot3dvars*ntotal*sizeof(float), p->memory_id)==0){
+    *errorcode=1;
+    ReadPlot3D("",ifile,UNLOAD,&error);
+    return;
   }
 
   if(NewMemoryMemID((void **)&meshi->yzcolorbase ,ny*nz*sizeof(unsigned char), p->memory_id)==0||
@@ -332,17 +330,13 @@ void ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
   file_size= GetFileSizeSMV(file);
   PRINTF("Loading plot3d data: %s",file);
   START_TIMER(read_time);
-  if(p->compression_type==UNCOMPRESSED){
-    getplot3dq(file,nx,ny,nz,meshi->qdata,&error,isotest);
-  }
+  getplot3dq(file,nx,ny,nz,meshi->qdata,&error,isotest);
   if(NewMemoryMemID((void **)&meshi->iqdata,numplot3dvars*ntotal*sizeof(unsigned char), p->memory_id)==0){
     *errorcode=1;
     ReadPlot3D("",ifile,UNLOAD,&error);
     return;
   }
   STOP_TIMER(read_time);
-  if(p->compression_type==COMPRESSED_ZLIB){
-  }
   p->loaded=1;
   p->display=1;
   if(nplot3dloaded==0)UpdatePlot3DFileLoad();
@@ -350,21 +344,19 @@ void ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
   meshi->udata=NULL;
   meshi->vdata=NULL;
   meshi->wdata=NULL;
-  if(p->compression_type==UNCOMPRESSED){
-    if(uindex!=-1||vindex!=-1||windex!=-1){
-      vectorspresent=1;
-      p->nvars= MAXPLOT3DVARS;
-      if(uindex!=-1)udata = meshi->qdata + ntotal*uindex;
-      if(vindex!=-1)vdata = meshi->qdata + ntotal*vindex;
-      if(windex!=-1)wdata = meshi->qdata + ntotal*windex;
-      sdata = meshi->qdata + ntotal*5;
-      for(i=0;i<ntotal;i++){
-        sum=0.0f;
-        if(uindex!=-1)sum += udata[i]*udata[i];
-        if(vindex!=-1)sum += vdata[i]*vdata[i];
-        if(windex!=-1)sum += wdata[i]*wdata[i];
-        sdata[i] = sqrt((double)sum);
-      }
+  if(uindex!=-1||vindex!=-1||windex!=-1){
+    vectorspresent=1;
+    p->nvars= MAXPLOT3DVARS;
+    if(uindex!=-1)udata = meshi->qdata + ntotal*uindex;
+    if(vindex!=-1)vdata = meshi->qdata + ntotal*vindex;
+    if(windex!=-1)wdata = meshi->qdata + ntotal*windex;
+    sdata = meshi->qdata + ntotal*5;
+    for(i=0;i<ntotal;i++){
+      sum=0.0f;
+      if(uindex!=-1)sum += udata[i]*udata[i];
+      if(vindex!=-1)sum += vdata[i]*vdata[i];
+      if(windex!=-1)sum += wdata[i]*wdata[i];
+      sdata[i] = sqrt((double)sum);
     }
     if(uindex!=-1)meshi->udata=meshi->qdata + ntotal*uindex;
     if(vindex!=-1)meshi->vdata=meshi->qdata + ntotal*vindex;
@@ -480,7 +472,7 @@ void ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
   }
   update_plot3d_bounds = ifile;
   GetPlot3DBounds(p);
-  if(p->compression_type==COMPRESSED_ZLIB || cache_plot3d_data==0){
+  if(cache_plot3d_data==0){
     cache_plot3d_data=0;
     FREEMEMORY(meshi->qdata);
   }

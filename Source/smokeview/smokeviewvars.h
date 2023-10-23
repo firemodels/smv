@@ -488,9 +488,9 @@ SVEXTERN char SVDECL(*prog_fullpath, NULL);
 SVEXTERN int SVDECL(nwindrosez_checkboxes, 0);
 SVEXTERN float startup_time;
 #ifdef pp_FAST
-SVEXTERN int SVDECL(fast_startup, 1), SVDECL(lookfor_compressed_slice,0);
+SVEXTERN int SVDECL(fast_startup, 1), SVDECL(lookfor_compressed_files,0);
 #else
-SVEXTERN int SVDECL(fast_startup, 0), SVDECL(lookfor_compressed_slice,1);
+SVEXTERN int SVDECL(fast_startup, 0), SVDECL(lookfor_compressed_files,1);
 #endif
 SVEXTERN int SVDECL(alt_ctrl_key_state, KEY_NONE);
 SVEXTERN devicedata SVDECL(**vel_devices, NULL);
@@ -1741,6 +1741,7 @@ SVEXTERN char SVDECL(*trainer_filename,NULL), SVDECL(*test_filename,NULL);
 SVEXTERN FILE SVDECL(*STREAM_SB,NULL);
 SVEXTERN float temp_threshold;
 SVEXTERN char SVDECL(*smv_filename,NULL),SVDECL(*smv_orig_filename,NULL),SVDECL(*fed_filename,NULL),fed_filename_base[1024],SVDECL(*stop_filename,NULL);
+SVEXTERN char SVDECL(*smvzip_filename, NULL);
 SVEXTERN int  SVDECL(have_multislice, 0), SVDECL(have_multivslice, 0);
 SVEXTERN char SVDECL(*hrr_filename, NULL);
 SVEXTERN char SVDECL(*part_globalbound_filename, NULL);

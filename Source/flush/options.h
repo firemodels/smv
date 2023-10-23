@@ -7,14 +7,6 @@
 //#undef pp_BETA
 //#define pp_BETA
 
-//*** define flushcache title
-
-#ifdef pp_BETA
-#define PROGVERSION "Test"
-#else
-#define PROGVERSION "1.0.0"
-#endif
-
 //#define pp_CSVF
 
 #endif
