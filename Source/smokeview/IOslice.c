@@ -2838,6 +2838,11 @@ void UpdateFedinfo(void){
       break;
     }
     if(fedi->o2_index == -1)continue;
+#ifdef pp_FED_COMPRESS
+    if(fedi->co_index  != -1 && sliceinfo[fedi->co_index].compression_type  == COMPRESSED_ZLIB)continue;
+    if(fedi->co2_index != -1 && sliceinfo[fedi->co2_index].compression_type == COMPRESSED_ZLIB)continue;
+    if(fedi->o2_index  != -1 && sliceinfo[fedi->o2_index].compression_type  == COMPRESSED_ZLIB)continue;
+#endif
     fedi->fed_index = nsliceinfo + nfedinfo;
     if(sliceinfo[fedi->co_index].volslice == 1)nfediso++;
     nfedinfo++;
