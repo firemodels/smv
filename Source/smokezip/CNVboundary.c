@@ -277,6 +277,7 @@ int ConvertBoundaryGEOM(patchdata *patchi, int *thread_index){
         NewMemory(( void ** )&cvals, MAXVALS);
         NewMemory(( void ** )&compressed_vals, MAXCOMPRESSEDVALS);
       }
+      ncompressed_vals = 0;
       if(ntotal > 0){
         int i;
         int exit_loop;
