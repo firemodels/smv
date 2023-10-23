@@ -10,13 +10,13 @@ RENDERDIR
 //LOADBOUNDARY
 // WALL TEMPERATURE(geometry)
 LOADFILE
- sphere_propanec_1_1.be
+ sphere_propanec_1_1.be.svz
 LOADFILE
- sphere_propanec_2_1.be
+ sphere_propanec_2_1.be.svz
 LOADFILE
- sphere_propanec_3_1.be
+ sphere_propanec_3_1.be.svz
 LOADFILE
- sphere_propanec_4_1.be
+ sphere_propanec_4_1.be.svz
 SETTIMEVAL
  2.5
 RENDERONCE

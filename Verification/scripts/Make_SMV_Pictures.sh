@@ -260,6 +260,12 @@ if [ "$RUN_SMV" == "1" ]; then
 # compute isosurface from particles
 
   cd $SVNROOT/smv/Verification/Visualization
+  echo Compressing sphere_propanec case
+  $SMOKEZIP sphere_propanec
+
+# compute isosurface from particles
+
+  cd $SVNROOT/smv/Verification/Visualization
   echo Converting particles to isosurfaces in case plumeiso
   $SMOKEZIP -f -part2iso plumeiso
 
