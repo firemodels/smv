@@ -963,9 +963,6 @@ int lua_get_plot3dentry(lua_State *L) {
   lua_pushstring(L, plot3dinfo[index].reg_file);
   lua_setfield(L, -2, "reg_file");
 
-  lua_pushstring(L, plot3dinfo[index].comp_file);
-  lua_setfield(L, -2, "comp_file");
-
   lua_pushstring(L, plot3dinfo[index].longlabel);
   lua_setfield(L, -2, "longlabel");
 
