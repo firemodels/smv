@@ -4695,7 +4695,7 @@ void GetSliceTimes(char *file, float *times, int ntimes){
 
 FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_value, int flag, int set_slicecolor, int *errorcode){
   float *xplt_local, *yplt_local, *zplt_local, offset, qmin, qmax, read_time, total_time;
-  int blocknumber, error, i, ii, headersize, framesize, flag2 = 0;
+  int blocknumber, error, headersize, framesize, flag2 = 0;
   slicedata *sd;
   int ntimes_slice_old;
 
@@ -4752,6 +4752,8 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
       FREEMEMORY(sd->slicecomplevel);
 
       if(sd->histograms!=NULL){
+        int i;
+
         for(i = 0; i<sd->nhistograms; i++){
           FreeHistogram(sd->histograms+i);
         }
@@ -4764,6 +4766,8 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
 // reset slice variables to an unloaded state
 
     if(flag == UNLOAD){
+      int ii, i;
+
       update_flipped_colorbar = 1;
       sd->ntimes_old = 0;
       sd->ntimes = 0;
@@ -4774,6 +4778,7 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
       plotstate = GetPlotState(DYNAMIC_PLOTS);
       ReadVolSlice = 0;
       for(ii = 0; ii<nslice_loaded; ii++){
+        int i;
         slicedata *sdi;
 
         i = slice_loaded_list[ii];
@@ -4781,6 +4786,7 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
         if(sdi->volslice == 1)ReadVolSlice = 1;
       }
       for(ii = 0; ii<nslice_loaded; ii++){
+        int i;
         slicedata *sdi;
 
         i = slice_loaded_list[ii];
@@ -4794,6 +4800,7 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
       if(flag2 == 0){
         for(ii = 0; ii<nslice_loaded; ii++){
           slicedata *sdi;
+          int i;
 
           i = slice_loaded_list[ii];
           sdi = sliceinfo + i;
@@ -5126,7 +5133,10 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
     //if(flag!=RESETBOUNDS)update_research_mode=1;
     if(use_set_slicecolor==0||set_slicecolor==SET_SLICECOLOR){
       if(sd->compression_type==UNCOMPRESSED){
+        int i;
+
         for(i = 0; i<nsliceinfo; i++){
+          int ii;
           slicedata *slicei;
 
           slicei = sliceinfo+i;
@@ -5154,6 +5164,13 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
 
         UpdateAllSliceLabels(slicefile_labelindex, errorcode);
         MakeColorLabels(sb->colorlabels, sb->colorvalues, qmin, qmax, nrgb);
+      }
+    }
+    if(sd->compression_type == COMPRESSED_ZLIB){
+      int ii;
+
+      for(ii = 0; ii < 256; ii++){
+        sd->qval256[ii] = (qmin * (255 - ii) + qmax * ii) / 255;
       }
     }
     CheckMemory;
