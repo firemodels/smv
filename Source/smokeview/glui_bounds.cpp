@@ -77,7 +77,7 @@ class bounds_dialog{
   GLUI_RadioButton *RADIO_button_loaded_min, *RADIO_button_loaded_max;
   GLUI_RadioButton *RADIO_button_all_min, *RADIO_button_all_max;
   GLUI_RadioButton *RADIO_button_percentile_min, *RADIO_button_percentile_max;
-  GLUI_Button      *BUTTON_update_colors, *BUTTON_reload_data;
+  GLUI_Button      *BUTTON_reload_data;
   GLUI_Panel *PANEL_min, *PANEL_max;
   GLUI_Spinner *SPINNER_percentile_min, *SPINNER_percentile_max;
   GLUI_Spinner *SPINNER_plot_min, *SPINNER_plot_max;
@@ -488,8 +488,6 @@ void bounds_dialog::setup(const char *file_type, GLUI_Rollout *ROLLOUT_dialog, c
   if(cache_flag!=NULL&&percentile_enabled==1&&strcmp(file_type,"hvac")!=0){
     RADIO_button_percentile_max = glui_bounds->add_radiobutton_to_group(RADIO_set_valmax, "percentile");
   }
-
-  BUTTON_update_colors = NULL;
   SPINNER_percentile_min = NULL;
   SPINNER_percentile_max = NULL;
   SPINNER_plot_min = NULL;
@@ -535,15 +533,6 @@ void bounds_dialog::setup(const char *file_type, GLUI_Rollout *ROLLOUT_dialog, c
       // glui_bounds->add_button_to_panel(ROLLOUT_percentiles, "Update", BOUND_COMPUTE_PERCENTILES, Callback);
     }
     PANEL_buttons = glui_bounds->add_panel_to_panel(PANEL_minmax, "", GLUI_PANEL_NONE);
-    int skip_update_colors_button=0;
-    if(strcmp(file_type,"boundary")==0)skip_update_colors_button = 1;
-    if(strcmp(file_type,"particle")==0)skip_update_colors_button = 1;
-    if(strcmp(file_type,"PLOT3D")==0)skip_update_colors_button = 1;
-    if(strcmp(file_type,"slice")==0)skip_update_colors_button = 1;
-    if(strcmp(file_type, "hvac") == 0)skip_update_colors_button = 1;
-    if(skip_update_colors_button==0){
-      BUTTON_update_colors      = glui_bounds->add_button_to_panel(PANEL_buttons, "Update colors", BOUND_UPDATE_COLORS, Callback);
-    }
     glui_bounds->add_column_to_panel(PANEL_buttons, false);
   }
   if(PANEL_buttons==NULL){
@@ -1019,7 +1008,7 @@ void bounds_dialog::CB(int var){
       // keep data checkbox
     case BOUND_CACHE_DATA:
       {
-        int i, cache_val = 0, enable_update_colors;
+        int i, cache_val = 0;
 
         cache_val = cache_file_data;
         if(CHECKBOX_cache!=NULL)cache_val = CHECKBOX_cache->get_int_val();
@@ -1046,16 +1035,6 @@ void bounds_dialog::CB(int var){
         else{
           if(RADIO_button_percentile_min!=NULL)RADIO_button_percentile_min->disable();
           if(RADIO_button_percentile_max!=NULL)RADIO_button_percentile_max->disable();
-        }
-        if(BUTTON_update_colors!=NULL){
-          enable_update_colors = 0;
-          if(cache_val==1)enable_update_colors = 1;
-          if(enable_update_colors==1){
-            BUTTON_update_colors->enable();
-          }
-          else{
-            BUTTON_update_colors->disable();
-          }
         }
       }
       break;
