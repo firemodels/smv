@@ -1,0 +1,27 @@
+
+// put rendered files in specified directory
+
+LABEL
+  put rendered files in specified directory
+
+RENDERDIR
+ ..\..\Manuals\SMV_Verification_Guide\SCRIPT_FIGURES
+
+//LOADBOUNDARY
+// WALL TEMPERATURE(geometry)
+LOADFILE
+ sphere_propanec_1_1.be.svz
+LOADFILE
+ sphere_propanec_2_1.be.svz
+LOADFILE
+ sphere_propanec_3_1.be.svz
+LOADFILE
+ sphere_propanec_4_1.be.svz
+SETTIMEVAL
+ 2.5
+RENDERONCE
+ sphere_propanec_walltemp_25
+SETTIMEVAL
+ 5.0
+RENDERONCE
+ sphere_propanec_walltemp_50

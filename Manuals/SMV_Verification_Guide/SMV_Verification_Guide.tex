@@ -348,6 +348,8 @@ The temperature of the upper obstacle is initialized to \SI{600}{\degreeCelsius}
 hence the red colors for the $t=\SI{0}{s}$ images. The first column of images
 colors data at cell nodes using temperatures averaged at surrounding cell centers.
 The second column of images colors data using data values at cell centers.
+Figure \ref{figgeomboundtest} presents images for geometry boundary files comparing compressed and 
+uncompressed data.smoke
 
 \begin{figure}[bph]
 \begin{center}
@@ -373,6 +375,21 @@ for the $t\approx\SI{2}{s}$ images. For the chopped contours, the
 color near the chop boundary should match the color near
 \SI{140}{\degreeCelsius} in the colorbar.}
 \label{figboundtest}%
+\end{figure}
+
+\begin{figure}[bph]
+\begin{center}
+\begin{tabular}{cc}
+ \includegraphics[height=\figheightE]{SCRIPT_FIGURES/sphere_propaneu_walltemp_25} &
+ \includegraphics[height=\figheightE]{SCRIPT_FIGURES/sphere_propanec_walltemp_25}\\
+ \includegraphics[height=\figheightE]{SCRIPT_FIGURES/sphere_propaneu_walltemp_50} &
+ \includegraphics[height=\figheightE]{SCRIPT_FIGURES/sphere_propanec_walltemp_50}\\
+ uncompressed&compressed\\
+\end{tabular}
+\end{center}
+\caption[Geometry Boundary file test for compressed and uncompressed data.]
+{Geometry Boundary file test for compressed and uncompressed data.}
+\label{figgeomboundtest}%
 \end{figure}
 
 \clearpage
