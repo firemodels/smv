@@ -5176,6 +5176,10 @@ int ParseBNDFProcess(bufferstreamdata *stream, char *buffer, int *nn_patch_in, i
   patchi->patch_filetype    = PATCH_STRUCTURED_NODE_CENTER;
   patchi->structured        = YES;
   patchi->boundary          = 1;
+#ifdef pp_DECIMATE
+  patchi->triangles         = NULL;
+  patchi->ntriangles        = 0;
+#endif
   if(Match(buffer, "BNDC")==1){
     patchi->patch_filetype = PATCH_STRUCTURED_CELL_CENTER;
   }

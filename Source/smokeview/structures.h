@@ -1664,6 +1664,10 @@ typedef struct _patchdata {
   int histogram_nframes;
   bounddata bounds;
   boundsdata *bounds2;
+#ifdef pp_DECIMATE
+  tridata *triangles;
+  int ntriangles;
+#endif
 } patchdata;
 
 /* --------------------------  plot3ddata ------------------------------------ */

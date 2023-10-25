@@ -366,7 +366,8 @@ int GetMinInd(int *inds, unsigned char *vert_type){
   return MIN(MIN(inds[0], inds[1]), inds[2]);
 }
 
-/* ------------------ DecimateGeom ------------------------ */
+#ifdef pp_DECIMATE
+/* ------------------ DecimateTerrain ------------------------ */
 
 float DecimateTerrain(float *verts, int nverts, int *faces, int nfaces, int **newfaces, int *nnewfaces, float *box, float face_eps, float box_eps){
   unsigned char *vert_type;
@@ -459,6 +460,12 @@ float DecimateTerrain(float *verts, int nverts, int *faces, int nfaces, int **ne
   FREEMEMORY(vert_type);
   return max_dist;
 }
+
+/* ------------------ DecimateTerrainGeoms ------------------------ */
+
+void DecimateTerrainGeoms(void){
+}
+#endif
   
   /* ------------------ GetTriangleNormal ------------------------ */
 
@@ -4218,7 +4225,7 @@ void ClassifyGeom(geomdata *geomi,int *geom_frame_index){
           v2->isdup = 1;
         }
       }
-        FREEMEMORY(vertlist_ptr);
+      FREEMEMORY(vertlist_ptr);
     }
   }
 }
@@ -4625,8 +4632,21 @@ void DrawGeomData(int flag, slicedata *sd, patchdata *patchi, int geom_type){
       if(geomlisti->norms_defined==0&&enable_lighting==1){
         UpdatePatchGeomTriangles(patchi, geom_type);
       }
+      tridata *triangles;
 
-      ntris = geomlisti->ntriangles;
+#ifdef pp_DECIMATE
+      if(use_decimate_geom == 1 && patchi != NULL && patchi->triangles != NULL){
+        triangles = patchi->triangles;
+        ntris     = patchi->ntriangles;
+      }
+      else{
+        triangles = geomlisti->triangles;
+        ntris     = geomlisti->ntriangles;
+      }
+#else
+      triangles = geomlisti->triangles;
+      ntris     = geomlisti->ntriangles;
+#endif
       if(ntris == 0)continue;
 
       if(is_ccell==0&&flag == DRAW_TRANSPARENT&&use_transparency_data == 1 && patchi->patch_filetype == PATCH_GEOMETRY_SLICE)TransparentOn();
@@ -4659,7 +4679,7 @@ void DrawGeomData(int flag, slicedata *sd, patchdata *patchi, int geom_type){
           float *xyzptr[3];
           tridata *trianglei;
 
-          trianglei = geomlisti->triangles + j;
+          trianglei = triangles + j;
           if(patchi->patch_filetype==PATCH_GEOMETRY_BOUNDARY){
             rvals[0] = GEOMTEXTURE(j, ttmin, ttmax);
           }
@@ -4715,7 +4735,7 @@ void DrawGeomData(int flag, slicedata *sd, patchdata *patchi, int geom_type){
           float *xyznorm[3];
           tridata *trianglei;
 
-          trianglei = geomlisti->triangles+j;
+          trianglei = triangles+j;
 
           if(patchi->structured == NO&&patchi->patch_filetype == PATCH_GEOMETRY_SLICE){
             int insolid;

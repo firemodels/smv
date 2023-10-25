@@ -42,6 +42,10 @@ int      ngeomprocinfo = 0;
 #define SHOWONLY_TOP          51
 #define GEOM_FDS_DOMAIN       52
 #define GEOM_OUTLINECOLOR     53
+#ifdef pp_DECIMATE
+#define GEOM_DECIMATE         54
+#define GEOM_DECIMATE_DELTA   55
+#endif
 
 #define HVAC_PROPS            -1
 #define HVAC_SHOWALL_NETWORK  -2
@@ -88,6 +92,9 @@ GLUI_Checkbox *CHECKBOX_show_geom_normal = NULL;
 GLUI_Checkbox *CHECKBOX_smooth_geom_normal = NULL;
 GLUI_Checkbox *CHECKBOX_show_texture_1dimage = NULL;
 GLUI_Checkbox *CHECKBOX_showonly_top = NULL;
+#ifdef pp_DECIMATE
+GLUI_Checkbox *CHECKBOX_use_decimate_geom = NULL;
+#endif
 
 GLUI_RadioGroup *RADIO_terrain_type = NULL;
 GLUI_RadioGroup *RADIO_select_geom = NULL;
@@ -155,6 +162,9 @@ GLUI_Spinner *SPINNER_geom_vertex2_rgb[3]  = {NULL, NULL, NULL};
 GLUI_Spinner *SPINNER_geom_triangle_rgb[3] = {NULL, NULL, NULL};
 GLUI_Spinner *SPINNER_surf_rgb[3]          = {NULL, NULL, NULL};
 GLUI_Spinner *SPINNER_surf_axis[3]         = {NULL, NULL, NULL};
+#ifdef pp_DECIMATE
+GLUI_Spinner *SPINNER_terrain_deimate_delta=NULL;
+#endif
 
 #define VOL_SHOWHIDE           3
 #define SELECT_GEOM            4
@@ -194,6 +204,9 @@ GLUI_Panel *PANEL_geomedgecheck=NULL;
 GLUI_Panel *PANEL_group1=NULL;
 GLUI_Panel *PANEL_geom_offset=NULL;
 GLUI_Panel *PANEL_terrain_images = NULL;
+#ifdef pp_DECIMATE
+GLUI_Panel *PANEL_terrain_decimate = NULL;
+#endif
 GLUI_Panel *PANEL_geom_show = NULL;
 
 GLUI_Rollout *ROLLOUT_hvac = NULL;
@@ -1095,6 +1108,18 @@ extern "C" void GluiGeometrySetup(int main_window){
         }
       }
     }
+#ifdef pp_DECIMATE
+    if(nterraininfo > 0){
+      float *xplt;
+
+      xplt = meshinfo->xplt_orig;
+      terrain_decimate_delta = ABS(xplt[1] - xplt[0]);
+      PANEL_terrain_decimate = glui_geometry->add_panel_to_panel(PANEL_group1, "Decimate terrain geometry");
+      SPINNER_terrain_deimate_delta = glui_geometry->add_spinner_to_panel(PANEL_terrain_decimate, "delta", GLUI_SPINNER_FLOAT, &terrain_decimate_delta, GEOM_DECIMATE_DELTA, VolumeCB);
+      CHECKBOX_use_decimate_geom = glui_geometry->add_checkbox_to_panel(PANEL_terrain_decimate, "use decimated geometry", &use_decimate_geom);
+      BUTTON_reset_zbounds = glui_geometry->add_button_to_panel(PANEL_terrain_decimate, _("Decimate"), GEOM_DECIMATE, VolumeCB);
+    }
+#endif
 
     PANEL_elevation_color = glui_geometry->add_panel_to_panel(PANEL_group1, "color by elevation");
     PANEL_elevation_color->set_alignment(GLUI_ALIGN_LEFT);
@@ -1322,6 +1347,17 @@ extern "C" void VolumeCB(int var){
     break;
   case GEOM_OUTLINECOLOR:
     break;
+#ifdef pp_DECIMATE
+  case GEOM_DECIMATE:
+    DecimateTerrainGeoms();
+    break;
+  case GEOM_DECIMATE_DELTA:
+    if(terrain_decimate_delta<0.0){
+      terrain_decimate_delta = 0.0;
+      SPINNER_terrain_deimate_delta->set_float_val(terrain_decimate_delta);
+    }
+    break;
+#endif
   case GEOM_IVECFACTOR:
     geom_vecfactor = (float)geom_ivecfactor/1000.0;
     break;
