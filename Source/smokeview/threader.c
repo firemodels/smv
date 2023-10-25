@@ -6,6 +6,7 @@
 
 #include "smokeviewvars.h"
 #include "IOvolsmoke.h"
+#include GLUT_H
 
 #ifndef pp_THREAD
 #undef pp_CSV_MULTI
@@ -143,6 +144,7 @@ void LoadAllPartFilesMT(int partnum){
   for(i=0;i<npartthread_ids;i++){
     pthread_join(partthread_ids[i],NULL);
   }
+  INIT_PRINT_TIMER(part_timer);
   if(partnum<0){
     for(i = 0; i<npartinfo; i++){
       partdata *parti;
@@ -164,6 +166,7 @@ void LoadAllPartFilesMT(int partnum){
   else{
     FinalizePartLoad(partinfo+partnum);
   }
+  PRINT_TIMER(part_timer, "finalize particle time");
 }
 #else
 void LoadAllPartFilesMT(int partnum){
