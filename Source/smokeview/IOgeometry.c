@@ -349,103 +349,115 @@ void AverageVerts3(float v1[3], int v1type, float v2[3], int v2type,
   }
 }
 
-#define TERRAIN_INTERIOR 0
-#define TERRAIN_EDGE     1
-#define TERRAIN_CORNER   2
+#define TERRAIN_INTERIOR  0
+#define TERRAIN_XEDGE     1
+#define TERRAIN_YEDGE     2
+#define TERRAIN_XYEDGE    3
 
 /* ------------------ GetMinInd ------------------------ */
 
 int GetMinInd(int *inds, unsigned char *vert_type){
-  int have_corner, have_edge, min_ind;
-
-  have_corner = 0;
-  have_edge = 0;
-  min_ind = MIN(MIN(inds[0], inds[1]), inds[2]);
-  if(vert_type[inds[0]] == TERRAIN_CORNER){
-    have_corner = 1;
-    min_ind = inds[0];
-  }
-  if(have_corner == 0 && vert_type[inds[1]] == TERRAIN_CORNER){
-    have_corner = 1;
-    min_ind = inds[1];
-  }
-  if(have_corner == 0 && vert_type[inds[2]] == TERRAIN_CORNER){
-    have_corner = 1;
-    min_ind = inds[2];
-  }
-  if(have_corner == 0){
-    if(vert_type[inds[0]] == TERRAIN_EDGE){
-      have_edge = 1;
-      min_ind = inds[0];
-    }
-    if(vert_type[inds[1]] == TERRAIN_EDGE){
-      if(have_edge == 1){
-        min_ind = MIN(min_ind, inds[1]);
-      }
-      else{
-        min_ind = inds[1];
-      }
-    }
-    if(vert_type[inds[2]] == TERRAIN_EDGE){
-      if(have_edge == 1){
-        min_ind = MIN(min_ind, inds[2]);
-      }
-      else{
-        min_ind = inds[2];
-      }
-    }
-  }
-  return min_ind;
+  if(vert_type[inds[0]] == TERRAIN_XYEDGE)return inds[0];
+  if(vert_type[inds[1]] == TERRAIN_XYEDGE)return inds[1];
+  if(vert_type[inds[2]] == TERRAIN_XYEDGE)return inds[2];
+  if(vert_type[inds[0]] != TERRAIN_INTERIOR)return inds[0];
+  if(vert_type[inds[1]] != TERRAIN_INTERIOR)return inds[1];
+  if(vert_type[inds[2]] != TERRAIN_INTERIOR)return inds[2];
+  return MIN(MIN(inds[0], inds[1]), inds[2]);
 }
 
 /* ------------------ DecimateGeom ------------------------ */
 
-void DecimateTerrain(float *verts, int nverts, int *faces, int nfaces, float *box, float face_eps, float box_eps){
+float DecimateTerrain(float *verts, int nverts, int *faces, int nfaces, int **newfaces, int *nnewfaces, float *box, float face_eps, float box_eps){
   unsigned char *vert_type;
   int *vert_map;
   int i;
+  float max_dist;
 
-  if(nverts <= 0)return;
+  if(nverts <= 0)return 0.0;
   NewMemory((void **)&vert_map, nverts*sizeof(int));
   NewMemory((void **)&vert_type, nverts);
   for(i = 0;i < nverts;i++){
-    int count;
     float *xyz;
 
     vert_type[i] = TERRAIN_INTERIOR;
     vert_map[i] = i;
     xyz = verts + 3 * i;
-    count = 0;
-    if(ABS(xyz[0] - box[0]) < box_eps)count++;
-    if(ABS(xyz[0] - box[1]) < box_eps)count++;
-    if(ABS(xyz[1] - box[2]) < box_eps)count++;
-    if(ABS(xyz[1] - box[3]) < box_eps)count++;
-    if(count == 1)vert_type[i] = TERRAIN_EDGE;
-    if(count >= 2)vert_type[i] = TERRAIN_CORNER;
+    if(ABS(xyz[0] - box[0]) < box_eps || ABS(xyz[0] - box[1]) < box_eps)vert_type[i] |= TERRAIN_XEDGE;
+    if(ABS(xyz[1] - box[2]) < box_eps || ABS(xyz[1] - box[3]) < box_eps)vert_type[i] |= TERRAIN_YEDGE;
   }
-  for(i = 0;i < nfaces;i++){
-    int *inds, indsmap[3], min_ind;
-    float *xyz1, *xyz2, *xyz3;
+  int iter;
+  for(iter = 0; iter < 4; iter++){
+    int have_small_triangle;
 
-    inds = faces + 3 * i;
-    indsmap[0] = vert_map[inds[0]];
-    indsmap[1] = vert_map[inds[1]];
-    indsmap[2] = vert_map[inds[2]];
-    xyz1 = verts + 3 * indsmap[0];
-    xyz2 = verts + 3 * indsmap[1];
-    xyz3 = verts + 3 * indsmap[2];
-    if(DIST2(xyz1, xyz2) < face_eps || DIST2(xyz1, xyz3) < face_eps || DIST2(xyz2, xyz3) < face_eps){
-      min_ind = GetMinInd(inds, vert_type);
-      vert_map[indsmap[0]] = min_ind;
-      vert_map[indsmap[1]] = min_ind;
-      vert_map[indsmap[2]] = min_ind;
-      inds[0] = min_ind;
-      inds[1] = min_ind;
-      inds[2] = min_ind;
+    have_small_triangle = 0;
+    max_dist = 0.0;
+    for(i = 0; i < nfaces; i++){
+      int *index, new_index[3];
+      float *xyz1, *xyz2, *xyz3;
+      float d12, d13, d23;
+      float dist;
+
+      index = faces + 3 * i;
+      new_index[0] = vert_map[index[0]];
+      new_index[1] = vert_map[index[1]];
+      new_index[2] = vert_map[index[2]];
+      xyz1 = verts + 3 * new_index[0];
+      xyz2 = verts + 3 * new_index[1];
+      xyz3 = verts + 3 * new_index[2];
+      d12 = DIST2(xyz1, xyz2);
+      d13 = DIST2(xyz1, xyz3);
+      d23 = DIST2(xyz2, xyz3);
+      if(d12 < face_eps || d13 < face_eps || d23 < face_eps){
+        int min_ind;
+
+        min_ind = GetMinInd(new_index, vert_type);
+        vert_map[new_index[0]] = min_ind;
+        vert_map[new_index[1]] = min_ind;
+        vert_map[new_index[2]] = min_ind;
+        have_small_triangle = 1;
+      }
+      dist = MAX(MAX(d12, d13), d13);
+      max_dist = MAX(dist, max_dist);
+    }
+    if(have_small_triangle == 0)break;
+  }
+  int nf = 0;
+  for(i = 0; i < nfaces; i++){
+    int *index, new_index[3];
+
+    index = faces + 3 * i;
+    new_index[0] = vert_map[index[0]];
+    new_index[1] = vert_map[index[1]];
+    new_index[2] = vert_map[index[2]];
+    if(new_index[0] != new_index[1] && new_index[0] != new_index[2] && new_index[1] != new_index[2])nf++;
+  }
+  if(nf > 0){
+    int *newfacesptr;
+
+    NewMemory(( void ** )&newfacesptr, 3*nf*sizeof(int));
+    *newfaces = newfacesptr;
+    *nnewfaces = nf;
+    for(i = 0; i < nfaces; i++){
+      int *index, new_index[3];
+
+      index = faces + 3 * i;
+      new_index[0] = vert_map[index[0]];
+      new_index[1] = vert_map[index[1]];
+      new_index[2] = vert_map[index[2]];
+      if(new_index[0] == new_index[1] || new_index[0] == new_index[2] || new_index[1] == new_index[2])continue;
+      newfacesptr[3 * i]   = new_index[0];
+      newfacesptr[3 * i+1] = new_index[1];
+      newfacesptr[3 * i+2] = new_index[2];
     }
   }
+  else{
+    *newfaces = NULL;
+    *nnewfaces = 0;
+  }
   FREEMEMORY(vert_map);
-
+  FREEMEMORY(vert_type);
+  return max_dist;
 }
   
   /* ------------------ GetTriangleNormal ------------------------ */
