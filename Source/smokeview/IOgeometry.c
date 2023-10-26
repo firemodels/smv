@@ -369,7 +369,9 @@ int GetMinInd(int *inds, unsigned char *vert_type){
 #ifdef pp_DECIMATE
 /* ------------------ DecimateTerrain ------------------------ */
 
-float DecimateTerrain(float *verts, int nverts, int *faces, int nfaces, int **newfaces, int *nnewfaces, float *box, float face_eps, float box_eps){
+float DecimateTerrain(float *verts, int nverts, int *faces, int nfaces, 
+                      int **newfaces, int *nnewfaces, 
+                      float *boxmin, float *boxmax, float face_eps, float box_eps){
   unsigned char *vert_type;
   int *vert_map;
   int i;
@@ -378,14 +380,23 @@ float DecimateTerrain(float *verts, int nverts, int *faces, int nfaces, int **ne
   if(nverts <= 0)return 0.0;
   NewMemory((void **)&vert_map, nverts*sizeof(int));
   NewMemory((void **)&vert_type, nverts);
+  int n0, n1, n2, n3;
+  n0 = 0;
+  n1 = 0;
+  n2 = 0;
+  n3 = 0;
   for(i = 0;i < nverts;i++){
     float *xyz;
 
     vert_type[i] = TERRAIN_INTERIOR;
     vert_map[i] = i;
     xyz = verts + 3 * i;
-    if(ABS(xyz[0] - box[0]) < box_eps || ABS(xyz[0] - box[1]) < box_eps)vert_type[i] |= TERRAIN_XEDGE;
-    if(ABS(xyz[1] - box[2]) < box_eps || ABS(xyz[1] - box[3]) < box_eps)vert_type[i] |= TERRAIN_YEDGE;
+    if(ABS(xyz[0] - boxmin[0]) < box_eps || ABS(xyz[0] - boxmax[0]) < box_eps)vert_type[i] |= TERRAIN_XEDGE;
+    if(ABS(xyz[1] - boxmin[1]) < box_eps || ABS(xyz[1] - boxmax[1]) < box_eps)vert_type[i] |= TERRAIN_YEDGE;
+    if(vert_type[i] == TERRAIN_INTERIOR)n0++;
+    if(vert_type[i] == TERRAIN_XEDGE)n1++;
+    if(vert_type[i] == TERRAIN_YEDGE)n2++;
+    if(vert_type[i] == TERRAIN_XYEDGE)n3++;
   }
   int iter;
   for(iter = 0; iter < 4; iter++){
@@ -403,6 +414,7 @@ float DecimateTerrain(float *verts, int nverts, int *faces, int nfaces, int **ne
       new_index[0] = vert_map[index[0]];
       new_index[1] = vert_map[index[1]];
       new_index[2] = vert_map[index[2]];
+      if(new_index[0] == new_index[1] || new_index[0] == new_index[2] || new_index[1] == new_index[2])continue;
       xyz1 = verts + 3 * new_index[0];
       xyz2 = verts + 3 * new_index[1];
       xyz3 = verts + 3 * new_index[2];
@@ -464,6 +476,74 @@ float DecimateTerrain(float *verts, int nverts, int *faces, int nfaces, int **ne
 /* ------------------ DecimateTerrainGeoms ------------------------ */
 
 void DecimateTerrainGeoms(void){
+  int i;
+  float box_eps;
+
+  box_eps = ABS(meshinfo->xplt_orig[1] - meshinfo->xplt_orig[0]) / 10.0;
+  for(i=0;i<nmeshes;i++){
+    meshdata *meshi;
+
+    meshi = meshinfo + i;
+    meshi->decimated = 0;
+  }
+
+  for(i=0;i<npatchinfo;i++){
+    meshdata *meshi;
+    patchdata *patchi;
+    geomdata *geomi;
+    geomlistdata *geomlisti;
+    vertdata *verts_orig;
+    tridata *triangles_orig;
+    int ntris_orig, nverts_orig;
+    float *verts;
+    int *faces;
+
+    patchi = patchinfo + i;
+    if(patchi->loaded==0||patchi->display==0||patchi->blocknumber<0)continue;
+    geomi = patchi->geominfo;
+    if(geomi == NULL || geomi->display == 0 || geomi->loaded == 0)continue;
+    meshi = meshinfo + patchi->blocknumber;
+    if(meshi->decimated==1)continue;
+
+    meshi->decimated = 1;
+    geomlisti      = geomi->geomlistinfo - 1;
+    triangles_orig = geomlisti->triangles;
+    ntris_orig     = geomlisti->ntriangles;
+    verts_orig     = geomlisti->verts;
+    nverts_orig    = geomlisti->nverts;
+    NewMemory((void **)&verts, 3*nverts_orig*sizeof(float));
+    NewMemory((void **)&faces, 3*ntris_orig*sizeof(int));
+    int j;
+    for(j=0;j<nverts_orig;j++){
+      verts[3*j]   = verts_orig[j].xyz[0];
+      verts[3*j+1] = verts_orig[j].xyz[1];
+      verts[3*j+2] = verts_orig[j].xyz[2];
+    }
+    for(j=0;j<ntris_orig;j++){
+      faces[3*j]   = triangles_orig[j].verts[0] - verts_orig;
+      faces[3*j+1] = triangles_orig[j].verts[1] - verts_orig;
+      faces[3*j+2] = triangles_orig[j].verts[2] - verts_orig;
+    }
+    float max_dist;
+    int *newfaces, nnewfaces;
+    max_dist = DecimateTerrain(verts, nverts_orig, faces, ntris_orig,
+      &newfaces, &nnewfaces,
+      meshi->boxmin, meshi->boxmax, terrain_decimate_delta, box_eps);
+    printf("decimated geometry in mesh %i, max distance: %f nmeshes before: %i after %i\n",i,max_dist,ntris_orig, nnewfaces);
+      
+    tridata *new_triangles;
+    NewMemory((void **)&new_triangles, nnewfaces * sizeof(tridata));
+    FREEMEMORY(meshi->triangles);
+    meshi->triangles = new_triangles;
+    for(j = 0;j < nnewfaces;j++){
+      tridata *trii;
+
+      trii = new_triangles + j;
+      trii->verts[0] = verts_orig + faces[3*j];
+      trii->verts[1] = verts_orig + faces[3*j+1];
+      trii->verts[2] = verts_orig + faces[3*j+2];
+    }
+  }
 }
 #endif
   
@@ -4635,9 +4715,9 @@ void DrawGeomData(int flag, slicedata *sd, patchdata *patchi, int geom_type){
       tridata *triangles;
 
 #ifdef pp_DECIMATE
-      if(use_decimate_geom == 1 && patchi != NULL && patchi->triangles != NULL){
-        triangles = patchi->triangles;
-        ntris     = patchi->ntriangles;
+      if(use_decimate_geom == 1 && patchi->blocknumber>=0 && meshinfo[patchi->blocknumber].triangles != NULL){
+        triangles = meshinfo[patchi->blocknumber].triangles;
+        ntris     = meshinfo[patchi->blocknumber].ntriangles;
       }
       else{
         triangles = geomlisti->triangles;

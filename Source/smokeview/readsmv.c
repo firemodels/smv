@@ -886,6 +886,11 @@ void InitMesh(meshdata *meshi){
   for(i = 0;i < 6;i++){
     meshi->skip_nabors[i]=NULL;
   }
+#ifdef pp_DECIMATE
+  meshi->triangles  = NULL;
+  meshi->ntriangles = 0;
+  meshi->decimated  = 0;
+#endif
   meshi->in_frustum = 1;
   meshi->imap = NULL;
   meshi->jmap = NULL;
@@ -5176,10 +5181,6 @@ int ParseBNDFProcess(bufferstreamdata *stream, char *buffer, int *nn_patch_in, i
   patchi->patch_filetype    = PATCH_STRUCTURED_NODE_CENTER;
   patchi->structured        = YES;
   patchi->boundary          = 1;
-#ifdef pp_DECIMATE
-  patchi->triangles         = NULL;
-  patchi->ntriangles        = 0;
-#endif
   if(Match(buffer, "BNDC")==1){
     patchi->patch_filetype = PATCH_STRUCTURED_CELL_CENTER;
   }

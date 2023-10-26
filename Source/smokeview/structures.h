@@ -836,6 +836,11 @@ typedef struct _meshdata {
 
   int ncullgeominfo,nxyzgeomcull[3],nxyzskipgeomcull[3];
   struct _culldata *cullgeominfo;
+#ifdef pp_DECIMATE
+  tridata *triangles;
+  int ntriangles, decimated;
+#endif
+
 
   volrenderdata volrenderinfo;
   int  nslicex,  nslicey,  nslicez;
@@ -1664,10 +1669,6 @@ typedef struct _patchdata {
   int histogram_nframes;
   bounddata bounds;
   boundsdata *bounds2;
-#ifdef pp_DECIMATE
-  tridata *triangles;
-  int ntriangles;
-#endif
 } patchdata;
 
 /* --------------------------  plot3ddata ------------------------------------ */
