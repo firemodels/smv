@@ -1110,9 +1110,6 @@ extern "C" void GluiGeometrySetup(int main_window){
     }
 #ifdef pp_DECIMATE
     if(nterraininfo > 0){
-      float *xplt;
-
-      xplt = meshinfo->xplt_orig;
       terrain_decimate_delta     = MAX((xbarFDS - xbar0FDS)/screenWidth, (ybarFDS - ybar0FDS)/screenHeight);
       terrain_decimate_delta_min = terrain_decimate_delta/4.0;
       PANEL_terrain_decimate = glui_geometry->add_panel_to_panel(PANEL_group1, "Decimate terrain geometry");
