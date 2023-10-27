@@ -367,9 +367,9 @@ int GetMinInd(int *inds, unsigned char *vert_type){
 }
 
 #ifdef pp_DECIMATE
-/* ------------------ DecimateTerrain ------------------------ */
+/* ------------------ DecimateGeom ------------------------ */
 
-float DecimateTerrain(float *verts, int nverts, int *faces, int nfaces, 
+int DecimateGeom(float *verts, int nverts, int *faces, int nfaces, 
                       int **newfaces, int *nnewfaces, 
                       float *boxmin, float *boxmax, float face_eps, float box_eps){
   unsigned char *vert_type;
@@ -473,9 +473,9 @@ float DecimateTerrain(float *verts, int nverts, int *faces, int nfaces,
   return max_dist;
 }
 
-/* ------------------ DecimateTerrainGeoms ------------------------ */
+/* ------------------ DecimateAllGeoms ------------------------ */
 
-void DecimateTerrainGeoms(void){
+void DecimateAllGeoms(void){
   int i;
   float box_eps;
 
@@ -526,7 +526,7 @@ void DecimateTerrainGeoms(void){
     }
     float max_dist;
     int *newfaces, nnewfaces;
-    max_dist = DecimateTerrain(verts, nverts_orig, faces, ntris_orig,
+    max_dist = DecimateGeom(verts, nverts_orig, faces, ntris_orig,
       &newfaces, &nnewfaces,
       meshi->boxmin, meshi->boxmax, terrain_decimate_delta, box_eps);
     printf("decimated geometry in mesh %i, max distance: %f nmeshes before: %i after %i\n",i,max_dist,ntris_orig, nnewfaces);

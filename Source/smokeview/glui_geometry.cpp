@@ -1349,7 +1349,7 @@ extern "C" void VolumeCB(int var){
     break;
 #ifdef pp_DECIMATE
   case GEOM_DECIMATE:
-    DecimateTerrainGeoms();
+    DecimateAllGeoms();
     break;
   case GEOM_DECIMATE_DELTA:
     if(terrain_decimate_delta<0.0){
