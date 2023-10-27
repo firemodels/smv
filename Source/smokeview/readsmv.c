@@ -887,8 +887,10 @@ void InitMesh(meshdata *meshi){
     meshi->skip_nabors[i]=NULL;
   }
 #ifdef pp_DECIMATE
-  meshi->triangles  = NULL;
-  meshi->ntriangles = 0;
+  meshi->dec_verts      = NULL;
+  meshi->dec_triangles  = NULL;
+  meshi->ndec_triangles = 0;
+  meshi->ndec_verts     = 0;
   meshi->decimated  = 0;
 #endif
   meshi->in_frustum = 1;

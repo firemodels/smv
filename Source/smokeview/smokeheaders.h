@@ -166,7 +166,7 @@ EXTERNCPP void GenerateSliceMenu(int from_commandline);
 void DrawTerrainGeom(int option);
 void GenerateTerrainGeom(float **vertices_arg, unsigned int **indices_arg, int *nindices_arg);
 #ifdef pp_DECIMATE
-EXTERNCPP void DecimateAllGeoms(void);
+EXTERNCPP void DecimateAllTerrains(void);
 #endif
 
 #ifdef pp_REFRESH

@@ -1113,7 +1113,8 @@ extern "C" void GluiGeometrySetup(int main_window){
       float *xplt;
 
       xplt = meshinfo->xplt_orig;
-      terrain_decimate_delta = ABS(xplt[1] - xplt[0]);
+      terrain_decimate_delta     = MAX((xbarFDS - xbar0FDS)/screenWidth, (ybarFDS - ybar0FDS)/screenHeight);
+      terrain_decimate_delta_min = terrain_decimate_delta/4.0;
       PANEL_terrain_decimate = glui_geometry->add_panel_to_panel(PANEL_group1, "Decimate terrain geometry");
       SPINNER_terrain_deimate_delta = glui_geometry->add_spinner_to_panel(PANEL_terrain_decimate, "delta", GLUI_SPINNER_FLOAT, &terrain_decimate_delta, GEOM_DECIMATE_DELTA, VolumeCB);
       CHECKBOX_use_decimate_geom = glui_geometry->add_checkbox_to_panel(PANEL_terrain_decimate, "use decimated geometry", &use_decimate_geom);
@@ -1349,11 +1350,11 @@ extern "C" void VolumeCB(int var){
     break;
 #ifdef pp_DECIMATE
   case GEOM_DECIMATE:
-    DecimateAllGeoms();
+    DecimateAllTerrains();
     break;
   case GEOM_DECIMATE_DELTA:
-    if(terrain_decimate_delta<0.0){
-      terrain_decimate_delta = 0.0;
+    if(terrain_decimate_delta < terrain_decimate_delta_min){
+      terrain_decimate_delta = terrain_decimate_delta_min;
       SPINNER_terrain_deimate_delta->set_float_val(terrain_decimate_delta);
     }
     break;
