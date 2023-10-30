@@ -12,105 +12,6 @@
 #define BUILD_GEOM_OFFSETS 0
 #define GET_GEOM_OFFSETS  -1
 
-// !  ------------------ PtInTriangle ------------------------
-
-int PtInTriangle(float *xy, float *v0, float *v1, float *v2, float *zval){
-  float l[3];
-  float denom;
-
-  // (   1   1   1 ) ( l0 )    ( 1 )
-  // ( v00 v10 v20 ) ( l1 ) =  ( x )
-  // ( v01 v11 v21 ) ( l2 )    ( y )
-
-  //      |   1   1   1 |
-  // l0 = |   x v10 v20 | / denom
-  //      |   y v11 v21 |
-
-  //      |   1   1   1 |
-  // l1 = |   v00 x v20 | / denom
-  //      |   v01 y v21 |
-
-  //      |   1   1   1 |
-  // l2 = |   v00 v10 x | / denom
-  //      |   v01 v11 y |
-
-  denom = (v1[0]*v2[1]-v1[1]*v2[0]) - (v0[0]*v2[1]-v0[1]*v2[0]) + (v0[0]*v1[1]-v0[1]*v1[0]);
-  if(denom == 0.0)return 0;
-
-  l[0] = (v1[0]*v2[1]-v1[1]*v2[0]) - (xy[0]*v2[1]-xy[1]*v2[0]) + (xy[0]*v1[1]-xy[1]*v1[0]);
-  l[0] /= denom;
-  if(ABS(l[0]) > 1.0)return 0;
-
-  l[1] = (xy[0]*v2[1]-xy[1]*v2[0]) - (v0[0]*v2[1]-v0[1]*v2[0]) + (v0[0]*xy[1]-v0[1]*xy[0]);
-  l[1] /= denom;
-  if(ABS(l[1]) > 1.0)return 0;
-
-  l[2] = (v1[0]*xy[1]-v1[1]*xy[0]) - (v0[0]*xy[1]-v0[1]*xy[0]) + (v0[0]*v1[1]-v0[1]*v1[0]);
-  l[2] /= denom;
-  if(ABS(l[2]) > 1.0)return 0;
-
-  *zval = l[0]*v0[2] + l[1]*v1[2] + l[2]*v2[2];
-  return 1;
-}
-
-// !  ------------------ Geom2Ter ------------------------
-
-void Geom2Ter(float *verts, int nverts, int *triangles, int ntriangles, float *xb, int nx, int ny, float *zvals){
-  int i, nvals;
-  unsigned char *set;
-  float dx, dy;
-  float xmin, xmax, ymin, ymax;
-
-  xmin = xb[0];
-  ymin = xb[2];
-  xmax = xb[1];
-  ymax = xb[3];
-
-  nvals = nx*ny;
-  NewMemory((void **)&set, nvals);
-  for(i = 0;i < nvals;i++){
-    set[i] = 0;
-  }
-  dx = (xmax - xmin) / (float)nx;
-  dy = (ymax - ymin) / (float)ny;
-  for(i = 0;i < ntriangles;i++){
-    int *trii;
-    float *v0, *v1, *v2;
-    float xtmin, xtmax, ytmin, ytmax;
-    int imin, imax, jmin, jmax;
-    int ii;
-    float xy[2];
-
-    trii = triangles + 3*i;
-    v0 = verts + 3*trii[0];
-    v1 = verts + 3*trii[1];
-    v2 = verts + 3*trii[2];
-    xtmin = MIN(MIN(v0[0], v1[0]), v2[0]);
-    xtmax = MAX(MAX(v0[0], v1[0]), v2[0]);
-    ytmin = MIN(MIN(v0[1], v1[1]), v2[1]);
-    ytmax = MAX(MAX(v0[1], v1[1]), v2[1]);
-    imin = (xtmin - xmin) / dx;
-    imax = (xtmax - xmin) / dx+1;
-    jmin = (ytmin - ymin) / dy;
-    jmax = (ytmax - ymin) / dy+1;
-    for(ii = imin;ii <= imax;ii++){
-      int jj;
-
-      xy[0] = ymin + (float)ii*dx;
-
-      for(jj = jmin;jj <= jmax;jj++){
-        float zval;
-
-        xy[1] = ymax + (float)jj*dy;
-        if(PtInTriangle(xy, v0, v1, v2, &zval)==1){
-          zvals[jj*nx+ii] = zval;
-          set[jj*nx+ii] = 1;
-        }
-      }
-    }
-  }
-}
-
 // !  ------------------ Distance3 ------------------------
 
 float Distance3(float v1[3], float v2[3]){
@@ -350,181 +251,160 @@ void AverageVerts3(float v1[3], int v1type, float v2[3], int v2type,
 }
 
 #ifdef pp_DECIMATE
-/* --------------------------  decimatedata ------------------------------------ */
+#define IJNODE(i,j) ((j)*nx+(i))
 
-typedef struct _decimatedata{
-  int i, j, ival;
-  tridata *triangle;
-  float xyz_avg[3];
-} decimatedata;
+// !  ------------------ PtInTriangle ------------------------
 
-#define IJDEC(i,j) ((j)*nx+(i))
+int PtInTriangle(float *xy, float *v0, float *v1, float *v2, float *zval){
+  float l[3];
+  float denom;
+
+  // (   1   1   1 ) ( l0 )    ( 1 )
+  // ( v00 v10 v20 ) ( l1 ) =  ( x )
+  // ( v01 v11 v21 ) ( l2 )    ( y )
+
+  //      |   1   1   1 |
+  // l0 = |   x v10 v20 | / denom
+  //      |   y v11 v21 |
+
+  //      |   1   1   1 |
+  // l1 = |   v00 x v20 | / denom
+  //      |   v01 y v21 |
+
+  //      |   1   1   1 |
+  // l2 = |   v00 v10 x | / denom
+  //      |   v01 v11 y |
+
+  denom = (v1[0] * v2[1] - v1[1] * v2[0]) - (v0[0] * v2[1] - v0[1] * v2[0]) + (v0[0] * v1[1] - v0[1] * v1[0]);
+  if(denom == 0.0)return 0;
+
+  l[0] = (v1[0] * v2[1] - v1[1] * v2[0]) - (xy[0] * v2[1] - xy[1] * v2[0]) + (xy[0] * v1[1] - xy[1] * v1[0]);
+  l[0] /= denom;
+  if(ABS(l[0]) > 1.0)return 0;
+
+  l[1] = (xy[0] * v2[1] - xy[1] * v2[0]) - (v0[0] * v2[1] - v0[1] * v2[0]) + (v0[0] * xy[1] - v0[1] * xy[0]);
+  l[1] /= denom;
+  if(ABS(l[1]) > 1.0)return 0;
+
+  l[2] = (v1[0] * xy[1] - v1[1] * xy[0]) - (v0[0] * xy[1] - v0[1] * xy[0]) + (v0[0] * v1[1] - v0[1] * v1[0]);
+  l[2] /= denom;
+  if(ABS(l[2]) > 1.0)return 0;
+
+  *zval = l[0] * v0[2] + l[1] * v1[2] + l[2] * v2[2];
+  return 1;
+}
+
 /* ------------------ DecimateTerrain ------------------------ */
 
-void DecimateTerrain(meshdata *meshi,
-                     vertdata *verts, int nverts, tridata *triangles, int ntriangles,
-                     vertdata **verts_new, int *nverts_new, tridata **triangles_new, int *ntriangles_new, 
-                     float *boxmin, float *boxmax, float face_eps, float box_eps){
-  decimatedata *decimateinfo, decimateinfo0;
-  int i, j, nx, ny;
+void DecimateTerrain(vertdata *verts, int nverts, tridata *triangles, int ntriangles,
+              vertdata **verts_new, int *nverts_new, tridata **triangles_new, int *ntriangles_new, 
+              float *boxmin, float *boxmax, int nx, int ny){
+  int i, j, nvnew, ntrinew;
+  unsigned char *set;
+  float dx, dy;
+  vertdata *vertnewptr;
+  tridata *trinewptr;
 
-  if(nverts <= 0)return;
+  nvnew = nx*ny;
+  NewMemory((void **)&vertnewptr, nvnew*sizeof(vertdata));
+  NewMemory((void **)&set,        nvnew*sizeof(int));
+  *nverts_new = nvnew;
+  *verts_new  = vertnewptr;
 
-  nx = MIN(meshi->ibar, MAX(2,(boxmax[0] - boxmin[0]) / face_eps));
-  ny = MIN(meshi->jbar, MAX(2,(boxmax[1] - boxmin[1]) / face_eps));
+  ntrinew = 2*(nx - 1)*(ny - 1);
+  NewMemory((void **)&trinewptr, ntrinew * sizeof(tridata));
+  *ntriangles_new = ntrinew;
+  *triangles_new = trinewptr;
 
-  NewMemory(( void ** )&decimateinfo, nx*ny*sizeof(decimatedata));
-  decimateinfo0.i          = 0;
-  decimateinfo0.j          = 0;
-  decimateinfo0.ival       = 0;
-  decimateinfo0.triangle   = NULL;
-  decimateinfo0.xyz_avg[0] = 0.0;
-  decimateinfo0.xyz_avg[1] = 0.0;
-  decimateinfo0.xyz_avg[2] = 0.0;
-
-  for(i = 0; i < nx * ny; i++){
-    decimatedata *deci;
-
-    deci = decimateinfo + i;
-    memcpy(deci, &decimateinfo0, sizeof(decimatedata));
+  for(i = 0;i < nvnew;i++){
+    set[i] = -1;
   }
-  int ncount1 = 0;
-  for(i = 0; i < ntriangles; i++){
-    int ii, jj;
+  dx = (boxmax[0] - boxmin[0]) / (float)nx;
+  dy = (boxmax[1] - boxmin[1]) / (float)ny;
+  for(i = 0;i < ntriangles;i++){
     tridata *trii;
-    vertdata *v1, *v2, *v3;
+    float *v0, *v1, *v2;
+    float xtmin, xtmax, ytmin, ytmax;
+    int imin, imax, jmin, jmax;
+    int ii;
     float xyz[3];
-    decimatedata *decij;
 
     trii = triangles + i;
-    v1 = trii->verts[0];
-    v2 = trii->verts[1];
-    v3 = trii->verts[2];
-    xyz[0] = (v1->xyz[0] + v2->xyz[0] + v3->xyz[0]) / 3.0;
-    xyz[1] = (v1->xyz[1] + v2->xyz[1] + v3->xyz[1]) / 3.0;
-    xyz[2] = (v1->xyz[2] + v2->xyz[2] + v3->xyz[2]) / 3.0;
-    ii = CLAMP((xyz[0] - boxmin[0]) / face_eps, 0, nx - 1);
-    jj = CLAMP((xyz[1] - boxmin[1]) / face_eps, 0, ny - 1);
-    decij = decimateinfo + IJDEC(ii,jj);
-    if(decij->triangle != NULL)continue;
-    decij->triangle = trii;
-    decij->ival     = trii - triangles;
-    memcpy(decij->xyz_avg, xyz, 3 * sizeof(float));
-    ncount1++;
-  }
-  #define GETTRI(ii)  decij2 = decimateinfo + (ii);\
-  if(decij2->triangle != NULL){\
-    decij->triangle = decij2->triangle;\
-    decij->ival = decij2->ival;\
-    break;}
+    v0 = trii->verts[0]->xyz;
+    v1 = trii->verts[1]->xyz;
+    v2 = trii->verts[2]->xyz;
+    xtmin = MIN(MIN(v0[0], v1[0]), v2[0]);
+    xtmax = MAX(MAX(v0[0], v1[0]), v2[0]);
+    ytmin = MIN(MIN(v0[1], v1[1]), v2[1]);
+    ytmax = MAX(MAX(v0[1], v1[1]), v2[1]);
 
-  for(i = 0; i < nx; i++){
-    for(j = 0; j < ny; j++){
-      decimatedata *decij;
+    imin = CLAMP((xtmin - boxmin[0]) / dx,   0, nx-1);
+    imax = CLAMP((xtmax - boxmin[0]) / dx+1, 0, nx-1);
+    jmin = CLAMP((ytmin - boxmin[1]) / dy,   0, ny-1);
+    jmax = CLAMP((ytmax - boxmin[1]) / dy+1, 0, ny-1);
+    for(ii = imin;ii <= imax;ii++){
+      int jj, exit_loop;
 
-      decij = decimateinfo + IJDEC(i,j);
-      if(decij->triangle == NULL){
-        int ij;
-        decimatedata *decij2;
+      xyz[0] = boxmin[0] + (float)ii * dx;
 
-        for(ij = 1; ij < 2; ij++){
-          GETTRI(IJDEC(CLAMP(i - ij, 0, nx - 1), j));
-          GETTRI(IJDEC(CLAMP(i + ij, 0, nx - 1), j));
-          GETTRI(IJDEC(i, CLAMP(j - ij, 0, ny - 1)));
-          GETTRI(IJDEC(i, CLAMP(j + ij, 0, ny - 1)));
+      exit_loop = 0;
+      for(jj = jmin;jj <= jmax;jj++){
+        float zval;
+
+        xyz[1] = boxmin[1] + (float)jj * dy;
+
+        if(PtInTriangle(xyz, v0, v1, v2, &zval)==1){
+          int index;
+
+          xyz[2] = zval;
+          index = IJNODE(ii, jj);
+          set[index]   = i;
+          memcpy(vertnewptr[index].xyz, xyz, 3*sizeof(float));
+          exit_loop = 1;
+          break;
         }
+        if(exit_loop == 1)break;
       }
     }
   }
-  int ncount2;
-  ncount2 = 0;
-  for(i = 0; i < nx; i++){
-    for(j = 0; j < ny; j++){
-      decimatedata *decij;
-
-      decij = decimateinfo + IJDEC(i, j);
-      if(decij->triangle == NULL)ncount2++;
-    }
-  }
-  *nverts_new = nx * ny;
-  *ntriangles_new = 2 * (nx - 1) * (ny - 1);
-  tridata *triangles_newptr;
-  vertdata *verts_newptr;
-  NewMemory(( void ** )&triangles_newptr, (*ntriangles_new)*sizeof(tridata));
-  NewMemory(( void ** )&verts_newptr,     (*nverts_new)*sizeof(vertdata));
-  *triangles_new = triangles_newptr;
-  *verts_new     = verts_newptr;
-
-  for(j = 0; j < ny; j++){
-    float factory;
-
-    factory = (float)j/(ny - 1);
-    for(i = 0; i < nx; i++){
-      int iijj;
-      decimatedata *deci;
-      vertdata *vertij;
-      float factorx;
-
-      iijj = IJDEC(i,j);
-      deci = decimateinfo + iijj;
-      vertij = verts_newptr + iijj;
-      factorx = (float)i/(nx - 1);
-      vertij->xyz[0] = boxmin[0]*(1.0-factorx) + boxmax[0]*factorx;
-      vertij->xyz[1] = boxmin[1]*(1.0-factory) + boxmax[1]*factory;
-      vertij->xyz[2] = deci->xyz_avg[2];
-    }
-  }
   int ij = 0;
+  int ncount2 = 0;
   for(j = 0; j < ny-1; j++){
     for(i = 0; i < nx-1; i++){
       tridata *tri;
-      int idec, ival;
+      int ival;
 
-      idec = IJDEC(i, j);
-      ival = decimateinfo[idec].ival;
+      tri           = trinewptr + ij++;
+      tri->verts[0] = *verts_new + IJNODE(i,   j);
+      tri->verts[1] = *verts_new + IJNODE(i+1, j);
+      tri->verts[2] = *verts_new + IJNODE(i,   j+1);
+      ival = set[IJNODE(i, j)];
+      if(ival < 0)ncount2++;
+      tri->ival = set[MAX(0,ival)];
 
-      tri = triangles_newptr + ij++;
-      tri->verts[0] = *verts_new + IJ(i,   j);
-      tri->verts[1] = *verts_new + IJ(i+1, j);
-      tri->verts[2] = *verts_new + IJ(i,   j+1);
-      tri->ival = ival;
-
-      tri = triangles_newptr + ij++;
-      tri->verts[0] = *verts_new + IJ(i,   j+1);
-      tri->verts[1] = *verts_new + IJ(i+1, j);
-      tri->verts[2] = *verts_new + IJ(i+1, j+1);
-      tri->ival = ival;
+      tri           = trinewptr + ij++;
+      tri->verts[0] = *verts_new + IJNODE(i,   j+1);
+      tri->verts[1] = *verts_new + IJNODE(i+1, j);
+      tri->verts[2] = *verts_new + IJNODE(i+1, j+1);
+      if(ival < 0)ncount2++;
+      tri->ival = set[MAX(0, ival)];
     }
   }
-  printf("ncount1=%i ncount2=%i\n", ncount1, ncount2);
-  FREEMEMORY(decimateinfo);
+  printf("ncount1=%i ncount2=%i\n", ntriangles, ncount2);
+  FREEMEMORY(set);
 }
 
 /* ------------------ DecimateAllTerrains ------------------------ */
 
 void DecimateAllTerrains(void){
   int i;
-  float box_eps;
-
-  box_eps = 0.0;
-  for(i=0;i<nmeshes;i++){
-    meshdata *meshi;
-    float dx, dy, *xplt, *yplt;
-
-    meshi = meshinfo + i;
-    xplt = meshi->xplt_orig;
-    yplt = meshi->yplt_orig;
-    dx = xplt[1] - xplt[0];
-    dy = yplt[1] - yplt[0];
-    box_eps = MAX(MAX(dx, dy), box_eps);
-    meshi->decimated = 0;
-  }
-  box_eps /= 10.0;
 
   for(i=0;i<npatchinfo;i++){
     meshdata *meshi;
     patchdata *patchi;
     geomlistdata *geomlisti;
+    int nx, ny;
+    float *boxmin, *boxmax;
 
     patchi = patchinfo + i;
     if(patchi->loaded==0||patchi->display==0||patchi->blocknumber<0)continue;
@@ -534,10 +414,13 @@ void DecimateAllTerrains(void){
 
     meshi->decimated = 1;
     geomlisti = patchi->geominfo->geomlistinfo - 1;
-    DecimateTerrain(meshi,
-       geomlisti->verts, geomlisti->nverts,  geomlisti->triangles,  geomlisti->ntriangles, 
-      &meshi->dec_verts, &meshi->ndec_verts, &meshi->dec_triangles, &meshi->ndec_triangles, 
-      meshi->boxmin, meshi->boxmax, terrain_decimate_delta, box_eps);
+    boxmin = meshi->boxmin;
+    boxmax = meshi->boxmax;
+    nx = MAX((boxmax[0] - boxmin[0]) / terrain_decimate_delta, 2);
+    ny = MAX((boxmax[1] - boxmin[1]) / terrain_decimate_delta, 2);
+    DecimateTerrain(geomlisti->verts, geomlisti->nverts,  geomlisti->triangles,  geomlisti->ntriangles,
+                    &meshi->dec_verts, &meshi->ndec_verts, &meshi->dec_triangles, &meshi->ndec_triangles, 
+                    boxmin, boxmax, nx, ny);
   }
 }
 #endif
