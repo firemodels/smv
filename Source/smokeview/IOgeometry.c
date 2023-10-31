@@ -300,14 +300,14 @@ void DecimateTerrain(vertdata *verts, int nverts, tridata *triangles, int ntrian
               vertdata **verts_new, int *nverts_new, tridata **triangles_new, int *ntriangles_new, 
               float *boxmin, float *boxmax, int nx, int ny){
   int i, j, nvnew, ntrinew;
-  unsigned char *set;
+  int *tri_new;
   float dx, dy;
   vertdata *vertnewptr;
   tridata *trinewptr;
 
   nvnew = nx*ny;
   NewMemory((void **)&vertnewptr, nvnew*sizeof(vertdata));
-  NewMemory((void **)&set,        nvnew*sizeof(int));
+  NewMemory((void **)&tri_new,        nvnew*sizeof(int));
   *nverts_new = nvnew;
   *verts_new  = vertnewptr;
 
@@ -317,7 +317,7 @@ void DecimateTerrain(vertdata *verts, int nverts, tridata *triangles, int ntrian
   *triangles_new = trinewptr;
 
   for(i = 0;i < nvnew;i++){
-    set[i] = -1;
+    tri_new[i] = -1;
   }
   dx = (boxmax[0] - boxmin[0]) / (float)(nx-1);
   dy = (boxmax[1] - boxmin[1]) / (float)(ny-1);
@@ -358,7 +358,7 @@ void DecimateTerrain(vertdata *verts, int nverts, tridata *triangles, int ntrian
 
           xyz[2] = zval;
           index = IJNODE(ii, jj);
-          set[index]   = i;
+          tri_new[index]   = i;
           memcpy(vertnewptr[index].xyz, xyz, 3*sizeof(float));
           exit_loop = 1;
           break;
@@ -378,20 +378,27 @@ void DecimateTerrain(vertdata *verts, int nverts, tridata *triangles, int ntrian
       tri->verts[0] = *verts_new + IJNODE(i,   j);
       tri->verts[1] = *verts_new + IJNODE(i+1, j);
       tri->verts[2] = *verts_new + IJNODE(i,   j+1);
-      ival = set[IJNODE(i, j)];
-      if(ival < 0)ncount2++;
-      tri->ival = set[MAX(0,ival)];
+      ival = tri_new[IJNODE(i, j)];
+      if(ival < 0){
+        ncount2++;
+        ival = 0;
+      }
+      tri->ival = ival;
 
       tri           = trinewptr + ij++;
       tri->verts[0] = *verts_new + IJNODE(i,   j+1);
       tri->verts[1] = *verts_new + IJNODE(i+1, j);
       tri->verts[2] = *verts_new + IJNODE(i+1, j+1);
-      if(ival < 0)ncount2++;
-      tri->ival = set[MAX(0, ival)];
+      ival = tri_new[IJNODE(i, j)];
+      if(ival < 0){
+        ncount2++;
+        ival = 0;
+      }
+      tri->ival = ival;
     }
   }
   printf("ncount1=%i ncount2=%i\n", ntriangles, ncount2);
-  FREEMEMORY(set);
+  FREEMEMORY(tri_new);
 }
 
 /* ------------------ DecimateAllTerrains ------------------------ */
