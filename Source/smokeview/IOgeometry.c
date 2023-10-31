@@ -319,8 +319,8 @@ void DecimateTerrain(vertdata *verts, int nverts, tridata *triangles, int ntrian
   for(i = 0;i < nvnew;i++){
     set[i] = -1;
   }
-  dx = (boxmax[0] - boxmin[0]) / (float)nx;
-  dy = (boxmax[1] - boxmin[1]) / (float)ny;
+  dx = (boxmax[0] - boxmin[0]) / (float)(nx-1);
+  dy = (boxmax[1] - boxmin[1]) / (float)(ny-1);
   for(i = 0;i < ntriangles;i++){
     tridata *trii;
     float *v0, *v1, *v2;
@@ -399,6 +399,12 @@ void DecimateTerrain(vertdata *verts, int nverts, tridata *triangles, int ntrian
 void DecimateAllTerrains(void){
   int i;
 
+  for(i=0;i<nmeshes;i++){
+    meshdata *meshi;
+
+    meshi = meshinfo + i;
+    meshi->decimated = 0;
+  }
   for(i=0;i<npatchinfo;i++){
     meshdata *meshi;
     patchdata *patchi;
@@ -4803,8 +4809,24 @@ void DrawGeomData(int flag, slicedata *sd, patchdata *patchi, int geom_type){
       else{
         geomlisti = geomi->geomlistinfo + geomi->itime;
       }
+      tridata *triangles;
 
+
+#ifdef pp_DECIMATE
+      if(use_decimate_geom == 1 && patchi->blocknumber >= 0 && meshinfo[patchi->blocknumber].dec_triangles != NULL){
+        triangles = meshinfo[patchi->blocknumber].dec_triangles;
+        ntris = meshinfo[patchi->blocknumber].ndec_triangles;
+       // decimate = 1;
+      }
+      else{
+        triangles = geomlisti->triangles;
+        ntris = geomlisti->ntriangles;
+       // decimate = 0;
+      }
+#else
+      triangles = geomlisti->triangles;
       ntris = geomlisti->ntriangles;
+#endif
       if(ntris == 0)continue;
 
       glPushMatrix();
@@ -4827,7 +4849,7 @@ void DrawGeomData(int flag, slicedata *sd, patchdata *patchi, int geom_type){
           int draw_foreground=1;
           float *color0, *color1, *color2;
 
-          trianglei = geomlisti->triangles + j;
+          trianglei = triangles + j;
           if(patchi->patch_filetype == PATCH_GEOMETRY_SLICE){
             int insolid, insolid_glui=-1;
 
