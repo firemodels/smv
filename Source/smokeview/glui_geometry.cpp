@@ -687,15 +687,12 @@ float AverageTerrainSize(void){
 /* ------------------ UpdateTerrainSizes ------------------------ */
 
 void UpdateTerrainSizes(void){
-  float domain_width, mesh_width, cell_width, pixel_width;
+  float domain_width, cell_width, pixel_width;
   int screen_width;
-  int domain_ncells_x;
   float average_terrain_size;
 
   screen_width = glutGet(GLUT_SCREEN_WIDTH);                      // number of pixels
   domain_width = xbarORIG - xbar0ORIG;                            // meters
-  mesh_width = meshinfo->boxmax[0]-meshinfo->boxmin[0];           // meters
-  domain_ncells_x = (domain_width / mesh_width) * meshinfo->ibar; // number of grid cells
   cell_width = meshinfo->xplt_orig[1]-meshinfo->xplt_orig[0];
   pixel_width = domain_width / ( float )screen_width;
 
