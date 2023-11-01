@@ -429,8 +429,8 @@ void DecimateAllTerrains(void){
     geomlisti = patchi->geominfo->geomlistinfo - 1;
     boxmin = meshi->boxmin;
     boxmax = meshi->boxmax;
-    nx = MAX((boxmax[0] - boxmin[0]) / terrain_decimate_delta, 2);
-    ny = MAX((boxmax[1] - boxmin[1]) / terrain_decimate_delta, 2);
+    nx = MAX((boxmax[0] - boxmin[0]) / terrain_decimate_delta+1, 2);
+    ny = MAX((boxmax[1] - boxmin[1]) / terrain_decimate_delta+1, 2);
     DecimateTerrain(geomlisti->verts, geomlisti->nverts,  geomlisti->triangles,  geomlisti->ntriangles,
                     &meshi->dec_verts, &meshi->ndec_verts, &meshi->dec_triangles, &meshi->ndec_triangles, 
                     boxmin, boxmax, nx, ny);

@@ -206,6 +206,7 @@ GLUI_Panel *PANEL_geom_offset=NULL;
 GLUI_Panel *PANEL_terrain_images = NULL;
 #ifdef pp_DECIMATE
 GLUI_Panel *PANEL_terrain_decimate = NULL;
+GLUI_Panel *PANEL_terrain_decimate_sizes = NULL;
 #endif
 GLUI_Panel *PANEL_geom_show = NULL;
 
@@ -216,6 +217,11 @@ GLUI_Rollout *ROLLOUT_terrain = NULL;
 
 GLUI_Spinner *SPINNER_face_factor=NULL;
 
+#ifdef pp_DECIMATE
+GLUI_StaticText *STATIC_terrain_pixel_size=NULL;
+GLUI_StaticText *STATIC_terrain_cell_size=NULL;
+GLUI_StaticText *STATIC_terrain_geom_size=NULL;
+#endif
 GLUI_StaticText *STATIC_blockage_index=NULL;
 GLUI_StaticText *STATIC_mesh_index=NULL;
 GLUI_StaticText *STATIC_label=NULL;
@@ -602,6 +608,118 @@ extern "C" void HvacCB(int var){
   }
   GLUTPOSTREDISPLAY;
 }
+
+#ifdef pp_DECIMATE
+/* ------------------ AverageTerrainSize ------------------------ */
+
+float AverageTerrainSize(void){
+  int i;
+  float total_distance, average_distance;
+  int ntriangles = 0;
+  int count, skip;
+
+  for(i = 0; i < nmeshes; i++){
+    meshdata *meshi;
+
+    meshi = meshinfo + i;
+    meshi->decimated = 0;
+  }
+  for(i = 0; i < npatchinfo; i++){
+    meshdata *meshi;
+    patchdata *patchi;
+    geomlistdata *geomlisti;
+
+    patchi = patchinfo + i;
+    if(patchi->loaded == 0 || patchi->display == 0 || patchi->blocknumber < 0)continue;
+    meshi = meshinfo + patchi->blocknumber;
+    if(meshi->decimated == 1)continue;
+    if(patchi->geominfo == NULL || patchi->geominfo->display == 0 || patchi->geominfo->loaded == 0)continue;
+    meshi->decimated = 1;
+    geomlisti = patchi->geominfo->geomlistinfo - 1;
+    ntriangles += geomlisti->ntriangles;
+  }
+  skip = MAX(ntriangles / 5000, 1);
+  for(i = 0; i < nmeshes; i++){
+    meshdata *meshi;
+
+    meshi = meshinfo + i;
+    meshi->decimated = 0;
+  }
+  count = 0;
+  total_distance = 0.0;
+  for(i = 0; i < npatchinfo; i++){
+    meshdata *meshi;
+    patchdata *patchi;
+    geomlistdata *geomlisti;
+
+    patchi = patchinfo + i;
+    if(patchi->loaded == 0 || patchi->display == 0 || patchi->blocknumber < 0)continue;
+    meshi = meshinfo + patchi->blocknumber;
+    if(meshi->decimated == 1)continue;
+    if(patchi->geominfo == NULL || patchi->geominfo->display == 0 || patchi->geominfo->loaded == 0)continue;
+    meshi->decimated = 1;
+    geomlisti = patchi->geominfo->geomlistinfo - 1;
+    int j;
+
+    for(j = 0; j < geomlisti->ntriangles; j += skip){
+      vertdata *v1, *v2, *v3;
+      float dist1, dist2, dist3, dx, dy, dz;
+
+      v1 = geomlisti->triangles->verts[0];
+      v2 = geomlisti->triangles->verts[1];
+      v3 = geomlisti->triangles->verts[2];
+      DDIST3(v1->xyz, v2->xyz, dist1);
+      DDIST3(v1->xyz, v3->xyz, dist2);
+      DDIST3(v2->xyz, v3->xyz, dist3);
+      total_distance += (dist1+dist2+dist3);
+      count+=3;
+    }
+  }
+  if(count > 0){
+    average_distance = total_distance / ( float )count;
+  }
+  else{
+    average_distance = 0.0;
+  }
+  return average_distance;
+}
+
+/* ------------------ UpdateTerrainSizes ------------------------ */
+
+void UpdateTerrainSizes(void){
+  float domain_width, mesh_width, cell_width, pixel_width;
+  int screen_width;
+  int domain_ncells_x;
+  float average_terrain_size;
+
+  screen_width = glutGet(GLUT_SCREEN_WIDTH);                      // number of pixels
+  domain_width = xbarORIG - xbar0ORIG;                            // meters
+  mesh_width = meshinfo->boxmax[0]-meshinfo->boxmin[0];           // meters
+  domain_ncells_x = (domain_width / mesh_width) * meshinfo->ibar; // number of grid cells
+  cell_width = meshinfo->xplt_orig[1]-meshinfo->xplt_orig[0];
+  pixel_width = domain_width / ( float )screen_width;
+
+  char label[500], cval[500];
+
+  Float2String(cval, pixel_width, 3, 1);
+  sprintf(label, "pixel: %s m", cval);
+  STATIC_terrain_pixel_size->set_name(label);
+
+  Float2String(cval, cell_width, 3, 1);
+  sprintf(label, "cell: %s m", cval);
+  STATIC_terrain_cell_size->set_name(label);
+
+  average_terrain_size = AverageTerrainSize();
+  if(average_terrain_size > 0.0){
+    Float2String(cval, average_terrain_size, 3, 1);
+    sprintf(label, "geom: %s m", cval);
+  }
+  else{
+    strcpy(label, "geom:");
+  }
+  STATIC_terrain_geom_size->set_name(label);
+}
+#endif
 
 /* ------------------ GluiGeometrySetup ------------------------ */
 
@@ -1116,6 +1234,11 @@ extern "C" void GluiGeometrySetup(int main_window){
       SPINNER_terrain_deimate_delta = glui_geometry->add_spinner_to_panel(PANEL_terrain_decimate, "delta", GLUI_SPINNER_FLOAT, &terrain_decimate_delta, GEOM_DECIMATE_DELTA, VolumeCB);
       CHECKBOX_use_decimate_geom = glui_geometry->add_checkbox_to_panel(PANEL_terrain_decimate, "use decimated geometry", &use_decimate_geom);
       BUTTON_reset_zbounds = glui_geometry->add_button_to_panel(PANEL_terrain_decimate, _("Decimate"), GEOM_DECIMATE, VolumeCB);
+      PANEL_terrain_decimate_sizes = glui_geometry->add_panel_to_panel(PANEL_terrain_decimate, "Sizes (approximate)");
+      STATIC_terrain_cell_size = glui_geometry->add_statictext_to_panel(PANEL_terrain_decimate_sizes, "cell:");
+      STATIC_terrain_pixel_size = glui_geometry->add_statictext_to_panel(PANEL_terrain_decimate_sizes,"pixel:");
+      STATIC_terrain_geom_size  = glui_geometry->add_statictext_to_panel(PANEL_terrain_decimate_sizes, "geom:");
+      UpdateTerrainSizes();
     }
 #endif
 
@@ -1347,6 +1470,7 @@ extern "C" void VolumeCB(int var){
     break;
 #ifdef pp_DECIMATE
   case GEOM_DECIMATE:
+    UpdateTerrainSizes();
     DecimateAllTerrains();
     break;
   case GEOM_DECIMATE_DELTA:
