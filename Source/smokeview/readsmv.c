@@ -886,6 +886,13 @@ void InitMesh(meshdata *meshi){
   for(i = 0;i < 6;i++){
     meshi->skip_nabors[i]=NULL;
   }
+#ifdef pp_DECIMATE
+  meshi->dec_verts      = NULL;
+  meshi->dec_triangles  = NULL;
+  meshi->ndec_triangles = 0;
+  meshi->ndec_verts     = 0;
+  meshi->decimated  = 0;
+#endif
   meshi->in_frustum = 1;
   meshi->imap = NULL;
   meshi->jmap = NULL;

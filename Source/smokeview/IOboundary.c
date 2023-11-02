@@ -2638,7 +2638,6 @@ FILE_SIZE ReadBoundary(int ifile, int load_flag, int *errorcode){
   SetTimeState();
   patchi = patchinfo + ifile;
   if(patchi->structured == NO){
-    ASSERT(ifile>=0&&ifile<ngeominfo);
     if(load_flag == LOAD){
 #ifdef pp_PATCH_HIST
       update_boundary_hist = 1;

@@ -23,6 +23,7 @@
 #define pp_BLACKBODY      // use blackbody theory for generating fire colors
 // pp_BLACKBODY_OUT       // output generated blackbody color data 
 //#define pp_BOUND_HIST_ON // turn on boundary file histograms
+//#define pp_DECIMATE     // decimate terrain geometry
 
 #define pp_FAST           // set fast startup by default
 #define pp_FED_COMPRESS   // skip fed slices when co, o2 or co2 slices are compressed (for now)

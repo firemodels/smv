@@ -96,6 +96,9 @@ typedef struct _tridata {
   int vert_index[3], exterior, geomtype, insolid, outside_domain;
   vertdata *verts[3];
   edgedata *edges[3];
+#ifdef pp_DECIMATE
+  int ival;
+#endif
 } tridata;
 
 /* --------------------------  geomlistdata ------------------------------------ */
@@ -836,6 +839,12 @@ typedef struct _meshdata {
 
   int ncullgeominfo,nxyzgeomcull[3],nxyzskipgeomcull[3];
   struct _culldata *cullgeominfo;
+#ifdef pp_DECIMATE
+  vertdata *dec_verts;
+  tridata *dec_triangles;
+  int ndec_triangles, ndec_verts, decimated;
+#endif
+
 
   volrenderdata volrenderinfo;
   int  nslicex,  nslicey,  nslicez;

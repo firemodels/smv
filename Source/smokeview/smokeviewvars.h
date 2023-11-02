@@ -479,6 +479,11 @@ SVEXTERN int SVDECL(update_boundary_hist, 0);
 
 SVEXTERN int SVDECL(smoke_framenumber, 0);
 SVEXTERN float SVDECL(time_frameval, 0.0), SVDECL(time_framemax,0.0), SVDECL(time_framemin,1.0);
+#ifdef pp_DECIMATE
+SVEXTERN float SVDECL(terrain_decimate_delta,0.1);
+SVEXTERN float SVDECL(terrain_decimate_delta_min, 0.1);
+SVEXTERN int SVDECL(use_decimate_geom, 0);
+#endif
 
 SVEXTERN int SVDECL(clip_rotate, 0);
 SVEXTERN int curdir_writable;

@@ -1433,7 +1433,7 @@ int GetPartPropIndex(int class_i, int class_i_j){
     partpropdata *propi;
 
     propi = part5propinfo + i;
-    if(strcmp(propi->label->longlabel,label)==0)return i;
+    if(label!=NULL&&strcmp(propi->label->longlabel,label)==0)return i;
   }
   return 0;
 }
@@ -1956,8 +1956,11 @@ void FinalizePartLoad(partdata *parti){
   else{
     update_generate_part_histograms = 1;
   }
+  INIT_PRINT_TIMER(part_time1);
   GetGlobalPartBounds(ALL_FILES);
+  PRINT_TIMER(part_time1, "particle get bounds time");
   if(cache_part_data==1){
+    INIT_PRINT_TIMER(part_time2);
     SetPercentilePartBounds();
     for(j = 0; j<npartinfo; j++){
       partdata *partj;
@@ -1967,6 +1970,7 @@ void FinalizePartLoad(partdata *parti){
         UpdatePartColors(partj, 0);
       }
     }
+    PRINT_TIMER(part_time2, "particle update colors time");
   }
 #define BOUND_PERCENTILE_DRAW          120
   PartBoundsCPP_CB(BOUND_PERCENTILE_DRAW);
@@ -2073,7 +2077,11 @@ FILE_SIZE ReadPart(char *file_arg, int ifile_arg, int loadflag_arg, int *errorco
     }
   }
   else{
-    if(parti->finalize==1)FinalizePartLoad(parti);
+    if(parti->finalize == 1){
+      INIT_PRINT_TIMER(finalize_part);
+      FinalizePartLoad(parti);
+      PRINT_TIMER(finalize_part, "finalize particle time");
+    }
     STOP_TIMER(load_time_local);
     if(file_size_local>1000000000){
       PRINTF(" - %.1f GB/%.1f s\n", (float)file_size_local/1000000000., load_time_local);

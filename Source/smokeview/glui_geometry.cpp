@@ -42,6 +42,10 @@ int      ngeomprocinfo = 0;
 #define SHOWONLY_TOP          51
 #define GEOM_FDS_DOMAIN       52
 #define GEOM_OUTLINECOLOR     53
+#ifdef pp_DECIMATE
+#define GEOM_DECIMATE         54
+#define GEOM_DECIMATE_DELTA   55
+#endif
 
 #define HVAC_PROPS            -1
 #define HVAC_SHOWALL_NETWORK  -2
@@ -88,6 +92,9 @@ GLUI_Checkbox *CHECKBOX_show_geom_normal = NULL;
 GLUI_Checkbox *CHECKBOX_smooth_geom_normal = NULL;
 GLUI_Checkbox *CHECKBOX_show_texture_1dimage = NULL;
 GLUI_Checkbox *CHECKBOX_showonly_top = NULL;
+#ifdef pp_DECIMATE
+GLUI_Checkbox *CHECKBOX_use_decimate_geom = NULL;
+#endif
 
 GLUI_RadioGroup *RADIO_terrain_type = NULL;
 GLUI_RadioGroup *RADIO_select_geom = NULL;
@@ -155,6 +162,9 @@ GLUI_Spinner *SPINNER_geom_vertex2_rgb[3]  = {NULL, NULL, NULL};
 GLUI_Spinner *SPINNER_geom_triangle_rgb[3] = {NULL, NULL, NULL};
 GLUI_Spinner *SPINNER_surf_rgb[3]          = {NULL, NULL, NULL};
 GLUI_Spinner *SPINNER_surf_axis[3]         = {NULL, NULL, NULL};
+#ifdef pp_DECIMATE
+GLUI_Spinner *SPINNER_terrain_deimate_delta=NULL;
+#endif
 
 #define VOL_SHOWHIDE           3
 #define SELECT_GEOM            4
@@ -194,6 +204,10 @@ GLUI_Panel *PANEL_geomedgecheck=NULL;
 GLUI_Panel *PANEL_group1=NULL;
 GLUI_Panel *PANEL_geom_offset=NULL;
 GLUI_Panel *PANEL_terrain_images = NULL;
+#ifdef pp_DECIMATE
+GLUI_Panel *PANEL_terrain_decimate = NULL;
+GLUI_Panel *PANEL_terrain_decimate_sizes = NULL;
+#endif
 GLUI_Panel *PANEL_geom_show = NULL;
 
 GLUI_Rollout *ROLLOUT_hvac = NULL;
@@ -203,6 +217,11 @@ GLUI_Rollout *ROLLOUT_terrain = NULL;
 
 GLUI_Spinner *SPINNER_face_factor=NULL;
 
+#ifdef pp_DECIMATE
+GLUI_StaticText *STATIC_terrain_pixel_size=NULL;
+GLUI_StaticText *STATIC_terrain_cell_size=NULL;
+GLUI_StaticText *STATIC_terrain_geom_size=NULL;
+#endif
 GLUI_StaticText *STATIC_blockage_index=NULL;
 GLUI_StaticText *STATIC_mesh_index=NULL;
 GLUI_StaticText *STATIC_label=NULL;
@@ -589,6 +608,115 @@ extern "C" void HvacCB(int var){
   }
   GLUTPOSTREDISPLAY;
 }
+
+#ifdef pp_DECIMATE
+/* ------------------ AverageTerrainSize ------------------------ */
+
+float AverageTerrainSize(void){
+  int i;
+  float total_distance, average_distance;
+  int ntriangles = 0;
+  int count, skip;
+
+  for(i = 0; i < nmeshes; i++){
+    meshdata *meshi;
+
+    meshi = meshinfo + i;
+    meshi->decimated = 0;
+  }
+  for(i = 0; i < npatchinfo; i++){
+    meshdata *meshi;
+    patchdata *patchi;
+    geomlistdata *geomlisti;
+
+    patchi = patchinfo + i;
+    if(patchi->loaded == 0 || patchi->display == 0 || patchi->blocknumber < 0)continue;
+    meshi = meshinfo + patchi->blocknumber;
+    if(meshi->decimated == 1)continue;
+    if(patchi->geominfo == NULL || patchi->geominfo->display == 0 || patchi->geominfo->loaded == 0)continue;
+    meshi->decimated = 1;
+    geomlisti = patchi->geominfo->geomlistinfo - 1;
+    ntriangles += geomlisti->ntriangles;
+  }
+  skip = MAX(ntriangles / 5000, 1);
+  for(i = 0; i < nmeshes; i++){
+    meshdata *meshi;
+
+    meshi = meshinfo + i;
+    meshi->decimated = 0;
+  }
+  count = 0;
+  total_distance = 0.0;
+  for(i = 0; i < npatchinfo; i++){
+    meshdata *meshi;
+    patchdata *patchi;
+    geomlistdata *geomlisti;
+
+    patchi = patchinfo + i;
+    if(patchi->loaded == 0 || patchi->display == 0 || patchi->blocknumber < 0)continue;
+    meshi = meshinfo + patchi->blocknumber;
+    if(meshi->decimated == 1)continue;
+    if(patchi->geominfo == NULL || patchi->geominfo->display == 0 || patchi->geominfo->loaded == 0)continue;
+    meshi->decimated = 1;
+    geomlisti = patchi->geominfo->geomlistinfo - 1;
+    int j;
+
+    for(j = 0; j < geomlisti->ntriangles; j += skip){
+      vertdata *v1, *v2, *v3;
+      float dist1, dist2, dist3, dx, dy, dz;
+
+      v1 = geomlisti->triangles->verts[0];
+      v2 = geomlisti->triangles->verts[1];
+      v3 = geomlisti->triangles->verts[2];
+      DDIST3(v1->xyz, v2->xyz, dist1);
+      DDIST3(v1->xyz, v3->xyz, dist2);
+      DDIST3(v2->xyz, v3->xyz, dist3);
+      total_distance += (dist1+dist2+dist3);
+      count+=3;
+    }
+  }
+  if(count > 0){
+    average_distance = total_distance / ( float )count;
+  }
+  else{
+    average_distance = 0.0;
+  }
+  return average_distance;
+}
+
+/* ------------------ UpdateTerrainSizes ------------------------ */
+
+void UpdateTerrainSizes(void){
+  float domain_width, cell_width, pixel_width;
+  int screen_width;
+  float average_terrain_size;
+
+  screen_width = glutGet(GLUT_SCREEN_WIDTH);                      // number of pixels
+  domain_width = xbarORIG - xbar0ORIG;                            // meters
+  cell_width = meshinfo->xplt_orig[1]-meshinfo->xplt_orig[0];
+  pixel_width = domain_width / ( float )screen_width;
+
+  char label[500], cval[500];
+
+  Float2String(cval, pixel_width, 3, 1);
+  sprintf(label, "pixel: %s m", cval);
+  STATIC_terrain_pixel_size->set_name(label);
+
+  Float2String(cval, cell_width, 3, 1);
+  sprintf(label, "cell: %s m", cval);
+  STATIC_terrain_cell_size->set_name(label);
+
+  average_terrain_size = AverageTerrainSize();
+  if(average_terrain_size > 0.0){
+    Float2String(cval, average_terrain_size, 3, 1);
+    sprintf(label, "geom: %s m", cval);
+  }
+  else{
+    strcpy(label, "geom:");
+  }
+  STATIC_terrain_geom_size->set_name(label);
+}
+#endif
 
 /* ------------------ GluiGeometrySetup ------------------------ */
 
@@ -1095,6 +1223,21 @@ extern "C" void GluiGeometrySetup(int main_window){
         }
       }
     }
+#ifdef pp_DECIMATE
+    if(nterraininfo > 0){
+      terrain_decimate_delta     = MAX((xbarFDS - xbar0FDS)/screenWidth, (ybarFDS - ybar0FDS)/screenHeight);
+      terrain_decimate_delta_min = terrain_decimate_delta/4.0;
+      PANEL_terrain_decimate = glui_geometry->add_panel_to_panel(PANEL_group1, "Decimate terrain geometry");
+      SPINNER_terrain_deimate_delta = glui_geometry->add_spinner_to_panel(PANEL_terrain_decimate, "delta", GLUI_SPINNER_FLOAT, &terrain_decimate_delta, GEOM_DECIMATE_DELTA, VolumeCB);
+      CHECKBOX_use_decimate_geom = glui_geometry->add_checkbox_to_panel(PANEL_terrain_decimate, "use decimated geometry", &use_decimate_geom);
+      BUTTON_reset_zbounds = glui_geometry->add_button_to_panel(PANEL_terrain_decimate, _("Decimate"), GEOM_DECIMATE, VolumeCB);
+      PANEL_terrain_decimate_sizes = glui_geometry->add_panel_to_panel(PANEL_terrain_decimate, "Sizes (approximate)");
+      STATIC_terrain_cell_size = glui_geometry->add_statictext_to_panel(PANEL_terrain_decimate_sizes, "cell:");
+      STATIC_terrain_pixel_size = glui_geometry->add_statictext_to_panel(PANEL_terrain_decimate_sizes,"pixel:");
+      STATIC_terrain_geom_size  = glui_geometry->add_statictext_to_panel(PANEL_terrain_decimate_sizes, "geom:");
+      UpdateTerrainSizes();
+    }
+#endif
 
     PANEL_elevation_color = glui_geometry->add_panel_to_panel(PANEL_group1, "color by elevation");
     PANEL_elevation_color->set_alignment(GLUI_ALIGN_LEFT);
@@ -1322,6 +1465,18 @@ extern "C" void VolumeCB(int var){
     break;
   case GEOM_OUTLINECOLOR:
     break;
+#ifdef pp_DECIMATE
+  case GEOM_DECIMATE:
+    UpdateTerrainSizes();
+    DecimateAllTerrains();
+    break;
+  case GEOM_DECIMATE_DELTA:
+    if(terrain_decimate_delta < terrain_decimate_delta_min){
+      terrain_decimate_delta = terrain_decimate_delta_min;
+      SPINNER_terrain_deimate_delta->set_float_val(terrain_decimate_delta);
+    }
+    break;
+#endif
   case GEOM_IVECFACTOR:
     geom_vecfactor = (float)geom_ivecfactor/1000.0;
     break;
