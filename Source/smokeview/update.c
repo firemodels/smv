@@ -1956,11 +1956,13 @@ void UpdateShowScene(void){
     SplitCB(SPLIT_COLORBAR);
     update_splitcolorbar = 0;
   }
+#ifdef pp_HIST
   if(update_generate_part_histograms==1){
     update_generate_part_histograms = 0;
     GeneratePartHistogramsMT();
     update_generate_part_histograms = -1;
   }
+#endif
   if(update_stept==1){
     update_stept = 0;
     SetTimeVal(time_paused);
@@ -2078,10 +2080,12 @@ void UpdateShowScene(void){
   if(global_times!=NULL&&updateUpdateFrameRateMenu==1)FrameRateMenu(frameratevalue);
   if(updatefaces==1)UpdateFaces();
   if(updatefacelists==1)UpdateFaceLists();
+#ifdef pp_HIST
   if(update_draw_hist==1){
     update_draw_hist = 0;
     SetPercentileDrawOff();
   }
+#endif
 }
 
 /* ------------------ UpdateFlippedColorbar ------------------------ */
@@ -2590,10 +2594,12 @@ void UpdateDisplay(void){
     update_research_mode = 0;
     UpdateResearchMode();
   }
+#ifdef pp_HIST
   if(update_percentile_mode==1){
     update_percentile_mode = 0;
     SetPercentileMode(percentile_mode);
   }
+#endif
   if(update_colorbar_digits==1){
     update_colorbar_digits = 0;
     SetColorbarDigitsCPP(ncolorlabel_digits);

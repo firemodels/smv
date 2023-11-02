@@ -110,7 +110,9 @@ SVEXTERN int SVDECL(show_geom_boundingbox, SHOW_BOUNDING_BOX_NEVER);
 SVEXTERN int SVDECL(have_obsts, 0);
 SVEXTERN int SVDECL(chop_patch, 0);
 SVEXTERN float SVDECL(colorbar_slice_min, 0.0), SVDECL(colorbar_slice_max, 1.0);
+#ifdef pp_HIST
 SVEXTERN int SVDECL(update_generate_part_histograms, 0);
+#endif
 SVEXTERN int SVDECL(have_geom_triangles, 0);
 SVEXTERN int SVDECL(force_fixedpoint, FORCE_FIXEDPOINT_NO);
 SVEXTERN int SVDECL(force_exponential, 0);
@@ -172,7 +174,9 @@ extern int double_scale;
 
 SVEXTERN int SVDECL(windowsize_pointer_old, -999);
 
+#ifdef pp_HIST
 SVEXTERN int SVDECL(update_draw_hist, 0);
+#endif
 SVEXTERN histogramdata SVDECL(*histogram_draw, NULL);
 SVEXTERN float SVDECL(xmin_draw, 1.0), SVDECL(xmax_draw, 0.0);
 SVEXTERN float SVDECL(gmin_draw, 1.0), SVDECL(gmax_draw, 0.0);
@@ -379,7 +383,9 @@ SVEXTERN int SVDECL(update_research_mode, 1);
 SVEXTERN int SVDECL(research_mode, 1);
 SVEXTERN int SVDECL(research_mode_override, -1);
 
+#ifdef pp_HIST
 SVEXTERN int SVDECL(update_percentile_mode, 0);
+#endif
 SVEXTERN int SVDECL(percentile_mode, 0);
 
 SVEXTERN float SVDECL(geomboundary_pointsize, 5.0);

@@ -130,7 +130,11 @@ void *MtLoadAllPartFiles(void *arg){
 void LoadAllPartFilesMT(int partnum){
   int i;
 
+#ifdef pp_HIST
   if(part_multithread==1&&current_script_command==NULL&&update_generate_part_histograms==-1){
+#else
+  if(part_multithread==1&&current_script_command==NULL){
+#endif
     JOIN_PART_HIST;
   }
   if(part_multithread==0){
@@ -263,6 +267,7 @@ void ReadAllGeomMT(void){
 
 /* ------------------ MTGeneratePartHistograms ------------------------ */
 
+#ifdef pp_HIST
 void *MTGeneratePartHistograms(void *arg){
   GeneratePartHistograms();
   pthread_exit(NULL);
@@ -272,6 +277,7 @@ void *MTGeneratePartHistograms(void *arg){
 void GeneratePartHistogramsMT(void){
   pthread_create(&generate_part_histogram_id, NULL, MTGeneratePartHistograms, NULL);
 }
+#endif
 #else
 void GeneratePartHistogramsMT(void){
   GeneratePartHistograms();

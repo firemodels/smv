@@ -11979,6 +11979,7 @@ int ReadIni2(char *inifile, int localfile){
     CheckMemory;
     if(fgets(buffer, 255, stream) == NULL)break;
 
+#ifdef pp_HIST
     if(MatchINI(buffer, "PERCENTILEMODE")==1){
       fgets(buffer, 255, stream);
       sscanf(buffer, " %i", &percentile_mode);
@@ -11990,6 +11991,7 @@ int ReadIni2(char *inifile, int localfile){
       update_percentile_mode = 1;
       continue;
     }
+#endif
     if(MatchINI(buffer, "RESEARCHMODE") == 1){
       int dummy;
 
@@ -12004,10 +12006,12 @@ int ReadIni2(char *inifile, int localfile){
       ONEORZERO(force_fixedpoint);
       ONEORZERO(force_exponential);
       if(force_fixedpoint==1&&force_exponential==1)force_exponential = 0;
+#ifdef pp_HIST
       if(research_mode==1&&percentile_mode==1){
         percentile_mode = 0;
         update_percentile_mode = 1;
       }
+#endif
       update_research_mode=1;
       continue;
     }

@@ -1006,7 +1006,9 @@ void ReadFed(int file_index, int time_frame, float *time_value, int flag, int fi
   }
 
   if(flag==UNLOAD){
+#ifdef pp_HIST
     update_draw_hist = 1;
+#endif
     return;
   }
 
@@ -1365,7 +1367,9 @@ FILE_SIZE ReadVSlice(int ivslice, int time_frame, float *time_value, int flag, i
     showvslice=0;
     updatemenu=1;
     plotstate=GetPlotState(DYNAMIC_PLOTS);
+#ifdef pp_HIST
     update_draw_hist = 1;
+#endif
     update_vectorskip = 1;
     return return_filesize;
   }
@@ -4851,7 +4855,9 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
       UpdateUnitDefs();
       update_times = 1;
       RemoveSliceLoadstack(slicefilenumber);
+#ifdef pp_HIST
       update_draw_hist = 1;
+#endif
       PrintMemoryInfo;
       return 0;
     }

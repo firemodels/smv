@@ -1157,6 +1157,7 @@ void MergePartHistograms(void){
 
 /* ------------------ GeneratePartHistograms ------------------------ */
 
+#ifdef pp_HIST
 void GeneratePartHistograms(void){
   int i;
 
@@ -1173,6 +1174,7 @@ void GeneratePartHistograms(void){
   EnableDisablePartPercentileDraw(1);
   if(part_multithread==1)printf("particle setup complete\n");
 }
+#endif
 
 /* ------------------ GetPartData ------------------------ */
 
@@ -1950,18 +1952,22 @@ void FinalizePartLoad(partdata *parti){
 
   // generate histograms now rather than in the background if a script is running
 
+#ifdef pp_HIST
   if(current_script_command!=NULL||part_multithread==0){
     GeneratePartHistograms();
   }
   else{
     update_generate_part_histograms = 1;
   }
+#endif
   INIT_PRINT_TIMER(part_time1);
   GetGlobalPartBounds(ALL_FILES);
   PRINT_TIMER(part_time1, "particle get bounds time");
   if(cache_part_data==1){
     INIT_PRINT_TIMER(part_time2);
+#ifdef pp_HIST
     SetPercentilePartBounds();
+#endif
     for(j = 0; j<npartinfo; j++){
       partdata *partj;
 
@@ -1993,7 +1999,11 @@ FILE_SIZE ReadPart(char *file_arg, int ifile_arg, int loadflag_arg, int *errorco
   FILE_SIZE file_size_local;
   float load_time_local;
 
+#ifdef pp_PART_HIST
   if(loadflag_arg==UNLOAD&&part_multithread==1&&update_generate_part_histograms==-1){
+#else
+  if(loadflag_arg==UNLOAD&&part_multithread==1){
+#endif
     JOIN_PART_HIST;
   }
   SetTimeState();
@@ -2025,7 +2035,9 @@ FILE_SIZE ReadPart(char *file_arg, int ifile_arg, int loadflag_arg, int *errorco
       UpdatePart5Extremes();
       PrintMemoryInfo;
     }
+#ifdef pp_HIST
     update_draw_hist = 1;
+#endif
     return 0.0;
   }
 

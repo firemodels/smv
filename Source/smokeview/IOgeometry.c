@@ -2768,7 +2768,9 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
     if(patchi->boundary==1)UpdateBoundaryType();
     UpdateUnitDefs();
     UpdateTimes();
+#ifdef pp_HIST
     update_draw_hist = 1;
+#endif
     PrintMemoryInfo;
     return 0;
   }

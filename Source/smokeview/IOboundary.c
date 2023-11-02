@@ -1645,7 +1645,9 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
   }
 
   if(flag==UNLOAD){
+#ifdef pp_HIST
     update_draw_hist = 1;
+#endif
     UpdateBoundaryType();
     UpdateUnitDefs();
     UpdateTimes();
@@ -2651,9 +2653,11 @@ FILE_SIZE ReadBoundary(int ifile, int load_flag, int *errorcode){
     ASSERT(ifile>=0&&ifile<npatchinfo);
     return_filesize=ReadBoundaryBndf(ifile,load_flag,errorcode);
   }
+#ifdef pp_HIST
   if(load_flag==UNLOAD){
     update_draw_hist = 1;
   }
+#endif
   return return_filesize;
 }
 

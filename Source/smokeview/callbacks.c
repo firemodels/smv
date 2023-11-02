@@ -1908,7 +1908,9 @@ void Keyboard(unsigned char key, int flag){
           visColorbarVertical = 1;
           update_slice_hists = 1;
         }
+#ifdef pp_HIST
         UpdateHistogramType();
+#endif
         break;
       }
       break;
