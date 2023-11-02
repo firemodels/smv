@@ -16,7 +16,7 @@
 #define pp_CSV_MULTI      // read in csv files in parallel
 
 #define pp_PATCH_HIST     // simplify boundary file histogram computation
-//#define pp_HIST           // compute histograms
+#define pp_HIST           // compute histograms
 
 //#define pp_SMOKE16      // load 16 bit smoke files
 //#define pp_VOLSMOKE     // add option to compress volume rendered data
