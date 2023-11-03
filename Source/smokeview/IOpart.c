@@ -2001,11 +2001,9 @@ FILE_SIZE ReadPart(char *file_arg, int ifile_arg, int loadflag_arg, int *errorco
 
 #ifdef pp_PART_HIST
   if(loadflag_arg==UNLOAD&&part_multithread==1&&update_generate_part_histograms==-1){
-#else
-  if(loadflag_arg==UNLOAD&&part_multithread==1){
-#endif
     JOIN_PART_HIST;
   }
+#endif
   SetTimeState();
   START_TIMER(load_time_local);
   ASSERT(ifile_arg>=0&&ifile_arg<npartinfo);

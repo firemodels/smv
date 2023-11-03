@@ -132,11 +132,9 @@ void LoadAllPartFilesMT(int partnum){
 
 #ifdef pp_HIST
   if(part_multithread==1&&current_script_command==NULL&&update_generate_part_histograms==-1){
-#else
-  if(part_multithread==1&&current_script_command==NULL){
-#endif
     JOIN_PART_HIST;
   }
+#endif
   if(part_multithread==0){
     LoadAllPartFiles(partnum);
     return;
