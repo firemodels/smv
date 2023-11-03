@@ -11875,7 +11875,11 @@ int GetNewBoundIndex(int old_index){
 #define NEW_GLOBAL     1
 #define NEW_PERCENTILE 3
 
+#ifdef pp_HIST
   int bound_map[] = {NEW_PERCENTILE, NEW_SET, NEW_GLOBAL};
+#else
+  int bound_map[] = {NEW_GLOBAL, NEW_SET, NEW_GLOBAL};
+#endif
 
   ASSERT(old_index>=0&&old_index<=2);
   old_index=CLAMP(old_index,0, 2);
@@ -12709,10 +12713,14 @@ int ReadIni2(char *inifile, int localfile){
           isetmin = GetNewBoundIndex(isetmin);
           isetmax = GetNewBoundIndex(isetmax);
         }
+#ifdef pp_HIST
         if(
           isetmin==BOUND_SET_MIN||isetmin==BOUND_PERCENTILE_MIN||
           isetmax==BOUND_SET_MAX||isetmax==BOUND_PERCENTILE_MAX
         ){
+#else
+        if(isetmin == BOUND_SET_MIN || isetmax == BOUND_SET_MAX){
+#endif
           research_mode = 0;
           update_research_mode = 1;
         }
@@ -13120,10 +13128,14 @@ int ReadIni2(char *inifile, int localfile){
         ivmin = GetNewBoundIndex(ivmin);
         ivmax = GetNewBoundIndex(ivmax);
       }
+#ifdef pp_HIST
       if(
         ivmin==BOUND_SET_MIN||ivmin==BOUND_PERCENTILE_MIN||
         ivmax==BOUND_SET_MAX||ivmax==BOUND_PERCENTILE_MAX
       ){
+#else
+      if(ivmin==BOUND_SET_MIN||ivmax==BOUND_SET_MAX){
+#endif
         research_mode = 0;
         update_research_mode = 1;
       }
@@ -13328,7 +13340,11 @@ int ReadIni2(char *inifile, int localfile){
         set_valmin = GetNewBoundIndex(set_valmin);
         set_valmax = GetNewBoundIndex(set_valmax);
       }
+#ifdef pp_HIST
       if(set_valmin==BOUND_SET_MIN||set_valmin==BOUND_PERCENTILE_MIN||set_valmax==BOUND_SET_MAX||set_valmax==BOUND_PERCENTILE_MAX){
+#else
+      if(set_valmin==BOUND_SET_MIN||set_valmax==BOUND_SET_MAX){
+#endif
         research_mode = 0;
         update_research_mode = 1;
       }
@@ -13443,10 +13459,14 @@ int ReadIni2(char *inifile, int localfile){
         glui_setpatchmin = GetNewBoundIndex(glui_setpatchmin);
         glui_setpatchmax = GetNewBoundIndex(glui_setpatchmax);
       }
+#ifdef pp_HIST
       if(
         glui_setpatchmin==BOUND_SET_MIN||glui_setpatchmin==BOUND_PERCENTILE_MIN||
         glui_setpatchmax==BOUND_SET_MAX||glui_setpatchmax==BOUND_PERCENTILE_MAX
       ){
+#else
+      if(glui_setpatchmin==BOUND_SET_MIN||glui_setpatchmax==BOUND_SET_MAX){
+#endif
         research_mode = 0;
         update_research_mode = 1;
       }

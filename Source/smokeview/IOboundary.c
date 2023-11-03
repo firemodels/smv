@@ -1556,8 +1556,10 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
   int npatchvals;
   char patchcsvfile[1024];
   int framestart;
+#ifdef pp_HIST
 #ifndef pp_PATCH_HIST
   float hist_update_time;
+#endif
 #endif
 
   int nn;
@@ -2608,10 +2610,12 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
    PRINTF(" - %.0f kB in %.1f s\n", (float)return_filesize / 1000., total_time);
   }
 
+#ifdef pp_HIST
 #ifndef pp_PATCH_HIST
   if(show_timings==1&&hist_update_time>0.0){
     PRINTF(" data distribution update time: %.1f s\n", hist_update_time);
   }
+#endif
 #endif
   update_patch_bounds = ifile;
 
