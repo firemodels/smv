@@ -40,6 +40,7 @@ void PrintTime(const char *filepath, int line, float *timer, const char *label, 
 
   /* ------------------ DrawHistogram ------------------------ */
 
+#ifdef pp_HIST
 #define MAXN 201
 void DrawHistogram(histogramdata *histogram, float valmin, float valmax, float gmin, float gmax, int ndigits){
   float x[MAXN], y[MAXN], ymax, *buckets, valmin_normalized, valmax_normalized;
@@ -186,6 +187,7 @@ void DrawHistogram(histogramdata *histogram, float valmin, float valmax, float g
   }
   glPopMatrix();
 }
+#endif
 
 /* ------------------------ GetFontHeight ------------------------- */
 

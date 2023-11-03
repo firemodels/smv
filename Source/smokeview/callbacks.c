@@ -1898,6 +1898,7 @@ void Keyboard(unsigned char key, int flag){
         break;
       case GLUT_ACTIVE_CTRL:
       default:
+#ifdef pp_HIST
         if(histogram_show_graph == 1 || histogram_show_numbers == 1){
           histogram_show_graph = 0;
           histogram_show_numbers = 0;
@@ -1908,7 +1909,6 @@ void Keyboard(unsigned char key, int flag){
           visColorbarVertical = 1;
           update_slice_hists = 1;
         }
-#ifdef pp_HIST
         UpdateHistogramType();
 #endif
         break;

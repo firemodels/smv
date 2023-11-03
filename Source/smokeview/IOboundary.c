@@ -1388,9 +1388,9 @@ int GetPatchNTimes(char *file){
   return count;
 }
 
+#ifdef pp_HIST
 #ifdef pp_PATCH_HIST
 /* ------------------ UpdateBoundaryHist ------------------------ */
-
 float UpdateBoundaryHist(patchdata *patchi){
   float hist_time = 0.0;
 
@@ -1530,7 +1530,7 @@ float UpdateBoundaryHist(patchdata *patchj){
   return hist_time;
 }
 #endif
-
+#endif
 /* ------------------ ReadBoundaryBndf ------------------------ */
 
 FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
@@ -1776,10 +1776,12 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
     meshi->npatchsize=nnsize;
     loadpatchbysteps=COMPRESSED_ALLFRAMES;
   }
+#ifdef pp_HIST
 #ifdef pp_PATCH_HIST
   update_boundary_hist = 1;
 #else
   hist_update_time = UpdateBoundaryHist(patchi);
+#endif
 #endif
 
   if(meshi->npatchsize>0){
@@ -2532,13 +2534,18 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
       bounds = GetBoundsData(BOUND_PATCH);
       if(bounds->set_valmin==BOUND_PERCENTILE_MIN||bounds->set_valmax==BOUND_PERCENTILE_MAX){
         float global_min=0.0, global_max=1.0;
+#ifdef pp_HIST
         histogramdata *bound_hist;
+#endif
 
+#ifdef pp_HIST
         bound_hist = bounds->hist;
+#endif
         GetGlobalBoundsMinMax(BOUND_PATCH, bounds->label, &global_min, &global_max);
 #ifdef pp_BOUND_HIST_ON
         ComputeLoadedPatchHist(bounds->label, &bound_hist, &global_min, &global_max);
 #endif
+#ifdef pp_HIST
         if(bound_hist!=NULL&&bound_hist->defined==1){
           if(bounds->set_valmin==BOUND_PERCENTILE_MIN){
            float per_valmin;
@@ -2553,6 +2560,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
             SetMax(BOUND_PATCH, bounds->label, BOUND_PERCENTILE_MAX, per_valmax);
           }
         }
+#endif
         PatchBoundsCPP_CB(BOUND_UPDATE_COLORS);
       }
     }
@@ -2640,6 +2648,7 @@ FILE_SIZE ReadBoundary(int ifile, int load_flag, int *errorcode){
   SetTimeState();
   patchi = patchinfo + ifile;
   if(patchi->structured == NO){
+#ifdef pp_HIST
     if(load_flag == LOAD){
 #ifdef pp_PATCH_HIST
       update_boundary_hist = 1;
@@ -2647,6 +2656,7 @@ FILE_SIZE ReadBoundary(int ifile, int load_flag, int *errorcode){
       UpdateBoundaryHist(patchi);
 #endif
     }
+#endif
     return_filesize=ReadGeomData(patchi,NULL, load_flag,ALL_FRAMES, NULL, 1, errorcode);
   }
   else{
@@ -4373,7 +4383,7 @@ void UpdateHideBoundarySurface(void){
 
 
 /* ------------------ UpdateAllBoundaryBoundsST ------------------------ */
-
+#ifdef pp_HIST
 void UpdateAllBoundaryBoundsST(void){
   int i;
   int total=0;
@@ -4396,3 +4406,4 @@ void UpdateAllBoundaryBoundsST(void){
   }
   UNLOCK_COMPRESS;
 }
+#endif

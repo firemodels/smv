@@ -55,5 +55,4 @@ void MergeVals2Histogram(float *vals, char *mask, float *weight, int nvals, hist
 void ResetHistogram(histogramdata *histogram, float *valmin, float *valmax);
 void ResetHistogramPolar(histogramdata *histogram, float *rmin, float *rmax);
 void UpdateHistogram(float *vals, char *mask, int nvals, histogramdata *histogram);
-
 #endif

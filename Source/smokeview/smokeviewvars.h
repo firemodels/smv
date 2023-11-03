@@ -54,7 +54,9 @@ SVEXTERN int hvac_duct_color[3];
 SVEXTERN int hvac_node_color[3];
 #endif
 
+#ifdef pp_HIST
 SVEXTERN int SVDECL(histogram_nframes, 40);
+#endif
 SVEXTERN int SVDECL(glui_surf_index, 0);
 SVEXTERN int SVDECL(clip_commandline, 0), SVDECL(special_modifier, 0);
 SVEXTERN int SVDECL(update_slicexyz, 0);
@@ -176,11 +178,13 @@ SVEXTERN int SVDECL(windowsize_pointer_old, -999);
 
 #ifdef pp_HIST
 SVEXTERN int SVDECL(update_draw_hist, 0);
-#endif
 SVEXTERN histogramdata SVDECL(*histogram_draw, NULL);
+#endif
 SVEXTERN float SVDECL(xmin_draw, 1.0), SVDECL(xmax_draw, 0.0);
 SVEXTERN float SVDECL(gmin_draw, 1.0), SVDECL(gmax_draw, 0.0);
+#ifdef pp_HIST
 SVEXTERN char SVDECL(*histogram_label1, NULL), SVDECL(*histogram_label2, NULL);
+#endif
 
 #ifdef INMAIN
 SVEXTERN char *cslice_label = "Slice",  *cpart_label = "Part", *cbound_label = "Bndry", *cplot3d_label = "Plot3D";
@@ -345,7 +349,9 @@ SVEXTERN int SVDECL(geomdata_smoothnormals, 0), SVDECL(geomdata_lighting, 1);
 SVEXTERN int SVDECL(update_texturebar, 0);
 SVEXTERN float SVDECL(iso_valmin, 20.0), SVDECL(iso_valmax, 1020.0);
 SVEXTERN float SVDECL(glui_iso_valmin, 20.0), SVDECL(glui_iso_valmax, 1020.0);
+#ifdef pp_HIST
 SVEXTERN float SVDECL(iso_percentile_min,0.0), SVDECL(iso_percentile_max,1.0);
+#endif
 SVEXTERN float SVDECL(iso_global_min,0.0), SVDECL(iso_global_max,1.0);
 SVEXTERN int SVDECL(iso_colorbar_index, 0);
 SVEXTERN colorbardata SVDECL(*iso_colorbar, NULL);
@@ -385,8 +391,8 @@ SVEXTERN int SVDECL(research_mode_override, -1);
 
 #ifdef pp_HIST
 SVEXTERN int SVDECL(update_percentile_mode, 0);
-#endif
 SVEXTERN int SVDECL(percentile_mode, 0);
+#endif
 
 SVEXTERN float SVDECL(geomboundary_pointsize, 5.0);
 SVEXTERN float SVDECL(geomboundary_linewidth, 5.0);
@@ -479,8 +485,10 @@ SVEXTERN int SVDECL(show_3dsmoke_16bit, 0);
 #endif
 SVEXTERN int SVDECL(show_plot3dfiles, 1), SVDECL(show_isofiles,1);
 SVEXTERN int SVDECL(show_boundaryfiles, 1);
+#ifdef pp_HIST
 #ifdef pp_PATCH_HIST
 SVEXTERN int SVDECL(update_boundary_hist, 0);
+#endif
 #endif
 
 SVEXTERN int SVDECL(smoke_framenumber, 0);
@@ -534,6 +542,7 @@ SVEXTERN char SVDECL(*updatetimes_debug, NULL);
 SVEXTERN int SVDECL(*fed_areas, NULL);
 SVEXTERN int SVDECL(nfediso, 0);
 SVEXTERN int SVDECL(slice_time, 0);
+#ifdef pp_HIST
 SVEXTERN float SVDECL(histogram_width_factor,25.0);
 SVEXTERN int SVDECL(histogram_show_graph, 0), SVDECL(histogram_show_numbers, 0);
 SVEXTERN int SVDECL(histogram_nbuckets,10), SVDECL(histogram_static, 0), SVDECL(histogram_show_outline, 0);
@@ -541,6 +550,7 @@ SVEXTERN int SVDECL(histograms_defined,0), SVDECL(update_slice_hists, 0), SVDECL
 SVEXTERN histogramdata SVDECL(*hists256_slice, NULL), SVDECL(*hists12_slice, NULL);
 SVEXTERN histogramdata SVDECL(*full_part_histogram, NULL);
 SVEXTERN histogramdata SVDECL(*full_plot3D_histograms, NULL);
+#endif
 SVEXTERN int SVDECL(update_loadall_textures, 1);
 
 SVEXTERN int SVDECL(max_LISTBOX_cb_bound, 0);
@@ -1022,9 +1032,11 @@ SVEXTERN float vertical_factor;
 
 SVEXTERN char input_filename_ext[5];
 
+#ifdef pp_HIST
 SVEXTERN float SVDECL(percentile_level_min,0.01);
 SVEXTERN float SVDECL(percentile_level_max, 0.99);
-SVEXTERN int SVDECL(hist_left_percen, 0), SVDECL(hist_down_percen,0), SVDECL(hist_length_percen,100), SVDECL(hist_show_labels, 1);
+SVEXTERN int SVDECL(hist_left_percen, 0), SVDECL(hist_down_percen, 0), SVDECL(hist_length_percen, 100), SVDECL(hist_show_labels, 1);
+#endif
 
 SVEXTERN float SVDECL(fire_line_min,150.0), SVDECL(fire_line_max,200.0);
 SVEXTERN int SVDECL(fire_line_index,-1);

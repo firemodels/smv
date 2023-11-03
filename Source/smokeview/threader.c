@@ -737,6 +737,7 @@ void PSystem(char *commandline){
 
 /* ------------------ Update_Bounds ------------------------ */
 
+#ifdef pp_HIST
 int Update_Bounds(void){
   UpdateAllBoundaryBounds();
 #ifdef pp_THREAD
@@ -760,6 +761,7 @@ void UpdateAllBoundaryBounds(void){
 void UpdateAllBoundaryBounds(void){
   UpdateAllBoundaryBoundsST();
 }
+#endif
 #endif
 
 /* ------------------ MtReadVolsmokeAllFramesAllMeshes2 ------------------------ */

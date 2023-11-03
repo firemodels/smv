@@ -2843,6 +2843,7 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
       NewMemory((void **)&patchi->geom_ivals, nvals * sizeof(char));
     }
   }
+#ifdef pp_HIST
   if(load_flag == UPDATE_HIST){
     GetGeomData(patchi->file, ntimes_local, nvals, patchi->geom_times,
       patchi->geom_nstatics, patchi->geom_ndynamics, patchi->geom_vals, time_frame, time_value, geom_offsets, &error);
@@ -2852,6 +2853,7 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
     return 0;
   }
   else{
+#endif
     int filesize;
 
     if(current_script_command==NULL||current_script_command->command!=SCRIPT_LOADSLICERENDER){
@@ -2860,7 +2862,9 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
     filesize=GetGeomData(patchi->file, ntimes_local, nvals, patchi->geom_times,
       patchi->geom_nstatics, patchi->geom_ndynamics, patchi->geom_vals, time_frame, time_value, geom_offsets, &error);
     return_filesize += filesize;
+#ifdef pp_HIST
   }
+#endif
 
   patchi->ngeom_times = ntimes_local;
   patchi->geom_nvals = nvals;
@@ -2992,6 +2996,7 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
     }
 
     bounds = GetBoundsData(bound_type);
+#ifdef pp_HIST
     if(bounds->set_valmin==BOUND_PERCENTILE_MIN||bounds->set_valmax==BOUND_PERCENTILE_MAX){
       float global_min = 0.0, global_max = 1.0;
 
@@ -3018,6 +3023,7 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
         }
       }
     }
+#endif
     if(bounds->set_valmin==BOUND_SET_MIN||bounds->set_valmax==BOUND_SET_MAX){
       if(patchi->boundary==1){
       }

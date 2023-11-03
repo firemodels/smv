@@ -2043,7 +2043,7 @@ void InitDefaultColorbars(int nini){
 }
 
 /* ------------------ DrawColorbarHist ------------------------ */
-
+#ifdef pp_HIST
 void DrawColorbarHist(void){
   int ibucket;
   int cbt, cbb, cbdiff;
@@ -2172,6 +2172,7 @@ void DrawColorbarHistLabels(int lefthist){
     glPopMatrix();
   }
 }
+#endif
 
 /* ------------------ DrawHorizontalColorbarReg ------------------------ */
 
@@ -2427,9 +2428,13 @@ void DrawHorizontalColorbars(void){
 
     // -------------- draw all other colorbars ------------
 
+#ifdef pp_HIST
     if(hists12_slice == NULL || histogram_show_graph == 0){
       DrawHorizontalColorbarReg();
     }
+#else
+    DrawHorizontalColorbarReg();
+#endif
   }
   if(show_extreme_mindata == 1 || show_extreme_maxdata == 1){
     float barmid;
@@ -2551,13 +2556,16 @@ void DrawVerticalColorbars(void){
     else{
 
       // -------------- draw all other colorbars ------------
-
+#ifdef pp_HIST
       if(hists12_slice == NULL || histogram_show_graph == 0){
         DrawVerticalColorbarReg();
       }
       if(histogram_show_graph == 1 || histogram_show_numbers == 1){
         if(hists12_slice != NULL)DrawColorbarHist();
       }
+#else
+      DrawVerticalColorbarReg();
+#endif
     }
     if(show_extreme_mindata==1||show_extreme_maxdata==1){
       float barmid;
@@ -3261,10 +3269,12 @@ void DrawVerticalColorbarRegLabels(void){
   if(showsmoke == 1&&parttype != 0)leftsmoke = ileft++;
   if(show_slice_colorbar_local == 1){
     leftslice = ileft++;
+#ifdef pp_HIST
     if(histogram_show_numbers == 1){
       lefthist = ileft++;
       dohist = 1;
     }
+#endif
   }
   if(showpatch == 1 && wall_cell_color_flag == 0)leftpatch = ileft++;
   if(show_hvacnode_colorbar_local == 1)lefthvacnode = ileft++;
@@ -3305,6 +3315,7 @@ void DrawVerticalColorbarRegLabels(void){
 
       // -------------- draw all other colorbars ------------
 
+#ifdef pp_HIST
       if(show_fed_area == 1 && fed_slice == 1 && fed_areas != NULL){
         char area_label[256];
         char percen[] = "%";
@@ -3338,6 +3349,7 @@ void DrawVerticalColorbarRegLabels(void){
       if(histogram_show_graph == 1 || histogram_show_numbers == 1){
         if(hists12_slice != NULL)DrawColorbarHistLabels(lefthist);
       }
+#endif
     }
   }
 

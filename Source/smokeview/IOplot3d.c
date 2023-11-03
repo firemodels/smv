@@ -13,6 +13,7 @@
 
 /* ------------------ GetPlot3DHists ------------------------ */
 
+#ifdef pp_HIST
 void GetPlot3DHists(plot3ddata *p){
   int i;
 
@@ -62,6 +63,7 @@ void MergePlot3DHistograms(void){
     }
   }
 }
+#endif
 
 
 /* ------------------ Plot3dCompare  ------------------------ */
@@ -410,7 +412,9 @@ void ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
       if(setp3max_all[nn]!=SET_MAX&&setp3max_all[nn]!=CHOP_MAX)setp3max_all[nn]=SET_MAX;
     }
   }
+#ifdef pp_HIST
   GetPlot3DHists(p);
+#endif
   AllocatePlot3DColorLabels(p);
   if(cache_plot3d_data==1){
     if(p->finalize==1){

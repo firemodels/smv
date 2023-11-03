@@ -120,8 +120,10 @@ EXTERNCPP void DrawPlot2D(int option, float *x, float *z, float *z2, int n,
 
 EXTERNCPP void UpdateSliceSkip(void);
 
+#ifdef pp_HIST
 EXTERNCPP void MergePartHistograms(void);
 EXTERNCPP void MergePlot3DHistograms(void);
+#endif
 
 EXTERNCPP void UpdateColorbarControls(void);
 EXTERNCPP void UpdateColorbarControls2(void);
@@ -219,12 +221,14 @@ EXTERNCPP void ClosePartFiles(void);
 EXTERNCPP void PartBoundsCPP_CB(int var);
 EXTERNCPP void UpdatdateResearchModeCPP(void);
 EXTERNCPP void UpdatePartColors(partdata *parti, int flag);
-EXTERNCPP void DrawHistogram(histogramdata *histogram, float xxmin, float xxmax, float gmin, float gmax, int ndigits);
 EXTERNCPP void SliceBoundsSetupNoGraphics(void);
+#ifdef pp_HIST
+EXTERNCPP void DrawHistogram(histogramdata *histogram, float xxmin, float xxmax, float gmin, float gmax, int ndigits);
 EXTERNCPP void GetHistogramValProc(histogramdata*histogram, float cdf, float *val);
 EXTERNCPP void ComputeLoadedSliceHist(char *label);
 EXTERNCPP void MergeLoadedSliceHist(char *label, histogramdata **histptr);
 EXTERNCPP void ComputeLoadedPatchHist(char *label, histogramdata **histptr, float *valmin, float *valmax);
+#endif
 EXTERNCPP void GetGlobalBoundsMinMax(int type, char *label, float *valmin, float *valmax);
 EXTERNCPP void SliceBoundsCPP_CB(int var);
 EXTERNCPP void PatchBoundsCPP_CB(int var);
@@ -402,8 +406,8 @@ EXTERNCPP void GeometryMenu(int var);
 EXTERNCPP void Smoke3dCB(int var);
 #ifdef pp_HIST
 EXTERNCPP void UpdateHistogramType(void);
-#endif
 EXTERNCPP void UpdateSliceHist(void);
+#endif
 EXTERNCPP void Enable360Zoom(void);
 #ifdef pp_RENDER360_DEBUG
 EXTERNCPP void DrawScreenInfo(void);
@@ -642,9 +646,11 @@ EXTERNCPP void RemoveDupBlockages(void);
 EXTERNCPP void SortIsoTriangles(float *mm);
 EXTERNCPP void UpdateIsoTriangles(int flag);
 EXTERNCPP void UpdateSliceMenuShow(void);
+#ifdef pp_HIST
 EXTERNCPP void UpdateBoundaryBounds(patchdata *patchi);
 EXTERNCPP void UpdateAllBoundaryBounds(void);
 EXTERNCPP void UpdateAllBoundaryBoundsST(void);
+#endif
 EXTERNCPP void UpdateHideBoundarySurface(void);
 EXTERNCPP int  LastSliceLoadstack(void);
 EXTERNCPP int  LastVSliceLoadstack(void);
@@ -1107,7 +1113,9 @@ EXTERNCPP void ScaleString(const char *stringfrom, char *stringto, const float *
 EXTERNCPP void Num2String(char *string, float tval);
 EXTERNCPP int  SetupCase(char *file);
 EXTERNCPP int  GetMinPartFrames(int flag);
+#ifdef pp_HIST
 EXTERNCPP int  Update_Bounds(void);
+#endif
 
 EXTERNCPP void FreeCADInfo(void);
 

@@ -3843,12 +3843,16 @@ extern "C" void UpdateListIsoColorobar(void){
 
 extern "C" void UpdateGluiIsoBounds(void){
   if(setisomin==PERCENTILE_MIN||setisomin==GLOBAL_MIN){
+#ifdef pp_HIST
     if(setisomin==PERCENTILE_MIN)glui_iso_valmin=iso_percentile_min;
+#endif
     if(setisomin==GLOBAL_MIN)glui_iso_valmin=iso_global_min;
     if(EDIT_iso_valmin!=NULL)EDIT_iso_valmin->set_float_val(glui_iso_valmin);
   }
   if(setisomax==PERCENTILE_MAX||setisomax==GLOBAL_MAX){
+#ifdef pp_HIST
     if(setisomax==PERCENTILE_MAX)glui_iso_valmax=iso_percentile_max;
+#endif
     if(setisomax==GLOBAL_MAX)glui_iso_valmax=iso_global_max;
     if(EDIT_iso_valmax!=NULL)EDIT_iso_valmax->set_float_val(glui_iso_valmax);
   }
@@ -6209,10 +6213,16 @@ extern "C" void IsoBoundCB(int var){
         iso_valmin=glui_iso_valmin;
         EDIT_iso_valmin->enable();
         break;
+#ifdef pp_HIST
       case PERCENTILE_MIN:
         iso_valmin = iso_percentile_min;
         EDIT_iso_valmin->disable();
         break;
+#else
+      case PERCENTILE_MIN:
+        EDIT_iso_valmin->disable();
+        break;
+#endif
       case GLOBAL_MIN:
         iso_valmin = iso_global_min;
         EDIT_iso_valmin->disable();
@@ -6231,10 +6241,16 @@ extern "C" void IsoBoundCB(int var){
         iso_valmax=glui_iso_valmax;
         EDIT_iso_valmax->enable();
         break;
+#ifdef pp_HIST
       case PERCENTILE_MAX:
         iso_valmax = iso_percentile_max;
         EDIT_iso_valmax->disable();
         break;
+#else
+      case PERCENTILE_MAX:
+        EDIT_iso_valmax->disable();
+        break;
+#endif
       case GLOBAL_MAX:
         iso_valmax = iso_global_max;
         EDIT_iso_valmax->disable();
