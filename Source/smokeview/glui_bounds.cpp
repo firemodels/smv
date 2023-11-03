@@ -1090,10 +1090,16 @@ void bounds_dialog::CB(int var){
       // keep data checkbox
     case BOUND_CACHE_DATA:
       {
+#ifdef pp_HIST
         int i, cache_val = 0;
+#else
+        int i;
+#endif
 
+#ifdef pp_HIST
         cache_val = cache_file_data;
         if(CHECKBOX_cache!=NULL)cache_val = CHECKBOX_cache->get_int_val();
+#endif
 
         for(i = 0; i<nall_bounds; i++){
           cpp_boundsdata *boundi;
@@ -2259,14 +2265,16 @@ int HavePlot3DData(void){
 extern "C" void Plot3DBoundsCPP_CB(int var){
 #ifdef pp_HIST
   int i;
-#endif
   int iplot3d;
   cpp_boundsdata *all_bounds, *bounds;
+#endif
 
   plot3dboundsCPP.CB(var);
+#ifdef pp_HIST
   all_bounds = plot3dboundsCPP.all_bounds;
   iplot3d = GetValType(BOUND_PLOT3D);
   bounds = all_bounds+iplot3d;
+#endif
   switch(var){
     case BOUND_VAL_TYPE:
       plotn = GetValType(BOUND_PLOT3D)+1;
@@ -2434,12 +2442,16 @@ extern "C" void Plot3DBoundsCPP_CB(int var){
 /* ------------------ part callback: PartBoundsCPP_CB ------------------------ */
 
 extern "C" void PartBoundsCPP_CB(int var){
+#ifdef pp_HIST
   cpp_boundsdata *all_bounds, *bounds;
+#endif
 
   partboundsCPP.CB(var);
-  all_bounds = partboundsCPP.all_bounds;
   ipart5prop = GetValType(BOUND_PART);
+#ifdef pp_HIST
+  all_bounds = partboundsCPP.all_bounds;
   bounds = all_bounds+ipart5prop;
+#endif
 
   switch(var){
     case BOUND_COLORBAR_DIGITS:

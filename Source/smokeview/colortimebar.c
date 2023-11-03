@@ -3211,7 +3211,11 @@ void DrawHorizontalColorbarRegLabels(void){
 void DrawVerticalColorbarRegLabels(void){
   int i;
   int ileft = 0;
+#ifdef pp_HIST
   int leftzone, leftsmoke, leftslice, lefthist, leftpatch, leftiso;
+#else
+  int leftzone, leftsmoke, leftslice, leftpatch, leftiso;
+#endif
   int lefthvacduct, lefthvacnode;
   int iposition;
 
@@ -3261,7 +3265,9 @@ void DrawVerticalColorbarRegLabels(void){
   lefthvacduct = 0;
   leftsmoke    = 0;
   leftslice    = 0;
+#ifdef pp_HIST
   lefthist     = 0;
+#endif
   leftpatch    = 0;
   leftiso      = 0;
   ileft        = 0;
