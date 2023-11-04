@@ -13110,8 +13110,15 @@ int ReadIni2(char *inifile, int localfile){
       }
       continue;
     }
+#ifdef pp_HIST
     if(MatchINI(buffer, "V2_PARTICLES") == 1||
        MatchINI(buffer, "V_PARTICLES")==1){
+#else
+    if(MatchINI(buffer, "V2_PARTICLES") == 1||
+       MatchINI(buffer, "V_PARTICLES")==1||
+       MatchINI(buffer, "V5_PARTICLES")==1
+    ){
+#endif
       int is_old_bound = 0;
 
       if(MatchINI(buffer, "V_PARTICLES")==1){
