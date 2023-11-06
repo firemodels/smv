@@ -1965,8 +1965,6 @@ SVEXTERN int SVDECL(*sortedblocklist,NULL),SVDECL(*changed_idlist,NULL),SVDECL(n
 SVEXTERN int nselectblocks;
 SVEXTERN surfdata SVDECL(*surfinfo,NULL),sdefault,v_surfacedefault,e_surfacedefault;
 SVEXTERN int nsurfinfo;
-SVEXTERN matldata SVDECL(*matlinfo,NULL);
-SVEXTERN int nmatlinfo;
 SVEXTERN int surface_indices[7],surface_indices_bak[7];
 SVEXTERN int wall_case;
 SVEXTERN surfdata SVDECL(*surfacedefault,NULL), SVDECL(*vent_surfacedefault,NULL), SVDECL(*exterior_surfacedefault,NULL);

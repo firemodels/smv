@@ -4045,13 +4045,6 @@ surfdata *GetSurface(char *label){
   return surfacedefault;
 }
 
-/* ------------------ InitMatl ------------------------ */
-
-void InitMatl(matldata *matl){
-  matl->matllabel = NULL;
-  matl->color = block_ambient2;
-}
-
 /* ------------------ InitObst ------------------------ */
 
 void InitObst(blockagedata *bc, surfdata *surf, int index, int meshindex){
@@ -6866,7 +6859,6 @@ int ReadSMV(bufferstreamdata *stream){
   nOBST=0;
   noffset=0;
   nsurfinfo=0;
-  nmatlinfo=1;
   nvent_transparent=0;
 
   nvents=0;
@@ -7268,10 +7260,6 @@ int ReadSMV(bufferstreamdata *stream){
       nsurfinfo++;
       continue;
     }
-    if(MatchSMV(buffer,"MATERIAL") ==1){
-      nmatlinfo++;
-      continue;
-    }
     if(MatchSMV(buffer,"GRID") == 1){
       noGRIDpresent=0;
       nmeshes++;
@@ -7650,21 +7638,6 @@ int ReadSMV(bufferstreamdata *stream){
   FREEMEMORY(surfinfo);
   if(NewMemory((void **)&surfinfo,(nsurfinfo+MAX_ISO_COLORS+1)*sizeof(surfdata))==0)return 2;
 
-  {
-    matldata *matli;
-    float s_color[4];
-
-    FREEMEMORY(matlinfo);
-    if(NewMemory((void **)&matlinfo,nmatlinfo*sizeof(matldata))==0)return 2;
-    matli = matlinfo;
-    InitMatl(matli);
-    s_color[0]=matli->color[0];
-    s_color[1]=matli->color[1];
-    s_color[2]=matli->color[2];
-    s_color[3]=matli->color[3];
-    matli->color = GetColorPtr(s_color);
-  }
-
   if(cadgeominfo!=NULL)FreeCADInfo();
   if(ncadgeom>0){
     if(NewMemory((void **)&cadgeominfo,ncadgeom*sizeof(cadgeomdata))==0)return 2;
@@ -7709,7 +7682,6 @@ int ReadSMV(bufferstreamdata *stream){
   iobst=0;
   ncadgeom=0;
   nsurfinfo=0;
-  nmatlinfo=1;
   noutlineinfo=0;
   if(noffset==0)ioffset=1;
 
@@ -8944,42 +8916,7 @@ int ReadSMV(bufferstreamdata *stream){
       nsurfinfo++;
       continue;
     }
-  /*
-    ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    ++++++++++++++++++++++ MATERIAL  +++++++++++++++++++++++++
-    ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  */
-    if(MatchSMV(buffer,"MATERIAL") ==1){
-      matldata *matli;
-      float s_color[4];
-      int len;
 
-      matli = matlinfo + nmatlinfo;
-      InitMatl(matli);
-
-      FGETS(buffer,255,stream);
-      TrimBack(buffer);
-      len=strlen(buffer);
-      NewMemory((void **)&matli->matllabel,(len+1)*sizeof(char));
-      strcpy(matli->matllabel,TrimFront(buffer));
-
-      s_color[0]=matli->color[0];
-      s_color[1]=matli->color[1];
-      s_color[2]=matli->color[2];
-      s_color[3]=matli->color[3];
-      FGETS(buffer,255,stream);
-      sscanf(buffer,"%f %f %f %f",s_color,s_color+1,s_color+2,s_color+3);
-
-      s_color[0]=CLAMP(s_color[0],0.0,1.0);
-      s_color[1]=CLAMP(s_color[1],0.0,1.0);
-      s_color[2]=CLAMP(s_color[2],0.0,1.0);
-      s_color[3]=CLAMP(s_color[3],0.0,1.0);
-
-      matli->color = GetColorPtr(s_color);
-
-      nmatlinfo++;
-      continue;
-    }
   /*
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     ++++++++++++++++++++++ GRID ++++++++++++++++++++++++++++++

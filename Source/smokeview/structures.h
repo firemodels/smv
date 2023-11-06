@@ -364,13 +364,6 @@ typedef struct _terraindata {
   struct _meshdata *terrain_mesh;
 } terraindata;
 
-/* --------------------------  matldata ------------------------------------ */
-
-typedef struct _matldata {
-  char *matllabel;
-  float *color;
-} matldata;
-
 /* --------------------------  surfdata ------------------------------------ */
 
 typedef struct _surfdata {
