@@ -1201,8 +1201,8 @@ typedef struct _partpropdata {
   int extreme_min, extreme_max;
 #ifdef pp_HIST
   histogramdata histogram;
-#endif
   int *buckets;
+#endif
 } partpropdata;
 
 /* --------------------------  part5data ------------------------------------ */

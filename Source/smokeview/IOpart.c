@@ -1535,10 +1535,10 @@ void InitPartProp(void){
           propi->chopmin=1.0;
           propi->chopmax=0.0;
 
-          propi->buckets=NULL;
           propi->partlabelvals = NULL;
           NewMemory((void **)&propi->partlabelvals, 256*sizeof(float));
 #ifdef pp_HIST
+          propi->buckets = NULL;
           InitHistogram(&propi->histogram, NHIST_BUCKETS, NULL, NULL);
 #endif
           npart5prop++;
