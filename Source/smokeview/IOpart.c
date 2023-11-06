@@ -716,6 +716,7 @@ void UpdateAllPartVis(partdata *parti){
 
 /* ------------------ GetHistFileStatus ------------------------ */
 
+#ifdef pp_HIST
 int GetHistFileStatus(partdata *parti){
 
   // return -1 if history file cannot be created (corresponding particle file does not exist)
@@ -739,6 +740,7 @@ int GetHistFileStatus(partdata *parti){
   if(stat_regfile_buffer.st_mtime > stat_histfile_buffer.st_mtime)return HIST_OLD; // size file is older than particle file
   return HIST_OK;
 }
+#endif
 
 /* ------------------ GetSizeFileStatus ------------------------ */
 
@@ -1067,6 +1069,7 @@ void CreatePartSizeFile(partdata*parti){
   CreatePartSizeFileFromPart(parti->reg_file, parti->size_file, header_offset_local);
 }
 
+#ifdef pp_HIST
   /* ------------------ GetPartHistogramFile ------------------------ */
 void GetPartHistogramFile(partdata *parti){
   int i;
@@ -1173,6 +1176,7 @@ void GeneratePartHistograms(void){
   EnableDisablePartPercentileDraw(1);
   if(part_multithread==1)printf("particle setup complete\n");
 }
+#endif
 
 /* ------------------ GetPartData ------------------------ */
 
@@ -1389,7 +1393,9 @@ void PrintPartProp(void){
     else{
       PRINTF("label=%s min=%f max=%f\n", propi->label->longlabel, propi->valmin, propi->valmax);
       PRINTF("   glbmin=%f glbmax=%f\n", propi->dlg_global_valmin, propi->dlg_global_valmax);
+#ifdef pp_HIST
       PRINTF("   permin=%f permax=%f\n", propi->percentile_min, propi->percentile_max);
+#endif
     }
     PRINTF("\n");
   }
@@ -1515,8 +1521,10 @@ void InitPartProp(void){
           propi->dlg_global_valmax=-propi->dlg_global_valmin;
           propi->valmin=1.0;
           propi->valmax=0.0;
+#ifdef pp_HIST
           propi->percentile_min=1.0;
           propi->percentile_max=0.0;
+#endif
           propi->user_min=1.0;
           propi->user_max=0.0;
           propi->display=0;
@@ -1527,11 +1535,12 @@ void InitPartProp(void){
           propi->chopmin=1.0;
           propi->chopmax=0.0;
 
-          propi->buckets=NULL;
           propi->partlabelvals = NULL;
           NewMemory((void **)&propi->partlabelvals, 256*sizeof(float));
+#ifdef pp_HIST
+          propi->buckets = NULL;
           InitHistogram(&propi->histogram, NHIST_BUCKETS, NULL, NULL);
-
+#endif
           npart5prop++;
         }
       }
@@ -1950,18 +1959,22 @@ void FinalizePartLoad(partdata *parti){
 
   // generate histograms now rather than in the background if a script is running
 
+#ifdef pp_HIST
   if(current_script_command!=NULL||part_multithread==0){
     GeneratePartHistograms();
   }
   else{
     update_generate_part_histograms = 1;
   }
+#endif
   INIT_PRINT_TIMER(part_time1);
   GetGlobalPartBounds(ALL_FILES);
   PRINT_TIMER(part_time1, "particle get bounds time");
   if(cache_part_data==1){
     INIT_PRINT_TIMER(part_time2);
+#ifdef pp_HIST
     SetPercentilePartBounds();
+#endif
     for(j = 0; j<npartinfo; j++){
       partdata *partj;
 
@@ -1993,9 +2006,11 @@ FILE_SIZE ReadPart(char *file_arg, int ifile_arg, int loadflag_arg, int *errorco
   FILE_SIZE file_size_local;
   float load_time_local;
 
+#ifdef pp_PART_HIST
   if(loadflag_arg==UNLOAD&&part_multithread==1&&update_generate_part_histograms==-1){
     JOIN_PART_HIST;
   }
+#endif
   SetTimeState();
   START_TIMER(load_time_local);
   ASSERT(ifile_arg>=0&&ifile_arg<npartinfo);
@@ -2025,7 +2040,9 @@ FILE_SIZE ReadPart(char *file_arg, int ifile_arg, int loadflag_arg, int *errorco
       UpdatePart5Extremes();
       PrintMemoryInfo;
     }
+#ifdef pp_HIST
     update_draw_hist = 1;
+#endif
     return 0.0;
   }
 

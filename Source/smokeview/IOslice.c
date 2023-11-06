@@ -911,7 +911,9 @@ int CReadSlice_frame(int frame_index_local,int sd_index,int flag){
 void OutputFedCSV(void){
   FILE *AREA_STREAM=NULL;
   char *fed_area_file=NULL,fed_area_file_base[1024];
+#ifdef pp_HIST
   int i;
+#endif
 
   if(fed_areas == NULL)return;
   sprintf(fed_area_file_base, "%s_s%04i_fedarea.csv", fdsprefix, fed_seqnum++);
@@ -920,6 +922,7 @@ void OutputFedCSV(void){
   if(AREA_STREAM == NULL)return;
 
   fprintf(AREA_STREAM, "\"step\",\"0.0->0.3\",\"0.3->1.0\",\"1.0->3.0\",\"3.0->\"\n");
+#ifdef pp_HIST
   for(i = 1; i < hists256_slice->ntotal; i++){
     int *areas;
 
@@ -927,6 +930,7 @@ void OutputFedCSV(void){
 
     fprintf(AREA_STREAM,"%f,%i,%i,%i,%i\n",hists256_slice->time,areas[0],areas[1],areas[2],areas[3]);
   }
+#endif
   fclose(AREA_STREAM);
 }
 
@@ -1006,7 +1010,9 @@ void ReadFed(int file_index, int time_frame, float *time_value, int flag, int fi
   }
 
   if(flag==UNLOAD){
+#ifdef pp_HIST
     update_draw_hist = 1;
+#endif
     return;
   }
 
@@ -1365,7 +1371,9 @@ FILE_SIZE ReadVSlice(int ivslice, int time_frame, float *time_value, int flag, i
     showvslice=0;
     updatemenu=1;
     plotstate=GetPlotState(DYNAMIC_PLOTS);
+#ifdef pp_HIST
     update_draw_hist = 1;
+#endif
     update_vectorskip = 1;
     return return_filesize;
   }
@@ -1568,6 +1576,7 @@ void UncompressSliceDataFrame(slicedata *sd, int iframe_local){
   CheckMemory;
 }
 
+#ifdef pp_HIST
 /* ------------------ GetHistogramValProc ------------------------ */
 
 void GetHistogramValProc(histogramdata *histogram, float cdf, float *val){
@@ -1883,6 +1892,7 @@ void UpdateSliceHist(void){
   }
 
 }
+#endif
 
 /* ------------------ UpdateSliceBounds ------------------------ */
 
@@ -2962,8 +2972,10 @@ void UpdateFedinfo(void){
     sd->line_contours = NULL;
     sd->menu_show = 1;
     sd->constant_color = NULL;
+#ifdef pp_HIST
     sd->histograms = NULL;
     sd->nhistograms = 0;
+#endif
     sd->have_bound_file = 0;
 
     strcpy(filename_base, fedi->co->file);
@@ -4728,7 +4740,9 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
   slicefilenumber = ifile;
   ASSERT(slicefilenumber>=0&&slicefilenumber<nsliceinfo);
   slicefilenum = ifile;
+#ifdef pp_HIST
   histograms_defined = 0;
+#endif
   sd = sliceinfo+slicefilenumber;
 
   blocknumber = sd->blocknumber;
@@ -4756,6 +4770,7 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
       FREEMEMORY(sd->qslicedata_compressed);
       FREEMEMORY(sd->slicecomplevel);
 
+#ifdef pp_HIST
       if(sd->histograms!=NULL){
         int i;
 
@@ -4764,6 +4779,7 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
         }
         FREEMEMORY(sd->histograms);
       }
+#endif
     }
 
     slicefilenum = ifile;
@@ -4851,7 +4867,9 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
       UpdateUnitDefs();
       update_times = 1;
       RemoveSliceLoadstack(slicefilenumber);
+#ifdef pp_HIST
       update_draw_hist = 1;
+#endif
       PrintMemoryInfo;
       return 0;
     }
@@ -5110,6 +5128,7 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
       SetLoadedSliceBounds(NULL, 0);
     }
     GetMinMax(BOUND_SLICE, sd->label.shortlabel, &set_valmin, &qmin, &set_valmax, &qmax);
+#ifdef pp_HIST
     if(set_valmin==BOUND_PERCENTILE_MIN||set_valmax==BOUND_PERCENTILE_MAX){
       cpp_boundsdata *bounds;
 
@@ -5127,6 +5146,7 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
         }
       }
     }
+#endif
 #define BOUND_PERCENTILE_DRAW          120
     SliceBoundsCPP_CB(BOUND_PERCENTILE_DRAW);
     colorbar_slice_min = qmin;
@@ -5251,7 +5271,7 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
   }
 
   // define histogram data structures if visible
-
+#ifdef pp_HIST
   if(histogram_show_graph==1||histogram_show_numbers==1){
     update_slice_hists=1;
   }
@@ -5260,6 +5280,7 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
     histogram_nbuckets = 255;
     histogram_show_numbers=0;
   }
+#endif
   CheckMemory;
   showall_slices=1;
   GLUTPOSTREDISPLAY;

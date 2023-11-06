@@ -1647,9 +1647,11 @@ void ReadSMVDynamic(char *file){
       nmemory_ids++;
       plot3di->memory_id = nmemory_ids;
 
+#ifdef pp_HIST
       for(i=0;i<MAXPLOT3DVARS;i++){
         plot3di->histograms[i] = NULL;
       }
+#endif
       if(plot3di>plot3dinfo+nplot3dinfo_old-1){
         plot3di->loaded=0;
         plot3di->display=0;
@@ -4801,7 +4803,9 @@ int ParseISOFProcess(bufferstreamdata *stream, char *buffer, int *iiso_in, int *
   isoi->geom_ndynamics = NULL;
   isoi->geom_times = NULL;
   isoi->geom_vals = NULL;
+#ifdef pp_HIST
   isoi->histogram = NULL;
+#endif
   isoi->get_isolevels = 0;
 
   isoi->normaltable = NULL;
@@ -5002,10 +5006,12 @@ int ParsePRT5Process(bufferstreamdata *stream, char *buffer, int *nn_part_in, in
   STRCPY(parti->size_file, bufferptr);
   STRCAT(parti->size_file, ".sz");
 
+#ifdef pp_HIST
   parti->hist_file = NULL;
   if(NewMemory((void **)&parti->hist_file, (unsigned int)(len+1+5))==0)return RETURN_TWO;
   STRCPY(parti->hist_file, bufferptr);
   STRCAT(parti->hist_file, ".hist");
+#endif
 
   // parti->size_file can't be written to, then put it in a world writable temp directory
 
@@ -5021,6 +5027,7 @@ int ParsePRT5Process(bufferstreamdata *stream, char *buffer, int *nn_part_in, in
 
   // parti->hist_file can't be written to, then put it in a world writable temp directory
 
+#ifdef pp_HIST
   if(FILE_EXISTS_CASEDIR(parti->hist_file)==NO && curdir_writable==NO && smokeview_scratchdir!=NULL){
     len = strlen(smokeview_scratchdir)+strlen(bufferptr)+1+5+1;
     FREEMEMORY(parti->hist_file);
@@ -5030,6 +5037,7 @@ int ParsePRT5Process(bufferstreamdata *stream, char *buffer, int *nn_part_in, in
     STRCAT(parti->hist_file, bufferptr);
     STRCAT(parti->hist_file, ".hist");
   }
+#endif
 
   parti->compression_type = UNCOMPRESSED;
   if(FILE_EXISTS_CASEDIR(parti->reg_file)==YES){
@@ -5047,7 +5055,9 @@ int ParsePRT5Process(bufferstreamdata *stream, char *buffer, int *nn_part_in, in
   parti->display = 0;
   parti->times = NULL;
   parti->timeslist = NULL;
+#ifdef pp_HIST
   parti->histograms = NULL;
+#endif
   parti->bounds_set = 0;
   parti->global_min = NULL;
   parti->global_max = NULL;
@@ -5178,7 +5188,9 @@ int ParseBNDFProcess(bufferstreamdata *stream, char *buffer, int *nn_patch_in, i
   patchi->version           = version;
   patchi->ntimes            = 0;
   patchi->ntimes_old        = 0;
+#ifdef pp_HIST
   patchi->histogram_nframes = -1;
+#endif
   patchi->filetype_label    = NULL;
   patchi->patch_filetype    = PATCH_STRUCTURED_NODE_CENTER;
   patchi->structured        = YES;
@@ -5322,7 +5334,9 @@ int ParseBNDFProcess(bufferstreamdata *stream, char *buffer, int *nn_patch_in, i
   patchi->cbuffer = NULL;
   patchi->cbuffer_size = 0;
   patchi->is_compressed = 0;
+#ifdef pp_HIST
   patchi->histogram = NULL;
+#endif
   patchi->blocknumber = blocknumber;
   patchi->seq_id = nn_patch;
   patchi->autoload = 0;
@@ -5372,8 +5386,10 @@ int ParseBNDFProcess(bufferstreamdata *stream, char *buffer, int *nn_patch_in, i
       geomptr = strstr(patchi->menulabel_base, geomlabel2);
       if(geomptr!=NULL)geomptr[0] = 0;
     }
+#ifdef pp_HIST
     NewMemory((void **)&patchi->histogram, sizeof(histogramdata));
     InitHistogram(patchi->histogram, NHIST_BUCKETS, NULL, NULL);
+#endif
     if(slicegeom==0){
       ipatch++;
       *ipatch_in = ipatch;
@@ -5978,8 +5994,10 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
   sd->line_contours = NULL;
   sd->menu_show = 1;
   sd->constant_color = NULL;
+#ifdef pp_HIST
   sd->histograms = NULL;
   sd->nhistograms = 0;
+#endif
   {
     meshdata *meshi;
 
@@ -11857,7 +11875,11 @@ int GetNewBoundIndex(int old_index){
 #define NEW_GLOBAL     1
 #define NEW_PERCENTILE 3
 
+#ifdef pp_HIST
   int bound_map[] = {NEW_PERCENTILE, NEW_SET, NEW_GLOBAL};
+#else
+  int bound_map[] = {NEW_GLOBAL, NEW_SET, NEW_GLOBAL};
+#endif
 
   ASSERT(old_index>=0&&old_index<=2);
   old_index=CLAMP(old_index,0, 2);
@@ -11979,6 +12001,7 @@ int ReadIni2(char *inifile, int localfile){
     CheckMemory;
     if(fgets(buffer, 255, stream) == NULL)break;
 
+#ifdef pp_HIST
     if(MatchINI(buffer, "PERCENTILEMODE")==1){
       fgets(buffer, 255, stream);
       sscanf(buffer, " %i", &percentile_mode);
@@ -11990,6 +12013,7 @@ int ReadIni2(char *inifile, int localfile){
       update_percentile_mode = 1;
       continue;
     }
+#endif
     if(MatchINI(buffer, "RESEARCHMODE") == 1){
       int dummy;
 
@@ -12004,10 +12028,12 @@ int ReadIni2(char *inifile, int localfile){
       ONEORZERO(force_fixedpoint);
       ONEORZERO(force_exponential);
       if(force_fixedpoint==1&&force_exponential==1)force_exponential = 0;
+#ifdef pp_HIST
       if(research_mode==1&&percentile_mode==1){
         percentile_mode = 0;
         update_percentile_mode = 1;
       }
+#endif
       update_research_mode=1;
       continue;
     }
@@ -12191,12 +12217,14 @@ int ReadIni2(char *inifile, int localfile){
       update_zaxis_custom = 1;
       continue;
     }
+#ifdef pp_HIST
     if(MatchINI(buffer, "HISTOGRAM") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, " %i %i %i %i %i %f",
       &histogram_static, &histogram_nbuckets, &histogram_show_numbers, &histogram_show_graph, &histogram_show_outline, &histogram_width_factor);
       continue;
     }
+#endif
     if(MatchINI(buffer, "GEOMSHOW") == 1){
       int dummy, dummy2;
       float rdummy;
@@ -12685,10 +12713,14 @@ int ReadIni2(char *inifile, int localfile){
           isetmin = GetNewBoundIndex(isetmin);
           isetmax = GetNewBoundIndex(isetmax);
         }
+#ifdef pp_HIST
         if(
           isetmin==BOUND_SET_MIN||isetmin==BOUND_PERCENTILE_MIN||
           isetmax==BOUND_SET_MAX||isetmax==BOUND_PERCENTILE_MAX
         ){
+#else
+        if(isetmin == BOUND_SET_MIN || isetmax == BOUND_SET_MAX){
+#endif
           research_mode = 0;
           update_research_mode = 1;
         }
@@ -12903,6 +12935,7 @@ int ReadIni2(char *inifile, int localfile){
       ONEORZERO(skip_slice_in_embedded_mesh);
       continue;
     }
+#ifdef pp_HIST
     if(MatchINI(buffer, "PERCENTILELEVEL") == 1){
       fgets(buffer, 255, stream);
       float p_level_max=-1.0;
@@ -12913,6 +12946,7 @@ int ReadIni2(char *inifile, int localfile){
       percentile_level_max = CLAMP(p_level_max, percentile_level_min+0.0001,1.0);
       continue;
     }
+#endif
     if(MatchINI(buffer, "TRAINERMODE") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%i", &trainer_mode);
@@ -13076,8 +13110,15 @@ int ReadIni2(char *inifile, int localfile){
       }
       continue;
     }
+#ifdef pp_HIST
     if(MatchINI(buffer, "V2_PARTICLES") == 1||
        MatchINI(buffer, "V_PARTICLES")==1){
+#else
+    if(MatchINI(buffer, "V2_PARTICLES") == 1||
+       MatchINI(buffer, "V_PARTICLES")==1||
+       MatchINI(buffer, "V5_PARTICLES")==1
+    ){
+#endif
       int is_old_bound = 0;
 
       if(MatchINI(buffer, "V_PARTICLES")==1){
@@ -13094,10 +13135,14 @@ int ReadIni2(char *inifile, int localfile){
         ivmin = GetNewBoundIndex(ivmin);
         ivmax = GetNewBoundIndex(ivmax);
       }
+#ifdef pp_HIST
       if(
         ivmin==BOUND_SET_MIN||ivmin==BOUND_PERCENTILE_MIN||
         ivmax==BOUND_SET_MAX||ivmax==BOUND_PERCENTILE_MAX
       ){
+#else
+      if(ivmin==BOUND_SET_MIN||ivmax==BOUND_SET_MAX){
+#endif
         research_mode = 0;
         update_research_mode = 1;
       }
@@ -13127,9 +13172,15 @@ int ReadIni2(char *inifile, int localfile){
           propi->valmax = vmax;
           if(is_old_bound==1){
             switch(ivmin){
+#ifdef pp_HIST
               case PERCENTILE_MIN:
                 propi->percentile_min = vmin;
                 break;
+#else
+            case PERCENTILE_MIN:
+              propi->user_min = vmin;
+              break;
+#endif
               case GLOBAL_MIN:
                 propi->dlg_global_valmin = vmin;
                 break;
@@ -13141,9 +13192,15 @@ int ReadIni2(char *inifile, int localfile){
                 break;
             }
             switch(ivmax){
+#ifdef pp_HIST
               case PERCENTILE_MAX:
                 propi->percentile_max = vmax;
                 break;
+#else
+            case PERCENTILE_MAX:
+              propi->user_max = vmax;
+              break;
+#endif
               case GLOBAL_MAX:
                 propi->dlg_global_valmax = vmax;
                 break;
@@ -13157,9 +13214,15 @@ int ReadIni2(char *inifile, int localfile){
           }
           else{
             switch(ivmin){
+#ifdef pp_HIST
               case BOUND_PERCENTILE_MIN:
                 propi->percentile_min = vmin;
                 break;
+#else
+            case BOUND_PERCENTILE_MIN:
+              propi->user_min = vmin;
+              break;
+#endif
               case BOUND_LOADED_MIN:
               case BOUND_GLOBAL_MIN:
                 propi->dlg_global_valmin = vmin;
@@ -13172,9 +13235,15 @@ int ReadIni2(char *inifile, int localfile){
                 break;
             }
             switch(ivmax){
+#ifdef pp_HIST
               case BOUND_PERCENTILE_MAX:
                 propi->percentile_max = vmax;
                 break;
+#else
+            case BOUND_PERCENTILE_MAX:
+              propi->user_max = vmax;
+              break;
+#endif
               case BOUND_LOADED_MAX:
               case BOUND_GLOBAL_MAX:
                 propi->dlg_global_valmax = vmax;
@@ -13278,7 +13347,11 @@ int ReadIni2(char *inifile, int localfile){
         set_valmin = GetNewBoundIndex(set_valmin);
         set_valmax = GetNewBoundIndex(set_valmax);
       }
+#ifdef pp_HIST
       if(set_valmin==BOUND_SET_MIN||set_valmin==BOUND_PERCENTILE_MIN||set_valmax==BOUND_SET_MAX||set_valmax==BOUND_PERCENTILE_MAX){
+#else
+      if(set_valmin==BOUND_SET_MIN||set_valmax==BOUND_SET_MAX){
+#endif
         research_mode = 0;
         update_research_mode = 1;
       }
@@ -13393,10 +13466,14 @@ int ReadIni2(char *inifile, int localfile){
         glui_setpatchmin = GetNewBoundIndex(glui_setpatchmin);
         glui_setpatchmax = GetNewBoundIndex(glui_setpatchmax);
       }
+#ifdef pp_HIST
       if(
         glui_setpatchmin==BOUND_SET_MIN||glui_setpatchmin==BOUND_PERCENTILE_MIN||
         glui_setpatchmax==BOUND_SET_MAX||glui_setpatchmax==BOUND_PERCENTILE_MAX
       ){
+#else
+      if(glui_setpatchmin==BOUND_SET_MIN||glui_setpatchmax==BOUND_SET_MAX){
+#endif
         research_mode = 0;
         update_research_mode = 1;
       }
@@ -16181,8 +16258,10 @@ void WriteIniLocal(FILE *fileout){
     patchout_ymin, patchout_ymax,
     patchout_zmin, patchout_zmax
     );
+#ifdef pp_HIST
   fprintf(fileout, "PERCENTILELEVEL\n");
   fprintf(fileout, " %f %f\n", percentile_level_min, percentile_level_max);
+#endif
   fprintf(fileout, "TIMEOFFSET\n");
   fprintf(fileout, " %f\n", timeoffset);
   fprintf(fileout, "TLOAD\n");
@@ -16607,8 +16686,10 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %i\n", nopart);
   fprintf(fileout, "PARTFAST\n");
   fprintf(fileout, " %i %i %i\n", partfast, part_multithread, npartthread_ids);
+#ifdef pp_HIST
   fprintf(fileout, "PERCENTILEMODE\n");
   fprintf(fileout, " %i\n", percentile_mode);
+#endif
   fprintf(fileout, "RESEARCHMODE\n");
   fprintf(fileout, " %i %i %f %i %i %i %i %i\n", research_mode, 1, colorbar_shift, ncolorlabel_digits, force_fixedpoint, ngridloc_digits, sliceval_ndigits, force_exponential);
   fprintf(fileout, "SHOWFEDAREA\n");
@@ -16705,9 +16786,11 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %i\n", vis_title_gversion);
   fprintf(fileout, "GVECDOWN\n");
   fprintf(fileout, " %i\n", gvec_down);
+#ifdef pp_HIST
   fprintf(fileout, "HISTOGRAM\n");
   fprintf(fileout, " %i %i %i %i %i %f\n",
   histogram_static, histogram_nbuckets, histogram_show_numbers, histogram_show_graph, histogram_show_outline, histogram_width_factor);
+#endif
   fprintf(fileout, "ISOTRAN2\n");
   fprintf(fileout, " %i\n", transparent_state);
   for(i = 0; i < nmeshes; i++){

@@ -13,6 +13,7 @@
 
 /* ------------------ GetPlot3DHists ------------------------ */
 
+#ifdef pp_HIST
 void GetPlot3DHists(plot3ddata *p){
   int i;
 
@@ -62,6 +63,7 @@ void MergePlot3DHistograms(void){
     }
   }
 }
+#endif
 
 
 /* ------------------ Plot3dCompare  ------------------------ */
@@ -241,7 +243,9 @@ void ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
   }
   if(flag==UNLOAD){
     meshi->plot3dfilenum=-1;
+#ifdef pp_HIST
     update_draw_hist = 1;
+#endif
   }
   else{
     pn = meshi->plot3dfilenum;
@@ -408,15 +412,21 @@ void ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
       if(setp3max_all[nn]!=SET_MAX&&setp3max_all[nn]!=CHOP_MAX)setp3max_all[nn]=SET_MAX;
     }
   }
+#ifdef pp_HIST
   GetPlot3DHists(p);
+#endif
   AllocatePlot3DColorLabels(p);
   if(cache_plot3d_data==1){
     if(p->finalize==1){
+#ifdef pp_HIST
       MergePlot3DHistograms();
       SetPercentilePlot3DBounds();
+#endif
       UpdateAllPlot3DColors(0);
+#ifdef pp_HIST
 #define BOUND_PERCENTILE_DRAW          120
       Plot3DBoundsCPP_CB(BOUND_PERCENTILE_DRAW);
+#endif
     }
   }
   else{

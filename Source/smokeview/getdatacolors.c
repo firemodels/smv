@@ -138,15 +138,21 @@ void WriteBoundIni(void){
         return;
       }
     }
+#ifdef pp_HIST
     fprintf(stream, "B_BOUNDARY\n");
     fprintf(stream, " %f %f %f %f %i %s\n", boundi->global_min, boundi->percentile_min, boundi->percentile_max, boundi->global_max, patchi->patch_filetype, patchi->label.shortlabel);
+#else
+    float dummy = 0.0;
+    fprintf(stream, "B_BOUNDARY\n");
+    fprintf(stream, " %f %f %f %f %i %s\n", boundi->global_min, dummy, dummy, boundi->global_max, patchi->patch_filetype, patchi->label.shortlabel);
+#endif
   }
   if(stream != NULL)fclose(stream);
   FREEMEMORY(fullfilename);
 }
 
 /* ------------------ UpdateBoundaryBounds ------------------------ */
-
+#ifdef pp_HIST
 void UpdateBoundaryBounds(patchdata *patchi){
   histogramdata full_histogram;
   bounddata *boundi;
@@ -160,9 +166,7 @@ void UpdateBoundaryBounds(patchdata *patchi){
     patchdata *patchj;
 
     patchj=patchinfo+j;
-#ifdef pp_PATCH_HIST
     if(patchj->loaded == 0)continue;
-#endif
     if(patchi->boundary != patchj->boundary)continue;
     if(patchi->patch_filetype == PATCH_GEOMETRY_SLICE || patchj->patch_filetype == PATCH_GEOMETRY_SLICE)continue;
     if(patchj->shortlabel_index != patchi->shortlabel_index)continue; // dont consider file type for now (node/cell centered, structdured/unstructured etc)
@@ -192,6 +196,7 @@ void UpdateBoundaryBounds(patchdata *patchi){
   WriteBoundIni();
   FreeHistogram(&full_histogram);
 }
+#endif
 
 /* ------------------ GetBoundaryColors3 ------------------------ */
 
@@ -308,6 +313,7 @@ void UpdateAllBoundaryColors(int flag){
         switch(patchi->patch_filetype){
           case PATCH_STRUCTURED_NODE_CENTER:
           case PATCH_STRUCTURED_CELL_CENTER:
+#ifdef pp_HIST
 #ifndef pp_PATCH_HIST
             if(patchi->blocknumber>=0){
               meshdata *meshi;
@@ -321,14 +327,17 @@ void UpdateAllBoundaryColors(int flag){
                                  &patchi->extreme_min, &patchi->extreme_max, flag);
             }
 #endif
+#endif
             break;
           case PATCH_GEOMETRY_BOUNDARY:
           case PATCH_GEOMETRY_SLICE:
+#ifdef pp_HIST
 #ifndef pp_PATCH_HIST
             GetBoundaryColors3(patchi, patchi->geom_vals, 0, patchi->geom_nvals, patchi->geom_ivals,
                                &valmin, &valmax,
                                nrgb, colorlabelpatch, colorvaluespatch, boundarylevels256,
                                &patchi->extreme_min, &patchi->extreme_max, flag);
+#endif
 #endif
             break;
           default:

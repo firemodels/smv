@@ -849,12 +849,14 @@ int main(int argc, char **argv){
   START_TIMER(startup_time);
 
   return_code= SetupCase(smv_filename);
+#ifdef pp_HIST
 #ifndef pp_PATCH_HIST
   if(return_code==0&&update_bounds==1){
     INIT_PRINT_TIMER(timer_update_bounds);
     return_code=Update_Bounds();
     PRINT_TIMER(timer_update_bounds, "Update_Bounds");
   }
+#endif
 #endif
   if(return_code!=0)return 1;
   if(convert_ini==1){

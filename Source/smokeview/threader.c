@@ -130,9 +130,11 @@ void *MtLoadAllPartFiles(void *arg){
 void LoadAllPartFilesMT(int partnum){
   int i;
 
+#ifdef pp_HIST
   if(part_multithread==1&&current_script_command==NULL&&update_generate_part_histograms==-1){
     JOIN_PART_HIST;
   }
+#endif
   if(part_multithread==0){
     LoadAllPartFiles(partnum);
     return;
@@ -263,6 +265,7 @@ void ReadAllGeomMT(void){
 
 /* ------------------ MTGeneratePartHistograms ------------------------ */
 
+#ifdef pp_HIST
 void *MTGeneratePartHistograms(void *arg){
   GeneratePartHistograms();
   pthread_exit(NULL);
@@ -272,6 +275,7 @@ void *MTGeneratePartHistograms(void *arg){
 void GeneratePartHistogramsMT(void){
   pthread_create(&generate_part_histogram_id, NULL, MTGeneratePartHistograms, NULL);
 }
+#endif
 #else
 void GeneratePartHistogramsMT(void){
   GeneratePartHistograms();
@@ -733,6 +737,7 @@ void PSystem(char *commandline){
 
 /* ------------------ Update_Bounds ------------------------ */
 
+#ifdef pp_HIST
 int Update_Bounds(void){
   UpdateAllBoundaryBounds();
 #ifdef pp_THREAD
@@ -756,6 +761,7 @@ void UpdateAllBoundaryBounds(void){
 void UpdateAllBoundaryBounds(void){
   UpdateAllBoundaryBoundsST();
 }
+#endif
 #endif
 
 /* ------------------ MtReadVolsmokeAllFramesAllMeshes2 ------------------------ */

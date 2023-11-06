@@ -419,12 +419,14 @@ FILE_SIZE ReadIsoGeom(int ifile, int load_flag, int *geom_frame_index, int *erro
     GetIsoDataBounds(isoi, &iso_valmin, &iso_valmax);
     isoi->geom_globalmin = iso_valmin;
     isoi->geom_globalmax = iso_valmax;
-    isoi->geom_percentilemin = iso_valmin;
-    isoi->geom_percentilemax = iso_valmax;
     if(setisomin == GLOBAL_MIN)iso_valmin = isoi->geom_globalmin;
     if(setisomax == GLOBAL_MAX)iso_valmax = isoi->geom_globalmax;
+#ifdef pp_HIST
+    isoi->geom_percentilemin = iso_valmin;
+    isoi->geom_percentilemax = iso_valmax;
     iso_percentile_min = isoi->geom_percentilemin;
     iso_percentile_max = isoi->geom_percentilemax;
+#endif
     iso_global_min = isoi->geom_globalmin;
     iso_global_max = isoi->geom_globalmax;
     UpdateGluiIsoBounds();

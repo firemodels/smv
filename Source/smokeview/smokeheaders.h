@@ -57,9 +57,11 @@ EXTERNCPP void UpdateTerrainTexture(int val);
 EXTERNCPP void UpdateShowOnlyTop(void);
 
 EXTERNCPP void UpdateGLuiGridLocation(void);
+#ifdef pp_HIST
 EXTERNCPP void EnableDisablePartPercentileDraw(int flag);
 EXTERNCPP void GeneratePartHistograms(void);
 EXTERNCPP void GeneratePartHistogramsMT(void);
+#endif
 FILE_SIZE LoadAllMSlicesMT(int last_slice, multislicedata *mslicei, int *fcount);
 
 EXTERNCPP void PrintTime(const char *tag, int line, float *timer, const char *label, int stop_flag);
@@ -118,8 +120,10 @@ EXTERNCPP void DrawPlot2D(int option, float *x, float *z, float *z2, int n,
 
 EXTERNCPP void UpdateSliceSkip(void);
 
+#ifdef pp_HIST
 EXTERNCPP void MergePartHistograms(void);
 EXTERNCPP void MergePlot3DHistograms(void);
+#endif
 
 EXTERNCPP void UpdateColorbarControls(void);
 EXTERNCPP void UpdateColorbarControls2(void);
@@ -132,7 +136,9 @@ EXTERNCPP void UpdateHoc(void);
 EXTERNCPP int GetStringWidth(char *string);
 EXTERNCPP void DrawDevicePlots(void);
 EXTERNCPP void DrawTreeDevicePlots(void);
+#ifdef pp_HIST
 EXTERNCPP int GetPercentileDraw(int type);
+#endif
 EXTERNCPP int GetPlotState(int choice);
 
 #ifndef TERRAIN_FIRE_LINE_UPDATE
@@ -206,19 +212,23 @@ EXTERNCPP  void UpdateSliceXYZ(void);
 EXTERNCPP int InMesh(float *xyz);
 EXTERNCPP void UpdateVectorSkip(int skip);
 EXTERNCPP char *GetHomeDir(void);
+#ifdef pp_HIST
 EXTERNCPP void SetPercentileDrawOff(void);
+EXTERNCPP void SetPercentilePartBounds(void);
+EXTERNCPP void SetPercentilePlot3DBounds(void);
+#endif
 EXTERNCPP void ClosePartFiles(void);
 EXTERNCPP void PartBoundsCPP_CB(int var);
 EXTERNCPP void UpdatdateResearchModeCPP(void);
 EXTERNCPP void UpdatePartColors(partdata *parti, int flag);
-EXTERNCPP void SetPercentilePartBounds(void);
-EXTERNCPP void SetPercentilePlot3DBounds(void);
-EXTERNCPP void DrawHistogram(histogramdata *histogram, float xxmin, float xxmax, float gmin, float gmax, int ndigits);
 EXTERNCPP void SliceBoundsSetupNoGraphics(void);
+#ifdef pp_HIST
+EXTERNCPP void DrawHistogram(histogramdata *histogram, float xxmin, float xxmax, float gmin, float gmax, int ndigits);
 EXTERNCPP void GetHistogramValProc(histogramdata*histogram, float cdf, float *val);
 EXTERNCPP void ComputeLoadedSliceHist(char *label);
 EXTERNCPP void MergeLoadedSliceHist(char *label, histogramdata **histptr);
 EXTERNCPP void ComputeLoadedPatchHist(char *label, histogramdata **histptr, float *valmin, float *valmax);
+#endif
 EXTERNCPP void GetGlobalBoundsMinMax(int type, char *label, float *valmin, float *valmax);
 EXTERNCPP void SliceBoundsCPP_CB(int var);
 EXTERNCPP void PatchBoundsCPP_CB(int var);
@@ -243,8 +253,10 @@ EXTERNCPP void SetLoadedPatchBounds(int *list, int nlist);
 EXTERNCPP void SetLoadedPlot3DBounds(int *list, int nlist);
 EXTERNCPP void SetLoadedPartBounds(int *list, int nlist);
 EXTERNCPP void SetResearchMode(int flag);
+#ifdef pp_HIST
 EXTERNCPP void SetPercentileMode(int flag);
 EXTERNCPP void SetPercentileMinMax(float p_min, float p_max);
+#endif
 EXTERNCPP void Plot3DBoundsCPP_CB(int var);
 EXTERNCPP void SetColorbarDigitsCPP(int ndigits);
 
@@ -392,8 +404,10 @@ EXTERNCPP void VolumeCB(int var);
 EXTERNCPP void TerrainCB(int var);
 EXTERNCPP void GeometryMenu(int var);
 EXTERNCPP void Smoke3dCB(int var);
+#ifdef pp_HIST
 EXTERNCPP void UpdateHistogramType(void);
 EXTERNCPP void UpdateSliceHist(void);
+#endif
 EXTERNCPP void Enable360Zoom(void);
 #ifdef pp_RENDER360_DEBUG
 EXTERNCPP void DrawScreenInfo(void);
@@ -632,9 +646,11 @@ EXTERNCPP void RemoveDupBlockages(void);
 EXTERNCPP void SortIsoTriangles(float *mm);
 EXTERNCPP void UpdateIsoTriangles(int flag);
 EXTERNCPP void UpdateSliceMenuShow(void);
+#ifdef pp_HIST
 EXTERNCPP void UpdateBoundaryBounds(patchdata *patchi);
 EXTERNCPP void UpdateAllBoundaryBounds(void);
 EXTERNCPP void UpdateAllBoundaryBoundsST(void);
+#endif
 EXTERNCPP void UpdateHideBoundarySurface(void);
 EXTERNCPP int  LastSliceLoadstack(void);
 EXTERNCPP int  LastVSliceLoadstack(void);
@@ -1097,7 +1113,9 @@ EXTERNCPP void ScaleString(const char *stringfrom, char *stringto, const float *
 EXTERNCPP void Num2String(char *string, float tval);
 EXTERNCPP int  SetupCase(char *file);
 EXTERNCPP int  GetMinPartFrames(int flag);
+#ifdef pp_HIST
 EXTERNCPP int  Update_Bounds(void);
+#endif
 
 EXTERNCPP void FreeCADInfo(void);
 

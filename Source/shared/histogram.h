@@ -40,20 +40,19 @@ typedef struct {
 void CopyBuckets2Histogram(int *buckets, int nbuckets, float valmin, float valmax, histogramdata *histogram);
 void CopyPolar2Histogram(float *speed, float *angle, int nvals, float rmin, float rmax, histogramdata *histogram);
 void CopyVals2Histogram(float *vals, char *mask, float *weight, int nvals, histogramdata *histogram);
-void MergeVals2Histogram(float *vals, char *mask, float *weight, int nvals, histogramdata *histogram);
 void CopyUV2Histogram(float *times, float *uvals, float *vvals, int nvals, float tmin, float tmax, float rmin, float rmax, histogramdata *histogram);
 void FreeHistogram(histogramdata *histogram);
 int Get2DBounds(float *times, float *uvals, float *vvals, int nvals, float tmin, float tmax, float *rmin, float *rmax);
-void GetHistogramStats(histogramdata *histogram);
 float GetHistogramCDF(histogramdata *histogram, float val);
+void GetHistogramStats(histogramdata *histogram);
 float GetHistogramVal(histogramdata *histogram, float cdf);
 void GetPolarBounds(float *speed, int nvals, float *rmin, float *rmax);
 void InitHistogramMemID(histogramdata *histogram, int nbuckets, float *valmin, float *valmax, int memory_id);
 void InitHistogram(histogramdata *histogram, int nbuckets, float *valmin, float *valmax);
 void InitHistogramPolar(histogramdata *histogram, int nx, int ny, float *rmin, float *rmax);
 void MergeHistogram(histogramdata *histogramto, histogramdata *histogramfrom, int reset_bounds);
+void MergeVals2Histogram(float *vals, char *mask, float *weight, int nvals, histogramdata *histogram);
 void ResetHistogram(histogramdata *histogram, float *valmin, float *valmax);
 void ResetHistogramPolar(histogramdata *histogram, float *rmin, float *rmax);
 void UpdateHistogram(float *vals, char *mask, int nvals, histogramdata *histogram);
-
 #endif
