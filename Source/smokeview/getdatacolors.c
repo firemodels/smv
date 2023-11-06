@@ -313,6 +313,7 @@ void UpdateAllBoundaryColors(int flag){
         switch(patchi->patch_filetype){
           case PATCH_STRUCTURED_NODE_CENTER:
           case PATCH_STRUCTURED_CELL_CENTER:
+#ifdef pp_HIST
 #ifndef pp_PATCH_HIST
             if(patchi->blocknumber>=0){
               meshdata *meshi;
@@ -326,14 +327,17 @@ void UpdateAllBoundaryColors(int flag){
                                  &patchi->extreme_min, &patchi->extreme_max, flag);
             }
 #endif
+#endif
             break;
           case PATCH_GEOMETRY_BOUNDARY:
           case PATCH_GEOMETRY_SLICE:
+#ifdef pp_HIST
 #ifndef pp_PATCH_HIST
             GetBoundaryColors3(patchi, patchi->geom_vals, 0, patchi->geom_nvals, patchi->geom_ivals,
                                &valmin, &valmax,
                                nrgb, colorlabelpatch, colorvaluespatch, boundarylevels256,
                                &patchi->extreme_min, &patchi->extreme_max, flag);
+#endif
 #endif
             break;
           default:
