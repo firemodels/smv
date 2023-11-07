@@ -2546,7 +2546,7 @@ void ScriptPartClassColor(scriptdata *scripti){
     propi = part5propinfo + i;
     if(strcmp(propi->label->longlabel,scripti->cval)==0){
       ParticlePropShowMenu(i);
-      return;;
+      return;
     }
   }
   fprintf(stderr, "*** Error: particle class quantity: %s failed to be set\n", scripti->cval);
