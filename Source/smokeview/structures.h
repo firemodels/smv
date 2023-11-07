@@ -1152,7 +1152,6 @@ typedef struct _cameradata {
 
 typedef struct _partclassdata {
   char *name;
-  int kind;
   int col_diameter, col_length, col_azimuth, col_elevation;
   int col_u_vel, col_v_vel, col_w_vel;
   float dx, dy, dz;
@@ -1177,7 +1176,6 @@ typedef struct _partpropdata {
   float *partlabelvals;
   unsigned char *class_present, *class_vis;
   unsigned int *class_types;
-  int human_property, particle_property;
   int display;
   float ppartlevels256[256];
   float valmin, valmax;
@@ -1207,7 +1205,6 @@ typedef struct _part5data {
   short *sx, *sy, *sz;
   float *dsx, *dsy, *dsz;
   float *avatar_angle, *avatar_width, *avatar_depth, *avatar_height;
-  int humancolor_varindex;
   int *tags,*sort_tags;
   unsigned char *vis_part;
   float *rvals,**rvalsptr;

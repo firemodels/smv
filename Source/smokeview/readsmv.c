@@ -1964,7 +1964,7 @@ void ReadSMVDynamic(char *file){
 
 /* ------------------ GetLabels ------------------------ */
 
-void GetLabels(char *buffer, int kind, char **label1, char **label2, char prop_buffer[255]){
+void GetLabels(char *buffer, char **label1, char **label2, char prop_buffer[255]){
   char *tok0, *tok1, *tok2;
 
   tok0 = NULL;
@@ -1984,13 +1984,7 @@ void GetLabels(char *buffer, int kind, char **label1, char **label2, char prop_b
     if(strlen(tok2) == 0)tok2 = NULL;
   }
   if(label2 != NULL){
-    if(tok2 == NULL&&kind == HUMANS){
-      strcpy(prop_buffer, "Human_props(default)");
-      *label2 = prop_buffer;
-    }
-    else{
-      *label2 = tok2;
-    }
+    *label2 = tok2;
   }
   if(label1 != NULL)*label1 = tok1;
 }
@@ -2183,7 +2177,7 @@ void ParseDevicekeyword(BFILE *stream, devicedata *devicei){
   }
   devicei->is_beam = is_beam;
 
-  GetLabels(buffer,-1,&prop_id,NULL,prop_buffer);
+  GetLabels(buffer,&prop_id,NULL,prop_buffer);
   devicei->prop=GetPropID(prop_id);
   if(prop_id!=NULL&&devicei->prop!=NULL&&devicei->prop->smv_object!=NULL){
     devicei->object=devicei->prop->smv_object;
@@ -2312,7 +2306,7 @@ void ParseDevicekeyword2(FILE *stream, devicedata *devicei){
   }
   devicei->is_beam = is_beam;
 
-  GetLabels(buffer, -1, &prop_id, NULL, prop_buffer);
+  GetLabels(buffer, &prop_id, NULL, prop_buffer);
   devicei->prop = GetPropID(prop_id);
   if(prop_id!=NULL&&devicei->prop!=NULL&&devicei->prop->smv_object!=NULL){
     devicei->object = devicei->prop->smv_object;
@@ -7068,8 +7062,7 @@ int ReadSMV(bufferstreamdata *stream){
       nterraininfo++;
       continue;
     }
-    if(MatchSMV(buffer,"CLASS_OF_PARTICLES") == 1||
-       MatchSMV(buffer,"CLASS_OF_HUMANS") == 1){
+    if(MatchSMV(buffer,"CLASS_OF_PARTICLES") == 1){
       npartclassinfo++;
       continue;
     }
@@ -8417,8 +8410,7 @@ int ReadSMV(bufferstreamdata *stream){
     // 3'rd type first type read in
     // 2+ntypes  ntypes type read in
 
-    if(MatchSMV(buffer,"CLASS_OF_PARTICLES") == 1||
-       MatchSMV(buffer,"CLASS_OF_HUMANS") == 1){
+    if(MatchSMV(buffer,"CLASS_OF_PARTICLES") == 1){
       float rgb_class[4];
       partclassdata *partclassi;
       char *device_ptr;
@@ -8427,11 +8419,9 @@ int ReadSMV(bufferstreamdata *stream){
       size_t len;
 
       partclassi = partclassinfo + npartclassinfo;
-      partclassi->kind=PARTICLES;
-      if(MatchSMV(buffer,"CLASS_OF_HUMANS") == 1)partclassi->kind=HUMANS;
       FGETS(buffer,255,stream);
 
-      GetLabels(buffer,partclassi->kind,&device_ptr,&prop_id,prop_buffer);
+      GetLabels(buffer,&device_ptr,&prop_id,prop_buffer);
       if(prop_id!=NULL){
         device_ptr=NULL;
       }
@@ -9757,19 +9747,16 @@ int ReadSMV(bufferstreamdata *stream){
     ++++++++++++++++++ CLASS_OF_PARTICLES +++++++++++++++++++++++
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   */
-    if(MatchSMV(buffer,"CLASS_OF_PARTICLES") == 1||
-       MatchSMV(buffer,"CLASS_OF_HUMANS") == 1){
+    if(MatchSMV(buffer,"CLASS_OF_PARTICLES") == 1){
       partclassdata *partclassi;
       char *device_ptr;
       char *prop_id;
       char prop_buffer[255];
 
       partclassi = partclassinfo + npartclassinfo;
-      partclassi->kind=PARTICLES;
-      if(MatchSMV(buffer,"CLASS_OF_HUMANS") == 1)partclassi->kind=HUMANS;
       FGETS(buffer,255,stream);
 
-      GetLabels(buffer,partclassi->kind,&device_ptr,&prop_id,prop_buffer);
+      GetLabels(buffer,&device_ptr,&prop_id,prop_buffer);
       partclassi->prop=GetPropID(prop_id);
       UpdatePartClassDepend(partclassi);
 

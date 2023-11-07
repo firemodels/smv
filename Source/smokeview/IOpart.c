@@ -1510,10 +1510,7 @@ void InitPartProp(void){
 
           propi = part5propinfo + npart5prop;
 
-          propi->human_property=0;
-          propi->particle_property=0;
           propi->label=flowlabel;
-
           propi->setvalmin=GLOBAL_MIN;
           propi->setvalmax=GLOBAL_MAX;
           propi->set_global_bounds=1;
@@ -1576,12 +1573,6 @@ void InitPartProp(void){
       flowlabel = partclassi->labels + j;
       classprop = GetPartProp(flowlabel->longlabel);
       if(classprop!=NULL){
-        if(partclassi->kind==1){
-          classprop->human_property=1;
-        }
-        else{
-          classprop->particle_property=1;
-        }
         classprop->class_present[i]=1;
         classprop->class_types[i]=j-2;
       }

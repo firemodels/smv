@@ -2545,7 +2545,6 @@ void ScriptPartClassColor(scriptdata *scripti){
     partpropdata *propi;
 
     propi = part5propinfo + i;
-    if(propi->particle_property==0)continue;
     if(strcmp(propi->label->longlabel,scripti->cval)==0){
       ParticlePropShowMenu(i);
       count++;
@@ -2847,7 +2846,6 @@ void ScriptPartClassType(scriptdata *scripti){
 
       if(propi->class_present[j]==0)continue;
       partclassj = partclassinfo + j;
-      if(partclassj->kind==HUMANS)continue;
       if(strcmp(partclassj->name,scripti->cval)==0){
         ParticlePropShowMenu(-10-j);
         count++;
