@@ -2539,7 +2539,6 @@ void ScriptLoadBoundary(scriptdata *scripti, int meshnum){
 
 void ScriptPartClassColor(scriptdata *scripti){
   int i;
-  int count=0;
 
   for(i=0;i<npart5prop;i++){
     partpropdata *propi;
@@ -2547,14 +2546,11 @@ void ScriptPartClassColor(scriptdata *scripti){
     propi = part5propinfo + i;
     if(strcmp(propi->label->longlabel,scripti->cval)==0){
       ParticlePropShowMenu(i);
-      count++;
+      return;;
     }
   }
-  if(count == 0){
-    fprintf(stderr, "*** Error: particle class color: %s failed to be set\n", scripti->cval);
-    if(stderr2!=NULL)fprintf(stderr2, "*** Error: particle class color: %s failed to be set\n", scripti->cval);
-  }
-
+  fprintf(stderr, "*** Error: particle class quantity: %s failed to be set\n", scripti->cval);
+  if(stderr2!=NULL)fprintf(stderr2, "*** Error: particle class color: %s failed to be set\n", scripti->cval);
 }
 
 
