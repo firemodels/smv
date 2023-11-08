@@ -1,4 +1,5 @@
 #include "options.h"
+#include <assert.h>
 #include <math.h>
 #include <stdbool.h>
 #include <stdint.h>
@@ -67,8 +68,8 @@ int fortread(void *ptr, size_t size, size_t count, FILE *file) {
   size_t trailer_read = fread(&trailer, sizeof(trailer), 1, file);
   if (trailer_read != 1) return 4;
   if (trailer != (size * count)) return 5;
-  ASSERT(data_read == count);
-  ASSERT(trailer == (size * count));
+  assert(data_read == count);
+  assert(trailer == (size * count));
   return 0;
 }
 
@@ -90,9 +91,9 @@ int fortwrite(void *ptr, size_t size, size_t count, FILE *file) {
   uint32_t trailer = size * count;
   size_t trailer_written = fwrite(&trailer, sizeof(trailer), 1, file);
   if (trailer_written != 1) return 4;
-  ASSERT(header == (size * count));
-  ASSERT(data_written == count);
-  ASSERT(trailer == (size * count));
+  assert(header == (size * count));
+  assert(data_written == count);
+  assert(trailer == (size * count));
   return 0;
 }
 
@@ -167,7 +168,7 @@ void getpatchsizes1(FILE **file, const char *patchfilename, int *npatch,
                     int *headersize, int *error) {
 
   *error = 0;
-  ASSERT(file!=NULL);  
+  assert(file!=NULL);
   if(file == NULL){
     printf("***Error: null pointer in getpatchsizes1 routine\n");
     *error = 1;

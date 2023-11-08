@@ -1,6 +1,7 @@
 #define CPP
 #include "options.h"
 
+#include <assert.h>
 #include <stdio.h>
 #include <string.h>
 #include GLUT_H
@@ -830,7 +831,7 @@ void TourCB(int var){
     }
     break;
   default:
-    ASSERT(FFALSE);
+    assert(FFALSE);
   }
 }
 

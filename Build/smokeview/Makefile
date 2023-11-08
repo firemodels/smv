@@ -56,7 +56,7 @@ bin = .
 
 # Definition of the object variables
 
-csrc = assert.c callbacks.c camera.c color2rgb.c colortimebar.c compress.c csphere.c dmalloc.c \
+csrc = callbacks.c camera.c color2rgb.c colortimebar.c compress.c csphere.c dmalloc.c \
       drawGeometry.c file_util.c getdata.c getdatabounds.c getdatacolors.c glew.c  \
       histogram.c infoheader.c \
       IOboundary.c IOgeometry.c IOhvac.c IOiso.c IOobjects.c IOpart.c IOplot2d.c IOplot3d.c \
@@ -78,7 +78,7 @@ obj = $(cobj) $(cppobj)
 incs = compress.h contourdefs.h csphere.h datadefs.h dirent_win.h file_util.h glui_bounds.h \
        glui_motion.h glui_smoke.h glui_tour.h histogram.h infoheader.h interp.h isodefs.h \
        IOobjects.h IOscript.h IOvolsmoke.h lint.h lua_api.h MALLOCC.h options.h options_common.h \
-       pragmas.h smokeheaders.h smokeviewdefs.h smokeviewvars.h smv_assert.h \
+       pragmas.h smokeheaders.h smokeviewdefs.h smokeviewvars.h \
        stdio_buffer.h stdio_m.h string_util.h structures.h translate.h threader.h viewports.h command_args.h
 
 ifeq ($(ICON),icon)

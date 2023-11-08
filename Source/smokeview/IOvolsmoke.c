@@ -1,5 +1,6 @@
 #include "options.h"
 #include "glew.h"
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -510,7 +511,7 @@ void MakeFireColorsNew(float temp_min, float temp_max, int nfire_colors_arg){
   int i;
   float dtemp;
 
-#ifdef pp_BLACKBODY_OUT  
+#ifdef pp_BLACKBODY_OUT
   FILE *stream;
   stream = fopen("testfire.csv", "w");
 #endif
@@ -528,11 +529,11 @@ void MakeFireColorsNew(float temp_min, float temp_max, int nfire_colors_arg){
 // NTSCsystem
     ConstrainRgb(fire_rgb);
     memcpy(fire_rgbs + 3*i, fire_rgb, 3*sizeof(float));
-#ifdef pp_BLACKBODY_OUT  
+#ifdef pp_BLACKBODY_OUT
     fprintf(stream, "%f,%f,%f,%f\n", temp, fire_rgb[0], fire_rgb[1], fire_rgb[2]);
 #endif
   }
-#ifdef pp_BLACKBODY_OUT  
+#ifdef pp_BLACKBODY_OUT
   fclose(stream);
 #endif
 }
@@ -543,7 +544,7 @@ void MakeFireColors(float temp_min, float temp_max, int nfire_colors_arg){
   int i;
   float dtemp;
 
-#ifdef pp_BLACKBODY_OUT  
+#ifdef pp_BLACKBODY_OUT
   FILE *stream;
   stream = fopen("testfire.csv", "w");
 #endif
@@ -568,7 +569,7 @@ void MakeFireColors(float temp_min, float temp_max, int nfire_colors_arg){
     }
 #endif
   }
-#ifdef pp_BLACKBODY_OUT  
+#ifdef pp_BLACKBODY_OUT
   if(stream!=NULL)fclose(stream);
 #endif
 }
@@ -650,7 +651,7 @@ void GetFireEmission(float *smoke_tran, float *fire_emission, float dlength, flo
     zmin = voltest_center[2] - voltest_r1;
     zmax = voltest_center[2] + voltest_r2;
 
-    
+
     for(k=0;k<nz;k++){
       float dz;
 
@@ -1167,7 +1168,7 @@ void InitNabors(void){
     float xyzmid[3], xyz[3];
 
     meshi = meshinfo + i;
-    memcpy(xyzmid, meshi->boxmiddle, 3*sizeof(float)); 
+    memcpy(xyzmid, meshi->boxmiddle, 3*sizeof(float));
 
     memcpy(xyz, xyzmid, 3*sizeof(float));
     xyz[0] = meshi->boxmin[0]- meshi->boxeps_fds[0];
@@ -1506,7 +1507,7 @@ meshdata *GetMeshInSmesh(meshdata *mesh_guess, supermeshdata *smesh, float *xyz)
       return meshi;
     }
   }
-  ASSERT(FFALSE);
+  assert(FFALSE);
   return NULL;
 }
 
@@ -1555,7 +1556,7 @@ void IntegrateFireColors(float *integrated_firecolor, float *xyzvert, float dlen
       // xyz(t) = xyzvert + t*(xyzvert - eye_position_smv )
       // xyzvert_ii + t*(xyzvert_ii - eye_position_smv_ii) = boxmin_ii
       // t = (xyzvert_ii - boxmin_ii)/(xyzvert_ii-eye_position_smv_ii)
-      // 
+      //
       // integrate from t=0 to t=t_intersect_min  (if outside mesh)
       //     ie from vertex to nearest wall along a line from the eye position
       //        intersecting the vertex position
@@ -1613,7 +1614,7 @@ void IntegrateFireColors(float *integrated_firecolor, float *xyzvert, float dlen
         vert_end[2] = boxmax[2];
         break;
       default:
-        ASSERT(FFALSE);
+        assert(FFALSE);
         break;
     }
   }
@@ -1668,7 +1669,7 @@ void IntegrateFireColors(float *integrated_firecolor, float *xyzvert, float dlen
     taun *= taui;
     alphai = 1.0 - taui;
     alphan = 1.0 - taun;
-    
+
     if(hrrpuv_max_blending==1){
       integrated_firecolor[0] = MAX(integrated_firecolor[0], fire_emission[0]);
       integrated_firecolor[1] = MAX(integrated_firecolor[1], fire_emission[1]);
@@ -1853,7 +1854,7 @@ void ComputeAllSmokecolors(void){
           }
           break;
         default:
-          ASSERT(FFALSE);
+          assert(FFALSE);
           break;
       }
     }
@@ -1937,7 +1938,7 @@ void DrawSmoke3dVolDebug(void){
         Output3Text(foregroundcolor, (x[0]+x[1])/2.0,(y[0]+y[1])/2.0,(z[0]+z[1])/2.0, label);
         break;
       default:
-        ASSERT(FFALSE);
+        assert(FFALSE);
         break;
     }
   }
@@ -2023,7 +2024,7 @@ void DrawSmoke3dVolDebug(void){
         glVertex3f(x[1],y[0],z[0]);
         break;
       default:
-        ASSERT(FFALSE);
+        assert(FFALSE);
         break;
     }
   }
@@ -2068,7 +2069,7 @@ void DrawSmoke3DVol(void){
         fire_rgb[1] /= maxrgb;
         fire_rgb[2] /= maxrgb;
       }
-      
+
       glColor3fv(fire_rgb);
       zmin = (float)i / (float)nfire_colors;
       zmax = (float)(i + 1) / (float)nfire_colors;
@@ -2316,7 +2317,7 @@ void DrawSmoke3DVol(void){
         }
         break;
       default:
-        ASSERT(FFALSE);
+        assert(FFALSE);
         break;
     }
     glEnd();
@@ -2648,7 +2649,7 @@ void DrawSmoke3DGPUVol(void){
         }
         break;
       default:
-        ASSERT(FFALSE);
+        assert(FFALSE);
         break;
     }
     glEnd();

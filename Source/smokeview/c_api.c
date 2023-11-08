@@ -1,4 +1,5 @@
 #include "options.h"
+#include <assert.h>
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -253,7 +254,7 @@ int Loadsmv(char *input_filename, char *input_filename_ext) {
   case 3:
     return 3;
   default:
-    ASSERT(FFALSE);
+    assert(FFALSE);
   }
 
   /* initialize units */
@@ -532,7 +533,7 @@ char *FormFilename(int view_mode, char *renderfile_name, char *renderfile_dir,
     case VIEW_CENTER:
       break;
     default:
-      ASSERT(FFALSE);
+      assert(FFALSE);
       break;
     }
 
@@ -1222,7 +1223,7 @@ int BlockageLocations(int setting) {
     blocklocation = BLOCKlocation_cad;
     break;
   default:
-    ASSERT(FFALSE);
+    assert(FFALSE);
     break;
   }
   return 0;
@@ -1590,7 +1591,7 @@ void ShowPlot3dData(int meshnumber, int plane_orientation, int display,
     updatemenu = 1;
     break;
   default:
-    ASSERT(FFALSE);
+    assert(FFALSE);
     break;
   }
   UpdatePlotSlice(dir);
@@ -3232,7 +3233,7 @@ int SetSkybox() {
   //   fgets(buffer, 255, stream);
   //   loadskytexture(buffer, skyi->face + i);
   // }
-  ASSERT(FFALSE);
+  assert(FFALSE);
   return 0;
 } // SKYBOX TODO
 
@@ -3993,7 +3994,7 @@ int SetV5Particles(int minFlag, float minValue, int maxFlag, float maxValue,
         propi->user_min = minValue;
         break;
       default:
-        ASSERT(FFALSE);
+        assert(FFALSE);
         break;
       }
       switch (maxFlag) {
@@ -4007,7 +4008,7 @@ int SetV5Particles(int minFlag, float minValue, int maxFlag, float maxValue,
         propi->user_max = maxValue;
         break;
       default:
-        ASSERT(FFALSE);
+        assert(FFALSE);
         break;
       }
     }
