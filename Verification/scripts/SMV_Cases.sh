@@ -6,6 +6,7 @@ $QFDS -d Visualization -t -A mplume5c8_bench.fds
 $QFDS -d Visualization -t -A plume5c_bench.fds
 $QFDS -p 2 -d Visualization -t -A thouse5_bench.fds
 
+$QFDS -d Visualization boundtest.fds
 $QFDS -d Visualization cell_test.fds
 $RUNCFAST -d Visualization cfast_test.in
 $QFDS -d Visualization colorbar.fds

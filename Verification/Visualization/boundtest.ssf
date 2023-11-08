@@ -1,0 +1,73 @@
+// put rendered files in specified directory
+
+RENDERDIR
+ .
+// ..\..\Manuals\SMV_Verification_Guide\SCRIPT_FIGURES
+
+// render slice files
+
+UNLOADALL
+LOADSLCF
+ QUANTITY='TEMPERATURE' PBY=0.8
+SETTIMEVAL
+ 5.0
+RENDERONCE
+ boundtest_slice_05
+
+
+// render vector slice files
+
+UNLOADALL
+LOADVSLICEM
+ TEMPERATURE
+ 2 0.800000
+ 1
+SETTIMEVAL
+ 5.0
+RENDERONCE
+ boundtest_vslice_05
+
+// render particle files using points
+
+UNLOADALL
+LOADPARTICLES
+PARTCLASSCOLOR
+ PARTICLE U
+SETTIMEVAL
+ 5.0
+RENDERONCE
+ boundtest_part_05
+
+// render boundary files
+
+UNLOADALL
+LOADBOUNDARYM
+ WALL TEMPERATURE
+ 1
+SETTIMEVAL
+ 5.0
+RENDERONCE
+ boundtest_bound_05
+
+// render cell centered boundary files
+
+UNLOADALL
+// LOADFILE
+//  plume5c_04.bf
+LOADBOUNDARYM
+ WALL TEMPERATURE(cell centered)
+ 1
+SETTIMEVAL
+ 5.0
+RENDERONCE
+ boundtest_bound_cell_05
+
+// render PLOT3D continuous contours
+
+UNLOADALL
+LOADPLOT3D
+ 1 5.0
+SETVIEWPOINT
+ external
+RENDERONCE
+ boundtest_plot3d_05
