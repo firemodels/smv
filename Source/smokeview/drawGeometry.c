@@ -1225,6 +1225,7 @@ void SetVentDirs(void){
       ventdata *vi;
 
       vi=meshi->ventinfo+iv;
+      if(vi->dir!=DIR_UNDEFINED)continue;
 
       if(vi->isMirrorvent==1)n_mirrorvents++; // count number of mirror and open vents
       if(vi->isOpenvent==1)n_openvents++;
