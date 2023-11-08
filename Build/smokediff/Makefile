@@ -35,7 +35,7 @@ GNU_COMPINFO=-Dpp_COMPVER=\"$(GNU_COMPVERSION)\"
 
 # Definition of the object variables
 
-obj = assert.o color2rgb.o dmalloc.o file_util.o getdata.o histogram.o IOdboundary.o IOdplot.o \
+obj = color2rgb.o dmalloc.o file_util.o getdata.o histogram.o IOdboundary.o IOdplot.o \
       IOdslice.o main.o md5.o readsmv.o sha1.o sha256.o stdio_buffer.o string_util.o utilities.o
 objwin = $(obj:.o=.obj)
 

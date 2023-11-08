@@ -38,11 +38,11 @@ GNU_COMPINFO=-Dpp_COMPVER=\"$(GNU_COMPVERSION)\"
 
 # Definition of the object variables
 
-obj =    assert.o CNV3dsmoke.o CNVboundary.o CNVpart.o CNVslice.o  \
+obj =    CNV3dsmoke.o CNVboundary.o CNVpart.o CNVslice.o  \
          compress.o dmalloc.o file_util.o getdata.o \
          isobox.o main.o md5.o readfiles.o sha1.o sha256.o stdio_buffer.o \
-         string_util.o threader.o utilities.o 
-	    
+         string_util.o threader.o utilities.o
+
 objwin = $(obj:.o=.obj)
 
 # main has to be compiled without optimization (on a Windows PC) otherwise errors occcur
@@ -108,7 +108,7 @@ gnu_linux_64_db : $(obj)
 # ------------- gnu osx 64 ----------------
 
 gnu_osx_64 : CFLAGS    = -O0 -m64 -D pp_GCC -D pp_OSX $(GITINFO) $(GNU_COMPINFO) $(SMV_TESTFLAG)
-gnu_osx_64 : LFLAGS    = -L $(LIB_DIR)/gnu_osx_64 -lz -lpthread 
+gnu_osx_64 : LFLAGS    = -L $(LIB_DIR)/gnu_osx_64 -lz -lpthread
 gnu_osx_64 : CC        = gcc
 gnu_osx_64 : exe       = smokezip_osx_64
 
