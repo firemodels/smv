@@ -1519,7 +1519,7 @@ SVEXTERN float SVDECL(vector_headlength,0.2);
 SVEXTERN float SVDECL(vector_headdiameter,0.2);
 
 SVEXTERN float linewidth, ventlinewidth, highlight_linewidth,solidlinewidth;
-SVEXTERN float SVDECL(sliceoffset_factor,0.1), SVDECL(ventoffset_factor,0.1);
+SVEXTERN float SVDECL(sliceoffset_factor,0.1), SVDECL(ventoffset_factor,0.2);
 SVEXTERN int visBLOCKold;
 
 SVEXTERN int SVDECL(planar_terrain_slice,0);
