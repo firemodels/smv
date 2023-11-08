@@ -15,7 +15,7 @@ void SetColorbar(size_t value);
 ERROR_CODE SetNamedColorbar(const char *name);
 ERROR_CODE GetNamedColorbar(const char *name, size_t *index);
 ERROR_CODE CApiSetSliceBounds(const char *slice_type, int set_min,
-                            float value_min, int set_max, float value_max);
+                              float value_min, int set_max, float value_max);
 ERROR_CODE SetSliceBoundMin(const char *slice_type, int set, float value);
 ERROR_CODE SetSliceBoundMax(const char *slice_type, int set, float value);
 ERROR_CODE GetSliceBounds(const char *slice_type, simple_bounds *bounds);
@@ -135,11 +135,11 @@ void SetSceneclipZMax(int flag, float value);
 
 int RenderFrameLua(int view_mode, const char *basename);
 char *FormFilename(int view_mode, char *renderfile_name, char *renderfile_dir,
-                    char *renderfile_path, int woffset, int hoffset,
-                    int screenH, const char *basename);
+                   char *renderfile_path, int woffset, int hoffset, int screenH,
+                   const char *basename);
 
 int ParseSmvFilepath(const char *smv_filepath, char *fdsprefix,
-                       char *input_filename_ext);
+                     char *input_filename_ext);
 
 // --------- show/hide label options--------
 
@@ -291,8 +291,8 @@ int SetForegroundcolor(float r, float g, float b); // FOREGROUNDCOLOR
 int SetHeatoffcolor(float r, float g, float b);    // HEATOFFCOLOR
 int SetHeatoncolor(float r, float g, float b);     // HEATONCOLOR
 int SetIsocolors(float shininess, float transparency, int transparency_option,
-                  int opacity_change, float specular[3], int n_colors,
-                  float colors[][4]);
+                 int opacity_change, float specular[3], int n_colors,
+                 float colors[][4]);
 int SetColortable(int ncolors, int colors[][4], char **names);
 int SetLightpos0(float x, float y, float z, float w); // LIGHTPOS0
 int SetLightpos1(float x, float y, float z, float w); // LIGHTPOS1
@@ -324,7 +324,7 @@ int SetStreaklinewidth(float v);  // STREAKLINEWIDTH
 int SetTicklinewidth(float v);    // TICKLINEWIDTH
 int SetUsenewdrawface(int v);     // USENEWDRAWFACE
 int SetVeclength(float vf, int vec_uniform_length_in,
-                  int vec_uniform_spacing_in); // VECLENGTH
+                 int vec_uniform_spacing_in); // VECLENGTH
 int SetVectorlinewidth(float a, float b);     // VECTORLINEWIDTH
 int SetVectorpointsize(float v);              // VECTORPOINTSIZE
 int SetVentlinewidth(float v);                // VENTLINEWIDTH
@@ -347,7 +347,7 @@ int SetSlicedataout(int v);                             // SLICEDATAOUT
 int SetSlicezipstep(int v);                             // SLICEZIPSTEP
 int SetSmoke3dzipstep(int v);                           // SMOKE3DZIPSTEP
 int SetUserrotate(int index, int show_center, float x, float y,
-                   float z); // USER_ROTATE
+                  float z); // USER_ROTATE
 
 // --  *** VIEW PARAMETERS ***
 
@@ -384,8 +384,8 @@ int SetP3dsurfacetype(int v);                          // P3DSURFACETYPE
 int SetP3dsurfacesmooth(int v);                        // P3DSURFACESMOOTH
 int SetSbatstart(int v);                               // SBATSTART
 int SetScaledfont(int height2d, float height2dwidth, int thickness2d,
-                   int height3d, float height3dwidth,
-                   int thickness3d); // SCALEDFONT
+                  int height3d, float height3dwidth,
+                  int thickness3d); // SCALEDFONT
 int GetScaledfontHeight2d();
 int SetScaledfontHeight2d(int height2d);
 int SetShowalltextures(int v);      // SHOWALLTEXTURES
@@ -419,14 +419,14 @@ int SetShowsmokepart(int v);        // SHOWSMOKEPART
 int SetShowsprinkpart(int v);       // SHOWSPRINKPART
 int SetShowstreak(int show, int step, int showhead, int index); // SHOWSTREAK
 int SetShowterrain(int v);                                      // SHOWTERRAIN
-int SetShowthreshold(int a, int b, float c); // SHOWTHRESHOLD
-int SetShowticks(int v);                     // SHOWTICKS
-int SetShowtimebar(int v);                   // SHOWTIMEBAR
-int SetShowtimelabel(int v);                 // SHOWTIMELABEL
-int SetShowtitle(int v);                     // SHOWTITLE
-int SetShowtracersalways(int v);             // SHOWTRACERSALWAYS
+int SetShowthreshold(int a, int b, float c);                    // SHOWTHRESHOLD
+int SetShowticks(int v);                                        // SHOWTICKS
+int SetShowtimebar(int v);                                      // SHOWTIMEBAR
+int SetShowtimelabel(int v);                                    // SHOWTIMELABEL
+int SetShowtitle(int v);                                        // SHOWTITLE
+int SetShowtracersalways(int v); // SHOWTRACERSALWAYS
 int SetShowtriangles(int a, int b, int c, int d, int e,
-                      int f);                            // SHOWTRIANGLES
+                     int f);                            // SHOWTRIANGLES
 int SetShowtransparent(int v);                          // SHOWTRANSPARENT
 int SetShowtransparentvents(int v);                     // SHOWTRANSPARENTVENTS
 int SetShowtrianglecount(int v);                        // SHOWTRIANGLECOUNT
@@ -440,7 +440,7 @@ int SetStartuplang(const char *lang);                   // STARTUPLANG
 int SetStereo(int v);                                   // STEREO
 int SetSurfinc(int v);                                  // SURFINC
 int SetTerrainparams(int r_min, int g_min, int b_min, int r_max, int g_max,
-                      int b_max, int v);                      // TERRAINPARMS
+                     int b_max, int v);                      // TERRAINPARMS
 int SetTitlesafe(int v);                                     // TITLESAFE
 int SetTrainermode(int v);                                   // TRAINERMODE
 int SetTrainerview(int v);                                   // TRAINERVIEW
@@ -449,7 +449,7 @@ int SetTreeparms(int minsize, int visx, int visy, int visz); // TREEPARMS
 int SetTwosidedvents(int internal, int external);            // TWOSIDEDVENTS
 int SetVectorskip(int v);                                    // VECTORSKIP
 int SetVolsmoke(int a, int b, int c, int d, int e, float f, float g, float h,
-                 float i, float j, float k, float l); // VOLSMOKE
+                float i, float j, float k, float l); // VOLSMOKE
 int SetZoom(int a, float b);                         // ZOOM
 
 // --  *** MISC ***
@@ -469,7 +469,7 @@ int SetZaxisangles(float a, float b, float c);
 
 int SetColorbartype(int v, const char *label); // COLORBARTYPE
 int SetExtremecolors(int a, int b, int c, int d, int e,
-                      int f);                 // EXTREMECOLORS
+                     int f);                 // EXTREMECOLORS
 int SetFirecolor(int r, int g, int b);       // FIRECOLOR
 int SetFirecolormap(int a, int b);           // FIRECOLORMAP
 int SetFiredepth(float v);                   // FIREDEPTH
@@ -512,13 +512,13 @@ int SetViewtourfrompath(int v);            // VIEWTOURFROMPATH
 
 int SetAvatarevac(int v); // AVATAREVAC
 int SetDevicevectordimensions(float baselength, float basediameter,
-                               float headlength,
-                               float headdiameter); // DEVICEVECTORDIMENSIONS
+                              float headlength,
+                              float headdiameter); // DEVICEVECTORDIMENSIONS
 int SetDevicebounds(float a, float b);             // DEVICEBOUNDS
 int SetDeviceorientation(int a, float b);          // DEVICEORIENTATION
 int SetGridparms(int vx, int vy, int vz, int px, int py, int pz); // GRIDPARMS
 int SetGsliceparms(int vis_data, int vis_triangles, int vis_triangulation,
-                    int vis_normal, float xyz[], float azelev[]); // GSLICEPARMS
+                   int vis_normal, float xyz[], float azelev[]); // GSLICEPARMS
 int SetLoadfilesatstartup(int v);         // LOADFILESATSTARTUP
 int SetMscale(float a, float b, float c); // MSCALE
 int SetSliceauto(int n, int vals[]);      // SLICEAUTO
@@ -528,48 +528,48 @@ int SetPart5propdisp(int vals[]);         // PART5PROPDISP
 int SetPart5color(int v);                 // PART5COLOR
 int SetPropindex(int nvals, int *vals);   // PROPINDEX
 int SetShooter(float xyz[], float dxyz[], float uvw[], float velmag,
-                float veldir, float pointsize, int fps, int vel_type,
-                int nparts, int vis, int cont_update, float duration,
-                float v_inf);                         // SHOOTER
+               float veldir, float pointsize, int fps, int vel_type, int nparts,
+               int vis, int cont_update, float duration,
+               float v_inf);                         // SHOOTER
 int SetShowdevices(int n, const char *const *names); // SHOWDEVICES
 int SetShowdevicevals(int showdeviceval, int showvdeviceval,
-                       int devicetypes_index, int colordeviceval,
-                       int vectortype, int vispilot, int showdevicetype,
-                       int showdeviceunit); // SHOWDEVICEVALS
+                      int devicetypes_index, int colordeviceval, int vectortype,
+                      int vispilot, int showdevicetype,
+                      int showdeviceunit); // SHOWDEVICEVALS
 int SetShowmissingobjects(int v);          // SHOWMISSINGOBJECTS
 int SetTourindex(int v);                   // TOURINDEX
 int SetUserticks(int vis, int auto_place, int sub, float origin[], float min[],
-                  float max[], float step[], int show_x, int show_y,
-                  int show_z); // USERTICKS
+                 float max[], float step[], int show_x, int show_y,
+                 int show_z); // USERTICKS
 int SetCParticles(int minFlag, float minValue, int maxFlag, float maxValue,
-                    const char *label); // C_PARTICLES
+                  const char *label); // C_PARTICLES
 int SetCSlice(int minFlag, float minValue, int maxFlag, float maxValue,
-                const char *label);      // C_SLICE
+              const char *label);      // C_SLICE
 int SetCacheBoundarydata(int setting); // CACHE_BOUNDARYDATA
 int SetCacheQdata(int setting);        // CACHE_QDATA
 int SetPercentilelevel(float percentile_level_min,
-                        float p_level_max); // PERCENTILELEVEL
+                       float p_level_max); // PERCENTILELEVEL
 int SetTimeoffset(int setting);            // TIMEOFFSET
 int SetPatchdataout(int outputFlag, float tmin, float tmax, float xmin,
-                     float xmax, float ymin, float ymax, float zmin,
-                     float zmax); // PATCHDATAOUT
+                    float xmax, float ymin, float ymax, float zmin,
+                    float zmax); // PATCHDATAOUT
 int SetCPlot3d(int n3d, int minFlags[], int minVals[], int maxFlags[],
-                 int maxVals[]); // C_PLOT3D
+               int maxVals[]); // C_PLOT3D
 int SetVPlot3d(int n3d, int minFlags[], int minVals[], int maxFlags[],
-                 int maxVals[]); // V_PLOT3D
+               int maxVals[]); // V_PLOT3D
 int SetPl3dBoundMin(int pl3dValueIndex, int set, float value);
 int SetPl3dBoundMax(int pl3dValueIndex, int set, float value);
 int SetTload(int beginFlag, float beginVal, int endFlag, int endVal,
-              int skipFlag, int skipVal); // TLOAD
+             int skipFlag, int skipVal); // TLOAD
 int SetV5Particles(int minFlag, float minValue, int maxFlag, float maxValue,
-                     const char *label); // V5_PARTICLES
+                   const char *label); // V5_PARTICLES
 int SetVParticles(int minFlag, float minValue, int maxFlag, float maxValue);
 // V_PARTICLES
 int SetVTarget(int minFlag, float minValue, int maxFlag, float maxValue);
 // V_TARGET
 int SetVSlice(int minFlag, float minValue, int maxFlag, float maxValue,
-                const char *label, float lineMin, float lineMax,
-                int lineNum); // V_SLICE
+              const char *label, float lineMin, float lineMax,
+              int lineNum); // V_SLICE
 // -- VIEWPOINT5
 // --  0 10 2
 // --  0.490669 -2.257067 0.018868 1.000000 -2

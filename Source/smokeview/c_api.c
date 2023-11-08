@@ -103,7 +103,7 @@ int SetSliceBoundMax(const char *slice_type, int set, float value) {
 /// @param[in] valmax
 /// @return Non-zero on error
 int CApiSetSliceBounds(const char *slice_type, int set_valmin, float valmin,
-                   int set_valmax, float valmax) {
+                       int set_valmax, float valmax) {
   int slice_type_index = GetSliceBoundIndex(slice_type);
   if (slice_type_index < 0) {
     // Slice type index could not be found.
@@ -168,7 +168,7 @@ int Loadsmvall(const char *input_filename) {
 /// @param[out] input_filename_ext
 /// @return
 int ParseSmvFilepath(const char *smv_filepath, char *fdsprefix,
-                       char *input_filename_ext) {
+                     char *input_filename_ext) {
   int len_casename;
   strcpy(input_filename_ext, "");
   len_casename = (int)strlen(smv_filepath);

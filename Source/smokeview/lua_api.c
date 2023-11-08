@@ -3063,7 +3063,7 @@ int LuaSetIsocolors(lua_State *L) {
     GetColor(L, -1, colors[i - 1]);
   }
   int return_code = SetIsocolors(shininess, transparency, transparency_option,
-                                  opacity_change, specular, n_colors, colors);
+                                 opacity_change, specular, n_colors, colors);
   lua_pushnumber(L, return_code);
   return 1;
 }
@@ -3666,7 +3666,7 @@ int LuaSetScaledfont(lua_State *L) {
   int height3dwidth = lua_tonumber(L, 5);
   int thickness3d = lua_tonumber(L, 6);
   int return_code = SetScaledfont(height2d, height2dwidth, thickness2d,
-                                   height3d, height3dwidth, thickness3d);
+                                  height3d, height3dwidth, thickness3d);
   lua_pushnumber(L, return_code);
   return 1;
 }
@@ -4604,7 +4604,7 @@ int LuaSetDevicevectordimensions(lua_State *L) {
   float headlength = lua_tonumber(L, 3);
   float headdiameter = lua_tonumber(L, 4);
   int return_code = SetDevicevectordimensions(baselength, basediameter,
-                                               headlength, headdiameter);
+                                              headlength, headdiameter);
   lua_pushnumber(L, return_code);
   return 1;
 }
@@ -4661,7 +4661,7 @@ int LuaSetGsliceparms(lua_State *L) {
     i++;
   }
   int return_code = SetGsliceparms(vis_data, vis_triangles, vis_triangulation,
-                                    vis_normal, xyz, azelev);
+                                   vis_normal, xyz, azelev);
   lua_pushnumber(L, return_code);
   return 1;
 }
@@ -4853,8 +4853,7 @@ int LuaSetCSlice(lua_State *L) {
   if (lua_gettop(L) == 5) {
     label = lua_tostring(L, 5);
   }
-  int return_code =
-      SetCSlice(min_flag, min_value, max_flag, max_value, label);
+  int return_code = SetCSlice(min_flag, min_value, max_flag, max_value, label);
   lua_pushnumber(L, return_code);
   return 1;
 } // C_SLICE
@@ -4911,7 +4910,7 @@ int LuaSetVSlice(lua_State *L) {
   float line_max = lua_tonumber(L, 7);
   int line_num = lua_tonumber(L, 8);
   int return_code = SetVSlice(min_flag, min_value, max_flag, max_value, label,
-                                line_min, line_max, line_num);
+                              line_min, line_max, line_num);
   lua_pushnumber(L, return_code);
   return 1;
 }
@@ -4927,7 +4926,7 @@ int LuaSetPatchdataout(lua_State *L) {
   int zmin = lua_tonumber(L, 7);
   int zmax = lua_tonumber(L, 8);
   int return_code = SetPatchdataout(output_flag, tmin, tmax, xmin, xmax, ymin,
-                                     ymax, zmin, zmax);
+                                    ymax, zmin, zmax);
   lua_pushnumber(L, return_code);
   return 1;
 } // PATCHDATAOUT
