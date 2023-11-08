@@ -10913,10 +10913,6 @@ typedef struct {
           s2_color[3]=1.0;
 
           FGETS(buffer,255,stream);
-          sscanf(buffer,"%i %i %i %i %i %i %i %i %f %f %f %f",
-               &iv1,&iv2,&jv1,&jv2,&kv1,&kv2,
-               &ventindex,&venttype,
-               s2_color,s2_color+1,s2_color+2,s2_color+3);
           cventdir = strchr(buffer, '!');
           ventdir = 0;
           if(cventdir != NULL){
@@ -10924,6 +10920,13 @@ typedef struct {
             cventdir++;
             sscanf(cventdir, "%i", &ventdir);
           }
+
+          sscanf(buffer,"%i %i %i %i %i %i %i %i %f %f %f %f",
+               &iv1,&iv2,&jv1,&jv2,&kv1,&kv2,
+               &ventindex,&venttype,
+               s2_color,s2_color+1,s2_color+2,s2_color+3);
+
+          // get vent direction
           if(ventdir == 0){
             vi->dir = DIR_UNDEFINED;
           }
@@ -10937,6 +10940,7 @@ typedef struct {
             if(jv1 == jv2)vi->dir = DOWN_Y;
             if(kv1 == kv2)vi->dir = DOWN_Z;
           }
+
           if(s2_color[0]>=0.0&&s2_color[1]>=0.0&&s2_color[2]>=0.0){
             s_color[0]=s2_color[0];
             s_color[1]=s2_color[1];
