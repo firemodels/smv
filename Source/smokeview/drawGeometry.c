@@ -1194,6 +1194,7 @@ int CheckVentDup(ventdata* vi, meshdata* meshi){
 void SetVentDirs(void){
   int ii;
 
+  INIT_PRINT_TIMER(vent_setup_timer);
   n_mirrorvents = 0;
   n_openvents = 0;
   for(ii=0;ii<nmeshes;ii++){
@@ -1401,6 +1402,7 @@ void SetVentDirs(void){
       }
     }
   }
+  PRINT_TIMER(vent_setup_timer, "set vent directions");
 }
 
 /* ------------------ InBlockage ------------------------ */
