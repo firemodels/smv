@@ -1663,55 +1663,8 @@ void ScriptMakeMovie(scriptdata *scripti){
 /* ------------------ ScriptLoadParticles ------------------------ */
 
 void ScriptLoadParticles(scriptdata *scripti){
-  int i;
-  int errorcode;
-  int count=0;
-  int part_multithread_save;
-
   PRINTF("script: loading particles files\n\n");
-  part_multithread_save = part_multithread;
-  part_multithread = 0;
-  npartframes_max=GetMinPartFrames(PARTFILE_LOADALL);
-  for(i=0;i<npartinfo;i++){
-    partdata *parti;
-
-    parti = partinfo + i;
-    ReadPart(parti->file,i,UNLOAD,&errorcode);
-    count++;
-  }
-  for(i = 0;i<npartinfo;i++){
-    partdata *parti;
-
-    parti = partinfo+i;
-    parti->finalize = 0;
-  }
-  for(i = npartinfo-1;i>=0;i--){
-    partdata *parti;
-    int nf_all_local;
-    int have_particles;
-
-    parti = partinfo+i;
-#define NOT_FORCE 0
-    have_particles = GetPartHeader(parti, &nf_all_local, NOT_FORCE, 1);
-    if(have_particles == 0)continue;
-    parti->finalize = 1;
-    break;
-  }
-  for(i=0;i<npartinfo;i++){
-    partdata *parti;
-
-    parti = partinfo + i;
-    ReadPart(parti->file,i,LOAD,&errorcode);
-    count++;
-  }
-  if(count == 0){
-    fprintf(stderr, "*** Error: Particles files failed to load\n");
-    if(stderr2!=NULL)fprintf(stderr2, "*** Error: Particles files failed to load\n");
-  }
-  force_redisplay=1;
-  UpdateFrameNumber(0);
-  updatemenu=1;
-  part_multithread = part_multithread_save;
+  LoadParticleMenu(PARTFILE_LOADALL);
 }
 
 /* ------------------ ScriptLoadIso ------------------------ */
