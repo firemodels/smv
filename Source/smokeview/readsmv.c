@@ -10930,12 +10930,12 @@ typedef struct {
           else if(ventdir<0){
             if(iv1 == iv2)vi->dir = UP_X;
             if(jv1 == jv2)vi->dir = UP_Y;
-            if(kv1 == kv2)vi->dir = UP_X;
+            if(kv1 == kv2)vi->dir = UP_Z;
           }
           else{
             if(iv1 == iv2)vi->dir = DOWN_X;
             if(jv1 == jv2)vi->dir = DOWN_Y;
-            if(kv1 == kv2)vi->dir = DOWN_X;
+            if(kv1 == kv2)vi->dir = DOWN_Z;
           }
           if(s2_color[0]>=0.0&&s2_color[1]>=0.0&&s2_color[2]>=0.0){
             s_color[0]=s2_color[0];
