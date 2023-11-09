@@ -412,8 +412,6 @@ void ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
       if(setp3max_all[nn]!=SET_MAX&&setp3max_all[nn]!=CHOP_MAX)setp3max_all[nn]=SET_MAX;
     }
   }
-//  int num;
-//  GetMinMaxAll(BOUND_PLOT3D, setp3min_all, p3min_all, setp3max_all, p3max_all, &num);
 #ifdef pp_HIST
   GetPlot3DHists(p);
 #endif
