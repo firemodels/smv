@@ -2902,8 +2902,10 @@ void UpdateFaceLists(void){
     glutPostRedisplay();
   }
   // if we are not showing boundary files then don't try to hide blockages
-  if(use_tload_begin == 1 && global_times!=NULL && global_times[itimes] < tload_begin)check_blockhide = 0;
-  if(use_tload_end   == 1 && global_times!=NULL && global_times[itimes] > tload_end)check_blockhide = 0;
+  if(showplot3d == 0){
+    if(use_tload_begin == 1 && global_times != NULL && global_times[itimes] < tload_begin)check_blockhide = 0;
+    if(use_tload_end == 1 && global_times != NULL && global_times[itimes] > tload_end)check_blockhide = 0;
+  }
   for(i=0;i<nmeshes;i++){
     meshdata *meshi;
     int patchfilenum;
@@ -2924,17 +2926,17 @@ void UpdateFaceLists(void){
     local_showpatch=0;
     loadpatch=0;
     patchfilenum=meshi->patchfilenum;
-    if(hidepatchsurface==1&&patchfilenum>=0&&patchfilenum<npatchinfo){
-      patchi = patchinfo + patchfilenum;
-      if(patchi->loaded==1)loadpatch=1;
-      if(patchi->display==1)local_showpatch=1;
-    }
-    else{
-      patchi=NULL;
-    }
-    if(chop_patch == 1){
-      local_showpatch=0;
-      loadpatch=0;
+    patchi=NULL;
+    if(showplot3d == 0){
+      if(hidepatchsurface==1&&patchfilenum>=0&&patchfilenum<npatchinfo){
+        patchi = patchinfo + patchfilenum;
+        if(patchi->loaded==1)loadpatch=1;
+        if(patchi->display==1)local_showpatch=1;
+      }
+      if(chop_patch == 1){
+        local_showpatch=0;
+        loadpatch=0;
+      }
     }
 
     if(local_showpatch==1&&loadpatch==1&&check_blockhide==1){
