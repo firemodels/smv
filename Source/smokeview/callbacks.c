@@ -3897,11 +3897,11 @@ void DoStereo(void){
 void DoScriptLua(void){
   int script_return_code;
   if(runluascript == 1){
-    if(strlen(luascript_filename)>0) load_script(luascript_filename);
+    if(strlen(luascript_filename)>0) LoadScript(luascript_filename);
     runluascript = 0;
     PRINTF("running lua script section\n");
     fflush(stdout);
-    script_return_code = runLuaScript();
+    script_return_code = RunLuaScript();
     if(script_return_code != LUA_OK && script_return_code != LUA_YIELD && exit_on_script_crash){
         SMV_EXIT(1);
     }
@@ -3917,7 +3917,7 @@ void DoScript(void){
   if(runscript == 1){
   // csv files are read in the background.  the following line ensures that they will all be read in
   // before the script begins. gpf
-      JOIN_CSV_FILES; 
+      JOIN_CSV_FILES;
       runscript = 0;
       PRINTF("running ssf script instruction\n");
       fflush(stdout);
