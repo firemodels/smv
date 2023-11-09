@@ -70,7 +70,6 @@ int GetGlobalPartBounds(int flag){
 
     parti = partinfo+i;
     if(parti->loaded==1)nloaded_files++;
-
     if(npart5prop>0){
       if(parti->valmin_fds==NULL)NewMemory((void **)&parti->valmin_fds, npart5prop*sizeof(float));
       if(parti->valmax_fds==NULL)NewMemory((void **)&parti->valmax_fds, npart5prop*sizeof(float));

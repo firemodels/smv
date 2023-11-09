@@ -700,8 +700,6 @@ SVEXTERN int SVDECL(triangle_count ,0);
 SVEXTERN int SVDECL(n_geom_triangles,0);
 SVEXTERN int SVDECL(show_device_orientation,0);
 SVEXTERN float SVDECL(orientation_scale,1.0);
-SVEXTERN char SVDECL(*script_labelstring,NULL);
-SVEXTERN char SVDECL(*loaded_file,NULL);
 SVEXTERN int SVDECL(clipon,0);
 SVEXTERN int SVDECL(vectortype,0);
 SVEXTERN int SVDECL(show_cutcells,0);
@@ -1965,8 +1963,6 @@ SVEXTERN int SVDECL(*sortedblocklist,NULL),SVDECL(*changed_idlist,NULL),SVDECL(n
 SVEXTERN int nselectblocks;
 SVEXTERN surfdata SVDECL(*surfinfo,NULL),sdefault,v_surfacedefault,e_surfacedefault;
 SVEXTERN int nsurfinfo;
-SVEXTERN matldata SVDECL(*matlinfo,NULL);
-SVEXTERN int nmatlinfo;
 SVEXTERN int surface_indices[7],surface_indices_bak[7];
 SVEXTERN int wall_case;
 SVEXTERN surfdata SVDECL(*surfacedefault,NULL), SVDECL(*vent_surfacedefault,NULL), SVDECL(*exterior_surfacedefault,NULL);

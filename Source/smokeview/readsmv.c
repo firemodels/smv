@@ -1964,7 +1964,7 @@ void ReadSMVDynamic(char *file){
 
 /* ------------------ GetLabels ------------------------ */
 
-void GetLabels(char *buffer, int kind, char **label1, char **label2, char prop_buffer[255]){
+void GetLabels(char *buffer, char **label1, char **label2, char prop_buffer[255]){
   char *tok0, *tok1, *tok2;
 
   tok0 = NULL;
@@ -1984,13 +1984,7 @@ void GetLabels(char *buffer, int kind, char **label1, char **label2, char prop_b
     if(strlen(tok2) == 0)tok2 = NULL;
   }
   if(label2 != NULL){
-    if(tok2 == NULL&&kind == HUMANS){
-      strcpy(prop_buffer, "Human_props(default)");
-      *label2 = prop_buffer;
-    }
-    else{
-      *label2 = tok2;
-    }
+    *label2 = tok2;
   }
   if(label1 != NULL)*label1 = tok1;
 }
@@ -2183,7 +2177,7 @@ void ParseDevicekeyword(BFILE *stream, devicedata *devicei){
   }
   devicei->is_beam = is_beam;
 
-  GetLabels(buffer,-1,&prop_id,NULL,prop_buffer);
+  GetLabels(buffer,&prop_id,NULL,prop_buffer);
   devicei->prop=GetPropID(prop_id);
   if(prop_id!=NULL&&devicei->prop!=NULL&&devicei->prop->smv_object!=NULL){
     devicei->object=devicei->prop->smv_object;
@@ -2312,7 +2306,7 @@ void ParseDevicekeyword2(FILE *stream, devicedata *devicei){
   }
   devicei->is_beam = is_beam;
 
-  GetLabels(buffer, -1, &prop_id, NULL, prop_buffer);
+  GetLabels(buffer, &prop_id, NULL, prop_buffer);
   devicei->prop = GetPropID(prop_id);
   if(prop_id!=NULL&&devicei->prop!=NULL&&devicei->prop->smv_object!=NULL){
     devicei->object = devicei->prop->smv_object;
@@ -4043,13 +4037,6 @@ surfdata *GetSurface(char *label){
     if(strcmp(surfi->surfacelabel, label) == 0)return surfi;
   }
   return surfacedefault;
-}
-
-/* ------------------ InitMatl ------------------------ */
-
-void InitMatl(matldata *matl){
-  matl->matllabel = NULL;
-  matl->color = block_ambient2;
 }
 
 /* ------------------ InitObst ------------------------ */
@@ -6866,7 +6853,6 @@ int ReadSMV(bufferstreamdata *stream){
   nOBST=0;
   noffset=0;
   nsurfinfo=0;
-  nmatlinfo=1;
   nvent_transparent=0;
 
   nvents=0;
@@ -7076,8 +7062,7 @@ int ReadSMV(bufferstreamdata *stream){
       nterraininfo++;
       continue;
     }
-    if(MatchSMV(buffer,"CLASS_OF_PARTICLES") == 1||
-       MatchSMV(buffer,"CLASS_OF_HUMANS") == 1){
+    if(MatchSMV(buffer,"CLASS_OF_PARTICLES") == 1){
       npartclassinfo++;
       continue;
     }
@@ -7266,10 +7251,6 @@ int ReadSMV(bufferstreamdata *stream){
     }
     if(MatchSMV(buffer,"SURFACE") ==1){
       nsurfinfo++;
-      continue;
-    }
-    if(MatchSMV(buffer,"MATERIAL") ==1){
-      nmatlinfo++;
       continue;
     }
     if(MatchSMV(buffer,"GRID") == 1){
@@ -7650,21 +7631,6 @@ int ReadSMV(bufferstreamdata *stream){
   FREEMEMORY(surfinfo);
   if(NewMemory((void **)&surfinfo,(nsurfinfo+MAX_ISO_COLORS+1)*sizeof(surfdata))==0)return 2;
 
-  {
-    matldata *matli;
-    float s_color[4];
-
-    FREEMEMORY(matlinfo);
-    if(NewMemory((void **)&matlinfo,nmatlinfo*sizeof(matldata))==0)return 2;
-    matli = matlinfo;
-    InitMatl(matli);
-    s_color[0]=matli->color[0];
-    s_color[1]=matli->color[1];
-    s_color[2]=matli->color[2];
-    s_color[3]=matli->color[3];
-    matli->color = GetColorPtr(s_color);
-  }
-
   if(cadgeominfo!=NULL)FreeCADInfo();
   if(ncadgeom>0){
     if(NewMemory((void **)&cadgeominfo,ncadgeom*sizeof(cadgeomdata))==0)return 2;
@@ -7709,7 +7675,6 @@ int ReadSMV(bufferstreamdata *stream){
   iobst=0;
   ncadgeom=0;
   nsurfinfo=0;
-  nmatlinfo=1;
   noutlineinfo=0;
   if(noffset==0)ioffset=1;
 
@@ -8445,8 +8410,7 @@ int ReadSMV(bufferstreamdata *stream){
     // 3'rd type first type read in
     // 2+ntypes  ntypes type read in
 
-    if(MatchSMV(buffer,"CLASS_OF_PARTICLES") == 1||
-       MatchSMV(buffer,"CLASS_OF_HUMANS") == 1){
+    if(MatchSMV(buffer,"CLASS_OF_PARTICLES") == 1){
       float rgb_class[4];
       partclassdata *partclassi;
       char *device_ptr;
@@ -8455,11 +8419,9 @@ int ReadSMV(bufferstreamdata *stream){
       size_t len;
 
       partclassi = partclassinfo + npartclassinfo;
-      partclassi->kind=PARTICLES;
-      if(MatchSMV(buffer,"CLASS_OF_HUMANS") == 1)partclassi->kind=HUMANS;
       FGETS(buffer,255,stream);
 
-      GetLabels(buffer,partclassi->kind,&device_ptr,&prop_id,prop_buffer);
+      GetLabels(buffer,&device_ptr,&prop_id,prop_buffer);
       if(prop_id!=NULL){
         device_ptr=NULL;
       }
@@ -8944,42 +8906,7 @@ int ReadSMV(bufferstreamdata *stream){
       nsurfinfo++;
       continue;
     }
-  /*
-    ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    ++++++++++++++++++++++ MATERIAL  +++++++++++++++++++++++++
-    ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  */
-    if(MatchSMV(buffer,"MATERIAL") ==1){
-      matldata *matli;
-      float s_color[4];
-      int len;
 
-      matli = matlinfo + nmatlinfo;
-      InitMatl(matli);
-
-      FGETS(buffer,255,stream);
-      TrimBack(buffer);
-      len=strlen(buffer);
-      NewMemory((void **)&matli->matllabel,(len+1)*sizeof(char));
-      strcpy(matli->matllabel,TrimFront(buffer));
-
-      s_color[0]=matli->color[0];
-      s_color[1]=matli->color[1];
-      s_color[2]=matli->color[2];
-      s_color[3]=matli->color[3];
-      FGETS(buffer,255,stream);
-      sscanf(buffer,"%f %f %f %f",s_color,s_color+1,s_color+2,s_color+3);
-
-      s_color[0]=CLAMP(s_color[0],0.0,1.0);
-      s_color[1]=CLAMP(s_color[1],0.0,1.0);
-      s_color[2]=CLAMP(s_color[2],0.0,1.0);
-      s_color[3]=CLAMP(s_color[3],0.0,1.0);
-
-      matli->color = GetColorPtr(s_color);
-
-      nmatlinfo++;
-      continue;
-    }
   /*
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     ++++++++++++++++++++++ GRID ++++++++++++++++++++++++++++++
@@ -9820,19 +9747,16 @@ int ReadSMV(bufferstreamdata *stream){
     ++++++++++++++++++ CLASS_OF_PARTICLES +++++++++++++++++++++++
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   */
-    if(MatchSMV(buffer,"CLASS_OF_PARTICLES") == 1||
-       MatchSMV(buffer,"CLASS_OF_HUMANS") == 1){
+    if(MatchSMV(buffer,"CLASS_OF_PARTICLES") == 1){
       partclassdata *partclassi;
       char *device_ptr;
       char *prop_id;
       char prop_buffer[255];
 
       partclassi = partclassinfo + npartclassinfo;
-      partclassi->kind=PARTICLES;
-      if(MatchSMV(buffer,"CLASS_OF_HUMANS") == 1)partclassi->kind=HUMANS;
       FGETS(buffer,255,stream);
 
-      GetLabels(buffer,partclassi->kind,&device_ptr,&prop_id,prop_buffer);
+      GetLabels(buffer,&device_ptr,&prop_id,prop_buffer);
       partclassi->prop=GetPropID(prop_id);
       UpdatePartClassDepend(partclassi);
 
