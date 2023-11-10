@@ -5,8 +5,8 @@ MULT ID='mesh', DX=3.2, DY=4.0, DZ=2.4, I_UPPER=1, J_UPPER=1, K_UPPER=1 /
 &MESH IJK=24,20,24, XB=0.0,6.4,0.0,4.0,0.0,4.8 /
 &MESH IJK=24,20,24, XB=0.0,6.4,4.0,8.0,0.0,4.8 /
 
-&TIME T_END=61. /
-&DUMP NFRAMES=610 DT_PL3D=12.2, DT_SL3D=0.1/
+&TIME T_END=60. /
+&DUMP NFRAMES=2 DT_PL3D=12.2 /
 
 &SURF ID='BURNER', HRRPUA=3000., PART_ID='smoke' /
 &REAC CO_YIELD=0.5,SOOT_YIELD=0.01,FUEL='PROPANE'/
@@ -97,7 +97,7 @@ Reaction 3: "ACTIVE" solid is converted FUEL gases
       NU_SPEC(1,1:2)        = 0.65,    1.0
       SPEC_ID(1,1:2)        = 'PROPANE',  'PROPANE'
       NU_MATL               = 0.35
-      MATL_ID               = 'CHAR' /  
+      MATL_ID               = 'CHAR' /
 
 Water evaporation from original wood
 
