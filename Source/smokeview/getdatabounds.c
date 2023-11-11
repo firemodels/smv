@@ -367,9 +367,7 @@ void GetGlobalPatchBounds(int flag){
       boundscppi->set_chopmax = boundi->setchopmax;
       boundscppi->chopmin     = boundi->chopmin;
       boundscppi->chopmax     = boundi->chopmax;
-#ifdef pp_HIST
       boundscppi->hist = NULL;
-#endif
     }
   }
 }
@@ -636,9 +634,7 @@ void GetGlobalSliceBounds(int flag){
       boundscppi->set_chopmax = boundi->setchopmax;
       boundscppi->chopmin     = boundi->chopmin;
       boundscppi->chopmax     = boundi->chopmax;
-#ifdef pp_HIST
       boundscppi->hist = NULL;
-#endif
     }
   }
 }

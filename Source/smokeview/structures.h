@@ -1442,11 +1442,12 @@ typedef struct _slicedata {
   int cell_center;
   float delta_orig, dplane_min, dplane_max;
   int extreme_min, extreme_max;
-#ifdef pp_HIST
+#ifndef pp_HIST
+  int hist_update;
+#endif
+  int nhistograms;
   histogramdata *histograms;
   histogramdata *histogram;
-  int nhistograms;
-#endif
   struct _patchdata *patchgeom;
   FILE_SIZE file_size;
   int *geom_offsets;
@@ -1505,6 +1506,8 @@ typedef struct _cpp_boundsdata {
   float glui_valmin, glui_valmax;
   int set_valtype, cache;
 #ifdef pp_HIST
+  histogramdata *hist;
+#else
   histogramdata *hist;
 #endif
 } cpp_boundsdata;
@@ -1682,6 +1685,8 @@ typedef struct _patchdata {
 #ifdef pp_HIST
   histogramdata *histogram;
   int histogram_nframes;
+#else
+  int hist_update;
 #endif
   bounddata bounds;
   boundsdata *bounds2;

@@ -5177,6 +5177,8 @@ int ParseBNDFProcess(bufferstreamdata *stream, char *buffer, int *nn_patch_in, i
   patchi->ntimes_old        = 0;
 #ifdef pp_HIST
   patchi->histogram_nframes = -1;
+#else
+  patchi->hist_update = 0;
 #endif
   patchi->filetype_label    = NULL;
   patchi->patch_filetype    = PATCH_STRUCTURED_NODE_CENTER;
@@ -5959,6 +5961,9 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
   sd->display = 0;
   sd->loaded = 0;
   sd->loading = 0;
+#ifndef pp_HIST
+  sd->hist_update = 0;
+#endif
   sd->qslicedata = NULL;
   sd->compindex = NULL;
   sd->slicecomplevel = NULL;
@@ -5981,10 +5986,8 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
   sd->line_contours = NULL;
   sd->menu_show = 1;
   sd->constant_color = NULL;
-#ifdef pp_HIST
   sd->histograms = NULL;
   sd->nhistograms = 0;
-#endif
   {
     meshdata *meshi;
 

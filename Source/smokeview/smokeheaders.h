@@ -224,11 +224,11 @@ EXTERNCPP void UpdatePartColors(partdata *parti, int flag);
 EXTERNCPP void SliceBoundsSetupNoGraphics(void);
 #ifdef pp_HIST
 EXTERNCPP void DrawHistogram(histogramdata *histogram, float xxmin, float xxmax, float gmin, float gmax, int ndigits);
-EXTERNCPP void GetHistogramValProc(histogramdata*histogram, float cdf, float *val);
-EXTERNCPP void ComputeLoadedSliceHist(char *label);
+#endif
 EXTERNCPP void MergeLoadedSliceHist(char *label, histogramdata **histptr);
 EXTERNCPP void ComputeLoadedPatchHist(char *label, histogramdata **histptr, float *valmin, float *valmax);
-#endif
+EXTERNCPP void GetHistogramValProc(histogramdata *histogram, float cdf, float *val);
+EXTERNCPP void ComputeLoadedSliceHist(char *label);
 EXTERNCPP void GetGlobalBoundsMinMax(int type, char *label, float *valmin, float *valmax);
 EXTERNCPP void SliceBoundsCPP_CB(int var);
 EXTERNCPP void PatchBoundsCPP_CB(int var);
