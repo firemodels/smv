@@ -1710,9 +1710,11 @@ typedef struct _plot3ddata {
   float valmin_smv[MAXPLOT3DVARS], valmax_smv[MAXPLOT3DVARS];   // computed by smokeview
   flowlabels label[MAXPLOT3DVARS];
   char menulabel[256], longlabel[256], timelabel[256];
-#ifdef pp_HIST
   histogramdata *histograms[MAXPLOT3DVARS];
+#ifndef pp_HIST
+  int hist_update;
 #endif
+
 } plot3ddata;
 
 /* --------------------------  zonedata ------------------------------------ */

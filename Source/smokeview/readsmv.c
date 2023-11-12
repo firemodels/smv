@@ -1644,14 +1644,16 @@ void ReadSMVDynamic(char *file){
       plot3di->autoload=0;
       plot3di->time=time_local;
       plot3di->finalize = 1;
+#ifndef pp_HIST
+      plot3di->hist_update = 0;
+#endif
       nmemory_ids++;
       plot3di->memory_id = nmemory_ids;
 
-#ifdef pp_HIST
       for(i=0;i<MAXPLOT3DVARS;i++){
         plot3di->histograms[i] = NULL;
       }
-#endif
+
       if(plot3di>plot3dinfo+nplot3dinfo_old-1){
         plot3di->loaded=0;
         plot3di->display=0;

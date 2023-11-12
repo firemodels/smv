@@ -13,7 +13,6 @@
 
 /* ------------------ GetPlot3DHists ------------------------ */
 
-#ifdef pp_HIST
 void GetPlot3DHists(plot3ddata *p){
   int i;
 
@@ -63,8 +62,6 @@ void MergePlot3DHistograms(void){
     }
   }
 }
-#endif
-
 
 /* ------------------ Plot3dCompare  ------------------------ */
 
@@ -343,6 +340,9 @@ void ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
   STOP_TIMER(read_time);
   p->loaded=1;
   p->display=1;
+#ifndef pp_HIST
+  p->hist_update = 1;
+#endif
   if(nplot3dloaded==0)UpdatePlot3DFileLoad();
   speedmax = -1.;
   meshi->udata=NULL;

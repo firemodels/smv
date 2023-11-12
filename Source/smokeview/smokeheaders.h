@@ -122,8 +122,10 @@ EXTERNCPP void UpdateSliceSkip(void);
 
 #ifdef pp_HIST
 EXTERNCPP void MergePartHistograms(void);
-EXTERNCPP void MergePlot3DHistograms(void);
 #endif
+EXTERNCPP void MergePlot3DHistograms(void);
+EXTERNCPP void GetPlot3DHists(plot3ddata *p);
+
 
 EXTERNCPP void UpdateColorbarControls(void);
 EXTERNCPP void UpdateColorbarControls2(void);

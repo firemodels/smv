@@ -2339,8 +2339,9 @@ extern "C" void Plot3DBoundsCPP_CB(int var){
 #ifdef pp_HIST
   int i;
   int iplot3d;
-  cpp_boundsdata *all_bounds, *bounds;
+  cpp_boundsdata *all_bounds;
 #endif
+  cpp_boundsdata *bounds;
 
   plot3dboundsCPP.CB(var);
 #ifdef pp_HIST
@@ -2504,10 +2505,44 @@ extern "C" void Plot3DBoundsCPP_CB(int var){
     case BOUND_DOWN_PERCEN:
     case BOUND_LENGTH_PERCEN:
     case BOUND_HIST_LABELS:
-    case SET_PERCENTILE_MIN_VAL:
-    case SET_PERCENTILE_MAX_VAL:
+      break;
     case SET_PERCENTILE_MIN_LEVEL:
     case SET_PERCENTILE_MAX_LEVEL:
+    case SET_PERCENTILE_MIN_VAL:
+    case SET_PERCENTILE_MAX_VAL:
+      float valmin, valmax;
+      int hist_update, i;
+
+      hist_update = 0;
+      bounds = GetBoundsData(BOUND_PLOT3D);
+      for(i = 0;i < nplot3dinfo;i++){
+        plot3ddata *plot3di;
+
+        plot3di = plot3dinfo + i;
+        if(plot3di->loaded == 0)continue;
+        if(plot3di->hist_update == 1)hist_update = 1;
+        plot3di->hist_update = 0;
+      }
+      if(hist_update == 1){
+        for(i = 0;i < nplot3dinfo;i++){
+          plot3ddata *plot3di;
+
+          plot3di = plot3dinfo + i;
+          if(plot3di->loaded == 0)continue;
+          GetPlot3DHists(plot3di);
+        }
+        MergePlot3DHistograms();
+      }
+      if(var == SET_PERCENTILE_MIN_VAL || var == SET_PERCENTILE_MIN_LEVEL){
+        GetHistogramValProc(full_plot3D_histograms+plotn-1, plot3dboundsCPP.percentile_min_level, &valmin);
+        SetMin(BOUND_PLOT3D, bounds->label, 0, valmin);
+        Plot3DBoundsCPP_CB(BOUND_VALMIN);
+      }
+      if(var == SET_PERCENTILE_MAX_VAL || var == SET_PERCENTILE_MAX_LEVEL){
+        GetHistogramValProc(full_plot3D_histograms+plotn-1, plot3dboundsCPP.percentile_max_level, &valmax);
+        SetMax(BOUND_PLOT3D, bounds->label, 0, valmax);
+        Plot3DBoundsCPP_CB(BOUND_VALMAX);
+      }
       break;
 #endif
     default:
