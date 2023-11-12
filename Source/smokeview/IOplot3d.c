@@ -30,7 +30,9 @@ void GetPlot3DHists(plot3ddata *p){
     plot3d_mesh = meshinfo+p->blocknumber;
     nvals = (plot3d_mesh->ibar+1)*(plot3d_mesh->jbar+1)*(plot3d_mesh->kbar+1);
     vals = plot3d_mesh->qdata+i*nvals;
-    CopyVals2Histogram(vals, NULL, NULL, nvals, histi);
+    int use_bounds = 0;
+    float valmin_dummy = 0.0, valmax_dummy = 1.0;
+    CopyVals2Histogram(vals, NULL, NULL, nvals, histi, use_bounds, valmin_dummy, valmax_dummy);
   }
 }
 

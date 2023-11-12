@@ -1731,7 +1731,11 @@ void MergeLoadedSliceHist(char *label, histogramdata **histptr){
 
 /* ------------------ GetSliceHists ------------------------ */
 
+#ifdef pp_HIST
 void GetSliceHists(slicedata *sd){
+#else
+void GetSliceHists(slicedata *sd, int use_bounds, float valmin, float valmax){
+#endif
   int ndata;
   int n, i;
   int nframe;
@@ -1843,7 +1847,11 @@ void GetSliceHists(slicedata *sd){
 
     histi = sd->histograms + istep + 1;
     histall = sd->histograms;
-    CopyVals2Histogram(pdata0, slice_mask0, slice_weight0, nframe, histi);
+#ifdef pp_HIST
+    int use_bounds = 0;
+    float valmin = 0.0, valmax = 1.0;
+#endif
+    CopyVals2Histogram(pdata0, slice_mask0, slice_weight0, nframe, histi, use_bounds, valmin, valmax);
     MergeHistogram(histall, histi, MERGE_BOUNDS);
   }
   FREEMEMORY(pdata0);
@@ -1859,7 +1867,11 @@ void GetHistogramValProc(histogramdata *histogram, float cdf, float *val){
 
 /* ------------------ GetSliceGeomHists ------------------------ */
 
+#ifdef pp_HIST
 void GetSliceGeomHists(slicedata *sd){
+#else
+void GetSliceGeomHists(slicedata *sd, int use_bounds, float valmin, float valmax){
+#endif
   if(sd->histograms != NULL)return;
 
   // initialize histograms
@@ -1870,12 +1882,20 @@ void GetSliceGeomHists(slicedata *sd){
 
   // compute histogram for each timestep, histi and all time steps, histall
 
-  CopyVals2Histogram(sd->patchgeom->geom_vals, NULL, NULL, sd->patchgeom->geom_nvals, sd->histograms);
+#ifdef pp_HIST
+  int use_bounds = 0;
+  float valmin = 0.0, valmax = 1.0;
+#endif
+  CopyVals2Histogram(sd->patchgeom->geom_vals, NULL, NULL, sd->patchgeom->geom_nvals, sd->histograms, use_bounds, valmin, valmax);
 }
 
 /* ------------------ ComputeLoadedSliceHist ------------------------ */
 
+#ifdef pp_HIST
 void ComputeLoadedSliceHist(char *label){
+#else
+void ComputeLoadedSliceHist(char *label, float valmin, float valmax){
+#endif
   int i;
 
   for(i = 0; i < nsliceinfo; i++){
@@ -1886,10 +1906,20 @@ void ComputeLoadedSliceHist(char *label){
     if(label != NULL && strcmp(slicei->label.shortlabel, label) != 0)continue;
     if(slicei->histograms == NULL){
       if(slicei->slice_filetype == SLICE_GEOM){
+#ifdef pp_HIST
         GetSliceGeomHists(slicei);
+#else
+        int use_bounds = 1;
+        GetSliceGeomHists(slicei, use_bounds, valmin, valmax);
+#endif
       }
       else{
+#ifdef pp_HIST
         GetSliceHists(slicei);
+#else
+        int use_bounds = 1;
+        GetSliceHists(slicei, use_bounds, valmin, valmax);
+#endif
       }
     }
   }
@@ -9657,7 +9687,9 @@ void SliceData2Hist(slicedata *sd, float *xyz, float *dxyz, float time, float dt
     }
   }
   InitHistogram(histogram, NHIST_BUCKETS, NULL, NULL);
-  CopyVals2Histogram(vals, NULL, NULL, nvals, histogram);
+  int use_bounds;
+  float valmin = 0.0, valmax = 1.0;
+  CopyVals2Histogram(vals, NULL, NULL, nvals, histogram, use_bounds, valmin, valmax);
   FREEMEMORY(vals);
 }
 

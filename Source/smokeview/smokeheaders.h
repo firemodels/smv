@@ -230,7 +230,11 @@ EXTERNCPP void DrawHistogram(histogramdata *histogram, float xxmin, float xxmax,
 EXTERNCPP void MergeLoadedSliceHist(char *label, histogramdata **histptr);
 EXTERNCPP void ComputeLoadedPatchHist(char *label, histogramdata **histptr, float *valmin, float *valmax);
 EXTERNCPP void GetHistogramValProc(histogramdata *histogram, float cdf, float *val);
+#ifdef pp_HIST
 EXTERNCPP void ComputeLoadedSliceHist(char *label);
+#else
+EXTERNCPP void ComputeLoadedSliceHist(char *label, float valmin, float valmax);
+#endif
 EXTERNCPP void GetGlobalBoundsMinMax(int type, char *label, float *valmin, float *valmax);
 EXTERNCPP void SliceBoundsCPP_CB(int var);
 EXTERNCPP void PatchBoundsCPP_CB(int var);
