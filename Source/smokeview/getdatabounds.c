@@ -170,9 +170,7 @@ int GetGlobalPartBounds(int flag){
       boundscppi->set_chopmax = 0;
       boundscppi->chopmin     = valmin;
       boundscppi->chopmax     = valmax;
-#ifdef pp_HIST
-      boundscppi->hist = NULL;
-#endif
+      boundscppi->hist        = NULL;
     }
   }
   FREEMEMORY(partmins);

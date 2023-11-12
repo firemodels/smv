@@ -4971,6 +4971,9 @@ int ParsePRT5Process(bufferstreamdata *stream, char *buffer, int *nn_part_in, in
   parti->valmin_smv = NULL;
   parti->valmax_smv = NULL;
   parti->stream     = NULL;
+#ifndef pp_HIST
+  parti->hist_update = 0;
+#endif
   if(FGETS(buffer, 255, stream)==NULL){
     npartinfo--;
     return RETURN_BREAK;
@@ -5042,9 +5045,7 @@ int ParsePRT5Process(bufferstreamdata *stream, char *buffer, int *nn_part_in, in
   parti->display = 0;
   parti->times = NULL;
   parti->timeslist = NULL;
-#ifdef pp_HIST
   parti->histograms = NULL;
-#endif
   parti->bounds_set = 0;
   parti->global_min = NULL;
   parti->global_max = NULL;

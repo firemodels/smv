@@ -58,10 +58,10 @@ EXTERNCPP void UpdateShowOnlyTop(void);
 
 EXTERNCPP void UpdateGLuiGridLocation(void);
 #ifdef pp_HIST
-EXTERNCPP void EnableDisablePartPercentileDraw(int flag);
-EXTERNCPP void GeneratePartHistograms(void);
 EXTERNCPP void GeneratePartHistogramsMT(void);
+EXTERNCPP void EnableDisablePartPercentileDraw(int flag);
 #endif
+EXTERNCPP void GeneratePartHistograms(void);
 FILE_SIZE LoadAllMSlicesMT(int last_slice, multislicedata *mslicei, int *fcount);
 
 EXTERNCPP void PrintTime(const char *tag, int line, float *timer, const char *label, int stop_flag);

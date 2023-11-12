@@ -1503,20 +1503,16 @@ extern "C" int GetPercentileDraw(int type){
   }
   return 0;
 }
-#endif
 
 /* ------------------ DisablePartPercentileDrawOff ------------------------ */
 
-#ifdef pp_HIST
 extern "C" void EnableDisablePartPercentileDraw(int flag){
   if(npartloaded>0){
     partboundsCPP.enabledisable_percentile_draw(flag);
   }
 }
-#endif
 
 /* ------------------ SetPercentileDrawOff ------------------------ */
-#ifdef pp_HIST
 extern "C" void SetPercentileDrawOff(void){
   if(npatchloaded==0){
     patchboundsCPP.set_percentile_draw(0);
@@ -2524,8 +2520,9 @@ extern "C" void Plot3DBoundsCPP_CB(int var){
 
 extern "C" void PartBoundsCPP_CB(int var){
 #ifdef pp_HIST
-  cpp_boundsdata *all_bounds, *bounds;
+  cpp_boundsdata *all_bounds;
 #endif
+  cpp_boundsdata *bounds;
 
   partboundsCPP.CB(var);
   ipart5prop = GetValType(BOUND_PART);
@@ -2693,10 +2690,45 @@ extern "C" void PartBoundsCPP_CB(int var){
     case BOUND_DOWN_PERCEN:
     case BOUND_LENGTH_PERCEN:
     case BOUND_HIST_LABELS:
-    case SET_PERCENTILE_MIN_VAL:
-    case SET_PERCENTILE_MAX_VAL:
+      break;
     case SET_PERCENTILE_MIN_LEVEL:
     case SET_PERCENTILE_MAX_LEVEL:
+    case SET_PERCENTILE_MIN_VAL:
+    case SET_PERCENTILE_MAX_VAL:
+      float valmin, valmax;
+      int i, hist_update;
+
+      hist_update = 0;
+      bounds = GetBoundsData(BOUND_PART);
+      for(i = 0;i < npartinfo;i++){
+        partdata *parti;
+
+        parti = partinfo + i;
+        if(parti->loaded == 0)continue;
+        if(parti->hist_update == 1)hist_update = 1;
+        parti->hist_update = 0;
+      }
+      if(hist_update == 1 || bounds->hist == NULL){
+        float global_min, global_max;
+
+        GetGlobalBoundsMinMax(BOUND_PART, bounds->label, &global_min, &global_max);
+        GeneratePartHistograms();
+      }
+      int partprop_index;
+
+      partprop_index = GetPartPropIndexS(bounds->label);
+      if(partprop_index>=0){
+        if(var == SET_PERCENTILE_MIN_VAL || var == SET_PERCENTILE_MIN_LEVEL){
+          GetHistogramValProc(full_part_histogram + partprop_index, partboundsCPP.percentile_min_level, &valmin);
+          SetMin(BOUND_PART, bounds->label, 0, valmin);
+          PartBoundsCPP_CB(BOUND_VALMIN);
+        }
+        if(var == SET_PERCENTILE_MAX_VAL || var == SET_PERCENTILE_MAX_LEVEL){
+          GetHistogramValProc(full_part_histogram + partprop_index, partboundsCPP.percentile_max_level, &valmax);
+          SetMax(BOUND_PART, bounds->label, 0, valmax);
+          PartBoundsCPP_CB(BOUND_VALMAX);
+        }
+      }
       break;
 #endif
     default:
