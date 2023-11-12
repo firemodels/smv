@@ -1177,7 +1177,10 @@ void GeneratePartHistograms(void){
 #ifdef pp_HIST
   EnableDisablePartPercentileDraw(1);
 #endif
-  if(part_multithread==1)printf("particle setup complete\n");
+  if(in_part_mt == 1){
+    printf("particle setup complete\n");
+    in_part_mt = 0;
+  }
 }
 
 /* ------------------ GetPartData ------------------------ */

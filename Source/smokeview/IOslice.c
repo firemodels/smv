@@ -9687,7 +9687,7 @@ void SliceData2Hist(slicedata *sd, float *xyz, float *dxyz, float time, float dt
     }
   }
   InitHistogram(histogram, NHIST_BUCKETS, NULL, NULL);
-  int use_bounds;
+  int use_bounds=0;
   float valmin = 0.0, valmax = 1.0;
   CopyVals2Histogram(vals, NULL, NULL, nvals, histogram, use_bounds, valmin, valmax);
   FREEMEMORY(vals);

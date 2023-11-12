@@ -547,6 +547,7 @@ SVEXTERN int SVDECL(histogram_nbuckets,10), SVDECL(histogram_static, 0), SVDECL(
 SVEXTERN int SVDECL(histograms_defined,0), SVDECL(update_slice_hists, 0), SVDECL(nhists256_slice, 0);
 SVEXTERN histogramdata SVDECL(*hists256_slice, NULL), SVDECL(*hists12_slice, NULL);
 #endif
+SVEXTERN int SVDECL(in_part_mt, 0);
 SVEXTERN histogramdata SVDECL(*full_plot3D_histograms, NULL);
 SVEXTERN histogramdata SVDECL(*full_part_histogram, NULL);
 SVEXTERN int SVDECL(update_loadall_textures, 1);
