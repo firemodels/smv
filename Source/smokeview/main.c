@@ -879,18 +879,3 @@ int main(int argc, char **argv){
   glutMainLoop();
   return 0;
 }
-
-/* ------------------ SMV_EXIT ------------------------ */
-
-void SMV_EXIT(int code){
-  exit(code);
-}
-
-/* ------------------ StartTimer ------------------------ */
-
-void StartTimer(float *timerptr){
-  float timer;
-
-  START_TIMER(timer);
-  *timerptr = timer;
-}
