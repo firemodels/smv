@@ -189,7 +189,6 @@ void CopyVals2Histogram(float *vals, char *mask, float *weight, int nvals, histo
   int i;
   float valmin, valmax;
   float dbucket;
-  int first=1;
   float nnvals=0.0;
 
 // initialize
