@@ -3024,6 +3024,7 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
       }
     }
 #endif
+    INIT_PRINT_TIMER(geom_bounds_timer);
     if(bounds->set_valmin==BOUND_SET_MIN||bounds->set_valmax==BOUND_SET_MAX){
       if(patchi->boundary==1){
       }
@@ -3034,12 +3035,18 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
         GetMinMax(BOUND_SLICE, bounds->label, &set_valmin, &valmin_dlg, &set_valmax, &valmax_dlg);
       }
     }
-    if(patchi->boundary==1){
-      PatchBoundsCPP_CB(BOUND_UPDATE_COLORS);
-    }
-    else{
-      SliceBoundsCPP_CB(BOUND_UPDATE_COLORS);
-    }
+    PRINT_TIMER(geom_bounds_timer, "update boundary bounds");
+
+    INIT_PRINT_TIMER(geom_color_timer);
+//*** don't think the following is needed
+//    if(patchi->boundary==1){
+//      PatchBoundsCPP_CB(BOUND_UPDATE_COLORS);
+//    }
+//    else{
+//      SliceBoundsCPP_CB(BOUND_UPDATE_COLORS);
+//    }
+    PRINT_TIMER(geom_color_timer, "update boundary colors");
+
     UpdateUnitDefs();
     UpdateTimes();
     force_redisplay = 1;
