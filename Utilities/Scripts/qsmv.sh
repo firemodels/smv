@@ -262,7 +262,7 @@ fi
 
 if [ "$smv_script" != "" ]; then
   smokeview_script_file=$smv_script
-  smv_script="-script_file $smv_script"
+  smv_script="-script $smv_script"
 else
   smokeview_script_file=${infile}.ssf
   smv_script=-runscript
