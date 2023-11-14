@@ -6,6 +6,7 @@
 
 #include "smokeviewvars.h"
 #include "IOvolsmoke.h"
+#include "smokestream.h"
 #include GLUT_H
 
 #ifndef pp_THREAD
@@ -29,6 +30,9 @@ void InitMultiThreading(void){
   pthread_mutex_init(&mutexCHECKFILES, NULL);
   pthread_mutex_init(&mutexSLICEBOUNDS, NULL);
   pthread_mutex_init(&mutexPATCHBOUNDS, NULL);
+#ifdef pp_STREAM
+  pthread_mutex_init(&mutexSTREAM, NULL);
+#endif
 #endif
 }
 
@@ -659,6 +663,73 @@ void SampleMT(void){
 #else
 void SampleMT(void){
   Sample();
+}
+#endif
+#endif
+
+/* ------------------ I/O streaming ------------------------ */
+
+#ifdef pp_STREAM
+
+#ifdef pp_THREAD
+
+/* ------------------ MtStreamReadList ------------------------ */
+
+void *MtStreamReadList(void *arg){
+  streamlistargdata *streamlist;
+  streamdata **streams;
+  int nstreams;
+
+  streamlist = (streamlistargdata *)arg;
+
+  streams  = streamlist->streams;
+  nstreams = streamlist->nstreams;
+
+  StreamReadList(streams, nstreams);
+  pthread_exit(NULL);
+  return NULL;
+}
+
+/* ------------------ GetThreads ------------------------ */
+
+pthread_t *GetThreads(int nthreads){
+  pthread_t *threads = NULL;
+
+  if(nthreads<=0)return NULL;
+  NewMemory((void **)&threads, nthreads*sizeof(pthread_t));
+  return threads;
+}
+
+/* ------------------ StreamReadListMT ------------------------ */
+
+void StreamReadListMT(streamlistargdata *arg, int nthreads){
+  pthread_t *threads=NULL;
+
+  if(nthreads>0&&stream_multithread==1)threads = GetThreads(nthreads);
+  if(threads!=NULL){
+    int i;
+
+    for(i=0;i<nthreads;i++){
+      pthread_create(threads+i, NULL, MtStreamReadList, (void *)arg);
+    }
+  }
+  else{
+    streamdata **streams;
+    int nstreams;
+
+    streams = arg->streams;
+    nstreams = arg->nstreams;
+    StreamReadList(streams, nstreams);
+  }
+}
+#else
+void StreamReadListMT(streamlistargdata *arg){
+  streamdata **streams;
+  int nstreams;
+
+  streams = arg->streams;
+  nstreams = arg->nstreams;
+  StreamReadList(streams, nstreams);
 }
 #endif
 #endif
