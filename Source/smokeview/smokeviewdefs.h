@@ -597,6 +597,7 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 #define TETRA_CLIPPLANES 1
 #define BOX_CLIPPLANES   0
 
+#define DIR_UNDEFINED -1
 #define DOWN_Y 0
 #define UP_X   1
 #define UP_Y   2

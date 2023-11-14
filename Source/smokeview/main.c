@@ -748,7 +748,7 @@ int main(int argc, char **argv){
 #ifdef pp_LUA
   // If we are using lua, let lua take control here.
   // Initialise the lua interpreter, it does not take control at this point
-  lua_State *L = initLua();
+  lua_State *L = InitLua();
   // This code branch gives more control to the interpreter during startup.
   return_code = RunLuaBranch(L, argc, argv);
   // All of the below code is run by the lua interpreter, therefore if we want
@@ -878,19 +878,4 @@ int main(int argc, char **argv){
 
   glutMainLoop();
   return 0;
-}
-
-/* ------------------ SMV_EXIT ------------------------ */
-
-void SMV_EXIT(int code){
-  exit(code);
-}
-
-/* ------------------ StartTimer ------------------------ */
-
-void StartTimer(float *timerptr){
-  float timer;
-
-  START_TIMER(timer);
-  *timerptr = timer;
 }
