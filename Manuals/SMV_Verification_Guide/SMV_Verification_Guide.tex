@@ -348,7 +348,7 @@ The temperature of the upper obstacle is initialized to \SI{600}{\degreeCelsius}
 hence the red colors for the $t=\SI{0}{s}$ images. The first column of images
 colors data at cell nodes using temperatures averaged at surrounding cell centers.
 The second column of images colors data using data values at cell centers.
-Figure \ref{figgeomboundtest} presents images for geometry boundary files comparing compressed and 
+Figure \ref{figgeomboundtest} presents images for geometry boundary files comparing compressed and
 uncompressed data.smoke
 
 \begin{figure}[bph]
@@ -973,6 +973,28 @@ Figure \ref{figPLOT3Dtestiso} shows PLOT3D iso-surfaces for \SI{50}{\degreeCelsi
  \caption{A test showing PLOT3D iso-surfaces for \SI{50}{\degreeCelsius},
  \SI{230}{\degreeCelsius}, \SI{410}{\degreeCelsius} and \SI{590}{\degreeCelsius}.}
 \label{figPLOT3Dtestiso}%
+\end{figure}
+
+\clearpage
+
+\section{Bounds}
+
+\begin{figure}[bph]
+\begin{center}
+\begin{tabular}{cc}
+ \includegraphics[height=\figheightE]{SCRIPT_FIGURES/boundtest_slice_05}&
+ \includegraphics[height=\figheightE]{SCRIPT_FIGURES/boundtest_vslice_05}\\
+ slice&vector slice\\
+ \includegraphics[height=\figheightE]{SCRIPT_FIGURES/boundtest_bound_05}&
+ \includegraphics[height=\figheightE]{SCRIPT_FIGURES/boundtest_bound_cell_05}\\
+ boundary&cell centered boundary\\
+ \includegraphics[height=\figheightE]{SCRIPT_FIGURES/boundtest_part_05}&
+ \includegraphics[height=\figheightE]{SCRIPT_FIGURES/boundtest_plot3d_05}\\
+ particle&Plot3D
+ \end{tabular}
+\end{center}
+ \caption[A test showing bounds for various file type]{A test showing slice, vector slice, boundary, cell centered boundary, particle and plot3D file plots along with their min and max bounds.}
+\label{figPLOT3Dtestvector}%
 \end{figure}
 
 \chapter{Smoke Visualization Tests}

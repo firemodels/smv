@@ -1,6 +1,7 @@
 &HEAD CHID='boundtest',TITLE='Plume whirl case' /
 
-&MESH IJK=16,16,32, XB=0.0,1.6,0.0,1.6,0.0,3.2 /
+&MESH IJK=8,16,32, XB=0.0,0.8,0.0,1.6,0.0,3.2 /
+&MESH IJK=8,16,32, XB=0.8,1.6,0.0,1.6,0.0,3.2 /
 
 &MISC IBLANK_SMV=.TRUE. /
 

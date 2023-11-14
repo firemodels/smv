@@ -1069,7 +1069,6 @@ void CreatePartSizeFile(partdata*parti){
   CreatePartSizeFileFromPart(parti->reg_file, parti->size_file, header_offset_local);
 }
 
-#ifdef pp_HIST
   /* ------------------ GetPartHistogramFile ------------------------ */
 void GetPartHistogramFile(partdata *parti){
   int i;
@@ -1163,7 +1162,9 @@ void MergePartHistograms(void){
 void GeneratePartHistograms(void){
   int i;
 
+#ifdef pp_HIST
   EnableDisablePartPercentileDraw(0);
+#endif
   for(i=0;i<npartinfo;i++){
     partdata *parti;
 
@@ -1173,10 +1174,14 @@ void GeneratePartHistograms(void){
     }
   }
   MergePartHistograms();
+#ifdef pp_HIST
   EnableDisablePartPercentileDraw(1);
-  if(part_multithread==1)printf("particle setup complete\n");
-}
 #endif
+  if(in_part_mt == 1){
+    printf("particle setup complete\n");
+    in_part_mt = 0;
+  }
+}
 
 /* ------------------ GetPartData ------------------------ */
 
@@ -2065,6 +2070,9 @@ FILE_SIZE ReadPart(char *file_arg, int ifile_arg, int loadflag_arg, int *errorco
   LOCK_PART_LOAD;
   parti->loaded = 1;
   parti->display = 1;
+#ifndef pp_HIST
+  parti->hist_update=1;
+#endif
   if(cache_part_data==0){
     UpdatePartColors(parti, 0);
   }

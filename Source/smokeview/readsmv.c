@@ -1644,14 +1644,16 @@ void ReadSMVDynamic(char *file){
       plot3di->autoload=0;
       plot3di->time=time_local;
       plot3di->finalize = 1;
+#ifndef pp_HIST
+      plot3di->hist_update = 0;
+#endif
       nmemory_ids++;
       plot3di->memory_id = nmemory_ids;
 
-#ifdef pp_HIST
       for(i=0;i<MAXPLOT3DVARS;i++){
         plot3di->histograms[i] = NULL;
       }
-#endif
+
       if(plot3di>plot3dinfo+nplot3dinfo_old-1){
         plot3di->loaded=0;
         plot3di->display=0;
@@ -4971,6 +4973,9 @@ int ParsePRT5Process(bufferstreamdata *stream, char *buffer, int *nn_part_in, in
   parti->valmin_smv = NULL;
   parti->valmax_smv = NULL;
   parti->stream     = NULL;
+#ifndef pp_HIST
+  parti->hist_update = 0;
+#endif
   if(FGETS(buffer, 255, stream)==NULL){
     npartinfo--;
     return RETURN_BREAK;
@@ -5042,9 +5047,7 @@ int ParsePRT5Process(bufferstreamdata *stream, char *buffer, int *nn_part_in, in
   parti->display = 0;
   parti->times = NULL;
   parti->timeslist = NULL;
-#ifdef pp_HIST
   parti->histograms = NULL;
-#endif
   parti->bounds_set = 0;
   parti->global_min = NULL;
   parti->global_max = NULL;
@@ -5177,6 +5180,8 @@ int ParseBNDFProcess(bufferstreamdata *stream, char *buffer, int *nn_patch_in, i
   patchi->ntimes_old        = 0;
 #ifdef pp_HIST
   patchi->histogram_nframes = -1;
+#else
+  patchi->hist_update = 0;
 #endif
   patchi->filetype_label    = NULL;
   patchi->patch_filetype    = PATCH_STRUCTURED_NODE_CENTER;
@@ -5959,6 +5964,9 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
   sd->display = 0;
   sd->loaded = 0;
   sd->loading = 0;
+#ifndef pp_HIST
+  sd->hist_update = 0;
+#endif
   sd->qslicedata = NULL;
   sd->compindex = NULL;
   sd->slicecomplevel = NULL;
@@ -5981,10 +5989,8 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
   sd->line_contours = NULL;
   sd->menu_show = 1;
   sd->constant_color = NULL;
-#ifdef pp_HIST
   sd->histograms = NULL;
   sd->nhistograms = 0;
-#endif
   {
     meshdata *meshi;
 

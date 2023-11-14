@@ -13,7 +13,6 @@
 
 /* ------------------ GetPlot3DHists ------------------------ */
 
-#ifdef pp_HIST
 void GetPlot3DHists(plot3ddata *p){
   int i;
 
@@ -31,7 +30,9 @@ void GetPlot3DHists(plot3ddata *p){
     plot3d_mesh = meshinfo+p->blocknumber;
     nvals = (plot3d_mesh->ibar+1)*(plot3d_mesh->jbar+1)*(plot3d_mesh->kbar+1);
     vals = plot3d_mesh->qdata+i*nvals;
-    CopyVals2Histogram(vals, NULL, NULL, nvals, histi);
+    int use_bounds = 0;
+    float valmin_dummy = 0.0, valmax_dummy = 1.0;
+    CopyVals2Histogram(vals, NULL, NULL, nvals, histi, use_bounds, valmin_dummy, valmax_dummy);
   }
 }
 
@@ -63,8 +64,6 @@ void MergePlot3DHistograms(void){
     }
   }
 }
-#endif
-
 
 /* ------------------ Plot3dCompare  ------------------------ */
 
@@ -343,6 +342,9 @@ void ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
   STOP_TIMER(read_time);
   p->loaded=1;
   p->display=1;
+#ifndef pp_HIST
+  p->hist_update = 1;
+#endif
   if(nplot3dloaded==0)UpdatePlot3DFileLoad();
   speedmax = -1.;
   meshi->udata=NULL;
