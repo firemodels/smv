@@ -1,3 +1,4 @@
+// NOLINTBEGIN
 #include "options.h"
 #ifdef pp_HASH
 /*
@@ -405,3 +406,4 @@ int mbedtls_md5_self_test( int verbose )
 
 #endif /* MBEDTLS_MD5_C */
 #endif /* pp_HASH */
+// NOLINTEND

@@ -1599,7 +1599,7 @@ extern "C" int GetValType(int type){
       if(nplot3dinfo>0)return plot3dboundsCPP.get_valtype();
       break;
     case BOUND_SLICE:
-      if(npatchinfo>0)return sliceboundsCPP.get_valtype();
+      if(nsliceinfo>0)return sliceboundsCPP.get_valtype();
       break;
     default:
       ASSERT(FFALSE);
