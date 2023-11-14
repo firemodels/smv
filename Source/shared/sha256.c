@@ -1,3 +1,4 @@
+// NOLINTBEGIN
 #include "options.h"
 #ifdef pp_HASH
 /*
@@ -459,3 +460,4 @@ exit:
 
 #endif /* MBEDTLS_SHA256_C */
 #endif /* pp_HASH */
+// NOLINTEND
