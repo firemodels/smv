@@ -4213,10 +4213,6 @@ FILE_SIZE ReadSmoke3D(int iframe_arg,int ifile_arg,int flag_arg, int first_time,
   return file_size_local;
 }
 
-#define FIRST_FRAME  0
-#define MIDDLE_FRAME 1
-#define LAST_FRAME   2
-
 /* ------------------ ReadSmoke3DAllMeshes ------------------------ */
 
 void ReadSmoke3DAllMeshes(int iframe, int smoketype, int *errorcode){
