@@ -49,6 +49,10 @@ GLUI_Spinner *SPINNER_hrrpuv_cutoff=NULL;
 GLUI_Spinner *SPINNER_nongpu_vol_factor=NULL;
 GLUI_Spinner *SPINNER_gpu_vol_factor=NULL;
 GLUI_Spinner *SPINNER_smoke3d_threads = NULL;
+#ifdef pp_SMOKE_SKIP
+GLUI_Spinner *SPINNER_smoke3d_load_start=NULL;
+GLUI_Spinner *SPINNER_smoke3d_load_skip=NULL;
+#endif
 
 #ifdef pp_BLACKBODY
 GLUI_Spinner *SPINNER_fire_temp_min = NULL;
@@ -93,6 +97,9 @@ GLUI_Spinner *SPINNER_timeloadframe = NULL;
 GLUI_Spinner *SPINNER_co2color[3];
 GLUI_Spinner *SPINNER_emission_factor=NULL;
 
+#ifdef pp_SMOKE_SKIP
+GLUI_Checkbox *CHECKBOX_smoke3d_use_skip=NULL;
+#endif
 GLUI_Checkbox *CHECKBOX_use_opacity_depth = NULL;
 GLUI_Checkbox *CHECKBOX_use_opacity_multiplier = NULL;
 GLUI_Checkbox *CHECKBOX_use_co2_colormap = NULL;
@@ -383,6 +390,11 @@ extern "C" void Glui3dSmokeSetup(int main_window){
 #endif
   SPINNER_smoke3d_threads = glui_3dsmoke->add_spinner_to_panel(PANEL_overall, _("threads"), GLUI_SPINNER_INT, &nsmoke_threads);
   SPINNER_smoke3d_threads->set_int_limits(1, 16);
+#ifdef pp_SMOKE_SKIP
+  SPINNER_smoke3d_load_start = glui_3dsmoke->add_spinner_to_panel(PANEL_overall, _("start"), GLUI_SPINNER_INT, &smoke3d_start_frame);
+  SPINNER_smoke3d_load_skip = glui_3dsmoke->add_spinner_to_panel(PANEL_overall, _("skip"), GLUI_SPINNER_INT, &smoke3d_skip_frame);
+  CHECKBOX_smoke3d_use_skip = glui_3dsmoke->add_checkbox_to_panel(PANEL_overall, _("skip smoke frames"), &smoke3d_use_skip);
+#endif
 
   if(active_smokesensors==1){
     PANEL_smokesensor = glui_3dsmoke->add_panel_to_panel(PANEL_overall,_("Visibility"));

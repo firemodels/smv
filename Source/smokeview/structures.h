@@ -1602,6 +1602,9 @@ typedef struct _smoke3ddata {
   char menulabel[128];
   float *times;
   int *use_smokeframe;
+#ifdef pp_SMOKE_SKIP
+  int *smokeframe_loaded;
+#endif
   float extinct, valmin, valmax;
   char cextinct[32];
 #define ALPHA_X  0

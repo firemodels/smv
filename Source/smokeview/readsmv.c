@@ -5508,6 +5508,9 @@ int ParseSMOKE3DProcess(bufferstreamdata *stream, char *buffer, int *nn_smoke3d_
     smoke3di->smokeview_tmp = NULL;
     smoke3di->times = NULL;
     smoke3di->use_smokeframe = NULL;
+#ifdef pp_SMOKE_SKIP
+    smoke3di->smokeframe_loaded = NULL;
+#endif
     smoke3di->nchars_compressed_smoke = NULL;
     smoke3di->nchars_compressed_smoke_full = NULL;
     smoke3di->maxval = -1.0;

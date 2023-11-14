@@ -3241,6 +3241,21 @@ void DrawSmokeFrame(void){
     if(smoke3di->loaded==0||smoke3di->display==0)continue;
     if(smoke3di->primary_file==0)continue;
     if(IsSmokeComponentPresent(smoke3di)==0)continue;
+#ifdef pp_SMOKE_SKIP
+    if(smoke3d_use_skip==1){
+      if(smoke3di->smokeframe_loaded==NULL){
+        NewMemory((void **)&smoke3di->smokeframe_loaded, smoke3di->ntimes_full*sizeof(int));
+        int j;
+        for(j=0;j<smoke3di->ntimes_full;j++){
+          smoke3di->smokeframe_loaded[j] = 0;
+        }
+        for(j=smoke3d_start_frame;j<smoke3di->ntimes_full;j+=smoke3d_skip_frame){
+          smoke3di->smokeframe_loaded[j] = 1;
+        }
+      }
+      if(smoke3di->smokeframe_loaded!=NULL&&smoke3di->smokeframe_loaded[smoke3di->ismoke3d_time]==0)continue;
+    }
+#endif
 #ifdef pp_GPU
     if(usegpu==1){
       DrawSmoke3DGPU(smoke3di);
@@ -3628,6 +3643,9 @@ void FreeSmoke3D(smoke3ddata *smoke3di){
   FREEMEMORY(smoke3di->smoke_comp_all);
   FREEMEMORY(smoke3di->smokeframe_comp_list);
   FREEMEMORY(smoke3di->smokeview_tmp);
+#ifdef pp_SMOKE_SKIP
+  FREEMEMORY(smoke3di->smokeframe_loaded);
+#endif
 }
 
 /* ------------------ GetSmoke3DVersion ------------------------ */
@@ -4263,7 +4281,7 @@ void ReadSmoke3DAllMeshes(int iframe, int smoketype, int *errorcode){
       first_time = FIRST_TIME;
     }
     else{
-      first_time = LATER_TIMES;
+      first_time = LATER_TIME;
     }
     ReadSmoke3D(iframe, i, LOAD, first_time, errorcode);
   }
