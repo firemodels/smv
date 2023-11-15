@@ -3841,12 +3841,14 @@ int SetCacheQdata(int setting) {
   return 0;
 } // CACHE_QDATA
 
+#ifdef pp_HIST
 int SetPercentilelevel(float p_level_min, float p_level_max) {
   percentile_level_min = CLAMP(p_level_min, 0.0, 1.0);
   if (p_level_max < 0.0) p_level_max = 1.0 - percentile_level_min;
   percentile_level_max = CLAMP(p_level_max, percentile_level_min + 0.0001, 1.0);
   return 0;
 } // PERCENTILELEVEL
+#endif
 
 int SetTimeoffset(int setting) {
   timeoffset = setting;
@@ -3945,7 +3947,9 @@ int SetV5Particles(int minFlag, float minValue, int maxFlag, float maxValue,
       propi->valmax = maxValue;
       switch (minFlag) {
       case PERCENTILE_MIN:
+#ifdef pp_HIST
         propi->percentile_min = minValue;
+#endif
         break;
       case GLOBAL_MIN:
         propi->dlg_global_valmin = minValue;
@@ -3959,7 +3963,9 @@ int SetV5Particles(int minFlag, float minValue, int maxFlag, float maxValue,
       }
       switch (maxFlag) {
       case PERCENTILE_MAX:
+#ifdef pp_HIST
         propi->percentile_max = maxValue;
+#endif
         break;
       case GLOBAL_MAX:
         propi->dlg_global_valmax = maxValue;
