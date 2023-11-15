@@ -1,0 +1,7 @@
+RENDERDIR
+ frames
+LOADSMOKERENDER
+ soot
+ plume5c_soot
+ 0 3
+EXIT
