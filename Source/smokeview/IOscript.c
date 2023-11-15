@@ -2399,8 +2399,6 @@ void ScriptLoadSmokeRender(scriptdata *scripti){
   smoke_type  = scripti->cval;
 
   if(scripti->first==1){
-    char *shortlabel = NULL;
-
     PRINTF("startup time: %f\n", timer_startup);
     PRINTF("script: loading 3D smoke files of type: %s\n", scripti->cval);
     PRINTF("  frames: %i,%i,%i,... \n\n", frame_start, frame_start+frame_skip, frame_start+2*frame_skip);
