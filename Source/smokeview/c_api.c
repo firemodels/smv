@@ -1434,7 +1434,6 @@ void Partclasscolor(const char *color) {
     partpropdata *propi;
 
     propi = part5propinfo + i;
-    if (propi->particle_property == 0) continue;
     if (strcmp(propi->label->longlabel, color) == 0) {
       ParticlePropShowMenu(i);
       count++;
@@ -1459,7 +1458,6 @@ void Partclasstype(const char *part_type) {
 
       if (propi->class_present[j] == 0) continue;
       partclassj = partclassinfo + j;
-      if (partclassj->kind == HUMANS) continue;
       if (strcmp(partclassj->name, part_type) == 0) {
         ParticlePropShowMenu(-10 - j);
         count++;
