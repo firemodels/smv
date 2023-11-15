@@ -244,6 +244,9 @@ int GetScriptKeywordIndex(char *keyword){
   if(MatchSSF(keyword,"LOADSLICE") == MATCH)return SCRIPT_LOADSLICE;                   // documented
   if(MatchSSF(keyword,"LOADSLCF")==MATCH)return SCRIPT_LOADSLCF;
   if(MatchSSF(keyword,"LOADSLICERENDER")==MATCH)return SCRIPT_LOADSLICERENDER;
+  if(MatchSSF(keyword, "LOADSMOKERENDER") == MATCH){
+    return SCRIPT_LOADSMOKERENDER;
+  }
   if(MatchSSF(keyword,"LOADSLICEM") == MATCH)return SCRIPT_LOADSLICEM;
   if(MatchSSF(keyword,"LOADTOUR") == MATCH)return SCRIPT_LOADTOUR;                     // documented
   if(MatchSSF(keyword,"LOADVOLSMOKE") == MATCH)return SCRIPT_LOADVOLSMOKE;             // documented
@@ -1025,6 +1028,29 @@ NewMemory((void **)&scriptinfo, nscriptinfo*sizeof(scriptdata));
         if(render_skipframe0>0)scripti->ival3=render_skipframe0;
         break;
 
+// LOADSMOKERENDER
+//  (char)quantity (soot, hrrpuv, temp or co2)
+//  (char)renderfile_base
+// (int)start (int)skip 
+      case SCRIPT_LOADSMOKERENDER:
+        SETcval;
+
+        SETcval2;
+        SETbuffer;
+        sscanf(buffer, "%i %i", &scripti->ival2, &scripti->ival3);
+        scripti->ival4 = scripti->ival2;
+        scripti->first = 1;
+        scripti->exit = 0;
+        scripti->fval2 = 1.0;
+        scripti->fval3 = 0.0;
+
+        if(script_startframe>0)scripti->ival2=script_startframe;
+        if(render_startframe0>=0)scripti->ival2=render_startframe0;
+
+        if(script_skipframe>0)scripti->ival3=script_skipframe;
+        if(render_skipframe0>0)scripti->ival3=render_skipframe0;
+        break;
+        
 // LOADSLCF
 //  PBX=val QUANTITY='quantity'
 #define KW_QUANTITY      0
@@ -1821,7 +1847,7 @@ void ScriptLoad3dSmoke(scriptdata *scripti){
 
     smoke3di = smoke3dinfo + i;
     if(MatchUpper(smoke3di->label.longlabel,scripti->cval) == MATCH){
-      ReadSmoke3D(ALL_SMOKE_FRAMES, i, LOAD, FIRST_TIME, &errorcode);
+      ReadSmoke3D(ALL_SMOKE_FRAMES, i, LOAD, FIRST_TIME, NULL, &errorcode);
       if(scripti->cval!=NULL&&strlen(scripti->cval)>0){
         FREEMEMORY(loaded_file);
         NewMemory((void **)&loaded_file,strlen(scripti->cval)+1);
@@ -2338,6 +2364,119 @@ void ScriptLoadSliceRender(scriptdata *scripti){
   }
   if(valid_frame==1&&count==0){
     fprintf(stderr,  "*** Error: Slice files of type %s, frame %i failed to load\n", scripti->cval, frame_current);
+    if(stderr2!=NULL)fprintf(stderr2, "*** Error: Slice files of type %s, frame %i failed to load\n", scripti->cval, frame_current);
+    scripti->exit = 1;
+    valid_frame = 0;
+    RenderState(RENDER_OFF);
+  }
+}
+
+/* ------------------ GetSmokeType ------------------------ */
+
+int GetSmokeType(char *smoke_type){
+  if(strcmp(smoke_type, "hrrpuv") == 0){
+    return HRRPUV_index;
+  }
+  else if(strcmp(smoke_type, "temp") == 0){
+    return TEMP_index;
+  }
+  else if(strcmp(smoke_type, "co2") == 0){
+    return CO2_index;
+  }
+  return SOOT_index;
+}
+
+/* ------------------ ScriptLoadSliceRender ------------------------ */
+
+void ScriptLoadSmokeRender(scriptdata *scripti){
+  int count = 0;
+  int frame_start, frame_skip, frame_current;
+  int valid_frame = 1;
+  char *smoke_type;
+
+  frame_start = scripti->ival2;
+  frame_skip  = scripti->ival3;
+  smoke_type  = scripti->cval;
+
+  if(scripti->first==1){
+    char *shortlabel = NULL;
+
+    PRINTF("startup time: %f\n", timer_startup);
+    PRINTF("script: loading 3D smoke files of type: %s\n", scripti->cval);
+    PRINTF("  frames: %i,%i,%i,... \n\n", frame_start, frame_start+frame_skip, frame_start+2*frame_skip);
+    scripti->first = 0;
+    scripti->exit = 0;
+    frame_current = frame_start;
+    frame360 = 0;
+  }
+  else{
+    frame_current = scripti->ival4;
+    if(frame_current==frame_start&&frame360==0&&render_mode==RENDER_360){ // output first frame twice - work around for a bug causing first frame to be output incorrectly
+      frame360 = 1;
+    }
+    else{
+      frame_current += frame_skip;
+    }
+  }
+  script_itime       = frame_current;
+  script_render_flag = 1;
+  scripti->ival4     = frame_current;
+  int type;
+
+  type = GetSmokeType(smoke_type);
+  if(scripti->fval2>scripti->fval3){
+    frames_total = GetSmokeNFrames(type, &scripti->fval2, &scripti->fval3);
+  }
+
+  if(frame_current<frames_total){
+    PRINTF("\nFrame: %i of %i, ", frame_current, frames_total);
+  }
+
+  float smoke_load_time;
+  START_TIMER(smoke_load_time);
+  GLUTSETCURSOR(GLUT_CURSOR_WAIT);
+
+    // load smoke data
+
+  if(frame_current>=frames_total){
+    scripti->exit = 1;
+    valid_frame = 0;
+    RenderState(RENDER_OFF);
+  }
+
+  FILE_SIZE total_smokefile_size;
+  float time_value;
+  total_smokefile_size = LoadSmoke3D(type, frame_current, &count, &time_value);
+  scripti->fval4 = time_value;
+
+  if(total_smokefile_size ==0){
+    scripti->exit = 1;
+    valid_frame = 0;
+    RenderState(RENDER_OFF);
+  }
+  CheckMemory;
+
+//save finalize
+  GLUTPOSTREDISPLAY;
+  GLUTSETCURSOR(GLUT_CURSOR_LEFT_ARROW);
+  updatemenu = 1;
+  STOP_TIMER(smoke_load_time);
+
+
+  if(frame_current<frames_total){
+    PRINTF("files: %i, ", count);
+    if(total_smokefile_size >1000000000){
+      PRINTF("file size: %.1f GB, load time: %.1f s\n", (float)total_smokefile_size /1000000000., smoke_load_time);
+    }
+    else if(total_smokefile_size >1000000){
+      PRINTF("file size: %.1f MB, load time: %.1f s\n", (float)total_smokefile_size /1000000., smoke_load_time);
+    }
+    else{
+      PRINTF("file size: %.0f KB, load time: %.1f s\n", (float)total_smokefile_size /1000., smoke_load_time);
+    }
+  }
+  if(valid_frame==1&&count==0){
+    fprintf(stderr,  "*** Error: 3D smoke files of type %s, frame %i failed to load\n", scripti->cval, frame_current);
     if(stderr2!=NULL)fprintf(stderr2, "*** Error: Slice files of type %s, frame %i failed to load\n", scripti->cval, frame_current);
     scripti->exit = 1;
     valid_frame = 0;
@@ -2930,7 +3069,7 @@ void ScriptLoadFile(scriptdata *scripti){
     smoke3di = smoke3dinfo + i;
     if(strcmp(smoke3di->file,scripti->cval)==0){
       smoke3di->finalize = 1;
-      ReadSmoke3D(ALL_SMOKE_FRAMES, i, LOAD, FIRST_TIME, &errorcode);
+      ReadSmoke3D(ALL_SMOKE_FRAMES, i, LOAD, FIRST_TIME, NULL, &errorcode);
       return;
     }
   }
@@ -3809,6 +3948,10 @@ int RunScriptCommand(scriptdata *script_command){
     case SCRIPT_LOADSLICERENDER:
  //   Since ScriptLoadSliceRender is called multiple times, call this routine from DoScripts in callback.c
  //     ScriptLoadSliceRender(scripti);
+      break;
+    case SCRIPT_LOADSMOKERENDER:
+      //   Since ScriptLoadSmokeRender is called multiple times, call this routine from DoScripts in callback.c
+      //     ScriptLoadSmokeRender(scripti);
       break;
     case SCRIPT_LOADSLICEM:
       ScriptLoadSliceM(scripti, scripti->ival2);

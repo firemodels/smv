@@ -127,7 +127,7 @@ void UpdateFrameNumber(int changetime){
           patchi = sd->patchgeom;
           if(patchi->geom_timeslist == NULL)continue;
           if(patchi->structured == YES || patchi->boundary == 1 || patchi->geom_times == NULL || patchi->geom_timeslist == NULL)continue;
-          if(current_script_command!=NULL && current_script_command->command == SCRIPT_LOADSLICERENDER){
+          if(current_script_command!=NULL && IS_LOADRENDER){
             patchi->geom_itime = 0; // only one frame loaded at a time when using LOADSLICERNDER
           }
           else{
@@ -1156,7 +1156,7 @@ void UpdateTimes(void){
 
   // determine min time, max time and number of times
 
-  if(current_script_command!=NULL&&current_script_command->command==SCRIPT_LOADSLICERENDER){
+  if(current_script_command!=NULL&& IS_LOADRENDER){
     scriptdata *ss;
 
     ss = current_script_command;
@@ -2577,7 +2577,7 @@ void UpdateDisplay(void){
   }
   if(update_patch_bounds!=-1||update_slice_bounds!=-1||update_part_bounds!=-1||update_plot3d_bounds!=-1){
 
-    if(current_script_command==NULL||current_script_command->command!=SCRIPT_LOADSLICERENDER){
+    if(current_script_command==NULL|| NOT_LOADRENDER){
       OutputBounds();
     }
     update_patch_bounds = -1;

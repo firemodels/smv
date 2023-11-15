@@ -76,6 +76,7 @@
 #define SCRIPT_SETCBAR           245
 #define SCRIPT_SETCBARLAB        246
 #define SCRIPT_SETCBARRGB        247
+#define SCRIPT_LOADSMOKERENDER   248
 
 #define SCRIPT_SETTIMEVAL        301
 #define SCRIPT_SETVIEWPOINT      302
@@ -103,6 +104,9 @@
 #define SCRIPT_ISO_FILE            4
 
 #define SCRIPT_UNKNOWN            -1
+
+#define NOT_LOADRENDER (current_script_command->command!=SCRIPT_LOADSLICERENDER && current_script_command->command != SCRIPT_LOADSMOKERENDER)
+#define IS_LOADRENDER  (current_script_command->command==SCRIPT_LOADSLICERENDER || current_script_command->command == SCRIPT_LOADSMOKERENDER)
 
 #endif
 

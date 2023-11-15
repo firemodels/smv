@@ -3472,6 +3472,48 @@ void GetSmoke3DTimeSteps(int fortran_skip, char *smokefile, int version, int *nt
   fclose(SMOKE_SIZE);
 }
 
+/* ------------------ GetSmokeNFrames ------------------------ */
+
+int GetSmokeNFrames(int type, float *tmin, float *tmax){
+  FILE *stream;
+  char buffer[255];
+  int i, nframes;
+  char size_file[256];
+
+  nframes = 0;
+  *tmin = 1.0;
+  *tmax = 0.0;
+  for(i = 0;i < nsmoke3dinfo;i++){
+    smoke3ddata *smoke3di;
+    int nf;
+
+    smoke3di = smoke3dinfo + i;
+    if(smoke3di->type != type)continue;
+    strcpy(size_file, smoke3di->file);
+    strcat(size_file,".sz");
+    stream = fopen(size_file, "r");
+    if(stream == NULL)continue;
+    nf = 0;
+    fgets(buffer, 255, stream);
+    while(!feof(stream)){
+      float t;
+      if(fgets(buffer, 255, stream) == NULL)break;
+      sscanf(buffer, "%f", &t);
+      if(*tmin>*tmax){
+        *tmin = t;
+        *tmax = t;
+      }
+      else{
+        *tmin = MIN(*tmin, t);
+        *tmax = MAX(*tmax, t);
+      }
+      nf++;
+    }
+    nframes = MAX(nf, nframes);
+    fclose(stream);
+  }
+  return nframes;
+}
 /* ------------------ GetSmoke3dTimesSizes ------------------------ */
 
 void GetSmoke3dTimesSizes(char *file, float **times_ptr, int **frame_sizes_ptr, int *nframes_ptr){
@@ -4075,7 +4117,7 @@ int SetupSmoke3D(smoke3ddata *smoke3di, int flag_arg, int iframe_arg, int *error
 
 /* ------------------ ReadSmoke3D ------------------------ */
 
-FILE_SIZE ReadSmoke3D(int iframe_arg,int ifile_arg,int flag_arg, int first_time, int *errorcode_arg){
+FILE_SIZE ReadSmoke3D(int iframe_arg,int ifile_arg,int flag_arg, int first_time, float *time_value, int *errorcode_arg){
   smoke3ddata *smoke3di;
   MFILE *SMOKE3DFILE;
   int error_local;
@@ -4178,6 +4220,7 @@ FILE_SIZE ReadSmoke3D(int iframe_arg,int ifile_arg,int flag_arg, int first_time,
   nframes_found_local = frame_start_local;
   for(i=frame_start_local;i<frame_end_local;i++){
     SKIP_SMOKE;FREAD_SMOKE(&time_local,4,1,SMOKE3DFILE);SKIP_SMOKE;
+    if(time_value != NULL)*time_value = time_local;
     file_size_local +=4+4+4;
     if(FEOF_SMOKE(SMOKE3DFILE)!=0||(use_tload_end==1&&time_local>tload_end)){
       smoke3di->ntimes_full=i;
@@ -4283,7 +4326,7 @@ void ReadSmoke3DAllMeshes(int iframe, int smoketype, int *errorcode){
     else{
       first_time = LATER_TIME;
     }
-    ReadSmoke3D(iframe, i, LOAD, first_time, errorcode);
+    ReadSmoke3D(iframe, i, LOAD, first_time, NULL, errorcode);
   }
 }
 
