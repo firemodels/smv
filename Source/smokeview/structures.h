@@ -252,7 +252,7 @@ typedef struct _scriptdata {
   char command_label[32], quantity2[32];
   int ival,ival2,ival3,ival4,ival5;
   int need_graphics;
-  char *cval,*cval2;
+  char *cval,*cval2,*cval3;
   float fval,fval2,fval3,fval4,fval5;
   int exit,first,remove_frame;
   char *quantity, *id, *c_pbxyz;

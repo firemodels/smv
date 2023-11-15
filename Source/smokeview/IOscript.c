@@ -181,6 +181,7 @@ void FreeScript(void){
 
       FREEMEMORY(scripti->cval);
       FREEMEMORY(scripti->cval2);
+      FREEMEMORY(scripti->cval3);
     }
     FREEMEMORY(scriptinfo);
     nscriptinfo=0;
@@ -199,6 +200,7 @@ void InitScriptI(scriptdata *scripti, int command,char *label){
   scripti->command       = command;
   scripti->cval          = NULL;
   scripti->cval2         = NULL;
+  scripti->cval3         = NULL;
   scripti->fval          = 0.0;
   scripti->ival          = 0;
   scripti->ival2         = 0;
@@ -1034,7 +1036,17 @@ NewMemory((void **)&scriptinfo, nscriptinfo*sizeof(scriptdata));
 // (int)start (int)skip 
       case SCRIPT_LOADSMOKERENDER:
         SETcval;
+        if(scripti->cval != NULL){
+          char *semi;
 
+          semi = strchr(scripti->cval, ';');
+          if(semi != NULL){
+            *semi = 0;
+            semi++;
+            scripti->cval3 = GetCharPointer(semi);
+            scripti->cval = TrimFrontBack(scripti->cval);
+          }
+        }
         SETcval2;
         SETbuffer;
         sscanf(buffer, "%i %i", &scripti->ival2, &scripti->ival3);
@@ -2373,17 +2385,22 @@ void ScriptLoadSliceRender(scriptdata *scripti){
 
 /* ------------------ GetSmokeType ------------------------ */
 
-int GetSmokeType(char *smoke_type){
-  if(strcmp(smoke_type, "hrrpuv") == 0){
-    return HRRPUV_index;
+int GetSmokeType(char *smoke_type, char *smoke_type2){
+  int type = 0;
+
+  if(smoke_type != NULL){
+    if(strcmp(smoke_type, "soot")   == 0)type |= 1;
+    if(strcmp(smoke_type, "hrrpuv") == 0)type |= 2;
+    if(strcmp(smoke_type, "temp")   == 0)type |= 4;
+    if(strcmp(smoke_type, "co2")    == 0)type |= 8;
   }
-  else if(strcmp(smoke_type, "temp") == 0){
-    return TEMP_index;
+  if(smoke_type2 != NULL){
+    if(strcmp(smoke_type2, "soot")   == 0)type |= 1;
+    if(strcmp(smoke_type2, "hrrpuv") == 0)type |= 2;
+    if(strcmp(smoke_type2, "temp")   == 0)type |= 4;
+    if(strcmp(smoke_type2, "co2")    == 0)type |= 8;
   }
-  else if(strcmp(smoke_type, "co2") == 0){
-    return CO2_index;
-  }
-  return SOOT_index;
+  return type;
 }
 
 /* ------------------ ScriptLoadSliceRender ------------------------ */
@@ -2392,11 +2409,12 @@ void ScriptLoadSmokeRender(scriptdata *scripti){
   int count = 0;
   int frame_start, frame_skip, frame_current;
   int valid_frame = 1;
-  char *smoke_type;
+  char *smoke_type, *smoke_type2;
 
   frame_start = scripti->ival2;
   frame_skip  = scripti->ival3;
   smoke_type  = scripti->cval;
+  smoke_type2 = scripti->cval3;
 
   if(scripti->first==1){
     PRINTF("startup time: %f\n", timer_startup);
@@ -2421,7 +2439,7 @@ void ScriptLoadSmokeRender(scriptdata *scripti){
   scripti->ival4     = frame_current;
   int type;
 
-  type = GetSmokeType(smoke_type);
+  type = GetSmokeType(smoke_type, smoke_type2);
   if(scripti->fval2>scripti->fval3){
     frames_total = GetSmokeNFrames(type, &scripti->fval2, &scripti->fval3);
   }

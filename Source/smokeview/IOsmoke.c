@@ -3488,7 +3488,10 @@ int GetSmokeNFrames(int type, float *tmin, float *tmax){
     int nf;
 
     smoke3di = smoke3dinfo + i;
-    if(smoke3di->type != type)continue;
+    if(smoke3di->type == SOOT_index   && (type&1) == 0)continue;
+    if(smoke3di->type == HRRPUV_index && (type&2) == 0)continue;
+    if(smoke3di->type == TEMP_index   && (type&4) == 0)continue;
+    if(smoke3di->type == CO2_index    && (type&8) == 0)continue;
     strcpy(size_file, smoke3di->file);
     strcat(size_file,".sz");
     stream = fopen(size_file, "r");

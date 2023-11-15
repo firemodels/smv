@@ -3,7 +3,7 @@ RENDERDIR
 LOADINIFILE
  plume5c_nogpu.ini
 LOADSMOKERENDER
- soot
+ soot ; hrrpuv
  plume5c_soot
  0 3
 EXIT

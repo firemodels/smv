@@ -4601,6 +4601,16 @@ void UnLoadSmoke3DMenu(int value){
   }
 }
 
+/* ------------------ IsSmokeType ------------------------ */
+
+int IsSmokeType(smoke3ddata *smoke3di, int type){
+  if(smoke3di->type == SOOT_index   && (type&1) != 0)return 1;
+  if(smoke3di->type == HRRPUV_index && (type&2) != 0)return 1;
+  if(smoke3di->type == TEMP_index   && (type&4) != 0)return 1;
+  if(smoke3di->type == CO2_index    && (type&8) != 0)return 1;
+  return 0;
+}
+
 /* ------------------ LoadSmoke3D ------------------------ */
 
 FILE_SIZE LoadSmoke3D(int type, int frame, int *count, float *time_value){
@@ -4612,7 +4622,7 @@ FILE_SIZE LoadSmoke3D(int type, int frame, int *count, float *time_value){
     smoke3ddata *smoke3di;
 
     smoke3di = smoke3dinfo+i;
-    if(smoke3di->type == type){
+    if(IsSmokeType(smoke3di, type) == 1){
     last_smoke = i;
     break;
     }
@@ -4625,7 +4635,7 @@ FILE_SIZE LoadSmoke3D(int type, int frame, int *count, float *time_value){
     smoke3ddata *smoke3di;
 
     smoke3di = smoke3dinfo+i;
-    if(smoke3di->type==type&&compute_smoke3d_file_sizes!=1)nstreams++;
+    if(IsSmokeType(smoke3di,type)==1&&compute_smoke3d_file_sizes!=1)nstreams++;
   }
   if(nstreams>0)NewMemory((void **)&streams, nstreams*sizeof(streamdata *));
   nstreams = 0;
@@ -4635,7 +4645,7 @@ FILE_SIZE LoadSmoke3D(int type, int frame, int *count, float *time_value){
     smoke3ddata *smoke3di;
 
     smoke3di = smoke3dinfo + i;
-    if(smoke3di->type==type){
+    if(IsSmokeType(smoke3di, type) == 1){
       file_count++;
       smoke3di->finalize = 0;
       if(i == last_smoke)smoke3di->finalize = 1;
@@ -4778,10 +4788,15 @@ void LoadSmoke3DMenu(int value){
         }
         if(add_blank==1)printf("\n");
       }
+      int type;
+      type = 1;
+      if(smoke3di->type == HRRPUV_index)type = 2;
+      if(smoke3di->type == TEMP_index)type = 4;
+      if(smoke3di->type == CO2_index)type = 8;
 #ifndef pp_SMOKE3DSTREAM
       load_size=
 #endif
-	      LoadSmoke3D(smoke3di->type, ALL_SMOKE_FRAMES, &file_count, NULL);
+	      LoadSmoke3D(type, ALL_SMOKE_FRAMES, &file_count, NULL);
     }
   }
 #ifndef pp_SMOKE3DSTREAM
