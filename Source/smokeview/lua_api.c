@@ -175,12 +175,13 @@ int RunLuaBranch(lua_State *L, int argc, char **argv) {
   // interpreter to call this.
   LuaSetupCase(L);
   return_code = lua_tonumber(L, -1);
-
+#ifdef pp_HIST
   if (return_code == 0 && update_bounds == 1) {
     INIT_PRINT_TIMER(timer_update_bounds);
     return_code = Update_Bounds();
     PRINT_TIMER(timer_update_bounds, "Update_Bounds");
   }
+#endif
   if (return_code != 0) return 1;
   if (convert_ini == 1) {
     INIT_PRINT_TIMER(timer_read_ini);

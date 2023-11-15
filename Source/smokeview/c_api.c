@@ -152,7 +152,9 @@ int Loadsmvall(const char *input_filename) {
   // TODO: move these into the model information namespace
   ParseSmvFilepath(input_filename, fdsprefix, input_filename_ext);
   return_code = Loadsmv(fdsprefix, input_filename_ext);
+#ifdef pp_HIST
   if (return_code == 0 && update_bounds == 1) return_code = Update_Bounds();
+#endif
   if (return_code != 0) return 1;
   // if(convert_ini==1){
   // ReadIni(ini_from);
@@ -316,11 +318,13 @@ int Loadfile(const char *filename) {
     return 1;
   }
 
+#ifdef pp_HIST
   FREEMEMORY(loaded_file);
   if (filename != NULL && strlen(filename) > 0) {
     NewMemory((void **)&loaded_file, strlen(filename) + 1);
     strcpy(loaded_file, filename);
   }
+#endif
   for (size_t i = 0; i < nsliceinfo; i++) {
     slicedata *sd;
 
@@ -410,7 +414,9 @@ void Loadinifile(const char *filepath) {
 }
 
 int Loadvfile(const char *filepath) {
+#ifdef pp_HIST
   FREEMEMORY(loaded_file);
+#endif
   for (size_t i = 0; i < nvsliceinfo; i++) {
     slicedata *val;
     vslicedata *vslicei;
@@ -420,10 +426,12 @@ int Loadvfile(const char *filepath) {
     if (val == NULL) continue;
     if (strcmp(val->reg_file, filepath) == 0) {
       LoadVSliceMenu(i);
+#ifdef pp_HIST
       if (filepath != NULL && strlen(filepath) > 0) {
         NewMemory((void **)&loaded_file, strlen(filepath) + 1);
         strcpy(loaded_file, filepath);
       }
+#endif
       return 0;
     }
   }
@@ -435,7 +443,9 @@ void Loadboundaryfile(const char *filepath) {
   int errorcode;
   int count = 0;
 
+#ifdef pp_HIST
   FREEMEMORY(loaded_file);
+#endif
   for (size_t i = 0; i < npatchinfo; i++) {
     patchdata *patchi;
 
@@ -443,11 +453,13 @@ void Loadboundaryfile(const char *filepath) {
     if (strcmp(patchi->label.longlabel, filepath) == 0) {
       LOCK_COMPRESS
       ReadBoundary(i, LOAD, &errorcode);
+#ifdef pp_HIST
       if (filepath != NULL && strlen(filepath) > 0) {
         FREEMEMORY(loaded_file);
         NewMemory((void **)&loaded_file, strlen(filepath) + 1);
         strcpy(loaded_file, filepath);
       }
+#endif
       count++;
       UNLOCK_COMPRESS
     }
@@ -743,8 +755,10 @@ int Settime(float timeval) {
         fprintf(stderr, "*** Error: data not available at time requested\n");
         fprintf(stderr, "           time: %f s, min time: %f, max time: %f s\n",
                 timeval, global_times[0], global_times[nglobal_times - 1]);
+#ifdef pp_HIST
         if (loaded_file != NULL)
           fprintf(stderr, "           loaded file: %s\n", loaded_file);
+#endif
         if (script_labelstring != NULL)
           fprintf(stderr,
                   "                 "
@@ -1310,8 +1324,9 @@ void Load3dsmoke(const char *smoke_type) {
   int errorcode;
   int count = 0;
   int lastsmoke;
-
+#ifdef pp_HIST
   FREEMEMORY(loaded_file);
+#endif
 
   for (size_t i = nsmoke3dinfo - 1; i >= 0; i--) {
     smoke3ddata *smoke3di;
@@ -1341,11 +1356,13 @@ void Load3dsmoke(const char *smoke_type) {
       smoke3di->finalize = 0;
       if (lastsmoke == i) smoke3di->finalize = 1;
       ReadSmoke3D(ALL_SMOKE_FRAMES, i, LOAD, FIRST_TIME, &errorcode);
+#ifdef pp_HIST
       if (smoke_type != NULL && strlen(smoke_type) > 0) {
         FREEMEMORY(loaded_file);
         NewMemory((void **)&loaded_file, strlen(smoke_type) + 1);
         strcpy(loaded_file, smoke_type);
       }
+#endif
       count++;
     }
   }
@@ -1428,7 +1445,9 @@ void Loadparticles(const char *name) {
   int errorcode;
   int count = 0;
 
+#ifdef pp_HIST
   FREEMEMORY(loaded_file);
+#endif
 
   npartframes_max = GetMinPartFrames(PARTFILE_LOADALL);
   for (size_t i = 0; i < npartinfo; i++) {
@@ -1443,11 +1462,13 @@ void Loadparticles(const char *name) {
 
     parti = partinfo + i;
     ReadPart(parti->file, i, LOAD, &errorcode);
+#ifdef pp_HIST
     if (name != NULL && strlen(name) > 0) {
       FREEMEMORY(loaded_file);
       NewMemory((void **)&loaded_file, strlen(name) + 1);
       strcpy(loaded_file, name);
     }
+#endif
     count++;
   }
   if (count == 0)
@@ -1624,7 +1645,9 @@ void Loadplot3d(int meshnumber, float time_local) {
 void Loadiso(const char *type) {
   int count = 0;
 
+#ifdef pp_HIST
   FREEMEMORY(loaded_file);
+#endif
 
   update_readiso_geom_wrapup = UPDATE_ISO_START_ALL;
   for (size_t i = 0; i < nisoinfo; i++) {
@@ -1634,11 +1657,13 @@ void Loadiso(const char *type) {
     isoi = isoinfo + i;
     if (STRCMP(isoi->surface_label.longlabel, type) == 0) {
       ReadIso(isoi->file, i, LOAD, NULL, &errorcode);
+#ifdef pp_HIST
       if (type != NULL && strlen(type) > 0) {
         FREEMEMORY(loaded_file);
         NewMemory((void **)&loaded_file, strlen(type) + 1);
         strcpy(loaded_file, type);
       }
+#endif
       count++;
     }
   }
