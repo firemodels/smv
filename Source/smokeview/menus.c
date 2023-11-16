@@ -155,6 +155,7 @@ float     part_load_time;
 #define MENU_VOLSMOKE_SETTINGS    -4
 #define MENU_SLICE_SETTINGS       -6
 #define MENU_PART_PARTFAST        -7
+#define MENU_PART_SHOW_NUMBER     -8
 
 #define MENU_PARTICLE_UNLOAD_ALL -1
 #define MENU_PARTICLE_DUMMY -2
@@ -4065,6 +4066,16 @@ void LoadParticleMenu(int value){
       if(partfast==0)printf("fast loading: off\n");
       if(partfast==1)printf("fast loading: on\n");
       UpdateGluiPartFast();
+    }
+    else if(value == MENU_PART_SHOW_NUMBER){
+      int total = 0;
+      for(i = 0;i < npartinfo;i++){
+        partdata *parti;
+
+        parti = partinfo + i;
+        total += parti->npoints;
+      }
+      printf("particle number: %i\n", total);
     }
     else{
       if(scriptoutstream!=NULL){
@@ -11847,6 +11858,7 @@ updatemenu=0;
         GLUTADDSUBMENU(menulabel, particlesubmenu);
       }
     }
+    glutAddMenuEntry("Particle number", MENU_PART_SHOW_NUMBER);
     glutAddMenuEntry(_("Settings..."), MENU_PART_SETTINGS);
     if(npartloaded>1){
       GLUTADDSUBMENU(_("Unload"),unloadpartmenu);

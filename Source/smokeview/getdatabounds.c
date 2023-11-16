@@ -9,10 +9,11 @@
 
 /* ------------------ GetPartFileBounds ------------------------ */
 
-int GetPartFileBounds(char *file, float *valmin, float *valmax){
+int GetPartFileBounds(char *file, float *valmin, float *valmax, int *ntotal_points){
   FILE *stream;
   int i;
 
+  *ntotal_points = 0;
   if(file==NULL||strlen(file)==0)return 0;
   stream = fopen(file, "r");
   if(stream==NULL)return 0;
@@ -27,10 +28,11 @@ int GetPartFileBounds(char *file, float *valmin, float *valmax){
     sscanf(buffer, "%f %i", &time, &nclasses);
 
     for(class_index = 0; class_index<nclasses; class_index++){
-      int nfilebounds;
+      int nfilebounds, npoints;
 
       if(fgets(buffer, 255, stream)==NULL)break;
-      sscanf(buffer, "%i", &nfilebounds);
+      sscanf(buffer, "%i %i", &nfilebounds, &npoints);
+      *ntotal_points += npoints;
 
       for(i = 0; i<nfilebounds; i++){
         float vmin, vmax;
@@ -82,7 +84,7 @@ int GetGlobalPartBounds(int flag){
         parti->valmax_smv[j] = 0.0;
       }
     }
-    parti->have_bound_file = GetPartFileBounds(parti->bound_file, parti->valmin_fds, parti->valmax_fds);
+    parti->have_bound_file = GetPartFileBounds(parti->bound_file, parti->valmin_fds, parti->valmax_fds, &parti->npoints);
   }
   if(npart5prop>0){
     NewMemory((void **)&partmins, npart5prop*sizeof(float));
