@@ -1,10 +1,10 @@
 #!/bin/bash
+
 CURRENT_DIR=`pwd`
 SCRIPTDIR=`dirname "$(readlink -f "$0")"`
 cd $SCRIPTDIR/../../..
 FIREMODELS_ROOT=`pwd`
 cd $CURRENT_DIR
-
 
 #---------------------------------------------
 #                   Usage
