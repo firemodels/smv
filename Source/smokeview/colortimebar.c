@@ -16,7 +16,7 @@ void UpdateTimeLabels(void){
 
   time0 = timeoffset;
   if(global_times!=NULL)time0 = timeoffset+global_times[itimes];
-  if(current_script_command!=NULL&&current_script_command->command==SCRIPT_LOADSLICERENDER){
+  if(current_script_command!=NULL&&IS_LOADRENDER){
     time0 = current_script_command->fval4;
   }
 
@@ -42,7 +42,7 @@ void UpdateTimeLabels(void){
     float dt;
     char timeval[30], *timevalptr;
 
-    if(current_script_command!=NULL&&current_script_command->command==SCRIPT_LOADSLICERENDER){
+    if(current_script_command!=NULL&&IS_LOADRENDER){
       dt = current_script_command->fval5;
     }
     else{
@@ -63,7 +63,7 @@ void UpdateTimeLabels(void){
   {
     int itime_val;
 
-    if(current_script_command!=NULL&&current_script_command->command==SCRIPT_LOADSLICERENDER){
+    if(current_script_command!=NULL&&IS_LOADRENDER){
       itime_val = script_itime;
     }
     else{
@@ -117,7 +117,7 @@ void DrawTimebar(float xleft, float xright, float ybot, float ytop){
   glEnd();
 
   xxright = xright;
-  if(current_script_command!=NULL&&current_script_command->command==SCRIPT_LOADSLICERENDER){
+  if(current_script_command!=NULL&&IS_LOADRENDER){
     float factor, time_min, time_max, time_now;
 
     time_min = current_script_command->fval2;

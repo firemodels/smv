@@ -18,6 +18,7 @@
 #define pp_PATCH_HIST     // simplify boundary file histogram computation
 //#define pp_HIST           // compute histograms
 
+#define pp_SMOKE_SKIP     // add option to skip smoke frames
 //#define pp_SMOKE16      // load 16 bit smoke files
 //#define pp_VOLSMOKE     // add option to compress volume rendered data
 //#define pp_GAMMA        // show gamma correction checkbox
@@ -35,8 +36,22 @@
 
 //#define pp_DPRINT       // turn on debug print (file, line number)
 
-#define pp_READBUFFER_THREAD // use pthreads in ReadBuffer routine (don't use pthreads when used in smokezip and smokediff)
+// streaming directives
 
+//#define pp_SMOKE3DSTREAM      // stream smoke3d data
+//#define pp_PARTSTREAM         // stream particle data
+
+// turn on pp_STREAM if streaming is on for any file type
+
+#ifdef pp_SMOKE3DSTREAM
+#define pp_STREAM
+#endif
+#ifdef pp_PARTSTREAM
+#undef pp_STREAM
+#define pp_STREAM
+#endif
+
+#define pp_READBUFFER_THREAD // use pthreads in ReadBuffer routine (don't use pthreads when used in smokezip and smokediff)
 //#define pp_CRASH_TEST       // test detection of division by zero or use of undefined pointer
 #define pp_GPU                // support the GPU
 #define pp_THREAD             // turn on multi-threading

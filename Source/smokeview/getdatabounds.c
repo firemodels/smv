@@ -285,7 +285,7 @@ void GetGlobalPatchBounds(int flag){
 
     doit = 0;
     if(patchi->valmin_fds > patchi->valmax_fds ||
-      current_script_command == NULL || current_script_command->command != SCRIPT_LOADSLICERENDER)doit = 1;
+      current_script_command == NULL || NOT_LOADRENDER)doit = 1;
     if(flag == 0){
       doit = 0;
       patchi->valmin_fds = 0.0;
@@ -559,7 +559,7 @@ void GetGlobalSliceBounds(int flag){
     slicei = sliceinfo+i;
     if(slicei->is_fed==1)continue;
     if(slicei->valmin_fds>slicei->valmax_fds ||
-       current_script_command==NULL||current_script_command->command!=SCRIPT_LOADSLICERENDER)doit=1;
+       current_script_command==NULL || NOT_LOADRENDER)doit=1;
     if(flag==0){
        doit = 0;
        slicei->valmin_fds = 0.0;
@@ -836,7 +836,7 @@ void UpdateGlobalFEDSliceBounds(void){
     slicei = sliceinfo+i;
     if(slicei->is_fed==0||slicei->have_bound_file==0)continue;
     if(slicei->valmin_fds>slicei->valmax_fds||
-       current_script_command==NULL||current_script_command->command!=SCRIPT_LOADSLICERENDER){
+       current_script_command==NULL || NOT_LOADRENDER){
 
       GetBounds(slicei->bound_file, &valmin, &valmax, &sliceboundsinfo, &nsliceboundsinfo);
 

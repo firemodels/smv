@@ -128,7 +128,7 @@ void UpdateFrameNumber(int changetime){
           patchi = sd->patchgeom;
           if(patchi->geom_timeslist == NULL)continue;
           if(patchi->structured == YES || patchi->boundary == 1 || patchi->geom_times == NULL || patchi->geom_timeslist == NULL)continue;
-          if(current_script_command!=NULL && current_script_command->command == SCRIPT_LOADSLICERENDER){
+          if(current_script_command!=NULL && IS_LOADRENDER){
             patchi->geom_itime = 0; // only one frame loaded at a time when using LOADSLICERNDER
           }
           else{
@@ -166,6 +166,11 @@ void UpdateFrameNumber(int changetime){
     }
     if(show3dsmoke==1){
       if(nsmoke3dinfo > 0){
+#ifdef pp_SMOKE3DSTREAM
+        int display_smoke_frame;
+
+        display_smoke_frame = 0;
+#endif
         for(i = 0;i < nsmoke3dinfo;i++){
           smoke3ddata *smoke3di;
 
@@ -173,13 +178,21 @@ void UpdateFrameNumber(int changetime){
           if(smoke3di->loaded == 0 || smoke3di->display == 0)continue;
           smoke3di->ismoke3d_time = smoke3di->timeslist[itimes];
           if(IsSmokeComponentPresent(smoke3di) == 0)continue;
+#ifdef pp_SMOKE3DSTREAM
+          smoke3di->lastiframe = smoke3di->ismoke3d_time;
+          if(UpdateSmoke3D(smoke3di)==1)display_smoke_frame=1;
+#else
           if(smoke3di->ismoke3d_time != smoke3di->lastiframe){
             smoke3di->lastiframe = smoke3di->ismoke3d_time;
             UpdateSmoke3D(smoke3di);
           }
+#endif
         }
         MergeSmoke3D(NULL);
         PrintMemoryInfo;
+#ifdef pp_SMOKE3DSTREAM
+        if(display_smoke_frame==0)Keyboard('0', FROM_SMOKEVIEW);
+#endif
       }
     }
     if(showpatch==1){
@@ -1144,7 +1157,7 @@ void UpdateTimes(void){
 
   // determine min time, max time and number of times
 
-  if(current_script_command!=NULL&&current_script_command->command==SCRIPT_LOADSLICERENDER){
+  if(current_script_command!=NULL&& IS_LOADRENDER){
     scriptdata *ss;
 
     ss = current_script_command;
@@ -2565,7 +2578,7 @@ void UpdateDisplay(void){
   }
   if(update_patch_bounds!=-1||update_slice_bounds!=-1||update_part_bounds!=-1||update_plot3d_bounds!=-1){
 
-    if(current_script_command==NULL||current_script_command->command!=SCRIPT_LOADSLICERENDER){
+    if(current_script_command==NULL|| NOT_LOADRENDER){
       OutputBounds();
     }
     update_patch_bounds = -1;

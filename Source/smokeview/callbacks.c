@@ -596,7 +596,7 @@ void CheckTimeBound(void){
     itimes=first_frame_index;
     if(render_status==RENDER_ON){
       RenderMenu(RenderCancel);
-      if(current_script_command!=NULL&&current_script_command->command!=SCRIPT_LOADSLICERENDER){
+      if(current_script_command!=NULL&&NOT_LOADRENDER){
         current_script_command->exit=1;
       }
     }
@@ -3565,6 +3565,7 @@ void UpdateFrame(float thisinterval, int *changetime, int *redisplay){
           itimes += render_skip*FlowDir;
         }
       }
+      if(script_render_flag == 1&&IS_LOADRENDER)itimes = script_itime;
 
 // if toggling time display with H then show the frame that was visible
 
@@ -3968,7 +3969,7 @@ void DoScript(void){
             current_script_command->exit = 0;
           }
       }
-      else if(current_script_command->command==SCRIPT_LOADSLICERENDER){
+      else if(IS_LOADRENDER){
         if(current_script_command->exit==0){
           if(render_resolution==RENDER_RESOLUTION_360){
             if(viewpoint_script_ptr!=NULL)SetCurrentViewPoint(viewpoint_script);
@@ -3978,7 +3979,12 @@ void DoScript(void){
             RenderCB(RENDER_START_360);
           }
           RenderState(RENDER_ON);
-          ScriptLoadSliceRender(current_script_command);
+          if(current_script_command->command == SCRIPT_LOADSLICERENDER){
+            ScriptLoadSliceRender(current_script_command);
+          }
+          else{
+            ScriptLoadSmokeRender(current_script_command);
+          }
         }
         else{
           RenderState(RENDER_OFF);

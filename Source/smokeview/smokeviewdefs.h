@@ -961,7 +961,7 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 #define BOUNDS_ONLY 5
 
 #define FIRST_TIME  1
-#define LATER_TIMES 0
+#define LATER_TIME  0
 
 #define MAKE_SIZEFILE 0
 #define GET_DATA      1

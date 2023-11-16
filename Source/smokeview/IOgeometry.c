@@ -2857,7 +2857,7 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
 #endif
     int filesize;
 
-    if(current_script_command==NULL||current_script_command->command!=SCRIPT_LOADSLICERENDER){
+    if(current_script_command==NULL||NOT_LOADRENDER){
       PRINTF("Loading %s(%s)", patchi->file, patchi->label.shortlabel);
     }
     filesize=GetGeomData(patchi->file, ntimes_local, nvals, patchi->geom_times,
@@ -3057,7 +3057,7 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
   force_redisplay = 1;
   updatemenu = 1;
   STOP_TIMER(total_time);
-  if(current_script_command==NULL||current_script_command->command!=SCRIPT_LOADSLICERENDER){
+  if(current_script_command==NULL||NOT_LOADRENDER){
     PRINTF(" - %.1f MB/%.1f s\n", (float)return_filesize/1000000., total_time);
   }
   PrintMemoryInfo;

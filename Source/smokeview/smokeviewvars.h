@@ -304,6 +304,10 @@ SVEXTERN int SVDECL(npartthread_ids, 2);
 #ifdef pp_SLICE_MULTI
 SVEXTERN int SVDECL(nslicethread_ids, 4);
 #endif
+#ifdef pp_STREAM
+SVEXTERN int SVDECL(stream_multithread, 1);
+SVEXTERN streamlistargdata SVDECL(*streamlistarg, NULL);
+#endif
 SVEXTERN int SVDECL(nreadallgeomthread_ids, 4);
 SVEXTERN int SVDECL(partfast, 1);
 SVEXTERN int SVDECL(have_vr, 0), SVDECL(use_vr,0);
@@ -315,6 +319,11 @@ SVEXTERN float SVDECL(emission_factor, 3.0);
 SVEXTERN int SVDECL(monitor_screen_height, -1);
 #endif
 SVEXTERN int SVDECL(rollout_count, 0);
+#ifdef pp_SMOKE_SKIP
+SVEXTERN int SVDECL(smoke3d_start_frame, 0);
+SVEXTERN int SVDECL(smoke3d_skip_frame, 1);
+SVEXTERN int SVDECL(smoke3d_use_skip, 0);
+#endif
 
 SVEXTERN int SVDECL(glui_defined, 0);
 SVEXTERN int SVDECL(update_times,0);

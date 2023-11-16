@@ -4974,6 +4974,9 @@ int ParsePRT5Process(bufferstreamdata *stream, char *buffer, int *nn_part_in, in
   parti->valmin_smv = NULL;
   parti->valmax_smv = NULL;
   parti->stream     = NULL;
+#ifdef pp_PARTSTREAM
+  parti->part_stream = NULL;
+#endif
 #ifndef pp_HIST
   parti->hist_update = 0;
 #endif
@@ -5463,6 +5466,11 @@ int ParseSMOKE3DProcess(bufferstreamdata *stream, char *buffer, int *nn_smoke3d_
 
     if(NewMemory((void **)&smoke3di->reg_file, (unsigned int)(len+1))==0)return RETURN_TWO;
     STRCPY(smoke3di->reg_file, bufferptr);
+#ifdef pp_SMOKE3DSTREAM
+    if(NewMemory((void **)&smoke3di->size_file, (unsigned int)(len+3+1))==0)return RETURN_TWO;
+    STRCPY(smoke3di->size_file, bufferptr);
+    strcat(smoke3di->size_file, ".sz");
+#endif
 
     for(i=0; i<6; i++){
       unsigned char *alpha_dir;
@@ -5493,6 +5501,9 @@ int ParseSMOKE3DProcess(bufferstreamdata *stream, char *buffer, int *nn_smoke3d_
     smoke3di->smokeview_tmp = NULL;
     smoke3di->times = NULL;
     smoke3di->use_smokeframe = NULL;
+#ifdef pp_SMOKE_SKIP
+    smoke3di->smokeframe_loaded = NULL;
+#endif
     smoke3di->nchars_compressed_smoke = NULL;
     smoke3di->nchars_compressed_smoke_full = NULL;
     smoke3di->maxval = -1.0;
@@ -5508,6 +5519,9 @@ int ParseSMOKE3DProcess(bufferstreamdata *stream, char *buffer, int *nn_smoke3d_
     smoke3di->blocknumber = blocknumber;
     smoke3di->lastiframe = -999;
     smoke3di->ismoke3d_time = 0;
+#ifdef pp_SMOKE3DSTREAM
+    smoke3di->smoke_stream = NULL;
+#endif
 
     STRCPY(buffer2, bufferptr);
     STRCAT(buffer2, ".svz");

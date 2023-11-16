@@ -8,6 +8,7 @@
 
 #include "stdio_m.h"
 #include "string_util.h" // necessary for flowlabels
+#include "smokestream.h"
 
 /* --------------------------  circdata ------------------------------------ */
 
@@ -251,7 +252,7 @@ typedef struct _scriptdata {
   char command_label[32], quantity2[32];
   int ival,ival2,ival3,ival4,ival5;
   int need_graphics;
-  char *cval,*cval2;
+  char *cval,*cval2,*cval3;
   float fval,fval2,fval3,fval4,fval5;
   int exit,first,remove_frame;
   char *quantity, *id, *c_pbxyz;
@@ -1253,6 +1254,9 @@ typedef struct _partdata {
   int *sort_tags;
   short *sx, *sy, *sz;
   unsigned char *irvals;
+#ifdef pp_SMOKE3DSTREAM
+  streamdata *part_stream;
+#endif
 } partdata;
 
 /* --------------------------  compdata ------------------------------------ */
@@ -1570,6 +1574,9 @@ typedef struct {
 typedef struct _smoke3ddata {
   int seq_id,autoload;
   char *file;
+#ifdef pp_SMOKE3DSTREAM
+  char *size_file;
+#endif
   char *comp_file, *reg_file;
 #ifdef pp_SMOKE16
   char *s16_file;
@@ -1589,6 +1596,9 @@ typedef struct _smoke3ddata {
   char menulabel[128];
   float *times;
   int *use_smokeframe;
+#ifdef pp_SMOKE_SKIP
+  int *smokeframe_loaded;
+#endif
   float extinct, valmin, valmax;
   char cextinct[32];
 #define ALPHA_X  0
@@ -1618,6 +1628,9 @@ typedef struct _smoke3ddata {
   FILE_SIZE file_size;
   float *smoke_boxmin, *smoke_boxmax;
   smokedata smoke;
+#ifdef pp_SMOKE3DSTREAM
+  streamdata *smoke_stream;
+#endif
   int dir;
 } smoke3ddata;
 

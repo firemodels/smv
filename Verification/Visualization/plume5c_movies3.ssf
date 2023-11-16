@@ -1,0 +1,9 @@
+RENDERDIR
+ frames
+LOADINIFILE
+ plume5c_nogpu.ini
+LOADSMOKERENDER
+ soot ; hrrpuv
+ plume5c_soot
+ 0 3
+EXIT
