@@ -1,4 +1,5 @@
 #include "options.h"
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
@@ -227,7 +228,7 @@ float GetPoint2BoxDist(float boxmin[3], float boxmax[3], float p1[3], float p2or
       }
     }
   }
-  ASSERT(FFALSE);
+  assert(FFALSE);
   return Dist(p1, p2);
 }
 
@@ -419,7 +420,7 @@ void DrawDevicesVal(void){
           }
           break;
         default:
-          ASSERT(FFALSE);
+          assert(FFALSE);
           break;
       }
       if(devicei->visval>128){
@@ -3535,7 +3536,7 @@ void DrawDevices(int mode){
             glPopMatrix();
             break;
           default:
-            ASSERT(FFALSE);
+            assert(FFALSE);
             break;
           }
         }
@@ -3683,7 +3684,7 @@ void DrawDevices(int mode){
             glPopMatrix();
             break;
           default:
-            ASSERT(FFALSE);
+            assert(FFALSE);
             break;
           }
         }
@@ -3907,7 +3908,7 @@ void DrawSmvObject(sv_object *object_dev, int iframe_local, propdata *prop, int 
   if(iframe_local > object->nframes - 1 || iframe_local < 0)iframe_local = 0;
   framei = object->obj_frames[iframe_local];
 
-  ASSERT(framei->error == 0 || framei->error == 1);
+  assert(framei->error == 0 || framei->error == 1);
 
   if(framei->error == 1){
     object = error_device;
@@ -4653,7 +4654,7 @@ void DrawSmvObject(sv_object *object_dev, int iframe_local, propdata *prop, int 
     case SV_ERR:
       break;
     default:
-      ASSERT(FFALSE);
+      assert(FFALSE);
       break;
     }
   }
@@ -5803,7 +5804,7 @@ int CompareV2Devices(const void *arg1, const void *arg2){
     if(xyzi[1] - xyzj[1]>+EPSDEV)return 1;
     break;
   default:
-    ASSERT(FFALSE);
+    assert(FFALSE);
     break;
   }
   return 0;
@@ -5850,7 +5851,7 @@ int CompareV3Devices( const void *arg1, const void *arg2 ){
     if(xyzi[2]-xyzj[2]>+EPSDEV)return 1;
     break;
   default:
-    ASSERT(FFALSE);
+    assert(FFALSE);
     break;
   }
   return 0;
@@ -6445,7 +6446,7 @@ void DeviceData2WindRose(int nr, int ntheta){
             if(wdev!=NULL)vvals = wdev->vals;
             break;
           default:
-            ASSERT(FFALSE);
+            assert(FFALSE);
             break;
           }
           if(udev!=NULL)times = udev->times;

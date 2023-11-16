@@ -1,4 +1,5 @@
 #include "options.h"
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -478,7 +479,7 @@ int ParseTokens(char *buffer, char **keywords, int *type, int nkeywords, int *to
         }
         break;
       default:
-	ASSERT(FFALSE);
+	assert(FFALSE);
 	break;
     }
   }
@@ -592,16 +593,16 @@ NewMemory((void **)&scriptinfo, nscriptinfo*sizeof(scriptdata));
 // SHOWCBAREDIT
        case SCRIPT_SHOWCBAREDIT:
          break;
-        
+
 // HIDECBAREDIT
        case SCRIPT_HIDECBAREDIT:
          break;
-       
+
 // SETCBAR
        case SCRIPT_SETCBAR:
          SETcval;
          break;
-       
+
 // SETCBARLAB
        case SCRIPT_SETCBARLAB:
          break;
@@ -622,7 +623,7 @@ NewMemory((void **)&scriptinfo, nscriptinfo*sizeof(scriptdata));
 // HIDEALLDEVS
       case SCRIPT_HIDEALLDEVS:
         break;
-        
+
 // SHOWDEV
 // dev_id
       case SCRIPT_SHOWDEV:
@@ -1104,7 +1105,7 @@ NewMemory((void **)&scriptinfo, nscriptinfo*sizeof(scriptdata));
                 scripti->cell_centered = itokens[i];
                 break;
 	      default:
-		ASSERT(FFALSE);
+		assert(FFALSE);
 		break;
             }
           }
@@ -1246,7 +1247,7 @@ NewMemory((void **)&scriptinfo, nscriptinfo*sizeof(scriptdata));
         sscanf(buffer,"%f %f",&scripti->fval,&scripti->fval2);
         break;
       default:
-	ASSERT(FFALSE);
+	assert(FFALSE);
 	break;
     }
     if(scriptEOF==1)break;
@@ -1864,7 +1865,7 @@ int SliceMatch(scriptdata *scripti, slicedata *slicei){
   }
 
   // ID was not specified so slice has to match QUANTITY, direction and position and type (cell or node cenetered)
-  ASSERT(scripti->quantity!=NULL);
+  assert(scripti->quantity!=NULL);
   if(scripti->quantity==NULL)return 0;  // should never happen
   if(scripti->quantity!=NULL&&strncmp(scripti->quantity, slicei->label.longlabel,strlen(scripti->quantity))!=0)return 0;
   if(scripti->cell_centered==0&&slicei->slice_filetype==SLICE_CELL_CENTER)return 0;
@@ -2823,7 +2824,7 @@ void ScriptShowPlot3dData(scriptdata *scripti){
       updatemenu=1;
       break;
     default:
-      ASSERT(FFALSE);
+      assert(FFALSE);
       break;
   }
   UpdatePlotSlice(dir);
@@ -3303,7 +3304,7 @@ void ScriptSetClipx(scriptdata *scripti){
   clipinfo.clip_xmax = scripti->ival2;
   clipinfo.xmin      = scripti->fval;
   clipinfo.xmax      = scripti->fval2;
-  ClipCB(CLIP_xlower);  
+  ClipCB(CLIP_xlower);
   ClipCB(CLIP_xupper);
 }
 
@@ -3314,7 +3315,7 @@ void ScriptSetClipy(scriptdata *scripti){
   clipinfo.clip_ymax = scripti->ival2;
   clipinfo.ymin      = scripti->fval;
   clipinfo.ymax      = scripti->fval2;
-  ClipCB(CLIP_ylower);  
+  ClipCB(CLIP_ylower);
   ClipCB(CLIP_yupper);
 }
 
@@ -3325,7 +3326,7 @@ void ScriptSetClipz(scriptdata *scripti){
   clipinfo.clip_zmax = scripti->ival2;
   clipinfo.zmin      = scripti->fval;
   clipinfo.zmax      = scripti->fval2;
-  ClipCB(CLIP_zlower);  
+  ClipCB(CLIP_zlower);
   ClipCB(CLIP_zupper);
 }
 
@@ -3396,7 +3397,7 @@ void ScriptViewXYZMINMAXOrtho(int command){
     zaxis_angles[2] =  0.0;
     break;
   default:
-    ASSERT(FFALSE);
+    assert(FFALSE);
     break;
   }
   ResetGluiView(EXTERNAL_VIEW);
@@ -3428,7 +3429,7 @@ void ScriptViewXYZMINMAXPersp(int command){
     ResetDefaultMenu(VIEW_ZMAX);
     break;
   default:
-    ASSERT(FFALSE);
+    assert(FFALSE);
     break;
   }
 }
@@ -3877,7 +3878,7 @@ int RunScriptCommand(scriptdata *script_command){
       ColorbarMenu(COLORBAR_FLIP);
       break;
     default:
-      ASSERT(FFALSE);
+      assert(FFALSE);
       break;
   }
   GLUTPOSTREDISPLAY;

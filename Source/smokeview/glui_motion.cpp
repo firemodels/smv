@@ -1,6 +1,7 @@
 #define CPP
 #include "options.h"
 
+#include <assert.h>
 #include <stdio.h>
 #ifndef WIN32
 #include <unistd.h>
@@ -475,7 +476,7 @@ void MovieCB(int val){
       strcat(movie_ini_filename, ".ini");
       break;
     default:
-      ASSERT(FFALSE);
+      assert(FFALSE);
       break;
   }
 }
@@ -604,7 +605,7 @@ void GSliceCB(int var){
     gslice_xyz[2] = CLAMP(gslice_xyz[2], zbar0, SMV2FDS_Z(zbar));
     break;
   default:
-    ASSERT(FFALSE);
+    assert(FFALSE);
     break;
   }
 }
@@ -1020,7 +1021,7 @@ extern "C" void ViewpointCB(int var){
     }
     break;
   default:
-    ASSERT(FFALSE);
+    assert(FFALSE);
     break;
   }
 }
@@ -1028,7 +1029,7 @@ extern "C" void ViewpointCB(int var){
 /* ------------------ ResetGluiView ------------------------ */
 
 extern "C" void ResetGluiView(int ival){
-  ASSERT(ival>=-5);
+  assert(ival>=-5);
 #ifdef pp_LUA
   LIST_viewpoints->set_int_val(ival);
 #else
@@ -1121,7 +1122,7 @@ void MotionDlgCB(int var){
     WriteIni(LOCAL_INI, NULL);
     break;
   default:
-    ASSERT(FFALSE);
+    assert(FFALSE);
     break;
   }
 }
@@ -1914,7 +1915,7 @@ extern "C" void ShowHideTranslate(int var){
     if(BUTTON_snap!=NULL)BUTTON_snap->enable();
     break;
   default:
-    ASSERT(FFALSE);
+    assert(FFALSE);
   }
 
 }
@@ -2147,7 +2148,7 @@ extern "C" void SceneMotionCB(int var){
           glui_screenHeight=1024;
           break;
         default:
-          ASSERT(FFALSE);
+          assert(FFALSE);
           break;
       }
       if(windowsize_pointer>=2){
@@ -2179,7 +2180,7 @@ extern "C" void SceneMotionCB(int var){
     case WINDOW_PRESERVE:
       if(fix_window_aspect==1){
         float width, height;
-        
+
         width  = (float)glutGet(GLUT_WINDOW_WIDTH);
         height = (float)glutGet(GLUT_WINDOW_HEIGHT);
         window_aspect = 1.0;
@@ -2334,7 +2335,7 @@ extern "C" void SceneMotionCB(int var){
     case GLUI_Z:
       break;
     default:
-      ASSERT(FFALSE);
+      assert(FFALSE);
       break;
   }
 
@@ -2460,7 +2461,7 @@ extern "C" void SceneMotionCB(int var){
     case COLOR_FLIP:
       break;
     default:
-      ASSERT(FFALSE);
+      assert(FFALSE);
       break;
   }
 }
@@ -2516,7 +2517,7 @@ extern "C" void ShowGluiMotion(int menu_id){
       MotionRolloutCB(SCALING_ROLLOUT);
       break;
     default:
-      ASSERT(FFALSE);
+      assert(FFALSE);
       break;
     }
   }
@@ -2690,7 +2691,7 @@ void RenderCB(int var){
         SPINNER_bitrate->disable();
         break;
       default:
-        ASSERT(FFALSE);
+        assert(FFALSE);
         break;
       }
       break;
@@ -2761,7 +2762,7 @@ void RenderCB(int var){
         RenderCB(RENDER_START_360);
         break;
       default:
-	ASSERT(FFALSE);
+	assert(FFALSE);
 	break;
       }
     break;
@@ -2795,7 +2796,7 @@ void RenderCB(int var){
       RenderMenu(RenderCancel);
       break;
     default:
-      ASSERT(FFALSE);
+      assert(FFALSE);
       break;
   }
 }

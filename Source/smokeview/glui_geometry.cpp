@@ -1,6 +1,7 @@
 #define CPP
 #include "options.h"
 
+#include <assert.h>
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
@@ -355,7 +356,7 @@ void BlockeditDlgCB(int var){
     DialogMenu(DIALOG_GEOMETRY);
     break;
   default:
-    ASSERT(FFALSE);
+    assert(FFALSE);
     break;
   }
 
@@ -603,7 +604,7 @@ extern "C" void HvacCB(int var){
       }
       break;
     default:
-      ASSERT(FFALSE);
+      assert(FFALSE);
       break;
   }
   GLUTPOSTREDISPLAY;
@@ -863,8 +864,8 @@ extern "C" void GluiGeometrySetup(int main_window){
       glui_geometry->add_button_to_panel(PANEL_hvac_node, _("Set node bounds"), HVACNODE_SET_BOUNDS, HvacCB);
     }
     HvacCB(HVAC_PROPS);
-    HvacCB(HVAC_SHOW_NETWORKS);   
-    HvacCB(HVAC_SHOW_CONNECTIONS);   
+    HvacCB(HVAC_SHOW_NETWORKS);
+    HvacCB(HVAC_SHOW_CONNECTIONS);
   }
 
   if(have_obsts == 1){
@@ -1040,7 +1041,7 @@ extern "C" void GluiGeometrySetup(int main_window){
     CHECKBOX_surface_points = glui_geometry->add_checkbox_to_panel(PANEL_triangles,  "points",  &show_geom_verts,    VOL_SHOWHIDE, VolumeCB);
 
     if(ncgeominfo>0){
-      glui_geometry->add_column_to_panel(PANEL_face_cface, false); 
+      glui_geometry->add_column_to_panel(PANEL_face_cface, false);
       PANEL_cfaces = glui_geometry->add_panel_to_panel(PANEL_face_cface, "cfaces");
       PANEL_cfaces->set_alignment(GLUI_ALIGN_LEFT);
       CHECKBOX_cfaces = glui_geometry->add_checkbox_to_panel(PANEL_cfaces, "show", &glui_use_cfaces, VOL_USE_CFACES, VolumeCB);
@@ -1264,7 +1265,7 @@ extern "C" void GluiGeometrySetup(int main_window){
     INSERT_ROLLOUT(ROLLOUT_terrain, glui_geometry);
     ADDPROCINFO(geomprocinfo, ngeomprocinfo, ROLLOUT_terrain, TERRAIN_ROLLOUT, glui_geometry);
 
-    CHECKBOX_terrain_top_surface = glui_geometry->add_checkbox_to_panel(ROLLOUT_terrain, "Show only top surface", 
+    CHECKBOX_terrain_top_surface = glui_geometry->add_checkbox_to_panel(ROLLOUT_terrain, "Show only top surface",
       &terrain_showonly_top, TERRAIN_TOP_ONLY, TerrainCB);
     RADIO_terrain_type = glui_geometry->add_radiogroup_to_panel(ROLLOUT_terrain, &visTerrainType, TERRAIN_TYPE, TerrainCB);
     glui_geometry->add_radiobutton_to_group(RADIO_terrain_type, "3D surface");
@@ -1304,7 +1305,7 @@ extern "C" void TerrainCB(int var){
       UpdateShowOnlyTop();
       break;
     default:
-    ASSERT(FFALSE);
+    assert(FFALSE);
     break;
   }
 }
@@ -1410,7 +1411,7 @@ extern "C" void VolumeCB(int var){
     case GEOM_PROP_VERTEX2:
       selected_geom_triangle = -1;
     default:
-      ASSERT(FFALSE);
+      assert(FFALSE);
       break;
     }
     break;
@@ -1497,7 +1498,7 @@ extern "C" void VolumeCB(int var){
     updatemenu=1;
     break;
   default:
-    ASSERT(FFALSE);
+    assert(FFALSE);
     break;
   }
 }
@@ -1641,7 +1642,7 @@ extern "C" void UpdateBlockVals(int flag){
       case WALL_6:
         break;
       default:
-        ASSERT(FFALSE);
+        assert(FFALSE);
         break;
       }
 
@@ -1703,7 +1704,7 @@ extern "C" void ObjectCB(int var){
         }
         break;
       default:
-        ASSERT(FFALSE);
+        assert(FFALSE);
         break;
       }
 
@@ -1768,7 +1769,7 @@ extern "C" void ObjectCB(int var){
         LIST_obst_surface[UP_X]->set_name("");
         break;
       default:
-        ASSERT(FFALSE);
+        assert(FFALSE);
         break;
       }
       ObjectCB(UPDATE_LIST);
@@ -1791,7 +1792,7 @@ extern "C" void ObjectCB(int var){
         UpdateBlockVals(NOT_SELECT_BLOCKS);
         break;
     default:
-      ASSERT(FFALSE);
+      assert(FFALSE);
       break;
   }
 }

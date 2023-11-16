@@ -6,6 +6,7 @@
 #endif
 
 #include GLUT_H
+#include <assert.h>
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
@@ -205,7 +206,7 @@ int GetFontHeight(void){
         height = glutStrokeWidth(GLUT_STROKE_ROMAN, 'A');
       break;
     default:
-      ASSERT(FFALSE);
+      assert(FFALSE);
       break;
   }
   return height;
@@ -850,4 +851,3 @@ void ScaleFont3D(void){
     glLineWidth((float)scaled_font3d_thickness);
   }
 }
-

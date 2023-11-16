@@ -1,4 +1,5 @@
 #include "options.h"
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -400,7 +401,7 @@ void DrawTours(void){
         }
         break;
       default:
-        ASSERT(FFALSE);
+        assert(FFALSE);
         break;
     }
   }

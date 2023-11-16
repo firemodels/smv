@@ -1,4 +1,5 @@
 #include "options.h"
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -199,8 +200,8 @@ int GetTagIndex(const partdata *partin_arg, part5data **datain_arg, int tagval_a
     if(parti_local->loaded == 0 || parti_local->display == 0)continue;
 
     if(data_local->npoints == 0)continue;
-    ASSERT(data_local->npoints>0);
-    ASSERT(data_local->sort_tags != NULL);
+    assert(data_local->npoints>0);
+    assert(data_local->sort_tags != NULL);
     returnval_local = bsearch(&tagval_arg, data_local->sort_tags, data_local->npoints, 2 * sizeof(int), CompareTags);
     if(returnval_local== NULL)continue;
     *datain_arg = data_local;
@@ -242,7 +243,7 @@ void DrawPart(const partdata *parti){
     valmax = 1.0;
   }
   ipframe = parti->itime;
-  ASSERT(ipframe>=0);
+  assert(ipframe>=0);
   if(ipframe < 0){
     ipframe = 0;
   } //xxx need to check this - why is ipframe < 0 ???
@@ -1425,12 +1426,12 @@ int GetPartPropIndex(int class_i, int class_i_j){
   partclassdata *partclassi;
   flowlabels *labels, *labelj;
 
-  ASSERT(class_i>=0&&class_i<npartclassinfo);
+  assert(class_i>=0&&class_i<npartclassinfo);
   class_i = CLAMP(class_i,0, npartclassinfo-1);
   partclassi = partclassinfo+class_i;
 
   labels = partclassi->labels;
-  ASSERT(class_i_j>=0&&class_i_j<partclassi->ntypes);
+  assert(class_i_j>=0&&class_i_j<partclassi->ntypes);
   class_i_j = CLAMP(class_i_j,0, partclassi->ntypes-1);
   labelj = labels+class_i_j;
 
@@ -2013,7 +2014,7 @@ FILE_SIZE ReadPart(char *file_arg, int ifile_arg, int loadflag_arg, int *errorco
 #endif
   SetTimeState();
   START_TIMER(load_time_local);
-  ASSERT(ifile_arg>=0&&ifile_arg<npartinfo);
+  assert(ifile_arg>=0&&ifile_arg<npartinfo);
   parti=partinfo+ifile_arg;
 
   FreeAllPart5Data(parti);

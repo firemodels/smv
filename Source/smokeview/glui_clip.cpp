@@ -1,6 +1,7 @@
 #define CPP
 #include "options.h"
 
+#include <assert.h>
 #include <stdio.h>
 #include <string.h>
 #include GLUT_H
@@ -173,7 +174,7 @@ void ClipCB(int var){
     updatefacelists = 1;
     break;
   default:
-    ASSERT(FFALSE);
+    assert(FFALSE);
     break;
   }
   switch(var){
@@ -208,7 +209,7 @@ void ClipCB(int var){
   case CLIP_SHOW_ROTATE2:
     break;
   default:
-    ASSERT(FFALSE);
+    assert(FFALSE);
     break;
   }
   if(glui_rotation_index==ROTATE_ABOUT_CLIPPING_CENTER)UpdateRotationIndex(ROTATE_ABOUT_CLIPPING_CENTER);
@@ -293,7 +294,7 @@ extern "C" void GluiClipSetup(int main_window){
   RADIOBUTTON_clip_1b=glui_clip->add_radiobutton_to_group(radio_clip,_("Clip blockages and data"));
   RADIOBUTTON_clip_1c=glui_clip->add_radiobutton_to_group(radio_clip,_("Clip blockages"));
   RADIOBUTTON_clip_1c=glui_clip->add_radiobutton_to_group(radio_clip,_("Clip data"));
-  ASSERT(CLIP_MAX==3);
+  assert(CLIP_MAX==3);
 
   PANEL_rotation_center = glui_clip->add_panel_to_panel(PANEL_clip,"rotation center");
   CHECKBOX_clip_rotate = glui_clip->add_checkbox_to_panel(PANEL_rotation_center,"center of clipping planes", &clip_rotate, CLIP_ROTATE, ClipCB);

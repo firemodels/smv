@@ -1,4 +1,5 @@
 #include "options.h"
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -886,7 +887,7 @@ void ReadZone(int ifile, int flag, int *errorcode){
 
   *errorcode=0;
 
-  ASSERT(ifile>=0&&ifile<nzoneinfo);
+  assert(ifile>=0&&ifile<nzoneinfo);
   zonei = zoneinfo + ifile;
   file = zonei->file;
   if(zonei->loaded==0&&flag==UNLOAD)return;
@@ -1469,7 +1470,7 @@ void DrawZoneRoomGeom(void){
           break;
 
         default:
-          ASSERT(FFALSE);
+          assert(FFALSE);
           break;
         }
         DrawZoneVent(zvi->area_fraction, XB[0], XB[1], XB[2], XB[3], XB[4], XB[5]);
@@ -1495,7 +1496,7 @@ void DrawZoneVentDataProfile(void){
     float zelev[NELEV_ZONE];
 
     zvi = zventinfo + i;
-    ASSERT(zvi->z0 <= zvi->z1);
+    assert(zvi->z0 <= zvi->z1);
     if(zvi->vent_type==VFLOW_VENT||zvi->vent_type==MFLOW_VENT)continue;
     for(j=0;j<NELEV_ZONE;j++){
       zelev[j]=(zvi->z0*(NELEV_ZONE-1-j)+zvi->z1*j)/(float)(NELEV_ZONE-1);
@@ -1537,7 +1538,7 @@ void DrawZoneVentDataProfile(void){
         ywall = zvi->y1;
         break;
       default:
-	    ASSERT(FFALSE);
+	    assert(FFALSE);
 	    break;
       }
       dvent1 = factor*zvi->area_fraction*zvi->vdata[j];
@@ -1608,7 +1609,7 @@ void DrawZoneVentDataProfile(void){
         }
         break;
       default:
-        ASSERT(FFALSE);
+        assert(FFALSE);
         break;
       }
     }
@@ -1697,7 +1698,7 @@ void DrawZoneVentDataSlab(void){
         glVertex3f(zvi->x0, ymid, zvi->z1 + dvent);
         break;
       default:
-        ASSERT(FFALSE);
+        assert(FFALSE);
         break;
       }
     }
@@ -2085,7 +2086,7 @@ void DrawZoneSmokeGpu(roomdata *roomi){
         }
         break;
       default:
-        ASSERT(FFALSE);
+        assert(FFALSE);
         break;
     }
     glEnd();
@@ -2175,7 +2176,7 @@ void DrawZoneSmoke(roomdata *roomi){
         }
         break;
       default:
-        ASSERT(FFALSE);
+        assert(FFALSE);
         break;
     }
 
@@ -2455,4 +2456,3 @@ void DrawZoneFirePlume(float diameter, float height, float maxheight){
     glPopMatrix();
   }
 }
-

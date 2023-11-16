@@ -1,5 +1,6 @@
 #define IN_UPDATE
 #include "options.h"
+#include <assert.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -1006,7 +1007,7 @@ void MergeGlobalTimes(float *t, int n);
 
 void TruncateGlobalTimes(void){
   int i, ibeg, iend;
-  
+
   if(use_tload_begin == 0 && use_tload_end == 0)return;
   if(nglobal_times==0 || global_times==NULL)return;
   ibeg = 0;
@@ -1056,7 +1057,7 @@ void MergeGlobalTimes(float *time_in, int ntimes_in){
     float dt;
 
     dt = time_in[i]-time_in[i-1];
- //   ASSERT(dt>=0.0);
+ //   assert(dt>=0.0);
     dt_eps = MIN(dt_eps, ABS(dt)/2.0);
   }
   if(nglobal_times>1){
@@ -1064,7 +1065,7 @@ void MergeGlobalTimes(float *time_in, int ntimes_in){
       float dt;
 
       dt = global_times[i]-global_times[i-1];
-  //    ASSERT(dt>=0.0);
+  //    assert(dt>=0.0);
       dt_eps = MIN(dt_eps, ABS(dt)/2.0);
     }
   }
@@ -1176,7 +1177,7 @@ void UpdateTimes(void){
   {
     float *times = NULL;
     int ntimes = 0;
-    
+
     if(HavePlot2D(&times, &ntimes)==1){
       MergeGlobalTimes(times, ntimes);
     }
@@ -1715,7 +1716,7 @@ int GetPlotStateSub(int choice){
       if(choice!=DYNAMIC_PLOTS_NORECURSE)return GetPlotState(STATIC_PLOTS_NORECURSE);
       break;
     default:
-      ASSERT(FFALSE);
+      assert(FFALSE);
       break;
   }
   stept = 0;
@@ -2673,4 +2674,3 @@ void PauseTime(float pause_time){
     if(delta_time > pause_time || delta_time > 60.0)return;
     }
   }
-

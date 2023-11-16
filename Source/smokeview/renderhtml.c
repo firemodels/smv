@@ -1,4 +1,5 @@
 #include "options.h"
+#include <assert.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -342,7 +343,7 @@ void GetSliceCellVerts(int option, int option2, int *offset, float *verts, unsig
         nrows = slicei->nslicej;
         break;
       default:
-	ASSERT(FFALSE);
+	assert(FFALSE);
 	break;
       }
       if(nrows>1&&ncols>1){
@@ -499,7 +500,7 @@ void GetSliceCellVerts(int option, int option2, int *offset, float *verts, unsig
             }
             break;
           default:
-	    ASSERT(FFALSE);
+	    assert(FFALSE);
             break;
           }
         }
@@ -693,7 +694,7 @@ void GetSliceNodeVerts(int option, int option2,
         nrows = slicei->nslicej;
         break;
       default:
-        ASSERT(FFALSE);
+        assert(FFALSE);
         break;
       }
       if(nrows>1&&ncols>1){
@@ -906,7 +907,7 @@ void GetSliceNodeVerts(int option, int option2,
             }
             break;
 	  default:
-	    ASSERT(FFALSE);
+	    assert(FFALSE);
 	    break;
           }
         }

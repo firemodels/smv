@@ -33,7 +33,7 @@ GNU_COMPINFO=-Dpp_COMPVER=\"$(GNU_COMPVERSION)\"
 
 # Definition of the object variables
 
-obj = assert.o dmalloc.o main.o md5.o sha1.o sha256.o\
+obj = dmalloc.o main.o md5.o sha1.o sha256.o\
       file_util.o string_util.o stdio_buffer.o
 objwin = $(obj:.o=.obj)
 
@@ -78,7 +78,7 @@ gnu_win_64 : CC        = gcc
 gnu_win_64 : CPP       = g++
 gnu_win_64 : exe       = convert_win_64.exe
 
-gnu_win_64 : $(obj) 
+gnu_win_64 : $(obj)
 	$(FC) -o $(bin)/$(exe) $(LFLAGS) $(obj)
 
 # ------------- gnu linux 64 ----------------
@@ -101,7 +101,7 @@ gnu_linux_64_db : CPP       = g++
 gnu_linux_64_db : exe       = convert_linux_64_db
 
 gnu_linux_64_db : $(obj)
-	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS) 
+	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS)
 
 
 # ------------- gnu osx 64 ----------------
@@ -133,7 +133,7 @@ intel_linux_64 : CC        = $(I_ICC)
 intel_linux_64 : exe       = convert_linux_64
 
 intel_linux_64 : $(obj)
-	$(CC) -o $(bin)/$(exe) -static-intel $(obj) 
+	$(CC) -o $(bin)/$(exe) -static-intel $(obj)
 
 # ------------- intel linux 64 db ----------------
 
@@ -143,17 +143,17 @@ intel_linux_64_db : exe       = convert_linux_64_db
 
 intel_linux_64_db : $(obj)
 	$(CC) -o $(bin)/$(exe) -static-intel $(obj)
-	
+
 
 # ------------- intel osx 64 ----------------
 
-intel_osx_64 : CFLAGS    = -O2 -m64 -D pp_OSX $(GITINFO) $(INTEL_COMPINFO) -mmacosx-version-min=10.9 
+intel_osx_64 : CFLAGS    = -O2 -m64 -D pp_OSX $(GITINFO) $(INTEL_COMPINFO) -mmacosx-version-min=10.9
 intel_osx_64 : CC        = icc
 intel_osx_64 : CPP       = icc
 intel_osx_64 : exe       = convert_osx_64
 
 intel_osx_64 : $(obj)
-	$(CPP) -o $(bin)/$(exe) -m64 -static-intel $(obj) -mmacosx-version-min=10.9 
+	$(CPP) -o $(bin)/$(exe) -m64 -static-intel $(obj) -mmacosx-version-min=10.9
 
 # ------------- intel osx 64 db ----------------
 
@@ -171,4 +171,3 @@ string_util.o:  .FORCE
 string_util.obj:        .FORCE
 
 .FORCE:
-

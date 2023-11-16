@@ -12,7 +12,6 @@
 #ifndef pp_OSX
 #include <malloc.h>
 #endif
-#include "smv_assert.h"
 #define memGarbage 0xA3
 
 typedef int mallocflag;
