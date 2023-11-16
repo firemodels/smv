@@ -1,6 +1,7 @@
 #define CPP
 #include "options.h"
 
+#include <assert.h>
 #include <stdio.h>
 #include <string.h>
 #include GLUT_H
@@ -789,7 +790,7 @@ void FilterList(void){
             sscanf(label, "%i", &ilabel);
             if(compartment_id == ilabel-1)doit = 1;
           }
-          
+
         }
       }
       if(doit==1)LIST_csvID->add_item(i, csvi->label.shortlabel);
@@ -1433,7 +1434,7 @@ void GenPlotCB(int var){
     case GENPLOT_UPDATE:
       break;
     default:
-      ASSERT(FFALSE);
+      assert(FFALSE);
       break;
   }
   ForceIdle();
@@ -1623,7 +1624,7 @@ extern "C" void DeviceCB(int var){
           ShowObjectsMenu(OBJECT_PLOT_SHOW_TREE_ALL);
           break;
         default:
-          ASSERT(FFALSE);
+          assert(FFALSE);
           break;
       }
     }
@@ -1656,7 +1657,7 @@ extern "C" void DeviceCB(int var){
     HideGluiDevice();
     break;
   default:
-    ASSERT(FFALSE);
+    assert(FFALSE);
   }
 }
 
@@ -2350,7 +2351,7 @@ void OpenCB(int var){
       }
       break;
     default:
-      ASSERT(FFALSE);
+      assert(FFALSE);
       break;
   }
 }

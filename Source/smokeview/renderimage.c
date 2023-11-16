@@ -1,4 +1,5 @@
 #include "options.h"
+#include <assert.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -206,7 +207,7 @@ void Render(int view_mode){
       RenderFrame(view_mode);
     }
     else{
-      ASSERT(render_skip>0);
+      assert(render_skip>0);
       RenderState(RENDER_OFF);
     }
   }
@@ -356,7 +357,7 @@ int GetRenderFileName(int view_mode, char *renderfile_dir, char *renderfile_full
     case VIEW_LEFT:
       break;
     default:
-      ASSERT(FFALSE);
+      assert(FFALSE);
       break;
     }
     strcat(renderfile_suffix, suffix);
@@ -458,7 +459,7 @@ void OutputSliceData(void){
       }
       break;
     default:
-      ASSERT(FFALSE);
+      assert(FFALSE);
       break;
     }
     fclose(fileout);
@@ -627,7 +628,7 @@ int MergeRenderScreenBuffers(int nfactor, GLubyte **screenbuffers){
     gdImageJpeg(RENDERimage,RENDERfile,-1);
     break;
   default:
-    ASSERT(FFALSE);
+    assert(FFALSE);
     break;
   }
   fclose(RENDERfile);
@@ -1078,7 +1079,7 @@ int MergeRenderScreenBuffers360(void){
     gdImageJpeg(RENDERimage, RENDERfile, -1);
     break;
   default:
-    ASSERT(FFALSE);
+    assert(FFALSE);
     break;
   }
   fclose(RENDERfile);
@@ -1209,7 +1210,7 @@ int SmokeviewImage2File(char *directory, char *RENDERfilename, int rendertype, i
     gdImageJpeg(RENDERimage,RENDERfile,-1);
     break;
   default:
-    ASSERT(FFALSE);
+    assert(FFALSE);
     break;
   }
 

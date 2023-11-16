@@ -1,4 +1,5 @@
 #include "options.h"
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
@@ -150,7 +151,7 @@ int HaveTerrainTexture(int *draw_surfaceptr){
 
 int GetNTerrainTexturesLoaded(void){
   int count, i, opaque_texture_index = -1;
-  
+
   for(i = 0; i < nterrain_textures; i++){
     texturedata *texti;
 
@@ -715,7 +716,7 @@ void DrawTrees(void){
 
     state=0;
     if(showtime==1&&global_times!=NULL){
-      ASSERT(itimes>=0)
+      assert(itimes>=0);
       if(treei->time_char>0.0&&global_times[itimes]>treei->time_char)state=1;
       if(treei->time_complete>0.0&&global_times[itimes]>treei->time_complete)state=2;
     }
@@ -749,7 +750,7 @@ void DrawTrees(void){
         DrawCone(treei->trunk_diam,crown_height,trunccolor_uc);
         break;
       default:
-        ASSERT(FFALSE);
+        assert(FFALSE);
         break;
     }
     glPopMatrix();

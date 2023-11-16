@@ -33,7 +33,7 @@ LINUX64FORTLIBDIR = $(IFORT_COMPILER)/lib/intel64
 
 # Definition of the object variables
 
-obj = main.o dmalloc.o assert.o file_util.o translate.o string_util.o md5.o sha1.o sha256.o stdio_buffer.o
+obj = main.o dmalloc.o file_util.o translate.o string_util.o md5.o sha1.o sha256.o stdio_buffer.o
 objwin = $(obj:.o=.obj)
 
 #*** General Purpose Rules ***

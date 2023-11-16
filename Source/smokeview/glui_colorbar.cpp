@@ -1,6 +1,7 @@
 #define CPP
 #include "options.h"
 
+#include <assert.h>
 #include <stdio.h>
 #include <string.h>
 #include GLUT_H
@@ -152,7 +153,7 @@ void ColorbarGeneral2Simple(colorbardata *cbi){
 
   switch(cbi->nnodes){
   default:
-    ASSERT(FFALSE);
+    assert(FFALSE);
     break;
   case 2:
     for(i = 0;i < 3;i++){
@@ -252,7 +253,7 @@ void ColorbarSimple2General(colorbardata *cbi){
     cbi->node_index[3] = 255;
     break;
   default:
-    ASSERT(FFALSE);
+    assert(FFALSE);
     break;
   }
   for(i=0;i<3*cbi->nnodes;i++){
@@ -389,7 +390,7 @@ void GetNewColorbarName(char *base, char *label){
 
 /* ------------------ ColorbarSimple ------------------------ */
 
-void ColorbarSimple(int node){  
+void ColorbarSimple(int node){
   ColorbarSimple2General(colorbarinfo + colorbartype);
   colorbarpoint = node;
   memcpy(cb_rgb, cb_simple_rgb + 3*colorbarpoint, 3*sizeof(int));
@@ -491,7 +492,7 @@ extern "C" void ColorbarCB(int var){
     cbi->nnodes++;
     if(colorbarpoint < 1)colorbarpoint = 1;
     cbi->nodehilight = colorbarpoint;
-    
+
     int nsize;
 
     nsize = (cbi->nnodes - colorbarpoint - 1);
@@ -589,7 +590,7 @@ extern "C" void ColorbarCB(int var){
     if(colorbarinfo[colorbartype].nnodes > 5)break;
     switch(colorbar_simple_type){
       default:
-      ASSERT(FFALSE);
+      assert(FFALSE);
       break;
       case 0:
       for(type=0;type<5;type++){
@@ -874,7 +875,7 @@ extern "C" void ColorbarCB(int var){
     }
     break;
   default:
-    ASSERT(FFALSE);
+    assert(FFALSE);
     break;
   }
 }
@@ -885,7 +886,7 @@ void AddColorbarListEdit(GLUI_Listbox *LIST_cbar, int index, char *label_arg, in
   char cbar_type[256];
   int i, nitems=0;
 
- 
+
   for(i = 0; i < ncolorbars; i++){
     colorbardata *cbi;
 
@@ -928,7 +929,7 @@ extern "C" void UpdateColorbarListEdit(int flag, int del){
     break;
   default:
     LISTBOX_cb = LISTBOX_cb_edit;
-    ASSERT(FFALSE);
+    assert(FFALSE);
     break;
   }
   if(LISTBOX_cb == NULL)return;
@@ -1064,7 +1065,7 @@ extern "C" void GluiColorbarSetup(int main_window){
   glui_colorbar->add_radiobutton_to_group(RADIO_cb_simple_type, "split/divergent");
   RADIOBUTTON_cb_gtr_5nodes = glui_colorbar->add_radiobutton_to_group(RADIO_cb_simple_type, ">5 nodes");
   RADIOBUTTON_cb_gtr_5nodes->disable();
- 
+
   ROLLOUT_cb_general = glui_colorbar->add_rollout_to_panel(PANEL_cb_edit, "General(2->256 nodes)");
   ROLLOUT_cb_general->close();
   PANEL_cb_general1 = glui_colorbar->add_panel_to_panel(ROLLOUT_cb_general,"",GLUI_PANEL_NONE);
@@ -1083,7 +1084,7 @@ extern "C" void GluiColorbarSetup(int main_window){
   SPINNER_cb_rgb[0] = glui_colorbar->add_spinner_to_panel(PANEL_cb_general2, _("red"),  GLUI_SPINNER_INT, cb_rgb,   COLORBAR_RGB, ColorbarCB);
   SPINNER_cb_rgb[1] = glui_colorbar->add_spinner_to_panel(PANEL_cb_general2,_("green"), GLUI_SPINNER_INT, cb_rgb+1, COLORBAR_RGB, ColorbarCB);
   SPINNER_cb_rgb[2] = glui_colorbar->add_spinner_to_panel(PANEL_cb_general2,_("blue"),  GLUI_SPINNER_INT, cb_rgb+2, COLORBAR_RGB, ColorbarCB);
-  
+
 
   SPINNER_cb_rgb[0]->set_int_limits(0,255);
   SPINNER_cb_rgb[1]->set_int_limits(0,255);

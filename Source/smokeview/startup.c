@@ -1,4 +1,5 @@
 #include "options.h"
+#include <assert.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -277,7 +278,7 @@ int SetupCase(char *filename){
     case 3:
       return 3;
     default:
-      ASSERT(FFALSE);
+      assert(FFALSE);
   }
 
   /* initialize units */
@@ -1230,7 +1231,7 @@ void InitOpenGL(int option){
     char *return_path = NULL;
 
     if(smokeview_bindir == NULL || subdir==NULL)return return_path;
-    
+
     NewMemory((void **)&return_path,
               strlen(smokeview_bindir) + strlen("colorbars") + strlen(dirseparator) + strlen(subdir) + 2);
     strcpy(return_path, smokeview_bindir);
@@ -2226,4 +2227,3 @@ void InitVars(void){
     }
   }
 }
-

@@ -1,4 +1,5 @@
 #include "options.h"
+#include <assert.h>
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
@@ -35,7 +36,7 @@ int GetGridIndex(float val, int dir, float *plotxyz, int nplotxyz){
       val=FDS2SMV_Z(val);
       break;
     default:
-      ASSERT(FFALSE);
+      assert(FFALSE);
       break;
   }
 
@@ -251,7 +252,7 @@ void WindowStatus(int state){
   case GLUT_PARTIALLY_RETAINED:
     break;
   default:
-    ASSERT(FFALSE);
+    assert(FFALSE);
     break;
   }
 }
@@ -378,7 +379,7 @@ void MouseEditBlockage(int x, int y){
         xyz_dir=ZDIR;
         break;
       default:
-        ASSERT(FFALSE);
+        assert(FFALSE);
         break;
     }
     switch(sd->dir){
@@ -393,7 +394,7 @@ void MouseEditBlockage(int x, int y){
         which_face=1;
         break;
       default:
-        ASSERT(FFALSE);
+        assert(FFALSE);
         break;
     }
     UpdateBlockVals(SELECT_BLOCKS);
@@ -533,7 +534,7 @@ void MouseSelectGeom(int x, int y){
       selected_geom_triangle = val-1;
       break;
     default:
-      ASSERT(FFALSE);
+      assert(FFALSE);
       break;
     }
 
@@ -572,7 +573,7 @@ void MouseSelectGeom(int x, int y){
       }
       break;
     default:
-      ASSERT(FFALSE);
+      assert(FFALSE);
       break;
     }
     glShadeModel(GL_SMOOTH);
@@ -701,7 +702,7 @@ int GlutGetModifiersNew(void){
     break;
   default:
     modifier = glutGetModifiers();
-    ASSERT(FFALSE);
+    assert(FFALSE);
     break;
   }
 #ifdef _DEBUG
@@ -730,7 +731,7 @@ int ColorbarClick(int x, int y){
     UpdateRGBColors(COLORBAR_INDEX_NONE);
   }
   else{
-    ASSERT(FFALSE);
+    assert(FFALSE);
   }
   return 0;
 }
@@ -863,7 +864,7 @@ void UpdateMouseInfo(int flag, int xm, int ym){
       mi->lastangle = mi->angle;
       break;
     default:
-      ASSERT(FFALSE);
+      assert(FFALSE);
       break;
   }
 
@@ -1156,7 +1157,7 @@ void DragColorbarEditNode(int xm, int ym){
   }
   break;
   default:
-    ASSERT(FFALSE);
+    assert(FFALSE);
     break;
   }
 }
@@ -1214,7 +1215,7 @@ void DragTourNode(int xm, int ym){
       }
       break;
     default:
-      ASSERT(FFALSE);
+      assert(FFALSE);
       break;
   }
 }
@@ -1274,7 +1275,7 @@ void MoveGenSlice(int xm, int ym){
     case KEY_SHIFT:
     break;
     default:
-      ASSERT(FFALSE);
+      assert(FFALSE);
       break;
   }
 }
@@ -1322,7 +1323,7 @@ void MoveScene(int xm, int ym){
           start_xyz0[1]=ym;
           break;
         default:
-          ASSERT(FFALSE);
+          assert(FFALSE);
           break;
       }
       break;
@@ -1391,7 +1392,7 @@ void MoveScene(int xm, int ym){
       SceneMotionCB(ZOOM);
       break;
     default:
-      ASSERT(FFALSE);
+      assert(FFALSE);
       break;
   }
 }
@@ -1643,7 +1644,7 @@ void Keyboard(unsigned char key, int flag){
           ShowObjectsMenu(OBJECT_PLOT_SHOW_ALL);
           break;
 	default:
-	  ASSERT(FFALSE);
+	  assert(FFALSE);
 	  break;
       }
 // hrr plot
@@ -1659,7 +1660,7 @@ void Keyboard(unsigned char key, int flag){
           ShowObjectsMenu(PLOT_HRRPUV);
           break;
 	default:
-	  ASSERT(FFALSE);
+	  assert(FFALSE);
 	  break;
       }
       break;
@@ -2588,7 +2589,7 @@ void Keyboard(unsigned char key, int flag){
           printf("Clip data\n");
           break;
 	    default:
-	      ASSERT(FFALSE);
+	      assert(FFALSE);
 	      break;
       }
       UpdateClipAll();
@@ -2779,7 +2780,7 @@ void Keyboard(unsigned char key, int flag){
         printf("only if time/colorbar hidden\n");
         break;
       default:
-        ASSERT(FFALSE);
+        assert(FFALSE);
         break;
       }
       break;
@@ -2927,7 +2928,7 @@ void Keyboard(unsigned char key, int flag){
     case ' ':
       break;
     default:
-      ASSERT(FFALSE);
+      assert(FFALSE);
       break;
   }
 
@@ -2991,7 +2992,7 @@ void Keyboard(unsigned char key, int flag){
       NextZIndex(skip_global*FlowDir,0);
       break;
     default:
-      ASSERT(FFALSE);
+      assert(FFALSE);
       break;
   }
   if(nplot3dloaded>0){
@@ -3050,7 +3051,7 @@ void HandleRotationType(int flag){
     }
     break;
   default:
-    ASSERT(FFALSE);
+    assert(FFALSE);
     break;
   }
   ShowHideTranslate(rotation_type);
@@ -3125,7 +3126,7 @@ void SpecialKeyboardCB(int key, int x, int y){
       HandleMoveKeys(key);
       break;
     default:
-      ASSERT(FFALSE);
+      assert(FFALSE);
       break;
   }
 }
@@ -3159,7 +3160,7 @@ float SetClipVal(int flag){
         if(plotz>=0)return zplt[plotz];
         break;
       default:
-	ASSERT(FFALSE);
+	assert(FFALSE);
 	break;
     }
   }
@@ -3300,7 +3301,7 @@ void HandlePLOT3DKeys(int  key){
         NextZIndex(0,-1);
         break;
       default:
-        ASSERT(FFALSE);
+        assert(FFALSE);
         break;
     }
     break;
@@ -3317,7 +3318,7 @@ void HandlePLOT3DKeys(int  key){
         NextZIndex(0,1);
         break;
       default:
-        ASSERT(FFALSE);
+        assert(FFALSE);
         break;
     }
     break;
@@ -3483,7 +3484,7 @@ void HandleMoveKeys(int  key){
       if(camera_current->view_angle>360.0)camera_current->view_angle-=360.0;
       break;
     default:
-      ASSERT(FFALSE);
+      assert(FFALSE);
       break;
   }
   if(rotation_type==EYE_CENTERED){
@@ -4153,7 +4154,7 @@ void DoNonStereo(void){
       }
     }
     if(stop_rendering==1){
-      ASSERT(render_skip>0);
+      assert(render_skip>0);
       RenderState(RENDER_OFF);
     }
   }

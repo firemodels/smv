@@ -1,4 +1,5 @@
 #include "options.h"
+#include <assert.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -699,7 +700,7 @@ void TrainerViewMenu(int value){
     trainerload_old=0;
     break;
   default:
-    ASSERT(FFALSE);
+    assert(FFALSE);
   }
   updatemenu=1;
   GLUTPOSTREDISPLAY;
@@ -932,7 +933,7 @@ void LabelMenu(int value){
      visUSERticks = 1 - visUSERticks;
      break;
    default:
-     ASSERT(FFALSE);
+     assert(FFALSE);
      break;
   }
   SetLabelControls();
@@ -1055,7 +1056,7 @@ void ColorbarMenu(int value){
      ShowGluiBounds(DIALOG_COLORING);
      break;
    default:
-     ASSERT(FFALSE);
+     assert(FFALSE);
      break;
    }
   }
@@ -1146,7 +1147,7 @@ void Smoke3DShowMenu(int value){
       }
     break;
     default:
-      ASSERT(FFALSE);
+      assert(FFALSE);
     }
   }
   else{
@@ -1538,7 +1539,7 @@ void ShowHideMenu(int value){
     }
     break;
   default:
-    ASSERT(FFALSE);
+    assert(FFALSE);
     break;
   }
 }
@@ -1559,7 +1560,7 @@ void ViewpointMenu(int value){
     }
     break;
   default:
-    ASSERT(FFALSE);
+    assert(FFALSE);
     break;
   }
 }
@@ -1680,7 +1681,7 @@ void DialogMenu(int value){
     HideGluiDevice();
     break;
   default:
-    ASSERT(FFALSE);
+    assert(FFALSE);
     break;
   }
   updatemenu=1;
@@ -1800,7 +1801,7 @@ void FontMenu(int value){
     fontindex=SCALED_FONT;
     break;
   default:
-    ASSERT(FFALSE);
+    assert(FFALSE);
   }
   GluiUpdateFontIndex();
   SetLabelControls();
@@ -1929,7 +1930,7 @@ void ResetMenu(int value){
     SetStartupView();
     break;
   default:
-    ASSERT(value>=-5);
+    assert(value>=-5);
     if(value<100000){
       ResetGluiView(value);
       if(scriptoutstream!=NULL){
@@ -1982,7 +1983,7 @@ void ResetDefaultMenu(int var){
       UpdateCameraYpos(camera_current, 3);
       break;
     default:
-      ASSERT(FFALSE);
+      assert(FFALSE);
       break;
   }
 }
@@ -2210,7 +2211,7 @@ void RenderMenu(int value){
      updatemenu=1;
      break;
   default:
-     ASSERT(FFALSE);
+     assert(FFALSE);
      break;
   }
   UpdateResolutionMultiplier();
@@ -2268,7 +2269,7 @@ void ParticleShowMenu(int value){
         }
         break;
       default:
-        ASSERT(FFALSE);
+        assert(FFALSE);
         break;
     }
     if(visSprinkPart==1||visSmokePart!=0){
@@ -2298,7 +2299,7 @@ void ParticleShowMenu(int value){
       case 5:
         break;
       default:
-        ASSERT(FFALSE);
+        assert(FFALSE);
         break;
     }
     if(visSmokePart!=0||visSprinkPart==1){
@@ -2378,7 +2379,7 @@ void IsoSurfaceTypeMenu(int value){
       p3dsurfacetype=SURFACE_POINTS;
       break;
     default:
-      ASSERT(FFALSE);
+      assert(FFALSE);
       break;
     }
     UpdateGluiPlot3Dtype();
@@ -2470,7 +2471,7 @@ void HelpMenu(int value){
     case MENU_DUMMY:
       break;
     default:
-      ASSERT(FFALSE);
+      assert(FFALSE);
       break;
   }
 }
@@ -2547,7 +2548,7 @@ void TextureShowMenu(int value){
       showall_textures=0;
       break;
     default:
-      ASSERT(FFALSE);
+      assert(FFALSE);
       break;
     }
   }
@@ -2612,7 +2613,7 @@ void Plot3DShowMenu(int value){
           contour_type=SHADED_CONTOURS;
           break;
         default:
-          ASSERT(FFALSE);
+          assert(FFALSE);
           break;
       }
       break;
@@ -2715,7 +2716,7 @@ void GridSliceMenu(int value){
         visGrid=GRID_NOPROBE;
         break;
       default:
-        ASSERT(FFALSE);
+        assert(FFALSE);
         break;
     }
     break;
@@ -2734,12 +2735,12 @@ void GridSliceMenu(int value){
         visGrid=NOGRID_PROBE;
         break;
       default:
-        ASSERT(FFALSE);
+        assert(FFALSE);
         break;
     }
     break;
   default:
-    ASSERT(FFALSE);
+    assert(FFALSE);
     break;
   }
   updatemenu=1;
@@ -2776,7 +2777,7 @@ void CompressMenu(int value){
     UpdateOverwrite();
     break;
   default:
-    ASSERT(FFALSE);
+    assert(FFALSE);
     break;
   }
   updatemenu=1;
@@ -2829,7 +2830,7 @@ void SmokeviewIniMenu(int value){
     ShowGluiBounds(DIALOG_CONFIG);
     break;
   default:
-    ASSERT(FFALSE);
+    assert(FFALSE);
     break;
   }
   updatemenu=1;
@@ -3438,7 +3439,7 @@ void LoadUnloadMenu(int value){
 
       patchi = patchinfo + i;
       patchi->loaded2 = patchi->loaded;
-      ASSERT(patchi->loaded==0||patchi->loaded==1);
+      assert(patchi->loaded==0||patchi->loaded==1);
     }
     for(i = 0;i < npatchinfo;i++){
       patchdata *patchi;
@@ -4012,7 +4013,7 @@ void SetupPart(int value){
     partdata *parti;
 
     parti = partinfo+value;
-    ASSERT(value>=0&&value<npartinfo);
+    assert(value>=0&&value<npartinfo);
     value = CLAMP(value, 0, npartinfo-1);
     parti->finalize = 1;
   }
@@ -5127,7 +5128,7 @@ void LoadMultiVSliceMenu(int value){
         ShowBoundsDialog(DLG_SLICE);
         break;
       default:
-        ASSERT(FFALSE);
+        assert(FFALSE);
         break;
     }
   }
@@ -5309,7 +5310,7 @@ void LoadMultiSliceMenu(int value){
         ShowBoundsDialog(DLG_SLICE);
         break;
       default:
-        ASSERT(FFALSE);
+        assert(FFALSE);
         break;
     }
   }
@@ -5997,7 +5998,7 @@ void VentMenu(int value){
      circle_outline=1-circle_outline;
      break;
   default:
-    ASSERT(FFALSE);
+    assert(FFALSE);
     break;
   }
   updatefacelists=1;
@@ -6130,7 +6131,7 @@ void ImmersedMenu(int value){
       UpdateWhereFaceVolumes();
       break;
     default:
-      ASSERT(FFALSE);
+      assert(FFALSE);
       break;
   }
   UpdateGeometryControls();
@@ -6233,7 +6234,7 @@ void BlockageMenu(int value){
     case BLOCKlocation_cad:
       break;
     default:
-      ASSERT(FFALSE);
+      assert(FFALSE);
       break;
   }
   if(change_state==1){
@@ -6256,12 +6257,12 @@ void BlockageMenu(int value){
             value=visBLOCKOutline;
             break;
           default:
-            ASSERT(FFALSE);
+            assert(FFALSE);
             break;
         }
         break;
       default:
-        ASSERT(FFALSE);
+        assert(FFALSE);
         break;
     }
   }
@@ -6316,7 +6317,7 @@ void BlockageMenu(int value){
        }
      }
      else{
-       ASSERT(FFALSE);
+       assert(FFALSE);
      }
      break;
   }
@@ -6390,7 +6391,7 @@ void TitleMenu(int value){
     vis_title_gversion    = 0;
     break;
   default:
-    ASSERT(FFALSE);
+    assert(FFALSE);
     break;
   }
   SetLabelControls();
@@ -6464,7 +6465,7 @@ void ShowDevicesMenu(int value){
     if(itype == 2)devicei->show = 0;
   }
 }
- 
+
 /* ------------------ ShowObjectsMenu ------------------------ */
 
 void ShowObjectsMenu(int value){
@@ -6622,7 +6623,7 @@ void TerrainGeomShowMenu(int value){
       UpdateGeomBoundingBox();
       break;
     default:
-      ASSERT(0);
+      assert(0);
       break;
     }
   }
@@ -6756,7 +6757,7 @@ void ZoneShowMenu(int value){
     viszonefire=1-viszonefire;
     break;
   default:
-    ASSERT(FFALSE);
+    assert(FFALSE);
   }
   updatemenu=1;
   GLUTPOSTREDISPLAY;
@@ -6788,7 +6789,7 @@ void HVACConnectMenu(int var){
     GLUTPOSTREDISPLAY;
     return;
   }
-  hvac_show_networks    = 0;  
+  hvac_show_networks    = 0;
   hvac_show_connections = 1;
   if(var >= 0){
     hvacconnectinfo[var].display = 1 - hvacconnectinfo[var].display;
@@ -6820,7 +6821,7 @@ void HVACNetworkMenu(int value){
     GLUTPOSTREDISPLAY;
     return;
   }
-  hvac_show_networks    = 1;  
+  hvac_show_networks    = 1;
   hvac_show_connections = 0;
   if(value>=0&&value<nhvacinfo){
     hvacdata *hvaci;
@@ -6847,7 +6848,7 @@ void HVACNetworkMenu(int value){
       }
       break;
     default:
-      ASSERT(FFALSE);
+      assert(FFALSE);
       break;
     }
   }
@@ -6955,7 +6956,7 @@ void HVACNodeValueMenu(int value){
   HVACNodeBoundsCPP_CB(BOUND_UPDATE_COLORS);
   GLUTPOSTREDISPLAY;
 }
-  
+
 /* ------------------ HVACDuctValueMenu ------------------------ */
 
 void HVACDuctValueMenu(int value){
@@ -6994,7 +6995,7 @@ void LoadHVACMenu(int value){
       plotstate = GetPlotState(DYNAMIC_PLOTS);
       UpdateTimes();
       HVACDuctBoundsCPP_CB(BOUND_UPDATE_COLORS);//
-      GLUTPOSTREDISPLAY;      
+      GLUTPOSTREDISPLAY;
       break;
     case MENU_HVAC_UNLOAD:
       SetHVACNodeValIndex(-1);
@@ -7005,7 +7006,7 @@ void LoadHVACMenu(int value){
       GLUTPOSTREDISPLAY;
       break;
     default:
-      ASSERT(FFALSE);
+      assert(FFALSE);
       break;
   }
 }
@@ -7033,22 +7034,22 @@ void HVACMenu(int value){
       glui_hvac->show_node_labels = 1 - glui_hvac->show_node_labels;
       break;
     case MENU_HVAC_SHOW_COMPONENT_TEXT:
-      glui_hvac->show_component = 0;     
+      glui_hvac->show_component = 0;
       break;
     case MENU_HVAC_SHOW_COMPONENT_SYMBOLS:
-      glui_hvac->show_component = 1;     
+      glui_hvac->show_component = 1;
       break;
     case MENU_HVAC_SHOW_COMPONENT_HIDE:
-      glui_hvac->show_component = 2;     
+      glui_hvac->show_component = 2;
       break;
     case MENU_HVAC_SHOW_FILTER_TEXT:
-      glui_hvac->show_filters = 0;     
+      glui_hvac->show_filters = 0;
       break;
     case MENU_HVAC_SHOW_FILTER_SYMBOLS:
-      glui_hvac->show_filters = 1;     
+      glui_hvac->show_filters = 1;
       break;
     case MENU_HVAC_SHOW_FILTER_HIDE:
-      glui_hvac->show_filters = 2;     
+      glui_hvac->show_filters = 2;
       break;
     case MENU_HVAC_METRO_VIEW:
       hvac_metro_view = 1 - hvac_metro_view;
@@ -7062,7 +7063,7 @@ void HVACMenu(int value){
       DialogMenu(DIALOG_HVAC);
       break;
     default:
-      ASSERT(FFALSE);
+      assert(FFALSE);
       break;
   }
   for(i = 0; i < nhvacinfo; i++){
@@ -7158,7 +7159,7 @@ void GeometryMenu(int value){
     visCompartments = 1 - visCompartments;
     break;
   default:
-    ASSERT(FFALSE);
+    assert(FFALSE);
     break;
   }
   updatefacelists=1;
@@ -7338,7 +7339,7 @@ void PartLoadState(int  *load_state){
   }
 
 #ifdef _DEBUG
-#define GLUTADDSUBMENU(menu_label,menu_value){ASSERT(menu_value!=0);glutAddSubMenu(menu_label,menu_value);}
+#define GLUTADDSUBMENU(menu_label,menu_value){assert(menu_value!=0);glutAddSubMenu(menu_label,menu_value);}
 #else
 #define GLUTADDSUBMENU(menu_label,menu_value){if(menu_value==0){printf("*** warning: sub-menu entry %s added to non-existant menu at line %i in file %s\n",menu_label,__LINE__,__FILE__);};glutAddSubMenu(menu_label,menu_value);}
 #endif
@@ -8490,7 +8491,7 @@ int MakeSubColorbarMenu(int *submenuptr, int *nmenusptr, char *ctype, void (*CBM
 /* ------------------ MakeColorbarMenu ------------------------ */
 
 void MakeColorbarMenu(int *menuptr,
-                      int *submenu1ptr, int *submenu2ptr, int *submenu3ptr, 
+                      int *submenu1ptr, int *submenu2ptr, int *submenu3ptr,
                       int *submenu4ptr, int *submenu5ptr, int *submenu6ptr,
                       int *submenu7ptr,
                       void (*CBMenu)(int)){
@@ -9610,7 +9611,7 @@ updatemenu=0;
     if(nhvacconnectinfo > 0){
       int show_all_connections=1;
       int hide_all_connections=1;
-      
+
       CREATEMENU(connectivitymenu, HVACConnectMenu);
       if(hvac_show_connections==1){
         glutAddMenuEntry("*connection view", MENU_HVAC_CONNECTION_VIEW);
@@ -9895,7 +9896,7 @@ updatemenu=0;
         }
       }
     }
-  }  
+  }
   glutAddMenuEntry(_("Show all"), GEOM_ShowAll);
   glutAddMenuEntry(_("Hide all"), GEOM_HideAll);
 
@@ -10021,7 +10022,7 @@ updatemenu=0;
     glutAddMenuEntry(_("Eye centered"),EYE_CENTERED);
     break;
   default:
-    ASSERT(FFALSE);
+    assert(FFALSE);
     break;
   }
   glutAddMenuEntry(_("Direction vectors:"), MENU_DUMMY);
@@ -10725,7 +10726,7 @@ updatemenu=0;
     glutAddMenuEntry(_("  Auto flip"), COLORBAR_AUTOFLIP);
   }
   MakeColorbarMenu(&colorbarsmenu,
-                   &colorbars_submenu1, &colorbars_submenu2, &colorbars_submenu3, 
+                   &colorbars_submenu1, &colorbars_submenu2, &colorbars_submenu3,
                    &colorbars_submenu4, &colorbars_submenu5, &colorbars_submenu6,
                    &colorbars_submenu7,
                    ColorbarMenu);
@@ -11527,7 +11528,7 @@ updatemenu=0;
     glutAddMenuEntry(_("*Scaled"),SCALED_FONT);
     break;
   default:
-    ASSERT(FFALSE);
+    assert(FFALSE);
     break;
   }
   glutAddMenuEntry(_("Settings..."), MENU_FONT_SETTINGS);
@@ -11841,7 +11842,7 @@ updatemenu=0;
       glutAddMenuEntry(_("horizontal/vertical: rotate about user location"), MENU_DUMMY);
       break;
     default:
-      ASSERT(FFALSE);
+      assert(FFALSE);
       break;
   }
   switch(rotation_type){
@@ -11853,7 +11854,7 @@ updatemenu=0;
       glutAddMenuEntry(_("CTRL horizontal/vertical: translate along x, y axis"), MENU_DUMMY);
       break;
     default:
-      ASSERT(FFALSE);
+      assert(FFALSE);
       break;
   }
   glutAddMenuEntry(_("ALT vertical: translate along z axis"), MENU_DUMMY);

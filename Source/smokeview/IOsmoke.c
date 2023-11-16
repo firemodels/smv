@@ -1,5 +1,6 @@
 #include "options.h"
 #include "glew.h"
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -1494,7 +1495,7 @@ void DrawSmoke3DGPU(smoke3ddata *smoke3di){
     glEnd();
     break;
   default:
-    ASSERT(FFALSE);
+    assert(FFALSE);
     break;
   }
   TransparentOff();
@@ -1711,7 +1712,7 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
         for(j = js1;j<=js2;j++){
           jterm = (j-js1)*nx;
           n = iterm+jterm+kterm;
-          ASSERT(n>=0&&n<smoke3di->nchars_uncompressed);
+          assert(n>=0&&n<smoke3di->nchars_uncompressed);
           ADJUSTALPHA(smokealpha_ptr[n]);
         }
       }
@@ -1861,7 +1862,7 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
         for(i = is1;i<=is2;i++){
           iterm = (i-is1);
           n = iterm+jterm+kterm;
-          ASSERT(n>=0&&n<smoke3di->nchars_uncompressed);
+          assert(n>=0&&n<smoke3di->nchars_uncompressed);
           ADJUSTALPHA(smokealpha_ptr[n]);
         }
       }
@@ -2006,7 +2007,7 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
         for(i = is1;i<=is2;i++){
           iterm = (i-is1);
           n = iterm+jterm+kterm;
-          ASSERT(n>=0&&n<smoke3di->nchars_uncompressed);
+          assert(n>=0&&n<smoke3di->nchars_uncompressed);
           ADJUSTALPHA(smokealpha_ptr[n]);
         }
       }
@@ -2169,7 +2170,7 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
           jterm = (j-js1)*nx;
 
           n = iterm+jterm+kterm;
-          ASSERT(n>=0&&n<smoke3di->nchars_uncompressed);
+          assert(n>=0&&n<smoke3di->nchars_uncompressed);
           ADJUSTALPHA(smokealpha_ptr[n]);
         }
       }
@@ -2349,7 +2350,7 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
           jterm = (j-js1)*nx;
 
           n = iterm+jterm+kterm;
-          ASSERT(n>=0&&n<smoke3di->nchars_uncompressed);
+          assert(n>=0&&n<smoke3di->nchars_uncompressed);
           ADJUSTALPHA(smokealpha_ptr[n]);
         }
       }
@@ -2535,7 +2536,7 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
           kterm = (k-ks1)*nxy;
 
           n = iterm+jterm+kterm;
-          ASSERT(n>=0&&n<smoke3di->nchars_uncompressed);
+          assert(n>=0&&n<smoke3di->nchars_uncompressed);
           ADJUSTALPHA(smokealpha_ptr[n]);
         }
       }
@@ -2715,7 +2716,7 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
           kterm = (k-ks1)*nxy;
 
           n = iterm+jterm+kterm;
-          ASSERT(n>=0&&n<smoke3di->nchars_uncompressed);
+          assert(n>=0&&n<smoke3di->nchars_uncompressed);
           ADJUSTALPHA(smokealpha_ptr[n]);
         }
       }
@@ -2899,7 +2900,7 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
           kterm = (k-ks1)*nxy;
 
           n = iterm+jterm+kterm;
-          ASSERT(n>=0&&n<smoke3di->nchars_uncompressed);
+          assert(n>=0&&n<smoke3di->nchars_uncompressed);
           ADJUSTALPHA(smokealpha_ptr[n]);
         }
       }
@@ -3079,7 +3080,7 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
           kterm = (k-ks1)*nxy;
 
           n = iterm+jterm+kterm;
-          ASSERT(n>=0&&n<smoke3di->nchars_uncompressed);
+          assert(n>=0&&n<smoke3di->nchars_uncompressed);
           ADJUSTALPHA(smokealpha_ptr[n]);
         }
       }
@@ -3200,7 +3201,7 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
     glEnd();
     break;
   default:
-    ASSERT(FFALSE);
+    assert(FFALSE);
     break;
   }
   TransparentOff();
@@ -3762,7 +3763,7 @@ void SetSmokeColorFlags(void){
       smoke3di->smokestate[smoke3di->type].index = i;
     }
     else{
-      ASSERT(FFALSE);
+      assert(FFALSE);
     }
 
     for(j = 0;j<nsmoke3dinfo;j++){
@@ -3785,7 +3786,7 @@ void SetSmokeColorFlags(void){
         smoke3di->smokestate[smoke3dj->type].index = j;
       }
       else{
-        ASSERT(FFALSE);
+        assert(FFALSE);
       }
       for(k = 0;k <nsmoke3dtypes;k++){
         if(smoke3di->smokestate[k].color != NULL)smoke3dj->smokestate[k].loaded = 1;
@@ -4147,7 +4148,7 @@ FILE_SIZE ReadSmoke3D(int iframe_arg,int ifile_arg,int flag_arg, int first_time,
   if(flag_arg==RELOAD)flag_arg = LOAD;
 #endif
   START_TIMER(total_time_local);
-  ASSERT(ifile_arg>=0&&ifile_arg<nsmoke3dinfo);
+  assert(ifile_arg>=0&&ifile_arg<nsmoke3dinfo);
   smoke3di = smoke3dinfo + ifile_arg;
   if(smoke3di->filetype==FORTRAN_GENERATED&&smoke3di->is_zlib==0)fortran_skip=4;
 
@@ -4360,7 +4361,7 @@ int UpdateSmoke3D(smoke3ddata *smoke3di){
     UnCompressZLIB(smoke3di->smokeframe_in,&countout,smoke3di->smokeframe_comp_list[iframe_local],countin);
     break;
   default:
-    ASSERT(FFALSE);
+    assert(FFALSE);
     break;
   }
   CheckMemory;
@@ -4380,7 +4381,7 @@ int UpdateSmoke3D(smoke3ddata *smoke3di){
       }
     }
   }
-  //ASSERT(countout==smoke3di->nchars_uncompressed);
+  //assert(countout==smoke3di->nchars_uncompressed);
   return 1;
 }
 
@@ -4490,7 +4491,7 @@ void MergeSmoke3DColors(smoke3ddata *smoke3dset){
 
 //  temp and hrrpuv cannot be loaded at the same time
 
-    ASSERT(mesh_smoke3d->smoke3d_temp==NULL||mesh_smoke3d->smoke3d_hrrpuv==NULL);
+    assert(mesh_smoke3d->smoke3d_temp==NULL||mesh_smoke3d->smoke3d_hrrpuv==NULL);
 
 // set up fire data
 
@@ -4523,7 +4524,7 @@ void MergeSmoke3DColors(smoke3ddata *smoke3dset){
         co2color_data = mesh_smoke3d->smoke3d_co2->smokeframe_in;
       }
     }
-    ASSERT(firecolor_data!=NULL||smokecolor_data!=NULL||co2color_data!=NULL);
+    assert(firecolor_data!=NULL||smokecolor_data!=NULL||co2color_data!=NULL);
 
 #ifdef pp_GPU
     if(usegpu==1)continue;
@@ -4736,7 +4737,7 @@ void MergeSmoke3DBlack(smoke3ddata *smoke3dset){
 #ifdef pp_GPU
     if(usegpu==1)continue;
 #endif
-    ASSERT(firecolor_data!=NULL||smokecolor_data!=NULL);
+    assert(firecolor_data!=NULL||smokecolor_data!=NULL);
     meshi->smokecolor_ptr = firecolor_data;
     meshi->smokealpha_ptr = smokecolor_data;
   }
@@ -4787,7 +4788,7 @@ void UpdateSmoke3dMenuLabels(void){
       STRCAT(smoke3di->menulabel," (ZLIB) ");
       break;
     default:
-      ASSERT(FFALSE);
+      assert(FFALSE);
       break;
     }
   }

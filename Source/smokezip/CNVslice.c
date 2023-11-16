@@ -1,5 +1,6 @@
 #include "options.h"
 #include "zlib.h"
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -255,7 +256,7 @@ int ConvertVolSlice(slicedata *slicei, int *thread_index){
         valmax=&vmax;
       }
       else{
-        ASSERT(0);
+        assert(0);
       }
       CheckMemory;
       CompressVolSliceFrame(sliceframe_data, framesize, time_local, valmin, valmax,

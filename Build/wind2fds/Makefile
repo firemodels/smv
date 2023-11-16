@@ -34,7 +34,7 @@ GNU_COMPINFO=-Dpp_COMPVER=\"$(GNU_COMPVERSION)\"
 
 # Definition of the object variables
 
-obj =    main.o assert.o dmalloc.o string_util.o file_util.o  md5.o sha1.o sha256.o stdio_buffer.o
+obj =    main.o dmalloc.o string_util.o file_util.o  md5.o sha1.o sha256.o stdio_buffer.o
 objwin = $(obj:.o=.obj)
 
 # main has to be compiled without optimization (on a Windows PC) otherwise errors occcur
@@ -139,4 +139,3 @@ string_util.o:  .FORCE
 string_util.obj:        .FORCE
 
 .FORCE:
-

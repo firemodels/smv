@@ -12,7 +12,7 @@ FILTERF =
 # Intel compiler definitions
 include ../../scripts/intel_compiler.mak
 
-VPATH = $(SOURCE_DIR)/env2mod $(SOURCE_DIR)/shared  
+VPATH = $(SOURCE_DIR)/env2mod $(SOURCE_DIR)/shared
 bin = .
 
 ifeq ($(shell echo "check_quotes"),"check_quotes")
@@ -36,7 +36,7 @@ GNU_COMPINFO=-Dpp_COMPVER=\"$(GNU_COMPVERSION)\"
 
 # Definition of the object variables
 
-obj = assert.o file_util.o md5.o sha1.o sha256.o dmalloc.o string_util.o stdio_buffer.o env2mod.o main.o
+obj = file_util.o md5.o sha1.o sha256.o dmalloc.o string_util.o stdio_buffer.o env2mod.o main.o
 objwin = $(obj:.o=.obj)
 
 #*** General Purpose Rules ***
@@ -45,7 +45,7 @@ no_target:
 	@echo \******** You did not specify a make target \********
 	@echo Use one of targets found in the Makefile
 
-.SUFFIXES: .c .obj .o 
+.SUFFIXES: .c .obj .o
 
 .c.obj:
 	$(CC) -c $(CFLAGS) $(FILTERC) $(INC_DIR) $<
@@ -112,7 +112,7 @@ gnu_osx_64 : CPP       = g++
 gnu_osx_64 : exe       = env2mod_osx_64
 
 gnu_osx_64 : $(obj)
-	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS) 
+	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS)
 
 # ------------- intel osx 64 ----------------
 
@@ -127,4 +127,3 @@ intel_osx_64 : $(obj)
 .PHONY : clean
 clean:
 	rm -f *.o
-

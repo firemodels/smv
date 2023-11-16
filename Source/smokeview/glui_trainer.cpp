@@ -1,6 +1,7 @@
 #define CPP
 #include "options.h"
 
+#include <assert.h>
 #include <stdio.h>
 #include <string.h>
 #include GLUT_H
@@ -264,7 +265,7 @@ void TrainerCB(int var){
     ColorbarMenu(COLORBAR_FLIP);
     break;
   default:
-    ASSERT(FFALSE);
+    assert(FFALSE);
     break;
   }
 }
@@ -306,7 +307,7 @@ void RotateCB(int var){
     eye_xyz[2] = TRANSLATE_updown->get_y();
     break;
   default:
-    ASSERT(FFALSE);
+    assert(FFALSE);
     break;
   }
   camera_current->dirty = 1;

@@ -1,4 +1,5 @@
 #include "options.h"
+#include <assert.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -807,7 +808,7 @@ int BoxInFrustum(float *xx, float *yy, float *zz, int n){
 
 int MeshInFrustum(meshdata *meshi){
   float xx[2], yy[2], zz[2];
-  
+
   xx[0] = meshi->boxmin_scaled[0];
   xx[1] = meshi->boxmax_scaled[0];
   yy[0] = meshi->boxmin_scaled[1];
@@ -1018,7 +1019,7 @@ int GetInterval(float val, float *array, int n){
       high=mid;
     }
   }
-  ASSERT(low<n)
+  assert(low<n);
   return low;
 }
 
@@ -1732,4 +1733,3 @@ void SetClipPlanes(clipdata *ci, int option){
     glDisable(GL_CLIP_PLANE5);
   }
 }
-
