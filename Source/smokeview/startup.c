@@ -463,8 +463,6 @@ void SetupGlut(int argc, char **argv){
   char workingdir[1000];
 #endif
 
-  InitStartupDirs();
-
 #ifdef pp_OSX
   getcwd(workingdir, 1000);
 #endif
