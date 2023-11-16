@@ -1230,6 +1230,7 @@ typedef struct _partdata {
   int blocknumber;
   int *timeslist, ntimes, itime;
   FILE_SIZE bound_file_size;
+  int npoints;
 
   float zoffset, *times;
   FILE_SIZE reg_file_size, file_size;
