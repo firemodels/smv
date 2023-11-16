@@ -277,6 +277,7 @@ void *MTGeneratePartHistograms(void *arg){
 }
 
 void GeneratePartHistogramsMT(void){
+  in_part_mt = 1;
   pthread_create(&generate_part_histogram_id, NULL, MTGeneratePartHistograms, NULL);
 }
 #endif

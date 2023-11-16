@@ -175,12 +175,13 @@ int RunLuaBranch(lua_State *L, int argc, char **argv) {
   // interpreter to call this.
   LuaSetupCase(L);
   return_code = lua_tonumber(L, -1);
-
+#ifdef pp_HIST
   if (return_code == 0 && update_bounds == 1) {
     INIT_PRINT_TIMER(timer_update_bounds);
     return_code = Update_Bounds();
     PRINT_TIMER(timer_update_bounds, "Update_Bounds");
   }
+#endif
   if (return_code != 0) return 1;
   if (convert_ini == 1) {
     INIT_PRINT_TIMER(timer_read_ini);
@@ -4872,6 +4873,7 @@ int LuaSetCacheQdata(lua_State *L) {
   return 1;
 } // CACHE_QDATA
 
+#ifdef pp_HIST
 int LuaSetPercentilelevel(lua_State *L) {
   float p_level_min = lua_tonumber(L, 1);
   float p_level_max = lua_tonumber(L, 2);
@@ -4879,6 +4881,7 @@ int LuaSetPercentilelevel(lua_State *L) {
   lua_pushnumber(L, return_code);
   return 1;
 } // PERCENTILELEVEL
+#endif
 
 int LuaSetTimeoffset(lua_State *L) {
   int v = lua_tonumber(L, 1);
@@ -5521,7 +5524,9 @@ static luaL_Reg const SMVLIB[] = {
     {"set_c_slice", LuaSetCSlice},
     {"set_cache_boundarydata", LuaSetCacheBoundarydata},
     {"set_cache_qdata", LuaSetCacheQdata},
+#ifdef pp_HIST
     {"set_percentilelevel", LuaSetPercentilelevel},
+#endif
     {"set_timeoffset", LuaSetTimeoffset},
     {"set_tload", LuaSetTload},
     {"set_v_slice", LuaSetVSlice},

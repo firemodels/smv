@@ -365,13 +365,6 @@ typedef struct _terraindata {
   struct _meshdata *terrain_mesh;
 } terraindata;
 
-/* --------------------------  matldata ------------------------------------ */
-
-typedef struct _matldata {
-  char *matllabel;
-  float *color;
-} matldata;
-
 /* --------------------------  surfdata ------------------------------------ */
 
 typedef struct _surfdata {
@@ -1160,7 +1153,6 @@ typedef struct _cameradata {
 
 typedef struct _partclassdata {
   char *name;
-  int kind;
   int col_diameter, col_length, col_azimuth, col_elevation;
   int col_u_vel, col_v_vel, col_w_vel;
   float dx, dy, dz;
@@ -1185,7 +1177,6 @@ typedef struct _partpropdata {
   float *partlabelvals;
   unsigned char *class_present, *class_vis;
   unsigned int *class_types;
-  int human_property, particle_property;
   int display;
   float ppartlevels256[256];
   float valmin, valmax;
@@ -1215,7 +1206,6 @@ typedef struct _part5data {
   short *sx, *sy, *sz;
   float *dsx, *dsy, *dsz;
   float *avatar_angle, *avatar_width, *avatar_depth, *avatar_height;
-  int humancolor_varindex;
   int *tags,*sort_tags;
   unsigned char *vis_part;
   float *rvals,**rvalsptr;
@@ -1250,8 +1240,9 @@ typedef struct _partdata {
   int nclasses;
   partclassdata **partclassptr;
   part5data *data5;
-#ifdef pp_HIST
   histogramdata **histograms;
+#ifndef pp_HIST
+  int hist_update;
 #endif
   int bounds_set;
   float *global_min, *global_max;
@@ -1456,11 +1447,12 @@ typedef struct _slicedata {
   int cell_center;
   float delta_orig, dplane_min, dplane_max;
   int extreme_min, extreme_max;
-#ifdef pp_HIST
+#ifndef pp_HIST
+  int hist_update;
+#endif
+  int nhistograms;
   histogramdata *histograms;
   histogramdata *histogram;
-  int nhistograms;
-#endif
   struct _patchdata *patchgeom;
   FILE_SIZE file_size;
   int *geom_offsets;
@@ -1519,6 +1511,8 @@ typedef struct _cpp_boundsdata {
   float glui_valmin, glui_valmax;
   int set_valtype, cache;
 #ifdef pp_HIST
+  histogramdata *hist;
+#else
   histogramdata *hist;
 #endif
 } cpp_boundsdata;
@@ -1705,6 +1699,8 @@ typedef struct _patchdata {
 #ifdef pp_HIST
   histogramdata *histogram;
   int histogram_nframes;
+#else
+  int hist_update;
 #endif
   bounddata bounds;
   boundsdata *bounds2;
@@ -1727,9 +1723,11 @@ typedef struct _plot3ddata {
   float valmin_smv[MAXPLOT3DVARS], valmax_smv[MAXPLOT3DVARS];   // computed by smokeview
   flowlabels label[MAXPLOT3DVARS];
   char menulabel[256], longlabel[256], timelabel[256];
-#ifdef pp_HIST
   histogramdata *histograms[MAXPLOT3DVARS];
+#ifndef pp_HIST
+  int hist_update;
 #endif
+
 } plot3ddata;
 
 /* --------------------------  zonedata ------------------------------------ */

@@ -1578,192 +1578,6 @@ void UncompressSliceDataFrame(slicedata *sd, int iframe_local){
 }
 
 #ifdef pp_HIST
-/* ------------------ GetHistogramValProc ------------------------ */
-
-void GetHistogramValProc(histogramdata *histogram, float cdf, float *val){
-  *val = GetHistogramVal(histogram, cdf);
-}
-
-/* ------------------ GetSliceHists ------------------------ */
-
-void GetSliceHists(slicedata *sd){
-  int ndata;
-  int n, i;
-  int nframe;
-  float *pdata0;
-
-  int istep;
-  int nx, ny, nxy, ibar, jbar;
-  int ntimes;
-  char *iblank_node, *iblank_cell, *slice_mask0;
-  meshdata *meshi;
-  float *slice_weight0;
-  float *xplt, *yplt, *zplt;
-
-  if(sd->histograms != NULL)return;
-  meshi = meshinfo + sd->blocknumber;
-  iblank_node = meshi->c_iblank_node;
-  iblank_cell = meshi->c_iblank_cell;
-  xplt = meshi->xplt_orig;
-  yplt = meshi->yplt_orig;
-  zplt = meshi->zplt_orig;
-
-  ibar = meshi->ibar;
-  jbar = meshi->jbar;
-  nx = ibar + 1;
-  ny = jbar + 1;
-  nxy = nx*ny;
-
-  ndata = sd->nslicetotal;
-
-  nframe = sd->nslicei*sd->nslicej*sd->nslicek;
-  NewMemory((void **)&slice_mask0, sd->nslicei*sd->nslicej*sd->nslicek);
-  NewMemory((void **)&slice_weight0, sd->nslicei*sd->nslicej*sd->nslicek*sizeof(float));
-  n = -1;
-  for(i = 0; i < sd->nslicei; i++){
-    int j;
-    float dx;
-    int i1, i1p1;
-
-    i1 = MIN(sd->is1+i,sd->is2-2);
-    i1p1 = i1+1;
-    dx = xplt[i1p1] - xplt[i1];
-    if(dx <= 0.0)dx = 1.0;
-
-    for(j = 0; j < sd->nslicej; j++){
-      int k;
-      float dy;
-      int j1, j1p1;
-
-      j1 = MIN(sd->js1+j,sd->js2-2);
-      j1p1 = j1+1;
-      dy = yplt[j1p1] - yplt[j1];
-      if(dy <= 0.0)dy = 1.0;
-
-      for(k = 0; k < sd->nslicek; k++){
-        float dz;
-        int k1, k1p1;
-
-        k1 = MIN(sd->ks1+k,sd->ks2-2);
-        k1p1 = k1+1;
-        dz = zplt[k1p1] - zplt[k1];
-        if(dz <= 0.0)dz = 1.0;
-
-        n++;
-        slice_mask0[n] = 0;
-        slice_weight0[n] = dx*dy*dz;
-        if(sd->slice_filetype == SLICE_CELL_CENTER &&
-          ((k == 0 && sd->nslicek != 1) || (j == 0 && sd->nslicej != 1) || (i == 0 && sd->nslicei != 1)))continue;
-        if(show_slice_in_obst == ONLY_IN_GAS){
-          if(sd->slice_filetype != SLICE_CELL_CENTER&& iblank_node != NULL&&iblank_node[IJKNODE(sd->is1 + i, sd->js1 + j, sd->ks1 + k)] == SOLID)continue;
-          if(sd->slice_filetype == SLICE_CELL_CENTER&& iblank_cell != NULL&&iblank_cell[IJKCELL(sd->is1 + i - 1, sd->js1 + j - 1, sd->ks1 + k - 1)] == EMBED_YES)continue;
-        }
-        slice_mask0[n] = 1;
-      }
-    }
-  }
-
-  ntimes = ndata / sd->nsliceijk;
-
-  // initialize histograms
-
-  sd->nhistograms = ntimes + 1;
-  NewMemory((void **)&sd->histograms, sd->nhistograms * sizeof(histogramdata));
-  NewMemory((void **)&pdata0, sd->nslicei*sd->nslicej*sd->nslicek * sizeof(float));
-  for(i = 0; i < sd->nhistograms; i++){
-    InitHistogram(sd->histograms + i, NHIST_BUCKETS, NULL, NULL);
-  }
-
-  n = 0;
-  int skip;
-  skip = MAX(ntimes/ histogram_nframes, 1);
-  for(istep = 0; istep < ntimes; istep+=skip){
-    histogramdata *histi, *histall;
-    int nn;
-
-    if(sd->compression_type != UNCOMPRESSED){
-      UncompressSliceDataFrame(sd, istep);
-    }
-    for(nn = 0; nn < sd->nslicei*sd->nslicej*sd->nslicek; nn++){
-      if(sd->compression_type != UNCOMPRESSED){
-        pdata0[nn] = sd->qval256[sd->slicecomplevel[nn]];
-      }
-      else{
-        pdata0[nn] = sd->qslicedata[n + nn];
-      }
-    }
-    n += skip*sd->nslicei*sd->nslicej*sd->nslicek;
-
-    // compute histogram for each timestep, histi and all time steps, histall
-
-    histi = sd->histograms + istep + 1;
-    histall = sd->histograms;
-    CopyVals2Histogram(pdata0, slice_mask0, slice_weight0, nframe, histi);
-    MergeHistogram(histall, histi, MERGE_BOUNDS);
-  }
-  FREEMEMORY(pdata0);
-  FREEMEMORY(slice_mask0);
-  FREEMEMORY(slice_weight0);
-}
-
-/* ------------------ GetSliceGeomHists ------------------------ */
-
-void GetSliceGeomHists(slicedata *sd){
-  if(sd->histograms != NULL)return;
-
-  // initialize histograms
-
-  sd->nhistograms = 1;
-  NewMemory((void **)&sd->histograms, sizeof(histogramdata));
-  InitHistogram(sd->histograms, NHIST_BUCKETS, NULL, NULL);
-
-  // compute histogram for each timestep, histi and all time steps, histall
-
-  CopyVals2Histogram(sd->patchgeom->geom_vals, NULL, NULL, sd->patchgeom->geom_nvals, sd->histograms);
-}
-
-/* ------------------ ComputeLoadedSliceHist ------------------------ */
-
-void ComputeLoadedSliceHist(char *label){
-  int i;
-
-  for(i = 0; i<nsliceinfo; i++){
-    slicedata *slicei;
-
-    slicei = sliceinfo+i;
-    if(slicei->loaded == 0)continue;
-    if(label!=NULL&&strcmp(slicei->label.shortlabel, label)!=0)continue;
-    if(slicei->histograms==NULL){
-      if(slicei->slice_filetype==SLICE_GEOM){
-        GetSliceGeomHists(slicei);
-      }
-      else{
-        GetSliceHists(slicei);
-      }
-    }
-  }
-}
-
-/* ------------------ MergeLoadedSliceHist ------------------------ */
-
-void MergeLoadedSliceHist(char *label, histogramdata **histptr){
-  histogramdata *hist;
-  int i;
-
-  hist = *histptr;
-  if(*histptr != NULL)FreeHistogram(*histptr);
-  NewMemory((void **)&hist, sizeof(histogramdata));
-  *histptr = hist;
-
-  InitHistogram(hist, NHIST_BUCKETS, NULL, NULL);
-  for(i = 0; i < nsliceinfo; i++){
-    slicedata *slicei;
-
-    slicei = sliceinfo + i;
-    if(slicei->loaded == 0 || strcmp(slicei->label.shortlabel, label) != 0)continue;
-    MergeHistogram(hist, slicei->histograms, MERGE_BOUNDS);
-  }
-}
 
 /* ------------------ UpdateSliceHist ------------------------ */
 
@@ -1894,6 +1708,223 @@ void UpdateSliceHist(void){
 
 }
 #endif
+
+/* ------------------ MergeLoadedSliceHist ------------------------ */
+
+void MergeLoadedSliceHist(char *label, histogramdata **histptr){
+  histogramdata *hist;
+  int i;
+
+  hist = *histptr;
+  if(*histptr != NULL)FreeHistogram(*histptr);
+  NewMemory((void **)&hist, sizeof(histogramdata));
+  *histptr = hist;
+
+  InitHistogram(hist, NHIST_BUCKETS, NULL, NULL);
+  for(i = 0; i < nsliceinfo; i++){
+    slicedata *slicei;
+
+    slicei = sliceinfo + i;
+    if(slicei->loaded == 0 || strcmp(slicei->label.shortlabel, label) != 0)continue;
+    MergeHistogram(hist, slicei->histograms, MERGE_BOUNDS);
+  }
+}
+
+/* ------------------ GetSliceHists ------------------------ */
+
+#ifdef pp_HIST
+void GetSliceHists(slicedata *sd){
+#else
+void GetSliceHists(slicedata *sd, int use_bounds, float valmin, float valmax){
+#endif
+  int ndata;
+  int n, i;
+  int nframe;
+  float *pdata0;
+
+  int istep;
+  int nx, ny, nxy, ibar, jbar;
+  int ntimes;
+  char *iblank_node, *iblank_cell, *slice_mask0;
+  meshdata *meshi;
+  float *slice_weight0;
+  float *xplt, *yplt, *zplt;
+
+  if(sd->histograms != NULL)return;
+  meshi = meshinfo + sd->blocknumber;
+  iblank_node = meshi->c_iblank_node;
+  iblank_cell = meshi->c_iblank_cell;
+  xplt = meshi->xplt_orig;
+  yplt = meshi->yplt_orig;
+  zplt = meshi->zplt_orig;
+
+  ibar = meshi->ibar;
+  jbar = meshi->jbar;
+  nx = ibar + 1;
+  ny = jbar + 1;
+  nxy = nx * ny;
+
+  ndata = sd->nslicetotal;
+
+  nframe = sd->nslicei * sd->nslicej * sd->nslicek;
+  NewMemory((void **)&slice_mask0, sd->nslicei * sd->nslicej * sd->nslicek);
+  NewMemory((void **)&slice_weight0, sd->nslicei * sd->nslicej * sd->nslicek * sizeof(float));
+  n = -1;
+  for(i = 0; i < sd->nslicei; i++){
+    int j;
+    float dx;
+    int i1, i1p1;
+
+    i1 = MIN(sd->is1 + i, sd->is2 - 2);
+    i1p1 = i1 + 1;
+    dx = xplt[i1p1] - xplt[i1];
+    if(dx <= 0.0)dx = 1.0;
+
+    for(j = 0; j < sd->nslicej; j++){
+      int k;
+      float dy;
+      int j1, j1p1;
+
+      j1 = MIN(sd->js1 + j, sd->js2 - 2);
+      j1p1 = j1 + 1;
+      dy = yplt[j1p1] - yplt[j1];
+      if(dy <= 0.0)dy = 1.0;
+
+      for(k = 0; k < sd->nslicek; k++){
+        float dz;
+        int k1, k1p1;
+
+        k1 = MIN(sd->ks1 + k, sd->ks2 - 2);
+        k1p1 = k1 + 1;
+        dz = zplt[k1p1] - zplt[k1];
+        if(dz <= 0.0)dz = 1.0;
+
+        n++;
+        slice_mask0[n] = 0;
+        slice_weight0[n] = dx * dy * dz;
+        if(sd->slice_filetype == SLICE_CELL_CENTER &&
+          ((k == 0 && sd->nslicek != 1) || (j == 0 && sd->nslicej != 1) || (i == 0 && sd->nslicei != 1)))continue;
+        if(show_slice_in_obst == ONLY_IN_GAS){
+          if(sd->slice_filetype != SLICE_CELL_CENTER && iblank_node != NULL && iblank_node[IJKNODE(sd->is1 + i, sd->js1 + j, sd->ks1 + k)] == SOLID)continue;
+          if(sd->slice_filetype == SLICE_CELL_CENTER && iblank_cell != NULL && iblank_cell[IJKCELL(sd->is1 + i - 1, sd->js1 + j - 1, sd->ks1 + k - 1)] == EMBED_YES)continue;
+        }
+        slice_mask0[n] = 1;
+      }
+    }
+  }
+
+  ntimes = ndata / sd->nsliceijk;
+
+  // initialize histograms
+
+  sd->nhistograms = ntimes + 1;
+  NewMemory((void **)&sd->histograms, sd->nhistograms * sizeof(histogramdata));
+  NewMemory((void **)&pdata0, sd->nslicei * sd->nslicej * sd->nslicek * sizeof(float));
+  for(i = 0; i < sd->nhistograms; i++){
+    InitHistogram(sd->histograms + i, NHIST_BUCKETS, NULL, NULL);
+  }
+
+  n = 0;
+  int skip;
+  skip = MAX(ntimes / histogram_nframes, 1);
+  for(istep = 0; istep < ntimes; istep += skip){
+    histogramdata *histi, *histall;
+    int nn;
+
+    if(sd->compression_type != UNCOMPRESSED){
+      UncompressSliceDataFrame(sd, istep);
+    }
+    for(nn = 0; nn < sd->nslicei * sd->nslicej * sd->nslicek; nn++){
+      if(sd->compression_type != UNCOMPRESSED){
+        pdata0[nn] = sd->qval256[sd->slicecomplevel[nn]];
+      }
+      else{
+        pdata0[nn] = sd->qslicedata[n + nn];
+      }
+    }
+    n += skip * sd->nslicei * sd->nslicej * sd->nslicek;
+
+    // compute histogram for each timestep, histi and all time steps, histall
+
+    histi = sd->histograms + istep + 1;
+    histall = sd->histograms;
+#ifdef pp_HIST
+    int use_bounds = 0;
+    float valmin = 0.0, valmax = 1.0;
+#endif
+    CopyVals2Histogram(pdata0, slice_mask0, slice_weight0, nframe, histi, use_bounds, valmin, valmax);
+    MergeHistogram(histall, histi, MERGE_BOUNDS);
+  }
+  FREEMEMORY(pdata0);
+  FREEMEMORY(slice_mask0);
+  FREEMEMORY(slice_weight0);
+}
+
+/* ------------------ GetHistogramValProc ------------------------ */
+
+void GetHistogramValProc(histogramdata *histogram, float cdf, float *val){
+  *val = GetHistogramVal(histogram, cdf);
+}
+
+/* ------------------ GetSliceGeomHists ------------------------ */
+
+#ifdef pp_HIST
+void GetSliceGeomHists(slicedata *sd){
+#else
+void GetSliceGeomHists(slicedata *sd, int use_bounds, float valmin, float valmax){
+#endif
+  if(sd->histograms != NULL)return;
+
+  // initialize histograms
+
+  sd->nhistograms = 1;
+  NewMemory((void **)&sd->histograms, sizeof(histogramdata));
+  InitHistogram(sd->histograms, NHIST_BUCKETS, NULL, NULL);
+
+  // compute histogram for each timestep, histi and all time steps, histall
+
+#ifdef pp_HIST
+  int use_bounds = 0;
+  float valmin = 0.0, valmax = 1.0;
+#endif
+  CopyVals2Histogram(sd->patchgeom->geom_vals, NULL, NULL, sd->patchgeom->geom_nvals, sd->histograms, use_bounds, valmin, valmax);
+}
+
+/* ------------------ ComputeLoadedSliceHist ------------------------ */
+
+#ifdef pp_HIST
+void ComputeLoadedSliceHist(char *label){
+#else
+void ComputeLoadedSliceHist(char *label, float valmin, float valmax){
+#endif
+  int i;
+
+  for(i = 0; i < nsliceinfo; i++){
+    slicedata *slicei;
+
+    slicei = sliceinfo + i;
+    if(slicei->loaded == 0)continue;
+    if(label != NULL && strcmp(slicei->label.shortlabel, label) != 0)continue;
+    if(slicei->histograms == NULL){
+      if(slicei->slice_filetype == SLICE_GEOM){
+#ifdef pp_HIST
+        GetSliceGeomHists(slicei);
+#else
+        int use_bounds = 1;
+        GetSliceGeomHists(slicei, use_bounds, valmin, valmax);
+#endif
+      }
+      else{
+#ifdef pp_HIST
+        GetSliceHists(slicei);
+#else
+        int use_bounds = 1;
+        GetSliceHists(slicei, use_bounds, valmin, valmax);
+#endif
+      }
+    }
+  }
+}
 
 /* ------------------ UpdateSliceBounds ------------------------ */
 
@@ -5110,6 +5141,10 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
   CheckMemory;
 
   sd->loaded = 1;
+#ifndef pp_HIST
+  sd->hist_update = 1;
+#endif
+
   if(sd->vloaded == 0){
     sd->display = 1;
     if(sd->uvw==0)HideSlices(sd->label.longlabel);
@@ -9653,7 +9688,9 @@ void SliceData2Hist(slicedata *sd, float *xyz, float *dxyz, float time, float dt
     }
   }
   InitHistogram(histogram, NHIST_BUCKETS, NULL, NULL);
-  CopyVals2Histogram(vals, NULL, NULL, nvals, histogram);
+  int use_bounds=0;
+  float valmin = 0.0, valmax = 1.0;
+  CopyVals2Histogram(vals, NULL, NULL, nvals, histogram, use_bounds, valmin, valmax);
   FREEMEMORY(vals);
 }
 

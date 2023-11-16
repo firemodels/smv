@@ -54,9 +54,7 @@ SVEXTERN int hvac_duct_color[3];
 SVEXTERN int hvac_node_color[3];
 #endif
 
-#ifdef pp_HIST
 SVEXTERN int SVDECL(histogram_nframes, 40);
-#endif
 SVEXTERN int SVDECL(glui_surf_index, 0);
 SVEXTERN int SVDECL(clip_commandline, 0), SVDECL(special_modifier, 0);
 SVEXTERN int SVDECL(update_slicexyz, 0);
@@ -557,9 +555,10 @@ SVEXTERN int SVDECL(histogram_show_graph, 0), SVDECL(histogram_show_numbers, 0);
 SVEXTERN int SVDECL(histogram_nbuckets,10), SVDECL(histogram_static, 0), SVDECL(histogram_show_outline, 0);
 SVEXTERN int SVDECL(histograms_defined,0), SVDECL(update_slice_hists, 0), SVDECL(nhists256_slice, 0);
 SVEXTERN histogramdata SVDECL(*hists256_slice, NULL), SVDECL(*hists12_slice, NULL);
-SVEXTERN histogramdata SVDECL(*full_part_histogram, NULL);
-SVEXTERN histogramdata SVDECL(*full_plot3D_histograms, NULL);
 #endif
+SVEXTERN int SVDECL(in_part_mt, 0);
+SVEXTERN histogramdata SVDECL(*full_plot3D_histograms, NULL);
+SVEXTERN histogramdata SVDECL(*full_part_histogram, NULL);
 SVEXTERN int SVDECL(update_loadall_textures, 1);
 
 SVEXTERN int SVDECL(max_LISTBOX_cb_bound, 0);
@@ -709,8 +708,6 @@ SVEXTERN int SVDECL(triangle_count ,0);
 SVEXTERN int SVDECL(n_geom_triangles,0);
 SVEXTERN int SVDECL(show_device_orientation,0);
 SVEXTERN float SVDECL(orientation_scale,1.0);
-SVEXTERN char SVDECL(*script_labelstring,NULL);
-SVEXTERN char SVDECL(*loaded_file,NULL);
 SVEXTERN int SVDECL(clipon,0);
 SVEXTERN int SVDECL(vectortype,0);
 SVEXTERN int SVDECL(show_cutcells,0);
@@ -1974,8 +1971,6 @@ SVEXTERN int SVDECL(*sortedblocklist,NULL),SVDECL(*changed_idlist,NULL),SVDECL(n
 SVEXTERN int nselectblocks;
 SVEXTERN surfdata SVDECL(*surfinfo,NULL),sdefault,v_surfacedefault,e_surfacedefault;
 SVEXTERN int nsurfinfo;
-SVEXTERN matldata SVDECL(*matlinfo,NULL);
-SVEXTERN int nmatlinfo;
 SVEXTERN int surface_indices[7],surface_indices_bak[7];
 SVEXTERN int wall_case;
 SVEXTERN surfdata SVDECL(*surfacedefault,NULL), SVDECL(*vent_surfacedefault,NULL), SVDECL(*exterior_surfacedefault,NULL);

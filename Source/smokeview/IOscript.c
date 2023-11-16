@@ -1702,63 +1702,8 @@ void ScriptMakeMovie(scriptdata *scripti){
 /* ------------------ ScriptLoadParticles ------------------------ */
 
 void ScriptLoadParticles(scriptdata *scripti){
-  int i;
-  int errorcode;
-  int count=0;
-  int part_multithread_save;
-  FREEMEMORY(loaded_file);
-
   PRINTF("script: loading particles files\n\n");
-
-
-  part_multithread_save = part_multithread;
-  part_multithread = 0;
-  npartframes_max=GetMinPartFrames(PARTFILE_LOADALL);
-  for(i=0;i<npartinfo;i++){
-    partdata *parti;
-
-    parti = partinfo + i;
-    ReadPart(parti->file,i,UNLOAD,&errorcode);
-    count++;
-  }
-  for(i = 0;i<npartinfo;i++){
-    partdata *parti;
-
-    parti = partinfo+i;
-    parti->finalize = 0;
-  }
-  for(i = npartinfo-1;i>=0;i--){
-    partdata *parti;
-    int nf_all_local;
-    int have_particles;
-
-    parti = partinfo+i;
-#define NOT_FORCE 0
-    have_particles = GetPartHeader(parti, &nf_all_local, NOT_FORCE, 1);
-    if(have_particles == 0)continue;
-    parti->finalize = 1;
-    break;
-  }
-  for(i=0;i<npartinfo;i++){
-    partdata *parti;
-
-    parti = partinfo + i;
-    ReadPart(parti->file,i,LOAD,&errorcode);
-    if(scripti->cval!=NULL&&strlen(scripti->cval)>0){
-      FREEMEMORY(loaded_file);
-      NewMemory((void **)&loaded_file,strlen(scripti->cval)+1);
-      strcpy(loaded_file,scripti->cval);
-    }
-    count++;
-  }
-  if(count == 0){
-    fprintf(stderr, "*** Error: Particles files failed to load\n");
-    if(stderr2!=NULL)fprintf(stderr2, "*** Error: Particles files failed to load\n");
-  }
-  force_redisplay=1;
-  UpdateFrameNumber(0);
-  updatemenu=1;
-  part_multithread = part_multithread_save;
+  LoadParticleMenu(PARTFILE_LOADALL);
 }
 
 /* ------------------ ScriptLoadIso ------------------------ */
@@ -1771,7 +1716,6 @@ void ScriptLoadIso(scriptdata *scripti, int meshnum){
     SetupAllIsosurfaces();
     setup_isosurfaces = 1;
   }
-  FREEMEMORY(loaded_file);
   PRINTF("script: loading isosurface files of type: %s\n\n",scripti->cval);
 
   update_readiso_geom_wrapup = UPDATE_ISO_START_ALL;
@@ -1791,11 +1735,6 @@ void ScriptLoadIso(scriptdata *scripti, int meshnum){
       label2[lencval] = 0;
       if(STRCMP(label2, scripti->cval)==0){
         ReadIso(isoi->file, i, LOAD, NULL, &errorcode);
-        if(scripti->cval!=NULL&&strlen(scripti->cval)>0){
-          FREEMEMORY(loaded_file);
-          NewMemory((void **)&loaded_file, strlen(scripti->cval)+1);
-          strcpy(loaded_file, scripti->cval);
-        }
         count++;
       }
     }
@@ -1837,9 +1776,7 @@ void ScriptLoad3dSmoke(scriptdata *scripti){
   int errorcode;
   int count=0;
 
-  FREEMEMORY(loaded_file);
   PRINTF("script: loading smoke3d files of type: %s\n\n",scripti->cval);
-
   for(i = 0; i < nsmoke3dinfo; i++){
     smoke3ddata *smoke3di;
 
@@ -1861,11 +1798,6 @@ void ScriptLoad3dSmoke(scriptdata *scripti){
     smoke3di = smoke3dinfo + i;
     if(MatchUpper(smoke3di->label.longlabel,scripti->cval) == MATCH){
       ReadSmoke3D(ALL_SMOKE_FRAMES, i, LOAD, FIRST_TIME, NULL, &errorcode);
-      if(scripti->cval!=NULL&&strlen(scripti->cval)>0){
-        FREEMEMORY(loaded_file);
-        NewMemory((void **)&loaded_file,strlen(scripti->cval)+1);
-        strcpy(loaded_file,scripti->cval);
-      }
       count++;
     }
   }
@@ -2123,12 +2055,7 @@ void ScriptLoadSlice(scriptdata *scripti){
       }
       LoadSliceMenu(mslicei->islices[j]);
       slicej->finalize = finalize_save;
-      FREEMEMORY(loaded_file);
       slicej = sliceinfo + mslicei->islices[j];
-      if(slicej->file != NULL&&strlen(slicej->file) > 0){
-        NewMemory((void **)&loaded_file, strlen(slicej->file) + 1);
-        strcpy(loaded_file, slicej->file);
-      }
       count++;
     }
     break;
@@ -2348,11 +2275,6 @@ void ScriptLoadSliceRender(scriptdata *scripti){
 
 //save finalize
       slicej->finalize = finalize_save;
-      FREEMEMORY(loaded_file);
-      if(slicej->file!=NULL&&strlen(slicej->file)>0){
-        NewMemory((void **)&loaded_file, strlen(slicej->file)+1);
-        strcpy(loaded_file, slicej->file);
-      }
       count++;
     }
     GLUTPOSTREDISPLAY;
@@ -2659,9 +2581,7 @@ void ScriptLoadBoundary(scriptdata *scripti, int meshnum){
   int errorcode;
   int count=0;
 
-  FREEMEMORY(loaded_file);
   PRINTF("Script: loading boundary files of type: %s\n\n",scripti->cval);
-
   for(i=0;i<npatchinfo;i++){
     patchdata *patchi;
 
@@ -2669,15 +2589,10 @@ void ScriptLoadBoundary(scriptdata *scripti, int meshnum){
     if(meshnum == -1 || patchi->blocknumber + 1 == meshnum){
       if(strcmp(patchi->label.longlabel, scripti->cval) == 0){
         LOCK_COMPRESS
-          ReadBoundary(i, LOAD, &errorcode);
-        if(scripti->cval != NULL&&strlen(scripti->cval) > 0){
-          FREEMEMORY(loaded_file);
-          NewMemory((void **)&loaded_file, strlen(scripti->cval) + 1);
-          strcpy(loaded_file, scripti->cval);
-        }
+        ReadBoundary(i, LOAD, &errorcode);
         count++;
         UNLOCK_COMPRESS
-          if(meshnum == -1)break;
+        if(meshnum == -1)break;
       }
     }
   }
@@ -2695,23 +2610,18 @@ void ScriptLoadBoundary(scriptdata *scripti, int meshnum){
 
 void ScriptPartClassColor(scriptdata *scripti){
   int i;
-  int count=0;
 
   for(i=0;i<npart5prop;i++){
     partpropdata *propi;
 
     propi = part5propinfo + i;
-    if(propi->particle_property==0)continue;
     if(strcmp(propi->label->longlabel,scripti->cval)==0){
       ParticlePropShowMenu(i);
-      count++;
+      return;
     }
   }
-  if(count == 0){
-    fprintf(stderr, "*** Error: particle class color: %s failed to be set\n", scripti->cval);
-    if(stderr2!=NULL)fprintf(stderr2, "*** Error: particle class color: %s failed to be set\n", scripti->cval);
-  }
-
+  fprintf(stderr, "*** Error: particle class quantity: %s failed to be set\n", scripti->cval);
+  if(stderr2!=NULL)fprintf(stderr2, "*** Error: particle class color: %s failed to be set\n", scripti->cval);
 }
 
 
@@ -3003,7 +2913,6 @@ void ScriptPartClassType(scriptdata *scripti){
 
       if(propi->class_present[j]==0)continue;
       partclassj = partclassinfo + j;
-      if(partclassj->kind==HUMANS)continue;
       if(strcmp(partclassj->name,scripti->cval)==0){
         ParticlePropShowMenu(-10-j);
         count++;
@@ -3030,12 +2939,7 @@ void ScriptLoadFile(scriptdata *scripti){
   int i;
   int errorcode;
 
-  FREEMEMORY(loaded_file);
   PRINTF("script: loading file %s\n\n",scripti->cval);
-  if(scripti->cval!=NULL&&strlen(scripti->cval)>0){
-    NewMemory((void **)&loaded_file,strlen(scripti->cval)+1);
-    strcpy(loaded_file,scripti->cval);
-  }
   for(i=0;i<nsliceinfo;i++){
     slicedata *sd;
 
@@ -3118,13 +3022,9 @@ void ScriptLoadFile(scriptdata *scripti){
 /* ------------------ ScriptLabel ------------------------ */
 
 void ScriptLabel(scriptdata *scripti){
-
-  FREEMEMORY(script_labelstring);
   if(scripti->cval!=NULL&&strlen(scripti->cval)>0){
-    NewMemory((void **)&script_labelstring,strlen(scripti->cval)+1);
-    strcpy(script_labelstring,scripti->cval);
     PRINTF("*******************************\n");
-    PRINTF("*** %s ***\n",script_labelstring);
+    PRINTF("*** %s ***\n",scripti->cval);
     PRINTF("*******************************\n");
   }
 }
@@ -3169,7 +3069,6 @@ void ScriptLoadPlot3D(scriptdata *scripti){
 void ScriptLoadVecFile(scriptdata *scripti){
   int i;
 
-  FREEMEMORY(loaded_file);
   PRINTF("script: loading vector slice file %s\n\n",scripti->cval);
   for(i=0;i<nvsliceinfo;i++){
     slicedata *val;
@@ -3180,10 +3079,6 @@ void ScriptLoadVecFile(scriptdata *scripti){
     if(val==NULL)continue;
     if(strcmp(val->reg_file,scripti->cval)==0){
       LoadVSliceMenu(i);
-      if(scripti->cval!=NULL&&strlen(scripti->cval)>0){
-        NewMemory((void **)&loaded_file,strlen(scripti->cval)+1);
-        strcpy(loaded_file,scripti->cval);
-      }
       return;
     }
   }
@@ -3311,22 +3206,6 @@ void ScriptSetTimeVal(scriptdata *scripti){
         if(stderr2!=NULL)fprintf(stderr2, "*** Error: data not available at time requested\n");
         if(stderr2!=NULL)fprintf(stderr2, "           time: %f s, min time: %f, max time: %f s, number of times: %i\n",
           timeval, global_times[0], global_times[nglobal_times - 1], nglobal_times);
-        if(stderr2!=NULL)fprintf(stderr2, "all times: ");
-
-        for(i=0;i<nglobal_times;i++){
-          fprintf(stderr,"%f ",global_times[i]);
-          if(stderr2!=NULL)fprintf(stderr2, "%f ", global_times[i]);
-        }
-        fprintf(stderr," ***\n");
-        if(stderr2!=NULL)fprintf(stderr2, " ***\n");
-        if(loaded_file != NULL){
-          fprintf(stderr, "           loaded file: %s\n", loaded_file);
-          if(stderr2!=NULL)fprintf(stderr2, "           loaded file: %s\n", loaded_file);
-        }
-        if(script_labelstring != NULL){
-          fprintf(stderr, "                 label: %s\n", script_labelstring);
-          if(stderr2!=NULL)fprintf(stderr2, "                 label: %s\n", script_labelstring);
-        }
       }
       timeval=maxtime;
     }

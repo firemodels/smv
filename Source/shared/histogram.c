@@ -182,20 +182,21 @@ void CopyBuckets2Histogram(int *buckets, int nbuckets, float valmin, float valma
 
   /* ------------------ CopyU2Histogram ------------------------ */
 
-void CopyVals2Histogram(float *vals, char *mask, float *weight, int nvals, histogramdata *histogram){
+void CopyVals2Histogram(float *vals, char *mask, float *weight, int nvals, histogramdata *histogram, int use_bounds, float valmin_arg, float valmax_arg){
 
 // copy vals into histogram
 
   int i;
   float valmin, valmax;
   float dbucket;
-  int first=1;
   float nnvals=0.0;
 
 // initialize
 
-  valmin=(float)pow(10.0,20.0);
-  valmax=-valmin;
+  if(use_bounds == 0){
+    valmin = (float)pow(10.0, 20.0);
+    valmax = -valmin;
+  }
   histogram->defined=1;
   for(i=0;i<histogram->nbuckets;i++){
     histogram->buckets[i]=0.0;
@@ -211,14 +212,23 @@ void CopyVals2Histogram(float *vals, char *mask, float *weight, int nvals, histo
     else{
       nnvals++;
     }
-    if(first==1){
-      valmin=vals[i];
-      valmax=vals[i];
-      first=0;
-      continue;
+  }
+  if(use_bounds == 1){
+    valmin = valmin_arg;
+    valmax = valmax_arg;
+  }
+  else{
+    for(i = 0;i < nvals;i++){
+      if(mask != NULL && mask[i] == 0)continue;
+      if(weight != NULL){
+        nnvals += weight[i];
+      }
+      else{
+        nnvals++;
+      }
+      valmin = MIN(vals[i], valmin);
+      valmax = MAX(vals[i], valmax);
     }
-    valmin=MIN(vals[i],valmin);
-    valmax=MAX(vals[i],valmax);
   }
 
 // record unmasked data in histogram
@@ -329,7 +339,9 @@ void UpdateHistogram(float *vals, char *mask, int nvals, histogramdata *histogra
   if(nvals<=0)return;
   InitHistogram(&histogram_from,NHIST_BUCKETS, NULL, NULL);
 
-  CopyVals2Histogram(vals,mask,NULL,nvals,&histogram_from);
+  int use_bounds=0;
+  float valmin_dummy=0.0, valmax_dummy=1.0;
+  CopyVals2Histogram(vals,mask,NULL,nvals,&histogram_from, use_bounds, valmin_dummy, valmax_dummy);
   MergeHistogram(histogram_to,&histogram_from,MERGE_BOUNDS);
   FreeHistogram(&histogram_from);
 }
