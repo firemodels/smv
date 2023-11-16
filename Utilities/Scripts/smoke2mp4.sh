@@ -1,5 +1,4 @@
 #!/bin/bash
-
 CURRENT_DIR=`pwd`
 SCRIPTDIR=`dirname "$(readlink -f "$0")"`
 cd $SCRIPTDIR/../../..
@@ -118,6 +117,7 @@ restore_user_state()
       SHARE=$USER_SHARE
     fi
   fi
+  setsmoke
 }
 #---------------------------------------------
 #                   restore_state
@@ -163,6 +163,8 @@ restore_state()
     if [ "$FONTSIZE" == "" ]; then
       FONTSIZE="0"
     fi
+    SHOW_SOOT=$SMOKE2MP4_SHOW_SOOT
+    SHOW_HRRPUV=$SMOKE2MP4_SHOW_HRRPUV
   fi
 }
 
@@ -193,6 +195,8 @@ save_state()
   echo "export SMOKE2MP4_COLORBAR=$COLORBAR"          >> $LOCALCONFIG
   echo "export SMOKE2MP4_FONTSIZE=$FONTSIZE"          >> $LOCALCONFIG
   echo "export SMOKE2MP4_TIMEBAR=$TIMEBAR"            >> $LOCALCONFIG
+  echo "export SMOKE2MP4_SHOW_SOOT=$SHOW_SOOT"        >> $LOCALCONFIG
+  echo "export SMOKE2MP4_SHOW_HRRPUV=$SHOW_HRRPUV"    >> $LOCALCONFIG
 }
 
 #---------------------------------------------
@@ -755,8 +759,6 @@ if [ "$USER_CONFIG" != "" ]; then
 fi
 
 smvfile=$1.smv
-slicefilemenu=$CONFIGDIR/$1.slcf
-
 if [ ! -e $smvfile ]; then
   echo "***error: $smvfile does not exist"
   exit
