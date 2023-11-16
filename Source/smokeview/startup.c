@@ -273,7 +273,7 @@ int SetupCase(char *filename){
       fprintf(stderr,"*** Error: problem reading Smokeview file, %s\n",input_file);
       return 2;
     case 0:
-      ReadSMVDynamic(input_file);
+      UpdateSMVDynamic(input_file);
       break;
     case 3:
       return 3;
