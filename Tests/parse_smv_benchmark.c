@@ -184,11 +184,9 @@ int SetGlobalFilenames(const char *fdsprefix) {
   return 0;
 }
 
-int RunBenchmark(int argc, char **argv, char *input_file) {
+int RunBenchmark(char *input_file) {
   initMALLOC();
   InitVars();
-  SetupGlut(argc, argv);
-
   SetGlobalFilenames(fdsprefix);
 
   INIT_PRINT_TIMER(parse_time);
@@ -226,7 +224,7 @@ int main(int argc, char **argv) {
     return 1;
   }
   fdsprefix = GetBaseName(input_file);
-  int result = RunBenchmark(argc, argv, input_file);
+  int result = RunBenchmark(input_file);
   if (fdsprefix != NULL) free(fdsprefix);
   return result;
 }
