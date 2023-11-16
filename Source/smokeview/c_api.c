@@ -370,7 +370,7 @@ int Loadfile(const char *filename) {
     smoke3di = smoke3dinfo + i;
     if (strcmp(smoke3di->file, filename) == 0) {
       smoke3di->finalize = 1;
-      ReadSmoke3D(ALL_SMOKE_FRAMES, i, LOAD, FIRST_TIME, &errorcode);
+      ReadSmoke3D(ALL_SMOKE_FRAMES, i, LOAD, FIRST_TIME, NULL, &errorcode);
       return errorcode;
     }
   }
@@ -1323,7 +1323,7 @@ void Load3dsmoke(const char *smoke_type) {
     if (MatchUpper(smoke3di->label.longlabel, smoke_type) == MATCH) {
       smoke3di->finalize = 0;
       if (lastsmoke == i) smoke3di->finalize = 1;
-      ReadSmoke3D(ALL_SMOKE_FRAMES, i, LOAD, FIRST_TIME, &errorcode);
+      ReadSmoke3D(ALL_SMOKE_FRAMES, i, LOAD, FIRST_TIME, NULL, &errorcode);
       count++;
     }
   }
@@ -1793,7 +1793,7 @@ int Unloadall() {
     ReadZone(i, UNLOAD, &errorcode);
   }
   for (size_t i = 0; i < nsmoke3dinfo; i++) {
-    ReadSmoke3D(ALL_SMOKE_FRAMES, i, UNLOAD, FIRST_TIME, &errorcode);
+    ReadSmoke3D(ALL_SMOKE_FRAMES, i, UNLOAD, FIRST_TIME, NULL, &errorcode);
   }
   if (nvolrenderinfo > 0) {
     UnLoadVolsmoke3DMenu(UNLOAD_ALL);
