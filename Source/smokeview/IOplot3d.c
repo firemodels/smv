@@ -1,4 +1,5 @@
 #include "options.h"
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -224,7 +225,7 @@ void ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
   START_TIMER(total_time);
   *errorcode=0;
 
-  ASSERT(ifile>=0&&ifile<nplot3dinfo);
+  assert(ifile>=0&&ifile<nplot3dinfo);
   p=plot3dinfo+ifile;
   if(flag==UNLOAD&&p->loaded==0)return;
 
@@ -1063,7 +1064,7 @@ int GetPlot3dIndex(meshdata *meshi, int dir, float val){
     default:
       xyz = NULL;
       nvals = 0;
-      ASSERT(FFALSE);
+      assert(FFALSE);
       break;
   }
 
@@ -1441,7 +1442,7 @@ void UpdateShowStep(int val, int slicedir){
     }
     break;
   default:
-    ASSERT(FFALSE);
+    assert(FFALSE);
     break;
   }
   plotstate=GetPlotState(STATIC_PLOTS);

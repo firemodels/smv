@@ -1,4 +1,5 @@
 #include "options.h"
+#include <assert.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -51,7 +52,7 @@ int GetStringWidth(char *string){
       length *= (283.0/402.0)*scale_2d_x;
       break;
     default:
-      ASSERT(FFALSE);
+      assert(FFALSE);
       break;
   }
   return length;
@@ -145,7 +146,7 @@ void GetColorbarLabelWidth(int show_slice_colorbar_local, int showcfast_local,
     }
     max_width = GetStringWidth(sample_label);
 
-    UpdateShowColorbar(&showcfast_local, &show_slice_colorbar_local, 
+    UpdateShowColorbar(&showcfast_local, &show_slice_colorbar_local,
       &show_hvacduct_colorbar_local, &show_hvacnode_colorbar_local);
     GetColorbarLabelWidth(show_slice_colorbar_local, showcfast_local,
                           &slice_label_width, &boundary_label_width, &part_label_width, &plot3d_label_width, &zone_label_width);
@@ -557,7 +558,7 @@ int SubPortOrtho(int quad,
     gluOrtho2D(subportx_left,subportx_right,subportx_down,subportx_top);
     break;
   default:
-    ASSERT(FFALSE);
+    assert(FFALSE);
     break;
   }
   return 1;
@@ -682,7 +683,7 @@ int SubPortOrtho2(int quad,
     gluOrtho2D(subportx_left,subportx_right,subportx_down,subportx_top);
     break;
   default:
-    ASSERT(FFALSE);
+    assert(FFALSE);
     break;
   }
   return 1;
@@ -779,7 +780,7 @@ int SubPortFrustum(int quad,
     }
     return 1;
   default:
-    ASSERT(FFALSE);
+    assert(FFALSE);
     break;
   }
   return 1;
@@ -1142,7 +1143,7 @@ void ViewportSlicePlot(int quad, GLint screen_left, GLint screen_down){
   if(SubPortOrtho2(quad, &VP_slice_plot, screen_left, screen_down)==0)return;
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
-  ASSERT(vis_colorbar_dists_plot ==0||vis_slice_plot==0);
+  assert(vis_colorbar_dists_plot ==0||vis_slice_plot==0);
   if(vis_colorbar_dists_plot == 1){
     float valmin, valmax;
     float xvals[255];
@@ -1515,7 +1516,7 @@ int CompareMeshes(const void *arg1, const void *arg2){
     }
     break;
   default:
-    ASSERT(FFALSE);
+    assert(FFALSE);
     break;
   }
   return returnval;
@@ -1711,7 +1712,7 @@ void GetVolSmokeDir(float *mm){
         }
         break;
       default:
-        ASSERT(FFALSE);
+        assert(FFALSE);
         break;
       }
       VEC3DIFF(eyedir, eye_position_smv, eyedir);
@@ -2006,7 +2007,7 @@ void GetSmokeDir(float *mm){
         }
         break;
       default:
-        ASSERT(FFALSE);
+        assert(FFALSE);
         break;
       }
       scalednorm[0] = norm[0] * mscale[0];
@@ -2143,7 +2144,7 @@ void GetZoneSmokeDir(float *mm){
         }
         break;
       default:
-        ASSERT(FFALSE);
+        assert(FFALSE);
         break;
       }
       eyedir[0] = eye_position_smv[0] - eyedir[0];

@@ -1,4 +1,5 @@
 #include "options.h"
+#include <assert.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -15,7 +16,7 @@ void DrawCircVentsApproxSolid(int option){
   int i;
 
   if(option==VENT_HIDE)return;
-  ASSERT(option==VENT_CIRCLE||option==VENT_RECTANGLE);
+  assert(option==VENT_CIRCLE||option==VENT_RECTANGLE);
 
   glBegin(GL_TRIANGLES);
   for(i=0;i<nmeshes;i++){
@@ -153,7 +154,7 @@ void DrawCircVentsApproxSolid(int option){
           }
           break;
         default:
-          ASSERT(FFALSE);
+          assert(FFALSE);
           break;
       }
     }
@@ -167,7 +168,7 @@ void DrawCircVentsApproxOutline(int option){
   int i;
 
   if(option==VENT_HIDE)return;
-  ASSERT(option==VENT_CIRCLE||option==VENT_RECTANGLE);
+  assert(option==VENT_CIRCLE||option==VENT_RECTANGLE);
 
   glBegin(GL_LINES);
   for(i=0;i<nmeshes;i++){
@@ -338,7 +339,7 @@ void DrawCircVentsApproxOutline(int option){
           }
           break;
         default:
-          ASSERT(FFALSE);
+          assert(FFALSE);
           break;
       }
     }
@@ -352,7 +353,7 @@ void DrawCircVentsExactSolid(int option){
   int i;
 
   if(option==VENT_HIDE)return;
-  ASSERT(option==VENT_CIRCLE||option==VENT_RECTANGLE);
+  assert(option==VENT_CIRCLE||option==VENT_RECTANGLE);
   for(i=0;i<nmeshes;i++){
     int j;
     meshdata *meshi;
@@ -439,7 +440,7 @@ void DrawCircVentsExactSolid(int option){
           height = cvi->ymax-cvi->ymin;
           break;
         default:
-          ASSERT(FFALSE);
+          assert(FFALSE);
           break;
       }
       if(option==VENT_CIRCLE){
@@ -462,7 +463,7 @@ void DrawCircVentsExactOutline(int option){
   int i;
 
   if(option==VENT_HIDE)return;
-  ASSERT(option==VENT_CIRCLE||option==VENT_RECTANGLE);
+  assert(option==VENT_CIRCLE||option==VENT_RECTANGLE);
   for(i=0;i<nmeshes;i++){
     int j;
     meshdata *meshi;
@@ -549,7 +550,7 @@ void DrawCircVentsExactOutline(int option){
           height = cvi->ymax-cvi->ymin;
           break;
         default:
-          ASSERT(FFALSE);
+          assert(FFALSE);
           break;
       }
       if(option==VENT_CIRCLE){
@@ -1024,7 +1025,7 @@ void SetCVentDirs(void){
         cvi->dir=ventdir;
         break;
       default:
-        ASSERT(FFALSE);
+        assert(FFALSE);
         break;
       }
     }
@@ -1068,7 +1069,7 @@ void SetCVentDirs(void){
         default:
           nx = 0;
           ny = 0;
-          ASSERT(FFALSE);
+          assert(FFALSE);
           break;
       }
       nx+=2;
@@ -1146,7 +1147,7 @@ void SetCVentDirs(void){
         }
         break;
       default:
-        ASSERT(FFALSE);
+        assert(FFALSE);
         break;
       }
     }
@@ -1397,7 +1398,7 @@ void SetVentDirs(void){
         }
         break;
       default:
-        ASSERT(FFALSE);
+        assert(FFALSE);
         break;
       }
     }
@@ -2034,7 +2035,7 @@ void DrawCAD2Geom(const cadgeomdata *cd, int trans_flag){
     int i;
 
     i=cd->order[ii];
-    ASSERT(i>=0&&i<cd->nquads);
+    assert(i>=0&&i<cd->nquads);
     quadi = cd->quad+i;
     xyzpoint = quadi->xyzpoints;
     texti = &quadi->cadlookq->textureinfo;
@@ -2118,7 +2119,7 @@ void DrawCAD2Geom(const cadgeomdata *cd, int trans_flag){
       int i;
 
       i=cd->order[ii];
-      ASSERT(i>=0&&i<cd->nquads);
+      assert(i>=0&&i<cd->nquads);
       quadi = cd->quad+i;
       xyzpoint = quadi->xyzpoints;
 
@@ -2228,12 +2229,12 @@ void ObstOrVent2Faces(const meshdata *meshi,blockagedata *bc,
 
   surfdata *face_surf;
 
-  ASSERT((bc==NULL&&vi!=NULL)||(bc!=NULL&&vi==NULL));
+  assert((bc==NULL&&vi!=NULL)||(bc!=NULL&&vi==NULL));
 
   xplt = meshi->xplt;
   yplt = meshi->yplt;
   zplt = meshi->zplt;
-  ASSERT((bc!=NULL&&vi==NULL)||(bc==NULL&&vi!=NULL));
+  assert((bc!=NULL&&vi==NULL)||(bc==NULL&&vi!=NULL));
   if(bc!=NULL){
     jend=6;
     xminmax[0] = xplt[bc->ijk[IMIN]];
@@ -2368,7 +2369,7 @@ void ObstOrVent2Faces(const meshdata *meshi,blockagedata *bc,
         }
         break;
       default:
-        ASSERT(FFALSE);
+        assert(FFALSE);
         break;
       }
       if(outline_color_flag==1){
@@ -2529,7 +2530,7 @@ void ObstOrVent2Faces(const meshdata *meshi,blockagedata *bc,
        if(bc!=NULL)faceptr->interior = bc->interior[5];
        break;
      default:
-       ASSERT(FFALSE);
+       assert(FFALSE);
        break;
     }
     if(facetype==SHADED_FRAME_face){
@@ -2614,7 +2615,7 @@ void ObstOrVent2Faces(const meshdata *meshi,blockagedata *bc,
           ya_texture[0] -= faceptr->texture_origin[1];
           break;
         default:
-          ASSERT(FFALSE);
+          assert(FFALSE);
           break;
       }
 
@@ -2687,7 +2688,7 @@ void UpdateFaces(void){
 
       vi = meshi->ventinfo+j;
       ObstOrVent2Faces(meshi,NULL,vi,faceptr,OUTLINE_FRAME_face);
-      ASSERT(faceptr->color!=NULL);
+      assert(faceptr->color!=NULL);
       faceptr++;
     }
     for(j=meshi->nvents+6;j<meshi->nvents+12;j++){
@@ -2695,7 +2696,7 @@ void UpdateFaces(void){
 
       vi = meshi->ventinfo+j;
       ObstOrVent2Faces(meshi,NULL,vi,faceptr,SHADED_FRAME_face);
-      ASSERT(faceptr->color!=NULL);
+      assert(faceptr->color!=NULL);
       faceptr++;
     }
     meshi->nfaces=faceptr-meshi->faceinfo;
@@ -2814,7 +2815,7 @@ int CompareSingleFaces0( const void *arg1, const void *arg2 ){
       if(facei->jmax>facej->jmax)return 1;
       break;
     default:
-      ASSERT(FFALSE);
+      assert(FFALSE);
       break;
   }
   if(facei->color<facej->color)return  1;
@@ -2858,7 +2859,7 @@ int CompareSingleFaces( const void *arg1, const void *arg2 ){
       if(facei->kmin>facej->kmin)return 1;
       break;
     default:
-      ASSERT(FFALSE);
+      assert(FFALSE);
       break;
   }
   if(facei->color<facej->color)return  1;
@@ -3033,7 +3034,7 @@ void UpdateFaceLists(void){
            if(visWalls==0)continue;
           break;
          default:
-           ASSERT(FFALSE);
+           assert(FFALSE);
            break;
         }
       }
@@ -3099,7 +3100,7 @@ void UpdateFaceLists(void){
               break;
             default:
               PRINTF("facej->type=%i\n", facej->type);
-              ASSERT(FFALSE);
+              assert(FFALSE);
               break;
           }
         }
@@ -3215,7 +3216,7 @@ void UpdateFaceLists(void){
             meshi->nface_normals_single_UP_Z++;
             break;
           default:
-            ASSERT(FFALSE);
+            assert(FFALSE);
             break;
         }
       }
@@ -3444,7 +3445,7 @@ void DrawFaces(){
               if(facei->dir==DOWN_Z)new_color=down_color;
               break;
              default:
-              ASSERT(FFALSE);
+              assert(FFALSE);
               break;
             }
           }
@@ -3687,7 +3688,7 @@ void DrawTransparentFaces(){
             if(facei->dir==DOWN_Z)new_color=down_color;
             break;
            default:
-            ASSERT(FFALSE);
+            assert(FFALSE);
             break;
           }
         }
@@ -3856,7 +3857,7 @@ facedata *GetFaceNabor(meshdata *meshi, facedata *facei, int dir){
     }
     break;
   default:
-    ASSERT(FFALSE);
+    assert(FFALSE);
     break;
   }
   return NULL;
@@ -4433,7 +4434,7 @@ void DrawDemo(int nlat, int nlong){
       glDisable(GL_COLOR_MATERIAL);
       break;
     default:
-      ASSERT(FFALSE);
+      assert(FFALSE);
       break;
   }
 }
@@ -4528,7 +4529,7 @@ int GetTickDir(float *mm){
       if(i>0)norm[2] = 1.0;
       break;
     default:
-      ASSERT(FFALSE);
+      assert(FFALSE);
       break;
     }
     scalednorm[0] = norm[0] * mscale[0];
@@ -4631,7 +4632,7 @@ void DrawUserTicks(void){
         show_tick_y = 1;
         break;
       default:
-        ASSERT(FFALSE);
+        assert(FFALSE);
         break;
     }
   }
@@ -5264,7 +5265,7 @@ void DrawFacesOLD(){
               if(facei->dir==DOWN_Z)new_color=down_color;
               break;
              default:
-              ASSERT(FFALSE);
+              assert(FFALSE);
               break;
             }
           }
@@ -5344,7 +5345,7 @@ void DrawFacesOLD(){
               if(facei->dir==DOWN_Z)new_color=down_color;
               break;
              default:
-              ASSERT(FFALSE);
+              assert(FFALSE);
               break;
             }
           }

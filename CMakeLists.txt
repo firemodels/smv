@@ -152,7 +152,6 @@ add_executable(smokeview
     Source/smokeview/readsmv.c
     Source/smokeview/scontour2d.c
     Source/shared/dmalloc.c
-    Source/shared/assert.c
     Source/shared/compress.c
     Source/smokeview/IOvolsmoke.c
     Source/smokeview/IOsmoke.c
@@ -363,7 +362,6 @@ install(TARGETS smokeview)
 # Other programs
 # smokediff
 add_executable(smokediff
-    Source/shared/assert.c
     Source/shared/dmalloc.c
     Source/shared/histogram.c
     Source/smokediff/IOdboundary.c
@@ -409,7 +407,6 @@ add_executable(smokezip
     Source/smokezip/CNVboundary.c
     Source/smokezip/CNVpart.c
     Source/smokezip/CNVslice.c
-    Source/shared/assert.c
     Source/shared/dmalloc.c
     Source/smokezip/readfiles.c
     Source/smokezip/utilities.c
@@ -457,7 +454,6 @@ install(TARGETS smokezip)
 # background
 add_executable(background
     Source/background/main.c
-    Source/shared/assert.c
     Source/shared/dmalloc.c
     Source/shared/file_util.c
     Source/shared/string_util.c
@@ -479,7 +475,6 @@ endif()
 # convert
 add_executable(convert
     Source/convert/main.c
-    Source/shared/assert.c
     Source/shared/dmalloc.c
     Source/shared/file_util.c
     Source/shared/string_util.c
@@ -501,7 +496,6 @@ endif()
 # env2mod
 add_executable(env2mod
     Source/env2mod/main.c
-    Source/shared/assert.c
     Source/shared/dmalloc.c
     Source/shared/file_util.c
     Source/shared/string_util.c
@@ -524,7 +518,6 @@ endif()
 # flush
 add_executable(flush
     Source/flush/main.c
-    Source/shared/assert.c
     Source/shared/dmalloc.c
     Source/shared/file_util.c
     Source/shared/string_util.c
@@ -559,7 +552,6 @@ target_include_directories(getdate PRIVATE Source/getdate)
 # hashfile
 add_executable(hashfile
     Source/hashfile/main.c
-    Source/shared/assert.c
     Source/shared/dmalloc.c
     Source/shared/file_util.c
     Source/shared/string_util.c
@@ -581,7 +573,6 @@ endif()
 # makepo
 add_executable(makepo
     Source/makepo/main.c
-    Source/shared/assert.c
     Source/shared/dmalloc.c
     Source/shared/file_util.c
     Source/shared/string_util.c
@@ -603,7 +594,6 @@ endif()
 # mergepo
 add_executable(mergepo
     Source/mergepo/main.c
-    Source/shared/assert.c
     Source/shared/dmalloc.c
     Source/shared/file_util.c
     Source/shared/string_util.c
@@ -627,7 +617,6 @@ if (WIN32)
     # set_path
     add_executable(set_path
         Source/set_path/main.c
-        Source/shared/assert.c
         Source/shared/dmalloc.c
         Source/shared/file_util.c
         Source/shared/string_util.c
@@ -646,7 +635,6 @@ endif ()
 # sh2bat
 add_executable(sh2bat
     Source/sh2bat/sh2bat.c
-    Source/shared/assert.c
     Source/shared/dmalloc.c
     Source/shared/file_util.c
     Source/shared/string_util.c
@@ -668,7 +656,6 @@ endif()
 # timep
 add_executable(timep
     Source/timep/main.c
-    Source/shared/assert.c
     Source/shared/dmalloc.c
     Source/shared/file_util.c
     Source/shared/string_util.c
@@ -690,7 +677,6 @@ endif()
 # wind2fds
 add_executable(wind2fds
     Source/wind2fds/main.c
-    Source/shared/assert.c
     Source/shared/dmalloc.c
     Source/shared/file_util.c
     Source/shared/string_util.c

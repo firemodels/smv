@@ -1,4 +1,5 @@
 #include "options.h"
+#include <assert.h>
 #include <stdio.h>
 #include <stdarg.h>
 #include <string.h>
@@ -112,7 +113,7 @@ void CopyFILE(char *destdir, char *file_in, char *file_out, int mode){
     streamout=fopen(full_file_out,"ab");
   }
   else{
-    ASSERT(0);
+    assert(0);
   }
 
   if(streamout==NULL){

@@ -1,4 +1,5 @@
 #include "options.h"
+#include <assert.h>
 #include <stdlib.h>
 #include <string.h>
 #ifdef pp_DRAWISO
@@ -140,7 +141,7 @@ float GetTetraVol(float *verts[4], float vals[4], float level){
     if(ncase<0)vol_above_level = full_volume-vol_above_level;
   }
   else{
-    ASSERT(ncase==6);
+    assert(ncase==6);
     volargs[0]=volverts + 3*cases[index][1];
     volargs[1]=volverts + 3*cases[index][2];
     volargs[2]=volverts + 3*cases[index][3];

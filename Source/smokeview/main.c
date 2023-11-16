@@ -20,6 +20,8 @@
 #include "lua_api.h"
 #endif
 
+#include <assert.h>
+
 /* ------------------ IsInstallBinDir ------------------------ */
 
 int IsInstallBinDir(char *bindir){

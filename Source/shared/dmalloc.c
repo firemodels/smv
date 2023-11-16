@@ -1,5 +1,6 @@
 #include "options.h"
 #define INDMALLOC
+#include <assert.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
@@ -112,7 +113,7 @@ mallocflag _NewMemoryNOTHREAD(void **ppv, size_t size, int memory_id){
   int infoblocksize;
   MMdata *this_ptr, *prev_ptr, *next_ptr;
 
-  ASSERT(ppv != NULL && size != 0);
+  assert(ppv != NULL && size != 0);
   infoblocksize=(sizeof(MMdata)+3)/4;
   infoblocksize*=4;
 
@@ -162,7 +163,7 @@ mallocflag _NewMemoryNOTHREAD(void **ppv, size_t size, int memory_id){
       }
     }
     MMtotalmemory+=size;
-    ASSERT(*ppb !=NULL);
+    assert(*ppb !=NULL);
   }
 #endif
   return (*ppb != NULL);
@@ -220,7 +221,7 @@ void FreeMemoryNOTHREAD(void *pv){
   int infoblocksize;
   MMdata *this_ptr, *prev_ptr, *next_ptr;
 
-  ASSERT(pv != NULL);
+  assert(pv != NULL);
   infoblocksize=(sizeof(MMdata)+3)/4;
   infoblocksize*=4;
 #ifdef pp_MEMDEBUG
@@ -236,7 +237,7 @@ void FreeMemoryNOTHREAD(void *pv){
   }
 #endif
   this_ptr=(MMdata *)((char *)pv-infoblocksize);
-  ASSERT(this_ptr->marker==markerByte);
+  assert(this_ptr->marker==markerByte);
   prev_ptr=this_ptr->prev;
   next_ptr=this_ptr->next;
 
@@ -282,7 +283,7 @@ mallocflag _ResizeMemoryNOTHREAD(void **ppv, size_t sizeNew, int memory_id){
   infoblocksize*=4;
 
   ppold=(bbyte **)ppv;
-  ASSERT(ppold != NULL && sizeNew != 0);
+  assert(ppold != NULL && sizeNew != 0);
 #ifdef pp_MEMDEBUG
   {
     CheckMemoryNOTHREAD;
@@ -462,7 +463,7 @@ static blockinfo *GetBlockInfo(bbyte *pb){
 
     if(fPtrGrtrEq(pb, pbStart) && fPtrLessEq(pb, pbEnd))break;
   }
-  ASSERT(pbi != NULL);
+  assert(pbi != NULL);
   return (pbi);
 }
 
@@ -546,7 +547,7 @@ void _CheckMemoryNOTHREAD(void){
   if(checkmemoryflag==0)return;
   for(pbi = pbiHead; pbi != NULL; pbi = pbi->pbiNext){
     if(sizeofDebugByte!=0){
-      ASSERT((char)*(pbi->pb+pbi->size)==(char)debugByte);
+      assert((char)*(pbi->pb+pbi->size)==(char)debugByte);
     }
   }
   return;
@@ -557,7 +558,7 @@ void _CheckMemoryNOTHREAD(void){
 mallocflag CreateBlockInfo(bbyte *pbNew, size_t sizeNew){
   blockinfo *pbi;
 
-  ASSERT(pbNew != NULL && sizeNew != 0);
+  assert(pbNew != NULL && sizeNew != 0);
 
   pbi = (blockinfo *)malloc(sizeof(blockinfo));
   if( pbi != NULL){
@@ -587,9 +588,9 @@ void FreeBlockInfo(bbyte *pbToFree){
     }
     pbiPrev = pbi;
   }
-  ASSERT(pbi != NULL);
+  assert(pbi != NULL);
   if(sizeofDebugByte!=0){
-    ASSERT((char)*(pbi->pb+pbi->size)==(char)debugByte);
+    assert((char)*(pbi->pb+pbi->size)==(char)debugByte);
   }
   free(pbi);
 }
@@ -599,10 +600,10 @@ void FreeBlockInfo(bbyte *pbToFree){
 void UpdateBlockInfo(bbyte *pbOld, bbyte *pbNew, size_t sizeNew){
   blockinfo *pbi;
 
-  ASSERT(pbNew != NULL && sizeNew != 0);
+  assert(pbNew != NULL && sizeNew != 0);
 
   pbi = GetBlockInfo(pbOld);
-  ASSERT(pbOld == pbi->pb);
+  assert(pbOld == pbi->pb);
 
   pbi->pb = pbNew;
   pbi->size = sizeNew;
@@ -614,9 +615,9 @@ size_t sizeofBlock(bbyte *pb){
   blockinfo *pbi;
 
   pbi = GetBlockInfo(pb);
-  ASSERT(pb==pbi->pb);
+  assert(pb==pbi->pb);
   if(sizeofDebugByte!=0){
-    ASSERT((char)*(pbi->pb+pbi->size)==(char)debugByte);
+    assert((char)*(pbi->pb+pbi->size)==(char)debugByte);
   }
   return(pbi->size);
 }
@@ -627,15 +628,15 @@ mallocflag _ValidPointer(void *pv, size_t size){
   blockinfo *pbi;
   bbyte *pb = (bbyte *)pv;
 
-  ASSERT(pv != NULL && size != 0);
+  assert(pv != NULL && size != 0);
 
   pbi = GetBlockInfo(pb);
-  ASSERT(pb==pbi->pb);
+  assert(pb==pbi->pb);
 
-  ASSERT(fPtrLessEq(pb+size,pbi->pb + pbi->size));
+  assert(fPtrLessEq(pb+size,pbi->pb + pbi->size));
 
   if(sizeofDebugByte!=0){
-    ASSERT((char)*(pbi->pb+pbi->size)==(char)debugByte);
+    assert((char)*(pbi->pb+pbi->size)==(char)debugByte);
   }
   return(1);
 }
@@ -651,7 +652,7 @@ char *_strcpy(char *s1, const char *s2){
   pbi = GetBlockInfo_nofail(s1);
   if(pbi!=NULL){
     offset = s1 - pbi->pb;
-    ASSERT(pbi->size - offset >= strlen(s2)+1);
+    assert(pbi->size - offset >= strlen(s2)+1);
   }
   UNLOCK_MEM;
 
@@ -669,7 +670,7 @@ char *_strcat(char *s1, const char *s2){
   pbi = GetBlockInfo_nofail(s1);
   if(pbi!=NULL){
     offset = s1 - pbi->pb;
-    ASSERT(pbi->size - offset >= strlen(s1)+strlen(s2)+1);
+    assert(pbi->size - offset >= strlen(s1)+strlen(s2)+1);
   }
   UNLOCK_MEM;
 
@@ -698,7 +699,7 @@ void set_memcheck(int index){
     MMmaxmemory=8000000000;
     break;
   default:
-    ASSERT(0);
+    assert(0);
     break;
   }
 }
@@ -720,4 +721,3 @@ void getMemusage(MMsize totalmemory,char *MEMlabel){
 
 }
 #endif
-

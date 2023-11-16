@@ -1,5 +1,6 @@
 #include "options.h"
 #include "glew.h"
+#include <assert.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -5839,7 +5840,7 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
     sd->file = sd->comp_file;
     break;
   default:
-    ASSERT(FFALSE);
+    assert(FFALSE);
     break;
   }
 
@@ -7714,8 +7715,8 @@ int ReadSMV(bufferstreamdata *stream){
       NewMemory(( void ** )&hvacductvalsinfo, sizeof(hvacvalsdata));
       hvacductvalsinfo->times = NULL;
       hvacductvalsinfo->loaded = 0;
-      hvacductvalsinfo->node_vars = NULL;   
-      hvacductvalsinfo->duct_vars = NULL;   
+      hvacductvalsinfo->node_vars = NULL;
+      hvacductvalsinfo->duct_vars = NULL;
 
       if(FGETS(buffer, 255, stream) == NULL)BREAK;
       hvacductvalsinfo->file = GetCharPtr(TrimFrontBack(buffer));
@@ -7735,7 +7736,7 @@ int ReadSMV(bufferstreamdata *stream){
           ReadLabels(labeli, stream, NULL);
         }
       }
-      
+
       if(FGETS(buffer, 255, stream) == NULL)BREAK;
       sscanf(buffer, "%i", &hvacductvalsinfo->n_duct_vars);
 
@@ -7815,7 +7816,7 @@ int ReadSMV(bufferstreamdata *stream){
           strcpy(nodei->c_filter, "FI");
           nhvacfilters++;
         }
-        
+
       }
   // DUCTS
   // n_ducts
@@ -8698,7 +8699,7 @@ int ReadSMV(bufferstreamdata *stream){
           dxyz[2]=1.0;
           break;
         default:
-          ASSERT(FFALSE);
+          assert(FFALSE);
           break;
         }
         if(ticki->dir<0){
@@ -9895,7 +9896,7 @@ int ReadSMV(bufferstreamdata *stream){
           zvi->y1 = zvi->y0 + vent_width;
           break;
         default:
-          ASSERT(FFALSE);
+          assert(FFALSE);
         }
         zvi->color = GetColorPtr(color);
         zvi->area_fraction = area_fraction;
@@ -9945,7 +9946,7 @@ int ReadSMV(bufferstreamdata *stream){
           zvi->y1 = ycen + ventside/2.0;
           break;
         default:
-          ASSERT(FFALSE);
+          assert(FFALSE);
           break;
         }
 
@@ -9993,7 +9994,7 @@ int ReadSMV(bufferstreamdata *stream){
         ReadZVentData(zvi, buffer, ZVENT_1ROOM);
         break;
       default:
-        ASSERT(FFALSE);
+        assert(FFALSE);
         break;
       }
       CheckMemory;
@@ -10291,7 +10292,7 @@ typedef struct {
           *id_labelptr2 = 0;
         }
         bc->id_label = GetCharPtr(id_labelptr);
-    
+
         TrimBack(buffer);
         for(i=0;i<6;i++){
           s_num[i]=-1;
@@ -10456,7 +10457,7 @@ typedef struct {
               s_color[2]=0.0;
               break;
             default:
-              ASSERT(FFALSE);
+              assert(FFALSE);
               break;
             }
             colorindex=-3;
@@ -10803,7 +10804,7 @@ typedef struct {
             vi->zmin=vi->zmax;
             break;
           default:
-            ASSERT(FFALSE);
+            assert(FFALSE);
             break;
           }
           if(nn>=nvents+6){
@@ -10948,7 +10949,7 @@ typedef struct {
             vi->dir2=ZDIR;
             break;
           default:
-            ASSERT(FFALSE);
+            assert(FFALSE);
             break;
           }
         }
@@ -10978,7 +10979,7 @@ typedef struct {
         if(nn>=nvents&&nn<nvents+6){
           vi->color=foregroundcolor;
         }
-        ASSERT(vi->color!=NULL);
+        assert(vi->color!=NULL);
       }
       for(nn=0;nn<nvents-ndummyvents;nn++){
         int j;
@@ -11014,7 +11015,7 @@ typedef struct {
         continue;
       }
       else{
-        ASSERT(FFALSE);
+        assert(FFALSE);
       }
       continue;
     }
@@ -11043,7 +11044,7 @@ typedef struct {
         return 2;
       }
       else{
-        ASSERT(FFALSE);
+        assert(FFALSE);
       }
       continue;
     }
@@ -11069,7 +11070,7 @@ typedef struct {
         return 2;
       }
       else{
-        ASSERT(FFALSE);
+        assert(FFALSE);
       }
       continue;
     }
@@ -11101,7 +11102,7 @@ typedef struct {
       else if(return_val==RETURN_PROCEED){
       }
       else{
-        ASSERT(FFALSE);
+        assert(FFALSE);
       }
     }
   /*
@@ -11129,7 +11130,7 @@ typedef struct {
         return 2;
       }
       else{
-        ASSERT(FFALSE);
+        assert(FFALSE);
       }
       continue;
     }
@@ -11156,7 +11157,7 @@ typedef struct {
         continue;
       }
       else{
-        ASSERT(FFALSE);
+        assert(FFALSE);
       }
       continue;
     }
@@ -11177,7 +11178,7 @@ typedef struct {
     nOBST=0;
     iobst=0;
   }
-  
+
   PRINT_CUM_TIMER(cum_BNDF_timer, "BNDF");
   PRINT_CUM_TIMER(cum_ISOF_timer, "ISOF");
   PRINT_CUM_TIMER(cum_PRT5_timer, "PRT5");
@@ -11837,7 +11838,7 @@ int GetNewBoundIndex(int old_index){
   int bound_map[] = {NEW_GLOBAL, NEW_SET, NEW_GLOBAL};
 #endif
 
-  ASSERT(old_index>=0&&old_index<=2);
+  assert(old_index>=0&&old_index<=2);
   old_index=CLAMP(old_index,0, 2);
   return bound_map[old_index];
 }
@@ -12041,7 +12042,7 @@ int ReadIni2(char *inifile, int localfile){
       float rdummy;
 
       fgets(buffer, 255, stream);
-      sscanf(buffer, " %i %i %i %i %f %i", 
+      sscanf(buffer, " %i %i %i %i %f %i",
         &nh, &hvac_metro_view, &dummy, &dummy, &rdummy, &hvac_cell_view);
       ONEORZERO(hvac_metro_view);
       ONEORZERO(hvac_cell_view);
@@ -12211,8 +12212,8 @@ int ReadIni2(char *inifile, int localfile){
     }
     if(MatchINI(buffer, "SHOWSLICEPLOT")==1){
       fgets(buffer, 255, stream);
-      sscanf(buffer, " %f %f %f %f %i %i %f %f %f %i %i", 
-         slice_xyz, slice_xyz+1, slice_xyz+2, 
+      sscanf(buffer, " %f %f %f %f %i %i %f %f %f %i %i",
+         slice_xyz, slice_xyz+1, slice_xyz+2,
          &plot2d_size_factor, &vis_slice_plot, &slice_plot_bound_option,
          slice_dxyz, slice_dxyz+1, slice_dxyz+2, &average_plot2d_slice_region, &show_plot2d_slice_position
       );
@@ -12234,7 +12235,7 @@ int ReadIni2(char *inifile, int localfile){
     }
     if(MatchINI(buffer, "SHOWGENPLOTXLABEL") == 1){
       char *xlabelptr;
-      
+
       fgets(buffer, 255, stream);
       sscanf(buffer, " %i, %f", &plot2d_show_xaxis_labels, &plot2d_xaxis_position);
       fgets(buffer, 255, stream);
@@ -13144,7 +13145,7 @@ int ReadIni2(char *inifile, int localfile){
                 propi->user_min = vmin;
                 break;
               default:
-                ASSERT(FFALSE);
+                assert(FFALSE);
                 break;
             }
             switch(ivmax){
@@ -13164,7 +13165,7 @@ int ReadIni2(char *inifile, int localfile){
                 propi->user_max = vmax;
                 break;
               default:
-                ASSERT(FFALSE);
+                assert(FFALSE);
                 break;
             }
           }
@@ -13187,7 +13188,7 @@ int ReadIni2(char *inifile, int localfile){
                 propi->user_min = vmin;
                 break;
               default:
-                ASSERT(FFALSE);
+                assert(FFALSE);
                 break;
             }
             switch(ivmax){
@@ -13208,7 +13209,7 @@ int ReadIni2(char *inifile, int localfile){
                 propi->user_max = vmax;
                 break;
               default:
-                ASSERT(FFALSE);
+                assert(FFALSE);
                 break;
             }
           }
@@ -15265,7 +15266,7 @@ int ReadIni2(char *inifile, int localfile){
             dxyz[2] = 1.0;
             break;
           default:
-            ASSERT(FFALSE);
+            assert(FFALSE);
             break;
           }
           if(ticki->dir<0){
@@ -16000,7 +16001,7 @@ void WriteIniLocal(FILE *fileout){
   fprintf(fileout, "SHOWGENPLOTXLABEL\n");
   fprintf(fileout, " %i, %f\n", plot2d_show_xaxis_labels, plot2d_xaxis_position);
   fprintf(fileout, "%s\n", plot2d_xaxis_label);
-  
+
   fprintf(fileout, "SHOWGENPLOTS\n");
   fprintf(fileout, " %i\n", nplot2dinfo);
   fprintf(fileout, " %i %i %i %i %i %i %f %i %i\n",
@@ -16365,7 +16366,7 @@ void WriteIni(int flag,char *filename){
     outfilename=caseini_filename;
     break;
   default:
-    ASSERT(FFALSE);
+    assert(FFALSE);
     break;
   }
   if(flag==SCRIPT_INI)flag=LOCAL_INI;
@@ -17284,5 +17285,3 @@ void GetElevAz(float *xyznorm,float *dtheta,float *rotate_axis, float *dpsi){
     if(xyznorm2[0]<0.0)*dpsi=-(*dpsi);
   }
 }
-
-

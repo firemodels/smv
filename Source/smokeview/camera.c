@@ -1,4 +1,5 @@
 #include "options.h"
+#include <assert.h>
 #include <stdlib.h>
 #include <math.h>
 #include <stdio.h>
@@ -136,7 +137,7 @@ void UpdateCameraYpos(cameradata *ci, int option){
       offset = (dz-dy)/2.0;
       break;
     default:
-      ASSERT(FFALSE);
+      assert(FFALSE);
       break;
   }
   eyeyfactor = -(width/2.0)/tan(local_aperture_default*DEG2RAD/2.0) - offset;
@@ -183,7 +184,7 @@ void SetCameraViewPersp(cameradata *ca, int option){
       elev = 90.0;
       break;
     default:
-      ASSERT(FFALSE);
+      assert(FFALSE);
       break;
   }
   ca->az_elev[0] = az;
@@ -207,7 +208,7 @@ void SetCameraViewPersp(cameradata *ca, int option){
       UpdateCameraYpos(ca, 3);
       break;
     default:
-      ASSERT(FFALSE);
+      assert(FFALSE);
       break;
   }
 }
@@ -325,7 +326,7 @@ void CopyViewCamera(cameradata *to, cameradata *from){
     UpdateGluiZoom();
   }
   to->dirty=1;
-  
+
   Cam2Clip(to);
   if(to==camera_current&&to->quat_defined==1){
     quat_general[0]=to->quaternion[0];

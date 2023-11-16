@@ -1,11 +1,11 @@
 #define INMAIN
 #include "options.h"
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <windows.h>
 #include <ctype.h>
-#include "smv_assert.h"
 #include "string_util.h"
 #include "file_util.h"
 #include "datadefs.h"
@@ -349,7 +349,7 @@ int reg_path(int setget, int pathtype, char *path){
       hTree=HKEY_LOCAL_MACHINE;
       break;
     default:
-      ASSERT(0);
+      assert(0);
       break;
   }
   switch (setget) {
@@ -419,7 +419,7 @@ int reg_path(int setget, int pathtype, char *path){
       }
       break;
     default:
-      ASSERT(0);
+      assert(0);
       break;
   }
   return 1;

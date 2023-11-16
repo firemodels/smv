@@ -1,4 +1,5 @@
 #include "options.h"
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -60,7 +61,7 @@ int HaveHVACConnect(int val, hvacconnectdata *vals, int nvals){
 
 /* ------------------ GetHVACPathXYZ ------------------------ */
 
-void GetHVACPathXYZ(float fraction, float *xyzs, int n, float *xyz){ 
+void GetHVACPathXYZ(float fraction, float *xyzs, int n, float *xyz){
   int i;
   float length=0.0, lengthf;
   float length1, length2;
@@ -141,7 +142,7 @@ void GetCellXYZs(float *xyz, int nxyz, int ncells, float **xyz_cellptr, int *nxy
     fractions[i] /= length;
   }
   fractions[nxyz-1] = 1.0;
-  
+
   fractions_cell[0]      = 0.0;
   for(i=1;i<ncells;i++){
     fractions_cell[i]=(float)i/(float)ncells;
@@ -294,7 +295,7 @@ void ReadHVACData(int flag){
     hi = hvacductvalsinfo->duct_vars + i;
     FREEMEMORY(hi->vals);
   }
-  
+
   for(i = 0;i < hvacnodevalsinfo->n_node_vars;i++){
     hvacvaldata *hi;
 
@@ -380,7 +381,7 @@ void ReadHVACData(int flag){
         hk->vals[iframe + j * nframes] = node_buffer[k];
       }
     }
-  
+
     int iduct;
     for(iduct = 0;iduct < n_ducts;iduct++){
       int ntotalvals;
@@ -437,7 +438,7 @@ void ReadHVACData(int flag){
 
       for(icell=0;icell<duct_ncells[iduct];icell++){
 	      int iframe2;
-	
+
         for(iframe2=0;iframe2<nframes;iframe2++){
           int index;
 
@@ -716,7 +717,7 @@ void SetHVACInfo(void){
         }
         break;
       default:
-        ASSERT(FFALSE);
+        assert(FFALSE);
         break;
     }
     GetCellXYZs(ducti->xyz_reg, ducti->nxyz_reg, ducti->nduct_cells,
@@ -962,7 +963,7 @@ void DrawHVACFilter(hvacductdata *ducti, float *xyz, float size){
 
   glVertex3f(0.0, -0.5, -1.0);
   glVertex3f(0.0, -0.5,  1.0);
-  
+
   glVertex3f(0.0,  0.5, -1.0);
   glVertex3f(0.0,  0.5,  1.0);
   glEnd();
@@ -1062,7 +1063,7 @@ void DrawHVAC(hvacdata *hvaci){
   for(i = 0; i < nhvacductinfo; i++){
     hvacductdata *ducti;
     hvacnodedata *node_from, *node_to;
- 
+
     ducti = hvacductinfo + i;
     if(hvac_show_networks==1&&strcmp(hvaci->network_name, ducti->network_name) != 0)continue;
     if(hvac_show_connections==1&&ducti->connect != NULL && ducti->connect->display == 0)continue;
@@ -1125,10 +1126,10 @@ void DrawHVAC(hvacdata *hvaci){
       hvacductdata *ducti;
       float *xyzs;
       int nxyzs, j;
- 
+
       ducti = hvacductinfo + i;
       if(ducti->nduct_cells <= 1)continue;
-    
+
       if(hvac_metro_view == 1){
         xyzs       = ducti->xyz_met_cell;
         nxyzs      = ducti->nxyz_met_cell-1;
@@ -1238,7 +1239,7 @@ void DrawHVAC(hvacdata *hvaci){
         DrawHVACDamper(ducti, xyz, size, state);
         break;
       default:
-        ASSERT(FFALSE);
+        assert(FFALSE);
         break;
       }
     }

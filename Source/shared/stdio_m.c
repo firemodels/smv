@@ -1,4 +1,5 @@
 #include "options.h"
+#include <assert.h>
 #include <stdio.h>
 #include <string.h>
 #include "stdio_m.h"
@@ -168,7 +169,7 @@ int fseek_m(FILE_m *stream_m, long int offset, int whence){
       stream_m->buffer = stream_m->buffer_end + offset;
       break;
     default:
-      ASSERT(FFALSE);
+      assert(FFALSE);
       break;
     }
     if(stream_m->buffer-stream_m->buffer_beg<0||stream_m->buffer-stream_m->buffer_end>=0)return_val = FAIL_m;

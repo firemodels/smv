@@ -1,5 +1,6 @@
 #define CPP
 #include "options.h"
+#include <assert.h>
 #include <stdio.h>
 #include <string.h>
 #include GLUT_H
@@ -499,7 +500,7 @@ void TextLabelsCB(int var){
     memcpy(&LABEL_global_ptr->show_tick, &gl->show_tick, sizeof(int));
     break;
   default:
-    ASSERT(FFALSE);
+    assert(FFALSE);
     break;
   }
 }
@@ -579,7 +580,7 @@ extern "C" void ColorCB(int var){
     SPINNER_diff_blue->set_int_val(glui_diffusegrey);
   break;
   default:
-    ASSERT(FFALSE);
+    assert(FFALSE);
     break;
   }
 }
@@ -655,7 +656,7 @@ void SurfaceCB(int var){
     }
     break;
   default:
-    ASSERT(FFALSE);
+    assert(FFALSE);
   }
 }
 
@@ -1111,7 +1112,7 @@ extern "C" void ShowGluiDisplay(int menu_id){
     DisplayRolloutCB(LABELS_ROLLOUT);
     break;
   default:
-    ASSERT(0);
+    assert(0);
     break;
   }
 }
@@ -1277,7 +1278,7 @@ extern "C" void LabelsCB(int var){
     }
     break;
   default:
-    ASSERT(FFALSE);
+    assert(FFALSE);
   }
 }
 
@@ -1315,6 +1316,3 @@ extern "C" void LabelsCB(int var){
   SetLabelControls2();
 
 }
-
-
-

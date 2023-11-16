@@ -1,4 +1,5 @@
 #include "options.h"
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/stat.h>
@@ -568,7 +569,7 @@ int NodeInInternalVent(const meshdata *meshi, int i, int j, int k, int dir, int 
         }
         break;
       default:
-        ASSERT(FFALSE);
+        assert(FFALSE);
         break;
       }
     }
@@ -675,7 +676,7 @@ void NodeInExternalVent(int ipatch, int *patchblank, const meshdata *meshi,
       }
       break;
     default:
-      ASSERT(FFALSE);
+      assert(FFALSE);
       break;
     }
   }
@@ -704,7 +705,7 @@ void NodeInExternalVent(int ipatch, int *patchblank, const meshdata *meshi,
         patchblank[iii] = NodeInBlockage(meshi, i, j1, k, &imesh, &iblockage);
         if(imesh != -1){
           meshblock = meshinfo + imesh;
-          ASSERT(iblockage >= 0 && iblockage < meshblock->nbptrs);
+          assert(iblockage >= 0 && iblockage < meshblock->nbptrs);
           meshi->blockonpatch[ipatch] = iblockage;
           meshi->meshonpatch[ipatch] = meshblock;
         }
@@ -723,7 +724,7 @@ void NodeInExternalVent(int ipatch, int *patchblank, const meshdata *meshi,
     }
     break;
   default:
-    ASSERT(FFALSE);
+    assert(FFALSE);
     break;
   }
 }
@@ -761,13 +762,13 @@ void DrawOnlyThreshold(const meshdata *meshi){
   patchi = patchinfo+meshi->patchfilenum;
   switch(patchi->compression_type){
   case UNCOMPRESSED:
-    ASSERT(meshi->cpatchval_iframe!=NULL);
+    assert(meshi->cpatchval_iframe!=NULL);
     break;
   case COMPRESSED_ZLIB:
-    ASSERT(meshi->cpatchval_iframe_zlib!=NULL);
+    assert(meshi->cpatchval_iframe_zlib!=NULL);
     break;
   default:
-    ASSERT(FFALSE);
+    assert(FFALSE);
   }
   patchi = patchinfo+meshi->patchfilenum;
 
@@ -783,7 +784,7 @@ void DrawOnlyThreshold(const meshdata *meshi){
   for(n = 0;n<meshi->npatches;n++){
     iblock = meshi->blockonpatch[n];
     meshblock = meshi->meshonpatch[n];
-    ASSERT((iblock!=-1&&meshblock!=NULL)||(iblock==-1&&meshblock==NULL));
+    assert((iblock!=-1&&meshblock!=NULL)||(iblock==-1&&meshblock==NULL));
     if(iblock!=-1&&meshblock!=NULL){
       bc = meshblock->blockageinfoptrs[iblock];
       if(bc->showtimelist!=NULL&&bc->showtimelist[itimes]==0){
@@ -949,7 +950,7 @@ void DrawOnlyThreshold(const meshdata *meshi){
   for(n = 0;n<meshi->npatches;n++){
     iblock = meshi->blockonpatch[n];
     meshblock = meshi->meshonpatch[n];
-    ASSERT((iblock!=-1&&meshblock!=NULL)||(iblock==-1&&meshblock==NULL));
+    assert((iblock!=-1&&meshblock!=NULL)||(iblock==-1&&meshblock==NULL));
     if(iblock!=-1&&meshblock!=NULL){
       bc = meshblock->blockageinfoptrs[iblock];
       if(bc->showtimelist!=NULL&&bc->showtimelist[itimes]==0){
@@ -1099,7 +1100,7 @@ void GetBoundaryDataZlib(patchdata *patchi, unsigned char *data, int ndata,
     if(skip_frame==1||local_count%tload_step!=0)continue;
     i++;
     if(i>=ntimes_local)break;
-    ASSERT(i<ntimes_local);
+    assert(i<ntimes_local);
     local_times[i] = local_time;
     zipoffset[i] = offset;
     zipsize[i] = compressed_size;
@@ -1362,7 +1363,7 @@ void ComputeLoadedPatchHist(char *label, histogramdata **histptr, float *global_
         continue;
         break;
       default:
-	ASSERT(FFALSE);
+	assert(FFALSE);
 	break;
     }
   }
@@ -1894,7 +1895,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
       dzz2 = meshi->zplt[1]*block_factor_z;
       break;
     default:
-      ASSERT(FFALSE);
+      assert(FFALSE);
     }
 
 
@@ -2280,7 +2281,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
     NewResizeMemory(meshi->cpatchval_iframe_zlib,sizeof(unsigned char)*meshi->npatchsize);
     break;
   default:
-    ASSERT(FFALSE);
+    assert(FFALSE);
     break;
   }
 
@@ -2366,7 +2367,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
           iblock=meshi->blockonpatch[n];
           meshblock = meshi->meshonpatch[n];
           nsize=meshi->boundary_row[n]*meshi->boundary_col[n];
-          ASSERT((iblock!=-1&&meshblock!=NULL)||(iblock==-1&&meshblock==NULL));
+          assert((iblock!=-1&&meshblock!=NULL)||(iblock==-1&&meshblock==NULL));
           if(iblock!=-1&&meshblock!=NULL){
             switch(loadpatchbysteps){
             case UNCOMPRESSED_ALLFRAMES:
@@ -2390,7 +2391,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
               }
               break;
             default:
-              ASSERT(FFALSE);
+              assert(FFALSE);
               break;
             }
           }
@@ -2428,7 +2429,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
         ii++;
         break;
       default:
-        ASSERT(FFALSE);
+        assert(FFALSE);
         break;
     }
   }
@@ -2504,7 +2505,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
       colorlabelpatch,colorvaluespatch,boundarylevels256,nrgb);
     break;
   default:
-    ASSERT(FFALSE);
+    assert(FFALSE);
     break;
   }
   if(do_threshold==1){
@@ -2667,7 +2668,7 @@ FILE_SIZE ReadBoundary(int ifile, int load_flag, int *errorcode){
     return_filesize=ReadGeomData(patchi,NULL, load_flag,ALL_FRAMES, NULL, 1, errorcode);
   }
   else{
-    ASSERT(ifile>=0&&ifile<npatchinfo);
+    assert(ifile>=0&&ifile<npatchinfo);
     return_filesize=ReadBoundaryBndf(ifile,load_flag,errorcode);
   }
 #ifdef pp_HIST
@@ -2775,13 +2776,13 @@ void DrawBoundaryTexture(const meshdata *meshi){
   patchi=patchinfo+meshi->patchfilenum;
   switch(patchi->compression_type){
   case UNCOMPRESSED:
-    ASSERT(meshi->cpatchval_iframe!=NULL);
+    assert(meshi->cpatchval_iframe!=NULL);
     patchval_iframe=meshi->patchval_iframe;
     break;
   case COMPRESSED_ZLIB:
     break;
   default:
-    ASSERT(FFALSE);
+    assert(FFALSE);
   }
   patchi = patchinfo + meshi->patchfilenum;
 
@@ -2807,7 +2808,7 @@ void DrawBoundaryTexture(const meshdata *meshi){
 
     iblock = meshi->blockonpatch[n];
     meshblock = meshi->meshonpatch[n];
-    ASSERT((iblock!=-1&&meshblock!=NULL)||(iblock==-1&&meshblock==NULL));
+    assert((iblock!=-1&&meshblock!=NULL)||(iblock==-1&&meshblock==NULL));
     if(iblock!=-1&&meshblock!=NULL){
       bc=meshblock->blockageinfoptrs[iblock];
       if(bc->showtimelist!=NULL&&bc->showtimelist[itimes]==0){
@@ -2929,7 +2930,7 @@ void DrawBoundaryTexture(const meshdata *meshi){
             glTranslatef(0.00,0.0,dboundz);
             break;
           default:
-            ASSERT(FFALSE);
+            assert(FFALSE);
             break;
         }
         glBegin(GL_TRIANGLES);
@@ -3004,7 +3005,7 @@ void DrawBoundaryTexture(const meshdata *meshi){
 
     iblock = meshi->blockonpatch[n];
     meshblock = meshi->meshonpatch[n];
-    ASSERT((iblock!=-1&&meshblock!=NULL)||(iblock==-1&&meshblock==NULL));
+    assert((iblock!=-1&&meshblock!=NULL)||(iblock==-1&&meshblock==NULL));
     if(iblock!=-1&&meshblock!=NULL){
       bc=meshblock->blockageinfoptrs[iblock];
       if(bc->showtimelist!=NULL&&bc->showtimelist[itimes]==0){
@@ -3037,7 +3038,7 @@ void DrawBoundaryTexture(const meshdata *meshi){
             glTranslatef(0.0,0.0,-dboundz);
             break;
           default:
-            ASSERT(FFALSE);
+            assert(FFALSE);
             break;
         }
         glBegin(GL_TRIANGLES);
@@ -3148,13 +3149,13 @@ void DrawBoundaryTextureThreshold(const meshdata *meshi){
   patchi=patchinfo+meshi->patchfilenum;
   switch(patchi->compression_type){
   case UNCOMPRESSED:
-    ASSERT(meshi->patchval_iframe!=NULL);
+    assert(meshi->patchval_iframe!=NULL);
     patchval_iframe=meshi->patchval_iframe;
     break;
   case COMPRESSED_ZLIB:
     break;
   default:
-    ASSERT(FFALSE);
+    assert(FFALSE);
   }
   patchi = patchinfo + meshi->patchfilenum;
 
@@ -3180,7 +3181,7 @@ void DrawBoundaryTextureThreshold(const meshdata *meshi){
   for(n=0;n<meshi->npatches;n++){
     iblock = meshi->blockonpatch[n];
     meshblock = meshi->meshonpatch[n];
-    ASSERT((iblock!=-1&&meshblock!=NULL)||(iblock==-1&&meshblock==NULL));
+    assert((iblock!=-1&&meshblock!=NULL)||(iblock==-1&&meshblock==NULL));
     if(iblock!=-1&&meshblock!=NULL){
       bc=meshblock->blockageinfoptrs[iblock];
       if(bc->showtimelist!=NULL&&bc->showtimelist[itimes]==0){
@@ -3349,7 +3350,7 @@ void DrawBoundaryTextureThreshold(const meshdata *meshi){
   for(n=0;n<meshi->npatches;n++){
     iblock = meshi->blockonpatch[n];
     meshblock = meshi->meshonpatch[n];
-    ASSERT((iblock!=-1&&meshblock!=NULL)||(iblock==-1&&meshblock==NULL));
+    assert((iblock!=-1&&meshblock!=NULL)||(iblock==-1&&meshblock==NULL));
     if(iblock!=-1&&meshblock!=NULL){
       bc=meshblock->blockageinfoptrs[iblock];
       if(bc->showtimelist!=NULL&&bc->showtimelist[itimes]==0){
@@ -3463,13 +3464,13 @@ void DrawBoundaryThresholdCellcenter(const meshdata *meshi){
   patchi=patchinfo+meshi->patchfilenum;
   switch(patchi->compression_type){
   case UNCOMPRESSED:
-    ASSERT(meshi->cpatchval_iframe!=NULL);
+    assert(meshi->cpatchval_iframe!=NULL);
     break;
   case COMPRESSED_ZLIB:
-    ASSERT(meshi->cpatchval_iframe_zlib!=NULL);
+    assert(meshi->cpatchval_iframe_zlib!=NULL);
     break;
   default:
-    ASSERT(FFALSE);
+    assert(FFALSE);
   }
   patchi = patchinfo + meshi->patchfilenum;
 
@@ -3483,7 +3484,7 @@ void DrawBoundaryThresholdCellcenter(const meshdata *meshi){
   for(n=0;n<meshi->npatches;n++){
     iblock = meshi->blockonpatch[n];
     meshblock = meshi->meshonpatch[n];
-    ASSERT((iblock!=-1&&meshblock!=NULL)||(iblock==-1&&meshblock==NULL));
+    assert((iblock!=-1&&meshblock!=NULL)||(iblock==-1&&meshblock==NULL));
     if(iblock!=-1&&meshblock!=NULL){
       bc=meshblock->blockageinfoptrs[iblock];
       if(bc->showtimelist!=NULL&&bc->showtimelist[itimes]==0){
@@ -3591,7 +3592,7 @@ void DrawBoundaryThresholdCellcenter(const meshdata *meshi){
   for(n=0;n<meshi->npatches;n++){
     iblock = meshi->blockonpatch[n];
     meshblock = meshi->meshonpatch[n];
-    ASSERT((iblock!=-1&&meshblock!=NULL)||(iblock==-1&&meshblock==NULL));
+    assert((iblock!=-1&&meshblock!=NULL)||(iblock==-1&&meshblock==NULL));
     if(iblock!=-1&&meshblock!=NULL){
       bc=meshblock->blockageinfoptrs[iblock];
       if(bc->showtimelist!=NULL&&bc->showtimelist[itimes]==0){
@@ -3701,7 +3702,7 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
   case COMPRESSED_ZLIB:
     break;
   default:
-    ASSERT(FFALSE);
+    assert(FFALSE);
   }
   patchi = patchinfo+meshi->patchfilenum;
 
@@ -3717,7 +3718,7 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
 
     iblock = meshi->blockonpatch[n];
     meshblock = meshi->meshonpatch[n];
-    ASSERT((iblock!=-1&&meshblock!=NULL)||(iblock==-1&&meshblock==NULL));
+    assert((iblock!=-1&&meshblock!=NULL)||(iblock==-1&&meshblock==NULL));
     if(iblock!=-1&&meshblock!=NULL){
       bc = meshblock->blockageinfoptrs[iblock];
       if(bc->showtimelist!=NULL&&bc->showtimelist[itimes]==0){
@@ -3827,7 +3828,7 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
           glTranslatef(0.0, 0.0, dboundz);
           break;
         default:
-          ASSERT(FFALSE);
+          assert(FFALSE);
           break;
         }
         glBegin(GL_TRIANGLES);
@@ -3894,7 +3895,7 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
 
     iblock = meshi->blockonpatch[n];
     meshblock = meshi->meshonpatch[n];
-    ASSERT((iblock!=-1&&meshblock!=NULL)||(iblock==-1&&meshblock==NULL));
+    assert((iblock!=-1&&meshblock!=NULL)||(iblock==-1&&meshblock==NULL));
     if(iblock!=-1&&meshblock!=NULL){
       bc = meshblock->blockageinfoptrs[iblock];
       if(bc->showtimelist!=NULL&&bc->showtimelist[itimes]==0){
@@ -3926,7 +3927,7 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
           glTranslatef(0.0, 0.0, -dboundz);
           break;
         default:
-          ASSERT(FFALSE);
+          assert(FFALSE);
           break;
         }
         glBegin(GL_TRIANGLES);

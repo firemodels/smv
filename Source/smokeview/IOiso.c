@@ -1,4 +1,5 @@
 #include "options.h"
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -580,7 +581,7 @@ void ReadIsoOrig(const char *file, int ifile, int flag, int *errorcode){
     SetupAllIsosurfaces();
     setup_isosurfaces = 1;
   }
-  ASSERT(ifile>=0&&ifile<nisoinfo);
+  assert(ifile>=0&&ifile<nisoinfo);
   ib = isoinfo+ifile;
   if(ib->loaded==0&&flag==UNLOAD)return;
   blocknumber=ib->blocknumber;
@@ -652,7 +653,7 @@ void ReadIsoOrig(const char *file, int ifile, int flag, int *errorcode){
       meshi->isomax_index=ilevel;
     }
   }
-  //ASSERT(meshi->animatedsurfaces==NULL);
+  //assert(meshi->animatedsurfaces==NULL);
   if(NewMemoryMemID((void **)&meshi->animatedsurfaces,meshi->nisolevels*meshi->niso_times*sizeof(isosurface),ib->memory_id)==0){
     *errorcode=1;
     ReadIso("",ifile,UNLOAD,NULL,&error);
@@ -1963,4 +1964,3 @@ void UpdateIsoColors(void){
   }
   CheckMemory;
 }
-

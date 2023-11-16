@@ -1,6 +1,7 @@
 #define CPP
 #include "options.h"
 
+#include <assert.h>
 #include <stdio.h>
 #include <string.h>
 #include GLUT_H
@@ -1270,7 +1271,7 @@ void bounds_dialog::CB(int var){
       break;
 #endif
     default:
-      ASSERT(FFALSE);
+      assert(FFALSE);
       break;
   }
 };
@@ -1364,7 +1365,7 @@ extern "C" void SetPercentiles(int type, float val_00, float per_valmin, float v
       if(nsliceinfo>0)sliceboundsCPP.set_percentiles(val_00, per_valmin, val_50, per_valmax, val_100);
       break;
     default:
-      ASSERT(FFALSE);
+      assert(FFALSE);
       break;
   }
 }
@@ -1393,7 +1394,7 @@ extern "C" cpp_boundsdata *GetBoundsData(int type){
       if(nsliceinfo>0)return sliceboundsCPP.get_bounds_data();
       break;
     default:
-      ASSERT(FFALSE);
+      assert(FFALSE);
       break;
   }
   return NULL;
@@ -1422,7 +1423,7 @@ extern "C" void GetGlobalBoundsMinMax(int type, char *label, float *valmin, floa
       if(nsliceinfo>0)sliceboundsCPP.get_global_minmax(label, valmin, valmax);
       break;
     default:
-      ASSERT(FFALSE);
+      assert(FFALSE);
       break;
   }
 }
@@ -1450,7 +1451,7 @@ extern "C" void SetCacheFlag(int type, int cache_flag){
       if(nsliceinfo>0)sliceboundsCPP.set_cache_flag(cache_flag);
       break;
     default:
-      ASSERT(FFALSE);
+      assert(FFALSE);
       break;
   }
 }
@@ -1478,7 +1479,7 @@ extern "C" int GetCacheFlag(int type){
       if(nsliceinfo>0)return sliceboundsCPP.get_cache_flag();
       break;
     default:
-      ASSERT(FFALSE);
+      assert(FFALSE);
       break;
   }
   return 0;
@@ -1502,7 +1503,7 @@ extern "C" int GetPercentileDraw(int type){
       if(nsliceinfo>0)return sliceboundsCPP.get_percentile_draw();
       break;
     default:
-      ASSERT(FFALSE);
+      assert(FFALSE);
       break;
   }
   return 0;
@@ -1581,7 +1582,7 @@ extern "C" void SetPercentileDraw(int type, int val){
       }
       break;
     default:
-      ASSERT(FFALSE);
+      assert(FFALSE);
       break;
   }
 }
@@ -1644,7 +1645,7 @@ extern "C" int GetValType(int type){
       if(nsliceinfo>0)return sliceboundsCPP.get_valtype();
       break;
     default:
-      ASSERT(FFALSE);
+      assert(FFALSE);
       break;
   }
   return 0;
@@ -1673,7 +1674,7 @@ extern "C" int GetNValtypes(int type){
       if(nsliceinfo>0)return sliceboundsCPP.get_nvaltypes();
       break;
     default:
-      ASSERT(FFALSE);
+      assert(FFALSE);
       break;
   }
   return 0;
@@ -1702,7 +1703,7 @@ extern "C" void SetValTypeIndex(int type, int valtype_index){
       if(nsliceinfo>0)sliceboundsCPP.set_valtype_index(valtype_index);
       break;
     default:
-      ASSERT(FFALSE);
+      assert(FFALSE);
       break;
   }
 }
@@ -1748,7 +1749,7 @@ extern "C" void GetOnlyMinMax(int type, char *label, int *set_valmin, float *val
       }
       break;
     default:
-      ASSERT(FFALSE);
+      assert(FFALSE);
       break;
   }
 }
@@ -1800,7 +1801,7 @@ extern "C" void GetMinMax(int type, char *label, int *set_valmin, float *valmin,
       }
       break;
     default:
-      ASSERT(FFALSE);
+      assert(FFALSE);
       break;
   }
 }
@@ -1834,7 +1835,7 @@ extern "C" void GetMinMaxAll(int type, int *set_valmin, float *valmin, int *set_
       sliceboundsCPP.get_max_all(set_valmax, valmax, nall);
       break;
     default:
-      ASSERT(FFALSE);
+      assert(FFALSE);
       break;
   }
 }
@@ -1868,7 +1869,7 @@ extern "C" void SetMinMax(int type, char *label, int set_valmin, float valmin, i
       sliceboundsCPP.set_max(label, set_valmax, valmax);
       break;
     default:
-      ASSERT(FFALSE);
+      assert(FFALSE);
       break;
   }
 }
@@ -1896,7 +1897,7 @@ extern "C" void SetMin(int type, char *label, int set_valmin, float valmin){
       sliceboundsCPP.set_min(label, set_valmin, valmin);
       break;
     default:
-      ASSERT(FFALSE);
+      assert(FFALSE);
       break;
   }
 }
@@ -1924,7 +1925,7 @@ extern "C" void SetMax(int type, char *label, int set_valmax, float valmax){
       sliceboundsCPP.set_max(label, set_valmax, valmax);
       break;
     default:
-      ASSERT(FFALSE);
+      assert(FFALSE);
       break;
   }
 }
@@ -1958,7 +1959,7 @@ extern "C" void SetMinMaxAll(int type, int *set_valmin, float *valmin, int *set_
       sliceboundsCPP.set_max_all(set_valmax, valmax, nall);
       break;
     default:
-      ASSERT(FFALSE);
+      assert(FFALSE);
       break;
   }
 }
@@ -1986,7 +1987,7 @@ extern "C" void SetChopMin(int type, char *label, int set_valmin, float valmin){
       sliceboundsCPP.set_chopmin(label, set_valmin, valmin);
       break;
     default:
-      ASSERT(FFALSE);
+      assert(FFALSE);
       break;
   }
 }
@@ -2014,7 +2015,7 @@ extern "C" void SetChopMax(int type, char *label, int set_valmax, float valmax){
       sliceboundsCPP.set_chopmax(label, set_valmax, valmax);
       break;
     default:
-      ASSERT(FFALSE);
+      assert(FFALSE);
       break;
   }
 }
@@ -2318,7 +2319,7 @@ extern "C" void SliceBoundsCPP_CB(int var){
       break;
 #endif
     default:
-      ASSERT(FFALSE);
+      assert(FFALSE);
       break;
   }
 }
@@ -2558,7 +2559,7 @@ extern "C" void Plot3DBoundsCPP_CB(int var){
       break;
 #endif
     default:
-      ASSERT(FFALSE);
+      assert(FFALSE);
       break;
   }
 }
@@ -2780,7 +2781,7 @@ extern "C" void PartBoundsCPP_CB(int var){
       break;
 #endif
     default:
-      ASSERT(FFALSE);
+      assert(FFALSE);
       break;
   }
 }
@@ -2808,7 +2809,7 @@ int HavePatchData(void){
       case PATCH_GEOMETRY_SLICE:
         break;
     default:
-      ASSERT(FFALSE);
+      assert(FFALSE);
       break;
     }
   }
@@ -3049,7 +3050,7 @@ extern "C" void PatchBoundsCPP_CB(int var){
       break;
 #endif
     default:
-      ASSERT(FFALSE);
+      assert(FFALSE);
       break;
   }
 }
@@ -3915,7 +3916,7 @@ extern "C" void SplitCB(int var){
     UpdateRGBColors(COLORBAR_INDEX_NONE);
     break;
   default:
-    ASSERT(FFALSE);
+    assert(FFALSE);
     break;
   }
 }
@@ -4338,7 +4339,7 @@ extern "C" void FileShowCB(int var){
       Plot3DShowMenu(HIDEALL_PLOT3D);
       break;
     default:
-      ASSERT(FFALSE);
+      assert(FFALSE);
       break;
     }
     break;
@@ -4359,7 +4360,7 @@ extern "C" void FileShowCB(int var){
       ParticleShowMenu(HIDEALL_PARTICLE);
       break;
     default:
-      ASSERT(FFALSE);
+      assert(FFALSE);
       break;
     }
     break;
@@ -4380,7 +4381,7 @@ extern "C" void FileShowCB(int var){
       ShowHideSliceMenu(GLUI_HIDEALL_SLICE);
       break;
     default:
-      ASSERT(FFALSE);
+      assert(FFALSE);
       break;
     }
     break;
@@ -4401,7 +4402,7 @@ extern "C" void FileShowCB(int var){
       ShowVSliceMenu(GLUI_HIDEALL_VSLICE);
       break;
     default:
-      ASSERT(FFALSE);
+      assert(FFALSE);
       break;
     }
     break;
@@ -4422,7 +4423,7 @@ extern "C" void FileShowCB(int var){
       ShowBoundaryMenu(GLUI_HIDEALL_BOUNDARY);
       break;
     default:
-      ASSERT(FFALSE);
+      assert(FFALSE);
       break;
     }
     break;
@@ -4443,7 +4444,7 @@ extern "C" void FileShowCB(int var){
       Smoke3DShowMenu(HIDEALL_SMOKE3D);
       break;
     default:
-      ASSERT(FFALSE);
+      assert(FFALSE);
       break;
     }
     break;
@@ -4464,7 +4465,7 @@ extern "C" void FileShowCB(int var){
       IsoShowMenu(HIDEALL_ISO);
       break;
     default:
-      ASSERT(FFALSE);
+      assert(FFALSE);
       break;
     }
     break;
@@ -4483,7 +4484,7 @@ void MemcheckCB(int var){
     set_memcheck(list_memcheck_index);
     break;
   default:
-    ASSERT(FFALSE);
+    assert(FFALSE);
     break;
   }
 }
@@ -4506,7 +4507,7 @@ void BoundsDlgCB(int var){
     PRINTF("compressing\n");
     break;
   default:
-    ASSERT(FFALSE);
+    assert(FFALSE);
     break;
   }
 }
@@ -4538,7 +4539,7 @@ extern "C" void ImmersedBoundCB(int var){
           show_slice_outlines[i]=0;
           break;
 	      default:
-	        ASSERT(FFALSE);
+	        assert(FFALSE);
 	        break;
       }
     }
@@ -4590,14 +4591,14 @@ extern "C" void ImmersedBoundCB(int var){
       glui_show_slice_outlines=0;
       break;
     default:
-      ASSERT(FFALSE);
+      assert(FFALSE);
       break;
     }
     ImmersedBoundCB(IMMERSED_SET_DRAWTYPE);
     if(CHECKBOX_show_slice_outlines!=NULL)CHECKBOX_show_slice_outlines->set_int_val(glui_show_slice_outlines);
     break;
   default:
-    ASSERT(FFALSE);
+    assert(FFALSE);
     break;
   }
 }
@@ -4657,7 +4658,7 @@ extern "C" void BoundBoundCB(int var){
     case ENABLE:
       break;
     default:
-      ASSERT(FFALSE);
+      assert(FFALSE);
       break;
     }
     UpdateHideBoundarySurface();
@@ -4671,7 +4672,7 @@ extern "C" void BoundBoundCB(int var){
     case ENABLE:
       break;
     default:
-      ASSERT(FFALSE);
+      assert(FFALSE);
       break;
     }
     UpdateHideBoundarySurface();
@@ -4762,7 +4763,7 @@ extern "C" void BoundBoundCB(int var){
     LoadFiles();
     break;
   default:
-    ASSERT(FFALSE);
+    assert(FFALSE);
     break;
   }
 }
@@ -4825,7 +4826,7 @@ void TimeBoundCB(int var){
     ReloadMenu(RELOAD_INCREMENTAL_NOW);
     break;
   default:
-    ASSERT(FFALSE);
+    assert(FFALSE);
     break;
   }
 }
@@ -4993,7 +4994,7 @@ void ScriptCB(int var){
   case SCRIPT_SETSUFFIX:
     break;
   default:
-    ASSERT(FFALSE);
+    assert(FFALSE);
     break;
   }
 }
@@ -5067,10 +5068,10 @@ extern "C" void UpdateColorbarListBound(int flag){
      break;
     default:
      LIST_cb = LISTBOX_cb_bound;
-     ASSERT(FFALSE);
+     assert(FFALSE);
      break;
   }
-  
+
   if(LIST_cb == NULL)return;
   for(i=-7;i<ncolorbars;i++){
    LIST_cb->delete_item(i);
@@ -6102,7 +6103,7 @@ extern "C" void CompressOnOff(int flag){
       if(CHECKBOX_multi_task!=NULL)CHECKBOX_multi_task->enable();
       break;
     default:
-      ASSERT(FFALSE);
+      assert(FFALSE);
       break;
   }
 }
@@ -6216,7 +6217,7 @@ extern "C" void Plot3DBoundCB(int var){
     case CHOP_MIN:
       break;
     default:
-      ASSERT(FFALSE);
+      assert(FFALSE);
       break;
    }
    break;
@@ -6232,7 +6233,7 @@ extern "C" void Plot3DBoundCB(int var){
       case CHOP_MAX:
         break;
       default:
-        ASSERT(FFALSE);
+        assert(FFALSE);
         break;
      }
    break;
@@ -6268,7 +6269,7 @@ extern "C" void Plot3DBoundCB(int var){
   case VALMAX:
     break;
   default:
-    ASSERT(FFALSE);
+    assert(FFALSE);
     break;
   }
 }
@@ -6346,7 +6347,7 @@ extern "C" void IsoBoundCB(int var){
         iso_opacity_change=1;
         break;
       default:
-	ASSERT(FFALSE);
+	assert(FFALSE);
 	break;
     }
     SliceBoundCB(DATA_transparent);
@@ -6443,7 +6444,7 @@ extern "C" void IsoBoundCB(int var){
         EDIT_iso_valmin->disable();
         break;
       default:
-        ASSERT(FFALSE);
+        assert(FFALSE);
         break;
     }
     glui_iso_valmin=iso_valmin;
@@ -6471,7 +6472,7 @@ extern "C" void IsoBoundCB(int var){
         EDIT_iso_valmax->disable();
         break;
       default:
-        ASSERT(FFALSE);
+        assert(FFALSE);
         break;
     }
     glui_iso_valmax = iso_valmax;
@@ -6487,7 +6488,7 @@ extern "C" void IsoBoundCB(int var){
     glutPostRedisplay();
     break;
   default:
-    ASSERT(FFALSE);
+    assert(FFALSE);
     break;
   }
 }
@@ -6729,7 +6730,7 @@ void PartBoundCB(int var){
     }
     break;
   default:
-    ASSERT(FFALSE);
+    assert(FFALSE);
     break;
   }
 }
@@ -7168,7 +7169,7 @@ extern "C" void SliceBoundCB(int var){
     SliceBoundsCPP_CB(BOUND_UPDATE_COLORS);
     break;
   default:
-    ASSERT(FFALSE);
+    assert(FFALSE);
     break;
   }
 }
@@ -7207,7 +7208,7 @@ extern "C" void ShowGluiBounds(int menu_id){
     FileRolloutCB(COLORING_ROLLOUT);
     break;
   default:
-    ASSERT(FFALSE);
+    assert(FFALSE);
     break;
   }
   glui_bounds->show();
@@ -7254,7 +7255,7 @@ extern "C" void ShowBoundsDialog(int type){
       if(ROLLOUT_iso_settings!=NULL)ROLLOUT_iso_settings->open();
       break;
     default:
-      ASSERT(FFALSE);
+      assert(FFALSE);
       break;
   }
 }

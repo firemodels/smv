@@ -1,4 +1,5 @@
 #include "options.h"
+#include <assert.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -297,7 +298,7 @@ int PtInTriangle(float *xy, float *v0, float *v1, float *v2, float *zval){
 /* ------------------ DecimateTerrain ------------------------ */
 
 void DecimateTerrain(vertdata *verts, int nverts, tridata *triangles, int ntriangles,
-              vertdata **verts_new, int *nverts_new, tridata **triangles_new, int *ntriangles_new, 
+              vertdata **verts_new, int *nverts_new, tridata **triangles_new, int *ntriangles_new,
               float *boxmin, float *boxmax, int nx, int ny){
   int i, j, nvnew, ntrinew;
   int *tri_new;
@@ -432,12 +433,12 @@ void DecimateAllTerrains(void){
     nx = MAX((boxmax[0] - boxmin[0]) / terrain_decimate_delta+1, 2);
     ny = MAX((boxmax[1] - boxmin[1]) / terrain_decimate_delta+1, 2);
     DecimateTerrain(geomlisti->verts, geomlisti->nverts,  geomlisti->triangles,  geomlisti->ntriangles,
-                    &meshi->dec_verts, &meshi->ndec_verts, &meshi->dec_triangles, &meshi->ndec_triangles, 
+                    &meshi->dec_verts, &meshi->ndec_verts, &meshi->dec_triangles, &meshi->ndec_triangles,
                     boxmin, boxmax, nx, ny);
   }
 }
 #endif
-  
+
   /* ------------------ GetTriangleNormal ------------------------ */
 
 void GetTriangleNormal(float *v1, float *v2, float *v3, float *normal, float *area){
@@ -793,7 +794,7 @@ void DrawSelectGeom(void){
     }
   break;
   default:
-  ASSERT(FFALSE);
+  assert(FFALSE);
   break;
   }
 }
@@ -2170,15 +2171,15 @@ void ReadGeomHeader0(geomdata *geomi, int *geom_frame_index, int *ntimes_local){
   // nints
   // if(nints>0) int_1, ..., int_nints
   //*** static verts and triangles (verts and triangles that appear at all time steps)
-  // nverts, ntris  
+  // nverts, ntris
   // vert_1, ..., vert_nverts   (each vert_i is a triple x_i,y_i,z_i of floats)
-  // tri_1a,tri_1b,tri_1c ..., tri_ntrisa,tri_ntrisb,tri_ntrisc 
+  // tri_1a,tri_1b,tri_1c ..., tri_ntrisa,tri_ntrisb,tri_ntrisc
   // surf_1, ..., surf_ntris      (each tri_i is a triple I,J,K triangle int indices )
   //*** for a time step
   // time             (float)
   // nverts, ntris    (int,int)
   // vert_1, ..., vert_nverts   (each vert_i is a triple x_i,y_i,z_i of floats)
-  // tri_1a,tri_1b,tri_1c ..., tri_ntrisa,tri_ntrisb,tri_ntrisc 
+  // tri_1a,tri_1b,tri_1c ..., tri_ntrisa,tri_ntrisb,tri_ntrisc
   // surf_1, ..., surf_ntris      (each tri_i is a triple I,J,K triangle int indices )
 
   stream = fopen(geomi->file,"rb");
@@ -2284,7 +2285,7 @@ void ReadGeomHeader2(geomdata *geomi, int *ntimes_local){
   // time             (float)
   // nverts, ntris, dummy    (int,int,int)
   // vert_1, ..., vert_nverts   (each vert_i is a triple x_i,y_i,z_i of floats)
-  // tri_1a,tri_1b,tri_1c ..., tri_ntrisa,tri_ntrisb,tri_ntrisc 
+  // tri_1a,tri_1b,tri_1c ..., tri_ntrisa,tri_ntrisb,tri_ntrisc
   //*** if cfaces:
   // loc_1, .., loc_ntris
   // surf_1, ..., surf_ntris
@@ -3856,7 +3857,7 @@ FILE_SIZE ReadGeom2(geomdata *geomi, int load_flag, int type){
           triangles[ii].insolid = 0;
           break;
 	    default:
-	      ASSERT(FFALSE);
+	      assert(FFALSE);
 	      break;
         }
         if(geomi->geomtype==GEOM_GEOM)surfi->used_by_geom = 1;
@@ -5814,5 +5815,3 @@ void XYZ2AzElev(float *xyz, float *azimuth, float *elevation){
   }
   *azimuth = RAD2DEG*atan2(xyz[1], xyz[0]);
 }
-
-
