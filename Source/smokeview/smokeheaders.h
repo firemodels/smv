@@ -58,10 +58,10 @@ EXTERNCPP void UpdateShowOnlyTop(void);
 
 EXTERNCPP void UpdateGLuiGridLocation(void);
 #ifdef pp_HIST
-EXTERNCPP void EnableDisablePartPercentileDraw(int flag);
-EXTERNCPP void GeneratePartHistograms(void);
 EXTERNCPP void GeneratePartHistogramsMT(void);
+EXTERNCPP void EnableDisablePartPercentileDraw(int flag);
 #endif
+EXTERNCPP void GeneratePartHistograms(void);
 FILE_SIZE LoadAllMSlicesMT(int last_slice, multislicedata *mslicei, int *fcount);
 
 EXTERNCPP void PrintTime(const char *tag, int line, float *timer, const char *label, int stop_flag);
@@ -122,8 +122,10 @@ EXTERNCPP void UpdateSliceSkip(void);
 
 #ifdef pp_HIST
 EXTERNCPP void MergePartHistograms(void);
-EXTERNCPP void MergePlot3DHistograms(void);
 #endif
+EXTERNCPP void MergePlot3DHistograms(void);
+EXTERNCPP void GetPlot3DHists(plot3ddata *p);
+
 
 EXTERNCPP void UpdateColorbarControls(void);
 EXTERNCPP void UpdateColorbarControls2(void);
@@ -224,10 +226,14 @@ EXTERNCPP void UpdatePartColors(partdata *parti, int flag);
 EXTERNCPP void SliceBoundsSetupNoGraphics(void);
 #ifdef pp_HIST
 EXTERNCPP void DrawHistogram(histogramdata *histogram, float xxmin, float xxmax, float gmin, float gmax, int ndigits);
-EXTERNCPP void GetHistogramValProc(histogramdata*histogram, float cdf, float *val);
-EXTERNCPP void ComputeLoadedSliceHist(char *label);
+#endif
 EXTERNCPP void MergeLoadedSliceHist(char *label, histogramdata **histptr);
 EXTERNCPP void ComputeLoadedPatchHist(char *label, histogramdata **histptr, float *valmin, float *valmax);
+EXTERNCPP void GetHistogramValProc(histogramdata *histogram, float cdf, float *val);
+#ifdef pp_HIST
+EXTERNCPP void ComputeLoadedSliceHist(char *label);
+#else
+EXTERNCPP void ComputeLoadedSliceHist(char *label, float valmin, float valmax);
 #endif
 EXTERNCPP void GetGlobalBoundsMinMax(int type, char *label, float *valmin, float *valmax);
 EXTERNCPP void SliceBoundsCPP_CB(int var);

@@ -2517,6 +2517,9 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
 
   patchi->loaded = 1;
   patchi->display = 1;
+#ifndef pp_HIST
+  patchi->hist_update = 1;
+#endif
 
   if(patchi->finalize==1){
     UpdateBoundaryListIndex(patchfilenum);

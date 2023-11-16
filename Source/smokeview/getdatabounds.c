@@ -70,7 +70,6 @@ int GetGlobalPartBounds(int flag){
 
     parti = partinfo+i;
     if(parti->loaded==1)nloaded_files++;
-
     if(npart5prop>0){
       if(parti->valmin_fds==NULL)NewMemory((void **)&parti->valmin_fds, npart5prop*sizeof(float));
       if(parti->valmax_fds==NULL)NewMemory((void **)&parti->valmax_fds, npart5prop*sizeof(float));
@@ -171,9 +170,7 @@ int GetGlobalPartBounds(int flag){
       boundscppi->set_chopmax = 0;
       boundscppi->chopmin     = valmin;
       boundscppi->chopmax     = valmax;
-#ifdef pp_HIST
-      boundscppi->hist = NULL;
-#endif
+      boundscppi->hist        = NULL;
     }
   }
   FREEMEMORY(partmins);
@@ -368,9 +365,7 @@ void GetGlobalPatchBounds(int flag){
       boundscppi->set_chopmax = boundi->setchopmax;
       boundscppi->chopmin     = boundi->chopmin;
       boundscppi->chopmax     = boundi->chopmax;
-#ifdef pp_HIST
       boundscppi->hist = NULL;
-#endif
     }
   }
 }
@@ -637,9 +632,7 @@ void GetGlobalSliceBounds(int flag){
       boundscppi->set_chopmax = boundi->setchopmax;
       boundscppi->chopmin     = boundi->chopmin;
       boundscppi->chopmax     = boundi->chopmax;
-#ifdef pp_HIST
       boundscppi->hist = NULL;
-#endif
     }
   }
 }

@@ -153,7 +153,9 @@ int Loadsmvall(const char *input_filename) {
   // TODO: move these into the model information namespace
   ParseSmvFilepath(input_filename, fdsprefix, input_filename_ext);
   return_code = Loadsmv(fdsprefix, input_filename_ext);
+#ifdef pp_HIST
   if (return_code == 0 && update_bounds == 1) return_code = Update_Bounds();
+#endif
   if (return_code != 0) return 1;
   // if(convert_ini==1){
   // ReadIni(ini_from);
@@ -317,11 +319,6 @@ int Loadfile(const char *filename) {
     return 1;
   }
 
-  FREEMEMORY(loaded_file);
-  if (filename != NULL && strlen(filename) > 0) {
-    NewMemory((void **)&loaded_file, strlen(filename) + 1);
-    strcpy(loaded_file, filename);
-  }
   for (size_t i = 0; i < nsliceinfo; i++) {
     slicedata *sd;
 
@@ -411,7 +408,6 @@ void Loadinifile(const char *filepath) {
 }
 
 int Loadvfile(const char *filepath) {
-  FREEMEMORY(loaded_file);
   for (size_t i = 0; i < nvsliceinfo; i++) {
     slicedata *val;
     vslicedata *vslicei;
@@ -421,10 +417,6 @@ int Loadvfile(const char *filepath) {
     if (val == NULL) continue;
     if (strcmp(val->reg_file, filepath) == 0) {
       LoadVSliceMenu(i);
-      if (filepath != NULL && strlen(filepath) > 0) {
-        NewMemory((void **)&loaded_file, strlen(filepath) + 1);
-        strcpy(loaded_file, filepath);
-      }
       return 0;
     }
   }
@@ -436,7 +428,6 @@ void Loadboundaryfile(const char *filepath) {
   int errorcode;
   int count = 0;
 
-  FREEMEMORY(loaded_file);
   for (size_t i = 0; i < npatchinfo; i++) {
     patchdata *patchi;
 
@@ -444,11 +435,6 @@ void Loadboundaryfile(const char *filepath) {
     if (strcmp(patchi->label.longlabel, filepath) == 0) {
       LOCK_COMPRESS
       ReadBoundary(i, LOAD, &errorcode);
-      if (filepath != NULL && strlen(filepath) > 0) {
-        FREEMEMORY(loaded_file);
-        NewMemory((void **)&loaded_file, strlen(filepath) + 1);
-        strcpy(loaded_file, filepath);
-      }
       count++;
       UNLOCK_COMPRESS
     }
@@ -744,8 +730,6 @@ int Settime(float timeval) {
         fprintf(stderr, "*** Error: data not available at time requested\n");
         fprintf(stderr, "           time: %f s, min time: %f, max time: %f s\n",
                 timeval, global_times[0], global_times[nglobal_times - 1]);
-        if (loaded_file != NULL)
-          fprintf(stderr, "           loaded file: %s\n", loaded_file);
         if (script_labelstring != NULL)
           fprintf(stderr,
                   "                 "
@@ -1312,8 +1296,6 @@ void Load3dsmoke(const char *smoke_type) {
   int count = 0;
   int lastsmoke;
 
-  FREEMEMORY(loaded_file);
-
   for (size_t i = nsmoke3dinfo - 1; i >= 0; i--) {
     smoke3ddata *smoke3di;
 
@@ -1342,11 +1324,6 @@ void Load3dsmoke(const char *smoke_type) {
       smoke3di->finalize = 0;
       if (lastsmoke == i) smoke3di->finalize = 1;
       ReadSmoke3D(ALL_SMOKE_FRAMES, i, LOAD, FIRST_TIME, &errorcode);
-      if (smoke_type != NULL && strlen(smoke_type) > 0) {
-        FREEMEMORY(loaded_file);
-        NewMemory((void **)&loaded_file, strlen(smoke_type) + 1);
-        strcpy(loaded_file, smoke_type);
-      }
       count++;
     }
   }
@@ -1429,8 +1406,6 @@ void Loadparticles(const char *name) {
   int errorcode;
   int count = 0;
 
-  FREEMEMORY(loaded_file);
-
   npartframes_max = GetMinPartFrames(PARTFILE_LOADALL);
   for (size_t i = 0; i < npartinfo; i++) {
     partdata *parti;
@@ -1444,11 +1419,6 @@ void Loadparticles(const char *name) {
 
     parti = partinfo + i;
     ReadPart(parti->file, i, LOAD, &errorcode);
-    if (name != NULL && strlen(name) > 0) {
-      FREEMEMORY(loaded_file);
-      NewMemory((void **)&loaded_file, strlen(name) + 1);
-      strcpy(loaded_file, name);
-    }
     count++;
   }
   if (count == 0)
@@ -1465,7 +1435,6 @@ void Partclasscolor(const char *color) {
     partpropdata *propi;
 
     propi = part5propinfo + i;
-    if (propi->particle_property == 0) continue;
     if (strcmp(propi->label->longlabel, color) == 0) {
       ParticlePropShowMenu(i);
       count++;
@@ -1490,7 +1459,6 @@ void Partclasstype(const char *part_type) {
 
       if (propi->class_present[j] == 0) continue;
       partclassj = partclassinfo + j;
-      if (partclassj->kind == HUMANS) continue;
       if (strcmp(partclassj->name, part_type) == 0) {
         ParticlePropShowMenu(-10 - j);
         count++;
@@ -1625,8 +1593,6 @@ void Loadplot3d(int meshnumber, float time_local) {
 void Loadiso(const char *type) {
   int count = 0;
 
-  FREEMEMORY(loaded_file);
-
   update_readiso_geom_wrapup = UPDATE_ISO_START_ALL;
   for (size_t i = 0; i < nisoinfo; i++) {
     int errorcode;
@@ -1635,11 +1601,6 @@ void Loadiso(const char *type) {
     isoi = isoinfo + i;
     if (STRCMP(isoi->surface_label.longlabel, type) == 0) {
       ReadIso(isoi->file, i, LOAD, NULL, &errorcode);
-      if (type != NULL && strlen(type) > 0) {
-        FREEMEMORY(loaded_file);
-        NewMemory((void **)&loaded_file, strlen(type) + 1);
-        strcpy(loaded_file, type);
-      }
       count++;
     }
   }
@@ -3881,12 +3842,14 @@ int SetCacheQdata(int setting) {
   return 0;
 } // CACHE_QDATA
 
+#ifdef pp_HIST
 int SetPercentilelevel(float p_level_min, float p_level_max) {
   percentile_level_min = CLAMP(p_level_min, 0.0, 1.0);
   if (p_level_max < 0.0) p_level_max = 1.0 - percentile_level_min;
   percentile_level_max = CLAMP(p_level_max, percentile_level_min + 0.0001, 1.0);
   return 0;
 } // PERCENTILELEVEL
+#endif
 
 int SetTimeoffset(int setting) {
   timeoffset = setting;
@@ -3985,7 +3948,9 @@ int SetV5Particles(int minFlag, float minValue, int maxFlag, float maxValue,
       propi->valmax = maxValue;
       switch (minFlag) {
       case PERCENTILE_MIN:
+#ifdef pp_HIST
         propi->percentile_min = minValue;
+#endif
         break;
       case GLOBAL_MIN:
         propi->dlg_global_valmin = minValue;
@@ -3999,7 +3964,9 @@ int SetV5Particles(int minFlag, float minValue, int maxFlag, float maxValue,
       }
       switch (maxFlag) {
       case PERCENTILE_MAX:
+#ifdef pp_HIST
         propi->percentile_max = maxValue;
+#endif
         break;
       case GLOBAL_MAX:
         propi->dlg_global_valmax = maxValue;

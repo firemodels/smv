@@ -3874,10 +3874,8 @@ void ParticlePropShowMenu(int value){
 
     for(i=0;i<npart5prop;i++){
       propi = part5propinfo + i;
-      if(propi->particle_property==1){
-        if(propi->display==1)unhide=0;
-        propi->display=0;
-      }
+      if(propi->display==1)unhide=0;
+      propi->display=0;
     }
     part5show=0;
     parttype=0;
@@ -3886,14 +3884,6 @@ void ParticlePropShowMenu(int value){
     }
   }
   else if(value==MENU_PROP_HIDEAVATAR){
-    int i;
-
-    for(i=0;i<npart5prop;i++){
-      propi = part5propinfo + i;
-      if(propi->human_property==1){
-        propi->display=0;
-      }
-    }
     part5show=0;
     parttype=0;
   }
@@ -8533,7 +8523,7 @@ static int duplicatevectorslicemenu=0, duplicateslicemenu=0, duplicateboundarysl
 static int unloadmultislicemenu=0, vsliceloadmenu=0, staticslicemenu=0;
 static int particlemenu=0, particlesubmenu=0, showpatchmenu=0, zonemenu=0, isoshowmenu=0, isoshowsubmenu=0, isolevelmenu=0, smoke3dshowmenu=0;
 static int smoke3dshowsinglemenu = 0;
-static int particlepropshowmenu=0,humanpropshowmenu=0;
+static int particlepropshowmenu=0;
 static int *particlepropshowsubmenu=NULL;
 static int particlestreakshowmenu=0;
 static int tourmenu=0,tourcopymenu=0;
@@ -10199,29 +10189,27 @@ updatemenu=0;
               strcpy(menulabel,_("using:"));
             }
             glutAddMenuEntry(menulabel,-10-5*j);
-            if(partclassj->kind!=HUMANS){
-              if(partclassj->vis_type==PART_POINTS){
-                glutAddMenuEntry(_("    *points"),-10-5*j-PART_POINTS);
+            if(partclassj->vis_type==PART_POINTS){
+              glutAddMenuEntry(_("    *points"),-10-5*j-PART_POINTS);
+            }
+            else{
+              glutAddMenuEntry(_("    points"),-10-5*j-PART_POINTS);
+            }
+            if(partclassj->col_diameter>=0||partclassj->device_name!=NULL){
+              if(partclassj->vis_type==PART_SPHERES){
+                glutAddMenuEntry(_("    *spheres"),-10-5*j-PART_SPHERES);
               }
               else{
-                glutAddMenuEntry(_("    points"),-10-5*j-PART_POINTS);
+                glutAddMenuEntry(_("    spheres"),-10-5*j-PART_SPHERES);
               }
-              if(partclassj->col_diameter>=0||partclassj->device_name!=NULL){
-                if(partclassj->vis_type==PART_SPHERES){
-                  glutAddMenuEntry(_("    *spheres"),-10-5*j-PART_SPHERES);
-                }
-                else{
-                  glutAddMenuEntry(_("    spheres"),-10-5*j-PART_SPHERES);
-                }
+            }
+            if(partclassj->col_length>=0||partclassj->device_name!=NULL||
+              (partclassj->col_u_vel>=0&&partclassj->col_v_vel>=0&&partclassj->col_w_vel>=0)){
+              if(partclassj->vis_type==PART_LINES){
+                glutAddMenuEntry(_("    *Lines"),-10-5*j-PART_LINES);
               }
-              if(partclassj->col_length>=0||partclassj->device_name!=NULL||
-                (partclassj->col_u_vel>=0&&partclassj->col_v_vel>=0&&partclassj->col_w_vel>=0)){
-                if(partclassj->vis_type==PART_LINES){
-                  glutAddMenuEntry(_("    *Lines"),-10-5*j-PART_LINES);
-                }
-                else{
-                  glutAddMenuEntry(_("    Lines"),-10-5*j-PART_LINES);
-                }
+              else{
+                glutAddMenuEntry(_("    Lines"),-10-5*j-PART_LINES);
               }
             }
             if(
@@ -10274,7 +10262,6 @@ updatemenu=0;
         char menulabel[1024];
 
         propi = part5propinfo + i;
-        if(propi->particle_property==0)continue;
         if(propi->display==1){
           strcpy(menulabel,"  *");
         }
@@ -10303,7 +10290,6 @@ updatemenu=0;
 
           if(propi->class_present[j]==0)continue;
           partclassj = partclassinfo + j;
-          if(partclassj->kind==HUMANS)continue;
           ntypes++;
           if(propi->class_vis[j]==1){
             strcpy(menulabel,"  *");
@@ -10330,68 +10316,6 @@ updatemenu=0;
       glutAddMenuEntry("-",MENU_PROP_DUMMY);
       if(show_tracers_always==0)glutAddMenuEntry(_("Show tracers always"),MENU_PROP_TRACERS);
       if(show_tracers_always==1)glutAddMenuEntry(_("*Show tracers always"), MENU_PROP_TRACERS);
-    }
-
-    CREATEMENU(humanpropshowmenu,ParticlePropShowMenu);
-    if(npart5prop>=0){
-      glutAddMenuEntry(_("Color with:"),MENU_PROP_DUMMY);
-      for(i=0;i<npart5prop;i++){
-        partpropdata *propi;
-        char menulabel[1024];
-
-        propi = part5propinfo + i;
-        if(propi->human_property==0)continue;
-        if(propi->display==1){
-          strcpy(menulabel,"  *");
-        }
-        else{
-          strcpy(menulabel,"  ");
-        }
-        strcat(menulabel,propi->label->longlabel);
-        glutAddMenuEntry(menulabel,i);
-      }
-
-      if(part5show==0)glutAddMenuEntry(_("  *Hide"),MENU_PROP_HIDEAVATAR);
-      if(part5show==1)glutAddMenuEntry(_("  Hide"), MENU_PROP_HIDEAVATAR);
-      glutAddMenuEntry("-",MENU_PROP_DUMMY);
-      glutAddMenuEntry(_("Draw"),MENU_PROP_DUMMY);
-      ntypes=0;
-      for(i=0;i<npart5prop;i++){
-        partpropdata *propi;
-        int j;
-
-        propi = part5propinfo + i;
-        if(propi->display==0)continue;
-        for(j=0;j<npartclassinfo;j++){
-          partclassdata *partclassj;
-          char menulabel[1024];
-
-          if(propi->class_present[j]==0)continue;
-          partclassj = partclassinfo + j;
-          if(partclassj->kind!=HUMANS)continue;
-          ntypes++;
-          if(propi->class_vis[j]==1){
-            strcpy(menulabel,"  *");
-          }
-          else{
-            strcpy(menulabel,"  ");
-          }
-          strcat(menulabel,partclassj->name);
-          GLUTADDSUBMENU(menulabel,particlepropshowsubmenu[ntypes-1]);
-        }
-        //break;
-      }
-      if(ntypes>1){
-        glutAddMenuEntry(_("  Show all"),MENU_PROP_SHOWALL);
-        glutAddMenuEntry(_("  Hide all"),MENU_PROP_HIDEALL);
-      }
-      glutAddMenuEntry("-",MENU_PROP_DUMMY);
-      if(streak5show==1){
-        GLUTADDSUBMENU(_("  *Streaks"),particlestreakshowmenu);
-      }
-      else{
-        GLUTADDSUBMENU(_("  Streaks"),particlestreakshowmenu);
-      }
     }
   }
 
@@ -11039,30 +10963,10 @@ updatemenu=0;
     showhide_data = 1;
     GLUTADDSUBMENU(_("Boundary"), showpatchmenu);
   }
-  {
-    int human_present=0;
-    int particle_present=0;
-
-    if(npart5loaded>0){
-      int ii;
-
-      showhide_data = 1;
-      for(ii = 0; ii<npartinfo; ii++){
-        partdata *parti;
-
-        parti = partinfo + ii;
-        if(parti->loaded==0)continue;
-        particle_present = 1;
-      }
-      if(particle_present==1){
-        GLUTADDSUBMENU(_("Particles"),particlepropshowmenu);
-      }
-      if(human_present==1){
-        GLUTADDSUBMENU(_("Humans"),humanpropshowmenu);
-      }
-    }
+  if(npart5loaded>0){
+    showhide_data = 1;
+    GLUTADDSUBMENU(_("Particles"), particlepropshowmenu);
   }
-
   if(ReadIsoFile==1){
     int niso_loaded=0;
 

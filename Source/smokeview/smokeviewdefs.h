@@ -555,9 +555,6 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 
 #define PROJECTION 24
 
-#define PARTICLES 0
-#define HUMANS    1
-
 #define GLOBAL_INI 0
 #define STDOUT_INI 1
 #define LOCAL_INI  2
