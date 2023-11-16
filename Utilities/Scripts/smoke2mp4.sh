@@ -222,12 +222,35 @@ fi
 }
 
 #---------------------------------------------
+#                  set_smoke
+#---------------------------------------------
+
+setsmoke ()
+{
+  if [ "$SHOW_SOOT" == "" ]; then
+    if [ "$SHOW_HRRPUV" == "" ]; then
+      SMOKE_TYPE=soot
+    else
+      SMOKE_TYPE=hrrpuv
+    fi
+  else
+    if [ "$SHOW_HRRPUV" == "" ]; then
+      SMOKE_TYPE=soot
+    else
+      SMOKE_TYPE="soot ; hrrpuv"
+    fi
+  fi
+}
+
+#---------------------------------------------
 #                  generate_images
 #---------------------------------------------
 
 select_options ()
 {
 while true; do
+echo ""
+echo "     smoke type: $SMOKE_TYPE"
 echo ""
 if [ "$COLORBAR" == "1" ]; then
   echo "      color bar: show"
@@ -267,6 +290,9 @@ echo "      processes: $NPROCS"
 echo "          queue: $QUEUE"
 echo "          email: $EMAIL"
 echo ""
+echo "H - show/hide hrrpuv"
+echo "S - show/hide soot"
+echo ""
 echo "b - set bounds"
 if [ "$COLORBAR" == "0" ]; then
   echo "C - show color bar"
@@ -300,6 +326,24 @@ fi
   echo "2 - create MP4 animation then exit"
   echo "x - exit"
   read -p "option: " ans
+  if [ "$ans" == "S" ]; then
+    read -p "   s (show), h (hide):" SHOW_SOOT
+    if [ "$SHOW_SOOT" == "s" ]; then
+      SHOW_SOOT=soot
+    else
+      SHOW_SOOT=
+    fi
+    setsmoke
+  fi
+  if [ "$ans" == "H" ]; then
+    read -p "   s (show), h (hide):" SHOW_HRRPUV
+    if [ "$SHOW_HRRPUV" == "s" ]; then
+      SHOW_HRRPUV=hrrpuv
+    else
+      SHOW_HRRPUV=
+    fi
+    setsmoke
+  fi
   if [ "$ans" == "a" ]; then
     read -p "   enter animation directory: " MOVIEDIR
     CHECK_WRITE $MOVIEDIR
@@ -577,7 +621,7 @@ EOF
 fi
   cat << EOF >> ${smv_scriptname}
 LOADSMOKERENDER
-  soot
+  $SMOKE_TYPE
   $img_basename 
   0 1
 EOF
@@ -623,6 +667,9 @@ MAKE_MOVIE=
 COLORBAR="0"
 TIMEBAR="0"
 FONTSIZE="1"
+SMOKE_TYPE=soot
+SHOW_SOOT=soot
+SHOW_HRRPUV=
 
 CONFIGDIR=$HOME/.smokeview
 if [ ! -e $CONFIGDIR ]; then
