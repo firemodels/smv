@@ -178,7 +178,7 @@ jobs:
         shell: bash
         run: |
           . /etc/profile.d/modules.sh
-          module use /opt/intel/oneapi/modulefiles
+          module use ~/modulefiles
           module load compiler
           CC=icx CXX=icx cmake3 -B ${{github.workspace}}/cbuild -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DLUA=${{ matrix.lua }}
           cmake3 --build ${{github.workspace}}/cbuild -j4
