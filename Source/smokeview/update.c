@@ -166,11 +166,6 @@ void UpdateFrameNumber(int changetime){
     }
     if(show3dsmoke==1){
       if(nsmoke3dinfo > 0){
-#ifdef pp_SMOKE3DSTREAM
-        int display_smoke_frame;
-
-        display_smoke_frame = 0;
-#endif
         for(i = 0;i < nsmoke3dinfo;i++){
           smoke3ddata *smoke3di;
 
@@ -178,21 +173,13 @@ void UpdateFrameNumber(int changetime){
           if(smoke3di->loaded == 0 || smoke3di->display == 0)continue;
           smoke3di->ismoke3d_time = smoke3di->timeslist[itimes];
           if(IsSmokeComponentPresent(smoke3di) == 0)continue;
-#ifdef pp_SMOKE3DSTREAM
-          smoke3di->lastiframe = smoke3di->ismoke3d_time;
-          if(UpdateSmoke3D(smoke3di)==1)display_smoke_frame=1;
-#else
           if(smoke3di->ismoke3d_time != smoke3di->lastiframe){
             smoke3di->lastiframe = smoke3di->ismoke3d_time;
             UpdateSmoke3D(smoke3di);
           }
-#endif
         }
         MergeSmoke3D(NULL);
         PrintMemoryInfo;
-#ifdef pp_SMOKE3DSTREAM
-        if(display_smoke_frame==0)Keyboard('0', FROM_SMOKEVIEW);
-#endif
       }
     }
     if(showpatch==1){
