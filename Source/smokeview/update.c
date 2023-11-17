@@ -2524,6 +2524,14 @@ void UpdateDisplay(void){
     if(cb != NULL){
       colorbartype = cb - colorbarinfo;
       colorbartype_default = colorbartype;
+      if(cb->can_adjust == 1){
+        cb->interp = INTERP_LAB;
+      }
+      else{
+        cb->interp = INTERP_RGB;
+      }
+      RemapColorbar(cb);
+      memcpy(cb->node_rgb_orig, cb->node_rgb, 3*cb->nnodes*sizeof(unsigned char));
       UpdateCurrentColorbar(cb);
       if(colorbartype != colorbartype_default){
         colorbartype_ini = colorbartype;
