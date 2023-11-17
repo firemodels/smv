@@ -38,14 +38,10 @@
 
 // streaming directives
 
-//#define pp_SMOKE3DSTREAM      // stream smoke3d data
 //#define pp_PARTSTREAM         // stream particle data
 
 // turn on pp_STREAM if streaming is on for any file type
 
-#ifdef pp_SMOKE3DSTREAM
-#define pp_STREAM
-#endif
 #ifdef pp_PARTSTREAM
 #undef pp_STREAM
 #define pp_STREAM
