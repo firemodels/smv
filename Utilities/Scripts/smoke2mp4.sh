@@ -117,7 +117,6 @@ restore_user_state()
       SHARE=$USER_SHARE
     fi
   fi
-  setsmoke
 }
 #---------------------------------------------
 #                   restore_state
@@ -165,6 +164,7 @@ restore_state()
     fi
     SHOW_SOOT=$SMOKE2MP4_SHOW_SOOT
     SHOW_HRRPUV=$SMOKE2MP4_SHOW_HRRPUV
+    setsmoke
   fi
 }
 
@@ -582,10 +582,10 @@ make_movie() {
       if [ -e $animation_file ]; then
         if [[ "$SMV_WEBHOST" != "" ]] && [[ "$SMV_WEBHOST" != "none" ]]; then
           echo "URL: $SMV_WEBHOST/${img_basename}.mp4 sent to $EMAIL"
-          echo "$SMV_WEBHOST/${img_basename}.mp4" | mail -s "$slice_quantity slice generated" $EMAIL
+          echo "$SMV_WEBHOST/${img_basename}.mp4" | mail -s "smoke animation generated" $EMAIL
         else
-          echo "$animation_file slice generated"
-          echo "" | mail -s "$slice_quantity slice generated" $EMAIL
+          echo "$animation_file animation generated"
+          echo "" | mail -s "animtation file generated" $EMAIL
         fi
       fi
     fi
@@ -679,7 +679,7 @@ CONFIGDIR=$HOME/.smokeview
 if [ ! -e $CONFIGDIR ]; then
   mkdir $CONFIGDIR
 fi
-GLOBALCONFIG=$CONFIGDIR/slice2mp4_global
+GLOBALCONFIG=$CONFIGDIR/smoke2mp4_global
 
 SMVSCRIPTDIR=
 touch test.$$ >& /dev/null
