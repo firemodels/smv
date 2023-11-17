@@ -258,7 +258,6 @@ SVEXTERN int SVDECL(refresh_glui_dialogs, 0);
 SVEXTERN float SVDECL(colorbar_shift, 1.0);
 
 SVEXTERN int SVDECL(compute_slice_file_sizes, 0);
-SVEXTERN int SVDECL(compute_smoke3d_file_sizes, 0);
 
 SVEXTERN int SVDECL(update_colorbar_digits, 0);
 
@@ -303,10 +302,6 @@ SVEXTERN FILE_SIZE  SVDECL(global_part_boundsize, 0);
 SVEXTERN int SVDECL(npartthread_ids, 2);
 #ifdef pp_SLICE_MULTI
 SVEXTERN int SVDECL(nslicethread_ids, 4);
-#endif
-#ifdef pp_STREAM
-SVEXTERN int SVDECL(stream_multithread, 1);
-SVEXTERN streamlistargdata SVDECL(*streamlistarg, NULL);
 #endif
 SVEXTERN int SVDECL(nreadallgeomthread_ids, 4);
 SVEXTERN int SVDECL(partfast, 1);

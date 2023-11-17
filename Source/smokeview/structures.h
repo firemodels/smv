@@ -1230,6 +1230,7 @@ typedef struct _partdata {
   int blocknumber;
   int *timeslist, ntimes, itime;
   FILE_SIZE bound_file_size;
+  int npoints;
 
   float zoffset, *times;
   FILE_SIZE reg_file_size, file_size;
@@ -1254,9 +1255,6 @@ typedef struct _partdata {
   int *sort_tags;
   short *sx, *sy, *sz;
   unsigned char *irvals;
-#ifdef pp_SMOKE3DSTREAM
-  streamdata *part_stream;
-#endif
 } partdata;
 
 /* --------------------------  compdata ------------------------------------ */
@@ -1574,9 +1572,6 @@ typedef struct {
 typedef struct _smoke3ddata {
   int seq_id,autoload;
   char *file;
-#ifdef pp_SMOKE3DSTREAM
-  char *size_file;
-#endif
   char *comp_file, *reg_file;
 #ifdef pp_SMOKE16
   char *s16_file;
@@ -1628,9 +1623,6 @@ typedef struct _smoke3ddata {
   FILE_SIZE file_size;
   float *smoke_boxmin, *smoke_boxmax;
   smokedata smoke;
-#ifdef pp_SMOKE3DSTREAM
-  streamdata *smoke_stream;
-#endif
   int dir;
 } smoke3ddata;
 
