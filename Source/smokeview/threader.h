@@ -19,14 +19,6 @@
 #ifdef pp_THREAD
   MMEXTERN pthread_mutex_t mutexSLICE_BOUND, mutexPATCH_BOUND, mutexPART2ISO, mutexPRINT, mutexMEM;
 
-#ifdef pp_STREAM
-  #define LOCK_STREAM     pthread_mutex_lock(&mutexSTREAM);
-  #define UNLOCK_STREAM   pthread_mutex_unlock(&mutexSTREAM);
-#else
-  #define LOCK_STREAM
-  #define UNLOCK_STREAM
-#endif
-
   #define LOCK_READALLGEOM     if(readallgeom_multithread==1)pthread_mutex_lock(&mutexREADALLGEOM);
   #define UNLOCK_READALLGEOM   if(readallgeom_multithread==1)pthread_mutex_unlock(&mutexREADALLGEOM);
 
@@ -92,10 +84,6 @@
 
 // blank out all preprocessing symbols if we arn't using threading
 #ifndef pp_THREAD
-
-  #define LOCK_STREAM
-  #define UNLOCK_STREAM
-
   #define LOCK_READALLGEOM
   #define UNLOCK_READALLGEOM
 
@@ -167,16 +155,10 @@ MT_EXTERN pthread_mutex_t mutexSETUP_FFMPEG;
 MT_EXTERN pthread_mutex_t mutexCHECKFILES;
 MT_EXTERN pthread_mutex_t mutexSLICEBOUNDS;
 MT_EXTERN pthread_mutex_t mutexPATCHBOUNDS;
-#ifdef pp_STREAM
-MT_EXTERN pthread_mutex_t mutexSTREAM;
-#endif
 #ifdef pp_SAMPLE
 MT_EXTERN pthread_mutex_t mutexSAMPLE;
 #endif
 
-#ifdef pp_STREAM
-MT_EXTERN pthread_t stream_thread_id;
-#endif
 MT_EXTERN pthread_t makeiblank_thread_id;
 MT_EXTERN pthread_t setupff_thread_id;
 MT_EXTERN pthread_t PATCHBOUNDS_thread_id;

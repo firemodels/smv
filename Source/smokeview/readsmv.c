@@ -4974,9 +4974,6 @@ int ParsePRT5Process(bufferstreamdata *stream, char *buffer, int *nn_part_in, in
   parti->valmin_smv = NULL;
   parti->valmax_smv = NULL;
   parti->stream     = NULL;
-#ifdef pp_PARTSTREAM
-  parti->part_stream = NULL;
-#endif
 #ifndef pp_HIST
   parti->hist_update = 0;
 #endif
