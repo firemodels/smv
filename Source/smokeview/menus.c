@@ -4636,7 +4636,6 @@ int IsSmokeType(smoke3ddata *smoke3di, int type){
 FILE_SIZE LoadSmoke3D(int type, int frame, int *count, float *time_value){
   int last_smoke = 0, i, file_count=0,errorcode;
   FILE_SIZE load_size=0;
-  FILE_SIZE total_size;
 
   for(i = nsmoke3dinfo-1; i>=0; i--){
     smoke3ddata *smoke3di;
@@ -4647,7 +4646,6 @@ FILE_SIZE LoadSmoke3D(int type, int frame, int *count, float *time_value){
     break;
     }
   }
-  total_size = 0;
   for(i=0;i<nsmoke3dinfo;i++){
     smoke3ddata *smoke3di;
 
