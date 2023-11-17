@@ -155,7 +155,7 @@ float     part_load_time;
 #define MENU_VOLSMOKE_SETTINGS    -4
 #define MENU_SLICE_SETTINGS       -6
 #define MENU_PART_PARTFAST        -7
-#define MENU_PART_SHOW_NUMBER     -8
+#define MENU_PART_NUM_FILE_SIZE   -8
 
 #define MENU_PARTICLE_UNLOAD_ALL -1
 #define MENU_PARTICLE_DUMMY -2
@@ -4067,7 +4067,7 @@ void LoadParticleMenu(int value){
       if(partfast==1)printf("fast loading: on\n");
       UpdateGluiPartFast();
     }
-    else if(value == MENU_PART_SHOW_NUMBER){
+    else if(value == MENU_PART_NUM_FILE_SIZE){
       int total = 0;
       for(i = 0;i < npartinfo;i++){
         partdata *parti;
@@ -4075,7 +4075,25 @@ void LoadParticleMenu(int value){
         parti = partinfo + i;
         total += parti->npoints;
       }
-      printf("particle number: %i\n", total);
+      printf("Particle number/file size: %i/", total);
+      FILE_SIZE total_size;
+
+      total_size=0;
+      for(i = 0; i < npartinfo; i++){
+        partdata *parti;
+
+        parti = partinfo + i;
+        total_size += GetFileSizeSMV(parti->reg_file);
+      }
+      if(total_size > 1000000000){
+        PRINTF("%.1f GB\n", (float)total_size / 1000000000.);
+      }
+      else if(total_size > 1000000){
+        PRINTF("%.1f MB\n", (float)total_size / 1000000.);
+      }
+      else{
+        PRINTF("%.0f kB\n", (float)total_size / 1000.);
+      }
     }
     else{
       if(scriptoutstream!=NULL){
@@ -4637,7 +4655,6 @@ FILE_SIZE LoadSmoke3D(int type, int frame, int *count, float *time_value){
     smoke3ddata *smoke3di;
 
     smoke3di = smoke3dinfo+i;
-    if(IsSmokeType(smoke3di,type)==1&&compute_smoke3d_file_sizes!=1)nstreams++;
   }
   if(nstreams>0)NewMemory((void **)&streams, nstreams*sizeof(streamdata *));
   nstreams = 0;
@@ -4651,16 +4668,10 @@ FILE_SIZE LoadSmoke3D(int type, int frame, int *count, float *time_value){
       file_count++;
       smoke3di->finalize = 0;
       if(i == last_smoke)smoke3di->finalize = 1;
-      if(compute_smoke3d_file_sizes==1){
-        smoke3di->file_size = GetFileSizeSMV(smoke3di->reg_file);
-        total_size += smoke3di->file_size;
-      }
-      else{
-        load_size += ReadSmoke3D(frame, i, LOAD, FIRST_TIME, time_value, &errorcode);
+      load_size += ReadSmoke3D(frame, i, LOAD, FIRST_TIME, time_value, &errorcode);
 #ifdef pp_SMOKE3DSTREAM
         if(smoke3di->smoke_stream!=NULL)streams[nstreams++] = smoke3di->smoke_stream;
 #endif
-      }
     }
   }
 #ifdef pp_SMOKE3DSTREAM
@@ -4674,20 +4685,6 @@ FILE_SIZE LoadSmoke3D(int type, int frame, int *count, float *time_value){
     //StreamReadList(streams, nstreams);
   }
 #endif
-  if(compute_smoke3d_file_sizes==1){
-    PRINTF(" file size: ");
-    if(total_size>1000000000){
-      PRINTF("%.1f GB\n", (float)total_size/1000000000.);
-    }
-    else if(total_size>1000000){
-      PRINTF("%.1f MB\n", (float)total_size/1000000.);
-    }
-    else{
-      PRINTF("%.0f kB\n", (float)total_size/1000.);
-    }
-    PRINTF(" load time: %f s\n",(float)total_size*8.0/1000000000.0);
-    PRINTF("   (assuming a gigabit network connection)\n");
-  }
   *count = file_count;
   return load_size;
 }
@@ -4755,8 +4752,39 @@ void LoadSmoke3DMenu(int value){
     ShowBoundsDialog(DLG_3DSMOKE);
   }
   else if(value ==MENU_SMOKE_FILE_SIZES){
-    compute_smoke3d_file_sizes = 1-compute_smoke3d_file_sizes;
-    updatemenu = 1;
+    if(nsmoke3dtypes>0){
+      int ii;
+
+      PRINTF("3D smoke file sizes:\n");
+      for(ii = 0; ii<nsmoke3dtypes; ii++){
+        FILE_SIZE total_size;
+        char *smoke_type;
+
+        total_size=0;
+        smoke_type = NULL;
+        for(i = 0; i < nsmoke3dinfo; i++){
+          smoke3ddata *smoke3di;
+
+          smoke3di = smoke3dinfo + i;
+          if(smoke3di->type == ii){
+            total_size += GetFileSizeSMV(smoke3di->reg_file);
+            smoke_type = smoke3di->label.longlabel;
+          }
+        }
+        if(smoke_type != NULL){
+          printf("  %s: ", smoke_type);
+          if(total_size > 1000000000){
+            PRINTF("%.1f GB\n", (float)total_size / 1000000000.);
+          }
+          else if(total_size > 1000000){
+            PRINTF("%.1f MB\n", (float)total_size / 1000000.);
+          }
+          else{
+            PRINTF("%.0f kB\n", (float)total_size / 1000.);
+          }
+        }
+      }
+    }
   }
 #ifdef pp_SMOKE16
   else if(value ==MENU_SMOKE_16){
@@ -4803,9 +4831,7 @@ void LoadSmoke3DMenu(int value){
   }
 #ifndef pp_SMOKE3DSTREAM
   STOP_TIMER(load_time);
-  if(compute_smoke3d_file_sizes==0){
-    PRINT_LOADTIMES(file_count, load_size, load_time);
-  }
+  PRINT_LOADTIMES(file_count, load_size, load_time);
 #endif
   updatemenu=1;
   GLUTPOSTREDISPLAY;
@@ -11858,8 +11884,9 @@ updatemenu=0;
         GLUTADDSUBMENU(menulabel, particlesubmenu);
       }
     }
-    glutAddMenuEntry("Particle number", MENU_PART_SHOW_NUMBER);
-    glutAddMenuEntry(_("Settings..."), MENU_PART_SETTINGS);
+    glutAddMenuEntry("-",MENU_DUMMY);
+    glutAddMenuEntry("Particle number/file size", MENU_PART_NUM_FILE_SIZE);
+    glutAddMenuEntry(_("Settings..."),     MENU_PART_SETTINGS);
     if(npartloaded>1){
       GLUTADDSUBMENU(_("Unload"),unloadpartmenu);
     }
@@ -12106,12 +12133,7 @@ updatemenu=0;
           }
         }
 #endif
-        if(compute_smoke3d_file_sizes==1){
-          glutAddMenuEntry(_("*Show 3D smoke file size"), MENU_SMOKE_FILE_SIZES);
-        }
-        else{
-          glutAddMenuEntry(_("Show 3D smoke file size"), MENU_SMOKE_FILE_SIZES);
-        }
+        glutAddMenuEntry(_("3D smoke file sizes"), MENU_SMOKE_FILE_SIZES);
         if(nmeshes>1){
           GLUTADDSUBMENU(_("Mesh"), loadsmoke3dsinglemenu);
         }
