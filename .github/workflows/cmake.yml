@@ -58,6 +58,7 @@ jobs:
         run: |
           echo "CC=gcc-11" >> $GITHUB_ENV
           echo "CXX=g++-11" >> $GITHUB_ENV
+          brew install glew lua gd zlib
       # If we are building on linux configure the environment to use gcc as the
       # compiler
       - name: set linux gcc
@@ -66,6 +67,14 @@ jobs:
         run: |
           echo "CC=gcc" >> $GITHUB_ENV
           echo "CXX=g++" >> $GITHUB_ENV
+      # Download a snaphot of the fig repo and use that as test data.
+      - name: Download test data
+        working-directory: ${{github.workspace}}/Tests
+        run: ./get_test_data.sh
+      # Remove Visualization data on macos as we can't render currently.
+      - name: Download test data
+        if: runner.os == 'macOS'
+        run: rm -rf Verification/Visualization/*.smv
       # Run cmake to build smokeview
       - name: Build
         shell: bash
@@ -73,16 +82,18 @@ jobs:
           cmake -B ${{github.workspace}}/cbuild -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DLUA=${{ matrix.lua }}
           cmake --build ${{github.workspace}}/cbuild -j4
           cp ${{github.workspace}}/cbuild/smokeview smokeview
-      # Download a snaphot of the fig repo and use that as test data.
-      - name: Download test data
-        working-directory: ${{github.workspace}}/Tests
-        run: ./get_test_data.sh
-      # Run the CMake-based tests
+      # Run the CMake-based tests on MacOS
       - name: Test
+        if: runner.os == 'macOS'
         shell: bash
-        working-directory: ${{github.workspace}}/cbuild
         run: |
-          ctest -j10 --output-on-failure -V
+          ctest --test-dir cbuild -j10 --output-on-failure -V
+      # Run the CMake-based tests on Linux
+      - name: Test
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          xvfb-run ctest --test-dir cbuild -j10 --output-on-failure -V
       # Set a suffix based on whether lua is included
       - name: Set exec suffix
         if: ${{ matrix.lua }}
