@@ -1,18 +1,113 @@
 #ifndef OPTIONS_H_DEFINED
 #define OPTIONS_H_DEFINED
 
+
 #include "options_common.h"
 
-//*** uncomment the following two lines to force all versions to be beta
-//#undef pp_BETA
-//#define pp_BETA
-
-//*** define smokediff title
+//*** define smokeview title
 
 #ifdef pp_BETA
-  #define PROGVERSION "Test"
-#else
-  #define PROGVERSION "1.0.11"
+#define pp_DEBUG_SUBMENU       // debug output and testing for building menus
 #endif
+
+//*** parallel file loading
+#define pp_SLICE_MULTI    // load slice files in parallel
+#define pp_PART_MULTI     // load particle files in parallel
+#define pp_CSV_MULTI      // read in csv files in parallel
+
+#define pp_PATCH_HIST     // simplify boundary file histogram computation
+//#define pp_HIST           // compute histograms
+
+#define pp_SMOKE_SKIP     // add option to skip smoke frames
+//#define pp_SMOKE16      // load 16 bit smoke files
+//#define pp_VOLSMOKE     // add option to compress volume rendered data
+//#define pp_GAMMA        // show gamma correction checkbox
+#define pp_BLACKBODY      // use blackbody theory for generating fire colors
+// pp_BLACKBODY_OUT       // output generated blackbody color data
+//#define pp_BOUND_HIST_ON // turn on boundary file histograms
+//#define pp_DECIMATE     // decimate terrain geometry
+
+#define pp_FAST           // set fast startup by default
+#define pp_FED_COMPRESS   // skip fed slices when co, o2 or co2 slices are compressed (for now)
+
+#define pp_COLOR_PLOT     /  add checkbox for showing CIELab colorbar delta distance plot
+
+//#define pp_BNDF         // merge geometry and structured boundary files in load menus
+
+//#define pp_DPRINT       // turn on debug print (file, line number)
+
+// streaming directives
+
+//#define pp_SMOKE3DSTREAM      // stream smoke3d data
+//#define pp_PARTSTREAM         // stream particle data
+
+// turn on pp_STREAM if streaming is on for any file type
+
+#ifdef pp_SMOKE3DSTREAM
+#define pp_STREAM
+#endif
+#ifdef pp_PARTSTREAM
+#undef pp_STREAM
+#define pp_STREAM
+#endif
+
+#define pp_READBUFFER_THREAD // use pthreads in ReadBuffer routine (don't use pthreads when used in smokezip and smokediff)
+//#define pp_CRASH_TEST       // test detection of division by zero or use of undefined pointer
+#define pp_GPU                // support the GPU
+// #define pp_THREAD             // turn on multi-threading
+//#define pp_LOAD_NEWDATA     // add button for loading new data
+
+#ifdef pp_GPU
+#define pp_GPUTHROTTLE  // pp_GPU directive must also be set
+#endif
+
+//*** options: windows
+
+#ifdef WIN32
+#define pp_memstatus
+#define pp_COMPRESS         // support for smokezip
+#define pp_DIALOG_SHORTCUTS // dialog shortcuts
+#ifdef pp_GPU
+#define pp_WINGPU           // only draw 3d slices with the GPU on windows
+#endif
+#endif
+
+
+//*** options: Linux
+
+#ifdef pp_LINUX
+#define pp_REFRESH          // refresh glui dialogs when they change size
+#define pp_DIALOG_SHORTCUTS // dialog shortcuts
+#endif
+
+//*** options: Mac
+
+#ifdef pp_OSX
+#ifndef pp_NOQUARTZ     // if used, passed in from the command line so we don'thave to change source
+#define pp_QUARTZ       // use Quartz
+#endif
+#endif
+
+#ifdef pp_QUARTZ
+#define pp_CLOSEOFF     // turn off and disable close buttons in dialog box
+#endif
+
+#undef pp_OSX_HIGHRES
+#ifdef pp_OSX
+#ifndef pp_QUARTZ
+#define pp_REFRESH      // refresh glui dialogs when they change size
+#ifndef pp_OSX_LOWRES
+#define pp_OSX_HIGHRES
+#endif
+#endif
+#endif
+
+//*** options: for debugging
+
+#ifdef _DEBUG
+#define pp_MOVIE_BATCH_DEBUG // allow movei batch dialogs to be defined for testing
+#define pp_SNIFF_ERROR
+#endif
+#define pp_RENDER360_DEBUG
 
 #endif

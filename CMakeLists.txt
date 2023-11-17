@@ -291,7 +291,7 @@ if (SMOKEVIEW_OBJECT_DEFS_PATH)
 endif()
 
 if (LUA)
-    add_definitions(-Dpp_LUA)
+    target_compile_definitions(smokeview PRIVATE pp_LUA)
     find_package(Lua)
     if (LUA_FOUND)
         target_link_libraries(smokeview PRIVATE ${LUA_LIBRARIES})
@@ -711,4 +711,165 @@ file(DOWNLOAD "https://raw.githubusercontent.com/firemodels/bot/a0a9d710f7a55b4e
 list(GET smokeview_ini_status 0 smokeview_ini_status_code)
 if (smokeview_ini_status_code)
     message(FATAL_ERROR "Could not download smokeview.ini ${smokeview_ini_status_code}")
+endif()
+
+# parse_smv_benchmark
+add_executable(parse_smv_benchmark Tests/parse_smv_benchmark.c
+    Source/shared/getdata.c
+    Source/shared/dmalloc.c
+    Source/smokeview/menus.c
+    Source/smokeview/IOscript.c
+    Source/smokeview/IOshooter.c
+    Source/shared/csphere.c
+    Source/smokeview/colortimebar.c
+    Source/smokeview/camera.c
+    Source/smokeview/IOgeometry.c
+    Source/smokeview/IOwui.c
+    Source/smokeview/IOobjects.c
+    Source/smokeview/IOtour.c
+    Source/smokeview/getdatacolors.c
+    Source/smokeview/smokeview.c
+    Source/smokeview/output.c
+    Source/smokeview/renderimage.c
+    Source/smokeview/renderhtml.c
+    Source/shared/isobox.c
+    Source/smokeview/getdatabounds.c
+    Source/smokeview/readsmv.c
+    Source/smokeview/scontour2d.c
+    Source/shared/dmalloc.c
+    Source/shared/compress.c
+    Source/smokeview/IOvolsmoke.c
+    Source/smokeview/IOsmoke.c
+    Source/smokeview/IOplot3d.c
+    Source/smokeview/IOplot2d.c
+    Source/smokeview/IOslice.c
+    Source/smokeview/IOhvac.c
+    Source/smokeview/IOboundary.c
+    Source/smokeview/IOpart.c
+    Source/smokeview/IOzone.c
+    Source/smokeview/IOiso.c
+    Source/smokeview/callbacks.c
+    Source/smokeview/drawGeometry.c
+    Source/smokeview/skybox.c
+    Source/shared/file_util.c
+    Source/shared/string_util.c
+    Source/smokeview/startup.c
+    Source/smokeview/shaders.c
+    Source/smokeview/unit.c
+    Source/smokeview/threader.c
+    Source/shared/histogram.c
+    Source/shared/translate.c
+    Source/smokeview/update.c
+    Source/smokeview/viewports.c
+    Source/smokeview/smv_geometry.c
+    Source/smokeview/showscene.c
+    Source/smokeview/infoheader.c
+    Source/shared/md5.c
+    Source/shared/sha1.c
+    Source/shared/sha256.c
+    Source/shared/stdio_m.c
+    Source/shared/stdio_buffer.c
+    Source/shared/getdata.c
+    Source/shared/color2rgb.c
+    Source/smokeview/colortable.c
+    Source/smokeview/command_args.c
+
+    Source/smokeview/glui_smoke.cpp
+    Source/smokeview/glui_clip.cpp
+    Source/smokeview/glui_stereo.cpp
+    Source/smokeview/glui_geometry.cpp
+    Source/smokeview/glui_motion.cpp
+    Source/smokeview/glui_bounds.cpp
+    Source/smokeview/glui_colorbar.cpp
+    Source/smokeview/glui_display.cpp
+    Source/smokeview/glui_tour.cpp
+    Source/smokeview/glui_trainer.cpp
+    Source/smokeview/glui_objects.cpp
+    Source/smokeview/glui_shooter.cpp
+)
+
+target_include_directories(parse_smv_benchmark PRIVATE
+    Source/shared
+    Source/glew
+    Source/smokeview
+    Source/glui_v2_1_beta
+    Source/glui_gl
+)
+
+
+# These include directories are an existing workaround that would be good to
+# remove.Because of this custom code and the potential conflict with native libs
+# this needs to be early in the include order.
+if (WIN32)
+    target_include_directories(parse_smv_benchmark PRIVATE Source/glut_gl)
+else()
+    target_include_directories(parse_smv_benchmark PRIVATE Source/glui_gl)
+endif ()
+# GLUI can be provided natively, but there are modifications in the code
+# vendored with Smokeview that we rely on. Because of this custom code and the
+# potential conflict with native libs this needs to be early in the include order.
+target_link_libraries(parse_smv_benchmark PRIVATE glui_static)
+target_include_directories(parse_smv_benchmark PRIVATE Source/glui_v2_1_beta)
+if(WIN32)
+    if (PThreads4W_FOUND)
+        target_link_libraries(parse_smv_benchmark PRIVATE PThreads4W::PThreads4W)
+    else()
+        target_include_directories(parse_smv_benchmark PRIVATE Source/pthreads)
+        target_link_libraries(parse_smv_benchmark PRIVATE pthread_static)
+    endif()
+endif()
+# Selecting which GLUT version to use is the most platform-dependent part of the
+# build.
+if (MACOSX)
+    add_definitions(-Dpp_NOQUARTZ)
+    target_link_libraries(parse_smv_benchmark PRIVATE "-framework OpenGL" "-framework GLUT")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99")
+elseif (GLUT_FOUND)
+    target_link_libraries(parse_smv_benchmark PRIVATE GLUT::GLUT)
+else()
+    target_link_libraries(parse_smv_benchmark PRIVATE glut32_static)
+endif ()
+if (GLEW_FOUND)
+    target_link_libraries(parse_smv_benchmark PRIVATE GLEW::GLEW)
+    # This line is a hack to work around the fact the code includes "glew.h"
+    # rather than <GL/glew.h>
+    target_include_directories(parse_smv_benchmark PRIVATE ${GLEW_INCLUDE_DIRS}/GL)
+else()
+    target_sources(parse_smv_benchmark PRIVATE
+        Source/glew/glew.c
+    )
+    target_include_directories(parse_smv_benchmark PRIVATE Source/glew)
+endif()
+if (JPEG_FOUND)
+    target_link_libraries(parse_smv_benchmark PRIVATE JPEG::JPEG)
+else()
+    target_link_libraries(parse_smv_benchmark PRIVATE jpeg_static)
+endif()
+if (PNG_FOUND)
+    target_link_libraries(parse_smv_benchmark PRIVATE PNG::PNG)
+else()
+    target_link_libraries(parse_smv_benchmark PRIVATE png_static)
+endif()
+if (ZLIB_FOUND)
+    target_link_libraries(parse_smv_benchmark PRIVATE ZLIB::ZLIB)
+else()
+    target_link_libraries(parse_smv_benchmark PRIVATE zlib_static)
+endif()
+if (LIBGD_FOUND)
+    target_link_libraries(parse_smv_benchmark PRIVATE PkgConfig::LIBGD)
+else()
+    target_link_libraries(parse_smv_benchmark PRIVATE gd_static)
+endif()
+target_link_libraries(parse_smv_benchmark PRIVATE OpenGL::GL OpenGL::GLU)
+
+
+if (WIN32)
+    target_include_directories(parse_smv_benchmark PRIVATE Source/pthreads)
+endif()
+if ((NOT MACOSX) AND UNIX)
+    target_link_libraries(parse_smv_benchmark PRIVATE m)
+endif()
+if (LINUX)
+    add_definitions(-Dpp_LINUX)
+    target_link_libraries(parse_smv_benchmark PRIVATE pthread X11 Xmu GLU GL m stdc++)
 endif()
