@@ -847,6 +847,7 @@ int main(int argc, char **argv){
   InitScriptErrorFiles();
   smokezippath= GetSmokeZipPath(smokeview_bindir);
   DisplayVersionInfo("Smokeview ");
+  InitStartupDirs();
   SetupGlut(argc,argv);
   START_TIMER(startup_time);
 

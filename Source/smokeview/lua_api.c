@@ -37,8 +37,33 @@ int LuaDisplayCb(lua_State *L);
 #endif
 
 char *ParseCommandline(int argc, char **argv);
-void Usage(char *prog, int option);
-int CheckSMVFile(char *file, char *subdir);
+
+int CheckSMVFileLua(char *file, char *subdir) {
+  char casedir[256], *casedirptr, casename[256];
+  FILE *stream;
+
+  if (file == NULL) return 1;
+
+  strcpy(casename, file);
+  if (subdir == NULL) {
+    casedirptr = casedir;
+    strcpy(casedir, casename);
+  }
+  else {
+    casedirptr = subdir;
+  }
+  stream = fopen(casename, "r");
+  if (stream == NULL) {
+    stream = fopen_indir(casedirptr, casename, "r");
+    if (stream == NULL) {
+      printf("***error: unable to open %s\n", casename);
+      return 0;
+    }
+    CHDIR(casedirptr);
+  }
+  fclose(stream);
+  return 1;
+}
 
 int ProgramSetupLua(lua_State *L, int argc, char **argv) {
   char *progname;
@@ -48,19 +73,6 @@ int ProgramSetupLua(lua_State *L, int argc, char **argv) {
   printf("smv_filename: %s\n", smv_filename);
 
   progname = argv[0];
-
-  if (show_help == 1) {
-    Usage("smokeview", HELP_SUMMARY);
-    fflush(stderr);
-    fflush(stdout);
-    SMV_EXIT(0);
-  }
-  if (show_help == 2) {
-    Usage("smokeview", HELP_ALL);
-    fflush(stderr);
-    fflush(stdout);
-    SMV_EXIT(0);
-  }
   prog_fullpath = progname;
 #ifdef pp_LUA
   smokeview_bindir_abs = getprogdirabs(progname, &smokeviewpath);
@@ -72,7 +84,7 @@ int ProgramSetupLua(lua_State *L, int argc, char **argv) {
     DisplayVersionInfo("Smokeview ");
     SMV_EXIT(0);
   }
-  if (CheckSMVFile(smv_filename, smokeview_casedir) == 0) {
+  if (CheckSMVFileLua(smv_filename, smokeview_casedir) == 0) {
     SMV_EXIT(1);
   }
   InitTextureDir();
@@ -124,6 +136,7 @@ int LuaSetupGlut(lua_State *L) {
   // Here we must copy the arguments received from the Lua interperter to
   // allow them to be non-const (i.e. let the C code modify them).
   char **argv_sv_non_const = CopyArgv(argc, argv_sv);
+  InitStartupDirs();
   SetupGlut(argc, argv_sv_non_const);
   FreeArgv(argc, argv_sv_non_const);
   return 0;
