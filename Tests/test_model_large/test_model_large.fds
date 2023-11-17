@@ -1,0 +1,70 @@
+&HEAD CHID='test_model_large'  /
+
+&MESH IJK=10,10,10, XB=0,1,0,1,0,1, MULT_ID='mesh' /
+&MULT ID='mesh', DX=1, DY=1, DZ=1, I_UPPER=10, J_UPPER=10, K_UPPER=10/
+
+&TIME T_END=0. /
+
+&DUMP NFRAMES=2  /
+
+&REAC FUEL='POLYURETHANE', FORMULA='C6.3H7.1N1.0O2.1', SOOT_YIELD=0.01, HEAT_OF_COMBUSTION=22700. /
+
+&MATL ID                    = 'FABRIC'
+      FYI                   = 'Properties completely fabricated'
+      SPECIFIC_HEAT         = 1.0
+      CONDUCTIVITY          = 0.5
+      DENSITY               = 50.
+      NU_SPEC               = 1.
+      SPEC_ID               = 'POLYURETHANE'
+      REFERENCE_TEMPERATURE = 250.
+      HEAT_OF_REACTION      = 500.
+      HEAT_OF_COMBUSTION    = 16000. /
+
+&MATL ID                    = 'FOAM'
+      FYI                   = 'Properties completely fabricated'
+      SPECIFIC_HEAT         = 1.0
+      CONDUCTIVITY          = 0.1
+      DENSITY               = 40.0
+      NU_SPEC               = 1.
+      SPEC_ID               = 'POLYURETHANE'
+      REFERENCE_TEMPERATURE = 280.
+      HEAT_OF_REACTION      = 800.
+      HEAT_OF_COMBUSTION    = 22700. /
+
+&MATL ID            = 'GYPSUM PLASTER'
+      CONDUCTIVITY  = 0.5
+      SPECIFIC_HEAT = 1.0
+      DENSITY       = 500. /
+
+&SURF ID             = 'UPHOLSTERY'
+      FYI            = 'Properties completely fabricated'
+      COLOR          = 'PURPLE'
+      BURN_AWAY      = .TRUE.
+      MATL_ID(1:2,1) = 'FABRIC','FOAM'
+      THICKNESS(1:2) = 0.0005,0.1  /
+
+&SURF ID             = 'WALL'
+      DEFAULT        = .TRUE.
+      RGB            = 200,200,200
+      MATL_ID        = 'GYPSUM PLASTER'
+      THICKNESS      = 0.012 /
+
+&MULT ID='m1', DX=0.2, DY=0.2, DZ=0.2, I_UPPER=100, J_UPPER=100, K_UPPER=100 /
+&OBST XB=0,0.1,0,0.1,0,0.1,SURF_ID='UPHOLSTERY', MULT_ID='m1' /
+
+&PART ID='ignitor particle', SURF_ID='ignitor', STATIC=.TRUE. /
+&SURF ID='ignitor', TMP_FRONT=1000., EMISSIVITY=1., GEOMETRY='CYLINDRICAL', LENGTH=0.15, RADIUS=0.01 /
+&INIT XB=2.4,2.7,4.1,4.4,0.60,0.70, PART_ID='ignitor particle', N_PARTICLES_PER_CELL=1, CELL_CENTERED=T /
+
+&VENT XB=1,4,0,0,0,2, SURF_ID='OPEN' /
+
+&BNDF QUANTITY='RADIATIVE HEAT FLUX' /
+&BNDF QUANTITY='CONVECTIVE HEAT FLUX' /
+&BNDF QUANTITY='NET HEAT FLUX' /
+&BNDF QUANTITY='WALL TEMPERATURE' /
+&BNDF QUANTITY='BURNING RATE' /
+
+&SLCF PBX=2.50, QUANTITY='TEMPERATURE',VECTOR=.TRUE., CELL_CENTERED=.TRUE. /
+&SLCF PBX=2.50, QUANTITY='HRRPUV', CELL_CENTERED=.TRUE. /
+
+&TAIL /
