@@ -2968,7 +2968,6 @@ void ScriptMenu(int value){
         if(error_code==0){
       //    ReadIni(NULL);
           StartScript();
-          runscript = 1;
         }
         else{
           fprintf(stderr,"*** Error (fatal): unable to open script file");
