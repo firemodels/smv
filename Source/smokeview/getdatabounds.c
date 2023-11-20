@@ -979,7 +979,10 @@ int ReadPartBounds(partdata *parti,int read_bounds_arg){
     if(parti->size_file!=NULL)stream = fopen(parti->size_file, "r");
     if(stream==NULL)return 0;
   }
-  if(stream!=NULL)fclose(stream);
+  if(stream!=NULL){
+    fclose(stream);
+    stream = NULL;
+  }
 
   // make sure a bound file exists
 
@@ -989,7 +992,10 @@ int ReadPartBounds(partdata *parti,int read_bounds_arg){
     stream = fopen(parti->bound_file, "r");
     if(stream==NULL)return 0;
   }
-  if(stream!=NULL)fclose(stream);
+  if(stream!=NULL){
+    fclose(stream);
+    stream = NULL;
+  }
 
 // if valid global particle bounds file so we can return now and not read individual bound files
 
@@ -999,6 +1005,7 @@ int ReadPartBounds(partdata *parti,int read_bounds_arg){
     return 0;
   }
 
+  stream = fopen(parti->bound_file, "r");
   for(;;){
     float time_local;
     int nclasses_local, k, version_local =-1;
