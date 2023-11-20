@@ -944,17 +944,18 @@ LINT GetPartHeaderOffset(partdata *parti_arg){
 /* ------------------ CreatePartBoundFile ------------------------ */
 
 void CreatePartBoundFile(partdata *parti){
-  FILE_m *PART5FILE;
+  FILE_m *PART5FILE=NULL;
   int one_local, version_local, nclasses_local;
   int i;
   size_t returncode;
   float time_local;
   int nparts_local, *numtypes_local = NULL, numtypes_temp_local[2];
-  FILE *stream_out_local;
+  FILE *stream_out_local=NULL;
 
-  PART5FILE = fopen_m(parti->reg_file, "rbm");
-  if(PART5FILE==NULL)return;
-  stream_out_local = fopen(parti->bound_file, "w");
+  
+  if(parti->reg_file!=NULL)PART5FILE = fopen_m(parti->reg_file, "rbm");
+  if(parti->reg_file==NULL||PART5FILE==NULL)return;
+  if(parti->bound_file!=NULL)stream_out_local = fopen(parti->bound_file, "w");
   if(stream_out_local==NULL){
     FCLOSE_m(PART5FILE);
     return;
@@ -1047,10 +1048,13 @@ wrapup:
 
 /* ------------------ CreatePartSizeFile ------------------------ */
 
-void CreatePartSizeFile(partdata*parti){
-  FILE *stream_local;
+void CreatePartSizeFile(partdata *parti){
+  FILE *stream_local=NULL;
   LINT header_offset_local;
 
+  if(parti->reg_file!=NULL)stream_local = fopen(parti->reg_file, "rb");
+  if(parti->reg_file==NULL||stream_local==NULL)return;
+  fclose(stream_local);
   header_offset_local =GetPartHeaderOffset(parti);
   stream_local = fopen(parti->bound_file, "r");
   if(stream_local==NULL){
