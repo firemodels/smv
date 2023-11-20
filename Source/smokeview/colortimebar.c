@@ -1345,7 +1345,11 @@ void InitDefaultColorbars(int nini){
 
   // rainbow colorbar
 
+#ifdef pp_CB_ORIG
+  strcpy(cbi->menu_label,"Rainbow_new");
+#else
   strcpy(cbi->menu_label,"Rainbow");
+#endif
   cbi->nnodes=5;
   cbi->nodehilight=0;
 
@@ -1378,7 +1382,11 @@ void InitDefaultColorbars(int nini){
 
   // original rainbow colorbar
 
-  strcpy(cbi->menu_label,"Rainbow_orig");
+#ifdef pp_CB_ORIG
+  strcpy(cbi->menu_label, "Rainbow");
+#else
+  strcpy(cbi->menu_label, "Rainbow_orig");
+#endif
   cbi->nnodes=5;
   cbi->nodehilight=0;
 
@@ -2026,7 +2034,12 @@ void InitDefaultColorbars(int nini){
   for(i=0;i<ndefaultcolorbars;i++){
     cbi = colorbarinfo + i;
 
-    cbi->interp = INTERP_LAB;
+    if(cbi->can_adjust==1){
+      cbi->interp = INTERP_LAB;
+    }
+    else{
+      cbi->interp = INTERP_RGB;
+    }
     RemapColorbar(cbi);
     memcpy(cbi->node_rgb_orig, cbi->node_rgb, 3 * cbi->nnodes * sizeof(unsigned char));
   }

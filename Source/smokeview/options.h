@@ -30,7 +30,8 @@
 #define pp_FAST           // set fast startup by default
 #define pp_FED_COMPRESS   // skip fed slices when co, o2 or co2 slices are compressed (for now)
 
-#define pp_COLOR_PLOT     /  add checkbox for showing CIELab colorbar delta distance plot
+//#define pp_CB_ORIG        // set the original the rainbow colorbar as the default
+#define pp_COLOR_PLOT     //  add checkbox for showing CIELab colorbar delta distance plot
 
 //#define pp_BNDF         // merge geometry and structured boundary files in load menus
 
