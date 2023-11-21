@@ -29,12 +29,15 @@ if exist %userprofile%\.bundle\fds_revision.txt (
 
 :: ---- log entry date ----
 
-set smvlogdate="27-Jul-2023"
+set smvlogdate="21-Nov-2023"
 
 :: ---- repo locations ----
 
 ::*** PC
+if "x%svn_root%" NEQ "x" goto skipsvn
 set svn_root=%userprofile%\FireModels_fork
+:skipsvn
+
 set fdswikirepo=%svn_root%\wikis
 set svn_drive=c:
 
