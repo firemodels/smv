@@ -323,7 +323,11 @@ void GetViewportInfo(void){
     if(doit==0&&visFramerate==1)doit=1;
     if(doit==0&&vis_slice_average==1&&show_slice_average&&slice_average_flag==1)doit=1;
   }
-  if(show_horizontal_colorbar == 1||visAvailmemory==1)doit=1;
+  if(show_horizontal_colorbar == 1
+#ifdef pp_memstatus
+    ||visAvailmemory==1
+#endif
+    )doit=1;
 
   VP_timebar.left = titlesafe_offset;
   if(vis_hrr_plot==1 || vis_slice_plot==1||vis_colorbar_dists_plot==1)VP_timebar.left = VP_hrr_plot.right;
@@ -345,7 +349,11 @@ void GetViewportInfo(void){
     VP_timebar.width  = screenWidth-VP_info.width-2*titlesafe_offset;
     if(vis_hrr_plot==1 || vis_slice_plot==1||vis_colorbar_dists_plot==1)VP_timebar.width -= (VP_hrr_plot.right - titlesafe_offset);
     temp_height = text_height + v_space;
-    if(visFramelabel==1||vis_hrr_label==1||visAvailmemory==1)temp_height += (text_height+v_space);
+    if(visFramelabel==1||vis_hrr_label==1
+#ifdef  pp_memstatus
+      ||visAvailmemory==1
+#endif
+      )temp_height += (text_height+v_space);
     VP_timebar.height = MAX(timebar_height + 2*v_space, temp_height);
     if(show_horizontal_colorbar==1)VP_timebar.height += hbar_height;
   }
@@ -1244,7 +1252,9 @@ void ViewportTimebar(int quad, GLint screen_left, GLint screen_down){
   timebar_right_width = 0;
   if(visFramerate==1&&showtime==1)framerate_width = GetStringWidth("Frame rate: 99.99");
   if(visUsagememory == 1)memavail_width = GetStringWidth("9999 MBx");
+#ifdef pp_memstatus
   if(visAvailmemory == 1)memusage_width = GetStringWidth("Mem Load: 100%x");
+#endif
   timebar_right_width = MAX(MAX(framerate_width, memavail_width), memusage_width);
   timebar_right_width = MAX(timebar_right_width, delta);
 
