@@ -2164,9 +2164,6 @@ void RenderMenu(int value){
       RenderMenu(RENDER_CURRENT_MULTIPLE);
       return;
     }
-    if(touring==1){
-      rendertourcount=0;
-    }
     if(render_skip == RENDER_CURRENT_SINGLE){
       UpdateFrameNumber(0);
     }
