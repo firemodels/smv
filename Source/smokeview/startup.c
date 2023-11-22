@@ -1488,44 +1488,13 @@ void InitVars(void){
 
   FontMenu(fontindex);
 
-  treecharcolor[0]=0.3;
-  treecharcolor[1]=0.3;
-  treecharcolor[2]=0.3;
-  treecharcolor[3]=1.0;
-  trunccolor[0]=0.6;
-  trunccolor[1]=0.2;
-  trunccolor[2]=0.0;
-  trunccolor[3]=1.0;
-
   direction_color[0]=39.0/255.0;
   direction_color[1]=64.0/255.0;
   direction_color[2]=139.0/255.0;
   direction_color[3]=1.0;
-
   direction_color_ptr=GetColorPtr(direction_color);
 
-  shooter_uvw[0]=0.0;
-  shooter_uvw[1]=0.0;
-  shooter_uvw[2]=0.0;
-  vis_slice_contours=0;
-  update_slicecontours=0;
-
-  partfacedir[0]=0.0;
-  partfacedir[1]=0.0;
-  partfacedir[2]=1.0;
-
-  navatar_types=0;
-  select_avatar=0;
-  selected_avatar_tag=-1;
-  select_device_color_ptr=NULL;
-  avatar_types=NULL;
-  view_from_selected_avatar=0;
   GetGitInfo(smv_githash,smv_gitdate);
-  force_isometric=0;
-  cb_valmin=0.0;
-  cb_valmax=100.0;
-  cb_val=50.0;
-  cb_colorindex=128;
 
   rgb_terrain[0][0]=1.0;
   rgb_terrain[0][1]=0.0;
@@ -1581,251 +1550,16 @@ void InitVars(void){
   strcpy(script_renderdir,"");
   strcpy(script_renderfilesuffix,"");
   strcpy(script_renderfile,"");
-  trainerview=1;
-  show_bothsides_int=1;
-  show_bothsides_ext=0;
-  skip_slice_in_embedded_mesh=0;
-  offset_slice=0;
-  trainer_pause=0;
-  trainee_location=0;
-  trainer_inside=0;
-  from_glui_trainer=0;
-  trainer_path_old=-3;
-  trainer_outline=1;
-  trainer_viewpoints=-1;
-  ntrainer_viewpoints=0;
-  trainer_realtime=1;
-  trainer_path=0;
-  trainer_xzy[0]=0.0;
-  trainer_xzy[1]=0.0;
-  trainer_xzy[2]=0.0;
-  trainer_ab[0]=0.0;
-  trainer_ab[1]=0.0;
-  motion_ab[0]=0.0;
-  motion_ab[1]=0.0;
-  motion_dir[0]=0.0;
-  motion_dir[1]=0.0;
-  fontsize_save=0;
-  trainer_mode=0;
-  trainer_active=0;
-  show_slice_average=0;
-  vis_slice_average=1;
-  slice_average_interval=10.0;
-
-  show_transparent_vents=1;
-  maxtourframes=500;
-  blockageSelect=0;
-  stretch_var_black=0;
-  stretch_var_white=0;
-  move_var=0;
-
-  xyz_dir=0;
-  which_face=2;
-
-  glui_active=0;
-
-  vis3DSmoke3D=1;
-  smokeskip=1;
-  smokeskipm1=0;
-  nrooms=0;
-  nzoneinfo=0;
-  nfires=0;
-
-  windowsize_pointer=0;
-
-  xbar=1.0, ybar=1.0, zbar=1.0;
-  xbar0=0.0, ybar0=0.0, zbar0=0.0;
-  xbarORIG=1.0, ybarORIG=1.0, zbarORIG=1.0;
-  xbar0ORIG=0.0, ybar0ORIG=0.0, zbar0ORIG=0.0;
-  ReadIsoFile=0;
-
-  ReadVolSlice=0;
-  ReadZoneFile=0;
-
-  editwindow_status=-1;
-  startup_pass=1;
-
-  slicefilenumber=0;
-  nspr=0;
-  vectorskip=1;
-  rotation_type=ROTATION_2AXIS;
-  eyeview_level=1;
-  rotation_type_old=ROTATION_2AXIS,eyeview_SAVE=0,eyeview_last=0;
-  frameratevalue=1000;
-  setpartmin=PERCENTILE_MIN, setpartmax=PERCENTILE_MAX;
   setpartmin_old=setpartmin;
   setpartmax_old=setpartmax;
-  glui_setpatchmin = GLOBAL_MIN;
-  glui_setpatchmax = GLOBAL_MAX;
-  settargetmin=0, settargetmax=0;
-  setpartchopmin=0, setpartchopmax=0;
-  partchopmin=1.0,  partchopmax=0.;
-
-  temp_threshold=400.0;
-  vis_onlythreshold=0, vis_threshold=0;
-  activate_threshold=1;
-  canshow_threshold=1;
-  speedmax=0.0;
-  hrrpuv_max_smv=1200.0;
-  FlowDir=1,ClipDir=1;
-  plotn=1;
-  stept=0;
-  plotstate=NO_PLOTS;
-  visVector=0;
-  visSmokePart=2, visSprinkPart=1, havesprinkpart=0;
-  visaxislabels=0;
-  numplot3dvars=0;
-  p3dsurfacesmooth=1;
-  parttype=0;
-  allinterior=1;
-  hrrpuv_iso_color[0]=1.0;
-  hrrpuv_iso_color[1]=0.5;
-  hrrpuv_iso_color[2]=0.0;
-  hrrpuv_iso_color[3]=1.0;
-  showgluitrainer=0;
   UpdateCurrentColorbar(colorbarinfo);
   colorbartype_save=colorbartype;
-  colorbarpoint=0;
-  vectorspresent=0;
-
-  smokediff=0;
-  smoke3d_cvis=1.0;
-  test_smokesensors=0;
-  active_smokesensors=0;
-  loadplot3dall=0;
-  visAIso=1;
-  surfincrement=0,visiso=0;
-  isotest=0;
-  isolevelindex=0, isolevelindex2=0;
-  pref=101325.,pamb=0.,tamb=293.15;
-  ntc_total=0, nspr_total=0, nheat_total=0;
-  n_devices=0;
-
-  npartinfo=0, nsliceinfo=0, nvsliceinfo=0, npatch2=0, nplot3dinfo=0, npatchinfo=0;
-  nsmoke3dinfo=0;
-  nisoinfo=0, niso_bounds=0;
-  ntrnx=0, ntrny=0, ntrnz=0,npdim=0,nmeshes=0,clip_mesh=0;
-  noffset=0;
-  visLabels=0;
-  framerate=-1.0;
-  itimes=0, itimeold=-999, seqnum=0,RenderTime=0; RenderTimeOld=0; itime_save=-1;
-  nopart=1;
-  uindex=-1, vindex=-1, windex=-1;
-
-  cullfaces=1;
-  showonly_hiddenfaces=0;
-
-  windowresized=0;
-
-  first_display=2;
-
-  updatemenu=0;
-  updatezoommenu=0;
-  updatemenu_count=0;
-
-  updatefaces=0,updatefacelists=0;
-  updateOpenSMVFile=0;
-
-  slicefilenum=-1;
-  zonefilenum=-1;
-  targfilenum=-1;
-
-  setPDIM=0;
-  menustatus=GLUT_MENU_NOT_IN_USE;
-
-  vertical_factor=1.0;
-  terrain_rgba_zmin[0]=90;
-  terrain_rgba_zmin[1]=50;
-  terrain_rgba_zmin[2]=50;
-
-  terrain_rgba_zmax[0]=200;
-  terrain_rgba_zmax[1]=200;
-  terrain_rgba_zmax[2]=200;
-
-#ifdef pp_memstatus
-  visAvailmemory=0;
-#endif
   visBlocks=visBLOCKAsInput;
-  visTransparentBlockage=0;
   blocklocation=BLOCKlocation_grid;
-  ncadgeom=0;
-  visFloor=0, visFrame=1;
-  visNormalEditColors=1;
-  visWalls=0, visGrid=0, visCeiling=0;
-  visSensor=1, visSensorNorm=1, hasSensorNorm=0;
   render_window_size=RenderWindow;
   RenderMenu(render_window_size);
-  viewoption=0;
-
-  partpointsize=4.0,vectorpointsize=3.0,streaklinewidth=1.0;
-  isopointsize=4.0;
-  isolinewidth=2.0;
-  plot3dpointsize=4.0;
-  plot3dlinewidth=2.0;
-  sprinklerabssize=0.076f, sensorabssize=0.038f, heatabssize=0.076f;
-
-  linewidth=2.0, ventlinewidth=2.0, highlight_linewidth=4.0;
   solidlinewidth=linewidth;
-  visBLOCKold=-1;
-
-  nrgb_ini=0;
-  nrgb2_ini=0;
-  rgb_white=NRGB, rgb_yellow=NRGB+1, rgb_blue=NRGB+2, rgb_red=NRGB+3;
-  rgb_green=NRGB+4, rgb_magenta=NRGB+5, rgb_cyan=NRGB+6, rgb_black=NRGB+7;
-  setbw=0;
   setbwSAVE=setbw;
-  antialiasflag=1;
-  nrgb_full=256;
-  nrgb_cad=256;
-  eyexfactor=0.5f, eyeyfactor=-0.9f, eyezfactor=0.5f;
-
-  frameinterval=1.0;
-
-  blockages_dirty=0;
-  usetextures=0;
-  canrestorelastview=0;
-  ntargets=0;
-
-  mainwindow_id=0;
-  rendertourcount=0;
-
-  static_color[0]=0.0;
-  static_color[1]=1.0;
-  static_color[2]=0.0;
-  static_color[3]=1.0;
-
-  sensorcolor[0]=1.0;
-  sensorcolor[1]=1.0;
-  sensorcolor[2]=0.0;
-  sensorcolor[3]=1.0;
-
-
-  sensornormcolor[0]=1.0;
-  sensornormcolor[1]=1.0;
-  sensornormcolor[2]=0.0;
-  sensornormcolor[3]=1.0;
-
-
-  sprinkoncolor[0]=0.0;
-  sprinkoncolor[1]=1.0;
-  sprinkoncolor[2]=0.0;
-  sprinkoncolor[3]=1.0;
-
-  sprinkoffcolor[0]=1.0; //xxxx check
-  sprinkoffcolor[1]=0.0;
-  sprinkoffcolor[2]=0.0;
-  sprinkoffcolor[3]=1.0;
-
-
-  heatoncolor[0]=1.0; //xxx check
-  heatoncolor[1]=0.0;
-  heatoncolor[2]=0.0;
-  heatoncolor[3]=1.0;
-
-  heatoffcolor[0]=1.0;
-  heatoffcolor[1]=0.0;
-  heatoffcolor[2]=0.0;
-  heatoffcolor[3]=1.0;
 
   glui_backgroundbasecolor[0] = 255 * backgroundbasecolor[0];
   glui_backgroundbasecolor[1] = 255 * backgroundbasecolor[1];
@@ -1837,25 +1571,6 @@ void InitVars(void){
   glui_foregroundbasecolor[2] = 255 * foregroundbasecolor[2];
   glui_foregroundbasecolor[3] = 255 * foregroundbasecolor[3];
 
-  boundcolor[0]=0.5;
-  boundcolor[1]=0.5;
-  boundcolor[2]=0.5;
-  boundcolor[3]=1.0;
-
-  timebarcolor[0]=0.6;
-  timebarcolor[1]=0.6;
-  timebarcolor[2]=0.6;
-  timebarcolor[3]=1.0;
-
-  redcolor[0]=1.0;
-  redcolor[1]=0.0;
-  redcolor[2]=0.0;
-  redcolor[3]=1.0;
-
-  loadfiles_at_startup=0;
-
-  nmenus=0;
-
   strcpy(emptylabel,"");
   font_ptr          = GLUT_BITMAP_HELVETICA_12;
   colorbar_font_ptr = GLUT_BITMAP_HELVETICA_10;
@@ -1866,34 +1581,6 @@ void InitVars(void){
     }
 #endif
 
-  texture_origin[0]=0.0;
-  texture_origin[1]=0.0;
-  texture_origin[2]=0.0;
-
-  isZoneFireModel=0;
-  nunitclasses=0,nunitclasses_default=0,nunitclasses_ini=0;
-  callfrom_tourglui=0;
-  showtours_whenediting=0;
-
-  right_green=0.0;
-  right_blue=1.0;
-  apertureindex=1;
-  zoomindex=ZOOMINDEX_ONE;
-  projection_type=PROJECTION_PERSPECTIVE;
-  apertures[0]=30.;
-  apertures[1]=45.;
-  apertures[2]=60.;
-  apertures[3]=75.;
-  apertures[3]=90.;
-
-  zooms[0] = 0.25;
-  zooms[1] = 0.5;
-  zooms[2] = 1.0;
-  zooms[3] = 2.0;
-  zooms[4] = 4.0;
-  zooms[5] = 10.0;
-  zooms[MAX_ZOOMS] = -1.0;
-  zoom=1.0;
   aperture = Zoom2Aperture(zoom);
   aperture_glui = aperture;
   aperture_default = aperture;
@@ -1906,91 +1593,13 @@ void InitVars(void){
     }
   }
 
-  sv_age=0;
-  titlesafe_offset=0;
-  titlesafe_offsetBASE=45;
-  reset_frame=0;
-  reset_time=0.0,start_frametime=0.0,stop_frametime=0.0;
-  nsorted_surfidlist=0;
-
-  overwrite_all=0,erase_all=0;
-  compress_autoloaded=0;
   strcpy(ext_png,".png");
   strcpy(ext_jpg,".jpg");
   render_filetype=PNG;
 
-  start_xyz0[0]=0.0;
-  start_xyz0[1]=0.0;
-  start_xyz0[2]=0.0;
-  glui_move_mode=-1;
-
-  update_tour_list =0;
-  desired_view_height=1.5;
-  resetclock=1,initialtime=0;
-  realtime_flag=0;
-  slicefile_labelindex=-1,slicefile_labelindex_save=-1,iboundarytype=-1;
-  iisotype=-1;
-
-
-  cpuframe=0;
-
-  highlight_block=-1, highlight_mesh=0, highlight_flag=2;
-
-  visUSERticks=0;
-  user_tick_show_x=1;
-  user_tick_show_y=1;
-  user_tick_show_z=1;
-  auto_user_tick_placement=1;
-
-  smoke_extinct=7.600,smoke_dens=.50,smoke_pathlength=1.0;
-  showall_textures=0;
-
-  do_threshold=0;
-  updateindexcolors=0;
-  show_path_knots=0;
-  tourrad_avatar=0.1;
-  dirtycircletour=0;
-  viewtourfrompath=0,viewalltours=0,viewanytours=0,edittour=0;
-  tour_usecurrent=0;
-  visFDSticks=0;
-  visCadTextures=1;
-  visTerrainTexture=1;
-  nselectblocks=0;
-  surface_indices[0]=0;
-  surface_indices[1]=0;
-  surface_indices[2]=0;
-  surface_indices[3]=0;
-  surface_indices[4]=0;
-  surface_indices[5]=0;
-  wall_case=0;
   strcpy(surfacedefaultlabel,"");
-  mscale[0]=1.0;
-  mscale[1]=1.0;
-  mscale[2]=1.0;
-  updateUpdateFrameRateMenu=0;
-  nskyboxinfo=0;
-
-  streak_rvalue[0]=0.25;
-  streak_rvalue[1]=0.5;
-  streak_rvalue[2]=1.0;
-  streak_rvalue[3]=2.0;
-  streak_rvalue[4]=4.0;
-  streak_rvalue[5]=8.0;
-  streak_rvalue[6]=16.0;
-  streak_rvalue[7]=32.0;
-  nstreak_rvalue=8;
-  streak_index=-1;
-  float_streak5value=0.0;
   if(streak_index>=0)float_streak5value=streak_rvalue[streak_index];
 
-  streak5step=0;
-  npartclassinfo=0;
-  noutlineinfo=0;
-  nmultisliceinfo=0;
-  nmultivsliceinfo=0;
-
-  svofile_exists=0;
-  devicenorm_length = 0.1;
   strcpy(object_def_first.label,"first");
   object_def_first.next=&object_def_last;
   object_def_first.prev=NULL;
@@ -2000,99 +1609,10 @@ void InitVars(void){
   object_def_last.prev=&object_def_first;
   object_defs=NULL;
 
-  showfiles=0;
-
-  smokecullflag=1;
-  visMAINmenus=0;
-#ifdef pp_GPU
-  usegpu=0;
-#endif
-  ijkbarmax=5;
-  blockage_as_input=0;
-  blockage_snapped=1;
-  show_cad_and_grid=0;
-
-  buffertype=DOUBLE_BUFFER;
-  opengldefined=0;
-
   GetTitle("Smokeview ", release_title);
   GetTitle("Smokeview ", plot3d_title);
 
-  tourcol_selectedpathline[0]=1.0;
-  tourcol_selectedpathline[1]=0.0;
-  tourcol_selectedpathline[2]=0.0;
-
-
-  tourcol_selectedpathlineknots[0]=1.0;
-  tourcol_selectedpathlineknots[1]=0.0;
-  tourcol_selectedpathlineknots[2]=0.0;
-
-
-  tourcol_selectedknot[0]=0.0;
-  tourcol_selectedknot[1]=1.0;
-  tourcol_selectedknot[2]=0.0;
-
-
-  tourcol_selectedview[0]=1.0;
-  tourcol_selectedview[1]=1.0;
-  tourcol_selectedview[2]=0.0;
-
-
-  tourcol_pathline[0]=-1.0;
-  tourcol_pathline[1]=-1.0;
-  tourcol_pathline[2]=-1.0;
-
-  tourcol_pathknots[0]=-1.0;
-  tourcol_pathknots[1]=-1.0;
-  tourcol_pathknots[2]=-1.0;
-
-  tourcol_text[0]=-1.0;
-  tourcol_text[1]=-1.0;
-  tourcol_text[2]=-1.0;
-
-
-  tourcol_avatar[0]=1.0;
-  tourcol_avatar[1]=0.0;
-  tourcol_avatar[2]=0.0;
-
-  iso_specular[0] = 0.7;
-  iso_specular[1] = 0.7;
-  iso_specular[2] = 0.7;
-  iso_specular[3] = 1.0;
-
-  light_position0[0] = 1.0f;
-  light_position0[1] = 1.0f;
-  light_position0[2] = 1.0f;
-  light_position0[3] = 0.0f;
-
-  light_position1[0] = -1.0f;
-  light_position1[1] = -1.0f;
-  light_position1[2] =  1.0f;
-  light_position1[3] =  0.0f;
-
-  ambientlight[0] = 0.6f;
-  ambientlight[1] = 0.6f;
-  ambientlight[2] = 0.6f;
-  ambientlight[3] = 1.0f;
-
-  diffuselight[0] = 0.50f;
-  diffuselight[1] = 0.50f;
-  diffuselight[2] = 0.50f;
-  diffuselight[3] = 1.00f;
-
-
-  list_p3_index_old=0, list_slice_index_old=0, list_patch_index_old=0;
-
-  videoSTEREO=0;
-  fzero=0.25;
-
-
   strcpy(blank_global,"");
-
-  demo_mode=0;
-  update_demo=1;
-
-  valindex=0;
 
   NewMemory((void **)&iso_colors, 4 * MAX_ISO_COLORS*sizeof(float));
   NewMemory((void **)&iso_colorsbw, 4 * MAX_ISO_COLORS*sizeof(float));
@@ -2185,31 +1705,12 @@ void InitVars(void){
     strcpy(cti->label, "firebrick");
   }
 
-  mouse_deltax=0.0, mouse_deltay=0.0;
-
-  char_color[0]=0.0;
-  char_color[1]=0.0;
-  char_color[2]=0.0;
-  char_color[3]=0.0;
-
-  movedir[0]=0.0;
-  movedir[1]=1.0;
-  movedir[2]=0.0;
-
   memcpy(rgb_base,rgb_baseBASE,MAXRGB*4*sizeof(float));
   memcpy(bw_base,bw_baseBASE,MAXRGB*4*sizeof(float));
   memcpy(rgb2,rgb2BASE,MAXRGB*3*sizeof(float));
   memcpy(bw_base,bw_baseBASE,MAXRGB*4*sizeof(float));
 
-  nrgb2=8;
-
-  ncamera_list=0;
-  i_view_list=1;
-  camera_max_id=2;
-  startup=0;
-  startup_view_ini=1;
   strcpy(viewpoint_label_startup,"external");
-  selected_view=-999;
   {
     int iii;
 
