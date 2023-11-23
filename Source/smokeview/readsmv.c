@@ -6584,7 +6584,11 @@ static float pass2_time;
 static float pass3_time;
 static float pass4_time;
 static float pass5_time;
-int ReadSMV_Init(){
+
+/// @brief Initialise any global variables necessary to being parsing an SMV
+/// file. This should be called before @ref ReadSMV_Parse.
+/// @return zero on success, nonzero on failure.
+int ReadSMV_Init() {
   START_TIMER(timer_readsmv);
   START_TIMER(processing_time);
 
@@ -6870,7 +6874,12 @@ int ReadSMV_Init(){
   return 0;
 }
 
-int ReadSMV_Parse(bufferstreamdata *stream){
+/* ------------------ ReadSMV_Parse ------------------------ */
+/// @brief Parse an SMV file into global variables. This should only be called
+/// after ReadSMV_Init to ensure that the appropriate variables are set.
+/// @param stream the smv file stream
+/// @return zero on success, non-zero on failure
+int ReadSMV_Parse(bufferstreamdata *stream) {
   int i;
   float processing_time, wrapup_time, getfilelist_time;
   int have_zonevents,nzventsnew=0;
@@ -11343,6 +11352,11 @@ typedef struct {
   return 0;
 }
 
+/* ------------------ ReadSMV_Configure ------------------------ */
+
+/// @brief Finish setting global variables after an SMV file has been parsed.
+/// This should be called after @ref ReadSMV_Parse.
+/// @return zero on success, nonzero on failure.
 int ReadSMV_Configure(){
   int i;
   float wrapup_time;
@@ -11735,6 +11749,10 @@ int ReadSMV_Configure(){
   return 0;
 }
 
+/* ------------------ ReadSMV_Init ------------------------ */
+/// @brief Parse an SMV file.
+/// @param stream the file stream to parse.
+/// @return zero on sucess, non-zero on error
 int ReadSMV(bufferstreamdata *stream){
   START_TIMER(timer_readsmv);
   ReadSMV_Init();
