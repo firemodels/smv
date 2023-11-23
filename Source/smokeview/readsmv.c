@@ -6881,7 +6881,7 @@ int ReadSMV_Init() {
 /// @return zero on success, non-zero on failure
 int ReadSMV_Parse(bufferstreamdata *stream) {
   int i;
-  float processing_time, wrapup_time, getfilelist_time;
+  float wrapup_time;
   int have_zonevents,nzventsnew=0;
   devicedata *devicecopy;
   int do_pass4=0, do_pass5=0;
