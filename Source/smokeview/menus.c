@@ -1615,7 +1615,7 @@ void DialogMenu(int value){
     HideGluiTour();
     break;
   case DIALOG_CLIP:
-    ShowGluiClip();
+    GLUIShowGluiClip();
     break;
   case DIALOG_STEREO:
     ShowGluiStereo();
@@ -1674,7 +1674,7 @@ void DialogMenu(int value){
     GLUIHideGluiBounds();
     HideGluiMotion();
     HideGluiTour();
-    HideGluiClip();
+    GLUIHideGluiClip();
     HideGluiStereo();
     HideGluiColorbar();
     if(showedit_dialog==1)DialogMenu(DIALOG_GEOMETRY);

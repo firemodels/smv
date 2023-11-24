@@ -2084,7 +2084,7 @@ void Keyboard(unsigned char key, int flag){
         UpdateGridClip(0);
         UpdateGridClip(1);
         UpdateGridClip(2);
-        UpdateGluiClip();
+        GLUIUpdateGluiClip();
       }
       if(clip_commandline==0){
         visGrid = NOGRID_PROBE2;
@@ -2592,7 +2592,7 @@ void Keyboard(unsigned char key, int flag){
 	      assert(FFALSE);
 	      break;
       }
-      UpdateClipAll();
+      GLUIUpdateClipAll();
       break;
     case 'x':
     case 'X':
@@ -2615,7 +2615,7 @@ void Keyboard(unsigned char key, int flag){
           }
           if(clipinfo.clip_xmax==0)printf("off\n");
         }
-        UpdateGluiClip();
+        GLUIUpdateGluiClip();
       }
 #ifdef pp_DIALOG_SHORTCUTS
       if(keystate==GLUT_ACTIVE_ALT){
@@ -2655,7 +2655,7 @@ void Keyboard(unsigned char key, int flag){
           }
           if(clipinfo.clip_ymax==0)printf("off\n");
         }
-        UpdateGluiClip();
+        GLUIUpdateGluiClip();
       }
       visy_all = 1-visy_all;
       if(visx_all==1||visy_all==1||visz_all==1)update_slice2device = 1;
@@ -2673,7 +2673,7 @@ void Keyboard(unsigned char key, int flag){
           }
           if(clipinfo.clip_zmax==0)printf("off\n");
         }
-        UpdateGluiClip();
+        GLUIUpdateGluiClip();
       }
       rotate_center = 1-rotate_center;
       if(rotate_center==1&&have_geom_bb==1){
@@ -2696,7 +2696,7 @@ void Keyboard(unsigned char key, int flag){
           }
           if(clipinfo.clip_zmin==0)printf("off\n");
         }
-        UpdateGluiClip();
+        GLUIUpdateGluiClip();
       }
 #ifdef pp_DIALOG_SHORTCUTS
       if(keystate==GLUT_ACTIVE_ALT){
@@ -3215,7 +3215,7 @@ void HandlePLOT3DKeys(int  key){
       else{
         clipinfo.xmin = SetClipVal(0);
       }
-      UpdateGluiClip();
+      GLUIUpdateGluiClip();
     }
     break;
   case GLUT_KEY_RIGHT:
@@ -3229,7 +3229,7 @@ void HandlePLOT3DKeys(int  key){
       else{
         clipinfo.xmin = SetClipVal(0);
       }
-      UpdateGluiClip();
+      GLUIUpdateGluiClip();
     }
     break;
   case GLUT_KEY_DOWN:
@@ -3243,7 +3243,7 @@ void HandlePLOT3DKeys(int  key){
       else{
         clipinfo.ymin = SetClipVal(1);
       }
-      UpdateGluiClip();
+      GLUIUpdateGluiClip();
     }
     break;
   case GLUT_KEY_UP:
@@ -3257,7 +3257,7 @@ void HandlePLOT3DKeys(int  key){
       else{
         clipinfo.ymin = SetClipVal(1);
       }
-      UpdateGluiClip();
+      GLUIUpdateGluiClip();
     }
     break;
   case GLUT_KEY_PAGE_DOWN:
@@ -3271,7 +3271,7 @@ void HandlePLOT3DKeys(int  key){
       else{
         clipinfo.zmin = SetClipVal(2);
       }
-      UpdateGluiClip();
+      GLUIUpdateGluiClip();
     }
     break;
   case GLUT_KEY_PAGE_UP:
@@ -3285,7 +3285,7 @@ void HandlePLOT3DKeys(int  key){
       else{
         clipinfo.zmin = SetClipVal(2);
       }
-      UpdateGluiClip();
+      GLUIUpdateGluiClip();
     }
     break;
   case GLUT_KEY_HOME:

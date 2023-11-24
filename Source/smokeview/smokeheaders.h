@@ -6,6 +6,7 @@
 #endif
 
 //*** glui_bounds.cpp headers
+EXTERNCPP void GluiBoundsSetup(int main_window);
 EXTERNCPP void GLUIUpdatePartPointSize(void);
 EXTERNCPP void GLUIUpdateBoundTbounds(void);
 EXTERNCPP void GLUIUpdatePlotLabel(void);
@@ -90,6 +91,12 @@ EXTERNCPP void UpdateTrianglesMT(void);
 EXTERNCPP void CancelUpdateTriangles(void);
 EXTERNCPP void FinishUpdateTriangles(void);
 
+//*** glui_clip.cpp headers
+EXTERNCPP void GluiClipSetup(int main_window);
+EXTERNCPP void GLUIUpdateGluiClip(void);
+EXTERNCPP void GLUIShowGluiClip(void);
+EXTERNCPP void GLUIHideGluiClip(void);
+EXTERNCPP void GLUIUpdateClipAll(void);
 
 EXTERNCPP float GetTime(void);
 EXTERNCPP void StartTimer(float *timerptr);
@@ -500,8 +507,6 @@ EXTERNCPP void InitVolrenderScript(char *prefix, char *tour_label, int startfram
 // glui headers
 
 EXTERNCPP void Glui3dSmokeSetup(int main_window);
-EXTERNCPP void GluiBoundsSetup(int main_window);
-EXTERNCPP void GluiClipSetup(int main_window);
 EXTERNCPP void GluiColorbarSetup(int main_window);
 EXTERNCPP void GluiDeviceSetup(int main_window);
 EXTERNCPP void GluiPlot2DSetup(int main_window);
@@ -525,7 +530,6 @@ EXTERNCPP void UpdateGluiSliceUnits(void);
 EXTERNCPP void SetGLuiViewListManual(void);
 EXTERNCPP void UpdateGluiStereo(void);
 EXTERNCPP void UpdateGluiZoom(void);
-EXTERNCPP void UpdateGluiClip(void);
 
 EXTERNCPP void ShowGluiAlert(void);
 EXTERNCPP void HideGluiAlert(void);
@@ -537,9 +541,6 @@ EXTERNCPP void ShowGluiColorbar(void);
 EXTERNCPP void HideGluiColorbar(void);
 EXTERNCPP void ShowGluiMotion(int menu_id);
 EXTERNCPP void HideGluiMotion(void);
-EXTERNCPP void ShowGluiClip(void);
-
-EXTERNCPP void HideGluiClip(void);
 EXTERNCPP void ShowGluiDisplay(int menu_id);
 EXTERNCPP void ShowGluiDevice(void);
 EXTERNCPP void ShowGluiPlotDevice(void);
@@ -916,7 +917,6 @@ EXTERNCPP void CopyCamera(cameradata *to, cameradata *from);
 EXTERNCPP void CopyViewCamera(cameradata *to, cameradata *from);
 EXTERNCPP void UpdateCamera(cameradata *ca);
 EXTERNCPP void UpdateProjectionType(void);
-EXTERNCPP void UpdateClipAll(void);
 EXTERNCPP void GetInverse(float *m, float *mi);
 EXTERNCPP void MatMultMat(float *m1, float *m2, float *m3);
 EXTERNCPP void UpdateMeshList1(int val);

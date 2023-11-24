@@ -97,7 +97,7 @@ void ClipCB(int var){
     WriteIni(LOCAL_INI, NULL);
     break;
   case CLIP_CLOSE:
-    HideGluiClip();
+    GLUIHideGluiClip();
     break;
   case CLIP_xlower:
     if(clipinfo.clip_xmin == 0)SPINNER_clip_xmin->disable();
@@ -378,21 +378,21 @@ extern "C" void GluiClipSetup(int main_window){
   glui_clip->set_main_gfx_window( main_window );
 }
 
-/* ------------------ HideGluiClip ------------------------ */
+/* ------------------ GLUIHideGluiClip ------------------------ */
 
-extern "C" void HideGluiClip(void){
+extern "C" void GLUIHideGluiClip(void){
   CloseRollouts(glui_clip);
 }
 
-/* ------------------ ShowGluiClip ------------------------ */
+/* ------------------ GLUIShowGluiClip ------------------------ */
 
-extern "C" void ShowGluiClip(void){
+extern "C" void GLUIShowGluiClip(void){
   if(glui_clip!=NULL)glui_clip->show();
 }
 
-/* ------------------ UpdateGluiClip ------------------------ */
+/* ------------------ GLUIUpdateGluiClip ------------------------ */
 
-extern "C" void UpdateGluiClip(void){
+extern "C" void GLUIUpdateGluiClip(void){
   if(CHECKBOX_clip_xmin!=NULL&&CHECKBOX_clip_ymin!=NULL&&CHECKBOX_clip_zmin!=NULL&&
      CHECKBOX_clip_xmax!=NULL&&CHECKBOX_clip_ymax!=NULL&&CHECKBOX_clip_zmax!=NULL){
 
@@ -419,9 +419,9 @@ extern "C" void UpdateGluiClip(void){
   }
 }
 
-/* ------------------ UpdateClipAll ------------------------ */
+/* ------------------ GLUIUpdateClipAll ------------------------ */
 
-extern "C" void UpdateClipAll(void){
+extern "C" void GLUIUpdateClipAll(void){
   ClipCB(CLIP_all);
   radio_clip->set_int_val(clip_mode);
 }
