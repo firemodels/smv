@@ -9,6 +9,9 @@
 
 #include "smokeviewvars.h"
 
+void TerrainCB(int var);
+void VolumeCB(int var);
+
 //*** geomprocinfo entries
 #define STRUCTURED_ROLLOUT     0
 #define UNSTRUCTURED_ROLLOUT   1
@@ -232,16 +235,16 @@ char a_updatelabel[1000];
 char *updatelabel=NULL;
 
 
-/* ------------------ UpdateHVACViews ------------------------ */
+/* ------------------ GLUIUpdateHVACViews ------------------------ */
 
-extern "C" void UpdateHVACViews(void){
+extern "C" void GLUIUpdateHVACViews(void){
   CHECKBOX_hvac_metro_view->set_int_val(hvac_metro_view);
   CHECKBOX_hvac_cell_view->set_int_val(hvac_cell_view);
 }
 
-  /* ------------------ UpdateTerrainTexture ------------------------ */
+  /* ------------------ GLUIUpdateTerrainTexture ------------------------ */
 
-extern "C" void UpdateTerrainTexture(int val){
+extern "C" void GLUIUpdateTerrainTexture(int val){
   if(CHECKBOX_terrain_texture_show!=NULL&&val>=0&&val<nterrain_textures){
     texturedata *texti;
 
@@ -264,9 +267,9 @@ void GeomRolloutCB(int var){
   ToggleRollout(geomprocinfo, ngeomprocinfo, var);
 }
 
-/* ------------------ UpdateSelectGeom ------------------------ */
+/* ------------------ GLUIUpdateSelectGeom ------------------------ */
 
-extern "C" void UpdateSelectGeom(void){
+extern "C" void GLUIUpdateSelectGeom(void){
   RADIO_select_geom->set_int_val(select_geom);
 }
 
@@ -276,9 +279,9 @@ extern "C" void UpdateShowOnlyTop(void){
   if(CHECKBOX_showonly_top!=NULL)CHECKBOX_showonly_top->set_int_val(terrain_showonly_top);
 }
 
-/* ------------------ UpdateWhereFaceVolumes ------------------------ */
+/* ------------------ GLUIUpdateWhereFaceVolumes ------------------------ */
 
-extern "C" void UpdateWhereFaceVolumes(void){
+extern "C" void GLUIUpdateWhereFaceVolumes(void){
   if(CHECKBOX_showgeom_inside_domain!=NULL)CHECKBOX_showgeom_inside_domain->set_int_val(showgeom_inside_domain);
   if(CHECKBOX_showgeom_outside_domain!=NULL)CHECKBOX_showgeom_outside_domain->set_int_val(showgeom_outside_domain);
 }
@@ -293,15 +296,15 @@ extern "C" void UpdateGluiCfaces(void){
   if(CHECKBOX_show_cface_normals!=NULL)CHECKBOX_show_cface_normals->set_int_val(show_cface_normals);
 }
 
-/* ------------------ UpdateGeomBoundingBox ------------------------ */
+/* ------------------ GLUIUpdateGeomBoundingBox ------------------------ */
 
-extern "C" void UpdateGeomBoundingBox(void){
+extern "C" void GLUIUpdateGeomBoundingBox(void){
   if(RADIO_show_geom_boundingbox!=NULL)RADIO_show_geom_boundingbox->set_int_val(show_geom_boundingbox);
 }
 
-/* ------------------ UpdateGeometryControls ------------------------ */
+/* ------------------ GLUIUpdateGeometryControls ------------------------ */
 
-extern "C" void UpdateGeometryControls(void){
+extern "C" void GLUIUpdateGeometryControls(void){
   if(CHECKBOX_surface_solid!=NULL)CHECKBOX_surface_solid->set_int_val(show_faces_shaded);
   if(CHECKBOX_surface_outline!=NULL)CHECKBOX_surface_outline->set_int_val(show_faces_outline);
 
@@ -309,9 +312,9 @@ extern "C" void UpdateGeometryControls(void){
   if(CHECKBOX_smooth_geom_normal != NULL)CHECKBOX_smooth_geom_normal->set_int_val(smooth_geom_normal);
 }
 
-/* ------------------ GetGeomDialogState ------------------------ */
+/* ------------------ GLUIGetGeomDialogState ------------------------ */
 
-extern "C" void GetGeomDialogState(void){
+extern "C" void GLUIGetGeomDialogState(void){
   if(ROLLOUT_structured!=NULL){
     if(ROLLOUT_structured->is_open){
       structured_isopen=1;
@@ -362,10 +365,10 @@ void BlockeditDlgCB(int var){
 
 }
 
-/* ------------------ UpdateTriangleInfo ------------------------ */
+/* ------------------ GLUIUpdateTriangleInfo ------------------------ */
 
 
-extern "C" void UpdateTriangleInfo(surfdata *tri_surf, float tri_area){
+extern "C" void GLUIUpdateTriangleInfo(surfdata *tri_surf, float tri_area){
   char label[100];
 
   LIST_geom_surface->set_int_val(tri_surf->in_geom_list);
@@ -376,9 +379,9 @@ extern "C" void UpdateTriangleInfo(surfdata *tri_surf, float tri_area){
   VolumeCB(SURF_GET);
 }
 
-  /* ------------------ UpdateVertexInfo ------------------------ */
+  /* ------------------ GLUIUpdateVertexInfo ------------------------ */
 
-extern "C" void UpdateVertexInfo(float *xyz1, float *xyz2){
+extern "C" void GLUIUpdateVertexInfo(float *xyz1, float *xyz2){
   char label[100];
 
   if(xyz1!=NULL){
@@ -450,9 +453,9 @@ void Glui2HVAC(void){
   }
 }
 
-/* ------------------ HVAC2Glui ------------------------ */
+/* ------------------ GLUIHVAC2Glui ------------------------ */
 
-extern "C" void HVAC2Glui(int index){
+extern "C" void GLUIHVAC2Glui(int index){
   hvacdata *hvaci;
   int i;
 
@@ -481,24 +484,24 @@ extern "C" void HVAC2Glui(int index){
   RADIO_hvac_show_filters->set_int_val(glui_hvac->show_filters);
 }
 
-/* ------------------ UpdateTerrainGlui ------------------------ */
+/* ------------------ GLUIUpdateTerrain ------------------------ */
 
-extern "C" void UpdateTerrainGlui(void){
+extern "C" void GLUIUpdateTerrain(void){
   if(CHECKBOX_terrain_top_surface!=NULL)CHECKBOX_terrain_top_surface->set_int_val(terrain_showonly_top);
   if(CHECKBOX_showonly_top != NULL)CHECKBOX_showonly_top->set_int_val(terrain_showonly_top);
   if(RADIO_terrain_type!=NULL)RADIO_terrain_type->set_int_val(visTerrainType);
 }
 
-/* ------------------ UpdateHVACVarLists ------------------------ */
+/* ------------------ GLUIUpdateHVACVarLists ------------------------ */
 
-extern "C" void UpdateHVACVarLists(void){
+extern "C" void GLUIUpdateHVACVarLists(void){
   if(LIST_hvacductvar_index!=NULL)LIST_hvacductvar_index->set_int_val(hvacductvar_index);
   if(LIST_hvacnodevar_index!=NULL)LIST_hvacnodevar_index->set_int_val(hvacnodevar_index);
 }
 
 /* ------------------ HvacCB ------------------------ */
 
-extern "C" void HvacCB(int var){
+void HvacCB(int var){
   int i;
 
   updatemenu = 1;
@@ -525,7 +528,7 @@ extern "C" void HvacCB(int var){
       }
     break;
     case HVAC_DUCTNODE_NETWORK:
-      HVAC2Glui(hvac_network_ductnode_index);
+      GLUIHVAC2Glui(hvac_network_ductnode_index);
       break;
     case HVAC_SHOW_DUCT_LABELS:
     case HVAC_SHOW_COMPONENTS:
@@ -883,7 +886,7 @@ extern "C" void GluiGeometrySetup(int main_window){
     if(nsurfinfo>0){
       glui_geometry->add_statictext_to_panel(PANEL_faces, "");
 
-      LIST_obst_surface[DOWN_X] = glui_geometry->add_listbox_to_panel(PANEL_faces, _("Left"), surface_indices+DOWN_X, UPDATE_LIST, ObjectCB);
+      LIST_obst_surface[DOWN_X] = glui_geometry->add_listbox_to_panel(PANEL_faces, _("Left"), surface_indices+DOWN_X, UPDATE_LIST, GLUIObjectCB);
       LIST_obst_surface[DOWN_X]->set_w(260);
       for(i = 0; i<nsurfinfo; i++){
         surfdata *surfi;
@@ -895,7 +898,7 @@ extern "C" void GluiGeometrySetup(int main_window){
         LIST_obst_surface[DOWN_X]->add_item(i, surfacelabel);
       }
 
-      LIST_obst_surface[UP_X] = glui_geometry->add_listbox_to_panel(PANEL_faces, _("Right"), surface_indices+UP_X, UPDATE_LIST, ObjectCB);
+      LIST_obst_surface[UP_X] = glui_geometry->add_listbox_to_panel(PANEL_faces, _("Right"), surface_indices+UP_X, UPDATE_LIST, GLUIObjectCB);
       LIST_obst_surface[UP_X]->set_w(260);
       for(i = 0; i<nsurfinfo; i++){
         surfdata *surfi;
@@ -907,7 +910,7 @@ extern "C" void GluiGeometrySetup(int main_window){
         LIST_obst_surface[UP_X]->add_item(i, surfacelabel);
       }
 
-      LIST_obst_surface[DOWN_Y] = glui_geometry->add_listbox_to_panel(PANEL_faces, _("Front"), surface_indices+DOWN_Y, UPDATE_LIST, ObjectCB);
+      LIST_obst_surface[DOWN_Y] = glui_geometry->add_listbox_to_panel(PANEL_faces, _("Front"), surface_indices+DOWN_Y, UPDATE_LIST, GLUIObjectCB);
       LIST_obst_surface[DOWN_Y]->set_w(260);
       for(i = 0; i<nsurfinfo; i++){
         surfdata *surfi;
@@ -919,7 +922,7 @@ extern "C" void GluiGeometrySetup(int main_window){
         LIST_obst_surface[DOWN_Y]->add_item(i, surfacelabel);
       }
 
-      LIST_obst_surface[UP_Y] = glui_geometry->add_listbox_to_panel(PANEL_faces, _("Back"), surface_indices+UP_Y, UPDATE_LIST, ObjectCB);
+      LIST_obst_surface[UP_Y] = glui_geometry->add_listbox_to_panel(PANEL_faces, _("Back"), surface_indices+UP_Y, UPDATE_LIST, GLUIObjectCB);
       LIST_obst_surface[UP_Y]->set_w(260);
       for(i = 0; i<nsurfinfo; i++){
         surfdata *surfi;
@@ -931,7 +934,7 @@ extern "C" void GluiGeometrySetup(int main_window){
         LIST_obst_surface[UP_Y]->add_item(i, surfacelabel);
       }
 
-      LIST_obst_surface[DOWN_Z] = glui_geometry->add_listbox_to_panel(PANEL_faces, _("Down"), surface_indices+DOWN_Z, UPDATE_LIST, ObjectCB);
+      LIST_obst_surface[DOWN_Z] = glui_geometry->add_listbox_to_panel(PANEL_faces, _("Down"), surface_indices+DOWN_Z, UPDATE_LIST, GLUIObjectCB);
       LIST_obst_surface[DOWN_Z]->set_w(260);
       for(i = 0; i<nsurfinfo; i++){
         surfdata *surfi;
@@ -943,7 +946,7 @@ extern "C" void GluiGeometrySetup(int main_window){
         LIST_obst_surface[DOWN_Z]->add_item(i, surfacelabel);
       }
 
-      LIST_obst_surface[UP_Z] = glui_geometry->add_listbox_to_panel(PANEL_faces, _("Up"), surface_indices+UP_Z, UPDATE_LIST, ObjectCB);
+      LIST_obst_surface[UP_Z] = glui_geometry->add_listbox_to_panel(PANEL_faces, _("Up"), surface_indices+UP_Z, UPDATE_LIST, GLUIObjectCB);
       LIST_obst_surface[UP_Z]->set_w(260);
       for(i = 0; i<nsurfinfo; i++){
         surfdata *surfi;
@@ -955,7 +958,7 @@ extern "C" void GluiGeometrySetup(int main_window){
         LIST_obst_surface[UP_Z]->add_item(i, surfacelabel);
       }
 
-      ObjectCB(RADIO_WALL);
+      GLUIObjectCB(RADIO_WALL);
       for(i = 0; i<6; i++){
         LIST_obst_surface[i]->disable();
       }
@@ -986,16 +989,16 @@ extern "C" void GluiGeometrySetup(int main_window){
     }
     blockage_as_input = 1-blockage_snapped;
     CHECKBOX_blockage = glui_geometry->add_checkbox_to_panel(PANEL_obj_stretch2, _("Dimensions snapped to grid"), &blockage_snapped,
-                                                             BLOCKAGE_AS_INPUT, ObjectCB);
+                                                             BLOCKAGE_AS_INPUT, GLUIObjectCB);
     PANEL_obj_stretch3 = glui_geometry->add_panel_to_panel(PANEL_obj_stretch2, "", GLUI_PANEL_NONE);
-    EDIT_xmin = glui_geometry->add_edittext_to_panel(PANEL_obj_stretch3, "x", GLUI_EDITTEXT_FLOAT, &glui_block_xmin, XMIN_SPIN, ObjectCB);
-    EDIT_ymin = glui_geometry->add_edittext_to_panel(PANEL_obj_stretch3, "y", GLUI_EDITTEXT_FLOAT, &glui_block_ymin, YMIN_SPIN, ObjectCB);
-    EDIT_zmin = glui_geometry->add_edittext_to_panel(PANEL_obj_stretch3, "z", GLUI_EDITTEXT_FLOAT, &glui_block_zmin, ZMIN_SPIN, ObjectCB);
+    EDIT_xmin = glui_geometry->add_edittext_to_panel(PANEL_obj_stretch3, "x", GLUI_EDITTEXT_FLOAT, &glui_block_xmin, XMIN_SPIN, GLUIObjectCB);
+    EDIT_ymin = glui_geometry->add_edittext_to_panel(PANEL_obj_stretch3, "y", GLUI_EDITTEXT_FLOAT, &glui_block_ymin, YMIN_SPIN, GLUIObjectCB);
+    EDIT_zmin = glui_geometry->add_edittext_to_panel(PANEL_obj_stretch3, "z", GLUI_EDITTEXT_FLOAT, &glui_block_zmin, ZMIN_SPIN, GLUIObjectCB);
 
     glui_geometry->add_column_to_panel(PANEL_obj_stretch3, false);
-    EDIT_xmax = glui_geometry->add_edittext_to_panel(PANEL_obj_stretch3, "", GLUI_EDITTEXT_FLOAT, &glui_block_xmax, XMAX_SPIN, ObjectCB);
-    EDIT_ymax = glui_geometry->add_edittext_to_panel(PANEL_obj_stretch3, "", GLUI_EDITTEXT_FLOAT, &glui_block_ymax, YMAX_SPIN, ObjectCB);
-    EDIT_zmax = glui_geometry->add_edittext_to_panel(PANEL_obj_stretch3, "", GLUI_EDITTEXT_FLOAT, &glui_block_zmax, ZMAX_SPIN, ObjectCB);
+    EDIT_xmax = glui_geometry->add_edittext_to_panel(PANEL_obj_stretch3, "", GLUI_EDITTEXT_FLOAT, &glui_block_xmax, XMAX_SPIN, GLUIObjectCB);
+    EDIT_ymax = glui_geometry->add_edittext_to_panel(PANEL_obj_stretch3, "", GLUI_EDITTEXT_FLOAT, &glui_block_ymax, YMAX_SPIN, GLUIObjectCB);
+    EDIT_zmax = glui_geometry->add_edittext_to_panel(PANEL_obj_stretch3, "", GLUI_EDITTEXT_FLOAT, &glui_block_zmax, ZMAX_SPIN, GLUIObjectCB);
 
     EDIT_xmin->disable();
     EDIT_ymin->disable();
@@ -1004,7 +1007,7 @@ extern "C" void GluiGeometrySetup(int main_window){
     EDIT_xmax->disable();
     EDIT_ymax->disable();
     EDIT_zmax->disable();
-    ObjectCB(BLOCKAGE_AS_INPUT);
+    GLUIObjectCB(BLOCKAGE_AS_INPUT);
 
     EDIT_xmin->set_float_limits(xplt_orig[0], xplt_orig[ibar], GLUI_LIMIT_CLAMP);
     EDIT_xmax->set_float_limits(xplt_orig[0], xplt_orig[ibar], GLUI_LIMIT_CLAMP);
@@ -1117,7 +1120,7 @@ extern "C" void GluiGeometrySetup(int main_window){
     STATIC_vertx2 = glui_geometry->add_statictext_to_panel(PANEL_properties_vertex, "x2:");
     STATIC_verty2 = glui_geometry->add_statictext_to_panel(PANEL_properties_vertex, "y2:");
     STATIC_vertz2 = glui_geometry->add_statictext_to_panel(PANEL_properties_vertex, "z2:");
-    UpdateVertexInfo(NULL, NULL);
+    GLUIUpdateVertexInfo(NULL, NULL);
 
     PANEL_properties_triangle = glui_geometry->add_panel_to_panel(PANEL_properties2, "triangle");
     STATIC_tri_area = glui_geometry->add_statictext_to_panel(PANEL_properties_triangle, "area:");
@@ -1294,7 +1297,7 @@ extern "C" void GluiGeometrySetup(int main_window){
 
 /* ------------------ TerrainCB ------------------------ */
 
-extern "C" void TerrainCB(int var){
+void TerrainCB(int var){
   switch (var){
     case TERRAIN_TYPE:
       GeometryMenu(17+visTerrainType);
@@ -1342,7 +1345,7 @@ void GetGeomZBounds(float *zmin, float *zmax){
 
 /* ------------------ VolumeCB ------------------------ */
 
-extern "C" void VolumeCB(int var){
+void VolumeCB(int var){
   int i;
   switch(var){
   case SURF_GET:
@@ -1458,7 +1461,7 @@ extern "C" void VolumeCB(int var){
         texti = terrain_textures+i;
         if(texti->loaded==1){
           texti->display = 0;
-          UpdateTerrainTexture(i);
+          GLUIUpdateTerrainTexture(i);
         }
       }
       updatemenu = 1;
@@ -1503,16 +1506,16 @@ extern "C" void VolumeCB(int var){
   }
 }
 
-/* ------------------ HideGluiHVAC ------------------------ */
+/* ------------------ GLUIHideHVAC ------------------------ */
 
-extern "C" void HideGluiHVAC(void){
+extern "C" void GLUIHideHVAC(void){
   showhvac_dialog = 0;
   CloseRollouts(glui_geometry);
 }
 
-/* ------------------ ShowGluiHVAC ------------------------ */
+/* ------------------ GLUIShowHVAC ------------------------ */
 
-extern "C" void ShowGluiHVAC(void){
+extern "C" void GLUIShowHVAC(void){
   if(glui_geometry!=NULL && ROLLOUT_hvac!=NULL){
     showhvac_dialog=1;
     glui_geometry->show();
@@ -1520,21 +1523,21 @@ extern "C" void ShowGluiHVAC(void){
   }
 }
 
-/* ------------------ HideGluiGeometry ------------------------ */
+/* ------------------ GLUIHideGeometry ------------------------ */
 
-extern "C" void HideGluiGeometry(void){
+extern "C" void GLUIHideGeometry(void){
   blockageSelect=0;
   CloseRollouts(glui_geometry);
   showedit_dialog=0;
   editwindow_status=CLOSE_WINDOW;
 }
 
-/* ------------------ ShowGluiGeometry ------------------------ */
+/* ------------------ GLUIShowGeometry ------------------------ */
 
-extern "C" void ShowGluiGeometry(void){
+extern "C" void GLUIShowGeometry(void){
   showedit_dialog=1;
   blockageSelect=1;
-  UpdateBlockVals(NOT_SELECT_BLOCKS);
+  GLUIUpdateBlockVals(NOT_SELECT_BLOCKS);
   if(glui_geometry!=NULL){
     glui_geometry->show();
     if(ROLLOUT_unstructured!=NULL&&ROLLOUT_structured==NULL){
@@ -1546,9 +1549,9 @@ extern "C" void ShowGluiGeometry(void){
   }
 }
 
-/* ------------------ ShowGluiTerrain ------------------------ */
+/* ------------------ GLUIShowGluiTerrain ------------------------ */
 
-extern "C" void ShowGluiTerrain(void){
+extern "C" void GLUIShowGluiTerrain(void){
   showterrain_dialog = 1;
   if(glui_geometry != NULL){
     glui_geometry->show();
@@ -1558,17 +1561,17 @@ extern "C" void ShowGluiTerrain(void){
   }
 }
 
-/* ------------------ HideGluiTerrain ------------------------ */
+/* ------------------ GLUIHideGluiTerrain ------------------------ */
 
-extern "C" void HideGluiTerrain(void){
+extern "C" void GLUIHideGluiTerrain(void){
   showterrain_dialog = 0;
   CloseRollouts(glui_geometry);
   editwindow_status = CLOSE_WINDOW;
 }
 
-/* ------------------ UpdateBlockVals ------------------------ */
+/* ------------------ GLUIUpdateBlockVals ------------------------ */
 
-extern "C" void UpdateBlockVals(int flag){
+extern "C" void GLUIUpdateBlockVals(int flag){
   float xmin, xmax, ymin, ymax, zmin, zmax;
   int imin, jmin, kmin;
   int i;
@@ -1601,7 +1604,7 @@ extern "C" void UpdateBlockVals(int flag){
   EDIT_zmax->set_float_val(zmax);
   if(bchighlight!=NULL&&nsurfinfo>0){
     wall_case=bchighlight->walltype;
-    ObjectCB(RADIO_WALL);
+    GLUIObjectCB(RADIO_WALL);
   }
 
   if(flag==SELECT_BLOCKS){
@@ -1666,9 +1669,9 @@ extern "C" void UpdateBlockVals(int flag){
   }
 }
 
-/* ------------------ ObjectCB ------------------------ */
+/* ------------------ GLUIObjectCB ------------------------ */
 
-extern "C" void ObjectCB(int var){
+extern "C" void GLUIObjectCB(int var){
   int i,temp;
   switch(var){
     case VISAXISLABELS:
@@ -1772,7 +1775,7 @@ extern "C" void ObjectCB(int var){
         assert(FFALSE);
         break;
       }
-      ObjectCB(UPDATE_LIST);
+      GLUIObjectCB(UPDATE_LIST);
       break;
       case BLOCKAGE_AS_INPUT2:
       case BLOCKAGE_AS_INPUT:
@@ -1789,7 +1792,7 @@ extern "C" void ObjectCB(int var){
             blocklocation=BLOCKlocation_grid;
           }
         }
-        UpdateBlockVals(NOT_SELECT_BLOCKS);
+        GLUIUpdateBlockVals(NOT_SELECT_BLOCKS);
         break;
     default:
       assert(FFALSE);

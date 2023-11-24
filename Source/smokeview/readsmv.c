@@ -16668,7 +16668,7 @@ void WriteIni(int flag,char *filename){
 
   fprintf(fileout,"\n *** VIEW PARAMETERS ***\n\n");
 
-  GetGeomDialogState();
+  GLUIGetGeomDialogState();
   fprintf(fileout, "APERTURE\n");
   fprintf(fileout, " %i\n", apertureindex);
   fprintf(fileout, "BLOCKLOCATION\n");

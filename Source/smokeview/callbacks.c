@@ -397,7 +397,7 @@ void MouseEditBlockage(int x, int y){
         assert(FFALSE);
         break;
     }
-    UpdateBlockVals(SELECT_BLOCKS);
+    GLUIUpdateBlockVals(SELECT_BLOCKS);
   }
 }
 
@@ -558,7 +558,7 @@ void MouseSelectGeom(int x, int y){
         verti = geomlisti->verts+selected_geom_vertex2;
         xyz2 = verti->xyz;
       }
-      UpdateVertexInfo(xyz1, xyz2);
+      GLUIUpdateVertexInfo(xyz1, xyz2);
     }
       break;
     case GEOM_PROP_TRIANGLE:
@@ -569,7 +569,7 @@ void MouseSelectGeom(int x, int y){
 
         trii = geomlisti->triangles+selected_geom_triangle;
         tri_surf = trii->geomsurf;
-        UpdateTriangleInfo(tri_surf, trii->area);
+        GLUIUpdateTriangleInfo(tri_surf, trii->area);
       }
       break;
     default:
@@ -1032,7 +1032,7 @@ void MouseCB(int button, int state, int xm, int ym){
 
     if(button==GLUT_LEFT_BUTTON){
       if(blockageSelect == 1){
-        GetGeomDialogState();
+        GLUIGetGeomDialogState();
         if(structured_isopen == 1 && unstructured_isopen == 0)MouseEditBlockage(xm, ym);
       }
       if(edittour==1&&blockageSelect==0)MouseEditTour(xm,ym);
@@ -1096,7 +1096,7 @@ void MouseCB(int button, int state, int xm, int ym){
   }
   glutPostRedisplay();
   if(blockageSelect == 1){
-    GetGeomDialogState();
+    GLUIGetGeomDialogState();
     if(structured_isopen == 1 && unstructured_isopen == 0)DisplayCB();
   }
 }
@@ -1719,7 +1719,7 @@ void Keyboard(unsigned char key, int flag){
         show_geom_boundingbox = SHOW_BOUNDING_BOX_MOUSE_DOWN;
         printf("show bounding box when mouse is down: on\n");
       }
-      UpdateGeomBoundingBox();
+      GLUIUpdateGeomBoundingBox();
 
       break;
     case 'b':
@@ -2153,7 +2153,7 @@ void Keyboard(unsigned char key, int flag){
       if(show_faces_shaded==0&&show_faces_outline==0)printf("hidden");
       printf("\n");
     }
-    UpdateGeometryControls();
+    GLUIUpdateGeometryControls();
       switch(visBlocks){
         case visBLOCKAsInput:
         case visBLOCKAsInputOutline:
@@ -2292,7 +2292,7 @@ void Keyboard(unsigned char key, int flag){
         else{
           blockage_as_input=0;
         }
-        ObjectCB(BLOCKAGE_AS_INPUT2);
+        GLUIObjectCB(BLOCKAGE_AS_INPUT2);
       }
       updatefacelists = 1;
       break;
@@ -2734,7 +2734,7 @@ void Keyboard(unsigned char key, int flag){
         if(select_geom==GEOM_PROP_VERTEX2)printf("select vertex 2\n");
         if(select_geom==GEOM_PROP_TRIANGLE)printf("select triangle\n");
         if(select_geom==GEOM_PROP_SURF)printf("select surf\n");
-        UpdateSelectGeom();
+        GLUIUpdateSelectGeom();
       }
       break;
     case '!':

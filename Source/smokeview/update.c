@@ -1888,7 +1888,7 @@ void UpdateShowScene(void){
 
   if(update_terrain_type == 1){
     update_terrain_type = 0;
-    UpdateTerrainGlui();
+    GLUIUpdateTerrain();
   }
   if(check_colorbar == 1){
     CheckLab();

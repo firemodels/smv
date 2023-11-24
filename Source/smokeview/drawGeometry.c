@@ -5061,7 +5061,7 @@ void DrawBlockages(int mode, int trans_flag){
   if(trans_flag!=DRAW_TRANSPARENT&&blocklocation!=BLOCKlocation_cad){
     if(mode==SELECTOBJECT){
       if(blockageSelect==1){
-        GetGeomDialogState();
+        GLUIGetGeomDialogState();
         if(structured_isopen == 1 && unstructured_isopen == 0){
           DrawSelectFaces();
           return;

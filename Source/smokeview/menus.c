@@ -1632,10 +1632,10 @@ void DialogMenu(int value){
   case DIALOG_HVAC:
     showhvac_dialog = 1 - showhvac_dialog;
     if(showhvac_dialog == 1){
-      ShowGluiHVAC();
+      GLUIShowHVAC();
     }
     if(showhvac_dialog == 0){
-      HideGluiHVAC();
+      GLUIHideHVAC();
     }
     break;
   case DIALOG_GEOMETRY:
@@ -1647,21 +1647,21 @@ void DialogMenu(int value){
         CheckMemoryOn;
         updategetobstlabels=0;
       }
-      ShowGluiGeometry();
+      GLUIShowGeometry();
       visBlocks=visBLOCKNormal;
     }
     if(showedit_dialog==0){
-      HideGluiGeometry();
+      GLUIHideGeometry();
     }
     UpdateTrainerOutline();
     break;
   case DIALOG_TERRAIN:
     showterrain_dialog = 1 - showterrain_dialog;
     if(showterrain_dialog == 1){
-      ShowGluiTerrain();
+      GLUIShowGluiTerrain();
     }
     else{
-      HideGluiTerrain();
+      GLUIHideGluiTerrain();
     }
     break;
   case DIALOG_SHRINKALL:
@@ -6026,7 +6026,7 @@ void ImmersedMenu(int value){
       else{
         show_geom_boundingbox = SHOW_BOUNDING_BOX_ALWAYS;
       }
-      UpdateGeomBoundingBox();
+      GLUIUpdateGeomBoundingBox();
       break;
     case GEOM_BOUNDING_BOX_MOUSE_DOWN:
       if(show_geom_boundingbox==SHOW_BOUNDING_BOX_MOUSE_DOWN){
@@ -6035,7 +6035,7 @@ void ImmersedMenu(int value){
       else{
         show_geom_boundingbox = SHOW_BOUNDING_BOX_MOUSE_DOWN;
       }
-      UpdateGeomBoundingBox();
+      GLUIUpdateGeomBoundingBox();
       break;
     case GEOMETRY_TERRAIN_SHOW_TOP:
       terrain_showonly_top = 1 - terrain_showonly_top;
@@ -6111,17 +6111,17 @@ void ImmersedMenu(int value){
       break;
     case GEOMETRY_INSIDE_DOMAIN:
       showgeom_inside_domain = 1 - showgeom_inside_domain;
-      UpdateWhereFaceVolumes();
+      GLUIUpdateWhereFaceVolumes();
       break;
     case GEOMETRY_OUTSIDE_DOMAIN:
       showgeom_outside_domain = 1 - showgeom_outside_domain;
-      UpdateWhereFaceVolumes();
+      GLUIUpdateWhereFaceVolumes();
       break;
     default:
       assert(FFALSE);
       break;
   }
-  UpdateGeometryControls();
+  GLUIUpdateGeometryControls();
 
   GLUTPOSTREDISPLAY;
 }
@@ -6160,7 +6160,7 @@ void BlockageMenu(int value){
       else{
         show_geom_boundingbox = SHOW_BOUNDING_BOX_ALWAYS;
       }
-      UpdateGeomBoundingBox();
+      GLUIUpdateGeomBoundingBox();
       break;
     case GEOM_BOUNDING_BOX_MOUSE_DOWN:
       if(show_geom_boundingbox==SHOW_BOUNDING_BOX_MOUSE_DOWN){
@@ -6169,7 +6169,7 @@ void BlockageMenu(int value){
       else{
         show_geom_boundingbox = SHOW_BOUNDING_BOX_MOUSE_DOWN;
       }
-      UpdateGeomBoundingBox();
+      GLUIUpdateGeomBoundingBox();
       break;
     case visBLOCKOutlineColor:
       outline_color_flag = 1 - outline_color_flag;
@@ -6577,7 +6577,7 @@ void TerrainGeomShowMenu(int value){
     if(value>=0&&value<nterrain_textures){
       texti = terrain_textures+value;
       texti->display = 1-texti->display;
-      UpdateTerrainTexture(value);
+      GLUIUpdateTerrainTexture(value);
     }
   }
   else{
@@ -6598,7 +6598,7 @@ void TerrainGeomShowMenu(int value){
       else{
         show_geom_boundingbox = SHOW_BOUNDING_BOX_ALWAYS;
       }
-      UpdateGeomBoundingBox();
+      GLUIUpdateGeomBoundingBox();
       break;
     case MENU_TERRAIN_BOUNDING_BOX_AUTO:
       if(show_geom_boundingbox==SHOW_BOUNDING_BOX_MOUSE_DOWN){
@@ -6607,7 +6607,7 @@ void TerrainGeomShowMenu(int value){
       else{
         show_geom_boundingbox = SHOW_BOUNDING_BOX_MOUSE_DOWN;
       }
-      UpdateGeomBoundingBox();
+      GLUIUpdateGeomBoundingBox();
       break;
     default:
       assert(0);
@@ -6939,7 +6939,7 @@ void HVACNodeValueMenu(int value){
   }
   GLUISetValTypeIndex(BOUND_HVACNODE, value);
   updatemenu = 1;
-  UpdateHVACVarLists();
+  GLUIUpdateHVACVarLists();
   GLUIHVACNodeBoundsCPP_CB(BOUND_UPDATE_COLORS);
   GLUTPOSTREDISPLAY;
 }
@@ -6966,7 +6966,7 @@ void HVACDuctValueMenu(int value){
     }
   }
   updatemenu = 1;
-  UpdateHVACVarLists();
+  GLUIUpdateHVACVarLists();
   GLUISetValTypeIndex(BOUND_HVACDUCT, value);
   GLUIHVACDuctBoundsCPP_CB(BOUND_UPDATE_COLORS);//
   GLUTPOSTREDISPLAY;
@@ -7040,11 +7040,11 @@ void HVACMenu(int value){
       break;
     case MENU_HVAC_METRO_VIEW:
       hvac_metro_view = 1 - hvac_metro_view;
-      UpdateHVACViews();
+      GLUIUpdateHVACViews();
       break;
     case MENU_HVAC_CELL_VIEW:
       hvac_cell_view = 1 - hvac_cell_view;
-      UpdateHVACViews();
+      GLUIUpdateHVACViews();
       break;
     case MENU_HVAC_DIALOG_HVAC:
       DialogMenu(DIALOG_HVAC);
@@ -7065,7 +7065,7 @@ void HVACMenu(int value){
     hvaci->network_name = labelsave;
     hvaci->display      = display;
   }
-  HVAC2Glui(0);
+  GLUIHVAC2Glui(0);
   updatemenu = 1;
   GLUTPOSTREDISPLAY;
 }
@@ -7095,13 +7095,13 @@ void GeometryMenu(int value){
     break;
   case 17+TERRAIN_TOP:
     terrain_showonly_top = 1 - terrain_showonly_top;
-    UpdateTerrainGlui();
+    GLUIUpdateTerrain();
     break;
   case 17+TERRAIN_SURFACE:
   case 17+TERRAIN_IMAGE:
   case 17+TERRAIN_HIDDEN:
     visTerrainType = value-17;
-    UpdateTerrainGlui();
+    GLUIUpdateTerrain();
     if(visTerrainType == TERRAIN_HIDDEN){
       if(visOtherVents!=visOtherVentsSAVE){
         visOtherVents=visOtherVentsSAVE;
