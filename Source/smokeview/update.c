@@ -1934,10 +1934,10 @@ void UpdateShowScene(void){
   if(open_movie_dialog==1){
     open_movie_dialog = 0;
     if(have_slurm==1&&nmovie_queues>0){
-      ShowGluiMotion(DIALOG_MOVIE_BATCH);
+      GLUIShowMotion(DIALOG_MOVIE_BATCH);
     }
     else{
-      ShowGluiMotion(DIALOG_MOVIE);
+      GLUIShowMotion(DIALOG_MOVIE);
     }
   }
   if(terrain_update_normals==1&&ngeominfo>0){
@@ -1970,7 +1970,7 @@ void UpdateShowScene(void){
   }
   if(update_movie_parms==1){
     update_movie_parms = 0;
-    UpdateMovieParms();
+    GLUIUpdateMovieParms();
   }
 #ifdef pp_REFRESH
   if(update_refresh==1){
@@ -2012,13 +2012,13 @@ void UpdateShowScene(void){
     LoadFiles();
   }
   if(update_startup_view>0){
-    SetCurrentViewPoint(viewpoint_label_startup);
+    GLUISetCurrentViewPoint(viewpoint_label_startup);
     update_rotation_center = 0;
     update_rotation_center_ini = 0;
     update_startup_view--;
   }
   if(update_saving_viewpoint>0){
-    SetCurrentViewPoint(viewpoint_label_saved);
+    GLUISetCurrentViewPoint(viewpoint_label_saved);
     update_saving_viewpoint--;
   }
 #ifdef pp_HIST
@@ -2031,23 +2031,23 @@ void UpdateShowScene(void){
 #endif
 #endif
   if(update_viewpoint_script>0){
-    SetCurrentViewPoint(viewpoint_script);
+    GLUISetCurrentViewPoint(viewpoint_script);
     update_viewpoint_script--;
   }
   if(update_tour_list == 1){
     UpdateTourList();
   }
   if(update_gslice == 1){
-    UpdateGsliceParms();
+    GLUIUpdateGsliceParms();
   }
   if(update_rotation_center == 1){
     camera_current->rotation_index = glui_rotation_index;
-    SceneMotionCB(ROTATE_ABOUT);
+    GLUISceneMotionCB(ROTATE_ABOUT);
     update_rotation_center = 0;
   }
   if(update_rotation_center_ini == 1){
     camera_current->rotation_index = glui_rotation_index_ini;
-    SceneMotionCB(ROTATE_ABOUT);
+    GLUISceneMotionCB(ROTATE_ABOUT);
     update_rotation_center_ini = 0;
   }
   if(camera_current->dirty == 1){
@@ -2418,7 +2418,7 @@ void HandleMakeMovie(void){
     UNLOCK_SETUP_FFMPEG
     return;
   }
-  EnableDisableMakeMovieCPP(OFF);
+  GLUIEnableDisableMakeMovieCPP(OFF);
   update_makemovie = 1;
   UNLOCK_SETUP_FFMPEG
 }
@@ -2427,7 +2427,7 @@ void HandleMakeMovie(void){
 
 void EnableDisableMakeMovie(int onoff){
   LOCK_SETUP_FFMPEG
-  EnableDisableMakeMovieCPP(onoff);
+  GLUIEnableDisableMakeMovieCPP(onoff);
   UNLOCK_SETUP_FFMPEG
 }
 
@@ -2435,7 +2435,7 @@ void EnableDisableMakeMovie(int onoff){
 
 void EnableDisablePlayMovie(void){
   LOCK_SETUP_FFMPEG
-  EnableDisablePlayMovieCPP();
+  GLUIEnableDisablePlayMovieCPP();
   UNLOCK_SETUP_FFMPEG
 }
 
@@ -2468,10 +2468,10 @@ void UpdateDisplay(void){
   if(update_ff == 1){
     update_ff = 0;
     if(have_ffmpeg == 1){
-      EnableDisableMakeMovieCPP(ON);
+      GLUIEnableDisableMakeMovieCPP(ON);
     }
     else{
-      EnableDisableMakeMovieCPP(OFF);
+      GLUIEnableDisableMakeMovieCPP(OFF);
     }
   }
   UNLOCK_SETUP_FFMPEG
@@ -2503,7 +2503,7 @@ void UpdateDisplay(void){
   }
   if(update_zaxis_custom == 1){
     update_zaxis_custom = 0;
-    UpdateZAxisCustom();
+    GLUIUpdateZAxisCustom();
   }
   if(update_flipped_colorbar == 1){
     update_flipped_colorbar = 0;
@@ -2554,7 +2554,7 @@ void UpdateDisplay(void){
   }
   if(update_screensize == 1){
     update_screensize = 0;
-    UpdateWindowSizeList();
+    GLUIUpdateWindowSizeList();
 #ifdef pp_OSX_HIGHRES
     if(double_scale==1){
       screenWidthINI  /= 2;

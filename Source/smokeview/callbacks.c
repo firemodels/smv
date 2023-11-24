@@ -997,7 +997,7 @@ void MouseCB(int button, int state, int xm, int ym){
     eye_xyz0[0]=eye_xyz[0];
     eye_xyz0[1]=eye_xyz[1];
     eye_xyz0[2]=eye_xyz[2];
-    UpdateTranslate();
+    GLUIUpdateTranslate();
     timebar_drag=0;
     colorbar_drag=0;
     colorbar_splitdrag=0;
@@ -1051,7 +1051,7 @@ void MouseCB(int button, int state, int xm, int ym){
     if(canrestorelastview==0){
       updatemenu=1;
       canrestorelastview=1;
-      EnableResetSavedView();
+      GLUIEnableResetSavedView();
     }
     switch(button){
       case GLUT_MIDDLE_BUTTON:
@@ -1236,7 +1236,7 @@ void MoveGenSlice(int xm, int ym){
         delev = 360.0*dym/(float)screenHeight;
         gslice_normal_azelev[0] += daz;
         gslice_normal_azelev[1] += delev;
-        UpdateGsliceParms();
+        GLUIUpdateGsliceParms();
         start_xyz0[0]=xm;
         start_xyz0[1]=ym;
       }
@@ -1258,7 +1258,7 @@ void MoveGenSlice(int xm, int ym){
         gslice_xyz0[1] = gslice_xyz[1];
         mouse_down_xy0[0]=xm;
         mouse_down_xy0[1]=ym;
-        UpdateGsliceParms();
+        GLUIUpdateGsliceParms();
       }
       break;
     case KEY_ALT:
@@ -1269,7 +1269,7 @@ void MoveGenSlice(int xm, int ym){
         yy = yy/(float)screenHeight;
 
         gslice_xyz[2] = gslice_xyz0[2] - SMV2FDS_Z(4*(xyzbox-FDS2SMV_Z(gslice_xyz0[2]))*yy);
-        UpdateGsliceParms();
+        GLUIUpdateGsliceParms();
       }
       break;
     case KEY_SHIFT:
@@ -1388,8 +1388,8 @@ void MoveScene(int xm, int ym){
       aperture_glui = CLAMP(aperture_glui0 + aperture_max*yy,aperture_min,aperture_max);
 #define APERTURE 15
 #define ZOOM 12
-      SceneMotionCB(APERTURE);
-      SceneMotionCB(ZOOM);
+      GLUISceneMotionCB(APERTURE);
+      GLUISceneMotionCB(ZOOM);
       break;
     default:
       assert(FFALSE);
@@ -1823,8 +1823,8 @@ void Keyboard(unsigned char key, int flag){
       default:
         rotation_type++;
         if(rotation_type>3)rotation_type=0;
-        RotationTypeCB(rotation_type);
-        UpdateRotationType(rotation_type);
+        GLUIRotationTypeCB(rotation_type);
+        GLUIUpdateRotationType(rotation_type);
         HandleRotationType(ROTATION_2AXIS);
       }
       break;
@@ -2030,8 +2030,8 @@ void Keyboard(unsigned char key, int flag){
       fix_window_aspect = 1 - fix_window_aspect;
       if(fix_window_aspect == 1)printf("fix window aspect ratio: on\n");
       if(fix_window_aspect == 0)printf("fix window aspect ratio: off\n");
-      SceneMotionCB(WINDOW_PRESERVE);
-      UpdateWindowAspect();
+      GLUISceneMotionCB(WINDOW_PRESERVE);
+      GLUIUpdateWindowAspect();
       break;
     case 'k':
       if(keystate==GLUT_ACTIVE_ALT){ // toggle device selection
@@ -2533,13 +2533,13 @@ void Keyboard(unsigned char key, int flag){
       break;
     case '|':
       projection_type = 1-projection_type;
-      SceneMotionCB(PROJECTION);
+      GLUISceneMotionCB(PROJECTION);
       break;
     case 'v':
       switch(keystate){
         case GLUT_ACTIVE_ALT:
           projection_type = 1 - projection_type;
-          SceneMotionCB(PROJECTION);
+          GLUISceneMotionCB(PROJECTION);
           break;
         default:
           visVector=1-visVector;
@@ -2567,7 +2567,7 @@ void Keyboard(unsigned char key, int flag){
           }
           else{
             vis_gslice_data = 1 - vis_gslice_data;
-            UpdateGsliceParms();
+            GLUIUpdateGsliceParms();
           }
           break;
       }
@@ -3054,7 +3054,7 @@ void HandleRotationType(int flag){
     assert(FFALSE);
     break;
   }
-  ShowHideTranslate(rotation_type);
+  GLUIShowHideTranslate(rotation_type);
   rotation_type_old = rotation_type;
 }
 
@@ -3491,7 +3491,7 @@ void HandleMoveKeys(int  key){
     eye_xyz0[0]=eye_xyz[0];
     eye_xyz0[1]=eye_xyz[1];
     eye_xyz0[2]=eye_xyz[2];
-    UpdateTranslate();
+    GLUIUpdateTranslate();
   }
 }
 
@@ -3650,7 +3650,7 @@ void SetScreenSize(int *width, int *height){
     int width_low, height_low, width_high, height_high;
 
     GetRenderResolution(&width_low, &height_low, &width_high, &height_high);
-    UpdateRenderRadioButtons(width_low, height_low, width_high, height_high);
+    GLUIUpdateRenderRadioButtons(width_low, height_low, width_high, height_high);
   }
 }
 
@@ -3666,7 +3666,7 @@ void ReshapeCB(int width, int height){
   if(fix_window_aspect==1){
     glui_screenWidth=width;
     glui_screenHeight=glui_screenWidth*window_aspect;
-    SceneMotionCB(WINDOW_RESIZE);
+    GLUISceneMotionCB(WINDOW_RESIZE);
   }
   else{
     SetScreenSize(&width,&height);
@@ -3675,7 +3675,7 @@ void ReshapeCB(int width, int height){
   windowresized=1;
   CopyCamera(camera_current,camera_save);
   windowsize_pointer_old = -1;
-  UpdateWindowSizeList();
+  GLUIUpdateWindowSizeList();
   update_reshape = 2;
  }
 
@@ -3972,7 +3972,7 @@ void DoScript(void){
       else if(IS_LOADRENDER){
         if(current_script_command->exit==0){
           if(render_resolution==RENDER_RESOLUTION_360){
-            if(viewpoint_script_ptr!=NULL)SetCurrentViewPoint(viewpoint_script);
+            if(viewpoint_script_ptr!=NULL)GLUISetCurrentViewPoint(viewpoint_script);
             render_size_index=RenderWindow;
             resolution_multiplier = 1;
             RenderCB(RENDER_RESOLUTION);

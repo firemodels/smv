@@ -43,7 +43,7 @@ void InitDefaultCameras(void){
   camera_external->zoom = zoom;
   CopyCamera(camera_current, camera_external);
   strcpy(camera_label, camera_current->name);
-  UpdateCameraLabel();
+  GLUIUpdateCameraLabel();
 
   CopyCamera(camera_save, camera_current);
   CopyCamera(camera_last, camera_current);
@@ -51,7 +51,7 @@ void InitDefaultCameras(void){
   InitCameraList();
   AddDefaultViewpoints();
   CopyCamera(camera_external_save, camera_external);
-  UpdateGluiViewpointList();
+  GLUIUpdateViewpointList();
 }
 
 /* ------------------ InitMisc ------------------------ */
@@ -118,7 +118,7 @@ void InitMisc(void){
   InitDefaultCameras();
 
 
-  //ResetGluiView(i_view_list);
+  //GLUIResetView(i_view_list);
 
   glEnable(GL_DEPTH_TEST);
   glEnable(GL_NORMALIZE);
@@ -151,7 +151,7 @@ void InitMisc(void){
   strcpy(glui_curve_default.scaled_label, "");
   strcpy(glui_curve_default.scaled_unit,  "");
 
-  ResetGluiView(startup_view_ini);
+  GLUIResetView(startup_view_ini);
   UpdateShow();
 }
 

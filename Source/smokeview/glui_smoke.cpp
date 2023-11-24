@@ -288,13 +288,13 @@ extern "C" void UpdateTimeFrameBounds(float time_min, float time_max){
 /* ------------------ VolSmokeRolloutCB ------------------------ */
 
 void VolSmokeRolloutCB(int var){
-  ToggleRollout(volsmokeprocinfo, nvolsmokeprocinfo, var);
+  GLUIToggleRollout(volsmokeprocinfo, nvolsmokeprocinfo, var);
 }
 
 /* ------------------ ColorRolloutCB ------------------------ */
 
 void ColorRolloutCB(int var){
-  ToggleRollout(colorprocinfo, ncolorprocinfo, var);
+  GLUIToggleRollout(colorprocinfo, ncolorprocinfo, var);
 }
 
 /* ------------------ SmokeRolloutCB ------------------------ */
@@ -303,7 +303,7 @@ extern "C" void SmokeRolloutCB(int var){
   if(var == VOLRENDER_ROLLOUT)smoke_render_option = RENDER_VOLUME;
   if(var == SLICERENDER_ROLLOUT)smoke_render_option = RENDER_SLICE;
   Smoke3dCB(SMOKE_OPTIONS);
-  ToggleRollout(smokeprocinfo, nsmokeprocinfo, var);
+  GLUIToggleRollout(smokeprocinfo, nsmokeprocinfo, var);
 }
 
 /* ------------------ DeleteVolTourList ------------------------ */

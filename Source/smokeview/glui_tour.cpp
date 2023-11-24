@@ -70,7 +70,7 @@ int ntoursprocinfo = 0;
 /* ------------------ ToursRolloutCB ------------------------ */
 
 void ToursRolloutCB(int var){
-  ToggleRollout(toursprocinfo, ntoursprocinfo, var);
+  GLUIToggleRollout(toursprocinfo, ntoursprocinfo, var);
   if(var == MODIFY_TOURS_ROLLOUT){
     if(ROLLOUT_circular->is_open == 1){
       selectedtour_index = 0;
@@ -311,7 +311,7 @@ extern "C" void UpdateTourList(void){
 /* ------------------ HideGluiTour ------------------------ */
 
 extern "C" void HideGluiTour(void){
-  CloseRollouts(glui_tour);
+  GLUICloseRollouts(glui_tour);
   showtour_dialog = 0;
 }
 

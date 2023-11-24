@@ -91,13 +91,13 @@ int nshooterprocinfo = 0;
 /* ------------------ ShooterRolloutCB ------------------------ */
 
 void ShooterRolloutCB(int var){
-  ToggleRollout(shooterprocinfo, nshooterprocinfo, var);
+  GLUIToggleRollout(shooterprocinfo, nshooterprocinfo, var);
 }
 
 /* ------------------ GLUIHideGluiShooter ------------------------ */
 
 extern "C" void GLUIHideGluiShooter(void){
-  CloseRollouts(glui_shooter);
+  GLUICloseRollouts(glui_shooter);
 }
 
 /* ------------------ GLUIShowGluiShooter ------------------------ */

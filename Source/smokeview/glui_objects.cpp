@@ -249,13 +249,13 @@ extern "C" void UpdatePlot2DSize(void){
 /* ------------------ Device_Rollout_CB ------------------------ */
 
 void Device_Rollout_CB(int var){
-  ToggleRollout(deviceprocinfo, ndeviceprocinfo, var);
+  GLUIToggleRollout(deviceprocinfo, ndeviceprocinfo, var);
 }
 
 /* ------------------ Plot2D_Rollout_CB ------------------------ */
 
 void Plot2D_Rollout_CB(int var){
-  ToggleRollout(plot2dprocinfo, nplot2dprocinfo, var);
+  GLUIToggleRollout(plot2dprocinfo, nplot2dprocinfo, var);
 }
 
 /* ------------------ UpdateDeviceTypes ------------------------ */
@@ -2237,7 +2237,7 @@ extern "C" void GluiDeviceSetup(int main_window){
 /* ------------------ HideGluiDevice ------------------------ */
 
 extern "C" void HideGluiDevice(void){
-  CloseRollouts(glui_device);
+  GLUICloseRollouts(glui_device);
 }
 
 /* ------------------ ShowGluiPlotDevice ------------------------ */

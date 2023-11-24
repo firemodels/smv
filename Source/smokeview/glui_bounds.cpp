@@ -4100,13 +4100,13 @@ extern "C" void GLUIUpdateIsoColorlevel(void){
 /* ------------------ ParticleRolloutCB ------------------------ */
 
 void ParticleRolloutCB(int var){
-  ToggleRollout(particleprocinfo, nparticleprocinfo, var);
+  GLUIToggleRollout(particleprocinfo, nparticleprocinfo, var);
 }
 
 /* ------------------ Plot3dRolloutCB ------------------------ */
 
 void Plot3dRolloutCB(int var){
-  ToggleRollout(plot3dprocinfo, nplot3dprocinfo, var);
+  GLUIToggleRollout(plot3dprocinfo, nplot3dprocinfo, var);
 }
 
 /* ------------------ HVACRolloutCB ------------------------ */
@@ -4117,19 +4117,19 @@ void HVACRolloutCB(int var){
 /* ------------------ SliceRolloutCB ------------------------ */
 
 void SliceRolloutCB(int var){
-  ToggleRollout(sliceprocinfo, nsliceprocinfo, var);
+  GLUIToggleRollout(sliceprocinfo, nsliceprocinfo, var);
 }
 
 /* ------------------ IsoRolloutCB ------------------------ */
 
 void IsoRolloutCB(int var){
-  ToggleRollout(isoprocinfo, nisoprocinfo, var);
+  GLUIToggleRollout(isoprocinfo, nisoprocinfo, var);
 }
 
 /* ------------------ BoundRolloutCB ------------------------ */
 
 void BoundRolloutCB(int var){
-  ToggleRollout(boundprocinfo, nboundprocinfo, var);
+  GLUIToggleRollout(boundprocinfo, nboundprocinfo, var);
   if(nzoneinfo>0){
     if(var==ZONE_ROLLOUT){
       GLUISliceBoundCB(SETZONEVALMINMAX);
@@ -4145,13 +4145,13 @@ void BoundRolloutCB(int var){
 /* ------------------ SubBoundRolloutCB ------------------------ */
 
 void SubBoundRolloutCB(int var){
-  ToggleRollout(subboundprocinfo, nsubboundprocinfo, var);
+  GLUIToggleRollout(subboundprocinfo, nsubboundprocinfo, var);
 }
 
 /* ------------------ FileRolloutCB ------------------------ */
 
 void FileRolloutCB(int var){
-  ToggleRollout(fileprocinfo, nfileprocinfo, var);
+  GLUIToggleRollout(fileprocinfo, nfileprocinfo, var);
 }
 
 /* ------------------ GLUIUpdateGluiZoneBounds ------------------------ */
@@ -7194,7 +7194,7 @@ extern "C" void GLUIUpdateOverwrite(void){
 /* ------------------ GLUIHideGluiBounds ------------------------ */
 
 extern "C" void GLUIHideGluiBounds(void){
-  CloseRollouts(glui_bounds);
+  GLUICloseRollouts(glui_bounds);
 }
 
 /* ------------------ GLUIUpdateVectorWidgets ------------------------ */

@@ -1511,7 +1511,7 @@ void ShowHideMenu(int value){
    background_flip = 1-background_flip;
    UpdateRGBColors(COLORBAR_INDEX_NONE);
    GLUISetLabelControls();
-   SetColorControls();
+   GLUISetColorControls();
    GLUIUpdateBackgroundFlip(background_flip);
    GLUIUpdateBackgroundFlip2(background_flip);
    break;
@@ -1600,7 +1600,7 @@ void DialogMenu(int value){
   case DIALOG_SCALING:
   case DIALOG_VIEW:
   case DIALOG_WINDOW:
-    ShowGluiMotion(value);
+    GLUIShowMotion(value);
     break;
   case DIALOG_TICKS:
   case DIALOG_FONTS:
@@ -1665,14 +1665,14 @@ void DialogMenu(int value){
     }
     break;
   case DIALOG_SHRINKALL:
-    ShrinkDialogs();
+    GLUIShrinkDialogs();
     break;
   case DIALOG_HIDEALL:
     showcolorbar_dialog = 0;
     GLUIHideGluiShooter();
     GLUIHideGluiDisplay();
     GLUIHideGluiBounds();
-    HideGluiMotion();
+    GLUIHideMotion();
     HideGluiTour();
     GLUIHideGluiClip();
     HideGluiStereo();
@@ -1715,12 +1715,12 @@ void ZoomMenu(int value){
     if(projection_type!= PROJECTION_PERSPECTIVE){
       camera_current->projection_type=projection_type;
       SetViewPoint(RESTORE_EXTERIOR_VIEW);
-      UpdateProjectionType();
+      GLUIUpdateProjectionType();
     }
   }
   else if(zoomindex==UPDATE_PROJECTION){
     camera_current->projection_type=projection_type;
-    UpdateProjectionType();
+    GLUIUpdateProjectionType();
     UpdateCameraYpos(camera_current, 2);
     if(projection_type== PROJECTION_ORTHOGRAPHIC){
       camera_current->eye[1]=camera_current->isometric_y;
@@ -1733,11 +1733,11 @@ void ZoomMenu(int value){
     if(projection_type!= PROJECTION_PERSPECTIVE){
       SetViewPoint(RESTORE_EXTERIOR_VIEW_ZOOM);
       camera_current->projection_type=projection_type;
-      UpdateProjectionType();
+      GLUIUpdateProjectionType();
     }
   }
   camera_current->zoom=zoom;
-  UpdateGluiZoom();
+  GLUIUpdateZoom();
 }
 
 /* ------------------ ApertureMenu ------------------------ */
@@ -1873,11 +1873,11 @@ void ResetMenu(int value){
   if(value==MENU_DUMMY)return;
   switch(value){
   case MENU_VIEWPOINT_SETTINGS:
-    ShowGluiMotion(DIALOG_VIEW);
+    GLUIShowMotion(DIALOG_VIEW);
     break;
   case MENU_SIZEPRESERVING:
     projection_type = 1 - projection_type;
-    SceneMotionCB(PROJECTION);
+    GLUISceneMotionCB(PROJECTION);
     break;
   case MENU_OUTLINEVIEW:
     if(visBlocks==visBLOCKOutline){
@@ -1917,7 +1917,7 @@ void ResetMenu(int value){
       else{
         GetNextViewLabel(view_label);
       }
-      AddListView(view_label);
+      GLUIAddListView(view_label);
       ca = GetCamera(view_label);
       if(ca != NULL){
         ResetMenu(ca->view_id);
@@ -1933,7 +1933,7 @@ void ResetMenu(int value){
   default:
     assert(value>=-5);
     if(value<100000){
-      ResetGluiView(value);
+      GLUIResetView(value);
       if(scriptoutstream!=NULL){
         fprintf(scriptoutstream,"SETVIEWPOINT\n");
         fprintf(scriptoutstream," %s\n",camera_current->name);
@@ -1955,7 +1955,7 @@ void ResetDefaultMenu(int var){
 
     use_geom_factors = 1 - use_geom_factors;
     updatemenu = 1;
-    UpdateUseGeomFactors();
+    GLUIUpdateUseGeomFactors();
     for(i = 0; i<ncameras_sorted; i++){
       cameradata *ca;
 
@@ -2024,13 +2024,13 @@ void RenderState(int onoff){
     if(render_status==RENDER_OFF)return;
     render_status = RENDER_OFF;
     render_firsttime = NO;
-    Enable360Zoom();
+    GLUIEnable360Zoom();
     screenWidth  = saveW/scale;
     screenHeight = saveH/scale;
     SetScreenSize(&screenWidth, &screenHeight);
     ResizeWindow(saveW/scale, saveH/scale);
     ResetRenderResolution(&width_low, &height_low, &width_high, &height_high);
-    UpdateRenderRadioButtons(width_low, height_low, width_high, height_high);
+    GLUIUpdateRenderRadioButtons(width_low, height_low, width_high, height_high);
   }
 }
 
@@ -2058,12 +2058,12 @@ void RenderMenu(int value){
   }
   if(value>=10000&&value<=10005){
     resolution_multiplier=value-10000;
-    UpdateResolutionMultiplier();
+    GLUIUpdateResolutionMultiplier();
     return;
   }
   switch(value){
   case MENU_RENDER_SETTINGS:
-    ShowGluiMotion(DIALOG_RENDER);
+    GLUIShowMotion(DIALOG_RENDER);
     break;
   case RenderCustom:
     render_window_size = value;
@@ -2194,11 +2194,11 @@ void RenderMenu(int value){
     break;
   case RenderLABELframenumber:
     render_label_type=RENDER_LABEL_FRAMENUM;
-    UpdateGluiFileLabel(render_label_type);
+    GLUIUpdateFileLabel(render_label_type);
     break;
   case RenderLABELtime:
     render_label_type=RENDER_LABEL_TIME;
-    UpdateGluiFileLabel(render_label_type);
+    GLUIUpdateFileLabel(render_label_type);
     break;
   case RenderPNG:
      render_filetype=PNG;
@@ -2212,7 +2212,7 @@ void RenderMenu(int value){
      assert(FFALSE);
      break;
   }
-  UpdateResolutionMultiplier();
+  GLUIUpdateResolutionMultiplier();
 }
 
 /* ------------------ ParticleShowMenu ------------------------ */
@@ -6320,26 +6320,26 @@ void BlockageMenu(int value){
 void RotateTypeMenu(int value){
   if(value==MENU_DUMMY)return;
   if(value==MENU_MOTION_SETTINGS){
-    ShowGluiMotion(DIALOG_MOTION);
+    GLUIShowMotion(DIALOG_MOTION);
     return;
   }
   else if(value == MENU_MOTION_SHOW_VECTORS){
 	showgravity_vector = 1-showgravity_vector;
-	UpdateShowGravityVector();
+	GLUIUpdateShowGravityVector();
   }
   else if(value == MENU_MOTION_GRAVITY_VECTOR){
     gvec_down = 1;
 #define USE_GVEC 28
-    SceneMotionCB(USE_GVEC);
+    GLUISceneMotionCB(USE_GVEC);
   }
   else if(value==MENU_MOTION_Z_VECTOR){
 #define ZAXIS_UP 41
-    SceneMotionCB(ZAXIS_UP);
+    GLUISceneMotionCB(ZAXIS_UP);
   }
   else{
     rotation_type = value;
-    UpdateRotationType(rotation_type);
-    RotationTypeCB(rotation_type);
+    GLUIUpdateRotationType(rotation_type);
+    GLUIRotationTypeCB(rotation_type);
   }
   updatemenu = 1;
   GLUTPOSTREDISPLAY;
@@ -11298,7 +11298,7 @@ updatemenu=0;
     GLUTADDSUBMENU(_("Image type"),        render_filetypemenu);
     GLUTADDSUBMENU(_("Image suffix"), render_filesuffixmenu);
     glutAddMenuEntry(_("Settings..."), MENU_RENDER_SETTINGS);
-    UpdateGluiRender();
+    GLUIUpdateRender();
   }
 
   /* --------------------------------filesdialog menu -------------------------- */

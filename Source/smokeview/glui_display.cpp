@@ -300,7 +300,7 @@ extern "C" void GLUIUpdateTimebarOverlap(void) {
 /* ------------------ DisplayRolloutCB ------------------------ */
 
 void DisplayRolloutCB(int var){
-  ToggleRollout(displayprocinfo, ndisplayprocinfo, var);
+  GLUIToggleRollout(displayprocinfo, ndisplayprocinfo, var);
 }
 
 /* ------------------ UpdateGluiLabelText ------------------------ */
@@ -1091,7 +1091,7 @@ extern "C" void GluiDisplaySetup(int main_window){
 /* ------------------ GLUIHideGluiDisplay ------------------------ */
 
 extern "C" void GLUIHideGluiDisplay(void){
-  CloseRollouts(glui_labels);
+  GLUICloseRollouts(glui_labels);
 }
 
 /* ------------------ GLUIShowGluiDisplay ------------------------ */

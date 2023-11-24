@@ -264,7 +264,7 @@ void TerrainTextureCB(int val){
 /* ------------------ GeomRolloutCB ------------------------ */
 
 void GeomRolloutCB(int var){
-  ToggleRollout(geomprocinfo, ngeomprocinfo, var);
+  GLUIToggleRollout(geomprocinfo, ngeomprocinfo, var);
 }
 
 /* ------------------ GLUIUpdateSelectGeom ------------------------ */
@@ -1510,7 +1510,7 @@ void VolumeCB(int var){
 
 extern "C" void GLUIHideHVAC(void){
   showhvac_dialog = 0;
-  CloseRollouts(glui_geometry);
+  GLUICloseRollouts(glui_geometry);
 }
 
 /* ------------------ GLUIShowHVAC ------------------------ */
@@ -1527,7 +1527,7 @@ extern "C" void GLUIShowHVAC(void){
 
 extern "C" void GLUIHideGeometry(void){
   blockageSelect=0;
-  CloseRollouts(glui_geometry);
+  GLUICloseRollouts(glui_geometry);
   showedit_dialog=0;
   editwindow_status=CLOSE_WINDOW;
 }
@@ -1565,7 +1565,7 @@ extern "C" void GLUIShowGluiTerrain(void){
 
 extern "C" void GLUIHideGluiTerrain(void){
   showterrain_dialog = 0;
-  CloseRollouts(glui_geometry);
+  GLUICloseRollouts(glui_geometry);
   editwindow_status = CLOSE_WINDOW;
 }
 

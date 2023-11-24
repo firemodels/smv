@@ -2828,17 +2828,17 @@ void ScriptShowSmokeSensors(void){
 
 void ScriptXYZView(float x, float y, float z, float az, float elev){
   use_customview = 0;
-  SceneMotionCB(CUSTOM_VIEW);
-  ViewpointCB(RESTORE_VIEW);
+  GLUISceneMotionCB(CUSTOM_VIEW);
+  GLUIViewpointCB(RESTORE_VIEW);
   set_view_xyz[0]      = x;
   set_view_xyz[1]      = y;
   set_view_xyz[2]      = z;
   customview_azimuth   = az;
   customview_elevation = elev;
   use_customview       = 1;
-  SceneMotionCB(CUSTOM_VIEW);
-  SceneMotionCB(SET_VIEW_XYZ);
-  UpdatePosView();
+  GLUISceneMotionCB(CUSTOM_VIEW);
+  GLUISceneMotionCB(SET_VIEW_XYZ);
+  GLUIUpdatePosView();
 }
 
 /* ------------------ ScriptShowPlot3dData ------------------------ */
@@ -3239,7 +3239,7 @@ void ScriptProjection(scriptdata *scripti){
   else{
     projection_type = PROJECTION_ORTHOGRAPHIC;
   }
-  SceneMotionCB(PROJECTION);
+  GLUISceneMotionCB(PROJECTION);
 }
 
 //    sscanf(buffer,"%i %i %i %i",&vis_gslice_data, &show_gslice_triangles, &show_gslice_triangulation, &show_gslice_normal);
@@ -3434,10 +3434,10 @@ void ScriptViewXYZMINMAXOrtho(int command){
     assert(FFALSE);
     break;
   }
-  ResetGluiView(EXTERNAL_VIEW);
+  GLUIResetView(EXTERNAL_VIEW);
   use_customview=0;
-  SceneMotionCB(CUSTOM_VIEW);
-  SceneMotionCB(ZAXIS_CUSTOM);
+  GLUISceneMotionCB(CUSTOM_VIEW);
+  GLUISceneMotionCB(ZAXIS_CUSTOM);
 }
 
 /* ------------------ ScriptViewXYZMINMAXPersp ------------------------ */
@@ -3501,20 +3501,20 @@ void SetViewZMAXPersp(void){
   zcen = zbarORIG+DL;
   elevation = -89.9;
   azimuth = 0.0;
-  ResetGluiView(EXTERNAL_VIEW);
+  GLUIResetView(EXTERNAL_VIEW);
 
   use_customview = 0;
-  SceneMotionCB(CUSTOM_VIEW);
-  ViewpointCB(RESTORE_VIEW);
+  GLUISceneMotionCB(CUSTOM_VIEW);
+  GLUIViewpointCB(RESTORE_VIEW);
   set_view_xyz[0]      = xcen;
   set_view_xyz[1]      = ycen;
   set_view_xyz[2]      = zcen;
   customview_azimuth   = azimuth;
   customview_elevation = elevation;
   use_customview       = 1;
-  SceneMotionCB(CUSTOM_VIEW);
-  SceneMotionCB(SET_VIEW_XYZ);
-  UpdatePosView();
+  GLUISceneMotionCB(CUSTOM_VIEW);
+  GLUISceneMotionCB(SET_VIEW_XYZ);
+  GLUIUpdatePosView();
 }
 
 /* ------------------ RunScriptCommand ------------------------ */

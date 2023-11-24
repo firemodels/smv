@@ -84,7 +84,7 @@ extern "C" void GluiAlertSetup(int main_window){
 /* ------------------ HideGluiTrainer ------------------------ */
 
 extern "C" void HideGluiTrainer(void){
-  CloseRollouts(glui_trainer);
+  GLUICloseRollouts(glui_trainer);
   showtrainer_dialog=0;
 }
 

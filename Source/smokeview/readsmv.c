@@ -13052,8 +13052,8 @@ int ReadIni2(char *inifile, int localfile){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%i", &projection_type);
       projection_type = CLAMP(projection_type, 0, 1);
-      SceneMotionCB(PROJECTION);
-      UpdateProjectionType();
+      GLUISceneMotionCB(PROJECTION);
+      GLUIUpdateProjectionType();
       continue;
     }
     if(MatchINI(buffer, "V_PARTICLES") == 1){
@@ -14055,7 +14055,7 @@ int ReadIni2(char *inifile, int localfile){
     if(MatchINI(buffer, "BACKGROUNDCOLOR") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%f %f %f", backgroundbasecolor, backgroundbasecolor + 1, backgroundbasecolor + 2);
-      SetColorControls();
+      GLUISetColorControls();
       continue;
     }
     if(MatchINI(buffer, "SURFCOLORS")==1){
@@ -14135,7 +14135,7 @@ int ReadIni2(char *inifile, int localfile){
     if(MatchINI(buffer, "FOREGROUNDCOLOR") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%f %f %f", foregroundbasecolor, foregroundbasecolor + 1, foregroundbasecolor + 2);
-      SetColorControls();
+      GLUISetColorControls();
       continue;
     }
     if(MatchINI(buffer, "BLOCKCOLOR") == 1){
@@ -14641,7 +14641,7 @@ int ReadIni2(char *inifile, int localfile){
       InitCameraList();
       InsertCamera(&camera_list_first, ci, bufferptr);
 
-      EnableResetSavedView();
+      GLUIEnableResetSavedView();
       ci->dirty = 1;
       ci->defined = 1;
       continue;

@@ -63,9 +63,9 @@ GLUI_Button *BUTTON_clip_2=NULL;
 #define SAVE_SETTINGS_CLIP 98
 #define CLIP_MESH 80
 
-/* ------------------ UpdateShowRotationCenter2 ------------------------ */
+/* ------------------ GLUIUpdateShowRotationCenter2 ------------------------ */
 
-extern "C" void UpdateShowRotationCenter2(void){
+extern "C" void GLUIUpdateShowRotationCenter2(void){
   if(CHECKBOX_clip_show_rotation_center2!=NULL)CHECKBOX_clip_show_rotation_center2->set_int_val(show_rotation_center);
 }
 
@@ -83,7 +83,7 @@ void ClipCB(int var){
     }
     break;
   case CLIP_SHOW_ROTATE2:
-    UpdateShowRotationCenter();
+    GLUIUpdateShowRotationCenter();
     break;
   case CLIP_MESH:
     if(clip_mesh == 0){
@@ -212,7 +212,7 @@ void ClipCB(int var){
     assert(FFALSE);
     break;
   }
-  if(glui_rotation_index==ROTATE_ABOUT_CLIPPING_CENTER)UpdateRotationIndex(ROTATE_ABOUT_CLIPPING_CENTER);
+  if(glui_rotation_index==ROTATE_ABOUT_CLIPPING_CENTER)GLUIUpdateRotationIndex(ROTATE_ABOUT_CLIPPING_CENTER);
 }
 
 /* ------------------ SetClipControls ------------------------ */
@@ -381,7 +381,7 @@ extern "C" void GluiClipSetup(int main_window){
 /* ------------------ GLUIHideGluiClip ------------------------ */
 
 extern "C" void GLUIHideGluiClip(void){
-  CloseRollouts(glui_clip);
+  GLUICloseRollouts(glui_clip);
 }
 
 /* ------------------ GLUIShowGluiClip ------------------------ */
