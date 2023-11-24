@@ -164,6 +164,9 @@ EXTERNCPP int ISearch(float *list, int nlist, float key, int guess);
 EXTERNCPP void LockUnlockCompress(int flag);
 #endif
 
+EXTERNCPP int GLUTGetScreenWidth(void);
+EXTERNCPP int GLUTGetScreenHeight(void);
+
 EXTERNCPP void HideSlices(char *longlabel);
 
 EXTERNCPP void OutputMinMax(char *meshlabel, char *label, char *unit, float valmin_fds, float valmax_fds, float valmin_smv, float valmax_smv);

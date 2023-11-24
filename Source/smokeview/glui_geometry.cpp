@@ -692,7 +692,7 @@ void UpdateTerrainSizes(void){
   int screen_width;
   float average_terrain_size;
 
-  screen_width = glutGet(GLUT_SCREEN_WIDTH);                      // number of pixels
+  screen_width = GLUTGetScreenWidth();                      // number of pixels
   domain_width = xbarORIG - xbar0ORIG;                            // meters
   cell_width = meshinfo->xplt_orig[1]-meshinfo->xplt_orig[0];
   pixel_width = domain_width / ( float )screen_width;

@@ -10,7 +10,6 @@
 #include <sys/types.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include GLUT_H
 #include <pthread.h>
 
 #include "smokeviewvars.h"
@@ -14394,7 +14393,7 @@ int ReadIni2(char *inifile, int localfile){
         fgets(buffer, 255, stream);
         sscanf(buffer, "%i", &scrWidth);
         if(scrWidth <= 0){
-          scrWidth = glutGet(GLUT_SCREEN_WIDTH);
+          scrWidth = GLUTGetScreenWidth();
         }
         if(scrWidth != screenWidth){
           SetScreenSize(&scrWidth, NULL);
@@ -14409,7 +14408,7 @@ int ReadIni2(char *inifile, int localfile){
         fgets(buffer, 255, stream);
         sscanf(buffer, "%i", &scrHeight);
         if(scrHeight <= 0){
-          scrHeight = glutGet(GLUT_SCREEN_HEIGHT);
+          scrHeight = GLUTGetScreenHeight();
         }
         if(scrHeight != screenHeight){
           SetScreenSize(NULL, &scrHeight);
@@ -16602,7 +16601,7 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, "WINDOWOFFSET\n");
   fprintf(fileout, " %i\n", titlesafe_offsetBASE);
   if(use_graphics == 1 &&
-     (screenWidth == glutGet(GLUT_SCREEN_WIDTH)||screenHeight == glutGet(GLUT_SCREEN_HEIGHT))
+     (screenWidth == GLUTGetScreenWidth()||screenHeight == GLUTGetScreenHeight())
     ){
     fprintf(fileout,"WINDOWWIDTH\n");
     fprintf(fileout," %i\n",-1);

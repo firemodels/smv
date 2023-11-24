@@ -455,6 +455,18 @@ void InitStartupDirs(void){
 #endif
 }
 
+/* ------------------ GLUTGetScreenWidth ------------------------ */
+
+int GLUTGetScreenWidth(void){
+  return glutGet(GLUT_SCREEN_WIDTH);
+}
+
+/* ------------------ GLUTGetScreenHeight ------------------------ */
+
+int GLUTGetScreenHeight(void){
+  return glutGet(GLUT_SCREEN_HEIGHT);
+}
+
 /* ------------------ SetupGlut ------------------------ */
 
 void SetupGlut(int argc, char **argv){
@@ -471,7 +483,7 @@ void SetupGlut(int argc, char **argv){
     if(verbose_output==1)PRINTF("%s","initializing Glut");
     glutInit(&argc, argv);
 #ifdef pp_OSX
-    if(verbose_output==1)PRINTF("(%i/%i)", GetScreenHeight(), glutGet(GLUT_SCREEN_HEIGHT));
+    if(verbose_output==1)PRINTF("(%i/%i)", GetScreenHeight(), GLUTGetScreenHeight());
 #endif
     if(verbose_output==1)PRINTF("\n%s\n",_("complete"));
 
@@ -489,8 +501,8 @@ void SetupGlut(int argc, char **argv){
     if(verbose_output==1)PRINTF("%s\n",_("initialized"));
 #endif
 
-    max_screenWidth = glutGet(GLUT_SCREEN_WIDTH);
-    max_screenHeight = glutGet(GLUT_SCREEN_HEIGHT);
+    max_screenWidth =  GLUTGetScreenWidth();
+    max_screenHeight = GLUTGetScreenHeight();
 #ifdef pp_OSX_HIGHRES
     if(force_scale==0){
       if(monitor_screen_height!=max_screenHeight)double_scale=1;
