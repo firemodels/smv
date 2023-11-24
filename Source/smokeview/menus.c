@@ -1068,7 +1068,7 @@ void ColorbarMenu(int value){
     update_texturebar=1;
     GLUIUpdateListIsoColorobar();
     UpdateCurrentColorbar(colorbarinfo+colorbartype);
-    UpdateColorbarType();
+    GLUIUpdateColorbarType();
     GLUISetColorbarListBound(colorbartype);
     if(colorbartype == bw_colorbar_index&&bw_colorbar_index>=0){
       setbwdata = 1;
@@ -1623,10 +1623,10 @@ void DialogMenu(int value){
   case DIALOG_COLORBAR:
     showcolorbar_dialog=1-showcolorbar_dialog;
     if(showcolorbar_dialog==1){
-      ShowGluiColorbar();
+      GLUIShowGluiColorbar();
     }
     if(showcolorbar_dialog==0){
-      HideGluiColorbar();
+      GLUIHideGluiColorbar();
     }
     break;
   case DIALOG_HVAC:
@@ -1676,7 +1676,7 @@ void DialogMenu(int value){
     HideGluiTour();
     GLUIHideGluiClip();
     HideGluiStereo();
-    HideGluiColorbar();
+    GLUIHideGluiColorbar();
     if(showedit_dialog==1)DialogMenu(DIALOG_GEOMETRY);
     HideGluiTrainer();
     HideGluiDevice();

@@ -1272,7 +1272,7 @@ void ReadFed(int file_index, int time_frame, float *time_value, int flag, int fi
     cb = GetColorbar(default_fed_colorbar);
     if(cb!=NULL){
       colorbartype=cb-colorbarinfo;
-      SetColorbarListEdit(colorbartype);
+      GLUISetColorbarListEdit(colorbartype);
       GLUISliceBoundCB(COLORBAR_LIST2);
       UpdateCurrentColorbar(cb);
     }

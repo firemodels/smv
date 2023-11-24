@@ -983,10 +983,10 @@ extern "C" void Smoke3dCB(int var){
   case SHOW_FIRECOLORMAP:
     UpdateSmokeColormap(smoke_render_option);
     if(show_firecolormap!=0){
-      ShowGluiColorbar();
+      GLUIShowGluiColorbar();
     }
     else{
-      HideGluiColorbar();
+      GLUIHideGluiColorbar();
     }
     break;
   case TEMP_MIN:

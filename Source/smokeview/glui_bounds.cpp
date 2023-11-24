@@ -5906,17 +5906,17 @@ hvacductboundsCPP.setup("hvac", ROLLOUT_hvacduct, hvacductbounds_cpp, nhvacductb
   CHECKBOX_use_lighting = glui_bounds->add_checkbox_to_panel(PANEL_coloring, _("Lighting"), &use_lighting, CB_USE_LIGHTING, LabelsCB);
 
     PANEL_toggle_cba = glui_bounds->add_panel_to_panel(PANEL_cb11, _("toggle colorbars"));
-    LISTBOX_cb_toggle_bound1 = glui_bounds->add_listbox_to_panel(PANEL_toggle_cba, "", &index_colorbar1, COLORBAR_LISTA, ColorbarCB);
+    LISTBOX_cb_toggle_bound1 = glui_bounds->add_listbox_to_panel(PANEL_toggle_cba, "", &index_colorbar1, COLORBAR_LISTA, GLUIColorbarCB);
     GLUIUpdateColorbarListBound(2);
     LISTBOX_cb_toggle_bound1->set_int_val(index_colorbar1);
 
-    LISTBOX_cb_toggle_bound2 = glui_bounds->add_listbox_to_panel(PANEL_toggle_cba, "", &index_colorbar2, COLORBAR_LISTB, ColorbarCB);
+    LISTBOX_cb_toggle_bound2 = glui_bounds->add_listbox_to_panel(PANEL_toggle_cba, "", &index_colorbar2, COLORBAR_LISTB, GLUIColorbarCB);
     GLUIUpdateColorbarListBound(3);
     LISTBOX_cb_toggle_bound2->set_int_val(index_colorbar2);
 
-    glui_bounds->add_button_to_panel(PANEL_toggle_cba, _("toggle"), COLORBAR_TOGGLE, ColorbarCB);
-    ColorbarCB(COLORBAR_LISTA);
-    ColorbarCB(COLORBAR_LISTB);
+    glui_bounds->add_button_to_panel(PANEL_toggle_cba, _("toggle"), COLORBAR_TOGGLE, GLUIColorbarCB);
+    GLUIColorbarCB(COLORBAR_LISTA);
+    GLUIColorbarCB(COLORBAR_LISTB);
     GLUIUpdateColorbarBound();
   PANEL_extreme = glui_bounds->add_panel_to_panel(PANEL_cb11, "Highlight extreme data");
 
@@ -5949,7 +5949,7 @@ hvacductboundsCPP.setup("hvac", ROLLOUT_hvacduct, hvacductbounds_cpp, nhvacductb
     CHECKBOX_show_extreme_mindata->set_int_val(0);
     GLUIExtremeCB(COLORBAR_EXTREME_RGB);
   }
-  ColorbarGlobal2Local();
+  GLUIColorbarGlobal2Local();
 
   ROLLOUT_split = glui_bounds->add_rollout_to_panel(ROLLOUT_coloring, "Modify split colorbar", false);
   INSERT_ROLLOUT(ROLLOUT_split, glui_bounds);
@@ -6848,9 +6848,9 @@ extern "C" void GLUISliceBoundCB(int var){
       list_index = LISTBOX_cb_bound->get_int_val();
       if(list_index<0)break;
       colorbartype = list_index;
-      SetColorbarListEdit(colorbartype);
+      GLUISetColorbarListEdit(colorbartype);
       ColorbarMenu(colorbartype);
-      ColorbarGlobal2Local();
+      GLUIColorbarGlobal2Local();
       if(colorbartype == bw_colorbar_index&&bw_colorbar_index>=0){
         setbwdata = 1;
         ColorbarMenu(bw_colorbar_index);

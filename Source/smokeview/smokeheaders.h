@@ -98,6 +98,18 @@ EXTERNCPP void GLUIShowGluiClip(void);
 EXTERNCPP void GLUIHideGluiClip(void);
 EXTERNCPP void GLUIUpdateClipAll(void);
 
+//*** glui_colorbar.cpp headers
+EXTERNCPP void GluiColorbarSetup(int main_window);
+EXTERNCPP void GLUIUpdateColorbarList(void);
+EXTERNCPP void GLUIColorbarCB(int var);
+EXTERNCPP void GLUIColorbarGlobal2Local(void);
+EXTERNCPP void GLUIShowGluiColorbar(void);
+EXTERNCPP void GLUIHideGluiColorbar(void);
+EXTERNCPP void GLUISetColorbarListEdit(int val);
+EXTERNCPP void GLUIUpdateColorbarListEdit(int flag,int del);
+EXTERNCPP void GLUIUpdateColorbarEdit(void);
+EXTERNCPP void GLUIUpdateColorbarType(void);
+
 EXTERNCPP float GetTime(void);
 EXTERNCPP void StartTimer(float *timerptr);
 EXTERNCPP void UpdatePlot2DTbounds(void);
@@ -129,7 +141,6 @@ EXTERNCPP void InitHvacData(hvacvaldata *hi);
 EXTERNCPP void ReadHVACData(int flag);
 EXTERNCPP int IsHVACVisible(void);
 EXTERNCPP void UpdateHVACDuctColorLabels(int index);
-EXTERNCPP void UpdateColorbarList(void);
 EXTERNCPP void UpdateNodeLabel(colorbardata *cbi);
 EXTERNCPP int IsColorbarSplit(colorbardata *cbi);
 
@@ -408,7 +419,6 @@ EXTERNCPP void UpdateRenderListSkip(void);
 EXTERNCPP void ForceIdle(void);
 EXTERNCPP void UpdateFrameNumber(int changetime);
 EXTERNCPP void UpdateVentOffset(void);
-EXTERNCPP void ColorbarCB(int var);
 EXTERNCPP void UpdateOpacityMap(void);
 EXTERNCPP void UpdateFreeze(int val);
 EXTERNCPP void UpdateLoadTimeVal(float val);
@@ -433,7 +443,6 @@ EXTERNCPP void TourCB(int var);
 EXTERNCPP void SetClipControls(int val);
 EXTERNCPP void PartBoundCB(int var);
 EXTERNCPP void ShowHideMenu(int val);
-EXTERNCPP void ColorbarGlobal2Local(void);
 EXTERNCPP void UpdateShowbeamAsLine(void);
 EXTERNCPP void UpdateVSliceDups(void);
 EXTERNCPP void UnloadVSliceMenu(int value);
@@ -507,7 +516,6 @@ EXTERNCPP void InitVolrenderScript(char *prefix, char *tour_label, int startfram
 // glui headers
 
 EXTERNCPP void Glui3dSmokeSetup(int main_window);
-EXTERNCPP void GluiColorbarSetup(int main_window);
 EXTERNCPP void GluiDeviceSetup(int main_window);
 EXTERNCPP void GluiPlot2DSetup(int main_window);
 EXTERNCPP void GluiGeometrySetup(int main_window);
@@ -537,8 +545,6 @@ EXTERNCPP void ShowGluiShooter(void);
 EXTERNCPP void HideGluiShooter(void);
 EXTERNCPP void ShowGluiTrainer(void);
 EXTERNCPP void HideGluiTrainer(void);
-EXTERNCPP void ShowGluiColorbar(void);
-EXTERNCPP void HideGluiColorbar(void);
 EXTERNCPP void ShowGluiMotion(int menu_id);
 EXTERNCPP void HideGluiMotion(void);
 EXTERNCPP void ShowGluiDisplay(int menu_id);
@@ -608,7 +614,6 @@ EXTERNCPP void DrawCircVents(int option);
 EXTERNCPP void UpdateSmokeColormap(int option);
 EXTERNCPP void UpdateCO2Colormap(void);
 EXTERNCPP void DefineVolsmokeTextures(void);
-EXTERNCPP void SetColorbarListEdit(int val);
 EXTERNCPP int  GetColorbarIndex(int flag, int x, int y);
 EXTERNCPP void GetViewportInfo(void);
 
@@ -749,7 +754,6 @@ EXTERNCPP sv_object *GetSmvObjectType2(char *label, sv_object *default_object);
 EXTERNCPP void FreeAllObjects(void);
 EXTERNCPP void UpdatePartClassDepend(partclassdata *partclassi);
 
-EXTERNCPP void UpdateColorbarListEdit(int flag,int del);
 EXTERNCPP void CheckLab(void);
 
 EXTERNCPP void AdjustColorBar(colorbardata *cbi);
@@ -772,7 +776,6 @@ EXTERNCPP void SortColorBars(void);
 EXTERNCPP colorbardata *GetColorbar(char *label);
 EXTERNCPP void InitOpenGL(int option);
 EXTERNCPP void TextureShowMenu(int value);
-EXTERNCPP void UpdateColorbarEdit(void);
 #ifdef pp_SMOKE16
 EXTERNCPP void UpdateSmoke16(void);
 #endif
@@ -904,7 +907,6 @@ EXTERNCPP void UpdateSmoke3dMenuLabels(void);
 EXTERNCPP void LabelsCB(int value);
 EXTERNCPP void InitSliceData(void);
 EXTERNCPP void UpdateCameraLabel(void);
-EXTERNCPP void UpdateColorbarType(void);
 EXTERNCPP void InitCameraList(void);
 EXTERNCPP cameradata *InsertCamera(cameradata *cb,cameradata *source, char *name);
 EXTERNCPP void AddDefaultViewpoints(void);

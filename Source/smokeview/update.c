@@ -2483,7 +2483,7 @@ void UpdateDisplay(void){
     GLUIUpdateGluiBounds();
   }
   if(update_colorbar_list == 1){
-    UpdateColorbarList();
+    GLUIUpdateColorbarList();
     update_colorbar_list = 0;
   }
   if(update_glui_bounds==1){

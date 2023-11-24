@@ -1149,7 +1149,7 @@ void DragColorbarEditNode(int xm, int ym){
     cb_rgb[0] = CLAMP(cb_rgb[0]+255*xyz[0],0,255);
     cb_rgb[1] = CLAMP(cb_rgb[1]+255*xyz[1],0,255);
     cb_rgb[2] = CLAMP(cb_rgb[2]+255*xyz[2],0,255);
-    ColorbarCB(COLORBAR_RGB);
+    GLUIColorbarCB(COLORBAR_RGB);
 
     mouse_down_xy0[0] = xm;
     mouse_down_xy0[1] = ym;
