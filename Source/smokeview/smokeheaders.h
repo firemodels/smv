@@ -125,6 +125,11 @@ EXTERNCPP void GLUISetLabelControls(void);
 EXTERNCPP void GLUIHideGluiDisplay(void);
 EXTERNCPP void GLUILabelsCB(int value);
 
+//*** glui_shooter.cpp headers
+EXTERNCPP void GluiShooterSetup(int main_window);
+EXTERNCPP void GLUIShowGluiShooter(void);
+EXTERNCPP void GLUIHideGluiShooter(void);
+
 EXTERNCPP float GetTime(void);
 EXTERNCPP void StartTimer(float *timerptr);
 EXTERNCPP void UpdatePlot2DTbounds(void);
@@ -526,7 +531,6 @@ EXTERNCPP void GluiDeviceSetup(int main_window);
 EXTERNCPP void GluiPlot2DSetup(int main_window);
 EXTERNCPP void GluiGeometrySetup(int main_window);
 EXTERNCPP void GluiMotionSetup(int main_window);
-EXTERNCPP void GluiShooterSetup(int main_window);
 EXTERNCPP void GluiStereoSetup(int main_window);
 EXTERNCPP void GluiTourSetup(int main_window);
 EXTERNCPP void GluiTrainerSetup(int main_window);
@@ -545,8 +549,6 @@ EXTERNCPP void UpdateGluiZoom(void);
 
 EXTERNCPP void ShowGluiAlert(void);
 EXTERNCPP void HideGluiAlert(void);
-EXTERNCPP void ShowGluiShooter(void);
-EXTERNCPP void HideGluiShooter(void);
 EXTERNCPP void ShowGluiTrainer(void);
 EXTERNCPP void HideGluiTrainer(void);
 EXTERNCPP void ShowGluiMotion(int menu_id);

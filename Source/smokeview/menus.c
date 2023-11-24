@@ -1572,7 +1572,7 @@ void DialogMenu(int value){
   GLUTPOSTREDISPLAY;
   switch(value){
   case DIALOG_SHOOTER:
-    ShowGluiShooter();
+    GLUIShowGluiShooter();
     break;
   case DIALOG_TRAINER:
     ShowGluiTrainer();
@@ -1669,7 +1669,7 @@ void DialogMenu(int value){
     break;
   case DIALOG_HIDEALL:
     showcolorbar_dialog = 0;
-    HideGluiShooter();
+    GLUIHideGluiShooter();
     GLUIHideGluiDisplay();
     GLUIHideGluiBounds();
     HideGluiMotion();

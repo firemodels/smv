@@ -94,15 +94,15 @@ void ShooterRolloutCB(int var){
   ToggleRollout(shooterprocinfo, nshooterprocinfo, var);
 }
 
-/* ------------------ HideGluiShooter ------------------------ */
+/* ------------------ GLUIHideGluiShooter ------------------------ */
 
-extern "C" void HideGluiShooter(void){
+extern "C" void GLUIHideGluiShooter(void){
   CloseRollouts(glui_shooter);
 }
 
-/* ------------------ ShowGluiShooter ------------------------ */
+/* ------------------ GLUIShowGluiShooter ------------------------ */
 
-extern "C" void ShowGluiShooter(void){
+extern "C" void GLUIShowGluiShooter(void){
   if(glui_shooter!=NULL){
     glui_shooter->show();
     updatemenu=1;
@@ -263,7 +263,7 @@ void ShooterCB(int var){
     WriteIni(LOCAL_INI, NULL);
     break;
   case SHOOTER_CLOSE:
-    HideGluiShooter();
+    GLUIHideGluiShooter();
     break;
   default:
     assert(FFALSE);
