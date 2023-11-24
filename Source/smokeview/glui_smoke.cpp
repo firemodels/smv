@@ -221,9 +221,9 @@ extern "C" void UpdateFireColorbarList(void){
   if(LISTBOX_smoke_colorbar!=NULL)LISTBOX_smoke_colorbar->set_int_val(fire_colorbar_index);
 }
 
-/* ------------------ UpdateBackgroundFlip2 ------------------------ */
+/* ------------------ GLUIUpdateBackgroundFlip2 ------------------------ */
 
-extern "C" void UpdateBackgroundFlip2(int flip) {
+extern "C" void GLUIUpdateBackgroundFlip2(int flip) {
   if(CHECKBOX_smoke_flip!=NULL)CHECKBOX_smoke_flip->set_int_val(flip);
 }
 

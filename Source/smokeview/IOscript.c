@@ -3055,7 +3055,7 @@ void ScriptLoadPlot3D(scriptdata *scripti){
     count = LoadAllPlot3D(time_local);
   }
   UpdateRGBColors(COLORBAR_INDEX_NONE);
-  SetLabelControls();
+  GLUISetLabelControls();
   if(count == 0){
     fprintf(stderr, "*** Error: Plot3d file failed to load\n");
     if(stderr2!=NULL)fprintf(stderr2, "*** Error: Plot3d file failed to load\n");

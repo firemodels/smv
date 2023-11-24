@@ -2623,7 +2623,7 @@ void UpdateDisplay(void){
     visColorbarVertical = visColorbarVertical_val;
     visColorbarHorizontal = visColorbarHorizontal_val;
     vis_colorbar = GetColorbarState();
-    UpdateColorbarControls();
+    GLUIUpdateColorbarControls();
     GLUIUpdateColorbarControls2();
     updatemenu = 1;
   }

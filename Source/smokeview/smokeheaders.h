@@ -110,6 +110,21 @@ EXTERNCPP void GLUIUpdateColorbarListEdit(int flag,int del);
 EXTERNCPP void GLUIUpdateColorbarEdit(void);
 EXTERNCPP void GLUIUpdateColorbarType(void);
 
+//*** glui_display.cpp headers
+EXTERNCPP void GluiDisplaySetup(int main_window);
+EXTERNCPP void GLUIUpdateGridLocation(void);
+EXTERNCPP void GLUIUpdateFrameTimelabel(void);
+EXTERNCPP void GLUIUpdateColorbarControls(void);
+EXTERNCPP void GLUIUpdateBackgroundFlip(int flip);
+EXTERNCPP void GLUIUpdateBackgroundFlip2(int flip);
+EXTERNCPP void GLUIUpdateTimebarOverlap(void);
+EXTERNCPP void GLUIUpdateVisAxisLabels(void);
+EXTERNCPP void GLUIUpdateFontIndex(void);
+EXTERNCPP void GLUIShowGluiDisplay(int menu_id);
+EXTERNCPP void GLUISetLabelControls(void);
+EXTERNCPP void GLUIHideGluiDisplay(void);
+EXTERNCPP void GLUILabelsCB(int value);
+
 EXTERNCPP float GetTime(void);
 EXTERNCPP void StartTimer(float *timerptr);
 EXTERNCPP void UpdatePlot2DTbounds(void);
@@ -155,7 +170,6 @@ EXTERNCPP void UpdateTerrainTexture(int val);
 
 EXTERNCPP void UpdateShowOnlyTop(void);
 
-EXTERNCPP void UpdateGLuiGridLocation(void);
 #ifdef pp_HIST
 EXTERNCPP void GeneratePartHistogramsMT(void);
 EXTERNCPP void EnableDisablePartPercentileDraw(int flag);
@@ -190,8 +204,6 @@ EXTERNCPP void UpdateShowHRRPUVPlot(int val);
 
 EXTERNCPP void UpdateUseGeomFactors(void);
 
-EXTERNCPP void UpdateFrameTimelabel(void);
-
 EXTERNCPP void UpdateWindowAspect(void);
 
 EXTERNCPP void ScriptViewXYZMINMAXOrtho(int option);
@@ -220,8 +232,6 @@ EXTERNCPP void MergePartHistograms(void);
 EXTERNCPP void MergePlot3DHistograms(void);
 EXTERNCPP void GetPlot3DHists(plot3ddata *p);
 
-
-EXTERNCPP void UpdateColorbarControls(void);
 EXTERNCPP void UpdateHoc(void);
 
 EXTERNCPP int GetStringWidth(char *string);
@@ -394,8 +404,6 @@ EXTERNCPP int Smv2Geom(char *html_file);
 EXTERNCPP int Obst2Data(char *html_file);
 EXTERNCPP int SliceNode2Data(char *html_file, int option);
 EXTERNCPP int SliceCell2Data(char *html_file, int option);
-EXTERNCPP void UpdateBackgroundFlip(int flip);
-EXTERNCPP void UpdateBackgroundFlip2(int flip);
 EXTERNCPP void UpdateVectorpointsize(void);
 EXTERNCPP void UpdateTexturebar(void);
 EXTERNCPP void UpdatePosView(void);
@@ -406,7 +414,6 @@ EXTERNCPP void UpdateAllSliceColors(int slicetype, int *errorcode);
 EXTERNCPP void UpdateSliceBounds(void);
 EXTERNCPP FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int time_frame, float *time_value, int flag, int *errorcode);
 EXTERNCPP void UpdateWhereFaceVolumes(void);
-EXTERNCPP void UpdateTimebarOverlap(void);
 EXTERNCPP void UpdateRenderRadioButtons(int width_low, int height_low, int width_high, int height_high);
 EXTERNCPP void ResetRenderResolution(int *width_low, int *height_low, int *width_high, int *height_high);
 EXTERNCPP void GetRenderResolution(int *width_low, int *height_low, int *width_high, int *height_high);
@@ -509,7 +516,6 @@ EXTERNCPP void GetGeomDialogState(void);
 EXTERNCPP void UpdateDeviceOrientation(void);
 EXTERNCPP void UpdateGluiDevices(void);
 EXTERNCPP void UpdateColorDevices(void);
-EXTERNCPP void UpdateVisAxisLabels(void);
 EXTERNCPP void UpdateGeometryControls(void);
 EXTERNCPP void InitVolrenderScript(char *prefix, char *tour_label, int startframe, int skipframe);
 
@@ -519,14 +525,12 @@ EXTERNCPP void Glui3dSmokeSetup(int main_window);
 EXTERNCPP void GluiDeviceSetup(int main_window);
 EXTERNCPP void GluiPlot2DSetup(int main_window);
 EXTERNCPP void GluiGeometrySetup(int main_window);
-EXTERNCPP void GluiLabelsSetup(int main_window);
 EXTERNCPP void GluiMotionSetup(int main_window);
 EXTERNCPP void GluiShooterSetup(int main_window);
 EXTERNCPP void GluiStereoSetup(int main_window);
 EXTERNCPP void GluiTourSetup(int main_window);
 EXTERNCPP void GluiTrainerSetup(int main_window);
 
-EXTERNCPP void GluiUpdateFontIndex(void);
 EXTERNCPP void GluiAlertSetup(int main_window);
 EXTERNCPP void GluiIdle(void);
 EXTERNCPP void GluiIdleNULL(void);
@@ -547,13 +551,10 @@ EXTERNCPP void ShowGluiTrainer(void);
 EXTERNCPP void HideGluiTrainer(void);
 EXTERNCPP void ShowGluiMotion(int menu_id);
 EXTERNCPP void HideGluiMotion(void);
-EXTERNCPP void ShowGluiDisplay(int menu_id);
 EXTERNCPP void ShowGluiDevice(void);
 EXTERNCPP void ShowGluiPlotDevice(void);
 EXTERNCPP void HideGluiDevice(void);
-EXTERNCPP void SetLabelControls(void);
 EXTERNCPP void SetColorControls(void);
-EXTERNCPP void HideGluiDisplay(void);
 EXTERNCPP void ShowGluiTour(void);
 EXTERNCPP void HideGluiTour(void);
 EXTERNCPP void ShowGluiStereo(void);
@@ -904,7 +905,6 @@ EXTERNCPP void UpdateTerrainGlui(void);
 EXTERNCPP void DrawSmoke3DVol(void);
 EXTERNCPP void GetDrawingParms(int *drawing_transparent, int *drawing_blockage_transparent, int *drawing_vent_transparent);
 EXTERNCPP void UpdateSmoke3dMenuLabels(void);
-EXTERNCPP void LabelsCB(int value);
 EXTERNCPP void InitSliceData(void);
 EXTERNCPP void UpdateCameraLabel(void);
 EXTERNCPP void InitCameraList(void);

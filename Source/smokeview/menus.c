@@ -789,7 +789,7 @@ void LabelMenu(int value){
   GLUTPOSTREDISPLAY;
   switch(value){
   case MENU_LABEL_SETTINGS:
-    ShowGluiDisplay(DIALOG_DISPLAY);
+    GLUIShowGluiDisplay(DIALOG_DISPLAY);
     break;
     // vis_colorbar                        state
     //    0/COLORBAR_HIDDEN                hidden
@@ -805,7 +805,7 @@ void LabelMenu(int value){
       visColorbarHorizontal = 1 - visColorbarHorizontal;
       if(visColorbarHorizontal == 1)visColorbarVertical = 0;
     }
-    UpdateColorbarControls();
+    GLUIUpdateColorbarControls();
     GLUIUpdateColorbarControls2();
     vis_colorbar = GetColorbarState();
     break;
@@ -875,7 +875,7 @@ void LabelMenu(int value){
      break;
    case MENU_LABEL_axis:
     visaxislabels = 1 - visaxislabels;
-    UpdateVisAxisLabels();
+    GLUIUpdateVisAxisLabels();
     break;
    case MENU_LABEL_textlabels:
      visLabels = 1 - visLabels;
@@ -885,7 +885,7 @@ void LabelMenu(int value){
      break;
    case MENU_LABEL_frametimelabel:
      visFrameTimelabel = 1-visFrameTimelabel;
-     UpdateFrameTimelabel();
+     GLUIUpdateFrameTimelabel();
      break;
    case MENU_LABEL_framelabel:
      visFramelabel=1-visFramelabel;
@@ -937,7 +937,7 @@ void LabelMenu(int value){
      assert(FFALSE);
      break;
   }
-  SetLabelControls();
+  GLUISetLabelControls();
 }
 
 /* ------------------ SmokeColorbarMenu ------------------------ */
@@ -1020,7 +1020,7 @@ void ColorbarMenu(int value){
     case COLORBAR_TOGGLE_BW:
       setbw=1-setbw;
       InitRGB();
-      SetLabelControls();
+      GLUISetLabelControls();
       break;
     case USE_LIGHTING:
       GLUIUpdateUseLighting();
@@ -1032,7 +1032,7 @@ void ColorbarMenu(int value){
    case COLORBAR_TRANSPARENT:
      use_transparency_data=1-use_transparency_data;
      UpdateRGBColors(COLORBAR_INDEX_NONE);
-     SetLabelControls();
+     GLUISetLabelControls();
      GLUIUpdateTransparency();
      break;
    case COLORBAR_CONTINUOUS:
@@ -1077,7 +1077,7 @@ void ColorbarMenu(int value){
       setbwdata = 0;
     }
     GLUIIsoBoundCB(ISO_COLORS);
-    SetLabelControls();
+    GLUISetLabelControls();
     char *ext, cblabel[1024];
     strcpy(cblabel,colorbarinfo[colorbartype].menu_label);
     ext = strrchr(cblabel,'.');
@@ -1510,10 +1510,10 @@ void ShowHideMenu(int value){
   case MENU_SHOWHIDE_FLIP:
    background_flip = 1-background_flip;
    UpdateRGBColors(COLORBAR_INDEX_NONE);
-   SetLabelControls();
+   GLUISetLabelControls();
    SetColorControls();
-   UpdateBackgroundFlip(background_flip);
-   UpdateBackgroundFlip2(background_flip);
+   GLUIUpdateBackgroundFlip(background_flip);
+   GLUIUpdateBackgroundFlip2(background_flip);
    break;
   case MENU_SHOWHIDE_PARTICLES:
     if(plotstate==DYNAMIC_PLOTS){
@@ -1606,7 +1606,7 @@ void DialogMenu(int value){
   case DIALOG_FONTS:
   case DIALOG_LABELS:
   case DIALOG_DISPLAY:
-    ShowGluiDisplay(value);
+    GLUIShowGluiDisplay(value);
     break;
   case DIALOG_TOUR_SHOW:
     ShowGluiTour();
@@ -1670,7 +1670,7 @@ void DialogMenu(int value){
   case DIALOG_HIDEALL:
     showcolorbar_dialog = 0;
     HideGluiShooter();
-    HideGluiDisplay();
+    GLUIHideGluiDisplay();
     GLUIHideGluiBounds();
     HideGluiMotion();
     HideGluiTour();
@@ -1760,7 +1760,7 @@ void FontMenu(int value){
   }
   switch(value){
   case MENU_FONT_SETTINGS:
-    ShowGluiDisplay(DIALOG_FONTS);
+    GLUIShowGluiDisplay(DIALOG_FONTS);
     break;
   case SMALL_FONT:
     fontindex=SMALL_FONT;
@@ -1804,8 +1804,8 @@ void FontMenu(int value){
   default:
     assert(FFALSE);
   }
-  GluiUpdateFontIndex();
-  SetLabelControls();
+  GLUIUpdateFontIndex();
+  GLUISetLabelControls();
 }
 
 /* ------------------ UnitsMenu ------------------------ */
@@ -1824,7 +1824,7 @@ void UnitsMenu(int value){
   }
   else if(value==MENU_UNITS_HMS){
     vishmsTimelabel = 1 - vishmsTimelabel;
-    SetLabelControls();
+    GLUISetLabelControls();
 
   }
   else if(value==MENU_UNITS_SHOWALL){
@@ -2667,7 +2667,7 @@ void Plot3DShowMenu(int value){
 
 void GridDigitsMenu(int value){
   ngridloc_digits = value;
-  UpdateGLuiGridLocation();
+  GLUIUpdateGridLocation();
 }
 
   /* ------------------ GridSliceMenu ------------------------ */
@@ -6381,7 +6381,7 @@ void TitleMenu(int value){
     assert(FFALSE);
     break;
   }
-  SetLabelControls();
+  GLUISetLabelControls();
 }
 
 /* ------------------ ShowADeviceType ------------------------ */

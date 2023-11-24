@@ -2513,7 +2513,7 @@ void Keyboard(unsigned char key, int flag){
       break;
     case 'T':
       vishmsTimelabel = 1-vishmsTimelabel;
-      SetLabelControls();
+      GLUISetLabelControls();
       break;
     case 'u':
     case 'U':
@@ -2767,7 +2767,7 @@ void Keyboard(unsigned char key, int flag){
     case ':':
       timebar_overlap++;
       if (timebar_overlap > 2)timebar_overlap = 0;
-      UpdateTimebarOverlap();
+      GLUIUpdateTimebarOverlap();
       printf("overlap time/colorbar region: ");
       switch(timebar_overlap){
       case 0:
