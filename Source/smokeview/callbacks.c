@@ -1695,7 +1695,7 @@ void Keyboard(unsigned char key, int flag){
           vecfactor*=1.5;
         }
         PRINTF("vector length factor: %f\n",vecfactor);
-        UpdateGluiVecFactor();
+        GLUIUpdateGluiVecFactor();
       }
       if(visVector==1&&nplot3dloaded>0){
         gbsave=current_mesh;
@@ -1761,7 +1761,7 @@ void Keyboard(unsigned char key, int flag){
           if(contour_type==LINE_CONTOURS)printf("line coloring\n");
           if(contour_type==STEPPED_CONTOURS)printf("stepped coloring\n");
           if(contour_type==SHADED_CONTOURS)printf("continuous coloring\n");
-          UpdatePlot3dDisplay();
+          GLUIUpdatePlot3dDisplay();
           UpdateRGBColors(COLORBAR_INDEX_NONE);
         }
       }
@@ -1835,7 +1835,7 @@ void Keyboard(unsigned char key, int flag){
       hide_overlaps=1-hide_overlaps;
       updatehiddenfaces=1;
       UpdateHiddenFaces();
-      UpdateShowHideButtons();
+      GLUIUpdateShowHideButtons();
       glutPostRedisplay();
       break;
     case 'g':
@@ -1977,7 +1977,7 @@ void Keyboard(unsigned char key, int flag){
     case 'I':
       show_slice_in_obst++;
       if(show_slice_in_obst>3)show_slice_in_obst = 0;
-      SliceInObstMenu2Dialog(show_slice_in_obst);
+      GLUISliceInObstMenu2Dialog(show_slice_in_obst);
       updatemenu = 1;
       break;
     case 'j':
@@ -2219,9 +2219,9 @@ void Keyboard(unsigned char key, int flag){
 
         if(is_part_loaded==1||is_plot3d_loaded==1){
           if(is_part_loaded==1){
-            IncrementPartPropIndex();
+            GLUIIncrementPartPropIndex();
 #define BOUND_PERCENTILE_DRAW          120
-            PartBoundsCPP_CB(BOUND_PERCENTILE_DRAW);
+            GLUIPartBoundsCPP_CB(BOUND_PERCENTILE_DRAW);
           }
           if(is_plot3d_loaded==1){
             plotn += FlowDir;
@@ -2233,8 +2233,8 @@ void Keyboard(unsigned char key, int flag){
             }
             UpdateAllPlotSlices();
             if(visiso==1&&cache_plot3d_data==1)UpdateSurface();
-            UpdatePlot3dListIndex();
-            Plot3DBoundsCPP_CB(BOUND_PERCENTILE_DRAW);
+            GLUIUpdatePlot3dListIndex();
+            GLUIPlot3DBoundsCPP_CB(BOUND_PERCENTILE_DRAW);
           }
         }
         else{
@@ -2322,7 +2322,7 @@ void Keyboard(unsigned char key, int flag){
 
         if(keystate==GLUT_ACTIVE_ALT&&strncmp((const char *)&key2, "r", 1) == 0){
           research_mode = 1-research_mode;
-          UpdatdateResearchModeCPP();
+          GLUIUpdatdateResearchModeCPP();
           update_research_mode = 1;
           return;
         }
@@ -2756,7 +2756,7 @@ void Keyboard(unsigned char key, int flag){
         show_slice_values[2]=0;
       }
 #define IMMERSED_SWITCH_CELLTYPE 0
-      ImmersedBoundCB(IMMERSED_SWITCH_CELLTYPE);
+      GLUIImmersedBoundCB(IMMERSED_SWITCH_CELLTYPE);
       break;
     case '.':
       lock_mouse_aperture = 1 - lock_mouse_aperture;
@@ -2855,7 +2855,7 @@ void Keyboard(unsigned char key, int flag){
         if(npartthread_ids==1)printf("parallel particle loading: on(1 thread)\n");
       }
       if(part_multithread==0)printf("parallel particle loading: off\n");
-      UpdateGluiPartFast();
+      GLUIUpdateGluiPartFast();
       break;
     case '$':
       trainer_active=1-trainer_active;
@@ -2906,7 +2906,7 @@ void Keyboard(unsigned char key, int flag){
       if(key2==']')partpointsize++;
       partpointsize = CLAMP(partpointsize, PART_MIN_SIZE, PART_MAX_SIZE);
       printf("particle size: %f\n", partpointsize);
-      UpdatePartPointSize();
+      GLUIUpdatePartPointSize();
       break;
     case ';':
       ColorbarMenu(COLORBAR_FLIP);
@@ -4015,7 +4015,7 @@ void DoScript(void){
         SMV_EXIT(0);
       }
       if(current_script_command==NULL){
-        GluiScriptEnable();
+        GLUIGluiScriptEnable();
       }
     }
     else{

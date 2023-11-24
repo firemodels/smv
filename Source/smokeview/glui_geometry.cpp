@@ -507,10 +507,10 @@ extern "C" void HvacCB(int var){
   }
   switch(var){
     case HVACDUCT_SET_BOUNDS:
-      ShowBoundsDialog(DLG_HVACDUCT);
+      GLUIShowBoundsDialog(DLG_HVACDUCT);
       break;
     case HVACNODE_SET_BOUNDS:
-      ShowBoundsDialog(DLG_HVACNODE);
+      GLUIShowBoundsDialog(DLG_HVACNODE);
       break;
     case HVAC_NODE_LIST:
       if(hvacnodevar_index>=0){
@@ -1274,8 +1274,8 @@ extern "C" void GluiGeometrySetup(int main_window){
     SPINNER_terrain_skip = glui_geometry->add_spinner_to_panel(ROLLOUT_terrain, "terrain skip", GLUI_SPINNER_INT, &terrain_skip);
     SPINNER_terrain_skip->set_int_limits(1, 10);
 #define SLICE_SKIP 124
-    SPINNER_slice_skip2 = glui_geometry->add_spinner_to_panel(ROLLOUT_terrain, "slice data skip", GLUI_SPINNER_INT, &slice_skip, SLICE_SKIP, SliceBoundCB);
-    SliceBoundCB(SLICE_SKIP);
+    SPINNER_slice_skip2 = glui_geometry->add_spinner_to_panel(ROLLOUT_terrain, "slice data skip", GLUI_SPINNER_INT, &slice_skip, SLICE_SKIP, GLUISliceBoundCB);
+    GLUISliceBoundCB(SLICE_SKIP);
   }
 
   PANEL_geom_close = glui_geometry->add_panel("", GLUI_PANEL_NONE);

@@ -283,11 +283,11 @@ extern "C" void HideGluiColorbar(void){
   showcolorbar_dialog=0;
   if(show_extreme_mindata_save==1){
     show_extreme_mindata=1;
-    UpdateExtreme();
+    GLUIUpdateExtreme();
   }
   if(show_extreme_maxdata_save==1){
     show_extreme_maxdata=1;
-    UpdateExtreme();
+    GLUIUpdateExtreme();
   }
   if(glui_colorbar!=NULL){
     CopyCamera(camera_external,camera_external_save);
@@ -309,12 +309,12 @@ extern "C" void ShowGluiColorbar(void){
   show_extreme_mindata_save = show_extreme_mindata;
   if(show_extreme_mindata==1){
     show_extreme_mindata=0;
-    UpdateExtreme();
+    GLUIUpdateExtreme();
   }
   show_extreme_maxdata_save = show_extreme_maxdata;
   if(show_extreme_maxdata==1){
     show_extreme_maxdata=0;
-    UpdateExtreme();
+    GLUIUpdateExtreme();
   }
   if(glui_colorbar!=NULL){
     ReshapeCB(screenWidth,screenHeight);
@@ -753,7 +753,7 @@ extern "C" void ColorbarCB(int var){
     colorbartype = list_index;
     cbi = colorbarinfo + colorbartype;
     if(show_firecolormap!=0)fire_colorbar_index= colorbartype;
-    SetColorbarListBound(colorbartype);
+    GLUISetColorbarListBound(colorbartype);
     ColorbarMenu(colorbartype);
     ColorbarGlobal2Local();
     ColorbarGeneral2Simple(cbi);
@@ -784,7 +784,7 @@ extern "C" void ColorbarCB(int var){
   case COLORBAR_CLOSE:
     vis_colorbar_dists_plot = 0;
     if(CHECKBOX_cb_plot_dist!=NULL)CHECKBOX_cb_plot_dist->set_int_val(0);
-    SliceBoundCB(COLORBAR_PLOT2D);
+    GLUISliceBoundCB(COLORBAR_PLOT2D);
     HideGluiColorbar();
     break;
   case COLORBAR_PREV:
@@ -1097,7 +1097,7 @@ extern "C" void GluiColorbarSetup(int main_window){
   glui_colorbar->add_radiobutton_to_group(RADIO_cb_coord_type, "CIELab");
   glui_colorbar->add_checkbox_to_panel(ROLLOUT_cb_display,"Show CIELab equal distance bars", &show_Lab_dist_bars);
 #ifdef pp_COLOR_PLOT
-  CHECKBOX_cb_plot_dist = glui_colorbar->add_checkbox_to_panel(ROLLOUT_cb_display, _("Show CIELab distance plot"), &vis_colorbar_dists_plot, COLORBAR_PLOT2D, SliceBoundCB);
+  CHECKBOX_cb_plot_dist = glui_colorbar->add_checkbox_to_panel(ROLLOUT_cb_display, _("Show CIELab distance plot"), &vis_colorbar_dists_plot, COLORBAR_PLOT2D, GLUISliceBoundCB);
 #endif
 
   PANEL_cb_toggle = glui_colorbar->add_panel_to_panel(ROLLOUT_cb_display, "Toggle");
@@ -1197,7 +1197,7 @@ extern "C" void ColorbarGlobal2Local(void){
   SPINNER_cb_rgb[1]->set_int_val((int)(rgb_local[1]));
   SPINNER_cb_rgb[2]->set_int_val( (int)(rgb_local[2]));
 
-  UpdateExtremeVals();
+  GLUIUpdateExtremeVals();
 
-  ExtremeCB(COLORBAR_EXTREME);
+  GLUIExtremeCB(COLORBAR_EXTREME);
 }

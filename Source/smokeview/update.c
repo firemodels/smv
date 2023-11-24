@@ -1580,7 +1580,7 @@ void UpdateTimes(void){
   updatefaces=1;
   if(nglobal_times>0){
     UpdateTimeLabels();
-    UpdateGluiTimeBounds(global_times[0],global_times[nglobal_times-1]);
+    GLUIUpdateGluiTimeBounds(global_times[0],global_times[nglobal_times-1]);
   }
   CheckMemory;
 }
@@ -1846,7 +1846,7 @@ void UpdateColorTable(colortabledata *ctableinfo, int nctableinfo){
     strcpy(newentryi->label, fromi->label);
   }
   ResizeMemory((void **)&colortableinfo, ncolortableinfo*sizeof(colortabledata));
-  UpdateColorTableList(ncolortableinfo_old);
+  GLUIUpdateColorTableList(ncolortableinfo_old);
 }
 
 /* ------------------ HaveFire ------------------------ */
@@ -1921,7 +1921,7 @@ void UpdateShowScene(void){
   }
   if(update_slicexyz==1){
     update_slicexyz = 0;
-    UpdateSliceXYZ();
+    GLUIUpdateSliceXYZ();
   }
   if(update_vectorskip == 1){
     update_vectorskip = 0;
@@ -1929,7 +1929,7 @@ void UpdateShowScene(void){
   }
   if(update_plot_label == 1){
     update_plot_label = 0;
-    UpdatePlotLabel();
+    GLUIUpdatePlotLabel();
   }
   if(open_movie_dialog==1){
     open_movie_dialog = 0;
@@ -1954,7 +1954,7 @@ void UpdateShowScene(void){
     Smoke3dCB(USE_OPACITY_DEPTH);
   }
   if(update_splitcolorbar==1){
-    SplitCB(SPLIT_COLORBAR);
+    GLUISplitCB(SPLIT_COLORBAR);
     update_splitcolorbar = 0;
   }
 #ifdef pp_HIST
@@ -2480,7 +2480,7 @@ void UpdateDisplay(void){
     ReadIni(NULL);
 
     update_glui_bounds = 0;
-    UpdateGluiBounds();
+    GLUIUpdateGluiBounds();
   }
   if(update_colorbar_list == 1){
     UpdateColorbarList();
@@ -2488,14 +2488,14 @@ void UpdateDisplay(void){
   }
   if(update_glui_bounds==1){
     update_glui_bounds = 0;
-    UpdateGluiBounds();
+    GLUIUpdateGluiBounds();
   }
   if(update_cache_data==1){
     update_cache_data = 0;
-    SetCacheFlag(BOUND_PLOT3D, cache_plot3d_data);
-    SetCacheFlag(BOUND_PART, cache_part_data);
-    SetCacheFlag(BOUND_PATCH, cache_boundary_data);
-    SetCacheFlag(BOUND_SLICE, cache_slice_data);
+    GLUISetCacheFlag(BOUND_PLOT3D, cache_plot3d_data);
+    GLUISetCacheFlag(BOUND_PART, cache_part_data);
+    GLUISetCacheFlag(BOUND_PATCH, cache_boundary_data);
+    GLUISetCacheFlag(BOUND_SLICE, cache_slice_data);
   }
   if(update_chop_colors==1){
     update_chop_colors = 0;
@@ -2605,7 +2605,7 @@ void UpdateDisplay(void){
   }
   if(update_research_mode == 1){
     update_research_mode = 0;
-    UpdateResearchMode();
+    GLUIUpdateResearchMode();
   }
 #ifdef pp_HIST
   if(update_percentile_mode==1){
@@ -2615,8 +2615,8 @@ void UpdateDisplay(void){
 #endif
   if(update_colorbar_digits==1){
     update_colorbar_digits = 0;
-    SetColorbarDigitsCPP(ncolorlabel_digits);
-    SetColorbarDigits();
+    GLUISetColorbarDigitsCPP(ncolorlabel_digits);
+    GLUISetColorbarDigits();
   }
   if(update_visColorbars==1){
     update_visColorbars = 0;
@@ -2624,7 +2624,7 @@ void UpdateDisplay(void){
     visColorbarHorizontal = visColorbarHorizontal_val;
     vis_colorbar = GetColorbarState();
     UpdateColorbarControls();
-    UpdateColorbarControls2();
+    GLUIUpdateColorbarControls2();
     updatemenu = 1;
   }
   if(update_windrose==1){

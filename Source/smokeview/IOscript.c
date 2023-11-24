@@ -148,7 +148,7 @@ void StartScript(void){
     if(stderr2!=NULL)fprintf(stderr2,"*** Error: Smokeview script does not exist\n");
     return;
   }
-  GluiScriptDisable();
+  GLUIGluiScriptDisable();
   current_script_command=scriptinfo-1;
   iso_multithread_save = iso_multithread;
   iso_multithread = 0;
@@ -2646,16 +2646,16 @@ void ScriptPlot3dProps(scriptdata *scripti){
   }
   UpdateAllPlotSlices();
   if(visiso==1)UpdateSurface();
-  UpdatePlot3dListIndex();
+  GLUIUpdatePlot3dListIndex();
 
   vecfactor=1.0;
   if(scripti->fval>=0.0)vecfactor=scripti->fval;
-  UpdateVectorWidgets();
+  GLUIUpdateVectorWidgets();
 
   PRINTF("script: vecfactor=%f\n",vecfactor);
 
   contour_type=CLAMP(scripti->ival4,0,2);
-  UpdatePlot3dDisplay();
+  GLUIUpdatePlot3dDisplay();
 
   if(visVector==1&&nplot3dloaded>0){
     meshdata *gbsave,*gbi;

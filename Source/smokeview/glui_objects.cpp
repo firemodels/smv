@@ -1076,7 +1076,7 @@ void GenPlotCB(int var){
       }
       break;
     case GENPLOT_PLOT_TMINMAX:
-      UpdateBoundTbounds();
+      GLUIUpdateBoundTbounds();
       break;
     case GENPLOT_PLOT_MINMAX:
       Glui2Plot2D(iplot2dinfo);
@@ -1590,7 +1590,7 @@ extern "C" void DeviceCB(int var){
       }
     }
     update_avg = 1;
-    UpdatePlot2DSize2();
+    GLUIUpdatePlot2DSize2();
     break;
   case DEVICE_devicetypes:
     for(i = 0;i < ndevicetypes;i++){

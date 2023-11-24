@@ -1987,7 +1987,7 @@ void FinalizePartLoad(partdata *parti){
     PRINT_TIMER(part_time2, "particle update colors time");
   }
 #define BOUND_PERCENTILE_DRAW          120
-  PartBoundsCPP_CB(BOUND_PERCENTILE_DRAW);
+  GLUIPartBoundsCPP_CB(BOUND_PERCENTILE_DRAW);
   parttype = 0;
   ParticlePropShowMenu(part5colorindex);
   plotstate = GetPlotState(DYNAMIC_PLOTS);

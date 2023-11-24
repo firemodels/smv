@@ -561,13 +561,13 @@ void ShowMultiSliceMenu(int value){
     ShowHideSliceMenu(value);
     return;
   case MENU_SHOWSLICE_IN_GAS:
-    SliceInObstMenu2Dialog(ONLY_IN_GAS);
+    GLUISliceInObstMenu2Dialog(ONLY_IN_GAS);
     break;
   case MENU_SHOWSLICE_IN_GASANDSOLID:
-    SliceInObstMenu2Dialog(GAS_AND_SOLID);
+    GLUISliceInObstMenu2Dialog(GAS_AND_SOLID);
     break;
   case MENU_SHOWSLICE_IN_SOLID:
-    SliceInObstMenu2Dialog(ONLY_IN_SOLID);
+    GLUISliceInObstMenu2Dialog(ONLY_IN_SOLID);
     break;
   case -12:
     offset_slice = 1 - offset_slice;
@@ -750,9 +750,9 @@ void StaticVariableMenu(int value){
   UpdateAllPlotSlices();
   updatemenu=1;
   GLUTPOSTREDISPLAY;
-  UpdatePlot3dListIndex();
+  GLUIUpdatePlot3dListIndex();
 #define BOUND_PERCENTILE_DRAW          120
-  Plot3DBoundsCPP_CB(BOUND_PERCENTILE_DRAW);
+  GLUIPlot3DBoundsCPP_CB(BOUND_PERCENTILE_DRAW);
 }
 
 /* ------------------ IsoVariableMenu ------------------------ */
@@ -777,7 +777,7 @@ void IsoVariableMenu(int value){
     UpdatePlotSlice(ZDIR);
     updatemenu=1;
     GLUTPOSTREDISPLAY;
-    UpdatePlot3dListIndex();
+    GLUIUpdatePlot3dListIndex();
   }
 }
 
@@ -806,7 +806,7 @@ void LabelMenu(int value){
       if(visColorbarHorizontal == 1)visColorbarVertical = 0;
     }
     UpdateColorbarControls();
-    UpdateColorbarControls2();
+    GLUIUpdateColorbarControls2();
     vis_colorbar = GetColorbarState();
     break;
   case MENU_LABEL_timebar:
@@ -981,11 +981,11 @@ void ColorbarMenu(int value){
     case COLORBAR_AUTOFLIP:
       colorbar_autoflip = 1 - colorbar_autoflip;
       update_flipped_colorbar = 1;
-      UpdateColorbarFlip();
+      GLUIUpdateColorbarFlip();
       break;
     case COLORBAR_FLIP:
       colorbar_flip=1-colorbar_flip;
-      UpdateColorbarFlip();
+      GLUIUpdateColorbarFlip();
       break;
     case COLORBAR_RESET:
       show_extreme_mindata=0;
@@ -993,17 +993,17 @@ void ColorbarMenu(int value){
       colorbar_flip=0;
       contour_type=SHADED_CONTOURS;
       setbw=0;
-      UpdateExtreme();
+      GLUIUpdateExtreme();
       UpdateRGBColors(COLORBAR_INDEX_NONE);
       break;
     case COLORBAR_HIGHLIGHT_BELOW:
       show_extreme_mindata=1-show_extreme_mindata;
-      UpdateExtreme();
+      GLUIUpdateExtreme();
       UpdateRGBColors(COLORBAR_INDEX_NONE);
       break;
     case COLORBAR_HIGHLIGHT_ABOVE:
       show_extreme_maxdata=1-show_extreme_maxdata;
-      UpdateExtreme();
+      GLUIUpdateExtreme();
       UpdateRGBColors(COLORBAR_INDEX_NONE);
       break;
     case COLORBAR_TOGGLE_BW_DATA:
@@ -1015,7 +1015,7 @@ void ColorbarMenu(int value){
       else{
         ColorbarMenu(colorbartype_save);
       }
-      IsoBoundCB(ISO_COLORS);
+      GLUIIsoBoundCB(ISO_COLORS);
       break;
     case COLORBAR_TOGGLE_BW:
       setbw=1-setbw;
@@ -1023,17 +1023,17 @@ void ColorbarMenu(int value){
       SetLabelControls();
       break;
     case USE_LIGHTING:
-      UpdateUseLighting();
+      GLUIUpdateUseLighting();
       break;
     case TOGGLE_LIGHTING:
       use_lighting = 1 - use_lighting;
-      UpdateUseLighting();
+      GLUIUpdateUseLighting();
       break;
    case COLORBAR_TRANSPARENT:
      use_transparency_data=1-use_transparency_data;
      UpdateRGBColors(COLORBAR_INDEX_NONE);
      SetLabelControls();
-     UpdateTransparency();
+     GLUIUpdateTransparency();
      break;
    case COLORBAR_CONTINUOUS:
      contour_type=SHADED_CONTOURS;
@@ -1054,7 +1054,7 @@ void ColorbarMenu(int value){
      LabelMenu(MENU_LABEL_colorbar_vertical);
      break;
    case MENU_COLORBAR_SETTINGS:
-     ShowGluiBounds(DIALOG_COLORING);
+     GLUIShowGluiBounds(DIALOG_COLORING);
      break;
    default:
      assert(FFALSE);
@@ -1066,17 +1066,17 @@ void ColorbarMenu(int value){
     iso_colorbar_index=value;
     iso_colorbar = colorbarinfo + iso_colorbar_index;
     update_texturebar=1;
-    UpdateListIsoColorobar();
+    GLUIUpdateListIsoColorobar();
     UpdateCurrentColorbar(colorbarinfo+colorbartype);
     UpdateColorbarType();
-    SetColorbarListBound(colorbartype);
+    GLUISetColorbarListBound(colorbartype);
     if(colorbartype == bw_colorbar_index&&bw_colorbar_index>=0){
       setbwdata = 1;
     }
     else{
       setbwdata = 0;
     }
-    IsoBoundCB(ISO_COLORS);
+    GLUIIsoBoundCB(ISO_COLORS);
     SetLabelControls();
     char *ext, cblabel[1024];
     strcpy(cblabel,colorbarinfo[colorbartype].menu_label);
@@ -1193,7 +1193,7 @@ void IsoShowMenu(int value){
     if(visAIso!=0){
       plotstate=DYNAMIC_PLOTS;
     }
-    UpdateGluiIsotype();
+    GLUIUpdateGluiIsotype();
     break;
    case MENU_ISOSHOW_ALLSOLID:
     transparent_state=ALL_SOLID;
@@ -1328,15 +1328,15 @@ void ShowVSliceMenu(int value){
     return;
   }
   if(value==MENU_SHOWSLICE_IN_GAS){
-    SliceInObstMenu2Dialog(ONLY_IN_GAS);
+    GLUISliceInObstMenu2Dialog(ONLY_IN_GAS);
     return;
   }
   else if(value==MENU_SHOWSLICE_IN_GASANDSOLID){
-    SliceInObstMenu2Dialog(GAS_AND_SOLID);
+    GLUISliceInObstMenu2Dialog(GAS_AND_SOLID);
     return;
   }
   else if(value==MENU_SHOWSLICE_IN_SOLID){
-    SliceInObstMenu2Dialog(ONLY_IN_SOLID);
+    GLUISliceInObstMenu2Dialog(ONLY_IN_SOLID);
     return;
   }
   if(value == MENU_SHOWSLICE_OFFSET){
@@ -1397,7 +1397,7 @@ void ShowVSliceMenu(int value){
 
 void SliceSkipMenu(int value){
   slice_skip = value;
-  UpdateSliceSkip();
+  GLUIUpdateSliceSkip();
   updatemenu=1;
 }
 
@@ -1422,13 +1422,13 @@ void ShowHideSliceMenu(int value){
       }
       break;
     case MENU_SHOWSLICE_IN_GAS:
-      SliceInObstMenu2Dialog(ONLY_IN_GAS);
+      GLUISliceInObstMenu2Dialog(ONLY_IN_GAS);
       break;
     case MENU_SHOWSLICE_IN_GASANDSOLID:
-      SliceInObstMenu2Dialog(GAS_AND_SOLID);
+      GLUISliceInObstMenu2Dialog(GAS_AND_SOLID);
       break;
     case MENU_SHOWSLICE_IN_SOLID:
-      SliceInObstMenu2Dialog(ONLY_IN_SOLID);
+      GLUISliceInObstMenu2Dialog(ONLY_IN_SOLID);
       break;
     case MENU_SHOWSLICE_OFFSET:
       offset_slice=1-offset_slice;
@@ -1591,7 +1591,7 @@ void DialogMenu(int value){
   case DIALOG_SHOWFILES:
   case DIALOG_SMOKEZIP:
   case DIALOG_TIME:
-    ShowGluiBounds(value);
+    GLUIShowGluiBounds(value);
     break;
   case DIALOG_MOTION:
   case DIALOG_RENDER:
@@ -1671,7 +1671,7 @@ void DialogMenu(int value){
     showcolorbar_dialog = 0;
     HideGluiShooter();
     HideGluiDisplay();
-    HideGluiBounds();
+    GLUIHideGluiBounds();
     HideGluiMotion();
     HideGluiTour();
     HideGluiClip();
@@ -2380,7 +2380,7 @@ void IsoSurfaceTypeMenu(int value){
       assert(FFALSE);
       break;
     }
-    UpdateGluiPlot3Dtype();
+    GLUIUpdateGluiPlot3Dtype();
     updatemenu=1;
     GLUTPOSTREDISPLAY;
   }
@@ -2753,18 +2753,18 @@ void CompressMenu(int value){
   if(value==MENU_DUMMY)return;
   switch(value){
   case MENU_CONFIG_SETTINGS:
-    ShowGluiBounds(DIALOG_SMOKEZIP);
+    GLUIShowGluiBounds(DIALOG_SMOKEZIP);
     break;
   case MENU_ERASECOMPRESS:
     erase_all=1;
     overwrite_all=0;
-    UpdateOverwrite();
+    GLUIUpdateOverwrite();
     CompressSVZip();
     break;
   case MENU_OVERWRITECOMPRESS:
     erase_all=0;
     overwrite_all=1-overwrite_all;
-    UpdateOverwrite();
+    GLUIUpdateOverwrite();
     break;
   case MENU_COMPRESSNOW:
     erase_all=0;
@@ -2772,7 +2772,7 @@ void CompressMenu(int value){
     break;
   case MENU_COMPRESSAUTOLOAD:
     compress_autoloaded=1-compress_autoloaded;
-    UpdateOverwrite();
+    GLUIUpdateOverwrite();
     break;
   default:
     assert(FFALSE);
@@ -2825,7 +2825,7 @@ void SmokeviewIniMenu(int value){
   case MENU_DUMMY:
     break;
   case MENU_CONFIG_SETTINGS:
-    ShowGluiBounds(DIALOG_CONFIG);
+    GLUIShowGluiBounds(DIALOG_CONFIG);
     break;
   default:
     assert(FFALSE);
@@ -2863,7 +2863,7 @@ void PeriodicRefresh(int value){
 
 void ScriptMenu2(int value){
   script_step=1;
-  UpdateScriptStep();
+  GLUIUpdateScriptStep();
   ScriptMenu(value);
 }
 
@@ -2880,7 +2880,7 @@ void ScriptMenu(int value){
   GLUTPOSTREDISPLAY;
   switch(value){
     case MENU_SCRIPT_SETTINGS:
-      ShowGluiBounds(DIALOG_SCRIPT);
+      GLUIShowGluiBounds(DIALOG_SCRIPT);
       break;
     case SCRIPT_STEP:
       script_step=1-script_step;
@@ -2894,7 +2894,7 @@ void ScriptMenu(int value){
       script_startframe=-1;
       script_skipframe=-1;
       script_step=0;
-      GluiScriptEnable();
+      GLUIGluiScriptEnable();
       break;
     case SCRIPT_CONTINUE:
       script_step=0;
@@ -2905,7 +2905,7 @@ void ScriptMenu(int value){
       break;
     case SCRIPT_START_RECORDING:
       script_defer_loading = 0;
-      UpdateScriptStart();
+      GLUIUpdateScriptStart();
       GetNewScriptFileName(newscriptfilename);
       script_recording = InsertScriptFile(newscriptfilename);
       scriptoutstream=fopen(newscriptfilename,"w");
@@ -2944,7 +2944,7 @@ void ScriptMenu(int value){
     case SCRIPT_STOP_RECORDING:
       if(script_recording!=NULL){
         script_recording->recording=0;
-        AddScriptList(script_recording->file,script_recording->id);
+        GLUIAddScriptList(script_recording->file,script_recording->id);
         script_recording=NULL;
       }
       if(scriptoutstream!=NULL){
@@ -2952,7 +2952,7 @@ void ScriptMenu(int value){
         scriptoutstream=NULL;
         PRINTF("Script recorder off\n");
       }
-      UpdateScriptStop();
+      GLUIUpdateScriptStop();
       break;
     default:
       for(scriptfile=first_scriptfile.next;scriptfile->next!=NULL;scriptfile=scriptfile->next){
@@ -3172,7 +3172,7 @@ void LoadVolsmoke3DMenu(int value){
     }
   }
   else if(value==MENU_VOLSMOKE_SETTINGS){
-    ShowBoundsDialog(DLG_3DSMOKE);
+    GLUIShowBoundsDialog(DLG_3DSMOKE);
   }
   updatemenu = 1;
   ForceIdle();
@@ -3408,7 +3408,7 @@ void LoadUnloadMenu(int value){
     SetLoadedSliceBounds(NULL, 0);
     ReloadAllVectorSliceFiles();
     ReloadAllSliceFiles();
-    SliceBoundsCPP_CB(BOUND_UPDATE_COLORS);
+    HVACSliceBoundsCPP_CB(BOUND_UPDATE_COLORS);
     STOP_TIMER(load_time);
     PRINT_LOADTIMES(file_count,load_size,load_time);
     slicefile_labelindex=slicefile_labelindex_save;
@@ -3527,13 +3527,13 @@ void LoadUnloadMenu(int value){
     cache_plot3d_data = cache_file_data;
     cache_boundary_data = cache_file_data;
     cache_part_data = cache_file_data;
-    SetCacheFlag(BOUND_PATCH, cache_file_data);
-    SetCacheFlag(BOUND_PLOT3D, cache_file_data);
-    SetCacheFlag(BOUND_PART, cache_file_data);
+    GLUISetCacheFlag(BOUND_PATCH, cache_file_data);
+    GLUISetCacheFlag(BOUND_PLOT3D, cache_file_data);
+    GLUISetCacheFlag(BOUND_PART, cache_file_data);
 #define BOUND_CACHE_DATA               112
-    PatchBoundsCPP_CB(BOUND_CACHE_DATA);
-    SliceBoundsCPP_CB(BOUND_CACHE_DATA);
-    PartBoundsCPP_CB(BOUND_CACHE_DATA);
+    GLUIPatchBoundsCPP_CB(BOUND_CACHE_DATA);
+    HVACSliceBoundsCPP_CB(BOUND_CACHE_DATA);
+    GLUIPartBoundsCPP_CB(BOUND_CACHE_DATA);
     updatemenu = 1;
   }
   if(value==REDIRECT){
@@ -3749,7 +3749,7 @@ void ParticleStreakShowMenu(int value){
     streak5step=0;
     rvalue=streak_rvalue[value];
     UpdateStreakValue(rvalue-0.001);
-    UpdateGluiStreakValue(rvalue);
+    GLUIUpdateGluiStreakValue(rvalue);
 
   }
   updatemenu=1;
@@ -3823,7 +3823,7 @@ void ParticlePropShowMenu(int value){
     propi = part5propinfo + iprop;
     last_prop_display=iprop;
     ipart5prop = iprop;
-    SetValTypeIndex(BOUND_PART, ipart5prop);
+    GLUISetValTypeIndex(BOUND_PART, ipart5prop);
 
     propi->display=1;
     part5colorindex=iprop;
@@ -3841,7 +3841,7 @@ void ParticlePropShowMenu(int value){
     partunitlabel=propi->label->unit;
 #define FILETYPE_INDEX 5
 #define BOUND_PERCENTILE_DRAW          120
-    PartBoundsCPP_CB(BOUND_PERCENTILE_DRAW);
+    GLUIPartBoundsCPP_CB(BOUND_PERCENTILE_DRAW);
   }
   else if(value==MENU_PROP_SHOWALL){
     if(current_property!=NULL){
@@ -3887,7 +3887,7 @@ void ParticlePropShowMenu(int value){
   }
   else if(value==MENU_PROP_TRACERS){
     show_tracers_always=1-show_tracers_always;
-    UpdateTracers();
+    GLUIUpdateTracers();
   }
   else{
     int iclass;
@@ -4055,14 +4055,14 @@ void LoadParticleMenu(int value){
       }
     }
     else if(value==MENU_PART_SETTINGS){
-      ShowBoundsDialog(DLG_PART);
+      GLUIShowBoundsDialog(DLG_PART);
     }
     else if(value==MENU_PART_PARTFAST){
       updatemenu = 1;
       partfast = 1-partfast;
       if(partfast==0)printf("fast loading: off\n");
       if(partfast==1)printf("fast loading: on\n");
-      UpdateGluiPartFast();
+      GLUIUpdateGluiPartFast();
     }
     else if(value == MENU_PART_NUM_FILE_SIZE){
       int total = 0;
@@ -4333,7 +4333,7 @@ FILE_SIZE LoadVSliceMenu2(int value){
     return 0;
   }
   else if(value==MENU_LOADVSLICE_SETTINGS){
-    ShowBoundsDialog(DLG_SLICE);
+    GLUIShowBoundsDialog(DLG_SLICE);
   }
   else if(value>=0){
     vslicedata *vslicei;
@@ -4714,7 +4714,7 @@ void LoadSmoke3DMenu(int value){
     }
   }
   else if(value == MENU_SMOKE_SETTINGS){
-    ShowBoundsDialog(DLG_3DSMOKE);
+    GLUIShowBoundsDialog(DLG_3DSMOKE);
   }
   else if(value ==MENU_SMOKE_FILE_SIZES){
     if(nsmoke3dtypes>0){
@@ -4942,16 +4942,16 @@ void LoadSliceMenu(int value){
         }
         break;
       case MENU_SHOWSLICE_IN_GAS:
-        SliceInObstMenu2Dialog(ONLY_IN_GAS);
+        GLUISliceInObstMenu2Dialog(ONLY_IN_GAS);
         break;
       case  MENU_SHOWSLICE_IN_GASANDSOLID:
-        SliceInObstMenu2Dialog(GAS_AND_SOLID);
+        GLUISliceInObstMenu2Dialog(GAS_AND_SOLID);
         break;
       case MENU_SHOWSLICE_IN_SOLID:
-        SliceInObstMenu2Dialog(ONLY_IN_SOLID);
+        GLUISliceInObstMenu2Dialog(ONLY_IN_SOLID);
         break;
       case MENU_SLICE_SETTINGS:
-        ShowBoundsDialog(DLG_SLICE);
+        GLUIShowBoundsDialog(DLG_SLICE);
         break;
       default:
         value = -(1000 + value);
@@ -5112,7 +5112,7 @@ void LoadMultiVSliceMenu(int value){
       }
       break;
       case MENU_LOADVSLICE_SETTINGS:
-        ShowBoundsDialog(DLG_SLICE);
+        GLUIShowBoundsDialog(DLG_SLICE);
         break;
       default:
         assert(FFALSE);
@@ -5274,12 +5274,12 @@ void LoadMultiSliceMenu(int value){
         sortslices = 1 - sortslices;
         updatemenu = 1;
         GLUTPOSTREDISPLAY;
-        UpdateSortSlices();
+        GLUIUpdateSortSlices();
         break;
       case MENU_SPLITSLICES_DEBUG:
         sortslices_debug = 1 - sortslices_debug;
         if(sortslices_debug == 1)sortslices = 1;
-        UpdateSortSlices();
+        GLUIUpdateSortSlices();
         updatemenu = 1;
         GLUTPOSTREDISPLAY;
         break;
@@ -5294,7 +5294,7 @@ void LoadMultiSliceMenu(int value){
         GLUTPOSTREDISPLAY;
         break;
       case MENU_SLICE_SETTINGS:
-        ShowBoundsDialog(DLG_SLICE);
+        GLUIShowBoundsDialog(DLG_SLICE);
         break;
       default:
         assert(FFALSE);
@@ -5459,7 +5459,7 @@ void LoadPlot3dMenu(int value){
     }
   }
   else if(value==MENU_PLOT3D_SETTINGS){
-    ShowBoundsDialog(DLG_PLOT3D);
+    GLUIShowBoundsDialog(DLG_PLOT3D);
   }
   else{
     value+=100000;
@@ -5558,7 +5558,7 @@ void LoadIsoMenu(int value){
     }
   }
   if(value==MENU_ISO_SETTINGS){
-    ShowBoundsDialog(DLG_ISO);
+    GLUIShowBoundsDialog(DLG_ISO);
     return;
   }
   if(value<=-10){
@@ -5745,7 +5745,7 @@ void LoadBoundaryMenu(int value){
       break;
 #endif
     case MENU_BOUNDARY_SETTINGS:
-      ShowBoundsDialog(DLG_BOUNDARY);
+      GLUIShowBoundsDialog(DLG_BOUNDARY);
       break;
       case MENU_KEEP_ALL:
       if(boundaryslicedup_option!=SLICEDUP_KEEPALL){
@@ -5816,7 +5816,7 @@ void ShowBoundaryMenu(int value){
   }
   if(value==SHOW_CHAR){
     vis_threshold = 1 - vis_threshold;
-    UpdateChar();
+    GLUIUpdateChar();
   }
   if(value==GLUI_SHOWALL_BOUNDARY||value==GLUI_HIDEALL_BOUNDARY){
     int i;
@@ -6937,10 +6937,10 @@ void HVACNodeValueMenu(int value){
       }
     }
   }
-  SetValTypeIndex(BOUND_HVACNODE, value);
+  GLUISetValTypeIndex(BOUND_HVACNODE, value);
   updatemenu = 1;
   UpdateHVACVarLists();
-  HVACNodeBoundsCPP_CB(BOUND_UPDATE_COLORS);
+  GLUIHVACNodeBoundsCPP_CB(BOUND_UPDATE_COLORS);
   GLUTPOSTREDISPLAY;
 }
 
@@ -6967,8 +6967,8 @@ void HVACDuctValueMenu(int value){
   }
   updatemenu = 1;
   UpdateHVACVarLists();
-  SetValTypeIndex(BOUND_HVACDUCT, value);
-  HVACDuctBoundsCPP_CB(BOUND_UPDATE_COLORS);//
+  GLUISetValTypeIndex(BOUND_HVACDUCT, value);
+  GLUIHVACDuctBoundsCPP_CB(BOUND_UPDATE_COLORS);//
   GLUTPOSTREDISPLAY;
 }
 
@@ -6981,7 +6981,7 @@ void LoadHVACMenu(int value){
       SetHVACDuct();
       plotstate = GetPlotState(DYNAMIC_PLOTS);
       UpdateTimes();
-      HVACDuctBoundsCPP_CB(BOUND_UPDATE_COLORS);//
+      GLUIHVACDuctBoundsCPP_CB(BOUND_UPDATE_COLORS);//
       GLUTPOSTREDISPLAY;
       break;
     case MENU_HVAC_UNLOAD:
@@ -8589,7 +8589,7 @@ updatemenu=0;
   PRINTF("Updating Menus %i In menu %i\n",menu_count++,in_menu);
   in_menu=1;
 #endif
-  UpdateShowHideButtons();
+  GLUIUpdateShowHideButtons();
   GLUTPOSTREDISPLAY;
 
   for(i=0;i<nmultisliceinfo;i++){

@@ -608,7 +608,7 @@ void UpdateCurrentColorbar(colorbardata *cb){
       break;
     }
   }
-  if(is_fed_colorbar==1&&fed_loaded==1)SliceBoundCB(FILE_UPDATE);
+  if(is_fed_colorbar==1&&fed_loaded==1)GLUISliceBoundCB(FILE_UPDATE);
 }
 
 /* ------------------ AdjustColorBar ------------------------ */
@@ -1249,12 +1249,12 @@ void SortColorBars(void){
 void UpdateColorbarDialogs(void){
   SortColorBars();
   UpdateColorbarListEdit(1, CB_DELETE);
-  UpdateColorbarListBound(1);
+  GLUIUpdateColorbarListBound(1);
   UpdateColorbarListEdit(2, CB_DELETE);
   UpdateColorbarListEdit(3, CB_DELETE);
-  UpdateColorbarListBound(2);
-  UpdateColorbarListBound(3);
-  UpdateColorbarBound();
+  GLUIUpdateColorbarListBound(2);
+  GLUIUpdateColorbarListBound(3);
+  GLUIUpdateColorbarBound();
   UpdateColorbarEdit();
   ColorbarCB(COLORBAR_LIST);
 }
@@ -1294,7 +1294,7 @@ int AddColorbar(int icolorbar){
     colorbartype = cbnew - colorbarinfo;
   }
   SetColorbarListEdit(colorbartype);
-  SetColorbarListBound(colorbartype);
+  GLUISetColorbarListBound(colorbartype);
   return colorbartype;
 }
 

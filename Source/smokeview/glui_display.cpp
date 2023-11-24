@@ -1157,7 +1157,7 @@ extern "C" void LabelsCB(int var){
       if (visColorbarHorizontal == 1)visColorbarVertical = 0;
     }
     UpdateColorbarControls();
-    UpdateColorbarControls2();
+    GLUIUpdateColorbarControls2();
     vis_colorbar = GetColorbarState();
     break;
   case LABELS_tick_inside:
@@ -1313,6 +1313,6 @@ extern "C" void LabelsCB(int var){
   if(CHECKBOX_labels_version!=NULL)CHECKBOX_labels_version->set_int_val(vis_title_gversion);
   if(CHECKBOX_labels_meshlabel!=NULL)CHECKBOX_labels_meshlabel->set_int_val(visMeshlabel);
   if(CHECKBOX_visUSERticks2!=NULL)CHECKBOX_visUSERticks2->set_int_val(visUSERticks);
-  SetLabelControls2();
+  GLUISetLabelControls2();
 
 }

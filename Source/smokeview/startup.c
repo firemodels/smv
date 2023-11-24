@@ -301,7 +301,7 @@ int SetupCase(char *filename){
   PRINT_TIMER(timer_start, "UpdateRGBColors");
 
   if(use_graphics==0){
-    SliceBoundsSetupNoGraphics();
+    GLUISliceBoundsSetupNoGraphics();
     return 0;
   }
   glui_defined = 1;
