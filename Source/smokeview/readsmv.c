@@ -13502,7 +13502,7 @@ int ReadIni2(char *inifile, int localfile){
       if(setzonemax == PERCENTILE_MIN)setzonemax = GLOBAL_MIN;
       if(setzonemin == SET_MIN)zonemin = zoneusermin;
       if(setzonemax == SET_MAX)zonemax = zoneusermax;
-      GLUIUpdateGluiZoneBounds();
+      GLUIUpdateZoneBounds();
       continue;
     }
     if(MatchINI(buffer, "V_TARGET") == 1){

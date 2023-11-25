@@ -310,19 +310,19 @@ int SetupCase(char *filename){
 
   if(ntourinfo==0)SetupTour();
   InitRolloutList();
-  GluiColorbarSetup(mainwindow_id);
-  GluiMotionSetup(mainwindow_id);
-  GluiBoundsSetup(mainwindow_id);
-  GluiShooterSetup(mainwindow_id);
-  GluiGeometrySetup(mainwindow_id);
-  GluiClipSetup(mainwindow_id);
-  GluiDisplaySetup(mainwindow_id);
-  GluiDeviceSetup(mainwindow_id);
-  GluiPlot2DSetup(mainwindow_id);
+  GLUIColorbarSetup(mainwindow_id);
+  GLUIMotionSetup(mainwindow_id);
+  GLUIBoundsSetup(mainwindow_id);
+  GLUIShooterSetup(mainwindow_id);
+  GLUIGeometrySetup(mainwindow_id);
+  GLUIClipSetup(mainwindow_id);
+  GLUIDisplaySetup(mainwindow_id);
+  GLUIDeviceSetup(mainwindow_id);
+  GLUIPlot2DSetup(mainwindow_id);
   GLUITourSetup(mainwindow_id);
   GLUIAlertSetup(mainwindow_id);
-  GluiStereoSetup(mainwindow_id);
-  Glui3dSmokeSetup(mainwindow_id);
+  GLUIStereoSetup(mainwindow_id);
+  GLUI3dSmokeSetup(mainwindow_id);
   PRINT_TIMER(timer_start, "all dialogs");
 
   UpdateLights(light_position0, light_position1);

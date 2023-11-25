@@ -148,7 +148,7 @@ void StartScript(void){
     if(stderr2!=NULL)fprintf(stderr2,"*** Error: Smokeview script does not exist\n");
     return;
   }
-  GLUIGluiScriptDisable();
+  GLUIScriptDisable();
   current_script_command=scriptinfo-1;
   iso_multithread_save = iso_multithread;
   iso_multithread = 0;

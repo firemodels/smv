@@ -1580,7 +1580,7 @@ void UpdateTimes(void){
   updatefaces=1;
   if(nglobal_times>0){
     UpdateTimeLabels();
-    GLUIUpdateGluiTimeBounds(global_times[0],global_times[nglobal_times-1]);
+    GLUIUpdateTimeBounds(global_times[0],global_times[nglobal_times-1]);
   }
   CheckMemory;
 }
@@ -1980,7 +1980,7 @@ void UpdateShowScene(void){
 #endif
   if(update_glui_devices==1){
     update_glui_devices = 0;
-    GLUIUpdateGluiDevices();
+    GLUIUpdateDevices();
   }
   if(update_times==1){
     update_times = 0;
@@ -2480,7 +2480,7 @@ void UpdateDisplay(void){
     ReadIni(NULL);
 
     update_glui_bounds = 0;
-    GLUIUpdateGluiBounds();
+    GLUIUpdateBounds();
   }
   if(update_colorbar_list == 1){
     GLUIUpdateColorbarList();
@@ -2488,7 +2488,7 @@ void UpdateDisplay(void){
   }
   if(update_glui_bounds==1){
     update_glui_bounds = 0;
-    GLUIUpdateGluiBounds();
+    GLUIUpdateBounds();
   }
   if(update_cache_data==1){
     update_cache_data = 0;

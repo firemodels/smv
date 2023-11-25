@@ -789,7 +789,7 @@ void LabelMenu(int value){
   GLUTPOSTREDISPLAY;
   switch(value){
   case MENU_LABEL_SETTINGS:
-    GLUIShowGluiDisplay(DIALOG_DISPLAY);
+    GLUIShowDisplay(DIALOG_DISPLAY);
     break;
     // vis_colorbar                        state
     //    0/COLORBAR_HIDDEN                hidden
@@ -1054,7 +1054,7 @@ void ColorbarMenu(int value){
      LabelMenu(MENU_LABEL_colorbar_vertical);
      break;
    case MENU_COLORBAR_SETTINGS:
-     GLUIShowGluiBounds(DIALOG_COLORING);
+     GLUIShowBounds(DIALOG_COLORING);
      break;
    default:
      assert(FFALSE);
@@ -1193,7 +1193,7 @@ void IsoShowMenu(int value){
     if(visAIso!=0){
       plotstate=DYNAMIC_PLOTS;
     }
-    GLUIUpdateGluiIsotype();
+    GLUIUpdateIsotype();
     break;
    case MENU_ISOSHOW_ALLSOLID:
     transparent_state=ALL_SOLID;
@@ -1572,7 +1572,7 @@ void DialogMenu(int value){
   GLUTPOSTREDISPLAY;
   switch(value){
   case DIALOG_SHOOTER:
-    GLUIShowGluiShooter();
+    GLUIShowShooter();
     break;
   case DIALOG_TRAINER:
     GLUIShowTrainer();
@@ -1591,7 +1591,7 @@ void DialogMenu(int value){
   case DIALOG_SHOWFILES:
   case DIALOG_SMOKEZIP:
   case DIALOG_TIME:
-    GLUIShowGluiBounds(value);
+    GLUIShowBounds(value);
     break;
   case DIALOG_MOTION:
   case DIALOG_RENDER:
@@ -1606,7 +1606,7 @@ void DialogMenu(int value){
   case DIALOG_FONTS:
   case DIALOG_LABELS:
   case DIALOG_DISPLAY:
-    GLUIShowGluiDisplay(value);
+    GLUIShowDisplay(value);
     break;
   case DIALOG_TOUR_SHOW:
     GLUIShowTour();
@@ -1615,7 +1615,7 @@ void DialogMenu(int value){
     GLUIHideTour();
     break;
   case DIALOG_CLIP:
-    GLUIShowGluiClip();
+    GLUIShowClip();
     break;
   case DIALOG_STEREO:
     GLUIShowStereo();
@@ -1623,10 +1623,10 @@ void DialogMenu(int value){
   case DIALOG_COLORBAR:
     showcolorbar_dialog=1-showcolorbar_dialog;
     if(showcolorbar_dialog==1){
-      GLUIShowGluiColorbar();
+      GLUIShowColorbar();
     }
     if(showcolorbar_dialog==0){
-      GLUIHideGluiColorbar();
+      GLUIHideColorbar();
     }
     break;
   case DIALOG_HVAC:
@@ -1658,10 +1658,10 @@ void DialogMenu(int value){
   case DIALOG_TERRAIN:
     showterrain_dialog = 1 - showterrain_dialog;
     if(showterrain_dialog == 1){
-      GLUIShowGluiTerrain();
+      GLUIShowTerrain();
     }
     else{
-      GLUIHideGluiTerrain();
+      GLUIHideTerrain();
     }
     break;
   case DIALOG_SHRINKALL:
@@ -1669,14 +1669,14 @@ void DialogMenu(int value){
     break;
   case DIALOG_HIDEALL:
     showcolorbar_dialog = 0;
-    GLUIHideGluiShooter();
-    GLUIHideGluiDisplay();
-    GLUIHideGluiBounds();
+    GLUIHideShooter();
+    GLUIHideDisplay();
+    GLUIHideBounds();
     GLUIHideMotion();
     GLUIHideTour();
-    GLUIHideGluiClip();
+    GLUIHideClip();
     GLUIHideStereo();
-    GLUIHideGluiColorbar();
+    GLUIHideColorbar();
     if(showedit_dialog==1)DialogMenu(DIALOG_GEOMETRY);
     GLUIHideTrainer();
     GLUIHideDevice();
@@ -1760,7 +1760,7 @@ void FontMenu(int value){
   }
   switch(value){
   case MENU_FONT_SETTINGS:
-    GLUIShowGluiDisplay(DIALOG_FONTS);
+    GLUIShowDisplay(DIALOG_FONTS);
     break;
   case SMALL_FONT:
     fontindex=SMALL_FONT;
@@ -2380,7 +2380,7 @@ void IsoSurfaceTypeMenu(int value){
       assert(FFALSE);
       break;
     }
-    GLUIUpdateGluiPlot3Dtype();
+    GLUIUpdatePlot3Dtype();
     updatemenu=1;
     GLUTPOSTREDISPLAY;
   }
@@ -2753,7 +2753,7 @@ void CompressMenu(int value){
   if(value==MENU_DUMMY)return;
   switch(value){
   case MENU_CONFIG_SETTINGS:
-    GLUIShowGluiBounds(DIALOG_SMOKEZIP);
+    GLUIShowBounds(DIALOG_SMOKEZIP);
     break;
   case MENU_ERASECOMPRESS:
     erase_all=1;
@@ -2825,7 +2825,7 @@ void SmokeviewIniMenu(int value){
   case MENU_DUMMY:
     break;
   case MENU_CONFIG_SETTINGS:
-    GLUIShowGluiBounds(DIALOG_CONFIG);
+    GLUIShowBounds(DIALOG_CONFIG);
     break;
   default:
     assert(FFALSE);
@@ -2880,7 +2880,7 @@ void ScriptMenu(int value){
   GLUTPOSTREDISPLAY;
   switch(value){
     case MENU_SCRIPT_SETTINGS:
-      GLUIShowGluiBounds(DIALOG_SCRIPT);
+      GLUIShowBounds(DIALOG_SCRIPT);
       break;
     case SCRIPT_STEP:
       script_step=1-script_step;
@@ -2894,7 +2894,7 @@ void ScriptMenu(int value){
       script_startframe=-1;
       script_skipframe=-1;
       script_step=0;
-      GLUIGluiScriptEnable();
+      GLUIScriptEnable();
       break;
     case SCRIPT_CONTINUE:
       script_step=0;
@@ -3749,7 +3749,7 @@ void ParticleStreakShowMenu(int value){
     streak5step=0;
     rvalue=streak_rvalue[value];
     UpdateStreakValue(rvalue-0.001);
-    GLUIUpdateGluiStreakValue(rvalue);
+    GLUIUpdateStreakValue(rvalue);
 
   }
   updatemenu=1;
@@ -4062,7 +4062,7 @@ void LoadParticleMenu(int value){
       partfast = 1-partfast;
       if(partfast==0)printf("fast loading: off\n");
       if(partfast==1)printf("fast loading: on\n");
-      GLUIUpdateGluiPartFast();
+      GLUIUpdatePartFast();
     }
     else if(value == MENU_PART_NUM_FILE_SIZE){
       int total = 0;

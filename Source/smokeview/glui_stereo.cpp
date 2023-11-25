@@ -100,9 +100,9 @@ void StereoCB(int var){
   }
 }
 
-/* ------------------ GluiStereoSetup ------------------------ */
+/* ------------------ GLUIStereoSetup ------------------------ */
 
-extern "C" void GluiStereoSetup(int main_window){
+extern "C" void GLUIStereoSetup(int main_window){
   if(glui_stereo!=NULL){
     glui_stereo->close();
     glui_stereo = NULL;

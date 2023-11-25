@@ -6,7 +6,7 @@
 #endif
 
 //*** glui_bounds.cpp headers
-EXTERNCPP void GluiBoundsSetup(int main_window);
+EXTERNCPP void GLUIBoundsSetup(int main_window);
 EXTERNCPP void GLUIUpdatePartPointSize(void);
 EXTERNCPP void GLUIUpdateBoundTbounds(void);
 EXTERNCPP void GLUIUpdatePlotLabel(void);
@@ -33,14 +33,14 @@ EXTERNCPP void GLUISetMin(int type, char *label, int set_valmin, float valmin);
 EXTERNCPP void GLUISetMax(int type, char *label, int set_valmax, float valmax);
 EXTERNCPP void GLUISetMinMax(int type, char *label, int set_valmin, float valmin, int set_valmax, float valmax);
 EXTERNCPP void GLUISetMinMaxAll(int type, int *set_valmin, float *valmin, int *set_valmax, float *valmax, int nall);
-EXTERNCPP void GLUIUpdateGluiBounds(void);
+EXTERNCPP void GLUIUpdateBounds(void);
 EXTERNCPP void GLUIPlot3DBoundsCPP_CB(int var);
 EXTERNCPP void GLUISetColorbarDigitsCPP(int ndigits);
-EXTERNCPP void GLUIUpdateGluiPartFast(void);
+EXTERNCPP void GLUIUpdatePartFast(void);
 EXTERNCPP void GLUIUpdateColorbarControls2(void);
 EXTERNCPP void GLUISetColorbarDigits(void);
 EXTERNCPP void GLUIIncrementPartPropIndex(void);
-EXTERNCPP void GLUIUpdateGluiIsoBounds(void);
+EXTERNCPP void GLUIUpdateIsoBounds(void);
 EXTERNCPP void GLUIUpdateListIsoColorobar(void);
 EXTERNCPP void GLUIUpdateUseLighting(void);
 EXTERNCPP void GLUIImmersedBoundCB(int var);
@@ -53,16 +53,16 @@ EXTERNCPP void GLUIAddScriptList(char *file, int id);
 EXTERNCPP void GLUISliceInObstMenu2Dialog(int var);
 EXTERNCPP void GLUIUpdateColorTableList(int ncolortableinfo_old);
 EXTERNCPP void GLUIUpdateIsoColorlevel(void);
-EXTERNCPP void GLUIUpdateGluiZoneBounds(void);
-EXTERNCPP void GLUIGluiScriptDisable(void);
-EXTERNCPP void GLUIGluiScriptEnable(void);
-EXTERNCPP void GLUIUpdateGluiVecFactor(void);
-EXTERNCPP void GLUIUpdateGluiPlot3Dtype(void);
-EXTERNCPP void GLUIUpdateGluiIsotype(void);
-EXTERNCPP void GLUIUpdateGluiStreakValue(float rvalue);
+EXTERNCPP void GLUIUpdateZoneBounds(void);
+EXTERNCPP void GLUIScriptDisable(void);
+EXTERNCPP void GLUIScriptEnable(void);
+EXTERNCPP void GLUIUpdateVecFactor(void);
+EXTERNCPP void GLUIUpdatePlot3Dtype(void);
+EXTERNCPP void GLUIUpdateIsotype(void);
+EXTERNCPP void GLUIUpdateStreakValue(float rvalue);
 EXTERNCPP void GLUISetLabelControls2(void);
-EXTERNCPP void GLUIShowGluiBounds(int menu_id);
-EXTERNCPP void GLUIHideGluiBounds(void);
+EXTERNCPP void GLUIShowBounds(int menu_id);
+EXTERNCPP void GLUIHideBounds(void);
 EXTERNCPP void GLUIUpdateBoundaryListIndex(int patchfilenum);
 EXTERNCPP void GLUIUpdatePlot3dListIndex(void);
 EXTERNCPP void GLUISetColorbarListBound(int val);
@@ -73,7 +73,7 @@ EXTERNCPP void GLUIUpdateScriptStart(void);
 EXTERNCPP void GLUIUpdateResearchMode(void);
 EXTERNCPP void GLUIUpdateScriptStop(void);
 EXTERNCPP void GLUIUpdateTBounds(void);
-EXTERNCPP void GLUIUpdateGluiTimeBounds(float time_min, float time_max);
+EXTERNCPP void GLUIUpdateTimeBounds(float time_min, float time_max);
 EXTERNCPP void GLUIUpdateColorbarFlip(void);
 EXTERNCPP void GLUICompressOnOff(int flag);
 EXTERNCPP void GLUIUpdateColorbarListBound(int flag);
@@ -92,26 +92,26 @@ EXTERNCPP void CancelUpdateTriangles(void);
 EXTERNCPP void FinishUpdateTriangles(void);
 
 //*** glui_clip.cpp headers
-EXTERNCPP void GluiClipSetup(int main_window);
-EXTERNCPP void GLUIUpdateGluiClip(void);
-EXTERNCPP void GLUIShowGluiClip(void);
-EXTERNCPP void GLUIHideGluiClip(void);
+EXTERNCPP void GLUIClipSetup(int main_window);
+EXTERNCPP void GLUIUpdateClip(void);
+EXTERNCPP void GLUIShowClip(void);
+EXTERNCPP void GLUIHideClip(void);
 EXTERNCPP void GLUIUpdateClipAll(void);
 
 //*** glui_colorbar.cpp headers
-EXTERNCPP void GluiColorbarSetup(int main_window);
+EXTERNCPP void GLUIColorbarSetup(int main_window);
 EXTERNCPP void GLUIUpdateColorbarList(void);
 EXTERNCPP void GLUIColorbarCB(int var);
 EXTERNCPP void GLUIColorbarGlobal2Local(void);
-EXTERNCPP void GLUIShowGluiColorbar(void);
-EXTERNCPP void GLUIHideGluiColorbar(void);
+EXTERNCPP void GLUIShowColorbar(void);
+EXTERNCPP void GLUIHideColorbar(void);
 EXTERNCPP void GLUISetColorbarListEdit(int val);
 EXTERNCPP void GLUIUpdateColorbarListEdit(int flag,int del);
 EXTERNCPP void GLUIUpdateColorbarEdit(void);
 EXTERNCPP void GLUIUpdateColorbarType(void);
 
 //*** glui_display.cpp headers
-EXTERNCPP void GluiDisplaySetup(int main_window);
+EXTERNCPP void GLUIDisplaySetup(int main_window);
 EXTERNCPP void GLUIUpdateGridLocation(void);
 EXTERNCPP void GLUIUpdateFrameTimelabel(void);
 EXTERNCPP void GLUIUpdateColorbarControls(void);
@@ -120,25 +120,25 @@ EXTERNCPP void GLUIUpdateBackgroundFlip2(int flip);
 EXTERNCPP void GLUIUpdateTimebarOverlap(void);
 EXTERNCPP void GLUIUpdateVisAxisLabels(void);
 EXTERNCPP void GLUIUpdateFontIndex(void);
-EXTERNCPP void GLUIShowGluiDisplay(int menu_id);
+EXTERNCPP void GLUIShowDisplay(int menu_id);
 EXTERNCPP void GLUISetLabelControls(void);
-EXTERNCPP void GLUIHideGluiDisplay(void);
+EXTERNCPP void GLUIHideDisplay(void);
 EXTERNCPP void GLUILabelsCB(int value);
 
 //*** glui_shooter.cpp headers
-EXTERNCPP void GluiShooterSetup(int main_window);
-EXTERNCPP void GLUIShowGluiShooter(void);
-EXTERNCPP void GLUIHideGluiShooter(void);
+EXTERNCPP void GLUIShooterSetup(int main_window);
+EXTERNCPP void GLUIShowShooter(void);
+EXTERNCPP void GLUIHideShooter(void);
 
 //*** glui_geometry.cpp headers
-EXTERNCPP void GluiGeometrySetup(int main_window);
+EXTERNCPP void GLUIGeometrySetup(int main_window);
 EXTERNCPP void GLUIUpdateBlockVals(int flag);
 EXTERNCPP void GLUIUpdateTerrain(void);
 EXTERNCPP void GLUIObjectCB(int flag);
 EXTERNCPP void GLUIUpdateHVACViews(void);
 EXTERNCPP void GLUIShowGeometry(void);
-EXTERNCPP void GLUIShowGluiTerrain(void);
-EXTERNCPP void GLUIHideGluiTerrain(void);
+EXTERNCPP void GLUIShowTerrain(void);
+EXTERNCPP void GLUIHideTerrain(void);
 EXTERNCPP void GLUIHideHVAC(void);
 EXTERNCPP void GLUIShowHVAC(void);
 EXTERNCPP void GLUIHVAC2Glui(int index);
@@ -154,7 +154,7 @@ EXTERNCPP void GLUIUpdateHVACVarLists(void);
 EXTERNCPP void GLUIHideGeometry(void);
 
 //*** glui_motion.cpp headers
-EXTERNCPP void GluiMotionSetup(int main_window);
+EXTERNCPP void GLUIMotionSetup(int main_window);
 EXTERNCPP void GLUIViewpointCB(int val);
 EXTERNCPP void GLUIUpdateMovieParms(void);
 EXTERNCPP void GLUISetCurrentViewPoint(char *viewpoint_label);
@@ -199,8 +199,8 @@ EXTERNCPP void GLUIUpdateTranslate(void);
 EXTERNCPP void GLUIShowHideTranslate(int var);
 
 //*** glui_objects.cpp headers
-EXTERNCPP void GluiDeviceSetup(int main_window);
-EXTERNCPP void GluiPlot2DSetup(int main_window);
+EXTERNCPP void GLUIDeviceSetup(int main_window);
+EXTERNCPP void GLUIPlot2DSetup(int main_window);
 EXTERNCPP void GLUIUpdatePlot2DTbounds(void);
 EXTERNCPP void GLUIUpdatePlot2DINI(void);
 EXTERNCPP void GLUIShowPlot2D(void);
@@ -209,7 +209,7 @@ EXTERNCPP void GLUIShowPlotDevice(void);
 EXTERNCPP void GLUIHideDevice(void);
 EXTERNCPP void GLUIUpdateDeviceSize(void);
 EXTERNCPP void GLUIUpdateDeviceOrientation(void);
-EXTERNCPP void GLUIUpdateGluiDevices(void);
+EXTERNCPP void GLUIUpdateDevices(void);
 EXTERNCPP void GLUIUpdateDeviceTypes(int val);
 EXTERNCPP void GLUIUpdateDeviceShow(void);
 EXTERNCPP void GLUIUpdateWindRoseDevices(int option);
@@ -218,7 +218,7 @@ SVEXTERN void GLUIUpdatePlot2DSize(void);
 EXTERNCPP void GLUIUpdateDeviceAdd(void);
 
 //*** glui_smoke.cpp headers
-EXTERNCPP void Glui3dSmokeSetup(int main_window);
+EXTERNCPP void GLUI3dSmokeSetup(int main_window);
 EXTERNCPP void GLUISmoke3dCB(int var);
 EXTERNCPP void GLUIUpdateCO2ColorbarList(int value);
 EXTERNCPP void GLUIUpdateFireColorbarList(void);
@@ -237,7 +237,7 @@ EXTERNCPP void GLUICreateVolTourList(void);
 EXTERNCPP void GLUIDeleteVolTourList(void);
 
 //*** glui_stereo.cpp headers
-EXTERNCPP void GluiStereoSetup(int main_window);
+EXTERNCPP void GLUIStereoSetup(int main_window);
 EXTERNCPP void GLUIUpdateStereo(void);
 EXTERNCPP void GLUIShowStereo(void);
 EXTERNCPP void GLUIHideStereo(void);
@@ -319,7 +319,7 @@ EXTERNCPP void PrintTime(const char *tag, int line, float *timer, const char *la
 EXTERNCPP void DrawObstBoundingBox(void);
 EXTERNCPP void DrawGeomBoundingBox(float *boundingbox_color);
 
-EXTERNCPP void UpdateGluiCfaces(void);
+EXTERNCPP void GLUIUpdateCfaces(void);
 
 EXTERNCPP void SetTimeState(void);
 

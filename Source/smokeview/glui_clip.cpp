@@ -97,7 +97,7 @@ void ClipCB(int var){
     WriteIni(LOCAL_INI, NULL);
     break;
   case CLIP_CLOSE:
-    GLUIHideGluiClip();
+    GLUIHideClip();
     break;
   case CLIP_xlower:
     if(clipinfo.clip_xmin == 0)SPINNER_clip_xmin->disable();
@@ -262,9 +262,9 @@ void SetClipControls(int val){
   SPINNER_clip_zmax->set_float_val(clipinfo.zmax);
 }
 
-/* ------------------ GluiClipSetup ------------------------ */
+/* ------------------ GLUIClipSetup ------------------------ */
 
-extern "C" void GluiClipSetup(int main_window){
+extern "C" void GLUIClipSetup(int main_window){
   if(glui_clip!=NULL){
     glui_clip->close();
     glui_clip=NULL;
@@ -378,21 +378,21 @@ extern "C" void GluiClipSetup(int main_window){
   glui_clip->set_main_gfx_window( main_window );
 }
 
-/* ------------------ GLUIHideGluiClip ------------------------ */
+/* ------------------ GLUIHideClip ------------------------ */
 
-extern "C" void GLUIHideGluiClip(void){
+extern "C" void GLUIHideClip(void){
   GLUICloseRollouts(glui_clip);
 }
 
-/* ------------------ GLUIShowGluiClip ------------------------ */
+/* ------------------ GLUIShowClip ------------------------ */
 
-extern "C" void GLUIShowGluiClip(void){
+extern "C" void GLUIShowClip(void){
   if(glui_clip!=NULL)glui_clip->show();
 }
 
-/* ------------------ GLUIUpdateGluiClip ------------------------ */
+/* ------------------ GLUIUpdateClip ------------------------ */
 
-extern "C" void GLUIUpdateGluiClip(void){
+extern "C" void GLUIUpdateClip(void){
   if(CHECKBOX_clip_xmin!=NULL&&CHECKBOX_clip_ymin!=NULL&&CHECKBOX_clip_zmin!=NULL&&
      CHECKBOX_clip_xmax!=NULL&&CHECKBOX_clip_ymax!=NULL&&CHECKBOX_clip_zmax!=NULL){
 

@@ -1661,9 +1661,9 @@ extern "C" void DeviceCB(int var){
   }
 }
 
-/* ------------------ GLUIUpdateGluiDevices ------------------------ */
+/* ------------------ GLUIUpdateDevices ------------------------ */
 
-extern "C" void GLUIUpdateGluiDevices(void){
+extern "C" void GLUIUpdateDevices(void){
   DeviceCB(DEVICE_SHOWDEVICEPLOT);
   DeviceCB(DEVICE_SHOWDEVICEVALS);
   DeviceCB(DEVICE_COLORDEVICEVALS);
@@ -1762,9 +1762,9 @@ extern "C" void GLUIUpdatePlot2DTbounds(void){
   if(SPINNER_genplot_valmin[2]!=NULL)SPINNER_genplot_valmin[2]->set_float_val(tload_begin2);
 }
 
-/* ------------------ GluiPlot2DSetup ------------------------ */
+/* ------------------ GLUIPlot2DSetup ------------------------ */
 
-extern "C" void GluiPlot2DSetup(int main_window){
+extern "C" void GLUIPlot2DSetup(int main_window){
   if(glui_plot2d!=NULL){
     glui_plot2d->close();
     glui_plot2d = NULL;
@@ -1993,9 +1993,9 @@ extern "C" void GluiPlot2DSetup(int main_window){
   }
 }
 
-/* ------------------ GluiDeviceSetup ------------------------ */
+/* ------------------ GLUIDeviceSetup ------------------------ */
 
-extern "C" void GluiDeviceSetup(int main_window){
+extern "C" void GLUIDeviceSetup(int main_window){
 
   if(glui_device!=NULL){
     glui_device->close();
@@ -2205,7 +2205,7 @@ extern "C" void GluiDeviceSetup(int main_window){
       SPINNER_scale_max_windrose = glui_device->add_spinner_to_panel(ROLLOUT_scale_windrose, _("max"), GLUI_SPINNER_INT, &scale_max_windrose);
       SPINNER_scale_max_windrose->set_int_limits(0, 100);
 
-      GLUIUpdateGluiDevices();
+      GLUIUpdateDevices();
     }
   }
 

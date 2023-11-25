@@ -286,9 +286,9 @@ extern "C" void GLUIUpdateWhereFaceVolumes(void){
   if(CHECKBOX_showgeom_outside_domain!=NULL)CHECKBOX_showgeom_outside_domain->set_int_val(showgeom_outside_domain);
 }
 
-/* ------------------ UpdateGluiCfaces ------------------------ */
+/* ------------------ GLUIUpdateCfaces ------------------------ */
 
-extern "C" void UpdateGluiCfaces(void){
+extern "C" void GLUIUpdateCfaces(void){
   glui_use_cfaces = use_cfaces;
   if(CHECKBOX_cfaces!=NULL){
     CHECKBOX_cfaces->set_int_val(use_cfaces);
@@ -722,9 +722,9 @@ void UpdateTerrainSizes(void){
 }
 #endif
 
-/* ------------------ GluiGeometrySetup ------------------------ */
+/* ------------------ GLUIGeometrySetup ------------------------ */
 
-extern "C" void GluiGeometrySetup(int main_window){
+extern "C" void GLUIGeometrySetup(int main_window){
   int ibar,jbar,kbar;
   float *xplt_orig, *yplt_orig, *zplt_orig;
   char *surfacelabel;
@@ -1549,9 +1549,9 @@ extern "C" void GLUIShowGeometry(void){
   }
 }
 
-/* ------------------ GLUIShowGluiTerrain ------------------------ */
+/* ------------------ GLUIShowTerrain ------------------------ */
 
-extern "C" void GLUIShowGluiTerrain(void){
+extern "C" void GLUIShowTerrain(void){
   showterrain_dialog = 1;
   if(glui_geometry != NULL){
     glui_geometry->show();
@@ -1561,9 +1561,9 @@ extern "C" void GLUIShowGluiTerrain(void){
   }
 }
 
-/* ------------------ GLUIHideGluiTerrain ------------------------ */
+/* ------------------ GLUIHideTerrain ------------------------ */
 
-extern "C" void GLUIHideGluiTerrain(void){
+extern "C" void GLUIHideTerrain(void){
   showterrain_dialog = 0;
   GLUICloseRollouts(glui_geometry);
   editwindow_status = CLOSE_WINDOW;

@@ -361,9 +361,9 @@ extern "C" void GLUIUpdateSmoke3dFlags(void){
   glutPostRedisplay();
 }
 
-/* ------------------ Glui3dSmokeSetup ------------------------ */
+/* ------------------ GLUI3dSmokeSetup ------------------------ */
 
-extern "C" void Glui3dSmokeSetup(int main_window){
+extern "C" void GLUI3dSmokeSetup(int main_window){
   int i;
 
 
@@ -982,10 +982,10 @@ extern "C" void GLUISmoke3dCB(int var){
   case SHOW_FIRECOLORMAP:
     UpdateSmokeColormap(smoke_render_option);
     if(show_firecolormap!=0){
-      GLUIShowGluiColorbar();
+      GLUIShowColorbar();
     }
     else{
-      GLUIHideGluiColorbar();
+      GLUIHideColorbar();
     }
     break;
   case TEMP_MIN:

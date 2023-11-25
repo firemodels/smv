@@ -275,9 +275,9 @@ extern "C" void GLUIUpdateColorbarType(void){
   if(LISTBOX_cb_edit!=NULL)LISTBOX_cb_edit->set_int_val(colorbartype);
 }
 
-/* ------------------ HideGluiColorbar ------------------------ */
+/* ------------------ GLUIHideColorbar ------------------------ */
 
-extern "C" void GLUIHideGluiColorbar(void){
+extern "C" void GLUIHideColorbar(void){
   GLUICloseRollouts(glui_colorbar);
   viscolorbarpath=0;
   showcolorbar_dialog=0;
@@ -300,9 +300,9 @@ extern "C" void GLUIHideGluiColorbar(void){
   updatemenu=1;
 }
 
-/* ------------------ GLUIShowGluiColorbar ------------------------ */
+/* ------------------ GLUIShowColorbar ------------------------ */
 
-extern "C" void GLUIShowGluiColorbar(void){
+extern "C" void GLUIShowColorbar(void){
 // show colorbar dialog box and redefine initial view point
   showcolorbar_dialog=1;
   viscolorbarpath=1;
@@ -785,7 +785,7 @@ extern "C" void GLUIColorbarCB(int var){
     vis_colorbar_dists_plot = 0;
     if(CHECKBOX_cb_plot_dist!=NULL)CHECKBOX_cb_plot_dist->set_int_val(0);
     GLUISliceBoundCB(COLORBAR_PLOT2D);
-    GLUIHideGluiColorbar();
+    GLUIHideColorbar();
     break;
   case COLORBAR_PREV:
   case COLORBAR_NEXT:
@@ -956,9 +956,9 @@ extern "C" void GLUIUpdateColorbarList(void){
   GLUIColorbarCB(COLORBAR_SIMPLE_TYPE);
 }
 
-/* ------------------ GluiColorbarSetup ------------------------ */
+/* ------------------ GLUIColorbarSetup ------------------------ */
 
-extern "C" void GluiColorbarSetup(int main_window){
+extern "C" void GLUIColorbarSetup(int main_window){
   cb_valmin=0.0;
   cb_valmax=100.0;
   cb_val=50.0;

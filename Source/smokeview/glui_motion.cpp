@@ -1115,9 +1115,9 @@ void MotionDlgCB(int var){
   }
 }
 
-/* ------------------ GluiMotionSetup ------------------------ */
+/* ------------------ GLUIMotionSetup ------------------------ */
 
-extern "C" void GluiMotionSetup(int main_window){
+extern "C" void GLUIMotionSetup(int main_window){
   int i;
 #define TRANSLATE_SPEED 0.005
   int *rotation_index;

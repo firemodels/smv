@@ -1695,7 +1695,7 @@ void Keyboard(unsigned char key, int flag){
           vecfactor*=1.5;
         }
         PRINTF("vector length factor: %f\n",vecfactor);
-        GLUIUpdateGluiVecFactor();
+        GLUIUpdateVecFactor();
       }
       if(visVector==1&&nplot3dloaded>0){
         gbsave=current_mesh;
@@ -2084,7 +2084,7 @@ void Keyboard(unsigned char key, int flag){
         UpdateGridClip(0);
         UpdateGridClip(1);
         UpdateGridClip(2);
-        GLUIUpdateGluiClip();
+        GLUIUpdateClip();
       }
       if(clip_commandline==0){
         visGrid = NOGRID_PROBE2;
@@ -2113,7 +2113,7 @@ void Keyboard(unsigned char key, int flag){
       else{
         printf("hide cface normals\n");
       }
-      UpdateGluiCfaces();
+      GLUIUpdateCfaces();
       break;
     case 'N':
       force_bound_update = 1 - force_bound_update;
@@ -2280,7 +2280,7 @@ void Keyboard(unsigned char key, int flag){
         if(show_faces_outline==1)printf("outlines");
         if(show_faces_shaded==0&&show_faces_outline==0)printf("hidden");
         printf("\n");
-        UpdateGluiCfaces();
+        GLUIUpdateCfaces();
       }
       if(blocklocation==BLOCKlocation_grid)printf("blocklocation: snapped to grid\n");
       if(blocklocation==BLOCKlocation_exact)printf("blocklocation: as input\n");
@@ -2615,7 +2615,7 @@ void Keyboard(unsigned char key, int flag){
           }
           if(clipinfo.clip_xmax==0)printf("off\n");
         }
-        GLUIUpdateGluiClip();
+        GLUIUpdateClip();
       }
 #ifdef pp_DIALOG_SHORTCUTS
       if(keystate==GLUT_ACTIVE_ALT){
@@ -2655,7 +2655,7 @@ void Keyboard(unsigned char key, int flag){
           }
           if(clipinfo.clip_ymax==0)printf("off\n");
         }
-        GLUIUpdateGluiClip();
+        GLUIUpdateClip();
       }
       visy_all = 1-visy_all;
       if(visx_all==1||visy_all==1||visz_all==1)update_slice2device = 1;
@@ -2673,7 +2673,7 @@ void Keyboard(unsigned char key, int flag){
           }
           if(clipinfo.clip_zmax==0)printf("off\n");
         }
-        GLUIUpdateGluiClip();
+        GLUIUpdateClip();
       }
       rotate_center = 1-rotate_center;
       if(rotate_center==1&&have_geom_bb==1){
@@ -2696,7 +2696,7 @@ void Keyboard(unsigned char key, int flag){
           }
           if(clipinfo.clip_zmin==0)printf("off\n");
         }
-        GLUIUpdateGluiClip();
+        GLUIUpdateClip();
       }
 #ifdef pp_DIALOG_SHORTCUTS
       if(keystate==GLUT_ACTIVE_ALT){
@@ -2855,7 +2855,7 @@ void Keyboard(unsigned char key, int flag){
         if(npartthread_ids==1)printf("parallel particle loading: on(1 thread)\n");
       }
       if(part_multithread==0)printf("parallel particle loading: off\n");
-      GLUIUpdateGluiPartFast();
+      GLUIUpdatePartFast();
       break;
     case '$':
       trainer_active=1-trainer_active;
@@ -3215,7 +3215,7 @@ void HandlePLOT3DKeys(int  key){
       else{
         clipinfo.xmin = SetClipVal(0);
       }
-      GLUIUpdateGluiClip();
+      GLUIUpdateClip();
     }
     break;
   case GLUT_KEY_RIGHT:
@@ -3229,7 +3229,7 @@ void HandlePLOT3DKeys(int  key){
       else{
         clipinfo.xmin = SetClipVal(0);
       }
-      GLUIUpdateGluiClip();
+      GLUIUpdateClip();
     }
     break;
   case GLUT_KEY_DOWN:
@@ -3243,7 +3243,7 @@ void HandlePLOT3DKeys(int  key){
       else{
         clipinfo.ymin = SetClipVal(1);
       }
-      GLUIUpdateGluiClip();
+      GLUIUpdateClip();
     }
     break;
   case GLUT_KEY_UP:
@@ -3257,7 +3257,7 @@ void HandlePLOT3DKeys(int  key){
       else{
         clipinfo.ymin = SetClipVal(1);
       }
-      GLUIUpdateGluiClip();
+      GLUIUpdateClip();
     }
     break;
   case GLUT_KEY_PAGE_DOWN:
@@ -3271,7 +3271,7 @@ void HandlePLOT3DKeys(int  key){
       else{
         clipinfo.zmin = SetClipVal(2);
       }
-      GLUIUpdateGluiClip();
+      GLUIUpdateClip();
     }
     break;
   case GLUT_KEY_PAGE_UP:
@@ -3285,7 +3285,7 @@ void HandlePLOT3DKeys(int  key){
       else{
         clipinfo.zmin = SetClipVal(2);
       }
-      GLUIUpdateGluiClip();
+      GLUIUpdateClip();
     }
     break;
   case GLUT_KEY_HOME:
@@ -4015,7 +4015,7 @@ void DoScript(void){
         SMV_EXIT(0);
       }
       if(current_script_command==NULL){
-        GLUIGluiScriptEnable();
+        GLUIScriptEnable();
       }
     }
     else{

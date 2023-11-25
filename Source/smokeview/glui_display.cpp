@@ -660,9 +660,9 @@ void SurfaceCB(int var){
   }
 }
 
-/* ------------------ GluiDisplaySetup ------------------------ */
+/* ------------------ GLUIDisplaySetup ------------------------ */
 
-extern "C" void GluiDisplaySetup(int main_window){
+extern "C" void GLUIDisplaySetup(int main_window){
   labeldata *gl;
 
   if(glui_labels!=NULL){
@@ -1088,15 +1088,15 @@ extern "C" void GluiDisplaySetup(int main_window){
   glui_labels->set_main_gfx_window( main_window );
 }
 
-/* ------------------ GLUIHideGluiDisplay ------------------------ */
+/* ------------------ GLUIHideDisplay ------------------------ */
 
-extern "C" void GLUIHideGluiDisplay(void){
+extern "C" void GLUIHideDisplay(void){
   GLUICloseRollouts(glui_labels);
 }
 
-/* ------------------ GLUIShowGluiDisplay ------------------------ */
+/* ------------------ GLUIShowDisplay ------------------------ */
 
-extern "C" void GLUIShowGluiDisplay(int menu_id){
+extern "C" void GLUIShowDisplay(int menu_id){
   if(glui_labels!=NULL)glui_labels->show();
   switch(menu_id){
   case DIALOG_DISPLAY:
@@ -1253,7 +1253,7 @@ extern "C" void GLUILabelsCB(int var){
     }
     break;
   case LABELS_close:
-    GLUIHideGluiDisplay();
+    GLUIHideDisplay();
     break;
   case LABELS_fontsize:
     FontMenu(fontindex);

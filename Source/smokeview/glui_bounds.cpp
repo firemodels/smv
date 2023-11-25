@@ -1595,9 +1595,9 @@ extern "C" void SetPercentileDraw(int type, int val){
 }
 #endif
 
-/* ------------------ GLUIUpdateGluiBounds ------------------------ */
+/* ------------------ GLUIUpdateBounds ------------------------ */
 
-extern "C" void GLUIUpdateGluiBounds(void){
+extern "C" void GLUIUpdateBounds(void){
   if(nhvacductbounds > 0){
     hvacductboundsCPP.CB(BOUND_VAL_TYPE);
   }
@@ -3973,9 +3973,9 @@ extern "C" void GLUISetLabelControls2(){
   if(CHECKBOX_labels_shadedata != NULL)CHECKBOX_labels_shadedata->set_int_val(setbwdata);
 }
 
-/* ------------------ GLUIUpdateGluiPartFast ------------------------ */
+/* ------------------ GLUIUpdatePartFast ------------------------ */
 
-extern "C" void GLUIUpdateGluiPartFast(void){
+extern "C" void GLUIUpdatePartFast(void){
   if(CHECKBOX_partfast!=NULL)CHECKBOX_partfast->set_int_val(partfast);
   if(CHECKBOX_part_multithread!=NULL)CHECKBOX_part_multithread->set_int_val(part_multithread);
   PartBoundCB(PARTFAST);
@@ -3988,9 +3988,9 @@ extern "C" void GLUIUpdateListIsoColorobar(void){
 }
 
 
-/* ------------------ GLUIUpdateGluiIsoBounds ------------------------ */
+/* ------------------ GLUIUpdateIsoBounds ------------------------ */
 
-extern "C" void GLUIUpdateGluiIsoBounds(void){
+extern "C" void GLUIUpdateIsoBounds(void){
   if(setisomin==PERCENTILE_MIN||setisomin==GLOBAL_MIN){
 #ifdef pp_HIST
     if(setisomin==PERCENTILE_MIN)glui_iso_valmin=iso_percentile_min;
@@ -4154,15 +4154,15 @@ void FileRolloutCB(int var){
   GLUIToggleRollout(fileprocinfo, nfileprocinfo, var);
 }
 
-/* ------------------ GLUIUpdateGluiZoneBounds ------------------------ */
+/* ------------------ GLUIUpdateZoneBounds ------------------------ */
 
-extern "C" void GLUIUpdateGluiZoneBounds(void){
+extern "C" void GLUIUpdateZoneBounds(void){
   if(EDIT_zone_min!=NULL)EDIT_zone_min->set_float_val(zonemin);
   if(EDIT_zone_max!=NULL)EDIT_zone_max->set_float_val(zonemax);
 }
-/* ------------------ GLUIUpdateGluiVecFactor ------------------------ */
+/* ------------------ GLUIUpdateVecFactor ------------------------ */
 
-extern "C" void GLUIUpdateGluiVecFactor(void){
+extern "C" void GLUIUpdateVecFactor(void){
   if(SPINNER_plot3d_vectorlinelength!=NULL)SPINNER_plot3d_vectorlinelength->set_float_val(vecfactor);
   if(SPINNER_vectorlinelength!=NULL)SPINNER_vectorlinelength->set_float_val(vecfactor);
 }
@@ -4784,7 +4784,7 @@ void ScriptCB(int var){
     script_startframe = -1;
     script_skipframe = -1;
     script_step = 0;
-    GLUIGluiScriptEnable();
+    GLUIScriptEnable();
     render_status = RENDER_OFF;
     break;
   case SCRIPT_RENDER_DIR:
@@ -5018,9 +5018,9 @@ extern "C" void GLUIUpdateColorbarListBound(int flag){
   strcpy(label, "user defined"); AddColorbarListBound(LIST_cb, -7, label, &max_LISTBOX_cb_bound);
 }
 
-/* ------------------ GluiBoundsSetup ------------------------ */
+/* ------------------ GLUIBoundsSetup ------------------------ */
 
-extern "C" void GluiBoundsSetup(int main_window){
+extern "C" void GLUIBoundsSetup(int main_window){
   int i;
   int have_part;
 
@@ -6216,19 +6216,19 @@ extern "C" void GLUIUpdateTracers(void){
 }
 
 
-/* ------------------ GLUIUpdateGluiIsotype ------------------------ */
+/* ------------------ GLUIUpdateIsotype ------------------------ */
 
-extern "C" void GLUIUpdateGluiIsotype(void){
+extern "C" void GLUIUpdateIsotype(void){
   CHECKBOX_show_iso_shaded->set_int_val(visAIso&1);
   CHECKBOX_show_iso_outline->set_int_val((visAIso&2)/2);
   CHECKBOX_show_iso_points->set_int_val((visAIso&4)/4);
 }
 
 
-/* ------------------ GLUIUpdateGluiPlot3Dtype ------------------------ */
+/* ------------------ GLUIUpdatePlot3Dtype ------------------------ */
 
 
-extern "C" void GLUIUpdateGluiPlot3Dtype(void){
+extern "C" void GLUIUpdatePlot3Dtype(void){
   RADIO_plot3d_isotype->set_int_val(p3dsurfacetype);
 }
 /* ------------------ GLUIUpdateChar ------------------------ */
@@ -6436,9 +6436,9 @@ extern "C" void GLUIAddScriptList(char *file, int id){
   }
 }
 
-/* ------------------ GLUIGluiScriptEnable ------------------------ */
+/* ------------------ GLUIScriptEnable ------------------------ */
 
-extern "C" void GLUIGluiScriptEnable(void){
+extern "C" void GLUIScriptEnable(void){
     BUTTON_script_start->enable();
     BUTTON_script_stop->enable();
     BUTTON_script_runscript->enable();
@@ -6448,10 +6448,10 @@ extern "C" void GLUIGluiScriptEnable(void){
     EDIT_ini->enable();
   }
 
-/* ------------------ GLUIGluiScriptDisable ------------------------ */
+/* ------------------ GLUIScriptDisable ------------------------ */
 
 
-extern "C"  void GLUIGluiScriptDisable(void){
+extern "C"  void GLUIScriptDisable(void){
     BUTTON_script_start->disable();
     BUTTON_script_stop->disable();
     BUTTON_script_runscript->disable();
@@ -6484,9 +6484,9 @@ extern "C" void GLUIUpdateBoundaryListIndex(int patchfilenum){
   }
 }
 
-/* ------------------ GLUIUpdateGluiStreakValue ------------------------ */
+/* ------------------ GLUIUpdateStreakValue ------------------------ */
 
-extern "C" void GLUIUpdateGluiStreakValue(float rvalue){
+extern "C" void GLUIUpdateStreakValue(float rvalue){
   float_streak5value=rvalue;
   if(SPINNER_partstreaklength!=NULL){
     SPINNER_partstreaklength->set_float_val(rvalue);
@@ -7098,9 +7098,9 @@ extern "C" void GLUISliceBoundCB(int var){
   }
 }
 
-/* ------------------ GLUIShowGluiBounds ------------------------ */
+/* ------------------ GLUIShowBounds ------------------------ */
 
-extern "C" void GLUIShowGluiBounds(int menu_id){
+extern "C" void GLUIShowBounds(int menu_id){
   switch (menu_id){
   case DIALOG_BOUNDS:
     GLUIUpdateChar();
@@ -7142,10 +7142,10 @@ extern "C" void GLUIShowGluiBounds(int menu_id){
 
 extern "C" void GLUIShowBoundsDialog(int type){
   if(type==DIALOG_3DSMOKE){
-    GLUIShowGluiBounds(DIALOG_3DSMOKE);
+    GLUIShowBounds(DIALOG_3DSMOKE);
   }
   else{
-    GLUIShowGluiBounds(DIALOG_BOUNDS);
+    GLUIShowBounds(DIALOG_BOUNDS);
   }
   switch (type){
     case DLG_3DSMOKE:
@@ -7191,9 +7191,9 @@ extern "C" void GLUIUpdateOverwrite(void){
   if(CHECKBOX_compress_autoloaded!=NULL)CHECKBOX_compress_autoloaded->set_int_val(compress_autoloaded);
 }
 
-/* ------------------ GLUIHideGluiBounds ------------------------ */
+/* ------------------ GLUIHideBounds ------------------------ */
 
-extern "C" void GLUIHideGluiBounds(void){
+extern "C" void GLUIHideBounds(void){
   GLUICloseRollouts(glui_bounds);
 }
 
@@ -7210,9 +7210,9 @@ extern "C" void GLUIUpdatePlot3dDisplay(void){
   if(RADIO_plot3d_display!=NULL)RADIO_plot3d_display->set_int_val(contour_type);
 }
 
-/* ------------------ GLUIUpdateGluiTimeBounds ------------------------ */
+/* ------------------ GLUIUpdateTimeBounds ------------------------ */
 
-extern "C" void GLUIUpdateGluiTimeBounds(float time_min, float time_max){
+extern "C" void GLUIUpdateTimeBounds(float time_min, float time_max){
   if(SPINNER_timebounds!=NULL){
     SPINNER_timebounds->set_float_limits(time_min,time_max);
   }
