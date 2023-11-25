@@ -18,7 +18,7 @@ void SetResearchMode(int flag);
 int GetCacheFlag(int type);
 int GetValType(int type);
 void SliceInObstDialog2Menu(void);
-void Plot3DBoundCB(int var);
+void GLUIPlot3DBoundCB(int var);
 
 GLUI *glui_bounds=NULL;
 
@@ -5487,13 +5487,13 @@ extern "C" void GLUIBoundsSetup(int main_window){
     INSERT_ROLLOUT(ROLLOUT_vector, glui_bounds);
     ADDPROCINFO(plot3dprocinfo, nplot3dprocinfo, ROLLOUT_vector, PLOT3D_VECTOR_ROLLOUT, glui_bounds);
 
-    glui_bounds->add_checkbox_to_panel(ROLLOUT_vector,_("Show vectors"),&visVector,UPDATEPLOT,Plot3DBoundCB);
-    SPINNER_plot3d_vectorpointsize=glui_bounds->add_spinner_to_panel(ROLLOUT_vector,_("point size"),GLUI_SPINNER_FLOAT,&vectorpointsize,UPDATE_VECTOR,Plot3DBoundCB);
+    glui_bounds->add_checkbox_to_panel(ROLLOUT_vector,_("Show vectors"),&visVector,UPDATEPLOT,GLUIPlot3DBoundCB);
+    SPINNER_plot3d_vectorpointsize=glui_bounds->add_spinner_to_panel(ROLLOUT_vector,_("point size"),GLUI_SPINNER_FLOAT,&vectorpointsize,UPDATE_VECTOR,GLUIPlot3DBoundCB);
     SPINNER_plot3d_vectorpointsize->set_float_limits(1.0,10.0);
-    SPINNER_plot3d_vectorlinewidth=glui_bounds->add_spinner_to_panel(ROLLOUT_vector,_("vector width"),GLUI_SPINNER_FLOAT,&vectorlinewidth,UPDATE_VECTOR,Plot3DBoundCB);
+    SPINNER_plot3d_vectorlinewidth=glui_bounds->add_spinner_to_panel(ROLLOUT_vector,_("vector width"),GLUI_SPINNER_FLOAT,&vectorlinewidth,UPDATE_VECTOR,GLUIPlot3DBoundCB);
     SPINNER_plot3d_vectorlinewidth->set_float_limits(1.0,10.0);
-    SPINNER_plot3d_vectorlinelength=glui_bounds->add_spinner_to_panel(ROLLOUT_vector,_("vector length"),GLUI_SPINNER_FLOAT,&vecfactor,UPDATE_VECTOR,Plot3DBoundCB);
-    SPINNER_plot3dvectorskip=glui_bounds->add_spinner_to_panel(ROLLOUT_vector,_("Vector skip"),GLUI_SPINNER_INT,&vectorskip,PLOT3D_VECTORSKIP,Plot3DBoundCB);
+    SPINNER_plot3d_vectorlinelength=glui_bounds->add_spinner_to_panel(ROLLOUT_vector,_("vector length"),GLUI_SPINNER_FLOAT,&vecfactor,UPDATE_VECTOR,GLUIPlot3DBoundCB);
+    SPINNER_plot3dvectorskip=glui_bounds->add_spinner_to_panel(ROLLOUT_vector,_("Vector skip"),GLUI_SPINNER_INT,&vectorskip,PLOT3D_VECTORSKIP,GLUIPlot3DBoundCB);
 
     glui_bounds->add_column_to_panel(PANEL_plot3d, false);
 
@@ -5503,7 +5503,7 @@ extern "C" void GLUIBoundsSetup(int main_window){
 
     PANEL_pan1 = glui_bounds->add_panel_to_panel(ROLLOUT_isosurface,"",GLUI_PANEL_NONE);
 
-    glui_bounds->add_checkbox_to_panel(PANEL_pan1,"Show isosurface",&visiso,PLOTISO,Plot3DBoundCB);
+    glui_bounds->add_checkbox_to_panel(PANEL_pan1,"Show isosurface",&visiso,PLOTISO,GLUIPlot3DBoundCB);
     SPINNER_plot3dpointsize=glui_bounds->add_spinner_to_panel(PANEL_pan1,_("Point size"),GLUI_SPINNER_FLOAT,
       &plot3dpointsize);
     SPINNER_plot3dpointsize->set_float_limits(1.0,10.0);
@@ -5513,7 +5513,7 @@ extern "C" void GLUIBoundsSetup(int main_window){
     SPINNER_plot3dlinewidth->set_float_limits(1.0,10.0);
 //    glui_bounds->add_column_to_panel(ROLLOUT_isosurface);
     PANEL_pan2 = glui_bounds->add_panel_to_panel(ROLLOUT_isosurface,"",GLUI_PANEL_NONE);
-    RADIO_plot3d_isotype=glui_bounds->add_radiogroup_to_panel(PANEL_pan2,&p3dsurfacetype,PLOTISOTYPE,Plot3DBoundCB);
+    RADIO_plot3d_isotype=glui_bounds->add_radiogroup_to_panel(PANEL_pan2,&p3dsurfacetype,PLOTISOTYPE,GLUIPlot3DBoundCB);
     RADIOBUTTON_plot3d_iso_hidden=glui_bounds->add_radiobutton_to_group(RADIO_plot3d_isotype,_("Hidden"));
     glui_bounds->add_radiobutton_to_group(RADIO_plot3d_isotype,_("shaded"));
     glui_bounds->add_radiobutton_to_group(RADIO_plot3d_isotype,_("outline"));
@@ -5872,7 +5872,7 @@ hvacductboundsCPP.setup("hvac", ROLLOUT_hvacduct, hvacductbounds_cpp, nhvacductb
 
   CHECKBOX_visColorbarVertical2   = glui_bounds->add_checkbox_to_panel(PANEL_colorbar_properties, "vertical",   &visColorbarVertical,   LABELS_vcolorbar, GLUILabelsCB);
   CHECKBOX_visColorbarHorizontal2 = glui_bounds->add_checkbox_to_panel(PANEL_colorbar_properties, "horizontal", &visColorbarHorizontal, LABELS_hcolorbar, GLUILabelsCB);
-  RADIO2_plot3d_display = glui_bounds->add_radiogroup_to_panel(PANEL_colorbar_properties, &contour_type, UPDATEPLOT, Plot3DBoundCB);
+  RADIO2_plot3d_display = glui_bounds->add_radiogroup_to_panel(PANEL_colorbar_properties, &contour_type, UPDATEPLOT, GLUIPlot3DBoundCB);
   glui_bounds->add_radiobutton_to_group(RADIO2_plot3d_display, _("Continuous"));
   glui_bounds->add_radiobutton_to_group(RADIO2_plot3d_display, _("Stepped"));
   glui_bounds->add_radiobutton_to_group(RADIO2_plot3d_display, _("Line"));
@@ -6042,12 +6042,12 @@ extern "C" void GLUICompressOnOff(int flag){
   }
 }
 
-/* ------------------ Plot3DBoundCB ------------------------ */
+/* ------------------ GLUIPlot3DBoundCB ------------------------ */
 
-void Plot3DBoundCB(int var){
+extern "C" void GLUIPlot3DBoundCB(int var){
   int i;
 
-  SNIFF_ERRORS("Plot3DBoundCB: start");
+  SNIFF_ERRORS("GLUIPlot3DBoundCB: start");
   switch(var){
   case PLOT3D_VECTORSKIP:
     if(vectorskip < 1){
@@ -6064,7 +6064,7 @@ void Plot3DBoundCB(int var){
       SPINNER_vectorlinelength->set_float_val(vecfactor);
       if(SPINNER_plot3d_vectorlinelength!=NULL)SPINNER_plot3d_vectorlinelength->set_float_val(vecfactor);
     }
-    Plot3DBoundCB(UPDATE_VECTOR);
+    GLUIPlot3DBoundCB(UPDATE_VECTOR);
     break;
   case UPDATE_VECTOR:
     if(vecfactor<0.0){
@@ -6134,10 +6134,10 @@ void Plot3DBoundCB(int var){
    }
 
    list_p3_index_old=list_p3_index;
-   Plot3DBoundCB(SETCHOPMINVAL);
-   Plot3DBoundCB(SETCHOPMAXVAL);
-   Plot3DBoundCB(SETVALMIN);
-   Plot3DBoundCB(SETVALMAX);
+   GLUIPlot3DBoundCB(SETCHOPMINVAL);
+   GLUIPlot3DBoundCB(SETCHOPMAXVAL);
+   GLUIPlot3DBoundCB(SETVALMIN);
+   GLUIPlot3DBoundCB(SETVALMAX);
    break;
   case SETVALMIN:
    switch(glui_setp3min){
@@ -6188,11 +6188,11 @@ void Plot3DBoundCB(int var){
    setp3max_all[list_p3_index] = glui_setp3max;
    break;
   case UPDATE_DATA_COLORS:
-    Plot3DBoundCB(FILE_UPDATE);
+    GLUIPlot3DBoundCB(FILE_UPDATE);
     UpdateAllPlot3DColors(1);
     break;
   case FILE_RELOAD:
-   Plot3DBoundCB(FILE_UPDATE);
+   GLUIPlot3DBoundCB(FILE_UPDATE);
    for(i=0;i<nplot3dinfo;i++){
      if(plot3dinfo[i].loaded==0)continue;
      LoadPlot3dMenu(i);
@@ -7200,7 +7200,7 @@ extern "C" void GLUIHideBounds(void){
 /* ------------------ GLUIUpdateVectorWidgets ------------------------ */
 
 extern "C" void GLUIUpdateVectorWidgets(void){
-  Plot3DBoundCB(UPDATE_VECTOR_FROM_SMV);
+  GLUIPlot3DBoundCB(UPDATE_VECTOR_FROM_SMV);
   GLUISliceBoundCB(UPDATE_VECTOR_FROM_SMV);
 }
 

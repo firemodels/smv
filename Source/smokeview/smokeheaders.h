@@ -13,6 +13,7 @@ EXTERNCPP void GLUIUpdatePlotLabel(void);
 EXTERNCPP void GLUIHVACDuctBoundsCPP_CB(int var);
 EXTERNCPP void GLUIHVACNodeBoundsCPP_CB(int var);
 EXTERNCPP void GLUISplitCB(int var);
+EXTERNCPP void GLUIPlot3DBoundCB(int var);
 EXTERNCPP void GLUIUpdateSliceSkip(void);
 EXTERNCPP void GLUIUpdateHVACDuctType(void);
 EXTERNCPP  void GLUIUpdateSliceXYZ(void);
