@@ -1928,7 +1928,7 @@ void ResetMenu(int value){
     break;
   case MENU_STARTUPVIEW:
     if(selected_view==MENU_DUMMY)ResetMenu(SAVE_VIEWPOINT);
-    SetStartupView();
+    GLUISetStartupView();
     break;
   default:
     assert(value>=-5);
@@ -6410,7 +6410,7 @@ void ShowADeviceType(void){
 
 void DeviceTypeMenu(int val){
   GLUIUpdateDeviceTypes(val);
-  DeviceCB(DEVICE_devicetypes);
+  GLUIDeviceCB(DEVICE_devicetypes);
 }
 
 /* ------------------ ShowDevicesMenu ------------------------ */

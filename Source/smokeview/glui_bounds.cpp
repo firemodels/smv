@@ -2044,7 +2044,7 @@ extern "C" void GLUIUpdateHVACDuctType(void){
 
 /* ------------------ slice callback: GLUIHVACSliceBoundsCPP_CB ------------------------ */
 
-extern "C" void GLUIHVACSlicefBoundsCPP_CB(int var){
+extern "C" void GLUIHVACSliceBoundsCPP_CB(int var){
   int ii, last_slice;
   cpp_boundsdata *bounds;
 #ifdef pp_HIST
@@ -6702,7 +6702,7 @@ extern "C" void GLUISliceBoundCB(int var){
       break;
     case SLICE_SIZE:
       update_avg = 1;
-      DeviceCB(DEVICE_TIMEAVERAGE);
+      GLUIDeviceCB(DEVICE_TIMEAVERAGE);
       if(plot2d_size_factor<0){
         plot2d_size_factor = 0.0;
         GLUIUpdatePlot2DSize2();

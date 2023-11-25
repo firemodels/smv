@@ -2511,9 +2511,9 @@ extern "C" void GLUIShowMotion(int menu_id){
   }
 }
 
-/* ------------------ SetStartupView ------------------------ */
+/* ------------------ GLUISetStartupView ------------------------ */
 
- extern "C" void SetStartupView(void){
+ extern "C" void GLUISetStartupView(void){
   GLUIViewpointCB(STARTUP);
 }
 

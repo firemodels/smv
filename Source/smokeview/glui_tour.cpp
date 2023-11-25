@@ -327,9 +327,9 @@ float TrimVal(float val){
   }
 }
 
-/* ------------------ UpdateGluiKeyframe ------------------------ */
+/* ------------------ GLUIUpdateKeyframe ------------------------ */
 
- extern "C" void UpdateGluiKeyframe(void){
+ extern "C" void GLUIUpdateKeyframe(void){
   glui_tour_time = selected_frame->time;
   SPINNER_tour_time->set_float_val(glui_tour_time);
   glui_tour_pause_time = selected_frame->pause_time;

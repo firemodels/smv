@@ -1908,7 +1908,7 @@ void UpdateShowScene(void){
   }
   if(update_device_timeaverage == 1){
     update_device_timeaverage = 0;
-    DeviceCB(DEVICE_TIMEAVERAGE);
+    GLUIDeviceCB(DEVICE_TIMEAVERAGE);
   }
   if(update_smoke_alphas==1){
     update_smoke_alphas = 0;

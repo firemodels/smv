@@ -1211,7 +1211,7 @@ void DragTourNode(int xm, int ym){
 // update tour data structures with new tour node location
 
         GLUIUpdateTourParms();
-        UpdateGluiKeyframe();
+        GLUIUpdateKeyframe();
       }
       break;
     default:

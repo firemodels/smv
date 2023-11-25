@@ -202,8 +202,10 @@ EXTERNCPP void GLUIUpdateProjectionType(void);
 EXTERNCPP void GLUIUpdateMeshList1(int val);
 EXTERNCPP void GLUIUpdateTranslate(void);
 EXTERNCPP void GLUIShowHideTranslate(int var);
+EXTERNCPP void GLUISetStartupView(void);
 
 //*** glui_objects.cpp headers
+EXTERNCPP void GLUIDeviceCB(int val);
 EXTERNCPP void GLUIDeviceSetup(int main_window);
 EXTERNCPP void GLUIPlot2DSetup(int main_window);
 EXTERNCPP void GLUIUpdatePlot2DTbounds(void);
@@ -263,6 +265,7 @@ EXTERNCPP void GLUICreateTourList(void);
 EXTERNCPP void GLUIDeleteTourList(void);
 EXTERNCPP void GLUIUpdateTourControls(void);
 EXTERNCPP void GLUISetTourKeyframe(void);
+EXTERNCPP void GLUIUpdateKeyframe(void);
 
 //*** glui_trainer.cpp headers
 EXTERNCPP void GLUIUpdateTrainerOutline(void);
@@ -341,8 +344,6 @@ EXTERNCPP void UpdateShowHRRPUVPlot(int val);
 EXTERNCPP void ScriptViewXYZMINMAXOrtho(int option);
 EXTERNCPP void SetCameraView(cameradata *ca, int option);
 EXTERNCPP void SetCameraViewPersp(cameradata *ca, int option);
-
-EXTERNCPP void DeviceCB(int val);
 
 EXTERNCPP void InitStartupDirs(void);
 
@@ -604,7 +605,6 @@ EXTERNCPP void XYZ2AzElev(float *xyz,float *azimuth, float *elevation);
 EXTERNCPP void UpdateColorDevices(void);
 EXTERNCPP void InitVolrenderScript(char *prefix, char *tour_label, int startframe, int skipframe);
 
-EXTERNCPP void UpdateGluiKeyframe(void);
 EXTERNCPP void UpdateGluiBoundaryUnits(void);
 EXTERNCPP void UpdateGluiSliceUnits(void);
 EXTERNCPP void HVACMenu(int value);
@@ -1100,7 +1100,6 @@ EXTERNCPP void AllocateFaces(void);
 EXTERNCPP void UpdateFaceLists(void);
 EXTERNCPP void UpdateFaces(void);
 EXTERNCPP void DrawTicks(void);
-EXTERNCPP void SetStartupView(void);
 EXTERNCPP float *GetColorPtr(float *color);
 EXTERNCPP float *GetColorTranPtr(float *color, float transparency);
 EXTERNCPP void ConvertColor(int flag);
