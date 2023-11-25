@@ -1159,6 +1159,15 @@ ventdata *GetCloseVent(meshdata *ventmesh, int ivent){
   return close_vent;
 }
 
+/// @brief Re-read an *.smv file to read any updates.
+/// @param file The path to the *.smv file.
+void UpdateSMVDynamic(char *file){
+  ReadSMVDynamic(file);
+  UpdatePlot3dMenuLabels();
+  InitPlot3dTimeList();
+  UpdateTimes();
+  GetGlobalPlot3DBounds();
+}
 /* ------------------ ReadSMVDynamic ------------------------ */
 
 void ReadSMVDynamic(char *file){
@@ -1957,10 +1966,6 @@ void ReadSMVDynamic(char *file){
     }
   }
   FCLOSE(stream);
-  UpdatePlot3dMenuLabels();
-  InitPlot3dTimeList();
-  UpdateTimes();
-  GetGlobalPlot3DBounds();
 }
 
 
@@ -6569,34 +6574,21 @@ void AddCfastCsvf(void){
 }
 
   /* ------------------ ReadSMV ------------------------ */
+static float timer_readsmv;
+static float processing_time;
+static float getfilelist_time;
+static float pass0_time;
+static float pass1_time;
+static float pass2_time;
+static float pass3_time;
+static float pass4_time;
+static float pass5_time;
 
-int ReadSMV(bufferstreamdata *stream){
-
-/* read the .smv file */
-  float processing_time, wrapup_time, getfilelist_time;
-  float pass0_time, pass1_time, pass2_time, pass3_time, pass4_time, pass5_time;
-  int have_zonevents,nzventsnew=0;
-  devicedata *devicecopy;
-  int do_pass4=0, do_pass5=0;
-  int roomdefined=0;
-  int noGRIDpresent=1,startpass;
-  slicedata *sliceinfo_copy=NULL;
-  int nisos_per_mesh=1;
-
-  int nn_smoke3d=0,nn_patch=0,nn_iso=0,nn_part=0,nn_slice=0,nslicefiles=0,nvents;
-
-  int ipart=0, ipatch=0, iroom=0,izone_local=0,ifire=0,iiso=0;
-  int ismoke3d=0,ismoke3dcount=1,igrid,ioffset;
-  int itrnx, itrny, itrnz, ipdim, iobst, ivent, icvent;
-  int ibartemp=2, jbartemp=2, kbartemp=2;
-
-  int setGRID=0;
-  int have_auto_terrain_image=0;
-
-  char buffer[256], buffers[6][256];
-  patchdata *patchgeom;
-
-  INIT_PRINT_TIMER(timer_readsmv);
+/// @brief Initialise any global variables necessary to being parsing an SMV
+/// file. This should be called before @ref ReadSMV_Parse.
+/// @return zero on success, nonzero on failure.
+int ReadSMV_Init() {
+  START_TIMER(timer_readsmv);
   START_TIMER(processing_time);
 
   START_TIMER(getfilelist_time);
@@ -6754,14 +6746,6 @@ int ReadSMV(bufferstreamdata *stream){
   // read in device (.svo) definitions
 
   InitObjectDefs();
-  {
-    int return_code;
-
-  // get input file name
-
-    return_code=GetInpf(stream);
-    if(return_code!=0)return return_code;
-  }
 
   if(noutlineinfo>0){
     for(i=0;i<noutlineinfo;i++){
@@ -6862,7 +6846,6 @@ int ReadSMV(bufferstreamdata *stream){
   nsurfinfo=0;
   nvent_transparent=0;
 
-  nvents=0;
   setPDIM=0;
 
   FREEMEMORY(database_filename);
@@ -6887,6 +6870,46 @@ int ReadSMV(bufferstreamdata *stream){
 
   STOP_TIMER(pass0_time );
   PRINT_TIMER(timer_readsmv, "readsmv setup");
+  return 0;
+}
+
+/* ------------------ ReadSMV_Parse ------------------------ */
+/// @brief Parse an SMV file into global variables. This should only be called
+/// after ReadSMV_Init to ensure that the appropriate variables are set.
+/// @param stream the smv file stream
+/// @return zero on success, non-zero on failure
+int ReadSMV_Parse(bufferstreamdata *stream) {
+  int i;
+  float wrapup_time;
+  int have_zonevents,nzventsnew=0;
+  devicedata *devicecopy;
+  int do_pass4=0, do_pass5=0;
+  int roomdefined=0;
+  int noGRIDpresent=1,startpass;
+  slicedata *sliceinfo_copy=NULL;
+  int nisos_per_mesh=1;
+
+  int nn_smoke3d=0,nn_patch=0,nn_iso=0,nn_part=0,nn_slice=0,nslicefiles=0,nvents;
+
+  int ipart=0, ipatch=0, iroom=0,izone_local=0,ifire=0,iiso=0;
+  int ismoke3d=0,ismoke3dcount=1,igrid,ioffset;
+  int itrnx, itrny, itrnz, ipdim, iobst, ivent, icvent;
+  int ibartemp=2, jbartemp=2, kbartemp=2;
+
+  int setGRID=0;
+  int have_auto_terrain_image=0;
+
+  char buffer[256], buffers[6][256];
+  patchdata *patchgeom;
+
+ {
+    int return_code;
+
+  // get input file name
+
+    return_code=GetInpf(stream);
+    if(return_code!=0)return return_code;
+  }
 
 /*
    ************************************************************************
@@ -11324,7 +11347,18 @@ typedef struct {
   else{
     pass5_time = 0.0;
   }
+  clip_I=ibartemp; clip_J=jbartemp; clip_K=kbartemp;
+  return 0;
+}
 
+/* ------------------ ReadSMV_Configure ------------------------ */
+
+/// @brief Finish setting global variables after an SMV file has been parsed.
+/// This should be called after @ref ReadSMV_Parse.
+/// @return zero on success, nonzero on failure.
+int ReadSMV_Configure(){
+  int i;
+  float wrapup_time;
 /*
    ************************************************************************
    ************************ wrap up ***************************************
@@ -11631,7 +11665,6 @@ typedef struct {
   InitUserTicks();
   PRINT_TIMER(timer_readsmv, "InitUserTicks");
 
-  clip_I=ibartemp; clip_J=jbartemp; clip_K=kbartemp;
 
   // define changed_idlist used for blockage editing
 
@@ -11715,7 +11748,17 @@ typedef struct {
   return 0;
 }
 
-/* ------------------ UpdateUseTextures ------------------------ */
+/* ------------------ ReadSMV_Init ------------------------ */
+/// @brief Parse an SMV file.
+/// @param stream the file stream to parse.
+/// @return zero on sucess, non-zero on error
+int ReadSMV(bufferstreamdata *stream){
+  START_TIMER(timer_readsmv);
+  ReadSMV_Init();
+  ReadSMV_Parse(stream);
+  ReadSMV_Configure();
+  return 0;
+}
 
 void UpdateUseTextures(void){
   int i;

@@ -1160,6 +1160,7 @@ EXTERNCPP void InitMenus(void);
 
 EXTERNCPP int ReadSMV(bufferstreamdata *stream);
 EXTERNCPP void ReadSMVOrig(void);
+EXTERNCPP void UpdateSMVDynamic(char *file);
 EXTERNCPP void ReadSMVDynamic(char *file);
 EXTERNCPP void SetInteriorBlockages(int flag);
 

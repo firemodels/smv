@@ -3001,7 +3001,7 @@ void ReloadMenu(int value){
     LoadUnloadMenu(RELOAD_INCREMENTAL_ALL);
     break;
   case RELOAD_SMV_FILE:
-    ReadSMVDynamic(smv_filename);
+    UpdateSMVDynamic(smv_filename);
     break;
   case RELOAD_MODE_INCREMENTAL:
     load_incremental = 1;
@@ -3494,7 +3494,7 @@ void LoadUnloadMenu(int value){
     }
     if(update_readiso_geom_wrapup == UPDATE_ISO_ALL_NOW)ReadIsoGeomWrapup(BACKGROUND);
     update_readiso_geom_wrapup = UPDATE_ISO_OFF;
-    ReadSMVDynamic(smv_filename);
+    UpdateSMVDynamic(smv_filename);
     UNLOCK_COMPRESS
   //  plotstate=DYNAMIC_PLOTS;
   //  visParticles=1;
