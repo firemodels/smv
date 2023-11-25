@@ -303,8 +303,8 @@ void MouseEditTour(int x, int y){
       selected_tour=NULL;
       itourknots=-1;
     }
-    SetGluiTourKeyframe();
-    UpdateTourControls();
+    GLUISetTourKeyframe();
+    GLUIUpdateTourControls();
     tour_drag=1;
   }
   glShadeModel(GL_SMOOTH);
@@ -1210,7 +1210,7 @@ void DragTourNode(int xm, int ym){
 
 // update tour data structures with new tour node location
 
-        UpdateTourParms();
+        GLUIUpdateTourParms();
         UpdateGluiKeyframe();
       }
       break;

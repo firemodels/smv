@@ -1609,10 +1609,10 @@ void DialogMenu(int value){
     GLUIShowGluiDisplay(value);
     break;
   case DIALOG_TOUR_SHOW:
-    ShowGluiTour();
+    GLUIShowTour();
     break;
   case DIALOG_TOUR_HIDE:
-    HideGluiTour();
+    GLUIHideTour();
     break;
   case DIALOG_CLIP:
     GLUIShowGluiClip();
@@ -1673,7 +1673,7 @@ void DialogMenu(int value){
     GLUIHideGluiDisplay();
     GLUIHideGluiBounds();
     GLUIHideMotion();
-    HideGluiTour();
+    GLUIHideTour();
     GLUIHideGluiClip();
     GLUIHideStereo();
     GLUIHideGluiColorbar();
@@ -3573,7 +3573,7 @@ void TourMenu(int value){
     DialogMenu(DIALOG_TOUR_SHOW);
     break;
   case MENU_TOUR_NEW:
-    AddNewTour();
+    GLUIAddNewTour();
     DialogMenu(DIALOG_TOUR_SHOW);
     break;
   case MENU_TOUR_CLEARALL:
@@ -3612,7 +3612,7 @@ void TourMenu(int value){
   case MENU_TOUR_SHOWDIALOG:
     edittour=1-edittour;
     if(edittour==1&&showtour_dialog==0){
-      ShowGluiTour();
+      GLUIShowTour();
     }
     break;
   case MENU_TOUR_SHOWALL:               // show all tours
@@ -3671,9 +3671,9 @@ void TourMenu(int value){
     break;
   }
   UpdateViewTour();
-  DeleteTourList();
-  CreateTourList();
-  UpdateTourControls();
+  GLUIDeleteTourList();
+  GLUICreateTourList();
+  GLUIUpdateTourControls();
   plotstate=GetPlotState(DYNAMIC_PLOTS);
   if(value!=-5&&value!=-4)UpdateTimes();
   callfrom_tourglui=0;

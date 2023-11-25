@@ -2035,7 +2035,7 @@ void UpdateShowScene(void){
     update_viewpoint_script--;
   }
   if(update_tour_list == 1){
-    UpdateTourList();
+    GLUIUpdateTourList();
   }
   if(update_gslice == 1){
     GLUIUpdateGsliceParms();
@@ -2059,7 +2059,7 @@ void UpdateShowScene(void){
     updateclipvals = 0;
   }
   if(update_selectedtour_index == 1){
-    UpdateTourIndex();
+    GLUIUpdateTourIndex();
   }
   if(trainer_mode == 1 && fontindex != LARGE_FONT)FontMenu(LARGE_FONT);
   if(updateindexcolors == 1){

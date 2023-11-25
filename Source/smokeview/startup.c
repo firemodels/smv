@@ -319,7 +319,7 @@ int SetupCase(char *filename){
   GluiDisplaySetup(mainwindow_id);
   GluiDeviceSetup(mainwindow_id);
   GluiPlot2DSetup(mainwindow_id);
-  GluiTourSetup(mainwindow_id);
+  GLUITourSetup(mainwindow_id);
   GluiAlertSetup(mainwindow_id);
   GluiStereoSetup(mainwindow_id);
   Glui3dSmokeSetup(mainwindow_id);

@@ -245,6 +245,20 @@ EXTERNCPP void GLUIHideStereo(void);
 EXTERNCPP float GetTime(void);
 EXTERNCPP void StartTimer(float *timerptr);
 
+//*** glui_tour.cpp headers
+EXTERNCPP void GLUITourSetup(int main_window);
+EXTERNCPP void GLUIShowTour(void);
+EXTERNCPP void GLUIHideTour(void);
+EXTERNCPP void GLUIUpdateTourState(void);
+EXTERNCPP void GLUIUpdateTourParms(void);
+EXTERNCPP void GLUIAddNewTour(void);
+EXTERNCPP void GLUIUpdateTourList(void);
+EXTERNCPP void GLUIUpdateTourIndex(void);
+EXTERNCPP void GLUICreateTourList(void);
+EXTERNCPP void GLUIDeleteTourList(void);
+EXTERNCPP void GLUIUpdateTourControls(void);
+EXTERNCPP void GLUISetTourKeyframe(void);
+
 // gen plot routines
 
 EXTERNCPP int HavePlot2D(float **times, int *ntimes);
@@ -581,7 +595,6 @@ EXTERNCPP void InitVolrenderScript(char *prefix, char *tour_label, int startfram
 
 // glui headers
 
-EXTERNCPP void GluiTourSetup(int main_window);
 EXTERNCPP void GluiTrainerSetup(int main_window);
 
 EXTERNCPP void GluiAlertSetup(int main_window);
@@ -594,8 +607,6 @@ EXTERNCPP void ShowGluiAlert(void);
 EXTERNCPP void HideGluiAlert(void);
 EXTERNCPP void ShowGluiTrainer(void);
 EXTERNCPP void HideGluiTrainer(void);
-EXTERNCPP void ShowGluiTour(void);
-EXTERNCPP void HideGluiTour(void);
 
 EXTERNCPP void HVACMenu(int value);
 EXTERNCPP int GetHVACDuctValIndex(char *shortlabel);
@@ -616,10 +627,7 @@ EXTERNCPP void GetSliceParams2(void);
 EXTERNCPP void DrawWindRosesDevices(void);
 EXTERNCPP void DeviceData2WindRose(int nr, int ntheta);
 EXTERNCPP void DefineAllFEDs(void);
-EXTERNCPP void UpdateTourState(void);
-EXTERNCPP void UpdateEditTour(void);
 EXTERNCPP void AddDeleteKeyframe(int flag);
-EXTERNCPP void UpdateTourParms(void);
 EXTERNCPP void Slerp(float *p0, float *p1, float t, float *pout);
 EXTERNCPP void VentMenu(int value);
 EXTERNCPP void UpdateAllSliceLabels(int slicetype, int *errorcode);
@@ -715,7 +723,6 @@ EXTERNCPP void ScriptLoadIsoFrame2(scriptdata *scripti);
 EXTERNCPP void InitDevicePlane(devicedata *devicei);
 EXTERNCPP void DrawDevicesVal(void);
 EXTERNCPP void GetSmokeSensors(void);
-EXTERNCPP void AddNewTour(void);
 EXTERNCPP void StartScript(void);
 EXTERNCPP int RunScriptCommand(scriptdata *script_command);
 EXTERNCPP void DoScriptHtml(void);
@@ -876,7 +883,6 @@ EXTERNCPP void CompressSVZip(void);
 EXTERNCPP void DrawBlockages(int mode, int flag);
 EXTERNCPP void WriteLabels(void);
 EXTERNCPP void DrawLabels(void);
-EXTERNCPP void UpdateTourList(void);
 EXTERNCPP void GetNewPos(float *oldpos, float dx, float dy, float dz, float speed_factor);
 EXTERNCPP void FreeSkybox(void);
 EXTERNCPP void DrawSkybox(void);
@@ -886,7 +892,6 @@ EXTERNCPP void UncompressBoundaryDataBNDF(meshdata *meshi,int frame_index);
 EXTERNCPP void RGBTest(void);
 EXTERNCPP void UpdateCADTextCoords(cadquad *quadi);
 EXTERNCPP void UpdateIndexColors(void);
-EXTERNCPP void UpdateTourIndex(void);
 EXTERNCPP void SetTour(tourdata *thetour);
 EXTERNCPP void MergeSmoke3D(smoke3ddata *smoke3dset);
 EXTERNCPP void ShowHideSortGeometry(int sort_geom, float *mm);
@@ -983,14 +988,10 @@ EXTERNCPP unsigned char *ReadPNG(const char *filename,int *width, int *height, i
 EXTERNCPP void UpdateColorbarDialogs(void);
 
 EXTERNCPP void SetTourXYZView(float t, tourdata *touri);
-EXTERNCPP void CreateTourList(void);
-EXTERNCPP void DeleteTourList(void);
 EXTERNCPP void UpdateViewTour(void);
-EXTERNCPP void UpdateTourControls(void);
 EXTERNCPP void SetupTour(void);
 EXTERNCPP void CreateTourPaths(void);
 EXTERNCPP void DrawTours(void);
-EXTERNCPP void SetGluiTourKeyframe(void);
 EXTERNCPP void DrawSelectTours(void);
 EXTERNCPP void DrawSelectColorbar(void);
 EXTERNCPP void FreeTour(tourdata *touri);

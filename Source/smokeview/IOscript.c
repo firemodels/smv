@@ -3114,8 +3114,8 @@ void ScriptSetTourKeyFrame(scriptdata *scripti){
   }
   if(minkey!=NULL){
     NewSelect(minkey);
-    SetGluiTourKeyframe();
-    UpdateTourControls();
+    GLUISetTourKeyframe();
+    GLUIUpdateTourControls();
   }
 }
 
@@ -3140,7 +3140,7 @@ void ScriptSetTourView(scriptdata *scripti){
       viewtourfrompath=0;
       break;
   }
-  UpdateTourState();
+  GLUIUpdateTourState();
 }
 
 /* ------------------ ScriptSetSliceBounds ------------------------ */
