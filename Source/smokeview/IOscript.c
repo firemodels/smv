@@ -148,7 +148,7 @@ void StartScript(void){
     if(stderr2!=NULL)fprintf(stderr2,"*** Error: Smokeview script does not exist\n");
     return;
   }
-  GluiScriptDisable();
+  GLUIScriptDisable();
   current_script_command=scriptinfo-1;
   iso_multithread_save = iso_multithread;
   iso_multithread = 0;
@@ -1466,10 +1466,10 @@ void LoadSmokeFrame(int meshnum, int framenum){
   if(meshnum > nmeshes - 1||meshnum<-1)meshnum = -1;
 
   max_frames = GetVolFrameMax(meshnum);
-  if(max_frames > 0)UpdateLoadFrameMax(max_frames);
+  if(max_frames > 0)GLUIUpdateLoadFrameMax(max_frames);
   frame_old = framenum;
   framenum = CLAMP(framenum, 0, max_frames-1);
-  if(framenum!=frame_old)UpdateLoadFrameVal(framenum);
+  if(framenum!=frame_old)GLUIUpdateLoadFrameVal(framenum);
 
   for(i = 0; i<nmeshes; i++){
     meshdata *meshi;
@@ -1502,7 +1502,7 @@ void LoadSmokeFrame(int meshnum, int framenum){
   stept=1;
   Keyboard('t', FROM_SMOKEVIEW);
   UpdateTimeLabels();
-  UpdateLoadTimeVal(valtime);
+  GLUIUpdateLoadTimeVal(valtime);
 }
 
 /* ------------------ LoadTimeFrame ------------------------ */
@@ -1537,7 +1537,7 @@ void LoadTimeFrame(int meshnum, float timeval){
       update_timebounds = 1;
     }
   }
-  if(update_timebounds==1)UpdateTimeFrameBounds(time_framemin, time_framemax);
+  if(update_timebounds==1)GLUIUpdateTimeFrameBounds(time_framemin, time_framemax);
 
   vrtime = vr->times[0];
   mindiff = ABS(timeval-vrtime);
@@ -1552,7 +1552,7 @@ void LoadTimeFrame(int meshnum, float timeval){
       smokeframe = i;
     }
   }
-  UpdateLoadFrameVal(smokeframe);
+  GLUIUpdateLoadFrameVal(smokeframe);
   LoadSmokeFrame(meshnum, smokeframe);
 }
 
@@ -2646,16 +2646,16 @@ void ScriptPlot3dProps(scriptdata *scripti){
   }
   UpdateAllPlotSlices();
   if(visiso==1)UpdateSurface();
-  UpdatePlot3dListIndex();
+  GLUIUpdatePlot3dListIndex();
 
   vecfactor=1.0;
   if(scripti->fval>=0.0)vecfactor=scripti->fval;
-  UpdateVectorWidgets();
+  GLUIUpdateVectorWidgets();
 
   PRINTF("script: vecfactor=%f\n",vecfactor);
 
   contour_type=CLAMP(scripti->ival4,0,2);
-  UpdatePlot3dDisplay();
+  GLUIUpdatePlot3dDisplay();
 
   if(visVector==1&&nplot3dloaded>0){
     meshdata *gbsave,*gbi;
@@ -2828,17 +2828,17 @@ void ScriptShowSmokeSensors(void){
 
 void ScriptXYZView(float x, float y, float z, float az, float elev){
   use_customview = 0;
-  SceneMotionCB(CUSTOM_VIEW);
-  ViewpointCB(RESTORE_VIEW);
+  GLUISceneMotionCB(CUSTOM_VIEW);
+  GLUIViewpointCB(RESTORE_VIEW);
   set_view_xyz[0]      = x;
   set_view_xyz[1]      = y;
   set_view_xyz[2]      = z;
   customview_azimuth   = az;
   customview_elevation = elev;
   use_customview       = 1;
-  SceneMotionCB(CUSTOM_VIEW);
-  SceneMotionCB(SET_VIEW_XYZ);
-  UpdatePosView();
+  GLUISceneMotionCB(CUSTOM_VIEW);
+  GLUISceneMotionCB(SET_VIEW_XYZ);
+  GLUIUpdatePosView();
 }
 
 /* ------------------ ScriptShowPlot3dData ------------------------ */
@@ -3055,7 +3055,7 @@ void ScriptLoadPlot3D(scriptdata *scripti){
     count = LoadAllPlot3D(time_local);
   }
   UpdateRGBColors(COLORBAR_INDEX_NONE);
-  SetLabelControls();
+  GLUISetLabelControls();
   if(count == 0){
     fprintf(stderr, "*** Error: Plot3d file failed to load\n");
     if(stderr2!=NULL)fprintf(stderr2, "*** Error: Plot3d file failed to load\n");
@@ -3114,8 +3114,8 @@ void ScriptSetTourKeyFrame(scriptdata *scripti){
   }
   if(minkey!=NULL){
     NewSelect(minkey);
-    SetGluiTourKeyframe();
-    UpdateTourControls();
+    GLUISetTourKeyframe();
+    GLUIUpdateTourControls();
   }
 }
 
@@ -3140,7 +3140,7 @@ void ScriptSetTourView(scriptdata *scripti){
       viewtourfrompath=0;
       break;
   }
-  UpdateTourState();
+  GLUIUpdateTourState();
 }
 
 /* ------------------ ScriptSetSliceBounds ------------------------ */
@@ -3239,7 +3239,7 @@ void ScriptProjection(scriptdata *scripti){
   else{
     projection_type = PROJECTION_ORTHOGRAPHIC;
   }
-  SceneMotionCB(PROJECTION);
+  GLUISceneMotionCB(PROJECTION);
 }
 
 //    sscanf(buffer,"%i %i %i %i",&vis_gslice_data, &show_gslice_triangles, &show_gslice_triangulation, &show_gslice_normal);
@@ -3434,10 +3434,10 @@ void ScriptViewXYZMINMAXOrtho(int command){
     assert(FFALSE);
     break;
   }
-  ResetGluiView(EXTERNAL_VIEW);
+  GLUIResetView(EXTERNAL_VIEW);
   use_customview=0;
-  SceneMotionCB(CUSTOM_VIEW);
-  SceneMotionCB(ZAXIS_CUSTOM);
+  GLUISceneMotionCB(CUSTOM_VIEW);
+  GLUISceneMotionCB(ZAXIS_CUSTOM);
 }
 
 /* ------------------ ScriptViewXYZMINMAXPersp ------------------------ */
@@ -3501,20 +3501,20 @@ void SetViewZMAXPersp(void){
   zcen = zbarORIG+DL;
   elevation = -89.9;
   azimuth = 0.0;
-  ResetGluiView(EXTERNAL_VIEW);
+  GLUIResetView(EXTERNAL_VIEW);
 
   use_customview = 0;
-  SceneMotionCB(CUSTOM_VIEW);
-  ViewpointCB(RESTORE_VIEW);
+  GLUISceneMotionCB(CUSTOM_VIEW);
+  GLUIViewpointCB(RESTORE_VIEW);
   set_view_xyz[0]      = xcen;
   set_view_xyz[1]      = ycen;
   set_view_xyz[2]      = zcen;
   customview_azimuth   = azimuth;
   customview_elevation = elevation;
   use_customview       = 1;
-  SceneMotionCB(CUSTOM_VIEW);
-  SceneMotionCB(SET_VIEW_XYZ);
-  UpdatePosView();
+  GLUISceneMotionCB(CUSTOM_VIEW);
+  GLUISceneMotionCB(SET_VIEW_XYZ);
+  GLUIUpdatePosView();
 }
 
 /* ------------------ RunScriptCommand ------------------------ */

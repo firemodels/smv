@@ -135,7 +135,7 @@ void  UpdatePlot3DColors(plot3ddata *plot3di, int flag, int *errorcode){
 
   int num;
 
-  GetMinMaxAll(BOUND_PLOT3D, setp3min_all, p3min_all, setp3max_all, p3max_all, &num);
+  GLUIGetMinMaxAll(BOUND_PLOT3D, setp3min_all, p3min_all, setp3max_all, p3max_all, &num);
   *errorcode=AllocatePlot3DColorLabels(plot3di);
   if(*errorcode==1)return;
   for(nn = 0; nn < numplot3dvars; nn++){
@@ -428,7 +428,7 @@ void ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
       UpdateAllPlot3DColors(0);
 #ifdef pp_HIST
 #define BOUND_PERCENTILE_DRAW          120
-      Plot3DBoundsCPP_CB(BOUND_PERCENTILE_DRAW);
+      GLUIPlot3DBoundsCPP_CB(BOUND_PERCENTILE_DRAW);
 #endif
     }
   }
@@ -465,7 +465,7 @@ void ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
     UpdateSurface();
   }
 
-  UpdatePlot3dListIndex();
+  GLUIUpdatePlot3dListIndex();
   PrintMemoryInfo;
   UpdateTimes();
   UpdateUnitDefs();
@@ -535,7 +535,7 @@ void DrawPlot3dTexture(meshdata *meshi){
   plotz = meshi->iplotz_all[iplotz_all];
   qdata = meshi->qdata;
 
-  GetMinMaxAll(BOUND_PLOT3D, setp3min_all, p3min_all, setp3max_all, p3max_all, &num);
+  GLUIGetMinMaxAll(BOUND_PLOT3D, setp3min_all, p3min_all, setp3max_all, p3max_all, &num);
   float ttmin, ttmax;
 
   ttmin = p3min_all[plotn-1];

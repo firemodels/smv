@@ -247,15 +247,15 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 #define UPDATE_WINDROSE_SHOWHIDE 2
 
 #ifndef START_TIMER
-#define START_TIMER(a) a = glutGet(GLUT_ELAPSED_TIME)/1000.0
+#define START_TIMER(a) a = (float)clock()/(float)CLOCKS_PER_SEC
 #endif
 
 #ifndef STOP_TIMER
-#define STOP_TIMER(a) a = glutGet(GLUT_ELAPSED_TIME)/1000.0 - a
+#define STOP_TIMER(a) a = (float)clock()/(float)CLOCKS_PER_SEC - a
 #endif
 
 #ifndef CUM_TIMER
-#define CUM_TIMER(a,b) b += (glutGet(GLUT_ELAPSED_TIME)/1000.0 - a)
+#define CUM_TIMER(a,b) b += ((float)clock()/(float)CLOCKS_PER_SEC - a)
 #endif
 
 #ifndef INIT_PRINT_TIMER

@@ -43,7 +43,7 @@ void InitDefaultCameras(void){
   camera_external->zoom = zoom;
   CopyCamera(camera_current, camera_external);
   strcpy(camera_label, camera_current->name);
-  UpdateCameraLabel();
+  GLUIUpdateCameraLabel();
 
   CopyCamera(camera_save, camera_current);
   CopyCamera(camera_last, camera_current);
@@ -51,7 +51,7 @@ void InitDefaultCameras(void){
   InitCameraList();
   AddDefaultViewpoints();
   CopyCamera(camera_external_save, camera_external);
-  UpdateGluiViewpointList();
+  GLUIUpdateViewpointList();
 }
 
 /* ------------------ InitMisc ------------------------ */
@@ -118,7 +118,7 @@ void InitMisc(void){
   InitDefaultCameras();
 
 
-  //ResetGluiView(i_view_list);
+  //GLUIResetView(i_view_list);
 
   glEnable(GL_DEPTH_TEST);
   glEnable(GL_NORMALIZE);
@@ -151,7 +151,7 @@ void InitMisc(void){
   strcpy(glui_curve_default.scaled_label, "");
   strcpy(glui_curve_default.scaled_unit,  "");
 
-  ResetGluiView(startup_view_ini);
+  GLUIResetView(startup_view_ini);
   UpdateShow();
 }
 
@@ -262,8 +262,8 @@ int SetupCase(char *filename){
     ReadSMVOrig();
   }
   if(return_code==0&&trainer_mode==1){
-    ShowGluiTrainer();
-    ShowGluiAlert();
+    GLUIShowTrainer();
+    GLUIShowAlert();
   }
   switch(return_code){
     case 1:
@@ -301,7 +301,7 @@ int SetupCase(char *filename){
   PRINT_TIMER(timer_start, "UpdateRGBColors");
 
   if(use_graphics==0){
-    SliceBoundsSetupNoGraphics();
+    GLUISliceBoundsSetupNoGraphics();
     return 0;
   }
   glui_defined = 1;
@@ -310,19 +310,19 @@ int SetupCase(char *filename){
 
   if(ntourinfo==0)SetupTour();
   InitRolloutList();
-  GluiColorbarSetup(mainwindow_id);
-  GluiMotionSetup(mainwindow_id);
-  GluiBoundsSetup(mainwindow_id);
-  GluiShooterSetup(mainwindow_id);
-  GluiGeometrySetup(mainwindow_id);
-  GluiClipSetup(mainwindow_id);
-  GluiLabelsSetup(mainwindow_id);
-  GluiDeviceSetup(mainwindow_id);
-  GluiPlot2DSetup(mainwindow_id);
-  GluiTourSetup(mainwindow_id);
-  GluiAlertSetup(mainwindow_id);
-  GluiStereoSetup(mainwindow_id);
-  Glui3dSmokeSetup(mainwindow_id);
+  GLUIColorbarSetup(mainwindow_id);
+  GLUIMotionSetup(mainwindow_id);
+  GLUIBoundsSetup(mainwindow_id);
+  GLUIShooterSetup(mainwindow_id);
+  GLUIGeometrySetup(mainwindow_id);
+  GLUIClipSetup(mainwindow_id);
+  GLUIDisplaySetup(mainwindow_id);
+  GLUIDeviceSetup(mainwindow_id);
+  GLUIPlot2DSetup(mainwindow_id);
+  GLUITourSetup(mainwindow_id);
+  GLUIAlertSetup(mainwindow_id);
+  GLUIStereoSetup(mainwindow_id);
+  GLUI3dSmokeSetup(mainwindow_id);
   PRINT_TIMER(timer_start, "all dialogs");
 
   UpdateLights(light_position0, light_position1);
@@ -333,15 +333,15 @@ int SetupCase(char *filename){
   glutShowWindow();
   glutSetWindowTitle(fdsprefix);
   InitMisc();
-  GluiTrainerSetup(mainwindow_id);
+  GLUITrainerSetup(mainwindow_id);
   glutDetachMenu(GLUT_RIGHT_BUTTON);
   LOCK_CHECKFILES;
   InitMenus();
   UNLOCK_CHECKFILES;
   glutAttachMenu(GLUT_RIGHT_BUTTON);
   if(trainer_mode==1){
-    ShowGluiTrainer();
-    ShowGluiAlert();
+    GLUIShowTrainer();
+    GLUIShowAlert();
   }
   // initialize info header
   initialiseInfoHeader(&titleinfo, release_title, smv_githash, fds_githash, chidfilebase, fds_title);
@@ -455,6 +455,18 @@ void InitStartupDirs(void){
 #endif
 }
 
+/* ------------------ GLUTGetScreenWidth ------------------------ */
+
+int GLUTGetScreenWidth(void){
+  return glutGet(GLUT_SCREEN_WIDTH);
+}
+
+/* ------------------ GLUTGetScreenHeight ------------------------ */
+
+int GLUTGetScreenHeight(void){
+  return glutGet(GLUT_SCREEN_HEIGHT);
+}
+
 /* ------------------ SetupGlut ------------------------ */
 
 void SetupGlut(int argc, char **argv){
@@ -471,7 +483,7 @@ void SetupGlut(int argc, char **argv){
     if(verbose_output==1)PRINTF("%s","initializing Glut");
     glutInit(&argc, argv);
 #ifdef pp_OSX
-    if(verbose_output==1)PRINTF("(%i/%i)", GetScreenHeight(), glutGet(GLUT_SCREEN_HEIGHT));
+    if(verbose_output==1)PRINTF("(%i/%i)", GetScreenHeight(), GLUTGetScreenHeight());
 #endif
     if(verbose_output==1)PRINTF("\n%s\n",_("complete"));
 
@@ -489,8 +501,8 @@ void SetupGlut(int argc, char **argv){
     if(verbose_output==1)PRINTF("%s\n",_("initialized"));
 #endif
 
-    max_screenWidth = glutGet(GLUT_SCREEN_WIDTH);
-    max_screenHeight = glutGet(GLUT_SCREEN_HEIGHT);
+    max_screenWidth =  GLUTGetScreenWidth();
+    max_screenHeight = GLUTGetScreenHeight();
 #ifdef pp_OSX_HIGHRES
     if(force_scale==0){
       if(monitor_screen_height!=max_screenHeight)double_scale=1;
@@ -1093,7 +1105,7 @@ void InitOpenGL(int option){
     int i;
     int errorcode;
 
-//    ShowGluiAlert();
+//    GLUIShowAlert();
     for(i = 0; i<nplot3dinfo; i++){
       plot3ddata *plot3di;
 
@@ -1219,7 +1231,7 @@ void InitOpenGL(int option){
     UpdateFrameNumber(0);
     updatemenu=1;
     update_load_files=0;
-    HideGluiAlert();
+    GLUIHideAlert();
     TrainerViewMenu(trainerview);
   }
 

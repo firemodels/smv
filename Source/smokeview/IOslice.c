@@ -1272,8 +1272,8 @@ void ReadFed(int file_index, int time_frame, float *time_value, int flag, int fi
     cb = GetColorbar(default_fed_colorbar);
     if(cb!=NULL){
       colorbartype=cb-colorbarinfo;
-      SetColorbarListEdit(colorbartype);
-      SliceBoundCB(COLORBAR_LIST2);
+      GLUISetColorbarListEdit(colorbartype);
+      GLUISliceBoundCB(COLORBAR_LIST2);
       UpdateCurrentColorbar(cb);
     }
   }
@@ -5163,28 +5163,28 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
       GetGlobalSliceBounds(1);
       SetLoadedSliceBounds(NULL, 0);
     }
-    GetMinMax(BOUND_SLICE, sd->label.shortlabel, &set_valmin, &qmin, &set_valmax, &qmax);
+    GLUIGetMinMax(BOUND_SLICE, sd->label.shortlabel, &set_valmin, &qmin, &set_valmax, &qmax);
 #ifdef pp_HIST
     if(set_valmin==BOUND_PERCENTILE_MIN||set_valmax==BOUND_PERCENTILE_MAX){
       cpp_boundsdata *bounds;
 
-      bounds = GetBoundsData(BOUND_SLICE);
+      bounds = GLUIGetBoundsData(BOUND_SLICE);
       ComputeLoadedSliceHist(bounds->label);
       MergeLoadedSliceHist(bounds->label, &(bounds->hist));
       if(bounds->hist!=NULL&&bounds->hist->defined==1){
         if(set_valmin==BOUND_PERCENTILE_MIN){
           GetHistogramValProc(bounds->hist, percentile_level_min, &qmin);
-          SetMin(BOUND_SLICE, bounds->label, BOUND_PERCENTILE_MIN, qmin);
+          GLUISetMin(BOUND_SLICE, bounds->label, BOUND_PERCENTILE_MIN, qmin);
         }
         if(set_valmax==BOUND_PERCENTILE_MAX){
           GetHistogramValProc(bounds->hist, percentile_level_max, &qmax);
-          SetMax(BOUND_SLICE, bounds->label, BOUND_PERCENTILE_MAX, qmax);
+          GLUISetMax(BOUND_SLICE, bounds->label, BOUND_PERCENTILE_MAX, qmax);
         }
       }
     }
 #endif
 #define BOUND_PERCENTILE_DRAW          120
-    SliceBoundsCPP_CB(BOUND_PERCENTILE_DRAW);
+    GLUIHVACSliceBoundsCPP_CB(BOUND_PERCENTILE_DRAW);
     colorbar_slice_min = qmin;
     colorbar_slice_max = qmax;
     UpdateUnitDefs();

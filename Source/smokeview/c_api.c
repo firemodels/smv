@@ -1,4 +1,5 @@
 #include "options.h"
+#ifdef pp_LUA
 #include <assert.h>
 #include <math.h>
 #include <stdio.h>
@@ -116,7 +117,7 @@ int CApiSetSliceBounds(const char *slice_type, int set_valmin, float valmin,
   slicebounds[slice_type_index].dlg_valmin = valmin;
   slicebounds[slice_type_index].dlg_valmax = valmax;
   int error = 0;
-  SetMinMax(BOUND_SLICE, slicebounds[slice_type_index].shortlabel, set_valmin,
+  GLUISetMinMax(BOUND_SLICE, slicebounds[slice_type_index].shortlabel, set_valmin,
             valmin, set_valmax, valmax);
   // Update the colors given the bounds set above
   UpdateAllSliceColors(slice_type_index, &error);
@@ -239,8 +240,8 @@ int Loadsmv(char *input_filename, char *input_filename_ext) {
     }
   }
   if (return_code == 0 && trainer_mode == 1) {
-    ShowGluiTrainer();
-    ShowGluiAlert();
+    GLUIShowTrainer();
+    GLUIShowAlert();
   }
   switch (return_code) {
   case 1:
@@ -277,18 +278,18 @@ int Loadsmv(char *input_filename, char *input_filename_ext) {
 
   if (ntourinfo == 0) SetupTour();
   InitRolloutList();
-  GluiColorbarSetup(mainwindow_id);
-  GluiMotionSetup(mainwindow_id);
-  GluiBoundsSetup(mainwindow_id);
-  GluiShooterSetup(mainwindow_id);
-  GluiGeometrySetup(mainwindow_id);
-  GluiClipSetup(mainwindow_id);
-  GluiLabelsSetup(mainwindow_id);
-  GluiDeviceSetup(mainwindow_id);
-  GluiTourSetup(mainwindow_id);
-  GluiAlertSetup(mainwindow_id);
-  GluiStereoSetup(mainwindow_id);
-  Glui3dSmokeSetup(mainwindow_id);
+  GLUIColorbarSetup(mainwindow_id);
+  GLUIMotionSetup(mainwindow_id);
+  GLUIBoundsSetup(mainwindow_id);
+  GLUIShooterSetup(mainwindow_id);
+  GLUIGeometrySetup(mainwindow_id);
+  GLUIClipSetup(mainwindow_id);
+  GLUIDisplaySetup(mainwindow_id);
+  GLUIDeviceSetup(mainwindow_id);
+  GLUITourSetup(mainwindow_id);
+  GLUIAlertSetup(mainwindow_id);
+  GLUIStereoSetup(mainwindow_id);
+  GLUI3dSmokeSetup(mainwindow_id);
 
   UpdateLights(light_position0, light_position1);
 
@@ -298,13 +299,13 @@ int Loadsmv(char *input_filename, char *input_filename_ext) {
   glutShowWindow();
   glutSetWindowTitle(fdsprefix);
   InitMisc();
-  GluiTrainerSetup(mainwindow_id);
+  GLUITrainerSetup(mainwindow_id);
   glutDetachMenu(GLUT_RIGHT_BUTTON);
   InitMenus();
   glutAttachMenu(GLUT_RIGHT_BUTTON);
   if (trainer_mode == 1) {
-    ShowGluiTrainer();
-    ShowGluiAlert();
+    GLUIShowTrainer();
+    GLUIShowAlert();
   }
   // initialize info header
   initialiseInfoHeader(&titleinfo, release_title, smv_githash, fds_githash,
@@ -652,8 +653,8 @@ void Settourkeyframe(float keyframe_time) {
   }
   if (minkey != NULL) {
     NewSelect(minkey);
-    SetGluiTourKeyframe();
-    UpdateTourControls();
+    GLUISetTourKeyframe();
+    GLUIUpdateTourControls();
   }
 }
 
@@ -699,7 +700,7 @@ void Settourview(int edittourArg, int mode, int show_tourlocusArg,
     viewtourfrompath = 0;
     break;
   }
-  UpdateTourState();
+  GLUIUpdateTourState();
 }
 
 /// @brief Get the current frame number.
@@ -805,17 +806,17 @@ void SetColorbar(size_t value) {
   iso_colorbar_index = value;
   iso_colorbar = colorbarinfo + iso_colorbar_index;
   update_texturebar = 1;
-  UpdateListIsoColorobar();
+  GLUIUpdateListIsoColorobar();
   UpdateCurrentColorbar(colorbarinfo + colorbartype);
-  UpdateColorbarType();
+  GLUIUpdateColorbarType();
   if (colorbartype == bw_colorbar_index && bw_colorbar_index >= 0) {
     setbwdata = 1;
   }
   else {
     setbwdata = 0;
   }
-  IsoBoundCB(ISO_COLORS);
-  SetLabelControls();
+  GLUIIsoBoundCB(ISO_COLORS);
+  GLUISetLabelControls();
   if (value > -10) {
     UpdateRGBColors(COLORBAR_INDEX_NONE);
   }
@@ -956,14 +957,14 @@ void DevicesHideAll() {
 // axis visibility
 void SetAxisVisibility(int setting) {
   visaxislabels = setting;
-  UpdateVisAxisLabels();
+  GLUIUpdateVisAxisLabels();
 }
 
 int GetAxisVisibility() { return visaxislabels; }
 
 void ToggleAxisVisibility() {
   visaxislabels = 1 - visaxislabels;
-  UpdateVisAxisLabels();
+  GLUIUpdateVisAxisLabels();
 }
 
 // framelabel visibility
@@ -1096,14 +1097,14 @@ void SetAllLabelVisibility(int setting) {
 // time
 void SetTimehms(int setting) {
   vishmsTimelabel = 1 - vishmsTimelabel;
-  SetLabelControls();
+  GLUISetLabelControls();
 }
 
 int GetTimehms() { return vishmsTimelabel; }
 
 void ToggleTimehms() {
   vishmsTimelabel = 1 - vishmsTimelabel;
-  SetLabelControls();
+  GLUISetLabelControls();
 }
 
 void SetUnits(int unitclass, int unit_index) {
@@ -1492,14 +1493,14 @@ void Plot3dprops(int variable_index, int showvector, int vector_length_index,
   }
   UpdateAllPlotSlices();
   if (visiso == 1) UpdateSurface();
-  UpdatePlot3dListIndex();
+  GLUIUpdatePlot3dListIndex();
 
   vecfactor = 1.0;
   if (vector_length >= 0.0) vecfactor = vector_length;
-  UpdateVectorWidgets();
+  GLUIUpdateVectorWidgets();
 
   contour_type = CLAMP(display_type, 0, 2);
-  UpdatePlot3dDisplay();
+  GLUIUpdatePlot3dDisplay();
 
   if (visVector == 1 && nplot3dloaded == 1) {
     meshdata *gbsave, *gbi;
@@ -1584,7 +1585,7 @@ void Loadplot3d(int meshnumber, float time_local) {
     }
   }
   UpdateRGBColors(COLORBAR_INDEX_NONE);
-  SetLabelControls();
+  GLUISetLabelControls();
   if (count == 0) fprintf(stderr, "*** Error: Plot3d file failed to load\n");
 
   // UpdateMenu();
@@ -1868,8 +1869,8 @@ int GetClippingMode() { return clip_mode; }
 void SetClippingMode(int mode) {
   clip_mode = mode;
   updatefacelists = 1;
-  UpdateGluiClip();
-  UpdateClipAll();
+  GLUIUpdateClip();
+  GLUIUpdateClipAll();
 }
 
 void SetSceneclipX(int clipMin, float min, int clipMax, float max) {
@@ -1879,24 +1880,24 @@ void SetSceneclipX(int clipMin, float min, int clipMax, float max) {
   clipinfo.clip_xmax = clipMax;
   clipinfo.xmax = max;
   updatefacelists = 1;
-  UpdateGluiClip();
-  UpdateClipAll();
+  GLUIUpdateClip();
+  GLUIUpdateClipAll();
 }
 
 void SetSceneclipXMin(int flag, float value) {
   clipinfo.clip_xmin = flag;
   clipinfo.xmin = value;
   updatefacelists = 1;
-  UpdateGluiClip();
-  UpdateClipAll();
+  GLUIUpdateClip();
+  GLUIUpdateClipAll();
 }
 
 void SetSceneclipXMax(int flag, float value) {
   clipinfo.clip_xmax = flag;
   clipinfo.xmax = value;
   updatefacelists = 1;
-  UpdateGluiClip();
-  UpdateClipAll();
+  GLUIUpdateClip();
+  GLUIUpdateClipAll();
 }
 
 void SetSceneclipY(int clipMin, float min, int clipMax, float max) {
@@ -1906,24 +1907,24 @@ void SetSceneclipY(int clipMin, float min, int clipMax, float max) {
   clipinfo.clip_ymax = clipMax;
   clipinfo.ymax = max;
   updatefacelists = 1;
-  UpdateGluiClip();
-  UpdateClipAll();
+  GLUIUpdateClip();
+  GLUIUpdateClipAll();
 }
 
 void SetSceneclipYMin(int flag, float value) {
   clipinfo.clip_ymin = flag;
   clipinfo.ymin = value;
   updatefacelists = 1;
-  UpdateGluiClip();
-  UpdateClipAll();
+  GLUIUpdateClip();
+  GLUIUpdateClipAll();
 }
 
 void SetSceneclipYMax(int flag, float value) {
   clipinfo.clip_ymax = flag;
   clipinfo.ymax = value;
   updatefacelists = 1;
-  UpdateGluiClip();
-  UpdateClipAll();
+  GLUIUpdateClip();
+  GLUIUpdateClipAll();
 }
 
 void SetSceneclipZ(int clipMin, float min, int clipMax, float max) {
@@ -1933,24 +1934,24 @@ void SetSceneclipZ(int clipMin, float min, int clipMax, float max) {
   clipinfo.clip_zmax = clipMax;
   clipinfo.zmax = max;
   updatefacelists = 1;
-  UpdateGluiClip();
-  UpdateClipAll();
+  GLUIUpdateClip();
+  GLUIUpdateClipAll();
 }
 
 void SetSceneclipZMin(int flag, float value) {
   clipinfo.clip_zmin = flag;
   clipinfo.zmin = value;
   updatefacelists = 1;
-  UpdateGluiClip();
-  UpdateClipAll();
+  GLUIUpdateClip();
+  GLUIUpdateClipAll();
 }
 
 void SetSceneclipZMax(int flag, float value) {
   clipinfo.clip_zmax = flag;
   clipinfo.zmax = value;
   updatefacelists = 1;
-  UpdateGluiClip();
-  UpdateClipAll();
+  GLUIUpdateClip();
+  GLUIUpdateClipAll();
 }
 
 int Setrenderdir(const char *dir) {
@@ -2034,7 +2035,7 @@ void Setgridparms(int x_vis, int y_vis, int z_vis, int x_plot, int y_plot,
 /// than default.
 void Setcolorbarflip(int flip) {
   colorbar_flip = flip;
-  UpdateColorbarFlip();
+  GLUIUpdateColorbarFlip();
   UpdateRGBColors(COLORBAR_INDEX_NONE);
 }
 
@@ -2047,8 +2048,8 @@ int Getcolorbarflip() { return colorbar_flip; }
 void CameraSetRotationType(int rotation_typev) {
   rotation_type = rotation_typev;
   camera_current->rotation_type = rotation_typev;
-  RotationTypeCB(rotation_type);
-  UpdateRotationType(rotation_type);
+  GLUIRotationTypeCB(rotation_type);
+  GLUIUpdateRotationType(rotation_type);
   HandleRotationType(ROTATION_2AXIS);
 }
 
@@ -2153,7 +2154,7 @@ int SetBackgroundcolor(float r, float g, float b) {
   backgroundbasecolor[0] = r;
   backgroundbasecolor[1] = g;
   backgroundbasecolor[2] = b;
-  SetColorControls();
+  GLUISetColorControls();
   GLUTPOSTREDISPLAY;
   return 0;
 } // BACKGROUNDCOLOR
@@ -2308,7 +2309,7 @@ int SetIsocolors(float shininess, float transparency, int transparency_option,
     iso_color[3] = CLAMP(colors[nn][3], 0.0, 1.0);
   }
   UpdateIsoColors();
-  UpdateIsoColorlevel();
+  GLUIUpdateIsoColorlevel();
   return 0;
 } // ISOCOLORS
 
@@ -3733,7 +3734,7 @@ int SetShowdevicevals(int vshowdeviceval, int vshowvdeviceval,
   showdevice_type = vshowdevicetype;
   showdevice_unit = vshowdeviceunit;
   devicetypes_index = CLAMP(vdevicetypes_index, 0, ndevicetypes - 1);
-  UpdateGluiDevices();
+  GLUIUpdateDevices();
   return 0;
 } // SHOWDEVICEVALS
 
@@ -3902,7 +3903,7 @@ int SetPl3dBoundMin(int pl3dValueIndex, int set, float value) {
   setp3min_all[pl3dValueIndex] = set;
   p3min_all[pl3dValueIndex] = value;
   // TODO: remove this reload and hardcoded value
-  Plot3DBoundCB(7);
+  GLUIPlot3DBoundCB(7);
   return 0;
 }
 
@@ -3910,7 +3911,7 @@ int SetPl3dBoundMax(int pl3dValueIndex, int set, float value) {
   setp3max_all[pl3dValueIndex] = set;
   p3max_all[pl3dValueIndex] = value;
   // TODO: remove this reload and hardcoded value
-  Plot3DBoundCB(7);
+  GLUIPlot3DBoundCB(7);
   return 0;
 }
 
@@ -4092,3 +4093,4 @@ int ShowSlicesHideall() {
   UpdateShow();
   return 0;
 }
+#endif

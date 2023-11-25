@@ -10,6 +10,8 @@
 #define pp_DEBUG_SUBMENU       // debug output and testing for building menus
 #endif
 
+//#define pp_LUA                 // turn on LUA option
+
 //*** parallel file loading
 #define pp_SLICE_MULTI    // load slice files in parallel
 #define pp_PART_MULTI     // load particle files in parallel

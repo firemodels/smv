@@ -2522,7 +2522,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
 #endif
 
   if(patchi->finalize==1){
-    UpdateBoundaryListIndex(patchfilenum);
+    GLUIUpdateBoundaryListIndex(patchfilenum);
 #define BOUND_UPDATE_COLORS       110
 #define BOUND_DONTUPDATE_COLORS   128
 #define BOUND_COMPUTE_PERCENTILES 116
@@ -2534,10 +2534,10 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
     if(force_bound_update==1||patch_bounds_defined==0){
       GetGlobalPatchBounds(1);
       SetLoadedPatchBounds(NULL, 0);
-      PatchBoundsCPP_CB(BOUND_DONTUPDATE_COLORS);
+      GLUIPatchBoundsCPP_CB(BOUND_DONTUPDATE_COLORS);
     }
     else{
-      bounds = GetBoundsData(BOUND_PATCH);
+      bounds = GLUIGetBoundsData(BOUND_PATCH);
       if(bounds->set_valmin==BOUND_PERCENTILE_MIN||bounds->set_valmax==BOUND_PERCENTILE_MAX){
         float global_min=0.0, global_max=1.0;
 #ifdef pp_HIST
@@ -2547,7 +2547,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
 #ifdef pp_HIST
         bound_hist = bounds->hist;
 #endif
-        GetGlobalBoundsMinMax(BOUND_PATCH, bounds->label, &global_min, &global_max);
+        GLUIGetGlobalBoundsMinMax(BOUND_PATCH, bounds->label, &global_min, &global_max);
 #ifdef pp_HIST
 #ifdef pp_BOUND_HIST_ON
         ComputeLoadedPatchHist(bounds->label, &bound_hist, &global_min, &global_max);
@@ -2557,21 +2557,21 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
            float per_valmin;
 
             GetHistogramValProc(bound_hist, percentile_level_min, &per_valmin);
-            SetMin(BOUND_PATCH, bounds->label, BOUND_PERCENTILE_MIN, per_valmin);
+            GLUISetMin(BOUND_PATCH, bounds->label, BOUND_PERCENTILE_MIN, per_valmin);
           }
           if(bounds->set_valmax==BOUND_PERCENTILE_MAX){
             float per_valmax;
 
             GetHistogramValProc(bound_hist,percentile_level_max, &per_valmax);
-            SetMax(BOUND_PATCH, bounds->label, BOUND_PERCENTILE_MAX, per_valmax);
+            GLUISetMax(BOUND_PATCH, bounds->label, BOUND_PERCENTILE_MAX, per_valmax);
           }
         }
 #endif
-        PatchBoundsCPP_CB(BOUND_UPDATE_COLORS);
+        GLUIPatchBoundsCPP_CB(BOUND_UPDATE_COLORS);
       }
     }
 #define BOUND_PERCENTILE_DRAW          120
-    PatchBoundsCPP_CB(BOUND_PERCENTILE_DRAW);
+    GLUIPatchBoundsCPP_CB(BOUND_PERCENTILE_DRAW);
   }
 
   if(wallcenter==1){
@@ -2791,7 +2791,7 @@ void DrawBoundaryTexture(const meshdata *meshi){
   float ttmin, ttmax;
 
   label = patchi->label.shortlabel;
-  GetOnlyMinMax(BOUND_PATCH, label, &set_valmin, &ttmin, &set_valmax, &ttmax);
+  GLUIGetOnlyMinMax(BOUND_PATCH, label, &set_valmin, &ttmin, &set_valmax, &ttmax);
 
   if(patch_times[0]>global_times[itimes]||patchi->display==0)return;
   if(cullfaces==1)glDisable(GL_CULL_FACE);
@@ -3166,7 +3166,7 @@ void DrawBoundaryTextureThreshold(const meshdata *meshi){
   float ttmin, ttmax;
 
   label = patchi->label.shortlabel;
-  GetMinMax(BOUND_PATCH, label, &set_valmin, &ttmin, &set_valmax, &ttmax);
+  GLUIGetMinMax(BOUND_PATCH, label, &set_valmin, &ttmin, &set_valmax, &ttmax);
 
   if(cullfaces==1)glDisable(GL_CULL_FACE);
 
@@ -3688,7 +3688,7 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
   patchi = patchinfo+meshi->patchfilenum;
 
   label = patchi->label.shortlabel;
-  GetOnlyMinMax(BOUND_PATCH, label, &set_valmin, &ttmin, &set_valmax, &ttmax);
+  GLUIGetOnlyMinMax(BOUND_PATCH, label, &set_valmin, &ttmin, &set_valmax, &ttmax);
   if(ttmin>=ttmax){
     ttmin = 0.0;
     ttmax = 1.0;
