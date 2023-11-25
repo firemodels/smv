@@ -2466,7 +2466,7 @@ void Keyboard(unsigned char key, int flag){
         stereotype++;
         if(stereotype>5)stereotype=0;
         if(stereotype==STEREO_TIME&&videoSTEREO!=1)stereotype=STEREO_LR;
-        UpdateGluiStereo();
+        GLUIUpdateStereo();
         break;
       default:
         vectorskip--;

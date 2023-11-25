@@ -236,6 +236,12 @@ EXTERNCPP void GLUIUpdateSmoke3dFlags(void);
 EXTERNCPP void GLUICreateVolTourList(void);
 EXTERNCPP void GLUIDeleteVolTourList(void);
 
+//*** glui_stereo.cpp headers
+EXTERNCPP void GluiStereoSetup(int main_window);
+EXTERNCPP void GLUIUpdateStereo(void);
+EXTERNCPP void GLUIShowStereo(void);
+EXTERNCPP void GLUIHideStereo(void);
+
 EXTERNCPP float GetTime(void);
 EXTERNCPP void StartTimer(float *timerptr);
 
@@ -575,7 +581,6 @@ EXTERNCPP void InitVolrenderScript(char *prefix, char *tour_label, int startfram
 
 // glui headers
 
-EXTERNCPP void GluiStereoSetup(int main_window);
 EXTERNCPP void GluiTourSetup(int main_window);
 EXTERNCPP void GluiTrainerSetup(int main_window);
 
@@ -584,7 +589,6 @@ EXTERNCPP void UpdateGluiKeyframe(void);
 EXTERNCPP void UpdateGluiBoundaryUnits(void);
 EXTERNCPP void UpdateGluiSliceUnits(void);
 EXTERNCPP void SetGLuiViewListManual(void);
-EXTERNCPP void UpdateGluiStereo(void);
 
 EXTERNCPP void ShowGluiAlert(void);
 EXTERNCPP void HideGluiAlert(void);
@@ -592,8 +596,6 @@ EXTERNCPP void ShowGluiTrainer(void);
 EXTERNCPP void HideGluiTrainer(void);
 EXTERNCPP void ShowGluiTour(void);
 EXTERNCPP void HideGluiTour(void);
-EXTERNCPP void ShowGluiStereo(void);
-EXTERNCPP void HideGluiStereo(void);
 
 EXTERNCPP void HVACMenu(int value);
 EXTERNCPP int GetHVACDuctValIndex(char *shortlabel);

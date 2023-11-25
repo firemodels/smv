@@ -12608,7 +12608,7 @@ int ReadIni2(char *inifile, int localfile){
       sscanf(buffer, "%i", &stereotype);
       stereotype = CLAMP(stereotype, 0, 5);
       if(stereotype == STEREO_TIME&&videoSTEREO != 1)stereotype = STEREO_NONE;
-      UpdateGluiStereo();
+      GLUIUpdateStereo();
       continue;
     }
     if(MatchINI(buffer, "TERRAINPARMS") == 1){
