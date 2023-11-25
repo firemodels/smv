@@ -1,4 +1,5 @@
 #include "options.h"
+#ifdef pp_LUA
 #include <assert.h>
 #include <math.h>
 #include <stdio.h>
@@ -4092,3 +4093,4 @@ int ShowSlicesHideall() {
   UpdateShow();
   return 0;
 }
+#endif
