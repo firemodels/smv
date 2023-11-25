@@ -4711,7 +4711,7 @@ void TimeBoundCB(int var){
     SetTimeVal(glui_time);
     break;
   case TBOUNDS_USE:
-    UpdatePlot2DTbounds();
+    GLUIUpdatePlot2DTbounds();
     if(use_tload_begin == 1){
       SPINNER_tload_begin->enable();
     }
@@ -4735,7 +4735,7 @@ void TimeBoundCB(int var){
     updatemenu = 1;
     break;
   case TBOUNDS:
-    UpdatePlot2DTbounds();
+    GLUIUpdatePlot2DTbounds();
     GLUIUpdateTBounds();
     UpdateTimes();
     updatemenu = 1;
@@ -6707,7 +6707,7 @@ extern "C" void GLUISliceBoundCB(int var){
         plot2d_size_factor = 0.0;
         GLUIUpdatePlot2DSize2();
       }
-      UpdatePlot2DSize();
+      GLUIUpdatePlot2DSize();
       break;
     case COLORBAR_PLOT2D:
       if(vis_colorbar_dists_plot==1&&vis_slice_plot == 1){

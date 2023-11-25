@@ -1578,10 +1578,10 @@ void DialogMenu(int value){
     ShowGluiTrainer();
     break;
   case DIALOG_2DPLOTS:
-    ShowPlot2D();
+    GLUIShowPlot2D();
     break;
   case DIALOG_DEVICE:
-    ShowGluiDevice();
+    GLUIShowDevice();
     break;
   case DIALOG_3DSMOKE:
   case DIALOG_AUTOLOAD:
@@ -1679,7 +1679,7 @@ void DialogMenu(int value){
     GLUIHideGluiColorbar();
     if(showedit_dialog==1)DialogMenu(DIALOG_GEOMETRY);
     HideGluiTrainer();
-    HideGluiDevice();
+    GLUIHideDevice();
     break;
   default:
     assert(FFALSE);
@@ -3384,7 +3384,7 @@ void LoadUnloadMenu(int value){
     if(showdevice_val==1||vis_device_plot!=DEVICE_PLOT_HIDDEN){
       vis_device_plot = DEVICE_PLOT_HIDDEN;
       showdevice_val = 0;
-      UpdateDeviceShow();
+      GLUIUpdateDeviceShow();
     }
     updatemenu=1;
     GLUTPOSTREDISPLAY;
@@ -6409,7 +6409,7 @@ void ShowADeviceType(void){
 /* ------------------ DeviceTypeMenu ------------------------ */
 
 void DeviceTypeMenu(int val){
-  UpdateDeviceTypes(val);
+  GLUIUpdateDeviceTypes(val);
   DeviceCB(DEVICE_devicetypes);
 }
 
@@ -6465,7 +6465,7 @@ void ShowObjectsMenu(int value){
     if(showdevice_val==1||vis_device_plot!=DEVICE_PLOT_HIDDEN){
       update_times = 1;
       plotstate = GetPlotState(DYNAMIC_PLOTS);
-      UpdateDeviceShow();
+      GLUIUpdateDeviceShow();
     }
   }
   else if(value == OBJECT_MISSING){
@@ -6498,7 +6498,7 @@ void ShowObjectsMenu(int value){
       ShowADeviceType();
     }
     plotstate=GetPlotState(DYNAMIC_PLOTS);
-    UpdateDeviceShow();
+    GLUIUpdateDeviceShow();
   }
   else if(value==PLOT_HRRPUV){
     vis_hrr_plot = 1-vis_hrr_plot;
@@ -6517,7 +6517,7 @@ void ShowObjectsMenu(int value){
       ShowADeviceType();
     }
     plotstate=GetPlotState(DYNAMIC_PLOTS);
-    UpdateDeviceShow();
+    GLUIUpdateDeviceShow();
   }
   else if(value==OBJECT_PLOT_SHOW_SELECTED){
     update_times = 1;
@@ -6530,16 +6530,16 @@ void ShowObjectsMenu(int value){
       ShowADeviceType();
     }
     plotstate = GetPlotState(DYNAMIC_PLOTS);
-    UpdateDeviceShow();
+    GLUIUpdateDeviceShow();
   }
   else if(value==MENU_DEVICE_SETTINGS){
-    ShowGluiPlotDevice();
+    GLUIShowPlotDevice();
   }
   else if(value==OBJECT_VALUES){
     update_times=1;
     showdevice_val = 1 - showdevice_val;
     plotstate=GetPlotState(DYNAMIC_PLOTS);
-    UpdateDeviceShow();
+    GLUIUpdateDeviceShow();
   }
   else if(value==OBJECT_OUTLINE){
     object_outlines=1-object_outlines;
@@ -6549,11 +6549,11 @@ void ShowObjectsMenu(int value){
   }
   else if(value==OBJECT_ORIENTATION){
     show_device_orientation=1-show_device_orientation;
-    UpdateDeviceOrientation();
+    GLUIUpdateDeviceOrientation();
   }
   else if(value == OBJECT_SHOWBEAM){
     showbeam_as_line = 1 - showbeam_as_line;
-    UpdateShowbeamAsLine();
+    GLUIUpdateShowbeamAsLine();
   }
   else if(value==MENU_DUMMY){
   }

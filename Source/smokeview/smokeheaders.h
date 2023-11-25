@@ -198,14 +198,31 @@ EXTERNCPP void GLUIUpdateMeshList1(int val);
 EXTERNCPP void GLUIUpdateTranslate(void);
 EXTERNCPP void GLUIShowHideTranslate(int var);
 
+//*** glui_objects.cpp headers
+EXTERNCPP void GluiDeviceSetup(int main_window);
+EXTERNCPP void GluiPlot2DSetup(int main_window);
+EXTERNCPP void GLUIUpdatePlot2DTbounds(void);
+EXTERNCPP void GLUIUpdatePlot2DINI(void);
+EXTERNCPP void GLUIShowPlot2D(void);
+EXTERNCPP void GLUIShowDevice(void);
+EXTERNCPP void GLUIShowPlotDevice(void);
+EXTERNCPP void GLUIHideDevice(void);
+EXTERNCPP void GLUIUpdateDeviceSize(void);
+EXTERNCPP void GLUIUpdateDeviceOrientation(void);
+EXTERNCPP void GLUIUpdateGluiDevices(void);
+EXTERNCPP void GLUIUpdateDeviceTypes(int val);
+EXTERNCPP void GLUIUpdateDeviceShow(void);
+EXTERNCPP void GLUIUpdateWindRoseDevices(int option);
+EXTERNCPP void GLUIUpdateShowbeamAsLine(void);
+SVEXTERN void GLUIUpdatePlot2DSize(void);
+EXTERNCPP void GLUIUpdateDeviceAdd(void);
+
 EXTERNCPP float GetTime(void);
 EXTERNCPP void StartTimer(float *timerptr);
-EXTERNCPP void UpdatePlot2DTbounds(void);
 
 // gen plot routines
 
 EXTERNCPP int HavePlot2D(float **times, int *ntimes);
-EXTERNCPP void UpdatePlot2DINI(void);
 EXTERNCPP char *GetPlotUnit2(plot2ddata *plot2di, curvedata *curve);
 EXTERNCPP char *GetPlotShortLabel2(plot2ddata *plot2di, curvedata *curv);
 EXTERNCPP void GetPlot2DBounds(plot2ddata*plot2di, float *valmin, float *valmax);
@@ -214,7 +231,6 @@ EXTERNCPP void GenPlotCB(int var);
 EXTERNCPP void UpdateCurveControls(char *unit);
 EXTERNCPP void InitPlot2D(plot2ddata *plot2di, int plot_index);
 EXTERNCPP void DrawGenPlots(void);
-EXTERNCPP void ShowPlot2D(void);
 EXTERNCPP char *GetPlotShortLabel(plot2ddata *plot2di, int curv_index);
 EXTERNCPP csvdata *GetCsvData(int file_index, int col_index, csvfiledata **csvf_ptr);
 EXTERNCPP csvdata *GetCsvCurve(int i, csvfiledata **csvf_ptr);
@@ -272,7 +288,6 @@ EXTERNCPP void SetCameraView(cameradata *ca, int option);
 EXTERNCPP void SetCameraViewPersp(cameradata *ca, int option);
 
 EXTERNCPP void DeviceCB(int val);
-EXTERNCPP void UpdateDeviceTypes(int val);
 
 EXTERNCPP void InitStartupDirs(void);
 
@@ -309,7 +324,6 @@ EXTERNCPP int GetPlotState(int choice);
 
 EXTERNCPP FILE_SIZE LoadVSliceMenu2(int val);
 
-EXTERNCPP void UpdateDeviceShow(void);
 EXTERNCPP void UpdateClipbounds(int set_i0, int *i0, int set_i1, int *i1, int maxi);
 EXTERNCPP void ClipCB(int var);
 EXTERNCPP int CompareFloat(const void *arg1, const void *arg2);
@@ -487,7 +501,6 @@ EXTERNCPP void UpdateGluiRotateAbout(int val);
 EXTERNCPP void ReloadAllSliceFiles(void);
 EXTERNCPP void ReloadAllVectorSliceFiles(void);
 EXTERNCPP void UnloadAllSliceFiles(char *longlabel);
-EXTERNCPP void UpdateWindRoseDevices(int option);
 EXTERNCPP void ParticleStreakShowMenu(int var);
 EXTERNCPP void UpdateGeomNormals();
 EXTERNCPP void Plot3DListMenu(int value);
@@ -497,7 +510,6 @@ EXTERNCPP void TourCB(int var);
 EXTERNCPP void SetClipControls(int val);
 EXTERNCPP void PartBoundCB(int var);
 EXTERNCPP void ShowHideMenu(int val);
-EXTERNCPP void UpdateShowbeamAsLine(void);
 EXTERNCPP void UpdateVSliceDups(void);
 EXTERNCPP void UnloadVSliceMenu(int value);
 EXTERNCPP void UpdateSliceDups(void);
@@ -545,21 +557,16 @@ EXTERNCPP void MakeMovie(void);
 EXTERNCPP void PlayMovie(void);
 EXTERNCPP void UpdateRenderType(int type);
 EXTERNCPP void UpdateMovieType(int type);
-EXTERNCPP void UpdateDeviceSize(void);
 EXTERNCPP void UpdateDisplay(void);
 EXTERNCPP void UpdateShowScene(void);
 EXTERNCPP void DrawGravityAxis(void);
 EXTERNCPP void XYZ2AzElev(float *xyz,float *azimuth, float *elevation);
-EXTERNCPP void UpdateDeviceOrientation(void);
-EXTERNCPP void UpdateGluiDevices(void);
 EXTERNCPP void UpdateColorDevices(void);
 EXTERNCPP void InitVolrenderScript(char *prefix, char *tour_label, int startframe, int skipframe);
 
 // glui headers
 
 EXTERNCPP void Glui3dSmokeSetup(int main_window);
-EXTERNCPP void GluiDeviceSetup(int main_window);
-EXTERNCPP void GluiPlot2DSetup(int main_window);
 EXTERNCPP void GluiStereoSetup(int main_window);
 EXTERNCPP void GluiTourSetup(int main_window);
 EXTERNCPP void GluiTrainerSetup(int main_window);
@@ -575,9 +582,6 @@ EXTERNCPP void ShowGluiAlert(void);
 EXTERNCPP void HideGluiAlert(void);
 EXTERNCPP void ShowGluiTrainer(void);
 EXTERNCPP void HideGluiTrainer(void);
-EXTERNCPP void ShowGluiDevice(void);
-EXTERNCPP void ShowGluiPlotDevice(void);
-EXTERNCPP void HideGluiDevice(void);
 EXTERNCPP void ShowGluiTour(void);
 EXTERNCPP void HideGluiTour(void);
 EXTERNCPP void ShowGluiStereo(void);
@@ -662,7 +666,6 @@ EXTERNCPP void MouseDragCB(int xm, int ym);
 EXTERNCPP void MenuStatusCB(int status, int x, int y);
 EXTERNCPP void IdleCB(void);
 
-SVEXTERN void UpdatePlot2DSize(void);
 EXTERNCPP void ReadIsoOrig(const char *file, int ifile, int flag, int *errorcode);
 EXTERNCPP void UpdatePlotxyzAll(void);
 EXTERNCPP void UpdateIsoColors(void);
@@ -927,8 +930,6 @@ EXTERNCPP void HandlePLOT3DKeys(int  key);
 EXTERNCPP void HandleMoveKeys(int  key);
 EXTERNCPP int GetInterval(float val, float *array, int n);
 EXTERNCPP int GetTimeInterval(float val, float *array, int n);
-
-EXTERNCPP void UpdateDeviceAdd(void);
 
 EXTERNCPP void SetUnitVis(void);
 EXTERNCPP void UpdateAllPlotSlices(void);

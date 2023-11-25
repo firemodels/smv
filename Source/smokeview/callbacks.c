@@ -1988,7 +1988,7 @@ void Keyboard(unsigned char key, int flag){
       else{
         sensorrelsize *= 1.5;
       }
-      UpdateDeviceSize();
+      GLUIUpdateDeviceSize();
       break;
     case '`':
       if(ndeviceinfo>0){
@@ -2242,7 +2242,7 @@ void Keyboard(unsigned char key, int flag){
             devicetypes_index++;
             if(devicetypes_index>=ndevicetypes)devicetypes_index = 0;
             updatemenu = 1;
-            UpdateDeviceTypes(devicetypes_index);
+            GLUIUpdateDeviceTypes(devicetypes_index);
           }
         }
       }
@@ -2741,7 +2741,7 @@ void Keyboard(unsigned char key, int flag){
       SnapScene();
       break;
     case '"':
-      ShowPlot2D();
+      GLUIShowPlot2D();
       break;
     case '@':
       show_slice_values_all_regions = 1 - show_slice_values_all_regions;

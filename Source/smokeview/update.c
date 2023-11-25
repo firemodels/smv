@@ -1904,7 +1904,7 @@ void UpdateShowScene(void){
   }
   if(update_plot2dini == 1){
     update_plot2dini = 0;
-    UpdatePlot2DINI();
+    GLUIUpdatePlot2DINI();
   }
   if(update_device_timeaverage == 1){
     update_device_timeaverage = 0;
@@ -1980,7 +1980,7 @@ void UpdateShowScene(void){
 #endif
   if(update_glui_devices==1){
     update_glui_devices = 0;
-    UpdateGluiDevices();
+    GLUIUpdateGluiDevices();
   }
   if(update_times==1){
     update_times = 0;
@@ -2601,7 +2601,7 @@ void UpdateDisplay(void){
   }
 #endif
   if(update_windrose_showhide==1){
-    UpdateWindRoseDevices(UPDATE_WINDROSE_DEVICE);
+    GLUIUpdateWindRoseDevices(UPDATE_WINDROSE_DEVICE);
   }
   if(update_research_mode == 1){
     update_research_mode = 0;

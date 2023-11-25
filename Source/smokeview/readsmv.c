@@ -12258,7 +12258,7 @@ int ReadIni2(char *inifile, int localfile){
              &plot2d_show_yaxis_units, &plot2d_show_plots
              );
       update_device_timeaverage = 1;
-      UpdateDeviceAdd();
+      GLUIUpdateDeviceAdd();
       for(i=0;i<nplot2dini;i++){
         plot2ddata *plot2di;
         char *labelptr;
@@ -16932,7 +16932,7 @@ void WriteIni(int flag,char *filename){
     if(nwindrosez_showhide > 0){
       int ii;
 
-      UpdateWindRoseDevices(UPDATE_WINDROSE_SHOWHIDE);
+      GLUIUpdateWindRoseDevices(UPDATE_WINDROSE_SHOWHIDE);
       fprintf(fileout, "WINDROSESHOWHIDE\n");
       fprintf(fileout, " %i\n", nwindrosez_showhide);
       for(ii = 0; ii < nwindrosez_showhide; ii++){

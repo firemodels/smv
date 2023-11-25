@@ -239,9 +239,9 @@ int ndeviceprocinfo = 0;
 procdata plot2dprocinfo[3];
 int nplot2dprocinfo = 0;
 
-/* ------------------ UpdatePlot2DSize ------------------------ */
+/* ------------------ GLUIUpdatePlot2DSize ------------------------ */
 
-extern "C" void UpdatePlot2DSize(void){
+extern "C" void GLUIUpdatePlot2DSize(void){
   if(SPINNER_size_factor!=NULL)SPINNER_size_factor->set_float_val(plot2d_size_factor);
   if(SPINNER_plot2d_time_average!=NULL)SPINNER_plot2d_time_average->set_float_val(plot2d_time_average);
 }
@@ -258,22 +258,22 @@ void Plot2D_Rollout_CB(int var){
   GLUIToggleRollout(plot2dprocinfo, nplot2dprocinfo, var);
 }
 
-/* ------------------ UpdateDeviceTypes ------------------------ */
+/* ------------------ GLUIUpdateDeviceTypes ------------------------ */
 
-extern "C" void UpdateDeviceTypes(int val){
+ extern "C" void GLUIUpdateDeviceTypes(int val){
   devicetypes_index = val;
   updatemenu = 1;
 }
 
-/* ------------------ UpdateDeviceShow ------------------------ */
+/* ------------------ GLUIUpdateDeviceShow ------------------------ */
 
-extern "C" void UpdateDeviceShow(void){
+extern "C" void GLUIUpdateDeviceShow(void){
   if(CHECKBOX_showdevice_val!=NULL)CHECKBOX_showdevice_val->set_int_val(showdevice_val);
 }
 
-/* ------------------ UpdateWindRoseDevices ------------------------ */
+/* ------------------ GLUIUpdateWindRoseDevices ------------------------ */
 
-extern "C" void UpdateWindRoseDevices(int option){
+extern "C" void GLUIUpdateWindRoseDevices(int option){
   int i,icheckboxes;
 
   icheckboxes = 0;
@@ -316,26 +316,26 @@ extern "C" void UpdateWindRoseDevices(int option){
   update_windrose_showhide = 0;
   if(option == UPDATE_WINDROSE_SHOWHIDE&&windrosez_showhide == NULL){
     NewMemory((void **)&windrosez_showhide, nwindrosez_showhide * sizeof(int));
-    if(windrosez_showhide!=NULL)UpdateWindRoseDevices(UPDATE_WINDROSE_SHOWHIDE);
+    if(windrosez_showhide!=NULL)GLUIUpdateWindRoseDevices(UPDATE_WINDROSE_SHOWHIDE);
   }
 }
 
-/* ------------------ UpdateShowbeamAsLine ------------------------ */
+/* ------------------ GLUIUpdateShowbeamAsLine ------------------------ */
 
-extern "C" void UpdateShowbeamAsLine(void){
+extern "C" void GLUIUpdateShowbeamAsLine(void){
   if(CHECKBOX_showbeam_as_line!=NULL)CHECKBOX_showbeam_as_line->set_int_val(showbeam_as_line);
 }
 
-/* ------------------ UpdateDeviceSize ------------------------ */
+/* ------------------ GLUIUpdateDeviceSize ------------------------ */
 
-extern "C" void UpdateDeviceSize(void){
+extern "C" void GLUIUpdateDeviceSize(void){
   if(sensorrelsize<sensorrelsizeMIN)sensorrelsize = sensorrelsizeMIN;
   if(SPINNER_sensorrelsize!=NULL)SPINNER_sensorrelsize->set_float_val(sensorrelsize);
 }
 
-/* ------------------ UpdateDeviceOrientation ------------------------ */
+/* ------------------ GLUIUpdateDeviceOrientation ------------------------ */
 
-extern "C" void UpdateDeviceOrientation(void){
+extern "C" void GLUIUpdateDeviceOrientation(void){
   if(CHECKBOX_device_orientation!=NULL)CHECKBOX_device_orientation->set_int_val(show_device_orientation);
 }
 
@@ -573,7 +573,7 @@ void GetPlotLabel(char *label, int size){
 
 /* ------------------ AddPlot ------------------------ */
 
-extern "C" void AddPlot(void){
+void AddPlot(void){
   char label[32];
 
   nplot2dinfo++;
@@ -690,17 +690,17 @@ void EnableDisablePlot2D(void){
   }
 }
 
-/* ------------------ UpdateDeviceAdd ------------------------ */
+/* ------------------ GLUIUpdateDeviceAdd ------------------------ */
 
-extern "C" void UpdateDeviceAdd(void){
+extern "C" void GLUIUpdateDeviceAdd(void){
   if(LIST_plot_add_dev!=NULL){
     LIST_plot_add_dev->set_int_val(idevice_add);
   }
 }
 
-/* ------------------ ShowPlot2D ------------------------ */
+/* ------------------ GLUIShowPlot2D ------------------------ */
 
-extern "C" void ShowPlot2D(void){
+extern "C" void GLUIShowPlot2D(void){
   if(glui_plot2d != NULL){
     glui_plot2d->show();
     EnableDisablePlot2D();
@@ -1193,7 +1193,7 @@ void GenPlotCB(int var){
     case GENPLOT_PLOT_SIZE:
       if(plot2d_size_factor<0.0){
         plot2d_size_factor = 0.0;
-        UpdatePlot2DSize();
+        GLUIUpdatePlot2DSize();
       }
       break;
     case GENPLOT_PLOT_LABEL:
@@ -1531,7 +1531,7 @@ extern "C" void DeviceCB(int var){
         vd->display = 1;
       }
     }
-    UpdateWindRoseDevices(UPDATE_WINDROSE_CHECKBOX);
+    GLUIUpdateWindRoseDevices(UPDATE_WINDROSE_CHECKBOX);
     return;
   }
   if(var>=DEVICE_WINDROSE_SHOWHIDEALL+nzwindtreeinfo&&var<DEVICE_WINDROSE_SHOWHIDEALL+2*nzwindtreeinfo){
@@ -1552,7 +1552,7 @@ extern "C" void DeviceCB(int var){
         vd->display = 0;
       }
     }
-    UpdateWindRoseDevices(UPDATE_WINDROSE_CHECKBOX);
+    GLUIUpdateWindRoseDevices(UPDATE_WINDROSE_CHECKBOX);
     return;
   }
   switch(var){
@@ -1654,16 +1654,16 @@ extern "C" void DeviceCB(int var){
     WriteIni(LOCAL_INI, NULL);
     break;
   case DEVICE_close:
-    HideGluiDevice();
+    GLUIHideDevice();
     break;
   default:
     assert(FFALSE);
   }
 }
 
-/* ------------------ UpdateGluiDevices ------------------------ */
+/* ------------------ GLUIUpdateGluiDevices ------------------------ */
 
-extern "C" void UpdateGluiDevices(void){
+extern "C" void GLUIUpdateGluiDevices(void){
   DeviceCB(DEVICE_SHOWDEVICEPLOT);
   DeviceCB(DEVICE_SHOWDEVICEVALS);
   DeviceCB(DEVICE_COLORDEVICEVALS);
@@ -1712,9 +1712,9 @@ int HaveExt(void){
   return 0;
 }
 
-/* ------------------ UpdatePlot2DINI ------------------------ */
+/* ------------------ GLUIUpdatePlot2DINI ------------------------ */
 
-extern "C" void UpdatePlot2DINI(void){
+extern "C" void GLUIUpdatePlot2DINI(void){
   if(nplot2dini > 0){
     int i;
 
@@ -1749,9 +1749,9 @@ void UpdateCSVFileTypes(void){
   }
 }
 
-/* ------------------ UpdatePlot2DTbounds ------------------------ */
+/* ------------------ GLUIUpdatePlot2DTbounds ------------------------ */
 
-extern "C" void UpdatePlot2DTbounds(void){
+extern "C" void GLUIUpdatePlot2DTbounds(void){
   use_tload_end2 = use_tload_end;
   use_tload_begin2 = use_tload_begin;
   tload_end2 = tload_end;
@@ -1974,7 +1974,7 @@ extern "C" void GluiPlot2DSetup(int main_window){
 
     if(update_plot2dini == 1){
       update_plot2dini = 0;
-      UpdatePlot2DINI();
+      GLUIUpdatePlot2DINI();
     }
     GenPlotCB(GENPLOT_SHOW_PLOT);
     plot2d_dialogs_defined = 1;
@@ -2144,7 +2144,7 @@ extern "C" void GluiDeviceSetup(int main_window){
         for(i = 0; i<nwindrosez_checkboxes; i++){
           CHECKBOX_showz_windrose[i] = NULL;
         }
-        UpdateWindRoseDevices(UPDATE_WINDROSE_DEVICE);
+        GLUIUpdateWindRoseDevices(UPDATE_WINDROSE_DEVICE);
 
         icheckboxes = 0;
         for(i = 0; i<nzwindtreeinfo; i++){
@@ -2205,7 +2205,7 @@ extern "C" void GluiDeviceSetup(int main_window){
       SPINNER_scale_max_windrose = glui_device->add_spinner_to_panel(ROLLOUT_scale_windrose, _("max"), GLUI_SPINNER_INT, &scale_max_windrose);
       SPINNER_scale_max_windrose->set_int_limits(0, 100);
 
-      UpdateGluiDevices();
+      GLUIUpdateGluiDevices();
     }
   }
 
@@ -2234,15 +2234,15 @@ extern "C" void GluiDeviceSetup(int main_window){
   glui_device->set_main_gfx_window( main_window );
 }
 
-/* ------------------ HideGluiDevice ------------------------ */
+/* ------------------ GLUIHideDevice ------------------------ */
 
-extern "C" void HideGluiDevice(void){
+extern "C" void GLUIHideDevice(void){
   GLUICloseRollouts(glui_device);
 }
 
-/* ------------------ ShowGluiPlotDevice ------------------------ */
+/* ------------------ GLUIShowPlotDevice ------------------------ */
 
-extern "C" void ShowGluiPlotDevice(void){
+extern "C" void GLUIShowPlotDevice(void){
   if(glui_device!=NULL){
     glui_device->show();
     if(ROLLOUT_device2Dplots!=NULL)ROLLOUT_device2Dplots->open();
@@ -2250,9 +2250,9 @@ extern "C" void ShowGluiPlotDevice(void){
 
 }
 
-/* ------------------ ShowGluiDevice ------------------------ */
+/* ------------------ GLUIShowDevice ------------------------ */
 
-extern "C" void ShowGluiDevice(void){
+extern "C" void GLUIShowDevice(void){
   if(glui_device!=NULL&&ROLLOUT_smvobjects!=NULL){
     glui_device->show();
     ROLLOUT_smvobjects->open();
