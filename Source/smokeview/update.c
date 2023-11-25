@@ -1949,9 +1949,9 @@ void UpdateShowScene(void){
   }
   if(update_smokefire_colors==1){
     update_smokefire_colors = 0;
-    Smoke3dCB(UPDATE_SMOKEFIRE_COLORS);
-    Smoke3dCB(UPDATE_SMOKEFIRE_COLORS2);
-    Smoke3dCB(USE_OPACITY_DEPTH);
+    GLUISmoke3dCB(UPDATE_SMOKEFIRE_COLORS);
+    GLUISmoke3dCB(UPDATE_SMOKEFIRE_COLORS2);
+    GLUISmoke3dCB(USE_OPACITY_DEPTH);
   }
   if(update_splitcolorbar==1){
     GLUISplitCB(SPLIT_COLORBAR);
@@ -2453,7 +2453,7 @@ void UpdateDisplay(void){
   }
   if(update_fire_alpha==1){
     update_fire_alpha=0;
-    UpdateFireAlpha();
+    GLUIUpdateFireAlpha();
   }
   if(update_texturebar==1){
     update_texturebar = 0;
@@ -2583,11 +2583,11 @@ void UpdateDisplay(void){
   }
   if(update_fire_colorbar_index == 1){
     SmokeColorbarMenu(fire_colorbar_index_ini);
-    UpdateFireColorbarList();
+    GLUIUpdateFireColorbarList();
     update_fire_colorbar_index = 0;
   }
   if(update_co2_colorbar_index==1){
-    UpdateCO2ColorbarList(co2_colorbar_index_ini);
+    GLUIUpdateCO2ColorbarList(co2_colorbar_index_ini);
     update_co2_colorbar_index = 0;
   }
   if(update_colorbar_select_index == 1 && colorbar_select_index >= 0 && colorbar_select_index <= 255){

@@ -844,7 +844,7 @@ extern "C" void DeleteTourList(void){
   for(i=0;i<ntourinfo;i++){
     LISTBOX_tour->delete_item(i);
   }
-  DeleteVolTourList(); //xx comment this line if smokebot fails with seg fault
+  GLUIDeleteVolTourList(); //xx comment this line if smokebot fails with seg fault
 }
 
 /* ------------------ CreateTourList ------------------------ */
@@ -870,7 +870,7 @@ extern "C" void CreateTourList(void){
   }
   if(selectedtour_index>=-1&&selectedtour_index<ntourinfo)LISTBOX_tour->set_int_val(selectedtour_index);
 
-  CreateVolTourList(); //xx comment this line if smokebot fails with seg fault
+  GLUICreateVolTourList(); //xx comment this line if smokebot fails with seg fault
 }
 
 /* ------------------ UpdateTourControls ------------------------ */

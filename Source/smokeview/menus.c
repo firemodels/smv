@@ -1133,7 +1133,7 @@ void Smoke3DShowMenu(int value){
         show_3dsmoke = 0;
       }
       Smoke3DShowMenu(SET_SMOKE3D);
-      UpdateSmoke16();
+      GLUIUpdateSmoke16();
       break;
 #else
     case TOGGLE_SMOKE3D:
@@ -4754,7 +4754,7 @@ void LoadSmoke3DMenu(int value){
 #ifdef pp_SMOKE16
   else if(value ==MENU_SMOKE_16){
     load_smoke16 = 1-load_smoke16;
-    UpdateSmoke16();
+    GLUIUpdateSmoke16();
     updatemenu = 1;
   }
 #endif

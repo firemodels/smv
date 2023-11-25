@@ -217,6 +217,25 @@ EXTERNCPP void GLUIUpdateShowbeamAsLine(void);
 SVEXTERN void GLUIUpdatePlot2DSize(void);
 EXTERNCPP void GLUIUpdateDeviceAdd(void);
 
+//*** glui_smoke.cpp headers
+EXTERNCPP void Glui3dSmokeSetup(int main_window);
+EXTERNCPP void GLUISmoke3dCB(int var);
+EXTERNCPP void GLUIUpdateCO2ColorbarList(int value);
+EXTERNCPP void GLUIUpdateFireColorbarList(void);
+EXTERNCPP void GLUIUpdateFreeze(int val);
+EXTERNCPP void GLUIUpdateLoadTimeVal(float val);
+EXTERNCPP void GLUIUpdateTimeFrameBounds(float time_min, float time_max);
+EXTERNCPP void GLUIUpdateLoadFrameVal(int frames);
+EXTERNCPP void GLUIUpdateLoadFrameMax(int max_frames);
+EXTERNCPP void GLUISmoke3dCB(int var);
+EXTERNCPP void GLUIUpdateFireAlpha(void);
+#ifdef pp_SMOKE16
+EXTERNCPP void GLUIUpdateSmoke16(void);
+#endif
+EXTERNCPP void GLUIUpdateSmoke3dFlags(void);
+EXTERNCPP void GLUICreateVolTourList(void);
+EXTERNCPP void GLUIDeleteVolTourList(void);
+
 EXTERNCPP float GetTime(void);
 EXTERNCPP void StartTimer(float *timerptr);
 
@@ -448,7 +467,6 @@ EXTERNCPP void UnLockCSV(void);
 #endif
 EXTERNCPP int HaveFireLoaded(void);
 EXTERNCPP int HaveSootLoaded(void);
-EXTERNCPP void Smoke3dCB(int var);
 EXTERNCPP void MakeColorLabels(char colorlabels[12][11], float colorvalues[12], float tmin_arg, float tmax_arg, int nlevel);
 EXTERNCPP void FinalizePartLoad(partdata *parti);
 EXTERNCPP void LoadAllPartFilesMT(int val);
@@ -458,8 +476,6 @@ EXTERNCPP void GetAllPartBoundsMT(void);
 EXTERNCPP void LoadAllPartFiles(int partnum);
 EXTERNCPP void CreatePartBoundFile(partdata *parti);
 EXTERNCPP void InitRolloutList(void);
-EXTERNCPP void UpdateCO2ColorbarList(int value);
-EXTERNCPP void UpdateFireColorbarList(void);
 EXTERNCPP void GetKeyXYZ(float t, keyframe *this_key, float *xyz);
 EXTERNCPP void GetTourXYZ(float t, tourdata *this_tour, float *xyz);
 EXTERNCPP void GetKeyView(float t, keyframe *this_key, float *view);
@@ -491,12 +507,7 @@ EXTERNCPP void ForceIdle(void);
 EXTERNCPP void UpdateFrameNumber(int changetime);
 EXTERNCPP void UpdateVentOffset(void);
 EXTERNCPP void UpdateOpacityMap(void);
-EXTERNCPP void UpdateFreeze(int val);
-EXTERNCPP void UpdateLoadTimeVal(float val);
-EXTERNCPP void UpdateTimeFrameBounds(float time_min, float time_max);
 EXTERNCPP int  GetVolFrameMax(int meshnum);
-EXTERNCPP void UpdateLoadFrameVal(int frames);
-EXTERNCPP void UpdateLoadFrameMax(int max_frames);
 EXTERNCPP void UpdateGluiRotateAbout(int val);
 EXTERNCPP void ReloadAllSliceFiles(void);
 EXTERNCPP void ReloadAllVectorSliceFiles(void);
@@ -523,7 +534,6 @@ EXTERNCPP void UpdateBoundarySliceDups(void);
 EXTERNCPP void UnLoadVolsmoke3DMenu(int value);
 EXTERNCPP void UpdateMenu(void);
 EXTERNCPP void GeometryMenu(int var);
-EXTERNCPP void Smoke3dCB(int var);
 #ifdef pp_HIST
 EXTERNCPP void UpdateHistogramType(void);
 EXTERNCPP void UpdateSliceHist(void);
@@ -539,7 +549,6 @@ EXTERNCPP void DrawGeomValues(slicedata *sd, patchdata *patchi, int geom_type);
 EXTERNCPP void DrawGeomData(int flag, slicedata *sd, patchdata *patchi, int geom_type);
 EXTERNCPP void DrawGeomVData(vslicedata *vd);
 EXTERNCPP void UpdateCurrentColorbar(colorbardata *cb);
-EXTERNCPP void UpdateFireAlpha(void);
 EXTERNCPP void UpdateObjectUsed(void);
 EXTERNCPP void UpdateColorTable(colortabledata *ctableinfo, int nctableinfo);
 EXTERNCPP colortabledata *GetColorTable(char *label);
@@ -566,7 +575,6 @@ EXTERNCPP void InitVolrenderScript(char *prefix, char *tour_label, int startfram
 
 // glui headers
 
-EXTERNCPP void Glui3dSmokeSetup(int main_window);
 EXTERNCPP void GluiStereoSetup(int main_window);
 EXTERNCPP void GluiTourSetup(int main_window);
 EXTERNCPP void GluiTrainerSetup(int main_window);
@@ -788,9 +796,6 @@ EXTERNCPP void SortColorBars(void);
 EXTERNCPP colorbardata *GetColorbar(char *label);
 EXTERNCPP void InitOpenGL(int option);
 EXTERNCPP void TextureShowMenu(int value);
-#ifdef pp_SMOKE16
-EXTERNCPP void UpdateSmoke16(void);
-#endif
 
 
 EXTERNCPP void CopyArgs(int *argc, char **aargv, char ***argv_sv);
@@ -881,7 +886,6 @@ EXTERNCPP void UpdateCADTextCoords(cadquad *quadi);
 EXTERNCPP void UpdateIndexColors(void);
 EXTERNCPP void UpdateTourIndex(void);
 EXTERNCPP void SetTour(tourdata *thetour);
-EXTERNCPP void UpdateSmoke3dFlags(void);
 EXTERNCPP void MergeSmoke3D(smoke3ddata *smoke3dset);
 EXTERNCPP void ShowHideSortGeometry(int sort_geom, float *mm);
 EXTERNCPP void SortTransparentFaces(float *mm);
@@ -977,8 +981,6 @@ EXTERNCPP unsigned char *ReadPNG(const char *filename,int *width, int *height, i
 EXTERNCPP void UpdateColorbarDialogs(void);
 
 EXTERNCPP void SetTourXYZView(float t, tourdata *touri);
-EXTERNCPP void CreateVolTourList(void);
-EXTERNCPP void DeleteVolTourList(void);
 EXTERNCPP void CreateTourList(void);
 EXTERNCPP void DeleteTourList(void);
 EXTERNCPP void UpdateViewTour(void);

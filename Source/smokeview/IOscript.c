@@ -1466,10 +1466,10 @@ void LoadSmokeFrame(int meshnum, int framenum){
   if(meshnum > nmeshes - 1||meshnum<-1)meshnum = -1;
 
   max_frames = GetVolFrameMax(meshnum);
-  if(max_frames > 0)UpdateLoadFrameMax(max_frames);
+  if(max_frames > 0)GLUIUpdateLoadFrameMax(max_frames);
   frame_old = framenum;
   framenum = CLAMP(framenum, 0, max_frames-1);
-  if(framenum!=frame_old)UpdateLoadFrameVal(framenum);
+  if(framenum!=frame_old)GLUIUpdateLoadFrameVal(framenum);
 
   for(i = 0; i<nmeshes; i++){
     meshdata *meshi;
@@ -1502,7 +1502,7 @@ void LoadSmokeFrame(int meshnum, int framenum){
   stept=1;
   Keyboard('t', FROM_SMOKEVIEW);
   UpdateTimeLabels();
-  UpdateLoadTimeVal(valtime);
+  GLUIUpdateLoadTimeVal(valtime);
 }
 
 /* ------------------ LoadTimeFrame ------------------------ */
@@ -1537,7 +1537,7 @@ void LoadTimeFrame(int meshnum, float timeval){
       update_timebounds = 1;
     }
   }
-  if(update_timebounds==1)UpdateTimeFrameBounds(time_framemin, time_framemax);
+  if(update_timebounds==1)GLUIUpdateTimeFrameBounds(time_framemin, time_framemax);
 
   vrtime = vr->times[0];
   mindiff = ABS(timeval-vrtime);
@@ -1552,7 +1552,7 @@ void LoadTimeFrame(int meshnum, float timeval){
       smokeframe = i;
     }
   }
-  UpdateLoadFrameVal(smokeframe);
+  GLUIUpdateLoadFrameVal(smokeframe);
   LoadSmokeFrame(meshnum, smokeframe);
 }
 

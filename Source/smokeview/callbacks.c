@@ -963,8 +963,8 @@ void MouseCB(int button, int state, int xm, int ym){
   }
 
   if(autofreeze_volsmoke==ON&&nvolsmoke_loaded>0){
-    if(state==GLUT_DOWN)UpdateFreeze(ON);
-    if(state==GLUT_UP)UpdateFreeze(OFF);
+    if(state==GLUT_DOWN)GLUIUpdateFreeze(ON);
+    if(state==GLUT_UP)GLUIUpdateFreeze(OFF);
   }
   if(state == GLUT_UP){
     alt_ctrl_key_state = KEY_NONE;
@@ -1882,7 +1882,7 @@ void Keyboard(unsigned char key, int flag){
         usegpu=0;
       }
       if(nsmoke3dinfo>0){
-        UpdateSmoke3dFlags();
+        GLUIUpdateSmoke3dFlags();
       }
       PrintGPUState();
       return;
@@ -2550,7 +2550,7 @@ void Keyboard(unsigned char key, int flag){
     case 'V':
       if(nvolrenderinfo>0){
         usevolrender=1-usevolrender;
-        UpdateSmoke3dFlags();
+        GLUIUpdateSmoke3dFlags();
 #ifdef pp_GPU
         PrintGPUState();
 #endif
