@@ -3044,7 +3044,7 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
 //      GLUIPatchBoundsCPP_CB(BOUND_UPDATE_COLORS);
 //    }
 //    else{
-//      HVACSliceBoundsCPP_CB(BOUND_UPDATE_COLORS);
+//      GLUIHVACSliceBoundsCPP_CB(BOUND_UPDATE_COLORS);
 //    }
     PRINT_TIMER(geom_color_timer, "update boundary colors");
 

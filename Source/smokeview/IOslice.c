@@ -5184,7 +5184,7 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
     }
 #endif
 #define BOUND_PERCENTILE_DRAW          120
-    HVACSliceBoundsCPP_CB(BOUND_PERCENTILE_DRAW);
+    GLUIHVACSliceBoundsCPP_CB(BOUND_PERCENTILE_DRAW);
     colorbar_slice_min = qmin;
     colorbar_slice_max = qmax;
     UpdateUnitDefs();

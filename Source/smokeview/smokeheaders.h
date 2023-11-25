@@ -20,7 +20,7 @@ EXTERNCPP void GLUIPartBoundsCPP_CB(int var);
 EXTERNCPP void GLUIUpdatdateResearchModeCPP(void);
 EXTERNCPP void GLUISliceBoundsSetupNoGraphics(void);
 EXTERNCPP void GLUIGetGlobalBoundsMinMax(int type, char *label, float *valmin, float *valmax);
-EXTERNCPP void HVACSliceBoundsCPP_CB(int var);
+EXTERNCPP void GLUIHVACSliceBoundsCPP_CB(int var);
 EXTERNCPP void GLUIPatchBoundsCPP_CB(int var);
 EXTERNCPP cpp_boundsdata *GLUIGetBoundsData(int type);
 EXTERNCPP void GLUISetCacheFlag(int type, int cache_flag);
@@ -90,6 +90,11 @@ EXTERNCPP void UpdateTriangles(int time_flag, int update);
 EXTERNCPP void UpdateTrianglesMT(void);
 EXTERNCPP void CancelUpdateTriangles(void);
 EXTERNCPP void FinishUpdateTriangles(void);
+#ifdef pp_REFRESH
+EXTERNCPP void GLUIRefreshDialogs(void);
+#endif
+EXTERNCPP void GLUIUpdateVectorpointsize(void);
+EXTERNCPP void GLUIUpdateSliceDupDialog(void);
 
 //*** glui_clip.cpp headers
 EXTERNCPP void GLUIClipSetup(int main_window);
@@ -407,9 +412,6 @@ void GenerateTerrainGeom(float **vertices_arg, unsigned int **indices_arg, int *
 EXTERNCPP void DecimateAllTerrains(void);
 #endif
 
-#ifdef pp_REFRESH
-EXTERNCPP void RefreshGluiDialogs(void);
-#endif
 EXTERNCPP int GetPartHeader(partdata *parti, int *nf_all, int option_arg, int print_option_arg);
 EXTERNCPP void SetMainWindow(void);
 EXTERNCPP void GetSliceFileHeader(char *file, int *ip1, int *ip2, int *jp1, int *jp2, int *kp1, int *kp2, int *error);
@@ -520,7 +522,6 @@ EXTERNCPP int Smv2Geom(char *html_file);
 EXTERNCPP int Obst2Data(char *html_file);
 EXTERNCPP int SliceNode2Data(char *html_file, int option);
 EXTERNCPP int SliceCell2Data(char *html_file, int option);
-EXTERNCPP void UpdateVectorpointsize(void);
 EXTERNCPP void UpdateTexturebar(void);
 EXTERNCPP void GetFileSizes(void);
 EXTERNCPP int IsSmokeComponentPresent(smoke3ddata *smoke3di);
@@ -574,7 +575,6 @@ EXTERNCPP void DrawScreenInfo(void);
 #endif
 EXTERNCPP void GetGeomZBounds(float *zmin, float *zmax);
 EXTERNCPP void MakeIBlankAllMT(void);
-EXTERNCPP void UpdateSliceDupDialog(void);
 EXTERNCPP void DrawNorth(void);
 EXTERNCPP void DrawGeomValues(slicedata *sd, patchdata *patchi, int geom_type);
 EXTERNCPP void DrawGeomData(int flag, slicedata *sd, patchdata *patchi, int geom_type);

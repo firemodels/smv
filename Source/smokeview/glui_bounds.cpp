@@ -1540,7 +1540,7 @@ extern "C" void SetPercentileDrawOff(void){
   }
   if(nsliceloaded==0){
     sliceboundsCPP.set_percentile_draw(0);
-    HVACSliceBoundsCPP_CB(BOUND_PERCENTILE_DRAW);
+    GLUIHVACSliceBoundsCPP_CB(BOUND_PERCENTILE_DRAW);
   }
 }
 
@@ -2042,9 +2042,9 @@ extern "C" void GLUIUpdateHVACDuctType(void){
   GLUIHVACDuctBoundsCPP_CB(BOUND_VAL_TYPE);
 }
 
-/* ------------------ slice callback: HVACSliceBoundsCPP_CB ------------------------ */
+/* ------------------ slice callback: GLUIHVACSliceBoundsCPP_CB ------------------------ */
 
-extern "C" void HVACSliceBoundsCPP_CB(int var){
+extern "C" void GLUIHVACSlicefBoundsCPP_CB(int var){
   int ii, last_slice;
   cpp_boundsdata *bounds;
 #ifdef pp_HIST
@@ -2091,7 +2091,7 @@ extern "C" void HVACSliceBoundsCPP_CB(int var){
         SetPercentiles(BOUND_SLICE, per_00, per_valmin, per_50, per_valmax, per_100);
       }
       if(var==BOUND_PERCENTILE_MAXVAL||var==BOUND_PERCENTILE_MINVAL)update_hist_bounds = 0;
-      HVACSliceBoundsCPP_CB(BOUND_PERCENTILE_DRAW);
+      GLUIHVACSliceBoundsCPP_CB(BOUND_PERCENTILE_DRAW);
       if(var==BOUND_PERCENTILE_MAXVAL||var==BOUND_PERCENTILE_MINVAL)update_hist_bounds = 1;
       break;
     case BOUND_PERCENTILE_DRAW:
@@ -2193,7 +2193,7 @@ extern "C" void HVACSliceBoundsCPP_CB(int var){
 #ifdef pp_THREAD
       LockUnlockCompress(0);
 #endif
-      HVACSliceBoundsCPP_CB(BOUND_UPDATE_COLORS);
+      GLUIHVACSliceBoundsCPP_CB(BOUND_UPDATE_COLORS);
       break;
     case BOUND_RESEARCH_MODE:
       if(npartinfo>0)partboundsCPP.CB(BOUND_RESEARCH_MODE);
@@ -2254,12 +2254,12 @@ extern "C" void HVACSliceBoundsCPP_CB(int var){
         if(var == SET_PERCENTILE_MIN_VAL || var == SET_PERCENTILE_MIN_LEVEL){
           GetHistogramValProc(bounds->hist, sliceboundsCPP.percentile_min_level / 100.0, &valmin);
           GLUISetMin(BOUND_SLICE, bounds->label, 0, valmin);
-          HVACSliceBoundsCPP_CB(BOUND_VALMIN);
+          GLUIHVACSliceBoundsCPP_CB(BOUND_VALMIN);
         }
         if(var == SET_PERCENTILE_MAX_VAL || var == SET_PERCENTILE_MAX_LEVEL){
           GetHistogramValProc(bounds->hist, sliceboundsCPP.percentile_max_level / 100.0, &valmax);
           GLUISetMax(BOUND_SLICE, bounds->label, 0, valmax);
-          HVACSliceBoundsCPP_CB(BOUND_VALMAX);
+          GLUIHVACSliceBoundsCPP_CB(BOUND_VALMAX);
         }
       }
       break;
@@ -3779,9 +3779,9 @@ extern "C" void GLUIUpdatePlot2DSize2(void){
 }
 
 #ifdef pp_REFRESH
-/* ------------------ RefreshGluiDialogs ------------------------ */
+/* ------------------ GLUIRefreshDialogs ------------------------ */
 
-extern "C" void RefreshGluiDialogs(void){
+extern "C" void GLUIRefreshDialogs(void){
   if(glui_bounds!=NULL)glui_bounds->refresh();
   if(glui_clip!=NULL)glui_clip->refresh();
   if(glui_colorbar!=NULL)glui_colorbar->refresh();
@@ -4007,17 +4007,17 @@ extern "C" void GLUIUpdateIsoBounds(void){
   }
 }
 
-/* ------------------ UpdateVectorpointsize ------------------------ */
+/* ------------------ GLUIUpdateVectorpointsize ------------------------ */
 
 
-extern "C" void UpdateVectorpointsize(void){
+extern "C" void GLUIUpdateVectorpointsize(void){
   if(SPINNER_vectorpointsize!=NULL)SPINNER_vectorpointsize->set_int_val(vectorpointsize);
 }
 
-/* ------------------ UpdateSliceDupDialog ------------------------ */
+/* ------------------ GLUIUpdateSliceDupDialog ------------------------ */
 
 
-extern "C" void UpdateSliceDupDialog(void){
+extern "C" void GLUIUpdateSliceDupDialog(void){
   if(RADIO_boundaryslicedup != NULL)RADIO_boundaryslicedup->set_int_val(boundaryslicedup_option);
   if(RADIO_slicedup != NULL)RADIO_slicedup->set_int_val(slicedup_option);
   if(RADIO_vectorslicedup != NULL)RADIO_vectorslicedup->set_int_val(vectorslicedup_option);
@@ -5571,10 +5571,10 @@ hvacductboundsCPP.setup("hvac", ROLLOUT_hvacduct, hvacductbounds_cpp, nhvacductb
     ADDPROCINFO(boundprocinfo, nboundprocinfo, ROLLOUT_slice, SLICE_ROLLOUT, glui_bounds);
 
 #ifdef pp_HIST
-    sliceboundsCPP.setup("slice", ROLLOUT_slice, slicebounds_cpp, nslicebounds_cpp, &cache_slice_data, HIDE_CACHE_CHECKBOX, PERCENTILE_ENABLED, HVACSliceBoundsCPP_CB,
+    sliceboundsCPP.setup("slice", ROLLOUT_slice, slicebounds_cpp, nslicebounds_cpp, &cache_slice_data, HIDE_CACHE_CHECKBOX, PERCENTILE_ENABLED, GLUIHVACSliceBoundsCPP_CB,
                          SliceRolloutCB, sliceprocinfo, &nsliceprocinfo);
 #else
-    sliceboundsCPP.setup("slice", ROLLOUT_slice, slicebounds_cpp, nslicebounds_cpp, &cache_slice_data, HIDE_CACHE_CHECKBOX, HVACSliceBoundsCPP_CB,
+    sliceboundsCPP.setup("slice", ROLLOUT_slice, slicebounds_cpp, nslicebounds_cpp, &cache_slice_data, HIDE_CACHE_CHECKBOX, GLUIHVACSliceBoundsCPP_CB,
       SliceRolloutCB, sliceprocinfo, &nsliceprocinfo);
 #endif
 
@@ -6865,7 +6865,7 @@ extern "C" void GLUISliceBoundCB(int var){
       SetResearchMode(research_mode);
       GLUIHVACDuctBoundsCPP_CB(BOUND_UPDATE_COLORS);
       GLUIHVACNodeBoundsCPP_CB(BOUND_UPDATE_COLORS);
-      HVACSliceBoundsCPP_CB(BOUND_UPDATE_COLORS);
+      GLUIHVACSliceBoundsCPP_CB(BOUND_UPDATE_COLORS);
       GLUIPatchBoundsCPP_CB(BOUND_UPDATE_COLORS);
       GLUIPartBoundsCPP_CB(BOUND_RELOAD_DATA);
       if(nplot3dloaded>0)GLUIPlot3DBoundsCPP_CB(BOUND_UPDATE_COLORS);
@@ -7090,7 +7090,7 @@ extern "C" void GLUISliceBoundCB(int var){
     SetLoadedSliceBounds(NULL, 0);
     ReloadAllVectorSliceFiles();
     ReloadAllSliceFiles();
-    HVACSliceBoundsCPP_CB(BOUND_UPDATE_COLORS);
+    GLUIHVACSliceBoundsCPP_CB(BOUND_UPDATE_COLORS);
     break;
   default:
     assert(FFALSE);

@@ -2634,7 +2634,7 @@ void UpdateDisplay(void){
 #ifdef pp_REFRESH
   if(refresh_glui_dialogs>=-1){
     refresh_glui_dialogs--;
-    RefreshGluiDialogs();
+    GLUIRefreshDialogs();
   }
 #endif
 }

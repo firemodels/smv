@@ -1689,7 +1689,7 @@ void DialogMenu(int value){
 #ifdef pp_REFRESH
   refresh_glui_dialogs = 1;
   SetMainWindow();
-  RefreshGluiDialogs();
+  GLUIRefreshDialogs();
   glutPostRedisplay();
 #endif
 }
@@ -3408,7 +3408,7 @@ void LoadUnloadMenu(int value){
     SetLoadedSliceBounds(NULL, 0);
     ReloadAllVectorSliceFiles();
     ReloadAllSliceFiles();
-    HVACSliceBoundsCPP_CB(BOUND_UPDATE_COLORS);
+    GLUIHVACSliceBoundsCPP_CB(BOUND_UPDATE_COLORS);
     STOP_TIMER(load_time);
     PRINT_LOADTIMES(file_count,load_size,load_time);
     slicefile_labelindex=slicefile_labelindex_save;
@@ -3532,7 +3532,7 @@ void LoadUnloadMenu(int value){
     GLUISetCacheFlag(BOUND_PART, cache_file_data);
 #define BOUND_CACHE_DATA               112
     GLUIPatchBoundsCPP_CB(BOUND_CACHE_DATA);
-    HVACSliceBoundsCPP_CB(BOUND_CACHE_DATA);
+    GLUIHVACSliceBoundsCPP_CB(BOUND_CACHE_DATA);
     GLUIPartBoundsCPP_CB(BOUND_CACHE_DATA);
     updatemenu = 1;
   }
@@ -5088,7 +5088,7 @@ void LoadMultiVSliceMenu(int value){
         updatemenu = 1;
         GLUTPOSTREDISPLAY;
         UpdateVSliceDups();
-        UpdateSliceDupDialog();
+        GLUIUpdateSliceDupDialog();
       }
       break;
 
@@ -5098,7 +5098,7 @@ void LoadMultiVSliceMenu(int value){
         updatemenu = 1;
         GLUTPOSTREDISPLAY;
         UpdateVSliceDups();
-        UpdateSliceDupDialog();
+        GLUIUpdateSliceDupDialog();
       }
       break;
 
@@ -5108,7 +5108,7 @@ void LoadMultiVSliceMenu(int value){
         updatemenu = 1;
         GLUTPOSTREDISPLAY;
         UpdateVSliceDups();
-        UpdateSliceDupDialog();
+        GLUIUpdateSliceDupDialog();
       }
       break;
       case MENU_LOADVSLICE_SETTINGS:
@@ -5247,7 +5247,7 @@ void LoadMultiSliceMenu(int value){
         updatemenu = 1;
         GLUTPOSTREDISPLAY;
         UpdateSliceDups();
-        UpdateSliceDupDialog();
+        GLUIUpdateSliceDupDialog();
       }
       break;
 
@@ -5257,7 +5257,7 @@ void LoadMultiSliceMenu(int value){
         updatemenu = 1;
         GLUTPOSTREDISPLAY;
         UpdateSliceDups();
-        UpdateSliceDupDialog();
+        GLUIUpdateSliceDupDialog();
       }
       break;
 
@@ -5267,7 +5267,7 @@ void LoadMultiSliceMenu(int value){
         updatemenu = 1;
         GLUTPOSTREDISPLAY;
         UpdateSliceDups();
-        UpdateSliceDupDialog();
+        GLUIUpdateSliceDupDialog();
       }
       break;
       case MENU_SPLITSLICES:
@@ -5753,7 +5753,7 @@ void LoadBoundaryMenu(int value){
         updatemenu = 1;
         GLUTPOSTREDISPLAY;
         UpdateBoundarySliceDups();
-        UpdateSliceDupDialog();
+        GLUIUpdateSliceDupDialog();
       }
       break;
 
@@ -5763,7 +5763,7 @@ void LoadBoundaryMenu(int value){
         updatemenu = 1;
         GLUTPOSTREDISPLAY;
         UpdateBoundarySliceDups();
-        UpdateSliceDupDialog();
+        GLUIUpdateSliceDupDialog();
       }
       break;
 
@@ -5773,7 +5773,7 @@ void LoadBoundaryMenu(int value){
         updatemenu = 1;
         GLUTPOSTREDISPLAY;
         UpdateBoundarySliceDups();
-        UpdateSliceDupDialog();
+        GLUIUpdateSliceDupDialog();
       }
       break;
     default:

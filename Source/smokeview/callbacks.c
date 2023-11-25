@@ -2820,7 +2820,7 @@ void Keyboard(unsigned char key, int flag){
       }
       vectorpointsize+=2;
       if(vectorpointsize>20.0)vectorpointsize = 1.0;
-      UpdateVectorpointsize();
+      GLUIUpdateVectorpointsize();
       updatemenu = 1;
       break;
     case '>':
@@ -2833,7 +2833,7 @@ void Keyboard(unsigned char key, int flag){
       }
       vectorpointsize-=2;
       if(vectorpointsize<1.0)vectorpointsize = 20.0;
-      UpdateVectorpointsize();
+      GLUIUpdateVectorpointsize();
       updatemenu = 1;
       break;
     case '#':
@@ -2913,7 +2913,7 @@ void Keyboard(unsigned char key, int flag){
       break;
 #ifdef pp_REFRESH
     case '_':
-      RefreshGluiDialogs();
+      GLUIRefreshDialogs();
       break;
 #endif
     case '{':
