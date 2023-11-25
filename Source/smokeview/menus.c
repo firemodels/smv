@@ -6039,7 +6039,7 @@ void ImmersedMenu(int value){
       break;
     case GEOMETRY_TERRAIN_SHOW_TOP:
       terrain_showonly_top = 1 - terrain_showonly_top;
-      UpdateShowOnlyTop();
+      GLUIUpdateShowOnlyTop();
       break;
     case GEOMETRY_SOLIDOUTLINE:
       if(show_faces_shaded==1&&show_faces_outline==1){

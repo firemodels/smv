@@ -273,9 +273,9 @@ extern "C" void GLUIUpdateSelectGeom(void){
   RADIO_select_geom->set_int_val(select_geom);
 }
 
-/* ------------------ UpdateShowOnlyTop ------------------------ */
+/* ------------------ GLUIUpdateShowOnlyTop ------------------------ */
 
-extern "C" void UpdateShowOnlyTop(void){
+extern "C" void GLUIUpdateShowOnlyTop(void){
   if(CHECKBOX_showonly_top!=NULL)CHECKBOX_showonly_top->set_int_val(terrain_showonly_top);
 }
 
@@ -1305,7 +1305,7 @@ void TerrainCB(int var){
     case TERRAIN_TOP_ONLY:
       terrain_showonly_top = 1 - terrain_showonly_top;
       GeometryMenu(17+TERRAIN_TOP);
-      UpdateShowOnlyTop();
+      GLUIUpdateShowOnlyTop();
       break;
     default:
     assert(FFALSE);

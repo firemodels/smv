@@ -310,7 +310,7 @@ EXTERNCPP void UpdateAllHVACColorLabels(void);
 EXTERNCPP void PeriodicRefresh(int var);
 #endif
 
-EXTERNCPP void UpdateShowOnlyTop(void);
+EXTERNCPP void GLUIUpdateShowOnlyTop(void);
 
 #ifdef pp_HIST
 EXTERNCPP void GeneratePartHistogramsMT(void);
