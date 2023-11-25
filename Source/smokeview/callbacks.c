@@ -979,7 +979,7 @@ void MouseCB(int button, int state, int xm, int ym){
   }
 
   if(trainer_mode==1){
-    SetGLuiViewListManual();
+    GLUISetViewListManual();
   }
   eye_xyz = camera_current->eye;
   if(selected_view!=-999){
@@ -1002,7 +1002,7 @@ void MouseCB(int button, int state, int xm, int ym){
     colorbar_drag=0;
     colorbar_splitdrag=0;
     GLUTSETCURSOR(GLUT_CURSOR_LEFT_ARROW);
-    UpdateTrainerMoves();
+    GLUIUpdateTrainerMoves();
     geom_bounding_box_mousedown = 0;
     return;
   }
@@ -2862,12 +2862,12 @@ void Keyboard(unsigned char key, int flag){
       if(trainer_active==1){
         PRINTF("Trainer mode active\n");
         trainer_mode=1;
-        ShowGluiTrainer();
+        GLUIShowTrainer();
       }
       if(trainer_active==0){
         PRINTF("Trainer mode inactive\n");
         trainer_mode=0;
-        HideGluiTrainer();
+        GLUIHideTrainer();
       }
       break;
     case '%':

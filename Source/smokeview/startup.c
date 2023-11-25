@@ -262,8 +262,8 @@ int SetupCase(char *filename){
     ReadSMVOrig();
   }
   if(return_code==0&&trainer_mode==1){
-    ShowGluiTrainer();
-    ShowGluiAlert();
+    GLUIShowTrainer();
+    GLUIShowAlert();
   }
   switch(return_code){
     case 1:
@@ -320,7 +320,7 @@ int SetupCase(char *filename){
   GluiDeviceSetup(mainwindow_id);
   GluiPlot2DSetup(mainwindow_id);
   GLUITourSetup(mainwindow_id);
-  GluiAlertSetup(mainwindow_id);
+  GLUIAlertSetup(mainwindow_id);
   GluiStereoSetup(mainwindow_id);
   Glui3dSmokeSetup(mainwindow_id);
   PRINT_TIMER(timer_start, "all dialogs");
@@ -333,15 +333,15 @@ int SetupCase(char *filename){
   glutShowWindow();
   glutSetWindowTitle(fdsprefix);
   InitMisc();
-  GluiTrainerSetup(mainwindow_id);
+  GLUITrainerSetup(mainwindow_id);
   glutDetachMenu(GLUT_RIGHT_BUTTON);
   LOCK_CHECKFILES;
   InitMenus();
   UNLOCK_CHECKFILES;
   glutAttachMenu(GLUT_RIGHT_BUTTON);
   if(trainer_mode==1){
-    ShowGluiTrainer();
-    ShowGluiAlert();
+    GLUIShowTrainer();
+    GLUIShowAlert();
   }
   // initialize info header
   initialiseInfoHeader(&titleinfo, release_title, smv_githash, fds_githash, chidfilebase, fds_title);
@@ -1105,7 +1105,7 @@ void InitOpenGL(int option){
     int i;
     int errorcode;
 
-//    ShowGluiAlert();
+//    GLUIShowAlert();
     for(i = 0; i<nplot3dinfo; i++){
       plot3ddata *plot3di;
 
@@ -1231,7 +1231,7 @@ void InitOpenGL(int option){
     UpdateFrameNumber(0);
     updatemenu=1;
     update_load_files=0;
-    HideGluiAlert();
+    GLUIHideAlert();
     TrainerViewMenu(trainerview);
   }
 

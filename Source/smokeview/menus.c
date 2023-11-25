@@ -1575,7 +1575,7 @@ void DialogMenu(int value){
     GLUIShowGluiShooter();
     break;
   case DIALOG_TRAINER:
-    ShowGluiTrainer();
+    GLUIShowTrainer();
     break;
   case DIALOG_2DPLOTS:
     GLUIShowPlot2D();
@@ -1653,7 +1653,7 @@ void DialogMenu(int value){
     if(showedit_dialog==0){
       GLUIHideGeometry();
     }
-    UpdateTrainerOutline();
+    GLUIUpdateTrainerOutline();
     break;
   case DIALOG_TERRAIN:
     showterrain_dialog = 1 - showterrain_dialog;
@@ -1678,7 +1678,7 @@ void DialogMenu(int value){
     GLUIHideStereo();
     GLUIHideGluiColorbar();
     if(showedit_dialog==1)DialogMenu(DIALOG_GEOMETRY);
-    HideGluiTrainer();
+    GLUIHideTrainer();
     GLUIHideDevice();
     break;
   default:
@@ -1843,7 +1843,7 @@ void OptionMenu(int value){
   if(value == MENU_OPTION_TRAINERMENU){
     trainer_mode=1;
     if(showtrainer_dialog==0){
-      ShowGluiTrainer();
+      GLUIShowTrainer();
     }
     FontMenu(LARGE_FONT);
   }
@@ -6261,7 +6261,7 @@ void BlockageMenu(int value){
    case visBLOCKAsInputOutline:
    case visBLOCKAsInput:
      visBlocks=value;
-     UpdateTrainerOutline();
+     GLUIUpdateTrainerOutline();
      break;
    case visBLOCKNormal:
    case visBLOCKOutline:
@@ -6269,7 +6269,7 @@ void BlockageMenu(int value){
    case visBLOCKSolidOutline:
      visBlocks=value;
      if(value==visBLOCKSolidOutline||visBLOCKold==visBLOCKSolidOutline)updatefaces=1;
-     UpdateTrainerOutline();
+     GLUIUpdateTrainerOutline();
      break;
    case BLOCKlocation_grid:
    case BLOCKlocation_exact:

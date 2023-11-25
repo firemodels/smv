@@ -259,6 +259,17 @@ EXTERNCPP void GLUIDeleteTourList(void);
 EXTERNCPP void GLUIUpdateTourControls(void);
 EXTERNCPP void GLUISetTourKeyframe(void);
 
+//*** glui_trainer.cpp headers
+EXTERNCPP void GLUIUpdateTrainerOutline(void);
+EXTERNCPP void GLUIUpdateTrainerMoves(void);
+EXTERNCPP void GLUISetViewListManual(void);
+EXTERNCPP void GLUITrainerSetup(int main_window);
+EXTERNCPP void GLUIAlertSetup(int main_window);
+EXTERNCPP void GLUIShowAlert(void);
+EXTERNCPP void GLUIHideAlert(void);
+EXTERNCPP void GLUIShowTrainer(void);
+EXTERNCPP void GLUIHideTrainer(void);
+
 // gen plot routines
 
 EXTERNCPP int HavePlot2D(float **times, int *ntimes);
@@ -593,21 +604,9 @@ EXTERNCPP void XYZ2AzElev(float *xyz,float *azimuth, float *elevation);
 EXTERNCPP void UpdateColorDevices(void);
 EXTERNCPP void InitVolrenderScript(char *prefix, char *tour_label, int startframe, int skipframe);
 
-// glui headers
-
-EXTERNCPP void GluiTrainerSetup(int main_window);
-
-EXTERNCPP void GluiAlertSetup(int main_window);
 EXTERNCPP void UpdateGluiKeyframe(void);
 EXTERNCPP void UpdateGluiBoundaryUnits(void);
 EXTERNCPP void UpdateGluiSliceUnits(void);
-EXTERNCPP void SetGLuiViewListManual(void);
-
-EXTERNCPP void ShowGluiAlert(void);
-EXTERNCPP void HideGluiAlert(void);
-EXTERNCPP void ShowGluiTrainer(void);
-EXTERNCPP void HideGluiTrainer(void);
-
 EXTERNCPP void HVACMenu(int value);
 EXTERNCPP int GetHVACDuctValIndex(char *shortlabel);
 EXTERNCPP int GetHVACNodeValIndex(char *shortlabel);
@@ -851,8 +850,6 @@ EXTERNCPP void LoadVSliceMenu(int value);
 EXTERNCPP void InitVars(void);
 EXTERNCPP void RenderState(int onoff);
 EXTERNCPP void ResizeWindow(int width, int height);
-EXTERNCPP void UpdateTrainerOutline(void);
-EXTERNCPP void UpdateTrainerMoves(void);
 EXTERNCPP meshdata *GetMesh(float *xyz, meshdata *guess);
 EXTERNCPP meshdata *GetMeshNoFail(float *xyz);
 EXTERNCPP int  OnMeshBoundary(float *xyz);

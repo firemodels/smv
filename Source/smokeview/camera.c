@@ -371,7 +371,7 @@ void UpdateCamera(cameradata *ca){
     highlight_mesh = current_mesh-meshinfo;
     HandleRotationType(EYE_CENTERED);
     GLUIUpdateMeshList1(ca->rotation_index);
-    UpdateTrainerMoves();
+    GLUIUpdateTrainerMoves();
 
     ca->clip_mode=clip_mode;
     ca->clip_xmin=clipinfo.clip_xmin;
