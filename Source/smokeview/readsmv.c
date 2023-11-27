@@ -893,6 +893,15 @@ void InitMesh(meshdata *meshi){
   meshi->ndec_verts     = 0;
   meshi->decimated  = 0;
 #endif
+  NewMemory((void **)&meshi->plot3dcontour1, sizeof(contour));
+  NewMemory((void **)&meshi->plot3dcontour2, sizeof(contour));
+  NewMemory((void **)&meshi->plot3dcontour3, sizeof(contour));
+  NewMemory((void **)&meshi->currentsurf,    sizeof(isosurface));
+  NewMemory((void **)&meshi->currentsurf2,   sizeof(isosurface));
+  NewMemory((void **)&meshi->box_clipinfo,   sizeof(clipdata));
+  NewMemory((void **)&meshi->gsliceinfo,     sizeof(meshplanedata));
+  NewMemory((void **)&meshi->volrenderinfo,  sizeof(volrenderdata));
+
   meshi->in_frustum = 1;
   meshi->imap = NULL;
   meshi->jmap = NULL;
@@ -6884,7 +6893,7 @@ int ReadSMV_Parse(bufferstreamdata *stream) {
   devicedata *devicecopy;
   int do_pass4=0, do_pass5=0;
   int roomdefined=0;
-  int noGRIDpresent=1,startpass;
+  int GRIDpresent=0,startpass;
   slicedata *sliceinfo_copy=NULL;
   int nisos_per_mesh=1;
 
@@ -7283,7 +7292,7 @@ int ReadSMV_Parse(bufferstreamdata *stream) {
       continue;
     }
     if(MatchSMV(buffer,"GRID") == 1){
-      noGRIDpresent=0;
+      GRIDpresent=1;
       nmeshes++;
       continue;
     }
@@ -7713,7 +7722,7 @@ int ReadSMV_Parse(bufferstreamdata *stream) {
     if(FEOF(stream)!=0){
       BREAK;
     }
-    if(noGRIDpresent==1&&startpass==1){
+    if(GRIDpresent==0&&startpass==1){
       strcpy(buffer,"GRID");
       startpass=0;
     }
@@ -8983,7 +8992,7 @@ int ReadSMV_Parse(bufferstreamdata *stream) {
 
       }
       setGRID=1;
-      if(noGRIDpresent==1){
+      if(GRIDpresent==0){
         ibartemp=2;
         jbartemp=2;
         kbartemp=2;
@@ -9756,7 +9765,7 @@ int ReadSMV_Parse(bufferstreamdata *stream) {
       strcpy(buffer,"VENT");
     }
     else{
-      if(startpass==1&&noGRIDpresent==1){
+      if(startpass==1&&GRIDpresent==0){
         strcpy(buffer,"GRID");
         startpass=0;
       }
@@ -10084,7 +10093,7 @@ int ReadSMV_Parse(bufferstreamdata *stream) {
       meshi->xyz_bar0[ZZZ]=zbar0;
       meshi->xyz_bar[ZZZ] =zbar;
       meshi->zcen =(zbar+zbar0)/2.0;
-      InitBoxClipInfo(&(meshi->box_clipinfo),xbar0,xbar,ybar0,ybar,zbar0,zbar);
+      InitBoxClipInfo(meshi->box_clipinfo,xbar0,xbar,ybar0,ybar,zbar0,zbar);
       if(ntrnx==0){
         int nn;
 
@@ -17296,7 +17305,7 @@ void UpdateLoadedLists(void){
       volrenderdata *vr;
 
       meshi = meshinfo + i;
-      vr = &(meshi->volrenderinfo);
+      vr = meshi->volrenderinfo;
       if(vr==NULL||vr->fireslice==NULL||vr->smokeslice==NULL)continue;
       if(vr->loaded==0||vr->display==0)continue;
       nvolsmoke_loaded++;

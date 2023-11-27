@@ -618,9 +618,9 @@ void GetFireEmission(float *smoke_tran, float *fire_emission, float dlength, flo
   int slicetype;
   float soot_density, temperature;
 
-  smokedata_local = meshi->volrenderinfo.smokedataptr;
-  firedata_local  = meshi->volrenderinfo.firedataptr;
-  slicetype = meshi->volrenderinfo.smokeslice->slice_filetype;
+  smokedata_local = meshi->volrenderinfo->smokedataptr;
+  firedata_local  = meshi->volrenderinfo->firedataptr;
+  slicetype = meshi->volrenderinfo->smokeslice->slice_filetype;
 
   if(slicetype==SLICE_NODE_CENTER){
     // check this
@@ -686,11 +686,11 @@ void GetFireEmission(float *smoke_tran, float *fire_emission, float dlength, flo
           int ii;
 
           ijk_index = IJKNODE(i, j, k);
-          for(ii = 0;ii < meshi->volrenderinfo.ntimes;ii++){
+          for(ii = 0;ii < meshi->volrenderinfo->ntimes;ii++){
             float *smokevals, *firevals;
 
-            smokevals = meshi->volrenderinfo.smokedataptrs[ii];
-            firevals = meshi->volrenderinfo.firedataptrs[ii];
+            smokevals = meshi->volrenderinfo->smokedataptrs[ii];
+            firevals = meshi->volrenderinfo->firedataptrs[ii];
 
             if(smokevals!=NULL)smokevals[ijk_index] = smoke_val;
             if(firevals!=NULL)firevals[ijk_index] = fire_val;
@@ -806,7 +806,7 @@ void InitVolRenderSurface(int flag){
     volrenderdata *vr;
 
     meshi = meshinfo + i;
-    vr = &(meshi->volrenderinfo);
+    vr = meshi->volrenderinfo;
     if(flag==FIRSTCALL){
       vr->smokecolor_yz0=NULL;
       vr->smokecolor_yz1=NULL;
@@ -1371,7 +1371,7 @@ void InitVolRender(void){
     volrenderdata *vr;
 
     meshi = meshinfo + i;
-    vr = &(meshi->volrenderinfo);
+    vr = meshi->volrenderinfo;
     vr->rendermeshlabel=meshi->label;
 
     vr->fireslice=NULL;
@@ -1405,7 +1405,7 @@ void InitVolRender(void){
 
     meshi = meshinfo + blocknumber;
 
-    vr = &(meshi->volrenderinfo);
+    vr = meshi->volrenderinfo;
 
     if(STRCMP(shortlabel,"temp")==0){
       vr->fireslice=slicei;
@@ -1421,7 +1421,7 @@ void InitVolRender(void){
     volrenderdata *vr;
 
     meshi = meshinfo + i;
-    vr = &(meshi->volrenderinfo);
+    vr = meshi->volrenderinfo;
     vr->ntimes=0;
 
     vr->firedata_full=NULL;
@@ -1735,7 +1735,7 @@ void ComputeAllSmokecolors(void){
     float *smokecolor;
 
     meshi = meshinfo + ii;
-    vr = &(meshi->volrenderinfo);
+    vr = meshi->volrenderinfo;
     if(vr->loaded==0||vr->display==0)continue;
 
     x = meshi->xvolplt;
@@ -2124,7 +2124,7 @@ void DrawSmoke3DVol(void){
     ibar = meshi->ivolbar;
     jbar = meshi->jvolbar;
     kbar = meshi->kvolbar;
-    vr = &(meshi->volrenderinfo);
+    vr = meshi->volrenderinfo;
 
     if(iwall==0||meshi->drawsides[iwall+3]==0)continue;
     if(vr->firedataptr==NULL&&vr->smokedataptr==NULL)continue;
@@ -2340,7 +2340,7 @@ void UpdateVolsmokeSupertexture(supermeshdata *smesh){
     float *smokedataptr;
 
     meshi = smesh->meshes[i];
-    smokedataptr = meshi->volrenderinfo.smokedataptr;
+    smokedataptr = meshi->volrenderinfo->smokedataptr;
 
     s_offset = meshi->s_offset;
 
@@ -2362,7 +2362,7 @@ void UpdateVolsmokeSupertexture(supermeshdata *smesh){
     float *firedataptr;
 
     meshi = smesh->meshes[i];
-    firedataptr = meshi->volrenderinfo.firedataptr;
+    firedataptr = meshi->volrenderinfo->firedataptr;
     if(firedataptr==NULL)continue;
 
     s_offset = meshi->s_offset;
@@ -2413,7 +2413,7 @@ void UpdateVolsmokeTexture(meshdata *meshi){
   volrenderdata *vr;
   float *smokedata_local, *firedata_local;
 
-  vr = &meshi->volrenderinfo;
+  vr = meshi->volrenderinfo;
   smokedata_local = vr->smokedataptr;
   firedata_local  = vr->firedataptr;
 
@@ -2496,7 +2496,7 @@ void DrawSmoke3DGPUVol(void){
     if(meshvisptr[meshi-meshinfo]==0)continue;
     if(iwall==0||meshi->drawsides[iwall+3]==0)continue;
 
-    vr = &meshi->volrenderinfo;
+    vr = meshi->volrenderinfo;
     if(vr->firedataptr==NULL&&vr->smokedataptr==NULL)continue;
 
     // VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
@@ -2959,7 +2959,7 @@ void UnloadVolsmokeFrameAllMeshes(int framenum){
     volrenderdata *vr;
 
     meshi = meshinfo + i;
-    vr = &meshi->volrenderinfo;
+    vr = meshi->volrenderinfo;
     if(vr->smokeslice==NULL||vr->fireslice==NULL||vr->loaded==0)continue;
     FREEMEMORY(vr->firedataptrs[framenum]);
     FREEMEMORY(vr->smokedataptrs[framenum]);
@@ -3036,7 +3036,7 @@ void ReadVolsmokeFrameAllMeshes(int framenum, supermeshdata *smesh){
     else{
       meshi = smesh->meshes[i];
     }
-    vr = &meshi->volrenderinfo;
+    vr = meshi->volrenderinfo;
     if(vr->fireslice==NULL||vr->smokeslice==NULL)continue;
     if(read_vol_mesh==i||read_vol_mesh==VOL_READALL){
       ReadVolsmokeFrame(vr,framenum,&first);
@@ -3052,7 +3052,7 @@ void ReadVolsmokeFrameAllMeshes(int framenum, supermeshdata *smesh){
     else{
       meshi = smesh->meshes[i];
     }
-    vr = &meshi->volrenderinfo;
+    vr = meshi->volrenderinfo;
     if(vr->fireslice==NULL||vr->smokeslice==NULL)continue;
     if(read_vol_mesh!=i&&read_vol_mesh!=VOL_READALL)continue;
     if(framenum==0){
@@ -3081,7 +3081,7 @@ void *ReadVolsmokeAllFramesAllMeshes2(void *arg){
     volrenderdata *vr;
 
     meshi = meshinfo + i;
-    vr = &meshi->volrenderinfo;
+    vr = meshi->volrenderinfo;
     if(vr->fireslice==NULL||vr->smokeslice==NULL)continue;
     if(read_vol_mesh!=VOL_READALL&&read_vol_mesh!=i)continue;
     if(vr->ntimes>0){
@@ -3254,7 +3254,7 @@ void ReadVolsmokeAllFramesAllMeshes(void){
     volrenderdata *vr;
 
     meshi = meshinfo + i;
-    vr = &meshi->volrenderinfo;
+    vr = meshi->volrenderinfo;
     if(vr->fireslice==NULL||vr->smokeslice==NULL)continue;
     if(read_vol_mesh!=VOL_READALL&&read_vol_mesh!=i)continue;
     GetVolsmokeAllTimes(vr);

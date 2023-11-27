@@ -10,16 +10,16 @@
 
 /* iso-surface definitions */
 
-typedef struct {
+typedef struct _isovert {
   float xyz[3],*color,distance;
   unsigned char flag, ctexturecolor, cnorm;
 } isovert;
 
-typedef struct {
+typedef struct _isotri {
   isovert *v1, *v2, *v3;
 } isotri;
 
-typedef struct {
+typedef struct _isosurface {
   float level;
   float *color;
   int dataflag;
@@ -50,17 +50,17 @@ typedef struct {
   int compression_type;
 } isosurface;
 
-typedef struct {
+typedef struct _sortdata {
   int index;
   unsigned short vertex[3];
 } sortdata;
 
-typedef struct {
+typedef struct _rankdata {
   int index;
   int sortedlist;
 } rankdata;
 
-typedef struct {
+typedef struct _orderdata {
   int index;
   int closest;
 } orderdata;

@@ -1028,7 +1028,7 @@ extern "C" void GLUISmoke3dCB(int var){
       meshdata *meshi;
 
       meshi = meshinfo + i;
-      if(meshi->volrenderinfo.loaded == 0)continue;
+      if(meshi->volrenderinfo->loaded == 0)continue;
       meshi->voltest_update = 1;
     }
     break;
@@ -1278,7 +1278,7 @@ extern "C" void GLUISmoke3dCB(int var){
     {
       volrenderdata *vr;
 
-      vr = &meshinfo->volrenderinfo;
+      vr = meshinfo->volrenderinfo;
       if(vr!=NULL&&vr->smokeslice!=NULL&&vr->smokeslice->slice_filetype==SLICE_CELL_CENTER){
         if(usegpu==1&&combine_meshes==1){
           combine_meshes=0;

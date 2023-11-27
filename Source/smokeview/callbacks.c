@@ -2365,7 +2365,7 @@ void Keyboard(unsigned char key, int flag){
                 float timediffmin;
 
                 meshi = meshinfo + i;
-                vr = &meshi->volrenderinfo;
+                vr = meshi->volrenderinfo;
                 if(vr->fireslice==NULL||vr->smokeslice==NULL)continue;
                 if(vr->loaded==0||vr->display==0)continue;
                 timediffmin = ABS(timeval-vr->times[0]);

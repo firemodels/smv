@@ -1790,7 +1790,7 @@ void GetVolSmokeDir(float *mm){
 
     drawsides = meshi->drawsides;
 
-    vr = &(meshi->volrenderinfo);
+    vr = meshi->volrenderinfo;
     if(vr->firedataptr == NULL&&vr->smokedataptr == NULL)continue;
     if(vr->loaded == 0 || vr->display == 0)continue;
     for(j = -3;j <= 3;j++){
