@@ -20,7 +20,7 @@ void InitVolRender(void){
     volrenderdata *vr;
 
     meshi = meshinfo + i;
-    vr = meshi->volrenderinfo;
+    vr = &meshi->volrenderinfo;
     vr->rendermesh = meshi;
     vr->fire = NULL;
     vr->smoke = NULL;
@@ -41,7 +41,7 @@ void InitVolRender(void){
     GetSliceParmsC(slicei->file, &ni, &nj, &nk);
 
     if(ni != meshi->ibar + 1 || nj != meshi->jbar + 1 || nk != meshi->kbar + 1)continue;
-    vr = meshi->volrenderinfo;
+    vr = &meshi->volrenderinfo;
 
     if(STRCMP(slicei->label.shortlabel, "temp") == 0){
       vr->fire = slicei;
@@ -58,7 +58,7 @@ void InitVolRender(void){
     volrenderdata *vr;
 
     meshi = meshinfo + i;
-    vr = meshi->volrenderinfo;
+    vr = &meshi->volrenderinfo;
     if(vr->smoke != NULL){
       nvolrenderinfo++;
       vr->smoke->isvolslice = 1;
