@@ -1,5 +1,5 @@
-#ifndef FLOWFILES_H_DEFINED
-#define FLOWFILES_H_DEFINED
+#ifndef STRUCTURES_H_DEFINED
+#define STRUCTURES_H_DEFINED
 
 #if defined(WIN32)
 #include <windows.h>
