@@ -74,7 +74,7 @@ void initMALLOC(void){
 #ifdef pp_THREAD
   pthread_mutex_init(&mutexMEM,NULL);
 #endif
-#ifdef pp_MEMDEBUG
+#ifdef pp_MEMCHECKSIZE
   MMmaxmemory=0;
   MMtotalmemory=0;
 #endif
@@ -479,12 +479,6 @@ int _CountMemoryBlocks(void){
   return n;
 }
 
-/* ------------------ GetTotalMemory ------------------------ */
-
-MMsize _GetTotalMemory(void){
-  return MMtotalmemory;
-}
-
 /* ------------------ PrintAllMemoryInfo ------------------------ */
 
 void _PrintAllMemoryInfo(void){
@@ -677,33 +671,24 @@ char *_strcat(char *s1, const char *s2){
   return strcat(s1,s2);
 }
 #endif
-#ifdef pp_MEMDEBUG
+#ifdef pp_MEMCHECKSIZE
 
-/* ------------------ set_memcheck ------------------------ */
 
-void set_memcheck(int index){
-  switch(index){
-  case 0:
-    MMmaxmemory=0;
-    break;
-  case 1:
-    MMmaxmemory=1000000000;
-    break;
-  case 2:
-    MMmaxmemory=2000000000;
-    break;
-  case 3:
-    MMmaxmemory=4000000000;
-    break;
-  case 4:
-    MMmaxmemory=8000000000;
-    break;
-  default:
-    assert(0);
-    break;
-  }
+/* ------------------ GetTotalMemory ------------------------ */
+
+MMsize _GetTotalMemory(void){
+  return MMtotalmemory;
 }
 
+/* ------------------ SetMemCheck ------------------------ */
+
+void SetMemCheck(int memGB){
+  if(memGB < 0)memGB = 0;
+  MMmaxmemory = memGB * 1000*1000*1000;
+}
+#endif
+
+#ifdef pp_MEMDEBUG
 /* ------------------ getMemusage ------------------------ */
 
 void getMemusage(MMsize totalmemory,char *MEMlabel){

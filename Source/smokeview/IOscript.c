@@ -1449,7 +1449,7 @@ int GetVolFrameMax(int meshnum){
 
     if(meshnum!=i && meshnum>=0)continue;
     meshi = meshinfo+i;
-    vr = &meshi->volrenderinfo;
+    vr = meshi->volrenderinfo;
     volframemax = MAX(volframemax,vr->ntimes);
   }
   return volframemax;
@@ -1477,7 +1477,7 @@ void LoadSmokeFrame(int meshnum, int framenum){
 
     if(meshnum != i && meshnum >= 0)continue;
     meshi = meshinfo + i;
-    vr = &meshi->volrenderinfo;
+    vr = meshi->volrenderinfo;
     FreeVolsmokeFrame(vr, framenum);
     ReadVolsmokeFrame(vr, framenum, &first);
     if(vr->times_defined == 0){
@@ -1519,7 +1519,7 @@ void LoadTimeFrame(int meshnum, float timeval){
   if(meshnum<0||meshnum>nmeshes-1)meshnum = 0;
 
   meshi = meshinfo+meshnum;
-  vr = &meshi->volrenderinfo;
+  vr = meshi->volrenderinfo;
 
   if(vr->times_defined==0)LoadSmokeFrame(meshnum_orig, 0);
   if(time_framemin>time_framemax){
@@ -1764,7 +1764,7 @@ void ScriptLoadVolSmoke(scriptdata *scripti){
     volrenderdata *vr;
 
     meshi = meshinfo + imesh;
-    vr = &meshi->volrenderinfo;
+    vr = meshi->volrenderinfo;
     ReadVolsmokeAllFrames(vr);
   }
 }

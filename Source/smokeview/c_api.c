@@ -1240,7 +1240,7 @@ void Loadvolsmoke(int meshnumber) {
     volrenderdata *vr;
 
     meshi = meshinfo + imesh;
-    vr = &meshi->volrenderinfo;
+    vr = meshi->volrenderinfo;
     ReadVolsmokeAllFrames(vr);
   }
 }
@@ -1264,7 +1264,7 @@ void Loadvolsmokeframe(int meshnumber, int framenumber, int flag) {
       volrenderdata *vr;
 
       meshi = meshinfo + i;
-      vr = &meshi->volrenderinfo;
+      vr = meshi->volrenderinfo;
       FreeVolsmokeFrame(vr, framenum);
       ReadVolsmokeFrame(vr, framenum, &first);
       if (vr->times_defined == 0) {

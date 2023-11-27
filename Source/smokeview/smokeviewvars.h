@@ -1616,8 +1616,8 @@ SVEXTERN int SVDECL(ntargets,0);
 
 SVEXTERN int SVDECL(mainwindow_id,0);
 
-#ifdef pp_MEMDEBUG
-SVEXTERN int list_memcheck_index;
+#ifdef pp_MEMCHECKSIZE
+SVEXTERN int SVDECL(max_mem_GB,0);
 #endif
 SVEXTERN int SVDECL(visUsagememory,0);
 SVEXTERN float gslice_norm[3];

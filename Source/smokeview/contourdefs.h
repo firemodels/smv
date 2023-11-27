@@ -20,7 +20,8 @@
 #ifndef ZDIR
 #define ZDIR 3
 #endif
-typedef struct {
+
+typedef struct _contour {
   float *levels,*areas;
   int nlevels, *nnodes, *npolys, *nlines;
   int **polysize;

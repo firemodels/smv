@@ -189,6 +189,13 @@ CommandlineArgs ParseCommandlineNew(int argc, char **argv,
       args.outline = true;
     } else if (strcmp(argv[i], "-make_movie") == 0) {
       args.make_movie = true;
+#ifdef pp_MEMCHECKSIZE
+    } else if(strcmp(argv[i], "-max_memory") == 0) {
+      args.max_memory = true;
+      i++;
+      sscanf(argv[i],"%i",&args.max_mem_GB);
+      if(args.max_mem_GB<0)args.max_mem_GB = 0;
+#endif
     } else if (strcmp(argv[i], "-geominfo") == 0) {
       args.geominfo = true;
     } else if (strcmp(argv[i], "-fast") == 0) {

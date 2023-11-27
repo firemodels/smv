@@ -256,14 +256,14 @@ void ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
     meshi->plot3dfilenum=ifile;
   }
 
-  FreeSurface(&meshi->currentsurf);
-  FreeSurface(&meshi->currentsurf2);
-  FreeContour(&meshi->plot3dcontour1);
-  FreeContour(&meshi->plot3dcontour2);
-  FreeContour(&meshi->plot3dcontour3);
-  InitContour(&meshi->plot3dcontour1,rgb_plot3d_contour,nrgb);
-  InitContour(&meshi->plot3dcontour2,rgb_plot3d_contour,nrgb);
-  InitContour(&meshi->plot3dcontour3,rgb_plot3d_contour,nrgb);
+  FreeSurface(meshi->currentsurf);
+  FreeSurface(meshi->currentsurf2);
+  FreeContour(meshi->plot3dcontour1);
+  FreeContour(meshi->plot3dcontour2);
+  FreeContour(meshi->plot3dcontour3);
+  InitContour(meshi->plot3dcontour1,rgb_plot3d_contour,nrgb);
+  InitContour(meshi->plot3dcontour2,rgb_plot3d_contour,nrgb);
+  InitContour(meshi->plot3dcontour3,rgb_plot3d_contour,nrgb);
 
 
   for(i=0;i<nmeshes;i++){
@@ -562,8 +562,8 @@ void DrawPlot3dTexture(meshdata *meshi){
   nxy = nx*ny;
   nxyz = nx*ny*nz;
 
-  currentsurfptr=&meshi->currentsurf;
-  currentsurf2ptr=&meshi->currentsurf2;
+  currentsurfptr=meshi->currentsurf;
+  currentsurf2ptr=meshi->currentsurf2;
   dx_xy=meshi->dx_xy;
   dx_xz=meshi->dx_xz;
   dx_yz=meshi->dx_yz;
@@ -988,8 +988,8 @@ void UpdateSurface(void){
     zplt=meshi->zplt;
     iblank_cell=meshi->c_iblank_cell;
 
-    currentsurfptr = &meshi->currentsurf;
-    currentsurf2ptr = &meshi->currentsurf2;
+    currentsurfptr = meshi->currentsurf;
+    currentsurf2ptr = meshi->currentsurf2;
     qdata=meshi->qdata;
     if(plotiso[plotn-1]<0){
       plotiso[plotn-1]=nrgb-3;
@@ -1236,9 +1236,9 @@ void UpdatePlotSliceMesh(meshdata *mesh_in, int slicedir){
   dz_xz = meshi->dz_xz;
   dz_yz = meshi->dz_yz;
 
-  plot3dcontour1ptr = &meshi->plot3dcontour1;
-  plot3dcontour2ptr = &meshi->plot3dcontour2;
-  plot3dcontour3ptr = &meshi->plot3dcontour3;
+  plot3dcontour1ptr = meshi->plot3dcontour1;
+  plot3dcontour2ptr = meshi->plot3dcontour2;
+  plot3dcontour3ptr = meshi->plot3dcontour3;
   nx = ibar + 1;
   ny = jbar + 1;
   nz = kbar + 1;

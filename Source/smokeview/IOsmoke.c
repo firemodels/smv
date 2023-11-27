@@ -314,7 +314,7 @@ float GetSootDensity(float *xyz, int itime, meshdata **mesh_try){
   if(mesh_soot->c_iblank_node != NULL&&mesh_soot->c_iblank_node[ijk] == SOLID){
     return 1000000.0;
   }
-  vr = &(mesh_soot->volrenderinfo);
+  vr = mesh_soot->volrenderinfo;
   if(vr->smokedataptrs ==NULL)return 0.0;
   itime = CLAMP(itime,0, vr->ntimes -1);
   if(vr->smokedataptrs[itime] == NULL)return 0.0;
