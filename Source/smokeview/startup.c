@@ -98,17 +98,17 @@ void InitMisc(void){
     meshdata *meshi;
 
     meshi=meshinfo+i;
-    InitContour(&meshi->plot3dcontour1,rgb_plot3d_contour,nrgb);
-    InitContour(&meshi->plot3dcontour2,rgb_plot3d_contour,nrgb);
-    InitContour(&meshi->plot3dcontour3,rgb_plot3d_contour,nrgb);
+    InitContour(meshi->plot3dcontour1,rgb_plot3d_contour,nrgb);
+    InitContour(meshi->plot3dcontour2,rgb_plot3d_contour,nrgb);
+    InitContour(meshi->plot3dcontour3,rgb_plot3d_contour,nrgb);
   }
 
   for(i=0;i<nmeshes;i++){
     meshdata *meshi;
 
     meshi=meshinfo+i;
-    meshi->currentsurf.defined=0;
-    meshi->currentsurf2.defined=0;
+    meshi->currentsurf->defined=0;
+    meshi->currentsurf2->defined=0;
   }
 
   /* initialize box sizes, lighting parameters */

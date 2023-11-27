@@ -3117,7 +3117,7 @@ void LoadVolsmoke3DMenu(int value){
 
     update_smokecolorbar = 1;
     meshi = meshinfo + value;
-    vr = &(meshi->volrenderinfo);
+    vr = meshi->volrenderinfo;
     if(vr->smokeslice != NULL&&vr->fireslice != NULL){
       if(scriptoutstream != NULL){
         fprintf(scriptoutstream, "LOADVOLSMOKE\n");
@@ -4522,7 +4522,7 @@ void ShowVolsmoke3DMenu(int value){
     volrenderdata *vr;
 
     meshi = meshinfo + value;
-    vr = &(meshi->volrenderinfo);
+    vr = meshi->volrenderinfo;
     if(vr->fireslice!=NULL||vr->smokeslice!=NULL){
       if(vr->loaded==1){
         vr->display=1-vr->display;
@@ -4545,7 +4545,7 @@ void ShowVolsmoke3DMenu(int value){
       volrenderdata *vr;
 
       meshi = meshinfo + i;
-      vr = &(meshi->volrenderinfo);
+      vr = meshi->volrenderinfo;
       if(vr->fireslice==NULL||vr->smokeslice==NULL)continue;
       if(vr->loaded==1){
         vr->display=show_volsmokefiles;
@@ -4572,7 +4572,7 @@ void UnLoadVolsmoke3DMenu(int value){
         volrenderdata *vr;
 
         meshi = meshinfo + i;
-        vr = &(meshi->volrenderinfo);
+        vr = meshi->volrenderinfo;
         if(vr->fireslice==NULL||vr->smokeslice==NULL)continue;
         if(vr->loaded==1){
           UnloadVolsmokeAllFrames(vr);
@@ -4585,7 +4585,7 @@ void UnLoadVolsmoke3DMenu(int value){
     volrenderdata *vr;
 
     meshi = meshinfo + value;
-    vr = &(meshi->volrenderinfo);
+    vr = meshi->volrenderinfo;
     if(vr->fireslice!=NULL||vr->smokeslice!=NULL){
       UnloadVolsmokeAllFrames(vr);
     }
@@ -10823,7 +10823,7 @@ updatemenu=0;
       char menulabel[1024];
 
       meshi = meshinfo + i;
-      vr = &(meshi->volrenderinfo);
+      vr = meshi->volrenderinfo;
       if(vr->fireslice==NULL||vr->smokeslice==NULL)continue;
       if(vr->loaded==0)continue;
       strcpy(menulabel,"");
@@ -11913,7 +11913,7 @@ updatemenu=0;
         char menulabel[1024];
 
         meshi = meshinfo + i;
-        vr = &(meshi->volrenderinfo);
+        vr = meshi->volrenderinfo;
         if(vr->fireslice==NULL||vr->smokeslice==NULL)continue;
         strcpy(menulabel,"");
         if(vr->loaded==1)strcat(menulabel,"*");
@@ -11934,7 +11934,7 @@ updatemenu=0;
         volrenderdata *vr;
 
         meshi = meshinfo + i;
-        vr = &(meshi->volrenderinfo);
+        vr = meshi->volrenderinfo;
         if(vr->fireslice==NULL||vr->smokeslice==NULL)continue;
         if(vr->loaded==0)continue;
         glutAddMenuEntry(meshi->label,i);

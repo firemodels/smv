@@ -893,6 +893,15 @@ void InitMesh(meshdata *meshi){
   meshi->ndec_verts     = 0;
   meshi->decimated  = 0;
 #endif
+  NewMemory((void **)&meshi->plot3dcontour1, sizeof(contour));
+  NewMemory((void **)&meshi->plot3dcontour2, sizeof(contour));
+  NewMemory((void **)&meshi->plot3dcontour3, sizeof(contour));
+  NewMemory((void **)&meshi->currentsurf,    sizeof(isosurface));
+  NewMemory((void **)&meshi->currentsurf2,   sizeof(isosurface));
+  NewMemory((void **)&meshi->box_clipinfo,   sizeof(clipdata));
+  NewMemory((void **)&meshi->gsliceinfo,     sizeof(meshplanedata));
+  NewMemory((void **)&meshi->volrenderinfo,  sizeof(volrenderdata));
+
   meshi->in_frustum = 1;
   meshi->imap = NULL;
   meshi->jmap = NULL;
@@ -10084,7 +10093,7 @@ int ReadSMV_Parse(bufferstreamdata *stream) {
       meshi->xyz_bar0[ZZZ]=zbar0;
       meshi->xyz_bar[ZZZ] =zbar;
       meshi->zcen =(zbar+zbar0)/2.0;
-      InitBoxClipInfo(&(meshi->box_clipinfo),xbar0,xbar,ybar0,ybar,zbar0,zbar);
+      InitBoxClipInfo(meshi->box_clipinfo,xbar0,xbar,ybar0,ybar,zbar0,zbar);
       if(ntrnx==0){
         int nn;
 
@@ -17296,7 +17305,7 @@ void UpdateLoadedLists(void){
       volrenderdata *vr;
 
       meshi = meshinfo + i;
-      vr = &(meshi->volrenderinfo);
+      vr = meshi->volrenderinfo;
       if(vr==NULL||vr->fireslice==NULL||vr->smokeslice==NULL)continue;
       if(vr->loaded==0||vr->display==0)continue;
       nvolsmoke_loaded++;

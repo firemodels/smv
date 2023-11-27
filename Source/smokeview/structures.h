@@ -450,8 +450,8 @@ typedef struct _blockagedata {
   int ijk[6];
   float xmin, xmax, ymin, ymax, zmin, zmax;
   float xyzEXACT[6], xyzDELTA[18];
-  surfdata *surf[6];
-  propdata *prop;
+  struct _surfdata *surf[6];
+  struct _propdata *prop;
   int walltype,walltypeORIG;
   int surf_index[6];
   int patchvis[7];
@@ -474,7 +474,7 @@ typedef struct _blockagedata {
   float *color;
   int colorindex;
   int useblockcolor;
-  facedata *faceinfo[6];
+  struct _facedata *faceinfo[6];
   float texture_origin[3];
 } blockagedata;
 
@@ -682,7 +682,7 @@ typedef struct _meshdata {
 
   int *cutcells, ncutcells;
   int update_smoke3dcolors;
-  terraindata *terrain;
+  struct _terraindata *terrain;
   float *znodes_complete;
   int nznodes;
   struct _meshdata *floor_mesh;
@@ -747,10 +747,10 @@ typedef struct _meshdata {
   int zdist_flag;
   unsigned char *iblank_smoke3d;
   int iblank_smoke3d_defined;
-  blockagedata **blockageinfoptrs;
+  struct _blockagedata **blockageinfoptrs;
   int *obst_bysize;
-  ventdata *ventinfo;
-  cventdata *cventinfo;
+  struct _ventdata *ventinfo;
+  struct _cventdata *cventinfo;
   unsigned char *is_block_terrain;
   unsigned char *iqdata;
   float *qdata, *udata, *vdata, *wdata;
@@ -762,10 +762,10 @@ typedef struct _meshdata {
   float *dx_yz, *dy_yz, *dz_yz;
   char *c_iblank_xy, *c_iblank_xz, *c_iblank_yz;
   float plot3d_speedmax;
-  contour plot3dcontour1,plot3dcontour2,plot3dcontour3;
-  isosurface currentsurf,currentsurf2;
-  isosurface *blockagesurface;
-  isosurface **blockagesurfaces;
+  struct _contour *plot3dcontour1, *plot3dcontour2, *plot3dcontour3;
+  struct _isosurface *currentsurf, *currentsurf2;
+  struct _isosurface *blockagesurface;
+  struct _isosurface **blockagesurfaces;
   int ntc;
   int nspr;
   float *xsprplot, *ysprplot, *zsprplot, *tspr;
@@ -774,7 +774,7 @@ typedef struct _meshdata {
   float *xspr, *yspr, *zspr;
   float *xheat, *yheat, *zheat;
 
-  isosurface *animatedsurfaces;
+  struct _isosurface *animatedsurfaces;
   int nisolevels, *showlevels;
   float *isolevels;
   int isomin_index, isomax_index;
@@ -816,10 +816,10 @@ typedef struct _meshdata {
 
   int nface_textures, nface_outlines, nfaces;
   int nface_normals_single, nface_normals_double, nface_transparent_double;
-  facedata *faceinfo, **face_normals_single, **face_normals_double, **face_transparent_double, **face_textures, **face_outlines;
-  facedata **face_normals_single_DOWN_X,**face_normals_single_UP_X;
-  facedata **face_normals_single_DOWN_Y,**face_normals_single_UP_Y;
-  facedata **face_normals_single_DOWN_Z,**face_normals_single_UP_Z;
+  struct _facedata *faceinfo, **face_normals_single, **face_normals_double, **face_transparent_double, **face_textures, **face_outlines;
+  struct _facedata **face_normals_single_DOWN_X,**face_normals_single_UP_X;
+  struct _facedata **face_normals_single_DOWN_Y,**face_normals_single_UP_Y;
+  struct _facedata **face_normals_single_DOWN_Z,**face_normals_single_UP_Z;
   int nface_normals_single_DOWN_X,nface_normals_single_UP_X;
   int nface_normals_single_DOWN_Y,nface_normals_single_UP_Y;
   int nface_normals_single_DOWN_Z,nface_normals_single_UP_Z;
@@ -830,7 +830,7 @@ typedef struct _meshdata {
   float vent_offset[3];
   int select_min, select_max;
 
-  clipdata box_clipinfo;
+  struct _clipdata *box_clipinfo;
 
   unsigned char *merge_color,*merge_alpha;
   unsigned char *smokecolor_ptr, *smokealpha_ptr;
@@ -840,18 +840,18 @@ typedef struct _meshdata {
   int ncullgeominfo,nxyzgeomcull[3],nxyzskipgeomcull[3];
   struct _culldata *cullgeominfo;
 #ifdef pp_DECIMATE
-  vertdata *dec_verts;
-  tridata *dec_triangles;
+  struct _vertdata *dec_verts;
+  struct _tridata *dec_triangles;
   int ndec_triangles, ndec_verts, decimated;
 #endif
 
 
-  volrenderdata volrenderinfo;
+  struct _volrenderdata *volrenderinfo;
   int  nslicex,  nslicey,  nslicez;
   struct _slicedata **slicex, **slicey, **slicez;
 
-  meshplanedata gsliceinfo;
-  meshplanedata *smokeplaneinfo;
+  struct _meshplanedata *gsliceinfo;
+  struct _meshplanedata *smokeplaneinfo;
   int nsmokeplaneinfo;
   int s_offset[3];
 } meshdata;
