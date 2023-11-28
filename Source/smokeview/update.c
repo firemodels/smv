@@ -54,7 +54,7 @@ void UpdateFrameNumber(int changetime){
         int j;
 
         meshi = meshinfo + imesh;
-        vr = &(meshi->volrenderinfo);
+        vr = meshi->volrenderinfo;
         fireslice=vr->fireslice;
         smokeslice=vr->smokeslice;
         if(fireslice==NULL||smokeslice==NULL)continue;
@@ -298,7 +298,7 @@ void UpdateFileLoad(void){
     volrenderdata *vr;
 
     meshi = meshinfo+i;
-    vr = &(meshi->volrenderinfo);
+    vr = meshi->volrenderinfo;
     if(vr->fireslice==NULL||vr->smokeslice==NULL)continue;
     if(vr->loaded==1)nvolsmoke3dloaded++;
   }
@@ -400,7 +400,7 @@ void UpdateShow(void){
       volrenderdata *vr;
 
       meshi = meshinfo + i;
-      vr = &(meshi->volrenderinfo);
+      vr = meshi->volrenderinfo;
       if(vr->fireslice==NULL||vr->smokeslice==NULL)continue;
       if(vr->loaded==0||vr->display==0)continue;
       showvolrender=1;
@@ -824,7 +824,7 @@ void SynchTimes(void){
         meshdata *meshi;
 
         meshi=meshinfo+igrid;
-        vr = &meshi->volrenderinfo;
+        vr = meshi->volrenderinfo;
         if(vr->smokeslice==NULL)continue;
         if(vr->loaded==0||vr->display==0)continue;
         if(vr->times==NULL)continue;
@@ -1273,7 +1273,7 @@ void UpdateTimes(void){
       meshdata *meshi;
 
       meshi=meshinfo+i;
-      vr = &meshi->volrenderinfo;
+      vr = meshi->volrenderinfo;
       if(vr->fireslice==NULL||vr->smokeslice==NULL)continue;
       if(vr->loaded==0||vr->display==0)continue;
       MergeGlobalTimes(vr->times, vr->ntimes);
@@ -1358,7 +1358,7 @@ void UpdateTimes(void){
       volrenderdata *vr;
 
       meshi = meshinfo + i;
-      vr = &(meshi->volrenderinfo);
+      vr = meshi->volrenderinfo;
       if(vr->fireslice==NULL||vr->smokeslice==NULL)continue;
       if(vr->loaded==0||vr->display==0)continue;
       FREEMEMORY(vr->timeslist);
@@ -1704,7 +1704,7 @@ int GetPlotStateSub(int choice){
           volrenderdata *vr;
 
           meshi = meshinfo + i;
-          vr = &(meshi->volrenderinfo);
+          vr = meshi->volrenderinfo;
           if(vr->fireslice==NULL||vr->smokeslice==NULL)continue;
           if(vr->loaded==0||vr->display==0)continue;
           return DYNAMIC_PLOTS;
