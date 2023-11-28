@@ -157,7 +157,7 @@ char *ProcessCommandLine(CommandlineArgs *args) {
 
   CheckMemory;
 
-#ifdef pp_MEMCHECKSIZE
+#ifdef pp_MEMDEBUG
   if(args->max_memory){
     max_mem_GB = args->max_mem_GB;
   }

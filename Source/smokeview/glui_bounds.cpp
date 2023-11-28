@@ -3550,7 +3550,7 @@ GLUI_Spinner *SPINNER_down_red = NULL, *SPINNER_down_green = NULL, *SPINNER_down
 GLUI_Spinner *SPINNER_up_red = NULL, *SPINNER_up_green = NULL, *SPINNER_up_blue = NULL;
 GLUI_Spinner *SPINNER_colorsplit[12];
 GLUI_Spinner *SPINNER_valsplit[3];
-#ifdef pp_MEMCHECKSIZE
+#ifdef pp_MEMDEBUG
 GLUI_Spinner *SPINNER_max_mem_GB = NULL;
 #endif
 
@@ -4404,7 +4404,7 @@ void FileShowCB(int var){
   }
 }
 
-#ifdef pp_MEMCHECKSIZE
+#ifdef pp_MEMDEBUG
 
 /* ------------------ MemcheckCB ------------------------ */
 
@@ -5997,7 +5997,7 @@ hvacductboundsCPP.setup("hvac", ROLLOUT_hvacduct, hvacductbounds_cpp, nhvacductb
 
   // ----------------------------------- Memory check ----------------------------------------
 
-#ifdef pp_MEMCHECKSIZE
+#ifdef pp_MEMDEBUG
   ROLLOUT_memcheck = glui_bounds->add_rollout(_("Memory check"),false,MEMCHECK_ROLLOUT,FileRolloutCB);
   INSERT_ROLLOUT(ROLLOUT_memcheck, glui_bounds);
   ADDPROCINFO(fileprocinfo, nfileprocinfo, ROLLOUT_memcheck, MEMCHECK_ROLLOUT, glui_bounds);

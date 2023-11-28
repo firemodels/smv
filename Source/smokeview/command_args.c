@@ -189,7 +189,7 @@ CommandlineArgs ParseCommandlineNew(int argc, char **argv,
       args.outline = true;
     } else if (strcmp(argv[i], "-make_movie") == 0) {
       args.make_movie = true;
-#ifdef pp_MEMCHECKSIZE
+#ifdef pp_MEMDEBUG
     } else if(strcmp(argv[i], "-max_memory") == 0) {
       args.max_memory = true;
       i++;

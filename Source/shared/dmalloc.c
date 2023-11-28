@@ -74,7 +74,7 @@ void initMALLOC(void){
 #ifdef pp_THREAD
   pthread_mutex_init(&mutexMEM,NULL);
 #endif
-#ifdef pp_MEMCHECKSIZE
+#ifdef pp_MEMDEBUG
   MMmaxmemory=0;
   MMtotalmemory=0;
 #endif
@@ -670,9 +670,6 @@ char *_strcat(char *s1, const char *s2){
 
   return strcat(s1,s2);
 }
-#endif
-#ifdef pp_MEMCHECKSIZE
-
 
 /* ------------------ GetTotalMemory ------------------------ */
 

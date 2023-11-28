@@ -45,7 +45,7 @@ typedef struct {
 
 MMEXTERN MMdata MMfirst, MMlast;
 MMEXTERN MMdata *MMfirstptr, *MMlastptr;
-#ifdef pp_MEMCHECKSIZE
+#ifdef pp_MEMDEBUG
 MMEXTERN MMsize MMtotalmemory,MMmaxmemory;
 #endif
 
@@ -169,7 +169,7 @@ MMEXTERN mallocflag _ResizeMemoryNOTHREAD(void **ppv, size_t sizeNew, int memory
 MMEXTERN mallocflag _NewMemoryNOTHREAD(void **ppv, size_t size, int memory_id);
 MMEXTERN void FreeMemoryNOTHREAD(void *pv);
 MMEXTERN int memusage(void);
-#ifdef pp_MEMCHECKSIZE
+#ifdef pp_MEMDEBUG
 MMEXTERN void SetMemCheck(int index);
 #endif
 void initMALLOC(void);

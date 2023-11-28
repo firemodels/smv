@@ -1616,7 +1616,7 @@ SVEXTERN int SVDECL(ntargets,0);
 
 SVEXTERN int SVDECL(mainwindow_id,0);
 
-#ifdef pp_MEMCHECKSIZE
+#ifdef pp_MEMDEBUG
 SVEXTERN int SVDECL(max_mem_GB,0);
 #endif
 SVEXTERN int SVDECL(visUsagememory,0);
