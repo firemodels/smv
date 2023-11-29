@@ -683,9 +683,7 @@ void SetMemCheck(int memGB){
   if(memGB < 0)memGB = 0;
   MMmaxmemory = memGB * 1000*1000*1000;
 }
-#endif
 
-#ifdef pp_MEMDEBUG
 /* ------------------ getMemusage ------------------------ */
 
 void getMemusage(MMsize totalmemory,char *MEMlabel){
