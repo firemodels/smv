@@ -62,10 +62,10 @@ typedef struct CommandlineArgs {
   bool outline;
   /// @brief open the movie generating dialog box
   bool make_movie;
-#ifdef pp_MEMDEBUG
+#ifdef pp_MEMCHECK
   /// @brief specify maximum memory used
-  bool max_memory;
-  int max_mem_GB;
+  bool max_mem;
+  float max_mem_GB;
 #endif
   /// @brief output information about geometry triangles
   bool geominfo;

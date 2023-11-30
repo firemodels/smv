@@ -15,6 +15,7 @@
 #define pp_SLICE_MULTI    // load slice files in parallel
 #define pp_PART_MULTI     // load particle files in parallel
 #define pp_CSV_MULTI      // read in csv files in parallel
+#define pp_MEMCHECK       // set maximum memory used by smokeview for debugging
 
 #define pp_PATCH_HIST     // simplify boundary file histogram computation
 //#define pp_HIST           // compute histograms

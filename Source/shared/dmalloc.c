@@ -74,11 +74,8 @@ void initMALLOC(void){
 #ifdef pp_THREAD
   pthread_mutex_init(&mutexMEM,NULL);
 #endif
-#ifdef pp_MEMDEBUG
   MMmaxmemory=0;
   MMtotalmemory=0;
-#endif
-
 }
 
 /* ------------------ _NewMemory ------------------------ */
@@ -106,7 +103,7 @@ mallocflag _NewMemory(void **ppv, size_t size, int memory_id, const char *varnam
 /* ------------------ _NewMemoryNOTHREAD ------------------------ */
 
 mallocflag _NewMemoryNOTHREAD(void **ppv, size_t size, int memory_id){
-  void **ppb=(void **)ppv;
+  void **ppb = (void **)ppv;
 #ifdef pp_MEMDEBUG
   char *c;
 #endif
@@ -114,58 +111,54 @@ mallocflag _NewMemoryNOTHREAD(void **ppv, size_t size, int memory_id){
   MMdata *this_ptr, *prev_ptr, *next_ptr;
 
   assert(ppv != NULL && size != 0);
-  infoblocksize=(sizeof(MMdata)+3)/4;
-  infoblocksize*=4;
+  infoblocksize = (sizeof(MMdata) + 3) / 4;
+  infoblocksize *= 4;
 
-#ifdef pp_MEMDEBUG
-  if(MMmaxmemory==0||MMtotalmemory+size<=MMmaxmemory){
-    this_ptr = (void *)malloc(infoblocksize+size+sizeofDebugByte);
+  //  float total, maxmem;
+  //  total = MMtotalmemory/1000000000.0;
+  //  maxmem = MMmaxmemory / 1000000000.0;
+  //  printf("memory allocated: %f GB out of %f GB\n",total,maxmem);
+  if(MMmaxmemory == 0 || MMtotalmemory + size <= MMmaxmemory){
+    this_ptr = (void *)malloc(infoblocksize + size + sizeofDebugByte);
   }
   else{
     this_ptr = NULL;
   }
-#else
-  this_ptr = (void *)malloc(infoblocksize+size+sizeofDebugByte);
-#endif
-  if(this_ptr!=NULL){
-    prev_ptr=MMfirstptr;
-    next_ptr=MMfirstptr->next;
+  if(this_ptr != NULL){
+    prev_ptr = MMfirstptr;
+    next_ptr = MMfirstptr->next;
 
-    prev_ptr->next=this_ptr;
-    next_ptr->prev=this_ptr;
+    prev_ptr->next = this_ptr;
+    next_ptr->prev = this_ptr;
 
-#ifdef pp_MEMPRINT
     this_ptr->size = size;
-#endif
     this_ptr->memory_id = memory_id;
-    this_ptr->prev=prev_ptr;
-    this_ptr->next=next_ptr;
-    this_ptr->marker=markerByte;
+    this_ptr->prev = prev_ptr;
+    this_ptr->next = next_ptr;
+    this_ptr->marker = markerByte;
 
-    *ppb=(char *)this_ptr+infoblocksize;
+    *ppb = (char *)this_ptr + infoblocksize;
   }
   else{
-    *ppb=NULL;
+    *ppb = NULL;
   }
 
 #ifdef pp_MEMDEBUG
-  {
-    CheckMemoryNOTHREAD;
-    if(*ppb != NULL){
-      if(sizeofDebugByte!=0){
-       c = (char *)(*ppb) + size;
-       *c=(char)debugByte;
-      }
-      memset(*ppb, memGarbage, size);
-      if(!CreateBlockInfo(*ppb, size)){
-        free((char *)*ppb-infoblocksize);
-        *ppb=NULL;
-      }
+  CheckMemoryNOTHREAD;
+  assert(*ppb != NULL);
+  if(*ppb != NULL){
+    if(sizeofDebugByte != 0){
+      c = (char *)(*ppb) + size;
+      *c = (char)debugByte;
     }
-    MMtotalmemory+=size;
-    assert(*ppb !=NULL);
+    memset(*ppb, memGarbage, size);
+    if(!CreateBlockInfo(*ppb, size)){
+      free((char *)*ppb - infoblocksize);
+      *ppb = NULL;
+    }
   }
 #endif
+  MMtotalmemory += size;
   return (*ppb != NULL);
 }
 
@@ -230,7 +223,6 @@ void FreeMemoryNOTHREAD(void *pv){
 
     CheckMemoryNOTHREAD;
     meminfoblock = GetBlockInfo(pv);
-    MMtotalmemory-=meminfoblock->size;
     len_memory=sizeofBlock((char *)pv);
     memset((char *)pv, memGarbage, len_memory);
     FreeBlockInfo((char *)pv);
@@ -238,6 +230,7 @@ void FreeMemoryNOTHREAD(void *pv){
 #endif
   this_ptr=(MMdata *)((char *)pv-infoblocksize);
   assert(this_ptr->marker==markerByte);
+  MMtotalmemory-=this_ptr->size;
   prev_ptr=this_ptr->prev;
   next_ptr=this_ptr->next;
 
@@ -314,9 +307,7 @@ mallocflag _ResizeMemoryNOTHREAD(void **ppv, size_t sizeNew, int memory_id){
       prev_ptr->next=this_ptr;
       next_ptr->prev=this_ptr;
 
-#ifdef pp_MEMPRINT
       this_ptr->size = sizeNew;
-#endif
       this_ptr->memory_id = memory_id;
       this_ptr->next=next_ptr;
       this_ptr->prev=prev_ptr;
@@ -338,6 +329,14 @@ mallocflag _ResizeMemoryNOTHREAD(void **ppv, size_t sizeNew, int memory_id){
   }
   return (pbNew != NULL);
 }
+
+/* ------------------ SetMemCheck ------------------------ */
+#ifdef pp_MEMCHECK
+void SetMemCheck(float memGB){
+  if(memGB < 0)memGB = 0;
+  MMmaxmemory = memGB * (MMsize)(1000*1000*1000);
+}
+#endif
 
 #ifdef pp_MEMDEBUG
 /* ------------------ pointer comparison defines ------------------------ */
@@ -677,13 +676,6 @@ MMsize _GetTotalMemory(void){
   return MMtotalmemory;
 }
 
-/* ------------------ SetMemCheck ------------------------ */
-
-void SetMemCheck(int memGB){
-  if(memGB < 0)memGB = 0;
-  MMmaxmemory = memGB * 1000*1000*1000;
-}
-
 /* ------------------ getMemusage ------------------------ */
 
 void getMemusage(MMsize totalmemory,char *MEMlabel){
@@ -698,6 +690,5 @@ void getMemusage(MMsize totalmemory,char *MEMlabel){
     rsize = totalmemory/1000000000.0;
     sprintf(MEMlabel,"%4.2f GB",rsize);
   }
-
 }
 #endif
