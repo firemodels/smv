@@ -328,12 +328,10 @@ mallocflag _ResizeMemoryNOTHREAD(void **ppv, size_t sizeNew, int memory_id){
 }
 
 /* ------------------ SetMemCheck ------------------------ */
-#ifdef pp_MEMCHECK
 void SetMemCheck(float memGB){
   if(memGB < 0)memGB = 0;
   MMmaxmemory = memGB * (MMsize)(1000*1000*1000);
 }
-#endif
 
 #ifdef pp_MEMDEBUG
 /* ------------------ pointer comparison defines ------------------------ */

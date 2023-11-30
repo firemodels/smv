@@ -162,9 +162,7 @@ MMEXTERN mallocflag _ResizeMemoryNOTHREAD(void **ppv, size_t sizeNew, int memory
 MMEXTERN mallocflag _NewMemoryNOTHREAD(void **ppv, size_t size, int memory_id);
 MMEXTERN void FreeMemoryNOTHREAD(void *pv);
 MMEXTERN int memusage(void);
-#ifdef pp_MEMCHECK
 MMEXTERN void SetMemCheck(float memGB);
-#endif
 void initMALLOC(void);
 void FreeAllMemory(int memory_id);
 mallocflag _ValidPointer(void *pv, size_t size);

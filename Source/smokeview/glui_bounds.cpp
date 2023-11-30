@@ -3382,9 +3382,7 @@ GLUI_Listbox *LISTBOX_cb_bound = NULL;
 GLUI_Rollout *ROLLOUT_zone_bound=NULL;
 GLUI_Rollout *ROLLOUT_coloring=NULL;
 
-#ifdef pp_MEMCHECK
 #define MEMCHECK 1
-#endif
 
 GLUI_Button *BUTTON_globalalpha = NULL;
 GLUI_Button *BUTTON_updatebound = NULL;
@@ -3411,9 +3409,7 @@ GLUI_Button *BUTTON_OUTPUT_PLOT2D=NULL;;
 GLUI_Listbox *LIST_colortable = NULL;
 GLUI_Listbox *LIST_iso_colorbar = NULL;
 
-#ifdef pp_MEMCHECK
 GLUI_Rollout *ROLLOUT_memcheck=NULL;
-#endif
 GLUI_Rollout *ROLLOUT_boundary_duplicates;
 GLUI_Rollout *ROLLOUT_iso_settings;
 GLUI_Rollout *ROLLOUT_iso_bounds;
@@ -3550,9 +3546,7 @@ GLUI_Spinner *SPINNER_down_red = NULL, *SPINNER_down_green = NULL, *SPINNER_down
 GLUI_Spinner *SPINNER_up_red = NULL, *SPINNER_up_green = NULL, *SPINNER_up_blue = NULL;
 GLUI_Spinner *SPINNER_colorsplit[12];
 GLUI_Spinner *SPINNER_valsplit[3];
-#ifdef pp_MEMCHECK
 GLUI_Spinner *SPINNER_max_mem_GB = NULL;
-#endif
 
 GLUI_Listbox *LIST_scriptlist=NULL;
 GLUI_Listbox *LIST_ini_list=NULL;
@@ -4404,7 +4398,6 @@ void FileShowCB(int var){
   }
 }
 
-#ifdef pp_MEMCHECK
 /* ------------------ MemcheckCB ------------------------ */
 
 void MemcheckCB(int var){
@@ -4421,7 +4414,6 @@ void MemcheckCB(int var){
     break;
   }
 }
-#endif
 
 /* ------------------ BoundsDlgCB ------------------------ */
 
@@ -5996,14 +5988,12 @@ hvacductboundsCPP.setup("hvac", ROLLOUT_hvacduct, hvacductbounds_cpp, nhvacductb
 
   // ----------------------------------- Memory check ----------------------------------------
 
-#ifdef pp_MEMCHECK
   ROLLOUT_memcheck = glui_bounds->add_rollout(_("Memory check"),false,MEMCHECK_ROLLOUT,FileRolloutCB);
   INSERT_ROLLOUT(ROLLOUT_memcheck, glui_bounds);
   ADDPROCINFO(fileprocinfo, nfileprocinfo, ROLLOUT_memcheck, MEMCHECK_ROLLOUT, glui_bounds);
 
   SPINNER_max_mem_GB = glui_bounds->add_spinner_to_panel(ROLLOUT_memcheck, "max memory (0 unlimited) GB", GLUI_SPINNER_FLOAT, &max_mem_GB, MEMCHECK, MemcheckCB);
   MemcheckCB(MEMCHECK);
-#endif
 
   glui_bounds->add_button(_("Save settings"), SAVE_SETTINGS_BOUNDS, BoundsDlgCB);
 #ifdef pp_CLOSEOFF
