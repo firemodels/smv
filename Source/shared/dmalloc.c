@@ -135,7 +135,7 @@ mallocflag _NewMemoryNOTHREAD(void **ppv, size_t size, int memory_id){
     this_ptr->memory_id = memory_id;
     this_ptr->prev = prev_ptr;
     this_ptr->next = next_ptr;
-    this_ptr->marker = markerByte;
+    this_ptr->marker = MARKER_BYTE;
 
     *ppb = (char *)this_ptr + infoblocksize;
   }
@@ -149,7 +149,7 @@ mallocflag _NewMemoryNOTHREAD(void **ppv, size_t size, int memory_id){
   if(*ppb != NULL){
     if(sizeofDebugByte != 0){
       c = (char *)(*ppb) + size;
-      *c = (char)debugByte;
+      *c = (char)DEBUG_BYTE;
     }
     memset(*ppb, memGarbage, size);
     if(!CreateBlockInfo(*ppb, size)){
@@ -178,7 +178,7 @@ void FreeAllMemory(int memory_id){
     // if the 'thisptr' memory block is freed then thisptr is no longer valid.
     // so, nextptr (which is thisptr->next) must be defined before it is freed
     nextptr = thisptr->next;
-    if(thisptr->next == NULL || thisptr->marker != markerByte)break;
+    if(thisptr->next == NULL || thisptr->marker != MARKER_BYTE)break;
     thisptr = nextptr;
   }
 #endif
@@ -188,7 +188,7 @@ void FreeAllMemory(int memory_id){
     // if the 'thisptr' memory block is freed then thisptr is no longer valid.
     // so, nextptr (which is thisptr->next) must be defined before it is freed
     nextptr = thisptr->next;
-    if(thisptr->next == NULL || thisptr->marker != markerByte)break;
+    if(thisptr->next == NULL || thisptr->marker != MARKER_BYTE)break;
     if(memory_id == 0 || thisptr->memory_id == memory_id){
       FreeMemoryNOTHREAD((char *)thisptr + infoblocksize);
     }
@@ -226,7 +226,7 @@ void FreeMemoryNOTHREAD(void *pv){
   }
 #endif
   this_ptr=(MMdata *)((char *)pv-infoblocksize);
-  assert(this_ptr->marker==markerByte);
+  assert(this_ptr->marker==MARKER_BYTE);
   MMtotalmemory-=this_ptr->size;
   prev_ptr=this_ptr->prev;
   next_ptr=this_ptr->next;
@@ -308,13 +308,13 @@ mallocflag _ResizeMemoryNOTHREAD(void **ppv, size_t sizeNew, int memory_id){
       this_ptr->memory_id = memory_id;
       this_ptr->next=next_ptr;
       this_ptr->prev=prev_ptr;
-      this_ptr->marker=markerByte;
+      this_ptr->marker=MARKER_BYTE;
     }
 #ifdef pp_MEMDEBUG
     {
       if(sizeofDebugByte!=0){
         c = pbNew + infoblocksize + sizeNew;
-        *c=(char)debugByte;
+        *c=(char)DEBUG_BYTE;
       }
       UpdateBlockInfo(*ppold, (char *)pbNew+infoblocksize, sizeNew);
       if(sizeNew>sizeOld){
@@ -535,7 +535,7 @@ void _CheckMemoryNOTHREAD(void){
   if(checkmemoryflag==0)return;
   for(pbi = pbiHead; pbi != NULL; pbi = pbi->pbiNext){
     if(sizeofDebugByte!=0){
-      assert((char)*(pbi->pb+pbi->size)==(char)debugByte);
+      assert((char)*(pbi->pb+pbi->size)==(char)DEBUG_BYTE);
     }
   }
   return;
@@ -578,7 +578,7 @@ void FreeBlockInfo(bbyte *pbToFree){
   }
   assert(pbi != NULL);
   if(sizeofDebugByte!=0){
-    assert((char)*(pbi->pb+pbi->size)==(char)debugByte);
+    assert((char)*(pbi->pb+pbi->size)==(char)DEBUG_BYTE);
   }
   free(pbi);
 }
@@ -605,7 +605,7 @@ size_t sizeofBlock(bbyte *pb){
   pbi = GetBlockInfo(pb);
   assert(pb==pbi->pb);
   if(sizeofDebugByte!=0){
-    assert((char)*(pbi->pb+pbi->size)==(char)debugByte);
+    assert((char)*(pbi->pb+pbi->size)==(char)DEBUG_BYTE);
   }
   return(pbi->size);
 }
@@ -624,7 +624,7 @@ mallocflag _ValidPointer(void *pv, size_t size){
   assert(fPtrLessEq(pb+size,pbi->pb + pbi->size));
 
   if(sizeofDebugByte!=0){
-    assert((char)*(pbi->pb+pbi->size)==(char)debugByte);
+    assert((char)*(pbi->pb+pbi->size)==(char)DEBUG_BYTE);
   }
   return(1);
 }

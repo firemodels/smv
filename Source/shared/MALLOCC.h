@@ -42,8 +42,8 @@ MMEXTERN MMdata MMfirst, MMlast;
 MMEXTERN MMdata *MMfirstptr, *MMlastptr;
 MMEXTERN MMsize MMtotalmemory,MMmaxmemory;
 
-#define debugByte 0xE1
-#define markerByte 0xE1
+#define DEBUG_BYTE 0xE1
+#define MARKER_BYTE 0xE1
 #ifdef pp_MEMDEBUG
   #define sizeofDebugByte 1
 #else
