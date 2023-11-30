@@ -49,7 +49,7 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update
-          sudo apt-get install build-essential freeglut3-dev libx11-dev libxmu-dev libxi-dev libglew-dev libgd-dev liblua5.4-dev
+          sudo apt-get install build-essential freeglut3-dev libx11-dev libxmu-dev libxi-dev libglew-dev libgd-dev liblua5.4-dev libjson-c-dev
       # If we are building on macos configure the environment to use gcc11 as
       # the compiler
       - name: set macos gcc
@@ -58,7 +58,7 @@ jobs:
         run: |
           echo "CC=gcc-11" >> $GITHUB_ENV
           echo "CXX=g++-11" >> $GITHUB_ENV
-          brew install glew lua gd zlib
+          brew install glew lua gd zlib json-c
       # If we are building on linux configure the environment to use gcc as the
       # compiler
       - name: set linux gcc
@@ -121,7 +121,7 @@ jobs:
         run: |
           yum -y install epel-release
           yum -y install cmake3
-          yum -y install make gcc-c++ mesa-libGL-devel glut-devel libjpeg-devel libpng-devel gd-devel glew-devel libXmu-devel libXi-devel lua-devel
+          yum -y install make gcc-c++ mesa-libGL-devel glut-devel libjpeg-devel libpng-devel gd-devel glew-devel libXmu-devel libXi-devel lua-devel json-c-devel
           yum -y install wget unzip git
       - name: set gcc
         shell: bash
@@ -131,6 +131,7 @@ jobs:
       - name: Build
         shell: bash
         run: |
+          pkg-config --cflags json-c
           cmake3 -B ${{github.workspace}}/cbuild -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DLUA=${{ matrix.lua }}
           cmake3 --build ${{github.workspace}}/cbuild -j4
           cp ${{github.workspace}}/cbuild/smokeview smokeview
@@ -167,7 +168,7 @@ jobs:
         run: |
           yum -y install epel-release
           yum -y install cmake3
-          yum -y install make gcc-c++ mesa-libGL-devel glut-devel libjpeg-devel libpng-devel gd-devel glew-devel libXmu-devel libXi-devel lua-devel
+          yum -y install make gcc-c++ mesa-libGL-devel glut-devel libjpeg-devel libpng-devel gd-devel glew-devel libXmu-devel libXi-devel lua-devel json-c-devel
           yum -y install wget unzip git
       - name: Add intel RPM repo
         run: |
@@ -266,7 +267,7 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update
-          sudo apt-get install build-essential freeglut3-dev libx11-dev libxmu-dev libxi-dev libgl1-mesa-dev libglew-dev libgd-dev liblua5.4-dev
+          sudo apt-get install build-essential freeglut3-dev libx11-dev libxmu-dev libxi-dev libgl1-mesa-dev libglew-dev libgd-dev liblua5.4-dev libjson-c-dev
       - name: Build
         shell: bash
         run: |

@@ -2912,7 +2912,7 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
 
     label = patchi->label.shortlabel;
 
-    GetMinMax(BOUND_PATCH, label, &set_valmin, &valmin, &set_valmax, &valmax);
+    GLUIGetMinMax(BOUND_PATCH, label, &set_valmin, &valmin, &set_valmax, &valmax);
     int convert = 0;
     if(patchi->patch_filetype != PATCH_GEOMETRY_BOUNDARY && patchi->patch_filetype != PATCH_GEOMETRY_SLICE)convert = 0;
     GetBoundaryColors3(patchi, patchi->geom_vals, 0, patchi->geom_nvals, patchi->geom_ivals,
@@ -2996,13 +2996,13 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
       bound_type = BOUND_SLICE;
     }
 
-    bounds = GetBoundsData(bound_type);
+    bounds = GLUIGetBoundsData(bound_type);
 #ifdef pp_HIST
     if(bounds->set_valmin==BOUND_PERCENTILE_MIN||bounds->set_valmax==BOUND_PERCENTILE_MAX){
       float global_min = 0.0, global_max = 1.0;
 
       if(patchi->boundary==1){
-        GetGlobalBoundsMinMax(BOUND_PATCH, bounds->label, &global_min, &global_max);
+        GLUIGetGlobalBoundsMinMax(BOUND_PATCH, bounds->label, &global_min, &global_max);
         ComputeLoadedPatchHist(bounds->label, &(bounds->hist), &global_min, &global_max);
       }
       else{
@@ -3014,13 +3014,13 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
           float per_valmin;
 
           GetHistogramValProc(bounds->hist, percentile_level_min, &per_valmin);
-          SetMin(bound_type, bounds->label, BOUND_PERCENTILE_MIN, per_valmin);
+          GLUISetMin(bound_type, bounds->label, BOUND_PERCENTILE_MIN, per_valmin);
         }
         if(bounds->set_valmax==BOUND_PERCENTILE_MAX){
           float per_valmax;
 
           GetHistogramValProc(bounds->hist, percentile_level_max, &per_valmax);
-          SetMax(bound_type, bounds->label, BOUND_PERCENTILE_MAX, per_valmax);
+          GLUISetMax(bound_type, bounds->label, BOUND_PERCENTILE_MAX, per_valmax);
         }
       }
     }
@@ -3033,7 +3033,7 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
         int set_valmin, set_valmax;
         float valmin_dlg, valmax_dlg;
 
-        GetMinMax(BOUND_SLICE, bounds->label, &set_valmin, &valmin_dlg, &set_valmax, &valmax_dlg);
+        GLUIGetMinMax(BOUND_SLICE, bounds->label, &set_valmin, &valmin_dlg, &set_valmax, &valmax_dlg);
       }
     }
     PRINT_TIMER(geom_bounds_timer, "update boundary bounds");
@@ -3041,10 +3041,10 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
     INIT_PRINT_TIMER(geom_color_timer);
 //*** don't think the following is needed
 //    if(patchi->boundary==1){
-//      PatchBoundsCPP_CB(BOUND_UPDATE_COLORS);
+//      GLUIPatchBoundsCPP_CB(BOUND_UPDATE_COLORS);
 //    }
 //    else{
-//      SliceBoundsCPP_CB(BOUND_UPDATE_COLORS);
+//      GLUIHVACSliceBoundsCPP_CB(BOUND_UPDATE_COLORS);
 //    }
     PRINT_TIMER(geom_color_timer, "update boundary colors");
 
@@ -4566,7 +4566,7 @@ void DrawGeomData(int flag, slicedata *sd, patchdata *patchi, int geom_type){
   float ttmin, ttmax;
 
   label = patchi->label.shortlabel;
-  GetOnlyMinMax(BOUND_PATCH, label, &set_valmin, &ttmin, &set_valmax, &ttmax);
+  GLUIGetOnlyMinMax(BOUND_PATCH, label, &set_valmin, &ttmin, &set_valmax, &ttmax);
 
   float rvals[3];
   float valmin, valmax;

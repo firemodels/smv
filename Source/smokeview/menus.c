@@ -561,13 +561,13 @@ void ShowMultiSliceMenu(int value){
     ShowHideSliceMenu(value);
     return;
   case MENU_SHOWSLICE_IN_GAS:
-    SliceInObstMenu2Dialog(ONLY_IN_GAS);
+    GLUISliceInObstMenu2Dialog(ONLY_IN_GAS);
     break;
   case MENU_SHOWSLICE_IN_GASANDSOLID:
-    SliceInObstMenu2Dialog(GAS_AND_SOLID);
+    GLUISliceInObstMenu2Dialog(GAS_AND_SOLID);
     break;
   case MENU_SHOWSLICE_IN_SOLID:
-    SliceInObstMenu2Dialog(ONLY_IN_SOLID);
+    GLUISliceInObstMenu2Dialog(ONLY_IN_SOLID);
     break;
   case -12:
     offset_slice = 1 - offset_slice;
@@ -750,9 +750,9 @@ void StaticVariableMenu(int value){
   UpdateAllPlotSlices();
   updatemenu=1;
   GLUTPOSTREDISPLAY;
-  UpdatePlot3dListIndex();
+  GLUIUpdatePlot3dListIndex();
 #define BOUND_PERCENTILE_DRAW          120
-  Plot3DBoundsCPP_CB(BOUND_PERCENTILE_DRAW);
+  GLUIPlot3DBoundsCPP_CB(BOUND_PERCENTILE_DRAW);
 }
 
 /* ------------------ IsoVariableMenu ------------------------ */
@@ -777,7 +777,7 @@ void IsoVariableMenu(int value){
     UpdatePlotSlice(ZDIR);
     updatemenu=1;
     GLUTPOSTREDISPLAY;
-    UpdatePlot3dListIndex();
+    GLUIUpdatePlot3dListIndex();
   }
 }
 
@@ -789,7 +789,7 @@ void LabelMenu(int value){
   GLUTPOSTREDISPLAY;
   switch(value){
   case MENU_LABEL_SETTINGS:
-    ShowGluiDisplay(DIALOG_DISPLAY);
+    GLUIShowDisplay(DIALOG_DISPLAY);
     break;
     // vis_colorbar                        state
     //    0/COLORBAR_HIDDEN                hidden
@@ -805,8 +805,8 @@ void LabelMenu(int value){
       visColorbarHorizontal = 1 - visColorbarHorizontal;
       if(visColorbarHorizontal == 1)visColorbarVertical = 0;
     }
-    UpdateColorbarControls();
-    UpdateColorbarControls2();
+    GLUIUpdateColorbarControls();
+    GLUIUpdateColorbarControls2();
     vis_colorbar = GetColorbarState();
     break;
   case MENU_LABEL_timebar:
@@ -875,7 +875,7 @@ void LabelMenu(int value){
      break;
    case MENU_LABEL_axis:
     visaxislabels = 1 - visaxislabels;
-    UpdateVisAxisLabels();
+    GLUIUpdateVisAxisLabels();
     break;
    case MENU_LABEL_textlabels:
      visLabels = 1 - visLabels;
@@ -885,7 +885,7 @@ void LabelMenu(int value){
      break;
    case MENU_LABEL_frametimelabel:
      visFrameTimelabel = 1-visFrameTimelabel;
-     UpdateFrameTimelabel();
+     GLUIUpdateFrameTimelabel();
      break;
    case MENU_LABEL_framelabel:
      visFramelabel=1-visFramelabel;
@@ -937,7 +937,7 @@ void LabelMenu(int value){
      assert(FFALSE);
      break;
   }
-  SetLabelControls();
+  GLUISetLabelControls();
 }
 
 /* ------------------ SmokeColorbarMenu ------------------------ */
@@ -981,11 +981,11 @@ void ColorbarMenu(int value){
     case COLORBAR_AUTOFLIP:
       colorbar_autoflip = 1 - colorbar_autoflip;
       update_flipped_colorbar = 1;
-      UpdateColorbarFlip();
+      GLUIUpdateColorbarFlip();
       break;
     case COLORBAR_FLIP:
       colorbar_flip=1-colorbar_flip;
-      UpdateColorbarFlip();
+      GLUIUpdateColorbarFlip();
       break;
     case COLORBAR_RESET:
       show_extreme_mindata=0;
@@ -993,17 +993,17 @@ void ColorbarMenu(int value){
       colorbar_flip=0;
       contour_type=SHADED_CONTOURS;
       setbw=0;
-      UpdateExtreme();
+      GLUIUpdateExtreme();
       UpdateRGBColors(COLORBAR_INDEX_NONE);
       break;
     case COLORBAR_HIGHLIGHT_BELOW:
       show_extreme_mindata=1-show_extreme_mindata;
-      UpdateExtreme();
+      GLUIUpdateExtreme();
       UpdateRGBColors(COLORBAR_INDEX_NONE);
       break;
     case COLORBAR_HIGHLIGHT_ABOVE:
       show_extreme_maxdata=1-show_extreme_maxdata;
-      UpdateExtreme();
+      GLUIUpdateExtreme();
       UpdateRGBColors(COLORBAR_INDEX_NONE);
       break;
     case COLORBAR_TOGGLE_BW_DATA:
@@ -1015,25 +1015,25 @@ void ColorbarMenu(int value){
       else{
         ColorbarMenu(colorbartype_save);
       }
-      IsoBoundCB(ISO_COLORS);
+      GLUIIsoBoundCB(ISO_COLORS);
       break;
     case COLORBAR_TOGGLE_BW:
       setbw=1-setbw;
       InitRGB();
-      SetLabelControls();
+      GLUISetLabelControls();
       break;
     case USE_LIGHTING:
-      UpdateUseLighting();
+      GLUIUpdateUseLighting();
       break;
     case TOGGLE_LIGHTING:
       use_lighting = 1 - use_lighting;
-      UpdateUseLighting();
+      GLUIUpdateUseLighting();
       break;
    case COLORBAR_TRANSPARENT:
      use_transparency_data=1-use_transparency_data;
      UpdateRGBColors(COLORBAR_INDEX_NONE);
-     SetLabelControls();
-     UpdateTransparency();
+     GLUISetLabelControls();
+     GLUIUpdateTransparency();
      break;
    case COLORBAR_CONTINUOUS:
      contour_type=SHADED_CONTOURS;
@@ -1054,7 +1054,7 @@ void ColorbarMenu(int value){
      LabelMenu(MENU_LABEL_colorbar_vertical);
      break;
    case MENU_COLORBAR_SETTINGS:
-     ShowGluiBounds(DIALOG_COLORING);
+     GLUIShowBounds(DIALOG_COLORING);
      break;
    default:
      assert(FFALSE);
@@ -1066,18 +1066,18 @@ void ColorbarMenu(int value){
     iso_colorbar_index=value;
     iso_colorbar = colorbarinfo + iso_colorbar_index;
     update_texturebar=1;
-    UpdateListIsoColorobar();
+    GLUIUpdateListIsoColorobar();
     UpdateCurrentColorbar(colorbarinfo+colorbartype);
-    UpdateColorbarType();
-    SetColorbarListBound(colorbartype);
+    GLUIUpdateColorbarType();
+    GLUISetColorbarListBound(colorbartype);
     if(colorbartype == bw_colorbar_index&&bw_colorbar_index>=0){
       setbwdata = 1;
     }
     else{
       setbwdata = 0;
     }
-    IsoBoundCB(ISO_COLORS);
-    SetLabelControls();
+    GLUIIsoBoundCB(ISO_COLORS);
+    GLUISetLabelControls();
     char *ext, cblabel[1024];
     strcpy(cblabel,colorbarinfo[colorbartype].menu_label);
     ext = strrchr(cblabel,'.');
@@ -1133,7 +1133,7 @@ void Smoke3DShowMenu(int value){
         show_3dsmoke = 0;
       }
       Smoke3DShowMenu(SET_SMOKE3D);
-      UpdateSmoke16();
+      GLUIUpdateSmoke16();
       break;
 #else
     case TOGGLE_SMOKE3D:
@@ -1193,7 +1193,7 @@ void IsoShowMenu(int value){
     if(visAIso!=0){
       plotstate=DYNAMIC_PLOTS;
     }
-    UpdateGluiIsotype();
+    GLUIUpdateIsotype();
     break;
    case MENU_ISOSHOW_ALLSOLID:
     transparent_state=ALL_SOLID;
@@ -1328,15 +1328,15 @@ void ShowVSliceMenu(int value){
     return;
   }
   if(value==MENU_SHOWSLICE_IN_GAS){
-    SliceInObstMenu2Dialog(ONLY_IN_GAS);
+    GLUISliceInObstMenu2Dialog(ONLY_IN_GAS);
     return;
   }
   else if(value==MENU_SHOWSLICE_IN_GASANDSOLID){
-    SliceInObstMenu2Dialog(GAS_AND_SOLID);
+    GLUISliceInObstMenu2Dialog(GAS_AND_SOLID);
     return;
   }
   else if(value==MENU_SHOWSLICE_IN_SOLID){
-    SliceInObstMenu2Dialog(ONLY_IN_SOLID);
+    GLUISliceInObstMenu2Dialog(ONLY_IN_SOLID);
     return;
   }
   if(value == MENU_SHOWSLICE_OFFSET){
@@ -1397,7 +1397,7 @@ void ShowVSliceMenu(int value){
 
 void SliceSkipMenu(int value){
   slice_skip = value;
-  UpdateSliceSkip();
+  GLUIUpdateSliceSkip();
   updatemenu=1;
 }
 
@@ -1422,13 +1422,13 @@ void ShowHideSliceMenu(int value){
       }
       break;
     case MENU_SHOWSLICE_IN_GAS:
-      SliceInObstMenu2Dialog(ONLY_IN_GAS);
+      GLUISliceInObstMenu2Dialog(ONLY_IN_GAS);
       break;
     case MENU_SHOWSLICE_IN_GASANDSOLID:
-      SliceInObstMenu2Dialog(GAS_AND_SOLID);
+      GLUISliceInObstMenu2Dialog(GAS_AND_SOLID);
       break;
     case MENU_SHOWSLICE_IN_SOLID:
-      SliceInObstMenu2Dialog(ONLY_IN_SOLID);
+      GLUISliceInObstMenu2Dialog(ONLY_IN_SOLID);
       break;
     case MENU_SHOWSLICE_OFFSET:
       offset_slice=1-offset_slice;
@@ -1510,10 +1510,10 @@ void ShowHideMenu(int value){
   case MENU_SHOWHIDE_FLIP:
    background_flip = 1-background_flip;
    UpdateRGBColors(COLORBAR_INDEX_NONE);
-   SetLabelControls();
-   SetColorControls();
-   UpdateBackgroundFlip(background_flip);
-   UpdateBackgroundFlip2(background_flip);
+   GLUISetLabelControls();
+   GLUISetColorControls();
+   GLUIUpdateBackgroundFlip(background_flip);
+   GLUIUpdateBackgroundFlip2(background_flip);
    break;
   case MENU_SHOWHIDE_PARTICLES:
     if(plotstate==DYNAMIC_PLOTS){
@@ -1572,16 +1572,16 @@ void DialogMenu(int value){
   GLUTPOSTREDISPLAY;
   switch(value){
   case DIALOG_SHOOTER:
-    ShowGluiShooter();
+    GLUIShowShooter();
     break;
   case DIALOG_TRAINER:
-    ShowGluiTrainer();
+    GLUIShowTrainer();
     break;
   case DIALOG_2DPLOTS:
-    ShowPlot2D();
+    GLUIShowPlot2D();
     break;
   case DIALOG_DEVICE:
-    ShowGluiDevice();
+    GLUIShowDevice();
     break;
   case DIALOG_3DSMOKE:
   case DIALOG_AUTOLOAD:
@@ -1591,7 +1591,7 @@ void DialogMenu(int value){
   case DIALOG_SHOWFILES:
   case DIALOG_SMOKEZIP:
   case DIALOG_TIME:
-    ShowGluiBounds(value);
+    GLUIShowBounds(value);
     break;
   case DIALOG_MOTION:
   case DIALOG_RENDER:
@@ -1600,42 +1600,42 @@ void DialogMenu(int value){
   case DIALOG_SCALING:
   case DIALOG_VIEW:
   case DIALOG_WINDOW:
-    ShowGluiMotion(value);
+    GLUIShowMotion(value);
     break;
   case DIALOG_TICKS:
   case DIALOG_FONTS:
   case DIALOG_LABELS:
   case DIALOG_DISPLAY:
-    ShowGluiDisplay(value);
+    GLUIShowDisplay(value);
     break;
   case DIALOG_TOUR_SHOW:
-    ShowGluiTour();
+    GLUIShowTour();
     break;
   case DIALOG_TOUR_HIDE:
-    HideGluiTour();
+    GLUIHideTour();
     break;
   case DIALOG_CLIP:
-    ShowGluiClip();
+    GLUIShowClip();
     break;
   case DIALOG_STEREO:
-    ShowGluiStereo();
+    GLUIShowStereo();
     break;
   case DIALOG_COLORBAR:
     showcolorbar_dialog=1-showcolorbar_dialog;
     if(showcolorbar_dialog==1){
-      ShowGluiColorbar();
+      GLUIShowColorbar();
     }
     if(showcolorbar_dialog==0){
-      HideGluiColorbar();
+      GLUIHideColorbar();
     }
     break;
   case DIALOG_HVAC:
     showhvac_dialog = 1 - showhvac_dialog;
     if(showhvac_dialog == 1){
-      ShowGluiHVAC();
+      GLUIShowHVAC();
     }
     if(showhvac_dialog == 0){
-      HideGluiHVAC();
+      GLUIHideHVAC();
     }
     break;
   case DIALOG_GEOMETRY:
@@ -1647,39 +1647,39 @@ void DialogMenu(int value){
         CheckMemoryOn;
         updategetobstlabels=0;
       }
-      ShowGluiGeometry();
+      GLUIShowGeometry();
       visBlocks=visBLOCKNormal;
     }
     if(showedit_dialog==0){
-      HideGluiGeometry();
+      GLUIHideGeometry();
     }
-    UpdateTrainerOutline();
+    GLUIUpdateTrainerOutline();
     break;
   case DIALOG_TERRAIN:
     showterrain_dialog = 1 - showterrain_dialog;
     if(showterrain_dialog == 1){
-      ShowGluiTerrain();
+      GLUIShowTerrain();
     }
     else{
-      HideGluiTerrain();
+      GLUIHideTerrain();
     }
     break;
   case DIALOG_SHRINKALL:
-    ShrinkDialogs();
+    GLUIShrinkDialogs();
     break;
   case DIALOG_HIDEALL:
     showcolorbar_dialog = 0;
-    HideGluiShooter();
-    HideGluiDisplay();
-    HideGluiBounds();
-    HideGluiMotion();
-    HideGluiTour();
-    HideGluiClip();
-    HideGluiStereo();
-    HideGluiColorbar();
+    GLUIHideShooter();
+    GLUIHideDisplay();
+    GLUIHideBounds();
+    GLUIHideMotion();
+    GLUIHideTour();
+    GLUIHideClip();
+    GLUIHideStereo();
+    GLUIHideColorbar();
     if(showedit_dialog==1)DialogMenu(DIALOG_GEOMETRY);
-    HideGluiTrainer();
-    HideGluiDevice();
+    GLUIHideTrainer();
+    GLUIHideDevice();
     break;
   default:
     assert(FFALSE);
@@ -1689,7 +1689,7 @@ void DialogMenu(int value){
 #ifdef pp_REFRESH
   refresh_glui_dialogs = 1;
   SetMainWindow();
-  RefreshGluiDialogs();
+  GLUIRefreshDialogs();
   glutPostRedisplay();
 #endif
 }
@@ -1715,12 +1715,12 @@ void ZoomMenu(int value){
     if(projection_type!= PROJECTION_PERSPECTIVE){
       camera_current->projection_type=projection_type;
       SetViewPoint(RESTORE_EXTERIOR_VIEW);
-      UpdateProjectionType();
+      GLUIUpdateProjectionType();
     }
   }
   else if(zoomindex==UPDATE_PROJECTION){
     camera_current->projection_type=projection_type;
-    UpdateProjectionType();
+    GLUIUpdateProjectionType();
     UpdateCameraYpos(camera_current, 2);
     if(projection_type== PROJECTION_ORTHOGRAPHIC){
       camera_current->eye[1]=camera_current->isometric_y;
@@ -1733,11 +1733,11 @@ void ZoomMenu(int value){
     if(projection_type!= PROJECTION_PERSPECTIVE){
       SetViewPoint(RESTORE_EXTERIOR_VIEW_ZOOM);
       camera_current->projection_type=projection_type;
-      UpdateProjectionType();
+      GLUIUpdateProjectionType();
     }
   }
   camera_current->zoom=zoom;
-  UpdateGluiZoom();
+  GLUIUpdateZoom();
 }
 
 /* ------------------ ApertureMenu ------------------------ */
@@ -1760,7 +1760,7 @@ void FontMenu(int value){
   }
   switch(value){
   case MENU_FONT_SETTINGS:
-    ShowGluiDisplay(DIALOG_FONTS);
+    GLUIShowDisplay(DIALOG_FONTS);
     break;
   case SMALL_FONT:
     fontindex=SMALL_FONT;
@@ -1804,8 +1804,8 @@ void FontMenu(int value){
   default:
     assert(FFALSE);
   }
-  GluiUpdateFontIndex();
-  SetLabelControls();
+  GLUIUpdateFontIndex();
+  GLUISetLabelControls();
 }
 
 /* ------------------ UnitsMenu ------------------------ */
@@ -1824,7 +1824,7 @@ void UnitsMenu(int value){
   }
   else if(value==MENU_UNITS_HMS){
     vishmsTimelabel = 1 - vishmsTimelabel;
-    SetLabelControls();
+    GLUISetLabelControls();
 
   }
   else if(value==MENU_UNITS_SHOWALL){
@@ -1843,7 +1843,7 @@ void OptionMenu(int value){
   if(value == MENU_OPTION_TRAINERMENU){
     trainer_mode=1;
     if(showtrainer_dialog==0){
-      ShowGluiTrainer();
+      GLUIShowTrainer();
     }
     FontMenu(LARGE_FONT);
   }
@@ -1873,11 +1873,11 @@ void ResetMenu(int value){
   if(value==MENU_DUMMY)return;
   switch(value){
   case MENU_VIEWPOINT_SETTINGS:
-    ShowGluiMotion(DIALOG_VIEW);
+    GLUIShowMotion(DIALOG_VIEW);
     break;
   case MENU_SIZEPRESERVING:
     projection_type = 1 - projection_type;
-    SceneMotionCB(PROJECTION);
+    GLUISceneMotionCB(PROJECTION);
     break;
   case MENU_OUTLINEVIEW:
     if(visBlocks==visBLOCKOutline){
@@ -1917,7 +1917,7 @@ void ResetMenu(int value){
       else{
         GetNextViewLabel(view_label);
       }
-      AddListView(view_label);
+      GLUIAddListView(view_label);
       ca = GetCamera(view_label);
       if(ca != NULL){
         ResetMenu(ca->view_id);
@@ -1928,12 +1928,12 @@ void ResetMenu(int value){
     break;
   case MENU_STARTUPVIEW:
     if(selected_view==MENU_DUMMY)ResetMenu(SAVE_VIEWPOINT);
-    SetStartupView();
+    GLUISetStartupView();
     break;
   default:
     assert(value>=-5);
     if(value<100000){
-      ResetGluiView(value);
+      GLUIResetView(value);
       if(scriptoutstream!=NULL){
         fprintf(scriptoutstream,"SETVIEWPOINT\n");
         fprintf(scriptoutstream," %s\n",camera_current->name);
@@ -1955,7 +1955,7 @@ void ResetDefaultMenu(int var){
 
     use_geom_factors = 1 - use_geom_factors;
     updatemenu = 1;
-    UpdateUseGeomFactors();
+    GLUIUpdateUseGeomFactors();
     for(i = 0; i<ncameras_sorted; i++){
       cameradata *ca;
 
@@ -2024,13 +2024,13 @@ void RenderState(int onoff){
     if(render_status==RENDER_OFF)return;
     render_status = RENDER_OFF;
     render_firsttime = NO;
-    Enable360Zoom();
+    GLUIEnable360Zoom();
     screenWidth  = saveW/scale;
     screenHeight = saveH/scale;
     SetScreenSize(&screenWidth, &screenHeight);
     ResizeWindow(saveW/scale, saveH/scale);
     ResetRenderResolution(&width_low, &height_low, &width_high, &height_high);
-    UpdateRenderRadioButtons(width_low, height_low, width_high, height_high);
+    GLUIUpdateRenderRadioButtons(width_low, height_low, width_high, height_high);
   }
 }
 
@@ -2058,12 +2058,12 @@ void RenderMenu(int value){
   }
   if(value>=10000&&value<=10005){
     resolution_multiplier=value-10000;
-    UpdateResolutionMultiplier();
+    GLUIUpdateResolutionMultiplier();
     return;
   }
   switch(value){
   case MENU_RENDER_SETTINGS:
-    ShowGluiMotion(DIALOG_RENDER);
+    GLUIShowMotion(DIALOG_RENDER);
     break;
   case RenderCustom:
     render_window_size = value;
@@ -2164,9 +2164,6 @@ void RenderMenu(int value){
       RenderMenu(RENDER_CURRENT_MULTIPLE);
       return;
     }
-    if(touring==1){
-      rendertourcount=0;
-    }
     if(render_skip == RENDER_CURRENT_SINGLE){
       UpdateFrameNumber(0);
     }
@@ -2197,11 +2194,11 @@ void RenderMenu(int value){
     break;
   case RenderLABELframenumber:
     render_label_type=RENDER_LABEL_FRAMENUM;
-    UpdateGluiFileLabel(render_label_type);
+    GLUIUpdateFileLabel(render_label_type);
     break;
   case RenderLABELtime:
     render_label_type=RENDER_LABEL_TIME;
-    UpdateGluiFileLabel(render_label_type);
+    GLUIUpdateFileLabel(render_label_type);
     break;
   case RenderPNG:
      render_filetype=PNG;
@@ -2215,7 +2212,7 @@ void RenderMenu(int value){
      assert(FFALSE);
      break;
   }
-  UpdateResolutionMultiplier();
+  GLUIUpdateResolutionMultiplier();
 }
 
 /* ------------------ ParticleShowMenu ------------------------ */
@@ -2383,7 +2380,7 @@ void IsoSurfaceTypeMenu(int value){
       assert(FFALSE);
       break;
     }
-    UpdateGluiPlot3Dtype();
+    GLUIUpdatePlot3Dtype();
     updatemenu=1;
     GLUTPOSTREDISPLAY;
   }
@@ -2670,7 +2667,7 @@ void Plot3DShowMenu(int value){
 
 void GridDigitsMenu(int value){
   ngridloc_digits = value;
-  UpdateGLuiGridLocation();
+  GLUIUpdateGridLocation();
 }
 
   /* ------------------ GridSliceMenu ------------------------ */
@@ -2756,18 +2753,18 @@ void CompressMenu(int value){
   if(value==MENU_DUMMY)return;
   switch(value){
   case MENU_CONFIG_SETTINGS:
-    ShowGluiBounds(DIALOG_SMOKEZIP);
+    GLUIShowBounds(DIALOG_SMOKEZIP);
     break;
   case MENU_ERASECOMPRESS:
     erase_all=1;
     overwrite_all=0;
-    UpdateOverwrite();
+    GLUIUpdateOverwrite();
     CompressSVZip();
     break;
   case MENU_OVERWRITECOMPRESS:
     erase_all=0;
     overwrite_all=1-overwrite_all;
-    UpdateOverwrite();
+    GLUIUpdateOverwrite();
     break;
   case MENU_COMPRESSNOW:
     erase_all=0;
@@ -2775,7 +2772,7 @@ void CompressMenu(int value){
     break;
   case MENU_COMPRESSAUTOLOAD:
     compress_autoloaded=1-compress_autoloaded;
-    UpdateOverwrite();
+    GLUIUpdateOverwrite();
     break;
   default:
     assert(FFALSE);
@@ -2828,7 +2825,7 @@ void SmokeviewIniMenu(int value){
   case MENU_DUMMY:
     break;
   case MENU_CONFIG_SETTINGS:
-    ShowGluiBounds(DIALOG_CONFIG);
+    GLUIShowBounds(DIALOG_CONFIG);
     break;
   default:
     assert(FFALSE);
@@ -2866,7 +2863,7 @@ void PeriodicRefresh(int value){
 
 void ScriptMenu2(int value){
   script_step=1;
-  UpdateScriptStep();
+  GLUIUpdateScriptStep();
   ScriptMenu(value);
 }
 
@@ -2883,7 +2880,7 @@ void ScriptMenu(int value){
   GLUTPOSTREDISPLAY;
   switch(value){
     case MENU_SCRIPT_SETTINGS:
-      ShowGluiBounds(DIALOG_SCRIPT);
+      GLUIShowBounds(DIALOG_SCRIPT);
       break;
     case SCRIPT_STEP:
       script_step=1-script_step;
@@ -2897,7 +2894,7 @@ void ScriptMenu(int value){
       script_startframe=-1;
       script_skipframe=-1;
       script_step=0;
-      GluiScriptEnable();
+      GLUIScriptEnable();
       break;
     case SCRIPT_CONTINUE:
       script_step=0;
@@ -2908,7 +2905,7 @@ void ScriptMenu(int value){
       break;
     case SCRIPT_START_RECORDING:
       script_defer_loading = 0;
-      UpdateScriptStart();
+      GLUIUpdateScriptStart();
       GetNewScriptFileName(newscriptfilename);
       script_recording = InsertScriptFile(newscriptfilename);
       scriptoutstream=fopen(newscriptfilename,"w");
@@ -2947,7 +2944,7 @@ void ScriptMenu(int value){
     case SCRIPT_STOP_RECORDING:
       if(script_recording!=NULL){
         script_recording->recording=0;
-        AddScriptList(script_recording->file,script_recording->id);
+        GLUIAddScriptList(script_recording->file,script_recording->id);
         script_recording=NULL;
       }
       if(scriptoutstream!=NULL){
@@ -2955,7 +2952,7 @@ void ScriptMenu(int value){
         scriptoutstream=NULL;
         PRINTF("Script recorder off\n");
       }
-      UpdateScriptStop();
+      GLUIUpdateScriptStop();
       break;
     default:
       for(scriptfile=first_scriptfile.next;scriptfile->next!=NULL;scriptfile=scriptfile->next){
@@ -3004,7 +3001,7 @@ void ReloadMenu(int value){
     LoadUnloadMenu(RELOAD_INCREMENTAL_ALL);
     break;
   case RELOAD_SMV_FILE:
-    ReadSMVDynamic(smv_filename);
+    UpdateSMVDynamic(smv_filename);
     break;
   case RELOAD_MODE_INCREMENTAL:
     load_incremental = 1;
@@ -3120,7 +3117,7 @@ void LoadVolsmoke3DMenu(int value){
 
     update_smokecolorbar = 1;
     meshi = meshinfo + value;
-    vr = &(meshi->volrenderinfo);
+    vr = meshi->volrenderinfo;
     if(vr->smokeslice != NULL&&vr->fireslice != NULL){
       if(scriptoutstream != NULL){
         fprintf(scriptoutstream, "LOADVOLSMOKE\n");
@@ -3175,7 +3172,7 @@ void LoadVolsmoke3DMenu(int value){
     }
   }
   else if(value==MENU_VOLSMOKE_SETTINGS){
-    ShowBoundsDialog(DLG_3DSMOKE);
+    GLUIShowBoundsDialog(DLG_3DSMOKE);
   }
   updatemenu = 1;
   ForceIdle();
@@ -3387,7 +3384,7 @@ void LoadUnloadMenu(int value){
     if(showdevice_val==1||vis_device_plot!=DEVICE_PLOT_HIDDEN){
       vis_device_plot = DEVICE_PLOT_HIDDEN;
       showdevice_val = 0;
-      UpdateDeviceShow();
+      GLUIUpdateDeviceShow();
     }
     updatemenu=1;
     GLUTPOSTREDISPLAY;
@@ -3411,7 +3408,7 @@ void LoadUnloadMenu(int value){
     SetLoadedSliceBounds(NULL, 0);
     ReloadAllVectorSliceFiles();
     ReloadAllSliceFiles();
-    SliceBoundsCPP_CB(BOUND_UPDATE_COLORS);
+    GLUIHVACSliceBoundsCPP_CB(BOUND_UPDATE_COLORS);
     STOP_TIMER(load_time);
     PRINT_LOADTIMES(file_count,load_size,load_time);
     slicefile_labelindex=slicefile_labelindex_save;
@@ -3497,7 +3494,7 @@ void LoadUnloadMenu(int value){
     }
     if(update_readiso_geom_wrapup == UPDATE_ISO_ALL_NOW)ReadIsoGeomWrapup(BACKGROUND);
     update_readiso_geom_wrapup = UPDATE_ISO_OFF;
-    ReadSMVDynamic(smv_filename);
+    UpdateSMVDynamic(smv_filename);
     UNLOCK_COMPRESS
   //  plotstate=DYNAMIC_PLOTS;
   //  visParticles=1;
@@ -3530,13 +3527,13 @@ void LoadUnloadMenu(int value){
     cache_plot3d_data = cache_file_data;
     cache_boundary_data = cache_file_data;
     cache_part_data = cache_file_data;
-    SetCacheFlag(BOUND_PATCH, cache_file_data);
-    SetCacheFlag(BOUND_PLOT3D, cache_file_data);
-    SetCacheFlag(BOUND_PART, cache_file_data);
+    GLUISetCacheFlag(BOUND_PATCH, cache_file_data);
+    GLUISetCacheFlag(BOUND_PLOT3D, cache_file_data);
+    GLUISetCacheFlag(BOUND_PART, cache_file_data);
 #define BOUND_CACHE_DATA               112
-    PatchBoundsCPP_CB(BOUND_CACHE_DATA);
-    SliceBoundsCPP_CB(BOUND_CACHE_DATA);
-    PartBoundsCPP_CB(BOUND_CACHE_DATA);
+    GLUIPatchBoundsCPP_CB(BOUND_CACHE_DATA);
+    GLUIHVACSliceBoundsCPP_CB(BOUND_CACHE_DATA);
+    GLUIPartBoundsCPP_CB(BOUND_CACHE_DATA);
     updatemenu = 1;
   }
   if(value==REDIRECT){
@@ -3576,7 +3573,7 @@ void TourMenu(int value){
     DialogMenu(DIALOG_TOUR_SHOW);
     break;
   case MENU_TOUR_NEW:
-    AddNewTour();
+    GLUIAddNewTour();
     DialogMenu(DIALOG_TOUR_SHOW);
     break;
   case MENU_TOUR_CLEARALL:
@@ -3615,7 +3612,7 @@ void TourMenu(int value){
   case MENU_TOUR_SHOWDIALOG:
     edittour=1-edittour;
     if(edittour==1&&showtour_dialog==0){
-      ShowGluiTour();
+      GLUIShowTour();
     }
     break;
   case MENU_TOUR_SHOWALL:               // show all tours
@@ -3674,9 +3671,9 @@ void TourMenu(int value){
     break;
   }
   UpdateViewTour();
-  DeleteTourList();
-  CreateTourList();
-  UpdateTourControls();
+  GLUIDeleteTourList();
+  GLUICreateTourList();
+  GLUIUpdateTourControls();
   plotstate=GetPlotState(DYNAMIC_PLOTS);
   if(value!=-5&&value!=-4)UpdateTimes();
   callfrom_tourglui=0;
@@ -3752,7 +3749,7 @@ void ParticleStreakShowMenu(int value){
     streak5step=0;
     rvalue=streak_rvalue[value];
     UpdateStreakValue(rvalue-0.001);
-    UpdateGluiStreakValue(rvalue);
+    GLUIUpdateStreakValue(rvalue);
 
   }
   updatemenu=1;
@@ -3826,7 +3823,7 @@ void ParticlePropShowMenu(int value){
     propi = part5propinfo + iprop;
     last_prop_display=iprop;
     ipart5prop = iprop;
-    SetValTypeIndex(BOUND_PART, ipart5prop);
+    GLUISetValTypeIndex(BOUND_PART, ipart5prop);
 
     propi->display=1;
     part5colorindex=iprop;
@@ -3844,7 +3841,7 @@ void ParticlePropShowMenu(int value){
     partunitlabel=propi->label->unit;
 #define FILETYPE_INDEX 5
 #define BOUND_PERCENTILE_DRAW          120
-    PartBoundsCPP_CB(BOUND_PERCENTILE_DRAW);
+    GLUIPartBoundsCPP_CB(BOUND_PERCENTILE_DRAW);
   }
   else if(value==MENU_PROP_SHOWALL){
     if(current_property!=NULL){
@@ -3890,7 +3887,7 @@ void ParticlePropShowMenu(int value){
   }
   else if(value==MENU_PROP_TRACERS){
     show_tracers_always=1-show_tracers_always;
-    UpdateTracers();
+    GLUIUpdateTracers();
   }
   else{
     int iclass;
@@ -4058,14 +4055,14 @@ void LoadParticleMenu(int value){
       }
     }
     else if(value==MENU_PART_SETTINGS){
-      ShowBoundsDialog(DLG_PART);
+      GLUIShowBoundsDialog(DLG_PART);
     }
     else if(value==MENU_PART_PARTFAST){
       updatemenu = 1;
       partfast = 1-partfast;
       if(partfast==0)printf("fast loading: off\n");
       if(partfast==1)printf("fast loading: on\n");
-      UpdateGluiPartFast();
+      GLUIUpdatePartFast();
     }
     else if(value == MENU_PART_NUM_FILE_SIZE){
       int total = 0;
@@ -4336,7 +4333,7 @@ FILE_SIZE LoadVSliceMenu2(int value){
     return 0;
   }
   else if(value==MENU_LOADVSLICE_SETTINGS){
-    ShowBoundsDialog(DLG_SLICE);
+    GLUIShowBoundsDialog(DLG_SLICE);
   }
   else if(value>=0){
     vslicedata *vslicei;
@@ -4525,7 +4522,7 @@ void ShowVolsmoke3DMenu(int value){
     volrenderdata *vr;
 
     meshi = meshinfo + value;
-    vr = &(meshi->volrenderinfo);
+    vr = meshi->volrenderinfo;
     if(vr->fireslice!=NULL||vr->smokeslice!=NULL){
       if(vr->loaded==1){
         vr->display=1-vr->display;
@@ -4548,7 +4545,7 @@ void ShowVolsmoke3DMenu(int value){
       volrenderdata *vr;
 
       meshi = meshinfo + i;
-      vr = &(meshi->volrenderinfo);
+      vr = meshi->volrenderinfo;
       if(vr->fireslice==NULL||vr->smokeslice==NULL)continue;
       if(vr->loaded==1){
         vr->display=show_volsmokefiles;
@@ -4575,7 +4572,7 @@ void UnLoadVolsmoke3DMenu(int value){
         volrenderdata *vr;
 
         meshi = meshinfo + i;
-        vr = &(meshi->volrenderinfo);
+        vr = meshi->volrenderinfo;
         if(vr->fireslice==NULL||vr->smokeslice==NULL)continue;
         if(vr->loaded==1){
           UnloadVolsmokeAllFrames(vr);
@@ -4588,7 +4585,7 @@ void UnLoadVolsmoke3DMenu(int value){
     volrenderdata *vr;
 
     meshi = meshinfo + value;
-    vr = &(meshi->volrenderinfo);
+    vr = meshi->volrenderinfo;
     if(vr->fireslice!=NULL||vr->smokeslice!=NULL){
       UnloadVolsmokeAllFrames(vr);
     }
@@ -4717,7 +4714,7 @@ void LoadSmoke3DMenu(int value){
     }
   }
   else if(value == MENU_SMOKE_SETTINGS){
-    ShowBoundsDialog(DLG_3DSMOKE);
+    GLUIShowBoundsDialog(DLG_3DSMOKE);
   }
   else if(value ==MENU_SMOKE_FILE_SIZES){
     if(nsmoke3dtypes>0){
@@ -4757,7 +4754,7 @@ void LoadSmoke3DMenu(int value){
 #ifdef pp_SMOKE16
   else if(value ==MENU_SMOKE_16){
     load_smoke16 = 1-load_smoke16;
-    UpdateSmoke16();
+    GLUIUpdateSmoke16();
     updatemenu = 1;
   }
 #endif
@@ -4945,16 +4942,16 @@ void LoadSliceMenu(int value){
         }
         break;
       case MENU_SHOWSLICE_IN_GAS:
-        SliceInObstMenu2Dialog(ONLY_IN_GAS);
+        GLUISliceInObstMenu2Dialog(ONLY_IN_GAS);
         break;
       case  MENU_SHOWSLICE_IN_GASANDSOLID:
-        SliceInObstMenu2Dialog(GAS_AND_SOLID);
+        GLUISliceInObstMenu2Dialog(GAS_AND_SOLID);
         break;
       case MENU_SHOWSLICE_IN_SOLID:
-        SliceInObstMenu2Dialog(ONLY_IN_SOLID);
+        GLUISliceInObstMenu2Dialog(ONLY_IN_SOLID);
         break;
       case MENU_SLICE_SETTINGS:
-        ShowBoundsDialog(DLG_SLICE);
+        GLUIShowBoundsDialog(DLG_SLICE);
         break;
       default:
         value = -(1000 + value);
@@ -5091,7 +5088,7 @@ void LoadMultiVSliceMenu(int value){
         updatemenu = 1;
         GLUTPOSTREDISPLAY;
         UpdateVSliceDups();
-        UpdateSliceDupDialog();
+        GLUIUpdateSliceDupDialog();
       }
       break;
 
@@ -5101,7 +5098,7 @@ void LoadMultiVSliceMenu(int value){
         updatemenu = 1;
         GLUTPOSTREDISPLAY;
         UpdateVSliceDups();
-        UpdateSliceDupDialog();
+        GLUIUpdateSliceDupDialog();
       }
       break;
 
@@ -5111,11 +5108,11 @@ void LoadMultiVSliceMenu(int value){
         updatemenu = 1;
         GLUTPOSTREDISPLAY;
         UpdateVSliceDups();
-        UpdateSliceDupDialog();
+        GLUIUpdateSliceDupDialog();
       }
       break;
       case MENU_LOADVSLICE_SETTINGS:
-        ShowBoundsDialog(DLG_SLICE);
+        GLUIShowBoundsDialog(DLG_SLICE);
         break;
       default:
         assert(FFALSE);
@@ -5250,7 +5247,7 @@ void LoadMultiSliceMenu(int value){
         updatemenu = 1;
         GLUTPOSTREDISPLAY;
         UpdateSliceDups();
-        UpdateSliceDupDialog();
+        GLUIUpdateSliceDupDialog();
       }
       break;
 
@@ -5260,7 +5257,7 @@ void LoadMultiSliceMenu(int value){
         updatemenu = 1;
         GLUTPOSTREDISPLAY;
         UpdateSliceDups();
-        UpdateSliceDupDialog();
+        GLUIUpdateSliceDupDialog();
       }
       break;
 
@@ -5270,19 +5267,19 @@ void LoadMultiSliceMenu(int value){
         updatemenu = 1;
         GLUTPOSTREDISPLAY;
         UpdateSliceDups();
-        UpdateSliceDupDialog();
+        GLUIUpdateSliceDupDialog();
       }
       break;
       case MENU_SPLITSLICES:
         sortslices = 1 - sortslices;
         updatemenu = 1;
         GLUTPOSTREDISPLAY;
-        UpdateSortSlices();
+        GLUIUpdateSortSlices();
         break;
       case MENU_SPLITSLICES_DEBUG:
         sortslices_debug = 1 - sortslices_debug;
         if(sortslices_debug == 1)sortslices = 1;
-        UpdateSortSlices();
+        GLUIUpdateSortSlices();
         updatemenu = 1;
         GLUTPOSTREDISPLAY;
         break;
@@ -5297,7 +5294,7 @@ void LoadMultiSliceMenu(int value){
         GLUTPOSTREDISPLAY;
         break;
       case MENU_SLICE_SETTINGS:
-        ShowBoundsDialog(DLG_SLICE);
+        GLUIShowBoundsDialog(DLG_SLICE);
         break;
       default:
         assert(FFALSE);
@@ -5462,7 +5459,7 @@ void LoadPlot3dMenu(int value){
     }
   }
   else if(value==MENU_PLOT3D_SETTINGS){
-    ShowBoundsDialog(DLG_PLOT3D);
+    GLUIShowBoundsDialog(DLG_PLOT3D);
   }
   else{
     value+=100000;
@@ -5561,7 +5558,7 @@ void LoadIsoMenu(int value){
     }
   }
   if(value==MENU_ISO_SETTINGS){
-    ShowBoundsDialog(DLG_ISO);
+    GLUIShowBoundsDialog(DLG_ISO);
     return;
   }
   if(value<=-10){
@@ -5748,7 +5745,7 @@ void LoadBoundaryMenu(int value){
       break;
 #endif
     case MENU_BOUNDARY_SETTINGS:
-      ShowBoundsDialog(DLG_BOUNDARY);
+      GLUIShowBoundsDialog(DLG_BOUNDARY);
       break;
       case MENU_KEEP_ALL:
       if(boundaryslicedup_option!=SLICEDUP_KEEPALL){
@@ -5756,7 +5753,7 @@ void LoadBoundaryMenu(int value){
         updatemenu = 1;
         GLUTPOSTREDISPLAY;
         UpdateBoundarySliceDups();
-        UpdateSliceDupDialog();
+        GLUIUpdateSliceDupDialog();
       }
       break;
 
@@ -5766,7 +5763,7 @@ void LoadBoundaryMenu(int value){
         updatemenu = 1;
         GLUTPOSTREDISPLAY;
         UpdateBoundarySliceDups();
-        UpdateSliceDupDialog();
+        GLUIUpdateSliceDupDialog();
       }
       break;
 
@@ -5776,7 +5773,7 @@ void LoadBoundaryMenu(int value){
         updatemenu = 1;
         GLUTPOSTREDISPLAY;
         UpdateBoundarySliceDups();
-        UpdateSliceDupDialog();
+        GLUIUpdateSliceDupDialog();
       }
       break;
     default:
@@ -5819,7 +5816,7 @@ void ShowBoundaryMenu(int value){
   }
   if(value==SHOW_CHAR){
     vis_threshold = 1 - vis_threshold;
-    UpdateChar();
+    GLUIUpdateChar();
   }
   if(value==GLUI_SHOWALL_BOUNDARY||value==GLUI_HIDEALL_BOUNDARY){
     int i;
@@ -6029,7 +6026,7 @@ void ImmersedMenu(int value){
       else{
         show_geom_boundingbox = SHOW_BOUNDING_BOX_ALWAYS;
       }
-      UpdateGeomBoundingBox();
+      GLUIUpdateGeomBoundingBox();
       break;
     case GEOM_BOUNDING_BOX_MOUSE_DOWN:
       if(show_geom_boundingbox==SHOW_BOUNDING_BOX_MOUSE_DOWN){
@@ -6038,11 +6035,11 @@ void ImmersedMenu(int value){
       else{
         show_geom_boundingbox = SHOW_BOUNDING_BOX_MOUSE_DOWN;
       }
-      UpdateGeomBoundingBox();
+      GLUIUpdateGeomBoundingBox();
       break;
     case GEOMETRY_TERRAIN_SHOW_TOP:
       terrain_showonly_top = 1 - terrain_showonly_top;
-      UpdateShowOnlyTop();
+      GLUIUpdateShowOnlyTop();
       break;
     case GEOMETRY_SOLIDOUTLINE:
       if(show_faces_shaded==1&&show_faces_outline==1){
@@ -6114,17 +6111,17 @@ void ImmersedMenu(int value){
       break;
     case GEOMETRY_INSIDE_DOMAIN:
       showgeom_inside_domain = 1 - showgeom_inside_domain;
-      UpdateWhereFaceVolumes();
+      GLUIUpdateWhereFaceVolumes();
       break;
     case GEOMETRY_OUTSIDE_DOMAIN:
       showgeom_outside_domain = 1 - showgeom_outside_domain;
-      UpdateWhereFaceVolumes();
+      GLUIUpdateWhereFaceVolumes();
       break;
     default:
       assert(FFALSE);
       break;
   }
-  UpdateGeometryControls();
+  GLUIUpdateGeometryControls();
 
   GLUTPOSTREDISPLAY;
 }
@@ -6163,7 +6160,7 @@ void BlockageMenu(int value){
       else{
         show_geom_boundingbox = SHOW_BOUNDING_BOX_ALWAYS;
       }
-      UpdateGeomBoundingBox();
+      GLUIUpdateGeomBoundingBox();
       break;
     case GEOM_BOUNDING_BOX_MOUSE_DOWN:
       if(show_geom_boundingbox==SHOW_BOUNDING_BOX_MOUSE_DOWN){
@@ -6172,7 +6169,7 @@ void BlockageMenu(int value){
       else{
         show_geom_boundingbox = SHOW_BOUNDING_BOX_MOUSE_DOWN;
       }
-      UpdateGeomBoundingBox();
+      GLUIUpdateGeomBoundingBox();
       break;
     case visBLOCKOutlineColor:
       outline_color_flag = 1 - outline_color_flag;
@@ -6264,7 +6261,7 @@ void BlockageMenu(int value){
    case visBLOCKAsInputOutline:
    case visBLOCKAsInput:
      visBlocks=value;
-     UpdateTrainerOutline();
+     GLUIUpdateTrainerOutline();
      break;
    case visBLOCKNormal:
    case visBLOCKOutline:
@@ -6272,7 +6269,7 @@ void BlockageMenu(int value){
    case visBLOCKSolidOutline:
      visBlocks=value;
      if(value==visBLOCKSolidOutline||visBLOCKold==visBLOCKSolidOutline)updatefaces=1;
-     UpdateTrainerOutline();
+     GLUIUpdateTrainerOutline();
      break;
    case BLOCKlocation_grid:
    case BLOCKlocation_exact:
@@ -6323,26 +6320,26 @@ void BlockageMenu(int value){
 void RotateTypeMenu(int value){
   if(value==MENU_DUMMY)return;
   if(value==MENU_MOTION_SETTINGS){
-    ShowGluiMotion(DIALOG_MOTION);
+    GLUIShowMotion(DIALOG_MOTION);
     return;
   }
   else if(value == MENU_MOTION_SHOW_VECTORS){
 	showgravity_vector = 1-showgravity_vector;
-	UpdateShowGravityVector();
+	GLUIUpdateShowGravityVector();
   }
   else if(value == MENU_MOTION_GRAVITY_VECTOR){
     gvec_down = 1;
 #define USE_GVEC 28
-    SceneMotionCB(USE_GVEC);
+    GLUISceneMotionCB(USE_GVEC);
   }
   else if(value==MENU_MOTION_Z_VECTOR){
 #define ZAXIS_UP 41
-    SceneMotionCB(ZAXIS_UP);
+    GLUISceneMotionCB(ZAXIS_UP);
   }
   else{
     rotation_type = value;
-    UpdateRotationType(rotation_type);
-    RotationTypeCB(rotation_type);
+    GLUIUpdateRotationType(rotation_type);
+    GLUIRotationTypeCB(rotation_type);
   }
   updatemenu = 1;
   GLUTPOSTREDISPLAY;
@@ -6384,7 +6381,7 @@ void TitleMenu(int value){
     assert(FFALSE);
     break;
   }
-  SetLabelControls();
+  GLUISetLabelControls();
 }
 
 /* ------------------ ShowADeviceType ------------------------ */
@@ -6412,8 +6409,8 @@ void ShowADeviceType(void){
 /* ------------------ DeviceTypeMenu ------------------------ */
 
 void DeviceTypeMenu(int val){
-  UpdateDeviceTypes(val);
-  DeviceCB(DEVICE_devicetypes);
+  GLUIUpdateDeviceTypes(val);
+  GLUIDeviceCB(DEVICE_devicetypes);
 }
 
 /* ------------------ ShowDevicesMenu ------------------------ */
@@ -6468,7 +6465,7 @@ void ShowObjectsMenu(int value){
     if(showdevice_val==1||vis_device_plot!=DEVICE_PLOT_HIDDEN){
       update_times = 1;
       plotstate = GetPlotState(DYNAMIC_PLOTS);
-      UpdateDeviceShow();
+      GLUIUpdateDeviceShow();
     }
   }
   else if(value == OBJECT_MISSING){
@@ -6501,7 +6498,7 @@ void ShowObjectsMenu(int value){
       ShowADeviceType();
     }
     plotstate=GetPlotState(DYNAMIC_PLOTS);
-    UpdateDeviceShow();
+    GLUIUpdateDeviceShow();
   }
   else if(value==PLOT_HRRPUV){
     vis_hrr_plot = 1-vis_hrr_plot;
@@ -6520,7 +6517,7 @@ void ShowObjectsMenu(int value){
       ShowADeviceType();
     }
     plotstate=GetPlotState(DYNAMIC_PLOTS);
-    UpdateDeviceShow();
+    GLUIUpdateDeviceShow();
   }
   else if(value==OBJECT_PLOT_SHOW_SELECTED){
     update_times = 1;
@@ -6533,16 +6530,16 @@ void ShowObjectsMenu(int value){
       ShowADeviceType();
     }
     plotstate = GetPlotState(DYNAMIC_PLOTS);
-    UpdateDeviceShow();
+    GLUIUpdateDeviceShow();
   }
   else if(value==MENU_DEVICE_SETTINGS){
-    ShowGluiPlotDevice();
+    GLUIShowPlotDevice();
   }
   else if(value==OBJECT_VALUES){
     update_times=1;
     showdevice_val = 1 - showdevice_val;
     plotstate=GetPlotState(DYNAMIC_PLOTS);
-    UpdateDeviceShow();
+    GLUIUpdateDeviceShow();
   }
   else if(value==OBJECT_OUTLINE){
     object_outlines=1-object_outlines;
@@ -6552,11 +6549,11 @@ void ShowObjectsMenu(int value){
   }
   else if(value==OBJECT_ORIENTATION){
     show_device_orientation=1-show_device_orientation;
-    UpdateDeviceOrientation();
+    GLUIUpdateDeviceOrientation();
   }
   else if(value == OBJECT_SHOWBEAM){
     showbeam_as_line = 1 - showbeam_as_line;
-    UpdateShowbeamAsLine();
+    GLUIUpdateShowbeamAsLine();
   }
   else if(value==MENU_DUMMY){
   }
@@ -6580,7 +6577,7 @@ void TerrainGeomShowMenu(int value){
     if(value>=0&&value<nterrain_textures){
       texti = terrain_textures+value;
       texti->display = 1-texti->display;
-      UpdateTerrainTexture(value);
+      GLUIUpdateTerrainTexture(value);
     }
   }
   else{
@@ -6601,7 +6598,7 @@ void TerrainGeomShowMenu(int value){
       else{
         show_geom_boundingbox = SHOW_BOUNDING_BOX_ALWAYS;
       }
-      UpdateGeomBoundingBox();
+      GLUIUpdateGeomBoundingBox();
       break;
     case MENU_TERRAIN_BOUNDING_BOX_AUTO:
       if(show_geom_boundingbox==SHOW_BOUNDING_BOX_MOUSE_DOWN){
@@ -6610,7 +6607,7 @@ void TerrainGeomShowMenu(int value){
       else{
         show_geom_boundingbox = SHOW_BOUNDING_BOX_MOUSE_DOWN;
       }
-      UpdateGeomBoundingBox();
+      GLUIUpdateGeomBoundingBox();
       break;
     default:
       assert(0);
@@ -6940,10 +6937,10 @@ void HVACNodeValueMenu(int value){
       }
     }
   }
-  SetValTypeIndex(BOUND_HVACNODE, value);
+  GLUISetValTypeIndex(BOUND_HVACNODE, value);
   updatemenu = 1;
-  UpdateHVACVarLists();
-  HVACNodeBoundsCPP_CB(BOUND_UPDATE_COLORS);
+  GLUIUpdateHVACVarLists();
+  GLUIHVACNodeBoundsCPP_CB(BOUND_UPDATE_COLORS);
   GLUTPOSTREDISPLAY;
 }
 
@@ -6969,9 +6966,9 @@ void HVACDuctValueMenu(int value){
     }
   }
   updatemenu = 1;
-  UpdateHVACVarLists();
-  SetValTypeIndex(BOUND_HVACDUCT, value);
-  HVACDuctBoundsCPP_CB(BOUND_UPDATE_COLORS);//
+  GLUIUpdateHVACVarLists();
+  GLUISetValTypeIndex(BOUND_HVACDUCT, value);
+  GLUIHVACDuctBoundsCPP_CB(BOUND_UPDATE_COLORS);//
   GLUTPOSTREDISPLAY;
 }
 
@@ -6984,7 +6981,7 @@ void LoadHVACMenu(int value){
       SetHVACDuct();
       plotstate = GetPlotState(DYNAMIC_PLOTS);
       UpdateTimes();
-      HVACDuctBoundsCPP_CB(BOUND_UPDATE_COLORS);//
+      GLUIHVACDuctBoundsCPP_CB(BOUND_UPDATE_COLORS);//
       GLUTPOSTREDISPLAY;
       break;
     case MENU_HVAC_UNLOAD:
@@ -7043,11 +7040,11 @@ void HVACMenu(int value){
       break;
     case MENU_HVAC_METRO_VIEW:
       hvac_metro_view = 1 - hvac_metro_view;
-      UpdateHVACViews();
+      GLUIUpdateHVACViews();
       break;
     case MENU_HVAC_CELL_VIEW:
       hvac_cell_view = 1 - hvac_cell_view;
-      UpdateHVACViews();
+      GLUIUpdateHVACViews();
       break;
     case MENU_HVAC_DIALOG_HVAC:
       DialogMenu(DIALOG_HVAC);
@@ -7068,7 +7065,7 @@ void HVACMenu(int value){
     hvaci->network_name = labelsave;
     hvaci->display      = display;
   }
-  HVAC2Glui(0);
+  GLUIHVAC2Glui(0);
   updatemenu = 1;
   GLUTPOSTREDISPLAY;
 }
@@ -7098,13 +7095,13 @@ void GeometryMenu(int value){
     break;
   case 17+TERRAIN_TOP:
     terrain_showonly_top = 1 - terrain_showonly_top;
-    UpdateTerrainGlui();
+    GLUIUpdateTerrain();
     break;
   case 17+TERRAIN_SURFACE:
   case 17+TERRAIN_IMAGE:
   case 17+TERRAIN_HIDDEN:
     visTerrainType = value-17;
-    UpdateTerrainGlui();
+    GLUIUpdateTerrain();
     if(visTerrainType == TERRAIN_HIDDEN){
       if(visOtherVents!=visOtherVentsSAVE){
         visOtherVents=visOtherVentsSAVE;
@@ -8592,7 +8589,7 @@ updatemenu=0;
   PRINTF("Updating Menus %i In menu %i\n",menu_count++,in_menu);
   in_menu=1;
 #endif
-  UpdateShowHideButtons();
+  GLUIUpdateShowHideButtons();
   GLUTPOSTREDISPLAY;
 
   for(i=0;i<nmultisliceinfo;i++){
@@ -10826,7 +10823,7 @@ updatemenu=0;
       char menulabel[1024];
 
       meshi = meshinfo + i;
-      vr = &(meshi->volrenderinfo);
+      vr = meshi->volrenderinfo;
       if(vr->fireslice==NULL||vr->smokeslice==NULL)continue;
       if(vr->loaded==0)continue;
       strcpy(menulabel,"");
@@ -11301,7 +11298,7 @@ updatemenu=0;
     GLUTADDSUBMENU(_("Image type"),        render_filetypemenu);
     GLUTADDSUBMENU(_("Image suffix"), render_filesuffixmenu);
     glutAddMenuEntry(_("Settings..."), MENU_RENDER_SETTINGS);
-    UpdateGluiRender();
+    GLUIUpdateRender();
   }
 
   /* --------------------------------filesdialog menu -------------------------- */
@@ -11916,7 +11913,7 @@ updatemenu=0;
         char menulabel[1024];
 
         meshi = meshinfo + i;
-        vr = &(meshi->volrenderinfo);
+        vr = meshi->volrenderinfo;
         if(vr->fireslice==NULL||vr->smokeslice==NULL)continue;
         strcpy(menulabel,"");
         if(vr->loaded==1)strcat(menulabel,"*");
@@ -11937,7 +11934,7 @@ updatemenu=0;
         volrenderdata *vr;
 
         meshi = meshinfo + i;
-        vr = &(meshi->volrenderinfo);
+        vr = meshi->volrenderinfo;
         if(vr->fireslice==NULL||vr->smokeslice==NULL)continue;
         if(vr->loaded==0)continue;
         glutAddMenuEntry(meshi->label,i);

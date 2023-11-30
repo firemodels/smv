@@ -47,31 +47,31 @@ GLUI_StaticText *STATIC_alert=NULL;
 
 GLUI *glui_alert=NULL;
 
-/* ------------------ SetGLuiViewListManual ------------------------ */
+/* ------------------ GLUISetViewListManual ------------------------ */
 
-extern "C" void SetGLuiViewListManual(void){
+extern "C" void GLUISetViewListManual(void){
   if(trainer_viewpoints!=-1){
     LIST_viewpoint->set_int_val(-1);
   }
 }
 
-/* ------------------ ShowGluiAlert ------------------------ */
+/* ------------------ GLUIShowAlert ------------------------ */
 
-extern "C" void ShowGluiAlert(void){
+extern "C" void GLUIShowAlert(void){
   if(glui_alert!=NULL)glui_alert->show();
 }
 
-/* ------------------ HideGluiAlert ------------------------ */
+/* ------------------ GLUIHideAlert ------------------------ */
 
-extern "C" void HideGluiAlert(void){
+extern "C" void GLUIHideAlert(void){
 #ifndef pp_CLOSEOFF
   if(glui_alert!=NULL)glui_alert->hide();
 #endif
 }
 
-/* ------------------ GluiAlertSetup ------------------------ */
+/* ------------------ GLUIAlertSetup ------------------------ */
 
-extern "C" void GluiAlertSetup(int main_window){
+extern "C" void GLUIAlertSetup(int main_window){
   if(glui_alert!=NULL){
     glui_alert->close();
     glui_alert=NULL;
@@ -81,16 +81,16 @@ extern "C" void GluiAlertSetup(int main_window){
   STATIC_alert = glui_alert->add_statictext(_("Loading smoke and fire data"));
 }
 
-/* ------------------ HideGluiTrainer ------------------------ */
+/* ------------------ GLUIHideTrainer ------------------------ */
 
-extern "C" void HideGluiTrainer(void){
-  CloseRollouts(glui_trainer);
+extern "C" void GLUIHideTrainer(void){
+  GLUICloseRollouts(glui_trainer);
   showtrainer_dialog=0;
 }
 
-/* ------------------ ShowGluiTrainer ------------------------ */
+/* ------------------ GLUIShowTrainer ------------------------ */
 
-extern "C" void ShowGluiTrainer(void){
+extern "C" void GLUIShowTrainer(void){
   if(glui_trainer!=NULL){
     glui_trainer->show();
     showtrainer_dialog=1;
@@ -98,9 +98,9 @@ extern "C" void ShowGluiTrainer(void){
   }
 }
 
-/* ------------------ UpdateTrainerOutline ------------------------ */
+/* ------------------ GLUIUpdateTrainerOutline ------------------------ */
 
-extern "C" void UpdateTrainerOutline(void){
+extern "C" void GLUIUpdateTrainerOutline(void){
   if(visBlocks==visBLOCKOutline){
     trainer_outline=0;
   }
@@ -110,9 +110,9 @@ extern "C" void UpdateTrainerOutline(void){
   if(CHECKBOX_outline!=NULL)CHECKBOX_outline->set_int_val(trainer_outline);
 }
 
-/* ------------------ UpdateTrainerMoves ------------------------ */
+/* ------------------ GLUIUpdateTrainerMoves ------------------------ */
 
-extern "C" void UpdateTrainerMoves(void){
+extern "C" void GLUIUpdateTrainerMoves(void){
   float *eye_xyz;
   float *az, *elev;
 
@@ -313,9 +313,9 @@ void RotateCB(int var){
   camera_current->dirty = 1;
 }
 
-/* ------------------ GluiTrainerSetup ------------------------ */
+/* ------------------ GLUITrainerSetup ------------------------ */
 
-extern "C" void GluiTrainerSetup(int main_window){
+extern "C" void GLUITrainerSetup(int main_window){
 
   if(glui_trainer!=NULL){
     glui_trainer->close();
@@ -377,7 +377,7 @@ extern "C" void GluiTrainerSetup(int main_window){
   CHECKBOX_outline = glui_trainer->add_checkbox_to_panel(PANEL_explore,_("Show walls"),&trainer_outline,TRAINEROUTLINE,TrainerCB);
   CHECKBOX_pause = glui_trainer->add_checkbox_to_panel(PANEL_explore,_("Pause"),&trainer_pause,TRAINER_PAUSE,TrainerCB);
 
-  UpdateTrainerOutline();
+  GLUIUpdateTrainerOutline();
   PANEL_move = glui_trainer->add_panel_to_panel(PANEL_explore,_("Move"),false);
   TRANSLATE_leftright_inout = glui_trainer->add_translation_to_panel(PANEL_move,_("Horizontal"),
     GLUI_TRANSLATION_XY,trainer_xzy,TRAINER_LEFTRIGHT_INOUT, RotateCB);
@@ -390,7 +390,7 @@ extern "C" void GluiTrainerSetup(int main_window){
   TRANSLATE_az_elev = glui_trainer->add_translation_to_panel(PANEL_move,_("Rotate"),
     GLUI_TRANSLATION_XY,trainer_ab,TRAINER_AZ_ELEV, RotateCB);
 
-  UpdateTrainerMoves();
+  GLUIUpdateTrainerMoves();
 
   TrainerCB(MOVETYPE);
   TrainerCB(TRAINERVIEWPOINTS);

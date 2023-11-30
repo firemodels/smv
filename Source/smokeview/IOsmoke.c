@@ -314,7 +314,7 @@ float GetSootDensity(float *xyz, int itime, meshdata **mesh_try){
   if(mesh_soot->c_iblank_node != NULL&&mesh_soot->c_iblank_node[ijk] == SOLID){
     return 1000000.0;
   }
-  vr = &(mesh_soot->volrenderinfo);
+  vr = mesh_soot->volrenderinfo;
   if(vr->smokedataptrs ==NULL)return 0.0;
   itime = CLAMP(itime,0, vr->ntimes -1);
   if(vr->smokedataptrs[itime] == NULL)return 0.0;
@@ -3842,12 +3842,12 @@ void SmokeWrapup(void){
   UpdateLoadedSmoke(&hrrpuv_loaded,&temp_loaded);
   UpdateSmoke3dFileParms();
   UpdateTimes();
-  Smoke3dCB(UPDATE_SMOKEFIRE_COLORS);
+  GLUISmoke3dCB(UPDATE_SMOKEFIRE_COLORS);
   smoke_render_option = RENDER_SLICE;
   update_fire_alpha = 1;
   have_fire  = HaveFireLoaded();
   have_smoke = HaveSootLoaded();
-  Smoke3dCB(USE_OPACITY_MULTIPLIER);
+  GLUISmoke3dCB(USE_OPACITY_MULTIPLIER);
   ForceIdle();
 }
 
@@ -4272,7 +4272,7 @@ FILE_SIZE ReadSmoke3D(int iframe_arg,int ifile_arg,int flag_arg, int first_time,
     SOOT_index = GetSmoke3DType(smoke3di->label.shortlabel);
     update_smoke_alphas = 1;
 #define SMOKE_EXTINCT 95
-    Smoke3dCB(SMOKE_EXTINCT);
+    GLUISmoke3dCB(SMOKE_EXTINCT);
   }
   *errorcode_arg = 0;
   return file_size_local;

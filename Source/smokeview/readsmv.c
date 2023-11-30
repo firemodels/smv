@@ -10,7 +10,6 @@
 #include <sys/types.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include GLUT_H
 #include <pthread.h>
 
 #include "smokeviewvars.h"
@@ -894,6 +893,15 @@ void InitMesh(meshdata *meshi){
   meshi->ndec_verts     = 0;
   meshi->decimated  = 0;
 #endif
+  NewMemory((void **)&meshi->plot3dcontour1, sizeof(contour));
+  NewMemory((void **)&meshi->plot3dcontour2, sizeof(contour));
+  NewMemory((void **)&meshi->plot3dcontour3, sizeof(contour));
+  NewMemory((void **)&meshi->currentsurf,    sizeof(isosurface));
+  NewMemory((void **)&meshi->currentsurf2,   sizeof(isosurface));
+  NewMemory((void **)&meshi->box_clipinfo,   sizeof(clipdata));
+  NewMemory((void **)&meshi->gsliceinfo,     sizeof(meshplanedata));
+  NewMemory((void **)&meshi->volrenderinfo,  sizeof(volrenderdata));
+
   meshi->in_frustum = 1;
   meshi->imap = NULL;
   meshi->jmap = NULL;
@@ -1160,6 +1168,15 @@ ventdata *GetCloseVent(meshdata *ventmesh, int ivent){
   return close_vent;
 }
 
+/// @brief Re-read an *.smv file to read any updates.
+/// @param file The path to the *.smv file.
+void UpdateSMVDynamic(char *file){
+  ReadSMVDynamic(file);
+  UpdatePlot3dMenuLabels();
+  InitPlot3dTimeList();
+  UpdateTimes();
+  GetGlobalPlot3DBounds();
+}
 /* ------------------ ReadSMVDynamic ------------------------ */
 
 void ReadSMVDynamic(char *file){
@@ -1958,10 +1975,6 @@ void ReadSMVDynamic(char *file){
     }
   }
   FCLOSE(stream);
-  UpdatePlot3dMenuLabels();
-  InitPlot3dTimeList();
-  UpdateTimes();
-  GetGlobalPlot3DBounds();
 }
 
 
@@ -3004,8 +3017,8 @@ void UpdateBoundInfo(void){
     }
   }
   PRINT_TIMER(bound_timer, "hvacbounds");
-  UpdateChar();
-  PRINT_TIMER(bound_timer, "UpdateChar");
+  GLUIUpdateChar();
+  PRINT_TIMER(bound_timer, "GLUIUpdateChar");
   GetGlobalPartBounds(ALL_FILES);
   PRINT_TIMER(bound_timer, "GetGlobalPartBounds");
   GetGlobalSliceBoundsReduced();
@@ -6570,34 +6583,21 @@ void AddCfastCsvf(void){
 }
 
   /* ------------------ ReadSMV ------------------------ */
+static float timer_readsmv;
+static float processing_time;
+static float getfilelist_time;
+static float pass0_time;
+static float pass1_time;
+static float pass2_time;
+static float pass3_time;
+static float pass4_time;
+static float pass5_time;
 
-int ReadSMV(bufferstreamdata *stream){
-
-/* read the .smv file */
-  float processing_time, wrapup_time, getfilelist_time;
-  float pass0_time, pass1_time, pass2_time, pass3_time, pass4_time, pass5_time;
-  int have_zonevents,nzventsnew=0;
-  devicedata *devicecopy;
-  int do_pass4=0, do_pass5=0;
-  int roomdefined=0;
-  int noGRIDpresent=1,startpass;
-  slicedata *sliceinfo_copy=NULL;
-  int nisos_per_mesh=1;
-
-  int nn_smoke3d=0,nn_patch=0,nn_iso=0,nn_part=0,nn_slice=0,nslicefiles=0,nvents;
-
-  int ipart=0, ipatch=0, iroom=0,izone_local=0,ifire=0,iiso=0;
-  int ismoke3d=0,ismoke3dcount=1,igrid,ioffset;
-  int itrnx, itrny, itrnz, ipdim, iobst, ivent, icvent;
-  int ibartemp=2, jbartemp=2, kbartemp=2;
-
-  int setGRID=0;
-  int have_auto_terrain_image=0;
-
-  char buffer[256], buffers[6][256];
-  patchdata *patchgeom;
-
-  INIT_PRINT_TIMER(timer_readsmv);
+/// @brief Initialise any global variables necessary to being parsing an SMV
+/// file. This should be called before @ref ReadSMV_Parse.
+/// @return zero on success, nonzero on failure.
+int ReadSMV_Init() {
+  START_TIMER(timer_readsmv);
   START_TIMER(processing_time);
 
   START_TIMER(getfilelist_time);
@@ -6755,14 +6755,6 @@ int ReadSMV(bufferstreamdata *stream){
   // read in device (.svo) definitions
 
   InitObjectDefs();
-  {
-    int return_code;
-
-  // get input file name
-
-    return_code=GetInpf(stream);
-    if(return_code!=0)return return_code;
-  }
 
   if(noutlineinfo>0){
     for(i=0;i<noutlineinfo;i++){
@@ -6863,7 +6855,6 @@ int ReadSMV(bufferstreamdata *stream){
   nsurfinfo=0;
   nvent_transparent=0;
 
-  nvents=0;
   setPDIM=0;
 
   FREEMEMORY(database_filename);
@@ -6888,6 +6879,45 @@ int ReadSMV(bufferstreamdata *stream){
 
   STOP_TIMER(pass0_time );
   PRINT_TIMER(timer_readsmv, "readsmv setup");
+  return 0;
+}
+
+/* ------------------ ReadSMV_Parse ------------------------ */
+/// @brief Parse an SMV file into global variables. This should only be called
+/// after ReadSMV_Init to ensure that the appropriate variables are set.
+/// @param stream the smv file stream
+/// @return zero on success, non-zero on failure
+int ReadSMV_Parse(bufferstreamdata *stream) {
+  int i;
+  int have_zonevents,nzventsnew=0;
+  devicedata *devicecopy;
+  int do_pass4=0, do_pass5=0;
+  int roomdefined=0;
+  int GRIDpresent=0,startpass;
+  slicedata *sliceinfo_copy=NULL;
+  int nisos_per_mesh=1;
+
+  int nn_smoke3d=0,nn_patch=0,nn_iso=0,nn_part=0,nn_slice=0,nslicefiles=0,nvents;
+
+  int ipart=0, ipatch=0, iroom=0,izone_local=0,ifire=0,iiso=0;
+  int ismoke3d=0,ismoke3dcount=1,igrid,ioffset;
+  int itrnx, itrny, itrnz, ipdim, iobst, ivent, icvent;
+  int ibartemp=2, jbartemp=2, kbartemp=2;
+
+  int setGRID=0;
+  int have_auto_terrain_image=0;
+
+  char buffer[256], buffers[6][256];
+  patchdata *patchgeom;
+
+ {
+    int return_code;
+
+  // get input file name
+
+    return_code=GetInpf(stream);
+    if(return_code!=0)return return_code;
+  }
 
 /*
    ************************************************************************
@@ -7262,7 +7292,7 @@ int ReadSMV(bufferstreamdata *stream){
       continue;
     }
     if(MatchSMV(buffer,"GRID") == 1){
-      noGRIDpresent=0;
+      GRIDpresent=1;
       nmeshes++;
       continue;
     }
@@ -7692,7 +7722,7 @@ int ReadSMV(bufferstreamdata *stream){
     if(FEOF(stream)!=0){
       BREAK;
     }
-    if(noGRIDpresent==1&&startpass==1){
+    if(GRIDpresent==0&&startpass==1){
       strcpy(buffer,"GRID");
       startpass=0;
     }
@@ -8962,7 +8992,7 @@ int ReadSMV(bufferstreamdata *stream){
 
       }
       setGRID=1;
-      if(noGRIDpresent==1){
+      if(GRIDpresent==0){
         ibartemp=2;
         jbartemp=2;
         kbartemp=2;
@@ -9735,7 +9765,7 @@ int ReadSMV(bufferstreamdata *stream){
       strcpy(buffer,"VENT");
     }
     else{
-      if(startpass==1&&noGRIDpresent==1){
+      if(startpass==1&&GRIDpresent==0){
         strcpy(buffer,"GRID");
         startpass=0;
       }
@@ -10063,7 +10093,7 @@ int ReadSMV(bufferstreamdata *stream){
       meshi->xyz_bar0[ZZZ]=zbar0;
       meshi->xyz_bar[ZZZ] =zbar;
       meshi->zcen =(zbar+zbar0)/2.0;
-      InitBoxClipInfo(&(meshi->box_clipinfo),xbar0,xbar,ybar0,ybar,zbar0,zbar);
+      InitBoxClipInfo(meshi->box_clipinfo,xbar0,xbar,ybar0,ybar,zbar0,zbar);
       if(ntrnx==0){
         int nn;
 
@@ -11325,7 +11355,18 @@ typedef struct {
   else{
     pass5_time = 0.0;
   }
+  clip_I=ibartemp; clip_J=jbartemp; clip_K=kbartemp;
+  return 0;
+}
 
+/* ------------------ ReadSMV_Configure ------------------------ */
+
+/// @brief Finish setting global variables after an SMV file has been parsed.
+/// This should be called after @ref ReadSMV_Parse.
+/// @return zero on success, nonzero on failure.
+int ReadSMV_Configure(){
+  int i;
+  float wrapup_time;
 /*
    ************************************************************************
    ************************ wrap up ***************************************
@@ -11632,7 +11673,6 @@ typedef struct {
   InitUserTicks();
   PRINT_TIMER(timer_readsmv, "InitUserTicks");
 
-  clip_I=ibartemp; clip_J=jbartemp; clip_K=kbartemp;
 
   // define changed_idlist used for blockage editing
 
@@ -11716,7 +11756,17 @@ typedef struct {
   return 0;
 }
 
-/* ------------------ UpdateUseTextures ------------------------ */
+/* ------------------ ReadSMV_Init ------------------------ */
+/// @brief Parse an SMV file.
+/// @param stream the file stream to parse.
+/// @return zero on sucess, non-zero on error
+int ReadSMV(bufferstreamdata *stream){
+  START_TIMER(timer_readsmv);
+  ReadSMV_Init();
+  ReadSMV_Parse(stream);
+  ReadSMV_Configure();
+  return 0;
+}
 
 void UpdateUseTextures(void){
   int i;
@@ -11856,7 +11906,7 @@ void SetHVACDuctBounds(int set_valmin, float valmin, int set_valmax, float valma
     if(strcmp(quantity, "") == 0 || strcmp(quantity, boundi->shortlabel) == 0){
       hvacductbounds[i].dlg_setvalmin = glui_setpatchmin;
       hvacductbounds[i].dlg_setvalmax = glui_setpatchmax;
-      SetMinMax(BOUND_HVACDUCT, boundi->shortlabel, set_valmin, valmin, set_valmax, valmax);
+      GLUISetMinMax(BOUND_HVACDUCT, boundi->shortlabel, set_valmin, valmin, set_valmax, valmax);
       update_glui_bounds = 1;
     }
   }
@@ -11874,7 +11924,7 @@ void SetHVACNodeBounds(int set_valmin, float valmin, int set_valmax, float valma
     if(strcmp(quantity, "") == 0 || strcmp(quantity, boundi->shortlabel) == 0){
       hvacnodebounds[i].dlg_setvalmin = glui_setpatchmin;
       hvacnodebounds[i].dlg_setvalmax = glui_setpatchmax;
-      SetMinMax(BOUND_HVACNODE, boundi->shortlabel, set_valmin, valmin, set_valmax, valmax);
+      GLUISetMinMax(BOUND_HVACNODE, boundi->shortlabel, set_valmin, valmin, set_valmax, valmax);
       update_glui_bounds = 1;
     }
   }
@@ -11893,7 +11943,7 @@ void SetBoundBounds(int set_valmin, float valmin, int set_valmax, float valmax, 
     if(strcmp(quantity, "")==0||strcmp(quantity, boundi->shortlabel)==0){
       patchbounds[i].dlg_setvalmin = glui_setpatchmin;
       patchbounds[i].dlg_setvalmax = glui_setpatchmax;
-      SetMinMax(BOUND_PATCH, boundi->shortlabel, set_valmin, valmin, set_valmax, valmax);
+      GLUISetMinMax(BOUND_PATCH, boundi->shortlabel, set_valmin, valmin, set_valmax, valmax);
       update_glui_bounds = 1;
     }
   }
@@ -11910,7 +11960,7 @@ void SetSliceBounds(int set_valmin, float valmin, int set_valmax, float valmax, 
       slicebounds[i].dlg_setvalmax = set_valmax;
       slicebounds[i].dlg_valmin = valmin;
       slicebounds[i].dlg_valmax = valmax;
-      SetMinMax(BOUND_SLICE, slicebounds[i].shortlabel, set_valmin, valmin, set_valmax, valmax);
+      GLUISetMinMax(BOUND_SLICE, slicebounds[i].shortlabel, set_valmin, valmin, set_valmax, valmax);
       update_glui_bounds = 1;
       if(strcmp(slicebounds[i].shortlabel, buffer2)==0){
         break;
@@ -12156,7 +12206,7 @@ int ReadIni2(char *inifile, int localfile){
         update_splitcolorbar = 1;
       }
       else{
-        SplitCB(SPLIT_COLORBAR);
+        GLUISplitCB(SPLIT_COLORBAR);
       }
       continue;
     }
@@ -12259,7 +12309,7 @@ int ReadIni2(char *inifile, int localfile){
              &plot2d_show_yaxis_units, &plot2d_show_plots
              );
       update_device_timeaverage = 1;
-      UpdateDeviceAdd();
+      GLUIUpdateDeviceAdd();
       for(i=0;i<nplot2dini;i++){
         plot2ddata *plot2di;
         char *labelptr;
@@ -12609,7 +12659,7 @@ int ReadIni2(char *inifile, int localfile){
       sscanf(buffer, "%i", &stereotype);
       stereotype = CLAMP(stereotype, 0, 5);
       if(stereotype == STEREO_TIME&&videoSTEREO != 1)stereotype = STEREO_NONE;
-      UpdateGluiStereo();
+      GLUIUpdateStereo();
       continue;
     }
     if(MatchINI(buffer, "TERRAINPARMS") == 1){
@@ -12689,7 +12739,7 @@ int ReadIni2(char *inifile, int localfile){
           p3min_all[iplot3d]    = p3mintemp;
           p3max_all[iplot3d]    = p3maxtemp;
           if(plot3dinfo!=NULL){
-            SetMinMax(BOUND_PLOT3D, plot3dinfo[0].label[iplot3d].shortlabel, isetmin, p3mintemp, isetmax, p3maxtemp);
+            GLUISetMinMax(BOUND_PLOT3D, plot3dinfo[0].label[iplot3d].shortlabel, isetmin, p3mintemp, isetmax, p3maxtemp);
             update_glui_bounds = 1;
           }
         }
@@ -13053,8 +13103,8 @@ int ReadIni2(char *inifile, int localfile){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%i", &projection_type);
       projection_type = CLAMP(projection_type, 0, 1);
-      SceneMotionCB(PROJECTION);
-      UpdateProjectionType();
+      GLUISceneMotionCB(PROJECTION);
+      GLUIUpdateProjectionType();
       continue;
     }
     if(MatchINI(buffer, "V_PARTICLES") == 1){
@@ -13218,7 +13268,7 @@ int ReadIni2(char *inifile, int localfile){
           if(strcmp(short_label, "")==0){
             int npart_types;
 
-            npart_types = GetNValtypes(BOUND_PART);
+            npart_types = GLUIGetNValtypes(BOUND_PART);
             if(npart_types>0){
               int  *ivmins, *ivmaxs;
               float *vmins, *vmaxs;
@@ -13243,7 +13293,7 @@ int ReadIni2(char *inifile, int localfile){
                 vmins[i]  = vmin;
                 vmaxs[i]  = vmax;
               }
-              SetMinMaxAll(BOUND_PART, ivmins, vmins, ivmaxs, vmaxs, npart_types);
+              GLUISetMinMaxAll(BOUND_PART, ivmins, vmins, ivmaxs, vmaxs, npart_types);
               if(npart_types>MAX_PART_TYPES){
                 FREEMEMORY(ivmins);
                 FREEMEMORY(vmins);
@@ -13253,7 +13303,7 @@ int ReadIni2(char *inifile, int localfile){
             }
           }
           else{
-            SetMinMax(BOUND_PART, short_label, ivmin, vmin, ivmax, vmax);
+            GLUISetMinMax(BOUND_PART, short_label, ivmin, vmin, ivmax, vmax);
           }
           update_glui_bounds=1;
         }
@@ -13503,7 +13553,7 @@ int ReadIni2(char *inifile, int localfile){
       if(setzonemax == PERCENTILE_MIN)setzonemax = GLOBAL_MIN;
       if(setzonemin == SET_MIN)zonemin = zoneusermin;
       if(setzonemax == SET_MAX)zonemax = zoneusermax;
-      UpdateGluiZoneBounds();
+      GLUIUpdateZoneBounds();
       continue;
     }
     if(MatchINI(buffer, "V_TARGET") == 1){
@@ -14056,7 +14106,7 @@ int ReadIni2(char *inifile, int localfile){
     if(MatchINI(buffer, "BACKGROUNDCOLOR") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%f %f %f", backgroundbasecolor, backgroundbasecolor + 1, backgroundbasecolor + 2);
-      SetColorControls();
+      GLUISetColorControls();
       continue;
     }
     if(MatchINI(buffer, "SURFCOLORS")==1){
@@ -14136,7 +14186,7 @@ int ReadIni2(char *inifile, int localfile){
     if(MatchINI(buffer, "FOREGROUNDCOLOR") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%f %f %f", foregroundbasecolor, foregroundbasecolor + 1, foregroundbasecolor + 2);
-      SetColorControls();
+      GLUISetColorControls();
       continue;
     }
     if(MatchINI(buffer, "BLOCKCOLOR") == 1){
@@ -14394,7 +14444,7 @@ int ReadIni2(char *inifile, int localfile){
         fgets(buffer, 255, stream);
         sscanf(buffer, "%i", &scrWidth);
         if(scrWidth <= 0){
-          scrWidth = glutGet(GLUT_SCREEN_WIDTH);
+          scrWidth = GLUTGetScreenWidth();
         }
         if(scrWidth != screenWidth){
           SetScreenSize(&scrWidth, NULL);
@@ -14409,7 +14459,7 @@ int ReadIni2(char *inifile, int localfile){
         fgets(buffer, 255, stream);
         sscanf(buffer, "%i", &scrHeight);
         if(scrHeight <= 0){
-          scrHeight = glutGet(GLUT_SCREEN_HEIGHT);
+          scrHeight = GLUTGetScreenHeight();
         }
         if(scrHeight != screenHeight){
           SetScreenSize(NULL, &scrHeight);
@@ -14642,7 +14692,7 @@ int ReadIni2(char *inifile, int localfile){
       InitCameraList();
       InsertCamera(&camera_list_first, ci, bufferptr);
 
-      EnableResetSavedView();
+      GLUIEnableResetSavedView();
       ci->dirty = 1;
       ci->defined = 1;
       continue;
@@ -14711,7 +14761,7 @@ int ReadIni2(char *inifile, int localfile){
         iso_color[3] = CLAMP(iso_color[3], 0.0, 1.0);
       }
       UpdateIsoColors();
-      UpdateIsoColorlevel();
+      GLUIUpdateIsoColorlevel();
       continue;
     }
     if(MatchINI(buffer, "UNITCLASSES") == 1){
@@ -16235,7 +16285,7 @@ void WriteIniLocal(FILE *fileout){
 
       label = patchi->label.shortlabel;
 
-      GetOnlyMinMax(BOUND_PATCH, label, &set_valmin, &valmin, &set_valmax, &valmax);
+      GLUIGetOnlyMinMax(BOUND_PATCH, label, &set_valmin, &valmin, &set_valmax, &valmax);
       fprintf(fileout, "V2_BOUNDARY\n");
       fprintf(fileout, " %i %f %i %f %s\n", set_valmin, valmin, set_valmax, valmax, label);
     }
@@ -16262,7 +16312,7 @@ void WriteIniLocal(FILE *fileout){
 
       label = propi->label->shortlabel;
 
-      GetOnlyMinMax(BOUND_PART, label, &set_valmin, &valmin, &set_valmax, &valmax);
+      GLUIGetOnlyMinMax(BOUND_PART, label, &set_valmin, &valmin, &set_valmax, &valmax);
       fprintf(fileout, " %i %f %i %f %s\n", set_valmin, valmin, set_valmax, valmax, label);
     }
   }
@@ -16283,7 +16333,7 @@ void WriteIniLocal(FILE *fileout){
       char *label;
 
       label = plot3dinfo[0].label[i].shortlabel;
-      GetOnlyMinMax(BOUND_PLOT3D, label, &set_valmin, &valmin, &set_valmax, &valmax);
+      GLUIGetOnlyMinMax(BOUND_PLOT3D, label, &set_valmin, &valmin, &set_valmax, &valmax);
       fprintf(fileout, " %i %i %f %i %f %s\n", i+1, set_valmin, valmin, set_valmax, valmax, label);
     }
     }
@@ -16296,7 +16346,7 @@ void WriteIniLocal(FILE *fileout){
       char *label;
 
       label = hvacductbounds[i].label->shortlabel;
-      GetOnlyMinMax(BOUND_HVACDUCT, label, &set_valmin, &valmin, &set_valmax, &valmax);
+      GLUIGetOnlyMinMax(BOUND_HVACDUCT, label, &set_valmin, &valmin, &set_valmax, &valmax);
       fprintf(fileout, " %i %f %i %f %s\n", set_valmin, valmin, set_valmax, valmax, label);
     }
   }
@@ -16308,7 +16358,7 @@ void WriteIniLocal(FILE *fileout){
       char *label;
 
       label = hvacnodebounds[i].label->shortlabel;
-      GetOnlyMinMax(BOUND_HVACNODE, label, &set_valmin, &valmin, &set_valmax, &valmax);
+      GLUIGetOnlyMinMax(BOUND_HVACNODE, label, &set_valmin, &valmin, &set_valmax, &valmax);
       fprintf(fileout, " %i %f %i %f %s\n", set_valmin, valmin, set_valmax, valmax, label);
     }
   }
@@ -16320,7 +16370,7 @@ void WriteIniLocal(FILE *fileout){
       char *label;
 
       label = slicebounds[i].label->shortlabel;
-      GetOnlyMinMax(BOUND_SLICE, label, &set_valmin, &valmin, &set_valmax, &valmax);
+      GLUIGetOnlyMinMax(BOUND_SLICE, label, &set_valmin, &valmin, &set_valmax, &valmax);
       fprintf(fileout, " %i %f %i %f %s : %f %f %i\n", set_valmin, valmin, set_valmax, valmax, label,
         slicebounds[i].line_contour_min, slicebounds[i].line_contour_max, slicebounds[i].line_contour_num
         );
@@ -16602,7 +16652,7 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, "WINDOWOFFSET\n");
   fprintf(fileout, " %i\n", titlesafe_offsetBASE);
   if(use_graphics == 1 &&
-     (screenWidth == glutGet(GLUT_SCREEN_WIDTH)||screenHeight == glutGet(GLUT_SCREEN_HEIGHT))
+     (screenWidth == GLUTGetScreenWidth()||screenHeight == GLUTGetScreenHeight())
     ){
     fprintf(fileout,"WINDOWWIDTH\n");
     fprintf(fileout," %i\n",-1);
@@ -16669,7 +16719,7 @@ void WriteIni(int flag,char *filename){
 
   fprintf(fileout,"\n *** VIEW PARAMETERS ***\n\n");
 
-  GetGeomDialogState();
+  GLUIGetGeomDialogState();
   fprintf(fileout, "APERTURE\n");
   fprintf(fileout, " %i\n", apertureindex);
   fprintf(fileout, "BLOCKLOCATION\n");
@@ -16933,7 +16983,7 @@ void WriteIni(int flag,char *filename){
     if(nwindrosez_showhide > 0){
       int ii;
 
-      UpdateWindRoseDevices(UPDATE_WINDROSE_SHOWHIDE);
+      GLUIUpdateWindRoseDevices(UPDATE_WINDROSE_SHOWHIDE);
       fprintf(fileout, "WINDROSESHOWHIDE\n");
       fprintf(fileout, " %i\n", nwindrosez_showhide);
       for(ii = 0; ii < nwindrosez_showhide; ii++){
@@ -17255,7 +17305,7 @@ void UpdateLoadedLists(void){
       volrenderdata *vr;
 
       meshi = meshinfo + i;
-      vr = &(meshi->volrenderinfo);
+      vr = meshi->volrenderinfo;
       if(vr==NULL||vr->fireslice==NULL||vr->smokeslice==NULL)continue;
       if(vr->loaded==0||vr->display==0)continue;
       nvolsmoke_loaded++;

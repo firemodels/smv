@@ -430,7 +430,7 @@ FILE_SIZE ReadIsoGeom(int ifile, int load_flag, int *geom_frame_index, int *erro
 #endif
     iso_global_min = isoi->geom_globalmin;
     iso_global_max = isoi->geom_globalmax;
-    UpdateGluiIsoBounds();
+    GLUIUpdateIsoBounds();
   }
   PrintMemoryInfo;
   show_isofiles = 1;

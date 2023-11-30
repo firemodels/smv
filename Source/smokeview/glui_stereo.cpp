@@ -37,12 +37,9 @@ GLUI_Button *BUTTON_stereo_3=NULL;
 #define STEREO_BLUE  6
 #define SAVE_SETTINGS_STEREO 999
 
-extern "C" int InitVR(void);
-extern "C" void ShutdownVR(void);
+/* ------------------ GLUIUpdateStereo ------------------------ */
 
-/* ------------------ UpdateGluiStereo ------------------------ */
-
-extern "C" void UpdateGluiStereo(void){
+extern "C" void GLUIUpdateStereo(void){
   if(RADIO_stereotype!=NULL){
     RADIO_stereotype->set_int_val(stereotype);
   }
@@ -76,7 +73,7 @@ void StereoCB(int var){
     break;
   case STEREO_SHOW:
     if(stereotypeOLD != stereotype){
-      UpdateGluiStereo();
+      GLUIUpdateStereo();
       stereotypeOLD = stereotype;
     }
     if(stereotype == STEREO_CUSTOM){
@@ -92,7 +89,7 @@ void StereoCB(int var){
     SPINNER_zero_parallax->set_float_val(SCALE2FDS(0.25));
     break;
   case STEREO_CLOSE:
-    HideGluiStereo();
+    GLUIHideStereo();
     break;
   case SAVE_SETTINGS_STEREO:
     WriteIni(LOCAL_INI, NULL);
@@ -103,9 +100,9 @@ void StereoCB(int var){
   }
 }
 
-/* ------------------ GluiStereoSetup ------------------------ */
+/* ------------------ GLUIStereoSetup ------------------------ */
 
-extern "C" void GluiStereoSetup(int main_window){
+extern "C" void GLUIStereoSetup(int main_window){
   if(glui_stereo!=NULL){
     glui_stereo->close();
     glui_stereo = NULL;
@@ -144,7 +141,7 @@ extern "C" void GluiStereoSetup(int main_window){
   glui_stereo->add_radiobutton_to_group(RADIO_stereotype_frame,_("Both eyes"));
   //SPINNER_zero_parallax->set_float_limits(0.1*xyzmaxdiff,2.0*xyzmaxdiff,GLUI_LIMIT_CLAMP);
   StereoCB(STEREO_SHOW);
-  UpdateGluiStereo();
+  GLUIUpdateStereo();
 
   BUTTON_stereo_1=glui_stereo->add_button(_("Reset"),STEREO_RESET,StereoCB);
   BUTTON_stereo_2=glui_stereo->add_button(_("Save settings"),SAVE_SETTINGS_STEREO,StereoCB);
@@ -156,14 +153,14 @@ extern "C" void GluiStereoSetup(int main_window){
   glui_stereo->set_main_gfx_window( main_window );
 }
 
-/* ------------------ HideGluiStereo ------------------------ */
+/* ------------------ GLUIHideStereo ------------------------ */
 
-extern "C" void HideGluiStereo(void){
-  CloseRollouts(glui_stereo);
+extern "C" void GLUIHideStereo(void){
+  GLUICloseRollouts(glui_stereo);
 }
 
-/* ------------------ ShowGluiStereo ------------------------ */
+/* ------------------ GLUIShowStereo ------------------------ */
 
-extern "C" void ShowGluiStereo(void){
+extern "C" void GLUIShowStereo(void){
   if(glui_stereo!=NULL)glui_stereo->show();
 }
