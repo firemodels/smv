@@ -1,1 +1,2 @@
-       dummy text to trigger smokebot
+ master: dummy text to trigger smokebot
+ devel: dummy text to trigger smokebot
