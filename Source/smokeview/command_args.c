@@ -193,7 +193,7 @@ CommandlineArgs ParseCommandlineNew(int argc, char **argv,
     } else if(strcmp(argv[i], "-max_mem") == 0) {
       args.max_mem = true;
       i++;
-      sscanf(argv[i],"%i",&args.max_mem_GB);
+      sscanf(argv[i],"%f",&args.max_mem_GB);
       if(args.max_mem_GB<0.0)args.max_mem_GB = 0.0;
 #endif
     } else if (strcmp(argv[i], "-geominfo") == 0) {

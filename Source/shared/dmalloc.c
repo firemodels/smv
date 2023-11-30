@@ -219,10 +219,7 @@ void FreeMemoryNOTHREAD(void *pv){
   infoblocksize*=4;
 #ifdef pp_MEMDEBUG
   {
-    blockinfo *meminfoblock;
-
     CheckMemoryNOTHREAD;
-    meminfoblock = GetBlockInfo(pv);
     len_memory=sizeofBlock((char *)pv);
     memset((char *)pv, memGarbage, len_memory);
     FreeBlockInfo((char *)pv);
