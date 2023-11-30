@@ -29,25 +29,18 @@ typedef char bbyte;
 #define MMEXTERN extern MMCCC
 #endif
 
-#ifdef pp_MEMDEBUG
 #define MMsize unsigned long long
-#endif
 
 typedef struct {
   unsigned char marker;
   void *prev, *next;
   int memory_id;
-#ifdef pp_MEMPRINT
   size_t size;
-#endif
-
 } MMdata;
 
 MMEXTERN MMdata MMfirst, MMlast;
 MMEXTERN MMdata *MMfirstptr, *MMlastptr;
-#ifdef pp_MEMDEBUG
 MMEXTERN MMsize MMtotalmemory,MMmaxmemory;
-#endif
 
 #define debugByte 0xE1
 #define markerByte 0xE1
@@ -169,8 +162,7 @@ MMEXTERN mallocflag _ResizeMemoryNOTHREAD(void **ppv, size_t sizeNew, int memory
 MMEXTERN mallocflag _NewMemoryNOTHREAD(void **ppv, size_t size, int memory_id);
 MMEXTERN void FreeMemoryNOTHREAD(void *pv);
 MMEXTERN int memusage(void);
-MMEXTERN void set_memcheck(int index);
-
+MMEXTERN void SetMemCheck(float memGB);
 void initMALLOC(void);
 void FreeAllMemory(int memory_id);
 mallocflag _ValidPointer(void *pv, size_t size);

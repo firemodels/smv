@@ -90,6 +90,7 @@ void Usage(char *prog,int option){
     PRINTF("%s\n", _(" -lang xx       - where xx is de, es, fr, it for German, Spanish, French or Italian"));
     PRINTF("%s\n", _(" -large         - take some shortcuts when reading in large geometry cases"));
     PRINTF("%s\n", _(" -make_movie    - open the movie generating dialog box"));
+    PRINTF("%s\n", _(" -max_mem mem   - specify maximum memory used in GB"));
     PRINTF("%s\n", _(" -outline       - show geometry bound boxes instead of geometry"));
     PRINTF("%s\n", _(" -ng_ini        - non-graphics version of -ini."));
     PRINTF("%s\n", _(" -scriptrenderdir dir - directory containing script rendered images"));
@@ -156,7 +157,9 @@ char *ProcessCommandLine(CommandlineArgs *args) {
   char *filename_local = NULL;
 
   CheckMemory;
-
+  if(args->max_mem){
+    max_mem_GB = args->max_mem_GB;
+  }
   if (args->ini) {
     InitCameraList();
     InitOpenGL(NO_PRINT);

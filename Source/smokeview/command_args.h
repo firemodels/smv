@@ -62,6 +62,9 @@ typedef struct CommandlineArgs {
   bool outline;
   /// @brief open the movie generating dialog box
   bool make_movie;
+  /// @brief specify maximum memory used
+  bool max_mem;
+  float max_mem_GB;
   /// @brief output information about geometry triangles
   bool geominfo;
   /// @brief assume slice files exist in order to reduce startup time
