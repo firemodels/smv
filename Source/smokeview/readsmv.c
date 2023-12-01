@@ -11356,9 +11356,9 @@ typedef struct {
   return 0;
 }
 
-/* ------------------ InitializeDeviceData ------------------------ */
+/* ------------------ InitializeDeviceCsvData ------------------------ */
 
-void InitializeDeviceData(void){
+void InitializeDeviceCsvData(void){
   int i;
 
   INIT_PRINT_TIMER(device_timer);
@@ -11482,8 +11482,8 @@ int ReadSMV_Configure(){
   if(meshinfo!=NULL&&meshinfo->jbar==1)force_isometric=1;
 
 // update csv data
-  InitializeDeviceData();
-  PRINT_TIMER(timer_readsmv, "InitializeDeviceData");
+  InitializeDeviceCsvData();
+  PRINT_TIMER(timer_readsmv, "InitializeDeviceCsvData");
 
   SetupPlot2DUnitData();
   PRINT_TIMER(timer_readsmv, "SetupPlot2DUnitData");
