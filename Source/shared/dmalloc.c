@@ -100,6 +100,7 @@ void PrintMemoryError(size_t size, const char *varname, const char *file, int li
     fprintf(stderr," at %s(%i)\n",file,linenumber);
   }
   printf("\n");
+  assert(1==0); // force smokeview to abort when in debug mode
 }
 
 /* ------------------ _NewMemory ------------------------ */
@@ -161,7 +162,6 @@ mallocflag _NewMemoryNOTHREAD(void **ppv, size_t size, int memory_id){
 
 #ifdef pp_MEMDEBUG
   CheckMemoryNOTHREAD;
-  assert(*ppb != NULL);
   if(*ppb != NULL){
     if(sizeofDebugByte != 0){
       c = (char *)(*ppb) + size;
@@ -366,6 +366,9 @@ mallocflag __NewMemory(void **ppv, size_t size, int memory_id, const char *varna
   LOCK_MEM;
   return_code=_NewMemoryNOTHREAD(ppb,size,memory_id);
   pbi=GetBlockInfo((bbyte *)*ppb);
+  if(pbi == NULL){
+    PrintMemoryError(size, varname, file, linenumber);
+  }
   pbi->linenumber=linenumber;
 
   file2=strrchr(file,dirsep);
@@ -449,7 +452,6 @@ static blockinfo *GetBlockInfo(bbyte *pb){
 
     if(fPtrGrtrEq(pb, pbStart) && fPtrLessEq(pb, pbEnd))break;
   }
-  assert(pbi != NULL);
   return (pbi);
 }
 
