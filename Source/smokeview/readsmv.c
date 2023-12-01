@@ -453,13 +453,11 @@ void ReadAllCSVFiles(void){
     UNLOCK_CSV_LOAD;
   }
   LOCK_CSV_LOAD;
-  int all_loaded = 1;
   for(i = 0; i < ncsvfileinfo; i++){
     csvfiledata *csvfi;
 
     csvfi = csvfileinfo + i;
     if(csvfi->defined != CSV_DEFINED){
-      all_loaded = 0;
       break;
     }
   }
