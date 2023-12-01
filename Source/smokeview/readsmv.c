@@ -11482,7 +11482,8 @@ int ReadSMV_Configure(){
   if(meshinfo!=NULL&&meshinfo->jbar==1)force_isometric=1;
 
 // update csv data
-  InitializeDeviceCsvData();
+  void InitializeDeviceCsvDataMT(void);
+  InitializeDeviceCsvDataMT();
   PRINT_TIMER(timer_readsmv, "InitializeDeviceCsvData");
 
   SetupPlot2DUnitData();

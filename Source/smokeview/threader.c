@@ -338,12 +338,13 @@ void *MtReadBufferi(void *arg){
 
 //***************************** multi threading read in csv file ***********************************
 
-/* ------------------ MtReadAllCSVFiles ------------------------ */
+/* ------------------ MtInitializeDeviceCsvData ------------------------ */
 
 #ifdef pp_THREAD
-void ReadAllCSVFiles(void);
-void *MtReadAllCSVFiles(void *arg){
-  ReadAllCSVFiles();
+void InitializeDeviceCsvData(void);
+
+void *MtInitializeDeviceCsvData(void *arg){
+  InitializeDeviceCsvData();
   pthread_exit(NULL);
   return NULL;
 }
@@ -364,34 +365,18 @@ void UnLockCSV(void){
 
 /* ------------------ void ReadAllCSVFilesMT ------------------------ */
 
-void ReadAllCSVFilesMT(void){
+void InitializeDeviceCsvDataMT(void){
 #ifdef pp_CSV_MULTI
   if(csv_multithread == 1){
-    int i;
-
-    for(i=0;i<ncsv_threads;i++){
-     pthread_create(csv_ids+i, NULL, MtReadAllCSVFiles, NULL);
-    }
+    pthread_create(&csv_id, NULL, MtInitializeDeviceCsvData, NULL);
   }
   else{
-    ReadAllCSVFiles();
+    InitializeDeviceCsvData();
   }
 #else
-  ReadAllCSVFiles();
+  InitializeDeviceCsvData();
 #endif
 }
-
-/* ------------------ void FinishAllCSVFiles ------------------------ */
-
-#ifdef pp_CSV_MULTI
-void FinishAllCSVFiles(void){
-  int i;
-
-  for(i = 0; i < ncsv_threads; i++){
-    pthread_join(csv_ids[i], NULL);
-  }
-}
-#endif
 
 //***************************** multi threading triangle update ***********************************
 
