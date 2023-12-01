@@ -365,8 +365,11 @@ mallocflag __NewMemory(void **ppv, size_t size, int memory_id, const char *varna
 
   LOCK_MEM;
   return_code=_NewMemoryNOTHREAD(ppb,size,memory_id);
+  if(return_code != 1){
+    PrintMemoryError(size, varname, file, linenumber);
+  }
   pbi=GetBlockInfo((bbyte *)*ppb);
-  if(pbi == NULL){
+  if(return_code == 1 && pbi == NULL){ // don't print error message twice
     PrintMemoryError(size, varname, file, linenumber);
   }
   pbi->linenumber=linenumber;
