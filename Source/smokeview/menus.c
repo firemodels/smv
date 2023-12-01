@@ -131,6 +131,10 @@ float     part_load_time;
 #define MENU_PLOT3D_SHOWALL 5
 #define MENU_PLOT3D_HIDEALL 6
 
+#ifdef pp_CSV_MENU
+#define MENU_PLOT2D_LOAD 0
+#endif
+
 #define MENU_MAIN_TRAINERTOGGLE 997
 
 #define MENU_UNLOADSMOKE3D_UNLOADALLSOOT -1
@@ -5399,6 +5403,18 @@ int LoadAllPlot3D(float time){
   return count;
 }
 
+#ifdef pp_CSV_MENU
+/* ------------------ LoadPlot2DMenu ------------------------ */
+
+void LoadPlot2DMenu(int value){
+  if(value==MENU_PLOT2D_LOAD){
+    void InitializeDeviceCsvData(void);
+    InitializeDeviceCsvData();
+    DialogMenu(DIALOG_2DPLOTS);
+  }
+}
+#endif
+
 /* ------------------ LoadPlot3DMenu ------------------------ */
 
 void LoadPlot3dMenu(int value){
@@ -8554,6 +8570,9 @@ static int hvacmenu = 0, hvacnetworkmenu, showcomponentmenu = 0, showfiltermenu 
 static int hvacvaluemenu = 0, hvacnodevaluemenu = 0, hvacductvaluemenu = 0;
 static int scriptlistmenu=0,scriptsteplistmenu=0,scriptrecordmenu=0;
 static int loadplot3dmenu=0, unloadvslicemenu=0, unloadslicemenu=0;
+#ifdef pp_CSV_MENU
+static int loadplot2dmenu=0;
+#endif
 static int loadsmoke3dmenu = 0;
 static int loadvolsmoke3dmenu=0,showvolsmoke3dmenu=0;
 static int unloadsmoke3dmenu=0,unloadvolsmoke3dmenu=0;
@@ -12103,7 +12122,16 @@ updatemenu=0;
       }
     }
 
-/* --------------------------------plot3d menu -------------------------- */
+#ifdef pp_CSV_MENU
+    /* --------------------------------plot2d menu -------------------------- */
+
+    if(ncsvfileinfo > 0){
+      CREATEMENU(loadplot2dmenu, LoadPlot2DMenu);
+      glutAddMenuEntry("Load", MENU_PLOT2D_LOAD);
+    }
+#endif
+
+    /* --------------------------------plot3d menu -------------------------- */
 
     if(nplot3dinfo>0){
       plot3ddata *plot3dim1, *plot3di;
@@ -12998,6 +13026,11 @@ updatemenu=0;
         }
         GLUTADDSUBMENU(loadmenulabel,particlemenu);
       }
+
+      // plot2d
+#ifdef pp_CSV_MENU
+      if(ncsvfileinfo > 0)GLUTADDSUBMENU(_("CSV"), loadplot2dmenu);
+#endif
 
       // plot3d
 
