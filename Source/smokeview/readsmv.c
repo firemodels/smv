@@ -463,9 +463,6 @@ void ReadAllCSVFiles(void){
       break;
     }
   }
-  if(all_loaded == 1&&show_timings==1){
-    PRINT_TIMER(csv_timer, "csv file loading");
-  }
   UNLOCK_CSV_LOAD;
 }
 
@@ -11359,6 +11356,29 @@ typedef struct {
   return 0;
 }
 
+/* ------------------ InitializeDeviceData ------------------------ */
+
+void InitializeDeviceData(void){
+  int i;
+
+  INIT_PRINT_TIMER(device_timer);
+  if(hrr_csv_filename != NULL)ReadHRR(LOAD);
+  ReadDeviceData(NULL, CSV_FDS, UNLOAD);
+  ReadDeviceData(NULL, CSV_EXP, UNLOAD);
+  for(i = 0; i < ncsvfileinfo; i++){
+    csvfiledata *csvi;
+
+    csvi = csvfileinfo + i;
+    if(strcmp(csvi->c_type, "devc") == 0)ReadDeviceData(csvi->file, CSV_FDS, LOAD);
+    if(strcmp(csvi->c_type, "ext") == 0)ReadDeviceData(csvi->file, CSV_EXP, LOAD);
+  }
+  SetupDeviceData();
+  PRINT_TIMER(device_timer, "ReadDeviceData");
+  INIT_PRINT_TIMER(csv_timer);
+  ReadAllCSVFiles();
+  PRINT_TIMER(csv_timer, "ReadAllCSVFiles");
+}
+
 /* ------------------ ReadSMV_Configure ------------------------ */
 
 /// @brief Finish setting global variables after an SMV file has been parsed.
@@ -11462,22 +11482,9 @@ int ReadSMV_Configure(){
   if(meshinfo!=NULL&&meshinfo->jbar==1)force_isometric=1;
 
 // update csv data
+  InitializeDeviceData();
+  PRINT_TIMER(timer_readsmv, "InitializeDeviceData");
 
-  if(hrr_csv_filename!=NULL)ReadHRR(LOAD);
-  ReadDeviceData(NULL,CSV_FDS,UNLOAD);
-  ReadDeviceData(NULL,CSV_EXP,UNLOAD);
-  for(i=0;i<ncsvfileinfo;i++){
-    csvfiledata *csvi;
-
-    csvi = csvfileinfo + i;
-    if(strcmp(csvi->c_type, "devc")==0)ReadDeviceData(csvi->file,CSV_FDS,LOAD);
-    if(strcmp(csvi->c_type, "ext") == 0)ReadDeviceData(csvi->file,CSV_EXP,LOAD);
-  }
-  PRINT_TIMER(timer_readsmv, "ReadDeviceData");
-
-  SetupDeviceData();
-  PRINT_TIMER(timer_readsmv, "SetupDeviceData");
-  ReadAllCSVFilesMT();
   SetupPlot2DUnitData();
   PRINT_TIMER(timer_readsmv, "SetupPlot2DUnitData");
   if(nzoneinfo>0)SetupZoneDevs();
