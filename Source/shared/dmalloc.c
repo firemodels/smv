@@ -82,7 +82,12 @@ void initMALLOC(void){
 
 void PrintMemoryError(size_t size, const char *varname, const char *file, int linenumber){
   if(varname!=NULL){
-    fprintf(stderr, "\n*** Error when allocating %llu bytes for %s", (unsigned long long)size, varname);
+    char *varname2 = NULL;
+
+
+    varname2 = strrchr(varname, '&');
+    if(varname2 != NULL)varname = varname2+1;
+    fprintf(stderr, "\n*** Error when allocating %llu bytes for the variable '%s'", (unsigned long long)size, varname);
   }
   else{
     fprintf(stderr, "\n*** Error when allocating %llu bytes", (unsigned long long)size);
