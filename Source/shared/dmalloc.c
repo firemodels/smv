@@ -78,6 +78,31 @@ void initMALLOC(void){
   MMtotalmemory=0;
 }
 
+/* ------------------ PrintMemoryError ------------------------ */
+
+void PrintMemoryError(size_t size, const char *varname, const char *file, int linenumber){
+  if(varname!=NULL){
+    char *varname2 = NULL;
+
+    varname2 = strrchr(varname, '&');
+    if(varname2 != NULL)varname = varname2+1;
+    fprintf(stderr, "\n***Error: Failure when allocating %llu bytes for the variable '%s'", (unsigned long long)size, varname);
+  }
+  else{
+    fprintf(stderr, "\n***Error: Failure when allocating %llu bytes", (unsigned long long)size);
+  }
+  if(file!=NULL){
+    char *file2=NULL;
+
+    file2 = strrchr(file,'\\');
+    if(file2==NULL)file2 = strrchr(file, '/');
+    if(file2 != NULL)file = file2+1;
+    fprintf(stderr," at %s(%i)\n",file,linenumber);
+  }
+  printf("\n");
+  assert(1==0); // force smokeview to abort when in debug mode
+}
+
 /* ------------------ _NewMemory ------------------------ */
 
 mallocflag _NewMemory(void **ppv, size_t size, int memory_id, const char *varname, const char *file, int linenumber){
@@ -86,15 +111,7 @@ mallocflag _NewMemory(void **ppv, size_t size, int memory_id, const char *varnam
   LOCK_MEM;
   returnval=_NewMemoryNOTHREAD(ppv, size, memory_id);
   if(returnval!=1){
-    fprintf(stderr,"*** Error: memory allocation request of size %llu failed\n",(unsigned long long)size);
-    if(varname!=NULL){
-      fprintf(stderr,"             variable: %s\n",varname);
-      fprintf(stderr,"                 size: %u\n",(unsigned int)size);
-    }
-    if(file!=NULL){
-      fprintf(stderr,"                 file: %s\n",file);
-      fprintf(stderr,"          line number: %i\n",linenumber);
-    }
+     PrintMemoryError(size, varname, file, linenumber);
   }
   UNLOCK_MEM;
   return returnval;
@@ -135,7 +152,7 @@ mallocflag _NewMemoryNOTHREAD(void **ppv, size_t size, int memory_id){
     this_ptr->memory_id = memory_id;
     this_ptr->prev = prev_ptr;
     this_ptr->next = next_ptr;
-    this_ptr->marker = markerByte;
+    this_ptr->marker = MARKER_BYTE;
 
     *ppb = (char *)this_ptr + infoblocksize;
   }
@@ -145,11 +162,10 @@ mallocflag _NewMemoryNOTHREAD(void **ppv, size_t size, int memory_id){
 
 #ifdef pp_MEMDEBUG
   CheckMemoryNOTHREAD;
-  assert(*ppb != NULL);
   if(*ppb != NULL){
     if(sizeofDebugByte != 0){
       c = (char *)(*ppb) + size;
-      *c = (char)debugByte;
+      *c = (char)DEBUG_BYTE;
     }
     memset(*ppb, memGarbage, size);
     if(!CreateBlockInfo(*ppb, size)){
@@ -178,7 +194,7 @@ void FreeAllMemory(int memory_id){
     // if the 'thisptr' memory block is freed then thisptr is no longer valid.
     // so, nextptr (which is thisptr->next) must be defined before it is freed
     nextptr = thisptr->next;
-    if(thisptr->next == NULL || thisptr->marker != markerByte)break;
+    if(thisptr->next == NULL || thisptr->marker != MARKER_BYTE)break;
     thisptr = nextptr;
   }
 #endif
@@ -188,7 +204,7 @@ void FreeAllMemory(int memory_id){
     // if the 'thisptr' memory block is freed then thisptr is no longer valid.
     // so, nextptr (which is thisptr->next) must be defined before it is freed
     nextptr = thisptr->next;
-    if(thisptr->next == NULL || thisptr->marker != markerByte)break;
+    if(thisptr->next == NULL || thisptr->marker != MARKER_BYTE)break;
     if(memory_id == 0 || thisptr->memory_id == memory_id){
       FreeMemoryNOTHREAD((char *)thisptr + infoblocksize);
     }
@@ -226,7 +242,7 @@ void FreeMemoryNOTHREAD(void *pv){
   }
 #endif
   this_ptr=(MMdata *)((char *)pv-infoblocksize);
-  assert(this_ptr->marker==markerByte);
+  assert(this_ptr->marker==MARKER_BYTE);
   MMtotalmemory-=this_ptr->size;
   prev_ptr=this_ptr->prev;
   next_ptr=this_ptr->next;
@@ -244,15 +260,7 @@ mallocflag _ResizeMemory(void **ppv, size_t sizeNew, int memory_id, const char *
   LOCK_MEM;
   returnval=_ResizeMemoryNOTHREAD(ppv, sizeNew, memory_id);
   if(returnval!=1){
-    fprintf(stderr,"*** Error: memory allocation request of size %llu failed\n",(unsigned long long)sizeNew);
-    if(varname!=NULL){
-      fprintf(stderr,"             variable: %s\n",varname);
-      fprintf(stderr,"                 size: %u\n",(unsigned int)sizeNew);
-    }
-    if(file!=NULL){
-      fprintf(stderr,"                 file: %s\n",file);
-      fprintf(stderr,"          line number: %i\n",linenumber);
-    }
+    PrintMemoryError(sizeNew, varname, file, linenumber);
   }
   UNLOCK_MEM;
   return returnval;
@@ -308,13 +316,13 @@ mallocflag _ResizeMemoryNOTHREAD(void **ppv, size_t sizeNew, int memory_id){
       this_ptr->memory_id = memory_id;
       this_ptr->next=next_ptr;
       this_ptr->prev=prev_ptr;
-      this_ptr->marker=markerByte;
+      this_ptr->marker=MARKER_BYTE;
     }
 #ifdef pp_MEMDEBUG
     {
       if(sizeofDebugByte!=0){
         c = pbNew + infoblocksize + sizeNew;
-        *c=(char)debugByte;
+        *c=(char)DEBUG_BYTE;
       }
       UpdateBlockInfo(*ppold, (char *)pbNew+infoblocksize, sizeNew);
       if(sizeNew>sizeOld){
@@ -357,7 +365,13 @@ mallocflag __NewMemory(void **ppv, size_t size, int memory_id, const char *varna
 
   LOCK_MEM;
   return_code=_NewMemoryNOTHREAD(ppb,size,memory_id);
+  if(return_code != 1){
+    PrintMemoryError(size, varname, file, linenumber);
+  }
   pbi=GetBlockInfo((bbyte *)*ppb);
+  if(return_code == 1 && pbi == NULL){ // don't print error message twice
+    PrintMemoryError(size, varname, file, linenumber);
+  }
   pbi->linenumber=linenumber;
 
   file2=strrchr(file,dirsep);
@@ -390,15 +404,7 @@ mallocflag __NewMemory(void **ppv, size_t size, int memory_id, const char *varna
     strcat(pbi->varname,"\0");
   }
   if(return_code!=1){
-    fprintf(stderr,"*** Error: memory allocation request of size %llu failed\n",(unsigned long long)size);
-    if(varname!=NULL){
-      fprintf(stderr,"             variable: %s\n",varname);
-      fprintf(stderr,"                 size: %u\n",(unsigned int)size);
-    }
-    if(file!=NULL){
-      fprintf(stderr,"                 file: %s\n",file);
-      fprintf(stderr,"          line number: %i\n",linenumber);
-    }
+    PrintMemoryError(size, varname, file, linenumber);
   }
   UNLOCK_MEM;
   return return_code;
@@ -430,15 +436,7 @@ mallocflag __ResizeMemory(void **ppv, size_t size, int memory_id, const char *va
     strcat(pbi->varname,"\0");
   }
   if(return_code!=1){
-    fprintf(stderr,"*** Error: memory allocation request of size %llu failed\n",(unsigned long long)size);
-    if(varname!=NULL){
-      fprintf(stderr,"             variable: %s\n",varname);
-      fprintf(stderr,"                 size: %u\n",(unsigned int)size);
-    }
-    if(file!=NULL){
-      fprintf(stderr,"                 file: %s\n",file);
-      fprintf(stderr,"          line number: %i\n",linenumber);
-    }
+    PrintMemoryError(size, varname, file, linenumber);
   }
   UNLOCK_MEM;
   return return_code;
@@ -457,7 +455,6 @@ static blockinfo *GetBlockInfo(bbyte *pb){
 
     if(fPtrGrtrEq(pb, pbStart) && fPtrLessEq(pb, pbEnd))break;
   }
-  assert(pbi != NULL);
   return (pbi);
 }
 
@@ -535,7 +532,7 @@ void _CheckMemoryNOTHREAD(void){
   if(checkmemoryflag==0)return;
   for(pbi = pbiHead; pbi != NULL; pbi = pbi->pbiNext){
     if(sizeofDebugByte!=0){
-      assert((char)*(pbi->pb+pbi->size)==(char)debugByte);
+      assert((char)*(pbi->pb+pbi->size)==(char)DEBUG_BYTE);
     }
   }
   return;
@@ -578,7 +575,7 @@ void FreeBlockInfo(bbyte *pbToFree){
   }
   assert(pbi != NULL);
   if(sizeofDebugByte!=0){
-    assert((char)*(pbi->pb+pbi->size)==(char)debugByte);
+    assert((char)*(pbi->pb+pbi->size)==(char)DEBUG_BYTE);
   }
   free(pbi);
 }
@@ -605,7 +602,7 @@ size_t sizeofBlock(bbyte *pb){
   pbi = GetBlockInfo(pb);
   assert(pb==pbi->pb);
   if(sizeofDebugByte!=0){
-    assert((char)*(pbi->pb+pbi->size)==(char)debugByte);
+    assert((char)*(pbi->pb+pbi->size)==(char)DEBUG_BYTE);
   }
   return(pbi->size);
 }
@@ -624,7 +621,7 @@ mallocflag _ValidPointer(void *pv, size_t size){
   assert(fPtrLessEq(pb+size,pbi->pb + pbi->size));
 
   if(sizeofDebugByte!=0){
-    assert((char)*(pbi->pb+pbi->size)==(char)debugByte);
+    assert((char)*(pbi->pb+pbi->size)==(char)DEBUG_BYTE);
   }
   return(1);
 }
