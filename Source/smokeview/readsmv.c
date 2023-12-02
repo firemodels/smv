@@ -11482,6 +11482,10 @@ int ReadSMV_Configure(){
 
   if(meshinfo!=NULL&&meshinfo->jbar==1)force_isometric=1;
 
+  if(runscript == 1){
+    InitializeDeviceCsvData(LOAD);
+  }
+
   SetupPlot2DUnitData();
   PRINT_TIMER(timer_readsmv, "SetupPlot2DUnitData");
   if(nzoneinfo>0)SetupZoneDevs();
