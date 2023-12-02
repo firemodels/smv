@@ -132,7 +132,8 @@ float     part_load_time;
 #define MENU_PLOT3D_HIDEALL 6
 
 #ifdef pp_CSV_MENU
-#define MENU_PLOT2D_LOAD 0
+#define MENU_PLOT2D_LOAD   0
+#define MENU_PLOT2D_UNLOAD 1
 #endif
 
 #define MENU_MAIN_TRAINERTOGGLE 997
@@ -5407,11 +5408,35 @@ int LoadAllPlot3D(float time){
 /* ------------------ LoadPlot2DMenu ------------------------ */
 
 void LoadPlot2DMenu(int value){
-  if(value==MENU_PLOT2D_LOAD){
-    void InitializeDeviceCsvData(void);
-    InitializeDeviceCsvData();
+  switch(value){
+  case MENU_PLOT2D_LOAD:
+    void InitializeDeviceCsvData(int flag);
+    InitializeDeviceCsvData(UNLOAD);
+    InitializeDeviceCsvData(LOAD);
     DialogMenu(DIALOG_2DPLOTS);
+    csv_loaded = 1;
+    updatemenu = 1;
+    break;
+  case MENU_PLOT2D_UNLOAD:
+    int i;
+
+    for(i = 0; i < ncsvfileinfo; i++){
+      csvfiledata *csvfi;
+
+      csvfi = csvfileinfo + i;
+      ReadCSVFile(csvfi, UNLOAD);
+      DialogMenu(DIALOG_2DPLOTS);
+    }
+    csv_loaded = 0;
+    plot2d_show_plots=0;
+    updatemenu = 1;
+    GLUIHidePlot2D();
+    break;
+  default:
+    assert(0);
+    break;
   }
+
 }
 #endif
 
@@ -11385,11 +11410,13 @@ updatemenu=0;
   /* --------------------------------data dialog menu -------------------------- */
 
   CREATEMENU(datadialogmenu, DialogMenu);
-  if(ndeviceinfo>0&&GetNumActiveDevices()>0){
-    glutAddMenuEntry(_("Devices/Objects"), DIALOG_DEVICE);
-  }
-  if((ncsvfileinfo>0&&have_ext==0)||(ncsvfileinfo>1&&have_ext==1)){
-    glutAddMenuEntry(_("2D plots"), DIALOG_2DPLOTS);
+  if(csv_loaded==1){
+    if(ndeviceinfo>0&&GetNumActiveDevices()>0){
+      glutAddMenuEntry(_("Devices/Objects"), DIALOG_DEVICE);
+    }
+    if((ncsvfileinfo>0&&have_ext==0)||(ncsvfileinfo>1&&have_ext==1)){
+      glutAddMenuEntry(_("2D plots"), DIALOG_2DPLOTS);
+    }
   }
   glutAddMenuEntry(_("Show/Hide..."), DIALOG_SHOWFILES);
   glutAddMenuEntry(_("Particle tracking..."), DIALOG_SHOOTER);
@@ -12127,7 +12154,14 @@ updatemenu=0;
 
     if(ncsvfileinfo > 0){
       CREATEMENU(loadplot2dmenu, LoadPlot2DMenu);
-      glutAddMenuEntry("Load", MENU_PLOT2D_LOAD);
+      if(csv_loaded == 1){
+        glutAddMenuEntry("*Loaded",  MENU_PLOT2D_LOAD);
+        glutAddMenuEntry("Unload",   MENU_PLOT2D_UNLOAD);
+      }
+      else{
+        glutAddMenuEntry("Load",      MENU_PLOT2D_LOAD);
+        glutAddMenuEntry("*Unloaded", MENU_PLOT2D_UNLOAD);
+      }
     }
 #endif
 
@@ -13029,7 +13063,9 @@ updatemenu=0;
 
       // plot2d
 #ifdef pp_CSV_MENU
-      if(ncsvfileinfo > 0)GLUTADDSUBMENU(_("CSV"), loadplot2dmenu);
+      if(ncsvfileinfo > 0){
+        GLUTADDSUBMENU(_("csv/2D plots"), loadplot2dmenu);
+      }
 #endif
 
       // plot3d

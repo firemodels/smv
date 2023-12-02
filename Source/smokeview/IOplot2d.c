@@ -392,7 +392,6 @@ void UpdateCurveBounds(plot2ddata *plot2di, int option){
       csvi->valmax = valmax;
     }
   }
-
   if(plot2di->ncurves==0){
     plot2di->bounds_defined = 0;
   }

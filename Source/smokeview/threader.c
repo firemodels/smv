@@ -338,18 +338,6 @@ void *MtReadBufferi(void *arg){
 
 //***************************** multi threading read in csv file ***********************************
 
-/* ------------------ MtInitializeDeviceCsvData ------------------------ */
-
-#ifdef pp_THREAD
-void InitializeDeviceCsvData(void);
-
-void *MtInitializeDeviceCsvData(void *arg){
-  InitializeDeviceCsvData();
-  pthread_exit(NULL);
-  return NULL;
-}
-#endif
-
 /* ------------------ LockCSV ------------------------ */
 #ifdef pp_CSV_MULTI
 void LockCSV(void){
@@ -362,21 +350,6 @@ void UnLockCSV(void){
   UNLOCK_CSV_LOAD;
 }
 #endif
-
-/* ------------------ void ReadAllCSVFilesMT ------------------------ */
-
-void InitializeDeviceCsvDataMT(void){
-#ifdef pp_CSV_MULTI
-  if(csv_multithread == 1){
-    pthread_create(&csv_id, NULL, MtInitializeDeviceCsvData, NULL);
-  }
-  else{
-    InitializeDeviceCsvData();
-  }
-#else
-  InitializeDeviceCsvData();
-#endif
-}
 
 //***************************** multi threading triangle update ***********************************
 

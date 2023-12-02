@@ -180,16 +180,21 @@ int ReadCSVFile(csvfiledata *csvfi, int flag){
   int i;
 
   LOCK_CSV_LOAD;
-  for(i=0; i<csvfi->ncsvinfo; i++){
-    csvdata *ci;
+  if(csvfi->csvinfo != NULL){
+    for(i = 0; i < csvfi->ncsvinfo; i++){
+      csvdata *ci;
 
-    ci = csvfi->csvinfo + i;
-    FREEMEMORY(ci->vals);
-    FREEMEMORY(ci->vals_orig);
+      ci = csvfi->csvinfo + i;
+      FREEMEMORY(ci->vals);
+      FREEMEMORY(ci->vals_orig);
+    }
+    FREEMEMORY(csvfi->csvinfo);
   }
-  FREEMEMORY(csvfi->csvinfo);
   UNLOCK_CSV_LOAD;
-  if(flag == UNLOAD)return CSV_UNDEFINED;
+  if(flag == UNLOAD){
+    csvfi->defined = CSV_UNDEFINED;
+    return CSV_UNDEFINED;
+  }
 
   stream = fopen(csvfi->file, "r");
   if(stream == NULL)return CSV_UNDEFINED;
@@ -430,10 +435,19 @@ int CompareCSV( const void *arg1, const void *arg2 ){
 
 /* ------------------ ReadAllCSVFiles ------------------------ */
 
-void ReadAllCSVFiles(void){
+void ReadAllCSVFiles(int flag){
   int i;
 
   if(ncsvfileinfo == 0)return;
+#define GENPLOT_REM_ALL_PLOTS       136
+  GenPlotCB(GENPLOT_REM_ALL_PLOTS);
+  for(i = 0; i < ncsvfileinfo; i++){
+    csvfiledata *csvfi;
+
+    csvfi = csvfileinfo + i;
+    ReadCSVFile(csvfi, UNLOAD);
+  }
+  if(flag == UNLOAD)return;
   for(i = 0; i < ncsvfileinfo; i++){
     csvfiledata *csvfi;
 
@@ -11356,30 +11370,31 @@ typedef struct {
 
 /* ------------------ InitializeDeviceCsvData ------------------------ */
 
-void InitializeDeviceCsvData(void){
+void InitializeDeviceCsvData(int flag){
   int i;
 
   INIT_PRINT_TIMER(device_timer);
 #ifdef pp_CSV_MENU
   SetupDeviceData();
 #endif
-  if(hrr_csv_filename != NULL)ReadHRR(LOAD);
+  if(hrr_csv_filename != NULL)ReadHRR(flag);
   ReadDeviceData(NULL, CSV_FDS, UNLOAD);
   ReadDeviceData(NULL, CSV_EXP, UNLOAD);
   for(i = 0; i < ncsvfileinfo; i++){
     csvfiledata *csvi;
 
     csvi = csvfileinfo + i;
-    if(strcmp(csvi->c_type, "devc") == 0)ReadDeviceData(csvi->file, CSV_FDS, LOAD);
-    if(strcmp(csvi->c_type, "ext") == 0)ReadDeviceData(csvi->file, CSV_EXP, LOAD);
+    if(strcmp(csvi->c_type, "devc") == 0)ReadDeviceData(csvi->file, CSV_FDS, flag);
+    if(strcmp(csvi->c_type, "ext") == 0)ReadDeviceData(csvi->file, CSV_EXP, flag);
   }
 #ifndef pp_CSV_MENU
   SetupDeviceData();
 #endif
   PRINT_TIMER(device_timer, "ReadDeviceData");
   INIT_PRINT_TIMER(csv_timer);
-  ReadAllCSVFiles();
+  ReadAllCSVFiles(flag);
   PRINT_TIMER(csv_timer, "ReadAllCSVFiles");
+  if(flag==LOAD)csv_loaded = 1;
 }
 
 /* ------------------ ReadSMV_Configure ------------------------ */
@@ -11487,7 +11502,7 @@ int ReadSMV_Configure(){
 // update csv data
   void InitializeDeviceCsvDataMT(void);
 #ifndef pp_CSV_MENU
-  InitializeDeviceCsvData();
+  InitializeDeviceCsvData(LOAD);
 #endif
   PRINT_TIMER(timer_readsmv, "InitializeDeviceCsvData");
 

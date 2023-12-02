@@ -14,6 +14,7 @@
 
 #define GENPLOT_ADD_PLOT            101
 #define GENPLOT_REM_PLOT            102
+#define GENPLOT_REM_ALL_PLOTS       136
 #define GENPLOT_SHOW_PLOT           103
 #define GENPLOT_SELECT_PLOT         104
 #define GENPLOT_ADD_DEV_PLOTS       105
@@ -89,6 +90,7 @@ GLUI_EditText *EDIT_xaxis_label  = NULL;
 GLUI_Button *BUTTON_plot_position = NULL;
 GLUI_Button *BUTTON_add_plot = NULL;
 GLUI_Button *BUTTON_rem_plot = NULL;
+GLUI_Button *BUTTON_rem_all_plots = NULL;
 GLUI_Button *BUTTON_open_down=NULL ;
 GLUI_Button *BUTTON_device_2=NULL;
 GLUI_Button *BUTTON_plot2d_2=NULL;
@@ -703,6 +705,15 @@ extern "C" void GLUIUpdateDeviceAdd(void){
 extern "C" void GLUIShowPlot2D(void){
   if(glui_plot2d != NULL){
     glui_plot2d->show();
+    EnableDisablePlot2D();
+  }
+}
+
+/* ------------------ GLUIHidePlot2D ------------------------ */
+
+extern "C" void GLUIHidePlot2D(void){
+  if(glui_plot2d != NULL){
+    glui_plot2d->hide();
     EnableDisablePlot2D();
   }
 }
@@ -1377,6 +1388,12 @@ void GenPlotCB(int var){
       SetPlot2DBoundLabels(plot2dinfo+iplot2dinfo);
       LIST_csvID->set_int_val(-1);
       break;
+    case GENPLOT_REM_ALL_PLOTS:
+      while(nplot2dinfo != 0){
+        iplot2dinfo = 0;
+        GenPlotCB(GENPLOT_REM_PLOT);
+      }
+      break;
     case GENPLOT_REM_PLOT:
       RemovePlot(iplot2dinfo);
       if(iplot2dinfo>=0&&iplot2dinfo<nplot2dinfo){
@@ -1784,6 +1801,7 @@ extern "C" void GLUIPlot2DSetup(int main_window){
     BUTTON_add_plot = glui_plot2d->add_button_to_panel(PANEL_plots, _("New plot"), GENPLOT_ADD_PLOT, GenPlotCB);
 
     BUTTON_rem_plot = glui_plot2d->add_button_to_panel(PANEL_plots, _("Remove"), GENPLOT_REM_PLOT, GenPlotCB);
+    BUTTON_rem_all_plots = glui_plot2d->add_button_to_panel(PANEL_plots, _("Remove all"), GENPLOT_REM_ALL_PLOTS, GenPlotCB);
     LIST_plots = glui_plot2d->add_listbox_to_panel(PANEL_plots, "select:", &iplot2dinfo, GENPLOT_SELECT_PLOT, GenPlotCB);
     LIST_plots->add_item(-1, "");
     CHECKBOX_show_genplot  = glui_plot2d->add_checkbox_to_panel(PANEL_plots, "show", &(glui_plot2dinfo->show), GENPLOT_SHOW_PLOT, GenPlotCB);

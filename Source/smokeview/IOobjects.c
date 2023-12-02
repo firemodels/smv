@@ -6582,7 +6582,8 @@ void SetupDeviceData(void){
   char **devcunits=NULL, **devclabels=NULL;
   int is_dup;
 
-  if(ndeviceinfo==0)return;
+  if(ndeviceinfo==0||devices_setup==1)return; // only setup device data once
+  devices_setup = 1;
   FREEMEMORY(vdeviceinfo);
   NewMemory((void **)&vdeviceinfo,ndeviceinfo*sizeof(vdevicedata));
   FREEMEMORY(vdevices_sorted);

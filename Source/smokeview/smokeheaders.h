@@ -212,6 +212,7 @@ EXTERNCPP void GLUIPlot2DSetup(int main_window);
 EXTERNCPP void GLUIUpdatePlot2DTbounds(void);
 EXTERNCPP void GLUIUpdatePlot2DINI(void);
 EXTERNCPP void GLUIShowPlot2D(void);
+EXTERNCPP void GLUIHidePlot2D(void);
 EXTERNCPP void GLUIShowDevice(void);
 EXTERNCPP void GLUIShowPlotDevice(void);
 EXTERNCPP void GLUIHideDevice(void);
@@ -491,8 +492,7 @@ EXTERNCPP void MergeAllPartBounds(void);
 EXTERNCPP void InsertRollout(GLUI_Rollout *rollout, GLUI *dialog);
 #endif
 
-EXTERNCPP void ReadAllCSVFilesMT(void);
-EXTERNCPP void ReadAllCSVFiles(void);
+EXTERNCPP void ReadAllCSVFiles(int flag);
 EXTERNCPP int ReadCSVFile(csvfiledata *csvfi, int flag);
 EXTERNCPP void UpdateCSVFileTypes(void);
 #ifdef pp_CSV_MULTI
