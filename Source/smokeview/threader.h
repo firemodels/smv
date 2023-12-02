@@ -25,20 +25,6 @@
   #define LOCK_PART_LOAD    pthread_mutex_lock(&mutexPART_LOAD);
   #define UNLOCK_PART_LOAD  pthread_mutex_unlock(&mutexPART_LOAD);
 
-#ifdef pp_CSV_MULTI
-  #define JOIN_CSVFILES     if(csv_multithread==1)pthread_join(csv_id,NULL);
-  #define LOCK_CSV_LOAD     if(csv_multithread==1)pthread_mutex_lock(&mutexCSV_LOAD);
-  #define UNLOCK_CSV_LOAD   if(csv_multithread==1)pthread_mutex_unlock(&mutexCSV_LOAD);
-  #define LOCK_CSV_LOAD_CPP   LockCSV()
-  #define UNLOCK_CSV_LOAD_CPP UnLockCSV()
-#else
-  #define JOIN_CSVFILES
-  #define LOCK_CSV_LOAD
-  #define UNLOCK_CSV_LOAD
-  #define LOCK_CSV_LOAD_CPP
-  #define UNLOCK_CSV_LOAD_CPP
-#endif
-
 #ifdef pp_SLICE_MULTI
   #define LOCK_SLICE_LOAD    pthread_mutex_lock(&mutexSLICE_LOAD);
   #define UNLOCK_SLICE_LOAD  pthread_mutex_unlock(&mutexSLICE_LOAD);
@@ -87,9 +73,6 @@
   #define LOCK_READALLGEOM
   #define UNLOCK_READALLGEOM
 
-  #define LOCK_CSV_LOAD
-  #define UNLOCK_CSV_LOAD
-
   #define LOCK_PART_LOAD
   #define UNLOCK_PART_LOAD
 
@@ -125,10 +108,6 @@
   #define JOIN_SAMPLE
 #endif
 
-  #define JOIN_CSVFILES
-  #define LOCK_CSV_LOAD_CPP
-  #define UNLOCK_CSV_LOAD_CPP
-
   #define JOIN_PART_HIST
 #endif
 
@@ -146,7 +125,6 @@ MT_EXTERN pthread_mutex_t mutexREADALLGEOM;
 #ifdef pp_SLICE_MULTI
 MT_EXTERN pthread_mutex_t mutexSLICE_LOAD;
 #endif
-MT_EXTERN pthread_mutex_t mutexCSV_LOAD;
 MT_EXTERN pthread_mutex_t mutexPART_LOAD;
 MT_EXTERN pthread_mutex_t mutexIBLANK;
 MT_EXTERN pthread_mutex_t mutexVOLLOAD;

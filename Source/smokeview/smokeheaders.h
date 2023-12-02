@@ -495,11 +495,6 @@ EXTERNCPP void InsertRollout(GLUI_Rollout *rollout, GLUI *dialog);
 EXTERNCPP void ReadAllCSVFiles(int flag);
 EXTERNCPP void ReadCSVFile(csvfiledata *csvfi, int flag);
 EXTERNCPP void UpdateCSVFileTypes(void);
-#ifdef pp_CSV_MULTI
-EXTERNCPP void FinishAllCSVFiles(void);
-EXTERNCPP void LockCSV(void);
-EXTERNCPP void UnLockCSV(void);
-#endif
 EXTERNCPP int HaveFireLoaded(void);
 EXTERNCPP int HaveSootLoaded(void);
 EXTERNCPP void MakeColorLabels(char colorlabels[12][11], float colorvalues[12], float tmin_arg, float tmax_arg, int nlevel);

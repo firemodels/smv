@@ -179,7 +179,6 @@ void ReadCSVFile(csvfiledata *csvfi, int flag){
   int len_buffer;
   int i;
 
-  LOCK_CSV_LOAD;
   if(csvfi->csvinfo != NULL){
     for(i = 0; i < csvfi->ncsvinfo; i++){
       csvdata *ci;
@@ -190,7 +189,6 @@ void ReadCSVFile(csvfiledata *csvfi, int flag){
     }
     FREEMEMORY(csvfi->csvinfo);
   }
-  UNLOCK_CSV_LOAD;
   if(flag == UNLOAD){
     csvfi->defined = CSV_UNDEFINED;
     return;
@@ -211,33 +209,27 @@ void ReadCSVFile(csvfiledata *csvfi, int flag){
   csvfi->ncsvinfo = ncols;
 
   // allocate memory
-  LOCK_CSV_LOAD;
   NewMemory((void **)&(buffer),        len_buffer);
   NewMemory((void **)&(buffer_labels), len_buffer);
   NewMemory((void **)&(buffer_units),  len_buffer);
   NewMemory((void **)&(buffer_dummy),  len_buffer);
   NewMemory((void **)&(buffer_temp),   len_buffer);
-  UNLOCK_CSV_LOAD;
 
   if(strcmp(csvfi->c_type, "ext") == 0){
     fgets(buffer, len_buffer, stream);
     if(feof(stream)){
-      LOCK_CSV_LOAD;
       FREEMEMORY(buffer);
       FREEMEMORY(buffer_labels);
       FREEMEMORY(buffer_units);
-      UNLOCK_CSV_LOAD;
       csvfi->defined = CSV_UNDEFINED;
       return;
     }
     while(strstr(buffer, "//DATA") == NULL){
       fgets(buffer, len_buffer, stream);
       if(feof(stream)){
-        LOCK_CSV_LOAD;
         FREEMEMORY(buffer);
         FREEMEMORY(buffer_labels);
         FREEMEMORY(buffer_units);
-        UNLOCK_CSV_LOAD;
         csvfi->defined = CSV_UNDEFINED;
         return;
       }
@@ -246,7 +238,6 @@ void ReadCSVFile(csvfiledata *csvfi, int flag){
 
   int nsize;
   nsize = csvfi->ncsvinfo+1;
-  LOCK_CSV_LOAD;
   NewMemory((void **)&(csvfi->csvinfo), nsize*sizeof(csvdata));
   NewMemory((void **)&labels,           nsize*sizeof(char *));
   NewMemory((void **)&units,            nsize*sizeof(char *));
@@ -265,7 +256,6 @@ void ReadCSVFile(csvfiledata *csvfi, int flag){
     NewMemory((void **)&ci->vals,      MAX(1, ci->nvals)*sizeof(csvdata));
     NewMemory((void **)&ci->vals_orig, MAX(1, ci->nvals)*sizeof(csvdata));
   }
-  UNLOCK_CSV_LOAD;
   CheckMemory;
 
   // setup labels and units
@@ -416,7 +406,6 @@ void ReadCSVFile(csvfiledata *csvfi, int flag){
   }
 
   CheckMemory;
-  LOCK_CSV_LOAD;
   FREEMEMORY(units);
   FREEMEMORY(labels);
   FREEMEMORY(vals);
@@ -424,7 +413,6 @@ void ReadCSVFile(csvfiledata *csvfi, int flag){
   FREEMEMORY(buffer);
   FREEMEMORY(buffer_labels);
   FREEMEMORY(buffer_units);
-  UNLOCK_CSV_LOAD;
 
   fclose(stream);
   return;
@@ -460,21 +448,15 @@ void ReadAllCSVFiles(int flag){
     csvfiledata *csvfi;
 
     csvfi = csvfileinfo + i;
-    LOCK_CSV_LOAD;
     if(csvfi->defined == CSV_DEFINING|| csvfi->defined == CSV_DEFINED){
-      UNLOCK_CSV_LOAD;
       continue;
     }
     csvfi->defined = CSV_DEFINING;
-    UNLOCK_CSV_LOAD;
     ReadCSVFile(csvfi, LOAD);
-    LOCK_CSV_LOAD;
     plot2d_max_columns = MAX(plot2d_max_columns, csvfi->ncsvinfo);
     csvfi->defined = CSV_DEFINED;
     UpdateCSVFileTypes();
-    UNLOCK_CSV_LOAD;
   }
-  LOCK_CSV_LOAD;
   for(i = 0; i < ncsvfileinfo; i++){
     csvfiledata *csvfi;
 
@@ -483,7 +465,6 @@ void ReadAllCSVFiles(int flag){
       break;
     }
   }
-  UNLOCK_CSV_LOAD;
 }
 
 /* ------------------ ReadHRR ------------------------ */
@@ -11449,7 +11430,6 @@ int ReadSMV_Configure(){
 
   if(runscript == 1||compute_fed == 1){
     checkfiles_multithread  = 0;
-    csv_multithread         = 0;
     iblank_multithread      = 0;
     ffmpeg_multithread      = 0;
     readallgeom_multithread = 0;
@@ -11653,7 +11633,6 @@ int ReadSMV_Configure(){
   SetVentDirs();
   UNLOCK_IBLANK
 
-  JOIN_CSVFILES;
   JOIN_IBLANK;
 
   PRINT_TIMER(timer_readsmv, "make blanks");

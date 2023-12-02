@@ -9,10 +9,6 @@
 #include "smokestream.h"
 #include GLUT_H
 
-#ifndef pp_THREAD
-#undef pp_CSV_MULTI
-#endif
-
 /* ------------------ InitMultiThreading ------------------------ */
 
 void InitMultiThreading(void){
@@ -21,7 +17,6 @@ void InitMultiThreading(void){
 #ifdef pp_SLICE_MULTI
   pthread_mutex_init(&mutexSLICE_LOAD, NULL);
 #endif
-  pthread_mutex_init(&mutexCSV_LOAD, NULL);
   pthread_mutex_init(&mutexPART_LOAD, NULL);
   pthread_mutex_init(&mutexCOMPRESS,NULL);
   pthread_mutex_init(&mutexVOLLOAD,NULL);
@@ -333,21 +328,6 @@ void *MtReadBufferi(void *arg){
   ReadBufferi(arg);
   pthread_exit(NULL);
   return NULL;
-}
-#endif
-
-//***************************** multi threading read in csv file ***********************************
-
-/* ------------------ LockCSV ------------------------ */
-#ifdef pp_CSV_MULTI
-void LockCSV(void){
-  LOCK_CSV_LOAD;
-}
-
-/* ------------------ UnLockCSV ------------------------ */
-
-void UnLockCSV(void){
-  UNLOCK_CSV_LOAD;
 }
 #endif
 

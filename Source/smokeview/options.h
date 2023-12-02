@@ -14,12 +14,11 @@
 //*** parallel file loading
 #define pp_SLICE_MULTI    // load slice files in parallel
 #define pp_PART_MULTI     // load particle files in parallel
-#define pp_CSV_MULTI      // read in csv files in parallel
 
 #define pp_PATCH_HIST     // simplify boundary file histogram computation
 //#define pp_HIST           // compute histograms
 
-//#define pp_CSV_MENU       // add menu for loading csv data
+#define pp_CSV_MENU       // add menu for loading csv data
 
 #define pp_SMOKE_SKIP     // add option to skip smoke frames
 //#define pp_SMOKE16      // load 16 bit smoke files
