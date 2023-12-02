@@ -493,7 +493,7 @@ EXTERNCPP void InsertRollout(GLUI_Rollout *rollout, GLUI *dialog);
 #endif
 
 EXTERNCPP void ReadAllCSVFiles(int flag);
-EXTERNCPP int ReadCSVFile(csvfiledata *csvfi, int flag);
+EXTERNCPP void ReadCSVFile(csvfiledata *csvfi, int flag);
 EXTERNCPP void UpdateCSVFileTypes(void);
 #ifdef pp_CSV_MULTI
 EXTERNCPP void FinishAllCSVFiles(void);

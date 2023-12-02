@@ -166,7 +166,7 @@ int IsDimensionless(char *unit){
 
 /* ------------------ ReadCSVFile ------------------------ */
 
-int ReadCSVFile(csvfiledata *csvfi, int flag){
+void ReadCSVFile(csvfiledata *csvfi, int flag){
   FILE *stream;
   int nrows, ncols;
   int nunits, nlabels;
@@ -193,14 +193,20 @@ int ReadCSVFile(csvfiledata *csvfi, int flag){
   UNLOCK_CSV_LOAD;
   if(flag == UNLOAD){
     csvfi->defined = CSV_UNDEFINED;
-    return CSV_UNDEFINED;
+    return;
   }
 
   stream = fopen(csvfi->file, "r");
-  if(stream == NULL)return CSV_UNDEFINED;
+  if(stream == NULL){
+    csvfi->defined = CSV_UNDEFINED;
+    return;
+  }
 
   len_buffer = GetRowCols(stream, &nrows, &ncols);
-  if(nrows==0||ncols==0)return CSV_UNDEFINED;
+  if(nrows==0||ncols==0){
+    csvfi->defined = CSV_UNDEFINED;
+    return;
+  }
   len_buffer = MAX(len_buffer + 100 + ncols, 1000);
   csvfi->ncsvinfo = ncols;
 
@@ -221,7 +227,8 @@ int ReadCSVFile(csvfiledata *csvfi, int flag){
       FREEMEMORY(buffer_labels);
       FREEMEMORY(buffer_units);
       UNLOCK_CSV_LOAD;
-      return CSV_UNDEFINED;
+      csvfi->defined = CSV_UNDEFINED;
+      return;
     }
     while(strstr(buffer, "//DATA") == NULL){
       fgets(buffer, len_buffer, stream);
@@ -231,7 +238,8 @@ int ReadCSVFile(csvfiledata *csvfi, int flag){
         FREEMEMORY(buffer_labels);
         FREEMEMORY(buffer_units);
         UNLOCK_CSV_LOAD;
-        return CSV_UNDEFINED;
+        csvfi->defined = CSV_UNDEFINED;
+        return;
       }
     }
   }
@@ -419,7 +427,7 @@ int ReadCSVFile(csvfiledata *csvfi, int flag){
   UNLOCK_CSV_LOAD;
 
   fclose(stream);
-  return CSV_DEFINED;
+  return;
 }
 
 /* ------------------ CompareCSV ------------------------ */
