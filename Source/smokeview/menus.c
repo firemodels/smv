@@ -5407,10 +5407,12 @@ int LoadAllPlot3D(float time){
 #ifdef pp_CSV_MENU
 /* ------------------ LoadPlot2DMenu ------------------------ */
 
+void InitializeDeviceCsvData(int flag);
 void LoadPlot2DMenu(int value){
+  int i;
+
   switch(value){
   case MENU_PLOT2D_LOAD:
-    void InitializeDeviceCsvData(int flag);
     InitializeDeviceCsvData(UNLOAD);
     InitializeDeviceCsvData(LOAD);
     DialogMenu(DIALOG_2DPLOTS);
@@ -5418,8 +5420,6 @@ void LoadPlot2DMenu(int value){
     updatemenu = 1;
     break;
   case MENU_PLOT2D_UNLOAD:
-    int i;
-
     for(i = 0; i < ncsvfileinfo; i++){
       csvfiledata *csvfi;
 
