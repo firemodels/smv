@@ -11363,9 +11363,7 @@ void InitializeDeviceCsvData(int flag){
   int i;
 
   INIT_PRINT_TIMER(device_timer);
-#ifdef pp_CSV_MENU
   SetupDeviceData();
-#endif
   if(hrr_csv_filename != NULL)ReadHRR(flag);
   ReadDeviceData(NULL, CSV_FDS, UNLOAD);
   ReadDeviceData(NULL, CSV_EXP, UNLOAD);
@@ -11376,9 +11374,6 @@ void InitializeDeviceCsvData(int flag){
     if(strcmp(csvi->c_type, "devc") == 0)ReadDeviceData(csvi->file, CSV_FDS, flag);
     if(strcmp(csvi->c_type, "ext") == 0)ReadDeviceData(csvi->file, CSV_EXP, flag);
   }
-#ifndef pp_CSV_MENU
-  SetupDeviceData();
-#endif
   PRINT_TIMER(device_timer, "ReadDeviceData");
   INIT_PRINT_TIMER(csv_timer);
   ReadAllCSVFiles(flag);
@@ -11486,12 +11481,6 @@ int ReadSMV_Configure(){
   PRINT_TIMER(timer_readsmv, "UpdateINIList");
 
   if(meshinfo!=NULL&&meshinfo->jbar==1)force_isometric=1;
-
-// update csv data
-#ifndef pp_CSV_MENU
-  InitializeDeviceCsvData(LOAD);
-#endif
-  PRINT_TIMER(timer_readsmv, "InitializeDeviceCsvData");
 
   SetupPlot2DUnitData();
   PRINT_TIMER(timer_readsmv, "SetupPlot2DUnitData");

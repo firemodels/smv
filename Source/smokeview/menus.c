@@ -131,10 +131,8 @@ float     part_load_time;
 #define MENU_PLOT3D_SHOWALL 5
 #define MENU_PLOT3D_HIDEALL 6
 
-#ifdef pp_CSV_MENU
 #define MENU_PLOT2D_LOAD   0
 #define MENU_PLOT2D_UNLOAD 1
-#endif
 
 #define MENU_MAIN_TRAINERTOGGLE 997
 
@@ -5403,7 +5401,6 @@ int LoadAllPlot3D(float time){
   return count;
 }
 
-#ifdef pp_CSV_MENU
 /* ------------------ LoadPlot2DMenu ------------------------ */
 
 void LoadPlot2DMenu(int value){
@@ -5436,7 +5433,6 @@ void LoadPlot2DMenu(int value){
   }
 
 }
-#endif
 
 /* ------------------ LoadPlot3DMenu ------------------------ */
 
@@ -8593,9 +8589,7 @@ static int hvacmenu = 0, hvacnetworkmenu, showcomponentmenu = 0, showfiltermenu 
 static int hvacvaluemenu = 0, hvacnodevaluemenu = 0, hvacductvaluemenu = 0;
 static int scriptlistmenu=0,scriptsteplistmenu=0,scriptrecordmenu=0;
 static int loadplot3dmenu=0, unloadvslicemenu=0, unloadslicemenu=0;
-#ifdef pp_CSV_MENU
 static int loadplot2dmenu=0;
-#endif
 static int loadsmoke3dmenu = 0;
 static int loadvolsmoke3dmenu=0,showvolsmoke3dmenu=0;
 static int unloadsmoke3dmenu=0,unloadvolsmoke3dmenu=0;
@@ -12147,7 +12141,6 @@ updatemenu=0;
       }
     }
 
-#ifdef pp_CSV_MENU
     /* --------------------------------plot2d menu -------------------------- */
 
     if(ncsvfileinfo > 0){
@@ -12161,7 +12154,6 @@ updatemenu=0;
         glutAddMenuEntry("*Unloaded", MENU_PLOT2D_UNLOAD);
       }
     }
-#endif
 
     /* --------------------------------plot3d menu -------------------------- */
 
@@ -13060,11 +13052,9 @@ updatemenu=0;
       }
 
       // plot2d
-#ifdef pp_CSV_MENU
       if(ncsvfileinfo > 0){
         GLUTADDSUBMENU(_("csv/2D plots"), loadplot2dmenu);
       }
-#endif
 
       // plot3d
 
