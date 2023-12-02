@@ -492,6 +492,7 @@ EXTERNCPP void MergeAllPartBounds(void);
 EXTERNCPP void InsertRollout(GLUI_Rollout *rollout, GLUI *dialog);
 #endif
 
+EXTERNCPP void InitializeDeviceCsvData(int flag);
 EXTERNCPP void ReadAllCSVFiles(int flag);
 EXTERNCPP void ReadCSVFile(csvfiledata *csvfi, int flag);
 EXTERNCPP void UpdateCSVFileTypes(void);

@@ -5406,7 +5406,6 @@ int LoadAllPlot3D(float time){
 #ifdef pp_CSV_MENU
 /* ------------------ LoadPlot2DMenu ------------------------ */
 
-void InitializeDeviceCsvData(int flag);
 void LoadPlot2DMenu(int value){
   int i;
 

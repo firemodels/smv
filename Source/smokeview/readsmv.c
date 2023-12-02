@@ -11488,7 +11488,6 @@ int ReadSMV_Configure(){
   if(meshinfo!=NULL&&meshinfo->jbar==1)force_isometric=1;
 
 // update csv data
-  void InitializeDeviceCsvDataMT(void);
 #ifndef pp_CSV_MENU
   InitializeDeviceCsvData(LOAD);
 #endif
