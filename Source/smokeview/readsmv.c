@@ -12424,6 +12424,14 @@ int ReadIni2(char *inifile, int localfile){
       fbuff = TrimFront(buffer);
       if(strlen(fbuff)>0)strcpy(default_fed_colorbar, fbuff);
     }
+    if(MatchINI(buffer, "CSV") == 1){
+      int csv_load=0;
+
+      fgets(buffer, 255, stream);
+      sscanf(buffer, "%i", &csv_load);
+      if(csv_load == 1)update_csv_load = 1;
+      continue;
+    }
     if(MatchINI(buffer, "FED") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%i", &regenerate_fed);
@@ -16669,6 +16677,8 @@ void WriteIni(int flag,char *filename){
 
   fprintf(fileout, "\n *** DATA LOADING ***\n\n");
 
+  fprintf(fileout, "CSV\n");
+  fprintf(fileout, " %i\n", csv_loaded);
   fprintf(fileout, "FED\n");
   fprintf(fileout," %i\n",regenerate_fed);
   fprintf(fileout, "FEDCOLORBAR\n");

@@ -1886,6 +1886,10 @@ void UpdateShowScene(void){
   have_fire  = HaveFireLoaded();
   have_smoke = HaveSootLoaded();
 
+  if(update_csv_load == 1){
+    InitializeDeviceCsvData(LOAD);
+    update_csv_load = 0;
+  }
   if(update_terrain_type == 1){
     update_terrain_type = 0;
     GLUIUpdateTerrain();
