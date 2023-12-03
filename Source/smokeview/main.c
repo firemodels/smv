@@ -157,6 +157,9 @@ char *ProcessCommandLine(CommandlineArgs *args) {
   char *filename_local = NULL;
 
   CheckMemory;
+  if (args->csv) {
+    update_csv_load = 1;
+  }
   if(args->max_mem){
     max_mem_GB = args->max_mem_GB;
   }

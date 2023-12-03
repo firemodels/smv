@@ -64,6 +64,7 @@ typedef struct CommandlineArgs {
   bool make_movie;
   /// @brief specify maximum memory used
   bool max_mem;
+  bool csv;
   float max_mem_GB;
   /// @brief output information about geometry triangles
   bool geominfo;
