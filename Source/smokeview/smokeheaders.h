@@ -692,7 +692,6 @@ EXTERNCPP int GetNDevices(char *file);
 EXTERNCPP void ReadHRR(int flag);
 EXTERNCPP void ReadDeviceData(char *file, int filetype, int flag);
 EXTERNCPP void SetupZoneDevs(void);
-EXTERNCPP void SetupDeviceData(void);
 
 EXTERNCPP void DrawCGeom(int flag, geomdata *cgeom);
 EXTERNCPP void DrawGeom(int flag,int frameflag);

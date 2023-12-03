@@ -6582,7 +6582,7 @@ void SetupDeviceData(void){
   char **devcunits=NULL, **devclabels=NULL;
   int is_dup;
 
-  if(ndeviceinfo==0||devices_setup==1)return; // only setup device data once
+  if(ndeviceinfo==0)return; // only setup device data once
   devices_setup = 1;
   FREEMEMORY(vdeviceinfo);
   NewMemory((void **)&vdeviceinfo,ndeviceinfo*sizeof(vdevicedata));
@@ -6852,6 +6852,9 @@ void InitializeDeviceCsvData(int flag){
     if(strcmp(csvi->c_type, "ext") == 0)ReadDeviceData(csvi->file, CSV_EXP, flag);
   }
   PRINT_TIMER(device_timer, "ReadDeviceData");
+  INIT_PRINT_TIMER(setup_timer);
+  SetupDeviceData();
+  PRINT_TIMER(setup_timer, "SetupDeviceData");
   INIT_PRINT_TIMER(csv_timer);
   ReadAllCSVFiles(flag);
   PRINT_TIMER(csv_timer, "ReadAllCSVFiles");

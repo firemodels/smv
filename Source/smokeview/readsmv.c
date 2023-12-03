@@ -11458,7 +11458,6 @@ int ReadSMV_Configure(){
 
   if(meshinfo!=NULL&&meshinfo->jbar==1)force_isometric=1;
 
-  SetupDeviceData();
   PRINT_TIMER(timer_readsmv, "SetupDeviceData");
   if(runscript == 1){
     InitializeDeviceCsvData(LOAD);
@@ -12242,7 +12241,7 @@ int ReadIni2(char *inifile, int localfile){
       fgets(buffer, 255, stream);
       sscanf(buffer, " %i %i %i %i %i %i %i %i %i",
         &showdevice_val, &showvdevice_val, &devicetypes_index, &colordevice_val, &vectortype, &viswindrose, &showdevice_type, &showdevice_unit,&showdevice_id);
-      devicetypes_index = CLAMP(devicetypes_index, 0, ndevicetypes - 1);
+      devicetypes_index = CLAMP(devicetypes_index, 0, MAX(ndevicetypes - 1,0));
       update_glui_devices = 1;
       if(viswindrose==1)update_windrose = 1;
       continue;
