@@ -452,7 +452,7 @@ void ReadAllCSVFiles(int flag){
       continue;
     }
     csvfi->defined = CSV_DEFINING;
-    ReadCSVFile(csvfi, LOAD);
+    ReadCSVFile(csvfi, flag);
     plot2d_max_columns = MAX(plot2d_max_columns, csvfi->ncsvinfo);
     csvfi->defined = CSV_DEFINED;
     UpdateCSVFileTypes();

@@ -6853,7 +6853,7 @@ void InitializeDeviceCsvData(int flag){
   }
   PRINT_TIMER(device_timer, "ReadDeviceData");
   INIT_PRINT_TIMER(setup_timer);
-  SetupDeviceData();
+  if(flag==LOAD)SetupDeviceData();
   PRINT_TIMER(setup_timer, "SetupDeviceData");
   INIT_PRINT_TIMER(csv_timer);
   ReadAllCSVFiles(flag);

@@ -131,8 +131,9 @@ float     part_load_time;
 #define MENU_PLOT3D_SHOWALL 5
 #define MENU_PLOT3D_HIDEALL 6
 
-#define MENU_PLOT2D_LOAD   0
-#define MENU_PLOT2D_UNLOAD 1
+#define MENU_PLOT2D_LOAD    0
+#define MENU_PLOT2D_LOADCSV 1
+#define MENU_PLOT2D_UNLOAD  2
 
 #define MENU_MAIN_TRAINERTOGGLE 997
 
@@ -3331,13 +3332,17 @@ void LoadPlot2DMenu(int value){
   int i;
 
   switch(value){
-  case MENU_PLOT2D_LOAD:
+  case MENU_PLOT2D_LOADCSV:
     InitializeDeviceCsvData(UNLOAD);
     InitializeDeviceCsvData(LOAD);
-    DialogMenu(DIALOG_2DPLOTS);
     csv_loaded = 1;
     plot2d_show_plots = 1;
     updatemenu = 1;
+    printf("csv data loaded\n");
+    break;
+  case MENU_PLOT2D_LOAD:
+    LoadPlot2DMenu(MENU_PLOT2D_LOADCSV);
+    GLUIShowPlot2D();
     printf("csv data loaded\n");
     break;
   case MENU_PLOT2D_UNLOAD:
@@ -3539,7 +3544,7 @@ void LoadUnloadMenu(int value){
 
     //*** reload csv data
 
-    LoadPlot2DMenu(MENU_PLOT2D_LOAD);    
+    LoadPlot2DMenu(MENU_PLOT2D_LOADCSV);    
     updatemenu=1;
     GLUTPOSTREDISPLAY;
   }
