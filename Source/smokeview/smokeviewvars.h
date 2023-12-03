@@ -1279,7 +1279,7 @@ SVEXTERN int SVDECL(trainer_outline,1);
 SVEXTERN int SVDECL(trainer_viewpoints,-1), SVDECL(ntrainer_viewpoints,0);
 SVEXTERN int SVDECL(trainer_realtime,1);
 SVEXTERN int SVDECL(trainer_path,0);
-#ifdef INMIN
+#ifdef INMAIN
 SVEXTERN float trainer_xzy[3]={0.0,0.0,0.0};
 SVEXTERN float trainer_ab[2]={0.0,0.0};
 SVEXTERN float motion_ab[2]={0.0,0.0};
@@ -1761,7 +1761,7 @@ SVEXTERN treedata SVDECL(*treeinfo,NULL);
 SVEXTERN terraindata SVDECL(*terraininfo,NULL);
 SVEXTERN int SVDECL(ntreeinfo,0), SVDECL(nterraininfo,0), SVDECL(visTerrainType,0);
 SVEXTERN float treecolor[4];
-#ifdef INMIN
+#ifdef INMAIN
 SVEXTERN float treecharcolor[4]={0.3,0.3,0.3,1.0};
 SVEXTERN float trunccolor[4]={0.6,0.2,0.0,1.0};
 #else
