@@ -1059,7 +1059,7 @@ void InitRGB(void){
 
   if(setbw==0){
     ConvertColor(TO_COLOR);
-    if(nrgb_ini !=0){
+    if(nrgb_ini > 0){
       nrgb = nrgb_ini;
       for(n=0;n<nrgb_ini;n++){
         rgb[n][0] = rgb_ini[n*3];
