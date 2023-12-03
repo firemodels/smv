@@ -11357,30 +11357,6 @@ typedef struct {
   return 0;
 }
 
-/* ------------------ InitializeDeviceCsvData ------------------------ */
-
-void InitializeDeviceCsvData(int flag){
-  int i;
-
-  INIT_PRINT_TIMER(device_timer);
-  SetupDeviceData();
-  if(hrr_csv_filename != NULL)ReadHRR(flag);
-  ReadDeviceData(NULL, CSV_FDS, UNLOAD);
-  ReadDeviceData(NULL, CSV_EXP, UNLOAD);
-  for(i = 0; i < ncsvfileinfo; i++){
-    csvfiledata *csvi;
-
-    csvi = csvfileinfo + i;
-    if(strcmp(csvi->c_type, "devc") == 0)ReadDeviceData(csvi->file, CSV_FDS, flag);
-    if(strcmp(csvi->c_type, "ext") == 0)ReadDeviceData(csvi->file, CSV_EXP, flag);
-  }
-  PRINT_TIMER(device_timer, "ReadDeviceData");
-  INIT_PRINT_TIMER(csv_timer);
-  ReadAllCSVFiles(flag);
-  PRINT_TIMER(csv_timer, "ReadAllCSVFiles");
-  if(flag==LOAD)csv_loaded = 1;
-}
-
 /* ------------------ ReadSMV_Configure ------------------------ */
 
 /// @brief Finish setting global variables after an SMV file has been parsed.
@@ -11482,9 +11458,12 @@ int ReadSMV_Configure(){
 
   if(meshinfo!=NULL&&meshinfo->jbar==1)force_isometric=1;
 
+  SetupDeviceData();
+  PRINT_TIMER(timer_readsmv, "SetupDeviceData");
   if(runscript == 1){
     InitializeDeviceCsvData(LOAD);
   }
+  PRINT_TIMER(timer_readsmv, "InitializeDeviceCsvData");
 
   SetupPlot2DUnitData();
   PRINT_TIMER(timer_readsmv, "SetupPlot2DUnitData");

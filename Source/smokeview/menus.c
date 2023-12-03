@@ -3325,6 +3325,41 @@ void ReloadAllSliceFiles(void){
 
 void LoadHVACMenu(int value);
 
+/* ------------------ LoadPlot2DMenu ------------------------ */
+
+void LoadPlot2DMenu(int value){
+  int i;
+
+  switch(value){
+  case MENU_PLOT2D_LOAD:
+    InitializeDeviceCsvData(UNLOAD);
+    InitializeDeviceCsvData(LOAD);
+    DialogMenu(DIALOG_2DPLOTS);
+    csv_loaded = 1;
+    plot2d_show_plots = 1;
+    updatemenu = 1;
+    printf("csv data loaded\n");
+    break;
+  case MENU_PLOT2D_UNLOAD:
+    for(i = 0; i < ncsvfileinfo; i++){
+      csvfiledata *csvfi;
+
+      csvfi = csvfileinfo + i;
+      ReadCSVFile(csvfi, UNLOAD);
+      DialogMenu(DIALOG_2DPLOTS);
+    }
+    csv_loaded = 0;
+    plot2d_show_plots=0;
+    updatemenu = 1;
+    GLUIHidePlot2D();
+    printf("csv data unloaded\n");
+    break;
+  default:
+    assert(0);
+    break;
+  }
+}
+
 /* ------------------ LoadUnloadMenu ------------------------ */
 
 void LoadUnloadMenu(int value){
@@ -3388,6 +3423,7 @@ void LoadUnloadMenu(int value){
       showdevice_val = 0;
       GLUIUpdateDeviceShow();
     }
+    LoadPlot2DMenu(MENU_PLOT2D_UNLOAD);    
     updatemenu=1;
     GLUTPOSTREDISPLAY;
   }
@@ -3500,6 +3536,10 @@ void LoadUnloadMenu(int value){
     UNLOCK_COMPRESS
   //  plotstate=DYNAMIC_PLOTS;
   //  visParticles=1;
+
+    //*** reload csv data
+
+    LoadPlot2DMenu(MENU_PLOT2D_LOAD);    
     updatemenu=1;
     GLUTPOSTREDISPLAY;
   }
@@ -5399,39 +5439,6 @@ int LoadAllPlot3D(float time){
     if(errorcode==0)count++;
   }
   return count;
-}
-
-/* ------------------ LoadPlot2DMenu ------------------------ */
-
-void LoadPlot2DMenu(int value){
-  int i;
-
-  switch(value){
-  case MENU_PLOT2D_LOAD:
-    InitializeDeviceCsvData(UNLOAD);
-    InitializeDeviceCsvData(LOAD);
-    DialogMenu(DIALOG_2DPLOTS);
-    csv_loaded = 1;
-    updatemenu = 1;
-    break;
-  case MENU_PLOT2D_UNLOAD:
-    for(i = 0; i < ncsvfileinfo; i++){
-      csvfiledata *csvfi;
-
-      csvfi = csvfileinfo + i;
-      ReadCSVFile(csvfi, UNLOAD);
-      DialogMenu(DIALOG_2DPLOTS);
-    }
-    csv_loaded = 0;
-    plot2d_show_plots=0;
-    updatemenu = 1;
-    GLUIHidePlot2D();
-    break;
-  default:
-    assert(0);
-    break;
-  }
-
 }
 
 /* ------------------ LoadPlot3DMenu ------------------------ */
@@ -12841,6 +12848,7 @@ updatemenu=0;
 
     CREATEMENU(reloadmenu,ReloadMenu);
     glutAddMenuEntry(_("smv"), RELOAD_SMV_FILE);
+#ifdef pp_LOAD_INC
     if(load_incremental==1){
       glutAddMenuEntry(_("*New data"), RELOAD_MODE_INCREMENTAL);
       glutAddMenuEntry(_("All data"), RELOAD_MODE_ALL);
@@ -12849,6 +12857,7 @@ updatemenu=0;
       glutAddMenuEntry(_("New data"), RELOAD_MODE_INCREMENTAL);
       glutAddMenuEntry(_("*All data"), RELOAD_MODE_ALL);
     }
+#endif
     glutAddMenuEntry("-", MENU_DUMMY);
     glutAddMenuEntry(_("When:"), MENU_DUMMY);
     glutAddMenuEntry(_("  now"),RELOAD_SWITCH);

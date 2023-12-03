@@ -6835,6 +6835,32 @@ void SetupDeviceData(void){
   FREEMEMORY(devclabels)
 }
 
+/* ------------------ InitializeDeviceCsvData ------------------------ */
+
+void InitializeDeviceCsvData(int flag){
+  int i;
+
+  INIT_PRINT_TIMER(device_timer);
+  if(hrr_csv_filename != NULL)ReadHRR(flag);
+  ReadDeviceData(NULL, CSV_FDS, UNLOAD);
+  ReadDeviceData(NULL, CSV_EXP, UNLOAD);
+  for(i = 0; i < ncsvfileinfo; i++){
+    csvfiledata *csvi;
+
+    csvi = csvfileinfo + i;
+    if(strcmp(csvi->c_type, "devc") == 0)ReadDeviceData(csvi->file, CSV_FDS, flag);
+    if(strcmp(csvi->c_type, "ext") == 0)ReadDeviceData(csvi->file, CSV_EXP, flag);
+  }
+  PRINT_TIMER(device_timer, "ReadDeviceData");
+  INIT_PRINT_TIMER(csv_timer);
+  ReadAllCSVFiles(flag);
+  PRINT_TIMER(csv_timer, "ReadAllCSVFiles");
+  if(flag==LOAD){
+    csv_loaded = 1;
+    plot2d_show_plots = 1;
+  }
+}
+
 /* ----------------------- FreeObject ----------------------------- */
 
 void FreeObject(sv_object *object){
