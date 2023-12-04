@@ -282,6 +282,8 @@ EXTERNCPP void GLUIHideTrainer(void);
 
 // gen plot routines
 
+EXTERNCPP void PrintFileLoadTimes(int file_count, FILE_SIZE load_size, float load_time);
+
 EXTERNCPP int HavePlot2D(float **times, int *ntimes);
 EXTERNCPP char *GetPlotUnit2(plot2ddata *plot2di, curvedata *curve);
 EXTERNCPP char *GetPlotShortLabel2(plot2ddata *plot2di, curvedata *curv);

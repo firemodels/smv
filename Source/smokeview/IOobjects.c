@@ -6871,34 +6871,8 @@ void InitializeDeviceCsvData(int flag){
     csv_loaded = 1;
     plot2d_show_plots = 1;
     STOP_TIMER(total_time);
-    char crate[32];\
-    strcpy(crate,"");
-    if(total_time>0.0){
-      float rate;
-
-      rate = file_size * 8.0 / total_time;
-      if(rate>1000000000.0){
-        rate /= 1000000000.0;
-        sprintf(crate, "(%.1f Gbs)", rate);
-      }
-      else if(rate > 1000000.0){
-          rate /= 1000000.0;
-          sprintf(crate, "(%.1f Mbs)", rate);
-      }
-      else{
-        rate /= 1000.0;
-        sprintf(crate, "(%.1f Kbs)", rate);
-      }
-    }
-    if(file_size>1000000000){
-      PRINTF(" - %.1f GB/%.1f s %s\n", (float)file_size / 1000000000., total_time, crate);
-    }
-    else if(file_size>1000000){
-      PRINTF(" - %.1f MB/%.1f s %s\n", (float)file_size / 1000000., total_time, crate);
-    }
-    else{
-      PRINTF(" - %.0f KB/%.1f s %s\n", (float)file_size / 1000., total_time, crate);
-    }
+    printf("\n");
+    PrintFileLoadTimes(2,file_size, total_time);
     plotstate=GetPlotState(DYNAMIC_PLOTS);
     UpdateTimes();
     ForceIdle();
