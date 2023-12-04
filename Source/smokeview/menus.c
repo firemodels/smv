@@ -6507,11 +6507,6 @@ void ShowObjectsMenu(int value){
   sv_object *objecti;
   int i;
 
-  if(csv_loaded==0){
-    if(vis_hrr_plot==1||viswindrose == 1||vis_device_plot!=DEVICE_PLOT_HIDDEN||showdevice_val==1){
-      InitializeDeviceCsvData(LOAD);
-    }
-  }
   if(value>=0&&value<nobject_defs){
     objecti = object_defs[value];
     objecti->visible = 1 - objecti->visible;

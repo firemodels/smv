@@ -493,8 +493,8 @@ EXTERNCPP void InsertRollout(GLUI_Rollout *rollout, GLUI *dialog);
 #endif
 
 EXTERNCPP void InitializeDeviceCsvData(int flag);
-EXTERNCPP void ReadAllCSVFiles(int flag);
-EXTERNCPP void ReadCSVFile(csvfiledata *csvfi, int flag);
+EXTERNCPP FILE_SIZE ReadAllCSVFiles(int flag);
+EXTERNCPP FILE_SIZE ReadCSVFile(csvfiledata *csvfi, int flag);
 EXTERNCPP void UpdateCSVFileTypes(void);
 EXTERNCPP int HaveFireLoaded(void);
 EXTERNCPP int HaveSootLoaded(void);
@@ -690,7 +690,7 @@ EXTERNCPP devicedata *GetCSVDeviceFromLabel(char *label, int index);
 EXTERNCPP void SetupGlut(int argc, char **argv);
 EXTERNCPP int GetNDevices(char *file);
 EXTERNCPP void ReadHRR(int flag);
-EXTERNCPP void ReadDeviceData(char *file, int filetype, int flag);
+EXTERNCPP FILE_SIZE ReadDeviceData(char *file, int filetype, int flag);
 EXTERNCPP void SetupZoneDevs(void);
 
 EXTERNCPP void DrawCGeom(int flag, geomdata *cgeom);

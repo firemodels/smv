@@ -1457,11 +1457,6 @@ extern "C" void GLUIDeviceCB(int var){
   int i;
 
   updatemenu = 1;
-  if(csv_loaded==0){
-    if(vis_hrr_plot==1||viswindrose == 1||vis_device_plot!=DEVICE_PLOT_HIDDEN||showdevice_val==1){
-      InitializeDeviceCsvData(LOAD);
-    }
-  }
   if(var==DEVICE_HRRPUV_PLOT){
     vis_hrr_plot = 1-vis_hrr_plot;
     ShowObjectsMenu(PLOT_HRRPUV);

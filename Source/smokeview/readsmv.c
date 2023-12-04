@@ -166,7 +166,7 @@ int IsDimensionless(char *unit){
 
 /* ------------------ ReadCSVFile ------------------------ */
 
-void ReadCSVFile(csvfiledata *csvfi, int flag){
+FILE_SIZE ReadCSVFile(csvfiledata *csvfi, int flag){
   FILE *stream;
   int nrows, ncols;
   int nunits, nlabels;
@@ -191,19 +191,20 @@ void ReadCSVFile(csvfiledata *csvfi, int flag){
   }
   if(flag == UNLOAD){
     csvfi->defined = CSV_UNDEFINED;
-    return;
+    return 0;
   }
 
   stream = fopen(csvfi->file, "r");
   if(stream == NULL){
     csvfi->defined = CSV_UNDEFINED;
-    return;
+    return 0;
   }
 
   len_buffer = GetRowCols(stream, &nrows, &ncols);
   if(nrows==0||ncols==0){
     csvfi->defined = CSV_UNDEFINED;
-    return;
+    fclose(stream);
+    return 0;
   }
   len_buffer = MAX(len_buffer + 100 + ncols, 1000);
   csvfi->ncsvinfo = ncols;
@@ -222,7 +223,8 @@ void ReadCSVFile(csvfiledata *csvfi, int flag){
       FREEMEMORY(buffer_labels);
       FREEMEMORY(buffer_units);
       csvfi->defined = CSV_UNDEFINED;
-      return;
+      fclose(stream);
+      return 0;
     }
     while(strstr(buffer, "//DATA") == NULL){
       fgets(buffer, len_buffer, stream);
@@ -231,7 +233,8 @@ void ReadCSVFile(csvfiledata *csvfi, int flag){
         FREEMEMORY(buffer_labels);
         FREEMEMORY(buffer_units);
         csvfi->defined = CSV_UNDEFINED;
-        return;
+        fclose(stream);
+        return 0;
       }
     }
   }
@@ -415,7 +418,10 @@ void ReadCSVFile(csvfiledata *csvfi, int flag){
   FREEMEMORY(buffer_units);
 
   fclose(stream);
-  return;
+
+  FILE_SIZE file_size;
+  file_size = GetFileSizeSMV(csvfi->file);
+  return file_size;
 }
 
 /* ------------------ CompareCSV ------------------------ */
@@ -431,10 +437,11 @@ int CompareCSV( const void *arg1, const void *arg2 ){
 
 /* ------------------ ReadAllCSVFiles ------------------------ */
 
-void ReadAllCSVFiles(int flag){
+FILE_SIZE ReadAllCSVFiles(int flag){
   int i;
+  FILE_SIZE file_size=0;
 
-  if(ncsvfileinfo == 0)return;
+  if(ncsvfileinfo == 0)return 0;
 #define GENPLOT_REM_ALL_PLOTS       136
   GenPlotCB(GENPLOT_REM_ALL_PLOTS);
   for(i = 0; i < ncsvfileinfo; i++){
@@ -443,7 +450,7 @@ void ReadAllCSVFiles(int flag){
     csvfi = csvfileinfo + i;
     ReadCSVFile(csvfi, UNLOAD);
   }
-  if(flag == UNLOAD)return;
+  if(flag == UNLOAD)return 0;
   for(i = 0; i < ncsvfileinfo; i++){
     csvfiledata *csvfi;
 
@@ -452,7 +459,7 @@ void ReadAllCSVFiles(int flag){
       continue;
     }
     csvfi->defined = CSV_DEFINING;
-    ReadCSVFile(csvfi, flag);
+    file_size += ReadCSVFile(csvfi, flag);
     plot2d_max_columns = MAX(plot2d_max_columns, csvfi->ncsvinfo);
     csvfi->defined = CSV_DEFINED;
     UpdateCSVFileTypes();
@@ -465,6 +472,7 @@ void ReadAllCSVFiles(int flag){
       break;
     }
   }
+  return file_size;
 }
 
 /* ------------------ ReadHRR ------------------------ */
