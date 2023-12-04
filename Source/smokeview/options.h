@@ -18,6 +18,8 @@
 #define pp_PATCH_HIST     // simplify boundary file histogram computation
 //#define pp_HIST           // compute histograms
 
+//#define pp_CSV_MENU       // add menu for loading CSV files
+
 #define pp_SMOKE_SKIP     // add option to skip smoke frames
 //#define pp_SMOKE16      // load 16 bit smoke files
 //#define pp_VOLSMOKE     // add option to compress volume rendered data

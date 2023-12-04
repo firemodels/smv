@@ -6507,6 +6507,11 @@ void ShowObjectsMenu(int value){
   sv_object *objecti;
   int i;
 
+  if(csv_loaded==0){
+    if(vis_hrr_plot==1||viswindrose == 1||vis_device_plot!=DEVICE_PLOT_HIDDEN||showdevice_val==1){
+      InitializeDeviceCsvData(LOAD);
+    }
+  }
   if(value>=0&&value<nobject_defs){
     objecti = object_defs[value];
     objecti->visible = 1 - objecti->visible;
@@ -8562,7 +8567,7 @@ void MakeColorbarMenu(int *menuptr,
 }
 
 /* ------------------ GetCSVLoadMenu ------------------------ */
-
+#ifdef pp_CSV_MENU
 char *GetCSVLoadMenu(void){
   int ncsvloadmenu;
   char *label;
@@ -8600,6 +8605,7 @@ char *GetCSVLoadMenu(void){
   strcat(label,")");
   return label;
 }
+#endif
 
 /* ------------------ InitMenus ------------------------ */
 
@@ -8642,8 +8648,10 @@ static int hvacmenu = 0, hvacnetworkmenu, showcomponentmenu = 0, showfiltermenu 
 static int hvacvaluemenu = 0, hvacnodevaluemenu = 0, hvacductvaluemenu = 0;
 static int scriptlistmenu=0,scriptsteplistmenu=0,scriptrecordmenu=0;
 static int loadplot3dmenu=0, unloadvslicemenu=0, unloadslicemenu=0;
+#ifdef pp_CSV_MENU
 static int loadcsvmenu=0;
 static char *csvloadmenu=NULL;
+#endif
 static int loadsmoke3dmenu = 0;
 static int loadvolsmoke3dmenu=0,showvolsmoke3dmenu=0;
 static int unloadsmoke3dmenu=0,unloadvolsmoke3dmenu=0;
@@ -12193,8 +12201,8 @@ updatemenu=0;
       }
     }
 
-    /* --------------------------------plot2d menu -------------------------- */
-
+    /* --------------------------------CSV load menu -------------------------- */
+#ifdef pp_CSV_MENU
     if(ncsvfileinfo > 0){
       CREATEMENU(loadcsvmenu, LoadPlot2DMenu);
       if(csvloadmenu == NULL){
@@ -12209,6 +12217,7 @@ updatemenu=0;
         glutAddMenuEntry("*Unloaded", MENU_PLOT2D_UNLOAD);
       }
     }
+#endif
 
     /* --------------------------------plot3d menu -------------------------- */
 
@@ -13119,10 +13128,12 @@ updatemenu=0;
         GLUTADDSUBMENU(loadmenulabel,zonemenu);
       }
 
+#ifdef pp_CSV_MENU
       // CSV
       if(ncsvfileinfo > 0){
         GLUTADDSUBMENU(_("CSV"), loadcsvmenu);
       }
+#endif
 
       if(glui_active==1){
         glutAddMenuEntry("-",MENU_DUMMY);
