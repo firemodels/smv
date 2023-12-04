@@ -3331,8 +3331,6 @@ void ReloadAllSliceFiles(void){
 /* ------------------ LoadPlot2DMenu ------------------------ */
 
 void LoadPlot2DMenu(int value){
-  int i;
-
   switch(value){
   case MENU_PLOT2D_LOADCSV:
     InitializeDeviceCsvData(UNLOAD);
@@ -3348,18 +3346,14 @@ void LoadPlot2DMenu(int value){
     printf("csv data loaded\n");
     break;
   case MENU_PLOT2D_UNLOAD:
-    for(i = 0; i < ncsvfileinfo; i++){
-      csvfiledata *csvfi;
-
-      csvfi = csvfileinfo + i;
-      ReadCSVFile(csvfi, UNLOAD);
-      DialogMenu(DIALOG_2DPLOTS);
+    if(csv_loaded == 1){
+      InitializeDeviceCsvData(UNLOAD);
+      csv_loaded = 0;
+      plot2d_show_plots = 0;
+      updatemenu = 1;
+      GLUIHidePlot2D();
+      printf("csv data unloaded\n");
     }
-    csv_loaded = 0;
-    plot2d_show_plots=0;
-    updatemenu = 1;
-    GLUIHidePlot2D();
-    printf("csv data unloaded\n");
     break;
   default:
     assert(0);
@@ -3545,7 +3539,10 @@ void LoadUnloadMenu(int value){
 
     //*** reload csv data
 
-    LoadPlot2DMenu(MENU_PLOT2D_LOADCSV);    
+    if(csv_loaded == 1){
+      LoadPlot2DMenu(MENU_PLOT2D_LOADCSV);
+    }
+
     updatemenu=1;
     GLUTPOSTREDISPLAY;
   }
