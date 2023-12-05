@@ -637,11 +637,13 @@ void AdjustColorBar(colorbardata *cbi){
   total_dist = cbi->node_dist[cbi->nnodes - 1];
   nnodes = cbi->node_index[cbi->nnodes - 1];
 
-  for(i = 1;i < cbi->nnodes - 1;i++){
-    int inode;
+  if(total_dist > 0.0){
+    for(i = 1;i < cbi->nnodes - 1;i++){
+      int inode;
 
-    inode = nnodes * (cbi->node_dist[i] / total_dist);
-    cbi->node_index[i] = inode;
+      inode = nnodes * (cbi->node_dist[i] / total_dist);
+      cbi->node_index[i] = inode;
+    }
   }
   cbi->adjusted = 1;
   update_colorbar_dialog = 1;
@@ -1534,25 +1536,21 @@ void InitDefaultColorbars(int nini){
   cbi->nodehilight = 0;
 
   cbi->node_index[0]  =   0;
-
   cbi->node_rgb[0]    =   0;
   cbi->node_rgb[1]    = 151;
   cbi->node_rgb[2]    = 255;
 
   cbi->node_index[1]  = 113;
-
   cbi->node_rgb[3]    = 255;
   cbi->node_rgb[4]    =   0;
   cbi->node_rgb[5]    =   0;
 
   cbi->node_index[2]  = 212;
-
   cbi->node_rgb[6]    = 255;
   cbi->node_rgb[7]    = 255;
   cbi->node_rgb[8]    =   0;
 
   cbi->node_index[3]  = 255;
-
   cbi->node_rgb[9]    = 255;
   cbi->node_rgb[10]   = 255;
   cbi->node_rgb[11]   = 255;
@@ -1954,14 +1952,6 @@ void InitDefaultColorbars(int nini){
 
   cbi->node_index[2] = 160;
   cbi->node_rgb[6] = 250;
-  cbi->node_rgb[7] = 180;
-  cbi->node_rgb[8] = 0;
-
-  cbi->node_index[3] = 190;
-  cbi->node_rgb[9] = 252;
-  cbi->node_rgb[10] = 248;
-  cbi->node_rgb[11] = 70;
-
   cbi->node_rgb[7] = 180;
   cbi->node_rgb[8] = 0;
 

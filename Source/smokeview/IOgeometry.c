@@ -3952,8 +3952,8 @@ int CompareEdges(const void *arg1, const void *arg2){
   edgedata *edge1, *edge2;
   int *v1, *v2;
 
-  edge1 = (edgedata *)arg1;
-  edge2 = (edgedata *)arg2;
+  edge1 = *(edgedata **)arg1;
+  edge2 = *(edgedata **)arg2;
   v1 = edge1->vert_index;
   v2 = edge2->vert_index;
 
@@ -4152,9 +4152,8 @@ void ClassifyGeom(geomdata *geomi,int *geom_frame_index){
       edges2[nedges].vert_index[1] = edgelist_ptr[nedges]->vert_index[1];
       nedges++;
       for(ii = 1; ii < nedgelist_index; ii++){
-        if(CompareEdges(edgelist_ptr[ii - 1], edgelist_ptr[ii])==0)continue;
-        edges2[nedges].vert_index[0] = edgelist_ptr[ii]->vert_index[0];
-        edges2[nedges].vert_index[1] = edgelist_ptr[ii]->vert_index[1];
+        if(CompareEdges(edgelist_ptr+ii - 1, edgelist_ptr+ii)==0)continue;
+        memcpy(edges2[nedges].vert_index, edgelist_ptr[ii]->vert_index, 2*sizeof(int));
         nedges++;
       }
       if(nedges>0)ResizeMemory((void **)&edges2, nedges * sizeof(edgedata));

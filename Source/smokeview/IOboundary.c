@@ -2824,7 +2824,7 @@ void DrawBoundaryTexture(const meshdata *meshi){
       xyzpatchcopy = xyzpatch + 3*blockstart[n];
       patchblankcopy = patchblank + blockstart[n];
       patchvals = patchval_iframe + blockstart[n];
-      cpatchvals = meshi->cpatchval_iframe_zlib + blockstart[n];
+      if(patchi->compression_type == COMPRESSED_ZLIB)cpatchvals = meshi->cpatchval_iframe_zlib + blockstart[n];
 
       for(irow=0;irow<nrow-1;irow++){
         int *patchblank1, *patchblank2;
@@ -2916,7 +2916,7 @@ void DrawBoundaryTexture(const meshdata *meshi){
       xyzpatchcopy = xyzpatch + 3*blockstart[n];
       patchblankcopy = patchblank + blockstart[n];
       patchvals  = patchval_iframe+blockstart[n];
-      cpatchvals = meshi->cpatchval_iframe_zlib + blockstart[n];
+      if(patchi->compression_type == COMPRESSED_ZLIB)cpatchvals = meshi->cpatchval_iframe_zlib + blockstart[n];
       if(hidepatchsurface==0){
         glPushMatrix();
         switch(meshi->patchdir[n]){
@@ -3024,7 +3024,7 @@ void DrawBoundaryTexture(const meshdata *meshi){
       xyzpatchcopy = xyzpatch + 3*blockstart[n];
       patchblankcopy = patchblank + blockstart[n];
       patchvals  = patchval_iframe+blockstart[n];
-      cpatchvals = meshi->cpatchval_iframe_zlib + blockstart[n];
+      if(patchi->compression_type == COMPRESSED_ZLIB)cpatchvals = meshi->cpatchval_iframe_zlib + blockstart[n];
       if(hidepatchsurface==0){
         glPushMatrix();
         switch(meshi->patchdir[n]){
@@ -3195,7 +3195,7 @@ void DrawBoundaryTextureThreshold(const meshdata *meshi){
       xyzpatchcopy = xyzpatch + 3*blockstart[n];
       patchblankcopy = patchblank + blockstart[n];
       patchvals = patchval_iframe + blockstart[n];
-      cpatchvals = meshi->cpatchval_iframe_zlib + blockstart[n];
+      if(patchi->compression_type == COMPRESSED_ZLIB)cpatchvals = meshi->cpatchval_iframe_zlib + blockstart[n];
       for(irow=0;irow<nrow-1;irow++){
         int *patchblank1, *patchblank2;
         float *xyzp1, *xyzp2;
@@ -3281,7 +3281,7 @@ void DrawBoundaryTextureThreshold(const meshdata *meshi){
       xyzpatchcopy = xyzpatch + 3*blockstart[n];
       patchblankcopy = patchblank + blockstart[n];
       patchvals  = patchval_iframe + blockstart[n];
-      cpatchvals = meshi->cpatchval_iframe_zlib + blockstart[n];
+      if(patchi->compression_type == COMPRESSED_ZLIB)cpatchvals = meshi->cpatchval_iframe_zlib + blockstart[n];
       for(irow=0;irow<nrow-1;irow++){
         int *patchblank1, *patchblank2;
         float *xyzp1, *xyzp2;
@@ -3364,7 +3364,7 @@ void DrawBoundaryTextureThreshold(const meshdata *meshi){
       xyzpatchcopy = xyzpatch + 3*blockstart[n];
       patchblankcopy = patchblank + blockstart[n];
       patchvals  = patchval_iframe + blockstart[n];
-      cpatchvals = meshi->cpatchval_iframe_zlib + blockstart[n];
+      if(patchi->compression_type == COMPRESSED_ZLIB)cpatchvals = meshi->cpatchval_iframe_zlib + blockstart[n];
       for(irow=0;irow<nrow-1;irow++){
         int *patchblank1, *patchblank2;
         float *xyzp1, *xyzp2;
@@ -3733,7 +3733,7 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
       nrow = boundary_row[n];
       ncol = boundary_col[n];
       patchvals  = patchval_iframe+blockstart[n];
-      cpatchvals = meshi->cpatchval_iframe_zlib + blockstart[n];
+      if(patchi->compression_type == COMPRESSED_ZLIB)cpatchvals = meshi->cpatchval_iframe_zlib + blockstart[n];
       for(irow = 0;irow<nrow-1;irow++){
         int *patchblank1, *patchblank2;
         float *xyzp1, *xyzp2;
@@ -3814,7 +3814,7 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
       nrow = boundary_row[n];
       ncol = boundary_col[n];
       patchvals = patchval_iframe+blockstart[n];
-      cpatchvals = meshi->cpatchval_iframe_zlib + blockstart[n];
+      if(patchi->compression_type == COMPRESSED_ZLIB)cpatchvals = meshi->cpatchval_iframe_zlib + blockstart[n];
       if(hidepatchsurface==0){
         glPushMatrix();
         switch(meshi->patchdir[n]){
@@ -3913,7 +3913,7 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
       nrow = boundary_row[n];
       ncol = boundary_col[n];
       patchvals  = patchval_iframe+blockstart[n];
-      cpatchvals = meshi->cpatchval_iframe_zlib + blockstart[n];
+      if(patchi->compression_type == COMPRESSED_ZLIB)cpatchvals = meshi->cpatchval_iframe_zlib + blockstart[n];
       if(hidepatchsurface==0){
         glPushMatrix();
         switch(meshi->patchdir[n]){

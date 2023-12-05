@@ -396,6 +396,7 @@ void RemoveCurve(plot2ddata *plot2di, int index){
   if(index < 0){
     plot2di->ncurves = 0;
     LIST_plotcurves->set_int_val(-1);
+    return;
   }
   curve = plot2di->curve+index;
   if(index >= 0){
@@ -440,6 +441,7 @@ void AddCSVCurve(plot2ddata *plot2di, int index, int option){
   char *c_type;
 
   csvi = GetCsvCurve(index, &csvfi);
+  if(csvfi == NULL)return;
   c_type = csvfi->c_type;
 
   have_plot = 0;
@@ -753,13 +755,14 @@ void FilterList(void){
     csvfiledata *csvfi;
 
     GetCsvCurve(0, &csvfi);
+    if(csvfi == NULL)return;
     unit_id = LIST_curve_unit->get_int_val();
     strcpy(unit_label, "all");
     if(unit_id >= 0){
       csvdata *csvunit;
 
       csvunit = GetCsvCurve(unit_id, NULL);
-      if(csvunit->dimensionless == 0){
+      if(csvunit!=NULL&&csvunit->dimensionless == 0){
         strcpy(unit_label, csvunit->label.unit);
       }
       else{
@@ -774,7 +777,7 @@ void FilterList(void){
       int doit;
 
       csvi = GetCsvCurve(i, NULL);
-      if(csvi->skip != 0)continue;
+      if(csvi==NULL||csvi->skip != 0)continue;
       doit = 0;
       if(strcmp(unit_label, "all") == 0)doit = 1;
       if(doit==0&&csvi->dimensionless == 1 && strcmp(unit_label, "dimensionless")==0)doit = 1;
@@ -855,11 +858,12 @@ void UpdateCsvList(void){
     LIST_csvID->delete_item(i);
   }
   GetCsvCurve(0, &csvfi);
+  if(csvfi == NULL)return;
   for(i = 0; i < csvfi->ncsvinfo; i++){
     csvdata *csvi;
 
     csvi = GetCsvCurve(i, NULL);
-    if(csvi->skip==1)continue;
+    if(csvi==NULL||csvi->skip==1)continue;
     LIST_csvID->add_item(i, csvi->label.shortlabel);
   }
   strcpy(label, "add");
@@ -885,11 +889,13 @@ void UpdateCsvList(void){
     int dup_unit, j;
 
     csvi = GetCsvCurve(i, NULL);
+    if(csvi == NULL)continue;
     dup_unit = 0;
     for(j=0; j<i; j++){
       csvdata *csvj;
 
       csvj = GetCsvCurve(j, NULL);
+      if(csvj == NULL)continue;
       if(csvi->dimensionless==0){
         if(strcmp(csvi->label.unit, csvj->label.unit) == 0){
           dup_unit = 1;
@@ -1272,8 +1278,7 @@ void GenPlotCB(int var){
         strcat(label, plot2di->plot_label);
         strcat(label, ")");
         ROLLOUT_curve_properties->set_name(label);
-        csvfiledata *csvfi;
-        GetCsvCurve(0, &csvfi);
+        GetCsvCurve(0, NULL);
         strcpy(label, "add");
         if(plot2dinfo != NULL){
           strcat(label, " curves to ");
