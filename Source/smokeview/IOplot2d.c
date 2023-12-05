@@ -10,12 +10,20 @@
 /* ------------------ GetCsvData ------------------------ */
 
 csvdata *GetCsvData(int file_index, int col_index, csvfiledata **csvf_ptr){
-  csvfiledata *csvfi;
-  csvdata *csvi;
+  csvdata *csvi=NULL;
 
-  csvfi = csvfileinfo    + file_index;
-  csvi  = csvfi->csvinfo + col_index;
-  if(csvf_ptr != NULL)*csvf_ptr = csvfi;
+  if(csvf_ptr != NULL){
+    csvfiledata *csvfi;
+
+    csvfi = csvfileinfo    + file_index;
+    if(csvfi->csvinfo!=NULL){
+      csvi  = csvfi->csvinfo + col_index;
+      *csvf_ptr = csvfi;
+    }
+    else{
+      *csvf_ptr = NULL;
+    }
+  }
   return csvi;
 }
 
