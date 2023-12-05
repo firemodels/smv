@@ -396,6 +396,7 @@ void RemoveCurve(plot2ddata *plot2di, int index){
   if(index < 0){
     plot2di->ncurves = 0;
     LIST_plotcurves->set_int_val(-1);
+    return;
   }
   curve = plot2di->curve+index;
   if(index >= 0){
