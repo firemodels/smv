@@ -1,7 +1,6 @@
 #!/bin/bash
 SMV_MAKE_OPTS=
 TEST=
-SMV_MPI=
 TESTFLAG=
 SANITIZE=
 if [ "`uname`" == "Darwin" ]; then
@@ -86,7 +85,6 @@ fi
 export SMV_MAKE_OPTS
 export GLUT
 export TEST
-export SMV_MPI
 export SANITIZE
 if [ "$NOQUARTZ" != "" ]; then
   TESTFLAG="$TESTFLAG -D pp_NOQUARTZ"
