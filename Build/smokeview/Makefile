@@ -151,6 +151,7 @@ no_target:
 
 #--- Intel
 
+SANITIZE_OPTIONS=-fsanitize=address -fsanitize=undefined
 SMV_WIN_LIBDIR = $(LIB_DIR)/intel_win_64
 ifeq ($(GLUT),freeglut)
   GLUT_WIN_LIB = $(SMV_WIN_LIBDIR)\freeglut_staticd.lib $(SMV_WIN_LIBDIR)\glut32.lib
@@ -178,12 +179,18 @@ WIN32_LIBS = user32.lib gdi32.lib comdlg32.lib shell32.lib
 intel_win_64_db : DYNLIB_EXT = .dll
 intel_win_64_db : INC += $(WININC) -I $(SOURCE_DIR)/shared -I $(SOURCE_DIR)/smokeview
 intel_win_64_db : CFLAGS    = /Od /W4 /Wno-unused-function /Wno-unused-parameter /debug:full /Zi -D pp_INTEL -D _DEBUG -D WIN32 -D _CONSOLE -D X64 -D GLEW_STATIC -D PTW32_STATIC_LIB $(SMV_TESTFLAG) $(GITINFO) $(INTEL_COMPINFO)
+ifeq ($(SANITIZE),1)
+intel_win_64 : CFLAGS   += $(SANITIZE_OPTIONS)
+endif
 intel_win_64_db : C_STANDARD    = -Qstd=gnu99
 
 ifeq ($(GLUT),freeglut)
 intel_win_64_db : CFLAGS   += -D FREEGLUT_STATIC
 endif
 intel_win_64_db : LFLAGS    = /F32768000 /traceback /Zi /DEBUG
+ifeq ($(SANITIZE),1)
+intel_win_64 : LFLAGS   += $(SANITIZE_OPTIONS)
+endif
 intel_win_64_db : CC        = icx
 intel_win_64_db : CPP       = icx
 
@@ -193,11 +200,13 @@ intel_win_64_db : $(objwin)
 	$(CPP) -o $(bin)/$(exe) $(LFLAGS) $(objwin) $(WIN32_LIBS) $(SMV_LIBS_WIN)
 
 # ------------- intel_win_64 ----------------
-# -fsanitize=address -fsanitize=undefined
 
 intel_win_64 : DYNLIB_EXT = .dll
 intel_win_64 : INC += $(WININC) -I $(SOURCE_DIR)/shared -I $(SOURCE_DIR)/smokeview
 intel_win_64 : CFLAGS    = -O1 -D pp_INTEL -D NDEBUG -D WIN32 -D _CONSOLE -D X64 -D GLEW_STATIC -D PTW32_STATIC_LIB $(SMV_TESTFLAG) $(GITINFO) $(INTEL_COMPINFO)
+ifeq ($(SANITIZE),1)
+intel_win_64 : CFLAGS   += $(SANITIZE_OPTIONS)
+endif
 intel_win_64 : C_STANDARD    = -Qstd=gnu99
 ifeq ($(GLUT),freeglut)
 intel_win_64 : CFLAGS   += -D FREEGLUT_STATIC
@@ -208,6 +217,9 @@ intel_win_64 : SMVLUACORE_FILES += $(SMV_WIN_LIBDIR)\lpeg.dll
 intel_win_64 : SMVLUACORE_FILES += $(SMV_WIN_LIBDIR)\lua.dll
 endif
 intel_win_64 : LFLAGS    = /F32768000 -D FREEGLUT_STATIC
+ifeq ($(SANITIZE),1)
+intel_win_64 : LFLAGS   += $(SANITIZE_OPTIONS)
+endif
 intel_win_64 : CC        = icx
 intel_win_64 : CPP       = icx
 intel_win_64 : exe       = smokeview_win_$(SMV_TESTSTRING)64
