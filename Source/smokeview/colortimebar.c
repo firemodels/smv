@@ -637,11 +637,13 @@ void AdjustColorBar(colorbardata *cbi){
   total_dist = cbi->node_dist[cbi->nnodes - 1];
   nnodes = cbi->node_index[cbi->nnodes - 1];
 
-  for(i = 1;i < cbi->nnodes - 1;i++){
-    int inode;
+  if(total_dist > 0.0){
+    for(i = 1;i < cbi->nnodes - 1;i++){
+      int inode;
 
-    inode = nnodes * (cbi->node_dist[i] / total_dist);
-    cbi->node_index[i] = inode;
+      inode = nnodes * (cbi->node_dist[i] / total_dist);
+      cbi->node_index[i] = inode;
+    }
   }
   cbi->adjusted = 1;
   update_colorbar_dialog = 1;
