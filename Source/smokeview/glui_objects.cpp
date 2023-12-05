@@ -762,7 +762,7 @@ void FilterList(void){
       csvdata *csvunit;
 
       csvunit = GetCsvCurve(unit_id, NULL);
-      if(csvunit->dimensionless == 0){
+      if(csvunit!=NULL&&csvunit->dimensionless == 0){
         strcpy(unit_label, csvunit->label.unit);
       }
       else{
@@ -777,7 +777,7 @@ void FilterList(void){
       int doit;
 
       csvi = GetCsvCurve(i, NULL);
-      if(csvi->skip != 0)continue;
+      if(csvi==NULL||csvi->skip != 0)continue;
       doit = 0;
       if(strcmp(unit_label, "all") == 0)doit = 1;
       if(doit==0&&csvi->dimensionless == 1 && strcmp(unit_label, "dimensionless")==0)doit = 1;
@@ -863,7 +863,7 @@ void UpdateCsvList(void){
     csvdata *csvi;
 
     csvi = GetCsvCurve(i, NULL);
-    if(csvi->skip==1)continue;
+    if(csvi==NULL||csvi->skip==1)continue;
     LIST_csvID->add_item(i, csvi->label.shortlabel);
   }
   strcpy(label, "add");
@@ -889,11 +889,13 @@ void UpdateCsvList(void){
     int dup_unit, j;
 
     csvi = GetCsvCurve(i, NULL);
+    if(csvi == NULL)continue;
     dup_unit = 0;
     for(j=0; j<i; j++){
       csvdata *csvj;
 
       csvj = GetCsvCurve(j, NULL);
+      if(csvj == NULL)continue;
       if(csvi->dimensionless==0){
         if(strcmp(csvi->label.unit, csvj->label.unit) == 0){
           dup_unit = 1;
