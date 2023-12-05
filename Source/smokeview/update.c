@@ -1886,6 +1886,10 @@ void UpdateShowScene(void){
   have_fire  = HaveFireLoaded();
   have_smoke = HaveSootLoaded();
 
+  if(update_csv_load == 1){
+    InitializeDeviceCsvData(LOAD);
+    update_csv_load = 0;
+  }
   if(update_terrain_type == 1){
     update_terrain_type = 0;
     GLUIUpdateTerrain();
@@ -2447,6 +2451,11 @@ void UpdateDisplay(void){
     SortSlices();
   }
   LOCK_IBLANK
+  if(csv_loaded == 0){
+    if(vis_hrr_plot == 1 || viswindrose == 1 || vis_device_plot != DEVICE_PLOT_HIDDEN || showdevice_val == 1){
+      InitializeDeviceCsvData(LOAD);
+    }
+  }
   if(update_ini_boundary_type==1){
     update_ini_boundary_type = 0;
     ShowBoundaryMenu(INI_EXTERIORwallmenu);

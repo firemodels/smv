@@ -14,10 +14,11 @@
 //*** parallel file loading
 #define pp_SLICE_MULTI    // load slice files in parallel
 #define pp_PART_MULTI     // load particle files in parallel
-#define pp_CSV_MULTI      // read in csv files in parallel
 
 #define pp_PATCH_HIST     // simplify boundary file histogram computation
 //#define pp_HIST           // compute histograms
+
+//#define pp_CSV_MENU       // add menu for loading CSV files
 
 #define pp_SMOKE_SKIP     // add option to skip smoke frames
 //#define pp_SMOKE16      // load 16 bit smoke files
@@ -37,6 +38,8 @@
 //#define pp_BNDF         // merge geometry and structured boundary files in load menus
 
 //#define pp_DPRINT       // turn on debug print (file, line number)
+
+//#define pp_LOAD_INC     // add menu item for loading new data
 
 #define pp_READBUFFER_THREAD // use pthreads in ReadBuffer routine (don't use pthreads when used in smokezip and smokediff)
 //#define pp_CRASH_TEST       // test detection of division by zero or use of undefined pointer

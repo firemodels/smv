@@ -166,7 +166,7 @@ int IsDimensionless(char *unit){
 
 /* ------------------ ReadCSVFile ------------------------ */
 
-int ReadCSVFile(csvfiledata *csvfi, int flag){
+FILE_SIZE ReadCSVFile(csvfiledata *csvfi, int flag){
   FILE *stream;
   int nrows, ncols;
   int nunits, nlabels;
@@ -179,61 +179,68 @@ int ReadCSVFile(csvfiledata *csvfi, int flag){
   int len_buffer;
   int i;
 
-  LOCK_CSV_LOAD;
-  for(i=0; i<csvfi->ncsvinfo; i++){
-    csvdata *ci;
+  if(csvfi->csvinfo != NULL){
+    for(i = 0; i < csvfi->ncsvinfo; i++){
+      csvdata *ci;
 
-    ci = csvfi->csvinfo + i;
-    FREEMEMORY(ci->vals);
-    FREEMEMORY(ci->vals_orig);
+      ci = csvfi->csvinfo + i;
+      FREEMEMORY(ci->vals);
+      FREEMEMORY(ci->vals_orig);
+    }
+    FREEMEMORY(csvfi->csvinfo);
   }
-  FREEMEMORY(csvfi->csvinfo);
-  UNLOCK_CSV_LOAD;
-  if(flag == UNLOAD)return CSV_UNDEFINED;
+  if(flag == UNLOAD){
+    csvfi->defined = CSV_UNDEFINED;
+    return 0;
+  }
 
   stream = fopen(csvfi->file, "r");
-  if(stream == NULL)return CSV_UNDEFINED;
+  if(stream == NULL){
+    csvfi->defined = CSV_UNDEFINED;
+    return 0;
+  }
 
   len_buffer = GetRowCols(stream, &nrows, &ncols);
-  if(nrows==0||ncols==0)return CSV_UNDEFINED;
+  if(nrows==0||ncols==0){
+    csvfi->defined = CSV_UNDEFINED;
+    fclose(stream);
+    return 0;
+  }
   len_buffer = MAX(len_buffer + 100 + ncols, 1000);
   csvfi->ncsvinfo = ncols;
 
   // allocate memory
-  LOCK_CSV_LOAD;
   NewMemory((void **)&(buffer),        len_buffer);
   NewMemory((void **)&(buffer_labels), len_buffer);
   NewMemory((void **)&(buffer_units),  len_buffer);
   NewMemory((void **)&(buffer_dummy),  len_buffer);
   NewMemory((void **)&(buffer_temp),   len_buffer);
-  UNLOCK_CSV_LOAD;
 
   if(strcmp(csvfi->c_type, "ext") == 0){
     fgets(buffer, len_buffer, stream);
     if(feof(stream)){
-      LOCK_CSV_LOAD;
       FREEMEMORY(buffer);
       FREEMEMORY(buffer_labels);
       FREEMEMORY(buffer_units);
-      UNLOCK_CSV_LOAD;
-      return CSV_UNDEFINED;
+      csvfi->defined = CSV_UNDEFINED;
+      fclose(stream);
+      return 0;
     }
     while(strstr(buffer, "//DATA") == NULL){
       fgets(buffer, len_buffer, stream);
       if(feof(stream)){
-        LOCK_CSV_LOAD;
         FREEMEMORY(buffer);
         FREEMEMORY(buffer_labels);
         FREEMEMORY(buffer_units);
-        UNLOCK_CSV_LOAD;
-        return CSV_UNDEFINED;
+        csvfi->defined = CSV_UNDEFINED;
+        fclose(stream);
+        return 0;
       }
     }
   }
 
   int nsize;
   nsize = csvfi->ncsvinfo+1;
-  LOCK_CSV_LOAD;
   NewMemory((void **)&(csvfi->csvinfo), nsize*sizeof(csvdata));
   NewMemory((void **)&labels,           nsize*sizeof(char *));
   NewMemory((void **)&units,            nsize*sizeof(char *));
@@ -252,7 +259,6 @@ int ReadCSVFile(csvfiledata *csvfi, int flag){
     NewMemory((void **)&ci->vals,      MAX(1, ci->nvals)*sizeof(csvdata));
     NewMemory((void **)&ci->vals_orig, MAX(1, ci->nvals)*sizeof(csvdata));
   }
-  UNLOCK_CSV_LOAD;
   CheckMemory;
 
   // setup labels and units
@@ -403,7 +409,6 @@ int ReadCSVFile(csvfiledata *csvfi, int flag){
   }
 
   CheckMemory;
-  LOCK_CSV_LOAD;
   FREEMEMORY(units);
   FREEMEMORY(labels);
   FREEMEMORY(vals);
@@ -411,10 +416,12 @@ int ReadCSVFile(csvfiledata *csvfi, int flag){
   FREEMEMORY(buffer);
   FREEMEMORY(buffer_labels);
   FREEMEMORY(buffer_units);
-  UNLOCK_CSV_LOAD;
 
   fclose(stream);
-  return CSV_DEFINED;
+
+  FILE_SIZE file_size;
+  file_size = GetFileSizeSMV(csvfi->file);
+  return file_size;
 }
 
 /* ------------------ CompareCSV ------------------------ */
@@ -430,43 +437,42 @@ int CompareCSV( const void *arg1, const void *arg2 ){
 
 /* ------------------ ReadAllCSVFiles ------------------------ */
 
-void ReadAllCSVFiles(void){
+FILE_SIZE ReadAllCSVFiles(int flag){
   int i;
+  FILE_SIZE file_size=0;
 
-  if(ncsvfileinfo == 0)return;
+  if(ncsvfileinfo == 0)return 0;
+#define GENPLOT_REM_ALL_PLOTS       136
+  GenPlotCB(GENPLOT_REM_ALL_PLOTS);
   for(i = 0; i < ncsvfileinfo; i++){
     csvfiledata *csvfi;
 
     csvfi = csvfileinfo + i;
-    LOCK_CSV_LOAD;
+    ReadCSVFile(csvfi, UNLOAD);
+  }
+  if(flag == UNLOAD)return 0;
+  for(i = 0; i < ncsvfileinfo; i++){
+    csvfiledata *csvfi;
+
+    csvfi = csvfileinfo + i;
     if(csvfi->defined == CSV_DEFINING|| csvfi->defined == CSV_DEFINED){
-      UNLOCK_CSV_LOAD;
       continue;
     }
     csvfi->defined = CSV_DEFINING;
-    UNLOCK_CSV_LOAD;
-    ReadCSVFile(csvfi, LOAD);
-    LOCK_CSV_LOAD;
+    file_size += ReadCSVFile(csvfi, flag);
     plot2d_max_columns = MAX(plot2d_max_columns, csvfi->ncsvinfo);
     csvfi->defined = CSV_DEFINED;
     UpdateCSVFileTypes();
-    UNLOCK_CSV_LOAD;
   }
-  LOCK_CSV_LOAD;
-  int all_loaded = 1;
   for(i = 0; i < ncsvfileinfo; i++){
     csvfiledata *csvfi;
 
     csvfi = csvfileinfo + i;
     if(csvfi->defined != CSV_DEFINED){
-      all_loaded = 0;
       break;
     }
   }
-  if(all_loaded == 1&&show_timings==1){
-    PRINT_TIMER(csv_timer, "csv file loading");
-  }
-  UNLOCK_CSV_LOAD;
+  return file_size;
 }
 
 /* ------------------ ReadHRR ------------------------ */
@@ -11403,7 +11409,6 @@ int ReadSMV_Configure(){
 
   if(runscript == 1||compute_fed == 1){
     checkfiles_multithread  = 0;
-    csv_multithread         = 0;
     iblank_multithread      = 0;
     ffmpeg_multithread      = 0;
     readallgeom_multithread = 0;
@@ -11461,23 +11466,12 @@ int ReadSMV_Configure(){
 
   if(meshinfo!=NULL&&meshinfo->jbar==1)force_isometric=1;
 
-// update csv data
-
-  if(hrr_csv_filename!=NULL)ReadHRR(LOAD);
-  ReadDeviceData(NULL,CSV_FDS,UNLOAD);
-  ReadDeviceData(NULL,CSV_EXP,UNLOAD);
-  for(i=0;i<ncsvfileinfo;i++){
-    csvfiledata *csvi;
-
-    csvi = csvfileinfo + i;
-    if(strcmp(csvi->c_type, "devc")==0)ReadDeviceData(csvi->file,CSV_FDS,LOAD);
-    if(strcmp(csvi->c_type, "ext") == 0)ReadDeviceData(csvi->file,CSV_EXP,LOAD);
-  }
-  PRINT_TIMER(timer_readsmv, "ReadDeviceData");
-
-  SetupDeviceData();
   PRINT_TIMER(timer_readsmv, "SetupDeviceData");
-  ReadAllCSVFilesMT();
+  if(runscript == 1){
+    InitializeDeviceCsvData(LOAD);
+  }
+  PRINT_TIMER(timer_readsmv, "InitializeDeviceCsvData");
+
   SetupPlot2DUnitData();
   PRINT_TIMER(timer_readsmv, "SetupPlot2DUnitData");
   if(nzoneinfo>0)SetupZoneDevs();
@@ -11617,7 +11611,6 @@ int ReadSMV_Configure(){
   SetVentDirs();
   UNLOCK_IBLANK
 
-  JOIN_CSVFILES;
   JOIN_IBLANK;
 
   PRINT_TIMER(timer_readsmv, "make blanks");
@@ -12256,7 +12249,7 @@ int ReadIni2(char *inifile, int localfile){
       fgets(buffer, 255, stream);
       sscanf(buffer, " %i %i %i %i %i %i %i %i %i",
         &showdevice_val, &showvdevice_val, &devicetypes_index, &colordevice_val, &vectortype, &viswindrose, &showdevice_type, &showdevice_unit,&showdevice_id);
-      devicetypes_index = CLAMP(devicetypes_index, 0, ndevicetypes - 1);
+      devicetypes_index = CLAMP(devicetypes_index, 0, MAX(ndevicetypes - 1,0));
       update_glui_devices = 1;
       if(viswindrose==1)update_windrose = 1;
       continue;
@@ -12438,6 +12431,14 @@ int ReadIni2(char *inifile, int localfile){
       TrimBack(buffer);
       fbuff = TrimFront(buffer);
       if(strlen(fbuff)>0)strcpy(default_fed_colorbar, fbuff);
+    }
+    if(MatchINI(buffer, "CSV") == 1){
+      int csv_load=0;
+
+      fgets(buffer, 255, stream);
+      sscanf(buffer, "%i", &csv_load);
+      if(csv_load == 1)update_csv_load = 1;
+      continue;
     }
     if(MatchINI(buffer, "FED") == 1){
       fgets(buffer, 255, stream);
@@ -16684,6 +16685,8 @@ void WriteIni(int flag,char *filename){
 
   fprintf(fileout, "\n *** DATA LOADING ***\n\n");
 
+  fprintf(fileout, "CSV\n");
+  fprintf(fileout, " %i\n", csv_loaded);
   fprintf(fileout, "FED\n");
   fprintf(fileout," %i\n",regenerate_fed);
   fprintf(fileout, "FEDCOLORBAR\n");

@@ -392,7 +392,6 @@ void UpdateCurveBounds(plot2ddata *plot2di, int option){
       csvi->valmax = valmax;
     }
   }
-
   if(plot2di->ncurves==0){
     plot2di->bounds_defined = 0;
   }
@@ -614,7 +613,7 @@ void DrawGenPlot(plot2ddata *plot2di){
 void DrawGenPlots(void){
   int i;
 
-  if(plot2d_show_plots == 0)return;
+  if(plot2d_show_plots == 0||csv_loaded==0)return;
   for(i = 0; i < nplot2dinfo;i++){
     plot2ddata *plot2di;
 

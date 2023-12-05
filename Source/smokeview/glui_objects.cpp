@@ -14,6 +14,7 @@
 
 #define GENPLOT_ADD_PLOT            101
 #define GENPLOT_REM_PLOT            102
+#define GENPLOT_REM_ALL_PLOTS       136
 #define GENPLOT_SHOW_PLOT           103
 #define GENPLOT_SELECT_PLOT         104
 #define GENPLOT_ADD_DEV_PLOTS       105
@@ -89,6 +90,7 @@ GLUI_EditText *EDIT_xaxis_label  = NULL;
 GLUI_Button *BUTTON_plot_position = NULL;
 GLUI_Button *BUTTON_add_plot = NULL;
 GLUI_Button *BUTTON_rem_plot = NULL;
+GLUI_Button *BUTTON_rem_all_plots = NULL;
 GLUI_Button *BUTTON_open_down=NULL ;
 GLUI_Button *BUTTON_device_2=NULL;
 GLUI_Button *BUTTON_plot2d_2=NULL;
@@ -707,6 +709,15 @@ extern "C" void GLUIShowPlot2D(void){
   }
 }
 
+/* ------------------ GLUIHidePlot2D ------------------------ */
+
+extern "C" void GLUIHidePlot2D(void){
+  if(glui_plot2d != NULL){
+    glui_plot2d->hide();
+    EnableDisablePlot2D();
+  }
+}
+
 /* ------------------ GetCsvUnit ------------------------ */
 
 char *GetCsvUnit(void){
@@ -735,11 +746,9 @@ void FilterList(void){
   int unit_id;
   int compartment_id;
 
-  LOCK_CSV_LOAD_CPP;
   for(i=0; i<plot2d_max_columns; i++){
     LIST_csvID->delete_item(i);
   }
-  UNLOCK_CSV_LOAD_CPP;
   {
     csvfiledata *csvfi;
 
@@ -842,11 +851,9 @@ void UpdateCsvList(void){
   char label2[256];
   csvfiledata *csvfi;
 
-  LOCK_CSV_LOAD_CPP;
   for(i=0; i<plot2d_max_columns; i++){
     LIST_csvID->delete_item(i);
   }
-  UNLOCK_CSV_LOAD_CPP;
   GetCsvCurve(0, &csvfi);
   for(i = 0; i < csvfi->ncsvinfo; i++){
     csvdata *csvi;
@@ -870,11 +877,9 @@ void UpdateCsvList(void){
   strcat(label2, " curve:");
   LIST_csvID->set_name(label2);
 
-  LOCK_CSV_LOAD_CPP;
   for(i=0; i<plot2d_max_columns; i++){
     LIST_curve_unit->delete_item(i);
   }
-  UNLOCK_CSV_LOAD_CPP;
   for(i = 0; i < csvfi->ncsvinfo; i++){
     csvdata *csvi;
     int dup_unit, j;
@@ -1377,6 +1382,12 @@ void GenPlotCB(int var){
       SetPlot2DBoundLabels(plot2dinfo+iplot2dinfo);
       LIST_csvID->set_int_val(-1);
       break;
+    case GENPLOT_REM_ALL_PLOTS:
+      while(nplot2dinfo != 0){
+        iplot2dinfo = 0;
+        GenPlotCB(GENPLOT_REM_PLOT);
+      }
+      break;
     case GENPLOT_REM_PLOT:
       RemovePlot(iplot2dinfo);
       if(iplot2dinfo>=0&&iplot2dinfo<nplot2dinfo){
@@ -1784,6 +1795,7 @@ extern "C" void GLUIPlot2DSetup(int main_window){
     BUTTON_add_plot = glui_plot2d->add_button_to_panel(PANEL_plots, _("New plot"), GENPLOT_ADD_PLOT, GenPlotCB);
 
     BUTTON_rem_plot = glui_plot2d->add_button_to_panel(PANEL_plots, _("Remove"), GENPLOT_REM_PLOT, GenPlotCB);
+    BUTTON_rem_all_plots = glui_plot2d->add_button_to_panel(PANEL_plots, _("Remove all"), GENPLOT_REM_ALL_PLOTS, GenPlotCB);
     LIST_plots = glui_plot2d->add_listbox_to_panel(PANEL_plots, "select:", &iplot2dinfo, GENPLOT_SELECT_PLOT, GenPlotCB);
     LIST_plots->add_item(-1, "");
     CHECKBOX_show_genplot  = glui_plot2d->add_checkbox_to_panel(PANEL_plots, "show", &(glui_plot2dinfo->show), GENPLOT_SHOW_PLOT, GenPlotCB);

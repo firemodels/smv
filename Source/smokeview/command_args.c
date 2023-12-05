@@ -189,6 +189,8 @@ CommandlineArgs ParseCommandlineNew(int argc, char **argv,
       args.outline = true;
     } else if (strcmp(argv[i], "-make_movie") == 0) {
       args.make_movie = true;
+    } else if (strcmp(argv[i], "-csv") == 0) {
+      args.csv = true;
     } else if(strcmp(argv[i], "-max_mem") == 0) {
       args.max_mem = true;
       i++;

@@ -15,6 +15,9 @@
 #include "smokeviewvars.h"
 #include "IOvolsmoke.h"
 
+void LoadHVACMenu(int value);
+void LoadPlot2DMenu(int value);
+
 int       part_file_count;
 FILE_SIZE part_load_size;
 float     part_load_time;
@@ -22,51 +25,6 @@ float     part_load_time;
 #ifdef WIN32
 #include <direct.h>
 #endif
-
-#define PRINT_PROCESSTIMES(file_count,load_size,load_time) \
-  if(file_count>1){\
-    if(load_size>1000000000){\
-      PRINTF("Processed %.1f GB in %.1f s\n",(float)load_size/1000000000.,load_time);\
-    }\
-    else if(load_size>1000000){\
-      PRINTF("Processed %.1f MB in %.1f s\n",(float)load_size/1000000.,load_time);\
-    }\
-    else{\
-      PRINTF("Processed %.0f kB in %.1f s\n",(float)load_size/1000.,load_time);\
-    }\
-  }
-
-#define PRINT_LOADTIMES(file_count,load_size,load_time) \
-  if(file_count>1){\
-    float rate;\
-    char crate[32];\
-    strcpy(crate,"");\
-    if(load_time>0.0){\
-      rate = load_size * 8.0 / load_time;\
-      if(rate>1000000000.0){\
-        rate /= 1000000000.0;\
-        sprintf(crate, "%.1f Gbs", rate); \
-      }\
-      else if(rate > 1000000.0){\
-          rate /= 1000000.0;\
-        sprintf(crate, "%.1f Mbs", rate);\
-      }\
-      else{\
-        rate /= 1000.0;\
-        sprintf(crate, "%.1f Kbs", rate);\
-      }\
-    }\
-    if(load_size>1000000000){\
-      PRINTF("Loaded %.1f GB in %.1f s (%s)\n",(float)load_size/1000000000.,load_time,crate);\
-    }\
-    else if(load_size>1000000){\
-      PRINTF("Loaded %.1f MB in %.1f s (%s)\n",(float)load_size/1000000.,load_time,crate);\
-    }\
-    else{\
-      PRINTF("Loaded %.0f kB in %.1f s (%s)\n",(float)load_size/1000.,load_time,crate);\
-    }\
-    printf("\n");\
-  }
 
 #define GEOM_Vents                   15
 #define GEOM_Compartments            16
@@ -130,6 +88,10 @@ float     part_load_time;
 #define MENU_PLOT3D_CONT 4
 #define MENU_PLOT3D_SHOWALL 5
 #define MENU_PLOT3D_HIDEALL 6
+
+#define MENU_PLOT2D_LOAD    0
+#define MENU_PLOT2D_LOADCSV 1
+#define MENU_PLOT2D_UNLOAD  2
 
 #define MENU_MAIN_TRAINERTOGGLE 997
 
@@ -321,6 +283,41 @@ float     part_load_time;
 // defined in smokeviewdefs.h (so it can also be used in IOscript.c )
 //#define MENU_HVAC_HIDE_ALL_VALUES        -15
 #define MENU_HVAC_CELL_VIEW              -16
+
+/* ------------------ PrintFileLoadTimes ------------------------ */
+
+void PrintFileLoadTimes(int file_count, FILE_SIZE load_size, float load_time){
+  if(file_count > 1){
+    float rate;
+    char crate[32];
+    strcpy(crate, "");
+    if(load_time > 0.0){
+      rate = load_size * 8.0 / load_time;
+      if(rate > 1000000000.0){
+        rate /= 1000000000.0;
+        sprintf(crate, "%.1f Gbs", rate);
+      }
+      else if(rate > 1000000.0){
+        rate /= 1000000.0;
+        sprintf(crate, "%.1f Mbs", rate);
+      }
+      else{
+        rate /= 1000.0;
+        sprintf(crate, "%.1f Kbs", rate);
+      }
+    }
+    if(load_size > 1000000000){
+      PRINTF("Loaded %.1f GB in %.1f s (%s)\n", ( float )load_size / 1000000000., load_time, crate);
+    }
+    else if(load_size > 1000000){
+      PRINTF("Loaded %.1f MB in %.1f s (%s)\n", ( float )load_size / 1000000., load_time, crate);
+    }
+    else{
+      PRINTF("Loaded %.0f kB in %.1f s (%s)\n", ( float )load_size / 1000., load_time, crate);
+    }
+    printf("\n");
+  }
+}
 
 #ifdef WIN32
 
@@ -1578,6 +1575,7 @@ void DialogMenu(int value){
     GLUIShowTrainer();
     break;
   case DIALOG_2DPLOTS:
+    if(csv_loaded==0)LoadPlot2DMenu(MENU_PLOT2D_LOADCSV);
     GLUIShowPlot2D();
     break;
   case DIALOG_DEVICE:
@@ -2875,7 +2873,6 @@ void ScriptMenu(int value){
   char newscriptfilename[1024];
 
   if(value==MENU_DUMMY)return;
-  JOIN_CSVFILES;
   updatemenu=1;
   GLUTPOSTREDISPLAY;
   switch(value){
@@ -3317,11 +3314,42 @@ void ReloadAllSliceFiles(void){
   }
   STOP_TIMER(load_time);
   FREEMEMORY(reload_slicelist);
-  PRINT_LOADTIMES(file_count,load_size,load_time);
+  PrintFileLoadTimes(file_count,load_size,load_time);
   slicefile_labelindex = slicefile_labelindex_save;
 }
 
-void LoadHVACMenu(int value);
+/* ------------------ LoadPlot2DMenu ------------------------ */
+
+void LoadPlot2DMenu(int value){
+  switch(value){
+  case MENU_PLOT2D_LOADCSV:
+    InitializeDeviceCsvData(UNLOAD);
+    InitializeDeviceCsvData(LOAD);
+    csv_loaded = 1;
+    plot2d_show_plots = 1;
+    updatemenu = 1;
+    printf("CSV data loaded\n");
+    break;
+  case MENU_PLOT2D_LOAD:
+    LoadPlot2DMenu(MENU_PLOT2D_LOADCSV);
+    GLUIShowPlot2D();
+    printf("CSV data loaded\n");
+    break;
+  case MENU_PLOT2D_UNLOAD:
+    if(csv_loaded == 1){
+      InitializeDeviceCsvData(UNLOAD);
+      csv_loaded = 0;
+      plot2d_show_plots = 0;
+      updatemenu = 1;
+      GLUIHidePlot2D();
+      printf("CSV data unloaded\n");
+    }
+    break;
+  default:
+    assert(0);
+    break;
+  }
+}
 
 /* ------------------ LoadUnloadMenu ------------------------ */
 
@@ -3338,7 +3366,6 @@ void LoadUnloadMenu(int value){
       fprintf(scriptoutstream,"UNLOADALL\n");
     }
     if(nhvacinfo>0){
-      void LoadHVACMenu(int var);
       LoadHVACMenu(MENU_HVAC_UNLOAD);
     }
     if(nvolrenderinfo>0){
@@ -3386,6 +3413,7 @@ void LoadUnloadMenu(int value){
       showdevice_val = 0;
       GLUIUpdateDeviceShow();
     }
+    LoadPlot2DMenu(MENU_PLOT2D_UNLOAD);    
     updatemenu=1;
     GLUTPOSTREDISPLAY;
   }
@@ -3410,7 +3438,7 @@ void LoadUnloadMenu(int value){
     ReloadAllSliceFiles();
     GLUIHVACSliceBoundsCPP_CB(BOUND_UPDATE_COLORS);
     STOP_TIMER(load_time);
-    PRINT_LOADTIMES(file_count,load_size,load_time);
+    PrintFileLoadTimes(file_count,load_size,load_time);
     slicefile_labelindex=slicefile_labelindex_save;
 
     //*** reload plot3d files
@@ -3498,6 +3526,13 @@ void LoadUnloadMenu(int value){
     UNLOCK_COMPRESS
   //  plotstate=DYNAMIC_PLOTS;
   //  visParticles=1;
+
+    //*** reload csv data
+
+    if(csv_loaded == 1){
+      LoadPlot2DMenu(MENU_PLOT2D_LOADCSV);
+    }
+
     updatemenu=1;
     GLUTPOSTREDISPLAY;
   }
@@ -4140,7 +4175,7 @@ void LoadParticleMenu(int value){
             }
           }
           STOP_TIMER(part_load_time);
-          PRINT_LOADTIMES(part_file_count,part_load_size,part_load_time);
+          PrintFileLoadTimes(part_file_count,part_load_size,part_load_time);
           if(have_particles==0)printf("***warning: particle files have no particles\n");
         }
 
@@ -4396,7 +4431,7 @@ FILE_SIZE LoadVSliceMenu2(int value){
       }
     }
     STOP_TIMER(load_time);
-    PRINT_LOADTIMES(file_count,load_size,load_time);
+    PrintFileLoadTimes(file_count,load_size,load_time);
   }
   GLUTSETCURSOR(GLUT_CURSOR_LEFT_ARROW);
   return return_filesize;
@@ -4792,7 +4827,7 @@ void LoadSmoke3DMenu(int value){
     }
   }
   STOP_TIMER(load_time);
-  PRINT_LOADTIMES(file_count, load_size, load_time);
+  PrintFileLoadTimes(file_count, load_size, load_time);
   updatemenu=1;
   GLUTPOSTREDISPLAY;
   GLUTSETCURSOR(GLUT_CURSOR_LEFT_ARROW);
@@ -4974,7 +5009,7 @@ void LoadSliceMenu(int value){
         START_TIMER(load_time);
         load_size = LoadAllSliceFiles(last_slice, submenulabel, dir, &file_count);
         STOP_TIMER(load_time);
-        PRINT_LOADTIMES(file_count,load_size,load_time);
+        PrintFileLoadTimes(file_count,load_size,load_time);
       }
   }
   updatemenu=1;
@@ -5041,7 +5076,7 @@ void LoadMultiVSliceMenu(int value){
         if(vslicei->skip==1&&vslicei->loaded==1)UnloadVSliceMenu(mvslicei->ivslices[i]);
       }
       STOP_TIMER(load_time);
-      PRINT_LOADTIMES(file_count,load_size,load_time);
+      PrintFileLoadTimes(file_count,load_size,load_time);
     }
     script_multivslice=0;
   }
@@ -5074,7 +5109,7 @@ void LoadMultiVSliceMenu(int value){
       file_count++;
     }
     STOP_TIMER(load_time);
-    PRINT_LOADTIMES(file_count,load_size,load_time);
+    PrintFileLoadTimes(file_count,load_size,load_time);
   }
   else{
     switch(value){
@@ -5133,7 +5168,7 @@ FILE_SIZE LoadAllMSlices(int last_slice, multislicedata *mslicei){
   SetLoadedSliceBounds(mslicei->islices, mslicei->nslices);
   file_size = LoadAllMSlicesMT(last_slice, mslicei, &file_count);
   STOP_TIMER(load_time);
-  PRINT_LOADTIMES(file_count,(float)file_size,load_time);
+  PrintFileLoadTimes(file_count,(float)file_size,load_time);
   return file_size;
 }
 
@@ -5234,7 +5269,7 @@ void LoadMultiSliceMenu(int value){
       file_count++;
     }
     STOP_TIMER(load_time);
-    PRINT_LOADTIMES(file_count,load_size,load_time);
+    PrintFileLoadTimes(file_count,load_size,load_time);
   }
   else{
     switch(value){
@@ -5530,7 +5565,7 @@ void LoadAllIsos(int iso_type){
     }
   }
   STOP_TIMER(load_time);
-  PRINT_LOADTIMES(file_count,load_size,load_time);
+  PrintFileLoadTimes(file_count,load_size,load_time);
 }
 
 /* ------------------ LoadIsoMenu ------------------------ */
@@ -5720,7 +5755,7 @@ void LoadBoundaryMenu(int value){
         }
       }
       STOP_TIMER(load_time);
-      PRINT_LOADTIMES(file_count,load_size,load_time);
+      PrintFileLoadTimes(file_count,load_size,load_time);
     }
     force_redisplay=1;
     UpdateFrameNumber(0);
@@ -8513,6 +8548,47 @@ void MakeColorbarMenu(int *menuptr,
   *menuptr     = menu;
 }
 
+/* ------------------ GetCSVLoadMenu ------------------------ */
+#ifdef pp_CSV_MENU
+char *GetCSVLoadMenu(void){
+  int ncsvloadmenu;
+  char *label;
+  int i, last;
+
+  ncsvloadmenu=ncsvfileinfo + strlen("*Load ()");
+  for(i = ncsvfileinfo-1;i >=0;i--){
+    csvfiledata *csvfi;
+
+    csvfi = csvfileinfo + i;
+    if(strcmp(csvfi->c_type, "ext") != 0){
+      last=i;
+      break;
+    }
+  }
+  for(i=0;i<ncsvfileinfo;i++){
+    csvfiledata *csvfi;
+
+    csvfi = csvfileinfo + i;
+    if(strcmp(csvfi->c_type, "ext") != 0){
+      ncsvloadmenu += strlen(csvfi->c_type);
+    }
+  }
+  NewMemory((void **)&label,ncsvloadmenu);
+  strcpy(label, "*Load(");
+  for(i=0;i<ncsvfileinfo;i++){
+    csvfiledata *csvfi;
+
+    csvfi = csvfileinfo + i;
+    if(strcmp(csvfi->c_type, "ext")!=0){
+      strcat(label, csvfi->c_type);
+      if(i!=last)strcat(label, ",");
+    }
+  }
+  strcat(label,")");
+  return label;
+}
+#endif
+
 /* ------------------ InitMenus ------------------------ */
 
 void InitMenus(void){
@@ -8554,6 +8630,10 @@ static int hvacmenu = 0, hvacnetworkmenu, showcomponentmenu = 0, showfiltermenu 
 static int hvacvaluemenu = 0, hvacnodevaluemenu = 0, hvacductvaluemenu = 0;
 static int scriptlistmenu=0,scriptsteplistmenu=0,scriptrecordmenu=0;
 static int loadplot3dmenu=0, unloadvslicemenu=0, unloadslicemenu=0;
+#ifdef pp_CSV_MENU
+static int loadcsvmenu=0;
+static char *csvloadmenu=NULL;
+#endif
 static int loadsmoke3dmenu = 0;
 static int loadvolsmoke3dmenu=0,showvolsmoke3dmenu=0;
 static int unloadsmoke3dmenu=0,unloadvolsmoke3dmenu=0;
@@ -12103,7 +12183,25 @@ updatemenu=0;
       }
     }
 
-/* --------------------------------plot3d menu -------------------------- */
+    /* --------------------------------CSV load menu -------------------------- */
+#ifdef pp_CSV_MENU
+    if(ncsvfileinfo > 0){
+      CREATEMENU(loadcsvmenu, LoadPlot2DMenu);
+      if(csvloadmenu == NULL){
+        csvloadmenu = GetCSVLoadMenu();
+      }
+      if(csv_loaded == 1){
+        glutAddMenuEntry(csvloadmenu,  MENU_PLOT2D_LOAD);
+        glutAddMenuEntry("Unload",   MENU_PLOT2D_UNLOAD);
+      }
+      else{
+        glutAddMenuEntry(csvloadmenu+1,      MENU_PLOT2D_LOAD);
+        glutAddMenuEntry("*Unloaded", MENU_PLOT2D_UNLOAD);
+      }
+    }
+#endif
+
+    /* --------------------------------plot3d menu -------------------------- */
 
     if(nplot3dinfo>0){
       plot3ddata *plot3dim1, *plot3di;
@@ -12789,6 +12887,7 @@ updatemenu=0;
 
     CREATEMENU(reloadmenu,ReloadMenu);
     glutAddMenuEntry(_("smv"), RELOAD_SMV_FILE);
+#ifdef pp_LOAD_INC
     if(load_incremental==1){
       glutAddMenuEntry(_("*New data"), RELOAD_MODE_INCREMENTAL);
       glutAddMenuEntry(_("All data"), RELOAD_MODE_ALL);
@@ -12797,6 +12896,7 @@ updatemenu=0;
       glutAddMenuEntry(_("New data"), RELOAD_MODE_INCREMENTAL);
       glutAddMenuEntry(_("*All data"), RELOAD_MODE_ALL);
     }
+#endif
     glutAddMenuEntry("-", MENU_DUMMY);
     glutAddMenuEntry(_("When:"), MENU_DUMMY);
     glutAddMenuEntry(_("  now"),RELOAD_SWITCH);
@@ -13009,6 +13109,14 @@ updatemenu=0;
         strcpy(loadmenulabel,"Zone fire");
         GLUTADDSUBMENU(loadmenulabel,zonemenu);
       }
+
+#ifdef pp_CSV_MENU
+      // CSV
+      if(ncsvfileinfo > 0){
+        GLUTADDSUBMENU(_("CSV"), loadcsvmenu);
+      }
+#endif
+
       if(glui_active==1){
         glutAddMenuEntry("-",MENU_DUMMY);
       }

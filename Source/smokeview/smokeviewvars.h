@@ -336,11 +336,6 @@ SVEXTERN int SVDECL(part_multithread, 1);
 #else
 SVEXTERN int SVDECL(part_multithread, 0);
 #endif
-#ifdef pp_CSV_MULTI
-SVEXTERN int SVDECL(csv_multithread,1);
-SVEXTERN int SVDECL(ncsv_threads, 1);
-#endif
-SVEXTERN float SVDECL(csv_timer, 0.0);
 #ifdef pp_SLICE_MULTI
 SVEXTERN int SVDECL(slice_multithread, 0);
 #endif
@@ -1883,6 +1878,7 @@ SVEXTERN FILE SVDECL(*scriptoutstream,NULL);
 SVEXTERN char SVDECL(*log_filename,NULL);
 SVEXTERN FILE SVDECL(*LOG_FILENAME,NULL);
 SVEXTERN char SVDECL(*flushfile,NULL), SVDECL(*chidfilebase,NULL);
+SVEXTERN int SVDECL(csv_loaded, 0), SVDECL(devices_setup,0),SVDECL(update_csv_load,0);
 SVEXTERN char SVDECL(*hrr_csv_filename,NULL),SVDECL(*devc_csv_filename,NULL),SVDECL(*exp_csv_filename,NULL);
 SVEXTERN char SVDECL(*smokezippath,NULL),SVDECL(*smokeviewpath,NULL);
 SVEXTERN char SVDECL(*INI_fds_filein,NULL), SVDECL(*fds_filein,NULL);

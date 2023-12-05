@@ -212,6 +212,7 @@ EXTERNCPP void GLUIPlot2DSetup(int main_window);
 EXTERNCPP void GLUIUpdatePlot2DTbounds(void);
 EXTERNCPP void GLUIUpdatePlot2DINI(void);
 EXTERNCPP void GLUIShowPlot2D(void);
+EXTERNCPP void GLUIHidePlot2D(void);
 EXTERNCPP void GLUIShowDevice(void);
 EXTERNCPP void GLUIShowPlotDevice(void);
 EXTERNCPP void GLUIHideDevice(void);
@@ -280,6 +281,8 @@ EXTERNCPP void GLUIShowTrainer(void);
 EXTERNCPP void GLUIHideTrainer(void);
 
 // gen plot routines
+
+EXTERNCPP void PrintFileLoadTimes(int file_count, FILE_SIZE load_size, float load_time);
 
 EXTERNCPP int HavePlot2D(float **times, int *ntimes);
 EXTERNCPP char *GetPlotUnit2(plot2ddata *plot2di, curvedata *curve);
@@ -491,15 +494,10 @@ EXTERNCPP void MergeAllPartBounds(void);
 EXTERNCPP void InsertRollout(GLUI_Rollout *rollout, GLUI *dialog);
 #endif
 
-EXTERNCPP void ReadAllCSVFilesMT(void);
-EXTERNCPP void ReadAllCSVFiles(void);
-EXTERNCPP int ReadCSVFile(csvfiledata *csvfi, int flag);
+EXTERNCPP void InitializeDeviceCsvData(int flag);
+EXTERNCPP FILE_SIZE ReadAllCSVFiles(int flag);
+EXTERNCPP FILE_SIZE ReadCSVFile(csvfiledata *csvfi, int flag);
 EXTERNCPP void UpdateCSVFileTypes(void);
-#ifdef pp_CSV_MULTI
-EXTERNCPP void FinishAllCSVFiles(void);
-EXTERNCPP void LockCSV(void);
-EXTERNCPP void UnLockCSV(void);
-#endif
 EXTERNCPP int HaveFireLoaded(void);
 EXTERNCPP int HaveSootLoaded(void);
 EXTERNCPP void MakeColorLabels(char colorlabels[12][11], float colorvalues[12], float tmin_arg, float tmax_arg, int nlevel);
@@ -694,9 +692,8 @@ EXTERNCPP devicedata *GetCSVDeviceFromLabel(char *label, int index);
 EXTERNCPP void SetupGlut(int argc, char **argv);
 EXTERNCPP int GetNDevices(char *file);
 EXTERNCPP void ReadHRR(int flag);
-EXTERNCPP void ReadDeviceData(char *file, int filetype, int flag);
+EXTERNCPP FILE_SIZE ReadDeviceData(char *file, int filetype, int flag);
 EXTERNCPP void SetupZoneDevs(void);
-EXTERNCPP void SetupDeviceData(void);
 
 EXTERNCPP void DrawCGeom(int flag, geomdata *cgeom);
 EXTERNCPP void DrawGeom(int flag,int frameflag);

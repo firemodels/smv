@@ -6116,7 +6116,7 @@ void SetupZoneDevs(void){
 
 /* ----------------------- ReadDeviceData ----------------------------- */
 
-void ReadDeviceData(char *file, int filetype, int loadstatus){
+FILE_SIZE ReadDeviceData(char *file, int filetype, int loadstatus){
   FILE *stream;
   int nrows, ncols;
   int irow;
@@ -6158,22 +6158,26 @@ void ReadDeviceData(char *file, int filetype, int loadstatus){
         if(times_local==devicej->times)devicej->times=NULL;
       }
     }
-    return;
+    return 0;
   }
 
   // find number of rows and columns
 
   stream=fopen(file,"r");
-  if(stream==NULL)return;
+  if(stream==NULL)return 0;
   RewindDeviceFile(stream);
   buffer_len=GetRowCols(stream,&nrows,&ncols);
   buffer_len += (ncols+1);
   if(nrows<=0||ncols<=0||buffer_len<=0){
     fclose(stream);
-    return;
+    return 0;
   }
   buffer_len+=10;
   RewindDeviceFile(stream);
+
+  FILE_SIZE file_size;
+
+  file_size = GetFileSizeSMV(file);
 
   NewMemory((void **)&buffer,      buffer_len);
   NewMemory((void **)&buffer2,     buffer_len);
@@ -6250,6 +6254,7 @@ void ReadDeviceData(char *file, int filetype, int loadstatus){
   FREEMEMORY(devcunits);
   FREEMEMORY(devclabels)
   FREEMEMORY(devices);
+  return file_size;
 }
 
 
@@ -6582,7 +6587,8 @@ void SetupDeviceData(void){
   char **devcunits=NULL, **devclabels=NULL;
   int is_dup;
 
-  if(ndeviceinfo==0)return;
+  if(ndeviceinfo==0)return; // only setup device data once
+  devices_setup = 1;
   FREEMEMORY(vdeviceinfo);
   NewMemory((void **)&vdeviceinfo,ndeviceinfo*sizeof(vdevicedata));
   FREEMEMORY(vdevices_sorted);
@@ -6832,6 +6838,45 @@ void SetupDeviceData(void){
   FREEMEMORY(valids);
   FREEMEMORY(devcunits);
   FREEMEMORY(devclabels)
+}
+
+/* ------------------ InitializeDeviceCsvData ------------------------ */
+
+void InitializeDeviceCsvData(int flag){
+  int i;
+  FILE_SIZE file_size = 0;
+  float total_time;
+
+  if(flag == LOAD)printf("Loading CSV files");
+  START_TIMER(total_time);
+  INIT_PRINT_TIMER(device_timer);
+  if(hrr_csv_filename != NULL)ReadHRR(flag);
+  ReadDeviceData(NULL, CSV_FDS, UNLOAD);
+  ReadDeviceData(NULL, CSV_EXP, UNLOAD);
+  for(i = 0; i < ncsvfileinfo; i++){
+    csvfiledata *csvi;
+
+    csvi = csvfileinfo + i;
+    if(strcmp(csvi->c_type, "devc") == 0)file_size += ReadDeviceData(csvi->file, CSV_FDS, flag);
+    if(strcmp(csvi->c_type, "ext") == 0)file_size += ReadDeviceData(csvi->file, CSV_EXP, flag);
+  }
+  PRINT_TIMER(device_timer, "ReadDeviceData");
+  INIT_PRINT_TIMER(setup_timer);
+  if(flag==LOAD)SetupDeviceData();
+  PRINT_TIMER(setup_timer, "SetupDeviceData");
+  INIT_PRINT_TIMER(csv_timer);
+  file_size += ReadAllCSVFiles(flag);
+  PRINT_TIMER(csv_timer, "ReadAllCSVFiles");
+  if(flag==LOAD){
+    csv_loaded = 1;
+    plot2d_show_plots = 1;
+    STOP_TIMER(total_time);
+    printf("\n");
+    PrintFileLoadTimes(2,file_size, total_time);
+    plotstate=GetPlotState(DYNAMIC_PLOTS);
+    UpdateTimes();
+    ForceIdle();
+  }
 }
 
 /* ----------------------- FreeObject ----------------------------- */
