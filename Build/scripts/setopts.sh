@@ -4,6 +4,7 @@ TEST=
 SMV_MPI=
 TESTFLAG=
 OPENVKL=
+SANITIZE=
 if [ "`uname`" == "Darwin" ]; then
   GLUT=
   GLIBDIROPT=
@@ -23,7 +24,7 @@ if [ "$BUILD_ALL" == "1" ]; then
   FULL_BUILD="[default]"
 fi
 TESTOPT=
-while getopts 'AfhiLmpqQrtvT' OPTION
+while getopts 'AfhiLmpqQrstvT' OPTION
 do
 case $OPTION in
   A)
@@ -40,6 +41,7 @@ case $OPTION in
   echo "-i - incremental build"
   echo "-L - rebuild all libraries"
   echo "-p - build a profiling version of smokeview"
+  echo "-s - build smokeview with sanitize debug options"
   echo "-t - build a test version of smokeview"
   echo "-v - build smokeview using the openvkl library"
   echo "-T - same as -t"
@@ -64,6 +66,9 @@ case $OPTION in
   Q)
    DUMMY=1
   ;;
+  s)
+   SANITIZE=1
+  ;;
   v)
    OPENVKL=openvkl
   ;;
@@ -87,6 +92,7 @@ export SMV_MAKE_OPTS
 export GLUT
 export TEST
 export SMV_MPI
+export SANITIZE
 export OPENVKL
 if [ "$NOQUARTZ" != "" ]; then
   TESTFLAG="$TESTFLAG -D pp_NOQUARTZ"

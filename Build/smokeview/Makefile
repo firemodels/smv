@@ -41,6 +41,9 @@ endif
 INTEL_COMPINFO=-Dpp_COMPVER=\"$(INTEL_COMPVERSION)\"
 GNU_COMPINFO=-Dpp_COMPVER=\"$(GNU_COMPVERSION)\"
 
+#oneapi debug options
+SANITIZE_OPTIONS=-fsanitize=address -fsanitize=undefined
+
 .rc.obj:
 	windres $< -o $@
 %.obj : %.rc
@@ -277,6 +280,9 @@ SYSTEM_LIBS_LINUX = -lpthread -lX11 -lXmu -lGLU -lGL -lm -lrt
 intel_linux_64 : DYNLIB_EXT = .so
 intel_linux_64 : LIB_DIR_PLAT = $(LIB_DIR)/intel_linux_64
 intel_linux_64 : CFLAGS    = -O0 -traceback -m64 -D pp_LINUX -D NDEBUG $(SMV_TESTFLAG) $(SMV_PROFILEFLAG) $(GITINFO) $(INTEL_COMPINFO)
+ifeq ($(SANITIZE),1)
+intel_linux_64 : CFLAGS   += $(SANITIZE_OPTIONS)
+endif
 intel_linux_64 : C_STANDARD    = -std=gnu99
 intel_linux_64 : INC += -I $(SOURCE_DIR)/freeglut3.0.0/include
 intel_linux_64 : LIBLUA    =
@@ -286,6 +292,9 @@ intel_linux_64 : SMVLUACORE_FILES += $(LIB_DIR_PLAT)/lpeg.so
 intel_linux_64 : LIBLUA    += $(LIB_DIR_PLAT)/liblua.a -ldl
 endif
 intel_linux_64 : LFLAGS    = -m64 $(INTEL_LIBS_LINUX) $(SMV_PROFILEFLAG)
+ifeq ($(SANITIZE),1)
+intel_linux_64 : LFLAGS   += $(SANITIZE_OPTIONS)
+endif
 intel_linux_64 : CC        = icx
 intel_linux_64 : CPP       = icpx
 intel_linux_64 : exe       = smokeview_linux_$(SMV_TESTSTRING)64$(SMV_PROFILESTRING)
@@ -298,9 +307,15 @@ intel_linux_64 : $(obj) $(if $(LUA_SCRIPTING),smvluacore)
 intel_linux_64_db : CFLAGS    = -O0 -g -m64 $(SMV_TESTFLAG) -D _DEBUG -D pp_LINUX $(SMV_PROFILEFLAG) \
                                 -Wall -Wextra -Wuninitialized -Wunused-function -Wunused-variable -Wno-sign-compare \
                                 -Wno-unused-parameter $(GITINFO) $(INTEL_COMPINFO)
+ifeq ($(SANITIZE),1)
+intel_linux_64_db : CFLAGS   += $(SANITIZE_OPTIONS)
+endif
 intel_linux_64_db : C_STANDARD    = -std=gnu99
 intel_linux_64_db : INC += -I $(SOURCE_DIR)/freeglut3.0.0/include
 intel_linux_64_db : LFLAGS    = -m64 -static-intel $(INTEL_LIBS_LINUX) $(SMV_PROFILEFLAG)
+ifeq ($(SANITIZE),1)
+intel_linux_64_db : LFLAGS   += $(SANITIZE_OPTIONS)
+endif
 intel_linux_64_db : CC        = icx
 intel_linux_64_db : CPP       = icpx
 intel_linux_64_db : exe       = smokeview_linux_$(SMV_TESTSTRING)64_db$(SMV_PROFILESTRING)
