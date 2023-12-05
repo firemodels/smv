@@ -3947,7 +3947,7 @@ int CompareVerts2(const void *arg1, const void *arg2){
 }
 
 /* ------------------ CompareEdges ------------------------ */
-static count = 0;
+
 int CompareEdges(const void *arg1, const void *arg2){
   edgedata *edge1, *edge2;
   int *v1, *v2;
