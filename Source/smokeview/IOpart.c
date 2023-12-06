@@ -1839,25 +1839,22 @@ int GetPartHeader(partdata *parti, int *nf_all, int option_arg, int print_option
         datacopy_local++;
       }
     }
-    if(nall_points_local>0){
-      FREEMEMORY(parti->vis_part);
-      FREEMEMORY(parti->tags);
-      FREEMEMORY(parti->sort_tags);
-      FREEMEMORY(parti->sx);
-      FREEMEMORY(parti->sy);
-      FREEMEMORY(parti->sz);
+    FREEMEMORY(parti->vis_part);
+    FREEMEMORY(parti->tags);
+    FREEMEMORY(parti->sort_tags);
+    FREEMEMORY(parti->sx);
+    FREEMEMORY(parti->sy);
+    FREEMEMORY(parti->sz);
 
-      NewMemory((void **)&parti->vis_part,    nall_points_local*sizeof(unsigned char));
-      NewMemory((void **)&parti->tags,        nall_points_local*sizeof(int));
-      NewMemory((void **)&parti->sort_tags, 2*nall_points_local*sizeof(int));
-      NewMemory((void **)&parti->sx,          nall_points_local*sizeof(short));
-      NewMemory((void **)&parti->sy,          nall_points_local*sizeof(short));
-      NewMemory((void **)&parti->sz,          nall_points_local*sizeof(short));
-    }
-    if(nall_points_types_local>0){
-      FREEMEMORY(parti->irvals);
-      NewMemory((void **)&parti->irvals, nall_points_types_local*sizeof(unsigned char));
-    }
+    NewMemory((void **)&parti->vis_part,    MAX(nall_points_local, 1)*sizeof(unsigned char));
+    NewMemory((void **)&parti->tags,        MAX(nall_points_local, 1)*sizeof(int));
+    NewMemory((void **)&parti->sort_tags, 2*MAX(nall_points_local, 1)*sizeof(int));
+    NewMemory((void **)&parti->sx,          MAX(nall_points_local, 1)*sizeof(short));
+    NewMemory((void **)&parti->sy,          MAX(nall_points_local, 1)*sizeof(short));
+    NewMemory((void **)&parti->sz,          MAX(nall_points_local, 1)*sizeof(short));
+
+    FREEMEMORY(parti->irvals);
+    NewMemory((void **)&parti->irvals, MAX(nall_points_types_local,1)*sizeof(unsigned char));
 
     datacopy_local =parti->data5;
     nall_points_types_local = 0;
