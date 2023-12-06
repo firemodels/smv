@@ -22,7 +22,7 @@ if [ "$BUILD_ALL" == "1" ]; then
   FULL_BUILD="[default]"
 fi
 TESTOPT=
-while getopts 'AfhiLmpqQrstT' OPTION
+while getopts 'AfhiLmpqQrStT' OPTION
 do
 case $OPTION in
   A)
@@ -39,7 +39,7 @@ case $OPTION in
   echo "-i - incremental build"
   echo "-L - rebuild all libraries"
   echo "-p - build a profiling version of smokeview"
-  echo "-s - build smokeview with sanitize debug options"
+  echo "-S - build smokeview with sanitize debug options"
   echo "-t - build a test version of smokeview"
   echo "-T - same as -t"
   exit
@@ -63,10 +63,10 @@ case $OPTION in
   Q)
    DUMMY=1
   ;;
-  s)
-   SANITIZE=1
-  ;;
   r)
+  ;;
+  S)
+   SANITIZE=1
   ;;
   t)
    TESTOPT=1
