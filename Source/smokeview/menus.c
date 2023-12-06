@@ -9247,7 +9247,7 @@ updatemenu=0;
       char menulabel[1024];
 
       texti = textureinfo + i;
-      if(texti->loaded==0||texti->used==0)continue;
+      if(texti->loaded==0||texti->used==0||terrain_textures==NULL)continue;
       if(texti>=terrain_textures&&texti<terrain_textures+nterrain_textures)continue;
       ntextures_used++;
       if(texti->display==1){

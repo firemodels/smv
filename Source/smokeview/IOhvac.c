@@ -178,11 +178,17 @@ void GetCellXYZs(float *xyz, int nxyz, int ncells, float **xyz_cellptr, int *nxy
   for(i = 0;i < nmerge;i++){
     GetHVACPathXYZ(fractions_both[i], xyz, nxyz, xyz_cell + 3*i);
   }
+  assert(ncells >= 1);
   for(i = 0;i < nmerge-1;i++){
-    float frac_avg;
+    if(ncells > 1){
+      float frac_avg;
 
-    frac_avg = (fractions_both[i] + fractions_both[i + 1]) / 2.0;
-    cell_ind[i] = CLAMP((int)(frac_avg*(float)ncells), 0, ncells - 1);
+      frac_avg = (fractions_both[i] + fractions_both[i + 1]) / 2.0;
+      cell_ind[i] = CLAMP((int)(frac_avg * (float)ncells), 0, ncells - 1);
+    }
+    else{
+      cell_ind[i] = 0;
+    }
   }
   FREEMEMORY(fractions);
   FREEMEMORY(fractions_cell);

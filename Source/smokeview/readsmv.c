@@ -1986,7 +1986,7 @@ void ReadSMVDynamic(char *file){
 
 /* ------------------ GetLabels ------------------------ */
 
-void GetLabels(char *buffer, char **label1, char **label2, char prop_buffer[255]){
+void GetLabels(char *buffer, char **label1, char **label2){
   char *tok0, *tok1, *tok2;
 
   tok0 = NULL;
@@ -2131,7 +2131,6 @@ void ParseDevicekeyword(BFILE *stream, devicedata *devicei){
   int state0=0;
   int nparams=0, nparams_textures=0;
   char *labelptr, *prop_id;
-  char prop_buffer[255];
   char buffer[255],*buffer3;
   int i;
   char *tok1, *tok2, *tok3, *tok4;
@@ -2199,7 +2198,7 @@ void ParseDevicekeyword(BFILE *stream, devicedata *devicei){
   }
   devicei->is_beam = is_beam;
 
-  GetLabels(buffer,&prop_id,NULL,prop_buffer);
+  GetLabels(buffer,&prop_id,NULL);
   devicei->prop=GetPropID(prop_id);
   if(prop_id!=NULL&&devicei->prop!=NULL&&devicei->prop->smv_object!=NULL){
     devicei->object=devicei->prop->smv_object;
@@ -2272,7 +2271,6 @@ void ParseDevicekeyword2(FILE *stream, devicedata *devicei){
   int state0 = 0;
   int nparams = 0, nparams_textures = 0;
   char *labelptr, *prop_id;
-  char prop_buffer[255];
   char buffer[255], *buffer3;
   int i;
   char *tok1, *tok2, *tok3;
@@ -2328,7 +2326,7 @@ void ParseDevicekeyword2(FILE *stream, devicedata *devicei){
   }
   devicei->is_beam = is_beam;
 
-  GetLabels(buffer, &prop_id, NULL, prop_buffer);
+  GetLabels(buffer, &prop_id, NULL);
   devicei->prop = GetPropID(prop_id);
   if(prop_id!=NULL&&devicei->prop!=NULL&&devicei->prop->smv_object!=NULL){
     devicei->object = devicei->prop->smv_object;
@@ -8459,13 +8457,12 @@ int ReadSMV_Parse(bufferstreamdata *stream) {
       partclassdata *partclassi;
       char *device_ptr;
       char *prop_id;
-      char prop_buffer[255];
       size_t len;
 
       partclassi = partclassinfo + npartclassinfo;
       FGETS(buffer,255,stream);
 
-      GetLabels(buffer,&device_ptr,&prop_id,prop_buffer);
+      GetLabels(buffer,&device_ptr,&prop_id);
       if(prop_id!=NULL){
         device_ptr=NULL;
       }
@@ -9661,7 +9658,6 @@ int ReadSMV_Parse(bufferstreamdata *stream) {
 
   if(ncsvfileinfo>0){
     int *nexp_devices=NULL;
-    devicedata *devicecopy2;
 
     NewMemory((void **)&nexp_devices,(ncsvfileinfo+1)*sizeof(int));
     for(i=0;i<ncsvfileinfo;i++){
@@ -9681,20 +9677,22 @@ int ReadSMV_Parse(bufferstreamdata *stream) {
     else{
       if(ndeviceinfo_exp>0)NewMemory((void **)&deviceinfo,ndeviceinfo_exp*sizeof(devicedata));
     }
-    devicecopy2 = deviceinfo+ndeviceinfo;
-    ndeviceinfo+=ndeviceinfo_exp;
+    if(ndeviceinfo_exp >0){
+      devicedata *devicecopy2;
 
-    for(i=0;i<ncsvfileinfo;i++){
-      csvfiledata *csvi;
+      devicecopy2 = deviceinfo+ndeviceinfo;
+      for(i=0;i<ncsvfileinfo;i++){
+        csvfiledata *csvi;
 
-      csvi = csvfileinfo + i;
-      if(strcmp(csvi->c_type, "ext") == 0){
-        ReadDeviceHeader(csvi->file,devicecopy2,nexp_devices[i]);
-        devicecopy2 += nexp_devices[i];
+        csvi = csvfileinfo + i;
+        if(strcmp(csvi->c_type, "ext") == 0){
+          ReadDeviceHeader(csvi->file,devicecopy2,nexp_devices[i]);
+          devicecopy2 += nexp_devices[i];
+        }
       }
     }
+    ndeviceinfo += ndeviceinfo_exp;
     FREEMEMORY(nexp_devices);
-    devicecopy2=deviceinfo;
   }
   for(i = 0; i < ndeviceinfo; i++){
     devicedata *devicei;
@@ -9795,12 +9793,11 @@ int ReadSMV_Parse(bufferstreamdata *stream) {
       partclassdata *partclassi;
       char *device_ptr;
       char *prop_id;
-      char prop_buffer[255];
 
       partclassi = partclassinfo + npartclassinfo;
       FGETS(buffer,255,stream);
 
-      GetLabels(buffer,&device_ptr,&prop_id,prop_buffer);
+      GetLabels(buffer,&device_ptr,&prop_id);
       partclassi->prop=GetPropID(prop_id);
       UpdatePartClassDepend(partclassi);
 
