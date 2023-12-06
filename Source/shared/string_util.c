@@ -1956,6 +1956,9 @@ void PRINTversion(char *progname){
 #define pp_COMPVER "unknown"
 #endif
   PRINTF("Compiler         : %s\n", pp_COMPVER);
+#ifdef pp_SANITIZE
+  PRINTF("Sanitize checks  : enabled\n");
+#endif
 
 #ifdef pp_HASH
   if(option==HASH_MD5||option==HASH_ALL){

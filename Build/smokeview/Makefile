@@ -42,7 +42,7 @@ INTEL_COMPINFO=-Dpp_COMPVER=\"$(INTEL_COMPVERSION)\"
 GNU_COMPINFO=-Dpp_COMPVER=\"$(GNU_COMPVERSION)\"
 
 #oneapi debug options
-SANITIZE_OPTIONS=-fsanitize=address -fsanitize=undefined
+SANITIZE_OPTIONS=-fsanitize=address -fsanitize=undefined -D pp_SANITIZE
 
 .rc.obj:
 	windres $< -o $@
@@ -154,7 +154,6 @@ no_target:
 
 #--- Intel
 
-SANITIZE_OPTIONS=-fsanitize=address -fsanitize=undefined
 SMV_WIN_LIBDIR = $(LIB_DIR)/intel_win_64
 ifeq ($(GLUT),freeglut)
   GLUT_WIN_LIB = $(SMV_WIN_LIBDIR)\freeglut_staticd.lib $(SMV_WIN_LIBDIR)\glut32.lib
