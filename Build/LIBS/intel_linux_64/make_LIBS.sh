@@ -7,7 +7,7 @@ OPTS="-I $*"
 source ../../../Source/scripts/setopts.sh $OPTS
 
 if [[ "$target" == "all" ]] || [[ "$target" == "clean" ]]; then
-  rm *.a
+  rm -f *.a
   if [ "$target" == "clean" ]; then
     exit
   fi

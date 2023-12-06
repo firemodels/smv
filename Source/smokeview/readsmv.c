@@ -9661,7 +9661,6 @@ int ReadSMV_Parse(bufferstreamdata *stream) {
 
   if(ncsvfileinfo>0){
     int *nexp_devices=NULL;
-    devicedata *devicecopy2;
 
     NewMemory((void **)&nexp_devices,(ncsvfileinfo+1)*sizeof(int));
     for(i=0;i<ncsvfileinfo;i++){
@@ -9681,20 +9680,22 @@ int ReadSMV_Parse(bufferstreamdata *stream) {
     else{
       if(ndeviceinfo_exp>0)NewMemory((void **)&deviceinfo,ndeviceinfo_exp*sizeof(devicedata));
     }
-    devicecopy2 = deviceinfo+ndeviceinfo;
     ndeviceinfo+=ndeviceinfo_exp;
+    if(ncsvfileinfo>0){
+      devicedata *devicecopy2;
 
-    for(i=0;i<ncsvfileinfo;i++){
-      csvfiledata *csvi;
+      devicecopy2 = deviceinfo+ndeviceinfo;
+      for(i=0;i<ncsvfileinfo;i++){
+        csvfiledata *csvi;
 
-      csvi = csvfileinfo + i;
-      if(strcmp(csvi->c_type, "ext") == 0){
-        ReadDeviceHeader(csvi->file,devicecopy2,nexp_devices[i]);
-        devicecopy2 += nexp_devices[i];
+        csvi = csvfileinfo + i;
+        if(strcmp(csvi->c_type, "ext") == 0){
+          ReadDeviceHeader(csvi->file,devicecopy2,nexp_devices[i]);
+          devicecopy2 += nexp_devices[i];
+        }
       }
     }
     FREEMEMORY(nexp_devices);
-    devicecopy2=deviceinfo;
   }
   for(i = 0; i < ndeviceinfo; i++){
     devicedata *devicei;
