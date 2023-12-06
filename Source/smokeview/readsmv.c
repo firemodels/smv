@@ -9681,7 +9681,7 @@ int ReadSMV_Parse(bufferstreamdata *stream) {
       if(ndeviceinfo_exp>0)NewMemory((void **)&deviceinfo,ndeviceinfo_exp*sizeof(devicedata));
     }
     ndeviceinfo+=ndeviceinfo_exp;
-    if(ncsvfileinfo>0){
+    if(ndeviceinfo_exp >0){
       devicedata *devicecopy2;
 
       devicecopy2 = deviceinfo+ndeviceinfo;
