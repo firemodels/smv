@@ -10898,7 +10898,7 @@ typedef struct {
           if(ventdir == 0){
             vi->dir = DIR_UNDEFINED;
           }
-          else if(ventdir<0){
+          else if(ventdir>0){
             if(iv1 == iv2)vi->dir = UP_X;
             if(jv1 == jv2)vi->dir = UP_Y;
             if(kv1 == kv2)vi->dir = UP_Z;
