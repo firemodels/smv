@@ -746,6 +746,7 @@ extern "C" void GLUIDisplaySetup(int main_window){
   SPINNER_ventoffset_factor->set_float_limits(-1.0,1.0,GLUI_LIMIT_CLAMP);
   SPINNER_sliceoffset_factor=glui_labels->add_spinner_to_panel(PANEL_offset,_("slice"),GLUI_SPINNER_FLOAT,&sliceoffset_factor);
   SPINNER_sliceoffset_factor->set_float_limits(-1.0,1.0,GLUI_LIMIT_CLAMP);
+  glui_labels->add_spinner_to_panel(PANEL_offset, _("boundary"), GLUI_SPINNER_FLOAT, &boundaryoffset);
 
   int i, surfcount = 0, first_surf=-1;
 

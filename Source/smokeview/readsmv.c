@@ -3819,6 +3819,9 @@ void UpdateMeshCoords(void){
     face_centers[14]=meshi->boxmin_scaled[2];
     face_centers[17]=meshi->boxmax_scaled[2];
   }
+  if(nterraininfo>0){
+    boundaryoffset = (meshinfo->zplt_orig[1] - meshinfo->zplt_orig[0]) / 10.0;
+  }
 
   UpdateBlockType();
 
@@ -13813,6 +13816,11 @@ int ReadIni2(char *inifile, int localfile){
       sscanf(buffer, "%f ", &ventlinewidth);
       continue;
     }
+    if(MatchINI(buffer, "BOUNDARYOFFSET") == 1){
+      fgets(buffer, 255, stream);
+      sscanf(buffer, "%f", &boundaryoffset);
+      continue;
+    }
     if(MatchINI(buffer, "SLICEOFFSET") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%f %f %i", &sliceoffset_factor, &slice_dz, &agl_offset_actual);
@@ -15894,6 +15902,7 @@ void OutputViewpoints(FILE *fileout){
 
   /* ------------------ WriteIniLocal ------------------------ */
 
+
 void WriteIniLocal(FILE *fileout){
   int i;
   int ndevice_vis = 0;
@@ -15904,6 +15913,8 @@ void WriteIniLocal(FILE *fileout){
 
   fprintf(fileout, "\n ------------ local ini settings ------------\n\n");
 
+  fprintf(fileout, "BOUNDARYOFFSET\n");
+  fprintf(fileout, " %f \n", boundaryoffset);
   fprintf(fileout, "DEVICEVECTORDIMENSIONS\n");
   fprintf(fileout, " %f %f %f %f\n", vector_baselength, vector_basediameter, vector_headlength, vector_headdiameter);
   fprintf(fileout, "DEVICEBOUNDS\n");
