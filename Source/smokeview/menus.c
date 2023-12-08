@@ -7357,7 +7357,8 @@ void PartLoadState(int  *load_state){
   if(nmenus<10000){\
     strcpy(menuinfo[nmenus].label,#Menu);\
     menuinfo[nmenus].menuvar_ptr=&menu;\
-    menuinfo[nmenus++].menuvar = menu;\
+    menuinfo[nmenus].menuvar = menu;\
+    menuinfo[nmenus++].status = 1;\
   }
 
 #ifdef _DEBUG
@@ -7372,6 +7373,7 @@ void PartLoadState(int  *load_state){
   if(nmenus<10000){\
     strcpy(menuinfo[nmenus].label,#Menu);\
     menuinfo[nmenus++].menuvar=menu;\
+    menuinfo[nmenus++].status = 1;\
   }
 
 #define GLUTADDSUBMENU(menu_label,menu_value) glutAddSubMenu(menu_label,menu_value)
@@ -8733,8 +8735,9 @@ updatemenu=0;
 
       menui = menuinfo + i;
 
-      if(menui->menuvar>0){
+      if(menui->menuvar>0&&menui->status==1){
         glutDestroyMenu(menui->menuvar);
+        menui->status = 0;
 #ifdef pp_DEBUG_SUBMENU
         *(menui->menuvar_ptr) = 0;
 #endif
