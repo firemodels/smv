@@ -372,6 +372,7 @@ break; \
 }\
 buffptr = RemoveComment(buffer); \
 buffptr = TrimFront(buffptr); \
+line_number++; \
 ScriptErrorCheck(keyword, buffptr)
 
 #define SETcval \
@@ -545,6 +546,7 @@ NewMemory((void **)&scriptinfo, nscriptinfo*sizeof(scriptdata));
    ************************ start of pass 2 *********************************
    ************************************************************************
  */
+  int line_number=0;
   rewind(stream);
   while(!feof(stream)){
     int keyword_index;
@@ -555,15 +557,34 @@ NewMemory((void **)&scriptinfo, nscriptinfo*sizeof(scriptdata));
     int fatal_error;
 
     fatal_error = 0;
+    int breakfor;
 
-    if(fgets(buffer2,255,stream)==NULL)break;
+    // get next keyword
+    for(breakfor=0;breakfor!=1;breakfor=0){
+      char *com;
+
+      if(fgets(buffer2, 255, stream) == NULL){
+        breakfor = 1;
+        break;
+      }
+      line_number++;
+      TrimBack(buffer2);
+      com = strstr(buffer2, "//");
+      if(com != NULL && com == buffer2)buffer2[0] = 0;
+      if(strlen(buffer2)>0&&buffer2[0]!=' ')break;
+    }
+    if(breakfor==1)break;
+
     buffptr = RemoveComment(buffer2);
     strcpy(buffer, buffptr);
 
     if(strlen(buffer)==0)continue;
 
     keyword_index = GetScriptKeywordIndex(buffer);
-    if(keyword_index==SCRIPT_UNKNOWN)continue;
+    if(keyword_index == SCRIPT_UNKNOWN){
+      fprintf(stderr,"***error: unknown script keyword '%s' in %s(%i)\n", buffer, scriptfile, line_number);
+      continue;
+    }
     strcpy(keyword,buffer);
 
     scripti = scriptinfo + nscriptinfo;
