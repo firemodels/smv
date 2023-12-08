@@ -107,7 +107,11 @@ void _memorystatus(unsigned int size,unsigned int *availmem, unsigned int *memus
 
 #ifdef pp_MEMDEBUG
 void getMemusage(MMsize totalmemory,char *MEMlabel);
+#ifdef CPP
+extern "C" void _CheckMemory(void);
+#else
 void _CheckMemory(void);
+#endif
 void _CheckMemoryNOTHREAD(void);
 void _CheckMemoryOn(void);
 void _CheckMemoryOff(void);
