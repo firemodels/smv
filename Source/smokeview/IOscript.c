@@ -582,7 +582,7 @@ NewMemory((void **)&scriptinfo, nscriptinfo*sizeof(scriptdata));
 
     keyword_index = GetScriptKeywordIndex(buffer);
     if(keyword_index == SCRIPT_UNKNOWN){
-      fprintf(stderr,"***error: unknown script keyword '%s' in %s(%i)\n", buffer, scriptfile, line_number);
+      printf("***error: unknown script keyword '%s' in %s(%i)\n", buffer, scriptfile, line_number);
       continue;
     }
     strcpy(keyword,buffer);
