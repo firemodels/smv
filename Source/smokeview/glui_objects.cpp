@@ -471,17 +471,17 @@ void AddCSVCurve(plot2ddata *plot2di, int index, int option){
       curve->update_avg         = glui_curve_default.update_avg;
 
       shortlabel = GetPlotShortLabel2(plot2di, curve);
-      strcpy(curve->scaled_label, shortlabel);
+      if(shortlabel!=curve->scaled_label)strcpy(curve->scaled_label, shortlabel);
 
       unit = GetPlotUnit2(plot2di, curve);
-      strcpy(curve->scaled_unit,  unit);
+      if(unit!=curve->scaled_unit)strcpy(curve->scaled_unit,  unit);
     }
     else{
       csvfi  = csvfileinfo+curve->csv_file_index;
       c_type = curve->c_type;
       csvi   = csvfi->csvinfo+curve->csv_col_index;
     }
-    strcpy(curve->c_type, c_type);
+    if(c_type!=curve->c_type)strcpy(curve->c_type, c_type);
     if(strcmp(c_type, "devc")==0){
       curve->quantity = deviceinfo[curve->csv_col_index-1].quantity;
     }
