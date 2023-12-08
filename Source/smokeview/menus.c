@@ -8665,9 +8665,24 @@ static int textureshowmenu=0;
 static int menu_count=0;
 #endif
 
+//*** destroy existing menus
   updatemenu=0;
   GLUIUpdateShowHideButtons();
   GLUTPOSTREDISPLAY;
+
+  for(i = 0; i < nmenus; i++){
+    menudata *menui;
+
+    menui = menuinfo + i;
+    if(menui->menuvar > 0 && menui->status == 1){
+      glutDestroyMenu(menui->menuvar);
+      menui->status = 0;
+#ifdef pp_DEBUG_SUBMENU
+      *(menui->menuvar_ptr) = 0;
+#endif
+    }
+  }
+  nmenus = 0;
 
   for(i=0;i<nmultisliceinfo;i++){
     multislicedata *mslicei;
@@ -8724,22 +8739,6 @@ static int menu_count=0;
     }
   }
 
-  {
-    for(i=0;i<nmenus;i++){
-      menudata *menui;
-
-      menui = menuinfo + i;
-
-      if(menui->menuvar>0&&menui->status==1){
-        glutDestroyMenu(menui->menuvar);
-        menui->status = 0;
-#ifdef pp_DEBUG_SUBMENU
-        *(menui->menuvar_ptr) = 0;
-#endif
-      }
-    }
-    nmenus=0;
-  }
   if(nloadsubpatchmenu_b > 0){
     FREEMEMORY(loadsubpatchmenu_b);
     FREEMEMORY(nsubpatchmenus_b);
