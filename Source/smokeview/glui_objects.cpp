@@ -1386,6 +1386,11 @@ void GenPlotCB(int var){
       GenPlotCB(GENPLOT_SELECT_PLOT);
       SetPlot2DBoundLabels(plot2dinfo+iplot2dinfo);
       LIST_csvID->set_int_val(-1);
+      if(nplot2dinfo == 1){
+        glui_csv_file_index = 0;
+        LIST_csvfile->set_int_val(0);
+        GenPlotCB(GENPLOT_CSV_FILETYPE);
+      }
       break;
     case GENPLOT_REM_ALL_PLOTS:
       while(nplot2dinfo != 0){
