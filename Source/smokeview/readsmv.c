@@ -11467,6 +11467,7 @@ int ReadSMV_Configure(){
   if(meshinfo!=NULL&&meshinfo->jbar==1)force_isometric=1;
 
   PRINT_TIMER(timer_readsmv, "SetupDeviceData");
+  if(hrr_csv_filename != NULL)ReadHRR(LOAD);
   if(runscript == 1){
     InitializeDeviceCsvData(LOAD);
   }
