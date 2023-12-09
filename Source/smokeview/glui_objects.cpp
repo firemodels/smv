@@ -1403,7 +1403,7 @@ void GenPlotCB(int var){
         strcat(label, plot2dinfo[iplot2dinfo].plot_label);
         SetPlot2DBoundLabels(plot2dinfo+iplot2dinfo);
       }
-      else{
+      else if(plot2dinfo!=NULL){
         strcpy(label, "Remove plot");
         SetPlot2DBoundLabels(plot2dinfo+iplot2dinfo);
       }
