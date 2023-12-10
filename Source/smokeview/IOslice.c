@@ -5251,6 +5251,7 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
 
   STOP_TIMER(total_time);
 
+  printf("(slice file size)");
   if(time_frame==ALL_FRAMES&&flag != RESETBOUNDS){
     if(file_size>1000000000){
       PRINTF(" - %.1f GB/%.1f s\n", (float)file_size / 1000000000., total_time);
@@ -5325,6 +5326,7 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
     PrintMemoryInfo;
   }
   SNIFF_ERRORS("ReadSlice: end");
+  printf("slice file input complete\n");
   return return_filesize;
 }
 
