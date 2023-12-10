@@ -62,7 +62,7 @@ int FFLUSH(void){
   if(alt_stdout!=NULL){
     printf("alt_stdout is NOT NULL\n");
     printf("222\n");
-    return_val = fflush(alt_stdout);
+    //return_val = fflush(alt_stdout);
     printf("333\n");
   }
   else{
