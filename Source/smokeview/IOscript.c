@@ -548,11 +548,11 @@ int CompileScript(char *scriptfile){
   FreeScript();
 
   while(!feof(stream)){
-    int script_index;
+    int s_index;
 
-    script_index = GetScriptKeywordIndex(stream);
-    if(script_index == SCRIPT_EOF)break;
-    if(script_index != SCRIPT_UNKNOWN)nscriptinfo++;
+    s_index = GetScriptKeywordIndex(stream);
+    if(s_index == SCRIPT_EOF)break;
+    if(s_index != SCRIPT_UNKNOWN)nscriptinfo++;
   }
 
   if(nscriptinfo==0){
@@ -721,7 +721,7 @@ int CompileScript(char *scriptfile){
           if(param_buffer[len-1]!='\\')strcat(param_buffer,dirseparator);
 #else
           for(i=0;i<len;i++){
-            if(param_buffer[i]=='\\')buffer[i]='/';
+            if(param_buffer[i]=='\\')param_buffer[i]='/';
           }
           if(param_buffer[len-1]!='/')strcat(param_buffer,dirseparator);
 #endif
