@@ -234,12 +234,6 @@ int GetParamBuffer(FILE *stream){
     if(comment!=NULL)comment[0]=0;
     TrimBack(param_buffer);
     if(strlen(param_buffer)==0)continue;
-    if(param_buffer[0]!=' '){
-      printf("***error: only keywords can occur in column 1\n");
-      printf("keyword: %s\n", keyword_buffer);
-      printf(" buffer: %s\n", param_buffer);
-      return SCRIPT_ERR;
-    }
     break;
   }
   return SCRIPT_OK;
