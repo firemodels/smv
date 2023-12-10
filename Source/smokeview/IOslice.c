@@ -5266,6 +5266,7 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
 
   update_flipped_colorbar=1;
 
+  printf("111\n");
   if(colorbartype_ini == -1){
     if(strcmp(sd->label.shortlabel, "thick") == 0){
       ColorbarMenu(wallthickness_colorbar);
@@ -5274,25 +5275,37 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
       ColorbarMenu(levelset_colorbar);
     }
   }
+  printf("222\n");
   PushSliceLoadstack(slicefilenumber);
+  printf("333\n");
 
   if(sd->volslice == 1){
     meshdata *meshj;
 
+    printf("444\n");
     meshj = meshinfo + sd->blocknumber;
 
+    printf("555\n");
     meshj->slice_min[0] = SMV2FDS_X(sd->xyz_min[0]);
+    printf("555\n");
     meshj->slice_min[1] = SMV2FDS_Y(sd->xyz_min[1]);
+    printf("555\n");
     meshj->slice_min[2] = SMV2FDS_Z(sd->xyz_min[2]);
+    printf("555\n");
 
     meshj->slice_max[0] = SMV2FDS_X(sd->xyz_max[0]);
+    printf("555\n");
     meshj->slice_max[1] = SMV2FDS_Y(sd->xyz_max[1]);
+    printf("555\n");
     meshj->slice_max[2] = SMV2FDS_Z(sd->xyz_max[2]);
+    printf("555\n");
 
 #ifdef pp_GPU
+    printf("666\n");
     if(gpuactive == 1){
       InitSlice3DTexture(meshj);
     }
+    printf("777\n");
 #endif
   }
   else{
@@ -5318,13 +5331,18 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
     histogram_show_numbers=0;
   }
 #endif
+  printf("888\n");
   CheckMemory;
   showall_slices=1;
   GLUTPOSTREDISPLAY;
+  printf("999\n");
   if(sd->finalize==1){
+    printf("AAA\n");
     update_slice_bounds = slicefilenumber;
     PrintMemoryInfo;
+    printf("BBB\n");
   }
+  printf("CCC\n");
   SNIFF_ERRORS("ReadSlice: end");
   printf("slice file input complete\n");
   return return_filesize;
