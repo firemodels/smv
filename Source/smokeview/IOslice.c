@@ -5289,7 +5289,7 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
     meshj->slice_max[2] = SMV2FDS_Z(sd->xyz_max[2]);
 
 #ifdef pp_GPU
-    if(gpuactive == 1){
+    if(gpuactive == 1 && runscript == 0){
       InitSlice3DTexture(meshj);
     }
 #endif
