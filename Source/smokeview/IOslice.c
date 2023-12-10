@@ -4310,11 +4310,13 @@ void InitSlice3DTexture(meshdata *meshi){
 
   printf("www\n");
   glActiveTexture(GL_TEXTURE0);
-  printf("xxx\n");
+  printf("xxx verbose output=%i\n", verbose_output);
   if(verbose_output==1)PRINTF("completed");
-  if(verbose_output==1)PRINTF("\n");
-  FFLUSH();
   printf("yyy\n");
+  if(verbose_output==1)PRINTF("\n");
+  printf("zzz\n");
+  FFLUSH();
+  printf("zzz000\n");
 }
 #endif
 
