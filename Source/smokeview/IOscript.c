@@ -232,6 +232,7 @@ int GetScriptKeywordIndex(char *keyword){
   if(MatchSSF(keyword,"GSLICEORIEN")==MATCH)return SCRIPT_GSLICEORIEN;
   if(MatchSSF(keyword,"GSLICEPOS")==MATCH)return SCRIPT_GSLICEPOS;
   if(MatchSSF(keyword,"GSLICEVIEW")==MATCH)return SCRIPT_GSLICEVIEW;
+  if(MatchSSF(keyword,"GPUOFF")==MATCH)return SCRIPT_GPUOFF;
   if(MatchSSF(keyword,"PROJECTION")==MATCH)return SCRIPT_PROJECTION;
   if(MatchSSF(keyword,"ISORENDERALL")==MATCH)return SCRIPT_ISORENDERALL;
   if(MatchSSF(keyword,"KEYBOARD") == MATCH)return SCRIPT_KEYBOARD;                     // documented
@@ -910,6 +911,10 @@ NewMemory((void **)&scriptinfo, nscriptinfo*sizeof(scriptdata));
         sscanf(buffer, "%i", &scripti->ival);
         break;
 
+// GPUOFF
+      case SCRIPT_GPUOFF:
+        break;
+        
 // SETVIEWPOINT
 //  viewpoint (char)
       case SCRIPT_SETVIEWPOINT:
@@ -3748,6 +3753,10 @@ int RunScriptCommand(scriptdata *script_command){
       break;
     case SCRIPT_LOADINIFILE:
       ScriptLoadIniFile(scripti);
+      break;
+    case SCRIPT_GPUOFF:
+      usegpu = 0;
+      gpuactive = 0;
       break;
     case SCRIPT_LOADVFILE:
       ScriptLoadVecFile(scripti);
