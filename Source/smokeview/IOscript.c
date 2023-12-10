@@ -223,6 +223,7 @@ void InitScriptI(scriptdata *scripti, int command,char *label){
 /* ------------------ GetScriptKeywordIndex ------------------------ */
 
 int GetScriptKeywordIndex(char *keyword){
+  CheckMemory;
   if(keyword==NULL||strlen(keyword)==0)return SCRIPT_UNKNOWN;
 
   if(MatchSSF(keyword,"CBARFLIP") == MATCH)return SCRIPT_CBARFLIP;                     // documented
@@ -373,19 +374,23 @@ break; \
 buffptr = RemoveComment(buffer); \
 buffptr = TrimFront(buffptr); \
 line_number++; \
-ScriptErrorCheck(keyword, buffptr)
+ScriptErrorCheck(keyword, buffptr) ;\
+CheckMemory
 
 #define SETcval \
 SETbuffer;\
-scripti->cval=GetCharPointer(buffptr)
+scripti->cval=GetCharPointer(buffptr) ;\
+CheckMemory
 
 #define SETcval2 \
 SETbuffer;\
-scripti->cval2 = GetCharPointer(buffptr)
+scripti->cval2 = GetCharPointer(buffptr) ;\
+CheckMemory
 
 #define SETfval \
 SETbuffer;\
-sscanf(buffptr, "%f", &scripti->fval)
+sscanf(buffptr, "%f", &scripti->fval) ;\
+CheckMemory
 
 #define SETival \
 SETbuffer;\
@@ -393,7 +398,8 @@ sscanf(buffptr, "%i", &scripti->ival)
 
 #define SETival2 \
 SETbuffer;\
-sscanf(buffptr, "%i", &scripti->ival2)
+sscanf(buffptr, "%i", &scripti->ival2) ;\
+CheckMemory
 
 /* ------------------ RemoveDeg ------------------------ */
 
@@ -2966,6 +2972,7 @@ void ScriptLoadFile(scriptdata *scripti){
 
     sd = sliceinfo + i;
     if(strcmp(sd->file,scripti->cval)==0){
+      sd->finalize = 1;
       if(i<nsliceinfo-nfedinfo){
         ReadSlice(sd->file,i, ALL_FRAMES, NULL, LOAD, SET_SLICECOLOR,&errorcode);
       }
@@ -2980,6 +2987,7 @@ void ScriptLoadFile(scriptdata *scripti){
 
     patchi = patchinfo + i;
     if(strcmp(patchi->file,scripti->cval)==0){
+      patchi->finalize = 1;
       ReadBoundary(i,LOAD,&errorcode);
       return;
     }
@@ -2990,6 +2998,7 @@ void ScriptLoadFile(scriptdata *scripti){
 
     parti = partinfo + i;
     if(strcmp(parti->file,scripti->cval)==0){
+      parti->finalize = 1;
       LoadParticleMenu(i);
       return;
     }
@@ -3010,6 +3019,7 @@ void ScriptLoadFile(scriptdata *scripti){
 
     smoke3di = smoke3dinfo + i;
     if(strcmp(smoke3di->file,scripti->cval)==0){
+      smoke3di->finalize = 1;
       smoke3di->finalize = 1;
       ReadSmoke3D(ALL_SMOKE_FRAMES, i, LOAD, FIRST_TIME, NULL, &errorcode);
       return;
