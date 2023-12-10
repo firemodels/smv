@@ -4315,7 +4315,7 @@ void InitSlice3DTexture(meshdata *meshi){
   printf("yyy\n");
   if(verbose_output==1)PRINTF("\n");
   printf("zzz\n");
-  FFLUSH();
+  //FFLUSH();
   printf("zzz000\n");
 }
 #endif
