@@ -4051,8 +4051,23 @@ void DoScript(void){
 
 void DoScriptHtml(void){
   int i;
+  int error_code;
 
-  CompileScript(default_script->file);
+  error_code = CompileScript(default_script->file);
+  switch(error_code){
+  case 0:
+    StartScript();
+    break;
+  case 1:
+    fprintf(stderr, "*** Error: unable to open script file");
+    if(default_script->file != NULL)fprintf(stderr, ": %s", default_script->file);
+    fprintf(stderr, "\n");
+  case 2:
+    break;
+  default:
+    assert(FFALSE);
+    break;
+  }
   for(i=0;i<nscriptinfo;i++){
     scriptdata *scripti;
 

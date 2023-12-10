@@ -14,6 +14,9 @@
 #include "glui_motion.h"
 #include "glui_smoke.h"
 
+static char keyword_buffer[1024], param_buffer[1024];
+static int param_status;
+
 /* ------------------ GetNewScriptFileName ------------------------ */
 
 void GetNewScriptFileName(char *newscriptfilename){
@@ -157,11 +160,11 @@ void StartScript(void){
 
 /* ------------------ GetCharPointer ------------------------ */
 
-char *GetCharPointer(char *buffer2){
+char *GetCharPointer(char *buffer_arg){
   char *cval=NULL, *buffptr;
   int len;
 
-  buffptr = RemoveComment(buffer2);
+  buffptr = RemoveComment(buffer_arg);
   len = strlen(buffptr);
   if(len>0){
     NewMemory((void **)&cval,len+1);
@@ -220,9 +223,45 @@ void InitScriptI(scriptdata *scripti, int command,char *label){
   strcpy(scripti->quantity2, "");
 }
 
+/* ------------------ GetParamBuffer ------------------------ */
+
+int GetParamBuffer(FILE *stream){
+  for(;;){
+    char *comment;
+    
+    if(fgets(param_buffer, 1024, stream)==NULL)return SCRIPT_EOF;
+    comment = strstr(param_buffer, "//");
+    if(comment!=NULL)comment[0]=0;
+    TrimBack(param_buffer);
+    if(strlen(param_buffer)==0)continue;
+    if(param_buffer[0]!=' '){
+      printf("***error: only keywords can occur in column 1\n");
+      printf("keyword: %s\n", keyword_buffer);
+      printf(" buffer: %s\n", param_buffer);
+      return SCRIPT_ERR;
+    }
+    break;
+  }
+  return SCRIPT_OK;
+}
+
 /* ------------------ GetScriptKeywordIndex ------------------------ */
 
-int GetScriptKeywordIndex(char *keyword){
+int GetScriptKeywordIndex(FILE *stream){
+  char *keyword;
+
+  for(;;){
+    char *comment;
+
+    if(fgets(keyword_buffer, 1024, stream)==NULL)return SCRIPT_EOF;
+    comment = strstr(keyword_buffer, "//");
+    if(comment != NULL)comment[0] = 0;
+    TrimBack(keyword_buffer);
+    if(strlen(keyword_buffer)==0||keyword_buffer[0]==' ')continue;
+    keyword = keyword_buffer;
+    break;
+  }
+
   if(keyword==NULL||strlen(keyword)==0)return SCRIPT_UNKNOWN;
 
   if(MatchSSF(keyword,"CBARFLIP") == MATCH)return SCRIPT_CBARFLIP;                     // documented
@@ -230,7 +269,7 @@ int GetScriptKeywordIndex(char *keyword){
   if(MatchSSF(keyword,"EXIT") == MATCH)return SCRIPT_EXIT;                             // documented
   if(MatchSSF(keyword,"GSLICEORIEN")==MATCH)return SCRIPT_GSLICEORIEN;
   if(MatchSSF(keyword,"GSLICEPOS")==MATCH)return SCRIPT_GSLICEPOS;
-  if(MatchSSF(keyword,"GSLICEVIEW")==MATCH)return SCRIPT_GSLICEVIEW;
+  if(MatchSSF(keyword,"GSLICEVIEW")==MATCH|| MatchSSF(keyword, "GSSLICEVIEW") == MATCH)return SCRIPT_GSLICEVIEW;
   if(MatchSSF(keyword,"PROJECTION")==MATCH)return SCRIPT_PROJECTION;
   if(MatchSSF(keyword,"ISORENDERALL")==MATCH)return SCRIPT_ISORENDERALL;
   if(MatchSSF(keyword,"KEYBOARD") == MATCH)return SCRIPT_KEYBOARD;                     // documented
@@ -354,45 +393,34 @@ void GetXYZ(char *buffer,int *ival){
   }
 }
 
-/* ------------------ ScriptErrorCheck ------------------------ */
-
-void ScriptErrorCheck(char *keyword, char *data){
-  if(GetScriptKeywordIndex(data)!=SCRIPT_UNKNOWN){
-    fprintf(stderr,"*** Error: While parsing the Smokeview script entry: %s ,\n",keyword);
-    fprintf(stderr,"           a keyword was found in \"%s\", data was expected.\n",data);
-    if(stderr2!=NULL)fprintf(stderr2,"*** Error: While parsing the Smokeview script entry: %s ,\n",keyword);
-    if(stderr2!=NULL)fprintf(stderr2,"           a keyword was found in \"%s\", data was expected.\n",data);
-  }
-}
 
 #define SETbuffer \
-if(fgets(buffer, 255, stream) == NULL){\
-scriptEOF = 1; \
-break; \
-}\
-buffptr = RemoveComment(buffer); \
-buffptr = TrimFront(buffptr); \
-ScriptErrorCheck(keyword, buffptr)
+param_status = GetParamBuffer(stream);\
+if(param_status == SCRIPT_EOF){\
+  scriptEOF = 1;\
+  break;\
+};\
+if(param_status != SCRIPT_OK)return 1;
 
 #define SETcval \
 SETbuffer;\
-scripti->cval=GetCharPointer(buffptr)
+scripti->cval=GetCharPointer(param_buffer);\
 
 #define SETcval2 \
 SETbuffer;\
-scripti->cval2 = GetCharPointer(buffptr)
+scripti->cval2=GetCharPointer(param_buffer);
 
 #define SETfval \
 SETbuffer;\
-sscanf(buffptr, "%f", &scripti->fval)
+sscanf(param_buffer, "%f", &scripti->fval);
 
 #define SETival \
 SETbuffer;\
-sscanf(buffptr, "%i", &scripti->ival)
+sscanf(param_buffer, "%i", &scripti->ival);
 
 #define SETival2 \
 SETbuffer;\
-sscanf(buffptr, "%i", &scripti->ival2)
+sscanf(param_buffer, "%i", &scripti->ival2);
 
 /* ------------------ RemoveDeg ------------------------ */
 
@@ -520,23 +548,20 @@ int CompileScript(char *scriptfile){
   FreeScript();
 
   while(!feof(stream)){
-    char buffer[1024], buffer2[1024], *buffptr;
+    int script_index;
 
-    if(fgets(buffer2,255,stream)==NULL)break;
-    buffptr = RemoveComment(buffer2);
-    strcpy(buffer, buffptr);
-
-
-    if(GetScriptKeywordIndex(buffer)!=SCRIPT_UNKNOWN)nscriptinfo++;
+    script_index = GetScriptKeywordIndex(stream);
+    if(script_index == SCRIPT_EOF)break;
+    if(script_index != SCRIPT_UNKNOWN)nscriptinfo++;
   }
 
   if(nscriptinfo==0){
     fclose(stream);
-    fprintf(stderr,"*** Error: scriptfile has no usable commands\n");
+    fprintf(stderr,"*** Error: scriptfile %s has no usable commands\n", scriptfile);
     return 1;
   }
 
-NewMemory((void **)&scriptinfo, nscriptinfo*sizeof(scriptdata));
+  NewMemory((void **)&scriptinfo, nscriptinfo*sizeof(scriptdata));
 
   nscriptinfo=0;
 
@@ -550,24 +575,21 @@ NewMemory((void **)&scriptinfo, nscriptinfo*sizeof(scriptdata));
     int keyword_index;
     int scriptEOF;
     char keyword[255];
-    char buffer[1024], buffer2[1024], *buffptr;
     scriptdata *scripti;
     int fatal_error;
 
     fatal_error = 0;
 
-    if(fgets(buffer2,255,stream)==NULL)break;
-    buffptr = RemoveComment(buffer2);
-    strcpy(buffer, buffptr);
-
-    if(strlen(buffer)==0)continue;
-
-    keyword_index = GetScriptKeywordIndex(buffer);
-    if(keyword_index==SCRIPT_UNKNOWN)continue;
-    strcpy(keyword,buffer);
+    keyword_index = GetScriptKeywordIndex(stream);
+    if(keyword_index == SCRIPT_EOF)break;
+    if(keyword_index == SCRIPT_UNKNOWN){
+      printf("*** Error: unknown script keyword: %s\n",keyword_buffer);
+      return 2;
+    }
+    strcpy(keyword, keyword_buffer);
 
     scripti = scriptinfo + nscriptinfo;
-    InitScriptI(scripti,keyword_index,buffer);
+    InitScriptI(scripti,keyword_index, keyword_buffer);
 
     scriptEOF=0;
     switch(keyword_index){
@@ -645,7 +667,7 @@ NewMemory((void **)&scriptinfo, nscriptinfo*sizeof(scriptdata));
 // width height (int)
       case SCRIPT_RENDERSIZE:
         SETbuffer;
-        sscanf(buffer, "%i %i", &scripti->ival, &scripti->ival2);
+        sscanf(param_buffer, "%i %i", &scripti->ival, &scripti->ival2);
         break;
 
 // RENDERTYPE
@@ -688,22 +710,22 @@ NewMemory((void **)&scriptinfo, nscriptinfo*sizeof(scriptdata));
         if(keyword_index==SCRIPT_RENDERHTMLDIR)scripti->need_graphics = 0;
         SETbuffer;
         if(script_renderdir_cmd!=NULL&&strlen(script_renderdir_cmd)>0){
-          strcpy(buffer, script_renderdir_cmd);
+          strcpy(param_buffer, script_renderdir_cmd);
         }
-        len = strlen(buffer);
+        len = strlen(param_buffer);
         if(len>0){
 #ifdef WIN32
           for(i=0;i<len;i++){
-            if(buffer[i]=='/')buffer[i]='\\';
+            if(param_buffer[i]=='/')param_buffer[i]='\\';
           }
-          if(buffer[len-1]!='\\')strcat(buffer,dirseparator);
+          if(param_buffer[len-1]!='\\')strcat(param_buffer,dirseparator);
 #else
           for(i=0;i<len;i++){
-            if(buffer[i]=='\\')buffer[i]='/';
+            if(param_buffer[i]=='\\')buffer[i]='/';
           }
-          if(buffer[len-1]!='/')strcat(buffer,dirseparator);
+          if(param_buffer[len-1]!='/')strcat(param_buffer,dirseparator);
 #endif
-          scripti->cval= GetCharPointer(buffer);
+          scripti->cval= GetCharPointer(param_buffer);
         }
         }
         break;
@@ -725,14 +747,14 @@ NewMemory((void **)&scriptinfo, nscriptinfo*sizeof(scriptdata));
       case SCRIPT_YSCENECLIP:
       case SCRIPT_ZSCENECLIP:
         SETbuffer;
-        sscanf(buffer,"%i %f %i %f",&scripti->ival,&scripti->fval,&scripti->ival2,&scripti->fval2);
+        sscanf(param_buffer,"%i %f %i %f",&scripti->ival,&scripti->fval,&scripti->ival2,&scripti->fval2);
         break;
 
 // RENDERCLIP
 // flag left right bottom top indentations in pixels, clip if flag==1
       case SCRIPT_RENDERCLIP:
         SETbuffer;
-        sscanf(buffer,"%i %i %i %i %i",&scripti->ival,&scripti->ival2,&scripti->ival3,&scripti->ival4, &scripti->ival5);
+        sscanf(param_buffer,"%i %i %i %i %i",&scripti->ival,&scripti->ival2,&scripti->ival3,&scripti->ival4, &scripti->ival5);
         break;
 
 // RENDERONCE
@@ -761,7 +783,7 @@ NewMemory((void **)&scriptinfo, nscriptinfo*sizeof(scriptdata));
         // file name base (char) (or blank to use smokeview default)
         SETbuffer;
         scripti->ival = 1;   // skip
-        sscanf(buffer, "%i", &scripti->ival);
+        sscanf(param_buffer, "%i", &scripti->ival);
 
         SETcval2;
         scripti->need_graphics = 0;
@@ -771,7 +793,7 @@ NewMemory((void **)&scriptinfo, nscriptinfo*sizeof(scriptdata));
 //  start_frame (int) skip_frame (int)
       case SCRIPT_RENDERSTART:
         SETbuffer;
-        sscanf(buffer,"%i %i",&scripti->ival,&scripti->ival2);
+        sscanf(param_buffer,"%i %i",&scripti->ival,&scripti->ival2);
         break;
 
 // RENDERALL
@@ -781,7 +803,7 @@ NewMemory((void **)&scriptinfo, nscriptinfo*sizeof(scriptdata));
         SETbuffer;
         scripti->ival=1;   // skip
         scripti->ival3=0;  // first frame
-        sscanf(buffer,"%i %i",&scripti->ival,&scripti->ival3);
+        sscanf(param_buffer,"%i %i",&scripti->ival,&scripti->ival3);
         scripti->ival = MAX(scripti->ival, 1);
         scripti->ival3 = MAX(scripti->ival3, 0);
         first_frame_index=scripti->ival3;
@@ -796,7 +818,7 @@ NewMemory((void **)&scriptinfo, nscriptinfo*sizeof(scriptdata));
         SETbuffer;
         scripti->ival = 1;   // skip
         scripti->ival3 = 0;  // first frame
-        sscanf(buffer, "%i %i", &scripti->ival, &scripti->ival3);
+        sscanf(param_buffer, "%i %i", &scripti->ival, &scripti->ival3);
         scripti->ival = MAX(scripti->ival, 1);
         scripti->ival3 = MAX(scripti->ival3, 0);
         first_frame_index = scripti->ival3;
@@ -811,7 +833,7 @@ NewMemory((void **)&scriptinfo, nscriptinfo*sizeof(scriptdata));
         SETbuffer;
         scripti->ival3=0;  // first frame
         scripti->ival=1;
-        sscanf(buffer,"%i %i",&scripti->ival,&scripti->ival3);
+        sscanf(param_buffer,"%i %i",&scripti->ival,&scripti->ival3);
         scripti->ival=CLAMP(scripti->ival,1,20); // skip
         scripti->exit=0;
         scripti->first=1;
@@ -839,7 +861,7 @@ NewMemory((void **)&scriptinfo, nscriptinfo*sizeof(scriptdata));
         SETbuffer;
         scripti->ival3 = 0;  // first frame
         scripti->ival = 1;
-        sscanf(buffer, "%i %i %i", &scripti->ival, &scripti->ival3, &scripti->ival4);
+        sscanf(param_buffer, "%i %i %i", &scripti->ival, &scripti->ival3, &scripti->ival4);
         scripti->ival=CLAMP(scripti->ival,1,20); // skip
         scripti->exit = 0;
         scripti->first = 1;
@@ -874,13 +896,13 @@ NewMemory((void **)&scriptinfo, nscriptinfo*sizeof(scriptdata));
       case SCRIPT_SETCLIPY:
       case SCRIPT_SETCLIPZ:
         SETbuffer;
-        sscanf(buffer, "%i %f %i %f", &scripti->ival, &scripti->fval, &scripti->ival2, &scripti->fval2);
+        sscanf(param_buffer, "%i %f %i %f", &scripti->ival, &scripti->fval, &scripti->ival2, &scripti->fval2);
         break;
 
 // SETCLIPMODE
       case SCRIPT_SETCLIPMODE:
         SETbuffer;
-        sscanf(buffer, "%i", &scripti->ival);
+        sscanf(param_buffer, "%i", &scripti->ival);
         break;
 
 // SETVIEWPOINT
@@ -952,7 +974,7 @@ NewMemory((void **)&scriptinfo, nscriptinfo*sizeof(scriptdata));
         {
           float fv=-1;
 
-          sscanf(buffer,"%i %i %i %i %f",&scripti->ival,&scripti->ival2,&scripti->ival3,&scripti->ival4,&fv);
+          sscanf(param_buffer,"%i %i %i %i %f",&scripti->ival,&scripti->ival2,&scripti->ival3,&scripti->ival4,&fv);
           if(scripti->ival3<0&&fv>=0.0){
             scripti->fval=fv;
           }
@@ -974,7 +996,7 @@ NewMemory((void **)&scriptinfo, nscriptinfo*sizeof(scriptdata));
       case SCRIPT_XYZVIEW:
         SETbuffer;
 
-        sscanf(buffer, "%f %f %f %f %f", &scripti->fval, &scripti->fval2, &scripti->fval3, &scripti->fval4, &scripti->fval5);
+        sscanf(param_buffer, "%f %f %f %f %f", &scripti->fval, &scripti->fval2, &scripti->fval3, &scripti->fval4, &scripti->fval5);
         if(ABS(scripti->fval5-90)<0.1)scripti->fval5=89.9;
         if(ABS(scripti->fval5+90)<0.1)scripti->fval5=-89.9;
         break;
@@ -988,9 +1010,9 @@ NewMemory((void **)&scriptinfo, nscriptinfo*sizeof(scriptdata));
 //  mesh number (int) orientation (int)  value (0/1) (int) position (float)
       case SCRIPT_SHOWPLOT3DDATA:
         SETbuffer;
-        sscanf(buffer,"%i %i %i %i %f",&scripti->ival,&scripti->ival2,&scripti->ival3,&scripti->ival4,&scripti->fval);
+        sscanf(param_buffer,"%i %i %i %i %f",&scripti->ival,&scripti->ival2,&scripti->ival3,&scripti->ival4,&scripti->fval);
         if(scripti->ival2==4){
-          sscanf(buffer,"%i %i %i %i %i",&scripti->ival,&scripti->ival2,&scripti->ival3,&scripti->ival4,&scripti->ival5);
+          sscanf(param_buffer,"%i %i %i %i %i",&scripti->ival,&scripti->ival2,&scripti->ival3,&scripti->ival4,&scripti->ival5);
         }
         break;
 
@@ -998,7 +1020,7 @@ NewMemory((void **)&scriptinfo, nscriptinfo*sizeof(scriptdata));
 //  mesh index, frame (int)
       case SCRIPT_LOADVOLSMOKEFRAME:
         SETbuffer;
-        sscanf(buffer,"%i %i",&scripti->ival,&scripti->ival2);
+        sscanf(param_buffer,"%i %i",&scripti->ival,&scripti->ival2);
         break;
 
 // LOADSLICERENDER
@@ -1010,14 +1032,14 @@ NewMemory((void **)&scriptinfo, nscriptinfo*sizeof(scriptdata));
         SETcval;
 
         SETbuffer;
-        sscanf(buffer, "%i %f", &scripti->ival, &scripti->fval);
+        sscanf(param_buffer, "%i %f", &scripti->ival, &scripti->fval);
         scripti->ival = CLAMP(scripti->ival, 0, 3);
         scripti->need_graphics = 0;
         SETcval2;
         SETbuffer;
         scripti->fval2 = 1.0;
         scripti->fval3 = 0.0;
-        sscanf(buffer, "%i %i %f %f", &scripti->ival2, &scripti->ival3, &scripti->fval2, &scripti->fval3);
+        sscanf(param_buffer, "%i %i %f %f", &scripti->ival2, &scripti->ival3, &scripti->fval2, &scripti->fval3);
         scripti->ival4 = scripti->ival2;
         scripti->first = 1;
         scripti->exit = 0;
@@ -1050,7 +1072,7 @@ NewMemory((void **)&scriptinfo, nscriptinfo*sizeof(scriptdata));
         }
         SETcval2;
         SETbuffer;
-        sscanf(buffer, "%i %i", &scripti->ival2, &scripti->ival3);
+        sscanf(param_buffer, "%i %i", &scripti->ival2, &scripti->ival3);
         scripti->ival4 = scripti->ival2;
         scripti->first = 1;
         scripti->exit = 0;
@@ -1078,6 +1100,7 @@ NewMemory((void **)&scriptinfo, nscriptinfo*sizeof(scriptdata));
       case SCRIPT_LOADSLCF:
         {
 #define MAX_SLCF_TOKENS 10
+          char param_buffer_copy[1024];
           char *ctokens[MAX_SLCF_TOKENS];
           char *keywords[]={"QUANTITY",   "ID",         "PBX",       "PBY",       "PBZ",      "PB3D",        "AGL_SLICE",  "VECTOR",       "CELL_CENTERED"};
           int types[]={     TOKEN_STRING, TOKEN_STRING, TOKEN_FLOAT, TOKEN_FLOAT, TOKEN_FLOAT, TOKEN_LOGICAL, TOKEN_FLOAT, TOKEN_LOGICAL,   TOKEN_LOGICAL};
@@ -1086,12 +1109,12 @@ NewMemory((void **)&scriptinfo, nscriptinfo*sizeof(scriptdata));
           int i;
 
           SETbuffer;
-          strcpy(buffer2, buffer);
+          strcpy(param_buffer_copy, param_buffer);
 
-          ntokens = ParseTokens(buffer, keywords, types, nkeywords, tokens, itokens, ftokens, &(ctokens[0]), MAX_SLCF_TOKENS);
+          ntokens = ParseTokens(param_buffer, keywords, types, nkeywords, tokens, itokens, ftokens, &(ctokens[0]), MAX_SLCF_TOKENS);
           if(ntokens==0){
             printf("***error: problems were found parsing LOADSLCF\n");
-            printf(" %s\n",buffer2);
+            printf("  buffer: %s\n", param_buffer_copy);
             fatal_error = 1;
             break;
           }
@@ -1172,7 +1195,7 @@ NewMemory((void **)&scriptinfo, nscriptinfo*sizeof(scriptdata));
         SETcval;
 
         SETbuffer;
-        sscanf(buffer, "%i %f", &scripti->ival, &scripti->fval);
+        sscanf(param_buffer, "%i %f", &scripti->ival, &scripti->fval);
         scripti->ival = CLAMP(scripti->ival, 0, 3);
         scripti->need_graphics = 0;
         break;
@@ -1185,7 +1208,7 @@ NewMemory((void **)&scriptinfo, nscriptinfo*sizeof(scriptdata));
         SETcval;
 
         SETbuffer;
-        sscanf(buffer, "%i %f", &scripti->ival, &scripti->fval);
+        sscanf(param_buffer, "%i %f", &scripti->ival, &scripti->fval);
         scripti->ival = CLAMP(scripti->ival, 0, 3);
         SETival2;
         scripti->need_graphics = 0;
@@ -1199,7 +1222,7 @@ NewMemory((void **)&scriptinfo, nscriptinfo*sizeof(scriptdata));
         SETcval;
 
         SETbuffer;
-        sscanf(buffer, "%i %f", &scripti->ival, &scripti->fval);
+        sscanf(param_buffer, "%i %f", &scripti->ival, &scripti->fval);
         scripti->ival = CLAMP(scripti->ival, 0, 3);
         SETival2;
         scripti->need_graphics = 0;
@@ -1209,7 +1232,7 @@ NewMemory((void **)&scriptinfo, nscriptinfo*sizeof(scriptdata));
 //  mesh number (int) time (float)
       case SCRIPT_LOADPLOT3D:
         SETbuffer;
-        sscanf(buffer," %i %f",&scripti->ival,&scripti->fval);
+        sscanf(param_buffer," %i %f",&scripti->ival,&scripti->fval);
         scripti->need_graphics = 0;
         break;
 
@@ -1225,21 +1248,21 @@ NewMemory((void **)&scriptinfo, nscriptinfo*sizeof(scriptdata));
 //  type (char) ivalmin (int) valmin (float) ivalmax (int) valmax quantity (char)
       case SCRIPT_SETBOUNDBOUNDS:
         SETbuffer;
-        sscanf(buffer," %i %f %i %f, %s",&scripti->ival,&scripti->fval, &scripti->ival2,&scripti->fval2, scripti->quantity2);
+        sscanf(param_buffer," %i %f %i %f, %s",&scripti->ival,&scripti->fval, &scripti->ival2,&scripti->fval2, scripti->quantity2);
         break;
 
 // SETSLICEBOUNDS
 //  type (char) ivalmin (int) valmin (float) ivalmax (int) valmax quantity (char)
       case SCRIPT_SETSLICEBOUNDS:
         SETbuffer;
-        sscanf(buffer," %i %f %i %f, %s",&scripti->ival,&scripti->fval, &scripti->ival2,&scripti->fval2, scripti->quantity2);
+        sscanf(param_buffer," %i %f %i %f, %s",&scripti->ival,&scripti->fval, &scripti->ival2,&scripti->fval2, scripti->quantity2);
         break;
 
 // SETTOURVIEW
 //   viewtype  showpath showtour_locus tension
       case SCRIPT_SETTOURVIEW:
         SETbuffer;
-        sscanf(buffer,"%i %i %i %f",&scripti->ival,&scripti->ival2,&scripti->ival3,&scripti->fval);
+        sscanf(param_buffer,"%i %i %i %f",&scripti->ival,&scripti->ival2,&scripti->ival3,&scripti->fval);
         break;
 
 // SETTOURKEYFRAME
@@ -1252,14 +1275,14 @@ NewMemory((void **)&scriptinfo, nscriptinfo*sizeof(scriptdata));
 //  x y z r g b delta
       case SCRIPT_RGBTEST:
         SETbuffer;
-        sscanf(buffer, "%f %f %f %i %i %i %i", &scripti->fval, &scripti->fval2, &scripti->fval3, &scripti->ival, &scripti->ival2, &scripti->ival3, &scripti->ival4);
+        sscanf(param_buffer, "%f %f %f %i %i %i %i", &scripti->fval, &scripti->fval2, &scripti->fval3, &scripti->ival, &scripti->ival2, &scripti->ival3, &scripti->ival4);
         break;
 
         // GSLICEVIEW
 // show_gslice (int) show_triangles (int)  show_triangulation (int) show_normals (int)
       case SCRIPT_GSLICEVIEW:
         SETbuffer;
-        sscanf(buffer,"%i %i %i %i",&scripti->ival,&scripti->ival2,&scripti->ival3,&scripti->ival4);
+        sscanf(param_buffer,"%i %i %i %i",&scripti->ival,&scripti->ival2,&scripti->ival3,&scripti->ival4);
         break;
 
     // PROJECTION
@@ -1267,7 +1290,7 @@ NewMemory((void **)&scriptinfo, nscriptinfo*sizeof(scriptdata));
      case SCRIPT_PROJECTION:
        SETbuffer;
        scripti->ival = 1;
-       sscanf(buffer, "%i", &scripti->ival);
+       sscanf(param_buffer, "%i", &scripti->ival);
        if(scripti->ival!=2)scripti->ival = 1;
        break;
 
@@ -1275,14 +1298,14 @@ NewMemory((void **)&scriptinfo, nscriptinfo*sizeof(scriptdata));
 // x (float) y (float) z (float)
       case SCRIPT_GSLICEPOS:
         SETbuffer;
-        sscanf(buffer,"%f %f %f",&scripti->fval,&scripti->fval2,&scripti->fval3);
+        sscanf(param_buffer,"%f %f %f",&scripti->fval,&scripti->fval2,&scripti->fval3);
         break;
 
 // GSLICEORIEN
 // azimuth (float) elevation (float)
       case SCRIPT_GSLICEORIEN:
         SETbuffer;
-        sscanf(buffer,"%f %f",&scripti->fval,&scripti->fval2);
+        sscanf(param_buffer,"%f %f",&scripti->fval,&scripti->fval2);
         break;
       default:
 	assert(FFALSE);
