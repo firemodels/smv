@@ -6850,7 +6850,6 @@ void InitializeDeviceCsvData(int flag){
   if(flag == LOAD)printf("Loading CSV files");
   START_TIMER(total_time);
   INIT_PRINT_TIMER(device_timer);
-  if(hrr_csv_filename != NULL)ReadHRR(flag);
   ReadDeviceData(NULL, CSV_FDS, UNLOAD);
   ReadDeviceData(NULL, CSV_EXP, UNLOAD);
   for(i = 0; i < ncsvfileinfo; i++){

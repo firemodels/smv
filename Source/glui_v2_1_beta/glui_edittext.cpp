@@ -886,7 +886,7 @@ void   GLUI_EditText::update_size( void )
 
 void    GLUI_EditText::set_text( char *new_text )
 {
-  strncpy(text,new_text,sizeof(GLUI_String));
+  if(text!=new_text)strncpy(text,new_text,sizeof(GLUI_String));
   substring_start = 0;
   substring_end   = (int)strlen( text ) - 1;
   insertion_pt    = -1;

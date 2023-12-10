@@ -29,6 +29,7 @@
 #define SCRIPT_RENDERSIZE        120
 #define SCRIPT_MOVIETYPE         121
 #define SCRIPT_ISORENDERALL      122
+#define SCRIPT_GPUOFF            127
 
 #define SCRIPT_LOADFILE          201
 #define SCRIPT_LOADVFILE         202

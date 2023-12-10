@@ -15,7 +15,7 @@
 #include "glui_smoke.h"
 
 static char keyword_buffer[1024], param_buffer[1024];
-static int param_status;
+static int param_status, line_number;
 
 /* ------------------ GetNewScriptFileName ------------------------ */
 
@@ -230,6 +230,7 @@ int GetParamBuffer(FILE *stream){
     char *comment;
     
     if(fgets(param_buffer, 1024, stream)==NULL)return SCRIPT_EOF;
+    line_number++;
     comment = strstr(param_buffer, "//");
     if(comment!=NULL)comment[0]=0;
     TrimBack(param_buffer);
@@ -248,6 +249,7 @@ int GetScriptKeywordIndex(FILE *stream){
     char *comment;
 
     if(fgets(keyword_buffer, 1024, stream)==NULL)return SCRIPT_EOF;
+    line_number++;
     comment = strstr(keyword_buffer, "//");
     if(comment != NULL)comment[0] = 0;
     TrimBack(keyword_buffer);
@@ -263,7 +265,8 @@ int GetScriptKeywordIndex(FILE *stream){
   if(MatchSSF(keyword,"EXIT") == MATCH)return SCRIPT_EXIT;                             // documented
   if(MatchSSF(keyword,"GSLICEORIEN")==MATCH)return SCRIPT_GSLICEORIEN;
   if(MatchSSF(keyword,"GSLICEPOS")==MATCH)return SCRIPT_GSLICEPOS;
-  if(MatchSSF(keyword,"GSLICEVIEW")==MATCH|| MatchSSF(keyword, "GSSLICEVIEW") == MATCH)return SCRIPT_GSLICEVIEW;
+  if(MatchSSF(keyword,"GSLICEVIEW")==MATCH)return SCRIPT_GSLICEVIEW;
+  if(MatchSSF(keyword,"GPUOFF")==MATCH)return SCRIPT_GPUOFF;
   if(MatchSSF(keyword,"PROJECTION")==MATCH)return SCRIPT_PROJECTION;
   if(MatchSSF(keyword,"ISORENDERALL")==MATCH)return SCRIPT_ISORENDERALL;
   if(MatchSSF(keyword,"KEYBOARD") == MATCH)return SCRIPT_KEYBOARD;                     // documented
@@ -541,6 +544,7 @@ int CompileScript(char *scriptfile){
 
   FreeScript();
 
+  line_number = 0;
   while(!feof(stream)){
     int s_index;
 
@@ -564,6 +568,8 @@ int CompileScript(char *scriptfile){
    ************************ start of pass 2 *********************************
    ************************************************************************
  */
+
+  line_number=0;
   rewind(stream);
   while(!feof(stream)){
     int keyword_index;
@@ -573,11 +579,10 @@ int CompileScript(char *scriptfile){
     int fatal_error;
 
     fatal_error = 0;
-
     keyword_index = GetScriptKeywordIndex(stream);
     if(keyword_index == SCRIPT_EOF)break;
     if(keyword_index == SCRIPT_UNKNOWN){
-      printf("*** Error: unknown script keyword: %s\n",keyword_buffer);
+      printf("***error: unknown script keyword '%s' in %s(%i)\n", keyword_buffer, scriptfile, line_number);
       return 2;
     }
     strcpy(keyword, keyword_buffer);
@@ -899,6 +904,10 @@ int CompileScript(char *scriptfile){
         sscanf(param_buffer, "%i", &scripti->ival);
         break;
 
+// GPUOFF
+      case SCRIPT_GPUOFF:
+        break;
+        
 // SETVIEWPOINT
 //  viewpoint (char)
       case SCRIPT_SETVIEWPOINT:
@@ -2962,6 +2971,7 @@ void ScriptLoadFile(scriptdata *scripti){
 
     sd = sliceinfo + i;
     if(strcmp(sd->file,scripti->cval)==0){
+      sd->finalize = 1;
       if(i<nsliceinfo-nfedinfo){
         ReadSlice(sd->file,i, ALL_FRAMES, NULL, LOAD, SET_SLICECOLOR,&errorcode);
       }
@@ -2976,6 +2986,7 @@ void ScriptLoadFile(scriptdata *scripti){
 
     patchi = patchinfo + i;
     if(strcmp(patchi->file,scripti->cval)==0){
+      patchi->finalize = 1;
       ReadBoundary(i,LOAD,&errorcode);
       return;
     }
@@ -2986,6 +2997,7 @@ void ScriptLoadFile(scriptdata *scripti){
 
     parti = partinfo + i;
     if(strcmp(parti->file,scripti->cval)==0){
+      parti->finalize = 1;
       LoadParticleMenu(i);
       return;
     }
@@ -3006,6 +3018,7 @@ void ScriptLoadFile(scriptdata *scripti){
 
     smoke3di = smoke3dinfo + i;
     if(strcmp(smoke3di->file,scripti->cval)==0){
+      smoke3di->finalize = 1;
       smoke3di->finalize = 1;
       ReadSmoke3D(ALL_SMOKE_FRAMES, i, LOAD, FIRST_TIME, NULL, &errorcode);
       return;
@@ -3199,10 +3212,11 @@ void ScriptSetTimeVal(scriptdata *scripti){
   char message[255];
 
   timeval = scripti->fval;
-  updatetimes_debug = message;
+  PRINTF("script: setting time to %f\n\n", timeval);
   UpdateTimes();
+  if(global_times == NULL || nglobal_times <= 0)PRINTF("***error: SETTIMES script failed, global_times time array not defined\n");
+  updatetimes_debug = message;
   updatetimes_debug = NULL;
-  PRINTF("script: setting time to %f\n\n",timeval);
   if(global_times!=NULL&&nglobal_times>0){
     float mintime, maxtime;
 
@@ -3733,6 +3747,10 @@ int RunScriptCommand(scriptdata *script_command){
       break;
     case SCRIPT_LOADINIFILE:
       ScriptLoadIniFile(scripti);
+      break;
+    case SCRIPT_GPUOFF:
+      usegpu = 0;
+      gpuactive = 0;
       break;
     case SCRIPT_LOADVFILE:
       ScriptLoadVecFile(scripti);
