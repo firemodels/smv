@@ -698,7 +698,10 @@ endif()
 include(CTest)
 enable_testing()
 add_subdirectory(Tests)
-add_subdirectory(Verification/Visualization)
+option(VERIFICATION_TESTS "Run larger verification tests" OFF)
+if (VERIFICATION_TESTS)
+    add_subdirectory(Verification/Visualization)
+endif()
 
 # Retrieve configuration and data files from the bot repo
 file(DOWNLOAD "https://raw.githubusercontent.com/firemodels/bot/a0a9d710f7a55b4e04c9ac4e32a04e2efe197c47/Bundlebot/smv/for_bundle/objects.svo" "${CMAKE_BINARY_DIR}/objects.svo" STATUS object_svo_status)
