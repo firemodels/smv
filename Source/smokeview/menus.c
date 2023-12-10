@@ -7357,7 +7357,8 @@ void PartLoadState(int  *load_state){
   if(nmenus<10000){\
     strcpy(menuinfo[nmenus].label,#Menu);\
     menuinfo[nmenus].menuvar_ptr=&menu;\
-    menuinfo[nmenus++].menuvar = menu;\
+    menuinfo[nmenus].menuvar = menu;\
+    menuinfo[nmenus++].status = 1;\
   }
 
 #ifdef _DEBUG
@@ -7372,6 +7373,7 @@ void PartLoadState(int  *load_state){
   if(nmenus<10000){\
     strcpy(menuinfo[nmenus].label,#Menu);\
     menuinfo[nmenus++].menuvar=menu;\
+    menuinfo[nmenus++].status = 1;\
   }
 
 #define GLUTADDSUBMENU(menu_label,menu_value) glutAddSubMenu(menu_label,menu_value)
@@ -8661,16 +8663,26 @@ static int showmultislicemenu=0;
 static int textureshowmenu=0;
 #ifdef _DEBUG
 static int menu_count=0;
-static int in_menu=0;
 #endif
 
-updatemenu=0;
-#ifdef _DEBUG
-  PRINTF("Updating Menus %i In menu %i\n",menu_count++,in_menu);
-  in_menu=1;
-#endif
+//*** destroy existing menus
+  updatemenu=0;
   GLUIUpdateShowHideButtons();
   GLUTPOSTREDISPLAY;
+
+  for(i = 0; i < nmenus; i++){
+    menudata *menui;
+
+    menui = menuinfo + i;
+    if(menui->menuvar > 0 && menui->status == 1){
+      glutDestroyMenu(menui->menuvar);
+      menui->status = 0;
+#ifdef pp_DEBUG_SUBMENU
+      *(menui->menuvar_ptr) = 0;
+#endif
+    }
+  }
+  nmenus = 0;
 
   for(i=0;i<nmultisliceinfo;i++){
     multislicedata *mslicei;
@@ -8727,21 +8739,6 @@ updatemenu=0;
     }
   }
 
-  {
-    for(i=0;i<nmenus;i++){
-      menudata *menui;
-
-      menui = menuinfo + i;
-
-      if(menui->menuvar>0){
-        glutDestroyMenu(menui->menuvar);
-#ifdef pp_DEBUG_SUBMENU
-        *(menui->menuvar_ptr) = 0;
-#endif
-      }
-    }
-    nmenus=0;
-  }
   if(nloadsubpatchmenu_b > 0){
     FREEMEMORY(loadsubpatchmenu_b);
     FREEMEMORY(nsubpatchmenus_b);
@@ -13181,10 +13178,9 @@ updatemenu=0;
         glutAddMenuEntry(_("Trainer menus"),MENU_MAIN_TRAINERTOGGLE);
       }
     }
-    updatemenu=0;
 #ifdef _DEBUG
-  in_menu=0;
-  PRINTF("nmenus=%i\n",nmenus);
+    PRINTF("Updated menus count: %i nmenus: %i\n", menu_count++, nmenus);
+    if(updatemenu==1)PRINTF("menu updated again\n");
 #endif
 
 }

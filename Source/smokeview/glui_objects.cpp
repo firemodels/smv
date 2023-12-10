@@ -471,17 +471,17 @@ void AddCSVCurve(plot2ddata *plot2di, int index, int option){
       curve->update_avg         = glui_curve_default.update_avg;
 
       shortlabel = GetPlotShortLabel2(plot2di, curve);
-      strcpy(curve->scaled_label, shortlabel);
+      if(shortlabel!=curve->scaled_label)strcpy(curve->scaled_label, shortlabel);
 
       unit = GetPlotUnit2(plot2di, curve);
-      strcpy(curve->scaled_unit,  unit);
+      if(unit!=curve->scaled_unit)strcpy(curve->scaled_unit,  unit);
     }
     else{
       csvfi  = csvfileinfo+curve->csv_file_index;
       c_type = curve->c_type;
       csvi   = csvfi->csvinfo+curve->csv_col_index;
     }
-    strcpy(curve->c_type, c_type);
+    if(c_type!=curve->c_type)strcpy(curve->c_type, c_type);
     if(strcmp(c_type, "devc")==0){
       curve->quantity = deviceinfo[curve->csv_col_index-1].quantity;
     }
@@ -1386,6 +1386,11 @@ void GenPlotCB(int var){
       GenPlotCB(GENPLOT_SELECT_PLOT);
       SetPlot2DBoundLabels(plot2dinfo+iplot2dinfo);
       LIST_csvID->set_int_val(-1);
+      if(nplot2dinfo == 1){
+        glui_csv_file_index = 0;
+        LIST_csvfile->set_int_val(0);
+        GenPlotCB(GENPLOT_CSV_FILETYPE);
+      }
       break;
     case GENPLOT_REM_ALL_PLOTS:
       while(nplot2dinfo != 0){
@@ -1403,7 +1408,7 @@ void GenPlotCB(int var){
         strcat(label, plot2dinfo[iplot2dinfo].plot_label);
         SetPlot2DBoundLabels(plot2dinfo+iplot2dinfo);
       }
-      else{
+      else if(plot2dinfo!=NULL){
         strcpy(label, "Remove plot");
         SetPlot2DBoundLabels(plot2dinfo+iplot2dinfo);
       }

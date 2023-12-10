@@ -223,6 +223,7 @@ void InitScriptI(scriptdata *scripti, int command,char *label){
 /* ------------------ GetScriptKeywordIndex ------------------------ */
 
 int GetScriptKeywordIndex(char *keyword){
+  CheckMemory;
   if(keyword==NULL||strlen(keyword)==0)return SCRIPT_UNKNOWN;
 
   if(MatchSSF(keyword,"CBARFLIP") == MATCH)return SCRIPT_CBARFLIP;                     // documented
@@ -231,6 +232,7 @@ int GetScriptKeywordIndex(char *keyword){
   if(MatchSSF(keyword,"GSLICEORIEN")==MATCH)return SCRIPT_GSLICEORIEN;
   if(MatchSSF(keyword,"GSLICEPOS")==MATCH)return SCRIPT_GSLICEPOS;
   if(MatchSSF(keyword,"GSLICEVIEW")==MATCH)return SCRIPT_GSLICEVIEW;
+  if(MatchSSF(keyword,"GPUOFF")==MATCH)return SCRIPT_GPUOFF;
   if(MatchSSF(keyword,"PROJECTION")==MATCH)return SCRIPT_PROJECTION;
   if(MatchSSF(keyword,"ISORENDERALL")==MATCH)return SCRIPT_ISORENDERALL;
   if(MatchSSF(keyword,"KEYBOARD") == MATCH)return SCRIPT_KEYBOARD;                     // documented
@@ -372,19 +374,24 @@ break; \
 }\
 buffptr = RemoveComment(buffer); \
 buffptr = TrimFront(buffptr); \
-ScriptErrorCheck(keyword, buffptr)
+line_number++; \
+ScriptErrorCheck(keyword, buffptr) ;\
+CheckMemory
 
 #define SETcval \
 SETbuffer;\
-scripti->cval=GetCharPointer(buffptr)
+scripti->cval=GetCharPointer(buffptr) ;\
+CheckMemory
 
 #define SETcval2 \
 SETbuffer;\
-scripti->cval2 = GetCharPointer(buffptr)
+scripti->cval2 = GetCharPointer(buffptr) ;\
+CheckMemory
 
 #define SETfval \
 SETbuffer;\
-sscanf(buffptr, "%f", &scripti->fval)
+sscanf(buffptr, "%f", &scripti->fval) ;\
+CheckMemory
 
 #define SETival \
 SETbuffer;\
@@ -392,7 +399,8 @@ sscanf(buffptr, "%i", &scripti->ival)
 
 #define SETival2 \
 SETbuffer;\
-sscanf(buffptr, "%i", &scripti->ival2)
+sscanf(buffptr, "%i", &scripti->ival2) ;\
+CheckMemory
 
 /* ------------------ RemoveDeg ------------------------ */
 
@@ -545,6 +553,7 @@ NewMemory((void **)&scriptinfo, nscriptinfo*sizeof(scriptdata));
    ************************ start of pass 2 *********************************
    ************************************************************************
  */
+  int line_number=0;
   rewind(stream);
   while(!feof(stream)){
     int keyword_index;
@@ -555,15 +564,34 @@ NewMemory((void **)&scriptinfo, nscriptinfo*sizeof(scriptdata));
     int fatal_error;
 
     fatal_error = 0;
+    int breakfor;
 
-    if(fgets(buffer2,255,stream)==NULL)break;
+    // get next keyword
+    for(breakfor=0;breakfor!=1;breakfor=0){
+      char *com;
+
+      if(fgets(buffer2, 255, stream) == NULL){
+        breakfor = 1;
+        break;
+      }
+      line_number++;
+      TrimBack(buffer2);
+      com = strstr(buffer2, "//");
+      if(com != NULL && com == buffer2)buffer2[0] = 0;
+      if(strlen(buffer2)>0&&buffer2[0]!=' ')break;
+    }
+    if(breakfor==1)break;
+
     buffptr = RemoveComment(buffer2);
     strcpy(buffer, buffptr);
 
     if(strlen(buffer)==0)continue;
 
     keyword_index = GetScriptKeywordIndex(buffer);
-    if(keyword_index==SCRIPT_UNKNOWN)continue;
+    if(keyword_index == SCRIPT_UNKNOWN){
+      printf("***error: unknown script keyword '%s' in %s(%i)\n", buffer, scriptfile, line_number);
+      continue;
+    }
     strcpy(keyword,buffer);
 
     scripti = scriptinfo + nscriptinfo;
@@ -883,6 +911,10 @@ NewMemory((void **)&scriptinfo, nscriptinfo*sizeof(scriptdata));
         sscanf(buffer, "%i", &scripti->ival);
         break;
 
+// GPUOFF
+      case SCRIPT_GPUOFF:
+        break;
+        
 // SETVIEWPOINT
 //  viewpoint (char)
       case SCRIPT_SETVIEWPOINT:
@@ -2945,6 +2977,7 @@ void ScriptLoadFile(scriptdata *scripti){
 
     sd = sliceinfo + i;
     if(strcmp(sd->file,scripti->cval)==0){
+      sd->finalize = 1;
       if(i<nsliceinfo-nfedinfo){
         ReadSlice(sd->file,i, ALL_FRAMES, NULL, LOAD, SET_SLICECOLOR,&errorcode);
       }
@@ -2959,6 +2992,7 @@ void ScriptLoadFile(scriptdata *scripti){
 
     patchi = patchinfo + i;
     if(strcmp(patchi->file,scripti->cval)==0){
+      patchi->finalize = 1;
       ReadBoundary(i,LOAD,&errorcode);
       return;
     }
@@ -2969,6 +3003,7 @@ void ScriptLoadFile(scriptdata *scripti){
 
     parti = partinfo + i;
     if(strcmp(parti->file,scripti->cval)==0){
+      parti->finalize = 1;
       LoadParticleMenu(i);
       return;
     }
@@ -2989,6 +3024,7 @@ void ScriptLoadFile(scriptdata *scripti){
 
     smoke3di = smoke3dinfo + i;
     if(strcmp(smoke3di->file,scripti->cval)==0){
+      smoke3di->finalize = 1;
       smoke3di->finalize = 1;
       ReadSmoke3D(ALL_SMOKE_FRAMES, i, LOAD, FIRST_TIME, NULL, &errorcode);
       return;
@@ -3182,10 +3218,11 @@ void ScriptSetTimeVal(scriptdata *scripti){
   char message[255];
 
   timeval = scripti->fval;
-  updatetimes_debug = message;
+  PRINTF("script: setting time to %f\n\n", timeval);
   UpdateTimes();
+  if(global_times == NULL || nglobal_times <= 0)PRINTF("***error: SETTIMES script failed, global_times time array not defined\n");
+  updatetimes_debug = message;
   updatetimes_debug = NULL;
-  PRINTF("script: setting time to %f\n\n",timeval);
   if(global_times!=NULL&&nglobal_times>0){
     float mintime, maxtime;
 
@@ -3716,6 +3753,10 @@ int RunScriptCommand(scriptdata *script_command){
       break;
     case SCRIPT_LOADINIFILE:
       ScriptLoadIniFile(scripti);
+      break;
+    case SCRIPT_GPUOFF:
+      usegpu = 0;
+      gpuactive = 0;
       break;
     case SCRIPT_LOADVFILE:
       ScriptLoadVecFile(scripti);
