@@ -57,17 +57,9 @@ void TestWrite(char *scratchdir, char **fileptr){
 
 int FFLUSH(void){
   int return_val=0;
-  
-  printf("111\n");
+
   if(alt_stdout!=NULL){
-    printf("alt_stdout is NOT NULL\n");
-    printf("222\n");
-    //return_val = fflush(alt_stdout);
-    printf("333\n");
-  }
-  else{
-    printf("alt_stdout is NULL\n");
-    printf("444\n");
+    return_val = fflush(alt_stdout);
   }
   return return_val;
 }

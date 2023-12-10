@@ -4245,28 +4245,18 @@ void InitSlice3DTexture(meshdata *meshi){
 #endif
   GLsizei nx, ny, nz;
 
-  printf("aaa\n");
   SNIFF_ERRORS("InitSlice3DTexture: start");
   if(verbose_output==1)PRINTF("Defining 3d slice textures for %s ...", meshi->label);
   FFLUSH();
 
-  printf("bbb\n");
   glActiveTexture(GL_TEXTURE0);
-  printf("ccc\n");
   glGenTextures(1, &meshi->slice3d_texture_id);
-  printf("ddd\n");
   glBindTexture(GL_TEXTURE_3D, meshi->slice3d_texture_id);
-  printf("eee\n");
   glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-  printf("fff\n");
   glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-  printf("ggg\n");
   glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-  printf("hhh\n");
   glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-  printf("iii\n");
   glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-  printf("jjj\n");
   nx = meshi->ibar + 1;
   ny = meshi->jbar + 1;
   nz = meshi->kbar + 1;
@@ -4281,42 +4271,26 @@ void InitSlice3DTexture(meshdata *meshi){
   }
   glTexImage3D(GL_TEXTURE_3D, 0, GL_R32F, nx, ny, nz, border_size, GL_RED, GL_FLOAT, meshi->slice3d_texture_buffer);
 #endif
-  printf("kkk\n");
   if(meshi->slice3d_c_buffer == NULL){
     NewMemory((void **)&meshi->slice3d_c_buffer, nx*ny*nz * sizeof(float));
   }
-  printf("lll\n");
 
 
   if(slice3d_colormap_id_defined == -1){
-    printf("mmm\n");
     slice3d_colormap_id_defined = 1;
-    printf("nnn\n");
     glActiveTexture(GL_TEXTURE4);
-    printf("ooo\n");
     glGenTextures(1, &slice3d_colormap_id);
-    printf("qqq\n");
     glBindTexture(GL_TEXTURE_1D, slice3d_colormap_id);
-    printf("rrr\n");
     glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    printf("sss\n");
     glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    printf("ttt\n");
     glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    printf("uuu\n");
     glTexImage1D(GL_TEXTURE_1D, 0, GL_RGBA, 256, 0, GL_RGBA, GL_FLOAT, rgb_slice);
-    printf("vvv\n");
   }
 
-  printf("www\n");
   glActiveTexture(GL_TEXTURE0);
-  printf("xxx verbose output=%i\n", verbose_output);
   if(verbose_output==1)PRINTF("completed");
-  printf("yyy\n");
   if(verbose_output==1)PRINTF("\n");
-  printf("zzz\n");
-  //FFLUSH();
-  printf("zzz000\n");
+  FFLUSH();
 }
 #endif
 
@@ -5316,9 +5290,7 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
 
 #ifdef pp_GPU
     if(gpuactive == 1){
-      printf("before InitSliceTexture\n");
       InitSlice3DTexture(meshj);
-      printf("after InitSliceTexture\n");
     }
 #endif
   }
