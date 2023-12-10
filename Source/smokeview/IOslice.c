@@ -4314,6 +4314,7 @@ void InitSlice3DTexture(meshdata *meshi){
   if(verbose_output==1)PRINTF("completed");
   if(verbose_output==1)PRINTF("\n");
   FFLUSH();
+  printf("yyy\n");
 }
 #endif
 
@@ -5313,7 +5314,9 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
 
 #ifdef pp_GPU
     if(gpuactive == 1){
+      printf("before InitSliceTexture\n");
       InitSlice3DTexture(meshj);
+      printf("after InitSliceTexture\n");
     }
 #endif
   }
