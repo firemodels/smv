@@ -639,7 +639,6 @@ int InitShaders(void){
     err=1;
   }
   if(err==0)gpuactive=1;
-  gpuactive = 0;
   return err;
 }
 
