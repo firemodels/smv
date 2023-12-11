@@ -232,6 +232,7 @@ int GetParamBuffer(FILE *stream){
     if(fgets(param_buffer, 1024, stream)==NULL)return SCRIPT_EOF;
     line_number++;
     comment = strstr(param_buffer, "//");
+    if(comment==NULL)strstr(param_buffer, "#");
     if(comment!=NULL)comment[0]=0;
     TrimBack(param_buffer);
     if(strlen(param_buffer)==0)continue;
@@ -472,6 +473,7 @@ keyworddata *GetScriptKeyword(FILE *stream){
     if(fgets(keyword_buffer, 1024, stream)==NULL)return NULL;
     line_number++;
     comment = strstr(keyword_buffer, "//");
+    if(comment==NULL)comment = strstr(keyword_buffer, "#")
     if(comment != NULL)comment[0] = 0;
     TrimBack(keyword_buffer);
     if(strlen(keyword_buffer)==0||keyword_buffer[0]==' ')continue;
