@@ -599,7 +599,7 @@ typedef struct _feddata {
 
 typedef struct _keyworddata {
   char keyword[32];
-  int index, nparms;
+  int index, nparms, err;
 } keyworddata;
 
 /* --------------------------  isodata ------------------------------------ */
