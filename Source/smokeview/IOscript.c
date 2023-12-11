@@ -395,10 +395,20 @@ int GetScriptError(keyworddata *kw, keyworddata *kw_last, int nparams){
 
 /* ------------------ CheckScript ------------------------ */
 
-int CheckScript(FILE *stream, char *file){
+int CheckScript(char *file){
+  FILE *stream = NULL;
   char *keyword, buffer[1024], were1[32], were2[32];
   int nparams = 0, return_val, reset;
   keyworddata *kw, *kw_last;
+
+  stream = fopen(file, "r");
+  if(stream == NULL){
+    fprintf(stderr, "*** Error: scriptfile, %s, could not be opened for input\n", file);
+    return 1;
+  }
+
+  // define script keywords
+  InitKeywords();
 
   line_number=0;
   return_val = 0;
@@ -415,6 +425,7 @@ int CheckScript(FILE *stream, char *file){
         if(nparams > kw_last->nparams)printf("          invalid keyword: %s\n", keyword);
         return_val = 2;
       }
+      fclose(stream);
       return return_val;
     }
     line_number++;
@@ -446,6 +457,7 @@ int CheckScript(FILE *stream, char *file){
     kw_last->line_number = line_number;
     nparams = 0;
   }
+  fclose(stream);
   return return_val;
 }
 
@@ -653,27 +665,14 @@ int CompileScript(char *scriptfile){
     return 1;
   }
 
-  // define script keywords
-  InitKeywords();
-
-  stream=fopen(scriptfile,"r");
-  if(stream==NULL){
-    fprintf(stderr,"*** Error: scriptfile, %s, could not be opened for input\n",scriptfile);
-    return 1;
-  }
-
   /*
    ************************************************************************
    ************************ start of pass 1 *********************************
    ************************************************************************
  */
 
-  return_val = CheckScript(stream, scriptfile);
-  if(return_val!=0){
-    fclose(stream);
-    return return_val;
-  }
-  rewind(stream);
+  return_val = CheckScript(scriptfile);
+  if(return_val!=0)return return_val;
 
  /*
    ************************************************************************
@@ -681,6 +680,11 @@ int CompileScript(char *scriptfile){
    ************************************************************************
  */
 
+  stream = fopen(scriptfile, "r");
+  if(stream == NULL){
+    fprintf(stderr, "*** Error: scriptfile, %s, could not be opened for input\n", scriptfile);
+    return 1;
+  }
   FreeScript();
 
   return_val=0;

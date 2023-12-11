@@ -76,6 +76,7 @@ typedef struct CommandlineArgs {
   bool redirect;
   /// @brief Run the default SSF script, i.e. CHID.ssf
   bool runscript;
+  bool checkscript;
   bool runhtmlscript;
   /// @brief Run the SSF script at this path
   char *script;
