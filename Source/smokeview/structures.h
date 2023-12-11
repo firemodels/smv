@@ -595,6 +595,13 @@ typedef struct _feddata {
   int loaded,display;
 } feddata;
 
+/* --------------------------  keyworddata ------------------------------------ */
+
+typedef struct _keyworddata {
+  char keyword[32];
+  int index, nparms;
+} keyworddata;
+
 /* --------------------------  isodata ------------------------------------ */
 
 typedef struct _isodata {

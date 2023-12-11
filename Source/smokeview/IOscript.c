@@ -240,6 +240,117 @@ int GetParamBuffer(FILE *stream){
   return SCRIPT_OK;
 }
 
+/* ------------------ InitKeywords ------------------------ */
+
+void InitKeyword(char *keyword, int index, int nparms){
+  keyworddata *kwi;
+
+  kwi = keywordinfo + nkeywordinfo;
+  strcpy(kwi->keyword, keyword);
+  kwi->index  = index;
+  kwi->nparms = nparms;
+  nkeywordinfo++;
+}
+
+/* ------------------ InitKeywords ------------------------ */
+
+void InitKeywords(void){
+  NewMemory((void **)&keywordinfo, 1000*sizeof(keyworddata));
+  InitKeyword("CBARFLIP",            SCRIPT_CBARFLIP, -1);            // documented
+  InitKeyword("CBARNORMAL",          SCRIPT_CBARNORMAL, -1);          // documented
+  InitKeyword("EXIT",                SCRIPT_EXIT, -1);                // documented
+  InitKeyword("GSLICEORIEN",         SCRIPT_GSLICEORIEN, -1);
+  InitKeyword("GSLICEPOS",           SCRIPT_GSLICEPOS, -1);
+  InitKeyword("GSLICEVIEW",          SCRIPT_GSLICEVIEW, -1);
+  InitKeyword("GPUOFF",              SCRIPT_GPUOFF, -1);
+  InitKeyword("PROJECTION",          SCRIPT_PROJECTION, -1);
+  InitKeyword("ISORENDERALL",        SCRIPT_ISORENDERALL, -1);
+  InitKeyword("KEYBOARD",            SCRIPT_KEYBOARD, -1);            // documented
+  InitKeyword("LABEL",               SCRIPT_LABEL, -1);
+  InitKeyword("LOAD3DSMOKE",         SCRIPT_LOAD3DSMOKE, -1);         // documented
+  InitKeyword("LOADBOUNDARY",        SCRIPT_LOADBOUNDARY, -1);        // documented
+  InitKeyword("LOADBOUNDARYM",       SCRIPT_LOADBOUNDARYM, -1);
+  InitKeyword("LOADFILE",            SCRIPT_LOADFILE, -1);            // documented
+  InitKeyword("LOADINIFILE",         SCRIPT_LOADINIFILE, -1);         // documented
+  InitKeyword("LOADISO",             SCRIPT_LOADISO, -1);             // documented
+  InitKeyword("LOADISOM",            SCRIPT_LOADISOM, -1);            // documented
+  InitKeyword("LOADPARTICLES",       SCRIPT_LOADPARTICLES, -1);       // documented
+  InitKeyword("LOADPLOT3D",          SCRIPT_LOADPLOT3D, -1);          // documented
+  InitKeyword("LOADSLICE",           SCRIPT_LOADSLICE, -1);           // documented
+  InitKeyword("LOADSLCF",            SCRIPT_LOADSLCF, -1);
+  InitKeyword("LOADSLICERENDER",     SCRIPT_LOADSLICERENDER, -1);
+  InitKeyword("LOADSMOKERENDER",     SCRIPT_LOADSMOKERENDER, -1);
+  InitKeyword("LOADSLICEM",          SCRIPT_LOADSLICEM, -1);
+  InitKeyword("LOADTOUR",            SCRIPT_LOADTOUR, -1);            // documented
+  InitKeyword("LOADVOLSMOKE",        SCRIPT_LOADVOLSMOKE, -1);        // documented
+  InitKeyword("LOADVOLSMOKEFRAME",   SCRIPT_LOADVOLSMOKEFRAME, -1);   // documented
+  InitKeyword("LOADVFILE",           SCRIPT_LOADVFILE, -1);           // documented
+  InitKeyword("LOADVSLICE",          SCRIPT_LOADVSLICE, -1);          // documented
+  InitKeyword("LOADVSLICEM",         SCRIPT_LOADVSLICEM, -1);
+  InitKeyword("UNLOADPLOT2D",        SCRIPT_UNLOADPLOT2D, -1);
+  InitKeyword("MAKEMOVIE",           SCRIPT_MAKEMOVIE, -1);
+  InitKeyword("MOVIETYPE",           SCRIPT_MOVIETYPE, -1);
+  InitKeyword("PARTCLASSCOLOR",      SCRIPT_PARTCLASSCOLOR, -1);      // documented
+  InitKeyword("PARTCLASSTYPE",       SCRIPT_PARTCLASSTYPE, -1);       // documented
+  InitKeyword("PLOT3DPROPS",         SCRIPT_PLOT3DPROPS, -1);         // documented
+  InitKeyword("XYZVIEW",             SCRIPT_XYZVIEW, -1);             // documented
+  InitKeyword("VIEWXMIN",            SCRIPT_VIEWXMIN, -1);            // documented
+  InitKeyword("VIEWXMAX",            SCRIPT_VIEWXMAX, -1);            // documented
+  InitKeyword("VIEWYMIN",            SCRIPT_VIEWYMIN, -1);            // documented
+  InitKeyword("VIEWYMAX",            SCRIPT_VIEWYMAX, -1);            // documented
+  InitKeyword("VIEWZMIN",            SCRIPT_VIEWZMIN, -1);            // documented
+  InitKeyword("VIEWZMAX",            SCRIPT_VIEWZMAX, -1);            // documented
+  InitKeyword("RENDER360ALL",        SCRIPT_RENDER360ALL, -1);
+  InitKeyword("RENDERALL",           SCRIPT_RENDERALL, -1);           // documented
+  InitKeyword("RENDERCLIP",          SCRIPT_RENDERCLIP, -1);          // documented
+  InitKeyword("RENDERDIR",           SCRIPT_RENDERDIR, -1);           // documented
+  InitKeyword("RENDERDOUBLEONCE",    SCRIPT_RENDERDOUBLEONCE, -1);    // documented
+  InitKeyword("RENDERHTMLALL",       SCRIPT_RENDERHTMLALL, -1);
+  InitKeyword("RENDERHTMLDIR",       SCRIPT_RENDERHTMLDIR, -1);
+  InitKeyword("RENDERHTMLGEOM",      SCRIPT_RENDERHTMLGEOM, -1);
+  InitKeyword("RENDERHTMLOBST",      SCRIPT_RENDERHTMLOBST, -1);
+  InitKeyword("RENDERHTMLONCE",      SCRIPT_RENDERHTMLONCE, -1);
+  InitKeyword("RENDERHTMLSLICENODE", SCRIPT_RENDERHTMLSLICENODE, -1);
+  InitKeyword("RENDERHTMLSLICECELL", SCRIPT_RENDERHTMLSLICECELL, -1);
+  InitKeyword("RENDERONCE",          SCRIPT_RENDERONCE, -1);          // documented
+  InitKeyword("RENDERSIZE",          SCRIPT_RENDERSIZE, -1);
+  InitKeyword("RENDERSTART",         SCRIPT_RENDERSTART, -1);
+  InitKeyword("RENDERTYPE",          SCRIPT_RENDERTYPE, -1);
+  InitKeyword("RGBTEST",             SCRIPT_RGBTEST, -1);
+  InitKeyword("SCENECLIP",           SCRIPT_SCENECLIP, -1);
+  InitKeyword("SETTOURKEYFRAME",     SCRIPT_SETTOURKEYFRAME, -1);
+  InitKeyword("SETTIMEVAL",          SCRIPT_SETTIMEVAL, -1);          // documented
+  InitKeyword("SETSLICEBOUNDS",      SCRIPT_SETSLICEBOUNDS, -1);
+  InitKeyword("SETBOUNDBOUNDS",      SCRIPT_SETBOUNDBOUNDS, -1);
+  InitKeyword("SETTOURVIEW",         SCRIPT_SETTOURVIEW, -1);
+  InitKeyword("SETVIEWPOINT",        SCRIPT_SETVIEWPOINT, -1);        // documented
+  InitKeyword("SETCLIPX",            SCRIPT_SETCLIPX, -1);
+  InitKeyword("SETCLIPY",            SCRIPT_SETCLIPY, -1);
+  InitKeyword("SETCLIPZ",            SCRIPT_SETCLIPZ, -1);
+  InitKeyword("SETCLIPMODE",         SCRIPT_SETCLIPMODE, -1);
+  InitKeyword("SHOWHVACDUCTVAL",     SCRIPT_SHOWHVACDUCTVAL, -1);
+  InitKeyword("SHOWHVACNODEVAL",     SCRIPT_SHOWHVACNODEVAL, -1);
+  InitKeyword("HIDEHVACVALS",        SCRIPT_HIDEHVACVALS, -1);
+  InitKeyword("SHOWCBAREDIT",        SCRIPT_SHOWCBAREDIT, -1);
+  InitKeyword("HIDECBAREDIT",        SCRIPT_HIDECBAREDIT, -1);
+  InitKeyword("SETCBAR",             SCRIPT_SETCBAR, -1);
+  InitKeyword("SETCBARLAB",          SCRIPT_SETCBARLAB, -1);
+  InitKeyword("SETCBARRGB",          SCRIPT_SETCBARRGB, -1);
+  InitKeyword("SHOWALLDEVS",         SCRIPT_SHOWALLDEVS, -1);         // documented
+  InitKeyword("HIDEALLDEVS",         SCRIPT_HIDEALLDEVS, -1);         // documented
+  InitKeyword("SHOWDEV",             SCRIPT_SHOWDEV, -1);             // documented
+  InitKeyword("HIDEDEV",             SCRIPT_HIDEDEV, -1);             // documented
+  InitKeyword("SHOWPLOT3DDATA",      SCRIPT_SHOWPLOT3DDATA, -1);      // documented
+  InitKeyword("SHOWSMOKESENSORS",    SCRIPT_SHOWSMOKESENSORS, -1);
+  InitKeyword("UNLOADALL",           SCRIPT_UNLOADALL, -1);           // documented
+  InitKeyword("UNLOADTOUR",          SCRIPT_UNLOADTOUR, -1);          // documented
+  InitKeyword("VOLSMOKERENDERALL",   SCRIPT_VOLSMOKERENDERALL, -1);   // documented
+  InitKeyword("XSCENECLIP",          SCRIPT_XSCENECLIP, -1);          // documented
+  InitKeyword("YSCENECLIP",          SCRIPT_YSCENECLIP, -1);          // documented
+  InitKeyword("ZSCENECLIP",          SCRIPT_ZSCENECLIP, -1);          // documented
+  ResizeMemory((void **)&keywordinfo, nkeywordinfo * sizeof(keyworddata));
+}
+
 /* ------------------ GetScriptKeywordIndex ------------------------ */
 
 int GetScriptKeywordIndex(FILE *stream){
@@ -260,101 +371,13 @@ int GetScriptKeywordIndex(FILE *stream){
 
   if(keyword==NULL||strlen(keyword)==0)return SCRIPT_UNKNOWN;
 
-  if(MatchSSF(keyword,"CBARFLIP") == MATCH)return SCRIPT_CBARFLIP;                     // documented
-  if(MatchSSF(keyword,"CBARNORMAL") == MATCH)return SCRIPT_CBARNORMAL;                 // documented
-  if(MatchSSF(keyword,"EXIT") == MATCH)return SCRIPT_EXIT;                             // documented
-  if(MatchSSF(keyword,"GSLICEORIEN")==MATCH)return SCRIPT_GSLICEORIEN;
-  if(MatchSSF(keyword,"GSLICEPOS")==MATCH)return SCRIPT_GSLICEPOS;
-  if(MatchSSF(keyword,"GSLICEVIEW")==MATCH)return SCRIPT_GSLICEVIEW;
-  if(MatchSSF(keyword,"GPUOFF")==MATCH)return SCRIPT_GPUOFF;
-  if(MatchSSF(keyword,"PROJECTION")==MATCH)return SCRIPT_PROJECTION;
-  if(MatchSSF(keyword,"ISORENDERALL")==MATCH)return SCRIPT_ISORENDERALL;
-  if(MatchSSF(keyword,"KEYBOARD") == MATCH)return SCRIPT_KEYBOARD;                     // documented
-  if(MatchSSF(keyword,"LABEL")==MATCH)return SCRIPT_LABEL;
-  if(MatchSSF(keyword,"LOAD3DSMOKE") == MATCH)return SCRIPT_LOAD3DSMOKE;               // documented
-  if(MatchSSF(keyword,"LOADBOUNDARY") == MATCH)return SCRIPT_LOADBOUNDARY;             // documented
-  if(MatchSSF(keyword,"LOADBOUNDARYM") == MATCH)return SCRIPT_LOADBOUNDARYM;
-  if(MatchSSF(keyword,"LOADFILE") == MATCH)return SCRIPT_LOADFILE;                     // documented
-  if(MatchSSF(keyword,"LOADINIFILE") == MATCH)return SCRIPT_LOADINIFILE;               // documented
-  if(MatchSSF(keyword,"LOADISO") == MATCH)return SCRIPT_LOADISO;                       // documented
-  if(MatchSSF(keyword,"LOADISOM") == MATCH)return SCRIPT_LOADISOM;                     // documented
-  if(MatchSSF(keyword,"LOADPARTICLES") == MATCH)return SCRIPT_LOADPARTICLES;           // documented
-  if(MatchSSF(keyword,"LOADPLOT3D") == MATCH)return SCRIPT_LOADPLOT3D;                 // documented
-  if(MatchSSF(keyword,"LOADSLICE") == MATCH)return SCRIPT_LOADSLICE;                   // documented
-  if(MatchSSF(keyword,"LOADSLCF")==MATCH)return SCRIPT_LOADSLCF;
-  if(MatchSSF(keyword,"LOADSLICERENDER")==MATCH)return SCRIPT_LOADSLICERENDER;
-  if(MatchSSF(keyword, "LOADSMOKERENDER") == MATCH){
-    return SCRIPT_LOADSMOKERENDER;
-  }
-  if(MatchSSF(keyword,"LOADSLICEM") == MATCH)return SCRIPT_LOADSLICEM;
-  if(MatchSSF(keyword,"LOADTOUR") == MATCH)return SCRIPT_LOADTOUR;                     // documented
-  if(MatchSSF(keyword,"LOADVOLSMOKE") == MATCH)return SCRIPT_LOADVOLSMOKE;             // documented
-  if(MatchSSF(keyword,"LOADVOLSMOKEFRAME") == MATCH)return SCRIPT_LOADVOLSMOKEFRAME;   // documented
-  if(MatchSSF(keyword,"LOADVFILE") == MATCH)return SCRIPT_LOADVFILE;                   // documented
-  if(MatchSSF(keyword,"LOADVSLICE") == MATCH)return SCRIPT_LOADVSLICE;                 // documented
-  if(MatchSSF(keyword,"LOADVSLICEM") == MATCH)return SCRIPT_LOADVSLICEM;
-  if(MatchSSF(keyword,"UNLOADPLOT2D") == MATCH)return SCRIPT_UNLOADPLOT2D;
-  if(MatchSSF(keyword,"MAKEMOVIE") == MATCH)return SCRIPT_MAKEMOVIE;
-  if(MatchSSF(keyword,"MOVIETYPE")==MATCH)return SCRIPT_MOVIETYPE;
-  if(MatchSSF(keyword,"PARTCLASSCOLOR") == MATCH)return SCRIPT_PARTCLASSCOLOR;         // documented
-  if(MatchSSF(keyword,"PARTCLASSTYPE") == MATCH)return SCRIPT_PARTCLASSTYPE;           // documented
-  if(MatchSSF(keyword,"PLOT3DPROPS") == MATCH)return SCRIPT_PLOT3DPROPS;               // documented
-  if(MatchSSF(keyword,"XYZVIEW")==MATCH)return SCRIPT_XYZVIEW;                         // documented
-  if(MatchSSF(keyword,"VIEWXMIN")==MATCH)return SCRIPT_VIEWXMIN;                       // documented
-  if(MatchSSF(keyword,"VIEWXMAX")==MATCH)return SCRIPT_VIEWXMAX;                       // documented
-  if(MatchSSF(keyword,"VIEWYMIN")==MATCH)return SCRIPT_VIEWYMIN;                       // documented
-  if(MatchSSF(keyword,"VIEWYMAX")==MATCH)return SCRIPT_VIEWYMAX;                       // documented
-  if(MatchSSF(keyword,"VIEWZMIN")==MATCH)return SCRIPT_VIEWZMIN;                       // documented
-  if(MatchSSF(keyword,"VIEWZMAX")==MATCH)return SCRIPT_VIEWZMAX;                       // documented
-  if(MatchSSF(keyword,"RENDER360ALL") == MATCH)return SCRIPT_RENDER360ALL;
-  if(MatchSSF(keyword,"RENDERALL") == MATCH)return SCRIPT_RENDERALL;                   // documented
-  if(MatchSSF(keyword,"RENDERCLIP") == MATCH)return SCRIPT_RENDERCLIP;                 // documented
-  if(MatchSSF(keyword,"RENDERDIR") == MATCH)return SCRIPT_RENDERDIR;                   // documented
-  if(MatchSSF(keyword,"RENDERDOUBLEONCE") == MATCH)return SCRIPT_RENDERDOUBLEONCE;     // documented
-  if(MatchSSF(keyword,"RENDERHTMLALL")==MATCH)return SCRIPT_RENDERHTMLALL;
-  if(MatchSSF(keyword,"RENDERHTMLDIR") == MATCH)return SCRIPT_RENDERHTMLDIR;
-  if(MatchSSF(keyword,"RENDERHTMLGEOM") == MATCH)return SCRIPT_RENDERHTMLGEOM;
-  if(MatchSSF(keyword,"RENDERHTMLOBST") == MATCH)return SCRIPT_RENDERHTMLOBST;
-  if(MatchSSF(keyword,"RENDERHTMLONCE") ==MATCH)return SCRIPT_RENDERHTMLONCE;
-  if(MatchSSF(keyword,"RENDERHTMLSLICENODE")==MATCH)return SCRIPT_RENDERHTMLSLICENODE;
-  if(MatchSSF(keyword,"RENDERHTMLSLICECELL")==MATCH)return SCRIPT_RENDERHTMLSLICECELL;
-  if(MatchSSF(keyword,"RENDERONCE") == MATCH)return SCRIPT_RENDERONCE;                 // documented
-  if(MatchSSF(keyword,"RENDERSIZE") == MATCH)return SCRIPT_RENDERSIZE;
-  if(MatchSSF(keyword,"RENDERSTART") == MATCH)return SCRIPT_RENDERSTART;
-  if(MatchSSF(keyword,"RENDERTYPE") == MATCH)return SCRIPT_RENDERTYPE;
-  if(MatchSSF(keyword,"RGBTEST")==MATCH)return SCRIPT_RGBTEST;
-  if(MatchSSF(keyword,"SCENECLIP") == MATCH)return SCRIPT_SCENECLIP;
-  if(MatchSSF(keyword,"SETTOURKEYFRAME") == MATCH)return SCRIPT_SETTOURKEYFRAME;
-  if(MatchSSF(keyword,"SETTIMEVAL") == MATCH)return SCRIPT_SETTIMEVAL;                 // documented
-  if(MatchSSF(keyword,"SETSLICEBOUNDS")==MATCH)return SCRIPT_SETSLICEBOUNDS;
-  if(MatchSSF(keyword,"SETBOUNDBOUNDS")==MATCH)return SCRIPT_SETBOUNDBOUNDS;
-  if(MatchSSF(keyword,"SETTOURVIEW") == MATCH)return SCRIPT_SETTOURVIEW;
-  if(MatchSSF(keyword,"SETVIEWPOINT") == MATCH)return SCRIPT_SETVIEWPOINT;             // documented
-  if(MatchSSF(keyword,"SETCLIPX") == MATCH)return SCRIPT_SETCLIPX;
-  if(MatchSSF(keyword,"SETCLIPY") == MATCH)return SCRIPT_SETCLIPY;
-  if(MatchSSF(keyword,"SETCLIPZ") == MATCH)return SCRIPT_SETCLIPZ;
-  if(MatchSSF(keyword,"SETCLIPMODE") == MATCH)return SCRIPT_SETCLIPMODE;
-  if(MatchSSF(keyword,"SHOWHVACDUCTVAL") == MATCH)return SCRIPT_SHOWHVACDUCTVAL;
-  if(MatchSSF(keyword,"SHOWHVACNODEVAL") == MATCH)return SCRIPT_SHOWHVACNODEVAL;
-  if(MatchSSF(keyword,"HIDEHVACVALS") == MATCH)return SCRIPT_HIDEHVACVALS;
-  if(MatchSSF(keyword,"SHOWCBAREDIT") == MATCH)return SCRIPT_SHOWCBAREDIT;
-  if(MatchSSF(keyword,"HIDECBAREDIT") == MATCH)return SCRIPT_HIDECBAREDIT;
-  if(MatchSSF(keyword,"SETCBAR") == MATCH)return SCRIPT_SETCBAR;
-  if(MatchSSF(keyword, "SETCBARLAB") == MATCH)return SCRIPT_SETCBARLAB;
-  if(MatchSSF(keyword, "SETCBARRGB") == MATCH)return SCRIPT_SETCBARRGB;
-  if(MatchSSF(keyword, "SHOWALLDEVS") == MATCH)return SCRIPT_SHOWALLDEVS;              // documented
-  if(MatchSSF(keyword, "HIDEALLDEVS") == MATCH)return SCRIPT_HIDEALLDEVS;              // documented
-  if(MatchSSF(keyword, "SHOWDEV") == MATCH)return SCRIPT_SHOWDEV;                      // documented
-  if(MatchSSF(keyword, "HIDEDEV") == MATCH)return SCRIPT_HIDEDEV;                      // documented
-  if(MatchSSF(keyword,"SHOWPLOT3DDATA") == MATCH)return SCRIPT_SHOWPLOT3DDATA;         // documented
-  if(MatchSSF(keyword,"SHOWSMOKESENSORS")==MATCH)return SCRIPT_SHOWSMOKESENSORS;
-  if(MatchSSF(keyword,"UNLOADALL") == MATCH)return SCRIPT_UNLOADALL;                   // documented
-  if(MatchSSF(keyword,"UNLOADTOUR") == MATCH)return SCRIPT_UNLOADTOUR;                 // documented
-  if(MatchSSF(keyword,"VOLSMOKERENDERALL") == MATCH)return SCRIPT_VOLSMOKERENDERALL;   // documented
-  if(MatchSSF(keyword,"XSCENECLIP")==MATCH)return SCRIPT_XSCENECLIP;                   // documented
-  if(MatchSSF(keyword,"YSCENECLIP") == MATCH)return SCRIPT_YSCENECLIP;                 // documented
-  if(MatchSSF(keyword,"ZSCENECLIP") == MATCH)return SCRIPT_ZSCENECLIP;                 // documented
+  int i;
+  for(i = 0;i < nkeywordinfo;i++){
+    keyworddata *kwi;
 
+    kwi = keywordinfo + i;
+    if(MatchSSF(kwi->keyword, keyword) == MATCH)return kwi->index;
+  }
   return SCRIPT_UNKNOWN;
 }
 
@@ -528,6 +551,7 @@ int CompileScript(char *scriptfile){
     fprintf(stderr,"*** Error: scriptfile name is NULL\n");
     return return_val;
   }
+  InitKeywords();
   stream=fopen(scriptfile,"r");
   if(stream==NULL){
     fprintf(stderr,"*** Error: scriptfile, %s, could not be opened for input\n",scriptfile);
