@@ -275,7 +275,7 @@ void InitKeywords(void){
   InitKeyword("LABEL",               SCRIPT_LABEL, 1);
   InitKeyword("LOAD3DSMOKE",         SCRIPT_LOAD3DSMOKE, 1);         // documented
   InitKeyword("LOADBOUNDARY",        SCRIPT_LOADBOUNDARY, 1);        // documented
-  InitKeyword("LOADBOUNDARYM",       SCRIPT_LOADBOUNDARYM, 1);
+  InitKeyword("LOADBOUNDARYM",       SCRIPT_LOADBOUNDARYM, 2);
   InitKeyword("LOADFILE",            SCRIPT_LOADFILE, 1);            // documented
   InitKeyword("LOADINIFILE",         SCRIPT_LOADINIFILE, 1);         // documented
   InitKeyword("LOADISO",             SCRIPT_LOADISO, 1);             // documented

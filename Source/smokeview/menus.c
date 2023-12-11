@@ -2967,14 +2967,16 @@ void ScriptMenu(int value){
           fprintf(stderr, "***error: unable to open script file");
           if(file != NULL)fprintf(stderr, ": %s", file);
           fprintf(stderr, "\n");
-          if(from_commandline == 1)SMV_EXIT(1);
         case 2:
           break;
         default:
           assert(FFALSE);
           break;
         }
-        if(error_code != 0)fprintf(stderr, "          script aborted\n");
+        if(error_code != 0){
+          fprintf(stderr, "          script aborted\n");
+          if(from_commandline == 1)SMV_EXIT(1);
+        }
         break;
       }
       break;
