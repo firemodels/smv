@@ -247,15 +247,16 @@ void InitKeyword(char *keyword, int index, int nparms){
 
   kwi = keywordinfo + nkeywordinfo;
   strcpy(kwi->keyword, keyword);
-  kwi->index  = index;
-  kwi->nparms = nparms;
-  kwi->err    = 0;
+  kwi->index       = index;
+  kwi->nparams     = nparms;
+  kwi->line_number = 0;
   nkeywordinfo++;
 }
 
 /* ------------------ InitKeywords ------------------------ */
 
 void InitKeywords(void){
+  if(keywordinfo!=NULL)return;  // only define once
   NewMemory((void **)&keywordinfo, 1000*sizeof(keyworddata));
   nkeywordinfo++;
   InitKeyword("CBARFLIP",            SCRIPT_CBARFLIP, 0);            // documented
@@ -351,6 +352,79 @@ void InitKeywords(void){
   InitKeyword("ZSCENECLIP",          SCRIPT_ZSCENECLIP, 1);          // documented
   InitKeyword("VOLSMOKERENDERALL",   SCRIPT_VOLSMOKERENDERALL, 2);   // documented
   ResizeMemory((void **)&keywordinfo, nkeywordinfo * sizeof(keyworddata));
+}
+
+/* ------------------ GetScriptKeywordFromLabel ------------------------ */
+
+keyworddata *GetScriptKeywordFromLabel(char *keyword){
+  int i;
+
+  for(i = 1;i < nkeywordinfo;i++){
+    keyworddata *kwi;
+
+    kwi = keywordinfo + i;
+    if(MatchSSF(kwi->keyword, keyword) == MATCH)return kwi;
+  }
+  return keywordinfo;
+}
+
+/* ------------------ GetWere ------------------------ */
+
+char *GetWere(int n, char *were){
+  if(n == 1){
+    sprintf(were, "%i was", n);
+  }
+  else{
+    sprintf(were, "%i were", n);
+  }
+  return were;
+}
+
+/* ------------------ CheckScript ------------------------ */
+
+int CheckScript(FILE *stream, char *file){
+  char *keyword, buffer[1024];
+  int nparams = 0;
+  keyworddata *kw, *kw_last;
+  int return_val;
+  char were1[32], were2[32];
+
+  line_number=0;
+  return_val = 0;
+  kw = NULL;
+  kw_last = NULL;
+  for(;;){
+    char *comment;
+
+    if(fgets(buffer, 1024, stream)==NULL){
+      if(kw_last!=NULL&&kw_last->nparams!=-1&&kw_last->nparams!=nparams){
+        printf("***error: script keyword %s in %s(%i) has the wrong number of data lines\n", kw_last->keyword, file, kw_last->line_number);
+        printf("          %s expected, %s found\n", GetWere(kw_last->nparams,were1), GetWere(nparams,were2));
+        return_val = 2;
+      }
+      return return_val;
+    }
+    line_number++;
+    comment = strstr(buffer, "//");
+    if(comment != NULL)comment[0] = 0;
+    keyword = TrimFrontBack(buffer);
+    if(strlen(buffer)==0)continue;
+
+    kw = GetScriptKeywordFromLabel(keyword);
+    if(kw==keywordinfo){
+      nparams++;
+      continue;
+    }
+    if(kw_last!=NULL&&kw_last->nparams!=-1&&kw_last->nparams!=nparams){
+      printf("***error: script keyword %s in %s(%i) has the wrong number of data lines\n", kw_last->keyword, file, kw_last->line_number);
+        printf("          %s expected, %s found\n", GetWere(kw_last->nparams,were1), GetWere(nparams,were2));
+      return_val = 2;
+    }
+    kw_last = kw;
+    kw_last->line_number = line_number;
+    nparams = 0;
+  }
+  return return_val;
 }
 
 /* ------------------ GetScriptKeyword ------------------------ */
@@ -552,19 +626,19 @@ int CompileScript(char *scriptfile){
   FILE *stream;
   int return_val;
 
-  return_val=1;
   if(scriptfile==NULL){
     fprintf(stderr,"*** Error: scriptfile name is NULL\n");
-    return return_val;
+    return 1;
   }
+
+  // define script keywords
   InitKeywords();
+
   stream=fopen(scriptfile,"r");
   if(stream==NULL){
     fprintf(stderr,"*** Error: scriptfile, %s, could not be opened for input\n",scriptfile);
-    return return_val;
+    return 1;
   }
-
-  return_val=0;
 
   /*
    ************************************************************************
@@ -572,8 +646,22 @@ int CompileScript(char *scriptfile){
    ************************************************************************
  */
 
+  return_val = CheckScript(stream, scriptfile);
+  if(return_val!=0){
+    fclose(stream);
+    return return_val;
+  }
+  rewind(stream);
+
+ /*
+   ************************************************************************
+   ************************ start of pass 2 *********************************
+   ************************************************************************
+ */
+
   FreeScript();
 
+  return_val=0;
   line_number = 0;
   while(!feof(stream)){
     keyworddata *kw;
@@ -595,7 +683,7 @@ int CompileScript(char *scriptfile){
 
   /*
    ************************************************************************
-   ************************ start of pass 2 *********************************
+   ************************ start of pass 3 *********************************
    ************************************************************************
  */
 
