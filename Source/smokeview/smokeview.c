@@ -242,6 +242,8 @@ void DisplayVersionInfo(char *progname){
 void SMV_EXIT(int code){
 #ifdef _DEBUG_VS
   char buffer[255];
+
+  printf("smokeview exiting\n");
   fgets(buffer, 255, stdin);
 #endif
   exit(code);
