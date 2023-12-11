@@ -14,7 +14,7 @@
 #include "glui_motion.h"
 #include "glui_smoke.h"
 
-static char keyword_buffer[1024], param_buffer[1024];
+static char param_buffer[1024];
 static int param_status, line_number;
 
 /* ------------------ GetNewScriptFileName ------------------------ */
@@ -256,6 +256,7 @@ void InitKeyword(char *keyword, int index, int nparms){
 
 void InitKeywords(void){
   NewMemory((void **)&keywordinfo, 1000*sizeof(keyworddata));
+  nkeywordinfo++;
   InitKeyword("CBARFLIP",            SCRIPT_CBARFLIP, -1);            // documented
   InitKeyword("CBARNORMAL",          SCRIPT_CBARNORMAL, -1);          // documented
   InitKeyword("EXIT",                SCRIPT_EXIT, -1);                // documented
@@ -351,15 +352,15 @@ void InitKeywords(void){
   ResizeMemory((void **)&keywordinfo, nkeywordinfo * sizeof(keyworddata));
 }
 
-/* ------------------ GetScriptKeywordIndex ------------------------ */
+/* ------------------ GetScriptKeyword ------------------------ */
 
-int GetScriptKeywordIndex(FILE *stream){
-  char *keyword;
+keyworddata *GetScriptKeyword(FILE *stream){
+  char *keyword, keyword_buffer[1024];
 
   for(;;){
     char *comment;
 
-    if(fgets(keyword_buffer, 1024, stream)==NULL)return SCRIPT_EOF;
+    if(fgets(keyword_buffer, 1024, stream)==NULL)return NULL;
     line_number++;
     comment = strstr(keyword_buffer, "//");
     if(comment != NULL)comment[0] = 0;
@@ -369,16 +370,20 @@ int GetScriptKeywordIndex(FILE *stream){
     break;
   }
 
-  if(keyword==NULL||strlen(keyword)==0)return SCRIPT_UNKNOWN;
+  if(keyword==NULL||strlen(keyword)==0){
+    strcpy(keywordinfo->keyword, keyword_buffer);
+    return keywordinfo;
+  }
 
   int i;
-  for(i = 0;i < nkeywordinfo;i++){
+  for(i = 1;i < nkeywordinfo;i++){
     keyworddata *kwi;
 
     kwi = keywordinfo + i;
-    if(MatchSSF(kwi->keyword, keyword) == MATCH)return kwi->index;
+    if(MatchSSF(kwi->keyword, keyword) == MATCH)return kwi;
   }
-  return SCRIPT_UNKNOWN;
+  strcpy(keywordinfo->keyword, keyword_buffer);
+  return keywordinfo;
 }
 
 /* ------------------ GetXYZ ------------------------ */
@@ -465,9 +470,9 @@ void RemoveDeg(char *string){
 #define TOKEN_STRING   2
 #define TOKEN_LOGICAL  3
 
-/* ------------------ GetScriptKeyWord ------------------------ */
+/* ------------------ GetSLCFKeyWord ------------------------ */
 
-int GetScriptKeyWord(char *token, char **keywords, int nkeywords){
+int GetSLCFKeyWord(char *token, char **keywords, int nkeywords){
   int i;
 
   for(i = 0; i<nkeywords; i++){
@@ -479,9 +484,9 @@ int GetScriptKeyWord(char *token, char **keywords, int nkeywords){
   return TOKEN_UNKNOWN;
 }
 
-/* ------------------ ParseTokens ------------------------ */
+/* ------------------ ParseSLCFTokens ------------------------ */
 
-int ParseTokens(char *buffer, char **keywords, int *type, int nkeywords, int *tokens, int *itokens, float *ftokens, char **ctokens, int max_tokens){
+int ParseSLCFTokens(char *buffer, char **keywords, int *type, int nkeywords, int *tokens, int *itokens, float *ftokens, char **ctokens, int max_tokens){
   int i;
   char *kw;
 
@@ -494,7 +499,7 @@ int ParseTokens(char *buffer, char **keywords, int *type, int nkeywords, int *to
     if(i!=0)kw = strtok(NULL, "=");
     if(kw==NULL)return i;
     kw = TrimFrontBack(kw);
-    keyword_index = GetScriptKeyWord(kw, keywords, nkeywords);
+    keyword_index = GetSLCFKeyWord(kw, keywords, nkeywords);
     if(keyword_index==TOKEN_UNKNOWN||type[keyword_index]==TOKEN_UNKNOWN){
       printf("***error: script keyword %s unknown\n", kw);
       return 0;
@@ -570,11 +575,11 @@ int CompileScript(char *scriptfile){
 
   line_number = 0;
   while(!feof(stream)){
-    int s_index;
+    keyworddata *kw;
 
-    s_index = GetScriptKeywordIndex(stream);
-    if(s_index == SCRIPT_EOF)break;
-    if(s_index != SCRIPT_UNKNOWN)nscriptinfo++;
+    kw = GetScriptKeyword(stream);
+    if(kw == NULL)break;
+    if(kw != keywordinfo)nscriptinfo++;
   }
 
   if(nscriptinfo==0){
@@ -596,26 +601,24 @@ int CompileScript(char *scriptfile){
   line_number=0;
   rewind(stream);
   while(!feof(stream)){
-    int keyword_index;
     int scriptEOF;
-    char keyword[255];
     scriptdata *scripti;
     int fatal_error;
+    keyworddata *kw;
 
     fatal_error = 0;
-    keyword_index = GetScriptKeywordIndex(stream);
-    if(keyword_index == SCRIPT_EOF)break;
-    if(keyword_index == SCRIPT_UNKNOWN){
-      printf("***error: unknown script keyword '%s' in %s(%i)\n", keyword_buffer, scriptfile, line_number);
+    kw = GetScriptKeyword(stream);
+    if(kw == NULL)break;
+    if(kw == keywordinfo){
+      printf("***error: unknown script keyword '%s' in %s(%i)\n", kw->keyword, scriptfile, line_number);
       return 2;
     }
-    strcpy(keyword, keyword_buffer);
 
     scripti = scriptinfo + nscriptinfo;
-    InitScriptI(scripti,keyword_index, keyword_buffer);
+    InitScriptI(scripti, kw->index, kw->keyword);
 
     scriptEOF=0;
-    switch(keyword_index){
+    switch(kw->index){
 
 // UNLOADALL
       case SCRIPT_UNLOADALL:
@@ -730,7 +733,7 @@ int CompileScript(char *scriptfile){
         int i;
 
         scripti->need_graphics = 1;
-        if(keyword_index==SCRIPT_RENDERHTMLDIR)scripti->need_graphics = 0;
+        if(kw->index==SCRIPT_RENDERHTMLDIR)scripti->need_graphics = 0;
         SETbuffer;
         if(script_renderdir_cmd!=NULL&&strlen(script_renderdir_cmd)>0){
           strcpy(param_buffer, script_renderdir_cmd);
@@ -1138,7 +1141,7 @@ int CompileScript(char *scriptfile){
           SETbuffer;
           strcpy(param_buffer_copy, param_buffer);
 
-          ntokens = ParseTokens(param_buffer, keywords, types, nkeywords, tokens, itokens, ftokens, &(ctokens[0]), MAX_SLCF_TOKENS);
+          ntokens = ParseSLCFTokens(param_buffer, keywords, types, nkeywords, tokens, itokens, ftokens, &(ctokens[0]), MAX_SLCF_TOKENS);
           if(ntokens==0){
             printf("***error: problems were found parsing LOADSLCF\n");
             printf("  buffer: %s\n", param_buffer_copy);
@@ -1339,7 +1342,7 @@ int CompileScript(char *scriptfile){
 	break;
     }
     if(scriptEOF==1)break;
-    if(keyword_index!=SCRIPT_UNKNOWN&&fatal_error==0)nscriptinfo++;
+    if(kw!=keywordinfo&&fatal_error==0)nscriptinfo++;
   }
   fclose(stream);
   return return_val;
