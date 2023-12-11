@@ -419,7 +419,7 @@ int CheckScript(char *file){
   for(;;){
     char *comment;
 
-    if(fgets(buffer, 1024, stream)==NULL){
+    if(fgets(param_buffer, 1024, stream)==NULL){
       if(GetScriptError(kw, kw_last, nparams) == 1){
         fprintf(stderr, "***error: script keyword %s in %s(%i) has the wrong number of data lines\n", kw_last->keyword, file, kw_last->line_number);
         fprintf(stderr, "          %s expected, %s found\n", GetWere(kw_last->nparams, were1), GetWere(nparams, were2));
