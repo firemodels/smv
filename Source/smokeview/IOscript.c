@@ -232,7 +232,7 @@ int GetParamBuffer(FILE *stream){
     if(fgets(param_buffer, 1024, stream)==NULL)return SCRIPT_EOF;
     line_number++;
     comment = strstr(param_buffer, "//");
-    if(comment==NULL)strstr(param_buffer, "#");
+    if(comment==NULL)comment = strstr(param_buffer, "#");
     if(comment!=NULL)comment[0]=0;
     TrimBack(param_buffer);
     if(strlen(param_buffer)==0)continue;
@@ -430,7 +430,8 @@ int CheckScript(char *file){
       return return_val;
     }
     line_number++;
-    comment = strstr(buffer, "//");
+    comment = strstr(param_buffer, "//");
+    if(comment==NULL)comment = strstr(param_buffer, "#");
     if(comment != NULL)comment[0] = 0;
     keyword = TrimFrontBack(buffer);
     if(strlen(buffer)==0)continue;
