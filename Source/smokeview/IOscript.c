@@ -380,26 +380,39 @@ char *GetWere(int n, char *were){
   return were;
 }
 
+/* ------------------ GetScriptError ------------------------ */
+
+int GetScriptError(keyworddata *kw, keyworddata *kw_last, int nparams){
+  if(kw_last == NULL)return 0;
+  if(kw == keywordinfo){
+    if(nparams > kw_last->nparams)return 1;
+  }
+  else{
+    if(nparams < kw_last->nparams)return 1;
+  }
+  return 0;
+}
+
 /* ------------------ CheckScript ------------------------ */
 
 int CheckScript(FILE *stream, char *file){
-  char *keyword, buffer[1024];
-  int nparams = 0;
+  char *keyword, buffer[1024], were1[32], were2[32];
+  int nparams = 0, return_val, reset;
   keyworddata *kw, *kw_last;
-  int return_val;
-  char were1[32], were2[32];
 
   line_number=0;
   return_val = 0;
   kw = NULL;
   kw_last = NULL;
+  reset = 0;
   for(;;){
     char *comment;
 
     if(fgets(buffer, 1024, stream)==NULL){
-      if(kw_last!=NULL&&kw_last->nparams!=-1&&kw_last->nparams!=nparams){
-        printf("***error: script keyword %s in %s(%i) has the wrong number of data lines\n", kw_last->keyword, file, kw_last->line_number);
-        printf("          %s expected, %s found\n", GetWere(kw_last->nparams,were1), GetWere(nparams,were2));
+      if(GetScriptError(kw, kw_last, nparams) == 1){
+        fprintf(stderr, "***error: script keyword %s in %s(%i) has the wrong number of data lines\n", kw_last->keyword, file, kw_last->line_number);
+        fprintf(stderr, "          %s expected, %s found\n", GetWere(kw_last->nparams, were1), GetWere(nparams, were2));
+        if(nparams > kw_last->nparams)printf("          invalid keyword: %s\n", keyword);
         return_val = 2;
       }
       return return_val;
@@ -411,15 +424,24 @@ int CheckScript(FILE *stream, char *file){
     if(strlen(buffer)==0)continue;
 
     kw = GetScriptKeywordFromLabel(keyword);
-    if(kw==keywordinfo){
-      nparams++;
+    if(reset == 1){ // an error was found, don't check for more errors until the next keyword
+      if(kw != keywordinfo){
+        reset = 0;
+        kw_last = kw;
+        kw_last->line_number = line_number;
+        nparams = 0;
+      }
       continue;
     }
-    if(kw_last!=NULL&&kw_last->nparams!=-1&&kw_last->nparams!=nparams){
-      printf("***error: script keyword %s in %s(%i) has the wrong number of data lines\n", kw_last->keyword, file, kw_last->line_number);
-        printf("          %s expected, %s found\n", GetWere(kw_last->nparams,were1), GetWere(nparams,were2));
+    if(kw == keywordinfo)nparams++;
+    if(GetScriptError(kw, kw_last, nparams)==1){
+      fprintf(stderr, "***error: script keyword %s in %s(%i) has the wrong number of data lines\n", kw_last->keyword, file, kw_last->line_number);
+      fprintf(stderr, "          %s expected, %s found\n", GetWere(kw_last->nparams,were1), GetWere(nparams,were2));
+      if(nparams>kw_last->nparams)printf("          invalid keyword: %s\n", keyword);
+      reset = 1;
       return_val = 2;
     }
+    if(kw==keywordinfo)continue;
     kw_last = kw;
     kw_last->line_number = line_number;
     nparams = 0;
