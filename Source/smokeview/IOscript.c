@@ -306,7 +306,6 @@ void InitKeywords(void){
   InitKeyword("VIEWZMIN",            SCRIPT_VIEWZMIN, 0);            // documented
   InitKeyword("VIEWZMAX",            SCRIPT_VIEWZMAX, 0);            // documented
   InitKeyword("XYZVIEW",             SCRIPT_XYZVIEW, 1);             // documented
-
   InitKeyword("RENDER360ALL",        SCRIPT_RENDER360ALL, 2);
   InitKeyword("RENDERALL",           SCRIPT_RENDERALL, 2);           // documented
   InitKeyword("RENDERCLIP",          SCRIPT_RENDERCLIP, 1);          // documented
