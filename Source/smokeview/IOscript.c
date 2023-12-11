@@ -474,7 +474,7 @@ keyworddata *GetScriptKeyword(FILE *stream){
     if(fgets(keyword_buffer, 1024, stream)==NULL)return NULL;
     line_number++;
     comment = strstr(keyword_buffer, "//");
-    if(comment==NULL)comment = strstr(keyword_buffer, "#")
+    if(comment==NULL)comment = strstr(keyword_buffer, "#");
     if(comment != NULL)comment[0] = 0;
     TrimBack(keyword_buffer);
     if(strlen(keyword_buffer)==0||keyword_buffer[0]==' ')continue;
