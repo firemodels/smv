@@ -3531,7 +3531,7 @@ to load data files, commands to position the scene in both time and space
 and commands to output the scene to image files.
 
 %%-----------------------------------------------------------------------
-\subsection{Loading and Unloading  Files}
+\subsection{Loading and Unloading Files}
 \subsubsection{3D Smoke Files}
 \blist
 
@@ -3572,12 +3572,17 @@ rendered smoke for all meshes is loaded.
 
 \hitemssfN{LOADBOUNDARYM}
 
-\hitemssf{LOADBOUNDARY}\ Load a boundary file of a particular type.
+\hitemssf{LOADBOUNDARY, LOADBONDARYM}\ Load a boundary file of a particular type.
 The type is the same as what Smokeview displays in the Load menus for boundary files.
+{\tt LOADBOUNDARY}\ loads boundary files for all meshes, {\tt LOADBOUNDARYM}\
+loads a boundary file for one mesh.
 Usage:
 \begin{lstlisting}
 LOADBOUNDARY
    type (char)
+LOADBOUNDARYM
+   type (char)
+   mesh_number (int)
 \end{lstlisting}
 
 \hitemssf{SETBOUNDBOUNDS}
