@@ -501,7 +501,7 @@ SHOWPLOT3DDATA
 PLOT3DPROPS
  1 0 4 1
 RENDERONCE
-thouse5_plot3d_val
+ thouse5_plot3d_val
 
 SHOWPLOT3DDATA
  1 1 1 0 5.866670
@@ -514,7 +514,7 @@ SHOWPLOT3DDATA
 PLOT3DPROPS
  1 1 4 1
 RENDERONCE
-thouse5_plot3d_vec
+ thouse5_plot3d_vec
 
 SHOWPLOT3DDATA
  1 1 1 0 5.866670
@@ -527,7 +527,7 @@ SHOWPLOT3DDATA
 PLOT3DPROPS
  1 0 4 1
 RENDERONCE
-thouse5_plot3d_iso1
+ thouse5_plot3d_iso1
 
 SHOWPLOT3DDATA
  1 1 1 0 5.866670
@@ -540,7 +540,7 @@ SHOWPLOT3DDATA
 PLOT3DPROPS
  1 0 4 1
 RENDERONCE
-thouse5_plot3d_iso2
+ thouse5_plot3d_iso2
 
 // render fed iso file
 

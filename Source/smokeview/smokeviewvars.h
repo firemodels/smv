@@ -22,6 +22,9 @@
 #include "glutbitmap.h"
 #endif
 
+SVEXTERN keyworddata SVDECL(*keywordinfo, NULL);
+SVEXTERN int SVDECL(nkeywordinfo, 0);
+
 SVEXTERN int SVDECL(update_plot2dini, 0);
 SVEXTERN int SVDECL(update_device_timeaverage, 0);
 SVEXTERN int SVDECL(update_colorbar_list, 0);

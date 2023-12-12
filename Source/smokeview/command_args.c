@@ -267,7 +267,20 @@ CommandlineArgs ParseCommandlineNew(int argc, char **argv,
         *error = CLE_ARGUMENT_EXPECTED;
         return args;
       }
-    } else if (strcmp(argv[i], "-htmlscript") == 0) {
+    } else if (strcmp(argv[i], "-checkscript") == 0) {
+      ++i;
+      if (i < argc) {
+        NewMemory((void **)&args.script, strlen(argv[i]) + 1);
+        strcpy(args.script, argv[i]);
+        args.checkscript = true;
+      } else {
+        *error = CLE_ARGUMENT_EXPECTED;
+        void SMV_EXIT(int error);
+        SMV_EXIT(1);
+        return args;
+      }
+    }
+    else if (strcmp(argv[i], "-htmlscript") == 0) {
       ++i;
       if (i < argc) {
         NewMemory((void **)&args.htmlscript, strlen(argv[i]) + 1);

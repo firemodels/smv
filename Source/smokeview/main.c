@@ -79,6 +79,7 @@ void Usage(char *prog,int option){
 #endif
     PRINTF("%s\n", _(" -big           - hide scene and data when moving scene or selecting menus"));
     PRINTF("%s\n", _(" -casedir dir   - specify location of case (if different than current directory)"));
+    PRINTF("%s\n", _(" -checkscript file.ssf  - check the script file file.ssf for errors"));
     PRINTF("%s\n", _(" -convert_ini case1.ini case2.ini - update case1.ini to the current format"));
     PRINTF("%s\n", _("                  and save the results into case2.ini"));
     PRINTF("%s\n", _(" -demo          - use demonstrator mode of Smokeview"));
@@ -157,6 +158,28 @@ char *ProcessCommandLine(CommandlineArgs *args) {
   char *filename_local = NULL;
 
   CheckMemory;
+  if(args->checkscript){
+    int error_code;
+
+    int CheckScript(char *file);
+    error_code = CheckScript(args->script);
+    switch(error_code){
+    case 0:
+      fprintf(stderr, "***no errors detected in %s\n", args->script);
+      break;
+    case 1:
+      fprintf(stderr, "***error: unable to open script file %s\n", args->script);
+      break;
+    case 2:
+      fprintf(stderr, "***errors detected in script file %s\n", args->script);
+      break;
+    default:
+      assert(FFALSE);
+      break;
+    }
+    void SMV_EXIT(int error);
+    SMV_EXIT(0);
+  }
   if (args->csv) {
     update_csv_load = 1;
   }

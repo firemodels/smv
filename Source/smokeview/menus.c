@@ -2959,15 +2959,23 @@ void ScriptMenu(int value){
         if(file==NULL)continue;
         if(scriptfile->id!=value)continue;
         error_code= CompileScript(file);
-        if(error_code==0){
-      //    ReadIni(NULL);
+        switch(error_code){
+        case 0:
           StartScript();
+          break;
+        case 1:
+          fprintf(stderr, "***error: unable to open script file");
+          if(file != NULL)fprintf(stderr, ": %s", file);
+          fprintf(stderr, "\n");
+        case 2:
+          break;
+        default:
+          assert(FFALSE);
+          break;
         }
-        else{
-          fprintf(stderr,"*** Error (fatal): unable to open script file");
-          if(file!=NULL)fprintf(stderr,": %s",file);
-          fprintf(stderr,"\n");
-          if(from_commandline==1)SMV_EXIT(1);
+        if(error_code != 0){
+          fprintf(stderr, "          script aborted\n");
+          if(from_commandline == 1)SMV_EXIT(1);
         }
         break;
       }

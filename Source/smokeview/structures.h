@@ -260,6 +260,13 @@ typedef struct _scriptdata {
   int pbxyz_dir, cell_centered, vector;
 } scriptdata;
 
+/* --------------------------  keyworddata ------------------------------------ */
+
+typedef struct _keyworddata{
+  char keyword[32];
+  int index, nparams, line_number;
+} keyworddata;
+
 /* --------------------------  treedata ------------------------------------ */
 
 typedef struct _treedata {

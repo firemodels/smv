@@ -105,6 +105,9 @@
 #define SCRIPT_ISO_FILE            4
 
 #define SCRIPT_UNKNOWN            -1
+#define SCRIPT_OK               -997
+#define SCRIPT_ERR              -998
+#define SCRIPT_EOF              -999
 
 #define NOT_LOADRENDER (current_script_command->command!=SCRIPT_LOADSLICERENDER && current_script_command->command != SCRIPT_LOADSMOKERENDER)
 #define IS_LOADRENDER  (current_script_command->command==SCRIPT_LOADSLICERENDER || current_script_command->command == SCRIPT_LOADSMOKERENDER)
