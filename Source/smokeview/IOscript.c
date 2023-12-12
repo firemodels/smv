@@ -278,17 +278,17 @@ void InitKeywords(void){
 
 // hvac files
 
-  InitKeyword("HIDEHVACVALS",        SCRIPT_HIDEHVACVALS, 0);
-  InitKeyword("SHOWHVACDUCTVAL",     SCRIPT_SHOWHVACDUCTVAL, 1);
-  InitKeyword("SHOWHVACNODEVAL",     SCRIPT_SHOWHVACNODEVAL, 1);
+  InitKeyword("HIDEHVACVALS",        SCRIPT_HIDEHVACVALS, 0);        // documented
+  InitKeyword("SHOWHVACDUCTVAL",     SCRIPT_SHOWHVACDUCTVAL, 1);     // documented
+  InitKeyword("SHOWHVACNODEVAL",     SCRIPT_SHOWHVACNODEVAL, 1);     // documented
 
 // slice and vector slice files
-  InitKeyword("LOADVFILE",           SCRIPT_LOADVFILE, 1);           // documented
-  InitKeyword("LOADVSLICE",          SCRIPT_LOADVSLICE, 2);
-  InitKeyword("LOADVSLICEM",         SCRIPT_LOADVSLICEM, 3);
   InitKeyword("LOADSLCF",            SCRIPT_LOADSLCF, 1);            // documented
-  InitKeyword("LOADSLICE",           SCRIPT_LOADSLICE, 2);
-  InitKeyword("LOADSLICEM",          SCRIPT_LOADSLICEM, 3);
+  InitKeyword("LOADSLICE",           SCRIPT_LOADSLICE, 2);           // documented
+  InitKeyword("LOADSLICEM",          SCRIPT_LOADSLICEM, 3);          // documented
+  InitKeyword("LOADVFILE",           SCRIPT_LOADVFILE, 1);           // documented
+  InitKeyword("LOADVSLICE",          SCRIPT_LOADVSLICE, 2);          // documented
+  InitKeyword("LOADVSLICEM",         SCRIPT_LOADVSLICEM, 3);         // documented
   InitKeyword("SETSLICEBOUNDS",      SCRIPT_SETSLICEBOUNDS, 1);      // documented
 
 // particle files
@@ -313,21 +313,26 @@ void InitKeywords(void){
   InitKeyword("SHOWSMOKESENSORS",    SCRIPT_SHOWSMOKESENSORS, 0);
 
 // colorbar
-  InitKeyword("HIDECBAREDIT",        SCRIPT_HIDECBAREDIT, 0);
-  InitKeyword("SHOWCBAREDIT",        SCRIPT_SHOWCBAREDIT, 0);
-  InitKeyword("SETCBAR",             SCRIPT_SETCBAR, 1);
+  InitKeyword("CBARNORMAL",          SCRIPT_CBARNORMAL, 0);          // documented
+  InitKeyword("CBARFLIP",            SCRIPT_CBARFLIP, 0);            // documented
+  InitKeyword("HIDECBAREDIT",        SCRIPT_HIDECBAREDIT, 0);        // documented
+  InitKeyword("SHOWCBAREDIT",        SCRIPT_SHOWCBAREDIT, 0);        // documented
+  InitKeyword("SETCBAR",             SCRIPT_SETCBAR, 1);             // documented
   InitKeyword("SETCBARLAB",          SCRIPT_SETCBARLAB, 0);
   InitKeyword("SETCBARRGB",          SCRIPT_SETCBARRGB, 0);
 
+// tour
+  InitKeyword("LOADTOUR",            SCRIPT_LOADTOUR, 1);            // documented
+  InitKeyword("SETTOURKEYFRAME",     SCRIPT_SETTOURKEYFRAME, 1);
+  InitKeyword("SETTOURVIEW",         SCRIPT_SETTOURVIEW, 1);
+  InitKeyword("UNLOADTOUR",          SCRIPT_UNLOADTOUR, 0);          // documented
+
 // controlling the scene
-  InitKeyword("CBARNORMAL",          SCRIPT_CBARNORMAL, 0);          // documented
-  InitKeyword("CBARFLIP",            SCRIPT_CBARFLIP, 0);            // documented
   InitKeyword("EXIT",                SCRIPT_EXIT, 0);                // documented
   InitKeyword("GSLICEORIEN",         SCRIPT_GSLICEORIEN, 1);         // documented
   InitKeyword("GSLICEPOS",           SCRIPT_GSLICEPOS, 1);           // documented
   InitKeyword("GSLICEVIEW",          SCRIPT_GSLICEVIEW, 1);          // documented
   InitKeyword("KEYBOARD",            SCRIPT_KEYBOARD, 1);            // documented
-  InitKeyword("LOADTOUR",            SCRIPT_LOADTOUR, 1);            // documented
   InitKeyword("PROJECTION",          SCRIPT_PROJECTION, 1);
   InitKeyword("SCENECLIP",           SCRIPT_SCENECLIP, 1);
   InitKeyword("SETCLIPMODE",         SCRIPT_SETCLIPMODE, 1);
@@ -335,10 +340,7 @@ void InitKeywords(void){
   InitKeyword("SETCLIPY",            SCRIPT_SETCLIPY, 1);
   InitKeyword("SETCLIPZ",            SCRIPT_SETCLIPZ, 1);
   InitKeyword("SETTIMEVAL",          SCRIPT_SETTIMEVAL, 1);          // documented
-  InitKeyword("SETTOURKEYFRAME",     SCRIPT_SETTOURKEYFRAME, 1);
-  InitKeyword("SETTOURVIEW",         SCRIPT_SETTOURVIEW, 1);
   InitKeyword("SETVIEWPOINT",        SCRIPT_SETVIEWPOINT, 1);        // documented
-  InitKeyword("UNLOADTOUR",          SCRIPT_UNLOADTOUR, 0);          // documented
   InitKeyword("VIEWXMIN",            SCRIPT_VIEWXMIN, 0);            // documented
   InitKeyword("VIEWXMAX",            SCRIPT_VIEWXMAX, 0);            // documented
   InitKeyword("VIEWYMIN",            SCRIPT_VIEWYMIN, 0);            // documented
