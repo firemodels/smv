@@ -711,8 +711,6 @@ SVEXTERN int SVDECL(show_node_slices_and_vectors,0);
 SVEXTERN int SVDECL(show_cell_slices_and_vectors,1);
 SVEXTERN int SVDECL(compute_fed,0);
 SVEXTERN int SVDECL(is_fed_colorbar, 0);
-SVEXTERN int SVDECL(tour_global_tension_flag,1);
-SVEXTERN float SVDECL(tour_global_tension,0.0);
 
 SVEXTERN int SVDECL(convert_ini,0), SVDECL(convert_ssf,0);
 SVEXTERN int SVDECL(update_ssf,0);
