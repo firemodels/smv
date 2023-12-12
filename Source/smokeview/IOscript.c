@@ -1443,10 +1443,10 @@ int CompileScript(char *scriptfile){
         break;
 
 // SETTOURVIEW
-//   viewtype  showpath showtour_locus tension
+//   viewtype  showpath showtour_locus
       case SCRIPT_SETTOURVIEW:
         SETbuffer;
-        sscanf(param_buffer,"%i %i %i %f",&scripti->ival,&scripti->ival2,&scripti->ival3,&scripti->fval);
+        sscanf(param_buffer,"%i %i %i",&scripti->ival,&scripti->ival2,&scripti->ival3);
         break;
 
 // SETTOURKEYFRAME
@@ -3335,8 +3335,6 @@ void ScriptSetTourKeyFrame(scriptdata *scripti){
 void ScriptSetTourView(scriptdata *scripti){
   edittour=scripti->ival;
   show_avatar =scripti->ival3;
-  tour_global_tension_flag=1;
-  tour_global_tension=scripti->fval;
   switch(scripti->ival2){
     case 0:
       viewtourfrompath=0;
