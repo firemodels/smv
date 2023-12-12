@@ -684,8 +684,6 @@ void Settourview(int edittourArg, int mode, int show_tourlocusArg,
                  float tour_global_tensionArg) {
   edittour = edittourArg;
   show_avatar = show_tourlocusArg;
-  tour_global_tension_flag = 1;
-  tour_global_tension = tour_global_tensionArg;
   switch (mode) {
   case 0:
     viewtourfrompath = 0;
