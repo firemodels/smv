@@ -263,9 +263,9 @@ void InitKeywords(void){
   InitKeyword("CBARFLIP",            SCRIPT_CBARFLIP, 0);            // documented
   InitKeyword("CBARNORMAL",          SCRIPT_CBARNORMAL, 0);          // documented
   InitKeyword("EXIT",                SCRIPT_EXIT, 0);                // documented
-  InitKeyword("GSLICEORIEN",         SCRIPT_GSLICEORIEN, 1);
-  InitKeyword("GSLICEPOS",           SCRIPT_GSLICEPOS, 1);
-  InitKeyword("GSLICEVIEW",          SCRIPT_GSLICEVIEW, 1);
+  InitKeyword("GSLICEORIEN",         SCRIPT_GSLICEORIEN, 1);         // documented
+  InitKeyword("GSLICEPOS",           SCRIPT_GSLICEPOS, 1);           // documented
+  InitKeyword("GSLICEVIEW",          SCRIPT_GSLICEVIEW, 1);          // documented
   InitKeyword("GPUOFF",              SCRIPT_GPUOFF, 0);
   InitKeyword("HIDEALLDEVS",         SCRIPT_HIDEALLDEVS, 0);         // documented
   InitKeyword("HIDECBAREDIT",        SCRIPT_HIDECBAREDIT, 0);
@@ -276,15 +276,15 @@ void InitKeywords(void){
   InitKeyword("LABEL",               SCRIPT_LABEL, 1);
   InitKeyword("LOAD3DSMOKE",         SCRIPT_LOAD3DSMOKE, 1);         // documented
   InitKeyword("LOADBOUNDARY",        SCRIPT_LOADBOUNDARY, 1);        // documented
-  InitKeyword("LOADBOUNDARYM",       SCRIPT_LOADBOUNDARYM, 2);
+  InitKeyword("LOADBOUNDARYM",       SCRIPT_LOADBOUNDARYM, 2);       // documented
   InitKeyword("LOADFILE",            SCRIPT_LOADFILE, 1);            // documented
   InitKeyword("LOADINIFILE",         SCRIPT_LOADINIFILE, 1);         // documented
   InitKeyword("LOADISO",             SCRIPT_LOADISO, 1);             // documented
   InitKeyword("LOADISOM",            SCRIPT_LOADISOM, 2);            // documented
   InitKeyword("LOADPARTICLES",       SCRIPT_LOADPARTICLES, 0);       // documented
   InitKeyword("LOADPLOT3D",          SCRIPT_LOADPLOT3D, 1);          // documented
-  InitKeyword("LOADSLCF",            SCRIPT_LOADSLCF, 1);
-  InitKeyword("LOADSLICE",           SCRIPT_LOADSLICE, 2);           // documented
+  InitKeyword("LOADSLCF",            SCRIPT_LOADSLCF, 1);            // documented
+  InitKeyword("LOADSLICE",           SCRIPT_LOADSLICE, 2);
   InitKeyword("LOADSLICEM",          SCRIPT_LOADSLICEM, 3);
   InitKeyword("LOADSLICERENDER",     SCRIPT_LOADSLICERENDER, 4);
   InitKeyword("LOADSMOKERENDER",     SCRIPT_LOADSMOKERENDER, 3);
@@ -292,7 +292,7 @@ void InitKeywords(void){
   InitKeyword("LOADVOLSMOKE",        SCRIPT_LOADVOLSMOKE, 1);        // documented
   InitKeyword("LOADVOLSMOKEFRAME",   SCRIPT_LOADVOLSMOKEFRAME, 1);   // documented
   InitKeyword("LOADVFILE",           SCRIPT_LOADVFILE, 1);           // documented
-  InitKeyword("LOADVSLICE",          SCRIPT_LOADVSLICE, 2);          // documented
+  InitKeyword("LOADVSLICE",          SCRIPT_LOADVSLICE, 2);
   InitKeyword("LOADVSLICEM",         SCRIPT_LOADVSLICEM, 3);
   InitKeyword("MAKEMOVIE",           SCRIPT_MAKEMOVIE, 3);
   InitKeyword("MOVIETYPE",           SCRIPT_MOVIETYPE, 1);
