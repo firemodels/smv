@@ -310,7 +310,8 @@ void InitKeywords(void){
   InitKeyword("HIDEDEV",             SCRIPT_HIDEDEV, 1);             // documented
   InitKeyword("SHOWALLDEVS",         SCRIPT_SHOWALLDEVS, 0);         // documented
   InitKeyword("SHOWDEV",             SCRIPT_SHOWDEV, 1);             // documented
-  InitKeyword("SHOWSMOKESENSORS",    SCRIPT_SHOWSMOKESENSORS, 0);
+  InitKeyword("SHOWSMOKESENSORS",    SCRIPT_OUTPUTSMOKESENSORS, 0);  // documented
+  InitKeyword("OUTPUTSMOKESENSORS",  SCRIPT_OUTPUTSMOKESENSORS, 0);  // documented
 
 // colorbar
   InitKeyword("CBARNORMAL",          SCRIPT_CBARNORMAL, 0);          // documented
@@ -323,8 +324,8 @@ void InitKeywords(void){
 
 // tour
   InitKeyword("LOADTOUR",            SCRIPT_LOADTOUR, 1);            // documented
-  InitKeyword("SETTOURKEYFRAME",     SCRIPT_SETTOURKEYFRAME, 1);
-  InitKeyword("SETTOURVIEW",         SCRIPT_SETTOURVIEW, 1);
+  InitKeyword("SETTOURKEYFRAME",     SCRIPT_SETTOURKEYFRAME, 1);     // documented
+  InitKeyword("SETTOURVIEW",         SCRIPT_SETTOURVIEW, 1);         // documented
   InitKeyword("UNLOADTOUR",          SCRIPT_UNLOADTOUR, 0);          // documented
 
 // controlling the scene
@@ -333,12 +334,12 @@ void InitKeywords(void){
   InitKeyword("GSLICEPOS",           SCRIPT_GSLICEPOS, 1);           // documented
   InitKeyword("GSLICEVIEW",          SCRIPT_GSLICEVIEW, 1);          // documented
   InitKeyword("KEYBOARD",            SCRIPT_KEYBOARD, 1);            // documented
-  InitKeyword("PROJECTION",          SCRIPT_PROJECTION, 1);
-  InitKeyword("SCENECLIP",           SCRIPT_SCENECLIP, 1);
-  InitKeyword("SETCLIPMODE",         SCRIPT_SETCLIPMODE, 1);
-  InitKeyword("SETCLIPX",            SCRIPT_SETCLIPX, 1);
-  InitKeyword("SETCLIPY",            SCRIPT_SETCLIPY, 1);
-  InitKeyword("SETCLIPZ",            SCRIPT_SETCLIPZ, 1);
+  InitKeyword("PROJECTION",          SCRIPT_PROJECTION, 1);          // documented
+  InitKeyword("SCENECLIP",           SCRIPT_SCENECLIP, 1);           // documented
+  InitKeyword("SETCLIPMODE",         SCRIPT_SETCLIPMODE, 1);         // documented
+  InitKeyword("SETCLIPX",            SCRIPT_SETCLIPX, 1);            // documented
+  InitKeyword("SETCLIPY",            SCRIPT_SETCLIPY, 1);            // documented
+  InitKeyword("SETCLIPZ",            SCRIPT_SETCLIPZ, 1);            // documented
   InitKeyword("SETTIMEVAL",          SCRIPT_SETTIMEVAL, 1);          // documented
   InitKeyword("SETVIEWPOINT",        SCRIPT_SETVIEWPOINT, 1);        // documented
   InitKeyword("VIEWXMIN",            SCRIPT_VIEWXMIN, 0);            // documented
@@ -354,27 +355,27 @@ void InitKeywords(void){
 
 // rendering images
 
-  InitKeyword("ISORENDERALL",        SCRIPT_ISORENDERALL, 2);
-  InitKeyword("LOADSLICERENDER",     SCRIPT_LOADSLICERENDER, 4);
-  InitKeyword("LOADSMOKERENDER",     SCRIPT_LOADSMOKERENDER, 3);
-  InitKeyword("MAKEMOVIE",           SCRIPT_MAKEMOVIE, 3);
-  InitKeyword("MOVIETYPE",           SCRIPT_MOVIETYPE, 1);
+  InitKeyword("ISORENDERALL",        SCRIPT_ISORENDERALL, 2);        // documented
+  InitKeyword("LOADSLICERENDER",     SCRIPT_LOADSLICERENDER, 4);     // documented
+  InitKeyword("LOADSMOKERENDER",     SCRIPT_LOADSMOKERENDER, 3);     // documented
+  InitKeyword("MAKEMOVIE",           SCRIPT_MAKEMOVIE, 3);           // documented
+  InitKeyword("MOVIETYPE",           SCRIPT_MOVIETYPE, 1);           // documented
   InitKeyword("RENDER360ALL",        SCRIPT_RENDER360ALL, 2);        // documented
   InitKeyword("RENDERALL",           SCRIPT_RENDERALL, 2);           // documented
   InitKeyword("RENDERCLIP",          SCRIPT_RENDERCLIP, 1);          // documented
   InitKeyword("RENDERDIR",           SCRIPT_RENDERDIR, 1);           // documented
   InitKeyword("RENDERDOUBLEONCE",    SCRIPT_RENDERDOUBLEONCE, 1);    // documented
-  InitKeyword("RENDERHTMLALL",       SCRIPT_RENDERHTMLALL, 1);
+  InitKeyword("RENDERHTMLALL",       SCRIPT_RENDERHTMLALL, 1);       // documented
   InitKeyword("RENDERHTMLDIR",       SCRIPT_RENDERHTMLDIR, 1);       // documented
   InitKeyword("RENDERHTMLGEOM",      SCRIPT_RENDERHTMLGEOM, 1);
   InitKeyword("RENDERHTMLOBST",      SCRIPT_RENDERHTMLOBST, 1);
-  InitKeyword("RENDERHTMLONCE",      SCRIPT_RENDERHTMLONCE, 1);
+  InitKeyword("RENDERHTMLONCE",      SCRIPT_RENDERHTMLONCE, 1);      // documented
   InitKeyword("RENDERHTMLSLICECELL", SCRIPT_RENDERHTMLSLICECELL, 2);
   InitKeyword("RENDERHTMLSLICENODE", SCRIPT_RENDERHTMLSLICENODE, 2);
   InitKeyword("RENDERONCE",          SCRIPT_RENDERONCE, 1);          // documented
   InitKeyword("RENDERSIZE",          SCRIPT_RENDERSIZE, 1);          // documented
   InitKeyword("RENDERSTART",         SCRIPT_RENDERSTART, 1);         // documented
-  InitKeyword("RENDERTYPE",          SCRIPT_RENDERTYPE, 1);
+  InitKeyword("RENDERTYPE",          SCRIPT_RENDERTYPE, 1);          // documented
   InitKeyword("VOLSMOKERENDERALL",   SCRIPT_VOLSMOKERENDERALL, 2);   // documented
 
 // miscellaneous
@@ -784,8 +785,8 @@ int CompileScript(char *scriptfile){
 // CBARNORMAL:
       case SCRIPT_CBARNORMAL:
 
-// SHOWSMOKESENSORS
-      case SCRIPT_SHOWSMOKESENSORS:
+// OUTPUTSMOKESENSORS
+      case SCRIPT_OUTPUTSMOKESENSORS:
         break;
 
 // SHOWHVACDUCTVAL
@@ -2955,9 +2956,9 @@ void ScriptHideHVACVals(void){
   HVACMenu(MENU_HVAC_HIDE_ALL_VALUES);
 }
 
-/* ------------------ ScriptShowSmokeSensors ------------------------ */
+/* ------------------ ScriptOutputSmokeSensors ------------------------ */
 
-void ScriptShowSmokeSensors(void){
+void ScriptOutputSmokeSensors(void){
   int i,j;
   FILE *stream_smokesensors;
   int nsmokesensors;
@@ -3967,8 +3968,8 @@ int RunScriptCommand(scriptdata *script_command){
     case SCRIPT_HIDEHVACVALS:
       ScriptHideHVACVals();
       break;
-    case SCRIPT_SHOWSMOKESENSORS:
-      ScriptShowSmokeSensors();
+    case SCRIPT_OUTPUTSMOKESENSORS:
+      ScriptOutputSmokeSensors();
       break;
     case SCRIPT_SHOWALLDEVS:
       ShowDevicesMenu(MENU_DEVICES_SHOWALL);
