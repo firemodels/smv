@@ -6853,7 +6853,7 @@ extern "C" void GLUISliceBoundCB(int var){
       GLUIHVACNodeBoundsCPP_CB(BOUND_UPDATE_COLORS);
       GLUIHVACSliceBoundsCPP_CB(BOUND_UPDATE_COLORS);
       GLUIPatchBoundsCPP_CB(BOUND_UPDATE_COLORS);
-      GLUIPartBoundsCPP_CB(BOUND_RELOAD_DATA);
+      GLUIPartBoundsCPP_CB(BOUND_UPDATE_COLORS);
       if(nplot3dloaded>0)GLUIPlot3DBoundsCPP_CB(BOUND_UPDATE_COLORS);
       if(research_mode==1)PRINTF("\nresearch mode on, using global bounds\n\n");
       if(research_mode==0)PRINTF("research mode off\n");

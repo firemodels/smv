@@ -1626,7 +1626,7 @@ int GetNPartFrames(partdata *parti){
     TrimBack(reg_file);
     TrimBack(size_file);
     TrimBack(bound_file);
-    CreatePartSizeFile(parti);
+    if(parti->loaded==1)CreatePartSizeFile(parti);
   }
 
   stream=fopen(size_file,"r");
@@ -1967,6 +1967,7 @@ void FinalizePartLoad(partdata *parti){
 #endif
   INIT_PRINT_TIMER(part_time1);
   GetGlobalPartBounds(ALL_FILES);
+  SetLoadedPartBounds(NULL, 0);
   PRINT_TIMER(part_time1, "particle get bounds time");
   if(cache_part_data==1){
     INIT_PRINT_TIMER(part_time2);

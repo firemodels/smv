@@ -288,40 +288,6 @@ void ReadAllGeomMT(void){
 #endif
 
 #ifdef pp_THREAD
-/* ------------------ MtGetAllPartBounds ------------------------ */
-
-void *MtGetAllPartBounds(void *arg){
-  GetAllPartBounds();
-  pthread_exit(NULL);
-  return NULL;
-}
-
-/* ------------------ GetAllPartBoundsMT ------------------------ */
-
-void GetAllPartBoundsMT(void){
-  if(part_multithread==1){
-    int i;
-
-    for(i = 0; i<npartthread_ids; i++){
-      pthread_create(partthread_ids+i, NULL, MtGetAllPartBounds, NULL);
-    }
-    for(i = 0; i<npartthread_ids; i++){
-      pthread_join(partthread_ids[i], NULL);
-    }
-  }
-  else{
-    GetAllPartBounds();
-  }
-  MergeAllPartBounds();
-}
-#else
-void GetAllPartBoundsMT(void){
-    GetAllPartBounds();
-    MergeAllPartBounds();
-}
-#endif
-
-#ifdef pp_THREAD
 /* ------------------ MtReadBufferi ------------------------ */
 
 void *MtReadBufferi(void *arg){
