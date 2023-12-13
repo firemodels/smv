@@ -334,7 +334,26 @@ void ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
   file_size= GetFileSizeSMV(file);
   PRINTF("Loading plot3d data: %s",file);
   START_TIMER(read_time);
-  getplot3dq(file,nx,ny,nz,meshi->qdata,&error,isotest);
+  float qmin[6], qmax[6], *qminptr=NULL, *qmaxptr=NULL;
+
+  if(p->have_bound_file==0){
+    qminptr = qmin;
+    qmaxptr = qmax;
+  }
+  getplot3dq(file, nx, ny, nz, meshi->qdata, qmin, qmax, &error, isotest);
+  if(p->have_bound_file == 0){
+    FILE *bound_stream;
+    int i;
+
+    bound_stream = fopen(p->bound_file, "w");
+    if(bound_stream != NULL){
+      for(i = 0;i < 6;i++){
+        fprintf(bound_stream, " %f %f\n", qmin[i], qmax[i]);
+      }
+      update_plot3d_bnd = 1;
+      fclose(bound_stream);
+    }
+  }
   if(NewMemoryMemID((void **)&meshi->iqdata,numplot3dvars*ntotal*sizeof(unsigned char), p->memory_id)==0){
     *errorcode=1;
     ReadPlot3D("",ifile,UNLOAD,&error);
@@ -425,6 +444,11 @@ void ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
       MergePlot3DHistograms();
       SetPercentilePlot3DBounds();
 #endif
+      if(update_plot3d_bnd==1){
+        update_plot3d_bnd = 0;
+        GetGlobalPlot3DBounds();
+        SetLoadedPlot3DBounds(NULL, 0);
+      }
       UpdateAllPlot3DColors(0);
 #ifdef pp_HIST
 #define BOUND_PERCENTILE_DRAW          120

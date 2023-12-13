@@ -140,12 +140,12 @@ void DiffPlot3Ds(FILE *stream_out){
     PRINTF("  Progress: reading %s,",fullfile1);
     FFLUSH();
 
-    getplot3dq(fullfile1,nx,ny,nz,qframe1,&error1,isotest);
+    getplot3dq(fullfile1,nx,ny,nz,qframe1,&error1,isotest, NULL);
     if(test_mode==1)isotest=2;
     PRINTF(" reading %s,",fullfile2);
     FFLUSH();
 
-    getplot3dq(fullfile2,nx,ny,nz,qframe2,&error2,isotest);
+    getplot3dq(fullfile2,nx,ny,nz,qframe2,&error2,isotest, NULL);
     PRINTF(" differencing data,");
     FFLUSH();
 

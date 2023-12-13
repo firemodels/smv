@@ -56,7 +56,7 @@ void outboundaryheader(const char *boundaryfilename, FILE **file, int npatches,
 void outpatchframe(FILE *file, int npatch, int *pi1, int *pi2, int *pj1,
                    int *pj2, int *pk1, int *pk2, float patchtime, float *pqq,
                    int *error);
-void getplot3dq(const char *qfilename, int nx, int ny, int nz, float *qq,
+void getplot3dq(const char *qfilename, int nx, int ny, int nz, float *qq, float *qmin, float *qmax,
                 int *error, int isotest);
 void plot3dout(const char *outfile, int nx, int ny, int nz, float *qout,
                int *error3);
