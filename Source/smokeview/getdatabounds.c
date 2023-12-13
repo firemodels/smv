@@ -581,7 +581,6 @@ void GetGlobalSliceBounds(int flag){
     else{
       valmin = slicei->valmin_fds;
       valmax = slicei->valmax_fds;
-      slicei->have_bound_file = YES;
     }
     boundi = GetSliceBoundsInfo(slicei->label.shortlabel);
     if(boundi==NULL)continue;
