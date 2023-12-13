@@ -920,9 +920,10 @@ void outpatchframe(FILE *file, int npatch, int *pi1, int *pi2, int *pj1,
 void getplot3dq(const char *qfilename, int nx, int ny, int nz, float *qq, float *qmin, float *qmax,
                 int *error, int isotest) {
   float qval;
-  int i;
 
   if(qmin != NULL && qmax != NULL){
+    int i;
+
     for(i = 0;i < 6;i++){
       qmin[i] = 0.0;
       qmax[i] = 1.0;
@@ -988,7 +989,7 @@ void getplot3dq(const char *qfilename, int nx, int ny, int nz, float *qq, float 
     *error = 0;
   }
   if(qmin != NULL && qmax != NULL){
-    int j;
+    int i, j;
 
     for(i = 0;i < 5;i++){
       float *qqq;

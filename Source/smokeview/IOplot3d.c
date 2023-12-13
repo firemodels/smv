@@ -340,10 +340,9 @@ void ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
     qminptr = qmin;
     qmaxptr = qmax;
   }
-  getplot3dq(file, nx, ny, nz, meshi->qdata, qmin, qmax, &error, isotest);
+  getplot3dq(file, nx, ny, nz, meshi->qdata, qminptr, qmaxptr, &error, isotest);
   if(p->have_bound_file == 0){
     FILE *bound_stream;
-    int i;
 
     bound_stream = fopen(p->bound_file, "w");
     if(bound_stream != NULL){
