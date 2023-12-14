@@ -4086,7 +4086,6 @@ void LoadParticleMenu(int value){
     npartframes_max=MAX(GetMinPartFrames(value),npartframes_max);
     if(scriptoutstream==NULL||script_defer_loading==0){
       SetupPart(value);                                                // load only particle file with index value
-      GetAllPartBoundsMT();
       LoadAllPartFilesMT(value);
       if(partinfo[value].file_size == 0.0)printf("***warning: particle file has no particles\n");
     }
@@ -4141,7 +4140,6 @@ void LoadParticleMenu(int value){
       }
       if(value==PARTFILE_LOADALL){
         SetupPart(value);
-        GetAllPartBoundsMT();
         npartframes_max=GetMinPartFrames(PARTFILE_LOADALL);
       }
       else{
@@ -4162,7 +4160,6 @@ void LoadParticleMenu(int value){
         // load particle files unless we are reloading and the were not loaded before
 
         START_TIMER(part_load_time);
-        GetAllPartBoundsMT();
         int have_particles = 0, load_particles=0;
         for(i = 0; i<npartinfo; i++){
           partdata *parti;

@@ -917,10 +917,18 @@ void outpatchframe(FILE *file, int npatch, int *pi1, int *pi2, int *pj1,
 // !  ------------------ getplot3dq ------------------------ TODO: we don't need
 // to pass in the nx, ny, and nz values. This previously allowed us to allocate
 // prior to this function.
-void getplot3dq(const char *qfilename, int nx, int ny, int nz, float *qq,
+void getplot3dq(const char *qfilename, int nx, int ny, int nz, float *qq, float *qmin, float *qmax,
                 int *error, int isotest) {
   float qval;
 
+  if(qmin != NULL && qmax != NULL){
+    int i;
+
+    for(i = 0;i < 6;i++){
+      qmin[i] = 0.0;
+      qmax[i] = 1.0;
+    }
+  }
   uint32_t npts[3] = {0};
   if (isotest == 0) {
     *error = 0;
@@ -980,7 +988,35 @@ void getplot3dq(const char *qfilename, int nx, int ny, int nz, float *qq,
     }
     *error = 0;
   }
-  return;
+  if(qmin != NULL && qmax != NULL){
+    int i, j;
+
+    for(i = 0;i < 5;i++){
+      float *qqq;
+
+      qqq = qq + i*nx*ny*nz;
+      qmin[i] = qqq[0];
+      qmax[i] = qqq[0];
+      for(j = 1;j < nx * ny * nz;j++){
+        if(qqq[j] < qmin[i])qmin[i] = qqq[j];
+        if(qqq[j] > qmax[i])qmax[i] = qqq[j];
+      }
+    }
+    float *u, *v, *w;
+    // assume u, v, w components of velocity are 2nd, 3rd and 4th variables in the plot3d file
+    u = qq + nx*ny*nz;
+    v = qq + 2*nx*ny*nz;
+    w = qq + 3*nx*ny*nz;
+    qmin[5] = sqrt(u[0] * u[0] + v[0] * v[0] + w[0] * w[0]);
+    qmax[5] = qmin[5];
+    for(j = 1;j < nx*ny*nz;j++){
+      float speed;
+
+      speed = sqrt(u[j]*u[j] + v[j]*v[j] + w[j]*w[j]);
+      if(speed < qmin[5])qmin[5] = speed;
+      if(speed > qmax[5])qmax[5] = speed;
+    }
+  }
 }
 
 // !  ------------------ plot3dout ------------------------

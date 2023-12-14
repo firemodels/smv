@@ -3023,7 +3023,7 @@ void UpdateBoundInfo(void){
   PRINT_TIMER(bound_timer, "hvacbounds");
   GLUIUpdateChar();
   PRINT_TIMER(bound_timer, "GLUIUpdateChar");
-  GetGlobalPartBounds(ALL_FILES);
+  GetGlobalPartBounds(0);
   PRINT_TIMER(bound_timer, "GetGlobalPartBounds");
   GetGlobalSliceBoundsReduced();
   GetGlobalSliceBoundsMT();

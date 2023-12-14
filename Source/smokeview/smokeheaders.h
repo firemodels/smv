@@ -505,7 +505,6 @@ EXTERNCPP void FinalizePartLoad(partdata *parti);
 EXTERNCPP void LoadAllPartFilesMT(int val);
 EXTERNCPP void ReadAllGeomMT(void);
 EXTERNCPP void ClassifyAllGeomMT(void);
-EXTERNCPP void GetAllPartBoundsMT(void);
 EXTERNCPP void LoadAllPartFiles(int partnum);
 EXTERNCPP void CreatePartBoundFile(partdata *parti);
 EXTERNCPP void InitRolloutList(void);

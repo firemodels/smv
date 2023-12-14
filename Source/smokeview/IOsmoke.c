@@ -3574,6 +3574,9 @@ int GetSmoke3DSizes(int fortran_skip, char *smokefile, int version, float **time
   int dummy;
   int ntimes_full2;
   int iii;
+  int first = 1;
+  int nchars_first;
+  float time_last;
 
   if(smokefile==NULL){
     printf("***error: smokefile pointer is NULL\n");
@@ -3590,8 +3593,23 @@ int GetSmoke3DSizes(int fortran_skip, char *smokefile, int version, float **time
   fgets(buffer, 255, SMOKE_SIZE);
   iii = 0;
   while(!feof(SMOKE_SIZE)){
+    int nchars;
+
     if(fgets(buffer, 255, SMOKE_SIZE) == NULL)break;
-    sscanf(buffer, "%f", &time_local);
+    sscanf(buffer, "%f %i", &time_local, &nchars);
+    if(first == 1){
+      nchars_first = nchars;
+      first = 0;
+    }
+    else{
+      if(nchars != nchars_first){
+        fprintf(stderr, "\n");
+        fprintf(stderr, "   ***error: file %s is corrupted after t=%f\n", smokefile, time_last);
+        fprintf(stderr, "             frame size expected: %i frame size found %i\n", nchars_first, nchars);
+        break; // file is corrupted, nchars should be the same for each time step
+      }
+    }
+    time_last = time_local;
     iframe_local++;
     if(time_local <= time_max)continue;
     if(use_tload_end == 1 && time_local > tload_end)break;

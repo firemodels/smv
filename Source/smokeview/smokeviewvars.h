@@ -1181,6 +1181,7 @@ SVEXTERN float SVDECL(*sphere_xyz,NULL);
 SVEXTERN int SVDECL(demo_mode,0), SVDECL(update_demo,1);
 SVEXTERN int SVDECL(loadplot3dall,0);
 SVEXTERN char *shortp3label[MAXPLOT3DVARS], *unitp3label[MAXPLOT3DVARS];
+SVEXTERN int SVDECL(update_plot3d_bnd, 0);
 
 SVEXTERN int show3dsmoke;
 SVEXTERN float frustum[6][4];

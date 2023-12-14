@@ -388,7 +388,7 @@ void GetGlobalPatchBoundsReduced(void){
 
 /* ------------------ GetPlot3DFileBounds ------------------------ */
 
-void GetPlot3DFileBounds(char *file, float *valmin, float *valmax){
+int GetPlot3DFileBounds(char *file, float *valmin, float *valmax){
   FILE *stream;
   int i, compute_bounds = 0;
   char buffer[255];
@@ -399,10 +399,10 @@ void GetPlot3DFileBounds(char *file, float *valmin, float *valmax){
       break;
     }
   }
-  if(compute_bounds==0)return;
-  if(file==NULL||strlen(file)==0)return;
+  if(compute_bounds==0)return 1;
+  if(file==NULL||strlen(file)==0)return 0;
   stream = fopen(file, "r");
-  if(stream==NULL)return;
+  if(stream==NULL)return 0;
 
   CheckMemory;
 
@@ -411,6 +411,7 @@ void GetPlot3DFileBounds(char *file, float *valmin, float *valmax){
     sscanf(buffer, "%f %f", valmin+i, valmax+i);
   }
   fclose(stream);
+  return 1;
 }
 
 /* ------------------ GetGlobalPlot3DBounds ------------------------ */
@@ -422,7 +423,7 @@ void GetGlobalPlot3DBounds(void){
     plot3ddata *plot3di;
 
     plot3di = plot3dinfo+i;
-    GetPlot3DFileBounds(plot3di->bound_file, plot3di->valmin_fds, plot3di->valmax_fds);
+    plot3di->have_bound_file = GetPlot3DFileBounds(plot3di->bound_file, plot3di->valmin_fds, plot3di->valmax_fds);
   }
   for(i = 0; i<MAXPLOT3DVARS; i++){
     p3min_all[i] = 1.0;
@@ -434,6 +435,7 @@ void GetGlobalPlot3DBounds(void){
     float *valmin_fds, *valmax_fds;
 
     plot3di = plot3dinfo+i;
+    if(plot3di->have_bound_file == 0)continue;
     valmin_fds = plot3di->valmin_fds;
     valmax_fds = plot3di->valmax_fds;
     for(j = 0; j<MAXPLOT3DVARS; j++){
@@ -581,7 +583,6 @@ void GetGlobalSliceBounds(int flag){
     else{
       valmin = slicei->valmin_fds;
       valmax = slicei->valmax_fds;
-      slicei->have_bound_file = YES;
     }
     boundi = GetSliceBoundsInfo(slicei->label.shortlabel);
     if(boundi==NULL)continue;
