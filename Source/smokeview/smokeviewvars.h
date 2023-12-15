@@ -93,7 +93,7 @@ SVEXTERN int SVDECL(agl_offset_actual, 1);
 SVEXTERN int SVDECL(slicebounds_thread, 1);
 SVEXTERN int SVDECL(patchbounds_thread, 1);
 SVEXTERN int SVDECL(checkfiles_multithread, 1), SVDECL(have_compressed_files, 0);
-SVEXTERN int SVDECL(setupmeshwalls_multithread, 1);
+SVEXTERN int SVDECL(setupmesh_multithread, 1);
 SVEXTERN int SVDECL(ffmpeg_multithread, 1);
 SVEXTERN int SVDECL(nsmoke_threads, 1), SVDECL(use_smoke_thread, 0);
 SVEXTERN int SVDECL(force_gray_smoke, 1);

@@ -1205,14 +1205,14 @@ void InitSuperMesh(void){
 
   // determine mesh connectivity
 
-  JOIN_SETUPWALLS;
-  LOCK_SETUPWALLS;
+  JOIN_SETUPMESH;
+  LOCK_SETUPMESH;
   if(update_mesh == 1){
     update_mesh = 0;
     void UpdateMesh(void);
     UpdateMesh();
   }
-  UNLOCK_SETUPWALLS;
+  UNLOCK_SETUPMESH;
 
   // merge connected meshes to form supermeshes
 

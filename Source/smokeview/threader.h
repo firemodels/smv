@@ -19,9 +19,9 @@
 #ifdef pp_THREAD
   MMEXTERN pthread_mutex_t mutexSLICE_BOUND, mutexPATCH_BOUND, mutexPART2ISO, mutexPRINT, mutexMEM;
 
-  #define LOCK_SETUPWALLS    if(setupmeshwalls_multithread==1)pthread_mutex_lock(&mutexSETUPWALLS);
-  #define UNLOCK_SETUPWALLS  if(setupmeshwalls_multithread==1)pthread_mutex_unlock(&mutexSETUPWALLS);
-  #define JOIN_SETUPWALLS    if(setupmeshwalls_multithread==1)pthread_join(setupmeshwalls_thread_id,NULL);
+  #define LOCK_SETUPMESH    if(setupmesh_multithread==1)pthread_mutex_lock(&mutexSETUPMESH);
+  #define UNLOCK_SETUPMESH  if(setupmesh_multithread==1)pthread_mutex_unlock(&mutexSETUPMESH);
+  #define JOIN_SETUPMESH    if(setupmesh_multithread==1)pthread_join(setupmesh_thread_id,NULL);
 
   #define LOCK_READALLGEOM   if(readallgeom_multithread==1)pthread_mutex_lock(&mutexREADALLGEOM);
   #define UNLOCK_READALLGEOM if(readallgeom_multithread==1)pthread_mutex_unlock(&mutexREADALLGEOM);
@@ -70,9 +70,9 @@
 
 // blank out all preprocessing symbols if we arn't using threading
 #ifndef pp_THREAD
-  #define LOCK_SETUPWALLS
-  #define UNLOCK_SETUPWALLS
-  #define JOIN_SETUPWALLS
+  #define LOCK_SETUPMESH
+  #define UNLOCK_SETUPMESH
+  #define JOIN_SETUPMESH
 
   #define LOCK_READALLGEOM
   #define UNLOCK_READALLGEOM
@@ -120,7 +120,7 @@ void MtReadVolsmokeAllFramesAllMeshes2(void);
 
 #ifndef CPP
 #ifdef pp_THREAD
-MT_EXTERN pthread_mutex_t mutexSETUPWALLS;
+MT_EXTERN pthread_mutex_t mutexSETUPMESH;
 MT_EXTERN pthread_mutex_t mutexREADALLGEOM;
 #ifdef pp_SLICE_MULTI
 MT_EXTERN pthread_mutex_t mutexSLICE_LOAD;
@@ -137,7 +137,7 @@ MT_EXTERN pthread_mutex_t mutexPATCHBOUNDS;
 MT_EXTERN pthread_mutex_t mutexSAMPLE;
 #endif
 
-MT_EXTERN pthread_t setupmeshwalls_thread_id;
+MT_EXTERN pthread_t setupmesh_thread_id;
 MT_EXTERN pthread_t makeiblank_thread_id;
 MT_EXTERN pthread_t setupff_thread_id;
 MT_EXTERN pthread_t PATCHBOUNDS_thread_id;

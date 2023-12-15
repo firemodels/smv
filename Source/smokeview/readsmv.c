@@ -4569,9 +4569,9 @@ void ReadZVentData(zventdata *zvi, char *buffer, int flag){
   zvi->area_fraction = area_fraction;
 }
 
-/* ------------------ SetupMeshWalls ------------------------ */
+/* ------------------ SetupMesh ------------------------ */
 
-void SetupMeshWalls(void){
+void SetupMesh(void){
   int i;
 
   for(i = 0; i < nmeshes; i++){
@@ -4631,9 +4631,9 @@ void SetupMeshWalls(void){
       is_extface[5] = MESH_INT;
     }
   }
-  LOCK_SETUPWALLS;  
+  LOCK_SETUPMESH;  
   update_mesh = 1;
-  UNLOCK_SETUPWALLS;
+  UNLOCK_SETUPMESH;
 }
 
 /* ------------------ MakeFileLists ------------------------ */
@@ -11415,7 +11415,7 @@ int ReadSMV_Configure(){
     iblank_multithread      = 0;
     ffmpeg_multithread      = 0;
     readallgeom_multithread = 0;
-    setupmeshwalls_multithread = 0;
+    setupmesh_multithread = 0;
   }
 
   CheckFilesMT();
@@ -11713,10 +11713,10 @@ int ReadSMV_Configure(){
   UpdateEvents();
   PRINT_TIMER(timer_readsmv, "UpdateEvents");
 
-  void SetupMeshWallsMT(void);
-  SetupMeshWallsMT();
+  void SetupMeshMT(void);
+  SetupMeshMT();
   if(viswindrose==1)update_windrose = 1;
-  PRINT_TIMER(timer_readsmv, "SetupMeshWalls");
+  PRINT_TIMER(timer_readsmv, "SetupMesh");
 
 // initialize 2d plot data structures
   NewMemory((void **)&glui_plot2dinfo, sizeof(plot2ddata));

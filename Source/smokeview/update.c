@@ -1921,12 +1921,12 @@ void UpdateShowScene(void){
     CheckLab();
     check_colorbar++;
   }
-  LOCK_SETUPWALLS;
+  LOCK_SETUPMESH;
   if(update_mesh == 1){
     update_mesh = 0;
     UpdateMesh();
   }
-  UNLOCK_SETUPWALLS;
+  UNLOCK_SETUPMESH;
   if(update_colorbar_orig == 1){
     UpdateColorbarOrig();
     update_colorbar_orig = 0;

@@ -13,7 +13,7 @@
 
 void InitMultiThreading(void){
 #ifdef pp_THREAD
-  pthread_mutex_init(&mutexSETUPWALLS, NULL);
+  pthread_mutex_init(&mutexSETUPMESH, NULL);
   pthread_mutex_init(&mutexREADALLGEOM, NULL);
 #ifdef pp_SLICE_MULTI
   pthread_mutex_init(&mutexSLICE_LOAD, NULL);
@@ -569,29 +569,29 @@ void SampleMT(void){
 #endif
 #endif
 
-void SetupMeshWalls(void);
+void SetupMesh(void);
 #ifdef pp_THREAD
-void *MtSetupMeshWalls(void *arg){
-  SetupMeshWalls();
+void *MtSetupMesh(void *arg){
+  SetupMesh();
   InitNabors();
   pthread_exit(NULL);
   return NULL;
 }
 
-/* ------------------ SetupMeshWallsMT ------------------------ */
+/* ------------------ SetupMeshMT ------------------------ */
 
-void SetupMeshWallsMT(void){
-  if(setupmeshwalls_multithread == 1){
-    pthread_create(&setupmeshwalls_thread_id, NULL, MtSetupMeshWalls, NULL);
+void SetupMeshMT(void){
+  if(setupmesh_multithread == 1){
+    pthread_create(&setupmesh_thread_id, NULL, MtSetupMesh, NULL);
   }
   else{
-    SetupMeshWalls();
+    SetupMesh();
     InitNabors();
   }
 }
 #else
-void SetupMeshWallsMT(void){
-  SetupMeshWalls();
+void SetupMeshMT(void){
+  SetupMesh();
   InitNabors();
 }
 #endif
