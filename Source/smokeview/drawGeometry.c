@@ -1152,8 +1152,6 @@ void SetCVentDirs(void){
       }
     }
   }
-
-  LOCK_IBLANK
   for(ii = 0; ii < nmeshes; ii++){
     meshdata *meshi;
     int iv;
@@ -1167,7 +1165,6 @@ void SetCVentDirs(void){
     }
   }
   cvents_defined = 1;
-  UNLOCK_IBLANK
 }
 
 /* ------------------ CheckVentDup ------------------------ */
@@ -2457,6 +2454,7 @@ void ObstOrVent2Faces(const meshdata *meshi,blockagedata *bc,
     offset[YYY]=(float)0.0;
     offset[ZZZ]=(float)0.0;
     switch(faceptr->dir){
+    case -1:
      case DOWN_Y:
        faceptr->normal[1]=(float)-1.0;
        if(facetype==VENT_face&&vi!=NULL&&vi->dummy==0)offset[YYY] = -meshi->vent_offset[YYY];

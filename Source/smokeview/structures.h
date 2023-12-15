@@ -685,8 +685,9 @@ typedef struct _meshdata {
   float cellsize;
   int ncvents,nvents,ndummyvents;
   int nbptrs;
-  int is_bottom;
-
+  int               is_bottom,       is_bottom_temp;
+  struct _meshdata *skip_nabors[6], *skip_nabors_temp[6];
+  struct _meshdata *nabors[6],      *nabors_temp[6];
   int *cutcells, ncutcells;
   int update_smoke3dcolors;
   struct _terraindata *terrain;
@@ -719,6 +720,7 @@ typedef struct _meshdata {
   int is_extface[6]; //  MESH_EXT if face i is completely adjacent to exterior,
                      //  MESH_INT if face i is completely adjacent to another mesh,
                      // MESH_BOTH if face i is neither
+  int is_extface_temp[6];  
   int inside;
   int in_frustum;    // 1 if part or all of mesh is in the view frustum
   float boxmin[3], boxmiddle[3], boxmax[3], dbox[3], boxeps[3], dcell, dcell3[3], verts[24], eyedist;
@@ -798,10 +800,8 @@ typedef struct _meshdata {
   int *boundarytype;
   int *patchdir,*patch_surfindex;
   int *pi1, *pi2, *pj1, *pj2, *pk1, *pk2;
-  struct _meshdata *skip_nabors[6];
   int *blockonpatch;
   struct _meshdata **meshonpatch;
-  struct _meshdata *nabors[6];
   struct _supermeshdata *super;
   int *ptype;
   int *boundary_row, *boundary_col, *blockstart;

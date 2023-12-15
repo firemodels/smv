@@ -13,6 +13,7 @@
 
 void InitMultiThreading(void){
 #ifdef pp_THREAD
+  pthread_mutex_init(&mutexSETUPWALLS, NULL);
   pthread_mutex_init(&mutexREADALLGEOM, NULL);
 #ifdef pp_SLICE_MULTI
   pthread_mutex_init(&mutexSLICE_LOAD, NULL);
@@ -352,9 +353,9 @@ void FinishUpdateTriangles(void){
 }
 #endif
 
-/* ------------------ MtSetupFF ------------------------ */
+/* ------------------ MtSetupFFMpeg ------------------------ */
 
-void SetupFF(void){
+void SetupFFMpeg(void){
   int have_ffmpeg_local, have_ffplay_local;
 
 #ifdef WIN32
@@ -370,9 +371,9 @@ void SetupFF(void){
   have_ffplay = have_ffplay_local;
 }
 
-/* ------------------ MtSetupFF ------------------------ */
+/* ------------------ MtSetupFFMpeg ------------------------ */
 
-void *MtSetupFF(void *arg){
+void *MtSetupFFMpeg(void *arg){
   int have_ffmpeg_local, have_ffplay_local;
 
 #ifdef WIN32
@@ -394,18 +395,18 @@ void *MtSetupFF(void *arg){
   return NULL;
 }
 
-/* ------------------ SetupFFMT ------------------------ */
+/* ------------------ SetupFFMpegMT ------------------------ */
 
-void SetupFFMT(void){
+void SetupFFMpegMT(void){
 #ifdef pp_THREAD
   if(ffmpeg_multithread == 1){
-    pthread_create(&setupff_thread_id, NULL, MtSetupFF, NULL);
+    pthread_create(&setupff_thread_id, NULL, MtSetupFFMpeg, NULL);
   }
   else{
-    SetupFF();
+    SetupFFMpeg();
   }
 #else
-  SetupFF();
+  SetupFFMpeg();
 #endif
 }
 
@@ -568,38 +569,30 @@ void SampleMT(void){
 #endif
 #endif
 
-//***************************** multi threaded blank creation ***********************************
-
+void SetupMeshWalls(void);
 #ifdef pp_THREAD
-/* ------------------ MtMakeIBlank ------------------------ */
-
-void *MtMakeIBlank(void *arg){
-  MakeIBlank();
-  SetCVentDirs();
-  LOCK_IBLANK
-  update_setvents = 1;
-  UNLOCK_IBLANK
+void *MtSetupMeshWalls(void *arg){
+  SetupMeshWalls();
+  InitNabors();
   pthread_exit(NULL);
   return NULL;
 }
 
-/* ------------------ makeiblank_all ------------------------ */
+/* ------------------ SetupMeshWallsMT ------------------------ */
 
-void MakeIBlankAllMT(void){
-  if(iblank_multithread == 1){
-    pthread_create(&makeiblank_thread_id, NULL, MtMakeIBlank, NULL);
+void SetupMeshWallsMT(void){
+  if(setupmeshwalls_multithread == 1){
+    pthread_create(&setupmeshwalls_thread_id, NULL, MtSetupMeshWalls, NULL);
   }
   else{
-    MakeIBlank();
-    SetCVentDirs();
-    update_setvents = 1;
+    SetupMeshWalls();
+    InitNabors();
   }
 }
 #else
-void MakeIBlankAllMT(void){
-  MakeIBlank();
-  SetCVentDirs();
-  update_setvents = 1;
+void SetupMeshWallsMT(void){
+  SetupMeshWalls();
+  InitNabors();
 }
 #endif
 

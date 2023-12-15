@@ -1124,12 +1124,12 @@ void SetSuperIndex(meshdata *meshi, int dir){
 void InitNabors(void){
   int i;
 
-  for(i = 0;i<nmeshes;i++){
+  for(i = 0;i < nmeshes;i++){
     meshdata *meshi;
     int j;
 
     meshi = meshinfo+i;
-    meshi->is_bottom = IsBottomMesh(meshi);
+    meshi->is_bottom_temp = IsBottomMesh(meshi);
     for(j = 0;j<nmeshes;j++){
       meshdata *meshj;
 
@@ -1138,27 +1138,27 @@ void InitNabors(void){
       meshj = meshinfo+j;
 
       if(MeshConnect(meshi, MLEFT, meshj)==1){
-        meshi->nabors[MRIGHT] = meshj;
+        meshi->nabors_temp[MRIGHT] = meshj;
         continue;
       }
       if(MeshConnect(meshi, MRIGHT, meshj)==1){
-        meshi->nabors[MLEFT] = meshj;
+        meshi->nabors_temp[MLEFT] = meshj;
         continue;
       }
       if(MeshConnect(meshi, MFRONT, meshj)==1){
-        meshi->nabors[MBACK] = meshj;
+        meshi->nabors_temp[MBACK] = meshj;
         continue;
       }
       if(MeshConnect(meshi, MBACK, meshj)==1){
-        meshi->nabors[MFRONT] = meshj;
+        meshi->nabors_temp[MFRONT] = meshj;
         continue;
       }
       if(MeshConnect(meshi, MDOWN, meshj)==1){
-        meshi->nabors[MUP] = meshj;
+        meshi->nabors_temp[MUP] = meshj;
         continue;
       }
       if(MeshConnect(meshi, MUP, meshj)==1){
-        meshi->nabors[MDOWN] = meshj;
+        meshi->nabors_temp[MDOWN] = meshj;
         continue;
       }
     }
@@ -1172,27 +1172,27 @@ void InitNabors(void){
 
     memcpy(xyz, xyzmid, 3*sizeof(float));
     xyz[0] = meshi->boxmin[0]- meshi->boxeps_fds[0];
-    meshi->skip_nabors[MLEFT] = GetMesh(xyz, NULL);
+    meshi->skip_nabors_temp[MLEFT] = GetMesh(xyz, NULL);
 
     memcpy(xyz, xyzmid, 3*sizeof(float));
     xyz[0] = meshi->boxmax[0] + meshi->boxeps_fds[0];
-    meshi->skip_nabors[MRIGHT] = GetMesh(xyz, NULL);
+    meshi->skip_nabors_temp[MRIGHT] = GetMesh(xyz, NULL);
 
     memcpy(xyz, xyzmid, 3*sizeof(float));
     xyz[1] = meshi->boxmin[1] - meshi->boxeps_fds[1];
-    meshi->skip_nabors[MFRONT] = GetMesh(xyz, NULL);
+    meshi->skip_nabors_temp[MFRONT] = GetMesh(xyz, NULL);
 
     memcpy(xyz, xyzmid, 3*sizeof(float));
     xyz[1] = meshi->boxmax[0] + meshi->boxeps_fds[1];
-    meshi->skip_nabors[MBACK] = GetMesh(xyz, NULL);
+    meshi->skip_nabors_temp[MBACK] = GetMesh(xyz, NULL);
 
     memcpy(xyz, xyzmid, 3*sizeof(float));
     xyz[2] = meshi->boxmin[2] - meshi->boxeps_fds[2];
-    meshi->skip_nabors[MDOWN] = GetMesh(xyz, NULL);
+    meshi->skip_nabors_temp[MDOWN] = GetMesh(xyz, NULL);
 
     memcpy(xyz, xyzmid, 3*sizeof(float));
     xyz[2] = meshi->boxmax[2] + meshi->boxeps_fds[2];
-    meshi->skip_nabors[MUP] = GetMesh(xyz, NULL);
+    meshi->skip_nabors_temp[MUP] = GetMesh(xyz, NULL);
   }
 }
 
@@ -1205,7 +1205,14 @@ void InitSuperMesh(void){
 
   // determine mesh connectivity
 
-  InitNabors();
+  JOIN_SETUPWALLS;
+  LOCK_SETUPWALLS;
+  if(update_mesh == 1){
+    update_mesh = 0;
+    void UpdateMesh(void);
+    UpdateMesh();
+  }
+  UNLOCK_SETUPWALLS;
 
   // merge connected meshes to form supermeshes
 
@@ -1470,7 +1477,6 @@ void InitVolRender(void){
   if(nvolrenderinfo>0){
     InitSuperMesh();
   }
-
 }
 
 /* ------------------ GetMeshInSmesh ------------------------ */

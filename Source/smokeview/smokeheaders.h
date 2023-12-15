@@ -573,7 +573,6 @@ EXTERNCPP void UpdateSliceHist(void);
 EXTERNCPP void DrawScreenInfo(void);
 #endif
 EXTERNCPP void GetGeomZBounds(float *zmin, float *zmax);
-EXTERNCPP void MakeIBlankAllMT(void);
 EXTERNCPP void DrawNorth(void);
 EXTERNCPP void DrawGeomValues(slicedata *sd, patchdata *patchi, int geom_type);
 EXTERNCPP void DrawGeomData(int flag, slicedata *sd, patchdata *patchi, int geom_type);
@@ -590,7 +589,7 @@ EXTERNCPP int GetNumActiveDevices(void);
 EXTERNCPP void EnableDisableMakeMovie(int onoff);
 EXTERNCPP void EnableDisablePlayMovie(void);
 EXTERNCPP void HandleMakeMovie(void);
-EXTERNCPP void SetupFFMT(void);
+EXTERNCPP void SetupFFMpegMT(void);
 EXTERNCPP void UpdateRenderStartButton(void);
 EXTERNCPP void MakeMovie(void);
 EXTERNCPP void PlayMovie(void);

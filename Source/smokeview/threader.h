@@ -19,8 +19,12 @@
 #ifdef pp_THREAD
   MMEXTERN pthread_mutex_t mutexSLICE_BOUND, mutexPATCH_BOUND, mutexPART2ISO, mutexPRINT, mutexMEM;
 
-  #define LOCK_READALLGEOM     if(readallgeom_multithread==1)pthread_mutex_lock(&mutexREADALLGEOM);
-  #define UNLOCK_READALLGEOM   if(readallgeom_multithread==1)pthread_mutex_unlock(&mutexREADALLGEOM);
+  #define LOCK_SETUPWALLS    if(setupmeshwalls_multithread==1)pthread_mutex_lock(&mutexSETUPWALLS);
+  #define UNLOCK_SETUPWALLS  if(setupmeshwalls_multithread==1)pthread_mutex_unlock(&mutexSETUPWALLS);
+  #define JOIN_SETUPWALLS    if(setupmeshwalls_multithread==1)pthread_join(setupmeshwalls_thread_id,NULL);
+
+  #define LOCK_READALLGEOM   if(readallgeom_multithread==1)pthread_mutex_lock(&mutexREADALLGEOM);
+  #define UNLOCK_READALLGEOM if(readallgeom_multithread==1)pthread_mutex_unlock(&mutexREADALLGEOM);
 
   #define LOCK_PART_LOAD    pthread_mutex_lock(&mutexPART_LOAD);
   #define UNLOCK_PART_LOAD  pthread_mutex_unlock(&mutexPART_LOAD);
@@ -38,10 +42,6 @@
 
   #define LOCK_VOLLOAD      pthread_mutex_lock(&mutexVOLLOAD);
   #define UNLOCK_VOLLOAD    pthread_mutex_unlock(&mutexVOLLOAD);
-
-  #define LOCK_IBLANK       if(iblank_multithread==1){pthread_mutex_lock(&mutexIBLANK);}
-  #define UNLOCK_IBLANK     if(iblank_multithread==1){pthread_mutex_unlock(&mutexIBLANK);}
-  #define JOIN_IBLANK       if(iblank_multithread==1){pthread_join(makeiblank_thread_id,NULL);}
 
   #define LOCK_SETUP_FFMPEG      if(ffmpeg_multithread==1)pthread_mutex_lock(&mutexSETUP_FFMPEG);
   #define UNLOCK_SETUP_FFMPEG    if(ffmpeg_multithread==1)pthread_mutex_unlock(&mutexSETUP_FFMPEG);
@@ -70,6 +70,10 @@
 
 // blank out all preprocessing symbols if we arn't using threading
 #ifndef pp_THREAD
+  #define LOCK_SETUPWALLS
+  #define UNLOCK_SETUPWALLS
+  #define JOIN_SETUPWALLS
+
   #define LOCK_READALLGEOM
   #define UNLOCK_READALLGEOM
 
@@ -81,10 +85,6 @@
 
   #define LOCK_VOLLOAD
   #define UNLOCK_VOLLOAD
-
-  #define LOCK_IBLANK
-  #define UNLOCK_IBLANK
-  #define JOIN_IBLANK
 
   #define LOCK_SETUP_FFMPEG
   #define UNLOCK_SETUP_FFMPEG
@@ -120,7 +120,7 @@ void MtReadVolsmokeAllFramesAllMeshes2(void);
 
 #ifndef CPP
 #ifdef pp_THREAD
-
+MT_EXTERN pthread_mutex_t mutexSETUPWALLS;
 MT_EXTERN pthread_mutex_t mutexREADALLGEOM;
 #ifdef pp_SLICE_MULTI
 MT_EXTERN pthread_mutex_t mutexSLICE_LOAD;
@@ -137,6 +137,7 @@ MT_EXTERN pthread_mutex_t mutexPATCHBOUNDS;
 MT_EXTERN pthread_mutex_t mutexSAMPLE;
 #endif
 
+MT_EXTERN pthread_t setupmeshwalls_thread_id;
 MT_EXTERN pthread_t makeiblank_thread_id;
 MT_EXTERN pthread_t setupff_thread_id;
 MT_EXTERN pthread_t PATCHBOUNDS_thread_id;

@@ -1419,7 +1419,6 @@ int MakeIBlank(void){
       }
     }
   }
-  LOCK_IBLANK
   for(ig = 0; ig < nmeshes; ig++){
     meshdata *meshi;
 
@@ -1431,8 +1430,6 @@ int MakeIBlank(void){
     meshi->c_iblank_y = meshi->c_iblank_y0;
     meshi->c_iblank_z = meshi->c_iblank_z0;
   }
-  UNLOCK_IBLANK
-
   return 0;
 }
 

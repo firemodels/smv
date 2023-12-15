@@ -4582,7 +4582,7 @@ void SetupMeshWalls(void){
     meshi = meshinfo + i;
     bmin = meshi->boxmin;
     bmax = meshi->boxmax;
-    is_extface = meshi->is_extface;
+    is_extface = meshi->is_extface_temp;
 
     bmid[0] = (bmin[0] + bmax[0]) / 2.0;
     bmid[1] = (bmin[1] + bmax[1]) / 2.0;
@@ -4631,6 +4631,9 @@ void SetupMeshWalls(void){
       is_extface[5] = MESH_INT;
     }
   }
+  LOCK_SETUPWALLS;  
+  update_mesh = 1;
+  UNLOCK_SETUPWALLS;
 }
 
 /* ------------------ MakeFileLists ------------------------ */
@@ -11570,7 +11573,7 @@ int ReadSMV_Configure(){
   UpdatePlotxyzAll();
   CheckMemory;
 
-  PRINT_TIMER(timer_readsmv, "null");
+  START_TIMER(timer_readsmv);
   UpdateVSlices();
   PRINT_TIMER(timer_readsmv, "UpdateVSlices");
   if(update_slice==1)return 3;
@@ -11602,19 +11605,20 @@ int ReadSMV_Configure(){
       InitDevicePlane(devicei);
     }
   }
-
-  PRINT_TIMER(timer_readsmv, "null");
+  PRINT_TIMER(timer_readsmv, "update slices info");
   MakeIBlankCarve();
+  PRINT_TIMER(timer_readsmv, "MakeIBlankCarve");
   MakeIBlankSmoke3D();
-  MakeIBlankAllMT();
-  SetupFFMT();
-  LOCK_IBLANK
+  PRINT_TIMER(timer_readsmv, "MakeIBlankCarve");
+  if(fast_startup==0&&nmeshes<=100)MakeIBlank();
+  PRINT_TIMER(timer_readsmv, "MakeIBlank");
+  SetCVentDirs();
+  PRINT_TIMER(timer_readsmv, "SetCVentDirs");
+  update_setvents = 1;
+  SetupFFMpegMT();
+  PRINT_TIMER(timer_readsmv, "SetupFFMpegMT");
   SetVentDirs();
-  UNLOCK_IBLANK
-
-  JOIN_IBLANK;
-
-  PRINT_TIMER(timer_readsmv, "make blanks");
+  PRINT_TIMER(timer_readsmv, "SetVentDirs");
   UpdateFaces();
   PRINT_TIMER(timer_readsmv, "UpdateFaces");
 
@@ -11622,8 +11626,6 @@ int ReadSMV_Configure(){
   xcenCUSTOM=xbar/2.0;  ycenCUSTOM=ybar/2.0; zcenCUSTOM=zbar/2.0;
 
   glui_rotation_index = ROTATE_ABOUT_FDS_CENTER;
-
-  PRINT_TIMER(timer_readsmv, "UpdateFileBoundList");
 
   UpdateBoundInfo();
   PRINT_TIMER(timer_readsmv, "UpdateBoundInfo");
@@ -11643,10 +11645,6 @@ int ReadSMV_Configure(){
   PRINT_TIMER(timer_readsmv, "UpdateIsoTypes");
   UpdateBoundaryTypes();
   PRINT_TIMER(timer_readsmv, "UpdateBoundaryTypes");
-
-  InitNabors();
-
-  PRINT_TIMER(timer_readsmv, "update nabors");
   UpdateTerrain(1); // xxslow
   UpdateTerrainColors();
   PRINT_TIMER(timer_readsmv, "UpdateTerrain");
@@ -11689,39 +11687,42 @@ int ReadSMV_Configure(){
     nchanged_idlist=ntotal;
   }
 
-  PRINT_TIMER(timer_readsmv, "null");
-  InitNabors();
   InitVolRender();
-  InitVolRenderSurface(FIRSTCALL);
-  radius_windrose = 0.2*xyzmaxdiff;
   PRINT_TIMER(timer_readsmv, "InitVolRender");
+  InitVolRenderSurface(FIRSTCALL);
+  PRINT_TIMER(timer_readsmv, "InitVolRenderSurface");
+  radius_windrose = 0.2*xyzmaxdiff;
 
   if(large_case == 0){
     ClassifyAllGeomMT();
   }
+  PRINT_TIMER(timer_readsmv, "ClassifyGeom");
 
-  PRINT_TIMER(timer_readsmv, "null");
   UpdateTriangles(GEOM_STATIC,GEOM_UPDATE_ALL);
   GetFaceInfo();
   GetBoxGeomCorners();
   PRINT_TIMER(timer_readsmv, "update trianglesfaces");
 
   if(ngeominfo>0&&auto_terrain==1){
-    PRINT_TIMER(timer_readsmv, "null");
     GenerateTerrainGeom(&terrain_vertices, &terrain_indices, &terrain_nindices);
-    PRINT_TIMER(timer_readsmv, "GenerateTerrainGeom");
   }
+  PRINT_TIMER(timer_readsmv, "GenerateTerrainGeom");
 
   // update event labels
   UpdateEvents();
+  PRINT_TIMER(timer_readsmv, "UpdateEvents");
 
-  SetupMeshWalls();
+  void SetupMeshWallsMT(void);
+  SetupMeshWallsMT();
   if(viswindrose==1)update_windrose = 1;
+  PRINT_TIMER(timer_readsmv, "SetupMeshWalls");
 
 // initialize 2d plot data structures
   NewMemory((void **)&glui_plot2dinfo, sizeof(plot2ddata));
   InitPlot2D(glui_plot2dinfo, 0);
+  PRINT_TIMER(timer_readsmv, "InitPlot2D");
   SetInteriorBlockages(1);
+  PRINT_TIMER(timer_readsmv, "SetInteriorBlockages");
 
   PRINTF("%s", _("complete"));
   PRINTF("\n\n");
@@ -11742,8 +11743,6 @@ int ReadSMV_Configure(){
     PRINTF("   wrap up: %.1f s\n", wrapup_time);
     PRINTF("\n");
   }
-  START_TIMER(timer_readsmv);
-  PRINT_TIMER(timer_readsmv, "CheckFilesMT");
   STOP_TIMER(timer_startup);
   START_TIMER(timer_render);
   PRINT_TIMER(total_wrapup_time, "total wrapup time");
