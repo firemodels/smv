@@ -29,7 +29,7 @@ int main(int argc, char **argv) {
   float *qframe;
   NewMemory((void **)&qframe, nq * sizeof(float));
 
-  getplot3dq(filename, nxpts[0], nxpts[1], nxpts[2], qframe, &error, isotest);
+  getplot3dq(filename, nxpts[0], nxpts[1], nxpts[2], qframe, NULL, NULL, &error, isotest);
   if (error) {
     return 1;
   }
