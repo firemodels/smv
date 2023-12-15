@@ -11415,6 +11415,7 @@ int ReadSMV_Configure(){
     iblank_multithread      = 0;
     ffmpeg_multithread      = 0;
     readallgeom_multithread = 0;
+    setupmeshwalls_multithread = 0;
   }
 
   CheckFilesMT();
