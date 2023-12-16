@@ -6590,7 +6590,6 @@ void AddCfastCsvf(void){
 }
 
   /* ------------------ ReadSMV ------------------------ */
-static float timer_readsmv;
 static float processing_time;
 static float getfilelist_time;
 static float pass0_time;
@@ -6604,6 +6603,8 @@ static float pass5_time;
 /// file. This should be called before @ref ReadSMV_Parse.
 /// @return zero on success, nonzero on failure.
 int ReadSMV_Init() {
+  float timer_readsmv;
+
   START_TIMER(timer_readsmv);
   START_TIMER(processing_time);
 
@@ -6903,6 +6904,7 @@ int ReadSMV_Parse(bufferstreamdata *stream) {
   int GRIDpresent=0,startpass;
   slicedata *sliceinfo_copy=NULL;
   int nisos_per_mesh=1;
+  float timer_readsmv;
 
   int nn_smoke3d=0,nn_patch=0,nn_iso=0,nn_part=0,nn_slice=0,nslicefiles=0,nvents;
 
@@ -6932,7 +6934,8 @@ int ReadSMV_Parse(bufferstreamdata *stream) {
    ************************************************************************
  */
 
-  START_TIMER(pass1_time);
+   START_TIMER(timer_readsmv);
+   START_TIMER(pass1_time);
 
   nvents=0;
   igrid=0;
@@ -11373,6 +11376,8 @@ typedef struct {
 int ReadSMV_Configure(){
   int i;
   float wrapup_time;
+  float timer_readsmv;
+
 /*
    ************************************************************************
    ************************ wrap up ***************************************
@@ -11386,8 +11391,9 @@ int ReadSMV_Configure(){
     SMV_EXIT(0);
   }
 
-  STOP_TIMER(processing_time);
   START_TIMER(wrapup_time);
+  STOP_TIMER(processing_time);
+  START_TIMER(timer_readsmv);
 
   PRINTF("  wrapping up\n");
 
@@ -11466,8 +11472,9 @@ int ReadSMV_Configure(){
 
   if(meshinfo!=NULL&&meshinfo->jbar==1)force_isometric=1;
 
-  PRINT_TIMER(timer_readsmv, "SetupDeviceData");
   if(hrr_csv_filename != NULL)ReadHRR(LOAD);
+  PRINT_TIMER(timer_readsmv, "ReadHRR");
+
   if(runscript == 1){
     InitializeDeviceCsvData(LOAD);
   }
@@ -11475,7 +11482,9 @@ int ReadSMV_Configure(){
 
   SetupPlot2DUnitData();
   PRINT_TIMER(timer_readsmv, "SetupPlot2DUnitData");
+
   if(nzoneinfo>0)SetupZoneDevs();
+  PRINT_TIMER(timer_readsmv, "SetupPlot2DUnitData");
 
   InitPartProp();
   PRINT_TIMER(timer_readsmv, "InitPartProp");
@@ -11510,21 +11519,26 @@ int ReadSMV_Configure(){
 
   UpdateMeshBoxBounds();
   PRINT_TIMER(timer_readsmv, "UpdateMeshBoxBounds");
+
   ReadAllGeomMT();
   PRINT_TIMER(timer_readsmv, "ReadAllGeomMT");
 
   UpdateMeshCoords();
+  PRINT_TIMER(timer_readsmv, "UpdateMeshCoords");
+
   UpdateSmoke3DTypes();
+  PRINT_TIMER(timer_readsmv, "UpdateSmoke3DTypes");
   CheckMemory;
 
   // allocate memory for geometry pointers (only once)
 
   GetGeomInfoPtrs(1);
-
+  PRINT_TIMER(timer_readsmv, "GetGeomInfoPtrs");
   /*
     Associate a surface with each block.
   */
   UpdateUseTextures();
+  PRINT_TIMER(timer_readsmv, "UpdateUseTextures");
   CheckMemory;
 
   /* compute global bar's and box's */
@@ -11584,8 +11598,10 @@ int ReadSMV_Configure(){
   }
 
   GetBoundaryParams();
+  PRINT_TIMER(timer_readsmv, "GetBoundaryParams");
 
   GetGSliceParams();
+  PRINT_TIMER(timer_readsmv, "GetGSliceParams");
 
   active_smokesensors=0;
   for(i=0;i<ndeviceinfo;i++){
@@ -11602,19 +11618,28 @@ int ReadSMV_Configure(){
       InitDevicePlane(devicei);
     }
   }
-  PRINT_TIMER(timer_readsmv, "update slices info");
+
+  START_TIMER(timer_readsmv);
+
   MakeIBlankCarve();
   PRINT_TIMER(timer_readsmv, "MakeIBlankCarve");
-  MakeIBlankSmoke3D();
-  MakeIBlankAllMT();
+
   SetupFFMT();
+  PRINT_TIMER(timer_readsmv, "SetupFFMT");
+
+  MakeIBlankSmoke3D();
+  PRINT_TIMER(timer_readsmv, "MakeIBlankSmoke3D");
+
+  MakeIBlankAllMT();
+  PRINT_TIMER(timer_readsmv, "MakeIBlankAll");
+
   LOCK_IBLANK
   SetVentDirs();
+  PRINT_TIMER(timer_readsmv, "SetVentDirs");
   UNLOCK_IBLANK
 
   JOIN_IBLANK;
 
-  PRINT_TIMER(timer_readsmv, "make blanks");
   UpdateFaces();
   PRINT_TIMER(timer_readsmv, "UpdateFaces");
 
@@ -11622,8 +11647,6 @@ int ReadSMV_Configure(){
   xcenCUSTOM=xbar/2.0;  ycenCUSTOM=ybar/2.0; zcenCUSTOM=zbar/2.0;
 
   glui_rotation_index = ROTATE_ABOUT_FDS_CENTER;
-
-  PRINT_TIMER(timer_readsmv, "UpdateFileBoundList");
 
   UpdateBoundInfo();
   PRINT_TIMER(timer_readsmv, "UpdateBoundInfo");
@@ -11635,35 +11658,47 @@ int ReadSMV_Configure(){
 
   UpdateSelectFaces();
   PRINT_TIMER(timer_readsmv, "UpdateSelectFaces");
+
   UpdateSliceBoundIndexes();
   PRINT_TIMER(timer_readsmv, "UpdateSliceBoundIndexes");
+
   UpdateSliceBoundLabels();
   PRINT_TIMER(timer_readsmv, "UpdateSliceBoundLabels");
+
   UpdateIsoTypes();
   PRINT_TIMER(timer_readsmv, "UpdateIsoTypes");
+
   UpdateBoundaryTypes();
   PRINT_TIMER(timer_readsmv, "UpdateBoundaryTypes");
 
   InitNabors();
-
   PRINT_TIMER(timer_readsmv, "update nabors");
+
   UpdateTerrain(1); // xxslow
   UpdateTerrainColors();
   PRINT_TIMER(timer_readsmv, "UpdateTerrain");
+
   UpdateSmoke3dMenuLabels();
   PRINT_TIMER(timer_readsmv, "UpdateSmoke3dMenuLabels");
+
   UpdateVSliceBoundIndexes();
   PRINT_TIMER(timer_readsmv, "UpdateVSliceBoundIndexes");
+
   UpdateBoundaryMenuLabels();
   PRINT_TIMER(timer_readsmv, "UpdateBoundaryMenuLabels");
+
   UpdateIsoMenuLabels();
   PRINT_TIMER(timer_readsmv, "UpdateIsoMenuLabels");
+
   UpdatePartMenuLabels();
   PRINT_TIMER(timer_readsmv, "UpdatePartMenuLabels");
+
   UpdateTourMenuLabels();
   PRINT_TIMER(timer_readsmv, "UpdateTourMenuLabels");
+
   SetupCircularTourNodes();
   PRINT_TIMER(timer_readsmv, "SetupCircularTourNodes");
+
   InitUserTicks();
   PRINT_TIMER(timer_readsmv, "InitUserTicks");
 
@@ -11689,7 +11724,7 @@ int ReadSMV_Configure(){
     nchanged_idlist=ntotal;
   }
 
-  PRINT_TIMER(timer_readsmv, "null");
+  START_TIMER(timer_readsmv);
   InitVolRender();
   InitVolRenderSurface(FIRSTCALL);
   radius_windrose = 0.2*xyzmaxdiff;
@@ -11699,28 +11734,32 @@ int ReadSMV_Configure(){
     ClassifyAllGeomMT();
   }
   PRINT_TIMER(timer_readsmv, "ClassifyGeom");
+
   UpdateTriangles(GEOM_STATIC,GEOM_UPDATE_ALL);
   GetFaceInfo();
   GetBoxGeomCorners();
   PRINT_TIMER(timer_readsmv, "update trianglesfaces");
 
   if(ngeominfo>0&&auto_terrain==1){
-    PRINT_TIMER(timer_readsmv, "null");
+    START_TIMER(timer_readsmv);
     GenerateTerrainGeom(&terrain_vertices, &terrain_indices, &terrain_nindices);
     PRINT_TIMER(timer_readsmv, "GenerateTerrainGeom");
   }
 
   // update event labels
   UpdateEvents();
+  PRINT_TIMER(timer_readsmv, "UpdateEvents");
 
   SetupMeshWalls();
+  PRINT_TIMER(timer_readsmv, "SetupMeshWalls");
+
   if(viswindrose==1)update_windrose = 1;
-  PRINT_TIMER(timer_readsmv, "SetupMesh");
 
 // initialize 2d plot data structures
   NewMemory((void **)&glui_plot2dinfo, sizeof(plot2ddata));
   InitPlot2D(glui_plot2dinfo, 0);
   PRINT_TIMER(timer_readsmv, "InitPlot2D");
+
   SetInteriorBlockages(1);
   PRINT_TIMER(timer_readsmv, "SetInteriorBlockages");
 
@@ -11743,8 +11782,6 @@ int ReadSMV_Configure(){
     PRINTF("   wrap up: %.1f s\n", wrapup_time);
     PRINTF("\n");
   }
-  START_TIMER(timer_readsmv);
-  PRINT_TIMER(timer_readsmv, "CheckFilesMT");
   STOP_TIMER(timer_startup);
   START_TIMER(timer_render);
   PRINT_TIMER(total_wrapup_time, "total wrapup time");
@@ -11756,7 +11793,6 @@ int ReadSMV_Configure(){
 /// @param stream the file stream to parse.
 /// @return zero on sucess, non-zero on error
 int ReadSMV(bufferstreamdata *stream){
-  START_TIMER(timer_readsmv);
   ReadSMV_Init();
   ReadSMV_Parse(stream);
   ReadSMV_Configure();
