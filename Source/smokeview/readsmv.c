@@ -11415,7 +11415,6 @@ int ReadSMV_Configure(){
 
   if(runscript == 1||compute_fed == 1){
     checkfiles_multithread  = 0;
-    iblank_multithread      = 0;
     ffmpeg_multithread      = 0;
     readallgeom_multithread = 0;
   }
@@ -11630,15 +11629,15 @@ int ReadSMV_Configure(){
   MakeIBlankSmoke3D();
   PRINT_TIMER(timer_readsmv, "MakeIBlankSmoke3D");
 
-  MakeIBlankAllMT();
-  PRINT_TIMER(timer_readsmv, "MakeIBlankAll");
+  MakeIBlank();
+  PRINT_TIMER(timer_readsmv, "MakeIBlank");
 
-  LOCK_IBLANK
+  SetCVentDirs();
+  PRINT_TIMER(timer_readsmv, "SetCVentDirs");
+
   SetVentDirs();
+  update_setvents = 1;
   PRINT_TIMER(timer_readsmv, "SetVentDirs");
-  UNLOCK_IBLANK
-
-  JOIN_IBLANK;
 
   UpdateFaces();
   PRINT_TIMER(timer_readsmv, "UpdateFaces");

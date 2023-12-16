@@ -1153,7 +1153,6 @@ void SetCVentDirs(void){
     }
   }
 
-  LOCK_IBLANK
   for(ii = 0; ii < nmeshes; ii++){
     meshdata *meshi;
     int iv;
@@ -1167,7 +1166,6 @@ void SetCVentDirs(void){
     }
   }
   cvents_defined = 1;
-  UNLOCK_IBLANK
 }
 
 /* ------------------ CheckVentDup ------------------------ */

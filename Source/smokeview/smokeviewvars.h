@@ -333,7 +333,6 @@ SVEXTERN int SVDECL(update_device, 0);
 SVEXTERN int SVDECL(cancel_update_triangles, 0);
 SVEXTERN int SVDECL(updating_triangles, 0);
 SVEXTERN int SVDECL(iso_multithread, 0), SVDECL(iso_multithread_save,0);
-SVEXTERN int SVDECL(iblank_multithread, 1);
 #ifdef pp_PART_MULTI
 SVEXTERN int SVDECL(part_multithread, 1);
 #else
