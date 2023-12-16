@@ -890,7 +890,8 @@ void InitMesh(meshdata *meshi){
   int i;
 
   for(i = 0;i < 6;i++){
-    meshi->skip_nabors[i]=NULL;
+    meshi->skip_nabors[i] = NULL;
+    meshi->nabors[i]      = NULL;
   }
 #ifdef pp_DECIMATE
   meshi->dec_verts      = NULL;
@@ -942,12 +943,6 @@ void InitMesh(meshdata *meshi){
   meshi->s_offset[1] = -1;
   meshi->s_offset[2] = -1;
   meshi->super = NULL;
-  meshi->nabors[0] = NULL;
-  meshi->nabors[1] = NULL;
-  meshi->nabors[2] = NULL;
-  meshi->nabors[3] = NULL;
-  meshi->nabors[4] = NULL;
-  meshi->nabors[5] = NULL;
   meshi->update_smoke3dcolors = 0;
   meshi->iplotx_all = NULL;
   meshi->iploty_all = NULL;
@@ -11629,8 +11624,10 @@ int ReadSMV_Configure(){
   MakeIBlankSmoke3D();
   PRINT_TIMER(timer_readsmv, "MakeIBlankSmoke3D");
 
-  MakeIBlank();
-  PRINT_TIMER(timer_readsmv, "MakeIBlank");
+  if(nmeshes < 100 && fast_startup == 0){
+    MakeIBlank();
+    PRINT_TIMER(timer_readsmv, "MakeIBlank");
+  }
 
   SetCVentDirs();
   PRINT_TIMER(timer_readsmv, "SetCVentDirs");
@@ -11670,8 +11667,10 @@ int ReadSMV_Configure(){
   UpdateBoundaryTypes();
   PRINT_TIMER(timer_readsmv, "UpdateBoundaryTypes");
 
-  InitNabors();
-  PRINT_TIMER(timer_readsmv, "update nabors");
+  if(nmeshes < 100 && fast_startup == 0){
+   InitNabors();
+    PRINT_TIMER(timer_readsmv, "update nabors");
+  }
 
   UpdateTerrain(1); // xxslow
   UpdateTerrainColors();
