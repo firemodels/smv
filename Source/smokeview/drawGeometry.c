@@ -903,7 +903,7 @@ void SetCVentDirs(void){
             for(k=cvi->kmin;k<=cvi->kmax;k++){
               int state1, state2;
 
-              if(use_iblank==1){
+              if(use_iblank==1&&c_iblank!=NULL){
                 state1=c_iblank[IJKCELL(i-1,j,k)];
                 state2=c_iblank[IJKCELL(i,j,k)];
               }
@@ -950,7 +950,7 @@ void SetCVentDirs(void){
             for(k=cvi->kmin;k<=cvi->kmax;k++){
               int state1, state2;
 
-              if(use_iblank==1){
+              if(use_iblank==1&&c_iblank!=NULL){
                 state1=c_iblank[IJKCELL(i,j-1,k)];
                 state2=c_iblank[IJKCELL(i,j,k)];
               }
@@ -997,7 +997,7 @@ void SetCVentDirs(void){
             for(j=cvi->jmin;j<=cvi->jmax;j++){
               int state1, state2;
 
-              if(use_iblank==1){
+              if(use_iblank==1&&c_iblank!=NULL){
                 state1=c_iblank[IJKCELL(i,j,k-1)];
                 state2=c_iblank[IJKCELL(i,j,k)];
               }
@@ -1044,111 +1044,113 @@ void SetCVentDirs(void){
     xplt = meshi->xplt_cen;
     yplt = meshi->yplt_cen;
     zplt = meshi->zplt_cen;
-    for(iv=0;iv<meshi->ncvents;iv++){
+    for(iv = 0;iv < meshi->ncvents;iv++){
       cventdata *cvi;
       int nx, ny;
 
-      cvi=meshi->cventinfo+iv;
+      cvi = meshi->cventinfo + iv;
 
       switch(cvi->dir){
-        case UP_X:
-        case DOWN_X:
-          nx = cvi->jmax - cvi->jmin;
-          ny = cvi->kmax - cvi->kmin;
-          break;
-        case UP_Y:
-        case DOWN_Y:
-          nx = cvi->imax - cvi->imin;
-          ny = cvi->kmax - cvi->kmin;
-          break;
-        case UP_Z:
-        case DOWN_Z:
-          nx = cvi->imax - cvi->imin;
-          ny = cvi->jmax - cvi->jmin;
-          break;
-        default:
-          nx = 0;
-          ny = 0;
-          assert(FFALSE);
-          break;
-      }
-      nx+=2;
-      ny+=2;
-      NewMemory((void **)&cvi->blank,nx*ny*sizeof(unsigned char));
-      blank=cvi->blank;
-      for(j=0;j<ny;j++){
-        for(i=0;i<nx;i++){
-          if(i==0||j==0||i==nx-1||j==ny-1){
-            blank[IJCIRC(i-1,j-1)]=0;
-          }
-          else{
-            blank[IJCIRC(i-1,j-1)]=1;
-          }
-        }
-      }
-
-      blank=cvi->blank;
-      switch(cvi->dir){
-      case DOWN_X:
       case UP_X:
-        for(k=cvi->kmin;k<cvi->kmax;k++){
-          float dz;
-
-          dz = zplt[k]-FDS2SMV_Z(cvi->origin[2]);
-          for(j=cvi->jmin;j<cvi->jmax;j++){
-            float dy;
-            float drad;
-
-            dy = yplt[j]-FDS2SMV_Y(cvi->origin[1]);
-            drad=sqrt(dy*dy+dz*dz);
-            if(SCALE2SMV(drad)>cvi->radius){
-              blank[IJCIRC(j-cvi->jmin,k-cvi->kmin)]=0;
-            }
-          }
-        }
+      case DOWN_X:
+        nx = cvi->jmax - cvi->jmin;
+        ny = cvi->kmax - cvi->kmin;
         break;
-      case DOWN_Y:
       case UP_Y:
-        for(k=cvi->kmin;k<cvi->kmax;k++){
-          float dz;
-
-          dz = zplt[k]-FDS2SMV_Z(cvi->origin[2]);
-          for(i=cvi->imin;i<cvi->imax;i++){
-            float dx;
-            float drad;
-
-            dx = xplt[i]-FDS2SMV_X(cvi->origin[0]);
-            drad=sqrt(dx*dx+dz*dz);
-            if(SCALE2SMV(drad)>cvi->radius){
-              blank[IJCIRC(i-cvi->imin,k-cvi->kmin)]=0;
-            }
-          }
-        }
+      case DOWN_Y:
+        nx = cvi->imax - cvi->imin;
+        ny = cvi->kmax - cvi->kmin;
         break;
-      case DOWN_Z:
       case UP_Z:
-        for(j=cvi->jmin;j<cvi->jmax;j++){
-          float dy;
-
-          dy = yplt[j]-FDS2SMV_Y(cvi->origin[1]);
-          for(i=cvi->imin;i<cvi->imax;i++){
-            float dx;
-            float drad;
-
-            dx = xplt[i]-FDS2SMV_X(cvi->origin[0]);
-            drad=sqrt(dx*dx+dy*dy);
-            if(SCALE2SMV(drad)>cvi->radius){
-              blank[IJCIRC(i-cvi->imin,j-cvi->jmin)]=0;
-            }
-            else{
-              blank[IJCIRC(i-cvi->imin,j-cvi->jmin)]=1;
-            }
-          }
-        }
+      case DOWN_Z:
+        nx = cvi->imax - cvi->imin;
+        ny = cvi->jmax - cvi->jmin;
         break;
       default:
+        nx = 0;
+        ny = 0;
         assert(FFALSE);
         break;
+      }
+      nx += 2;
+      ny += 2;
+      NewMemory((void **)&cvi->blank, nx * ny * sizeof(unsigned char));
+      blank = cvi->blank;
+      for(j = 0;j < ny;j++){
+        for(i = 0;i < nx;i++){
+          if(i == 0 || j == 0 || i == nx - 1 || j == ny - 1){
+            blank[IJCIRC(i - 1, j - 1)] = 0;
+          }
+          else{
+            blank[IJCIRC(i - 1, j - 1)] = 1;
+          }
+        }
+      }
+
+      blank = cvi->blank;
+      if(blank != NULL){
+        switch(cvi->dir){
+        case DOWN_X:
+        case UP_X:
+          for(k = cvi->kmin;k < cvi->kmax;k++){
+            float dz;
+
+            dz = zplt[k] - FDS2SMV_Z(cvi->origin[2]);
+            for(j = cvi->jmin;j < cvi->jmax;j++){
+              float dy;
+              float drad;
+
+              dy = yplt[j] - FDS2SMV_Y(cvi->origin[1]);
+              drad = sqrt(dy * dy + dz * dz);
+              if(SCALE2SMV(drad) > cvi->radius){
+                blank[IJCIRC(j - cvi->jmin, k - cvi->kmin)] = 0;
+              }
+            }
+          }
+          break;
+        case DOWN_Y:
+        case UP_Y:
+          for(k = cvi->kmin;k < cvi->kmax;k++){
+            float dz;
+
+            dz = zplt[k] - FDS2SMV_Z(cvi->origin[2]);
+            for(i = cvi->imin;i < cvi->imax;i++){
+              float dx;
+              float drad;
+
+              dx = xplt[i] - FDS2SMV_X(cvi->origin[0]);
+              drad = sqrt(dx * dx + dz * dz);
+              if(SCALE2SMV(drad) > cvi->radius){
+                blank[IJCIRC(i - cvi->imin, k - cvi->kmin)] = 0;
+              }
+            }
+          }
+          break;
+        case DOWN_Z:
+        case UP_Z:
+          for(j = cvi->jmin;j < cvi->jmax;j++){
+            float dy;
+
+            dy = yplt[j] - FDS2SMV_Y(cvi->origin[1]);
+            for(i = cvi->imin;i < cvi->imax;i++){
+              float dx;
+              float drad;
+
+              dx = xplt[i] - FDS2SMV_X(cvi->origin[0]);
+              drad = sqrt(dx * dx + dy * dy);
+              if(SCALE2SMV(drad) > cvi->radius){
+                blank[IJCIRC(i - cvi->imin, j - cvi->jmin)] = 0;
+              }
+              else{
+                blank[IJCIRC(i - cvi->imin, j - cvi->jmin)] = 1;
+              }
+            }
+          }
+          break;
+        default:
+          assert(FFALSE);
+          break;
+        }
       }
     }
   }
