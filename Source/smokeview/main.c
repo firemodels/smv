@@ -84,7 +84,6 @@ void Usage(char *prog,int option){
     PRINTF("%s\n", _("                  and save the results into case2.ini"));
     PRINTF("%s\n", _(" -demo          - use demonstrator mode of Smokeview"));
     PRINTF("%s\n", _(" -fast          - assume slice files exist in order to reduce startup time"));
-    PRINTF("%s\n", _("                  do not setup up blanking arrays"));
     PRINTF("%s\n", _(" -full          - full startup - check if files exist"));
     PRINTF("%s\n", _(" -fed           - pre-calculate all FED slice files"));
     PRINTF("%s\n", _(" -geominfo      - output information about geometry triangles"));

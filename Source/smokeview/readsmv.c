@@ -4569,9 +4569,9 @@ void ReadZVentData(zventdata *zvi, char *buffer, int flag){
   zvi->area_fraction = area_fraction;
 }
 
-/* ------------------ SetupMesh ------------------------ */
+/* ------------------ SetupMeshWalls ------------------------ */
 
-void SetupMesh(void){
+void SetupMeshWalls(void){
   int i;
 
   for(i = 0; i < nmeshes; i++){
@@ -4582,7 +4582,7 @@ void SetupMesh(void){
     meshi = meshinfo + i;
     bmin = meshi->boxmin;
     bmax = meshi->boxmax;
-    is_extface = meshi->is_extface_temp;
+    is_extface = meshi->is_extface;
 
     bmid[0] = (bmin[0] + bmax[0]) / 2.0;
     bmid[1] = (bmin[1] + bmax[1]) / 2.0;
@@ -4631,9 +4631,6 @@ void SetupMesh(void){
       is_extface[5] = MESH_INT;
     }
   }
-  LOCK_SETUPMESH;  
-  update_mesh = 1;
-  UNLOCK_SETUPMESH;
 }
 
 /* ------------------ MakeFileLists ------------------------ */
@@ -11415,7 +11412,6 @@ int ReadSMV_Configure(){
     iblank_multithread      = 0;
     ffmpeg_multithread      = 0;
     readallgeom_multithread = 0;
-    setupmesh_multithread = 0;
   }
 
   CheckFilesMT();
@@ -11610,16 +11606,15 @@ int ReadSMV_Configure(){
   MakeIBlankCarve();
   PRINT_TIMER(timer_readsmv, "MakeIBlankCarve");
   MakeIBlankSmoke3D();
-  PRINT_TIMER(timer_readsmv, "MakeIBlankCarve");
-  if(fast_startup==0&&nmeshes<=100)MakeIBlank();
-  PRINT_TIMER(timer_readsmv, "MakeIBlank");
-  SetCVentDirs();
-  PRINT_TIMER(timer_readsmv, "SetCVentDirs");
-  update_setvents = 1;
-  SetupFFMpegMT();
-  PRINT_TIMER(timer_readsmv, "SetupFFMpegMT");
+  MakeIBlankAllMT();
+  SetupFFMT();
+  LOCK_IBLANK
   SetVentDirs();
-  PRINT_TIMER(timer_readsmv, "SetVentDirs");
+  UNLOCK_IBLANK
+
+  JOIN_IBLANK;
+
+  PRINT_TIMER(timer_readsmv, "make blanks");
   UpdateFaces();
   PRINT_TIMER(timer_readsmv, "UpdateFaces");
 
@@ -11627,6 +11622,8 @@ int ReadSMV_Configure(){
   xcenCUSTOM=xbar/2.0;  ycenCUSTOM=ybar/2.0; zcenCUSTOM=zbar/2.0;
 
   glui_rotation_index = ROTATE_ABOUT_FDS_CENTER;
+
+  PRINT_TIMER(timer_readsmv, "UpdateFileBoundList");
 
   UpdateBoundInfo();
   PRINT_TIMER(timer_readsmv, "UpdateBoundInfo");
@@ -11646,6 +11643,10 @@ int ReadSMV_Configure(){
   PRINT_TIMER(timer_readsmv, "UpdateIsoTypes");
   UpdateBoundaryTypes();
   PRINT_TIMER(timer_readsmv, "UpdateBoundaryTypes");
+
+  InitNabors();
+
+  PRINT_TIMER(timer_readsmv, "update nabors");
   UpdateTerrain(1); // xxslow
   UpdateTerrainColors();
   PRINT_TIMER(timer_readsmv, "UpdateTerrain");
@@ -11688,33 +11689,31 @@ int ReadSMV_Configure(){
     nchanged_idlist=ntotal;
   }
 
+  PRINT_TIMER(timer_readsmv, "null");
   InitVolRender();
-  PRINT_TIMER(timer_readsmv, "InitVolRender");
   InitVolRenderSurface(FIRSTCALL);
-  PRINT_TIMER(timer_readsmv, "InitVolRenderSurface");
   radius_windrose = 0.2*xyzmaxdiff;
+  PRINT_TIMER(timer_readsmv, "InitVolRender");
 
   if(large_case == 0){
     ClassifyAllGeomMT();
   }
   PRINT_TIMER(timer_readsmv, "ClassifyGeom");
-
   UpdateTriangles(GEOM_STATIC,GEOM_UPDATE_ALL);
   GetFaceInfo();
   GetBoxGeomCorners();
   PRINT_TIMER(timer_readsmv, "update trianglesfaces");
 
   if(ngeominfo>0&&auto_terrain==1){
+    PRINT_TIMER(timer_readsmv, "null");
     GenerateTerrainGeom(&terrain_vertices, &terrain_indices, &terrain_nindices);
+    PRINT_TIMER(timer_readsmv, "GenerateTerrainGeom");
   }
-  PRINT_TIMER(timer_readsmv, "GenerateTerrainGeom");
 
   // update event labels
   UpdateEvents();
-  PRINT_TIMER(timer_readsmv, "UpdateEvents");
 
-  void SetupMeshMT(void);
-  SetupMeshMT();
+  SetupMeshWalls();
   if(viswindrose==1)update_windrose = 1;
   PRINT_TIMER(timer_readsmv, "SetupMesh");
 
@@ -11744,6 +11743,8 @@ int ReadSMV_Configure(){
     PRINTF("   wrap up: %.1f s\n", wrapup_time);
     PRINTF("\n");
   }
+  START_TIMER(timer_readsmv);
+  PRINT_TIMER(timer_readsmv, "CheckFilesMT");
   STOP_TIMER(timer_startup);
   START_TIMER(timer_render);
   PRINT_TIMER(total_wrapup_time, "total wrapup time");

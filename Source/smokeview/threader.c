@@ -13,7 +13,6 @@
 
 void InitMultiThreading(void){
 #ifdef pp_THREAD
-  pthread_mutex_init(&mutexSETUPMESH, NULL);
   pthread_mutex_init(&mutexREADALLGEOM, NULL);
 #ifdef pp_SLICE_MULTI
   pthread_mutex_init(&mutexSLICE_LOAD, NULL);
@@ -289,6 +288,40 @@ void ReadAllGeomMT(void){
 #endif
 
 #ifdef pp_THREAD
+/* ------------------ MtGetAllPartBounds ------------------------ */
+
+void *MtGetAllPartBounds(void *arg){
+  GetAllPartBounds();
+  pthread_exit(NULL);
+  return NULL;
+}
+
+/* ------------------ GetAllPartBoundsMT ------------------------ */
+
+void GetAllPartBoundsMT(void){
+  if(part_multithread==1){
+    int i;
+
+    for(i = 0; i<npartthread_ids; i++){
+      pthread_create(partthread_ids+i, NULL, MtGetAllPartBounds, NULL);
+    }
+    for(i = 0; i<npartthread_ids; i++){
+      pthread_join(partthread_ids[i], NULL);
+    }
+  }
+  else{
+    GetAllPartBounds();
+  }
+  MergeAllPartBounds();
+}
+#else
+void GetAllPartBoundsMT(void){
+    GetAllPartBounds();
+    MergeAllPartBounds();
+}
+#endif
+
+#ifdef pp_THREAD
 /* ------------------ MtReadBufferi ------------------------ */
 
 void *MtReadBufferi(void *arg){
@@ -353,9 +386,9 @@ void FinishUpdateTriangles(void){
 }
 #endif
 
-/* ------------------ MtSetupFFMpeg ------------------------ */
+/* ------------------ MtSetupFF ------------------------ */
 
-void SetupFFMpeg(void){
+void SetupFF(void){
   int have_ffmpeg_local, have_ffplay_local;
 
 #ifdef WIN32
@@ -371,9 +404,9 @@ void SetupFFMpeg(void){
   have_ffplay = have_ffplay_local;
 }
 
-/* ------------------ MtSetupFFMpeg ------------------------ */
+/* ------------------ MtSetupFF ------------------------ */
 
-void *MtSetupFFMpeg(void *arg){
+void *MtSetupFF(void *arg){
   int have_ffmpeg_local, have_ffplay_local;
 
 #ifdef WIN32
@@ -395,18 +428,18 @@ void *MtSetupFFMpeg(void *arg){
   return NULL;
 }
 
-/* ------------------ SetupFFMpegMT ------------------------ */
+/* ------------------ SetupFFMT ------------------------ */
 
-void SetupFFMpegMT(void){
+void SetupFFMT(void){
 #ifdef pp_THREAD
   if(ffmpeg_multithread == 1){
-    pthread_create(&setupff_thread_id, NULL, MtSetupFFMpeg, NULL);
+    pthread_create(&setupff_thread_id, NULL, MtSetupFF, NULL);
   }
   else{
-    SetupFFMpeg();
+    SetupFF();
   }
 #else
-  SetupFFMpeg();
+  SetupFF();
 #endif
 }
 
@@ -569,30 +602,38 @@ void SampleMT(void){
 #endif
 #endif
 
-void SetupMesh(void);
+//***************************** multi threaded blank creation ***********************************
+
 #ifdef pp_THREAD
-void *MtSetupMesh(void *arg){
-  SetupMesh();
-  InitNabors();
+/* ------------------ MtMakeIBlank ------------------------ */
+
+void *MtMakeIBlank(void *arg){
+  MakeIBlank();
+  SetCVentDirs();
+  LOCK_IBLANK
+  update_setvents = 1;
+  UNLOCK_IBLANK
   pthread_exit(NULL);
   return NULL;
 }
 
-/* ------------------ SetupMeshMT ------------------------ */
+/* ------------------ makeiblank_all ------------------------ */
 
-void SetupMeshMT(void){
-  if(setupmesh_multithread == 1){
-    pthread_create(&setupmesh_thread_id, NULL, MtSetupMesh, NULL);
+void MakeIBlankAllMT(void){
+  if(iblank_multithread == 1){
+    pthread_create(&makeiblank_thread_id, NULL, MtMakeIBlank, NULL);
   }
   else{
-    SetupMesh();
-    InitNabors();
+    MakeIBlank();
+    SetCVentDirs();
+    update_setvents = 1;
   }
 }
 #else
-void SetupMeshMT(void){
-  SetupMesh();
-  InitNabors();
+void MakeIBlankAllMT(void){
+  MakeIBlank();
+  SetCVentDirs();
+  update_setvents = 1;
 }
 #endif
 

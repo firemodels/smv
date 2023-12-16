@@ -93,7 +93,6 @@ SVEXTERN int SVDECL(agl_offset_actual, 1);
 SVEXTERN int SVDECL(slicebounds_thread, 1);
 SVEXTERN int SVDECL(patchbounds_thread, 1);
 SVEXTERN int SVDECL(checkfiles_multithread, 1), SVDECL(have_compressed_files, 0);
-SVEXTERN int SVDECL(setupmesh_multithread, 1);
 SVEXTERN int SVDECL(ffmpeg_multithread, 1);
 SVEXTERN int SVDECL(nsmoke_threads, 1), SVDECL(use_smoke_thread, 0);
 SVEXTERN int SVDECL(force_gray_smoke, 1);
@@ -1184,7 +1183,6 @@ SVEXTERN int SVDECL(loadplot3dall,0);
 SVEXTERN char *shortp3label[MAXPLOT3DVARS], *unitp3label[MAXPLOT3DVARS];
 SVEXTERN int SVDECL(update_plot3d_bnd, 0);
 
-SVEXTERN int SVDECL(update_mesh, 0);
 SVEXTERN int show3dsmoke;
 SVEXTERN float frustum[6][4];
 SVEXTERN int showtime, showtime2, showplot3d, showpatch, showslice, showvslice, showsmoke, showzone, showiso;

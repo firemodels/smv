@@ -1882,27 +1882,6 @@ int HaveSootLoaded(void) {
   return NO_SMOKE;
 }
 
-/* ------------------ UpdateMesh ------------------------ */
-
-void UpdateMesh(void){
-  int i;
-
-  for(i = 0;i < nmeshes;i++){
-    meshdata *meshi;
-
-    meshi = meshinfo + i;
-    memcpy(meshi->is_extface, meshi->is_extface_temp, 6 * sizeof(int));
-  }
-  for(i = 0;i < nmeshes;i++){
-    meshdata *meshi;
-
-    meshi = meshinfo + i;
-    meshi->is_bottom = meshi->is_bottom_temp;
-    memcpy(meshi->nabors,      meshi->nabors_temp,      6*sizeof(int));
-    memcpy(meshi->skip_nabors, meshi->skip_nabors_temp, 6*sizeof(int));
-  }
-}
-
 /* ------------------ UpdateShowScene ------------------------ */
 
 void UpdateShowScene(void){
@@ -1921,12 +1900,6 @@ void UpdateShowScene(void){
     CheckLab();
     check_colorbar++;
   }
-  LOCK_SETUPMESH;
-  if(update_mesh == 1){
-    update_mesh = 0;
-    UpdateMesh();
-  }
-  UNLOCK_SETUPMESH;
   if(update_colorbar_orig == 1){
     UpdateColorbarOrig();
     update_colorbar_orig = 0;
@@ -2479,6 +2452,7 @@ void UpdateDisplay(void){
   if(sortslices == 1&&nsliceloaded>0){
     SortSlices();
   }
+  LOCK_IBLANK
   if(csv_loaded == 0){
     if(vis_hrr_plot == 1 || viswindrose == 1 || vis_device_plot != DEVICE_PLOT_HIDDEN || showdevice_val == 1){
       InitializeDeviceCsvData(LOAD);
@@ -2500,6 +2474,7 @@ void UpdateDisplay(void){
     SetVentDirs();
     update_setvents=0;
   }
+  UNLOCK_IBLANK
   LOCK_SETUP_FFMPEG
   if(update_ff == 1){
     update_ff = 0;
