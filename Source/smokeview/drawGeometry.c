@@ -834,7 +834,21 @@ void GetBlockVals(  float *xmin, float *xmax,
 
 }
 
-/* ------------------ SetCVentDirs ------------------------ */
+/* ------------------ HaveCircularVents ------------------------ */
+
+int HaveCircularVents(void) {
+  int i;
+
+  for (i = 0; i < nmeshes; i++) {
+    meshdata* meshi;
+
+    meshi = meshinfo + i;
+
+    if (meshi->ncvents > 0)return 1;
+  }
+  return 0;
+}
+      /* ------------------ SetCVentDirs ------------------------ */
 
 void SetCVentDirs(void){
   int ii;

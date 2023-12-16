@@ -1086,6 +1086,7 @@ EXTERNCPP void UpdateSurface(void);
 EXTERNCPP void WindowStatus(int state);
 EXTERNCPP void SetVentDirs(void);
 EXTERNCPP void SetCVentDirs(void);
+EXTERNCPP int HaveCircularVents(void);
 EXTERNCPP void UpdateHiddenFaces(void);
 EXTERNCPP void UpdateSelectFaces(void);
 EXTERNCPP void UpdateSelectBlocks(void);
