@@ -863,7 +863,15 @@ typedef struct _meshdata {
   int s_offset[3];
 } meshdata;
 
-  /* --------------------------  supermeshdata ------------------------------------ */
+/* --------------------------  cellmeshdata ------------------------------------ */
+
+typedef struct _cellmeshdata {
+  int nxyz[3];
+  float xyzminmax[6], dxyz[3];
+  meshdata **cellmeshes;
+} cellmeshdata;
+
+/* --------------------------  supermeshdata ------------------------------------ */
 
 typedef struct _supermeshdata {
 #ifdef pp_GPU

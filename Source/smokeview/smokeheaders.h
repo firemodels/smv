@@ -846,8 +846,11 @@ EXTERNCPP void LoadVSliceMenu(int value);
 EXTERNCPP void InitVars(void);
 EXTERNCPP void RenderState(int onoff);
 EXTERNCPP void ResizeWindow(int width, int height);
-EXTERNCPP meshdata *GetMesh(float *xyz, meshdata *guess);
+EXTERNCPP meshdata *GetMesh(float *xyz);
 EXTERNCPP meshdata *GetMeshNoFail(float *xyz);
+EXTERNCPP void InitCellMeshInfo(void);
+EXTERNCPP int InExterior(float *xyz);
+
 EXTERNCPP int  OnMeshBoundary(float *xyz);
 
 EXTERNCPP void RenderCB(int var);

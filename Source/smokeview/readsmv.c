@@ -4564,6 +4564,121 @@ void ReadZVentData(zventdata *zvi, char *buffer, int flag){
   zvi->area_fraction = area_fraction;
 }
 
+#define CELLMESH_FACTOR 8
+#define IJKCELLINFO(ii,jj,kk) ((ii) + (jj)*nxyz[0] + (kk)*nxyz[0]*nxyz[1])
+
+/* ------------------ InitCellMeshInfo ------------------------ */
+
+void InitCellMeshInfo(void){
+  int i, *nxyz, ntotal;
+  float *xyzminmax, *dxyz;
+  float *x, *y, *z;
+  meshdata **cellmeshes;
+
+  if(cellmeshinfo!=NULL){
+    nxyz = cellmeshinfo->nxyz;
+    ntotal = nxyz[0]*nxyz[1]*nxyz[2];
+    for(i=0;i<ntotal;i++){
+      if(cellmeshinfo->cellmeshes[i] == NULL){
+        is_convex = 0;
+        return;
+      }
+    }
+    is_convex = 1;
+    return;
+  }
+
+  NewMemory(( void ** )&cellmeshinfo, sizeof(cellmeshdata));
+  xyzminmax = cellmeshinfo->xyzminmax;
+  dxyz      = cellmeshinfo->dxyz;
+  nxyz      = cellmeshinfo->nxyz;
+
+  x = meshinfo->xplt_orig;
+  y = meshinfo->yplt_orig;
+  z = meshinfo->zplt_orig;
+
+  xyzminmax[0] = x[0];
+  xyzminmax[1] = x[meshinfo->ibar];
+  xyzminmax[2] = y[0];
+  xyzminmax[3] = y[meshinfo->jbar];
+  xyzminmax[4] = z[0];
+  xyzminmax[5] = z[meshinfo->kbar];
+  dxyz[0] = x[meshinfo->ibar] - x[0];
+  dxyz[1] = y[meshinfo->jbar] - y[0];
+  dxyz[2] = z[meshinfo->kbar] - z[0];
+
+  for(i = 1; i<nmeshes;i++){
+    meshdata *meshi;
+
+    meshi = meshinfo + i;
+    x = meshi->xplt_orig;
+    y = meshi->yplt_orig;
+    z = meshi->zplt_orig;
+
+    xyzminmax[0] = MIN(xyzminmax[0], x[0]);
+    xyzminmax[1] = MAX(xyzminmax[1], x[meshinfo->ibar]);
+    xyzminmax[2] = MIN(xyzminmax[2], y[0]);
+    xyzminmax[3] = MAX(xyzminmax[3], y[meshinfo->jbar]);
+    xyzminmax[4] = MIN(xyzminmax[4], z[0]);
+    xyzminmax[5] = MAX(xyzminmax[5], z[meshinfo->kbar]);
+    dxyz[0] = MIN(dxyz[0], x[meshinfo->ibar] - x[0]);
+    dxyz[1] = MIN(dxyz[1], y[meshinfo->jbar] - y[0]);
+    dxyz[2] = MIN(dxyz[2], z[meshinfo->kbar] - z[0]);
+  }
+  dxyz[0] /= (float)CELLMESH_FACTOR;
+  dxyz[1] /= (float)CELLMESH_FACTOR;
+  dxyz[2] /= (float)CELLMESH_FACTOR;
+  nxyz[0] = MAX((int)( (xyzminmax[1] - xyzminmax[0])/dxyz[0] + 0.5), 1);
+  nxyz[1] = MAX((int)( (xyzminmax[3] - xyzminmax[2])/dxyz[1] + 0.5), 1);
+  nxyz[2] = MAX((int)( (xyzminmax[5] - xyzminmax[4])/dxyz[2] + 0.5), 1);
+
+  ntotal = nxyz[0]*nxyz[1]*nxyz[2];
+  NewMemory(( void ** )&cellmeshinfo->cellmeshes, ntotal*sizeof(meshdata *));
+  cellmeshes = cellmeshinfo->cellmeshes;
+  for(i=0;i<ntotal;i++){
+    cellmeshinfo->cellmeshes[i] = NULL; 
+  }
+  for(i = 0;i < nmeshes;i++){
+    meshdata *meshi;
+    int i1, i2, j1, j2, k1, k2;
+    float xmin, xmax, ymin, ymax, zmin, zmax;
+
+    meshi = meshinfo + i;
+    x = meshi->xplt_orig;
+    y = meshi->yplt_orig;
+    z = meshi->zplt_orig;
+    xmin = x[0];
+    xmax = x[meshi->ibar];
+    ymin = y[0];
+    ymax = y[meshi->jbar];
+    zmin = z[0];
+    zmax = z[meshi->kbar];
+    i1 = CLAMP(nxyz[0]*(xmin - xyzminmax[0])/dxyz[0], 0, nxyz[0]-1);
+    i2 = CLAMP(nxyz[0]*(xmax - xyzminmax[0])/dxyz[0], 0, nxyz[0]-1);
+    j1 = CLAMP(nxyz[1]*(ymin - xyzminmax[2])/dxyz[1], 0, nxyz[1]-1);
+    j2 = CLAMP(nxyz[1]*(ymax - xyzminmax[2])/dxyz[1], 0, nxyz[1]-1);
+    k1 = CLAMP(nxyz[2]*(zmin - xyzminmax[4])/dxyz[2], 0, nxyz[2]-1);
+    k2 = CLAMP(nxyz[2]*(zmax - xyzminmax[4])/dxyz[2], 0, nxyz[2]-1);
+    int ii, jj, kk;
+
+    for(kk = k1; kk <= k2; kk++){
+      for(jj = j1; jj <= j2; jj++){
+        for(ii = i1; ii <= i2; ii++){
+          cellmeshes[IJKCELLINFO(ii,jj,kk)] = meshi;
+        }
+      }
+    }
+  }
+  for(i=0;i<ntotal;i++){
+    if(cellmeshinfo->cellmeshes[i] == NULL){
+      is_convex = 0;
+      return;
+    }
+  }
+  is_convex = 1;
+  return;
+}
+
 /* ------------------ SetupMeshWalls ------------------------ */
 
 void SetupMeshWalls(void){
@@ -4587,44 +4702,32 @@ void SetupMeshWalls(void){
     xyz[0] = bmin[0] - EPSMESH;
     xyz[1] = bmid[1];
     xyz[2] = bmid[2];
-    if(GetMesh(xyz,NULL) != NULL){
-      is_extface[0] = MESH_INT;
-    }
+    if(InExterior(xyz) == 0)is_extface[0] = MESH_INT;
 
     xyz[0] = bmax[0] + EPSMESH;
     xyz[1] = bmid[1];
     xyz[2] = bmid[2];
-    if(GetMesh(xyz,NULL) != NULL){
-      is_extface[1] = 0;
-    }
+    if(InExterior(xyz) == 0)is_extface[1] = MESH_INT;
 
     xyz[0] = bmid[0];
     xyz[1] = bmin[1] - EPSMESH;
     xyz[2] = bmid[2];
-    if(GetMesh(xyz,NULL) != NULL){
-      is_extface[2] = MESH_INT;
-    }
+    if(InExterior(xyz) == 0)is_extface[2] = MESH_INT;
 
     xyz[0] = bmid[0];
     xyz[1] = bmax[1] + EPSMESH;
     xyz[2] = bmid[2];
-    if(GetMesh(xyz,NULL) != NULL){
-      is_extface[3] = MESH_INT;
-    }
+    if(InExterior(xyz) == 0)is_extface[3] = MESH_INT;
 
     xyz[0] = bmid[0];
     xyz[1] = bmid[1];
     xyz[2] = bmin[2] - EPSMESH;
-    if(GetMesh(xyz,NULL) != NULL){
-      is_extface[4] = MESH_INT;
-    }
+    if(InExterior(xyz) == 0)is_extface[4] = MESH_INT;
 
     xyz[0] = bmid[0];
     xyz[1] = bmid[1];
     xyz[2] = bmax[2] + EPSMESH;
-    if(GetMesh(xyz,NULL) != NULL){
-      is_extface[5] = MESH_INT;
-    }
+    if(InExterior(xyz) == 0)is_extface[5] = MESH_INT;
   }
 }
 
@@ -6599,12 +6702,15 @@ static float pass5_time;
 /// @return zero on success, nonzero on failure.
 int ReadSMV_Init() {
   float timer_readsmv;
+  float timer_setup;
 
+  START_TIMER(timer_setup);
   START_TIMER(timer_readsmv);
   START_TIMER(processing_time);
 
   START_TIMER(getfilelist_time);
   MakeFileLists();
+  PRINT_TIMER(timer_setup, "MakeFileLists");
   STOP_TIMER(getfilelist_time);
 
   START_TIMER(pass0_time);
@@ -6637,7 +6743,7 @@ int ReadSMV_Init() {
     NewMemory((void **)&wui_sphereinfo,sizeof(spherepoints));
     InitSpherePoints(wui_sphereinfo,14);
   }
-
+  PRINT_TIMER(timer_setup, "InitSpherePoints");
   ntotal_blockages=0;
 
   if(ncsvfileinfo>0){
@@ -6709,15 +6815,19 @@ int ReadSMV_Init() {
   nfires=0;
   nrooms=0;
 
+  START_TIMER(timer_setup);
   InitSurface(&sdefault);
+  PRINT_TIMER(timer_setup, "InitSurface");
   NewMemory((void **)&sdefault.surfacelabel,(5+1));
   strcpy(sdefault.surfacelabel,"INERT");
 
   InitVentSurface(&v_surfacedefault);
+  PRINT_TIMER(timer_setup, "InitVentSurface");
   NewMemory((void **)&v_surfacedefault.surfacelabel,(4+1));
   strcpy(v_surfacedefault.surfacelabel,"VENT");
 
   InitSurface(&e_surfacedefault);
+  PRINT_TIMER(timer_setup, "InitSurface");
   NewMemory((void **)&e_surfacedefault.surfacelabel,(8+1));
   strcpy(e_surfacedefault.surfacelabel,"EXTERIOR");
   e_surfacedefault.color=mat_ambient2;
@@ -6757,7 +6867,9 @@ int ReadSMV_Init() {
 
   // read in device (.svo) definitions
 
+  START_TIMER(timer_setup);
   InitObjectDefs();
+  PRINT_TIMER(timer_setup, "InitSurface");
 
   if(noutlineinfo>0){
     for(i=0;i<noutlineinfo;i++){
@@ -11747,6 +11859,9 @@ int ReadSMV_Configure(){
   // update event labels
   UpdateEvents();
   PRINT_TIMER(timer_readsmv, "UpdateEvents");
+
+  InitCellMeshInfo();
+  PRINT_TIMER(timer_readsmv, "InitCellMeshInfo");
 
   SetupMeshWalls();
   PRINT_TIMER(timer_readsmv, "SetupMeshWalls");
