@@ -11736,7 +11736,7 @@ int ReadSMV_Configure(){
   MakeIBlankSmoke3D();
   PRINT_TIMER(timer_readsmv, "MakeIBlankSmoke3D");
 
-  if(nmeshes < 100 && fast_startup == 0){
+  if(HaveCircularVents()==1||(nmeshes < 100 && fast_startup == 0)){
     MakeIBlank();
     PRINT_TIMER(timer_readsmv, "MakeIBlank");
   }
