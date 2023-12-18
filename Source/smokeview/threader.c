@@ -640,3 +640,89 @@ void MtReadVolsmokeAllFramesAllMeshes2(void){
   pthread_create(&read_volsmoke_id,NULL,ReadVolsmokeAllFramesAllMeshes2,NULL);
 }
 #endif
+
+#ifdef pp_THREADER_NEW
+// -------------- following code will go into threading.cpp --------------------------
+
+/* ------------------ threader class ------------------------ */
+
+#include <pthread.h>
+#define THREAD_LOCK   0
+#define THREAD_INIT   1
+#define THREAD_UNLOCK 2
+#define THREAD_JOIN   3
+class threader{
+public:
+
+  // variables
+  int nthreads;
+  pthread_t *thread_ids;
+  pthread_mutex_t mutex;
+  int threading_on = 1;
+
+  // routines
+  void control(int var);
+  void setup(int nthreads);
+  void RunMT(void);
+  void *MTRun(void *arg);
+  void Run(void);
+};
+
+/* ------------------ threader::control ------------------------ */
+
+void threader::control(int var){
+  switch(var){
+  case THREAD_INIT:
+    pthread_mutex_init(&mutex, NULL);
+    break;
+  case THREAD_LOCK:
+    if(threading_on == 1)pthread_mutex_lock(&mutex);
+    break;
+  case THREAD_UNLOCK:
+    if(threading_on == 1)pthread_mutex_unlock(&mutex);
+    break;
+  case THREAD_JOIN:
+    int i;
+
+    if(threading_on == 1){
+      for(i = 0;i < nthreads;i++){
+        pthread_join(thread_ids[i], NULL);
+      }
+    }
+    break;
+  default:
+    assert(0);
+    break;
+  }
+}
+
+/* ------------------ MtReadAllGeom ------------------------ */
+
+void *MTRun(void *arg){
+  Run();
+  pthread_exit(NULL);
+  return NULL;
+}
+
+/* ------------------ ReadAllGeomMT ------------------------ */
+
+void RunMT(void){
+  if(threading_on == 1){
+    for(i = 0; i < nthreads; i++){
+      pthread_create(thread_ids + i, NULL, MTRun, NULL);
+    }
+  }
+  else{
+    Run();
+  }
+}
+
+
+/* ------------------ threader::setup ------------------------ */
+
+void threader::setup(int nthreads_arg, int threading_on_arg){
+  nthreads = nthreads_arg;
+  threading_on = threading_on_arg;
+}
+
+#endif
