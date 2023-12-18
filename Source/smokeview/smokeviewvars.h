@@ -305,6 +305,9 @@ SVEXTERN int SVDECL(npartthread_ids, 2);
 #ifdef pp_SLICE_MULTI
 SVEXTERN int SVDECL(nslicethread_ids, 4);
 #endif
+
+SVEXTERN threaderdata SVDECL(*threader_playmovie, NULL);
+
 SVEXTERN int SVDECL(nreadallgeomthread_ids, 4);
 SVEXTERN int SVDECL(partfast, 1);
 SVEXTERN int SVDECL(have_vr, 0), SVDECL(use_vr,0);

@@ -13,16 +13,17 @@
 #include "gd.h"
 #include "IOscript.h"
 
-/* ------------------ PlayMovie ------------------------ */
+/* ------------------ PlayMovieNow ------------------------ */
 
-void PlayMovie(void){
-  char command_line[1024], moviefile_path[1024];
+void PlayMovieNow(void){
+  char moviefile_path[1024];
 
   if(play_movie_now==0)return;
   if(FILE_EXISTS(GetMovieFilePath(moviefile_path)) == YES){
-    strcpy(command_line, "ffplay ");
-    strcat(command_line,moviefile_path);
-    PSystem(command_line);
+    if(threader_playmovie==NULL){
+      threader_playmovie = THREADERinit(1,1,PlayMovie,MTPlayMovie);
+    }
+    THREADERrun(threader_playmovie);
   }
   else{
     PRINTF("*** Error: the movie file, %s, does not exist\n", moviefile_path);

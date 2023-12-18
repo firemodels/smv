@@ -132,7 +132,6 @@ MT_EXTERN pthread_t setupff_thread_id;
 MT_EXTERN pthread_t PATCHBOUNDS_thread_id;
 MT_EXTERN pthread_t SLICEBOUNDS_thread_id;
 MT_EXTERN pthread_t checkfiles_multithread_id;
-MT_EXTERN pthread_t system_thread_id;
 MT_EXTERN pthread_t compress_thread_id;
 MT_EXTERN pthread_t update_all_patch_bounds_id;
 MT_EXTERN pthread_t read_volsmoke_id;
@@ -173,6 +172,10 @@ EXTERNCPP void THREADERcontrol(threaderdata *thi, int var);
 EXTERNCPP void THREADERrun(threaderdata *thi);
 EXTERNCPP threaderdata *THREADERinit(int nthreads_arg, int threading_on_arg,
                                       void (*run_arg)(void), void *(*mtrun_arg)(void *arg));
+
+EXTERNCPP void *MTPlayMovie(void *arg);
+EXTERNCPP void PlayMovie(void);
+
 
 #ifdef pp_THREAD
 #define LOCK_THREADS(thi)   THREADERcontrol(thi, THEAD_LOCK)

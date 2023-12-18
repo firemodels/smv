@@ -2614,7 +2614,7 @@ void RenderCB(int var){
       EnableDisablePlayMovie();
       break;
     case PLAY_MOVIE:
-      PlayMovie();
+      PlayMovieNow();
       break;
     case OUTPUT_FFMPEG:
       output_ffmpeg_command=1;

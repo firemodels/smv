@@ -546,34 +546,31 @@ void GetGlobalPatchBoundsMT(void){
 // need to declare sample_thread_id in threader.h
 // need to declare sample_multithread in smokeviewvars.h
 
-#ifdef pp_THREAD
+void Sampe(void){
+}
+
 void *MtSample(void *arg){
   Sample();
   pthread_exit(NULL);
   return NULL;
 }
-
-void SampleMT(void){
-  if(sample_multithread==1){
-    pthread_create(&sample_thread_id, NULL, MtSample, NULL);
-  }
-  else{
-    Sample();
-  }
+if(threader_sample==NULL){
+  threader_sample = THREADERinit(1,1,Sample,MTSample);
 }
-#else
-void SampleMT(void){
-  Sample();
-}
-#endif
+THREADERrun(threader_sample);
 #endif
 
-//***************************** multi threaded system call ***********************************
+/* ------------------ MTPlayMovie ------------------------ */
 
-/* ------------------ MtPSystem ------------------------ */
+void *MTPlayMovie(void *arg){
+  PlayMovie();
+  pthread_exit(NULL);
+  return NULL;
+}
 
-#ifdef pp_THREAD
-void *MtPSystem(void *arg){
+/* ------------------ PlayMovie ------------------------ */
+
+void PlayMovie(void){
   char command_line[1024], moviefile_path[1024];
 
   if(FILE_EXISTS(GetMovieFilePath(moviefile_path))==YES){
@@ -590,20 +587,7 @@ void *MtPSystem(void *arg){
     play_movie_now = 1;
     update_playmovie = 1;
   }
-  pthread_exit(NULL);
-  return NULL;
 }
-
-/* ------------------ PSystem ------------------------ */
-
-void PSystem(char *commandline){
-  pthread_create(&system_thread_id, NULL, MtPSystem, NULL);
-}
-#else
-void PSystem(char *commandline){
-  system(commandline);
-}
-#endif
 
 /* ------------------ Update_Bounds ------------------------ */
 
