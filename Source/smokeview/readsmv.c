@@ -11626,7 +11626,11 @@ int ReadSMV_Configure(){
   UpdateMeshBoxBounds();
   PRINT_TIMER(timer_readsmv, "UpdateMeshBoxBounds");
 
-  ReadAllGeomMT();
+  if(threader_readallgeom == NULL){
+    threader_readallgeom = THREADERinit(nreadallgeomthread_ids, 1, ReadAllGeom, MtReadAllGeom);
+  }
+  SetupReadAllGeom();
+  THREADERrun(threader_readallgeom);
   PRINT_TIMER(timer_readsmv, "ReadAllGeomMT");
 
   UpdateMeshCoords();

@@ -14,7 +14,6 @@
 
 void InitMultiThreading(void){
 #ifdef pp_THREAD
-  pthread_mutex_init(&mutexREADALLGEOM, NULL);
 #ifdef pp_SLICE_MULTI
   pthread_mutex_init(&mutexSLICE_LOAD, NULL);
 #endif
@@ -230,34 +229,6 @@ void ClassifyAllGeomMT(void){
   }
 }
 
-/* ------------------ MtReadAllGeom ------------------------ */
-
-void *MtReadAllGeom(void *arg){
-  ReadAllGeom();
-  pthread_exit(NULL);
-  return NULL;
-}
-
-/* ------------------ ReadAllGeomMT ------------------------ */
-
-void ReadAllGeomMT(void){
-  if(readallgeom_multithread==1){
-    int i;
-
-    SetupReadAllGeom();
-    for(i = 0; i<nreadallgeomthread_ids; i++){
-      pthread_create(readallgeomthread_ids+i, NULL, MtReadAllGeom, NULL);
-    }
-    for(i = 0; i<nreadallgeomthread_ids; i++){
-      pthread_join(readallgeomthread_ids[i], NULL);
-    }
-  }
-  else{
-    SetupReadAllGeom();
-    ReadAllGeom();
-  }
-}
-
 /* ------------------ MTGeneratePartHistograms ------------------------ */
 
 #ifdef pp_HIST
@@ -279,10 +250,6 @@ void GeneratePartHistogramsMT(void){
 void ClassifyAllGeomMT(void){
   SetupReadAllGeom();
   ClassifyAllGeom();
-}
-void ReadAllGeomMT(void){
-  SetupReadAllGeom();
-  ReadAllGeom();
 }
 #endif
 
@@ -523,6 +490,14 @@ void MtReadVolsmokeAllFramesAllMeshes2(void){
 
 
 #ifdef pp_THREAD_NEW
+
+/* ------------------ MtReadAllGeom ------------------------ */
+
+void *MtReadAllGeom(void *arg){
+  ReadAllGeom();
+  pthread_exit(NULL);
+  return NULL;
+}
 
 /* ------------------ Sample ------------------------ */
 

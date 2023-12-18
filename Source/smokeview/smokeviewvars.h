@@ -306,8 +306,9 @@ SVEXTERN int SVDECL(npartthread_ids, 2);
 SVEXTERN int SVDECL(nslicethread_ids, 4);
 #endif
 
-SVEXTERN threaderdata SVDECL(*threader_playmovie, NULL);
-SVEXTERN threaderdata SVDECL(*threader_setupff, NULL);
+SVEXTERN threaderdata SVDECL(*threader_playmovie,   NULL);
+SVEXTERN threaderdata SVDECL(*threader_setupff,     NULL);
+SVEXTERN threaderdata SVDECL(*threader_readallgeom, NULL);
 
 SVEXTERN int SVDECL(nreadallgeomthread_ids, 4);
 SVEXTERN int SVDECL(partfast, 1);

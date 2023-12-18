@@ -3228,36 +3228,36 @@ void ReadAllGeom(void){
     geomdata *geomi;
 
     geomi = geominfo + i;
-    LOCK_READALLGEOM;
+    THREADERcontrol(threader_readallgeom, THREAD_LOCK);
     if(geomi->read_status!=0){
-      UNLOCK_READALLGEOM;
+      THREADERcontrol(threader_readallgeom, THREAD_UNLOCK);
       continue;
     }
     geomi->read_status = 1;
-    UNLOCK_READALLGEOM;
+    THREADERcontrol(threader_readallgeom, THREAD_UNLOCK);
 
     ReadGeom(geomi, LOAD, GEOM_GEOM, NULL);
-    LOCK_READALLGEOM;
+    THREADERcontrol(threader_readallgeom, THREAD_LOCK);
     geomi->read_status = 2;
-    UNLOCK_READALLGEOM;
+    THREADERcontrol(threader_readallgeom, THREAD_UNLOCK);
   }
   for(i = 0; i<ncgeominfo; i++){
     geomdata *geomi;
 
     geomi = cgeominfo+i;
-    LOCK_READALLGEOM;
+    THREADERcontrol(threader_readallgeom, THREAD_LOCK);
     if(geomi->read_status!=0){
-      UNLOCK_READALLGEOM;
+      THREADERcontrol(threader_readallgeom, THREAD_UNLOCK);
       continue;
     }
     geomi->read_status = 1;
-    UNLOCK_READALLGEOM;
+    THREADERcontrol(threader_readallgeom, THREAD_UNLOCK);
 
     ReadGeom(geomi, LOAD, GEOM_CGEOM, NULL);
     UpdateGeomTriangles(geomi, GEOM_STATIC);
-    LOCK_READALLGEOM;
+    THREADERcontrol(threader_readallgeom, THREAD_LOCK);
     geomi->read_status = 2;
-    UNLOCK_READALLGEOM;
+    THREADERcontrol(threader_readallgeom, THREAD_UNLOCK);
   }
 }
 
@@ -4225,39 +4225,39 @@ void ClassifyAllGeom(void){
     geomdata *geomi;
 
     geomi = geominfo+i;
-    LOCK_READALLGEOM;
+    THREADERcontrol(threader_readallgeom, THREAD_LOCK);
     if(geomi->read_status!=0){
-      UNLOCK_READALLGEOM;
+      THREADERcontrol(threader_readallgeom, THREAD_UNLOCK);
       continue;
     }
     geomi->read_status = 1;
-    UNLOCK_READALLGEOM;
+    THREADERcontrol(threader_readallgeom, THREAD_UNLOCK);
 
     if(geomi->geomtype!=GEOM_ISO){
       ClassifyGeom(geomi, NULL);
     }
-    LOCK_READALLGEOM;
+    THREADERcontrol(threader_readallgeom, THREAD_LOCK);
     geomi->read_status = 2;
-    UNLOCK_READALLGEOM;
+    THREADERcontrol(threader_readallgeom, THREAD_UNLOCK);
   }
   for(i = 0; i<ncgeominfo; i++){
     geomdata *geomi;
 
     geomi = cgeominfo+i;
-    LOCK_READALLGEOM;
+    THREADERcontrol(threader_readallgeom, THREAD_LOCK);
     if(geomi->read_status!=0){
-      UNLOCK_READALLGEOM;
+      THREADERcontrol(threader_readallgeom, THREAD_UNLOCK);
       continue;
     }
     geomi->read_status = 1;
-    UNLOCK_READALLGEOM;
+    THREADERcontrol(threader_readallgeom, THREAD_UNLOCK);
 
     if(geomi->geomtype!=GEOM_ISO){
       ClassifyGeom(geomi, NULL);
     }
-    LOCK_READALLGEOM;
+    THREADERcontrol(threader_readallgeom, THREAD_LOCK);
     geomi->read_status = 2;
-    UNLOCK_READALLGEOM;
+    THREADERcontrol(threader_readallgeom, THREAD_UNLOCK);
   }
 }
 

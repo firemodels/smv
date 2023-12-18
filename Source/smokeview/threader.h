@@ -19,9 +19,6 @@
 #ifdef pp_THREAD
   MMEXTERN pthread_mutex_t mutexSLICE_BOUND, mutexPATCH_BOUND, mutexPART2ISO, mutexPRINT, mutexMEM;
 
-  #define LOCK_READALLGEOM     if(readallgeom_multithread==1)pthread_mutex_lock(&mutexREADALLGEOM);
-  #define UNLOCK_READALLGEOM   if(readallgeom_multithread==1)pthread_mutex_unlock(&mutexREADALLGEOM);
-
   #define LOCK_PART_LOAD    pthread_mutex_lock(&mutexPART_LOAD);
   #define UNLOCK_PART_LOAD  pthread_mutex_unlock(&mutexPART_LOAD);
 
@@ -105,7 +102,6 @@ void MtReadVolsmokeAllFramesAllMeshes2(void);
 #ifndef CPP
 #ifdef pp_THREAD
 
-MT_EXTERN pthread_mutex_t mutexREADALLGEOM;
 #ifdef pp_SLICE_MULTI
 MT_EXTERN pthread_mutex_t mutexSLICE_LOAD;
 #endif
@@ -168,6 +164,9 @@ EXTERNCPP void PlayMovie(void);
 
 EXTERNCPP void *MTSetupFF(void *arg);
 EXTERNCPP void SetupFF(void);
+
+EXTERNCPP void *MtReadAllGeom(void *arg);
+EXTERNCPP void ReadAllGeom(void);
 
 #ifdef pp_THREAD
 #define LOCK_THREADS(thi)   THREADERcontrol(thi, THEAD_LOCK)
