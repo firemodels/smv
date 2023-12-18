@@ -21,7 +21,6 @@ void InitMultiThreading(void){
   pthread_mutex_init(&mutexPART_LOAD, NULL);
   pthread_mutex_init(&mutexCOMPRESS,NULL);
   pthread_mutex_init(&mutexVOLLOAD,NULL);
-  pthread_mutex_init(&mutexSETUP_FFMPEG, NULL);
   pthread_mutex_init(&mutexCHECKFILES, NULL);
   pthread_mutex_init(&mutexSLICEBOUNDS, NULL);
   pthread_mutex_init(&mutexPATCHBOUNDS, NULL);
@@ -352,63 +351,6 @@ void FinishUpdateTriangles(void){
 }
 #endif
 
-/* ------------------ MtSetupFF ------------------------ */
-
-void SetupFF(void){
-  int have_ffmpeg_local, have_ffplay_local;
-
-#ifdef WIN32
-  have_ffmpeg_local = HaveProg("ffmpeg -version> Nul 2>Nul");
-  have_ffplay_local = HaveProg("ffplay -version> Nul 2>Nul");
-#else
-  have_ffmpeg_local = HaveProg("ffmpeg -version >/dev/null 2>/dev/null");
-  have_ffplay_local = HaveProg("ffplay -version >/dev/null 2>/dev/null");
-#endif
-
-  update_ff = 1;
-  have_ffmpeg = have_ffmpeg_local;
-  have_ffplay = have_ffplay_local;
-}
-
-/* ------------------ MtSetupFF ------------------------ */
-
-void *MtSetupFF(void *arg){
-  int have_ffmpeg_local, have_ffplay_local;
-
-#ifdef WIN32
-  have_ffmpeg_local = HaveProg("ffmpeg -version> Nul 2>Nul");
-  have_ffplay_local = HaveProg("ffplay -version> Nul 2>Nul");
-#else
-  have_ffmpeg_local = HaveProg("ffmpeg -version >/dev/null 2>/dev/null");
-  have_ffplay_local = HaveProg("ffplay -version >/dev/null 2>/dev/null");
-#endif
-
-  LOCK_SETUP_FFMPEG
-  update_ff = 1;
-  have_ffmpeg = have_ffmpeg_local;
-  have_ffplay = have_ffplay_local;
-  UNLOCK_SETUP_FFMPEG
-#ifdef pp_THREAD
-  pthread_exit(NULL);
-#endif
-  return NULL;
-}
-
-/* ------------------ SetupFFMT ------------------------ */
-
-void SetupFFMT(void){
-#ifdef pp_THREAD
-  if(ffmpeg_multithread == 1){
-    pthread_create(&setupff_thread_id, NULL, MtSetupFF, NULL);
-  }
-  else{
-    SetupFF();
-  }
-#else
-  SetupFF();
-#endif
-}
-
 #ifndef pp_CHECK
 /* ------------------ CheckFiles ------------------------ */
 
@@ -539,6 +481,49 @@ void GetGlobalPatchBoundsMT(void){
 }
 #endif
 
+/* ------------------ Update_Bounds ------------------------ */
+
+#ifdef pp_HIST
+int Update_Bounds(void){
+  UpdateAllBoundaryBounds();
+#ifdef pp_THREAD
+  pthread_join(update_all_patch_bounds_id,NULL);
+#endif
+  return 1;
+}
+
+/* ------------------ UpdateAllBoundaryBoundsMT ------------------------ */
+
+#ifdef pp_THREAD
+void *UpdateAllBoundaryBoundsMT(void *arg){
+  UpdateAllBoundaryBoundsST();
+  pthread_exit(NULL);
+  return NULL;
+}
+void UpdateAllBoundaryBounds(void){
+  pthread_create(&update_all_patch_bounds_id,NULL, UpdateAllBoundaryBoundsMT,NULL);
+}
+#else
+void UpdateAllBoundaryBounds(void){
+  UpdateAllBoundaryBoundsST();
+}
+#endif
+#endif
+
+/* ------------------ MtReadVolsmokeAllFramesAllMeshes2 ------------------------ */
+
+#ifdef pp_THREAD
+void MtReadVolsmokeAllFramesAllMeshes2(void){
+  pthread_create(&read_volsmoke_id,NULL,ReadVolsmokeAllFramesAllMeshes2,NULL);
+}
+#endif
+
+//VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
+// -------------------- new threader routines
+
+
+#ifdef pp_THREAD_NEW
+
 /* ------------------ Sample ------------------------ */
 
 #ifdef pp_SAMPLE
@@ -589,44 +574,33 @@ void PlayMovie(void){
   }
 }
 
-/* ------------------ Update_Bounds ------------------------ */
+/* ------------------ SetupFF ------------------------ */
 
-#ifdef pp_HIST
-int Update_Bounds(void){
-  UpdateAllBoundaryBounds();
-#ifdef pp_THREAD
-  pthread_join(update_all_patch_bounds_id,NULL);
+void SetupFF(void){
+  int have_ffmpeg_local, have_ffplay_local;
+
+#ifdef WIN32
+  have_ffmpeg_local = HaveProg("ffmpeg -version> Nul 2>Nul");
+  have_ffplay_local = HaveProg("ffplay -version> Nul 2>Nul");
+#else
+  have_ffmpeg_local = HaveProg("ffmpeg -version >/dev/null 2>/dev/null");
+  have_ffplay_local = HaveProg("ffplay -version >/dev/null 2>/dev/null");
 #endif
-  return 1;
+
+  THREADERcontrol(threader_setupff, THREAD_LOCK);;
+  update_ff = 1;
+  have_ffmpeg = have_ffmpeg_local;
+  have_ffplay = have_ffplay_local;
+  THREADERcontrol(threader_setupff, THREAD_UNLOCK);;
 }
 
-/* ------------------ UpdateAllBoundaryBoundsMT ------------------------ */
+/* ------------------ MtSetupFF ------------------------ */
 
-#ifdef pp_THREAD
-void *UpdateAllBoundaryBoundsMT(void *arg){
-  UpdateAllBoundaryBoundsST();
+void *MTSetupFF(void *arg){
+  SetupFF();
   pthread_exit(NULL);
   return NULL;
 }
-void UpdateAllBoundaryBounds(void){
-  pthread_create(&update_all_patch_bounds_id,NULL, UpdateAllBoundaryBoundsMT,NULL);
-}
-#else
-void UpdateAllBoundaryBounds(void){
-  UpdateAllBoundaryBoundsST();
-}
-#endif
-#endif
-
-/* ------------------ MtReadVolsmokeAllFramesAllMeshes2 ------------------------ */
-
-#ifdef pp_THREAD
-void MtReadVolsmokeAllFramesAllMeshes2(void){
-  pthread_create(&read_volsmoke_id,NULL,ReadVolsmokeAllFramesAllMeshes2,NULL);
-}
-#endif
-
-#ifdef pp_THREAD_NEW
 
 /* ------------------ THREADERinit ------------------------ */
 

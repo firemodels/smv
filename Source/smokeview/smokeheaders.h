@@ -588,7 +588,6 @@ EXTERNCPP int GetNumActiveDevices(void);
 EXTERNCPP void EnableDisableMakeMovie(int onoff);
 EXTERNCPP void EnableDisablePlayMovie(void);
 EXTERNCPP void HandleMakeMovie(void);
-EXTERNCPP void SetupFFMT(void);
 EXTERNCPP void UpdateRenderStartButton(void);
 EXTERNCPP void MakeMovie(void);
 EXTERNCPP void PlayMovieNow(void);

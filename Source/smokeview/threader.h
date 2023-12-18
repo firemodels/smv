@@ -39,10 +39,6 @@
   #define LOCK_VOLLOAD      pthread_mutex_lock(&mutexVOLLOAD);
   #define UNLOCK_VOLLOAD    pthread_mutex_unlock(&mutexVOLLOAD);
 
-  #define LOCK_SETUP_FFMPEG      if(ffmpeg_multithread==1)pthread_mutex_lock(&mutexSETUP_FFMPEG);
-  #define UNLOCK_SETUP_FFMPEG    if(ffmpeg_multithread==1)pthread_mutex_unlock(&mutexSETUP_FFMPEG);
-  #define JOIN_SETUP_FFMPEG      if(ffmpeg_multithread==1)pthread_join(setupff_thread_id,NULL);
-
   #define LOCK_CHECKFILES   if(checkfiles_multithread==1)pthread_mutex_lock(&mutexCHECKFILES);
   #define UNLOCK_CHECKFILES if(checkfiles_multithread==1)pthread_mutex_unlock(&mutexCHECKFILES);
   #define JOIN_CHECKFILES   if(checkfiles_multithread==1)pthread_join(checkfiles_multithread_id,NULL);
@@ -77,10 +73,6 @@
 
   #define LOCK_VOLLOAD
   #define UNLOCK_VOLLOAD
-
-  #define LOCK_SETUP_FFMPEG
-  #define UNLOCK_SETUP_FFMPEG
-  #define JOIN_SETUP_FFMPEG
 
   #define LOCK_CHECKFILES
   #define UNLOCK_CHECKFILES
@@ -120,7 +112,6 @@ MT_EXTERN pthread_mutex_t mutexSLICE_LOAD;
 MT_EXTERN pthread_mutex_t mutexPART_LOAD;
 MT_EXTERN pthread_mutex_t mutexVOLLOAD;
 MT_EXTERN pthread_mutex_t mutexCOMPRESS;
-MT_EXTERN pthread_mutex_t mutexSETUP_FFMPEG;
 MT_EXTERN pthread_mutex_t mutexCHECKFILES;
 MT_EXTERN pthread_mutex_t mutexSLICEBOUNDS;
 MT_EXTERN pthread_mutex_t mutexPATCHBOUNDS;
@@ -128,7 +119,6 @@ MT_EXTERN pthread_mutex_t mutexPATCHBOUNDS;
 MT_EXTERN pthread_mutex_t mutexSAMPLE;
 #endif
 
-MT_EXTERN pthread_t setupff_thread_id;
 MT_EXTERN pthread_t PATCHBOUNDS_thread_id;
 MT_EXTERN pthread_t SLICEBOUNDS_thread_id;
 MT_EXTERN pthread_t checkfiles_multithread_id;
@@ -176,6 +166,8 @@ EXTERNCPP threaderdata *THREADERinit(int nthreads_arg, int threading_on_arg,
 EXTERNCPP void *MTPlayMovie(void *arg);
 EXTERNCPP void PlayMovie(void);
 
+EXTERNCPP void *MTSetupFF(void *arg);
+EXTERNCPP void SetupFF(void);
 
 #ifdef pp_THREAD
 #define LOCK_THREADS(thi)   THREADERcontrol(thi, THEAD_LOCK)

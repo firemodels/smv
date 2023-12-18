@@ -11730,7 +11730,10 @@ int ReadSMV_Configure(){
   MakeIBlankCarve();
   PRINT_TIMER(timer_readsmv, "MakeIBlankCarve");
 
-  SetupFFMT();
+  if(threader_setupff == NULL){
+    threader_setupff = THREADERinit(1, 1, SetupFF, MTSetupFF);
+  }
+  THREADERrun(threader_setupff);
   PRINT_TIMER(timer_readsmv, "SetupFFMT");
 
   MakeIBlankSmoke3D();
