@@ -4216,51 +4216,6 @@ void ClassifyGeom(geomdata *geomi,int *geom_frame_index){
   }
 }
 
-/* ------------------ ClassifyAllGeom ------------------------ */
-
-void ClassifyAllGeom(void){
-  int i;
-
-  for(i = 0; i<ngeominfo; i++){
-    geomdata *geomi;
-
-    geomi = geominfo+i;
-    THREADERcontrol(threader_readallgeom, THREAD_LOCK);
-    if(geomi->read_status!=0){
-      THREADERcontrol(threader_readallgeom, THREAD_UNLOCK);
-      continue;
-    }
-    geomi->read_status = 1;
-    THREADERcontrol(threader_readallgeom, THREAD_UNLOCK);
-
-    if(geomi->geomtype!=GEOM_ISO){
-      ClassifyGeom(geomi, NULL);
-    }
-    THREADERcontrol(threader_readallgeom, THREAD_LOCK);
-    geomi->read_status = 2;
-    THREADERcontrol(threader_readallgeom, THREAD_UNLOCK);
-  }
-  for(i = 0; i<ncgeominfo; i++){
-    geomdata *geomi;
-
-    geomi = cgeominfo+i;
-    THREADERcontrol(threader_readallgeom, THREAD_LOCK);
-    if(geomi->read_status!=0){
-      THREADERcontrol(threader_readallgeom, THREAD_UNLOCK);
-      continue;
-    }
-    geomi->read_status = 1;
-    THREADERcontrol(threader_readallgeom, THREAD_UNLOCK);
-
-    if(geomi->geomtype!=GEOM_ISO){
-      ClassifyGeom(geomi, NULL);
-    }
-    THREADERcontrol(threader_readallgeom, THREAD_LOCK);
-    geomi->read_status = 2;
-    THREADERcontrol(threader_readallgeom, THREAD_UNLOCK);
-  }
-}
-
 /* ------------------ ReadGeom ------------------------ */
 
 void ReadGeomFile2(geomdata *geomi){

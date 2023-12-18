@@ -59,9 +59,6 @@
 
 // blank out all preprocessing symbols if we arn't using threading
 #ifndef pp_THREAD
-  #define LOCK_READALLGEOM
-  #define UNLOCK_READALLGEOM
-
   #define LOCK_PART_LOAD
   #define UNLOCK_PART_LOAD
 
@@ -130,7 +127,6 @@ MT_EXTERN pthread_t *readbuffer_ids;
 MT_EXTERN pthread_t slicethread_ids[MAX_THREADS];
 #endif
 MT_EXTERN pthread_t readallgeomthread_ids[MAX_THREADS];
-MT_EXTERN pthread_t classifyallgeomthread_ids[MAX_THREADS];
 #ifdef pp_SAMPLE
 MT_EXTERN pthread_t sample_thread_id;
 #endif
@@ -167,6 +163,9 @@ EXTERNCPP void SetupFF(void);
 
 EXTERNCPP void *MtReadAllGeom(void *arg);
 EXTERNCPP void ReadAllGeom(void);
+
+EXTERNCPP void *MtClassifyAllGeom(void *arg);
+EXTERNCPP void ClassifyAllGeom(void);
 
 #ifdef pp_THREAD
 #define LOCK_THREADS(thi)   THREADERcontrol(thi, THEAD_LOCK)

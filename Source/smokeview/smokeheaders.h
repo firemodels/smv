@@ -330,6 +330,7 @@ EXTERNCPP void PrintTime(const char *tag, int line, float *timer, const char *la
 
 EXTERNCPP void DrawObstBoundingBox(void);
 EXTERNCPP void DrawGeomBoundingBox(float *boundingbox_color);
+EXTERNCPP void ClassifyGeom(geomdata *geomi, int *geom_frame_index);
 
 EXTERNCPP void GLUIUpdateCfaces(void);
 
@@ -503,7 +504,6 @@ EXTERNCPP int HaveSootLoaded(void);
 EXTERNCPP void MakeColorLabels(char colorlabels[12][11], float colorvalues[12], float tmin_arg, float tmax_arg, int nlevel);
 EXTERNCPP void FinalizePartLoad(partdata *parti);
 EXTERNCPP void LoadAllPartFilesMT(int val);
-EXTERNCPP void ClassifyAllGeomMT(void);
 EXTERNCPP void LoadAllPartFiles(int partnum);
 EXTERNCPP void CreatePartBoundFile(partdata *parti);
 EXTERNCPP void InitRolloutList(void);

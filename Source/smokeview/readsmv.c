@@ -11627,7 +11627,8 @@ int ReadSMV_Configure(){
   PRINT_TIMER(timer_readsmv, "UpdateMeshBoxBounds");
 
   if(threader_readallgeom == NULL){
-    threader_readallgeom = THREADERinit(nreadallgeomthread_ids, 1, ReadAllGeom, MtReadAllGeom);
+    threader_readallgeom = THREADERinit(nreadallgeomthread_ids, readallgeom_multithread, 
+                                        ReadAllGeom, MtReadAllGeom);
   }
   SetupReadAllGeom();
   THREADERrun(threader_readallgeom);
@@ -11735,7 +11736,7 @@ int ReadSMV_Configure(){
   PRINT_TIMER(timer_readsmv, "MakeIBlankCarve");
 
   if(threader_setupff == NULL){
-    threader_setupff = THREADERinit(1, 1, SetupFF, MTSetupFF);
+    threader_setupff = THREADERinit(1, ffmpeg_multithread, SetupFF, MTSetupFF);
   }
   THREADERrun(threader_setupff);
   PRINT_TIMER(timer_readsmv, "SetupFFMT");
@@ -11847,8 +11848,12 @@ int ReadSMV_Configure(){
   radius_windrose = 0.2*xyzmaxdiff;
   PRINT_TIMER(timer_readsmv, "InitVolRender");
 
-  if(large_case == 0){
-    ClassifyAllGeomMT();
+  if(large_case==0){
+    if(threader_classifyallgeom==NULL){
+      threader_classifyallgeom = THREADERinit(nreadallgeomthread_ids, readallgeom_multithread, 
+                                              ClassifyAllGeom, MtClassifyAllGeom);
+    }
+    THREADERrun(threader_classifyallgeom);
   }
   PRINT_TIMER(timer_readsmv, "ClassifyGeom");
 

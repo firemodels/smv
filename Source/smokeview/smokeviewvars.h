@@ -90,11 +90,7 @@ SVEXTERN int SOOT_index, HRRPUV_index, TEMP_index, CO2_index;
 
 SVEXTERN int SVDECL(agl_offset_actual, 1);
 
-SVEXTERN int SVDECL(slicebounds_thread, 1);
-SVEXTERN int SVDECL(patchbounds_thread, 1);
-SVEXTERN int SVDECL(checkfiles_multithread, 1), SVDECL(have_compressed_files, 0);
-SVEXTERN int SVDECL(ffmpeg_multithread, 1);
-SVEXTERN int SVDECL(nsmoke_threads, 1), SVDECL(use_smoke_thread, 0);
+SVEXTERN int SVDECL(have_compressed_files, 0);
 SVEXTERN int SVDECL(force_gray_smoke, 1);
 SVEXTERN int SVDECL(verbose_output, 0);
 SVEXTERN float glui_smoke3d_extinct;
@@ -301,16 +297,39 @@ SVEXTERN int npart5loaded, npartloaded;
 
 SVEXTERN int SVDECL(global_have_global_bound_file, 0);
 SVEXTERN FILE_SIZE  SVDECL(global_part_boundsize, 0);
-SVEXTERN int SVDECL(npartthread_ids, 2);
+
+// multi-threading
+//*** number of threads
+SVEXTERN int SVDECL(nreadallgeomthread_ids, 4);
+SVEXTERN int SVDECL(nsmoke_threads, 1), SVDECL(npartthread_ids, 2);
 #ifdef pp_SLICE_MULTI
 SVEXTERN int SVDECL(nslicethread_ids, 4);
 #endif
+SVEXTERN int SVDECL(nmemory_ids, 0);
+
+//***use  multi-threading
+SVEXTERN int SVDECL(iso_multithread, 0), SVDECL(iso_multithread_save,0);
+#ifdef pp_PART_MULTI
+SVEXTERN int SVDECL(part_multithread, 1);
+#else
+SVEXTERN int SVDECL(part_multithread, 0);
+#endif
+#ifdef pp_SLICE_MULTI
+SVEXTERN int SVDECL(slice_multithread, 0);
+#endif
+SVEXTERN int SVDECL(readallgeom_multithread, 1);
+SVEXTERN int SVDECL(slicebounds_thread, 1);
+SVEXTERN int SVDECL(patchbounds_thread, 1);
+SVEXTERN int SVDECL(checkfiles_multithread, 1);
+SVEXTERN int SVDECL(ffmpeg_multithread, 1);
+SVEXTERN int SVDECL(use_smoke_thread, 0);
+
 
 SVEXTERN threaderdata SVDECL(*threader_playmovie,   NULL);
 SVEXTERN threaderdata SVDECL(*threader_setupff,     NULL);
 SVEXTERN threaderdata SVDECL(*threader_readallgeom, NULL);
+SVEXTERN threaderdata SVDECL(*threader_classifyallgeom, NULL);
 
-SVEXTERN int SVDECL(nreadallgeomthread_ids, 4);
 SVEXTERN int SVDECL(partfast, 1);
 SVEXTERN int SVDECL(have_vr, 0), SVDECL(use_vr,0);
 SVEXTERN int SVDECL(use_fire_alpha, 0);
@@ -340,16 +359,6 @@ SVEXTERN int SVDECL(is_convex, 0);
 
 SVEXTERN int SVDECL(cancel_update_triangles, 0);
 SVEXTERN int SVDECL(updating_triangles, 0);
-SVEXTERN int SVDECL(iso_multithread, 0), SVDECL(iso_multithread_save,0);
-#ifdef pp_PART_MULTI
-SVEXTERN int SVDECL(part_multithread, 1);
-#else
-SVEXTERN int SVDECL(part_multithread, 0);
-#endif
-#ifdef pp_SLICE_MULTI
-SVEXTERN int SVDECL(slice_multithread, 0);
-#endif
-SVEXTERN int SVDECL(readallgeom_multithread, 1);
 SVEXTERN int SVDECL(lighting_on,0);
 SVEXTERN int SVDECL(geomdata_smoothnormals, 0), SVDECL(geomdata_lighting, 1);
 SVEXTERN int SVDECL(update_texturebar, 0);
@@ -668,7 +677,6 @@ SVEXTERN int SVDECL(showlabels_windrose,1), SVDECL(windstate_windrose,WINDROSE_D
 SVEXTERN int SVDECL(zone_rho, 1);
 SVEXTERN int SVDECL(visventslab, 0), SVDECL(visventprofile, 1);
 SVEXTERN int SVDECL(update_readiso_geom_wrapup, UPDATE_ISO_OFF);
-SVEXTERN int SVDECL(nmemory_ids, 0);
 SVEXTERN int SVDECL(update_playmovie, 0);
 SVEXTERN int SVDECL(play_movie_now, 1);
 SVEXTERN int SVDECL(update_makemovie, 0),SVDECL(movie_filetype,AVI);

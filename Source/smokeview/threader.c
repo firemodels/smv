@@ -206,28 +206,6 @@ FILE_SIZE LoadAllMSlicesMT(int last_slice, multislicedata *mslicei, int *fcount)
   }
 
 #ifdef pp_THREAD
-/* ------------------ MtClassifyAllGeom ------------------------ */
-
-void *MtClassifyAllGeom(void *arg){
-  ClassifyAllGeom();
-  pthread_exit(NULL);
-  return NULL;
-}
-
-void ClassifyAllGeomMT(void){
-  if(readallgeom_multithread==1){
-    int i;
-
-    SetupReadAllGeom();
-    for(i = 0; i<nreadallgeomthread_ids; i++){
-      pthread_create(classifyallgeomthread_ids+i, NULL, MtClassifyAllGeom, NULL);
-    }
-  }
-  else{
-    SetupReadAllGeom();
-    ClassifyAllGeom();
-  }
-}
 
 /* ------------------ MTGeneratePartHistograms ------------------------ */
 
@@ -246,10 +224,6 @@ void GeneratePartHistogramsMT(void){
 #else
 void GeneratePartHistogramsMT(void){
   GeneratePartHistograms();
-}
-void ClassifyAllGeomMT(void){
-  SetupReadAllGeom();
-  ClassifyAllGeom();
 }
 #endif
 
@@ -490,6 +464,59 @@ void MtReadVolsmokeAllFramesAllMeshes2(void){
 
 
 #ifdef pp_THREAD_NEW
+
+/* ------------------ MtClassifyAllGeom ------------------------ */
+
+void *MtClassifyAllGeom(void *arg){
+  ClassifyAllGeom();
+  pthread_exit(NULL);
+  return NULL;
+}
+
+/* ------------------ ClassifyAllGeom ------------------------ */
+
+void ClassifyAllGeom(void){
+  int i;
+
+  for(i = 0; i<ngeominfo; i++){
+    geomdata *geomi;
+
+    geomi = geominfo+i;
+    THREADERcontrol(threader_readallgeom, THREAD_LOCK);
+    if(geomi->read_status!=0){
+      THREADERcontrol(threader_readallgeom, THREAD_UNLOCK);
+      continue;
+    }
+    geomi->read_status = 1;
+    THREADERcontrol(threader_readallgeom, THREAD_UNLOCK);
+
+    if(geomi->geomtype!=GEOM_ISO){
+      ClassifyGeom(geomi, NULL);
+    }
+    THREADERcontrol(threader_readallgeom, THREAD_LOCK);
+    geomi->read_status = 2;
+    THREADERcontrol(threader_readallgeom, THREAD_UNLOCK);
+  }
+  for(i = 0; i<ncgeominfo; i++){
+    geomdata *geomi;
+
+    geomi = cgeominfo+i;
+    THREADERcontrol(threader_readallgeom, THREAD_LOCK);
+    if(geomi->read_status!=0){
+      THREADERcontrol(threader_readallgeom, THREAD_UNLOCK);
+      continue;
+    }
+    geomi->read_status = 1;
+    THREADERcontrol(threader_readallgeom, THREAD_UNLOCK);
+
+    if(geomi->geomtype!=GEOM_ISO){
+      ClassifyGeom(geomi, NULL);
+    }
+    THREADERcontrol(threader_readallgeom, THREAD_LOCK);
+    geomi->read_status = 2;
+    THREADERcontrol(threader_readallgeom, THREAD_UNLOCK);
+  }
+}
 
 /* ------------------ MtReadAllGeom ------------------------ */
 
