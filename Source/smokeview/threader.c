@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <assert.h>
 
 #include "smokeviewvars.h"
 #include "IOvolsmoke.h"
@@ -641,54 +642,59 @@ void MtReadVolsmokeAllFramesAllMeshes2(void){
 }
 #endif
 
-#ifdef pp_THREADER_NEW
-// -------------- following code will go into threading.cpp --------------------------
+#ifdef pp_THREAD_NEW
 
-/* ------------------ threader class ------------------------ */
+/* ------------------ THREADERinit ------------------------ */
 
-#include <pthread.h>
-#define THREAD_LOCK   0
-#define THREAD_INIT   1
-#define THREAD_UNLOCK 2
-#define THREAD_JOIN   3
-class threader{
-public:
+threaderdata *THREADERinit(int nthreads_arg, int threading_on_arg,
+  void (*run_arg)(void), void *(*mtrun_arg)(void *arg)){
+  threaderdata *thi;
 
-  // variables
-  int nthreads;
-  pthread_t *thread_ids;
-  pthread_mutex_t mutex;
-  int threading_on = 1;
+  //create two routines
+    // void run(void){
+    // }
+    // void *mtrun(void *arg){
+    //   run();
+    //   pthread_exit(NULL);
+    //   return NULL;
+    // }
 
-  // routines
-  void control(int var);
-  void setup(int nthreads);
-  void RunMT(void);
-  void *MTRun(void *arg);
-  void Run(void);
-};
+  if(nthreads_arg < 0)nthreads_arg = 0;
+  if(threading_on_arg != 1)threading_on_arg = 0;
+  if(nthreads_arg == 0)threading_on_arg = 0;
+  NewMemory(( void ** )&thi, sizeof(threaderdata));
+  thi->nthreads     = nthreads_arg;
+  thi->threading_on = threading_on_arg;
+  thi->run          = run_arg;
+  thi->mtrun        = mtrun_arg;
+  NewMemory(( void ** )&thi->thread_ids, nthreads_arg*sizeof(pthread_t));
+  pthread_mutex_init(&thi->mutex, NULL);
+  return thi;
+}
 
-/* ------------------ threader::control ------------------------ */
+/* ------------------ THREADERcontrol ------------------------ */
 
-void threader::control(int var){
+void THREADERcontrol(threaderdata *thi, int var){
+  if(thi == NULL)return;
   switch(var){
-  case THREAD_INIT:
-    pthread_mutex_init(&mutex, NULL);
-    break;
   case THREAD_LOCK:
-    if(threading_on == 1)pthread_mutex_lock(&mutex);
+    if(thi->threading_on == 1)pthread_mutex_lock(&thi->mutex);
     break;
   case THREAD_UNLOCK:
-    if(threading_on == 1)pthread_mutex_unlock(&mutex);
+    if(thi->threading_on == 1)pthread_mutex_unlock(&thi->mutex);
     break;
   case THREAD_JOIN:
-    int i;
+    if(thi->threading_on == 1){
+      int i;
 
-    if(threading_on == 1){
-      for(i = 0;i < nthreads;i++){
-        pthread_join(thread_ids[i], NULL);
+      for(i = 0;i < thi->nthreads;i++){
+        pthread_join(thi->thread_ids[i], NULL);
       }
     }
+    break;
+  case THREAD_FREE:
+    FREEMEMORY(thi->thread_ids);
+    FREEMEMORY(thi);
     break;
   default:
     assert(0);
@@ -696,33 +702,18 @@ void threader::control(int var){
   }
 }
 
-/* ------------------ MtReadAllGeom ------------------------ */
+/* ------------------ THREADERrun ------------------------ */
 
-void *MTRun(void *arg){
-  Run();
-  pthread_exit(NULL);
-  return NULL;
-}
+void THREADERrun(threaderdata *thi){
+  if(thi->threading_on == 1){
+    int i;
 
-/* ------------------ ReadAllGeomMT ------------------------ */
-
-void RunMT(void){
-  if(threading_on == 1){
-    for(i = 0; i < nthreads; i++){
-      pthread_create(thread_ids + i, NULL, MTRun, NULL);
+    for(i = 0; i < thi->nthreads; i++){
+      pthread_create(thi->thread_ids + i, NULL, thi->mtrun, NULL);
     }
   }
   else{
-    Run();
+   thi->run();
   }
 }
-
-
-/* ------------------ threader::setup ------------------------ */
-
-void threader::setup(int nthreads_arg, int threading_on_arg){
-  nthreads = nthreads_arg;
-  threading_on = threading_on_arg;
-}
-
 #endif

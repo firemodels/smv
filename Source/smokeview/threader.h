@@ -153,5 +153,39 @@ MT_EXTERN pthread_t sample_thread_id;
 #endif
 #endif
 
+// ------------ new threader routines -----------------------------
+#ifdef pp_THREAD_NEW
+#define THREAD_LOCK   0
+#define THREAD_UNLOCK 1
+#define THREAD_JOIN   2
+#define THREAD_FREE   3
+
+typedef struct _threaderdata{
+  int nthreads;
+  int threading_on;
+  pthread_t *thread_ids;
+  pthread_mutex_t mutex;
+  void (*run)(void);
+  void *(*mtrun)(void *arg);
+} threaderdata;
+
+EXTERNCPP void THREADERcontrol(threaderdata *thi, int var);
+EXTERNCPP void THREADERrun(threaderdata *thi);
+EXTERNCPP threaderdata *THREADERinit(int nthreads_arg, int threading_on_arg,
+                                      void (*run_arg)(void), void *(*mtrun_arg)(void *arg));
+
+#ifdef pp_THREAD
+#define LOCK_THREADS(thi)   THREADERcontrol(thi, THEAD_LOCK)
+#define UNLOCK_THREADS(thi) THREADERcontrol(thi, THEAD_UNLOCK)
+#define JOIN_THREADS(thi)   THREADERcontrol(thi, THEAD_JOIN)
+#else
+#define LOCK_THREADS(thi)
+#define UNLOCK_THREADS(thi)
+#define JOIN_THREADS(thi)
+#endif
+
+#endif
+
+
 #endif
 

@@ -45,6 +45,7 @@
 //#define pp_CRASH_TEST       // test detection of division by zero or use of undefined pointer
 #define pp_GPU                // support the GPU
 #define pp_THREAD             // turn on multi-threading
+#define pp_THREAD_NEW         // use new more general threading code
 //#define pp_LOAD_NEWDATA     // add button for loading new data
 
 #ifdef pp_GPU
