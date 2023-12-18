@@ -3228,36 +3228,36 @@ void ReadAllGeom(void){
     geomdata *geomi;
 
     geomi = geominfo + i;
-    THREADERcontrol(threader_readallgeom, THREAD_LOCK);
+    THREADcontrol(threader_readallgeom, THREAD_LOCK);
     if(geomi->read_status!=0){
-      THREADERcontrol(threader_readallgeom, THREAD_UNLOCK);
+      THREADcontrol(threader_readallgeom, THREAD_UNLOCK);
       continue;
     }
     geomi->read_status = 1;
-    THREADERcontrol(threader_readallgeom, THREAD_UNLOCK);
+    THREADcontrol(threader_readallgeom, THREAD_UNLOCK);
 
     ReadGeom(geomi, LOAD, GEOM_GEOM, NULL);
-    THREADERcontrol(threader_readallgeom, THREAD_LOCK);
+    THREADcontrol(threader_readallgeom, THREAD_LOCK);
     geomi->read_status = 2;
-    THREADERcontrol(threader_readallgeom, THREAD_UNLOCK);
+    THREADcontrol(threader_readallgeom, THREAD_UNLOCK);
   }
   for(i = 0; i<ncgeominfo; i++){
     geomdata *geomi;
 
     geomi = cgeominfo+i;
-    THREADERcontrol(threader_readallgeom, THREAD_LOCK);
+    THREADcontrol(threader_readallgeom, THREAD_LOCK);
     if(geomi->read_status!=0){
-      THREADERcontrol(threader_readallgeom, THREAD_UNLOCK);
+      THREADcontrol(threader_readallgeom, THREAD_UNLOCK);
       continue;
     }
     geomi->read_status = 1;
-    THREADERcontrol(threader_readallgeom, THREAD_UNLOCK);
+    THREADcontrol(threader_readallgeom, THREAD_UNLOCK);
 
     ReadGeom(geomi, LOAD, GEOM_CGEOM, NULL);
     UpdateGeomTriangles(geomi, GEOM_STATIC);
-    THREADERcontrol(threader_readallgeom, THREAD_LOCK);
+    THREADcontrol(threader_readallgeom, THREAD_LOCK);
     geomi->read_status = 2;
-    THREADERcontrol(threader_readallgeom, THREAD_UNLOCK);
+    THREADcontrol(threader_readallgeom, THREAD_UNLOCK);
   }
 }
 

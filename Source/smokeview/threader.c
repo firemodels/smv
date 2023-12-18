@@ -482,39 +482,39 @@ void ClassifyAllGeom(void){
     geomdata *geomi;
 
     geomi = geominfo+i;
-    THREADERcontrol(threader_readallgeom, THREAD_LOCK);
+    THREADcontrol(threader_readallgeom, THREAD_LOCK);
     if(geomi->read_status!=0){
-      THREADERcontrol(threader_readallgeom, THREAD_UNLOCK);
+      THREADcontrol(threader_readallgeom, THREAD_UNLOCK);
       continue;
     }
     geomi->read_status = 1;
-    THREADERcontrol(threader_readallgeom, THREAD_UNLOCK);
+    THREADcontrol(threader_readallgeom, THREAD_UNLOCK);
 
     if(geomi->geomtype!=GEOM_ISO){
       ClassifyGeom(geomi, NULL);
     }
-    THREADERcontrol(threader_readallgeom, THREAD_LOCK);
+    THREADcontrol(threader_readallgeom, THREAD_LOCK);
     geomi->read_status = 2;
-    THREADERcontrol(threader_readallgeom, THREAD_UNLOCK);
+    THREADcontrol(threader_readallgeom, THREAD_UNLOCK);
   }
   for(i = 0; i<ncgeominfo; i++){
     geomdata *geomi;
 
     geomi = cgeominfo+i;
-    THREADERcontrol(threader_readallgeom, THREAD_LOCK);
+    THREADcontrol(threader_readallgeom, THREAD_LOCK);
     if(geomi->read_status!=0){
-      THREADERcontrol(threader_readallgeom, THREAD_UNLOCK);
+      THREADcontrol(threader_readallgeom, THREAD_UNLOCK);
       continue;
     }
     geomi->read_status = 1;
-    THREADERcontrol(threader_readallgeom, THREAD_UNLOCK);
+    THREADcontrol(threader_readallgeom, THREAD_UNLOCK);
 
     if(geomi->geomtype!=GEOM_ISO){
       ClassifyGeom(geomi, NULL);
     }
-    THREADERcontrol(threader_readallgeom, THREAD_LOCK);
+    THREADcontrol(threader_readallgeom, THREAD_LOCK);
     geomi->read_status = 2;
-    THREADERcontrol(threader_readallgeom, THREAD_UNLOCK);
+    THREADcontrol(threader_readallgeom, THREAD_UNLOCK);
   }
 }
 
@@ -542,9 +542,9 @@ void *MtSample(void *arg){
   return NULL;
 }
 if(threader_sample==NULL){
-  threader_sample = THREADERinit(1,1,Sample,MTSample);
+  threader_sample = THREADinit(1,1,Sample,MTSample);
 }
-THREADERrun(threader_sample);
+THREADrun(threader_sample);
 #endif
 
 /* ------------------ MTPlayMovie ------------------------ */
@@ -589,11 +589,11 @@ void SetupFF(void){
   have_ffplay_local = HaveProg("ffplay -version >/dev/null 2>/dev/null");
 #endif
 
-  THREADERcontrol(threader_setupff, THREAD_LOCK);;
+  THREADcontrol(threader_setupff, THREAD_LOCK);;
   update_ff = 1;
   have_ffmpeg = have_ffmpeg_local;
   have_ffplay = have_ffplay_local;
-  THREADERcontrol(threader_setupff, THREAD_UNLOCK);;
+  THREADcontrol(threader_setupff, THREAD_UNLOCK);;
 }
 
 /* ------------------ MtSetupFF ------------------------ */
@@ -604,9 +604,9 @@ void *MTSetupFF(void *arg){
   return NULL;
 }
 
-/* ------------------ THREADERinit ------------------------ */
+/* ------------------ THREADinit ------------------------ */
 
-threaderdata *THREADERinit(int nthreads_arg, int threading_on_arg,
+threaderdata *THREADinit(int nthreads_arg, int threading_on_arg,
   void (*run_arg)(void), void *(*mtrun_arg)(void *arg)){
   threaderdata *thi;
 
@@ -632,9 +632,9 @@ threaderdata *THREADERinit(int nthreads_arg, int threading_on_arg,
   return thi;
 }
 
-/* ------------------ THREADERcontrol ------------------------ */
+/* ------------------ THREADcontrol ------------------------ */
 
-void THREADERcontrol(threaderdata *thi, int var){
+void THREADcontrol(threaderdata *thi, int var){
   if(thi == NULL)return;
   switch(var){
   case THREAD_LOCK:
@@ -662,9 +662,9 @@ void THREADERcontrol(threaderdata *thi, int var){
   }
 }
 
-/* ------------------ THREADERrun ------------------------ */
+/* ------------------ THREADrun ------------------------ */
 
-void THREADERrun(threaderdata *thi){
+void THREADrun(threaderdata *thi){
   if(thi->threading_on == 1){
     int i;
 

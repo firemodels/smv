@@ -150,9 +150,9 @@ typedef struct _threaderdata{
   void *(*mtrun)(void *arg);
 } threaderdata;
 
-EXTERNCPP void THREADERcontrol(threaderdata *thi, int var);
-EXTERNCPP void THREADERrun(threaderdata *thi);
-EXTERNCPP threaderdata *THREADERinit(int nthreads_arg, int threading_on_arg,
+EXTERNCPP void THREADcontrol(threaderdata *thi, int var);
+EXTERNCPP void THREADrun(threaderdata *thi);
+EXTERNCPP threaderdata *THREADinit(int nthreads_arg, int threading_on_arg,
                                       void (*run_arg)(void), void *(*mtrun_arg)(void *arg));
 
 EXTERNCPP void *MTPlayMovie(void *arg);
@@ -168,9 +168,9 @@ EXTERNCPP void *MtClassifyAllGeom(void *arg);
 EXTERNCPP void ClassifyAllGeom(void);
 
 #ifdef pp_THREAD
-#define LOCK_THREADS(thi)   THREADERcontrol(thi, THEAD_LOCK)
-#define UNLOCK_THREADS(thi) THREADERcontrol(thi, THEAD_UNLOCK)
-#define JOIN_THREADS(thi)   THREADERcontrol(thi, THEAD_JOIN)
+#define LOCK_THREADS(thi)   THREADcontrol(thi, THEAD_LOCK)
+#define UNLOCK_THREADS(thi) THREADcontrol(thi, THEAD_UNLOCK)
+#define JOIN_THREADS(thi)   THREADcontrol(thi, THEAD_JOIN)
 #else
 #define LOCK_THREADS(thi)
 #define UNLOCK_THREADS(thi)

@@ -11627,11 +11627,11 @@ int ReadSMV_Configure(){
   PRINT_TIMER(timer_readsmv, "UpdateMeshBoxBounds");
 
   if(threader_readallgeom == NULL){
-    threader_readallgeom = THREADERinit(nreadallgeomthread_ids, readallgeom_multithread, 
+    threader_readallgeom = THREADinit(nreadallgeomthread_ids, readallgeom_multithread, 
                                         ReadAllGeom, MtReadAllGeom);
   }
   SetupReadAllGeom();
-  THREADERrun(threader_readallgeom);
+  THREADrun(threader_readallgeom);
   PRINT_TIMER(timer_readsmv, "ReadAllGeomMT");
 
   UpdateMeshCoords();
@@ -11736,9 +11736,9 @@ int ReadSMV_Configure(){
   PRINT_TIMER(timer_readsmv, "MakeIBlankCarve");
 
   if(threader_setupff == NULL){
-    threader_setupff = THREADERinit(1, ffmpeg_multithread, SetupFF, MTSetupFF);
+    threader_setupff = THREADinit(1, ffmpeg_multithread, SetupFF, MTSetupFF);
   }
-  THREADERrun(threader_setupff);
+  THREADrun(threader_setupff);
   PRINT_TIMER(timer_readsmv, "SetupFFMT");
 
   MakeIBlankSmoke3D();
@@ -11850,10 +11850,10 @@ int ReadSMV_Configure(){
 
   if(large_case==0){
     if(threader_classifyallgeom==NULL){
-      threader_classifyallgeom = THREADERinit(nreadallgeomthread_ids, readallgeom_multithread, 
+      threader_classifyallgeom = THREADinit(nreadallgeomthread_ids, readallgeom_multithread, 
                                               ClassifyAllGeom, MtClassifyAllGeom);
     }
-    THREADERrun(threader_classifyallgeom);
+    THREADrun(threader_classifyallgeom);
   }
   PRINT_TIMER(timer_readsmv, "ClassifyGeom");
 

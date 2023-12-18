@@ -2418,31 +2418,31 @@ void OutputBounds(void){
 /* ------------------ HandleMakeMovie ------------------------ */
 
 void HandleMakeMovie(void){
-  THREADERcontrol(threader_setupff, THREAD_LOCK);
+  THREADcontrol(threader_setupff, THREAD_LOCK);
   if(have_ffmpeg == 0){
     PRINTF("*** Error: The movie generating program ffmpeg is not available\n");
-    THREADERcontrol(threader_setupff, THREAD_UNLOCK);
+    THREADcontrol(threader_setupff, THREAD_UNLOCK);
     return;
   }
   GLUIEnableDisableMakeMovieCPP(OFF);
   update_makemovie = 1;
-  THREADERcontrol(threader_setupff, THREAD_UNLOCK);
+  THREADcontrol(threader_setupff, THREAD_UNLOCK);
 }
 
 /* ------------------ EnableDisableMakeMovie ------------------------ */
 
 void EnableDisableMakeMovie(int onoff){
-  THREADERcontrol(threader_setupff, THREAD_LOCK);
+  THREADcontrol(threader_setupff, THREAD_LOCK);
   GLUIEnableDisableMakeMovieCPP(onoff);
-  THREADERcontrol(threader_setupff, THREAD_UNLOCK);
+  THREADcontrol(threader_setupff, THREAD_UNLOCK);
 }
 
 /* ------------------ EnableDisablePlayMovie ------------------------ */
 
 void EnableDisablePlayMovie(void){
-  THREADERcontrol(threader_setupff, THREAD_LOCK);
+  THREADcontrol(threader_setupff, THREAD_LOCK);
   GLUIEnableDisablePlayMovieCPP();
-  THREADERcontrol(threader_setupff, THREAD_UNLOCK);
+  THREADcontrol(threader_setupff, THREAD_UNLOCK);
 }
 
 /* ------------------ UpdateDisplay ------------------------ */
@@ -2473,7 +2473,7 @@ void UpdateDisplay(void){
     SetVentDirs();
     update_setvents=0;
   }
-  THREADERcontrol(threader_setupff, THREAD_LOCK);
+  THREADcontrol(threader_setupff, THREAD_LOCK);
   if(update_ff == 1){
     update_ff = 0;
     if(have_ffmpeg == 1){
@@ -2483,7 +2483,7 @@ void UpdateDisplay(void){
       GLUIEnableDisableMakeMovieCPP(OFF);
     }
   }
-  THREADERcontrol(threader_setupff, THREAD_UNLOCK);
+  THREADcontrol(threader_setupff, THREAD_UNLOCK);
   if(update_ini==1){
     update_ini = 0;
     ReadIni(NULL);
