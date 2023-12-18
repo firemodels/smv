@@ -39,10 +39,6 @@
   #define LOCK_VOLLOAD      pthread_mutex_lock(&mutexVOLLOAD);
   #define UNLOCK_VOLLOAD    pthread_mutex_unlock(&mutexVOLLOAD);
 
-  #define LOCK_IBLANK       if(iblank_multithread==1){pthread_mutex_lock(&mutexIBLANK);}
-  #define UNLOCK_IBLANK     if(iblank_multithread==1){pthread_mutex_unlock(&mutexIBLANK);}
-  #define JOIN_IBLANK       if(iblank_multithread==1){pthread_join(makeiblank_thread_id,NULL);}
-
   #define LOCK_SETUP_FFMPEG      if(ffmpeg_multithread==1)pthread_mutex_lock(&mutexSETUP_FFMPEG);
   #define UNLOCK_SETUP_FFMPEG    if(ffmpeg_multithread==1)pthread_mutex_unlock(&mutexSETUP_FFMPEG);
   #define JOIN_SETUP_FFMPEG      if(ffmpeg_multithread==1)pthread_join(setupff_thread_id,NULL);
@@ -81,10 +77,6 @@
 
   #define LOCK_VOLLOAD
   #define UNLOCK_VOLLOAD
-
-  #define LOCK_IBLANK
-  #define UNLOCK_IBLANK
-  #define JOIN_IBLANK
 
   #define LOCK_SETUP_FFMPEG
   #define UNLOCK_SETUP_FFMPEG
@@ -126,7 +118,6 @@ MT_EXTERN pthread_mutex_t mutexREADALLGEOM;
 MT_EXTERN pthread_mutex_t mutexSLICE_LOAD;
 #endif
 MT_EXTERN pthread_mutex_t mutexPART_LOAD;
-MT_EXTERN pthread_mutex_t mutexIBLANK;
 MT_EXTERN pthread_mutex_t mutexVOLLOAD;
 MT_EXTERN pthread_mutex_t mutexCOMPRESS;
 MT_EXTERN pthread_mutex_t mutexSETUP_FFMPEG;
@@ -137,7 +128,6 @@ MT_EXTERN pthread_mutex_t mutexPATCHBOUNDS;
 MT_EXTERN pthread_mutex_t mutexSAMPLE;
 #endif
 
-MT_EXTERN pthread_t makeiblank_thread_id;
 MT_EXTERN pthread_t setupff_thread_id;
 MT_EXTERN pthread_t PATCHBOUNDS_thread_id;
 MT_EXTERN pthread_t SLICEBOUNDS_thread_id;

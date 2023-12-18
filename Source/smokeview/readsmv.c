@@ -890,7 +890,8 @@ void InitMesh(meshdata *meshi){
   int i;
 
   for(i = 0;i < 6;i++){
-    meshi->skip_nabors[i]=NULL;
+    meshi->skip_nabors[i] = NULL;
+    meshi->nabors[i]      = NULL;
   }
 #ifdef pp_DECIMATE
   meshi->dec_verts      = NULL;
@@ -942,12 +943,6 @@ void InitMesh(meshdata *meshi){
   meshi->s_offset[1] = -1;
   meshi->s_offset[2] = -1;
   meshi->super = NULL;
-  meshi->nabors[0] = NULL;
-  meshi->nabors[1] = NULL;
-  meshi->nabors[2] = NULL;
-  meshi->nabors[3] = NULL;
-  meshi->nabors[4] = NULL;
-  meshi->nabors[5] = NULL;
   meshi->update_smoke3dcolors = 0;
   meshi->iplotx_all = NULL;
   meshi->iploty_all = NULL;
@@ -4569,6 +4564,121 @@ void ReadZVentData(zventdata *zvi, char *buffer, int flag){
   zvi->area_fraction = area_fraction;
 }
 
+#define CELLMESH_FACTOR 8
+#define IJKCELLINFO(ii,jj,kk) ((ii) + (jj)*nxyz[0] + (kk)*nxyz[0]*nxyz[1])
+
+/* ------------------ InitCellMeshInfo ------------------------ */
+
+void InitCellMeshInfo(void){
+  int i, *nxyz, ntotal;
+  float *xyzminmax, *dxyz;
+  float *x, *y, *z;
+  meshdata **cellmeshes;
+
+  if(cellmeshinfo!=NULL){
+    nxyz = cellmeshinfo->nxyz;
+    ntotal = nxyz[0]*nxyz[1]*nxyz[2];
+    for(i=0;i<ntotal;i++){
+      if(cellmeshinfo->cellmeshes[i] == NULL){
+        is_convex = 0;
+        return;
+      }
+    }
+    is_convex = 1;
+    return;
+  }
+
+  NewMemory(( void ** )&cellmeshinfo, sizeof(cellmeshdata));
+  xyzminmax = cellmeshinfo->xyzminmax;
+  dxyz      = cellmeshinfo->dxyz;
+  nxyz      = cellmeshinfo->nxyz;
+
+  x = meshinfo->xplt_orig;
+  y = meshinfo->yplt_orig;
+  z = meshinfo->zplt_orig;
+
+  xyzminmax[0] = x[0];
+  xyzminmax[1] = x[meshinfo->ibar];
+  xyzminmax[2] = y[0];
+  xyzminmax[3] = y[meshinfo->jbar];
+  xyzminmax[4] = z[0];
+  xyzminmax[5] = z[meshinfo->kbar];
+  dxyz[0] = x[meshinfo->ibar] - x[0];
+  dxyz[1] = y[meshinfo->jbar] - y[0];
+  dxyz[2] = z[meshinfo->kbar] - z[0];
+
+  for(i = 1; i<nmeshes;i++){
+    meshdata *meshi;
+
+    meshi = meshinfo + i;
+    x = meshi->xplt_orig;
+    y = meshi->yplt_orig;
+    z = meshi->zplt_orig;
+
+    xyzminmax[0] = MIN(xyzminmax[0], x[0]);
+    xyzminmax[1] = MAX(xyzminmax[1], x[meshinfo->ibar]);
+    xyzminmax[2] = MIN(xyzminmax[2], y[0]);
+    xyzminmax[3] = MAX(xyzminmax[3], y[meshinfo->jbar]);
+    xyzminmax[4] = MIN(xyzminmax[4], z[0]);
+    xyzminmax[5] = MAX(xyzminmax[5], z[meshinfo->kbar]);
+    dxyz[0] = MIN(dxyz[0], x[meshinfo->ibar] - x[0]);
+    dxyz[1] = MIN(dxyz[1], y[meshinfo->jbar] - y[0]);
+    dxyz[2] = MIN(dxyz[2], z[meshinfo->kbar] - z[0]);
+  }
+  dxyz[0] /= (float)CELLMESH_FACTOR;
+  dxyz[1] /= (float)CELLMESH_FACTOR;
+  dxyz[2] /= (float)CELLMESH_FACTOR;
+  nxyz[0] = MAX((int)( (xyzminmax[1] - xyzminmax[0])/dxyz[0] + 0.5), 1);
+  nxyz[1] = MAX((int)( (xyzminmax[3] - xyzminmax[2])/dxyz[1] + 0.5), 1);
+  nxyz[2] = MAX((int)( (xyzminmax[5] - xyzminmax[4])/dxyz[2] + 0.5), 1);
+
+  ntotal = nxyz[0]*nxyz[1]*nxyz[2];
+  NewMemory(( void ** )&cellmeshinfo->cellmeshes, ntotal*sizeof(meshdata *));
+  cellmeshes = cellmeshinfo->cellmeshes;
+  for(i=0;i<ntotal;i++){
+    cellmeshinfo->cellmeshes[i] = NULL; 
+  }
+  for(i = 0;i < nmeshes;i++){
+    meshdata *meshi;
+    int i1, i2, j1, j2, k1, k2;
+    float xmin, xmax, ymin, ymax, zmin, zmax;
+
+    meshi = meshinfo + i;
+    x = meshi->xplt_orig;
+    y = meshi->yplt_orig;
+    z = meshi->zplt_orig;
+    xmin = x[0];
+    xmax = x[meshi->ibar];
+    ymin = y[0];
+    ymax = y[meshi->jbar];
+    zmin = z[0];
+    zmax = z[meshi->kbar];
+    i1 = CLAMP(nxyz[0]*(xmin - xyzminmax[0])/dxyz[0], 0, nxyz[0]-1);
+    i2 = CLAMP(nxyz[0]*(xmax - xyzminmax[0])/dxyz[0], 0, nxyz[0]-1);
+    j1 = CLAMP(nxyz[1]*(ymin - xyzminmax[2])/dxyz[1], 0, nxyz[1]-1);
+    j2 = CLAMP(nxyz[1]*(ymax - xyzminmax[2])/dxyz[1], 0, nxyz[1]-1);
+    k1 = CLAMP(nxyz[2]*(zmin - xyzminmax[4])/dxyz[2], 0, nxyz[2]-1);
+    k2 = CLAMP(nxyz[2]*(zmax - xyzminmax[4])/dxyz[2], 0, nxyz[2]-1);
+    int ii, jj, kk;
+
+    for(kk = k1; kk <= k2; kk++){
+      for(jj = j1; jj <= j2; jj++){
+        for(ii = i1; ii <= i2; ii++){
+          cellmeshes[IJKCELLINFO(ii,jj,kk)] = meshi;
+        }
+      }
+    }
+  }
+  for(i=0;i<ntotal;i++){
+    if(cellmeshinfo->cellmeshes[i] == NULL){
+      is_convex = 0;
+      return;
+    }
+  }
+  is_convex = 1;
+  return;
+}
+
 /* ------------------ SetupMeshWalls ------------------------ */
 
 void SetupMeshWalls(void){
@@ -4592,44 +4702,32 @@ void SetupMeshWalls(void){
     xyz[0] = bmin[0] - EPSMESH;
     xyz[1] = bmid[1];
     xyz[2] = bmid[2];
-    if(GetMesh(xyz,NULL) != NULL){
-      is_extface[0] = MESH_INT;
-    }
+    if(InExterior(xyz) == 0)is_extface[0] = MESH_INT;
 
     xyz[0] = bmax[0] + EPSMESH;
     xyz[1] = bmid[1];
     xyz[2] = bmid[2];
-    if(GetMesh(xyz,NULL) != NULL){
-      is_extface[1] = 0;
-    }
+    if(InExterior(xyz) == 0)is_extface[1] = MESH_INT;
 
     xyz[0] = bmid[0];
     xyz[1] = bmin[1] - EPSMESH;
     xyz[2] = bmid[2];
-    if(GetMesh(xyz,NULL) != NULL){
-      is_extface[2] = MESH_INT;
-    }
+    if(InExterior(xyz) == 0)is_extface[2] = MESH_INT;
 
     xyz[0] = bmid[0];
     xyz[1] = bmax[1] + EPSMESH;
     xyz[2] = bmid[2];
-    if(GetMesh(xyz,NULL) != NULL){
-      is_extface[3] = MESH_INT;
-    }
+    if(InExterior(xyz) == 0)is_extface[3] = MESH_INT;
 
     xyz[0] = bmid[0];
     xyz[1] = bmid[1];
     xyz[2] = bmin[2] - EPSMESH;
-    if(GetMesh(xyz,NULL) != NULL){
-      is_extface[4] = MESH_INT;
-    }
+    if(InExterior(xyz) == 0)is_extface[4] = MESH_INT;
 
     xyz[0] = bmid[0];
     xyz[1] = bmid[1];
     xyz[2] = bmax[2] + EPSMESH;
-    if(GetMesh(xyz,NULL) != NULL){
-      is_extface[5] = MESH_INT;
-    }
+    if(InExterior(xyz) == 0)is_extface[5] = MESH_INT;
   }
 }
 
@@ -6590,7 +6688,6 @@ void AddCfastCsvf(void){
 }
 
   /* ------------------ ReadSMV ------------------------ */
-static float timer_readsmv;
 static float processing_time;
 static float getfilelist_time;
 static float pass0_time;
@@ -6604,11 +6701,16 @@ static float pass5_time;
 /// file. This should be called before @ref ReadSMV_Parse.
 /// @return zero on success, nonzero on failure.
 int ReadSMV_Init() {
+  float timer_readsmv;
+  float timer_setup;
+
+  START_TIMER(timer_setup);
   START_TIMER(timer_readsmv);
   START_TIMER(processing_time);
 
   START_TIMER(getfilelist_time);
   MakeFileLists();
+  PRINT_TIMER(timer_setup, "MakeFileLists");
   STOP_TIMER(getfilelist_time);
 
   START_TIMER(pass0_time);
@@ -6641,7 +6743,7 @@ int ReadSMV_Init() {
     NewMemory((void **)&wui_sphereinfo,sizeof(spherepoints));
     InitSpherePoints(wui_sphereinfo,14);
   }
-
+  PRINT_TIMER(timer_setup, "InitSpherePoints");
   ntotal_blockages=0;
 
   if(ncsvfileinfo>0){
@@ -6713,15 +6815,19 @@ int ReadSMV_Init() {
   nfires=0;
   nrooms=0;
 
+  START_TIMER(timer_setup);
   InitSurface(&sdefault);
+  PRINT_TIMER(timer_setup, "InitSurface");
   NewMemory((void **)&sdefault.surfacelabel,(5+1));
   strcpy(sdefault.surfacelabel,"INERT");
 
   InitVentSurface(&v_surfacedefault);
+  PRINT_TIMER(timer_setup, "InitVentSurface");
   NewMemory((void **)&v_surfacedefault.surfacelabel,(4+1));
   strcpy(v_surfacedefault.surfacelabel,"VENT");
 
   InitSurface(&e_surfacedefault);
+  PRINT_TIMER(timer_setup, "InitSurface");
   NewMemory((void **)&e_surfacedefault.surfacelabel,(8+1));
   strcpy(e_surfacedefault.surfacelabel,"EXTERIOR");
   e_surfacedefault.color=mat_ambient2;
@@ -6761,7 +6867,9 @@ int ReadSMV_Init() {
 
   // read in device (.svo) definitions
 
+  START_TIMER(timer_setup);
   InitObjectDefs();
+  PRINT_TIMER(timer_setup, "InitSurface");
 
   if(noutlineinfo>0){
     for(i=0;i<noutlineinfo;i++){
@@ -6903,6 +7011,7 @@ int ReadSMV_Parse(bufferstreamdata *stream) {
   int GRIDpresent=0,startpass;
   slicedata *sliceinfo_copy=NULL;
   int nisos_per_mesh=1;
+  float timer_readsmv;
 
   int nn_smoke3d=0,nn_patch=0,nn_iso=0,nn_part=0,nn_slice=0,nslicefiles=0,nvents;
 
@@ -6932,7 +7041,8 @@ int ReadSMV_Parse(bufferstreamdata *stream) {
    ************************************************************************
  */
 
-  START_TIMER(pass1_time);
+   START_TIMER(timer_readsmv);
+   START_TIMER(pass1_time);
 
   nvents=0;
   igrid=0;
@@ -11373,6 +11483,8 @@ typedef struct {
 int ReadSMV_Configure(){
   int i;
   float wrapup_time;
+  float timer_readsmv;
+
 /*
    ************************************************************************
    ************************ wrap up ***************************************
@@ -11386,8 +11498,9 @@ int ReadSMV_Configure(){
     SMV_EXIT(0);
   }
 
-  STOP_TIMER(processing_time);
   START_TIMER(wrapup_time);
+  STOP_TIMER(processing_time);
+  START_TIMER(timer_readsmv);
 
   PRINTF("  wrapping up\n");
 
@@ -11409,7 +11522,6 @@ int ReadSMV_Configure(){
 
   if(runscript == 1||compute_fed == 1){
     checkfiles_multithread  = 0;
-    iblank_multithread      = 0;
     ffmpeg_multithread      = 0;
     readallgeom_multithread = 0;
   }
@@ -11466,8 +11578,9 @@ int ReadSMV_Configure(){
 
   if(meshinfo!=NULL&&meshinfo->jbar==1)force_isometric=1;
 
-  PRINT_TIMER(timer_readsmv, "SetupDeviceData");
   if(hrr_csv_filename != NULL)ReadHRR(LOAD);
+  PRINT_TIMER(timer_readsmv, "ReadHRR");
+
   if(runscript == 1){
     InitializeDeviceCsvData(LOAD);
   }
@@ -11475,7 +11588,9 @@ int ReadSMV_Configure(){
 
   SetupPlot2DUnitData();
   PRINT_TIMER(timer_readsmv, "SetupPlot2DUnitData");
+
   if(nzoneinfo>0)SetupZoneDevs();
+  PRINT_TIMER(timer_readsmv, "SetupPlot2DUnitData");
 
   InitPartProp();
   PRINT_TIMER(timer_readsmv, "InitPartProp");
@@ -11510,21 +11625,26 @@ int ReadSMV_Configure(){
 
   UpdateMeshBoxBounds();
   PRINT_TIMER(timer_readsmv, "UpdateMeshBoxBounds");
+
   ReadAllGeomMT();
   PRINT_TIMER(timer_readsmv, "ReadAllGeomMT");
 
   UpdateMeshCoords();
+  PRINT_TIMER(timer_readsmv, "UpdateMeshCoords");
+
   UpdateSmoke3DTypes();
+  PRINT_TIMER(timer_readsmv, "UpdateSmoke3DTypes");
   CheckMemory;
 
   // allocate memory for geometry pointers (only once)
 
   GetGeomInfoPtrs(1);
-
+  PRINT_TIMER(timer_readsmv, "GetGeomInfoPtrs");
   /*
     Associate a surface with each block.
   */
   UpdateUseTextures();
+  PRINT_TIMER(timer_readsmv, "UpdateUseTextures");
   CheckMemory;
 
   /* compute global bar's and box's */
@@ -11570,7 +11690,7 @@ int ReadSMV_Configure(){
   UpdatePlotxyzAll();
   CheckMemory;
 
-  PRINT_TIMER(timer_readsmv, "null");
+  START_TIMER(timer_readsmv);
   UpdateVSlices();
   PRINT_TIMER(timer_readsmv, "UpdateVSlices");
   if(update_slice==1)return 3;
@@ -11584,8 +11704,10 @@ int ReadSMV_Configure(){
   }
 
   GetBoundaryParams();
+  PRINT_TIMER(timer_readsmv, "GetBoundaryParams");
 
   GetGSliceParams();
+  PRINT_TIMER(timer_readsmv, "GetGSliceParams");
 
   active_smokesensors=0;
   for(i=0;i<ndeviceinfo;i++){
@@ -11603,18 +11725,29 @@ int ReadSMV_Configure(){
     }
   }
 
-  PRINT_TIMER(timer_readsmv, "null");
+  START_TIMER(timer_readsmv);
+
   MakeIBlankCarve();
-  MakeIBlankSmoke3D();
-  MakeIBlankAllMT();
+  PRINT_TIMER(timer_readsmv, "MakeIBlankCarve");
+
   SetupFFMT();
-  LOCK_IBLANK
+  PRINT_TIMER(timer_readsmv, "SetupFFMT");
+
+  MakeIBlankSmoke3D();
+  PRINT_TIMER(timer_readsmv, "MakeIBlankSmoke3D");
+
+  if(HaveCircularVents()==1||(nmeshes < 100 && fast_startup == 0)){
+    MakeIBlank();
+    PRINT_TIMER(timer_readsmv, "MakeIBlank");
+  }
+
+  SetCVentDirs();
+  PRINT_TIMER(timer_readsmv, "SetCVentDirs");
+
   SetVentDirs();
-  UNLOCK_IBLANK
+  update_setvents = 1;
+  PRINT_TIMER(timer_readsmv, "SetVentDirs");
 
-  JOIN_IBLANK;
-
-  PRINT_TIMER(timer_readsmv, "make blanks");
   UpdateFaces();
   PRINT_TIMER(timer_readsmv, "UpdateFaces");
 
@@ -11622,8 +11755,6 @@ int ReadSMV_Configure(){
   xcenCUSTOM=xbar/2.0;  ycenCUSTOM=ybar/2.0; zcenCUSTOM=zbar/2.0;
 
   glui_rotation_index = ROTATE_ABOUT_FDS_CENTER;
-
-  PRINT_TIMER(timer_readsmv, "UpdateFileBoundList");
 
   UpdateBoundInfo();
   PRINT_TIMER(timer_readsmv, "UpdateBoundInfo");
@@ -11635,35 +11766,49 @@ int ReadSMV_Configure(){
 
   UpdateSelectFaces();
   PRINT_TIMER(timer_readsmv, "UpdateSelectFaces");
+
   UpdateSliceBoundIndexes();
   PRINT_TIMER(timer_readsmv, "UpdateSliceBoundIndexes");
+
   UpdateSliceBoundLabels();
   PRINT_TIMER(timer_readsmv, "UpdateSliceBoundLabels");
+
   UpdateIsoTypes();
   PRINT_TIMER(timer_readsmv, "UpdateIsoTypes");
+
   UpdateBoundaryTypes();
   PRINT_TIMER(timer_readsmv, "UpdateBoundaryTypes");
 
-  InitNabors();
+  if(nmeshes < 100 && fast_startup == 0){
+   InitNabors();
+    PRINT_TIMER(timer_readsmv, "update nabors");
+  }
 
-  PRINT_TIMER(timer_readsmv, "update nabors");
   UpdateTerrain(1); // xxslow
   UpdateTerrainColors();
   PRINT_TIMER(timer_readsmv, "UpdateTerrain");
+
   UpdateSmoke3dMenuLabels();
   PRINT_TIMER(timer_readsmv, "UpdateSmoke3dMenuLabels");
+
   UpdateVSliceBoundIndexes();
   PRINT_TIMER(timer_readsmv, "UpdateVSliceBoundIndexes");
+
   UpdateBoundaryMenuLabels();
   PRINT_TIMER(timer_readsmv, "UpdateBoundaryMenuLabels");
+
   UpdateIsoMenuLabels();
   PRINT_TIMER(timer_readsmv, "UpdateIsoMenuLabels");
+
   UpdatePartMenuLabels();
   PRINT_TIMER(timer_readsmv, "UpdatePartMenuLabels");
+
   UpdateTourMenuLabels();
   PRINT_TIMER(timer_readsmv, "UpdateTourMenuLabels");
+
   SetupCircularTourNodes();
   PRINT_TIMER(timer_readsmv, "SetupCircularTourNodes");
+
   InitUserTicks();
   PRINT_TIMER(timer_readsmv, "InitUserTicks");
 
@@ -11689,8 +11834,7 @@ int ReadSMV_Configure(){
     nchanged_idlist=ntotal;
   }
 
-  PRINT_TIMER(timer_readsmv, "null");
-  InitNabors();
+  START_TIMER(timer_readsmv);
   InitVolRender();
   InitVolRenderSurface(FIRSTCALL);
   radius_windrose = 0.2*xyzmaxdiff;
@@ -11699,29 +11843,38 @@ int ReadSMV_Configure(){
   if(large_case == 0){
     ClassifyAllGeomMT();
   }
+  PRINT_TIMER(timer_readsmv, "ClassifyGeom");
 
-  PRINT_TIMER(timer_readsmv, "null");
   UpdateTriangles(GEOM_STATIC,GEOM_UPDATE_ALL);
   GetFaceInfo();
   GetBoxGeomCorners();
   PRINT_TIMER(timer_readsmv, "update trianglesfaces");
 
   if(ngeominfo>0&&auto_terrain==1){
-    PRINT_TIMER(timer_readsmv, "null");
+    START_TIMER(timer_readsmv);
     GenerateTerrainGeom(&terrain_vertices, &terrain_indices, &terrain_nindices);
     PRINT_TIMER(timer_readsmv, "GenerateTerrainGeom");
   }
 
   // update event labels
   UpdateEvents();
+  PRINT_TIMER(timer_readsmv, "UpdateEvents");
+
+  InitCellMeshInfo();
+  PRINT_TIMER(timer_readsmv, "InitCellMeshInfo");
 
   SetupMeshWalls();
+  PRINT_TIMER(timer_readsmv, "SetupMeshWalls");
+
   if(viswindrose==1)update_windrose = 1;
 
 // initialize 2d plot data structures
   NewMemory((void **)&glui_plot2dinfo, sizeof(plot2ddata));
   InitPlot2D(glui_plot2dinfo, 0);
+  PRINT_TIMER(timer_readsmv, "InitPlot2D");
+
   SetInteriorBlockages(1);
+  PRINT_TIMER(timer_readsmv, "SetInteriorBlockages");
 
   PRINTF("%s", _("complete"));
   PRINTF("\n\n");
@@ -11742,8 +11895,6 @@ int ReadSMV_Configure(){
     PRINTF("   wrap up: %.1f s\n", wrapup_time);
     PRINTF("\n");
   }
-  START_TIMER(timer_readsmv);
-  PRINT_TIMER(timer_readsmv, "CheckFilesMT");
   STOP_TIMER(timer_startup);
   START_TIMER(timer_render);
   PRINT_TIMER(total_wrapup_time, "total wrapup time");
@@ -11755,7 +11906,6 @@ int ReadSMV_Configure(){
 /// @param stream the file stream to parse.
 /// @return zero on sucess, non-zero on error
 int ReadSMV(bufferstreamdata *stream){
-  START_TIMER(timer_readsmv);
   ReadSMV_Init();
   ReadSMV_Parse(stream);
   ReadSMV_Configure();

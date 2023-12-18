@@ -1172,27 +1172,27 @@ void InitNabors(void){
 
     memcpy(xyz, xyzmid, 3*sizeof(float));
     xyz[0] = meshi->boxmin[0]- meshi->boxeps_fds[0];
-    meshi->skip_nabors[MLEFT] = GetMesh(xyz, NULL);
+    meshi->skip_nabors[MLEFT] = GetMesh(xyz);
 
     memcpy(xyz, xyzmid, 3*sizeof(float));
     xyz[0] = meshi->boxmax[0] + meshi->boxeps_fds[0];
-    meshi->skip_nabors[MRIGHT] = GetMesh(xyz, NULL);
+    meshi->skip_nabors[MRIGHT] = GetMesh(xyz);
 
     memcpy(xyz, xyzmid, 3*sizeof(float));
     xyz[1] = meshi->boxmin[1] - meshi->boxeps_fds[1];
-    meshi->skip_nabors[MFRONT] = GetMesh(xyz, NULL);
+    meshi->skip_nabors[MFRONT] = GetMesh(xyz);
 
     memcpy(xyz, xyzmid, 3*sizeof(float));
     xyz[1] = meshi->boxmax[0] + meshi->boxeps_fds[1];
-    meshi->skip_nabors[MBACK] = GetMesh(xyz, NULL);
+    meshi->skip_nabors[MBACK] = GetMesh(xyz);
 
     memcpy(xyz, xyzmid, 3*sizeof(float));
     xyz[2] = meshi->boxmin[2] - meshi->boxeps_fds[2];
-    meshi->skip_nabors[MDOWN] = GetMesh(xyz, NULL);
+    meshi->skip_nabors[MDOWN] = GetMesh(xyz);
 
     memcpy(xyz, xyzmid, 3*sizeof(float));
     xyz[2] = meshi->boxmax[2] + meshi->boxeps_fds[2];
-    meshi->skip_nabors[MUP] = GetMesh(xyz, NULL);
+    meshi->skip_nabors[MUP] = GetMesh(xyz);
   }
 }
 
@@ -1470,7 +1470,6 @@ void InitVolRender(void){
   if(nvolrenderinfo>0){
     InitSuperMesh();
   }
-
 }
 
 /* ------------------ GetMeshInSmesh ------------------------ */

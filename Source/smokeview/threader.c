@@ -20,7 +20,6 @@ void InitMultiThreading(void){
   pthread_mutex_init(&mutexPART_LOAD, NULL);
   pthread_mutex_init(&mutexCOMPRESS,NULL);
   pthread_mutex_init(&mutexVOLLOAD,NULL);
-  pthread_mutex_init(&mutexIBLANK, NULL);
   pthread_mutex_init(&mutexSETUP_FFMPEG, NULL);
   pthread_mutex_init(&mutexCHECKFILES, NULL);
   pthread_mutex_init(&mutexSLICEBOUNDS, NULL);
@@ -566,41 +565,6 @@ void SampleMT(void){
   Sample();
 }
 #endif
-#endif
-
-//***************************** multi threaded blank creation ***********************************
-
-#ifdef pp_THREAD
-/* ------------------ MtMakeIBlank ------------------------ */
-
-void *MtMakeIBlank(void *arg){
-  MakeIBlank();
-  SetCVentDirs();
-  LOCK_IBLANK
-  update_setvents = 1;
-  UNLOCK_IBLANK
-  pthread_exit(NULL);
-  return NULL;
-}
-
-/* ------------------ makeiblank_all ------------------------ */
-
-void MakeIBlankAllMT(void){
-  if(iblank_multithread == 1){
-    pthread_create(&makeiblank_thread_id, NULL, MtMakeIBlank, NULL);
-  }
-  else{
-    MakeIBlank();
-    SetCVentDirs();
-    update_setvents = 1;
-  }
-}
-#else
-void MakeIBlankAllMT(void){
-  MakeIBlank();
-  SetCVentDirs();
-  update_setvents = 1;
-}
 #endif
 
 //***************************** multi threaded system call ***********************************

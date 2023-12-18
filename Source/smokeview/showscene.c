@@ -556,7 +556,6 @@ void ShowScene2(int mode){
 void ShowScene(int mode, int view_mode, int quad, GLint s_left, GLint s_down, screendata *screen){
   CheckMemory;
 
-  LOCK_IBLANK
   show_mode = mode;
 
   UNCLIP;
@@ -643,5 +642,4 @@ void ShowScene(int mode, int view_mode, int quad, GLint s_left, GLint s_down, sc
 //  Render(view_mode);
 
   SNIFF_ERRORS("end of ShowScene");
-  UNLOCK_IBLANK
 }

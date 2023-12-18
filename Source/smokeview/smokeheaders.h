@@ -573,7 +573,6 @@ EXTERNCPP void UpdateSliceHist(void);
 EXTERNCPP void DrawScreenInfo(void);
 #endif
 EXTERNCPP void GetGeomZBounds(float *zmin, float *zmax);
-EXTERNCPP void MakeIBlankAllMT(void);
 EXTERNCPP void DrawNorth(void);
 EXTERNCPP void DrawGeomValues(slicedata *sd, patchdata *patchi, int geom_type);
 EXTERNCPP void DrawGeomData(int flag, slicedata *sd, patchdata *patchi, int geom_type);
@@ -847,8 +846,11 @@ EXTERNCPP void LoadVSliceMenu(int value);
 EXTERNCPP void InitVars(void);
 EXTERNCPP void RenderState(int onoff);
 EXTERNCPP void ResizeWindow(int width, int height);
-EXTERNCPP meshdata *GetMesh(float *xyz, meshdata *guess);
+EXTERNCPP meshdata *GetMesh(float *xyz);
 EXTERNCPP meshdata *GetMeshNoFail(float *xyz);
+EXTERNCPP void InitCellMeshInfo(void);
+EXTERNCPP int InExterior(float *xyz);
+
 EXTERNCPP int  OnMeshBoundary(float *xyz);
 
 EXTERNCPP void RenderCB(int var);
@@ -1087,6 +1089,7 @@ EXTERNCPP void UpdateSurface(void);
 EXTERNCPP void WindowStatus(int state);
 EXTERNCPP void SetVentDirs(void);
 EXTERNCPP void SetCVentDirs(void);
+EXTERNCPP int HaveCircularVents(void);
 EXTERNCPP void UpdateHiddenFaces(void);
 EXTERNCPP void UpdateSelectFaces(void);
 EXTERNCPP void UpdateSelectBlocks(void);

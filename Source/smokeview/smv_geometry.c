@@ -466,23 +466,34 @@ void UpdatePlotxyzAll(void){
   }
 }
 
+/* ------------------ InExterior ------------------------ */
+
+int InExterior(float *xyz){
+  if(cellmeshinfo == NULL)InitCellMeshInfo();
+  if(is_convex == 1){
+    float *xyzminmax;
+
+    xyzminmax = cellmeshinfo->xyzminmax;
+    if(xyz[0]<xyzminmax[0] || xyz[0]>xyzminmax[1])return 1;
+    if(xyz[1]<xyzminmax[2] || xyz[1]>xyzminmax[3])return 1;
+    if(xyz[2]<xyzminmax[4] || xyz[2]>xyzminmax[5])return 1;
+    return 0;
+  }
+  if(GetMesh(xyz) == NULL)return 1;
+  return 0;
+}
+
 /* ------------------ GetMesh ------------------------ */
 
-meshdata *GetMesh(float *xyz, meshdata *guess){
+meshdata *GetMesh(float *xyz){
   int i;
 
-  for(i=-1;i<nmeshes;i++){
+  for(i=0;i<nmeshes;i++){
     meshdata *meshi;
     int ibar, jbar, kbar;
     float *xplt, *yplt, *zplt;
 
-    if(i == -1){
-      if(guess == NULL)continue;
-      meshi = guess;
-    }
-    else{
-      meshi = meshinfo + i;
-    }
+    meshi = meshinfo + i;
 
     ibar = meshi->ibar;
     jbar = meshi->jbar;
@@ -1419,7 +1430,6 @@ int MakeIBlank(void){
       }
     }
   }
-  LOCK_IBLANK
   for(ig = 0; ig < nmeshes; ig++){
     meshdata *meshi;
 
@@ -1431,8 +1441,6 @@ int MakeIBlank(void){
     meshi->c_iblank_y = meshi->c_iblank_y0;
     meshi->c_iblank_z = meshi->c_iblank_z0;
   }
-  UNLOCK_IBLANK
-
   return 0;
 }
 

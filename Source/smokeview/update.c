@@ -2452,7 +2452,6 @@ void UpdateDisplay(void){
   if(sortslices == 1&&nsliceloaded>0){
     SortSlices();
   }
-  LOCK_IBLANK
   if(csv_loaded == 0){
     if(vis_hrr_plot == 1 || viswindrose == 1 || vis_device_plot != DEVICE_PLOT_HIDDEN || showdevice_val == 1){
       InitializeDeviceCsvData(LOAD);
@@ -2474,7 +2473,6 @@ void UpdateDisplay(void){
     SetVentDirs();
     update_setvents=0;
   }
-  UNLOCK_IBLANK
   LOCK_SETUP_FFMPEG
   if(update_ff == 1){
     update_ff = 0;
