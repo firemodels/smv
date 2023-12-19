@@ -335,9 +335,9 @@ int SetupCase(char *filename){
   InitMisc();
   GLUITrainerSetup(mainwindow_id);
   glutDetachMenu(GLUT_RIGHT_BUTTON);
-  LOCK_CHECKFILES;
+  THREADcontrol(threader_checkfiles, THREAD_LOCK);
   InitMenus();
-  UNLOCK_CHECKFILES;
+  THREADcontrol(threader_checkfiles, THREAD_UNLOCK);
   glutAttachMenu(GLUT_RIGHT_BUTTON);
   if(trainer_mode==1){
     GLUIShowTrainer();

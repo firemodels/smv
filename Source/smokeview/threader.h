@@ -33,10 +33,6 @@
   #define LOCK_VOLLOAD      pthread_mutex_lock(&mutexVOLLOAD);
   #define UNLOCK_VOLLOAD    pthread_mutex_unlock(&mutexVOLLOAD);
 
-  #define LOCK_CHECKFILES   if(checkfiles_multithread==1)pthread_mutex_lock(&mutexCHECKFILES);
-  #define UNLOCK_CHECKFILES if(checkfiles_multithread==1)pthread_mutex_unlock(&mutexCHECKFILES);
-  #define JOIN_CHECKFILES   if(checkfiles_multithread==1)pthread_join(checkfiles_multithread_id,NULL);
-
   #define LOCK_SLICEBOUNDS    pthread_mutex_lock(&mutexSLICEBOUNDS);
   #define UNLOCK_SLICEBOUNDS  pthread_mutex_unlock(&mutexSLICEBOUNDS);
   #define JOIN_SLICEBOUNDS    pthread_join(SLICEBOUNDS_thread_id,NULL);
@@ -61,10 +57,6 @@
 
   #define LOCK_VOLLOAD
   #define UNLOCK_VOLLOAD
-
-  #define LOCK_CHECKFILES
-  #define UNLOCK_CHECKFILES
-  #define JOIN_CHECKFILES
 
   #define LOCK_SLICEBOUNDS
   #define UNLOCK_SLICEBOUNDS
@@ -99,13 +91,11 @@ MT_EXTERN pthread_mutex_t mutexSLICE_LOAD;
 MT_EXTERN pthread_mutex_t mutexPART_LOAD;
 MT_EXTERN pthread_mutex_t mutexVOLLOAD;
 MT_EXTERN pthread_mutex_t mutexCOMPRESS;
-MT_EXTERN pthread_mutex_t mutexCHECKFILES;
 MT_EXTERN pthread_mutex_t mutexSLICEBOUNDS;
 MT_EXTERN pthread_mutex_t mutexPATCHBOUNDS;
 
 MT_EXTERN pthread_t PATCHBOUNDS_thread_id;
 MT_EXTERN pthread_t SLICEBOUNDS_thread_id;
-MT_EXTERN pthread_t checkfiles_multithread_id;
 MT_EXTERN pthread_t update_all_patch_bounds_id;
 MT_EXTERN pthread_t read_volsmoke_id;
 MT_EXTERN pthread_t triangles_id;
@@ -140,6 +130,9 @@ EXTERNCPP void THREADcontrol(threaderdata *thi, int var);
 EXTERNCPP void THREADrun(threaderdata *thi);
 EXTERNCPP threaderdata *THREADinit(int nthreads_arg, int threading_on_arg,
                                       void (*run_arg)(void), void *(*mtrun_arg)(void *arg));
+
+EXTERNCPP void *MtCheckFiles(void *arg);
+EXTERNCPP void CheckFiles(void);
 
 EXTERNCPP void *MtCompress(void *arg);
 EXTERNCPP void Compress(void);

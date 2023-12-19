@@ -905,8 +905,6 @@ EXTERNCPP void MakeIBlankSmoke3D(void);
 EXTERNCPP void GetUnitInfo(const char *unitlabel, int *unitclass, int *unittype);
 EXTERNCPP float GetUnitVal(const char *unitlabel, float oldval, int ndecimals);
 
-EXTERNCPP void CheckFilesMT(void);
-
 EXTERNCPP void UpdateUnitDefs(void);
 
 EXTERNCPP void OutputAllIsoBounds(void);

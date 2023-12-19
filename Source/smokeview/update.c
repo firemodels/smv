@@ -2552,9 +2552,9 @@ void UpdateDisplay(void){
   }
   if(updatemenu == 1 && usemenu == 1 && menustatus == GLUT_MENU_NOT_IN_USE){
     glutDetachMenu(GLUT_RIGHT_BUTTON);
-    LOCK_CHECKFILES;
+    THREADcontrol(threader_checkfiles, THREAD_LOCK);
     InitMenus();
-    UNLOCK_CHECKFILES;
+    THREADcontrol(threader_checkfiles, THREAD_UNLOCK);
     glutAttachMenu(GLUT_RIGHT_BUTTON);
     updatemenu = 0;
   }

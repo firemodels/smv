@@ -11487,8 +11487,11 @@ int ReadSMV_Configure(){
     readallgeom_multithread = 0;
   }
 
-  CheckFilesMT();
-  PRINT_TIMER(timer_readsmv, "CheckFilesMT");
+  if(threader_checkfiles == NULL){
+    threader_checkfiles = THREADinit(checkfiles_multithread, ncheckfilesthread_ids, CheckFiles, MtCheckFiles);
+  }
+  THREADrun(threader_checkfiles);
+  PRINT_TIMER(timer_readsmv, "CheckFiles");
 
 #ifdef pp_BNDF
   for(i = 0;i < npatchinfo;i++){

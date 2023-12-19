@@ -19,7 +19,6 @@ void InitMultiThreading(void){
 #endif
   pthread_mutex_init(&mutexPART_LOAD, NULL);
   pthread_mutex_init(&mutexVOLLOAD,NULL);
-  pthread_mutex_init(&mutexCHECKFILES, NULL);
   pthread_mutex_init(&mutexSLICEBOUNDS, NULL);
   pthread_mutex_init(&mutexPATCHBOUNDS, NULL);
 #endif
@@ -252,21 +251,21 @@ void FinishUpdateTriangles(void){
 void CheckFiles(void){
   int i;
 
-  LOCK_CHECKFILES;
+  THREADcontrol(threader_checkfiles, THREAD_LOCK);
   have_compressed_files = 0;
-  UNLOCK_CHECKFILES;
+  THREADcontrol(threader_checkfiles, THREAD_UNLOCK);
   for(i=0;i<npatchinfo;i++){
     patchdata *patchi;
     int have_file;
 
     patchi = patchinfo + i;
     have_file = FILE_EXISTS_CASEDIR(patchi->comp_file);
-    LOCK_CHECKFILES;
+    THREADcontrol(threader_checkfiles, THREAD_LOCK);
     if(have_file==YES){
       patchi->compression_type_temp = COMPRESSED_ZLIB;
       have_compressed_files = 1;
     }
-    UNLOCK_CHECKFILES;
+    THREADcontrol(threader_checkfiles, THREAD_UNLOCK);
   }
   for(i=0;i<nsmoke3dinfo;i++){
     smoke3ddata *smoke3di;
@@ -274,15 +273,15 @@ void CheckFiles(void){
 
     smoke3di = smoke3dinfo + i;
     have_file = FILE_EXISTS_CASEDIR(smoke3di->comp_file);
-    LOCK_CHECKFILES;
+    THREADcontrol(threader_checkfiles, THREAD_LOCK);
     if(have_file==YES){
       smoke3di->compression_type_temp = COMPRESSED_ZLIB;
       have_compressed_files = 1;
     }
-    UNLOCK_CHECKFILES;
+    THREADcontrol(threader_checkfiles, THREAD_UNLOCK);
   }
   if(have_compressed_files==0)return;
-  LOCK_CHECKFILES;
+  THREADcontrol(threader_checkfiles, THREAD_LOCK);
   for(i = 0; i < npatchinfo; i++){
     patchdata *patchi;
 
@@ -303,31 +302,8 @@ void CheckFiles(void){
     }
   }
   updatemenu = 1;
-  UNLOCK_CHECKFILES;
+  THREADcontrol(threader_checkfiles, THREAD_UNLOCK);
 }
-
-/* ------------------ MtCheckFiles ------------------------ */
-
-#ifdef pp_THREAD
-void *MtCheckFiles(void *arg){
-  CheckFiles();
-  pthread_exit(NULL);
-  return NULL;
-}
-
-void CheckFilesMT(void){
-  if(checkfiles_multithread==1){
-    pthread_create(&checkfiles_multithread_id, NULL, MtCheckFiles, NULL);
-  }
-  else{
-    CheckFiles();
-  }
-}
-#else
-void CheckFilesMT(void){
-  CheckFiles();
-}
-#endif
 
 /* ------------------ MtGetGlobalSliceBounds ------------------------ */
 
@@ -388,7 +364,38 @@ void MtReadVolsmokeAllFramesAllMeshes2(void){
 // -------------------- new threader routines
 
 
+/* ------------------ Sample ------------------------ */
+
+#ifdef pp_SAMPLE
+// example multi threading routines
+// need to declare sample_thread_id in threader.h
+// need to declare sample_multithread in smokeviewvars.h
+
+/* ------------------ Sample ------------------------ */
+
+void Sample(void){
+}
+
+/* ------------------ MtSample ------------------------ */
+
+void *MtSample(void *arg){
+  Sample();
+  pthread_exit(NULL);
+  return NULL;
+}
+if(threader_sample==NULL){
+  threader_sample = THREADinit(1,1,Sample,MtSample);
+}
+THREADrun(threader_sample);
+#endif
+
 #ifdef pp_THREAD_NEW
+
+void *MtCheckFiles(void *arg){
+  CheckFiles();
+  pthread_exit(NULL);
+  return NULL;
+}
 
 /* ------------------ MtClassifyAllGeom ------------------------ */
 
@@ -450,31 +457,6 @@ void *MtReadAllGeom(void *arg){
   pthread_exit(NULL);
   return NULL;
 }
-
-/* ------------------ Sample ------------------------ */
-
-#ifdef pp_SAMPLE
-// example multi threading routines
-// need to declare sample_thread_id in threader.h
-// need to declare sample_multithread in smokeviewvars.h
-
-/* ------------------ Sample ------------------------ */
-
-void Sample(void){
-}
-
-/* ------------------ MtSample ------------------------ */
-
-void *MtSample(void *arg){
-  Sample();
-  pthread_exit(NULL);
-  return NULL;
-}
-if(threader_sample==NULL){
-  threader_sample = THREADinit(1,1,Sample,MtSample);
-}
-THREADrun(threader_sample);
-#endif
 
 /* ------------------ MtCompress ------------------------ */
 
