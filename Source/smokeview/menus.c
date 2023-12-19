@@ -4688,6 +4688,7 @@ FILE_SIZE LoadSmoke3D(int type, int frame, int *count, float *time_value){
     break;
     }
   }
+  int icount=0;
   for(i=0;i<nsmoke3dinfo;i++){
     smoke3ddata *smoke3di;
 
@@ -4696,9 +4697,15 @@ FILE_SIZE LoadSmoke3D(int type, int frame, int *count, float *time_value){
       file_count++;
       smoke3di->finalize = 0;
       if(i == last_smoke)smoke3di->finalize = 1;
+      icount++;
+      if(verbose_output == 0){
+        if(icount == 1)PRINTF("Loading %s for mesh: ", smoke3di->label.shortlabel);
+        if(nmeshes<30||(nmeshes<1000&&icount%50==0)|| (nmeshes >= 1000 && icount%100 == 0)||icount==1||i==last_smoke)PRINTF(" %i", icount);
+      }
       load_size += ReadSmoke3D(frame, i, LOAD, FIRST_TIME, time_value, &errorcode);
     }
   }
+  if(verbose_output == 0)PRINTF("\n");
   *count = file_count;
   return load_size;
 }
