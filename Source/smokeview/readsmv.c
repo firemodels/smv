@@ -11691,6 +11691,7 @@ int ReadSMV_Configure(){
   }
   SetupReadAllGeom();
   THREADrun(threader_readallgeom);
+  THREADcontrol(threader_readallgeom, THREAD_JOIN);
   PRINT_TIMER(timer_readsmv, "ReadAllGeomMT");
 
   UpdateMeshCoords();
