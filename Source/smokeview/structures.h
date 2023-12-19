@@ -167,9 +167,6 @@ typedef struct _screendata {
 /* --------------------------  bounddata ------------------------------------ */
 
 typedef struct _boundata {
-#ifdef pp_HIST
-  float percentile_min, percentile_max;
-#endif
   float global_min, global_max;
   int defined;
 } bounddata;
@@ -634,13 +631,7 @@ typedef struct _isodata {
   int *geom_nstatics, *geom_ndynamics;
   float *geom_times, *geom_vals;
   float geom_globalmin, geom_globalmax;
-#ifdef pp_HIST
-  float geom_percentilemin, geom_percentilemax;
-#endif
   int geom_nvals;
-#ifdef pp_HIST
-  histogramdata *histogram;
-#endif
 } isodata;
 
 /* --------------------------  volrenderdata ------------------------------------ */
@@ -1198,18 +1189,11 @@ typedef struct _partpropdata {
   int imin, imax;
   float dlg_global_valmin, dlg_global_valmax;
   int set_global_bounds;
-#ifdef pp_HIST
-  float percentile_min, percentile_max;
-#endif
   float user_min, user_max;
   int setvalmin, setvalmax;
   float chopmin, chopmax;
   int setchopmin, setchopmax;
   int extreme_min, extreme_max;
-#ifdef pp_HIST
-  histogramdata histogram;
-  int *buckets;
-#endif
 } partpropdata;
 
 /* --------------------------  part5data ------------------------------------ */
@@ -1233,11 +1217,7 @@ typedef struct _part5data {
 typedef struct _partdata {
   FILE_m *stream;
 
-#ifdef pp_HIST
-  char *file, *size_file, *reg_file, *hist_file, *bound_file;
-#else
   char *file, *size_file, *reg_file, *bound_file;
-#endif
   int have_bound_file;
   int seq_id, autoload, loaded, skipload, request_load, display, reload, finalize;
   int loadstatus, boundstatus;
@@ -1257,9 +1237,7 @@ typedef struct _partdata {
   partclassdata **partclassptr;
   part5data *data5;
   histogramdata **histograms;
-#ifndef pp_HIST
   int hist_update;
-#endif
   int bounds_set;
   float *global_min, *global_max;
   float *valmin_fds, *valmax_fds;   // read in from .bnd files
@@ -1461,9 +1439,7 @@ typedef struct _slicedata {
   int cell_center;
   float delta_orig, dplane_min, dplane_max;
   int extreme_min, extreme_max;
-#ifndef pp_HIST
   int hist_update;
-#endif
   int nhistograms;
   histogramdata *histograms;
   histogramdata *histogram;
@@ -1524,11 +1500,7 @@ typedef struct _cpp_boundsdata {
   float valmin[4], valmax[4], chopmin, chopmax;
   float glui_valmin, glui_valmax;
   int set_valtype, cache;
-#ifdef pp_HIST
   histogramdata *hist;
-#else
-  histogramdata *hist;
-#endif
 } cpp_boundsdata;
 /* --------------------------  boundsdata ------------------------------------ */
 
@@ -1704,12 +1676,7 @@ typedef struct _patchdata {
   int extreme_min, extreme_max;
   time_t modtime;
   int finalize;
-#ifdef pp_HIST
-  histogramdata *histogram;
-  int histogram_nframes;
-#else
   int hist_update;
-#endif
   bounddata bounds;
   boundsdata *bounds2;
 } patchdata;
@@ -1732,10 +1699,7 @@ typedef struct _plot3ddata {
   flowlabels label[MAXPLOT3DVARS];
   char menulabel[256], longlabel[256], timelabel[256];
   histogramdata *histograms[MAXPLOT3DVARS];
-#ifndef pp_HIST
   int hist_update;
-#endif
-
 } plot3ddata;
 
 /* --------------------------  zonedata ------------------------------------ */

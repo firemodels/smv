@@ -2769,9 +2769,6 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
     if(patchi->boundary==1)UpdateBoundaryType();
     UpdateUnitDefs();
     UpdateTimes();
-#ifdef pp_HIST
-    update_draw_hist = 1;
-#endif
     PrintMemoryInfo;
     return 0;
   }
@@ -2844,28 +2841,14 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
       NewMemory((void **)&patchi->geom_ivals, nvals * sizeof(char));
     }
   }
-#ifdef pp_HIST
-  if(load_flag == UPDATE_HIST){
-    GetGeomData(patchi->file, ntimes_local, nvals, patchi->geom_times,
-      patchi->geom_nstatics, patchi->geom_ndynamics, patchi->geom_vals, time_frame, time_value, geom_offsets, &error);
-    ResetHistogram(patchi->histogram, NULL, NULL);
-    UpdateHistogram(patchi->geom_vals, NULL, nvals, patchi->histogram);
-    patchi->histogram->complete=  1;
-    return 0;
-  }
-  else{
-#endif
-    int filesize;
+  int filesize;
 
-    if(current_script_command==NULL||NOT_LOADRENDER){
-      PRINTF("Loading %s(%s)", patchi->file, patchi->label.shortlabel);
-    }
-    filesize=GetGeomData(patchi->file, ntimes_local, nvals, patchi->geom_times,
-      patchi->geom_nstatics, patchi->geom_ndynamics, patchi->geom_vals, time_frame, time_value, geom_offsets, &error);
-    return_filesize += filesize;
-#ifdef pp_HIST
+  if(current_script_command==NULL||NOT_LOADRENDER){
+    PRINTF("Loading %s(%s)", patchi->file, patchi->label.shortlabel);
   }
-#endif
+  filesize=GetGeomData(patchi->file, ntimes_local, nvals, patchi->geom_times,
+    patchi->geom_nstatics, patchi->geom_ndynamics, patchi->geom_vals, time_frame, time_value, geom_offsets, &error);
+  return_filesize += filesize;
 
   patchi->ngeom_times = ntimes_local;
   patchi->geom_nvals = nvals;
@@ -2997,34 +2980,6 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
     }
 
     bounds = GLUIGetBoundsData(bound_type);
-#ifdef pp_HIST
-    if(bounds->set_valmin==BOUND_PERCENTILE_MIN||bounds->set_valmax==BOUND_PERCENTILE_MAX){
-      float global_min = 0.0, global_max = 1.0;
-
-      if(patchi->boundary==1){
-        GLUIGetGlobalBoundsMinMax(BOUND_PATCH, bounds->label, &global_min, &global_max);
-        ComputeLoadedPatchHist(bounds->label, &(bounds->hist), &global_min, &global_max);
-      }
-      else{
-        ComputeLoadedSliceHist(bounds->label);
-        MergeLoadedSliceHist(bounds->label, &(bounds->hist));
-      }
-      if(bounds->hist->defined==1){
-        if(bounds->set_valmin==BOUND_PERCENTILE_MIN){
-          float per_valmin;
-
-          GetHistogramValProc(bounds->hist, percentile_level_min, &per_valmin);
-          GLUISetMin(bound_type, bounds->label, BOUND_PERCENTILE_MIN, per_valmin);
-        }
-        if(bounds->set_valmax==BOUND_PERCENTILE_MAX){
-          float per_valmax;
-
-          GetHistogramValProc(bounds->hist, percentile_level_max, &per_valmax);
-          GLUISetMax(bound_type, bounds->label, BOUND_PERCENTILE_MAX, per_valmax);
-        }
-      }
-    }
-#endif
     INIT_PRINT_TIMER(geom_bounds_timer);
     if(bounds->set_valmin==BOUND_SET_MIN||bounds->set_valmax==BOUND_SET_MAX){
       if(patchi->boundary==1){

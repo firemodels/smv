@@ -125,11 +125,6 @@ void *MtLoadAllPartFiles(void *arg){
 void LoadAllPartFilesMT(int partnum){
   int i;
 
-#ifdef pp_HIST
-  if(part_multithread==1&&current_script_command==NULL&&update_generate_part_histograms==-1){
-    JOIN_PART_HIST;
-  }
-#endif
   if(part_multithread==0){
     LoadAllPartFiles(partnum);
     return;
@@ -260,18 +255,6 @@ void ReadAllGeomMT(void){
 
 /* ------------------ MTGeneratePartHistograms ------------------------ */
 
-#ifdef pp_HIST
-void *MTGeneratePartHistograms(void *arg){
-  GeneratePartHistograms();
-  pthread_exit(NULL);
-  return NULL;
-}
-
-void GeneratePartHistogramsMT(void){
-  in_part_mt = 1;
-  pthread_create(&generate_part_histogram_id, NULL, MTGeneratePartHistograms, NULL);
-}
-#endif
 #else
 void GeneratePartHistogramsMT(void){
   GeneratePartHistograms();
@@ -602,35 +585,6 @@ void PSystem(char *commandline){
 void PSystem(char *commandline){
   system(commandline);
 }
-#endif
-
-/* ------------------ Update_Bounds ------------------------ */
-
-#ifdef pp_HIST
-int Update_Bounds(void){
-  UpdateAllBoundaryBounds();
-#ifdef pp_THREAD
-  pthread_join(update_all_patch_bounds_id,NULL);
-#endif
-  return 1;
-}
-
-/* ------------------ UpdateAllBoundaryBoundsMT ------------------------ */
-
-#ifdef pp_THREAD
-void *UpdateAllBoundaryBoundsMT(void *arg){
-  UpdateAllBoundaryBoundsST();
-  pthread_exit(NULL);
-  return NULL;
-}
-void UpdateAllBoundaryBounds(void){
-  pthread_create(&update_all_patch_bounds_id,NULL, UpdateAllBoundaryBoundsMT,NULL);
-}
-#else
-void UpdateAllBoundaryBounds(void){
-  UpdateAllBoundaryBoundsST();
-}
-#endif
 #endif
 
 /* ------------------ MtReadVolsmokeAllFramesAllMeshes2 ------------------------ */
