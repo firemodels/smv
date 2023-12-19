@@ -486,9 +486,6 @@ void GetGlobalPlot3DBounds(void){
       boundscppi->set_chopmax = 0;
       boundscppi->chopmin = p3max_global[0];
       boundscppi->chopmax = p3max_global[0];
-#ifdef pp_HIST
-      boundscppi->hist = NULL;
-#endif
     }
   }
 }
@@ -759,9 +756,6 @@ void GetGlobalHVACDuctBounds(int flag){
       boundscppi->set_chopmax = boundi->setchopmax;
       boundscppi->chopmin = boundi->chopmin;
       boundscppi->chopmax = boundi->chopmax;
-#ifdef pp_HIST
-      boundscppi->hist = NULL;
-#endif
     }
   }
 }
@@ -819,9 +813,6 @@ void GetGlobalHVACNodeBounds(int flag){
       boundscppi->set_chopmax = boundi->setchopmax;
       boundscppi->chopmin = boundi->chopmin;
       boundscppi->chopmax = boundi->chopmax;
-#ifdef pp_HIST
-      boundscppi->hist = NULL;
-#endif
     }
   }
 }
@@ -904,9 +895,6 @@ void UpdateGlobalFEDSliceBounds(void){
       boundscppi->set_chopmax = boundi->setchopmax;
       boundscppi->chopmin = boundi->chopmin;
       boundscppi->chopmax = boundi->chopmax;
-#ifdef pp_HIST
-      boundscppi->hist = NULL;
-#endif
     }
   }
 }

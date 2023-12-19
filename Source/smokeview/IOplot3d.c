@@ -243,9 +243,6 @@ void ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
   }
   if(flag==UNLOAD){
     meshi->plot3dfilenum=-1;
-#ifdef pp_HIST
-    update_draw_hist = 1;
-#endif
   }
   else{
     pn = meshi->plot3dfilenum;
@@ -361,9 +358,7 @@ void ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
   STOP_TIMER(read_time);
   p->loaded=1;
   p->display=1;
-#ifndef pp_HIST
   p->hist_update = 1;
-#endif
   if(nplot3dloaded==0)UpdatePlot3DFileLoad();
   speedmax = -1.;
   meshi->udata=NULL;
@@ -433,26 +428,15 @@ void ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
       if(setp3max_all[nn]!=SET_MAX&&setp3max_all[nn]!=CHOP_MAX)setp3max_all[nn]=SET_MAX;
     }
   }
-#ifdef pp_HIST
-  GetPlot3DHists(p);
-#endif
   AllocatePlot3DColorLabels(p);
   if(cache_plot3d_data==1){
     if(p->finalize==1){
-#ifdef pp_HIST
-      MergePlot3DHistograms();
-      SetPercentilePlot3DBounds();
-#endif
       if(update_plot3d_bnd==1){
         update_plot3d_bnd = 0;
         GetGlobalPlot3DBounds();
         SetLoadedPlot3DBounds(NULL, 0);
       }
       UpdateAllPlot3DColors(0);
-#ifdef pp_HIST
-#define BOUND_PERCENTILE_DRAW          120
-      GLUIPlot3DBoundsCPP_CB(BOUND_PERCENTILE_DRAW);
-#endif
     }
   }
   else{

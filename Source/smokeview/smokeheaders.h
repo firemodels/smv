@@ -319,10 +319,6 @@ EXTERNCPP void PeriodicRefresh(int var);
 
 EXTERNCPP void GLUIUpdateShowOnlyTop(void);
 
-#ifdef pp_HIST
-EXTERNCPP void GeneratePartHistogramsMT(void);
-EXTERNCPP void EnableDisablePartPercentileDraw(int flag);
-#endif
 EXTERNCPP void GeneratePartHistograms(void);
 FILE_SIZE LoadAllMSlicesMT(int last_slice, multislicedata *mslicei, int *fcount);
 
@@ -362,9 +358,6 @@ EXTERNCPP void DrawPlot2D(int option, float *x, float *z, float *z2, int n,
   float global_valmin, float global_valmax, char *quantity, char *quantity2, char *unit,
   float left, float right, float down, float top);
 
-#ifdef pp_HIST
-EXTERNCPP void MergePartHistograms(void);
-#endif
 EXTERNCPP void MergePlot3DHistograms(void);
 EXTERNCPP void GetPlot3DHists(plot3ddata *p);
 
@@ -373,9 +366,6 @@ EXTERNCPP void UpdateHoc(void);
 EXTERNCPP int GetStringWidth(char *string);
 EXTERNCPP void DrawDevicePlots(void);
 EXTERNCPP void DrawTreeDevicePlots(void);
-#ifdef pp_HIST
-EXTERNCPP int GetPercentileDraw(int type);
-#endif
 EXTERNCPP int GetPlotState(int choice);
 
 #ifndef TERRAIN_FIRE_LINE_UPDATE
@@ -447,32 +437,19 @@ EXTERNCPP void PauseTime(float pause_time);
 EXTERNCPP int InMesh(float *xyz);
 EXTERNCPP void UpdateVectorSkip(int skip);
 EXTERNCPP char *GetHomeDir(void);
-#ifdef pp_HIST
 EXTERNCPP void SetPercentileDrawOff(void);
 EXTERNCPP void SetPercentilePartBounds(void);
 EXTERNCPP void SetPercentilePlot3DBounds(void);
-#endif
 EXTERNCPP void ClosePartFiles(void);
 EXTERNCPP void UpdatePartColors(partdata *parti, int flag);
-#ifdef pp_HIST
-EXTERNCPP void DrawHistogram(histogramdata *histogram, float xxmin, float xxmax, float gmin, float gmax, int ndigits);
-#endif
 EXTERNCPP void MergeLoadedSliceHist(char *label, histogramdata **histptr);
 EXTERNCPP void ComputeLoadedPatchHist(char *label, histogramdata **histptr, float *valmin, float *valmax);
 EXTERNCPP void GetHistogramValProc(histogramdata *histogram, float cdf, float *val);
-#ifdef pp_HIST
-EXTERNCPP void ComputeLoadedSliceHist(char *label);
-#else
 EXTERNCPP void ComputeLoadedSliceHist(char *label, float valmin, float valmax);
-#endif
 EXTERNCPP void SetLoadedSliceBounds(int *list, int nlist);
 EXTERNCPP void SetLoadedPatchBounds(int *list, int nlist);
 EXTERNCPP void SetLoadedPlot3DBounds(int *list, int nlist);
 EXTERNCPP void SetLoadedPartBounds(int *list, int nlist);
-#ifdef pp_HIST
-EXTERNCPP void SetPercentileMode(int flag);
-EXTERNCPP void SetPercentileMinMax(float p_min, float p_max);
-#endif
 
 EXTERNCPP void ShiftColorbars(void);
 EXTERNCPP int GetColorbarState(void);
@@ -565,10 +542,6 @@ EXTERNCPP void UpdateBoundarySliceDups(void);
 EXTERNCPP void UnLoadVolsmoke3DMenu(int value);
 EXTERNCPP void UpdateMenu(void);
 EXTERNCPP void GeometryMenu(int var);
-#ifdef pp_HIST
-EXTERNCPP void UpdateHistogramType(void);
-EXTERNCPP void UpdateSliceHist(void);
-#endif
 #ifdef pp_RENDER360_DEBUG
 EXTERNCPP void DrawScreenInfo(void);
 #endif
@@ -699,11 +672,6 @@ EXTERNCPP void RemoveDupBlockages(void);
 EXTERNCPP void SortIsoTriangles(float *mm);
 EXTERNCPP void UpdateIsoTriangles(int flag);
 EXTERNCPP void UpdateSliceMenuShow(void);
-#ifdef pp_HIST
-EXTERNCPP void UpdateBoundaryBounds(patchdata *patchi);
-EXTERNCPP void UpdateAllBoundaryBounds(void);
-EXTERNCPP void UpdateAllBoundaryBoundsST(void);
-#endif
 EXTERNCPP void UpdateHideBoundarySurface(void);
 EXTERNCPP int  LastSliceLoadstack(void);
 EXTERNCPP int  LastVSliceLoadstack(void);
@@ -1117,9 +1085,6 @@ EXTERNCPP void ScaleString(const char *stringfrom, char *stringto, const float *
 EXTERNCPP void Num2String(char *string, float tval);
 EXTERNCPP int  SetupCase(char *file);
 EXTERNCPP int  GetMinPartFrames(int flag);
-#ifdef pp_HIST
-EXTERNCPP int  Update_Bounds(void);
-#endif
 
 EXTERNCPP void FreeCADInfo(void);
 
