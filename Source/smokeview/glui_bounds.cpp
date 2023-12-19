@@ -1538,11 +1538,11 @@ extern "C" void GLUIHVACSliceBoundsCPP_CB(int var){
       break;
     case BOUND_RELOAD_DATA:
       SetLoadedSliceBounds(NULL, 0);
-      THREADcontrol(threader_compress, THREAD_LOCK);
+      THREADcontrol(compress_threads, THREAD_LOCK);
       SetLoadedSliceBounds(NULL, 0);
       ReloadAllVectorSliceFiles();
       ReloadAllSliceFiles();
-      THREADcontrol(threader_compress, THREAD_UNLOCK);
+      THREADcontrol(compress_threads, THREAD_UNLOCK);
       GLUIHVACSliceBoundsCPP_CB(BOUND_UPDATE_COLORS);
       break;
     case BOUND_RESEARCH_MODE:
@@ -2423,7 +2423,7 @@ GLUI_Panel *PANEL_slice_plot2de = NULL;;
 GLUI_Panel *PANEL_slice_plot2df = NULL;;
 
 GLUI_Spinner *SPINNER_sliceval_ndigits = NULL;
-GLUI_Spinner *SPINNER_npartthread_ids = NULL;
+GLUI_Spinner *SPINNER_n_part_threads = NULL;
 GLUI_Spinner *SPINNER_iso_outline_ioffset = NULL;
 GLUI_Spinner *SPINNER_iso_level = NULL;
 GLUI_Spinner *SPINNER_iso_colors[4];
@@ -3552,11 +3552,11 @@ void BoundBoundCB(int var){
     }
     break;
   case COMPRESS_FILES:
-    if(threader_compress==NULL){
-      threader_compress = THREADinit(ncompressthread_ids, compress_multithread,
+    if(compress_threads==NULL){
+      compress_threads = THREADinit(n_compress_threads, use_compress_threads,
                                      Compress, MtCompress);
     }
-    THREADrun(threader_compress);
+    THREADrun(compress_threads);
     break;
   case COMPRESS_AUTOLOADED:
     updatemenu = 1;
@@ -4328,16 +4328,16 @@ extern "C" void GLUIBoundsSetup(int main_window){
     PANEL_partread=glui_bounds->add_panel_to_panel(ROLLOUT_particle_settings,_("Particle loading"));
     CHECKBOX_partfast = glui_bounds->add_checkbox_to_panel(PANEL_partread, _("Fast loading"), &partfast, PARTFAST, PartBoundCB);
     CHECKBOX_part_multithread = glui_bounds->add_checkbox_to_panel(PANEL_partread, _("Parallel loading"), &part_multithread);
-    SPINNER_npartthread_ids = glui_bounds->add_spinner_to_panel(PANEL_partread, _("Files loaded at once"), GLUI_SPINNER_INT, &npartthread_ids);
+    SPINNER_n_part_threads = glui_bounds->add_spinner_to_panel(PANEL_partread, _("Files loaded at once"), GLUI_SPINNER_INT, &n_part_threads);
 #ifndef pp_PART_MULTI
     CHECKBOX_part_multithread->disable();
-    SPINNER_npartthread_ids->disable();
+    SPINNER_n_part_threads->disable();
 #endif
     if(npartinfo>1){
-      SPINNER_npartthread_ids->set_int_limits(1,MIN(npartinfo,MAX_THREADS));
+      SPINNER_n_part_threads->set_int_limits(1,MIN(npartinfo,MAX_THREADS));
     }
     else{
-      SPINNER_npartthread_ids->set_int_limits(1,1);
+      SPINNER_n_part_threads->set_int_limits(1,1);
     }
     PartBoundCB(PARTFAST);
   }
@@ -5402,14 +5402,14 @@ void PartBoundCB(int var){
   case PARTFAST:
     if(npartinfo<=1){
       CHECKBOX_part_multithread->disable();
-      SPINNER_npartthread_ids->disable();
+      SPINNER_n_part_threads->disable();
       part_multithread = 0;
       CHECKBOX_part_multithread->set_int_val(part_multithread);
     }
     else{
 #ifndef pp_PART_MULTI
       CHECKBOX_part_multithread->enable();
-      SPINNER_npartthread_ids->enable();
+      SPINNER_n_part_threads->enable();
 #endif
       CHECKBOX_part_multithread->set_int_val(part_multithread);
     }

@@ -287,21 +287,21 @@ SVEXTERN int npart5loaded, npartloaded;
 
 SVEXTERN int SVDECL(global_have_global_bound_file, 0);
 SVEXTERN FILE_SIZE  SVDECL(global_part_boundsize, 0);
+SVEXTERN int SVDECL(nmemory_ids, 0);
 
 // multi-threading
 //*** number of threads
-SVEXTERN int SVDECL(ncheckfilesthread_ids, 1);
-SVEXTERN int SVDECL(ncompressthread_ids, 1);
-SVEXTERN int SVDECL(nreadallgeomthread_ids, 4);
-SVEXTERN int SVDECL(nsmoke_threads, 1), SVDECL(npartthread_ids, 2);
+SVEXTERN int SVDECL(n_checkfiles_threads, 1);
+SVEXTERN int SVDECL(n_compress_threads, 1);
+SVEXTERN int SVDECL(n_readallgeom_threads, 4);
+SVEXTERN int SVDECL(n_smoke_threads, 1), SVDECL(n_part_threads, 2);
 #ifdef pp_SLICE_MULTI
-SVEXTERN int SVDECL(nslicethread_ids, 4);
+SVEXTERN int SVDECL(n_slice_threads, 4);
 #endif
-SVEXTERN int SVDECL(nmemory_ids, 0);
 
 //***use  multi-threading
-SVEXTERN int SVDECL(checkfiles_multithread, 1);
-SVEXTERN int SVDECL(compress_multithread, 1);
+SVEXTERN int SVDECL(use_checkfiles_threads, 1);
+SVEXTERN int SVDECL(use_compress_threads, 1);
 SVEXTERN int SVDECL(iso_multithread, 0), SVDECL(iso_multithread_save,0);
 #ifdef pp_PART_MULTI
 SVEXTERN int SVDECL(part_multithread, 1);
@@ -318,12 +318,12 @@ SVEXTERN int SVDECL(ffmpeg_multithread, 1);
 SVEXTERN int SVDECL(use_smoke_thread, 0);
 
 //*** threader data structures
-SVEXTERN threaderdata SVDECL(*threader_checkfiles, NULL);
-SVEXTERN threaderdata SVDECL(*threader_compress, NULL);
-SVEXTERN threaderdata SVDECL(*threader_playmovie,   NULL);
-SVEXTERN threaderdata SVDECL(*threader_setupff,     NULL);
-SVEXTERN threaderdata SVDECL(*threader_readallgeom, NULL);
-SVEXTERN threaderdata SVDECL(*threader_classifyallgeom, NULL);
+SVEXTERN threaderdata SVDECL(*checkfiles_threads,       NULL);
+SVEXTERN threaderdata SVDECL(*compress_threads,        NULL);
+SVEXTERN threaderdata SVDECL(*playmovie_threads,       NULL);
+SVEXTERN threaderdata SVDECL(*setupff_threads,         NULL);
+SVEXTERN threaderdata SVDECL(*readallgeom_threads,     NULL);
+SVEXTERN threaderdata SVDECL(*classifyallgeom_threads, NULL);
 
 SVEXTERN int SVDECL(partfast, 1);
 SVEXTERN int SVDECL(have_vr, 0), SVDECL(use_vr,0);

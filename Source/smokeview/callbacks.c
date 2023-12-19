@@ -2851,8 +2851,8 @@ void Keyboard(unsigned char key, int flag){
         }
       }
       if(part_multithread==1){
-        if(npartthread_ids>1)printf("parallel particle loading: on(%i threads)\n",npartthread_ids);
-        if(npartthread_ids==1)printf("parallel particle loading: on(1 thread)\n");
+        if(n_part_threads > 1)printf("parallel particle loading: on(%i threads)\n", n_part_threads);
+        if(n_part_threads == 1)printf("parallel particle loading: on(1 thread)\n");
       }
       if(part_multithread==0)printf("parallel particle loading: off\n");
       GLUIUpdatePartFast();

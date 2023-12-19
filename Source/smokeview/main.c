@@ -695,7 +695,7 @@ char *ProcessCommandLine(CommandlineArgs *args) {
       strcpy(smokeview_casedir, args->casedir);
     }
     if(args->threads_defined){
-        nreadallgeomthread_ids = CLAMP(args->threads, 1, 16);
+        n_readallgeom_threads = CLAMP(args->threads, 1, 16);
     }
   if(update_ssf == 1){
     int len_prefix = 0;

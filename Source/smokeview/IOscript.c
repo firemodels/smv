@@ -2796,10 +2796,10 @@ void ScriptLoadBoundary(scriptdata *scripti, int meshnum){
     patchi = patchinfo + i;
     if(meshnum == -1 || patchi->blocknumber + 1 == meshnum){
       if(strcmp(patchi->label.longlabel, scripti->cval) == 0){
-        THREADcontrol(threader_compress, THREAD_LOCK);
+        THREADcontrol(compress_threads, THREAD_LOCK);
         ReadBoundary(i, LOAD, &errorcode);
         count++;
-        THREADcontrol(threader_compress, THREAD_UNLOCK);
+        THREADcontrol(compress_threads, THREAD_UNLOCK);
         if(meshnum == -1)break;
       }
     }

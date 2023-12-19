@@ -56,10 +56,10 @@ void LoadAllPartFilesMT(int partnum){
     return;
   }
 
-  for(i = 0; i<npartthread_ids; i++){
+  for(i = 0; i<n_part_threads; i++){
     pthread_create(partthread_ids+i, NULL, MtLoadAllPartFiles, &partnum);
   }
-  for(i=0;i<npartthread_ids;i++){
+  for(i=0;i<n_part_threads;i++){
     pthread_join(partthread_ids[i],NULL);
   }
   INIT_PRINT_TIMER(part_timer);
@@ -302,10 +302,10 @@ void *MtReadAllGeom(void *arg){
 /* ------------------ MtCompress ------------------------ */
 
 void *MtCompress(void *arg){
-  THREADcontrol(threader_compress, THREAD_LOCK);
+  THREADcontrol(compress_threads, THREAD_LOCK);
   Compress();
   updatemenu=1;
-  THREADcontrol(threader_compress, THREAD_UNLOCK);
+  THREADcontrol(compress_threads, THREAD_UNLOCK);
   pthread_exit(NULL);
   return NULL;
 }

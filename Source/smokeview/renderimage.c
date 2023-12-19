@@ -47,11 +47,11 @@ void SetupFF(void){
   have_ffplay_local = HaveProg("ffplay -version >/dev/null 2>/dev/null");
 #endif
 
-  THREADcontrol(threader_setupff, THREAD_LOCK);;
+  THREADcontrol(setupff_threads, THREAD_LOCK);;
   update_ff = 1;
   have_ffmpeg = have_ffmpeg_local;
   have_ffplay = have_ffplay_local;
-  THREADcontrol(threader_setupff, THREAD_UNLOCK);;
+  THREADcontrol(setupff_threads, THREAD_UNLOCK);;
 }
 
 /* ------------------ PlayMovieNow ------------------------ */
@@ -61,10 +61,10 @@ void PlayMovieNow(void){
 
   if(play_movie_now==0)return;
   if(FILE_EXISTS(GetMovieFilePath(moviefile_path)) == YES){
-    if(threader_playmovie==NULL){
-      threader_playmovie = THREADinit(1, 1, PlayMovie, MtPlayMovie);
+    if(playmovie_threads==NULL){
+      playmovie_threads = THREADinit(1, 1, PlayMovie, MtPlayMovie);
     }
-    THREADrun(threader_playmovie);
+    THREADrun(playmovie_threads);
   }
   else{
     PRINTF("*** Error: the movie file, %s, does not exist\n", moviefile_path);

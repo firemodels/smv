@@ -2754,11 +2754,11 @@ void CompressMenu(int value){
     erase_all=1;
     overwrite_all=0;
     GLUIUpdateOverwrite();
-    if(threader_compress==NULL){
-      threader_compress = THREADinit(ncompressthread_ids, compress_multithread,
+    if(compress_threads==NULL){
+      compress_threads = THREADinit(n_compress_threads, use_compress_threads,
                                      Compress, MtCompress);
     }
-    THREADrun(threader_compress);
+    THREADrun(compress_threads);
     break;
   case MENU_OVERWRITECOMPRESS:
     erase_all=0;
@@ -2767,11 +2767,11 @@ void CompressMenu(int value){
     break;
   case MENU_COMPRESSNOW:
     erase_all=0;
-    if(threader_compress==NULL){
-      threader_compress = THREADinit(ncompressthread_ids, compress_multithread,
+    if(compress_threads==NULL){
+      compress_threads = THREADinit(n_compress_threads, use_compress_threads,
                                      Compress, MtCompress);
     }
-    THREADrun(threader_compress);
+    THREADrun(compress_threads);
     break;
   case MENU_COMPRESSAUTOLOAD:
     compress_autoloaded=1-compress_autoloaded;
@@ -3431,7 +3431,7 @@ void LoadUnloadMenu(int value){
     GLUTPOSTREDISPLAY;
   }
   if(value==RELOADALL||value==RELOAD_INCREMENTAL_ALL){
-    THREADcontrol(threader_compress, THREAD_LOCK);
+    THREADcontrol(compress_threads, THREAD_LOCK);
     if(hrr_csv_filename!=NULL){
       ReadHRR(LOAD);
     }
@@ -3547,7 +3547,7 @@ void LoadUnloadMenu(int value){
 
     updatemenu=1;
     GLUTPOSTREDISPLAY;
-    THREADcontrol(threader_compress, THREAD_UNLOCK);
+    THREADcontrol(compress_threads, THREAD_UNLOCK);
   }
   if(value==SHOWFILES){
     GLUTPOSTREDISPLAY;
@@ -5694,10 +5694,10 @@ void LoadBoundaryMenu(int value){
       fprintf(scriptoutstream, " %i\n", patchi->blocknumber+1);
     }
     if(scriptoutstream==NULL||script_defer_loading==0){
-      THREADcontrol(threader_compress, THREAD_LOCK);
+      THREADcontrol(compress_threads, THREAD_LOCK);
       SetLoadedPatchBounds(&value, 1);
       ReadBoundary(value,LOAD,&errorcode);
-      THREADcontrol(threader_compress, THREAD_UNLOCK);
+      THREADcontrol(compress_threads, THREAD_UNLOCK);
     }
   }
   else if(value<=-10){
@@ -5741,9 +5741,9 @@ void LoadBoundaryMenu(int value){
 
         patchi = patchinfo+i;
         if(InPatchList(patchj, patchi)==1){
-          THREADcontrol(threader_compress, THREAD_LOCK);
+          THREADcontrol(compress_threads, THREAD_LOCK);
           patchi->finalize = 1;
-          THREADcontrol(threader_compress, THREAD_UNLOCK);
+          THREADcontrol(compress_threads, THREAD_UNLOCK);
           break;
         }
       }
@@ -5752,7 +5752,7 @@ void LoadBoundaryMenu(int value){
 
         patchi = patchinfo + i;
         if(InPatchList(patchj, patchi)==1){
-          THREADcontrol(threader_compress, THREAD_LOCK);
+          THREADcontrol(compress_threads, THREAD_LOCK);
           if(patchi->structured == YES){
             PRINTF("Loading %s(%s)", patchi->file, patchi->label.shortlabel);
           }
@@ -5761,7 +5761,7 @@ void LoadBoundaryMenu(int value){
             UpdateTriangles(GEOM_STATIC, GEOM_UPDATE_ALL);
           }
           file_count++;
-          THREADcontrol(threader_compress, THREAD_UNLOCK);
+          THREADcontrol(compress_threads, THREAD_UNLOCK);
         }
       }
       STOP_TIMER(load_time);
@@ -11398,7 +11398,7 @@ static int menu_count=0;
 #endif
   glutAddMenuEntry(_("Save/load configuration files..."), DIALOG_CONFIG);
   glutAddMenuEntry(_("Render images..."), DIALOG_RENDER);
-  THREADcontrol(threader_setupff, THREAD_LOCK);;
+  THREADcontrol(setupff_threads, THREAD_LOCK);;
   if(have_slurm==1&&have_ffmpeg==1){
     glutAddMenuEntry(_("Make movies(local)..."), DIALOG_MOVIE);
     glutAddMenuEntry(_("Make movies(cluster)..."), DIALOG_MOVIE_BATCH);
@@ -11406,7 +11406,7 @@ static int menu_count=0;
   if(have_slurm==0&&have_ffmpeg==1){
     glutAddMenuEntry(_("Make movies..."), DIALOG_MOVIE);
   }
-  THREADcontrol(threader_setupff, THREAD_UNLOCK);
+  THREADcontrol(setupff_threads, THREAD_UNLOCK);
   glutAddMenuEntry(_("Record/run scripts..."), DIALOG_SCRIPT);
 
   /* --------------------------------viewdialog menu -------------------------- */

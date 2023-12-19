@@ -2396,31 +2396,31 @@ void OutputBounds(void){
 /* ------------------ HandleMakeMovie ------------------------ */
 
 void HandleMakeMovie(void){
-  THREADcontrol(threader_setupff, THREAD_LOCK);
+  THREADcontrol(setupff_threads, THREAD_LOCK);
   if(have_ffmpeg == 0){
     PRINTF("*** Error: The movie generating program ffmpeg is not available\n");
-    THREADcontrol(threader_setupff, THREAD_UNLOCK);
+    THREADcontrol(setupff_threads, THREAD_UNLOCK);
     return;
   }
   GLUIEnableDisableMakeMovieCPP(OFF);
   update_makemovie = 1;
-  THREADcontrol(threader_setupff, THREAD_UNLOCK);
+  THREADcontrol(setupff_threads, THREAD_UNLOCK);
 }
 
 /* ------------------ EnableDisableMakeMovie ------------------------ */
 
 void EnableDisableMakeMovie(int onoff){
-  THREADcontrol(threader_setupff, THREAD_LOCK);
+  THREADcontrol(setupff_threads, THREAD_LOCK);
   GLUIEnableDisableMakeMovieCPP(onoff);
-  THREADcontrol(threader_setupff, THREAD_UNLOCK);
+  THREADcontrol(setupff_threads, THREAD_UNLOCK);
 }
 
 /* ------------------ EnableDisablePlayMovie ------------------------ */
 
 void EnableDisablePlayMovie(void){
-  THREADcontrol(threader_setupff, THREAD_LOCK);
+  THREADcontrol(setupff_threads, THREAD_LOCK);
   GLUIEnableDisablePlayMovieCPP();
-  THREADcontrol(threader_setupff, THREAD_UNLOCK);
+  THREADcontrol(setupff_threads, THREAD_UNLOCK);
 }
 
 /* ------------------ UpdateDisplay ------------------------ */
@@ -2451,7 +2451,7 @@ void UpdateDisplay(void){
     SetVentDirs();
     update_setvents=0;
   }
-  THREADcontrol(threader_setupff, THREAD_LOCK);
+  THREADcontrol(setupff_threads, THREAD_LOCK);
   if(update_ff == 1){
     update_ff = 0;
     if(have_ffmpeg == 1){
@@ -2461,7 +2461,7 @@ void UpdateDisplay(void){
       GLUIEnableDisableMakeMovieCPP(OFF);
     }
   }
-  THREADcontrol(threader_setupff, THREAD_UNLOCK);
+  THREADcontrol(setupff_threads, THREAD_UNLOCK);
   if(update_ini==1){
     update_ini = 0;
     ReadIni(NULL);
@@ -2552,9 +2552,9 @@ void UpdateDisplay(void){
   }
   if(updatemenu == 1 && usemenu == 1 && menustatus == GLUT_MENU_NOT_IN_USE){
     glutDetachMenu(GLUT_RIGHT_BUTTON);
-    THREADcontrol(threader_checkfiles, THREAD_LOCK);
+    THREADcontrol(checkfiles_threads, THREAD_LOCK);
     InitMenus();
-    THREADcontrol(threader_checkfiles, THREAD_UNLOCK);
+    THREADcontrol(checkfiles_threads, THREAD_UNLOCK);
     glutAttachMenu(GLUT_RIGHT_BUTTON);
     updatemenu = 0;
   }

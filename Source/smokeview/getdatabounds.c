@@ -1112,7 +1112,7 @@ void PrintPartLoadSummary(int option_arg,int type_arg){
     if(type_arg==PART_SIZING&&partj->boundstatus==PART_BOUND_COMPUTING)nsize_local++;
     if(type_arg==PART_LOADING&&partj->loadstatus==FILE_LOADING)nsize_local++;
   }
-  if(option_arg==1||(nsize_local<npartthread_ids&&nsize_local>0)){
+  if(option_arg==1||(nsize_local<n_part_threads&&nsize_local>0)){
     int isize_local;
 
 #ifdef pp_PART_SIZE
