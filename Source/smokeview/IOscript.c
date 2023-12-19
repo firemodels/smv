@@ -153,8 +153,8 @@ void StartScript(void){
   }
   GLUIScriptDisable();
   current_script_command=scriptinfo-1;
-  iso_multithread_save = iso_multithread;
-  iso_multithread = 0;
+  use_iso_threads_save = use_iso_threads;
+  use_iso_threads = 0;
   viewpoint_script_ptr = NULL;
 }
 

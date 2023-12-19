@@ -1950,7 +1950,7 @@ FILE_SIZE ReadPart(char *file_arg, int ifile_arg, int loadflag_arg, int *errorco
   float load_time_local;
 
 #ifdef pp_PART_HIST
-  if(loadflag_arg==UNLOAD&&part_multithread==1&&update_generate_part_histograms==-1){
+  if(loadflag_arg==UNLOAD&&use_part_threads==1&&update_generate_part_histograms==-1){
     JOIN_PART_HIST;
   }
 #endif
@@ -1993,7 +1993,7 @@ FILE_SIZE ReadPart(char *file_arg, int ifile_arg, int loadflag_arg, int *errorco
     return 0.0;
   }
 
-  if(part_multithread==1){
+  if(use_part_threads==1){
     LOCK_PART_LOAD;
     PrintPartLoadSummary(PART_BEFORE, PART_LOADING);
     UNLOCK_PART_LOAD;
@@ -2027,7 +2027,7 @@ FILE_SIZE ReadPart(char *file_arg, int ifile_arg, int loadflag_arg, int *errorco
   PrintMemoryInfo;
 
   parti->request_load = 1;
-  if(part_multithread==1){
+  if(use_part_threads==1){
     if(npartinfo>1){
       LOCK_PART_LOAD;
       PrintPartLoadSummary(PART_AFTER, PART_LOADING);

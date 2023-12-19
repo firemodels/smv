@@ -298,24 +298,25 @@ SVEXTERN int SVDECL(n_smoke_threads, 1), SVDECL(n_part_threads, 2);
 #ifdef pp_SLICE_MULTI
 SVEXTERN int SVDECL(n_slice_threads, 4);
 #endif
+SVEXTERN int SVDECL(n_iso_threads, 1);
 
 //***use  multi-threading
 SVEXTERN int SVDECL(use_checkfiles_threads, 1);
 SVEXTERN int SVDECL(use_compress_threads, 1);
-SVEXTERN int SVDECL(iso_multithread, 0), SVDECL(iso_multithread_save,0);
+SVEXTERN int SVDECL(use_iso_threads, 0), SVDECL(use_iso_threads_save,0);
 #ifdef pp_PART_MULTI
-SVEXTERN int SVDECL(part_multithread, 1);
+SVEXTERN int SVDECL(use_part_threads, 1);
 #else
-SVEXTERN int SVDECL(part_multithread, 0);
+SVEXTERN int SVDECL(use_part_threads, 0);
 #endif
 #ifdef pp_SLICE_MULTI
-SVEXTERN int SVDECL(slice_multithread, 0);
+SVEXTERN int SVDECL(use_slice_threads, 0);
 #endif
-SVEXTERN int SVDECL(readallgeom_multithread, 1);
-SVEXTERN int SVDECL(slicebounds_thread, 1);
-SVEXTERN int SVDECL(patchbounds_thread, 1);
-SVEXTERN int SVDECL(ffmpeg_multithread, 1);
-SVEXTERN int SVDECL(use_smoke_thread, 0);
+SVEXTERN int SVDECL(use_readallgeom_threads, 1);
+SVEXTERN int SVDECL(use_slicebounds_threads, 1);
+SVEXTERN int SVDECL(use_patchbounds_threads, 1);
+SVEXTERN int SVDECL(use_ffmpeg_threads, 1);
+SVEXTERN int SVDECL(use_smoke_threads, 0);
 
 //*** threader data structures
 SVEXTERN threaderdata SVDECL(*checkfiles_threads,       NULL);

@@ -3385,7 +3385,7 @@ FILE *GetSmokeFileSize(char *smokefile, int fortran_skip, int version){
     printf("          and was not able to create a new size file: %s\n", smoke_sizefilename);
     return NULL;  // can't write size file in temp directory so give up
   }
-  SMOKE3DFILE = FOPEN_SMOKE(smokefile, "rb", n_smoke_threads, use_smoke_thread);
+  SMOKE3DFILE = FOPEN_SMOKE(smokefile, "rb", n_smoke_threads, use_smoke_threads);
   if(SMOKE3DFILE == NULL){
     fclose(SMOKE_SIZE);
     return NULL;
@@ -4176,7 +4176,7 @@ FILE_SIZE ReadSmoke3D(int iframe_arg,int ifile_arg,int flag_arg, int first_time,
 
 //*** read in data
 
-  SMOKE3DFILE=FOPEN_SMOKE(smoke3di->file,"rb", n_smoke_threads, use_smoke_thread);
+  SMOKE3DFILE=FOPEN_SMOKE(smoke3di->file,"rb", n_smoke_threads, use_smoke_threads);
   if(SMOKE3DFILE==NULL){
     SetupSmoke3D(smoke3di,UNLOAD, iframe_arg, &error_local);
     *errorcode_arg =1;

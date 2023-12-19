@@ -11578,8 +11578,8 @@ int ReadSMV_Configure(){
 
   if(runscript == 1||compute_fed == 1){
     use_checkfiles_threads  = 0;
-    ffmpeg_multithread      = 0;
-    readallgeom_multithread = 0;
+    use_ffmpeg_threads      = 0;
+    use_readallgeom_threads = 0;
   }
 
   if(checkfiles_threads == NULL){
@@ -11686,7 +11686,7 @@ int ReadSMV_Configure(){
   PRINT_TIMER(timer_readsmv, "UpdateMeshBoxBounds");
 
   if(readallgeom_threads == NULL){
-    readallgeom_threads = THREADinit(n_readallgeom_threads, readallgeom_multithread, 
+    readallgeom_threads = THREADinit(n_readallgeom_threads, use_readallgeom_threads, 
                                         ReadAllGeom, MtReadAllGeom);
   }
   SetupReadAllGeom();
@@ -11735,7 +11735,7 @@ int ReadSMV_Configure(){
   }
   if(npartinfo>=64){
 #ifdef pp_PART_MULTI
-    part_multithread = 1;
+    use_part_threads = 1;
 #endif
     partfast = 1;
   }
@@ -11796,7 +11796,7 @@ int ReadSMV_Configure(){
   PRINT_TIMER(timer_readsmv, "MakeIBlankCarve");
 
   if(setupff_threads == NULL){
-    setupff_threads = THREADinit(1, ffmpeg_multithread, SetupFF, MtSetupFF);
+    setupff_threads = THREADinit(1, use_ffmpeg_threads, SetupFF, MtSetupFF);
   }
   THREADrun(setupff_threads);
   PRINT_TIMER(timer_readsmv, "SetupFFMT");
@@ -11910,7 +11910,7 @@ int ReadSMV_Configure(){
 
   if(large_case==0){
     if(classifyallgeom_threads==NULL){
-      classifyallgeom_threads = THREADinit(n_readallgeom_threads, readallgeom_multithread, 
+      classifyallgeom_threads = THREADinit(n_readallgeom_threads, use_readallgeom_threads, 
                                               ClassifyAllGeom, MtClassifyAllGeom);
     }
     THREADrun(classifyallgeom_threads);
@@ -13730,9 +13730,9 @@ int ReadIni2(char *inifile, int localfile){
     if(MatchINI(buffer, "SMOKELOAD")==1){
       fgets(buffer, 255, stream);
 #ifdef pp_SMOKE16
-      sscanf(buffer, "%i %i %i", &use_smoke_thread, &n_smoke_threads, &load_smoke16);
+      sscanf(buffer, "%i %i %i", &use_smoke_threads, &n_smoke_threads, &load_smoke16);
 #else
-      sscanf(buffer, "%i %i", &use_smoke_thread, &n_smoke_threads);
+      sscanf(buffer, "%i %i", &use_smoke_threads, &n_smoke_threads);
 #endif
       continue;
     }
@@ -14628,9 +14628,9 @@ int ReadIni2(char *inifile, int localfile){
     if(MatchINI(buffer, "PARTFAST")==1){
       fgets(buffer, 255, stream);
       if(current_script_command==NULL){
-        sscanf(buffer, "%i %i %i", &partfast, &part_multithread, &n_part_threads);
+        sscanf(buffer, "%i %i %i", &partfast, &use_part_threads, &n_part_threads);
 #ifndef pp_PART_MULTI
-        part_multithread = 0;
+        use_part_threads = 0;
 #endif
       }
       continue;
@@ -16826,7 +16826,7 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, "NOPART\n");
   fprintf(fileout, " %i\n", nopart);
   fprintf(fileout, "PARTFAST\n");
-  fprintf(fileout, " %i %i %i\n", partfast, part_multithread, n_part_threads);
+  fprintf(fileout, " %i %i %i\n", partfast, use_part_threads, n_part_threads);
   fprintf(fileout, "RESEARCHMODE\n");
   fprintf(fileout, " %i %i %f %i %i %i %i %i\n", research_mode, 1, colorbar_shift, ncolorlabel_digits, force_fixedpoint, ngridloc_digits, sliceval_ndigits, force_exponential);
   fprintf(fileout, "SHOWFEDAREA\n");
@@ -16835,9 +16835,9 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %i %f %i\n", slice_average_flag, slice_average_interval, vis_slice_average);
   fprintf(fileout, "SMOKELOAD\n");
 #ifdef pp_SMOKE16
-  fprintf(fileout, " %i %i %i\n", use_smoke_thread, n_smoke_threads, load_smoke16);
+  fprintf(fileout, " %i %i %i\n", use_smoke_threads, n_smoke_threads, load_smoke16);
 #else
-  fprintf(fileout, " %i %i\n", use_smoke_thread, n_smoke_threads);
+  fprintf(fileout, " %i %i\n", use_smoke_threads, n_smoke_threads);
 #endif
   fprintf(fileout, "SLICEDATAOUT\n");
   fprintf(fileout, " %i \n", output_slicedata);

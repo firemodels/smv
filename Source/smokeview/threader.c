@@ -51,7 +51,7 @@ void *MtLoadAllPartFiles(void *arg){
 void LoadAllPartFilesMT(int partnum){
   int i;
 
-  if(part_multithread==0){
+  if(use_part_threads==0){
     LoadAllPartFiles(partnum);
     return;
   }
@@ -151,7 +151,7 @@ void *MtUpdateTriangles(void *arg){
 /* ------------------ UpdateTrianglesMT ------------------------ */
 
 void UpdateTrianglesMT(void){
-  if(iso_multithread==1){
+  if(use_iso_threads==1){
     pthread_create(&triangles_id, NULL, MtUpdateTriangles, NULL);
   }
   else{
@@ -162,7 +162,7 @@ void UpdateTrianglesMT(void){
 /* ------------------ FinishUpdateTriangles ------------------------ */
 
 void FinishUpdateTriangles(void){
-  if(iso_multithread==1)pthread_join(triangles_id, NULL);
+  if(use_iso_threads==1)pthread_join(triangles_id, NULL);
 }
 
 /* ------------------ CancelUpdateTriangles ------------------------ */
@@ -202,7 +202,7 @@ void *MtGetGlobalSliceBounds(void *arg){
 }
 
 void GetGlobalSliceBoundsMT(void){
-  if(slicebounds_thread == 1){
+  if(use_slicebounds_threads == 1){
     pthread_create(&SLICEBOUNDS_thread_id, NULL, MtGetGlobalSliceBounds, NULL);
   }
   else{
@@ -225,7 +225,7 @@ void *MtGetGlobalPatchBounds(void *arg){
 }
 
 void GetGlobalPatchBoundsMT(void){
-  if(patchbounds_thread == 1){
+  if(use_patchbounds_threads == 1){
     pthread_create(&PATCHBOUNDS_thread_id, NULL, MtGetGlobalPatchBounds, NULL);
   }
   else{
