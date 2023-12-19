@@ -13,6 +13,51 @@
 #define BUILD_GEOM_OFFSETS 0
 #define GET_GEOM_OFFSETS  -1
 
+/* ------------------ ClassifyAllGeom ------------------------ */
+
+void ClassifyAllGeom(void){
+  int i;
+
+  for(i = 0; i < ngeominfo; i++){
+    geomdata *geomi;
+
+    geomi = geominfo + i;
+    THREADcontrol(threader_readallgeom, THREAD_LOCK);
+    if(geomi->read_status != 0){
+      THREADcontrol(threader_readallgeom, THREAD_UNLOCK);
+      continue;
+    }
+    geomi->read_status = 1;
+    THREADcontrol(threader_readallgeom, THREAD_UNLOCK);
+
+    if(geomi->geomtype != GEOM_ISO){
+      ClassifyGeom(geomi, NULL);
+    }
+    THREADcontrol(threader_readallgeom, THREAD_LOCK);
+    geomi->read_status = 2;
+    THREADcontrol(threader_readallgeom, THREAD_UNLOCK);
+  }
+  for(i = 0; i < ncgeominfo; i++){
+    geomdata *geomi;
+
+    geomi = cgeominfo + i;
+    THREADcontrol(threader_readallgeom, THREAD_LOCK);
+    if(geomi->read_status != 0){
+      THREADcontrol(threader_readallgeom, THREAD_UNLOCK);
+      continue;
+    }
+    geomi->read_status = 1;
+    THREADcontrol(threader_readallgeom, THREAD_UNLOCK);
+
+    if(geomi->geomtype != GEOM_ISO){
+      ClassifyGeom(geomi, NULL);
+    }
+    THREADcontrol(threader_readallgeom, THREAD_LOCK);
+    geomi->read_status = 2;
+    THREADcontrol(threader_readallgeom, THREAD_UNLOCK);
+  }
+}
+
 // !  ------------------ Distance3 ------------------------
 
 float Distance3(float v1[3], float v2[3]){

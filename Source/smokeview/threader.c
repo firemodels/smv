@@ -26,49 +26,6 @@ void InitMultiThreading(void){
 
 //***************************** multi-threaded compression ***********************************
 
-/* ------------------ Compress ------------------------ */
-
-void InitCompress(void){
-      threader_compress = THREADinit(ncompressthread_ids, compress_multithread,
-                                     Compress, MtCompress);
-}
-
-/* ------------------ Compress ------------------------ */
-
-void Compress(void){
-  char shellcommand[1024];
-
-  PRINTF("Compressing...\n");
-  GLUICompressOnOff(OFF);
-
-  WriteIni(LOCAL_INI, NULL);
-
-  // surround smokezip path name with "'s so that the system call can handle embedded blanks
-
-  strcpy(shellcommand, "\"");
-  strcat(shellcommand, smokezippath);
-  strcat(shellcommand, "\" ");
-  if(overwrite_all == 1){
-    strcat(shellcommand, " -f ");
-  }
-  if(erase_all == 1){
-    strcat(shellcommand, " -c ");
-  }
-  if(compress_autoloaded == 1){
-    strcat(shellcommand, " -auto ");
-  }
-  strcat(shellcommand, " ");
-  strcat(shellcommand, smv_filename);
-
-  PRINTF("Executing shell command: %s\n", shellcommand);
-  system(shellcommand);
-  UpdateSmoke3dMenuLabels();
-  UpdateBoundaryMenuLabels();
-  GLUICompressOnOff(ON);
-  updatemenu = 1;
-  PRINTF("Compression completed\n");
-}
-
 #ifdef pp_THREAD
 
 /* --------------------------  slicethreaddata ------------------------------------ */
@@ -171,16 +128,6 @@ FILE_SIZE LoadAllMSlicesMT(int last_slice, multislicedata *mslicei, int *fcount)
   }
 
 #ifdef pp_THREAD
-
-/* ------------------ MTGeneratePartHistograms ------------------------ */
-
-#else
-void GeneratePartHistogramsMT(void){
-  GeneratePartHistograms();
-}
-#endif
-
-#ifdef pp_THREAD
 /* ------------------ MtReadBufferi ------------------------ */
 
 void *MtReadBufferi(void *arg){
@@ -245,66 +192,6 @@ void FinishUpdateTriangles(void){
 }
 #endif
 
-#ifndef pp_CHECK
-/* ------------------ CheckFiles ------------------------ */
-
-void CheckFiles(void){
-  int i;
-
-  THREADcontrol(threader_checkfiles, THREAD_LOCK);
-  have_compressed_files = 0;
-  THREADcontrol(threader_checkfiles, THREAD_UNLOCK);
-  for(i=0;i<npatchinfo;i++){
-    patchdata *patchi;
-    int have_file;
-
-    patchi = patchinfo + i;
-    have_file = FILE_EXISTS_CASEDIR(patchi->comp_file);
-    THREADcontrol(threader_checkfiles, THREAD_LOCK);
-    if(have_file==YES){
-      patchi->compression_type_temp = COMPRESSED_ZLIB;
-      have_compressed_files = 1;
-    }
-    THREADcontrol(threader_checkfiles, THREAD_UNLOCK);
-  }
-  for(i=0;i<nsmoke3dinfo;i++){
-    smoke3ddata *smoke3di;
-    int have_file;
-
-    smoke3di = smoke3dinfo + i;
-    have_file = FILE_EXISTS_CASEDIR(smoke3di->comp_file);
-    THREADcontrol(threader_checkfiles, THREAD_LOCK);
-    if(have_file==YES){
-      smoke3di->compression_type_temp = COMPRESSED_ZLIB;
-      have_compressed_files = 1;
-    }
-    THREADcontrol(threader_checkfiles, THREAD_UNLOCK);
-  }
-  if(have_compressed_files==0)return;
-  THREADcontrol(threader_checkfiles, THREAD_LOCK);
-  for(i = 0; i < npatchinfo; i++){
-    patchdata *patchi;
-
-    patchi = patchinfo + i;
-    if(patchi->compression_type_temp==COMPRESSED_ZLIB){
-      patchi->compression_type = COMPRESSED_ZLIB;
-      patchi->file             = patchi->comp_file;
-    }
-  }
-  for(i = 0; i < nsmoke3dinfo; i++){
-    smoke3ddata *smoke3di;
-
-    smoke3di = smoke3dinfo + i;
-    if(smoke3di->compression_type_temp==COMPRESSED_ZLIB){
-      smoke3di->file             = smoke3di->comp_file;
-      smoke3di->is_zlib          = 1;
-      smoke3di->compression_type = COMPRESSED_ZLIB;
-    }
-  }
-  updatemenu = 1;
-  THREADcontrol(threader_checkfiles, THREAD_UNLOCK);
-}
-
 /* ------------------ MtGetGlobalSliceBounds ------------------------ */
 
 #ifdef pp_THREAD
@@ -326,7 +213,6 @@ void GetGlobalSliceBoundsMT(void){
 void GetGlobalSliceBoundsMT(void){
   GetGlobalSliceBounds();
 }
-#endif
 #endif
 
 /* ------------------ MtGetGlobalPatchBounds ------------------------ */
@@ -405,51 +291,6 @@ void *MtClassifyAllGeom(void *arg){
   return NULL;
 }
 
-/* ------------------ ClassifyAllGeom ------------------------ */
-
-void ClassifyAllGeom(void){
-  int i;
-
-  for(i = 0; i<ngeominfo; i++){
-    geomdata *geomi;
-
-    geomi = geominfo+i;
-    THREADcontrol(threader_readallgeom, THREAD_LOCK);
-    if(geomi->read_status!=0){
-      THREADcontrol(threader_readallgeom, THREAD_UNLOCK);
-      continue;
-    }
-    geomi->read_status = 1;
-    THREADcontrol(threader_readallgeom, THREAD_UNLOCK);
-
-    if(geomi->geomtype!=GEOM_ISO){
-      ClassifyGeom(geomi, NULL);
-    }
-    THREADcontrol(threader_readallgeom, THREAD_LOCK);
-    geomi->read_status = 2;
-    THREADcontrol(threader_readallgeom, THREAD_UNLOCK);
-  }
-  for(i = 0; i<ncgeominfo; i++){
-    geomdata *geomi;
-
-    geomi = cgeominfo+i;
-    THREADcontrol(threader_readallgeom, THREAD_LOCK);
-    if(geomi->read_status!=0){
-      THREADcontrol(threader_readallgeom, THREAD_UNLOCK);
-      continue;
-    }
-    geomi->read_status = 1;
-    THREADcontrol(threader_readallgeom, THREAD_UNLOCK);
-
-    if(geomi->geomtype!=GEOM_ISO){
-      ClassifyGeom(geomi, NULL);
-    }
-    THREADcontrol(threader_readallgeom, THREAD_LOCK);
-    geomi->read_status = 2;
-    THREADcontrol(threader_readallgeom, THREAD_UNLOCK);
-  }
-}
-
 /* ------------------ MtReadAllGeom ------------------------ */
 
 void *MtReadAllGeom(void *arg){
@@ -475,47 +316,6 @@ void *MtPlayMovie(void *arg){
   PlayMovie();
   pthread_exit(NULL);
   return NULL;
-}
-
-/* ------------------ PlayMovie ------------------------ */
-
-void PlayMovie(void){
-  char command_line[1024], moviefile_path[1024];
-
-  if(FILE_EXISTS(GetMovieFilePath(moviefile_path))==YES){
-    strcpy(command_line, "ffplay ");
-    strcat(command_line, moviefile_path);
-#ifdef WIN32
-    strcat(command_line, " 2>Nul ");
-#else
-    strcat(command_line, " 2>/dev/null ");
-#endif
-    play_movie_now = 0;
-    update_playmovie = 1;
-    system(command_line);
-    play_movie_now = 1;
-    update_playmovie = 1;
-  }
-}
-
-/* ------------------ SetupFF ------------------------ */
-
-void SetupFF(void){
-  int have_ffmpeg_local, have_ffplay_local;
-
-#ifdef WIN32
-  have_ffmpeg_local = HaveProg("ffmpeg -version> Nul 2>Nul");
-  have_ffplay_local = HaveProg("ffplay -version> Nul 2>Nul");
-#else
-  have_ffmpeg_local = HaveProg("ffmpeg -version >/dev/null 2>/dev/null");
-  have_ffplay_local = HaveProg("ffplay -version >/dev/null 2>/dev/null");
-#endif
-
-  THREADcontrol(threader_setupff, THREAD_LOCK);;
-  update_ff = 1;
-  have_ffmpeg = have_ffmpeg_local;
-  have_ffplay = have_ffplay_local;
-  THREADcontrol(threader_setupff, THREAD_UNLOCK);;
 }
 
 /* ------------------ MtSetupFF ------------------------ */

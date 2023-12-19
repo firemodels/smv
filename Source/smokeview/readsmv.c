@@ -6648,7 +6648,102 @@ void AddCfastCsvf(void){
  // AddCfastCsvfi("_calculations", "calculations", CSV_CFAST_FORMAT);
 }
 
-  /* ------------------ ReadSMV ------------------------ */
+/* ------------------ Compress ------------------------ */
+
+void Compress(void){
+  char shellcommand[1024];
+
+  PRINTF("Compressing...\n");
+  GLUICompressOnOff(OFF);
+
+  WriteIni(LOCAL_INI, NULL);
+
+  // surround smokezip path name with "'s so that the system call can handle embedded blanks
+
+  strcpy(shellcommand, "\"");
+  strcat(shellcommand, smokezippath);
+  strcat(shellcommand, "\" ");
+  if(overwrite_all == 1){
+    strcat(shellcommand, " -f ");
+  }
+  if(erase_all == 1){
+    strcat(shellcommand, " -c ");
+  }
+  if(compress_autoloaded == 1){
+    strcat(shellcommand, " -auto ");
+  }
+  strcat(shellcommand, " ");
+  strcat(shellcommand, smv_filename);
+
+  PRINTF("Executing shell command: %s\n", shellcommand);
+  system(shellcommand);
+  UpdateSmoke3dMenuLabels();
+  UpdateBoundaryMenuLabels();
+  GLUICompressOnOff(ON);
+  updatemenu = 1;
+  PRINTF("Compression completed\n");
+}
+
+/* ------------------ CheckFiles ------------------------ */
+
+void CheckFiles(void){
+  int i;
+
+  THREADcontrol(threader_checkfiles, THREAD_LOCK);
+  have_compressed_files = 0;
+  THREADcontrol(threader_checkfiles, THREAD_UNLOCK);
+  for(i = 0;i < npatchinfo;i++){
+    patchdata *patchi;
+    int have_file;
+
+    patchi = patchinfo + i;
+    have_file = FILE_EXISTS_CASEDIR(patchi->comp_file);
+    THREADcontrol(threader_checkfiles, THREAD_LOCK);
+    if(have_file == YES){
+      patchi->compression_type_temp = COMPRESSED_ZLIB;
+      have_compressed_files = 1;
+    }
+    THREADcontrol(threader_checkfiles, THREAD_UNLOCK);
+  }
+  for(i = 0;i < nsmoke3dinfo;i++){
+    smoke3ddata *smoke3di;
+    int have_file;
+
+    smoke3di = smoke3dinfo + i;
+    have_file = FILE_EXISTS_CASEDIR(smoke3di->comp_file);
+    THREADcontrol(threader_checkfiles, THREAD_LOCK);
+    if(have_file == YES){
+      smoke3di->compression_type_temp = COMPRESSED_ZLIB;
+      have_compressed_files = 1;
+    }
+    THREADcontrol(threader_checkfiles, THREAD_UNLOCK);
+  }
+  if(have_compressed_files == 0)return;
+  THREADcontrol(threader_checkfiles, THREAD_LOCK);
+  for(i = 0; i < npatchinfo; i++){
+    patchdata *patchi;
+
+    patchi = patchinfo + i;
+    if(patchi->compression_type_temp == COMPRESSED_ZLIB){
+      patchi->compression_type = COMPRESSED_ZLIB;
+      patchi->file = patchi->comp_file;
+    }
+  }
+  for(i = 0; i < nsmoke3dinfo; i++){
+    smoke3ddata *smoke3di;
+
+    smoke3di = smoke3dinfo + i;
+    if(smoke3di->compression_type_temp == COMPRESSED_ZLIB){
+      smoke3di->file = smoke3di->comp_file;
+      smoke3di->is_zlib = 1;
+      smoke3di->compression_type = COMPRESSED_ZLIB;
+    }
+  }
+  updatemenu = 1;
+  THREADcontrol(threader_checkfiles, THREAD_UNLOCK);
+}
+
+/* ------------------ ReadSMV ------------------------ */
 static float processing_time;
 static float getfilelist_time;
 static float pass0_time;
