@@ -1949,11 +1949,6 @@ FILE_SIZE ReadPart(char *file_arg, int ifile_arg, int loadflag_arg, int *errorco
   FILE_SIZE file_size_local;
   float load_time_local;
 
-#ifdef pp_PART_HIST
-  if(loadflag_arg==UNLOAD&&use_part_threads==1&&update_generate_part_histograms==-1){
-    JOIN_PART_HIST;
-  }
-#endif
   SetTimeState();
   START_TIMER(load_time_local);
   assert(ifile_arg>=0&&ifile_arg<npartinfo);

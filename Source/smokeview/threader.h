@@ -41,13 +41,6 @@
   #define UNLOCK_PATCHBOUNDS  pthread_mutex_unlock(&mutexPATCHBOUNDS);
   #define JOIN_PATCHBOUNDS    pthread_join(PATCHBOUNDS_thread_id,NULL);
 
-#define JOIN_PART_HIST    pthread_join(generate_part_histogram_id,NULL);
-#ifdef pp_SAMPLE
-  #define LOCK_SAMPLE     pthread_mutex_lock(&mutexSAMPLE);
-  #define UNLOCK_SAMPLE   pthread_mutex_unlock(&mutexSAMPLE);
-  #define JOIN_SAMPLE     pthread_join(sample_thread_id,NULL);
-#endif
-
 #endif
 
 // blank out all preprocessing symbols if we arn't using threading
@@ -72,7 +65,6 @@
   #define JOIN_SAMPLE
 #endif
 
-  #define JOIN_PART_HIST
 #endif
 
 #ifdef pp_THREAD
@@ -99,7 +91,6 @@ MT_EXTERN pthread_t update_all_patch_bounds_id;
 MT_EXTERN pthread_t read_volsmoke_id;
 MT_EXTERN pthread_t csv_id;
 MT_EXTERN pthread_t partthread_ids[MAX_THREADS];
-MT_EXTERN pthread_t generate_part_histogram_id;
 MT_EXTERN pthread_t *readbuffer_ids;
 #ifdef pp_SLICE_MULTI
 MT_EXTERN pthread_t slicethread_ids[MAX_THREADS];
