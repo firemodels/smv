@@ -300,6 +300,7 @@ SVEXTERN FILE_SIZE  SVDECL(global_part_boundsize, 0);
 
 // multi-threading
 //*** number of threads
+SVEXTERN int SVDECL(ncompressthread_ids, 1);
 SVEXTERN int SVDECL(nreadallgeomthread_ids, 4);
 SVEXTERN int SVDECL(nsmoke_threads, 1), SVDECL(npartthread_ids, 2);
 #ifdef pp_SLICE_MULTI
@@ -308,6 +309,7 @@ SVEXTERN int SVDECL(nslicethread_ids, 4);
 SVEXTERN int SVDECL(nmemory_ids, 0);
 
 //***use  multi-threading
+SVEXTERN int SVDECL(compress_multithread, 1);
 SVEXTERN int SVDECL(iso_multithread, 0), SVDECL(iso_multithread_save,0);
 #ifdef pp_PART_MULTI
 SVEXTERN int SVDECL(part_multithread, 1);
@@ -324,7 +326,8 @@ SVEXTERN int SVDECL(checkfiles_multithread, 1);
 SVEXTERN int SVDECL(ffmpeg_multithread, 1);
 SVEXTERN int SVDECL(use_smoke_thread, 0);
 
-
+//*** threader data structures
+SVEXTERN threaderdata SVDECL(*threader_compress, NULL);
 SVEXTERN threaderdata SVDECL(*threader_playmovie,   NULL);
 SVEXTERN threaderdata SVDECL(*threader_setupff,     NULL);
 SVEXTERN threaderdata SVDECL(*threader_readallgeom, NULL);

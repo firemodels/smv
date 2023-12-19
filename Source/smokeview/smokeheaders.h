@@ -395,10 +395,6 @@ EXTERNCPP void UpdateTimes(void);
 EXTERNCPP int GetIndex(float key, const float *list, int nlist);
 EXTERNCPP int ISearch(float *list, int nlist, float key, int guess);
 
-#ifdef pp_THREAD
-EXTERNCPP void LockUnlockCompress(int flag);
-#endif
-
 EXTERNCPP int GLUTGetScreenWidth(void);
 EXTERNCPP int GLUTGetScreenHeight(void);
 
@@ -731,7 +727,6 @@ EXTERNCPP int  GetGridIndex(float x, int dir, float *plotxyz, int nplotxyz);
 EXTERNCPP void UpdateSliceContours(int slice_type_index, float line_min, float line_max, int nline_values);
 EXTERNCPP void ScriptMenu(int var);
 EXTERNCPP void SmokeColorbarMenu(int var);
-EXTERNCPP void CompressSVZip2(void);
 EXTERNCPP void UpdateTerrainColors(void);
 EXTERNCPP void DrawTerrainOBST(terraindata *terri, int flag);
 EXTERNCPP void DrawTerrainOBSTTexture(terraindata *terri);
@@ -872,7 +867,6 @@ EXTERNCPP int  IsBlockageVisible(blockagedata *bc, float time);
 EXTERNCPP float Zoom2Aperture(float zoom0);
 EXTERNCPP float Aperture2Zoom(float ap);
 EXTERNCPP int  GetZoneColor(float t, float tmin, float tmax, int nlevel);
-EXTERNCPP void CompressSVZip(void);
 EXTERNCPP void DrawBlockages(int mode, int flag);
 EXTERNCPP void WriteLabels(void);
 EXTERNCPP void DrawLabels(void);

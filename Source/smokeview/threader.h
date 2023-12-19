@@ -30,9 +30,6 @@
   #define UNLOCK_SLICE_LOAD
 #endif
 
-  #define LOCK_COMPRESS     pthread_mutex_lock(&mutexCOMPRESS);
-  #define UNLOCK_COMPRESS   pthread_mutex_unlock(&mutexCOMPRESS);
-
   #define LOCK_VOLLOAD      pthread_mutex_lock(&mutexVOLLOAD);
   #define UNLOCK_VOLLOAD    pthread_mutex_unlock(&mutexVOLLOAD);
 
@@ -61,9 +58,6 @@
 #ifndef pp_THREAD
   #define LOCK_PART_LOAD
   #define UNLOCK_PART_LOAD
-
-  #define LOCK_COMPRESS
-  #define UNLOCK_COMPRESS
 
   #define LOCK_VOLLOAD
   #define UNLOCK_VOLLOAD
@@ -108,14 +102,10 @@ MT_EXTERN pthread_mutex_t mutexCOMPRESS;
 MT_EXTERN pthread_mutex_t mutexCHECKFILES;
 MT_EXTERN pthread_mutex_t mutexSLICEBOUNDS;
 MT_EXTERN pthread_mutex_t mutexPATCHBOUNDS;
-#ifdef pp_SAMPLE
-MT_EXTERN pthread_mutex_t mutexSAMPLE;
-#endif
 
 MT_EXTERN pthread_t PATCHBOUNDS_thread_id;
 MT_EXTERN pthread_t SLICEBOUNDS_thread_id;
 MT_EXTERN pthread_t checkfiles_multithread_id;
-MT_EXTERN pthread_t compress_thread_id;
 MT_EXTERN pthread_t update_all_patch_bounds_id;
 MT_EXTERN pthread_t read_volsmoke_id;
 MT_EXTERN pthread_t triangles_id;
@@ -125,10 +115,6 @@ MT_EXTERN pthread_t generate_part_histogram_id;
 MT_EXTERN pthread_t *readbuffer_ids;
 #ifdef pp_SLICE_MULTI
 MT_EXTERN pthread_t slicethread_ids[MAX_THREADS];
-#endif
-MT_EXTERN pthread_t readallgeomthread_ids[MAX_THREADS];
-#ifdef pp_SAMPLE
-MT_EXTERN pthread_t sample_thread_id;
 #endif
 
 #endif
@@ -155,10 +141,13 @@ EXTERNCPP void THREADrun(threaderdata *thi);
 EXTERNCPP threaderdata *THREADinit(int nthreads_arg, int threading_on_arg,
                                       void (*run_arg)(void), void *(*mtrun_arg)(void *arg));
 
-EXTERNCPP void *MTPlayMovie(void *arg);
+EXTERNCPP void *MtCompress(void *arg);
+EXTERNCPP void Compress(void);
+
+EXTERNCPP void *MtPlayMovie(void *arg);
 EXTERNCPP void PlayMovie(void);
 
-EXTERNCPP void *MTSetupFF(void *arg);
+EXTERNCPP void *MtSetupFF(void *arg);
 EXTERNCPP void SetupFF(void);
 
 EXTERNCPP void *MtReadAllGeom(void *arg);

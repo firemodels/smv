@@ -2184,15 +2184,11 @@ extern "C" void GLUIHVACSliceBoundsCPP_CB(int var){
       break;
     case BOUND_RELOAD_DATA:
       SetLoadedSliceBounds(NULL, 0);
-#ifdef pp_THREAD
-      LockUnlockCompress(1);
-#endif
+      THREADcontrol(threader_compress, THREAD_LOCK);
       SetLoadedSliceBounds(NULL, 0);
       ReloadAllVectorSliceFiles();
       ReloadAllSliceFiles();
-#ifdef pp_THREAD
-      LockUnlockCompress(0);
-#endif
+      THREADcontrol(threader_compress, THREAD_UNLOCK);
       GLUIHVACSliceBoundsCPP_CB(BOUND_UPDATE_COLORS);
       break;
     case BOUND_RESEARCH_MODE:
@@ -4661,7 +4657,11 @@ void BoundBoundCB(int var){
     }
     break;
   case COMPRESS_FILES:
-    CompressSVZip();
+    if(threader_compress==NULL){
+      threader_compress = THREADinit(ncompressthread_ids, compress_multithread,
+                                     Compress, MtCompress);
+    }
+    THREADrun(threader_compress);
     break;
   case COMPRESS_AUTOLOADED:
     updatemenu = 1;

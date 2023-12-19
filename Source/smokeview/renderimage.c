@@ -21,7 +21,7 @@ void PlayMovieNow(void){
   if(play_movie_now==0)return;
   if(FILE_EXISTS(GetMovieFilePath(moviefile_path)) == YES){
     if(threader_playmovie==NULL){
-      threader_playmovie = THREADinit(1, 1, PlayMovie, MTPlayMovie);
+      threader_playmovie = THREADinit(1, 1, PlayMovie, MtPlayMovie);
     }
     THREADrun(threader_playmovie);
   }

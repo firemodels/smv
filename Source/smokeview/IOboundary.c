@@ -4396,7 +4396,7 @@ void UpdateAllBoundaryBoundsST(void){
   int i;
   int total=0;
 
-  LOCK_COMPRESS;
+  THREADcontrol(threader_compress, THREAD_LOCK);
   for(i=0;i<npatchinfo;i++){
     patchdata *patchi;
 
@@ -4412,6 +4412,6 @@ void UpdateAllBoundaryBoundsST(void){
   else{
     PRINTF("Bounds for %i boundary files computed\n",total);
   }
-  UNLOCK_COMPRESS;
+  THREADcontrol(threader_compress, THREAD_UNLOCK);
 }
 #endif

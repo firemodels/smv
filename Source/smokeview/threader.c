@@ -18,7 +18,6 @@ void InitMultiThreading(void){
   pthread_mutex_init(&mutexSLICE_LOAD, NULL);
 #endif
   pthread_mutex_init(&mutexPART_LOAD, NULL);
-  pthread_mutex_init(&mutexCOMPRESS,NULL);
   pthread_mutex_init(&mutexVOLLOAD,NULL);
   pthread_mutex_init(&mutexCHECKFILES, NULL);
   pthread_mutex_init(&mutexSLICEBOUNDS, NULL);
@@ -28,9 +27,16 @@ void InitMultiThreading(void){
 
 //***************************** multi-threaded compression ***********************************
 
-/* ------------------ CompressSVZip2 ------------------------ */
+/* ------------------ Compress ------------------------ */
 
-void CompressSVZip2(void){
+void InitCompress(void){
+      threader_compress = THREADinit(ncompressthread_ids, compress_multithread,
+                                     Compress, MtCompress);
+}
+
+/* ------------------ Compress ------------------------ */
+
+void Compress(void){
   char shellcommand[1024];
 
   PRINTF("Compressing...\n");
@@ -63,41 +69,6 @@ void CompressSVZip2(void){
   updatemenu = 1;
   PRINTF("Compression completed\n");
 }
-
-#ifdef pp_THREAD
-/* ------------------ LockUnlockCompress ------------------------ */
-
-void LockUnlockCompress(int flag){
-  if(flag==1){
-    LOCK_COMPRESS;
-  }
-  else{
-    UNLOCK_COMPRESS;
-  }
-}
- /* ------------------ MtCompressSVZip ------------------------ */
-
-void *MtCompressSVZip(void *arg){
-  LOCK_COMPRESS
-  CompressSVZip2();
-  updatemenu=1;
-  UNLOCK_COMPRESS
-  pthread_exit(NULL);
-  return NULL;
-}
-#endif
-
-/* ------------------ CompressSVZip ------------------------ */
-
-#ifdef pp_THREAD
-void CompressSVZip(void){
-  pthread_create(&compress_thread_id,NULL, MtCompressSVZip,NULL);
-}
-#else
-void CompressSVZip(void){
-  CompressSVZip2();
-}
-#endif
 
 #ifdef pp_THREAD
 
@@ -533,8 +504,12 @@ void *MtReadAllGeom(void *arg){
 // need to declare sample_thread_id in threader.h
 // need to declare sample_multithread in smokeviewvars.h
 
-void Sampe(void){
+/* ------------------ Sample ------------------------ */
+
+void Sample(void){
 }
+
+/* ------------------ MtSample ------------------------ */
 
 void *MtSample(void *arg){
   Sample();
@@ -542,14 +517,25 @@ void *MtSample(void *arg){
   return NULL;
 }
 if(threader_sample==NULL){
-  threader_sample = THREADinit(1,1,Sample,MTSample);
+  threader_sample = THREADinit(1,1,Sample,MtSample);
 }
 THREADrun(threader_sample);
 #endif
 
-/* ------------------ MTPlayMovie ------------------------ */
+/* ------------------ MtCompress ------------------------ */
 
-void *MTPlayMovie(void *arg){
+void *MtCompress(void *arg){
+  THREADcontrol(threader_compress, THREAD_LOCK);
+  Compress();
+  updatemenu=1;
+  THREADcontrol(threader_compress, THREAD_UNLOCK);
+  pthread_exit(NULL);
+  return NULL;
+}
+
+/* ------------------ MtPlayMovie ------------------------ */
+
+void *MtPlayMovie(void *arg){
   PlayMovie();
   pthread_exit(NULL);
   return NULL;
@@ -598,7 +584,7 @@ void SetupFF(void){
 
 /* ------------------ MtSetupFF ------------------------ */
 
-void *MTSetupFF(void *arg){
+void *MtSetupFF(void *arg){
   SetupFF();
   pthread_exit(NULL);
   return NULL;

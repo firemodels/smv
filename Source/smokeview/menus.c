@@ -2757,7 +2757,11 @@ void CompressMenu(int value){
     erase_all=1;
     overwrite_all=0;
     GLUIUpdateOverwrite();
-    CompressSVZip();
+    if(threader_compress==NULL){
+      threader_compress = THREADinit(ncompressthread_ids, compress_multithread,
+                                     Compress, MtCompress);
+    }
+    THREADrun(threader_compress);
     break;
   case MENU_OVERWRITECOMPRESS:
     erase_all=0;
@@ -2766,7 +2770,11 @@ void CompressMenu(int value){
     break;
   case MENU_COMPRESSNOW:
     erase_all=0;
-    CompressSVZip();
+    if(threader_compress==NULL){
+      threader_compress = THREADinit(ncompressthread_ids, compress_multithread,
+                                     Compress, MtCompress);
+    }
+    THREADrun(threader_compress);
     break;
   case MENU_COMPRESSAUTOLOAD:
     compress_autoloaded=1-compress_autoloaded;
@@ -3426,7 +3434,7 @@ void LoadUnloadMenu(int value){
     GLUTPOSTREDISPLAY;
   }
   if(value==RELOADALL||value==RELOAD_INCREMENTAL_ALL){
-    LOCK_COMPRESS
+    THREADcontrol(threader_compress, THREAD_LOCK);
     if(hrr_csv_filename!=NULL){
       ReadHRR(LOAD);
     }
@@ -3531,7 +3539,6 @@ void LoadUnloadMenu(int value){
     if(update_readiso_geom_wrapup == UPDATE_ISO_ALL_NOW)ReadIsoGeomWrapup(BACKGROUND);
     update_readiso_geom_wrapup = UPDATE_ISO_OFF;
     UpdateSMVDynamic(smv_filename);
-    UNLOCK_COMPRESS
   //  plotstate=DYNAMIC_PLOTS;
   //  visParticles=1;
 
@@ -3543,6 +3550,7 @@ void LoadUnloadMenu(int value){
 
     updatemenu=1;
     GLUTPOSTREDISPLAY;
+    THREADcontrol(threader_compress, THREAD_UNLOCK);
   }
   if(value==SHOWFILES){
     GLUTPOSTREDISPLAY;
@@ -5689,10 +5697,10 @@ void LoadBoundaryMenu(int value){
       fprintf(scriptoutstream, " %i\n", patchi->blocknumber+1);
     }
     if(scriptoutstream==NULL||script_defer_loading==0){
-      LOCK_COMPRESS;
+      THREADcontrol(threader_compress, THREAD_LOCK);
       SetLoadedPatchBounds(&value, 1);
       ReadBoundary(value,LOAD,&errorcode);
-      UNLOCK_COMPRESS;
+      THREADcontrol(threader_compress, THREAD_UNLOCK);
     }
   }
   else if(value<=-10){
@@ -5736,9 +5744,9 @@ void LoadBoundaryMenu(int value){
 
         patchi = patchinfo+i;
         if(InPatchList(patchj, patchi)==1){
-          LOCK_COMPRESS;
+          THREADcontrol(threader_compress, THREAD_LOCK);
           patchi->finalize = 1;
-          UNLOCK_COMPRESS;
+          THREADcontrol(threader_compress, THREAD_UNLOCK);
           break;
         }
       }
@@ -5747,7 +5755,7 @@ void LoadBoundaryMenu(int value){
 
         patchi = patchinfo + i;
         if(InPatchList(patchj, patchi)==1){
-          LOCK_COMPRESS;
+          THREADcontrol(threader_compress, THREAD_LOCK);
           if(patchi->structured == YES){
             PRINTF("Loading %s(%s)", patchi->file, patchi->label.shortlabel);
           }
@@ -5756,7 +5764,7 @@ void LoadBoundaryMenu(int value){
             UpdateTriangles(GEOM_STATIC, GEOM_UPDATE_ALL);
           }
           file_count++;
-          UNLOCK_COMPRESS;
+          THREADcontrol(threader_compress, THREAD_UNLOCK);
         }
       }
       STOP_TIMER(load_time);

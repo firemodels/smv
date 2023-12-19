@@ -11736,7 +11736,7 @@ int ReadSMV_Configure(){
   PRINT_TIMER(timer_readsmv, "MakeIBlankCarve");
 
   if(threader_setupff == NULL){
-    threader_setupff = THREADinit(1, ffmpeg_multithread, SetupFF, MTSetupFF);
+    threader_setupff = THREADinit(1, ffmpeg_multithread, SetupFF, MtSetupFF);
   }
   THREADrun(threader_setupff);
   PRINT_TIMER(timer_readsmv, "SetupFFMT");
