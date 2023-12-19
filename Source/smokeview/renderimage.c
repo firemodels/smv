@@ -62,7 +62,7 @@ void PlayMovieNow(void){
   if(play_movie_now==0)return;
   if(FILE_EXISTS(GetMovieFilePath(moviefile_path)) == YES){
     if(playmovie_threads==NULL){
-      playmovie_threads = THREADinit(n_playmovie_threads, use_playmovie_threads, PlayMovie, MtPlayMovie);
+      playmovie_threads = THREADinit(&n_playmovie_threads, &use_playmovie_threads, PlayMovie, MtPlayMovie);
     }
     THREADrun(playmovie_threads);
   }

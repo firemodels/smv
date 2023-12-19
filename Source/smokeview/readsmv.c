@@ -11583,7 +11583,7 @@ int ReadSMV_Configure(){
   }
 
   if(checkfiles_threads == NULL){
-    checkfiles_threads = THREADinit(use_checkfiles_threads, n_checkfiles_threads, CheckFiles, MtCheckFiles);
+    checkfiles_threads = THREADinit(&n_checkfiles_threads, &use_checkfiles_threads, CheckFiles, MtCheckFiles);
   }
   THREADrun(checkfiles_threads);
   PRINT_TIMER(timer_readsmv, "CheckFiles");
@@ -11686,8 +11686,8 @@ int ReadSMV_Configure(){
   PRINT_TIMER(timer_readsmv, "UpdateMeshBoxBounds");
 
   if(readallgeom_threads == NULL){
-    readallgeom_threads = THREADinit(n_readallgeom_threads, use_readallgeom_threads, 
-                                        ReadAllGeom, MtReadAllGeom);
+    readallgeom_threads = THREADinit(&n_readallgeom_threads, &use_readallgeom_threads, 
+                                      ReadAllGeom, MtReadAllGeom);
   }
   SetupReadAllGeom();
   THREADrun(readallgeom_threads);
@@ -11796,7 +11796,7 @@ int ReadSMV_Configure(){
   PRINT_TIMER(timer_readsmv, "MakeIBlankCarve");
 
   if(setupff_threads == NULL){
-    setupff_threads = THREADinit(1, use_ffmpeg_threads, SetupFF, MtSetupFF);
+    setupff_threads = THREADinit(&n_ffmpeg_threads, &use_ffmpeg_threads, SetupFF, MtSetupFF);
   }
   THREADrun(setupff_threads);
   PRINT_TIMER(timer_readsmv, "SetupFFMT");
@@ -11910,8 +11910,8 @@ int ReadSMV_Configure(){
 
   if(large_case==0){
     if(classifyallgeom_threads==NULL){
-      classifyallgeom_threads = THREADinit(n_readallgeom_threads, use_readallgeom_threads, 
-                                              ClassifyAllGeom, MtClassifyAllGeom);
+      classifyallgeom_threads = THREADinit(&n_readallgeom_threads, &use_readallgeom_threads, 
+                                            ClassifyAllGeom, MtClassifyAllGeom);
     }
     THREADrun(classifyallgeom_threads);
   }

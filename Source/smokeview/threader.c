@@ -328,9 +328,10 @@ void *MtSetupFF(void *arg){
 
 /* ------------------ THREADinit ------------------------ */
 
-threaderdata *THREADinit(int nthreads_arg, int threading_on_arg,
+threaderdata *THREADinit(int *nthreads_ptr, int *use_threads_ptr,
   void (*run_arg)(void), void *(*mtrun_arg)(void *arg)){
   threaderdata *thi;
+  int nthreads_local=1, use_threads_local=0;
 
   //create two routines
     // void run(void){
@@ -341,15 +342,18 @@ threaderdata *THREADinit(int nthreads_arg, int threading_on_arg,
     //   return NULL;
     // }
 
-  if(nthreads_arg < 0)nthreads_arg = 0;
-  if(threading_on_arg != 1)threading_on_arg = 0;
-  if(nthreads_arg == 0)threading_on_arg = 0;
   NewMemory(( void ** )&thi, sizeof(threaderdata));
-  thi->nthreads     = nthreads_arg;
-  thi->threading_on = threading_on_arg;
-  thi->run          = run_arg;
-  thi->mtrun        = mtrun_arg;
-  NewMemory(( void ** )&thi->thread_ids, nthreads_arg*sizeof(pthread_t));
+
+  if(nthreads_ptr != NULL && *nthreads_ptr > 1)nthreads_local = *nthreads_ptr;
+  if(nthreads_local > MAX_THREADS)nthreads_local = MAX_THREADS;
+  if(use_threads_ptr != NULL && *use_threads_ptr != 0)use_threads_local = 1;
+  thi->n_threads_ptr   = nthreads_ptr;
+  thi->use_threads_ptr = use_threads_ptr;
+  thi->n_threads       = nthreads_local;
+  thi->use_threads     = use_threads_local;
+  thi->run             = run_arg;
+  thi->mtrun           = mtrun_arg;
+  NewMemory(( void ** )&thi->thread_ids, nthreads_local*sizeof(pthread_t));
   pthread_mutex_init(&thi->mutex, NULL);
   return thi;
 }
@@ -360,16 +364,16 @@ void THREADcontrol(threaderdata *thi, int var){
   if(thi == NULL)return;
   switch(var){
   case THREAD_LOCK:
-    if(thi->threading_on == 1)pthread_mutex_lock(&thi->mutex);
+    if(thi->use_threads == 1)pthread_mutex_lock(&thi->mutex);
     break;
   case THREAD_UNLOCK:
-    if(thi->threading_on == 1)pthread_mutex_unlock(&thi->mutex);
+    if(thi->use_threads == 1)pthread_mutex_unlock(&thi->mutex);
     break;
   case THREAD_JOIN:
-    if(thi->threading_on == 1){
+    if(thi->use_threads == 1){
       int i;
 
-      for(i = 0;i < thi->nthreads;i++){
+      for(i = 0;i < thi->n_threads;i++){
         pthread_join(thi->thread_ids[i], NULL);
       }
     }
@@ -387,10 +391,13 @@ void THREADcontrol(threaderdata *thi, int var){
 /* ------------------ THREADrun ------------------------ */
 
 void THREADrun(threaderdata *thi){
-  if(thi->threading_on == 1){
+  if(thi == NULL)return;
+  if(thi->use_threads_ptr!=NULL)thi->use_threads = *(thi->use_threads_ptr);
+  if(thi->n_threads_ptr!=NULL)thi->n_threads = MIN(*(thi->n_threads_ptr),MAX_THREADS);
+  if(thi->use_threads == 1){
     int i;
 
-    for(i = 0; i < thi->nthreads; i++){
+    for(i = 0; i < thi->n_threads; i++){
       pthread_create(thi->thread_ids + i, NULL, thi->mtrun, NULL);
     }
   }

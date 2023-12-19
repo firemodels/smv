@@ -2755,7 +2755,7 @@ void CompressMenu(int value){
     overwrite_all=0;
     GLUIUpdateOverwrite();
     if(compress_threads==NULL){
-      compress_threads = THREADinit(n_compress_threads, use_compress_threads,
+      compress_threads = THREADinit(&n_compress_threads, &use_compress_threads,
                                      Compress, MtCompress);
     }
     THREADrun(compress_threads);
@@ -2768,7 +2768,7 @@ void CompressMenu(int value){
   case MENU_COMPRESSNOW:
     erase_all=0;
     if(compress_threads==NULL){
-      compress_threads = THREADinit(n_compress_threads, use_compress_threads,
+      compress_threads = THREADinit(&n_compress_threads, &use_compress_threads,
                                      Compress, MtCompress);
     }
     THREADrun(compress_threads);

@@ -118,8 +118,8 @@ MT_EXTERN pthread_t slicethread_ids[MAX_THREADS];
 #define THREAD_FREE   3
 
 typedef struct _threaderdata{
-  int nthreads;
-  int threading_on;
+  int n_threads,   *n_threads_ptr;
+  int use_threads, *use_threads_ptr;
   pthread_t *thread_ids;
   pthread_mutex_t mutex;
   void (*run)(void);
@@ -128,7 +128,7 @@ typedef struct _threaderdata{
 
 EXTERNCPP void THREADcontrol(threaderdata *thi, int var);
 EXTERNCPP void THREADrun(threaderdata *thi);
-EXTERNCPP threaderdata *THREADinit(int nthreads_arg, int threading_on_arg,
+EXTERNCPP threaderdata *THREADinit(int *nthreads_arg, int *threading_on_arg,
                                       void (*run_arg)(void), void *(*mtrun_arg)(void *arg));
 
 EXTERNCPP void *MtCheckFiles(void *arg);

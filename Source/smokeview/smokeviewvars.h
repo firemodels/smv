@@ -300,7 +300,7 @@ SVEXTERN int SVDECL(n_compress_threads, 1), SVDECL(use_compress_threads, 1);
 SVEXTERN threaderdata SVDECL(*compress_threads,        NULL);
 
 //*** ffmpeg
-SVEXTERN int SVDECL(use_ffmpeg_threads, 1);
+SVEXTERN int SVDECL(n_ffmpeg_threads, 1), SVDECL(use_ffmpeg_threads, 1);
 SVEXTERN threaderdata SVDECL(*setupff_threads,         NULL);
 
 //*** iso
