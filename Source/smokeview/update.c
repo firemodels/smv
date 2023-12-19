@@ -1963,13 +1963,6 @@ void UpdateShowScene(void){
     GLUISplitCB(SPLIT_COLORBAR);
     update_splitcolorbar = 0;
   }
-#ifdef pp_HIST
-  if(update_generate_part_histograms==1){
-    update_generate_part_histograms = 0;
-    GeneratePartHistogramsMT();
-    update_generate_part_histograms = -1;
-  }
-#endif
   if(update_stept==1){
     update_stept = 0;
     SetTimeVal(time_paused);
@@ -2027,15 +2020,6 @@ void UpdateShowScene(void){
     GLUISetCurrentViewPoint(viewpoint_label_saved);
     update_saving_viewpoint--;
   }
-#ifdef pp_HIST
-#ifdef pp_PATCH_HIST
-  if(update_boundary_hist==1){
-    //UpdateAllBoundaryBounds();
-    UpdateAllBoundaryBounds();
-    update_boundary_hist = 0;
-  }
-#endif
-#endif
   if(update_viewpoint_script>0){
     GLUISetCurrentViewPoint(viewpoint_script);
     update_viewpoint_script--;
@@ -2089,12 +2073,6 @@ void UpdateShowScene(void){
   if(global_times!=NULL&&updateUpdateFrameRateMenu==1)FrameRateMenu(frameratevalue);
   if(updatefaces==1)UpdateFaces();
   if(updatefacelists==1)UpdateFaceLists();
-#ifdef pp_HIST
-  if(update_draw_hist==1){
-    update_draw_hist = 0;
-    SetPercentileDrawOff();
-  }
-#endif
 }
 
 /* ------------------ UpdateFlippedColorbar ------------------------ */
@@ -2603,12 +2581,6 @@ void UpdateDisplay(void){
     update_colorbar_select_index = 0;
     UpdateRGBColors(colorbar_select_index);
   }
-#ifdef pp_HIST
-  if(histograms_defined==0&&update_slice_hists == 1){
-    update_slice_hists = 0;
-    UpdateSliceHist();
-  }
-#endif
   if(update_windrose_showhide==1){
     GLUIUpdateWindRoseDevices(UPDATE_WINDROSE_DEVICE);
   }
@@ -2616,12 +2588,6 @@ void UpdateDisplay(void){
     update_research_mode = 0;
     GLUIUpdateResearchMode();
   }
-#ifdef pp_HIST
-  if(update_percentile_mode==1){
-    update_percentile_mode = 0;
-    SetPercentileMode(percentile_mode);
-  }
-#endif
   if(update_colorbar_digits==1){
     update_colorbar_digits = 0;
     GLUISetColorbarDigitsCPP(ncolorlabel_digits);

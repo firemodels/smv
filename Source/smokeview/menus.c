@@ -53,9 +53,6 @@ float     part_load_time;
 
 #define MENU_OPTION_TRAINERMENU 2
 
-#ifdef pp_HIST
-#define MENU_UPDATEBOUNDS             -6
-#endif
 #define MENU_BNDF_SHOW_MESH_INTERFACE -8
 #define MENU_BNDF_MIRROR              -5
 #define MENU_BNDF_OPEN                -9
@@ -5787,11 +5784,6 @@ void LoadBoundaryMenu(int value){
       show_bndf_mesh_interface = 1-show_bndf_mesh_interface;
       updatemenu = 1;
       break;
-#ifdef pp_HIST
-    case MENU_UPDATEBOUNDS:
-      UpdateAllBoundaryBounds();
-      break;
-#endif
     case MENU_BOUNDARY_SETTINGS:
       GLUIShowBoundsDialog(DLG_BOUNDARY);
       break;
@@ -12479,9 +12471,6 @@ static int menu_count=0;
 //*** these same lines also appear below
       glutAddMenuEntry("-",MENU_DUMMY3);
 
-#ifdef pp_HIST
-      glutAddMenuEntry(_("Update bounds"),MENU_UPDATEBOUNDS);
-#endif
       if(nboundaryslicedups>0){
         GLUTADDSUBMENU(_("Duplicate boundary slices"),duplicateboundaryslicemenu);
       }
@@ -12644,9 +12633,6 @@ static int menu_count=0;
 //*** these same lines also appear above (except for nmeshes>1 line)
       glutAddMenuEntry("-",MENU_DUMMY3);
 
-#ifdef pp_HIST
-      glutAddMenuEntry(_("Update bounds"),MENU_UPDATEBOUNDS);
-#endif
       if(nboundaryslicedups>0){
         GLUTADDSUBMENU(_("Duplicate boundary slices"),duplicateboundaryslicemenu);
       }
