@@ -90,7 +90,6 @@ MT_EXTERN pthread_mutex_t mutexSLICE_LOAD;
 #endif
 MT_EXTERN pthread_mutex_t mutexPART_LOAD;
 MT_EXTERN pthread_mutex_t mutexVOLLOAD;
-MT_EXTERN pthread_mutex_t mutexCOMPRESS;
 MT_EXTERN pthread_mutex_t mutexSLICEBOUNDS;
 MT_EXTERN pthread_mutex_t mutexPATCHBOUNDS;
 
@@ -98,7 +97,6 @@ MT_EXTERN pthread_t PATCHBOUNDS_thread_id;
 MT_EXTERN pthread_t SLICEBOUNDS_thread_id;
 MT_EXTERN pthread_t update_all_patch_bounds_id;
 MT_EXTERN pthread_t read_volsmoke_id;
-MT_EXTERN pthread_t triangles_id;
 MT_EXTERN pthread_t csv_id;
 MT_EXTERN pthread_t partthread_ids[MAX_THREADS];
 MT_EXTERN pthread_t generate_part_histogram_id;
@@ -130,6 +128,9 @@ EXTERNCPP void THREADcontrol(threaderdata *thi, int var);
 EXTERNCPP void THREADrun(threaderdata *thi);
 EXTERNCPP threaderdata *THREADinit(int *nthreads_arg, int *threading_on_arg,
                                       void (*run_arg)(void), void *(*mtrun_arg)(void *arg));
+
+EXTERNCPP void *MtUpdateTrianglesAll(void *arg);
+EXTERNCPP void UpdateTrianglesAll(void);
 
 EXTERNCPP void *MtCheckFiles(void *arg);
 EXTERNCPP void CheckFiles(void);

@@ -139,56 +139,22 @@ void *MtReadBufferi(void *arg){
 
 //***************************** multi threading triangle update ***********************************
 
-/* ------------------ MtUpdateTriangles ------------------------ */
-
 #ifdef pp_THREAD
-void *MtUpdateTriangles(void *arg){
-  UpdateTriangles(GEOM_DYNAMIC,GEOM_UPDATE_ALL);
+
+/* ------------------ MtUpdateTrianglesAll ------------------------ */
+
+void *MtUpdateTrianglesAll(void *arg){
+  UpdateTrianglesAll();
   pthread_exit(NULL);
   return NULL;
-}
-
-/* ------------------ UpdateTrianglesMT ------------------------ */
-
-void UpdateTrianglesMT(void){
-  if(use_iso_threads==1){
-    pthread_create(&triangles_id, NULL, MtUpdateTriangles, NULL);
-  }
-  else{
-    UpdateTriangles(GEOM_DYNAMIC, GEOM_UPDATE_ALL);
-  }
-}
-
-/* ------------------ FinishUpdateTriangles ------------------------ */
-
-void FinishUpdateTriangles(void){
-  if(use_iso_threads==1)pthread_join(triangles_id, NULL);
 }
 
 /* ------------------ CancelUpdateTriangles ------------------------ */
 
 void CancelUpdateTriangles(void){
   cancel_update_triangles = 1;
-  FinishUpdateTriangles();
+  THREADcontrol(triangles_threads, THREAD_JOIN);
   cancel_update_triangles = 0;
-}
-
-#else
-
-/* ------------------ UpdateTrianglesMT ------------------------ */
-
-void UpdateTrianglesMT(void){
-  UpdateTriangles(GEOM_DYNAMIC,GEOM_UPDATE_ALL);
-}
-
-/* ------------------ CancelUpdateTriangles ------------------------ */
-
-void CancelUpdateTriangles(void){
-}
-
-/* ------------------ FinishUpdateTriangles ------------------------ */
-
-void FinishUpdateTriangles(void){
 }
 #endif
 
@@ -270,9 +236,9 @@ void *MtSample(void *arg){
   return NULL;
 }
 if(threader_sample==NULL){
-  threader_sample = THREADinit(1,1,Sample,MtSample);
+  sample_threads = THREADinit(&n_sample_threads, &use_sample_threads, Sample, MtSample);
 }
-THREADrun(threader_sample);
+THREADrun(sample_threads);
 #endif
 
 #ifdef pp_THREAD_NEW

@@ -88,9 +88,7 @@ EXTERNCPP void GLUIUpdateChar(void);
 EXTERNCPP void GLUIUpdateTracers(void);
 EXTERNCPP void GLUIUpdateShowHideButtons(void);
 EXTERNCPP void UpdateTriangles(int time_flag, int update);
-EXTERNCPP void UpdateTrianglesMT(void);
 EXTERNCPP void CancelUpdateTriangles(void);
-EXTERNCPP void FinishUpdateTriangles(void);
 #ifdef pp_REFRESH
 EXTERNCPP void GLUIRefreshDialogs(void);
 #endif

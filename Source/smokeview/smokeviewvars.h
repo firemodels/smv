@@ -291,6 +291,10 @@ SVEXTERN int SVDECL(nmemory_ids, 0);
 
 //------------------------- multi-threading ---------------------
 
+//***triangles
+SVEXTERN int SVDECL(n_triangles_threads, 1), SVDECL(use_triangles_threads, 1);
+SVEXTERN threaderdata SVDECL(*triangles_threads, NULL);
+
 //***checkfiles
 SVEXTERN int SVDECL(n_checkfiles_threads, 1), SVDECL(use_checkfiles_threads, 1);
 SVEXTERN threaderdata SVDECL(*checkfiles_threads,       NULL);
