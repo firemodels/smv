@@ -11,8 +11,6 @@
 
 //***************************** multi-threaded compression ***********************************
 
-#ifdef pp_THREAD
-
 /* ------------------ Sample ------------------------ */
 
 #ifdef pp_SAMPLE
@@ -112,4 +110,3 @@ void THREADrun(threaderdata *thi, void *arg){
    thi->run(arg);
   }
 }
-#endif

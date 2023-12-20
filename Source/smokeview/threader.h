@@ -1,9 +1,7 @@
 #ifndef THREADER_H_DEFINED
 #define THREADER_H_DEFINED
-#ifndef CPP
 #ifdef pp_THREAD
 #include <pthread.h>
-#endif
 #endif
 
 #ifdef INTHREADER
