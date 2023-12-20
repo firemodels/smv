@@ -7,7 +7,6 @@
 
 #include "smokeviewvars.h"
 #include "IOvolsmoke.h"
-#include "smokestream.h"
 #include GLUT_H
 
 /* ------------------ InitMultiThreading ------------------------ */
@@ -134,19 +133,6 @@ void *MtReadBufferi(void *arg){
   ReadBufferi(arg);
   pthread_exit(NULL);
   return NULL;
-}
-#endif
-
-//***************************** multi threading triangle update ***********************************
-
-#ifdef pp_THREAD
-
-/* ------------------ CancelUpdateTriangles ------------------------ */
-
-void CancelUpdateTriangles(void){
-  cancel_update_triangles = 1;
-  THREADcontrol(triangles_threads, THREAD_JOIN);
-  cancel_update_triangles = 0;
 }
 #endif
 

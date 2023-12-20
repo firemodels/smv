@@ -4053,6 +4053,14 @@ edgedata *GetEdge(edgedata *edges, int nedges, int iv1, int iv2){
   return NULL;
 }
 
+/* ------------------ CancelUpdateTriangles ------------------------ */
+
+void CancelUpdateTriangles(void){
+  cancel_update_triangles = 1;
+  THREADcontrol(triangles_threads, THREAD_JOIN);
+  cancel_update_triangles = 0;
+}
+
 /* ------------------ ClassifyGeom ------------------------ */
 
 void ClassifyGeom(geomdata *geomi,int *geom_frame_index){
