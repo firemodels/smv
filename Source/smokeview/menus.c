@@ -5171,6 +5171,38 @@ void LoadMultiVSliceMenu(int value){
   }
 }
 
+/* ------------------ LoadAllMSlicesMT ------------------------ */
+
+FILE_SIZE LoadAllMSlicesMT(int last_slice, multislicedata *mslicei, int *fcount){
+  FILE_SIZE file_size = 0;
+  int file_count = 0;
+  int i;
+
+  file_count = 0;
+  file_size = 0;
+  for(i = 0; i < mslicei->nslices; i++){
+    slicedata *slicei;
+    int set_slicecolor;
+
+    slicei = sliceinfo + mslicei->islices[i];
+    set_slicecolor = DEFER_SLICECOLOR;
+
+    slicei->finalize = 0;
+    if(last_slice == mslicei->islices[i]){
+      slicei->finalize = 1;
+      set_slicecolor = SET_SLICECOLOR;
+    }
+    if(slicei->skipdup == 0 && last_slice != mslicei->islices[i]){
+      file_size += LoadSlicei(set_slicecolor, mslicei->islices[i], ALL_FRAMES, NULL);
+      file_count++;
+    }
+  }
+  file_size += LoadSlicei(SET_SLICECOLOR, last_slice, ALL_FRAMES, NULL);
+  file_count++;
+  *fcount = file_count;
+  return file_size;
+}
+
 /* ------------------ LoadAllMSlices ------------------------ */
 
 FILE_SIZE LoadAllMSlices(int last_slice, multislicedata *mslicei){
