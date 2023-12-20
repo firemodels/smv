@@ -434,10 +434,10 @@ void Loadboundaryfile(const char *filepath) {
 
     patchi = patchinfo + i;
     if (strcmp(patchi->label.longlabel, filepath) == 0) {
-      LOCK_COMPRESS
+      THREADcontrol(compress_threads, THREAD_LOCK);
       ReadBoundary(i, LOAD, &errorcode);
       count++;
-      UNLOCK_COMPRESS
+      THREADcontrol(compress_threads, THREAD_UNLOCK);
     }
   }
   if (count == 0)
