@@ -1538,15 +1538,11 @@ extern "C" void GLUIHVACSliceBoundsCPP_CB(int var){
       break;
     case BOUND_RELOAD_DATA:
       SetLoadedSliceBounds(NULL, 0);
-#ifdef pp_THREAD
-      LockUnlockCompress(1);
-#endif
+      THREADcontrol(compress_threads, THREAD_LOCK);
       SetLoadedSliceBounds(NULL, 0);
       ReloadAllVectorSliceFiles();
       ReloadAllSliceFiles();
-#ifdef pp_THREAD
-      LockUnlockCompress(0);
-#endif
+      THREADcontrol(compress_threads, THREAD_UNLOCK);
       GLUIHVACSliceBoundsCPP_CB(BOUND_UPDATE_COLORS);
       break;
     case BOUND_RESEARCH_MODE:
@@ -2427,7 +2423,7 @@ GLUI_Panel *PANEL_slice_plot2de = NULL;;
 GLUI_Panel *PANEL_slice_plot2df = NULL;;
 
 GLUI_Spinner *SPINNER_sliceval_ndigits = NULL;
-GLUI_Spinner *SPINNER_npartthread_ids = NULL;
+GLUI_Spinner *SPINNER_n_part_threads = NULL;
 GLUI_Spinner *SPINNER_iso_outline_ioffset = NULL;
 GLUI_Spinner *SPINNER_iso_level = NULL;
 GLUI_Spinner *SPINNER_iso_colors[4];
@@ -2483,7 +2479,7 @@ GLUI_Checkbox* CHECKBOX_sortslices_debug = NULL;
 GLUI_Checkbox* CHECKBOX_visColorbarHorizontal2 = NULL;
 GLUI_Checkbox* CHECKBOX_visColorbarVertical2 = NULL;
 GLUI_Checkbox *CHECKBOX_show_boundary_outline=NULL;
-GLUI_Checkbox *CHECKBOX_part_multithread = NULL;
+GLUI_Checkbox *CHECKBOX_use_partload_threads = NULL;
 GLUI_Checkbox *CHECKBOX_partfast = NULL;
 GLUI_Checkbox *CHECKBOX_show_slice_shaded = NULL;
 GLUI_Checkbox *CHECKBOX_show_vector_slice = NULL;
@@ -2881,7 +2877,7 @@ extern "C" void GLUISetLabelControls2(){
 
 extern "C" void GLUIUpdatePartFast(void){
   if(CHECKBOX_partfast!=NULL)CHECKBOX_partfast->set_int_val(partfast);
-  if(CHECKBOX_part_multithread!=NULL)CHECKBOX_part_multithread->set_int_val(part_multithread);
+  if(CHECKBOX_use_partload_threads!=NULL)CHECKBOX_use_partload_threads->set_int_val(use_partload_threads);
   PartBoundCB(PARTFAST);
 }
 
@@ -3539,7 +3535,7 @@ void BoundBoundCB(int var){
     BoundBoundCB(UPDATE_DATA_COLORS);
     break;
   case UPDATE_DATA_COLORS:
-    GetGlobalPatchBoundsFull();
+    GetGlobalPatchBounds(1);
     if(patchlabellist != NULL)Global2GLUIBoundaryBounds(patchlabellist[list_patch_index]);
     UpdateAllBoundaryColors(1);
     break;
@@ -3556,7 +3552,10 @@ void BoundBoundCB(int var){
     }
     break;
   case COMPRESS_FILES:
-    CompressSVZip();
+    if(compress_threads==NULL){
+      compress_threads = THREADinit(&n_compress_threads, &use_compress_threads, Compress);
+    }
+    THREADrun(compress_threads, NULL);
     break;
   case COMPRESS_AUTOLOADED:
     updatemenu = 1;
@@ -4289,7 +4288,7 @@ extern "C" void GLUIBoundsSetup(int main_window){
     CHECKBOX_sort2 = glui_bounds->add_checkbox_to_panel(ROLLOUT_iso_settings, _("Sort transparent surfaces:"), &sort_iso_triangles, SORT_SURFACES, GLUISliceBoundCB);
 #endif
     CHECKBOX_smooth2 = glui_bounds->add_checkbox_to_panel(ROLLOUT_iso_settings, _("Smooth isosurfaces"), &smooth_iso_normal, SMOOTH_SURFACES, GLUISliceBoundCB);
-    glui_bounds->add_checkbox_to_panel(ROLLOUT_iso_settings, _("wrapup in background"), &iso_multithread);
+    glui_bounds->add_checkbox_to_panel(ROLLOUT_iso_settings, _("wrapup in background"), &use_iso_threads);
     glui_bounds->add_button_to_panel(ROLLOUT_iso_settings, "Output isosurface bounds", ISO_BOUNDS_OUTPUT, GLUISliceBoundCB);
   }
 
@@ -4327,17 +4326,13 @@ extern "C" void GLUIBoundsSetup(int main_window){
 
     PANEL_partread=glui_bounds->add_panel_to_panel(ROLLOUT_particle_settings,_("Particle loading"));
     CHECKBOX_partfast = glui_bounds->add_checkbox_to_panel(PANEL_partread, _("Fast loading"), &partfast, PARTFAST, PartBoundCB);
-    CHECKBOX_part_multithread = glui_bounds->add_checkbox_to_panel(PANEL_partread, _("Parallel loading"), &part_multithread);
-    SPINNER_npartthread_ids = glui_bounds->add_spinner_to_panel(PANEL_partread, _("Files loaded at once"), GLUI_SPINNER_INT, &npartthread_ids);
-#ifndef pp_PART_MULTI
-    CHECKBOX_part_multithread->disable();
-    SPINNER_npartthread_ids->disable();
-#endif
+    CHECKBOX_use_partload_threads = glui_bounds->add_checkbox_to_panel(PANEL_partread, _("Parallel loading"), &use_partload_threads);
+    SPINNER_n_part_threads = glui_bounds->add_spinner_to_panel(PANEL_partread, _("Files loaded at once"), GLUI_SPINNER_INT, &n_partload_threads);
     if(npartinfo>1){
-      SPINNER_npartthread_ids->set_int_limits(1,MIN(npartinfo,MAX_THREADS));
+      SPINNER_n_part_threads->set_int_limits(1,MIN(npartinfo,MAX_THREADS));
     }
     else{
-      SPINNER_npartthread_ids->set_int_limits(1,1);
+      SPINNER_n_part_threads->set_int_limits(1,1);
     }
     PartBoundCB(PARTFAST);
   }
@@ -5401,17 +5396,13 @@ void PartBoundCB(int var){
   case TRACERS:
   case PARTFAST:
     if(npartinfo<=1){
-      CHECKBOX_part_multithread->disable();
-      SPINNER_npartthread_ids->disable();
-      part_multithread = 0;
-      CHECKBOX_part_multithread->set_int_val(part_multithread);
+      CHECKBOX_use_partload_threads->disable();
+      SPINNER_n_part_threads->disable();
+      use_partload_threads = 0;
+      CHECKBOX_use_partload_threads->set_int_val(use_partload_threads);
     }
     else{
-#ifndef pp_PART_MULTI
-      CHECKBOX_part_multithread->enable();
-      SPINNER_npartthread_ids->enable();
-#endif
-      CHECKBOX_part_multithread->set_int_val(part_multithread);
+      CHECKBOX_use_partload_threads->set_int_val(use_partload_threads);
     }
     updatemenu=1;
     break;

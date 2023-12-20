@@ -13,6 +13,52 @@
 #define BUILD_GEOM_OFFSETS 0
 #define GET_GEOM_OFFSETS  -1
 
+/* ------------------ ClassifyAllGeom ------------------------ */
+
+void *ClassifyAllGeom(void *arg){
+  int i;
+
+  for(i = 0; i < ngeominfo; i++){
+    geomdata *geomi;
+
+    geomi = geominfo + i;
+    THREADcontrol(readallgeom_threads, THREAD_LOCK);
+    if(geomi->read_status != 0){
+      THREADcontrol(readallgeom_threads, THREAD_UNLOCK);
+      continue;
+    }
+    geomi->read_status = 1;
+    THREADcontrol(readallgeom_threads, THREAD_UNLOCK);
+
+    if(geomi->geomtype != GEOM_ISO){
+      ClassifyGeom(geomi, NULL);
+    }
+    THREADcontrol(readallgeom_threads, THREAD_LOCK);
+    geomi->read_status = 2;
+    THREADcontrol(readallgeom_threads, THREAD_UNLOCK);
+  }
+  for(i = 0; i < ncgeominfo; i++){
+    geomdata *geomi;
+
+    geomi = cgeominfo + i;
+    THREADcontrol(readallgeom_threads, THREAD_LOCK);
+    if(geomi->read_status != 0){
+      THREADcontrol(readallgeom_threads, THREAD_UNLOCK);
+      continue;
+    }
+    geomi->read_status = 1;
+    THREADcontrol(readallgeom_threads, THREAD_UNLOCK);
+
+    if(geomi->geomtype != GEOM_ISO){
+      ClassifyGeom(geomi, NULL);
+    }
+    THREADcontrol(readallgeom_threads, THREAD_LOCK);
+    geomi->read_status = 2;
+    THREADcontrol(readallgeom_threads, THREAD_UNLOCK);
+  }
+  THREAD_EXIT(use_readallgeom_threads);
+}
+
 // !  ------------------ Distance3 ------------------------
 
 float Distance3(float v1[3], float v2[3]){
@@ -3176,44 +3222,45 @@ void UpdateGeomTriangles(geomdata *geomi, int geom_type){
 
 /* ------------------ ReadAllGeom ------------------------ */
 
-void ReadAllGeom(void){
+void *ReadAllGeom(void *arg){
   int i;
 
   for(i=0;i<ngeominfo;i++){
     geomdata *geomi;
 
     geomi = geominfo + i;
-    LOCK_READALLGEOM;
+    THREADcontrol(readallgeom_threads, THREAD_LOCK);
     if(geomi->read_status!=0){
-      UNLOCK_READALLGEOM;
+      THREADcontrol(readallgeom_threads, THREAD_UNLOCK);
       continue;
     }
     geomi->read_status = 1;
-    UNLOCK_READALLGEOM;
+    THREADcontrol(readallgeom_threads, THREAD_UNLOCK);
 
     ReadGeom(geomi, LOAD, GEOM_GEOM, NULL);
-    LOCK_READALLGEOM;
+    THREADcontrol(readallgeom_threads, THREAD_LOCK);
     geomi->read_status = 2;
-    UNLOCK_READALLGEOM;
+    THREADcontrol(readallgeom_threads, THREAD_UNLOCK);
   }
   for(i = 0; i<ncgeominfo; i++){
     geomdata *geomi;
 
     geomi = cgeominfo+i;
-    LOCK_READALLGEOM;
+    THREADcontrol(readallgeom_threads, THREAD_LOCK);
     if(geomi->read_status!=0){
-      UNLOCK_READALLGEOM;
+      THREADcontrol(readallgeom_threads, THREAD_UNLOCK);
       continue;
     }
     geomi->read_status = 1;
-    UNLOCK_READALLGEOM;
+    THREADcontrol(readallgeom_threads, THREAD_UNLOCK);
 
     ReadGeom(geomi, LOAD, GEOM_CGEOM, NULL);
     UpdateGeomTriangles(geomi, GEOM_STATIC);
-    LOCK_READALLGEOM;
+    THREADcontrol(readallgeom_threads, THREAD_LOCK);
     geomi->read_status = 2;
-    UNLOCK_READALLGEOM;
+    THREADcontrol(readallgeom_threads, THREAD_UNLOCK);
   }
+  THREAD_EXIT(use_readallgeom_threads);
 }
 
 /* ------------------ UpdateAllGeomTriangles ------------------------ */
@@ -4006,6 +4053,14 @@ edgedata *GetEdge(edgedata *edges, int nedges, int iv1, int iv2){
   return NULL;
 }
 
+/* ------------------ CancelUpdateTriangles ------------------------ */
+
+void CancelUpdateTriangles(void){
+  cancel_update_triangles = 1;
+  THREADcontrol(triangles_threads, THREAD_JOIN);
+  cancel_update_triangles = 0;
+}
+
 /* ------------------ ClassifyGeom ------------------------ */
 
 void ClassifyGeom(geomdata *geomi,int *geom_frame_index){
@@ -4168,51 +4223,6 @@ void ClassifyGeom(geomdata *geomi,int *geom_frame_index){
       }
       FREEMEMORY(vertlist_ptr);
     }
-  }
-}
-
-/* ------------------ ClassifyAllGeom ------------------------ */
-
-void ClassifyAllGeom(void){
-  int i;
-
-  for(i = 0; i<ngeominfo; i++){
-    geomdata *geomi;
-
-    geomi = geominfo+i;
-    LOCK_READALLGEOM;
-    if(geomi->read_status!=0){
-      UNLOCK_READALLGEOM;
-      continue;
-    }
-    geomi->read_status = 1;
-    UNLOCK_READALLGEOM;
-
-    if(geomi->geomtype!=GEOM_ISO){
-      ClassifyGeom(geomi, NULL);
-    }
-    LOCK_READALLGEOM;
-    geomi->read_status = 2;
-    UNLOCK_READALLGEOM;
-  }
-  for(i = 0; i<ncgeominfo; i++){
-    geomdata *geomi;
-
-    geomi = cgeominfo+i;
-    LOCK_READALLGEOM;
-    if(geomi->read_status!=0){
-      UNLOCK_READALLGEOM;
-      continue;
-    }
-    geomi->read_status = 1;
-    UNLOCK_READALLGEOM;
-
-    if(geomi->geomtype!=GEOM_ISO){
-      ClassifyGeom(geomi, NULL);
-    }
-    LOCK_READALLGEOM;
-    geomi->read_status = 2;
-    UNLOCK_READALLGEOM;
   }
 }
 

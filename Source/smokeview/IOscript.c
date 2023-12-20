@@ -153,8 +153,8 @@ void StartScript(void){
   }
   GLUIScriptDisable();
   current_script_command=scriptinfo-1;
-  iso_multithread_save = iso_multithread;
-  iso_multithread = 0;
+  use_iso_threads_save = use_iso_threads;
+  use_iso_threads = 0;
   viewpoint_script_ptr = NULL;
 }
 
@@ -2796,10 +2796,10 @@ void ScriptLoadBoundary(scriptdata *scripti, int meshnum){
     patchi = patchinfo + i;
     if(meshnum == -1 || patchi->blocknumber + 1 == meshnum){
       if(strcmp(patchi->label.longlabel, scripti->cval) == 0){
-        LOCK_COMPRESS
+        THREADcontrol(compress_threads, THREAD_LOCK);
         ReadBoundary(i, LOAD, &errorcode);
         count++;
-        UNLOCK_COMPRESS
+        THREADcontrol(compress_threads, THREAD_UNLOCK);
         if(meshnum == -1)break;
       }
     }

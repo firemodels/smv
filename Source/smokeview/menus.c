@@ -2754,7 +2754,10 @@ void CompressMenu(int value){
     erase_all=1;
     overwrite_all=0;
     GLUIUpdateOverwrite();
-    CompressSVZip();
+    if(compress_threads==NULL){
+      compress_threads = THREADinit(&n_compress_threads, &use_compress_threads, Compress);
+    }
+    THREADrun(compress_threads, NULL);
     break;
   case MENU_OVERWRITECOMPRESS:
     erase_all=0;
@@ -2763,7 +2766,10 @@ void CompressMenu(int value){
     break;
   case MENU_COMPRESSNOW:
     erase_all=0;
-    CompressSVZip();
+    if(compress_threads==NULL){
+      compress_threads = THREADinit(&n_compress_threads, &use_compress_threads, Compress);
+    }
+    THREADrun(compress_threads, NULL);
     break;
   case MENU_COMPRESSAUTOLOAD:
     compress_autoloaded=1-compress_autoloaded;
@@ -2881,7 +2887,7 @@ void ScriptMenu(int value){
       break;
     case SCRIPT_CANCEL:
       script_defer_loading = 0;
-      iso_multithread = iso_multithread_save;
+      use_iso_threads = use_iso_threads_save;
       current_script_command=NULL;
       runscript=0;
       first_frame_index=0;
@@ -3423,7 +3429,7 @@ void LoadUnloadMenu(int value){
     GLUTPOSTREDISPLAY;
   }
   if(value==RELOADALL||value==RELOAD_INCREMENTAL_ALL){
-    LOCK_COMPRESS
+    THREADcontrol(compress_threads, THREAD_LOCK);
     if(hrr_csv_filename!=NULL){
       ReadHRR(LOAD);
     }
@@ -3528,7 +3534,6 @@ void LoadUnloadMenu(int value){
     if(update_readiso_geom_wrapup == UPDATE_ISO_ALL_NOW)ReadIsoGeomWrapup(BACKGROUND);
     update_readiso_geom_wrapup = UPDATE_ISO_OFF;
     UpdateSMVDynamic(smv_filename);
-    UNLOCK_COMPRESS
   //  plotstate=DYNAMIC_PLOTS;
   //  visParticles=1;
 
@@ -3540,6 +3545,7 @@ void LoadUnloadMenu(int value){
 
     updatemenu=1;
     GLUTPOSTREDISPLAY;
+    THREADcontrol(compress_threads, THREAD_UNLOCK);
   }
   if(value==SHOWFILES){
     GLUTPOSTREDISPLAY;
@@ -3987,20 +3993,20 @@ void LoadAllPartFiles(int partnum){
     parti = partinfo+i;
     if(parti->skipload==1)continue;
     if(partnum>=0&&i!=partnum)continue;  //  load only particle file with file index partnum
-    LOCK_PART_LOAD;                      //  or load all particle files
+    THREADcontrol(partload_threads, THREAD_LOCK);                      //  or load all particle files
     if(parti->loadstatus==FILE_UNLOADED){
       if(partnum==LOAD_ALL_PART_FILES||(partnum==RELOAD_LOADED_PART_FILES&&parti->reload==1)||partnum==i){
         parti->loadstatus = FILE_LOADING;
-        UNLOCK_PART_LOAD;
+        THREADcontrol(partload_threads, THREAD_UNLOCK);
         file_size = ReadPart(parti->file, i, LOAD, &errorcode);
-        LOCK_PART_LOAD;
+        THREADcontrol(partload_threads, THREAD_LOCK);
         parti->loadstatus = FILE_LOADED;
         part_load_size += file_size;
         part_file_count++;
         parti->file_size = file_size;
       }
     }
-    UNLOCK_PART_LOAD;
+    THREADcontrol(partload_threads, THREAD_UNLOCK);
   }
 }
 
@@ -4055,6 +4061,52 @@ void SetupPart(int value){
       break;
     }
   }
+}
+
+/* ------------------ MtLoadAllPartFiles ------------------------ */
+
+void *MtLoadAllPartFiles(void *arg){
+  int *valptr;
+
+  valptr = ( int * )(arg);
+  LoadAllPartFiles(*valptr);
+  THREAD_EXIT(use_partload_threads);
+}
+
+/* ------------------ LoadAllPartFilesMT ------------------------ */
+
+void LoadAllPartFilesMT(int partnum){
+  int i;
+
+  if(partload_threads == NULL){
+    partload_threads = THREADinit(&n_partload_threads, &use_partload_threads, MtLoadAllPartFiles);
+  }
+  THREADrun(partload_threads, &partnum);
+  THREADcontrol(partload_threads, THREAD_JOIN);
+
+  INIT_PRINT_TIMER(part_timer);
+  if(partnum < 0){
+    for(i = 0; i < npartinfo; i++){
+      partdata *parti;
+
+      parti = partinfo + i;
+      parti->finalize = 0;
+    }
+    for(i = npartinfo - 1; i >= 0; i--){
+      partdata *parti;
+
+      parti = partinfo + i;
+      if(parti->loaded == 1){
+        parti->finalize = 1;
+        FinalizePartLoad(parti);
+        break;
+      }
+    }
+  }
+  else{
+    FinalizePartLoad(partinfo + partnum);
+  }
+  PRINT_TIMER(part_timer, "finalize particle time");
 }
 
 /* ------------------ LoadParticleMenu ------------------------ */
@@ -5165,6 +5217,38 @@ void LoadMultiVSliceMenu(int value){
   }
 }
 
+/* ------------------ LoadAllMSlicesMT ------------------------ */
+
+FILE_SIZE LoadAllMSlicesMT(int last_slice, multislicedata *mslicei, int *fcount){
+  FILE_SIZE file_size = 0;
+  int file_count = 0;
+  int i;
+
+  file_count = 0;
+  file_size = 0;
+  for(i = 0; i < mslicei->nslices; i++){
+    slicedata *slicei;
+    int set_slicecolor;
+
+    slicei = sliceinfo + mslicei->islices[i];
+    set_slicecolor = DEFER_SLICECOLOR;
+
+    slicei->finalize = 0;
+    if(last_slice == mslicei->islices[i]){
+      slicei->finalize = 1;
+      set_slicecolor = SET_SLICECOLOR;
+    }
+    if(slicei->skipdup == 0 && last_slice != mslicei->islices[i]){
+      file_size += LoadSlicei(set_slicecolor, mslicei->islices[i], ALL_FRAMES, NULL);
+      file_count++;
+    }
+  }
+  file_size += LoadSlicei(SET_SLICECOLOR, last_slice, ALL_FRAMES, NULL);
+  file_count++;
+  *fcount = file_count;
+  return file_size;
+}
+
 /* ------------------ LoadAllMSlices ------------------------ */
 
 FILE_SIZE LoadAllMSlices(int last_slice, multislicedata *mslicei){
@@ -5693,10 +5777,10 @@ void LoadBoundaryMenu(int value){
       fprintf(scriptoutstream, " %i\n", patchi->blocknumber+1);
     }
     if(scriptoutstream==NULL||script_defer_loading==0){
-      LOCK_COMPRESS;
+      THREADcontrol(compress_threads, THREAD_LOCK);
       SetLoadedPatchBounds(&value, 1);
       ReadBoundary(value,LOAD,&errorcode);
-      UNLOCK_COMPRESS;
+      THREADcontrol(compress_threads, THREAD_UNLOCK);
     }
   }
   else if(value<=-10){
@@ -5740,9 +5824,9 @@ void LoadBoundaryMenu(int value){
 
         patchi = patchinfo+i;
         if(InPatchList(patchj, patchi)==1){
-          LOCK_COMPRESS;
+          THREADcontrol(compress_threads, THREAD_LOCK);
           patchi->finalize = 1;
-          UNLOCK_COMPRESS;
+          THREADcontrol(compress_threads, THREAD_UNLOCK);
           break;
         }
       }
@@ -5751,7 +5835,7 @@ void LoadBoundaryMenu(int value){
 
         patchi = patchinfo + i;
         if(InPatchList(patchj, patchi)==1){
-          LOCK_COMPRESS;
+          THREADcontrol(compress_threads, THREAD_LOCK);
           if(patchi->structured == YES){
             PRINTF("Loading %s(%s)", patchi->file, patchi->label.shortlabel);
           }
@@ -5760,7 +5844,7 @@ void LoadBoundaryMenu(int value){
             UpdateTriangles(GEOM_STATIC, GEOM_UPDATE_ALL);
           }
           file_count++;
-          UNLOCK_COMPRESS;
+          THREADcontrol(compress_threads, THREAD_UNLOCK);
         }
       }
       STOP_TIMER(load_time);
@@ -11397,7 +11481,7 @@ static int menu_count=0;
 #endif
   glutAddMenuEntry(_("Save/load configuration files..."), DIALOG_CONFIG);
   glutAddMenuEntry(_("Render images..."), DIALOG_RENDER);
-  LOCK_SETUP_FFMPEG;
+  THREADcontrol(ffmpeg_threads, THREAD_LOCK);;
   if(have_slurm==1&&have_ffmpeg==1){
     glutAddMenuEntry(_("Make movies(local)..."), DIALOG_MOVIE);
     glutAddMenuEntry(_("Make movies(cluster)..."), DIALOG_MOVIE_BATCH);
@@ -11405,7 +11489,7 @@ static int menu_count=0;
   if(have_slurm==0&&have_ffmpeg==1){
     glutAddMenuEntry(_("Make movies..."), DIALOG_MOVIE);
   }
-  UNLOCK_SETUP_FFMPEG;
+  THREADcontrol(ffmpeg_threads, THREAD_UNLOCK);
   glutAddMenuEntry(_("Record/run scripts..."), DIALOG_SCRIPT);
 
   /* --------------------------------viewdialog menu -------------------------- */

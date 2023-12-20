@@ -3014,18 +3014,30 @@ void UpdateBoundInfo(void){
     }
   }
   PRINT_TIMER(bound_timer, "hvacbounds");
+
   GLUIUpdateChar();
   PRINT_TIMER(bound_timer, "GLUIUpdateChar");
+
   GetGlobalPartBounds(0);
   PRINT_TIMER(bound_timer, "GetGlobalPartBounds");
+
   GetGlobalSliceBoundsReduced();
-  GetGlobalSliceBoundsMT();
+  if(slicebound_threads == NULL){
+    slicebound_threads = THREADinit(&n_slicebound_threads, &use_slicebound_threads, GetGlobalSliceBoundsFull);
+  }
+  THREADrun(slicebound_threads, NULL);
   PRINT_TIMER(bound_timer, "GetGlobalSliceBounds");
+
   GetGlobalPatchBoundsReduced();
-  GetGlobalPatchBoundsMT();
+  if(patchbound_threads == NULL){
+    patchbound_threads = THREADinit(&n_patchbound_threads, &use_patchbound_threads, GetGlobalPatchBoundsFull);
+  }
+  THREADrun(patchbound_threads, NULL);
   PRINT_TIMER(bound_timer, "GetGlobalPatchBounds");
+
   GetGlobalHVACDuctBounds(0);
   PRINT_TIMER(bound_timer, "GetGlobalHVACDuctBounds");
+
   GetGlobalHVACNodeBounds(0);
   PRINT_TIMER(bound_timer, "GetGlobalHVACNodeBounds");
 }
@@ -6648,7 +6660,106 @@ void AddCfastCsvf(void){
  // AddCfastCsvfi("_calculations", "calculations", CSV_CFAST_FORMAT);
 }
 
-  /* ------------------ ReadSMV ------------------------ */
+/* ------------------ Compress ------------------------ */
+
+void *Compress(void *arg){
+  char shellcommand[1024];
+
+  PRINTF("Compressing...\n");
+  GLUICompressOnOff(OFF);
+
+  WriteIni(LOCAL_INI, NULL);
+
+  // surround smokezip path name with "'s so that the system call can handle embedded blanks
+
+  strcpy(shellcommand, "\"");
+  strcat(shellcommand, smokezippath);
+  strcat(shellcommand, "\" ");
+  if(overwrite_all == 1){
+    strcat(shellcommand, " -f ");
+  }
+  if(erase_all == 1){
+    strcat(shellcommand, " -c ");
+  }
+  if(compress_autoloaded == 1){
+    strcat(shellcommand, " -auto ");
+  }
+  strcat(shellcommand, " ");
+  strcat(shellcommand, smv_filename);
+
+  PRINTF("Executing shell command: %s\n", shellcommand);
+  system(shellcommand);
+  UpdateSmoke3dMenuLabels();
+  UpdateBoundaryMenuLabels();
+  GLUICompressOnOff(ON);
+  updatemenu = 1;
+  PRINTF("Compression completed\n");
+  THREAD_EXIT(use_compress_threads);
+}
+
+/* ------------------ CheckFiles ------------------------ */
+
+void *CheckFiles(void *arg){
+  int i;
+
+  THREADcontrol(checkfiles_threads, THREAD_LOCK);
+  have_compressed_files = 0;
+  THREADcontrol(checkfiles_threads, THREAD_UNLOCK);
+  for(i = 0;i < npatchinfo;i++){
+    patchdata *patchi;
+    int have_file;
+
+    patchi = patchinfo + i;
+    have_file = FILE_EXISTS_CASEDIR(patchi->comp_file);
+    THREADcontrol(checkfiles_threads, THREAD_LOCK);
+    if(have_file == YES){
+      patchi->compression_type_temp = COMPRESSED_ZLIB;
+      have_compressed_files = 1;
+    }
+    THREADcontrol(checkfiles_threads, THREAD_UNLOCK);
+  }
+  for(i = 0;i < nsmoke3dinfo;i++){
+    smoke3ddata *smoke3di;
+    int have_file;
+
+    smoke3di = smoke3dinfo + i;
+    have_file = FILE_EXISTS_CASEDIR(smoke3di->comp_file);
+    THREADcontrol(checkfiles_threads, THREAD_LOCK);
+    if(have_file == YES){
+      smoke3di->compression_type_temp = COMPRESSED_ZLIB;
+      have_compressed_files = 1;
+    }
+    THREADcontrol(checkfiles_threads, THREAD_UNLOCK);
+  }
+  if(have_compressed_files == 0){
+    THREAD_EXIT(use_checkfiles_threads);
+  }
+  THREADcontrol(checkfiles_threads, THREAD_LOCK);
+  for(i = 0; i < npatchinfo; i++){
+    patchdata *patchi;
+
+    patchi = patchinfo + i;
+    if(patchi->compression_type_temp == COMPRESSED_ZLIB){
+      patchi->compression_type = COMPRESSED_ZLIB;
+      patchi->file = patchi->comp_file;
+    }
+  }
+  for(i = 0; i < nsmoke3dinfo; i++){
+    smoke3ddata *smoke3di;
+
+    smoke3di = smoke3dinfo + i;
+    if(smoke3di->compression_type_temp == COMPRESSED_ZLIB){
+      smoke3di->file = smoke3di->comp_file;
+      smoke3di->is_zlib = 1;
+      smoke3di->compression_type = COMPRESSED_ZLIB;
+    }
+  }
+  updatemenu = 1;
+  THREADcontrol(checkfiles_threads, THREAD_UNLOCK);
+  THREAD_EXIT(use_checkfiles_threads);
+}
+
+/* ------------------ ReadSMV ------------------------ */
 static float processing_time;
 static float getfilelist_time;
 static float pass0_time;
@@ -11477,18 +11588,17 @@ int ReadSMV_Configure(){
   }
   if(ntotal_blockages > 250000)show_geom_boundingbox = SHOW_BOUNDING_BOX_MOUSE_DOWN;
 
-#ifdef pp_THREAD
-  InitMultiThreading();
-#endif
-
   if(runscript == 1||compute_fed == 1){
-    checkfiles_multithread  = 0;
-    ffmpeg_multithread      = 0;
-    readallgeom_multithread = 0;
+    use_checkfiles_threads  = 0;
+    use_ffmpeg_threads      = 0;
+    use_readallgeom_threads = 0;
   }
 
-  CheckFilesMT();
-  PRINT_TIMER(timer_readsmv, "CheckFilesMT");
+  if(checkfiles_threads == NULL){
+    checkfiles_threads = THREADinit(&n_checkfiles_threads, &use_checkfiles_threads, CheckFiles);
+  }
+  THREADrun(checkfiles_threads, NULL);
+  PRINT_TIMER(timer_readsmv, "CheckFiles");
 
 #ifdef pp_BNDF
   for(i = 0;i < npatchinfo;i++){
@@ -11587,7 +11697,12 @@ int ReadSMV_Configure(){
   UpdateMeshBoxBounds();
   PRINT_TIMER(timer_readsmv, "UpdateMeshBoxBounds");
 
-  ReadAllGeomMT();
+  if(readallgeom_threads == NULL){
+    readallgeom_threads = THREADinit(&n_readallgeom_threads, &use_readallgeom_threads, ReadAllGeom);
+  }
+  SetupReadAllGeom();
+  THREADrun(readallgeom_threads, NULL);
+  THREADcontrol(readallgeom_threads, THREAD_JOIN);
   PRINT_TIMER(timer_readsmv, "ReadAllGeomMT");
 
   UpdateMeshCoords();
@@ -11630,9 +11745,7 @@ int ReadSMV_Configure(){
     }
   }
   if(npartinfo>=64){
-#ifdef pp_PART_MULTI
-    part_multithread = 1;
-#endif
+    use_partload_threads = 1;
     partfast = 1;
   }
 
@@ -11691,7 +11804,10 @@ int ReadSMV_Configure(){
   MakeIBlankCarve();
   PRINT_TIMER(timer_readsmv, "MakeIBlankCarve");
 
-  SetupFFMT();
+  if(ffmpeg_threads == NULL){
+    ffmpeg_threads = THREADinit(&n_ffmpeg_threads, &use_ffmpeg_threads, SetupFF);
+  }
+  THREADrun(ffmpeg_threads, NULL);
   PRINT_TIMER(timer_readsmv, "SetupFFMT");
 
   MakeIBlankSmoke3D();
@@ -11801,8 +11917,12 @@ int ReadSMV_Configure(){
   radius_windrose = 0.2*xyzmaxdiff;
   PRINT_TIMER(timer_readsmv, "InitVolRender");
 
-  if(large_case == 0){
-    ClassifyAllGeomMT();
+  if(large_case==0){
+    if(classifyallgeom_threads==NULL){
+      classifyallgeom_threads = THREADinit(&n_readallgeom_threads, &use_readallgeom_threads, ClassifyAllGeom);
+    }
+    SetupReadAllGeom();
+    THREADrun(classifyallgeom_threads, NULL);
   }
   PRINT_TIMER(timer_readsmv, "ClassifyGeom");
 
@@ -13619,9 +13739,9 @@ int ReadIni2(char *inifile, int localfile){
     if(MatchINI(buffer, "SMOKELOAD")==1){
       fgets(buffer, 255, stream);
 #ifdef pp_SMOKE16
-      sscanf(buffer, "%i %i %i", &use_smoke_thread, &nsmoke_threads, &load_smoke16);
+      sscanf(buffer, "%i %i %i", &use_smokeload_threads, &n_smokeload_threads, &load_smoke16);
 #else
-      sscanf(buffer, "%i %i", &use_smoke_thread, &nsmoke_threads);
+      sscanf(buffer, "%i %i", &use_smokeload_threads, &n_smokeload_threads);
 #endif
       continue;
     }
@@ -14517,10 +14637,7 @@ int ReadIni2(char *inifile, int localfile){
     if(MatchINI(buffer, "PARTFAST")==1){
       fgets(buffer, 255, stream);
       if(current_script_command==NULL){
-        sscanf(buffer, "%i %i %i", &partfast, &part_multithread, &npartthread_ids);
-#ifndef pp_PART_MULTI
-        part_multithread = 0;
-#endif
+        sscanf(buffer, "%i %i %i", &partfast, &use_partload_threads, &n_partload_threads);
       }
       continue;
     }
@@ -16715,7 +16832,7 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, "NOPART\n");
   fprintf(fileout, " %i\n", nopart);
   fprintf(fileout, "PARTFAST\n");
-  fprintf(fileout, " %i %i %i\n", partfast, part_multithread, npartthread_ids);
+  fprintf(fileout, " %i %i %i\n", partfast, use_partload_threads, n_partload_threads);
   fprintf(fileout, "RESEARCHMODE\n");
   fprintf(fileout, " %i %i %f %i %i %i %i %i\n", research_mode, 1, colorbar_shift, ncolorlabel_digits, force_fixedpoint, ngridloc_digits, sliceval_ndigits, force_exponential);
   fprintf(fileout, "SHOWFEDAREA\n");
@@ -16724,9 +16841,9 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %i %f %i\n", slice_average_flag, slice_average_interval, vis_slice_average);
   fprintf(fileout, "SMOKELOAD\n");
 #ifdef pp_SMOKE16
-  fprintf(fileout, " %i %i %i\n", use_smoke_thread, nsmoke_threads, load_smoke16);
+  fprintf(fileout, " %i %i %i\n", use_smokeload_threads, n_smokeload_threads, load_smoke16);
 #else
-  fprintf(fileout, " %i %i\n", use_smoke_thread, nsmoke_threads);
+  fprintf(fileout, " %i %i\n", use_smokeload_threads, n_smokeload_threads);
 #endif
   fprintf(fileout, "SLICEDATAOUT\n");
   fprintf(fileout, " %i \n", output_slicedata);

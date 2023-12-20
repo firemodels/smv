@@ -596,7 +596,7 @@ char *ProcessCommandLine(CommandlineArgs *args) {
     }
     if(args->runscript){
       from_commandline = 1;
-      iso_multithread=0;
+      use_iso_threads=0;
 #ifdef pp_LUA
       strcpy(script_filename, "");
 #endif
@@ -605,13 +605,13 @@ char *ProcessCommandLine(CommandlineArgs *args) {
     if(args->runhtmlscript){
       from_commandline = 1;
       use_graphics = 0;
-      iso_multithread = 0;
+      use_iso_threads = 0;
       runhtmlscript = 1;
     }
 #ifdef pp_LUA
     if(args->runluascript){
       from_commandline = 1;
-      iso_multithread=0;
+      use_iso_threads=0;
       strcpy(luascript_filename, "");
       strncpy(luascript_filename, fdsprefix, MAX_LUASCRIPT_FILENAME_BUFFER-5);
       strcat(luascript_filename, ".lua");
@@ -648,7 +648,7 @@ char *ProcessCommandLine(CommandlineArgs *args) {
         runhtmlscript = 1;
       }
       from_commandline = 1;
-      iso_multithread=0;
+      use_iso_threads=0;
         char scriptbuffer[MAX_SCRIPT_FILENAME_BUFFER];
         scriptfiledata *sfd;
         if (args->script != NULL) {
@@ -673,7 +673,7 @@ char *ProcessCommandLine(CommandlineArgs *args) {
 #ifdef pp_LUA
     if(args->luascript != NULL){
       from_commandline = 1;
-      iso_multithread=0;
+      use_iso_threads=0;
       if (strlen(args->luascript) > MAX_LUASCRIPT_FILENAME_BUFFER-1) {
         fprintf(stderr, "*** Error: luascript filename exceeds maximum length of %d\n", MAX_SMV_FILENAME_BUFFER-1);
         SMV_EXIT(1);
@@ -696,7 +696,7 @@ char *ProcessCommandLine(CommandlineArgs *args) {
       strcpy(smokeview_casedir, args->casedir);
     }
     if(args->threads_defined){
-        nreadallgeomthread_ids = CLAMP(args->threads, 1, 16);
+        n_readallgeom_threads = CLAMP(args->threads, 1, 16);
     }
   if(update_ssf == 1){
     int len_prefix = 0;

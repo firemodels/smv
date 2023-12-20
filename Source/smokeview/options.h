@@ -13,7 +13,6 @@
 
 //*** parallel file loading
 #define pp_SLICE_MULTI    // load slice files in parallel
-#define pp_PART_MULTI     // load particle files in parallel
 
 //#define pp_CSV_MENU       // add menu for loading CSV files
 
@@ -38,7 +37,6 @@
 
 //#define pp_LOAD_INC     // add menu item for loading new data
 
-#define pp_READBUFFER_THREAD // use pthreads in ReadBuffer routine (don't use pthreads when used in smokezip and smokediff)
 //#define pp_CRASH_TEST       // test detection of division by zero or use of undefined pointer
 #define pp_GPU                // support the GPU
 #define pp_THREAD             // turn on multi-threading

@@ -2844,17 +2844,17 @@ void Keyboard(unsigned char key, int flag){
       partfast = 1 - partfast;
       if(current_script_command==NULL){
         if(npartinfo>1){
-          part_multithread = partfast;
+          use_partload_threads = partfast;
         }
         else{
-          part_multithread = 0;
+          use_partload_threads = 0;
         }
       }
-      if(part_multithread==1){
-        if(npartthread_ids>1)printf("parallel particle loading: on(%i threads)\n",npartthread_ids);
-        if(npartthread_ids==1)printf("parallel particle loading: on(1 thread)\n");
+      if(use_partload_threads==1){
+        if(n_partload_threads > 1)printf("parallel particle loading: on(%i threads)\n", n_partload_threads);
+        if(n_partload_threads == 1)printf("parallel particle loading: on(1 thread)\n");
       }
-      if(part_multithread==0)printf("parallel particle loading: off\n");
+      if(use_partload_threads==0)printf("parallel particle loading: off\n");
       GLUIUpdatePartFast();
       break;
     case '$':

@@ -2369,7 +2369,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
     cpp_boundsdata *bounds;
 
     if(runscript == 0){
-      JOIN_PATCHBOUNDS;
+      THREADcontrol(patchbound_threads, THREAD_JOIN);
     }
     if(force_bound_update==1||patch_bounds_defined==0){
       GetGlobalPatchBounds(1);

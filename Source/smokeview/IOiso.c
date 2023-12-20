@@ -142,12 +142,22 @@ void GetIsoSizes(const char *isofile, int dataflag, FILE **isostreamptr, int *nv
   FSEEK(*isostreamptr,beg,SEEK_SET);
 }
 
+/* ------------------ UpdateTrianglesAll ------------------------ */
+
+void *UpdateTrianglesAll(void *arg){
+  UpdateTriangles(GEOM_DYNAMIC, GEOM_UPDATE_ALL);
+  THREAD_EXIT(use_triangles_threads);
+}
+
 /* ------------------ ReadIsoGeomWrapup ------------------------ */
 
 void ReadIsoGeomWrapup(int flag){
   update_readiso_geom_wrapup = UPDATE_ISO_OFF;
-  UpdateTrianglesMT();
-  if(flag == FOREGROUND)FinishUpdateTriangles();
+  if(triangles_threads == NULL){
+    triangles_threads = THREADinit(&n_triangles_threads, &use_triangles_threads, UpdateTrianglesAll);
+  }
+  THREADrun(triangles_threads, NULL);
+  if(flag == FOREGROUND)THREADcontrol(triangles_threads, THREAD_JOIN);
   UpdateTimes();
   GetFaceInfo();
   ForceIdle();

@@ -4,9 +4,6 @@
 #include "stdio_buffer.h"
 #include "MALLOCC.h"
 #include "string_util.h"
-#ifdef pp_READBUFFER_THREAD
-#include "threader.h"
-#endif
 
 /* ------------------ OutputFileBuffer ------------------------ */
 
@@ -243,70 +240,24 @@ void ReadBufferi(readbufferdata *readbufferi){
 
 /* ------------------ ReadBuffer ------------------------ */
 
-int ReadBuffer(char *filename, int filesize, char *buffer, int nthreads, int use_multithread){
-  int i, filesizei, returnval;
-  readbufferdata *readbufferinfo;
+int ReadBuffer(char *filename, int filesize, char *buffer){
+  int returnval;
+  readbufferdata *readbufferinfo=NULL;
 
   returnval = 1;
-  filesizei = filesize / nthreads;
 
-  NewMemory((void **)&readbufferinfo, nthreads * sizeof(readbufferdata));
-#ifdef pp_READBUFFER_THREAD
-  if(use_multithread == 1 && nthreads > 1){
-    NewMemory((void **)&readbuffer_ids, nthreads * sizeof(pthread_t));
-  }
-#endif
+  NewMemory((void **)&readbufferinfo, sizeof(readbufferdata));
 
-  for(i = 0; i < nthreads; i++){
-    readbufferdata *readbufferi;
-    int start, end;
+  readbufferinfo->buffer = buffer;
+  readbufferinfo->filename = filename;
+  readbufferinfo->start = 0;
+  readbufferinfo->size = filesize;
 
-    start = i * filesizei;
-    if(i == nthreads - 1){
-      end = filesize;
-    }
-    else{
-      end = start + filesizei;
-    }
-    if(end > filesize)end = filesize;
+  ReadBufferi(readbufferinfo);
 
-    readbufferi = readbufferinfo + i;
-    readbufferi->buffer = buffer;
-    readbufferi->filename = filename;
-    readbufferi->start = start;
-    readbufferi->size = end - start;
-#ifdef pp_READBUFFER_THREAD
-    if(use_multithread == 1 && nthreads > 1){
-      pthread_create(readbuffer_ids + i, NULL, MtReadBufferi, readbufferi);
-    }
-    else{
-      ReadBufferi(readbufferi);
-    }
-  }
-  if(use_multithread == 1 && nthreads > 1){
-    for(i = 0; i < nthreads; i++){
-      pthread_join(readbuffer_ids[i], NULL);
-    }
-  }
-#else
-    ReadBufferi(readbufferi);
-  }
-#endif
-  for(i = 0; i < nthreads; i++){
-    readbufferdata *readbufferi;
+  if(readbufferinfo->returnval == 0)returnval = 0;
 
-    readbufferi = readbufferinfo + i;
-    if(readbufferi->returnval == 0){
-      returnval = 0;
-      break;
-    }
-  }
   FREEMEMORY(readbufferinfo);
-#ifdef pp_READBUFFER_THREAD
-  if(use_multithread == 1 && nthreads > 1){
-    FREEMEMORY(readbuffer_ids);
-  }
-#endif
   return returnval;
 }
 
@@ -329,9 +280,9 @@ filedata *fopen_buffer(char *filename, char *mode, int nthreads, int use_multith
 
   if(NewMemory((void **)&buffer, filesize+1)==0)return NULL;
 
-  int ReadBuffer(char *filename, int filesize, char *buffer, int nthreads, int use_multithread);
+  int ReadBuffer(char *filename, int filesize, char *buffer);
 
-  if(ReadBuffer(filename, filesize, buffer, nthreads, use_multithread)==0){
+  if(ReadBuffer(filename, filesize, buffer)==0){
     FREEMEMORY(buffer);
     return NULL;
   }

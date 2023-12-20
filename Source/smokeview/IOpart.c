@@ -1949,11 +1949,6 @@ FILE_SIZE ReadPart(char *file_arg, int ifile_arg, int loadflag_arg, int *errorco
   FILE_SIZE file_size_local;
   float load_time_local;
 
-#ifdef pp_PART_HIST
-  if(loadflag_arg==UNLOAD&&part_multithread==1&&update_generate_part_histograms==-1){
-    JOIN_PART_HIST;
-  }
-#endif
   SetTimeState();
   START_TIMER(load_time_local);
   assert(ifile_arg>=0&&ifile_arg<npartinfo);
@@ -1967,10 +1962,10 @@ FILE_SIZE ReadPart(char *file_arg, int ifile_arg, int loadflag_arg, int *errorco
   parti->loaded = 0;
   parti->display=0;
 
-  LOCK_PART_LOAD;
+  THREADcontrol(partload_threads, THREAD_LOCK);
   plotstate=GetPlotState(DYNAMIC_PLOTS);
   updatemenu=1;
-  UNLOCK_PART_LOAD;
+  THREADcontrol(partload_threads, THREAD_UNLOCK);
 
   FREEMEMORY(parti->times);
   FREEMEMORY(parti->filepos);
@@ -1993,10 +1988,10 @@ FILE_SIZE ReadPart(char *file_arg, int ifile_arg, int loadflag_arg, int *errorco
     return 0.0;
   }
 
-  if(part_multithread==1){
-    LOCK_PART_LOAD;
+  if(use_partload_threads==1){
+    THREADcontrol(partload_threads, THREAD_LOCK);
     PrintPartLoadSummary(PART_BEFORE, PART_LOADING);
-    UNLOCK_PART_LOAD;
+    THREADcontrol(partload_threads, THREAD_UNLOCK);
   }
   else{
     PRINTF("Loading %s", file_arg);
@@ -2011,14 +2006,14 @@ FILE_SIZE ReadPart(char *file_arg, int ifile_arg, int loadflag_arg, int *errorco
   CheckMemory;
   GetPartData(parti, nf_all_local, &file_size_local);
   CheckMemory;
-  LOCK_PART_LOAD;
+  THREADcontrol(partload_threads, THREAD_LOCK);
   parti->loaded = 1;
   parti->display = 1;
   parti->hist_update=1;
   if(cache_part_data==0){
     UpdatePartColors(parti, 0);
   }
-  UNLOCK_PART_LOAD;
+  THREADcontrol(partload_threads, THREAD_UNLOCK);
   if(cache_part_data==0){
     FCLOSE_m(parti->stream);
     parti->stream = NULL;
@@ -2027,11 +2022,11 @@ FILE_SIZE ReadPart(char *file_arg, int ifile_arg, int loadflag_arg, int *errorco
   PrintMemoryInfo;
 
   parti->request_load = 1;
-  if(part_multithread==1){
+  if(use_partload_threads==1){
     if(npartinfo>1){
-      LOCK_PART_LOAD;
+      THREADcontrol(partload_threads, THREAD_LOCK);
       PrintPartLoadSummary(PART_AFTER, PART_LOADING);
-      UNLOCK_PART_LOAD;
+      THREADcontrol(partload_threads, THREAD_UNLOCK);
     }
   }
   else{
