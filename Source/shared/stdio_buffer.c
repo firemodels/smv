@@ -275,7 +275,12 @@ int ReadBuffer(char *filename, int filesize, char *buffer, int nthreads, int use
     readbufferi->filename = filename;
     readbufferi->start = start;
     readbufferi->size = end - start;
+  }
 #ifdef pp_READBUFFER_THREAD
+  for(i = 0; i < nthreads; i++){
+    readbufferdata *readbufferi;
+
+    readbufferi = readbufferinfo + i;
     if(use_multithread == 1 && nthreads > 1){
       pthread_create(readbuffer_ids + i, NULL, MtReadBufferi, readbufferi);
     }
@@ -289,6 +294,10 @@ int ReadBuffer(char *filename, int filesize, char *buffer, int nthreads, int use
     }
   }
 #else
+  for(i = 0; i < nthreads; i++){
+    readbufferdata *readbufferi;
+
+    readbufferi = readbufferinfo + i;
     ReadBufferi(readbufferi);
   }
 #endif
