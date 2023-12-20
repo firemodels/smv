@@ -14,6 +14,5 @@ EXTERNCPP void ReadVolsmokeAllFramesAllMeshes(void);
 EXTERNCPP void FreeVolsmokeFrame(volrenderdata *vr, int framenum);
 EXTERNCPP void ReadVolsmokeFrame(volrenderdata *vr, int framenum, int *first);
 EXTERNCPP void UnloadVolsmokeAllFrames(volrenderdata *vr);
-EXTERNCPP void *ReadVolsmokeAllFramesAllMeshes2(void *arg);
 #endif
 

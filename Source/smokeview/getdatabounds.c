@@ -378,7 +378,7 @@ void *GetGlobalPatchBoundsFull(void *arg){
   THREADcontrol(patchbound_threads, THREAD_LOCK);
   GetGlobalPatchBounds(1);
   THREADcontrol(patchbound_threads, THREAD_UNLOCK);
-  THREAD_EXIT(patchbound_threads);
+  THREAD_EXIT(use_patchbound_threads);
 }
 
 /* ------------------ GetGlobalPatchBoundsReduced ------------------------ */

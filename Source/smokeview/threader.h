@@ -21,33 +21,16 @@
 
   #define LOCK_PART_LOAD    pthread_mutex_lock(&mutexPART_LOAD);
   #define UNLOCK_PART_LOAD  pthread_mutex_unlock(&mutexPART_LOAD);
-
-#ifdef pp_SLICE_MULTI
-  #define LOCK_SLICE_LOAD    pthread_mutex_lock(&mutexSLICE_LOAD);
-  #define UNLOCK_SLICE_LOAD  pthread_mutex_unlock(&mutexSLICE_LOAD);
-#else
-  #define LOCK_SLICE_LOAD
-  #define UNLOCK_SLICE_LOAD
-#endif
-
-  #define LOCK_VOLLOAD      pthread_mutex_lock(&mutexVOLLOAD);
-  #define UNLOCK_VOLLOAD    pthread_mutex_unlock(&mutexVOLLOAD);
-
 #endif
 
 // blank out all preprocessing symbols if we arn't using threading
 #ifndef pp_THREAD
   #define LOCK_PART_LOAD
   #define UNLOCK_PART_LOAD
-
-  #define LOCK_VOLLOAD
-  #define UNLOCK_VOLLOAD
-
 #endif
 
 #ifdef pp_THREAD
 void *MtReadBufferi(void *arg);
-void MtReadVolsmokeAllFramesAllMeshes2(void);
 #endif
 
 // define mutex's and thread_ids
@@ -55,22 +38,10 @@ void MtReadVolsmokeAllFramesAllMeshes2(void);
 #ifndef CPP
 #ifdef pp_THREAD
 
-#ifdef pp_SLICE_MULTI
-MT_EXTERN pthread_mutex_t mutexSLICE_LOAD;
-#endif
 MT_EXTERN pthread_mutex_t mutexPART_LOAD;
-MT_EXTERN pthread_mutex_t mutexVOLLOAD;
-MT_EXTERN pthread_mutex_t mutexPATCHBOUNDS;
 
-MT_EXTERN pthread_t PATCHBOUNDS_thread_id;
-MT_EXTERN pthread_t update_all_patch_bounds_id;
-MT_EXTERN pthread_t read_volsmoke_id;
-MT_EXTERN pthread_t csv_id;
 MT_EXTERN pthread_t partthread_ids[MAX_THREADS];
 MT_EXTERN pthread_t *readbuffer_ids;
-#ifdef pp_SLICE_MULTI
-MT_EXTERN pthread_t slicethread_ids[MAX_THREADS];
-#endif
 
 #endif
 #endif
@@ -132,6 +103,7 @@ SVEXTERN threaderdata SVDECL(*slicebound_threads, NULL);
 //*** slice
 #ifdef pp_SLICE_MULTI
 SVEXTERN int SVDECL(n_sliceload_threads, 4), SVDECL(use_sliceload_threads, 0);
+SVEXTERN threaderdata SVDECL(*sliceload_threads, NULL);
 #endif
 
 //*** smoke
@@ -140,6 +112,10 @@ SVEXTERN int SVDECL(n_smokeload_threads, 1), SVDECL(use_smokeload_threads, 0);
 //***triangles
 SVEXTERN int SVDECL(n_triangles_threads, 1), SVDECL(use_triangles_threads, 1);
 SVEXTERN threaderdata SVDECL(*triangles_threads, NULL);
+
+//*** volsmoke
+SVEXTERN int SVDECL(n_volsmokeload_threads, 1), SVDECL(use_volsmokeload_threads, 0);
+SVEXTERN threaderdata SVDECL(*volsmokeload_threads, NULL);
 
 EXTERNCPP void THREADcontrol(threaderdata *thi, int var);
 EXTERNCPP void THREADrun(threaderdata *thi, void *arg);
@@ -152,6 +128,7 @@ EXTERNCPP void *GetGlobalPatchBoundsFull(void *arg);
 EXTERNCPP void *GetGlobalSliceBoundsFull(void *arg);
 EXTERNCPP void *PlayMovie(void *arg);
 EXTERNCPP void *ReadAllGeom(void *arg);
+EXTERNCPP void *ReadVolsmokeAllFramesAllMeshes2(void *arg);
 EXTERNCPP void *SetupFF(void *arg);
 EXTERNCPP void *UpdateTrianglesAll(void *arg);
 

@@ -3273,16 +3273,10 @@ void ReadVolsmokeAllFramesAllMeshes(void){
   plotstate=GetPlotState(DYNAMIC_PLOTS);
   stept=1;
   UpdateTimes();
-#ifdef pp_THREAD
-  if(use_multi_threading==1){
-    MtReadVolsmokeAllFramesAllMeshes2();
+  if(volsmokeload_threads ==NULL){
+    volsmokeload_threads = THREADinit(&n_volsmokeload_threads, &use_volsmokeload_threads, ReadVolsmokeAllFramesAllMeshes2);
   }
-  else{
-    ReadVolsmokeAllFramesAllMeshes2(NULL);
-  }
-#else
-  ReadVolsmokeAllFramesAllMeshes2(NULL);
-#endif
+  THREADrun(volsmokeload_threads, NULL);
 }
 
 /* ------------------ UnloadVolsmokeTextures ------------------------ */

@@ -13,12 +13,7 @@
 
 void InitMultiThreading(void){
 #ifdef pp_THREAD
-#ifdef pp_SLICE_MULTI
-  pthread_mutex_init(&mutexSLICE_LOAD, NULL);
-#endif
   pthread_mutex_init(&mutexPART_LOAD, NULL);
-  pthread_mutex_init(&mutexVOLLOAD,NULL);
-  pthread_mutex_init(&mutexPATCHBOUNDS, NULL);
 #endif
 }
 
@@ -132,14 +127,6 @@ void *MtReadBufferi(void *arg){
   ReadBufferi(arg);
   pthread_exit(NULL);
   return NULL;
-}
-#endif
-
-/* ------------------ MtReadVolsmokeAllFramesAllMeshes2 ------------------------ */
-
-#ifdef pp_THREAD
-void MtReadVolsmokeAllFramesAllMeshes2(void){
-  pthread_create(&read_volsmoke_id,NULL,ReadVolsmokeAllFramesAllMeshes2,NULL);
 }
 #endif
 
