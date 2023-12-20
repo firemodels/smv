@@ -11913,6 +11913,7 @@ int ReadSMV_Configure(){
       classifyallgeom_threads = THREADinit(&n_readallgeom_threads, &use_readallgeom_threads, 
                                             ClassifyAllGeom, MtClassifyAllGeom);
     }
+    SetupReadAllGeom();
     THREADrun(classifyallgeom_threads);
   }
   PRINT_TIMER(timer_readsmv, "ClassifyGeom");
