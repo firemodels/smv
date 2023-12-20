@@ -27,20 +27,12 @@
   #define UNLOCK_PART_LOAD
 #endif
 
-#ifdef pp_THREAD
-void *MtReadBufferi(void *arg);
-#endif
-
 // define mutex's and thread_ids
 
 #ifndef CPP
 #ifdef pp_THREAD
-
 MT_EXTERN pthread_mutex_t mutexPART_LOAD;
-
 MT_EXTERN pthread_t partthread_ids[MAX_THREADS];
-MT_EXTERN pthread_t *readbuffer_ids;
-
 #endif
 #endif
 

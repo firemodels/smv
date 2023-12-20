@@ -78,16 +78,6 @@ void LoadAllPartFilesMT(int partnum){
 }
 #endif
 
-#ifdef pp_THREAD
-/* ------------------ MtReadBufferi ------------------------ */
-
-void *MtReadBufferi(void *arg){
-  ReadBufferi(arg);
-  pthread_exit(NULL);
-  return NULL;
-}
-#endif
-
 // -------------------- old threader routines above
 // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
