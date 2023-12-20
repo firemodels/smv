@@ -13736,9 +13736,9 @@ int ReadIni2(char *inifile, int localfile){
     if(MatchINI(buffer, "SMOKELOAD")==1){
       fgets(buffer, 255, stream);
 #ifdef pp_SMOKE16
-      sscanf(buffer, "%i %i %i", &use_smoke_threads, &n_smoke_threads, &load_smoke16);
+      sscanf(buffer, "%i %i %i", &use_smokeload_threads, &n_smokeload_threads, &load_smoke16);
 #else
-      sscanf(buffer, "%i %i", &use_smoke_threads, &n_smoke_threads);
+      sscanf(buffer, "%i %i", &use_smokeload_threads, &n_smokeload_threads);
 #endif
       continue;
     }
@@ -16841,9 +16841,9 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %i %f %i\n", slice_average_flag, slice_average_interval, vis_slice_average);
   fprintf(fileout, "SMOKELOAD\n");
 #ifdef pp_SMOKE16
-  fprintf(fileout, " %i %i %i\n", use_smoke_threads, n_smoke_threads, load_smoke16);
+  fprintf(fileout, " %i %i %i\n", use_smokeload_threads, n_smokeload_threads, load_smoke16);
 #else
-  fprintf(fileout, " %i %i\n", use_smoke_threads, n_smoke_threads);
+  fprintf(fileout, " %i %i\n", use_smokeload_threads, n_smokeload_threads);
 #endif
   fprintf(fileout, "SLICEDATAOUT\n");
   fprintf(fileout, " %i \n", output_slicedata);

@@ -148,7 +148,7 @@ SVEXTERN int SVDECL(n_sliceload_threads, 4), SVDECL(use_sliceload_threads, 0);
 #endif
 
 //*** smoke
-SVEXTERN int SVDECL(n_smoke_threads, 1), SVDECL(use_smoke_threads, 0);
+SVEXTERN int SVDECL(n_smokeload_threads, 1), SVDECL(use_smokeload_threads, 0);
 
 //***triangles
 SVEXTERN int SVDECL(n_triangles_threads, 1), SVDECL(use_triangles_threads, 1);
