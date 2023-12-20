@@ -56,7 +56,7 @@ void *ClassifyAllGeom(void *arg){
     geomi->read_status = 2;
     THREADcontrol(readallgeom_threads, THREAD_UNLOCK);
   }
-  PTHREAD_EXIT(use_readallgeom_threads);
+  THREAD_EXIT(use_readallgeom_threads);
 }
 
 // !  ------------------ Distance3 ------------------------
@@ -3260,7 +3260,7 @@ void *ReadAllGeom(void *arg){
     geomi->read_status = 2;
     THREADcontrol(readallgeom_threads, THREAD_UNLOCK);
   }
-  PTHREAD_EXIT(use_readallgeom_threads);
+  THREAD_EXIT(use_readallgeom_threads);
 }
 
 /* ------------------ UpdateAllGeomTriangles ------------------------ */

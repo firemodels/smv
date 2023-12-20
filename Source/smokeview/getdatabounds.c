@@ -639,12 +639,12 @@ void GetGlobalSliceBounds(int flag){
 
 /* ------------------ GetGlobalSliceBoundsFull ------------------------ */
 
-void GetGlobalSliceBoundsFull(void){
-  LOCK_SLICEBOUNDS;
+void *GetGlobalSliceBoundsFull(void *arg){
+  THREADcontrol(slicebound_threads, THREAD_LOCK);
   GetGlobalSliceBounds(1);
-  UNLOCK_SLICEBOUNDS;
+  THREADcontrol(slicebound_threads, THREAD_UNLOCK);
+  THREAD_EXIT(use_slicebound_threads);
 }
-
 
 /* ------------------ GetGlobalSliceBoundsReduced ------------------------ */
 

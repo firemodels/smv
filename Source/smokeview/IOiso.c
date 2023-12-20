@@ -146,7 +146,7 @@ void GetIsoSizes(const char *isofile, int dataflag, FILE **isostreamptr, int *nv
 
 void *UpdateTrianglesAll(void *arg){
   UpdateTriangles(GEOM_DYNAMIC, GEOM_UPDATE_ALL);
-  PTHREAD_EXIT(use_triangles_threads);
+  THREAD_EXIT(use_triangles_threads);
 }
 
 /* ------------------ ReadIsoGeomWrapup ------------------------ */

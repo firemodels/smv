@@ -418,8 +418,6 @@ EXTERNCPP void GetGlobalPatchBoundsMT(void);
 EXTERNCPP void GetLoadedPlot3dBounds(int *compute_loaded, float *loaded_min, float *loaded_max);
 EXTERNCPP void GetGlobalPlot3DBounds(void);
 EXTERNCPP void GetGlobalSliceBounds(int flag);
-EXTERNCPP void GetGlobalSliceBoundsMT(void);
-EXTERNCPP void GetGlobalSliceBoundsFull(void);
 EXTERNCPP void GetGlobalSliceBoundsReduced(void);
 EXTERNCPP void GetGlobalHVACDuctBounds(int flag);
 EXTERNCPP void GetGlobalHVACNodeBounds(int flag);

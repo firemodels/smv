@@ -3019,7 +3019,10 @@ void UpdateBoundInfo(void){
   GetGlobalPartBounds(0);
   PRINT_TIMER(bound_timer, "GetGlobalPartBounds");
   GetGlobalSliceBoundsReduced();
-  GetGlobalSliceBoundsMT();
+  if(slicebound_threads == NULL){
+    slicebound_threads = THREADinit(&n_slicebound_threads, &use_slicebound_threads, GetGlobalSliceBoundsFull);
+  }
+  THREADrun(slicebound_threads, NULL);
   PRINT_TIMER(bound_timer, "GetGlobalSliceBounds");
   GetGlobalPatchBoundsReduced();
   GetGlobalPatchBoundsMT();
@@ -6682,7 +6685,7 @@ void *Compress(void *arg){
   GLUICompressOnOff(ON);
   updatemenu = 1;
   PRINTF("Compression completed\n");
-  PTHREAD_EXIT(use_compress_threads);
+  THREAD_EXIT(use_compress_threads);
 }
 
 /* ------------------ CheckFiles ------------------------ */
@@ -6720,7 +6723,7 @@ void *CheckFiles(void *arg){
     THREADcontrol(checkfiles_threads, THREAD_UNLOCK);
   }
   if(have_compressed_files == 0){
-    PTHREAD_EXIT(use_checkfiles_threads);
+    THREAD_EXIT(use_checkfiles_threads);
   }
   THREADcontrol(checkfiles_threads, THREAD_LOCK);
   for(i = 0; i < npatchinfo; i++){
@@ -6744,7 +6747,7 @@ void *CheckFiles(void *arg){
   }
   updatemenu = 1;
   THREADcontrol(checkfiles_threads, THREAD_UNLOCK);
-  PTHREAD_EXIT(use_checkfiles_threads);
+  THREAD_EXIT(use_checkfiles_threads);
 }
 
 /* ------------------ ReadSMV ------------------------ */

@@ -18,7 +18,6 @@ void InitMultiThreading(void){
 #endif
   pthread_mutex_init(&mutexPART_LOAD, NULL);
   pthread_mutex_init(&mutexVOLLOAD,NULL);
-  pthread_mutex_init(&mutexSLICEBOUNDS, NULL);
   pthread_mutex_init(&mutexPATCHBOUNDS, NULL);
 #endif
 }
@@ -133,29 +132,6 @@ void *MtReadBufferi(void *arg){
   ReadBufferi(arg);
   pthread_exit(NULL);
   return NULL;
-}
-#endif
-
-/* ------------------ MtGetGlobalSliceBounds ------------------------ */
-
-#ifdef pp_THREAD
-void *MtGetGlobalSliceBounds(void *arg){
-  GetGlobalSliceBoundsFull();
-  pthread_exit(NULL);
-  return NULL;
-}
-
-void GetGlobalSliceBoundsMT(void){
-  if(use_slicebounds_threads == 1){
-    pthread_create(&SLICEBOUNDS_thread_id, NULL, MtGetGlobalSliceBounds, NULL);
-  }
-  else{
-    GetGlobalSliceBoundsFull();
-  }
-}
-#else
-void GetGlobalSliceBoundsMT(void){
-  GetGlobalSliceBounds();
 }
 #endif
 
