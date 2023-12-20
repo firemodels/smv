@@ -3993,20 +3993,20 @@ void LoadAllPartFiles(int partnum){
     parti = partinfo+i;
     if(parti->skipload==1)continue;
     if(partnum>=0&&i!=partnum)continue;  //  load only particle file with file index partnum
-    LOCK_PART_LOAD;                      //  or load all particle files
+    THREADcontrol(partload_threads, THREAD_LOCK);                      //  or load all particle files
     if(parti->loadstatus==FILE_UNLOADED){
       if(partnum==LOAD_ALL_PART_FILES||(partnum==RELOAD_LOADED_PART_FILES&&parti->reload==1)||partnum==i){
         parti->loadstatus = FILE_LOADING;
-        UNLOCK_PART_LOAD;
+        THREADcontrol(partload_threads, THREAD_UNLOCK);
         file_size = ReadPart(parti->file, i, LOAD, &errorcode);
-        LOCK_PART_LOAD;
+        THREADcontrol(partload_threads, THREAD_LOCK);
         parti->loadstatus = FILE_LOADED;
         part_load_size += file_size;
         part_file_count++;
         parti->file_size = file_size;
       }
     }
-    UNLOCK_PART_LOAD;
+    THREADcontrol(partload_threads, THREAD_UNLOCK);
   }
 }
 
@@ -4061,6 +4061,52 @@ void SetupPart(int value){
       break;
     }
   }
+}
+
+/* ------------------ MtLoadAllPartFiles ------------------------ */
+
+void *MtLoadAllPartFiles(void *arg){
+  int *valptr;
+
+  valptr = ( int * )(arg);
+  LoadAllPartFiles(*valptr);
+  THREAD_EXIT(use_partload_threads);
+}
+
+/* ------------------ LoadAllPartFilesMT ------------------------ */
+
+void LoadAllPartFilesMT(int partnum){
+  int i;
+
+  if(partload_threads == NULL){
+    partload_threads = THREADinit(&n_partload_threads, &use_partload_threads, MtLoadAllPartFiles);
+  }
+  THREADrun(partload_threads, &partnum);
+  THREADcontrol(partload_threads, THREAD_JOIN);
+
+  INIT_PRINT_TIMER(part_timer);
+  if(partnum < 0){
+    for(i = 0; i < npartinfo; i++){
+      partdata *parti;
+
+      parti = partinfo + i;
+      parti->finalize = 0;
+    }
+    for(i = npartinfo - 1; i >= 0; i--){
+      partdata *parti;
+
+      parti = partinfo + i;
+      if(parti->loaded == 1){
+        parti->finalize = 1;
+        FinalizePartLoad(parti);
+        break;
+      }
+    }
+  }
+  else{
+    FinalizePartLoad(partinfo + partnum);
+  }
+  PRINT_TIMER(part_timer, "finalize particle time");
 }
 
 /* ------------------ LoadParticleMenu ------------------------ */

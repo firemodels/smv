@@ -9,81 +9,9 @@
 #include "IOvolsmoke.h"
 #include GLUT_H
 
-/* ------------------ InitMultiThreading ------------------------ */
-
-void InitMultiThreading(void){
-#ifdef pp_THREAD
-  pthread_mutex_init(&mutexPART_LOAD, NULL);
-#endif
-}
-
 //***************************** multi-threaded compression ***********************************
 
 #ifdef pp_THREAD
-
-/* ------------------ MtLoadAllPartFiles ------------------------ */
-
-void *MtLoadAllPartFiles(void *arg){
-  int *valptr;
-
-  valptr = (int *)(arg);
-  LoadAllPartFiles(*valptr);
-  pthread_exit(NULL);
-  return NULL;
-}
-
-/* ------------------ LoadAllPartFilesMT ------------------------ */
-
-void LoadAllPartFilesMT(int partnum){
-  int i;
-
-  if(use_part_threads==0){
-    LoadAllPartFiles(partnum);
-    return;
-  }
-
-  for(i = 0; i<n_part_threads; i++){
-    pthread_create(partthread_ids+i, NULL, MtLoadAllPartFiles, &partnum);
-  }
-  for(i=0;i<n_part_threads;i++){
-    pthread_join(partthread_ids[i],NULL);
-  }
-  INIT_PRINT_TIMER(part_timer);
-  if(partnum<0){
-    for(i = 0; i<npartinfo; i++){
-      partdata *parti;
-
-      parti = partinfo+i;
-      parti->finalize=0;
-    }
-    for(i = npartinfo-1; i>=0; i--){
-      partdata *parti;
-
-      parti = partinfo+i;
-      if(parti->loaded==1){
-        parti->finalize = 1;
-        FinalizePartLoad(parti);
-        break;
-      }
-    }
-  }
-  else{
-    FinalizePartLoad(partinfo+partnum);
-  }
-  PRINT_TIMER(part_timer, "finalize particle time");
-}
-#else
-void LoadAllPartFilesMT(int partnum){
-  LoadAllPartFiles(partnum);
-}
-#endif
-
-// -------------------- old threader routines above
-// ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-//VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
-// -------------------- new threader routines below
-
 
 /* ------------------ Sample ------------------------ */
 
@@ -95,7 +23,7 @@ void LoadAllPartFilesMT(int partnum){
 void *Sample(void *arg){
 
   sample code
-  
+
   THREAD_EXIT(use_sample_threads);
 }
 if(sample_threads==NULL){
@@ -174,10 +102,11 @@ void THREADrun(threaderdata *thi, void *arg){
     int i;
 
     for(i = 0; i < thi->n_threads; i++){
-      pthread_create(thi->thread_ids + i, NULL, thi->run, NULL);
+      pthread_create(thi->thread_ids + i, NULL, thi->run, arg);
     }
   }
   else{
    thi->run(arg);
   }
 }
+#endif

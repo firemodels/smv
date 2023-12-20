@@ -13,7 +13,6 @@
 
 //*** parallel file loading
 #define pp_SLICE_MULTI    // load slice files in parallel
-#define pp_PART_MULTI     // load particle files in parallel
 
 //#define pp_CSV_MENU       // add menu for loading CSV files
 
@@ -41,7 +40,6 @@
 //#define pp_CRASH_TEST       // test detection of division by zero or use of undefined pointer
 #define pp_GPU                // support the GPU
 #define pp_THREAD             // turn on multi-threading
-#define pp_THREAD_NEW         // use new more general threading code
 //#define pp_LOAD_NEWDATA     // add button for loading new data
 
 #ifdef pp_GPU

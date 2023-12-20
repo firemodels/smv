@@ -11588,10 +11588,6 @@ int ReadSMV_Configure(){
   }
   if(ntotal_blockages > 250000)show_geom_boundingbox = SHOW_BOUNDING_BOX_MOUSE_DOWN;
 
-#ifdef pp_THREAD
-  InitMultiThreading();
-#endif
-
   if(runscript == 1||compute_fed == 1){
     use_checkfiles_threads  = 0;
     use_ffmpeg_threads      = 0;
@@ -11749,9 +11745,7 @@ int ReadSMV_Configure(){
     }
   }
   if(npartinfo>=64){
-#ifdef pp_PART_MULTI
-    use_part_threads = 1;
-#endif
+    use_partload_threads = 1;
     partfast = 1;
   }
 
@@ -14643,10 +14637,7 @@ int ReadIni2(char *inifile, int localfile){
     if(MatchINI(buffer, "PARTFAST")==1){
       fgets(buffer, 255, stream);
       if(current_script_command==NULL){
-        sscanf(buffer, "%i %i %i", &partfast, &use_part_threads, &n_part_threads);
-#ifndef pp_PART_MULTI
-        use_part_threads = 0;
-#endif
+        sscanf(buffer, "%i %i %i", &partfast, &use_partload_threads, &n_partload_threads);
       }
       continue;
     }
@@ -16841,7 +16832,7 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, "NOPART\n");
   fprintf(fileout, " %i\n", nopart);
   fprintf(fileout, "PARTFAST\n");
-  fprintf(fileout, " %i %i %i\n", partfast, use_part_threads, n_part_threads);
+  fprintf(fileout, " %i %i %i\n", partfast, use_partload_threads, n_partload_threads);
   fprintf(fileout, "RESEARCHMODE\n");
   fprintf(fileout, " %i %i %f %i %i %i %i %i\n", research_mode, 1, colorbar_shift, ncolorlabel_digits, force_fixedpoint, ngridloc_digits, sliceval_ndigits, force_exponential);
   fprintf(fileout, "SHOWFEDAREA\n");

@@ -2479,7 +2479,7 @@ GLUI_Checkbox* CHECKBOX_sortslices_debug = NULL;
 GLUI_Checkbox* CHECKBOX_visColorbarHorizontal2 = NULL;
 GLUI_Checkbox* CHECKBOX_visColorbarVertical2 = NULL;
 GLUI_Checkbox *CHECKBOX_show_boundary_outline=NULL;
-GLUI_Checkbox *CHECKBOX_use_part_threads = NULL;
+GLUI_Checkbox *CHECKBOX_use_partload_threads = NULL;
 GLUI_Checkbox *CHECKBOX_partfast = NULL;
 GLUI_Checkbox *CHECKBOX_show_slice_shaded = NULL;
 GLUI_Checkbox *CHECKBOX_show_vector_slice = NULL;
@@ -2877,7 +2877,7 @@ extern "C" void GLUISetLabelControls2(){
 
 extern "C" void GLUIUpdatePartFast(void){
   if(CHECKBOX_partfast!=NULL)CHECKBOX_partfast->set_int_val(partfast);
-  if(CHECKBOX_use_part_threads!=NULL)CHECKBOX_use_part_threads->set_int_val(use_part_threads);
+  if(CHECKBOX_use_partload_threads!=NULL)CHECKBOX_use_partload_threads->set_int_val(use_partload_threads);
   PartBoundCB(PARTFAST);
 }
 
@@ -4326,12 +4326,8 @@ extern "C" void GLUIBoundsSetup(int main_window){
 
     PANEL_partread=glui_bounds->add_panel_to_panel(ROLLOUT_particle_settings,_("Particle loading"));
     CHECKBOX_partfast = glui_bounds->add_checkbox_to_panel(PANEL_partread, _("Fast loading"), &partfast, PARTFAST, PartBoundCB);
-    CHECKBOX_use_part_threads = glui_bounds->add_checkbox_to_panel(PANEL_partread, _("Parallel loading"), &use_part_threads);
-    SPINNER_n_part_threads = glui_bounds->add_spinner_to_panel(PANEL_partread, _("Files loaded at once"), GLUI_SPINNER_INT, &n_part_threads);
-#ifndef pp_PART_MULTI
-    CHECKBOX_use_part_threads->disable();
-    SPINNER_n_part_threads->disable();
-#endif
+    CHECKBOX_use_partload_threads = glui_bounds->add_checkbox_to_panel(PANEL_partread, _("Parallel loading"), &use_partload_threads);
+    SPINNER_n_part_threads = glui_bounds->add_spinner_to_panel(PANEL_partread, _("Files loaded at once"), GLUI_SPINNER_INT, &n_partload_threads);
     if(npartinfo>1){
       SPINNER_n_part_threads->set_int_limits(1,MIN(npartinfo,MAX_THREADS));
     }
@@ -5400,17 +5396,13 @@ void PartBoundCB(int var){
   case TRACERS:
   case PARTFAST:
     if(npartinfo<=1){
-      CHECKBOX_use_part_threads->disable();
+      CHECKBOX_use_partload_threads->disable();
       SPINNER_n_part_threads->disable();
-      use_part_threads = 0;
-      CHECKBOX_use_part_threads->set_int_val(use_part_threads);
+      use_partload_threads = 0;
+      CHECKBOX_use_partload_threads->set_int_val(use_partload_threads);
     }
     else{
-#ifndef pp_PART_MULTI
-      CHECKBOX_use_part_threads->enable();
-      SPINNER_n_part_threads->enable();
-#endif
-      CHECKBOX_use_part_threads->set_int_val(use_part_threads);
+      CHECKBOX_use_partload_threads->set_int_val(use_partload_threads);
     }
     updatemenu=1;
     break;

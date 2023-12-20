@@ -14,30 +14,6 @@
 
 #define MAX_THREADS 16
 
-// setup LOCKS
-
-#ifdef pp_THREAD
-  #define LOCK_PART_LOAD    pthread_mutex_lock(&mutexPART_LOAD);
-  #define UNLOCK_PART_LOAD  pthread_mutex_unlock(&mutexPART_LOAD);
-#endif
-
-// blank out all preprocessing symbols if we arn't using threading
-#ifndef pp_THREAD
-  #define LOCK_PART_LOAD
-  #define UNLOCK_PART_LOAD
-#endif
-
-// define mutex's and thread_ids
-
-#ifndef CPP
-#ifdef pp_THREAD
-MT_EXTERN pthread_mutex_t mutexPART_LOAD;
-MT_EXTERN pthread_t partthread_ids[MAX_THREADS];
-#endif
-#endif
-
-// ------------ new threader routines -----------------------------
-#ifdef pp_THREAD_NEW
 #define THREAD_LOCK   0
 #define THREAD_UNLOCK 1
 #define THREAD_JOIN   2
@@ -67,11 +43,8 @@ SVEXTERN threaderdata SVDECL(*ffmpeg_threads,         NULL);
 SVEXTERN int SVDECL(n_iso_threads, 1), SVDECL(use_iso_threads, 0), SVDECL(use_iso_threads_save,0);
 
 //*** part
-#ifdef pp_PART_MULTI
-SVEXTERN int SVDECL(n_part_threads, 2), SVDECL(use_part_threads, 1);
-#else
-SVEXTERN int SVDECL(n_part_threads, 2), SVDECL(use_part_threads, 0);
-#endif
+SVEXTERN int SVDECL(n_partload_threads, 2), SVDECL(use_partload_threads, 1);
+SVEXTERN threaderdata SVDECL(*partload_threads,         NULL);
 
 //*** patchbounds
 SVEXTERN int SVDECL(n_patchbound_threads, 1), SVDECL(use_patchbound_threads, 1);
@@ -91,7 +64,7 @@ SVEXTERN int SVDECL(n_slicebound_threads, 1), SVDECL(use_slicebound_threads, 1);
 SVEXTERN threaderdata SVDECL(*slicebound_threads, NULL);
 
 //*** slice
-#ifdef pp_SLICE_MULTI
+#ifdef pp_SLICE_MULTI // not implemented
 SVEXTERN int SVDECL(n_sliceload_threads, 4), SVDECL(use_sliceload_threads, 0);
 SVEXTERN threaderdata SVDECL(*sliceload_threads, NULL);
 #endif
@@ -134,9 +107,6 @@ EXTERNCPP void *UpdateTrianglesAll(void *arg);
 #define JOIN_THREADS(thi)
 #define THREAD_EXIT(flag)
 #endif
-
-#endif
-
 
 #endif
 
