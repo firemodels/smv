@@ -38,7 +38,6 @@
 
 //#define pp_LOAD_INC     // add menu item for loading new data
 
-#define pp_READBUFFER_THREAD // use pthreads in ReadBuffer routine (don't use pthreads when used in smokezip and smokediff)
 //#define pp_CRASH_TEST       // test detection of division by zero or use of undefined pointer
 #define pp_GPU                // support the GPU
 #define pp_THREAD             // turn on multi-threading
