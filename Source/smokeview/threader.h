@@ -17,7 +17,7 @@
 // setup LOCKS
 
 #ifdef pp_THREAD
-  MMEXTERN pthread_mutex_t mutexSLICE_BOUND, mutexPATCH_BOUND, mutexPART2ISO, mutexPRINT, mutexMEM;
+  MMEXTERN pthread_mutex_t mutexPART2ISO, mutexPRINT, mutexMEM;
 
   #define LOCK_PART_LOAD    pthread_mutex_lock(&mutexPART_LOAD);
   #define UNLOCK_PART_LOAD  pthread_mutex_unlock(&mutexPART_LOAD);
@@ -33,10 +33,6 @@
   #define LOCK_VOLLOAD      pthread_mutex_lock(&mutexVOLLOAD);
   #define UNLOCK_VOLLOAD    pthread_mutex_unlock(&mutexVOLLOAD);
 
-  #define LOCK_PATCHBOUNDS    pthread_mutex_lock(&mutexPATCHBOUNDS);
-  #define UNLOCK_PATCHBOUNDS  pthread_mutex_unlock(&mutexPATCHBOUNDS);
-  #define JOIN_PATCHBOUNDS    pthread_join(PATCHBOUNDS_thread_id,NULL);
-
 #endif
 
 // blank out all preprocessing symbols if we arn't using threading
@@ -46,16 +42,6 @@
 
   #define LOCK_VOLLOAD
   #define UNLOCK_VOLLOAD
-
-  #define LOCK_PATCHBOUNDS
-  #define UNLOCK_PATCHBOUNDS
-  #define JOIN_PATCHBOUNDS
-
-#ifdef pp_SAMPLE
-  #define LOCK_SAMPLE
-  #define UNLOCK_SAMPLE
-  #define JOIN_SAMPLE
-#endif
 
 #endif
 
@@ -127,7 +113,8 @@ SVEXTERN int SVDECL(n_part_threads, 2), SVDECL(use_part_threads, 0);
 #endif
 
 //*** patchbounds
-SVEXTERN int SVDECL(use_patchbounds_threads, 1);
+SVEXTERN int SVDECL(n_patchbound_threads, 1), SVDECL(use_patchbound_threads, 1);
+SVEXTERN threaderdata SVDECL(*patchbound_threads, NULL);
 
 //*** playmovie
 SVEXTERN int SVDECL(n_playmovie_threads, 1), SVDECL(use_playmovie_threads, 1);
@@ -158,14 +145,15 @@ EXTERNCPP void THREADcontrol(threaderdata *thi, int var);
 EXTERNCPP void THREADrun(threaderdata *thi, void *arg);
 EXTERNCPP threaderdata *THREADinit(int *nthreads_arg, int *threading_on_arg, void *(*run_arg)(void *arg));
 
-EXTERNCPP void *GetGlobalSliceBoundsFull(void *arg);
-EXTERNCPP void *UpdateTrianglesAll(void *arg);
 EXTERNCPP void *CheckFiles(void *arg);
-EXTERNCPP void *Compress(void *arg);
-EXTERNCPP void *SetupFF(void *arg);
-EXTERNCPP void *ReadAllGeom(void *arg);
 EXTERNCPP void *ClassifyAllGeom(void *arg);
+EXTERNCPP void *Compress(void *arg);
+EXTERNCPP void *GetGlobalPatchBoundsFull(void *arg);
+EXTERNCPP void *GetGlobalSliceBoundsFull(void *arg);
 EXTERNCPP void *PlayMovie(void *arg);
+EXTERNCPP void *ReadAllGeom(void *arg);
+EXTERNCPP void *SetupFF(void *arg);
+EXTERNCPP void *UpdateTrianglesAll(void *arg);
 
 #ifdef pp_THREAD
 #define LOCK_THREADS(thi)   THREADcontrol(thi, THEAD_LOCK)

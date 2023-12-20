@@ -135,29 +135,6 @@ void *MtReadBufferi(void *arg){
 }
 #endif
 
-/* ------------------ MtGetGlobalPatchBounds ------------------------ */
-
-#ifdef pp_THREAD
-void *MtGetGlobalPatchBounds(void *arg){
-  GetGlobalPatchBoundsFull();
-  pthread_exit(NULL);
-  return NULL;
-}
-
-void GetGlobalPatchBoundsMT(void){
-  if(use_patchbounds_threads == 1){
-    pthread_create(&PATCHBOUNDS_thread_id, NULL, MtGetGlobalPatchBounds, NULL);
-  }
-  else{
-    GetGlobalPatchBoundsFull();
-  }
-}
-#else
-void GetGlobalPatchBoundsMT(void){
-  GetGlobalPatchBounds();
-}
-#endif
-
 /* ------------------ MtReadVolsmokeAllFramesAllMeshes2 ------------------------ */
 
 #ifdef pp_THREAD

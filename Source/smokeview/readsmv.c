@@ -3014,21 +3014,30 @@ void UpdateBoundInfo(void){
     }
   }
   PRINT_TIMER(bound_timer, "hvacbounds");
+
   GLUIUpdateChar();
   PRINT_TIMER(bound_timer, "GLUIUpdateChar");
+
   GetGlobalPartBounds(0);
   PRINT_TIMER(bound_timer, "GetGlobalPartBounds");
+
   GetGlobalSliceBoundsReduced();
   if(slicebound_threads == NULL){
     slicebound_threads = THREADinit(&n_slicebound_threads, &use_slicebound_threads, GetGlobalSliceBoundsFull);
   }
   THREADrun(slicebound_threads, NULL);
   PRINT_TIMER(bound_timer, "GetGlobalSliceBounds");
+
   GetGlobalPatchBoundsReduced();
-  GetGlobalPatchBoundsMT();
+  if(patchbound_threads == NULL){
+    patchbound_threads = THREADinit(&n_patchbound_threads, &use_patchbound_threads, GetGlobalPatchBoundsFull);
+  }
+  THREADrun(patchbound_threads, NULL);
   PRINT_TIMER(bound_timer, "GetGlobalPatchBounds");
+
   GetGlobalHVACDuctBounds(0);
   PRINT_TIMER(bound_timer, "GetGlobalHVACDuctBounds");
+
   GetGlobalHVACNodeBounds(0);
   PRINT_TIMER(bound_timer, "GetGlobalHVACNodeBounds");
 }

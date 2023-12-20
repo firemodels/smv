@@ -374,10 +374,11 @@ void GetGlobalPatchBounds(int flag){
 
 /* ------------------ GetGlobalPatchBoundsFull ------------------------ */
 
-void GetGlobalPatchBoundsFull(void){
-  LOCK_PATCHBOUNDS;
+void *GetGlobalPatchBoundsFull(void *arg){
+  THREADcontrol(patchbound_threads, THREAD_LOCK);
   GetGlobalPatchBounds(1);
-  UNLOCK_PATCHBOUNDS;
+  THREADcontrol(patchbound_threads, THREAD_UNLOCK);
+  THREAD_EXIT(patchbound_threads);
 }
 
 /* ------------------ GetGlobalPatchBoundsReduced ------------------------ */

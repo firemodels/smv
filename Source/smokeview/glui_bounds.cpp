@@ -3535,7 +3535,7 @@ void BoundBoundCB(int var){
     BoundBoundCB(UPDATE_DATA_COLORS);
     break;
   case UPDATE_DATA_COLORS:
-    GetGlobalPatchBoundsFull();
+    GetGlobalPatchBounds(1);
     if(patchlabellist != NULL)Global2GLUIBoundaryBounds(patchlabellist[list_patch_index]);
     UpdateAllBoundaryColors(1);
     break;
