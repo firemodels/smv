@@ -51,9 +51,6 @@ MMEXTERN MMsize MMtotalmemory,MMmaxmemory;
 #endif
 
 #ifdef pp_THREAD
-#ifndef pp_SMOKEZIP
-MMEXTERN pthread_mutex_t mutexSLICE_BOUND, mutexPATCH_BOUND, mutexPART2ISO, muteexPRINT;
-#endif
 MMEXTERN pthread_mutex_t mutexMEM;
 #define LOCK_MEM           pthread_mutex_lock(&mutexMEM)
 #define UNLOCK_MEM         pthread_mutex_unlock(&mutexMEM)

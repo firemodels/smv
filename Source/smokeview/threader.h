@@ -17,8 +17,6 @@
 // setup LOCKS
 
 #ifdef pp_THREAD
-  MMEXTERN pthread_mutex_t mutexPART2ISO, mutexPRINT, mutexMEM;
-
   #define LOCK_PART_LOAD    pthread_mutex_lock(&mutexPART_LOAD);
   #define UNLOCK_PART_LOAD  pthread_mutex_unlock(&mutexPART_LOAD);
 #endif
