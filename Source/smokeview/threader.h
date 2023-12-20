@@ -1,8 +1,6 @@
 #ifndef THREADER_H_DEFINED
 #define THREADER_H_DEFINED
-#ifdef pp_THREAD
 #include <pthread.h>
-#endif
 
 #ifdef INTHREADER
 #define MT_EXTERN
