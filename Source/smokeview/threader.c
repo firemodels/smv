@@ -5,8 +5,8 @@
 #include <string.h>
 #include <assert.h>
 
-#include "smokeviewvars.h"
-#include "IOvolsmoke.h"
+#include "MALLOCC.h"
+#include "threader.h"
 #include GLUT_H
 
 //***************************** multi-threaded compression ***********************************
@@ -97,7 +97,10 @@ void THREADcontrol(threaderdata *thi, int var){
 void THREADrun(threaderdata *thi, void *arg){
   if(thi == NULL)return;
   if(thi->use_threads_ptr!=NULL)thi->use_threads = *(thi->use_threads_ptr);
-  if(thi->n_threads_ptr!=NULL)thi->n_threads = MIN(*(thi->n_threads_ptr),MAX_THREADS);
+  if(thi->n_threads_ptr != NULL){
+    thi->n_threads = *(thi->n_threads_ptr);
+    if(thi->n_threads>MAX_THREADS)thi->n_threads = MAX_THREADS;
+  }
   if(thi->use_threads == 1){
     int i;
 
