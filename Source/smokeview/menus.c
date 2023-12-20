@@ -2755,10 +2755,9 @@ void CompressMenu(int value){
     overwrite_all=0;
     GLUIUpdateOverwrite();
     if(compress_threads==NULL){
-      compress_threads = THREADinit(&n_compress_threads, &use_compress_threads,
-                                     Compress, MtCompress);
+      compress_threads = THREADinit(&n_compress_threads, &use_compress_threads, Compress);
     }
-    THREADrun(compress_threads);
+    THREADrun(compress_threads, NULL);
     break;
   case MENU_OVERWRITECOMPRESS:
     erase_all=0;
@@ -2768,10 +2767,9 @@ void CompressMenu(int value){
   case MENU_COMPRESSNOW:
     erase_all=0;
     if(compress_threads==NULL){
-      compress_threads = THREADinit(&n_compress_threads, &use_compress_threads,
-                                     Compress, MtCompress);
+      compress_threads = THREADinit(&n_compress_threads, &use_compress_threads, Compress);
     }
-    THREADrun(compress_threads);
+    THREADrun(compress_threads, NULL);
     break;
   case MENU_COMPRESSAUTOLOAD:
     compress_autoloaded=1-compress_autoloaded;
@@ -11405,7 +11403,7 @@ static int menu_count=0;
 #endif
   glutAddMenuEntry(_("Save/load configuration files..."), DIALOG_CONFIG);
   glutAddMenuEntry(_("Render images..."), DIALOG_RENDER);
-  THREADcontrol(setupff_threads, THREAD_LOCK);;
+  THREADcontrol(ffmpeg_threads, THREAD_LOCK);;
   if(have_slurm==1&&have_ffmpeg==1){
     glutAddMenuEntry(_("Make movies(local)..."), DIALOG_MOVIE);
     glutAddMenuEntry(_("Make movies(cluster)..."), DIALOG_MOVIE_BATCH);
@@ -11413,7 +11411,7 @@ static int menu_count=0;
   if(have_slurm==0&&have_ffmpeg==1){
     glutAddMenuEntry(_("Make movies..."), DIALOG_MOVIE);
   }
-  THREADcontrol(setupff_threads, THREAD_UNLOCK);
+  THREADcontrol(ffmpeg_threads, THREAD_UNLOCK);
   glutAddMenuEntry(_("Record/run scripts..."), DIALOG_SCRIPT);
 
   /* --------------------------------viewdialog menu -------------------------- */

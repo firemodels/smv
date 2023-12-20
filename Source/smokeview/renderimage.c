@@ -15,7 +15,7 @@
 
 /* ------------------ PlayMovie ------------------------ */
 
-void PlayMovie(void){
+void *PlayMovie(void *arg){
   char command_line[1024], moviefile_path[1024];
 
   if(FILE_EXISTS(GetMovieFilePath(moviefile_path)) == YES){
@@ -31,12 +31,14 @@ void PlayMovie(void){
     system(command_line);
     play_movie_now = 1;
     update_playmovie = 1;
+    GLUTPOSTREDISPLAY;
   }
+  PTHREAD_EXIT(use_playmovie_threads);
 }
 
 /* ------------------ SetupFF ------------------------ */
 
-void SetupFF(void){
+void *SetupFF(void *arg){
   int have_ffmpeg_local, have_ffplay_local;
 
 #ifdef WIN32
@@ -47,28 +49,12 @@ void SetupFF(void){
   have_ffplay_local = HaveProg("ffplay -version >/dev/null 2>/dev/null");
 #endif
 
-  THREADcontrol(setupff_threads, THREAD_LOCK);;
+  THREADcontrol(ffmpeg_threads, THREAD_LOCK);;
   update_ff = 1;
   have_ffmpeg = have_ffmpeg_local;
   have_ffplay = have_ffplay_local;
-  THREADcontrol(setupff_threads, THREAD_UNLOCK);;
-}
-
-/* ------------------ PlayMovieNow ------------------------ */
-
-void PlayMovieNow(void){
-  char moviefile_path[1024];
-
-  if(play_movie_now==0)return;
-  if(FILE_EXISTS(GetMovieFilePath(moviefile_path)) == YES){
-    if(playmovie_threads==NULL){
-      playmovie_threads = THREADinit(&n_playmovie_threads, &use_playmovie_threads, PlayMovie, MtPlayMovie);
-    }
-    THREADrun(playmovie_threads);
-  }
-  else{
-    PRINTF("*** Error: the movie file, %s, does not exist\n", moviefile_path);
-  }
+  THREADcontrol(ffmpeg_threads, THREAD_UNLOCK);
+  PTHREAD_EXIT(use_ffmpeg_threads);
 }
 
 /* ------------------ GetMovieFilePath ------------------------ */

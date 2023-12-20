@@ -15,7 +15,7 @@
 
 /* ------------------ ClassifyAllGeom ------------------------ */
 
-void ClassifyAllGeom(void){
+void *ClassifyAllGeom(void *arg){
   int i;
 
   for(i = 0; i < ngeominfo; i++){
@@ -56,6 +56,7 @@ void ClassifyAllGeom(void){
     geomi->read_status = 2;
     THREADcontrol(readallgeom_threads, THREAD_UNLOCK);
   }
+  PTHREAD_EXIT(use_readallgeom_threads);
 }
 
 // !  ------------------ Distance3 ------------------------
@@ -3221,7 +3222,7 @@ void UpdateGeomTriangles(geomdata *geomi, int geom_type){
 
 /* ------------------ ReadAllGeom ------------------------ */
 
-void ReadAllGeom(void){
+void *ReadAllGeom(void *arg){
   int i;
 
   for(i=0;i<ngeominfo;i++){
@@ -3259,6 +3260,7 @@ void ReadAllGeom(void){
     geomi->read_status = 2;
     THREADcontrol(readallgeom_threads, THREAD_UNLOCK);
   }
+  PTHREAD_EXIT(use_readallgeom_threads);
 }
 
 /* ------------------ UpdateAllGeomTriangles ------------------------ */

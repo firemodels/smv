@@ -141,14 +141,6 @@ void *MtReadBufferi(void *arg){
 
 #ifdef pp_THREAD
 
-/* ------------------ MtUpdateTrianglesAll ------------------------ */
-
-void *MtUpdateTrianglesAll(void *arg){
-  UpdateTrianglesAll();
-  pthread_exit(NULL);
-  return NULL;
-}
-
 /* ------------------ CancelUpdateTriangles ------------------------ */
 
 void CancelUpdateTriangles(void){
@@ -212,90 +204,35 @@ void MtReadVolsmokeAllFramesAllMeshes2(void){
 }
 #endif
 
+// -------------------- old threader routines above
+// ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 //VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
-// -------------------- new threader routines
+// -------------------- new threader routines below
 
 
 /* ------------------ Sample ------------------------ */
 
 #ifdef pp_SAMPLE
 // example multi threading routines
-// need to declare sample_thread_id in threader.h
-// need to declare sample_multithread in smokeviewvars.h
 
 /* ------------------ Sample ------------------------ */
 
-void Sample(void){
-}
+void *Sample(void *arg){
 
-/* ------------------ MtSample ------------------------ */
-
-void *MtSample(void *arg){
-  Sample();
-  pthread_exit(NULL);
-  return NULL;
+  sample code
+  
+  THREAD_EXIT(use_sample_threads);
 }
-if(threader_sample==NULL){
-  sample_threads = THREADinit(&n_sample_threads, &use_sample_threads, Sample, MtSample);
+if(sample_threads==NULL){
+  sample_threads = THREADinit(&n_sample_threads, &use_sample_threads, Sample);
 }
-THREADrun(sample_threads);
+THREADrun(sample_threads, arg);
 #endif
-
-#ifdef pp_THREAD_NEW
-
-void *MtCheckFiles(void *arg){
-  CheckFiles();
-  pthread_exit(NULL);
-  return NULL;
-}
-
-/* ------------------ MtClassifyAllGeom ------------------------ */
-
-void *MtClassifyAllGeom(void *arg){
-  ClassifyAllGeom();
-  pthread_exit(NULL);
-  return NULL;
-}
-
-/* ------------------ MtReadAllGeom ------------------------ */
-
-void *MtReadAllGeom(void *arg){
-  ReadAllGeom();
-  pthread_exit(NULL);
-  return NULL;
-}
-
-/* ------------------ MtCompress ------------------------ */
-
-void *MtCompress(void *arg){
-  THREADcontrol(compress_threads, THREAD_LOCK);
-  Compress();
-  updatemenu=1;
-  THREADcontrol(compress_threads, THREAD_UNLOCK);
-  pthread_exit(NULL);
-  return NULL;
-}
-
-/* ------------------ MtPlayMovie ------------------------ */
-
-void *MtPlayMovie(void *arg){
-  PlayMovie();
-  pthread_exit(NULL);
-  return NULL;
-}
-
-/* ------------------ MtSetupFF ------------------------ */
-
-void *MtSetupFF(void *arg){
-  SetupFF();
-  pthread_exit(NULL);
-  return NULL;
-}
 
 /* ------------------ THREADinit ------------------------ */
 
-threaderdata *THREADinit(int *nthreads_ptr, int *use_threads_ptr,
-  void (*run_arg)(void), void *(*mtrun_arg)(void *arg)){
+threaderdata *THREADinit(int *nthreads_ptr, int *use_threads_ptr, void *(*run_arg)(void *arg)){
   threaderdata *thi;
   int nthreads_local=1, use_threads_local=0;
 
@@ -318,7 +255,6 @@ threaderdata *THREADinit(int *nthreads_ptr, int *use_threads_ptr,
   thi->n_threads       = nthreads_local;
   thi->use_threads     = use_threads_local;
   thi->run             = run_arg;
-  thi->mtrun           = mtrun_arg;
   NewMemory(( void ** )&thi->thread_ids, nthreads_local*sizeof(pthread_t));
   pthread_mutex_init(&thi->mutex, NULL);
   return thi;
@@ -356,7 +292,7 @@ void THREADcontrol(threaderdata *thi, int var){
 
 /* ------------------ THREADrun ------------------------ */
 
-void THREADrun(threaderdata *thi){
+void THREADrun(threaderdata *thi, void *arg){
   if(thi == NULL)return;
   if(thi->use_threads_ptr!=NULL)thi->use_threads = *(thi->use_threads_ptr);
   if(thi->n_threads_ptr!=NULL)thi->n_threads = MIN(*(thi->n_threads_ptr),MAX_THREADS);
@@ -364,11 +300,10 @@ void THREADrun(threaderdata *thi){
     int i;
 
     for(i = 0; i < thi->n_threads; i++){
-      pthread_create(thi->thread_ids + i, NULL, thi->mtrun, NULL);
+      pthread_create(thi->thread_ids + i, NULL, thi->run, NULL);
     }
   }
   else{
-   thi->run();
+   thi->run(arg);
   }
 }
-#endif

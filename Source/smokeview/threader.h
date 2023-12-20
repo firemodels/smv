@@ -111,44 +111,81 @@ typedef struct _threaderdata{
   int use_threads, *use_threads_ptr;
   pthread_t *thread_ids;
   pthread_mutex_t mutex;
-  void (*run)(void);
-  void *(*mtrun)(void *arg);
+  void *(*run)(void *arg);
 } threaderdata;
 
+//***triangles
+SVEXTERN int SVDECL(n_triangles_threads, 1), SVDECL(use_triangles_threads, 1);
+SVEXTERN threaderdata SVDECL(*triangles_threads, NULL);
+
+//***checkfiles
+SVEXTERN int SVDECL(n_checkfiles_threads, 1), SVDECL(use_checkfiles_threads, 1);
+SVEXTERN threaderdata SVDECL(*checkfiles_threads,       NULL);
+
+//*** compress
+SVEXTERN int SVDECL(n_compress_threads, 1), SVDECL(use_compress_threads, 1);
+SVEXTERN threaderdata SVDECL(*compress_threads,        NULL);
+
+//*** ffmpeg
+SVEXTERN int SVDECL(n_ffmpeg_threads, 1), SVDECL(use_ffmpeg_threads, 1);
+SVEXTERN threaderdata SVDECL(*ffmpeg_threads,         NULL);
+
+//*** iso
+SVEXTERN int SVDECL(n_iso_threads, 1), SVDECL(use_iso_threads, 0), SVDECL(use_iso_threads_save,0);
+
+//*** part
+#ifdef pp_PART_MULTI
+SVEXTERN int SVDECL(n_part_threads, 2), SVDECL(use_part_threads, 1);
+#else
+SVEXTERN int SVDECL(n_part_threads, 2), SVDECL(use_part_threads, 0);
+#endif
+
+//*** patchbounds
+SVEXTERN int SVDECL(use_patchbounds_threads, 1);
+
+//*** playmovie
+SVEXTERN int SVDECL(n_playmovie_threads, 1), SVDECL(use_playmovie_threads, 1);
+SVEXTERN threaderdata SVDECL(*playmovie_threads,       NULL);
+
+//*** readallgeom
+SVEXTERN int SVDECL(n_readallgeom_threads, 4), SVDECL(use_readallgeom_threads, 1);
+SVEXTERN threaderdata SVDECL(*readallgeom_threads,     NULL);
+SVEXTERN threaderdata SVDECL(*classifyallgeom_threads, NULL);
+
+//*** slice
+#ifdef pp_SLICE_MULTI
+SVEXTERN int SVDECL(n_slice_threads, 4), SVDECL(use_slice_threads, 0);
+#endif
+
+//*** slicebounds
+SVEXTERN int SVDECL(use_slicebounds_threads, 1);
+
+//*** smoke
+SVEXTERN int SVDECL(n_smoke_threads, 1), SVDECL(use_smoke_threads, 0);
+
 EXTERNCPP void THREADcontrol(threaderdata *thi, int var);
-EXTERNCPP void THREADrun(threaderdata *thi);
-EXTERNCPP threaderdata *THREADinit(int *nthreads_arg, int *threading_on_arg,
-                                      void (*run_arg)(void), void *(*mtrun_arg)(void *arg));
+EXTERNCPP void THREADrun(threaderdata *thi, void *arg);
+EXTERNCPP threaderdata *THREADinit(int *nthreads_arg, int *threading_on_arg, void *(*run_arg)(void *arg));
 
-EXTERNCPP void *MtUpdateTrianglesAll(void *arg);
-EXTERNCPP void UpdateTrianglesAll(void);
-
-EXTERNCPP void *MtCheckFiles(void *arg);
-EXTERNCPP void CheckFiles(void);
-
-EXTERNCPP void *MtCompress(void *arg);
-EXTERNCPP void Compress(void);
-
-EXTERNCPP void *MtPlayMovie(void *arg);
-EXTERNCPP void PlayMovie(void);
-
-EXTERNCPP void *MtSetupFF(void *arg);
-EXTERNCPP void SetupFF(void);
-
-EXTERNCPP void *MtReadAllGeom(void *arg);
-EXTERNCPP void ReadAllGeom(void);
-
-EXTERNCPP void *MtClassifyAllGeom(void *arg);
-EXTERNCPP void ClassifyAllGeom(void);
+EXTERNCPP void *UpdateTrianglesAll(void *arg);
+EXTERNCPP void *CheckFiles(void *arg);
+EXTERNCPP void *Compress(void *arg);
+EXTERNCPP void *SetupFF(void *arg);
+EXTERNCPP void *ReadAllGeom(void *arg);
+EXTERNCPP void *ClassifyAllGeom(void *arg);
+EXTERNCPP void *PlayMovie(void *arg);
 
 #ifdef pp_THREAD
 #define LOCK_THREADS(thi)   THREADcontrol(thi, THEAD_LOCK)
 #define UNLOCK_THREADS(thi) THREADcontrol(thi, THEAD_UNLOCK)
 #define JOIN_THREADS(thi)   THREADcontrol(thi, THEAD_JOIN)
+#define PTHREAD_EXIT(flag)  if(flag==1)pthread_exit(NULL);\
+                            return NULL
 #else
 #define LOCK_THREADS(thi)
 #define UNLOCK_THREADS(thi)
 #define JOIN_THREADS(thi)
+#define PTHREAD_EXIT(flag)
 #endif
 
 #endif

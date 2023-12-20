@@ -144,8 +144,9 @@ void GetIsoSizes(const char *isofile, int dataflag, FILE **isostreamptr, int *nv
 
 /* ------------------ UpdateTrianglesAll ------------------------ */
 
-void UpdateTrianglesAll(void){
+void *UpdateTrianglesAll(void *arg){
   UpdateTriangles(GEOM_DYNAMIC, GEOM_UPDATE_ALL);
+  PTHREAD_EXIT(use_triangles_threads);
 }
 
 /* ------------------ ReadIsoGeomWrapup ------------------------ */
@@ -153,9 +154,9 @@ void UpdateTrianglesAll(void){
 void ReadIsoGeomWrapup(int flag){
   update_readiso_geom_wrapup = UPDATE_ISO_OFF;
   if(triangles_threads == NULL){
-    triangles_threads = THREADinit(&n_triangles_threads, &use_triangles_threads, UpdateTrianglesAll, MtUpdateTrianglesAll);
+    triangles_threads = THREADinit(&n_triangles_threads, &use_triangles_threads, UpdateTrianglesAll);
   }
-  THREADrun(triangles_threads);
+  THREADrun(triangles_threads, NULL);
   if(flag == FOREGROUND)THREADcontrol(triangles_threads, THREAD_JOIN);
   UpdateTimes();
   GetFaceInfo();

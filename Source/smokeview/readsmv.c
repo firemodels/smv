@@ -6650,7 +6650,7 @@ void AddCfastCsvf(void){
 
 /* ------------------ Compress ------------------------ */
 
-void Compress(void){
+void *Compress(void *arg){
   char shellcommand[1024];
 
   PRINTF("Compressing...\n");
@@ -6682,11 +6682,12 @@ void Compress(void){
   GLUICompressOnOff(ON);
   updatemenu = 1;
   PRINTF("Compression completed\n");
+  PTHREAD_EXIT(use_compress_threads);
 }
 
 /* ------------------ CheckFiles ------------------------ */
 
-void CheckFiles(void){
+void *CheckFiles(void *arg){
   int i;
 
   THREADcontrol(checkfiles_threads, THREAD_LOCK);
@@ -6718,7 +6719,9 @@ void CheckFiles(void){
     }
     THREADcontrol(checkfiles_threads, THREAD_UNLOCK);
   }
-  if(have_compressed_files == 0)return;
+  if(have_compressed_files == 0){
+    PTHREAD_EXIT(use_checkfiles_threads);
+  }
   THREADcontrol(checkfiles_threads, THREAD_LOCK);
   for(i = 0; i < npatchinfo; i++){
     patchdata *patchi;
@@ -6741,6 +6744,7 @@ void CheckFiles(void){
   }
   updatemenu = 1;
   THREADcontrol(checkfiles_threads, THREAD_UNLOCK);
+  PTHREAD_EXIT(use_checkfiles_threads);
 }
 
 /* ------------------ ReadSMV ------------------------ */
@@ -11583,9 +11587,9 @@ int ReadSMV_Configure(){
   }
 
   if(checkfiles_threads == NULL){
-    checkfiles_threads = THREADinit(&n_checkfiles_threads, &use_checkfiles_threads, CheckFiles, MtCheckFiles);
+    checkfiles_threads = THREADinit(&n_checkfiles_threads, &use_checkfiles_threads, CheckFiles);
   }
-  THREADrun(checkfiles_threads);
+  THREADrun(checkfiles_threads, NULL);
   PRINT_TIMER(timer_readsmv, "CheckFiles");
 
 #ifdef pp_BNDF
@@ -11686,11 +11690,10 @@ int ReadSMV_Configure(){
   PRINT_TIMER(timer_readsmv, "UpdateMeshBoxBounds");
 
   if(readallgeom_threads == NULL){
-    readallgeom_threads = THREADinit(&n_readallgeom_threads, &use_readallgeom_threads, 
-                                      ReadAllGeom, MtReadAllGeom);
+    readallgeom_threads = THREADinit(&n_readallgeom_threads, &use_readallgeom_threads, ReadAllGeom);
   }
   SetupReadAllGeom();
-  THREADrun(readallgeom_threads);
+  THREADrun(readallgeom_threads, NULL);
   THREADcontrol(readallgeom_threads, THREAD_JOIN);
   PRINT_TIMER(timer_readsmv, "ReadAllGeomMT");
 
@@ -11795,10 +11798,10 @@ int ReadSMV_Configure(){
   MakeIBlankCarve();
   PRINT_TIMER(timer_readsmv, "MakeIBlankCarve");
 
-  if(setupff_threads == NULL){
-    setupff_threads = THREADinit(&n_ffmpeg_threads, &use_ffmpeg_threads, SetupFF, MtSetupFF);
+  if(ffmpeg_threads == NULL){
+    ffmpeg_threads = THREADinit(&n_ffmpeg_threads, &use_ffmpeg_threads, SetupFF);
   }
-  THREADrun(setupff_threads);
+  THREADrun(ffmpeg_threads, NULL);
   PRINT_TIMER(timer_readsmv, "SetupFFMT");
 
   MakeIBlankSmoke3D();
@@ -11910,11 +11913,10 @@ int ReadSMV_Configure(){
 
   if(large_case==0){
     if(classifyallgeom_threads==NULL){
-      classifyallgeom_threads = THREADinit(&n_readallgeom_threads, &use_readallgeom_threads, 
-                                            ClassifyAllGeom, MtClassifyAllGeom);
+      classifyallgeom_threads = THREADinit(&n_readallgeom_threads, &use_readallgeom_threads, ClassifyAllGeom);
     }
     SetupReadAllGeom();
-    THREADrun(classifyallgeom_threads);
+    THREADrun(classifyallgeom_threads, NULL);
   }
   PRINT_TIMER(timer_readsmv, "ClassifyGeom");
 
