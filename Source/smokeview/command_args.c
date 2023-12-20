@@ -13,26 +13,36 @@
 
 /* ------------------ CLE_Message ------------------------ */
 
-const char *CLE_Message(enum CommandLineError cle) {
+const char *CLE_Message(enum CommandLineError cle, char *message) {
+  char message_local[80];
   switch (cle) {
   case CLE_OK:
     return NULL;
     break;
   case CLE_MULTIPLE_LANG:
-    return "-lang defined multiple times";
+    return "***error: -lang defined multiple times";
     break;
   case CLE_NO_LANG:
-    return "-lang must be given an argument";
+    return "***error: -lang must be given an argument";
+    break;
+  case CLE_MULTIPLE_INPUTS:
+    return "***error: multiple input files found";
+  case CLE_UNKNOWN_ARGUMENT:
+    strcpy(message_local, "***error: ");
+    strcat(message_local, message);
+    strcat(message_local, " is an unknown parameter");
+    strcpy(message, message_local);
+    return message;
     break;
   default:
-    return "a commandline parsing error occurred";
+    return "***error: a commandline parsing error occurred";
     break;
   }
 }
 
 /* ------------------ ParseCommandlineNew ------------------------ */
 
-CommandlineArgs ParseCommandlineNew(int argc, char **argv,
+CommandlineArgs ParseCommandlineNew(int argc, char **argv, char *message,
                                     enum CommandLineError *error) {
   CommandlineArgs args = {0};
   *error = CLE_OK;
@@ -323,6 +333,11 @@ CommandlineArgs ParseCommandlineNew(int argc, char **argv,
         return args;
       }
     } else {
+      if(argv[i][0] == '-') {
+        *error = CLE_UNKNOWN_ARGUMENT;
+        strcpy(message, argv[i]);
+        return args;
+      }
       if (args.input_file == NULL) {
         NewMemory((void **)&args.input_file, strlen(argv[i]) + 1);
         strcpy(args.input_file, argv[i]);

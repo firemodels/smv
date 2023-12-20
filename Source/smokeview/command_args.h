@@ -130,8 +130,9 @@ enum CommandLineError {
   CLE_MULTIPLE_INPUTS,
   CLE_OK,
   CLE_ARGUMENT_EXPECTED,
+  CLE_UNKNOWN_ARGUMENT
 };
-const char *CLE_Message(enum CommandLineError cle);
-CommandlineArgs ParseCommandlineNew(int argc, char **argv,
+const char *CLE_Message(enum CommandLineError cle, char *message);
+CommandlineArgs ParseCommandlineNew(int argc, char **argv, char *message,
                                     enum CommandLineError *error);
 #endif

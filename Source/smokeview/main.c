@@ -125,10 +125,11 @@ char *ProcessCommandLine(CommandlineArgs *args);
 char *ParseCommandline(int argc, char **argv) {
   enum CommandLineError error;
   char *return_val;
+  char message[256];
 
-  CommandlineArgs args = ParseCommandlineNew(argc, argv, &error);
+  CommandlineArgs args = ParseCommandlineNew(argc, argv, message, &error);
   if (error != CLE_OK) {
-    const char *msg = CLE_Message(error);
+    const char *msg = CLE_Message(error, message);
     if (msg != NULL) {
       fprintf(stderr, "%s\n", msg);
     }
