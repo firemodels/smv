@@ -21,7 +21,7 @@ void *Sample(void *arg){
 
   sample code
 
-  THREAD_EXIT(use_sample_threads);
+  THREAD_EXIT(sample_threads);
 }
 if(sample_threads==NULL){
   sample_threads = THREADinit(Label, &n_sample_threads, &use_sample_threads, Sample);
@@ -35,12 +35,10 @@ threaderdata *THREADinit(char *label, int *nthreads_ptr, int *use_threads_ptr, v
   threaderdata *thi;
   int nthreads_local=1, use_threads_local=0;
 
-  //create two routines
-    // void run(void){
-    // }
-    // void *mtrun(void *arg){
+  //create a routine
+    // void *run(void *arg){
     //   run();
-    //   pthread_exit(NULL);
+    //   pthread_exit(NULL); THREAD_EXIT macros handles these two lines
     //   return NULL;
     // }
 

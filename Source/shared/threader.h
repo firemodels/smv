@@ -3,10 +3,14 @@
 #include <pthread.h>
 
 #ifdef INTHREADER
-#define MT_EXTERN
+#define MTEXTERN
+#define MTDECL(var,val)  var=val
 #else
-#define MT_EXTERN extern CCC
+#define MTEXTERN extern CCC
+#define MTDECL(var,val)  var
 #endif
+
+//*** parameters
 
 #define MAX_THREADS 16
 
@@ -14,6 +18,8 @@
 #define THREAD_UNLOCK 1
 #define THREAD_JOIN   2
 #define THREAD_FREE   3
+
+//*** structure
 
 typedef struct _threaderdata{
   char label[32];
@@ -25,58 +31,63 @@ typedef struct _threaderdata{
   void *(*run)(void *arg);
 } threaderdata;
 
+
+//*** variables
+
 //***checkfiles
-SVEXTERN int SVDECL(n_checkfiles_threads, 1), SVDECL(use_checkfiles_threads, 1);
-SVEXTERN threaderdata SVDECL(*checkfiles_threads,       NULL);
+MTEXTERN int MTDECL(n_checkfiles_threads, 1), MTDECL(use_checkfiles_threads, 1);
+MTEXTERN threaderdata MTDECL(*checkfiles_threads,       NULL);
 
 //*** compress
-SVEXTERN int SVDECL(n_compress_threads, 1), SVDECL(use_compress_threads, 1);
-SVEXTERN threaderdata SVDECL(*compress_threads,        NULL);
+MTEXTERN int MTDECL(n_compress_threads, 1), MTDECL(use_compress_threads, 1);
+MTEXTERN threaderdata MTDECL(*compress_threads,        NULL);
 
 //*** ffmpeg
-SVEXTERN int SVDECL(n_ffmpeg_threads, 1), SVDECL(use_ffmpeg_threads, 1);
-SVEXTERN threaderdata SVDECL(*ffmpeg_threads,         NULL);
+MTEXTERN int MTDECL(n_ffmpeg_threads, 1), MTDECL(use_ffmpeg_threads, 1);
+MTEXTERN threaderdata MTDECL(*ffmpeg_threads,         NULL);
 
 //*** iso
-SVEXTERN int SVDECL(n_iso_threads, 1), SVDECL(use_iso_threads, 0), SVDECL(use_iso_threads_save,0);
+MTEXTERN int MTDECL(n_iso_threads, 1), MTDECL(use_iso_threads, 0), MTDECL(use_iso_threads_save,0);
 
 //*** part
-SVEXTERN int SVDECL(n_partload_threads, 2), SVDECL(use_partload_threads, 1);
-SVEXTERN threaderdata SVDECL(*partload_threads,         NULL);
+MTEXTERN int MTDECL(n_partload_threads, 2), MTDECL(use_partload_threads, 1);
+MTEXTERN threaderdata MTDECL(*partload_threads,         NULL);
 
 //*** patchbounds
-SVEXTERN int SVDECL(n_patchbound_threads, 1), SVDECL(use_patchbound_threads, 1);
-SVEXTERN threaderdata SVDECL(*patchbound_threads, NULL);
+MTEXTERN int MTDECL(n_patchbound_threads, 1), MTDECL(use_patchbound_threads, 1);
+MTEXTERN threaderdata MTDECL(*patchbound_threads, NULL);
 
 //*** playmovie
-SVEXTERN int SVDECL(n_playmovie_threads, 1), SVDECL(use_playmovie_threads, 1);
-SVEXTERN threaderdata SVDECL(*playmovie_threads,       NULL);
+MTEXTERN int MTDECL(n_playmovie_threads, 1), MTDECL(use_playmovie_threads, 1);
+MTEXTERN threaderdata MTDECL(*playmovie_threads,       NULL);
 
 //*** readallgeom
-SVEXTERN int SVDECL(n_readallgeom_threads, 4), SVDECL(use_readallgeom_threads, 1);
-SVEXTERN threaderdata SVDECL(*readallgeom_threads,     NULL);
-SVEXTERN threaderdata SVDECL(*classifyallgeom_threads, NULL);
+MTEXTERN int MTDECL(n_readallgeom_threads, 4), MTDECL(use_readallgeom_threads, 1);
+MTEXTERN threaderdata MTDECL(*readallgeom_threads,     NULL);
+MTEXTERN threaderdata MTDECL(*classifyallgeom_threads, NULL);
 
 //***slice bounds
-SVEXTERN int SVDECL(n_slicebound_threads, 1), SVDECL(use_slicebound_threads, 1);
-SVEXTERN threaderdata SVDECL(*slicebound_threads, NULL);
+MTEXTERN int MTDECL(n_slicebound_threads, 1), MTDECL(use_slicebound_threads, 1);
+MTEXTERN threaderdata MTDECL(*slicebound_threads, NULL);
 
 //*** slice
 #ifdef pp_SLICE_MULTI // not implemented
-SVEXTERN int SVDECL(n_sliceload_threads, 4), SVDECL(use_sliceload_threads, 0);
-SVEXTERN threaderdata SVDECL(*sliceload_threads, NULL);
+MTEXTERN int MTDECL(n_sliceload_threads, 4), MTDECL(use_sliceload_threads, 0);
+MTEXTERN threaderdata MTDECL(*sliceload_threads, NULL);
 #endif
 
 //*** smoke
-SVEXTERN int SVDECL(n_smokeload_threads, 1), SVDECL(use_smokeload_threads, 0);
+MTEXTERN int MTDECL(n_smokeload_threads, 1), MTDECL(use_smokeload_threads, 0);
 
 //***triangles
-SVEXTERN int SVDECL(n_triangles_threads, 1), SVDECL(use_triangles_threads, 1);
-SVEXTERN threaderdata SVDECL(*triangles_threads, NULL);
+MTEXTERN int MTDECL(n_triangles_threads, 1), MTDECL(use_triangles_threads, 1);
+MTEXTERN threaderdata MTDECL(*triangles_threads, NULL);
 
 //*** volsmoke
-SVEXTERN int SVDECL(n_volsmokeload_threads, 1), SVDECL(use_volsmokeload_threads, 0);
-SVEXTERN threaderdata SVDECL(*volsmokeload_threads, NULL);
+MTEXTERN int MTDECL(n_volsmokeload_threads, 1), MTDECL(use_volsmokeload_threads, 0);
+MTEXTERN threaderdata MTDECL(*volsmokeload_threads, NULL);
+
+//*** routines
 
 EXTERNCPP void THREADcontrol(threaderdata *thi, int var);
 EXTERNCPP void THREADrun(threaderdata *thi, void *arg);
@@ -93,6 +104,8 @@ EXTERNCPP void *ReadVolsmokeAllFramesAllMeshes2(void *arg);
 EXTERNCPP void *SetupFF(void *arg);
 EXTERNCPP void *UpdateTrianglesAll(void *arg);
 
+//*** threader controls
+
 #ifdef pp_THREAD
 #define LOCK_THREADS(thi)   THREADcontrol(thi, THEAD_LOCK)
 #define UNLOCK_THREADS(thi) THREADcontrol(thi, THEAD_UNLOCK)
@@ -107,5 +120,6 @@ EXTERNCPP void *UpdateTrianglesAll(void *arg);
 #define JOIN_THREADS(thi)
 #define THREAD_EXIT(threads)
 #endif
+
 #endif
 
