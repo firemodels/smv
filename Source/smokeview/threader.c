@@ -7,7 +7,6 @@
 
 #include "MALLOCC.h"
 #include "threader.h"
-#include GLUT_H
 
 //***************************** multi-threaded compression ***********************************
 
