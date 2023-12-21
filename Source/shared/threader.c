@@ -49,6 +49,8 @@ threaderdata *THREADinit(int *nthreads_ptr, int *use_threads_ptr, void *(*run_ar
   if(nthreads_ptr != NULL && *nthreads_ptr > 1)nthreads_local = *nthreads_ptr;
   if(nthreads_local > MAX_THREADS)nthreads_local = MAX_THREADS;
   if(use_threads_ptr != NULL && *use_threads_ptr != 0)use_threads_local = 1;
+
+  thi->count = 0;
   thi->n_threads_ptr   = nthreads_ptr;
   thi->use_threads_ptr = use_threads_ptr;
   thi->n_threads       = nthreads_local;
@@ -101,11 +103,13 @@ void THREADrun(threaderdata *thi, void *arg){
   if(thi->use_threads == 1){
     int i;
 
+    thi->count = + thi->n_threads;
     for(i = 0; i < thi->n_threads; i++){
       pthread_create(thi->thread_ids + i, NULL, thi->run, arg);
     }
   }
   else{
+    thi->count++;
    thi->run(arg);
   }
 }

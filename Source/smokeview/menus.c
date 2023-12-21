@@ -4070,7 +4070,7 @@ void *MtLoadAllPartFiles(void *arg){
 
   valptr = ( int * )(arg);
   LoadAllPartFiles(*valptr);
-  THREAD_EXIT(use_partload_threads);
+  THREAD_EXIT(partload_threads);
 }
 
 /* ------------------ LoadAllPartFilesMT ------------------------ */

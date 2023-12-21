@@ -18,6 +18,7 @@
 typedef struct _threaderdata{
   int n_threads,   *n_threads_ptr;
   int use_threads, *use_threads_ptr;
+  int count;
   pthread_t *thread_ids;
   pthread_mutex_t mutex;
   void *(*run)(void *arg);
@@ -95,14 +96,15 @@ EXTERNCPP void *UpdateTrianglesAll(void *arg);
 #define LOCK_THREADS(thi)   THREADcontrol(thi, THEAD_LOCK)
 #define UNLOCK_THREADS(thi) THREADcontrol(thi, THEAD_UNLOCK)
 #define JOIN_THREADS(thi)   THREADcontrol(thi, THEAD_JOIN)
-#define THREAD_EXIT(flag)  if(flag==1)pthread_exit(NULL);\
-                            return NULL
+#define THREAD_EXIT(threads)  \
+    if(threads!=NULL)threads->count--;\
+    if(use_ ## threads==1)pthread_exit(NULL);\
+    return NULL
 #else
 #define LOCK_THREADS(thi)
 #define UNLOCK_THREADS(thi)
 #define JOIN_THREADS(thi)
-#define THREAD_EXIT(flag)
+#define THREAD_EXIT(threads)
 #endif
-
 #endif
 

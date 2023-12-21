@@ -6694,7 +6694,7 @@ void *Compress(void *arg){
   GLUICompressOnOff(ON);
   updatemenu = 1;
   PRINTF("Compression completed\n");
-  THREAD_EXIT(use_compress_threads);
+  THREAD_EXIT(compress_threads);
 }
 
 /* ------------------ CheckFiles ------------------------ */
@@ -6732,7 +6732,7 @@ void *CheckFiles(void *arg){
     THREADcontrol(checkfiles_threads, THREAD_UNLOCK);
   }
   if(have_compressed_files == 0){
-    THREAD_EXIT(use_checkfiles_threads);
+    THREAD_EXIT(checkfiles_threads);
   }
   THREADcontrol(checkfiles_threads, THREAD_LOCK);
   for(i = 0; i < npatchinfo; i++){
@@ -6756,7 +6756,7 @@ void *CheckFiles(void *arg){
   }
   updatemenu = 1;
   THREADcontrol(checkfiles_threads, THREAD_UNLOCK);
-  THREAD_EXIT(use_checkfiles_threads);
+  THREAD_EXIT(checkfiles_threads);
 }
 
 /* ------------------ ReadSMV ------------------------ */
