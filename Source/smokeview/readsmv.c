@@ -3023,14 +3023,14 @@ void UpdateBoundInfo(void){
 
   GetGlobalSliceBoundsReduced();
   if(slicebound_threads == NULL){
-    slicebound_threads = THREADinit("slicebound", &n_slicebound_threads, &use_slicebound_threads, GetGlobalSliceBoundsFull);
+    slicebound_threads = THREADinit(&n_slicebound_threads, &use_slicebound_threads, GetGlobalSliceBoundsFull);
   }
   THREADrun(slicebound_threads, NULL);
   PRINT_TIMER(bound_timer, "GetGlobalSliceBounds");
 
   GetGlobalPatchBoundsReduced();
   if(patchbound_threads == NULL){
-    patchbound_threads = THREADinit("patchbound",  &n_patchbound_threads, &use_patchbound_threads, GetGlobalPatchBoundsFull);
+    patchbound_threads = THREADinit(&n_patchbound_threads, &use_patchbound_threads, GetGlobalPatchBoundsFull);
   }
   THREADrun(patchbound_threads, NULL);
   PRINT_TIMER(bound_timer, "GetGlobalPatchBounds");
@@ -11595,7 +11595,7 @@ int ReadSMV_Configure(){
   }
 
   if(checkfiles_threads == NULL){
-    checkfiles_threads = THREADinit("checkfiles",  & n_checkfiles_threads, &use_checkfiles_threads, CheckFiles);
+    checkfiles_threads = THREADinit(&n_checkfiles_threads, &use_checkfiles_threads, CheckFiles);
   }
   THREADrun(checkfiles_threads, NULL);
   PRINT_TIMER(timer_readsmv, "CheckFiles");
@@ -11698,7 +11698,7 @@ int ReadSMV_Configure(){
   PRINT_TIMER(timer_readsmv, "UpdateMeshBoxBounds");
 
   if(readallgeom_threads == NULL){
-    readallgeom_threads = THREADinit("readallgeom",  &n_readallgeom_threads, &use_readallgeom_threads, ReadAllGeom);
+    readallgeom_threads = THREADinit(&n_readallgeom_threads, &use_readallgeom_threads, ReadAllGeom);
   }
   SetupReadAllGeom();
   THREADrun(readallgeom_threads, NULL);
@@ -11805,7 +11805,7 @@ int ReadSMV_Configure(){
   PRINT_TIMER(timer_readsmv, "MakeIBlankCarve");
 
   if(ffmpeg_threads == NULL){
-    ffmpeg_threads = THREADinit("ffmpeg",  & n_ffmpeg_threads, &use_ffmpeg_threads, SetupFF);
+    ffmpeg_threads = THREADinit(&n_ffmpeg_threads, &use_ffmpeg_threads, SetupFF);
   }
   THREADrun(ffmpeg_threads, NULL);
   PRINT_TIMER(timer_readsmv, "SetupFFMT");
@@ -11919,7 +11919,7 @@ int ReadSMV_Configure(){
 
   if(large_case==0){
     if(classifyallgeom_threads==NULL){
-      classifyallgeom_threads = THREADinit("readallgeom",  &n_readallgeom_threads, &use_readallgeom_threads, ClassifyAllGeom);
+      classifyallgeom_threads = THREADinit(&n_readallgeom_threads, &use_readallgeom_threads, ClassifyAllGeom);
     }
     SetupReadAllGeom();
     THREADrun(classifyallgeom_threads, NULL);

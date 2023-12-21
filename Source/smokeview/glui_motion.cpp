@@ -2615,7 +2615,7 @@ void RenderCB(int var){
       break;
     case PLAY_MOVIE:
       if(playmovie_threads == NULL){
-        playmovie_threads = THREADinit("playmovie",  &n_playmovie_threads, &use_playmovie_threads, PlayMovie);
+        playmovie_threads = THREADinit(&n_playmovie_threads, &use_playmovie_threads, PlayMovie);
       }
       THREADrun(playmovie_threads, NULL);
       break;

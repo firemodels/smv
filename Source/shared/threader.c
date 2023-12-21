@@ -24,14 +24,14 @@ void *Sample(void *arg){
   THREAD_EXIT(sample_threads);
 }
 if(sample_threads==NULL){
-  sample_threads = THREADinit(Label, &n_sample_threads, &use_sample_threads, Sample);
+  sample_threads = THREADinit(&n_sample_threads, &use_sample_threads, Sample);
 }
 THREADrun(sample_threads, arg);
 #endif
 
 /* ------------------ THREADinit ------------------------ */
 
-threaderdata *THREADinit(char *label, int *nthreads_ptr, int *use_threads_ptr, void *(*run_arg)(void *arg)){
+threaderdata *THREADinit(int *nthreads_ptr, int *use_threads_ptr, void *(*run_arg)(void *arg)){
   threaderdata *thi;
   int nthreads_local=1, use_threads_local=0;
 
@@ -48,7 +48,6 @@ threaderdata *THREADinit(char *label, int *nthreads_ptr, int *use_threads_ptr, v
   if(nthreads_local > MAX_THREADS)nthreads_local = MAX_THREADS;
   if(use_threads_ptr != NULL && *use_threads_ptr != 0)use_threads_local = 1;
 
-  strcpy(thi->label, label);
   thi->count = 0;
   thi->n_threads_ptr   = nthreads_ptr;
   thi->use_threads_ptr = use_threads_ptr;
