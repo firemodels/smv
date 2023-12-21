@@ -5,6 +5,7 @@
 #ifdef INTHREADER
 #define MTEXTERN
 #define MTDECL(var,val)  var=val
+
 #else
 #define MTEXTERN extern CCC
 #define MTDECL(var,val)  var
@@ -14,10 +15,12 @@
 
 #define MAX_THREADS 16
 
-#define THREAD_LOCK   0
-#define THREAD_UNLOCK 1
-#define THREAD_JOIN   2
-#define THREAD_FREE   3
+enum threaderparms {
+  THREAD_LOCK,
+  THREAD_UNLOCK,
+  THREAD_JOIN,
+  THREAD_FREE,
+};
 
 //*** structure
 
