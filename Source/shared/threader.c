@@ -8,24 +8,25 @@
 #include "MALLOCC.h"
 #include "threader.h"
 
-//***************************** multi-threaded compression ***********************************
-
-/* ------------------ Sample ------------------------ */
-
 #ifdef pp_SAMPLE
-// example multi threading routines
 
 /* ------------------ Sample ------------------------ */
 
 void *Sample(void *arg){
+ // n_sample_threads - number of threads - default 1
+ // use_sample_threads 0/1 use multi threading or not
+ // threads - data structure that holds threading instance
+ // Sample - routine that does the work, must end with THREAD_EXIT macro
 
   sample code
 
   THREAD_EXIT(sample_threads);
 }
-if(sample_threads==NULL){
-  sample_threads = THREADinit(&n_sample_threads, &use_sample_threads, Sample);
-}
+//*** call before first use of threading routines
+
+sample_threads = THREADinit(&n_sample_threads, &use_sample_threads, Sample);
+
+//*** call to do the work
 THREADrun(sample_threads, arg);
 #endif
 
