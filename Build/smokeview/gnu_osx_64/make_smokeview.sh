@@ -30,6 +30,6 @@ fi
 cd $CURDIR
 
 if [ "$BUILD_ALL" == "1" ]; then
-  rm *.o *.mod smokeview_osx_64*
+  rm -f *.o *.mod smokeview_osx_64*
 fi
 eval make QUARTZ="$QUARTZSMV" GLUT="$GLUT" ${SMV_MAKE_OPTS} -f ../Makefile gnu_osx_64
