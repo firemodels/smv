@@ -16,6 +16,7 @@
 #define THREAD_FREE   3
 
 typedef struct _threaderdata{
+  char label[32];
   int n_threads,   *n_threads_ptr;
   int use_threads, *use_threads_ptr;
   int count;
@@ -79,7 +80,7 @@ SVEXTERN threaderdata SVDECL(*volsmokeload_threads, NULL);
 
 EXTERNCPP void THREADcontrol(threaderdata *thi, int var);
 EXTERNCPP void THREADrun(threaderdata *thi, void *arg);
-EXTERNCPP threaderdata *THREADinit(int *nthreads_arg, int *threading_on_arg, void *(*run_arg)(void *arg));
+EXTERNCPP threaderdata *THREADinit(char *label, int *nthreads_arg, int *threading_on_arg, void *(*run_arg)(void *arg));
 
 EXTERNCPP void *CheckFiles(void *arg);
 EXTERNCPP void *ClassifyAllGeom(void *arg);
