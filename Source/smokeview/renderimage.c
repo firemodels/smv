@@ -33,7 +33,7 @@ void *PlayMovie(void *arg){
     update_playmovie = 1;
     GLUTPOSTREDISPLAY;
   }
-  THREAD_EXIT(use_playmovie_threads);
+  THREAD_EXIT(playmovie_threads);
 }
 
 /* ------------------ SetupFF ------------------------ */
@@ -54,7 +54,7 @@ void *SetupFF(void *arg){
   have_ffmpeg = have_ffmpeg_local;
   have_ffplay = have_ffplay_local;
   THREADcontrol(ffmpeg_threads, THREAD_UNLOCK);
-  THREAD_EXIT(use_ffmpeg_threads);
+  THREAD_EXIT(ffmpeg_threads);
 }
 
 /* ------------------ GetMovieFilePath ------------------------ */

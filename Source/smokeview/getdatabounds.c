@@ -378,7 +378,7 @@ void *GetGlobalPatchBoundsFull(void *arg){
   THREADcontrol(patchbound_threads, THREAD_LOCK);
   GetGlobalPatchBounds(1);
   THREADcontrol(patchbound_threads, THREAD_UNLOCK);
-  THREAD_EXIT(use_patchbound_threads);
+  THREAD_EXIT(patchbound_threads);
 }
 
 /* ------------------ GetGlobalPatchBoundsReduced ------------------------ */
@@ -644,7 +644,7 @@ void *GetGlobalSliceBoundsFull(void *arg){
   THREADcontrol(slicebound_threads, THREAD_LOCK);
   GetGlobalSliceBounds(1);
   THREADcontrol(slicebound_threads, THREAD_UNLOCK);
-  THREAD_EXIT(use_slicebound_threads);
+  THREAD_EXIT(slicebound_threads);
 }
 
 /* ------------------ GetGlobalSliceBoundsReduced ------------------------ */

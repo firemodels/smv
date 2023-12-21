@@ -74,7 +74,7 @@ class bounds_dialog{
   // variables
   cpp_boundsdata bounds, *all_bounds, *all_bounds_save;
   int   nall_bounds, research_mode_cpp;
-  float percentile_min_level=1.0, percentile_max_level=99.0;
+  float percentile_min_level, percentile_max_level;
   float plot_min_cpp, plot_max_cpp;
 
   // widgets
@@ -97,7 +97,10 @@ class bounds_dialog{
   GLUI_Rollout *ROLLOUT_main_bound, *ROLLOUT_truncate;
 
   // routines
-  //bounds_dialog(void);
+  bounds_dialog(){
+    percentile_min_level = 1.0;
+    percentile_max_level = 99.0;
+  }
 
   void CB(int var);
   int  get_cache_flag(void);
@@ -3552,9 +3555,6 @@ void BoundBoundCB(int var){
     }
     break;
   case COMPRESS_FILES:
-    if(compress_threads==NULL){
-      compress_threads = THREADinit(&n_compress_threads, &use_compress_threads, Compress);
-    }
     THREADrun(compress_threads, NULL);
     break;
   case COMPRESS_AUTOLOADED:

@@ -7,26 +7,26 @@
 
 #include "MALLOCC.h"
 #include "threader.h"
-#include GLUT_H
-
-//***************************** multi-threaded compression ***********************************
-
-/* ------------------ Sample ------------------------ */
 
 #ifdef pp_SAMPLE
-// example multi threading routines
 
 /* ------------------ Sample ------------------------ */
 
 void *Sample(void *arg){
+ // n_sample_threads - number of threads - default 1
+ // use_sample_threads 0/1 use multi threading or not
+ // threads - data structure that holds threading instance
+ // Sample - routine that does the work, must end with THREAD_EXIT macro
 
   sample code
 
-  THREAD_EXIT(use_sample_threads);
+  THREAD_EXIT(sample_threads);
 }
-if(sample_threads==NULL){
-  sample_threads = THREADinit(&n_sample_threads, &use_sample_threads, Sample);
-}
+//*** call before first use of threading routines
+
+sample_threads = THREADinit(&n_sample_threads, &use_sample_threads, Sample);
+
+//*** call to do the work
 THREADrun(sample_threads, arg);
 #endif
 
@@ -36,12 +36,10 @@ threaderdata *THREADinit(int *nthreads_ptr, int *use_threads_ptr, void *(*run_ar
   threaderdata *thi;
   int nthreads_local=1, use_threads_local=0;
 
-  //create two routines
-    // void run(void){
-    // }
-    // void *mtrun(void *arg){
+  //create a routine
+    // void *run(void *arg){
     //   run();
-    //   pthread_exit(NULL);
+    //   pthread_exit(NULL); THREAD_EXIT macros handles these two lines
     //   return NULL;
     // }
 
@@ -50,6 +48,8 @@ threaderdata *THREADinit(int *nthreads_ptr, int *use_threads_ptr, void *(*run_ar
   if(nthreads_ptr != NULL && *nthreads_ptr > 1)nthreads_local = *nthreads_ptr;
   if(nthreads_local > MAX_THREADS)nthreads_local = MAX_THREADS;
   if(use_threads_ptr != NULL && *use_threads_ptr != 0)use_threads_local = 1;
+
+  thi->count = 0;
   thi->n_threads_ptr   = nthreads_ptr;
   thi->use_threads_ptr = use_threads_ptr;
   thi->n_threads       = nthreads_local;
@@ -72,7 +72,7 @@ void THREADcontrol(threaderdata *thi, int var){
     if(thi->use_threads == 1)pthread_mutex_unlock(&thi->mutex);
     break;
   case THREAD_JOIN:
-    if(thi->use_threads == 1){
+    if(thi->use_threads == 1&&thi->count>0){
       int i;
 
       for(i = 0;i < thi->n_threads;i++){
@@ -102,11 +102,13 @@ void THREADrun(threaderdata *thi, void *arg){
   if(thi->use_threads == 1){
     int i;
 
+    thi->count = thi->n_threads;
     for(i = 0; i < thi->n_threads; i++){
       pthread_create(thi->thread_ids + i, NULL, thi->run, arg);
     }
   }
   else{
-   thi->run(arg);
+    thi->count = 1;
+    thi->run(arg);
   }
 }

@@ -5,6 +5,19 @@
 #include "gd.h"
 #endif
 
+//*** threader headers
+EXTERNCPP void *CheckFiles(void *arg);
+EXTERNCPP void *ClassifyAllGeom(void *arg);
+EXTERNCPP void *Compress(void *arg);
+EXTERNCPP void *SetupFF(void *arg);
+EXTERNCPP void *MtLoadAllPartFiles(void *arg);
+EXTERNCPP void *GetGlobalPatchBoundsFull(void *arg);
+EXTERNCPP void *PlayMovie(void *arg);
+EXTERNCPP void *ReadAllGeom(void *arg);
+EXTERNCPP void *GetGlobalSliceBoundsFull(void *arg);
+EXTERNCPP void *UpdateTrianglesAll(void *arg);
+EXTERNCPP void *ReadVolsmokeAllFramesAllMeshes2(void *arg);
+
 //*** glui_bounds.cpp headers
 EXTERNCPP void GLUIBoundsSetup(int main_window);
 EXTERNCPP void GLUIUpdatePartPointSize(void);
