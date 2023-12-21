@@ -171,7 +171,7 @@ add_executable(smokeview
     Source/smokeview/startup.c
     Source/smokeview/shaders.c
     Source/smokeview/unit.c
-    Source/smokeview/threader.c
+    Source/shared/threader.c
     Source/shared/histogram.c
     Source/shared/translate.c
     Source/smokeview/update.c
@@ -759,7 +759,7 @@ add_executable(parse_smv_benchmark Tests/parse_smv_benchmark.c
     Source/smokeview/startup.c
     Source/smokeview/shaders.c
     Source/smokeview/unit.c
-    Source/smokeview/threader.c
+    Source/shared/threader.c
     Source/shared/histogram.c
     Source/shared/translate.c
     Source/smokeview/update.c
