@@ -2754,9 +2754,6 @@ void CompressMenu(int value){
     erase_all=1;
     overwrite_all=0;
     GLUIUpdateOverwrite();
-    if(compress_threads==NULL){
-      compress_threads = THREADinit(&n_compress_threads, &use_compress_threads, Compress);
-    }
     THREADrun(compress_threads, NULL);
     break;
   case MENU_OVERWRITECOMPRESS:
@@ -2766,9 +2763,6 @@ void CompressMenu(int value){
     break;
   case MENU_COMPRESSNOW:
     erase_all=0;
-    if(compress_threads==NULL){
-      compress_threads = THREADinit(&n_compress_threads, &use_compress_threads, Compress);
-    }
     THREADrun(compress_threads, NULL);
     break;
   case MENU_COMPRESSAUTOLOAD:
@@ -4078,9 +4072,6 @@ void *MtLoadAllPartFiles(void *arg){
 void LoadAllPartFilesMT(int partnum){
   int i;
 
-  if(partload_threads == NULL){
-    partload_threads = THREADinit(&n_partload_threads, &use_partload_threads, MtLoadAllPartFiles);
-  }
   THREADrun(partload_threads, &partnum);
   THREADcontrol(partload_threads, THREAD_JOIN);
 

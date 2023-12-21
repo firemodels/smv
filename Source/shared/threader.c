@@ -72,7 +72,7 @@ void THREADcontrol(threaderdata *thi, int var){
     if(thi->use_threads == 1)pthread_mutex_unlock(&thi->mutex);
     break;
   case THREAD_JOIN:
-    if(thi->use_threads == 1){
+    if(thi->use_threads == 1&&thi->count>0){
       int i;
 
       for(i = 0;i < thi->n_threads;i++){
@@ -102,13 +102,13 @@ void THREADrun(threaderdata *thi, void *arg){
   if(thi->use_threads == 1){
     int i;
 
-    thi->count = + thi->n_threads;
+    thi->count = thi->n_threads;
     for(i = 0; i < thi->n_threads; i++){
       pthread_create(thi->thread_ids + i, NULL, thi->run, arg);
     }
   }
   else{
-    thi->count++;
-   thi->run(arg);
+    thi->count = 1;
+    thi->run(arg);
   }
 }

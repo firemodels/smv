@@ -3552,9 +3552,6 @@ void BoundBoundCB(int var){
     }
     break;
   case COMPRESS_FILES:
-    if(compress_threads==NULL){
-      compress_threads = THREADinit(&n_compress_threads, &use_compress_threads, Compress);
-    }
     THREADrun(compress_threads, NULL);
     break;
   case COMPRESS_AUTOLOADED:
