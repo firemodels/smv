@@ -55,14 +55,17 @@ threaderdata *THREADinit(int *nthreads_ptr, int *use_threads_ptr, void *(*run_ar
   thi->n_threads       = nthreads_local;
   thi->use_threads     = use_threads_local;
   thi->run             = run_arg;
-  NewMemory(( void ** )&thi->thread_ids, nthreads_local*sizeof(pthread_t));
+#ifdef pp_THREAD
+  NewMemory(( void ** )&thi->thread_ids, nthreads_local * sizeof(pthread_t));
   pthread_mutex_init(&thi->mutex, NULL);
+#endif
   return thi;
 }
 
 /* ------------------ THREADcontrol ------------------------ */
 
 void THREADcontrol(threaderdata *thi, int var){
+#ifdef pp_THREAD
   if(thi == NULL)return;
   switch(var){
   case THREAD_LOCK:
@@ -80,19 +83,17 @@ void THREADcontrol(threaderdata *thi, int var){
       }
     }
     break;
-  case THREAD_FREE:
-    FREEMEMORY(thi->thread_ids);
-    FREEMEMORY(thi);
-    break;
   default:
     assert(0);
     break;
   }
+#endif
 }
 
 /* ------------------ THREADrun ------------------------ */
 
 void THREADrun(threaderdata *thi, void *arg){
+#ifdef pp_THREAD
   if(thi == NULL)return;
   if(thi->use_threads_ptr!=NULL)thi->use_threads = *(thi->use_threads_ptr);
   if(thi->n_threads_ptr != NULL){
@@ -111,4 +112,7 @@ void THREADrun(threaderdata *thi, void *arg){
     thi->count = 1;
     thi->run(arg);
   }
+#else
+  thi->run(arg);
+#endif
 }

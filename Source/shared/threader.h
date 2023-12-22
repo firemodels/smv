@@ -9,8 +9,7 @@
 enum threaderparms {
   THREAD_LOCK,
   THREAD_UNLOCK,
-  THREAD_JOIN,
-  THREAD_FREE,
+  THREAD_JOIN
 };
 
 //*** structure
@@ -19,8 +18,10 @@ typedef struct _threaderdata{
   int n_threads,   *n_threads_ptr;
   int use_threads, *use_threads_ptr;
   int count;
+#ifdef pp_THREAD
   pthread_t *thread_ids;
   pthread_mutex_t mutex;
+#endif
   void *(*run)(void *arg);
 } threaderdata;
 
@@ -44,7 +45,7 @@ EXTERNCPP threaderdata *THREADinit(int *nthreads_arg, int *threading_on_arg, voi
 #define LOCK_THREADS(thi)
 #define UNLOCK_THREADS(thi)
 #define JOIN_THREADS(thi)
-#define THREAD_EXIT(threads)
+#define THREAD_EXIT(threads) return NULL
 #endif
 
 #endif
