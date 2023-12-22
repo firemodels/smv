@@ -2858,6 +2858,15 @@ void Keyboard(unsigned char key, int flag){
       GLUIUpdatePartFast();
       break;
     case '$':
+      if(keystate == GLUT_ACTIVE_ALT){
+        force_alpha_opaque = 1 - force_alpha_opaque;
+        if(force_alpha_opaque == 1)printf("force smoke/fire opaqueness: yes\n");
+        if(force_alpha_opaque == 0)printf("force smoke/fire opaqueness: no\n");
+        update_smoke_alphas = 1;
+        GLUIForceAlphaOpaque();
+        GLUTPOSTREDISPLAY;
+        break;
+      }
       trainer_active=1-trainer_active;
       if(trainer_active==1){
         PRINTF("Trainer mode active\n");

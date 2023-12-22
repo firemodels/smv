@@ -1516,14 +1516,21 @@ void InitAlphas(unsigned char *alphanew,
     new_extinct = 1.0;
   }
   alphanew[0] = 0;
-  for(i = 1; i<254; i++){
-    float val;
-    int ival;
+  if(force_alpha_opaque==1){
+    for(i = 1; i<254; i++){
+      alphanew[i] = (unsigned char)254;
+    }
+  }
+  else{
+    for(i = 1; i<254; i++){
+      float val;
+      int ival;
 
-    val = -log(1.0-(float)i/254.0)/(base_extinct*base_dx);
-    val = 254.0*(1.0-exp(-val*new_extinct*new_dx))+0.5;
-    ival = CLAMP(val, 0, 254);
-    alphanew[i] = (unsigned char)ival;
+      val = -log(1.0-(float)i/254.0)/(base_extinct*base_dx);
+      val = 254.0*(1.0-exp(-val*new_extinct*new_dx))+0.5;
+      ival = CLAMP(val, 0, 254);
+      alphanew[i] = (unsigned char)ival;
+    }
   }
 }
 
