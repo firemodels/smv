@@ -85,5 +85,6 @@
 #endif
 #define VOLTEST_DEPTH 102
 #define VOLTEST_UPDATE 103
+#define FORCE_ALPHA_OPAQUE 104
 #endif
 

@@ -84,7 +84,7 @@ void ShowScene2(int mode){
 
     /* ++++++++++++++++++++++++ draw particles +++++++++++++++++++++++++ */
 
-    if(showsmoke == 1){
+    if(showsmoke == 1 && geom_bounding_box_mousedown==0){
       CLIP_VALS;
       DrawPartFrame();
     }

@@ -103,7 +103,6 @@ GLUI_Checkbox *CHECKBOX_use_decimate_geom = NULL;
 GLUI_RadioGroup *RADIO_terrain_type = NULL;
 GLUI_RadioGroup *RADIO_select_geom = NULL;
 GLUI_RadioGroup *RADIO_cface_type = NULL;
-GLUI_RadioGroup *RADIO_show_geom_boundingbox = NULL;
 GLUI_RadioGroup *RADIO_hvac_show_component_labels = NULL;
 GLUI_RadioGroup *RADIO_hvac_show_filters          = NULL;
 
@@ -173,7 +172,6 @@ GLUI_Spinner *SPINNER_terrain_deimate_delta=NULL;
 #define VOL_SHOWHIDE           3
 #define SELECT_GEOM            4
 #define VOL_USE_CFACES         5
-#define GEOM_BOUNDING_BOX      6
 
 GLUI *glui_geometry=NULL;
 
@@ -195,7 +193,6 @@ GLUI_Listbox *LIST_hvacductvar_index = NULL;
 GLUI_Panel *PANEL_geomtest2 = NULL;
 GLUI_Panel *PANEL_cfaces = NULL;
 GLUI_Panel *PANEL_obj_select=NULL,*PANEL_faces=NULL,*PANEL_triangles=NULL,*PANEL_volumes=NULL,*PANEL_geom_showhide;
-GLUI_Panel *PANEL_boundingbox = NULL;
 GLUI_Panel *PANEL_vertex1_rgb = NULL;
 GLUI_Panel *PANEL_vertex2_rgb = NULL;
 GLUI_Panel *PANEL_triangle_rgb = NULL;
@@ -294,12 +291,6 @@ extern "C" void GLUIUpdateCfaces(void){
     CHECKBOX_cfaces->set_int_val(use_cfaces);
   }
   if(CHECKBOX_show_cface_normals!=NULL)CHECKBOX_show_cface_normals->set_int_val(show_cface_normals);
-}
-
-/* ------------------ GLUIUpdateGeomBoundingBox ------------------------ */
-
-extern "C" void GLUIUpdateGeomBoundingBox(void){
-  if(RADIO_show_geom_boundingbox!=NULL)RADIO_show_geom_boundingbox->set_int_val(show_geom_boundingbox);
 }
 
 /* ------------------ GLUIUpdateGeometryControls ------------------------ */
@@ -1062,13 +1053,6 @@ extern "C" void GLUIGeometrySetup(int main_window){
     glui_geometry->add_spinner_to_panel(PANEL_geom_offset_outline, "normal",   GLUI_SPINNER_FLOAT, &geom_norm_offset);
     glui_geometry->add_spinner_to_panel(PANEL_geom_offset_outline, "vertical", GLUI_SPINNER_FLOAT, &geom_dz_offset);
 
-    PANEL_boundingbox = glui_geometry->add_panel_to_panel(PANEL_group1, "show bounding box");
-    PANEL_boundingbox->set_alignment(GLUI_ALIGN_LEFT);
-    RADIO_show_geom_boundingbox = glui_geometry->add_radiogroup_to_panel(PANEL_boundingbox, &show_geom_boundingbox, GEOM_BOUNDING_BOX, VolumeCB);
-    glui_geometry->add_radiobutton_to_group(RADIO_show_geom_boundingbox, "always");
-    glui_geometry->add_radiobutton_to_group(RADIO_show_geom_boundingbox, "when mouse is pressed");
-    glui_geometry->add_radiobutton_to_group(RADIO_show_geom_boundingbox, "never");
-
     PANEL_geom_transparency = glui_geometry->add_panel_to_panel(PANEL_group1, "transparency");
     PANEL_geom_transparency->set_alignment(GLUI_ALIGN_LEFT);
     CHECKBOX_geom_force_transparent = glui_geometry->add_checkbox_to_panel(PANEL_geom_transparency, "force", &geom_force_transparent);
@@ -1496,9 +1480,6 @@ void VolumeCB(int var){
   case VOL_USE_CFACES:
     VolumeCB(VOL_SHOWHIDE);
     Keyboard('q',FROM_GEOM_DIALOG);
-    break;
-  case GEOM_BOUNDING_BOX:
-    updatemenu=1;
     break;
   default:
     assert(FFALSE);

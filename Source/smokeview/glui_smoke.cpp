@@ -102,6 +102,7 @@ GLUI_Checkbox *CHECKBOX_smoke3d_use_skip=NULL;
 #endif
 GLUI_Checkbox *CHECKBOX_use_opacity_depth = NULL;
 GLUI_Checkbox *CHECKBOX_use_opacity_multiplier = NULL;
+GLUI_Checkbox *CHECKBOX_force_alpha_opaque = NULL;
 GLUI_Checkbox *CHECKBOX_use_co2_colormap = NULL;
 GLUI_Checkbox *CHECKBOX_use_fire_colormap = NULL;
 GLUI_Checkbox *CHECKBOX_use_fire_rgb = NULL;
@@ -241,6 +242,12 @@ extern "C" void GLUIUpdateSmoke16(void) {
 
 extern "C" void GLUIUpdateFreeze(int val){
   CHECKBOX_freeze->set_int_val(val);
+}
+
+/* ------------------ GLUIForceAlphaOpaque ------------------------ */
+
+extern "C" void GLUIForceAlphaOpaque(void){
+  CHECKBOX_force_alpha_opaque->set_int_val(force_alpha_opaque);
 }
 
 /* ------------------ GLUIUpdateLoadFrameVal ------------------------ */
@@ -507,6 +514,8 @@ extern "C" void GLUI3dSmokeSetup(int main_window){
   glui_3dsmoke->add_checkbox_to_panel(PANEL_fire_opacity, "off axis planes", &smoke_offaxis);
   glui_3dsmoke->add_checkbox_to_panel(PANEL_fire_opacity, "adjust opacities", &smoke_adjust);
   SPINNER_smoke3d_fire_halfdepth->set_float_limits(0.01, 100.0);
+  CHECKBOX_force_alpha_opaque = glui_3dsmoke->add_checkbox_to_panel(PANEL_fire_opacity, "force opaque", &force_alpha_opaque, FORCE_ALPHA_OPAQUE, GLUISmoke3dCB);
+
   GLUISmoke3dCB(USE_OPACITY_DEPTH);
 
   if(co2_colormap_type==0){
@@ -806,6 +815,10 @@ extern "C" void GLUISmoke3dCB(int var){
   switch(var){
   float temp_min, temp_max;
 
+  case FORCE_ALPHA_OPAQUE:
+    update_smoke_alphas = 1;
+    updatemenu = 1;
+    break;
   case USE_FIRE_ALPHA:
     use_fire_alpha = 1-glui_use_fire_alpha;
     if(have_fire!=NO_FIRE&&have_smoke==NO_SMOKE){
