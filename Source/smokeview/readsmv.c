@@ -3022,10 +3022,16 @@ void UpdateBoundInfo(void){
   PRINT_TIMER(bound_timer, "GetGlobalPartBounds");
 
   GetGlobalSliceBoundsReduced();
+  if(slicebound_threads == NULL){
+    slicebound_threads = THREADinit(&n_slicebound_threads, &use_slicebound_threads, GetGlobalSliceBoundsFull);
+  }
   THREADrun(slicebound_threads, NULL);
   PRINT_TIMER(bound_timer, "GetGlobalSliceBounds");
 
   GetGlobalPatchBoundsReduced();
+  if(patchbound_threads == NULL){
+    patchbound_threads = THREADinit(&n_patchbound_threads, &use_patchbound_threads, GetGlobalPatchBoundsFull);
+  }
   THREADrun(patchbound_threads, NULL);
   PRINT_TIMER(bound_timer, "GetGlobalPatchBounds");
 
@@ -6780,18 +6786,6 @@ int ReadSMV_Init() {
     use_ffmpeg_threads      = 0;
     use_readallgeom_threads = 0;
   }
-
-  checkfiles_threads      = THREADinit(&n_checkfiles_threads,   &use_checkfiles_threads,   CheckFiles);
-  classifyallgeom_threads = THREADinit(&n_readallgeom_threads,  &use_readallgeom_threads,  ClassifyAllGeom);
-  compress_threads        = THREADinit(&n_compress_threads,     &use_compress_threads,     Compress);
-  ffmpeg_threads          = THREADinit(&n_ffmpeg_threads,       &use_ffmpeg_threads,       SetupFF);
-  partload_threads        = THREADinit(&n_partload_threads,     &use_partload_threads,     MtLoadAllPartFiles);
-  patchbound_threads      = THREADinit(&n_patchbound_threads,   &use_patchbound_threads,   GetGlobalPatchBoundsFull);
-  playmovie_threads       = THREADinit(&n_playmovie_threads,    &use_playmovie_threads,    PlayMovie);
-  readallgeom_threads     = THREADinit(&n_readallgeom_threads,  &use_readallgeom_threads,  ReadAllGeom);
-  slicebound_threads      = THREADinit(&n_slicebound_threads,   &use_slicebound_threads,   GetGlobalSliceBoundsFull);
-  triangles_threads       = THREADinit(&n_triangles_threads,    &use_triangles_threads,    UpdateTrianglesAll);
-  volsmokeload_threads    = THREADinit(&n_volsmokeload_threads, &use_volsmokeload_threads, ReadVolsmokeAllFramesAllMeshes2);
 
   START_TIMER(getfilelist_time);
   MakeFileLists();
@@ -11601,6 +11595,9 @@ int ReadSMV_Configure(){
   }
   if(ntotal_blockages > 250000)show_geom_boundingbox = SHOW_BOUNDING_BOX_MOUSE_DOWN;
 
+  if(checkfiles_threads != NULL){
+    checkfiles_threads = THREADinit(&n_checkfiles_threads, &use_checkfiles_threads, CheckFiles);
+  }
   THREADrun(checkfiles_threads, NULL);
   PRINT_TIMER(timer_readsmv, "CheckFiles");
 
@@ -11702,6 +11699,9 @@ int ReadSMV_Configure(){
   PRINT_TIMER(timer_readsmv, "UpdateMeshBoxBounds");
 
   SetupReadAllGeom();
+  if(readallgeom_threads == NULL){
+    readallgeom_threads = THREADinit(&n_readallgeom_threads, &use_readallgeom_threads, ReadAllGeom);
+  }
   THREADrun(readallgeom_threads, NULL);
   THREADcontrol(readallgeom_threads, THREAD_JOIN);
   PRINT_TIMER(timer_readsmv, "ReadAllGeomMT");
@@ -11805,6 +11805,9 @@ int ReadSMV_Configure(){
   MakeIBlankCarve();
   PRINT_TIMER(timer_readsmv, "MakeIBlankCarve");
 
+  if(ffmpeg_threads == NULL){
+    ffmpeg_threads = THREADinit(&n_ffmpeg_threads, &use_ffmpeg_threads, SetupFF);
+  }
   THREADrun(ffmpeg_threads, NULL);
   PRINT_TIMER(timer_readsmv, "SetupFFMT");
 
@@ -11917,6 +11920,10 @@ int ReadSMV_Configure(){
 
   if(large_case==0){
     SetupReadAllGeom();
+
+    if(classifyallgeom_threads == NULL){
+      classifyallgeom_threads = THREADinit(&n_readallgeom_threads, &use_readallgeom_threads, ClassifyAllGeom);
+    }
     THREADrun(classifyallgeom_threads, NULL);
   }
   PRINT_TIMER(timer_readsmv, "ClassifyGeom");
