@@ -4711,8 +4711,6 @@ void UnLoadVolsmoke3DMenu(int value){
 /* ------------------ UnLoadSmoke3DMenu ------------------------ */
 
 void UnLoadSmoke3DMenu(int value){
-  int errorcode;
-
   if(value==MENU_DUMMY)return;
   updatemenu=1;
   if(value<0){

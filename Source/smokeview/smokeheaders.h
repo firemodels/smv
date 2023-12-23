@@ -407,6 +407,7 @@ EXTERNCPP void OutputMinMax(char *meshlabel, char *label, char *unit, float valm
 EXTERNCPP void ScriptLoadSliceRender(scriptdata*scripti);
 EXTERNCPP int GetSmokeNFrames(int type, float *tmin, float *tmax);
 EXTERNCPP void ScriptLoadSmokeRender(scriptdata *scripti);
+EXTERNCPP void SmokeWrapup(void);
 FILE_SIZE LoadSmoke3D(int type, int frame, int *count, float *time_value);
 EXTERNCPP int GetNSliceFrames(char *file, float *stime_min, float *stime_max);
 EXTERNCPP void GenerateSliceMenu(int from_commandline);
