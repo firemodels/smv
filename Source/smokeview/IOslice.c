@@ -3553,7 +3553,7 @@ void UpdateVSlices(void){
 #ifdef _DEBUG
   PRINTF("  updating vector slices\n");
 #endif
-  GetSliceParams();
+  GetSliceParams(); //slow
 
   /* update vector slices */
 
@@ -3579,7 +3579,7 @@ void UpdateVSlices(void){
       continue;
     }
   }
-  for(i=0;i<nsliceinfo;i++){
+  for(i=0;i<nsliceinfo;i++){ //slow
     slicedata *sdi;
     vslicedata *vd;
     int j;
