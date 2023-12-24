@@ -930,7 +930,7 @@ EXTERNCPP void Normalize(float *xyz, int n);
 EXTERNCPP void Array2String(float *array, int narray, char *string);
 EXTERNCPP void GetIsoLevels(const char *isofile, int dataflag, float **levelsptr, float ***colorlevelsptr, int *nisolevels);
 
-EXTERNCPP void UpdateVSlices(sliceparmdata *sp);
+EXTERNCPP void *UpdateVSlices(void *arg);
 EXTERNCPP void GetGSliceParams(void);
 EXTERNCPP void UpdatePartMenuLabels(void);
 EXTERNCPP void UpdateIsoMenuLabels(void);

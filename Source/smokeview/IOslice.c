@@ -3533,9 +3533,11 @@ void GetSliceParams2(void){
 
 /* ------------------ UpdateVSlices ------------------------ */
 
-void UpdateVSlices(sliceparmdata *sp){
+void *UpdateVSlices(void *arg){
   int i;
+  sliceparmdata *sp;
 
+  sp = (sliceparmdata *)arg;
   max_dx = meshinfo->xplt_orig[1] - meshinfo->xplt_orig[0];
   max_dy = meshinfo->yplt_orig[1] - meshinfo->yplt_orig[0];
   max_dz = meshinfo->zplt_orig[1] - meshinfo->zplt_orig[0];
@@ -3755,6 +3757,7 @@ void UpdateVSlices(sliceparmdata *sp){
     }
   }
   UpdateVsliceMenuLabels(sp);
+  THREAD_EXIT(sliceparms_threads);
 }
 
 /* ------------------ UpdateVSliceBoundIndexes ------------------------ */

@@ -11796,7 +11796,12 @@ int ReadSMV_Configure(){
   nvsliceinfo           = 0;
   nfedinfo              = 0;
   nfediso               = 0;
-  UpdateVSlices(&sliceparminfo);
+  if(sliceparms_threads == NULL){
+    sliceparms_threads = THREADinit(&n_sliceparms_threads, &use_sliceparms_threads, UpdateVSlices);
+  }
+  THREADrun(sliceparms_threads, &sliceparminfo);
+  THREADcontrol(sliceparms_threads, THREAD_JOIN);
+
   GetSliceParmInfo(&sliceparminfo);
   PRINT_TIMER(timer_readsmv, "UpdateVSlices");
   if(update_slice==1)return 3;
