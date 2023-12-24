@@ -1470,7 +1470,12 @@ SVEXTERN float SVDECL(pref,101325.0),SVDECL(pamb,0.0),SVDECL(tamb,293.15);
 SVEXTERN int SVDECL(ntc_total,0.0), SVDECL(nspr_total,0.0), SVDECL(nheat_total,0.0);
 SVEXTERN int SVDECL(n_devices,0);
 
-SVEXTERN int SVDECL(npartinfo,0), SVDECL(nsliceinfo,0), SVDECL(nvsliceinfo,0), SVDECL(nplot3dinfo,0), SVDECL(npatchinfo,0);
+SVEXTERN int SVDECL(npartinfo,0), SVDECL(nplot3dinfo,0), SVDECL(npatchinfo,0);
+
+SVEXTERN int SVDECL(nsliceinfo,0),           SVDECL(nvsliceinfo,0);
+SVEXTERN int SVDECL(nmultisliceinfo,0),      SVDECL(nmultivsliceinfo,0);
+SVEXTERN sliceparmdata sliceparminfo;
+
 SVEXTERN int SVDECL(nslicebounds, 0), SVDECL(npatchbounds,0), SVDECL(npatch2,0);
 SVEXTERN int nfedinfo;
 SVEXTERN int SVDECL(nsmoke3dinfo,0);
@@ -2122,8 +2127,6 @@ SVEXTERN multislicedata SVDECL(*multisliceinfo,NULL);
 SVEXTERN multivslicedata SVDECL(*multivsliceinfo,NULL);
 SVEXTERN outlinedata SVDECL(*outlineinfo,NULL);
 SVEXTERN int SVDECL(noutlineinfo,0);
-SVEXTERN int SVDECL(nmultisliceinfo,0);
-SVEXTERN int SVDECL(nmultivsliceinfo,0);
 SVEXTERN int SVDECL(*sliceorderindex,NULL),SVDECL(*vsliceorderindex,NULL),SVDECL(*partorderindex,NULL);
 SVEXTERN int SVDECL(*patchorderindex,NULL),SVDECL(*isoorderindex,NULL),SVDECL(*plot3dorderindex,NULL);
 SVEXTERN int SVDECL(showfiles,0);

@@ -2165,10 +2165,10 @@ int VSliceCompare(const void *arg1, const void *arg2){
 
 /* ------------------ UpdateSliceMenuShow ------------------------ */
 
-void UpdateSliceMenuShow(void){
+void UpdateSliceMenuShow(sliceparmdata *sp){
   int i;
 
-  for(i=0;i<nsliceinfo;i++){
+  for(i=0;i<sp->nsliceinfo;i++){
     slicedata *sd;
 
     sd = sliceinfo + i;
@@ -2212,14 +2212,14 @@ char *GetMSliceDir(multislicedata *mslicei){
 
 /* ------------------ UpdateSliceMenuLabels ------------------------ */
 
-void UpdateSliceMenuLabels(void){
+void UpdateSliceMenuLabels(sliceparmdata *sp){
   int i;
   char label[128];
   multislicedata *mslicei;
   slicedata *sd,*sdold;
 
-  UpdateSliceMenuShow();
-  if(nsliceinfo>0){
+  UpdateSliceMenuShow(sp);
+  if(sp->nsliceinfo>0){
     char *cdir;
 
     mslicei = multisliceinfo;
@@ -2249,7 +2249,7 @@ void UpdateSliceMenuLabels(void){
     if(sd->compression_type==COMPRESSED_RLE){
       STRCAT(sd->menulabel," (RLE)");
     }
-    for(i=1;i<nsliceinfo;i++){
+    for(i=1;i<sp->nsliceinfo;i++){
       sdold = sliceinfo + sliceorderindex[i - 1];
       sd = sliceinfo + sliceorderindex[i];
       cdir = GetMSliceDir(mslicei);
@@ -2280,7 +2280,7 @@ void UpdateSliceMenuLabels(void){
         STRCAT(sd->menulabel," (RLE)");
       }
     }
-    for(i=0;i<nsliceinfo;i++){
+    for(i=0;i<sp->nsliceinfo;i++){
       sd = sliceinfo + i;
       STRCPY(sd->menulabel2,sd->label.longlabel);
       STRCAT(sd->menulabel2,", ");
@@ -2520,7 +2520,7 @@ void UpdateVectorSkip(int skip){
 
 /* ------------------ UpdateVsliceMenulabels ------------------------ */
 
-void UpdateVsliceMenuLabels(void){
+void UpdateVsliceMenuLabels(sliceparmdata *sp){
   int i;
   slicedata *sd, *sdold;
   vslicedata *vsd, *vsdold;
@@ -2528,7 +2528,7 @@ void UpdateVsliceMenuLabels(void){
   char label[128];
 
 
-  if(nvsliceinfo>0){
+  if(sp->nvsliceinfo>0){
     mvslicei = multivsliceinfo;
     vsd = vsliceinfo + vsliceorderindex[0];
     sd = sliceinfo + vsd->ival;
@@ -2551,7 +2551,7 @@ void UpdateVsliceMenuLabels(void){
       STRCAT(vsd->menulabel,", ");
       STRCAT(vsd->menulabel,sd->file);
     }
-    for(i=1;i<nvsliceinfo;i++){
+    for(i=1;i<sp->nvsliceinfo;i++){
       vsdold = vsliceinfo + vsliceorderindex[i - 1];
       sdold = sliceinfo + vsdold->ival;
       vsd = vsliceinfo + vsliceorderindex[i];
@@ -2576,7 +2576,7 @@ void UpdateVsliceMenuLabels(void){
         STRCAT(vsd->menulabel,sd->file);
       }
     }
-    for(i=0;i<nvsliceinfo;i++){
+    for(i=0;i<sp->nvsliceinfo;i++){
       vsd = vsliceinfo + vsliceorderindex[i];
       sd = sliceinfo + vsd->ival;
       STRCPY(vsd->menulabel2,sd->label.longlabel);
@@ -2766,10 +2766,10 @@ int CountSliceDups(void){
 
 /* ------------------ UpdateSliceDups ------------------------ */
 
-void UpdateSliceDups(void){
+void UpdateSliceDups(sliceparmdata *sp){
   int i;
 
-  for(i=0;i<nmultisliceinfo;i++){
+  for(i=0;i<sp->nmultisliceinfo;i++){
     int ii;
     multislicedata *mslicei;
 
@@ -2782,7 +2782,7 @@ void UpdateSliceDups(void){
     }
   }
   // look for duplicate slices
-  for(i=0;i<nmultisliceinfo;i++){
+  for(i=0;i< sp->nmultisliceinfo;i++){
     int ii;
     multislicedata *mslicei;
 
@@ -2823,19 +2823,19 @@ void UpdateVSliceDups(void){
 
 /* ------------------ UpdateFedinfo ------------------------ */
 
-void UpdateFedinfo(void){
+void UpdateFedinfo(sliceparmdata *sp){
   int i;
   int ifediso = 0;
   FILE *stream_fedsmv = NULL;
 
-  nfedinfo = 0;
+  sp->nfedinfo = 0;
   if(smokediff == 1)return;
-  for(i = 0; i < nsliceinfo; i++){
+  for(i = 0; i < sp->nsliceinfo; i++){
     slicedata *slicei;
     feddata *fedi;
     int j;
 
-    fedi = fedinfo + nfedinfo;
+    fedi = fedinfo + sp->nfedinfo;
     slicei = sliceinfo + i;
 
     fedi->co = NULL;
@@ -2852,7 +2852,7 @@ void UpdateFedinfo(void){
     if(slicei->slice_filetype != SLICE_CELL_CENTER&&strcmp(slicei->label.longlabel, "CARBON DIOXIDE VOLUME FRACTION") != 0)continue;
     if(slicei->slice_filetype == SLICE_CELL_CENTER&&strcmp(slicei->label.longlabel, "CARBON DIOXIDE VOLUME FRACTION(cell centered)") != 0)continue;
     fedi->co2_index = i;
-    for(j = 0; j < nsliceinfo; j++){
+    for(j = 0; j < sp->nsliceinfo; j++){
       slicedata *slicej;
 
       slicej = sliceinfo + j;
@@ -2866,7 +2866,7 @@ void UpdateFedinfo(void){
       break;
     }
     if(fedi->co_index == -1)continue;
-    for(j = 0; j < nsliceinfo; j++){
+    for(j = 0; j < sp->nsliceinfo; j++){
       slicedata *slicej;
 
       slicej = sliceinfo + j;
@@ -2885,32 +2885,32 @@ void UpdateFedinfo(void){
     if(fedi->co2_index != -1 && sliceinfo[fedi->co2_index].compression_type == COMPRESSED_ZLIB)continue;
     if(fedi->o2_index  != -1 && sliceinfo[fedi->o2_index].compression_type  == COMPRESSED_ZLIB)continue;
 #endif
-    fedi->fed_index = nsliceinfo + nfedinfo;
-    if(sliceinfo[fedi->co_index].volslice == 1)nfediso++;
-    nfedinfo++;
+    fedi->fed_index = sp->nsliceinfo + sp->nfedinfo;
+    if(sliceinfo[fedi->co_index].volslice == 1)sp->nfediso++;
+    sp->nfedinfo++;
   }
-  if(nfedinfo == 0){
+  if(sp->nfedinfo == 0){
     FREEMEMORY(fedinfo);
     return;
   }
   else{
-    nsliceinfo += nfedinfo;
-    ResizeMemory((void **)&fedinfo, nfedinfo * sizeof(feddata));
-    ResizeMemory((void **)&sliceinfo, nsliceinfo * sizeof(slicedata));
-    ResizeMemory((void **)&vsliceinfo, 3 * nsliceinfo * sizeof(vslicedata));
-    ResizeMemory((void **)&sliceinfo, nsliceinfo * sizeof(slicedata));
-    ResizeMemory((void **)&fedinfo, nsliceinfo * sizeof(feddata));
-    ResizeMemory((void **)&slice_loadstack, nsliceinfo * sizeof(int));
-    ResizeMemory((void **)&vslice_loadstack, nsliceinfo * sizeof(int));
-    ResizeMemory((void **)&subslice_menuindex, nsliceinfo * sizeof(int));
-    ResizeMemory((void **)&msubslice_menuindex, nsliceinfo*sizeof(int));
-    ResizeMemory((void **)&subvslice_menuindex, nsliceinfo * sizeof(int));
-    ResizeMemory((void **)&msubvslice_menuindex, nsliceinfo*sizeof(int));
-    ResizeMemory((void **)&mslice_loadstack, nsliceinfo * sizeof(int));
-    ResizeMemory((void **)&mvslice_loadstack, nsliceinfo * sizeof(int));
-    if(nfediso > 0){
-      nisoinfo += nfediso;
-      if(nisoinfo == nfediso){
+    sp->nsliceinfo += sp->nfedinfo;
+    ResizeMemory((void **)&fedinfo, sp->nfedinfo * sizeof(feddata));
+    ResizeMemory((void **)&sliceinfo, sp->nsliceinfo * sizeof(slicedata));
+    ResizeMemory((void **)&vsliceinfo, 3 * sp->nsliceinfo * sizeof(vslicedata));
+    ResizeMemory((void **)&sliceinfo, sp->nsliceinfo * sizeof(slicedata));
+    ResizeMemory((void **)&fedinfo, sp->nsliceinfo * sizeof(feddata));
+    ResizeMemory((void **)&slice_loadstack, sp->nsliceinfo * sizeof(int));
+    ResizeMemory((void **)&vslice_loadstack, sp->nsliceinfo * sizeof(int));
+    ResizeMemory((void **)&subslice_menuindex, sp->nsliceinfo * sizeof(int));
+    ResizeMemory((void **)&msubslice_menuindex, sp->nsliceinfo*sizeof(int));
+    ResizeMemory((void **)&subvslice_menuindex, sp->nsliceinfo * sizeof(int));
+    ResizeMemory((void **)&msubvslice_menuindex, sp->nsliceinfo*sizeof(int));
+    ResizeMemory((void **)&mslice_loadstack, sp->nsliceinfo * sizeof(int));
+    ResizeMemory((void **)&mvslice_loadstack, sp->nsliceinfo * sizeof(int));
+    if(sp->nfediso > 0){
+      nisoinfo += sp->nfediso;
+      if(nisoinfo == sp->nfediso){
         NewMemory((void **)&isoinfo, nisoinfo * sizeof(isodata));
         NewMemory((void **)&isotypes, nisoinfo * sizeof(int));
       }
@@ -2920,17 +2920,17 @@ void UpdateFedinfo(void){
       }
     }
   }
-  if(nfedinfo > 0 && fed_filename != NULL){
+  if(sp->nfedinfo > 0 && fed_filename != NULL){
     stream_fedsmv = fopen(fed_filename, "w");
   }
-  for(i = 0; i < nfedinfo; i++){ // define sliceinfo for fed slices
+  for(i = 0; i < sp->nfedinfo; i++){ // define sliceinfo for fed slices
     slicedata *sd;
     slicedata *co2;
     int nn_slice;
     feddata *fedi;
     char *filename, filename_base[1024], *ext;
 
-    sd = sliceinfo + nsliceinfo + (i - nfedinfo);
+    sd = sliceinfo + sp->nsliceinfo + (i - sp->nfedinfo);
     fedi = fedinfo + i;
     fedi->co = sliceinfo + fedi->co_index;
     fedi->o2 = sliceinfo + fedi->o2_index;
@@ -2957,7 +2957,7 @@ void UpdateFedinfo(void){
     sd->ploty = co2->ploty;
     sd->plotz = co2->plotz;
 
-    nn_slice = nsliceinfo + i;
+    nn_slice = sp->nsliceinfo + i;
 
     sd->is_fed = 1;
     sd->slcf_index = co2->slcf_index;
@@ -3041,12 +3041,12 @@ void UpdateFedinfo(void){
       int nn_iso, ii;
       float **colorlevels;
 
-      isoi = isoinfo + nisoinfo - nfediso + ifediso;
+      isoi = isoinfo + nisoinfo - sp->nfediso + ifediso;
       fedi->fed_iso = isoi;
       isoi->tfile = NULL;
       isoi->is_fed = 1;
       isoi->fedptr = fedi;
-      nn_iso = nisoinfo - nfediso + ifediso + 1;
+      nn_iso = nisoinfo - sp->nfediso + ifediso + 1;
       isoi->seq_id = nn_iso;
       isoi->autoload = 0;
       isoi->blocknumber = sd->blocknumber;
@@ -3101,15 +3101,15 @@ void UpdateFedinfo(void){
     }
   }
   if(stream_fedsmv != NULL)fclose(stream_fedsmv);
-  if(nfediso > 0)UpdateIsoMenuLabels();
+  if(sp->nfediso > 0)UpdateIsoMenuLabels();
 }
 
 /* ------------------ UpdateSliceDirCount ------------------------ */
 
-void UpdateSliceDirCount(void){
+void UpdateSliceDirCount(sliceparmdata *sp){
   int i, j;
 
-  for(i = 0; i < nmultisliceinfo; i++){
+  for(i = 0; i < sp->nmultisliceinfo; i++){
     multislicedata *mslicei;
 
     mslicei = multisliceinfo + i;
@@ -3118,7 +3118,7 @@ void UpdateSliceDirCount(void){
     mslicei->ndirxyz[2] = 0;
     mslicei->ndirxyz[3] = 0;
   }
-  for(i = 0; i < nmultisliceinfo; i++){
+  for(i = 0; i < sp->nmultisliceinfo; i++){
     multislicedata *mslicei;
     slicedata *slicei;
 
@@ -3126,7 +3126,7 @@ void UpdateSliceDirCount(void){
     slicei = sliceinfo + mslicei->islices[0];
     if(slicei->idir < 1)continue;
     if(slicei->volslice == 1)continue;
-    for(j = 0; j < nmultisliceinfo; j++){
+    for(j = 0; j < sp->nmultisliceinfo; j++){
       multislicedata *mslicej;
       slicedata *slicej;
 
@@ -3140,7 +3140,7 @@ void UpdateSliceDirCount(void){
       mslicei->ndirxyz[slicej->idir]++;
     }
   }
-  for(i = 0; i < nsliceinfo; i++){
+  for(i = 0; i < sp->nsliceinfo; i++){
     slicedata *slicei;
 
     slicei = sliceinfo + i;
@@ -3149,13 +3149,13 @@ void UpdateSliceDirCount(void){
     slicei->ndirxyz[2] = 0;
     slicei->ndirxyz[3] = 0;
   }
-  for(i = 0; i < nsliceinfo; i++){
+  for(i = 0; i < sp->nsliceinfo; i++){
     slicedata *slicei, *slicej;
 
     slicei = sliceinfo + i;
     if(slicei->idir < 1)continue;
     if(slicei->volslice == 1)continue;
-    for(j = 0; j < nsliceinfo; j++){
+    for(j = 0; j < sp->nsliceinfo; j++){
       slicej = sliceinfo + j;
       if(slicej->idir < 1)continue;
       if(slicej->volslice == 1)continue;
@@ -3170,7 +3170,7 @@ void UpdateSliceDirCount(void){
 
 /* ------------------ GetSliceParams ------------------------ */
 
-void GetSliceParams(void){
+void GetSliceParams(sliceparmdata *sp){
   int i;
   int error;
 
@@ -3186,7 +3186,7 @@ void GetSliceParams(void){
     stream=fopen(sliceinfo_filename,"r");
   }
 
-  for(i=0;i<nsliceinfo;i++){
+  for(i=0;i<sp->nsliceinfo;i++){
     slicedata *sd;
     int is1, is2, js1, js2, ks1, ks2;
     int iis1, iis2;
@@ -3195,7 +3195,7 @@ void GetSliceParams(void){
     sd = sliceinfo + i;
 
 #ifdef _DEBUG
-    if(nsliceinfo>100&&(i%100==0||i==nsliceinfo-1)){
+    if(sp->nsliceinfo>100&&(i%100==0||i==sp->nsliceinfo-1)){
       PRINTF("    obtaining parameters from %i'st slice file\n",i+1);
     }
 #endif
@@ -3259,8 +3259,8 @@ void GetSliceParams(void){
       sd->nslicek=nk;
     }
   }
-  UpdateFedinfo();
-  for(i=0;i<nsliceinfo;i++){
+  UpdateFedinfo(sp);
+  for(i=0;i<sp->nsliceinfo;i++){
     slicedata *sd;
     int is1, is2, js1, js2, ks1, ks2;
     meshdata *meshi;
@@ -3410,67 +3410,67 @@ void GetSliceParams(void){
     }
   }
   if(stream!=NULL)fclose(stream);
-  if(nsliceinfo>0){
+  if(sp->nsliceinfo>0){
     FREEMEMORY(sliceorderindex);
-    NewMemory((void **)&sliceorderindex,sizeof(int)*nsliceinfo);
-    for(i=0;i<nsliceinfo;i++){
+    NewMemory((void **)&sliceorderindex,sizeof(int)*sp->nsliceinfo);
+    for(i=0;i<sp->nsliceinfo;i++){
       sliceorderindex[i]=i;
     }
-    qsort( (int *)sliceorderindex, (size_t)nsliceinfo, sizeof(int), SliceCompare );
+    qsort( (int *)sliceorderindex, (size_t)sp->nsliceinfo, sizeof(int), SliceCompare );
 
-    for(i=0;i<nmultisliceinfo;i++){
+    for(i=0;i<sp->nmultisliceinfo;i++){
       multislicedata *mslicei;
 
       mslicei = multisliceinfo + i;
       FREEMEMORY(mslicei->islices);
     }
     FREEMEMORY(multisliceinfo);
-    nmultisliceinfo=0;
+    sp->nmultisliceinfo=0;
 
-    NewMemory((void **)&multisliceinfo,sizeof(multislicedata)*nsliceinfo);
+    NewMemory((void **)&multisliceinfo,sizeof(multislicedata)*sp->nsliceinfo);
 
     {
       multislicedata *mslicei;
       slicedata *sd;
 
-      nmultisliceinfo=1;
+      sp->nmultisliceinfo=1;
       mslicei = multisliceinfo;
       mslicei->islices=NULL;
-      NewMemory((void **)&mslicei->islices,sizeof(int)*nsliceinfo);
+      NewMemory((void **)&mslicei->islices,sizeof(int)*sp->nsliceinfo);
       mslicei->nslices=1;
       sd = sliceinfo + sliceorderindex[0];
       mslicei->islices[0] = sliceorderindex[0];
-      for(i=1;i<nsliceinfo;i++){
+      for(i=1;i<sp->nsliceinfo;i++){
         slicedata *sdold;
 
         sdold = sliceinfo + sliceorderindex[i - 1];
         sd = sliceinfo + sliceorderindex[i];
         mslicei->autoload=0;
         if(NewMultiSlice(sdold,sd)==1){
-          nmultisliceinfo++;
+          sp->nmultisliceinfo++;
           mslicei++;
           mslicei->nslices=0;
           mslicei->islices=NULL;
-          NewMemory((void **)&mslicei->islices,sizeof(int)*nsliceinfo);
+          NewMemory((void **)&mslicei->islices,sizeof(int)*sp->nsliceinfo);
         }
         mslicei->nslices++;
         mslicei->islices[mslicei->nslices-1]=sliceorderindex[i];
       }
     }
     have_multislice = 0;
-    //if(nmultisliceinfo>0&&nsliceinfo>0&&nmultisliceinfo+nfedinfo<nsliceinfo)have_multislice = 1;
-    if(nmultisliceinfo>0)have_multislice = 1; // use multi slice for all cases
+    //if(sp->nmultisliceinfo>0&&sp->nsliceinfo>0&&sp->nmultisliceinfo+nfedinfo<sp->nsliceinfo)have_multislice = 1;
+    if(sp->nmultisliceinfo>0)have_multislice = 1; // use multi slice for all cases
   }
-  for(i = 0; i < nsliceinfo; i++){
+  for(i = 0; i < sp->nsliceinfo; i++){
     slicedata *slicei;
 
     slicei = sliceinfo + i;
     slicei->mslice = NULL;
     slicei->skipdup = 0;
   }
-  UpdateSliceDups();
+  UpdateSliceDups(sp);
   nslicedups = CountSliceDups();
-  for(i = 0; i < nmultisliceinfo; i++){
+  for(i = 0; i < sp->nmultisliceinfo; i++){
     int ii;
     multislicedata *mslicei;
 
@@ -3491,9 +3491,11 @@ void GetSliceParams(void){
       slicei->mslice = mslicei;
     }
   }
-  UpdateSliceMenuLabels();
-  UpdateSliceDirCount();
+  UpdateSliceMenuLabels(sp);
+  UpdateSliceDirCount(sp);
 }
+//nsliceinfo
+//nmultisliceinfo
 
 /* ------------------ GetSliceParams2 ------------------------ */
 
@@ -3531,7 +3533,7 @@ void GetSliceParams2(void){
 
 /* ------------------ UpdateVSlices ------------------------ */
 
-void UpdateVSlices(void){
+void UpdateVSlices(sliceparmdata *sp){
   int i;
 
   max_dx = meshinfo->xplt_orig[1] - meshinfo->xplt_orig[0];
@@ -3553,12 +3555,12 @@ void UpdateVSlices(void){
 #ifdef _DEBUG
   PRINTF("  updating vector slices\n");
 #endif
-  GetSliceParams(); //slow
+  GetSliceParams(sp); //slow
 
   /* update vector slices */
 
-  nvsliceinfo=0;
-  for(i=0;i<nsliceinfo;i++){
+  sp->nvsliceinfo=0;
+  for(i=0;i<sp->nsliceinfo;i++){
     slicedata *sdi;
 
     sdi = sliceinfo+i;
@@ -3579,16 +3581,16 @@ void UpdateVSlices(void){
       continue;
     }
   }
-  for(i=0;i<nsliceinfo;i++){ //slow
+  for(i=0;i<sp->nsliceinfo;i++){ //slow
     slicedata *sdi;
     vslicedata *vd;
     int j;
 #ifdef _DEBUG
-    if(nsliceinfo>100&&(i%100==0||i==nsliceinfo-1)){
+    if(sp->nsliceinfo>100&&(i%100==0||i==sp->nsliceinfo-1)){
       PRINTF("    examining %i'st slice file for vectors\n",i+1);
     }
 #endif
-    vd = vsliceinfo + nvsliceinfo;
+    vd = vsliceinfo + sp->nvsliceinfo;
     sdi = sliceinfo+i;
     vd->iu=-1;
     vd->iv=-1;
@@ -3597,7 +3599,7 @@ void UpdateVSlices(void){
     vd->vslicefile_labelindex=sdi->slicefile_labelindex;
     vd->vslice_filetype=sdi->slice_filetype;
     if(vd->vslice_filetype==SLICE_CELL_CENTER){
-      for(j=0;j<nsliceinfo;j++){
+      for(j=0;j<sp->nsliceinfo;j++){
         slicedata *sdj;
 
         sdj = sliceinfo+j;
@@ -3611,7 +3613,7 @@ void UpdateVSlices(void){
       }
     }
     else if(vd->vslice_filetype == SLICE_GEOM){
-      for(j=0;j<nsliceinfo;j++){
+      for(j=0;j<sp->nsliceinfo;j++){
         slicedata *sdj;
 
         sdj = sliceinfo+j;
@@ -3625,7 +3627,7 @@ void UpdateVSlices(void){
       }
     }
     else{
-      for (j = 0; j < nsliceinfo; j++) {
+      for (j = 0; j < sp->nsliceinfo; j++) {
         slicedata *sdj;
 
         sdj = sliceinfo + j;
@@ -3643,41 +3645,41 @@ void UpdateVSlices(void){
       vd->display=0;
       vd->loaded=0;
       vd->volslice=sdi->volslice;
-      nvsliceinfo++;
+      sp->nvsliceinfo++;
     }
   }
 #ifdef _DEBUG
-  PRINTF("    %i vector slices found\n",nvsliceinfo);
+  PRINTF("    %i vector slices found\n",sp->nvsliceinfo);
 #endif
-  if(nvsliceinfo>0){
+  if(sp->nvsliceinfo>0){
     vslicedata *vsd;
     multivslicedata *mvslicei;
 
     FREEMEMORY(vsliceorderindex);
-    NewMemory((void **)&vsliceorderindex,sizeof(int)*nvsliceinfo);
-    for(i=0;i<nvsliceinfo;i++){
+    NewMemory((void **)&vsliceorderindex,sizeof(int)*sp->nvsliceinfo);
+    for(i=0;i<sp->nvsliceinfo;i++){
       vsliceorderindex[i]=i;
     }
-    qsort( (int *)vsliceorderindex, (size_t)nvsliceinfo, sizeof(int), VSliceCompare );
+    qsort( (int *)vsliceorderindex, (size_t)sp->nvsliceinfo, sizeof(int), VSliceCompare );
 
-    for(i=0;i<nmultivsliceinfo;i++){
+    for(i=0;i<sp->nmultivsliceinfo;i++){
       mvslicei = multivsliceinfo + i;
       FREEMEMORY(mvslicei->ivslices);
     }
     FREEMEMORY(multivsliceinfo);
-    nmultivsliceinfo=0;
+    sp->nmultivsliceinfo=0;
 
-    NewMemory((void **)&multivsliceinfo,sizeof(multislicedata)*nvsliceinfo);
+    NewMemory((void **)&multivsliceinfo,sizeof(multislicedata)*sp->nvsliceinfo);
 
-    nmultivsliceinfo=1;
+    sp->nmultivsliceinfo=1;
     mvslicei = multivsliceinfo;
     mvslicei->ivslices=NULL;
-    NewMemory((void **)&mvslicei->ivslices,sizeof(int)*nvsliceinfo);
+    NewMemory((void **)&mvslicei->ivslices,sizeof(int)*sp->nvsliceinfo);
     mvslicei->nvslices=1;
     vsd = vsliceinfo + vsliceorderindex[0];
     mvslicei->ivslices[0] = vsliceorderindex[0];
     mvslicei->mvslicefile_labelindex=sliceinfo[vsd->ival].slicefile_labelindex;
-    for(i=1;i<nvsliceinfo;i++){
+    for(i=1;i<sp->nvsliceinfo;i++){
       slicedata *sd, *sdold;
       vslicedata *vsdold;
 
@@ -3686,12 +3688,12 @@ void UpdateVSlices(void){
       vsd = vsliceinfo + vsliceorderindex[i];
       sd = sliceinfo + vsd->ival;
       if(NewMultiSlice(sdold,sd)==1){
-        nmultivsliceinfo++;
+        sp->nmultivsliceinfo++;
         mvslicei++;
         mvslicei->nvslices=0;
         mvslicei-> mvslicefile_labelindex=sd->slicefile_labelindex;
         mvslicei->ivslices=NULL;
-        NewMemory((void **)&mvslicei->ivslices,sizeof(int)*nvsliceinfo);
+        NewMemory((void **)&mvslicei->ivslices,sizeof(int)*sp->nvsliceinfo);
       }
       mvslicei->nvslices++;
       mvslicei->ivslices[mvslicei->nvslices-1]=vsliceorderindex[i];
@@ -3699,7 +3701,7 @@ void UpdateVSlices(void){
 
     // define sequence id's for auto file loading
 
-    for(i=0;i<nvsliceinfo;i++){
+    for(i=0;i<sp->nvsliceinfo;i++){
       vslicedata *vslicei;
       slicedata *sliceval;
       int seq_id;
@@ -3715,12 +3717,12 @@ void UpdateVSlices(void){
     }
   }
   have_multivslice = 0;
-  //if(nvsliceinfo > 0 && nmultivsliceinfo < nvsliceinfo)have_multivslice = 1;
-  if(nvsliceinfo>0)have_multivslice = 1; // use multi vslice for all cases
+  //if(sp->nvsliceinfo > 0 && sp->nmultivsliceinfo < sp->nvsliceinfo)have_multivslice = 1;
+  if(sp->nvsliceinfo>0)have_multivslice = 1; // use multi vslice for all cases
 
   UpdateVSliceDups();
 
-  for(i = 0; i<nmultivsliceinfo; i++){
+  for(i = 0; i<sp->nmultivsliceinfo; i++){
     multivslicedata *mvslicei;
 
     mvslicei = multivsliceinfo + i;
@@ -3729,7 +3731,7 @@ void UpdateVSlices(void){
     mvslicei->ndirxyz[2]=0;
     mvslicei->ndirxyz[3]=0;
   }
-  for(i=0;i<nmultivsliceinfo;i++){
+  for(i=0;i<sp->nmultivsliceinfo;i++){
     multivslicedata *mvslicei;
     slicedata *slicei;
     int j;
@@ -3738,7 +3740,7 @@ void UpdateVSlices(void){
     slicei = sliceinfo + mvslicei->ivslices[0];
     if(slicei->idir<1)continue;
     if(slicei->volslice==1)continue;
-    for(j=0;j<nmultivsliceinfo;j++){
+    for(j=0;j<sp->nmultivsliceinfo;j++){
       multivslicedata *mvslicej;
       slicedata *slicej;
 
@@ -3752,8 +3754,7 @@ void UpdateVSlices(void){
       mvslicei->ndirxyz[slicej->idir]++;
     }
   }
-
-  UpdateVsliceMenuLabels();
+  UpdateVsliceMenuLabels(sp);
 }
 
 /* ------------------ UpdateVSliceBoundIndexes ------------------------ */

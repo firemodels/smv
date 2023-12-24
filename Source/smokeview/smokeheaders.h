@@ -535,7 +535,10 @@ EXTERNCPP void PartBoundCB(int var);
 EXTERNCPP void ShowHideMenu(int val);
 EXTERNCPP void UpdateVSliceDups(void);
 EXTERNCPP void UnloadVSliceMenu(int value);
-EXTERNCPP void UpdateSliceDups(void);
+EXTERNCPP void UpdateSliceDups(sliceparmdata *sp);
+EXTERNCPP void GetSliceParmInfo(sliceparmdata *sp);
+EXTERNCPP void SetSliceParmInfo(sliceparmdata *sp);
+
 EXTERNCPP void UpdateSmokeAlphas(void);
 EXTERNCPP void InitAlphas(unsigned char *alphanew,
                           float base_extinct, float new_extinct,
@@ -672,7 +675,7 @@ EXTERNCPP void DrawGeom(int flag,int frameflag);
 EXTERNCPP void RemoveDupBlockages(void);
 EXTERNCPP void SortIsoTriangles(float *mm);
 EXTERNCPP void UpdateIsoTriangles(int flag);
-EXTERNCPP void UpdateSliceMenuShow(void);
+EXTERNCPP void UpdateSliceMenuShow(sliceparmdata *sp);
 EXTERNCPP void UpdateHideBoundarySurface(void);
 EXTERNCPP int  LastSliceLoadstack(void);
 EXTERNCPP int  LastVSliceLoadstack(void);
@@ -927,13 +930,13 @@ EXTERNCPP void Normalize(float *xyz, int n);
 EXTERNCPP void Array2String(float *array, int narray, char *string);
 EXTERNCPP void GetIsoLevels(const char *isofile, int dataflag, float **levelsptr, float ***colorlevelsptr, int *nisolevels);
 
-EXTERNCPP void UpdateVSlices(void);
+EXTERNCPP void UpdateVSlices(sliceparmdata *sp);
 EXTERNCPP void GetGSliceParams(void);
 EXTERNCPP void UpdatePartMenuLabels(void);
 EXTERNCPP void UpdateIsoMenuLabels(void);
 EXTERNCPP void UpdateBoundaryMenuLabels(void);
-EXTERNCPP void UpdateSliceMenuLabels(void);
-EXTERNCPP void UpdateVsliceMenuLabels(void);
+EXTERNCPP void UpdateSliceMenuLabels(sliceparmdata *sp);
+EXTERNCPP void UpdateVsliceMenuLabels(sliceparmdata *sp);
 EXTERNCPP void UpdatePlot3dMenuLabels(void);
 EXTERNCPP void HandleRotationType(int flag);
 

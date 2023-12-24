@@ -12,6 +12,17 @@
 
 /* --------------------------  circdata ------------------------------------ */
 
+typedef struct _sliceparmdata {
+  int nsliceinfo;
+  int nvsliceinfo;
+  int nmultisliceinfo;
+  int nmultivsliceinfo;
+  int nfedinfo;
+  int nfediso;
+} sliceparmdata;
+
+/* --------------------------  circdata ------------------------------------ */
+
 typedef struct _circdata {
   float *xcirc, *ycirc;
   int ncirc;

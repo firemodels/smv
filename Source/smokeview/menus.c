@@ -3579,8 +3579,9 @@ void LoadUnloadMenu(int value){
     GLUTPOSTREDISPLAY;
     showfiles=1-showfiles;
     updatemenu=1;
-    UpdateSliceMenuLabels();
-    UpdateVsliceMenuLabels();
+    SetSliceParmInfo(&sliceparminfo);
+    UpdateSliceMenuLabels(&sliceparminfo);
+    UpdateVsliceMenuLabels(&sliceparminfo);
     UpdateSmoke3dMenuLabels();
     UpdateBoundaryMenuLabels();
     UpdateIsoMenuLabels();
@@ -5398,7 +5399,8 @@ void LoadMultiSliceMenu(int value){
         slicedup_option = SLICEDUP_KEEPALL;
         updatemenu = 1;
         GLUTPOSTREDISPLAY;
-        UpdateSliceDups();
+        SetSliceParmInfo(&sliceparminfo);
+        UpdateSliceDups(&sliceparminfo);
         GLUIUpdateSliceDupDialog();
       }
       break;
@@ -5408,7 +5410,8 @@ void LoadMultiSliceMenu(int value){
         slicedup_option = SLICEDUP_KEEPCOARSE;
         updatemenu = 1;
         GLUTPOSTREDISPLAY;
-        UpdateSliceDups();
+        SetSliceParmInfo(&sliceparminfo);
+        UpdateSliceDups(&sliceparminfo);
         GLUIUpdateSliceDupDialog();
       }
       break;
@@ -5418,7 +5421,8 @@ void LoadMultiSliceMenu(int value){
         slicedup_option = SLICEDUP_KEEPFINE;
         updatemenu = 1;
         GLUTPOSTREDISPLAY;
-        UpdateSliceDups();
+        SetSliceParmInfo(&sliceparminfo);
+        UpdateSliceDups(&sliceparminfo);
         GLUIUpdateSliceDupDialog();
       }
       break;

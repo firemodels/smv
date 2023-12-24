@@ -6759,6 +6759,29 @@ void *CheckFiles(void *arg){
   THREAD_EXIT(checkfiles_threads);
 }
 
+
+/* ------------------ GetSliceParmInfo ------------------------ */
+
+void GetSliceParmInfo(sliceparmdata *sp){
+  nsliceinfo = sp->nsliceinfo;
+  nmultisliceinfo=sp->nmultisliceinfo;
+  nvsliceinfo = sp->nvsliceinfo;
+  nmultivsliceinfo =sp->nmultivsliceinfo;
+  nfedinfo =sp->nfedinfo;
+  nfediso =sp->nfediso;
+}
+
+/* ------------------ SetSliceParmInfo ------------------------ */
+
+void SetSliceParmInfo(sliceparmdata *sp){
+  sp->nsliceinfo       = nsliceinfo;
+  sp->nmultisliceinfo  = nmultisliceinfo;
+  sp->nvsliceinfo      = nvsliceinfo;
+  sp->nmultivsliceinfo = nmultivsliceinfo;
+  sp->nfedinfo         = nfedinfo;
+  sp->nfediso          = nfediso;
+}
+
 /* ------------------ ReadSMV ------------------------ */
 static float processing_time;
 static float getfilelist_time;
@@ -11766,7 +11789,15 @@ int ReadSMV_Configure(){
   CheckMemory;
 
   START_TIMER(timer_readsmv);
-  UpdateVSlices();
+  SetSliceParmInfo(&sliceparminfo);
+  nsliceinfo            = 0;
+  nmultisliceinfo       = 0;
+  nmultivsliceinfo      = 0;
+  nvsliceinfo           = 0;
+  nfedinfo              = 0;
+  nfediso               = 0;
+  UpdateVSlices(&sliceparminfo);
+  GetSliceParmInfo(&sliceparminfo);
   PRINT_TIMER(timer_readsmv, "UpdateVSlices");
   if(update_slice==1)return 3;
 
@@ -12792,7 +12823,8 @@ int ReadIni2(char *inifile, int localfile){
       sscanf(buffer, "%f %f %f", dc, dc + 1, dc + 2);
       dc[3] = 1.0;
       direction_color_ptr = GetColorPtr(direction_color);
-      UpdateSliceMenuShow();
+      GetSliceParmInfo(&sliceparminfo);
+      UpdateSliceMenuShow(&sliceparminfo);
       continue;
     }
 
