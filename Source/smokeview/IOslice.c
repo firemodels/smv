@@ -3557,11 +3557,14 @@ void *UpdateVSlices(void *arg){
 #ifdef _DEBUG
   PRINTF("  updating vector slices\n");
 #endif
+  INIT_PRINT_TIMER(timer_getsliceparams);
   GetSliceParams(sp); //slow
+  PRINT_TIMER(timer_getsliceparams, "GetSliceParams");
 
   /* update vector slices */
 
   sp->nvsliceinfo=0;
+  INIT_PRINT_TIMER(timer_updatevslices1);
   for(i=0;i<sp->nsliceinfo;i++){
     slicedata *sdi;
 
@@ -3583,6 +3586,9 @@ void *UpdateVSlices(void *arg){
       continue;
     }
   }
+  PRINT_TIMER(timer_updatevslices1, "UpdateVSlices_1");
+
+  INIT_PRINT_TIMER(timer_updatevslices2);
   for(i=0;i<sp->nsliceinfo;i++){ //slow
     slicedata *sdi;
     vslicedata *vd;
@@ -3650,9 +3656,11 @@ void *UpdateVSlices(void *arg){
       sp->nvsliceinfo++;
     }
   }
+  PRINT_TIMER(timer_updatevslices2, "UpdateVSlices_2");
 #ifdef _DEBUG
   PRINTF("    %i vector slices found\n",sp->nvsliceinfo);
 #endif
+  INIT_PRINT_TIMER(timer_updatevslices3);
   if(sp->nvsliceinfo>0){
     vslicedata *vsd;
     multivslicedata *mvslicei;
@@ -3718,12 +3726,17 @@ void *UpdateVSlices(void *arg){
       vslicei->reload = 0;
     }
   }
+  PRINT_TIMER(timer_updatevslices3, "UpdateVSlices_3");
+
   have_multivslice = 0;
   //if(sp->nvsliceinfo > 0 && sp->nmultivsliceinfo < sp->nvsliceinfo)have_multivslice = 1;
   if(sp->nvsliceinfo>0)have_multivslice = 1; // use multi vslice for all cases
 
+  INIT_PRINT_TIMER(timer_updatevslices4);
   UpdateVSliceDups();
+  PRINT_TIMER(timer_updatevslices4, "UpdateVSlices_4");
 
+  INIT_PRINT_TIMER(timer_updatevslices5);
   for(i = 0; i<sp->nmultivsliceinfo; i++){
     multivslicedata *mvslicei;
 
@@ -3733,6 +3746,9 @@ void *UpdateVSlices(void *arg){
     mvslicei->ndirxyz[2]=0;
     mvslicei->ndirxyz[3]=0;
   }
+  PRINT_TIMER(timer_updatevslices5, "UpdateVSlices_5");
+
+  INIT_PRINT_TIMER(timer_updatevslices6);
   for(i=0;i<sp->nmultivsliceinfo;i++){
     multivslicedata *mvslicei;
     slicedata *slicei;
@@ -3756,7 +3772,11 @@ void *UpdateVSlices(void *arg){
       mvslicei->ndirxyz[slicej->idir]++;
     }
   }
+  PRINT_TIMER(timer_updatevslices6, "UpdateVSlices_6");
+
+  INIT_PRINT_TIMER(timer_updatevslices7);
   UpdateVsliceMenuLabels(sp);
+  PRINT_TIMER(timer_updatevslices7, "UpdateVSlices_7");
   THREAD_EXIT(sliceparms_threads);
 }
 
