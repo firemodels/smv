@@ -889,6 +889,8 @@ void FreeLabels(flowlabels *flowlabel){
 void InitMesh(meshdata *meshi){
   int i;
 
+  meshi->isliceinfo    = 0;
+  meshi->nsliceinfo    = 0;
   for(i = 0;i < 6;i++){
     meshi->skip_nabors[i] = NULL;
     meshi->nabors[i]      = NULL;
@@ -6107,6 +6109,11 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
   sliceinfo_copy++;
   *sliceinfo_copy_in = sliceinfo_copy;
 
+  meshdata *meshi;
+
+  meshi = meshinfo + blocknumber;
+  meshi->nsliceinfo++;
+
   if(slicegeom==1){
     strcpy(buffer, buffers[0]);
     *patchgeom_in = sd->patchgeom;
@@ -7814,17 +7821,18 @@ int ReadSMV_Parse(bufferstreamdata *stream) {
   FREEMEMORY(sliceinfo);
   FREEMEMORY(fedinfo);
   if(nsliceinfo>0){
-    if(NewMemory((void **)&vsliceinfo, 3*nsliceinfo*sizeof(vslicedata))==0 ||
-       NewMemory((void **)&sliceinfo,  nsliceinfo*sizeof(slicedata))==0    ||
-       NewMemory((void **)&fedinfo,  nsliceinfo*sizeof(feddata))==0        ||
-       NewMemory((void **)&slice_loadstack, nsliceinfo*sizeof(int))==0     ||
-       NewMemory((void **)&vslice_loadstack, nsliceinfo*sizeof(int))==0    ||
-       NewMemory((void **)&subslice_menuindex, nsliceinfo*sizeof(int))==0  ||
-       NewMemory((void **)&msubslice_menuindex, nsliceinfo*sizeof(int))==0 ||
-       NewMemory((void **)&subvslice_menuindex, nsliceinfo*sizeof(int))==0 ||
-       NewMemory((void **)&msubvslice_menuindex, nsliceinfo*sizeof(int))==0||
-       NewMemory((void **)&mslice_loadstack, nsliceinfo*sizeof(int))==0    ||
-       NewMemory((void **)&mvslice_loadstack, nsliceinfo*sizeof(int))==0){
+    if(NewMemory((void **)&vsliceinfo,         3*nsliceinfo*sizeof(vslicedata))==0    ||
+       NewMemory((void **)&sliceinfo,            nsliceinfo*sizeof(slicedata))==0     ||
+       NewMemory((void **)&sliceinfoptrs,        nsliceinfo*sizeof(slicedata *)) == 0 ||
+       NewMemory((void **)&fedinfo,              nsliceinfo*sizeof(feddata)) == 0     ||
+       NewMemory((void **)&slice_loadstack,      nsliceinfo*sizeof(int))==0           ||
+       NewMemory((void **)&vslice_loadstack,     nsliceinfo*sizeof(int))==0           ||
+       NewMemory((void **)&subslice_menuindex,   nsliceinfo*sizeof(int))==0           ||
+       NewMemory((void **)&msubslice_menuindex,  nsliceinfo*sizeof(int))==0           ||
+       NewMemory((void **)&subvslice_menuindex,  nsliceinfo*sizeof(int))==0           ||
+       NewMemory((void **)&msubvslice_menuindex, nsliceinfo*sizeof(int))==0           ||
+       NewMemory((void **)&mslice_loadstack,     nsliceinfo*sizeof(int))==0           ||
+       NewMemory((void **)&mvslice_loadstack,    nsliceinfo*sizeof(int))==0){
        return 2;
     }
     sliceinfo_copy=sliceinfo;

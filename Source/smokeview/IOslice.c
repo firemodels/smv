@@ -2821,6 +2821,41 @@ void UpdateVSliceDups(void){
   }
  }
 
+/* ------------------ UpdateSliceinfoPtrs ------------------------ */
+
+void UpdateSliceinfoPtrs(sliceparmdata *sp){
+  int i;
+
+  meshinfo->isliceinfo    = 0;
+  for(i=1; i<nmeshes; i++){
+    meshdata *meshim1, *meshi;
+
+    meshim1               = meshinfo + i - 1;
+    meshi                 = meshinfo + i;
+    meshi->isliceinfo     = meshim1->isliceinfo + meshim1->nsliceinfo;
+  }
+  for(i=0; i<sp->nsliceinfo; i++){
+    sliceinfoptrs[i] = NULL;
+  }
+  for(i=0; i<sp->nsliceinfo; i++){
+    slicedata *slicei;
+    meshdata *meshi;
+    
+    slicei                             = sliceinfo + i;
+    meshi                              = meshinfo + slicei->blocknumber;
+    sliceinfoptrs[meshi->isliceinfo++] = slicei;
+  }
+  meshinfo->isliceinfo    = 0;
+  for(i=1; i<nmeshes; i++){
+    meshdata *meshim1, *meshi;
+
+    meshim1               = meshinfo + i - 1;
+    meshi                 = meshinfo + i;
+    meshi->isliceinfo     = meshim1->isliceinfo + meshim1->nsliceinfo;
+  }
+  CheckMemory;
+}
+
 /* ------------------ UpdateFedinfo ------------------------ */
 
 void UpdateFedinfo(sliceparmdata *sp){
@@ -2897,6 +2932,7 @@ void UpdateFedinfo(sliceparmdata *sp){
     sp->nsliceinfo += sp->nfedinfo;
     ResizeMemory((void **)&fedinfo, sp->nfedinfo * sizeof(feddata));
     ResizeMemory((void **)&sliceinfo, sp->nsliceinfo * sizeof(slicedata));
+    ResizeMemory((void **)&sliceinfoptrs, sp->nsliceinfo * sizeof(slicedata *));
     ResizeMemory((void **)&vsliceinfo, 3 * sp->nsliceinfo * sizeof(vslicedata));
     ResizeMemory((void **)&sliceinfo, sp->nsliceinfo * sizeof(slicedata));
     ResizeMemory((void **)&fedinfo, sp->nsliceinfo * sizeof(feddata));
@@ -3009,6 +3045,12 @@ void UpdateFedinfo(sliceparmdata *sp){
     sd->nhistograms = 0;
 #endif
     sd->have_bound_file = 0;
+
+    meshdata *meshi;
+
+    meshi = meshinfo + sd->blocknumber;
+    meshi->nsliceinfo++;
+
 
     strcpy(filename_base, fedi->co->file);
     ext = strrchr(filename_base, '.');
@@ -3260,6 +3302,7 @@ void GetSliceParams(sliceparmdata *sp){
     }
   }
   UpdateFedinfo(sp);
+  UpdateSliceinfoPtrs(sp);
   for(i=0;i<sp->nsliceinfo;i++){
     slicedata *sd;
     int is1, is2, js1, js2, ks1, ks2;
@@ -3592,6 +3635,7 @@ void *UpdateVSlices(void *arg){
   for(i=0;i<sp->nsliceinfo;i++){ //slow
     slicedata *sdi;
     vslicedata *vd;
+    meshdata *meshi;
     int j;
 #ifdef _DEBUG
     if(sp->nsliceinfo>100&&(i%100==0||i==sp->nsliceinfo-1)){
@@ -3600,6 +3644,7 @@ void *UpdateVSlices(void *arg){
 #endif
     vd = vsliceinfo + sp->nvsliceinfo;
     sdi = sliceinfo+i;
+    meshi = meshinfo + sdi->blocknumber;
     vd->iu=-1;
     vd->iv=-1;
     vd->iw=-1;
@@ -3607,45 +3652,45 @@ void *UpdateVSlices(void *arg){
     vd->vslicefile_labelindex=sdi->slicefile_labelindex;
     vd->vslice_filetype=sdi->slice_filetype;
     if(vd->vslice_filetype==SLICE_CELL_CENTER){
-      for(j=0;j<sp->nsliceinfo;j++){
+      for(j=0;j<meshi->nsliceinfo;j++){
         slicedata *sdj;
 
-        sdj = sliceinfo+j;
+        sdj = sliceinfoptrs[meshi->isliceinfo + j];
         if(sdj->slice_filetype!=SLICE_CELL_CENTER)continue;
         if(sdi->blocknumber!=sdj->blocknumber)continue;
         if(sdi->is1!=sdj->is1||sdi->is2!=sdj->is2||sdi->js1!=sdj->js1)continue;
         if(sdi->js2!=sdj->js2||sdi->ks1!=sdj->ks1||sdi->ks2!=sdj->ks2)continue;
-        if(sdj->vec_comp==1)vd->iu=j;
-        if(sdj->vec_comp==2)vd->iv=j;
-        if(sdj->vec_comp==3)vd->iw=j;
+        if(sdj->vec_comp==1)vd->iu=sdj-sliceinfo;
+        if(sdj->vec_comp==2)vd->iv=sdj-sliceinfo;
+        if(sdj->vec_comp==3)vd->iw=sdj-sliceinfo;
       }
     }
     else if(vd->vslice_filetype == SLICE_GEOM){
-      for(j=0;j<sp->nsliceinfo;j++){
+      for(j = 0;j < meshi->nsliceinfo;j++){
         slicedata *sdj;
 
-        sdj = sliceinfo+j;
+        sdj = sliceinfoptrs[meshi->isliceinfo + j];
         if(sdj->slice_filetype!=SLICE_GEOM)continue;
         if(sdi->blocknumber!=sdj->blocknumber)continue;
         if(sdi->is1!=sdj->is1||sdi->is2!=sdj->is2||sdi->js1!=sdj->js1)continue;
         if(sdi->js2!=sdj->js2||sdi->ks1!=sdj->ks1||sdi->ks2!=sdj->ks2)continue;
-        if(sdj->vec_comp==1)vd->iu=j;
-        if(sdj->vec_comp==2)vd->iv=j;
-        if(sdj->vec_comp==3)vd->iw=j;
+        if(sdj->vec_comp==1)vd->iu=sdj-sliceinfo;
+        if(sdj->vec_comp==2)vd->iv=sdj-sliceinfo;
+        if(sdj->vec_comp==3)vd->iw=sdj-sliceinfo;
       }
     }
     else{
-      for (j = 0; j < sp->nsliceinfo; j++) {
+      for(j = 0;j < meshi->nsliceinfo;j++){
         slicedata *sdj;
 
-        sdj = sliceinfo + j;
+        sdj = sliceinfoptrs[meshi->isliceinfo + j];
         if (sdj->slice_filetype == SLICE_CELL_CENTER|| sdj->slice_filetype == SLICE_GEOM)continue;
         if (sdi->blocknumber != sdj->blocknumber)continue;
         if (sdi->is1 != sdj->is1 || sdi->is2 != sdj->is2 || sdi->js1 != sdj->js1)continue;
         if (sdi->js2 != sdj->js2 || sdi->ks1 != sdj->ks1 || sdi->ks2 != sdj->ks2)continue;
-        if (sdj->vec_comp == 1)vd->iu = j;
-        if (sdj->vec_comp == 2)vd->iv = j;
-        if (sdj->vec_comp == 3)vd->iw = j;
+        if (sdj->vec_comp == 1)vd->iu = sdj-sliceinfo;
+        if (sdj->vec_comp == 2)vd->iv = sdj-sliceinfo;
+        if (sdj->vec_comp == 3)vd->iw = sdj-sliceinfo;
       }
     }
     if(vd->iu!=-1||vd->iv!=-1||vd->iw!=-1){

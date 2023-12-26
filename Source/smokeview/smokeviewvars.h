@@ -2117,7 +2117,7 @@ SVEXTERN partpropdata SVDECL(*part5propinfo,NULL), SVDECL(*current_property,NULL
 SVEXTERN int SVDECL(npart5prop,0),ipart5prop,ipart5prop_old;
 SVEXTERN int SVDECL(global_prop_index,-1);
 
-SVEXTERN slicedata SVDECL(*sliceinfo, NULL);
+SVEXTERN slicedata SVDECL(**sliceinfoptrs, NULL), SVDECL(*sliceinfo, NULL);
 SVEXTERN splitslicedata SVDECL(*splitsliceinfo, NULL), SVDECL(**splitsliceinfoptr, NULL);
 SVEXTERN int SVDECL(nsplitsliceinfo, 0), SVDECL(nsplitsliceinfoMAX, 0);
 SVEXTERN int SVDECL(sortslices, 1), SVDECL(sortslices_debug, 0);

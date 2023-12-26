@@ -863,6 +863,7 @@ typedef struct _meshdata {
   struct _meshplanedata *smokeplaneinfo;
   int nsmokeplaneinfo;
   int s_offset[3];
+  int isliceinfo, nsliceinfo;
 } meshdata;
 
 /* --------------------------  cellmeshdata ------------------------------------ */
