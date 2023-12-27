@@ -2,8 +2,6 @@
 N=$1
 CHID=test${N}x${N}
 
-echo 1 > ${CHID}.stop
-
 cat << EOF > ${CHID}.fds
 &HEAD CHID='$CHID',TITLE='test' /
 
