@@ -1,7 +1,7 @@
-&HEAD CHID='test10000',TITLE='test' /
+&HEAD CHID='test100',TITLE='test' /
 
-&MESH IJK=2,2,2, XB=0.0,0.01,0.0,0.01,0.0,1.0, MULT_ID='mesh'/
-&MULT ID='mesh', DX=0.01, DY=0.01, DZ=1.0, I_UPPER=100, J_UPPER=100, K_UPPER=1 /
+&MESH IJK=2,2,2, XB=0.0,0.1,0.0,0.1,0.0,1.0, MULT_ID='mesh'/
+&MULT ID='mesh', DX=0.1, DY=0.1, DZ=1.0, I_UPPER=10, J_UPPER=10, K_UPPER=1 /
 
 &MISC FREEZE_VELOCITY=T/
 
