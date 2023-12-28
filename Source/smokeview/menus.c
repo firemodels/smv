@@ -8765,8 +8765,10 @@ static int loadsmoke3dsinglemenu=0, unloadsmoke3dsinglemenu=0;
 #ifdef pp_MESH_PATCH
 static int loadpatchsinglemenu = 0;
 #endif
+#ifdef pp_MESH_PLOT3D
 static int plot3dshowsinglemeshmenu=0;
-static int plot3dsinglemeshmenu=0;
+static int plot3dsinglemeshmenu = 0;
+#endif
 #ifdef pp_MESH_SLICE
 static int showsingleslicemenu=0;
 #endif
@@ -9441,6 +9443,7 @@ static int menu_count=0;
     glutAddMenuEntry(_("Show all planes"), MENU_PLOT3D_SHOWALL);
     glutAddMenuEntry(_("Hide all planes"), MENU_PLOT3D_HIDEALL);
 
+#ifdef pp_MESH_PLOT3D
     CREATEMENU(plot3dshowsinglemeshmenu,Plot3DShowMenu);
     if(nplot3dloaded>0){
       int ii;
@@ -9462,6 +9465,7 @@ static int menu_count=0;
         glutAddMenuEntry(menulabel,1000+i);
       }
     }
+#endif
 
     CREATEMENU(plot3dshowmenu,Plot3DShowMenu);
     if(nplot3dloaded>0){
@@ -12469,6 +12473,7 @@ static int menu_count=0;
         glutAddMenuEntry(menulabel,i);
       }
       nloadsubplot3dmenu=0;
+#ifdef pp_MESH_PLOT3D
       CREATEMENU(plot3dsinglemeshmenu,LoadPlot3dMenu);
       for(ii=0;ii<nplot3dinfo;ii++){
         int im1;
@@ -12503,6 +12508,7 @@ static int menu_count=0;
           }
         }
       }
+#endif
       nloadsubplot3dmenu=0;
       CREATEMENU(loadplot3dmenu,LoadPlot3dMenu);
       for(ii=0;ii<nplot3dinfo;ii++){
