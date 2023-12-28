@@ -7767,7 +7767,10 @@ void InitUnloadSliceMenu(int *unloadslicemenuptr){
 
 void InitSliceSubMenus(int *nloadsubslicemenuptr, int **loadsubslicemenuptr){
   int i;
-  int nloadsubslicemenu, iloadsubslicemenu, *loadsubslicemenu=NULL;
+  int nloadsubslicemenu, *loadsubslicemenu=NULL;
+#ifdef pp_SLICE_MESH
+  int iloadsubslicemenu;
+#endif
 
 //  count slice submenus
 
@@ -7788,8 +7791,8 @@ void InitSliceSubMenus(int *nloadsubslicemenuptr, int **loadsubslicemenuptr){
   for(i=0;i<nloadsubslicemenu;i++){
     loadsubslicemenu[i]=0;
   }
-  iloadsubslicemenu=0;
 #ifdef pp_SLICE_MESH
+  iloadsubslicemenu=0;
   for(i=0;i<nsliceinfo;i++){
     slicedata *sd,*sdim1,*sdip1;
     char menulabel[1024];
@@ -7914,8 +7917,9 @@ void InitSliceSkipMenu(int *sliceskipmenuptr){
 /* ------------------ InitLoadSliceMenu ------------------------ */
 
 void InitLoadSliceMenu(int *loadslicemenuptr, int unloadslicemenu, int *loadsubslicemenu, int *loadsubpatchmenu_s, int *nsubpatchmenus_s){
-  int loadslicemenu, iloadsubslicemenu;
+  int loadslicemenu;
 #ifdef pp_SLICE_MESH
+  int iloadsubslicemenu;
   int i;
 #endif
 
@@ -7923,8 +7927,8 @@ void InitLoadSliceMenu(int *loadslicemenuptr, int unloadslicemenu, int *loadsubs
 
   CREATEMENU(loadslicemenu, LoadSliceMenu);
   *loadslicemenuptr = loadslicemenu;
-  iloadsubslicemenu=0;
 #ifdef pp_SLICE_MESH
+  iloadsubslicemenu=0;
   for(i=0;i<nsliceinfo;i++){
     slicedata *sd,*sdim1;
 
@@ -8326,15 +8330,15 @@ void InitVSliceSubMenu(int **loadsubvslicemenuptr){
 
 void InitVSliceLoadMenu(int *vsliceloadmenuptr, int *loadsubvslicemenu, int unloadvslicemenu){
   int vsliceloadmenu;
-  int nloadsubvslicemenu;
 #ifdef pp_SLICE_MESH
+  int nloadsubvslicemenu;
   int ii;
 #endif
 
   CREATEMENU(vsliceloadmenu, LoadVSliceMenu);
   *vsliceloadmenuptr = vsliceloadmenu;
-  nloadsubvslicemenu = 0;
 #ifdef pp_SLICE_MESH
+  nloadsubvslicemenu = 0;
   for(ii = 0; ii<nvsliceinfo; ii++){
     slicedata *sd, *sdm1;
     vslicedata *vd, *vdim1;
@@ -8766,7 +8770,10 @@ static int fontmenu=0, aperturemenu=0,dialogmenu=0,zoommenu=0;
 static int gridslicemenu=0, griddigitsmenu=0, blockagemenu=0, immersedmenu=0, loadpatchmenu=0, ventmenu=0, circularventmenu=0;
 static int loadpatchsinglemenu=0,loadsmoke3dsinglemenu=0,loadvolsmokesinglemenu=0,unloadsmoke3dsinglemenu=0, showvolsmokesinglemenu=0, includepatchmenu=0;
 static int plot3dshowsinglemeshmenu=0;
-static int showsingleslicemenu=0,plot3dsinglemeshmenu=0;
+static int plot3dsinglemeshmenu=0;
+#ifdef pp_SLICE_MESH
+static int showsingleslicemenu=0;
+#endif
 static int loadisomenu=0, isosinglemeshmenu=0, isosurfacetypemenu=0,showpatchsinglemenu=0,showpatchextmenu=0;
 static int geometrymenu=0, loadunloadmenu=0, reloadmenu=0, fileinfomenu=0, aboutmenu=0, disclaimermenu=0, terrain_obst_showmenu=0;
 static int scriptmenu=0;
