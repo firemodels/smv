@@ -17,6 +17,7 @@ EXTERNCPP void *ReadAllGeom(void *arg);
 EXTERNCPP void *GetGlobalSliceBoundsFull(void *arg);
 EXTERNCPP void *UpdateTrianglesAll(void *arg);
 EXTERNCPP void *ReadVolsmokeAllFramesAllMeshes2(void *arg);
+EXTERNCPP void *SetupAllIsosurfaces(void *arg);
 
 //*** glui_bounds.cpp headers
 EXTERNCPP void GLUIBoundsSetup(int main_window);
@@ -920,7 +921,6 @@ EXTERNCPP void UpdateSliceFilenum(void);
 EXTERNCPP void DrawStaticIso(const isosurface *asurface,int surfacetype,
                              int smoothnorms, int trans_flag, int data_type,
                              float line_width);
-EXTERNCPP void SetupAllIsosurfaces(void);
 EXTERNCPP int  GetPlot3dTime(float *time);
 EXTERNCPP void Normalize(float *xyz, int n);
 EXTERNCPP void Array2String(float *array, int narray, char *string);
