@@ -7472,14 +7472,12 @@ void PartLoadState(int  *load_state){
 #ifdef pp_DEBUG_SUBMENU
 
 #define CREATEMENU(menu,Menu) menu=glutCreateMenu(Menu);\
-  if(nmenus>=maxmenus){\
-    maxmenus = nmenus + 100;\
-    ResizeMemory((void **)&menuinfo, maxmenus*sizeof(menudata));\
-  }\
-  strcpy(menuinfo[nmenus].label,#Menu);\
-  menuinfo[nmenus].menuvar_ptr=&menu;\
-  menuinfo[nmenus].menuvar = menu;\
-  menuinfo[nmenus++].status = 1
+  if(nmenus<10000){\
+    strcpy(menuinfo[nmenus].label,#Menu);\
+    menuinfo[nmenus].menuvar_ptr=&menu;\
+    menuinfo[nmenus].menuvar = menu;\
+    menuinfo[nmenus++].status = 1;\
+  }
 
 #ifdef _DEBUG
 #define GLUTADDSUBMENU(menu_label,menu_value){assert(menu_value!=0);glutAddSubMenu(menu_label,menu_value);}
@@ -7490,13 +7488,11 @@ void PartLoadState(int  *load_state){
 #else
 
 #define CREATEMENU(menu,Menu) menu=glutCreateMenu(Menu);\
-  if(nmenus>=maxmenus){\
-    maxmenus = nmenus + 100;\
-    ResizeMemory((void **)&menuinfo, maxmenus*sizeof(menudata));\
-  }\
-  strcpy(menuinfo[nmenus].label,#Menu);\
-  menuinfo[nmenus].menuvar = menu;\
-  menuinfo[nmenus++].status = 1
+  if(nmenus<10000){\
+    strcpy(menuinfo[nmenus].label,#Menu);\
+    menuinfo[nmenus++].menuvar=menu;\
+    menuinfo[nmenus++].status = 1;\
+  }
 
 #define GLUTADDSUBMENU(menu_label,menu_value) glutAddSubMenu(menu_label,menu_value)
 
@@ -8739,7 +8735,7 @@ char *GetCSVLoadMenu(void){
 
 /* ------------------ InitMenus ------------------------ */
 
-int InitMenus(void){
+void InitMenus(void){
   int i;
   int nmultisliceloaded;
   int showhide_data = 0;
@@ -13320,9 +13316,8 @@ static int menu_count=0;
     PRINTF("Updated menus count: %i nmenus: %i\n", menu_count++, nmenus);
     if(updatemenu==1)PRINTF("menu updated again\n");
 #endif
-    return nmenus;
-}
 
+}
 
 /* ------------------ MenuStatusCB ------------------------ */
 
