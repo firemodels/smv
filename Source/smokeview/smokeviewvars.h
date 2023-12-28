@@ -25,6 +25,10 @@
 //*** threader variables
 
 //***checkfiles
+SVEXTERN int SVDECL(n_isosurface_threads, 1), SVDECL(use_isosurface_threads, 1);
+SVEXTERN threaderdata SVDECL(*isosurface_threads, NULL);
+
+//***sliceparms
 SVEXTERN int SVDECL(n_sliceparms_threads, 1), SVDECL(use_sliceparms_threads, 1);
 SVEXTERN threaderdata SVDECL(*sliceparms_threads, NULL);
 
@@ -2209,7 +2213,6 @@ SVEXTERN int nboundarytypes;
 SVEXTERN char SVDECL(**patchlabellist,NULL);
 SVEXTERN int SVDECL(*patchlabellist_index,NULL);
 SVEXTERN int SVDECL(*isoindex,NULL);
-SVEXTERN int SVDECL(setup_isosurfaces, 0);
 
 SVEXTERN int have_vents_int;
 SVEXTERN int nface_outlines, nface_textures, nface_transparent;

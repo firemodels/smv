@@ -4833,7 +4833,7 @@ void SetupIsosurface(isodata *isoi){
 
 /* ------------------ SetupAllIsosurfaces ------------------------ */
 
-void SetupAllIsosurfaces(void){
+void *SetupAllIsosurfaces(void *arg){
   int i;
 
   for(i=0; i<nisoinfo-nfediso; i++){
@@ -4842,6 +4842,7 @@ void SetupAllIsosurfaces(void){
     isoi = isoinfo + i;
     SetupIsosurface(isoi);
   }
+  THREAD_EXIT(isosurface_threads);
 }
 
 /* ------------------ ParseISOFCount ------------------------ */
@@ -6815,6 +6816,7 @@ int ReadSMV_Init() {
     use_checkfiles_threads  = 0;
     use_ffmpeg_threads      = 0;
     use_readallgeom_threads = 0;
+    use_isosurface_threads  = 0;
   }
 
   START_TIMER(getfilelist_time);
@@ -11854,6 +11856,13 @@ int ReadSMV_Configure(){
   }
   THREADrun(ffmpeg_threads, NULL);
   PRINT_TIMER(timer_readsmv, "SetupFFMT");
+
+  if(isosurface_threads == NULL){
+    isosurface_threads = THREADinit(&n_isosurface_threads, &use_isosurface_threads, SetupAllIsosurfaces);
+  }
+  THREADrun(isosurface_threads, NULL);
+  THREADcontrol(isosurface_threads, THREAD_JOIN);
+  PRINT_TIMER(timer_readsmv, "SetupAllIsosurfaces");
 
   MakeIBlankSmoke3D();
   PRINT_TIMER(timer_readsmv, "MakeIBlankSmoke3D");
