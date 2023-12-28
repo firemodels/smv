@@ -205,10 +205,6 @@ void ReadBoundINI(void){
           boundi->defined = 1;
           boundi->global_min = gmin;
           boundi->global_max = gmax;
-#ifdef pp_HIST
-          boundi->percentile_min = pmin;
-          boundi->percentile_max = pmax;
-#endif
         }
       }
       continue;
