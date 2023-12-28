@@ -2554,6 +2554,9 @@ void UpdateDisplay(void){
     glutDetachMenu(GLUT_RIGHT_BUTTON);
     THREADcontrol(checkfiles_threads, THREAD_LOCK);
     InitMenus();
+#ifdef _DEBUG
+    printf("nmenus=%i\n", nmenus);
+#endif
     THREADcontrol(checkfiles_threads, THREAD_UNLOCK);
     glutAttachMenu(GLUT_RIGHT_BUTTON);
     updatemenu = 0;

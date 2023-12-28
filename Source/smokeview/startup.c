@@ -336,6 +336,8 @@ int SetupCase(char *filename){
   GLUITrainerSetup(mainwindow_id);
   glutDetachMenu(GLUT_RIGHT_BUTTON);
   THREADcontrol(checkfiles_threads, THREAD_LOCK);
+  maxmenus = 100;
+  NewMemory((void **)&menuinfo, maxmenus * sizeof(menudata));
   InitMenus();
   THREADcontrol(checkfiles_threads, THREAD_UNLOCK);
   glutAttachMenu(GLUT_RIGHT_BUTTON);
