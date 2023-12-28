@@ -11,8 +11,7 @@
 
 //#define pp_MESH_SLICE
 //#define pp_MESH_PATCH
-#define pp_MESH_ISO
-#define pp_MESH_ISO
+//#define pp_MESH_ISO
 #define pp_MESH_SMOKE
 #define pp_MESH_PART
 #define pp_MESH_VOLSMOKE

@@ -8773,7 +8773,10 @@ static int plot3dsinglemeshmenu=0;
 #ifdef pp_MESH_SLICE
 static int showsingleslicemenu=0;
 #endif
-static int loadisomenu=0, isosinglemeshmenu=0, isosurfacetypemenu=0,showpatchextmenu=0;
+static int loadisomenu=0, isosurfacetypemenu=0,showpatchextmenu=0;
+#ifdef pp_MESH_ISO
+static int isosinglemeshmenu = 0;
+#endif
 #ifdef pp_MESH_PATCH
 static int showpatchsinglemenu = 0;
 #endif
@@ -8803,7 +8806,10 @@ static int *loadsubplot3dmenu=NULL, nloadsubplot3dmenu=0;
 static int loadmultivslicemenu=0, unloadmultivslicemenu=0;
 static int duplicatevectorslicemenu=0, duplicateslicemenu=0, duplicateboundaryslicemenu=0;
 static int unloadmultislicemenu=0, vsliceloadmenu=0, staticslicemenu=0;
-static int particlemenu=0, particlesubmenu=0, showpatchmenu=0, zonemenu=0, isoshowmenu=0, isoshowsubmenu=0, isolevelmenu=0, smoke3dshowmenu=0;
+static int particlemenu=0, particlesubmenu=0, showpatchmenu=0, zonemenu=0, isoshowmenu=0, isolevelmenu=0, smoke3dshowmenu=0;
+#ifdef pp_MESH_ISO
+static int isoshowsubmenu=0;
+#endif
 static int smoke3dshowsinglemenu = 0;
 static int particlepropshowmenu=0;
 static int *particlepropshowsubmenu=NULL;
@@ -10760,10 +10766,12 @@ static int menu_count=0;
     if(nisoinfo>0&&ReadIsoFile==1){
       meshdata *hmesh;
       isodata *iso2;
+
+      iso2 = NULL;
+#ifdef pp_MESH_ISO
       int ii;
 
       CREATEMENU(isoshowsubmenu,IsoShowMenu);
-      iso2=NULL;
       for(ii=0;ii<nisoinfo;ii++){
         isodata *isoi;
         char menulabel[1024];
@@ -10782,6 +10790,7 @@ static int menu_count=0;
         }
         glutAddMenuEntry(menulabel,1000+i);
       }
+#endif
       CREATEMENU(isoshowmenu, IsoShowMenu);
       if(iso2!=NULL){
         char menulabel[1024];
@@ -12883,6 +12892,7 @@ static int menu_count=0;
         isodata *isoi, *isoj;
 
         if(nmeshes>1){
+#ifdef pp_MESH_ISO
           CREATEMENU(isosinglemeshmenu,LoadIsoMenu);
           for(ii=0;ii<nisoinfo;ii++){
             isodata *iso1, *iso2;
@@ -12905,6 +12915,7 @@ static int menu_count=0;
               }
             }
           }
+#endif
           CREATEMENU(loadisomenu,LoadIsoMenu);
           for(i=0;i<nisoinfo;i++){
             int j;
