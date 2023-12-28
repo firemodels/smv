@@ -8019,7 +8019,10 @@ void InitLoadMultiSubMenu(int **loadsubmslicemenuptr, int *nmultisliceloadedptr)
     slicedata *sdip1;
 #endif
     char menulabel[1024];
-    multislicedata *mslicei,*msliceim1,*msliceip1;
+    multislicedata *mslicei,*msliceim1;
+#ifdef pp_SLICE_DIR_COUNT
+    multislicedata *msliceip1;
+#endif
 
     if(i>0){
       msliceim1 = multisliceinfo+i-1;
@@ -8027,12 +8030,12 @@ void InitLoadMultiSubMenu(int **loadsubmslicemenuptr, int *nmultisliceloadedptr)
     }
     mslicei = multisliceinfo+i;
     sd = sliceinfo+mslicei->islices[0];
+#ifdef pp_SLICE_DIR_COUNT
     if(i<nmultisliceinfo-1){
       msliceip1 = multisliceinfo+i+1;
-#ifdef pp_SLICE_DIR_COUNT
       sdip1 = sliceinfo+msliceip1->islices[0];
-#endif
     }
+#endif
 
     if(i==0||strcmp(sd->label.longlabel, sdim1->label.longlabel)!=0){
       msubslice_menuindex[nloadsubmslicemenu]=mslicei->islices[0];
@@ -8435,7 +8438,10 @@ void InitMultiVectorSubMenu(int **loadsubmvslicemenuptr){
 
   nloadsubmvslicemenu = 0;
   for(i = 0; i<nmultivsliceinfo; i++){
-    vslicedata *vi, *vim1, *vip1;
+    vslicedata *vi, *vim1;
+#ifdef pp_SLICE_DIR_COUNT
+    vslicedata *vip1;
+#endif
     slicedata *si, *sim1;
 #ifdef pp_SLICE_DIR_COUNT
     slicedata *sip1;
@@ -8451,12 +8457,12 @@ void InitMultiVectorSubMenu(int **loadsubmvslicemenuptr){
     }
     vi = vsliceinfo+mvslicei->ivslices[0];
     si = sliceinfo+vi->ival;
+#ifdef pp_SLICE_DIR_COUNT
     if(i<nmultivsliceinfo-1){
       vip1 = vsliceinfo+(multivsliceinfo+i+1)->ivslices[0];
-#ifdef pp_SLICE_DIR_COUNT
       sip1 = sliceinfo+vip1->ival;
-#endif
     }
+#endif
     if(i==0||strcmp(si->label.longlabel, sim1->label.longlabel)!=0){
       CREATEMENU(loadsubmvslicemenu[nloadsubmvslicemenu], LoadMultiVSliceMenu);
       msubvslice_menuindex[nloadsubmvslicemenu] = vi->ival;
