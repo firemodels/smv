@@ -7763,14 +7763,13 @@ void InitUnloadSliceMenu(int *unloadslicemenuptr){
   glutAddMenuEntry(_("Unload all"), UNLOAD_ALL);
 }
 
+#ifdef pp_SLICE_MESH
 /* ------------------ InitSliceSubMenus ------------------------ */
 
 void InitSliceSubMenus(int *nloadsubslicemenuptr, int **loadsubslicemenuptr){
+  int nloadsubslicemenu=0, *loadsubslicemenu=NULL;
   int i;
-  int nloadsubslicemenu, *loadsubslicemenu=NULL;
-#ifdef pp_SLICE_MESH
   int iloadsubslicemenu;
-#endif
 
 //  count slice submenus
 
@@ -7786,12 +7785,10 @@ void InitSliceSubMenus(int *nloadsubslicemenuptr, int **loadsubslicemenuptr){
 // create slice submenus
 
   if(nloadsubslicemenu>0)NewMemory((void **)&loadsubslicemenu,nloadsubslicemenu*sizeof(int));
-  *loadsubslicemenuptr = loadsubslicemenu;
 
   for(i=0;i<nloadsubslicemenu;i++){
     loadsubslicemenu[i]=0;
   }
-#ifdef pp_SLICE_MESH
   iloadsubslicemenu=0;
   for(i=0;i<nsliceinfo;i++){
     slicedata *sd,*sdim1,*sdip1;
@@ -7852,9 +7849,10 @@ void InitSliceSubMenus(int *nloadsubslicemenuptr, int **loadsubslicemenuptr){
       iloadsubslicemenu++;
     }
   }
-#endif
   *nloadsubslicemenuptr = nloadsubslicemenu;
+  *loadsubslicemenuptr = loadsubslicemenu;
 }
+#endif
 
 /* ------------------ InitSliceSkipMenu ------------------------ */
 
@@ -7914,20 +7912,18 @@ void InitSliceSkipMenu(int *sliceskipmenuptr){
   }
 }
 
+#ifdef pp_SLICE_MESH
 /* ------------------ InitLoadSliceMenu ------------------------ */
 
 void InitLoadSliceMenu(int *loadslicemenuptr, int unloadslicemenu, int *loadsubslicemenu, int *loadsubpatchmenu_s, int *nsubpatchmenus_s){
   int loadslicemenu;
-#ifdef pp_SLICE_MESH
   int iloadsubslicemenu;
   int i;
-#endif
 
 // call slice submenus from main slice menu
 
   CREATEMENU(loadslicemenu, LoadSliceMenu);
   *loadslicemenuptr = loadslicemenu;
-#ifdef pp_SLICE_MESH
   iloadsubslicemenu=0;
   for(i=0;i<nsliceinfo;i++){
     slicedata *sd,*sdim1;
@@ -7972,8 +7968,8 @@ void InitLoadSliceMenu(int *loadslicemenuptr, int unloadslicemenu, int *loadsubs
   else{
     glutAddMenuEntry(_("Unload"),UNLOAD_ALL);
   }
-#endif
 }
+#endif
 
 /* ------------------ InitUnloadMultiSliceMenu ------------------------ */
 
@@ -8790,7 +8786,9 @@ static int loadvolsmoke3dmenu=0,showvolsmoke3dmenu=0;
 static int unloadsmoke3dmenu=0,unloadvolsmoke3dmenu=0;
 static int unloadpartmenu=0, loadslicemenu=0, loadmultislicemenu = 0, loadhvacmenu = 0;
 static int *loadsubvslicemenu=NULL, nloadsubvslicemenu=0;
+#ifdef pp_SLICE_MESH
 static int *loadsubslicemenu=NULL, nloadsubslicemenu=0;
+#endif
 static int *loadsubpatchmenu_b = NULL, *nsubpatchmenus_b=NULL, iloadsubpatchmenu_b=0, nloadsubpatchmenu_b = 0;
 static int *loadsubpatchmenu_s = NULL, *nsubpatchmenus_s=NULL, nloadsubpatchmenu_s = 0;
 static int *loadsubmslicemenu=NULL, nloadsubmslicemenu=0;
@@ -8896,9 +8894,11 @@ static int menu_count=0;
     FREEMEMORY(loadsubpatchmenu_s);
     FREEMEMORY(nsubpatchmenus_s);
   }
+#ifdef pp_SLICE_MESH
   if(nloadsubslicemenu>0){
     FREEMEMORY(loadsubslicemenu);
   }
+#endif
   if(nloadsubmslicemenu>0){
     FREEMEMORY(loadsubmslicemenu);
   }
@@ -12107,9 +12107,13 @@ static int menu_count=0;
 
   if(nsliceinfo>0||have_geom_slice_menus==1){
     InitUnloadSliceMenu(&unloadslicemenu);
+#ifdef pp_SLICE_MESH
     InitSliceSubMenus(&nloadsubslicemenu, &loadsubslicemenu);
+#endif
     InitSliceSkipMenu(&sliceskipmenu);
+#ifdef pp_SLICE_MESH
     InitLoadSliceMenu(&loadslicemenu, unloadslicemenu, loadsubslicemenu, loadsubpatchmenu_s, nsubpatchmenus_s);
+#endif
   }
 
   //*** setup multi slice menus
