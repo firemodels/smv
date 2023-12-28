@@ -2964,6 +2964,7 @@ void UpdateFedinfo(sliceparmdata *sp){
   if(sp->nfediso > 0)UpdateIsoMenuLabels();
 }
 
+#ifdef pp_SLICE_DIR_COUNT
 /* ------------------ UpdateSliceDirCount ------------------------ */
 
 void UpdateSliceDirCount(sliceparmdata *sp){
@@ -3027,7 +3028,7 @@ void UpdateSliceDirCount(sliceparmdata *sp){
     }
   }
 }
-
+#endif
 /* ------------------ GetSliceParams ------------------------ */
 
 void GetSliceParams(sliceparmdata *sp){
@@ -3046,6 +3047,7 @@ void GetSliceParams(sliceparmdata *sp){
     stream=fopen(sliceinfo_filename,"r");
   }
 
+  INIT_PRINT_TIMER(timer_getsliceparams1);
   for(i=0;i<sp->nsliceinfo;i++){
     slicedata *sd;
     int is1, is2, js1, js2, ks1, ks2;
@@ -3119,8 +3121,14 @@ void GetSliceParams(sliceparmdata *sp){
       sd->nslicek=nk;
     }
   }
+  PRINT_TIMER(timer_getsliceparams1, "getsliceparams 1");
+  INIT_PRINT_TIMER(timer_getsliceparams2);
   UpdateFedinfo(sp);
+  PRINT_TIMER(timer_getsliceparams2, "getsliceparams 2");
+  INIT_PRINT_TIMER(timer_getsliceparams3);
   UpdateSliceinfoPtrs(sp);
+  PRINT_TIMER(timer_getsliceparams3, "getsliceparams 3");
+  INIT_PRINT_TIMER(timer_getsliceparams4);
   for(i=0;i<sp->nsliceinfo;i++){
     slicedata *sd;
     int is1, is2, js1, js2, ks1, ks2;
@@ -3270,6 +3278,8 @@ void GetSliceParams(sliceparmdata *sp){
       }
     }
   }
+  PRINT_TIMER(timer_getsliceparams4, "getsliceparams 4");
+  INIT_PRINT_TIMER(timer_getsliceparams5);
   if(stream!=NULL)fclose(stream);
   if(sp->nsliceinfo>0){
     FREEMEMORY(sliceorderindex);
@@ -3322,6 +3332,8 @@ void GetSliceParams(sliceparmdata *sp){
     //if(sp->nmultisliceinfo>0&&sp->nsliceinfo>0&&sp->nmultisliceinfo+nfedinfo<sp->nsliceinfo)have_multislice = 1;
     if(sp->nmultisliceinfo>0)have_multislice = 1; // use multi slice for all cases
   }
+  PRINT_TIMER(timer_getsliceparams5, "getsliceparams 5");
+  INIT_PRINT_TIMER(timer_getsliceparams6);
   for(i = 0; i < sp->nsliceinfo; i++){
     slicedata *slicei;
 
@@ -3330,7 +3342,11 @@ void GetSliceParams(sliceparmdata *sp){
     slicei->skipdup = 0;
   }
   UpdateSliceDups(sp);
+  PRINT_TIMER(timer_getsliceparams6, "getsliceparams 6");
+  INIT_PRINT_TIMER(timer_getsliceparams7);
   nslicedups = CountSliceDups();
+  PRINT_TIMER(timer_getsliceparams7, "getsliceparams 7");
+  INIT_PRINT_TIMER(timer_getsliceparams8);
   for(i = 0; i < sp->nmultisliceinfo; i++){
     int ii;
     multislicedata *mslicei;
@@ -3352,11 +3368,16 @@ void GetSliceParams(sliceparmdata *sp){
       slicei->mslice = mslicei;
     }
   }
+  PRINT_TIMER(timer_getsliceparams8, "getsliceparams 8");
+  INIT_PRINT_TIMER(timer_getsliceparams9);
   UpdateSliceMenuLabels(sp);
+  PRINT_TIMER(timer_getsliceparams9, "getsliceparams 9");
+#ifdef pp_SLICE_DIR_COUNT
+  INIT_PRINT_TIMER(timer_getsliceparams10);
   UpdateSliceDirCount(sp);
+  PRINT_TIMER(timer_getsliceparams10, "getsliceparams 10");
+#endif
 }
-//nsliceinfo
-//nmultisliceinfo
 
 /* ------------------ GetSliceParams2 ------------------------ */
 
@@ -3599,6 +3620,7 @@ void *UpdateVSlices(void *arg){
   UpdateVSliceDups();
   PRINT_TIMER(timer_updatevslices4, "UpdateVSlices_4");
 
+#ifdef pp_SLICE_DIR_COUNT
   INIT_PRINT_TIMER(timer_updatevslices5);
   for(i = 0; i<sp->nmultivsliceinfo; i++){
     multivslicedata *mvslicei;
@@ -3610,7 +3632,6 @@ void *UpdateVSlices(void *arg){
     mvslicei->ndirxyz[3]=0;
   }
   PRINT_TIMER(timer_updatevslices5, "UpdateVSlices_5");
-
   INIT_PRINT_TIMER(timer_updatevslices6);
   for(i=0;i<sp->nmultivsliceinfo;i++){
     multivslicedata *mvslicei;
@@ -3636,6 +3657,7 @@ void *UpdateVSlices(void *arg){
     }
   }
   PRINT_TIMER(timer_updatevslices6, "UpdateVSlices_6");
+#endif
 
   INIT_PRINT_TIMER(timer_updatevslices7);
   UpdateVsliceMenuLabels(sp);

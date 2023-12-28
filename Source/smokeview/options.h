@@ -17,6 +17,8 @@
 //#define pp_MESH_VOLSMOKE
 //#define pp_MESH_PLOT3D
 
+//#define pp_SLICE_DIR_COUNT
+
 //#define pp_LUA                 // turn on LUA option
 
 //*** parallel file loading

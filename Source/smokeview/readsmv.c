@@ -11800,6 +11800,7 @@ int ReadSMV_Configure(){
 
   START_TIMER(timer_readsmv);
   SetSliceParmInfo(&sliceparminfo);
+  PRINT_TIMER(timer_readsmv, "SetSliceParmInfo");
   nsliceinfo            = 0;
   nmultisliceinfo       = 0;
   nmultivsliceinfo      = 0;
@@ -11811,9 +11812,10 @@ int ReadSMV_Configure(){
   }
   THREADrun(sliceparms_threads, &sliceparminfo);
   THREADcontrol(sliceparms_threads, THREAD_JOIN);
+  PRINT_TIMER(timer_readsmv, "UpdateVSlices");
 
   GetSliceParmInfo(&sliceparminfo);
-  PRINT_TIMER(timer_readsmv, "UpdateVSlices");
+  PRINT_TIMER(timer_readsmv, "GetSliceParmInfo");
   if(update_slice==1)return 3;
 
   GenerateSliceMenu(generate_info_from_commandline);

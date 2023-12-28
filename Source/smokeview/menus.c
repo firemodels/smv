@@ -8055,6 +8055,7 @@ void InitLoadMultiSubMenu(int **loadsubmslicemenuptr, int *nmultisliceloadedptr)
       strcat(menulabel, "(ZLIB)");
     }
     glutAddMenuEntry(menulabel, i);
+#ifdef pp_SLICE_DIR_COUNT
     if(i==nmultisliceinfo-1||strcmp(sd->label.longlabel, sdip1->label.longlabel)!=0){
       if(mslicei->ndirxyz[1] + mslicei->ndirxyz[2] + mslicei->ndirxyz[3] > 1){
         glutAddMenuEntry("-", MENU_DUMMY);
@@ -8072,6 +8073,7 @@ void InitLoadMultiSubMenu(int **loadsubmslicemenuptr, int *nmultisliceloadedptr)
         glutAddMenuEntry(_("Load all"),  -1000-4*(nloadsubmslicemenu-1));
       }
     }
+#endif
   }
   *loadsubmslicemenuptr = loadsubmslicemenu;
   *nmultisliceloadedptr = nmultisliceloaded;
@@ -8468,6 +8470,7 @@ void InitMultiVectorSubMenu(int **loadsubmvslicemenuptr){
       STRCAT(menulabel, "(ZLIB)");
     }
     glutAddMenuEntry(menulabel, i);
+#ifdef pp_SLICE_DIR_COUNT
     if(i==nmultivsliceinfo-1||strcmp(si->label.longlabel, sip1->label.longlabel)!=0){
       if(mvslicei->ndirxyz[1]+mvslicei->ndirxyz[2]+mvslicei->ndirxyz[3]>1){
         glutAddMenuEntry("-", MENU_DUMMY);
@@ -8485,6 +8488,7 @@ void InitMultiVectorSubMenu(int **loadsubmvslicemenuptr){
         glutAddMenuEntry(_("Load all"), -1000-4*nloadsubmvslicemenu);
       }
     }
+#endif
     if(i==0||strcmp(si->label.longlabel, sim1->label.longlabel)!=0){
       nloadsubmvslicemenu++;
     }
