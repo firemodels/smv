@@ -7492,7 +7492,7 @@ void PartLoadState(int  *load_state){
 #define CREATEMENU(menu,Menu) menu=glutCreateMenu(Menu);\
   if(nmenus>=maxmenus){\
     maxmenus = nmenus + 100;\
-    ResizeMemory((void **)&menuinfo, maxmenus*sizeof(menudata))
+    ResizeMemory((void **)&menuinfo, maxmenus*sizeof(menudata));\
   }\
   strcpy(menuinfo[nmenus].label,#Menu);\
   menuinfo[nmenus].menuvar = menu;\
