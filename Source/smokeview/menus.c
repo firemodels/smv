@@ -8803,7 +8803,10 @@ static int *loadsubplot3dmenu=NULL, nloadsubplot3dmenu=0;
 static int loadmultivslicemenu=0, unloadmultivslicemenu=0;
 static int duplicatevectorslicemenu=0, duplicateslicemenu=0, duplicateboundaryslicemenu=0;
 static int unloadmultislicemenu=0, vsliceloadmenu=0, staticslicemenu=0;
-static int particlemenu=0, particlesubmenu=0, showpatchmenu=0, zonemenu=0, isoshowmenu=0, isolevelmenu=0, smoke3dshowmenu=0;
+static int particlemenu=0, showpatchmenu=0, zonemenu=0, isoshowmenu=0, isolevelmenu=0, smoke3dshowmenu=0;
+#ifdef pp_MESH_PART
+static int particlesubmenu = 0;
+#endif
 #ifdef pp_MESH_ISO
 static int isoshowsubmenu=0;
 #endif
@@ -12055,24 +12058,31 @@ static int menu_count=0;
     }
     glutAddMenuEntry(_("Unload all"), MENU_PARTICLE_UNLOAD_ALL);
 
+    int doit = 0;
     if(nmeshes==1){
       CREATEMENU(particlemenu,LoadParticleMenu);
+      doit = 1;
     }
+#ifdef pp_MESH_PART
     else{
       CREATEMENU(particlesubmenu,LoadParticleMenu);
+      doit = 1;
     }
-    for(ii=0;ii<npartinfo;ii++){
-      char menulabel[1024];
+#endif
+    if(doit == 1){
+      for(ii = 0;ii < npartinfo;ii++){
+        char menulabel[1024];
 
-      i = partorderindex[ii];
-      if(partinfo[i].loaded==1){
-        STRCPY(menulabel,"*");
-        STRCAT(menulabel,partinfo[i].menulabel);
+        i = partorderindex[ii];
+        if(partinfo[i].loaded == 1){
+          STRCPY(menulabel, "*");
+          STRCAT(menulabel, partinfo[i].menulabel);
+        }
+        else{
+          STRCPY(menulabel, partinfo[i].menulabel);
+        }
+        glutAddMenuEntry(menulabel, i);
       }
-      else{
-        STRCPY(menulabel,partinfo[i].menulabel);
-      }
-      glutAddMenuEntry(menulabel,i);
     }
     if(nmeshes>1){
       char menulabel[1024];
