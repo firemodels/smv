@@ -8758,7 +8758,10 @@ static int vectorskipmenu=0,unitsmenu=0;
 static int isosurfacemenu=0, isovariablemenu=0, levelmenu=0;
 static int fontmenu=0, aperturemenu=0,dialogmenu=0,zoommenu=0;
 static int gridslicemenu=0, griddigitsmenu=0, blockagemenu=0, immersedmenu=0, loadpatchmenu=0, ventmenu=0, circularventmenu=0;
-static int loadvolsmokesinglemenu=0, showvolsmokesinglemenu=0, includepatchmenu=0;
+static int includepatchmenu=0;
+#ifdef pp_MESH_VOLSMOKE
+static int showvolsmokesinglemenu = 0, loadvolsmokesinglemenu = 0;
+#endif
 #ifdef pp_MESH_SMOKE
 static int loadsmoke3dsinglemenu=0, unloadsmoke3dsinglemenu=0;
 #endif
@@ -11073,6 +11076,7 @@ static int menu_count=0;
   if(nvolsmoke3dloaded>0){
     char vlabel[256];
 
+#ifdef pp_MESH_VOLSMOKE
     CREATEMENU(showvolsmokesinglemenu,ShowVolsmoke3DMenu);
     for(i=0;i<nmeshes;i++){
       meshdata *meshi;
@@ -11088,6 +11092,7 @@ static int menu_count=0;
       strcat(menulabel,meshi->label);
       glutAddMenuEntry(menulabel,i);
     }
+#endif
     CREATEMENU(showvolsmoke3dmenu,ShowVolsmoke3DMenu);
     strcpy(vlabel, "");
     if(show_volsmokefiles==1)strcat(vlabel, "*");
@@ -12177,6 +12182,7 @@ static int menu_count=0;
 
 /* --------------------------------unload and load 3d vol smoke menus -------------------------- */
 
+#ifdef pp_MESH_VOLSMOKE
     if(nvolrenderinfo>0){
       CREATEMENU(loadvolsmokesinglemenu, LoadVolsmoke3DMenu);
       for(i=0;i<nmeshes;i++){
@@ -12193,6 +12199,7 @@ static int menu_count=0;
         glutAddMenuEntry(menulabel,i);
       }
     }
+#endif
     if(nvolsmoke3dloaded>0){
       CREATEMENU(unloadvolsmoke3dmenu,UnLoadVolsmoke3DMenu);
       if(nvolsmoke3dloaded>1){
