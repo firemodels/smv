@@ -8758,7 +8758,10 @@ static int vectorskipmenu=0,unitsmenu=0;
 static int isosurfacemenu=0, isovariablemenu=0, levelmenu=0;
 static int fontmenu=0, aperturemenu=0,dialogmenu=0,zoommenu=0;
 static int gridslicemenu=0, griddigitsmenu=0, blockagemenu=0, immersedmenu=0, loadpatchmenu=0, ventmenu=0, circularventmenu=0;
-static int loadsmoke3dsinglemenu=0,loadvolsmokesinglemenu=0,unloadsmoke3dsinglemenu=0, showvolsmokesinglemenu=0, includepatchmenu=0;
+static int loadvolsmokesinglemenu=0, showvolsmokesinglemenu=0, includepatchmenu=0;
+#ifdef pp_MESH_SMOKE
+static int loadsmoke3dsinglemenu=0, unloadsmoke3dsinglemenu=0;
+#endif
 #ifdef pp_MESH_PATCH
 static int loadpatchsinglemenu = 0;
 #endif
@@ -8804,7 +8807,9 @@ static int particlemenu=0, particlesubmenu=0, showpatchmenu=0, zonemenu=0, isosh
 #ifdef pp_MESH_ISO
 static int isoshowsubmenu=0;
 #endif
+#ifdef pp_MESH_SMOKE
 static int smoke3dshowsinglemenu = 0;
+#endif
 static int particlepropshowmenu=0;
 static int *particlepropshowsubmenu=NULL;
 static int particlestreakshowmenu=0;
@@ -10677,6 +10682,7 @@ static int menu_count=0;
   if(nsmoke3dloaded>0){
     {
       if(nsmoke3dloaded>0){
+#ifdef pp_MESH_SMOKE
         CREATEMENU(smoke3dshowsinglemenu, Smoke3DShowMenu);
         for(i=0;i<nsmoke3dinfo;i++){
           smoke3ddata *smoke3di;
@@ -10689,6 +10695,7 @@ static int menu_count=0;
           strcat(menulabel,smoke3di->menulabel);
           glutAddMenuEntry(menulabel,i);
         }
+#endif
         CREATEMENU(smoke3dshowmenu, Smoke3DShowMenu);
 #ifdef pp_SMOKE16
         if(show_3dsmoke_8bit == 1)glutAddMenuEntry(_("*Show 8 bit"),   TOGGLE_SMOKE3D_8BIT);
@@ -11080,7 +11087,7 @@ static int menu_count=0;
     strcat(vlabel,_("Show"));
     glutAddMenuEntry(vlabel,TOGGLE_VOLSMOKE);
     GLUTADDSUBMENU(_("Smoke colorbar"),smokecolorbarmenu);
-#ifdef pp_MESH_SMOKE
+#ifdef pp_MESH_VOLSMOKE
     GLUTADDSUBMENU(_("Mesh"), showvolsmokesinglemenu);
 #endif
   }
@@ -12209,6 +12216,7 @@ static int menu_count=0;
     /* --------------------------------unload and load 3d smoke menus -------------------------- */
 
       if(nsmoke3dloaded>0){
+#ifdef pp_MESH_SMOKE
         CREATEMENU(unloadsmoke3dsinglemenu,UnLoadSmoke3DMenu);
         for(i=0;i<nsmoke3dinfo;i++){
           smoke3ddata *smoke3di;
@@ -12221,6 +12229,7 @@ static int menu_count=0;
           strcat(smokemenulabel, smoke3di->label.longlabel);
           glutAddMenuEntry(smokemenulabel,i);
         }
+#endif
         CREATEMENU(unloadsmoke3dmenu,UnLoadSmoke3DMenu);
         for(i = 0; i<nsmoke3dtypes; i++){
           int j, doit, is_zlib;
@@ -12276,6 +12285,7 @@ static int menu_count=0;
           }
         }
         if(nmeshes>1){
+#ifdef pp_MESH_SMOKE
           CREATEMENU(loadsmoke3dsinglemenu, LoadSmoke3DMenu);
           for(ii = 0; ii<nsmoke3dtypes; ii++){
             char menulabel[256];
@@ -12300,6 +12310,7 @@ static int menu_count=0;
             strcat(menulabel, smoke3dtypes[ii].longlabel);
             GLUTADDSUBMENU(menulabel, smoke3dtypes[ii].menu_id);
           }
+#endif
 
           CREATEMENU(loadsmoke3dmenu,LoadSmoke3DMenu);
           // multi mesh smoke menus items
