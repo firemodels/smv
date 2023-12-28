@@ -9,6 +9,8 @@
 #define pp_DEBUG_SUBMENU       // debug output and testing for building menus
 #endif
 
+//#define pp_SLICE_MESH
+
 //#define pp_LUA                 // turn on LUA option
 
 //*** parallel file loading

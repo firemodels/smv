@@ -7506,13 +7506,15 @@ void PartLoadState(int  *load_state){
 
 void InitShowSliceMenu(int *showhideslicemenuptr, int patchgeom_slice_showhide){
   if(nsliceloaded>0||patchgeom_slice_showhide==1){
-    int ii;
+#ifdef pp_SLICE_MESH
+    int ii, i;
+#endif
     int showhideslicemenu;
-    int i;
 
     CREATEMENU(showhideslicemenu, ShowHideSliceMenu);
     *showhideslicemenuptr = showhideslicemenu;
     // loaded slice entries
+#ifdef pp_SLICE_MESH
     for(ii = 0; ii<nslice_loaded; ii++){
       slicedata *sd;
       char menulabel[1024];
@@ -7559,6 +7561,7 @@ void InitShowSliceMenu(int *showhideslicemenuptr, int patchgeom_slice_showhide){
         glutAddMenuEntry(mlabel, -20-i);
       }
     }
+#endif
     if(have_multislice==0){
       glutAddMenuEntry("-", MENU_DUMMY);
       if(HaveTerrainSlice()==1){
@@ -7599,6 +7602,7 @@ void InitShowSliceMenu(int *showhideslicemenuptr, int patchgeom_slice_showhide){
       }
       if(nfedinfo>0){
         int showfedmenu = 0;
+        int i;
 
         for(i = nsliceinfo-nfedinfo; i<nsliceinfo; i++){
           slicedata *slicei;
@@ -7724,7 +7728,9 @@ void InitShowMultiSliceMenu(int *showmultislicemenuptr, int showhideslicemenu, i
         if(show_fed_area==0)glutAddMenuEntry(_("Show FED areas"), MENU_SHOWSLICE_FEDAREA);
       }
     }
+#ifdef pp_SLICE_MESH
     if(nslice_loaded>0)GLUTADDSUBMENU(_("Mesh"), showhideslicemenu);
+#endif
   }
 }
 
@@ -7787,6 +7793,7 @@ void InitSliceSubMenus(int *nloadsubslicemenuptr, int **loadsubslicemenuptr){
     loadsubslicemenu[i]=0;
   }
   iloadsubslicemenu=0;
+#ifdef pp_SLICE_MESH
   for(i=0;i<nsliceinfo;i++){
     slicedata *sd,*sdim1,*sdip1;
     char menulabel[1024];
@@ -7846,6 +7853,7 @@ void InitSliceSubMenus(int *nloadsubslicemenuptr, int **loadsubslicemenuptr){
       iloadsubslicemenu++;
     }
   }
+#endif
   *nloadsubslicemenuptr = nloadsubslicemenu;
 }
 
@@ -7910,13 +7918,17 @@ void InitSliceSkipMenu(int *sliceskipmenuptr){
 /* ------------------ InitLoadSliceMenu ------------------------ */
 
 void InitLoadSliceMenu(int *loadslicemenuptr, int unloadslicemenu, int *loadsubslicemenu, int *loadsubpatchmenu_s, int *nsubpatchmenus_s){
-  int i, loadslicemenu, iloadsubslicemenu;
+  int loadslicemenu, iloadsubslicemenu;
+#ifdef pp_SLICE_MESH
+  int i;
+#endif
 
 // call slice submenus from main slice menu
 
   CREATEMENU(loadslicemenu, LoadSliceMenu);
   *loadslicemenuptr = loadslicemenu;
   iloadsubslicemenu=0;
+#ifdef pp_SLICE_MESH
   for(i=0;i<nsliceinfo;i++){
     slicedata *sd,*sdim1;
 
@@ -7960,6 +7972,7 @@ void InitLoadSliceMenu(int *loadslicemenuptr, int unloadslicemenu, int *loadsubs
   else{
     glutAddMenuEntry(_("Unload"),UNLOAD_ALL);
   }
+#endif
 }
 
 /* ------------------ InitUnloadMultiSliceMenu ------------------------ */
@@ -8181,6 +8194,7 @@ void InitLoadMultiSliceMenu(int *loadmultislicemenuptr, int *loadsubmslicemenu, 
   else{
     glutAddMenuEntry(_("Show slice file sizes"), MENU_SLICE_FILE_SIZES);
   }
+#ifdef pp_SLICE_MESH
   if(nmeshes>1){
     char loadmenulabel[100];
     char steplabel[100];
@@ -8192,6 +8206,7 @@ void InitLoadMultiSliceMenu(int *loadmultislicemenuptr, int *loadsubmslicemenu, 
     }
     GLUTADDSUBMENU(loadmenulabel,loadslicemenu);
   }
+#endif
   glutAddMenuEntry(_("Settings..."), MENU_SLICE_SETTINGS);
   if(nmultisliceloaded+geom_slice_loaded>1){
     GLUTADDSUBMENU(_("Unload"), unloadmultislicemenu);
@@ -8224,6 +8239,7 @@ void InitUnloadVSLiceMenu(int *unloadvslicemenuptr){
 /* ------------------ InitVSliceSubMenu ------------------------ */
 
 void InitVSliceSubMenu(int **loadsubvslicemenuptr){
+#ifdef pp_SLICE_MESH 
   int nloadsubvslicemenu, ii;
   int *loadsubvslicemenu;
 
@@ -8283,6 +8299,7 @@ void InitVSliceSubMenu(int **loadsubvslicemenuptr){
       STRCAT(menulabel, " - ");
       STRCAT(menulabel, sd->slicelabel);
     }
+    strcat(menulabel, "zzz");
     glutAddMenuEntry(menulabel, i);
     if(ii==nvsliceinfo-1||strcmp(sd->label.longlabel, sdp1->label.longlabel)!=0){
       subvslice_menuindex[nloadsubvslicemenu] = vsliceorderindex[ii];
@@ -8306,6 +8323,7 @@ void InitVSliceSubMenu(int **loadsubvslicemenuptr){
       nloadsubvslicemenu++;
     }
   }
+#endif
 }
 
 /* ------------------ InitVSliceLoadMenu ------------------------ */
@@ -8313,11 +8331,14 @@ void InitVSliceSubMenu(int **loadsubvslicemenuptr){
 void InitVSliceLoadMenu(int *vsliceloadmenuptr, int *loadsubvslicemenu, int unloadvslicemenu){
   int vsliceloadmenu;
   int nloadsubvslicemenu;
+#ifdef pp_SLICE_MESH
   int ii;
+#endif
 
   CREATEMENU(vsliceloadmenu, LoadVSliceMenu);
   *vsliceloadmenuptr = vsliceloadmenu;
   nloadsubvslicemenu = 0;
+#ifdef pp_SLICE_MESH
   for(ii = 0; ii<nvsliceinfo; ii++){
     slicedata *sd, *sdm1;
     vslicedata *vd, *vdim1;
@@ -8340,6 +8361,7 @@ void InitVSliceLoadMenu(int *vsliceloadmenuptr, int *loadsubvslicemenu, int unlo
   }
   glutAddMenuEntry("-", MENU_DUMMY);
   GLUTADDSUBMENU(_("Unload"), unloadvslicemenu);
+#endif
 }
 
 /* ------------------ InitDuplicateVectorSliceMenu ------------------------ */
@@ -8511,6 +8533,7 @@ void InitMultiVectorLoadMenu(int *loadmultivslicemenuptr, int *loadsubmvslicemen
   if(nslicedups > 0){
     GLUTADDSUBMENU(_("Duplicate vector slices"), duplicatevectorslicemenu);
   }
+#ifdef pp_SLICE_MESH
   if(nmeshes>1){
     char loadmenulabel[100];
     char steplabel[100];
@@ -8522,6 +8545,7 @@ void InitMultiVectorLoadMenu(int *loadmultivslicemenuptr, int *loadsubmvslicemen
     }
     GLUTADDSUBMENU(loadmenulabel, vsliceloadmenu);
   }
+#endif
   glutAddMenuEntry(_("Settings..."), MENU_LOADVSLICE_SETTINGS);
   if(nvsliceloaded>1){
     GLUTADDSUBMENU(_("Unload"),unloadmultivslicemenu);
@@ -10871,6 +10895,7 @@ static int menu_count=0;
     vd_shown=NULL;
   }
   if(nvsliceinfo>0&&nvsliceloaded>0){
+#ifdef pp_SLICE_MESH
     CREATEMENU(showsingleslicemenu,ShowVSliceMenu);
     for(i=0;i<nvsliceinfo;i++){
       vslicedata *vd;
@@ -10892,6 +10917,7 @@ static int menu_count=0;
       }
       glutAddMenuEntry(menulabel,i);
     }
+#endif
     CREATEMENU(showvslicemenu,ShowVSliceMenu);
     if(vd_shown!=NULL&&nvsliceloaded!=0){
       char menulabel[1024];
@@ -10936,7 +10962,9 @@ static int menu_count=0;
     if(show_cell_slices_and_vectors == 0)glutAddMenuEntry(_("Show cell/face centered slices and vectors"), MENU_SHOWSLICE_CELLSLICEANDVECTORS);
     if(offset_slice == 1)glutAddMenuEntry(_("*Offset vector slice"), MENU_SHOWSLICE_OFFSET);
     if(offset_slice == 0)glutAddMenuEntry(_("Offset vector slice"), MENU_SHOWSLICE_OFFSET);
+#ifdef pp_SLICE_MESH
     GLUTADDSUBMENU(_("Mesh"), showsingleslicemenu);
+#endif
   }
 
 /* --------------------------------showslice menu -------------------------- */
