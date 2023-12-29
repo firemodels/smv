@@ -912,9 +912,6 @@ int CReadSlice_frame(int frame_index_local,int sd_index,int flag){
 void OutputFedCSV(void){
   FILE *AREA_STREAM=NULL;
   char *fed_area_file=NULL,fed_area_file_base[1024];
-#ifdef pp_HIST
-  int i;
-#endif
 
   if(fed_areas == NULL)return;
   sprintf(fed_area_file_base, "%s_s%04i_fedarea.csv", fdsprefix, fed_seqnum++);
@@ -923,15 +920,6 @@ void OutputFedCSV(void){
   if(AREA_STREAM == NULL)return;
 
   fprintf(AREA_STREAM, "\"step\",\"0.0->0.3\",\"0.3->1.0\",\"1.0->3.0\",\"3.0->\"\n");
-#ifdef pp_HIST
-  for(i = 1; i < hists256_slice->ntotal; i++){
-    int *areas;
-
-    areas = fed_areas + 4 * CLAMP(i, 1, nhists256_slice);
-
-    fprintf(AREA_STREAM,"%f,%i,%i,%i,%i\n",hists256_slice->time,areas[0],areas[1],areas[2],areas[3]);
-  }
-#endif
   fclose(AREA_STREAM);
 }
 
@@ -1011,9 +999,6 @@ void ReadFed(int file_index, int time_frame, float *time_value, int flag, int fi
   }
 
   if(flag==UNLOAD){
-#ifdef pp_HIST
-    update_draw_hist = 1;
-#endif
     return;
   }
 
@@ -1372,9 +1357,6 @@ FILE_SIZE ReadVSlice(int ivslice, int time_frame, float *time_value, int flag, i
     showvslice=0;
     updatemenu=1;
     plotstate=GetPlotState(DYNAMIC_PLOTS);
-#ifdef pp_HIST
-    update_draw_hist = 1;
-#endif
     update_vectorskip = 1;
     return return_filesize;
   }
@@ -1577,138 +1559,6 @@ void UncompressSliceDataFrame(slicedata *sd, int iframe_local){
   CheckMemory;
 }
 
-#ifdef pp_HIST
-
-/* ------------------ UpdateSliceHist ------------------------ */
-
-void UpdateSliceHist(void){
-  int i;
-  int nmax;
-  int is_fed = 0;
-
-  histograms_defined = 1;
-  ComputeLoadedSliceHist(NULL);
-  if(hists256_slice != NULL){
-    for(i = 0; i < nhists256_slice; i++){
-      FreeHistogram(hists256_slice + i);
-    }
-    FREEMEMORY(hists256_slice);
-  }
-
-  if(hists12_slice != NULL){
-    for(i = 0; i < nhists256_slice; i++){
-      FreeHistogram(hists12_slice + i);
-    }
-    FREEMEMORY(hists12_slice);
-  }
-
-  nmax = 0;
-  for(i = 0; i < nslice_loaded; i++){
-    slicedata *slicei;
-
-    slicei = sliceinfo + slice_loaded_list[i];
-    if(slicei->slicefile_labelindex != slicefile_labelindex)continue;
-    nmax = MAX(nmax, slicei->nhistograms);
-  }
-
-  nhists256_slice = nmax;
-  if(nhists256_slice > 0){
-    boundsdata *sb;
-    float maxval;
-
-    sb = slicebounds + slicefile_labelindex;
-    NewMemory((void **)&hists256_slice, nhists256_slice * sizeof(histogramdata));
-    NewMemory((void **)&hists12_slice, nhists256_slice * sizeof(histogramdata));
-    for(i = 0; i < nhists256_slice; i++){
-      histogramdata *hist256i;
-      histogramdata *hist12i;
-      float val12_min, val12_max, dval;
-      float val256_min, val256_max;
-
-      dval = sb->dlg_valmax - sb->dlg_valmin;
-
-      hist256i = hists256_slice + i;
-      hist12i = hists12_slice + i;
-
-      val256_min = sb->dlg_valmin - dval / (float)(histogram_nbuckets - 2);
-      val256_max = sb->dlg_valmax + dval / (float)(histogram_nbuckets - 2);
-      InitHistogram(hist256i, histogram_nbuckets, &val256_min, &val256_max);
-
-      val12_min = sb->dlg_valmin - dval / 10.0;
-      val12_max = sb->dlg_valmax + dval / 10.0;
-      InitHistogram(hist12i, 12, &val12_min, &val12_max);
-    }
-    for(i = 0; i < nslice_loaded; i++){
-      slicedata *slicei;
-      int j;
-
-      slicei = sliceinfo + slice_loaded_list[i];
-      if(slicei->slicefile_labelindex != slicefile_labelindex)continue;
-      if(slicei->is_fed == 1)is_fed = 1;
-      for(j = 0; j < MIN(slicei->nhistograms,nhists256_slice); j++){
-        histogramdata *hist256j, *hist12j, *histj;
-
-        histj = slicei->histograms + j;
-        hist256j = hists256_slice + j;
-        hist12j = hists12_slice + j;
-        MergeHistogram(hist256j, histj, KEEP_BOUNDS);
-        MergeHistogram(hist12j, histj, KEEP_BOUNDS);
-      }
-    }
-    for(i = 0; i < nslice_loaded; i++){
-      slicedata *slicei;
-      int j;
-
-      slicei = sliceinfo + slice_loaded_list[i];
-      if(slicei->slicefile_labelindex != slicefile_labelindex)continue;
-      if(slicei->is_fed == 0)continue;
-      for(j = 0; j < MIN(slicei->nhistograms, nhists256_slice); j++){
-        histogramdata *hist256j;
-
-        hist256j = hists256_slice + j;
-        hist256j->time_defined = 1;
-        hist256j->time = slicei->times[MIN(j,slicei->ntimes-1)];
-      }
-      break;
-    }
-    for(i = 0; i < nhists256_slice; i++){
-      histogramdata *hist256i;
-      int j;
-
-      hist256i = hists256_slice + i;
-      maxval = (float)hist256i->buckets[0] / (float)hist256i->ntotal;
-      for(j = 1; j < histogram_nbuckets; j++){
-        float val;
-
-        val = (float)hist256i->buckets[j] / (float)hist256i->ntotal;
-        maxval = MAX(val, maxval);
-      }
-      hist256i->bucket_maxval = maxval;
-    }
-    FREEMEMORY(fed_areas);
-    if(is_fed == 1){
-      NewMemory((void **)&fed_areas, 4*nhists256_slice * sizeof(int));
-      for(i = 0; i < nhists256_slice; i++){
-        int *fed_areasi;
-        float hist0p0, hist0p3, hist1p0, hist3p0;
-
-        hist0p0 = GetHistogramCDF(hists256_slice + i, 0.0);
-        hist0p3 = GetHistogramCDF(hists256_slice + i, 0.3);
-        hist1p0 = GetHistogramCDF(hists256_slice + i, 1.0);
-        hist3p0 = GetHistogramCDF(hists256_slice + i, 3.0);
-
-        fed_areasi = fed_areas + 4 * i;
-        fed_areasi[0] = 100 * (hist0p3 - hist0p0);
-        fed_areasi[1] = 100 * (hist1p0 - hist0p3);
-        fed_areasi[2] = 100 * (hist3p0 - hist1p0);
-        fed_areasi[3] = 100 * (1.0     - hist3p0);
-      }
-    }
-  }
-
-}
-#endif
-
 /* ------------------ MergeLoadedSliceHist ------------------------ */
 
 void MergeLoadedSliceHist(char *label, histogramdata **histptr){
@@ -1732,11 +1582,7 @@ void MergeLoadedSliceHist(char *label, histogramdata **histptr){
 
 /* ------------------ GetSliceHists ------------------------ */
 
-#ifdef pp_HIST
-void GetSliceHists(slicedata *sd){
-#else
 void GetSliceHists(slicedata *sd, int use_bounds, float valmin, float valmax){
-#endif
   int ndata;
   int n, i;
   int nframe;
@@ -1848,10 +1694,6 @@ void GetSliceHists(slicedata *sd, int use_bounds, float valmin, float valmax){
 
     histi = sd->histograms + istep + 1;
     histall = sd->histograms;
-#ifdef pp_HIST
-    int use_bounds = 0;
-    float valmin = 0.0, valmax = 1.0;
-#endif
     CopyVals2Histogram(pdata0, slice_mask0, slice_weight0, nframe, histi, use_bounds, valmin, valmax);
     MergeHistogram(histall, histi, MERGE_BOUNDS);
   }
@@ -1868,11 +1710,7 @@ void GetHistogramValProc(histogramdata *histogram, float cdf, float *val){
 
 /* ------------------ GetSliceGeomHists ------------------------ */
 
-#ifdef pp_HIST
-void GetSliceGeomHists(slicedata *sd){
-#else
 void GetSliceGeomHists(slicedata *sd, int use_bounds, float valmin, float valmax){
-#endif
   if(sd->histograms != NULL)return;
 
   // initialize histograms
@@ -1883,20 +1721,12 @@ void GetSliceGeomHists(slicedata *sd, int use_bounds, float valmin, float valmax
 
   // compute histogram for each timestep, histi and all time steps, histall
 
-#ifdef pp_HIST
-  int use_bounds = 0;
-  float valmin = 0.0, valmax = 1.0;
-#endif
   CopyVals2Histogram(sd->patchgeom->geom_vals, NULL, NULL, sd->patchgeom->geom_nvals, sd->histograms, use_bounds, valmin, valmax);
 }
 
 /* ------------------ ComputeLoadedSliceHist ------------------------ */
 
-#ifdef pp_HIST
-void ComputeLoadedSliceHist(char *label){
-#else
 void ComputeLoadedSliceHist(char *label, float valmin, float valmax){
-#endif
   int i;
 
   for(i = 0; i < nsliceinfo; i++){
@@ -1907,20 +1737,12 @@ void ComputeLoadedSliceHist(char *label, float valmin, float valmax){
     if(label != NULL && strcmp(slicei->label.shortlabel, label) != 0)continue;
     if(slicei->histograms == NULL){
       if(slicei->slice_filetype == SLICE_GEOM){
-#ifdef pp_HIST
-        GetSliceGeomHists(slicei);
-#else
         int use_bounds = 1;
         GetSliceGeomHists(slicei, use_bounds, valmin, valmax);
-#endif
       }
       else{
-#ifdef pp_HIST
-        GetSliceHists(slicei);
-#else
         int use_bounds = 1;
         GetSliceHists(slicei, use_bounds, valmin, valmax);
-#endif
       }
     }
   }
@@ -2165,10 +1987,10 @@ int VSliceCompare(const void *arg1, const void *arg2){
 
 /* ------------------ UpdateSliceMenuShow ------------------------ */
 
-void UpdateSliceMenuShow(void){
+void UpdateSliceMenuShow(sliceparmdata *sp){
   int i;
 
-  for(i=0;i<nsliceinfo;i++){
+  for(i=0;i<sp->nsliceinfo;i++){
     slicedata *sd;
 
     sd = sliceinfo + i;
@@ -2212,14 +2034,14 @@ char *GetMSliceDir(multislicedata *mslicei){
 
 /* ------------------ UpdateSliceMenuLabels ------------------------ */
 
-void UpdateSliceMenuLabels(void){
+void UpdateSliceMenuLabels(sliceparmdata *sp){
   int i;
   char label[128];
   multislicedata *mslicei;
   slicedata *sd,*sdold;
 
-  UpdateSliceMenuShow();
-  if(nsliceinfo>0){
+  UpdateSliceMenuShow(sp);
+  if(sp->nsliceinfo>0){
     char *cdir;
 
     mslicei = multisliceinfo;
@@ -2249,7 +2071,7 @@ void UpdateSliceMenuLabels(void){
     if(sd->compression_type==COMPRESSED_RLE){
       STRCAT(sd->menulabel," (RLE)");
     }
-    for(i=1;i<nsliceinfo;i++){
+    for(i=1;i<sp->nsliceinfo;i++){
       sdold = sliceinfo + sliceorderindex[i - 1];
       sd = sliceinfo + sliceorderindex[i];
       cdir = GetMSliceDir(mslicei);
@@ -2280,7 +2102,7 @@ void UpdateSliceMenuLabels(void){
         STRCAT(sd->menulabel," (RLE)");
       }
     }
-    for(i=0;i<nsliceinfo;i++){
+    for(i=0;i<sp->nsliceinfo;i++){
       sd = sliceinfo + i;
       STRCPY(sd->menulabel2,sd->label.longlabel);
       STRCAT(sd->menulabel2,", ");
@@ -2520,7 +2342,7 @@ void UpdateVectorSkip(int skip){
 
 /* ------------------ UpdateVsliceMenulabels ------------------------ */
 
-void UpdateVsliceMenuLabels(void){
+void UpdateVsliceMenuLabels(sliceparmdata *sp){
   int i;
   slicedata *sd, *sdold;
   vslicedata *vsd, *vsdold;
@@ -2528,7 +2350,7 @@ void UpdateVsliceMenuLabels(void){
   char label[128];
 
 
-  if(nvsliceinfo>0){
+  if(sp->nvsliceinfo>0){
     mvslicei = multivsliceinfo;
     vsd = vsliceinfo + vsliceorderindex[0];
     sd = sliceinfo + vsd->ival;
@@ -2551,7 +2373,7 @@ void UpdateVsliceMenuLabels(void){
       STRCAT(vsd->menulabel,", ");
       STRCAT(vsd->menulabel,sd->file);
     }
-    for(i=1;i<nvsliceinfo;i++){
+    for(i=1;i<sp->nvsliceinfo;i++){
       vsdold = vsliceinfo + vsliceorderindex[i - 1];
       sdold = sliceinfo + vsdold->ival;
       vsd = vsliceinfo + vsliceorderindex[i];
@@ -2576,7 +2398,7 @@ void UpdateVsliceMenuLabels(void){
         STRCAT(vsd->menulabel,sd->file);
       }
     }
-    for(i=0;i<nvsliceinfo;i++){
+    for(i=0;i<sp->nvsliceinfo;i++){
       vsd = vsliceinfo + vsliceorderindex[i];
       sd = sliceinfo + vsd->ival;
       STRCPY(vsd->menulabel2,sd->label.longlabel);
@@ -2766,10 +2588,10 @@ int CountSliceDups(void){
 
 /* ------------------ UpdateSliceDups ------------------------ */
 
-void UpdateSliceDups(void){
+void UpdateSliceDups(sliceparmdata *sp){
   int i;
 
-  for(i=0;i<nmultisliceinfo;i++){
+  for(i=0;i<sp->nmultisliceinfo;i++){
     int ii;
     multislicedata *mslicei;
 
@@ -2782,7 +2604,7 @@ void UpdateSliceDups(void){
     }
   }
   // look for duplicate slices
-  for(i=0;i<nmultisliceinfo;i++){
+  for(i=0;i< sp->nmultisliceinfo;i++){
     int ii;
     multislicedata *mslicei;
 
@@ -2821,21 +2643,56 @@ void UpdateVSliceDups(void){
   }
  }
 
+/* ------------------ UpdateSliceinfoPtrs ------------------------ */
+
+void UpdateSliceinfoPtrs(sliceparmdata *sp){
+  int i;
+
+  meshinfo->isliceinfo    = 0;
+  for(i=1; i<nmeshes; i++){
+    meshdata *meshim1, *meshi;
+
+    meshim1               = meshinfo + i - 1;
+    meshi                 = meshinfo + i;
+    meshi->isliceinfo     = meshim1->isliceinfo + meshim1->nsliceinfo;
+  }
+  for(i=0; i<sp->nsliceinfo; i++){
+    sliceinfoptrs[i] = NULL;
+  }
+  for(i=0; i<sp->nsliceinfo; i++){
+    slicedata *slicei;
+    meshdata *meshi;
+    
+    slicei                             = sliceinfo + i;
+    meshi                              = meshinfo + slicei->blocknumber;
+    sliceinfoptrs[meshi->isliceinfo++] = slicei;
+  }
+  meshinfo->isliceinfo    = 0;
+  for(i=1; i<nmeshes; i++){
+    meshdata *meshim1, *meshi;
+
+    meshim1               = meshinfo + i - 1;
+    meshi                 = meshinfo + i;
+    meshi->isliceinfo     = meshim1->isliceinfo + meshim1->nsliceinfo;
+  }
+  CheckMemory;
+}
+
 /* ------------------ UpdateFedinfo ------------------------ */
 
-void UpdateFedinfo(void){
+void UpdateFedinfo(sliceparmdata *sp){
   int i;
   int ifediso = 0;
   FILE *stream_fedsmv = NULL;
 
-  nfedinfo = 0;
+  sp->nfedinfo = 0;
   if(smokediff == 1)return;
-  for(i = 0; i < nsliceinfo; i++){
+  for(i = 0; i < sp->nsliceinfo; i++){
     slicedata *slicei;
     feddata *fedi;
     int j;
 
-    fedi = fedinfo + nfedinfo;
+    fedi = fedinfo + sp->nfedinfo;
     slicei = sliceinfo + i;
 
     fedi->co = NULL;
@@ -2852,7 +2709,7 @@ void UpdateFedinfo(void){
     if(slicei->slice_filetype != SLICE_CELL_CENTER&&strcmp(slicei->label.longlabel, "CARBON DIOXIDE VOLUME FRACTION") != 0)continue;
     if(slicei->slice_filetype == SLICE_CELL_CENTER&&strcmp(slicei->label.longlabel, "CARBON DIOXIDE VOLUME FRACTION(cell centered)") != 0)continue;
     fedi->co2_index = i;
-    for(j = 0; j < nsliceinfo; j++){
+    for(j = 0; j < sp->nsliceinfo; j++){
       slicedata *slicej;
 
       slicej = sliceinfo + j;
@@ -2866,7 +2723,7 @@ void UpdateFedinfo(void){
       break;
     }
     if(fedi->co_index == -1)continue;
-    for(j = 0; j < nsliceinfo; j++){
+    for(j = 0; j < sp->nsliceinfo; j++){
       slicedata *slicej;
 
       slicej = sliceinfo + j;
@@ -2885,32 +2742,33 @@ void UpdateFedinfo(void){
     if(fedi->co2_index != -1 && sliceinfo[fedi->co2_index].compression_type == COMPRESSED_ZLIB)continue;
     if(fedi->o2_index  != -1 && sliceinfo[fedi->o2_index].compression_type  == COMPRESSED_ZLIB)continue;
 #endif
-    fedi->fed_index = nsliceinfo + nfedinfo;
-    if(sliceinfo[fedi->co_index].volslice == 1)nfediso++;
-    nfedinfo++;
+    fedi->fed_index = sp->nsliceinfo + sp->nfedinfo;
+    if(sliceinfo[fedi->co_index].volslice == 1)sp->nfediso++;
+    sp->nfedinfo++;
   }
-  if(nfedinfo == 0){
+  if(sp->nfedinfo == 0){
     FREEMEMORY(fedinfo);
     return;
   }
   else{
-    nsliceinfo += nfedinfo;
-    ResizeMemory((void **)&fedinfo, nfedinfo * sizeof(feddata));
-    ResizeMemory((void **)&sliceinfo, nsliceinfo * sizeof(slicedata));
-    ResizeMemory((void **)&vsliceinfo, 3 * nsliceinfo * sizeof(vslicedata));
-    ResizeMemory((void **)&sliceinfo, nsliceinfo * sizeof(slicedata));
-    ResizeMemory((void **)&fedinfo, nsliceinfo * sizeof(feddata));
-    ResizeMemory((void **)&slice_loadstack, nsliceinfo * sizeof(int));
-    ResizeMemory((void **)&vslice_loadstack, nsliceinfo * sizeof(int));
-    ResizeMemory((void **)&subslice_menuindex, nsliceinfo * sizeof(int));
-    ResizeMemory((void **)&msubslice_menuindex, nsliceinfo*sizeof(int));
-    ResizeMemory((void **)&subvslice_menuindex, nsliceinfo * sizeof(int));
-    ResizeMemory((void **)&msubvslice_menuindex, nsliceinfo*sizeof(int));
-    ResizeMemory((void **)&mslice_loadstack, nsliceinfo * sizeof(int));
-    ResizeMemory((void **)&mvslice_loadstack, nsliceinfo * sizeof(int));
-    if(nfediso > 0){
-      nisoinfo += nfediso;
-      if(nisoinfo == nfediso){
+    sp->nsliceinfo += sp->nfedinfo;
+    ResizeMemory((void **)&fedinfo, sp->nfedinfo * sizeof(feddata));
+    ResizeMemory((void **)&sliceinfo, sp->nsliceinfo * sizeof(slicedata));
+    ResizeMemory((void **)&sliceinfoptrs, sp->nsliceinfo * sizeof(slicedata *));
+    ResizeMemory((void **)&vsliceinfo, 3 * sp->nsliceinfo * sizeof(vslicedata));
+    ResizeMemory((void **)&sliceinfo, sp->nsliceinfo * sizeof(slicedata));
+    ResizeMemory((void **)&fedinfo, sp->nsliceinfo * sizeof(feddata));
+    ResizeMemory((void **)&slice_loadstack, sp->nsliceinfo * sizeof(int));
+    ResizeMemory((void **)&vslice_loadstack, sp->nsliceinfo * sizeof(int));
+    ResizeMemory((void **)&subslice_menuindex, sp->nsliceinfo * sizeof(int));
+    ResizeMemory((void **)&msubslice_menuindex, sp->nsliceinfo*sizeof(int));
+    ResizeMemory((void **)&subvslice_menuindex, sp->nsliceinfo * sizeof(int));
+    ResizeMemory((void **)&msubvslice_menuindex, sp->nsliceinfo*sizeof(int));
+    ResizeMemory((void **)&mslice_loadstack, sp->nsliceinfo * sizeof(int));
+    ResizeMemory((void **)&mvslice_loadstack, sp->nsliceinfo * sizeof(int));
+    if(sp->nfediso > 0){
+      nisoinfo += sp->nfediso;
+      if(nisoinfo == sp->nfediso){
         NewMemory((void **)&isoinfo, nisoinfo * sizeof(isodata));
         NewMemory((void **)&isotypes, nisoinfo * sizeof(int));
       }
@@ -2920,17 +2778,17 @@ void UpdateFedinfo(void){
       }
     }
   }
-  if(nfedinfo > 0 && fed_filename != NULL){
+  if(sp->nfedinfo > 0 && fed_filename != NULL){
     stream_fedsmv = fopen(fed_filename, "w");
   }
-  for(i = 0; i < nfedinfo; i++){ // define sliceinfo for fed slices
+  for(i = 0; i < sp->nfedinfo; i++){ // define sliceinfo for fed slices
     slicedata *sd;
     slicedata *co2;
     int nn_slice;
     feddata *fedi;
     char *filename, filename_base[1024], *ext;
 
-    sd = sliceinfo + nsliceinfo + (i - nfedinfo);
+    sd = sliceinfo + sp->nsliceinfo + (i - sp->nfedinfo);
     fedi = fedinfo + i;
     fedi->co = sliceinfo + fedi->co_index;
     fedi->o2 = sliceinfo + fedi->o2_index;
@@ -2957,7 +2815,7 @@ void UpdateFedinfo(void){
     sd->ploty = co2->ploty;
     sd->plotz = co2->plotz;
 
-    nn_slice = nsliceinfo + i;
+    nn_slice = sp->nsliceinfo + i;
 
     sd->is_fed = 1;
     sd->slcf_index = co2->slcf_index;
@@ -3004,11 +2862,13 @@ void UpdateFedinfo(void){
     sd->line_contours = NULL;
     sd->menu_show = 1;
     sd->constant_color = NULL;
-#ifdef pp_HIST
-    sd->histograms = NULL;
-    sd->nhistograms = 0;
-#endif
     sd->have_bound_file = 0;
+
+    meshdata *meshi;
+
+    meshi = meshinfo + sd->blocknumber;
+    meshi->nsliceinfo++;
+
 
     strcpy(filename_base, fedi->co->file);
     ext = strrchr(filename_base, '.');
@@ -3041,12 +2901,12 @@ void UpdateFedinfo(void){
       int nn_iso, ii;
       float **colorlevels;
 
-      isoi = isoinfo + nisoinfo - nfediso + ifediso;
+      isoi = isoinfo + nisoinfo - sp->nfediso + ifediso;
       fedi->fed_iso = isoi;
       isoi->tfile = NULL;
       isoi->is_fed = 1;
       isoi->fedptr = fedi;
-      nn_iso = nisoinfo - nfediso + ifediso + 1;
+      nn_iso = nisoinfo - sp->nfediso + ifediso + 1;
       isoi->seq_id = nn_iso;
       isoi->autoload = 0;
       isoi->blocknumber = sd->blocknumber;
@@ -3101,15 +2961,16 @@ void UpdateFedinfo(void){
     }
   }
   if(stream_fedsmv != NULL)fclose(stream_fedsmv);
-  if(nfediso > 0)UpdateIsoMenuLabels();
+  if(sp->nfediso > 0)UpdateIsoMenuLabels();
 }
 
+#ifdef pp_SLICE_DIR_COUNT
 /* ------------------ UpdateSliceDirCount ------------------------ */
 
-void UpdateSliceDirCount(void){
+void UpdateSliceDirCount(sliceparmdata *sp){
   int i, j;
 
-  for(i = 0; i < nmultisliceinfo; i++){
+  for(i = 0; i < sp->nmultisliceinfo; i++){
     multislicedata *mslicei;
 
     mslicei = multisliceinfo + i;
@@ -3118,7 +2979,7 @@ void UpdateSliceDirCount(void){
     mslicei->ndirxyz[2] = 0;
     mslicei->ndirxyz[3] = 0;
   }
-  for(i = 0; i < nmultisliceinfo; i++){
+  for(i = 0; i < sp->nmultisliceinfo; i++){
     multislicedata *mslicei;
     slicedata *slicei;
 
@@ -3126,7 +2987,7 @@ void UpdateSliceDirCount(void){
     slicei = sliceinfo + mslicei->islices[0];
     if(slicei->idir < 1)continue;
     if(slicei->volslice == 1)continue;
-    for(j = 0; j < nmultisliceinfo; j++){
+    for(j = 0; j < sp->nmultisliceinfo; j++){
       multislicedata *mslicej;
       slicedata *slicej;
 
@@ -3140,7 +3001,7 @@ void UpdateSliceDirCount(void){
       mslicei->ndirxyz[slicej->idir]++;
     }
   }
-  for(i = 0; i < nsliceinfo; i++){
+  for(i = 0; i < sp->nsliceinfo; i++){
     slicedata *slicei;
 
     slicei = sliceinfo + i;
@@ -3149,13 +3010,13 @@ void UpdateSliceDirCount(void){
     slicei->ndirxyz[2] = 0;
     slicei->ndirxyz[3] = 0;
   }
-  for(i = 0; i < nsliceinfo; i++){
+  for(i = 0; i < sp->nsliceinfo; i++){
     slicedata *slicei, *slicej;
 
     slicei = sliceinfo + i;
     if(slicei->idir < 1)continue;
     if(slicei->volslice == 1)continue;
-    for(j = 0; j < nsliceinfo; j++){
+    for(j = 0; j < sp->nsliceinfo; j++){
       slicej = sliceinfo + j;
       if(slicej->idir < 1)continue;
       if(slicej->volslice == 1)continue;
@@ -3167,10 +3028,10 @@ void UpdateSliceDirCount(void){
     }
   }
 }
-
+#endif
 /* ------------------ GetSliceParams ------------------------ */
 
-void GetSliceParams(void){
+void GetSliceParams(sliceparmdata *sp){
   int i;
   int error;
 
@@ -3186,7 +3047,8 @@ void GetSliceParams(void){
     stream=fopen(sliceinfo_filename,"r");
   }
 
-  for(i=0;i<nsliceinfo;i++){
+  INIT_PRINT_TIMER(timer_getsliceparams1);
+  for(i=0;i<sp->nsliceinfo;i++){
     slicedata *sd;
     int is1, is2, js1, js2, ks1, ks2;
     int iis1, iis2;
@@ -3195,7 +3057,7 @@ void GetSliceParams(void){
     sd = sliceinfo + i;
 
 #ifdef _DEBUG
-    if(nsliceinfo>100&&(i%100==0||i==nsliceinfo-1)){
+    if(sp->nsliceinfo>100&&(i%100==0||i==sp->nsliceinfo-1)){
       PRINTF("    obtaining parameters from %i'st slice file\n",i+1);
     }
 #endif
@@ -3259,8 +3121,15 @@ void GetSliceParams(void){
       sd->nslicek=nk;
     }
   }
-  UpdateFedinfo();
-  for(i=0;i<nsliceinfo;i++){
+  PRINT_TIMER(timer_getsliceparams1, "getsliceparams 1");
+  INIT_PRINT_TIMER(timer_getsliceparams2);
+  UpdateFedinfo(sp);
+  PRINT_TIMER(timer_getsliceparams2, "getsliceparams 2");
+  INIT_PRINT_TIMER(timer_getsliceparams3);
+  UpdateSliceinfoPtrs(sp);
+  PRINT_TIMER(timer_getsliceparams3, "getsliceparams 3");
+  INIT_PRINT_TIMER(timer_getsliceparams4);
+  for(i=0;i<sp->nsliceinfo;i++){
     slicedata *sd;
     int is1, is2, js1, js2, ks1, ks2;
     meshdata *meshi;
@@ -3409,68 +3278,76 @@ void GetSliceParams(void){
       }
     }
   }
+  PRINT_TIMER(timer_getsliceparams4, "getsliceparams 4");
+  INIT_PRINT_TIMER(timer_getsliceparams5);
   if(stream!=NULL)fclose(stream);
-  if(nsliceinfo>0){
+  if(sp->nsliceinfo>0){
     FREEMEMORY(sliceorderindex);
-    NewMemory((void **)&sliceorderindex,sizeof(int)*nsliceinfo);
-    for(i=0;i<nsliceinfo;i++){
+    NewMemory((void **)&sliceorderindex,sizeof(int)*sp->nsliceinfo);
+    for(i=0;i<sp->nsliceinfo;i++){
       sliceorderindex[i]=i;
     }
-    qsort( (int *)sliceorderindex, (size_t)nsliceinfo, sizeof(int), SliceCompare );
+    qsort( (int *)sliceorderindex, (size_t)sp->nsliceinfo, sizeof(int), SliceCompare );
 
-    for(i=0;i<nmultisliceinfo;i++){
+    for(i=0;i<sp->nmultisliceinfo;i++){
       multislicedata *mslicei;
 
       mslicei = multisliceinfo + i;
       FREEMEMORY(mslicei->islices);
     }
     FREEMEMORY(multisliceinfo);
-    nmultisliceinfo=0;
+    sp->nmultisliceinfo=0;
 
-    NewMemory((void **)&multisliceinfo,sizeof(multislicedata)*nsliceinfo);
+    NewMemory((void **)&multisliceinfo,sizeof(multislicedata)*sp->nsliceinfo);
 
     {
       multislicedata *mslicei;
       slicedata *sd;
 
-      nmultisliceinfo=1;
+      sp->nmultisliceinfo=1;
       mslicei = multisliceinfo;
       mslicei->islices=NULL;
-      NewMemory((void **)&mslicei->islices,sizeof(int)*nsliceinfo);
+      NewMemory((void **)&mslicei->islices,sizeof(int)*sp->nsliceinfo);
       mslicei->nslices=1;
       sd = sliceinfo + sliceorderindex[0];
       mslicei->islices[0] = sliceorderindex[0];
-      for(i=1;i<nsliceinfo;i++){
+      for(i=1;i<sp->nsliceinfo;i++){
         slicedata *sdold;
 
         sdold = sliceinfo + sliceorderindex[i - 1];
         sd = sliceinfo + sliceorderindex[i];
         mslicei->autoload=0;
         if(NewMultiSlice(sdold,sd)==1){
-          nmultisliceinfo++;
+          sp->nmultisliceinfo++;
           mslicei++;
           mslicei->nslices=0;
           mslicei->islices=NULL;
-          NewMemory((void **)&mslicei->islices,sizeof(int)*nsliceinfo);
+          NewMemory((void **)&mslicei->islices,sizeof(int)*sp->nsliceinfo);
         }
         mslicei->nslices++;
         mslicei->islices[mslicei->nslices-1]=sliceorderindex[i];
       }
     }
     have_multislice = 0;
-    //if(nmultisliceinfo>0&&nsliceinfo>0&&nmultisliceinfo+nfedinfo<nsliceinfo)have_multislice = 1;
-    if(nmultisliceinfo>0)have_multislice = 1; // use multi slice for all cases
+    //if(sp->nmultisliceinfo>0&&sp->nsliceinfo>0&&sp->nmultisliceinfo+nfedinfo<sp->nsliceinfo)have_multislice = 1;
+    if(sp->nmultisliceinfo>0)have_multislice = 1; // use multi slice for all cases
   }
-  for(i = 0; i < nsliceinfo; i++){
+  PRINT_TIMER(timer_getsliceparams5, "getsliceparams 5");
+  INIT_PRINT_TIMER(timer_getsliceparams6);
+  for(i = 0; i < sp->nsliceinfo; i++){
     slicedata *slicei;
 
     slicei = sliceinfo + i;
     slicei->mslice = NULL;
     slicei->skipdup = 0;
   }
-  UpdateSliceDups();
+  UpdateSliceDups(sp);
+  PRINT_TIMER(timer_getsliceparams6, "getsliceparams 6");
+  INIT_PRINT_TIMER(timer_getsliceparams7);
   nslicedups = CountSliceDups();
-  for(i = 0; i < nmultisliceinfo; i++){
+  PRINT_TIMER(timer_getsliceparams7, "getsliceparams 7");
+  INIT_PRINT_TIMER(timer_getsliceparams8);
+  for(i = 0; i < sp->nmultisliceinfo; i++){
     int ii;
     multislicedata *mslicei;
 
@@ -3491,8 +3368,15 @@ void GetSliceParams(void){
       slicei->mslice = mslicei;
     }
   }
-  UpdateSliceMenuLabels();
-  UpdateSliceDirCount();
+  PRINT_TIMER(timer_getsliceparams8, "getsliceparams 8");
+  INIT_PRINT_TIMER(timer_getsliceparams9);
+  UpdateSliceMenuLabels(sp);
+  PRINT_TIMER(timer_getsliceparams9, "getsliceparams 9");
+#ifdef pp_SLICE_DIR_COUNT
+  INIT_PRINT_TIMER(timer_getsliceparams10);
+  UpdateSliceDirCount(sp);
+  PRINT_TIMER(timer_getsliceparams10, "getsliceparams 10");
+#endif
 }
 
 /* ------------------ GetSliceParams2 ------------------------ */
@@ -3531,9 +3415,11 @@ void GetSliceParams2(void){
 
 /* ------------------ UpdateVSlices ------------------------ */
 
-void UpdateVSlices(void){
+void *UpdateVSlices(void *arg){
   int i;
+  sliceparmdata *sp;
 
+  sp = (sliceparmdata *)arg;
   max_dx = meshinfo->xplt_orig[1] - meshinfo->xplt_orig[0];
   max_dy = meshinfo->yplt_orig[1] - meshinfo->yplt_orig[0];
   max_dz = meshinfo->zplt_orig[1] - meshinfo->zplt_orig[0];
@@ -3553,12 +3439,15 @@ void UpdateVSlices(void){
 #ifdef _DEBUG
   PRINTF("  updating vector slices\n");
 #endif
-  GetSliceParams(); //slow
+  INIT_PRINT_TIMER(timer_getsliceparams);
+  GetSliceParams(sp); //slow
+  PRINT_TIMER(timer_getsliceparams, "GetSliceParams");
 
   /* update vector slices */
 
-  nvsliceinfo=0;
-  for(i=0;i<nsliceinfo;i++){
+  sp->nvsliceinfo=0;
+  INIT_PRINT_TIMER(timer_updatevslices1);
+  for(i=0;i<sp->nsliceinfo;i++){
     slicedata *sdi;
 
     sdi = sliceinfo+i;
@@ -3579,17 +3468,22 @@ void UpdateVSlices(void){
       continue;
     }
   }
-  for(i=0;i<nsliceinfo;i++){ //slow
+  PRINT_TIMER(timer_updatevslices1, "UpdateVSlices_1");
+
+  INIT_PRINT_TIMER(timer_updatevslices2);
+  for(i=0;i<sp->nsliceinfo;i++){ //slow
     slicedata *sdi;
     vslicedata *vd;
+    meshdata *meshi;
     int j;
 #ifdef _DEBUG
-    if(nsliceinfo>100&&(i%100==0||i==nsliceinfo-1)){
+    if(sp->nsliceinfo>100&&(i%100==0||i==sp->nsliceinfo-1)){
       PRINTF("    examining %i'st slice file for vectors\n",i+1);
     }
 #endif
-    vd = vsliceinfo + nvsliceinfo;
+    vd = vsliceinfo + sp->nvsliceinfo;
     sdi = sliceinfo+i;
+    meshi = meshinfo + sdi->blocknumber;
     vd->iu=-1;
     vd->iv=-1;
     vd->iw=-1;
@@ -3597,45 +3491,45 @@ void UpdateVSlices(void){
     vd->vslicefile_labelindex=sdi->slicefile_labelindex;
     vd->vslice_filetype=sdi->slice_filetype;
     if(vd->vslice_filetype==SLICE_CELL_CENTER){
-      for(j=0;j<nsliceinfo;j++){
+      for(j=0;j<meshi->nsliceinfo;j++){
         slicedata *sdj;
 
-        sdj = sliceinfo+j;
+        sdj = sliceinfoptrs[meshi->isliceinfo + j];
         if(sdj->slice_filetype!=SLICE_CELL_CENTER)continue;
         if(sdi->blocknumber!=sdj->blocknumber)continue;
         if(sdi->is1!=sdj->is1||sdi->is2!=sdj->is2||sdi->js1!=sdj->js1)continue;
         if(sdi->js2!=sdj->js2||sdi->ks1!=sdj->ks1||sdi->ks2!=sdj->ks2)continue;
-        if(sdj->vec_comp==1)vd->iu=j;
-        if(sdj->vec_comp==2)vd->iv=j;
-        if(sdj->vec_comp==3)vd->iw=j;
+        if(sdj->vec_comp==1)vd->iu=sdj-sliceinfo;
+        if(sdj->vec_comp==2)vd->iv=sdj-sliceinfo;
+        if(sdj->vec_comp==3)vd->iw=sdj-sliceinfo;
       }
     }
     else if(vd->vslice_filetype == SLICE_GEOM){
-      for(j=0;j<nsliceinfo;j++){
+      for(j = 0;j < meshi->nsliceinfo;j++){
         slicedata *sdj;
 
-        sdj = sliceinfo+j;
+        sdj = sliceinfoptrs[meshi->isliceinfo + j];
         if(sdj->slice_filetype!=SLICE_GEOM)continue;
         if(sdi->blocknumber!=sdj->blocknumber)continue;
         if(sdi->is1!=sdj->is1||sdi->is2!=sdj->is2||sdi->js1!=sdj->js1)continue;
         if(sdi->js2!=sdj->js2||sdi->ks1!=sdj->ks1||sdi->ks2!=sdj->ks2)continue;
-        if(sdj->vec_comp==1)vd->iu=j;
-        if(sdj->vec_comp==2)vd->iv=j;
-        if(sdj->vec_comp==3)vd->iw=j;
+        if(sdj->vec_comp==1)vd->iu=sdj-sliceinfo;
+        if(sdj->vec_comp==2)vd->iv=sdj-sliceinfo;
+        if(sdj->vec_comp==3)vd->iw=sdj-sliceinfo;
       }
     }
     else{
-      for (j = 0; j < nsliceinfo; j++) {
+      for(j = 0;j < meshi->nsliceinfo;j++){
         slicedata *sdj;
 
-        sdj = sliceinfo + j;
+        sdj = sliceinfoptrs[meshi->isliceinfo + j];
         if (sdj->slice_filetype == SLICE_CELL_CENTER|| sdj->slice_filetype == SLICE_GEOM)continue;
         if (sdi->blocknumber != sdj->blocknumber)continue;
         if (sdi->is1 != sdj->is1 || sdi->is2 != sdj->is2 || sdi->js1 != sdj->js1)continue;
         if (sdi->js2 != sdj->js2 || sdi->ks1 != sdj->ks1 || sdi->ks2 != sdj->ks2)continue;
-        if (sdj->vec_comp == 1)vd->iu = j;
-        if (sdj->vec_comp == 2)vd->iv = j;
-        if (sdj->vec_comp == 3)vd->iw = j;
+        if (sdj->vec_comp == 1)vd->iu = sdj-sliceinfo;
+        if (sdj->vec_comp == 2)vd->iv = sdj-sliceinfo;
+        if (sdj->vec_comp == 3)vd->iw = sdj-sliceinfo;
       }
     }
     if(vd->iu!=-1||vd->iv!=-1||vd->iw!=-1){
@@ -3643,41 +3537,43 @@ void UpdateVSlices(void){
       vd->display=0;
       vd->loaded=0;
       vd->volslice=sdi->volslice;
-      nvsliceinfo++;
+      sp->nvsliceinfo++;
     }
   }
+  PRINT_TIMER(timer_updatevslices2, "UpdateVSlices_2");
 #ifdef _DEBUG
-  PRINTF("    %i vector slices found\n",nvsliceinfo);
+  PRINTF("    %i vector slices found\n",sp->nvsliceinfo);
 #endif
-  if(nvsliceinfo>0){
+  INIT_PRINT_TIMER(timer_updatevslices3);
+  if(sp->nvsliceinfo>0){
     vslicedata *vsd;
     multivslicedata *mvslicei;
 
     FREEMEMORY(vsliceorderindex);
-    NewMemory((void **)&vsliceorderindex,sizeof(int)*nvsliceinfo);
-    for(i=0;i<nvsliceinfo;i++){
+    NewMemory((void **)&vsliceorderindex,sizeof(int)*sp->nvsliceinfo);
+    for(i=0;i<sp->nvsliceinfo;i++){
       vsliceorderindex[i]=i;
     }
-    qsort( (int *)vsliceorderindex, (size_t)nvsliceinfo, sizeof(int), VSliceCompare );
+    qsort( (int *)vsliceorderindex, (size_t)sp->nvsliceinfo, sizeof(int), VSliceCompare );
 
-    for(i=0;i<nmultivsliceinfo;i++){
+    for(i=0;i<sp->nmultivsliceinfo;i++){
       mvslicei = multivsliceinfo + i;
       FREEMEMORY(mvslicei->ivslices);
     }
     FREEMEMORY(multivsliceinfo);
-    nmultivsliceinfo=0;
+    sp->nmultivsliceinfo=0;
 
-    NewMemory((void **)&multivsliceinfo,sizeof(multislicedata)*nvsliceinfo);
+    NewMemory((void **)&multivsliceinfo,sizeof(multislicedata)*sp->nvsliceinfo);
 
-    nmultivsliceinfo=1;
+    sp->nmultivsliceinfo=1;
     mvslicei = multivsliceinfo;
     mvslicei->ivslices=NULL;
-    NewMemory((void **)&mvslicei->ivslices,sizeof(int)*nvsliceinfo);
+    NewMemory((void **)&mvslicei->ivslices,sizeof(int)*sp->nvsliceinfo);
     mvslicei->nvslices=1;
     vsd = vsliceinfo + vsliceorderindex[0];
     mvslicei->ivslices[0] = vsliceorderindex[0];
     mvslicei->mvslicefile_labelindex=sliceinfo[vsd->ival].slicefile_labelindex;
-    for(i=1;i<nvsliceinfo;i++){
+    for(i=1;i<sp->nvsliceinfo;i++){
       slicedata *sd, *sdold;
       vslicedata *vsdold;
 
@@ -3686,12 +3582,12 @@ void UpdateVSlices(void){
       vsd = vsliceinfo + vsliceorderindex[i];
       sd = sliceinfo + vsd->ival;
       if(NewMultiSlice(sdold,sd)==1){
-        nmultivsliceinfo++;
+        sp->nmultivsliceinfo++;
         mvslicei++;
         mvslicei->nvslices=0;
         mvslicei-> mvslicefile_labelindex=sd->slicefile_labelindex;
         mvslicei->ivslices=NULL;
-        NewMemory((void **)&mvslicei->ivslices,sizeof(int)*nvsliceinfo);
+        NewMemory((void **)&mvslicei->ivslices,sizeof(int)*sp->nvsliceinfo);
       }
       mvslicei->nvslices++;
       mvslicei->ivslices[mvslicei->nvslices-1]=vsliceorderindex[i];
@@ -3699,7 +3595,7 @@ void UpdateVSlices(void){
 
     // define sequence id's for auto file loading
 
-    for(i=0;i<nvsliceinfo;i++){
+    for(i=0;i<sp->nvsliceinfo;i++){
       vslicedata *vslicei;
       slicedata *sliceval;
       int seq_id;
@@ -3714,13 +3610,19 @@ void UpdateVSlices(void){
       vslicei->reload = 0;
     }
   }
+  PRINT_TIMER(timer_updatevslices3, "UpdateVSlices_3");
+
   have_multivslice = 0;
-  //if(nvsliceinfo > 0 && nmultivsliceinfo < nvsliceinfo)have_multivslice = 1;
-  if(nvsliceinfo>0)have_multivslice = 1; // use multi vslice for all cases
+  //if(sp->nvsliceinfo > 0 && sp->nmultivsliceinfo < sp->nvsliceinfo)have_multivslice = 1;
+  if(sp->nvsliceinfo>0)have_multivslice = 1; // use multi vslice for all cases
 
+  INIT_PRINT_TIMER(timer_updatevslices4);
   UpdateVSliceDups();
+  PRINT_TIMER(timer_updatevslices4, "UpdateVSlices_4");
 
-  for(i = 0; i<nmultivsliceinfo; i++){
+#ifdef pp_SLICE_DIR_COUNT
+  INIT_PRINT_TIMER(timer_updatevslices5);
+  for(i = 0; i<sp->nmultivsliceinfo; i++){
     multivslicedata *mvslicei;
 
     mvslicei = multivsliceinfo + i;
@@ -3729,7 +3631,9 @@ void UpdateVSlices(void){
     mvslicei->ndirxyz[2]=0;
     mvslicei->ndirxyz[3]=0;
   }
-  for(i=0;i<nmultivsliceinfo;i++){
+  PRINT_TIMER(timer_updatevslices5, "UpdateVSlices_5");
+  INIT_PRINT_TIMER(timer_updatevslices6);
+  for(i=0;i<sp->nmultivsliceinfo;i++){
     multivslicedata *mvslicei;
     slicedata *slicei;
     int j;
@@ -3738,7 +3642,7 @@ void UpdateVSlices(void){
     slicei = sliceinfo + mvslicei->ivslices[0];
     if(slicei->idir<1)continue;
     if(slicei->volslice==1)continue;
-    for(j=0;j<nmultivsliceinfo;j++){
+    for(j=0;j<sp->nmultivsliceinfo;j++){
       multivslicedata *mvslicej;
       slicedata *slicej;
 
@@ -3752,8 +3656,13 @@ void UpdateVSlices(void){
       mvslicei->ndirxyz[slicej->idir]++;
     }
   }
+  PRINT_TIMER(timer_updatevslices6, "UpdateVSlices_6");
+#endif
 
-  UpdateVsliceMenuLabels();
+  INIT_PRINT_TIMER(timer_updatevslices7);
+  UpdateVsliceMenuLabels(sp);
+  PRINT_TIMER(timer_updatevslices7, "UpdateVSlices_7");
+  THREAD_EXIT(sliceparms_threads);
 }
 
 /* ------------------ UpdateVSliceBoundIndexes ------------------------ */
@@ -4772,9 +4681,6 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
   slicefilenumber = ifile;
   assert(slicefilenumber>=0&&slicefilenumber<nsliceinfo);
   slicefilenum = ifile;
-#ifdef pp_HIST
-  histograms_defined = 0;
-#endif
   sd = sliceinfo+slicefilenumber;
 
   blocknumber = sd->blocknumber;
@@ -4801,17 +4707,6 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
       FREEMEMORY(sd->compindex);
       FREEMEMORY(sd->qslicedata_compressed);
       FREEMEMORY(sd->slicecomplevel);
-
-#ifdef pp_HIST
-      if(sd->histograms!=NULL){
-        int i;
-
-        for(i = 0; i<sd->nhistograms; i++){
-          FreeHistogram(sd->histograms+i);
-        }
-        FREEMEMORY(sd->histograms);
-      }
-#endif
     }
 
     slicefilenum = ifile;
@@ -4899,9 +4794,6 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
       UpdateUnitDefs();
       update_times = 1;
       RemoveSliceLoadstack(slicefilenumber);
-#ifdef pp_HIST
-      update_draw_hist = 1;
-#endif
       PrintMemoryInfo;
       return 0;
     }
@@ -5141,10 +5033,7 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
   CheckMemory;
 
   sd->loaded = 1;
-#ifndef pp_HIST
   sd->hist_update = 1;
-#endif
-
   if(sd->vloaded == 0){
     sd->display = 1;
     if(sd->uvw==0)HideSlices(sd->label.longlabel);
@@ -5164,25 +5053,6 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
       SetLoadedSliceBounds(NULL, 0);
     }
     GLUIGetMinMax(BOUND_SLICE, sd->label.shortlabel, &set_valmin, &qmin, &set_valmax, &qmax);
-#ifdef pp_HIST
-    if(set_valmin==BOUND_PERCENTILE_MIN||set_valmax==BOUND_PERCENTILE_MAX){
-      cpp_boundsdata *bounds;
-
-      bounds = GLUIGetBoundsData(BOUND_SLICE);
-      ComputeLoadedSliceHist(bounds->label);
-      MergeLoadedSliceHist(bounds->label, &(bounds->hist));
-      if(bounds->hist!=NULL&&bounds->hist->defined==1){
-        if(set_valmin==BOUND_PERCENTILE_MIN){
-          GetHistogramValProc(bounds->hist, percentile_level_min, &qmin);
-          GLUISetMin(BOUND_SLICE, bounds->label, BOUND_PERCENTILE_MIN, qmin);
-        }
-        if(set_valmax==BOUND_PERCENTILE_MAX){
-          GetHistogramValProc(bounds->hist, percentile_level_max, &qmax);
-          GLUISetMax(BOUND_SLICE, bounds->label, BOUND_PERCENTILE_MAX, qmax);
-        }
-      }
-    }
-#endif
 #define BOUND_PERCENTILE_DRAW          120
     GLUIHVACSliceBoundsCPP_CB(BOUND_PERCENTILE_DRAW);
     colorbar_slice_min = qmin;
@@ -5307,16 +5177,6 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
   }
 
   // define histogram data structures if visible
-#ifdef pp_HIST
-  if(histogram_show_graph==1||histogram_show_numbers==1){
-    update_slice_hists=1;
-  }
-  if(sd->is_fed == 1){
-    update_slice_hists = 1;
-    histogram_nbuckets = 255;
-    histogram_show_numbers=0;
-  }
-#endif
   CheckMemory;
   showall_slices=1;
   GLUTPOSTREDISPLAY;

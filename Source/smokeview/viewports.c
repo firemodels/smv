@@ -372,13 +372,6 @@ void GetViewportInfo(void){
   // ------------------------------------ vertical colorbar viewport dimensions -----------------------------------------------------
 
   doit=1;
-#ifdef pp_HIST
-  if(showslice==1||(showvslice==1&&vslicecolorbarflag==1)){
-    if(histogram_show_graph == 1 || histogram_show_numbers == 1){
-      if(hists12_slice!=NULL)dohist=1;
-    }
-  }
-#endif
 
   if(show_vertical_colorbar==0||num_colorbars==0)doit=0;
   vis_colorbar = GetColorbarState();
@@ -1429,18 +1422,6 @@ void ViewportTitle(int quad, GLint screen_left, GLint screen_down){
   renderInfoHeader(&titleinfo);
 
 }
-
-    /* -------------------------- ViewportHistogram -------------------------- */
-#ifdef pp_HIST
-void ViewportHistogram(int quad, GLint screen_left, GLint screen_down){
-  if(SubPortOrtho2Custom(&VP_scene, screen_left, screen_down, hist_left_percen, hist_down_percen, hist_length_percen)==0)return;
-
-  glMatrixMode(GL_MODELVIEW);
-  glLoadIdentity();
-
-  DrawHistogram(histogram_draw, xmin_draw, xmax_draw, gmin_draw, gmax_draw, ncolorlabel_digits);
-}
-#endif
 
 /* ----------------------- CompareMeshes ----------------------------- */
 

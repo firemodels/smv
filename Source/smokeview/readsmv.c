@@ -889,6 +889,8 @@ void FreeLabels(flowlabels *flowlabel){
 void InitMesh(meshdata *meshi){
   int i;
 
+  meshi->isliceinfo    = 0;
+  meshi->nsliceinfo    = 0;
   for(i = 0;i < 6;i++){
     meshi->skip_nabors[i] = NULL;
     meshi->nabors[i]      = NULL;
@@ -4831,7 +4833,7 @@ void SetupIsosurface(isodata *isoi){
 
 /* ------------------ SetupAllIsosurfaces ------------------------ */
 
-void SetupAllIsosurfaces(void){
+void *SetupAllIsosurfaces(void *arg){
   int i;
 
   for(i=0; i<nisoinfo-nfediso; i++){
@@ -4840,6 +4842,7 @@ void SetupAllIsosurfaces(void){
     isoi = isoinfo + i;
     SetupIsosurface(isoi);
   }
+  THREAD_EXIT(isosurface_threads);
 }
 
 /* ------------------ ParseISOFCount ------------------------ */
@@ -6107,6 +6110,11 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
   sliceinfo_copy++;
   *sliceinfo_copy_in = sliceinfo_copy;
 
+  meshdata *meshi;
+
+  meshi = meshinfo + blocknumber;
+  meshi->nsliceinfo++;
+
   if(slicegeom==1){
     strcpy(buffer, buffers[0]);
     *patchgeom_in = sd->patchgeom;
@@ -6759,6 +6767,29 @@ void *CheckFiles(void *arg){
   THREAD_EXIT(checkfiles_threads);
 }
 
+
+/* ------------------ GetSliceParmInfo ------------------------ */
+
+void GetSliceParmInfo(sliceparmdata *sp){
+  nsliceinfo = sp->nsliceinfo;
+  nmultisliceinfo=sp->nmultisliceinfo;
+  nvsliceinfo = sp->nvsliceinfo;
+  nmultivsliceinfo =sp->nmultivsliceinfo;
+  nfedinfo =sp->nfedinfo;
+  nfediso =sp->nfediso;
+}
+
+/* ------------------ SetSliceParmInfo ------------------------ */
+
+void SetSliceParmInfo(sliceparmdata *sp){
+  sp->nsliceinfo       = nsliceinfo;
+  sp->nmultisliceinfo  = nmultisliceinfo;
+  sp->nvsliceinfo      = nvsliceinfo;
+  sp->nmultivsliceinfo = nmultivsliceinfo;
+  sp->nfedinfo         = nfedinfo;
+  sp->nfediso          = nfediso;
+}
+
 /* ------------------ ReadSMV ------------------------ */
 static float processing_time;
 static float getfilelist_time;
@@ -6785,6 +6816,7 @@ int ReadSMV_Init() {
     use_checkfiles_threads  = 0;
     use_ffmpeg_threads      = 0;
     use_readallgeom_threads = 0;
+    use_isosurface_threads  = 0;
   }
 
   START_TIMER(getfilelist_time);
@@ -7791,17 +7823,18 @@ int ReadSMV_Parse(bufferstreamdata *stream) {
   FREEMEMORY(sliceinfo);
   FREEMEMORY(fedinfo);
   if(nsliceinfo>0){
-    if(NewMemory((void **)&vsliceinfo, 3*nsliceinfo*sizeof(vslicedata))==0 ||
-       NewMemory((void **)&sliceinfo,  nsliceinfo*sizeof(slicedata))==0    ||
-       NewMemory((void **)&fedinfo,  nsliceinfo*sizeof(feddata))==0        ||
-       NewMemory((void **)&slice_loadstack, nsliceinfo*sizeof(int))==0     ||
-       NewMemory((void **)&vslice_loadstack, nsliceinfo*sizeof(int))==0    ||
-       NewMemory((void **)&subslice_menuindex, nsliceinfo*sizeof(int))==0  ||
-       NewMemory((void **)&msubslice_menuindex, nsliceinfo*sizeof(int))==0 ||
-       NewMemory((void **)&subvslice_menuindex, nsliceinfo*sizeof(int))==0 ||
-       NewMemory((void **)&msubvslice_menuindex, nsliceinfo*sizeof(int))==0||
-       NewMemory((void **)&mslice_loadstack, nsliceinfo*sizeof(int))==0    ||
-       NewMemory((void **)&mvslice_loadstack, nsliceinfo*sizeof(int))==0){
+    if(NewMemory((void **)&vsliceinfo,         3*nsliceinfo*sizeof(vslicedata))==0    ||
+       NewMemory((void **)&sliceinfo,            nsliceinfo*sizeof(slicedata))==0     ||
+       NewMemory((void **)&sliceinfoptrs,        nsliceinfo*sizeof(slicedata *)) == 0 ||
+       NewMemory((void **)&fedinfo,              nsliceinfo*sizeof(feddata)) == 0     ||
+       NewMemory((void **)&slice_loadstack,      nsliceinfo*sizeof(int))==0           ||
+       NewMemory((void **)&vslice_loadstack,     nsliceinfo*sizeof(int))==0           ||
+       NewMemory((void **)&subslice_menuindex,   nsliceinfo*sizeof(int))==0           ||
+       NewMemory((void **)&msubslice_menuindex,  nsliceinfo*sizeof(int))==0           ||
+       NewMemory((void **)&subvslice_menuindex,  nsliceinfo*sizeof(int))==0           ||
+       NewMemory((void **)&msubvslice_menuindex, nsliceinfo*sizeof(int))==0           ||
+       NewMemory((void **)&mslice_loadstack,     nsliceinfo*sizeof(int))==0           ||
+       NewMemory((void **)&mvslice_loadstack,    nsliceinfo*sizeof(int))==0){
        return 2;
     }
     sliceinfo_copy=sliceinfo;
@@ -11766,8 +11799,23 @@ int ReadSMV_Configure(){
   CheckMemory;
 
   START_TIMER(timer_readsmv);
-  UpdateVSlices();
+  SetSliceParmInfo(&sliceparminfo);
+  PRINT_TIMER(timer_readsmv, "SetSliceParmInfo");
+  nsliceinfo            = 0;
+  nmultisliceinfo       = 0;
+  nmultivsliceinfo      = 0;
+  nvsliceinfo           = 0;
+  nfedinfo              = 0;
+  nfediso               = 0;
+  if(sliceparms_threads == NULL){
+    sliceparms_threads = THREADinit(&n_sliceparms_threads, &use_sliceparms_threads, UpdateVSlices);
+  }
+  THREADrun(sliceparms_threads, &sliceparminfo);
+  THREADcontrol(sliceparms_threads, THREAD_JOIN);
   PRINT_TIMER(timer_readsmv, "UpdateVSlices");
+
+  GetSliceParmInfo(&sliceparminfo);
+  PRINT_TIMER(timer_readsmv, "GetSliceParmInfo");
   if(update_slice==1)return 3;
 
   GenerateSliceMenu(generate_info_from_commandline);
@@ -11810,6 +11858,13 @@ int ReadSMV_Configure(){
   }
   THREADrun(ffmpeg_threads, NULL);
   PRINT_TIMER(timer_readsmv, "SetupFFMT");
+
+  if(isosurface_threads == NULL){
+    isosurface_threads = THREADinit(&n_isosurface_threads, &use_isosurface_threads, SetupAllIsosurfaces);
+  }
+  THREADrun(isosurface_threads, NULL);
+  THREADcontrol(isosurface_threads, THREAD_JOIN);
+  PRINT_TIMER(timer_readsmv, "SetupAllIsosurfaces");
 
   MakeIBlankSmoke3D();
   PRINT_TIMER(timer_readsmv, "MakeIBlankSmoke3D");
@@ -12792,7 +12847,8 @@ int ReadIni2(char *inifile, int localfile){
       sscanf(buffer, "%f %f %f", dc, dc + 1, dc + 2);
       dc[3] = 1.0;
       direction_color_ptr = GetColorPtr(direction_color);
-      UpdateSliceMenuShow();
+      GetSliceParmInfo(&sliceparminfo);
+      UpdateSliceMenuShow(&sliceparminfo);
       continue;
     }
 

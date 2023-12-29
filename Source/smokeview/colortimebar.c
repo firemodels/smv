@@ -2045,138 +2045,6 @@ void InitDefaultColorbars(int nini){
   memcpy(colorbarcopyinfo, colorbarinfo, ncolorbars * sizeof(colorbardata));
 }
 
-/* ------------------ DrawColorbarHist ------------------------ */
-#ifdef pp_HIST
-void DrawColorbarHist(void){
-  int ibucket;
-  int cbt, cbb, cbdiff;
-
-  cbdiff = vcolorbar_top_pos - vcolorbar_down_pos;
-  cbt =  vcolorbar_top_pos + cbdiff / (float)(histogram_nbuckets - 2);
-  cbb = vcolorbar_down_pos - cbdiff / (float)(histogram_nbuckets - 2);
-
-  if(histogram_show_graph == 1){
-    if(histogram_show_outline == 1){
-      glBegin(GL_LINES);
-    }
-    else{
-      glBegin(GL_TRIANGLES);
-    }
-    for(ibucket = 0; ibucket < histogram_nbuckets; ibucket++){
-      float *rgb_cb, *rgb_cb2;
-      float yy, yy2;
-      int cbl, cbr;
-      int icolor, icolor2;
-      float dcolor, val;
-      histogramdata *histi;
-
-      icolor = ibucket*(float)(nrgb_full - 1) / (float)histogram_nbuckets;
-      rgb_cb = rgb_full[icolor];
-
-      icolor2 = (ibucket + 1)*(float)(nrgb_full - 1) / (float)histogram_nbuckets;
-      rgb_cb2 = rgb_full[icolor2];
-
-      if(histogram_static == 0){
-        histi = hists256_slice + CLAMP(slice_time + 1, 1, nhists256_slice);
-      }
-      else{
-        histi = hists256_slice;
-      }
-
-      dcolor = 3.0*(vcolorbar_right_pos - vcolorbar_left_pos)/(histogram_width_factor/100.0);
-      if(histi->bucket_maxval!=0.0){
-        val = (float)histi->buckets[ibucket] / (float)histi->ntotal;
-        cbl = vcolorbar_right_pos - dcolor*val / histi->bucket_maxval;
-      }
-      else{
-        cbl = vcolorbar_right_pos;
-      }
-
-      cbr = vcolorbar_right_pos;
-
-      yy = MIX2(icolor, 255, cbt, cbb);
-      yy2 = MIX2(icolor2, 255, cbt, cbb);
-
-      //   (cbl,yy)-------(cbr,yy)
-      //      |         /    |
-      //      |     /        |
-      //      |  /           |
-      //   (cbl,yy2)------(cbr,yy2)
-
-      if(histogram_show_outline == 1){
-        glColor4fv(rgb_cb);
-        glVertex2f(cbl, yy);
-        glVertex2f(cbr, yy);
-
-        glVertex2f(cbr, yy);
-        glColor4fv(rgb_cb2);
-        glVertex2f(cbr, yy2);
-
-        glVertex2f(cbr, yy2);
-        glVertex2f(cbl, yy2);
-
-        glVertex2f(cbl, yy2);
-        glColor4fv(rgb_cb);
-        glVertex2f(cbl, yy);
-      }
-      else{
-        glColor4fv(rgb_cb);
-        glVertex2f(cbl, yy);
-        glVertex2f(cbr, yy);
-        glColor4fv(rgb_cb2);
-        glVertex2f(cbl, yy2);
-
-        glVertex2f(cbr, yy2);
-        glVertex2f(cbl, yy2);
-        glColor4fv(rgb_cb);
-        glVertex2f(cbr, yy);
-      }
-    }
-    glEnd();
-  }
-}
-
-/* ------------------ DrawColorbarHistLabels ------------------------ */
-
-void DrawColorbarHistLabels(int lefthist){
-  if(histogram_show_numbers == 1 && (showslice == 1 || (showvslice == 1 && vslicecolorbarflag == 1))){
-    char *percen = "%";
-    int i;
-
-    glPushMatrix();
-    glTranslatef(vcolorbar_left_pos - colorbar_label_width, -VP_vcolorbar.text_height / 2.0, 0.0);
-    glTranslatef(-lefthist*(colorbar_label_width + h_space), 0.0, 0.0);
-    glTranslatef(colorbar_label_width / 2.0, 0.0, 0.0);
-
-    for(i = 0; i < nrgb; i++){
-      float vert_position;
-      char string[100], *stringptr;
-      GLfloat *foreground_color;
-      histogramdata *histi;
-      float val;
-
-      foreground_color = &(foregroundcolor[0]);
-
-      if(histogram_static == 0){
-        histi = hists12_slice + CLAMP(slice_time + 1, 1, nhists256_slice);
-      }
-      else{
-        histi = hists12_slice;
-      }
-
-      val = 100.0*(float)histi->buckets[i] / (float)histi->ntotal;
-
-      sprintf(string, "%i%s", (int)(val + 0.5), percen);
-
-      stringptr = string;
-      vert_position = MIX2(MAX(i - 0.5, -0.15), nrgb - 2, vcolorbar_top_pos, vcolorbar_down_pos);
-      OutputBarText(0.0, vert_position, foreground_color, stringptr);
-    }
-    glPopMatrix();
-  }
-}
-#endif
-
 /* ------------------ DrawHorizontalColorbarReg ------------------------ */
 
 void DrawHorizontalColorbarReg(void){
@@ -2431,13 +2299,7 @@ void DrawHorizontalColorbars(void){
 
     // -------------- draw all other colorbars ------------
 
-#ifdef pp_HIST
-    if(hists12_slice == NULL || histogram_show_graph == 0){
-      DrawHorizontalColorbarReg();
-    }
-#else
     DrawHorizontalColorbarReg();
-#endif
   }
   if(show_extreme_mindata == 1 || show_extreme_maxdata == 1){
     float barmid;
@@ -2559,16 +2421,7 @@ void DrawVerticalColorbars(void){
     else{
 
       // -------------- draw all other colorbars ------------
-#ifdef pp_HIST
-      if(hists12_slice == NULL || histogram_show_graph == 0){
-        DrawVerticalColorbarReg();
-      }
-      if(histogram_show_graph == 1 || histogram_show_numbers == 1){
-        if(hists12_slice != NULL)DrawColorbarHist();
-      }
-#else
       DrawVerticalColorbarReg();
-#endif
     }
     if(show_extreme_mindata==1||show_extreme_maxdata==1){
       float barmid;
@@ -3214,11 +3067,7 @@ void DrawHorizontalColorbarRegLabels(void){
 void DrawVerticalColorbarRegLabels(void){
   int i;
   int ileft = 0;
-#ifdef pp_HIST
-  int leftzone, leftsmoke, leftslice, lefthist, leftpatch, leftiso;
-#else
   int leftzone, leftsmoke, leftslice, leftpatch, leftiso;
-#endif
   int lefthvacduct, lefthvacnode;
   int iposition;
 
@@ -3268,9 +3117,6 @@ void DrawVerticalColorbarRegLabels(void){
   lefthvacduct = 0;
   leftsmoke    = 0;
   leftslice    = 0;
-#ifdef pp_HIST
-  lefthist     = 0;
-#endif
   leftpatch    = 0;
   leftiso      = 0;
   ileft        = 0;
@@ -3278,12 +3124,6 @@ void DrawVerticalColorbarRegLabels(void){
   if(showsmoke == 1&&parttype != 0)leftsmoke = ileft++;
   if(show_slice_colorbar_local == 1){
     leftslice = ileft++;
-#ifdef pp_HIST
-    if(histogram_show_numbers == 1){
-      lefthist = ileft++;
-      dohist = 1;
-    }
-#endif
   }
   if(showpatch == 1 && wall_cell_color_flag == 0)leftpatch = ileft++;
   if(show_hvacnode_colorbar_local == 1)lefthvacnode = ileft++;
@@ -3314,51 +3154,6 @@ void DrawVerticalColorbarRegLabels(void){
           }
         }
       }
-    }
-
-    // -------------- draw plot3d colorbars ------------
-
-    if(showplot3d == 1 && contour_type == STEPPED_CONTOURS){
-    }
-    else{
-
-      // -------------- draw all other colorbars ------------
-
-#ifdef pp_HIST
-      if(show_fed_area == 1 && fed_slice == 1 && fed_areas != NULL){
-        char area_label[256];
-        char percen[] = "%";
-        float yy;
-        int *fed_areasi;
-
-        fed_areasi = fed_areas + 4 * CLAMP(slice_time + 1, 1, nhists256_slice);
-
-        glPushMatrix();
-        glTranslatef(
-          vcolorbar_left_pos,
-          0.0,
-          0.0);
-        sprintf(area_label, "%i%s", fed_areasi[0], percen);
-        yy = MIX2(0.15, 3.0, vcolorbar_top_pos, vcolorbar_down_pos) - VP_vcolorbar.text_height / 2;
-        OutputBarText(0.0, yy, foreground_color, area_label);
-
-        sprintf(area_label, "%i%s", fed_areasi[1], percen);
-        yy = MIX2(0.65, 3.0, vcolorbar_top_pos, vcolorbar_down_pos) - VP_vcolorbar.text_height / 2;
-        OutputBarText(0.0, yy, foreground_color, area_label);
-
-        sprintf(area_label, "%i%s", fed_areasi[2], percen);
-        yy = MIX2(2.0, 3.0, vcolorbar_top_pos, vcolorbar_down_pos) - VP_vcolorbar.text_height / 2;
-        OutputBarText(0.0, yy, foreground_color, area_label);
-
-        sprintf(area_label, "%i%s", fed_areasi[3], percen);
-        yy = MIX2(3.0, 3.0, vcolorbar_top_pos, vcolorbar_down_pos) - VP_vcolorbar.text_height / 2;
-        OutputBarText(0.0, yy + 10, foreground_color, area_label);
-        glPopMatrix();
-      }
-      if(histogram_show_graph == 1 || histogram_show_numbers == 1){
-        if(hists12_slice != NULL)DrawColorbarHistLabels(lefthist);
-      }
-#endif
     }
   }
 

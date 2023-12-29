@@ -17,6 +17,7 @@ EXTERNCPP void *ReadAllGeom(void *arg);
 EXTERNCPP void *GetGlobalSliceBoundsFull(void *arg);
 EXTERNCPP void *UpdateTrianglesAll(void *arg);
 EXTERNCPP void *ReadVolsmokeAllFramesAllMeshes2(void *arg);
+EXTERNCPP void *SetupAllIsosurfaces(void *arg);
 
 //*** glui_bounds.cpp headers
 EXTERNCPP void GLUIBoundsSetup(int main_window);
@@ -407,6 +408,7 @@ EXTERNCPP void OutputMinMax(char *meshlabel, char *label, char *unit, float valm
 EXTERNCPP void ScriptLoadSliceRender(scriptdata*scripti);
 EXTERNCPP int GetSmokeNFrames(int type, float *tmin, float *tmax);
 EXTERNCPP void ScriptLoadSmokeRender(scriptdata *scripti);
+EXTERNCPP void SmokeWrapup(void);
 FILE_SIZE LoadSmoke3D(int type, int frame, int *count, float *time_value);
 EXTERNCPP int GetNSliceFrames(char *file, float *stime_min, float *stime_max);
 EXTERNCPP void GenerateSliceMenu(int from_commandline);
@@ -534,7 +536,10 @@ EXTERNCPP void PartBoundCB(int var);
 EXTERNCPP void ShowHideMenu(int val);
 EXTERNCPP void UpdateVSliceDups(void);
 EXTERNCPP void UnloadVSliceMenu(int value);
-EXTERNCPP void UpdateSliceDups(void);
+EXTERNCPP void UpdateSliceDups(sliceparmdata *sp);
+EXTERNCPP void GetSliceParmInfo(sliceparmdata *sp);
+EXTERNCPP void SetSliceParmInfo(sliceparmdata *sp);
+
 EXTERNCPP void UpdateSmokeAlphas(void);
 EXTERNCPP void InitAlphas(unsigned char *alphanew,
                           float base_extinct, float new_extinct,
@@ -671,7 +676,7 @@ EXTERNCPP void DrawGeom(int flag,int frameflag);
 EXTERNCPP void RemoveDupBlockages(void);
 EXTERNCPP void SortIsoTriangles(float *mm);
 EXTERNCPP void UpdateIsoTriangles(int flag);
-EXTERNCPP void UpdateSliceMenuShow(void);
+EXTERNCPP void UpdateSliceMenuShow(sliceparmdata *sp);
 EXTERNCPP void UpdateHideBoundarySurface(void);
 EXTERNCPP int  LastSliceLoadstack(void);
 EXTERNCPP int  LastVSliceLoadstack(void);
@@ -920,19 +925,18 @@ EXTERNCPP void UpdateSliceFilenum(void);
 EXTERNCPP void DrawStaticIso(const isosurface *asurface,int surfacetype,
                              int smoothnorms, int trans_flag, int data_type,
                              float line_width);
-EXTERNCPP void SetupAllIsosurfaces(void);
 EXTERNCPP int  GetPlot3dTime(float *time);
 EXTERNCPP void Normalize(float *xyz, int n);
 EXTERNCPP void Array2String(float *array, int narray, char *string);
 EXTERNCPP void GetIsoLevels(const char *isofile, int dataflag, float **levelsptr, float ***colorlevelsptr, int *nisolevels);
 
-EXTERNCPP void UpdateVSlices(void);
+EXTERNCPP void *UpdateVSlices(void *arg);
 EXTERNCPP void GetGSliceParams(void);
 EXTERNCPP void UpdatePartMenuLabels(void);
 EXTERNCPP void UpdateIsoMenuLabels(void);
 EXTERNCPP void UpdateBoundaryMenuLabels(void);
-EXTERNCPP void UpdateSliceMenuLabels(void);
-EXTERNCPP void UpdateVsliceMenuLabels(void);
+EXTERNCPP void UpdateSliceMenuLabels(sliceparmdata *sp);
+EXTERNCPP void UpdateVsliceMenuLabels(sliceparmdata *sp);
 EXTERNCPP void UpdatePlot3dMenuLabels(void);
 EXTERNCPP void HandleRotationType(int flag);
 

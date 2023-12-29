@@ -1,7 +1,12 @@
-&HEAD CHID='test100',TITLE='test' /
+#!/bin/bash
+N=$1
+CHID=test${N}x${N}
 
-&MESH IJK=2,2,2, XB=0.0,0.1,0.0,0.1,0.0,1.0, MULT_ID='mesh'/
-&MULT ID='mesh', DX=0.1, DY=0.1, DZ=1.0, I_UPPER=10, J_UPPER=10, K_UPPER=1 /
+cat << EOF > ${CHID}.fds
+&HEAD CHID='$CHID',TITLE='test' /
+
+&MESH IJK=2,2,2, XB=0,1,0,1,0,1, MULT_ID='mesh' /1
+&MULT ID='mesh', DX=1, DY=1, DZ=1, I_UPPER=$N, J_UPPER=$N, K_UPPER=1 /
 
 &MISC FREEZE_VELOCITY=T/
 
@@ -17,3 +22,4 @@
 &SLCF PBZ=0.5,QUANTITY='TEMPERATURE',VECTOR=.TRUE. /
 
 &TAIL /
+EOF

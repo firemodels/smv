@@ -25,6 +25,14 @@
 //*** threader variables
 
 //***checkfiles
+SVEXTERN int SVDECL(n_isosurface_threads, 1), SVDECL(use_isosurface_threads, 1);
+SVEXTERN threaderdata SVDECL(*isosurface_threads, NULL);
+
+//***sliceparms
+SVEXTERN int SVDECL(n_sliceparms_threads, 1), SVDECL(use_sliceparms_threads, 1);
+SVEXTERN threaderdata SVDECL(*sliceparms_threads, NULL);
+
+//***checkfiles
 SVEXTERN int SVDECL(n_checkfiles_threads, 1), SVDECL(use_checkfiles_threads, 1);
 SVEXTERN threaderdata SVDECL(*checkfiles_threads,       NULL);
 
@@ -1470,7 +1478,12 @@ SVEXTERN float SVDECL(pref,101325.0),SVDECL(pamb,0.0),SVDECL(tamb,293.15);
 SVEXTERN int SVDECL(ntc_total,0.0), SVDECL(nspr_total,0.0), SVDECL(nheat_total,0.0);
 SVEXTERN int SVDECL(n_devices,0);
 
-SVEXTERN int SVDECL(npartinfo,0), SVDECL(nsliceinfo,0), SVDECL(nvsliceinfo,0), SVDECL(nplot3dinfo,0), SVDECL(npatchinfo,0);
+SVEXTERN int SVDECL(npartinfo,0), SVDECL(nplot3dinfo,0), SVDECL(npatchinfo,0);
+
+SVEXTERN int SVDECL(nsliceinfo,0),           SVDECL(nvsliceinfo,0);
+SVEXTERN int SVDECL(nmultisliceinfo,0),      SVDECL(nmultivsliceinfo,0);
+SVEXTERN sliceparmdata sliceparminfo;
+
 SVEXTERN int SVDECL(nslicebounds, 0), SVDECL(npatchbounds,0), SVDECL(npatch2,0);
 SVEXTERN int nfedinfo;
 SVEXTERN int SVDECL(nsmoke3dinfo,0);
@@ -2108,7 +2121,7 @@ SVEXTERN partpropdata SVDECL(*part5propinfo,NULL), SVDECL(*current_property,NULL
 SVEXTERN int SVDECL(npart5prop,0),ipart5prop,ipart5prop_old;
 SVEXTERN int SVDECL(global_prop_index,-1);
 
-SVEXTERN slicedata SVDECL(*sliceinfo, NULL);
+SVEXTERN slicedata SVDECL(**sliceinfoptrs, NULL), SVDECL(*sliceinfo, NULL);
 SVEXTERN splitslicedata SVDECL(*splitsliceinfo, NULL), SVDECL(**splitsliceinfoptr, NULL);
 SVEXTERN int SVDECL(nsplitsliceinfo, 0), SVDECL(nsplitsliceinfoMAX, 0);
 SVEXTERN int SVDECL(sortslices, 1), SVDECL(sortslices_debug, 0);
@@ -2122,8 +2135,6 @@ SVEXTERN multislicedata SVDECL(*multisliceinfo,NULL);
 SVEXTERN multivslicedata SVDECL(*multivsliceinfo,NULL);
 SVEXTERN outlinedata SVDECL(*outlineinfo,NULL);
 SVEXTERN int SVDECL(noutlineinfo,0);
-SVEXTERN int SVDECL(nmultisliceinfo,0);
-SVEXTERN int SVDECL(nmultivsliceinfo,0);
 SVEXTERN int SVDECL(*sliceorderindex,NULL),SVDECL(*vsliceorderindex,NULL),SVDECL(*partorderindex,NULL);
 SVEXTERN int SVDECL(*patchorderindex,NULL),SVDECL(*isoorderindex,NULL),SVDECL(*plot3dorderindex,NULL);
 SVEXTERN int SVDECL(showfiles,0);
@@ -2202,7 +2213,6 @@ SVEXTERN int nboundarytypes;
 SVEXTERN char SVDECL(**patchlabellist,NULL);
 SVEXTERN int SVDECL(*patchlabellist_index,NULL);
 SVEXTERN int SVDECL(*isoindex,NULL);
-SVEXTERN int SVDECL(setup_isosurfaces, 0);
 
 SVEXTERN int have_vents_int;
 SVEXTERN int nface_outlines, nface_textures, nface_transparent;
