@@ -1820,10 +1820,7 @@ void ScriptLoadIsoFrame(scriptdata *scripti, int flag){
   int i;
   int fileindex;
 
-  if(setup_isosurfaces == 0){
-    SetupAllIsosurfaces();
-    setup_isosurfaces = 1;
-  }
+  THREADcontrol(isosurface_threads, THREAD_JOIN);
   index = scripti->ival;
   framenum = scripti->ival2;
   fileindex = scripti->ival4;
@@ -1920,10 +1917,7 @@ void ScriptLoadIso(scriptdata *scripti, int meshnum){
   int i;
   int count=0;
 
-  if(setup_isosurfaces == 0){
-    SetupAllIsosurfaces();
-    setup_isosurfaces = 1;
-  }
+  THREADcontrol(isosurface_threads, THREAD_JOIN);
   PRINTF("script: loading isosurface files of type: %s\n\n",scripti->cval);
 
   update_readiso_geom_wrapup = UPDATE_ISO_START_ALL;

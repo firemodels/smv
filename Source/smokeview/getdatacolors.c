@@ -139,65 +139,13 @@ void WriteBoundIni(void){
         return;
       }
     }
-#ifdef pp_HIST
-    fprintf(stream, "B_BOUNDARY\n");
-    fprintf(stream, " %f %f %f %f %i %s\n", boundi->global_min, boundi->percentile_min, boundi->percentile_max, boundi->global_max, patchi->patch_filetype, patchi->label.shortlabel);
-#else
     float dummy = 0.0;
     fprintf(stream, "B_BOUNDARY\n");
     fprintf(stream, " %f %f %f %f %i %s\n", boundi->global_min, dummy, dummy, boundi->global_max, patchi->patch_filetype, patchi->label.shortlabel);
-#endif
   }
   if(stream != NULL)fclose(stream);
   FREEMEMORY(fullfilename);
 }
-
-/* ------------------ UpdateBoundaryBounds ------------------------ */
-#ifdef pp_HIST
-void UpdateBoundaryBounds(patchdata *patchi){
-  histogramdata full_histogram;
-  bounddata *boundi;
-  int j;
-
-  boundi = &patchi->bounds;
-  if(boundi->defined==1)return;
-  InitHistogram(&full_histogram,NHIST_BUCKETS, NULL, NULL);
-
-  for(j=0;j<npatchinfo;j++){
-    patchdata *patchj;
-
-    patchj=patchinfo+j;
-    if(patchj->loaded == 0)continue;
-    if(patchi->boundary != patchj->boundary)continue;
-    if(patchi->patch_filetype == PATCH_GEOMETRY_SLICE || patchj->patch_filetype == PATCH_GEOMETRY_SLICE)continue;
-    if(patchj->shortlabel_index != patchi->shortlabel_index)continue; // dont consider file type for now (node/cell centered, structdured/unstructured etc)
-    MergeHistogram(&full_histogram,patchj->histogram,MERGE_BOUNDS);
-  }
-
-  boundi->global_min = GetHistogramVal(&full_histogram, 0.0);
-  boundi->global_max = GetHistogramVal(&full_histogram, 1.0);
-
-  boundi->percentile_min = GetHistogramVal(&full_histogram, percentile_level_min);
-  boundi->percentile_max = GetHistogramVal(&full_histogram, percentile_level_max);
-  boundi->defined=1;
-
-  for(j=0;j<npatchinfo;j++){
-    bounddata *boundj;
-    patchdata *patchj;
-
-    patchj=patchinfo+j;
-    if (patchi == patchj)continue;
-    if(patchi->boundary != patchj->boundary)continue;
-    if(patchi->patch_filetype == PATCH_GEOMETRY_SLICE || patchj->patch_filetype == PATCH_GEOMETRY_SLICE)continue;
-    if(patchj->shortlabel_index != patchi->shortlabel_index)continue;
-
-    boundj = &patchj->bounds;
-    memcpy(boundj,boundi,sizeof(bounddata));
-  }
-  WriteBoundIni();
-  FreeHistogram(&full_histogram);
-}
-#endif
 
 /* ------------------ GetBoundaryColors3 ------------------------ */
 

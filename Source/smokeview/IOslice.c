@@ -912,9 +912,6 @@ int CReadSlice_frame(int frame_index_local,int sd_index,int flag){
 void OutputFedCSV(void){
   FILE *AREA_STREAM=NULL;
   char *fed_area_file=NULL,fed_area_file_base[1024];
-#ifdef pp_HIST
-  int i;
-#endif
 
   if(fed_areas == NULL)return;
   sprintf(fed_area_file_base, "%s_s%04i_fedarea.csv", fdsprefix, fed_seqnum++);
@@ -923,15 +920,6 @@ void OutputFedCSV(void){
   if(AREA_STREAM == NULL)return;
 
   fprintf(AREA_STREAM, "\"step\",\"0.0->0.3\",\"0.3->1.0\",\"1.0->3.0\",\"3.0->\"\n");
-#ifdef pp_HIST
-  for(i = 1; i < hists256_slice->ntotal; i++){
-    int *areas;
-
-    areas = fed_areas + 4 * CLAMP(i, 1, nhists256_slice);
-
-    fprintf(AREA_STREAM,"%f,%i,%i,%i,%i\n",hists256_slice->time,areas[0],areas[1],areas[2],areas[3]);
-  }
-#endif
   fclose(AREA_STREAM);
 }
 
@@ -1011,9 +999,6 @@ void ReadFed(int file_index, int time_frame, float *time_value, int flag, int fi
   }
 
   if(flag==UNLOAD){
-#ifdef pp_HIST
-    update_draw_hist = 1;
-#endif
     return;
   }
 
@@ -1372,9 +1357,6 @@ FILE_SIZE ReadVSlice(int ivslice, int time_frame, float *time_value, int flag, i
     showvslice=0;
     updatemenu=1;
     plotstate=GetPlotState(DYNAMIC_PLOTS);
-#ifdef pp_HIST
-    update_draw_hist = 1;
-#endif
     update_vectorskip = 1;
     return return_filesize;
   }
@@ -1577,138 +1559,6 @@ void UncompressSliceDataFrame(slicedata *sd, int iframe_local){
   CheckMemory;
 }
 
-#ifdef pp_HIST
-
-/* ------------------ UpdateSliceHist ------------------------ */
-
-void UpdateSliceHist(void){
-  int i;
-  int nmax;
-  int is_fed = 0;
-
-  histograms_defined = 1;
-  ComputeLoadedSliceHist(NULL);
-  if(hists256_slice != NULL){
-    for(i = 0; i < nhists256_slice; i++){
-      FreeHistogram(hists256_slice + i);
-    }
-    FREEMEMORY(hists256_slice);
-  }
-
-  if(hists12_slice != NULL){
-    for(i = 0; i < nhists256_slice; i++){
-      FreeHistogram(hists12_slice + i);
-    }
-    FREEMEMORY(hists12_slice);
-  }
-
-  nmax = 0;
-  for(i = 0; i < nslice_loaded; i++){
-    slicedata *slicei;
-
-    slicei = sliceinfo + slice_loaded_list[i];
-    if(slicei->slicefile_labelindex != slicefile_labelindex)continue;
-    nmax = MAX(nmax, slicei->nhistograms);
-  }
-
-  nhists256_slice = nmax;
-  if(nhists256_slice > 0){
-    boundsdata *sb;
-    float maxval;
-
-    sb = slicebounds + slicefile_labelindex;
-    NewMemory((void **)&hists256_slice, nhists256_slice * sizeof(histogramdata));
-    NewMemory((void **)&hists12_slice, nhists256_slice * sizeof(histogramdata));
-    for(i = 0; i < nhists256_slice; i++){
-      histogramdata *hist256i;
-      histogramdata *hist12i;
-      float val12_min, val12_max, dval;
-      float val256_min, val256_max;
-
-      dval = sb->dlg_valmax - sb->dlg_valmin;
-
-      hist256i = hists256_slice + i;
-      hist12i = hists12_slice + i;
-
-      val256_min = sb->dlg_valmin - dval / (float)(histogram_nbuckets - 2);
-      val256_max = sb->dlg_valmax + dval / (float)(histogram_nbuckets - 2);
-      InitHistogram(hist256i, histogram_nbuckets, &val256_min, &val256_max);
-
-      val12_min = sb->dlg_valmin - dval / 10.0;
-      val12_max = sb->dlg_valmax + dval / 10.0;
-      InitHistogram(hist12i, 12, &val12_min, &val12_max);
-    }
-    for(i = 0; i < nslice_loaded; i++){
-      slicedata *slicei;
-      int j;
-
-      slicei = sliceinfo + slice_loaded_list[i];
-      if(slicei->slicefile_labelindex != slicefile_labelindex)continue;
-      if(slicei->is_fed == 1)is_fed = 1;
-      for(j = 0; j < MIN(slicei->nhistograms,nhists256_slice); j++){
-        histogramdata *hist256j, *hist12j, *histj;
-
-        histj = slicei->histograms + j;
-        hist256j = hists256_slice + j;
-        hist12j = hists12_slice + j;
-        MergeHistogram(hist256j, histj, KEEP_BOUNDS);
-        MergeHistogram(hist12j, histj, KEEP_BOUNDS);
-      }
-    }
-    for(i = 0; i < nslice_loaded; i++){
-      slicedata *slicei;
-      int j;
-
-      slicei = sliceinfo + slice_loaded_list[i];
-      if(slicei->slicefile_labelindex != slicefile_labelindex)continue;
-      if(slicei->is_fed == 0)continue;
-      for(j = 0; j < MIN(slicei->nhistograms, nhists256_slice); j++){
-        histogramdata *hist256j;
-
-        hist256j = hists256_slice + j;
-        hist256j->time_defined = 1;
-        hist256j->time = slicei->times[MIN(j,slicei->ntimes-1)];
-      }
-      break;
-    }
-    for(i = 0; i < nhists256_slice; i++){
-      histogramdata *hist256i;
-      int j;
-
-      hist256i = hists256_slice + i;
-      maxval = (float)hist256i->buckets[0] / (float)hist256i->ntotal;
-      for(j = 1; j < histogram_nbuckets; j++){
-        float val;
-
-        val = (float)hist256i->buckets[j] / (float)hist256i->ntotal;
-        maxval = MAX(val, maxval);
-      }
-      hist256i->bucket_maxval = maxval;
-    }
-    FREEMEMORY(fed_areas);
-    if(is_fed == 1){
-      NewMemory((void **)&fed_areas, 4*nhists256_slice * sizeof(int));
-      for(i = 0; i < nhists256_slice; i++){
-        int *fed_areasi;
-        float hist0p0, hist0p3, hist1p0, hist3p0;
-
-        hist0p0 = GetHistogramCDF(hists256_slice + i, 0.0);
-        hist0p3 = GetHistogramCDF(hists256_slice + i, 0.3);
-        hist1p0 = GetHistogramCDF(hists256_slice + i, 1.0);
-        hist3p0 = GetHistogramCDF(hists256_slice + i, 3.0);
-
-        fed_areasi = fed_areas + 4 * i;
-        fed_areasi[0] = 100 * (hist0p3 - hist0p0);
-        fed_areasi[1] = 100 * (hist1p0 - hist0p3);
-        fed_areasi[2] = 100 * (hist3p0 - hist1p0);
-        fed_areasi[3] = 100 * (1.0     - hist3p0);
-      }
-    }
-  }
-
-}
-#endif
-
 /* ------------------ MergeLoadedSliceHist ------------------------ */
 
 void MergeLoadedSliceHist(char *label, histogramdata **histptr){
@@ -1732,11 +1582,7 @@ void MergeLoadedSliceHist(char *label, histogramdata **histptr){
 
 /* ------------------ GetSliceHists ------------------------ */
 
-#ifdef pp_HIST
-void GetSliceHists(slicedata *sd){
-#else
 void GetSliceHists(slicedata *sd, int use_bounds, float valmin, float valmax){
-#endif
   int ndata;
   int n, i;
   int nframe;
@@ -1848,10 +1694,6 @@ void GetSliceHists(slicedata *sd, int use_bounds, float valmin, float valmax){
 
     histi = sd->histograms + istep + 1;
     histall = sd->histograms;
-#ifdef pp_HIST
-    int use_bounds = 0;
-    float valmin = 0.0, valmax = 1.0;
-#endif
     CopyVals2Histogram(pdata0, slice_mask0, slice_weight0, nframe, histi, use_bounds, valmin, valmax);
     MergeHistogram(histall, histi, MERGE_BOUNDS);
   }
@@ -1868,11 +1710,7 @@ void GetHistogramValProc(histogramdata *histogram, float cdf, float *val){
 
 /* ------------------ GetSliceGeomHists ------------------------ */
 
-#ifdef pp_HIST
-void GetSliceGeomHists(slicedata *sd){
-#else
 void GetSliceGeomHists(slicedata *sd, int use_bounds, float valmin, float valmax){
-#endif
   if(sd->histograms != NULL)return;
 
   // initialize histograms
@@ -1883,20 +1721,12 @@ void GetSliceGeomHists(slicedata *sd, int use_bounds, float valmin, float valmax
 
   // compute histogram for each timestep, histi and all time steps, histall
 
-#ifdef pp_HIST
-  int use_bounds = 0;
-  float valmin = 0.0, valmax = 1.0;
-#endif
   CopyVals2Histogram(sd->patchgeom->geom_vals, NULL, NULL, sd->patchgeom->geom_nvals, sd->histograms, use_bounds, valmin, valmax);
 }
 
 /* ------------------ ComputeLoadedSliceHist ------------------------ */
 
-#ifdef pp_HIST
-void ComputeLoadedSliceHist(char *label){
-#else
 void ComputeLoadedSliceHist(char *label, float valmin, float valmax){
-#endif
   int i;
 
   for(i = 0; i < nsliceinfo; i++){
@@ -1907,20 +1737,12 @@ void ComputeLoadedSliceHist(char *label, float valmin, float valmax){
     if(label != NULL && strcmp(slicei->label.shortlabel, label) != 0)continue;
     if(slicei->histograms == NULL){
       if(slicei->slice_filetype == SLICE_GEOM){
-#ifdef pp_HIST
-        GetSliceGeomHists(slicei);
-#else
         int use_bounds = 1;
         GetSliceGeomHists(slicei, use_bounds, valmin, valmax);
-#endif
       }
       else{
-#ifdef pp_HIST
-        GetSliceHists(slicei);
-#else
         int use_bounds = 1;
         GetSliceHists(slicei, use_bounds, valmin, valmax);
-#endif
       }
     }
   }
@@ -3040,10 +2862,6 @@ void UpdateFedinfo(sliceparmdata *sp){
     sd->line_contours = NULL;
     sd->menu_show = 1;
     sd->constant_color = NULL;
-#ifdef pp_HIST
-    sd->histograms = NULL;
-    sd->nhistograms = 0;
-#endif
     sd->have_bound_file = 0;
 
     meshdata *meshi;
@@ -3146,6 +2964,7 @@ void UpdateFedinfo(sliceparmdata *sp){
   if(sp->nfediso > 0)UpdateIsoMenuLabels();
 }
 
+#ifdef pp_SLICE_DIR_COUNT
 /* ------------------ UpdateSliceDirCount ------------------------ */
 
 void UpdateSliceDirCount(sliceparmdata *sp){
@@ -3209,7 +3028,7 @@ void UpdateSliceDirCount(sliceparmdata *sp){
     }
   }
 }
-
+#endif
 /* ------------------ GetSliceParams ------------------------ */
 
 void GetSliceParams(sliceparmdata *sp){
@@ -3228,6 +3047,7 @@ void GetSliceParams(sliceparmdata *sp){
     stream=fopen(sliceinfo_filename,"r");
   }
 
+  INIT_PRINT_TIMER(timer_getsliceparams1);
   for(i=0;i<sp->nsliceinfo;i++){
     slicedata *sd;
     int is1, is2, js1, js2, ks1, ks2;
@@ -3301,8 +3121,14 @@ void GetSliceParams(sliceparmdata *sp){
       sd->nslicek=nk;
     }
   }
+  PRINT_TIMER(timer_getsliceparams1, "getsliceparams 1");
+  INIT_PRINT_TIMER(timer_getsliceparams2);
   UpdateFedinfo(sp);
+  PRINT_TIMER(timer_getsliceparams2, "getsliceparams 2");
+  INIT_PRINT_TIMER(timer_getsliceparams3);
   UpdateSliceinfoPtrs(sp);
+  PRINT_TIMER(timer_getsliceparams3, "getsliceparams 3");
+  INIT_PRINT_TIMER(timer_getsliceparams4);
   for(i=0;i<sp->nsliceinfo;i++){
     slicedata *sd;
     int is1, is2, js1, js2, ks1, ks2;
@@ -3452,6 +3278,8 @@ void GetSliceParams(sliceparmdata *sp){
       }
     }
   }
+  PRINT_TIMER(timer_getsliceparams4, "getsliceparams 4");
+  INIT_PRINT_TIMER(timer_getsliceparams5);
   if(stream!=NULL)fclose(stream);
   if(sp->nsliceinfo>0){
     FREEMEMORY(sliceorderindex);
@@ -3504,6 +3332,8 @@ void GetSliceParams(sliceparmdata *sp){
     //if(sp->nmultisliceinfo>0&&sp->nsliceinfo>0&&sp->nmultisliceinfo+nfedinfo<sp->nsliceinfo)have_multislice = 1;
     if(sp->nmultisliceinfo>0)have_multislice = 1; // use multi slice for all cases
   }
+  PRINT_TIMER(timer_getsliceparams5, "getsliceparams 5");
+  INIT_PRINT_TIMER(timer_getsliceparams6);
   for(i = 0; i < sp->nsliceinfo; i++){
     slicedata *slicei;
 
@@ -3512,7 +3342,11 @@ void GetSliceParams(sliceparmdata *sp){
     slicei->skipdup = 0;
   }
   UpdateSliceDups(sp);
+  PRINT_TIMER(timer_getsliceparams6, "getsliceparams 6");
+  INIT_PRINT_TIMER(timer_getsliceparams7);
   nslicedups = CountSliceDups();
+  PRINT_TIMER(timer_getsliceparams7, "getsliceparams 7");
+  INIT_PRINT_TIMER(timer_getsliceparams8);
   for(i = 0; i < sp->nmultisliceinfo; i++){
     int ii;
     multislicedata *mslicei;
@@ -3534,11 +3368,16 @@ void GetSliceParams(sliceparmdata *sp){
       slicei->mslice = mslicei;
     }
   }
+  PRINT_TIMER(timer_getsliceparams8, "getsliceparams 8");
+  INIT_PRINT_TIMER(timer_getsliceparams9);
   UpdateSliceMenuLabels(sp);
+  PRINT_TIMER(timer_getsliceparams9, "getsliceparams 9");
+#ifdef pp_SLICE_DIR_COUNT
+  INIT_PRINT_TIMER(timer_getsliceparams10);
   UpdateSliceDirCount(sp);
+  PRINT_TIMER(timer_getsliceparams10, "getsliceparams 10");
+#endif
 }
-//nsliceinfo
-//nmultisliceinfo
 
 /* ------------------ GetSliceParams2 ------------------------ */
 
@@ -3781,6 +3620,7 @@ void *UpdateVSlices(void *arg){
   UpdateVSliceDups();
   PRINT_TIMER(timer_updatevslices4, "UpdateVSlices_4");
 
+#ifdef pp_SLICE_DIR_COUNT
   INIT_PRINT_TIMER(timer_updatevslices5);
   for(i = 0; i<sp->nmultivsliceinfo; i++){
     multivslicedata *mvslicei;
@@ -3792,7 +3632,6 @@ void *UpdateVSlices(void *arg){
     mvslicei->ndirxyz[3]=0;
   }
   PRINT_TIMER(timer_updatevslices5, "UpdateVSlices_5");
-
   INIT_PRINT_TIMER(timer_updatevslices6);
   for(i=0;i<sp->nmultivsliceinfo;i++){
     multivslicedata *mvslicei;
@@ -3818,6 +3657,7 @@ void *UpdateVSlices(void *arg){
     }
   }
   PRINT_TIMER(timer_updatevslices6, "UpdateVSlices_6");
+#endif
 
   INIT_PRINT_TIMER(timer_updatevslices7);
   UpdateVsliceMenuLabels(sp);
@@ -4841,9 +4681,6 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
   slicefilenumber = ifile;
   assert(slicefilenumber>=0&&slicefilenumber<nsliceinfo);
   slicefilenum = ifile;
-#ifdef pp_HIST
-  histograms_defined = 0;
-#endif
   sd = sliceinfo+slicefilenumber;
 
   blocknumber = sd->blocknumber;
@@ -4870,17 +4707,6 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
       FREEMEMORY(sd->compindex);
       FREEMEMORY(sd->qslicedata_compressed);
       FREEMEMORY(sd->slicecomplevel);
-
-#ifdef pp_HIST
-      if(sd->histograms!=NULL){
-        int i;
-
-        for(i = 0; i<sd->nhistograms; i++){
-          FreeHistogram(sd->histograms+i);
-        }
-        FREEMEMORY(sd->histograms);
-      }
-#endif
     }
 
     slicefilenum = ifile;
@@ -4968,9 +4794,6 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
       UpdateUnitDefs();
       update_times = 1;
       RemoveSliceLoadstack(slicefilenumber);
-#ifdef pp_HIST
-      update_draw_hist = 1;
-#endif
       PrintMemoryInfo;
       return 0;
     }
@@ -5210,10 +5033,7 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
   CheckMemory;
 
   sd->loaded = 1;
-#ifndef pp_HIST
   sd->hist_update = 1;
-#endif
-
   if(sd->vloaded == 0){
     sd->display = 1;
     if(sd->uvw==0)HideSlices(sd->label.longlabel);
@@ -5233,25 +5053,6 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
       SetLoadedSliceBounds(NULL, 0);
     }
     GLUIGetMinMax(BOUND_SLICE, sd->label.shortlabel, &set_valmin, &qmin, &set_valmax, &qmax);
-#ifdef pp_HIST
-    if(set_valmin==BOUND_PERCENTILE_MIN||set_valmax==BOUND_PERCENTILE_MAX){
-      cpp_boundsdata *bounds;
-
-      bounds = GLUIGetBoundsData(BOUND_SLICE);
-      ComputeLoadedSliceHist(bounds->label);
-      MergeLoadedSliceHist(bounds->label, &(bounds->hist));
-      if(bounds->hist!=NULL&&bounds->hist->defined==1){
-        if(set_valmin==BOUND_PERCENTILE_MIN){
-          GetHistogramValProc(bounds->hist, percentile_level_min, &qmin);
-          GLUISetMin(BOUND_SLICE, bounds->label, BOUND_PERCENTILE_MIN, qmin);
-        }
-        if(set_valmax==BOUND_PERCENTILE_MAX){
-          GetHistogramValProc(bounds->hist, percentile_level_max, &qmax);
-          GLUISetMax(BOUND_SLICE, bounds->label, BOUND_PERCENTILE_MAX, qmax);
-        }
-      }
-    }
-#endif
 #define BOUND_PERCENTILE_DRAW          120
     GLUIHVACSliceBoundsCPP_CB(BOUND_PERCENTILE_DRAW);
     colorbar_slice_min = qmin;
@@ -5376,16 +5177,6 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
   }
 
   // define histogram data structures if visible
-#ifdef pp_HIST
-  if(histogram_show_graph==1||histogram_show_numbers==1){
-    update_slice_hists=1;
-  }
-  if(sd->is_fed == 1){
-    update_slice_hists = 1;
-    histogram_nbuckets = 255;
-    histogram_show_numbers=0;
-  }
-#endif
   CheckMemory;
   showall_slices=1;
   GLUTPOSTREDISPLAY;
