@@ -29,8 +29,6 @@ GLUI_Panel *PANEL_clipy=NULL, *PANEL_clipY=NULL;
 GLUI_Panel *PANEL_clipz=NULL, *PANEL_clipZ=NULL;
 GLUI_Panel *PANEL_rotation_center = NULL;
 
-GLUI_Rollout *PANEL_blockageview = NULL;
-
 GLUI_RadioButton *RADIOBUTTON_clip_1a=NULL;
 GLUI_RadioButton *RADIOBUTTON_clip_1b=NULL;
 GLUI_RadioButton *RADIOBUTTON_clip_1c=NULL;
@@ -296,10 +294,7 @@ extern "C" void GLUIClipSetup(int main_window){
   RADIOBUTTON_clip_1c=glui_clip->add_radiobutton_to_group(radio_clip,_("Clip data"));
   assert(CLIP_MAX==3);
 
-  PANEL_rotation_center = glui_clip->add_panel_to_panel(PANEL_clip,"rotation center");
-  CHECKBOX_clip_rotate = glui_clip->add_checkbox_to_panel(PANEL_rotation_center,"center of clipping planes", &clip_rotate, CLIP_ROTATE, ClipCB);
-  CHECKBOX_clip_show_rotation_center2 = glui_clip->add_checkbox_to_panel(PANEL_rotation_center, "Show", &show_rotation_center, CLIP_SHOW_ROTATE2, ClipCB);
-  glui_clip->add_column_to_panel(PANEL_clip,false);
+  glui_clip->add_column_to_panel(PANEL_clip, false);
 
   PANEL_clip_upper = glui_clip->add_panel_to_panel(PANEL_clip,_("Clip upper"));
 
@@ -318,37 +313,9 @@ extern "C" void GLUIClipSetup(int main_window){
   glui_clip->add_column_to_panel(PANEL_clipZ,false);
   CHECKBOX_clip_zmax=glui_clip->add_checkbox_to_panel(PANEL_clipZ,"",&clipinfo.clip_zmax,CLIP_zupper,ClipCB);
 
-  {
-    int nblocks = 0;
-    int i;
-
-    for(i = 0;i < nmeshes;i++){
-      meshdata *meshi;
-
-      meshi = meshinfo + i;
-      if(meshi->nbptrs > 0)nblocks++;
-    }
-    if(nblocks > 0){
-      int ncolumns,ib=0;
-
-#define MAXCLIPROWS 40
-
-      PANEL_blockageview = glui_clip->add_rollout_to_panel(PANEL_clip, "Hide blockages", false);
-      INSERT_ROLLOUT(PANEL_blockageview, glui_clip);
-      ncolumns = nblocks / MAXCLIPROWS + 1;
-
-      for(i = 0;i < nmeshes;i++){
-        meshdata *meshi;
-
-        meshi = meshinfo + i;
-        if(meshi->nbptrs > 0){
-          glui_clip->add_checkbox_to_panel(PANEL_blockageview, meshi->label, &meshi->blockvis);
-          ib++;
-          if(ib % (nblocks / ncolumns) == 0)glui_clip->add_column_to_panel(PANEL_blockageview);
-        }
-      }
-    }
-  }
+  PANEL_rotation_center = glui_clip->add_panel_to_panel(PANEL_clip, "rotation center");
+  CHECKBOX_clip_rotate = glui_clip->add_checkbox_to_panel(PANEL_rotation_center, "center of clipping planes", &clip_rotate, CLIP_ROTATE, ClipCB);
+  CHECKBOX_clip_show_rotation_center2 = glui_clip->add_checkbox_to_panel(PANEL_rotation_center, "Show", &show_rotation_center, CLIP_SHOW_ROTATE2, ClipCB);
 
   panel_wrapup = glui_clip->add_panel_to_panel(PANEL_clip,"",GLUI_PANEL_NONE);
 
