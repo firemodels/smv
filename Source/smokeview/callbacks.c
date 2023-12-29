@@ -2846,25 +2846,25 @@ void Keyboard(unsigned char key, int flag){
       break;
     case '$':
       if(keystate == GLUT_ACTIVE_ALT){
-        force_alpha_opaque = 1 - force_alpha_opaque;
-        if(force_alpha_opaque == 1)printf("force smoke/fire opaqueness: yes\n");
-        if(force_alpha_opaque == 0)printf("force smoke/fire opaqueness: no\n");
-        update_smoke_alphas = 1;
-        GLUIForceAlphaOpaque();
-        GLUTPOSTREDISPLAY;
+        trainer_active = 1 - trainer_active;
+        if(trainer_active == 1){
+          PRINTF("Trainer mode active\n");
+          trainer_mode = 1;
+          GLUIShowTrainer();
+        }
+        if(trainer_active == 0){
+          PRINTF("Trainer mode inactive\n");
+          trainer_mode = 0;
+          GLUIHideTrainer();
+        }
         break;
       }
-      trainer_active=1-trainer_active;
-      if(trainer_active==1){
-        PRINTF("Trainer mode active\n");
-        trainer_mode=1;
-        GLUIShowTrainer();
-      }
-      if(trainer_active==0){
-        PRINTF("Trainer mode inactive\n");
-        trainer_mode=0;
-        GLUIHideTrainer();
-      }
+      force_alpha_opaque = 1 - force_alpha_opaque;
+      if(force_alpha_opaque == 1)printf("force smoke/fire opaqueness: yes\n");
+      if(force_alpha_opaque == 0)printf("force smoke/fire opaqueness: no\n");
+      update_smoke_alphas = 1;
+      GLUIForceAlphaOpaque();
+      GLUTPOSTREDISPLAY;
       break;
     case '%':
       script_step=1-script_step;
