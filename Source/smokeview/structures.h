@@ -864,6 +864,9 @@ typedef struct _meshdata {
   int nsmokeplaneinfo;
   int s_offset[3];
   int isliceinfo, nsliceinfo;
+#ifdef pp_MESH_LOAD
+  int use;
+#endif
 } meshdata;
 
 /* --------------------------  cellmeshdata ------------------------------------ */

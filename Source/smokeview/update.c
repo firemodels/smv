@@ -1888,6 +1888,12 @@ void UpdateShowScene(void){
   have_fire  = HaveFireLoaded();
   have_smoke = HaveSootLoaded();
 
+#ifdef pp_MESH_LOAD
+  if(update_mesh_load_bounds == 1){
+    update_mesh_load_bounds = 0;
+    GLUIUpdateMeshBounds();
+  }
+#endif
   if(update_csv_load == 1){
     InitializeDeviceCsvData(LOAD);
     update_csv_load = 0;

@@ -20,6 +20,9 @@ EXTERNCPP void *ReadVolsmokeAllFramesAllMeshes2(void *arg);
 EXTERNCPP void *SetupAllIsosurfaces(void *arg);
 
 //*** glui_bounds.cpp headers
+#ifdef pp_MESH_LOAD
+EXTERNCPP void GLUIUpdateMeshBounds(void);
+#endif
 EXTERNCPP void GLUIBoundsSetup(int main_window);
 EXTERNCPP void GLUIUpdatePartPointSize(void);
 EXTERNCPP void GLUIUpdateBoundTbounds(void);

@@ -75,6 +75,11 @@
 #define SLICE_DPLOT              227
 #define COLORBAR_PLOT2D          228
 
+#ifdef pp_MESH_LOAD
+#define LOAD_XYZ                 100
+#define USE_LOAD_XYZ             200
+#endif
+
 #define ISO_TRANSPARENT_CONSTANT 0
 #define ISO_TRANSPARENT_VARYING  1
 #define ISO_OPAQUE               2
