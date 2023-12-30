@@ -75,7 +75,7 @@
 #define SLICE_DPLOT              227
 #define COLORBAR_PLOT2D          228
 
-#ifdef pp_MESH_LOAD
+#ifdef pp_LOAD_BOUNDS
 #define LOAD_XYZ                 100
 #define USE_LOAD_XYZ             200
 #endif

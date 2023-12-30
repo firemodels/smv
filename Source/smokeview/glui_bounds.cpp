@@ -2404,7 +2404,7 @@ GLUI_Panel *PANEL_script2a=NULL;
 GLUI_Panel *PANEL_script2b=NULL;
 GLUI_Panel *PANEL_script3=NULL;
 GLUI_Panel *PANEL_transparency2=NULL;
-#ifdef pp_MESH_LOAD
+#ifdef pp_LOAD_BOUNDS
 GLUI_Panel *PANEL_mesh     = NULL;
 GLUI_Panel *PANEL_mesh_min = NULL;
 GLUI_Panel *PANEL_meshxyz[6];
@@ -2512,7 +2512,7 @@ GLUI_Spinner *SPINNER_slice_dy = NULL;
 GLUI_Spinner *SPINNER_slice_dz = NULL;
 GLUI_Spinner *SPINNER_size_factor2         = NULL;
 GLUI_Spinner *SPINNER_plot2d_dt = NULL;
-#ifdef pp_MESH_LOAD
+#ifdef pp_LOAD_BOUNDS
 GLUI_Spinner *SPINNER_load_minmax[6];
 #endif
 
@@ -2549,7 +2549,7 @@ GLUI_Checkbox *CHECKBOX_transparentflag = NULL;
 GLUI_Checkbox *CHECKBOX_use_lighting = NULL;
 GLUI_Checkbox *CHECKBOX_show_extreme_mindata = NULL;
 GLUI_Checkbox *CHECKBOX_show_extreme_maxdata = NULL;
-#ifdef pp_MESH_LOAD
+#ifdef pp_LOAD_BOUNDS
 GLUI_Checkbox *CHECKBOX_use_load_minmax[6];
 GLUI_Checkbox *CHECKBOX_use_show_load_mesh=NULL;
 #endif
@@ -3605,7 +3605,7 @@ void BoundBoundCB(int var){
   }
 }
 
-#ifdef pp_MESH_LOAD
+#ifdef pp_LOAD_BOUNDS
 /* ------------------ TimeBoundCB ------------------------ */
 
 void MeshBoundCB(int var){
@@ -3620,12 +3620,12 @@ void MeshBoundCB(int var){
       meshi->use = 1;
     }
     if(
-      use_mesh_bounds[0] == 0 &&
-      use_mesh_bounds[1] == 0 &&
-      use_mesh_bounds[2] == 0 &&
-      use_mesh_bounds[3] == 0 &&
-      use_mesh_bounds[4] == 0 &&
-      use_mesh_bounds[5] == 0
+      use_load_bounds[0] == 0 &&
+      use_load_bounds[1] == 0 &&
+      use_load_bounds[2] == 0 &&
+      use_load_bounds[3] == 0 &&
+      use_load_bounds[4] == 0 &&
+      use_load_bounds[5] == 0
       )break;
     for(i=0;i<nmeshes;i++){
       meshdata *meshi;
@@ -3634,27 +3634,27 @@ void MeshBoundCB(int var){
       meshi = meshinfo + i;
       meshmin = meshi->boxmin;
       meshmax = meshi->boxmax;
-      if(use_mesh_bounds[0] == 1 && meshmin[0] > mesh_bounds[1]){
+      if(use_load_bounds[0] == 1 && meshmin[0] > load_bounds[1]){
         meshi->use = 0;
         continue;
       }
-      if(use_mesh_bounds[2] == 1 && meshmin[1] > mesh_bounds[3]){
+      if(use_load_bounds[2] == 1 && meshmin[1] > load_bounds[3]){
         meshi->use = 0;
         continue;
       }
-      if(use_mesh_bounds[4] == 1 && meshmin[2] > mesh_bounds[5]){
+      if(use_load_bounds[4] == 1 && meshmin[2] > load_bounds[5]){
         meshi->use = 0;
         continue;
       }
-      if(use_mesh_bounds[1] == 1 && meshmax[0] < mesh_bounds[0]){
+      if(use_load_bounds[1] == 1 && meshmax[0] < load_bounds[0]){
         meshi->use = 0;
         continue;
       }
-      if(use_mesh_bounds[3] == 1 && meshmax[1] < mesh_bounds[2]){
+      if(use_load_bounds[3] == 1 && meshmax[1] < load_bounds[2]){
         meshi->use = 0;
         continue;
       }
-      if(use_mesh_bounds[5] == 1 && meshmax[2] < mesh_bounds[4]){
+      if(use_load_bounds[5] == 1 && meshmax[2] < load_bounds[4]){
         meshi->use = 0;
         continue;
       }
@@ -3662,7 +3662,7 @@ void MeshBoundCB(int var){
     break;
   case USE_LOAD_XYZ:
     for(i = 0;i < 6;i++){
-      if(use_mesh_bounds[i] == 1){
+      if(use_load_bounds[i] == 1){
         SPINNER_load_minmax[i]->enable();
       }
       else{
@@ -3678,7 +3678,7 @@ void MeshBoundCB(int var){
   case USE_LOAD_XYZ + 5:
   case USE_LOAD_XYZ + 6:
     i = var - USE_LOAD_XYZ-1;
-    if(use_mesh_bounds[i]==1){
+    if(use_load_bounds[i]==1){
       SPINNER_load_minmax[i]->enable();
     }
     else{
@@ -3698,8 +3698,8 @@ extern "C" void GLUIUpdateMeshBounds(void){
   int i;
 
   for(i = 0;i < 6;i++){
-    SPINNER_load_minmax[i]->set_float_val(mesh_bounds[i]);
-    CHECKBOX_use_load_minmax[i]->set_int_val(use_mesh_bounds[i]);
+    SPINNER_load_minmax[i]->set_float_val(load_bounds[i]);
+    CHECKBOX_use_load_minmax[i]->set_int_val(use_load_bounds[i]);
   }
   CHECKBOX_use_show_load_mesh->set_int_val(show_load_mesh);
   MeshBoundCB(LOAD_XYZ);
@@ -4803,7 +4803,7 @@ hvacductboundsCPP.setup("hvac", ROLLOUT_hvacduct, hvacductbounds_cpp, nhvacductb
   TimeBoundCB(TBOUNDS_USE);
   TimeBoundCB(TBOUNDS);
 
-#ifdef pp_MESH_LOAD
+#ifdef pp_LOAD_BOUNDS
   PANEL_mesh = glui_bounds->add_panel_to_panel(ROLLOUT_time, "mesh bounds", true);
   PANEL_mesh_minmax = glui_bounds->add_panel_to_panel(PANEL_mesh, "", false);
   PANEL_mesh_min = glui_bounds->add_panel_to_panel(PANEL_mesh_minmax, "min", true);
@@ -4816,23 +4816,23 @@ hvacductboundsCPP.setup("hvac", ROLLOUT_hvacduct, hvacductbounds_cpp, nhvacductb
   PANEL_meshxyz[3] = glui_bounds->add_panel_to_panel(PANEL_mesh_max, "", false);
   PANEL_meshxyz[5] = glui_bounds->add_panel_to_panel(PANEL_mesh_max, "", false);
 
-  use_mesh_bounds[0] = 0;
-  use_mesh_bounds[1] = 0;
-  use_mesh_bounds[2] = 0;
-  use_mesh_bounds[3] = 0;
-  use_mesh_bounds[4] = 0;
-  use_mesh_bounds[5] = 0;
-  mesh_bounds[0] = xbar0FDS;
-  mesh_bounds[1] = xbarFDS;
-  mesh_bounds[2] = ybar0FDS;
-  mesh_bounds[3] = ybarFDS;
-  mesh_bounds[4] = zbar0FDS;
-  mesh_bounds[5] = zbarFDS;
+  use_load_bounds[0] = 0;
+  use_load_bounds[1] = 0;
+  use_load_bounds[2] = 0;
+  use_load_bounds[3] = 0;
+  use_load_bounds[4] = 0;
+  use_load_bounds[5] = 0;
+  load_bounds[0] = xbar0FDS;
+  load_bounds[1] = xbarFDS;
+  load_bounds[2] = ybar0FDS;
+  load_bounds[3] = ybarFDS;
+  load_bounds[4] = zbar0FDS;
+  load_bounds[5] = zbarFDS;
   char *lbl[]={"X","X","Y","Y","Z","Z"};
   for(i=0;i<6;i++){
-    SPINNER_load_minmax[i] = glui_bounds->add_spinner_to_panel(PANEL_meshxyz[i], lbl[i], GLUI_SPINNER_FLOAT, mesh_bounds+i, LOAD_XYZ, MeshBoundCB);
+    SPINNER_load_minmax[i] = glui_bounds->add_spinner_to_panel(PANEL_meshxyz[i], lbl[i], GLUI_SPINNER_FLOAT, load_bounds+i, LOAD_XYZ, MeshBoundCB);
     glui_bounds->add_column_to_panel(PANEL_meshxyz[i], false);
-    CHECKBOX_use_load_minmax[0] = glui_bounds->add_checkbox_to_panel(PANEL_meshxyz[i], "", use_mesh_bounds+i, USE_LOAD_XYZ+i+1, MeshBoundCB);
+    CHECKBOX_use_load_minmax[0] = glui_bounds->add_checkbox_to_panel(PANEL_meshxyz[i], "", use_load_bounds+i, USE_LOAD_XYZ+i+1, MeshBoundCB);
   }
 
   CHECKBOX_use_show_load_mesh = glui_bounds->add_checkbox_to_panel(PANEL_mesh, "show mesh loads", &show_load_mesh);

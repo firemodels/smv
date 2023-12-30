@@ -1888,7 +1888,7 @@ void UpdateShowScene(void){
   have_fire  = HaveFireLoaded();
   have_smoke = HaveSootLoaded();
 
-#ifdef pp_MESH_LOAD
+#ifdef pp_LOAD_BOUNDS
   if(update_mesh_load_bounds == 1){
     update_mesh_load_bounds = 0;
     GLUIUpdateMeshBounds();

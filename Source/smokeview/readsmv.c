@@ -889,7 +889,7 @@ void FreeLabels(flowlabels *flowlabel){
 void InitMesh(meshdata *meshi){
   int i;
 
-#ifdef pp_MESH_LOAD
+#ifdef pp_LOAD_BOUNDS
   meshi->use = 1;
 #endif
   meshi->isliceinfo    = 0;

@@ -2225,13 +2225,13 @@ SVEXTERN int SVDECL(use_transparency_geom,0);
 SVEXTERN facedata SVDECL(**face_transparent,NULL);
 SVEXTERN int SVDECL(hidepatchsurface,0);
 
-#ifdef pp_MESH_LOAD
+#ifdef pp_LOAD_BOUNDS
 #ifdef INMAIN
-SVEXTERN float mesh_bounds[6] = {0.0, 1.0, 0.0, 1.0, 0.0, 1.0};
-SVEXTERN int use_mesh_bounds[6] = {0, 0, 0, 0, 0, 0};
+SVEXTERN float load_bounds[6] = {0.0, 1.0, 0.0, 1.0, 0.0, 1.0};
+SVEXTERN int use_load_bounds[6] = {0, 0, 0, 0, 0, 0};
 #else
-SVEXTERN float mesh_bounds[6];
-SVEXTERN int use_mesh_bounds[6];
+SVEXTERN float load_bounds[6];
+SVEXTERN int use_load_bounds[6];
 #endif
 SVEXTERN int SVDECL(show_load_mesh, 0);
 SVEXTERN int SVDECL(update_mesh_load_bounds, 0);

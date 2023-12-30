@@ -18,7 +18,7 @@
 //#define pp_MESH_PLOT3D
 
 //#define pp_SLICE_DIR_COUNT
-//#define pp_MESH_LOAD   // specify clipping planes for loading data
+//#define pp_LOAD_BOUNDS   // specify clipping planes for loading data
 
 //#define pp_LUA                 // turn on LUA option
 
