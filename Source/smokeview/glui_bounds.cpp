@@ -3606,11 +3606,42 @@ void BoundBoundCB(int var){
 }
 
 #ifdef pp_LOAD_BOUNDS
+
+/* ------------------ CheckBounds ------------------------ */
+
+void CheckBounds(int var){
+  if((var==-1||var==0)&&use_load_bounds[0] == 0){
+    load_bounds[0] = xbar0FDS;
+    SPINNER_load_minmax[0]->set_float_val(load_bounds[0]);
+  }
+  if((var == -1 || var == 1) && use_load_bounds[1] == 0){
+    load_bounds[1] = xbarFDS;
+    SPINNER_load_minmax[1]->set_float_val(load_bounds[1]);
+  }
+  if((var == -1 || var == 2) && use_load_bounds[2] == 0){
+    load_bounds[2] = ybar0FDS;
+    SPINNER_load_minmax[2]->set_float_val(load_bounds[2]);
+  }
+  if((var == -1 || var == 3) && use_load_bounds[3] == 0){
+    load_bounds[3] = ybarFDS;
+    SPINNER_load_minmax[3]->set_float_val(load_bounds[3]);
+  }
+  if((var == -1 || var == 4) && use_load_bounds[4] == 0){
+    load_bounds[4] = zbar0FDS;
+    SPINNER_load_minmax[4]->set_float_val(load_bounds[4]);
+  }
+  if((var == -1 || var == 5) && use_load_bounds[5] == 0){
+    load_bounds[5] = zbarFDS;
+    SPINNER_load_minmax[5]->set_float_val(load_bounds[5]);
+  }
+}
+
 /* ------------------ TimeBoundCB ------------------------ */
 
 void MeshBoundCB(int var){
   int i;
 
+  GLUTPOSTREDISPLAY;
   switch(var){
   case LOAD_XYZ:
     for(i = 0;i < nmeshes;i++){
@@ -3634,27 +3665,27 @@ void MeshBoundCB(int var){
       meshi = meshinfo + i;
       meshmin = meshi->boxmin;
       meshmax = meshi->boxmax;
-      if(use_load_bounds[0] == 1 && meshmin[0] > load_bounds[1]){
+      if(use_load_bounds[0] == 1 && load_bounds[0] > meshmax[0]){
         meshi->use = 0;
         continue;
       }
-      if(use_load_bounds[2] == 1 && meshmin[1] > load_bounds[3]){
+      if(use_load_bounds[1] == 1 && load_bounds[1] < meshmin[0]){
         meshi->use = 0;
         continue;
       }
-      if(use_load_bounds[4] == 1 && meshmin[2] > load_bounds[5]){
+      if(use_load_bounds[2] == 1 && load_bounds[2] > meshmax[1]){
         meshi->use = 0;
         continue;
       }
-      if(use_load_bounds[1] == 1 && meshmax[0] < load_bounds[0]){
+      if(use_load_bounds[3] == 1 && load_bounds[3] < meshmin[1]){
         meshi->use = 0;
         continue;
       }
-      if(use_load_bounds[3] == 1 && meshmax[1] < load_bounds[2]){
+      if(use_load_bounds[4] == 1 && load_bounds[4] > meshmax[2]){
         meshi->use = 0;
         continue;
       }
-      if(use_load_bounds[5] == 1 && meshmax[2] < load_bounds[4]){
+      if(use_load_bounds[5] == 1 && load_bounds[5] < meshmin[2]){
         meshi->use = 0;
         continue;
       }
@@ -3669,6 +3700,7 @@ void MeshBoundCB(int var){
         SPINNER_load_minmax[i]->disable();
       }
     }
+    CheckBounds(-1);
     MeshBoundCB(LOAD_XYZ);
     break;
   case USE_LOAD_XYZ + 1:
@@ -3684,6 +3716,7 @@ void MeshBoundCB(int var){
     else{
       SPINNER_load_minmax[i]->disable();
     }
+    CheckBounds(i);
     MeshBoundCB(LOAD_XYZ);
     break;
   default:
@@ -4764,7 +4797,7 @@ hvacductboundsCPP.setup("hvac", ROLLOUT_hvacduct, hvacductbounds_cpp, nhvacductb
 
   // ----------------------------------- Time ----------------------------------------
 
-  ROLLOUT_time = glui_bounds->add_rollout("Time", false, TIME_ROLLOUT, BoundRolloutCB);
+  ROLLOUT_time = glui_bounds->add_rollout("Time/Mesh Loading", false, TIME_ROLLOUT, BoundRolloutCB);
   INSERT_ROLLOUT(ROLLOUT_time, glui_bounds);
   ADDPROCINFO(fileprocinfo, nfileprocinfo, ROLLOUT_time, TIME_ROLLOUT, glui_bounds);
 
@@ -4804,11 +4837,11 @@ hvacductboundsCPP.setup("hvac", ROLLOUT_hvacduct, hvacductbounds_cpp, nhvacductb
   TimeBoundCB(TBOUNDS);
 
 #ifdef pp_LOAD_BOUNDS
-  PANEL_mesh = glui_bounds->add_panel_to_panel(ROLLOUT_time, "mesh bounds", true);
+  PANEL_mesh = glui_bounds->add_panel_to_panel(ROLLOUT_time, "load data for meshes that intersect box", true);
   PANEL_mesh_minmax = glui_bounds->add_panel_to_panel(PANEL_mesh, "", false);
-  PANEL_mesh_min = glui_bounds->add_panel_to_panel(PANEL_mesh_minmax, "min", true);
+  PANEL_mesh_min = glui_bounds->add_panel_to_panel(PANEL_mesh_minmax, "min box coords", true);
   glui_bounds->add_column_to_panel(PANEL_mesh_minmax, false);
-  PANEL_mesh_max = glui_bounds->add_panel_to_panel(PANEL_mesh_minmax, "max", true);
+  PANEL_mesh_max = glui_bounds->add_panel_to_panel(PANEL_mesh_minmax, "max box coords", true);
   PANEL_meshxyz[0] = glui_bounds->add_panel_to_panel(PANEL_mesh_min, "", false);
   PANEL_meshxyz[2] = glui_bounds->add_panel_to_panel(PANEL_mesh_min, "", false);
   PANEL_meshxyz[4] = glui_bounds->add_panel_to_panel(PANEL_mesh_min, "", false);
@@ -4835,7 +4868,7 @@ hvacductboundsCPP.setup("hvac", ROLLOUT_hvacduct, hvacductbounds_cpp, nhvacductb
     CHECKBOX_use_load_minmax[0] = glui_bounds->add_checkbox_to_panel(PANEL_meshxyz[i], "", use_load_bounds+i, USE_LOAD_XYZ+i+1, MeshBoundCB);
   }
 
-  CHECKBOX_use_show_load_mesh = glui_bounds->add_checkbox_to_panel(PANEL_mesh, "show mesh loads", &show_load_mesh);
+  CHECKBOX_use_show_load_mesh = glui_bounds->add_checkbox_to_panel(PANEL_mesh, "show box and intersected meshes", &show_load_mesh);
   MeshBoundCB(USE_LOAD_XYZ);
 #endif
 

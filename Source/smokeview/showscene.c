@@ -168,6 +168,28 @@ void ShowScene2(int mode){
       DrawObstBoundingBox();
     }
 
+#ifdef pp_LOAD_BOUNDS
+    if(show_load_mesh == 1){
+      int i;
+
+      float box_black[4] = {0.0, 0.0, 0.0, 1.0};
+      float box_red[4] = {1.0, 0.0, 0.0, 1.0};
+      for(i = 0;i < nmeshes;i++){
+        meshdata *meshi;
+
+        meshi = meshinfo + i;
+        if(meshi->use == 1){
+          DrawBoxMinMax(meshi->boxmin_scaled, meshi->boxmax_scaled, box_black);
+        }
+      }
+      glPushMatrix();
+      glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
+      glTranslatef(-xbar0, -ybar0, -zbar0);
+      DrawBox(load_bounds, box_red);
+      glPopMatrix();
+    }
+#endif
+
     if(show_rotation_center == 1){
       unsigned char pcolor[4];
 

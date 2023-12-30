@@ -22,6 +22,8 @@ EXTERNCPP void *SetupAllIsosurfaces(void *arg);
 //*** glui_bounds.cpp headers
 #ifdef pp_LOAD_BOUNDS
 EXTERNCPP void GLUIUpdateMeshBounds(void);
+EXTERNCPP void DrawBoxMinMax(float *bbmin, float *bbmax, float *box_color);
+EXTERNCPP void DrawBox(float *bb, float *box_color);
 #endif
 EXTERNCPP void GLUIBoundsSetup(int main_window);
 EXTERNCPP void GLUIUpdatePartPointSize(void);
