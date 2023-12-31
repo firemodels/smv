@@ -5269,6 +5269,13 @@ FILE_SIZE LoadAllMSlicesMT(int last_slice, multislicedata *mslicei, int *fcount)
 
     slicei = sliceinfo + mslicei->islices[i];
     set_slicecolor = DEFER_SLICECOLOR;
+#ifdef pp_LOAD_BOUNDS
+    meshdata *meshi;
+
+    meshi = meshinfo + slicei->blocknumber;
+    if(meshi->use == 0)continue;
+#endif
+
 
     slicei->finalize = 0;
     if(last_slice == mslicei->islices[i]){
@@ -5333,6 +5340,12 @@ void LoadMultiSliceMenu(int value){
         slicedata *slicei;
 
         slicei = sliceinfo + mslicei->islices[i];
+#ifdef pp_LOAD_BOUNDS
+        meshdata *meshi;
+
+        meshi = meshinfo + slicei->blocknumber;
+        if(meshi->use == 0)continue;
+#endif
         if(slicei->slice_filetype==SLICE_TERRAIN&&slicei->have_agl_data==0)continue;
         if(slicei->skipdup== 0){
           last_slice = mslicei->islices[i];

@@ -3,8 +3,6 @@
 
 #include "options_common.h"
 
-//*** define smokeview title
-
 #ifdef pp_BETA
 #define pp_DEBUG_SUBMENU       // debug output and testing for building menus
 #endif
