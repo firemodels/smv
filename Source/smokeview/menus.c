@@ -4748,6 +4748,12 @@ FILE_SIZE LoadSmoke3D(int type, int frame, int *count, float *time_value){
     smoke3ddata *smoke3di;
 
     smoke3di = smoke3dinfo+i;
+#ifdef pp_LOAD_BOUNDS
+    meshdata *meshi;
+
+    meshi = meshinfo + smoke3di->blocknumber;
+    if(meshi->use == 0)continue;
+#endif
     if(IsSmokeType(smoke3di, type) == 1){
     last_smoke = i;
     break;
@@ -4760,6 +4766,12 @@ FILE_SIZE LoadSmoke3D(int type, int frame, int *count, float *time_value){
     smoke3ddata *smoke3di;
 
     smoke3di = smoke3dinfo + i;
+#ifdef pp_LOAD_BOUNDS
+    meshdata *meshi;
+
+    meshi = meshinfo + smoke3di->blocknumber;
+    if(meshi->use == 0)continue;
+#endif
     if(IsSmokeType(smoke3di, type) == 1){
       file_count++;
       smoke3di->finalize = 0;

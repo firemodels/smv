@@ -4184,6 +4184,15 @@ FILE_SIZE ReadSmoke3D(int iframe_arg,int ifile_arg,int flag_arg, int first_time,
   }
   if(smoke3di->smokeframe_comp_list==NULL)return 0;
 
+#ifdef pp_LOAD_BOUNDS
+  if(flag_arg == LOAD){
+    meshdata *meshi;
+
+    meshi = meshinfo + smoke3di->blocknumber;
+    if(meshi->use == 0)return 0;
+  }
+#endif
+
 //*** read in data
 
   SMOKE3DFILE=FOPEN_SMOKE(smoke3di->file,"rb", n_smokeload_threads, use_smokeload_threads);
