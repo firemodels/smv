@@ -5870,6 +5870,12 @@ void LoadBoundaryMenu(int value){
         patchdata *patchi;
 
         patchi = patchinfo+i;
+#ifdef pp_LOAD_BOUNDS
+        meshdata *meshi;
+
+        meshi = meshinfo + patchi->blocknumber;
+        if(meshi->use == 0)continue;
+#endif
         if(InPatchList(patchj, patchi)==1){
           THREADcontrol(compress_threads, THREAD_LOCK);
           patchi->finalize = 1;
@@ -5881,6 +5887,12 @@ void LoadBoundaryMenu(int value){
         patchdata *patchi;
 
         patchi = patchinfo + i;
+#ifdef pp_LOAD_BOUNDS
+        meshdata *meshi;
+
+        meshi = meshinfo + patchi->blocknumber;
+        if(meshi->use == 0)continue;
+#endif
         if(InPatchList(patchj, patchi)==1){
           THREADcontrol(compress_threads, THREAD_LOCK);
           if(patchi->structured == YES){
