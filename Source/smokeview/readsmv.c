@@ -12325,7 +12325,7 @@ int ReadIni2(char *inifile, int localfile){
 #ifdef pp_LOAD_BOUNDS
     if(MatchINI(buffer, "LOADMESH") == 1){
       fgets(buffer, 255, stream);
-      sscanf(buffer, " %i", &show_load_bounds);
+      sscanf(buffer, " %i %i", &show_load_bounds, &show_load_bounds_meshes);
 
       fgets(buffer, 255, stream);
       sscanf(buffer, " %i %f %i %f", use_load_bounds + 0, load_bounds + 0, use_load_bounds + 1, load_bounds + 1);
@@ -12339,6 +12339,9 @@ int ReadIni2(char *inifile, int localfile){
       for(i = 0;i < 6;i++){
         if(use_load_bounds[i] != 0)use_load_bounds[i] = 1;
       }
+      if(show_load_bounds != 0)show_load_bounds = 1;
+      if(show_load_bounds_meshes != 0)show_load_bounds_meshes = 1;
+      if(show_load_bounds == 1 && show_load_bounds_meshes == 1)show_load_bounds = 0;
       update_load_bounds = 1;
     }
 #endif
@@ -16498,7 +16501,7 @@ void WriteIniLocal(FILE *fileout){
   fprintf(fileout, " %i %i %i %i \n", cache_boundary_data, cache_part_data, cache_plot3d_data, cache_slice_data);
 #ifdef pp_LOAD_BOUNDS
   fprintf(fileout, "LOADMESH\n");
-  fprintf(fileout, " %i\n", show_load_bounds);
+  fprintf(fileout, " %i %i\n", show_load_bounds, show_load_bounds_meshes);
   fprintf(fileout, " %i %f %i %f\n", use_load_bounds[0], load_bounds[0], use_load_bounds[1], load_bounds[1]);
   fprintf(fileout, " %i %f %i %f\n", use_load_bounds[2], load_bounds[2], use_load_bounds[3], load_bounds[3]);
   fprintf(fileout, " %i %f %i %f\n", use_load_bounds[4], load_bounds[4], use_load_bounds[5], load_bounds[5]);

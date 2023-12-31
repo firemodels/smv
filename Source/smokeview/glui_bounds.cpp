@@ -2552,6 +2552,7 @@ GLUI_Checkbox *CHECKBOX_show_extreme_maxdata = NULL;
 #ifdef pp_LOAD_BOUNDS
 GLUI_Checkbox *CHECKBOX_use_load_bounds[6];
 GLUI_Checkbox *CHECKBOX_use_show_load_bounds=NULL;
+GLUI_Checkbox *CHECKBOX_use_show_load_bounds_meshes = NULL;
 #endif
 
 GLUI_RadioGroup *RADIO_iso_setmin=NULL;
@@ -3643,6 +3644,18 @@ void MeshBoundCB(int var){
 
   GLUTPOSTREDISPLAY;
   switch(var){
+  case DRAW_BOX:
+    if(show_load_bounds_meshes==1&&show_load_bounds==1){
+      show_load_bounds_meshes = 0;
+      CHECKBOX_use_show_load_bounds_meshes->set_int_val(0);
+    }
+    break;
+  case DRAW_BOX_MESH:
+    if(show_load_bounds_meshes==1&&show_load_bounds==1){
+      show_load_bounds = 0;
+      CHECKBOX_use_show_load_bounds->set_int_val(0);
+    }
+    break;
   case LOAD_XYZ:
     for(i = 0;i < nmeshes;i++){
       meshdata *meshi;
@@ -4861,7 +4874,8 @@ hvacductboundsCPP.setup("hvac", ROLLOUT_hvacduct, hvacductbounds_cpp, nhvacductb
     glui_bounds->add_column_to_panel(PANEL_meshxyz[i], false);
     CHECKBOX_use_load_bounds[i] = glui_bounds->add_checkbox_to_panel(PANEL_meshxyz[i], "", use_load_bounds+i, USE_LOAD_XYZ+i, MeshBoundCB);
   }
-  CHECKBOX_use_show_load_bounds = glui_bounds->add_checkbox_to_panel(PANEL_mesh, "show box and intersected meshes", &show_load_bounds);
+  CHECKBOX_use_show_load_bounds_meshes = glui_bounds->add_checkbox_to_panel(PANEL_mesh, "show box and intersected meshes", &show_load_bounds_meshes, DRAW_BOX_MESH, MeshBoundCB);
+  CHECKBOX_use_show_load_bounds = glui_bounds->add_checkbox_to_panel(PANEL_mesh, "show box", &show_load_bounds, DRAW_BOX, MeshBoundCB);
   MeshBoundCB(USE_LOAD_XYZ_ALL);
   glui_load_bounds_defined = 1;
 #endif
