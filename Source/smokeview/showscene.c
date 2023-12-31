@@ -169,7 +169,7 @@ void ShowScene2(int mode){
     }
 
 #ifdef pp_LOAD_BOUNDS
-    if(show_load_mesh == 1){
+    if(show_load_bounds == 1){
       int i;
 
       float box_black[4] = {0.0, 0.0, 0.0, 1.0};

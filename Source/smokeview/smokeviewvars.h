@@ -2233,8 +2233,8 @@ SVEXTERN int use_load_bounds[6] = {0, 0, 0, 0, 0, 0};
 SVEXTERN float load_bounds[6];
 SVEXTERN int use_load_bounds[6];
 #endif
-SVEXTERN int SVDECL(show_load_mesh, 0);
-SVEXTERN int SVDECL(update_mesh_load_bounds, 0);
+SVEXTERN int SVDECL(show_load_bounds, 0);
+SVEXTERN int SVDECL(update_load_bounds, 0);
 #endif
 
 #ifdef INMAIN
