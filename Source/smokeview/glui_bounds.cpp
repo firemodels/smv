@@ -4849,7 +4849,13 @@ hvacductboundsCPP.setup("hvac", ROLLOUT_hvacduct, hvacductbounds_cpp, nhvacductb
   PANEL_meshxyz[3] = glui_bounds->add_panel_to_panel(PANEL_mesh_max, "", false);
   PANEL_meshxyz[5] = glui_bounds->add_panel_to_panel(PANEL_mesh_max, "", false);
 
-  char *lbl[]={"X","X","Y","Y","Z","Z"};
+  char lbl[6][6];
+  strcpy(lbl[0], "X");
+  strcpy(lbl[1], "X");
+  strcpy(lbl[2], "Y");
+  strcpy(lbl[3], "Y");
+  strcpy(lbl[4], "Z");
+  strcpy(lbl[5], "Z");
   for(i=0;i<6;i++){
     SPINNER_load_bounds[i] = glui_bounds->add_spinner_to_panel(PANEL_meshxyz[i], lbl[i], GLUI_SPINNER_FLOAT, load_bounds+i, LOAD_XYZ, MeshBoundCB);
     glui_bounds->add_column_to_panel(PANEL_meshxyz[i], false);
