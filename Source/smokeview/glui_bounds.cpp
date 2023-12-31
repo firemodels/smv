@@ -2513,7 +2513,7 @@ GLUI_Spinner *SPINNER_slice_dz = NULL;
 GLUI_Spinner *SPINNER_size_factor2         = NULL;
 GLUI_Spinner *SPINNER_plot2d_dt = NULL;
 #ifdef pp_LOAD_BOUNDS
-GLUI_Spinner *SPINNER_load_minmax[6];
+GLUI_Spinner *SPINNER_load_bounds[6];
 #endif
 
 GLUI_Checkbox *CHECKBOX_slice_load_incremental=NULL;
@@ -2550,7 +2550,7 @@ GLUI_Checkbox *CHECKBOX_use_lighting = NULL;
 GLUI_Checkbox *CHECKBOX_show_extreme_mindata = NULL;
 GLUI_Checkbox *CHECKBOX_show_extreme_maxdata = NULL;
 #ifdef pp_LOAD_BOUNDS
-GLUI_Checkbox *CHECKBOX_use_load_minmax[6];
+GLUI_Checkbox *CHECKBOX_use_load_bounds[6];
 GLUI_Checkbox *CHECKBOX_use_show_load_bounds=NULL;
 #endif
 
@@ -3612,27 +3612,27 @@ void BoundBoundCB(int var){
 void CheckBounds(int var){
   if((var==-1||var==0)&&use_load_bounds[0] == 0){
     load_bounds[0] = xbar0FDS;
-    SPINNER_load_minmax[0]->set_float_val(load_bounds[0]);
+    SPINNER_load_bounds[0]->set_float_val(load_bounds[0]);
   }
   if((var == -1 || var == 1) && use_load_bounds[1] == 0){
     load_bounds[1] = xbarFDS;
-    SPINNER_load_minmax[1]->set_float_val(load_bounds[1]);
+    SPINNER_load_bounds[1]->set_float_val(load_bounds[1]);
   }
   if((var == -1 || var == 2) && use_load_bounds[2] == 0){
     load_bounds[2] = ybar0FDS;
-    SPINNER_load_minmax[2]->set_float_val(load_bounds[2]);
+    SPINNER_load_bounds[2]->set_float_val(load_bounds[2]);
   }
   if((var == -1 || var == 3) && use_load_bounds[3] == 0){
     load_bounds[3] = ybarFDS;
-    SPINNER_load_minmax[3]->set_float_val(load_bounds[3]);
+    SPINNER_load_bounds[3]->set_float_val(load_bounds[3]);
   }
   if((var == -1 || var == 4) && use_load_bounds[4] == 0){
     load_bounds[4] = zbar0FDS;
-    SPINNER_load_minmax[4]->set_float_val(load_bounds[4]);
+    SPINNER_load_bounds[4]->set_float_val(load_bounds[4]);
   }
   if((var == -1 || var == 5) && use_load_bounds[5] == 0){
     load_bounds[5] = zbarFDS;
-    SPINNER_load_minmax[5]->set_float_val(load_bounds[5]);
+    SPINNER_load_bounds[5]->set_float_val(load_bounds[5]);
   }
 }
 
@@ -3691,30 +3691,30 @@ void MeshBoundCB(int var){
       }
     }
     break;
-  case USE_LOAD_XYZ:
+  case USE_LOAD_XYZ_ALL:
     for(i = 0;i < 6;i++){
       if(use_load_bounds[i] == 1){
-        SPINNER_load_minmax[i]->enable();
+        SPINNER_load_bounds[i]->enable();
       }
       else{
-        SPINNER_load_minmax[i]->disable();
+        SPINNER_load_bounds[i]->disable();
       }
     }
     CheckBounds(-1);
     MeshBoundCB(LOAD_XYZ);
     break;
+  case USE_LOAD_XYZ + 0:
   case USE_LOAD_XYZ + 1:
   case USE_LOAD_XYZ + 2:
   case USE_LOAD_XYZ + 3:
   case USE_LOAD_XYZ + 4:
   case USE_LOAD_XYZ + 5:
-  case USE_LOAD_XYZ + 6:
-    i = var - USE_LOAD_XYZ-1;
+    i = var - USE_LOAD_XYZ;
     if(use_load_bounds[i]==1){
-      SPINNER_load_minmax[i]->enable();
+      SPINNER_load_bounds[i]->enable();
     }
     else{
-      SPINNER_load_minmax[i]->disable();
+      SPINNER_load_bounds[i]->disable();
     }
     CheckBounds(i);
     MeshBoundCB(LOAD_XYZ);
@@ -3731,8 +3731,8 @@ extern "C" void GLUIUpdateMeshBounds(void){
   int i;
 
   for(i = 0;i < 6;i++){
-    SPINNER_load_minmax[i]->set_float_val(load_bounds[i]);
-    CHECKBOX_use_load_minmax[i]->set_int_val(use_load_bounds[i]);
+    SPINNER_load_bounds[i]->set_float_val(load_bounds[i]);
+    CHECKBOX_use_load_bounds[i]->set_int_val(use_load_bounds[i]);
   }
   CHECKBOX_use_show_load_bounds->set_int_val(show_load_bounds);
   MeshBoundCB(LOAD_XYZ);
@@ -4849,27 +4849,15 @@ hvacductboundsCPP.setup("hvac", ROLLOUT_hvacduct, hvacductbounds_cpp, nhvacductb
   PANEL_meshxyz[3] = glui_bounds->add_panel_to_panel(PANEL_mesh_max, "", false);
   PANEL_meshxyz[5] = glui_bounds->add_panel_to_panel(PANEL_mesh_max, "", false);
 
-  use_load_bounds[0] = 0;
-  use_load_bounds[1] = 0;
-  use_load_bounds[2] = 0;
-  use_load_bounds[3] = 0;
-  use_load_bounds[4] = 0;
-  use_load_bounds[5] = 0;
-  load_bounds[0] = xbar0FDS;
-  load_bounds[1] = xbarFDS;
-  load_bounds[2] = ybar0FDS;
-  load_bounds[3] = ybarFDS;
-  load_bounds[4] = zbar0FDS;
-  load_bounds[5] = zbarFDS;
   char *lbl[]={"X","X","Y","Y","Z","Z"};
   for(i=0;i<6;i++){
-    SPINNER_load_minmax[i] = glui_bounds->add_spinner_to_panel(PANEL_meshxyz[i], lbl[i], GLUI_SPINNER_FLOAT, load_bounds+i, LOAD_XYZ, MeshBoundCB);
+    SPINNER_load_bounds[i] = glui_bounds->add_spinner_to_panel(PANEL_meshxyz[i], lbl[i], GLUI_SPINNER_FLOAT, load_bounds+i, LOAD_XYZ, MeshBoundCB);
     glui_bounds->add_column_to_panel(PANEL_meshxyz[i], false);
-    CHECKBOX_use_load_minmax[0] = glui_bounds->add_checkbox_to_panel(PANEL_meshxyz[i], "", use_load_bounds+i, USE_LOAD_XYZ+i+1, MeshBoundCB);
+    CHECKBOX_use_load_bounds[i] = glui_bounds->add_checkbox_to_panel(PANEL_meshxyz[i], "", use_load_bounds+i, USE_LOAD_XYZ+i, MeshBoundCB);
   }
-
   CHECKBOX_use_show_load_bounds = glui_bounds->add_checkbox_to_panel(PANEL_mesh, "show box and intersected meshes", &show_load_bounds);
-  MeshBoundCB(USE_LOAD_XYZ);
+  MeshBoundCB(USE_LOAD_XYZ_ALL);
+  glui_load_bounds_defined = 1;
 #endif
 
   // -------------- Data coloring -------------------

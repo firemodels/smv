@@ -2235,6 +2235,7 @@ SVEXTERN int use_load_bounds[6];
 #endif
 SVEXTERN int SVDECL(show_load_bounds, 0);
 SVEXTERN int SVDECL(update_load_bounds, 0);
+SVEXTERN int SVDECL(glui_load_bounds_defined, 0);
 #endif
 
 #ifdef INMAIN

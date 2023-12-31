@@ -3527,6 +3527,21 @@ void UpdateMeshCoords(void){
   ybarFDS  = ybar;
   zbarFDS  = zbar;
 
+#ifdef pp_LOAD_BOUNDS
+  use_load_bounds[0] = 0;
+  use_load_bounds[1] = 0;
+  use_load_bounds[2] = 0;
+  use_load_bounds[3] = 0;
+  use_load_bounds[4] = 0;
+  use_load_bounds[5] = 0;
+  load_bounds[0] = xbar0FDS;
+  load_bounds[1] = xbarFDS;
+  load_bounds[2] = ybar0FDS;
+  load_bounds[3] = ybarFDS;
+  load_bounds[4] = zbar0FDS;
+  load_bounds[5] = zbarFDS;
+#endif
+
   geomlistdata *geomlisti;
   if(geominfo!=NULL&&geominfo->geomlistinfo!=NULL){
     geomlisti = geominfo->geomlistinfo-1;
@@ -12307,13 +12322,33 @@ int ReadIni2(char *inifile, int localfile){
       update_research_mode=1;
       continue;
     }
+#ifdef pp_LOAD_BOUNDS
+    if(MatchINI(buffer, "LOADMESH") == 1){
+      fgets(buffer, 255, stream);
+      sscanf(buffer, " %i", &show_load_bounds);
+
+      fgets(buffer, 255, stream);
+      sscanf(buffer, " %i %f %i %f", use_load_bounds + 0, load_bounds + 0, use_load_bounds + 1, load_bounds + 1);
+
+      fgets(buffer, 255, stream);
+      sscanf(buffer, " %i %f %i %f", use_load_bounds + 2, load_bounds + 2, use_load_bounds + 3, load_bounds + 3);
+
+      fgets(buffer, 255, stream);
+      sscanf(buffer, " %i %f %i %f", use_load_bounds + 4, load_bounds + 4, use_load_bounds + 5, load_bounds + 5);
+
+      for(i = 0;i < 6;i++){
+        if(use_load_bounds[i] != 0)use_load_bounds[i] = 1;
+      }
+      update_load_bounds = 1;
+    }
+#endif
     if(MatchINI(buffer, "GEOMDOMAIN") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, " %i %i ", &showgeom_inside_domain, &showgeom_outside_domain);
       showgeom_inside_domain = CLAMP(showgeom_inside_domain, 0, 1);
       showgeom_outside_domain = CLAMP(showgeom_outside_domain, 0, 1);
       continue;
-   }
+    }
     if(MatchINI(buffer, "SLICEDUP") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, " %i %i %i", &slicedup_option, &vectorslicedup_option,&boundaryslicedup_option);
@@ -16461,6 +16496,13 @@ void WriteIniLocal(FILE *fileout){
   }
   fprintf(fileout, "CACHE_DATA\n");
   fprintf(fileout, " %i %i %i %i \n", cache_boundary_data, cache_part_data, cache_plot3d_data, cache_slice_data);
+#ifdef pp_LOAD_BOUNDS
+  fprintf(fileout, "LOADMESH\n");
+  fprintf(fileout, " %i\n", show_load_bounds);
+  fprintf(fileout, " %i %f %i %f\n", use_load_bounds[0], load_bounds[0], use_load_bounds[1], load_bounds[1]);
+  fprintf(fileout, " %i %f %i %f\n", use_load_bounds[2], load_bounds[2], use_load_bounds[3], load_bounds[3]);
+  fprintf(fileout, " %i %f %i %f\n", use_load_bounds[2], load_bounds[2], use_load_bounds[5], load_bounds[5]);
+#endif
   fprintf(fileout, "PATCHDATAOUT\n");
   fprintf(fileout, " %i %f %f %f %f %f %f %f %f\n", output_patchdata,
     patchout_tmin, patchout_tmax,

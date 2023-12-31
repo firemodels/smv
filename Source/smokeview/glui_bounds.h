@@ -78,6 +78,7 @@
 #ifdef pp_LOAD_BOUNDS
 #define LOAD_XYZ                 100
 #define USE_LOAD_XYZ             200
+#define USE_LOAD_XYZ_ALL         199
 #endif
 
 #define ISO_TRANSPARENT_CONSTANT 0
