@@ -16501,7 +16501,7 @@ void WriteIniLocal(FILE *fileout){
   fprintf(fileout, " %i\n", show_load_bounds);
   fprintf(fileout, " %i %f %i %f\n", use_load_bounds[0], load_bounds[0], use_load_bounds[1], load_bounds[1]);
   fprintf(fileout, " %i %f %i %f\n", use_load_bounds[2], load_bounds[2], use_load_bounds[3], load_bounds[3]);
-  fprintf(fileout, " %i %f %i %f\n", use_load_bounds[2], load_bounds[2], use_load_bounds[5], load_bounds[5]);
+  fprintf(fileout, " %i %f %i %f\n", use_load_bounds[4], load_bounds[4], use_load_bounds[5], load_bounds[5]);
 #endif
   fprintf(fileout, "PATCHDATAOUT\n");
   fprintf(fileout, " %i %f %f %f %f %f %f %f %f\n", output_patchdata,
