@@ -2228,9 +2228,11 @@ SVEXTERN int SVDECL(hidepatchsurface,0);
 #ifdef pp_LOAD_BOUNDS
 #ifdef INMAIN
 SVEXTERN float load_bounds[6] = {0.0, 1.0, 0.0, 1.0, 0.0, 1.0};
+SVEXTERN float load_bounds_save[6] = {0.0, 1.0, 0.0, 1.0, 0.0, 1.0};
 SVEXTERN int use_load_bounds[6] = {0, 0, 0, 0, 0, 0};
 #else
 SVEXTERN float load_bounds[6];
+SVEXTERN float load_bounds_save[6];
 SVEXTERN int use_load_bounds[6];
 #endif
 SVEXTERN int SVDECL(show_load_bounds, 0);

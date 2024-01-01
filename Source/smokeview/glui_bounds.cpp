@@ -3612,26 +3612,32 @@ void BoundBoundCB(int var){
 
 void CheckBounds(int var){
   if((var==-1||var==0)&&use_load_bounds[0] == 0){
+    load_bounds_save[0] = load_bounds[0];
     load_bounds[0] = xbar0FDS;
     SPINNER_load_bounds[0]->set_float_val(load_bounds[0]);
   }
   if((var == -1 || var == 1) && use_load_bounds[1] == 0){
+    load_bounds_save[1] = load_bounds[1];
     load_bounds[1] = xbarFDS;
     SPINNER_load_bounds[1]->set_float_val(load_bounds[1]);
   }
   if((var == -1 || var == 2) && use_load_bounds[2] == 0){
+    load_bounds_save[2] = load_bounds[2];
     load_bounds[2] = ybar0FDS;
     SPINNER_load_bounds[2]->set_float_val(load_bounds[2]);
   }
   if((var == -1 || var == 3) && use_load_bounds[3] == 0){
+    load_bounds_save[3] = load_bounds[3];
     load_bounds[3] = ybarFDS;
     SPINNER_load_bounds[3]->set_float_val(load_bounds[3]);
   }
   if((var == -1 || var == 4) && use_load_bounds[4] == 0){
+    load_bounds_save[4] = load_bounds[4];
     load_bounds[4] = zbar0FDS;
     SPINNER_load_bounds[4]->set_float_val(load_bounds[4]);
   }
   if((var == -1 || var == 5) && use_load_bounds[5] == 0){
+    load_bounds_save[5] = load_bounds[5];
     load_bounds[5] = zbarFDS;
     SPINNER_load_bounds[5]->set_float_val(load_bounds[5]);
   }
@@ -3724,6 +3730,8 @@ void MeshBoundCB(int var){
   case USE_LOAD_XYZ + 5:
     i = var - USE_LOAD_XYZ;
     if(use_load_bounds[i]==1){
+      load_bounds[i] = load_bounds_save[i];
+      SPINNER_load_bounds[i]->set_float_val(load_bounds[i]);
       SPINNER_load_bounds[i]->enable();
     }
     else{
