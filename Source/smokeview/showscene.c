@@ -169,20 +169,21 @@ void ShowScene2(int mode){
     }
 
 #ifdef pp_LOAD_BOUNDS
-    if(show_load_bounds == 1||show_load_bounds_meshes==1){
-      if(show_load_bounds_meshes == 1){
-        int i;
-        float box_black[4] = {0.0, 0.0, 0.0, 1.0};
+    if(show_intersected_meshes == 1){
+      int i;
+      float box_black[4] = {0.0, 0.0, 0.0, 1.0};
 
-        for(i = 0;i < nmeshes;i++){
-          meshdata *meshi;
+      for(i = 0;i < nmeshes;i++){
+        meshdata *meshi;
 
-          meshi = meshinfo + i;
-          if(meshi->use == 1){
-            DrawBoxMinMax(meshi->boxmin_scaled, meshi->boxmax_scaled, box_black);
-          }
+        meshi = meshinfo + i;
+        if(meshi->use == 1){
+          DrawBoxMinMax(meshi->boxmin_scaled, meshi->boxmax_scaled, box_black);
         }
       }
+    }
+
+    if(show_intersection_box==1){
       float box_red[4] = {1.0, 0.0, 0.0, 1.0};
 
       glPushMatrix();

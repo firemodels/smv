@@ -2551,8 +2551,8 @@ GLUI_Checkbox *CHECKBOX_show_extreme_mindata = NULL;
 GLUI_Checkbox *CHECKBOX_show_extreme_maxdata = NULL;
 #ifdef pp_LOAD_BOUNDS
 GLUI_Checkbox *CHECKBOX_use_load_bounds[6];
-GLUI_Checkbox *CHECKBOX_use_show_load_bounds=NULL;
-GLUI_Checkbox *CHECKBOX_use_show_load_bounds_meshes = NULL;
+GLUI_Checkbox *CHECKBOX_show_intersection_box=NULL;
+GLUI_Checkbox *CHECKBOX_show_intersected_meshes = NULL;
 #endif
 
 GLUI_RadioGroup *RADIO_iso_setmin=NULL;
@@ -3651,16 +3651,8 @@ void MeshBoundCB(int var){
   GLUTPOSTREDISPLAY;
   switch(var){
   case DRAW_BOX:
-    if(show_load_bounds_meshes==1&&show_load_bounds==1){
-      show_load_bounds_meshes = 0;
-      CHECKBOX_use_show_load_bounds_meshes->set_int_val(0);
-    }
     break;
   case DRAW_BOX_MESH:
-    if(show_load_bounds_meshes==1&&show_load_bounds==1){
-      show_load_bounds = 0;
-      CHECKBOX_use_show_load_bounds->set_int_val(0);
-    }
     break;
   case LOAD_XYZ:
     for(i = 0;i < nmeshes;i++){
@@ -3755,7 +3747,8 @@ extern "C" void GLUIUpdateMeshBounds(void){
     SPINNER_load_bounds[i]->set_float_val(load_bounds[i]);
     CHECKBOX_use_load_bounds[i]->set_int_val(use_load_bounds[i]);
   }
-  CHECKBOX_use_show_load_bounds->set_int_val(show_load_bounds);
+  CHECKBOX_show_intersection_box->set_int_val(show_intersection_box);
+  CHECKBOX_show_intersected_meshes->set_int_val(show_intersected_meshes);
   MeshBoundCB(LOAD_XYZ);
   MeshBoundCB(USE_LOAD_XYZ);
 }
@@ -4889,8 +4882,8 @@ hvacductboundsCPP.setup("hvac", ROLLOUT_hvacduct, hvacductbounds_cpp, nhvacductb
   SPINNER_load_bounds[4]->set_float_limits(zbar0FDS, zbarFDS);
   SPINNER_load_bounds[5]->set_float_limits(zbar0FDS, zbarFDS);
 
-  CHECKBOX_use_show_load_bounds_meshes = glui_bounds->add_checkbox_to_panel(PANEL_mesh, "show box and intersected meshes", &show_load_bounds_meshes, DRAW_BOX_MESH, MeshBoundCB);
-  CHECKBOX_use_show_load_bounds = glui_bounds->add_checkbox_to_panel(PANEL_mesh, "show box", &show_load_bounds, DRAW_BOX, MeshBoundCB);
+  CHECKBOX_show_intersected_meshes = glui_bounds->add_checkbox_to_panel(PANEL_mesh, "show intersected meshes", &show_intersected_meshes, DRAW_BOX_MESH, MeshBoundCB);
+  CHECKBOX_show_intersection_box = glui_bounds->add_checkbox_to_panel(PANEL_mesh, "show box", &show_intersection_box, DRAW_BOX, MeshBoundCB);
   MeshBoundCB(USE_LOAD_XYZ_ALL);
   glui_load_bounds_defined = 1;
 #endif

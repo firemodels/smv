@@ -2235,8 +2235,8 @@ SVEXTERN float load_bounds[6];
 SVEXTERN float load_bounds_save[6];
 SVEXTERN int use_load_bounds[6];
 #endif
-SVEXTERN int SVDECL(show_load_bounds, 0);
-SVEXTERN int SVDECL(show_load_bounds_meshes, 0);
+SVEXTERN int SVDECL(show_intersection_box, 0);
+SVEXTERN int SVDECL(show_intersected_meshes, 0);
 SVEXTERN int SVDECL(update_load_bounds, 0);
 SVEXTERN int SVDECL(glui_load_bounds_defined, 0);
 #endif
