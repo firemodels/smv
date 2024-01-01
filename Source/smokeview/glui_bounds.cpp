@@ -4874,6 +4874,13 @@ hvacductboundsCPP.setup("hvac", ROLLOUT_hvacduct, hvacductbounds_cpp, nhvacductb
     glui_bounds->add_column_to_panel(PANEL_meshxyz[i], false);
     CHECKBOX_use_load_bounds[i] = glui_bounds->add_checkbox_to_panel(PANEL_meshxyz[i], "", use_load_bounds+i, USE_LOAD_XYZ+i, MeshBoundCB);
   }
+  SPINNER_load_bounds[0]->set_float_limits(xbar0FDS, xbarFDS);
+  SPINNER_load_bounds[1]->set_float_limits(xbar0FDS, xbarFDS);
+  SPINNER_load_bounds[2]->set_float_limits(ybar0FDS, ybarFDS);
+  SPINNER_load_bounds[3]->set_float_limits(ybar0FDS, ybarFDS);
+  SPINNER_load_bounds[4]->set_float_limits(zbar0FDS, zbarFDS);
+  SPINNER_load_bounds[5]->set_float_limits(zbar0FDS, zbarFDS);
+
   CHECKBOX_use_show_load_bounds_meshes = glui_bounds->add_checkbox_to_panel(PANEL_mesh, "show box and intersected meshes", &show_load_bounds_meshes, DRAW_BOX_MESH, MeshBoundCB);
   CHECKBOX_use_show_load_bounds = glui_bounds->add_checkbox_to_panel(PANEL_mesh, "show box", &show_load_bounds, DRAW_BOX, MeshBoundCB);
   MeshBoundCB(USE_LOAD_XYZ_ALL);
