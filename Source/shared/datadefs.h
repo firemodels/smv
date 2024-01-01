@@ -16,6 +16,27 @@
 #define K2C(T) ((T)-273.15)
 #define C2K(T) ((T)+273.15)
 
+#ifdef pp_LOAD_BOUNDS
+#define IF_NOT_USEMESH_RETURN0(blocknum)\
+  if((blocknum)>=0 && meshinfo[(blocknum)].use == 0){\
+    return 0;\
+   }
+#define IF_NOT_USEMESH_RETURN(blocknum)\
+  if((blocknum)>=0 && meshinfo[(blocknum)].use == 0){\
+    return;\
+   }
+#define IF_NOT_USEMESH_CONTINUE(blocknum)\
+  if((blocknum)>=0 && meshinfo[(blocknum)].use == 0){\
+    continue;\
+   }
+#else
+#define IF_NOT_USEMESH_RETURN0(blocknum)
+#define IF_NOT_USEMESH_RETURN(blocknum)
+#define IF_NOT_USEMESH_CONTINUE(blocknum)
+#endif
+
+
+
 #define SCALE2FDS(x) ((x)*xyzmaxdiff)
 #define SCALE2SMV(x) ((x)/xyzmaxdiff)
 

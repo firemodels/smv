@@ -4020,6 +4020,7 @@ void LoadAllPartFiles(int partnum){
     FILE_SIZE file_size;
 
     parti = partinfo+i;
+    IF_NOT_USEMESH_CONTINUE(parti->blocknumber);
     if(parti->skipload==1)continue;
     if(partnum>=0&&i!=partnum)continue;  //  load only particle file with file index partnum
     THREADcontrol(partload_threads, THREAD_LOCK);                      //  or load all particle files
@@ -4748,12 +4749,7 @@ FILE_SIZE LoadSmoke3D(int type, int frame, int *count, float *time_value){
     smoke3ddata *smoke3di;
 
     smoke3di = smoke3dinfo+i;
-#ifdef pp_LOAD_BOUNDS
-    meshdata *meshi;
-
-    meshi = meshinfo + smoke3di->blocknumber;
-    if(meshi->use == 0)continue;
-#endif
+    IF_NOT_USEMESH_CONTINUE(smoke3di->blocknumber);
     if(IsSmokeType(smoke3di, type) == 1){
     last_smoke = i;
     break;
@@ -4766,12 +4762,7 @@ FILE_SIZE LoadSmoke3D(int type, int frame, int *count, float *time_value){
     smoke3ddata *smoke3di;
 
     smoke3di = smoke3dinfo + i;
-#ifdef pp_LOAD_BOUNDS
-    meshdata *meshi;
-
-    meshi = meshinfo + smoke3di->blocknumber;
-    if(meshi->use == 0)continue;
-#endif
+    IF_NOT_USEMESH_CONTINUE(smoke3di->blocknumber);
     if(IsSmokeType(smoke3di, type) == 1){
       file_count++;
       smoke3di->finalize = 0;
@@ -5269,13 +5260,7 @@ FILE_SIZE LoadAllMSlicesMT(int last_slice, multislicedata *mslicei, int *fcount)
 
     slicei = sliceinfo + mslicei->islices[i];
     set_slicecolor = DEFER_SLICECOLOR;
-#ifdef pp_LOAD_BOUNDS
-    meshdata *meshi;
-
-    meshi = meshinfo + slicei->blocknumber;
-    if(meshi->use == 0)continue;
-#endif
-
+    IF_NOT_USEMESH_CONTINUE(slicei->blocknumber);
 
     slicei->finalize = 0;
     if(last_slice == mslicei->islices[i]){
@@ -5340,12 +5325,7 @@ void LoadMultiSliceMenu(int value){
         slicedata *slicei;
 
         slicei = sliceinfo + mslicei->islices[i];
-#ifdef pp_LOAD_BOUNDS
-        meshdata *meshi;
-
-        meshi = meshinfo + slicei->blocknumber;
-        if(meshi->use == 0)continue;
-#endif
+        IF_NOT_USEMESH_CONTINUE(slicei->blocknumber);
         if(slicei->slice_filetype==SLICE_TERRAIN&&slicei->have_agl_data==0)continue;
         if(slicei->skipdup== 0){
           last_slice = mslicei->islices[i];
@@ -5870,12 +5850,7 @@ void LoadBoundaryMenu(int value){
         patchdata *patchi;
 
         patchi = patchinfo+i;
-#ifdef pp_LOAD_BOUNDS
-        meshdata *meshi;
-
-        meshi = meshinfo + patchi->blocknumber;
-        if(meshi->use == 0)continue;
-#endif
+        IF_NOT_USEMESH_CONTINUE(patchi->blocknumber);
         if(InPatchList(patchj, patchi)==1){
           THREADcontrol(compress_threads, THREAD_LOCK);
           patchi->finalize = 1;
@@ -5887,12 +5862,7 @@ void LoadBoundaryMenu(int value){
         patchdata *patchi;
 
         patchi = patchinfo + i;
-#ifdef pp_LOAD_BOUNDS
-        meshdata *meshi;
-
-        meshi = meshinfo + patchi->blocknumber;
-        if(meshi->use == 0)continue;
-#endif
+        IF_NOT_USEMESH_CONTINUE(patchi->blocknumber);
         if(InPatchList(patchj, patchi)==1){
           THREADcontrol(compress_threads, THREAD_LOCK);
           if(patchi->structured == YES){
