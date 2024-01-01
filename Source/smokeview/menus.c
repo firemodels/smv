@@ -5149,6 +5149,7 @@ void LoadMultiVSliceMenu(int value){
         vslicedata *vslicei;
 
         vslicei = vsliceinfo+mvslicei->ivslices[i];
+        IF_NOT_USEMESH_CONTINUE(sliceinfo[vslicei->ival].blocknumber);
         if(vslicei->skip==0&&vslicei->loaded==0){
           vslicei->finalize = 1;
           break;
@@ -5158,6 +5159,7 @@ void LoadMultiVSliceMenu(int value){
         vslicedata *vslicei;
 
         vslicei = vsliceinfo + mvslicei->ivslices[i];
+        IF_NOT_USEMESH_CONTINUE(sliceinfo[vslicei->ival].blocknumber);
         if(vslicei->skip==0&&vslicei->loaded==0){
           load_size+=LoadVSliceMenu2(mvslicei->ivslices[i]);
           file_count++;
@@ -5485,6 +5487,7 @@ void Plot3DListMenu(int value){
     plot3ddata *plot3di;
 
     plot3di = plot3dinfo+i;
+    IF_NOT_USEMESH_CONTINUE(plot3di->blocknumber);
     if(ABS(plot3di->time-plot3dtimelist[value])<delta_time){
       list[nlist++] = i;
     }
@@ -5682,6 +5685,7 @@ void LoadAllIsos(int iso_type){
     isodata *isoi;
 
     isoi = isoinfo + i;
+    IF_NOT_USEMESH_CONTINUE(isoi->blocknumber);
     if(iso_type==isoi->type){
       load_size+=LoadIsoI(i);
       file_count++;
