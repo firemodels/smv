@@ -3671,7 +3671,6 @@ void UpdateBoundaryFiles(void){
 
 void MeshBoundCB(int var){
   int i;
-  int count;
 
   GLUTPOSTREDISPLAY;
   switch(var){
@@ -3691,15 +3690,17 @@ void MeshBoundCB(int var){
     MeshBoundCB(LOAD_XYZ);
     break;
   case SET_MESH:
-    meshdata *meshi;
+    {
+      meshdata *meshi;
 
-    meshi = meshinfo + set_mesh - 1;
-    load_bounds[0] = meshi->boxmin[0];
-    load_bounds[2] = meshi->boxmin[1];
-    load_bounds[4] = meshi->boxmin[2];
-    load_bounds[1] = meshi->boxmax[0];
-    load_bounds[3] = meshi->boxmax[1];
-    load_bounds[5] = meshi->boxmax[2];
+      meshi = meshinfo + set_mesh - 1;
+      load_bounds[0] = meshi->boxmin[0];
+      load_bounds[2] = meshi->boxmin[1];
+      load_bounds[4] = meshi->boxmin[2];
+      load_bounds[1] = meshi->boxmax[0];
+      load_bounds[3] = meshi->boxmax[1];
+      load_bounds[5] = meshi->boxmax[2];
+    }
     for(i = 0;i < 6;i++){
       use_load_bounds[i] = 1;
       CHECKBOX_use_load_bounds[i]->set_int_val(use_load_bounds[i]);
@@ -3728,7 +3729,6 @@ void MeshBoundCB(int var){
       use_load_bounds[4] == 0 &&
       use_load_bounds[5] == 0
       )break;
-    count = 0;
     for(i=0;i<nmeshes;i++){
       meshdata *meshi;
       float *meshmin, *meshmax;
