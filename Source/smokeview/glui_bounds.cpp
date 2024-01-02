@@ -3644,6 +3644,29 @@ void CheckBounds(int var){
   }
 }
 
+/* ------------------ UpdateBoundaryFiles ------------------------ */
+
+void UpdateBoundaryFiles(void){
+  int i;
+
+  for(i = 0;i < npatchinfo;i++){
+    patchdata *patchi;
+    meshdata *meshi;
+
+    patchi = patchinfo + i;
+    if(patchi->loaded == 0 || patchi->blocknumber < 0)continue;
+    meshi = meshinfo + patchi->blocknumber;
+    if(meshi->use == 1 && patchi->display == 0){
+      patchi->display = 1;
+      updatefacelists = 1;
+    }
+    else if(meshi->use == 0 && patchi->display == 1){
+      patchi->display = 0;
+      updatefacelists = 1;
+    }
+  }
+}
+
 /* ------------------ TimeBoundCB ------------------------ */
 
 void MeshBoundCB(int var){
@@ -3738,6 +3761,7 @@ void MeshBoundCB(int var){
         continue;
       }
     }
+    UpdateBoundaryFiles();
     break;
   case USE_LOAD_XYZ_ALL:
     for(i = 0;i < 6;i++){
