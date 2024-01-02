@@ -3248,6 +3248,7 @@ void DrawSmokeFrame(void){
     smoke3di = smoke3dinfo_sorted[i];
     if(smoke3di->loaded==0||smoke3di->display==0)continue;
     if(smoke3di->primary_file==0)continue;
+    IF_NOT_USEMESH_CONTINUE(smoke3di->blocknumber);
     if(IsSmokeComponentPresent(smoke3di)==0)continue;
 #ifdef pp_SMOKE_SKIP
     if(smoke3d_use_skip==1){

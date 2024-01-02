@@ -960,6 +960,9 @@ void DrawPlot3dFrame(void){
     meshdata *meshi;
 
     meshi=meshinfo+i;
+#ifdef pp_LOAD_BOUNDS
+    if(meshi->use == 0)continue;
+#endif
     if(meshi->plot3dfilenum==-1)continue;
     if(plot3dinfo[meshi->plot3dfilenum].display==0)continue;
     DrawPlot3dTexture(meshi);
