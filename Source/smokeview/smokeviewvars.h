@@ -2239,6 +2239,7 @@ SVEXTERN int SVDECL(show_intersection_box, 0);
 SVEXTERN int SVDECL(show_intersected_meshes, 0);
 SVEXTERN int SVDECL(update_load_bounds, 0);
 SVEXTERN int SVDECL(glui_load_bounds_defined, 0);
+SVEXTERN int SVDECL(set_mesh, 0);
 #endif
 
 #ifdef INMAIN

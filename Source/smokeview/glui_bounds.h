@@ -81,6 +81,8 @@
 #define USE_LOAD_XYZ_ALL         199
 #define DRAW_BOX_MESH            198
 #define DRAW_BOX                 197
+#define SET_MESH                 196
+#define ALL_MESHES               195
 #endif
 
 #define ISO_TRANSPARENT_CONSTANT 0

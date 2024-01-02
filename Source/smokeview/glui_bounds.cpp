@@ -2514,6 +2514,7 @@ GLUI_Spinner *SPINNER_size_factor2         = NULL;
 GLUI_Spinner *SPINNER_plot2d_dt = NULL;
 #ifdef pp_LOAD_BOUNDS
 GLUI_Spinner *SPINNER_load_bounds[6];
+GLUI_Spinner *SPINNER_set_mesh = NULL;
 #endif
 
 GLUI_Checkbox *CHECKBOX_slice_load_incremental=NULL;
@@ -3647,9 +3648,43 @@ void CheckBounds(int var){
 
 void MeshBoundCB(int var){
   int i;
+  int count;
 
   GLUTPOSTREDISPLAY;
   switch(var){
+  case ALL_MESHES:
+    load_bounds[0] = xbar0FDS;
+    load_bounds[1] = xbarFDS;
+    load_bounds[2] = ybar0FDS;
+    load_bounds[3] = ybarFDS;
+    load_bounds[4] = zbar0FDS;
+    load_bounds[5] = zbarFDS;
+    for(i = 0;i < 6;i++){
+      use_load_bounds[i] = 1;
+      CHECKBOX_use_load_bounds[i]->set_int_val(use_load_bounds[i]);
+      SPINNER_load_bounds[i]->set_float_val(load_bounds[i]);
+      SPINNER_load_bounds[i]->enable();
+    }
+    MeshBoundCB(LOAD_XYZ);
+    break;
+  case SET_MESH:
+    meshdata *meshi;
+
+    meshi = meshinfo + set_mesh - 1;
+    load_bounds[0] = meshi->boxmin[0];
+    load_bounds[2] = meshi->boxmin[1];
+    load_bounds[4] = meshi->boxmin[2];
+    load_bounds[1] = meshi->boxmax[0];
+    load_bounds[3] = meshi->boxmax[1];
+    load_bounds[5] = meshi->boxmax[2];
+    for(i = 0;i < 6;i++){
+      use_load_bounds[i] = 1;
+      CHECKBOX_use_load_bounds[i]->set_int_val(use_load_bounds[i]);
+      SPINNER_load_bounds[i]->set_float_val(load_bounds[i]);
+      SPINNER_load_bounds[i]->enable();
+    }
+    MeshBoundCB(LOAD_XYZ);
+    break;
   case DRAW_BOX:
     break;
   case DRAW_BOX_MESH:
@@ -3661,6 +3696,7 @@ void MeshBoundCB(int var){
       meshi = meshinfo + i;
       meshi->use = 1;
     }
+    #define MESH_EPS 0.01
     if(
       use_load_bounds[0] == 0 &&
       use_load_bounds[1] == 0 &&
@@ -3669,6 +3705,7 @@ void MeshBoundCB(int var){
       use_load_bounds[4] == 0 &&
       use_load_bounds[5] == 0
       )break;
+    count = 0;
     for(i=0;i<nmeshes;i++){
       meshdata *meshi;
       float *meshmin, *meshmax;
@@ -3676,27 +3713,27 @@ void MeshBoundCB(int var){
       meshi = meshinfo + i;
       meshmin = meshi->boxmin;
       meshmax = meshi->boxmax;
-      if(use_load_bounds[0] == 1 && load_bounds[0] > meshmax[0]){
+      if(use_load_bounds[0] == 1 && load_bounds[0] > meshmax[0]-MESH_EPS){
         meshi->use = 0;
         continue;
       }
-      if(use_load_bounds[1] == 1 && load_bounds[1] < meshmin[0]){
+      if(use_load_bounds[1] == 1 && load_bounds[1] < meshmin[0]+MESH_EPS){
         meshi->use = 0;
         continue;
       }
-      if(use_load_bounds[2] == 1 && load_bounds[2] > meshmax[1]){
+      if(use_load_bounds[2] == 1 && load_bounds[2] > meshmax[1]-MESH_EPS){
         meshi->use = 0;
         continue;
       }
-      if(use_load_bounds[3] == 1 && load_bounds[3] < meshmin[1]){
+      if(use_load_bounds[3] == 1 && load_bounds[3] < meshmin[1]+MESH_EPS){
         meshi->use = 0;
         continue;
       }
-      if(use_load_bounds[4] == 1 && load_bounds[4] > meshmax[2]){
+      if(use_load_bounds[4] == 1 && load_bounds[4] > meshmax[2]-MESH_EPS){
         meshi->use = 0;
         continue;
       }
-      if(use_load_bounds[5] == 1 && load_bounds[5] < meshmin[2]){
+      if(use_load_bounds[5] == 1 && load_bounds[5] < meshmin[2]+MESH_EPS){
         meshi->use = 0;
         continue;
       }
@@ -4883,7 +4920,10 @@ hvacductboundsCPP.setup("hvac", ROLLOUT_hvacduct, hvacductbounds_cpp, nhvacductb
   SPINNER_load_bounds[5]->set_float_limits(zbar0FDS, zbarFDS);
 
   CHECKBOX_show_intersected_meshes = glui_bounds->add_checkbox_to_panel(PANEL_mesh, "show intersected meshes", &show_intersected_meshes, DRAW_BOX_MESH, MeshBoundCB);
-  CHECKBOX_show_intersection_box = glui_bounds->add_checkbox_to_panel(PANEL_mesh, "show box", &show_intersection_box, DRAW_BOX, MeshBoundCB);
+  CHECKBOX_show_intersection_box = glui_bounds->add_checkbox_to_panel(PANEL_mesh, "show intersection box", &show_intersection_box, DRAW_BOX, MeshBoundCB);
+  SPINNER_set_mesh = glui_bounds->add_spinner_to_panel(PANEL_mesh, "set mesh", GLUI_SPINNER_INT, &set_mesh, SET_MESH, MeshBoundCB);
+  SPINNER_set_mesh->set_int_limits(1, nmeshes);
+  glui_bounds->add_button_to_panel(PANEL_mesh, "all meshes", ALL_MESHES, MeshBoundCB);
   MeshBoundCB(USE_LOAD_XYZ_ALL);
   glui_load_bounds_defined = 1;
 #endif
