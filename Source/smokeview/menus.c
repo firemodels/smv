@@ -5607,17 +5607,15 @@ void LoadPlot3dMenu(int value){
     }
   }
   else if(value==RELOAD_ALL){
-    plot3ddata **plot3d_list;
-    int nlist=0;
-
     for(i = 0; i<nplot3dinfo; i++){
       plot3ddata *plot3di;
 
       plot3di = plot3dinfo+i;
       plot3di->loadnow = 0;
       plot3di->finalize = 0;
-      if(plot3di->loaded==0)continue;
-      plot3di->loadnow = 1;
+      if(plot3di->loaded==1){
+        plot3di->loadnow = 1;
+      }
     }
     for(i = nplot3dinfo - 1; i >= 0; i--){
       plot3ddata *plot3di;
@@ -5629,15 +5627,21 @@ void LoadPlot3dMenu(int value){
       }
     }
     SetLoadedPlot3DBounds();
-    for(i = 0; i<nlist; i++){
-      ReadPlot3D("", plot3d_list[i]-plot3dinfo, UNLOAD, &errorcode);
+    for(i = 0; i<nplot3dinfo; i++){
+      plot3ddata *plot3di;
+
+      plot3di = plot3dinfo + i;
+      if(plot3di->loaded==1){
+        ReadPlot3D("", plot3di-plot3dinfo, UNLOAD, &errorcode);
+      }
     }
     for(i = 0; i<nplot3dinfo; i++){
       plot3ddata *plot3di;
 
       plot3di = plot3dinfo + i;
-      if(plot3di->loadnow == 0)continue;
-      ReadPlot3D(plot3di->file, plot3di-plot3dinfo, LOAD, &errorcode);
+      if(plot3di->loadnow == 1){
+        ReadPlot3D(plot3di->file, plot3di-plot3dinfo, LOAD, &errorcode);
+      }
     }
   }
   else if(value==UNLOAD_ALL){
