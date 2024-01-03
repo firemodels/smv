@@ -4020,7 +4020,7 @@ void LoadAllPartFiles(int partnum){
     FILE_SIZE file_size;
 
     parti = partinfo+i;
-    IF_NOT_USEMESH_CONTINUE(parti->blocknumber);
+    IF_NOT_USEMESH_CONTINUE(parti->loaded,parti->blocknumber);
     if(parti->skipload==1)continue;
     if(partnum>=0&&i!=partnum)continue;  //  load only particle file with file index partnum
     THREADcontrol(partload_threads, THREAD_LOCK);                      //  or load all particle files
@@ -4749,7 +4749,7 @@ FILE_SIZE LoadSmoke3D(int type, int frame, int *count, float *time_value){
     smoke3ddata *smoke3di;
 
     smoke3di = smoke3dinfo+i;
-    IF_NOT_USEMESH_CONTINUE(smoke3di->blocknumber);
+    IF_NOT_USEMESH_CONTINUE(smoke3di->loaded,smoke3di->blocknumber);
     if(IsSmokeType(smoke3di, type) == 1){
     last_smoke = i;
     break;
@@ -4762,7 +4762,7 @@ FILE_SIZE LoadSmoke3D(int type, int frame, int *count, float *time_value){
     smoke3ddata *smoke3di;
 
     smoke3di = smoke3dinfo + i;
-    IF_NOT_USEMESH_CONTINUE(smoke3di->blocknumber);
+    IF_NOT_USEMESH_CONTINUE(smoke3di->loaded,smoke3di->blocknumber);
     if(IsSmokeType(smoke3di, type) == 1){
       file_count++;
       smoke3di->finalize = 0;
@@ -5149,7 +5149,7 @@ void LoadMultiVSliceMenu(int value){
         vslicedata *vslicei;
 
         vslicei = vsliceinfo+mvslicei->ivslices[i];
-        IF_NOT_USEMESH_CONTINUE(sliceinfo[vslicei->ival].blocknumber);
+        IF_NOT_USEMESH_CONTINUE(vslicei->loaded,sliceinfo[vslicei->ival].blocknumber);
         if(vslicei->skip==0&&vslicei->loaded==0){
           vslicei->finalize = 1;
           break;
@@ -5159,7 +5159,7 @@ void LoadMultiVSliceMenu(int value){
         vslicedata *vslicei;
 
         vslicei = vsliceinfo + mvslicei->ivslices[i];
-        IF_NOT_USEMESH_CONTINUE(sliceinfo[vslicei->ival].blocknumber);
+        IF_NOT_USEMESH_CONTINUE(vslicei->loaded,sliceinfo[vslicei->ival].blocknumber);
         if(vslicei->skip==0&&vslicei->loaded==0){
           load_size+=LoadVSliceMenu2(mvslicei->ivslices[i]);
           file_count++;
@@ -5262,7 +5262,7 @@ FILE_SIZE LoadAllMSlicesMT(int last_slice, multislicedata *mslicei, int *fcount)
 
     slicei = sliceinfo + mslicei->islices[i];
     set_slicecolor = DEFER_SLICECOLOR;
-    IF_NOT_USEMESH_CONTINUE(slicei->blocknumber);
+    IF_NOT_USEMESH_CONTINUE(slicei->loaded,slicei->blocknumber);
 
     slicei->finalize = 0;
     if(last_slice == mslicei->islices[i]){
@@ -5327,7 +5327,7 @@ void LoadMultiSliceMenu(int value){
         slicedata *slicei;
 
         slicei = sliceinfo + mslicei->islices[i];
-        IF_NOT_USEMESH_CONTINUE(slicei->blocknumber);
+        IF_NOT_USEMESH_CONTINUE(slicei->loaded,slicei->blocknumber);
         if(slicei->slice_filetype==SLICE_TERRAIN&&slicei->have_agl_data==0)continue;
         if(slicei->skipdup== 0){
           last_slice = mslicei->islices[i];
@@ -5487,7 +5487,7 @@ void Plot3DListMenu(int value){
     plot3ddata *plot3di;
 
     plot3di = plot3dinfo+i;
-    IF_NOT_USEMESH_CONTINUE(plot3di->blocknumber);
+    IF_NOT_USEMESH_CONTINUE(plot3di->loaded,plot3di->blocknumber);
     if(ABS(plot3di->time-plot3dtimelist[value])<delta_time){
       list[nlist++] = i;
     }
@@ -5685,7 +5685,7 @@ void LoadAllIsos(int iso_type){
     isodata *isoi;
 
     isoi = isoinfo + i;
-    IF_NOT_USEMESH_CONTINUE(isoi->blocknumber);
+    IF_NOT_USEMESH_CONTINUE(isoi->loaded,isoi->blocknumber);
     if(iso_type==isoi->type){
       load_size+=LoadIsoI(i);
       file_count++;
@@ -5854,7 +5854,7 @@ void LoadBoundaryMenu(int value){
         patchdata *patchi;
 
         patchi = patchinfo+i;
-        IF_NOT_USEMESH_CONTINUE(patchi->blocknumber);
+        IF_NOT_USEMESH_CONTINUE(patchi->loaded,patchi->blocknumber);
         if(InPatchList(patchj, patchi)==1){
           THREADcontrol(compress_threads, THREAD_LOCK);
           patchi->finalize = 1;
@@ -5866,7 +5866,7 @@ void LoadBoundaryMenu(int value){
         patchdata *patchi;
 
         patchi = patchinfo + i;
-        IF_NOT_USEMESH_CONTINUE(patchi->blocknumber);
+        IF_NOT_USEMESH_CONTINUE(patchi->loaded,patchi->blocknumber);
         if(InPatchList(patchj, patchi)==1){
           THREADcontrol(compress_threads, THREAD_LOCK);
           if(patchi->structured == YES){

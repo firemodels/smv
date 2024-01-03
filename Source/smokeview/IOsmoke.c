@@ -3248,7 +3248,7 @@ void DrawSmokeFrame(void){
     smoke3di = smoke3dinfo_sorted[i];
     if(smoke3di->loaded==0||smoke3di->display==0)continue;
     if(smoke3di->primary_file==0)continue;
-    IF_NOT_USEMESH_CONTINUE(smoke3di->blocknumber);
+    IF_NOT_USEMESH_CONTINUE(USEMESH_DRAW,smoke3di->blocknumber);
     if(IsSmokeComponentPresent(smoke3di)==0)continue;
 #ifdef pp_SMOKE_SKIP
     if(smoke3d_use_skip==1){
@@ -4185,7 +4185,7 @@ FILE_SIZE ReadSmoke3D(int iframe_arg,int ifile_arg,int flag_arg, int first_time,
   }
   if(smoke3di->smokeframe_comp_list==NULL)return 0;
 
-IF_NOT_USEMESH_RETURN0(smoke3di->blocknumber);
+  IF_NOT_USEMESH_RETURN0(smoke3di->loaded,smoke3di->blocknumber);
 
 //*** read in data
 

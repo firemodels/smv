@@ -3796,7 +3796,7 @@ void DrawBoundaryFrame(int flag){
     patchdata *patchi;
 
     patchi = patchinfo + i;
-    IF_NOT_USEMESH_CONTINUE(patchi->blocknumber);
+    IF_NOT_USEMESH_CONTINUE(USEMESH_DRAW,patchi->blocknumber);
     if(patchi->structured == NO && patchi->loaded == 1 && patchi->display == 1){
       if(flag == DRAW_OPAQUE){
         if(patchi->patch_filetype == PATCH_GEOMETRY_BOUNDARY){

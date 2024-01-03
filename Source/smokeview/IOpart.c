@@ -570,7 +570,7 @@ void DrawPartFrame(void){
   for(i=0;i<npartinfo;i++){
     parti = partinfo + i;
     if(parti->loaded==0||parti->display==0)continue;
-    IF_NOT_USEMESH_CONTINUE(parti->blocknumber);
+    IF_NOT_USEMESH_CONTINUE(USEMESH_DRAW,parti->blocknumber);
     DrawPart(parti);
     SNIFF_ERRORS("after DrawPart");
   }

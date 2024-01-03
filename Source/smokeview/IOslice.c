@@ -7847,7 +7847,7 @@ void DrawSliceFrame(){
     i=slice_sorted_loaded_list[ii];
     sd = sliceinfo + i;
     if(SetupSlice(sd) == 0)continue;
-    IF_NOT_USEMESH_CONTINUE(sd->blocknumber);
+    IF_NOT_USEMESH_CONTINUE(USEMESH_DRAW,sd->blocknumber);
     orien = 0;
     direction = 1;
     blend_mode = 0;
@@ -9054,7 +9054,7 @@ void DrawVSliceFrame(void){
     w = vd->w;
     if(u==NULL&&v==NULL&&w==NULL)continue;
     if(sliceinfo[vd->ival].times[0]>global_times[itimes])continue;
-    IF_NOT_USEMESH_CONTINUE(sliceinfo[vd->ival].blocknumber);
+    IF_NOT_USEMESH_CONTINUE(USEMESH_DRAW,sliceinfo[vd->ival].blocknumber);
     if(vd->vslice_filetype!=SLICE_GEOM){
       if(val->compression_type!=UNCOMPRESSED){
         UncompressSliceDataFrame(val, val->itime);
@@ -9990,7 +9990,7 @@ void DrawSortSlices(void){
     si = splitsliceinfoptr[i];
     sd = si->slice;
     if(SetupSlice(sd) == 0)continue;
-    IF_NOT_USEMESH_CONTINUE(sd->blocknumber);
+    IF_NOT_USEMESH_CONTINUE(USEMESH_DRAW,sd->blocknumber);
     switch(sd->slice_filetype){
       case SLICE_NODE_CENTER:
         DrawVolSliceTexture(sd, si->is1, si->is2, si->js1, si->js2, si->ks1, si->ks2, si->splitdir);
@@ -10038,7 +10038,7 @@ void DrawSortSlicesDebug(void){
     ks1 = spliti->ks1;
     ks2 = spliti->ks2;
     sd = spliti->slice;
-    IF_NOT_USEMESH_CONTINUE(sd->blocknumber);
+    IF_NOT_USEMESH_CONTINUE(USEMESH_DRAW,sd->blocknumber);
     int plotx, ploty, plotz;
     meshi = spliti->mesh;
 
