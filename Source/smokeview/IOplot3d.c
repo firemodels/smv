@@ -434,7 +434,7 @@ void ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
       if(update_plot3d_bnd==1){
         update_plot3d_bnd = 0;
         GetGlobalPlot3DBounds();
-        SetLoadedPlot3DBounds(NULL, 0);
+        SetLoadedPlot3DBounds();
       }
       UpdateAllPlot3DColors(0);
     }

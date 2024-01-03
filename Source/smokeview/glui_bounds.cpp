@@ -2140,7 +2140,7 @@ void SetLoadedPatchBounds(int *list, int nlist){
 
 /* ------------------ SetLoadedPlot3DBounds ------------------------ */
 
-void SetLoadedPlot3DBounds(int *list, int nlist){
+void SetLoadedPlot3DBounds(void){
   float *valmin_dlg, *valmax_dlg, *valmin, *valmax;
   int *set_valmin, *set_valmax, nall;
   int i,j;
@@ -2155,12 +2155,12 @@ void SetLoadedPlot3DBounds(int *list, int nlist){
   for(j = 0; j<MAXPLOT3DVARS; j++){
     valmin[j] = 1.0;
     valmax[j] = 0.0;
-    if(list==NULL)nlist = 0;
-    for(i = 0; i<nlist; i++){
+    for(i = 0; i <nplot3dinfo; i++){
       float *valmin_fds, *valmax_fds;
       plot3ddata *plot3di;
 
-      plot3di = plot3dinfo+list[i];
+      plot3di = plot3dinfo+i;
+      if(plot3di->loadnow == 0)continue;
       valmin_fds = plot3di->valmin_fds;
       valmax_fds = plot3di->valmax_fds;
       if(valmin[j]>valmax[j]){

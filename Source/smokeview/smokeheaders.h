@@ -460,7 +460,7 @@ EXTERNCPP void GetHistogramValProc(histogramdata *histogram, float cdf, float *v
 EXTERNCPP void ComputeLoadedSliceHist(char *label, float valmin, float valmax);
 EXTERNCPP void SetLoadedSliceBounds(int *list, int nlist);
 EXTERNCPP void SetLoadedPatchBounds(int *list, int nlist);
-EXTERNCPP void SetLoadedPlot3DBounds(int *list, int nlist);
+EXTERNCPP void SetLoadedPlot3DBounds(void);
 EXTERNCPP void SetLoadedPartBounds(int *list, int nlist);
 
 EXTERNCPP void ShiftColorbars(void);
