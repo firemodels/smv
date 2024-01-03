@@ -3671,7 +3671,6 @@ void UpdateBoundaryFiles(void){
 
 void MeshBoundCB(int var){
   int i;
-  int count;
 
   GLUTPOSTREDISPLAY;
   switch(var){
@@ -3728,7 +3727,6 @@ void MeshBoundCB(int var){
       use_load_bounds[4] == 0 &&
       use_load_bounds[5] == 0
       )break;
-    count = 0;
     for(i=0;i<nmeshes;i++){
       meshdata *meshi;
       float *meshmin, *meshmax;
