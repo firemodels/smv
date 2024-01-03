@@ -2373,6 +2373,9 @@ GLUI_Panel *PANEL_partread = NULL;
 GLUI_Panel *PANEL_slice_misc=NULL, *PANEL_slice_vector=NULL, *PANEL_showslice=NULL;
 GLUI_Panel *PANEL_slicevalues = NULL;
 GLUI_Panel *PANEL_plot3d=NULL;
+GLUI_Panel *PANEL_setmesh = NULL;
+GLUI_Panel *PANEL_mesh1 = NULL;
+GLUI_Panel *PANEL_mesh2 = NULL;
 GLUI_Panel *PANEL_boundary_temp_threshold=NULL;
 GLUI_Panel *PANEL_slice_buttonsA = NULL;
 GLUI_Panel *PANEL_slice_buttonsB = NULL;
@@ -4872,18 +4875,17 @@ hvacductboundsCPP.setup("hvac", ROLLOUT_hvacduct, hvacductbounds_cpp, nhvacductb
 
   // ----------------------------------- Time ----------------------------------------
 
-  ROLLOUT_time = glui_bounds->add_rollout("Time/Mesh Loading", false, TIME_ROLLOUT, BoundRolloutCB);
+  ROLLOUT_time = glui_bounds->add_rollout_to_panel(ROLLOUT_filebounds, "Data loading options", false, TIME_ROLLOUT, BoundRolloutCB);
   INSERT_ROLLOUT(ROLLOUT_time, glui_bounds);
   ADDPROCINFO(fileprocinfo, nfileprocinfo, ROLLOUT_time, TIME_ROLLOUT, glui_bounds);
 
-  PANEL_time1a = glui_bounds->add_panel_to_panel(ROLLOUT_time, "", false);
+  PANEL_time1a = glui_bounds->add_panel_to_panel(ROLLOUT_time, "Set time", true);
   SPINNER_timebounds = glui_bounds->add_spinner_to_panel(PANEL_time1a, _("Time:"), GLUI_SPINNER_FLOAT, &glui_time);
   glui_bounds->add_spinner_to_panel(PANEL_time1a, _("Offset:"), GLUI_SPINNER_FLOAT, &timeoffset);
   glui_bounds->add_column_to_panel(PANEL_time1a, false);
-  SPINNER_timebounds->set_float_limits(0.0, 3600.0*24);
   BUTTON_SETTIME = glui_bounds->add_button_to_panel(PANEL_time1a, _("Set"), SET_TIME, TimeBoundCB);
 
-  PANEL_time2 = glui_bounds->add_panel_to_panel(ROLLOUT_time, _("Data loading"), true);
+  PANEL_time2 = glui_bounds->add_panel_to_panel(ROLLOUT_time, _("Time bounds"), true);
 
   glui_bounds->add_button_to_panel(PANEL_time2, _("Use FDS start/end times"), SET_FDS_TIMES, TimeBoundCB);
 
@@ -4912,7 +4914,7 @@ hvacductboundsCPP.setup("hvac", ROLLOUT_hvacduct, hvacductbounds_cpp, nhvacductb
   TimeBoundCB(TBOUNDS);
 
 #ifdef pp_LOAD_BOUNDS
-  PANEL_mesh = glui_bounds->add_panel_to_panel(ROLLOUT_time, "load data for meshes that intersect box", true);
+  PANEL_mesh = glui_bounds->add_panel_to_panel(ROLLOUT_time, "Spatial bounds - load data for meshes that intersect box", true);
   PANEL_mesh_minmax = glui_bounds->add_panel_to_panel(PANEL_mesh, "", false);
   PANEL_mesh_min = glui_bounds->add_panel_to_panel(PANEL_mesh_minmax, "min box coords", true);
   glui_bounds->add_column_to_panel(PANEL_mesh_minmax, false);
@@ -4943,11 +4945,17 @@ hvacductboundsCPP.setup("hvac", ROLLOUT_hvacduct, hvacductbounds_cpp, nhvacductb
   SPINNER_load_bounds[4]->set_float_limits(zbar0FDS, zbarFDS);
   SPINNER_load_bounds[5]->set_float_limits(zbar0FDS, zbarFDS);
 
-  CHECKBOX_show_intersected_meshes = glui_bounds->add_checkbox_to_panel(PANEL_mesh, "show intersected meshes", &show_intersected_meshes, USEMESH_DRAW_MESH, MeshBoundCB);
-  CHECKBOX_show_intersection_box = glui_bounds->add_checkbox_to_panel(PANEL_mesh, "show intersection box", &show_intersection_box, USEMESH_DRAW_BOX, MeshBoundCB);
-  SPINNER_set_mesh = glui_bounds->add_spinner_to_panel(PANEL_mesh, "set mesh", GLUI_SPINNER_INT, &set_mesh, USEMESH_SET_ONE, MeshBoundCB);
+  PANEL_mesh1 = glui_bounds->add_panel_to_panel(PANEL_mesh, "", false);
+  CHECKBOX_show_intersected_meshes = glui_bounds->add_checkbox_to_panel(PANEL_mesh1, "show intersected meshes", &show_intersected_meshes, USEMESH_DRAW_MESH, MeshBoundCB);
+  CHECKBOX_show_intersection_box = glui_bounds->add_checkbox_to_panel(PANEL_mesh1, "show intersection box", &show_intersection_box, USEMESH_DRAW_BOX, MeshBoundCB);
+  CHECKBOX_show_intersection_box = glui_bounds->add_checkbox_to_panel(PANEL_mesh1, "force load", &force_load);
+
+  glui_bounds->add_column_to_panel(PANEL_mesh1, false);
+
+  PANEL_setmesh = glui_bounds->add_panel_to_panel(PANEL_mesh1, "Set mesh(s)", true);
+  SPINNER_set_mesh = glui_bounds->add_spinner_to_panel(PANEL_setmesh, "set mesh", GLUI_SPINNER_INT, &set_mesh, USEMESH_SET_ONE, MeshBoundCB);
   SPINNER_set_mesh->set_int_limits(1, nmeshes);
-  glui_bounds->add_button_to_panel(PANEL_mesh, "all meshes", USEMESH_SET_ALL, MeshBoundCB);
+  glui_bounds->add_button_to_panel(PANEL_setmesh, "all meshes", USEMESH_SET_ALL, MeshBoundCB);
   MeshBoundCB(USEMESH_USE_XYZ_ALL);
   glui_load_bounds_defined = 1;
 #endif
@@ -4961,7 +4969,6 @@ hvacductboundsCPP.setup("hvac", ROLLOUT_hvacduct, hvacductbounds_cpp, nhvacductb
   PANEL_cb11 = glui_bounds->add_panel_to_panel(ROLLOUT_coloring, "", GLUI_PANEL_NONE);
 
   PANEL_colorbar_properties = glui_bounds->add_panel_to_panel(PANEL_cb11, _("Colorbar"));
-
 
   if(ncolorbars>0){
     colorbartype = -1;
