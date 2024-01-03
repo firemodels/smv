@@ -3675,7 +3675,7 @@ void MeshBoundCB(int var){
 
   GLUTPOSTREDISPLAY;
   switch(var){
-  case ALL_MESHES:
+  case USEMESH_SET_ALL:
     load_bounds[0] = xbar0FDS;
     load_bounds[1] = xbarFDS;
     load_bounds[2] = ybar0FDS;
@@ -3688,9 +3688,9 @@ void MeshBoundCB(int var){
       SPINNER_load_bounds[i]->set_float_val(load_bounds[i]);
       SPINNER_load_bounds[i]->enable();
     }
-    MeshBoundCB(LOAD_XYZ);
+    MeshBoundCB(USEMESH_XYZ);
     break;
-  case SET_MESH:
+  case USEMESH_SET_ONE:
     meshdata *meshi;
 
     meshi = meshinfo + set_mesh - 1;
@@ -3706,13 +3706,13 @@ void MeshBoundCB(int var){
       SPINNER_load_bounds[i]->set_float_val(load_bounds[i]);
       SPINNER_load_bounds[i]->enable();
     }
-    MeshBoundCB(LOAD_XYZ);
+    MeshBoundCB(USEMESH_XYZ);
     break;
-  case DRAW_BOX:
+  case USEMESH_DRAW_BOX:
     break;
-  case DRAW_BOX_MESH:
+  case USEMESH_DRAW_MESH:
     break;
-  case LOAD_XYZ:
+  case USEMESH_XYZ:
     for(i = 0;i < nmeshes;i++){
       meshdata *meshi;
 
@@ -3763,7 +3763,7 @@ void MeshBoundCB(int var){
     }
     UpdateBoundaryFiles();
     break;
-  case USE_LOAD_XYZ_ALL:
+  case USEMESH_USE_XYZ_ALL:
     for(i = 0;i < 6;i++){
       if(use_load_bounds[i] == 1){
         SPINNER_load_bounds[i]->enable();
@@ -3773,15 +3773,15 @@ void MeshBoundCB(int var){
       }
     }
     CheckBounds(-1);
-    MeshBoundCB(LOAD_XYZ);
+    MeshBoundCB(USEMESH_XYZ);
     break;
-  case USE_LOAD_XYZ + 0:
-  case USE_LOAD_XYZ + 1:
-  case USE_LOAD_XYZ + 2:
-  case USE_LOAD_XYZ + 3:
-  case USE_LOAD_XYZ + 4:
-  case USE_LOAD_XYZ + 5:
-    i = var - USE_LOAD_XYZ;
+  case USEMESH_USE_XYZ + 0:
+  case USEMESH_USE_XYZ + 1:
+  case USEMESH_USE_XYZ + 2:
+  case USEMESH_USE_XYZ + 3:
+  case USEMESH_USE_XYZ + 4:
+  case USEMESH_USE_XYZ + 5:
+    i = var - USEMESH_USE_XYZ;
     if(use_load_bounds[i]==1){
       load_bounds[i] = load_bounds_save[i];
       SPINNER_load_bounds[i]->set_float_val(load_bounds[i]);
@@ -3791,7 +3791,7 @@ void MeshBoundCB(int var){
       SPINNER_load_bounds[i]->disable();
     }
     CheckBounds(i);
-    MeshBoundCB(LOAD_XYZ);
+    MeshBoundCB(USEMESH_XYZ);
     break;
   default:
     assert(0);
@@ -3810,8 +3810,8 @@ extern "C" void GLUIUpdateMeshBounds(void){
   }
   CHECKBOX_show_intersection_box->set_int_val(show_intersection_box);
   CHECKBOX_show_intersected_meshes->set_int_val(show_intersected_meshes);
-  MeshBoundCB(LOAD_XYZ);
-  MeshBoundCB(USE_LOAD_XYZ);
+  MeshBoundCB(USEMESH_XYZ);
+  MeshBoundCB(USEMESH_USE_XYZ);
 }
 #endif
 
@@ -4932,9 +4932,9 @@ hvacductboundsCPP.setup("hvac", ROLLOUT_hvacduct, hvacductbounds_cpp, nhvacductb
   strcpy(lbl[4], "Z");
   strcpy(lbl[5], "Z");
   for(i=0;i<6;i++){
-    SPINNER_load_bounds[i] = glui_bounds->add_spinner_to_panel(PANEL_meshxyz[i], lbl[i], GLUI_SPINNER_FLOAT, load_bounds+i, LOAD_XYZ, MeshBoundCB);
+    SPINNER_load_bounds[i] = glui_bounds->add_spinner_to_panel(PANEL_meshxyz[i], lbl[i], GLUI_SPINNER_FLOAT, load_bounds+i, USEMESH_XYZ, MeshBoundCB);
     glui_bounds->add_column_to_panel(PANEL_meshxyz[i], false);
-    CHECKBOX_use_load_bounds[i] = glui_bounds->add_checkbox_to_panel(PANEL_meshxyz[i], "", use_load_bounds+i, USE_LOAD_XYZ+i, MeshBoundCB);
+    CHECKBOX_use_load_bounds[i] = glui_bounds->add_checkbox_to_panel(PANEL_meshxyz[i], "", use_load_bounds+i, USEMESH_USE_XYZ+i, MeshBoundCB);
   }
   SPINNER_load_bounds[0]->set_float_limits(xbar0FDS, xbarFDS);
   SPINNER_load_bounds[1]->set_float_limits(xbar0FDS, xbarFDS);
@@ -4943,12 +4943,12 @@ hvacductboundsCPP.setup("hvac", ROLLOUT_hvacduct, hvacductbounds_cpp, nhvacductb
   SPINNER_load_bounds[4]->set_float_limits(zbar0FDS, zbarFDS);
   SPINNER_load_bounds[5]->set_float_limits(zbar0FDS, zbarFDS);
 
-  CHECKBOX_show_intersected_meshes = glui_bounds->add_checkbox_to_panel(PANEL_mesh, "show intersected meshes", &show_intersected_meshes, DRAW_BOX_MESH, MeshBoundCB);
-  CHECKBOX_show_intersection_box = glui_bounds->add_checkbox_to_panel(PANEL_mesh, "show intersection box", &show_intersection_box, DRAW_BOX, MeshBoundCB);
-  SPINNER_set_mesh = glui_bounds->add_spinner_to_panel(PANEL_mesh, "set mesh", GLUI_SPINNER_INT, &set_mesh, SET_MESH, MeshBoundCB);
+  CHECKBOX_show_intersected_meshes = glui_bounds->add_checkbox_to_panel(PANEL_mesh, "show intersected meshes", &show_intersected_meshes, USEMESH_DRAW_MESH, MeshBoundCB);
+  CHECKBOX_show_intersection_box = glui_bounds->add_checkbox_to_panel(PANEL_mesh, "show intersection box", &show_intersection_box, USEMESH_DRAW_BOX, MeshBoundCB);
+  SPINNER_set_mesh = glui_bounds->add_spinner_to_panel(PANEL_mesh, "set mesh", GLUI_SPINNER_INT, &set_mesh, USEMESH_SET_ONE, MeshBoundCB);
   SPINNER_set_mesh->set_int_limits(1, nmeshes);
-  glui_bounds->add_button_to_panel(PANEL_mesh, "all meshes", ALL_MESHES, MeshBoundCB);
-  MeshBoundCB(USE_LOAD_XYZ_ALL);
+  glui_bounds->add_button_to_panel(PANEL_mesh, "all meshes", USEMESH_SET_ALL, MeshBoundCB);
+  MeshBoundCB(USEMESH_USE_XYZ_ALL);
   glui_load_bounds_defined = 1;
 #endif
 

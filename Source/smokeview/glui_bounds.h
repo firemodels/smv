@@ -76,13 +76,13 @@
 #define COLORBAR_PLOT2D          228
 
 #ifdef pp_LOAD_BOUNDS
-#define LOAD_XYZ                 100
-#define USE_LOAD_XYZ             200
-#define USE_LOAD_XYZ_ALL         199
-#define DRAW_BOX_MESH            198
-#define DRAW_BOX                 197
-#define SET_MESH                 196
-#define ALL_MESHES               195
+#define USEMESH_XYZ              100
+#define USEMESH_USE_XYZ          200
+#define USEMESH_USE_XYZ_ALL      199
+#define USEMESH_DRAW_MESH        198
+#define USEMESH_DRAW_BOX         197
+#define USEMESH_SET_ONE          196
+#define USEMESH_SET_ALL          195
 #endif
 
 #define ISO_TRANSPARENT_CONSTANT 0
