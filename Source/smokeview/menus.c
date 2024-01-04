@@ -8464,9 +8464,6 @@ static int showvolsmokesinglemenu = 0, loadvolsmokesinglemenu = 0;
 #ifdef pp_MESH_SMOKE
 static int loadsmoke3dsinglemenu=0, unloadsmoke3dsinglemenu=0;
 #endif
-#ifdef pp_MESH_PATCH
-static int loadpatchsinglemenu = 0;
-#endif
 #ifdef pp_MESH_PLOT3D
 static int plot3dshowsinglemeshmenu=0;
 static int plot3dsinglemeshmenu = 0;
@@ -8474,9 +8471,6 @@ static int plot3dsinglemeshmenu = 0;
 static int loadisomenu=0, isosurfacetypemenu=0,showpatchextmenu=0;
 #ifdef pp_MESH_ISO
 static int isosinglemeshmenu = 0;
-#endif
-#ifdef pp_MESH_PATCH
-static int showpatchsinglemenu = 0;
 #endif
 static int geometrymenu=0, loadunloadmenu=0, reloadmenu=0, fileinfomenu=0, aboutmenu=0, disclaimermenu=0, terrain_obst_showmenu=0;
 static int scriptmenu=0;
@@ -8638,23 +8632,6 @@ static int menu_count=0;
     char menulabel[1024];
     int next_total=0;
 
-#ifdef pp_MESH_PATCH
-    CREATEMENU(showpatchsinglemenu,ShowBoundaryMenu);
-    for(ii=0;ii<npatchinfo;ii++){
-      patchdata *patchi;
-
-      i = patchorderindex[ii];
-      patchi = patchinfo+i;
-      if(patchi->loaded==0)continue;
-      STRCPY(menulabel, "");
-      if(patchi->display==1&&patchi->shortlabel_index ==iboundarytype){
-        STRCAT(menulabel,"*");
-      }
-      STRCAT(menulabel,patchi->menulabel);
-      glutAddMenuEntry(menulabel,1000+i);
-    }
-#endif
-
     CREATEMENU(showpatchextmenu, ShowBoundaryMenu);
     for(i=1;i<7;i++){
       next_total+=vis_boundary_type[i];
@@ -8724,9 +8701,6 @@ static int menu_count=0;
           }
         }
       }
-#ifdef pp_MESH_PATCH
-      if(npatchloaded>1)GLUTADDSUBMENU(_("Mesh"), showpatchsinglemenu);
-#endif
     }
     npatchloaded=0;
     {
@@ -12329,33 +12303,6 @@ static int menu_count=0;
       else{
        glutAddMenuEntry(_("Unload"),UNLOAD_ALL);
       }
-#ifdef pp_MESH_PATCH
-      if(nmeshes>1){
-        char menulabel[1024];
-
-        CREATEMENU(loadpatchsinglemenu, LoadBoundaryMenu);
-        for(ii=0;ii<npatchinfo;ii++){
-          patchdata *patch1, *patch2;
-
-          i = patchorderindex[ii];
-          patch2 = patchinfo + i;
-          if(ii==0){
-            nloadpatchsubmenus=0;
-            strcpy(menulabel,patch2->label.longlabel);
-            GLUTADDSUBMENU(menulabel,loadpatchsubmenus[nloadpatchsubmenus]);
-            nloadpatchsubmenus++;
-          }
-          else{
-            patch1 = patchinfo + patchorderindex[ii-1];
-            if(strcmp(patch1->label.longlabel,patch2->label.longlabel)!=0){
-              strcpy(menulabel,patch2->label.longlabel);
-              GLUTADDSUBMENU(menulabel,loadpatchsubmenus[nloadpatchsubmenus]);
-              nloadpatchsubmenus++;
-            }
-          }
-        }
-      }
-#endif
 
       if(nboundaryslicedups>0){
         CREATEMENU(duplicateboundaryslicemenu,LoadBoundaryMenu);
@@ -12486,9 +12433,6 @@ static int menu_count=0;
       if(nboundaryslicedups>0){
         GLUTADDSUBMENU(_("Duplicate boundary slices"),duplicateboundaryslicemenu);
       }
-#ifdef pp_MESH_PATCH
-      if(nmeshes>1)GLUTADDSUBMENU(_("Mesh"), loadpatchsinglemenu);
-#endif
       glutAddMenuEntry(_("Settings..."), MENU_BOUNDARY_SETTINGS);
       if(npatchloaded2>1){
         GLUTADDSUBMENU(_("Unload"),unloadpatchmenu);
