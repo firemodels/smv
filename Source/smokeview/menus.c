@@ -8458,9 +8458,6 @@ static int isosurfacemenu=0, isovariablemenu=0, levelmenu=0;
 static int fontmenu=0, aperturemenu=0,dialogmenu=0,zoommenu=0;
 static int gridslicemenu=0, griddigitsmenu=0, blockagemenu=0, immersedmenu=0, loadpatchmenu=0, ventmenu=0, circularventmenu=0;
 static int includepatchmenu=0;
-#ifdef pp_MESH_VOLSMOKE
-static int showvolsmokesinglemenu = 0, loadvolsmokesinglemenu = 0;
-#endif
 #ifdef pp_MESH_PLOT3D
 static int plot3dshowsinglemeshmenu=0;
 static int plot3dsinglemeshmenu = 0;
@@ -10680,32 +10677,12 @@ static int menu_count=0;
   if(nvolsmoke3dloaded>0){
     char vlabel[256];
 
-#ifdef pp_MESH_VOLSMOKE
-    CREATEMENU(showvolsmokesinglemenu,ShowVolsmoke3DMenu);
-    for(i=0;i<nmeshes;i++){
-      meshdata *meshi;
-      volrenderdata *vr;
-      char menulabel[1024];
-
-      meshi = meshinfo + i;
-      vr = meshi->volrenderinfo;
-      if(vr->fireslice==NULL||vr->smokeslice==NULL)continue;
-      if(vr->loaded==0)continue;
-      strcpy(menulabel,"");
-      if(vr->display==1)strcat(menulabel,"*");
-      strcat(menulabel,meshi->label);
-      glutAddMenuEntry(menulabel,i);
-    }
-#endif
     CREATEMENU(showvolsmoke3dmenu,ShowVolsmoke3DMenu);
     strcpy(vlabel, "");
     if(show_volsmokefiles==1)strcat(vlabel, "*");
     strcat(vlabel,_("Show"));
     glutAddMenuEntry(vlabel,TOGGLE_VOLSMOKE);
     GLUTADDSUBMENU(_("Smoke colorbar"),smokecolorbarmenu);
-#ifdef pp_MESH_VOLSMOKE
-    GLUTADDSUBMENU(_("Mesh"), showvolsmokesinglemenu);
-#endif
   }
 
   CREATEMENU(aperturemenu,ApertureMenu);
@@ -11751,24 +11728,6 @@ static int menu_count=0;
 
 /* --------------------------------unload and load 3d vol smoke menus -------------------------- */
 
-#ifdef pp_MESH_VOLSMOKE
-    if(nvolrenderinfo>0){
-      CREATEMENU(loadvolsmokesinglemenu, LoadVolsmoke3DMenu);
-      for(i=0;i<nmeshes;i++){
-        meshdata *meshi;
-        volrenderdata *vr;
-        char menulabel[1024];
-
-        meshi = meshinfo + i;
-        vr = meshi->volrenderinfo;
-        if(vr->fireslice==NULL||vr->smokeslice==NULL)continue;
-        strcpy(menulabel,"");
-        if(vr->loaded==1)strcat(menulabel,"*");
-        strcat(menulabel,meshi->label);
-        glutAddMenuEntry(menulabel,i);
-      }
-    }
-#endif
     if(nvolsmoke3dloaded>0){
       CREATEMENU(unloadvolsmoke3dmenu,UnLoadVolsmoke3DMenu);
       if(nvolsmoke3dloaded>1){
@@ -11795,9 +11754,6 @@ static int menu_count=0;
       strcpy(vlabel,_("3D smoke (Volume rendered)"));
       glutAddMenuEntry(vlabel,LOAD_ALL);
       glutAddMenuEntry("-", MENU_DUMMY);
-#ifdef pp_MESH_VOLSMOKE
-      GLUTADDSUBMENU(_("Mesh"), loadvolsmokesinglemenu);
-#endif
       glutAddMenuEntry(_("Settings..."), MENU_VOLSMOKE_SETTINGS);
       if(nvolsmoke3dloaded==1)glutAddMenuEntry(_("Unload"),UNLOAD_ALL);
       if(nvolsmoke3dloaded>1)GLUTADDSUBMENU(_("Unload"),unloadvolsmoke3dmenu);
