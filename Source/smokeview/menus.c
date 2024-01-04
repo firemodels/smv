@@ -4054,6 +4054,12 @@ void SetupPart(int value){
     partdata *parti;
 
     parti = partinfo+i;
+    if(load_when_loaded == 1 && parti->loaded == 1){
+      int errorcode;
+      
+      ReadPart("", i, UNLOAD, &errorcode);
+    }
+    if(parti->loaded==1)continue;
     if(parti->loaded==0&&value==PARTFILE_RELOADALL)continue;  // don't reload a file that is not currently loaded
     if(parti->loaded==0&&value>=0&&value!=i)continue;         // if value>0 only load file with index  value
     list[nlist++] = i;
@@ -4068,6 +4074,7 @@ void SetupPart(int value){
     parti->skipload = 1;
     parti->loadstatus = FILE_UNLOADED;
     parti->boundstatus = PART_BOUND_UNDEFINED;
+    if(parti->loaded==1)continue;
     if(parti->loaded==0&&value==PARTFILE_RELOADALL)continue;  // don't reload a file that is not currently loaded
     if(parti->loaded==0&&value>=0&&value!=i)continue;         // if value>0 only load file with index  value
     parti->skipload = 0;
@@ -4232,7 +4239,7 @@ void LoadParticleMenu(int value){
         // unload particle files
 
 
-        if(value!=PARTFILE_RELOADALL){
+        if(load_when_loaded==1&&value!=PARTFILE_RELOADALL){
           UnloadAllPartFiles();
         }
 
