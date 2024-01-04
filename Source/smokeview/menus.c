@@ -5485,6 +5485,7 @@ void Plot3DListMenu(int value){
 
     plot3di = plot3dinfo + i;
     plot3di->loadnow = 0;
+    if(load_when_loaded==1&&plot3di->loaded==1)ReadPlot3D("", i, UNLOAD, &errorcode);
   }
   for(i = 0; i < nplot3dinfo; i++){
     plot3ddata *plot3di;

@@ -4948,7 +4948,7 @@ hvacductboundsCPP.setup("hvac", ROLLOUT_hvacduct, hvacductbounds_cpp, nhvacductb
   PANEL_mesh1 = glui_bounds->add_panel_to_panel(PANEL_mesh, "", false);
   CHECKBOX_show_intersected_meshes = glui_bounds->add_checkbox_to_panel(PANEL_mesh1, "show intersected meshes", &show_intersected_meshes, USEMESH_DRAW_MESH, MeshBoundCB);
   CHECKBOX_show_intersection_box = glui_bounds->add_checkbox_to_panel(PANEL_mesh1, "show intersection box", &show_intersection_box, USEMESH_DRAW_BOX, MeshBoundCB);
-  CHECKBOX_show_intersection_box = glui_bounds->add_checkbox_to_panel(PANEL_mesh1, "force load", &force_load);
+  glui_bounds->add_checkbox_to_panel(PANEL_mesh1, "load when loaded", &load_when_loaded);
 
   glui_bounds->add_column_to_panel(PANEL_mesh1, false);
 
