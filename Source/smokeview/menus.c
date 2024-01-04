@@ -4405,23 +4405,6 @@ void UnloadPlot3dMenu(int value){
   }
 }
 
-/* ------------------ UnloadPartMenu ------------------------ */
-
-void UnloadPartMenu(int value){
-  int errorcode,i;
-
-  updatemenu=1;
-  GLUTPOSTREDISPLAY;
-  if(value>=0){
-    ReadPart("", value, UNLOAD, &errorcode);
-  }
-  else{
-    for(i=0;i<npartinfo;i++){
-      ReadPart("", i, UNLOAD, &errorcode);
-    }
-  }
-}
-
 /* ------------------ LoadVSliceMenu2 ------------------------ */
 
 FILE_SIZE LoadVSliceMenu2(int value){
@@ -12135,22 +12118,8 @@ static int menu_count=0;
 
   if(npartinfo>0){
     int ii;
-
-    CREATEMENU(unloadpartmenu,UnloadPartMenu);
-    for(ii=0;ii<npartinfo;ii++){
-      partdata *parti;
-      char menulabel[1024];
-
-      i = partorderindex[ii];
-      parti = partinfo + i;
-      if(parti->loaded==1){
-        STRCPY(menulabel,parti->menulabel);
-        glutAddMenuEntry(menulabel,i);
-      }
-    }
-    glutAddMenuEntry(_("Unload all"), MENU_PARTICLE_UNLOAD_ALL);
-
     int doit = 0;
+
     if(nmeshes==1){
       CREATEMENU(particlemenu,LoadParticleMenu);
       doit = 1;
@@ -12203,12 +12172,7 @@ static int menu_count=0;
     glutAddMenuEntry("-",MENU_DUMMY);
     glutAddMenuEntry("Particle number/file size", MENU_PART_NUM_FILE_SIZE);
     glutAddMenuEntry(_("Settings..."),     MENU_PART_SETTINGS);
-    if(npartloaded>1){
-      GLUTADDSUBMENU(_("Unload"),unloadpartmenu);
-    }
-    else{
-      glutAddMenuEntry(_("Unload"), MENU_PARTICLE_UNLOAD_ALL);
-    }
+    glutAddMenuEntry(_("Unload"), MENU_PARTICLE_UNLOAD_ALL);
   }
 
   if(nvsliceinfo>0){
