@@ -8458,10 +8458,6 @@ static int isosurfacemenu=0, isovariablemenu=0, levelmenu=0;
 static int fontmenu=0, aperturemenu=0,dialogmenu=0,zoommenu=0;
 static int gridslicemenu=0, griddigitsmenu=0, blockagemenu=0, immersedmenu=0, loadpatchmenu=0, ventmenu=0, circularventmenu=0;
 static int includepatchmenu=0;
-#ifdef pp_MESH_PLOT3D
-static int plot3dshowsinglemeshmenu=0;
-static int plot3dsinglemeshmenu = 0;
-#endif
 static int loadisomenu=0, isosurfacetypemenu=0,showpatchextmenu=0;
 static int geometrymenu=0, loadunloadmenu=0, reloadmenu=0, fileinfomenu=0, aboutmenu=0, disclaimermenu=0, terrain_obst_showmenu=0;
 static int scriptmenu=0;
@@ -9090,30 +9086,6 @@ static int menu_count=0;
     glutAddMenuEntry(_("Show all planes"), MENU_PLOT3D_SHOWALL);
     glutAddMenuEntry(_("Hide all planes"), MENU_PLOT3D_HIDEALL);
 
-#ifdef pp_MESH_PLOT3D
-    CREATEMENU(plot3dshowsinglemeshmenu,Plot3DShowMenu);
-    if(nplot3dloaded>0){
-      int ii;
-
-      for(ii=0;ii<nplot3dinfo;ii++){
-        plot3ddata *plot3di;
-        char menulabel[1024];
-
-        i=plot3dorderindex[ii];
-        plot3di = plot3dinfo + i;
-        if(plot3di->loaded==0)continue;
-        if(plotstate==STATIC_PLOTS&&plot3di->display==1){
-          STRCPY(menulabel,"*");
-          STRCAT(menulabel,plot3di->menulabel);
-        }
-        else{
-          STRCPY(menulabel,plot3di->menulabel);
-        }
-        glutAddMenuEntry(menulabel,1000+i);
-      }
-    }
-#endif
-
     CREATEMENU(plot3dshowmenu,Plot3DShowMenu);
     if(nplot3dloaded>0){
       int ii;
@@ -9137,9 +9109,6 @@ static int menu_count=0;
     if(cache_plot3d_data==1){
       GLUTADDSUBMENU(_("3D contours"),isosurfacemenu);
     }
-#ifdef pp_MESH_PLOT3D
-    if(nplot3dloaded>1)GLUTADDSUBMENU(_("Mesh"),plot3dshowsinglemeshmenu);
-#endif
   }
 
 /* --------------------------------grid digits menu -------------------------- */
@@ -11956,42 +11925,6 @@ static int menu_count=0;
         glutAddMenuEntry(menulabel,i);
       }
       nloadsubplot3dmenu=0;
-#ifdef pp_MESH_PLOT3D
-      CREATEMENU(plot3dsinglemeshmenu,LoadPlot3dMenu);
-      for(ii=0;ii<nplot3dinfo;ii++){
-        int im1;
-
-        i = plot3dorderindex[ii];
-        plot3di = plot3dinfo + i;
-        if(ii==0){
-          sprintf(menulabel,"  %f",plot3di->time);
-          TrimZeros(menulabel);
-          strcat(menulabel," s");
-          if(nmeshes>1){
-            GLUTADDSUBMENU(menulabel,loadsubplot3dmenu[nloadsubplot3dmenu]);
-          }
-          nloadsubplot3dmenu++;
-        }
-        if(ii!=0){
-          i = plot3dorderindex[ii];
-          im1 = plot3dorderindex[ii-1];
-          plot3di = plot3dinfo + i;
-          plot3dim1 = plot3dinfo + im1;
-          if(strcmp(plot3di->longlabel,plot3dim1->longlabel)!=0){
-            glutAddMenuEntry(plot3di->longlabel,MENU_PLOT3D_DUMMY);
-          }
-          if(ABS(plot3di->time-plot3dim1->time)>0.1){
-            sprintf(menulabel,"  %f",plot3di->time);
-            TrimZeros(menulabel);
-            strcat(menulabel," s");
-            if(nmeshes>1){
-              GLUTADDSUBMENU(menulabel,loadsubplot3dmenu[nloadsubplot3dmenu]);
-            }
-            nloadsubplot3dmenu++;
-          }
-        }
-      }
-#endif
       nloadsubplot3dmenu=0;
       CREATEMENU(loadplot3dmenu,LoadPlot3dMenu);
       for(ii=0;ii<nplot3dinfo;ii++){
@@ -12061,11 +11994,6 @@ static int menu_count=0;
         }
         if(ii==nplot3dinfo-1){
           glutAddMenuEntry("-", MENU_PLOT3D_DUMMY);
-#ifdef pp_MESH_PLOT3D
-          if(nmeshes>1){
-            GLUTADDSUBMENU(_("Mesh"), plot3dsinglemeshmenu);
-          }
-#endif
           glutAddMenuEntry(_("Settings..."), MENU_PLOT3D_SETTINGS);
           if(nplot3dloaded>1){
             GLUTADDSUBMENU(_("Unload"), unloadplot3dmenu);

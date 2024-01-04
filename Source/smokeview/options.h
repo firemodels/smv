@@ -7,8 +7,6 @@
 #define pp_DEBUG_SUBMENU       // debug output and testing for building menus
 #endif
 
-//#define pp_MESH_PLOT3D
-
 //#define pp_SLICE_DIR_COUNT
 #define pp_LOAD_BOUNDS   // specify clipping planes for loading data
 
