@@ -164,9 +164,6 @@ GLUI_Rollout *ROLLOUT_generate_images = NULL;
 GLUI_Rollout *ROLLOUT_loadframe = NULL;
 GLUI_Rollout *ROLLOUT_co2color = NULL;
 GLUI_Rollout *ROLLOUT_temperature_settings=NULL;
-#ifdef pp_MESH_SMOKE
-GLUI_Rollout *ROLLOUT_meshvis = NULL;
-#endif
 GLUI_Rollout *ROLLOUT_slices = NULL;
 GLUI_Rollout *ROLLOUT_volume = NULL;
 GLUI_Rollout *ROLLOUT_smoke_test = NULL;
@@ -186,9 +183,6 @@ GLUI_StaticText *STATIC_timelimit_max = NULL;
 #define FIRECOLOR_ROLLOUT   2
 #define FIREOPACITY_ROLLOUT 3
 #define CO2COLOR_ROLLOUT    4
-#ifdef pp_MESH_SMOKE
-#define MESH_ROLLOUT        5
-#endif
 
 procdata smokeprocinfo[6], volsmokeprocinfo[6];
 int nsmokeprocinfo = 0, nvolsmokeprocinfo=0;
@@ -754,20 +748,6 @@ extern "C" void GLUI3dSmokeSetup(int main_window){
     SPINNER_smokeloadframe = glui_3dsmoke->add_spinner_to_panel(PANEL_loadframe, _("smoke frame"), GLUI_SPINNER_INT, &smoke_framenumber);
     SPINNER_timeloadframe = glui_3dsmoke->add_spinner_to_panel(PANEL_loadframe, _("time"), GLUI_SPINNER_FLOAT, &time_frameval);
   }
-
-#ifdef pp_MESH_SMOKE
-  if(nsmoke3dinfo>0){
-    ROLLOUT_meshvis = glui_3dsmoke->add_rollout_to_panel(PANEL_overall, "Mesh Visibility", false, MESH_ROLLOUT, SmokeRolloutCB);
-    INSERT_ROLLOUT(ROLLOUT_meshvis, glui_3dsmoke);
-    ADDPROCINFO(smokeprocinfo, nsmokeprocinfo, ROLLOUT_meshvis, MESH_ROLLOUT, glui_3dsmoke);
-    for(i = 0;i<nmeshes;i++){
-      meshdata *meshi;
-
-      meshi = meshinfo+i;
-      glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_meshvis, meshi->label, meshvisptr+i);
-    }
-  }
-#endif
 
 #ifdef pp_GPU
   GLUISmoke3dCB(VOL_SMOKE);

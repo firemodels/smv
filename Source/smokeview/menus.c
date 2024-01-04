@@ -8461,9 +8461,6 @@ static int includepatchmenu=0;
 #ifdef pp_MESH_VOLSMOKE
 static int showvolsmokesinglemenu = 0, loadvolsmokesinglemenu = 0;
 #endif
-#ifdef pp_MESH_SMOKE
-static int loadsmoke3dsinglemenu=0, unloadsmoke3dsinglemenu=0;
-#endif
 #ifdef pp_MESH_PLOT3D
 static int plot3dshowsinglemeshmenu=0;
 static int plot3dsinglemeshmenu = 0;
@@ -8495,9 +8492,6 @@ static int unloadmultislicemenu=0, vsliceloadmenu=0, staticslicemenu=0;
 static int particlemenu=0, showpatchmenu=0, zonemenu=0, isoshowmenu=0, isolevelmenu=0, smoke3dshowmenu=0;
 #ifdef pp_MESH_PART
 static int particlesubmenu = 0;
-#endif
-#ifdef pp_MESH_SMOKE
-static int smoke3dshowsinglemenu = 0;
 #endif
 static int particlepropshowmenu=0;
 static int *particlepropshowsubmenu=NULL;
@@ -10348,20 +10342,6 @@ static int menu_count=0;
   if(nsmoke3dloaded>0){
     {
       if(nsmoke3dloaded>0){
-#ifdef pp_MESH_SMOKE
-        CREATEMENU(smoke3dshowsinglemenu, Smoke3DShowMenu);
-        for(i=0;i<nsmoke3dinfo;i++){
-          smoke3ddata *smoke3di;
-          char menulabel[1024];
-
-          smoke3di = smoke3dinfo + i;
-          if(smoke3di->loaded==0)continue;
-          strcpy(menulabel,"");
-          if(smoke3di->display==1)strcpy(menulabel,"*");
-          strcat(menulabel,smoke3di->menulabel);
-          glutAddMenuEntry(menulabel,i);
-        }
-#endif
         CREATEMENU(smoke3dshowmenu, Smoke3DShowMenu);
 #ifdef pp_SMOKE16
         if(show_3dsmoke_8bit == 1)glutAddMenuEntry(_("*Show 8 bit"),   TOGGLE_SMOKE3D_8BIT);
@@ -11839,20 +11819,6 @@ static int menu_count=0;
     /* --------------------------------unload and load 3d smoke menus -------------------------- */
 
       if(nsmoke3dloaded>0){
-#ifdef pp_MESH_SMOKE
-        CREATEMENU(unloadsmoke3dsinglemenu,UnLoadSmoke3DMenu);
-        for(i=0;i<nsmoke3dinfo;i++){
-          smoke3ddata *smoke3di;
-          char smokemenulabel[256];
-
-          smoke3di=smoke3dinfo+i;
-          if(smoke3di->loaded==0)continue;
-          strcpy(smokemenulabel, smoke3di->menulabel);
-          strcat(smokemenulabel, "- ");
-          strcat(smokemenulabel, smoke3di->label.longlabel);
-          glutAddMenuEntry(smokemenulabel,i);
-        }
-#endif
         CREATEMENU(unloadsmoke3dmenu,UnLoadSmoke3DMenu);
         for(i = 0; i<nsmoke3dtypes; i++){
           int j, doit, is_zlib;
@@ -11878,9 +11844,6 @@ static int menu_count=0;
             glutAddMenuEntry(smvmenulabel, -(i + 1));
           }
         }
-#ifdef pp_MESH_SMOKE
-        GLUTADDSUBMENU(_("Mesh"), unloadsmoke3dsinglemenu);
-#endif
       }
     {
       if(nsmoke3dinfo>0){
@@ -11908,33 +11871,6 @@ static int menu_count=0;
           }
         }
         if(nmeshes>1){
-#ifdef pp_MESH_SMOKE
-          CREATEMENU(loadsmoke3dsinglemenu, LoadSmoke3DMenu);
-          for(ii = 0; ii<nsmoke3dtypes; ii++){
-            char menulabel[256];
-            int jj;
-            int ntotal, nloaded;
-
-            ntotal=0;
-            nloaded=0;
-            for(jj=0;jj<nsmoke3dinfo;jj++){
-              if(smoke3dinfo[jj].type==ii){
-                if(smoke3dinfo[jj].loaded==1)nloaded++;
-                ntotal++;
-              }
-            }
-            strcpy(menulabel,"");
-            if(nloaded==ntotal){
-              strcat(menulabel, "*");
-            }
-            else if(nloaded>0&&nloaded<ntotal){
-              strcat(menulabel, "#");
-            }
-            strcat(menulabel, smoke3dtypes[ii].longlabel);
-            GLUTADDSUBMENU(menulabel, smoke3dtypes[ii].menu_id);
-          }
-#endif
-
           CREATEMENU(loadsmoke3dmenu,LoadSmoke3DMenu);
           // multi mesh smoke menus items
           for(ii = 0; ii<nsmoke3dtypes; ii++){
@@ -11983,11 +11919,6 @@ static int menu_count=0;
         }
 #endif
         glutAddMenuEntry(_("3D smoke file sizes"), MENU_SMOKE_FILE_SIZES);
-#ifdef pp_MESH_SMOKE
-        if(nmeshes>1){
-          GLUTADDSUBMENU(_("Mesh"), loadsmoke3dsinglemenu);
-        }
-#endif
         glutAddMenuEntry(_("Settings..."), MENU_SMOKE_SETTINGS);
         if(nsmoke3dloaded==1)glutAddMenuEntry(_("Unload"),UNLOAD_ALL);
         if(nsmoke3dloaded>1)GLUTADDSUBMENU(_("Unload"),unloadsmoke3dmenu);
