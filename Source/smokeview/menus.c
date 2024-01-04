@@ -8469,9 +8469,6 @@ static int plot3dshowsinglemeshmenu=0;
 static int plot3dsinglemeshmenu = 0;
 #endif
 static int loadisomenu=0, isosurfacetypemenu=0,showpatchextmenu=0;
-#ifdef pp_MESH_ISO
-static int isosinglemeshmenu = 0;
-#endif
 static int geometrymenu=0, loadunloadmenu=0, reloadmenu=0, fileinfomenu=0, aboutmenu=0, disclaimermenu=0, terrain_obst_showmenu=0;
 static int scriptmenu=0;
 static int hvacmenu = 0, hvacnetworkmenu, showcomponentmenu = 0, showfiltermenu = 0, connectivitymenu = 0;
@@ -8498,9 +8495,6 @@ static int unloadmultislicemenu=0, vsliceloadmenu=0, staticslicemenu=0;
 static int particlemenu=0, showpatchmenu=0, zonemenu=0, isoshowmenu=0, isolevelmenu=0, smoke3dshowmenu=0;
 #ifdef pp_MESH_PART
 static int particlesubmenu = 0;
-#endif
-#ifdef pp_MESH_ISO
-static int isoshowsubmenu=0;
 #endif
 #ifdef pp_MESH_SMOKE
 static int smoke3dshowsinglemenu = 0;
@@ -10496,9 +10490,6 @@ static int menu_count=0;
       if(show_iso_normal == 1)glutAddMenuEntry(_("*Show normals"), MENU_ISOSHOW_NORMALS);
       if(show_iso_normal == 0)glutAddMenuEntry(_("Show normals"), MENU_ISOSHOW_NORMALS);
       glutAddMenuEntry(_("Output bounds"), MENU_ISOSHOW_OUTPUT);
-#ifdef pp_MESH_ISO
-      GLUTADDSUBMENU(_("Mesh"), isoshowsubmenu);
-#endif
     }
   }
 
@@ -12488,30 +12479,6 @@ static int menu_count=0;
         isodata *isoi, *isoj;
 
         if(nmeshes>1){
-#ifdef pp_MESH_ISO
-          CREATEMENU(isosinglemeshmenu,LoadIsoMenu);
-          for(ii=0;ii<nisoinfo;ii++){
-            isodata *iso1, *iso2;
-            char menulabel[1024];
-
-            i = isoorderindex[ii];
-            iso1 = isoinfo + i;
-            if(ii==0){
-              nisosubmenus=0;
-              strcpy(menulabel,iso1->surface_label.longlabel);
-              GLUTADDSUBMENU(menulabel,isosubmenus[nisosubmenus]);
-              nisosubmenus++;
-            }
-            else{
-              iso2 = isoinfo + isoorderindex[ii-1];
-              if(strcmp(iso1->surface_label.longlabel,iso2->surface_label.longlabel)!=0){
-                strcpy(menulabel,iso1->surface_label.longlabel);
-                GLUTADDSUBMENU(menulabel,isosubmenus[nisosubmenus]);
-                nisosubmenus++;
-              }
-            }
-          }
-#endif
           CREATEMENU(loadisomenu,LoadIsoMenu);
           for(i=0;i<nisoinfo;i++){
             int j;
@@ -12538,9 +12505,6 @@ static int menu_count=0;
             }
           }
           glutAddMenuEntry("-", MENU_DUMMY3);
-#ifdef pp_MESH_ISO
-          GLUTADDSUBMENU(_("Mesh"), isosinglemeshmenu);
-#endif
         }
       }
       glutAddMenuEntry(_("Settings..."), MENU_ISO_SETTINGS);
