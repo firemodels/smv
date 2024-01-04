@@ -5874,6 +5874,11 @@ void LoadBoundaryMenu(int value){
 
         patchi = patchinfo+i;
         patchi->finalize = 0;
+        if(patchi->loaded == 1 && load_when_loaded == 1){
+          int errorcode;
+
+          ReadBoundary(i, UNLOAD, &errorcode);
+        }
       }
       int *list=NULL, nlist=0;
 
