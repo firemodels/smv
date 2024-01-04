@@ -4745,6 +4745,18 @@ FILE_SIZE LoadSmoke3D(int type, int frame, int *count, float *time_value){
   int last_smoke = 0, i, file_count=0,errorcode;
   FILE_SIZE load_size=0;
 
+  if(load_when_loaded == 1){
+    for(i = nsmoke3dinfo - 1; i >= 0; i--){
+      smoke3ddata *smoke3di;
+
+      smoke3di = smoke3dinfo + i;
+      if(smoke3di->loaded==1&&IsSmokeType(smoke3di, type) == 1){
+        int errorcode;
+
+        ReadSmoke3D(ALL_SMOKE_FRAMES, i, UNLOAD, FIRST_TIME, NULL, &errorcode);
+      }
+    }
+  }
   for(i = nsmoke3dinfo-1; i>=0; i--){
     smoke3ddata *smoke3di;
 
