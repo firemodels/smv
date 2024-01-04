@@ -4371,23 +4371,6 @@ void UnloadBoundaryMenu(int value){
   }
 }
 
-/* ------------------ UnloadIsoMenu ------------------------ */
-
-void UnloadIsoMenu(int value){
-  int errorcode,i;
-
-  updatemenu=1;
-  GLUTPOSTREDISPLAY;
-  if(value>=0){
-    ReadIso("",value,UNLOAD,NULL,&errorcode);
-  }
-  else{
-    for(i=0;i<nisoinfo;i++){
-      ReadIso("",i,UNLOAD,NULL,&errorcode);
-    }
-  }
-}
-
 /* ------------------ UnloadPlot3dMenu ------------------------ */
 
 void UnloadPlot3dMenu(int value){
@@ -12913,19 +12896,6 @@ static int menu_count=0;
     if(nisoinfo>0){
       int ii;
 
-      CREATEMENU(unloadisomenu,UnloadIsoMenu);
-      for(ii=0;ii<nisoinfo;ii++){
-        isodata *isoi;
-        char menulabel[1024];
-
-        i = isoorderindex[ii];
-        isoi = isoinfo + i;
-        if(isoi->loaded==0)continue;
-        STRCPY(menulabel,isoi->menulabel);
-        glutAddMenuEntry(menulabel,i);
-      }
-      glutAddMenuEntry(_("Unload all"),UNLOAD_ALL);
-
       if(nisoinfo>0){
         if(isosubmenus==NULL){
           NewMemory((void **)&isosubmenus,nisoinfo*sizeof(int));
@@ -13023,12 +12993,7 @@ static int menu_count=0;
         }
       }
       glutAddMenuEntry(_("Settings..."), MENU_ISO_SETTINGS);
-      if(nisoloaded>1){
-        GLUTADDSUBMENU(_("Unload"),unloadisomenu);
-      }
-      else{
-       glutAddMenuEntry(_("Unload"),UNLOAD_ALL);
-      }
+      glutAddMenuEntry(_("Unload"),UNLOAD_ALL);
     }
 
 /* --------------------------------zone menu -------------------------- */
