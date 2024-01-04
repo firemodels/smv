@@ -7,7 +7,6 @@
 #define pp_DEBUG_SUBMENU       // debug output and testing for building menus
 #endif
 
-//#define pp_MESH_PART
 //#define pp_MESH_VOLSMOKE
 //#define pp_MESH_PLOT3D
 

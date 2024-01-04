@@ -8490,9 +8490,6 @@ static int loadmultivslicemenu=0, unloadmultivslicemenu=0;
 static int duplicatevectorslicemenu=0, duplicateslicemenu=0, duplicateboundaryslicemenu=0;
 static int unloadmultislicemenu=0, vsliceloadmenu=0, staticslicemenu=0;
 static int particlemenu=0, showpatchmenu=0, zonemenu=0, isoshowmenu=0, isolevelmenu=0, smoke3dshowmenu=0;
-#ifdef pp_MESH_PART
-static int particlesubmenu = 0;
-#endif
 static int particlepropshowmenu=0;
 static int *particlepropshowsubmenu=NULL;
 static int particlestreakshowmenu=0;
@@ -11666,12 +11663,6 @@ static int menu_count=0;
       CREATEMENU(particlemenu,LoadParticleMenu);
       doit = 1;
     }
-#ifdef pp_MESH_PART
-    else{
-      CREATEMENU(particlesubmenu,LoadParticleMenu);
-      doit = 1;
-    }
-#endif
     if(doit == 1){
       for(ii = 0;ii < npartinfo;ii++){
         char menulabel[1024];
@@ -11705,10 +11696,6 @@ static int menu_count=0;
       if(partfast==1)glutAddMenuEntry(_("*Fast loading"), MENU_PART_PARTFAST);
       if(partfast==0)glutAddMenuEntry(_("Fast loading"), MENU_PART_PARTFAST);
       if(nmeshes>1){
-#ifdef pp_MESH_PART
-        strcpy(menulabel, "Mesh");
-        GLUTADDSUBMENU(menulabel, particlesubmenu);
-#endif
       }
     }
     glutAddMenuEntry("-",MENU_DUMMY);
