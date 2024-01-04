@@ -7524,62 +7524,11 @@ void PartLoadState(int  *load_state){
 
 void InitShowSliceMenu(int *showhideslicemenuptr, int patchgeom_slice_showhide){
   if(nsliceloaded>0||patchgeom_slice_showhide==1){
-#ifdef pp_MESH_SLICE
-    int ii, i;
-#endif
     int showhideslicemenu;
 
     CREATEMENU(showhideslicemenu, ShowHideSliceMenu);
     *showhideslicemenuptr = showhideslicemenu;
     // loaded slice entries
-#ifdef pp_MESH_SLICE
-    for(ii = 0; ii<nslice_loaded; ii++){
-      slicedata *sd;
-      char menulabel[1024];
-      int doit;
-
-      i = slice_loaded_list[ii];
-      sd = sliceinfo+i;
-      if(sd_shown==NULL&&sd->slicefile_labelindex==slicefile_labelindex){
-        sd_shown = sd;
-      }
-      STRCPY(menulabel, "");
-      if(plotstate==DYNAMIC_PLOTS&&sd->display==1&&sd->slicefile_labelindex==slicefile_labelindex){
-        sd_shown = sd;
-        STRCAT(menulabel, "*");
-      }
-      STRCAT(menulabel, sd->menulabel2);
-      if(sd->slicelabel!=NULL){
-        STRCAT(menulabel, " - ");
-        STRCAT(menulabel, sd->slicelabel);
-      }
-      doit = 1;
-      if(sd->slice_filetype==SLICE_TERRAIN){
-        meshdata *meshslice;
-        terraindata *terri;
-
-        meshslice = meshinfo+sd->blocknumber;
-        terri = meshslice->terrain;
-        if(terri==NULL||terri->nvalues==0)doit = 0;
-      }
-      if(doit==1)glutAddMenuEntry(menulabel, i);
-    }
-    // loaded geometry slice entries
-    for(ii = 0; ii<npatchinfo; ii++){
-      patchdata *patchi;
-
-      i = patchorderindex[ii];
-      patchi = patchinfo+i;
-      if(patchi->loaded==1&&patchi->filetype_label!=NULL&&strcmp(patchi->filetype_label, "INCLUDE_GEOM")==0){
-        char mlabel[250];
-
-        strcpy(mlabel, "");
-        if(patchi->display==1)strcat(mlabel, "*");
-        strcat(mlabel, patchi->label.longlabel);
-        glutAddMenuEntry(mlabel, -20-i);
-      }
-    }
-#endif
     if(have_multislice==0){
       glutAddMenuEntry("-", MENU_DUMMY);
       if(HaveTerrainSlice()==1){
@@ -7746,9 +7695,6 @@ void InitShowMultiSliceMenu(int *showmultislicemenuptr, int showhideslicemenu, i
         if(show_fed_area==0)glutAddMenuEntry(_("Show FED areas"), MENU_SHOWSLICE_FEDAREA);
       }
     }
-#ifdef pp_MESH_SLICE
-    if(nslice_loaded>0)GLUTADDSUBMENU(_("Mesh"), showhideslicemenu);
-#endif
   }
 }
 
@@ -7784,97 +7730,6 @@ void InitUnloadSliceMenu(int *unloadslicemenuptr){
   glutAddMenuEntry(_("Unload last"),UNLOAD_LAST);
   glutAddMenuEntry(_("Unload all"), UNLOAD_ALL);
 }
-
-#ifdef pp_MESH_SLICE
-/* ------------------ InitSliceSubMenus ------------------------ */
-
-void InitSliceSubMenus(int *nloadsubslicemenuptr, int **loadsubslicemenuptr){
-  int nloadsubslicemenu=0, *loadsubslicemenu=NULL;
-  int i;
-  int iloadsubslicemenu;
-
-//  count slice submenus
-
-  nloadsubslicemenu=1;
-  for(i=1;i<nsliceinfo;i++){
-    slicedata *sd,*sdim1;
-
-    sd = sliceinfo + sliceorderindex[i];
-    sdim1 = sliceinfo + sliceorderindex[i-1];
-    if(strcmp(sd->label.longlabel,sdim1->label.longlabel)!=0)nloadsubslicemenu++;
-  }
-
-// create slice submenus
-
-  if(nloadsubslicemenu>0)NewMemory((void **)&loadsubslicemenu,nloadsubslicemenu*sizeof(int));
-
-  for(i=0;i<nloadsubslicemenu;i++){
-    loadsubslicemenu[i]=0;
-  }
-  iloadsubslicemenu=0;
-  for(i=0;i<nsliceinfo;i++){
-    slicedata *sd,*sdim1,*sdip1;
-    char menulabel[1024];
-
-    if(i!=0){
-      sdim1 = sliceinfo + sliceorderindex[i-1];
-    }
-    sd = sliceinfo + sliceorderindex[i];
-    if(i!=nsliceinfo-1){
-      sdip1 = sliceinfo + sliceorderindex[i+1];
-    }
-    if(i==0||strcmp(sd->label.longlabel,sdim1->label.longlabel)!=0){
-      CREATEMENU(loadsubslicemenu[iloadsubslicemenu], LoadSliceMenu);
-    }
-    STRCPY(menulabel,"");
-    if(sd->loaded==1){
-      STRCAT(menulabel,"*");
-    }
-    STRCAT(menulabel,sd->menulabel);
-    if(sd->slicelabel!=NULL){
-      STRCAT(menulabel," - ");
-      STRCAT(menulabel,sd->slicelabel);
-    }
-    if(sd->menu_show==1){
-      int doit;
-
-      doit=1;
-      if(sd->slice_filetype==SLICE_TERRAIN){
-        meshdata *meshslice;
-        terraindata *terri;
-
-        meshslice = meshinfo + sd->blocknumber;
-        terri = meshslice->terrain;
-        if(terri==NULL||terri->nvalues==0)doit = 0;
-      }
-      if(doit==1)glutAddMenuEntry(menulabel,sliceorderindex[i]);
-    }
-    if(i==nsliceinfo-1||strcmp(sd->label.longlabel,sdip1->label.longlabel)!=0){
-      subslice_menuindex[iloadsubslicemenu]=sliceorderindex[i];
-      if(sd->ndirxyz[1]+sd->ndirxyz[2]+sd->ndirxyz[3]>1){
-        glutAddMenuEntry("-",MENU_DUMMY);
-      }
-      if(sd->ndirxyz[1]>1){
-        glutAddMenuEntry(_A(_("Load all"), " x"),-1000-4*iloadsubslicemenu-1);
-      }
-      if(sd->ndirxyz[2]>1){
-        glutAddMenuEntry(_A(_("Load all"), " y"),-1000-4*iloadsubslicemenu-2);
-      }
-      if(sd->ndirxyz[3]>1){
-        glutAddMenuEntry(_A(_("Load all"), " z"),-1000-4*iloadsubslicemenu-3);
-      }
-      if(sd->ndirxyz[1]+sd->ndirxyz[2]+sd->ndirxyz[3]>1){
-        glutAddMenuEntry(_("Load all"),-1000-4*iloadsubslicemenu);
-      }
-    }
-    if(i!=nsliceinfo-1&&strcmp(sd->label.longlabel,sdip1->label.longlabel)!=0){
-      iloadsubslicemenu++;
-    }
-  }
-  *nloadsubslicemenuptr = nloadsubslicemenu;
-  *loadsubslicemenuptr = loadsubslicemenu;
-}
-#endif
 
 /* ------------------ InitSliceSkipMenu ------------------------ */
 
@@ -7933,65 +7788,6 @@ void InitSliceSkipMenu(int *sliceskipmenuptr){
     glutAddMenuEntry(skiplabel, i);
   }
 }
-
-#ifdef pp_MESH_SLICE
-/* ------------------ InitLoadSliceMenu ------------------------ */
-
-void InitLoadSliceMenu(int *loadslicemenuptr, int unloadslicemenu, int *loadsubslicemenu, int *loadsubpatchmenu_s, int *nsubpatchmenus_s){
-  int loadslicemenu;
-  int iloadsubslicemenu;
-  int i;
-
-// call slice submenus from main slice menu
-
-  CREATEMENU(loadslicemenu, LoadSliceMenu);
-  *loadslicemenuptr = loadslicemenu;
-  iloadsubslicemenu=0;
-  for(i=0;i<nsliceinfo;i++){
-    slicedata *sd,*sdim1;
-
-    sd = sliceinfo + sliceorderindex[i];
-    if(i>0)sdim1 = sliceinfo + sliceorderindex[i-1];
-    if(i==0||strcmp(sd->label.longlabel,sdim1->label.longlabel)!=0){
-      char mlabel[1024];
-
-      STRCPY(mlabel,sd->label.longlabel);
-      if(sd->menu_show==1)GLUTADDSUBMENU(mlabel,loadsubslicemenu[iloadsubslicemenu]);
-      iloadsubslicemenu++;
-    }
-  }
-// menus for boundary/slice geometry files
-  {
-    int ii, iloadsubpatchmenu_s;
-
-    iloadsubpatchmenu_s = 0;
-    for(ii = 0;ii<npatchinfo;ii++){
-      int im1;
-      patchdata *patchi, *patchim1;
-
-      i = patchorderindex[ii];
-      if(ii>0){
-        im1 = patchorderindex[ii-1];
-        patchim1 = patchinfo+im1;
-      }
-      patchi = patchinfo+i;
-      if(ii==0||strcmp(patchi->menulabel_base, patchim1->menulabel_base)!=0){
-        if(nsubpatchmenus_s[iloadsubpatchmenu_s]>0){
-          GLUTADDSUBMENU(patchi->menulabel_base, loadsubpatchmenu_s[iloadsubpatchmenu_s]);
-        }
-        iloadsubpatchmenu_s++;
-      }
-    }
-  }
-  glutAddMenuEntry("-", MENU_DUMMY);
-  if(nsliceloaded+geom_slice_loaded>1){
-    GLUTADDSUBMENU(_("Unload"),unloadslicemenu);
-  }
-  else{
-    glutAddMenuEntry(_("Unload"),UNLOAD_ALL);
-  }
-}
-#endif
 
 /* ------------------ InitUnloadMultiSliceMenu ------------------------ */
 
@@ -8222,19 +8018,6 @@ void InitLoadMultiSliceMenu(int *loadmultislicemenuptr, int *loadsubmslicemenu, 
   else{
     glutAddMenuEntry(_("Show slice file sizes"), MENU_SLICE_FILE_SIZES);
   }
-#ifdef pp_MESH_SLICE
-  if(nmeshes>1){
-    char loadmenulabel[100];
-    char steplabel[100];
-
-    strcpy(loadmenulabel,"Mesh");
-    if(tload_step > 1){
-      sprintf(steplabel,"/Skip %i",tload_skip);
-      strcat(loadmenulabel,steplabel);
-    }
-    GLUTADDSUBMENU(loadmenulabel,loadslicemenu);
-  }
-#endif
   glutAddMenuEntry(_("Settings..."), MENU_SLICE_SETTINGS);
   if(nmultisliceloaded+geom_slice_loaded>1){
     GLUTADDSUBMENU(_("Unload"), unloadmultislicemenu);
@@ -8264,132 +8047,13 @@ void InitUnloadVSLiceMenu(int *unloadvslicemenuptr){
   glutAddMenuEntry(_("Unload all"),UNLOAD_ALL);
 }
 
-/* ------------------ InitVSliceSubMenu ------------------------ */
-
-void InitVSliceSubMenu(int **loadsubvslicemenuptr){
-#ifdef pp_MESH_SLICE 
-  int nloadsubvslicemenu, ii;
-  int *loadsubvslicemenu;
-
-  nloadsubvslicemenu = 1;
-  for(ii = 1; ii<nvsliceinfo; ii++){
-    slicedata *sd, *sdm1;
-    vslicedata *vd, *vdim1;
-    int i;
-
-    i = vsliceorderindex[ii];
-    vd = vsliceinfo+i;
-    sd = sliceinfo+vd->ival;
-    if(ii>0){
-      vdim1 = vsliceinfo+vsliceorderindex[ii-1];
-      sdm1 = sliceinfo+vdim1->ival;
-    }
-    if(ii==0||strcmp(sd->label.longlabel, sdm1->label.longlabel)!=0){
-      nloadsubvslicemenu++;
-    }
-  }
-  NewMemory((void **)&loadsubvslicemenu, nloadsubvslicemenu*sizeof(int));
-  *loadsubvslicemenuptr = loadsubvslicemenu;
-  for(ii = 0; ii<nloadsubvslicemenu; ii++){
-    loadsubvslicemenu[ii] = 0;
-  }
-  nloadsubvslicemenu = 0;
-  for(ii = 0; ii<nvsliceinfo; ii++){
-    slicedata *sd, *sdm1, *sdp1;
-    vslicedata *vd, *vdim1, *vdip1;
-    char menulabel[1024];
-    int i;
-
-    i = vsliceorderindex[ii];
-    vd = vsliceinfo+i;
-    sd = sliceinfo+vd->ival;
-
-    if(ii!=0){
-      vdim1 = vsliceinfo+vsliceorderindex[ii-1];
-      sdm1 = sliceinfo+vdim1->ival;
-    }
-    if(ii!=nvsliceinfo-1){
-      vdip1 = vsliceinfo+vsliceorderindex[ii+1];
-      sdp1 = sliceinfo+vdip1->ival;
-    }
-
-    if(ii==0||strcmp(sd->label.longlabel, sdm1->label.longlabel)!=0){
-      CREATEMENU(loadsubvslicemenu[nloadsubvslicemenu], LoadVSliceMenu);
-    }
-    if(vd->loaded==1){
-      STRCPY(menulabel, "*");
-      STRCAT(menulabel, sd->menulabel);
-    }
-    else{
-      STRCPY(menulabel, sd->menulabel);
-    }
-    if(sd->slicelabel!=NULL){
-      STRCAT(menulabel, " - ");
-      STRCAT(menulabel, sd->slicelabel);
-    }
-    strcat(menulabel, "zzz");
-    glutAddMenuEntry(menulabel, i);
-    if(ii==nvsliceinfo-1||strcmp(sd->label.longlabel, sdp1->label.longlabel)!=0){
-      subvslice_menuindex[nloadsubvslicemenu] = vsliceorderindex[ii];
-      if(sd->ndirxyz[1]+sd->ndirxyz[2]+sd->ndirxyz[3]>1){
-        glutAddMenuEntry("-", MENU_DUMMY);
-      }
-      if(sd->ndirxyz[1]>1){
-        glutAddMenuEntry(_A(_("Load all"), " x"), -1000-4*nloadsubvslicemenu-1);
-      }
-      if(sd->ndirxyz[2]>1){
-        glutAddMenuEntry(_A(_("Load all"), "y"), -1000-4*nloadsubvslicemenu-2);
-      }
-      if(sd->ndirxyz[3]>1){
-        glutAddMenuEntry(_A(_("Load all"), "z"), -1000-4*nloadsubvslicemenu-3);
-      }
-      if(sd->ndirxyz[1]+sd->ndirxyz[2]+sd->ndirxyz[3]>1){
-        glutAddMenuEntry(_("Load all"), -1000-4*nloadsubvslicemenu);
-      }
-    }
-    if(ii==0||strcmp(sd->label.longlabel, sdm1->label.longlabel)!=0){
-      nloadsubvslicemenu++;
-    }
-  }
-#endif
-}
-
 /* ------------------ InitVSliceLoadMenu ------------------------ */
 
 void InitVSliceLoadMenu(int *vsliceloadmenuptr, int *loadsubvslicemenu, int unloadvslicemenu){
   int vsliceloadmenu;
-#ifdef pp_MESH_SLICE
-  int nloadsubvslicemenu;
-  int ii;
-#endif
 
   CREATEMENU(vsliceloadmenu, LoadVSliceMenu);
   *vsliceloadmenuptr = vsliceloadmenu;
-#ifdef pp_MESH_SLICE
-  nloadsubvslicemenu = 0;
-  for(ii = 0; ii<nvsliceinfo; ii++){
-    slicedata *sd, *sdm1;
-    vslicedata *vd, *vdim1;
-    int i;
-
-    i = vsliceorderindex[ii];
-    vd = vsliceinfo+i;
-    sd = sliceinfo+vd->ival;
-    if(ii>0){
-      vdim1 = vsliceinfo+vsliceorderindex[ii-1];
-      sdm1 = sliceinfo+vdim1->ival;
-    }
-    if(ii==0||strcmp(sd->label.longlabel, sdm1->label.longlabel)!=0){
-      char mlabel[1024];
-
-      STRCPY(mlabel, sd->label.longlabel);
-      GLUTADDSUBMENU(mlabel, loadsubvslicemenu[nloadsubvslicemenu]);
-      nloadsubvslicemenu++;
-    }
-  }
-  glutAddMenuEntry("-", MENU_DUMMY);
-  GLUTADDSUBMENU(_("Unload"), unloadvslicemenu);
-#endif
 }
 
 /* ------------------ InitDuplicateVectorSliceMenu ------------------------ */
@@ -8571,19 +8235,6 @@ void InitMultiVectorLoadMenu(int *loadmultivslicemenuptr, int *loadsubmvslicemen
   if(nslicedups > 0){
     GLUTADDSUBMENU(_("Duplicate vector slices"), duplicatevectorslicemenu);
   }
-#ifdef pp_MESH_SLICE
-  if(nmeshes>1){
-    char loadmenulabel[100];
-    char steplabel[100];
-
-    strcpy(loadmenulabel, "Mesh");
-    if(tload_step > 1){
-      sprintf(steplabel, "/Skip %i", tload_skip);
-      strcat(loadmenulabel, steplabel);
-    }
-    GLUTADDSUBMENU(loadmenulabel, vsliceloadmenu);
-  }
-#endif
   glutAddMenuEntry(_("Settings..."), MENU_LOADVSLICE_SETTINGS);
   if(nvsliceloaded>1){
     GLUTADDSUBMENU(_("Unload"),unloadmultivslicemenu);
@@ -8820,9 +8471,6 @@ static int loadpatchsinglemenu = 0;
 static int plot3dshowsinglemeshmenu=0;
 static int plot3dsinglemeshmenu = 0;
 #endif
-#ifdef pp_MESH_SLICE
-static int showsingleslicemenu=0;
-#endif
 static int loadisomenu=0, isosurfacetypemenu=0,showpatchextmenu=0;
 #ifdef pp_MESH_ISO
 static int isosinglemeshmenu = 0;
@@ -8845,9 +8493,6 @@ static int loadvolsmoke3dmenu=0,showvolsmoke3dmenu=0;
 static int unloadsmoke3dmenu=0,unloadvolsmoke3dmenu=0;
 static int unloadpartmenu=0, loadslicemenu=0, loadmultislicemenu = 0, loadhvacmenu = 0;
 static int *loadsubvslicemenu=NULL, nloadsubvslicemenu=0;
-#ifdef pp_MESH_SLICE
-static int *loadsubslicemenu=NULL, nloadsubslicemenu=0;
-#endif
 static int *loadsubpatchmenu_b = NULL, *nsubpatchmenus_b=NULL, iloadsubpatchmenu_b=0, nloadsubpatchmenu_b = 0;
 static int *loadsubpatchmenu_s = NULL, *nsubpatchmenus_s=NULL, nloadsubpatchmenu_s = 0;
 static int *loadsubmslicemenu=NULL, nloadsubmslicemenu=0;
@@ -8961,11 +8606,6 @@ static int menu_count=0;
     FREEMEMORY(loadsubpatchmenu_s);
     FREEMEMORY(nsubpatchmenus_s);
   }
-#ifdef pp_MESH_SLICE
-  if(nloadsubslicemenu>0){
-    FREEMEMORY(loadsubslicemenu);
-  }
-#endif
   if(nloadsubmslicemenu>0){
     FREEMEMORY(loadsubmslicemenu);
   }
@@ -10982,29 +10622,6 @@ static int menu_count=0;
     vd_shown=NULL;
   }
   if(nvsliceinfo>0&&nvsliceloaded>0){
-#ifdef pp_MESH_SLICE
-    CREATEMENU(showsingleslicemenu,ShowVSliceMenu);
-    for(i=0;i<nvsliceinfo;i++){
-      vslicedata *vd;
-      slicedata *sd;
-      char menulabel[1024];
-
-      vd = vsliceinfo + i;
-      if(vd->loaded==0)continue;
-      sd = sliceinfo + vd->ival;
-      STRCPY(menulabel,"");
-      if(plotstate==DYNAMIC_PLOTS&&sd->slicefile_labelindex==slicefile_labelindex&&vd->display==1){
-        vd_shown=vd;
-        STRCAT(menulabel,"*");
-      }
-      STRCAT(menulabel,sd->menulabel2);
-      if(sd->slicelabel!=NULL){
-        STRCAT(menulabel," - ");
-        STRCAT(menulabel,sd->slicelabel);
-      }
-      glutAddMenuEntry(menulabel,i);
-    }
-#endif
     CREATEMENU(showvslicemenu,ShowVSliceMenu);
     if(vd_shown!=NULL&&nvsliceloaded!=0){
       char menulabel[1024];
@@ -11049,9 +10666,6 @@ static int menu_count=0;
     if(show_cell_slices_and_vectors == 0)glutAddMenuEntry(_("Show cell/face centered slices and vectors"), MENU_SHOWSLICE_CELLSLICEANDVECTORS);
     if(offset_slice == 1)glutAddMenuEntry(_("*Offset vector slice"), MENU_SHOWSLICE_OFFSET);
     if(offset_slice == 0)glutAddMenuEntry(_("Offset vector slice"), MENU_SHOWSLICE_OFFSET);
-#ifdef pp_MESH_SLICE
-    GLUTADDSUBMENU(_("Mesh"), showsingleslicemenu);
-#endif
   }
 
 /* --------------------------------showslice menu -------------------------- */
@@ -12163,7 +11777,6 @@ static int menu_count=0;
   //*** setup vector slice menus
 
     InitUnloadVSLiceMenu(&unloadvslicemenu);
-    InitVSliceSubMenu(&loadsubvslicemenu);
     InitVSliceLoadMenu(&vsliceloadmenu, loadsubvslicemenu, unloadvslicemenu);
     if(nslicedups > 0){
       InitDuplicateVectorSliceMenu(&duplicatevectorslicemenu);
@@ -12186,13 +11799,7 @@ static int menu_count=0;
 
   if(nsliceinfo>0||have_geom_slice_menus==1){
     InitUnloadSliceMenu(&unloadslicemenu);
-#ifdef pp_MESH_SLICE
-    InitSliceSubMenus(&nloadsubslicemenu, &loadsubslicemenu);
-#endif
     InitSliceSkipMenu(&sliceskipmenu);
-#ifdef pp_MESH_SLICE
-    InitLoadSliceMenu(&loadslicemenu, unloadslicemenu, loadsubslicemenu, loadsubpatchmenu_s, nsubpatchmenus_s);
-#endif
   }
 
   //*** setup multi slice menus

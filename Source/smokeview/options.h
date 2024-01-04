@@ -7,7 +7,6 @@
 #define pp_DEBUG_SUBMENU       // debug output and testing for building menus
 #endif
 
-//#define pp_MESH_SLICE
 //#define pp_MESH_PATCH
 //#define pp_MESH_ISO
 //#define pp_MESH_SMOKE
