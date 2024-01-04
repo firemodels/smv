@@ -4724,8 +4724,6 @@ FILE_SIZE LoadSmoke3D(int type, int frame, int *count, float *time_value){
 
       smoke3di = smoke3dinfo + i;
       if(smoke3di->loaded==1&&IsSmokeType(smoke3di, type) == 1){
-        int errorcode;
-
         ReadSmoke3D(ALL_SMOKE_FRAMES, i, UNLOAD, FIRST_TIME, NULL, &errorcode);
       }
     }
@@ -5848,8 +5846,6 @@ void LoadBoundaryMenu(int value){
         patchi = patchinfo+i;
         patchi->finalize = 0;
         if(patchi->loaded == 1 && load_when_loaded == 1){
-          int errorcode;
-
           ReadBoundary(i, UNLOAD, &errorcode);
         }
       }
@@ -8472,7 +8468,7 @@ static char *csvloadmenu=NULL;
 static int loadsmoke3dmenu = 0;
 static int loadvolsmoke3dmenu=0,showvolsmoke3dmenu=0;
 static int unloadsmoke3dmenu=0,unloadvolsmoke3dmenu=0;
-static int unloadpartmenu=0, loadslicemenu=0, loadmultislicemenu = 0, loadhvacmenu = 0;
+static int loadslicemenu=0, loadmultislicemenu = 0, loadhvacmenu = 0;
 static int *loadsubvslicemenu=NULL, nloadsubvslicemenu=0;
 static int *loadsubpatchmenu_b = NULL, *nsubpatchmenus_b=NULL, iloadsubpatchmenu_b=0, nloadsubpatchmenu_b = 0;
 static int *loadsubpatchmenu_s = NULL, *nsubpatchmenus_s=NULL, nloadsubpatchmenu_s = 0;
@@ -8489,7 +8485,7 @@ static int particlestreakshowmenu=0;
 static int tourmenu=0,tourcopymenu=0;
 static int trainerviewmenu=0,mainmenu=0,zoneshowmenu=0,particleshowmenu=0;
 static int showobjectsmenu=0,showdevicesmenu=0,showobjectsplotmenu=0,devicetypemenu=0,spheresegmentmenu=0,propmenu=0;
-static int unloadplot3dmenu=0, unloadpatchmenu=0, unloadisomenu=0;
+static int unloadplot3dmenu=0, unloadpatchmenu=0;
 static int showmultislicemenu=0;
 static int textureshowmenu=0;
 #ifdef _DEBUG
