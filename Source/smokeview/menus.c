@@ -5120,6 +5120,14 @@ void LoadMultiVSliceMenu(int value){
       vslice1 = vsliceinfo+mvslicei->ivslices[0];
       if(vslice1->ival>=0)longlabel = sliceinfo[vslice1->ival].label.longlabel;
       UnloadAllSliceFiles(longlabel); // unload all vector slices except for the type being loaded now
+      if(load_when_loaded == 1){
+        for(i = 0; i < mvslicei->nvslices; i++){
+          vslicedata *vslicei;
+
+          vslicei = vsliceinfo + mvslicei->ivslices[i];
+          UnloadVSliceMenu(mvslicei->ivslices[i]);
+        }
+      }
 
       START_TIMER(load_time);
       for(i = 0; i<mvslicei->nvslices; i++){
