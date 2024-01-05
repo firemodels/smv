@@ -5301,11 +5301,22 @@ void LoadMultiSliceMenu(int value){
       }
     }
     if(scriptoutstream==NULL||script_defer_loading==0){
-      int last_slice;
       FILE_SIZE total_size=0;
+      int last_slice;
+
       char *longlabel;
 
-      last_slice = mslicei->nslices - 1;
+      longlabel = sliceinfo[mslicei->islices[0]].label.longlabel;
+      UnloadAllSliceFiles(longlabel); // unload all slice and vector slices not of type 'longlabel'
+      if(load_when_loaded == 1){ // unload slice being loaded if it is already loaded and of the same type
+        for(i = 0;i<mslicei->nslices; i++){
+          slicedata *slicei;
+
+          slicei = sliceinfo + mslicei->islices[i];
+          UnloadSliceMenu(mslicei->islices[i]);
+        }
+      }
+      last_slice = -1;
       for(i = mslicei->nslices-1; i >=0; i--){
         slicedata *slicei;
 
@@ -5325,22 +5336,22 @@ void LoadMultiSliceMenu(int value){
           UnloadSliceMenu(mslicei->islices[i]);
         }
       }
-      longlabel = sliceinfo[last_slice].label.longlabel;
-      UnloadAllSliceFiles(longlabel);  // unload all slices except for the type being loaded now
-      total_size = LoadAllMSlices(last_slice, mslicei);
-      if(compute_slice_file_sizes==1){
-        PRINTF(" file size: ");
-        if(total_size>1000000000){
-          PRINTF("%.1f GB\n", (float)total_size/1000000000.);
+      if(last_slice >= 0){
+        total_size = LoadAllMSlices(last_slice, mslicei);
+        if(compute_slice_file_sizes == 1){
+          PRINTF(" file size: ");
+          if(total_size > 1000000000){
+            PRINTF("%.1f GB\n", (float)total_size / 1000000000.);
+          }
+          else if(total_size > 1000000){
+            PRINTF("%.1f MB\n", (float)total_size / 1000000.);
+          }
+          else{
+            PRINTF("%.0f kB\n", (float)total_size / 1000.);
+          }
+          PRINTF(" load time: %f s\n", (float)total_size * 8.0 / 1000000000.0);
+          PRINTF("   (assuming a gigabit network connection)\n");
         }
-        else if(total_size>1000000){
-          PRINTF("%.1f MB\n", (float)total_size/1000000.);
-        }
-        else{
-          PRINTF("%.0f kB\n", (float)total_size/1000.);
-        }
-        PRINTF(" load time: %f s\n",(float)total_size*8.0/1000000000.0);
-        PRINTF("   (assuming a gigabit network connection)\n");
       }
     }
     script_multislice=0;
