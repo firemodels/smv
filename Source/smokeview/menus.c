@@ -5122,9 +5122,6 @@ void LoadMultiVSliceMenu(int value){
       UnloadAllSliceFiles(longlabel); // unload all vector slices except for the type being loaded now
       if(load_when_loaded == 1){
         for(i = 0; i < mvslicei->nvslices; i++){
-          vslicedata *vslicei;
-
-          vslicei = vsliceinfo + mvslicei->ivslices[i];
           UnloadVSliceMenu(mvslicei->ivslices[i]);
         }
       }
@@ -5318,9 +5315,6 @@ void LoadMultiSliceMenu(int value){
       UnloadAllSliceFiles(longlabel); // unload all slice and vector slices not of type 'longlabel'
       if(load_when_loaded == 1){ // unload slice being loaded if it is already loaded and of the same type
         for(i = 0;i<mslicei->nslices; i++){
-          slicedata *slicei;
-
-          slicei = sliceinfo + mslicei->islices[i];
           UnloadSliceMenu(mslicei->islices[i]);
         }
       }
