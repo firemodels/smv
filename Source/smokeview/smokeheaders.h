@@ -665,6 +665,7 @@ EXTERNCPP void MenuStatusCB(int status, int x, int y);
 EXTERNCPP void IdleCB(void);
 
 EXTERNCPP void ReadIsoOrig(const char *file, int ifile, int flag, int *errorcode);
+EXTERNCPP void UnloadIso(meshdata *meshi);
 EXTERNCPP void UpdatePlotxyzAll(void);
 EXTERNCPP void UpdateIsoColors(void);
 EXTERNCPP void GetFaceInfo(void);

@@ -5712,7 +5712,19 @@ void LoadAllIsos(int iso_type){
   int i;
   int file_count=0;
   float load_time=0.0, load_size=0.0;
+  if(load_when_loaded == 1){
+    for(i = 0; i < nisoinfo; i++){
+      isodata *isoi;
 
+      isoi = isoinfo + i;
+      if(iso_type == isoi->type&&isoi->blocknumber >= 0){
+        meshdata *meshi;
+
+        meshi = meshinfo + isoi->blocknumber;
+        UnloadIso(meshi);
+      }
+    }
+  }
   START_TIMER(load_time);
   CancelUpdateTriangles();
   for(i = 0; i < nisoinfo; i++){
