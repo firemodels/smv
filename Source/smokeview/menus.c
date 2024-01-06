@@ -3637,6 +3637,9 @@ void LoadUnloadMenu(int value){
     GLUIUpdateLoadWhenLoaded();
     updatemenu = 1;
     break;
+  default:
+    assert(FFALSE);
+    break;
   }
   GLUTSETCURSOR(GLUT_CURSOR_RIGHT_ARROW);
 }
