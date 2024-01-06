@@ -5752,7 +5752,21 @@ void LoadIsoMenu(int value){
   if(value==MENU_DUMMY3)return;
   GLUTSETCURSOR(GLUT_CURSOR_WAIT);
   if(value>=0){
-    LoadIsoI(value);
+    if(load_when_loaded == 1){
+      for(i = 0;i < nisoinfo;i++){
+        isodata *isoi;
+
+        isoi = isoinfo + i;
+        if(isoi->loaded == 1)ReadIso("", i, UNLOAD, NULL, &errorcode);
+      }
+    }
+    for(i=0;i<1;i++){
+      isodata *isoi;
+
+      isoi = isoinfo + value;
+      IF_NOT_USEMESH_CONTINUE(isoi->loaded,isoi->blocknumber);
+      LoadIsoI(value);
+    }
   }
   if(value==-1){
     for(i=0;i<nisoinfo;i++){
