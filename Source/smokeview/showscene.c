@@ -178,6 +178,10 @@ void ShowScene2(int mode){
 
         meshi = meshinfo + i;
         if(meshi->use == 1){
+          float *xyz;
+
+          xyz = meshi->boxmiddle_scaled;
+          if(show_mesh_labels == 1)Output3Text(foregroundcolor, xyz[0], xyz[1], xyz[2], meshi->label);
           DrawBoxMinMax(meshi->boxmin_scaled, meshi->boxmax_scaled, box_black);
         }
       }

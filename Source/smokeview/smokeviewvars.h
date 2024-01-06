@@ -2241,6 +2241,7 @@ SVEXTERN int SVDECL(update_load_bounds, 0);
 SVEXTERN int SVDECL(glui_load_bounds_defined, 0);
 SVEXTERN int SVDECL(set_mesh, 0);
 SVEXTERN int SVDECL(load_when_loaded, 1);
+SVEXTERN int SVDECL(show_mesh_labels, 0);
 #endif
 
 #ifdef INMAIN
