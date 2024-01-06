@@ -83,6 +83,7 @@
 #define USEMESH_DRAW_BOX         197
 #define USEMESH_SET_ONE          196
 #define USEMESH_SET_ALL          195
+#define USEMESH_LOAD_WHEN_LOADED 194
 #endif
 
 #define ISO_TRANSPARENT_CONSTANT 0

@@ -3400,7 +3400,8 @@ void LoadUnloadMenu(int value){
 
   if(value==MENU_DUMMY)return;
   GLUTSETCURSOR(GLUT_CURSOR_WAIT);
-  if(value==UNLOADALL){
+  switch(value){
+  case UNLOADALL:
     if(scriptoutstream!=NULL){
       fprintf(scriptoutstream,"UNLOADALL\n");
     }
@@ -3455,8 +3456,9 @@ void LoadUnloadMenu(int value){
     LoadPlot2DMenu(MENU_PLOT2D_UNLOAD);    
     updatemenu=1;
     GLUTPOSTREDISPLAY;
-  }
-  if(value==RELOADALL||value==RELOAD_INCREMENTAL_ALL){
+    break;
+  case RELOADALL:
+  case RELOAD_INCREMENTAL_ALL:
     THREADcontrol(compress_threads, THREAD_LOCK);
     if(hrr_csv_filename!=NULL){
       ReadHRR(LOAD);
@@ -3574,8 +3576,8 @@ void LoadUnloadMenu(int value){
     updatemenu=1;
     GLUTPOSTREDISPLAY;
     THREADcontrol(compress_threads, THREAD_UNLOCK);
-  }
-  if(value==SHOWFILES){
+    break;
+  case SHOWFILES:
     GLUTPOSTREDISPLAY;
     showfiles=1-showfiles;
     updatemenu=1;
@@ -3588,16 +3590,16 @@ void LoadUnloadMenu(int value){
     UpdatePartMenuLabels();
     UpdateTourMenuLabels();
     UpdatePlot3dMenuLabels();
-  }
-  if(value==COMPUTE_SMV_BOUNDS){
+    break;
+  case COMPUTE_SMV_BOUNDS:
     bounds_each_mesh = 1-bounds_each_mesh;
     updatemenu = 1;
-  }
-  if(value==SHOW_BOUND_DIFFS){
+    break;
+  case SHOW_BOUND_DIFFS:
     show_bound_diffs = 1-show_bound_diffs;
     updatemenu = 1;
-  }
-  if(value==CACHE_FILE_DATA){
+    break;
+  case CACHE_FILE_DATA:
     cache_file_data = 1-cache_file_data;
     cache_plot3d_data = cache_file_data;
     cache_boundary_data = cache_file_data;
@@ -3610,8 +3612,8 @@ void LoadUnloadMenu(int value){
     GLUIHVACSliceBoundsCPP_CB(BOUND_CACHE_DATA);
     GLUIPartBoundsCPP_CB(BOUND_CACHE_DATA);
     updatemenu = 1;
-  }
-  if(value==REDIRECT){
+    break;
+  case REDIRECT:
     updatemenu=1;
     GLUTPOSTREDISPLAY;
     redirect=1-redirect;
@@ -3629,6 +3631,12 @@ void LoadUnloadMenu(int value){
     else{
       SetStdOut(stdout);
     }
+    break;
+  case LOAD_WHEN_LOADED:
+    load_when_loaded = 1 - load_when_loaded;
+    GLUIUpdateLoadWhenLoaded();
+    updatemenu = 1;
+    break;
   }
   GLUTSETCURSOR(GLUT_CURSOR_RIGHT_ARROW);
 }
@@ -12695,6 +12703,8 @@ static int menu_count=0;
       }
 
       GLUTADDSUBMENU(_("Reload"),reloadmenu);
+      if(load_when_loaded==1)glutAddMenuEntry(_("*Load files when already loaded"), LOAD_WHEN_LOADED);
+      if(load_when_loaded==0)glutAddMenuEntry(_("Load files when already loaded"),  LOAD_WHEN_LOADED);
       glutAddMenuEntry(_("Unload all"),UNLOADALL);
     }
 
