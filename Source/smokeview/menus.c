@@ -5843,18 +5843,17 @@ int InPatchList(patchdata *patchj, patchdata *patchi){
 void LoadBoundaryMenu(int value){
   int errorcode;
   int i;
-  int boundarytypenew;
 
   GLUTSETCURSOR(GLUT_CURSOR_WAIT);
   if(value>=0){
-    boundarytypenew=GetBoundaryType(patchinfo+value);
-    if(boundarytypenew!=-1){
-      for(i=0;i<npatchinfo;i++){
+    if(load_when_loaded == 1){
+      for(i = 0;i < npatchinfo;i++){
         patchdata *patchi;
 
         patchi = patchinfo + i;
-        if(patchi->loaded == 0)continue;
-        if(patchi->shortlabel_index !=boundarytypenew)ReadBoundary(i,UNLOAD,&errorcode);
+        if(patchi->loaded == 1){
+          ReadBoundary(i, UNLOAD, &errorcode);
+        }
       }
     }
     if(scriptoutstream!=NULL){
@@ -5868,10 +5867,16 @@ void LoadBoundaryMenu(int value){
       fprintf(scriptoutstream, " %i\n", patchi->blocknumber+1);
     }
     if(scriptoutstream==NULL||script_defer_loading==0){
-      THREADcontrol(compress_threads, THREAD_LOCK);
-      SetLoadedPatchBounds(&value, 1);
-      ReadBoundary(value,LOAD,&errorcode);
-      THREADcontrol(compress_threads, THREAD_UNLOCK);
+      for(i = 0;i < 1;i++){
+        patchdata *patchi;
+
+        patchi = patchinfo + value;
+        IF_NOT_USEMESH_CONTINUE(patchi->loaded, patchi->blocknumber);
+        THREADcontrol(compress_threads, THREAD_LOCK);
+        SetLoadedPatchBounds(&value, 1);
+        ReadBoundary(value, LOAD, &errorcode);
+        THREADcontrol(compress_threads, THREAD_UNLOCK);
+      }
     }
   }
   else if(value<=-10){
