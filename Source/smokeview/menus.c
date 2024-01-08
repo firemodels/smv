@@ -4823,7 +4823,13 @@ void LoadSmoke3DMenu(int value){
         }
         if(add_blank==1)printf("\n");
       }
-      ReadSmoke3D(ALL_SMOKE_FRAMES, value, LOAD, FIRST_TIME, NULL, &errorcode);
+      if(load_when_loaded == 1){
+        ReadSmoke3D(ALL_SMOKE_FRAMES, value, UNLOAD, FIRST_TIME, NULL, &errorcode);
+      }
+      for(i = 0;i < 1;i++){
+        IF_NOT_USEMESH_CONTINUE(smoke3di->loaded, smoke3di->blocknumber);
+        ReadSmoke3D(ALL_SMOKE_FRAMES, value, LOAD, FIRST_TIME, NULL, &errorcode);
+      }
     }
   }
   else if(value==UNLOAD_ALL){
