@@ -5592,9 +5592,6 @@ void LoadPlot3dMenu(int value){
   if(value==MENU_PLOT3D_DUMMY)return;
   GLUTSETCURSOR(GLUT_CURSOR_WAIT);
   if(value>=0){
-    char *plot3dfile;
-
-    plot3dfile = plot3dinfo[value].file;
     if(scriptoutstream!=NULL&&loadplot3dall==0){
       fprintf(scriptoutstream,"LOADPLOT3D\n");
       fprintf(scriptoutstream," %i %f\n",
@@ -5610,12 +5607,23 @@ void LoadPlot3dMenu(int value){
       plot3dinfo[value].loadnow = 1;
       SetLoadedPlot3DBounds();
       plot3dinfo[value].finalize = 1;
-      for(i = 0; i<nplot3dinfo; i++){
-        if(plot3dinfo[i].loaded==1){
-          ReadPlot3D("", i, UNLOAD, &errorcode);
+      for(i = 0; i < nplot3dinfo; i++){
+        plot3ddata *plot3di;
+
+        plot3di = plot3dinfo + i;
+        if(plot3di->loaded == 1){
+          if(load_when_loaded == 1||i != value){
+            ReadPlot3D("", i, UNLOAD, &errorcode);
+          }
         }
       }
-      ReadPlot3D(plot3dfile,value,LOAD,&errorcode);
+      for(i = 0;i < 1;i++){
+        plot3ddata *plot3di;
+
+        plot3di = plot3dinfo + value;
+        IF_NOT_USEMESH_CONTINUE(plot3di->loaded, plot3di->blocknumber);
+        ReadPlot3D(plot3di->file, value, LOAD, &errorcode);
+      }
     }
   }
   else if(value==RELOAD_ALL){
