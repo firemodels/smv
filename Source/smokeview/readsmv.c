@@ -13106,17 +13106,32 @@ int ReadIni2(char *inifile, int localfile){
       }
       continue;
     }
-    if(MatchINI(buffer, "FIRECOLORMAP") == 1){
+    if(MatchINI(buffer, "COLORMAP") == 1){
+      char *ctype, *cmaptype, *cmap;
+      colorbardata *cb;
+
       fgets(buffer, 255, stream);
-      sscanf(buffer, "%i %i", &fire_colormap_type, &fire_colorbar_index_ini);
-      fire_colormap_type_save = fire_colormap_type;
-      update_fire_colorbar_index = 1;
-      continue;
-    }
-    if(MatchINI(buffer, "CO2COLORMAP") == 1){
-      fgets(buffer, 255, stream);
-      sscanf(buffer, "%i %i", &co2_colormap_type, &co2_colorbar_index_ini);
-      update_co2_colorbar_index = 1;
+      ctype = strtok(buffer, " ");
+      cmaptype = strtok(NULL, " ");
+      cmap = strtok(NULL, " ");
+      if(strcmp(ctype, "FIRE") == 0){
+        sscanf(cmaptype, "%i", &fire_colormap_type);
+        cb = GetColorbar(cmap);
+        if(cb == NULL)continue;
+        fire_colormap_type_save = fire_colormap_type;
+        fire_colorbar_index_ini = cb - colorbarinfo;
+        update_fire_colorbar_index = 1;
+      }
+      else if(strcmp(ctype, "CO2") == 0){
+        sscanf(cmaptype, "%i", &co2_colormap_type);
+        cb = GetColorbar(cmap);
+        if(cb == NULL)continue;
+        co2_colorbar_index_ini = cb - colorbarinfo;
+        update_co2_colorbar_index = 1;
+      }
+      else{
+        continue;
+      }
       continue;
     }
     if(MatchINI(buffer, "SHOWEXTREMEDATA") == 1){
@@ -17310,8 +17325,10 @@ void WriteIni(int flag,char *filename){
     fprintf(fileout, "COLORBARTYPE\n");
     fprintf(fileout, " %i %s %s \n", colorbartype, percen, cb->menu_label);
   }
-  fprintf(fileout, "CO2COLORMAP\n");
-  fprintf(fileout, " %i %i\n", co2_colormap_type, co2_colorbar_index);
+  if(co2_colorbar_index >= 0 && co2_colorbar_index < ncolorbars){
+    fprintf(fileout, "COLORMAP\n");
+    fprintf(fileout, " CO2 %i %s\n", co2_colormap_type, colorbarinfo[co2_colorbar_index].menu_label);
+  }
   {
     int mmin[3], mmax[3];
     for(i = 0; i < 3; i++){
@@ -17325,8 +17342,10 @@ void WriteIni(int flag,char *filename){
   }
   fprintf(fileout, "FIRECOLOR\n");
   fprintf(fileout, " %i %i %i\n", fire_color_int255[0], fire_color_int255[1], fire_color_int255[2]);
-  fprintf(fileout, "FIRECOLORMAP\n");
-  fprintf(fileout, " %i %i\n", fire_colormap_type, fire_colorbar_index);
+  if(fire_colorbar_index >= 0 && fire_colorbar_index < ncolorbars){
+    fprintf(fileout, "FIRECOLORMAP\n");
+    fprintf(fileout, " FIRE %i %s\n", fire_colormap_type, colorbarinfo[fire_colorbar_index].menu_label);
+  }
   fprintf(fileout, "FIREDEPTH\n");
   fprintf(fileout, " %f %f %f %i %i\n", fire_halfdepth, co2_halfdepth, emission_factor, use_fire_alpha, force_alpha_opaque);
   if(ncolorbars > ndefaultcolorbars){
