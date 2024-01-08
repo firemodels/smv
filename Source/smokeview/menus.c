@@ -5888,6 +5888,9 @@ void LoadBoundaryMenu(int value){
         IF_NOT_USEMESH_CONTINUE(patchi->loaded, patchi->blocknumber);
         THREADcontrol(compress_threads, THREAD_LOCK);
         SetLoadedPatchBounds(&value, 1);
+        if(patchi->structured == YES){
+          PRINTF("Loading %s(%s)", patchi->file, patchi->label.shortlabel);
+        }
         ReadBoundary(value, LOAD, &errorcode);
         THREADcontrol(compress_threads, THREAD_UNLOCK);
       }
