@@ -175,14 +175,24 @@ void ShowScene2(int mode){
 
       for(i = 0;i < nmeshes;i++){
         meshdata *meshi;
+        float *xyz_min, *xyz_max;
 
         meshi = meshinfo + i;
+        xyz_min = meshi->boxmin_scaled;
+        xyz_max = meshi->boxmax_scaled;
         if(meshi->use == 1){
-          float *xyz;
+          if(show_mesh_labels == 1){
+            char label[32];
+            float pos[3];
 
-          xyz = meshi->boxmiddle_scaled;
-          if(show_mesh_labels == 1)Output3Text(foregroundcolor, xyz[0], xyz[1], xyz[2], meshi->label);
-          DrawBoxMinMax(meshi->boxmin_scaled, meshi->boxmax_scaled, box_black);
+            pos[0] = xyz_min[0] + (xyz_max[0] - xyz_min[0]) / 40.0;
+            pos[1] = xyz_min[1] + (xyz_max[1] - xyz_min[1]) / 40.0;
+            pos[2] = xyz_min[2];
+
+            sprintf(label, "%i", i + 1);
+            Output3Text(foregroundcolor, pos[0], pos[1], pos[2], label);
+          }
+          DrawBoxMinMax(xyz_min, xyz_max, box_black);
         }
       }
     }

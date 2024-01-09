@@ -4956,9 +4956,9 @@ hvacductboundsCPP.setup("hvac", ROLLOUT_hvacduct, hvacductbounds_cpp, nhvacductb
   SPINNER_load_bounds[5]->set_float_limits(zbar0FDS, zbarFDS);
 
   PANEL_mesh1 = glui_bounds->add_panel_to_panel(PANEL_mesh, "", false);
-  CHECKBOX_show_intersected_meshes = glui_bounds->add_checkbox_to_panel(PANEL_mesh1, "show intersected meshes", &show_intersected_meshes, USEMESH_DRAW_MESH, MeshBoundCB);
   CHECKBOX_show_intersection_box = glui_bounds->add_checkbox_to_panel(PANEL_mesh1, "show intersection box", &show_intersection_box, USEMESH_DRAW_BOX, MeshBoundCB);
-  glui_bounds->add_checkbox_to_panel(PANEL_mesh1, "show mesh labels", &show_mesh_labels);
+  CHECKBOX_show_intersected_meshes = glui_bounds->add_checkbox_to_panel(PANEL_mesh1, "show intersected meshes", &show_intersected_meshes, USEMESH_DRAW_MESH, MeshBoundCB);
+  glui_bounds->add_checkbox_to_panel(PANEL_mesh1, "show intersected mesh indices", &show_mesh_labels);
   RADIO_load_only_when_unloaded = glui_bounds->add_radiogroup_to_panel(PANEL_mesh1, &load_only_when_unloaded, USEMESH_LOAD_WHEN_LOADED, MeshBoundCB);
   glui_bounds->add_radiobutton_to_group(RADIO_load_only_when_unloaded, "Load a file if either loaded or unloaded");
   glui_bounds->add_radiobutton_to_group(RADIO_load_only_when_unloaded, "Load a file only if unloaded");
