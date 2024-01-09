@@ -23,11 +23,6 @@
   if((blocknum)>=0 && meshinfo[(blocknum)].use == 0){\
     return 0;\
    }
-#define IF_NOT_USEMESH_RETURN(loaded,blocknum)\
-  if(loaded==1)return;\
-  if((blocknum)>=0 && meshinfo[(blocknum)].use == 0){\
-    return;\
-   }
 #define IF_NOT_USEMESH_CONTINUE(loaded,blocknum)\
   if(loaded==1)continue;\
   if((blocknum)>=0 && meshinfo[(blocknum)].use == 0){\
@@ -35,11 +30,8 @@
    }
 #else
 #define IF_NOT_USEMESH_RETURN0(loaded,blocknum)
-#define IF_NOT_USEMESH_RETURN(loaded,blocknum)
 #define IF_NOT_USEMESH_CONTINUE(loaded,blocknum)
 #endif
-
-
 
 #define SCALE2FDS(x) ((x)*xyzmaxdiff)
 #define SCALE2SMV(x) ((x)/xyzmaxdiff)

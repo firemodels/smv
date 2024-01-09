@@ -2501,7 +2501,6 @@ GLUI_Checkbox *CHECKBOX_show_slice_points = NULL;
 GLUI_Checkbox *CHECKBOX_show_slice_values = NULL;
 GLUI_Checkbox *CHECKBOX_vis_slice_plot = NULL;
 extern GLUI_Checkbox *CHECKBOX_cb_plot_dist;
-GLUI_Checkbox *CHECKBOX_load_when_loaded = NULL;
 
 GLUI_Checkbox *CHECKBOX_show_iso_shaded=NULL;
 GLUI_Checkbox *CHECKBOX_show_iso_outline=NULL;
@@ -2560,6 +2559,7 @@ GLUI_Checkbox *CHECKBOX_show_intersection_box=NULL;
 GLUI_Checkbox *CHECKBOX_show_intersected_meshes = NULL;
 #endif
 
+GLUI_RadioGroup *RADIO_load_only_when_unloaded = NULL;
 GLUI_RadioGroup *RADIO_iso_setmin=NULL;
 GLUI_RadioGroup *RADIO_iso_setmax=NULL;
 GLUI_RadioGroup *RADIO_transparency_option=NULL;
@@ -2678,13 +2678,13 @@ int       nsubboundprocinfo=0;
 /* ------------------ GLUIUpdatePartPointSize ------------------------ */
 
 extern "C" void GLUIUpdatePartPointSize(void){
-    SPINNER_partpointsize->set_float_val(partpointsize);
+  SPINNER_partpointsize->set_float_val(partpointsize);
 }
 
 /* ------------------ GLUIUpdateLoadWhenLoaded ------------------------ */
 
 extern "C" void GLUIUpdateLoadWhenLoaded(void){
-    CHECKBOX_load_when_loaded->set_int_val(load_when_loaded);
+  RADIO_load_only_when_unloaded->set_int_val(load_only_when_unloaded);
 }
 
 /* ------------------ GLUIUpdatePlotLabel ------------------------ */
@@ -4958,8 +4958,10 @@ hvacductboundsCPP.setup("hvac", ROLLOUT_hvacduct, hvacductbounds_cpp, nhvacductb
   PANEL_mesh1 = glui_bounds->add_panel_to_panel(PANEL_mesh, "", false);
   CHECKBOX_show_intersected_meshes = glui_bounds->add_checkbox_to_panel(PANEL_mesh1, "show intersected meshes", &show_intersected_meshes, USEMESH_DRAW_MESH, MeshBoundCB);
   CHECKBOX_show_intersection_box = glui_bounds->add_checkbox_to_panel(PANEL_mesh1, "show intersection box", &show_intersection_box, USEMESH_DRAW_BOX, MeshBoundCB);
-  CHECKBOX_load_when_loaded = glui_bounds->add_checkbox_to_panel(PANEL_mesh1, "load files when already loaded", &load_when_loaded, USEMESH_LOAD_WHEN_LOADED, MeshBoundCB);
   glui_bounds->add_checkbox_to_panel(PANEL_mesh1, "show mesh labels", &show_mesh_labels);
+  RADIO_load_only_when_unloaded = glui_bounds->add_radiogroup_to_panel(PANEL_mesh1, &load_only_when_unloaded, USEMESH_LOAD_WHEN_LOADED, MeshBoundCB);
+  glui_bounds->add_radiobutton_to_group(RADIO_load_only_when_unloaded, "Load a file if either loaded or unloaded");
+  glui_bounds->add_radiobutton_to_group(RADIO_load_only_when_unloaded, "Load a file only if unloaded");
 
   glui_bounds->add_column_to_panel(PANEL_mesh1, false);
 

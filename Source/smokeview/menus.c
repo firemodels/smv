@@ -3633,7 +3633,7 @@ void LoadUnloadMenu(int value){
     }
     break;
   case LOAD_WHEN_LOADED:
-    load_when_loaded = 1 - load_when_loaded;
+    load_only_when_unloaded = 1 - load_only_when_unloaded;
     GLUIUpdateLoadWhenLoaded();
     updatemenu = 1;
     break;
@@ -4065,7 +4065,7 @@ void SetupPart(int value){
     partdata *parti;
 
     parti = partinfo+i;
-    if(load_when_loaded == 1 && parti->loaded == 1){
+    if(load_only_when_unloaded == 0 && parti->loaded == 1){
       int errorcode;
       
       ReadPart("", i, UNLOAD, &errorcode);
@@ -4250,7 +4250,7 @@ void LoadParticleMenu(int value){
         // unload particle files
 
 
-        if(load_when_loaded==1&&value!=PARTFILE_RELOADALL){
+        if(load_only_when_unloaded==0&&value!=PARTFILE_RELOADALL){
           UnloadAllPartFiles();
         }
 
@@ -4729,7 +4729,7 @@ FILE_SIZE LoadSmoke3D(int type, int frame, int *count, float *time_value){
   int last_smoke = 0, i, file_count=0,errorcode;
   FILE_SIZE load_size=0;
 
-  if(load_when_loaded == 1){
+  if(load_only_when_unloaded == 0){
     for(i = nsmoke3dinfo - 1; i >= 0; i--){
       smoke3ddata *smoke3di;
 
@@ -4823,7 +4823,7 @@ void LoadSmoke3DMenu(int value){
         }
         if(add_blank==1)printf("\n");
       }
-      if(load_when_loaded == 1){
+      if(load_only_when_unloaded == 0){
         ReadSmoke3D(ALL_SMOKE_FRAMES, value, UNLOAD, FIRST_TIME, NULL, &errorcode);
       }
       for(i = 0;i < 1;i++){
@@ -5137,7 +5137,7 @@ void LoadMultiVSliceMenu(int value){
       vslice1 = vsliceinfo+mvslicei->ivslices[0];
       if(vslice1->ival>=0)longlabel = sliceinfo[vslice1->ival].label.longlabel;
       UnloadAllSliceFiles(longlabel); // unload all vector slices except for the type being loaded now
-      if(load_when_loaded == 1){
+      if(load_only_when_unloaded == 0){
         for(i = 0; i < mvslicei->nvslices; i++){
           UnloadVSliceMenu(mvslicei->ivslices[i]);
         }
@@ -5330,7 +5330,7 @@ void LoadMultiSliceMenu(int value){
 
       longlabel = sliceinfo[mslicei->islices[0]].label.longlabel;
       UnloadAllSliceFiles(longlabel); // unload all slice and vector slices not of type 'longlabel'
-      if(load_when_loaded == 1){ // unload slice being loaded if it is already loaded and of the same type
+      if(load_only_when_unloaded == 0){ // unload slice being loaded if it is already loaded and of the same type
         for(i = 0;i<mslicei->nslices; i++){
           UnloadSliceMenu(mslicei->islices[i]);
         }
@@ -5498,7 +5498,7 @@ void Plot3DListMenu(int value){
 
     plot3di = plot3dinfo + i;
     plot3di->loadnow = 0;
-    if(load_when_loaded == 1 && plot3di->loaded == 1){
+    if(load_only_when_unloaded == 0 && plot3di->loaded == 1){
       int errorcode;
 
       ReadPlot3D("", i, UNLOAD, &errorcode);
@@ -5618,7 +5618,7 @@ void LoadPlot3dMenu(int value){
 
         plot3di = plot3dinfo + i;
         if(plot3di->loaded == 1){
-          if(load_when_loaded == 1||i != value){
+          if(load_only_when_unloaded == 0||i != value){
             ReadPlot3D("", i, UNLOAD, &errorcode);
           }
         }
@@ -5726,7 +5726,7 @@ void LoadAllIsos(int iso_type){
   int i;
   int file_count=0;
   float load_time=0.0, load_size=0.0;
-  if(load_when_loaded == 1){
+  if(load_only_when_unloaded == 0){
     for(i = 0; i < nisoinfo; i++){
       isodata *isoi;
 
@@ -5766,7 +5766,7 @@ void LoadIsoMenu(int value){
   if(value==MENU_DUMMY3)return;
   GLUTSETCURSOR(GLUT_CURSOR_WAIT);
   if(value>=0){
-    if(load_when_loaded == 1){
+    if(load_only_when_unloaded == 0){
       for(i = 0;i < nisoinfo;i++){
         isodata *isoi;
 
@@ -5860,7 +5860,7 @@ void LoadBoundaryMenu(int value){
 
   GLUTSETCURSOR(GLUT_CURSOR_WAIT);
   if(value>=0){
-    if(load_when_loaded == 1){
+    if(load_only_when_unloaded == 0){
       for(i = 0;i < npatchinfo;i++){
         patchdata *patchi;
 
@@ -5917,7 +5917,7 @@ void LoadBoundaryMenu(int value){
 
         patchi = patchinfo+i;
         patchi->finalize = 0;
-        if(patchi->loaded == 1 && load_when_loaded == 1){
+        if(patchi->loaded == 1 && load_only_when_unloaded == 0){
           ReadBoundary(i, UNLOAD, &errorcode);
         }
       }
@@ -12511,7 +12511,7 @@ static int menu_count=0;
 #endif
     glutAddMenuEntry("-", MENU_DUMMY);
     glutAddMenuEntry(_("When:"), MENU_DUMMY);
-    glutAddMenuEntry(_("  now"),RELOAD_SWITCH);
+    glutAddMenuEntry(_("  now (all meshes)"),RELOAD_SWITCH);
     if(periodic_reload_value==1)glutAddMenuEntry(_("   *every minute"),1);
     if(periodic_reload_value!=1)glutAddMenuEntry(_("   every minute"),1);
     if(periodic_reload_value==5)glutAddMenuEntry(_("   *every 5 minutes"),5);
@@ -12754,8 +12754,14 @@ static int menu_count=0;
       }
 
       GLUTADDSUBMENU(_("Reload"),reloadmenu);
-      if(load_when_loaded==1)glutAddMenuEntry(_("*Load files when already loaded"), LOAD_WHEN_LOADED);
-      if(load_when_loaded==0)glutAddMenuEntry(_("Load files when already loaded"),  LOAD_WHEN_LOADED);
+      if(load_only_when_unloaded==1){
+        glutAddMenuEntry(_("Load a file if either loaded or unloaded"),  LOAD_WHEN_LOADED);
+        glutAddMenuEntry(_("*Load a file only if unloaded"), LOAD_WHEN_LOADED);
+      }
+      else{
+        glutAddMenuEntry(_("*Load a file if either loaded or unloaded"),  LOAD_WHEN_LOADED);
+        glutAddMenuEntry(_("Load a file only if unloaded"), LOAD_WHEN_LOADED);
+      }
       glutAddMenuEntry(_("Unload all"),UNLOADALL);
     }
 
