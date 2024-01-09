@@ -2683,9 +2683,11 @@ extern "C" void GLUIUpdatePartPointSize(void){
 
 /* ------------------ GLUIUpdateLoadWhenLoaded ------------------------ */
 
+#ifdef pp_LOAD_BOUNDS
 extern "C" void GLUIUpdateLoadWhenLoaded(void){
   RADIO_load_only_when_unloaded->set_int_val(load_only_when_unloaded);
 }
+#endif
 
 /* ------------------ GLUIUpdatePlotLabel ------------------------ */
 

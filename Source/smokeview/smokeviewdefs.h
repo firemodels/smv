@@ -779,7 +779,9 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 #define COMPUTE_SMV_BOUNDS    10
 #define SHOW_BOUND_DIFFS      11
 #define CACHE_FILE_DATA       12
+#ifdef pp_LOAD_BOUNDS
 #define LOAD_WHEN_LOADED      13
+#endif
 
 #define SCRIPT_START_RECORDING2 -6
 #define SCRIPT_START_RECORDING  -2
