@@ -2559,7 +2559,9 @@ GLUI_Checkbox *CHECKBOX_show_intersection_box=NULL;
 GLUI_Checkbox *CHECKBOX_show_intersected_meshes = NULL;
 #endif
 
+#ifdef pp_LOAD_BOUNDS
 GLUI_RadioGroup *RADIO_load_only_when_unloaded = NULL;
+#endif
 GLUI_RadioGroup *RADIO_iso_setmin=NULL;
 GLUI_RadioGroup *RADIO_iso_setmax=NULL;
 GLUI_RadioGroup *RADIO_transparency_option=NULL;
