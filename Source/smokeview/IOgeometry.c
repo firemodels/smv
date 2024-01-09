@@ -914,6 +914,23 @@ void DrawBox(float *bb, float *box_color){
   glEnd();
 }
 
+#ifdef pp_LOAD_BOUNDS
+
+/* ------------------ DrawBox ------------------------ */
+
+void DrawBoxMinMax(float *bbmin, float *bbmax, float *box_color){
+  float bb[6];
+
+  bb[0] = bbmin[0];
+  bb[2] = bbmin[1];
+  bb[4] = bbmin[2];
+  bb[1] = bbmax[0];
+  bb[3] = bbmax[1];
+  bb[5] = bbmax[2];
+  DrawBox(bb, box_color);
+}
+#endif
+
 /* ------------------ DrawObstBoundingBox ------------------------ */
 
 void DrawObstBoundingBox(void){

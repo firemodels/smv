@@ -2224,6 +2224,26 @@ SVEXTERN float SVDECL(transparency_geom,0.2);
 SVEXTERN int SVDECL(use_transparency_geom,0);
 SVEXTERN facedata SVDECL(**face_transparent,NULL);
 SVEXTERN int SVDECL(hidepatchsurface,0);
+
+#ifdef pp_LOAD_BOUNDS
+#ifdef INMAIN
+SVEXTERN float load_bounds[6] = {0.0, 1.0, 0.0, 1.0, 0.0, 1.0};
+SVEXTERN float load_bounds_save[6] = {0.0, 1.0, 0.0, 1.0, 0.0, 1.0};
+SVEXTERN int use_load_bounds[6] = {0, 0, 0, 0, 0, 0};
+#else
+SVEXTERN float load_bounds[6];
+SVEXTERN float load_bounds_save[6];
+SVEXTERN int use_load_bounds[6];
+#endif
+SVEXTERN int SVDECL(show_intersection_box, 0);
+SVEXTERN int SVDECL(show_intersected_meshes, 0);
+SVEXTERN int SVDECL(update_load_bounds, 0);
+SVEXTERN int SVDECL(glui_load_bounds_defined, 0);
+SVEXTERN int SVDECL(set_mesh, 0);
+SVEXTERN int SVDECL(load_only_when_unloaded, 0);
+SVEXTERN int SVDECL(show_mesh_labels, 0);
+#endif
+
 #ifdef INMAIN
   SVEXTERN float rgb_baseBASE[MAXRGB][4]=
 {

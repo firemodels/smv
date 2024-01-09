@@ -3796,6 +3796,7 @@ void DrawBoundaryFrame(int flag){
     patchdata *patchi;
 
     patchi = patchinfo + i;
+    IF_NOT_USEMESH_CONTINUE(USEMESH_DRAW,patchi->blocknumber);
     if(patchi->structured == NO && patchi->loaded == 1 && patchi->display == 1){
       if(flag == DRAW_OPAQUE){
         if(patchi->patch_filetype == PATCH_GEOMETRY_BOUNDARY){
@@ -3814,6 +3815,9 @@ void DrawBoundaryFrame(int flag){
   if(flag == DRAW_TRANSPARENT)return;
   for(i=0;i<nmeshes;i++){
     meshi=meshinfo+i;
+#ifdef pp_LOAD_BOUNDS
+    if(meshi->use == 0)continue;
+#endif
     if(meshi->npatches>0){
       int filenum;
 

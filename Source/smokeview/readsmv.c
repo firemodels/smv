@@ -889,6 +889,9 @@ void FreeLabels(flowlabels *flowlabel){
 void InitMesh(meshdata *meshi){
   int i;
 
+#ifdef pp_LOAD_BOUNDS
+  meshi->use = 1;
+#endif
   meshi->isliceinfo    = 0;
   meshi->nsliceinfo    = 0;
   for(i = 0;i < 6;i++){
@@ -3523,6 +3526,21 @@ void UpdateMeshCoords(void){
   xbarFDS  = xbar;
   ybarFDS  = ybar;
   zbarFDS  = zbar;
+
+#ifdef pp_LOAD_BOUNDS
+  use_load_bounds[0] = 0;
+  use_load_bounds[1] = 0;
+  use_load_bounds[2] = 0;
+  use_load_bounds[3] = 0;
+  use_load_bounds[4] = 0;
+  use_load_bounds[5] = 0;
+  load_bounds[0] = xbar0FDS;
+  load_bounds[1] = xbarFDS;
+  load_bounds[2] = ybar0FDS;
+  load_bounds[3] = ybarFDS;
+  load_bounds[4] = zbar0FDS;
+  load_bounds[5] = zbarFDS;
+#endif
 
   geomlistdata *geomlisti;
   if(geominfo!=NULL&&geominfo->geomlistinfo!=NULL){
@@ -12304,13 +12322,35 @@ int ReadIni2(char *inifile, int localfile){
       update_research_mode=1;
       continue;
     }
+#ifdef pp_LOAD_BOUNDS
+    if(MatchINI(buffer, "LOADMESH") == 1){
+      fgets(buffer, 255, stream);
+      sscanf(buffer, " %i %i", &show_intersection_box, &show_intersected_meshes);
+
+      fgets(buffer, 255, stream);
+      sscanf(buffer, " %i %f %i %f", use_load_bounds + 0, load_bounds + 0, use_load_bounds + 1, load_bounds + 1);
+
+      fgets(buffer, 255, stream);
+      sscanf(buffer, " %i %f %i %f", use_load_bounds + 2, load_bounds + 2, use_load_bounds + 3, load_bounds + 3);
+
+      fgets(buffer, 255, stream);
+      sscanf(buffer, " %i %f %i %f", use_load_bounds + 4, load_bounds + 4, use_load_bounds + 5, load_bounds + 5);
+
+      for(i = 0;i < 6;i++){
+        if(use_load_bounds[i] != 0)use_load_bounds[i] = 1;
+      }
+      if(show_intersection_box != 0)show_intersection_box = 1;
+      if(show_intersected_meshes != 0)show_intersected_meshes = 1;
+      update_load_bounds = 1;
+    }
+#endif
     if(MatchINI(buffer, "GEOMDOMAIN") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, " %i %i ", &showgeom_inside_domain, &showgeom_outside_domain);
       showgeom_inside_domain = CLAMP(showgeom_inside_domain, 0, 1);
       showgeom_outside_domain = CLAMP(showgeom_outside_domain, 0, 1);
       continue;
-   }
+    }
     if(MatchINI(buffer, "SLICEDUP") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, " %i %i %i", &slicedup_option, &vectorslicedup_option,&boundaryslicedup_option);
@@ -13066,17 +13106,32 @@ int ReadIni2(char *inifile, int localfile){
       }
       continue;
     }
-    if(MatchINI(buffer, "FIRECOLORMAP") == 1){
+    if(MatchINI(buffer, "COLORMAP") == 1){
+      char *ctype, *cmaptype, *cmap;
+      colorbardata *cb;
+
       fgets(buffer, 255, stream);
-      sscanf(buffer, "%i %i", &fire_colormap_type, &fire_colorbar_index_ini);
-      fire_colormap_type_save = fire_colormap_type;
-      update_fire_colorbar_index = 1;
-      continue;
-    }
-    if(MatchINI(buffer, "CO2COLORMAP") == 1){
-      fgets(buffer, 255, stream);
-      sscanf(buffer, "%i %i", &co2_colormap_type, &co2_colorbar_index_ini);
-      update_co2_colorbar_index = 1;
+      ctype = strtok(buffer, " ");
+      cmaptype = strtok(NULL, " ");
+      cmap = strtok(NULL, " ");
+      if(strcmp(ctype, "FIRE") == 0){
+        sscanf(cmaptype, "%i", &fire_colormap_type);
+        cb = GetColorbar(cmap);
+        if(cb == NULL)continue;
+        fire_colormap_type_save = fire_colormap_type;
+        fire_colorbar_index_ini = cb - colorbarinfo;
+        update_fire_colorbar_index = 1;
+      }
+      else if(strcmp(ctype, "CO2") == 0){
+        sscanf(cmaptype, "%i", &co2_colormap_type);
+        cb = GetColorbar(cmap);
+        if(cb == NULL)continue;
+        co2_colorbar_index_ini = cb - colorbarinfo;
+        update_co2_colorbar_index = 1;
+      }
+      else{
+        continue;
+      }
       continue;
     }
     if(MatchINI(buffer, "SHOWEXTREMEDATA") == 1){
@@ -16458,6 +16513,13 @@ void WriteIniLocal(FILE *fileout){
   }
   fprintf(fileout, "CACHE_DATA\n");
   fprintf(fileout, " %i %i %i %i \n", cache_boundary_data, cache_part_data, cache_plot3d_data, cache_slice_data);
+#ifdef pp_LOAD_BOUNDS
+  fprintf(fileout, "LOADMESH\n");
+  fprintf(fileout, " %i %i\n", show_intersection_box, show_intersected_meshes);
+  fprintf(fileout, " %i %f %i %f\n", use_load_bounds[0], load_bounds[0], use_load_bounds[1], load_bounds[1]);
+  fprintf(fileout, " %i %f %i %f\n", use_load_bounds[2], load_bounds[2], use_load_bounds[3], load_bounds[3]);
+  fprintf(fileout, " %i %f %i %f\n", use_load_bounds[4], load_bounds[4], use_load_bounds[5], load_bounds[5]);
+#endif
   fprintf(fileout, "PATCHDATAOUT\n");
   fprintf(fileout, " %i %f %f %f %f %f %f %f %f\n", output_patchdata,
     patchout_tmin, patchout_tmax,
@@ -17263,8 +17325,10 @@ void WriteIni(int flag,char *filename){
     fprintf(fileout, "COLORBARTYPE\n");
     fprintf(fileout, " %i %s %s \n", colorbartype, percen, cb->menu_label);
   }
-  fprintf(fileout, "CO2COLORMAP\n");
-  fprintf(fileout, " %i %i\n", co2_colormap_type, co2_colorbar_index);
+  if(co2_colorbar_index >= 0 && co2_colorbar_index < ncolorbars){
+    fprintf(fileout, "COLORMAP\n");
+    fprintf(fileout, " CO2 %i %s\n", co2_colormap_type, colorbarinfo[co2_colorbar_index].menu_label);
+  }
   {
     int mmin[3], mmax[3];
     for(i = 0; i < 3; i++){
@@ -17278,8 +17342,10 @@ void WriteIni(int flag,char *filename){
   }
   fprintf(fileout, "FIRECOLOR\n");
   fprintf(fileout, " %i %i %i\n", fire_color_int255[0], fire_color_int255[1], fire_color_int255[2]);
-  fprintf(fileout, "FIRECOLORMAP\n");
-  fprintf(fileout, " %i %i\n", fire_colormap_type, fire_colorbar_index);
+  if(fire_colorbar_index >= 0 && fire_colorbar_index < ncolorbars){
+    fprintf(fileout, "FIRECOLORMAP\n");
+    fprintf(fileout, " FIRE %i %s\n", fire_colormap_type, colorbarinfo[fire_colorbar_index].menu_label);
+  }
   fprintf(fileout, "FIREDEPTH\n");
   fprintf(fileout, " %f %f %f %i %i\n", fire_halfdepth, co2_halfdepth, emission_factor, use_fire_alpha, force_alpha_opaque);
   if(ncolorbars > ndefaultcolorbars){

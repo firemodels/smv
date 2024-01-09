@@ -3,21 +3,12 @@
 
 #include "options_common.h"
 
-//*** define smokeview title
-
 #ifdef pp_BETA
 #define pp_DEBUG_SUBMENU       // debug output and testing for building menus
 #endif
 
-//#define pp_MESH_SLICE
-//#define pp_MESH_PATCH
-//#define pp_MESH_ISO
-//#define pp_MESH_SMOKE
-//#define pp_MESH_PART
-//#define pp_MESH_VOLSMOKE
-//#define pp_MESH_PLOT3D
-
 //#define pp_SLICE_DIR_COUNT
+#define pp_LOAD_BOUNDS   // specify clipping planes for loading data
 
 //#define pp_LUA                 // turn on LUA option
 
