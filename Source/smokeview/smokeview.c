@@ -239,12 +239,12 @@ void DisplayVersionInfo(char *progname){
 
 /* ------------------ IsFDSRunning ------------------------ */
 
-int IsFDSRunning(void){
+int IsFDSRunning(FILE_SIZE *last_size){
   FILE_SIZE file_size;
 
   file_size = GetFileSizeSMV(stepcsv_filename);
-  if(file_size != last_file_size){
-    last_file_size = file_size;
+  if(file_size != *last_size){
+    *last_size = file_size;
     return 1;
   }
   return 0;

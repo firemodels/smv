@@ -11635,7 +11635,8 @@ int ReadSMV_Configure(){
   PRINTF("  wrapping up\n");
 
   INIT_PRINT_TIMER(fdsrunning_timer);
-  last_file_size = GetFileSizeSMV(stepcsv_filename); // used by IsFDSRunning 
+  last_size_for_slice = GetFileSizeSMV(stepcsv_filename); // used by IsFDSRunning 
+  last_size_for_boundary = last_size_for_slice;
   PRINT_TIMER(fdsrunning_timer, "filesize_timer");   // if file size changes then assume fds is running
 
   have_obsts = 0;

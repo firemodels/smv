@@ -120,7 +120,8 @@ SVEXTERN int hvac_duct_color[3];
 SVEXTERN int hvac_node_color[3];
 #endif
 
-SVEXTERN FILE_SIZE SVDECL(last_file_size, 0);
+SVEXTERN FILE_SIZE SVDECL(last_size_for_slice, 0);
+SVEXTERN FILE_SIZE SVDECL(last_size_for_boundary, 0);
 SVEXTERN char SVDECL(*stepcsv_filename, NULL);
 
 SVEXTERN int SVDECL(histogram_nframes, 40);
