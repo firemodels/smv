@@ -12810,11 +12810,9 @@ static int menu_count=0;
       GLUTADDSUBMENU(_("Reload"),reloadmenu);
 #ifdef pp_LOAD_BOUNDS
       if(load_only_when_unloaded==1){
-        glutAddMenuEntry(_("Load a file if either loaded or unloaded"),  LOAD_WHEN_LOADED);
         glutAddMenuEntry(_("*Load a file only if unloaded"), LOAD_WHEN_LOADED);
       }
       else{
-        glutAddMenuEntry(_("*Load a file if either loaded or unloaded"),  LOAD_WHEN_LOADED);
         glutAddMenuEntry(_("Load a file only if unloaded"), LOAD_WHEN_LOADED);
       }
 #endif

@@ -2557,11 +2557,9 @@ GLUI_Checkbox *CHECKBOX_show_extreme_maxdata = NULL;
 GLUI_Checkbox *CHECKBOX_use_meshclip[6];
 GLUI_Checkbox *CHECKBOX_show_intersection_box=NULL;
 GLUI_Checkbox *CHECKBOX_show_intersected_meshes = NULL;
+GLUI_Checkbox *CHECKBOX_load_only_when_unloaded = NULL;
 #endif
 
-#ifdef pp_LOAD_BOUNDS
-GLUI_RadioGroup *RADIO_load_only_when_unloaded = NULL;
-#endif
 GLUI_RadioGroup *RADIO_iso_setmin=NULL;
 GLUI_RadioGroup *RADIO_iso_setmax=NULL;
 GLUI_RadioGroup *RADIO_transparency_option=NULL;
@@ -2687,7 +2685,7 @@ extern "C" void GLUIUpdatePartPointSize(void){
 
 #ifdef pp_LOAD_BOUNDS
 extern "C" void GLUIUpdateLoadWhenLoaded(void){
-  RADIO_load_only_when_unloaded->set_int_val(load_only_when_unloaded);
+  CHECKBOX_load_only_when_unloaded->set_int_val(load_only_when_unloaded);
 }
 #endif
 
@@ -4977,9 +4975,7 @@ hvacductboundsCPP.setup("hvac", ROLLOUT_hvacduct, hvacductbounds_cpp, nhvacductb
   CHECKBOX_show_intersection_box = glui_bounds->add_checkbox_to_panel(PANEL_mesh1, "show intersection box", &show_intersection_box, USEMESH_DRAW_BOX, MeshBoundCB);
   CHECKBOX_show_intersected_meshes = glui_bounds->add_checkbox_to_panel(PANEL_mesh1, "show intersected meshes", &show_intersected_meshes, USEMESH_DRAW_MESH, MeshBoundCB);
   glui_bounds->add_checkbox_to_panel(PANEL_mesh1, "show intersected mesh indices", &show_mesh_labels);
-  RADIO_load_only_when_unloaded = glui_bounds->add_radiogroup_to_panel(PANEL_mesh1, &load_only_when_unloaded, USEMESH_LOAD_WHEN_LOADED, MeshBoundCB);
-  glui_bounds->add_radiobutton_to_group(RADIO_load_only_when_unloaded, "Load a file if either loaded or unloaded");
-  glui_bounds->add_radiobutton_to_group(RADIO_load_only_when_unloaded, "Load a file only if unloaded");
+  CHECKBOX_load_only_when_unloaded = glui_bounds->add_checkbox_to_panel(PANEL_mesh1, "Load a file only if unloaded", &load_only_when_unloaded, USEMESH_LOAD_WHEN_LOADED, MeshBoundCB);
 
   glui_bounds->add_column_to_panel(PANEL_mesh1, false);
 
