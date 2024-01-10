@@ -2227,18 +2227,18 @@ SVEXTERN int SVDECL(hidepatchsurface,0);
 
 #ifdef pp_LOAD_BOUNDS
 #ifdef INMAIN
-SVEXTERN float load_bounds[6] = {0.0, 1.0, 0.0, 1.0, 0.0, 1.0};
-SVEXTERN float load_bounds_save[6] = {0.0, 1.0, 0.0, 1.0, 0.0, 1.0};
-SVEXTERN int use_load_bounds[6] = {0, 0, 0, 0, 0, 0};
+SVEXTERN float meshclip[6] = {0.0, 1.0, 0.0, 1.0, 0.0, 1.0};
+SVEXTERN float meshclip_save[6] = {0.0, 1.0, 0.0, 1.0, 0.0, 1.0};
+SVEXTERN int use_meshclip[6] = {0, 0, 0, 0, 0, 0};
 #else
-SVEXTERN float load_bounds[6];
-SVEXTERN float load_bounds_save[6];
-SVEXTERN int use_load_bounds[6];
+SVEXTERN float meshclip[6];
+SVEXTERN float meshclip_save[6];
+SVEXTERN int use_meshclip[6];
 #endif
 SVEXTERN int SVDECL(show_intersection_box, 0);
 SVEXTERN int SVDECL(show_intersected_meshes, 0);
-SVEXTERN int SVDECL(update_load_bounds, 0);
-SVEXTERN int SVDECL(glui_load_bounds_defined, 0);
+SVEXTERN int SVDECL(update_meshclip, 0);
+SVEXTERN int SVDECL(glui_meshclip_defined, 0);
 SVEXTERN int SVDECL(set_mesh, 0);
 SVEXTERN int SVDECL(load_only_when_unloaded, 0);
 SVEXTERN int SVDECL(show_mesh_labels, 0);
