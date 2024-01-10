@@ -1162,7 +1162,6 @@ extern "C" void GLUISetValTypeIndex(int type, int valtype_index){
 
 /* ------------------ GLUIGetOnlyMinMax ------------------------ */
 
-
 extern "C" void GLUIGetOnlyMinMax(int type, char *label, int *set_valmin, float *valmin, int *set_valmax, float *valmax){
   switch(type){
     case BOUND_HVACDUCT:

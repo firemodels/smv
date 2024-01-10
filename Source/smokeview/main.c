@@ -308,6 +308,11 @@ char *ProcessCommandLine(CommandlineArgs *args) {
   STRCPY(expcsv_filename, fdsprefix);
   STRCAT(expcsv_filename, "_exp.csv");
 
+  FREEMEMORY(stepcsv_filename);
+  NewMemory(( void ** )&stepcsv_filename, len_casename + strlen("_steps.csv") + 1);
+  STRCPY(stepcsv_filename, fdsprefix);
+  STRCAT(stepcsv_filename, "_steps.csv");
+
   FREEMEMORY(dEcsv_filename);
   NewMemory(( void ** )&dEcsv_filename, len_casename + strlen("_dE.csv") + 1);
   STRCPY(dEcsv_filename, fdsprefix);

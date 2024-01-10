@@ -11634,6 +11634,10 @@ int ReadSMV_Configure(){
 
   PRINTF("  wrapping up\n");
 
+  INIT_PRINT_TIMER(fdsrunning_timer);
+  last_file_size = GetFileSizeSMV(stepcsv_filename); // used by IsFDSRunning 
+  PRINT_TIMER(fdsrunning_timer, "filesize_timer");   // if file size changes then assume fds is running
+
   have_obsts = 0;
   for(i=0;i<nmeshes;i++){
     meshdata *meshi;
