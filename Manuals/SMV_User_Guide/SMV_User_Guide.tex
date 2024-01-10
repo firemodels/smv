@@ -1987,14 +1987,18 @@ by loading a temperature slice and setting the position to $x=0.5$, $z=1.5$ .}
 %---------------------------------------------------------------------------------
 \section{Loading Data}
 
-Data is loaded in smokeview by clicking the right mouse buttons and selecting one of the data types
+Data is loaded in smokeview by clicking the right mouse button and selecting one of the data types
 under the Load/Unload menu. Smokeview loads data for all available times and meshes by default.
-For large cases, it is useful to reduce the amount of data that is loaded in order to shorten load times .
+For large cases, it is useful to reduce the amount of data loaded in order to shorten load times .
 To do this, one uses the Data loading dialog box
-illustrated in Figure \ref{figDataloading}.  To shorten the time interval over which
-data is loaded, specify a min and/or max time.  To reduce the number of meshes over which
-data is loaded specify an intersection box.  Only data in meshes within this intersection will
-then be loaded.  The intersection box is colored red and the meshes that are contained within this box
+illustrated in Figure \ref{figDataloading}.
+To open this dialog box select the Dialogs>File/Data/Coloring menu entry then select the Data loading tab.
+To shorten the time interval over which
+data is loaded, specify a min and/or max time in this dialog box.
+To reduce the number of meshes over which
+data is loaded specify an intersection box.  Only data in meshes within this intersection box will
+then be loaded.  The intersection box may be viewd by selecting the show intersection box checkbox.
+The intersection box is colored red. The meshes that are contained within this box
 are drawn as outlines and colored black. Mesh indices (1 to number of meshes) may be displayed and used
 to set the intersection box to that mesh.
 
