@@ -177,6 +177,8 @@ target_link_libraries(smvq PRIVATE OpenGL::GL OpenGL::GLU)
 
 if (WIN32)
     target_include_directories(smvq PRIVATE ../pthreads)
+    find_package(unofficial-getopt-win32 REQUIRED)
+    target_link_libraries(smvq PRIVATE unofficial::getopt-win32::getopt)
 endif()
 if ((NOT MACOSX) AND UNIX)
     target_link_libraries(smvq PRIVATE m)

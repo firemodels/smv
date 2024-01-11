@@ -1,10 +1,13 @@
 #define INMAIN
 #include "options.h"
+#include <ctype.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <getopt.h>
 
 #include "MALLOCC.h"
 #include "smokeviewvars.h"
@@ -382,7 +385,45 @@ int RunBenchmark(char *input_file) {
 }
 
 int main(int argc, char **argv) {
-  char *input_file = argv[1];
+
+  bool print_help = false;
+  bool print_version = false;
+
+  int c;
+
+  opterr = 0;
+
+  while ((c = getopt(argc, argv, "hV")) != -1)
+    switch (c) {
+    case 'h':
+      print_help = true;
+      break;
+    case 'V':
+      print_version = true;
+      break;
+    case '?':
+      if (isprint(optopt))
+        fprintf(stderr, "Unknown option `-%c'.\n", optopt);
+      else
+        fprintf(stderr, "Unknown option character `\\x%x'.\n", optopt);
+      return 1;
+    default:
+      abort();
+    }
+  if (print_help) {
+    printf("smvq-%s\n", PROGVERSION);
+    printf("\nUsage:  smvq [OPTIONS] <FILE>\n");
+    printf("\nOptions:\n");
+    printf("  -h Print help\n");
+    printf("  -V Print version\n");
+    return 0;
+  }
+  if (print_version) {
+    printf("smvq - smv query processor (v%s)\n", PROGVERSION);
+    return 0;
+  }
+  char *input_file = argv[optind];
+
   if (input_file == NULL) {
     fprintf(stderr, "No input file specified.\n");
     return 1;
