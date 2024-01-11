@@ -3528,18 +3528,18 @@ void UpdateMeshCoords(void){
   zbarFDS  = zbar;
 
 #ifdef pp_LOAD_BOUNDS
-  use_load_bounds[0] = 0;
-  use_load_bounds[1] = 0;
-  use_load_bounds[2] = 0;
-  use_load_bounds[3] = 0;
-  use_load_bounds[4] = 0;
-  use_load_bounds[5] = 0;
-  load_bounds[0] = xbar0FDS;
-  load_bounds[1] = xbarFDS;
-  load_bounds[2] = ybar0FDS;
-  load_bounds[3] = ybarFDS;
-  load_bounds[4] = zbar0FDS;
-  load_bounds[5] = zbarFDS;
+  use_meshclip[0] = 0;
+  use_meshclip[1] = 0;
+  use_meshclip[2] = 0;
+  use_meshclip[3] = 0;
+  use_meshclip[4] = 0;
+  use_meshclip[5] = 0;
+  meshclip[0] = xbar0FDS;
+  meshclip[1] = xbarFDS;
+  meshclip[2] = ybar0FDS;
+  meshclip[3] = ybarFDS;
+  meshclip[4] = zbar0FDS;
+  meshclip[5] = zbarFDS;
 #endif
 
   geomlistdata *geomlisti;
@@ -11634,6 +11634,11 @@ int ReadSMV_Configure(){
 
   PRINTF("  wrapping up\n");
 
+  INIT_PRINT_TIMER(fdsrunning_timer);
+  last_size_for_slice = GetFileSizeSMV(stepcsv_filename); // used by IsFDSRunning 
+  last_size_for_boundary = last_size_for_slice;
+  PRINT_TIMER(fdsrunning_timer, "filesize_timer");   // if file size changes then assume fds is running
+
   have_obsts = 0;
   for(i=0;i<nmeshes;i++){
     meshdata *meshi;
@@ -12328,20 +12333,20 @@ int ReadIni2(char *inifile, int localfile){
       sscanf(buffer, " %i %i", &show_intersection_box, &show_intersected_meshes);
 
       fgets(buffer, 255, stream);
-      sscanf(buffer, " %i %f %i %f", use_load_bounds + 0, load_bounds + 0, use_load_bounds + 1, load_bounds + 1);
+      sscanf(buffer, " %i %f %i %f", use_meshclip + 0, meshclip + 0, use_meshclip + 1, meshclip + 1);
 
       fgets(buffer, 255, stream);
-      sscanf(buffer, " %i %f %i %f", use_load_bounds + 2, load_bounds + 2, use_load_bounds + 3, load_bounds + 3);
+      sscanf(buffer, " %i %f %i %f", use_meshclip + 2, meshclip + 2, use_meshclip + 3, meshclip + 3);
 
       fgets(buffer, 255, stream);
-      sscanf(buffer, " %i %f %i %f", use_load_bounds + 4, load_bounds + 4, use_load_bounds + 5, load_bounds + 5);
+      sscanf(buffer, " %i %f %i %f", use_meshclip + 4, meshclip + 4, use_meshclip + 5, meshclip + 5);
 
       for(i = 0;i < 6;i++){
-        if(use_load_bounds[i] != 0)use_load_bounds[i] = 1;
+        if(use_meshclip[i] != 0)use_meshclip[i] = 1;
       }
       if(show_intersection_box != 0)show_intersection_box = 1;
       if(show_intersected_meshes != 0)show_intersected_meshes = 1;
-      update_load_bounds = 1;
+      update_meshclip = 1;
     }
 #endif
     if(MatchINI(buffer, "GEOMDOMAIN") == 1){
@@ -16516,9 +16521,9 @@ void WriteIniLocal(FILE *fileout){
 #ifdef pp_LOAD_BOUNDS
   fprintf(fileout, "LOADMESH\n");
   fprintf(fileout, " %i %i\n", show_intersection_box, show_intersected_meshes);
-  fprintf(fileout, " %i %f %i %f\n", use_load_bounds[0], load_bounds[0], use_load_bounds[1], load_bounds[1]);
-  fprintf(fileout, " %i %f %i %f\n", use_load_bounds[2], load_bounds[2], use_load_bounds[3], load_bounds[3]);
-  fprintf(fileout, " %i %f %i %f\n", use_load_bounds[4], load_bounds[4], use_load_bounds[5], load_bounds[5]);
+  fprintf(fileout, " %i %f %i %f\n", use_meshclip[0], meshclip[0], use_meshclip[1], meshclip[1]);
+  fprintf(fileout, " %i %f %i %f\n", use_meshclip[2], meshclip[2], use_meshclip[3], meshclip[3]);
+  fprintf(fileout, " %i %f %i %f\n", use_meshclip[4], meshclip[4], use_meshclip[5], meshclip[5]);
 #endif
   fprintf(fileout, "PATCHDATAOUT\n");
   fprintf(fileout, " %i %f %f %f %f %f %f %f %f\n", output_patchdata,

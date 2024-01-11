@@ -2361,20 +2361,19 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
   patchi->display = 1;
   patchi->hist_update = 1;
 
+  int recompute = 0;
   if(patchi->finalize==1){
     GLUIUpdateBoundaryListIndex(patchfilenum);
-#define BOUND_UPDATE_COLORS       110
-#define BOUND_DONTUPDATE_COLORS   128
-#define BOUND_COMPUTE_PERCENTILES 116
     cpp_boundsdata *bounds;
 
     if(runscript == 0){
       THREADcontrol(patchbound_threads, THREAD_JOIN);
     }
-    if(force_bound_update==1||patch_bounds_defined==0){
-      GetGlobalPatchBounds(1);
+    if(force_bound_update==1||patch_bounds_defined==0 || IsFDSRunning(&last_size_for_boundary) == 1){
+      GetGlobalPatchBounds(1,DONOT_SET_MINMAX_FLAG);
       SetLoadedPatchBounds(NULL, 0);
       GLUIPatchBoundsCPP_CB(BOUND_DONTUPDATE_COLORS);
+      recompute = 1;
     }
     else{
       bounds = GLUIGetBoundsData(BOUND_PATCH);
@@ -2427,6 +2426,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
  else{
    PRINTF(" - %.0f kB in %.1f s\n", (float)return_filesize / 1000., total_time);
   }
+  if(recompute == 1)printf("***recomputing bounds\n");
 
   update_patch_bounds = ifile;
 

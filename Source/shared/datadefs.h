@@ -54,6 +54,9 @@
 #define SMV2FDS_Y(y) (ybar0+(y)*xyzmaxdiff)
 #define SMV2FDS_Z(z) (zbar0+(z)*xyzmaxdiff)
 
+#define DONOT_SET_MINMAX_FLAG 0
+#define SET_MINMAX_FLAG       1
+
 #define VERT_AVG2(v1,v2,vavg) \
   vavg[0]=(v1[0]+v2[0])/2.0;\
   vavg[1]=(v1[1]+v2[1])/2.0;\

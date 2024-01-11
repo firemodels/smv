@@ -266,7 +266,7 @@ int GetBounds(char *file, float *valmin, float *valmax,
 
 /* ------------------ GetGlobalPatchBounds ------------------------ */
 
-void GetGlobalPatchBounds(int flag){
+void GetGlobalPatchBounds(int flag, int set_flag){
   int i;
 
   if(npatchinfo==0)return;
@@ -351,7 +351,7 @@ void GetGlobalPatchBounds(int flag){
       boundscppi->cache = cache_boundary_data;
       boundscppi->set_valtype = 0;
 
-      boundscppi->set_valmin = 0;
+      if(set_flag==1)boundscppi->set_valmin = 0;
       boundscppi->valmin[BOUND_SET_MIN]        = boundi->dlg_global_valmin;
       boundscppi->valmin[BOUND_LOADED_MIN]     = boundi->dlg_global_valmin;
       boundscppi->valmin[BOUND_GLOBAL_MIN]     = boundi->dlg_global_valmin;
@@ -361,7 +361,7 @@ void GetGlobalPatchBounds(int flag){
       boundscppi->valmax[BOUND_LOADED_MAX]     = boundi->dlg_global_valmax;
       boundscppi->valmax[BOUND_GLOBAL_MAX]     = boundi->dlg_global_valmax;
       boundscppi->valmax[BOUND_PERCENTILE_MAX] = boundi->dlg_global_valmax;
-      boundscppi->set_valmax = 0;
+      if(set_flag==1)boundscppi->set_valmax = 0;
 
       boundscppi->set_chopmin = boundi->setchopmin;
       boundscppi->set_chopmax = boundi->setchopmax;
@@ -376,7 +376,7 @@ void GetGlobalPatchBounds(int flag){
 
 void *GetGlobalPatchBoundsFull(void *arg){
   THREADcontrol(patchbound_threads, THREAD_LOCK);
-  GetGlobalPatchBounds(1);
+  GetGlobalPatchBounds(1,SET_MINMAX_FLAG);
   THREADcontrol(patchbound_threads, THREAD_UNLOCK);
   THREAD_EXIT(patchbound_threads);
 }
@@ -384,7 +384,7 @@ void *GetGlobalPatchBoundsFull(void *arg){
 /* ------------------ GetGlobalPatchBoundsReduced ------------------------ */
 
 void GetGlobalPatchBoundsReduced(void){
-  GetGlobalPatchBounds(0);
+  GetGlobalPatchBounds(0,SET_MINMAX_FLAG);
 }
 
 /* ------------------ GetPlot3DFileBounds ------------------------ */
@@ -541,7 +541,7 @@ void GetLoadedPlot3dBounds(int *compute_loaded, float *loaded_min, float *loaded
 
 /* ------------------ GetGlobalSliceBounds ------------------------ */
 
-void GetGlobalSliceBounds(int flag){
+void GetGlobalSliceBounds(int flag, int set_flag){
   int i;
 
   if(nsliceinfo==0)return;
@@ -617,13 +617,13 @@ void GetGlobalSliceBounds(int flag){
       boundscppi->cache = cache_slice_data;
       boundscppi->set_valtype = 0;
 
-      boundscppi->set_valmin = 0;
+      if(set_flag == 1)boundscppi->set_valmin = 0;
       boundscppi->valmin[BOUND_SET_MIN]        = boundi->dlg_global_valmin;
       boundscppi->valmin[BOUND_LOADED_MIN]     = boundi->dlg_global_valmin;
       boundscppi->valmin[BOUND_GLOBAL_MIN]     = boundi->dlg_global_valmin;
       boundscppi->valmin[BOUND_PERCENTILE_MIN] = boundi->dlg_global_valmin;
 
-      boundscppi->set_valmax = 0;
+      if(set_flag == 1)boundscppi->set_valmax = 0;
       boundscppi->valmax[BOUND_SET_MAX]        = boundi->dlg_global_valmax;
       boundscppi->valmax[BOUND_LOADED_MAX]     = boundi->dlg_global_valmax;
       boundscppi->valmax[BOUND_GLOBAL_MAX]     = boundi->dlg_global_valmax;
@@ -642,7 +642,7 @@ void GetGlobalSliceBounds(int flag){
 
 void *GetGlobalSliceBoundsFull(void *arg){
   THREADcontrol(slicebound_threads, THREAD_LOCK);
-  GetGlobalSliceBounds(1);
+  GetGlobalSliceBounds(1,SET_MINMAX_FLAG);
   THREADcontrol(slicebound_threads, THREAD_UNLOCK);
   THREAD_EXIT(slicebound_threads);
 }
@@ -650,7 +650,7 @@ void *GetGlobalSliceBoundsFull(void *arg){
 /* ------------------ GetGlobalSliceBoundsReduced ------------------------ */
 
 void GetGlobalSliceBoundsReduced(void){
-  GetGlobalSliceBounds(0);
+  GetGlobalSliceBounds(0,SET_MINMAX_FLAG);
 }
 /* ------------------ GetHVACDuctBounds ------------------------ */
 

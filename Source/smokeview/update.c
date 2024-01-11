@@ -1889,8 +1889,8 @@ void UpdateShowScene(void){
   have_smoke = HaveSootLoaded();
 
 #ifdef pp_LOAD_BOUNDS
-  if(glui_load_bounds_defined==1&&update_load_bounds == 1){
-    update_load_bounds = 0;
+  if(glui_meshclip_defined==1&&update_meshclip == 1){
+    update_meshclip = 0;
     GLUIUpdateMeshBounds();
   }
 #endif

@@ -237,6 +237,19 @@ void DisplayVersionInfo(char *progname){
   }
 }
 
+/* ------------------ IsFDSRunning ------------------------ */
+
+int IsFDSRunning(FILE_SIZE *last_size){
+  FILE_SIZE file_size;
+
+  file_size = GetFileSizeSMV(stepcsv_filename);
+  if(file_size != *last_size){
+    *last_size = file_size;
+    return 1;
+  }
+  return 0;
+}
+
 /* ------------------ SMV_EXIT ------------------------ */
 
 void SMV_EXIT(int code){

@@ -7,10 +7,12 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 #define SNIFF_ERRORS(f)
 #endif
 
+#define BOUND_UPDATE_COLORS       110
+#define BOUND_DONTUPDATE_COLORS   128
+#define BOUND_COMPUTE_PERCENTILES 116
+
 #define MENU_HVAC_LOAD     0
 #define MENU_HVAC_UNLOAD   1
-
-#define BOUND_UPDATE_COLORS            110 
 
 #define HVAC_FILTER_NO  0
 #define HVAC_FILTER_YES 1

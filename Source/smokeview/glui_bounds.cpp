@@ -47,7 +47,7 @@ GLUI *glui_bounds=NULL;
 #define BOUND_PERCENTILE_MODE          125
 #define BOUND_PLOT_MINMAX              126
 #define BOUND_COLORBAR_DIGITS          127
-#define BOUND_DONTUPDATE_COLORS        128
+//#define BOUND_DONTUPDATE_COLORS        128  // moved to datadefs.h
 #define SET_PERCENTILE_MIN_VAL         129
 #define SET_PERCENTILE_MAX_VAL         130
 #define SET_PERCENTILE_MIN_LEVEL       131
@@ -1161,7 +1161,6 @@ extern "C" void GLUISetValTypeIndex(int type, int valtype_index){
 }
 
 /* ------------------ GLUIGetOnlyMinMax ------------------------ */
-
 
 extern "C" void GLUIGetOnlyMinMax(int type, char *label, int *set_valmin, float *valmin, int *set_valmax, float *valmax){
   switch(type){
@@ -2516,7 +2515,7 @@ GLUI_Spinner *SPINNER_slice_dz = NULL;
 GLUI_Spinner *SPINNER_size_factor2         = NULL;
 GLUI_Spinner *SPINNER_plot2d_dt = NULL;
 #ifdef pp_LOAD_BOUNDS
-GLUI_Spinner *SPINNER_load_bounds[6];
+GLUI_Spinner *SPINNER_meshclip[6];
 GLUI_Spinner *SPINNER_set_mesh = NULL;
 #endif
 
@@ -2554,14 +2553,12 @@ GLUI_Checkbox *CHECKBOX_use_lighting = NULL;
 GLUI_Checkbox *CHECKBOX_show_extreme_mindata = NULL;
 GLUI_Checkbox *CHECKBOX_show_extreme_maxdata = NULL;
 #ifdef pp_LOAD_BOUNDS
-GLUI_Checkbox *CHECKBOX_use_load_bounds[6];
+GLUI_Checkbox *CHECKBOX_use_meshclip[6];
 GLUI_Checkbox *CHECKBOX_show_intersection_box=NULL;
 GLUI_Checkbox *CHECKBOX_show_intersected_meshes = NULL;
+GLUI_Checkbox *CHECKBOX_load_only_when_unloaded = NULL;
 #endif
 
-#ifdef pp_LOAD_BOUNDS
-GLUI_RadioGroup *RADIO_load_only_when_unloaded = NULL;
-#endif
 GLUI_RadioGroup *RADIO_iso_setmin=NULL;
 GLUI_RadioGroup *RADIO_iso_setmax=NULL;
 GLUI_RadioGroup *RADIO_transparency_option=NULL;
@@ -2687,7 +2684,7 @@ extern "C" void GLUIUpdatePartPointSize(void){
 
 #ifdef pp_LOAD_BOUNDS
 extern "C" void GLUIUpdateLoadWhenLoaded(void){
-  RADIO_load_only_when_unloaded->set_int_val(load_only_when_unloaded);
+  CHECKBOX_load_only_when_unloaded->set_int_val(load_only_when_unloaded);
 }
 #endif
 
@@ -3568,7 +3565,7 @@ void BoundBoundCB(int var){
     BoundBoundCB(UPDATE_DATA_COLORS);
     break;
   case UPDATE_DATA_COLORS:
-    GetGlobalPatchBounds(1);
+    GetGlobalPatchBounds(1,SET_MINMAX_FLAG);
     if(patchlabellist != NULL)Global2GLUIBoundaryBounds(patchlabellist[list_patch_index]);
     UpdateAllBoundaryColors(1);
     break;
@@ -3626,35 +3623,35 @@ void BoundBoundCB(int var){
 /* ------------------ CheckBounds ------------------------ */
 
 void CheckBounds(int var){
-  if((var==-1||var==0)&&use_load_bounds[0] == 0){
-    load_bounds_save[0] = load_bounds[0];
-    load_bounds[0] = xbar0FDS;
-    SPINNER_load_bounds[0]->set_float_val(load_bounds[0]);
+  if((var==-1||var==0)&&use_meshclip[0] == 0){
+    meshclip_save[0] = meshclip[0];
+    meshclip[0] = xbar0FDS;
+    SPINNER_meshclip[0]->set_float_val(meshclip[0]);
   }
-  if((var == -1 || var == 1) && use_load_bounds[1] == 0){
-    load_bounds_save[1] = load_bounds[1];
-    load_bounds[1] = xbarFDS;
-    SPINNER_load_bounds[1]->set_float_val(load_bounds[1]);
+  if((var == -1 || var == 1) && use_meshclip[1] == 0){
+    meshclip_save[1] = meshclip[1];
+    meshclip[1] = xbarFDS;
+    SPINNER_meshclip[1]->set_float_val(meshclip[1]);
   }
-  if((var == -1 || var == 2) && use_load_bounds[2] == 0){
-    load_bounds_save[2] = load_bounds[2];
-    load_bounds[2] = ybar0FDS;
-    SPINNER_load_bounds[2]->set_float_val(load_bounds[2]);
+  if((var == -1 || var == 2) && use_meshclip[2] == 0){
+    meshclip_save[2] = meshclip[2];
+    meshclip[2] = ybar0FDS;
+    SPINNER_meshclip[2]->set_float_val(meshclip[2]);
   }
-  if((var == -1 || var == 3) && use_load_bounds[3] == 0){
-    load_bounds_save[3] = load_bounds[3];
-    load_bounds[3] = ybarFDS;
-    SPINNER_load_bounds[3]->set_float_val(load_bounds[3]);
+  if((var == -1 || var == 3) && use_meshclip[3] == 0){
+    meshclip_save[3] = meshclip[3];
+    meshclip[3] = ybarFDS;
+    SPINNER_meshclip[3]->set_float_val(meshclip[3]);
   }
-  if((var == -1 || var == 4) && use_load_bounds[4] == 0){
-    load_bounds_save[4] = load_bounds[4];
-    load_bounds[4] = zbar0FDS;
-    SPINNER_load_bounds[4]->set_float_val(load_bounds[4]);
+  if((var == -1 || var == 4) && use_meshclip[4] == 0){
+    meshclip_save[4] = meshclip[4];
+    meshclip[4] = zbar0FDS;
+    SPINNER_meshclip[4]->set_float_val(meshclip[4]);
   }
-  if((var == -1 || var == 5) && use_load_bounds[5] == 0){
-    load_bounds_save[5] = load_bounds[5];
-    load_bounds[5] = zbarFDS;
-    SPINNER_load_bounds[5]->set_float_val(load_bounds[5]);
+  if((var == -1 || var == 5) && use_meshclip[5] == 0){
+    meshclip_save[5] = meshclip[5];
+    meshclip[5] = zbarFDS;
+    SPINNER_meshclip[5]->set_float_val(meshclip[5]);
   }
 }
 
@@ -3689,17 +3686,17 @@ void MeshBoundCB(int var){
   GLUTPOSTREDISPLAY;
   switch(var){
   case USEMESH_SET_ALL:
-    load_bounds[0] = xbar0FDS;
-    load_bounds[1] = xbarFDS;
-    load_bounds[2] = ybar0FDS;
-    load_bounds[3] = ybarFDS;
-    load_bounds[4] = zbar0FDS;
-    load_bounds[5] = zbarFDS;
+    meshclip[0] = xbar0FDS;
+    meshclip[1] = xbarFDS;
+    meshclip[2] = ybar0FDS;
+    meshclip[3] = ybarFDS;
+    meshclip[4] = zbar0FDS;
+    meshclip[5] = zbarFDS;
     for(i = 0;i < 6;i++){
-      use_load_bounds[i] = 1;
-      CHECKBOX_use_load_bounds[i]->set_int_val(use_load_bounds[i]);
-      SPINNER_load_bounds[i]->set_float_val(load_bounds[i]);
-      SPINNER_load_bounds[i]->enable();
+      use_meshclip[i] = 1;
+      CHECKBOX_use_meshclip[i]->set_int_val(use_meshclip[i]);
+      SPINNER_meshclip[i]->set_float_val(meshclip[i]);
+      SPINNER_meshclip[i]->enable();
     }
     MeshBoundCB(USEMESH_XYZ);
     break;
@@ -3708,18 +3705,18 @@ void MeshBoundCB(int var){
       meshdata *meshi;
 
       meshi = meshinfo + set_mesh - 1;
-      load_bounds[0] = meshi->boxmin[0];
-      load_bounds[2] = meshi->boxmin[1];
-      load_bounds[4] = meshi->boxmin[2];
-      load_bounds[1] = meshi->boxmax[0];
-      load_bounds[3] = meshi->boxmax[1];
-      load_bounds[5] = meshi->boxmax[2];
+      meshclip[0] = meshi->boxmin[0];
+      meshclip[2] = meshi->boxmin[1];
+      meshclip[4] = meshi->boxmin[2];
+      meshclip[1] = meshi->boxmax[0];
+      meshclip[3] = meshi->boxmax[1];
+      meshclip[5] = meshi->boxmax[2];
     }
     for(i = 0;i < 6;i++){
-      use_load_bounds[i] = 1;
-      CHECKBOX_use_load_bounds[i]->set_int_val(use_load_bounds[i]);
-      SPINNER_load_bounds[i]->set_float_val(load_bounds[i]);
-      SPINNER_load_bounds[i]->enable();
+      use_meshclip[i] = 1;
+      CHECKBOX_use_meshclip[i]->set_int_val(use_meshclip[i]);
+      SPINNER_meshclip[i]->set_float_val(meshclip[i]);
+      SPINNER_meshclip[i]->enable();
     }
     MeshBoundCB(USEMESH_XYZ);
     break;
@@ -3739,12 +3736,12 @@ void MeshBoundCB(int var){
     }
     #define MESH_EPS 0.01
     if(
-      use_load_bounds[0] == 0 &&
-      use_load_bounds[1] == 0 &&
-      use_load_bounds[2] == 0 &&
-      use_load_bounds[3] == 0 &&
-      use_load_bounds[4] == 0 &&
-      use_load_bounds[5] == 0
+      use_meshclip[0] == 0 &&
+      use_meshclip[1] == 0 &&
+      use_meshclip[2] == 0 &&
+      use_meshclip[3] == 0 &&
+      use_meshclip[4] == 0 &&
+      use_meshclip[5] == 0
       )break;
     for(i=0;i<nmeshes;i++){
       meshdata *meshi;
@@ -3753,27 +3750,41 @@ void MeshBoundCB(int var){
       meshi = meshinfo + i;
       meshmin = meshi->boxmin;
       meshmax = meshi->boxmax;
-      if(use_load_bounds[0] == 1 && load_bounds[0] > meshmax[0]-MESH_EPS){
+      float meshclip_min[3],  meshclip_max[3];
+      int use_meshclip_min[3], use_meshclip_max[3];
+      meshclip_min[0] = meshclip[0];
+      meshclip_min[1] = meshclip[2];
+      meshclip_min[2] = meshclip[4];
+      meshclip_max[0] = meshclip[1];
+      meshclip_max[1] = meshclip[3];
+      meshclip_max[2] = meshclip[5];
+      use_meshclip_min[0] = use_meshclip[0];
+      use_meshclip_min[1] = use_meshclip[2];
+      use_meshclip_min[2] = use_meshclip[4];
+      use_meshclip_max[0] = use_meshclip[1];
+      use_meshclip_max[1] = use_meshclip[3];
+      use_meshclip_max[2] = use_meshclip[5];
+      if(use_meshclip_min[0] == 1 && meshclip_min[0] > meshmin[0]+MESH_EPS){
         meshi->use = 0;
         continue;
       }
-      if(use_load_bounds[1] == 1 && load_bounds[1] < meshmin[0]+MESH_EPS){
+      if(use_meshclip_min[1] == 1 && meshclip_min[1] > meshmin[1] + MESH_EPS){
         meshi->use = 0;
         continue;
       }
-      if(use_load_bounds[2] == 1 && load_bounds[2] > meshmax[1]-MESH_EPS){
+      if(use_meshclip_min[2] == 1 && meshclip_min[2] > meshmin[2] + MESH_EPS){
         meshi->use = 0;
         continue;
       }
-      if(use_load_bounds[3] == 1 && load_bounds[3] < meshmin[1]+MESH_EPS){
+      if(use_meshclip_max[0] == 1 && meshclip_max[0] < meshmax[0] - MESH_EPS){
         meshi->use = 0;
         continue;
       }
-      if(use_load_bounds[4] == 1 && load_bounds[4] > meshmax[2]-MESH_EPS){
+      if(use_meshclip_max[1] == 1 && meshclip_max[1] < meshmax[1] - MESH_EPS){
         meshi->use = 0;
         continue;
       }
-      if(use_load_bounds[5] == 1 && load_bounds[5] < meshmin[2]+MESH_EPS){
+      if(use_meshclip_max[2] == 1 && meshclip_max[2] < meshmax[2] - MESH_EPS){
         meshi->use = 0;
         continue;
       }
@@ -3782,11 +3793,11 @@ void MeshBoundCB(int var){
     break;
   case USEMESH_USE_XYZ_ALL:
     for(i = 0;i < 6;i++){
-      if(use_load_bounds[i] == 1){
-        SPINNER_load_bounds[i]->enable();
+      if(use_meshclip[i] == 1){
+        SPINNER_meshclip[i]->enable();
       }
       else{
-        SPINNER_load_bounds[i]->disable();
+        SPINNER_meshclip[i]->disable();
       }
     }
     CheckBounds(-1);
@@ -3799,13 +3810,13 @@ void MeshBoundCB(int var){
   case USEMESH_USE_XYZ + 4:
   case USEMESH_USE_XYZ + 5:
     i = var - USEMESH_USE_XYZ;
-    if(use_load_bounds[i]==1){
-      load_bounds[i] = load_bounds_save[i];
-      SPINNER_load_bounds[i]->set_float_val(load_bounds[i]);
-      SPINNER_load_bounds[i]->enable();
+    if(use_meshclip[i]==1){
+      meshclip[i] = meshclip_save[i];
+      SPINNER_meshclip[i]->set_float_val(meshclip[i]);
+      SPINNER_meshclip[i]->enable();
     }
     else{
-      SPINNER_load_bounds[i]->disable();
+      SPINNER_meshclip[i]->disable();
     }
     CheckBounds(i);
     MeshBoundCB(USEMESH_XYZ);
@@ -3822,8 +3833,8 @@ extern "C" void GLUIUpdateMeshBounds(void){
   int i;
 
   for(i = 0;i < 6;i++){
-    SPINNER_load_bounds[i]->set_float_val(load_bounds[i]);
-    CHECKBOX_use_load_bounds[i]->set_int_val(use_load_bounds[i]);
+    SPINNER_meshclip[i]->set_float_val(meshclip[i]);
+    CHECKBOX_use_meshclip[i]->set_int_val(use_meshclip[i]);
   }
   CHECKBOX_show_intersection_box->set_int_val(show_intersection_box);
   CHECKBOX_show_intersected_meshes->set_int_val(show_intersected_meshes);
@@ -4948,24 +4959,22 @@ hvacductboundsCPP.setup("hvac", ROLLOUT_hvacduct, hvacductbounds_cpp, nhvacductb
   strcpy(lbl[4], "Z");
   strcpy(lbl[5], "Z");
   for(i=0;i<6;i++){
-    SPINNER_load_bounds[i] = glui_bounds->add_spinner_to_panel(PANEL_meshxyz[i], lbl[i], GLUI_SPINNER_FLOAT, load_bounds+i, USEMESH_XYZ, MeshBoundCB);
+    SPINNER_meshclip[i] = glui_bounds->add_spinner_to_panel(PANEL_meshxyz[i], lbl[i], GLUI_SPINNER_FLOAT, meshclip+i, USEMESH_XYZ, MeshBoundCB);
     glui_bounds->add_column_to_panel(PANEL_meshxyz[i], false);
-    CHECKBOX_use_load_bounds[i] = glui_bounds->add_checkbox_to_panel(PANEL_meshxyz[i], "", use_load_bounds+i, USEMESH_USE_XYZ+i, MeshBoundCB);
+    CHECKBOX_use_meshclip[i] = glui_bounds->add_checkbox_to_panel(PANEL_meshxyz[i], "", use_meshclip+i, USEMESH_USE_XYZ+i, MeshBoundCB);
   }
-  SPINNER_load_bounds[0]->set_float_limits(xbar0FDS, xbarFDS);
-  SPINNER_load_bounds[1]->set_float_limits(xbar0FDS, xbarFDS);
-  SPINNER_load_bounds[2]->set_float_limits(ybar0FDS, ybarFDS);
-  SPINNER_load_bounds[3]->set_float_limits(ybar0FDS, ybarFDS);
-  SPINNER_load_bounds[4]->set_float_limits(zbar0FDS, zbarFDS);
-  SPINNER_load_bounds[5]->set_float_limits(zbar0FDS, zbarFDS);
+  SPINNER_meshclip[0]->set_float_limits(xbar0FDS, xbarFDS);
+  SPINNER_meshclip[1]->set_float_limits(xbar0FDS, xbarFDS);
+  SPINNER_meshclip[2]->set_float_limits(ybar0FDS, ybarFDS);
+  SPINNER_meshclip[3]->set_float_limits(ybar0FDS, ybarFDS);
+  SPINNER_meshclip[4]->set_float_limits(zbar0FDS, zbarFDS);
+  SPINNER_meshclip[5]->set_float_limits(zbar0FDS, zbarFDS);
 
   PANEL_mesh1 = glui_bounds->add_panel_to_panel(PANEL_mesh, "", false);
   CHECKBOX_show_intersection_box = glui_bounds->add_checkbox_to_panel(PANEL_mesh1, "show intersection box", &show_intersection_box, USEMESH_DRAW_BOX, MeshBoundCB);
   CHECKBOX_show_intersected_meshes = glui_bounds->add_checkbox_to_panel(PANEL_mesh1, "show intersected meshes", &show_intersected_meshes, USEMESH_DRAW_MESH, MeshBoundCB);
   glui_bounds->add_checkbox_to_panel(PANEL_mesh1, "show intersected mesh indices", &show_mesh_labels);
-  RADIO_load_only_when_unloaded = glui_bounds->add_radiogroup_to_panel(PANEL_mesh1, &load_only_when_unloaded, USEMESH_LOAD_WHEN_LOADED, MeshBoundCB);
-  glui_bounds->add_radiobutton_to_group(RADIO_load_only_when_unloaded, "Load a file if either loaded or unloaded");
-  glui_bounds->add_radiobutton_to_group(RADIO_load_only_when_unloaded, "Load a file only if unloaded");
+  CHECKBOX_load_only_when_unloaded = glui_bounds->add_checkbox_to_panel(PANEL_mesh1, "Load a file only if unloaded", &load_only_when_unloaded, USEMESH_LOAD_WHEN_LOADED, MeshBoundCB);
 
   glui_bounds->add_column_to_panel(PANEL_mesh1, false);
 
@@ -4974,7 +4983,7 @@ hvacductboundsCPP.setup("hvac", ROLLOUT_hvacduct, hvacductbounds_cpp, nhvacductb
   SPINNER_set_mesh->set_int_limits(1, nmeshes);
   glui_bounds->add_button_to_panel(PANEL_setmesh, "all meshes", USEMESH_SET_ALL, MeshBoundCB);
   MeshBoundCB(USEMESH_USE_XYZ_ALL);
-  glui_load_bounds_defined = 1;
+  glui_meshclip_defined = 1;
 #endif
 
   // -------------- Data coloring -------------------
