@@ -2364,9 +2364,6 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
   int recompute = 0;
   if(patchi->finalize==1){
     GLUIUpdateBoundaryListIndex(patchfilenum);
-#define BOUND_UPDATE_COLORS       110
-#define BOUND_DONTUPDATE_COLORS   128
-#define BOUND_COMPUTE_PERCENTILES 116
     cpp_boundsdata *bounds;
 
     if(runscript == 0){

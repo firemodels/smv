@@ -3471,7 +3471,6 @@ void LoadUnloadMenu(int value){
 
     //*** reload vector slice and slice files
 
-#define BOUND_UPDATE_COLORS  110
     slicefile_labelindex_save = slicefile_labelindex;
     START_TIMER(load_time);
     SetLoadedSliceBounds(NULL, 0);

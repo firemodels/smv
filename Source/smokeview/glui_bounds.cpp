@@ -47,7 +47,7 @@ GLUI *glui_bounds=NULL;
 #define BOUND_PERCENTILE_MODE          125
 #define BOUND_PLOT_MINMAX              126
 #define BOUND_COLORBAR_DIGITS          127
-#define BOUND_DONTUPDATE_COLORS        128
+//#define BOUND_DONTUPDATE_COLORS        128  // moved to datadefs.h
 #define SET_PERCENTILE_MIN_VAL         129
 #define SET_PERCENTILE_MAX_VAL         130
 #define SET_PERCENTILE_MIN_LEVEL       131
