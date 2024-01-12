@@ -812,8 +812,8 @@ void SynchTimes(void){
       meshi=meshinfo+j;
       if(meshi->patchfilenum<0||meshi->patch_times==NULL)continue;
       patchi=patchinfo+meshi->patchfilenum;
-      if(patchi->structured == NO)continue;
-      meshi->patch_timeslist[n]=GetItime(n,meshi->patch_timeslist,NULL,meshi->patch_times,meshi->npatch_times);
+      if(patchi->structured == NO||patchi->loaded==0)continue;
+      meshi->patch_timeslist[n]=GetItime(n,meshi->patch_timeslist,meshi->patch_times_map,meshi->patch_times,meshi->npatch_times);
     }
 
   /* synchronize isosurface times */

@@ -1496,6 +1496,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
     FREEMEMORY(meshi->patchval);
     FREEMEMORY(meshi->thresholdtime);
     FREEMEMORY(meshi->patch_times);
+    FREEMEMORY(meshi->patch_times_map);
     FREEMEMORY(meshi->patchblank);
   }
 
@@ -1739,7 +1740,6 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
     default:
       assert(FFALSE);
     }
-
 
     meshi->boundarytype[n]=INTERIORwall;
     is_extface = meshi->is_extface;
@@ -2128,6 +2128,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
   }
 
   NewResizeMemory(meshi->patch_times,sizeof(float)*maxtimes_boundary);
+  NewResizeMemory(meshi->patch_times_map, maxtimes_boundary);
   NewResizeMemory(meshi->zipoffset,  sizeof(unsigned int)*maxtimes_boundary);
   NewResizeMemory(meshi->zipsize,    sizeof(unsigned int)*maxtimes_boundary);
   if(meshi->patch_times==NULL){
@@ -2409,6 +2410,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
     meshi->vis_boundaries[n] = vis_boundary_type[meshi->boundarytype[n]];
   }
   plotstate=GetPlotState(DYNAMIC_PLOTS);
+  patchi->have_restart = MakeTimesMap(meshi->patch_times, meshi->patch_times_map, meshi->npatch_times);
   UpdateTimes();
   UpdateUnitDefs();
   UpdateChopColors();

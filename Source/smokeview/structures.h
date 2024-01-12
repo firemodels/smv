@@ -815,6 +815,7 @@ typedef struct _meshdata {
   unsigned char *cpatchval_zlib, *cpatchval_iframe_zlib;
   unsigned char *cpatchval, *cpatchval_iframe;
   float *patch_times, *patch_timesi, *patchval, *patchval_iframe;
+  unsigned char *patch_times_map;
   float **patchventcolors;
   float *thresholdtime;
   int *patchblank;
@@ -1690,7 +1691,7 @@ typedef struct _patchdata {
   int blocknumber,loaded,loaded2,display;
   float *geom_times, *geom_vals;
   int *geom_timeslist,geom_itime;
-  unsigned char *times_map;
+  unsigned char *geom_times_map;
   int have_restart;
   unsigned char *geom_ivals;
   int *geom_ivals_static_offset, *geom_ivals_dynamic_offset;

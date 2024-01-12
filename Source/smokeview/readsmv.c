@@ -1059,6 +1059,7 @@ void InitMesh(meshdata *meshi){
   meshi->cpatchval_iframe_zlib = NULL;
   meshi->cpatchval_zlib = NULL;
   meshi->patch_times = NULL;
+  meshi->patch_times_map = NULL;
   meshi->patchval = NULL;
   meshi->patchval_iframe = NULL;
   meshi->thresholdtime = NULL;
