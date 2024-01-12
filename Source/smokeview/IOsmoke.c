@@ -3553,22 +3553,31 @@ int GetSmokeFrameStatus(float time_restart, float time_before, float time_now, i
 
 /* ------------------ MakeTimesMap ------------------------ */
 
-void MakeTimesMap(int have_restart, float time_restart, float *times, unsigned char *times_map, int n){
-  int i;
+int MakeTimesMap(float *times, unsigned char *times_map, int n){
+  int i, have_restart, skip;
+  float time_restart;
 
   for(i = 0;i < n;i++){
     times_map[i] = 1;
   }
-  if(have_restart == 1){
-    int skip;
-
-    skip = 0;
-    for(i = 1;i < n;i++){
-      if(have_restart == 1 && GetSmokeFrameStatus(time_restart, times[i - 1], times[i], &skip) == 0){
-        times_map[i] = 0;
-      }
+  have_restart = 0;
+  printf("-----------------\n");
+  for(i = 1;i < n;i++){
+    if(times[i - 1] > times[i]){
+      have_restart = 1;
+      time_restart = times[i];
+      break;
     }
   }
+  if(have_restart == 0)return 0;
+
+  skip = 0;
+  for(i = 1;i < n;i++){
+    if(GetSmokeFrameStatus(time_restart, times[i - 1], times[i], &skip) == 0){
+      times_map[i] = 0;
+    }
+  }
+  return 1;
 }
 
 /* ------------------ GetSmoke3DSizes ------------------------ */
@@ -3602,22 +3611,6 @@ int GetSmoke3DSizes(smoke3ddata *smoke3di, int fortran_skip, char *smokefile, in
     printf("***warning: failed to open 3D smoke size file: %s\n", smokefile);
     return 1;
   }
-
-  //see if case was restarted (times out of order);
-  time_last = -1000000.0;
-  smoke3di->time_restart = time_last;
-  smoke3di->have_restart = 0;
-  while(!feof(SMOKE_SIZE)){
-    if(fgets(buffer, 255, SMOKE_SIZE) == NULL)break;
-    sscanf(buffer, "%f", &time_local);
-    if(time_local < time_last){
-      smoke3di->time_restart = time_local;
-      smoke3di->have_restart = 1;
-      break;
-    }
-    time_last = time_local;
-  }
-  rewind(SMOKE_SIZE);
 
   nframes_found = 0;
   iframe_local = -1;
@@ -3675,10 +3668,6 @@ int GetSmoke3DSizes(smoke3ddata *smoke3di, int fortran_skip, char *smokefile, in
   NewResizeMemory(                 times_map, nframes_found   * sizeof(char));
   NewResizeMemory( nch_smoke_compressed_full, (*ntimes_full)  * sizeof(int));
   NewResizeMemory(nch_smoke_compressed_found, (*ntimes_found) * sizeof(int));
-  int i;
-  for(i = 0;i < nframes_found;i++){
-    times_map[i] = 1;
-  }
 
   *use_smokeframe                = use_smokeframe_full;
   *times_ptr                     = times;
@@ -3732,7 +3721,7 @@ int GetSmoke3DSizes(smoke3ddata *smoke3di, int fortran_skip, char *smokefile, in
     use_smokeframe_full++;
     iii++;
   }
-  MakeTimesMap(smoke3di->have_restart, smoke3di->time_restart, smoke3di->times, smoke3di->times_map, count);
+  smoke3di->have_restart = MakeTimesMap(smoke3di->times, smoke3di->times_map, count);
   *nchars_smoke_uncompressed = nch_uncompressed;
   fclose(SMOKE_SIZE);
   return 0;

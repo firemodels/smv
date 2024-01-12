@@ -780,7 +780,7 @@ void SynchTimes(void){
         sd->patchgeom->geom_timeslist[n] = GetItime(n, sd->patchgeom->geom_timeslist, NULL,sd->patchgeom->geom_times, sd->ntimes);
       }
       else{
-        sd->timeslist[n] = GetItime(n, sd->timeslist, NULL, sd->times, sd->ntimes);
+        sd->timeslist[n] = GetItime(n, sd->timeslist, sd->times_map, sd->times, sd->ntimes);
       }
     }
 

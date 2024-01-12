@@ -6093,6 +6093,7 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
     sd->volslice = 0;
   }
   sd->times = NULL;
+  sd->times_map = NULL;
   sd->slicelevel = NULL;
   sd->iqsliceframe = NULL;
   sd->qsliceframe = NULL;
