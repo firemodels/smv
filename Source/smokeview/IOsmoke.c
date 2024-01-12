@@ -3529,10 +3529,10 @@ int GetSmokeNFrames(int type, float *tmin, float *tmax){
 
 /* ------------------ GetSmokeFrameStatus ------------------------ */
 
-int GetSmokeFrameStatus(smoke3ddata *smoke3di, float time_last, float time_local, int *mode){
+int GetSmokeFrameStatus(float time_restart, float time_before, float time_now, int *mode){
   if(*mode==2)return 1;
   if(*mode == 0){
-    if(time_local < smoke3di->time_restart){
+    if(time_now < time_restart){
       return 1;
     }
     else{
@@ -3541,12 +3541,32 @@ int GetSmokeFrameStatus(smoke3ddata *smoke3di, float time_last, float time_local
     }
   }
   else{
-    if(time_local < time_last){
+    if(time_now < time_before){
       *mode = 2;
       return 1;
     }
     else{
       return 0;
+    }
+  }
+}
+
+/* ------------------ MakeTimesMap ------------------------ */
+
+void MakeTimesMap(int have_restart, float time_restart, float *times, unsigned char *times_map, int n){
+  int i;
+
+  for(i = 0;i < n;i++){
+    times_map[i] = 1;
+  }
+  if(have_restart == 1){
+    int skip;
+
+    skip = 0;
+    for(i = 1;i < n;i++){
+      if(have_restart == 1 && GetSmokeFrameStatus(time_restart, times[i - 1], times[i], &skip) == 0){
+        times_map[i] = 0;
+      }
     }
   }
 }
@@ -3712,13 +3732,7 @@ int GetSmoke3DSizes(smoke3ddata *smoke3di, int fortran_skip, char *smokefile, in
     use_smokeframe_full++;
     iii++;
   }
-  skip = 0;
-  time_last = -1000000.0;
-  for(i=1;i<count;i++){
-   if(smoke3di->have_restart == 1 && GetSmokeFrameStatus(smoke3di, smoke3di->times[i-1], smoke3di->times[i], &skip) == 0){
-     smoke3di->times_map[i] = 0;
-   }
-  }
+  MakeTimesMap(smoke3di->have_restart, smoke3di->time_restart, smoke3di->times, smoke3di->times_map, count);
   *nchars_smoke_uncompressed = nch_uncompressed;
   fclose(SMOKE_SIZE);
   return 0;
