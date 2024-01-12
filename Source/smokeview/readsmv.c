@@ -5605,6 +5605,7 @@ int ParseSMOKE3DProcess(bufferstreamdata *stream, char *buffer, int *nn_smoke3d_
     smoke3di->smoke_comp_all = NULL;
     smoke3di->smokeview_tmp = NULL;
     smoke3di->times = NULL;
+    smoke3di->times_map = NULL;
     smoke3di->use_smokeframe = NULL;
 #ifdef pp_SMOKE_SKIP
     smoke3di->smokeframe_loaded = NULL;

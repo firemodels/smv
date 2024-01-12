@@ -1599,6 +1599,9 @@ typedef struct _smoke3ddata {
   flowlabels label;
   char menulabel[128];
   float *times;
+  unsigned char *times_map;
+  float time_restart;
+  int have_restart;
   int *use_smokeframe;
 #ifdef pp_SMOKE_SKIP
   int *smokeframe_loaded;

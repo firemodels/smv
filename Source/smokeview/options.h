@@ -36,6 +36,8 @@
 
 //#define pp_BNDF         // merge geometry and structured boundary files in load menus
 
+//#define pp_SMOKE_TLAST  // isolate some code that maybe necessary (but was causing problems)
+
 //#define pp_DPRINT       // turn on debug print (file, line number)
 
 //#define pp_LOAD_INC     // add menu item for loading new data

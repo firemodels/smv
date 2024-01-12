@@ -693,12 +693,20 @@ void UpdateShow(void){
 
 /* ------------------ GetItime ------------------------ */
 
-int GetItime(int n, int *timeslist, float *times, int ntimes){
+int GetItime(int n, int *timeslist, unsigned char *times_map, float *times, int ntimes){
   int istart=0;
 
   if(n>0)istart=timeslist[n-1];
-  while(istart<ntimes-1&&times[istart+1]<=global_times[n]){
-    istart++;
+  while(1){
+    if(times_map!=NULL&&times_map[istart+1]==0){
+      istart++;
+      continue;
+    }
+    if(istart<ntimes-1&&times[istart+1]<=global_times[n]){
+      istart++;
+      continue;
+    }
+    break;
   }
   istart=CLAMP(istart,0,ntimes-1);
   return istart;
@@ -721,7 +729,7 @@ void SynchTimes(void){
 
       tourj = tourinfo + j;
       if(tourj->display==0)continue;
-      tourj->timeslist[n]=GetItime(n,tourj->timeslist,tourj->path_times,tourj->ntimes);
+      tourj->timeslist[n]=GetItime(n,tourj->timeslist,NULL,tourj->path_times,tourj->ntimes);
     }
 
   /* synchronize geometry times */
@@ -731,7 +739,7 @@ void SynchTimes(void){
 
       geomi = geominfoptrs[j];
       if(geomi->loaded==0||geomi->display==0)continue;
-      geomi->timeslist[n]=GetItime(n,geomi->timeslist,geomi->times,geomi->ntimes);
+      geomi->timeslist[n]=GetItime(n,geomi->timeslist,NULL,geomi->times,geomi->ntimes);
     }
 
   /* synchronize particle times */
@@ -741,7 +749,7 @@ void SynchTimes(void){
 
       parti=partinfo+j;
       if(parti->loaded==0)continue;
-      parti->timeslist[n]=GetItime(n,parti->timeslist,parti->times,parti->ntimes);
+      parti->timeslist[n]=GetItime(n,parti->timeslist,NULL,parti->times,parti->ntimes);
     }
 
   /* synchronize shooter times */
@@ -769,10 +777,10 @@ void SynchTimes(void){
 
       sd = sliceinfo + slice_loaded_list[jj];
       if(sd->slice_filetype == SLICE_GEOM){
-        sd->patchgeom->geom_timeslist[n] = GetItime(n, sd->patchgeom->geom_timeslist, sd->patchgeom->geom_times, sd->ntimes);
+        sd->patchgeom->geom_timeslist[n] = GetItime(n, sd->patchgeom->geom_timeslist, NULL,sd->patchgeom->geom_times, sd->ntimes);
       }
       else{
-        sd->timeslist[n] = GetItime(n, sd->timeslist, sd->times, sd->ntimes);
+        sd->timeslist[n] = GetItime(n, sd->timeslist, NULL, sd->times, sd->ntimes);
       }
     }
 
@@ -783,7 +791,7 @@ void SynchTimes(void){
       for(jj=0;jj<nsmoke3dinfo;jj++){
         smoke3di = smoke3dinfo + jj;
         if(smoke3di->loaded==0)continue;
-        smoke3di->timeslist[n]=GetItime(n,smoke3di->timeslist,smoke3di->times,smoke3di->ntimes);
+        smoke3di->timeslist[n]=GetItime(n,smoke3di->timeslist,smoke3di->times_map,smoke3di->times,smoke3di->ntimes);
       }
     }
 
@@ -795,7 +803,7 @@ void SynchTimes(void){
       patchi = patchinfo + j;
       if(patchi->loaded==0)continue;
       if(patchi->structured == YES)continue;
-      patchi->geom_timeslist[n]=GetItime(n,patchi->geom_timeslist,patchi->geom_times,patchi->ngeom_times);
+      patchi->geom_timeslist[n]=GetItime(n,patchi->geom_timeslist,NULL,patchi->geom_times,patchi->ngeom_times);
     }
     for(j=0;j<nmeshes;j++){
       patchdata *patchi;
@@ -805,7 +813,7 @@ void SynchTimes(void){
       if(meshi->patchfilenum<0||meshi->patch_times==NULL)continue;
       patchi=patchinfo+meshi->patchfilenum;
       if(patchi->structured == NO)continue;
-      meshi->patch_timeslist[n]=GetItime(n,meshi->patch_timeslist,meshi->patch_times,meshi->npatch_times);
+      meshi->patch_timeslist[n]=GetItime(n,meshi->patch_timeslist,NULL,meshi->patch_times,meshi->npatch_times);
     }
 
   /* synchronize isosurface times */
@@ -815,7 +823,7 @@ void SynchTimes(void){
 
       meshi=meshinfo+igrid;
       if(meshi->iso_times==NULL)continue;
-      meshi->iso_timeslist[n]=GetItime(n,meshi->iso_timeslist,meshi->iso_times,meshi->niso_times);
+      meshi->iso_timeslist[n]=GetItime(n,meshi->iso_timeslist,NULL,meshi->iso_times,meshi->niso_times);
     }
 
   /* synchronize volume render times */
@@ -830,13 +838,13 @@ void SynchTimes(void){
         if(vr->smokeslice==NULL)continue;
         if(vr->loaded==0||vr->display==0)continue;
         if(vr->times==NULL)continue;
-        vr->timeslist[n]=GetItime(n,vr->timeslist,vr->times,vr->ntimes);
+        vr->timeslist[n]=GetItime(n,vr->timeslist,NULL,vr->times,vr->ntimes);
       }
     }
     /* synchronize zone times */
 
     if(showzone==1){
-      zone_timeslist[n]=GetItime(n,zone_timeslist,zone_times,nzone_times);
+      zone_timeslist[n]=GetItime(n,zone_timeslist,NULL,zone_times,nzone_times);
     }
 
   }
