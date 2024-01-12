@@ -3680,7 +3680,6 @@ int GetSmoke3DSizes(smoke3ddata *smoke3di, int fortran_skip, char *smokefile, in
   time_max = -1000000.0;
   iii = 0;
   *maxval = -1.0;
-  int skip = 0;
   time_last = time_max;
   int count=0;
   while(!feof(SMOKE_SIZE)){

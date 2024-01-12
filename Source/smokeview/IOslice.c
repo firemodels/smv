@@ -4331,7 +4331,7 @@ FILE_SIZE GetSliceData(slicedata *sd, const char *slicefilename, int time_frame,
   int ip1, ip2, jp1, jp2, kp1, kp2;
   int nxsp, nysp, nzsp;
   int istart, irowstart;
-  float timeval, time_max;
+  float timeval;
   int loadframe;
   int ii, kk;
   int joff, koff, volslice;
@@ -4393,7 +4393,6 @@ FILE_SIZE GetSliceData(slicedata *sd, const char *slicefilename, int time_frame,
   NewMemory((void **)&qq, nxsp*(nysp+joff)*(nzsp+koff)*sizeof(float));
 
   count = -1;
-  time_max = -1000000.0;
 
   if(time_frame>0){
     int size;
@@ -4430,7 +4429,6 @@ FILE_SIZE GetSliceData(slicedata *sd, const char *slicefilename, int time_frame,
     }
     else{
       loadframe = 1;
-      time_max = timeval;
     }
     if(settmax_s_arg!=0&&timeval>tmax_s_arg)break;
     //    read(lu11, iostat = error)(((qq(i, j, k), i = 1, nxsp), j = 1, nysp), k = 1, nzsp)
