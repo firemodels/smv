@@ -749,7 +749,7 @@ void SynchTimes(void){
 
       parti=partinfo+j;
       if(parti->loaded==0)continue;
-      parti->timeslist[n]=GetItime(n,parti->timeslist,NULL,parti->times,parti->ntimes);
+      parti->timeslist[n]=GetItime(n,parti->timeslist,parti->times_map,parti->times,parti->ntimes);
     }
 
   /* synchronize shooter times */

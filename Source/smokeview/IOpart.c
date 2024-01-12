@@ -1694,9 +1694,10 @@ int GetPartHeader(partdata *parti, int *nf_all, int option_arg, int print_option
   // allocate memory for number of time steps * number of classes
 
   CheckMemory;
-  NewMemory((void **)&parti->data5,   parti->nclasses*parti->ntimes*sizeof(part5data));
-  NewMemory((void **)&parti->times,   parti->ntimes*sizeof(float));
-  NewMemory((void **)&parti->filepos, nframes_all_local*sizeof(LINT));
+  NewMemory((void **)&parti->data5,     parti->nclasses*parti->ntimes*sizeof(part5data));
+  NewMemory((void **)&parti->times,     parti->ntimes*sizeof(float));
+  NewMemory((void **)&parti->times_map, parti->ntimes);
+  NewMemory((void **)&parti->filepos,   nframes_all_local*sizeof(LINT));
 
   // free memory for x, y, z frame data
 
@@ -1904,6 +1905,7 @@ void FinalizePartLoad(partdata *parti){
 
     partj = partinfo+j;
     if(partj->request_load==1){
+      partj->have_restart = MakeTimesMap(partj->times, partj->times_map, partj->ntimes);
       partj->request_load = 0;
       partj->loaded = 1;
       partj->display = 1;
@@ -1969,6 +1971,7 @@ FILE_SIZE ReadPart(char *file_arg, int ifile_arg, int loadflag_arg, int *errorco
   THREADcontrol(partload_threads, THREAD_UNLOCK);
 
   FREEMEMORY(parti->times);
+  FREEMEMORY(parti->times_map);
   FREEMEMORY(parti->filepos);
 
   if(loadflag_arg==UNLOAD){

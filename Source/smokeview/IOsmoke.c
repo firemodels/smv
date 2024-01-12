@@ -3561,7 +3561,6 @@ int MakeTimesMap(float *times, unsigned char *times_map, int n){
     times_map[i] = 1;
   }
   have_restart = 0;
-  printf("-----------------\n");
   for(i = 1;i < n;i++){
     if(times[i - 1] > times[i]){
       have_restart = 1;
