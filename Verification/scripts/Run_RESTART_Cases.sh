@@ -55,7 +55,7 @@ done
 if [ "$QUEUE" != "" ]; then
   QUEUE="-q $QUEUE"
 fi
-if { "$JOBPREFIX" != "" ]; then
+if [ "$JOBPREFIX" != "" ]; then
   JOBPREFIX="RES"
 fi
 prefix=$JOBPREFIX
