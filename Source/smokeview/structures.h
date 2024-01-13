@@ -144,6 +144,7 @@ typedef struct _geomdata {
   int cache_defined;
   int memory_id, loaded, display;
   int is_terrain;
+  int block_number;
   int have_cface_normals, ncface_normals;
   float *cface_normals;
   float *float_vals;
@@ -791,6 +792,7 @@ typedef struct _meshdata {
   int isomin_index, isomax_index;
   int niso_times;
   float *iso_times;
+  unsigned char *iso_times_map;
   int *iso_timeslist;
   int iso_itime;
   int smokedir,smokedir_old;

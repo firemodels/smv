@@ -736,10 +736,14 @@ void SynchTimes(void){
 
     for(j=0;j<ngeominfoptrs;j++){
       geomdata *geomi;
+      unsigned char *times_map = NULL;
 
       geomi = geominfoptrs[j];
       if(geomi->loaded==0||geomi->display==0)continue;
-      geomi->timeslist[n]=GetItime(n,geomi->timeslist,NULL,geomi->times,geomi->ntimes);
+      if(geomi->geomtype == GEOM_ISO&& geomi->block_number >= 0){
+        times_map = meshinfo[geomi->block_number].iso_times_map;
+      }
+      geomi->timeslist[n] = GetItime(n, geomi->timeslist, times_map, geomi->times, geomi->ntimes);
     }
 
   /* synchronize particle times */

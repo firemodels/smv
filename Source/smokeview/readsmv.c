@@ -1026,6 +1026,7 @@ void InitMesh(meshdata *meshi){
   meshi->isolevels = NULL;
   meshi->nisolevels = 0;
   meshi->iso_times = NULL;
+  meshi->iso_times_map = NULL;
   meshi->iso_timeslist = NULL;
   meshi->isofilenum = -1;
   meshi->nvents = 0;
@@ -4953,7 +4954,7 @@ int ParseISOFProcess(bufferstreamdata *stream, char *buffer, int *iiso_in, int *
   NewMemory((void **)&isoi->geominfo, sizeof(geomdata));
   nmemory_ids++;
   isoi->geominfo->memory_id = nmemory_ids;
-  InitGeom(isoi->geominfo, GEOM_ISO, NOT_FDSBLOCK, CFACE_NORMALS_NO);
+  InitGeom(isoi->geominfo, GEOM_ISO, NOT_FDSBLOCK, CFACE_NORMALS_NO,blocknumber);
 
   bufferptr = TrimFrontBack(buffer);
 
@@ -8341,7 +8342,7 @@ int ReadSMV_Parse(bufferstreamdata *stream) {
       sscanf(buff2, "%i", &have_vectors);
       if(have_vectors!=CFACE_NORMALS_YES)have_vectors=CFACE_NORMALS_NO;
       if(have_vectors == CFACE_NORMALS_YES)have_cface_normals = CFACE_NORMALS_YES;
-      InitGeom(geomi, GEOM_CGEOM, FDSBLOCK, have_vectors);
+      InitGeom(geomi, GEOM_CGEOM, FDSBLOCK, have_vectors,-1);
       geomi->memory_id = ++nmemory_ids;
 
       FGETS(buffer,255,stream);
@@ -8376,11 +8377,11 @@ int ReadSMV_Parse(bufferstreamdata *stream) {
         sscanf(buff2,"%i",&ngeomobjinfo);
       }
       if(MatchSMV(buffer, "SGEOM") == 1){
-        InitGeom(geomi, GEOM_SLICE, NOT_FDSBLOCK, CFACE_NORMALS_NO);
+        InitGeom(geomi, GEOM_SLICE, NOT_FDSBLOCK, CFACE_NORMALS_NO,-1);
       }
       else{
         is_geom = 1;
-        InitGeom(geomi, GEOM_GEOM, FDSBLOCK, CFACE_NORMALS_NO);
+        InitGeom(geomi, GEOM_GEOM, FDSBLOCK, CFACE_NORMALS_NO,-1);
       }
 
       FGETS(buffer,255,stream);

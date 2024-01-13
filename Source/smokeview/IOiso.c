@@ -397,10 +397,16 @@ FILE_SIZE ReadIsoGeom(int ifile, int load_flag, int *geom_frame_index, int *erro
     *errorcode=1;
     return 0;
   }
+  if(NewMemoryMemID((void **)&meshi->iso_times_map, meshi->niso_times, isoi->memory_id) == 0){
+    ReadIso("", ifile, UNLOAD, geom_frame_index, &error);
+    *errorcode = 1;
+    return 0;
+  }
   for(i=0;i<geomi->ntimes;i++){
     meshi->iso_times[i]=geomi->times[i];
+    meshi->iso_times_map[i] = 1;
   }
-
+  isoi->have_restart = MakeTimesMap(meshi->iso_times, meshi->iso_times_map, geomi->ntimes);
   meshi->nisolevels=geomi->nfloat_vals;
   if(
     NewMemoryMemID((void **)&meshi->showlevels, sizeof(int)*meshi->nisolevels, isoi->memory_id) == 0 ||

@@ -5659,7 +5659,8 @@ void ShowHideSortGeometry(int sort_geom, float *mm){
 
 /* ------------------ InitGeom ------------------------ */
 
-void InitGeom(geomdata *geomi,int geomtype, int fdsblock, int have_cface_normals_arg){
+void InitGeom(geomdata *geomi,int geomtype, int fdsblock, int have_cface_normals_arg, int block_number){
+  geomi->block_number = block_number;
   geomi->file=NULL;
   geomi->topo_file = NULL;
   geomi->cache_defined = 0;
