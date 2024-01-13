@@ -1,6 +1,6 @@
 #!/bin/bash
 JPREF=$1
-if [ "$JPREF" ]; then
+if [ "$JPREF" != "" ]; then
  JPREF="-j $JPREF"
 fi
 
