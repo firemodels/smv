@@ -1,0 +1,65 @@
+
+RENDERDIR
+ ..\..\Manuals\SMV_Verification_Guide\SCRIPT_FIGURES
+
+UNLOADALL
+LOADSLCF
+ QUANTITY='TEMPERATURE' PBY=0.5
+SETTIMEVAL
+ 19
+RENDERONCE
+ test2_temp_19
+
+// render iso files (solid)
+
+UNLOADALL
+LOADISOM
+ TEMPERATURE: 620.0
+ 1
+SETTIMEVAL
+ 19.0
+RENDERONCE
+ test2_iso_19
+
+// render particle files using points
+
+UNLOADALL
+LOADPARTICLES
+PARTCLASSCOLOR
+ Uniform color
+SETTIMEVAL
+ 19
+RENDERONCE
+ test2_part_19
+
+// render boundary files
+
+UNLOADALL
+LOADBOUNDARYM
+ WALL TEMPERATURE
+ 1
+SETTIMEVAL
+ 19.0
+RENDERONCE
+ test2_bound_19
+
+// render 3D smoke files
+
+UNLOADALL
+LOADFILE
+ test2_1_1.s3d
+LOADFILE
+ test2_1_2.s3d
+LOADFILE
+ test2_1_3.s3d
+LOADFILE
+ test2_2_1.s3d
+LOADFILE
+ test2_2_2.s3d
+LOADFILE
+ test2_2_3.s3d
+SETTIMEVAL
+ 19
+RENDERONCE
+ test2_smoke_19
+

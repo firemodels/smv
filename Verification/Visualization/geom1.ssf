@@ -1,0 +1,53 @@
+
+RENDERDIR
+ ..\..\Manuals\SMV_Verification_Guide\SCRIPT_FIGURES
+
+UNLOADALL
+LOADFILE
+ geom1_1_1.sf
+LOADFILE
+ geom1_2_1.sf
+LOADFILE
+ geom1_3_1.sf
+LOADFILE
+ geom1_4_1.sf
+LOADFILE
+ geom1_5_1.sf
+LOADFILE
+ geom1_6_1.sf
+SETTIMEVAL
+ 5.0
+RENDERONCE
+ geom1_temp_05
+
+// render boundary files
+
+UNLOADALL
+LOADBOUNDARYM
+ WALL TEMPERATURE
+ 1
+SETTIMEVAL
+ 5.0
+RENDERONCE
+ geom1_bound_05
+
+// render 3D smoke files
+
+UNLOADALL
+LOADFILE
+ geom1_1_1.s3d
+LOADFILE
+ geom1_2_1.s3d
+LOADFILE
+ geom1_3_1.s3d
+LOADFILE
+ geom1_4_1.s3d
+LOADFILE
+ geom1_5_1.s3d
+LOADFILE
+ geom1_6_1.s3d
+SETTIMEVAL
+ 5.0
+RENDERONCE
+ geom1_smoke_05
+

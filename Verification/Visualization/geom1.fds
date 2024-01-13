@@ -29,7 +29,6 @@
 # Export Parameters:
 # ------ ----------
 &SLCF PBY=0, QUANTITY='TEMPERATURE'    /
-&SLCF PBY=0, QUANTITY='HRRPUV'         /
 
 # Boundary colormap in &GEOM surface:
 &BNDF QUANTITY='WALL TEMPERATURE' /
