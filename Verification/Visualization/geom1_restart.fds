@@ -1,13 +1,6 @@
 &HEAD CHID='geom1', TITLE='Complex Geometry: Test propane burning around sphere.' /
 &MISC RESTART=T/
 
-# 1 MESH:
-#& MESH IJK=64,64,96, XB=-2.0,2.0,-2.0,2.0,0.0,6.0 /
-
-# 2 MESHES:
-#& MESH IJK=64,64,48, XB=-2.0,2.0,-2.0,2.0,0.0,3.0, MULT_ID='mesh' /
-#& MULT ID='mesh', DZ=3, K_UPPER=1 /
-
 # 6 MESHES:
 &MESH IJK=32,16,16, XB=-2.0,2.0,-2.0,0.0,0.0,2.0, MULT_ID='mesh' /
 &MULT ID='mesh', DY=2, DZ=2, J_UPPER=1, K_UPPER=2 /
@@ -39,26 +32,11 @@
 
 # Export Parameters:
 # ------ ----------
-&SLCF PBY=0, QUANTITY='VELOCITY',      VECTOR=.TRUE.        /
-&SLCF PBY=0, QUANTITY='H',             CELL_CENTERED=.TRUE. /
-&SLCF PBY=0, QUANTITY='F_X'                                 /
-&SLCF PBY=0, QUANTITY='DENSITY',       CELL_CENTERED=.TRUE. /
-&SLCF PBY=0, QUANTITY='DIFFUSIVITY',   CELL_CENTERED=.TRUE. /
-&SLCF PBY=0, QUANTITY='VISCOSITY',     CELL_CENTERED=.TRUE. /
-&SLCF PBY=0, QUANTITY='MASS FRACTION', SPEC_ID='PROPANE'    /
-&SLCF PBY=0, QUANTITY='DIVERGENCE'     /
 &SLCF PBY=0, QUANTITY='TEMPERATURE'    /
 &SLCF PBY=0, QUANTITY='HRRPUV'         /
 
 # Boundary colormap in &GEOM surface:
 &BNDF QUANTITY='WALL TEMPERATURE' /
-
-# 3D Boundary slices in cut-cell region boundary:
-&SLCF QUANTITY='TEMPERATURE',   SLICETYPE='CUT_CELLS'    /
-
-&DEVC ID='WALL-T1', XYZ=0,0,1, IOR=0, QUANTITY='WALL TEMPERATURE' /
-&DEVC ID='WALL-T2', XYZ=1,0,2, IOR=0, QUANTITY='WALL TEMPERATURE' /
-&DEVC ID='WALL-T3', XYZ=0,0,3, IOR=0, QUANTITY='WALL TEMPERATURE' /
 
 # Geometries:
 &OBST XB=-.5,.5,-.5,.5,0.2,.4, SURF_IDS='BURNER','INERT','INERT' /
