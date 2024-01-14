@@ -68,7 +68,7 @@ $QFDS -p 2 $JOBPREFIX $QUEUE -d Visualization test1.fds
 $QFDS -p 6 $JOBPREFIX $QUEUE -d Visualization geom2.fds
 $QFDS -p 2 $JOBPREFIX $QUEUE -d Visualization test2.fds
 
-wait_cases_end $JPREFIX
+wait_cases_end $prefix
 echo "running restart jobs"
 echo ""
 $QFDS -p 6 $JOBPREFIX $QUEUE -d Visualization geom1_restart.fds
