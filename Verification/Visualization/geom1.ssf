@@ -24,13 +24,13 @@ RENDERONCE
 
 UNLOADALL
 LOADFILE
- geom1_1_1.bf
+ geom1_1_1.be
 LOADFILE
- geom1_2_1.bf
+ geom1_2_1.be
 LOADFILE
- geom1_3_1.bf
+ geom1_3_1.be
 LOADFILE
- geom1_4_1.bf
+ geom1_4_1.be
 SETTIMEVAL
  5.0
 RENDERONCE
