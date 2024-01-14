@@ -287,6 +287,7 @@ if [ "$RUN_SMV" == "1" ]; then
 
   cd $SVNROOT/smv/Verification
   scripts/SMV_Cases.sh
+  scripts/RESTART_Cases.sh
   cd $SVNROOT/smv/Verification
   scripts/SMV_DIFF_Cases.sh
   cd $CURDIDR
