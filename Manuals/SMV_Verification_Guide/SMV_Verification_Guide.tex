@@ -304,6 +304,7 @@ document is regenerated.
 \newcommand{\figheightE}{2.5in}
 \newcommand{\figheightF}{2.25in}
 \newcommand{\figheightG}{1.5in}
+\newcommand{\figheightI}{2.0in}
 \newcolumntype{M}[1]{>{\centering\arraybackslash}m{#1}}
 
 \chapter{Data File Tests}
@@ -995,6 +996,57 @@ Figure \ref{figPLOT3Dtestiso} shows PLOT3D iso-surfaces for \SI{50}{\degreeCelsi
 \end{center}
  \caption[A test showing bounds for various file type]{A test showing slice, vector slice, boundary, cell centered boundary, particle and plot3D file plots along with their min and max bounds.}
 \label{figBOUNDS}%
+\end{figure}
+
+\section{Restart Files}
+This section verifies that smokeview visualizes cases using restart files correctly.
+Three cases were run to generate results.
+Case 1 generates a restart file at time `T`
+then continues to run with the fire at the same level.  Case 2 runs with same fire size as in case 1
+until time `T` then continues to run with no fire.  Case 3 is the same as case 2 except it
+starts at time `T` using the restart file generated in case 1.  
+So, the results for case 2 should be the same as case 3. 
+Figures \ref{figRESTARTstructured} and \ref{figRESTARTgeom} show the results of case 2 and case 3, a case run using a restart file and case run without a restart file. The case in Figures \ref{figRESTARTstructured} uses
+structured geometry/obstacles.  The case in Figures \ref{figRESTARTgeom} uses immersed geometry. 
+The left and right columns in each figure for each file type should be the same. 
+
+Why test with 3 cases and not 2?  When using a restart files, FDS appends data to the various file types (particle, slice boundary {\em etc.}. Smokeview had a bug where it displayed values from the case that generated the restart file rather the case being computed. Errors in smokeview display will be more
+obvious if the case that generated the restart file has a constant fire throughout and the case run from the restart file does not.
+
+
+
+\begin{figure}[bph]
+\begin{center}
+\begin{tabular}{lcc}
+ boundary file&\includegraphics[height=\figheightI]{SCRIPT_FIGURES/test1_bound_19}&
+ \includegraphics[height=\figheightI]{SCRIPT_FIGURES/test2_bound_19}\\
+ 3D smoke&\includegraphics[height=\figheightI]{SCRIPT_FIGURES/test1_smoke_19}&
+ \includegraphics[height=\figheightI]{SCRIPT_FIGURES/test2_smoke_19}\\
+ particle&\includegraphics[height=\figheightI]{SCRIPT_FIGURES/test1_part_19}&
+ \includegraphics[height=\figheightI]{SCRIPT_FIGURES/test2_part_19}\\
+slice& \includegraphics[height=\figheightI]{SCRIPT_FIGURES/test2_temp_19}&
+ \includegraphics[height=\figheightI]{SCRIPT_FIGURES/test1_temp_19}\\
+ &with restart file&without restart file
+ \end{tabular}
+\end{center}
+ \caption[Geometry file smoke images for a case that was restarted.]{Geometry file smoke images for a case that was restarted.}
+\label{figRESTARTstructured}%
+\end{figure}
+
+\begin{figure}[bph]
+\begin{center}
+\begin{tabular}{lcc}
+\mbox{boundary}& \includegraphics[height=\figheightI]{SCRIPT_FIGURES/geom1_bound_05}&
+ \includegraphics[height=\figheightI]{SCRIPT_FIGURES/geom2_bound_05}\\
+3D smoke& \includegraphics[height=\figheightI]{SCRIPT_FIGURES/geom1_smoke_05}&
+ \includegraphics[height=\figheightI]{SCRIPT_FIGURES/geom2_smoke_05}\\
+slice& \includegraphics[height=\figheightI]{SCRIPT_FIGURES/geom1_temp_05}&
+ \includegraphics[height=\figheightI]{SCRIPT_FIGURES/geom2_temp_05}\\
+ &with restart file&without restart file
+ \end{tabular}
+\end{center}
+ \caption[Geometry file smoke images for a case that was restarted.]{Geometry file smoke images for a case that was restarted.}
+\label{figRESTARTgeom}
 \end{figure}
 
 \chapter{Smoke Visualization Tests}
