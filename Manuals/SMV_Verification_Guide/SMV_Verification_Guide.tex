@@ -999,29 +999,24 @@ Figure \ref{figPLOT3Dtestiso} shows PLOT3D iso-surfaces for \SI{50}{\degreeCelsi
 \end{figure}
 
 \section{Restart Files}
-This section verifies that smokeview visualizes cases using restart files correctly.
-Three cases were run to generate results.
-Case 1 generates a restart file at time `T`
-then continues to run with the fire at the same level.  Case 2 runs with same fire size as in case 1
-until time `T` then continues to run with no fire.  Case 3 is the same as case 2 except it
-starts at time `T` using the restart file generated in case 1.  
-So, the results for case 2 should be the same as case 3. 
-Figures \ref{figRESTARTstructured} and \ref{figRESTARTgeom} show the results of case 2 and case 3, a case run using a restart file and case run without a restart file. The case in Figures \ref{figRESTARTstructured} uses
-structured geometry/obstacles.  The case in Figures \ref{figRESTARTgeom} uses immersed geometry. 
-The left and right columns in each figure for each file type should be the same. 
+This section presents images used to verify that smokeview visualizes cases using restart files correctly. FDS appends data to various output files when running a case with a restart file. These output files have multiple entries for some times.  When viewing
+a restart file case, smokeview then needs to read data at the correct time.
+Figure \ref{figRESTARTstructured} shows an OBST case run with and without a restart file.
+The cases are the same otherwise.  Similarly, Figure \ref{figRESTARTgeom} shows
+an immersed geometry case run with and without a restart file. The `with restart` images
+in both figures
+should be the same as the `without restart` images.
 
-Why test with 3 cases and not 2?  When using a restart files, FDS appends data to the various file types (particle, slice boundary {\em etc.}. Smokeview had a bug where it displayed values from the case that generated the restart file rather the case being computed. Errors in smokeview display will be more
-obvious if the case that generated the restart file has a constant fire throughout and the case run from the restart file does not.
 
 
 
 \begin{figure}[bph]
 \begin{center}
 \begin{tabular}{lcc}
- boundary file&\includegraphics[height=\figheightI]{SCRIPT_FIGURES/test1_bound_19}&
- \includegraphics[height=\figheightI]{SCRIPT_FIGURES/test2_bound_19}\\
  3D smoke&\includegraphics[height=\figheightI]{SCRIPT_FIGURES/test1_smoke_19}&
  \includegraphics[height=\figheightI]{SCRIPT_FIGURES/test2_smoke_19}\\
+ boundary file&\includegraphics[height=\figheightI]{SCRIPT_FIGURES/test1_bound_19}&
+ \includegraphics[height=\figheightI]{SCRIPT_FIGURES/test2_bound_19}\\
  particle&\includegraphics[height=\figheightI]{SCRIPT_FIGURES/test1_part_19}&
  \includegraphics[height=\figheightI]{SCRIPT_FIGURES/test2_part_19}\\
 slice& \includegraphics[height=\figheightI]{SCRIPT_FIGURES/test2_temp_19}&
@@ -1029,23 +1024,23 @@ slice& \includegraphics[height=\figheightI]{SCRIPT_FIGURES/test2_temp_19}&
  &with restart file&without restart file
  \end{tabular}
 \end{center}
- \caption[Geometry file smoke images for a case that was restarted.]{Geometry file smoke images for a case that was restarted.}
+ \caption[A test comparing OBST cases run with and without a restart file.]{A test comparing OBST cases run with and without a restart file.}
 \label{figRESTARTstructured}%
 \end{figure}
 
 \begin{figure}[bph]
 \begin{center}
 \begin{tabular}{lcc}
-\mbox{boundary}& \includegraphics[height=\figheightI]{SCRIPT_FIGURES/geom1_bound_05}&
- \includegraphics[height=\figheightI]{SCRIPT_FIGURES/geom2_bound_05}\\
 3D smoke& \includegraphics[height=\figheightI]{SCRIPT_FIGURES/geom1_smoke_05}&
  \includegraphics[height=\figheightI]{SCRIPT_FIGURES/geom2_smoke_05}\\
+boundary& \includegraphics[height=\figheightI]{SCRIPT_FIGURES/geom1_bound_05}&
+ \includegraphics[height=\figheightI]{SCRIPT_FIGURES/geom2_bound_05}\\
 slice& \includegraphics[height=\figheightI]{SCRIPT_FIGURES/geom1_temp_05}&
  \includegraphics[height=\figheightI]{SCRIPT_FIGURES/geom2_temp_05}\\
  &with restart file&without restart file
  \end{tabular}
 \end{center}
- \caption[Geometry file smoke images for a case that was restarted.]{Geometry file smoke images for a case that was restarted.}
+ \caption[A test comparing immersed geometry cases run with and without a restart file.]{A test comparing immersed geometry cases run with and without a restart file.}
 \label{figRESTARTgeom}
 \end{figure}
 
