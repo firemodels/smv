@@ -17,10 +17,10 @@ RENDERONCE
 // render vector slice files
 
 UNLOADALL
-LOADVSLICEM
- TEMPERATURE
- 2 0.800000
- 1
+LOADVFILE
+ boundtest_1_1.sf
+LOADVFILE
+ boundtest_2_1.sf
 SETTIMEVAL
  5.0
 RENDERONCE
@@ -40,9 +40,10 @@ RENDERONCE
 // render boundary files
 
 UNLOADALL
-LOADBOUNDARYM
- WALL TEMPERATURE
- 1
+LOADFILE
+ boundtest_1_1.bf
+LOADFILE
+ boundtest_2_1.bf
 SETTIMEVAL
  5.0
 RENDERONCE
@@ -51,11 +52,10 @@ RENDERONCE
 // render cell centered boundary files
 
 UNLOADALL
-// LOADFILE
-//  plume5c_04.bf
-LOADBOUNDARYM
- WALL TEMPERATURE(cell centered)
- 1
+LOADFILE
+ boundtest_1_2.bf
+LOADFILE
+ boundtest_2_2.bf
 SETTIMEVAL
  5.0
 RENDERONCE
@@ -65,7 +65,7 @@ RENDERONCE
 
 UNLOADALL
 LOADPLOT3D
- 1 5.0
+ -1 5.0
 SETVIEWPOINT
  external
 RENDERONCE

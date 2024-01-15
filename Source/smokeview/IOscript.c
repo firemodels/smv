@@ -3235,6 +3235,43 @@ void ScriptLabel(scriptdata *scripti){
   }
 }
 
+/* ------------------ GetPlot3DTimeIndex ------------------------ */
+
+int GetPlot3DTimeIndex(float time){
+  int i;
+  int index;
+
+  if(plot3dorderindex == NULL){
+    NewMemory((void **)&plot3dorderindex, sizeof(int) * nplot3dinfo);
+    for(i = 0;i < nplot3dinfo;i++){
+      plot3dorderindex[i] = i;
+    }
+    int Plot3dCompare(const void *arg1, const void *arg2);
+    qsort((int *)plot3dorderindex, (size_t)nplot3dinfo, sizeof(int), Plot3dCompare);
+  }
+  index = 0;
+  for(i = 0;i < nplot3dinfo;i++){
+    int ii;
+    plot3ddata *plot3di;
+
+    ii = plot3dorderindex[i];
+    plot3di = plot3dinfo + ii;
+    if(i == 0){
+      if(ABS(time - plot3di->time) < 0.1)return 0;
+    }
+    else{
+      plot3ddata *plot3dim1;
+
+      plot3dim1 = plot3dinfo + plot3dorderindex[i - 1];
+      if(ABS(plot3di->time - plot3dim1->time) > 0.1){
+        index++;
+        if(ABS(time - plot3di->time) < 0.1)return index;
+      }
+    }
+  }
+  return index;
+}
+
 /* ------------------ ScriptLoadPlot3d ------------------------ */
 
 void ScriptLoadPlot3D(scriptdata *scripti){
@@ -3258,7 +3295,17 @@ void ScriptLoadPlot3D(scriptdata *scripti){
     }
   }
   else{
-    count = LoadAllPlot3D(time_local);
+    int index;
+
+    index = GetPlot3DTimeIndex(time_local);
+    LoadPlot3dMenu(-100000+index);
+    count = 0;
+    for(i = 0;i < nplot3dinfo;i++){
+      plot3ddata *plot3di;
+
+      plot3di = plot3dinfo + i;
+      if(plot3di->loaded == 1)count++;
+    }
   }
   UpdateRGBColors(COLORBAR_INDEX_NONE);
   GLUISetLabelControls();
