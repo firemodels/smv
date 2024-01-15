@@ -1109,7 +1109,7 @@ EXTERNCPP void ReadGeomHeader(geomdata *geomi, int *geom_frame_index, int *ntime
 EXTERNCPP void SetupReadAllGeom(void);
 EXTERNCPP FILE_SIZE ReadGeom(geomdata *geomi, int load_flag, int type, int *geom_frame_index);
 EXTERNCPP void ReadGeomFile2(geomdata *geomi);
-EXTERNCPP void InitGeom(geomdata *geomi, int hasdata, int fdsblock, int have_vectors);
+EXTERNCPP void InitGeom(geomdata *geomi, int hasdata, int fdsblock, int have_vectors, int block_number);
 EXTERNCPP FILE_SIZE ReadBoundary(int ifile, int flag, int *errorcode);
 EXTERNCPP FILE_SIZE ReadPart(char *file, int ifile, int loadflag, int *errorcode);
 
@@ -1190,6 +1190,7 @@ EXTERNCPP void GetSliceColors(const float *t, int nt, unsigned char *it,
               char colorlabels[12][11],float colorvalues[12], float *tlevels2,
               int *extreme_min, int *extreme_max, int flag
               );
+EXTERNCPP int MakeTimesMap(float *times, unsigned char *times_map, int n);
 EXTERNCPP meshdata *GetLoadedIsoMesh(void);
 EXTERNCPP void SetIsoLabels(float smin, float smax,
                     isodata *sd, int *errorcode);

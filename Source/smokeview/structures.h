@@ -144,6 +144,7 @@ typedef struct _geomdata {
   int cache_defined;
   int memory_id, loaded, display;
   int is_terrain;
+  int block_number;
   int have_cface_normals, ncface_normals;
   float *cface_normals;
   float *float_vals;
@@ -641,6 +642,8 @@ typedef struct _isodata {
   char menulabel[128];
   int *geom_nstatics, *geom_ndynamics;
   float *geom_times, *geom_vals;
+  unsigned char *times_map;
+  int have_restart;
   float geom_globalmin, geom_globalmax;
   int geom_nvals;
 } isodata;
@@ -789,6 +792,7 @@ typedef struct _meshdata {
   int isomin_index, isomax_index;
   int niso_times;
   float *iso_times;
+  unsigned char *iso_times_map;
   int *iso_timeslist;
   int iso_itime;
   int smokedir,smokedir_old;
@@ -813,6 +817,7 @@ typedef struct _meshdata {
   unsigned char *cpatchval_zlib, *cpatchval_iframe_zlib;
   unsigned char *cpatchval, *cpatchval_iframe;
   float *patch_times, *patch_timesi, *patchval, *patchval_iframe;
+  unsigned char *patch_times_map;
   float **patchventcolors;
   float *thresholdtime;
   int *patchblank;
@@ -1243,6 +1248,8 @@ typedef struct _partdata {
   int npoints;
 
   float zoffset, *times;
+  unsigned char *times_map;
+  int have_restart;
   FILE_SIZE reg_file_size, file_size;
   LINT *filepos;
 
@@ -1417,6 +1424,8 @@ typedef struct _slicedata {
   float diff_valmin,  diff_valmax;
   flowlabels label;
   float *qslicedata, *qsliceframe, *times, *qslice;
+  unsigned char *times_map;
+  int have_restart;
   unsigned char *qslicedata_compressed;
   unsigned char *slicecomplevel;
   unsigned char full_mesh;
@@ -1599,6 +1608,8 @@ typedef struct _smoke3ddata {
   flowlabels label;
   char menulabel[128];
   float *times;
+  unsigned char *times_map;
+  int have_restart;
   int *use_smokeframe;
 #ifdef pp_SMOKE_SKIP
   int *smokeframe_loaded;
@@ -1682,6 +1693,8 @@ typedef struct _patchdata {
   int blocknumber,loaded,loaded2,display;
   float *geom_times, *geom_vals;
   int *geom_timeslist,geom_itime;
+  unsigned char *geom_times_map;
+  int have_restart;
   unsigned char *geom_ivals;
   int *geom_ivals_static_offset, *geom_ivals_dynamic_offset;
   int *geom_vals_static_offset,  *geom_vals_dynamic_offset;

@@ -1026,6 +1026,7 @@ void InitMesh(meshdata *meshi){
   meshi->isolevels = NULL;
   meshi->nisolevels = 0;
   meshi->iso_times = NULL;
+  meshi->iso_times_map = NULL;
   meshi->iso_timeslist = NULL;
   meshi->isofilenum = -1;
   meshi->nvents = 0;
@@ -1059,6 +1060,7 @@ void InitMesh(meshdata *meshi){
   meshi->cpatchval_iframe_zlib = NULL;
   meshi->cpatchval_zlib = NULL;
   meshi->patch_times = NULL;
+  meshi->patch_times_map = NULL;
   meshi->patchval = NULL;
   meshi->patchval_iframe = NULL;
   meshi->thresholdtime = NULL;
@@ -4952,7 +4954,7 @@ int ParseISOFProcess(bufferstreamdata *stream, char *buffer, int *iiso_in, int *
   NewMemory((void **)&isoi->geominfo, sizeof(geomdata));
   nmemory_ids++;
   isoi->geominfo->memory_id = nmemory_ids;
-  InitGeom(isoi->geominfo, GEOM_ISO, NOT_FDSBLOCK, CFACE_NORMALS_NO);
+  InitGeom(isoi->geominfo, GEOM_ISO, NOT_FDSBLOCK, CFACE_NORMALS_NO,blocknumber);
 
   bufferptr = TrimFrontBack(buffer);
 
@@ -5172,6 +5174,7 @@ int ParsePRT5Process(bufferstreamdata *stream, char *buffer, int *nn_part_in, in
   parti->finalize = 0;
   parti->display = 0;
   parti->times = NULL;
+  parti->times_map = NULL;
   parti->timeslist = NULL;
   parti->histograms = NULL;
   parti->bounds_set = 0;
@@ -5605,6 +5608,7 @@ int ParseSMOKE3DProcess(bufferstreamdata *stream, char *buffer, int *nn_smoke3d_
     smoke3di->smoke_comp_all = NULL;
     smoke3di->smokeview_tmp = NULL;
     smoke3di->times = NULL;
+    smoke3di->times_map = NULL;
     smoke3di->use_smokeframe = NULL;
 #ifdef pp_SMOKE_SKIP
     smoke3di->smokeframe_loaded = NULL;
@@ -6092,6 +6096,7 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
     sd->volslice = 0;
   }
   sd->times = NULL;
+  sd->times_map = NULL;
   sd->slicelevel = NULL;
   sd->iqsliceframe = NULL;
   sd->qsliceframe = NULL;
@@ -8337,7 +8342,7 @@ int ReadSMV_Parse(bufferstreamdata *stream) {
       sscanf(buff2, "%i", &have_vectors);
       if(have_vectors!=CFACE_NORMALS_YES)have_vectors=CFACE_NORMALS_NO;
       if(have_vectors == CFACE_NORMALS_YES)have_cface_normals = CFACE_NORMALS_YES;
-      InitGeom(geomi, GEOM_CGEOM, FDSBLOCK, have_vectors);
+      InitGeom(geomi, GEOM_CGEOM, FDSBLOCK, have_vectors,-1);
       geomi->memory_id = ++nmemory_ids;
 
       FGETS(buffer,255,stream);
@@ -8372,11 +8377,11 @@ int ReadSMV_Parse(bufferstreamdata *stream) {
         sscanf(buff2,"%i",&ngeomobjinfo);
       }
       if(MatchSMV(buffer, "SGEOM") == 1){
-        InitGeom(geomi, GEOM_SLICE, NOT_FDSBLOCK, CFACE_NORMALS_NO);
+        InitGeom(geomi, GEOM_SLICE, NOT_FDSBLOCK, CFACE_NORMALS_NO,-1);
       }
       else{
         is_geom = 1;
-        InitGeom(geomi, GEOM_GEOM, FDSBLOCK, CFACE_NORMALS_NO);
+        InitGeom(geomi, GEOM_GEOM, FDSBLOCK, CFACE_NORMALS_NO,-1);
       }
 
       FGETS(buffer,255,stream);

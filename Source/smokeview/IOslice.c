@@ -4331,7 +4331,7 @@ FILE_SIZE GetSliceData(slicedata *sd, const char *slicefilename, int time_frame,
   int ip1, ip2, jp1, jp2, kp1, kp2;
   int nxsp, nysp, nzsp;
   int istart, irowstart;
-  float timeval, time_max;
+  float timeval;
   int loadframe;
   int ii, kk;
   int joff, koff, volslice;
@@ -4393,7 +4393,6 @@ FILE_SIZE GetSliceData(slicedata *sd, const char *slicefilename, int time_frame,
   NewMemory((void **)&qq, nxsp*(nysp+joff)*(nzsp+koff)*sizeof(float));
 
   count = -1;
-  time_max = -1000000.0;
 
   if(time_frame>0){
     int size;
@@ -4425,12 +4424,11 @@ FILE_SIZE GetSliceData(slicedata *sd, const char *slicefilename, int time_frame,
     FORT_SLICEREAD(&timeval, 1, stream);
     if(returncode==0)break;
     file_size = file_size+4;
-    if((settmin_s_arg!=0&&timeval<tmin_s_arg)||timeval<=time_max){
+    if((settmin_s_arg!=0&&timeval<tmin_s_arg)){
       loadframe = 0;
     }
     else{
       loadframe = 1;
-      time_max = timeval;
     }
     if(settmax_s_arg!=0&&timeval>tmax_s_arg)break;
     //    read(lu11, iostat = error)(((qq(i, j, k), i = 1, nxsp), j = 1, nysp), k = 1, nzsp)
@@ -4852,6 +4850,7 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
 
       return_code = NewResizeMemory(sd->qslicedata_compressed, sd->ncompressed);
       if(return_code!=0)return_code = NewResizeMemory(sd->times, sizeof(float)*sd->ntimes);
+      if(return_code != 0)return_code = NewResizeMemory(sd->times_map, sd->ntimes);
       if(return_code!=0)return_code = NewResizeMemory(sd->compindex, sizeof(compdata)*(1+sd->ntimes));
       if(return_code==0){
         ReadSlice("", ifile, time_frame, time_value, UNLOAD, set_slicecolor, &error);
@@ -4866,6 +4865,7 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
         *errorcode = 1;
         return 0;
       }
+      sd->have_restart = MakeTimesMap(sd->times, sd->times_map, sd->ntimes);
       file_size = sd->ncompressed;
       return_filesize = (FILE_SIZE)file_size;
     }
@@ -4874,6 +4874,7 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
 
       return_val = NewResizeMemory(sd->qslicedata, sizeof(float)*(sd->nslicei+1)*(sd->nslicej+1)*(sd->nslicek+1)*sd->ntimes);
       if(return_val!=0)return_val = NewResizeMemory(sd->times, sizeof(float)*sd->ntimes);
+      if(return_val != 0)return_val = NewResizeMemory(sd->times_map, sd->ntimes);
 
       if(return_val == 0){
         *errorcode = 1;
@@ -4899,6 +4900,7 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
             &qmin, &qmax, sd->qslicedata, sd->times, ntimes_slice_old, &sd->ntimes,
             tload_step, use_tload_begin, use_tload_end, tload_begin, tload_end
           );
+        sd->have_restart = MakeTimesMap(sd->times, sd->times_map, sd->ntimes);
         file_size = (int)return_filesize;
         sd->valmin_smv = qmin;
         sd->valmax_smv = qmax;

@@ -1,0 +1,60 @@
+
+RENDERDIR
+ ..\..\Manuals\SMV_Verification_Guide\SCRIPT_FIGURES
+
+UNLOADALL
+LOADFILE
+ geom2_1_1.sf
+LOADFILE
+ geom2_2_1.sf
+LOADFILE
+ geom2_3_1.sf
+LOADFILE
+ geom2_4_1.sf
+LOADFILE
+ geom2_5_1.sf
+LOADFILE
+ geom2_6_1.sf
+SETTIMEVAL
+ 5.0
+RENDERONCE
+ geom2_temp_05
+
+// render boundary files
+
+UNLOADALL
+LOADFILE
+ geom2_1_1.be
+LOADFILE
+ geom2_2_1.be
+LOADFILE
+ geom2_3_1.be
+LOADFILE
+ geom2_4_1.be
+LOADINIFILE
+ geom2.ini
+SETTIMEVAL
+ 5.0
+RENDERONCE
+ geom2_bound_05
+
+// render 3D smoke files
+
+UNLOADALL
+LOADFILE
+ geom2_1_1.s3d
+LOADFILE
+ geom2_2_1.s3d
+LOADFILE
+ geom2_3_1.s3d
+LOADFILE
+ geom2_4_1.s3d
+LOADFILE
+ geom2_5_1.s3d
+LOADFILE
+ geom2_6_1.s3d
+SETTIMEVAL
+ 5.0
+RENDERONCE
+ geom2_smoke_05
+
