@@ -914,8 +914,6 @@ void DrawBox(float *bb, float *box_color){
   glEnd();
 }
 
-#ifdef pp_LOAD_BOUNDS
-
 /* ------------------ DrawBox ------------------------ */
 
 void DrawBoxMinMax(float *bbmin, float *bbmax, float *box_color){
@@ -929,7 +927,6 @@ void DrawBoxMinMax(float *bbmin, float *bbmax, float *box_color){
   bb[5] = bbmax[2];
   DrawBox(bb, box_color);
 }
-#endif
 
 /* ------------------ DrawObstBoundingBox ------------------------ */
 
@@ -1330,14 +1327,10 @@ void DrawGeom(int flag, int timestate){
     glDisable(GL_COLOR_MATERIAL);
     DISABLE_LIGHTING;
     glPopMatrix();
-#ifdef _FORCE_TRANSPARENCY
-    TransparentOff();
-#else
     if(flag==DRAW_TRANSPARENT){
       if(use_transparency_data==1)TransparentOff();
       return;
     }
-#endif
     if(cullfaces==1)glEnable(GL_CULL_FACE);
   }
 

@@ -7,9 +7,6 @@
 #define pp_DEBUG_SUBMENU       // debug output and testing for building menus
 #endif
 
-//#define pp_SLICE_DIR_COUNT
-#define pp_LOAD_BOUNDS   // specify clipping planes for loading data
-
 //#define pp_LUA                 // turn on LUA option
 
 //*** parallel file loading
@@ -17,26 +14,18 @@
 
 //#define pp_CSV_MENU       // add menu for loading CSV files
 
-//#define pp_REDUCED_PRINT   // reduced 3d smoke output
-
 #define pp_SMOKE_SKIP     // add option to skip smoke frames
 //#define pp_SMOKE16      // load 16 bit smoke files
 //#define pp_VOLSMOKE     // add option to compress volume rendered data
 //#define pp_GAMMA        // show gamma correction checkbox
 #define pp_BLACKBODY      // use blackbody theory for generating fire colors
 // pp_BLACKBODY_OUT       // output generated blackbody color data 
-//#define pp_BOUND_HIST_ON // turn on boundary file histograms
 //#define pp_DECIMATE     // decimate terrain geometry
 
 #define pp_FAST           // set fast startup by default
 #define pp_FED_COMPRESS   // skip fed slices when co, o2 or co2 slices are compressed (for now)
 
-//#define pp_CB_ORIG        // set the original the rainbow colorbar as the default
-#define pp_COLOR_PLOT     //  add checkbox for showing CIELab colorbar delta distance plot
-
 //#define pp_BNDF         // merge geometry and structured boundary files in load menus
-
-//#define pp_SMOKE_TLAST  // isolate some code that maybe necessary (but was causing problems)
 
 //#define pp_DPRINT       // turn on debug print (file, line number)
 
@@ -45,7 +34,6 @@
 //#define pp_CRASH_TEST       // test detection of division by zero or use of undefined pointer
 #define pp_GPU                // support the GPU
 #define pp_THREAD             // turn on multi-threading
-//#define pp_LOAD_NEWDATA     // add button for loading new data
 
 #ifdef pp_GPU
 #define pp_GPUTHROTTLE  // pp_GPU directive must also be set
@@ -61,7 +49,6 @@
 #define pp_WINGPU           // only draw 3d slices with the GPU on windows
 #endif
 #endif
-
 
 //*** options: Linux
 

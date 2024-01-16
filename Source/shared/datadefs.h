@@ -17,7 +17,6 @@
 #define C2K(T) ((T)+273.15)
 
 #define USEMESH_DRAW -1
-#ifdef pp_LOAD_BOUNDS
 #define IF_NOT_USEMESH_RETURN0(loaded,blocknum)\
   if(loaded==1)return 0;\
   if((blocknum)>=0 && meshinfo[(blocknum)].use == 0){\
@@ -28,10 +27,6 @@
   if((blocknum)>=0 && meshinfo[(blocknum)].use == 0){\
     continue;\
    }
-#else
-#define IF_NOT_USEMESH_RETURN0(loaded,blocknum)
-#define IF_NOT_USEMESH_CONTINUE(loaded,blocknum)
-#endif
 
 #define SCALE2FDS(x) ((x)*xyzmaxdiff)
 #define SCALE2SMV(x) ((x)/xyzmaxdiff)

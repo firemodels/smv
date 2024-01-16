@@ -1900,12 +1900,10 @@ void UpdateShowScene(void){
   have_fire  = HaveFireLoaded();
   have_smoke = HaveSootLoaded();
 
-#ifdef pp_LOAD_BOUNDS
   if(glui_meshclip_defined==1&&update_meshclip == 1){
     update_meshclip = 0;
     GLUIUpdateMeshBounds();
   }
-#endif
   if(update_csv_load == 1){
     InitializeDeviceCsvData(LOAD);
     update_csv_load = 0;

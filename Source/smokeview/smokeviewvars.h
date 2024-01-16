@@ -883,9 +883,6 @@ SVEXTERN int SVDECL(slice_celltype, 0);
 SVEXTERN int SVDECL(show_geom_normal, 0), SVDECL(smooth_geom_normal, 1);
 
 SVEXTERN geomlistdata SVDECL(*geomlistinfo, NULL);
-#ifdef pp_VOLCOMPRESS
-SVEXTERN int SVDECL(have_volcompressed,0);
-#endif
 SVEXTERN int SVDECL(glui_load_volcompressed,0),SVDECL(load_volcompressed,0);
 SVEXTERN int SVDECL(use_multi_threading,1);
 SVEXTERN int SVDECL(load_at_rendertimes,1);
@@ -2229,7 +2226,6 @@ SVEXTERN int SVDECL(use_transparency_geom,0);
 SVEXTERN facedata SVDECL(**face_transparent,NULL);
 SVEXTERN int SVDECL(hidepatchsurface,0);
 
-#ifdef pp_LOAD_BOUNDS
 #ifdef INMAIN
 SVEXTERN float meshclip[6] = {0.0, 1.0, 0.0, 1.0, 0.0, 1.0};
 SVEXTERN float meshclip_save[6] = {0.0, 1.0, 0.0, 1.0, 0.0, 1.0};
@@ -2246,7 +2242,6 @@ SVEXTERN int SVDECL(glui_meshclip_defined, 0);
 SVEXTERN int SVDECL(set_mesh, 0);
 SVEXTERN int SVDECL(load_only_when_unloaded, 0);
 SVEXTERN int SVDECL(show_mesh_labels, 0);
-#endif
 
 #ifdef INMAIN
   SVEXTERN float rgb_baseBASE[MAXRGB][4]=

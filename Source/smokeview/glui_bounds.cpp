@@ -2406,13 +2406,11 @@ GLUI_Panel *PANEL_script2a=NULL;
 GLUI_Panel *PANEL_script2b=NULL;
 GLUI_Panel *PANEL_script3=NULL;
 GLUI_Panel *PANEL_transparency2=NULL;
-#ifdef pp_LOAD_BOUNDS
 GLUI_Panel *PANEL_mesh     = NULL;
 GLUI_Panel *PANEL_mesh_min = NULL;
 GLUI_Panel *PANEL_meshxyz[6];
 GLUI_Panel *PANEL_mesh_max = NULL;
 GLUI_Panel *PANEL_mesh_minmax = NULL;
-#endif
 GLUI_Panel *PANEL_time2=NULL;
 GLUI_Panel *PANEL_time1a=NULL;
 GLUI_Panel *PANEL_time2a=NULL;
@@ -2514,10 +2512,8 @@ GLUI_Spinner *SPINNER_slice_dy = NULL;
 GLUI_Spinner *SPINNER_slice_dz = NULL;
 GLUI_Spinner *SPINNER_size_factor2         = NULL;
 GLUI_Spinner *SPINNER_plot2d_dt = NULL;
-#ifdef pp_LOAD_BOUNDS
 GLUI_Spinner *SPINNER_meshclip[6];
 GLUI_Spinner *SPINNER_set_mesh = NULL;
-#endif
 
 GLUI_Checkbox *CHECKBOX_slice_load_incremental=NULL;
 GLUI_Checkbox *CHECKBOX_color_vector_black = NULL;
@@ -2552,12 +2548,10 @@ GLUI_Checkbox *CHECKBOX_transparentflag = NULL;
 GLUI_Checkbox *CHECKBOX_use_lighting = NULL;
 GLUI_Checkbox *CHECKBOX_show_extreme_mindata = NULL;
 GLUI_Checkbox *CHECKBOX_show_extreme_maxdata = NULL;
-#ifdef pp_LOAD_BOUNDS
 GLUI_Checkbox *CHECKBOX_use_meshclip[6];
 GLUI_Checkbox *CHECKBOX_show_intersection_box=NULL;
 GLUI_Checkbox *CHECKBOX_show_intersected_meshes = NULL;
 GLUI_Checkbox *CHECKBOX_load_only_when_unloaded = NULL;
-#endif
 
 GLUI_RadioGroup *RADIO_iso_setmin=NULL;
 GLUI_RadioGroup *RADIO_iso_setmax=NULL;
@@ -2682,11 +2676,9 @@ extern "C" void GLUIUpdatePartPointSize(void){
 
 /* ------------------ GLUIUpdateLoadWhenLoaded ------------------------ */
 
-#ifdef pp_LOAD_BOUNDS
 extern "C" void GLUIUpdateLoadWhenLoaded(void){
   CHECKBOX_load_only_when_unloaded->set_int_val(load_only_when_unloaded);
 }
-#endif
 
 /* ------------------ GLUIUpdatePlotLabel ------------------------ */
 
@@ -3618,8 +3610,6 @@ void BoundBoundCB(int var){
   }
 }
 
-#ifdef pp_LOAD_BOUNDS
-
 /* ------------------ CheckBounds ------------------------ */
 
 void CheckBounds(int var){
@@ -3841,7 +3831,6 @@ extern "C" void GLUIUpdateMeshBounds(void){
   MeshBoundCB(USEMESH_XYZ);
   MeshBoundCB(USEMESH_USE_XYZ);
 }
-#endif
 
 /* ------------------ TimeBoundCB ------------------------ */
 
@@ -4931,14 +4920,13 @@ hvacductboundsCPP.setup("hvac", ROLLOUT_hvacduct, hvacductbounds_cpp, nhvacductb
   SPINNER_tload_skip->set_int_limits(0, 1000);
 
   glui_bounds->add_button_to_panel(PANEL_time2, _("Reload all data"), RELOAD_ALL_DATA, TimeBoundCB);
-#ifdef pp_LOAD_NEWDATA
+#ifdef pp_LOAD_INC
   glui_bounds->add_button_to_panel(PANEL_time2, _("Reload new data"), RELOAD_INCREMENTAL_DATA, TimeBoundCB);
 #endif
 
   TimeBoundCB(TBOUNDS_USE);
   TimeBoundCB(TBOUNDS);
 
-#ifdef pp_LOAD_BOUNDS
   PANEL_mesh = glui_bounds->add_panel_to_panel(ROLLOUT_time, "Spatial bounds - load data for meshes that intersect box", true);
   PANEL_mesh_minmax = glui_bounds->add_panel_to_panel(PANEL_mesh, "", false);
   PANEL_mesh_min = glui_bounds->add_panel_to_panel(PANEL_mesh_minmax, "min box coords", true);
@@ -4984,7 +4972,6 @@ hvacductboundsCPP.setup("hvac", ROLLOUT_hvacduct, hvacductbounds_cpp, nhvacductb
   glui_bounds->add_button_to_panel(PANEL_setmesh, "all meshes", USEMESH_SET_ALL, MeshBoundCB);
   MeshBoundCB(USEMESH_USE_XYZ_ALL);
   glui_meshclip_defined = 1;
-#endif
 
   // -------------- Data coloring -------------------
 

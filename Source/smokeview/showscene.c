@@ -168,7 +168,6 @@ void ShowScene2(int mode){
       DrawObstBoundingBox();
     }
 
-#ifdef pp_LOAD_BOUNDS
     if(show_intersected_meshes == 1){
       int i;
       float box_black[4] = {0.0, 0.0, 0.0, 1.0};
@@ -206,7 +205,6 @@ void ShowScene2(int mode){
       DrawBox(meshclip, box_red);
       glPopMatrix();
     }
-#endif
 
     if(show_rotation_center == 1){
       unsigned char pcolor[4];

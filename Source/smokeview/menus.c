@@ -3631,13 +3631,11 @@ void LoadUnloadMenu(int value){
       SetStdOut(stdout);
     }
     break;
-#ifdef pp_LOAD_BOUNDS
   case LOAD_WHEN_LOADED:
     load_only_when_unloaded = 1 - load_only_when_unloaded;
     GLUIUpdateLoadWhenLoaded();
     updatemenu = 1;
     break;
-#endif
   default:
     assert(FFALSE);
     break;
@@ -4067,9 +4065,7 @@ void SetupPart(int value){
 
     parti = partinfo+i;
     if(
-#ifdef pp_LOAD_BOUNDS
       load_only_when_unloaded == 0 &&
-#endif
       parti->loaded == 1){
       int errorcode;
       
@@ -4255,9 +4251,7 @@ void LoadParticleMenu(int value){
         // unload particle files
 
         if(
-#ifdef pp_LOAD_BOUNDS
           load_only_when_unloaded==0&&
-#endif
           value!=PARTFILE_RELOADALL){
           UnloadAllPartFiles();
         }
@@ -4737,9 +4731,7 @@ FILE_SIZE LoadSmoke3D(int type, int frame, int *count, float *time_value){
   int last_smoke = 0, i, file_count=0,errorcode;
   FILE_SIZE load_size=0;
 
-#ifdef pp_LOAD_BOUNDS
   if(load_only_when_unloaded == 0){
-#endif
     for(i = nsmoke3dinfo - 1; i >= 0; i--){
       smoke3ddata *smoke3di;
 
@@ -4748,9 +4740,7 @@ FILE_SIZE LoadSmoke3D(int type, int frame, int *count, float *time_value){
         ReadSmoke3D(ALL_SMOKE_FRAMES, i, UNLOAD, FIRST_TIME, NULL, &errorcode);
       }
     }
-#ifdef pp_LOAD_BOUNDS
-}
-#endif
+  }
   for(i = nsmoke3dinfo-1; i>=0; i--){
     smoke3ddata *smoke3di;
 
@@ -4761,9 +4751,6 @@ FILE_SIZE LoadSmoke3D(int type, int frame, int *count, float *time_value){
     break;
     }
   }
-#ifdef pp_REDUCED_PRINT
-  int icount=0;
-#endif
   for(i=0;i<nsmoke3dinfo;i++){
     smoke3ddata *smoke3di;
 
@@ -4773,13 +4760,6 @@ FILE_SIZE LoadSmoke3D(int type, int frame, int *count, float *time_value){
       file_count++;
       smoke3di->finalize = 0;
       if(i == last_smoke)smoke3di->finalize = 1;
-#ifdef pp_REDUCED_PRINT
-      icount++;
-      if(verbose_output == 0){
-        if(icount == 1)PRINTF("Loading %s for mesh: ", smoke3di->label.shortlabel);
-        if(nmeshes<30||(nmeshes<1000&&icount%50==0)|| (nmeshes >= 1000 && icount%100 == 0)||icount==1||i==last_smoke)PRINTF(" %i", icount);
-      }
-#endif
       load_size += ReadSmoke3D(frame, i, LOAD, FIRST_TIME, time_value, &errorcode);
     }
   }
@@ -4835,13 +4815,9 @@ void LoadSmoke3DMenu(int value){
         }
         if(add_blank==1)printf("\n");
       }
-#ifdef pp_LOAD_BOUNDS
       if(load_only_when_unloaded == 0){
         ReadSmoke3D(ALL_SMOKE_FRAMES, value, UNLOAD, FIRST_TIME, NULL, &errorcode);
       }
-#else
-      ReadSmoke3D(ALL_SMOKE_FRAMES, value, UNLOAD, FIRST_TIME, NULL, &errorcode);
-#endif
       for(i = 0;i < 1;i++){
         IF_NOT_USEMESH_CONTINUE(smoke3di->loaded, smoke3di->blocknumber);
         ReadSmoke3D(ALL_SMOKE_FRAMES, value, LOAD, FIRST_TIME, NULL, &errorcode);
@@ -5153,17 +5129,11 @@ void LoadMultiVSliceMenu(int value){
       vslice1 = vsliceinfo+mvslicei->ivslices[0];
       if(vslice1->ival>=0)longlabel = sliceinfo[vslice1->ival].label.longlabel;
       UnloadAllSliceFiles(longlabel); // unload all vector slices except for the type being loaded now
-#ifdef pp_LOAD_BOUNDS
       if(load_only_when_unloaded == 0){
         for(i = 0; i < mvslicei->nvslices; i++){
           UnloadVSliceMenu(mvslicei->ivslices[i]);
         }
       }
-#else
-      for(i = 0; i < mvslicei->nvslices; i++){
-        UnloadVSliceMenu(mvslicei->ivslices[i]);
-      }
-#endif
 
       START_TIMER(load_time);
       for(i = 0; i<mvslicei->nvslices; i++){
@@ -5352,17 +5322,11 @@ void LoadMultiSliceMenu(int value){
 
       longlabel = sliceinfo[mslicei->islices[0]].label.longlabel;
       UnloadAllSliceFiles(longlabel); // unload all slice and vector slices not of type 'longlabel'
-#ifdef pp_LOAD_BOUNDS
       if(load_only_when_unloaded == 0){ // unload slice being loaded if it is already loaded and of the same type
         for(i = 0;i<mslicei->nslices; i++){
           UnloadSliceMenu(mslicei->islices[i]);
         }
       }
-#else
-      for(i = 0;i < mslicei->nslices; i++){
-        UnloadSliceMenu(mslicei->islices[i]);
-      }
-#endif
       last_slice = -1;
       for(i = mslicei->nslices-1; i >=0; i--){
         slicedata *slicei;
@@ -5527,9 +5491,7 @@ void Plot3DListMenu(int value){
     plot3di = plot3dinfo + i;
     plot3di->loadnow = 0;
     if(
-#ifdef pp_LOAD_BOUNDS
       load_only_when_unloaded == 0 &&
-#endif
       plot3di->loaded == 1){
       int errorcode;
 
@@ -5651,9 +5613,7 @@ void LoadPlot3dMenu(int value){
         plot3di = plot3dinfo + i;
         if(plot3di->loaded == 1){
           if(
-#ifdef pp_LOAD_BOUNDS
             load_only_when_unloaded == 0 ||
-#endif
             i != value){
             ReadPlot3D("", i, UNLOAD, &errorcode);
           }
@@ -5763,9 +5723,7 @@ void LoadAllIsos(int iso_type){
   int file_count=0;
   float load_time=0.0, load_size=0.0;
 
-#ifdef pp_LOAD_BOUNDS
   if(load_only_when_unloaded == 0){
-#endif
     for(i = 0; i < nisoinfo; i++){
       isodata *isoi;
 
@@ -5777,9 +5735,7 @@ void LoadAllIsos(int iso_type){
         UnloadIso(meshi);
       }
     }
-#ifdef pp_LOAD_BOUNDS
   }
-#endif
   START_TIMER(load_time);
   CancelUpdateTriangles();
   for(i = 0; i < nisoinfo; i++){
@@ -5807,18 +5763,14 @@ void LoadIsoMenu(int value){
   if(value==MENU_DUMMY3)return;
   GLUTSETCURSOR(GLUT_CURSOR_WAIT);
   if(value>=0){
-#ifdef pp_LOAD_BOUNDS
     if(load_only_when_unloaded == 0){
-#endif
       for(i = 0;i < nisoinfo;i++){
         isodata *isoi;
 
         isoi = isoinfo + i;
         if(isoi->loaded == 1)ReadIso("", i, UNLOAD, NULL, &errorcode);
       }
-#ifdef pp_LOAD_BOUNDS
     }
-#endif
     for(i=0;i<1;i++){
       isodata *isoi;
 
@@ -5905,9 +5857,7 @@ void LoadBoundaryMenu(int value){
 
   GLUTSETCURSOR(GLUT_CURSOR_WAIT);
   if(value>=0){
-#ifdef pp_LOAD_BOUNDS
     if(load_only_when_unloaded == 0){
-#endif
       for(i = 0;i < npatchinfo;i++){
         patchdata *patchi;
 
@@ -5916,9 +5866,7 @@ void LoadBoundaryMenu(int value){
           ReadBoundary(i, UNLOAD, &errorcode);
         }
       }
-#ifdef pp_LOAD_BOUNDS
     }
-#endif
     if(scriptoutstream!=NULL){
       patchdata *patchi;
 
@@ -5967,9 +5915,7 @@ void LoadBoundaryMenu(int value){
         patchi = patchinfo+i;
         patchi->finalize = 0;
         if(patchi->loaded == 1 
-#ifdef pp_LOAD_BOUNDS
           && load_only_when_unloaded == 0
-#endif
           ){
           ReadBoundary(i, UNLOAD, &errorcode);
         }
@@ -7960,14 +7906,8 @@ void InitLoadMultiSubMenu(int **loadsubmslicemenuptr, int *nmultisliceloadedptr)
   nloadsubmslicemenu = 0;
   for(i = 0;i<nmultisliceinfo;i++){
     slicedata *sd, *sdim1;
-#ifdef pp_SLICE_DIR_COUNT
-    slicedata *sdip1;
-#endif
     char menulabel[1024];
     multislicedata *mslicei,*msliceim1;
-#ifdef pp_SLICE_DIR_COUNT
-    multislicedata *msliceip1;
-#endif
 
     if(i>0){
       msliceim1 = multisliceinfo+i-1;
@@ -7975,12 +7915,6 @@ void InitLoadMultiSubMenu(int **loadsubmslicemenuptr, int *nmultisliceloadedptr)
     }
     mslicei = multisliceinfo+i;
     sd = sliceinfo+mslicei->islices[0];
-#ifdef pp_SLICE_DIR_COUNT
-    if(i<nmultisliceinfo-1){
-      msliceip1 = multisliceinfo+i+1;
-      sdip1 = sliceinfo+msliceip1->islices[0];
-    }
-#endif
 
     if(i==0||strcmp(sd->label.longlabel, sdim1->label.longlabel)!=0){
       msubslice_menuindex[nloadsubmslicemenu]=mslicei->islices[0];
@@ -8008,25 +7942,6 @@ void InitLoadMultiSubMenu(int **loadsubmslicemenuptr, int *nmultisliceloadedptr)
       strcat(menulabel, "(ZLIB)");
     }
     glutAddMenuEntry(menulabel, i);
-#ifdef pp_SLICE_DIR_COUNT
-    if(i==nmultisliceinfo-1||strcmp(sd->label.longlabel, sdip1->label.longlabel)!=0){
-      if(mslicei->ndirxyz[1] + mslicei->ndirxyz[2] + mslicei->ndirxyz[3] > 1){
-        glutAddMenuEntry("-", MENU_DUMMY);
-      }
-      if(mslicei->ndirxyz[1]>1){
-        glutAddMenuEntry(_A(_("Load all"), " x"),-1000-4*(nloadsubmslicemenu-1)-1);
-      }
-      if(mslicei->ndirxyz[2]>1){
-        glutAddMenuEntry(_A(_("Load all"), " y"),-1000-4*(nloadsubmslicemenu-1)-2);
-      }
-      if(mslicei->ndirxyz[3]>1){
-        glutAddMenuEntry(_A(_("Load all"), " z"),-1000-4*(nloadsubmslicemenu-1)-3);
-      }
-      if(mslicei->ndirxyz[1]+mslicei->ndirxyz[2]+mslicei->ndirxyz[3]>1){
-        glutAddMenuEntry(_("Load all"),  -1000-4*(nloadsubmslicemenu-1));
-      }
-    }
-#endif
   }
   *loadsubmslicemenuptr = loadsubmslicemenu;
   *nmultisliceloadedptr = nmultisliceloaded;
@@ -8252,13 +8167,7 @@ void InitMultiVectorSubMenu(int **loadsubmvslicemenuptr){
   nloadsubmvslicemenu = 0;
   for(i = 0; i<nmultivsliceinfo; i++){
     vslicedata *vi, *vim1;
-#ifdef pp_SLICE_DIR_COUNT
-    vslicedata *vip1;
-#endif
     slicedata *si, *sim1;
-#ifdef pp_SLICE_DIR_COUNT
-    slicedata *sip1;
-#endif
     char menulabel[1024];
     multivslicedata *mvslicei;
 
@@ -8270,12 +8179,6 @@ void InitMultiVectorSubMenu(int **loadsubmvslicemenuptr){
     }
     vi = vsliceinfo+mvslicei->ivslices[0];
     si = sliceinfo+vi->ival;
-#ifdef pp_SLICE_DIR_COUNT
-    if(i<nmultivsliceinfo-1){
-      vip1 = vsliceinfo+(multivsliceinfo+i+1)->ivslices[0];
-      sip1 = sliceinfo+vip1->ival;
-    }
-#endif
     if(i==0||strcmp(si->label.longlabel, sim1->label.longlabel)!=0){
       CREATEMENU(loadsubmvslicemenu[nloadsubmvslicemenu], LoadMultiVSliceMenu);
       msubvslice_menuindex[nloadsubmvslicemenu] = vi->ival;
@@ -8299,25 +8202,6 @@ void InitMultiVectorSubMenu(int **loadsubmvslicemenuptr){
       STRCAT(menulabel, "(ZLIB)");
     }
     glutAddMenuEntry(menulabel, i);
-#ifdef pp_SLICE_DIR_COUNT
-    if(i==nmultivsliceinfo-1||strcmp(si->label.longlabel, sip1->label.longlabel)!=0){
-      if(mvslicei->ndirxyz[1]+mvslicei->ndirxyz[2]+mvslicei->ndirxyz[3]>1){
-        glutAddMenuEntry("-", MENU_DUMMY);
-      }
-      if(mvslicei->ndirxyz[1]>1){
-        glutAddMenuEntry(_A(_("Load all"), " x"), -1000-4*nloadsubmvslicemenu-1);
-      }
-      if(mvslicei->ndirxyz[2]>1){
-        glutAddMenuEntry(_A(_("Load all"), " y"), -1000-4*nloadsubmvslicemenu-2);
-      }
-      if(mvslicei->ndirxyz[3]>1){
-        glutAddMenuEntry(_A(_("Load all"), " z"), -1000-4*nloadsubmvslicemenu-3);
-      }
-      if(mvslicei->ndirxyz[1]+mvslicei->ndirxyz[2]+mvslicei->ndirxyz[3]>1){
-        glutAddMenuEntry(_("Load all"), -1000-4*nloadsubmvslicemenu);
-      }
-    }
-#endif
     if(i==0||strcmp(si->label.longlabel, sim1->label.longlabel)!=0){
       nloadsubmvslicemenu++;
     }
@@ -9460,10 +9344,6 @@ static int menu_count=0;
       if(vis_device_plot!=DEVICE_PLOT_SHOW_ALL)glutAddMenuEntry(      "All devices",            OBJECT_PLOT_SHOW_ALL);
       if(vis_device_plot==DEVICE_PLOT_SHOW_SELECTED)glutAddMenuEntry( "*Selected devices",      OBJECT_PLOT_SHOW_SELECTED);
       if(vis_device_plot!=DEVICE_PLOT_SHOW_SELECTED)glutAddMenuEntry( "Selected devices",       OBJECT_PLOT_SHOW_SELECTED);
-#ifdef pp_ZTREE
-      if(vis_device_plot==DEVICE_PLOT_SHOW_TREE_ALL)glutAddMenuEntry( "*All device trees",      OBJECT_PLOT_SHOW_TREE_ALL);
-      if(vis_device_plot!=DEVICE_PLOT_SHOW_TREE_ALL)glutAddMenuEntry( "All device trees",       OBJECT_PLOT_SHOW_TREE_ALL);
-#endif
     }
     if(hrrptr!=NULL){
       if(vis_hrr_plot==1)glutAddMenuEntry("*HRRPUV", PLOT_HRRPUV);
@@ -10437,9 +10317,6 @@ static int menu_count=0;
         if(show_3dsmoke==0)glutAddMenuEntry(_("Show"), TOGGLE_SMOKE3D);
 #endif
         GLUTADDSUBMENU(_("Smoke colorbar"),smokecolorbarmenu);
-#ifdef pp_MESH_SMOKE
-        GLUTADDSUBMENU(_("Mesh"), smoke3dshowsinglemenu);
-#endif
       }
     }
   }
@@ -10499,29 +10376,6 @@ static int menu_count=0;
       isodata *iso2;
 
       iso2 = NULL;
-#ifdef pp_MESH_ISO
-      int ii;
-
-      CREATEMENU(isoshowsubmenu,IsoShowMenu);
-      for(ii=0;ii<nisoinfo;ii++){
-        isodata *isoi;
-        char menulabel[1024];
-
-        i = isoorderindex[ii];
-        isoi = isoinfo + i;
-        if(isoi->loaded==0)continue;
-        if(iso2==NULL&&isoi->type==iisotype)iso2=isoi;
-        if(plotstate==DYNAMIC_PLOTS&&isoi->display==1&&isoi->type==iisotype){
-          iso2=isoi;
-          STRCPY(menulabel,"*");
-          STRCAT(menulabel,isoi->menulabel);
-        }
-        else{
-          STRCPY(menulabel,isoi->menulabel);
-        }
-        glutAddMenuEntry(menulabel,1000+i);
-      }
-#endif
       CREATEMENU(isoshowmenu, IsoShowMenu);
       if(iso2!=NULL){
         char menulabel[1024];
@@ -12807,14 +12661,12 @@ static int menu_count=0;
       }
 
       GLUTADDSUBMENU(_("Reload"),reloadmenu);
-#ifdef pp_LOAD_BOUNDS
       if(load_only_when_unloaded==1){
         glutAddMenuEntry(_("*Load a file only if unloaded"), LOAD_WHEN_LOADED);
       }
       else{
         glutAddMenuEntry(_("Load a file only if unloaded"), LOAD_WHEN_LOADED);
       }
-#endif
       glutAddMenuEntry(_("Unload all"),UNLOADALL);
     }
 

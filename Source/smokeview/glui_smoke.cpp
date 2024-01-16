@@ -39,9 +39,6 @@ GLUI_RadioGroup *RADIO_newsmoke = NULL;
 GLUI_RadioGroup *RADIO_render=NULL;
 GLUI_RadioGroup *RADIO_skipframes=NULL;
 GLUI_RadioGroup *RADIO_smokesensors=NULL;
-#ifdef pp_VOLCOMPRESS
-GLUI_RadioGroup *RADIO_loadvol=NULL;
-#endif
 GLUI_Spinner *SPINNER_smoke_num=NULL;
 GLUI_Spinner *SPINNER_startframe=NULL;
 GLUI_Spinner *SPINNER_skipframe=NULL;
@@ -119,7 +116,6 @@ GLUI_Checkbox *CHECKBOX_update_smokeplanes = NULL;
 GLUI_Checkbox *CHECKBOX_plane_single = NULL;
 GLUI_Checkbox *CHECKBOX_freeze = NULL;
 GLUI_Checkbox *CHECKBOX_combine_meshes = NULL;
-GLUI_Checkbox *CHECKBOX_compress_volsmoke = NULL;
 GLUI_Checkbox *CHECKBOX_smokecullflag = NULL;
 GLUI_Checkbox *CHECKBOX_test_smokesensors = NULL;
 GLUI_Checkbox *CHECKBOX_smokeGPU = NULL;
@@ -611,14 +607,6 @@ extern "C" void GLUI3dSmokeSetup(int main_window){
     INSERT_ROLLOUT(ROLLOUT_volume, glui_3dsmoke);
     ADDPROCINFO(smokeprocinfo, nsmokeprocinfo, ROLLOUT_volume, VOLRENDER_ROLLOUT, glui_3dsmoke);
 
-#ifdef pp_VOLCOMPRESS
-    if(have_volcompressed == 1){
-      RADIO_loadvol = glui_3dsmoke->add_radiogroup_to_panel(ROLLOUT_volume, &glui_load_volcompressed, LOAD_COMPRESSED_DATA, GLUISmoke3dCB);
-      glui_3dsmoke->add_radiobutton_to_group(RADIO_loadvol, _("Load full data"));
-      glui_3dsmoke->add_radiobutton_to_group(RADIO_loadvol, _("Load compressed data"));
-    }
-#endif
-
     //*** display
 
     ROLLOUT_voldisplay = glui_3dsmoke->add_rollout_to_panel(ROLLOUT_volume,_("Display"),false, VOLSMOKE_DISPLAY, VolSmokeRolloutCB);
@@ -692,12 +680,6 @@ extern "C" void GLUI3dSmokeSetup(int main_window){
     ADDPROCINFO(volsmokeprocinfo, nvolsmokeprocinfo, ROLLOUT_volsmoke_load, VOLSMOKE_LOAD_ROLLOUT, glui_3dsmoke);
 
     glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_volsmoke_load, _("Load data in background"), &use_multi_threading);
-#ifdef pp_VOLCOMPRESS
-    CHECKBOX_compress_volsmoke = glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_volsmoke_load, _("Compress data while loading"), &glui_compress_volsmoke);
-    if(have_volcompressed == 1){
-      GLUISmoke3dCB(LOAD_COMPRESSED_DATA);
-    }
-#endif
     glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_volsmoke_load, _("Load data only at render times"), &load_at_rendertimes);
 
     //*** generate images
@@ -1054,14 +1036,6 @@ extern "C" void GLUISmoke3dCB(int var){
       SPINNER_temperature_max->set_float_val(global_temp_max);
     }
     UpdateSmokeColormap(smoke_render_option);
-    break;
-  case LOAD_COMPRESSED_DATA:
-    if(load_volcompressed==1){
-      CHECKBOX_compress_volsmoke->disable();
-    }
-    else{
-      CHECKBOX_compress_volsmoke->enable();
-    }
     break;
   case SMOKE_OPTIONS:
     if(nsmoke3d_temp==0&&smoke_render_option==RENDER_SLICE){
