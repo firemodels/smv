@@ -889,9 +889,7 @@ void FreeLabels(flowlabels *flowlabel){
 void InitMesh(meshdata *meshi){
   int i;
 
-#ifdef pp_LOAD_BOUNDS
   meshi->use = 1;
-#endif
   meshi->isliceinfo    = 0;
   meshi->nsliceinfo    = 0;
   for(i = 0;i < 6;i++){
@@ -3529,7 +3527,6 @@ void UpdateMeshCoords(void){
   ybarFDS  = ybar;
   zbarFDS  = zbar;
 
-#ifdef pp_LOAD_BOUNDS
   use_meshclip[0] = 0;
   use_meshclip[1] = 0;
   use_meshclip[2] = 0;
@@ -3542,7 +3539,6 @@ void UpdateMeshCoords(void){
   meshclip[3] = ybarFDS;
   meshclip[4] = zbar0FDS;
   meshclip[5] = zbarFDS;
-#endif
 
   geomlistdata *geomlisti;
   if(geominfo!=NULL&&geominfo->geomlistinfo!=NULL){
@@ -12332,7 +12328,6 @@ int ReadIni2(char *inifile, int localfile){
       update_research_mode=1;
       continue;
     }
-#ifdef pp_LOAD_BOUNDS
     if(MatchINI(buffer, "LOADMESH") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, " %i %i", &show_intersection_box, &show_intersected_meshes);
@@ -12353,7 +12348,6 @@ int ReadIni2(char *inifile, int localfile){
       if(show_intersected_meshes != 0)show_intersected_meshes = 1;
       update_meshclip = 1;
     }
-#endif
     if(MatchINI(buffer, "GEOMDOMAIN") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, " %i %i ", &showgeom_inside_domain, &showgeom_outside_domain);
@@ -16523,13 +16517,11 @@ void WriteIniLocal(FILE *fileout){
   }
   fprintf(fileout, "CACHE_DATA\n");
   fprintf(fileout, " %i %i %i %i \n", cache_boundary_data, cache_part_data, cache_plot3d_data, cache_slice_data);
-#ifdef pp_LOAD_BOUNDS
   fprintf(fileout, "LOADMESH\n");
   fprintf(fileout, " %i %i\n", show_intersection_box, show_intersected_meshes);
   fprintf(fileout, " %i %f %i %f\n", use_meshclip[0], meshclip[0], use_meshclip[1], meshclip[1]);
   fprintf(fileout, " %i %f %i %f\n", use_meshclip[2], meshclip[2], use_meshclip[3], meshclip[3]);
   fprintf(fileout, " %i %f %i %f\n", use_meshclip[4], meshclip[4], use_meshclip[5], meshclip[5]);
-#endif
   fprintf(fileout, "PATCHDATAOUT\n");
   fprintf(fileout, " %i %f %f %f %f %f %f %f %f\n", output_patchdata,
     patchout_tmin, patchout_tmax,

@@ -3817,9 +3817,7 @@ void DrawBoundaryFrame(int flag){
   if(flag == DRAW_TRANSPARENT)return;
   for(i=0;i<nmeshes;i++){
     meshi=meshinfo+i;
-#ifdef pp_LOAD_BOUNDS
     if(meshi->use == 0)continue;
-#endif
     if(meshi->npatches>0){
       int filenum;
 

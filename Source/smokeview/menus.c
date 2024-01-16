@@ -3631,13 +3631,11 @@ void LoadUnloadMenu(int value){
       SetStdOut(stdout);
     }
     break;
-#ifdef pp_LOAD_BOUNDS
   case LOAD_WHEN_LOADED:
     load_only_when_unloaded = 1 - load_only_when_unloaded;
     GLUIUpdateLoadWhenLoaded();
     updatemenu = 1;
     break;
-#endif
   default:
     assert(FFALSE);
     break;
@@ -4067,9 +4065,7 @@ void SetupPart(int value){
 
     parti = partinfo+i;
     if(
-#ifdef pp_LOAD_BOUNDS
       load_only_when_unloaded == 0 &&
-#endif
       parti->loaded == 1){
       int errorcode;
       
@@ -4255,9 +4251,7 @@ void LoadParticleMenu(int value){
         // unload particle files
 
         if(
-#ifdef pp_LOAD_BOUNDS
           load_only_when_unloaded==0&&
-#endif
           value!=PARTFILE_RELOADALL){
           UnloadAllPartFiles();
         }
@@ -4737,9 +4731,7 @@ FILE_SIZE LoadSmoke3D(int type, int frame, int *count, float *time_value){
   int last_smoke = 0, i, file_count=0,errorcode;
   FILE_SIZE load_size=0;
 
-#ifdef pp_LOAD_BOUNDS
   if(load_only_when_unloaded == 0){
-#endif
     for(i = nsmoke3dinfo - 1; i >= 0; i--){
       smoke3ddata *smoke3di;
 
@@ -4748,9 +4740,7 @@ FILE_SIZE LoadSmoke3D(int type, int frame, int *count, float *time_value){
         ReadSmoke3D(ALL_SMOKE_FRAMES, i, UNLOAD, FIRST_TIME, NULL, &errorcode);
       }
     }
-#ifdef pp_LOAD_BOUNDS
-}
-#endif
+  }
   for(i = nsmoke3dinfo-1; i>=0; i--){
     smoke3ddata *smoke3di;
 
@@ -4825,13 +4815,9 @@ void LoadSmoke3DMenu(int value){
         }
         if(add_blank==1)printf("\n");
       }
-#ifdef pp_LOAD_BOUNDS
       if(load_only_when_unloaded == 0){
         ReadSmoke3D(ALL_SMOKE_FRAMES, value, UNLOAD, FIRST_TIME, NULL, &errorcode);
       }
-#else
-      ReadSmoke3D(ALL_SMOKE_FRAMES, value, UNLOAD, FIRST_TIME, NULL, &errorcode);
-#endif
       for(i = 0;i < 1;i++){
         IF_NOT_USEMESH_CONTINUE(smoke3di->loaded, smoke3di->blocknumber);
         ReadSmoke3D(ALL_SMOKE_FRAMES, value, LOAD, FIRST_TIME, NULL, &errorcode);
@@ -5143,17 +5129,11 @@ void LoadMultiVSliceMenu(int value){
       vslice1 = vsliceinfo+mvslicei->ivslices[0];
       if(vslice1->ival>=0)longlabel = sliceinfo[vslice1->ival].label.longlabel;
       UnloadAllSliceFiles(longlabel); // unload all vector slices except for the type being loaded now
-#ifdef pp_LOAD_BOUNDS
       if(load_only_when_unloaded == 0){
         for(i = 0; i < mvslicei->nvslices; i++){
           UnloadVSliceMenu(mvslicei->ivslices[i]);
         }
       }
-#else
-      for(i = 0; i < mvslicei->nvslices; i++){
-        UnloadVSliceMenu(mvslicei->ivslices[i]);
-      }
-#endif
 
       START_TIMER(load_time);
       for(i = 0; i<mvslicei->nvslices; i++){
@@ -5342,17 +5322,11 @@ void LoadMultiSliceMenu(int value){
 
       longlabel = sliceinfo[mslicei->islices[0]].label.longlabel;
       UnloadAllSliceFiles(longlabel); // unload all slice and vector slices not of type 'longlabel'
-#ifdef pp_LOAD_BOUNDS
       if(load_only_when_unloaded == 0){ // unload slice being loaded if it is already loaded and of the same type
         for(i = 0;i<mslicei->nslices; i++){
           UnloadSliceMenu(mslicei->islices[i]);
         }
       }
-#else
-      for(i = 0;i < mslicei->nslices; i++){
-        UnloadSliceMenu(mslicei->islices[i]);
-      }
-#endif
       last_slice = -1;
       for(i = mslicei->nslices-1; i >=0; i--){
         slicedata *slicei;
@@ -5517,9 +5491,7 @@ void Plot3DListMenu(int value){
     plot3di = plot3dinfo + i;
     plot3di->loadnow = 0;
     if(
-#ifdef pp_LOAD_BOUNDS
       load_only_when_unloaded == 0 &&
-#endif
       plot3di->loaded == 1){
       int errorcode;
 
@@ -5641,9 +5613,7 @@ void LoadPlot3dMenu(int value){
         plot3di = plot3dinfo + i;
         if(plot3di->loaded == 1){
           if(
-#ifdef pp_LOAD_BOUNDS
             load_only_when_unloaded == 0 ||
-#endif
             i != value){
             ReadPlot3D("", i, UNLOAD, &errorcode);
           }
@@ -5753,9 +5723,7 @@ void LoadAllIsos(int iso_type){
   int file_count=0;
   float load_time=0.0, load_size=0.0;
 
-#ifdef pp_LOAD_BOUNDS
   if(load_only_when_unloaded == 0){
-#endif
     for(i = 0; i < nisoinfo; i++){
       isodata *isoi;
 
@@ -5767,9 +5735,7 @@ void LoadAllIsos(int iso_type){
         UnloadIso(meshi);
       }
     }
-#ifdef pp_LOAD_BOUNDS
   }
-#endif
   START_TIMER(load_time);
   CancelUpdateTriangles();
   for(i = 0; i < nisoinfo; i++){
@@ -5797,18 +5763,14 @@ void LoadIsoMenu(int value){
   if(value==MENU_DUMMY3)return;
   GLUTSETCURSOR(GLUT_CURSOR_WAIT);
   if(value>=0){
-#ifdef pp_LOAD_BOUNDS
     if(load_only_when_unloaded == 0){
-#endif
       for(i = 0;i < nisoinfo;i++){
         isodata *isoi;
 
         isoi = isoinfo + i;
         if(isoi->loaded == 1)ReadIso("", i, UNLOAD, NULL, &errorcode);
       }
-#ifdef pp_LOAD_BOUNDS
     }
-#endif
     for(i=0;i<1;i++){
       isodata *isoi;
 
@@ -5895,9 +5857,7 @@ void LoadBoundaryMenu(int value){
 
   GLUTSETCURSOR(GLUT_CURSOR_WAIT);
   if(value>=0){
-#ifdef pp_LOAD_BOUNDS
     if(load_only_when_unloaded == 0){
-#endif
       for(i = 0;i < npatchinfo;i++){
         patchdata *patchi;
 
@@ -5906,9 +5866,7 @@ void LoadBoundaryMenu(int value){
           ReadBoundary(i, UNLOAD, &errorcode);
         }
       }
-#ifdef pp_LOAD_BOUNDS
     }
-#endif
     if(scriptoutstream!=NULL){
       patchdata *patchi;
 
@@ -5957,9 +5915,7 @@ void LoadBoundaryMenu(int value){
         patchi = patchinfo+i;
         patchi->finalize = 0;
         if(patchi->loaded == 1 
-#ifdef pp_LOAD_BOUNDS
           && load_only_when_unloaded == 0
-#endif
           ){
           ReadBoundary(i, UNLOAD, &errorcode);
         }
@@ -12705,14 +12661,12 @@ static int menu_count=0;
       }
 
       GLUTADDSUBMENU(_("Reload"),reloadmenu);
-#ifdef pp_LOAD_BOUNDS
       if(load_only_when_unloaded==1){
         glutAddMenuEntry(_("*Load a file only if unloaded"), LOAD_WHEN_LOADED);
       }
       else{
         glutAddMenuEntry(_("Load a file only if unloaded"), LOAD_WHEN_LOADED);
       }
-#endif
       glutAddMenuEntry(_("Unload all"),UNLOADALL);
     }
 
