@@ -6007,21 +6007,6 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
     sd->colorbar_autoflip = 0;
   }
 
-#ifdef pp_VOLCOMPRESS
-  {
-    char volfile[1024];
-
-    strcpy(volfile, bufferptr);
-    strcat(volfile, ".svv");
-    sd->vol_file = NULL;
-    if(FILE_EXISTS_CASEDIR(volfile)==YES){
-      NewMemory((void **)&sd->vol_file, (unsigned int)(len+4+1));
-      STRCPY(sd->vol_file, volfile);
-      have_volcompressed = 1;
-    }
-  }
-#endif
-
   NewMemory((void **)&sd->size_file, (unsigned int)(len+3+1));
   STRCPY(sd->size_file, bufferptr);
   STRCAT(sd->size_file, ".sz");

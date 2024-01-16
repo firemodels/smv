@@ -38,7 +38,6 @@
 #define VOL_SMOKE 13
 #define VOL_NGRID 18
 #define SMOKE_OPTIONS 19
-#define LOAD_COMPRESSED_DATA 20
 #define TEMP_MIN 21
 #define TEMP_CUTOFF 22
 #define TEMP_MAX 23

@@ -883,9 +883,6 @@ SVEXTERN int SVDECL(slice_celltype, 0);
 SVEXTERN int SVDECL(show_geom_normal, 0), SVDECL(smooth_geom_normal, 1);
 
 SVEXTERN geomlistdata SVDECL(*geomlistinfo, NULL);
-#ifdef pp_VOLCOMPRESS
-SVEXTERN int SVDECL(have_volcompressed,0);
-#endif
 SVEXTERN int SVDECL(glui_load_volcompressed,0),SVDECL(load_volcompressed,0);
 SVEXTERN int SVDECL(use_multi_threading,1);
 SVEXTERN int SVDECL(load_at_rendertimes,1);
