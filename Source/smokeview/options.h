@@ -17,7 +17,7 @@
 //#define pp_SMOKE16      // load 16 bit smoke files
 //#define pp_GAMMA        // show gamma correction checkbox
 // #define pp_BLACKBODY_OUT       // output generated blackbody color data 
-// #define pp_BLACKBOCY_SYSTEM    
+// #define pp_BLACKBODY_SYSTEM    
 //#define pp_DECIMATE     // decimate terrain geometry
 
 #define pp_FAST           // set fast startup by default
