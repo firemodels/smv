@@ -3635,9 +3635,6 @@ int GetSmoke3DSizes(smoke3ddata *smoke3di, int fortran_skip, char *smokefile, in
     }
     time_last = time_local;
     iframe_local++;
-#ifdef pp_SMOKE_TLAST
-    //if(time_local <= time_max)continue;
-#endif
     if(use_tload_end == 1 && time_local > tload_end)break;
     if(iii%tload_step == 0 && (use_tload_begin == 0 || time_local >= tload_begin)){
       nframes_found++;
@@ -3701,12 +3698,6 @@ int GetSmoke3DSizes(smoke3ddata *smoke3di, int fortran_skip, char *smokefile, in
     *nch_smoke_compressed_full++ = nch_smoke_compressed;
     *use_smokeframe_full = 0;
     if(use_tload_end == 1 && time_local > tload_end)break;
-#ifdef pp_SMOKE_TLAST
-    if(time_local <= time_max){
-      use_smokeframe_full++;
-      continue;
-    }
-#endif
 
     if(iii%tload_step == 0 && (use_tload_begin == 0 || time_local >= tload_begin)){
       *use_smokeframe_full = 1;
@@ -4080,11 +4071,7 @@ int SetupSmoke3D(smoke3ddata *smoke3di, int flag_arg, int iframe_arg, int *error
     smoke3di->compression_type = GetSmoke3DVersion(smoke3di);
     UpdateSmoke3dMenuLabels();
   }
-#ifdef pp_REDUCED_PRINT
-  if(verbose_output==1&&iframe_arg==ALL_SMOKE_FRAMES)PRINTF("Loading %s(%s)", smoke3di->file, smoke3di->label.shortlabel);
-#else
   if(iframe_arg==ALL_SMOKE_FRAMES)PRINTF("Loading %s(%s)", smoke3di->file, smoke3di->label.shortlabel);
-#endif
   CheckMemory;
   smoke3di->request_load = 1;
   smoke3di->ntimes_old = smoke3di->ntimes;
@@ -4315,11 +4302,7 @@ FILE_SIZE ReadSmoke3D(int iframe_arg,int ifile_arg,int flag_arg, int first_time,
     SmokeWrapup();
   }
   STOP_TIMER(total_time_local);
-#ifdef pp_REDUCED_PRINT
-  if(verbose_output == 1 && iframe_arg==ALL_SMOKE_FRAMES){
-#else
   if(iframe_arg==ALL_SMOKE_FRAMES){
-#endif
     if(file_size_local>1000000){
       PRINTF(" - %.1f MB/%.1f s", (float)file_size_local/1000000., total_time_local);
     }
