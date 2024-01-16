@@ -25,8 +25,6 @@
 #define pp_FAST           // set fast startup by default
 #define pp_FED_COMPRESS   // skip fed slices when co, o2 or co2 slices are compressed (for now)
 
-//#define pp_CB_ORIG        // set the original the rainbow colorbar as the default
-
 //#define pp_BNDF         // merge geometry and structured boundary files in load menus
 
 //#define pp_DPRINT       // turn on debug print (file, line number)

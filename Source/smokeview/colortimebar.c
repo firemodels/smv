@@ -1347,11 +1347,7 @@ void InitDefaultColorbars(int nini){
 
   // rainbow colorbar
 
-#ifdef pp_CB_ORIG
-  strcpy(cbi->menu_label,"Rainbow_new");
-#else
   strcpy(cbi->menu_label,"Rainbow");
-#endif
   cbi->nnodes=5;
   cbi->nodehilight=0;
 
@@ -1384,11 +1380,7 @@ void InitDefaultColorbars(int nini){
 
   // original rainbow colorbar
 
-#ifdef pp_CB_ORIG
-  strcpy(cbi->menu_label, "Rainbow");
-#else
   strcpy(cbi->menu_label, "Rainbow_orig");
-#endif
   cbi->nnodes=5;
   cbi->nodehilight=0;
 
