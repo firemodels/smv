@@ -49,11 +49,9 @@ GLUI_Spinner *SPINNER_smoke3d_threads = NULL;
 GLUI_Spinner *SPINNER_smoke3d_load_start=NULL;
 GLUI_Spinner *SPINNER_smoke3d_load_skip=NULL;
 
-#ifdef pp_BLACKBODY
 GLUI_Spinner *SPINNER_fire_temp_min = NULL;
 GLUI_Spinner *SPINNER_fire_temp_max = NULL;
 GLUI_Spinner *SPINNER_nfire_colors  = NULL;
-#endif
 GLUI_Spinner *SPINNER_voltest_depth1  = NULL;
 GLUI_Spinner *SPINNER_voltest_depth2  = NULL;
 GLUI_Spinner *SPINNER_temperature_min=NULL;
@@ -129,9 +127,7 @@ GLUI_Panel *PANEL_smoke_outline_type = NULL;
 GLUI_Panel *PANEL_smokealg = NULL;
 GLUI_Panel *PANEL_gridres = NULL;
 GLUI_Panel *PANEL_fire_cutoff = NULL;
-#ifdef pp_BLACKBODY
 GLUI_Panel *PANEL_blackbody = NULL;
-#endif
 GLUI_Panel *PANEL_overall = NULL;
 GLUI_Panel *PANEL_smokesensor = NULL;
 GLUI_Panel *PANEL_color = NULL;
@@ -613,7 +609,6 @@ extern "C" void GLUI3dSmokeSetup(int main_window){
     glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_voldisplay, "block smoke", &block_volsmoke);
     glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_voldisplay, "debug", &smoke3dVoldebug);
 #endif
-#ifdef pp_BLACKBODY
     PANEL_blackbody = glui_3dsmoke->add_panel_to_panel(ROLLOUT_voldisplay, "Black body colors");
     SPINNER_fire_temp_min = glui_3dsmoke->add_spinner_to_panel(PANEL_blackbody, "min temperature", GLUI_SPINNER_FLOAT, &fire_temp_min, BLACKBODY_TEMPS, GLUISmoke3dCB);
     SPINNER_fire_temp_max = glui_3dsmoke->add_spinner_to_panel(PANEL_blackbody, "max temperature", GLUI_SPINNER_FLOAT, &fire_temp_max, BLACKBODY_TEMPS, GLUISmoke3dCB);
@@ -622,7 +617,6 @@ extern "C" void GLUI3dSmokeSetup(int main_window){
     glui_3dsmoke->add_checkbox_to_panel(PANEL_blackbody, "use blackbody colors", &use_blackbody_colors);
 #ifdef pp_GAMMA
     glui_3dsmoke->add_checkbox_to_panel(PANEL_blackbody, "gamma correction", &gamma_correction, BLACKBODY_TEMPS, GLUISmoke3dCB);
-#endif
 #endif
     ROLLOUT_voltest = glui_3dsmoke->add_rollout_to_panel(ROLLOUT_voldisplay, "volrender test data");
     ROLLOUT_voltest->close();
@@ -995,7 +989,6 @@ extern "C" void GLUISmoke3dCB(int var){
       meshi->voltest_update = 1;
     }
     break;
-#ifdef pp_BLACKBODY
   case BLACKBODY_TEMPS:
     if(nfire_colors<256){
       nfire_colors = 256;
@@ -1016,7 +1009,6 @@ extern "C" void GLUISmoke3dCB(int var){
     }
     MakeFireColors(fire_temp_min, fire_temp_max, nfire_colors);
     break;
-#endif
   case TEMP_CUTOFF:
     temp_min = (float)(10*(int)(global_temp_min/10.0) + 10.0);
     temp_max = (float)(10*(int)(global_temp_max/10.0) - 10.0);
