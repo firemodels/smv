@@ -7950,14 +7950,8 @@ void InitLoadMultiSubMenu(int **loadsubmslicemenuptr, int *nmultisliceloadedptr)
   nloadsubmslicemenu = 0;
   for(i = 0;i<nmultisliceinfo;i++){
     slicedata *sd, *sdim1;
-#ifdef pp_SLICE_DIR_COUNT
-    slicedata *sdip1;
-#endif
     char menulabel[1024];
     multislicedata *mslicei,*msliceim1;
-#ifdef pp_SLICE_DIR_COUNT
-    multislicedata *msliceip1;
-#endif
 
     if(i>0){
       msliceim1 = multisliceinfo+i-1;
@@ -7965,12 +7959,6 @@ void InitLoadMultiSubMenu(int **loadsubmslicemenuptr, int *nmultisliceloadedptr)
     }
     mslicei = multisliceinfo+i;
     sd = sliceinfo+mslicei->islices[0];
-#ifdef pp_SLICE_DIR_COUNT
-    if(i<nmultisliceinfo-1){
-      msliceip1 = multisliceinfo+i+1;
-      sdip1 = sliceinfo+msliceip1->islices[0];
-    }
-#endif
 
     if(i==0||strcmp(sd->label.longlabel, sdim1->label.longlabel)!=0){
       msubslice_menuindex[nloadsubmslicemenu]=mslicei->islices[0];
@@ -7998,25 +7986,6 @@ void InitLoadMultiSubMenu(int **loadsubmslicemenuptr, int *nmultisliceloadedptr)
       strcat(menulabel, "(ZLIB)");
     }
     glutAddMenuEntry(menulabel, i);
-#ifdef pp_SLICE_DIR_COUNT
-    if(i==nmultisliceinfo-1||strcmp(sd->label.longlabel, sdip1->label.longlabel)!=0){
-      if(mslicei->ndirxyz[1] + mslicei->ndirxyz[2] + mslicei->ndirxyz[3] > 1){
-        glutAddMenuEntry("-", MENU_DUMMY);
-      }
-      if(mslicei->ndirxyz[1]>1){
-        glutAddMenuEntry(_A(_("Load all"), " x"),-1000-4*(nloadsubmslicemenu-1)-1);
-      }
-      if(mslicei->ndirxyz[2]>1){
-        glutAddMenuEntry(_A(_("Load all"), " y"),-1000-4*(nloadsubmslicemenu-1)-2);
-      }
-      if(mslicei->ndirxyz[3]>1){
-        glutAddMenuEntry(_A(_("Load all"), " z"),-1000-4*(nloadsubmslicemenu-1)-3);
-      }
-      if(mslicei->ndirxyz[1]+mslicei->ndirxyz[2]+mslicei->ndirxyz[3]>1){
-        glutAddMenuEntry(_("Load all"),  -1000-4*(nloadsubmslicemenu-1));
-      }
-    }
-#endif
   }
   *loadsubmslicemenuptr = loadsubmslicemenu;
   *nmultisliceloadedptr = nmultisliceloaded;
@@ -8242,13 +8211,7 @@ void InitMultiVectorSubMenu(int **loadsubmvslicemenuptr){
   nloadsubmvslicemenu = 0;
   for(i = 0; i<nmultivsliceinfo; i++){
     vslicedata *vi, *vim1;
-#ifdef pp_SLICE_DIR_COUNT
-    vslicedata *vip1;
-#endif
     slicedata *si, *sim1;
-#ifdef pp_SLICE_DIR_COUNT
-    slicedata *sip1;
-#endif
     char menulabel[1024];
     multivslicedata *mvslicei;
 
@@ -8260,12 +8223,6 @@ void InitMultiVectorSubMenu(int **loadsubmvslicemenuptr){
     }
     vi = vsliceinfo+mvslicei->ivslices[0];
     si = sliceinfo+vi->ival;
-#ifdef pp_SLICE_DIR_COUNT
-    if(i<nmultivsliceinfo-1){
-      vip1 = vsliceinfo+(multivsliceinfo+i+1)->ivslices[0];
-      sip1 = sliceinfo+vip1->ival;
-    }
-#endif
     if(i==0||strcmp(si->label.longlabel, sim1->label.longlabel)!=0){
       CREATEMENU(loadsubmvslicemenu[nloadsubmvslicemenu], LoadMultiVSliceMenu);
       msubvslice_menuindex[nloadsubmvslicemenu] = vi->ival;
@@ -8289,25 +8246,6 @@ void InitMultiVectorSubMenu(int **loadsubmvslicemenuptr){
       STRCAT(menulabel, "(ZLIB)");
     }
     glutAddMenuEntry(menulabel, i);
-#ifdef pp_SLICE_DIR_COUNT
-    if(i==nmultivsliceinfo-1||strcmp(si->label.longlabel, sip1->label.longlabel)!=0){
-      if(mvslicei->ndirxyz[1]+mvslicei->ndirxyz[2]+mvslicei->ndirxyz[3]>1){
-        glutAddMenuEntry("-", MENU_DUMMY);
-      }
-      if(mvslicei->ndirxyz[1]>1){
-        glutAddMenuEntry(_A(_("Load all"), " x"), -1000-4*nloadsubmvslicemenu-1);
-      }
-      if(mvslicei->ndirxyz[2]>1){
-        glutAddMenuEntry(_A(_("Load all"), " y"), -1000-4*nloadsubmvslicemenu-2);
-      }
-      if(mvslicei->ndirxyz[3]>1){
-        glutAddMenuEntry(_A(_("Load all"), " z"), -1000-4*nloadsubmvslicemenu-3);
-      }
-      if(mvslicei->ndirxyz[1]+mvslicei->ndirxyz[2]+mvslicei->ndirxyz[3]>1){
-        glutAddMenuEntry(_("Load all"), -1000-4*nloadsubmvslicemenu);
-      }
-    }
-#endif
     if(i==0||strcmp(si->label.longlabel, sim1->label.longlabel)!=0){
       nloadsubmvslicemenu++;
     }

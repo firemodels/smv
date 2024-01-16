@@ -2964,71 +2964,6 @@ void UpdateFedinfo(sliceparmdata *sp){
   if(sp->nfediso > 0)UpdateIsoMenuLabels();
 }
 
-#ifdef pp_SLICE_DIR_COUNT
-/* ------------------ UpdateSliceDirCount ------------------------ */
-
-void UpdateSliceDirCount(sliceparmdata *sp){
-  int i, j;
-
-  for(i = 0; i < sp->nmultisliceinfo; i++){
-    multislicedata *mslicei;
-
-    mslicei = multisliceinfo + i;
-    mslicei->ndirxyz[0] = 0;
-    mslicei->ndirxyz[1] = 0;
-    mslicei->ndirxyz[2] = 0;
-    mslicei->ndirxyz[3] = 0;
-  }
-  for(i = 0; i < sp->nmultisliceinfo; i++){
-    multislicedata *mslicei;
-    slicedata *slicei;
-
-    mslicei = multisliceinfo + i;
-    slicei = sliceinfo + mslicei->islices[0];
-    if(slicei->idir < 1)continue;
-    if(slicei->volslice == 1)continue;
-    for(j = 0; j < sp->nmultisliceinfo; j++){
-      multislicedata *mslicej;
-      slicedata *slicej;
-
-      mslicej = multisliceinfo + j;
-      slicej = sliceinfo + mslicej->islices[0];
-      if(slicej->idir < 1)continue;
-      if(slicej->volslice == 1)continue;
-      if(strcmp(slicej->label.longlabel, slicei->label.longlabel) != 0)continue;
-      if((slicej->slice_filetype == SLICE_CELL_CENTER&&slicei->slice_filetype != SLICE_CELL_CENTER) ||
-         (slicej->slice_filetype != SLICE_CELL_CENTER&&slicei->slice_filetype == SLICE_CELL_CENTER))continue;
-      mslicei->ndirxyz[slicej->idir]++;
-    }
-  }
-  for(i = 0; i < sp->nsliceinfo; i++){
-    slicedata *slicei;
-
-    slicei = sliceinfo + i;
-    slicei->ndirxyz[0] = 0;
-    slicei->ndirxyz[1] = 0;
-    slicei->ndirxyz[2] = 0;
-    slicei->ndirxyz[3] = 0;
-  }
-  for(i = 0; i < sp->nsliceinfo; i++){
-    slicedata *slicei, *slicej;
-
-    slicei = sliceinfo + i;
-    if(slicei->idir < 1)continue;
-    if(slicei->volslice == 1)continue;
-    for(j = 0; j < sp->nsliceinfo; j++){
-      slicej = sliceinfo + j;
-      if(slicej->idir < 1)continue;
-      if(slicej->volslice == 1)continue;
-      if(strcmp(slicej->label.longlabel, slicei->label.longlabel) != 0)continue;
-      //if(slicej->cellcenter!=slicei->cellcenter)continue;
-      if((slicej->slice_filetype == SLICE_CELL_CENTER&&slicei->slice_filetype != SLICE_CELL_CENTER) ||
-         (slicej->slice_filetype != SLICE_CELL_CENTER&&slicei->slice_filetype == SLICE_CELL_CENTER))continue;
-      slicei->ndirxyz[slicej->idir]++;
-    }
-  }
-}
-#endif
 /* ------------------ GetSliceParams ------------------------ */
 
 void GetSliceParams(sliceparmdata *sp){
@@ -3372,11 +3307,6 @@ void GetSliceParams(sliceparmdata *sp){
   INIT_PRINT_TIMER(timer_getsliceparams9);
   UpdateSliceMenuLabels(sp);
   PRINT_TIMER(timer_getsliceparams9, "getsliceparams 9");
-#ifdef pp_SLICE_DIR_COUNT
-  INIT_PRINT_TIMER(timer_getsliceparams10);
-  UpdateSliceDirCount(sp);
-  PRINT_TIMER(timer_getsliceparams10, "getsliceparams 10");
-#endif
 }
 
 /* ------------------ GetSliceParams2 ------------------------ */
@@ -3616,45 +3546,6 @@ void *UpdateVSlices(void *arg){
   INIT_PRINT_TIMER(timer_updatevslices4);
   UpdateVSliceDups();
   PRINT_TIMER(timer_updatevslices4, "UpdateVSlices_4");
-
-#ifdef pp_SLICE_DIR_COUNT
-  INIT_PRINT_TIMER(timer_updatevslices5);
-  for(i = 0; i<sp->nmultivsliceinfo; i++){
-    multivslicedata *mvslicei;
-
-    mvslicei = multivsliceinfo + i;
-    mvslicei->ndirxyz[0]=0;
-    mvslicei->ndirxyz[1]=0;
-    mvslicei->ndirxyz[2]=0;
-    mvslicei->ndirxyz[3]=0;
-  }
-  PRINT_TIMER(timer_updatevslices5, "UpdateVSlices_5");
-  INIT_PRINT_TIMER(timer_updatevslices6);
-  for(i=0;i<sp->nmultivsliceinfo;i++){
-    multivslicedata *mvslicei;
-    slicedata *slicei;
-    int j;
-
-    mvslicei = multivsliceinfo + i;
-    slicei = sliceinfo + mvslicei->ivslices[0];
-    if(slicei->idir<1)continue;
-    if(slicei->volslice==1)continue;
-    for(j=0;j<sp->nmultivsliceinfo;j++){
-      multivslicedata *mvslicej;
-      slicedata *slicej;
-
-      mvslicej = multivsliceinfo + j;
-      slicej = sliceinfo + mvslicej->ivslices[0];
-      if(slicej->idir<1)continue;
-      if(slicej->volslice==1)continue;
-      if(strcmp(slicej->label.longlabel,slicei->label.longlabel)!=0)continue;
-      if((slicej->slice_filetype==SLICE_CELL_CENTER&&slicei->slice_filetype!=SLICE_CELL_CENTER)||
-         (slicej->slice_filetype!=SLICE_CELL_CENTER&&slicei->slice_filetype==SLICE_CELL_CENTER))continue;
-      mvslicei->ndirxyz[slicej->idir]++;
-    }
-  }
-  PRINT_TIMER(timer_updatevslices6, "UpdateVSlices_6");
-#endif
 
   INIT_PRINT_TIMER(timer_updatevslices7);
   UpdateVsliceMenuLabels(sp);

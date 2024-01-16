@@ -1456,9 +1456,6 @@ typedef struct _slicedata {
   float sliceoffset;
   int nslicei, nslicej, nslicek;
   int nslicex, nslicey;
-#ifdef pp_SLICE_DIR_COUNT
-  int ndirxyz[4];
-#endif
   int nslicetotal;
   int slicefile_labelindex;
   int vloaded, uvw;
@@ -1489,9 +1486,6 @@ typedef struct _slicemenudata {
 typedef struct _multislicedata {
   int seq_id, autoload;
   int loaded, display;
-#ifdef pp_SLICE_DIR_COUNT
-  int ndirxyz[4];
-#endif
   int *islices, nslices;
   int slice_filetype;
   char menulabel[128];
@@ -1504,9 +1498,6 @@ typedef struct _multivslicedata {
   int seq_id, autoload;
   int loaded,display,mvslicefile_labelindex;
   int nvslices;
-#ifdef pp_SLICE_DIR_COUNT
-  int ndirxyz[4];
-#endif
   int *ivslices;
   char menulabel[128];
   char menulabel2[128];
