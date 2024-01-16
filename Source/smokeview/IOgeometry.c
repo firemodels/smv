@@ -1327,14 +1327,10 @@ void DrawGeom(int flag, int timestate){
     glDisable(GL_COLOR_MATERIAL);
     DISABLE_LIGHTING;
     glPopMatrix();
-#ifdef _FORCE_TRANSPARENCY
-    TransparentOff();
-#else
     if(flag==DRAW_TRANSPARENT){
       if(use_transparency_data==1)TransparentOff();
       return;
     }
-#endif
     if(cullfaces==1)glEnable(GL_CULL_FACE);
   }
 
