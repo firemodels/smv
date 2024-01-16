@@ -369,11 +369,9 @@ SVEXTERN float SVDECL(emission_factor, 3.0);
 SVEXTERN int SVDECL(monitor_screen_height, -1);
 #endif
 SVEXTERN int SVDECL(rollout_count, 0);
-#ifdef pp_SMOKE_SKIP
 SVEXTERN int SVDECL(smoke3d_start_frame, 0);
 SVEXTERN int SVDECL(smoke3d_skip_frame, 1);
 SVEXTERN int SVDECL(smoke3d_use_skip, 0);
-#endif
 
 SVEXTERN int SVDECL(glui_defined, 0);
 SVEXTERN int SVDECL(update_times,0);

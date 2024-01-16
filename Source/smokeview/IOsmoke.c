@@ -3250,7 +3250,6 @@ void DrawSmokeFrame(void){
     if(smoke3di->primary_file==0)continue;
     IF_NOT_USEMESH_CONTINUE(USEMESH_DRAW,smoke3di->blocknumber);
     if(IsSmokeComponentPresent(smoke3di)==0)continue;
-#ifdef pp_SMOKE_SKIP
     if(smoke3d_use_skip==1){
       if(smoke3di->smokeframe_loaded==NULL){
         NewMemory((void **)&smoke3di->smokeframe_loaded, smoke3di->ntimes_full*sizeof(int));
@@ -3264,7 +3263,6 @@ void DrawSmokeFrame(void){
       }
       if(smoke3di->smokeframe_loaded!=NULL&&smoke3di->smokeframe_loaded[smoke3di->ismoke3d_time]==0)continue;
     }
-#endif
 #ifdef pp_GPU
     if(usegpu==1){
       DrawSmoke3DGPU(smoke3di);
@@ -3735,9 +3733,7 @@ void FreeSmoke3D(smoke3ddata *smoke3di){
   FREEMEMORY(smoke3di->smoke_comp_all);
   FREEMEMORY(smoke3di->smokeframe_comp_list);
   FREEMEMORY(smoke3di->smokeview_tmp);
-#ifdef pp_SMOKE_SKIP
   FREEMEMORY(smoke3di->smokeframe_loaded);
-#endif
 }
 
 /* ------------------ GetSmoke3DVersion ------------------------ */
