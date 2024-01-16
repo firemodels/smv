@@ -52,7 +52,6 @@
 #endif
 #endif
 
-
 //*** options: Linux
 
 #ifdef pp_LINUX

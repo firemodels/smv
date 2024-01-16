@@ -1116,9 +1116,6 @@ void PrintPartLoadSummary(int option_arg,int type_arg){
   if(option_arg==1||(nsize_local<n_partload_threads&&nsize_local>0)){
     int isize_local;
 
-#ifdef pp_PART_SIZE
-    if(type_arg==PART_SIZING)printf("sizing: ");
-#endif
     if(type_arg==PART_LOADING)printf("loading: ");
     isize_local = 0;
     for(j = 0; j<npartinfo; j++){
@@ -1127,9 +1124,6 @@ void PrintPartLoadSummary(int option_arg,int type_arg){
 
       partj = partinfo+j;
       doit = 0;
-#ifdef pp_PART_SIZE
-      if(type_arg==PART_SIZING&&partj->boundstatus==PART_BOUND_COMPUTING)doit = 1;
-#endif
       if(type_arg==PART_LOADING&&partj->loadstatus==FILE_LOADING)doit = 1;
       if(doit==1){
         printf("%s", partj->reg_file);
@@ -1137,9 +1131,6 @@ void PrintPartLoadSummary(int option_arg,int type_arg){
         isize_local++;
       }
     }
-#ifdef pp_PART_SIZE
-    printf("\n");
-#endif
     printf("\n");
   }
 }
@@ -1219,15 +1210,9 @@ void GetAllPartBounds(void){
       continue;
     }
     parti->boundstatus = PART_BOUND_COMPUTING;
-#ifdef pp_PART_SIZE
-    PrintPartLoadSummary(PART_BEFORE, PART_SIZING);
-#endif
     THREADcontrol(partload_threads, THREAD_UNLOCK);
     ReadPartBounds(parti,global_have_global_bound_file);
     THREADcontrol(partload_threads, THREAD_LOCK);
-#ifdef pp_PART_SIZE
-    if(npartinfo>1)PrintPartLoadSummary(PART_AFTER, PART_SIZING);
-#endif
     parti->boundstatus = PART_BOUND_DEFINED;
     THREADcontrol(partload_threads, THREAD_UNLOCK);
   }
