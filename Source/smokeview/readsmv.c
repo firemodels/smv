@@ -5606,9 +5606,7 @@ int ParseSMOKE3DProcess(bufferstreamdata *stream, char *buffer, int *nn_smoke3d_
     smoke3di->times = NULL;
     smoke3di->times_map = NULL;
     smoke3di->use_smokeframe = NULL;
-#ifdef pp_SMOKE_SKIP
     smoke3di->smokeframe_loaded = NULL;
-#endif
     smoke3di->nchars_compressed_smoke = NULL;
     smoke3di->nchars_compressed_smoke_full = NULL;
     smoke3di->maxval = -1.0;
@@ -11642,37 +11640,6 @@ int ReadSMV_Configure(){
   }
   THREADrun(checkfiles_threads, NULL);
   PRINT_TIMER(timer_readsmv, "CheckFiles");
-
-#ifdef pp_BNDF
-  for(i = 0;i < npatchinfo;i++){
-    patchdata *patchi;
-    int j;
-    char labeli[1000], *endi;
-
-    patchi = patchinfo + i;
-    patchi->have_geom = 0;
-    if(patchi->patch_filetype != PATCH_STRUCTURED_CELL_CENTER)continue;
-    strcpy(labeli, patchi->label.longlabel);
-    endi = strchr(labeli, '(');
-    if(endi != NULL)*endi = 0;
-    for(j = 0;j < npatchinfo;j++){
-      patchdata *patchj;
-      char labelj[1000], *endj;
-
-      if(i == j)continue;
-      patchj = patchinfo + j;
-      if(patchj->patch_filetype != PATCH_GEOMETRY_BOUNDARY)continue;
-      strcpy(labelj, patchj->label.longlabel);
-      endj = strchr(labelj, '(');
-      if(endj != NULL)*endj = 0;
-      if(strcmp(labeli, labelj) != 0)continue;
-      patchi->have_geom = 1;
-      break;
-    }
-  }
-  PRINT_TIMER(timer_readsmv, "bound labels");
-#endif
-
   CheckMemory;
   UpdateIsoColors();
   PRINT_TIMER(timer_readsmv, "UpdateIsoColors");

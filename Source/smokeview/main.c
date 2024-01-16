@@ -765,9 +765,8 @@ int main(int argc, char **argv){
   char *progname;
 
   START_TIMER(timer_startup);
-// #define pp_CRASH_TEST
-#ifdef pp_CRASH_TEST
-
+  // uncomment following block of code to test crash detection
+/*
   float *x = NULL, xx, yy, zz;
 
   printf("before using undefined variable\n");
@@ -782,7 +781,7 @@ int main(int argc, char **argv){
   printf("before accessing null variable\n");
   x[0] = 1.0;
   printf("after accessing null variable: %f\n", x[0]);
-#endif
+*/
 #ifdef pp_LUA
   // If we are using lua, let lua take control here.
   // Initialise the lua interpreter, it does not take control at this point
@@ -874,9 +873,7 @@ int main(int argc, char **argv){
   if(CheckSMVFile(smv_filename, smokeview_casedir)==0){
     SMV_EXIT(1);
   }
-#ifdef pp_BLACKBODY
   MakeFireColors(fire_temp_min, fire_temp_max, nfire_colors);
-#endif
 
   InitTextureDir();
   InitColorbarsDir();

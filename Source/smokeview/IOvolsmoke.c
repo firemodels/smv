@@ -67,8 +67,6 @@
       value = *vv;\
     }
 
-#ifdef pp_BLACKBODY
-
 // https://www.fourmilab.ch/documents/specrend/specrend.c
 
 /* A colour system is defined by the CIE x and y coordinates of
@@ -598,7 +596,6 @@ void Temperature2Emission(float temperature, float *emission){
   emission[1] = (1.0-factor)*rgb_bef[1] + factor*rgb_aft[1];
   emission[2] = (1.0-factor)*rgb_bef[2] + factor*rgb_aft[2];
 }
-#endif
 
 /* ----------------------- GetFireEmission ----------------------------- */
 

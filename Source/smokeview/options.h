@@ -14,24 +14,18 @@
 
 //#define pp_CSV_MENU       // add menu for loading CSV files
 
-#define pp_SMOKE_SKIP     // add option to skip smoke frames
 //#define pp_SMOKE16      // load 16 bit smoke files
-//#define pp_VOLSMOKE     // add option to compress volume rendered data
 //#define pp_GAMMA        // show gamma correction checkbox
-#define pp_BLACKBODY      // use blackbody theory for generating fire colors
-// pp_BLACKBODY_OUT       // output generated blackbody color data 
+// #define pp_BLACKBODY_OUT       // output generated blackbody color data 
+// #define pp_BLACKBODY_SYSTEM    
 //#define pp_DECIMATE     // decimate terrain geometry
 
 #define pp_FAST           // set fast startup by default
-#define pp_FED_COMPRESS   // skip fed slices when co, o2 or co2 slices are compressed (for now)
-
-//#define pp_BNDF         // merge geometry and structured boundary files in load menus
 
 //#define pp_DPRINT       // turn on debug print (file, line number)
 
 //#define pp_LOAD_INC     // add menu item for loading new data
 
-//#define pp_CRASH_TEST       // test detection of division by zero or use of undefined pointer
 #define pp_GPU                // support the GPU
 #define pp_THREAD             // turn on multi-threading
 

@@ -46,16 +46,12 @@ GLUI_Spinner *SPINNER_hrrpuv_cutoff=NULL;
 GLUI_Spinner *SPINNER_nongpu_vol_factor=NULL;
 GLUI_Spinner *SPINNER_gpu_vol_factor=NULL;
 GLUI_Spinner *SPINNER_smoke3d_threads = NULL;
-#ifdef pp_SMOKE_SKIP
 GLUI_Spinner *SPINNER_smoke3d_load_start=NULL;
 GLUI_Spinner *SPINNER_smoke3d_load_skip=NULL;
-#endif
 
-#ifdef pp_BLACKBODY
 GLUI_Spinner *SPINNER_fire_temp_min = NULL;
 GLUI_Spinner *SPINNER_fire_temp_max = NULL;
 GLUI_Spinner *SPINNER_nfire_colors  = NULL;
-#endif
 GLUI_Spinner *SPINNER_voltest_depth1  = NULL;
 GLUI_Spinner *SPINNER_voltest_depth2  = NULL;
 GLUI_Spinner *SPINNER_temperature_min=NULL;
@@ -94,9 +90,7 @@ GLUI_Spinner *SPINNER_timeloadframe = NULL;
 GLUI_Spinner *SPINNER_co2color[3];
 GLUI_Spinner *SPINNER_emission_factor=NULL;
 
-#ifdef pp_SMOKE_SKIP
 GLUI_Checkbox *CHECKBOX_smoke3d_use_skip=NULL;
-#endif
 GLUI_Checkbox *CHECKBOX_use_opacity_depth = NULL;
 GLUI_Checkbox *CHECKBOX_use_opacity_multiplier = NULL;
 GLUI_Checkbox *CHECKBOX_force_alpha_opaque = NULL;
@@ -133,9 +127,7 @@ GLUI_Panel *PANEL_smoke_outline_type = NULL;
 GLUI_Panel *PANEL_smokealg = NULL;
 GLUI_Panel *PANEL_gridres = NULL;
 GLUI_Panel *PANEL_fire_cutoff = NULL;
-#ifdef pp_BLACKBODY
 GLUI_Panel *PANEL_blackbody = NULL;
-#endif
 GLUI_Panel *PANEL_overall = NULL;
 GLUI_Panel *PANEL_smokesensor = NULL;
 GLUI_Panel *PANEL_color = NULL;
@@ -382,11 +374,9 @@ extern "C" void GLUI3dSmokeSetup(int main_window){
 #endif
   SPINNER_smoke3d_threads = glui_3dsmoke->add_spinner_to_panel(PANEL_overall, _("threads"), GLUI_SPINNER_INT, &n_smokeload_threads);
   SPINNER_smoke3d_threads->set_int_limits(1, 16);
-#ifdef pp_SMOKE_SKIP
   SPINNER_smoke3d_load_start = glui_3dsmoke->add_spinner_to_panel(PANEL_overall, _("start"), GLUI_SPINNER_INT, &smoke3d_start_frame);
   SPINNER_smoke3d_load_skip = glui_3dsmoke->add_spinner_to_panel(PANEL_overall, _("skip"), GLUI_SPINNER_INT, &smoke3d_skip_frame);
   CHECKBOX_smoke3d_use_skip = glui_3dsmoke->add_checkbox_to_panel(PANEL_overall, _("skip smoke frames"), &smoke3d_use_skip);
-#endif
 
   if(active_smokesensors==1){
     PANEL_smokesensor = glui_3dsmoke->add_panel_to_panel(PANEL_overall,_("Visibility"));
@@ -619,7 +609,6 @@ extern "C" void GLUI3dSmokeSetup(int main_window){
     glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_voldisplay, "block smoke", &block_volsmoke);
     glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_voldisplay, "debug", &smoke3dVoldebug);
 #endif
-#ifdef pp_BLACKBODY
     PANEL_blackbody = glui_3dsmoke->add_panel_to_panel(ROLLOUT_voldisplay, "Black body colors");
     SPINNER_fire_temp_min = glui_3dsmoke->add_spinner_to_panel(PANEL_blackbody, "min temperature", GLUI_SPINNER_FLOAT, &fire_temp_min, BLACKBODY_TEMPS, GLUISmoke3dCB);
     SPINNER_fire_temp_max = glui_3dsmoke->add_spinner_to_panel(PANEL_blackbody, "max temperature", GLUI_SPINNER_FLOAT, &fire_temp_max, BLACKBODY_TEMPS, GLUISmoke3dCB);
@@ -628,7 +617,6 @@ extern "C" void GLUI3dSmokeSetup(int main_window){
     glui_3dsmoke->add_checkbox_to_panel(PANEL_blackbody, "use blackbody colors", &use_blackbody_colors);
 #ifdef pp_GAMMA
     glui_3dsmoke->add_checkbox_to_panel(PANEL_blackbody, "gamma correction", &gamma_correction, BLACKBODY_TEMPS, GLUISmoke3dCB);
-#endif
 #endif
     ROLLOUT_voltest = glui_3dsmoke->add_rollout_to_panel(ROLLOUT_voldisplay, "volrender test data");
     ROLLOUT_voltest->close();
@@ -1001,7 +989,6 @@ extern "C" void GLUISmoke3dCB(int var){
       meshi->voltest_update = 1;
     }
     break;
-#ifdef pp_BLACKBODY
   case BLACKBODY_TEMPS:
     if(nfire_colors<256){
       nfire_colors = 256;
@@ -1022,7 +1009,6 @@ extern "C" void GLUISmoke3dCB(int var){
     }
     MakeFireColors(fire_temp_min, fire_temp_max, nfire_colors);
     break;
-#endif
   case TEMP_CUTOFF:
     temp_min = (float)(10*(int)(global_temp_min/10.0) + 10.0);
     temp_max = (float)(10*(int)(global_temp_max/10.0) - 10.0);

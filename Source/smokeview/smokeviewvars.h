@@ -369,11 +369,9 @@ SVEXTERN float SVDECL(emission_factor, 3.0);
 SVEXTERN int SVDECL(monitor_screen_height, -1);
 #endif
 SVEXTERN int SVDECL(rollout_count, 0);
-#ifdef pp_SMOKE_SKIP
 SVEXTERN int SVDECL(smoke3d_start_frame, 0);
 SVEXTERN int SVDECL(smoke3d_skip_frame, 1);
 SVEXTERN int SVDECL(smoke3d_use_skip, 0);
-#endif
 
 SVEXTERN int SVDECL(glui_defined, 0);
 SVEXTERN int SVDECL(update_times,0);
@@ -472,7 +470,6 @@ SVEXTERN int SVDECL(nsmoke3d_co2, 0);
 SVEXTERN int SVDECL(update_zaxis_custom, 0);
 SVEXTERN int SVDECL(from_DisplayCB, 0);
 SVEXTERN int SVDECL(ngeom_data, 0);
-#ifdef pp_BLACKBODY
 SVEXTERN float SVDECL(*fire_rgbs, NULL);
 SVEXTERN int SVDECL(nfire_colors, 1024);
 SVEXTERN float SVDECL(fire_temp_min, 100.0), SVDECL(fire_temp_max, 5500.0);
@@ -481,7 +478,6 @@ SVEXTERN int SVDECL(show_blackbody_colormap, 0);
 SVEXTERN int SVDECL(use_blackbody_colors, 0);
 #ifdef pp_GAMMA
 SVEXTERN int SVDECL(gamma_correction, 0);
-#endif
 #endif
 SVEXTERN int SVDECL(have_geom_slice_menus, 0), SVDECL(geom_slice_loaded,0);
 SVEXTERN FILE SVDECL(*stderr2,NULL);
