@@ -1657,7 +1657,7 @@ typedef struct _smoke3ddata {
 
   /* --------------------------  smoke3dtypedata ------------------------------------ */
 
-typedef struct smoke3dtypedata {
+typedef struct _smoke3dtypedata {
   char *shortlabel, *longlabel;
   int type;  // color based or opacity based
   int menu_id;
@@ -1791,7 +1791,7 @@ typedef struct _firedata {
 
 /* --------------------------  f_unit ------------------------------------ */
 
-typedef struct {
+typedef struct _f_unit {
   char unit[10];   /* m/s, mph etc - appears in the colorbar */
   float scale[2];  /* newval=scale[0]*oldval+scale[1] */
   char rel_val[20];
