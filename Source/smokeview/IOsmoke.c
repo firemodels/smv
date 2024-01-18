@@ -3549,6 +3549,36 @@ int GetSmokeFrameStatus(float time_restart, float time_before, float time_now, i
   }
 }
 
+#ifdef pp_RESTART
+/* ------------------ MakeTimesMap ------------------------ */
+
+int MakeTimesMap(float *times, unsigned char *times_map, int n){
+  int i, mode, nrestarts = 0;
+  float t_restart;
+
+  if(n <= 0)return 0;
+  mode = 1;
+  times_map[n - 1] = 1;
+  for(i = n - 2;i >= 0;i--){
+    if(mode == 1){
+      if(times[i] >= times[i + 1]){
+        t_restart = times[i + 1];
+        nrestarts++;
+        mode = 0;
+      }
+      times_map[i] = mode;
+      continue;
+    }
+    if(times[i] < t_restart)mode = 1;
+    times_map[i] = mode;
+  }
+  for(i=0;i<n;i++){
+    printf("%i: %f %i\n", i, times[i], (int)times_map[i]);
+  }
+  return nrestarts;
+}
+#else
+
 /* ------------------ MakeTimesMap ------------------------ */
 
 int MakeTimesMap(float *times, unsigned char *times_map, int n){
@@ -3576,6 +3606,7 @@ int MakeTimesMap(float *times, unsigned char *times_map, int n){
   }
   return 1;
 }
+#endif
 
 /* ------------------ GetSmoke3DSizes ------------------------ */
 
