@@ -1121,8 +1121,10 @@ void ReadFed(int file_index, int time_frame, float *time_value, int flag, int fi
     frame_size = fed_slice->nslicei*fed_slice->nslicej*fed_slice->nslicek;
     fed_slice->nslicetotal=frame_size*fed_slice->ntimes;
 
-    if(NewMemory((void **)&fed_slice->qslicedata,sizeof(float)*frame_size*fed_slice->ntimes)==0||
-       NewMemory((void **)&fed_slice->times,sizeof(float)*fed_slice->ntimes)==0
+    if(
+       NewMemory((void **)&fed_slice->qslicedata,sizeof(float)*frame_size*fed_slice->ntimes)==0 ||
+       NewMemory((void **)&fed_slice->times,sizeof(float)*fed_slice->ntimes)==0                 ||
+       NewResizeMemory(fed_slice->times_map, fed_slice->ntimes)==0
        ){
        ReadFed(file_index,time_frame,NULL,UNLOAD, file_type, errorcode);
       *errorcode=-1;
@@ -1241,6 +1243,7 @@ void ReadFed(int file_index, int time_frame, float *time_value, int flag, int fi
     }
     FREEMEMORY(fed_slice->qslicedata);
     FREEMEMORY(fed_slice->times);
+    FREEMEMORY(fed_slice->times_map);
     CReadSlice_frame(0,fedi->o2_index,UNLOAD);
     CReadSlice_frame(0,fedi->co2_index,UNLOAD);
     CReadSlice_frame(0,fedi->co_index,UNLOAD);
@@ -2850,6 +2853,7 @@ void UpdateFedinfo(sliceparmdata *sp){
     sd->qslicedata_compressed = NULL;
     sd->volslice = fedi->co->volslice;
     sd->times = NULL;
+    sd->times_map = NULL;
     sd->slicelevel = NULL;
     sd->iqsliceframe = NULL;
     sd->qsliceframe = NULL;
