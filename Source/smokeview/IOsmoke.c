@@ -3572,9 +3572,11 @@ int MakeTimesMap(float *times, unsigned char *times_map, int n){
     if(times[i] < t_restart)mode = 1;
     times_map[i] = mode;
   }
+#ifdef pp_RESTART_DEBUG
   for(i=0;i<n;i++){
     printf("%i: %f %i\n", i, times[i], (int)times_map[i]);
   }
+#endif
   return nrestarts;
 }
 #else

@@ -15,7 +15,7 @@
 //#define pp_CSV_MENU       // add menu for loading CSV files
 
 #define pp_RESTART          // allow multiple fds restart files (rather than just 1)
-#define pp_RESTART_DEBUG    // output debug print
+//#define pp_RESTART_DEBUG    // output debug print
 
 //#define pp_SMOKE16      // load 16 bit smoke files
 //#define pp_GAMMA        // show gamma correction checkbox
