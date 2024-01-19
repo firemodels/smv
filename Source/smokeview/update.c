@@ -698,7 +698,7 @@ int GetItime(int n, int *timeslist, unsigned char *times_map, float *times, int 
 
   if(n>0)istart=timeslist[n-1];
   while(1){
-    if(times_map!=NULL&&times_map[istart+1]==0){
+    if(times_map!=NULL&&istart+1>=0&&istart+1<ntimes-1&&times_map[istart+1]==0){
       istart++;
       continue;
     }

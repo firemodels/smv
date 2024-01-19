@@ -207,7 +207,7 @@ intel_win_64 : DYNLIB_EXT = .dll
 intel_win_64 : INC += $(WININC) -I $(SOURCE_DIR)/shared -I $(SOURCE_DIR)/smokeview
 intel_win_64 : CFLAGS    = -O1 -D pp_INTEL -D NDEBUG -D WIN32 -D _CONSOLE -D X64 -D GLEW_STATIC -D PTW32_STATIC_LIB $(SMV_TESTFLAG) $(GITINFO) $(INTEL_COMPINFO)
 ifeq ($(SANITIZE),1)
-intel_win_64 : CFLAGS   += $(SANITIZE_OPTIONS)
+intel_win_64 : CFLAGS   += $(SANITIZE_OPTIONS) -g
 endif
 intel_win_64 : C_STANDARD    = -Qstd=gnu99
 ifeq ($(GLUT),freeglut)
