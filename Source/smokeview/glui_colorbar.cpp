@@ -126,7 +126,7 @@ void UpdateNodeLabel(colorbardata *cbi){
     strcpy(label_nodes, "Equalized: no");
     STATICTEXT_cb_adjusted->set_name(label_nodes);
   }
-  sprintf(label_nodes, "nodes: %i", cbi->nnodes);
+  snprintf(label_nodes, sizeof(cbi->nnodes), "nodes: %i", cbi->nnodes);
   STATICTEXT_cb_node_label->set_name(label_nodes);
 }
 
@@ -368,10 +368,10 @@ void GetNewColorbarName(char *base, char *label){
     int j;
 
     if(i == 1){
-      sprintf(label, "%s", base);
+      snprintf(label, sizeof(base), "%s", base);
     }
     else{
-      sprintf(label, "%s %i", base, i);
+      snprintf(label, sizeof(base), "%s %i", base, i);
     }
 
     int dup = 0;
