@@ -364,6 +364,7 @@ int GetScreenHeight(void){
     fgets(buffer, 255, stream);
     sscanf(buffer, "%i", &screen_height);
     fclose(stream);
+    unlink(full_height_file);
   }
   FREEMEMORY(full_height_file);
   return screen_height;
