@@ -124,6 +124,12 @@ SVEXTERN FILE_SIZE SVDECL(last_size_for_slice, 0);
 SVEXTERN FILE_SIZE SVDECL(last_size_for_boundary, 0);
 SVEXTERN char SVDECL(*stepcsv_filename, NULL);
 
+#ifdef pp_GLOBAL_BOUNDS
+SVEXTERN char SVDECL(*slicebounds_filename, NULL), SVDECL(**sorted_slice_filenames, NULL);
+SVEXTERN globalboundsdata SVDECL(*sliceglobalboundsinfo, NULL);
+SVEXTERN int SVDECL(nsliceglobalboundsinfo, 0);
+#endif
+
 SVEXTERN int SVDECL(histogram_nframes, 40);
 SVEXTERN int SVDECL(glui_surf_index, 0);
 SVEXTERN int SVDECL(clip_commandline, 0), SVDECL(special_modifier, 0);

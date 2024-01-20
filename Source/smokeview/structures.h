@@ -1541,6 +1541,16 @@ typedef struct _boundsdata {
   flowlabels *label;
 } boundsdata;
 
+#ifdef pp_GLOBAL_BOUNDS
+/* --------------------------  globalboundsdata ------------------------------------ */
+
+typedef struct _globalboundsdata {
+  char *file;
+  int defined;
+  float valmin, valmax;
+} globalboundsdata;
+#endif
+
 /* --------------------------  vslicedata ------------------------------------ */
 
 typedef struct _vslicedata {

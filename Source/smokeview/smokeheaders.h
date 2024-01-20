@@ -1143,6 +1143,9 @@ EXTERNCPP void Output3Val(float x, float y, float z, float val);
 EXTERNCPP void OutputBarText(float x, float y, const GLfloat *color, char *string);
 EXTERNCPP float GetStringLength(char *string);
 EXTERNCPP void UpdateGslicePlanes(void);
+#ifdef pp_GLOBAL_BOUNDS
+EXTERNCPP void UpdateSliceBoundsFile(void);
+#endif
 
 EXTERNCPP void UpdateAllGeomTriangles(void);
 EXTERNCPP void SetSliceBounds(int set_valmin, float valmin, int set_valmax, float valmax, char *buffer2);
