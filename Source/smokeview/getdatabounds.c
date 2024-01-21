@@ -1230,24 +1230,29 @@ int CompareBoundFileName(const void *arg1, const void *arg2){
   return strcmp(x, y);
 }
 
-/* ------------------ UpdateSliceBoundsFile ------------------------ */
+/* ------------------ UpdateSliceBoundsFileSetup ------------------------ */
 
-void UpdateSliceBoundsFile(void){
-  FILE *stream;
+void UpdateSliceBoundsFileSetup(void){
   int i;
+  FILE *stream;
 
-//  SVEXTERN globalboundsdata SVDECL(*sliceglobalboundsinfo, NULL);
   if(sorted_slice_filenames == NULL){
-    NewMemory((void **)&sorted_slice_filenames, nsliceinfo*sizeof(char *));
+    NewMemory((void **)&sorted_slice_filenames, nsliceinfo * sizeof(char *));
     for(i = 0;i < nsliceinfo;i++){
-      sorted_slice_filenames[i]    = sliceinfo[i].reg_file;
+      sorted_slice_filenames[i] = sliceinfo[i].reg_file;
     }
     qsort((char *)sorted_slice_filenames, nsliceinfo, sizeof(char *), CompareBoundFileName);
   }
+  for(i = 0;i < nsliceinfo;i++){
+    slicedata *slicei;
+
+    slicei = sliceinfo + i;
+    slicei->boundstatus = 0;
+  }
   if(sliceglobalboundsinfo == NULL){
-    NewMemory((void **)&sliceglobalboundsinfo, nsliceinfo*sizeof(globalboundsdata));
+    NewMemory((void **)&sliceglobalboundsinfo, nsliceinfo * sizeof(globalboundsdata));
     for(i = 0;i < nsliceinfo;i++){
-      sliceglobalboundsinfo[i].file    = sorted_slice_filenames[i];
+      sliceglobalboundsinfo[i].file = sorted_slice_filenames[i];
       sliceglobalboundsinfo[i].defined = 0;
     }
   }
@@ -1262,9 +1267,9 @@ void UpdateSliceBoundsFile(void){
       char buffer[255], file[255], *fileptr, **key_index;
       float valmin, valmax;
       globalboundsdata *fi;
-      
-      if(fgets(buffer,255,stream)==NULL)break;
-      sscanf(buffer,"%s %f %f", file, &valmin, &valmax);
+
+      if(fgets(buffer, 255, stream) == NULL)break;
+      sscanf(buffer, "%s %f %f", file, &valmin, &valmax);
       fileptr = TrimFrontBack(file);
       key_index = (char **)bsearch((char *)&fileptr, sorted_slice_filenames, nsliceinfo, sizeof(char *), CompareBoundFileName);
       if(key_index != NULL){
@@ -1279,34 +1284,60 @@ void UpdateSliceBoundsFile(void){
     }
     fclose(stream);
   }
+}
+
+/* ------------------ UpdateSliceBoundsFile ------------------------ */
+
+#define LOCK_BOUNDS
+#define UNLOCK_BOUNDS
+void *UpdateSliceBoundsFileDoit(void *arg){
+  int i;
+
   for(i = 0;i < nsliceinfo;i++){
     slicedata *slicei;
-    int j;
-    float valmin, valmax;
     globalboundsdata *fi;
+    int j, index;
+    float valmin, valmax;
     char **key_index;
     
     slicei = sliceinfo + i;
+    THREADcontrol(getbounds_threads, THREAD_LOCK);
+    if(slicei->boundstatus == 0){
+      slicei->boundstatus = 1;
+    }
+    else{
+      THREADcontrol(getbounds_threads, THREAD_UNLOCK);
+      continue;
+    }
+    THREADcontrol(getbounds_threads, THREAD_UNLOCK);
     if(slicei->loaded == 0)continue;
+    key_index = (char **)bsearch((char *)&slicei->reg_file, sorted_slice_filenames, nsliceinfo, sizeof(char *), CompareBoundFileName);
+    if(key_index == NULL)continue;
+    index = (int)(key_index - sorted_slice_filenames);
+    if(index<0 || index>nsliceinfo - 1)continue;
+    fi = sliceglobalboundsinfo + index;
+    if(fi->defined == 1)continue;
     valmin = slicei->qslicedata[0];
     valmax = valmin;
     for(j=1;j<slicei->ntimes*slicei->nsliceijk;j++){
       valmin = MIN(valmin, slicei->qslicedata[j]);
       valmax = MAX(valmax, slicei->qslicedata[j]);
     }
-    key_index = (char **)bsearch((char *)&slicei->reg_file, sorted_slice_filenames, nsliceinfo, sizeof(char *), CompareBoundFileName);
-    if(key_index!=NULL){
-      int index;
-
-      index = (int)(key_index - sorted_slice_filenames);
-      fi = sliceglobalboundsinfo + index;
-      fi->valmin  = valmin;
-      fi->valmax  = valmax;
-      fi->defined = 1;
-    }
+    fi->valmin  = valmin;
+    fi->valmax  = valmax;
+    fi->defined = 1;
   }
+  THREAD_EXIT(getbounds_threads);
+}
+
+/* ------------------ UpdateSliceBoundsFileWrapup ------------------------ */
+
+void UpdateSliceBoundsFileWrapup(void){
+  int i;
+  FILE *stream;
+
   stream = fopen(slicebounds_filename, "w");
-  for(i=0;i<nsliceinfo;i++){
+  for(i = 0;i < nsliceinfo;i++){
     globalboundsdata *fi;
 
     fi = sliceglobalboundsinfo + i;
@@ -1314,5 +1345,23 @@ void UpdateSliceBoundsFile(void){
     fprintf(stream, "%s %f %f\n", fi->file, fi->valmin, fi->valmax);
   }
   fclose(stream);
+}
+
+/* ------------------ UpdateSliceBoundsFile ------------------------ */
+
+void UpdateSliceBoundsFile(void){
+  INIT_PRINT_TIMER(bound_setup);
+  UpdateSliceBoundsFileSetup();
+  PRINT_TIMER(bound_setup, "UpdateSliceBoundsFileSetup");
+  if(getbounds_threads == NULL){
+    getbounds_threads = THREADinit(&n_getbounds_threads, &use_getbounds_threads, UpdateSliceBoundsFileDoit);
+  }
+  INIT_PRINT_TIMER(bound_doit);
+  THREADrun(getbounds_threads, NULL);
+  THREADcontrol(getbounds_threads, THREAD_JOIN);
+  PRINT_TIMER(bound_doit, "UpdateSliceBoundsFileDoit");
+  INIT_PRINT_TIMER(bound_wrapup);
+  UpdateSliceBoundsFileWrapup();
+  PRINT_TIMER(bound_wrapup, "UpdateSliceBoundsFileWrapup");
 }
 #endif

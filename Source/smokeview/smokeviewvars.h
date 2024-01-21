@@ -24,7 +24,13 @@
 
 //*** threader variables
 
-//***checkfiles
+#ifdef pp_GLOBAL_BOUNDS
+//***getbounds
+SVEXTERN int SVDECL(n_getbounds_threads, 1), SVDECL(use_getbounds_threads, 1);
+SVEXTERN threaderdata SVDECL(*getbounds_threads, NULL);
+#endif
+
+//***isosurface
 SVEXTERN int SVDECL(n_isosurface_threads, 1), SVDECL(use_isosurface_threads, 1);
 SVEXTERN threaderdata SVDECL(*isosurface_threads, NULL);
 
