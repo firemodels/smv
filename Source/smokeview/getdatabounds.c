@@ -552,6 +552,9 @@ void GetGlobalSliceBounds(int flag, int set_flag){
     boundi->dlg_global_valmin = 1.0;
     boundi->dlg_global_valmax = 0.0;
   }
+#ifdef pp_GLOBAL_BOUNDS
+  UpdateSliceBoundsFile();
+#endif
   for(i = 0;i<nsliceinfo;i++){
     slicedata *slicei;
     float valmin, valmax;
@@ -570,9 +573,13 @@ void GetGlobalSliceBounds(int flag, int set_flag){
     if(force_bound_update == 1||nzoneinfo>0)doit = 1;
 
     if(doit==1){
+#ifdef pp_GLOBAL_BOUNDS
+      GetSliceFileBounds(slicei->reg_file, &valmin, &valmax);
+#else
       if(GetBounds(slicei->bound_file, &valmin, &valmax, &sliceboundsinfo, &nsliceboundsinfo)==1){
         slicei->have_bound_file = YES;
       }
+#endif
       if(valmin>valmax)continue;
       slicei->valmin_fds = valmin;
       slicei->valmax_fds = valmax;
@@ -652,6 +659,7 @@ void *GetGlobalSliceBoundsFull(void *arg){
 void GetGlobalSliceBoundsReduced(void){
   GetGlobalSliceBounds(0,SET_MINMAX_FLAG);
 }
+
 /* ------------------ GetHVACDuctBounds ------------------------ */
 
 void GetHVACDuctBounds(char *shortlabel, float *valminptr, float *valmaxptr){
@@ -823,6 +831,9 @@ void GetGlobalHVACNodeBounds(int flag){
 void UpdateGlobalFEDSliceBounds(void){
   int i;
 
+#ifdef pp_GLOBAL_BOUNDS
+  UpdateSliceBoundsFile();
+#endif
   for(i = 0; i<nsliceinfo; i++){
     slicedata *slicei;
     float valmin, valmax;
@@ -833,7 +844,11 @@ void UpdateGlobalFEDSliceBounds(void){
     if(slicei->valmin_fds>slicei->valmax_fds||
        current_script_command==NULL || NOT_LOADRENDER){
 
+#ifdef pp_GLOBAL_BOUNDS
+      GetSliceFileBounds(slicei->reg_file, &valmin, &valmax);
+#else
       GetBounds(slicei->bound_file, &valmin, &valmax, &sliceboundsinfo, &nsliceboundsinfo);
+#endif
 
       if(valmin>valmax)continue;
       slicei->valmin_fds = valmin;
@@ -1219,7 +1234,7 @@ void GetAllPartBounds(void){
 }
 
 #ifdef pp_GLOBAL_BOUNDS
-/* ------------------ CompareBOundFilename ------------------------ */
+/* ------------------ CompareBoundFileName ------------------------ */
 
 int CompareBoundFileName(const void *arg1, const void *arg2){
   char *x, *y;
@@ -1228,6 +1243,31 @@ int CompareBoundFileName(const void *arg1, const void *arg2){
   y = *(char **)arg2;
 
   return strcmp(x, y);
+}
+
+/* ------------------ GetFileBounds ------------------------ */
+
+void GetSliceFileBounds(char *file, float *valmin, float *valmax){
+  char **key_index;
+  int defined = 0;
+
+  key_index = (char **)bsearch((char *)&file, sorted_slice_filenames, nsliceinfo, sizeof(char *), CompareBoundFileName);
+  if(key_index != NULL){
+    int index;
+    globalboundsdata *fi;
+
+    index = (int)(key_index - sorted_slice_filenames);
+    fi = sliceglobalboundsinfo + index;
+    if(fi->defined == 1){
+      *valmin = fi->valmin;
+      *valmax = fi->valmax;
+      defined = 1;
+    }
+  }
+  if(defined == 0){
+    *valmin = 0.0;
+    *valmax = 1.0;
+  }
 }
 
 /* ------------------ UpdateSliceBoundsFileSetup ------------------------ */
@@ -1288,8 +1328,6 @@ void UpdateSliceBoundsFileSetup(void){
 
 /* ------------------ UpdateSliceBoundsFile ------------------------ */
 
-#define LOCK_BOUNDS
-#define UNLOCK_BOUNDS
 void *UpdateSliceBoundsFileDoit(void *arg){
   int i;
 
@@ -1345,6 +1383,22 @@ void UpdateSliceBoundsFileWrapup(void){
     fprintf(stream, "%s %f %f\n", fi->file, fi->valmin, fi->valmax);
   }
   fclose(stream);
+  for(i = 0;i < nsliceinfo;i++){
+    slicedata *slicei;
+    globalboundsdata *fi;
+    char **key_index;
+    int index;
+    
+    slicei = sliceinfo + i;
+    key_index = (char **)bsearch((char *)&slicei->reg_file, sorted_slice_filenames, nsliceinfo, sizeof(char *), CompareBoundFileName);
+    if(key_index == NULL)continue;
+    index = (int)(key_index - sorted_slice_filenames);
+    if(index<0 || index>nsliceinfo - 1)continue;
+    fi = sliceglobalboundsinfo + index;
+    if(fi->defined == 0)continue;
+    slicei->valmin_fds = fi->valmin;
+    slicei->valmax_fds = fi->valmax;
+  }
 }
 
 /* ------------------ UpdateSliceBoundsFile ------------------------ */

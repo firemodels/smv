@@ -1005,6 +1005,7 @@ void ReadFed(int file_index, int time_frame, float *time_value, int flag, int fi
   // regenerate if either the FED slice or isosurface file does not exist or is older than
   // either the CO, CO2 or O2 slice files
 
+#ifndef pp_GLOBAL_BOUNDS
   if(file_type==FED_SLICE){
     FILE *stream;
 
@@ -1019,6 +1020,7 @@ void ReadFed(int file_index, int time_frame, float *time_value, int flag, int fi
       regenerate_fed = 1;
     }
   }
+#endif
   if(regenerate_fed==1||
      (file_type==FED_SLICE&&(IsFileNewer(fed_slice->file,o2->file)!=1||
        IsFileNewer(fed_slice->file,co2->file)!=1||
@@ -1254,6 +1256,9 @@ void ReadFed(int file_index, int time_frame, float *time_value, int flag, int fi
   else{
     ReadIsoOrig(fed_iso->file,file_index,flag,&error_local);
   }
+#ifdef pp_GLOBAL_BOUNDS
+  UpdateGlobalFEDSliceBounds();
+#endif
   {
     colorbardata *cb;
 
@@ -5005,9 +5010,6 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
       assert(ValidPointer(sd->qslicedata, sizeof(float)*sd->nslicei*sd->nslicej*sd->nslicek*sd->ntimes));
     }
     CheckMemory;
-#endif
-#ifdef pp_GLOBAL_BOUNDS
-    UpdateSliceBoundsFile();
 #endif
     ForceIdle();
   }
