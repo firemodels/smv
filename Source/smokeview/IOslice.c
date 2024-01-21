@@ -5004,10 +5004,10 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
     if(sd->compression_type==UNCOMPRESSED&&sd->slice_filetype!=SLICE_GEOM){
       assert(ValidPointer(sd->qslicedata, sizeof(float)*sd->nslicei*sd->nslicej*sd->nslicek*sd->ntimes));
     }
+    CheckMemory;
+#endif
 #ifdef pp_GLOBAL_BOUNDS
     UpdateSliceBoundsFile();
-#ebduf
-    CheckMemory;
 #endif
     ForceIdle();
   }
