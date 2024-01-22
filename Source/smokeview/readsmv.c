@@ -13586,7 +13586,9 @@ int ReadIni2(char *inifile, int localfile){
         }
         level_val = NULL;
       }
+#ifndef pp_GLOBAL_BOUNDS
       if(strcmp(buffer2, "TEMP")==0&&nzoneinfo>0)continue;
+#endif
       TrimBack(buffer2);
       SetSliceBounds(set_valmin, valmin, set_valmax, valmax, buffer2);
       continue;

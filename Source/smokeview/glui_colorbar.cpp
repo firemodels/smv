@@ -368,10 +368,10 @@ void GetNewColorbarName(char *base, char *label){
     int j;
 
     if(i == 1){
-      sprintf(label, "%s", base);
+      snprintf(label, sizeof(base), "%s", base);
     }
     else{
-      sprintf(label, "%s %i", base, i);
+      snprintf(label, sizeof(base), "%s %i", base, i);
     }
 
     int dup = 0;

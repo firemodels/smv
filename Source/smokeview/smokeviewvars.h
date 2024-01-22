@@ -24,7 +24,13 @@
 
 //*** threader variables
 
-//***checkfiles
+#ifdef pp_GLOBAL_BOUNDS
+//***getbounds
+SVEXTERN int SVDECL(n_getbounds_threads, 1), SVDECL(use_getbounds_threads, 1);
+SVEXTERN threaderdata SVDECL(*getbounds_threads, NULL);
+#endif
+
+//***isosurface
 SVEXTERN int SVDECL(n_isosurface_threads, 1), SVDECL(use_isosurface_threads, 1);
 SVEXTERN threaderdata SVDECL(*isosurface_threads, NULL);
 
@@ -123,6 +129,12 @@ SVEXTERN int hvac_node_color[3];
 SVEXTERN FILE_SIZE SVDECL(last_size_for_slice, 0);
 SVEXTERN FILE_SIZE SVDECL(last_size_for_boundary, 0);
 SVEXTERN char SVDECL(*stepcsv_filename, NULL);
+
+#ifdef pp_GLOBAL_BOUNDS
+SVEXTERN char SVDECL(*slicebounds_filename, NULL), SVDECL(**sorted_slice_filenames, NULL);
+SVEXTERN globalboundsdata SVDECL(*sliceglobalboundsinfo, NULL);
+SVEXTERN int SVDECL(nsliceglobalboundsinfo, 0);
+#endif
 
 SVEXTERN int SVDECL(histogram_nframes, 40);
 SVEXTERN int SVDECL(glui_surf_index, 0);
