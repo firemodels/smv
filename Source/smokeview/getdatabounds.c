@@ -625,13 +625,17 @@ void GetGlobalSliceBounds(int flag, int set_flag){
       boundscppi->set_valtype = 0;
 
       if(set_flag == 1)boundscppi->set_valmin = 0;
+#ifndef pp_GLOBAL_BOUNDS
       boundscppi->valmin[BOUND_SET_MIN]        = boundi->dlg_global_valmin;
+#endif
       boundscppi->valmin[BOUND_LOADED_MIN]     = boundi->dlg_global_valmin;
       boundscppi->valmin[BOUND_GLOBAL_MIN]     = boundi->dlg_global_valmin;
       boundscppi->valmin[BOUND_PERCENTILE_MIN] = boundi->dlg_global_valmin;
 
       if(set_flag == 1)boundscppi->set_valmax = 0;
+#ifndef pp_GLOBAL_BOUNDS
       boundscppi->valmax[BOUND_SET_MAX]        = boundi->dlg_global_valmax;
+#endif
       boundscppi->valmax[BOUND_LOADED_MAX]     = boundi->dlg_global_valmax;
       boundscppi->valmax[BOUND_GLOBAL_MAX]     = boundi->dlg_global_valmax;
       boundscppi->valmax[BOUND_PERCENTILE_MAX] = boundi->dlg_global_valmax;
