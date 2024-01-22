@@ -1468,7 +1468,7 @@ typedef struct _slicedata {
   FILE_SIZE file_size;
   int *geom_offsets;
   devicedata vals2d;
-#ifdef pp_GLOBAL_BOUNDS
+#ifdef pp_SLICE_BOUNDS
   int boundstatus;
 #endif
 #ifdef pp_SLICE_MULTI
@@ -1544,7 +1544,7 @@ typedef struct _boundsdata {
   flowlabels *label;
 } boundsdata;
 
-#ifdef pp_GLOBAL_BOUNDS
+#ifdef pp_SLICE_BOUNDS
 /* --------------------------  globalboundsdata ------------------------------------ */
 
 typedef struct _globalboundsdata {

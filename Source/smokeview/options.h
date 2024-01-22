@@ -22,7 +22,7 @@
 // #define pp_BLACKBODY_OUT       // output generated blackbody color data 
 // #define pp_BLACKBODY_SYSTEM    
 //#define pp_DECIMATE     // decimate terrain geometry
-#define pp_GLOBAL_BOUNDS  // compute slice bounds from data
+#define pp_SLICE_BOUNDS  // compute slice bounds from data
 
 #define pp_FAST           // set fast startup by default
 

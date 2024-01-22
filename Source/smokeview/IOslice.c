@@ -1005,7 +1005,7 @@ void ReadFed(int file_index, int time_frame, float *time_value, int flag, int fi
   // regenerate if either the FED slice or isosurface file does not exist or is older than
   // either the CO, CO2 or O2 slice files
 
-#ifndef pp_GLOBAL_BOUNDS
+#ifndef pp_SLICE_BOUNDS
   if(file_type==FED_SLICE){
     FILE *stream;
 
@@ -1256,7 +1256,7 @@ void ReadFed(int file_index, int time_frame, float *time_value, int flag, int fi
   else{
     ReadIsoOrig(fed_iso->file,file_index,flag,&error_local);
   }
-#ifdef pp_GLOBAL_BOUNDS
+#ifdef pp_SLICE_BOUNDS
   UpdateGlobalFEDSliceBounds();
 #endif
   {
