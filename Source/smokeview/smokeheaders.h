@@ -1149,6 +1149,10 @@ EXTERNCPP void SliceBoundsGet(char *file, float *valmin, float *valmax);
 #endif
 
 EXTERNCPP void UpdateAllGeomTriangles(void);
+#ifdef pp_SLICE_BOUNDS
+EXTERNCPP void SetSliceMin(int set_valmin, float valmin, char *buffer2);
+EXTERNCPP void SetSliceMax(int set_valmax, float valmax, char *buffer2);
+#endif
 EXTERNCPP void SetSliceBounds(int set_valmin, float valmin, int set_valmax, float valmax, char *buffer2);
 EXTERNCPP void SetBoundBounds(int set_valmin, float valmin, int set_valmax, float valmax, char *buffer2);
 

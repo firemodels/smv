@@ -12223,6 +12223,40 @@ void SetSliceBounds(int set_valmin, float valmin, int set_valmax, float valmax, 
   }
 }
 
+#ifdef pp_SLICE_BOUNDS
+/* ------------------ SetSliceMin ------------------------ */
+
+void SetSliceMin(int set_valmin, float valmin, char *buffer2){
+  int i;
+
+  for(i = 0; i < nslicebounds; i++){
+    if(strcmp(buffer2, "") == 0 || strcmp(slicebounds[i].shortlabel, buffer2) == 0){
+      slicebounds[i].dlg_setvalmin = set_valmin;
+      slicebounds[i].dlg_valmin    = valmin;
+      GLUISetMin(BOUND_SLICE, slicebounds[i].shortlabel, set_valmin, valmin);
+      update_glui_bounds = 1;
+      if(strcmp(slicebounds[i].shortlabel, buffer2) == 0)break;
+    }
+  }
+}
+
+/* ------------------ SetSliceMax ------------------------ */
+
+void SetSliceMax(int set_valmax, float valmax, char *buffer2){
+  int i;
+
+  for(i = 0; i < nslicebounds; i++){
+    if(strcmp(buffer2, "") == 0 || strcmp(slicebounds[i].shortlabel, buffer2) == 0){
+      slicebounds[i].dlg_setvalmax = set_valmax;
+      slicebounds[i].dlg_valmax    = valmax;
+      GLUISetMax(BOUND_SLICE, slicebounds[i].shortlabel, set_valmax, valmax);
+      update_glui_bounds = 1;
+      if(strcmp(slicebounds[i].shortlabel, buffer2) == 0)break;
+    }
+  }
+}
+#endif
+
 /* ------------------ ReadIni2 ------------------------ */
 
 int ReadIni2(char *inifile, int localfile){

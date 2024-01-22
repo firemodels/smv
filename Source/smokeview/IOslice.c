@@ -4946,12 +4946,27 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
     if(runscript == 0){
       THREADcontrol(slicebound_threads, THREAD_JOIN);
     }
+#ifdef pp_SLICE_BOUNDS
+    int set_valmin_save, set_valmax_save;
+    float qmin_save, qmax_save;
+    GLUIGetMinMax(BOUND_SLICE, sd->label.shortlabel, &set_valmin_save, &qmin_save, &set_valmax_save, &qmax_save);
+#endif
     if(force_bound_update==1||slice_bounds_defined==0||IsFDSRunning(&last_size_for_slice)==1){
       recompute = 1;
       GetGlobalSliceBounds(1, DONOT_SET_MINMAX_FLAG);
       SetLoadedSliceBounds(NULL, 0);
     }
     GLUIGetMinMax(BOUND_SLICE, sd->label.shortlabel, &set_valmin, &qmin, &set_valmax, &qmax);
+#ifdef pp_SLICE_BOUNDS
+    if(set_valmin_save == 0){
+      qmin = qmin_save;
+      SetSliceMin(set_valmin_save, qmin_save, sd->label.shortlabel);
+    }
+    if(set_valmax_save == 0){
+      qmax = qmax_save;
+      SetSliceMax(set_valmax_save, qmax_save, sd->label.shortlabel);
+    }
+#endif
 #define BOUND_PERCENTILE_DRAW          120
     GLUIHVACSliceBoundsCPP_CB(BOUND_PERCENTILE_DRAW);
     colorbar_slice_min = qmin;
