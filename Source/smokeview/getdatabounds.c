@@ -1327,7 +1327,9 @@ void SliceBoundsUpdateSetup(void){
   size_temp = last_size_for_slicebound;
   if(stream == NULL||IsFDSRunning(&size_temp)==1){
     if(stream!=NULL)fclose(stream);
+    INIT_PRINT_TIMER(slice_gbnd_timer);
     CreateGbndFile();
+    PRINT_TIMER(slice_gbnd_timer, "CreateGbndFile");
   }
   stream = fopen(slice_gbnd_filename, "r");
   if(stream != NULL){
@@ -1361,6 +1363,7 @@ void *SliceBoundsUpdateDoit(void *arg){
   int is_fds_running;
 
   is_fds_running = IsFDSRunning(&last_size_for_slicebound);
+  INIT_PRINT_TIMER(slice_bound_timer);
   for(i = 0;i < nsliceinfo;i++){
     slicedata *slicei;
     globalboundsdata *fi;
@@ -1398,6 +1401,7 @@ void *SliceBoundsUpdateDoit(void *arg){
     fi->valmax  = valmax;
     fi->defined = 1;
   }
+  PRINT_TIMER(slice_bound_timer, "update_slice_bounds");
   THREAD_EXIT(getbounds_threads);
 }
 
