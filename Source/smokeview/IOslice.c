@@ -1369,6 +1369,17 @@ FILE_SIZE ReadVSlice(int ivslice, int time_frame, float *time_value, int flag, i
     return return_filesize;
   }
   if(vd->finalize==0)set_slicecolor = DEFER_SLICECOLOR;
+#ifdef pp_SLICE_BOUNDS
+
+  int set_valmin_save, set_valmax_save;
+  float qmin_save, qmax_save;
+  if(vd->finalize == 1 && vd->ival != -1){
+    slicedata *sd = NULL;
+
+    sd = sliceinfo + vd->ival;
+    GLUIGetMinMax(BOUND_SLICE, sd->label.shortlabel, &set_valmin_save, &qmin_save, &set_valmax_save, &qmax_save);
+  }
+#endif
   if(vd->iu!=-1){
     slicedata *u=NULL;
 
@@ -1519,6 +1530,39 @@ FILE_SIZE ReadVSlice(int ivslice, int time_frame, float *time_value, int flag, i
       }
     }
     max_velocity = MAX(ABS(valmax),ABS(valmin));
+#ifdef pp_SLICE_BOUNDS
+    if(vd->ival != -1){
+      slicedata *sd = NULL;
+
+      sd = sliceinfo + vd->ival;
+      if(set_valmin_save == 0){
+        SetSliceMin(set_valmin_save, qmin_save, sd->label.shortlabel);
+      }
+      if(set_valmax_save == 0){
+        SetSliceMax(set_valmax_save, qmax_save, sd->label.shortlabel);
+      }
+      if(set_valmin_save == 0 || set_valmax_save == 0){
+        float cbvals[256];
+
+        for(i = 0; i<256; i++){
+          cbvals[i] = (qmin_save*(float)(255 - i) + qmax_save*(float)i) / 255.0;
+        }
+        for(i=0;i<nvsliceinfo;i++){
+          vslicedata *vslicei;
+          slicedata *slicei;
+
+          vslicei = vsliceinfo + i;
+          if(vslicei->loaded == 0 || vslicei->display == 0 || vslicei->ival == -1)continue;
+          slicei = sliceinfo + vslicei->ival;
+          if(slicei->loaded==0||strcmp(sd->label.shortlabel,slicei->label.shortlabel)!=0)continue;
+          slicei->valmin = qmin_save;
+          slicei->valmax = qmax_save;
+          memcpy(slicei->qval256, cbvals, 256*sizeof(float));
+          SetSliceColors(qmin_save, qmax_save, slicei, 0, errorcode);
+        }
+      }
+    }
+#endif
   }
   PushVSliceLoadstack(ivslice);
 
