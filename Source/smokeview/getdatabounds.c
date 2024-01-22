@@ -1249,7 +1249,7 @@ int CompareBoundFileName(const void *arg1, const void *arg2){
   return strcmp(x, y);
 }
 
-/* ------------------ GetFileBounds ------------------------ */
+/* ------------------ GetSliceFileBounds ------------------------ */
 
 void GetSliceFileBounds(char *file, float *valmin, float *valmax){
   char **key_index;
@@ -1306,6 +1306,22 @@ void UpdateSliceBoundsFileSetup(void){
     strcat(slicebounds_filename, ".sf.gbnd");
   }
   stream = fopen(slicebounds_filename, "r");
+  if(stream == NULL){
+    stream = fopen(slicebounds_filename, "w"); // create .sf.gbnd from all the .sf.bnd files
+    if(stream != NULL){
+      for(i=0;i<nsliceinfo;i++){
+        slicedata *slicei;
+        float valmin, valmax;
+
+        slicei = sliceinfo + i;
+        if(GetFileBounds(slicei->bound_file, &valmin, &valmax)==1){
+          fprintf(stream, "%s %f %f\n", slicei->reg_file, valmin, valmax);
+        }
+      }
+      fclose(stream);
+      stream = fopen(slicebounds_filename, "r");
+    }
+  }
   if(stream != NULL){
     for(;;){
       char buffer[255], file[255], *fileptr, **key_index;
