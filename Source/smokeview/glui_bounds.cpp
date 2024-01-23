@@ -2514,6 +2514,9 @@ GLUI_Spinner *SPINNER_size_factor2         = NULL;
 GLUI_Spinner *SPINNER_plot2d_dt = NULL;
 GLUI_Spinner *SPINNER_meshclip[6];
 GLUI_Spinner *SPINNER_set_mesh = NULL;
+#ifdef pp_SLICE_BOUNDS
+GLUI_Spinner *SPINNER_getbounds = NULL;
+#endif
 
 GLUI_Checkbox *CHECKBOX_slice_load_incremental=NULL;
 GLUI_Checkbox *CHECKBOX_color_vector_black = NULL;
@@ -4963,6 +4966,10 @@ hvacductboundsCPP.setup("hvac", ROLLOUT_hvacduct, hvacductbounds_cpp, nhvacductb
   CHECKBOX_show_intersected_meshes = glui_bounds->add_checkbox_to_panel(PANEL_mesh1, "show intersected meshes", &show_intersected_meshes, USEMESH_DRAW_MESH, MeshBoundCB);
   glui_bounds->add_checkbox_to_panel(PANEL_mesh1, "show intersected mesh indices", &show_mesh_labels);
   CHECKBOX_load_only_when_unloaded = glui_bounds->add_checkbox_to_panel(PANEL_mesh1, "Load a file only if unloaded", &load_only_when_unloaded, USEMESH_LOAD_WHEN_LOADED, MeshBoundCB);
+#ifdef pp_SLICE_BOUNDS
+  SPINNER_getbounds = glui_bounds->add_spinner_to_panel(PANEL_mesh1, "number of getbound threads", GLUI_SPINNER_INT, &n_getbounds_threads);
+  SPINNER_getbounds->set_int_limits(1,16);
+#endif
 
   glui_bounds->add_column_to_panel(PANEL_mesh1, false);
 

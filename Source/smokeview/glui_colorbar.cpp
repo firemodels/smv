@@ -126,7 +126,7 @@ void UpdateNodeLabel(colorbardata *cbi){
     strcpy(label_nodes, "Equalized: no");
     STATICTEXT_cb_adjusted->set_name(label_nodes);
   }
-  snprintf(label_nodes, sizeof(cbi->nnodes), "nodes: %i", cbi->nnodes);
+  sprintf(label_nodes, "nodes: %i", cbi->nnodes);
   STATICTEXT_cb_node_label->set_name(label_nodes);
 }
 
