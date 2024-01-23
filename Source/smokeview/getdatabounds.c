@@ -1310,7 +1310,7 @@ int BoundsCreateGbnd(char *gbnd_filename, int option){
         assert(FFALSE);
         break;
     }
-    if(GetFileBounds(gbnd_filename, &valmin, &valmax)==1){
+    if(GetFileBounds(bound_file, &valmin, &valmax)==1){
       fprintf(stream, "%s %f %f\n", reg_file, valmin, valmax);
     }
   }
