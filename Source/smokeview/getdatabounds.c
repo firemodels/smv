@@ -8,6 +8,9 @@
 #include "smokeviewvars.h"
 #include "IOscript.h"
 
+void BoundsUpdate(int file_type);
+void BoundsGet(char *file, globalboundsdata *globalboundsinfo, char **sorted_filenames, int n_sorted_filenames, float *valmin, float *valmax);
+
 /* ------------------ GetPartFileBounds ------------------------ */
 
 int GetPartFileBounds(char *file, float *valmin, float *valmax, int *ntotal_points){
@@ -278,6 +281,9 @@ void GetGlobalPatchBounds(int flag, int set_flag){
     boundi->dlg_global_valmin = 1.0;
     boundi->dlg_global_valmax = 0.0;
   }
+#ifdef pp_BOUNDS
+  BoundsUpdate(BOUND_PATCH);
+#endif
   for(i = 0; i < npatchinfo; i++){
     patchdata *patchi;
     float valmin, valmax;
@@ -296,7 +302,11 @@ void GetGlobalPatchBounds(int flag, int set_flag){
     }
     if(force_bound_update == 1)doit = 1;
     if(doit==1){
+#ifdef pp_BOUNDS
+      BoundsGet(patchi->reg_file, patchglobalboundsinfo, sorted_patch_filenames, npatchinfo, &valmin, &valmax);
+#else
       if(GetBounds(patchi->bound_file, &valmin, &valmax, &patchboundsinfo, &npatchboundsinfo)==1)patchi->have_bound_file = YES;
+#endif
       if(valmin > valmax)continue;
       patchi->valmin_fds = valmin;
       patchi->valmax_fds = valmax;
@@ -662,7 +672,7 @@ char *GetRegFile(int file_type, int i){
   if(file_type == BOUND_SLICE){
     reg_file = sliceinfo[i].reg_file;
   }
-  else if(file_type != BOUND_PATCH){
+  else if(file_type == BOUND_PATCH){
     reg_file = patchinfo[i].reg_file;
   }
   return reg_file;
@@ -768,7 +778,7 @@ void BoundsUpdateSetup(int file_type){
   sorted_filenames = GetSortedFilenames(file_type);
 
   if(sorted_filenames == NULL){
-    NewMemory((void **)&sorted_filenames, nsliceinfo * sizeof(char *));
+    NewMemory((void **)&sorted_filenames, ninfo * sizeof(char *));
     for(i = 0;i < ninfo;i++){
       sorted_filenames[i] = GetRegFile(file_type, i);
     }
