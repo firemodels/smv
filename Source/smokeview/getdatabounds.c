@@ -625,15 +625,15 @@ char **GetSortedFilenames(int file_type){
 
 /* ------------------ FopenGbndFile ------------------------ */
 
-FILE *FopenGbndFile(int file_type){
+FILE *FopenGbndFile(int file_type, char *mode){
   FILE *stream = NULL;
 
   assert(file_type == BOUND_SLICE || file_type == BOUND_PATCH);
   if(file_type == BOUND_SLICE){
-    stream = fopen(slice_gbnd_filename, "r");
+    stream = fopen(slice_gbnd_filename, mode);
   }
   else if(file_type==BOUND_PATCH){
-    stream = fopen(patch_gbnd_filename, "r");
+    stream = fopen(patch_gbnd_filename, mode);
   }
   return stream;
 }
@@ -784,14 +784,14 @@ void BoundsUpdateSetup(int file_type){
     SaveGlobalBoundsinfo(file_type, globalboundsinfo);
   }
   DefineGbndFilename(file_type);
-  stream = FopenGbndFile(file_type);
+  stream = FopenGbndFile(file_type, "r");
   FILE_SIZE size_temp;
   size_temp = last_size_for_bound;
   if(stream == NULL || IsFDSRunning(&size_temp) == 1){
     if(stream != NULL)fclose(stream);
     BoundsCreateGbnd(file_type);
   }
-  stream = fopen(slice_gbnd_filename, "r");
+  stream = FopenGbndFile(file_type, "r");
   if(stream != NULL){
     for(;;){
       char buffer[255], file[255], *fileptr, **key_index;
@@ -881,25 +881,12 @@ void BoundsUpdateWrapup(int file_type){
   ninfo = GetNinfo(file_type);
   globalboundsinfo = GetGlobalBoundsinfo(file_type);
   sorted_filenames = GetSortedFilenames(file_type);
-
-  switch(file_type){
-  case BOUND_SLICE:
-    stream = fopen(slice_gbnd_filename, "w");
-    break;
-  case BOUND_PATCH:
-    stream = fopen(patch_gbnd_filename, "w");
-    break;
-  default:
-    assert(FFALSE);
-    return;
-    break;
-  }
+  stream = FopenGbndFile(file_type, "w");
   for(i = 0;i < ninfo;i++){
     globalboundsdata *fi;
 
     fi = globalboundsinfo + i;
-    if(fi->defined == 0)continue;
-    fprintf(stream, "%s %f %f\n", fi->file, fi->valmin, fi->valmax);
+    if(fi->defined == 1)fprintf(stream, "%s %f %f\n", fi->file, fi->valmin, fi->valmax);
   }
   fclose(stream);
   for(i = 0;i < ninfo;i++){
@@ -974,6 +961,7 @@ void GetGlobalSliceBounds(int flag, int set_flag){
 #ifdef pp_SLICE_BOUNDS
   BoundsUpdate(BOUND_SLICE);
 #endif
+  INIT_PRINT_TIMER(slicebounds_timer);
   for(i = 0;i<nsliceinfo;i++){
     slicedata *slicei;
     float valmin, valmax;
@@ -1062,6 +1050,7 @@ void GetGlobalSliceBounds(int flag, int set_flag){
       boundscppi->hist = NULL;
     }
   }
+  PRINT_TIMER(slicebounds_timer, "GlobalSliceBounds (not BoundsUpdate)");
 }
 
 /* ------------------ GetGlobalSliceBoundsFull ------------------------ */
