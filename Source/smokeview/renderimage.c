@@ -82,7 +82,6 @@ char *GetMovieFilePath(char *moviefile_path){
 
 void MakeMovie(void){
   char command_line[1024];
-  char frame0[1024];
   char moviefile_path[1024],overwrite_flag[10],image_ext[10], movie_frames[1024];
   int make_movie_now=1;
 
@@ -96,16 +95,6 @@ void MakeMovie(void){
   }
   else{
     strcpy(image_ext, ".png");
-  }
-
-// if the first frame doesn't exist then generate images
-
-  strcpy(frame0, render_file_base);
-  strcat(frame0, "_0001");
-  strcat(frame0, image_ext);
-  if(runscript==0&& FILE_EXISTS(frame0)==NO){
-    RenderCB(RENDER_START_NORMAL);
-    return;
   }
 
 // construct full pathname of movie
@@ -335,7 +324,12 @@ int GetRenderFileName(int view_mode, char *renderfile_dir, char *renderfile_full
       image_num = seqnum;
     }
     else{
-      image_num = itimes;
+      if(render_skip > 1){
+        image_num = itimes / render_skip;
+      }
+      else{
+        image_num = itimes;
+      }
     }
     if(current_script_command!=NULL && IS_LOADRENDER){
       int time_current = current_script_command->ival4;
