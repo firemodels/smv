@@ -124,7 +124,7 @@ SVEXTERN FILE_SIZE SVDECL(last_size_for_slice, 0);
 SVEXTERN FILE_SIZE SVDECL(last_size_for_boundary, 0);
 SVEXTERN char SVDECL(*stepcsv_filename, NULL);
 
-#ifdef pp_SLICE_BOUNDS
+#ifdef pp_BOUNDS
 SVEXTERN char SVDECL(*slice_gbnd_filename, NULL), SVDECL(**sorted_slice_filenames, NULL);
 SVEXTERN char SVDECL(*patch_gbnd_filename, NULL), SVDECL(**sorted_patch_filenames, NULL);
 SVEXTERN globalboundsdata SVDECL(*sliceglobalboundsinfo, NULL);

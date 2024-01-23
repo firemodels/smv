@@ -12223,7 +12223,7 @@ void SetSliceBounds(int set_valmin, float valmin, int set_valmax, float valmax, 
   }
 }
 
-#ifdef pp_SLICE_BOUNDS
+#ifdef pp_BOUNDS
 /* ------------------ SetSliceMin ------------------------ */
 
 void SetSliceMin(int set_valmin, float valmin, char *buffer2){
@@ -13620,7 +13620,7 @@ int ReadIni2(char *inifile, int localfile){
         }
         level_val = NULL;
       }
-#ifndef pp_SLICE_BOUNDS
+#ifndef pp_BOUNDS
       if(strcmp(buffer2, "TEMP")==0&&nzoneinfo>0)continue;
 #endif
       TrimBack(buffer2);

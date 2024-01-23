@@ -1145,7 +1145,7 @@ EXTERNCPP float GetStringLength(char *string);
 EXTERNCPP void UpdateGslicePlanes(void);
 
 EXTERNCPP void UpdateAllGeomTriangles(void);
-#ifdef pp_SLICE_BOUNDS
+#ifdef pp_BOUNDS
 EXTERNCPP void SetSliceMin(int set_valmin, float valmin, char *buffer2);
 EXTERNCPP void SetSliceMax(int set_valmax, float valmax, char *buffer2);
 #endif

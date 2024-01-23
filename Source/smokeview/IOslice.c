@@ -1005,7 +1005,7 @@ void ReadFed(int file_index, int time_frame, float *time_value, int flag, int fi
   // regenerate if either the FED slice or isosurface file does not exist or is older than
   // either the CO, CO2 or O2 slice files
 
-#ifndef pp_SLICE_BOUNDS
+#ifndef pp_BOUNDS
   if(file_type==FED_SLICE){
     FILE *stream;
 
@@ -1256,7 +1256,7 @@ void ReadFed(int file_index, int time_frame, float *time_value, int flag, int fi
   else{
     ReadIsoOrig(fed_iso->file,file_index,flag,&error_local);
   }
-#ifdef pp_SLICE_BOUNDS
+#ifdef pp_BOUNDS
   UpdateGlobalFEDSliceBounds();
 #endif
   {
@@ -1369,7 +1369,7 @@ FILE_SIZE ReadVSlice(int ivslice, int time_frame, float *time_value, int flag, i
     return return_filesize;
   }
   if(vd->finalize==0)set_slicecolor = DEFER_SLICECOLOR;
-#ifdef pp_SLICE_BOUNDS
+#ifdef pp_BOUNDS
 
   int set_valmin_save, set_valmax_save;
   float qmin_save, qmax_save;
@@ -1530,7 +1530,7 @@ FILE_SIZE ReadVSlice(int ivslice, int time_frame, float *time_value, int flag, i
       }
     }
     max_velocity = MAX(ABS(valmax),ABS(valmin));
-#ifdef pp_SLICE_BOUNDS
+#ifdef pp_BOUNDS
     if(vd->ival != -1){
       slicedata *sd = NULL;
 
@@ -4990,7 +4990,7 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
     if(runscript == 0){
       THREADcontrol(slicebound_threads, THREAD_JOIN);
     }
-#ifdef pp_SLICE_BOUNDS
+#ifdef pp_BOUNDS
     int set_valmin_save, set_valmax_save;
     float qmin_save, qmax_save;
     GLUIGetMinMax(BOUND_SLICE, sd->label.shortlabel, &set_valmin_save, &qmin_save, &set_valmax_save, &qmax_save);
@@ -5001,7 +5001,7 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
       SetLoadedSliceBounds(NULL, 0);
     }
     GLUIGetMinMax(BOUND_SLICE, sd->label.shortlabel, &set_valmin, &qmin, &set_valmax, &qmax);
-#ifdef pp_SLICE_BOUNDS
+#ifdef pp_BOUNDS
     if(set_valmin_save == 0){
       qmin = qmin_save;
       SetSliceMin(set_valmin_save, qmin_save, sd->label.shortlabel);

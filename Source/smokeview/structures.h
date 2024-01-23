@@ -1541,7 +1541,7 @@ typedef struct _boundsdata {
   flowlabels *label;
 } boundsdata;
 
-#ifdef pp_SLICE_BOUNDS
+#ifdef pp_BOUNDS
 /* --------------------------  globalboundsdata ------------------------------------ */
 
 typedef struct _globalboundsdata {
