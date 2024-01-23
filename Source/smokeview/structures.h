@@ -1468,9 +1468,6 @@ typedef struct _slicedata {
   FILE_SIZE file_size;
   int *geom_offsets;
   devicedata vals2d;
-#ifdef pp_SLICE_BOUNDS
-  int boundstatus;
-#endif
 #ifdef pp_SLICE_MULTI
   int loadstatus;
 #endif

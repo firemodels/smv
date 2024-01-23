@@ -577,8 +577,387 @@ void BoundsGet(char *file, globalboundsdata *globalboundsinfo, char **sorted_fil
     *valmax = 1.0;
   }
 }
-#endif
 
+/* ------------------ GetNinfo ------------------------ */
+
+int GetNinfo(int file_type){
+  int ninfo = -1;
+
+  assert(file_type == BOUND_SLICE || file_type == BOUND_PATCH);
+  if(file_type == BOUND_SLICE){
+    ninfo = nsliceinfo;
+  }
+  else if(file_type == BOUND_PATCH){
+    ninfo = npatchinfo;
+  }
+  return ninfo;
+}
+
+/* ------------------ GetNinfo ------------------------ */
+
+globalboundsdata *GetGlobalBoundsinfo(int file_type){
+  globalboundsdata *gi = NULL;
+
+  assert(file_type == BOUND_SLICE || file_type == BOUND_PATCH);
+  if(file_type == BOUND_SLICE){
+    gi = sliceglobalboundsinfo;
+  }
+  else if(file_type == BOUND_PATCH){
+    gi = patchglobalboundsinfo;
+  }
+  return gi;
+}
+
+/* ------------------ GetGbndFilename ------------------------ */
+
+char **GetSortedFilenames(int file_type){
+  char **sorted_filenames = NULL;
+
+  assert(file_type == BOUND_SLICE || file_type == BOUND_PATCH);
+  if(file_type == BOUND_SLICE){
+    sorted_filenames = sorted_slice_filenames;
+  }
+  else if(file_type == BOUND_PATCH){
+    sorted_filenames = sorted_patch_filenames;
+  }
+  return sorted_filenames;
+}
+
+/* ------------------ FopenGbndFile ------------------------ */
+
+FILE *FopenGbndFile(int file_type){
+  FILE *stream = NULL;
+
+  assert(file_type == BOUND_SLICE || file_type == BOUND_PATCH);
+  if(file_type == BOUND_SLICE){
+    stream = fopen(slice_gbnd_filename, "r");
+  }
+  else if(file_type==BOUND_PATCH){
+    stream = fopen(patch_gbnd_filename, "r");
+  }
+  return stream;
+}
+
+/* ------------------ GetGbndFilename ------------------------ */
+
+char *GetGbndFilename(int file_type){
+  char *filename=NULL;
+
+  assert(file_type == BOUND_SLICE || file_type == BOUND_PATCH);
+  if(file_type == BOUND_SLICE){
+    filename = slice_gbnd_filename;
+  }
+  else if(file_type==BOUND_PATCH){
+    filename = patch_gbnd_filename;\
+  }
+  return filename;
+}
+
+/* ------------------ GetRegFile ------------------------ */
+
+char *GetRegFile(int file_type, int i){
+  char *reg_file = NULL;;
+
+  assert(file_type == BOUND_SLICE || file_type == BOUND_PATCH);
+  if(file_type == BOUND_SLICE){
+    reg_file = sliceinfo[i].reg_file;
+  }
+  else if(file_type != BOUND_PATCH){
+    reg_file = patchinfo[i].reg_file;
+  }
+  return reg_file;
+}
+
+/* ------------------ SaveSortedFilenames ------------------------ */
+
+void SaveSortedFilenames(int file_type, char **sorted_filenames){
+  assert(file_type == BOUND_SLICE || file_type == BOUND_PATCH);
+  if(file_type == BOUND_SLICE){
+    sorted_slice_filenames = sorted_filenames;
+  }
+  else if(file_type==BOUND_PATCH){
+    sorted_patch_filenames = sorted_filenames;
+  }
+}
+
+/* ------------------ SaveGlobalBoundsinfo ------------------------ */
+
+void SaveGlobalBoundsinfo(int file_type, globalboundsdata *globalboundsinfo){
+  assert(file_type == BOUND_SLICE || file_type == BOUND_PATCH);
+  if(file_type == BOUND_SLICE){
+    sliceglobalboundsinfo = globalboundsinfo;
+  }
+  else if(file_type==BOUND_PATCH){
+    patchglobalboundsinfo = globalboundsinfo;
+  }
+}
+
+/* ------------------ DefineGbndFilename ------------------------ */
+
+void DefineGbndFilename(int file_type){
+  assert(file_type == BOUND_SLICE || file_type == BOUND_PATCH);
+  if(file_type == BOUND_SLICE){
+    if(slice_gbnd_filename == NULL){
+      NewMemory((void **)&slice_gbnd_filename, strlen(fdsprefix) + strlen(".sf.gbnd") + 1);
+      strcpy(slice_gbnd_filename, fdsprefix);
+      strcat(slice_gbnd_filename, ".sf.gbnd");
+    }
+  }
+  else if(file_type==BOUND_PATCH){
+    if(patch_gbnd_filename == NULL){
+      NewMemory((void **)&patch_gbnd_filename, strlen(fdsprefix) + strlen(".bf.gbnd") + 1);
+      strcpy(patch_gbnd_filename, fdsprefix);
+      strcat(patch_gbnd_filename, ".bf.gbnd");
+    }
+  }
+}
+
+/* ------------------ GetBoundFile ------------------------ */
+
+char *GetBoundFile(int file_type, int i){
+  char *bound_file = NULL;
+
+  assert(file_type == BOUND_SLICE || file_type == BOUND_PATCH);
+  if(file_type == BOUND_SLICE){
+    bound_file = sliceinfo[i].bound_file;
+  }
+  else if(file_type == BOUND_PATCH){
+    bound_file = patchinfo[i].bound_file;
+  }
+  return bound_file;
+}
+
+/* ------------------ BoundsCreateGbnd ------------------------ */
+
+int BoundsCreateGbnd(int file_type){
+  int i, ninfo;
+  FILE *stream;
+  char *gbnd_filename;
+
+  ninfo = GetNinfo(file_type);
+  gbnd_filename = GetGbndFilename(file_type);
+
+  stream = fopen(gbnd_filename, "w"); // create .sf.gbnd from all the .sf.bnd files
+  if(stream == NULL)return 0;
+  for(i = 0;i < ninfo;i++){
+    float valmin, valmax;
+    char *reg_file, *bound_file;
+
+    reg_file = GetRegFile(file_type, i);
+    bound_file = GetBoundFile(file_type, i);
+    if(GetFileBounds(bound_file, &valmin, &valmax) == 1){
+      fprintf(stream, "%s %f %f\n", reg_file, valmin, valmax);
+    }
+  }
+  fclose(stream);
+  return 1;
+}
+
+/* ------------------ SliceBoundsUpdateSetup ------------------------ */
+
+void BoundsUpdateSetup(int file_type){
+  int i;
+  FILE *stream = NULL;
+
+  int ninfo;
+  globalboundsdata *globalboundsinfo;
+  char **sorted_filenames;
+
+  ninfo = GetNinfo(file_type);
+  globalboundsinfo = GetGlobalBoundsinfo(file_type);
+  sorted_filenames = GetSortedFilenames(file_type);
+
+  if(sorted_filenames == NULL){
+    NewMemory((void **)&sorted_filenames, nsliceinfo * sizeof(char *));
+    for(i = 0;i < ninfo;i++){
+      sorted_filenames[i] = GetRegFile(file_type, i);
+    }
+    qsort((char *)sorted_filenames, ninfo, sizeof(char *), CompareBoundFileName);
+    SaveSortedFilenames(file_type, sorted_filenames);
+  }
+  if(globalboundsinfo == NULL){
+    NewMemory((void **)&globalboundsinfo, ninfo * sizeof(globalboundsdata));
+    for(i = 0;i < ninfo;i++){
+      globalboundsinfo[i].file = sorted_filenames[i];
+      globalboundsinfo[i].defined = 0;
+    }
+    SaveGlobalBoundsinfo(file_type, globalboundsinfo);
+  }
+  DefineGbndFilename(file_type);
+  stream = FopenGbndFile(file_type);
+  FILE_SIZE size_temp;
+  size_temp = last_size_for_bound;
+  if(stream == NULL || IsFDSRunning(&size_temp) == 1){
+    if(stream != NULL)fclose(stream);
+    BoundsCreateGbnd(file_type);
+  }
+  stream = fopen(slice_gbnd_filename, "r");
+  if(stream != NULL){
+    for(;;){
+      char buffer[255], file[255], *fileptr, **key_index;
+      float valmin, valmax;
+      globalboundsdata *fi;
+
+      if(fgets(buffer, 255, stream) == NULL)break;
+      sscanf(buffer, "%s %f %f", file, &valmin, &valmax);
+      fileptr = TrimFrontBack(file);
+      key_index = (char **)bsearch((char *)&fileptr, sorted_filenames, ninfo, sizeof(char *), CompareBoundFileName);
+      if(key_index != NULL){
+        int index;
+
+        index = (int)(key_index - sorted_filenames);
+        fi = globalboundsinfo + index;
+        fi->valmin = valmin;
+        fi->valmax = valmax;
+        fi->defined = 1;
+      }
+    }
+    fclose(stream);
+  }
+}
+
+/* ------------------ BoundsUpdateDoit ------------------------ */
+
+void BoundsUpdateDoit(int file_type){
+  int i;
+  int is_fds_running;
+  int ninfo;
+  globalboundsdata *globalboundsinfo;
+  char **sorted_filenames;
+
+  ninfo = GetNinfo(file_type);
+  globalboundsinfo = GetGlobalBoundsinfo(file_type);
+  sorted_filenames = GetSortedFilenames(file_type);
+
+  is_fds_running = IsFDSRunning(&last_size_for_bound);
+  for(i = 0;i < ninfo;i++){
+    globalboundsdata *fi;
+    int j, index;
+    float valmin, valmax;
+    char **key_index, *reg_file;
+
+    if(file_type == BOUND_SLICE && sliceinfo[i].loaded == 0)continue;
+    if(file_type == BOUND_PATCH && patchinfo[i].loaded == 0)continue;
+    reg_file = GetRegFile(file_type, i);
+    key_index = (char **)bsearch((char *)&reg_file, sorted_filenames, ninfo, sizeof(char *), CompareBoundFileName);
+    if(key_index == NULL)continue;
+    index = (int)(key_index - sorted_filenames);
+    if(index<0 || index>nsliceinfo - 1)continue;
+    fi = globalboundsinfo + index;
+    if(fi->defined == 1 && is_fds_running == 0)continue;
+    if(file_type == BOUND_SLICE){
+      slicedata *slicei;
+
+      slicei = sliceinfo + i;
+      valmin = slicei->qslicedata[0];
+      valmax = valmin;
+      for(j = 1;j < slicei->ntimes * slicei->nsliceijk;j++){
+        float val;
+
+        val = slicei->qslicedata[j];
+        valmin = MIN(valmin, val);
+        valmax = MAX(valmax, val);
+      }
+    }
+    else if(file_type==BOUND_PATCH){
+      valmin = 0.0;
+      valmax = 1.0;
+    }
+    fi->valmin = valmin;
+    fi->valmax = valmax;
+    fi->defined = 1;
+  }
+}
+
+/* ------------------ BoundsUpdateWrapup ------------------------ */
+
+void BoundsUpdateWrapup(int file_type){
+  int i;
+  FILE *stream;
+  int ninfo;
+  globalboundsdata *globalboundsinfo;
+  char **sorted_filenames;
+
+  ninfo = GetNinfo(file_type);
+  globalboundsinfo = GetGlobalBoundsinfo(file_type);
+  sorted_filenames = GetSortedFilenames(file_type);
+
+  switch(file_type){
+  case BOUND_SLICE:
+    stream = fopen(slice_gbnd_filename, "w");
+    break;
+  case BOUND_PATCH:
+    stream = fopen(patch_gbnd_filename, "w");
+    break;
+  default:
+    assert(FFALSE);
+    return;
+    break;
+  }
+  for(i = 0;i < ninfo;i++){
+    globalboundsdata *fi;
+
+    fi = globalboundsinfo + i;
+    if(fi->defined == 0)continue;
+    fprintf(stream, "%s %f %f\n", fi->file, fi->valmin, fi->valmax);
+  }
+  fclose(stream);
+  for(i = 0;i < ninfo;i++){
+    slicedata *slicei;
+    patchdata *patchi;
+    globalboundsdata *fi;
+    char **key_index, *reg_file;
+    int index;
+
+    reg_file = GetRegFile(file_type, i);
+    key_index = (char **)bsearch((char *)&reg_file, sorted_filenames, ninfo, sizeof(char *), CompareBoundFileName);
+    if(key_index == NULL)continue;
+    index = (int)(key_index - sorted_filenames);
+    if(index<0 || index>nsliceinfo - 1)continue;
+    fi = globalboundsinfo + index;
+    if(fi->defined == 0)continue;
+    if(file_type == BOUND_SLICE){
+      slicei = sliceinfo + i;
+      slicei->valmin_fds = fi->valmin;
+      slicei->valmax_fds = fi->valmax;
+    }
+    else{
+      patchi = patchinfo + i;
+      patchi->valmin_fds = fi->valmin;
+      patchi->valmax_fds = fi->valmax;
+    }
+  }
+}
+
+/* ------------------ BoundsUpdate ------------------------ */
+
+void BoundsUpdate(int file_type){
+  char label1[256], label2[256], label3[256];
+
+  strcpy(label1, "BoundsUpdateSetup ");
+  strcpy(label2, "BoundsUpdateDoit ");
+  strcpy(label3, "BoundsUpdateWrapup ");
+  if(file_type == BOUND_SLICE){
+    strcat(label1, "SLICE");
+    strcat(label2, "SLICE");
+    strcat(label3, "SLICE");
+  }
+  else if(file_type==BOUND_PATCH){
+    strcat(label1, "PATCH");
+    strcat(label2, "PATCH");
+    strcat(label3, "PATCH");
+  }
+  INIT_PRINT_TIMER(bound_setup);
+  BoundsUpdateSetup(file_type);
+  PRINT_TIMER(bound_setup, label1);
+  INIT_PRINT_TIMER(bound_doit);
+  BoundsUpdateDoit(file_type);
+  PRINT_TIMER(bound_doit, label2);
+  INIT_PRINT_TIMER(bound_wrapup);
+  BoundsUpdateWrapup(file_type);
+  PRINT_TIMER(bound_wrapup, label3);
+}
+#endif
 /* ------------------ GetGlobalSliceBounds ------------------------ */
 
 void GetGlobalSliceBounds(int flag, int set_flag){
@@ -593,7 +972,7 @@ void GetGlobalSliceBounds(int flag, int set_flag){
     boundi->dlg_global_valmax = 0.0;
   }
 #ifdef pp_SLICE_BOUNDS
-  SliceBoundsUpdate();
+  BoundsUpdate(BOUND_SLICE);
 #endif
   for(i = 0;i<nsliceinfo;i++){
     slicedata *slicei;
@@ -872,7 +1251,7 @@ void UpdateGlobalFEDSliceBounds(void){
   int i;
 
 #ifdef pp_SLICE_BOUNDS
-  SliceBoundsUpdate();
+  BoundsUpdate(BOUND_SLICE);
 #endif
   for(i = 0; i<nsliceinfo; i++){
     slicedata *slicei;
@@ -1272,214 +1651,3 @@ void GetAllPartBounds(void){
     THREADcontrol(partload_threads, THREAD_UNLOCK);
   }
 }
-
-#ifdef pp_SLICE_BOUNDS
-/* ------------------ BoundsCreateGbnd ------------------------ */
-
-int BoundsCreateGbnd(char *gbnd_filename, int option){
-  int i, nfiles;
-  FILE *stream;
-
-  stream = fopen(gbnd_filename, "w"); // create .sf.gbnd from all the .sf.bnd files
-  switch(option){
-    case BOUND_SLICE:
-      nfiles = nsliceinfo;
-      break;
-    case BOUND_PATCH:
-      nfiles = npatchinfo;
-      break;
-    default:
-      assert(FFALSE);
-      break;
-  }
-  if(stream == NULL)return 0;
-  for(i=0;i<nfiles;i++){
-    float valmin, valmax;
-    char *reg_file, *bound_file;
-    
-    switch(option){
-      case BOUND_SLICE:
-        reg_file   = sliceinfo[i].reg_file;
-        bound_file = sliceinfo[i].bound_file;
-        break;
-      case BOUND_PATCH:
-        reg_file   = patchinfo[i].reg_file;
-        bound_file = patchinfo[i].bound_file;
-        break;
-      default:
-        assert(FFALSE);
-        break;
-    }
-    if(GetFileBounds(gbnd_filename, &valmin, &valmax)==1){
-      fprintf(stream, "%s %f %f\n", reg_file, valmin, valmax);
-    }
-  }
-  fclose(stream);
-  return 1;
-}
-
-/* ------------------ SliceBoundsUpdateSetup ------------------------ */
-
-void SliceBoundsUpdateSetup(void){
-  int i;
-  FILE *stream=NULL;
-
-  if(sorted_slice_filenames == NULL){
-    NewMemory((void **)&sorted_slice_filenames, nsliceinfo * sizeof(char *));
-    for(i = 0;i < nsliceinfo;i++){
-      sorted_slice_filenames[i] = sliceinfo[i].reg_file;
-    }
-    qsort((char *)sorted_slice_filenames, nsliceinfo, sizeof(char *), CompareBoundFileName);
-  }
-  for(i = 0;i < nsliceinfo;i++){
-    slicedata *slicei;
-
-    slicei = sliceinfo + i;
-    slicei->boundstatus = 0;
-  }
-  if(sliceglobalboundsinfo == NULL){
-    NewMemory((void **)&sliceglobalboundsinfo, nsliceinfo * sizeof(globalboundsdata));
-    for(i = 0;i < nsliceinfo;i++){
-      sliceglobalboundsinfo[i].file = sorted_slice_filenames[i];
-      sliceglobalboundsinfo[i].defined = 0;
-    }
-  }
-  if(slice_gbnd_filename == NULL){
-    NewMemory((void **)&slice_gbnd_filename, strlen(fdsprefix) + strlen(".sf.gbnd") + 1);
-    strcpy(slice_gbnd_filename, fdsprefix);
-    strcat(slice_gbnd_filename, ".sf.gbnd");
-  }
-  stream = fopen(slice_gbnd_filename, "r");
-  FILE_SIZE size_temp;
-  size_temp = last_size_for_slicebound;
-  if(stream == NULL||IsFDSRunning(&size_temp)==1){
-    if(stream!=NULL)fclose(stream);
-    INIT_PRINT_TIMER(slice_gbnd_timer);
-    BoundsCreateGbnd(slice_gbnd_filename, BOUND_SLICE);
-    PRINT_TIMER(slice_gbnd_timer, "BoundsCreateGbnd");
-  }
-  stream = fopen(slice_gbnd_filename, "r");
-  if(stream != NULL){
-    for(;;){
-      char buffer[255], file[255], *fileptr, **key_index;
-      float valmin, valmax;
-      globalboundsdata *fi;
-
-      if(fgets(buffer, 255, stream) == NULL)break;
-      sscanf(buffer, "%s %f %f", file, &valmin, &valmax);
-      fileptr = TrimFrontBack(file);
-      key_index = (char **)bsearch((char *)&fileptr, sorted_slice_filenames, nsliceinfo, sizeof(char *), CompareBoundFileName);
-      if(key_index != NULL){
-        int index;
-
-        index = (int)(key_index - sorted_slice_filenames);
-        fi = sliceglobalboundsinfo + index;
-        fi->valmin = valmin;
-        fi->valmax = valmax;
-        fi->defined = 1;
-      }
-    }
-    fclose(stream);
-  }
-}
-
-/* ------------------ SliceBoundsUpdate ------------------------ */
-
-void *SliceBoundsUpdateDoit(void *arg){
-  int i;
-  int is_fds_running;
-
-  is_fds_running = IsFDSRunning(&last_size_for_slicebound);
-  INIT_PRINT_TIMER(slice_bound_timer);
-  for(i = 0;i < nsliceinfo;i++){
-    slicedata *slicei;
-    globalboundsdata *fi;
-    int j, index;
-    float valmin, valmax;
-    char **key_index;
-    
-    slicei = sliceinfo + i;
-    THREADcontrol(getbounds_threads, THREAD_LOCK);
-    if(slicei->boundstatus == 0){
-      slicei->boundstatus = 1;
-    }
-    else{
-      THREADcontrol(getbounds_threads, THREAD_UNLOCK);
-      continue;
-    }
-    THREADcontrol(getbounds_threads, THREAD_UNLOCK);
-    if(slicei->loaded == 0)continue;
-    key_index = (char **)bsearch((char *)&slicei->reg_file, sorted_slice_filenames, nsliceinfo, sizeof(char *), CompareBoundFileName);
-    if(key_index == NULL)continue;
-    index = (int)(key_index - sorted_slice_filenames);
-    if(index<0 || index>nsliceinfo - 1)continue;
-    fi = sliceglobalboundsinfo + index;
-    if(fi->defined == 1&&is_fds_running==0)continue;
-    valmin = slicei->qslicedata[0];
-    valmax = valmin;
-    for(j=1;j<slicei->ntimes*slicei->nsliceijk;j++){
-      float val;
-
-      val = slicei->qslicedata[j];
-      valmin = MIN(valmin, val);
-      valmax = MAX(valmax, val);
-    }
-    fi->valmin  = valmin;
-    fi->valmax  = valmax;
-    fi->defined = 1;
-  }
-  PRINT_TIMER(slice_bound_timer, "update_slice_bounds");
-  THREAD_EXIT(getbounds_threads);
-}
-
-/* ------------------ SliceBoundsUpdateWrapup ------------------------ */
-
-void SliceBoundsUpdateWrapup(void){
-  int i;
-  FILE *stream;
-
-  stream = fopen(slice_gbnd_filename, "w");
-  for(i = 0;i < nsliceinfo;i++){
-    globalboundsdata *fi;
-
-    fi = sliceglobalboundsinfo + i;
-    if(fi->defined == 0)continue;
-    fprintf(stream, "%s %f %f\n", fi->file, fi->valmin, fi->valmax);
-  }
-  fclose(stream);
-  for(i = 0;i < nsliceinfo;i++){
-    slicedata *slicei;
-    globalboundsdata *fi;
-    char **key_index;
-    int index;
-    
-    slicei = sliceinfo + i;
-    key_index = (char **)bsearch((char *)&slicei->reg_file, sorted_slice_filenames, nsliceinfo, sizeof(char *), CompareBoundFileName);
-    if(key_index == NULL)continue;
-    index = (int)(key_index - sorted_slice_filenames);
-    if(index<0 || index>nsliceinfo - 1)continue;
-    fi = sliceglobalboundsinfo + index;
-    if(fi->defined == 0)continue;
-    slicei->valmin_fds = fi->valmin;
-    slicei->valmax_fds = fi->valmax;
-  }
-}
-
-/* ------------------ SliceBoundsUpdate ------------------------ */
-
-void SliceBoundsUpdate(void){
-  INIT_PRINT_TIMER(bound_setup);
-  SliceBoundsUpdateSetup();
-  PRINT_TIMER(bound_setup, "SliceBoundsUpdateSetup");
-  if(getbounds_threads == NULL){
-    getbounds_threads = THREADinit(&n_getbounds_threads, &use_getbounds_threads, SliceBoundsUpdateDoit);
-  }
-  INIT_PRINT_TIMER(bound_doit);
-  THREADrun(getbounds_threads, NULL);
-  THREADcontrol(getbounds_threads, THREAD_JOIN);
-  PRINT_TIMER(bound_doit, "SliceBoundsUpdateDoit");
-  INIT_PRINT_TIMER(bound_wrapup);
-  SliceBoundsUpdateWrapup();
-  PRINT_TIMER(bound_wrapup, "SliceBoundsUpdateWrapup");
-}
-#endif

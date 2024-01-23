@@ -24,12 +24,6 @@
 
 //*** threader variables
 
-#ifdef pp_SLICE_BOUNDS
-//***getbounds
-SVEXTERN int SVDECL(n_getbounds_threads, 1), SVDECL(use_getbounds_threads, 1);
-SVEXTERN threaderdata SVDECL(*getbounds_threads, NULL);
-#endif
-
 //***isosurface
 SVEXTERN int SVDECL(n_isosurface_threads, 1), SVDECL(use_isosurface_threads, 1);
 SVEXTERN threaderdata SVDECL(*isosurface_threads, NULL);
@@ -132,9 +126,12 @@ SVEXTERN char SVDECL(*stepcsv_filename, NULL);
 
 #ifdef pp_SLICE_BOUNDS
 SVEXTERN char SVDECL(*slice_gbnd_filename, NULL), SVDECL(**sorted_slice_filenames, NULL);
+SVEXTERN char SVDECL(*patch_gbnd_filename, NULL), SVDECL(**sorted_patch_filenames, NULL);
 SVEXTERN globalboundsdata SVDECL(*sliceglobalboundsinfo, NULL);
+SVEXTERN globalboundsdata SVDECL(*patchglobalboundsinfo, NULL);
 SVEXTERN int SVDECL(nsliceglobalboundsinfo, 0);
-SVEXTERN FILE_SIZE SVDECL(last_size_for_slicebound, 0);
+SVEXTERN int SVDECL(npatchglobalboundsinfo, 0);
+SVEXTERN FILE_SIZE SVDECL(last_size_for_bound, 0);
 #endif
 
 SVEXTERN int SVDECL(histogram_nframes, 40);
