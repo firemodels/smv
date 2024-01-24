@@ -663,6 +663,21 @@ char *GetGbndFilename(int file_type){
   return filename;
 }
 
+/* ------------------ GetShortLabel ------------------------ */
+
+char *GetShortLabel(int file_type, int i){
+  char *shortlabel = NULL;;
+
+  assert(file_type == BOUND_SLICE || file_type == BOUND_PATCH);
+  if(file_type == BOUND_SLICE){
+    shortlabel = sliceinfo[i].label.shortlabel;
+  }
+  else if(file_type == BOUND_PATCH){
+    shortlabel = patchinfo[i].label.shortlabel;
+  }
+  return shortlabel;
+}
+
 /* ------------------ GetRegFile ------------------------ */
 
 char *GetRegFile(int file_type, int i){
@@ -742,21 +757,27 @@ char *GetBoundFile(int file_type, int i){
 int BoundsCreateGbnd(int file_type){
   int i, ninfo;
   FILE *stream;
-  char *gbnd_filename;
 
   ninfo = GetNinfo(file_type);
-  gbnd_filename = GetGbndFilename(file_type);
-
-  stream = fopen(gbnd_filename, "w"); // create .sf.gbnd from all the .sf.bnd files
+  stream = FopenGbndFile(file_type, "w");
   if(stream == NULL)return 0;
   for(i = 0;i < ninfo;i++){
     float valmin, valmax;
     char *reg_file, *bound_file;
 
-    reg_file = GetRegFile(file_type, i);
+
+    reg_file   = GetRegFile(file_type, i);
     bound_file = GetBoundFile(file_type, i);
     if(GetFileBounds(bound_file, &valmin, &valmax) == 1){
-      fprintf(stream, "%s %f %f\n", reg_file, valmin, valmax);
+      char *shortlabel, label[32];
+
+      shortlabel = GetShortLabel(file_type, i);
+      strcpy(label, "");
+      if(shortlabel != NULL){
+        strcat(label, "! ");
+        strcat(label, shortlabel);
+      }
+      fprintf(stream, "%s %f %f %s\n", reg_file, valmin, valmax, label);
     }
   }
   fclose(stream);
@@ -839,15 +860,25 @@ void BoundsUpdateDoit(int file_type){
   globalboundsinfo = GetGlobalBoundsinfo(file_type);
   sorted_filenames = GetSortedFilenames(file_type);
 
+  assert(file_type == BOUND_SLICE || file_type == BOUND_PATCH);
+  if(file_type != BOUND_SLICE && file_type != BOUND_PATCH)return;
   is_fds_running = IsFDSRunning(&last_size_for_bound);
   for(i = 0;i < ninfo;i++){
     globalboundsdata *fi;
-    int j, index;
+    int index;
     float valmin, valmax;
     char **key_index, *reg_file;
+    patchdata *patchi;
+    slicedata *slicei;
 
-    if(file_type == BOUND_SLICE && sliceinfo[i].loaded == 0)continue;
-    if(file_type == BOUND_PATCH && patchinfo[i].loaded == 0)continue;
+    if(file_type == BOUND_SLICE){
+      slicei = sliceinfo + i;
+      if(slicei->loaded == 0)continue;
+    }
+    if(file_type == BOUND_PATCH){
+      patchi = patchinfo + i;
+      if(patchi->loaded == 0)continue;
+    }
     reg_file = GetRegFile(file_type, i);
     key_index = (char **)bsearch((char *)&reg_file, sorted_filenames, ninfo, sizeof(char *), CompareBoundFileName);
     if(key_index == NULL)continue;
@@ -858,22 +889,46 @@ void BoundsUpdateDoit(int file_type){
     valmin = 0.0;
     valmax = 1.0;
     if(file_type == BOUND_SLICE){
-      slicedata *slicei;
+      float *vals;
+      int j;
 
-      slicei = sliceinfo + i;
-      valmin = slicei->qslicedata[0];
+      vals = slicei->qslicedata;
+      valmin = vals[0];
       valmax = valmin;
       for(j = 1;j < slicei->ntimes * slicei->nsliceijk;j++){
-        float val;
-
-        val = slicei->qslicedata[j];
-        valmin = MIN(valmin, val);
-        valmax = MAX(valmax, val);
+        valmin = MIN(valmin, vals[j]);
+        valmax = MAX(valmax, vals[j]);
       }
     }
     else if(file_type==BOUND_PATCH){
-      valmin = 0.0;
-      valmax = 1.0;
+      if(patchi->structured == 1){
+        if(patchi->blocknumber >= 0){
+          meshdata *meshi;
+          float *vals;
+          int j;
+
+          meshi = meshinfo + patchi->blocknumber;
+          vals = meshi->patchval;
+          valmin = vals[0];
+          valmax = valmin;
+          for(j = 1;j < meshi->npatch_times * meshi->npatchsize;j++){
+            valmin = MIN(vals[j], valmin);
+            valmax = MAX(vals[j], valmax);
+          }
+        }
+      }
+      else{
+        float *vals;
+        int j;
+
+        vals = patchi->geom_vals;
+        valmin = vals[0];
+        valmax = valmin;
+        for(j = 1;j < patchi->ngeom_times;j++){
+          valmin = MIN(vals[j], valmin);
+          valmax = MAX(vals[j], valmax);
+        }
+      }
     }
     fi->valmin = valmin;
     fi->valmax = valmax;
@@ -898,7 +953,17 @@ void BoundsUpdateWrapup(int file_type){
     globalboundsdata *fi;
 
     fi = globalboundsinfo + i;
-    if(fi->defined == 1)fprintf(stream, "%s %f %f\n", fi->file, fi->valmin, fi->valmax);
+    if(fi->defined == 1){
+      char *shortlabel, label[32];
+
+      shortlabel = GetShortLabel(file_type, i);
+      strcpy(label, "");
+      if(shortlabel != NULL){
+        strcat(label, "! ");
+        strcat(label, shortlabel);
+      }
+      fprintf(stream, "%s %f %f %s\n", fi->file, fi->valmin, fi->valmax, label);
+    }
   }
   fclose(stream);
   for(i = 0;i < ninfo;i++){
