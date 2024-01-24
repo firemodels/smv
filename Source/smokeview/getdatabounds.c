@@ -855,6 +855,8 @@ void BoundsUpdateDoit(int file_type){
     if(index<0 || index>nsliceinfo - 1)continue;
     fi = globalboundsinfo + index;
     if(fi->defined == 1 && is_fds_running == 0)continue;
+    valmin = 0.0;
+    valmax = 1.0;
     if(file_type == BOUND_SLICE){
       slicedata *slicei;
 
