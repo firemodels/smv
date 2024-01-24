@@ -12224,6 +12224,37 @@ void SetSliceBounds(int set_valmin, float valmin, int set_valmax, float valmax, 
 }
 
 #ifdef pp_BOUNDS
+/* ------------------ SetPatchMin ------------------------ */
+
+void SetPatchMin(int set_valmin, float valmin, char *buffer2){
+  int i;
+
+  for(i = 0; i < npatchbounds; i++){
+    if(strcmp(buffer2, "") == 0 || strcmp(patchbounds[i].shortlabel, buffer2) == 0){
+      patchbounds[i].dlg_setvalmin = set_valmin;
+      patchbounds[i].dlg_valmin = valmin;
+      GLUISetMin(BOUND_PATCH, patchbounds[i].shortlabel, set_valmin, valmin);
+      update_glui_bounds = 1;
+      if(strcmp(patchbounds[i].shortlabel, buffer2) == 0)break;
+    }
+  }
+}
+
+/* ------------------ SetPatchMax ------------------------ */
+
+void SetPatchMax(int set_valmax, float valmax, char *buffer2){
+  int i;
+
+  for(i = 0; i < npatchbounds; i++){
+    if(strcmp(buffer2, "") == 0 || strcmp(patchbounds[i].shortlabel, buffer2) == 0){
+      patchbounds[i].dlg_setvalmax = set_valmax;
+      patchbounds[i].dlg_valmax = valmax;
+      GLUISetMax(BOUND_PATCH, patchbounds[i].shortlabel, set_valmax, valmax);
+      update_glui_bounds = 1;
+      if(strcmp(patchbounds[i].shortlabel, buffer2) == 0)break;
+    }
+  }
+}
 /* ------------------ SetSliceMin ------------------------ */
 
 void SetSliceMin(int set_valmin, float valmin, char *buffer2){

@@ -2370,6 +2370,11 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
     if(runscript == 0){
       THREADcontrol(patchbound_threads, THREAD_JOIN);
     }
+#ifdef pp_BOUNDS
+    int set_valmin_save, set_valmax_save;
+    float qmin_save, qmax_save;
+    GLUIGetMinMax(BOUND_PATCH, patchi->label.shortlabel, &set_valmin_save, &qmin_save, &set_valmax_save, &qmax_save);
+#endif
     if(force_bound_update==1||patch_bounds_defined==0 || IsFDSRunning(&last_size_for_boundary) == 1){
       GetGlobalPatchBounds(1,DONOT_SET_MINMAX_FLAG);
       SetLoadedPatchBounds(NULL, 0);
@@ -2384,6 +2389,17 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
         GLUIPatchBoundsCPP_CB(BOUND_UPDATE_COLORS);
       }
     }
+#ifdef pp_BOUNDS
+    if(set_valmin_save == 0){
+      SetPatchMin(set_valmin_save, qmin_save, patchi->label.shortlabel);
+    }
+    if(set_valmax_save == 0){
+      SetPatchMax(set_valmax_save, qmax_save, patchi->label.shortlabel);
+    }
+    if(set_valmin_save == 0 || set_valmax_save == 0){
+      UpdateAllBoundaryColors(0);
+    }
+#endif
 #define BOUND_PERCENTILE_DRAW          120
     GLUIPatchBoundsCPP_CB(BOUND_PERCENTILE_DRAW);
   }
