@@ -3898,7 +3898,7 @@ void DrawVerticalColorbarRegLabels(void){
       for(i = 0; i < nrgb - 2; i++){
         float val;
 
-        val = tttmin + (i - 1)*plot3drange / (nrgb - 2);
+        val = tttmin + (float)(i +0.5)*plot3drange / (nrgb - 2);
         colorbar_vals[i] = val;
       }
       Floats2Strings(colorbar_labels, colorbar_vals, nrgb-2, ncolorlabel_digits, force_fixedpoint, force_exponential, exp_factor_label);
