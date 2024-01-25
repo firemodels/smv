@@ -125,12 +125,18 @@ SVEXTERN FILE_SIZE SVDECL(last_size_for_boundary, 0);
 SVEXTERN char SVDECL(*stepcsv_filename, NULL);
 
 #ifdef pp_BOUNDS
-SVEXTERN char SVDECL(*slice_gbnd_filename, NULL), SVDECL(**sorted_slice_filenames, NULL);
-SVEXTERN char SVDECL(*patch_gbnd_filename, NULL), SVDECL(**sorted_patch_filenames, NULL);
-SVEXTERN globalboundsdata SVDECL(*sliceglobalboundsinfo, NULL);
-SVEXTERN globalboundsdata SVDECL(*patchglobalboundsinfo, NULL);
-SVEXTERN int SVDECL(nsliceglobalboundsinfo, 0);
-SVEXTERN int SVDECL(npatchglobalboundsinfo, 0);
+SVEXTERN char SVDECL(*plot3d_gbnd_filename, NULL), SVDECL(**sorted_plot3d_filenames, NULL);
+SVEXTERN char SVDECL(*slice_gbnd_filename,  NULL), SVDECL(**sorted_slice_filenames,  NULL);
+SVEXTERN char SVDECL(*patch_gbnd_filename,  NULL), SVDECL(**sorted_patch_filenames,  NULL);
+
+SVEXTERN globalboundsdata SVDECL(*plot3dglobalboundsinfo, NULL);
+SVEXTERN globalboundsdata SVDECL(*sliceglobalboundsinfo,  NULL);
+SVEXTERN globalboundsdata SVDECL(*patchglobalboundsinfo,  NULL);
+
+SVEXTERN int SVDECL(nplot3dglobalboundsinfo,   0);
+SVEXTERN int SVDECL(nsliceglobalboundsinfo,    0);
+SVEXTERN int SVDECL(npatchglobalboundsinfo,    0);
+
 SVEXTERN FILE_SIZE SVDECL(last_size_for_bound, 0);
 #endif
 

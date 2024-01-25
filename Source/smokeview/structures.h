@@ -1547,7 +1547,8 @@ typedef struct _boundsdata {
 typedef struct _globalboundsdata {
   char *file;
   int defined;
-  float valmin, valmax;
+  int nbounds;
+  float valmins[6], valmaxs[6];
 } globalboundsdata;
 #endif
 

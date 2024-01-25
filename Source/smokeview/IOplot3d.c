@@ -433,8 +433,16 @@ void ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
     if(p->finalize==1){
       if(update_plot3d_bnd==1){
         update_plot3d_bnd = 0;
+#ifdef pp_BOUNDS
+       // int set_valmin_save[6], set_valmax_save[6], nall_save;
+       // float valmin_save[6], valmax_save[6];
+       // GLUIGetMinMaxAll(BOUND_PLOT3D, set_valmin_save, valmin_save, set_valmax_save, valmax_save, &nall_save);
+#endif
         GetGlobalPlot3DBounds();
         SetLoadedPlot3DBounds();
+#ifdef pp_BOUNDS
+      //  GLUISetMinMaxAll(BOUND_PLOT3D, set_valmin_save, valmin_save, set_valmax_save, valmax_save, nall_save);
+#endif
       }
       UpdateAllPlot3DColors(0);
     }
