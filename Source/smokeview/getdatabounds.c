@@ -1160,6 +1160,8 @@ void BoundsUpdateWrapup(int file_type){
       plot3ddata *plot3di;
 
       plot3di = plot3dinfo + i;
+      memcpy(plot3di->valmin_fds, fi->valmins, 6 * sizeof(float));
+      memcpy(plot3di->valmax_fds, fi->valmaxs, 6 * sizeof(float));
     }
   }
 }
