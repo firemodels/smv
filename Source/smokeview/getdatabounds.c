@@ -934,10 +934,16 @@ void BoundsUpdateSetup(int file_type){
   FILE_SIZE size_temp;
   size_temp = last_size_for_bound;
   if(stream == NULL || IsFDSRunning(&size_temp) == 1){
-    if(stream != NULL)fclose(stream);
+    if(stream != NULL){
+      fclose(stream);
+      stream = NULL;
+    }
     BoundsCreateGbnd(file_type);
   }
-  if(stream != NULL)fclose(stream);
+  if(stream != NULL){
+    fclose(stream);
+    stream = NULL;
+  }
   stream = FopenGbndFile(file_type, "r");
   if(stream != NULL){
     for(;;){
