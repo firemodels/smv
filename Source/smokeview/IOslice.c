@@ -8152,7 +8152,7 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
       }
       yhalf = (yy1+yy2) / 2.0;
     for(kk = 0; kk < sd->n_kmap; kk++){
-      k = sd->jmap[kk];
+      k = sd->kmap[kk];
         float zhalf, z1;
 
         int in_solid, in_gas;
