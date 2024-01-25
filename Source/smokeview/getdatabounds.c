@@ -452,7 +452,6 @@ void GetGlobalPlot3DBounds(void){
     plot3di = plot3dinfo+i;
 #ifdef pp_BOUNDS
     int set_valmin_save[6] = {1, 1, 1, 1, 1, 1}, set_valmax_save[6] = {1, 1, 1, 1, 1, 1};
-    int nall_save;
 
     BoundsGet(plot3di->reg_file, plot3dglobalboundsinfo, sorted_plot3d_filenames, nplot3dinfo, 6, plot3di->valmin_fds, plot3di->valmax_fds);
     GLUISetMinMaxAll(BOUND_PLOT3D, set_valmin_save, plot3di->valmin_fds, set_valmax_save, plot3di->valmax_fds, 6);
