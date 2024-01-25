@@ -1718,10 +1718,10 @@ void ReadSMVDynamic(char *file){
           continue;
         }
         if(plot3di->u>-1||plot3di->v>-1||plot3di->w>-1){
-          plot3di->nvars = MAXPLOT3DVARS;
+          plot3di->nplot3dvars = MAXPLOT3DVARS;
         }
         else{
-          plot3di->nvars = 5;
+          plot3di->nplot3dvars = 5;
         }
         if(NewMemory((void **)&plot3di->label[5].longlabel, 6)==0)return;
         if(NewMemory((void **)&plot3di->label[5].shortlabel, 6)==0)return;

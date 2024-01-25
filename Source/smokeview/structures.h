@@ -1719,7 +1719,7 @@ typedef struct _plot3ddata {
   int finalize;
   int memory_id;
   float time;
-  int u, v, w, nvars;
+  int u, v, w, nplot3dvars;
   float diff_valmin[MAXPLOT3DVARS], diff_valmax[MAXPLOT3DVARS];
   int extreme_min[MAXPLOT3DVARS], extreme_max[MAXPLOT3DVARS];
   int blocknumber,loaded,display,loadnow;

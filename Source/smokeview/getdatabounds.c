@@ -218,8 +218,8 @@ int GetFileBounds(char *file, int nbounds, float *valmin, float *valmax){
   FILE *stream;
   char buffer[255];
   int i;
-  float vmins[6] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
-  float vmaxs[6] = {1.0, 1.0, 1.0, 1.0, 1.0, 1.0};
+  float vmins[MAXPLOT3DVARS] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+  float vmaxs[MAXPLOT3DVARS] = {1.0, 1.0, 1.0, 1.0, 1.0, 1.0};
 
   stream = fopen(file, "r");
   if(stream==NULL){
@@ -232,13 +232,13 @@ int GetFileBounds(char *file, int nbounds, float *valmin, float *valmax){
   if(nbounds==1){
     float t;
 
-    for(i = 0;i < MIN(nbounds, 6);i++){
+    for(i = 0;i < nbounds;i++){
       if(fgets(buffer, 255, stream) == NULL)break;
       sscanf(buffer, " %f %f %f", &t, vmins+i, vmaxs+i);
     }
   }
   else{
-    for(i = 0;i < MIN(nbounds, 6);i++){
+    for(i = 0;i < nbounds;i++){
       if(fgets(buffer, 255, stream) == NULL)break;
       sscanf(buffer, " %f %f", vmins+i, vmaxs+i);
     }
@@ -451,10 +451,11 @@ void GetGlobalPlot3DBounds(void){
 
     plot3di = plot3dinfo+i;
 #ifdef pp_BOUNDS
-    int set_valmin_save[6] = {1, 1, 1, 1, 1, 1}, set_valmax_save[6] = {1, 1, 1, 1, 1, 1};
+    int set_valmin_save[MAXPLOT3DVARS] = {1, 1, 1, 1, 1, 1};
+    int set_valmax_save[MAXPLOT3DVARS] = {1, 1, 1, 1, 1, 1};
 
-    BoundsGet(plot3di->reg_file, plot3dglobalboundsinfo, sorted_plot3d_filenames, nplot3dinfo, 6, plot3di->valmin_fds, plot3di->valmax_fds);
-    GLUISetMinMaxAll(BOUND_PLOT3D, set_valmin_save, plot3di->valmin_fds, set_valmax_save, plot3di->valmax_fds, 6);
+    BoundsGet(plot3di->reg_file, plot3dglobalboundsinfo, sorted_plot3d_filenames, nplot3dinfo, plot3di->nplot3dvars, plot3di->valmin_fds, plot3di->valmax_fds);
+    GLUISetMinMaxAll(BOUND_PLOT3D, set_valmin_save, plot3di->valmin_fds, set_valmax_save, plot3di->valmax_fds, plot3di->nplot3dvars);
 #else
     plot3di->have_bound_file = GetPlot3DFileBounds(plot3di->bound_file, plot3di->valmin_fds, plot3di->valmax_fds);
 #endif
@@ -492,7 +493,7 @@ void GetGlobalPlot3DBounds(void){
 
   nplot3dbounds_cpp = 0;
   if(nplot3dinfo>0&&plot3dbounds_cpp==NULL){ // only initialize once
-    nplot3dbounds_cpp = plot3dinfo[0].nvars;
+    nplot3dbounds_cpp = plot3dinfo[0].nplot3dvars;
     NewMemory((void **)&plot3dbounds_cpp, nplot3dbounds_cpp*sizeof(cpp_boundsdata));
     for(i = 0; i<nplot3dbounds_cpp; i++){
       cpp_boundsdata *boundscppi;
@@ -541,13 +542,13 @@ void GetLoadedPlot3dBounds(int *compute_loaded, float *loaded_min, float *loaded
   }
   if(plot3d_loaded==0){
     printf("***loaded plot3d bounds not available, using global bounds\n");
-    for(i = 0; i<6; i++) {
+    for(i = 0; i< MAXPLOT3DVARS; i++) {
       loaded_min[i] = p3min_global[i];
       loaded_max[i] = p3max_global[i];
     }
     return;
   }
-  for(i = 0; i<6; i++) {
+  for(i = 0; i< MAXPLOT3DVARS; i++) {
     if(compute_loaded!=NULL&&compute_loaded[i]!=BOUNDS_LOADED)continue;
     loaded_min[i] = 1.0;
     loaded_max[i] = 0.0;
@@ -558,7 +559,7 @@ void GetLoadedPlot3dBounds(int *compute_loaded, float *loaded_min, float *loaded
 
     plot3di = plot3dinfo+i;
     if(plot3di->loaded==0)continue;
-    for(j = 0; j<6; j++){
+    for(j = 0; j< MAXPLOT3DVARS; j++){
       if(compute_loaded!=NULL&&compute_loaded[j]!=BOUNDS_LOADED)continue;
       if(loaded_min[j]>loaded_max[j]){
         loaded_min[j] = plot3di->valmin_fds[j];
@@ -724,7 +725,12 @@ int GetNBounds(int file_type){
     nbounds = 1;
   }
   else if(file_type == BOUND_PLOT3D){
-    nbounds = 6;
+    if(plot3dinfo != NULL){
+      nbounds = plot3dinfo->nplot3dvars;
+    }
+    else{
+      nbounds = 5;
+    }
   }
   return nbounds;
 }
@@ -870,7 +876,7 @@ int BoundsCreateGbnd(int file_type){
   stream = FopenGbndFile(file_type, "w");
   if(stream == NULL)return 0;
   for(i = 0;i < ninfo;i++){
-    float valmins[6], valmaxs[6];
+    float valmins[MAXPLOT3DVARS], valmaxs[MAXPLOT3DVARS];
     char *reg_file, *bound_file;
     int nbounds;
 
@@ -936,7 +942,7 @@ void BoundsUpdateSetup(int file_type){
   if(stream != NULL){
     for(;;){
       char buffer[255], file[255], *fileptr, **key_index;
-      float valmins[6], valmaxs[6];
+      float valmins[MAXPLOT3DVARS], valmaxs[MAXPLOT3DVARS];
       globalboundsdata *fi;
 
       if(fgets(buffer, 255, stream) == NULL)break;
@@ -961,7 +967,10 @@ void BoundsUpdateSetup(int file_type){
         index = (int)(key_index - sorted_filenames);
         fi = globalboundsinfo + index;
         fi->nbounds = 1;
-        if(file_type == BOUND_PLOT3D)fi->nbounds = 6;
+        if(file_type == BOUND_PLOT3D){
+          fi->nbounds = 5;
+          if(plot3dinfo != NULL)fi->nbounds = plot3dinfo->nplot3dvars;
+        }
         memcpy(fi->valmins, valmins, fi->nbounds * sizeof(float));
         memcpy(fi->valmaxs, valmaxs, fi->nbounds * sizeof(float));
         fi->defined = 1;
@@ -1069,7 +1078,7 @@ void BoundsUpdateDoit(int file_type){
       meshdata *meshi;
       int nx, ny, nz, nxy, nxyz;
       int ii, jj, kk, nn;
-      float valmins[6], valmaxs[6];
+      float valmins[MAXPLOT3DVARS], valmaxs[MAXPLOT3DVARS];
 
       meshi = meshinfo + plot3di->blocknumber;
       nx = meshi->ibar+1;
@@ -1077,7 +1086,7 @@ void BoundsUpdateDoit(int file_type){
       nz = meshi->kbar+1;
       nxy = nx*ny;
       nxyz = nx*ny*nz;
-      for(nn=0;nn<6;nn++){//make sure 6 is right
+      for(nn=0;nn<plot3di->nplot3dvars;nn++){
         valmins[nn] = meshi->qdata[IJKN(0,0,0,nn)];
         valmaxs[nn] = valmins[nn];
         for(ii=0;ii<nx;ii++){
@@ -1095,7 +1104,8 @@ void BoundsUpdateDoit(int file_type){
         fi->valmins[nn] = valmins[nn];
         fi->valmaxs[nn] = valmaxs[nn];
       }
-      fi->nbounds = 6;
+      fi->nbounds = 5;
+      if(plot3dinfo!=NULL)fi->nbounds = plot3di->nplot3dvars;
     }
   }
 }
@@ -1160,8 +1170,8 @@ void BoundsUpdateWrapup(int file_type){
       plot3ddata *plot3di;
 
       plot3di = plot3dinfo + i;
-      memcpy(plot3di->valmin_fds, fi->valmins, 6 * sizeof(float));
-      memcpy(plot3di->valmax_fds, fi->valmaxs, 6 * sizeof(float));
+      memcpy(plot3di->valmin_fds, fi->valmins, plot3di->nplot3dvars * sizeof(float));
+      memcpy(plot3di->valmax_fds, fi->valmaxs, plot3di->nplot3dvars * sizeof(float));
     }
   }
 }

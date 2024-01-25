@@ -17,7 +17,7 @@
 void GetPlot3DHists(plot3ddata *p){
   int i;
 
-  for(i = 0; i<p->nvars; i++){
+  for(i = 0; i<p->nplot3dvars; i++){
     histogramdata *histi;
     float *vals;
     int nvals;
@@ -60,7 +60,7 @@ void MergePlot3DHistograms(void){
 
     plot3di = plot3dinfo+i;
     if(plot3di->loaded==0)continue;
-    for(k = 0; k<plot3di->nvars; k++){
+    for(k = 0; k<plot3di->nplot3dvars; k++){
       MergeHistogram(full_plot3D_histograms+k, plot3di->histograms[k], MERGE_BOUNDS);
     }
   }
@@ -169,7 +169,7 @@ int GetPlot3DBounds(plot3ddata *plot3di){
   ntotal = (meshi->ibar+1)*(meshi->jbar+1)*(meshi->kbar+1);
   iblank = meshi->c_iblank_node;
 
-  for(i = 0; i<plot3di->nvars; i++){
+  for(i = 0; i<plot3di->nplot3dvars; i++){
     int n;
 
     valmin = 1000000000.;
@@ -297,7 +297,7 @@ void ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
   uindex = plot3dinfo[ifile].u;
   vindex = plot3dinfo[ifile].v;
   windex = plot3dinfo[ifile].w;
-  if(uindex!=-1||vindex!=-1||windex!=-1)numplot3dvars=plot3dinfo[ifile].nvars;
+  if(uindex!=-1||vindex!=-1||windex!=-1)numplot3dvars=plot3dinfo[ifile].nplot3dvars;
 
   if(NewMemoryMemID((void **)&meshi->qdata,numplot3dvars*ntotal*sizeof(float), p->memory_id)==0){
     *errorcode=1;
@@ -366,7 +366,7 @@ void ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
   meshi->wdata=NULL;
   if(uindex!=-1||vindex!=-1||windex!=-1){
     vectorspresent=1;
-    p->nvars= MAXPLOT3DVARS;
+    p->nplot3dvars= MAXPLOT3DVARS;
     if(uindex!=-1)udata = meshi->qdata + ntotal*uindex;
     if(vindex!=-1)vdata = meshi->qdata + ntotal*vindex;
     if(windex!=-1)wdata = meshi->qdata + ntotal*windex;
