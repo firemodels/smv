@@ -10,7 +10,7 @@
 
 #ifdef pp_BOUNDS
 void BoundsUpdate(int file_type);
-void BoundsGet(char *file, globalboundsdata *globalboundsinfo, char **sorted_filenames, int n_sorted_filenames, int nbounds, float *valmin, float *valmax);
+int BoundsGet(char *file, globalboundsdata *globalboundsinfo, char **sorted_filenames, int n_sorted_filenames, int nbounds, float *valmin, float *valmax);
 #endif
 
 /* ------------------ GetPartFileBounds ------------------------ */
@@ -454,8 +454,7 @@ void GetGlobalPlot3DBounds(void){
     int set_valmin_save[MAXPLOT3DVARS] = {1, 1, 1, 1, 1, 1};
     int set_valmax_save[MAXPLOT3DVARS] = {1, 1, 1, 1, 1, 1};
 
-    BoundsGet(plot3di->reg_file, plot3dglobalboundsinfo, sorted_plot3d_filenames, nplot3dinfo, plot3di->nplot3dvars, plot3di->valmin_fds, plot3di->valmax_fds);
-    GLUISetMinMaxAll(BOUND_PLOT3D, set_valmin_save, plot3di->valmin_fds, set_valmax_save, plot3di->valmax_fds, plot3di->nplot3dvars);
+    plot3di->have_bound_file = BoundsGet(plot3di->reg_file, plot3dglobalboundsinfo, sorted_plot3d_filenames, nplot3dinfo, plot3di->nplot3dvars, plot3di->valmin_fds, plot3di->valmax_fds);
 #else
     plot3di->have_bound_file = GetPlot3DFileBounds(plot3di->bound_file, plot3di->valmin_fds, plot3di->valmax_fds);
 #endif
@@ -523,6 +522,9 @@ void GetGlobalPlot3DBounds(void){
       boundscppi->chopmax = p3max_global[0];
     }
   }
+#ifdef pp_BOUNDS
+  GLUISetGlobalMinMaxAll(BOUND_PLOT3D, p3min_global, p3max_global, plot3dinfo->nplot3dvars);
+#endif
 }
 
 /* ------------------ GetLoadedPlot3dBounds ------------------------ */
@@ -588,7 +590,7 @@ int CompareBoundFileName(const void *arg1, const void *arg2){
 
 /* ------------------ BoundsGet ------------------------ */
 
-void BoundsGet(char *file, globalboundsdata *globalboundsinfo, char **sorted_filenames, int n_sorted_filenames, int nbounds, float *valmins, float *valmaxs){
+int BoundsGet(char *file, globalboundsdata *globalboundsinfo, char **sorted_filenames, int n_sorted_filenames, int nbounds, float *valmins, float *valmaxs){
   char **key_index;
   int defined = 0;
 
@@ -613,6 +615,7 @@ void BoundsGet(char *file, globalboundsdata *globalboundsinfo, char **sorted_fil
       valmaxs[i] = 1.0;
     }
   }
+  return defined;
 }
 
 #ifdef _DEBUG

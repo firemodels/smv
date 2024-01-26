@@ -191,6 +191,33 @@ int GetPlot3DBounds(plot3ddata *plot3di){
   return 1;
 }
 
+/* ------------------ ComputeLoadedPlot3DBounds  ------------------------ */
+
+void ComputeLoadedPlot3DBounds(float *valmin_loaded, float *valmax_loaded){
+  int i, first;
+
+  for(first = 1, i = 0; i < nplot3dinfo; i++){
+    plot3ddata *plot3di;
+
+    plot3di = plot3dinfo + i;
+    if(plot3di->loaded == 0)continue;
+    if(first == 1){
+      first = 0;
+      memcpy(valmin_loaded, plot3di->valmin_fds, plot3di->nplot3dvars * sizeof(float));
+      memcpy(valmax_loaded, plot3di->valmax_fds, plot3di->nplot3dvars * sizeof(float));
+    }
+    else{
+      int j;
+
+      for(j = 0; j < plot3di->nplot3dvars; j++){
+        valmin_loaded[j] = MIN(valmin_loaded[j], plot3di->valmin_fds[j]);
+        valmax_loaded[j] = MAX(valmax_loaded[j], plot3di->valmax_fds[j]);
+      }
+    }
+  }
+}
+
+
 /* ------------------ UpdatePlot3DFileLoad  ------------------------ */
 
 void UpdatePlot3DFileLoad(void){
@@ -339,6 +366,7 @@ void ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
   }
   getplot3dq(file, nx, ny, nz, meshi->qdata, qminptr, qmaxptr, &error, isotest);
 #ifdef pp_BOUNDS
+  update_plot3d_bnd = 1;
 #else
   if(p->have_bound_file == 0){
     FILE *bound_stream;
@@ -437,14 +465,13 @@ void ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
       if(update_plot3d_bnd==1){
         update_plot3d_bnd = 0;
 #ifdef pp_BOUNDS
-       // int set_valmin_save[6], set_valmax_save[6], nall_save;
-       // float valmin_save[6], valmax_save[6];
-       // GLUIGetMinMaxAll(BOUND_PLOT3D, set_valmin_save, valmin_save, set_valmax_save, valmax_save, &nall_save);
-#endif
+        float valmin_loaded[6], valmax_loaded[6];
+
+        ComputeLoadedPlot3DBounds(valmin_loaded, valmax_loaded);
+        GLUISetLoadedMinMaxAll(BOUND_PLOT3D, valmin_loaded, valmax_loaded, plot3dinfo->nplot3dvars);
+#else
         GetGlobalPlot3DBounds();
         SetLoadedPlot3DBounds();
-#ifdef pp_BOUNDS
-      //  GLUISetMinMaxAll(BOUND_PLOT3D, set_valmin_save, valmin_save, set_valmax_save, valmax_save, nall_save);
 #endif
       }
       UpdateAllPlot3DColors(0);
