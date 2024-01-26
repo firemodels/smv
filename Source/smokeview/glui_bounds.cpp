@@ -123,6 +123,12 @@ class bounds_dialog{
   int  set_chopmax(char *label, int set_valmax, float valmax);
   int  set_min(char *label, int set_valmin, float valmin);
   void set_min_all(int *set_valmin, float *valmin, int nvals);
+#ifdef pp_BOUNDS
+  void get_global_minmax_all(float *valmin, float *valmax, int nvals);
+  void get_loaded_minmax_all(float *valmin, float *valmax, int nvals);
+  void set_global_minmax_all(float *valmin, float *valmax, int nvals);
+  void set_loaded_minmax_all(float *valmin, float *valmax, int nvals);
+#endif
   int  set_max(char *label, int set_valmax, float valmax);
   void set_max_all(int *set_valmax, float *valmax, int nvals);
   void set_plot_minmax(float p_min, float p_max);
@@ -604,6 +610,76 @@ void bounds_dialog::set_min_all(int *set_valmin, float *valmin, int nvals){
     boundi->valmin[boundi->set_valmin] = valmin[i];
   }
 }
+
+#ifdef pp_BOUNDS
+/* ------------------ get_global_minmax_all ------------------------ */
+
+void bounds_dialog::get_global_minmax_all(float *valmin, float *valmax, int nvals){
+  int i, set_valmin, set_valmax;
+
+  nvals = MIN(nall_bounds, nvals);
+  set_valmin = BOUND_GLOBAL_MIN;
+  set_valmax = BOUND_GLOBAL_MAX;
+  for(i = 0; i < nall_bounds; i++){
+    cpp_boundsdata *boundi;
+
+    boundi = all_bounds + i;
+    valmin[i] = boundi->valmin[set_valmin];
+    valmax[i] = boundi->valmax[set_valmax];
+  }
+}
+
+/* ------------------ get_loaded_minmax_all ------------------------ */
+
+void bounds_dialog::get_loaded_minmax_all(float *valmin, float *valmax, int nvals){
+  int i, set_valmin, set_valmax;
+
+  nvals = MIN(nall_bounds, nvals);
+  set_valmin = BOUND_LOADED_MIN;
+  set_valmax = BOUND_LOADED_MAX;
+  for(i = 0; i < nall_bounds; i++){
+    cpp_boundsdata *boundi;
+
+    boundi = all_bounds + i;
+    valmin[i] = boundi->valmin[set_valmin];
+    valmax[i] = boundi->valmax[set_valmax];
+  }
+}
+
+/* ------------------ set_global_minmax_all ------------------------ */
+
+void bounds_dialog::set_global_minmax_all(float *valmin, float *valmax, int nvals){
+  int i, set_valmin, set_valmax;
+
+  nvals = MIN(nall_bounds, nvals);
+  set_valmin = BOUND_GLOBAL_MIN;
+  set_valmax = BOUND_GLOBAL_MAX;
+  for(i = 0; i < nall_bounds; i++){
+    cpp_boundsdata *boundi;
+
+    boundi = all_bounds + i;
+    boundi->valmin[set_valmin] = valmin[i];
+    boundi->valmax[set_valmax] = valmax[i];
+  }
+}
+
+/* ------------------ set_loaded_minmax_all ------------------------ */
+
+void bounds_dialog::set_loaded_minmax_all(float *valmin, float *valmax, int nvals){
+  int i, set_valmin, set_valmax;
+
+  nvals = MIN(nall_bounds, nvals);
+  set_valmin = BOUND_LOADED_MIN;
+  set_valmax = BOUND_LOADED_MAX;
+  for(i = 0; i < nall_bounds; i++){
+    cpp_boundsdata *boundi;
+
+    boundi = all_bounds + i;
+    boundi->valmin[set_valmin] = valmin[i];
+    boundi->valmax[set_valmax] = valmax[i];
+  }
+}
+#endif
 
 /* ------------------ set_max_all ------------------------ */
 
@@ -1415,6 +1491,120 @@ extern "C" void GLUISetMinMaxAll(int type, int *set_valmin, float *valmin, int *
       break;
   }
 }
+
+#ifdef pp_BOUNDS
+/* ------------------ GLUIGetGlobalMinMaxAll ------------------------ */
+
+extern "C" void GLUIGetGlobalMinMaxAll(int type, float *valmin, float *valmax, int nall){
+  switch(type){
+  case BOUND_HVACDUCT:
+    hvacductboundsCPP.get_global_minmax_all(valmin, valmax, nall);
+    break;
+  case BOUND_HVACNODE:
+    hvacnodeboundsCPP.get_global_minmax_all(valmin, valmax, nall);
+    break;
+  case BOUND_PATCH:
+    patchboundsCPP.get_global_minmax_all(valmin, valmax, nall);
+    break;
+  case BOUND_PART:
+    partboundsCPP.get_global_minmax_all(valmin, valmax, nall);
+    break;
+  case BOUND_PLOT3D:
+    plot3dboundsCPP.get_global_minmax_all(valmin, valmax, nall);
+    break;
+  case BOUND_SLICE:
+    sliceboundsCPP.get_global_minmax_all(valmin, valmax, nall);
+    break;
+  default:
+    assert(FFALSE);
+    break;
+  }
+}
+
+/* ------------------ GLUIGetLoadedMinMaxAll ------------------------ */
+
+extern "C" void GLUIGetLoadedMinMaxAll(int type, float *valmin, float *valmax, int nall){
+  switch(type){
+  case BOUND_HVACDUCT:
+    hvacductboundsCPP.get_loaded_minmax_all(valmin, valmax, nall);
+    break;
+  case BOUND_HVACNODE:
+    hvacnodeboundsCPP.get_loaded_minmax_all(valmin, valmax, nall);
+    break;
+  case BOUND_PATCH:
+    patchboundsCPP.get_loaded_minmax_all(valmin, valmax, nall);
+    break;
+  case BOUND_PART:
+    partboundsCPP.get_loaded_minmax_all(valmin, valmax, nall);
+    break;
+  case BOUND_PLOT3D:
+    plot3dboundsCPP.get_loaded_minmax_all(valmin, valmax, nall);
+    break;
+  case BOUND_SLICE:
+    sliceboundsCPP.get_loaded_minmax_all(valmin, valmax, nall);
+    break;
+  default:
+    assert(FFALSE);
+    break;
+  }
+}
+
+/* ------------------ GLUISetGlobalMinMaxAll ------------------------ */
+
+extern "C" void GLUISetGlobalMinMaxAll(int type, float *valmin, float *valmax, int nall){
+  switch(type){
+  case BOUND_HVACDUCT:
+    hvacductboundsCPP.set_global_minmax_all(valmin, valmax, nall);
+    break;
+  case BOUND_HVACNODE:
+    hvacnodeboundsCPP.set_global_minmax_all(valmin, valmax, nall);
+    break;
+  case BOUND_PATCH:
+    patchboundsCPP.set_global_minmax_all(valmin, valmax, nall);
+    break;
+  case BOUND_PART:
+    partboundsCPP.set_global_minmax_all(valmin, valmax, nall);
+    break;
+  case BOUND_PLOT3D:
+    plot3dboundsCPP.set_global_minmax_all(valmin, valmax, nall);
+    break;
+  case BOUND_SLICE:
+    sliceboundsCPP.set_global_minmax_all(valmin, valmax, nall);
+    break;
+  default:
+    assert(FFALSE);
+    break;
+  }
+}
+
+/* ------------------ GLUISetLoadedMinMaxAll ------------------------ */
+
+extern "C" void GLUISetLoadedMinMaxAll(int type, float *valmin, float *valmax, int nall){
+  switch(type){
+  case BOUND_HVACDUCT:
+    hvacductboundsCPP.set_loaded_minmax_all(valmin, valmax, nall);
+    break;
+  case BOUND_HVACNODE:
+    hvacnodeboundsCPP.set_loaded_minmax_all(valmin, valmax, nall);
+    break;
+  case BOUND_PATCH:
+    patchboundsCPP.set_loaded_minmax_all(valmin, valmax, nall);
+    break;
+  case BOUND_PART:
+    partboundsCPP.set_loaded_minmax_all(valmin, valmax, nall);
+    break;
+  case BOUND_PLOT3D:
+    plot3dboundsCPP.set_loaded_minmax_all(valmin, valmax, nall);
+    break;
+  case BOUND_SLICE:
+    sliceboundsCPP.set_loaded_minmax_all(valmin, valmax, nall);
+    break;
+  default:
+    assert(FFALSE);
+    break;
+  }
+}
+#endif
 
 /* ------------------ HVAC callback: GLUIHVACDuctBoundsCPP_CB ------------------------ */
 

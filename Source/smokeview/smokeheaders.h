@@ -52,6 +52,12 @@ EXTERNCPP void GLUISetMin(int type, char *label, int set_valmin, float valmin);
 EXTERNCPP void GLUISetMax(int type, char *label, int set_valmax, float valmax);
 EXTERNCPP void GLUISetMinMax(int type, char *label, int set_valmin, float valmin, int set_valmax, float valmax);
 EXTERNCPP void GLUISetMinMaxAll(int type, int *set_valmin, float *valmin, int *set_valmax, float *valmax, int nall);
+#ifdef pp_BOUNDS
+EXTERNCPP void GLUISetGlobalMinMaxAll(int type, float *valmin, float *valmax, int nall);
+EXTERNCPP void GLUISetLoadedMinMaxAll(int type, float *valmin, float *valmax, int nall);
+EXTERNCPP void GLUIGetGlobalMinMaxAll(int type, float *valmin, float *valmax, int nall);
+EXTERNCPP void GLUIGetLoadedMinMaxAll(int type, float *valmin, float *valmax, int nall);
+#endif
 EXTERNCPP void GLUIUpdateBounds(void);
 EXTERNCPP void GLUIPlot3DBoundsCPP_CB(int var);
 EXTERNCPP void GLUISetColorbarDigitsCPP(int ndigits);
