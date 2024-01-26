@@ -1192,6 +1192,7 @@ void BoundsUpdateWrapup(int file_type){
 void BoundsUpdate(int file_type){
   char label1[256], label2[256], label3[256];
 
+  if(GetNinfo(file_type) == 0)return;
   strcpy(label1, "BoundsUpdateSetup ");
   strcpy(label2, "BoundsUpdateDoit ");
   strcpy(label3, "BoundsUpdateWrapup ");
