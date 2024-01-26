@@ -1046,6 +1046,7 @@ void BoundsUpdateDoit(int file_type){
         valmin = MIN(valmin, vals[j]);
         valmax = MAX(valmax, vals[j]);
       }
+      fi->defined = 1;
     }
     else if(file_type==BOUND_PATCH){
       if(patchi->structured == 1){
@@ -1079,6 +1080,7 @@ void BoundsUpdateDoit(int file_type){
           valmax = MAX(vals[j], valmax);
         }
       }
+      fi->defined = 1;
       fi->nbounds = 1;
       fi->valmins[0] = valmin;
       fi->valmaxs[0] = valmax;
@@ -1113,24 +1115,22 @@ void BoundsUpdateDoit(int file_type){
         fi->valmins[nn] = valmins[nn];
         fi->valmaxs[nn] = valmaxs[nn];
       }
+      fi->defined = 1;
       fi->nbounds = 5;
       if(plot3dinfo!=NULL)fi->nbounds = plot3di->nplot3dvars;
     }
   }
 }
 
-/* ------------------ BoundsUpdateWrapup ------------------------ */
+/* ------------------ BoundsGlobalBounds2Gbnd ------------------------ */
 
-void BoundsUpdateWrapup(int file_type){
-  int i;
-  FILE *stream=NULL;
-  int ninfo;
+void BoundsGlobalBounds2Gbnd(int file_type){
+  int i, ninfo;
+  FILE *stream = NULL;
   globalboundsdata *globalboundsinfo;
-  char **sorted_filenames;
 
   ninfo = GetNinfo(file_type);
   globalboundsinfo = GetGlobalBoundsinfo(file_type);
-  sorted_filenames = GetSortedFilenames(file_type);
   for(i = 0;i < ninfo;i++){
     globalboundsdata *fi;
 
@@ -1147,11 +1147,26 @@ void BoundsUpdateWrapup(int file_type){
       for(j = 0;j < fi->nbounds;j++){
         fprintf(stream, " %f %f ", fi->valmins[j], fi->valmaxs[j]);
       }
-      if(GetBoundLabel(file_type, i, label) !=NULL)fprintf(stream, " ! %s", label);
+      if(GetBoundLabel(file_type, i, label) != NULL)fprintf(stream, " ! %s", label);
       fprintf(stream, "\n");
     }
   }
-  if(stream!=NULL)fclose(stream);
+  if(stream != NULL)fclose(stream);
+}
+
+/* ------------------ BoundsUpdateWrapup ------------------------ */
+
+void BoundsUpdateWrapup(int file_type){
+  int i;
+  int ninfo;
+  char **sorted_filenames;
+  globalboundsdata *globalboundsinfo;
+
+  globalboundsinfo = GetGlobalBoundsinfo(file_type);
+  ninfo = GetNinfo(file_type);
+  sorted_filenames = GetSortedFilenames(file_type);
+  BoundsGlobalBounds2Gbnd(file_type);
+
   for(i = 0;i < ninfo;i++){
     globalboundsdata *fi;
     char **key_index, *reg_file;

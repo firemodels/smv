@@ -467,6 +467,7 @@ void ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
 #ifdef pp_BOUNDS
         float valmin_loaded[6], valmax_loaded[6];
 
+        BoundsUpdate(BOUND_PLOT3D);
         ComputeLoadedPlot3DBounds(valmin_loaded, valmax_loaded);
         GLUISetLoadedMinMaxAll(BOUND_PLOT3D, valmin_loaded, valmax_loaded, plot3dinfo->nplot3dvars);
 #else
