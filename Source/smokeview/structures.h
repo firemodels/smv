@@ -1548,7 +1548,7 @@ typedef struct _globalboundsdata {
   char *file;
   int defined;
   int nbounds;
-  float valmins[6], valmaxs[6];
+  float valmins[MAXPLOT3DVARS], valmaxs[MAXPLOT3DVARS];
 } globalboundsdata;
 #endif
 

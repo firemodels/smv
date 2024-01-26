@@ -866,15 +866,13 @@ char *GetBoundLabel(int file_type, int ifile, char *label){
   return label;
 }
 
-/* ------------------ BoundsCreateGbnd ------------------------ */
+/* ------------------ BoundsBnd2Gbnd ------------------------ */
 
-int BoundsCreateGbnd(int file_type){
+int BoundsBnd2Gbnd(int file_type){
   int i, ninfo;
-  FILE *stream;
+  FILE *stream=NULL;
 
   ninfo = GetNinfo(file_type);
-  stream = FopenGbndFile(file_type, "w");
-  if(stream == NULL)return 0;
   for(i = 0;i < ninfo;i++){
     float valmins[MAXPLOT3DVARS], valmaxs[MAXPLOT3DVARS];
     char *reg_file, *bound_file;
@@ -887,6 +885,10 @@ int BoundsCreateGbnd(int file_type){
       char label[256];
       int j;
 
+      if(stream == NULL){
+        stream = FopenGbndFile(file_type, "w");
+        if(stream == NULL)return 0;
+      }
       fprintf(stream, "%s ", reg_file);
       for(j = 0;j < nbounds;j++){
         fprintf(stream, " %f %f ", valmins[j], valmaxs[j]);
@@ -895,7 +897,7 @@ int BoundsCreateGbnd(int file_type){
       fprintf(stream, "\n");
     }
   }
-  fclose(stream);
+  if(stream!=NULL)fclose(stream);
   return 1;
 }
 
@@ -938,7 +940,7 @@ void BoundsUpdateSetup(int file_type){
       fclose(stream);
       stream = NULL;
     }
-    BoundsCreateGbnd(file_type);
+    BoundsBnd2Gbnd(file_type);
   }
   if(stream != NULL){
     fclose(stream);
@@ -1120,7 +1122,7 @@ void BoundsUpdateDoit(int file_type){
 
 void BoundsUpdateWrapup(int file_type){
   int i;
-  FILE *stream;
+  FILE *stream=NULL;
   int ninfo;
   globalboundsdata *globalboundsinfo;
   char **sorted_filenames;
@@ -1128,7 +1130,6 @@ void BoundsUpdateWrapup(int file_type){
   ninfo = GetNinfo(file_type);
   globalboundsinfo = GetGlobalBoundsinfo(file_type);
   sorted_filenames = GetSortedFilenames(file_type);
-  stream = FopenGbndFile(file_type, "w");
   for(i = 0;i < ninfo;i++){
     globalboundsdata *fi;
 
@@ -1137,6 +1138,10 @@ void BoundsUpdateWrapup(int file_type){
       char label[256];
       int j;
 
+      if(stream == NULL){
+        stream = FopenGbndFile(file_type, "w");
+        if(stream == NULL)return;
+      }
       fprintf(stream, "%s ", fi->file);
       for(j = 0;j < fi->nbounds;j++){
         fprintf(stream, " %f %f ", fi->valmins[j], fi->valmaxs[j]);
@@ -1145,7 +1150,7 @@ void BoundsUpdateWrapup(int file_type){
       fprintf(stream, "\n");
     }
   }
-  fclose(stream);
+  if(stream!=NULL)fclose(stream);
   for(i = 0;i < ninfo;i++){
     globalboundsdata *fi;
     char **key_index, *reg_file;

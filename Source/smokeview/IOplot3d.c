@@ -338,6 +338,8 @@ void ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
     qmaxptr = qmax;
   }
   getplot3dq(file, nx, ny, nz, meshi->qdata, qminptr, qmaxptr, &error, isotest);
+#ifdef pp_BOUNDS
+#else
   if(p->have_bound_file == 0){
     FILE *bound_stream;
 
@@ -350,6 +352,7 @@ void ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
       fclose(bound_stream);
     }
   }
+#endif
   if(NewMemoryMemID((void **)&meshi->iqdata,numplot3dvars*ntotal*sizeof(unsigned char), p->memory_id)==0){
     *errorcode=1;
     ReadPlot3D("",ifile,UNLOAD,&error);
