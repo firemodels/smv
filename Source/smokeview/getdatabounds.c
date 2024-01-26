@@ -451,9 +451,6 @@ void GetGlobalPlot3DBounds(void){
 
     plot3di = plot3dinfo+i;
 #ifdef pp_BOUNDS
-    int set_valmin_save[MAXPLOT3DVARS] = {1, 1, 1, 1, 1, 1};
-    int set_valmax_save[MAXPLOT3DVARS] = {1, 1, 1, 1, 1, 1};
-
     plot3di->have_bound_file = BoundsGet(plot3di->reg_file, plot3dglobalboundsinfo, sorted_plot3d_filenames, nplot3dinfo, plot3di->nplot3dvars, plot3di->valmin_fds, plot3di->valmax_fds);
 #else
     plot3di->have_bound_file = GetPlot3DFileBounds(plot3di->bound_file, plot3di->valmin_fds, plot3di->valmax_fds);
