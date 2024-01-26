@@ -443,6 +443,7 @@ int GetPlot3DFileBounds(char *file, float *valmin, float *valmax){
 void GetGlobalPlot3DBounds(void){
   int i;
 
+  if(nplot3dinfo <= 0)return;
 #ifdef pp_BOUNDS
   BoundsUpdate(BOUND_PLOT3D);
 #endif
