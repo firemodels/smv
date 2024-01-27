@@ -1129,6 +1129,21 @@ void BoundsGlobalBounds2Gbnd(int file_type){
   FILE *stream = NULL;
   globalboundsdata *globalboundsinfo;
 
+#ifdef pp_BOUND_DEBUG
+  char label1[32];
+
+  strcpy(label1, "");
+  if(file_type == BOUND_SLICE){
+    strcat(label1, "SLICE");
+  }
+  else if(file_type==BOUND_PATCH){
+    strcat(label1, "PATCH");
+  }
+  else if(file_type == BOUND_PLOT3D){
+    strcat(label1, "PLOT3D");
+  }
+  printf("BoundsGlobalBounds2Gbnd(%s)\n", label1);
+#endif
   ninfo = GetNinfo(file_type);
   globalboundsinfo = GetGlobalBoundsinfo(file_type);
   for(i = 0;i < ninfo;i++){
@@ -1216,16 +1231,25 @@ void BoundsUpdate(int file_type){
     strcat(label1, "SLICE");
     strcat(label2, "SLICE");
     strcat(label3, "SLICE");
+#ifdef pp_BOUND_DEBUG
+    printf("BoundsUpdate(SLICE)\n");
+#endif
   }
   else if(file_type==BOUND_PATCH){
     strcat(label1, "PATCH");
     strcat(label2, "PATCH");
     strcat(label3, "PATCH");
+#ifdef pp_BOUND_DEBUG
+    printf("BoundsUpdate(PATCH)\n");
+#endif
   }
   else if(file_type == BOUND_PLOT3D){
     strcat(label1, "PLOT3D");
     strcat(label2, "PLOT3D");
     strcat(label3, "PLOT3D");
+#ifdef pp_BOUND_DEBUG
+    printf("BoundsUpdate(PLOT3D)\n");
+#endif
   }
   INIT_PRINT_TIMER(bound_setup);
   BoundsUpdateSetup(file_type);
