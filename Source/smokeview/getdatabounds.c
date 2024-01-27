@@ -927,7 +927,7 @@ void BoundsUpdateSetup(int file_type){
   if(globalboundsinfo == NULL){
     NewMemory((void **)&globalboundsinfo, ninfo * sizeof(globalboundsdata));
     for(i = 0;i < ninfo;i++){
-      globalboundsinfo[i].file = sorted_filenames[i];
+      globalboundsinfo[i].file    = sorted_filenames[i];
       globalboundsinfo[i].defined = 0;
     }
     SaveGlobalBoundsinfo(file_type, globalboundsinfo);
@@ -980,8 +980,10 @@ void BoundsUpdateSetup(int file_type){
           fi->nbounds = 5;
           if(plot3dinfo != NULL)fi->nbounds = plot3dinfo->nplot3dvars;
         }
-        memcpy(fi->valmins, valmins, fi->nbounds * sizeof(float));
-        memcpy(fi->valmaxs, valmaxs, fi->nbounds * sizeof(float));
+        memcpy(fi->valmins,      valmins, fi->nbounds * sizeof(float));
+        memcpy(fi->valmaxs,      valmaxs, fi->nbounds * sizeof(float));
+        memcpy(fi->valmins_save, valmins, fi->nbounds * sizeof(float));
+        memcpy(fi->valmaxs_save, valmaxs, fi->nbounds * sizeof(float));
         fi->defined = 1;
       }
     }
@@ -1018,11 +1020,11 @@ void BoundsUpdateDoit(int file_type){
       slicei = sliceinfo + i;
       if(slicei->loaded == 0)continue;
     }
-    if(file_type == BOUND_PATCH){
+    else if(file_type == BOUND_PATCH){
       patchi = patchinfo + i;
       if(patchi->loaded == 0)continue;
     }
-    if(file_type == BOUND_PLOT3D){
+    else if(file_type == BOUND_PLOT3D){
       plot3di = plot3dinfo + i;
       if(plot3di->loaded == 0)continue;
     }
@@ -1142,10 +1144,36 @@ void BoundsGlobalBounds2Gbnd(int file_type){
   else if(file_type == BOUND_PLOT3D){
     strcat(label1, "PLOT3D");
   }
-  printf("BoundsGlobalBounds2Gbnd(%s)\n", label1);
 #endif
   ninfo = GetNinfo(file_type);
   globalboundsinfo = GetGlobalBoundsinfo(file_type);
+  int changed = 0;
+  for(i = 0;i < ninfo;i++){
+    globalboundsdata *fi;
+    int j;
+
+    fi = globalboundsinfo + i;
+    if(fi->defined == 0)continue;
+    if(fi->nbounds == 1){
+      if(fi->valmaxs[0] != fi->valmaxs_save[0] || fi->valmins[0] != fi->valmins_save[0]){
+        changed = 1;
+        break;
+      }
+    }
+    else{
+      for(j = 0;j < fi->nbounds;j++){
+        if(fi->valmaxs[j] != fi->valmaxs_save[j] || fi->valmins[j] != fi->valmins_save[j]){
+          changed = 1;
+          break;
+        }
+      }
+    }
+    if(changed == 1)break;
+  }
+  if(changed == 0)return;
+#ifdef pp_BOUND_DEBUG
+  printf("BoundsGlobalBounds2Gbnd(%s)\n", label1);
+#endif
   for(i = 0;i < ninfo;i++){
     globalboundsdata *fi;
 
