@@ -11845,7 +11845,7 @@ int ReadSMV_Configure(){
   MakeIBlankSmoke3D();
   PRINT_TIMER(timer_readsmv, "MakeIBlankSmoke3D");
 
-  if(HaveCircularVents()==1||(nmeshes < 100 && fast_startup == 0)){
+  if(HaveCircularVents()==1|| nmeshes < 100 || fast_startup == 0){
     MakeIBlank();
     PRINT_TIMER(timer_readsmv, "MakeIBlank");
   }
@@ -11888,8 +11888,8 @@ int ReadSMV_Configure(){
   UpdateBoundaryTypes();
   PRINT_TIMER(timer_readsmv, "UpdateBoundaryTypes");
 
-  if(nmeshes < 100 && fast_startup == 0){
-   InitNabors();
+  if(nmeshes < 100 || fast_startup == 0){
+    InitNabors();
     PRINT_TIMER(timer_readsmv, "update nabors");
   }
 

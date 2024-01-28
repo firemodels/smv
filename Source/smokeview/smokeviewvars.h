@@ -670,6 +670,7 @@ SVEXTERN float SVDECL(geom_dz_offset,0.0);
 SVEXTERN int SVDECL(iso_outline_ioffset, 1);
 SVEXTERN float SVDECL(iso_outline_offset, 0.001);
 SVEXTERN int SVDECL(update_setvents, 0);
+SVEXTERN int SVDECL(update_setcvents, 0);
 SVEXTERN int SVDECL(update_ff, 0);
 SVEXTERN int SVDECL(use_set_slicecolor, 1);
 SVEXTERN int SVDECL(cvents_defined, 0);
@@ -2004,6 +2005,7 @@ SVEXTERN int SVDECL(show_extreme_mindata,0), SVDECL(show_extreme_maxdata,0);
 SVEXTERN int SVDECL(show_extreme_mindata_save,0), SVDECL(show_extreme_maxdata_save,0);
 
 SVEXTERN int SVDECL(use_iblank,1),SVDECL(iblank_set_on_commandline,0);
+SVEXTERN int SVDECL(update_make_iblank, 0);
 
 SVEXTERN int script_index, ini_index;
 SVEXTERN char script_inifile_suffix[1024], vol_prefix[1024];
