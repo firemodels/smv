@@ -1900,30 +1900,6 @@ void UpdateShowScene(void){
   have_fire  = HaveFireLoaded();
   have_smoke = HaveSootLoaded();
 
-  if(update_make_iblank == 1){
-    int ig;
-
-    update_make_iblank = 0;
-    for(ig = 0; ig < nmeshes; ig++){
-      meshdata *meshi;
-
-      meshi = meshinfo + ig;
-      meshi->c_iblank_node = meshi->c_iblank_node_temp;
-      meshi->c_iblank_cell = meshi->c_iblank_cell_temp;
-      meshi->f_iblank_cell = meshi->f_iblank_cell_temp;
-      meshi->c_iblank_x    = meshi->c_iblank_x_temp;
-      meshi->c_iblank_y    = meshi->c_iblank_y_temp;
-      meshi->c_iblank_z    = meshi->c_iblank_z_temp;
-
-      meshi->c_iblank_node_html = meshi->c_iblank_node_html_temp;
-      meshi->c_iblank_node0     = meshi->c_iblank_node0_temp;
-      meshi->c_iblank_cell0     = meshi->c_iblank_cell0_temp;
-      meshi->f_iblank_cell0     = meshi->f_iblank_cell0_temp;
-      meshi->c_iblank_x0        = meshi->c_iblank_x0_temp;
-      meshi->c_iblank_y0        = meshi->c_iblank_y0_temp;
-      meshi->c_iblank_z0        = meshi->c_iblank_z0_temp;
-    }
-  }
   if(glui_meshclip_defined==1&&update_meshclip == 1){
     update_meshclip = 0;
     GLUIUpdateMeshBounds();
@@ -2111,8 +2087,16 @@ void UpdateShowScene(void){
   }
   UpdateShow();
   if(global_times!=NULL&&updateUpdateFrameRateMenu==1)FrameRateMenu(frameratevalue);
-  if(updatefaces==1)UpdateFaces();
-  if(updatefacelists==1)UpdateFaceLists();
+  if(updatefaces == 1){
+    INIT_PRINT_TIMER(timer_update_faces);
+    UpdateFaces();
+    PRINT_TIMER(timer_update_faces, "UpdateFaces");
+  }
+  if(updatefacelists == 1){
+    INIT_PRINT_TIMER(timer_update_facelists);
+    UpdateFaceLists();
+    PRINT_TIMER(timer_update_facelists, "UpdateFaceLists");
+  }
 }
 
 /* ------------------ UpdateFlippedColorbar ------------------------ */
@@ -2487,9 +2471,39 @@ void UpdateDisplay(void){
     update_texturebar = 0;
     UpdateTexturebar();
   }
+  if(update_make_iblank == 1){
+    int ig;
+
+    for(ig = 0; ig < nmeshes; ig++){
+      meshdata *meshi;
+
+      meshi = meshinfo + ig;
+      meshi->c_iblank_node = meshi->c_iblank_node_temp;
+      meshi->c_iblank_cell = meshi->c_iblank_cell_temp;
+      meshi->f_iblank_cell = meshi->f_iblank_cell_temp;
+      meshi->c_iblank_x    = meshi->c_iblank_x_temp;
+      meshi->c_iblank_y    = meshi->c_iblank_y_temp;
+      meshi->c_iblank_z    = meshi->c_iblank_z_temp;
+
+      meshi->c_iblank_node_html = meshi->c_iblank_node_html_temp;
+      meshi->c_iblank_node0     = meshi->c_iblank_node0_temp;
+      meshi->c_iblank_cell0     = meshi->c_iblank_cell0_temp;
+      meshi->f_iblank_cell0     = meshi->f_iblank_cell0_temp;
+      meshi->c_iblank_x0        = meshi->c_iblank_x0_temp;
+      meshi->c_iblank_y0        = meshi->c_iblank_y0_temp;
+      meshi->c_iblank_z0        = meshi->c_iblank_z0_temp;
+    }
+    update_make_iblank = 0;
+    update_setvents    = 1;
+    update_setcvents   = 1;
+  }
   if(update_setvents==1){
     SetVentDirs();
     update_setvents=0;
+  }
+  if(update_setcvents == 1){
+    SetCVentDirs();
+    update_setcvents = 0;
   }
   THREADcontrol(ffmpeg_threads, THREAD_LOCK);
   if(update_ff == 1){
