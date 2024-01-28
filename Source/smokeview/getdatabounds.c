@@ -927,7 +927,7 @@ void BoundsUpdateSetup(int file_type){
   if(globalboundsinfo == NULL){
     NewMemory((void **)&globalboundsinfo, ninfo * sizeof(globalboundsdata));
     for(i = 0;i < ninfo;i++){
-      globalboundsinfo[i].file = sorted_filenames[i];
+      globalboundsinfo[i].file    = sorted_filenames[i];
       globalboundsinfo[i].defined = 0;
     }
     SaveGlobalBoundsinfo(file_type, globalboundsinfo);
@@ -980,8 +980,10 @@ void BoundsUpdateSetup(int file_type){
           fi->nbounds = 5;
           if(plot3dinfo != NULL)fi->nbounds = plot3dinfo->nplot3dvars;
         }
-        memcpy(fi->valmins, valmins, fi->nbounds * sizeof(float));
-        memcpy(fi->valmaxs, valmaxs, fi->nbounds * sizeof(float));
+        memcpy(fi->valmins,      valmins, fi->nbounds * sizeof(float));
+        memcpy(fi->valmaxs,      valmaxs, fi->nbounds * sizeof(float));
+        memcpy(fi->valmins_save, valmins, fi->nbounds * sizeof(float));
+        memcpy(fi->valmaxs_save, valmaxs, fi->nbounds * sizeof(float));
         fi->defined = 1;
       }
     }
@@ -1018,11 +1020,11 @@ void BoundsUpdateDoit(int file_type){
       slicei = sliceinfo + i;
       if(slicei->loaded == 0)continue;
     }
-    if(file_type == BOUND_PATCH){
+    else if(file_type == BOUND_PATCH){
       patchi = patchinfo + i;
       if(patchi->loaded == 0)continue;
     }
-    if(file_type == BOUND_PLOT3D){
+    else if(file_type == BOUND_PLOT3D){
       plot3di = plot3dinfo + i;
       if(plot3di->loaded == 0)continue;
     }
@@ -1046,6 +1048,7 @@ void BoundsUpdateDoit(int file_type){
         valmin = MIN(valmin, vals[j]);
         valmax = MAX(valmax, vals[j]);
       }
+      fi->defined = 1;
     }
     else if(file_type==BOUND_PATCH){
       if(patchi->structured == 1){
@@ -1079,6 +1082,7 @@ void BoundsUpdateDoit(int file_type){
           valmax = MAX(vals[j], valmax);
         }
       }
+      fi->defined = 1;
       fi->nbounds = 1;
       fi->valmins[0] = valmin;
       fi->valmaxs[0] = valmax;
@@ -1113,24 +1117,63 @@ void BoundsUpdateDoit(int file_type){
         fi->valmins[nn] = valmins[nn];
         fi->valmaxs[nn] = valmaxs[nn];
       }
+      fi->defined = 1;
       fi->nbounds = 5;
       if(plot3dinfo!=NULL)fi->nbounds = plot3di->nplot3dvars;
     }
   }
 }
 
-/* ------------------ BoundsUpdateWrapup ------------------------ */
+/* ------------------ BoundsGlobalBounds2Gbnd ------------------------ */
 
-void BoundsUpdateWrapup(int file_type){
-  int i;
-  FILE *stream=NULL;
-  int ninfo;
+void BoundsGlobalBounds2Gbnd(int file_type){
+  int i, ninfo;
+  FILE *stream = NULL;
   globalboundsdata *globalboundsinfo;
-  char **sorted_filenames;
 
+#ifdef pp_BOUND_DEBUG
+  char label1[32];
+
+  strcpy(label1, "");
+  if(file_type == BOUND_SLICE){
+    strcat(label1, "SLICE");
+  }
+  else if(file_type==BOUND_PATCH){
+    strcat(label1, "PATCH");
+  }
+  else if(file_type == BOUND_PLOT3D){
+    strcat(label1, "PLOT3D");
+  }
+#endif
   ninfo = GetNinfo(file_type);
   globalboundsinfo = GetGlobalBoundsinfo(file_type);
-  sorted_filenames = GetSortedFilenames(file_type);
+  int changed = 0;
+  for(i = 0;i < ninfo;i++){
+    globalboundsdata *fi;
+    int j;
+
+    fi = globalboundsinfo + i;
+    if(fi->defined == 0)continue;
+    if(fi->nbounds == 1){
+      if(fi->valmaxs[0] != fi->valmaxs_save[0] || fi->valmins[0] != fi->valmins_save[0]){
+        changed = 1;
+        break;
+      }
+    }
+    else{
+      for(j = 0;j < fi->nbounds;j++){
+        if(fi->valmaxs[j] != fi->valmaxs_save[j] || fi->valmins[j] != fi->valmins_save[j]){
+          changed = 1;
+          break;
+        }
+      }
+    }
+    if(changed == 1)break;
+  }
+  if(changed == 0)return;
+#ifdef pp_BOUND_DEBUG
+  printf("BoundsGlobalBounds2Gbnd(%s)\n", label1);
+#endif
   for(i = 0;i < ninfo;i++){
     globalboundsdata *fi;
 
@@ -1147,11 +1190,26 @@ void BoundsUpdateWrapup(int file_type){
       for(j = 0;j < fi->nbounds;j++){
         fprintf(stream, " %f %f ", fi->valmins[j], fi->valmaxs[j]);
       }
-      if(GetBoundLabel(file_type, i, label) !=NULL)fprintf(stream, " ! %s", label);
+      if(GetBoundLabel(file_type, i, label) != NULL)fprintf(stream, " ! %s", label);
       fprintf(stream, "\n");
     }
   }
-  if(stream!=NULL)fclose(stream);
+  if(stream != NULL)fclose(stream);
+}
+
+/* ------------------ BoundsUpdateWrapup ------------------------ */
+
+void BoundsUpdateWrapup(int file_type){
+  int i;
+  int ninfo;
+  char **sorted_filenames;
+  globalboundsdata *globalboundsinfo;
+
+  globalboundsinfo = GetGlobalBoundsinfo(file_type);
+  ninfo = GetNinfo(file_type);
+  sorted_filenames = GetSortedFilenames(file_type);
+  BoundsGlobalBounds2Gbnd(file_type);
+
   for(i = 0;i < ninfo;i++){
     globalboundsdata *fi;
     char **key_index, *reg_file;
@@ -1201,16 +1259,25 @@ void BoundsUpdate(int file_type){
     strcat(label1, "SLICE");
     strcat(label2, "SLICE");
     strcat(label3, "SLICE");
+#ifdef pp_BOUND_DEBUG
+    printf("BoundsUpdate(SLICE)\n");
+#endif
   }
   else if(file_type==BOUND_PATCH){
     strcat(label1, "PATCH");
     strcat(label2, "PATCH");
     strcat(label3, "PATCH");
+#ifdef pp_BOUND_DEBUG
+    printf("BoundsUpdate(PATCH)\n");
+#endif
   }
   else if(file_type == BOUND_PLOT3D){
     strcat(label1, "PLOT3D");
     strcat(label2, "PLOT3D");
     strcat(label3, "PLOT3D");
+#ifdef pp_BOUND_DEBUG
+    printf("BoundsUpdate(PLOT3D)\n");
+#endif
   }
   INIT_PRINT_TIMER(bound_setup);
   BoundsUpdateSetup(file_type);

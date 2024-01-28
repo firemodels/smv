@@ -2362,7 +2362,9 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
   patchi->display = 1;
   patchi->hist_update = 1;
 
+#ifdef pp_RECOMPUTE_DEBUG
   int recompute = 0;
+#endif
   if(patchi->finalize==1){
     GLUIUpdateBoundaryListIndex(patchfilenum);
     cpp_boundsdata *bounds;
@@ -2379,7 +2381,9 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
       GetGlobalPatchBounds(1,DONOT_SET_MINMAX_FLAG);
       SetLoadedPatchBounds(NULL, 0);
       GLUIPatchBoundsCPP_CB(BOUND_DONTUPDATE_COLORS);
+#ifdef pp_RECOMPUTE_DEBUG
       recompute = 1;
+#endif
     }
     else{
       bounds = GLUIGetBoundsData(BOUND_PATCH);
@@ -2444,7 +2448,9 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
  else{
    PRINTF(" - %.0f kB in %.1f s\n", (float)return_filesize / 1000., total_time);
   }
+#ifdef pp_RECOMPUTE_DEBUG
   if(recompute == 1)printf("***recomputing bounds\n");
+#endif
 
   update_patch_bounds = ifile;
 
