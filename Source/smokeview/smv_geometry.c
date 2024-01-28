@@ -1261,13 +1261,13 @@ int MakeIBlank(void){
     if(NewMemory((void **)&c_iblank_y,ijksize*sizeof(char))==0)return 1;
     if(NewMemory((void **)&c_iblank_z,ijksize*sizeof(char))==0)return 1;
 
-    meshi->c_iblank_node_html = c_iblank_node_html;
-    meshi->c_iblank_node0=iblank_node;
-    meshi->c_iblank_cell0=iblank_cell;
-    meshi->f_iblank_cell0=fblank_cell;
-    meshi->c_iblank_x0=c_iblank_x;
-    meshi->c_iblank_y0=c_iblank_y;
-    meshi->c_iblank_z0=c_iblank_z;
+    meshi->c_iblank_node_html_temp = c_iblank_node_html;
+    meshi->c_iblank_node0_temp     = iblank_node;
+    meshi->c_iblank_cell0_temp     = iblank_cell;
+    meshi->f_iblank_cell0_temp     = fblank_cell;
+    meshi->c_iblank_x0_temp        = c_iblank_x;
+    meshi->c_iblank_y0_temp        = c_iblank_y;
+    meshi->c_iblank_z0_temp        = c_iblank_z;
 
     for(i=0;i<ibar*jbar*kbar;i++){
       iblank_cell[i]=GAS;
@@ -1434,13 +1434,15 @@ int MakeIBlank(void){
     meshdata *meshi;
 
     meshi = meshinfo + ig;
-    meshi->c_iblank_node = meshi->c_iblank_node0;
-    meshi->c_iblank_cell = meshi->c_iblank_cell0;
-    meshi->f_iblank_cell = meshi->f_iblank_cell0;
-    meshi->c_iblank_x = meshi->c_iblank_x0;
-    meshi->c_iblank_y = meshi->c_iblank_y0;
-    meshi->c_iblank_z = meshi->c_iblank_z0;
+    meshi->c_iblank_node_temp = meshi->c_iblank_node0_temp;
+    meshi->c_iblank_cell_temp = meshi->c_iblank_cell0_temp;
+    meshi->f_iblank_cell_temp = meshi->f_iblank_cell0_temp;
+    meshi->c_iblank_x_temp    = meshi->c_iblank_x0_temp;
+    meshi->c_iblank_y_temp    = meshi->c_iblank_y0_temp;
+    meshi->c_iblank_z_temp    = meshi->c_iblank_z0_temp;
   }
+
+  update_make_iblank = 1;
   return 0;
 }
 
