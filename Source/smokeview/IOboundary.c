@@ -3484,21 +3484,19 @@ void DrawBoundaryThresholdCellcenter(const meshdata *meshi){
 
 void MakeBoundaryMask(patchdata *patchi){
   meshdata *meshi;
-  int *boundary_row, *boundary_col, n;
+  int *boundary_col, n;
 
   if(patchi->blocknumber < 0)return;
   meshi = meshinfo + patchi->blocknumber;
   if(meshi->boundary_mask != NULL|| meshi->npatchsize <= 0)return;
-  boundary_row = meshi->boundary_row;
   boundary_col = meshi->boundary_col;
   NewMemory((void **)&meshi->boundary_mask, meshi->npatchsize);
   memset(meshi->boundary_mask, 0, meshi->npatchsize);
-  int ncol;
   for(n = 0;n < meshi->npatches; n++){
-    int irow;
-    ncol = meshi->boundary_col[n];
+    int irow, ncol;
 
-    for(irow = 1; irow < meshi->boundary_row[n];irow++){
+    ncol = meshi->boundary_col[n];
+    for(irow = 1; irow < meshi->boundary_row[n]; irow++){
       int icol;
 
       for(icol = 1;icol < meshi->boundary_col[n];icol++){
