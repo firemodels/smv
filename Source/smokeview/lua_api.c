@@ -1000,8 +1000,8 @@ int LuaGetPlot3dentry(lua_State *L) {
   lua_pushnumber(L, plot3dinfo[index].w);
   lua_setfield(L, -2, "w");
 
-  lua_pushnumber(L, plot3dinfo[index].nvars);
-  lua_setfield(L, -2, "nvars");
+  lua_pushnumber(L, plot3dinfo[index].nplot3dvars);
+  lua_setfield(L, -2, "nplot3dvars");
 
   lua_pushnumber(L, plot3dinfo[index].blocknumber);
   lua_setfield(L, -2, "blocknumber");
