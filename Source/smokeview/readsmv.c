@@ -912,6 +912,9 @@ void InitMesh(meshdata *meshi){
   NewMemory((void **)&meshi->gsliceinfo,     sizeof(meshplanedata));
   NewMemory((void **)&meshi->volrenderinfo,  sizeof(volrenderdata));
 
+#ifdef pp_BOUNDS
+  meshi->boundary_mask = NULL;
+#endif
   meshi->in_frustum = 1;
   meshi->imap = NULL;
   meshi->jmap = NULL;

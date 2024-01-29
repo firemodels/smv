@@ -745,6 +745,9 @@ typedef struct _meshdata {
   int n_imap, n_jmap, n_kmap;
 
   char *c_iblank_node0, *c_iblank_cell0, *c_iblank_x0, *c_iblank_y0, *c_iblank_z0;
+#ifdef pp_BOUNDS
+  unsigned char *boundary_mask;
+#endif
   char *c_iblank_node_html;
   float *f_iblank_cell0;
   char *c_iblank_embed0;

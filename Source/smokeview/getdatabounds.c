@@ -1058,12 +1058,25 @@ void BoundsUpdateDoit(int file_type){
           int j;
 
           meshi = meshinfo + patchi->blocknumber;
+          if(meshi->boundary_mask == NULL&&patchi->patch_filetype==PATCH_STRUCTURED_CELL_CENTER){
+            MakeBoundaryMask(patchi);
+          }
           vals = meshi->patchval;
           valmin = vals[0];
           valmax = valmin;
-          for(j = 1;j < meshi->npatch_times * meshi->npatchsize;j++){
-            valmin = MIN(vals[j], valmin);
-            valmax = MAX(vals[j], valmax);
+          if(meshi->boundary_mask != NULL && patchi->patch_filetype == PATCH_STRUCTURED_CELL_CENTER){
+            for(j = 1;j < meshi->npatch_times * meshi->npatchsize;j++){
+              if(meshi->boundary_mask[j % meshi->npatchsize] == 1){
+                valmin = MIN(vals[j], valmin);
+                valmax = MAX(vals[j], valmax);
+              }
+            }
+          }
+          else{
+            for(j = 1;j < meshi->npatch_times * meshi->npatchsize;j++){
+              valmin = MIN(vals[j], valmin);
+              valmax = MAX(vals[j], valmax);
+            }
           }
         }
         fi->nbounds = 1;

@@ -1152,6 +1152,7 @@ EXTERNCPP void UpdateGslicePlanes(void);
 
 EXTERNCPP void UpdateAllGeomTriangles(void);
 #ifdef pp_BOUNDS
+EXTERNCPP void MakeBoundaryMask(patchdata *patchi);
 EXTERNCPP void SetPatchMin(int set_valmin, float valmin, char *buffer2);
 EXTERNCPP void SetPatchMax(int set_valmax, float valmax, char *buffer2);
 EXTERNCPP void SetSliceMin(int set_valmin, float valmin, char *buffer2);

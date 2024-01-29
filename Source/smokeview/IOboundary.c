@@ -2323,12 +2323,34 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
 
     patchstart = patchi->ntimes_old*meshi->npatchsize;
 
+#ifdef pp_BOUNDS
+    if(meshi->boundary_mask == NULL&&patchi->patch_filetype==PATCH_STRUCTURED_CELL_CENTER){
+      MakeBoundaryMask(patchi);
+    }
+    patchmin_global = 10000000000000.0;
+    patchmax_global = -patchmin_global;
+    if(meshi->boundary_mask != NULL && patchi->patch_filetype == PATCH_STRUCTURED_CELL_CENTER){
+      for(i = 0; i<npatchvals; i++){
+        if(meshi->boundary_mask[i % meshi->npatchsize] == 1){
+          patchmin_global = MIN(patchmin_global, meshi->patchval[i]);
+          patchmax_global = MAX(patchmax_global, meshi->patchval[i]);
+        }
+      }
+    }
+    else{
+      for(i = 0; i<npatchvals; i++){
+        patchmin_global = MIN(patchmin_global, meshi->patchval[i]);
+        patchmax_global = MAX(patchmax_global, meshi->patchval[i]);
+      }
+    }
+#else
     patchmin_global = 10000000000000.0;
     patchmax_global = -patchmin_global;
     for(i = 0; i<npatchvals; i++){
       patchmin_global = MIN(patchmin_global, meshi->patchval[i]);
       patchmax_global = MAX(patchmax_global, meshi->patchval[i]);
     }
+#endif
     patchi->valmin_smv = patchmin_global;
     patchi->valmax_smv = patchmax_global;
     if(patchi->have_bound_file==NO){
@@ -3456,6 +3478,36 @@ void DrawBoundaryThresholdCellcenter(const meshdata *meshi){
   }
   glEnd();
 }
+
+#ifdef pp_BOUNDS
+/* ------------------ MakeBoundaryMask ------------------------ */
+
+void MakeBoundaryMask(patchdata *patchi){
+  meshdata *meshi;
+  int *boundary_row, *boundary_col, n;
+
+  if(patchi->blocknumber < 0)return;
+  meshi = meshinfo + patchi->blocknumber;
+  if(meshi->boundary_mask != NULL|| meshi->npatchsize <= 0)return;
+  boundary_row = meshi->boundary_row;
+  boundary_col = meshi->boundary_col;
+  NewMemory((void **)&meshi->boundary_mask, meshi->npatchsize);
+  memset(meshi->boundary_mask, 0, meshi->npatchsize);
+  int ncol;
+  for(n = 0;n < meshi->npatches; n++){
+    int irow;
+    ncol = meshi->boundary_col[n];
+
+    for(irow = 1; irow < meshi->boundary_row[n];irow++){
+      int icol;
+
+      for(icol = 1;icol < meshi->boundary_col[n];icol++){
+        meshi->boundary_mask[meshi->blockstart[n]+IJKBF(irow, icol)] = 1;
+      }
+    }
+  }
+}
+#endif
 
 /* ------------------ DrawBoundaryCellCenter ------------------------ */
 
