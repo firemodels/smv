@@ -1267,9 +1267,8 @@ typedef struct _partdata {
   histogramdata **histograms;
   int hist_update;
   int bounds_set;
-  float *global_min, *global_max;
-  float *valmin_fds, *valmax_fds;   // read in from .bnd files
-  float *valmin_smv, *valmax_smv;   // computed by smokeview
+  float *globalmin_part, *globalmax_part;
+  float *valmin_part,    *valmax_part;
   int nfilebounds;
   unsigned char *vis_part;
   int *tags;

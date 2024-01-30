@@ -5114,10 +5114,8 @@ int ParsePRT5Process(bufferstreamdata *stream, char *buffer, int *nn_part_in, in
   parti->autoload = 0;
   parti->reload = 0;
   parti->finalize = 1;
-  parti->valmin_fds = NULL;
-  parti->valmax_fds = NULL;
-  parti->valmin_smv = NULL;
-  parti->valmax_smv = NULL;
+  parti->valmin_part = NULL;
+  parti->valmax_part = NULL;
   parti->stream     = NULL;
   parti->hist_update = 0;
   if(FGETS(buffer, 255, stream)==NULL){
@@ -5175,8 +5173,8 @@ int ParsePRT5Process(bufferstreamdata *stream, char *buffer, int *nn_part_in, in
   parti->timeslist = NULL;
   parti->histograms = NULL;
   parti->bounds_set = 0;
-  parti->global_min = NULL;
-  parti->global_max = NULL;
+  parti->globalmin_part = NULL;
+  parti->globalmax_part = NULL;
   parti->filepos = NULL;
   parti->tags = NULL;
   parti->sort_tags = NULL;

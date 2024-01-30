@@ -79,18 +79,14 @@ int GetGlobalPartBounds(int flag){
     parti = partinfo+i;
     if(parti->loaded==1)nloaded_files++;
     if(npart5prop>0){
-      if(parti->valmin_fds==NULL)NewMemory((void **)&parti->valmin_fds, npart5prop*sizeof(float));
-      if(parti->valmax_fds==NULL)NewMemory((void **)&parti->valmax_fds, npart5prop*sizeof(float));
-      if(parti->valmin_smv==NULL)NewMemory((void **)&parti->valmin_smv, npart5prop*sizeof(float));
-      if(parti->valmax_smv==NULL)NewMemory((void **)&parti->valmax_smv, npart5prop*sizeof(float));
+      if(parti->valmin_part==NULL)NewMemory((void **)&parti->valmin_part, npart5prop*sizeof(float));
+      if(parti->valmax_part==NULL)NewMemory((void **)&parti->valmax_part, npart5prop*sizeof(float));
       for(j = 0; j<npart5prop; j++){
-        parti->valmin_fds[j] = 1.0;
-        parti->valmax_fds[j] = 0.0;
-        parti->valmin_smv[j] = 1.0;
-        parti->valmax_smv[j] = 0.0;
+        parti->valmin_part[j] = 1.0;
+        parti->valmax_part[j] = 0.0;
       }
     }
-    parti->have_bound_file = GetPartFileBounds(parti->bound_file, parti->valmin_fds, parti->valmax_fds, &parti->npoints);
+    parti->have_bound_file = GetPartFileBounds(parti->bound_file, parti->valmin_part, parti->valmax_part, &parti->npoints);
   }
   if(npart5prop>0){
     NewMemory((void **)&partmins, npart5prop*sizeof(float));
@@ -103,21 +99,21 @@ int GetGlobalPartBounds(int flag){
   for(i = 0; i<npartinfo; i++){
     partdata *parti;
     int j;
-    float *valmin_fds, *valmax_fds;
+    float *valmin_part, *valmax_part;
 
     parti = partinfo+i;
     if(flag==LOADED_FILES&&parti->loaded==0)continue;
-    valmin_fds = parti->valmin_fds;
-    valmax_fds = parti->valmax_fds;
+    valmin_part = parti->valmin_part;
+    valmax_part = parti->valmax_part;
     for(j = 0; j<npart5prop; j++){
-      if(valmin_fds[j]<=valmax_fds[j]){
+      if(valmin_part[j]<=valmax_part[j]){
         if(partmins[j]>partmaxs[j]){
-          partmins[j] = valmin_fds[j];
-          partmaxs[j] = valmax_fds[j];
+          partmins[j] = valmin_part[j];
+          partmaxs[j] = valmax_part[j];
         }
         else{
-          partmins[j] = MIN(valmin_fds[j], partmins[j]);
-          partmaxs[j] = MAX(valmax_fds[j], partmaxs[j]);
+          partmins[j] = MIN(valmin_part[j], partmins[j]);
+          partmaxs[j] = MAX(valmax_part[j], partmaxs[j]);
         }
       }
     }
@@ -1788,11 +1784,11 @@ int ReadPartBounds(partdata *parti,int read_bounds_arg){
   float *valmin_local, *valmax_local;
 
   parti->bounds_set = 0;
-  if(parti->global_min==NULL)NewMemory((void **)&parti->global_min, npart5prop*sizeof(float));
-  if(parti->global_max==NULL)NewMemory((void **)&parti->global_max, npart5prop*sizeof(float));
+  if(parti->globalmin_part==NULL)NewMemory((void **)&parti->globalmin_part, npart5prop*sizeof(float));
+  if(parti->globalmax_part==NULL)NewMemory((void **)&parti->globalmax_part, npart5prop*sizeof(float));
 
-  valmin_local = parti->global_min;
-  valmax_local = parti->global_max;
+  valmin_local = parti->globalmin_part;
+  valmax_local = parti->globalmax_part;
   for(j = 0; j<npart5prop; j++){
     valmin_local[j] =  1000000000.0;
     valmax_local[j] = -1000000000.0;
@@ -1906,8 +1902,8 @@ void MergeAllPartBounds(void){
 
       propj = part5propinfo+j;
       if(strcmp(propj->label->shortlabel, "Uniform")==0)continue;
-      propj->dlg_global_valmin = MIN(propj->dlg_global_valmin, parti->global_min[j]);
-      propj->dlg_global_valmax = MAX(propj->dlg_global_valmax, parti->global_max[j]);
+      propj->dlg_global_valmin = MIN(propj->dlg_global_valmin, parti->globalmin_part[j]);
+      propj->dlg_global_valmax = MAX(propj->dlg_global_valmax, parti->globalmax_part[j]);
     }
   }
   if(global_have_global_bound_file==0){
@@ -1983,11 +1979,11 @@ void GetAllPartBounds(void){
     partdata *parti;
 
     parti = partinfo+i;
-    if(parti->global_min==NULL){
-      NewMemory((void **)&parti->global_min, npart5prop*sizeof(float));
+    if(parti->globalmin_part==NULL){
+      NewMemory((void **)&parti->globalmin_part, npart5prop*sizeof(float));
     }
-    if(parti->global_max==NULL){
-      NewMemory((void **)&parti->global_max, npart5prop*sizeof(float));
+    if(parti->globalmax_part==NULL){
+      NewMemory((void **)&parti->globalmax_part, npart5prop*sizeof(float));
     }
   }
 
@@ -2026,8 +2022,8 @@ void GetAllPartBounds(void){
           partpropdata *propj;
 
           propj = part5propinfo+j;
-          parti->global_min[j] = propj->dlg_global_valmin;
-          parti->global_max[j] = propj->dlg_global_valmax;
+          parti->globalmin_part[j] = propj->dlg_global_valmin;
+          parti->globalmax_part[j] = propj->dlg_global_valmax;
         }
       }
       THREADcontrol(partload_threads, THREAD_UNLOCK);
