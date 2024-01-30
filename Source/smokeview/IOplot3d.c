@@ -185,10 +185,8 @@ int GetPlot3DBounds(plot3ddata *plot3di){
         valmax = MAX(val, valmax);
       }
     }
-    plot3di->valmin_smv[i] = valmin;
-    plot3di->valmax_smv[i] = valmax;
-    plot3di->valmin_fds[i] = valmin;
-    plot3di->valmax_fds[i] = valmax;
+    plot3di->valmin_plot3d[i] = valmin;
+    plot3di->valmax_plot3d[i] = valmax;
   }
   return 1;
 }
@@ -205,15 +203,15 @@ void ComputeLoadedPlot3DBounds(float *valmin_loaded, float *valmax_loaded){
     if(plot3di->loaded == 0)continue;
     if(first == 1){
       first = 0;
-      memcpy(valmin_loaded, plot3di->valmin_fds, plot3di->nplot3dvars * sizeof(float));
-      memcpy(valmax_loaded, plot3di->valmax_fds, plot3di->nplot3dvars * sizeof(float));
+      memcpy(valmin_loaded, plot3di->valmin_plot3d, plot3di->nplot3dvars * sizeof(float));
+      memcpy(valmax_loaded, plot3di->valmax_plot3d, plot3di->nplot3dvars * sizeof(float));
     }
     else{
       int j;
 
       for(j = 0; j < plot3di->nplot3dvars; j++){
-        valmin_loaded[j] = MIN(valmin_loaded[j], plot3di->valmin_fds[j]);
-        valmax_loaded[j] = MAX(valmax_loaded[j], plot3di->valmax_fds[j]);
+        valmin_loaded[j] = MIN(valmin_loaded[j], plot3di->valmin_plot3d[j]);
+        valmax_loaded[j] = MAX(valmax_loaded[j], plot3di->valmax_plot3d[j]);
       }
     }
   }

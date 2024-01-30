@@ -1735,8 +1735,7 @@ typedef struct _plot3ddata {
   float diff_valmin[MAXPLOT3DVARS], diff_valmax[MAXPLOT3DVARS];
   int extreme_min[MAXPLOT3DVARS], extreme_max[MAXPLOT3DVARS];
   int blocknumber,loaded,display,loadnow;
-  float valmin_fds[MAXPLOT3DVARS], valmax_fds[MAXPLOT3DVARS];   // read in from .bnd files
-  float valmin_smv[MAXPLOT3DVARS], valmax_smv[MAXPLOT3DVARS];   // computed by smokeview
+  float valmin_plot3d[MAXPLOT3DVARS], valmax_plot3d[MAXPLOT3DVARS];
   flowlabels label[MAXPLOT3DVARS];
   char menulabel[256], longlabel[256], timelabel[256];
   histogramdata *histograms[MAXPLOT3DVARS];

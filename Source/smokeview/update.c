@@ -2374,7 +2374,7 @@ void OutputBounds(void){
           label = p->label[j].longlabel;
           unit = p->label[j].unit;
 
-          OutputMinMax(meshi->label, label, unit, plot3di->valmin_fds[j], plot3di->valmax_fds[j], plot3di->valmin_smv[j], plot3di->valmax_smv[j]);
+          OutputMinMax(meshi->label, label, unit, plot3di->valmin_plot3d[j], plot3di->valmax_plot3d[j], plot3di->valmin_plot3d[j], plot3di->valmax_plot3d[j]);
         }
         printf("\n");
       }
@@ -2395,20 +2395,20 @@ void OutputBounds(void){
         plot3di = plot3dinfo+i;
         if(plot3di->loaded==0)continue;
         if(valmin_fds>valmax_fds){
-          valmin_fds = plot3di->valmin_fds[j];
-          valmax_fds = plot3di->valmax_fds[j];
+          valmin_fds = plot3di->valmin_plot3d[j];
+          valmax_fds = plot3di->valmax_plot3d[j];
         }
         else{
-          valmin_fds = MIN(plot3di->valmin_fds[j], valmin_fds);
-          valmax_fds = MAX(plot3di->valmax_fds[j], valmax_fds);
+          valmin_fds = MIN(plot3di->valmin_plot3d[j], valmin_fds);
+          valmax_fds = MAX(plot3di->valmax_plot3d[j], valmax_fds);
         }
         if(valmin_smv>valmax_smv){
-          valmin_smv = plot3di->valmin_smv[j];
-          valmax_smv = plot3di->valmax_smv[j];
+          valmin_smv = plot3di->valmin_plot3d[j];
+          valmax_smv = plot3di->valmax_plot3d[j];
         }
         else{
-          valmin_smv = MIN(plot3di->valmin_smv[j], valmin_smv);
-          valmax_smv = MAX(plot3di->valmax_smv[j], valmax_smv);
+          valmin_smv = MIN(plot3di->valmin_plot3d[j], valmin_smv);
+          valmax_smv = MAX(plot3di->valmax_plot3d[j], valmax_smv);
         }
       }
       OutputMinMax("global", label, unit, valmin_fds, valmax_fds, valmin_smv, valmax_smv);

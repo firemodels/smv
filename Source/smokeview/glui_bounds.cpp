@@ -2350,8 +2350,8 @@ void SetLoadedPlot3DBounds(void){
 
       plot3di = plot3dinfo+i;
       if(plot3di->loadnow == 0)continue;
-      valmin_fds = plot3di->valmin_fds;
-      valmax_fds = plot3di->valmax_fds;
+      valmin_fds = plot3di->valmin_plot3d;
+      valmax_fds = plot3di->valmax_plot3d;
       if(valmin[j]>valmax[j]){
         valmin[j] = valmin_fds[j];
         valmax[j] = valmax_fds[j];
@@ -2368,8 +2368,8 @@ void SetLoadedPlot3DBounds(void){
 
       plot3di = plot3dinfo+i;
       if(plot3di->loaded==0)continue;
-      valmin_fds = plot3di->valmin_fds;
-      valmax_fds = plot3di->valmax_fds;
+      valmin_fds = plot3di->valmin_plot3d;
+      valmax_fds = plot3di->valmax_plot3d;
       if(valmin[j]>valmax[j]){
         valmin[j] = valmin_fds[j];
         valmax[j] = valmax_fds[j];

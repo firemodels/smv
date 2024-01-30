@@ -1661,10 +1661,8 @@ void ReadSMVDynamic(char *file){
 
       plot3di=plot3dinfo+iplot3d;
       for(i = 0; i < 5; i++){
-        plot3di->valmin_fds[i] = 1.0;
-        plot3di->valmax_fds[i] = 0.0;
-        plot3di->valmin_smv[i] = 1.0;
-        plot3di->valmax_smv[i] = 0.0;
+        plot3di->valmin_plot3d[i] = 1.0;
+        plot3di->valmax_plot3d[i] = 0.0;
       }
       plot3di->blocknumber = blocknumber;
       plot3di->seq_id=nn_plot3d;

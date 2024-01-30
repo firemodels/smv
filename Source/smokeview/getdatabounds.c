@@ -452,9 +452,9 @@ void GetGlobalPlot3DBounds(void){
 
     plot3di = plot3dinfo+i;
 #ifdef pp_BOUNDS
-    plot3di->have_bound_file = BoundsGet(plot3di->reg_file, plot3dglobalboundsinfo, sorted_plot3d_filenames, nplot3dinfo, plot3di->nplot3dvars, plot3di->valmin_fds, plot3di->valmax_fds);
+    plot3di->have_bound_file = BoundsGet(plot3di->reg_file, plot3dglobalboundsinfo, sorted_plot3d_filenames, nplot3dinfo, plot3di->nplot3dvars, plot3di->valmin_plot3d, plot3di->valmax_plot3d);
 #else
-    plot3di->have_bound_file = GetPlot3DFileBounds(plot3di->bound_file, plot3di->valmin_fds, plot3di->valmax_fds);
+    plot3di->have_bound_file = GetPlot3DFileBounds(plot3di->bound_file, plot3di->valmin_plot3d, plot3di->valmax_plot3d);
 #endif
   }
   for(i = 0; i<MAXPLOT3DVARS; i++){
@@ -468,8 +468,8 @@ void GetGlobalPlot3DBounds(void){
 
     plot3di = plot3dinfo+i;
     if(plot3di->have_bound_file == 0)continue;
-    valmin_fds = plot3di->valmin_fds;
-    valmax_fds = plot3di->valmax_fds;
+    valmin_fds = plot3di->valmin_plot3d;
+    valmax_fds = plot3di->valmax_plot3d;
     for(j = 0; j<MAXPLOT3DVARS; j++){
       if(valmin_fds[j]<=valmax_fds[j]){
         if(p3min_all[j]>p3max_all[j]){
@@ -562,12 +562,12 @@ void GetLoadedPlot3dBounds(int *compute_loaded, float *loaded_min, float *loaded
     for(j = 0; j< MAXPLOT3DVARS; j++){
       if(compute_loaded!=NULL&&compute_loaded[j]!=BOUNDS_LOADED)continue;
       if(loaded_min[j]>loaded_max[j]){
-        loaded_min[j] = plot3di->valmin_fds[j];
-        loaded_max[j] = plot3di->valmax_fds[j];
+        loaded_min[j] = plot3di->valmin_plot3d[j];
+        loaded_max[j] = plot3di->valmax_plot3d[j];
       }
       else{
-        loaded_min[j] = MIN(plot3di->valmin_fds[j], loaded_min[j]);
-        loaded_max[j] = MAX(plot3di->valmax_fds[j], loaded_max[j]);
+        loaded_min[j] = MIN(plot3di->valmin_plot3d[j], loaded_min[j]);
+        loaded_max[j] = MAX(plot3di->valmax_plot3d[j], loaded_max[j]);
       }
     }
   }
@@ -1309,8 +1309,8 @@ void BoundsUpdateWrapup(int file_type){
       plot3ddata *plot3di;
 
       plot3di = plot3dinfo + i;
-      memcpy(plot3di->valmin_fds, fi->valmins, plot3di->nplot3dvars * sizeof(float));
-      memcpy(plot3di->valmax_fds, fi->valmaxs, plot3di->nplot3dvars * sizeof(float));
+      memcpy(plot3di->valmin_plot3d, fi->valmins, plot3di->nplot3dvars * sizeof(float));
+      memcpy(plot3di->valmax_plot3d, fi->valmaxs, plot3di->nplot3dvars * sizeof(float));
     }
   }
 }
