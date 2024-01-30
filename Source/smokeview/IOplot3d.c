@@ -187,6 +187,8 @@ int GetPlot3DBounds(plot3ddata *plot3di){
     }
     plot3di->valmin_smv[i] = valmin;
     plot3di->valmax_smv[i] = valmax;
+    plot3di->valmin_fds[i] = valmin;
+    plot3di->valmax_fds[i] = valmax;
   }
   return 1;
 }
