@@ -991,6 +991,48 @@ void BoundsUpdateSetup(int file_type){
   }
 }
 
+#define IJK_SLICE(i,j,k)  ( ((i)-sd->is1)*sd->nslicej*sd->nslicek + ((j)-sd->js1)*sd->nslicek + ((k)-sd->ks1) )
+
+/* ------------------ MakeSliceMask ------------------------ */
+
+void MakeSliceMask(slicedata *sd){
+  int i;
+  int iis1, iis2, jjs1, jjs2, kks1, kks2;
+
+  NewMemory((void **)&sd->slice_mask, sd->nsliceijk);
+  memset(sd->slice_mask, 0, sd->nsliceijk);
+
+  iis1 = sd->iis1+1;
+  if(sd->iis2==sd->iis1)iis1 = sd->iis1;
+  iis2 = sd->iis2;
+
+  jjs1 = sd->jjs1 + 1;
+  if(sd->jjs2 == sd->jjs1)jjs1 = sd->jjs1;
+  jjs2 = sd->jjs2;
+
+  kks1 = sd->kks1 + 1;
+  if(sd->kks2 == sd->kks1)kks1 = sd->kks1;
+  kks2 = sd->kks2;
+
+  for(i = iis1; i <= iis2; i++){
+    int j;
+
+    for(j = jjs1;j <= jjs2;j++){
+      int k;
+
+      for(k = kks1;k <= kks2;k++){
+        int ival;
+
+        ival = IJK_SLICE(i,j,k);
+        assert(ival>=0&&ival<sd->nsliceijk);
+        sd->slice_mask[ival] = 1;
+      }
+    }
+  }
+}
+
+#define IJK_SLICE(i,j,k)  ( ((i)-sd->is1)*sd->nslicej*sd->nslicek + ((j)-sd->js1)*sd->nslicek + ((k)-sd->ks1) )
+
 /* ------------------ BoundsUpdateDoit ------------------------ */
 
 void BoundsUpdateDoit(int file_type){
@@ -1039,14 +1081,28 @@ void BoundsUpdateDoit(int file_type){
     valmax = 1.0;
     if(file_type == BOUND_SLICE){
       float *vals;
-      int j;
+      int j, nsize;
 
+      if(slicei->slice_mask == NULL && slicei->slice_filetype == SLICE_CELL_CENTER){
+        MakeSliceMask(slicei);
+      }
       vals = slicei->qslicedata;
-      valmin = vals[0];
-      valmax = valmin;
-      for(j = 1;j < slicei->ntimes * slicei->nsliceijk;j++){
-        valmin = MIN(valmin, vals[j]);
-        valmax = MAX(valmax, vals[j]);
+      valmin = 1000000000.0;
+      valmax = -valmin;
+      nsize = slicei->nslicei * slicei->nslicej * slicei->nslicek;
+      if(slicei->slice_mask != NULL && slicei->slice_filetype == SLICE_CELL_CENTER){
+        for(j = 0;j < slicei->ntimes * slicei->nsliceijk;j++){
+          if(slicei->slice_mask[j % nsize] == 1){
+            valmin = MIN(valmin, vals[j]);
+            valmax = MAX(valmax, vals[j]);
+          }
+        }
+      }
+      else{
+        for(j = 0;j < slicei->ntimes * slicei->nsliceijk;j++){
+          valmin = MIN(valmin, vals[j]);
+          valmax = MAX(valmax, vals[j]);
+        }
       }
       fi->defined = 1;
     }
@@ -1062,10 +1118,10 @@ void BoundsUpdateDoit(int file_type){
             MakeBoundaryMask(patchi);
           }
           vals = meshi->patchval;
-          valmin = vals[0];
-          valmax = valmin;
+          valmin = 10000000000.0;
+          valmax = -valmin;
           if(meshi->boundary_mask != NULL && patchi->patch_filetype == PATCH_STRUCTURED_CELL_CENTER){
-            for(j = 1;j < meshi->npatch_times * meshi->npatchsize;j++){
+            for(j = 0;j < meshi->npatch_times * meshi->npatchsize;j++){
               if(meshi->boundary_mask[j % meshi->npatchsize] == 1){
                 valmin = MIN(vals[j], valmin);
                 valmax = MAX(vals[j], valmax);
@@ -1073,7 +1129,7 @@ void BoundsUpdateDoit(int file_type){
             }
           }
           else{
-            for(j = 1;j < meshi->npatch_times * meshi->npatchsize;j++){
+            for(j = 0;j < meshi->npatch_times * meshi->npatchsize;j++){
               valmin = MIN(vals[j], valmin);
               valmax = MAX(vals[j], valmax);
             }

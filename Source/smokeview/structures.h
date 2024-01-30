@@ -1403,6 +1403,9 @@ typedef struct _slicedata {
   int finalize;
   int slcf_index;
   char *slicelabel;
+#ifdef pp_BOUNDS
+  unsigned char *slice_mask;
+#endif
   int compression_type;
   int colorbar_autoflip;
   int ncompressed;

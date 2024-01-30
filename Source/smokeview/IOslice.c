@@ -4356,6 +4356,8 @@ FILE_SIZE GetSliceData(slicedata *sd, const char *slicefilename, int time_frame,
   }
   count_timeframe = 0;
   for(;;){
+    int skipmin;
+
     if(time_frame>=0&&count_timeframe==1){
       count_timeframe = 1;
       break;
@@ -4385,8 +4387,11 @@ FILE_SIZE GetSliceData(slicedata *sd, const char *slicefilename, int time_frame,
         qqto = qq + IJKNODE(0,j,1);
         for(i = 0;i<nxsp;i++){
 //        qq[IJKNODE(i, j, 1)] = qq[IJKNODE(i, j, 0)];
-          if((sd->slice_filetype==SLICE_CELL_CENTER&&i!=0&&j!=0)||
-             sd->slice_filetype!=SLICE_CELL_CENTER){
+          skipmin = 0;
+          if(sd->slice_filetype == SLICE_CELL_CENTER){
+            if(i == 0 || j == 0)skipmin = 1;
+          }
+          if(skipmin==0){
             *qminptr = MIN(*qminptr, *qqfrom);
             *qmaxptr = MAX(*qmaxptr, *qqfrom);
           }
@@ -4403,8 +4408,11 @@ FILE_SIZE GetSliceData(slicedata *sd, const char *slicefilename, int time_frame,
         qqto = qq + IJKNODE(0,1,k);
         for(i = 0;i<nxsp;i++){
 //        qq[IJKNODE(i, 1, k)] = qq[IJKNODE(i, 0, k)];
-          if((sd->slice_filetype==SLICE_CELL_CENTER&&i!=0&&k!=0)||
-              sd->slice_filetype!=SLICE_CELL_CENTER){
+          skipmin = 0;
+          if(sd->slice_filetype == SLICE_CELL_CENTER){
+            if(i == 0 || k == 0)skipmin = 1;
+          }
+          if(skipmin == 0){
             *qminptr = MIN(*qminptr, *qqfrom);
             *qmaxptr = MAX(*qmaxptr, *qqfrom);
           }
@@ -4428,8 +4436,11 @@ FILE_SIZE GetSliceData(slicedata *sd, const char *slicefilename, int time_frame,
 //      qdata(ii+1:ii+nysp) = qq(i, 1:nysp, 1)
         for(j = 0;j<nysp;j++){
 //        qdataptr[ii+j] = qq[IJKNODE(i, j, 0)];
-          if((sd->slice_filetype==SLICE_CELL_CENTER&&i!=0&&j!=0)||
-              sd->slice_filetype!=SLICE_CELL_CENTER){
+          skipmin = 0;
+          if(sd->slice_filetype == SLICE_CELL_CENTER){
+            if(i == 0 || j == 0)skipmin = 1;
+          }
+          if(skipmin==0){
             *qminptr = MIN(*qminptr, *qqfrom);
             *qmaxptr = MAX(*qmaxptr, *qqfrom);
           }
@@ -4450,8 +4461,11 @@ FILE_SIZE GetSliceData(slicedata *sd, const char *slicefilename, int time_frame,
         qqfrom = qq + IJKNODE(i, 0, 0);
         for(k = 0;k<nzsp+koff;k++){
 //        qdataptr[kk+k] = qq[IJKNODE(i, 0, k)];
-          if((sd->slice_filetype==SLICE_CELL_CENTER&&i!=0&&k!=0)||
-              sd->slice_filetype!=SLICE_CELL_CENTER){
+          skipmin = 0;
+          if(sd->slice_filetype == SLICE_CELL_CENTER){
+            if(i == 0 || k == 0)skipmin = 1;
+          }
+          if(skipmin==0){
             *qminptr = MIN(*qminptr, *qqfrom);
             *qmaxptr = MAX(*qmaxptr, *qqfrom);
           }
@@ -4473,8 +4487,11 @@ FILE_SIZE GetSliceData(slicedata *sd, const char *slicefilename, int time_frame,
           qqfrom = qq + IJKNODE(i, j, 0);
           for(k = 0;k<nzsp+koff;k++){
 //          qdataptr[kk+k] = qq[IJKNODE(i, j, k)];
-            if((sd->slice_filetype==SLICE_CELL_CENTER&&i!=0&&j!=0&&k!=0)||
-                sd->slice_filetype!=SLICE_CELL_CENTER){
+            skipmin = 0;
+            if(sd->slice_filetype == SLICE_CELL_CENTER){
+              if(j == 0 || k == 0 || (nxsp > 1 && i == 0))skipmin = 1;
+            }
+            if(skipmin==0){
               *qminptr = MIN(*qminptr, *qqfrom);
               *qmaxptr = MAX(*qmaxptr, *qqfrom);
             }
@@ -4843,6 +4860,9 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
         file_size = (int)return_filesize;
         sd->valmin_smv = qmin;
         sd->valmax_smv = qmax;
+        sd->valmin_fds = qmin;
+        sd->valmax_fds = qmax;
+
         if(sd->have_bound_file==NO){
           if(WriteFileBounds(sd->bound_file, qmin, qmax)==1){
             sd->have_bound_file = YES;
@@ -5006,13 +5026,40 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
     }
     GLUIGetMinMax(BOUND_SLICE, sd->label.shortlabel, &set_valmin, &qmin, &set_valmax, &qmax);
 #ifdef pp_BOUNDS
+    float valmin_loaded = 1.0, valmax_loaded = 0;
+    if(set_valmin != 0 || set_valmax != 0){
+      int i;
+
+      for(i = 0;i < nsliceinfo;i++){
+        slicedata *slicei;
+
+        slicei = sliceinfo + i;
+        if(slicei->loaded == 0 || strcmp(sd->label.shortlabel,slicei->label.shortlabel) != 0)continue;
+        if(valmin_loaded > valmax_loaded){
+          valmin_loaded = slicei->valmin_smv;
+          valmax_loaded = slicei->valmax_smv;
+        }
+        else{
+          valmin_loaded = MIN(valmin_loaded, slicei->valmin_smv);
+          valmax_loaded = MAX(valmax_loaded, slicei->valmax_smv);
+        }
+      }
+    }
     if(set_valmin_save == 0){
       qmin = qmin_save;
       SetSliceMin(set_valmin_save, qmin_save, sd->label.shortlabel);
     }
+    else{
+      qmin = valmin_loaded;
+      SetSliceMin(BOUND_LOADED_MIN, valmin_loaded, sd->label.shortlabel);
+    }
     if(set_valmax_save == 0){
       qmax = qmax_save;
       SetSliceMax(set_valmax_save, qmax_save, sd->label.shortlabel);
+    }
+    else{
+      qmax = valmax_loaded;
+      SetSliceMax(BOUND_LOADED_MAX, valmax_loaded, sd->label.shortlabel);
     }
 #endif
 #define BOUND_PERCENTILE_DRAW          120
