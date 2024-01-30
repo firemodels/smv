@@ -853,8 +853,8 @@ void GetSliceTempBounds(void){
       &qmin, &qmax, slicei->qslicedata, slicei->times, ntimes_slice_old, &slicei->ntimes,
       tload_step, use_tload_begin, use_tload_end, tload_begin, tload_end
     );
-    slicei->globalmin = qmin;
-    slicei->globalmax = qmax;
+    slicei->globalmin_slice = qmin;
+    slicei->globalmax_slice = qmax;
     slicei->valmin = qmin;
     slicei->valmax = qmax;
     slicei->valmin_data = qmin;

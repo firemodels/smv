@@ -4815,7 +4815,7 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
       }
       return_code=GetSliceCompressedData(sd->comp_file, sd->compression_type,
         use_tload_begin, use_tload_end, tload_begin, tload_end, sd->ncompressed, tload_step, sd->ntimes,
-        sd->times, sd->qslicedata_compressed, sd->compindex, &sd->globalmin, &sd->globalmax);
+        sd->times, sd->qslicedata_compressed, sd->compindex, &sd->globalmin_slice, &sd->globalmax_slice);
       if(return_code == 0){
         ReadSlice("", ifile, time_frame, time_value, UNLOAD,  set_slicecolor, &error);
         *errorcode = 1;
@@ -4844,8 +4844,8 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
       ntimes_slice_old = 0;
       if(flag==RELOAD){
         ntimes_slice_old = sd->ntimes_old;
-        qmin = sd->globalmin;
-        qmax = sd->globalmax;
+        qmin = sd->globalmin_slice;
+        qmax = sd->globalmax_slice;
       }
       else{
         qmin = 1.0e30;
@@ -4858,10 +4858,8 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
           );
         sd->have_restart = MakeTimesMap(sd->times, sd->times_map, sd->ntimes);
         file_size = (int)return_filesize;
-        sd->valmin_smv = qmin;
-        sd->valmax_smv = qmax;
-        sd->valmin_fds = qmin;
-        sd->valmax_fds = qmax;
+        sd->valmin_slice = qmin;
+        sd->valmax_slice = qmax;
 
         if(sd->have_bound_file==NO){
           if(WriteFileBounds(sd->bound_file, qmin, qmax)==1){
@@ -5036,12 +5034,12 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
         slicei = sliceinfo + i;
         if(slicei->loaded == 0 || strcmp(sd->label.shortlabel,slicei->label.shortlabel) != 0)continue;
         if(valmin_loaded > valmax_loaded){
-          valmin_loaded = slicei->valmin_smv;
-          valmax_loaded = slicei->valmax_smv;
+          valmin_loaded = slicei->valmin_slice;
+          valmax_loaded = slicei->valmax_slice;
         }
         else{
-          valmin_loaded = MIN(valmin_loaded, slicei->valmin_smv);
-          valmax_loaded = MAX(valmax_loaded, slicei->valmax_smv);
+          valmin_loaded = MIN(valmin_loaded, slicei->valmin_slice);
+          valmax_loaded = MAX(valmax_loaded, slicei->valmax_slice);
         }
       }
     }
@@ -5084,8 +5082,8 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
           if(slicei->loaded==0)continue;
           if(slicei->vloaded==0&&slicei->display==0)continue;
           if(slicei->slicefile_labelindex!=slicefile_labelindex)continue;
-          slicei->globalmin = qmin;
-          slicei->globalmax = qmax;
+          slicei->globalmin_slice = qmin;
+          slicei->globalmax_slice = qmax;
           slicei->valmin = qmin;
           slicei->valmax = qmax;
           slicei->valmin_data = qmin;
@@ -7686,8 +7684,8 @@ void Slice2Device(void){
       slicej = sliceinfo+j;
       if(slicej->loaded==0||strcmp(sb->label->longlabel, slicej->label.longlabel)!=0)continue;
       if(slice_plot_bound_option==1){
-        valmin = slicej->valmin_fds;
-        valmax = slicej->valmax_fds;
+        valmin = slicej->valmin_slice;
+        valmax = slicej->valmax_slice;
       }
       else{
         devicedata *devicej;

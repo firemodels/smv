@@ -2979,10 +2979,10 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
 
     UpdateLoadedLists();
     GetSliceDataBounds(slicei, &qmin, &qmax);
-    slicei->globalmin = qmin;
-    slicei->globalmax = qmax;
-    slicei->valmin_smv = qmin;
-    slicei->valmax_smv = qmax;
+    slicei->globalmin_slice = qmin;
+    slicei->globalmax_slice = qmax;
+    slicei->valmin_slice = qmin;
+    slicei->valmax_slice = qmax;
     if(slice_average_flag==1){
       int data_per_timestep, nvals2, ntimes;
       float *vals, *times;

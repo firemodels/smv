@@ -1291,8 +1291,8 @@ void BoundsUpdateWrapup(int file_type){
       slicedata *slicei;
 
       slicei = sliceinfo + i;
-      slicei->valmin_fds = fi->valmins[0];
-      slicei->valmax_fds = fi->valmaxs[0];
+      slicei->valmin_slice = fi->valmins[0];
+      slicei->valmax_slice = fi->valmaxs[0];
     }
     else if(file_type==BOUND_PATCH){
       patchdata *patchi;
@@ -1380,12 +1380,12 @@ void GetGlobalSliceBounds(int flag, int set_flag){
 
     slicei = sliceinfo+i;
     if(slicei->is_fed==1)continue;
-    if(slicei->valmin_fds>slicei->valmax_fds ||
+    if(slicei->valmin_slice>slicei->valmax_slice ||
        current_script_command==NULL || NOT_LOADRENDER)doit=1;
     if(flag==0){
        doit = 0;
-       slicei->valmin_fds = 0.0;
-       slicei->valmax_fds = 1.0;
+       slicei->valmin_slice = 0.0;
+       slicei->valmax_slice = 1.0;
     }
     if(force_bound_update == 1||nzoneinfo>0)doit = 1;
 
@@ -1398,13 +1398,13 @@ void GetGlobalSliceBounds(int flag, int set_flag){
       }
 #endif
       if(valmin>valmax)continue;
-      slicei->valmin_fds = valmin;
-      slicei->valmax_fds = valmax;
+      slicei->valmin_slice = valmin;
+      slicei->valmax_slice = valmax;
       slice_bounds_defined = 1;
     }
     else{
-      valmin = slicei->valmin_fds;
-      valmax = slicei->valmax_fds;
+      valmin = slicei->valmin_slice;
+      valmax = slicei->valmax_slice;
     }
     boundi = GetSliceBoundsInfo(slicei->label.shortlabel);
     if(boundi==NULL)continue;
@@ -1659,7 +1659,7 @@ void UpdateGlobalFEDSliceBounds(void){
 
     slicei = sliceinfo+i;
     if(slicei->is_fed==0||slicei->have_bound_file==0)continue;
-    if(slicei->valmin_fds>slicei->valmax_fds||
+    if(slicei->valmin_slice>slicei->valmax_slice||
        current_script_command==NULL || NOT_LOADRENDER){
 
 #ifdef pp_BOUNDS
@@ -1669,12 +1669,12 @@ void UpdateGlobalFEDSliceBounds(void){
 #endif
 
       if(valmin>valmax)continue;
-      slicei->valmin_fds = valmin;
-      slicei->valmax_fds = valmax;
+      slicei->valmin_slice = valmin;
+      slicei->valmax_slice = valmax;
     }
     else{
-      valmin = slicei->valmin_fds;
-      valmax = slicei->valmax_fds;
+      valmin = slicei->valmin_slice;
+      valmax = slicei->valmax_slice;
       slicei->have_bound_file = YES;
     }
     boundi = GetSliceBoundsInfo(slicei->label.shortlabel);

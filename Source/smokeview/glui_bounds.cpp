@@ -2228,12 +2228,12 @@ void SetLoadedSliceBounds(int *list, int nlist){
 
     slicei = sliceinfo+list[i];
     if(valmin>valmax){
-      valmin = slicei->valmin_fds;
-      valmax = slicei->valmax_fds;
+      valmin = slicei->valmin_slice;
+      valmax = slicei->valmax_slice;
     }
     else{
-      valmin = MIN(valmin, slicei->valmin_fds);
-      valmax = MAX(valmax, slicei->valmax_fds);
+      valmin = MIN(valmin, slicei->valmin_slice);
+      valmax = MAX(valmax, slicei->valmax_slice);
     }
   }
   for(i = 0; i<nsliceinfo; i++){
@@ -2243,12 +2243,12 @@ void SetLoadedSliceBounds(int *list, int nlist){
     if(slicei->loaded==0)continue;
     if(strcmp(slicei->label.shortlabel, label)!=0)continue;
     if(valmin>valmax){
-      valmin = slicei->valmin_fds;
-      valmax = slicei->valmax_fds;
+      valmin = slicei->valmin_slice;
+      valmax = slicei->valmax_slice;
     }
     else{
-      valmin = MIN(valmin, slicei->valmin_fds);
-      valmax = MAX(valmax, slicei->valmax_fds);
+      valmin = MIN(valmin, slicei->valmin_slice);
+      valmax = MAX(valmax, slicei->valmax_slice);
     }
   }
   if(valmin<=valmax){

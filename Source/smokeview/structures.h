@@ -1425,10 +1425,9 @@ typedef struct _slicedata {
   int skipdup;
   int setvalmin, setvalmax;
   float valmin, valmax;
-  float globalmin, globalmax;
+  float globalmin_slice, globalmax_slice;
   float valmin_data, valmax_data;
-  float valmin_fds, valmax_fds;   // read in from .bnd files
-  float valmin_smv, valmax_smv;   // computed by smokeview
+  float valmin_slice, valmax_slice;
   float diff_valmin,  diff_valmax;
   flowlabels label;
   float *qslicedata, *qsliceframe, *times, *qslice;

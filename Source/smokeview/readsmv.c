@@ -5860,12 +5860,10 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
   sd->ntimes = 0;
   sd->skipdup = 0;
   sd->ntimes_old = 0;
-  sd->globalmax = -1.0e30;
-  sd->globalmin = -sd->globalmax;
-  sd->valmin_smv = 1.0;
-  sd->valmax_smv = 0.0;
-  sd->valmin_fds = 1.0;
-  sd->valmax_fds = 0.0;
+  sd->globalmax_slice = -1.0e30;
+  sd->globalmin_slice = -sd->globalmax_slice;
+  sd->valmin_slice = 1.0;
+  sd->valmax_slice = 0.0;
   sd->imap = NULL;
   sd->jmap = NULL;
   sd->kmap = NULL;

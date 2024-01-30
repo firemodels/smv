@@ -800,8 +800,8 @@ void UpdateSliceBounds2(void){
     GLUIGetMinMax(BOUND_SLICE, sd->label.shortlabel, &set_valmin, &qmin, &set_valmax, &qmax);
     sd->valmin      = qmin;
     sd->valmax      = qmax;
-    sd->globalmin   = qmin;
-    sd->globalmax   = qmax;
+    sd->globalmin_slice   = qmin;
+    sd->globalmax_slice   = qmax;
     sd->valmin_data = qmin;
     sd->valmax_data = qmax;
     SetSliceColors(qmin, qmax, sd, 0, &error);
@@ -818,8 +818,8 @@ void UpdateSliceBounds2(void){
     GLUIGetMinMax(BOUND_SLICE, sd->label.shortlabel, &set_valmin, &qmin, &set_valmax, &qmax);
     sd->valmin = qmin;
     sd->valmax = qmax;
-    sd->globalmin = qmin;
-    sd->globalmax = qmax;
+    sd->globalmin_slice = qmin;
+    sd->globalmax_slice = qmax;
     sd->valmin_data = qmin;
     sd->valmax_data = qmax;
     SetSliceColors(qmin, qmax, sd, 0, &error);
