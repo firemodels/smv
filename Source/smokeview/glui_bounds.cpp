@@ -2294,12 +2294,12 @@ void SetLoadedPatchBounds(int *list, int nlist){
   for(i = 0; i<nlist; i++){
     patchi = patchinfo+list[i];
     if(valmin>valmax){
-      valmin = patchi->valmin_fds;
-      valmax = patchi->valmax_fds;
+      valmin = patchi->valmin_patch;
+      valmax = patchi->valmax_patch;
     }
     else{
-      valmin = MIN(valmin, patchi->valmin_fds);
-      valmax = MAX(valmax, patchi->valmax_fds);
+      valmin = MIN(valmin, patchi->valmin_patch);
+      valmax = MAX(valmax, patchi->valmax_patch);
     }
   }
   for(i = 0; i<npatchinfo; i++){
@@ -2307,12 +2307,12 @@ void SetLoadedPatchBounds(int *list, int nlist){
     if(patchi->loaded==0)continue;
     if(strcmp(patchi->label.shortlabel, label)!=0)continue;
     if(valmin>valmax){
-      valmin = patchi->valmin_fds;
-      valmax = patchi->valmax_fds;
+      valmin = patchi->valmin_patch;
+      valmax = patchi->valmax_patch;
     }
     else{
-      valmin = MIN(valmin, patchi->valmin_fds);
-      valmax = MAX(valmax, patchi->valmax_fds);
+      valmin = MIN(valmin, patchi->valmin_patch);
+      valmax = MAX(valmax, patchi->valmax_patch);
     }
   }
   if(valmin<=valmax){

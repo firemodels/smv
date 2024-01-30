@@ -2351,8 +2351,8 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
       patchmax_global = MAX(patchmax_global, meshi->patchval[i]);
     }
 #endif
-    patchi->valmin_smv = patchmin_global;
-    patchi->valmax_smv = patchmax_global;
+    patchi->valmin_patch = patchmin_global;
+    patchi->valmax_patch = patchmax_global;
     if(patchi->have_bound_file==NO){
       if(WriteFileBounds(patchi->bound_file, patchmin_global, patchmax_global)==1){
         patchi->have_bound_file = YES;

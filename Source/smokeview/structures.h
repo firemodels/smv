@@ -1689,8 +1689,7 @@ typedef struct _patchdata {
   int firstshort;
   int compression_type, compression_type_temp;
   int setvalmin, setvalmax;
-  float valmin_fds, valmax_fds;   // read in from .bnd files
-  float valmin_smv, valmax_smv;   // computed by smokeview
+  float valmin_patch, valmax_patch;
   float valmin, valmax;
   int setchopmin, setchopmax;
   float chopmin, chopmax;

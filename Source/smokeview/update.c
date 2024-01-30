@@ -2246,7 +2246,7 @@ void OutputBounds(void){
 
 // boundary file bounds
   if(update_patch_bounds != -1){
-    float valmin_fds=1.0, valmax_fds=0.0, valmin_smv=1.0, valmax_smv=0.0;
+    float valmin_patch=1.0, valmax_patch=0.0;
     char *label, *unit;
     int i;
 
@@ -2263,26 +2263,18 @@ void OutputBounds(void){
       labeli = patchi->label.longlabel;
       if(strcmp(label,labeli)!=0)continue;
       if(nmeshes>1&&bounds_each_mesh==1){
-        OutputMinMax(meshi->label, label, unit, patchi->valmin_fds, patchi->valmax_fds, patchi->valmin_smv, patchi->valmax_smv);
+        OutputMinMax(meshi->label, label, unit, patchi->valmin_patch, patchi->valmax_patch, patchi->valmin_patch, patchi->valmax_patch);
       }
-      if(valmin_fds>valmax_fds){
-        valmin_fds = patchi->valmin_fds;
-        valmax_fds = patchi->valmax_fds;
-      }
-      else{
-        valmin_fds = MIN(patchi->valmin_fds, valmin_fds);
-        valmax_fds = MAX(patchi->valmax_fds, valmax_fds);
-      }
-      if(valmin_smv>valmax_smv){
-        valmin_smv = patchi->valmin_smv;
-        valmax_smv = patchi->valmax_smv;
+      if(valmin_patch>valmax_patch){
+        valmin_patch = patchi->valmin_patch;
+        valmax_patch = patchi->valmax_patch;
       }
       else{
-        valmin_smv = MIN(patchi->valmin_smv, valmin_smv);
-        valmax_smv = MAX(patchi->valmax_smv, valmax_smv);
+        valmin_patch = MIN(patchi->valmin_patch, valmin_patch);
+        valmax_patch = MAX(patchi->valmax_patch, valmax_patch);
       }
     }
-    OutputMinMax("global", label, unit, valmin_fds, valmax_fds, valmin_smv, valmax_smv);
+    OutputMinMax("global", label, unit, valmin_patch, valmax_patch, valmin_patch, valmax_patch);
   }
 
 // particle file bounds

@@ -5294,10 +5294,8 @@ int ParseBNDFProcess(bufferstreamdata *stream, char *buffer, int *nn_patch_in, i
     patchi->ijk[i] = -1;
   }
   patchi->finalize          = 1;
-  patchi->valmin_fds        = 1.0;
-  patchi->valmax_fds        = 0.0;
-  patchi->valmin_smv        = 1.0;
-  patchi->valmax_smv        = 0.0;
+  patchi->valmin_patch        = 1.0;
+  patchi->valmax_patch        = 0.0;
   patchi->skip              = 0;
   patchi->version           = version;
   patchi->ntimes            = 0;

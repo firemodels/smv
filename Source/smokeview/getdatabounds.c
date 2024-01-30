@@ -301,12 +301,12 @@ void GetGlobalPatchBounds(int flag, int set_flag){
     patchi = patchinfo + i;
 
     doit = 0;
-    if(patchi->valmin_fds > patchi->valmax_fds ||
+    if(patchi->valmin_patch > patchi->valmax_patch ||
       current_script_command == NULL || NOT_LOADRENDER)doit = 1;
     if(flag == 0){
       doit = 0;
-      patchi->valmin_fds = 0.0;
-      patchi->valmax_fds = 1.0;
+      patchi->valmin_patch = 0.0;
+      patchi->valmax_patch = 1.0;
     }
     if(force_bound_update == 1)doit = 1;
     if(doit==1){
@@ -316,13 +316,13 @@ void GetGlobalPatchBounds(int flag, int set_flag){
       if(GetBounds(patchi->bound_file, &valmin, &valmax, &patchboundsinfo, &npatchboundsinfo)==1)patchi->have_bound_file = YES;
 #endif
       if(valmin > valmax)continue;
-      patchi->valmin_fds = valmin;
-      patchi->valmax_fds = valmax;
+      patchi->valmin_patch = valmin;
+      patchi->valmax_patch = valmax;
       patch_bounds_defined = 1;
     }
     else{
-      valmin = patchi->valmin_fds;
-      valmax = patchi->valmax_fds;
+      valmin = patchi->valmin_patch;
+      valmax = patchi->valmax_patch;
     }
     boundi = GetPatchBoundsInfo(patchi->label.shortlabel);
     if(boundi == NULL)continue;
@@ -1298,8 +1298,8 @@ void BoundsUpdateWrapup(int file_type){
       patchdata *patchi;
 
       patchi = patchinfo + i;
-      patchi->valmin_fds = fi->valmins[0];
-      patchi->valmax_fds = fi->valmaxs[0];
+      patchi->valmin_patch = fi->valmins[0];
+      patchi->valmax_patch = fi->valmaxs[0];
     }
     else if(file_type==BOUND_PLOT3D){
       plot3ddata *plot3di;
