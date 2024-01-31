@@ -2528,8 +2528,8 @@ void GLUI2GlobalBoundaryBounds(const char *key){
 
     patchi = patchinfo + i;
     if(strcmp(key,"")==0||strcmp(patchi->label.shortlabel,key)==0){
-      patchi->valmin = glui_patchmin;
-      patchi->valmax = glui_patchmax;
+      patchi->valmin_glui = glui_patchmin;
+      patchi->valmax_glui = glui_patchmax;
 
       patchi->chopmin=patchchopmin;
       patchi->chopmax=patchchopmax;
@@ -2549,8 +2549,8 @@ void Global2GLUIBoundaryBounds(const char *key){
 
     patchi = patchinfo + i;
     if(strcmp(patchi->label.shortlabel,key)==0){
-      glui_patchmin = patchi->valmin;
-      glui_patchmax = patchi->valmax;
+      glui_patchmin = patchi->valmin_glui;
+      glui_patchmax = patchi->valmax_glui;
 
       patchchopmin=patchi->chopmin;
       patchchopmax=patchi->chopmax;

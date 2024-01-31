@@ -347,8 +347,8 @@ void GetGlobalPatchBounds(int flag, int set_flag){
 
       patchj = patchinfo + j;
       if(strcmp(patchj->label.shortlabel, boundi->shortlabel) == 0){
-        patchj->valmin = boundi->dlg_global_valmin;
-        patchj->valmax = boundi->dlg_global_valmax;
+        patchj->valmin_glui = boundi->dlg_global_valmin;
+        patchj->valmax_glui = boundi->dlg_global_valmax;
       }
     }
   }
@@ -2015,8 +2015,6 @@ void GetAllPartBounds(void){
       fclose(stream);
       for(i = 0; i<npartinfo; i++){
         partdata *parti;
-        int j;
-
         parti              = partinfo+i;
         parti->boundstatus = PART_BOUND_DEFINED;
         parti->bounds_set  = 1;

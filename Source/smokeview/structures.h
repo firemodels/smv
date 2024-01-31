@@ -1689,7 +1689,7 @@ typedef struct _patchdata {
   int compression_type, compression_type_temp;
   int setvalmin, setvalmax;
   float valmin_patch, valmax_patch;
-  float valmin, valmax;
+  float valmin_glui,  valmax_glui;
   int setchopmin, setchopmax;
   float chopmin, chopmax;
   float diff_valmin, diff_valmax;
