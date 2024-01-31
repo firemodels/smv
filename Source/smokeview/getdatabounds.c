@@ -1977,16 +1977,11 @@ void GetAllPartBounds(void){
   FILE *stream = NULL;
 
   THREADcontrol(partload_threads, THREAD_LOCK);
-  for(i = 0; i<npartinfo; i++){
-    partdata *parti;
-
-    parti = partinfo+i;
-    if(globalmin_part==NULL){
-      NewMemory((void **)&globalmin_part, npart5prop*sizeof(float));
-    }
-    if(globalmax_part==NULL){
-      NewMemory((void **)&globalmax_part, npart5prop*sizeof(float));
-    }
+  if(globalmin_part == NULL){
+    NewMemory((void **)&globalmin_part, npart5prop*sizeof(float));
+  }
+  if(globalmax_part == NULL){
+    NewMemory((void **)&globalmax_part, npart5prop*sizeof(float));
   }
 
   // find min/max for each particle file
