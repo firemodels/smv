@@ -5442,11 +5442,9 @@ void LoadMultiSliceMenu2(int value){
       }
       break;
       case MENU_LOAD_SPECIFIED:
-        sliceload_option = SLICE_LOAD_SPECIFIED;
-        GLUIUpdateSliceLoadOption();
-        break;
       case MENU_LOADALL_XYZ:
-        sliceload_option = SLICE_LOADALL_XYZ;
+        if(value==MENU_LOAD_SPECIFIED)sliceload_option = SLICE_LOAD_SPECIFIED;
+        if(value == MENU_LOADALL_XYZ)sliceload_option = SLICE_LOADALL_XYZ;
         GLUIUpdateSliceLoadOption();
         updatemenu = 1;
         break;
