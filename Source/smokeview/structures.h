@@ -1425,7 +1425,6 @@ typedef struct _slicedata {
   int setvalmin, setvalmax;
   float valmin, valmax;
   float globalmin_slice, globalmax_slice;
-  float valmin_data, valmax_data;
   float valmin_slice, valmax_slice;
   float diff_valmin,  diff_valmax;
   flowlabels label;

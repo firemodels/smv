@@ -1833,11 +1833,11 @@ void UpdateSliceBounds(void){
         }
       }
       if(minflag2==0){
-        valmin_data=sliceinfo[j].valmin_data;
+        valmin_data=sliceinfo[j].globalmin_slice;
         minflag2=1;
       }
       else{
-        if(slicej->valmin_data<valmin_data)valmin_data=slicej->valmin_data;
+        valmin_data=MIN(valmin_data, slicej->globalmin_slice);
       }
     }
     for(jj=0;jj<nslice_loaded;jj++){
@@ -1860,11 +1860,11 @@ void UpdateSliceBounds(void){
         }
       }
       if(maxflag2==0){
-        valmax_data=slicej->valmax_data;
+        valmax_data=slicej->globalmax_slice;
         maxflag2=1;
       }
       else{
-        if(slicej->valmax_data>valmax_data)valmax_data=slicej->valmax_data;
+        valmax_data=MAX(valmax_data, slicej->globalmax_slice);
       }
     }
     if(minflag==1)slicebounds[i].dlg_valmin=valmin;
@@ -5086,8 +5086,6 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
           slicei->globalmax_slice = qmax;
           slicei->valmin = qmin;
           slicei->valmax = qmax;
-          slicei->valmin_data = qmin;
-          sd->valmax_data = qmax;
           for(ii = 0; ii<256; ii++){
             slicei->qval256[ii] = (qmin*(255 - ii) + qmax*ii) / 255;
           }

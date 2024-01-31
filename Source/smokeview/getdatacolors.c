@@ -802,8 +802,6 @@ void UpdateSliceBounds2(void){
     sd->valmax      = qmax;
     sd->globalmin_slice   = qmin;
     sd->globalmax_slice   = qmax;
-    sd->valmin_data = qmin;
-    sd->valmax_data = qmax;
     SetSliceColors(qmin, qmax, sd, 0, &error);
   }
   for(ii = 0; ii<nvsliceinfo; ii++){
@@ -820,8 +818,6 @@ void UpdateSliceBounds2(void){
     sd->valmax = qmax;
     sd->globalmin_slice = qmin;
     sd->globalmax_slice = qmax;
-    sd->valmin_data = qmin;
-    sd->valmax_data = qmax;
     SetSliceColors(qmin, qmax, sd, 0, &error);
   }
 }

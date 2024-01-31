@@ -857,8 +857,6 @@ void GetSliceTempBounds(void){
     slicei->globalmax_slice = qmax;
     slicei->valmin = qmin;
     slicei->valmax = qmax;
-    slicei->valmin_data = qmin;
-    slicei->valmax_data = qmax;
     FREEMEMORY(slicei->qslicedata);
     FREEMEMORY(slicei->times);
   }

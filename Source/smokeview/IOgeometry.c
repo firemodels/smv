@@ -2999,8 +2999,8 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
     }
     slicei->valmin = qmin;
     slicei->valmax = qmax;
-    slicei->valmin_data = qmin;
-    slicei->valmax_data = qmax;
+    slicei->globalmin_slice = qmin;
+    slicei->globalmax_slice = qmax;
     for (i = 0; i < 256; i++){
       slicei->qval256[i] = (qmin*(255 - i) + qmax*i) / 255;
     }
