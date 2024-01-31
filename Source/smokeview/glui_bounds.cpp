@@ -2370,6 +2370,7 @@ GLUI_Rollout     *ROLLOUT_split=NULL;
 GLUI_Panel *PANEL_vector1=NULL, *PANEL_vector2=NULL;
 GLUI_Panel *PANEL_partread = NULL;
 GLUI_Panel *PANEL_slice_misc=NULL, *PANEL_slice_vector=NULL, *PANEL_showslice=NULL;
+GLUI_Panel *PANEL_sliceload_option = NULL;
 GLUI_Panel *PANEL_slicevalues = NULL;
 GLUI_Panel *PANEL_plot3d=NULL;
 GLUI_Panel *PANEL_setmesh = NULL;
@@ -2556,6 +2557,7 @@ GLUI_Checkbox *CHECKBOX_show_intersection_box=NULL;
 GLUI_Checkbox *CHECKBOX_show_intersected_meshes = NULL;
 GLUI_Checkbox *CHECKBOX_load_only_when_unloaded = NULL;
 
+GLUI_RadioGroup *RADIO_sliceload_option=NULL;
 GLUI_RadioGroup *RADIO_iso_setmin=NULL;
 GLUI_RadioGroup *RADIO_iso_setmax=NULL;
 GLUI_RadioGroup *RADIO_transparency_option=NULL;
@@ -2575,6 +2577,7 @@ GLUI_RadioGroup *RADIO_plot3d_display=NULL;
 GLUI_RadioGroup *RADIO2_plot3d_display = NULL;
 GLUI_RadioButton *RADIO_button_cutcell = NULL;
 
+GLUI_RadioButton *RADIOBUTTON_sliceload_option[4];
 GLUI_RadioButton *RADIOBUTTON_plot3d_iso_hidden=NULL;
 GLUI_RadioButton *RADIOBUTTON_zone_permin=NULL;
 GLUI_RadioButton *RADIOBUTTON_zone_permax=NULL;
@@ -2720,6 +2723,15 @@ extern "C" void GLUIRefreshDialogs(void){
   if(glui_trainer!=NULL)glui_trainer->refresh();
 }
 #endif
+
+/* ------------------ GLUIUpdateSliceLoadOption ------------------------ */
+
+extern "C" void GLUIUpdateSliceLoadOption(void){
+  if(have_x_slices == 0&&have_y_slices == 0&&have_z_slices == 0){
+    RADIOBUTTON_sliceload_option[1]->disable();
+  }
+  RADIO_sliceload_option->set_int_val(sliceload_option);
+}
 
 /* ------------------ GLUIUpdateSliceSkip ------------------------ */
 
@@ -4888,6 +4900,10 @@ hvacductboundsCPP.setup("hvac", ROLLOUT_hvacduct, hvacductbounds_cpp, nhvacductb
       glui_bounds->add_checkbox_to_panel(ROLLOUT_slice_settings, _("terrain slice overlap"), &terrain_slice_overlap);
       glui_bounds->add_checkbox_to_panel(ROLLOUT_slice_settings, _("actual agl offset"), &agl_offset_actual);
     }
+    PANEL_sliceload_option = glui_bounds->add_panel_to_panel(ROLLOUT_slice_settings, "Load option", true);
+    RADIO_sliceload_option = glui_bounds->add_radiogroup_to_panel(PANEL_sliceload_option, &sliceload_option, SLICE_OPTION, GLUISliceBoundCB);
+    RADIOBUTTON_sliceload_option[0] = glui_bounds->add_radiobutton_to_group(RADIO_sliceload_option, _("Load selected slice"));
+    RADIOBUTTON_sliceload_option[1] = glui_bounds->add_radiobutton_to_group(RADIO_sliceload_option, _("Load all x, y or z slices"));
   }
 
   // ----------------------------------- Time ----------------------------------------
@@ -5988,6 +6004,9 @@ extern "C" void GLUISliceBoundCB(int var){
       if(force_exponential==1&&force_fixedpoint==1)force_exponential=0;
       updatemenu = 1;
       update_colorbar_digits = 1;
+      break;
+    case SLICE_OPTION:
+      updatemenu = 1;
       break;
     case SLICE_SKIP:
       slice_skip = CLAMP(slice_skip,1,max_slice_skip);
