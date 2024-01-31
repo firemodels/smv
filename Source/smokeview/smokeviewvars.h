@@ -1492,6 +1492,10 @@ SVEXTERN float SVDECL(pref,101325.0),SVDECL(pamb,0.0),SVDECL(tamb,293.15);
 SVEXTERN int SVDECL(ntc_total,0.0), SVDECL(nspr_total,0.0), SVDECL(nheat_total,0.0);
 SVEXTERN int SVDECL(n_devices,0);
 
+SVEXTERN int SVDECL(sliceload_option, 0);
+SVEXTERN int SVDECL(have_x_slices, 0), SVDECL(have_y_slices, 0), SVDECL(have_z_slices, 0);
+SVEXTERN int SVDECL(update_load_slices, 0);
+
 SVEXTERN int SVDECL(npartinfo,0), SVDECL(nplot3dinfo,0), SVDECL(npatchinfo,0);
 SVEXTERN float SVDECL(*globalmin_part, NULL), SVDECL(*globalmax_part, NULL);
 

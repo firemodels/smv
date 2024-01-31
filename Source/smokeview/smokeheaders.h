@@ -20,6 +20,7 @@ EXTERNCPP void *ReadVolsmokeAllFramesAllMeshes2(void *arg);
 EXTERNCPP void *SetupAllIsosurfaces(void *arg);
 
 //*** glui_bounds.cpp headers
+EXTERNCPP  void GLUIUpdateSliceLoadOption(void);
 EXTERNCPP void GLUIUpdateMeshBounds(void);
 EXTERNCPP void DrawBoxMinMax(float *bbmin, float *bbmax, float *box_color);
 EXTERNCPP void DrawBox(float *bb, float *box_color);

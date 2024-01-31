@@ -2479,6 +2479,33 @@ void UpdateDisplay(void){
     update_setvents    = 1;
     update_setcvents   = 1;
   }
+  if(update_load_slices == 1){
+    int i;
+
+    update_load_slices = 0;
+    for(i = 0;i < nsliceinfo;i++){
+      slicedata *slicei;
+
+      slicei = sliceinfo + i;
+      if(slicei->idir == XDIR){
+        have_x_slices = 1;
+        if(have_y_slices == 1 && have_z_slices == 1)break;
+        continue;
+      }
+      if(slicei->idir == YDIR){
+        have_y_slices = 1;
+        if(have_x_slices == 1 && have_z_slices == 1)break;
+        continue;
+      }
+      if(slicei->idir == ZDIR){
+        have_z_slices = 1;
+        if(have_x_slices == 1 && have_y_slices == 1)break;
+        continue;
+      }
+    }
+    GLUIUpdateSliceLoadOption();
+    updatemenu = 1;
+  }
   if(update_setvents==1){
     SetVentDirs();
     update_setvents=0;
