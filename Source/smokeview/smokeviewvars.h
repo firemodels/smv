@@ -1493,6 +1493,7 @@ SVEXTERN int SVDECL(ntc_total,0.0), SVDECL(nspr_total,0.0), SVDECL(nheat_total,0
 SVEXTERN int SVDECL(n_devices,0);
 
 SVEXTERN int SVDECL(npartinfo,0), SVDECL(nplot3dinfo,0), SVDECL(npatchinfo,0);
+SVEXTERN float SVDECL(*globalmin_part, NULL), SVDECL(*globalmax_part, NULL);
 
 SVEXTERN int SVDECL(nsliceinfo,0),           SVDECL(nvsliceinfo,0);
 SVEXTERN int SVDECL(nmultisliceinfo,0),      SVDECL(nmultivsliceinfo,0);

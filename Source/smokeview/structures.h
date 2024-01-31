@@ -1267,7 +1267,6 @@ typedef struct _partdata {
   histogramdata **histograms;
   int hist_update;
   int bounds_set;
-  float *globalmin_part, *globalmax_part;
   float *valmin_part,    *valmax_part;
   int nfilebounds;
   unsigned char *vis_part;
