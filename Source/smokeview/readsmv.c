@@ -2804,7 +2804,7 @@ void UpdateBoundInfo(void){
 
       isoi = isoinfo + i;
       if(isoi->dataflag==0)continue;
-      isoi->firstshort=1;
+      isoi->firstshort_iso=1;
       isoi->setvalmin=0;
       isoi->setvalmax=0;
       isoi->valmin=1.0;
@@ -2827,7 +2827,7 @@ void UpdateBoundInfo(void){
         ison = isoinfo + n;
         if(ison->dataflag==0)continue;
         if(strcmp(isoi->color_label.shortlabel,ison->color_label.shortlabel)==0){
-          isoi->firstshort=0;
+          isoi->firstshort_iso=0;
           niso_bounds--;
           break;
         }
@@ -2896,7 +2896,7 @@ void UpdateBoundInfo(void){
       boundsdata *sbi;
 
       patchi = patchinfo + i;
-      patchi->firstshort=1;
+      patchi->firstshort_patch=1;
       if(strncmp(patchi->label.shortlabel,"temp",4)==0||
          strncmp(patchi->label.shortlabel,"TEMP",4)==0){
         canshow_threshold=1;
@@ -2909,7 +2909,7 @@ void UpdateBoundInfo(void){
 
         patchn = patchinfo + n;
         if(strcmp(patchi->label.shortlabel,patchn->label.shortlabel)==0){
-          patchi->firstshort=0;
+          patchi->firstshort_patch = 0;
           npatch2--;
           break;
         }
@@ -2936,7 +2936,7 @@ void UpdateBoundInfo(void){
 
         patchn = patchinfo+n;
         if(strcmp(patchi->label.shortlabel, patchn->label.shortlabel)==0){
-          patchi->firstshort = 0;
+          patchi->firstshort_patch = 0;
           npatchbounds--;
           break;
         }
@@ -2969,7 +2969,6 @@ void UpdateBoundInfo(void){
         hi = hvacnodevalsinfo->node_vars + i - hvacductvalsinfo->n_duct_vars;
         hbi = hvacnodebounds + nhvacnodebounds;
       }
-      hi->firstshort=1;
       hi->valmin=1.0;
       hi->valmax=0.0;
       hi->setvalmin=0;
@@ -3007,7 +3006,6 @@ void UpdateBoundInfo(void){
           hn = hvacnodevalsinfo->node_vars + n - hvacductvalsinfo->n_duct_vars;
         }
         if(strcmp(hi->label.shortlabel,hn->label.shortlabel)==0){
-          hi->firstshort=0;
           if(n<hvacductvalsinfo->n_duct_vars){
             nhvacductbounds--;
           }
@@ -16554,7 +16552,7 @@ void WriteIniLocal(FILE *fileout){
     patchdata *patchi;
 
     patchi = patchinfo + i;
-    if(patchi->firstshort == 1){
+    if(patchi->firstshort_patch == 1){
       int set_valmin=0, set_valmax=0;
       float valmin=1.0, valmax=0.0;
       char *label;

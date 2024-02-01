@@ -463,7 +463,7 @@ int GetIsoTType(const isodata *isoi){
     isoi2 = isoinfo + j;
 
     if(isoi2->dataflag == 0)continue;
-    if(isoi2->firstshort == 0)continue;
+    if(isoi2->firstshort_iso == 0)continue;
     if(strcmp(isoi->color_label.longlabel, isoi2->color_label.longlabel) == 0)return jj;
     jj++;
   }

@@ -629,7 +629,7 @@ typedef struct _isodata {
   int type;
   int setvalmin, setvalmax;
   float valmin, valmax;
-  int firstshort;
+  int firstshort_iso;
   flowlabels surface_label, color_label;
   geomdata *geominfo;
   int blocknumber,display,loaded,loading;
@@ -1354,7 +1354,6 @@ typedef struct _hvacvaldata{
   float *vals, valmin, valmax;
   int setvalmin, setvalmax;
   int vis, nvals;
-  int firstshort;
   char  colorlabels[12][11];
   float colorvalues[12];
   float levels256[256];
@@ -1683,7 +1682,7 @@ typedef struct _patchdata {
   int cbuffer_size;
   int boundary;
   int inuse,inuse_getbounds;
-  int firstshort;
+  int firstshort_patch;
   int compression_type, compression_type_temp;
   int setvalmin, setvalmax;
   float valmin_patch, valmax_patch;
