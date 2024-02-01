@@ -7,8 +7,9 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 #define SNIFF_ERRORS(f)
 #endif
 
-#define SLICE_LOAD_SPECIFIED 0
-#define SLICE_LOADALL_XYZ    1
+#define SLICE_LOAD_SPECIFIED    0
+#define SLICE_LOADALL_XorYorZ   1
+#define SLICE_LOADALL_XandYandZ 2
 
 #define BOUND_UPDATE_COLORS       110
 #define BOUND_DONTUPDATE_COLORS   128

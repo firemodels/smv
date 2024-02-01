@@ -45,12 +45,13 @@ float     part_load_time;
 #define MENU_KEEP_FINE -3
 #define MENU_KEEP_COARSE -4
 
-#define MENU_SLICECOLORDEFER -5
+#define MENU_SLICECOLORDEFER    -5
 #define MENU_SPLITSLICES       -10
-#define MENU_LOAD_SPECIFIED -12
-#define MENU_LOADALL_XYZ    -13
-
 #define MENU_SPLITSLICES_DEBUG -11
+
+#define MENU_LOAD_SPECIFIED    -12
+#define MENU_LOADALL_XorYorZ   -13
+#define MENU_LOADALL_XandYandZ -14
 
 #define MENU_SLICE_FILE_SIZES -9
 
@@ -5407,44 +5408,44 @@ void LoadMultiSliceMenu2(int value){
   else{
     switch(value){
       case UNLOAD_ALL:
-      LoadSliceMenu(UNLOAD_ALL);
-      break;
+        LoadSliceMenu(UNLOAD_ALL);
+        break;
       case MENU_KEEP_ALL:
-      if(slicedup_option!=SLICEDUP_KEEPALL){
-        slicedup_option = SLICEDUP_KEEPALL;
-        updatemenu = 1;
-        GLUTPOSTREDISPLAY;
-        SetSliceParmInfo(&sliceparminfo);
-        UpdateSliceDups(&sliceparminfo);
-        GLUIUpdateSliceDupDialog();
-      }
-      break;
-
+        if(slicedup_option!=SLICEDUP_KEEPALL){
+          slicedup_option = SLICEDUP_KEEPALL;
+          updatemenu = 1;
+          GLUTPOSTREDISPLAY;
+          SetSliceParmInfo(&sliceparminfo);
+          UpdateSliceDups(&sliceparminfo);
+          GLUIUpdateSliceDupDialog();
+        }
+        break;
       case  MENU_KEEP_COARSE:
-      if(slicedup_option!=SLICEDUP_KEEPCOARSE){
-        slicedup_option = SLICEDUP_KEEPCOARSE;
-        updatemenu = 1;
-        GLUTPOSTREDISPLAY;
-        SetSliceParmInfo(&sliceparminfo);
-        UpdateSliceDups(&sliceparminfo);
-        GLUIUpdateSliceDupDialog();
-      }
-      break;
-
+        if(slicedup_option!=SLICEDUP_KEEPCOARSE){
+          slicedup_option = SLICEDUP_KEEPCOARSE;
+          updatemenu = 1;
+          GLUTPOSTREDISPLAY;
+          SetSliceParmInfo(&sliceparminfo);
+          UpdateSliceDups(&sliceparminfo);
+          GLUIUpdateSliceDupDialog();
+        }
+        break;
       case MENU_KEEP_FINE:
-      if(slicedup_option!=SLICEDUP_KEEPFINE){
-        slicedup_option = SLICEDUP_KEEPFINE;
-        updatemenu = 1;
-        GLUTPOSTREDISPLAY;
-        SetSliceParmInfo(&sliceparminfo);
-        UpdateSliceDups(&sliceparminfo);
-        GLUIUpdateSliceDupDialog();
-      }
-      break;
+        if(slicedup_option!=SLICEDUP_KEEPFINE){
+          slicedup_option = SLICEDUP_KEEPFINE;
+          updatemenu = 1;
+          GLUTPOSTREDISPLAY;
+          SetSliceParmInfo(&sliceparminfo);
+          UpdateSliceDups(&sliceparminfo);
+          GLUIUpdateSliceDupDialog();
+        }
+        break;
       case MENU_LOAD_SPECIFIED:
-      case MENU_LOADALL_XYZ:
-        if(value==MENU_LOAD_SPECIFIED)sliceload_option = SLICE_LOAD_SPECIFIED;
-        if(value == MENU_LOADALL_XYZ)sliceload_option = SLICE_LOADALL_XYZ;
+      case MENU_LOADALL_XorYorZ:
+      case MENU_LOADALL_XandYandZ:
+        if(value == MENU_LOAD_SPECIFIED)sliceload_option    = SLICE_LOAD_SPECIFIED;
+        if(value == MENU_LOADALL_XorYorZ)sliceload_option   = SLICE_LOADALL_XorYorZ;
+        if(value == MENU_LOADALL_XandYandZ)sliceload_option = SLICE_LOADALL_XandYandZ;
         GLUIUpdateSliceLoadOption();
         updatemenu = 1;
         break;
@@ -5488,7 +5489,10 @@ void LoadMultiSliceMenu(int value){
 
   if(value < 0 || sliceload_option == SLICE_LOAD_SPECIFIED)do_single = 1;
   if(value >= 0){
-    if(sliceinfo[value].volslice == 1)do_single = 1;
+    slicedata *slice0;
+
+    slice0 = sliceinfo + multisliceinfo[value].islices[0];
+    if(slice0->volslice == 1)do_single = 1;
   }
   if(do_single==1){
     LoadMultiSliceMenu2(value);
@@ -5508,9 +5512,9 @@ void LoadMultiSliceMenu(int value){
 
       mslicei = multisliceinfo + i;
       slicei = sliceinfo + mslicei->islices[0];
-      if(slicei->idir != idir || slice_filetype != slicei->slice_filetype)continue;
-      if(slicei->volslice == 1)continue;
+      if(slice_filetype != slicei->slice_filetype || slicei->volslice == 1)continue;
       if(strcmp(label, slicei->label.shortlabel) != 0)continue;
+      if(sliceload_option == SLICE_LOADALL_XorYorZ && slicei->idir != idir)continue;
       LoadMultiSliceMenu2(i);
     }
   }
@@ -8043,10 +8047,13 @@ void InitLoadMultiSliceMenu(int *loadmultislicemenuptr, int *loadsubmslicemenu, 
 
   if(nmultisliceinfo>0)glutAddMenuEntry("-", MENU_DUMMY);
   if(have_x_slices==1||have_y_slices==1||have_z_slices==1){
-    if(sliceload_option == SLICE_LOAD_SPECIFIED)glutAddMenuEntry(_("*Load selected slice"), MENU_LOAD_SPECIFIED);
-    if(sliceload_option != SLICE_LOAD_SPECIFIED)glutAddMenuEntry(_("Load selected slice"),  MENU_LOAD_SPECIFIED);
-    if(sliceload_option == SLICE_LOADALL_XYZ)glutAddMenuEntry(_("*Load all x, y or z slices"), MENU_LOADALL_XYZ);
-    if(sliceload_option != SLICE_LOADALL_XYZ)glutAddMenuEntry(_("Load all x, y or z slices"),  MENU_LOADALL_XYZ);
+    glutAddMenuEntry("Slice load options", MENU_DUMMY);
+    if(sliceload_option == SLICE_LOAD_SPECIFIED)glutAddMenuEntry(_("  *Load selected slice"), MENU_LOAD_SPECIFIED);
+    if(sliceload_option != SLICE_LOAD_SPECIFIED)glutAddMenuEntry(_("   Load selected slice"),  MENU_LOAD_SPECIFIED);
+    if(sliceload_option == SLICE_LOADALL_XorYorZ)glutAddMenuEntry(_("  *Load all x, all y or all z slices"), MENU_LOADALL_XorYorZ);
+    if(sliceload_option != SLICE_LOADALL_XorYorZ)glutAddMenuEntry(_("   Load all x, all y or all z slices"), MENU_LOADALL_XorYorZ);
+    if(sliceload_option == SLICE_LOADALL_XandYandZ)glutAddMenuEntry(_("  *Load all x, all y and all z slices"), MENU_LOADALL_XandYandZ);
+    if(sliceload_option != SLICE_LOADALL_XandYandZ)glutAddMenuEntry(_("   Load all x, all y and all z slices"), MENU_LOADALL_XandYandZ);
   }
 
   GLUTADDSUBMENU(_("Skip"), sliceskipmenu);

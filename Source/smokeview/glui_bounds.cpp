@@ -2764,7 +2764,8 @@ GLUI_RadioGroup *RADIO_plot3d_display=NULL;
 GLUI_RadioGroup *RADIO2_plot3d_display = NULL;
 GLUI_RadioButton *RADIO_button_cutcell = NULL;
 
-GLUI_RadioButton *RADIOBUTTON_sliceload_option=NULL;
+GLUI_RadioButton *RADIOBUTTON_sliceload_or_option=NULL;
+GLUI_RadioButton *RADIOBUTTON_sliceload_and_option = NULL;
 GLUI_RadioButton *RADIOBUTTON_plot3d_iso_hidden=NULL;
 GLUI_RadioButton *RADIOBUTTON_zone_permin=NULL;
 GLUI_RadioButton *RADIOBUTTON_zone_permax=NULL;
@@ -2915,7 +2916,8 @@ extern "C" void GLUIRefreshDialogs(void){
 
 extern "C" void GLUIUpdateSliceLoadOption(void){
   if(have_x_slices == 0&&have_y_slices == 0&&have_z_slices == 0){
-    if(RADIOBUTTON_sliceload_option!=NULL)RADIOBUTTON_sliceload_option->disable();
+    if(RADIOBUTTON_sliceload_or_option!=NULL)RADIOBUTTON_sliceload_or_option->disable();
+    if(RADIOBUTTON_sliceload_and_option != NULL)RADIOBUTTON_sliceload_and_option->disable();
   }
   if(RADIO_sliceload_option!=NULL)RADIO_sliceload_option->set_int_val(sliceload_option);
 }
@@ -5090,7 +5092,8 @@ hvacductboundsCPP.setup("hvac", ROLLOUT_hvacduct, hvacductbounds_cpp, nhvacductb
     PANEL_sliceload_option = glui_bounds->add_panel_to_panel(ROLLOUT_slice_settings, "Load option", true);
     RADIO_sliceload_option = glui_bounds->add_radiogroup_to_panel(PANEL_sliceload_option, &sliceload_option, SLICE_OPTION, GLUISliceBoundCB);
     glui_bounds->add_radiobutton_to_group(RADIO_sliceload_option, _("Load selected slice"));
-    RADIOBUTTON_sliceload_option = glui_bounds->add_radiobutton_to_group(RADIO_sliceload_option, _("Load all x, y or z slices"));
+    RADIOBUTTON_sliceload_or_option = glui_bounds->add_radiobutton_to_group(RADIO_sliceload_option,  _("Load all x, all y or all z slices"));
+    RADIOBUTTON_sliceload_and_option = glui_bounds->add_radiobutton_to_group(RADIO_sliceload_option, _("Load all x, all y and all z slices"));
   }
 
   // ----------------------------------- Time ----------------------------------------
