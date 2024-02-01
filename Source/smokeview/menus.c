@@ -8105,8 +8105,8 @@ void InitLoadMultiSliceMenu(int *loadmultislicemenuptr, int *loadsubmslicemenu, 
     if(sliceload_option != SLICE_LOAD_SPECIFIED)glutAddMenuEntry(_("   Load selected slice"),  MENU_LOAD_SPECIFIED);
     if(sliceload_option == SLICE_LOADALL_XorYorZ)glutAddMenuEntry(_("  *Load all x, all y or all z slices"), MENU_LOADALL_XorYorZ);
     if(sliceload_option != SLICE_LOADALL_XorYorZ)glutAddMenuEntry(_("   Load all x, all y or all z slices"), MENU_LOADALL_XorYorZ);
-    if(sliceload_option == SLICE_LOADALL_XandYandZ)glutAddMenuEntry(_("  *Load all x, all y and all z slices"), MENU_LOADALL_XandYandZ);
-    if(sliceload_option != SLICE_LOADALL_XandYandZ)glutAddMenuEntry(_("   Load all x, all y and all z slices"), MENU_LOADALL_XandYandZ);
+    if(sliceload_option == SLICE_LOADALL_XandYandZ)glutAddMenuEntry(_("  *Load all slices"), MENU_LOADALL_XandYandZ);
+    if(sliceload_option != SLICE_LOADALL_XandYandZ)glutAddMenuEntry(_("   Load all slices"), MENU_LOADALL_XandYandZ);
   }
 
   GLUTADDSUBMENU(_("Skip"), sliceskipmenu);
@@ -8328,8 +8328,8 @@ void InitMultiVectorLoadMenu(int *loadmultivslicemenuptr, int *loadsubmvslicemen
     if(sliceload_option != SLICE_LOAD_SPECIFIED)glutAddMenuEntry(_("   Load selected vector slice"),  MENU_LOAD_SPECIFIED);
     if(sliceload_option == SLICE_LOADALL_XorYorZ)glutAddMenuEntry(_("  *Load all x, all y or all z vector slices"), MENU_LOADALL_XorYorZ);
     if(sliceload_option != SLICE_LOADALL_XorYorZ)glutAddMenuEntry(_("   Load all x, all y or all z vector slices"), MENU_LOADALL_XorYorZ);
-    if(sliceload_option == SLICE_LOADALL_XandYandZ)glutAddMenuEntry(_("  *Load all x, all y and all z vector slices"), MENU_LOADALL_XandYandZ);
-    if(sliceload_option != SLICE_LOADALL_XandYandZ)glutAddMenuEntry(_("   Load all x, all y and all z vector slices"), MENU_LOADALL_XandYandZ);
+    if(sliceload_option == SLICE_LOADALL_XandYandZ)glutAddMenuEntry(_("  *Load all vector slices"), MENU_LOADALL_XandYandZ);
+    if(sliceload_option != SLICE_LOADALL_XandYandZ)glutAddMenuEntry(_("   Load all vector slices"), MENU_LOADALL_XandYandZ);
   }
 
   if(nslicedups > 0){

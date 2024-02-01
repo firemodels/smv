@@ -5093,7 +5093,7 @@ hvacductboundsCPP.setup("hvac", ROLLOUT_hvacduct, hvacductbounds_cpp, nhvacductb
     RADIO_sliceload_option = glui_bounds->add_radiogroup_to_panel(PANEL_sliceload_option, &sliceload_option, SLICE_OPTION, GLUISliceBoundCB);
     glui_bounds->add_radiobutton_to_group(RADIO_sliceload_option, _("Load selected slice"));
     RADIOBUTTON_sliceload_or_option = glui_bounds->add_radiobutton_to_group(RADIO_sliceload_option,  _("Load all x, all y or all z slices"));
-    RADIOBUTTON_sliceload_and_option = glui_bounds->add_radiobutton_to_group(RADIO_sliceload_option, _("Load all x, all y and all z slices"));
+    RADIOBUTTON_sliceload_and_option = glui_bounds->add_radiobutton_to_group(RADIO_sliceload_option, _("Load all slices"));
   }
 
   // ----------------------------------- Time ----------------------------------------
