@@ -1690,7 +1690,7 @@ typedef struct _patchdata {
   int setchopmin, setchopmax;
   float chopmin, chopmax;
   float diff_valmin, diff_valmax;
-  int blocknumber,loaded,loaded2,display;
+  int blocknumber,loaded,display;
   float *geom_times, *geom_vals;
   int *geom_timeslist,geom_itime;
   unsigned char *geom_times_map;
