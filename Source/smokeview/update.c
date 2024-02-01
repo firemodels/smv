@@ -2222,23 +2222,23 @@ void OutputBounds(void){
       labeli = slicei->label.longlabel;
       if(strcmp(label,labeli)!=0)continue;
       if(nmeshes>1&&bounds_each_mesh==1){
-        OutputMinMax(meshi->label, label, unit, slicei->valmin_fds, slicei->valmax_fds, slicei->valmin_smv, slicei->valmax_smv);
+        OutputMinMax(meshi->label, label, unit, slicei->valmin_slice, slicei->valmax_slice, slicei->valmin_slice, slicei->valmax_slice);
       }
       if(valmin_fds>valmax_fds){
-        valmin_fds = slicei->valmin_fds;
-        valmax_fds = slicei->valmax_fds;
+        valmin_fds = slicei->valmin_slice;
+        valmax_fds = slicei->valmax_slice;
       }
       else{
-        valmin_fds = MIN(slicei->valmin_fds, valmin_fds);
-        valmax_fds = MAX(slicei->valmax_fds, valmax_fds);
+        valmin_fds = MIN(slicei->valmin_slice, valmin_fds);
+        valmax_fds = MAX(slicei->valmax_slice, valmax_fds);
       }
       if(valmin_smv>valmax_smv){
-        valmin_smv = slicei->valmin_smv;
-        valmax_smv = slicei->valmax_smv;
+        valmin_smv = slicei->valmin_slice;
+        valmax_smv = slicei->valmax_slice;
       }
       else{
-        valmin_smv = MIN(slicei->valmin_smv, valmin_smv);
-        valmax_smv = MAX(slicei->valmax_smv, valmax_smv);
+        valmin_smv = MIN(slicei->valmin_slice, valmin_smv);
+        valmax_smv = MAX(slicei->valmax_slice, valmax_smv);
       }
     }
     OutputMinMax("global", label, unit, valmin_fds, valmax_fds, valmin_smv, valmax_smv);
@@ -2246,7 +2246,7 @@ void OutputBounds(void){
 
 // boundary file bounds
   if(update_patch_bounds != -1){
-    float valmin_fds=1.0, valmax_fds=0.0, valmin_smv=1.0, valmax_smv=0.0;
+    float valmin_patch=1.0, valmax_patch=0.0;
     char *label, *unit;
     int i;
 
@@ -2263,31 +2263,23 @@ void OutputBounds(void){
       labeli = patchi->label.longlabel;
       if(strcmp(label,labeli)!=0)continue;
       if(nmeshes>1&&bounds_each_mesh==1){
-        OutputMinMax(meshi->label, label, unit, patchi->valmin_fds, patchi->valmax_fds, patchi->valmin_smv, patchi->valmax_smv);
+        OutputMinMax(meshi->label, label, unit, patchi->valmin_patch, patchi->valmax_patch, patchi->valmin_patch, patchi->valmax_patch);
       }
-      if(valmin_fds>valmax_fds){
-        valmin_fds = patchi->valmin_fds;
-        valmax_fds = patchi->valmax_fds;
-      }
-      else{
-        valmin_fds = MIN(patchi->valmin_fds, valmin_fds);
-        valmax_fds = MAX(patchi->valmax_fds, valmax_fds);
-      }
-      if(valmin_smv>valmax_smv){
-        valmin_smv = patchi->valmin_smv;
-        valmax_smv = patchi->valmax_smv;
+      if(valmin_patch>valmax_patch){
+        valmin_patch = patchi->valmin_patch;
+        valmax_patch = patchi->valmax_patch;
       }
       else{
-        valmin_smv = MIN(patchi->valmin_smv, valmin_smv);
-        valmax_smv = MAX(patchi->valmax_smv, valmax_smv);
+        valmin_patch = MIN(patchi->valmin_patch, valmin_patch);
+        valmax_patch = MAX(patchi->valmax_patch, valmax_patch);
       }
     }
-    OutputMinMax("global", label, unit, valmin_fds, valmax_fds, valmin_smv, valmax_smv);
+    OutputMinMax("global", label, unit, valmin_patch, valmax_patch, valmin_patch, valmax_patch);
   }
 
 // particle file bounds
   if(update_part_bounds!=-1){
-    float valmin_fds = 1.0, valmax_fds = 0.0, valmin_smv = 1.0, valmax_smv = 0.0;
+    float valmin_part = 1.0, valmax_part = 0.0;
     char *label, *unit;
     int i, j;
 
@@ -2307,7 +2299,7 @@ void OutputBounds(void){
 
           label = propj->label->longlabel;
           unit = propj->label->unit;
-          OutputMinMax(meshi->label, label, unit, parti->valmin_fds[j], parti->valmax_fds[j], parti->valmin_smv[j], parti->valmax_smv[j]);
+          OutputMinMax(meshi->label, label, unit, parti->valmin_part[j], parti->valmax_part[j], parti->valmin_part[j], parti->valmax_part[j]);
         }
         printf("\n");
       }
@@ -2321,33 +2313,23 @@ void OutputBounds(void){
 
       label = propj->label->longlabel;
       unit = propj->label->unit;
-      valmin_fds = 1.0;
-      valmax_fds = 0.0;
-      valmin_smv = 1.0;
-      valmax_smv = 0.0;
+      valmin_part = 1.0;
+      valmax_part = 0.0;
       for(i = 0; i<npartinfo; i++){
         partdata *parti;
 
         parti = partinfo+i;
         if(parti->loaded==0)continue;
-        if(valmin_fds>valmax_fds){
-          valmin_fds = parti->valmin_fds[j];
-          valmax_fds = parti->valmax_fds[j];
+        if(valmin_part>valmax_part){
+          valmin_part = parti->valmin_part[j];
+          valmax_part = parti->valmax_part[j];
         }
         else{
-          valmin_fds = MIN(parti->valmin_fds[j], valmin_fds);
-          valmax_fds = MAX(parti->valmax_fds[j], valmax_fds);
-        }
-        if(valmin_smv>valmax_smv){
-          valmin_smv = parti->valmin_smv[j];
-          valmax_smv = parti->valmax_smv[j];
-        }
-        else{
-          valmin_smv = MIN(parti->valmin_smv[j], valmin_smv);
-          valmax_smv = MAX(parti->valmax_smv[j], valmax_smv);
+          valmin_part = MIN(parti->valmin_part[j], valmin_part);
+          valmax_part = MAX(parti->valmax_part[j], valmax_part);
         }
       }
-      OutputMinMax("global", label, unit, valmin_fds, valmax_fds, valmin_smv, valmax_smv);
+      OutputMinMax("global", label, unit, valmin_part, valmax_part, valmin_part, valmax_part);
     }
   }
 
@@ -2374,7 +2356,7 @@ void OutputBounds(void){
           label = p->label[j].longlabel;
           unit = p->label[j].unit;
 
-          OutputMinMax(meshi->label, label, unit, plot3di->valmin_fds[j], plot3di->valmax_fds[j], plot3di->valmin_smv[j], plot3di->valmax_smv[j]);
+          OutputMinMax(meshi->label, label, unit, plot3di->valmin_plot3d[j], plot3di->valmax_plot3d[j], plot3di->valmin_plot3d[j], plot3di->valmax_plot3d[j]);
         }
         printf("\n");
       }
@@ -2395,20 +2377,20 @@ void OutputBounds(void){
         plot3di = plot3dinfo+i;
         if(plot3di->loaded==0)continue;
         if(valmin_fds>valmax_fds){
-          valmin_fds = plot3di->valmin_fds[j];
-          valmax_fds = plot3di->valmax_fds[j];
+          valmin_fds = plot3di->valmin_plot3d[j];
+          valmax_fds = plot3di->valmax_plot3d[j];
         }
         else{
-          valmin_fds = MIN(plot3di->valmin_fds[j], valmin_fds);
-          valmax_fds = MAX(plot3di->valmax_fds[j], valmax_fds);
+          valmin_fds = MIN(plot3di->valmin_plot3d[j], valmin_fds);
+          valmax_fds = MAX(plot3di->valmax_plot3d[j], valmax_fds);
         }
         if(valmin_smv>valmax_smv){
-          valmin_smv = plot3di->valmin_smv[j];
-          valmax_smv = plot3di->valmax_smv[j];
+          valmin_smv = plot3di->valmin_plot3d[j];
+          valmax_smv = plot3di->valmax_plot3d[j];
         }
         else{
-          valmin_smv = MIN(plot3di->valmin_smv[j], valmin_smv);
-          valmax_smv = MAX(plot3di->valmax_smv[j], valmax_smv);
+          valmin_smv = MIN(plot3di->valmin_plot3d[j], valmin_smv);
+          valmax_smv = MAX(plot3di->valmax_plot3d[j], valmax_smv);
         }
       }
       OutputMinMax("global", label, unit, valmin_fds, valmax_fds, valmin_smv, valmax_smv);
@@ -2496,6 +2478,33 @@ void UpdateDisplay(void){
     update_make_iblank = 0;
     update_setvents    = 1;
     update_setcvents   = 1;
+  }
+  if(update_load_slices == 1){
+    int i;
+
+    update_load_slices = 0;
+    for(i = 0;i < nsliceinfo;i++){
+      slicedata *slicei;
+
+      slicei = sliceinfo + i;
+      if(slicei->idir == XDIR){
+        have_x_slices = 1;
+        if(have_y_slices == 1 && have_z_slices == 1)break;
+        continue;
+      }
+      if(slicei->idir == YDIR){
+        have_y_slices = 1;
+        if(have_x_slices == 1 && have_z_slices == 1)break;
+        continue;
+      }
+      if(slicei->idir == ZDIR){
+        have_z_slices = 1;
+        if(have_x_slices == 1 && have_y_slices == 1)break;
+        continue;
+      }
+    }
+    GLUIUpdateSliceLoadOption();
+    updatemenu = 1;
   }
   if(update_setvents==1){
     SetVentDirs();

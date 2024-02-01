@@ -912,6 +912,9 @@ void InitMesh(meshdata *meshi){
   NewMemory((void **)&meshi->gsliceinfo,     sizeof(meshplanedata));
   NewMemory((void **)&meshi->volrenderinfo,  sizeof(volrenderdata));
 
+#ifdef pp_BOUNDS
+  meshi->boundary_mask = NULL;
+#endif
   meshi->in_frustum = 1;
   meshi->imap = NULL;
   meshi->jmap = NULL;
@@ -1658,10 +1661,8 @@ void ReadSMVDynamic(char *file){
 
       plot3di=plot3dinfo+iplot3d;
       for(i = 0; i < 5; i++){
-        plot3di->valmin_fds[i] = 1.0;
-        plot3di->valmax_fds[i] = 0.0;
-        plot3di->valmin_smv[i] = 1.0;
-        plot3di->valmax_smv[i] = 0.0;
+        plot3di->valmin_plot3d[i] = 1.0;
+        plot3di->valmax_plot3d[i] = 0.0;
       }
       plot3di->blocknumber = blocknumber;
       plot3di->seq_id=nn_plot3d;
@@ -1718,10 +1719,10 @@ void ReadSMVDynamic(char *file){
           continue;
         }
         if(plot3di->u>-1||plot3di->v>-1||plot3di->w>-1){
-          plot3di->nvars = MAXPLOT3DVARS;
+          plot3di->nplot3dvars = MAXPLOT3DVARS;
         }
         else{
-          plot3di->nvars = 5;
+          plot3di->nplot3dvars = 5;
         }
         if(NewMemory((void **)&plot3di->label[5].longlabel, 6)==0)return;
         if(NewMemory((void **)&plot3di->label[5].shortlabel, 6)==0)return;
@@ -2803,7 +2804,7 @@ void UpdateBoundInfo(void){
 
       isoi = isoinfo + i;
       if(isoi->dataflag==0)continue;
-      isoi->firstshort=1;
+      isoi->firstshort_iso=1;
       isoi->setvalmin=0;
       isoi->setvalmax=0;
       isoi->valmin=1.0;
@@ -2826,7 +2827,7 @@ void UpdateBoundInfo(void){
         ison = isoinfo + n;
         if(ison->dataflag==0)continue;
         if(strcmp(isoi->color_label.shortlabel,ison->color_label.shortlabel)==0){
-          isoi->firstshort=0;
+          isoi->firstshort_iso=0;
           niso_bounds--;
           break;
         }
@@ -2845,8 +2846,8 @@ void UpdateBoundInfo(void){
 
       slicei = sliceinfo + i;
       slicei->firstshort_slice=1;
-      slicei->valmin=1.0;
-      slicei->valmax=0.0;
+      slicei->valmin_slice =1.0;
+      slicei->valmax_slice =0.0;
       slicei->setvalmin=0;
       slicei->setvalmax=0;
 
@@ -2895,7 +2896,7 @@ void UpdateBoundInfo(void){
       boundsdata *sbi;
 
       patchi = patchinfo + i;
-      patchi->firstshort=1;
+      patchi->firstshort_patch=1;
       if(strncmp(patchi->label.shortlabel,"temp",4)==0||
          strncmp(patchi->label.shortlabel,"TEMP",4)==0){
         canshow_threshold=1;
@@ -2908,7 +2909,7 @@ void UpdateBoundInfo(void){
 
         patchn = patchinfo + n;
         if(strcmp(patchi->label.shortlabel,patchn->label.shortlabel)==0){
-          patchi->firstshort=0;
+          patchi->firstshort_patch = 0;
           npatch2--;
           break;
         }
@@ -2935,7 +2936,7 @@ void UpdateBoundInfo(void){
 
         patchn = patchinfo+n;
         if(strcmp(patchi->label.shortlabel, patchn->label.shortlabel)==0){
-          patchi->firstshort = 0;
+          patchi->firstshort_patch = 0;
           npatchbounds--;
           break;
         }
@@ -2968,7 +2969,6 @@ void UpdateBoundInfo(void){
         hi = hvacnodevalsinfo->node_vars + i - hvacductvalsinfo->n_duct_vars;
         hbi = hvacnodebounds + nhvacnodebounds;
       }
-      hi->firstshort=1;
       hi->valmin=1.0;
       hi->valmax=0.0;
       hi->setvalmin=0;
@@ -3006,7 +3006,6 @@ void UpdateBoundInfo(void){
           hn = hvacnodevalsinfo->node_vars + n - hvacductvalsinfo->n_duct_vars;
         }
         if(strcmp(hi->label.shortlabel,hn->label.shortlabel)==0){
-          hi->firstshort=0;
           if(n<hvacductvalsinfo->n_duct_vars){
             nhvacductbounds--;
           }
@@ -5113,10 +5112,8 @@ int ParsePRT5Process(bufferstreamdata *stream, char *buffer, int *nn_part_in, in
   parti->autoload = 0;
   parti->reload = 0;
   parti->finalize = 1;
-  parti->valmin_fds = NULL;
-  parti->valmax_fds = NULL;
-  parti->valmin_smv = NULL;
-  parti->valmax_smv = NULL;
+  parti->valmin_part = NULL;
+  parti->valmax_part = NULL;
   parti->stream     = NULL;
   parti->hist_update = 0;
   if(FGETS(buffer, 255, stream)==NULL){
@@ -5174,8 +5171,6 @@ int ParsePRT5Process(bufferstreamdata *stream, char *buffer, int *nn_part_in, in
   parti->timeslist = NULL;
   parti->histograms = NULL;
   parti->bounds_set = 0;
-  parti->global_min = NULL;
-  parti->global_max = NULL;
   parti->filepos = NULL;
   parti->tags = NULL;
   parti->sort_tags = NULL;
@@ -5295,10 +5290,8 @@ int ParseBNDFProcess(bufferstreamdata *stream, char *buffer, int *nn_patch_in, i
     patchi->ijk[i] = -1;
   }
   patchi->finalize          = 1;
-  patchi->valmin_fds        = 1.0;
-  patchi->valmax_fds        = 0.0;
-  patchi->valmin_smv        = 1.0;
-  patchi->valmax_smv        = 0.0;
+  patchi->valmin_patch        = 1.0;
+  patchi->valmax_patch        = 0.0;
   patchi->skip              = 0;
   patchi->version           = version;
   patchi->ntimes            = 0;
@@ -5848,6 +5841,9 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
 #ifdef pp_SLICE_MULTI
   sd->loadstatus = FILE_UNLOADED;
 #endif
+#ifdef pp_BOUNDS
+  sd->slice_mask       = NULL;
+#endif
   sd->vals2d.vals      = NULL;
   sd->vals2d.vals_orig = NULL;
   sd->vals2d.times     = NULL;
@@ -5858,12 +5854,10 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
   sd->ntimes = 0;
   sd->skipdup = 0;
   sd->ntimes_old = 0;
-  sd->globalmax = -1.0e30;
-  sd->globalmin = -sd->globalmax;
-  sd->valmin_smv = 1.0;
-  sd->valmax_smv = 0.0;
-  sd->valmin_fds = 1.0;
-  sd->valmax_fds = 0.0;
+  sd->globalmax_slice = -1.0e30;
+  sd->globalmin_slice = -sd->globalmax_slice;
+  sd->valmin_slice = 1.0;
+  sd->valmax_slice = 0.0;
   sd->imap = NULL;
   sd->jmap = NULL;
   sd->kmap = NULL;
@@ -11695,6 +11689,8 @@ int ReadSMV_Configure(){
     NewMemory((void **)&slice_loaded_list,nsliceinfo*sizeof(int));
   }
 
+  update_load_slices = 1;
+
   FREEMEMORY(slice_sorted_loaded_list);
   if(nsliceinfo>0){
     NewMemory((void **)&slice_sorted_loaded_list, nsliceinfo*sizeof(int));
@@ -12223,7 +12219,38 @@ void SetSliceBounds(int set_valmin, float valmin, int set_valmax, float valmax, 
   }
 }
 
-#ifdef pp_SLICE_BOUNDS
+#ifdef pp_BOUNDS
+/* ------------------ SetPatchMin ------------------------ */
+
+void SetPatchMin(int set_valmin, float valmin, char *buffer2){
+  int i;
+
+  for(i = 0; i < npatchbounds; i++){
+    if(strcmp(buffer2, "") == 0 || strcmp(patchbounds[i].shortlabel, buffer2) == 0){
+      patchbounds[i].dlg_setvalmin = set_valmin;
+      patchbounds[i].dlg_valmin = valmin;
+      GLUISetMin(BOUND_PATCH, patchbounds[i].shortlabel, set_valmin, valmin);
+      update_glui_bounds = 1;
+      if(strcmp(patchbounds[i].shortlabel, buffer2) == 0)break;
+    }
+  }
+}
+
+/* ------------------ SetPatchMax ------------------------ */
+
+void SetPatchMax(int set_valmax, float valmax, char *buffer2){
+  int i;
+
+  for(i = 0; i < npatchbounds; i++){
+    if(strcmp(buffer2, "") == 0 || strcmp(patchbounds[i].shortlabel, buffer2) == 0){
+      patchbounds[i].dlg_setvalmax = set_valmax;
+      patchbounds[i].dlg_valmax = valmax;
+      GLUISetMax(BOUND_PATCH, patchbounds[i].shortlabel, set_valmax, valmax);
+      update_glui_bounds = 1;
+      if(strcmp(patchbounds[i].shortlabel, buffer2) == 0)break;
+    }
+  }
+}
 /* ------------------ SetSliceMin ------------------------ */
 
 void SetSliceMin(int set_valmin, float valmin, char *buffer2){
@@ -13620,7 +13647,7 @@ int ReadIni2(char *inifile, int localfile){
         }
         level_val = NULL;
       }
-#ifndef pp_SLICE_BOUNDS
+#ifndef pp_BOUNDS
       if(strcmp(buffer2, "TEMP")==0&&nzoneinfo>0)continue;
 #endif
       TrimBack(buffer2);
@@ -16525,7 +16552,7 @@ void WriteIniLocal(FILE *fileout){
     patchdata *patchi;
 
     patchi = patchinfo + i;
-    if(patchi->firstshort == 1){
+    if(patchi->firstshort_patch == 1){
       int set_valmin=0, set_valmax=0;
       float valmin=1.0, valmax=0.0;
       char *label;

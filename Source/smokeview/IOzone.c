@@ -853,12 +853,10 @@ void GetSliceTempBounds(void){
       &qmin, &qmax, slicei->qslicedata, slicei->times, ntimes_slice_old, &slicei->ntimes,
       tload_step, use_tload_begin, use_tload_end, tload_begin, tload_end
     );
-    slicei->globalmin = qmin;
-    slicei->globalmax = qmax;
-    slicei->valmin = qmin;
-    slicei->valmax = qmax;
-    slicei->valmin_data = qmin;
-    slicei->valmax_data = qmax;
+    slicei->globalmin_slice = qmin;
+    slicei->globalmax_slice = qmax;
+    slicei->valmin_slice    = qmin;
+    slicei->valmax_slice    = qmax;
     FREEMEMORY(slicei->qslicedata);
     FREEMEMORY(slicei->times);
   }
@@ -1181,8 +1179,8 @@ void ReadZone(int ifile, int flag, int *errorcode){
 
     slicei = sliceinfo+i;
     if(strcmp(slicei->label.shortlabel, "TEMP")==0){
-      zoneglobalmin = MIN(slicei->valmin, zoneglobalmin);
-      zoneglobalmax = MAX(slicei->valmax, zoneglobalmax);
+      zoneglobalmin = MIN(slicei->valmin_slice, zoneglobalmin);
+      zoneglobalmax = MAX(slicei->valmax_slice, zoneglobalmax);
     }
   }
   zone_temp_bounds_defined = 1;

@@ -20,6 +20,7 @@ EXTERNCPP void *ReadVolsmokeAllFramesAllMeshes2(void *arg);
 EXTERNCPP void *SetupAllIsosurfaces(void *arg);
 
 //*** glui_bounds.cpp headers
+EXTERNCPP  void GLUIUpdateSliceLoadOption(void);
 EXTERNCPP void GLUIUpdateMeshBounds(void);
 EXTERNCPP void DrawBoxMinMax(float *bbmin, float *bbmax, float *box_color);
 EXTERNCPP void DrawBox(float *bb, float *box_color);
@@ -52,6 +53,12 @@ EXTERNCPP void GLUISetMin(int type, char *label, int set_valmin, float valmin);
 EXTERNCPP void GLUISetMax(int type, char *label, int set_valmax, float valmax);
 EXTERNCPP void GLUISetMinMax(int type, char *label, int set_valmin, float valmin, int set_valmax, float valmax);
 EXTERNCPP void GLUISetMinMaxAll(int type, int *set_valmin, float *valmin, int *set_valmax, float *valmax, int nall);
+#ifdef pp_BOUNDS
+EXTERNCPP void GLUISetGlobalMinMaxAll(int type, float *valmin, float *valmax, int nall);
+EXTERNCPP void GLUISetLoadedMinMaxAll(int type, float *valmin, float *valmax, int nall);
+EXTERNCPP void GLUIGetGlobalMinMaxAll(int type, float *valmin, float *valmax, int nall);
+EXTERNCPP void GLUIGetLoadedMinMaxAll(int type, float *valmin, float *valmax, int nall);
+#endif
 EXTERNCPP void GLUIUpdateBounds(void);
 EXTERNCPP void GLUIPlot3DBoundsCPP_CB(int var);
 EXTERNCPP void GLUISetColorbarDigitsCPP(int ndigits);
@@ -1143,13 +1150,12 @@ EXTERNCPP void Output3Val(float x, float y, float z, float val);
 EXTERNCPP void OutputBarText(float x, float y, const GLfloat *color, char *string);
 EXTERNCPP float GetStringLength(char *string);
 EXTERNCPP void UpdateGslicePlanes(void);
-#ifdef pp_SLICE_BOUNDS
-EXTERNCPP void SliceBoundsUpdate(void);
-EXTERNCPP void SliceBoundsGet(char *file, float *valmin, float *valmax);
-#endif
 
 EXTERNCPP void UpdateAllGeomTriangles(void);
-#ifdef pp_SLICE_BOUNDS
+#ifdef pp_BOUNDS
+EXTERNCPP void MakeBoundaryMask(patchdata *patchi);
+EXTERNCPP void SetPatchMin(int set_valmin, float valmin, char *buffer2);
+EXTERNCPP void SetPatchMax(int set_valmax, float valmax, char *buffer2);
 EXTERNCPP void SetSliceMin(int set_valmin, float valmin, char *buffer2);
 EXTERNCPP void SetSliceMax(int set_valmax, float valmax, char *buffer2);
 #endif

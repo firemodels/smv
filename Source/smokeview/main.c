@@ -764,32 +764,6 @@ int main(int argc, char **argv){
   int return_code;
   char *progname;
 
-#ifdef pp_RESTART_DEBUG
-  float dtimes[20];
-  int dn;
-  unsigned char dtimes_map[20];
-
-  dn = 0;
-  dtimes[dn++] = 0.0;
-  dtimes[dn++] = 20.0;
-  dtimes[dn++] = 30;
-  dtimes[dn++] = 40.0;
-  dtimes[dn++] = 60.0;
-  dtimes[dn++] = 99.0;
-  dtimes[dn++] = 50.0;
-  dtimes[dn++] = 60.0;
-  dtimes[dn++] = 74.0;
-  dtimes[dn++] = 79.0;
-  dtimes[dn++] = 85.0;
-  dtimes[dn++] = 110.0;
-  dtimes[dn++] = 200.0;
-  dtimes[dn++] = 75.0;
-  dtimes[dn++] = 77.0;
-  dtimes[dn++] = 79.0;
-  dtimes[dn++] = 81.0;
-  MakeTimesMap(dtimes, dtimes_map, dn);
-#endif
-
   START_TIMER(timer_startup);
   // uncomment following block of code to test crash detection
 /*

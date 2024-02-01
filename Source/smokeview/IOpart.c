@@ -1298,13 +1298,13 @@ void GetPartData(partdata *parti, int nf_all_arg, FILE_SIZE *file_size_arg){
       if(doit_local==1){
         int part_type;
         if(numtypes_local[2*class_index]>0){
-          float *valmin_smv, *valmax_smv;
+          float *valmin_part, *valmax_part;
 
           FORTPART5READ_mv((void **)&(datacopy_local->rvals), nparts_local*numtypes_local[2*class_index]);
           if(returncode==FAIL_m)goto wrapup;
 
-          valmin_smv = parti->valmin_smv;
-          valmax_smv = parti->valmax_smv;
+          valmin_part = parti->valmin_part;
+          valmax_part = parti->valmax_part;
           for(part_type = 0; part_type<numtypes_local[2*class_index]; part_type++){
             int prop_index, k;
             float *vals;
@@ -1315,13 +1315,13 @@ void GetPartData(partdata *parti, int nf_all_arg, FILE_SIZE *file_size_arg){
               float val;
 
               val = *vals++;
-              if(valmin_smv[prop_index]>valmax_smv[prop_index]){
-                valmin_smv[prop_index] = val;
-                valmax_smv[prop_index] = val;
+              if(valmin_part[prop_index]>valmax_part[prop_index]){
+                valmin_part[prop_index] = val;
+                valmax_part[prop_index] = val;
               }
               else{
-                valmin_smv[prop_index] = MIN(val, valmin_smv[prop_index]);
-                valmax_smv[prop_index] = MAX(val, valmax_smv[prop_index]);
+                valmin_part[prop_index] = MIN(val, valmin_part[prop_index]);
+                valmax_part[prop_index] = MAX(val, valmax_part[prop_index]);
               }
             }
           }

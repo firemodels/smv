@@ -798,12 +798,10 @@ void UpdateSliceBounds2(void){
     sd = sliceinfo+i;
     if(sd->display==0)continue;
     GLUIGetMinMax(BOUND_SLICE, sd->label.shortlabel, &set_valmin, &qmin, &set_valmax, &qmax);
-    sd->valmin      = qmin;
-    sd->valmax      = qmax;
-    sd->globalmin   = qmin;
-    sd->globalmax   = qmax;
-    sd->valmin_data = qmin;
-    sd->valmax_data = qmax;
+    sd->valmin_slice      = qmin;
+    sd->valmax_slice      = qmax;
+    sd->globalmin_slice   = qmin;
+    sd->globalmax_slice   = qmax;
     SetSliceColors(qmin, qmax, sd, 0, &error);
   }
   for(ii = 0; ii<nvsliceinfo; ii++){
@@ -816,12 +814,10 @@ void UpdateSliceBounds2(void){
     if(vd->loaded==0||vd->display==0||vd->ival==-1)continue;
     sd = sliceinfo+vd->ival;
     GLUIGetMinMax(BOUND_SLICE, sd->label.shortlabel, &set_valmin, &qmin, &set_valmax, &qmax);
-    sd->valmin = qmin;
-    sd->valmax = qmax;
-    sd->globalmin = qmin;
-    sd->globalmax = qmax;
-    sd->valmin_data = qmin;
-    sd->valmax_data = qmax;
+    sd->valmin_slice    = qmin;
+    sd->valmax_slice    = qmax;
+    sd->globalmin_slice = qmin;
+    sd->globalmax_slice = qmax;
     SetSliceColors(qmin, qmax, sd, 0, &error);
   }
 }

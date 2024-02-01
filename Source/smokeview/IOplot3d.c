@@ -17,7 +17,7 @@
 void GetPlot3DHists(plot3ddata *p){
   int i;
 
-  for(i = 0; i<p->nvars; i++){
+  for(i = 0; i<p->nplot3dvars; i++){
     histogramdata *histi;
     float *vals;
     int nvals;
@@ -60,7 +60,7 @@ void MergePlot3DHistograms(void){
 
     plot3di = plot3dinfo+i;
     if(plot3di->loaded==0)continue;
-    for(k = 0; k<plot3di->nvars; k++){
+    for(k = 0; k<plot3di->nplot3dvars; k++){
       MergeHistogram(full_plot3D_histograms+k, plot3di->histograms[k], MERGE_BOUNDS);
     }
   }
@@ -169,7 +169,7 @@ int GetPlot3DBounds(plot3ddata *plot3di){
   ntotal = (meshi->ibar+1)*(meshi->jbar+1)*(meshi->kbar+1);
   iblank = meshi->c_iblank_node;
 
-  for(i = 0; i<plot3di->nvars; i++){
+  for(i = 0; i<plot3di->nplot3dvars; i++){
     int n;
 
     valmin = 1000000000.;
@@ -185,11 +185,38 @@ int GetPlot3DBounds(plot3ddata *plot3di){
         valmax = MAX(val, valmax);
       }
     }
-    plot3di->valmin_smv[i] = valmin;
-    plot3di->valmax_smv[i] = valmax;
+    plot3di->valmin_plot3d[i] = valmin;
+    plot3di->valmax_plot3d[i] = valmax;
   }
   return 1;
 }
+
+/* ------------------ ComputeLoadedPlot3DBounds  ------------------------ */
+
+void ComputeLoadedPlot3DBounds(float *valmin_loaded, float *valmax_loaded){
+  int i, first;
+
+  for(first = 1, i = 0; i < nplot3dinfo; i++){
+    plot3ddata *plot3di;
+
+    plot3di = plot3dinfo + i;
+    if(plot3di->loaded == 0)continue;
+    if(first == 1){
+      first = 0;
+      memcpy(valmin_loaded, plot3di->valmin_plot3d, plot3di->nplot3dvars * sizeof(float));
+      memcpy(valmax_loaded, plot3di->valmax_plot3d, plot3di->nplot3dvars * sizeof(float));
+    }
+    else{
+      int j;
+
+      for(j = 0; j < plot3di->nplot3dvars; j++){
+        valmin_loaded[j] = MIN(valmin_loaded[j], plot3di->valmin_plot3d[j]);
+        valmax_loaded[j] = MAX(valmax_loaded[j], plot3di->valmax_plot3d[j]);
+      }
+    }
+  }
+}
+
 
 /* ------------------ UpdatePlot3DFileLoad  ------------------------ */
 
@@ -297,7 +324,7 @@ void ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
   uindex = plot3dinfo[ifile].u;
   vindex = plot3dinfo[ifile].v;
   windex = plot3dinfo[ifile].w;
-  if(uindex!=-1||vindex!=-1||windex!=-1)numplot3dvars=plot3dinfo[ifile].nvars;
+  if(uindex!=-1||vindex!=-1||windex!=-1)numplot3dvars=plot3dinfo[ifile].nplot3dvars;
 
   if(NewMemoryMemID((void **)&meshi->qdata,numplot3dvars*ntotal*sizeof(float), p->memory_id)==0){
     *errorcode=1;
@@ -338,6 +365,9 @@ void ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
     qmaxptr = qmax;
   }
   getplot3dq(file, nx, ny, nz, meshi->qdata, qminptr, qmaxptr, &error, isotest);
+#ifdef pp_BOUNDS
+  update_plot3d_bnd = 1;
+#else
   if(p->have_bound_file == 0){
     FILE *bound_stream;
 
@@ -350,6 +380,7 @@ void ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
       fclose(bound_stream);
     }
   }
+#endif
   if(NewMemoryMemID((void **)&meshi->iqdata,numplot3dvars*ntotal*sizeof(unsigned char), p->memory_id)==0){
     *errorcode=1;
     ReadPlot3D("",ifile,UNLOAD,&error);
@@ -366,7 +397,7 @@ void ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
   meshi->wdata=NULL;
   if(uindex!=-1||vindex!=-1||windex!=-1){
     vectorspresent=1;
-    p->nvars= MAXPLOT3DVARS;
+    p->nplot3dvars= MAXPLOT3DVARS;
     if(uindex!=-1)udata = meshi->qdata + ntotal*uindex;
     if(vindex!=-1)vdata = meshi->qdata + ntotal*vindex;
     if(windex!=-1)wdata = meshi->qdata + ntotal*windex;
@@ -433,8 +464,17 @@ void ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
     if(p->finalize==1){
       if(update_plot3d_bnd==1){
         update_plot3d_bnd = 0;
+#ifdef pp_BOUNDS
+        float valmin_loaded[6], valmax_loaded[6];
+
+        void BoundsUpdate(int file_type);
+        BoundsUpdate(BOUND_PLOT3D);
+        ComputeLoadedPlot3DBounds(valmin_loaded, valmax_loaded);
+        GLUISetLoadedMinMaxAll(BOUND_PLOT3D, valmin_loaded, valmax_loaded, plot3dinfo->nplot3dvars);
+#else
         GetGlobalPlot3DBounds();
         SetLoadedPlot3DBounds();
+#endif
       }
       UpdateAllPlot3DColors(0);
     }

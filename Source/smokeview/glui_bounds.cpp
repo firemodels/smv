@@ -123,6 +123,12 @@ class bounds_dialog{
   int  set_chopmax(char *label, int set_valmax, float valmax);
   int  set_min(char *label, int set_valmin, float valmin);
   void set_min_all(int *set_valmin, float *valmin, int nvals);
+#ifdef pp_BOUNDS
+  void get_global_minmax_all(float *valmin, float *valmax, int nvals);
+  void get_loaded_minmax_all(float *valmin, float *valmax, int nvals);
+  void set_global_minmax_all(float *valmin, float *valmax, int nvals);
+  void set_loaded_minmax_all(float *valmin, float *valmax, int nvals);
+#endif
   int  set_max(char *label, int set_valmax, float valmax);
   void set_max_all(int *set_valmax, float *valmax, int nvals);
   void set_plot_minmax(float p_min, float p_max);
@@ -604,6 +610,76 @@ void bounds_dialog::set_min_all(int *set_valmin, float *valmin, int nvals){
     boundi->valmin[boundi->set_valmin] = valmin[i];
   }
 }
+
+#ifdef pp_BOUNDS
+/* ------------------ get_global_minmax_all ------------------------ */
+
+void bounds_dialog::get_global_minmax_all(float *valmin, float *valmax, int nvals){
+  int i, set_valmin, set_valmax;
+
+  nvals = MIN(nall_bounds, nvals);
+  set_valmin = BOUND_GLOBAL_MIN;
+  set_valmax = BOUND_GLOBAL_MAX;
+  for(i = 0; i < nall_bounds; i++){
+    cpp_boundsdata *boundi;
+
+    boundi = all_bounds + i;
+    valmin[i] = boundi->valmin[set_valmin];
+    valmax[i] = boundi->valmax[set_valmax];
+  }
+}
+
+/* ------------------ get_loaded_minmax_all ------------------------ */
+
+void bounds_dialog::get_loaded_minmax_all(float *valmin, float *valmax, int nvals){
+  int i, set_valmin, set_valmax;
+
+  nvals = MIN(nall_bounds, nvals);
+  set_valmin = BOUND_LOADED_MIN;
+  set_valmax = BOUND_LOADED_MAX;
+  for(i = 0; i < nall_bounds; i++){
+    cpp_boundsdata *boundi;
+
+    boundi = all_bounds + i;
+    valmin[i] = boundi->valmin[set_valmin];
+    valmax[i] = boundi->valmax[set_valmax];
+  }
+}
+
+/* ------------------ set_global_minmax_all ------------------------ */
+
+void bounds_dialog::set_global_minmax_all(float *valmin, float *valmax, int nvals){
+  int i, set_valmin, set_valmax;
+
+  nvals = MIN(nall_bounds, nvals);
+  set_valmin = BOUND_GLOBAL_MIN;
+  set_valmax = BOUND_GLOBAL_MAX;
+  for(i = 0; i < nall_bounds; i++){
+    cpp_boundsdata *boundi;
+
+    boundi = all_bounds + i;
+    boundi->valmin[set_valmin] = valmin[i];
+    boundi->valmax[set_valmax] = valmax[i];
+  }
+}
+
+/* ------------------ set_loaded_minmax_all ------------------------ */
+
+void bounds_dialog::set_loaded_minmax_all(float *valmin, float *valmax, int nvals){
+  int i, set_valmin, set_valmax;
+
+  nvals = MIN(nall_bounds, nvals);
+  set_valmin = BOUND_LOADED_MIN;
+  set_valmax = BOUND_LOADED_MAX;
+  for(i = 0; i < nall_bounds; i++){
+    cpp_boundsdata *boundi;
+
+    boundi = all_bounds + i;
+    boundi->valmin[set_valmin] = valmin[i];
+    boundi->valmax[set_valmax] = valmax[i];
+  }
+}
+#endif
 
 /* ------------------ set_max_all ------------------------ */
 
@@ -1416,6 +1492,120 @@ extern "C" void GLUISetMinMaxAll(int type, int *set_valmin, float *valmin, int *
   }
 }
 
+#ifdef pp_BOUNDS
+/* ------------------ GLUIGetGlobalMinMaxAll ------------------------ */
+
+extern "C" void GLUIGetGlobalMinMaxAll(int type, float *valmin, float *valmax, int nall){
+  switch(type){
+  case BOUND_HVACDUCT:
+    hvacductboundsCPP.get_global_minmax_all(valmin, valmax, nall);
+    break;
+  case BOUND_HVACNODE:
+    hvacnodeboundsCPP.get_global_minmax_all(valmin, valmax, nall);
+    break;
+  case BOUND_PATCH:
+    patchboundsCPP.get_global_minmax_all(valmin, valmax, nall);
+    break;
+  case BOUND_PART:
+    partboundsCPP.get_global_minmax_all(valmin, valmax, nall);
+    break;
+  case BOUND_PLOT3D:
+    plot3dboundsCPP.get_global_minmax_all(valmin, valmax, nall);
+    break;
+  case BOUND_SLICE:
+    sliceboundsCPP.get_global_minmax_all(valmin, valmax, nall);
+    break;
+  default:
+    assert(FFALSE);
+    break;
+  }
+}
+
+/* ------------------ GLUIGetLoadedMinMaxAll ------------------------ */
+
+extern "C" void GLUIGetLoadedMinMaxAll(int type, float *valmin, float *valmax, int nall){
+  switch(type){
+  case BOUND_HVACDUCT:
+    hvacductboundsCPP.get_loaded_minmax_all(valmin, valmax, nall);
+    break;
+  case BOUND_HVACNODE:
+    hvacnodeboundsCPP.get_loaded_minmax_all(valmin, valmax, nall);
+    break;
+  case BOUND_PATCH:
+    patchboundsCPP.get_loaded_minmax_all(valmin, valmax, nall);
+    break;
+  case BOUND_PART:
+    partboundsCPP.get_loaded_minmax_all(valmin, valmax, nall);
+    break;
+  case BOUND_PLOT3D:
+    plot3dboundsCPP.get_loaded_minmax_all(valmin, valmax, nall);
+    break;
+  case BOUND_SLICE:
+    sliceboundsCPP.get_loaded_minmax_all(valmin, valmax, nall);
+    break;
+  default:
+    assert(FFALSE);
+    break;
+  }
+}
+
+/* ------------------ GLUISetGlobalMinMaxAll ------------------------ */
+
+extern "C" void GLUISetGlobalMinMaxAll(int type, float *valmin, float *valmax, int nall){
+  switch(type){
+  case BOUND_HVACDUCT:
+    hvacductboundsCPP.set_global_minmax_all(valmin, valmax, nall);
+    break;
+  case BOUND_HVACNODE:
+    hvacnodeboundsCPP.set_global_minmax_all(valmin, valmax, nall);
+    break;
+  case BOUND_PATCH:
+    patchboundsCPP.set_global_minmax_all(valmin, valmax, nall);
+    break;
+  case BOUND_PART:
+    partboundsCPP.set_global_minmax_all(valmin, valmax, nall);
+    break;
+  case BOUND_PLOT3D:
+    plot3dboundsCPP.set_global_minmax_all(valmin, valmax, nall);
+    break;
+  case BOUND_SLICE:
+    sliceboundsCPP.set_global_minmax_all(valmin, valmax, nall);
+    break;
+  default:
+    assert(FFALSE);
+    break;
+  }
+}
+
+/* ------------------ GLUISetLoadedMinMaxAll ------------------------ */
+
+extern "C" void GLUISetLoadedMinMaxAll(int type, float *valmin, float *valmax, int nall){
+  switch(type){
+  case BOUND_HVACDUCT:
+    hvacductboundsCPP.set_loaded_minmax_all(valmin, valmax, nall);
+    break;
+  case BOUND_HVACNODE:
+    hvacnodeboundsCPP.set_loaded_minmax_all(valmin, valmax, nall);
+    break;
+  case BOUND_PATCH:
+    patchboundsCPP.set_loaded_minmax_all(valmin, valmax, nall);
+    break;
+  case BOUND_PART:
+    partboundsCPP.set_loaded_minmax_all(valmin, valmax, nall);
+    break;
+  case BOUND_PLOT3D:
+    plot3dboundsCPP.set_loaded_minmax_all(valmin, valmax, nall);
+    break;
+  case BOUND_SLICE:
+    sliceboundsCPP.set_loaded_minmax_all(valmin, valmax, nall);
+    break;
+  default:
+    assert(FFALSE);
+    break;
+  }
+}
+#endif
+
 /* ------------------ HVAC callback: GLUIHVACDuctBoundsCPP_CB ------------------------ */
 
 extern "C" void GLUIHVACDuctBoundsCPP_CB(int var){
@@ -2038,12 +2228,12 @@ void SetLoadedSliceBounds(int *list, int nlist){
 
     slicei = sliceinfo+list[i];
     if(valmin>valmax){
-      valmin = slicei->valmin_fds;
-      valmax = slicei->valmax_fds;
+      valmin = slicei->valmin_slice;
+      valmax = slicei->valmax_slice;
     }
     else{
-      valmin = MIN(valmin, slicei->valmin_fds);
-      valmax = MAX(valmax, slicei->valmax_fds);
+      valmin = MIN(valmin, slicei->valmin_slice);
+      valmax = MAX(valmax, slicei->valmax_slice);
     }
   }
   for(i = 0; i<nsliceinfo; i++){
@@ -2053,12 +2243,12 @@ void SetLoadedSliceBounds(int *list, int nlist){
     if(slicei->loaded==0)continue;
     if(strcmp(slicei->label.shortlabel, label)!=0)continue;
     if(valmin>valmax){
-      valmin = slicei->valmin_fds;
-      valmax = slicei->valmax_fds;
+      valmin = slicei->valmin_slice;
+      valmax = slicei->valmax_slice;
     }
     else{
-      valmin = MIN(valmin, slicei->valmin_fds);
-      valmax = MAX(valmax, slicei->valmax_fds);
+      valmin = MIN(valmin, slicei->valmin_slice);
+      valmax = MAX(valmax, slicei->valmax_slice);
     }
   }
   if(valmin<=valmax){
@@ -2104,12 +2294,12 @@ void SetLoadedPatchBounds(int *list, int nlist){
   for(i = 0; i<nlist; i++){
     patchi = patchinfo+list[i];
     if(valmin>valmax){
-      valmin = patchi->valmin_fds;
-      valmax = patchi->valmax_fds;
+      valmin = patchi->valmin_patch;
+      valmax = patchi->valmax_patch;
     }
     else{
-      valmin = MIN(valmin, patchi->valmin_fds);
-      valmax = MAX(valmax, patchi->valmax_fds);
+      valmin = MIN(valmin, patchi->valmin_patch);
+      valmax = MAX(valmax, patchi->valmax_patch);
     }
   }
   for(i = 0; i<npatchinfo; i++){
@@ -2117,12 +2307,12 @@ void SetLoadedPatchBounds(int *list, int nlist){
     if(patchi->loaded==0)continue;
     if(strcmp(patchi->label.shortlabel, label)!=0)continue;
     if(valmin>valmax){
-      valmin = patchi->valmin_fds;
-      valmax = patchi->valmax_fds;
+      valmin = patchi->valmin_patch;
+      valmax = patchi->valmax_patch;
     }
     else{
-      valmin = MIN(valmin, patchi->valmin_fds);
-      valmax = MAX(valmax, patchi->valmax_fds);
+      valmin = MIN(valmin, patchi->valmin_patch);
+      valmax = MAX(valmax, patchi->valmax_patch);
     }
   }
   if(valmin<=valmax){
@@ -2160,8 +2350,8 @@ void SetLoadedPlot3DBounds(void){
 
       plot3di = plot3dinfo+i;
       if(plot3di->loadnow == 0)continue;
-      valmin_fds = plot3di->valmin_fds;
-      valmax_fds = plot3di->valmax_fds;
+      valmin_fds = plot3di->valmin_plot3d;
+      valmax_fds = plot3di->valmax_plot3d;
       if(valmin[j]>valmax[j]){
         valmin[j] = valmin_fds[j];
         valmax[j] = valmax_fds[j];
@@ -2178,8 +2368,8 @@ void SetLoadedPlot3DBounds(void){
 
       plot3di = plot3dinfo+i;
       if(plot3di->loaded==0)continue;
-      valmin_fds = plot3di->valmin_fds;
-      valmax_fds = plot3di->valmax_fds;
+      valmin_fds = plot3di->valmin_plot3d;
+      valmax_fds = plot3di->valmax_plot3d;
       if(valmin[j]>valmax[j]){
         valmin[j] = valmin_fds[j];
         valmax[j] = valmax_fds[j];
@@ -2239,38 +2429,38 @@ void SetLoadedPartBounds(int *list, int nlist){
     }
     if(list==NULL)nlist = 0;
     for(i = 0; i<nlist; i++){
-      float *valmin_fds, *valmax_fds;
+      float *valmin_part, *valmax_part;
       partdata *parti;
 
       parti = partinfo+list[i];
       if(parti->have_bound_file==NO)continue;
-      valmin_fds = parti->valmin_fds;
-      valmax_fds = parti->valmax_fds;
+      valmin_part = parti->valmin_part;
+      valmax_part = parti->valmax_part;
       if(valmin[j]>valmax[j]){
-        valmin[j] = valmin_fds[j];
-        valmax[j] = valmax_fds[j];
+        valmin[j] = valmin_part[j];
+        valmax[j] = valmax_part[j];
       }
       else{
-        valmin[j] = MIN(valmin[j], valmin_fds[j]);
-        valmax[j] = MAX(valmax[j], valmax_fds[j]);
+        valmin[j] = MIN(valmin[j], valmin_part[j]);
+        valmax[j] = MAX(valmax[j], valmax_part[j]);
       }
     }
 
     for(i = 0; i<npartinfo; i++){
-      float *valmin_fds, *valmax_fds;
+      float *valmin_part, *valmax_part;
       partdata *parti;
 
       parti = partinfo+i;
       if(parti->loaded==0||parti->have_bound_file==NO)continue;
-      valmin_fds = parti->valmin_fds;
-      valmax_fds = parti->valmax_fds;
+      valmin_part = parti->valmin_part;
+      valmax_part = parti->valmax_part;
       if(valmin[j]>valmax[j]){
-        valmin[j] = valmin_fds[j];
-        valmax[j] = valmax_fds[j];
+        valmin[j] = valmin_part[j];
+        valmax[j] = valmax_part[j];
       }
       else{
-        valmin[j] = MIN(valmin[j], valmin_fds[j]);
-        valmax[j] = MAX(valmax[j], valmax_fds[j]);
+        valmin[j] = MIN(valmin[j], valmin_part[j]);
+        valmax[j] = MAX(valmax[j], valmax_part[j]);
       }
     }
   }
@@ -2370,6 +2560,7 @@ GLUI_Rollout     *ROLLOUT_split=NULL;
 GLUI_Panel *PANEL_vector1=NULL, *PANEL_vector2=NULL;
 GLUI_Panel *PANEL_partread = NULL;
 GLUI_Panel *PANEL_slice_misc=NULL, *PANEL_slice_vector=NULL, *PANEL_showslice=NULL;
+GLUI_Panel *PANEL_sliceload_option = NULL;
 GLUI_Panel *PANEL_slicevalues = NULL;
 GLUI_Panel *PANEL_plot3d=NULL;
 GLUI_Panel *PANEL_setmesh = NULL;
@@ -2514,9 +2705,6 @@ GLUI_Spinner *SPINNER_size_factor2         = NULL;
 GLUI_Spinner *SPINNER_plot2d_dt = NULL;
 GLUI_Spinner *SPINNER_meshclip[6];
 GLUI_Spinner *SPINNER_set_mesh = NULL;
-#ifdef pp_SLICE_BOUNDS
-GLUI_Spinner *SPINNER_getbounds = NULL;
-#endif
 
 GLUI_Checkbox *CHECKBOX_slice_load_incremental=NULL;
 GLUI_Checkbox *CHECKBOX_color_vector_black = NULL;
@@ -2556,6 +2744,7 @@ GLUI_Checkbox *CHECKBOX_show_intersection_box=NULL;
 GLUI_Checkbox *CHECKBOX_show_intersected_meshes = NULL;
 GLUI_Checkbox *CHECKBOX_load_only_when_unloaded = NULL;
 
+GLUI_RadioGroup *RADIO_sliceload_option=NULL;
 GLUI_RadioGroup *RADIO_iso_setmin=NULL;
 GLUI_RadioGroup *RADIO_iso_setmax=NULL;
 GLUI_RadioGroup *RADIO_transparency_option=NULL;
@@ -2575,6 +2764,8 @@ GLUI_RadioGroup *RADIO_plot3d_display=NULL;
 GLUI_RadioGroup *RADIO2_plot3d_display = NULL;
 GLUI_RadioButton *RADIO_button_cutcell = NULL;
 
+GLUI_RadioButton *RADIOBUTTON_sliceload_or_option=NULL;
+GLUI_RadioButton *RADIOBUTTON_sliceload_and_option = NULL;
 GLUI_RadioButton *RADIOBUTTON_plot3d_iso_hidden=NULL;
 GLUI_RadioButton *RADIOBUTTON_zone_permin=NULL;
 GLUI_RadioButton *RADIOBUTTON_zone_permax=NULL;
@@ -2720,6 +2911,16 @@ extern "C" void GLUIRefreshDialogs(void){
   if(glui_trainer!=NULL)glui_trainer->refresh();
 }
 #endif
+
+/* ------------------ GLUIUpdateSliceLoadOption ------------------------ */
+
+extern "C" void GLUIUpdateSliceLoadOption(void){
+  if(have_x_slices == 0&&have_y_slices == 0&&have_z_slices == 0){
+    if(RADIOBUTTON_sliceload_or_option!=NULL)RADIOBUTTON_sliceload_or_option->disable();
+    if(RADIOBUTTON_sliceload_and_option != NULL)RADIOBUTTON_sliceload_and_option->disable();
+  }
+  if(RADIO_sliceload_option!=NULL)RADIO_sliceload_option->set_int_val(sliceload_option);
+}
 
 /* ------------------ GLUIUpdateSliceSkip ------------------------ */
 
@@ -4858,6 +5059,12 @@ hvacductboundsCPP.setup("hvac", ROLLOUT_hvacduct, hvacductbounds_cpp, nhvacductb
 
     if(ngeom_data == 0)glui_bounds->add_column_to_panel(ROLLOUT_slice_settings, false);
 
+    PANEL_sliceload_option = glui_bounds->add_panel_to_panel(ROLLOUT_slice_settings, "Load option", true);
+    RADIO_sliceload_option = glui_bounds->add_radiogroup_to_panel(PANEL_sliceload_option, &sliceload_option, SLICE_OPTION, GLUISliceBoundCB);
+    glui_bounds->add_radiobutton_to_group(RADIO_sliceload_option, _("Load selected slice"));
+    RADIOBUTTON_sliceload_or_option = glui_bounds->add_radiobutton_to_group(RADIO_sliceload_option,  _("Load all x, all y or all z slices"));
+    RADIOBUTTON_sliceload_and_option = glui_bounds->add_radiobutton_to_group(RADIO_sliceload_option, _("Load all slices"));
+
     PANEL_slice_smoke = glui_bounds->add_panel_to_panel(ROLLOUT_slice_settings, "slice(fire)", true);
     glui_bounds->add_checkbox_to_panel(PANEL_slice_smoke, _("max blending"), &slices3d_max_blending);
     glui_bounds->add_checkbox_to_panel(PANEL_slice_smoke, _("show all 3D slices"), &showall_3dslices);
@@ -4966,10 +5173,6 @@ hvacductboundsCPP.setup("hvac", ROLLOUT_hvacduct, hvacductbounds_cpp, nhvacductb
   CHECKBOX_show_intersected_meshes = glui_bounds->add_checkbox_to_panel(PANEL_mesh1, "show intersected meshes", &show_intersected_meshes, USEMESH_DRAW_MESH, MeshBoundCB);
   glui_bounds->add_checkbox_to_panel(PANEL_mesh1, "show intersected mesh indices", &show_mesh_labels);
   CHECKBOX_load_only_when_unloaded = glui_bounds->add_checkbox_to_panel(PANEL_mesh1, "Load a file only if unloaded", &load_only_when_unloaded, USEMESH_LOAD_WHEN_LOADED, MeshBoundCB);
-#ifdef pp_SLICE_BOUNDS
-  SPINNER_getbounds = glui_bounds->add_spinner_to_panel(PANEL_mesh1, "number of getbound threads", GLUI_SPINNER_INT, &n_getbounds_threads);
-  SPINNER_getbounds->set_int_limits(1,16);
-#endif
 
   glui_bounds->add_column_to_panel(PANEL_mesh1, false);
 
@@ -5988,6 +6191,9 @@ extern "C" void GLUISliceBoundCB(int var){
       if(force_exponential==1&&force_fixedpoint==1)force_exponential=0;
       updatemenu = 1;
       update_colorbar_digits = 1;
+      break;
+    case SLICE_OPTION:
+      updatemenu = 1;
       break;
     case SLICE_SKIP:
       slice_skip = CLAMP(slice_skip,1,max_slice_skip);

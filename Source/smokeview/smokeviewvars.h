@@ -24,12 +24,6 @@
 
 //*** threader variables
 
-#ifdef pp_SLICE_BOUNDS
-//***getbounds
-SVEXTERN int SVDECL(n_getbounds_threads, 1), SVDECL(use_getbounds_threads, 1);
-SVEXTERN threaderdata SVDECL(*getbounds_threads, NULL);
-#endif
-
 //***isosurface
 SVEXTERN int SVDECL(n_isosurface_threads, 1), SVDECL(use_isosurface_threads, 1);
 SVEXTERN threaderdata SVDECL(*isosurface_threads, NULL);
@@ -130,11 +124,20 @@ SVEXTERN FILE_SIZE SVDECL(last_size_for_slice, 0);
 SVEXTERN FILE_SIZE SVDECL(last_size_for_boundary, 0);
 SVEXTERN char SVDECL(*stepcsv_filename, NULL);
 
-#ifdef pp_SLICE_BOUNDS
-SVEXTERN char SVDECL(*slice_gbnd_filename, NULL), SVDECL(**sorted_slice_filenames, NULL);
-SVEXTERN globalboundsdata SVDECL(*sliceglobalboundsinfo, NULL);
-SVEXTERN int SVDECL(nsliceglobalboundsinfo, 0);
-SVEXTERN FILE_SIZE SVDECL(last_size_for_slicebound, 0);
+#ifdef pp_BOUNDS
+SVEXTERN char SVDECL(*plot3d_gbnd_filename, NULL), SVDECL(**sorted_plot3d_filenames, NULL);
+SVEXTERN char SVDECL(*slice_gbnd_filename,  NULL), SVDECL(**sorted_slice_filenames,  NULL);
+SVEXTERN char SVDECL(*patch_gbnd_filename,  NULL), SVDECL(**sorted_patch_filenames,  NULL);
+
+SVEXTERN globalboundsdata SVDECL(*plot3dglobalboundsinfo, NULL);
+SVEXTERN globalboundsdata SVDECL(*sliceglobalboundsinfo,  NULL);
+SVEXTERN globalboundsdata SVDECL(*patchglobalboundsinfo,  NULL);
+
+SVEXTERN int SVDECL(nplot3dglobalboundsinfo,   0);
+SVEXTERN int SVDECL(nsliceglobalboundsinfo,    0);
+SVEXTERN int SVDECL(npatchglobalboundsinfo,    0);
+
+SVEXTERN FILE_SIZE SVDECL(last_size_for_bound, 0);
 #endif
 
 SVEXTERN int SVDECL(histogram_nframes, 40);
@@ -1489,7 +1492,12 @@ SVEXTERN float SVDECL(pref,101325.0),SVDECL(pamb,0.0),SVDECL(tamb,293.15);
 SVEXTERN int SVDECL(ntc_total,0.0), SVDECL(nspr_total,0.0), SVDECL(nheat_total,0.0);
 SVEXTERN int SVDECL(n_devices,0);
 
+SVEXTERN int SVDECL(sliceload_option, 0);
+SVEXTERN int SVDECL(have_x_slices, 0), SVDECL(have_y_slices, 0), SVDECL(have_z_slices, 0);
+SVEXTERN int SVDECL(update_load_slices, 0);
+
 SVEXTERN int SVDECL(npartinfo,0), SVDECL(nplot3dinfo,0), SVDECL(npatchinfo,0);
+SVEXTERN float SVDECL(*globalmin_part, NULL), SVDECL(*globalmax_part, NULL);
 
 SVEXTERN int SVDECL(nsliceinfo,0),           SVDECL(nvsliceinfo,0);
 SVEXTERN int SVDECL(nmultisliceinfo,0),      SVDECL(nmultivsliceinfo,0);
