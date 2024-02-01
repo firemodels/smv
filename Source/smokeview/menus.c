@@ -3508,14 +3508,8 @@ void LoadUnloadMenu(int value){
       patchdata *patchi;
 
       patchi = patchinfo + i;
-      patchi->loaded2 = patchi->loaded;
       assert(patchi->loaded==0||patchi->loaded==1);
-    }
-    for(i = 0;i < npatchinfo;i++){
-      patchdata *patchi;
-
-      patchi = patchinfo + i;
-      if(patchi->loaded2 == 1){
+      if(patchi->loaded == 1){
         PRINTF("Loading %s(%s)", patchi->file, patchi->label.shortlabel);
         ReadBoundary(i, LOAD,&errorcode);
       }
