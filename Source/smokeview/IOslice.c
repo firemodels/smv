@@ -864,7 +864,7 @@ int CReadSlice_frame(int frame_index_local,int sd_index,int flag){
       if(
         GetSliceHeader(sd->comp_file,sd->size_file,sd->compression_type,
                        tload_step, use_tload_begin, use_tload_end, tload_begin, tload_end,
-                       &sd->nslicei, &sd->nslicej, &sd->nslicek, &sd->ntimes, &sd->ncompressed, &sd->valmin, &sd->valmax)==0){
+                       &sd->nslicei, &sd->nslicej, &sd->nslicek, &sd->ntimes, &sd->ncompressed, &sd->valmin_slice, &sd->valmax_slice)==0){
         ReadSlice("",sd_index, ALL_FRAMES,NULL,UNLOAD,SET_SLICECOLOR,&error);
         return -1;
       }
@@ -1401,8 +1401,8 @@ FILE_SIZE ReadVSlice(int ivslice, int time_frame, float *time_value, int flag, i
         *errorcode = 1;
         return 0;
       }
-      if(u->valmin<valmin)valmin = u->valmin;
-      if(u->valmax>valmax)valmax = u->valmax;
+      if(u->valmin_slice<valmin)valmin = u->valmin_slice;
+      if(u->valmax_slice>valmax)valmax = u->valmax_slice;
       u->display = 0;
       u->vloaded = 1;
     }
@@ -1429,8 +1429,8 @@ FILE_SIZE ReadVSlice(int ivslice, int time_frame, float *time_value, int flag, i
         return 0;
       }
 
-      if(v->valmin<valmin)valmin = v->valmin;
-      if(v->valmax>valmax)valmax = v->valmax;
+      if(v->valmin_slice<valmin)valmin = v->valmin_slice;
+      if(v->valmax_slice>valmax)valmax = v->valmax_slice;
       v->display = 0;
       v->vloaded = 1;
     }
@@ -1457,8 +1457,8 @@ FILE_SIZE ReadVSlice(int ivslice, int time_frame, float *time_value, int flag, i
         return 0;
       }
 
-      if(w->valmin<valmin)valmin = w->valmin;
-      if(w->valmax>valmax)valmax = w->valmax;
+      if(w->valmin_slice <valmin)valmin = w->valmin_slice;
+      if(w->valmax_slice >valmax)valmax = w->valmax_slice;
       w->display = 0;
       w->vloaded = 1;
     }
@@ -1511,22 +1511,22 @@ FILE_SIZE ReadVSlice(int ivslice, int time_frame, float *time_value, int flag, i
         slicedata *u = NULL;
 
         u = sliceinfo+vslicei->iu;
-        valmin = MIN(u->valmin, valmin);
-        valmax = MAX(u->valmax, valmax);
+        valmin = MIN(u->valmin_slice, valmin);
+        valmax = MAX(u->valmax_slice, valmax);
       }
       if(vslicei->iv!=-1){
         slicedata *v = NULL;
 
         v = sliceinfo+vslicei->iv;
-        valmin = MIN(v->valmin, valmin);
-        valmax = MAX(v->valmax, valmax);
+        valmin = MIN(v->valmin_slice, valmin);
+        valmax = MAX(v->valmax_slice, valmax);
       }
       if(vslicei->iw!=-1){
         slicedata *w = NULL;
 
         w = sliceinfo+vslicei->iw;
-        valmin = MIN(w->valmin, valmin);
-        valmax = MAX(w->valmax, valmax);
+        valmin = MIN(w->valmin_slice, valmin);
+        valmax = MAX(w->valmax_slice, valmax);
       }
     }
     max_velocity = MAX(ABS(valmax),ABS(valmin));
@@ -1555,8 +1555,8 @@ FILE_SIZE ReadVSlice(int ivslice, int time_frame, float *time_value, int flag, i
           if(vslicei->loaded == 0 || vslicei->display == 0 || vslicei->ival == -1)continue;
           slicei = sliceinfo + vslicei->ival;
           if(slicei->loaded==0||strcmp(sd->label.shortlabel,slicei->label.shortlabel)!=0)continue;
-          slicei->valmin = qmin_save;
-          slicei->valmax = qmax_save;
+          slicei->valmin_slice = qmin_save;
+          slicei->valmax_slice = qmax_save;
           memcpy(slicei->qval256, cbvals, 256*sizeof(float));
           SetSliceColors(qmin_save, qmax_save, slicei, 0, errorcode);
         }
@@ -1825,11 +1825,11 @@ void UpdateSliceBounds(void){
       }
       if(slicebounds[i].dlg_setvalmin!=SET_MIN){
         if(minflag==0){
-          valmin=slicej->valmin;
+          valmin=slicej->valmin_slice;
           minflag=1;
         }
         else{
-          if(sliceinfo[j].valmin<valmin)valmin=slicej->valmin;
+          if(sliceinfo[j].valmin_slice <valmin)valmin=slicej->valmin_slice;
         }
       }
       if(minflag2==0){
@@ -1852,11 +1852,11 @@ void UpdateSliceBounds(void){
       }
       if(slicebounds[i].dlg_setvalmax!=SET_MAX){
         if(maxflag==0){
-          valmax=sliceinfo[j].valmax;
+          valmax=sliceinfo[j].valmax_slice;
           maxflag=1;
         }
         else{
-          if(sliceinfo[j].valmax>valmax)valmax=slicej->valmax;
+          if(sliceinfo[j].valmax_slice >valmax)valmax=slicej->valmax_slice;
         }
       }
       if(maxflag2==0){
@@ -4764,7 +4764,7 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
       if(
         GetSliceHeader(sd->comp_file, sd->size_file, sd->compression_type,
           tload_step, use_tload_begin, use_tload_end, tload_begin, tload_end,
-          &sd->nslicei, &sd->nslicej, &sd->nslicek, &sd->ntimes, &sd->ncompressed, &sd->valmin, &sd->valmax) == 0){
+          &sd->nslicei, &sd->nslicej, &sd->nslicek, &sd->ntimes, &sd->ncompressed, &sd->valmin_slice, &sd->valmax_slice) == 0){
         ReadSlice("", ifile, time_frame, time_value, UNLOAD, set_slicecolor, &error);
         *errorcode = 1;
         return 0;
@@ -4986,8 +4986,8 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
   if(sd->compression_type == UNCOMPRESSED){
   }
   else{
-    qmin = sd->valmin;
-    qmax = sd->valmax;
+    qmin = sd->valmin_slice;
+    qmax = sd->valmax_slice;
   }
   CheckMemory;
 
@@ -5084,8 +5084,8 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
           if(slicei->slicefile_labelindex!=slicefile_labelindex)continue;
           slicei->globalmin_slice = qmin;
           slicei->globalmax_slice = qmax;
-          slicei->valmin = qmin;
-          slicei->valmax = qmax;
+          slicei->valmin_slice = qmin;
+          slicei->valmax_slice = qmax;
           for(ii = 0; ii<256; ii++){
             slicei->qval256[ii] = (qmin*(255 - ii) + qmax*ii) / 255;
           }
@@ -5320,8 +5320,8 @@ void DrawVolSliceCellFaceCenter(const slicedata *sd, int flag,
 
   float valmin, valmax;
 
-  valmin = sd->valmin;
-  valmax = sd->valmax;
+  valmin = sd->valmin_slice;
+  valmax = sd->valmax_slice;
   if(valmin>=valmax){
     valmin = 0.0;
     valmax = 1.0;
@@ -5988,8 +5988,8 @@ void DrawVolSliceTerrain(const slicedata *sd){
   }
   float valmin, valmax;
 
-  valmin = sd->valmin;
-  valmax = sd->valmax;
+  valmin = sd->valmin_slice;
+  valmax = sd->valmax_slice;
   if(valmin>=valmax){
     valmin = 0.0;
     valmax = 1.0;
@@ -6304,8 +6304,8 @@ void DrawVolSliceTexture(const slicedata *sd, int is1, int is2, int js1, int js2
 
   float valmin, valmax;
 
-  valmin = sd->valmin;
-  valmax = sd->valmax;
+  valmin = sd->valmin_slice;
+  valmax = sd->valmax_slice;
   if(valmin>=valmax){
     valmin = 0.0;
     valmax = 1.0;
@@ -6600,8 +6600,8 @@ void DrawVolSliceLines(const slicedata *sd){
 
   float valmin, valmax;
 
-  valmin = sd->valmin;
-  valmax = sd->valmax;
+  valmin = sd->valmin_slice;
+  valmax = sd->valmax_slice;
   if(valmin>=valmax){
     valmin = 0.0;
     valmax = 1.0;
@@ -6937,8 +6937,8 @@ void DrawVolSliceVerts(const slicedata *sd){
 
   float valmin, valmax;
 
-  valmin = sd->valmin;
-  valmax = sd->valmax;
+  valmin = sd->valmin_slice;
+  valmax = sd->valmax_slice;
   if(valmin>=valmax){
     valmin = 0.0;
     valmax = 1.0;
@@ -8521,8 +8521,8 @@ void DrawVVolSliceTerrain(const vslicedata *vd){
 
   float valmin, valmax;
 
-  valmin = sd->valmin;
-  valmax = sd->valmax;
+  valmin = sd->valmin_slice;
+  valmax = sd->valmax_slice;
   if(valmin>=valmax){
     valmin = 0.0;
     valmax = 1.0;
@@ -8741,8 +8741,8 @@ void DrawVVolSlice(const vslicedata *vd){
 
   float valmin, valmax;
 
-  valmin = sd->valmin;
-  valmax = sd->valmax;
+  valmin = sd->valmin_slice;
+  valmax = sd->valmax_slice;
   if(valmin>=valmax){
     valmin = 0.0;
     valmax = 1.0;

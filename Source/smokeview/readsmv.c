@@ -2846,8 +2846,8 @@ void UpdateBoundInfo(void){
 
       slicei = sliceinfo + i;
       slicei->firstshort_slice=1;
-      slicei->valmin=1.0;
-      slicei->valmax=0.0;
+      slicei->valmin_slice =1.0;
+      slicei->valmax_slice =0.0;
       slicei->setvalmin=0;
       slicei->setvalmax=0;
 

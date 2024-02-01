@@ -1423,7 +1423,6 @@ typedef struct _slicedata {
   int vec_comp;
   int skipdup;
   int setvalmin, setvalmax;
-  float valmin, valmax;
   float globalmin_slice, globalmax_slice;
   float valmin_slice, valmax_slice;
   float diff_valmin,  diff_valmax;

@@ -2981,8 +2981,8 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
     GetSliceDataBounds(slicei, &qmin, &qmax);
     slicei->globalmin_slice = qmin;
     slicei->globalmax_slice = qmax;
-    slicei->valmin_slice = qmin;
-    slicei->valmax_slice = qmax;
+    slicei->valmin_slice    = qmin;
+    slicei->valmax_slice    = qmax;
     if(slice_average_flag==1){
       int data_per_timestep, nvals2, ntimes;
       float *vals, *times;
@@ -2997,8 +2997,8 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
         show_slice_average = 0;
       }
     }
-    slicei->valmin = qmin;
-    slicei->valmax = qmax;
+    slicei->valmin_slice    = qmin;
+    slicei->valmax_slice    = qmax;
     slicei->globalmin_slice = qmin;
     slicei->globalmax_slice = qmax;
     for (i = 0; i < 256; i++){
@@ -4572,8 +4572,8 @@ void DrawGeomData(int flag, slicedata *sd, patchdata *patchi, int geom_type){
   float rvals[3];
   float valmin, valmax;
   if(sd!=NULL){
-    valmin = sd->valmin;
-    valmax = sd->valmax;
+    valmin = sd->valmin_slice;
+    valmax = sd->valmax_slice;
     if(valmin>=valmax){
       valmin = 0.0;
       valmax = 1.0;
