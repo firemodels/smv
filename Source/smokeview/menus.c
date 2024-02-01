@@ -5241,15 +5241,6 @@ void LoadMultiVSliceMenu2(int value){
       case MENU_LOADVSLICE_SETTINGS:
         GLUIShowBoundsDialog(DLG_SLICE);
         break;
-      case MENU_LOAD_SPECIFIED:
-      case MENU_LOADALL_XorYorZ:
-      case MENU_LOADALL_XandYandZ:
-        if(value == MENU_LOAD_SPECIFIED)sliceload_option    = SLICE_LOAD_SPECIFIED;
-        if(value == MENU_LOADALL_XorYorZ)sliceload_option   = SLICE_LOADALL_XorYorZ;
-        if(value == MENU_LOADALL_XandYandZ)sliceload_option = SLICE_LOADALL_XandYandZ;
-        GLUIUpdateSliceLoadOption();
-        updatemenu = 1;
-        break;
       default:
         assert(FFALSE);
         break;
@@ -7873,6 +7864,57 @@ void InitUnloadSliceMenu(int *unloadslicemenuptr){
   glutAddMenuEntry(_("Unload all"), UNLOAD_ALL);
 }
 
+/* ------------------ SliceLoadOptionMenu ------------------------ */
+
+void SliceLoadOptionMenu(int value){
+  switch(value){
+    case MENU_LOAD_SPECIFIED:
+    case MENU_LOADALL_XorYorZ:
+    case MENU_LOADALL_XandYandZ:
+      if(value == MENU_LOAD_SPECIFIED)sliceload_option    = SLICE_LOAD_SPECIFIED;
+      if(value == MENU_LOADALL_XorYorZ)sliceload_option   = SLICE_LOADALL_XorYorZ;
+      if(value == MENU_LOADALL_XandYandZ)sliceload_option = SLICE_LOADALL_XandYandZ;
+      GLUIUpdateSliceLoadOption();
+      updatemenu = 1;
+      break;
+    default:
+      assert(FFALSE);
+      break;
+  }
+}
+
+/* ------------------ InitSliceLoadOptionMenu ------------------------ */
+
+void InitSliceLoadOptionMenu(int *sliceloadoptionmenuptr){
+  int sliceloadoption;
+
+  CREATEMENU(sliceloadoption, SliceLoadOptionMenu);
+  *sliceloadoptionmenuptr = sliceloadoption;
+
+  if(sliceload_option == SLICE_LOAD_SPECIFIED)glutAddMenuEntry(_("  *Load selected slice"), MENU_LOAD_SPECIFIED);
+  if(sliceload_option != SLICE_LOAD_SPECIFIED)glutAddMenuEntry(_("   Load selected slice"),  MENU_LOAD_SPECIFIED);
+  if(sliceload_option == SLICE_LOADALL_XorYorZ)glutAddMenuEntry(_("  *Load all x, all y or all z slices"), MENU_LOADALL_XorYorZ);
+  if(sliceload_option != SLICE_LOADALL_XorYorZ)glutAddMenuEntry(_("   Load all x, all y or all z slices"), MENU_LOADALL_XorYorZ);
+  if(sliceload_option == SLICE_LOADALL_XandYandZ)glutAddMenuEntry(_("  *Load all slices"), MENU_LOADALL_XandYandZ);
+  if(sliceload_option != SLICE_LOADALL_XandYandZ)glutAddMenuEntry(_("   Load all slices"), MENU_LOADALL_XandYandZ);
+}
+
+/* ------------------ InitVectorSliceLoadOptionMenu ------------------------ */
+
+void InitVectorSliceLoadOptionMenu(int *vectorsliceloadoptionmenuptr){
+  int vectorsliceloadoption;
+
+  CREATEMENU(vectorsliceloadoption, SliceLoadOptionMenu);
+  *vectorsliceloadoptionmenuptr = vectorsliceloadoption;
+
+  if(sliceload_option == SLICE_LOAD_SPECIFIED)glutAddMenuEntry(_("  *Load selected vector slice"), MENU_LOAD_SPECIFIED);
+  if(sliceload_option != SLICE_LOAD_SPECIFIED)glutAddMenuEntry(_("   Load selected vector slice"),  MENU_LOAD_SPECIFIED);
+  if(sliceload_option == SLICE_LOADALL_XorYorZ)glutAddMenuEntry(_("  *Load all x, all y or all z vector slices"), MENU_LOADALL_XorYorZ);
+  if(sliceload_option != SLICE_LOADALL_XorYorZ)glutAddMenuEntry(_("   Load all x, all y or all z vector slices"), MENU_LOADALL_XorYorZ);
+  if(sliceload_option == SLICE_LOADALL_XandYandZ)glutAddMenuEntry(_("  *Load all vector slices"), MENU_LOADALL_XandYandZ);
+  if(sliceload_option != SLICE_LOADALL_XandYandZ)glutAddMenuEntry(_("   Load all vector slices"), MENU_LOADALL_XandYandZ);
+}
+
 /* ------------------ InitSliceSkipMenu ------------------------ */
 
 void InitSliceSkipMenu(int *sliceskipmenuptr){
@@ -8052,7 +8094,7 @@ void InitDuplicateSliceMenu(int *duplicateslicemenuptr){
 /* ------------------ InitLoadMultiSliceMenu ------------------------ */
 
 void InitLoadMultiSliceMenu(int *loadmultislicemenuptr, int *loadsubmslicemenu, int *loadsubpatchmenu_s,
-                            int *nsubpatchmenus_s, int sliceskipmenu, int duplicateslicemenu,
+                            int *nsubpatchmenus_s, int sliceskipmenu, int sliceloadoptionmenu, int duplicateslicemenu,
                             int loadslicemenu, int nmultisliceloaded, int unloadmultislicemenu){
   int i, loadmultislicemenu;
   int nloadsubmslicemenu;
@@ -8099,16 +8141,10 @@ void InitLoadMultiSliceMenu(int *loadmultislicemenuptr, int *loadsubmslicemenu, 
   }
 
   if(nmultisliceinfo>0)glutAddMenuEntry("-", MENU_DUMMY);
-  if(have_x_slices==1||have_y_slices==1||have_z_slices==1){
-    glutAddMenuEntry("Slice load options", MENU_DUMMY);
-    if(sliceload_option == SLICE_LOAD_SPECIFIED)glutAddMenuEntry(_("  *Load selected slice"), MENU_LOAD_SPECIFIED);
-    if(sliceload_option != SLICE_LOAD_SPECIFIED)glutAddMenuEntry(_("   Load selected slice"),  MENU_LOAD_SPECIFIED);
-    if(sliceload_option == SLICE_LOADALL_XorYorZ)glutAddMenuEntry(_("  *Load all x, all y or all z slices"), MENU_LOADALL_XorYorZ);
-    if(sliceload_option != SLICE_LOADALL_XorYorZ)glutAddMenuEntry(_("   Load all x, all y or all z slices"), MENU_LOADALL_XorYorZ);
-    if(sliceload_option == SLICE_LOADALL_XandYandZ)glutAddMenuEntry(_("  *Load all slices"), MENU_LOADALL_XandYandZ);
-    if(sliceload_option != SLICE_LOADALL_XandYandZ)glutAddMenuEntry(_("   Load all slices"), MENU_LOADALL_XandYandZ);
-  }
 
+  if(have_x_slices==1||have_y_slices==1||have_z_slices==1){
+    GLUTADDSUBMENU(_("Load option"), sliceloadoptionmenu);
+  }
   GLUTADDSUBMENU(_("Skip"), sliceskipmenu);
   if(sortslices == 1){
     glutAddMenuEntry(_("*Sort slices(back to front)"), MENU_SPLITSLICES);
@@ -8295,7 +8331,7 @@ void InitMultiVectorSubMenu(int **loadsubmvslicemenuptr){
 
 /* ------------------ InitMultiVectorLoadMenu ------------------------ */
 
-void InitMultiVectorLoadMenu(int *loadmultivslicemenuptr, int *loadsubmvslicemenu, int duplicatevectorslicemenu, int vsliceloadmenu, int unloadmultivslicemenu){
+void InitMultiVectorLoadMenu(int *loadmultivslicemenuptr, int *loadsubmvslicemenu, int duplicatevectorslicemenu, int vsliceloadmenu, int sliceloadoptionmenu, int unloadmultivslicemenu){
   int loadmultivslicemenu;
   int nloadsubmvslicemenu;
   int i;
@@ -8323,13 +8359,7 @@ void InitMultiVectorLoadMenu(int *loadmultivslicemenuptr, int *loadsubmvslicemen
   }
   if(nmultivsliceinfo>0)glutAddMenuEntry("-", MENU_DUMMY);
   if(have_x_slices==1||have_y_slices==1||have_z_slices==1){
-    glutAddMenuEntry("Vector slice load options", MENU_DUMMY);
-    if(sliceload_option == SLICE_LOAD_SPECIFIED)glutAddMenuEntry(_("  *Load selected vector slice"), MENU_LOAD_SPECIFIED);
-    if(sliceload_option != SLICE_LOAD_SPECIFIED)glutAddMenuEntry(_("   Load selected vector slice"),  MENU_LOAD_SPECIFIED);
-    if(sliceload_option == SLICE_LOADALL_XorYorZ)glutAddMenuEntry(_("  *Load all x, all y or all z vector slices"), MENU_LOADALL_XorYorZ);
-    if(sliceload_option != SLICE_LOADALL_XorYorZ)glutAddMenuEntry(_("   Load all x, all y or all z vector slices"), MENU_LOADALL_XorYorZ);
-    if(sliceload_option == SLICE_LOADALL_XandYandZ)glutAddMenuEntry(_("  *Load all vector slices"), MENU_LOADALL_XandYandZ);
-    if(sliceload_option != SLICE_LOADALL_XandYandZ)glutAddMenuEntry(_("   Load all vector slices"), MENU_LOADALL_XandYandZ);
+    GLUTADDSUBMENU(_("Load option"), sliceloadoptionmenu);
   }
 
   if(nslicedups > 0){
@@ -8554,6 +8584,7 @@ static int compressmenu=0;
 static int showhideslicemenu=0, sliceskipmenu=0, showvslicemenu=0;
 static int plot3dshowmenu=0, staticvariablemenu=0, helpmenu=0, webhelpmenu=0, keyboardhelpmenu=0, mousehelpmenu=0;
 static int vectorskipmenu=0,unitsmenu=0;
+static int sliceloadoptionmenu = 0, vectorsliceloadoptionmenu = 0;
 static int isosurfacemenu=0, isovariablemenu=0, levelmenu=0;
 static int fontmenu=0, aperturemenu=0,dialogmenu=0,zoommenu=0;
 static int gridslicemenu=0, griddigitsmenu=0, blockagemenu=0, immersedmenu=0, loadpatchmenu=0, ventmenu=0, circularventmenu=0;
@@ -11720,6 +11751,11 @@ static int menu_count=0;
     glutAddMenuEntry(_("Unload"), MENU_PARTICLE_UNLOAD_ALL);
   }
 
+  if(nsliceinfo>0||have_geom_slice_menus==1){
+    InitSliceLoadOptionMenu(&sliceloadoptionmenu);
+    InitVectorSliceLoadOptionMenu(&vectorsliceloadoptionmenu);
+  }
+
   if(nvsliceinfo>0){
 
   //*** setup vector slice menus
@@ -11735,7 +11771,7 @@ static int menu_count=0;
     if(have_multivslice==1){
       InitMultiVectorUnloadSliceMenu(&unloadmultivslicemenu);
       InitMultiVectorSubMenu(&loadsubmvslicemenu);
-      InitMultiVectorLoadMenu(&loadmultivslicemenu, loadsubmvslicemenu, duplicatevectorslicemenu, vsliceloadmenu, unloadmultivslicemenu);
+      InitMultiVectorLoadMenu(&loadmultivslicemenu, loadsubmvslicemenu, duplicatevectorslicemenu, vsliceloadmenu, vectorsliceloadoptionmenu, unloadmultivslicemenu);
     }
   }
 
@@ -11761,7 +11797,7 @@ static int menu_count=0;
       InitDuplicateSliceMenu(&duplicateslicemenu);
     }
     InitLoadMultiSliceMenu(&loadmultislicemenu, loadsubmslicemenu, loadsubpatchmenu_s, nsubpatchmenus_s,
-                           sliceskipmenu, duplicateslicemenu, loadslicemenu, nmultisliceloaded, unloadmultislicemenu);
+                           sliceskipmenu, sliceloadoptionmenu, duplicateslicemenu, loadslicemenu, nmultisliceloaded, unloadmultislicemenu);
   }
 
 
