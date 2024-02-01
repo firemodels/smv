@@ -2979,10 +2979,10 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
 
     UpdateLoadedLists();
     GetSliceDataBounds(slicei, &qmin, &qmax);
-    slicei->globalmin = qmin;
-    slicei->globalmax = qmax;
-    slicei->valmin_smv = qmin;
-    slicei->valmax_smv = qmax;
+    slicei->globalmin_slice = qmin;
+    slicei->globalmax_slice = qmax;
+    slicei->valmin_slice    = qmin;
+    slicei->valmax_slice    = qmax;
     if(slice_average_flag==1){
       int data_per_timestep, nvals2, ntimes;
       float *vals, *times;
@@ -2997,10 +2997,10 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
         show_slice_average = 0;
       }
     }
-    slicei->valmin = qmin;
-    slicei->valmax = qmax;
-    slicei->valmin_data = qmin;
-    slicei->valmax_data = qmax;
+    slicei->valmin_slice    = qmin;
+    slicei->valmax_slice    = qmax;
+    slicei->globalmin_slice = qmin;
+    slicei->globalmax_slice = qmax;
     for (i = 0; i < 256; i++){
       slicei->qval256[i] = (qmin*(255 - i) + qmax*i) / 255;
     }
@@ -3022,7 +3022,9 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
   else{
     slicefile_labelindex = GetSliceBoundsIndexFromLabel(patchi->label.shortlabel);
   }
+#ifdef pp_RECOMPUTE_DEBUG
   int recompute = 0;
+#endif
   if(current_script_command!=NULL||(slicei==NULL&&patchi->finalize==1)||(slicei!=NULL&&slicei->finalize==1)){
     plotstate = GetPlotState(DYNAMIC_PLOTS);
     if(patchi->boundary==1)UpdateBoundaryType();
@@ -3045,14 +3047,18 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
         GetGlobalPatchBounds(1,DONOT_SET_MINMAX_FLAG);
         SetLoadedPatchBounds(NULL, 0);
         GLUIPatchBoundsCPP_CB(BOUND_DONTUPDATE_COLORS);
+#ifdef pp_RECOMPUTE_DEBUG
         recompute = 1;
+#endif
       }
     }
     else{
       if(bound_update==1||slice_bounds_defined==0||IsFDSRunning(&last_size_for_slice)==1){
         GetGlobalSliceBounds(1, DONOT_SET_MINMAX_FLAG);
         SetLoadedSliceBounds(NULL, 0);
+#ifdef pp_RECOMPUTE_DEBUG
         recompute = 1;
+#endif
       }
     }
     if(bounds->set_valmin==BOUND_SET_MIN||bounds->set_valmax==BOUND_SET_MAX){
@@ -3090,7 +3096,9 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
     PRINTF(" - %.1f MB/%.1f s\n", (float)return_filesize/1000000., total_time);
   }
   PrintMemoryInfo;
+#ifdef pp_RECOMPUTE_DEBUG
   if(recompute == 1)printf("***recomputing bounds\n");
+#endif
   return return_filesize;
 }
 
@@ -4564,8 +4572,8 @@ void DrawGeomData(int flag, slicedata *sd, patchdata *patchi, int geom_type){
   float rvals[3];
   float valmin, valmax;
   if(sd!=NULL){
-    valmin = sd->valmin;
-    valmax = sd->valmax;
+    valmin = sd->valmin_slice;
+    valmax = sd->valmax_slice;
     if(valmin>=valmax){
       valmin = 0.0;
       valmax = 1.0;

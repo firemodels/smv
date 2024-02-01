@@ -2323,14 +2323,36 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
 
     patchstart = patchi->ntimes_old*meshi->npatchsize;
 
+#ifdef pp_BOUNDS
+    if(meshi->boundary_mask == NULL&&patchi->patch_filetype==PATCH_STRUCTURED_CELL_CENTER){
+      MakeBoundaryMask(patchi);
+    }
+    patchmin_global = 10000000000000.0;
+    patchmax_global = -patchmin_global;
+    if(meshi->boundary_mask != NULL && patchi->patch_filetype == PATCH_STRUCTURED_CELL_CENTER){
+      for(i = 0; i<npatchvals; i++){
+        if(meshi->boundary_mask[i % meshi->npatchsize] == 1){
+          patchmin_global = MIN(patchmin_global, meshi->patchval[i]);
+          patchmax_global = MAX(patchmax_global, meshi->patchval[i]);
+        }
+      }
+    }
+    else{
+      for(i = 0; i<npatchvals; i++){
+        patchmin_global = MIN(patchmin_global, meshi->patchval[i]);
+        patchmax_global = MAX(patchmax_global, meshi->patchval[i]);
+      }
+    }
+#else
     patchmin_global = 10000000000000.0;
     patchmax_global = -patchmin_global;
     for(i = 0; i<npatchvals; i++){
       patchmin_global = MIN(patchmin_global, meshi->patchval[i]);
       patchmax_global = MAX(patchmax_global, meshi->patchval[i]);
     }
-    patchi->valmin_smv = patchmin_global;
-    patchi->valmax_smv = patchmax_global;
+#endif
+    patchi->valmin_patch = patchmin_global;
+    patchi->valmax_patch = patchmax_global;
     if(patchi->have_bound_file==NO){
       if(WriteFileBounds(patchi->bound_file, patchmin_global, patchmax_global)==1){
         patchi->have_bound_file = YES;
@@ -2362,7 +2384,9 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
   patchi->display = 1;
   patchi->hist_update = 1;
 
+#ifdef pp_RECOMPUTE_DEBUG
   int recompute = 0;
+#endif
   if(patchi->finalize==1){
     GLUIUpdateBoundaryListIndex(patchfilenum);
     cpp_boundsdata *bounds;
@@ -2370,11 +2394,18 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
     if(runscript == 0){
       THREADcontrol(patchbound_threads, THREAD_JOIN);
     }
+#ifdef pp_BOUNDS
+    int set_valmin_save, set_valmax_save;
+    float qmin_save, qmax_save;
+    GLUIGetMinMax(BOUND_PATCH, patchi->label.shortlabel, &set_valmin_save, &qmin_save, &set_valmax_save, &qmax_save);
+#endif
     if(force_bound_update==1||patch_bounds_defined==0 || IsFDSRunning(&last_size_for_boundary) == 1){
       GetGlobalPatchBounds(1,DONOT_SET_MINMAX_FLAG);
       SetLoadedPatchBounds(NULL, 0);
       GLUIPatchBoundsCPP_CB(BOUND_DONTUPDATE_COLORS);
+#ifdef pp_RECOMPUTE_DEBUG
       recompute = 1;
+#endif
     }
     else{
       bounds = GLUIGetBoundsData(BOUND_PATCH);
@@ -2384,6 +2415,17 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
         GLUIPatchBoundsCPP_CB(BOUND_UPDATE_COLORS);
       }
     }
+#ifdef pp_BOUNDS
+    if(set_valmin_save == 0){
+      SetPatchMin(set_valmin_save, qmin_save, patchi->label.shortlabel);
+    }
+    if(set_valmax_save == 0){
+      SetPatchMax(set_valmax_save, qmax_save, patchi->label.shortlabel);
+    }
+    if(set_valmin_save == 0 || set_valmax_save == 0){
+      UpdateAllBoundaryColors(0);
+    }
+#endif
 #define BOUND_PERCENTILE_DRAW          120
     GLUIPatchBoundsCPP_CB(BOUND_PERCENTILE_DRAW);
   }
@@ -2428,7 +2470,9 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
  else{
    PRINTF(" - %.0f kB in %.1f s\n", (float)return_filesize / 1000., total_time);
   }
+#ifdef pp_RECOMPUTE_DEBUG
   if(recompute == 1)printf("***recomputing bounds\n");
+#endif
 
   update_patch_bounds = ifile;
 
@@ -2484,8 +2528,8 @@ void GLUI2GlobalBoundaryBounds(const char *key){
 
     patchi = patchinfo + i;
     if(strcmp(key,"")==0||strcmp(patchi->label.shortlabel,key)==0){
-      patchi->valmin = glui_patchmin;
-      patchi->valmax = glui_patchmax;
+      patchi->valmin_glui = glui_patchmin;
+      patchi->valmax_glui = glui_patchmax;
 
       patchi->chopmin=patchchopmin;
       patchi->chopmax=patchchopmax;
@@ -2505,8 +2549,8 @@ void Global2GLUIBoundaryBounds(const char *key){
 
     patchi = patchinfo + i;
     if(strcmp(patchi->label.shortlabel,key)==0){
-      glui_patchmin = patchi->valmin;
-      glui_patchmax = patchi->valmax;
+      glui_patchmin = patchi->valmin_glui;
+      glui_patchmax = patchi->valmax_glui;
 
       patchchopmin=patchi->chopmin;
       patchchopmax=patchi->chopmax;
@@ -3434,6 +3478,33 @@ void DrawBoundaryThresholdCellcenter(const meshdata *meshi){
   }
   glEnd();
 }
+
+#ifdef pp_BOUNDS
+/* ------------------ MakeBoundaryMask ------------------------ */
+
+void MakeBoundaryMask(patchdata *patchi){
+  meshdata *meshi;
+  int n;
+
+  if(patchi->blocknumber < 0)return;
+  meshi = meshinfo + patchi->blocknumber;
+  if(meshi->boundary_mask != NULL|| meshi->npatchsize <= 0)return;
+  NewMemory((void **)&meshi->boundary_mask, meshi->npatchsize);
+  memset(meshi->boundary_mask, 0, meshi->npatchsize);
+  for(n = 0;n < meshi->npatches; n++){
+    int irow, ncol;
+
+    ncol = meshi->boundary_col[n];
+    for(irow = 1; irow < meshi->boundary_row[n]; irow++){
+      int icol;
+
+      for(icol = 1;icol < meshi->boundary_col[n];icol++){
+        meshi->boundary_mask[meshi->blockstart[n]+IJKBF(irow, icol)] = 1;
+      }
+    }
+  }
+}
+#endif
 
 /* ------------------ DrawBoundaryCellCenter ------------------------ */
 
