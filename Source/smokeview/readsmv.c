@@ -2845,7 +2845,6 @@ void UpdateBoundInfo(void){
       boundsdata *sbi;
 
       slicei = sliceinfo + i;
-      slicei->firstshort_slice=1;
       slicei->valmin_slice =1.0;
       slicei->valmax_slice =0.0;
       slicei->setvalmin=0;
@@ -2872,7 +2871,6 @@ void UpdateBoundInfo(void){
 
         slicen = sliceinfo + n;
         if(strcmp(slicei->label.shortlabel,slicen->label.shortlabel)==0){
-          slicei->firstshort_slice=0;
           nslicebounds--;
           break;
         }
