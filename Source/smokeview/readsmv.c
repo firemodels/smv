@@ -2805,10 +2805,6 @@ void UpdateBoundInfo(void){
       isoi = isoinfo + i;
       if(isoi->dataflag==0)continue;
       isoi->firstshort_iso=1;
-      isoi->setvalmin=0;
-      isoi->setvalmax=0;
-      isoi->valmin=1.0;
-      isoi->valmax=0.0;
       isoindex[niso_bounds]=i;
       isobounds[niso_bounds].shortlabel=isoi->color_label.shortlabel;
       isobounds[niso_bounds].dlg_setvalmin=0;
@@ -2845,7 +2841,6 @@ void UpdateBoundInfo(void){
       boundsdata *sbi;
 
       slicei = sliceinfo + i;
-      slicei->firstshort_slice=1;
       slicei->valmin_slice =1.0;
       slicei->valmax_slice =0.0;
       slicei->setvalmin=0;
@@ -2872,7 +2867,6 @@ void UpdateBoundInfo(void){
 
         slicen = sliceinfo + n;
         if(strcmp(slicei->label.shortlabel,slicen->label.shortlabel)==0){
-          slicei->firstshort_slice=0;
           nslicebounds--;
           break;
         }
@@ -5445,8 +5439,6 @@ int ParseBNDFProcess(bufferstreamdata *stream, char *buffer, int *nn_patch_in, i
   patchi->autoload = 0;
   patchi->loaded = 0;
   patchi->display = 0;
-  patchi->inuse = 0;
-  patchi->inuse_getbounds = 0;
   patchi->bounds.defined = 0;
   patchi->setchopmin = 0;
   patchi->chopmin = 1.0;

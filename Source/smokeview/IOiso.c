@@ -434,12 +434,12 @@ FILE_SIZE ReadIsoGeom(int ifile, int load_flag, int *geom_frame_index, int *erro
 
   if(isoi->dataflag==1){
     GetIsoDataBounds(isoi, &iso_valmin, &iso_valmax);
-    isoi->geom_globalmin = iso_valmin;
-    isoi->geom_globalmax = iso_valmax;
-    if(setisomin == GLOBAL_MIN)iso_valmin = isoi->geom_globalmin;
-    if(setisomax == GLOBAL_MAX)iso_valmax = isoi->geom_globalmax;
-    iso_global_min = isoi->geom_globalmin;
-    iso_global_max = isoi->geom_globalmax;
+    isoi->globalmin_iso = iso_valmin;
+    isoi->globalmax_iso = iso_valmax;
+    if(setisomin == GLOBAL_MIN)iso_valmin = isoi->globalmin_iso;
+    if(setisomax == GLOBAL_MAX)iso_valmax = isoi->globalmax_iso;
+    iso_global_min = isoi->globalmin_iso;
+    iso_global_max = isoi->globalmax_iso;
     GLUIUpdateIsoBounds();
   }
   PrintMemoryInfo;
