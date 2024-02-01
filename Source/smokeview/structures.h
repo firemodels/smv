@@ -640,7 +640,7 @@ typedef struct _isodata {
   float *geom_times, *geom_vals;
   unsigned char *times_map;
   int have_restart;
-  float geom_globalmin, geom_globalmax;
+  float globalmin_iso, globalmax_iso;
   int geom_nvals;
 } isodata;
 
