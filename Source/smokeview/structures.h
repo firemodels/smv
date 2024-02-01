@@ -1681,7 +1681,6 @@ typedef struct _patchdata {
   int is_compressed;
   int cbuffer_size;
   int boundary;
-  int inuse,inuse_getbounds;
   int firstshort_patch;
   int compression_type, compression_type_temp;
   int setvalmin, setvalmax;

@@ -5445,8 +5445,6 @@ int ParseBNDFProcess(bufferstreamdata *stream, char *buffer, int *nn_patch_in, i
   patchi->autoload = 0;
   patchi->loaded = 0;
   patchi->display = 0;
-  patchi->inuse = 0;
-  patchi->inuse_getbounds = 0;
   patchi->bounds.defined = 0;
   patchi->setchopmin = 0;
   patchi->chopmin = 1.0;
