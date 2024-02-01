@@ -2805,10 +2805,6 @@ void UpdateBoundInfo(void){
       isoi = isoinfo + i;
       if(isoi->dataflag==0)continue;
       isoi->firstshort_iso=1;
-      isoi->setvalmin=0;
-      isoi->setvalmax=0;
-      isoi->valmin=1.0;
-      isoi->valmax=0.0;
       isoindex[niso_bounds]=i;
       isobounds[niso_bounds].shortlabel=isoi->color_label.shortlabel;
       isobounds[niso_bounds].dlg_setvalmin=0;

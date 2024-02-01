@@ -627,15 +627,11 @@ typedef struct _isodata {
   int is_fed;
   feddata *fedptr;
   int type;
-  int setvalmin, setvalmax;
-  float valmin, valmax;
   int firstshort_iso;
   flowlabels surface_label, color_label;
   geomdata *geominfo;
   int blocknumber,display,loaded,loading;
   float tmin,tmax;
-  float valmin_data, valmax_data;
-  int extreme_min, extreme_max;
   int isoupdate_timestep;
   float *levels, **colorlevels;
   int nlevels;
