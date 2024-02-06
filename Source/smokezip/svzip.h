@@ -120,7 +120,7 @@ typedef struct {
   int compressed;
   int filesize;
   int is_geom;
-  int inuse,inuse_getbounds;
+  int inuse;
   int doit, done;
   int *pi1, *pi2, *pj1, *pj2, *pk1, *pk2, *patchdir, *patchsize;
   int npatches;
@@ -140,7 +140,7 @@ typedef struct _slicedata {
   char summary[1024];
   char volsummary[1024];
   int compressed,vol_compressed;
-  int inuse,involuse,inuse_getbounds;
+  int inuse,involuse;
   int filesize;
   int doit, done;
   int setvalmin, setvalmax;

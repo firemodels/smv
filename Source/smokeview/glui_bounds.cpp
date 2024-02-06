@@ -5097,6 +5097,12 @@ hvacductboundsCPP.setup("hvac", ROLLOUT_hvacduct, hvacductbounds_cpp, nhvacductb
 
     if(ngeom_data == 0)glui_bounds->add_column_to_panel(ROLLOUT_slice_settings, false);
 
+    PANEL_sliceload_option = glui_bounds->add_panel_to_panel(ROLLOUT_slice_settings, "Load option", true);
+    RADIO_sliceload_option = glui_bounds->add_radiogroup_to_panel(PANEL_sliceload_option, &sliceload_option, SLICE_OPTION, GLUISliceBoundCB);
+    glui_bounds->add_radiobutton_to_group(RADIO_sliceload_option, _("Load selected slice"));
+    RADIOBUTTON_sliceload_or_option = glui_bounds->add_radiobutton_to_group(RADIO_sliceload_option,  _("Load all x, all y or all z slices"));
+    RADIOBUTTON_sliceload_and_option = glui_bounds->add_radiobutton_to_group(RADIO_sliceload_option, _("Load all slices"));
+
     PANEL_slice_smoke = glui_bounds->add_panel_to_panel(ROLLOUT_slice_settings, "slice(fire)", true);
     glui_bounds->add_checkbox_to_panel(PANEL_slice_smoke, _("max blending"), &slices3d_max_blending);
     glui_bounds->add_checkbox_to_panel(PANEL_slice_smoke, _("show all 3D slices"), &showall_3dslices);

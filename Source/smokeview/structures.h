@@ -627,15 +627,11 @@ typedef struct _isodata {
   int is_fed;
   feddata *fedptr;
   int type;
-  int setvalmin, setvalmax;
-  float valmin, valmax;
   int firstshort_iso;
   flowlabels surface_label, color_label;
   geomdata *geominfo;
   int blocknumber,display,loaded,loading;
   float tmin,tmax;
-  float valmin_data, valmax_data;
-  int extreme_min, extreme_max;
   int isoupdate_timestep;
   float *levels, **colorlevels;
   int nlevels;
@@ -644,7 +640,7 @@ typedef struct _isodata {
   float *geom_times, *geom_vals;
   unsigned char *times_map;
   int have_restart;
-  float geom_globalmin, geom_globalmax;
+  float globalmin_iso, globalmax_iso;
   int geom_nvals;
 } isodata;
 
@@ -1418,7 +1414,6 @@ typedef struct _slicedata {
   float position_orig;
   int blocknumber;
   int cell_center_edge;
-  int firstshort_slice;
   int vec_comp;
   int skipdup;
   int setvalmin, setvalmax;
@@ -1681,7 +1676,6 @@ typedef struct _patchdata {
   int is_compressed;
   int cbuffer_size;
   int boundary;
-  int inuse,inuse_getbounds;
   int firstshort_patch;
   int compression_type, compression_type_temp;
   int setvalmin, setvalmax;
@@ -1690,7 +1684,7 @@ typedef struct _patchdata {
   int setchopmin, setchopmax;
   float chopmin, chopmax;
   float diff_valmin, diff_valmax;
-  int blocknumber,loaded,loaded2,display;
+  int blocknumber,loaded,display;
   float *geom_times, *geom_vals;
   int *geom_timeslist,geom_itime;
   unsigned char *geom_times_map;
