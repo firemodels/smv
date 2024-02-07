@@ -4315,7 +4315,6 @@ void AddColorbarListBound(GLUI_Listbox *LIST_cbar, int index, char *label_arg, i
 
 #define SLICE_LOADALL   1
 #define SLICE_UNLOADALL 2
-#define SLICE_ISVECTOR  3
 
 /* ------------------ SliceLoadCB ------------------------ */
 
@@ -4324,20 +4323,6 @@ void LoadAllMultiVSliceMenu(void);
 
 void SliceLoadCB(int var){
   switch(var){
-  case SLICE_ISVECTOR:
-    if(sliceload_isvector==1){
-      RADIOBUTTON_sliceload_x->set_name("x vector slices");
-      RADIOBUTTON_sliceload_y->set_name("y vector slices");
-      RADIOBUTTON_sliceload_z->set_name("z vector slices");
-      RADIOBUTTON_sliceload_xyz->set_name("x,y,z vector slices");
-    }
-    else{
-      RADIOBUTTON_sliceload_x->set_name("x slices");
-      RADIOBUTTON_sliceload_y->set_name("y slices");
-      RADIOBUTTON_sliceload_z->set_name("z slices");
-      RADIOBUTTON_sliceload_xyz->set_name("x,y,z slices");
-    }
-    break;
   case SLICE_LOADALL:
     if(sliceload_isvector==1){
       LoadAllMultiVSliceMenu();
@@ -5129,13 +5114,13 @@ hvacductboundsCPP.setup("hvac", ROLLOUT_hvacduct, hvacductbounds_cpp, nhvacductb
     }
     PANEL_sliceload_option = glui_bounds->add_panel_to_panel(ROLLOUT_slice_settings, "", true);
     glui_bounds->add_button_to_panel(PANEL_sliceload_option, _("Load all"), SLICE_LOADALL, SliceLoadCB);
-    glui_bounds->add_checkbox_to_panel(PANEL_sliceload_option, "vector slice", &sliceload_isvector, SLICE_ISVECTOR, SliceLoadCB);
+    glui_bounds->add_checkbox_to_panel(PANEL_sliceload_option, "vector slice", &sliceload_isvector);
     PANEL_slice_xyz = glui_bounds->add_panel_to_panel(PANEL_sliceload_option, "orientation", true);
     RADIO_sliceload_dir = glui_bounds->add_radiogroup_to_panel(PANEL_slice_xyz, &sliceload_dir);
-    RADIOBUTTON_sliceload_x   = glui_bounds->add_radiobutton_to_group(RADIO_sliceload_dir, "x slice");
-    RADIOBUTTON_sliceload_y   = glui_bounds->add_radiobutton_to_group(RADIO_sliceload_dir, "y slice");
-    RADIOBUTTON_sliceload_z   = glui_bounds->add_radiobutton_to_group(RADIO_sliceload_dir, "z slice");
-    RADIOBUTTON_sliceload_xyz = glui_bounds->add_radiobutton_to_group(RADIO_sliceload_dir, "x,y,z slice");
+    RADIOBUTTON_sliceload_x   = glui_bounds->add_radiobutton_to_group(RADIO_sliceload_dir, "x");
+    RADIOBUTTON_sliceload_y   = glui_bounds->add_radiobutton_to_group(RADIO_sliceload_dir, "y");
+    RADIOBUTTON_sliceload_z   = glui_bounds->add_radiobutton_to_group(RADIO_sliceload_dir, "z");
+    RADIOBUTTON_sliceload_xyz = glui_bounds->add_radiobutton_to_group(RADIO_sliceload_dir, "x,y,z");
     PANEL_slice_filetype = glui_bounds->add_panel_to_panel(PANEL_sliceload_option, "file type", true);
     RADIO_filetype = glui_bounds->add_radiogroup_to_panel(PANEL_slice_filetype, &sliceload_filetype);
     glui_bounds->add_radiobutton_to_group(RADIO_filetype, _("node centered"));
@@ -5145,7 +5130,6 @@ hvacductboundsCPP.setup("hvac", ROLLOUT_hvacduct, hvacductbounds_cpp, nhvacductb
       LISTBOX_sliceload->add_item(i, slicebounds_cpp[i].label);
     }
     glui_bounds->add_button_to_panel(PANEL_sliceload_option, _("Unload all"), SLICE_UNLOADALL, SliceLoadCB);
-    SliceLoadCB(SLICE_ISVECTOR);
   }
 
   // ----------------------------------- Time ----------------------------------------
