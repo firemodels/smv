@@ -5129,18 +5129,18 @@ hvacductboundsCPP.setup("hvac", ROLLOUT_hvacduct, hvacductbounds_cpp, nhvacductb
     }
     PANEL_sliceload_option = glui_bounds->add_panel_to_panel(ROLLOUT_slice_settings, "", true);
     glui_bounds->add_button_to_panel(PANEL_sliceload_option, _("Load all"), SLICE_LOADALL, SliceLoadCB);
-    PANEL_slice_xyz = glui_bounds->add_panel_to_panel(PANEL_sliceload_option, "", true);
-    glui_bounds->add_checkbox_to_panel(PANEL_slice_xyz, "vector slice", &sliceload_isvector, SLICE_ISVECTOR, SliceLoadCB);
+    glui_bounds->add_checkbox_to_panel(PANEL_sliceload_option, "vector slice", &sliceload_isvector, SLICE_ISVECTOR, SliceLoadCB);
+    PANEL_slice_xyz = glui_bounds->add_panel_to_panel(PANEL_sliceload_option, "orientation", true);
     RADIO_sliceload_dir = glui_bounds->add_radiogroup_to_panel(PANEL_slice_xyz, &sliceload_dir);
     RADIOBUTTON_sliceload_x   = glui_bounds->add_radiobutton_to_group(RADIO_sliceload_dir, "x slice");
     RADIOBUTTON_sliceload_y   = glui_bounds->add_radiobutton_to_group(RADIO_sliceload_dir, "y slice");
     RADIOBUTTON_sliceload_z   = glui_bounds->add_radiobutton_to_group(RADIO_sliceload_dir, "z slice");
     RADIOBUTTON_sliceload_xyz = glui_bounds->add_radiobutton_to_group(RADIO_sliceload_dir, "x,y,z slice");
-    PANEL_slice_filetype = glui_bounds->add_panel_to_panel(PANEL_sliceload_option, "", true);
+    PANEL_slice_filetype = glui_bounds->add_panel_to_panel(PANEL_sliceload_option, "file type", true);
     RADIO_filetype = glui_bounds->add_radiogroup_to_panel(PANEL_slice_filetype, &sliceload_filetype);
     glui_bounds->add_radiobutton_to_group(RADIO_filetype, _("node centered"));
     glui_bounds->add_radiobutton_to_group(RADIO_filetype, _("cell centered"));
-    LISTBOX_sliceload = glui_bounds->add_listbox_to_panel(PANEL_sliceload_option, "of type:", &sliceload_boundtype);
+    LISTBOX_sliceload = glui_bounds->add_listbox_to_panel(PANEL_sliceload_option, "quantity:", &sliceload_boundtype);
     for(i=0;i<nslicebounds_cpp;i++){
       LISTBOX_sliceload->add_item(i, slicebounds_cpp[i].label);
     }
