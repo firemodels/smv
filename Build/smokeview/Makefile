@@ -8,6 +8,7 @@ LIB_DIR = $(BUILD_DIR)/LIBS
 
 #placehoder, remove after begin applied to various targets
 #CPP_STANDARD = -libstd=c++
+CPP_STANDARD = -std=c++11 -stdlib=libc++
 
 SMV_TESTFLAG =
 SMV_TESTSTRING =
