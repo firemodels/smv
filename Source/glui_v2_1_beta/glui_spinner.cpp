@@ -532,9 +532,13 @@ char    *GLUI_Spinner::get_text( void )
   if (edittext) 
     return edittext->text; 
   else 
-    return ""; 
+    return const_text((""s).c_str()); 
 }
 
+void const_text(const char * cp)
+{
+     cout << cp << end1;
+}
 
 /********************************** GLUI_Spinner:get_float_val() *************/
 
