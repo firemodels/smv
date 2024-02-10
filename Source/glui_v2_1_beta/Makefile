@@ -1,5 +1,6 @@
 .SUFFIXES: .c .cpp .o .obj
 
+CPP_STANDARD = -std=c++11 -stdlib=libc++
 #COMPILER=icx
 #COMPILER2=icx
 COMPILER=icx
@@ -20,9 +21,9 @@ endif
 .c.o:
 	$(CC)  $(CFLAGS) $(FILTERC) -c $<
 .cpp.obj:
-	$(CPP) $(CFLAGS) $(INCS) $(FILTERC) -c $<
+	$(CPP) $(CFLAGS) $(CPP_STANDARD) $(INCS) $(FILTERC) -c $<
 .cpp.o:
-	$(CPP) $(CFLAGS) $(FILTERC) -c $<
+	$(CPP) $(CFLAGS) $(CPP_STANDARD) $(FILTERC) -c $<
 
 
 GLUI_OBJS = glui_add_controls.o glui.o glui_bitmap_img_data.o glui_bitmaps.o \
