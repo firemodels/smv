@@ -35,6 +35,7 @@
 #define  GLUI_SPINNER_MIN_GROWTH_STEPS     100
 #define  GLUI_SPINNER_CALLBACK_INTERVAL    1
  
+ 
 /****************************** GLUI_Spinner::mouse_down_handler() **********/
 
 int    GLUI_Spinner::mouse_down_handler( int local_x, int local_y )
@@ -531,9 +532,10 @@ char    *GLUI_Spinner::get_text( void )
   static GLUI_String def;
   if (edittext) 
     return edittext->text; 
-  else
+  else 
     return def;
 }
+
 
 /********************************** GLUI_Spinner:get_float_val() *************/
 
