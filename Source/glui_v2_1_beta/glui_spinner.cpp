@@ -34,7 +34,7 @@
 #define  GLUI_SPINNER_GROWTH_STEPS         800
 #define  GLUI_SPINNER_MIN_GROWTH_STEPS     100
 #define  GLUI_SPINNER_CALLBACK_INTERVAL    1
-
+ 
  
 /****************************** GLUI_Spinner::mouse_down_handler() **********/
 
@@ -529,10 +529,11 @@ void    GLUI_Spinner::increase_growth( void )
 
 char    *GLUI_Spinner::get_text( void )
 { 
+  static GLUI_String def;
   if (edittext) 
     return edittext->text; 
   else 
-    return ""; 
+    return def;
 }
 
 
