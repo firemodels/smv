@@ -6197,7 +6197,7 @@ extern "C" void GLUISliceBoundCB(int var){
       break;
     case SLICE_SKIP:
       slice_skip = CLAMP(slice_skip,1,max_slice_skip);
-      if(SPINNER_slice_skip!=NULL)SPINNER_slice_skip->set_int_val(slice_skip);
+      SPINNER_slice_skip->set_int_val(slice_skip);
       if(SPINNER_slice_skip2!=NULL)SPINNER_slice_skip2->set_int_val(slice_skip);
       slice_skipx = slice_skip;
       slice_skipy = slice_skip;
