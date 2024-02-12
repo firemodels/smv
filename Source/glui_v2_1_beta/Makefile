@@ -37,7 +37,7 @@ default: $(GLUI_OBJS)
 	ar rcs libglui.a $(GLUI_OBJS)
 
 intel_linux_64: CPP_STANDARD = -std=c++11 -stdlib=libc++
-intel_linux_64: CFLAGS=-m64 $(NOCLOSE) -fpermissive 
+intel_linux_64: CFLAGS=-m64 $(INCS) $(PLATFORM) $(NOCLOSE) $(CFLAGOPT) -fpermissive 
 intel_linux_64: $(GLUI_OBJS)
 	ar rcs libglui.a $(GLUI_OBJS)
 
