@@ -532,10 +532,9 @@ char    *GLUI_Spinner::get_text( void )
   static GLUI_String def;
   if (edittext) 
     return edittext->text; 
-  else 
+  else
     return def;
 }
-
 
 /********************************** GLUI_Spinner:get_float_val() *************/
 
