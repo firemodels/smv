@@ -6,9 +6,6 @@ SOURCE_DIR = ../../../Source/
 BUILD_DIR = ../../../Build
 LIB_DIR = $(BUILD_DIR)/LIBS
 
-#placehoder, remove after begin applied to various targets
-#CPP_STANDARD = -libstd=c++
-
 SMV_TESTFLAG =
 SMV_TESTSTRING =
 SMV_PROFILEFLAG =
