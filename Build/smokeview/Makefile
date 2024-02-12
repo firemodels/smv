@@ -8,6 +8,7 @@ LIB_DIR = $(BUILD_DIR)/LIBS
 
 #placehoder, remove after begin applied to various targets
 #CPP_STANDARD = -libstd=c++
+#CPP_STANDARD = -std=c++11 -stdlib=libc++
 
 SMV_TESTFLAG =
 SMV_TESTSTRING =
@@ -278,6 +279,7 @@ SYSTEM_LIBS_LINUX = -lpthread -lX11 -lXmu -lGLU -lGL -lm -lrt
 
 intel_linux_64 : DYNLIB_EXT = .so
 intel_linux_64 : LIB_DIR_PLAT = $(LIB_DIR)/intel_linux_64
+intel_linux_64 : CPP_STANDARD = -std=c++11 -stdlib=libc++
 intel_linux_64 : CFLAGS    = -O0 -traceback -m64 -D pp_LINUX -D NDEBUG $(SMV_TESTFLAG) $(SMV_PROFILEFLAG) $(GITINFO) $(INTEL_COMPINFO)
 ifeq ($(SANITIZE),1)
 intel_linux_64 : CFLAGS   += $(SANITIZE_OPTIONS)
@@ -307,6 +309,7 @@ intel_linux_64_db : CFLAGS    = -O0 -g -m64 $(SMV_TESTFLAG) -D _DEBUG -D pp_LINU
                                 -Wall -Wextra -Wuninitialized -Wunused-function -Wunused-variable -Wno-sign-compare \
                                 -Wno-unused-parameter $(GITINFO) $(INTEL_COMPINFO)
 ifeq ($(SANITIZE),1)
+intel_linux_64_db : CPP_STANDARD = -std=c++11 -stdlib=libc++
 intel_linux_64_db : CFLAGS   += $(SANITIZE_OPTIONS)
 endif
 intel_linux_64_db : C_STANDARD    = -std=gnu99
