@@ -1,8 +1,5 @@
 .SUFFIXES: .c .cpp .o .obj
 
-#CPP_STANDARD = -std=c++11 -stdlib=libc++
-#COMPILER=icx
-#COMPILER2=icx
 COMPILER=icx
 COMPILER2=icx
 CC=${COMPILER}
