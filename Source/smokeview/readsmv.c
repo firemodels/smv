@@ -11680,9 +11680,6 @@ int ReadSMV_Configure(){
   if(nsliceinfo>0){
     NewMemory((void **)&slice_loaded_list,nsliceinfo*sizeof(int));
   }
-
-  update_load_slices = 1;
-
   FREEMEMORY(slice_sorted_loaded_list);
   if(nsliceinfo>0){
     NewMemory((void **)&slice_sorted_loaded_list, nsliceinfo*sizeof(int));
