@@ -5958,6 +5958,7 @@ void LoadBoundaryMenu(int value){
 
         patchi = patchinfo+i;
         IF_NOT_USEMESH_CONTINUE(patchi->loaded,patchi->blocknumber);
+        if(FileExistsOrig(patchi->reg_file) == NO)continue;
         if(InPatchList(patchj, patchi)==1){
           THREADcontrol(compress_threads, THREAD_LOCK);
           patchi->finalize = 1;

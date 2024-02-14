@@ -2905,6 +2905,11 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
   filesize=GetGeomData(patchi->file, ntimes_local, nvals, patchi->geom_times,
     patchi->geom_nstatics, patchi->geom_ndynamics, patchi->geom_vals, time_frame, time_value, geom_offsets, &error);
   return_filesize += filesize;
+  if(error == 1){
+    patchi->loaded = 0;
+    patchi->display = 0;
+    return return_filesize;
+  }
 
   patchi->ngeom_times = ntimes_local;
   patchi->geom_nvals = nvals;
