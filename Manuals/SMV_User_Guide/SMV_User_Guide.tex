@@ -1033,12 +1033,13 @@ Other data coloring properties such as transparency, order of the colorbar may a
 
 
 \begin{figure}[bph]
-\centerline{\includegraphics[width=4.25694444in]{\SMVfigdir/figDatacoloring}
+\centerline{\includegraphics[width=6.5in]{\SMVfigdir/figDatacoloring}
 }\ \caption [Dialog box for selecting colorbars.] {Dialog
 box for selecting colorbars.  The selected colorbar may be modified by
 shading it continuously, stepped or as a series of discrete lines.  The
 colorbar may also be converted to shades of gray.  Colors for
-extreme data (data outside of specified bounds) may be specified.
+extreme data (data outside of specified bounds) may be specified. Two colorbars may be toggled
+to compare how data appears.
 A split colorbar may be specified using one range of colors between the minimum
 value and the split and another range of colors between the split and the maximum value.}
 \label{figDatacoloring}
@@ -1989,24 +1990,23 @@ by loading a temperature slice and setting the position to $x=0.5$, $z=1.5$ .}
 
 Data is loaded in smokeview by clicking the right mouse button and selecting one of the data types
 under the Load/Unload menu. Smokeview loads data for all available times and meshes by default.
-For large cases, it is useful to reduce the amount of data loaded in order to shorten load times .
-To do this, one uses the Data loading options tab of the Files/Data/Coloring dialog box
+For large cases, it is useful to decrease the amount of data loaded in order to reduce load times .
+To do this, use the Data loading options tab of the Files/Data/Coloring dialog box
 illustrated in Figure \ref{figDataloading}.
 To open this dialog box select the Dialogs>File/Data/Coloring menu entry then select the Data loading options tab.
-To shorten the time interval over which
+To reduce the time interval over which
 data is loaded, specify a min and/or max time in this dialog box.
 To reduce the number of meshes over which
-data is loaded specify an intersection box. 
+data is loaded specify an intersection box.
 The intersection box may be viewed by selecting the show intersection box checkbox.
 The intersection box is colored red. The meshes that are contained within this box
 are drawn as outlines and colored black. Mesh indices (1 to number of meshes) may be displayed and used
 to set the intersection box to that mesh.
 Only data in meshes within the intersection box will
-then be loaded. 
-If the `Load a file only if unloaded` checkbox is selected and if the intersection box 
-is expanded to include more meshes then only data in these extra meshes where data was not loaded before will be loaded 
+then be loaded.
+If the `Load a file only if unloaded` checkbox is selected and if the intersection box
+is expanded to include more meshes then only data in these extra meshes where data was not loaded before will be loaded
 (data will not be loaded twice).
-
 
 \begin{figure}[bph]
 \centerline{
@@ -2049,14 +2049,13 @@ when mapping data to color indices.
 
 \begin{figure}[bph]
 \centerline{
-\includegraphics[width=4.0in]{\SMVfigdir/figBOUNDset}}
+\includegraphics[width=4.5in]{\SMVfigdir/figBOUNDset}}
 \caption[Dialog box for setting Slice file data bounds.]
 {Dialog box for setting Slice file data bounds.
 Select a variable and bound type (set, global  or percentile).  Enter a lower
 and/or upper bound if set bound type was selected. Data may be excluded from the plot by
 selecting a {\em Truncate data}\ bound.
-Press the {\em Update colors}\ or {\em Reload data}\ button for
-the new bounds to take effect.}\ \label{figBOUNDSset}
+}\ \label{figBOUNDSset}
 \end{figure}
 
 
@@ -2110,8 +2109,7 @@ options.] {Dialog box for setting Plot3D file
 options. Select a variable and bound type. Enter a lower
 and/or upper bound if set bound type was selected.  Data may be excluded from the plot by
 selecting a {\em Truncate data}\ bound. Select the type of contour
-plot to be displayed. Press the {\em Update colors}\ or {\em Reload data}\ button for
-the new bounds to take effect.}\ \label{figBOUNDSplot3d}
+plot to be displayed.}\ \label{figBOUNDSplot3d}
 \end{figure}
 
 The {\tt Plot3D}\ portion of the File/Bounds dialog box as illustrated in Figure \ref{figBOUNDSplot3d} has controls for specifying how Plot3D vectors and isosurfaces appear.
@@ -4651,7 +4649,7 @@ The General(2->256) tab is used to edit
 colorbars with more nodes or if one wishes to delete or add nodes.
 \begin{figure}[bph]
 \begin{center}
-\includegraphics[width=4.236111in]{\SMVfigdir/figCOLORBAR_EDITOR2}
+\includegraphics[width=5.5in]{\SMVfigdir/figCOLORBAR_EDITOR2}
 \end{center}
 \caption[Colorbar Editor display.]{Colorbar Editor display.
 Dialog box for specifying the color space (RGB or CIELab) used to display a colorbar or to
