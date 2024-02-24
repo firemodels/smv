@@ -678,6 +678,7 @@ char **GetSortedFilenames(int file_type){
 FILE *FopenGbndFile(int file_type, char *mode){
   FILE *stream = NULL;
 
+#ifdef pp_GBND
   ASSERT_BOUND_TYPE;
   if(file_type == BOUND_SLICE){
     stream = fopen(slice_gbnd_filename, mode);
@@ -688,6 +689,7 @@ FILE *FopenGbndFile(int file_type, char *mode){
   else if(file_type == BOUND_PLOT3D){
     stream = fopen(plot3d_gbnd_filename, mode);
   }
+#endif
   return stream;
 }
 
