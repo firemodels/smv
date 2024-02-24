@@ -9,7 +9,7 @@
 
 //#define pp_LUA                 // turn on LUA option
 
-//#define pp_GBND  // use .gbnd files
+#define pp_GBND  // use .gbnd files
 
 //*** parallel file loading
 #define pp_SLICE_MULTI    // load slice files in parallel
