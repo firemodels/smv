@@ -2105,7 +2105,7 @@ void Keyboard(unsigned char key, int flag){
     case 'N':
       force_bound_update = 1 - force_bound_update;
       if(force_bound_update == 1)printf("bound updates: always\n");
-      if(force_bound_update == 0)printf("bound updates: only when bound files have change\n");
+      if(force_bound_update == 0)printf("bound updates: only when bound files have changed\n");
       break;
     case 'O':
     if(ncgeominfo>0){
