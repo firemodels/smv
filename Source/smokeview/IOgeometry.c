@@ -3048,7 +3048,7 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
     int bound_update = 0;
     if(force_bound_update == 1 || current_script_command != NULL)bound_update = 1;
     if(patchi->boundary == 1){
-      if(bound_update==1||patch_bounds_defined==0 || IsFDSRunning(&last_size_for_boundary) == 1){
+      if(bound_update==1||patch_bounds_defined==0 || BuildGbndFile(BOUND_PATCH) == 1){
         GetGlobalPatchBounds(1,DONOT_SET_MINMAX_FLAG);
         SetLoadedPatchBounds(NULL, 0);
         GLUIPatchBoundsCPP_CB(BOUND_DONTUPDATE_COLORS);
@@ -3058,7 +3058,7 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
       }
     }
     else{
-      if(bound_update==1||slice_bounds_defined==0||IsFDSRunning(&last_size_for_slice)==1){
+      if(bound_update==1||slice_bounds_defined==0|| BuildGbndFile(BOUND_SLICE) ==1){
         GetGlobalSliceBounds(1, DONOT_SET_MINMAX_FLAG);
         SetLoadedSliceBounds(NULL, 0);
 #ifdef pp_RECOMPUTE_DEBUG

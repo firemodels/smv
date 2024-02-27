@@ -5015,7 +5015,7 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
     float qmin_save, qmax_save;
     GLUIGetMinMax(BOUND_SLICE, sd->label.shortlabel, &set_valmin_save, &qmin_save, &set_valmax_save, &qmax_save);
 #endif
-    if(force_bound_update==1||slice_bounds_defined==0||IsFDSRunning(&last_size_for_slice)==1){
+    if(force_bound_update==1||slice_bounds_defined==0|| BuildGbndFile(BOUND_SLICE) ==1){
 #ifdef pp_RECOMPUTE_DEBUG
       recompute = 1;
 #endif

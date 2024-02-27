@@ -445,6 +445,8 @@ EXTERNCPP void GetLoadedPlot3dBounds(int *compute_loaded, float *loaded_min, flo
 EXTERNCPP void GetGlobalPlot3DBounds(void);
 EXTERNCPP void GetGlobalSliceBounds(int flag, int set_flag);
 EXTERNCPP int IsFDSRunning(FILE_SIZE *last_size);
+EXTERNCPP int BuildGbndFile(int file_type);
+
 EXTERNCPP void GetGlobalSliceBoundsReduced(void);
 EXTERNCPP void GetGlobalHVACDuctBounds(int flag);
 EXTERNCPP void GetGlobalHVACNodeBounds(int flag);
