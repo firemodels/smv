@@ -8,20 +8,20 @@ cd %CD%\..
 set BASEDIR=%CD%
 
 cd %BASEDIR%\..\
-set SVNROOT=%CD%
-set VDIR=%SVNROOT%\smv\Verification
-set INDIR=%SVNROOT%\smv\Verification\Visualization\frames
-set OUTDIR=%SVNROOT%\smv\Manuals\SMV_Summary\movies
-set WUIINDIR=%SVNROOT%\smv\Verification\WUI\frames
-set RUNSMV=call "%SVNROOT%\fds\Verification\scripts\runsmv.bat"
-set RUNSMV=call "%SVNROOT%\fds\Verification\scripts\runmsmv.bat"
+set GITROOT=%CD%
+set VDIR=%GITROOT%\smv\Verification
+set INDIR=%GITROOT%\smv\Verification\Visualization\frames
+set OUTDIR=%GITROOT%\smv\Manuals\SMV_Summary\movies
+set WUIINDIR=%GITROOT%\smv\Verification\WUI\frames
+set RUNSMV=call "%GITROOT%\fds\Verification\scripts\runsmv.bat"
+set RUNSMV=call "%GITROOT%\fds\Verification\scripts\runmsmv.bat"
 
 if "%size%" == "" (
   set SMOKEVIEW=smokeview
   set FDS=fds
 ) else (
-  set SMOKEVIEW=%SVNROOT%\smv\Build\intel_win_%size%\smokeview_win_%size%.exe -bindir %SVNROOT%\smv\for_bundle
-  set FDS=%SVNROOT%\fds\Build\intel_win_%size%\fds_win_%size%.exe
+  set SMOKEVIEW=%GITROOT%\smv\Build\intel_win_%size%\smokeview_win_%size%.exe -bindir %GITROOT%\smv\for_bundle
+  set FDS=%GITROOT%\fds\Build\intel_win_%size%\fds_win_%size%.exe
 )
 
 call :is_file_installed %SMOKEVIEW%|| exit /b 1

@@ -34,17 +34,17 @@ set smvlogdate="21-Nov-2023"
 :: ---- repo locations ----
 
 ::*** PC
-if "x%svn_root%" NEQ "x" goto skipsvn
-set svn_root=%userprofile%\FireModels_fork
-:skipsvn
+if "x%git_root%" NEQ "x" goto skipgit
+set git_root=%userprofile%\FireModels_fork
+:skipgit
 
-set fdswikirepo=%svn_root%\wikis
-set svn_drive=c:
+set fdswikirepo=%git_root%\wikis
+set git_drive=c:
 
 ::*** Linux/OSX
 set userhome=/home/gforney
 set bot_home=/home4/gforney
-set linux_svn_root=FireModels_fork
+set linux_git_root=FireModels_fork
 set compiler_dir=fire-notes/INSTALL/LINUX/INTEL_19u1
 set misc_dir=fire-notes/INSTALL/LIBS/LINUX/LIB64
 

@@ -1,10 +1,10 @@
 @echo off
-set svn_drive=d:
+set git_drive=d:
 
-set SVNROOT=%CD%\..\..\
-set WUIDIR=%SVNROOT%\Verification\Wui
+set GITROOT=%CD%\..\..\
+set WUIDIR=%GITROOT%\Verification\Wui
 
-set FDS=%SVNROOT%\fds\Build\intel_win_64\fds_win_64
+set FDS=%GITROOT%\fds\Build\intel_win_64\fds_win_64
 
 echo %FDS%
 cd %WUIDIR%

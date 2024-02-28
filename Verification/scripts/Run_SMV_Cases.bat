@@ -2,7 +2,7 @@
 setlocal
 
 set size=_64
-set svn_drive=c:
+set git_drive=c:
 set DEBUG=
 set SCRIPT_DIR=%CD%
 set runwuicases=1
@@ -14,7 +14,7 @@ cd ..
 set BASEDIR=%CD%
 
 cd ..\..
-set SVNROOT=%CD%
+set GITROOT=%CD%
 
 set stopscript=0
 call :getopts %*
@@ -26,26 +26,26 @@ if %stopscript% == 1 (
 set TIME_FILE=%SCRIPT_DIR%\smv_case_times.txt
 set WAIT_FILE=%SCRIPT_DIR%\wait.txt
 
-set RUNFDS_R=call %SVNROOT%\fds\Utilities\Scripts\runfds.bat
-set RUNTFDS_R=call %SVNROOT%\fds\Utilities\Scripts\runfds.bat
-set RUNCFAST_R=call %SVNROOT%\fds\Utilities\Scripts\runcfast.bat
+set RUNFDS_R=call %GITROOT%\fds\Utilities\Scripts\runfds.bat
+set RUNTFDS_R=call %GITROOT%\fds\Utilities\Scripts\runfds.bat
+set RUNCFAST_R=call %GITROOT%\fds\Utilities\Scripts\runcfast.bat
 
-set RUNFDS_M=call %SVNROOT%\fds\Verification\scripts\make_stop.bat
-set RUNTFDS_M=call %SVNROOT%\fds\Verification\scripts\make_stop.bat
-set RUNCFAST_M=call %SVNROOT%\fds\Verification\scripts\make_stop.bat
+set RUNFDS_M=call %GITROOT%\fds\Verification\scripts\make_stop.bat
+set RUNTFDS_M=call %GITROOT%\fds\Verification\scripts\make_stop.bat
+set RUNCFAST_M=call %GITROOT%\fds\Verification\scripts\make_stop.bat
 
-set RUNFDS_E=call %SVNROOT%\fds\Verification\scripts\erase_stop.bat
-set RUNTFDS_E=call %SVNROOT%\fds\Verification\scripts\erase_stop.bat
-set RUNCFAST_E=call %SVNROOT%\fds\Verification\scripts\erase_stop.bat
+set RUNFDS_E=call %GITROOT%\fds\Verification\scripts\erase_stop.bat
+set RUNTFDS_E=call %GITROOT%\fds\Verification\scripts\erase_stop.bat
+set RUNCFAST_E=call %GITROOT%\fds\Verification\scripts\erase_stop.bat
 
 :: VVVVVVVVVVVV set parameters VVVVVVVVVVVVVVVVVVVVVV
 
 set FDSBASE=fds_impi_win%size%%DEBUG%.exe
-set FDSEXE=%SVNROOT%\fds\Build\impi_intel_win%size%%DEBUG%\%FDSBASE%
-set CFASTEXE=%SVNROOT%\cfast\Build\CFAST\intel_win%size%\cfast7_win%size%.exe
-set WIND2FDSEXE=%SVNROOT%\smv\Build\wind2fds\intel_win%size%\wind2fds_win%size%.exe
+set FDSEXE=%GITROOT%\fds\Build\impi_intel_win%size%%DEBUG%\%FDSBASE%
+set CFASTEXE=%GITROOT%\cfast\Build\CFAST\intel_win%size%\cfast7_win%size%.exe
+set WIND2FDSEXE=%GITROOT%\smv\Build\wind2fds\intel_win%size%\wind2fds_win%size%.exe
 
-set BACKGROUNDEXE=%SVNROOT%\smv\Build\background\intel_win%size%\background.exe
+set BACKGROUNDEXE=%GITROOT%\smv\Build\background\intel_win%size%\background.exe
 
 :: Run jobs in background (or not)
 
@@ -63,7 +63,7 @@ call :is_file_installed %WIND2FDSEXE%|| exit /b 1
 set FDS=%bg%%FDSEXE%
 set CFAST=%bg%%CFASTEXE%
 
-set SH2BAT=%SVNROOT%\smv\Build\sh2bat\intel_win_64\sh2bat
+set SH2BAT=%GITROOT%\smv\Build\sh2bat\intel_win_64\sh2bat
 call :is_file_installed %sh2bat%|| exit /b 1
 
 echo.
@@ -73,7 +73,7 @@ echo.
 
 echo Converting wind data
 echo.
-cd %SVNROOT%\smv\Verification\WUI
+cd %GITROOT%\smv\Verification\WUI
 %WIND2FDSEXE% -prefix sd11 -offset " 50.0  50.0 0.0" wind_data1a.csv
 %WIND2FDSEXE% -prefix sd12 -offset " 50.0 150.0 0.0" wind_data1b.csv
 %WIND2FDSEXE% -prefix sd21 -offset "150.0  50.0 0.0" wind_data1c.csv
@@ -98,7 +98,7 @@ time /t >> %TIME_FILE%
 :: create a text file containing the FDS version used to run these tests.
 :: This file is included in the smokeview user's guide
 
-set smvug="%SVNROOT%\smv\Manuals\SMV_User_Guide\"
+set smvug="%GITROOT%\smv\Manuals\SMV_User_Guide\"
 echo | %FDSEXE% 2> "%smvug%\SCRIPT_FIGURES\fds.version"
 
 if "%rundebug%" == "1" (
