@@ -2461,11 +2461,23 @@ void UpdateVsliceMenuLabels(sliceparmdata *sp){
 }
 
 /* ------------------ NewMultiSlice ------------------------ */
+#ifdef pp_SLICE_MENU
+int NewMultiSlice(slicedata *sdold,slicedata *sd){
+  int i, j;
+
+  i = sdold - sliceinfo;
+  j = sd - sliceinfo;
+  if(SliceCompare(&i, &j) == 0)return 0;
+  return 1;
+}
+
+#else
 
 int NewMultiSlice(slicedata *sdold,slicedata *sd){
   if(strcmp(sd->label.longlabel, sdold->label.longlabel)==0&&sd->slcf_index==sdold->slcf_index)return 0;
   return 1;
 }
+#endif
 
 /* ------------------ GetGSliceParams ------------------------ */
 

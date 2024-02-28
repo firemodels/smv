@@ -9,6 +9,8 @@
 
 //#define pp_LUA                 // turn on LUA option
 
+#define pp_SLICE_MENU     // make slice menu formation consistent (sort step, build step)
+
 //*** parallel file loading
 #define pp_SLICE_MULTI    // load slice files in parallel
 
