@@ -2004,6 +2004,44 @@ void UpdateAllSliceColors(int slicetype, int *errorcode){
   SliceBounds2Glui(slicetype);
 }
 
+#ifdef pp_SLICE_MENU_DEBUG
+/* ------------------ PrintSliceInfo ------------------------ */
+int NewMultiSlice(slicedata *sd1, slicedata *sc2);
+void PrintSliceInfo(void){
+  int i, lenfile;
+  FILE *stream;
+  char sliceinfofile[256];
+
+  if(nsliceinfo==0)return;
+  lenfile = strlen(chidfilebase) + strlen("_sliceinfo.csv") + 1;
+  if(lenfile<256){
+    strcpy(sliceinfofile, chidfilebase);
+    strcat(sliceinfofile, "_sliceinfo.csv");
+  }
+  else{
+    strcpy(sliceinfofile, "sliceinfo.csv");
+  }
+  stream = fopen(sliceinfofile, "w");
+  if(stream == NULL)return;
+  fprintf(stream, ",file,long label,volslice,idir,position,filetype,index\n");
+  for(i = 0; i < nsliceinfo; i++){
+    slicedata *sd;
+    char label[32];
+
+    sd = sliceinfo + sliceorderindex[i];
+    strcpy(label, "");
+    if(i == 0 ||
+       NewMultiSlice(sliceinfo + sliceorderindex[i-1], sliceinfo + sliceorderindex[i]) == 1){
+      strcpy(label, "***");
+    }
+    fprintf(stream, "%s,%s,%s,%i,%i,%f,%i,%i\n",
+      label, sd->reg_file, sd->label.longlabel, sd->volslice, sd->idir, sd->position_orig,
+      sd->slice_filetype, sd->slcf_index);
+  }
+  fclose(stream);
+}
+#endif
+
 /* ------------------ SliceCompare ------------------------ */
 
 int SliceCompare( const void *arg1, const void *arg2 ){
@@ -2461,11 +2499,23 @@ void UpdateVsliceMenuLabels(sliceparmdata *sp){
 }
 
 /* ------------------ NewMultiSlice ------------------------ */
+#ifdef pp_SLICE_MENU
+int NewMultiSlice(slicedata *sdold,slicedata *sd){
+  int i, j;
+
+  i = sdold - sliceinfo;
+  j = sd - sliceinfo;
+  if(SliceCompare(&i, &j) == 0)return 0;
+  return 1;
+}
+
+#else
 
 int NewMultiSlice(slicedata *sdold,slicedata *sd){
   if(strcmp(sd->label.longlabel, sdold->label.longlabel)==0&&sd->slcf_index==sdold->slcf_index)return 0;
   return 1;
 }
+#endif
 
 /* ------------------ GetGSliceParams ------------------------ */
 
