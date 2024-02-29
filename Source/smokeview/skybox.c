@@ -6,6 +6,7 @@
 #include GLUT_H
 
 #include "smokeviewvars.h"
+#include "readimage.h"
 
 /* ------------------ LoadSkyTexture ------------------------ */
 
