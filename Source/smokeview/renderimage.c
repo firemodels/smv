@@ -1335,7 +1335,7 @@ int SVimage2var(int rendertype,
 
 /* ------------------ ReadPicture ------------------------ */
 
-unsigned char *ReadPicture(char *filename, int *width, int *height, int *is_transparent, int printflag){
+unsigned char *ReadPicture(char *texturedir, char *filename, int *width, int *height, int *is_transparent, int printflag){
   char *ext;
   unsigned char *returncode;
   char *filebuffer=NULL;
