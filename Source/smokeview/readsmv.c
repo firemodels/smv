@@ -16,6 +16,7 @@
 #include "IOvolsmoke.h"
 #include "stdio_buffer.h"
 #include "glui_motion.h"
+#include "readimage.h"
 
 #define BREAK break
 #define BREAK2 \

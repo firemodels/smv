@@ -968,9 +968,6 @@ EXTERNCPP void Hsl2Rgb(float *hslvals, unsigned char *rgbvals);
 EXTERNCPP void InitColorbarsDir(void);
 EXTERNCPP void InitTextureDir(void);
 EXTERNCPP void GetRGB(unsigned int val, unsigned char *rr, unsigned char *gg, unsigned char *bb);
-EXTERNCPP unsigned char *ReadPicture(char *texturedir, char *filename, int *width, int *height, int *is_transparent, int printflag);
-EXTERNCPP unsigned char *ReadJPEG(const char *filename,int *width, int *height, int *is_transparent);
-EXTERNCPP unsigned char *ReadPNG(const char *filename,int *width, int *height, int *is_transparent);
 EXTERNCPP void UpdateColorbarDialogs(void);
 
 EXTERNCPP void SetTourXYZView(float t, tourdata *touri);
