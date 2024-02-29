@@ -336,6 +336,10 @@ EXTERNCPP int IsColorbarSplit(colorbardata *cbi);
 EXTERNCPP void UpdateHVACNodeColorLabels(int index);
 EXTERNCPP void UpdateAllHVACColorLabels(void);
 
+#ifdef pp_SLICE_MENU_DEBUG
+EXTERNCPP void PrintSliceInfo(void);
+#endif
+
 #ifdef pp_REFRESH
 EXTERNCPP void PeriodicRefresh(int var);
 #endif
