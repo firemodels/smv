@@ -1675,7 +1675,7 @@ void DrawGeom(int flag, int timestate){
       if(show_geom_normal == 1 && smooth_geom_normal == 1)doit = 1;
       if(show_iso_normal == 1 && smooth_iso_normal == 1)doit = 1;
     }
-    if(doit=1){  // draw smooth normals
+    if(doit==1){  // draw smooth normals
       glPushMatrix();
       glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
       glTranslatef(-xbar0, -ybar0, -zbar0);
