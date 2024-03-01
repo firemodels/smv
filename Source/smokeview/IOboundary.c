@@ -2399,7 +2399,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
     float qmin_save, qmax_save;
     GLUIGetMinMax(BOUND_PATCH, patchi->label.shortlabel, &set_valmin_save, &qmin_save, &set_valmax_save, &qmax_save);
 #endif
-    if(force_bound_update==1||patch_bounds_defined==0 || IsFDSRunning(&last_size_for_boundary) == 1){
+    if(force_bound_update==1||patch_bounds_defined==0 || BuildGbndFile(BOUND_SLICE) == 1){
       GetGlobalPatchBounds(1,DONOT_SET_MINMAX_FLAG);
       SetLoadedPatchBounds(NULL, 0);
       GLUIPatchBoundsCPP_CB(BOUND_DONTUPDATE_COLORS);
