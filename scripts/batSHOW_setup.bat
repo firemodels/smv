@@ -33,9 +33,9 @@ echo.
 echo *** FDS-Smokeview repository settings
 
 echo.
-echo svn_root=%svn_root%
-echo svn_drive=%svn_drive%
-echo linux_svn_root=%linux_svn_root%
+echo git_root=%git_root%
+echo git_drive=%git_drive%
+echo linux_git_root=%linux_git_root%
 
 echo.
 echo Press any key to continue

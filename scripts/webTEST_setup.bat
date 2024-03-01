@@ -24,10 +24,10 @@ echo fds_smv_env.bat was found in your home directory.
 echo Press any key to view settings.
 pause >NUL
 
-%svn_drive%
+%git_drive%
 call %envfile%
 
-call %svn_root%\smv\scripts\batSHOW_setup.bat
+call %git_root%\smv\scripts\batSHOW_setup.bat
 
 echo.
 echo Press any key to test putty installation

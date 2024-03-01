@@ -1,9 +1,9 @@
 #!/bin/bash
 CURDIR=`pwd`
-export SVNROOT=`pwd`/../../..
+export GITROOT=`pwd`/../../..
 
-cd $SVNROOT
-export SVNROOT=`pwd`
+cd $GITROOT
+export GITROOT=`pwd`
 cd $CURDIR/..
 
 QSMV=/usr/local/bin/qsmokeview.sh

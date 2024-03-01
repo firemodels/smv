@@ -1,9 +1,9 @@
 #!/bin/bash
 
 curdir=`pwd`
-SVNROOT=`pwd`/../..
-cd $SVNROOT
-SVNROOT=`pwd`
+GITROOT=`pwd`/../..
+cd $GITROOT
+GITROOT=`pwd`
 
 tmpout=/tmp/timings.$$
 
@@ -13,15 +13,15 @@ TIMING=$2
 
 echo 'FDS Case,Wall Clock Time (s),CPU Time (s),Number of Cells,Number of Time Steps,Performance Metric (1e-6)' > $tmpout
 
-export QFDS=$SVNROOT/Utilities/Scripts/timing_stats.sh
-export RUNCFAST=$SVNROOT/Utilities/Scripts/timing_stats.sh
-export RUNTFDS=$SVNROOT/Utilities/Scripts/timing_stats.sh
+export QFDS=$GITROOT/Utilities/Scripts/timing_stats.sh
+export RUNCFAST=$GITROOT/Utilities/Scripts/timing_stats.sh
+export RUNTFDS=$GITROOT/Utilities/Scripts/timing_stats.sh
 if [[ "$TIMING" == "" ]]; then 
   export save_benchmark=
 else
   export save_benchmark="yes"
 fi
-cd $SVNROOT/Verification
+cd $GITROOT/Verification
 if [[ "$MODE" == "smokebot" ]]; then
   scripts/SMV_Cases.sh >> $tmpout
   scripts/WUI_Cases.sh >> $tmpout

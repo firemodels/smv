@@ -89,9 +89,9 @@ is_file_installed()
 CURDIR=`pwd`
 cd ..
 
-SVNROOT=`pwd`/../..
-cd $SVNROOT
-SVNROOT=`pwd`
+GITROOT=`pwd`/../..
+cd $GITROOT
+GITROOT=`pwd`
 
 cd $CURDIR/..
 
@@ -172,19 +172,19 @@ fi
 if [ "$use_installed" == "1" ] ; then
   export WIND2FDS=wind2fds
 else
-  export WIND2FDS=$SVNROOT/smv/Build/wind2fds/${COMPILER}_$PLATFORM/wind2fds_$PLATFORM
+  export WIND2FDS=$GITROOT/smv/Build/wind2fds/${COMPILER}_$PLATFORM/wind2fds_$PLATFORM
 fi
-export FDSEXE=$SVNROOT/fds/Build/${INTEL}mpi_${COMPILER}_$FDSPLATFORM$DEBUG/fds_${INTEL}mpi_${COMPILER}_$FDSPLATFORM$DEBUG
+export FDSEXE=$GITROOT/fds/Build/${INTEL}mpi_${COMPILER}_$FDSPLATFORM$DEBUG/fds_${INTEL}mpi_${COMPILER}_$FDSPLATFORM$DEBUG
 export FDS=$FDSEXE
-export FDSMPI=$SVNROOT/fds/Build/${INTEL}mpi_${COMPILER}_$FDSPLATFORM$DEBUG/fds_${INTEL}mpi_${COMPILER}_$FDSPLATFORM$DEBUG
+export FDSMPI=$GITROOT/fds/Build/${INTEL}mpi_${COMPILER}_$FDSPLATFORM$DEBUG/fds_${INTEL}mpi_${COMPILER}_$FDSPLATFORM$DEBUG
 export CFAST=$CFASTREPO/Build/CFAST/${COMPILER}_$PLATFORM/cfast7_$PLATFORM
 
-QFDSSH="$SVNROOT/fds/Utilities/Scripts/qfds.sh -j $JOBPREFIX"
+QFDSSH="$GITROOT/fds/Utilities/Scripts/qfds.sh -j $JOBPREFIX"
 if [ "$DEBUG" != "" ]; then
   QFDSSH="$QFDSSH -T db "
 fi
 if [ "$QUEUE" == "none" ]; then
-  QFDSSH="$SVNROOT/smv/Utilities/Scripts/background.sh -I -s"
+  QFDSSH="$GITROOT/smv/Utilities/Scripts/background.sh -I -s"
 fi
 FDSPARM=
 
@@ -222,7 +222,7 @@ fi
 echo QFDS=$QFDS
 echo "*************************************************"
 
-echo "" | $FDSEXE 2> $SVNROOT/smv/Manuals/SMV_User_Guide/SCRIPT_FIGURES/fds.version
+echo "" | $FDSEXE 2> $GITROOT/smv/Manuals/SMV_User_Guide/SCRIPT_FIGURES/fds.version
 
 if [[ ! $stop_cases ]] ; then
   if [ "$FDS_DEBUG" == "0" ] ; then
