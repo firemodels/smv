@@ -9,6 +9,8 @@
 
 //#define pp_LUA                 // turn on LUA option
 
+#define pp_GBND             // use .gbnd files
+
 #define pp_SLICE_MENU       // make slice menu formation consistent (sort step, build step)
 #define pp_SLICE_MENU_DEBUG // output slice menu infoo to casename_sliceinfo.csv
 

@@ -2008,14 +2008,14 @@ void UpdateAllSliceColors(int slicetype, int *errorcode){
 /* ------------------ PrintSliceInfo ------------------------ */
 int NewMultiSlice(slicedata *sd1, slicedata *sc2);
 void PrintSliceInfo(void){
-  int i, lenfile;
+  int i, lenfile=500;
   FILE *stream;
   char sliceinfofile[256];
 
   if(nsliceinfo==0)return;
-  lenfile = strlen(chidfilebase) + strlen("_sliceinfo.csv") + 1;
-  if(lenfile<256){
-    strcpy(sliceinfofile, chidfilebase);
+  if(fdsprefix != NULL)lenfile = strlen(fdsprefix) + strlen("_sliceinfo.csv") + 1;
+  if(fdsprefix != NULL && lenfile<256){
+    strcpy(sliceinfofile, fdsprefix);
     strcat(sliceinfofile, "_sliceinfo.csv");
   }
   else{
@@ -5065,7 +5065,7 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
     float qmin_save, qmax_save;
     GLUIGetMinMax(BOUND_SLICE, sd->label.shortlabel, &set_valmin_save, &qmin_save, &set_valmax_save, &qmax_save);
 #endif
-    if(force_bound_update==1||slice_bounds_defined==0||IsFDSRunning(&last_size_for_slice)==1){
+    if(force_bound_update==1||slice_bounds_defined==0|| BuildGbndFile(BOUND_SLICE) ==1){
 #ifdef pp_RECOMPUTE_DEBUG
       recompute = 1;
 #endif

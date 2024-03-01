@@ -19,6 +19,9 @@ QFDS_COUNT=/tmp/qfds_count_`whoami`
 
 CUR=`pwd`
 SCRIPTDIR=`dirname $0`
+cd $SCRIPTDIR
+SCRIPTDIR=`pwd`
+
 cd $SCRIPTDIR/..
 VDIR=`pwd`
 
