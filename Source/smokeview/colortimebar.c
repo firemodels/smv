@@ -2693,7 +2693,6 @@ void DrawHorizontalColorbarRegLabels(void){
     sb = isobounds + iisottype;
     tttmin = iso_valmin;
     tttmax = iso_valmax;
-    int i;
     for(i = 0;i < 256;i++){
       float f1;
 
@@ -3160,7 +3159,6 @@ void DrawVerticalColorbarRegLabels(void){
     sb = isobounds + iisottype;
     tttmin = iso_valmin;
     tttmax = iso_valmax;
-    int i;
     for(i = 0;i < 256;i++){
       float f1;
 
