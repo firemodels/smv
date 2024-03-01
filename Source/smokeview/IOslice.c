@@ -2013,9 +2013,9 @@ void PrintSliceInfo(void){
   char sliceinfofile[256];
 
   if(nsliceinfo==0)return;
-  lenfile = strlen(chidfilebase) + strlen("_sliceinfo.csv") + 1;
+  lenfile = strlen(fdsprefix) + strlen("_sliceinfo.csv") + 1;
   if(lenfile<256){
-    strcpy(sliceinfofile, chidfilebase);
+    strcpy(sliceinfofile, fdsprefix);
     strcat(sliceinfofile, "_sliceinfo.csv");
   }
   else{
