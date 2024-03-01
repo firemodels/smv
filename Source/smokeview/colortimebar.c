@@ -2452,7 +2452,6 @@ void DrawHorizontalColorbarRegLabels(void){
   int iposition;
 
   int sliceflag = 0;
-  int isoflag = 0;
   float *slicefactor = NULL;
   float slicefactor2[2];
   float *isofactor = NULL;
@@ -2692,8 +2691,15 @@ void DrawHorizontalColorbarRegLabels(void){
     float isorange;
 
     sb = isobounds + iisottype;
-    tttmin = sb->levels256[0];
-    tttmax = sb->levels256[255];
+    tttmin = iso_valmin;
+    tttmax = iso_valmax;
+    int i;
+    for(i = 0;i < 256;i++){
+      float f1;
+
+      f1 = (float)i / 255.0;
+      sb->levels256[i] = tttmin * (1.0-f1) + f1 * tttmax;
+    }
     isorange = tttmax - tttmin;
     iposition = -1;
     glPushMatrix();
@@ -2706,10 +2712,8 @@ void DrawHorizontalColorbarRegLabels(void){
       tttval = sb->levels256[valindex];
       Num2String(isolabel, tttval);
       isocolorlabel_ptr = isolabel;
-      if(isoflag == 1){
-        ScaleFloat2String(tttval, isocolorlabel, isofactor);
-        isocolorlabel_ptr = isocolorlabel;
-      }
+      ScaleFloat2String(tttval, isocolorlabel, isofactor);
+      isocolorlabel_ptr = isocolorlabel;
       horiz_position = MIX2(global_colorbar_index, 255, hcolorbar_right_pos, hcolorbar_left_pos);
       iposition = MIX2(global_colorbar_index, 255, nrgb - 1, 0);
       OutputBarText(horiz_position, 0.0, red_color, isocolorlabel_ptr);
@@ -2718,17 +2722,15 @@ void DrawHorizontalColorbarRegLabels(void){
       float horiz_position;
       char isocolorlabel[256];
       char *isocolorlabel_ptr = NULL;
+      float val;
 
       horiz_position = MIX2(i, nrgb - 2, hcolorbar_right_pos, hcolorbar_left_pos);
       if(iposition == i)continue;
       isocolorlabel_ptr = &(sb->colorlabels[i + 1][0]);
-      if(isoflag == 1){
-        float val;
 
-        val = tttmin + i*isorange / (nrgb - 2);
-        ScaleFloat2String(val, isocolorlabel, isofactor);
-        isocolorlabel_ptr = isocolorlabel;
-      }
+      val = tttmin + i*isorange / (nrgb - 2);
+      ScaleFloat2String(val, isocolorlabel, isofactor);
+      isocolorlabel_ptr = isocolorlabel;
       OutputBarText(horiz_position, 0.0, foreground_color, isocolorlabel_ptr);
     }
     glPopMatrix();
@@ -3157,8 +3159,15 @@ void DrawVerticalColorbarRegLabels(void){
     float isorange;
 
     sb = isobounds + iisottype;
-    tttmin = sb->levels256[0];
-    tttmax = sb->levels256[255];
+    tttmin = iso_valmin;
+    tttmax = iso_valmax;
+    int i;
+    for(i = 0;i < 256;i++){
+      float f1;
+
+      f1 = (float)i / 255.0;
+      sb->levels256[i] = tttmin * (1.0-f1) + f1 * tttmax;
+    }
     isorange = tttmax - tttmin;
     iposition = -1;
     glPushMatrix();
@@ -3172,10 +3181,8 @@ void DrawVerticalColorbarRegLabels(void){
       tttval = sb->levels256[valindex];
       Num2String(isolabel, tttval);
       isocolorlabel_ptr = isolabel;
-      if(isoflag == 1){
-        ScaleFloat2String(tttval, isocolorlabel, isofactor);
-        isocolorlabel_ptr = isocolorlabel;
-      }
+      ScaleFloat2String(tttval, isocolorlabel, isofactor);
+      isocolorlabel_ptr = isocolorlabel;
       vert_position = MIX2(global_colorbar_index, 255, vcolorbar_top_pos, vcolorbar_down_pos);
       iposition = MIX2(global_colorbar_index, 255, nrgb - 1, 0);
       OutputBarText(0.0, vert_position, red_color, isocolorlabel_ptr);
@@ -3184,17 +3191,15 @@ void DrawVerticalColorbarRegLabels(void){
       float vert_position;
       char isocolorlabel[256];
       char *isocolorlabel_ptr = NULL;
+      float val;
 
       vert_position = MIX2(i, nrgb - 2, vcolorbar_top_pos, vcolorbar_down_pos);
       if(iposition == i)continue;
       isocolorlabel_ptr = &(sb->colorlabels[i + 1][0]);
-      if(isoflag == 1){
-        float val;
 
-        val = tttmin + i*isorange / (nrgb - 2);
-        ScaleFloat2String(val, isocolorlabel, isofactor);
-        isocolorlabel_ptr = isocolorlabel;
-      }
+      val = tttmin + i*isorange / (nrgb - 2);
+      ScaleFloat2String(val, isocolorlabel, isofactor);
+      isocolorlabel_ptr = isocolorlabel;
       OutputBarText(0.0, vert_position, foreground_color, isocolorlabel_ptr);
     }
     glPopMatrix();

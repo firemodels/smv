@@ -662,7 +662,7 @@ void UpdateShow(void){
     if(hvacductvar_index >= 0)num_colorbars++;
     if(hvacnodevar_index >= 0)num_colorbars++;
 
-    if(tisoflag==1&&1==0){ // disable isosurface colorbar label for now
+    if(tisoflag==1){
       showiso_colorbar = 1;
       num_colorbars++;
     }
