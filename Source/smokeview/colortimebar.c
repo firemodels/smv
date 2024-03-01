@@ -3066,7 +3066,6 @@ void DrawVerticalColorbarRegLabels(void){
   int iposition;
 
   int sliceflag = 0;
-  int isoflag = 0;
   float *slicefactor = NULL;
   float slicefactor2[2];
   float *isofactor = NULL;
