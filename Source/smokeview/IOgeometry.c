@@ -1592,7 +1592,12 @@ void DrawGeom(int flag, int timestate){
 
     // draw geometry normal vectors
 
-    if(show_geom_normal==1&&smooth_geom_normal==0&&geomlisti->ntriangles>0){  // draw faceted normals
+    int doit = 0;
+    if(geomlisti->ntriangles > 0){
+      if(show_geom_normal==1&&smooth_geom_normal==0)doit = 1;
+      if(show_iso_normal == 1&&smooth_iso_normal==0)doit = 1;
+    }
+    if(doit==1){  // draw faceted normals
       glPushMatrix();
       glScalef(SCALE2SMV(1.0),SCALE2SMV(1.0),SCALE2SMV(1.0));
       glTranslatef(-xbar0,-ybar0,-zbar0);
@@ -1665,7 +1670,12 @@ void DrawGeom(int flag, int timestate){
       glEnd();
       glPopMatrix();
     }
-    if(show_geom_normal==1&&smooth_geom_normal==1&&geomlisti->ntriangles > 0){  // draw smooth normals
+    doit = 0;
+    if(geomlisti->ntriangles > 0){
+      if(show_geom_normal == 1 && smooth_geom_normal == 1)doit = 1;
+      if(show_iso_normal == 1 && smooth_iso_normal == 1)doit = 1;
+    }
+    if(doit=1){  // draw smooth normals
       glPushMatrix();
       glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
       glTranslatef(-xbar0, -ybar0, -zbar0);
