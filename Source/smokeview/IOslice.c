@@ -2008,13 +2008,13 @@ void UpdateAllSliceColors(int slicetype, int *errorcode){
 /* ------------------ PrintSliceInfo ------------------------ */
 int NewMultiSlice(slicedata *sd1, slicedata *sc2);
 void PrintSliceInfo(void){
-  int i, lenfile;
+  int i, lenfile=500;
   FILE *stream;
   char sliceinfofile[256];
 
   if(nsliceinfo==0)return;
-  lenfile = strlen(fdsprefix) + strlen("_sliceinfo.csv") + 1;
-  if(lenfile<256){
+  if(fdsprefix != NULL)lenfile = strlen(fdsprefix) + strlen("_sliceinfo.csv") + 1;
+  if(fdsprefix != NULL && lenfile<256){
     strcpy(sliceinfofile, fdsprefix);
     strcat(sliceinfofile, "_sliceinfo.csv");
   }
