@@ -349,7 +349,6 @@ FILE_SIZE ReadIsoGeom(int ifile, int load_flag, int *geom_frame_index, int *erro
   return_filesize=ReadGeom(geomi,load_flag,GEOM_ISO,geom_frame_index);
 
   if(load_flag==UNLOAD){
-    FREEMEMORY(isoi->geom_vals);
     meshi->isofilenum = -1;
     return 0;
   }
