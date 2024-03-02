@@ -2768,6 +2768,8 @@ GLUI_RadioGroup *RADIO_plot3d_display=NULL;
 GLUI_RadioGroup *RADIO2_plot3d_display = NULL;
 GLUI_RadioButton *RADIO_button_cutcell = NULL;
 
+GLUI_RadioButton *RADIOBUTTON_iso_percentile_min = NULL;
+GLUI_RadioButton *RADIOBUTTON_iso_percentile_max = NULL;
 GLUI_RadioButton *RADIOBUTTON_sliceload_x=NULL;
 GLUI_RadioButton *RADIOBUTTON_sliceload_y=NULL;
 GLUI_RadioButton *RADIOBUTTON_sliceload_z=NULL;
@@ -4674,19 +4676,23 @@ extern "C" void GLUIBoundsSetup(int main_window){
       EDIT_iso_valmin = glui_bounds->add_edittext_to_panel(PANEL_iso1, "", GLUI_EDITTEXT_FLOAT, &glui_iso_valmin, ISO_VALMIN, GLUIIsoBoundCB);
       glui_bounds->add_column_to_panel(PANEL_iso1, false);
       RADIO_iso_setmin = glui_bounds->add_radiogroup_to_panel(PANEL_iso1, &setisomin, ISO_SETVALMIN, GLUIIsoBoundCB);
-      glui_bounds->add_radiobutton_to_group(RADIO_iso_setmin, _("percentile min"));
+
+      RADIOBUTTON_iso_percentile_min = glui_bounds->add_radiobutton_to_group(RADIO_iso_setmin, _("percentile min"));
       glui_bounds->add_radiobutton_to_group(RADIO_iso_setmin, _("set min"));
       glui_bounds->add_radiobutton_to_group(RADIO_iso_setmin, _("global min"));
       GLUIIsoBoundCB(ISO_SETVALMIN);
+      RADIOBUTTON_iso_percentile_min->disable();
 
       PANEL_iso2 = glui_bounds->add_panel_to_panel(ROLLOUT_iso_bounds, "", GLUI_PANEL_NONE);
       EDIT_iso_valmax = glui_bounds->add_edittext_to_panel(PANEL_iso2, "", GLUI_EDITTEXT_FLOAT, &glui_iso_valmax, ISO_VALMAX, GLUIIsoBoundCB);
       glui_bounds->add_column_to_panel(PANEL_iso2, false);
       RADIO_iso_setmax = glui_bounds->add_radiogroup_to_panel(PANEL_iso2, &setisomax, ISO_SETVALMAX, GLUIIsoBoundCB);
-      glui_bounds->add_radiobutton_to_group(RADIO_iso_setmax, _("percentile max"));
+
+      RADIOBUTTON_iso_percentile_max = glui_bounds->add_radiobutton_to_group(RADIO_iso_setmax, _("percentile max"));
       glui_bounds->add_radiobutton_to_group(RADIO_iso_setmax, _("set max"));
       glui_bounds->add_radiobutton_to_group(RADIO_iso_setmax, _("global max"));
       GLUIIsoBoundCB(ISO_SETVALMAX);
+      RADIOBUTTON_iso_percentile_max->disable();
     }
 
     ROLLOUT_iso_color = glui_bounds->add_rollout_to_panel(ROLLOUT_iso, "Color/transparency", false, ISO_ROLLOUT_COLOR, IsoRolloutCB);
