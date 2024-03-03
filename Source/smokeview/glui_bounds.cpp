@@ -5662,6 +5662,8 @@ extern "C" void GLUIIsoBoundCB(int var){
       if(iisottype<0)return;
       sb = isobounds + iisottype;
       break;
+    default:
+      break;
   }
   switch(var){
   case ISO_OUTLINE_IOFFSET:
