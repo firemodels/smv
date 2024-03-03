@@ -1526,6 +1526,11 @@ typedef struct _cpp_boundsdata {
 typedef struct _boundsdata {
   char *shortlabel;
   int dlg_setvalmin, dlg_setvalmax;
+
+  int ini_defined;
+  int ini_setvalmin, ini_setvalmax;
+  float ini_valmin, ini_valmax;
+
   int setchopmin, setchopmax;
   float chopmin, chopmax;
   float dlg_valmin, dlg_valmax;
