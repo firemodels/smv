@@ -1653,7 +1653,6 @@ void SetIsoLabels(float smin, float smax,
   sb = isobounds + isotype;
   sb->label=&(sd->color_label);
 
-
   *errorcode=0;
   PRINTF("setting up iso labels \n");
   GetColorbarLabels(smin,smax,nrgb,sb->colorlabels,sb->levels256);

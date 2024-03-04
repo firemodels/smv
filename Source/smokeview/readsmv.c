@@ -2812,6 +2812,10 @@ void UpdateBoundInfo(void){
       isobounds[niso_bounds].dlg_setvalmax=0;
       isobounds[niso_bounds].dlg_valmin=1.0;
       isobounds[niso_bounds].dlg_valmax=0.0;
+      isobounds[niso_bounds].edit_valmin = 0.0;
+      isobounds[niso_bounds].edit_valmax = 1.0;
+      isobounds[niso_bounds].edit_valmin_defined = 0;
+      isobounds[niso_bounds].edit_valmax_defined = 0;
       isobounds[niso_bounds].setchopmax=0;
       isobounds[niso_bounds].setchopmin=0;
       isobounds[niso_bounds].chopmax=0.0;

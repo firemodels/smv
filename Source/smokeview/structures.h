@@ -1530,11 +1530,13 @@ typedef struct _boundsdata {
   int ini_defined;
   int ini_setvalmin, ini_setvalmax;
   float ini_valmin, ini_valmax;
+  float edit_valmin, edit_valmax;
+  int edit_valmin_defined, edit_valmax_defined;
 
   int setchopmin, setchopmax;
   float chopmin, chopmax;
   float dlg_valmin, dlg_valmax;
-  float data_valmin,data_valmax;
+  float data_valmin, data_valmax;
   float dlg_global_valmin, dlg_global_valmax;
   float line_contour_min;
   float line_contour_max;
