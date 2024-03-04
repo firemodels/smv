@@ -1468,14 +1468,14 @@ FDS input file.}
 \label{figiso}%
 \end{figure}
 
-The surface where a quantity such as temperature attains a given
-value is called an isosurface. An isosurface is also called a
+An isosurface is a surface where a quantity such as temperature has the same
+value. This surface may also be called a
 level surface or 3D contour. Isosurface files contain data
-specifying isosurface locations for a given quantity at one or
-more levels. These surfaces are represented as triangles.
-Isosurface files have file names with extension .iso and are
+specifying locations for a given quantity at one or
+more levels. These surfaces are represented using triangles.
+Isosurface files have have extensions .iso and are
 displayed by selecting the desired entry from the {\em
-Load/Unload}\ menu.
+Load/Unload>Isosurface}\ menu.
 
 Isosurfaces are specified in the FDS input file with the {\tt
 \&ISOF}\ keyword.  To specify isosurfaces for temperatures of
@@ -1484,7 +1484,13 @@ the line:
 \begin{lstlisting}
 &ISOF QUANTITY='TEMPERATURE', VALUE(1)=30.0, VALUE(2)=100.0 /
 \end{lstlisting}
-to the FDS input file.  A complete list of isosurface quantities
+to the FDS input file.
+A second quantity may be specified for coloring the isosurface.
+For example, to color an HRRPUV isosurface by temperature use:
+\begin{lstlisting}
+&ISOF QUANTITY='HRRPUV' , VALUE(1)=200, QUANTITY2='TEMPERATURE' /
+\end{lstlisting}
+A complete list of isosurface quantities
 may be found in Ref.~\cite{FDS_Users_Guide}
 
 %%-----------------------------------------------------------------------
