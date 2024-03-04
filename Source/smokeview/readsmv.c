@@ -2806,11 +2806,16 @@ void UpdateBoundInfo(void){
       if(isoi->dataflag==0)continue;
       isoi->firstshort_iso=1;
       isoindex[niso_bounds]=i;
+      isobounds[niso_bounds].ini_defined = 0;
       isobounds[niso_bounds].shortlabel=isoi->color_label.shortlabel;
       isobounds[niso_bounds].dlg_setvalmin=0;
       isobounds[niso_bounds].dlg_setvalmax=0;
       isobounds[niso_bounds].dlg_valmin=1.0;
       isobounds[niso_bounds].dlg_valmax=0.0;
+      isobounds[niso_bounds].edit_valmin = 0.0;
+      isobounds[niso_bounds].edit_valmax = 1.0;
+      isobounds[niso_bounds].edit_valmin_defined = 0;
+      isobounds[niso_bounds].edit_valmax_defined = 0;
       isobounds[niso_bounds].setchopmax=0;
       isobounds[niso_bounds].setchopmin=0;
       isobounds[niso_bounds].chopmax=0.0;
@@ -13670,26 +13675,25 @@ int ReadIni2(char *inifile, int localfile){
     if(MatchINI(buffer, "V_ISO") == 1){
       float valmin, valmax;
       int setvalmin, setvalmax;
+      char *isolabel;
+
+#define SETVALMIN 1
+#define SETVALMAX 1
 
       fgets(buffer, 255, stream);
       strcpy(buffer2, "");
       sscanf(buffer, "%i %f %i %f %s", &setvalmin, &valmin, &setvalmax, &valmax, buffer2);
-      if(strcmp(buffer2, "") != 0){
+      isolabel = TrimFrontBack(buffer2);
+      if(strcmp(isolabel, "") != 0){
         for(i = 0; i<niso_bounds; i++){
-          if(strcmp(isobounds[i].shortlabel, buffer2) != 0)continue;
-          isobounds[i].dlg_setvalmin = setvalmin;
-          isobounds[i].dlg_setvalmax = setvalmax;
-          isobounds[i].dlg_valmin = valmin;
-          isobounds[i].dlg_valmax = valmax;
+          if(strcmp(isolabel, isobounds[i].label->shortlabel) != 0)continue;
+          isobounds[i].ini_defined = 1;
+          isobounds[i].ini_setvalmin = setvalmin;
+          isobounds[i].ini_setvalmax = setvalmax;
+          if(setvalmin == SETVALMIN)isobounds[i].ini_valmin = valmin;
+          if(setvalmax == SETVALMAX)isobounds[i].ini_valmax = valmax;
+          update_iso_ini = 1;
           break;
-        }
-      }
-      else{
-        for(i = 0; i<niso_bounds; i++){
-          isobounds[i].dlg_setvalmin = setvalmin;
-          isobounds[i].dlg_setvalmax = setvalmax;
-          isobounds[i].dlg_valmin = valmin;
-          isobounds[i].dlg_valmax = valmax;
         }
       }
       continue;

@@ -7,6 +7,7 @@
 #include <math.h>
 
 #include "smokeviewvars.h"
+#include "glui_bounds.h"
 #include "getdata.h"
 
 /* ------------------ GetIsoLevels ------------------------ */
@@ -321,6 +322,118 @@ void OutputAllIsoBounds(void){
   }
 }
 
+/* ------------------ GetIsoTType ------------------------ */
+
+int GetIsoTType(const isodata *isoi){
+  isodata *isoi2;
+  int j;
+  int jj;
+
+  if(isoi->dataflag == 0)return -1;
+  jj = 0;
+  for(j = 0;j < nisoinfo;j++){
+    isoi2 = isoinfo + j;
+
+    if(isoi2->dataflag == 0)continue;
+    if(isoi2->firstshort_iso == 0)continue;
+    if(strcmp(isoi->color_label.longlabel, isoi2->color_label.longlabel) == 0)return jj;
+    jj++;
+  }
+  return -1;
+}
+
+/* ------------------ SyncIsoBounds ------------------------ */
+
+void SyncIsoBounds(){
+  int i, ncount;
+  int firsttime = 1;
+  float tmin_local, tmax_local;
+
+  // find number of iso-surfaces with values
+
+  ncount = 0;
+  for(i = 0;i < nisoinfo;i++){
+    isodata *isoi;
+
+    isoi = isoinfo + i;
+    if(isoi->loaded == 0 || isoi->type != iisotype || isoi->dataflag == 0)continue;
+    if(iisottype != GetIsoTType(isoi))continue;
+    ncount++;
+  }
+  if(ncount <= 1)return;
+
+  // find min and max bounds for valued iso-surfaces
+
+  for(i = 0;i < nisoinfo;i++){
+    isodata *isoi;
+
+    isoi = isoinfo + i;
+    if(isoi->loaded == 0 || isoi->type != iisotype || isoi->dataflag == 0)continue;
+    if(iisottype != GetIsoTType(isoi))continue;
+    if(firsttime == 1){
+      firsttime = 0;
+      tmin_local = isoi->tmin;
+      tmax_local = isoi->tmax;
+    }
+    else{
+      if(tmin_local < isoi->tmin)isoi->tmin = tmin_local;
+      if(tmax_local > isoi->tmax)isoi->tmax = tmax_local;
+    }
+  }
+
+  // set min and max bounds for valued iso-surfaces
+
+  for(i = 0;i < nisoinfo;i++){
+    isodata *isoi;
+
+    isoi = isoinfo + i;
+    if(isoi->loaded == 0 || isoi->type != iisotype || isoi->dataflag == 0)continue;
+    if(iisottype != GetIsoTType(isoi))continue;
+    isoi->tmin = tmin_local;
+    isoi->tmax = tmax_local;
+  }
+
+  // rescale all data
+
+  for(i = 0;i < nisoinfo;i++){
+    isodata *isoi;
+    meshdata *meshi;
+    int ii;
+    isosurface *asurface;
+
+    isoi = isoinfo + i;
+    if(isoi->loaded == 0 || isoi->type != iisotype || isoi->dataflag == 0)continue;
+    if(iisottype != GetIsoTType(isoi))continue;
+
+    meshi = meshinfo + isoi->blocknumber;
+    asurface = meshi->animatedsurfaces;
+
+    for(ii = 0;ii < meshi->niso_times;ii++){
+      int j;
+
+      for(j = 0;j < meshi->nisolevels;j++){
+        float tcolor, tcolor0, tcolorfactor;
+        int kk;
+
+        if(isoi->tmax > isoi->tmin){
+          tcolor0 = (asurface->tmin - isoi->tmin) / (isoi->tmax - isoi->tmin);
+          tcolorfactor = (asurface->tmax - asurface->tmin) / 65535.;
+          tcolorfactor /= (isoi->tmax - isoi->tmin);
+        }
+        else{
+          tcolor0 = 0.5;
+          tcolorfactor = 0.0;
+        }
+        for(kk = 0;kk < asurface->nvertices;kk++){
+          tcolor = tcolor0 + asurface->tvertices[kk] * tcolorfactor;
+          asurface->color8[kk] = (unsigned char)(CLAMP(tcolor, 0.0, 1.0) * 255);
+        }
+        asurface++;
+      }
+    }
+  }
+}
+
 /* ------------------ ReadIsoGeom ------------------------ */
 
 FILE_SIZE ReadIsoGeom(int ifile, int load_flag, int *geom_frame_index, int *errorcode){
@@ -439,7 +552,14 @@ FILE_SIZE ReadIsoGeom(int ifile, int load_flag, int *geom_frame_index, int *erro
     if(setisomax == GLOBAL_MAX)iso_valmax = isoi->globalmax_iso;
     iso_global_min = isoi->globalmin_iso;
     iso_global_max = isoi->globalmax_iso;
+
+    iisottype = GetIsoTType(isoi);
+    SyncIsoBounds();
+    SetIsoLabels(isoi->tmin, isoi->tmax, isoi, errorcode);
+
     GLUIUpdateIsoBounds();
+    GLUIIsoBoundCB(ISO_VALMIN);
+    GLUIIsoBoundCB(ISO_VALMAX);
   }
   PrintMemoryInfo;
   show_isofiles = 1;
@@ -447,118 +567,6 @@ FILE_SIZE ReadIsoGeom(int ifile, int load_flag, int *geom_frame_index, int *erro
   GLUTPOSTREDISPLAY;
   CheckMemory;
   return return_filesize;
-}
-
-/* ------------------ GetIsoTType ------------------------ */
-
-int GetIsoTType(const isodata *isoi){
-  isodata *isoi2;
-  int j;
-  int jj;
-
-  if(isoi->dataflag == 0)return -1;
-  jj = 0;
-  for(j = 0;j < nisoinfo;j++){
-    isoi2 = isoinfo + j;
-
-    if(isoi2->dataflag == 0)continue;
-    if(isoi2->firstshort_iso == 0)continue;
-    if(strcmp(isoi->color_label.longlabel, isoi2->color_label.longlabel) == 0)return jj;
-    jj++;
-  }
-  return -1;
-}
-
-/* ------------------ SyncIsoBounds ------------------------ */
-
-void SyncIsoBounds(){
-  int i, ncount;
-  int firsttime = 1;
-  float tmin_local, tmax_local;
-
-  // find number of iso-surfaces with values
-
-  ncount = 0;
-  for(i = 0;i < nisoinfo;i++){
-    isodata *isoi;
-
-    isoi = isoinfo + i;
-    if(isoi->loaded == 0 || isoi->type != iisotype || isoi->dataflag == 0)continue;
-    if(iisottype != GetIsoTType(isoi))continue;
-    ncount++;
-  }
-  if(ncount <= 1)return;
-
-  // find min and max bounds for valued iso-surfaces
-
-  for(i = 0;i < nisoinfo;i++){
-    isodata *isoi;
-
-    isoi = isoinfo + i;
-    if(isoi->loaded == 0 || isoi->type != iisotype || isoi->dataflag == 0)continue;
-    if(iisottype != GetIsoTType(isoi))continue;
-    if(firsttime == 1){
-      firsttime = 0;
-      tmin_local = isoi->tmin;
-      tmax_local = isoi->tmax;
-    }
-    else{
-      if(tmin_local < isoi->tmin)isoi->tmin = tmin_local;
-      if(tmax_local > isoi->tmax)isoi->tmax = tmax_local;
-    }
-  }
-
-  // set min and max bounds for valued iso-surfaces
-
-  for(i = 0;i < nisoinfo;i++){
-    isodata *isoi;
-
-    isoi = isoinfo + i;
-    if(isoi->loaded == 0 || isoi->type != iisotype || isoi->dataflag == 0)continue;
-    if(iisottype != GetIsoTType(isoi))continue;
-    isoi->tmin = tmin_local;
-    isoi->tmax = tmax_local;
-  }
-
-  // rescale all data
-
-  for(i = 0;i < nisoinfo;i++){
-    isodata *isoi;
-    meshdata *meshi;
-    int ii;
-    isosurface *asurface;
-
-    isoi = isoinfo + i;
-    if(isoi->loaded == 0 || isoi->type != iisotype || isoi->dataflag == 0)continue;
-    if(iisottype != GetIsoTType(isoi))continue;
-
-    meshi = meshinfo + isoi->blocknumber;
-    asurface = meshi->animatedsurfaces;
-
-    for(ii = 0;ii < meshi->niso_times;ii++){
-      int j;
-
-      for(j = 0;j < meshi->nisolevels;j++){
-        float tcolor, tcolor0, tcolorfactor;
-        int kk;
-
-        if(isoi->tmax > isoi->tmin){
-          tcolor0 = (asurface->tmin - isoi->tmin) / (isoi->tmax - isoi->tmin);
-          tcolorfactor = (asurface->tmax - asurface->tmin) / 65535.;
-          tcolorfactor /= (isoi->tmax - isoi->tmin);
-        }
-        else{
-          tcolor0 = 0.5;
-          tcolorfactor = 0.0;
-        }
-        for(kk = 0;kk < asurface->nvertices;kk++){
-          tcolor = tcolor0 + asurface->tvertices[kk] * tcolorfactor;
-          asurface->color8[kk] = (unsigned char)(CLAMP(tcolor, 0.0, 1.0) * 255);
-        }
-        asurface++;
-      }
-    }
-  }
 }
 
 /* ------------------ ReadIsoOrig ------------------------ */
@@ -1644,7 +1652,6 @@ void SetIsoLabels(float smin, float smax,
   isotype= GetIsoTType(sd);
   sb = isobounds + isotype;
   sb->label=&(sd->color_label);
-
 
   *errorcode=0;
   PRINTF("setting up iso labels \n");
