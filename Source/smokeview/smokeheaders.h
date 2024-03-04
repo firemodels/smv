@@ -65,7 +65,7 @@ EXTERNCPP void GLUIUpdatePartFast(void);
 EXTERNCPP void GLUIUpdateColorbarControls2(void);
 EXTERNCPP void GLUISetColorbarDigits(void);
 EXTERNCPP void GLUIIncrementPartPropIndex(void);
-EXTERNCPP void GLUIUpdateIsoBounds(void);
+EXTERNCPP void GLUIUpdateIsoBounds();
 EXTERNCPP void GLUIUpdateListIsoColorobar(void);
 EXTERNCPP void GLUIUpdateUseLighting(void);
 EXTERNCPP void GLUIImmersedBoundCB(int var);

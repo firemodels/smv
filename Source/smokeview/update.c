@@ -1894,6 +1894,21 @@ int HaveSootLoaded(void) {
   return NO_SMOKE;
 }
 
+/* ------------------ UpdateIsoIni ------------------------ */
+
+void UpdateIsoIni(void){
+  int i;
+
+  for(i = 0; i < niso_bounds; i++){
+    if(isobounds[i].ini_defined == 1){
+      isobounds[i].dlg_setvalmin = isobounds[i].ini_setvalmin;
+      isobounds[i].dlg_setvalmax = isobounds[i].ini_setvalmax;
+      isobounds[i].dlg_valmin    = isobounds[i].ini_valmin;
+      isobounds[i].dlg_valmax    = isobounds[i].ini_valmax;
+    }
+  }
+}
+
 /* ------------------ UpdateShowScene ------------------------ */
 
 void UpdateShowScene(void){
@@ -1911,6 +1926,10 @@ void UpdateShowScene(void){
   if(update_terrain_type == 1){
     update_terrain_type = 0;
     GLUIUpdateTerrain();
+  }
+  if(update_iso_ini == 1){
+    UpdateIsoIni();
+    update_iso_ini = 0;
   }
   if(check_colorbar == 1){
     CheckLab();

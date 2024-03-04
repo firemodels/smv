@@ -3115,16 +3115,45 @@ extern "C" void GLUIUpdateListIsoColorobar(void){
 /* ------------------ GLUIUpdateIsoBounds ------------------------ */
 
 extern "C" void GLUIUpdateIsoBounds(void){
-  if(setisomin==PERCENTILE_MIN||setisomin==GLOBAL_MIN){
-    if(setisomin==GLOBAL_MIN)glui_iso_valmin=iso_global_min;
-    if(EDIT_iso_valmin!=NULL)EDIT_iso_valmin->set_float_val(glui_iso_valmin);
+  boundsdata *sb = NULL;
+  char label[256];
+
+  if(iisottype<0||iisotype>=niso_bounds)return;
+  sb = isobounds + iisottype;
+  setisomin = sb->dlg_setvalmin;
+  setisomax = sb->dlg_setvalmax;
+  strcpy(label, "Isosurface - colored by ");
+  strcat(label, sb->label->longlabel);
+  strcat(label, "(");
+  strcat(label, sb->label->unit);
+  strcat(label, ")");
+  if(ROLLOUT_iso!=NULL)ROLLOUT_iso->set_name(label);
+
+  if(setisomin == GLOBAL_MIN || setisomin == SET_MIN){
+    if(setisomin == GLOBAL_MIN){
+      glui_iso_valmin = iso_global_min;
+      if(EDIT_iso_valmin != NULL)EDIT_iso_valmin->disable();
+    }
+    if(setisomin == SET_MIN){
+      glui_iso_valmin = sb->dlg_valmin;
+      if(EDIT_iso_valmin != NULL)EDIT_iso_valmin->enable();
+    }
+    if(EDIT_iso_valmin != NULL)EDIT_iso_valmin->set_float_val(glui_iso_valmin);
+    if(RADIO_iso_setmin!=NULL&&sb!=NULL)RADIO_iso_setmin->set_int_val(setisomin);
   }
-  if(setisomax==PERCENTILE_MAX||setisomax==GLOBAL_MAX){
-    if(setisomax==GLOBAL_MAX)glui_iso_valmax=iso_global_max;
-    if(EDIT_iso_valmax!=NULL)EDIT_iso_valmax->set_float_val(glui_iso_valmax);
+  if(setisomax == GLOBAL_MAX || setisomin == SET_MAX){
+    if(setisomax == GLOBAL_MAX){
+      glui_iso_valmax = iso_global_max;
+      if(EDIT_iso_valmin != NULL)EDIT_iso_valmax->disable();
+    }
+    if(setisomax == SET_MAX){
+      glui_iso_valmax = sb->dlg_valmax;
+      if(EDIT_iso_valmax!=NULL)EDIT_iso_valmax->enable();
+    }
+    if(EDIT_iso_valmax != NULL)EDIT_iso_valmax->set_float_val(glui_iso_valmax);
+    if(RADIO_iso_setmax!=NULL&&sb!=NULL)RADIO_iso_setmax->set_int_val(setisomax);
   }
 }
-
 /* ------------------ GLUIUpdateVectorpointsize ------------------------ */
 
 
@@ -4675,8 +4704,8 @@ extern "C" void GLUIBoundsSetup(int main_window){
       PANEL_iso1 = glui_bounds->add_panel_to_panel(ROLLOUT_iso_bounds, "", GLUI_PANEL_NONE);
       EDIT_iso_valmin = glui_bounds->add_edittext_to_panel(PANEL_iso1, "", GLUI_EDITTEXT_FLOAT, &glui_iso_valmin, ISO_VALMIN, GLUIIsoBoundCB);
       glui_bounds->add_column_to_panel(PANEL_iso1, false);
-      RADIO_iso_setmin = glui_bounds->add_radiogroup_to_panel(PANEL_iso1, &setisomin, ISO_SETVALMIN, GLUIIsoBoundCB);
 
+      RADIO_iso_setmin = glui_bounds->add_radiogroup_to_panel(PANEL_iso1, &setisomin, ISO_SETVALMIN, GLUIIsoBoundCB);
       RADIOBUTTON_iso_percentile_min = glui_bounds->add_radiobutton_to_group(RADIO_iso_setmin, _("percentile min"));
       glui_bounds->add_radiobutton_to_group(RADIO_iso_setmin, _("set min"));
       glui_bounds->add_radiobutton_to_group(RADIO_iso_setmin, _("global min"));
@@ -4686,8 +4715,8 @@ extern "C" void GLUIBoundsSetup(int main_window){
       PANEL_iso2 = glui_bounds->add_panel_to_panel(ROLLOUT_iso_bounds, "", GLUI_PANEL_NONE);
       EDIT_iso_valmax = glui_bounds->add_edittext_to_panel(PANEL_iso2, "", GLUI_EDITTEXT_FLOAT, &glui_iso_valmax, ISO_VALMAX, GLUIIsoBoundCB);
       glui_bounds->add_column_to_panel(PANEL_iso2, false);
-      RADIO_iso_setmax = glui_bounds->add_radiogroup_to_panel(PANEL_iso2, &setisomax, ISO_SETVALMAX, GLUIIsoBoundCB);
 
+      RADIO_iso_setmax = glui_bounds->add_radiogroup_to_panel(PANEL_iso2, &setisomax, ISO_SETVALMAX, GLUIIsoBoundCB);
       RADIOBUTTON_iso_percentile_max = glui_bounds->add_radiobutton_to_group(RADIO_iso_setmax, _("percentile max"));
       glui_bounds->add_radiobutton_to_group(RADIO_iso_setmax, _("set max"));
       glui_bounds->add_radiobutton_to_group(RADIO_iso_setmax, _("global max"));
@@ -5623,7 +5652,19 @@ extern "C" void GLUIUpdatePlot3dListIndex(void){
 extern "C" void GLUIIsoBoundCB(int var){
   int i;
   float *iso_color;
+  boundsdata *sb;
 
+  switch(var){
+    case ISO_SETVALMIN:
+    case ISO_SETVALMAX:
+    case ISO_VALMIN:
+    case ISO_VALMAX:
+      if(iisottype<0)return;
+      sb = isobounds + iisottype;
+      break;
+    default:
+      break;
+  }
   switch(var){
   case ISO_OUTLINE_IOFFSET:
     iso_outline_offset = (float)iso_outline_ioffset/1000.0;
@@ -5725,9 +5766,11 @@ extern "C" void GLUIIsoBoundCB(int var){
     visAIso= 1*show_iso_shaded + 2*show_iso_outline + 4*show_iso_points;
     updatemenu=1;
     break;
+
   case ISO_SETVALMIN:
     switch (setisomin){
       case SET_MIN:
+        if(sb->edit_valmin_defined==1)glui_iso_valmin = sb->edit_valmin;
         iso_valmin=glui_iso_valmin;
         EDIT_iso_valmin->enable();
         break;
@@ -5742,13 +5785,16 @@ extern "C" void GLUIIsoBoundCB(int var){
         assert(FFALSE);
         break;
     }
+    sb->dlg_setvalmin = setisomin;
     glui_iso_valmin=iso_valmin;
     EDIT_iso_valmin->set_float_val(glui_iso_valmin);
     glutPostRedisplay();
     break;
+    
   case ISO_SETVALMAX:
     switch (setisomax){
       case SET_MAX:
+        if(sb->edit_valmax_defined==1)glui_iso_valmax = sb->edit_valmax;
         iso_valmax=glui_iso_valmax;
         EDIT_iso_valmax->enable();
         break;
@@ -5763,16 +5809,27 @@ extern "C" void GLUIIsoBoundCB(int var){
         assert(FFALSE);
         break;
     }
+    sb->dlg_setvalmax = setisomax;
     glui_iso_valmax = iso_valmax;
     EDIT_iso_valmax->set_float_val(glui_iso_valmax);
     glutPostRedisplay();
     break;
   case ISO_VALMIN:
+    if(setisomin==1){
+      sb->edit_valmin = glui_iso_valmin;
+      sb->edit_valmin_defined = 1;
+    }
     iso_valmin=glui_iso_valmin;
+    sb->dlg_valmin = iso_valmin;
     glutPostRedisplay();
     break;
   case ISO_VALMAX:
+    if(setisomax==1){
+      sb->edit_valmax = glui_iso_valmax;
+      sb->edit_valmax_defined = 1;
+    }
     iso_valmax=glui_iso_valmax;
+    sb->dlg_valmax = iso_valmax;
     glutPostRedisplay();
     break;
   default:
