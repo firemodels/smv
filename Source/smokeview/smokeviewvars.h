@@ -411,6 +411,7 @@ SVEXTERN float SVDECL(iso_global_min,0.0), SVDECL(iso_global_max,1.0);
 SVEXTERN int SVDECL(iso_colorbar_index, 0);
 SVEXTERN colorbardata SVDECL(*iso_colorbar, NULL);
 SVEXTERN int SVDECL(show_iso_color, 1);
+SVEXTERN int SVDECL(update_iso_ini, 0);
 
 SVEXTERN int SVDECL(script_defer_loading, 0);
 
