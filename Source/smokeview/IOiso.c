@@ -247,11 +247,17 @@ void GetIsoDataBounds(isodata *isod, float *pmin, float *pmax){
 
   pdata = isod->geom_vals;
   ndata = isod->geom_nvals;
-  *pmin = pdata[0];
-  *pmax = pdata[0];
-  for(i = 1; i<ndata; i++) {
-    *pmin = MIN(*pmin, pdata[i]);
-    *pmax = MAX(*pmax, pdata[i]);
+  if(ndata > 0 && pdata != NULL){
+    *pmin = pdata[0];
+    *pmax = pdata[0];
+    for(i = 1; i < ndata; i++) {
+      *pmin = MIN(*pmin, pdata[i]);
+      *pmax = MAX(*pmax, pdata[i]);
+    }
+  }
+  else{
+    *pmin = 0.0;
+    *pmax = 1.0;
   }
 }
 
