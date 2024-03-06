@@ -99,6 +99,30 @@ if ((NOT MACOSX) AND UNIX)
     target_link_libraries(test_objects m)
 endif()
 
+# parse_hvac_vals
+add_executable(parse_hvac_vals parse_hvac_vals.c
+    ../Source/shared/readhvac.c
+    ../Source/shared/file_util.c
+    ../Source/shared/string_util.c
+    ../Source/shared/stdio_buffer.c
+    ../Source/shared/getdata.c
+    ../Source/shared/dmalloc.c
+    ../Source/shared/sha256.c
+    ../Source/shared/sha1.c
+    ../Source/shared/md5.c
+)
+
+target_include_directories(parse_hvac_vals PRIVATE
+    ../Tests
+    ../Source/shared
+)
+if (WIN32)
+    target_include_directories(parse_hvac_vals PRIVATE ../Source/pthreads)
+endif()
+if ((NOT MACOSX) AND UNIX)
+    target_link_libraries(parse_hvac_vals m)
+endif()
+
 # mem_test
 add_executable(mem_test mem_test.c
     ../Source/shared/dmalloc.c
@@ -127,15 +151,18 @@ add_test(NAME "Simple BNDF - Complete"
 # Arguments to this tests are <bndf path> <number of frames in bndf>
 # Simple slice is a finished slice file with 3 frames
 add_test(NAME "Simple PRT5 - Complete"
-COMMAND parse_simple_part ${CMAKE_SOURCE_DIR}/Tests/fig/smv/Tests/simple_part.prt5 3)
+    COMMAND parse_simple_part ${CMAKE_SOURCE_DIR}/Tests/fig/smv/Tests/simple_part.prt5 3)
 
 # Arguments to this tests are <bndf path> <number of frames in bndf>
 # Simple slice is a finished slice file with 3 frames
 add_test(NAME "Simple PL3d - Complete"
-COMMAND parse_simple_pl3d ${CMAKE_SOURCE_DIR}/Tests/fig/smv/Tests/simple_pl3d.q)
+    COMMAND parse_simple_pl3d ${CMAKE_SOURCE_DIR}/Tests/fig/smv/Tests/simple_pl3d.q)
 
 add_test(NAME "Test Object API"
-COMMAND test_objects ${CMAKE_SOURCE_DIR}/Tests/bad_objects.svo)
+    COMMAND test_objects ${CMAKE_SOURCE_DIR}/Tests/bad_objects.svo)
+
+add_test(NAME "Simple HVAC Vals - Complete"
+	COMMAND parse_hvac_vals ${CMAKE_SOURCE_DIR}/Tests/fig/smv/Tests/simple_hvac.hvac)
 
 add_test(NAME "Mem Test"
     COMMAND mem_test)

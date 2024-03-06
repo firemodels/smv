@@ -13,6 +13,7 @@
 #include "contourdefs.h"
 #include "histogram.h"
 #include "structures.h"
+#include "readhvac.h"
 #include "readobject.h"
 #ifndef CPP
 #include <zlib.h>
@@ -119,27 +120,23 @@ SVEXTERN int SVDECL(update_frame, 0);
 #endif
 
 // hvac data
-SVEXTERN int SVDECL(hvacductvar_index, -1), SVDECL(hvacnodevar_index, -1);
-SVEXTERN int SVDECL(nhvacnodeinfo, 0), SVDECL(nhvacductinfo, 0), SVDECL(nhvacinfo, 0);
 SVEXTERN int SVDECL(hvac_show_connections, 0), SVDECL(hvac_show_networks, 1);
-SVEXTERN int SVDECL(nhvacconnectinfo, 0);
-SVEXTERN hvacconnectdata SVDECL(*hvacconnectinfo, NULL);
-SVEXTERN hvacvalsdata SVDECL(*hvacductvalsinfo, NULL);
-SVEXTERN hvacvalsdata SVDECL(*hvacnodevalsinfo, NULL);
-SVEXTERN hvacdata SVDECL(*hvacinfo, NULL);
-SVEXTERN hvacnodedata SVDECL(*hvacnodeinfo, NULL);
-SVEXTERN hvacductdata SVDECL(*hvacductinfo, NULL);
 SVEXTERN int SVDECL(hvac_metro_view, 0), SVDECL(hvac_cell_view, 0);
 
 SVEXTERN hvacdata SVDECL(*glui_hvac, NULL);
 SVEXTERN int SVDECL(hvac_network_ductnode_index, -1);
-SVEXTERN int SVDECL(nhvacfilters, 0), SVDECL(nhvaccomponents, 0);
 #define HVAC_NCIRC 72
 SVEXTERN float SVDECL(*hvac_circ_x, NULL), SVDECL(*hvac_circ_y, NULL);
 #ifdef INMAIN
+SVEXTERN hvacdatacollection hvaccoll = {
+  .hvacductvar_index= -1,
+  .hvacnodevar_index= -1,
+  0
+};
 SVEXTERN int hvac_duct_color[3] = { 63,0,15};
 SVEXTERN int hvac_node_color[3] = { 63,0,15};
 #else
+SVEXTERN hvacdatacollection hvaccoll;
 SVEXTERN int hvac_duct_color[3];
 SVEXTERN int hvac_node_color[3];
 #endif

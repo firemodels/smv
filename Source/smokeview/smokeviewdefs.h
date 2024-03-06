@@ -18,16 +18,6 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 #define MENU_HVAC_LOAD     0
 #define MENU_HVAC_UNLOAD   1
 
-#define HVAC_FILTER_NO  0
-#define HVAC_FILTER_YES 1
-#define HVAC_NONE    0
-#define HVAC_FAN     1
-#define HVAC_AIRCOIL 2
-#define HVAC_DAMPER  3
-
-#define HVAC_STATE_INACTIVE 0
-#define HVAC_STATE_ACTIVE   1
-
 #define SPLIT_COLORBAR         1
 
 #define LABELS_vcolorbar 34

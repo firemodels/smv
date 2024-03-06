@@ -15,6 +15,7 @@
 
 #include "readgeom.h"
 #include "readobject.h"
+#include "shared_structures.h"
 
 /* --------------------------  circdata ------------------------------------ */
 
@@ -873,94 +874,6 @@ typedef struct _partdata {
 typedef struct _compdata {
   int offset, size;
 } compdata;
-
-
-#define DUCT_COMPONENT_TEXT    0
-#define DUCT_COMPONENT_SYMBOLS 1
-#define DUCT_COMPONENT_HIDE    2
-
-#define NODE_FILTERS_LABELS  0
-#define NODE_FILTERS_SYMBOLS 1
-#define NODE_FILTERS_HIDE    2
-
-#define DUCT_XYZ 0
-#define DUCT_YXZ 1
-#define DUCT_XZY 2
-#define DUCT_ZXY 3
-#define DUCT_YZX 4
-#define DUCT_ZYX 5
-
-
-/* --------------------------  hvacconnectdata ------------------------------------ */
-
-typedef struct hvacconnectdata {
-  int index, display;
-} hvacconnectdata;
-
-
-/* --------------------------  hvacnodedata ------------------------------------ */
-
-typedef struct _hvacnodedata {
-  char *node_name, *vent_name, *duct_name, *network_name;
-  char c_filter[10];
-  int node_id, filter, use_node, connect_id;
-  hvacconnectdata *connect;
-  struct _hvacductdata *duct;
-  float xyz[3], xyz_orig[3];
-} hvacnodedata;
-
-/* --------------------------  hvacductdata ------------------------------------ */
-
-typedef struct _hvacductdata {
-  char *duct_name, *network_name, c_component[4];
-  int duct_id, component, nduct_cells;
-  int node_id_from, node_id_to, use_duct, connect_id;
-  hvacconnectdata *connect;
-  int nact_times, *act_states, metro_path;
-  float *act_times;
-  float xyz_symbol[3], xyz_symbol_metro[3];
-  float xyz_label[3],  xyz_label_metro[3];
-  float normal[3], normal_metro[3];
-  hvacnodedata* node_from, * node_to;
-  float xyz_met[12], *xyz_reg;
-  int   nxyz_met, nxyz_reg;
-  float *xyz_met_cell, *xyz_reg_cell;
-  int   nxyz_met_cell, nxyz_reg_cell;
-  int    *cell_met,    *cell_reg;
-} hvacductdata;
-
-/* --------------------------  hvacdata ------------------------------------ */
-
-typedef struct _hvacdata {
-  char *network_name;
-  int display;
-  int show_node_labels, show_duct_labels;
-  int show_filters, show_component;
-  float cell_node_size, node_size, component_size, duct_width, filter_size;
-  int duct_color[3], node_color[3];
-} hvacdata;
-
-/* --------------------------  hvacvaldata ------------------------------------ */
-
-typedef struct _hvacvaldata{
-  float *vals, valmin, valmax;
-  int setvalmin, setvalmax;
-  int vis, nvals;
-  char  colorlabels[12][11];
-  float colorvalues[12];
-  float levels256[256];
-  flowlabels label;
-} hvacvaldata;
-
-/* --------------------------  _hvacvalsdata ------------------------------------ */
-
-typedef struct _hvacvalsdata {
-  char *file;
-  int loaded;
-  int n_node_vars, n_duct_vars, ntimes;
-  float *times;
-  hvacvaldata *node_vars, *duct_vars;
-} hvacvalsdata;
 
 /* --------------------------  menudata ------------------------------------ */
 
