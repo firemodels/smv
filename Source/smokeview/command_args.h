@@ -120,6 +120,9 @@ typedef struct CommandlineArgs {
   char *ini_to;
   char *ssf_from;
   char *ssf_to;
+  /// @brief initial screen coordinates
+  bool have_x0, have_y0;
+  int x0, y0;
 } CommandlineArgs;
 
 enum CommandLineError {
