@@ -115,6 +115,8 @@ void Usage(char *prog,int option){
     PRINTF("%s\n", _(" -update_slice  - calculate slice file parameters"));
     PRINTF("%s\n", _(" -update        - equivalent to -update_bounds and -update_slice"));
     PRINTF("%s\n", _(" -update_ini case.ini - update case.ini to the current format"));
+    PRINTF("%s\n", _(" -x0 val - horizontal screen coordinate in pixels where window is place at startup"));
+    PRINTF("%s\n", _(" -y0 val - vertical screen coordinate in pixels where window is place at startup"));
     PRINTF("%s\n", _(" -volrender     - generate images of volume rendered smoke and fire"));
     UsageCommon(HELP_ALL);
   }
@@ -181,6 +183,14 @@ char *ProcessCommandLine(CommandlineArgs *args) {
     }
     void SMV_EXIT(int error);
     SMV_EXIT(0);
+  }
+  if(args->have_x0){
+    use_commandline_origin = 1;
+    screenOriginX = args->x0;
+  }
+  if(args->have_y0){
+    use_commandline_origin = 1;
+    screenOriginY = args->y0;
   }
   if (args->csv) {
     update_csv_load = 1;
