@@ -620,6 +620,7 @@ typedef struct _isodata {
   short *normaltable;
   int memory_id;
   int fds_skip;
+  int finalize;
   float fds_delta;
   int nnormaltable;
   char *file,*tfile;

@@ -3118,7 +3118,7 @@ extern "C" void GLUIUpdateIsoBounds(void){
   boundsdata *sb = NULL;
   char label[256];
 
-  if(iisottype<0||iisotype>=niso_bounds)return;
+  if(iisottype<0|| iisottype >=niso_bounds)return;
   sb = isobounds + iisottype;
   setisomin = sb->dlg_setvalmin;
   setisomax = sb->dlg_setvalmax;
