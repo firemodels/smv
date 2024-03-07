@@ -182,6 +182,14 @@ char *ProcessCommandLine(CommandlineArgs *args) {
     void SMV_EXIT(int error);
     SMV_EXIT(0);
   }
+  if(args->have_x0){
+    use_commandline_origin = 1;
+    screenOriginX = args->x0;
+  }
+  if(args->have_y0){
+    use_commandline_origin = 1;
+    screenOriginY = args->y0;
+  }
   if (args->csv) {
     update_csv_load = 1;
   }
