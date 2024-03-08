@@ -223,10 +223,10 @@ SETTIMEVAL
 RENDERONCE
  thouse5_vslice_060
 
-// render iso-surface
+// render temperature isosurfaces
 
 LABEL
-  render iso-surface
+  render temperature isosurfaces
 
 UNLOADALL
 LOADISO
@@ -247,6 +247,31 @@ SETTIMEVAL
  60.000000
 RENDERONCE
  thouse5_iso_060
+
+// render temperature colored hrrpuv isosurfaces
+
+LABEL
+  render temperature colored hrrpuv isosurface
+
+UNLOADALL
+LOADISO
+ HRRPUV: 600.0
+SETTIMEVAL
+ 5.000000
+RENDERONCE
+ thouse5_tiso_005
+SETTIMEVAL
+ 10.000000
+RENDERONCE
+ thouse5_tiso_010
+SETTIMEVAL
+ 30.000000
+RENDERONCE
+ thouse5_tiso_030
+SETTIMEVAL
+ 60.000000
+RENDERONCE
+ thouse5_tiso_060
 
 // render boundary file (cell averaged)
 
