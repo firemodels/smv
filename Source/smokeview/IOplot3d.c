@@ -1600,7 +1600,6 @@ void DrawGrid(const meshdata *meshi){
     else{
       glColor4fv(foregroundcolor);
     }
-    glBegin(GL_LINES);
 
     int skipi, skipj, skipk;
 
@@ -1613,6 +1612,7 @@ void DrawGrid(const meshdata *meshi){
       skipk = kbar;
     }
 
+    glBegin(GL_LINES);
     if(visx_all==1&&plotx>=0){
       for(j=0;j<jbar+1;j+=skipj){
         glVertex3f(xplt[plotx],yplt[j],zplt[0]);

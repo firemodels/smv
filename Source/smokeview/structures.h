@@ -711,6 +711,7 @@ typedef struct _meshdata {
   float mesh_offset[3], *mesh_offset_ptr;
   int blockvis;
   float *xplt, *yplt, *zplt;
+  double *xpltd, *ypltd, *zpltd;
   int ivolbar, jvolbar, kvolbar;
   float *xvolplt, *yvolplt, *zvolplt;
   float *xplt_cen, *yplt_cen, *zplt_cen;

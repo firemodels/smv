@@ -3765,15 +3765,15 @@ void UpdateMeshCoords(void){
 
     for(i=0;i<ibar+1;i++){
       xplt_orig[i]=xplt[i];
-      xplt[i]=FDS2SMV_X(xplt[i]);
+      xplt[i]=FDS2SMV_X(meshi->xpltd[i]);
     }
     for(j=0;j<jbar+1;j++){
       yplt_orig[j]=yplt[j];
-      yplt[j]=FDS2SMV_Y(yplt[j]);
+      yplt[j]=FDS2SMV_Y(meshi->ypltd[j]);
     }
     for(k=0;k<kbar+1;k++){
       zplt_orig[k]=zplt[k];
-      zplt[k]=FDS2SMV_Z(zplt[k]);
+      zplt[k]=FDS2SMV_Z(meshi->zpltd[k]);
     }
 
     for(nn=0;nn<ibar;nn++){
@@ -9174,6 +9174,7 @@ int ReadSMV_Parse(bufferstreamdata *stream) {
     if(MatchSMV(buffer,"GRID") == 1){
       meshdata *meshi;
       float *xp, *yp, *zp;
+      double *xpd, *ypd, *zpd;
       float *xp2, *yp2, *zp2;
       float *xplt_cen, *yplt_cen,*zplt_cen;
       int *imap, *jmap, *kmap;
@@ -9226,12 +9227,16 @@ int ReadSMV_Parse(bufferstreamdata *stream) {
       if(jbartemp<1)jbartemp=1;
       if(kbartemp<1)kbartemp=1;
       xp=NULL; yp=NULL; zp=NULL;
+      xpd = NULL; ypd = NULL; zpd = NULL;
       xp2=NULL; yp2=NULL; zp2=NULL;
       if(
          NewMemory((void **)&xp,sizeof(float)*(ibartemp+1))==0||
          NewMemory((void **)&yp,sizeof(float)*(jbartemp+1))==0||
          NewMemory((void **)&zp,sizeof(float)*(kbartemp+1))==0||
-         NewMemory((void **)&xplt_cen,sizeof(float)*ibartemp)==0||
+         NewMemory((void **)&xpd, sizeof(double)*(ibartemp + 1)) == 0 ||
+         NewMemory((void **)&ypd, sizeof(double)*(jbartemp + 1)) == 0 ||
+         NewMemory((void **)&zpd, sizeof(double)*(kbartemp + 1)) == 0 ||
+         NewMemory((void **)&xplt_cen, sizeof(float) * ibartemp) == 0 ||
          NewMemory((void **)&yplt_cen,sizeof(float)*jbartemp)==0||
          NewMemory((void **)&zplt_cen,sizeof(float)*kbartemp)==0||
          NewMemory((void **)&xp2,sizeof(float)*(ibartemp+1))==0||
@@ -9247,6 +9252,9 @@ int ReadSMV_Parse(bufferstreamdata *stream) {
         meshi->xplt=xp;
         meshi->yplt=yp;
         meshi->zplt=zp;
+        meshi->xpltd = xpd;
+        meshi->ypltd = ypd;
+        meshi->zpltd = zpd;
         meshi->xplt_cen=xplt_cen;
         meshi->yplt_cen=yplt_cen;
         meshi->zplt_cen=zplt_cen;
@@ -10345,11 +10353,13 @@ int ReadSMV_Parse(bufferstreamdata *stream) {
   */
     if(MatchSMV(buffer,"TRNX")==1){
       float *xpltcopy;
+      double *xpltdcopy;
       int idummy;
       int nn;
 
       itrnx++;
       xpltcopy=meshinfo[itrnx-1].xplt;
+      xpltdcopy = meshinfo[itrnx - 1].xpltd;
       ibartemp=meshinfo[itrnx-1].ibar;
       FGETS(buffer,255,stream);
       sscanf(buffer,"%i ",&idummy);
@@ -10358,7 +10368,8 @@ int ReadSMV_Parse(bufferstreamdata *stream) {
       }
       for(nn=0;nn<=ibartemp;nn++){
         FGETS(buffer,255,stream);
-        sscanf(buffer,"%i %f",&idummy,xpltcopy);xpltcopy++;
+        sscanf(buffer,"%i %lf",&idummy,xpltdcopy+nn);
+        xpltcopy[nn] = xpltdcopy[nn];
       }
       continue;
     }
@@ -10369,11 +10380,13 @@ int ReadSMV_Parse(bufferstreamdata *stream) {
   */
     if(MatchSMV(buffer,"TRNY") == 1){
       float *ypltcopy;
+      double *ypltdcopy;
       int idummy;
       int nn;
 
       itrny++;
       ypltcopy=meshinfo[itrny-1].yplt;
+      ypltdcopy = meshinfo[itrny - 1].ypltd;
       jbartemp=meshinfo[itrny-1].jbar;
       FGETS(buffer,255,stream);
       sscanf(buffer,"%i ",&idummy);
@@ -10381,10 +10394,9 @@ int ReadSMV_Parse(bufferstreamdata *stream) {
         FGETS(buffer,255,stream);
       }
       for(nn=0;nn<=jbartemp;nn++){
-//        if(jbartemp==2&&nn==2)continue;
         FGETS(buffer,255,stream);
-        sscanf(buffer,"%i %f",&idummy,ypltcopy);
-        ypltcopy++;
+        sscanf(buffer,"%i %lf",&idummy,ypltdcopy+nn);
+        ypltcopy[nn] = ypltdcopy[nn];
       }
       continue;
     }
@@ -10395,11 +10407,13 @@ int ReadSMV_Parse(bufferstreamdata *stream) {
   */
     if(MatchSMV(buffer,"TRNZ") == 1){
       float *zpltcopy;
+      double *zpltdcopy;
       int idummy;
       int nn;
 
       itrnz++;
       zpltcopy=meshinfo[itrnz-1].zplt;
+      zpltdcopy = meshinfo[itrnz - 1].zpltd;
       kbartemp=meshinfo[itrnz-1].kbar;
       FGETS(buffer,255,stream);
       sscanf(buffer,"%i ",&idummy);
@@ -10408,7 +10422,8 @@ int ReadSMV_Parse(bufferstreamdata *stream) {
       }
       for(nn=0;nn<=kbartemp;nn++){
         FGETS(buffer,255,stream);
-        sscanf(buffer,"%i %f",&idummy,zpltcopy);zpltcopy++;
+        sscanf(buffer,"%i %lf",&idummy,zpltdcopy+nn);
+        zpltcopy[nn] = zpltdcopy[nn];
       }
       continue;
     }
