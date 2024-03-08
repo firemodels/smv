@@ -396,15 +396,19 @@ color near the chop boundary should match the color near
 \clearpage
 
 \section{Iso-surfaces}
-An isosurface is a three-dimensional surface that defines constant values of a
-dependent variable. Figures \ref{figisotest} and \ref{figisotest2} present
-images verifying the display of isosurfaces. A series of temperature isosurfaces
+An isosurface is a surface that defines constant values of a
+dependent variable. Figures \ref{figisotest}, \ref{figtisotest} and \ref{figisotest2} present
+images verifying the display of isosurfaces. In Figure \ref{figisotest}, a series of temperature
+isosurfaces
 are drawn at \SI{0}{s}, \SI{10}{s} and \SI{30}{s}.  A portion of the interior gas
 temperature is initialized to \SI{600}{\degreeCelsius}. This results in the rectangular block
 that appears in the first row of images. The first column in
 Fig. \ref{figisotest}\ presents the iso-surface using points. The second column
 presents the iso-surface using triangulated outlines. The third column presents
-the iso-surface using a solid surface. Figure \ref{figisotest2} demonstrates
+the iso-surface using a solid surface. Figure \ref{figtisotest} shows isosurfaces of temperature
+colored by HRRPUV.  The left column uses the {\tt DEBUG=.TRUE.} option.  These images
+verify that the isosurfaces are drawn and colored correctly (spheres with same radius as time, colored proportional to z coordinate) and
+Figure \ref{figisotest2} demonstrates
 color customization using the {\tt ISOCOLORS}\ .ini keyword.
 
 \begin{figure}[bph]
@@ -428,6 +432,25 @@ color customization using the {\tt ISOCOLORS}\ .ini keyword.
  and \SI{30}{s}. The isosurface should surround this region for the $t=\SI{0}{s}$ images.}
 \label{figisotest}%
 \end{figure}
+
+\begin{figure}[bph]
+\begin{center}
+\begin{tabular}{cc}
+ \includegraphics[height=2.25in]{SCRIPT_FIGURES/plumeiso4_diso_00}&
+ \includegraphics[height=2.25in]{SCRIPT_FIGURES/plumeiso4_tiso_00}\\
+ \includegraphics[height=2.25in]{SCRIPT_FIGURES/plumeiso4_diso_10}&
+ \includegraphics[height=2.25in]{SCRIPT_FIGURES/plumeiso4_tiso_10}\\
+ \includegraphics[height=2.25in]{SCRIPT_FIGURES/plumeiso4_diso_30}&
+ \includegraphics[height=2.25in]{SCRIPT_FIGURES/plumeiso4_tiso_30}\\
+ debug on&debug off
+  \end{tabular}
+\end{center}
+ \caption[A test showing isosurfaces colored by a second value.]{A test showing isosurfaces colored by a second value. The left column used the DEBUG=.TRUE. option on the \&ISOF line
+ and shows a growing sphere colored proportional to the vertical location.  The right column shows
+ a temerature isosurface colored by HRRPUV. }
+\label{figtisotest}%
+\end{figure}
+
 
 \begin{figure}[bph]
 \begin{center}
@@ -1024,7 +1047,7 @@ slice& \includegraphics[height=\figheightI]{SCRIPT_FIGURES/test2_temp_19}&
  &with restart file&without restart file
  \end{tabular}
 \end{center}
- \caption[A test comparing OBST cases run with and without a restart file.]{A test comparing OBST cases run with and without a restart file. The two cases are the 
+ \caption[A test comparing OBST cases run with and without a restart file.]{A test comparing OBST cases run with and without a restart file. The two cases are the
  same otherwise.}
 \label{figRESTARTstructured}%
 \end{figure}
