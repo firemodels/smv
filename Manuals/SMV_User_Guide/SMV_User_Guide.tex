@@ -1473,22 +1473,21 @@ value. This surface may also be called a
 level surface or 3D contour. Isosurface files contain data
 specifying locations for a given quantity at one or
 more levels. These surfaces are represented using triangles.
-Isosurface files have have extensions .iso and are
-displayed by selecting the desired entry from the {\em
-Load/Unload>Isosurface}\ menu.
+An isosurface file has the extension {\tt .iso}\ and is
+displayed by selecting an entry from the {\em Load/Unload>Isosurface}\ menu.
 
-Isosurfaces are specified in the FDS input file with the {\tt
-\&ISOF}\ keyword.  To specify isosurfaces for temperatures of
-30\degC\ and 100\degC\ as illustrated in Fig. \ref{figiso}\ add
+Isosurfaces are specified in an FDS input file using the {\tt
+\&ISOF}\ keyword.  To specify an isosurface with constant 
+30\degC\ and 100\degC\ temperature, as illustrated in Fig. \ref{figiso}, add
 the line:
 \begin{lstlisting}
-&ISOF QUANTITY='TEMPERATURE', VALUE(1)=30.0, VALUE(2)=100.0 /
+&ISOF QUANTITY='TEMPERATURE', VALUE(1:2)=30.0, 100.0 /
 \end{lstlisting}
 to the FDS input file.
 A second quantity may be specified for coloring the isosurface.
-For example, to color an HRRPUV isosurface by temperature use:
+For example, to color a constant 600 kw/m2 HRRPUV isosurface by temperature use:
 \begin{lstlisting}
-&ISOF QUANTITY='HRRPUV' , VALUE(1)=200, QUANTITY2='TEMPERATURE' /
+&ISOF QUANTITY='HRRPUV' , VALUE(1)=600, QUANTITY2='TEMPERATURE' /
 \end{lstlisting}
 A complete list of isosurface quantities
 may be found in Ref.~\cite{FDS_Users_Guide}
