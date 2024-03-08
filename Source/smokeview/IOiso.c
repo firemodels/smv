@@ -1001,8 +1001,7 @@ void ReadIsoOrig(const char *file, int ifile, int flag, int *errorcode){
     UnloadIso(meshi);
     ReadIso("",ifile,UNLOAD,NULL,&error);
     return;
-    }
-
+  }
 
   ib->loaded=1;
   ib->display=1;
@@ -1016,7 +1015,7 @@ void ReadIsoOrig(const char *file, int ifile, int flag, int *errorcode){
   CheckMemory;
   if(ib->dataflag==1){
     iisottype = GetIsoTType(ib);
-    SyncIsoBounds();
+   // SyncIsoBounds();
     SetIsoLabels(ib->tmin, ib->tmax, ib, errorcode);
     CheckMemory;
   }
