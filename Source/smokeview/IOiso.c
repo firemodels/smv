@@ -555,26 +555,26 @@ FILE_SIZE ReadIsoGeom(int ifile, int load_flag, int *geom_frame_index, int *erro
       iso_global_min = 1.0;
       iso_global_max = 0.0;
       for(i = 0;i < nisoinfo;i++){
-        isodata *isoi;
+        isodata *isoj;
 
-        isoi = isoinfo + i;
-        if(isoi->loaded == 0)continue;
+        isoj = isoinfo + i;
+        if(isoj->loaded == 0)continue;
         if(iso_global_min > iso_valmax){
-          iso_global_min = isoi->globalmin_iso;
-          iso_global_max = isoi->globalmax_iso;
+          iso_global_min = isoj->globalmin_iso;
+          iso_global_max = isoj->globalmax_iso;
         }
         else{
-          iso_global_min = MIN(iso_global_min, isoi->globalmin_iso);
-          iso_global_max = MAX(iso_global_max, isoi->globalmax_iso);
+          iso_global_min = MIN(iso_global_min, isoj->globalmin_iso);
+          iso_global_max = MAX(iso_global_max, isoj->globalmax_iso);
         }
       }
       for(i = 0;i < nisoinfo;i++){
-        isodata *isoi;
+        isodata *isoj;
 
-        isoi = isoinfo + i;
-        if(isoi->loaded == 0)continue;
-        isoi->globalmin_iso = iso_global_min;
-        isoi->globalmax_iso = iso_global_max;
+        isoj = isoinfo + i;
+        if(isoj->loaded == 0)continue;
+        isoj->globalmin_iso = iso_global_min;
+        isoj->globalmax_iso = iso_global_max;
       }
       iisottype = GetIsoTType(isoi);
    //   SyncIsoBounds();
