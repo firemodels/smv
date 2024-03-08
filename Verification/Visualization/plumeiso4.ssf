@@ -1,0 +1,27 @@
+
+// put rendered files in specified directory
+
+LABEL
+  put rendered files in specified directory
+
+RENDERDIR
+ ..\..\Manuals\SMV_Verification_Guide\SCRIPT_FIGURES
+
+
+// render temperature colored hrrpuv isosurfaces
+
+LABEL
+  render temperature colored hrrpuv isosurface
+
+UNLOADALL
+LOADISO
+ HRRPUV: 0.08 kW/m3 (Colored by: TEMPERATURE)
+SETTIMEVAL
+ 10.000000
+RENDERONCE
+ plumeiso4_tiso_010
+SETTIMEVAL
+ 30.000000
+RENDERONCE
+ plumeiso4_tiso_030
+
