@@ -1468,6 +1468,23 @@ FDS input file.}
 \label{figiso}%
 \end{figure}
 
+\begin{figure}[bph]
+\begin{center}
+\begin{tabular}{cc}
+\includegraphics[height=\figheightA]{SCRIPT_FIGURES/thouse5_tiso_005}&
+\includegraphics[height=\figheightA]{SCRIPT_FIGURES/thouse5_tiso_010}\\
+5.0 s&10.0 s\\
+\includegraphics[height=\figheightA]{SCRIPT_FIGURES/thouse5_tiso_030}&
+\includegraphics[height=\figheightA]{SCRIPT_FIGURES/thouse5_tiso_060}\\
+30.0 s&60.0 s
+\end{tabular}
+\end{center}
+\caption [Isosurface file snapshots of HRRPUV levels colored by temperature. ]
+
+{ Isosurface file snapshots of HRRPUV levels colored by temperature.}
+\label{figtiso}%
+\end{figure}
+
 An isosurface is a surface where a quantity such as temperature has the same
 value. This surface may also be called a
 level surface or 3D contour. Isosurface files contain data
@@ -1485,7 +1502,9 @@ the line:
 \end{lstlisting}
 to the FDS input file.
 A second quantity may be specified for coloring the isosurface.
-For example, to color a constant 600 kw/m2 HRRPUV isosurface by temperature use:
+For example, to color a constant 600 kw/m2 HRRPUV isosurface by temperature,
+illustrated in Figure \ref{figtiso},
+use:
 \begin{lstlisting}
 &ISOF QUANTITY='HRRPUV' , VALUE(1)=600, QUANTITY2='TEMPERATURE' /
 \end{lstlisting}
