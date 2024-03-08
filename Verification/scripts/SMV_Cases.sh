@@ -22,7 +22,7 @@ $QFDS -d Visualization part_color.fds
 $QFDS -d Visualization plume5c.fds
 $QFDS -d Visualization plume5cdelta.fds
 $QFDS -d Visualization plumeiso.fds
-$QFDS -d Visualization plumeiso4.fds
+$QFDS -p 4 -d Visualization plumeiso4.fds
 $QFDS -d Visualization plume5c_bounddef.fds
 $QFDS -d Visualization script_test.fds
 $QFDS -d Visualization script_slice_test.fds
