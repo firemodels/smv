@@ -10,7 +10,6 @@ $QFDS -d Visualization smokex080.fds
 $QFDS -d Visualization smokex160.fds
 $QFDS -d Visualization colorbar.fds
 $QFDS -d Visualization smoke_test2.fds
-$QFDS -d Visualization fed_test.fds
 $QFDS -d Visualization part_color.fds
 $QFDS -d Visualization slicemask.fds
 $QFDS -d Visualization smoke_sensor.fds
