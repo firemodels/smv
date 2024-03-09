@@ -605,7 +605,9 @@ void ReadIsoOrig(const char *file, int ifile, int flag, int *errorcode){
   FILE *isostream;
   int break_frame;
   int skip_local;
+#ifdef pp_FED
   float *fed_colors[3];
+#endif
   float read_time, total_time;
   FILE_SIZE read_size;
 
@@ -706,6 +708,7 @@ void ReadIsoOrig(const char *file, int ifile, int flag, int *errorcode){
     return;
   }
 
+#ifdef pp_FED
   if(strcmp(ib->surface_label.shortlabel,"FED")==0){
     float fed_blue[]={0.0,0.0,1.0,1.0};
     float fed_yellow[]={1.0,1.0,0.0,1.0};
@@ -715,6 +718,7 @@ void ReadIsoOrig(const char *file, int ifile, int flag, int *errorcode){
     fed_colors[1]=GetColorPtr(fed_yellow);
     fed_colors[2]=GetColorPtr(fed_red);
   }
+#endif
 
   asurface=meshi->animatedsurfaces;
   break_frame=0;
@@ -810,9 +814,11 @@ void ReadIsoOrig(const char *file, int ifile, int flag, int *errorcode){
           if(ilevel==0&&strcmp(ib->surface_label.shortlabel,"hrrpuv")==0){
             isoverti->color=hrrpuv_iso_color;
           }
+#ifdef pp_FED
           else if(strcmp(ib->surface_label.shortlabel,"FED")==0){
             isoverti->color=fed_colors[ilevel%3];
           }
+#endif
           else{
             isoverti->color=iso_colors+4*ilevel;
           }
@@ -908,9 +914,11 @@ void ReadIsoOrig(const char *file, int ifile, int flag, int *errorcode){
           if(ilevel==0&&strcmp(ib->surface_label.shortlabel,"hrrpuv")==0){
             ib->colorlevels[ilevel]=hrrpuv_iso_color;
           }
+#ifdef pp_FED
           else if(strcmp(ib->surface_label.shortlabel,"FED")==0){
             ib->colorlevels[ilevel]=fed_colors[ilevel%3];
           }
+#endif
           else{
             ib->colorlevels[ilevel]=iso_colors+4*ilevel;
           }

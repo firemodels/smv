@@ -1406,7 +1406,9 @@ void InitVars(void){
   strcpy((char *)degC,"C");
   strcpy((char *)degF,"F");
 
+#ifdef pp_FED
   strcpy(default_fed_colorbar,"FED");
+#endif
 
   label_first_ptr = &label_first;
   label_last_ptr = &label_last;

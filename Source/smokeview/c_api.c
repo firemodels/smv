@@ -325,6 +325,7 @@ int Loadfile(const char *filename) {
 
     sd = sliceinfo + i;
     if (strcmp(sd->file, filename) == 0) {
+#ifdef pp_FED
       if (i < nsliceinfo - nfedinfo) {
         ReadSlice(sd->file, i, ALL_FRAMES, NULL, LOAD, SET_SLICECOLOR,
                   &errorcode);
@@ -332,6 +333,10 @@ int Loadfile(const char *filename) {
       else {
         ReadFed(i, ALL_FRAMES, NULL, LOAD, FED_SLICE, &errorcode);
       }
+#else
+      ReadSlice(sd->file, i, ALL_FRAMES, NULL, LOAD, SET_SLICECOLOR,
+        &errorcode);
+#endif
       return errorcode;
     }
   }
@@ -2540,6 +2545,7 @@ int SetBoundzipstep(int v) {
   return 0;
 } // BOUNDZIPSTEP
 
+#ifdef pp_FED
 int SetFed(int v) {
   regenerate_fed = v;
   return 0;
@@ -2554,6 +2560,7 @@ int SetFedcolorbar(const char *name) {
     return 1;
   }
 } // FEDCOLORBAR
+#endif
 
 int SetIsozipstep(int v) {
   tload_zipstep = v;
@@ -2570,10 +2577,12 @@ int SetNopart(int v) {
 //   return 0;
 // } // PARTPOINTSTEP
 
+#ifdef pp_FED
 int SetShowfedarea(int v) {
   show_fed_area = v;
   return 0;
 } // SHOWFEDAREA
+#endif
 
 int SetSliceaverage(int flag, float interval, int vis) {
   slice_average_flag = flag;

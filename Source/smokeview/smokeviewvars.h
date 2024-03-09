@@ -583,8 +583,8 @@ SVEXTERN float SVDECL(zone_hvac_diam, 0.05);
 SVEXTERN int SVDECL(setup_only, 0);
 SVEXTERN int SVDECL(timearray_test, 0);
 SVEXTERN char SVDECL(*updatetimes_debug, NULL);
-SVEXTERN int SVDECL(*fed_areas, NULL);
 #ifdef pp_FED
+SVEXTERN int SVDECL(*fed_areas, NULL);
 SVEXTERN int SVDECL(nfediso, 0);
 #endif
 SVEXTERN int SVDECL(slice_time, 0);
@@ -814,8 +814,10 @@ SVEXTERN float quat_general[4], quat_rotation[16];
 SVEXTERN float modelview_identity[16];
 SVEXTERN mousedata mouseinfo;
 SVEXTERN int SVDECL(use_glui_rotate,0);
+#ifdef pp_FED
 SVEXTERN int SVDECL(show_fed_area,1);
 SVEXTERN char default_fed_colorbar[255];
+#endif
 
 SVEXTERN int SVDECL(colorbar_coord_type, 0);
 
@@ -1899,7 +1901,11 @@ SVEXTERN int SVDECL(*sorted_surfidlist,NULL),SVDECL(*inv_sorted_surfidlist,NULL)
 SVEXTERN char SVDECL(*trainer_filename,NULL), SVDECL(*test_filename,NULL);
 SVEXTERN FILE SVDECL(*STREAM_SB,NULL);
 SVEXTERN float SVDECL(temp_threshold,400.0);
+#ifdef pp_FED
 SVEXTERN char SVDECL(*smv_filename,NULL),SVDECL(*smv_orig_filename,NULL),SVDECL(*fed_filename,NULL),fed_filename_base[1024],SVDECL(*stop_filename,NULL);
+#else
+SVEXTERN char SVDECL(*smv_filename,NULL),SVDECL(*smv_orig_filename,NULL),SVDECL(*stop_filename,NULL);
+#endif
 SVEXTERN char SVDECL(*smvzip_filename, NULL);
 SVEXTERN int  SVDECL(have_multislice, 0), SVDECL(have_multivslice, 0);
 SVEXTERN char SVDECL(*hrr_filename, NULL);

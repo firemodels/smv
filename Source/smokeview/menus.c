@@ -188,7 +188,9 @@ float     part_load_time;
 #define MENU_SHOWSLICE_CELLSLICEANDVECTORS -19
 #define MENU_SHOWSLICE_TERRAIN -13
 #define MENU_SHOWSLICE_OFFSET -12
+#ifdef pp_FED
 #define MENU_SHOWSLICE_FEDAREA -14
+#endif
 
 #define MENU_VENT_OPEN 14
 #define MENU_VENT_EXTERIOR 16
@@ -570,9 +572,11 @@ void ShowMultiSliceMenu(int value){
   case -12:
     offset_slice = 1 - offset_slice;
     break;
+#ifdef pp_FED
   case -14:
     show_fed_area = 1 - show_fed_area;
     break;
+#endif
   default:
     if(value<=-20){
       value = -20 - value;
@@ -1434,9 +1438,11 @@ void ShowHideSliceMenu(int value){
     case MENU_SHOWSLICE_TERRAIN:
       planar_terrain_slice=1-planar_terrain_slice;
       break;
+#ifdef pp_FED
     case MENU_SHOWSLICE_FEDAREA:
       show_fed_area=1-show_fed_area;
       break;
+#endif
     case MENU_SHOWSLICE_NODESLICEANDVECTORS:
       show_node_slices_and_vectors=1-show_node_slices_and_vectors;
       return;
@@ -1470,7 +1476,6 @@ void ShowHideSliceMenu(int value){
     }
 #ifdef pp_FED
     if(value < nsliceinfo - nfedinfo)
-#endif
     {
       colorbardata *fed_colorbar;
       int reset_colorbar = 0;
@@ -1479,7 +1484,6 @@ void ShowHideSliceMenu(int value){
       if(fed_colorbar != NULL&&fed_colorbar - colorbarinfo == colorbartype)reset_colorbar = 1;
       if(reset_colorbar == 1)ColorbarMenu(colorbartype_save);
     }
-#ifdef pp_FED
     else{
       colorbardata *fed_colorbar;
 
@@ -5016,19 +5020,22 @@ FILE_SIZE LoadSlicei(int set_slicecolor, int value, int time_frame, float *time_
     if(value < nsliceinfo - nfedinfo)
 #endif
     {
+#ifdef pp_FED
       colorbardata *fed_colorbar;
       int reset_colorbar = 0;
 
       fed_colorbar = GetColorbar(default_fed_colorbar);
       if(fed_colorbar != NULL&&fed_colorbar - colorbarinfo == colorbartype)reset_colorbar = 1;
-
+#endif
       if(slicei->slice_filetype == SLICE_GEOM){
         return_filesize = ReadGeomData(slicei->patchgeom, slicei, LOAD, time_frame, time_value, 0, &errorcode);
       }
       else{
         return_filesize = ReadSlice(slicei->file, value, time_frame, time_value, LOAD, set_slicecolor, &errorcode);
       }
+#ifdef pp_FED
       if(reset_colorbar == 1)ColorbarMenu(colorbartype_save);
+#endif
     }
 #ifdef pp_FED
     else

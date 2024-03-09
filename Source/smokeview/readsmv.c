@@ -12770,6 +12770,7 @@ int ReadIni2(char *inifile, int localfile){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%i %f %i", &scaled_font3d_height, &scaled_font3d_height2width, &scaled_font3d_thickness);
     }
+#ifdef pp_FED
     if(MatchINI(buffer, "FEDCOLORBAR") == 1){
       char *fbuff;
 
@@ -12786,7 +12787,6 @@ int ReadIni2(char *inifile, int localfile){
       if(csv_load == 1)update_csv_load = 1;
       continue;
     }
-#ifdef pp_FED
     if(MatchINI(buffer, "FED") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%i", &regenerate_fed);
@@ -16997,9 +16997,9 @@ void WriteIni(int flag,char *filename){
 #ifdef pp_FED
   fprintf(fileout, "FED\n");
   fprintf(fileout," %i\n",regenerate_fed);
-#endif
   fprintf(fileout, "FEDCOLORBAR\n");
   fprintf(fileout, " %s\n", default_fed_colorbar);
+#endif
   fprintf(fileout, "LOADINC\n");
   fprintf(fileout, " %i\n", load_incremental);
   fprintf(fileout, "NOPART\n");
@@ -17008,8 +17008,10 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %i %i %i\n", partfast, use_partload_threads, n_partload_threads);
   fprintf(fileout, "RESEARCHMODE\n");
   fprintf(fileout, " %i %i %f %i %i %i %i %i\n", research_mode, 1, colorbar_shift, ncolorlabel_digits, force_fixedpoint, ngridloc_digits, sliceval_ndigits, force_exponential);
+#ifdef pp_FED
   fprintf(fileout, "SHOWFEDAREA\n");
   fprintf(fileout, " %i\n", show_fed_area);
+#endif
   fprintf(fileout, "SLICEAVERAGE\n");
   fprintf(fileout, " %i %f %i\n", slice_average_flag, slice_average_interval, vis_slice_average);
   fprintf(fileout, "SMOKELOAD\n");
