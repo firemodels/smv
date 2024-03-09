@@ -12950,7 +12950,7 @@ int ReadIni2(char *inifile, int localfile){
       int dummy;
 
       fgets(buffer, 255, stream);
-      sscanf(buffer, "%i %i %i %i %i %i", &show_iso_shaded, &show_iso_outline, &show_iso_points, &show_iso_normal, &dummy, &smooth_iso_normal);
+      sscanf(buffer, "%i %i %i %i %i %i %i", &show_iso_shaded, &show_iso_outline, &show_iso_points, &show_iso_normal, &dummy, &smooth_iso_normal, &sort_iso_triangles);
       ONEORZERO(show_iso_shaded);
       ONEORZERO(show_iso_outline);
       ONEORZERO(show_iso_points);
@@ -12961,6 +12961,8 @@ int ReadIni2(char *inifile, int localfile){
 #else
       show_iso_normal = 0;
 #endif
+      ONEORZERO(sort_iso_triangles);
+      sort_geometry = sort_iso_triangles;
       visAIso = show_iso_shaded * 1 + show_iso_outline * 2 + show_iso_points * 4;
       continue;
     }
@@ -17199,7 +17201,7 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, "SHOWTRANSPARENT\n");
   fprintf(fileout, " %i\n", visTransparentBlockage);
   fprintf(fileout, "SHOWTRIANGLES\n");
-  fprintf(fileout, " %i %i %i %i 1 %i\n", show_iso_shaded, show_iso_outline, show_iso_points, show_iso_normal, smooth_iso_normal);
+  fprintf(fileout, " %i %i %i %i 1 %i %i\n", show_iso_shaded, show_iso_outline, show_iso_points, show_iso_normal, smooth_iso_normal, sort_iso_triangles);
   fprintf(fileout, "SHOWTRANSPARENTVENTS\n");
   fprintf(fileout, " %i\n", show_transparent_vents);
   fprintf(fileout, "SHOWTRIANGLECOUNT\n");
