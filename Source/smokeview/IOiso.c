@@ -247,11 +247,17 @@ void GetIsoDataBounds(isodata *isod, float *pmin, float *pmax){
 
   pdata = isod->geom_vals;
   ndata = isod->geom_nvals;
-  *pmin = pdata[0];
-  *pmax = pdata[0];
-  for(i = 1; i<ndata; i++) {
-    *pmin = MIN(*pmin, pdata[i]);
-    *pmax = MAX(*pmax, pdata[i]);
+  if(ndata > 0 && pdata != NULL){
+    *pmin = pdata[0];
+    *pmax = pdata[0];
+    for(i = 1; i < ndata; i++) {
+      *pmin = MIN(*pmin, pdata[i]);
+      *pmax = MAX(*pmax, pdata[i]);
+    }
+  }
+  else{
+    *pmin = 0.0;
+    *pmax = 1.0;
   }
 }
 
@@ -356,8 +362,7 @@ void SyncIsoBounds(){
     isodata *isoi;
 
     isoi = isoinfo + i;
-    if(isoi->loaded == 0 || isoi->type != iisotype || isoi->dataflag == 0)continue;
-    if(iisottype != GetIsoTType(isoi))continue;
+    if(isoi->type != iisotype || isoi->dataflag == 0 || iisottype != GetIsoTType(isoi))continue;
     ncount++;
   }
   if(ncount <= 1)return;
@@ -368,8 +373,7 @@ void SyncIsoBounds(){
     isodata *isoi;
 
     isoi = isoinfo + i;
-    if(isoi->loaded == 0 || isoi->type != iisotype || isoi->dataflag == 0)continue;
-    if(iisottype != GetIsoTType(isoi))continue;
+    if(isoi->type != iisotype || isoi->dataflag == 0 || iisottype != GetIsoTType(isoi))continue;
     if(firsttime == 1){
       firsttime = 0;
       tmin_local = isoi->tmin;
@@ -387,8 +391,7 @@ void SyncIsoBounds(){
     isodata *isoi;
 
     isoi = isoinfo + i;
-    if(isoi->loaded == 0 || isoi->type != iisotype || isoi->dataflag == 0)continue;
-    if(iisottype != GetIsoTType(isoi))continue;
+    if(isoi->type != iisotype || isoi->dataflag == 0 || iisottype != GetIsoTType(isoi))continue;
     isoi->tmin = tmin_local;
     isoi->tmax = tmax_local;
   }
@@ -548,18 +551,38 @@ FILE_SIZE ReadIsoGeom(int ifile, int load_flag, int *geom_frame_index, int *erro
     GetIsoDataBounds(isoi, &iso_valmin, &iso_valmax);
     isoi->globalmin_iso = iso_valmin;
     isoi->globalmax_iso = iso_valmax;
-    if(setisomin == GLOBAL_MIN)iso_valmin = isoi->globalmin_iso;
-    if(setisomax == GLOBAL_MAX)iso_valmax = isoi->globalmax_iso;
-    iso_global_min = isoi->globalmin_iso;
-    iso_global_max = isoi->globalmax_iso;
+    if(isoi->finalize == 1){
+      iso_global_min = 1.0;
+      iso_global_max = 0.0;
+      for(i = 0;i < nisoinfo;i++){
+        isodata *isoj;
 
-    iisottype = GetIsoTType(isoi);
-    SyncIsoBounds();
-    SetIsoLabels(isoi->tmin, isoi->tmax, isoi, errorcode);
+        isoj = isoinfo + i;
+        if(isoj->loaded == 0)continue;
+        if(iso_global_min > iso_valmax){
+          iso_global_min = isoj->globalmin_iso;
+          iso_global_max = isoj->globalmax_iso;
+        }
+        else{
+          iso_global_min = MIN(iso_global_min, isoj->globalmin_iso);
+          iso_global_max = MAX(iso_global_max, isoj->globalmax_iso);
+        }
+      }
+      for(i = 0;i < nisoinfo;i++){
+        isodata *isoj;
 
-    GLUIUpdateIsoBounds();
-    GLUIIsoBoundCB(ISO_VALMIN);
-    GLUIIsoBoundCB(ISO_VALMAX);
+        isoj = isoinfo + i;
+        if(isoj->loaded == 0)continue;
+        isoj->globalmin_iso = iso_global_min;
+        isoj->globalmax_iso = iso_global_max;
+      }
+      iisottype = GetIsoTType(isoi);
+   //   SyncIsoBounds();
+      SetIsoLabels(isoi->tmin, isoi->tmax, isoi, errorcode);
+      GLUIUpdateIsoBounds();
+      GLUIIsoBoundCB(ISO_VALMIN);
+      GLUIIsoBoundCB(ISO_VALMAX);
+    }
   }
   PrintMemoryInfo;
   show_isofiles = 1;
@@ -978,8 +1001,7 @@ void ReadIsoOrig(const char *file, int ifile, int flag, int *errorcode){
     UnloadIso(meshi);
     ReadIso("",ifile,UNLOAD,NULL,&error);
     return;
-    }
-
+  }
 
   ib->loaded=1;
   ib->display=1;
@@ -993,7 +1015,7 @@ void ReadIsoOrig(const char *file, int ifile, int flag, int *errorcode){
   CheckMemory;
   if(ib->dataflag==1){
     iisottype = GetIsoTType(ib);
-    SyncIsoBounds();
+   // SyncIsoBounds();
     SetIsoLabels(ib->tmin, ib->tmax, ib, errorcode);
     CheckMemory;
   }

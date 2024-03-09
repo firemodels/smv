@@ -5828,6 +5828,22 @@ void LoadAllIsos(int iso_type){
   }
   START_TIMER(load_time);
   CancelUpdateTriangles();
+  for(i = 0;i < nisoinfo;i++){
+    isodata *isoi;
+
+    isoi = isoinfo + i;
+    isoi->finalize = 0;
+  }
+  for(i = nisoinfo-1;i>=0;i--){
+    isodata *isoi;
+
+    isoi = isoinfo + i;
+    IF_NOT_USEMESH_CONTINUE(isoi->loaded, isoi->blocknumber);
+    if(iso_type==isoi->type){
+      isoi->finalize = 1;
+      break;
+    }
+  }
   for(i = 0; i < nisoinfo; i++){
     isodata *isoi;
 
@@ -5858,6 +5874,7 @@ void LoadIsoMenu(int value){
         isodata *isoi;
 
         isoi = isoinfo + i;
+        isoi->finalize = 0;
         if(isoi->loaded == 1)ReadIso("", i, UNLOAD, NULL, &errorcode);
       }
     }
@@ -5865,6 +5882,7 @@ void LoadIsoMenu(int value){
       isodata *isoi;
 
       isoi = isoinfo + value;
+      isoi->finalize = 1;
       IF_NOT_USEMESH_CONTINUE(isoi->loaded,isoi->blocknumber);
       LoadIsoI(value);
     }

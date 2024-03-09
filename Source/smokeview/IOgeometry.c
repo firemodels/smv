@@ -2030,12 +2030,14 @@ void UpdateTriangles(int flag,int update){
         geomj = geominfoptrs[j];
         if(geomj->geomtype != GEOM_GEOM&&geomj->geomtype!=GEOM_ISO)continue;
         geomlisti = geomj->geomlistinfo+ii;
-        for(i = 0; i<geomlisti->nverts; i++){
-          vertdata *verti;
+        if(geomlisti->verts != NULL){
+          for(i = 0; i < geomlisti->nverts; i++){
+            vertdata *verti;
 
-          verti = geomlisti->verts+i;
-          verti->on_mesh_boundary = OnMeshBoundary(verti->xyz);
-          if(verti->on_mesh_boundary==1)nsurface_verts++;
+            verti = geomlisti->verts + i;
+            verti->on_mesh_boundary = OnMeshBoundary(verti->xyz);
+            if(verti->on_mesh_boundary == 1)nsurface_verts++;
+          }
         }
       }
 
@@ -2057,15 +2059,17 @@ void UpdateTriangles(int flag,int update){
           geomj = geominfoptrs[j];
           if(geomj->geomtype != GEOM_GEOM&&geomj->geomtype != GEOM_ISO)continue;
           geomlisti = geomj->geomlistinfo + ii;
-          for(i = 0; i<geomlisti->nverts; i++){
-            vertdata *verti;
+          if(geomlisti->verts != NULL){
+            for(i = 0; i < geomlisti->nverts; i++){
+              vertdata *verti;
 
-            verti = geomlisti->verts+i;
-            if(verti->on_mesh_boundary==1){
-              if(isurf<nsurface_verts){
-                surface_verts[isurf] = verti;
-                match_verts[isurf] = -1;
-                isurf++;
+              verti = geomlisti->verts + i;
+              if(verti->on_mesh_boundary == 1){
+                if(isurf < nsurface_verts){
+                  surface_verts[isurf] = verti;
+                  match_verts[isurf] = -1;
+                  isurf++;
+                }
               }
             }
           }
