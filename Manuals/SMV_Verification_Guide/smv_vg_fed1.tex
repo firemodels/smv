@@ -1,0 +1,23 @@
+Figure \ref{figfedslicetest} presents slice file images verifying the computation
+of fractional effective dose (FED).  FED is a measure of human incapacitation or
+hazard due to combustion gases\cite{SFPE:Purser}. Images are drawn at \SI{30}{s},
+\SI{60}{s} and \SI{120}{s} and \SI{240}{s}. The FED is computed using three data slices with concentration of $1000~\mathrm{ppm}$ for $\mathrm{CO}$ and volume fractions of 0.02 and 0.07 for $\mathrm{CO_2}$ and $\mathrm{O_2}$ respectively. These values result in FED values of 1.5 at \SI{30}{s}, 3.0 at \SI{60}{s}, 6.0 at \SI{120}{s} and 12.0 at \SI{240}{s}.
+
+\begin{figure}[bph]
+\begin{center}
+\begin{tabular}{ccp{1.0in}}
+ \includegraphics[height=\figheightE]{SCRIPT_FIGURES/fed_test_030}&
+ \includegraphics[height=\figheightE]{SCRIPT_FIGURES/fed_test_060}\\
+SI{30}{s}, FED=0.29&\SI{60}{s}, FED=0.59\\
+ \includegraphics[height=\figheightE]{SCRIPT_FIGURES/fed_test_120}&
+ \includegraphics[height=\figheightE]{SCRIPT_FIGURES/fed_test_360}\\
+\SI{120}{s}, FED=1.2&3\SI{60}{s}, FED=3.5\\
+&&\raisebox{0.25in}[0pt]{\includegraphics[height=5.5in]{\SMVfigdir/colorbar_fed}}
+ \end{tabular}
+\end{center}
+ \caption[A test showing cell centered FED slice file data]{A test showing cell
+ centered FED slice file data.  These contours were generated using $\mathrm{CO}$,
+ $\mathrm{CO_2}$ and $\mathrm{O_2}$ data slices. }
+\label{figfedslicetest}%
+\end{figure}
+

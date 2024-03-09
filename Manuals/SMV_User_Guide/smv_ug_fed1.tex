@@ -1,0 +1,49 @@
+\subsection{Fractional effective dose (FED) slices}
+The fractional effective dose (FED), developed by Purser~\cite{SFPE:Purser},
+is an estimate of human incapacitation
+due to a limited set of combustion gases.
+FED index data is computed by Smokeview using CO, $\mathrm{CO_2}$ and $\mathrm{O_2}$ gas
+concentration data computed by FDS.
+This data is made available to Smokeview in the form of slice files.
+Smokeview computes FED data using
+\be
+\mathrm{FED}_\mathrm{tot}\ = \mathrm{FED}_\mathrm{CO}
+\times \mathrm{HV}_\mathrm{CO_2}\ + \mathrm{FED}_\mathrm{O_2}
+\ee
+where $\mathrm{FED}_\mathrm{tot}$ is the total FED,
+$\mathrm{FED}_\mathrm{CO}$ is the FED due to CO,
+$\mathrm{HV}_\mathrm{CO_2}$ is a hyper-ventilating factor
+applied to CO and $\mathrm{FED}_\mathrm{O_2}$
+is the FED due to $\mathrm{O_2}$.
+The species data slices used to compute an FED slice needs to be specified at the
+same location.  To generate an FED slice at $y=1.6$, specify the following species slices in the input file
+\begin{lstlisting}
+&SLCF PBY=1.6,QUANTITY='VOLUME FRACTION' SPEC_ID='CARBON DIOXIDE' /
+&SLCF PBY=1.6,QUANTITY='VOLUME FRACTION' SPEC_ID='CARBON MONOXIDE' /
+&SLCF PBY=1.6,QUANTITY='VOLUME FRACTION' SPEC_ID='OXYGEN' /
+\end{lstlisting}
+
+FED computations are stored by Smokeview in slice files for subsequent use.
+Since this computation
+is performed in Smokeview using data only found in the slices files, time step intervals
+should be chosen to ensure accuracy.  Figure \ref{figfedslice}\ illustrates
+an FED slice file at several times.  The FED colorbar is split at values of 0.3, 1.0 and 3.0.  When FED slices are displayed using the FED colorbar (colorbar illustrated in Figure \ref{figfedslice}), Smokeview computes color levels assuming a minimum FED level of 0.0 and a maximum level of 3.0.  To display FED data using other data bounds, a different colorbar needs to be chosen.
+
+\begin{figure}[bph]
+\begin{center}
+\begin{tabular}{ccc}
+\includegraphics[height=\figheightAbar]{SCRIPT_FIGURES/thouse5_fed_z1p5_slice_005}&
+\includegraphics[height=\figheightAbar]{SCRIPT_FIGURES/thouse5_fed_z1p5_slice_010}\\
+5.0 s&10.0 s\\
+\includegraphics[height=\figheightAbar]{SCRIPT_FIGURES/thouse5_fed_z1p5_slice_030}&
+\includegraphics[height=\figheightAbar]{SCRIPT_FIGURES/thouse5_fed_z1p5_slice_060}&\\
+30.0 s&60.0 s
+&\raisebox{0.0ex}[0pt]{\includegraphics[height=5.0in]{\SMVfigdir/colorbar_fed}}\\
+\end{tabular}
+\caption [FED slices.]
+{FED slices.
+These contours were generated using CO, $\mathrm{CO_2}$ and $\mathrm{O_2}$ data slices.
+}
+\label{figfedslice}%
+\end{center}
+\end{figure}
