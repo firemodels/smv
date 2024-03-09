@@ -457,7 +457,9 @@ EXTERNCPP int BuildGbndFile(int file_type);
 EXTERNCPP void GetGlobalSliceBoundsReduced(void);
 EXTERNCPP void GetGlobalHVACDuctBounds(int flag);
 EXTERNCPP void GetGlobalHVACNodeBounds(int flag);
+#ifdef pp_FED
 EXTERNCPP void UpdateGlobalFEDSliceBounds(void);
+#endif
 
 EXTERNCPP void Slice2Device(void);
 EXTERNCPP void PauseTime(float pause_time);
@@ -622,7 +624,9 @@ EXTERNCPP void GetSliceParams2(void);
 
 EXTERNCPP void DrawWindRosesDevices(void);
 EXTERNCPP void DeviceData2WindRose(int nr, int ntheta);
+#ifdef pp_FED
 EXTERNCPP void DefineAllFEDs(void);
+#endif
 EXTERNCPP void AddDeleteKeyframe(int flag);
 EXTERNCPP void Slerp(float *p0, float *p1, float t, float *pout);
 EXTERNCPP void VentMenu(int value);
@@ -724,7 +728,9 @@ EXTERNCPP char *GetScriptFileName(int id);
 EXTERNCPP inifiledata *InsertIniFile(char *file);
 EXTERNCPP void Keyboard(unsigned char key, int flag);
 EXTERNCPP void GetNewScriptFileName(char *newscriptfilename);
+#ifdef pp_FED
 EXTERNCPP void OutputFedCSV(void);
+#endif
 EXTERNCPP void ParticlePropShowMenu(int value);
 EXTERNCPP int  GetGridIndex(float x, int dir, float *plotxyz, int nplotxyz);
 EXTERNCPP void UpdateSliceContours(int slice_type_index, float line_min, float line_max, int nline_values);

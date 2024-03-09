@@ -572,9 +572,11 @@ char *ProcessCommandLine(CommandlineArgs *args) {
       iblank_set_on_commandline = 1;
       use_iblank = 0;
     }
+#ifdef pp_FED
     if(args->fed){
       compute_fed = 1;
     }
+#endif
     if(args->verbose){
       verbose_output = 1;
     }

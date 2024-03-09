@@ -191,9 +191,13 @@ CommandlineArgs ParseCommandlineNew(int argc, char **argv, char *message,
       args.show_help_all = true;
     } else if (strcmp(argv[i], "-noblank") == 0) {
       args.noblank = true;
-    } else if (strcmp(argv[i], "-fed") == 0) {
+    } 
+#ifdef pp_FED
+    else if (strcmp(argv[i], "-fed") == 0) {
       args.fed = true;
-    } else if (strcmp(argv[i], "-verbose") == 0) {
+    } 
+#endif
+    else if (strcmp(argv[i], "-verbose") == 0) {
       args.verbose = true;
     } else if (strcmp(argv[i], "-outline") == 0) {
       args.outline = true;

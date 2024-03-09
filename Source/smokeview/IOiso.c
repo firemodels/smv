@@ -1042,10 +1042,12 @@ FILE_SIZE ReadIso(const char *file, int ifile, int flag, int *geom_frame_index, 
 
     isoi = isoinfo+ifile;
     if(flag==LOAD)PRINTF("Loading %s(%s)", file,isoi->surface_label.shortlabel);
+#ifdef pp_FED
     if(isoi->is_fed==1){
       ReadFed(ifile, ALL_FRAMES, NULL,  flag, FED_ISO, errorcode);
     }
     else{
+#endif
       if(isoi->geomflag==1){
         return_filesize=ReadIsoGeom(ifile,flag,geom_frame_index,errorcode);
       }
@@ -1053,7 +1055,9 @@ FILE_SIZE ReadIso(const char *file, int ifile, int flag, int *geom_frame_index, 
         ReadIsoOrig(file,ifile,flag,errorcode);
       }
     }
+#ifdef pp_FED
   }
+#endif
   return return_filesize;
 }
 

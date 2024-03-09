@@ -584,7 +584,9 @@ SVEXTERN int SVDECL(setup_only, 0);
 SVEXTERN int SVDECL(timearray_test, 0);
 SVEXTERN char SVDECL(*updatetimes_debug, NULL);
 SVEXTERN int SVDECL(*fed_areas, NULL);
+#ifdef pp_FED
 SVEXTERN int SVDECL(nfediso, 0);
+#endif
 SVEXTERN int SVDECL(slice_time, 0);
 SVEXTERN int SVDECL(in_part_mt, 0);
 SVEXTERN histogramdata SVDECL(*full_plot3D_histograms, NULL);
@@ -747,8 +749,10 @@ SVEXTERN int SVDECL(update_volbox_controls,0);
 SVEXTERN float SVDECL(face_factor,0.01);
 SVEXTERN int SVDECL(show_node_slices_and_vectors,0);
 SVEXTERN int SVDECL(show_cell_slices_and_vectors,1);
+#ifdef pp_FED
 SVEXTERN int SVDECL(compute_fed,0);
 SVEXTERN int SVDECL(is_fed_colorbar, 0);
+#endif
 
 SVEXTERN int SVDECL(convert_ini,0), SVDECL(convert_ssf,0);
 SVEXTERN int SVDECL(update_ssf,0);
@@ -830,7 +834,9 @@ SVEXTERN int iplotx_all, iploty_all, iplotz_all;
 SVEXTERN int SVDECL(iplot_state,0);
 SVEXTERN int SVDECL(visx_all,0),SVDECL(visy_all,1),SVDECL(visz_all,0);
 SVEXTERN float SVDECL(*plotx_all,NULL), SVDECL(*ploty_all,NULL), SVDECL(*plotz_all,NULL);
+#ifdef pp_FED
 SVEXTERN int SVDECL(regenerate_fed,0);
+#endif
 SVEXTERN int SVDECL(debug_count,0);
 SVEXTERN geomdata SVDECL(**geominfoptrs,NULL);
 SVEXTERN int SVDECL(ngeominfoptrs,0);
@@ -1512,7 +1518,9 @@ SVEXTERN int SVDECL(nmultisliceinfo,0),      SVDECL(nmultivsliceinfo,0);
 SVEXTERN sliceparmdata sliceparminfo;
 
 SVEXTERN int SVDECL(nslicebounds, 0), SVDECL(npatchbounds,0), SVDECL(npatch2,0);
+#ifdef pp_FED
 SVEXTERN int nfedinfo;
+#endif
 SVEXTERN int SVDECL(nsmoke3dinfo,0);
 SVEXTERN int SVDECL(nisoinfo,0), SVDECL(niso_bounds,0);
 SVEXTERN int SVDECL(ntrnx,0), SVDECL(ntrny,0), SVDECL(ntrnz,0),SVDECL(npdim,0),SVDECL(nmeshes,0),SVDECL(clip_mesh,0);
@@ -1520,7 +1528,9 @@ SVEXTERN int SVDECL(nOBST,0),SVDECL(nVENT,0),SVDECL(nCVENT,0),SVDECL(ncvents,0),
 SVEXTERN int SVDECL(visLabels,0);
 SVEXTERN float SVDECL(framerate,-1.0);
 SVEXTERN int SVDECL(seqnum,0),SVDECL(RenderTime,0),SVDECL(RenderTimeOld,0), SVDECL(itime_cycle,0);
+#ifdef pp_FED
 SVEXTERN int SVDECL(fed_seqnum, 0);
+#endif
 SVEXTERN int SVDECL(nopart,1);
 SVEXTERN int SVDECL(uindex,-1), SVDECL(vindex,-1), SVDECL(windex,-1);
 
@@ -2157,7 +2167,9 @@ SVEXTERN slicedata SVDECL(**slicex, NULL), SVDECL(**slicey, NULL), SVDECL(**slic
 
 SVEXTERN fileboundsdata SVDECL(*sliceboundsinfo, NULL), SVDECL(*patchboundsinfo, NULL);
 SVEXTERN int SVDECL(nsliceboundsinfo, 0), SVDECL(npatchboundsinfo, 0);
+#ifdef pp_FED
 SVEXTERN feddata SVDECL(*fedinfo,NULL);
+#endif
 SVEXTERN camdata SVDECL(*caminfo,NULL);
 SVEXTERN multislicedata SVDECL(*multisliceinfo,NULL);
 SVEXTERN multivslicedata SVDECL(*multivsliceinfo,NULL);

@@ -907,6 +907,7 @@ int CReadSlice_frame(int frame_index_local,int sd_index,int flag){
   return 0;
 }
 
+#ifdef pp_FED
 /* ------------------ OutputFedCSV ------------------------ */
 
 void OutputFedCSV(void){
@@ -924,7 +925,6 @@ void OutputFedCSV(void){
 }
 
 /* ------------------ ReadFed ------------------------ */
-
 void ReadFed(int file_index, int time_frame, float *time_value, int flag, int file_type, int *errorcode){
   feddata *fedi;
   slicedata *fed_slice,*o2,*co2,*co;
@@ -1271,7 +1271,7 @@ void ReadFed(int file_index, int time_frame, float *time_value, int flag, int fi
     }
   }
 }
-
+#endif
 /* ------------------ ReadVSlice ------------------------ */
 
 FILE_SIZE ReadVSlice(int ivslice, int time_frame, float *time_value, int flag, int set_slicecolor, int *errorcode){
@@ -1819,10 +1819,12 @@ void UpdateSliceBounds(void){
       j = slice_loaded_list[jj];
       slicej = sliceinfo + j;
       if(slicej->slicefile_labelindex!=i)continue;
+#ifdef pp_FED
       if(is_fed_colorbar==1&&slicej->is_fed==1){
         slicebounds[i].dlg_setvalmin=SET_MIN;
         slicebounds[i].dlg_valmin=0.0;
       }
+#endif
       if(slicebounds[i].dlg_setvalmin!=SET_MIN){
         if(minflag==0){
           valmin=slicej->valmin_slice;
@@ -1846,10 +1848,12 @@ void UpdateSliceBounds(void){
       j = slice_loaded_list[jj];
       slicej = sliceinfo + j;
       if(slicej->slicefile_labelindex!=i)continue;
+#ifdef pp_FED
       if(is_fed_colorbar==1&&slicej->is_fed==1){
         slicebounds[i].dlg_setvalmax=SET_MAX;
         slicebounds[i].dlg_valmax=3.0;
       }
+#endif
       if(slicebounds[i].dlg_setvalmax!=SET_MAX){
         if(maxflag==0){
           valmax=sliceinfo[j].valmax_slice;
@@ -2781,7 +2785,7 @@ void UpdateSliceinfoPtrs(sliceparmdata *sp){
 }
 
 /* ------------------ UpdateFedinfo ------------------------ */
-
+#ifdef pp_FED
 void UpdateFedinfo(sliceparmdata *sp){
   int i;
   int ifediso = 0;
@@ -3064,6 +3068,7 @@ void UpdateFedinfo(sliceparmdata *sp){
   if(stream_fedsmv != NULL)fclose(stream_fedsmv);
   if(sp->nfediso > 0)UpdateIsoMenuLabels();
 }
+#endif
 
 /* ------------------ GetSliceParams ------------------------ */
 
@@ -3159,7 +3164,9 @@ void GetSliceParams(sliceparmdata *sp){
   }
   PRINT_TIMER(timer_getsliceparams1, "getsliceparams 1");
   INIT_PRINT_TIMER(timer_getsliceparams2);
+#ifdef pp_FED
   UpdateFedinfo(sp);
+#endif
   PRINT_TIMER(timer_getsliceparams2, "getsliceparams 2");
   INIT_PRINT_TIMER(timer_getsliceparams3);
   UpdateSliceinfoPtrs(sp);
@@ -3282,7 +3289,10 @@ void GetSliceParams(sliceparmdata *sp){
       sd->zmax = zplt[sd->ks2];
       xyz_min = sd->xyz_min;
       xyz_max = sd->xyz_max;
-      if(sd->is_fed==0){
+#ifdef pp_FED
+      if(sd->is_fed==0)
+#endif
+      {
         if(sd->volslice==1){
           xyz_min[0] = xplt[sd->ijk_min[0]];
           xyz_max[0] = xplt[sd->ijk_max[0]];
@@ -3300,6 +3310,7 @@ void GetSliceParams(sliceparmdata *sp){
           xyz_max[2] = sd->zmax;
         }
       }
+#ifdef pp_FED
       else{
         float *xyz_min2, *xyz_max2;
 
@@ -3312,6 +3323,7 @@ void GetSliceParams(sliceparmdata *sp){
         xyz_min[2] = xyz_min2[2];
         xyz_max[2] = xyz_max2[2];
       }
+#endif
     }
   }
   PRINT_TIMER(timer_getsliceparams4, "getsliceparams 4");

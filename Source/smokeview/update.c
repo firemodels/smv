@@ -2037,7 +2037,9 @@ void UpdateShowScene(void){
   }
   UpdateRenderStartButton();
   if(update_makemovie == 1||output_ffmpeg_command==1)MakeMovie();
+#ifdef pp_FED
   if(compute_fed == 1)DefineAllFEDs();
+#endif
   if(restart_time == 1){
     restart_time = 0;
     ResetItimes0();

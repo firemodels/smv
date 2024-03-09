@@ -587,15 +587,20 @@ colorbardata *GetColorbar(char *menu_label){
 /* ------------------ UpdateCurrentColorbar ------------------------ */
 #define FILE_UPDATE 6
 void UpdateCurrentColorbar(colorbardata *cb){
-  int jj=0,fed_loaded=0;
+  int jj = 0;
+#ifdef pp_FED
+  int fed_loaded = 0;
+#endif
 
   current_colorbar = cb;
+#ifdef pp_FED
   if(current_colorbar != NULL&&strcmp(current_colorbar->menu_label, "FED") == 0){
     is_fed_colorbar = 1;
   }
   else{
     is_fed_colorbar = 0;
   }
+#endif
   for(jj=0;jj<nslice_loaded;jj++){
     slicedata *slicej;
     int j;
@@ -603,12 +608,16 @@ void UpdateCurrentColorbar(colorbardata *cb){
     j = slice_loaded_list[jj];
     slicej = sliceinfo + j;
     if(slicej->display==0)continue;
+#ifdef pp_FED
     if(slicej->is_fed==1){
       fed_loaded=1;
       break;
     }
+#endif
   }
+#ifdef pp_FED
   if(is_fed_colorbar==1&&fed_loaded==1)GLUISliceBoundCB(FILE_UPDATE);
+#endif
 }
 
 /* ------------------ AdjustColorBar ------------------------ */
