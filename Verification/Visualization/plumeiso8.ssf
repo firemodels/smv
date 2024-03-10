@@ -19,15 +19,15 @@ LOADISO
 SETTIMEVAL
  5.000000
 RENDERONCE
- plumeiso4_diso_05
+ plumeiso8_diso_05
 SETTIMEVAL
  20.000000
 RENDERONCE
- plumeiso4_diso_20
+ plumeiso8_diso_20
 SETTIMEVAL
  35.000000
 RENDERONCE
- plumeiso4_diso_35
+ plumeiso8_diso_35
 
 UNLOADALL
 LOADISO
@@ -35,13 +35,13 @@ LOADISO
 SETTIMEVAL
  5.000000
 RENDERONCE
- plumeiso4_tiso_05
+ plumeiso8_tiso_05
 SETTIMEVAL
  20.000000
 RENDERONCE
- plumeiso4_tiso_20
+ plumeiso8_tiso_20
 SETTIMEVAL
  35.000000
 RENDERONCE
- plumeiso4_tiso_35
+ plumeiso8_tiso_35
 
