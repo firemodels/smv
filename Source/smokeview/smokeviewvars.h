@@ -970,6 +970,7 @@ SVEXTERN int npropinfo;
 SVEXTERN propdata SVDECL(*propinfo,NULL);
 SVEXTERN float SVDECL(right_green,0.0), SVDECL(right_blue,1.0);
 
+SVEXTERN int SVDECL(saved_colorbar, -1);
 SVEXTERN int SVDECL(levelset_colorbar,-1), SVDECL(wallthickness_colorbar,-1);
 SVEXTERN colorbardata SVDECL(*fire_colorbar,NULL);
 SVEXTERN float SVDECL(glui_time,0.0);
