@@ -22,6 +22,8 @@
 #include "glutbitmap.h"
 #endif
 
+#include GLUT_H
+
 //*** threader variables
 
 //***isosurface
