@@ -11359,10 +11359,8 @@ static int menu_count=0;
     }
     if(vishmsTimelabel==0)glutAddMenuEntry(_("time (h:m:s)"), MENU_UNITS_HMS);
     if(vishmsTimelabel==1)glutAddMenuEntry(_("*time (h:m:s)"), MENU_UNITS_HMS);
-#ifdef pp_BETA
     if(show_all_units==1)glutAddMenuEntry(_("*show all units"), MENU_UNITS_SHOWALL);
     if(show_all_units==0)glutAddMenuEntry(_("show all units"), MENU_UNITS_SHOWALL);
-#endif
     glutAddMenuEntry(_("Reset"), MENU_UNITS_RESET);
   }
 
