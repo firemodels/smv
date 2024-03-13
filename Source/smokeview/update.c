@@ -1298,8 +1298,13 @@ void UpdateTimes(void){
 
     if(nsmoke3dloaded>0&&vis3DSmoke3D==1){
       for(i=0;i<nsmoke3dinfo;i++){
+        int j;
         smoke3di = smoke3dinfo + i;
         if(smoke3di->loaded==0)continue;
+        for(j = 0;j < smoke3di->ntimes;j++){
+          printf("%f ", smoke3di->times[j]);
+        }
+        printf("\n");
         MergeGlobalTimes(smoke3di->times, smoke3di->ntimes);
       }
     }

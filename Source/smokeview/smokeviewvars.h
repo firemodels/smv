@@ -764,11 +764,7 @@ SVEXTERN int SVDECL(tour_drag,0);
 SVEXTERN int SVDECL(update_gslice,0);
 SVEXTERN int SVDECL(wall_cell_color_flag,0);
 SVEXTERN circdata cvent_circ, object_circ, windrose_circ;
-#ifdef pp_BETA
-SVEXTERN int SVDECL(show_all_units,1);
-#else
 SVEXTERN int SVDECL(show_all_units,0);
-#endif
 SVEXTERN int SVDECL(circle_outline,0);
 SVEXTERN unsigned char SVDECL(*patchmin_unit,NULL),SVDECL(*patchmax_unit,NULL);
 SVEXTERN unsigned char SVDECL(*glui_slicemin_unit,NULL),SVDECL(*glui_slicemax_unit,NULL);
@@ -978,6 +974,7 @@ SVEXTERN int npropinfo;
 SVEXTERN propdata SVDECL(*propinfo,NULL);
 SVEXTERN float SVDECL(right_green,0.0), SVDECL(right_blue,1.0);
 
+SVEXTERN int SVDECL(saved_colorbar, -1);
 SVEXTERN int SVDECL(levelset_colorbar,-1), SVDECL(wallthickness_colorbar,-1);
 SVEXTERN colorbardata SVDECL(*fire_colorbar,NULL);
 SVEXTERN float SVDECL(glui_time,0.0);

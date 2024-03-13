@@ -5207,10 +5207,21 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
 
   if(colorbartype_ini == -1){
     if(strcmp(sd->label.shortlabel, "thick") == 0){
+      if(colorbartype != wallthickness_colorbar && colorbartype != -1){
+        saved_colorbar = colorbartype;
+      }
       ColorbarMenu(wallthickness_colorbar);
-    }
-    if(strcmp(sd->label.shortlabel, "phi") == 0){
+    } 
+    else if(strcmp(sd->label.shortlabel, "phi") == 0){
+      if(colorbartype != levelset_colorbar && colorbartype != -1){
+        saved_colorbar = colorbartype;
+      }
       ColorbarMenu(levelset_colorbar);
+    }
+    else{
+      if(colorbartype==levelset_colorbar||colorbartype==wallthickness_colorbar){
+        ColorbarMenu(saved_colorbar);
+      }
     }
   }
   PushSliceLoadstack(slicefilenumber);
