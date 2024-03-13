@@ -1,14 +1,15 @@
 #define INMAIN
 #include "options.h"
+#include <ctype.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
 #include <sys/types.h>
-#include GLUT_H
+#include <getopt.h>
 
 #include "MALLOCC.h"
-#include "command_args.h"
 #include "smokeviewvars.h"
 #include "string_util.h"
 
@@ -219,7 +220,9 @@ int RunBenchmark(char *input_file) {
   struct json_object *jobj = json_object_new_object();
   json_object_object_add(jobj, "version", json_object_new_int(1));
   json_object_object_add(jobj, "chid", json_object_new_string(chidfilebase));
-  json_object_object_add(jobj, "title", json_object_new_string(fds_title));
+  if (fds_title != NULL) {
+    json_object_object_add(jobj, "title", json_object_new_string(fds_title));
+  }
   json_object_object_add(jobj, "fds_version",
                          json_object_new_string(fds_version));
   struct json_object *mesh_array = json_object_new_array();
@@ -227,7 +230,10 @@ int RunBenchmark(char *input_file) {
     meshdata *mesh = &meshinfo[i];
     struct json_object *mesh_obj = json_object_new_object();
     json_object_object_add(mesh_obj, "index", json_object_new_int(i + 1));
-    json_object_object_add(mesh_obj, "id", json_object_new_string(mesh->label));
+    if (mesh->label != NULL) {
+      json_object_object_add(mesh_obj, "id",
+                             json_object_new_string(mesh->label));
+    }
     struct json_object *mesh_coordinates = json_object_new_object();
     json_object_object_add(mesh_coordinates, "i",
                            json_object_new_int(mesh->ibar));
@@ -292,8 +298,20 @@ int RunBenchmark(char *input_file) {
       json_object_object_add(device_position, "z",
                              json_object_new_double(device->xyz[2]));
       json_object_object_add(device_obj, "position", device_position);
-      json_object_array_add(devices, device_obj);
     }
+    if (device->act_times != NULL) {
+      struct json_object *state_changes = json_object_new_array();
+      for (int j = 0; j < device->nstate_changes; j++) {
+        struct json_object *state_change = json_object_new_object();
+        json_object_object_add(state_change, "time",
+                               json_object_new_double(device->act_times[j]));
+        json_object_object_add(state_change, "value",
+                               json_object_new_int(device->state_values[j]));
+        json_object_array_add(state_changes, state_change);
+      }
+      json_object_object_add(device_obj, "state_changes", state_changes);
+    }
+    json_object_array_add(devices, device_obj);
   }
   json_object_object_add(jobj, "devices", devices);
 
@@ -305,23 +323,59 @@ int RunBenchmark(char *input_file) {
     json_object_object_add(slice_obj, "index", json_object_new_int(i + 1));
     json_object_object_add(slice_obj, "mesh",
                            json_object_new_int(slice->blocknumber));
-    json_object_object_add(slice_obj, "longlabel",
-                           json_object_new_string(slice->label.longlabel));
-    json_object_object_add(slice_obj, "shortlabel",
-                           json_object_new_string(slice->label.shortlabel));
-    json_object_object_add(slice_obj, "unit",
-                           json_object_new_string(slice->label.unit));
+    if (slice->label.longlabel != NULL) {
+      json_object_object_add(slice_obj, "longlabel",
+                             json_object_new_string(slice->label.longlabel));
+    }
+    if (slice->label.shortlabel) {
+      json_object_object_add(slice_obj, "shortlabel",
+                             json_object_new_string(slice->label.shortlabel));
+    }
+    if (slice->label.unit) {
+      json_object_object_add(slice_obj, "unit",
+                             json_object_new_string(slice->label.unit));
+    }
     struct json_object *coordinates = json_object_new_object();
-    json_object_object_add(coordinates, "i_min", json_object_new_int(slice->ijk_min[0]));
-    json_object_object_add(coordinates, "i_max", json_object_new_int(slice->ijk_max[0]));
-    json_object_object_add(coordinates, "j_min", json_object_new_int(slice->ijk_min[1]));
-    json_object_object_add(coordinates, "j_max", json_object_new_int(slice->ijk_max[1]));
-    json_object_object_add(coordinates, "k_min", json_object_new_int(slice->ijk_min[2]));
-    json_object_object_add(coordinates, "k_max", json_object_new_int(slice->ijk_max[2]));
+    json_object_object_add(coordinates, "i_min",
+                           json_object_new_int(slice->ijk_min[0]));
+    json_object_object_add(coordinates, "i_max",
+                           json_object_new_int(slice->ijk_max[0]));
+    json_object_object_add(coordinates, "j_min",
+                           json_object_new_int(slice->ijk_min[1]));
+    json_object_object_add(coordinates, "j_max",
+                           json_object_new_int(slice->ijk_max[1]));
+    json_object_object_add(coordinates, "k_min",
+                           json_object_new_int(slice->ijk_min[2]));
+    json_object_object_add(coordinates, "k_max",
+                           json_object_new_int(slice->ijk_max[2]));
     json_object_object_add(slice_obj, "coordinates", coordinates);
     json_object_array_add(slices, slice_obj);
   }
   json_object_object_add(jobj, "slices", slices);
+
+  // Add surfaces to JSON
+  struct json_object *surfaces = json_object_new_array();
+  for (int i = 0; i < nsurfinfo; i++) {
+    surfdata *surf = &surfinfo[i];
+    struct json_object *surf_obj = json_object_new_object();
+    json_object_object_add(surf_obj, "index", json_object_new_int(i + 1));
+    json_object_object_add(surf_obj, "id",
+                           json_object_new_string(surf->surfacelabel));
+    json_object_array_add(surfaces, surf_obj);
+  }
+  json_object_object_add(jobj, "surfaces", surfaces);
+
+  // Add materials to JSON
+  struct json_object *materials = json_object_new_array();
+  for (int i = 0; i < nsurfinfo; i++) {
+    surfdata *surf = &surfinfo[i];
+    struct json_object *surf_obj = json_object_new_object();
+    json_object_object_add(surf_obj, "index", json_object_new_int(i + 1));
+    json_object_object_add(surf_obj, "id",
+                           json_object_new_string(surf->surfacelabel));
+    json_object_array_add(materials, surf_obj);
+  }
+  json_object_object_add(jobj, "surfaces", materials);
 
   const char *json_output =
       json_object_to_json_string_ext(jobj, JSON_C_TO_STRING_PRETTY);
@@ -331,7 +385,45 @@ int RunBenchmark(char *input_file) {
 }
 
 int main(int argc, char **argv) {
-  char *input_file = argv[1];
+
+  bool print_help = false;
+  bool print_version = false;
+
+  int c;
+
+  opterr = 0;
+
+  while ((c = getopt(argc, argv, "hV")) != -1)
+    switch (c) {
+    case 'h':
+      print_help = true;
+      break;
+    case 'V':
+      print_version = true;
+      break;
+    case '?':
+      if (isprint(optopt))
+        fprintf(stderr, "Unknown option `-%c'.\n", optopt);
+      else
+        fprintf(stderr, "Unknown option character `\\x%x'.\n", optopt);
+      return 1;
+    default:
+      abort();
+    }
+  if (print_help) {
+    printf("smvq-%s\n", PROGVERSION);
+    printf("\nUsage:  smvq [OPTIONS] <FILE>\n");
+    printf("\nOptions:\n");
+    printf("  -h Print help\n");
+    printf("  -V Print version\n");
+    return 0;
+  }
+  if (print_version) {
+    printf("smvq - smv query processor (v%s)\n", PROGVERSION);
+    return 0;
+  }
+  char *input_file = argv[optind];
+
   if (input_file == NULL) {
     fprintf(stderr, "No input file specified.\n");
     return 1;
