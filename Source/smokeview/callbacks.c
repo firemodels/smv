@@ -748,6 +748,17 @@ int GetNextTimeFrame(int this_frame, int skip){
   next_frame = this_frame + skip * dir;
   if(next_frame <0)return nglobal_times-1;
   if(next_frame >nglobal_times-1)return 0;
+  if(dir < 0){
+    int i;
+
+    for(i = next_frame; i >= 0; i--){
+      if(global_times_map[i] == 0){
+        continue;
+      }
+      next_frame = i;
+      break;
+    }
+  }
   time = global_times[next_frame];
   next_frame = GetTimeFrame(time);
   return next_frame;
