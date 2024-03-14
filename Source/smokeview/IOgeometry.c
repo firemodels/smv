@@ -4574,7 +4574,6 @@ void DrawGeomVData(vslicedata *vd){
         CLAMP( (float)cvals[(index)]/255.0,0.0,1.0) \
         )
 
-
 void DrawGeomData(int flag, slicedata *sd, patchdata *patchi, int geom_type){
   int i;
   unsigned char *ivals, *cvals;

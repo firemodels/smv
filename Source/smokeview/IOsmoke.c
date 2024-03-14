@@ -3551,18 +3551,17 @@ int GetSmokeFrameStatus(float time_restart, float time_before, float time_now, i
 
 /* ------------------ MakeTimesMap ------------------------ */
 
-int MakeTimesMap(float *times, unsigned char *times_map, int n){
-  int i, mode, nrestarts = 0;
+void MakeTimesMap(float *times, unsigned char *times_map, int n){
+  int i, mode;
   float t_restart;
 
-  if(n <= 0)return 0;
+  if(n <= 0)return;
   mode = 1;
   times_map[n - 1] = 1;
   for(i = n - 2;i >= 0;i--){
     if(mode == 1){
       if(times[i] >= times[i + 1]){
         t_restart = times[i + 1];
-        nrestarts++;
         mode = 0;
       }
       times_map[i] = mode;
@@ -3571,7 +3570,6 @@ int MakeTimesMap(float *times, unsigned char *times_map, int n){
     if(times[i] < t_restart)mode = 1;
     times_map[i] = mode;
   }
-  return nrestarts;
 }
 
 /* ------------------ GetSmoke3DSizes ------------------------ */
@@ -3705,7 +3703,7 @@ int GetSmoke3DSizes(smoke3ddata *smoke3di, int fortran_skip, char *smokefile, in
     use_smokeframe_full++;
     iii++;
   }
-  smoke3di->have_restart = MakeTimesMap(smoke3di->times, smoke3di->times_map, count);
+  MakeTimesMap(smoke3di->times, smoke3di->times_map, count);
   *nchars_smoke_uncompressed = nch_uncompressed;
   fclose(SMOKE_SIZE);
   return 0;

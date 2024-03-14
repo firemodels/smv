@@ -147,6 +147,8 @@ void UpdateFrameNumber(int changetime){
         else{
           if(sd->timeslist == NULL)continue;
           sd->itime = sd->timeslist[itimes];
+
+          assert(sd->times_map == NULL || sd->times_map[sd->itime] == 1);
           slice_time = sd->itime;
         }
       }
@@ -698,11 +700,11 @@ int GetItime(int n, int *timeslist, unsigned char *times_map, float *times, int 
 
   if(n>0)istart=timeslist[n-1];
   while(1){
-    if(times_map!=NULL&&istart+1>=0&&istart+1<ntimes-1&&times_map[istart+1]==0){
+    if(times_map!=NULL&&istart>=0&&istart<ntimes-1&&times_map[istart]==0){
       istart++;
       continue;
     }
-    if(istart<ntimes-1&&times[istart+1]<=global_times[n]){
+    if(istart<ntimes-1&&times[istart]<=global_times[n]){
       istart++;
       continue;
     }
@@ -785,6 +787,7 @@ void SynchTimes(void){
       }
       else{
         sd->timeslist[n] = GetItime(n, sd->timeslist, sd->times_map, sd->times, sd->ntimes);
+        assert(sd->times_map == NULL || sd->times_map[sd->timeslist[n]] != 0);
       }
     }
 
@@ -1091,6 +1094,10 @@ void MergeGlobalTimes(float *time_in, int ntimes_in){
     }
     memcpy(global_times, time_in, ntimes_in*sizeof(float));
     nglobal_times = ntimes_in;
+
+    FREEMEMORY(global_times_map);
+    NewMemory((void **)&global_times_map, nglobal_times);
+    MakeTimesMap(global_times, global_times_map, nglobal_times);
     return;
   }
 
@@ -1136,8 +1143,11 @@ void MergeGlobalTimes(float *time_in, int ntimes_in){
     NewMemory((void **)&global_times, nbuffer*sizeof(float));
   }
   memcpy(global_times, times_buffer, nbuffer*sizeof(float));
-
   nglobal_times = nbuffer;
+
+  FREEMEMORY(global_times_map);
+  NewMemory((void **)&global_times_map, nglobal_times);
+  MakeTimesMap(global_times, global_times_map, nglobal_times);
 }
 
   /* ------------------ UpdateTimes ------------------------ */
@@ -1298,13 +1308,8 @@ void UpdateTimes(void){
 
     if(nsmoke3dloaded>0&&vis3DSmoke3D==1){
       for(i=0;i<nsmoke3dinfo;i++){
-        int j;
         smoke3di = smoke3dinfo + i;
         if(smoke3di->loaded==0)continue;
-        for(j = 0;j < smoke3di->ntimes;j++){
-          printf("%f ", smoke3di->times[j]);
-        }
-        printf("\n");
         MergeGlobalTimes(smoke3di->times, smoke3di->ntimes);
       }
     }
