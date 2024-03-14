@@ -1096,7 +1096,7 @@ void MergeGlobalTimes(float *time_in, int ntimes_in){
     nglobal_times = ntimes_in;
 
     FREEMEMORY(global_times_map);
-    NewMemory((void **)&global_times_map, nglobal_times);
+    NewMemory((void **)&global_times_map, nglobal_times*sizeof(unsigned char));
     MakeTimesMap(global_times, global_times_map, nglobal_times);
     return;
   }
@@ -1146,7 +1146,7 @@ void MergeGlobalTimes(float *time_in, int ntimes_in){
   nglobal_times = nbuffer;
 
   FREEMEMORY(global_times_map);
-  NewMemory((void **)&global_times_map, nglobal_times);
+  NewMemory((void **)&global_times_map, nglobal_times*sizeof(unsigned char));
   MakeTimesMap(global_times, global_times_map, nglobal_times);
 }
 
