@@ -152,7 +152,7 @@ extern "C" void GLUITourSetup(int main_window){
     glui_tour->close();
     glui_tour=NULL;
   }
-  glui_tour = GLUI_Master.create_glui(_("Tours"),0,0,0);
+  glui_tour = GLUI_Master.create_glui(_("Tours"),0,screenX0,screenY0);
   glui_tour->hide();
 
   ROLLOUT_circular = glui_tour->add_rollout(_("Modify circular tour"),false, MODIFY_TOURS_ROLLOUT, ToursRolloutCB);

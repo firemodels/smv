@@ -186,11 +186,11 @@ char *ProcessCommandLine(CommandlineArgs *args) {
   }
   if(args->have_x0){
     use_commandline_origin = 1;
-    screenOriginX = args->x0;
+    screenX0 = args->x0;
   }
   if(args->have_y0){
     use_commandline_origin = 1;
-    screenOriginY = args->y0;
+    screenY0 = args->y0;
   }
   if (args->csv) {
     update_csv_load = 1;
