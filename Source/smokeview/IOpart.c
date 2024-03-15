@@ -1905,7 +1905,7 @@ void FinalizePartLoad(partdata *parti){
 
     partj = partinfo+j;
     if(partj->request_load==1){
-      partj->have_restart = MakeTimesMap(partj->times, partj->times_map, partj->ntimes);
+      MakeTimesMap(partj->times, partj->times_map, partj->ntimes);
       partj->request_load = 0;
       partj->loaded = 1;
       partj->display = 1;

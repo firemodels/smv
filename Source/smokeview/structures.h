@@ -640,7 +640,7 @@ typedef struct _isodata {
   int *geom_nstatics, *geom_ndynamics;
   float *geom_times, *geom_vals;
   unsigned char *times_map;
-  int have_restart;
+  unsigned char *geom_times_map;
   float globalmin_iso, globalmax_iso;
   int geom_nvals;
 } isodata;
@@ -1253,7 +1253,6 @@ typedef struct _partdata {
 
   float zoffset, *times;
   unsigned char *times_map;
-  int have_restart;
   FILE_SIZE reg_file_size, file_size;
   LINT *filepos;
 
@@ -1425,7 +1424,6 @@ typedef struct _slicedata {
   flowlabels label;
   float *qslicedata, *qsliceframe, *times, *qslice;
   unsigned char *times_map;
-  int have_restart;
   unsigned char *qslicedata_compressed;
   unsigned char *slicecomplevel;
   unsigned char full_mesh;
@@ -1619,7 +1617,6 @@ typedef struct _smoke3ddata {
   char menulabel[128];
   float *times;
   unsigned char *times_map;
-  int have_restart;
   int *use_smokeframe;
   int *smokeframe_loaded;
   float extinct, valmin, valmax;
@@ -1697,7 +1694,6 @@ typedef struct _patchdata {
   float *geom_times, *geom_vals;
   int *geom_timeslist,geom_itime;
   unsigned char *geom_times_map;
-  int have_restart;
   unsigned char *geom_ivals;
   int *geom_ivals_static_offset, *geom_ivals_dynamic_offset;
   int *geom_vals_static_offset,  *geom_vals_dynamic_offset;
