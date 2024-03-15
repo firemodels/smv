@@ -4883,7 +4883,7 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
         *errorcode = 1;
         return 0;
       }
-      sd->have_restart = MakeTimesMap(sd->times, sd->times_map, sd->ntimes);
+      MakeTimesMap(sd->times, sd->times_map, sd->ntimes);
       file_size = sd->ncompressed;
       return_filesize = (FILE_SIZE)file_size;
     }
@@ -4918,7 +4918,7 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
             &qmin, &qmax, sd->qslicedata, sd->times, ntimes_slice_old, &sd->ntimes,
             tload_step, use_tload_begin, use_tload_end, tload_begin, tload_end
           );
-        sd->have_restart = MakeTimesMap(sd->times, sd->times_map, sd->ntimes);
+        MakeTimesMap(sd->times, sd->times_map, sd->ntimes);
         file_size = (int)return_filesize;
         sd->valmin_slice = qmin;
         sd->valmax_slice = qmax;
@@ -5207,10 +5207,21 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
 
   if(colorbartype_ini == -1){
     if(strcmp(sd->label.shortlabel, "thick") == 0){
+      if(colorbartype != wallthickness_colorbar && colorbartype != -1){
+        saved_colorbar = colorbartype;
+      }
       ColorbarMenu(wallthickness_colorbar);
-    }
-    if(strcmp(sd->label.shortlabel, "phi") == 0){
+    } 
+    else if(strcmp(sd->label.shortlabel, "phi") == 0){
+      if(colorbartype != levelset_colorbar && colorbartype != -1){
+        saved_colorbar = colorbartype;
+      }
       ColorbarMenu(levelset_colorbar);
+    }
+    else{
+      if(colorbartype==levelset_colorbar||colorbartype==wallthickness_colorbar){
+        ColorbarMenu(saved_colorbar);
+      }
     }
   }
   PushSliceLoadstack(slicefilenumber);
