@@ -109,10 +109,10 @@ extern "C" void GLUIStereoSetup(int main_window){
   }
   if(glui_stereo!=NULL)glui_stereo->close();
   if(have_vr==1){
-    glui_stereo = GLUI_Master.create_glui("Stereo/VR", 0, screenX0, screenY0);
+    glui_stereo = GLUI_Master.create_glui("Stereo/VR", 0, dialogX0, dialogY0);
   }
   else{
-    glui_stereo = GLUI_Master.create_glui("Stereo", 0, screenX0, screenY0);
+    glui_stereo = GLUI_Master.create_glui("Stereo", 0, dialogX0, dialogY0);
   }
   glui_stereo->hide();
 

@@ -279,7 +279,7 @@ extern "C" void GLUIShooterSetup(int main_window){
     glui_shooter->close();
     glui_shooter=NULL;
   }
-  glui_shooter = GLUI_Master.create_glui(_("Particle tracking"),0,screenX0,screenY0);
+  glui_shooter = GLUI_Master.create_glui(_("Particle tracking"),0,dialogX0,dialogY0);
   glui_shooter->hide();
 
   ROLLOUT_shooter_frame = glui_shooter->add_rollout(_("Starting locations/velocities"), true, START_SHOOTER_ROLLOUT, ShooterRolloutCB);
