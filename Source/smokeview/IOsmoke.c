@@ -3567,6 +3567,9 @@ void MakeTimesMap(float *times, unsigned char *times_map, int n){
       times_map[i] = mode;
       continue;
     }
+// to remove near identical time points
+//#define RESTART_EPS 0.0005
+//    if(times[i] < t_restart-RESTART_EPS)mode = 1;
     if(times[i] < t_restart)mode = 1;
     times_map[i] = mode;
   }
