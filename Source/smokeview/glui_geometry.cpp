@@ -732,7 +732,7 @@ extern "C" void GLUIGeometrySetup(int main_window){
     glui_geometry->close();
     glui_geometry=NULL;
   }
-  glui_geometry = GLUI_Master.create_glui("Geometry",0,0,0);
+  glui_geometry = GLUI_Master.create_glui("Geometry",0,screenX0,screenY0);
   if(showedit_dialog==0)glui_geometry->hide();
 
   if(nhvacinfo > 0){

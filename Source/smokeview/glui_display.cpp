@@ -675,7 +675,7 @@ extern "C" void GLUIDisplaySetup(int main_window){
     glui_labels->close();
     glui_labels=NULL;
   }
-  glui_labels = GLUI_Master.create_glui("Display",0,0,0);
+  glui_labels = GLUI_Master.create_glui("Display",0,screenX0,screenY0);
   glui_labels->hide();
 
   // -------------- General Settings -------------------
