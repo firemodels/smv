@@ -1212,7 +1212,7 @@ EXTERNCPP void GetSliceColors(const float *t, int nt, unsigned char *it,
               char colorlabels[12][11],float colorvalues[12], float *tlevels2,
               int *extreme_min, int *extreme_max, int flag
               );
-EXTERNCPP int MakeTimesMap(float *times, unsigned char *times_map, int n);
+EXTERNCPP void MakeTimesMap(float *times, unsigned char *times_map, int n);
 EXTERNCPP meshdata *GetLoadedIsoMesh(void);
 EXTERNCPP void SetIsoLabels(float smin, float smax,
                     isodata *sd, int *errorcode);

@@ -736,33 +736,28 @@ int ColorbarClick(int x, int y){
   return 0;
 }
 
-/* ------------------ GetTimeFrame ------------------------ */
+/* ------------------ GetTimeBarFrame ------------------------ */
 
-int GetTimeFrame(int xm){
-  int timebar_right_pos;
-  int timebar_left_pos;
-  int iframe;
+int GetTimeBarFrame(int xm){
+  int timebar_right_pos, timebar_left_pos, iframe;
 
   timebar_left_pos = VP_timebar.left+timebar_left_width;
   timebar_right_pos = VP_timebar.right-timebar_right_width;
 
   iframe = 0;
   if(global_times!=NULL&&timebar_right_pos>timebar_left_pos){
-    float time, factor;
+    float factor, timexm;
+    int i;
 
     factor = (float)(xm-timebar_left_pos)/(float)(timebar_right_pos-timebar_left_pos);
     factor = CLAMP(factor, 0.0, 1.0);
-    time = global_times[0]*(1.0-factor)+global_times[nglobal_times-1]*factor;
-    if(time<=global_times[0]){
-      iframe = 0;
+    timexm = global_times[0]*(1.0-factor) + factor*global_times[nglobal_times - 1];
+    if(timexm < global_times[0])return 0;
+    if(timexm >= global_times[nglobal_times - 1])return nglobal_times - 1;
+    for(i = 0;i < nglobal_times - 1;i++){
+      if(timexm >= global_times[i] && timexm < global_times[i + 1])return i;
     }
-    else if(time>=global_times[nglobal_times-1]){
-      iframe = nglobal_times-1;
-    }
-    else{
-      iframe = GetInterval(time, global_times, nglobal_times);
-      iframe = CLAMP(iframe, 0, nglobal_times-1);
-    }
+    return nglobal_times-1;
   }
   return iframe;
 }
@@ -772,7 +767,7 @@ int GetTimeFrame(int xm){
 int TimebarClick(int xm, int ym){
   if(screenHeight-ym<titlesafe_offset+VP_timebar.height&&nglobal_times>0){
 //    PRINTF("ngt=%i xl=%i x=%i xr=%i\n",nglobal_times,timebar_left_pos,x,timebar_right_pos);
-    itimes = GetTimeFrame(xm);
+    itimes = GetTimeBarFrame(xm);
     CheckTimeBound();
     timebar_drag=1;
     stept=0;
@@ -787,7 +782,7 @@ int TimebarClick(int xm, int ym){
 
 void TimebarDrag(int xm){
   if(nglobal_times>0){
-    itimes = GetTimeFrame(xm);
+    itimes = GetTimeBarFrame(xm);
     CheckTimeBound();
     timebar_drag = 1;
   }
@@ -2970,10 +2965,11 @@ void Keyboard(unsigned char key, int flag){
   }
 
   if(plotstate==DYNAMIC_PLOTS){
-    if(timebar_drag==0)itimes += skip_global*FlowDir;
+    if(timebar_drag==0){
+      itimes += skip_global*FlowDir;
+    }
     CheckTimeBound();
     IdleCB();
-
     return;
   }
   switch(iplot_state){
@@ -3545,7 +3541,7 @@ void UpdateFrame(float thisinterval, int *changetime, int *redisplay){
         }
         else{
           if(script_render_flag==0){
-            itimes+=FlowDir;
+            itimes += FlowDir;
           }
           else{
             itimes=script_itime;

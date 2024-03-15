@@ -1243,7 +1243,9 @@ SVEXTERN float rgb_part[4*MAXRGB];
 SVEXTERN float rgb_trans[4*MAXRGB];
 SVEXTERN float rgb_cad[MAXRGB][4];
 
-SVEXTERN float SVDECL(iso_transparency,30.5/255.0), SVDECL(*iso_colors,NULL), SVDECL(*iso_colorsbw,NULL);
+//keep comment until changes are merged
+//SVEXTERN float SVDECL(iso_transparency,30.5/255.0), SVDECL(*iso_colors,NULL), SVDECL(*iso_colorsbw,NULL);
+SVEXTERN float SVDECL(iso_transparency, 0.1196078), SVDECL(*iso_colors,NULL), SVDECL(*iso_colorsbw,NULL);
 SVEXTERN int glui_iso_colors[4], SVDECL(glui_iso_level,1), glui_iso_transparency;
 
 SVEXTERN float SVDECL(*rgb_ini,NULL);
@@ -1350,7 +1352,9 @@ SVEXTERN int SVDECL(nrooms,0),SVDECL(nzoneinfo,0), SVDECL(nfires,0);
 SVEXTERN float SVDECL(scene_aspect_ratio,1.0);
 
 SVEXTERN int SVDECL(fix_window_aspect, 0);
-SVEXTERN float SVDECL(window_aspect,640.0/480.0);
+//keep comment until changes are merged
+//SVEXTERN float SVDECL(window_aspect,640.0/480.0);
+SVEXTERN float SVDECL(window_aspect,1.333333);
 SVEXTERN int SVDECL(screenWidth,640), SVDECL(screenHeight,480);
 SVEXTERN int SVDECL(screenOriginX, 0), SVDECL(screenOriginY, 0);
 SVEXTERN int SVDECL(use_commandline_origin, 0);
@@ -1469,7 +1473,9 @@ SVEXTERN float shooter_uvw[3];
 #endif
 SVEXTERN float shooter_velx, shooter_vely, shooter_velz, shooter_time, shooter_time_max;
 SVEXTERN int SVDECL(shooter_cont_update,0),SVDECL(shooter_firstframe,0);
-SVEXTERN float SVDECL(shooter_u0,2.0), SVDECL(shooter_z0,1.0), SVDECL(shooter_p,1.0/7.0), SVDECL(shooter_v_inf,1.0);
+//keep comment until changes are merged
+//SVEXTERN float SVDECL(shooter_u0,2.0), SVDECL(shooter_z0,1.0), SVDECL(shooter_p,1.0/7.0), SVDECL(shooter_v_inf,1.0);
+SVEXTERN float SVDECL(shooter_u0,2.0), SVDECL(shooter_z0,1.0), SVDECL(shooter_p, 0.1428571), SVDECL(shooter_v_inf,1.0);
 SVEXTERN float shooter_velmag, shooter_veldir, shooter_duration, SVDECL(shooter_history,10.0);
 SVEXTERN int SVDECL(shooter_active,0);
 SVEXTERN int shooter_fps,shooter_vel_type, shooter_nparts, SVDECL(visShooter,0), showshooter, nshooter_frames, max_shooter_points;
