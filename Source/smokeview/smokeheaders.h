@@ -1148,7 +1148,6 @@ EXTERNCPP void ReadSMVOrig(void);
 EXTERNCPP void UpdateSMVDynamic(char *file);
 EXTERNCPP void ReadSMVDynamic(char *file);
 EXTERNCPP void SetInteriorBlockages(int flag);
-EXTERNCPP int GetTimeFrame(float time);
 
 EXTERNCPP int  STRCMP(const char *s1, const char *s2);
 EXTERNCPP void OutputAxisLabels(void);

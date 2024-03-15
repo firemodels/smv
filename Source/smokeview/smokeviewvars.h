@@ -2008,7 +2008,6 @@ SVEXTERN int nglobal_times, SVDECL(itimes,0), SVDECL(itime_save,-1), SVDECL(itim
 SVEXTERN float SVDECL(*global_times,NULL), SVDECL(*times_buffer, NULL), cputimes[20];
 SVEXTERN float SVDECL(global_tbegin, 1.0), SVDECL(global_tend, 0.0);
 SVEXTERN int SVDECL(ntimes_buffer, 0);
-SVEXTERN unsigned char SVDECL(*global_times_map, NULL);
 
 SVEXTERN int SVDECL(cpuframe,0);
 

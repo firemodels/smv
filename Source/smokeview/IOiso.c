@@ -479,6 +479,7 @@ FILE_SIZE ReadIsoGeom(int ifile, int load_flag, int *geom_frame_index, int *erro
       NewMemoryMemID((void **)&isoi->geom_nstatics,  ntimes_local*sizeof(int),       isoi->memory_id);
       NewMemoryMemID((void **)&isoi->geom_ndynamics, ntimes_local*sizeof(int),       isoi->memory_id);
       NewMemoryMemID((void **)&isoi->geom_times,     ntimes_local*sizeof(float),     isoi->memory_id);
+      NewMemoryMemID((void **)&isoi->geom_times_map, ntimes_local*sizeof(unsigned char), isoi->memory_id);
       NewMemoryMemID((void **)&isoi->geom_vals,      isoi->geom_nvals*sizeof(float), isoi->memory_id);
     }
 
@@ -488,6 +489,7 @@ FILE_SIZE ReadIsoGeom(int ifile, int load_flag, int *geom_frame_index, int *erro
     return_filesize += filesize;
     FREEMEMORY(isoi->geom_nstatics);
     FREEMEMORY(isoi->geom_times);
+    FREEMEMORY(isoi->geom_times_map);
     valptr = isoi->geom_vals;
     for(i = 0; i<ntimes_local; i++){
       geomlistdata *geomlisti;

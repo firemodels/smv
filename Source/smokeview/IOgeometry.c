@@ -2834,6 +2834,7 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
   FREEMEMORY(patchi->geom_vals);
   FREEMEMORY(patchi->geom_ivals);
   FREEMEMORY(patchi->geom_times);
+  FREEMEMORY(patchi->geom_times_map);
   if(load_flag==UNLOAD){
     plotstate = GetPlotState(DYNAMIC_PLOTS);
     if(patchi->boundary==1)UpdateBoundaryType();
@@ -2896,6 +2897,7 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
     NewMemory((void **)&patchi->geom_nstatics,             ntimes_local*sizeof(int));
     NewMemory((void **)&patchi->geom_ndynamics,            ntimes_local*sizeof(int));
     NewMemory((void **)&patchi->geom_times,                ntimes_local*sizeof(float));
+    NewMemory((void **)&patchi->geom_times_map,            ntimes_local*sizeof(unsigned char));
     NewMemory((void **)&patchi->geom_ivals_static_offset,  ntimes_local*sizeof(int));
     NewMemory((void **)&patchi->geom_ivals_dynamic_offset, ntimes_local*sizeof(int));
     NewMemory((void **)&patchi->geom_vals_static_offset,   ntimes_local*sizeof(int));
@@ -2918,6 +2920,8 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
   }
   filesize=GetGeomData(patchi->file, ntimes_local, nvals, patchi->geom_times,
     patchi->geom_nstatics, patchi->geom_ndynamics, patchi->geom_vals, time_frame, time_value, geom_offsets, &error);
+  MakeTimesMap(patchi->geom_times, patchi->geom_times_map, ntimes_local);
+
   return_filesize += filesize;
   if(error == 1){
     patchi->loaded = 0;

@@ -714,6 +714,32 @@ int GetItime(int n, int *timeslist, unsigned char *times_map, float *times, int 
   return istart;
 }
 
+/* ------------------ GetDataTimeFrame ------------------------ */
+
+int GetDataTimeFrame(float time, unsigned char *times_map, float *times, int ntimes){
+  int i, mini;
+  float tmin = -1.0;
+
+  mini = 0;
+  for(i = 0; i < ntimes; i++){
+    float tdiff;
+
+    if(times_map!=NULL&&times_map[i] == 0)continue;
+    tdiff = ABS(time - times[i]);
+    if(tmin < 0.0){
+      tmin = tdiff;
+      mini = i;
+    }
+    else{
+      if(tdiff < tmin){
+        tmin = tdiff;
+        mini = i;
+      }
+    }
+  }
+  return mini;
+}
+
 /* ------------------ SynchTimes ------------------------ */
 
 void SynchTimes(void){
@@ -731,7 +757,7 @@ void SynchTimes(void){
 
       tourj = tourinfo + j;
       if(tourj->display==0)continue;
-      tourj->timeslist[n]=GetItime(n,tourj->timeslist,NULL,tourj->path_times,tourj->ntimes);
+      tourj->timeslist[n] = GetDataTimeFrame(global_times[n], NULL, tourj->path_times,tourj->ntimes);
     }
 
   /* synchronize geometry times */
@@ -745,7 +771,7 @@ void SynchTimes(void){
       if(geomi->geomtype == GEOM_ISO&& geomi->block_number >= 0){
         times_map = meshinfo[geomi->block_number].iso_times_map;
       }
-      geomi->timeslist[n] = GetItime(n, geomi->timeslist, times_map, geomi->times, geomi->ntimes);
+      geomi->timeslist[n] = GetDataTimeFrame(global_times[n], times_map, geomi->times, geomi->ntimes);
     }
 
   /* synchronize particle times */
@@ -755,7 +781,7 @@ void SynchTimes(void){
 
       parti=partinfo+j;
       if(parti->loaded==0)continue;
-      parti->timeslist[n]=GetItime(n,parti->timeslist,parti->times_map,parti->times,parti->ntimes);
+      parti->timeslist[n] = GetDataTimeFrame(global_times[n], parti->times_map, parti->times,parti->ntimes);
     }
 
   /* synchronize shooter times */
@@ -783,10 +809,10 @@ void SynchTimes(void){
 
       sd = sliceinfo + slice_loaded_list[jj];
       if(sd->slice_filetype == SLICE_GEOM){
-        sd->patchgeom->geom_timeslist[n] = GetItime(n, sd->patchgeom->geom_timeslist, NULL,sd->patchgeom->geom_times, sd->ntimes);
+        sd->patchgeom->geom_timeslist[n] = GetDataTimeFrame(global_times[n], sd->patchgeom->geom_times_map , sd->patchgeom->geom_times, sd->ntimes);
       }
       else{
-        sd->timeslist[n] = GetItime(n, sd->timeslist, sd->times_map, sd->times, sd->ntimes);
+        sd->timeslist[n] = GetDataTimeFrame(global_times[n], sd->times_map, sd->times, sd->ntimes);
         assert(sd->times_map == NULL || sd->times_map[sd->timeslist[n]] != 0);
       }
     }
@@ -798,7 +824,7 @@ void SynchTimes(void){
       for(jj=0;jj<nsmoke3dinfo;jj++){
         smoke3di = smoke3dinfo + jj;
         if(smoke3di->loaded==0)continue;
-        smoke3di->timeslist[n]=GetItime(n,smoke3di->timeslist,smoke3di->times_map,smoke3di->times,smoke3di->ntimes);
+        smoke3di->timeslist[n] = GetDataTimeFrame(global_times[n], smoke3di->times_map, smoke3di->times,smoke3di->ntimes);
       }
     }
 
@@ -810,7 +836,7 @@ void SynchTimes(void){
       patchi = patchinfo + j;
       if(patchi->loaded==0)continue;
       if(patchi->structured == YES)continue;
-      patchi->geom_timeslist[n]=GetItime(n,patchi->geom_timeslist,NULL,patchi->geom_times,patchi->ngeom_times);
+      patchi->geom_timeslist[n] = GetDataTimeFrame(global_times[n], patchi->geom_times_map, patchi->geom_times,patchi->ngeom_times);
     }
     for(j=0;j<nmeshes;j++){
       patchdata *patchi;
@@ -820,7 +846,7 @@ void SynchTimes(void){
       if(meshi->patchfilenum<0||meshi->patch_times==NULL)continue;
       patchi=patchinfo+meshi->patchfilenum;
       if(patchi->structured == NO||patchi->loaded==0)continue;
-      meshi->patch_timeslist[n]=GetItime(n,meshi->patch_timeslist,meshi->patch_times_map,meshi->patch_times,meshi->npatch_times);
+      meshi->patch_timeslist[n] = GetDataTimeFrame(global_times[n], meshi->patch_times_map, meshi->patch_times,meshi->npatch_times);
     }
 
   /* synchronize isosurface times */
@@ -830,7 +856,7 @@ void SynchTimes(void){
 
       meshi=meshinfo+igrid;
       if(meshi->iso_times==NULL)continue;
-      meshi->iso_timeslist[n]=GetItime(n,meshi->iso_timeslist,NULL,meshi->iso_times,meshi->niso_times);
+      meshi->iso_timeslist[n] = GetDataTimeFrame(global_times[n], meshi->iso_times_map, meshi->iso_times,meshi->niso_times);
     }
 
   /* synchronize volume render times */
@@ -845,13 +871,13 @@ void SynchTimes(void){
         if(vr->smokeslice==NULL)continue;
         if(vr->loaded==0||vr->display==0)continue;
         if(vr->times==NULL)continue;
-        vr->timeslist[n]=GetItime(n,vr->timeslist,NULL,vr->times,vr->ntimes);
+        vr->timeslist[n] = GetDataTimeFrame(global_times[n], vr->smokeslice->times_map, vr->times,vr->ntimes);
       }
     }
     /* synchronize zone times */
 
     if(showzone==1){
-      zone_timeslist[n]=GetItime(n,zone_timeslist,NULL,zone_times,nzone_times);
+      zone_timeslist[n] = GetDataTimeFrame(global_times[n], NULL, zone_times,nzone_times);
     }
 
   }
@@ -1095,9 +1121,20 @@ void MergeGlobalTimes(float *time_in, int ntimes_in){
     memcpy(global_times, time_in, ntimes_in*sizeof(float));
     nglobal_times = ntimes_in;
 
-    FREEMEMORY(global_times_map);
-    NewMemory((void **)&global_times_map, nglobal_times*sizeof(unsigned char));
-    MakeTimesMap(global_times, global_times_map, nglobal_times);
+    unsigned char *times_map = NULL;
+    NewMemory((void **)&times_map, nglobal_times*sizeof(unsigned char));
+    MakeTimesMap(global_times, times_map, nglobal_times);
+    int i,n;
+
+    n = 0;
+    for(i = 0; i < nglobal_times; i++){
+      if(times_map[i] == 1){
+        if(i != n)global_times[n] = global_times[i];
+        n++;
+      }
+    }
+    nglobal_times = n;
+    FREEMEMORY(times_map);
     return;
   }
 
@@ -1145,9 +1182,20 @@ void MergeGlobalTimes(float *time_in, int ntimes_in){
   memcpy(global_times, times_buffer, nbuffer*sizeof(float));
   nglobal_times = nbuffer;
 
-  FREEMEMORY(global_times_map);
-  NewMemory((void **)&global_times_map, nglobal_times*sizeof(unsigned char));
-  MakeTimesMap(global_times, global_times_map, nglobal_times);
+  unsigned char *times_map = NULL;
+  NewMemory((void **)&times_map, nglobal_times*sizeof(unsigned char));
+  MakeTimesMap(global_times, times_map, nglobal_times);
+  int n;
+
+  n = 0;
+  for(i = 0; i < nglobal_times; i++){
+    if(times_map[i] == 1){
+      if(i != n)global_times[n] = global_times[i];
+      n++;
+    }
+  }
+  nglobal_times = n;
+  FREEMEMORY(times_map);
 }
 
   /* ------------------ UpdateTimes ------------------------ */

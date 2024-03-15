@@ -70,7 +70,6 @@ void UpdateTimeLabels(void){
       itime_val = itimes;
     }
 
-    itime_val = GetTimeFrame(global_times[itime_val]);
     if(visFrameTimelabel==1){
       sprintf(framelabel, "Frame: %i", itime_val);
     }
@@ -84,7 +83,6 @@ void UpdateTimeLabels(void){
     int itime;
 
     itime = GetInterval(global_times[itimes], timeptr->vals, timeptr->nvals);
-    itime = GetTimeFrame(global_times[itime]);
     hrr = hrrptr->vals[itime];
     if(hrr<1.0){
       sprintf(hrrlabel,"HRR: %4.1f W",hrr*1000.0);
