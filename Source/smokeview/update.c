@@ -1124,7 +1124,7 @@ void MergeGlobalTimes(float *time_in, int ntimes_in){
     unsigned char *times_map = NULL;
     NewMemory((void **)&times_map, nglobal_times*sizeof(unsigned char));
     MakeTimesMap(global_times, times_map, nglobal_times);
-    int i,n;
+    int n;
 
     n = 0;
     for(i = 0; i < nglobal_times; i++){
