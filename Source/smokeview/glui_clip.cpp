@@ -267,7 +267,7 @@ extern "C" void GLUIClipSetup(int main_window){
     glui_clip->close();
     glui_clip=NULL;
   }
-  glui_clip = GLUI_Master.create_glui("Clipping",0,0,0);
+  glui_clip = GLUI_Master.create_glui("Clipping",0,screenX0,screenY0);
   glui_clip->hide();
 
   PANEL_clip = glui_clip->add_panel("",GLUI_PANEL_NONE);

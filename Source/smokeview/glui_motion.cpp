@@ -1140,7 +1140,7 @@ extern "C" void GLUIMotionSetup(int main_window){
     glui_motion->close();
     glui_motion=NULL;
   }
-  glui_motion = GLUI_Master.create_glui(_("Motion/View/Render"),0,0,0);
+  glui_motion = GLUI_Master.create_glui(_("Motion/View/Render"),0,screenX0,screenY0);
   glui_motion->hide();
 
   ROLLOUT_motion = glui_motion->add_rollout("Motion",false, MOTION_ROLLOUT, MVRRolloutCB);
