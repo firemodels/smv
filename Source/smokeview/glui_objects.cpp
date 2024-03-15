@@ -1795,7 +1795,7 @@ extern "C" void GLUIPlot2DSetup(int main_window){
   if((ncsvfileinfo>0&&have_ext==0)||(ncsvfileinfo>1&&have_ext==1)){
     int i;
 
-    glui_plot2d = GLUI_Master.create_glui("2D plots", 0, screenX0, screenY0);
+    glui_plot2d = GLUI_Master.create_glui("2D plots", 0, dialogX0, dialogY0);
     glui_plot2d->hide();
 
     PANEL_genplot = glui_plot2d->add_panel("", 0);
@@ -2023,7 +2023,7 @@ extern "C" void GLUIDeviceSetup(int main_window){
     glui_device->close();
     glui_device=NULL;
   }
-  glui_device = GLUI_Master.create_glui("Devices/Objects/2D plots",0,screenX0,screenY0);
+  glui_device = GLUI_Master.create_glui("Devices/Objects/2D plots",0,dialogX0,dialogY0);
   glui_device->hide();
 
   if(ndeviceinfo>0){
