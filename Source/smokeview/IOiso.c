@@ -203,6 +203,7 @@ void UnloadIso(meshdata *meshi){
   ib = isoinfo + meshi->isofilenum;
   FreeAllMemory(ib->memory_id);
   meshi->iso_times = NULL;
+  meshi->iso_times_map = NULL;
 
   UnloadIsoTrans();
 
