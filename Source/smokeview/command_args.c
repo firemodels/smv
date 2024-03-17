@@ -206,15 +206,28 @@ CommandlineArgs ParseCommandlineNew(int argc, char **argv, char *message,
       i++;
       sscanf(argv[i],"%f",&args.max_mem_GB);
       if(args.max_mem_GB<0.0)args.max_mem_GB = 0.0;
-    } else if(strcmp(argv[i], "-x0") == 0) {
+    } 
+    else if(strcmp(argv[i], "-x0") == 0 || strcmp(argv[i], "-screenX0") == 0) {
       args.have_x0 = true;
       i++;
       sscanf(argv[i],"%i",&args.x0);
-    } else if(strcmp(argv[i], "-y0") == 0) {
+    } 
+    else if(strcmp(argv[i], "-y0") == 0 || strcmp(argv[i], "-screenY0") == 0) {
       args.have_y0 = true;
       i++;
       sscanf(argv[i],"%i",&args.y0);
-    } else if (strcmp(argv[i], "-geominfo") == 0) {
+    } 
+    else if(strcmp(argv[i], "-X0") == 0 || strcmp(argv[i], "-dialogX0") == 0) {
+      args.have_X0 = true;
+      i++;
+      sscanf(argv[i], "%i", &args.X0);
+    }
+    else if(strcmp(argv[i], "-Y0") == 0 || strcmp(argv[i], "-dialogY0") == 0) {
+      args.have_Y0 = true;
+      i++;
+      sscanf(argv[i], "%i", &args.Y0);
+    }
+    else if (strcmp(argv[i], "-geominfo") == 0) {
       args.geominfo = true;
     } else if (strcmp(argv[i], "-fast") == 0) {
       args.fast = true;

@@ -3782,7 +3782,7 @@ void DrawVerticalColorbarRegLabels(void){
       vert_position = MIX2(i, nrgb - 2, vcolorbar_top_pos, vcolorbar_down_pos);
       if(iposition == i)continue;
       if(zoneflag == 1){
-        val = tttmin + (i - 1)*zonerange / (nrgb - 2);
+        val = tttmin + i*zonerange / (nrgb - 2);
       }
       else{
         val = colorvalueszone[i+1];

@@ -115,8 +115,14 @@ void Usage(char *prog,int option){
     PRINTF("%s\n", _(" -update_slice  - calculate slice file parameters"));
     PRINTF("%s\n", _(" -update        - equivalent to -update_bounds and -update_slice"));
     PRINTF("%s\n", _(" -update_ini case.ini - update case.ini to the current format"));
-    PRINTF("%s\n", _(" -x0 val - horizontal screen coordinate in pixels where window is place at startup"));
-    PRINTF("%s\n", _(" -y0 val - vertical screen coordinate in pixels where window is place at startup"));
+    PRINTF("%s\n", _(" -x0 val - horizontal screen coordinate in pixels where smokeview window is place at startup"));
+    PRINTF("%s\n", _(" -y0 val - vertical screen coordinate in pixels where smokeview window is place at startup"));
+    PRINTF("%s\n", _(" -X0 val - horizontal screen coordinate in pixels where dialog windows are placed when opened"));
+    PRINTF("%s\n", _(" -Y0 val - vertical screen coordinate in pixels where dialog windows are placed when opened"));
+    PRINTF("%s\n", _(" -screenX0 val - same as -x0 val"));
+    PRINTF("%s\n", _(" -screenY0 val - same as -y0 val"));
+    PRINTF("%s\n", _(" -dialogX0 val - same as -X0 val"));
+    PRINTF("%s\n", _(" -dialogY0 val - same as -Y0 val"));
     PRINTF("%s\n", _(" -volrender     - generate images of volume rendered smoke and fire"));
     UsageCommon(HELP_ALL);
   }
@@ -191,6 +197,14 @@ char *ProcessCommandLine(CommandlineArgs *args) {
   if(args->have_y0){
     use_commandline_origin = 1;
     screenY0 = args->y0;
+  }
+  if(args->have_X0){
+    dialogX0 = args->X0;
+    have_dialogX0 = 1;
+  }
+  if(args->have_Y0){
+    dialogY0 = args->Y0;
+    have_dialogY0 = 1;
   }
   if (args->csv) {
     update_csv_load = 1;
