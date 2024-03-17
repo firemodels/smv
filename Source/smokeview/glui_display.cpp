@@ -243,9 +243,6 @@ GLUI_Button *BUTTON_label_4=NULL;
 #define LABELS_REFRESH_RATE   37
 #endif
 #define LABELS_BOUNDING_BOX   38
-#define LABELS_show_screen_origin 39
-#define LABELS_save_screen_origin 40
-#define LABELS_reset_screen_origin 41
 
 #define LABELS_HMS 18
 #define SAVE_SETTINGS_DISPLAY 99
@@ -675,7 +672,7 @@ extern "C" void GLUIDisplaySetup(int main_window){
     glui_labels->close();
     glui_labels=NULL;
   }
-  glui_labels = GLUI_Master.create_glui("Display",0,0,0);
+  glui_labels = GLUI_Master.create_glui("Display",0,dialogX0,dialogY0);
   glui_labels->hide();
 
   // -------------- General Settings -------------------
@@ -701,11 +698,6 @@ extern "C" void GLUIDisplaySetup(int main_window){
 #ifdef pp_memstatus
   CHECKBOX_labels_availmemory = glui_labels->add_checkbox_to_panel(PANEL_gen1, _("Memory load"), &visAvailmemory, LABELS_label, GLUILabelsCB);
 #endif
-
-  PANEL_screen = glui_labels->add_panel_to_panel(PANEL_gen1, "Screen");
-  glui_labels->add_button_to_panel(PANEL_screen,_("Show origin"), LABELS_show_screen_origin, GLUILabelsCB);
-  glui_labels->add_button_to_panel(PANEL_screen,_("Save origin"), LABELS_save_screen_origin, GLUILabelsCB);
-  glui_labels->add_button_to_panel(PANEL_screen,_("Reset origin to (0,0)"), LABELS_reset_screen_origin, GLUILabelsCB);
 
   glui_labels->add_column_to_panel(PANEL_gen1, false);
 
@@ -1155,15 +1147,6 @@ extern "C" void GLUIUpdateGeomBoundingBox(void){
 extern "C" void GLUILabelsCB(int var){
   updatemenu=1;
   switch(var){
-    case LABELS_show_screen_origin:  
-      printf("screen origin: (%i, %i)\n", (int)glutGet((GLenum)GLUT_WINDOW_X), (int)glutGet((GLenum)GLUT_WINDOW_Y));
-      break;
-    case LABELS_save_screen_origin:
-      SaveScreenOrigin((int)glutGet((GLenum)GLUT_WINDOW_X), (int)glutGet((GLenum)GLUT_WINDOW_Y));
-      break;
-    case LABELS_reset_screen_origin:
-      SaveScreenOrigin(0, 0);
-      break;
     case LABELS_BOUNDING_BOX:
       updatemenu = 1;
       break;

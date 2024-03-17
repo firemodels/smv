@@ -125,6 +125,8 @@ typedef struct CommandlineArgs {
   /// @brief initial screen coordinates
   bool have_x0, have_y0;
   int x0, y0;
+  bool have_X0, have_Y0;
+  int X0, Y0;
 } CommandlineArgs;
 
 enum CommandLineError {

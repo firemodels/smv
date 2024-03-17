@@ -980,7 +980,7 @@ extern "C" void GLUIColorbarSetup(int main_window){
     glui_colorbar->close();
     glui_colorbar=NULL;
   }
-  glui_colorbar = GLUI_Master.create_glui(_("Edit Colorbar"),0,0,0);
+  glui_colorbar = GLUI_Master.create_glui(_("Edit Colorbar"),0,dialogX0,dialogY0);
   if(showcolorbar_dialog==0)glui_colorbar->hide();
 
   PANEL_cb_select = glui_colorbar->add_panel(_("Colorbar"));

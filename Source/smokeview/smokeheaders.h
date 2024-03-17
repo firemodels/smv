@@ -323,9 +323,6 @@ EXTERNCPP void SetupPlot2DUnitData(void);
 
 EXTERNCPP void TimeAveragePlot2DData(float *times, float *vals, float *vals_avg, int nvals, float time_interval);
 
-EXTERNCPP void SaveScreenOrigin(int x, int y);
-EXTERNCPP int GetScreenOrigin(int *x, int *y);
-
 EXTERNCPP void SetHVACInfo(void);
 EXTERNCPP void DrawHVACS(void);
 EXTERNCPP hvacnodedata *GetHVACNode(hvacdata *hvaci, int node_id);

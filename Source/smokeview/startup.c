@@ -498,8 +498,9 @@ void SetupGlut(int argc, char **argv){
     if(verbose_output==1)PRINTF("%s",_("initializing Smokeview graphics window - "));
 #endif
     glutInitWindowSize(screenWidth, screenHeight);
-    if(use_commandline_origin == 0)GetScreenOrigin(&screenOriginX, &screenOriginY);
-    glutInitWindowPosition(screenOriginX, screenOriginY);
+    if(have_dialogX0 == 0)dialogX0 = screenX0;
+    if(have_dialogY0 == 0)dialogY0 = screenY0;
+    glutInitWindowPosition(screenX0, screenY0);
 #ifdef _DEBUG
     if(verbose_output==1)PRINTF("%s\n",_("initialized"));
 #endif

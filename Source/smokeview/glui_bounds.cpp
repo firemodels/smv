@@ -4418,7 +4418,7 @@ extern "C" void GLUIBoundsSetup(int main_window){
     glui_bounds=NULL;
   }
   overwrite_all=0;
-  glui_bounds = GLUI_Master.create_glui( "Files/Data/Coloring",0,0,0 );
+  glui_bounds = GLUI_Master.create_glui( "Files/Data/Coloring",0,dialogX0,dialogY0);
   glui_bounds->hide();
 
   ROLLOUT_files = glui_bounds->add_rollout("Files", false);
