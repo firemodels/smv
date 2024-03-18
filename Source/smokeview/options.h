@@ -11,7 +11,7 @@
 
 #define pp_GBND             // use .gbnd files
 
-#define pp_OSX_1X         // use -1x option by default on macs
+//#define pp_OSX_1X         // use -1x option by default on macs
 
 //#define pp_SLICE_MENU       // make slice menu formation consistent (sort step, build step)
 //#define pp_SLICE_MENU_DEBUG // output slice menu infoo to casename_sliceinfo.csv
