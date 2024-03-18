@@ -51,6 +51,12 @@ CommandlineArgs ParseCommandlineNew(int argc, char **argv, char *message,
     strcpy(args.prog, argv[0]);
   }
   int i;
+#ifdef pp_OSX_1X
+#ifdef pp_OSX_HIGHRES
+  args.x1 = true;
+  args.x2 = false;
+#endif
+#endif
   for (i = 1; i < argc; i++) {
     if (strcmp(argv[i], "-ini") == 0) {
       args.ini = true;
@@ -65,7 +71,9 @@ CommandlineArgs ParseCommandlineNew(int argc, char **argv, char *message,
 #ifdef pp_OSX_HIGHRES
     else if (strcmp(argv[i], "-1x") == 0) {
       args.x1 = true;
+      args.x2 = false;
     } else if (strcmp(argv[i], "-2x") == 0) {
+      args.x1 = false;
       args.x2 = true;
     }
 #endif
