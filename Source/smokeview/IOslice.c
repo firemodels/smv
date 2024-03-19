@@ -6379,8 +6379,11 @@ void DrawVolSliceTexture(const slicedata *sd, int is1, int is2, int js1, int js2
   zplt = meshi->zplt;
   if(sd->volslice == 1){
     plotx = meshi->iplotx_all[iplotx_all];
+    if(plotx>=0)plotx = CLAMP(plotx, sd->iis1, sd->iis2);
     ploty = meshi->iploty_all[iploty_all];
+    if(ploty>=0)ploty = CLAMP(ploty, sd->jjs1, sd->jjs2);
     plotz = meshi->iplotz_all[iplotz_all];
+    if(plotz>=0)plotz = CLAMP(plotz, sd->kks1, sd->kks2);
   }
   else{
     plotx = is1;
@@ -9896,11 +9899,17 @@ void SortSlices(void){
         int plotx, ploty, plotz;
 
         plotx = meshi->iplotx_all[iplotx_all];
-        ploty = meshi->iploty_all[iploty_all];
-        plotz = meshi->iplotz_all[iplotz_all];
+        if(plotx>=0)plotx = CLAMP(plotx, slicej->iis1, slicej->iis2);
         slicej->plotx = plotx;
+
+        ploty = meshi->iploty_all[iploty_all];
+        if(ploty >= 0)ploty = CLAMP(ploty, slicej->jjs1, slicej->jjs2);
         slicej->ploty = ploty;
+
+        plotz = meshi->iplotz_all[iplotz_all];
+        if(plotz >= 0)plotz = CLAMP(plotz, slicej->kks1, slicej->kks2);
         slicej->plotz = plotz;
+
         if(plotx >= 0 && visx_all == 1)slicex0[nx++] = slicej;
         if(ploty >= 0 && visy_all == 1)slicey0[ny++] = slicej;
         if(plotz >= 0 && visz_all == 1)slicez0[nz++] = slicej;
