@@ -13916,6 +13916,11 @@ int ReadIni2(char *inifile, int localfile){
       ONEORZERO(show_tracers_always);
       continue;
     }
+    if(MatchINI(buffer, "PARTSKIP") == 1){
+      fgets(buffer, 255, stream);
+      sscanf(buffer, "%i", &partskip);
+      partskip = MAX(partskip, 1);
+    }
     if(MatchINI(buffer, "PART5COLOR") == 1){
       for(i = 0; i<npart5prop; i++){
         partpropdata *propi;
@@ -16277,6 +16282,8 @@ void WriteIniLocal(FILE *fileout){
       fprintf(fileout, " %i\n", partclassj->vis_type);
     }
   }
+  fprintf(fileout, "PARTSKIP\n");
+  fprintf(fileout, " %i\n", partskip);
 
   if(npropinfo>0){
     fprintf(fileout, "PROPINDEX\n");
