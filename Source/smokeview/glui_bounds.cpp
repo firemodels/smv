@@ -2626,6 +2626,7 @@ GLUI_Panel *PANEL_slice_plot2dd = NULL;;
 GLUI_Panel *PANEL_slice_plot2de = NULL;;
 GLUI_Panel *PANEL_slice_plot2df = NULL;;
 
+GLUI_Spinner *SPINNER_partskip = NULL;
 GLUI_Spinner *SPINNER_sliceval_ndigits = NULL;
 GLUI_Spinner *SPINNER_n_part_threads = NULL;
 GLUI_Spinner *SPINNER_iso_outline_ioffset = NULL;
@@ -4833,14 +4834,16 @@ extern "C" void GLUIBoundsSetup(int main_window){
     PANEL_partread=glui_bounds->add_panel_to_panel(ROLLOUT_particle_settings,_("Particle loading"));
     CHECKBOX_partfast = glui_bounds->add_checkbox_to_panel(PANEL_partread, _("Fast loading"), &partfast, PARTFAST, PartBoundCB);
     CHECKBOX_use_partload_threads = glui_bounds->add_checkbox_to_panel(PANEL_partread, _("Parallel loading"), &use_partload_threads);
-    SPINNER_n_part_threads = glui_bounds->add_spinner_to_panel(PANEL_partread, _("Files loaded at once"), GLUI_SPINNER_INT, &n_partload_threads);
+    SPINNER_n_part_threads = glui_bounds->add_spinner_to_panel(PANEL_partread, _("Files loaded at once:"), GLUI_SPINNER_INT, &n_partload_threads);
     if(npartinfo>1){
       SPINNER_n_part_threads->set_int_limits(1,MIN(npartinfo,MAX_THREADS));
     }
     else{
       SPINNER_n_part_threads->set_int_limits(1,1);
     }
+    SPINNER_partskip = glui_bounds->add_spinner_to_panel(PANEL_partread, _("Particle draw skip:"), GLUI_SPINNER_INT, &partskip, PARTSKIP, PartBoundCB);
     PartBoundCB(PARTFAST);
+    PartBoundCB(PARTSKIP);
   }
   PartBoundCB(FILETYPE_INDEX);
 
@@ -5987,6 +5990,12 @@ void PartBoundCB(int var){
       streak5show=1;
     }
     updatemenu=1;
+    break;
+  case PARTSKIP:
+    if(partskip < 1){
+      partskip = 1;
+      if(SPINNER_partskip!=NULL)SPINNER_partskip->set_float_val(partskip);
+    }
     break;
   case TRACERS:
   case PARTFAST:

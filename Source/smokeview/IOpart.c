@@ -292,7 +292,7 @@ void DrawPart(const partdata *parti){
               glBegin(GL_POINTS);
               if(show_default == 1){
                 glColor4fv(datacopy->partclassbase->rgb);
-                for(j = 0;j < datacopy->npoints;j++){
+                for(j = 0;j < datacopy->npoints;j+=partskip){
                   if(vis[j] == 1){
                     glVertex3f(xplts[sx[j]], yplts[sy[j]], zplts[sz[j]]);
                   }
@@ -302,7 +302,7 @@ void DrawPart(const partdata *parti){
                 float *rvals;
 
                 rvals = datacopy->rvals+itype*datacopy->npoints;
-                for(j = 0;j < datacopy->npoints;j++){
+                for(j = 0;j < datacopy->npoints;j+=partskip){
                   if(vis[j] == 1){
                     int colorj;
                     float rval;
@@ -321,7 +321,7 @@ void DrawPart(const partdata *parti){
             // *** draw particles using smokeview object
 
             if(datacopy->partclassbase->vis_type == PART_SMV_DEVICE){
-              for(j = 0;j < datacopy->npoints;j++){
+              for(j = 0;j < datacopy->npoints;j+=partskip){
                 float *colorptr;
 
                 if(vis[j] != 1)continue;
@@ -382,7 +382,7 @@ void DrawPart(const partdata *parti){
               glBegin(GL_LINES);
               if(show_default == 1){
                 glColor4fv(datacopy->partclassbase->rgb);
-                for(j = 0;j < datacopy->npoints;j++){
+                for(j = 0;j < datacopy->npoints;j+=partskip){
                   if(vis[j] == 1){
                     if(flag == 1){
                       dx = dxv[j];
@@ -396,7 +396,7 @@ void DrawPart(const partdata *parti){
               }
               else{
                 color = datacopy->irvals + itype*datacopy->npoints;
-                for(j = 0;j < datacopy->npoints;j++){
+                for(j = 0;j < datacopy->npoints;j+=partskip){
                   if(vis[j] == 1){
                     glColor4fv(rgb_full[color[j]]);
                     if(flag == 1){
@@ -416,7 +416,7 @@ void DrawPart(const partdata *parti){
             glBegin(GL_POINTS);
             if(show_default == 1){
               glColor4fv(datacopy->partclassbase->rgb);
-              for(j = 0;j < datacopy->npoints;j++){
+              for(j = 0;j < datacopy->npoints;j+=partskip){
                 float zoffset;
                 float xx, yy, zz;
                 int loc;
@@ -431,7 +431,7 @@ void DrawPart(const partdata *parti){
             }
             else{
               color = datacopy->irvals + itype*datacopy->npoints;
-              for(j = 0;j < datacopy->npoints;j++){
+              for(j = 0;j < datacopy->npoints;j+=partskip){
                 if(vis[j] == 1){
                   glColor4fv(rgb_full[color[j]]);
                   glVertex3f(xplts[sx[j]], yplts[sy[j]], zplts[sz[j]]);
@@ -495,7 +495,7 @@ void DrawPart(const partdata *parti){
         glColor4fv(colorptr);
 
         glLineWidth(streaklinewidth);
-        for(j = 0;j < datacopy->npoints;j++){
+        for(j = 0;j < datacopy->npoints;j+=partskip){
           int tagval;
 
           tagval = datacopy->tags[j];
@@ -523,7 +523,7 @@ void DrawPart(const partdata *parti){
 
         // draw the streak line
 
-        for(j = 0;j < datacopy->npoints;j++){
+        for(j = 0;j < datacopy->npoints;j+=partskip){
           int tagval;
 
           tagval = datacopy->tags[j];
