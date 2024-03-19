@@ -1992,7 +1992,7 @@ SVEXTERN float start_xyz0[3];
 SVEXTERN int SVDECL(glui_move_mode,-1);
 
 SVEXTERN float SVDECL(timeoffset,0.0);
-SVEXTERN int npartpoints, npartframes;
+SVEXTERN int npartpoints, npartframes, SVDECL(partskip,1);
 SVEXTERN float xslicemid, yslicemid, zslicemid;
 SVEXTERN float delx;
 SVEXTERN float delz;
