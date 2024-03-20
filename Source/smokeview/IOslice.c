@@ -3072,8 +3072,9 @@ void GetSliceParams(sliceparmdata *sp){
   int error;
 
   int build_cache=0;
-  FILE *stream;
+  FILE *stream=NULL;
 
+#ifdef pp_SINFO
   if(IfFirstLineBlank(sliceinfo_filename)==1){
     build_cache=1;
     stream=fopen(sliceinfo_filename,"w");
@@ -3082,6 +3083,9 @@ void GetSliceParams(sliceparmdata *sp){
     build_cache=0;
     stream=fopen(sliceinfo_filename,"r");
   }
+#else
+  build_cache=1;
+#endif
 
   INIT_PRINT_TIMER(timer_getsliceparams1);
   for(i=0;i<sp->nsliceinfo;i++){
@@ -3135,7 +3139,9 @@ void GetSliceParams(sliceparmdata *sp){
         nk = ks2+1-ks1;
         sd->volslice = volslice;
         error = 0;
+#ifdef pp_SINFO
         if(stream!=NULL&&doit_anyway==0)fprintf(stream,"%i %i %i %i %i %i %i %i %i %i %i\n",sd->seq_id,is1,is2,js1,js2,ks1,ks2,ni,nj,nk,sd->volslice);
+#endif
       }
     }
     else if(sd->compression_type!=UNCOMPRESSED){
