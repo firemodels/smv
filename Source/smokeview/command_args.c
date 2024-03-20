@@ -51,6 +51,12 @@ CommandlineArgs ParseCommandlineNew(int argc, char **argv, char *message,
     strcpy(args.prog, argv[0]);
   }
   int i;
+#ifdef pp_OSX_1X
+#ifdef pp_OSX_HIGHRES
+  args.x1 = true;
+  args.x2 = false;
+#endif
+#endif
   for (i = 1; i < argc; i++) {
     if (strcmp(argv[i], "-ini") == 0) {
       args.ini = true;
@@ -65,7 +71,9 @@ CommandlineArgs ParseCommandlineNew(int argc, char **argv, char *message,
 #ifdef pp_OSX_HIGHRES
     else if (strcmp(argv[i], "-1x") == 0) {
       args.x1 = true;
+      args.x2 = false;
     } else if (strcmp(argv[i], "-2x") == 0) {
+      args.x1 = false;
       args.x2 = true;
     }
 #endif
@@ -210,15 +218,28 @@ CommandlineArgs ParseCommandlineNew(int argc, char **argv, char *message,
       i++;
       sscanf(argv[i],"%f",&args.max_mem_GB);
       if(args.max_mem_GB<0.0)args.max_mem_GB = 0.0;
-    } else if(strcmp(argv[i], "-x0") == 0) {
+    } 
+    else if(strcmp(argv[i], "-x0") == 0) {
       args.have_x0 = true;
       i++;
       sscanf(argv[i],"%i",&args.x0);
-    } else if(strcmp(argv[i], "-y0") == 0) {
+    } 
+    else if(strcmp(argv[i], "-y0") == 0) {
       args.have_y0 = true;
       i++;
       sscanf(argv[i],"%i",&args.y0);
-    } else if (strcmp(argv[i], "-geominfo") == 0) {
+    } 
+    else if(strcmp(argv[i], "-X0") == 0) {
+      args.have_X0 = true;
+      i++;
+      sscanf(argv[i], "%i", &args.X0);
+    }
+    else if(strcmp(argv[i], "-Y0") == 0) {
+      args.have_Y0 = true;
+      i++;
+      sscanf(argv[i], "%i", &args.Y0);
+    }
+    else if (strcmp(argv[i], "-geominfo") == 0) {
       args.geominfo = true;
     } else if (strcmp(argv[i], "-fast") == 0) {
       args.fast = true;

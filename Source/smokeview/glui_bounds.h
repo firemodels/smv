@@ -48,6 +48,7 @@
 #define HIDEPATCHSURFACE 25
 #define DATA_transparent 26
 #define SET_GLOBAL_BOUNDS 27
+#define PARTSKIP 28
 #define UNLOAD_QDATA 203
 #define SET_TIME 204
 #define TBOUNDS 205

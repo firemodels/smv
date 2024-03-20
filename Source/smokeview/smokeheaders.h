@@ -323,9 +323,6 @@ EXTERNCPP void SetupPlot2DUnitData(void);
 
 EXTERNCPP void TimeAveragePlot2DData(float *times, float *vals, float *vals_avg, int nvals, float time_interval);
 
-EXTERNCPP void SaveScreenOrigin(int x, int y);
-EXTERNCPP int GetScreenOrigin(int *x, int *y);
-
 EXTERNCPP void SetHVACInfo(void);
 EXTERNCPP void DrawHVACS(void);
 EXTERNCPP hvacnodedata *GetHVACNode(hvacdata *hvaci, int node_id);
@@ -1220,7 +1217,7 @@ EXTERNCPP void GetSliceColors(const float *t, int nt, unsigned char *it,
               char colorlabels[12][11],float colorvalues[12], float *tlevels2,
               int *extreme_min, int *extreme_max, int flag
               );
-EXTERNCPP int MakeTimesMap(float *times, unsigned char *times_map, int n);
+EXTERNCPP void MakeTimesMap(float *times, unsigned char *times_map, int n);
 EXTERNCPP meshdata *GetLoadedIsoMesh(void);
 EXTERNCPP void SetIsoLabels(float smin, float smax,
                     isodata *sd, int *errorcode);

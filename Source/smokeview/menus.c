@@ -1873,50 +1873,6 @@ void GetNextViewLabel(char *label){
   }
 }
 
-/* ------------------ SaveScreenOrigin ------------------------ */
-
-void SaveScreenOrigin(int x, int y){
-  FILE *stream;
-
-  stream = fopen(smv_screenini, "w");
-  if(stream==NULL)return;
-  fprintf(stream, "%i %i", x, y);
-  fclose(stream);
-}
-
-/* ------------------ GetScreenOrigin ------------------------ */
-
-int GetScreenOrigin(int *x, int *y){
-  FILE *stream;
-  char buffer[255];
-
-  stream = fopen(smv_screenini, "r");
-  if(stream==NULL)return 0;
-  fgets(buffer, 255, stream);
-  sscanf(buffer, "%i %i", x, y);
-  fclose(stream);
-  return 1;
-}
-
-/* ------------------ ScreenMenu ------------------------ */
-
-void ScreenMenu(int value){
-  switch (value){
-    case 1:
-      printf("screen origin: (%i, %i)\n", (int)glutGet((GLenum)GLUT_WINDOW_X), (int)glutGet((GLenum)GLUT_WINDOW_Y));
-      break;
-    case 2:
-      SaveScreenOrigin((int)glutGet((GLenum)GLUT_WINDOW_X), (int)glutGet((GLenum)GLUT_WINDOW_Y));
-      break;
-    case 3:
-      SaveScreenOrigin(0, 0);
-      break;
-    default:
-      assert(FFALSE);
-      break;
-  }
-}
-
 /* ------------------ ResetMenu ------------------------ */
 
 void ResetMenu(int value){
@@ -8558,7 +8514,6 @@ static int smokecolorbars_submenu1 = 0, smokecolorbars_submenu2 = 0, smokecolorb
 static int smokecolorbars_submenu4 = 0, smokecolorbars_submenu5 = 0, smokecolorbars_submenu6 = 0;
 static int smokecolorbars_submenu7 = 0;
 static int resetmenu=0, defaultviewmenu=0, frameratemenu=0, rendermenu=0, smokeviewinimenu=0, inisubmenu=0, resolutionmultipliermenu=0;
-static int screenmenu = 0;
 static int terrain_geom_showmenu = 0;
 static int render_resolutionmenu=0, render_filetypemenu=0, render_filesuffixmenu=0, render_skipmenu=0;
 static int render_startmenu = 0;
@@ -10796,13 +10751,6 @@ static int menu_count=0;
     glutAddMenuEntry(line, ca->view_id);
   }
 
-  /* --------------------------------screen menu -------------------------- */
-
-  CREATEMENU(screenmenu, ScreenMenu);
-  glutAddMenuEntry("Show screen origin", 1);
-  glutAddMenuEntry("Save screen origin", 2);
-  glutAddMenuEntry("Reset screen origin", 3);
-
   /* --------------------------------reset menu -------------------------- */
 
   CREATEMENU(resetmenu,ResetMenu);
@@ -10900,7 +10848,6 @@ static int menu_count=0;
 
   GLUTADDSUBMENU(_("Viewpoints (default)"), defaultviewmenu);
   GLUTADDSUBMENU(_("Viewpoints (user)"), resetmenu);
-  GLUTADDSUBMENU(_("Screen"), screenmenu);
   glutAddMenuEntry("-", MENU_DUMMY);
   if(nsmoke3dloaded>0){
     showhide_data = 1;

@@ -203,6 +203,7 @@ void UnloadIso(meshdata *meshi){
   ib = isoinfo + meshi->isofilenum;
   FreeAllMemory(ib->memory_id);
   meshi->iso_times = NULL;
+  meshi->iso_times_map = NULL;
 
   UnloadIsoTrans();
 
@@ -479,6 +480,7 @@ FILE_SIZE ReadIsoGeom(int ifile, int load_flag, int *geom_frame_index, int *erro
       NewMemoryMemID((void **)&isoi->geom_nstatics,  ntimes_local*sizeof(int),       isoi->memory_id);
       NewMemoryMemID((void **)&isoi->geom_ndynamics, ntimes_local*sizeof(int),       isoi->memory_id);
       NewMemoryMemID((void **)&isoi->geom_times,     ntimes_local*sizeof(float),     isoi->memory_id);
+      NewMemoryMemID((void **)&isoi->geom_times_map, ntimes_local*sizeof(unsigned char), isoi->memory_id);
       NewMemoryMemID((void **)&isoi->geom_vals,      isoi->geom_nvals*sizeof(float), isoi->memory_id);
     }
 
@@ -488,6 +490,7 @@ FILE_SIZE ReadIsoGeom(int ifile, int load_flag, int *geom_frame_index, int *erro
     return_filesize += filesize;
     FREEMEMORY(isoi->geom_nstatics);
     FREEMEMORY(isoi->geom_times);
+    FREEMEMORY(isoi->geom_times_map);
     valptr = isoi->geom_vals;
     for(i = 0; i<ntimes_local; i++){
       geomlistdata *geomlisti;
@@ -521,7 +524,7 @@ FILE_SIZE ReadIsoGeom(int ifile, int load_flag, int *geom_frame_index, int *erro
     meshi->iso_times[i]=geomi->times[i];
     meshi->iso_times_map[i] = 1;
   }
-  isoi->have_restart = MakeTimesMap(meshi->iso_times, meshi->iso_times_map, geomi->ntimes);
+  MakeTimesMap(meshi->iso_times, meshi->iso_times_map, geomi->ntimes);
   meshi->nisolevels=geomi->nfloat_vals;
   if(
     NewMemoryMemID((void **)&meshi->showlevels, sizeof(int)*meshi->nisolevels, isoi->memory_id) == 0 ||

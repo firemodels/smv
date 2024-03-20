@@ -4943,6 +4943,7 @@ int ParseISOFProcess(bufferstreamdata *stream, char *buffer, int *iiso_in, int *
   isoi->geom_nstatics = NULL;
   isoi->geom_ndynamics = NULL;
   isoi->geom_times = NULL;
+  isoi->geom_times_map = NULL;
   isoi->geom_vals = NULL;
   isoi->get_isolevels = 0;
 
@@ -5437,6 +5438,7 @@ int ParseBNDFProcess(bufferstreamdata *stream, char *buffer, int *nn_patch_in, i
   patchi->geom_ndynamics = NULL;
   patchi->geom_nstatics = NULL;
   patchi->geom_times = NULL;
+  patchi->geom_times_map = NULL;
   patchi->geom_vals = NULL;
   patchi->geom_ivals = NULL;
   patchi->geom_nvals = 0;
@@ -13938,6 +13940,11 @@ int ReadIni2(char *inifile, int localfile){
       ONEORZERO(show_tracers_always);
       continue;
     }
+    if(MatchINI(buffer, "PARTSKIP") == 1){
+      fgets(buffer, 255, stream);
+      sscanf(buffer, "%i", &partskip);
+      partskip = MAX(partskip, 1);
+    }
     if(MatchINI(buffer, "PART5COLOR") == 1){
       for(i = 0; i<npart5prop; i++){
         partpropdata *propi;
@@ -16045,31 +16052,6 @@ int ReadIni(char *inifile){
     UpdateTerrainOptions();
   }
 
-  // Read "smokeview.ini" from the user's config dir $HOME/.smokeview (Linux,
-  //  OSX) or %userprofile%\.smokeview (Windows)
-  {
-    int returnval;
-
-    returnval = ReadIni2(smokeviewini_filename, 0);
-    if(returnval==2)return 2;
-    if(returnval == 0 && readini_output==1){
-      if(verbose_output==1)PRINTF("- complete\n");
-    }
-  }
-
-  // Read "smokeview.ini" from the current dir
-  {
-    int returnval;
-    char smokeviewini_localfilename[100];
-
-    strcpy(smokeviewini_localfilename, "smokeview.ini");
-    returnval = ReadIni2(smokeviewini_localfilename, 0);
-    if(returnval==2)return 2;
-    if(returnval==0&&readini_output==1){
-      if(verbose_output==1)PRINTF("- complete\n");
-    }
-  }
-
   // Read "${fdsprefix}.ini" from the current directory
   if(caseini_filename!=NULL){
     int returnval;
@@ -16115,30 +16097,6 @@ int ReadIni(char *inifile){
     if(return_code==2)return 2;
 
     UpdateRGBColors(COLORBAR_INDEX_NONE);
-  }
-
-#ifdef SMOKEVIEW_CONFIG_PATH
-  {
-    // Read objects file pointed to be macro SMOKEVIEW_CONFIG_PATH. Useful
-    // when install paths differ per platform.
-    int returnval = ReadIni2(SMOKEVIEW_CONFIG_PATH, 0);
-    if (returnval == 2) return 2;
-    if (returnval == 0 && readini_output == 1) {
-      if (verbose_output == 1) PRINTF("- complete\n");
-    }
-  }
-#endif
-
-  // Read objects file from the envar SMOKEVIEW_CONFIG
-  {
-    char *envar_config_path = getenv("SMOKEVIEW_CONFIG");
-    if (envar_config_path != NULL) {
-      int returnval = ReadIni2(envar_config_path, 0);
-      if (returnval == 2) return 2;
-      if (returnval == 0 && readini_output == 1) {
-        if (verbose_output == 1) PRINTF("- complete\n");
-      }
-    }
   }
 
   if(use_graphics==1){
@@ -16299,6 +16257,8 @@ void WriteIniLocal(FILE *fileout){
       fprintf(fileout, " %i\n", partclassj->vis_type);
     }
   }
+  fprintf(fileout, "PARTSKIP\n");
+  fprintf(fileout, " %i\n", partskip);
 
   if(npropinfo>0){
     fprintf(fileout, "PROPINDEX\n");

@@ -3077,8 +3077,9 @@ void GetSliceParams(sliceparmdata *sp){
   int error;
 
   int build_cache=0;
-  FILE *stream;
+  FILE *stream=NULL;
 
+#ifdef pp_SINFO
   if(IfFirstLineBlank(sliceinfo_filename)==1){
     build_cache=1;
     stream=fopen(sliceinfo_filename,"w");
@@ -3087,6 +3088,9 @@ void GetSliceParams(sliceparmdata *sp){
     build_cache=0;
     stream=fopen(sliceinfo_filename,"r");
   }
+#else
+  build_cache=1;
+#endif
 
   INIT_PRINT_TIMER(timer_getsliceparams1);
   for(i=0;i<sp->nsliceinfo;i++){
@@ -3140,7 +3144,9 @@ void GetSliceParams(sliceparmdata *sp){
         nk = ks2+1-ks1;
         sd->volslice = volslice;
         error = 0;
+#ifdef pp_SINFO
         if(stream!=NULL&&doit_anyway==0)fprintf(stream,"%i %i %i %i %i %i %i %i %i %i %i\n",sd->seq_id,is1,is2,js1,js2,ks1,ks2,ni,nj,nk,sd->volslice);
+#endif
       }
     }
     else if(sd->compression_type!=UNCOMPRESSED){
@@ -4883,7 +4889,7 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
         *errorcode = 1;
         return 0;
       }
-      sd->have_restart = MakeTimesMap(sd->times, sd->times_map, sd->ntimes);
+      MakeTimesMap(sd->times, sd->times_map, sd->ntimes);
       file_size = sd->ncompressed;
       return_filesize = (FILE_SIZE)file_size;
     }
@@ -4918,7 +4924,7 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
             &qmin, &qmax, sd->qslicedata, sd->times, ntimes_slice_old, &sd->ntimes,
             tload_step, use_tload_begin, use_tload_end, tload_begin, tload_end
           );
-        sd->have_restart = MakeTimesMap(sd->times, sd->times_map, sd->ntimes);
+        MakeTimesMap(sd->times, sd->times_map, sd->ntimes);
         file_size = (int)return_filesize;
         sd->valmin_slice = qmin;
         sd->valmax_slice = qmax;
@@ -6391,8 +6397,11 @@ void DrawVolSliceTexture(const slicedata *sd, int is1, int is2, int js1, int js2
   zplt = meshi->zplt;
   if(sd->volslice == 1){
     plotx = meshi->iplotx_all[iplotx_all];
+    if(plotx>=0)plotx = CLAMP(plotx, sd->iis1, sd->iis2);
     ploty = meshi->iploty_all[iploty_all];
+    if(ploty>=0)ploty = CLAMP(ploty, sd->jjs1, sd->jjs2);
     plotz = meshi->iplotz_all[iplotz_all];
+    if(plotz>=0)plotz = CLAMP(plotz, sd->kks1, sd->kks2);
   }
   else{
     plotx = is1;
@@ -9908,11 +9917,17 @@ void SortSlices(void){
         int plotx, ploty, plotz;
 
         plotx = meshi->iplotx_all[iplotx_all];
-        ploty = meshi->iploty_all[iploty_all];
-        plotz = meshi->iplotz_all[iplotz_all];
+        if(plotx>=0)plotx = CLAMP(plotx, slicej->iis1, slicej->iis2);
         slicej->plotx = plotx;
+
+        ploty = meshi->iploty_all[iploty_all];
+        if(ploty >= 0)ploty = CLAMP(ploty, slicej->jjs1, slicej->jjs2);
         slicej->ploty = ploty;
+
+        plotz = meshi->iplotz_all[iplotz_all];
+        if(plotz >= 0)plotz = CLAMP(plotz, slicej->kks1, slicej->kks2);
         slicej->plotz = plotz;
+
         if(plotx >= 0 && visx_all == 1)slicex0[nx++] = slicej;
         if(ploty >= 0 && visy_all == 1)slicey0[ny++] = slicej;
         if(plotz >= 0 && visz_all == 1)slicez0[nz++] = slicej;
