@@ -119,10 +119,6 @@ void Usage(char *prog,int option){
     PRINTF("%s\n", _(" -y0 val - vertical screen coordinate in pixels where smokeview window is place at startup"));
     PRINTF("%s\n", _(" -X0 val - horizontal screen coordinate in pixels where dialog windows are placed when opened"));
     PRINTF("%s\n", _(" -Y0 val - vertical screen coordinate in pixels where dialog windows are placed when opened"));
-    PRINTF("%s\n", _(" -screenX0 val - same as -x0 val"));
-    PRINTF("%s\n", _(" -screenY0 val - same as -y0 val"));
-    PRINTF("%s\n", _(" -dialogX0 val - same as -X0 val"));
-    PRINTF("%s\n", _(" -dialogY0 val - same as -Y0 val"));
     PRINTF("%s\n", _(" -volrender     - generate images of volume rendered smoke and fire"));
     UsageCommon(HELP_ALL);
   }
