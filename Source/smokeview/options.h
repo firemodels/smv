@@ -15,6 +15,7 @@
 
 //#define pp_SLICE_MENU       // make slice menu formation consistent (sort step, build step)
 //#define pp_SLICE_MENU_DEBUG // output slice menu infoo to casename_sliceinfo.csv
+//#define pp_SINFO            // use .sinfo file to cache slice file info 
 
 //*** parallel file loading
 #define pp_SLICE_MULTI    // load slice files in parallel
