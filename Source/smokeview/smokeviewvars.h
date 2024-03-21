@@ -1747,7 +1747,7 @@ SVEXTERN float timebarcolor[4];
 SVEXTERN float redcolor[4];
 #endif
 
-SVEXTERN int SVDECL(loadfiles_at_startup,1);
+SVEXTERN int SVDECL(loadfiles_at_startup,0);
 
 SVEXTERN char SVDECL(*smokeview_scratchdir,NULL);
 
