@@ -8,7 +8,7 @@ set SCRIPT_DIR=%CD%
 cd ..
 set BASEDIR="%CD%"
 cd ..\..
-set SVNROOT="%CD%"
+set GITROOT="%CD%"
 cd %BASEDIR%
 
 set stopscript=0
@@ -19,9 +19,9 @@ if %stopscript% == 1 (
 )
 
 
-set QFDS=call %SVNROOT%\fds\Verification\scripts\checkfds.bat
-set RUNCFAST=call %SVNROOT%\fds\Verification\scripts\checkcfast.bat
-set RUNTFDS=call %SVNROOT%\fds\Verification\scripts\checkfds.bat
+set QFDS=call %GITROOT%\fds\Verification\scripts\checkfds.bat
+set RUNCFAST=call %GITROOT%\fds\Verification\scripts\checkcfast.bat
+set RUNTFDS=call %GITROOT%\fds\Verification\scripts\checkfds.bat
 
 if "%runsmvcases%" == "1" (
   call %SCRIPT_DIR%\SMV_Cases.bat

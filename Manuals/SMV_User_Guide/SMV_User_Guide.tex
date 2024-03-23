@@ -1446,7 +1446,7 @@ An isosurface file has the extension {\tt .iso}\ and is
 displayed by selecting an entry from the {\em Load/Unload>Isosurface}\ menu.
 
 Isosurfaces are specified in an FDS input file using the {\tt
-\&ISOF}\ keyword.  To specify an isosurface with constant 
+\&ISOF}\ keyword.  To specify an isosurface with constant
 30\degC\ and 100\degC\ temperature, as illustrated in Fig. \ref{figiso}, add
 the line:
 \begin{lstlisting}
@@ -1506,7 +1506,9 @@ generated from  particles.}
 \section{HVAC Networks}
 
 An HVAC network defined in an FDS input file may be visualized  by
-selecting the Show/Hide>HVAC menu item or selecting the Dialogs>View>HVAC dialog box.
+selecting the Show/Hide>HVAC menu item.  This feature is available when cases are run with FDS~6.8.0 or later.
+The view may be customized using the
+HVAC settings dialog box opened by selecting the Dialogs>View>HVAC~settings... menu item.
 Portions of the network may be shown or hidden by either selecting a network ID or
 by selecting a connection number.  All parts of an HVAC network that are connected
 are given the same connection number.  Two portions of an HVAC network

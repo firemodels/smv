@@ -3,11 +3,11 @@
 makemovie=/usr/local/bin/make_movie.sh
 
 CURDIR=`pwd`
-export SVNROOT=`pwd`/../../..
-cd $SVNROOT
-export SVNROOT=`pwd`
+export GITROOT=`pwd`/../../..
+cd $GITROOT
+export GITROOT=`pwd`
 
-OUTDIR=$SVNROOT/Manuals/SMV_Summary/movies2
+OUTDIR=$GITROOT/Manuals/SMV_Summary/movies2
 
 cd $CURDIR/..
 
