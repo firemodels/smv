@@ -163,21 +163,21 @@ VERSION=$PLATFORM${TEST}_64$DEBUG
 VERSION2=${PLATFORM}_64
 CURDIR=`pwd`
 cd ../../..
-export SVNROOT=`pwd`
+export GITROOT=`pwd`
 cd $CURDIR/..
 export BASEDIR=`pwd`
 
 if [ "$QUEUE" == "none" ]; then
   PREFIX=i
-  FDSEXE=$SVNROOT/fds/Build/${PREFIX}mpi_${COMPILER}_$PLATFORM/fds_${PREFIX}mpi_${COMPILER}_$PLATFORM
+  FDSEXE=$GITROOT/fds/Build/${PREFIX}mpi_${COMPILER}_$PLATFORM/fds_${PREFIX}mpi_${COMPILER}_$PLATFORM
   if [ ! -e $FDSEXE ]; then
     PREFIX=o  
-    FDSEXE=$SVNROOT/fds/Build/${PREFIX}mpi_${COMPILER}_$PLATFORM/fds_${PREFIX}mpi_${COMPILER}_$PLATFORM
+    FDSEXE=$GITROOT/fds/Build/${PREFIX}mpi_${COMPILER}_$PLATFORM/fds_${PREFIX}mpi_${COMPILER}_$PLATFORM
   fi
   if [ -e $FDSEXE ]; then
-    echo "" | $FDSEXE 2> $SVNROOT/smv/Manuals/SMV_User_Guide/SCRIPT_FIGURES/fds.version
+    echo "" | $FDSEXE 2> $GITROOT/smv/Manuals/SMV_User_Guide/SCRIPT_FIGURES/fds.version
   else
-    echo "FDS version: unknown" $SVNROOT/smv/Manuals/SMV_User_Guide/SCRIPT_FIGURES/fds.version
+    echo "FDS version: unknown" $GITROOT/smv/Manuals/SMV_User_Guide/SCRIPT_FIGURES/fds.version
   fi
 fi
 
@@ -192,17 +192,17 @@ if [ "$use_installed" == "1" ] ; then
     SMVBINDIR=${SMVBINDIR%/*}
   fi
 else
-  export SMV=$SVNROOT/smv/Build/smokeview/${COMPILER}_$VERSION2/smokeview_$VERSION
-  export SMOKEZIP=$SVNROOT/smv/Build/smokezip/${COMPILER}_$VERSION2/smokezip_$VERSION2
-  export SMOKEDIFF=$SVNROOT/smv/Build/smokediff/${COMPILER}_$VERSION2/smokediff_$VERSION2
-  export WIND2FDS=$SVNROOT/smv/Build/wind2fds/${COMPILER}_$VERSION2/wind2fds_$VERSION2
-  export BACKGROUND=$SVNROOT/smv/Build/background/${COMPILER}_$VERSION2/background_$VERSION2
-  export SMVBINDIR=$SVNROOT/bot/Bundlebot/smv/for_bundle
+  export SMV=$GITROOT/smv/Build/smokeview/${COMPILER}_$VERSION2/smokeview_$VERSION
+  export SMOKEZIP=$GITROOT/smv/Build/smokezip/${COMPILER}_$VERSION2/smokezip_$VERSION2
+  export SMOKEDIFF=$GITROOT/smv/Build/smokediff/${COMPILER}_$VERSION2/smokediff_$VERSION2
+  export WIND2FDS=$GITROOT/smv/Build/wind2fds/${COMPILER}_$VERSION2/wind2fds_$VERSION2
+  export BACKGROUND=$GITROOT/smv/Build/background/${COMPILER}_$VERSION2/background_$VERSION2
+  export SMVBINDIR=$GITROOT/bot/Bundlebot/smv/for_bundle
 fi
 
-SMOKEBOT=$SVNROOT/bot/Smokebot/run_smokebot.sh
-FIREBOT=$SVNROOT/bot/Firebot/run_firebot.sh
-CFASTBOT=$SVNROOT/bot/Cfastbot/run_cfastbot.sh
+SMOKEBOT=$GITROOT/bot/Smokebot/run_smokebot.sh
+FIREBOT=$GITROOT/bot/Firebot/run_firebot.sh
+CFASTBOT=$GITROOT/bot/Cfastbot/run_cfastbot.sh
 
 echo Generating smokeview images using:
 echo background: $BACKGROUND
@@ -212,17 +212,17 @@ echo smokezip  : $SMOKEZIP
 echo
 
 if [ "$QUEUE" == "none" ]; then
-  RUNSMV="$SVNROOT/smv/Utilities/Scripts/runsmv.sh"
+  RUNSMV="$GITROOT/smv/Utilities/Scripts/runsmv.sh"
 else
-  RUNSMV="$SVNROOT/smv/Utilities/Scripts/qsmv.sh -j $JOBPREFIX $use_installed -q $QUEUE"
+  RUNSMV="$GITROOT/smv/Utilities/Scripts/qsmv.sh -j $JOBPREFIX $use_installed -q $QUEUE"
 fi
 export QFDS=$RUNSMV
 export RUNCFAST=$RUNSMV
 
-export FDSUG=$SVNROOT/fds/Manuals/FDS_User_Guide
-export SMVUG=$SVNROOT/smv/Manuals/SMV_User_Guide
-export SMVVG=$SVNROOT/smv/Manuals/SMV_Verification_Guide
-SUMMARY=$SVNROOT/smv/Manuals/SMV_Summary
+export FDSUG=$GITROOT/fds/Manuals/FDS_User_Guide
+export SMVUG=$GITROOT/smv/Manuals/SMV_User_Guide
+export SMVVG=$GITROOT/smv/Manuals/SMV_Verification_Guide
+SUMMARY=$GITROOT/smv/Manuals/SMV_Summary
 
 is_file_installed $SMV
 is_file_installed $SMOKEZIP
@@ -245,7 +245,7 @@ $SMV -version > smokeview.version
 if [ "$RUN_SMV" == "1" ]; then
 
 # precompute FED slices
-  cd $SVNROOT/smv/Verification
+  cd $GITROOT/smv/Verification
   if [ "$QUEUE" == "none" ]; then
     $QFDS -d Visualization plume5c
   else
@@ -259,17 +259,17 @@ if [ "$RUN_SMV" == "1" ]; then
 
 # compute isosurface from particles
 
-  cd $SVNROOT/smv/Verification/Visualization
+  cd $GITROOT/smv/Verification/Visualization
   echo Compressing sphere_propanec case
   $SMOKEZIP sphere_propanec
 
 # compute isosurface from particles
 
-  cd $SVNROOT/smv/Verification/Visualization
+  cd $GITROOT/smv/Verification/Visualization
   echo Converting particles to isosurfaces in case plumeiso
   $SMOKEZIP -f -part2iso plumeiso
 
-  cd $SVNROOT/smv/Verification/WUI
+  cd $GITROOT/smv/Verification/WUI
   echo Converting particles to isosurfaces in case pine_tree
   if  [ -e pine_tree.smv ]; then
     $SMOKEZIP -f -part2iso pine_tree
@@ -277,7 +277,7 @@ if [ "$RUN_SMV" == "1" ]; then
 
 # difference plume5c and thouse5
 
-  cd $SVNROOT/smv/Verification/Visualization
+  cd $GITROOT/smv/Verification/Visualization
   echo Differencing cases plume5c and plume5cdelta
   $SMOKEDIFF -w -r plume5c plume5cdelta
   echo Differencing cases thouse5 and thouse5delta
@@ -285,10 +285,10 @@ if [ "$RUN_SMV" == "1" ]; then
 
   echo Generating images
 
-  cd $SVNROOT/smv/Verification
+  cd $GITROOT/smv/Verification
   scripts/SMV_Cases.sh
   scripts/RESTART_Cases.sh
-  cd $SVNROOT/smv/Verification
+  cd $GITROOT/smv/Verification
   scripts/SMV_DIFF_Cases.sh
   cd $CURDIDR
 
@@ -297,7 +297,7 @@ fi
 # generate geometry images
 
 if [ "$RUN_WUI" == "1" ] ; then
-  cd $SVNROOT/smv/Verification
+  cd $GITROOT/smv/Verification
   scripts/WUI_Cases.sh
 fi
 

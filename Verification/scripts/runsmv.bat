@@ -1,6 +1,6 @@
 @echo off
 
-call %SVNROOT%\fds\Utilities\Scripts\getopts.bat %*
+call %GITROOT%\fds\Utilities\Scripts\getopts.bat %*
 
 set fulldir=%BASEDIR%/%dir%
 
