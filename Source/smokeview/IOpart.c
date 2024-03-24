@@ -81,8 +81,8 @@ int GetPartColor(float **color_handle, part5data*datacopy, int show_default, int
   else{
     float *rvals;
 
-    color = datacopy->irvals + itype*datacopy->npoints;
-    rvals = datacopy->rvals + itype*datacopy->npoints;
+    color = datacopy->irvals + itype*datacopy->npoints_file;
+    rvals = datacopy->rvals + itype*datacopy->npoints_file;
     {
      int colorj;
       float rval;
@@ -136,7 +136,7 @@ void CopyDepVals(partclassdata *partclassi, part5data *datacopy, float *colorptr
     if(label != NULL)shortlabel = label->shortlabel;
     if(shortlabel != NULL)varprop = GetPartPropS(shortlabel);
     if(varprop != NULL){
-      var_type = datacopy->irvals + ii*datacopy->npoints;
+      var_type = datacopy->irvals + ii*datacopy->npoints_file;
       color_index = var_type[j];
       valmin = varprop->valmin;
       valmax = varprop->valmax;
@@ -199,10 +199,10 @@ int GetTagIndex(const partdata *partin_arg, part5data **datain_arg, int tagval_a
     }
     if(parti_local->loaded == 0 || parti_local->display == 0)continue;
 
-    if(data_local->npoints == 0)continue;
-    assert(data_local->npoints>0);
+    if(data_local->npoints_file == 0)continue;
+    assert(data_local->npoints_file>0);
     assert(data_local->sort_tags != NULL);
-    returnval_local = bsearch(&tagval_arg, data_local->sort_tags, data_local->npoints, 2 * sizeof(int), CompareTags);
+    returnval_local = bsearch(&tagval_arg, data_local->sort_tags, data_local->npoints_file, 2 * sizeof(int), CompareTags);
     if(returnval_local== NULL)continue;
     *datain_arg = data_local;
     return *(returnval_local+ 1);
@@ -265,7 +265,7 @@ void DrawPart(const partdata *parti){
         vistype = current_property->class_present[partclass_index];
         class_vis = current_property->class_vis[partclass_index];
 
-        if(vistype == 0 || datacopy->npoints <= 0 || (vistype == 1 && class_vis == 0)){
+        if(vistype == 0 || datacopy->npoints_file <= 0 || (vistype == 1 && class_vis == 0)){
           if(show_tracers_always == 0 || partclassi->ntypes > 2){
             datacopy++;
             continue;
@@ -292,7 +292,7 @@ void DrawPart(const partdata *parti){
               glBegin(GL_POINTS);
               if(show_default == 1){
                 glColor4fv(datacopy->partclassbase->rgb);
-                for(j = 0;j < datacopy->npoints;j+=partskip){
+                for(j = 0;j < datacopy->npoints_file;j+=partskip){
                   if(vis[j] == 1){
                     glVertex3f(xplts[sx[j]], yplts[sy[j]], zplts[sz[j]]);
                   }
@@ -301,8 +301,8 @@ void DrawPart(const partdata *parti){
               else{
                 float *rvals;
 
-                rvals = datacopy->rvals+itype*datacopy->npoints;
-                for(j = 0;j < datacopy->npoints;j+=partskip){
+                rvals = datacopy->rvals+itype*datacopy->npoints_file;
+                for(j = 0;j < datacopy->npoints_file;j+=partskip){
                   if(vis[j] == 1){
                     int colorj;
                     float rval;
@@ -321,7 +321,7 @@ void DrawPart(const partdata *parti){
             // *** draw particles using smokeview object
 
             if(datacopy->partclassbase->vis_type == PART_SMV_DEVICE){
-              for(j = 0;j < datacopy->npoints;j+=partskip){
+              for(j = 0;j < datacopy->npoints_file;j+=partskip){
                 float *colorptr;
 
                 if(vis[j] != 1)continue;
@@ -342,7 +342,7 @@ void DrawPart(const partdata *parti){
                 else{
                   float *rvals, rval;
 
-                  rvals = datacopy->rvals+itype*datacopy->npoints;
+                  rvals = datacopy->rvals+itype*datacopy->npoints_file;
                   rval = CLAMP(255.0*(rvals[j]-valmin)/(valmax-valmin), 0.0, 255.0);
                   colorptr = rgb_full[(int)rval];
                 }
@@ -382,7 +382,7 @@ void DrawPart(const partdata *parti){
               glBegin(GL_LINES);
               if(show_default == 1){
                 glColor4fv(datacopy->partclassbase->rgb);
-                for(j = 0;j < datacopy->npoints;j+=partskip){
+                for(j = 0;j < datacopy->npoints_file;j+=partskip){
                   if(vis[j] == 1){
                     if(flag == 1){
                       dx = dxv[j];
@@ -395,8 +395,8 @@ void DrawPart(const partdata *parti){
                 }
               }
               else{
-                color = datacopy->irvals + itype*datacopy->npoints;
-                for(j = 0;j < datacopy->npoints;j+=partskip){
+                color = datacopy->irvals + itype*datacopy->npoints_file;
+                for(j = 0;j < datacopy->npoints_file;j+=partskip){
                   if(vis[j] == 1){
                     glColor4fv(rgb_full[color[j]]);
                     if(flag == 1){
@@ -416,7 +416,7 @@ void DrawPart(const partdata *parti){
             glBegin(GL_POINTS);
             if(show_default == 1){
               glColor4fv(datacopy->partclassbase->rgb);
-              for(j = 0;j < datacopy->npoints;j+=partskip){
+              for(j = 0;j < datacopy->npoints_file;j+=partskip){
                 float zoffset;
                 float xx, yy, zz;
                 int loc;
@@ -430,8 +430,8 @@ void DrawPart(const partdata *parti){
               }
             }
             else{
-              color = datacopy->irvals + itype*datacopy->npoints;
-              for(j = 0;j < datacopy->npoints;j+=partskip){
+              color = datacopy->irvals + itype*datacopy->npoints_file;
+              for(j = 0;j < datacopy->npoints_file;j+=partskip){
                 if(vis[j] == 1){
                   glColor4fv(rgb_full[color[j]]);
                   glVertex3f(xplts[sx[j]], yplts[sy[j]], zplts[sz[j]]);
@@ -469,7 +469,7 @@ void DrawPart(const partdata *parti){
       vistype = current_property->class_present[partclass_index];
       class_vis = current_property->class_vis[partclass_index];
 
-      if(vistype == 0 || datacopy->npoints <= 0 || (vistype == 1 && class_vis == 0)){
+      if(vistype == 0 || datacopy->npoints_file <= 0 || (vistype == 1 && class_vis == 0)){
         if(show_tracers_always == 0 || partclassi->ntypes > 2){
           datacopy++;
           continue;
@@ -495,7 +495,7 @@ void DrawPart(const partdata *parti){
         glColor4fv(colorptr);
 
         glLineWidth(streaklinewidth);
-        for(j = 0;j < datacopy->npoints;j+=partskip){
+        for(j = 0;j < datacopy->npoints_file;j+=partskip){
           int tagval;
 
           tagval = datacopy->tags[j];
@@ -523,7 +523,7 @@ void DrawPart(const partdata *parti){
 
         // draw the streak line
 
-        for(j = 0;j < datacopy->npoints;j+=partskip){
+        for(j = 0;j < datacopy->npoints_file;j+=partskip){
           int tagval;
 
           tagval = datacopy->tags[j];
@@ -656,7 +656,7 @@ void UpdatePartVis(int first_frame_arg, partdata *parti_arg, part5data *datacopy
   int nparts_local;
   unsigned char *vis_part_local;
 
-  nparts_local = datacopy_arg->npoints;
+  nparts_local = datacopy_arg->npoints_file;
   vis_part_local = datacopy_arg->vis_part;
 
   if(first_frame_arg== 1){
@@ -1084,8 +1084,8 @@ void GetPartHistogramFile(partdata *parti){
             if(prop_id==NULL)continue;
 
             partprop_index = prop_id-part5propinfo;
-            UpdateHistogram(rvals, NULL,datacopy->npoints, parti->histograms[partprop_index]);
-            rvals += datacopy->npoints;
+            UpdateHistogram(rvals, NULL,datacopy->npoints_file, parti->histograms[partprop_index]);
+            rvals += datacopy->npoints_file;
           }
         }
         datacopy++;
@@ -1763,8 +1763,8 @@ int GetPartHeader(partdata *parti, int *nf_all, int option_arg, int print_option
           fail_local =1;
           break;
         }
-        sscanf(buffer_local,"%i",&datacopy_local->npoints);
-        npoints_local =datacopy_local->npoints;
+        sscanf(buffer_local,"%i",&datacopy_local->npoints_file);
+        npoints_local =datacopy_local->npoints_file;
         if(npoints_local>partclassj->maxpoints)partclassj->maxpoints=npoints_local;
         if(npoints_local>0){
           if(partfast==NO){
@@ -1789,7 +1789,7 @@ int GetPartHeader(partdata *parti, int *nf_all, int option_arg, int print_option
       for(j=0;j<parti->nclasses;j++){
         int npoints_local, ntypes_local;
 
-        npoints_local            = datacopy_local->npoints;
+        npoints_local            = datacopy_local->npoints_file;
         ntypes_local             = datacopy_local->partclassbase->ntypes;
         nall_points_types_local += npoints_local*ntypes_local;
         nall_points_local       += npoints_local;
@@ -1830,7 +1830,7 @@ int GetPartHeader(partdata *parti, int *nf_all, int option_arg, int print_option
         datacopy_local->sy        = parti->sy        +     nall_points_local;
         datacopy_local->sz        = parti->sz        +     nall_points_local;
 
-        npoints_local            = datacopy_local->npoints;
+        npoints_local            = datacopy_local->npoints_file;
         ntypes_local             = datacopy_local->partclassbase->ntypes;
         nall_points_types_local += npoints_local*ntypes_local;
         nall_points_local       += npoints_local;
