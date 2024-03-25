@@ -673,12 +673,27 @@ char **GetSortedFilenames(int file_type){
   return sorted_filenames;
 }
 
+/* ------------------ RmGbndFile ------------------------ */
+
+void RmGbndFile(int file_type){
+
+  ASSERT_BOUND_TYPE;
+  if(file_type == BOUND_SLICE){
+    UNLINK(slice_gbnd_filename);
+  }
+  else if(file_type==BOUND_PATCH){
+    UNLINK(patch_gbnd_filename);
+  }
+  else if(file_type == BOUND_PLOT3D){
+    UNLINK(plot3d_gbnd_filename);
+  }
+}
+
 /* ------------------ FopenGbndFile ------------------------ */
 
 FILE *FopenGbndFile(int file_type, char *mode){
   FILE *stream = NULL;
 
-#ifdef pp_GBND
   ASSERT_BOUND_TYPE;
   if(file_type == BOUND_SLICE){
     stream = fopen(slice_gbnd_filename, mode);
@@ -689,7 +704,6 @@ FILE *FopenGbndFile(int file_type, char *mode){
   else if(file_type == BOUND_PLOT3D){
     stream = fopen(plot3d_gbnd_filename, mode);
   }
-#endif
   return stream;
 }
 
@@ -931,6 +945,9 @@ void BoundsUpdateSetup(int file_type){
     SaveGlobalBoundsinfo(file_type, globalboundsinfo);
   }
   DefineGbndFilename(file_type);
+#ifdef pp_GBND
+  BoundsBnd2Gbnd(file_type);
+#else
   stream = FopenGbndFile(file_type, "r");
   FILE_SIZE size_temp;
   size_temp = last_size_for_bound;
@@ -945,6 +962,7 @@ void BoundsUpdateSetup(int file_type){
     fclose(stream);
     stream = NULL;
   }
+#endif
   stream = FopenGbndFile(file_type, "r");
   if(stream != NULL){
     for(;;){
@@ -986,6 +1004,9 @@ void BoundsUpdateSetup(int file_type){
       }
     }
     fclose(stream);
+#ifdef pp_GBND
+    RmGbndFile(file_type);
+#endif    
   }
 }
 

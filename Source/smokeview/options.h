@@ -9,7 +9,7 @@
 
 //#define pp_LUA                 // turn on LUA option
 
-#define pp_GBND             // use .gbnd files
+#define pp_GBND             // always update .gbnd files
 
 //#define pp_OSX_1X         // use -1x option by default on macs
 
