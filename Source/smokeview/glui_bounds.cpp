@@ -2626,7 +2626,7 @@ GLUI_Panel *PANEL_slice_plot2dd = NULL;;
 GLUI_Panel *PANEL_slice_plot2de = NULL;;
 GLUI_Panel *PANEL_slice_plot2df = NULL;;
 
-GLUI_Spinner *SPINNER_partskip = NULL;
+GLUI_Spinner *SPINNER_partdrawskip = NULL;
 GLUI_Spinner *SPINNER_sliceval_ndigits = NULL;
 GLUI_Spinner *SPINNER_n_part_threads = NULL;
 GLUI_Spinner *SPINNER_iso_outline_ioffset = NULL;
@@ -4841,7 +4841,7 @@ extern "C" void GLUIBoundsSetup(int main_window){
     else{
       SPINNER_n_part_threads->set_int_limits(1,1);
     }
-    SPINNER_partskip = glui_bounds->add_spinner_to_panel(PANEL_partread, _("Particle draw skip:"), GLUI_SPINNER_INT, &partskip, PARTSKIP, PartBoundCB);
+    SPINNER_partdrawskip = glui_bounds->add_spinner_to_panel(PANEL_partread, _("Draw skip:"), GLUI_SPINNER_INT, &partdrawskip, PARTSKIP, PartBoundCB);
     PartBoundCB(PARTFAST);
     PartBoundCB(PARTSKIP);
   }
@@ -5992,9 +5992,9 @@ void PartBoundCB(int var){
     updatemenu=1;
     break;
   case PARTSKIP:
-    if(partskip < 1){
-      partskip = 1;
-      if(SPINNER_partskip!=NULL)SPINNER_partskip->set_float_val(partskip);
+    if(partdrawskip < 1){
+      partdrawskip = 1;
+      if(SPINNER_partdrawskip!=NULL)SPINNER_partdrawskip->set_float_val(partdrawskip);
     }
     break;
   case TRACERS:
