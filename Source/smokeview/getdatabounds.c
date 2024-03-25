@@ -86,7 +86,7 @@ int GetGlobalPartBounds(int flag){
         parti->valmax_part[j] = 0.0;
       }
     }
-    parti->have_bound_file = GetPartFileBounds(parti->bound_file, parti->valmin_part, parti->valmax_part, &parti->npoints);
+    parti->have_bound_file = GetPartFileBounds(parti->bound_file, parti->valmin_part, parti->valmax_part, &parti->npoints_file);
   }
   if(npart5prop>0){
     NewMemory((void **)&partmins, npart5prop*sizeof(float));
