@@ -4217,7 +4217,7 @@ void LoadParticleMenu(int value){
         partdata *parti;
 
         parti = partinfo + i;
-        total += parti->npoints;
+        total += parti->npoints_file;
       }
       printf("Particle number/file size: %i/", total);
       FILE_SIZE total_size;

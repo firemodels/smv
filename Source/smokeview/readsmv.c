@@ -13942,8 +13942,8 @@ int ReadIni2(char *inifile, int localfile){
     }
     if(MatchINI(buffer, "PARTSKIP") == 1){
       fgets(buffer, 255, stream);
-      sscanf(buffer, "%i", &partskip);
-      partskip = MAX(partskip, 1);
+      sscanf(buffer, "%i", &partdrawskip);
+      partdrawskip = MAX(partdrawskip, 1);
     }
     if(MatchINI(buffer, "PART5COLOR") == 1){
       for(i = 0; i<npart5prop; i++){
@@ -16258,7 +16258,7 @@ void WriteIniLocal(FILE *fileout){
     }
   }
   fprintf(fileout, "PARTSKIP\n");
-  fprintf(fileout, " %i\n", partskip);
+  fprintf(fileout, " %i\n", partdrawskip);
 
   if(npropinfo>0){
     fprintf(fileout, "PROPINDEX\n");

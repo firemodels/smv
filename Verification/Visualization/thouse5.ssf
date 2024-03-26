@@ -13,9 +13,9 @@ RENDERDIR
 LABEL
   render 3D smoke
 
+UNLOADALL
 LOADINIFILE
  thouse5_part.ini
-UNLOADALL
 LOAD3DSMOKE
  SOOT DENSITY
 LOAD3DSMOKE
@@ -394,9 +394,9 @@ RENDERONCE
 LABEL
   render two left/right stereo images
 
+UNLOADALL
 LOADINIFILE
  thouse5_lr_stereo.ini
-UNLOADALL
 SETTIMEVAL
  30.000000
 RENDERONCE
@@ -426,21 +426,14 @@ SETTIMEVAL
 RENDERONCE
  thouse5_iso_rb_stereo
 
-// render OBSTs using solid view
-
-LABEL
-  render OBSTs using solid view
-
-UNLOADALL
-
 // render 3D smoke with no clipping
 
 LABEL
   render 3D smoke with no clipping
 
+UNLOADALL
 LOADINIFILE
  thouse5.ini
-UNLOADALL
 LOAD3DSMOKE
  SOOT DENSITY
 LOAD3DSMOKE
@@ -567,15 +560,76 @@ PLOT3DPROPS
 RENDERONCE
  thouse5_plot3d_iso2
 
+// render fed iso file
+
+LABEL
+  render fed iso file
+
+UNLOADALL
+LOADINIFILE
+ thouse5.ini
+LOADISO
+ Fractional effective dose: 0.3, 1.0, 3.0
+SETVIEWPOINT
+ external
+SETTIMEVAL
+ 5.000000
+RENDERONCE
+ thouse5_fed_iso_005
+SETTIMEVAL
+ 10.000000
+RENDERONCE
+ thouse5_fed_iso_010
+SETTIMEVAL
+ 30.000000
+RENDERONCE
+ thouse5_fed_iso_030
+SETTIMEVAL
+ 60.000000
+RENDERONCE
+ thouse5_fed_iso_060
+LOADINIFILE
+ thouse5.ini
+
+ // render fed slice file
+
+LABEL
+  render fed slice file
+
+UNLOADALL
+LOADINIFILE
+ thouse5_fed.ini
+SCENECLIP
+ 1
+LOADSLCF
+ PBY=1.6 QUANTITY='Fractional effective dose'
+SETTIMEVAL
+ 5.0
+SETVIEWPOINT
+ upy
+RENDERONCE
+ thouse5_fed_z1p5_slice_005
+SETTIMEVAL
+ 10.000000
+RENDERONCE
+ thouse5_fed_z1p5_slice_010
+SETTIMEVAL
+ 30.000000
+RENDERONCE
+ thouse5_fed_z1p5_slice_030
+SETTIMEVAL
+ 60.000000
+RENDERONCE
+ thouse5_fed_z1p5_slice_060
 
 // render chopped slice file (ceiling jet)
 
 LABEL
   render chopped slice file (ceiling jet)
 
+UNLOADALL
 LOADINIFILE
  thouse5_cjet.ini
-UNLOADALL
 LOADSLCF
  PBY=1.5 QUANTITY='TEMPERATURE'
 SETTIMEVAL

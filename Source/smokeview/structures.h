@@ -1230,7 +1230,7 @@ typedef struct _partpropdata {
 typedef struct _part5data {
   partclassdata *partclassbase;
   float time;
-  int npoints,n_rtypes, n_itypes;
+  int npoints_file,npoints_loaded,n_rtypes, n_itypes;
   short *sx, *sy, *sz;
   float *dsx, *dsy, *dsz;
   float *avatar_angle, *avatar_width, *avatar_depth, *avatar_height;
@@ -1254,7 +1254,7 @@ typedef struct _partdata {
   int blocknumber;
   int *timeslist, ntimes, itime;
   FILE_SIZE bound_file_size;
-  int npoints;
+  int npoints_file, npoints_loaded;
 
   float zoffset, *times;
   unsigned char *times_map;
