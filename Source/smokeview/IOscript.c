@@ -3156,7 +3156,11 @@ void ScriptLoadIniFile(scriptdata *scripti){
   PRINTF("script: loading ini file %s\n\n",scripti->cval);
   windowresized=0;
   ReadIni(scripti->cval);
-  UpdateDisplay();
+  UpdateDisplay();               // update all variables that need changing
+//  if(update_chop_colors == 1){ // only update variables for chopping data
+//    update_chop_colors = 0;
+//    UpdateChopColors();
+//  }
 }
 
 /* ------------------ ScriptLoadFile ------------------------ */
