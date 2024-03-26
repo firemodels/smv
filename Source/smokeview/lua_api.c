@@ -1511,7 +1511,7 @@ int LuaGetPartNpoints(lua_State *L) {
   // Create a table with an entry for each time
   for (index = 0; index < parti->ntimes; index++) {
     part5data *part5 = parti->data5 + index * parti->nclasses;
-    // sum += part5->npoints;
+    // sum += part5->npoints_file;
 
     // use a 1-indexed array to match lua
     lua_pushnumber(L, index + 1);
@@ -1539,11 +1539,11 @@ int LuaGetPartNpoints(lua_State *L) {
   // Create a table with an entry for each time
   for (index = 0; index < parti->ntimes; index++) {
     part5data *part5 = parti->data5 + index * parti->nclasses;
-    // sum += part5->npoints;
+    // sum += part5->npoints_file;
 
     // use a 1-indexed array to match lua
     lua_pushnumber(L, index + 1);
-    lua_pushnumber(L, part5->npoints);
+    lua_pushnumber(L, part5->npoints_file);
     lua_settable(L, -3);
   }
   lua_settable(L, -3);
