@@ -3156,6 +3156,7 @@ void ScriptLoadIniFile(scriptdata *scripti){
   PRINTF("script: loading ini file %s\n\n",scripti->cval);
   windowresized=0;
   ReadIni(scripti->cval);
+  UpdateDisplay();
 }
 
 /* ------------------ ScriptLoadFile ------------------------ */
