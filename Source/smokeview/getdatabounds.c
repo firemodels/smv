@@ -86,7 +86,7 @@ int GetGlobalPartBounds(int flag){
         parti->valmax_part[j] = 0.0;
       }
     }
-    parti->have_bound_file = GetPartFileBounds(parti->bound_file, parti->valmin_part, parti->valmax_part, &parti->npoints);
+    parti->have_bound_file = GetPartFileBounds(parti->bound_file, parti->valmin_part, parti->valmax_part, &parti->npoints_file);
   }
   if(npart5prop>0){
     NewMemory((void **)&partmins, npart5prop*sizeof(float));
@@ -381,11 +381,12 @@ void GetGlobalPatchBounds(int flag, int set_flag){
       boundscppi->valmax[BOUND_GLOBAL_MAX]     = boundi->dlg_global_valmax;
       boundscppi->valmax[BOUND_PERCENTILE_MAX] = boundi->dlg_global_valmax;
       if(set_flag==1)boundscppi->set_valmax = 0;
-
+#ifndef pp_CHOPFIX
       boundscppi->set_chopmin = boundi->setchopmin;
       boundscppi->set_chopmax = boundi->setchopmax;
       boundscppi->chopmin     = boundi->chopmin;
       boundscppi->chopmax     = boundi->chopmax;
+#endif
       boundscppi->hist = NULL;
     }
   }
@@ -673,12 +674,27 @@ char **GetSortedFilenames(int file_type){
   return sorted_filenames;
 }
 
+/* ------------------ RmGbndFile ------------------------ */
+
+void RmGbndFile(int file_type){
+
+  ASSERT_BOUND_TYPE;
+  if(file_type == BOUND_SLICE){
+    UNLINK(slice_gbnd_filename);
+  }
+  else if(file_type==BOUND_PATCH){
+    UNLINK(patch_gbnd_filename);
+  }
+  else if(file_type == BOUND_PLOT3D){
+    UNLINK(plot3d_gbnd_filename);
+  }
+}
+
 /* ------------------ FopenGbndFile ------------------------ */
 
 FILE *FopenGbndFile(int file_type, char *mode){
   FILE *stream = NULL;
 
-#ifdef pp_GBND
   ASSERT_BOUND_TYPE;
   if(file_type == BOUND_SLICE){
     stream = fopen(slice_gbnd_filename, mode);
@@ -689,7 +705,6 @@ FILE *FopenGbndFile(int file_type, char *mode){
   else if(file_type == BOUND_PLOT3D){
     stream = fopen(plot3d_gbnd_filename, mode);
   }
-#endif
   return stream;
 }
 
@@ -931,6 +946,9 @@ void BoundsUpdateSetup(int file_type){
     SaveGlobalBoundsinfo(file_type, globalboundsinfo);
   }
   DefineGbndFilename(file_type);
+#ifdef pp_GBND
+  BoundsBnd2Gbnd(file_type);
+#else
   stream = FopenGbndFile(file_type, "r");
   FILE_SIZE size_temp;
   size_temp = last_size_for_bound;
@@ -945,6 +963,7 @@ void BoundsUpdateSetup(int file_type){
     fclose(stream);
     stream = NULL;
   }
+#endif
   stream = FopenGbndFile(file_type, "r");
   if(stream != NULL){
     for(;;){
@@ -986,6 +1005,9 @@ void BoundsUpdateSetup(int file_type){
       }
     }
     fclose(stream);
+#ifdef pp_GBND
+    RmGbndFile(file_type);
+#endif    
   }
 }
 
@@ -1455,10 +1477,12 @@ void GetGlobalSliceBounds(int flag, int set_flag){
       boundscppi->valmax[BOUND_GLOBAL_MAX]     = boundi->dlg_global_valmax;
       boundscppi->valmax[BOUND_PERCENTILE_MAX] = boundi->dlg_global_valmax;
 
+#ifndef pp_CHOPFIX      
       boundscppi->set_chopmin = boundi->setchopmin;
       boundscppi->set_chopmax = boundi->setchopmax;
       boundscppi->chopmin     = boundi->chopmin;
       boundscppi->chopmax     = boundi->chopmax;
+#endif
       boundscppi->hist = NULL;
     }
   }
@@ -1581,10 +1605,12 @@ void GetGlobalHVACDuctBounds(int flag){
       boundscppi->valmax[BOUND_GLOBAL_MAX] = boundi->dlg_global_valmax;
       boundscppi->valmax[BOUND_PERCENTILE_MAX] = boundi->dlg_global_valmax;
 
+#ifndef pp_CHOPFIX
       boundscppi->set_chopmin = boundi->setchopmin;
       boundscppi->set_chopmax = boundi->setchopmax;
       boundscppi->chopmin = boundi->chopmin;
       boundscppi->chopmax = boundi->chopmax;
+#endif
     }
   }
 }
@@ -1638,10 +1664,12 @@ void GetGlobalHVACNodeBounds(int flag){
       boundscppi->valmax[BOUND_GLOBAL_MAX] = boundi->dlg_global_valmax;
       boundscppi->valmax[BOUND_PERCENTILE_MAX] = boundi->dlg_global_valmax;
 
+#ifndef pp_CHOPFIX
       boundscppi->set_chopmin = boundi->setchopmin;
       boundscppi->set_chopmax = boundi->setchopmax;
       boundscppi->chopmin = boundi->chopmin;
       boundscppi->chopmax = boundi->chopmax;
+#endif
     }
   }
 }
@@ -1727,10 +1755,12 @@ void UpdateGlobalFEDSliceBounds(void){
       boundscppi->valmax[BOUND_GLOBAL_MAX] = boundi->dlg_global_valmax;
       boundscppi->valmax[BOUND_PERCENTILE_MAX] = boundi->dlg_global_valmax;
 
+#ifndef pp_CHOPFIX
       boundscppi->set_chopmin = boundi->setchopmin;
       boundscppi->set_chopmax = boundi->setchopmax;
       boundscppi->chopmin = boundi->chopmin;
       boundscppi->chopmax = boundi->chopmax;
+#endif
     }
   }
 }

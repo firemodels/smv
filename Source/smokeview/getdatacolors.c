@@ -375,14 +375,14 @@ void GetPartColors(partdata *parti, int nlevel, int flag){
       rvals = datacopy->rvals;
       irvals = datacopy->irvals;
  // caused problems with coloring - might need in some form if crashes stil occur
-      if(rvals==NULL || irvals==NULL || datacopy->npoints==0){
+      if(rvals==NULL || irvals==NULL || datacopy->npoints_file==0){
         datacopy++;
         continue;
       }
       for(k=2;k<partclassi->ntypes;k++){
         partpropdata *prop_id;
 
-        if(datacopy->npoints==0)continue;
+        if(datacopy->npoints_file ==0)continue;
         prop_id = GetPartProp(partclassi->labels[k].longlabel);
         if(prop_id==NULL)continue;
 
@@ -396,7 +396,7 @@ void GetPartColors(partdata *parti, int nlevel, int flag){
           dval = valmax - valmin;
           if(dval<=0.0)dval=1.0;
 
-          for(m = 0; m<datacopy->npoints; m++){
+          for(m = 0; m<datacopy->npoints_file; m++){
             float val;
             int irval;
 
@@ -417,25 +417,25 @@ void GetPartColors(partdata *parti, int nlevel, int flag){
 
       if(partfast==NO){
         if(partclassi->col_azimuth>=0){
-          azimuth_data = datacopy->rvals+partclassi->col_azimuth*datacopy->npoints;
+          azimuth_data = datacopy->rvals+partclassi->col_azimuth*datacopy->npoints_file;
         }
         if(partclassi->col_diameter>=0){
-          // diameter_data=datacopy->rvals+partclassi->col_diameter*datacopy->npoints;
+          // diameter_data=datacopy->rvals+partclassi->col_diameter*datacopy->npoints_file;
         }
         if(partclassi->col_elevation>=0){
-          elevation_data = datacopy->rvals+partclassi->col_elevation*datacopy->npoints;
+          elevation_data = datacopy->rvals+partclassi->col_elevation*datacopy->npoints_file;
         }
         if(partclassi->col_length>=0){
-          length_data = datacopy->rvals+partclassi->col_length*datacopy->npoints;
+          length_data = datacopy->rvals+partclassi->col_length*datacopy->npoints_file;
         }
         if(partclassi->col_u_vel>=0){
-          u_vel_data = datacopy->rvals+partclassi->col_u_vel*datacopy->npoints;
+          u_vel_data = datacopy->rvals+partclassi->col_u_vel*datacopy->npoints_file;
         }
         if(partclassi->col_v_vel>=0){
-          v_vel_data = datacopy->rvals+partclassi->col_v_vel*datacopy->npoints;
+          v_vel_data = datacopy->rvals+partclassi->col_v_vel*datacopy->npoints_file;
         }
         if(partclassi->col_w_vel>=0){
-          w_vel_data = datacopy->rvals+partclassi->col_w_vel*datacopy->npoints;
+          w_vel_data = datacopy->rvals+partclassi->col_w_vel*datacopy->npoints_file;
         }
         local_flag = 0;
         if(azimuth_data!=NULL&&elevation_data!=NULL&&length_data!=NULL){
@@ -445,7 +445,7 @@ void GetPartColors(partdata *parti, int nlevel, int flag){
           dsx = datacopy->dsx;
           dsy = datacopy->dsy;
           dsz = datacopy->dsz;
-          for(m = 0; m<datacopy->npoints; m++){
+          for(m = 0; m<datacopy->npoints_file; m++){
             float az, elev, length;
 
             az = azimuth_data[m]*DEG2RAD;
@@ -482,7 +482,7 @@ void GetPartColors(partdata *parti, int nlevel, int flag){
           dsx = datacopy->dsx;
           dsy = datacopy->dsy;
           dsz = datacopy->dsz;
-          for(m = 0; m<datacopy->npoints; m++){
+          for(m = 0; m<datacopy->npoints_file; m++){
             dsx[m] = 0.05*u_vel_data[m]/denom;
             dsy[m] = 0.05*v_vel_data[m]/denom;
             dsz[m] = 0.05*w_vel_data[m]/denom;

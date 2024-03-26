@@ -31,6 +31,8 @@ _Static_assert(sizeof(float) == 4, "getdata.c assumes that float is 4 bytes");
 #endif
 #endif
 
+//  ------------------ getzonesize ------------------------
+
 #ifdef WIN32
 FILE *FOPEN(const char *file, const char *mode) {
   return _fsopen(file, mode, _SH_DENYNO);
@@ -38,6 +40,8 @@ FILE *FOPEN(const char *file, const char *mode) {
 #else
 FILE *FOPEN(const char *file, const char *mode) { return fopen(file, mode); }
 #endif
+
+//  ------------------ fortread ------------------------
 
 int fortread(void *ptr, size_t size, size_t count, FILE *file) {
   // TODO: check endianess, currently little-endian is assumed
@@ -73,6 +77,8 @@ int fortread(void *ptr, size_t size, size_t count, FILE *file) {
   return 0;
 }
 
+//  ------------------ fortwrite ------------------------
+
 int fortwrite(void *ptr, size_t size, size_t count, FILE *file) {
   // TODO: check endianess
   // Read record header
@@ -97,12 +103,15 @@ int fortwrite(void *ptr, size_t size, size_t count, FILE *file) {
   return 0;
 }
 
+//  ------------------ fortseek ------------------------
+
 int fortseek(FILE *file, size_t size, size_t count, int whence) {
   return fseek(file, sizeof(uint32_t) + size * count + sizeof(uint32_t),
                whence);
 }
 
 //  ------------------ getzonesize ------------------------
+
 void getzonesize(const char *zonefilename, int *nzonet, int *nrooms,
                  int *nfires, int *error) {
   int version;

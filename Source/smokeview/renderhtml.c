@@ -68,8 +68,8 @@ void GetPartVerts(int option, int option2, int *offset,
         part5data *datacopy;
 
         datacopy = parti->data5 + parti->nclasses*itime;
-        *nverts   += datacopy->npoints;
-        *nindices += datacopy->npoints;
+        *nverts   += datacopy->npoints_file;
+        *nindices += datacopy->npoints_file;
       }
     }
   }
@@ -89,7 +89,7 @@ void GetPartVerts(int option, int option2, int *offset,
         int partclass_index, itype;
 
         datacopy = parti->data5+parti->nclasses*itime;
-        frame_sizes[itime-ibeg] += datacopy->npoints;
+        frame_sizes[itime-ibeg] += datacopy->npoints_file;
         sx = datacopy->sx;
         sy = datacopy->sy;
         sz = datacopy->sz;
@@ -98,7 +98,7 @@ void GetPartVerts(int option, int option2, int *offset,
         partclass_index = partclassi - partclassinfo;
         itype = current_property->class_types[partclass_index];
 
-        for(j=0;j<datacopy->npoints;j++){
+        for(j=0;j<datacopy->npoints_file;j++){
           *verts++   = xplts[sx[j]];
           *verts++   = yplts[sy[j]];
           *verts++   = zplts[sz[j]];
@@ -111,7 +111,7 @@ void GetPartVerts(int option, int option2, int *offset,
             unsigned char *color_index;
             float *color;
 
-            color_index = datacopy->irvals + itype*datacopy->npoints + j;
+            color_index = datacopy->irvals + itype*datacopy->npoints_file + j;
             color = rgb_full[*color_index];
             *colors++   = color[0];
             *colors++   = color[1];
@@ -119,7 +119,7 @@ void GetPartVerts(int option, int option2, int *offset,
           }
           *indices++ = *offset + j;
         }
-        *offset += datacopy->npoints;
+        *offset += datacopy->npoints_file;
       }
     }
   }

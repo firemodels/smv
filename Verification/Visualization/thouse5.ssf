@@ -13,9 +13,9 @@ RENDERDIR
 LABEL
   render 3D smoke
 
+UNLOADALL
 LOADINIFILE
  thouse5_part.ini
-UNLOADALL
 LOAD3DSMOKE
  SOOT DENSITY
 LOAD3DSMOKE
@@ -394,9 +394,9 @@ RENDERONCE
 LABEL
   render two left/right stereo images
 
+UNLOADALL
 LOADINIFILE
  thouse5_lr_stereo.ini
-UNLOADALL
 SETTIMEVAL
  30.000000
 RENDERONCE
@@ -426,21 +426,14 @@ SETTIMEVAL
 RENDERONCE
  thouse5_iso_rb_stereo
 
-// render OBSTs using solid view
-
-LABEL
-  render OBSTs using solid view
-
-UNLOADALL
-
 // render 3D smoke with no clipping
 
 LABEL
   render 3D smoke with no clipping
 
+UNLOADALL
 LOADINIFILE
  thouse5.ini
-UNLOADALL
 LOAD3DSMOKE
  SOOT DENSITY
 LOAD3DSMOKE
@@ -572,9 +565,9 @@ RENDERONCE
 LABEL
   render fed iso file
 
+UNLOADALL
 LOADINIFILE
  thouse5.ini
-UNLOADALL
 LOADISO
  Fractional effective dose: 0.3, 1.0, 3.0
 SETVIEWPOINT
@@ -634,9 +627,9 @@ RENDERONCE
 LABEL
   render chopped slice file (ceiling jet)
 
+UNLOADALL
 LOADINIFILE
  thouse5_cjet.ini
-UNLOADALL
 LOADSLCF
  PBY=1.5 QUANTITY='TEMPERATURE'
 SETTIMEVAL
