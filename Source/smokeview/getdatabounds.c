@@ -1476,10 +1476,12 @@ void GetGlobalSliceBounds(int flag, int set_flag){
       boundscppi->valmax[BOUND_GLOBAL_MAX]     = boundi->dlg_global_valmax;
       boundscppi->valmax[BOUND_PERCENTILE_MAX] = boundi->dlg_global_valmax;
 
+#ifndef pp_CHOPFIX      
       boundscppi->set_chopmin = boundi->setchopmin;
       boundscppi->set_chopmax = boundi->setchopmax;
       boundscppi->chopmin     = boundi->chopmin;
       boundscppi->chopmax     = boundi->chopmax;
+#endif
       boundscppi->hist = NULL;
     }
   }
