@@ -2323,7 +2323,6 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
 
     patchstart = patchi->ntimes_old*meshi->npatchsize;
 
-#ifdef pp_BOUNDS
     if(meshi->boundary_mask == NULL&&patchi->patch_filetype==PATCH_STRUCTURED_CELL_CENTER){
       MakeBoundaryMask(patchi);
     }
@@ -2343,14 +2342,6 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
         patchmax_global = MAX(patchmax_global, meshi->patchval[i]);
       }
     }
-#else
-    patchmin_global = 10000000000000.0;
-    patchmax_global = -patchmin_global;
-    for(i = 0; i<npatchvals; i++){
-      patchmin_global = MIN(patchmin_global, meshi->patchval[i]);
-      patchmax_global = MAX(patchmax_global, meshi->patchval[i]);
-    }
-#endif
     patchi->valmin_patch = patchmin_global;
     patchi->valmax_patch = patchmax_global;
     if(patchi->have_bound_file==NO){
@@ -2394,11 +2385,9 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
     if(runscript == 0){
       THREADcontrol(patchbound_threads, THREAD_JOIN);
     }
-#ifdef pp_BOUNDS
     int set_valmin_save, set_valmax_save;
     float qmin_save, qmax_save;
     GLUIGetMinMax(BOUND_PATCH, patchi->label.shortlabel, &set_valmin_save, &qmin_save, &set_valmax_save, &qmax_save);
-#endif
     if(force_bound_update==1||patch_bounds_defined==0 || BuildGbndFile(BOUND_SLICE) == 1){
       GetGlobalPatchBounds(1,DONOT_SET_MINMAX_FLAG);
       SetLoadedPatchBounds(NULL, 0);
@@ -2415,7 +2404,6 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
         GLUIPatchBoundsCPP_CB(BOUND_UPDATE_COLORS);
       }
     }
-#ifdef pp_BOUNDS
     if(set_valmin_save == 0){
       SetPatchMin(set_valmin_save, qmin_save, patchi->label.shortlabel);
     }
@@ -2425,7 +2413,6 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
     if(set_valmin_save == 0 || set_valmax_save == 0){
       UpdateAllBoundaryColors(0);
     }
-#endif
 #define BOUND_PERCENTILE_DRAW          120
     GLUIPatchBoundsCPP_CB(BOUND_PERCENTILE_DRAW);
   }
@@ -3479,7 +3466,6 @@ void DrawBoundaryThresholdCellcenter(const meshdata *meshi){
   glEnd();
 }
 
-#ifdef pp_BOUNDS
 /* ------------------ MakeBoundaryMask ------------------------ */
 
 void MakeBoundaryMask(patchdata *patchi){
@@ -3504,7 +3490,6 @@ void MakeBoundaryMask(patchdata *patchi){
     }
   }
 }
-#endif
 
 /* ------------------ DrawBoundaryCellCenter ------------------------ */
 

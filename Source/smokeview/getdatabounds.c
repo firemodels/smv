@@ -8,10 +8,8 @@
 #include "smokeviewvars.h"
 #include "IOscript.h"
 
-#ifdef pp_BOUNDS
 void BoundsUpdate(int file_type);
 int BoundsGet(char *file, globalboundsdata *globalboundsinfo, char **sorted_filenames, int n_sorted_filenames, int nbounds, float *valmin, float *valmax);
-#endif
 
 /* ------------------ GetPartFileBounds ------------------------ */
 
@@ -289,9 +287,7 @@ void GetGlobalPatchBounds(int flag, int set_flag){
     boundi->dlg_global_valmin = 1.0;
     boundi->dlg_global_valmax = 0.0;
   }
-#ifdef pp_BOUNDS
   BoundsUpdate(BOUND_PATCH);
-#endif
   for(i = 0; i < npatchinfo; i++){
     patchdata *patchi;
     float valmin, valmax;
@@ -310,11 +306,7 @@ void GetGlobalPatchBounds(int flag, int set_flag){
     }
     if(force_bound_update == 1)doit = 1;
     if(doit==1){
-#ifdef pp_BOUNDS
       BoundsGet(patchi->reg_file, patchglobalboundsinfo, sorted_patch_filenames, npatchinfo, 1, &valmin, &valmax);
-#else
-      if(GetBounds(patchi->bound_file, &valmin, &valmax, &patchboundsinfo, &npatchboundsinfo)==1)patchi->have_bound_file = YES;
-#endif
       if(valmin > valmax)continue;
       patchi->valmin_patch = valmin;
       patchi->valmax_patch = valmax;
@@ -441,18 +433,12 @@ void GetGlobalPlot3DBounds(void){
   int i;
 
   if(nplot3dinfo <= 0)return;
-#ifdef pp_BOUNDS
   BoundsUpdate(BOUND_PLOT3D);
-#endif
   for(i = 0; i<nplot3dinfo; i++){
     plot3ddata *plot3di;
 
     plot3di = plot3dinfo+i;
-#ifdef pp_BOUNDS
     plot3di->have_bound_file = BoundsGet(plot3di->reg_file, plot3dglobalboundsinfo, sorted_plot3d_filenames, nplot3dinfo, plot3di->nplot3dvars, plot3di->valmin_plot3d, plot3di->valmax_plot3d);
-#else
-    plot3di->have_bound_file = GetPlot3DFileBounds(plot3di->bound_file, plot3di->valmin_plot3d, plot3di->valmax_plot3d);
-#endif
   }
   for(i = 0; i<MAXPLOT3DVARS; i++){
     p3min_all[i] = 1.0;
@@ -517,9 +503,7 @@ void GetGlobalPlot3DBounds(void){
       boundscppi->chopmax = p3max_global[0];
     }
   }
-#ifdef pp_BOUNDS
   GLUISetGlobalMinMaxAll(BOUND_PLOT3D, p3min_global, p3max_global, plot3dinfo->nplot3dvars);
-#endif
 }
 
 /* ------------------ GetLoadedPlot3dBounds ------------------------ */
@@ -569,8 +553,6 @@ void GetLoadedPlot3dBounds(int *compute_loaded, float *loaded_min, float *loaded
     }
   }
 }
-
-#ifdef pp_BOUNDS
 
 /* ------------------ CompareBoundFileName ------------------------ */
 
@@ -1378,7 +1360,7 @@ void BoundsUpdate(int file_type){
   BoundsUpdateWrapup(file_type);
   PRINT_TIMER(bound_wrapup, label3);
 }
-#endif
+
 /* ------------------ GetGlobalSliceBounds ------------------------ */
 
 void GetGlobalSliceBounds(int flag, int set_flag){
@@ -1392,9 +1374,7 @@ void GetGlobalSliceBounds(int flag, int set_flag){
     boundi->dlg_global_valmin = 1.0;
     boundi->dlg_global_valmax = 0.0;
   }
-#ifdef pp_BOUNDS
   BoundsUpdate(BOUND_SLICE);
-#endif
   INIT_PRINT_TIMER(slicebounds_timer);
   for(i = 0;i<nsliceinfo;i++){
     slicedata *slicei;
@@ -1414,13 +1394,7 @@ void GetGlobalSliceBounds(int flag, int set_flag){
     if(force_bound_update == 1||nzoneinfo>0)doit = 1;
 
     if(doit==1){
-#ifdef pp_BOUNDS
       BoundsGet(slicei->reg_file, sliceglobalboundsinfo, sorted_slice_filenames, nsliceinfo, 1, &valmin, &valmax);
-#else
-      if(GetBounds(slicei->bound_file, &valmin, &valmax, &sliceboundsinfo, &nsliceboundsinfo)==1){
-        slicei->have_bound_file = YES;
-      }
-#endif
       if(valmin>valmax)continue;
       slicei->valmin_slice = valmin;
       slicei->valmax_slice = valmax;
@@ -1679,9 +1653,7 @@ void GetGlobalHVACNodeBounds(int flag){
 void UpdateGlobalFEDSliceBounds(void){
   int i;
 
-#ifdef pp_BOUNDS
   BoundsUpdate(BOUND_SLICE);
-#endif
   for(i = 0; i<nsliceinfo; i++){
     slicedata *slicei;
     float valmin, valmax;
@@ -1692,11 +1664,7 @@ void UpdateGlobalFEDSliceBounds(void){
     if(slicei->valmin_slice>slicei->valmax_slice||
        current_script_command==NULL || NOT_LOADRENDER){
 
-#ifdef pp_BOUNDS
       BoundsGet(slicei->reg_file, sliceglobalboundsinfo, sorted_slice_filenames, nsliceinfo, 1, &valmin, &valmax);
-#else
-      GetBounds(slicei->bound_file, &valmin, &valmax, &sliceboundsinfo, &nsliceboundsinfo);
-#endif
 
       if(valmin>valmax)continue;
       slicei->valmin_slice = valmin;

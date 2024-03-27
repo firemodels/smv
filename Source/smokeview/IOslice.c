@@ -1005,22 +1005,6 @@ void ReadFed(int file_index, int time_frame, float *time_value, int flag, int fi
   // regenerate if either the FED slice or isosurface file does not exist or is older than
   // either the CO, CO2 or O2 slice files
 
-#ifndef pp_BOUNDS
-  if(file_type==FED_SLICE){
-    FILE *stream;
-
-    stream = fopen(slicei->bound_file, "r");
-    if(stream!=NULL){
-      slicei->have_bound_file = 1;
-      fclose(stream);
-      UpdateGlobalFEDSliceBounds();
-    }
-    else{
-      slicei->have_bound_file = 0;
-      regenerate_fed = 1;
-    }
-  }
-#endif
   if(regenerate_fed==1||
      (file_type==FED_SLICE&&(IsFileNewer(fed_slice->file,o2->file)!=1||
        IsFileNewer(fed_slice->file,co2->file)!=1||
@@ -1256,9 +1240,7 @@ void ReadFed(int file_index, int time_frame, float *time_value, int flag, int fi
   else{
     ReadIsoOrig(fed_iso->file,file_index,flag,&error_local);
   }
-#ifdef pp_BOUNDS
   UpdateGlobalFEDSliceBounds();
-#endif
   {
     colorbardata *cb;
 
@@ -1369,7 +1351,6 @@ FILE_SIZE ReadVSlice(int ivslice, int time_frame, float *time_value, int flag, i
     return return_filesize;
   }
   if(vd->finalize==0)set_slicecolor = DEFER_SLICECOLOR;
-#ifdef pp_BOUNDS
 
   int set_valmin_save, set_valmax_save;
   float qmin_save, qmax_save;
@@ -1379,7 +1360,6 @@ FILE_SIZE ReadVSlice(int ivslice, int time_frame, float *time_value, int flag, i
     sd = sliceinfo + vd->ival;
     GLUIGetMinMax(BOUND_SLICE, sd->label.shortlabel, &set_valmin_save, &qmin_save, &set_valmax_save, &qmax_save);
   }
-#endif
   if(vd->iu!=-1){
     slicedata *u=NULL;
 
@@ -1530,7 +1510,6 @@ FILE_SIZE ReadVSlice(int ivslice, int time_frame, float *time_value, int flag, i
       }
     }
     max_velocity = MAX(ABS(valmax),ABS(valmin));
-#ifdef pp_BOUNDS
     if(vd->ival != -1){
       slicedata *sd = NULL;
 
@@ -1562,7 +1541,6 @@ FILE_SIZE ReadVSlice(int ivslice, int time_frame, float *time_value, int flag, i
         }
       }
     }
-#endif
   }
   PushVSliceLoadstack(ivslice);
 
@@ -5066,11 +5044,9 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
     if(runscript == 0){
       THREADcontrol(slicebound_threads, THREAD_JOIN);
     }
-#ifdef pp_BOUNDS
     int set_valmin_save, set_valmax_save;
     float qmin_save, qmax_save;
     GLUIGetMinMax(BOUND_SLICE, sd->label.shortlabel, &set_valmin_save, &qmin_save, &set_valmax_save, &qmax_save);
-#endif
     if(force_bound_update==1||slice_bounds_defined==0|| BuildGbndFile(BOUND_SLICE) ==1){
 #ifdef pp_RECOMPUTE_DEBUG
       recompute = 1;
@@ -5079,7 +5055,6 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
       SetLoadedSliceBounds(NULL, 0);
     }
     GLUIGetMinMax(BOUND_SLICE, sd->label.shortlabel, &set_valmin, &qmin, &set_valmax, &qmax);
-#ifdef pp_BOUNDS
     float valmin_loaded = 1.0, valmax_loaded = 0;
     if(set_valmin != 0 || set_valmax != 0){
       int i;
@@ -5115,7 +5090,6 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
       qmax = valmax_loaded;
       SetSliceMax(BOUND_LOADED_MAX, valmax_loaded, sd->label.shortlabel);
     }
-#endif
 #define BOUND_PERCENTILE_DRAW          120
     GLUIHVACSliceBoundsCPP_CB(BOUND_PERCENTILE_DRAW);
     colorbar_slice_min = qmin;
