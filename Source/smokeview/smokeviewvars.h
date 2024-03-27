@@ -126,7 +126,6 @@ SVEXTERN FILE_SIZE SVDECL(last_size_for_slice, 0);
 SVEXTERN FILE_SIZE SVDECL(last_size_for_boundary, 0);
 SVEXTERN char SVDECL(*stepcsv_filename, NULL);
 
-#ifdef pp_BOUNDS
 SVEXTERN char SVDECL(*plot3d_gbnd_filename, NULL), SVDECL(**sorted_plot3d_filenames, NULL);
 SVEXTERN char SVDECL(*slice_gbnd_filename,  NULL), SVDECL(**sorted_slice_filenames,  NULL);
 SVEXTERN char SVDECL(*patch_gbnd_filename,  NULL), SVDECL(**sorted_patch_filenames,  NULL);
@@ -140,7 +139,6 @@ SVEXTERN int SVDECL(nsliceglobalboundsinfo,    0);
 SVEXTERN int SVDECL(npatchglobalboundsinfo,    0);
 
 SVEXTERN FILE_SIZE SVDECL(last_size_for_bound, 0);
-#endif
 
 SVEXTERN int SVDECL(histogram_nframes, 40);
 SVEXTERN int SVDECL(glui_surf_index, 0);
@@ -1518,9 +1516,6 @@ SVEXTERN int SVDECL(sliceload_boundtype, 0);
 SVEXTERN int SVDECL(sliceload_filetype, 0);
 SVEXTERN int SVDECL(sliceload_dir,0);
 SVEXTERN int SVDECL(sliceload_isvector, 0);
-#ifdef pp_SLICE_MENU_DEBUG
-SVEXTERN int SVDECL(update_printsliceinfo, 1);
-#endif
 
 SVEXTERN int SVDECL(nsliceinfo,0),           SVDECL(nvsliceinfo,0);
 SVEXTERN int SVDECL(nmultisliceinfo,0),      SVDECL(nmultivsliceinfo,0);

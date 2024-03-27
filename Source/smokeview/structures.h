@@ -747,9 +747,7 @@ typedef struct _meshdata {
   int *imap, *jmap, *kmap;
   int n_imap, n_jmap, n_kmap;
 
-#ifdef pp_BOUNDS
   unsigned char *boundary_mask;
-#endif
   char *c_iblank_node0,      *c_iblank_cell0,      *c_iblank_x0,      *c_iblank_y0,      *c_iblank_z0;
   char *c_iblank_node0_temp, *c_iblank_cell0_temp, *c_iblank_x0_temp, *c_iblank_y0_temp, *c_iblank_z0_temp;
   char *c_iblank_node_html;
@@ -1402,9 +1400,7 @@ typedef struct _slicedata {
   int finalize;
   int slcf_index;
   char *slicelabel;
-#ifdef pp_BOUNDS
   unsigned char *slice_mask;
-#endif
   int compression_type;
   int colorbar_autoflip;
   int ncompressed;
@@ -1555,7 +1551,6 @@ typedef struct _boundsdata {
   flowlabels *label;
 } boundsdata;
 
-#ifdef pp_BOUNDS
 /* --------------------------  globalboundsdata ------------------------------------ */
 
 typedef struct _globalboundsdata {
@@ -1565,7 +1560,6 @@ typedef struct _globalboundsdata {
   float valmins_save[MAXPLOT3DVARS], valmaxs_save[MAXPLOT3DVARS];
   float valmins[MAXPLOT3DVARS],      valmaxs[MAXPLOT3DVARS];
 } globalboundsdata;
-#endif
 
 /* --------------------------  vslicedata ------------------------------------ */
 

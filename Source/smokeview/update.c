@@ -2513,12 +2513,6 @@ void EnableDisablePlayMovie(void){
 void UpdateDisplay(void){
   SNIFF_ERRORS("UpdateDisplay: start");
 
-#ifdef pp_SLICE_MENU_DEBUG
-  if(update_printsliceinfo == 1){
-    PrintSliceInfo();
-    update_printsliceinfo = 0;
-  }
-#endif
   if(sortslices == 1&&nsliceloaded>0){
     SortSlices();
   }
