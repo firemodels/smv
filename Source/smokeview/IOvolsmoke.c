@@ -99,16 +99,6 @@ struct colourSystem{
 
 #define GAMMA_REC709    0               /* Rec. 709 */
 
-#ifdef pp_BLACKBODY_SYSTEM
-static struct colourSystem
-/* Name                  xRed    yRed    xGreen  yGreen  xBlue  yBlue    White point        Gamma   */
-NTSCsystem = {"NTSC",               0.67,   0.33,   0.21,   0.71,   0.14,   0.08,   IlluminantC,    GAMMA_REC709},
-EBUsystem = {"EBU (PAL/SECAM)",    0.64,   0.33,   0.29,   0.60,   0.15,   0.06,   IlluminantD65,  GAMMA_REC709},
-SMPTEsystem = {"SMPTE",              0.630,  0.340,  0.310,  0.595,  0.155,  0.070,  IlluminantD65,  GAMMA_REC709},
-HDTVsystem = {"HDTV",               0.670,  0.330,  0.210,  0.710,  0.150,  0.060,  IlluminantD65,  GAMMA_REC709},
-CIEsystem = {"CIE",                0.7355, 0.2645, 0.2658, 0.7243, 0.1669, 0.0085, IlluminantE,    GAMMA_REC709},
-Rec709system = {"CIE REC 709",        0.64,   0.33,   0.30,   0.60,   0.15,   0.06,   IlluminantD65,  GAMMA_REC709};
-#endif
 //static struct colourSystem SMPTEsystem = {"SMPTE",              0.630,  0.340,  0.310,  0.595,  0.155,  0.070,  IlluminantD65,  GAMMA_REC709};
 //static struct colourSystem CIEsystem = {"CIE",                0.7355, 0.2645, 0.2658, 0.7243, 0.1669, 0.0085, IlluminantE,    GAMMA_REC709};
 static struct colourSystem HDTVsystem = {"HDTV",               0.670,  0.330,  0.210,  0.710,  0.150,  0.060,  IlluminantD65,  GAMMA_REC709};

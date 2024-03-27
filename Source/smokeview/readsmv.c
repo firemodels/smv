@@ -912,9 +912,7 @@ void InitMesh(meshdata *meshi){
   NewMemory((void **)&meshi->gsliceinfo,     sizeof(meshplanedata));
   NewMemory((void **)&meshi->volrenderinfo,  sizeof(volrenderdata));
 
-#ifdef pp_BOUNDS
   meshi->boundary_mask = NULL;
-#endif
   meshi->in_frustum = 1;
   meshi->imap = NULL;
   meshi->jmap = NULL;
@@ -5840,9 +5838,7 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
 #ifdef pp_SLICE_MULTI
   sd->loadstatus = FILE_UNLOADED;
 #endif
-#ifdef pp_BOUNDS
   sd->slice_mask       = NULL;
-#endif
   sd->vals2d.vals      = NULL;
   sd->vals2d.vals_orig = NULL;
   sd->vals2d.times     = NULL;
@@ -12230,7 +12226,6 @@ void SetSliceBounds(int set_valmin, float valmin, int set_valmax, float valmax, 
   }
 }
 
-#ifdef pp_BOUNDS
 /* ------------------ SetPatchMin ------------------------ */
 
 void SetPatchMin(int set_valmin, float valmin, char *buffer2){
@@ -12293,7 +12288,6 @@ void SetSliceMax(int set_valmax, float valmax, char *buffer2){
     }
   }
 }
-#endif
 
 /* ------------------ ReadIni2 ------------------------ */
 
@@ -13660,9 +13654,6 @@ int ReadIni2(char *inifile, int localfile){
         }
         level_val = NULL;
       }
-#ifndef pp_BOUNDS
-      if(strcmp(buffer2, "TEMP")==0&&nzoneinfo>0)continue;
-#endif
       TrimBack(buffer2);
       SetSliceBounds(set_valmin, valmin, set_valmax, valmax, buffer2);
       continue;

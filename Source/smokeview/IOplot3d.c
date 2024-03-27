@@ -365,22 +365,7 @@ void ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
     qmaxptr = qmax;
   }
   getplot3dq(file, nx, ny, nz, meshi->qdata, qminptr, qmaxptr, &error, isotest);
-#ifdef pp_BOUNDS
   update_plot3d_bnd = 1;
-#else
-  if(p->have_bound_file == 0){
-    FILE *bound_stream;
-
-    bound_stream = fopen(p->bound_file, "w");
-    if(bound_stream != NULL){
-      for(i = 0;i < 6;i++){
-        fprintf(bound_stream, " %f %f\n", qmin[i], qmax[i]);
-      }
-      update_plot3d_bnd = 1;
-      fclose(bound_stream);
-    }
-  }
-#endif
   if(NewMemoryMemID((void **)&meshi->iqdata,numplot3dvars*ntotal*sizeof(unsigned char), p->memory_id)==0){
     *errorcode=1;
     ReadPlot3D("",ifile,UNLOAD,&error);
@@ -464,17 +449,12 @@ void ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
     if(p->finalize==1){
       if(update_plot3d_bnd==1){
         update_plot3d_bnd = 0;
-#ifdef pp_BOUNDS
         float valmin_loaded[6], valmax_loaded[6];
 
         void BoundsUpdate(int file_type);
         BoundsUpdate(BOUND_PLOT3D);
         ComputeLoadedPlot3DBounds(valmin_loaded, valmax_loaded);
         GLUISetLoadedMinMaxAll(BOUND_PLOT3D, valmin_loaded, valmax_loaded, plot3dinfo->nplot3dvars);
-#else
-        GetGlobalPlot3DBounds();
-        SetLoadedPlot3DBounds();
-#endif
       }
       UpdateAllPlot3DColors(0);
     }

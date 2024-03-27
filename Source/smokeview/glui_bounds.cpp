@@ -124,12 +124,10 @@ class bounds_dialog{
   int  set_chopmax(char *label, int set_valmax, float valmax);
   int  set_min(char *label, int set_valmin, float valmin);
   void set_min_all(int *set_valmin, float *valmin, int nvals);
-#ifdef pp_BOUNDS
   void get_global_minmax_all(float *valmin, float *valmax, int nvals);
   void get_loaded_minmax_all(float *valmin, float *valmax, int nvals);
   void set_global_minmax_all(float *valmin, float *valmax, int nvals);
   void set_loaded_minmax_all(float *valmin, float *valmax, int nvals);
-#endif
   int  set_max(char *label, int set_valmax, float valmax);
   void set_max_all(int *set_valmax, float *valmax, int nvals);
   void set_plot_minmax(float p_min, float p_max);
@@ -612,7 +610,6 @@ void bounds_dialog::set_min_all(int *set_valmin, float *valmin, int nvals){
   }
 }
 
-#ifdef pp_BOUNDS
 /* ------------------ get_global_minmax_all ------------------------ */
 
 void bounds_dialog::get_global_minmax_all(float *valmin, float *valmax, int nvals){
@@ -680,7 +677,6 @@ void bounds_dialog::set_loaded_minmax_all(float *valmin, float *valmax, int nval
     boundi->valmax[set_valmax] = valmax[i];
   }
 }
-#endif
 
 /* ------------------ set_max_all ------------------------ */
 
@@ -1493,7 +1489,6 @@ extern "C" void GLUISetMinMaxAll(int type, int *set_valmin, float *valmin, int *
   }
 }
 
-#ifdef pp_BOUNDS
 /* ------------------ GLUIGetGlobalMinMaxAll ------------------------ */
 
 extern "C" void GLUIGetGlobalMinMaxAll(int type, float *valmin, float *valmax, int nall){
@@ -1605,7 +1600,6 @@ extern "C" void GLUISetLoadedMinMaxAll(int type, float *valmin, float *valmax, i
     break;
   }
 }
-#endif
 
 /* ------------------ HVAC callback: GLUIHVACDuctBoundsCPP_CB ------------------------ */
 
