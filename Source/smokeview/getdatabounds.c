@@ -928,24 +928,7 @@ void BoundsUpdateSetup(int file_type){
     SaveGlobalBoundsinfo(file_type, globalboundsinfo);
   }
   DefineGbndFilename(file_type);
-#ifdef pp_GBND
   BoundsBnd2Gbnd(file_type);
-#else
-  stream = FopenGbndFile(file_type, "r");
-  FILE_SIZE size_temp;
-  size_temp = last_size_for_bound;
-  if(stream == NULL || IsFDSRunning(&size_temp) == 1){
-    if(stream != NULL){
-      fclose(stream);
-      stream = NULL;
-    }
-    BoundsBnd2Gbnd(file_type);
-  }
-  if(stream != NULL){
-    fclose(stream);
-    stream = NULL;
-  }
-#endif
   stream = FopenGbndFile(file_type, "r");
   if(stream != NULL){
     for(;;){
@@ -987,9 +970,7 @@ void BoundsUpdateSetup(int file_type){
       }
     }
     fclose(stream);
-#ifdef pp_GBND
     RmGbndFile(file_type);
-#endif    
   }
 }
 
