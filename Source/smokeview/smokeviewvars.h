@@ -1508,9 +1508,6 @@ SVEXTERN int SVDECL(sliceload_boundtype, 0);
 SVEXTERN int SVDECL(sliceload_filetype, 0);
 SVEXTERN int SVDECL(sliceload_dir,0);
 SVEXTERN int SVDECL(sliceload_isvector, 0);
-#ifdef pp_SLICE_MENU_DEBUG
-SVEXTERN int SVDECL(update_printsliceinfo, 1);
-#endif
 
 SVEXTERN int SVDECL(nsliceinfo,0),           SVDECL(nvsliceinfo,0);
 SVEXTERN int SVDECL(nmultisliceinfo,0),      SVDECL(nmultivsliceinfo,0);
