@@ -122,6 +122,14 @@ SVEXTERN int hvac_duct_color[3];
 SVEXTERN int hvac_node_color[3];
 #endif
 
+
+#ifdef pp_ONEBUFFER
+#define MAXFILELEN 360
+SVEXTERN char SVDECL(*part_buffer, NULL);
+SVEXTERN char SVDECL(*smoke3d_buffer, NULL);
+SVEXTERN char SVDECL(*slice_buffer, NULL);
+#endif
+
 SVEXTERN FILE_SIZE SVDECL(last_size_for_slice, 0);
 SVEXTERN FILE_SIZE SVDECL(last_size_for_boundary, 0);
 SVEXTERN char SVDECL(*stepcsv_filename, NULL);

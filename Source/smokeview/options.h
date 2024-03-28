@@ -25,6 +25,7 @@
 #ifdef pp_GPU
 #define pp_GPUTHROTTLE      // pp_GPU directive must also be set
 #endif
+#define pp_ONEBUFFER         // consolidate memory allocations when parsing .smv file
 
 //*** options: windows
 
