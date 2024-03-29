@@ -531,7 +531,11 @@ int NodeInInternalVent(const meshdata *meshi, int i, int j, int k, int dir, int 
   int imesh, iblockage;
 
   if(option == 1)return YES;
+#ifdef pp_MESH_BOUNDARY
+  if(NodeInBlockage(meshi, i, j, k, &imesh, &iblockage) == YES)return YES;
+#else
   if(mesh_boundary==NO&&NodeInBlockage(meshi, i, j, k, &imesh, &iblockage) == YES)return YES;
+#endif
   for(ii = 0; ii < meshi->nvents; ii++){
     ventdata *vi;
 
