@@ -2216,7 +2216,6 @@ void UpdateAllMeshSkips(int skip){
     meshi->n_jmap = 0;
     meshi->n_kmap = 0;
   }
-#ifdef pp_MESHSKIP
   for(i = 0; i < nmeshes; i++){
     meshdata *meshi;
 
@@ -2225,7 +2224,6 @@ void UpdateAllMeshSkips(int skip){
     UpdateMeshSkip(meshi, skip, 1);
     UpdateMeshSkip(meshi, skip, 2);
   }
-#endif
 }
 
 /* ------------------ UpdateVectorSkipDefault ------------------------ */

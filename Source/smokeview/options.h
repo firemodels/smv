@@ -8,7 +8,6 @@
 #endif
 
 //#define pp_PARTBOUND_MULTI // compute particle bounds in the background
-//#define pp_MESHSKIP       // compute uniform mesh skips for displaying vectors
 //#define pp_LUA            // turn on LUA option
 #define pp_CHOPFIX          // fix to saving chop values
 #define pp_OSX_1X           // use -1x option by default on macs
