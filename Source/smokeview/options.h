@@ -28,6 +28,7 @@
 #define pp_GPUTHROTTLE      // pp_GPU directive must also be set
 #endif
 #define pp_ONEBUFFER        // consolidate memory allocations when parsing .smv file
+#define pp_MESH_BOUNDARY    // display boundary files on blockages that are on mesh boundaries
 
 //*** options: windows
 
