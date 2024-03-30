@@ -748,8 +748,8 @@ void CreatePartSizeFileFromBound(char *part5boundfile_arg, char *part5sizefile_a
   float time_local;
   char buffer_local[255];
 
-  streamin_local  = FOPEN_SCR(part5boundfile_arg, "r");
-  streamout_local = FOPEN_SCR(part5sizefile_arg, "w");
+  streamin_local  = FOPEN_2DIR(part5boundfile_arg, "r");
+  streamout_local = FOPEN_2DIR(part5sizefile_arg, "w");
 
   for(;;){
     int nclasses_local,j,eof_local;
@@ -809,7 +809,7 @@ void CreatePartSizeFileFromPart(char *part5file_arg, char *part5sizefile_arg, LI
   int skip_local, numvals_local;
 
   PART5FILE       = fopen(part5file_arg, "rb");
-  streamout_local = FOPEN_SCR(part5sizefile_arg, "w");
+  streamout_local = FOPEN_2DIR(part5sizefile_arg, "w");
 
   FSEEK(PART5FILE, 4, SEEK_CUR); fread(&one_local, 4, 1, PART5FILE); FSEEK(PART5FILE, 4, SEEK_CUR);
   FORTPART5READ(&version_local, 1);
@@ -928,7 +928,7 @@ void CreatePartBoundFile(partdata *parti){
   
   if(parti->reg_file!=NULL)PART5FILE = fopen_m(parti->reg_file, "rbm");
   if(parti->reg_file==NULL||PART5FILE==NULL)return;
-  if(parti->bound_file!=NULL)stream_out_local = FOPEN_SCR(parti->bound_file, "w");
+  if(parti->bound_file!=NULL)stream_out_local = FOPEN_2DIR(parti->bound_file, "w");
   if(stream_out_local==NULL){
     FCLOSE_m(PART5FILE);
     return;
@@ -1029,11 +1029,11 @@ void CreatePartSizeFile(partdata *parti){
   if(parti->reg_file==NULL||stream_local==NULL)return;
   fclose(stream_local);
   header_offset_local =GetPartHeaderOffset(parti);
-  stream_local = FOPEN_SCR(parti->bound_file, "r");
+  stream_local = FOPEN_2DIR(parti->bound_file, "r");
   if(stream_local==NULL){
     TestWrite(smokeview_scratchdir, &(parti->bound_file));
     CreatePartBoundFile(parti);
-    stream_local = FOPEN_SCR(parti->bound_file, "r");
+    stream_local = FOPEN_2DIR(parti->bound_file, "r");
   }
   if(stream_local!=NULL){
     fclose(stream_local);
@@ -1585,7 +1585,7 @@ int GetNPartFrames(partdata *parti){
     if(parti->loaded==1)CreatePartSizeFile(parti);
   }
 
-  stream=FOPEN_SCR(size_file,"r");
+  stream=FOPEN_2DIR(size_file,"r");
   if(stream==NULL)return -1;
 
   nframes_all=0;
@@ -1659,7 +1659,7 @@ int GetPartHeader(partdata *parti, int *nf_all, int option_arg, int print_option
     CreatePartSizeFile(parti);
   }
 
-  stream=FOPEN_SCR(parti->size_file,"r");
+  stream=FOPEN_2DIR(parti->size_file,"r");
   if(stream==NULL)return 0;
 
     // pass 1: count frames

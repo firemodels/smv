@@ -326,5 +326,5 @@
 #define IJ2(i,j) ((nycell+1)*(i) + (j))
 #endif
 
-#define FOPEN_SCR(file, mode) fopen_scr(file, mode, smokeview_scratchdir)
+#define FOPEN_2DIR(file, mode) fopen_2dir(file, mode, smokeview_scratchdir)
 #endif

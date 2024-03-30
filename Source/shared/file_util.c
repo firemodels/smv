@@ -574,11 +574,12 @@ FILE *fopen_indir(char *dir, char *file, char *mode){
   return stream;
 }
 
-/* ------------------ fopen_scr ------------------------ */
+/* ------------------ fopen_2dir ------------------------ */
 
-FILE *fopen_scr(char *file, char *mode, char *scratch_dir){
+FILE *fopen_2dir(char *file, char *mode, char *scratch_dir){
   FILE *stream;
 
+  if(file == NULL)return NULL;
 #ifdef WIN32
   stream = _fsopen(file,mode,_SH_DENYNO);
 #else

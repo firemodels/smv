@@ -3365,13 +3365,13 @@ FILE *GetSmokeFileSize(char *smokefile, int fortran_skip, int version){
     }
   }
   strcat(smoke_sizefilename, ".szz");
-  SMOKE_SIZE = FOPEN_SCR(smoke_sizefilename, "r");
+  SMOKE_SIZE = FOPEN_2DIR(smoke_sizefilename, "r");
 
   if(SMOKE_SIZE == NULL){
     // not .szz so try .sz
     strcpy(smoke_sizefilename, smokefile);
     strcat(smoke_sizefilename, ".sz");
-    SMOKE_SIZE = FOPEN_SCR(smoke_sizefilename, "r");
+    SMOKE_SIZE = FOPEN_2DIR(smoke_sizefilename, "r");
   }
   if(SMOKE_SIZE != NULL)return SMOKE_SIZE;
 
@@ -3379,7 +3379,7 @@ FILE *GetSmokeFileSize(char *smokefile, int fortran_skip, int version){
 
   strcpy(smoke_sizefilename, smokefile);
   strcat(smoke_sizefilename, ".sz");
-  SMOKE_SIZE = FOPEN_SCR(smoke_sizefilename, "w");
+  SMOKE_SIZE = FOPEN_2DIR(smoke_sizefilename, "w");
   if(SMOKE_SIZE == NULL){
     printf("***error: was not able to read the size file for %s\n", smokefile);
     printf("          and was not able to create a new size file: %s\n", smoke_sizefilename);
@@ -3429,7 +3429,7 @@ FILE *GetSmokeFileSize(char *smokefile, int fortran_skip, int version){
 
   FCLOSE_SMOKE(SMOKE3DFILE);
   fclose(SMOKE_SIZE);
-  SMOKE_SIZE = FOPEN_SCR(smoke_sizefilename, "r");
+  SMOKE_SIZE = FOPEN_2DIR(smoke_sizefilename, "r");
   return SMOKE_SIZE;
 }
 
@@ -3495,7 +3495,7 @@ int GetSmokeNFrames(int type, float *tmin, float *tmax){
     if(smoke3di->type == CO2_index    && (type&8) == 0)continue;
     strcpy(size_file, smoke3di->file);
     strcat(size_file,".sz");
-    stream = FOPEN_SCR(size_file, "r");
+    stream = FOPEN_2DIR(size_file, "r");
     if(stream == NULL)continue;
     nf = 0;
     fgets(buffer, 255, stream);

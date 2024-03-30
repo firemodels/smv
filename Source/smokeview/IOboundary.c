@@ -30,10 +30,10 @@ void OutputBoundaryData(char *csvfile, char *patchfile, meshdata *meshi, int fir
 
   if(patchout_tmin > patchout_tmax)return;
   if(first_time== FIRST_TIME){
-    csvstream = FOPEN_SCR(csvfile, "w");
+    csvstream = FOPEN_2DIR(csvfile, "w");
   }
   else{
-    csvstream = FOPEN_SCR(csvfile, "a");
+    csvstream = FOPEN_2DIR(csvfile, "a");
   }
   if(csvstream==NULL)return;
   if(first_time==FIRST_TIME){
@@ -1230,7 +1230,7 @@ void GetBoundarySizeInfo(patchdata *patchi, int *nframes, int *buffersize){
 
   strcpy(sizefile, patchi->size_file);
   strcat(sizefile, ".szz");
-  streamsize = FOPEN_SCR(sizefile, "r");
+  streamsize = FOPEN_2DIR(sizefile, "r");
   if(streamsize==NULL){
     *nframes = 0;
     *buffersize = 0;
@@ -1244,7 +1244,7 @@ void GetBoundarySizeInfo(patchdata *patchi, int *nframes, int *buffersize){
       return;
     }
 
-    streamsize = FOPEN_SCR(sizefile, "w");
+    streamsize = FOPEN_2DIR(sizefile, "w");
     if(streamsize==NULL){
       fclose(stream);
       return;
@@ -1282,7 +1282,7 @@ void GetBoundarySizeInfo(patchdata *patchi, int *nframes, int *buffersize){
     }
     fclose(stream);
     fclose(streamsize);
-    streamsize = FOPEN_SCR(sizefile, "r");
+    streamsize = FOPEN_2DIR(sizefile, "r");
     if(streamsize==NULL)return;
   }
 
