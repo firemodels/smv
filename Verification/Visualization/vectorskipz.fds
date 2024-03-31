@@ -6,15 +6,15 @@
 
 &DUMP NFRAMES=400 DT_PL3D=8.0, DT_SL3D=0.1 /
 
-&TIME T_END=1. /  Total simulation time
+&TIME T_END=2. /  Total simulation time
 
 &REAC SOOT_YIELD=0.01,FUEL='PROPANE'/
 
 &SURF ID='BURNER',HRRPUA=600.0,PART_ID='tracers' /  Ignition source
 
-&VENT XB=0.0,1.0,0.0,1.0,0.1,0.1,SURF_ID='BURNER' /  fire source on kitchen stove
+&VENT XB=0.3,0.7,0.3,0.7,0.1,0.1,SURF_ID='BURNER' /  fire source on kitchen stove
 
-&OBST XB=0.0,1.0,0.0,1.0,0.0,0.1 /
+&OBST XB=0.3,0.7,0.3,0.7,0.0,0.1 /
 
 &VENT MB='XMIN', SURF_ID='OPEN' /
 &VENT MB='XMAX', SURF_ID='OPEN' /

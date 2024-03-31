@@ -1,5 +1,5 @@
 RENDERDIR
- .
+ ..\..\Manuals\SMV_Verification_Guide\SCRIPT_FIGURES
 XSCENECLIP
  0 -0.003000 0 3.003000
 YSCENECLIP
@@ -16,9 +16,14 @@ SETTIMEVAL
 RENDERONCE
   vectorskipy
 LOADINIFILE
- vectorskipy_uni.ini
+ vectorskipy_uniform.ini
 SETTIMEVAL
  1.000000
 RENDERONCE
-  vectorskipy_uni
+  vectorskipy_uniform
+UNLOADALL
+LOADINIFILE
+ vectorskipy_grid.ini
+RENDERONCE
+  vectorskipy_grid
  

@@ -1,5 +1,5 @@
 RENDERDIR
- .
+ ..\..\Manuals\SMV_Verification_Guide\SCRIPT_FIGURES
 XSCENECLIP
  0 -0.003000 0 3.003000
 YSCENECLIP
@@ -12,13 +12,18 @@ LOADVSLICE
  TEMPERATURE
  2 0.500000
 SETTIMEVAL
- 1.000000
+ 5.000000
 RENDERONCE
   vectorskipz
 LOADINIFILE
- vectorskipz_uni.ini
+ vectorskipz_uniform.ini
 SETTIMEVAL
- 1.000000
+ 5.000000
 RENDERONCE
-  vectorskipz_uni
+  vectorskipz_uniform
+UNLOADALL
+LOADINIFILE
+ vectorskipz_grid.ini
+RENDERONCE
+  vectorskipz_grid
  
