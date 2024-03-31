@@ -152,30 +152,11 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-      - name: Write vcpkg config
-        uses: "DamianReeves/write-file-action@v1.3"
-        with:
-          path: vcpkg.json
-          write-mode: overwrite
-          contents: |
-            {
-              "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg-tool/main/docs/vcpkg.schema.json",
-              "name":"smv",
-              "version-string":"0.1.0",
-              "dependencies":[
-                  "zlib",
-                  "freeglut",
-                  "glew",
-                  "getopt",
-                  "libjpeg-turbo",
-                  "libpng",
-                  "pkgconf",
-                  "libgd",
-                  "lua",
-                  "pthreads",
-                  "json-c"
-              ]
-            }
+      - name: Pin vcpkg version
+        run: |
+          cd C:\vcpkg
+          git fetch
+          git checkout 2024.03.25
       - name: build smokeview
         shell: cmd
         run: |
