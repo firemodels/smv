@@ -1,0 +1,18 @@
+{
+  "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg-tool/main/docs/vcpkg.schema.json",
+  "name": "smv",
+  "version-string": "0.1.0",
+  "dependencies": [
+    "zlib",
+    "freeglut",
+    "glew",
+    "getopt",
+    "libjpeg-turbo",
+    "libpng",
+    "pkgconf",
+    { "name": "libgd", "default-features": false },
+    "lua",
+    "pthreads",
+    "json-c"
+  ]
+}
