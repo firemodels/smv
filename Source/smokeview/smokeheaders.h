@@ -14,6 +14,7 @@ EXTERNCPP void *MtLoadAllPartFiles(void *arg);
 EXTERNCPP void *GetGlobalPatchBoundsFull(void *arg);
 EXTERNCPP void *PlayMovie(void *arg);
 EXTERNCPP void *ReadAllGeom(void *arg);
+EXTERNCPP void *GetGlobalPartBoundsReduced(void *arg);
 EXTERNCPP void *GetGlobalSliceBoundsFull(void *arg);
 EXTERNCPP void *UpdateTrianglesAll(void *arg);
 EXTERNCPP void *ReadVolsmokeAllFramesAllMeshes2(void *arg);
