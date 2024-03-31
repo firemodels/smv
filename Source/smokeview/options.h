@@ -7,6 +7,7 @@
 #define pp_DEBUG_SUBMENU       // debug output and testing for building menus
 #endif
 
+//#define pp_PARTBOUND_MULTI // compute particle bounds in the background
 //#define pp_LUA            // turn on LUA option
 //#define pp_FED            // used to isolate fed code
 #define pp_CHOPFIX          // fix to saving chop values
@@ -26,7 +27,7 @@
 #ifdef pp_GPU
 #define pp_GPUTHROTTLE      // pp_GPU directive must also be set
 #endif
-#define pp_ONEBUFFER         // consolidate memory allocations when parsing .smv file
+#define pp_ONEBUFFER        // consolidate memory allocations when parsing .smv file
 #define pp_MESH_BOUNDARY    // display boundary files on blockages that are on mesh boundaries
 
 //*** options: windows
