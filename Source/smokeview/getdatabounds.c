@@ -70,6 +70,28 @@ int GetGlobalPartBounds(int flag){
   float *partmins = NULL, *partmaxs = NULL;
   int nloaded_files = 0;
 
+
+#ifdef pp_ONEBUFFER
+  if(part_bound_buffer == NULL && npartinfo > 0 && npart5prop>0){
+    NewMemory(( void ** )&part_bound_buffer, 2*npartinfo*npart5prop*sizeof(float));
+    for(i = 0; i < npartinfo; i++){
+      partdata *parti;
+      int j;
+
+      parti = partinfo + i;
+      if(parti->loaded == 1)nloaded_files++;
+      parti->valmin_part = part_bound_buffer;
+      part_bound_buffer += npart5prop;
+      parti->valmax_part = part_bound_buffer;
+      part_bound_buffer += npart5prop;
+      for(j = 0; j < npart5prop; j++){
+        parti->valmin_part[j] = 1.0;
+        parti->valmax_part[j] = 0.0;
+      }
+      parti->have_bound_file = GetPartFileBounds(parti->bound_file, parti->valmin_part, parti->valmax_part, &parti->npoints_file);
+    }
+  }
+#else
   for(i = 0; i<npartinfo; i++){
     partdata *parti;
     int j;
@@ -86,6 +108,7 @@ int GetGlobalPartBounds(int flag){
     }
     parti->have_bound_file = GetPartFileBounds(parti->bound_file, parti->valmin_part, parti->valmax_part, &parti->npoints_file);
   }
+#endif
   if(npart5prop>0){
     NewMemory((void **)&partmins, npart5prop*sizeof(float));
     NewMemory((void **)&partmaxs, npart5prop*sizeof(float));
@@ -179,6 +202,14 @@ int GetGlobalPartBounds(int flag){
   FREEMEMORY(partmaxs);
   return nloaded_files;
 }
+
+/* ------------------ GetGlobalPartBoundsReduced ------------------------ */
+
+void *GetGlobalPartBoundsReduced(void *arg){
+  GetGlobalPartBounds(0);
+  THREAD_EXIT(partbound_threads);
+}
+
 
 /* ------------------ GetPatchBoundsInfo ------------------------ */
 

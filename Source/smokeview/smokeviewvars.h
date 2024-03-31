@@ -70,6 +70,10 @@ SVEXTERN threaderdata SVDECL(*classifyallgeom_threads, NULL);
 SVEXTERN int SVDECL(n_slicebound_threads, 1), SVDECL(use_slicebound_threads, 1);
 SVEXTERN threaderdata SVDECL(*slicebound_threads, NULL);
 
+//***part bounds
+SVEXTERN int SVDECL(n_partbound_threads, 1), SVDECL(use_partbound_threads, 1);
+SVEXTERN threaderdata SVDECL(*partbound_threads, NULL);
+
 //*** slice
 #ifdef pp_SLICE_MULTI // not implemented
 SVEXTERN int SVDECL(n_sliceload_threads, 4), SVDECL(use_sliceload_threads, 0);
@@ -123,8 +127,10 @@ SVEXTERN int hvac_node_color[3];
 #endif
 
 
+//*** buffers for consolidating memory allocations
 #ifdef pp_ONEBUFFER
 #define MAXFILELEN 360
+SVEXTERN float SVDECL(*part_bound_buffer, NULL);
 SVEXTERN char SVDECL(*part_buffer, NULL);
 SVEXTERN char SVDECL(*smoke3d_buffer, NULL);
 SVEXTERN char SVDECL(*slice_buffer, NULL);
