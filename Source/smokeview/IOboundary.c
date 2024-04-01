@@ -30,10 +30,10 @@ void OutputBoundaryData(char *csvfile, char *patchfile, meshdata *meshi, int fir
 
   if(patchout_tmin > patchout_tmax)return;
   if(first_time== FIRST_TIME){
-    csvstream = fopen(csvfile, "w");
+    csvstream = FOPEN_2DIR(csvfile, "w");
   }
   else{
-    csvstream = fopen(csvfile, "a");
+    csvstream = FOPEN_2DIR(csvfile, "a");
   }
   if(csvstream==NULL)return;
   if(first_time==FIRST_TIME){
@@ -1230,7 +1230,7 @@ void GetBoundarySizeInfo(patchdata *patchi, int *nframes, int *buffersize){
 
   strcpy(sizefile, patchi->size_file);
   strcat(sizefile, ".szz");
-  streamsize = fopen(sizefile, "r");
+  streamsize = FOPEN_2DIR(sizefile, "r");
   if(streamsize==NULL){
     *nframes = 0;
     *buffersize = 0;
@@ -1244,7 +1244,7 @@ void GetBoundarySizeInfo(patchdata *patchi, int *nframes, int *buffersize){
       return;
     }
 
-    streamsize = fopen(sizefile, "w");
+    streamsize = FOPEN_2DIR(sizefile, "w");
     if(streamsize==NULL){
       fclose(stream);
       return;
@@ -1282,7 +1282,7 @@ void GetBoundarySizeInfo(patchdata *patchi, int *nframes, int *buffersize){
     }
     fclose(stream);
     fclose(streamsize);
-    streamsize = fopen(sizefile, "r");
+    streamsize = FOPEN_2DIR(sizefile, "r");
     if(streamsize==NULL)return;
   }
 
@@ -2334,7 +2334,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
     patchmax_global = -patchmin_global;
     if(meshi->boundary_mask != NULL && patchi->patch_filetype == PATCH_STRUCTURED_CELL_CENTER){
       for(i = 0; i<npatchvals; i++){
-        if(meshi->boundary_mask[i % meshi->npatchsize] == 1){
+        if(meshi->boundary_mask[i % meshi->npatchsize] == 0){
           patchmin_global = MIN(patchmin_global, meshi->patchval[i]);
           patchmax_global = MAX(patchmax_global, meshi->patchval[i]);
         }

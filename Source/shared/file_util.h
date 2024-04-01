@@ -100,6 +100,7 @@ int FileExistsOrig(char *filename);
 // vvvvvvvvvvvvvvvvvvvvvvvv headers vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 EXTERNCPP void GetProgFullPath(char *progexe, int maxlen_progexe);
 EXTERNCPP FILE *fopen_indir(char *dir, char *file, char *mode);
+EXTERNCPP FILE *fopen_2dir(char *file, char *mode, char *scratch_dir);
 EXTERNCPP void TestWrite(char *scratchdir, char **fileptr);
 EXTERNCPP int FFLUSH(void);
 EXTERNCPP int PRINTF(const char * format, ...);

@@ -643,6 +643,9 @@ Figure \ref{figvslicetest} present images verifying the display of vector slices
 Again, vector slice file images are drawn at \SI{0}{s}, \SI{10}{s} and \SI{30}{s}.
 The first column draws all vectors while the second column discards or chops vectors
 below \SI{140}{\degreeCelsius}.
+Figures \ref{figvsliceuniformx} and \ref{figvsliceuniformz} present images verifying the display of vector slices using the unifrom option.
+The test cases consist of three meshes with different resolutions.  With the uniform option selected vector
+skipping is set in each mesh so the overall vector display is uniform.
 
 %%\include smv_vg_fed1.tex
 
@@ -809,6 +812,38 @@ above on boundary&above
  red for the $t=\SI{0}{s}$ images. For the chopped contours, the color near the chop
  boundary should match the color near \SI{140}{\degreeCelsius} in the colorbar.}
 \label{figvslicetest}%
+\end{figure}
+
+\begin{figure}[bph]
+\begin{center}
+\begin{figure}[bph]
+\begin{center}
+\begin{tabular}{c}
+ \includegraphics[height=\figheightE]{SCRIPT_FIGURES/vectorskipx_grid}\\
+ grid\\
+ \includegraphics[height=\figheightE]{SCRIPT_FIGURES/vectorskipx}\\
+ original spacing\\
+ \includegraphics[height=\figheightE]{SCRIPT_FIGURES/vectorskipx_uniform}\\
+ uniform spacing
+ \end{tabular}
+\end{center}
+ \caption[A test showing uniform vector slices where grids are non-uniform in the X direction.]
+{A test showing uniform vector slices where grids are non-uniform in the X direction.}
+\label{figvsliceuniformx}%
+\end{figure}
+
+\begin{figure}[bph]
+\begin{center}
+\begin{tabular}{ccc}
+ \includegraphics[height=6.0in]{SCRIPT_FIGURES/vectorskipz_grid}&
+ \includegraphics[height=6.0in]{SCRIPT_FIGURES/vectorskipz}&
+ \includegraphics[height=6.0in]{SCRIPT_FIGURES/vectorskipz_uniform}\\
+ grid&original spacing&uniform spacing\\
+ \end{tabular}
+\end{center}
+ \caption[A test showing uniform vector slices where grids are non-uniform in the Z direction.]
+{A test showing uniform vector slices where grids are non-uniform in the Z direction.}
+\label{figvsliceuniformz}%
 \end{figure}
 
 \begin{figure}[bph]
@@ -1008,9 +1043,6 @@ The cases are the same otherwise.  Similarly, Figure \ref{figRESTARTgeom} shows
 an immersed geometry case run with and without a restart file. The `with restart` images
 in both figures
 should be the same as the `without restart` images.
-
-
-
 
 \begin{figure}[bph]
 \begin{center}

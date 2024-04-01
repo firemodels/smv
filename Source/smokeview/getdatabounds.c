@@ -19,7 +19,7 @@ int GetPartFileBounds(char *file, float *valmin, float *valmax, int *ntotal_poin
 
   *ntotal_points = 0;
   if(file==NULL||strlen(file)==0)return 0;
-  stream = fopen(file, "r");
+  stream = FOPEN_2DIR(file, "r");
   if(stream==NULL)return 0;
 
   while(!feof(stream)){
@@ -230,7 +230,7 @@ boundsdata *GetPatchBoundsInfo(char *shortlabel){
 int WriteFileBounds(char *file, float valmin, float valmax){
   FILE *stream;
 
-  stream = fopen(file, "w");
+  stream = FOPEN_2DIR(file, "w");
   if(stream==NULL)return 0;
   fprintf(stream," %f %f %f", 0.0, valmin, valmax);
   fclose(stream);
@@ -246,7 +246,7 @@ int GetFileBounds(char *file, int nbounds, float *valmin, float *valmax){
   float vmins[MAXPLOT3DVARS] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
   float vmaxs[MAXPLOT3DVARS] = {1.0, 1.0, 1.0, 1.0, 1.0, 1.0};
 
-  stream = fopen(file, "r");
+  stream = FOPEN_2DIR(file, "r");
   if(stream==NULL){
     memcpy(valmin, vmins, nbounds * sizeof(float));
     memcpy(valmax, vmaxs, nbounds * sizeof(float));
@@ -445,7 +445,7 @@ int GetPlot3DFileBounds(char *file, float *valmin, float *valmax){
   }
   if(compute_bounds==0)return 1;
   if(file==NULL||strlen(file)==0)return 0;
-  stream = fopen(file, "r");
+  stream = FOPEN_2DIR(file, "r");
   if(stream==NULL)return 0;
 
   CheckMemory;
@@ -707,16 +707,23 @@ void RmGbndFile(int file_type){
 
 FILE *FopenGbndFile(int file_type, char *mode){
   FILE *stream = NULL;
+  char *file=NULL;
 
   ASSERT_BOUND_TYPE;
   if(file_type == BOUND_SLICE){
-    stream = fopen(slice_gbnd_filename, mode);
+    file = slice_gbnd_filename;
   }
   else if(file_type==BOUND_PATCH){
-    stream = fopen(patch_gbnd_filename, mode);
+    file = patch_gbnd_filename;
   }
   else if(file_type == BOUND_PLOT3D){
-    stream = fopen(plot3d_gbnd_filename, mode);
+    file = plot3d_gbnd_filename;
+  }
+  else{
+    file = NULL;
+  }
+  if(file != NULL){
+    stream = FOPEN_2DIR(file, mode);
   }
   return stream;
 }
@@ -1814,10 +1821,10 @@ int ReadPartBounds(partdata *parti,int read_bounds_arg){
 
   // make sure a size file exists
 
-  if(parti->size_file!=NULL)stream = fopen(parti->size_file, "r");
-  if(parti->size_file==NULL||stream==NULL){
+  if(parti->size_file!=NULL)stream = FOPEN_2DIR(parti->size_file, "r");
+  if(stream==NULL){
     CreatePartSizeFile(parti);
-    if(parti->size_file!=NULL)stream = fopen(parti->size_file, "r");
+    if(parti->size_file!=NULL)stream = FOPEN_2DIR(parti->size_file, "r");
     if(stream==NULL)return 0;
   }
   if(stream!=NULL){
@@ -1827,10 +1834,10 @@ int ReadPartBounds(partdata *parti,int read_bounds_arg){
 
   // make sure a bound file exists
 
-  if(parti->bound_file!=NULL)stream = fopen(parti->bound_file, "r");
+  if(parti->bound_file!=NULL)stream = FOPEN_2DIR(parti->bound_file, "r");
   if(parti->bound_file==NULL||stream==NULL){
     CreatePartBoundFile(parti);
-    stream = fopen(parti->bound_file, "r");
+    stream = FOPEN_2DIR(parti->bound_file, "r");
     if(stream==NULL)return 0;
   }
   if(stream!=NULL){
@@ -1846,7 +1853,7 @@ int ReadPartBounds(partdata *parti,int read_bounds_arg){
     return 0;
   }
 
-  stream = fopen(parti->bound_file, "r");
+  stream = FOPEN_2DIR(parti->bound_file, "r");
   for(;;){
     float time_local;
     int nclasses_local, k, version_local =-1;
@@ -1927,7 +1934,7 @@ void MergeAllPartBounds(void){
   if(global_have_global_bound_file==0){
     FILE *stream;
 
-    stream = fopen(part_globalbound_filename, "w");
+    stream = FOPEN_2DIR(part_globalbound_filename, "w");
     if(stream!=NULL){
       global_have_global_bound_file = 1;
       global_part_boundsize = GetFileSizeSMV(partinfo->bound_file);
@@ -2004,7 +2011,7 @@ void GetAllPartBounds(void){
 
   if(global_part_boundsize==0)global_part_boundsize = GetFileSizeSMV(partinfo->bound_file);
 
-  stream = fopen(part_globalbound_filename, "r");
+  stream = FOPEN_2DIR(part_globalbound_filename, "r");
   if(stream!=NULL){
     int n;
     int part_boundsize_old_local;
