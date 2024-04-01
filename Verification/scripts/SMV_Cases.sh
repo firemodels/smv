@@ -50,6 +50,9 @@ $QFDS -d Visualization tour.fds
 $QFDS -d Visualization transparency.fds
 $QFDS -d Visualization vcirctest.fds
 $QFDS -d Visualization vcirctest2.fds
+$QFDS -p 3 -d Visualization vectorskipx.fds
+$QFDS -p 3 -d Visualization vectorskipy.fds
+$QFDS -p 3 -d Visualization vectorskipz.fds
 $QFDS -d Visualization version.fds
 $QFDS -d Visualization version2.fds
 $QFDS -d Visualization windrose.fds

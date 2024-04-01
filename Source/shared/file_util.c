@@ -542,7 +542,6 @@ int GetFileListSize(const char *path, char *filter, int mode){
   return maxfiles;
 }
 
-
 /* ------------------ fopen_indir  ------------------------ */
 
 FILE *fopen_indir(char *dir, char *file, char *mode){
@@ -550,7 +549,11 @@ FILE *fopen_indir(char *dir, char *file, char *mode){
 
   if(file==NULL||strlen(file)==0)return NULL;
   if(dir==NULL||strlen(dir)==0){
+#ifdef WIN32
+    stream = _fsopen(file, mode, _SH_DENYNO);
+#else
     stream = fopen(file,mode);
+#endif
   }
   else{
     char *filebuffer;
@@ -561,11 +564,33 @@ FILE *fopen_indir(char *dir, char *file, char *mode){
     strcpy(filebuffer,dir);
     strcat(filebuffer,dirseparator);
     strcat(filebuffer,file);
-    stream = fopen(filebuffer,mode);
+#ifdef WIN32
+    stream = _fsopen(filebuffer, mode, _SH_DENYNO);
+#else
+    stream = fopen(filebuffer, mode);
+#endif
     FREEMEMORY(filebuffer);
   }
   return stream;
 }
+
+/* ------------------ fopen_2dir ------------------------ */
+
+FILE *fopen_2dir(char *file, char *mode, char *scratch_dir){
+  FILE *stream;
+
+  if(file == NULL)return NULL;
+#ifdef WIN32
+  stream = _fsopen(file,mode,_SH_DENYNO);
+#else
+  stream = fopen(file,mode);
+#endif
+  if(stream == NULL && scratch_dir != NULL){
+    stream = fopen_indir(scratch_dir, file, mode);
+  }
+  return stream;
+}
+
 
 /* ------------------ CompareFileList ------------------------ */
 

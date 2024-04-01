@@ -690,7 +690,7 @@ int MakeSliceSizefile(char *file, char *sizefile, int compression_type){
   stream = FOPEN(file, "rb");
   if(stream==NULL)return 0;
 
-  sizestream = fopen(sizefile, "w");
+  sizestream = FOPEN_2DIR(sizefile, "w");
   if(sizestream==NULL){
     fclose(stream);
     return 0;
@@ -755,10 +755,10 @@ int GetSliceHeader0(char *comp_file, char *size_file, int compression_type, int 
   FILE *stream;
   char buffer[255];
 
-  stream = FOPEN(size_file, "r");
+  stream = FOPEN_2DIR(size_file, "r");
   if(stream == NULL){
     if(MakeSliceSizefile(comp_file, size_file, compression_type) == 0)return 0;
-    stream = FOPEN(size_file, "r");
+    stream = FOPEN_2DIR(size_file, "r");
     if(stream == NULL)return 0;
   }
 
@@ -790,10 +790,10 @@ int GetSliceHeader(char *comp_file, char *size_file, int compression_type,
   char buffer[256];
   int ncompressed_rle, ncompressed_zlib;
 
-  stream = FOPEN(size_file, "r");
+  stream = FOPEN_2DIR(size_file, "r");
   if(stream == NULL){
     if(MakeSliceSizefile(comp_file, size_file, compression_type) == 0)return 0;
-    stream = fopen(size_file, "r");
+    stream = FOPEN_2DIR(size_file, "r");
     if(stream == NULL)return 0;
   }
 
@@ -1172,7 +1172,7 @@ void ReadFed(int file_index, int time_frame, float *time_value, int flag, int fi
     if(file_type==FED_SLICE){
       FILE *stream=NULL;
 
-      stream = fopen(slicei->bound_file, "w");
+      stream = FOPEN_2DIR(slicei->bound_file, "w");
       if(stream!=NULL){
         fprintf(stream, "0.0 %f %f\n", fed_valmin, fed_valmax);
         fclose(stream);
@@ -2216,6 +2216,7 @@ void UpdateAllMeshSkips(int skip){
     meshi->n_jmap = 0;
     meshi->n_kmap = 0;
   }
+#ifdef pp_MESHSKIP
   for(i = 0; i < nmeshes; i++){
     meshdata *meshi;
 
@@ -2224,6 +2225,7 @@ void UpdateAllMeshSkips(int skip){
     UpdateMeshSkip(meshi, skip, 1);
     UpdateMeshSkip(meshi, skip, 2);
   }
+#endif
 }
 
 /* ------------------ UpdateVectorSkipDefault ------------------------ */
