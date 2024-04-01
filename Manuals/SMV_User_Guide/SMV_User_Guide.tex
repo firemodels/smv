@@ -1167,6 +1167,27 @@ to obtain:
 &SLCF PBY=1.50,QUANTITY='TEMPERATURE',VECTOR=.TRUE. /
 \end{lstlisting}
 
+When adjacent grids have different resolutions, vector slices may be displayed uniformly 
+by selecting the {\em uniform spacing}\ checkbox in the Slice file settings dialog box.
+This is illustrated in Figure \ref{figvsliceuniformx}.
+
+\begin{figure}[bph]
+\begin{center}
+\begin{tabular}{c}
+ \includegraphics[width=6.5in]{../SMV_Verification_Guide/SCRIPT_FIGURES/vectorskipx_grid}\\
+ grid\\
+ \includegraphics[width=6.5in]{../SMV_Verification_Guide/SCRIPT_FIGURES/vectorskipx}\\
+ original spacing\\
+ \includegraphics[width=6.5in]{../SMV_Verification_Guide/SCRIPT_FIGURES/vectorskipx_uniform}\\
+ uniform spacing
+ \end{tabular}
+\end{center}
+ \caption[A test showing uniform vector slices where grids are non-uniform in the X direction.]
+{A test showing uniform vector slices where grids are non-uniform in the X direction.}
+\label{figvsliceuniformx}%
+\end{figure}
+
+
 %%-----------------------------------------------------------------------
 \subsection{3D slices}
 The user may visualize a 3D region of data using slice files.
