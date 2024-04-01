@@ -2334,7 +2334,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
     patchmax_global = -patchmin_global;
     if(meshi->boundary_mask != NULL && patchi->patch_filetype == PATCH_STRUCTURED_CELL_CENTER){
       for(i = 0; i<npatchvals; i++){
-        if(meshi->boundary_mask[i % meshi->npatchsize] == 1){
+        if(meshi->boundary_mask[i % meshi->npatchsize] == 0){
           patchmin_global = MIN(patchmin_global, meshi->patchval[i]);
           patchmax_global = MAX(patchmax_global, meshi->patchval[i]);
         }
