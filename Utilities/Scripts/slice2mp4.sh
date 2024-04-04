@@ -816,7 +816,7 @@ if [ ! -e $smvfile ]; then
   exit
 fi
 
-$SMOKEVIEW -info $input >& /dev/null
+$SMOKEVIEW $NOBOUNDS -info $input >& /dev/null
 
 # get viewpoint menu (optional)
 
