@@ -582,6 +582,11 @@ char *ProcessCommandLine(CommandlineArgs *args) {
       iblank_set_on_commandline = 1;
       use_iblank = 0;
     }
+#ifdef pp_NOBOUNDS
+    if(args->nobounds){
+      no_bounds = 1;
+    }
+#endif
     if(args->fed){
       compute_fed = 1;
     }

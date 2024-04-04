@@ -311,6 +311,9 @@ void GetGlobalPatchBounds(int flag, int set_flag){
   int i;
 
   if(npatchinfo==0)return;
+#ifdef pp_NOBOUNDS
+  if(no_bounds == 1 && force_bounds==0)flag = 0;
+#endif
   for(i = 0; i < npatchbounds; i++){
     boundsdata *boundi;
 
@@ -1385,6 +1388,9 @@ void BoundsUpdate(int file_type){
 void GetGlobalSliceBounds(int flag, int set_flag){
   int i;
 
+#ifdef pp_NOBOUNDS
+  if(no_bounds == 1 && force_bounds==0)flag = 0;
+#endif
   if(nsliceinfo==0)return;
   for(i = 0;i<nslicebounds;i++){
     boundsdata *boundi;
@@ -1554,6 +1560,9 @@ void GetHVACNodeBounds(char *shortlabel, float *valminptr, float *valmaxptr){
 void GetGlobalHVACDuctBounds(int flag){
   int i;
 
+#ifdef pp_NOBOUNDS
+  if(no_bounds == 1 && force_bounds==0)flag = 0;
+#endif
   int nhvacboundsmax = 0;
   if(hvacductvalsinfo != NULL)nhvacboundsmax = hvacductvalsinfo->n_duct_vars;
   if(nhvacboundsmax == 0)return;
@@ -1613,6 +1622,9 @@ void GetGlobalHVACDuctBounds(int flag){
 void GetGlobalHVACNodeBounds(int flag){
   int i;
 
+#ifdef pp_NOBOUNDS
+  if(no_bounds == 1 && force_bounds==0)flag = 0;
+#endif
   int nhvacboundsmax = 0;
   if(hvacnodevalsinfo != NULL)nhvacboundsmax = hvacnodevalsinfo->n_duct_vars + hvacnodevalsinfo->n_node_vars;
   if(nhvacboundsmax == 0)return;
