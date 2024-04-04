@@ -321,7 +321,7 @@ void GetGlobalPatchBounds(int flag, int set_flag){
     boundi->dlg_global_valmin = 1.0;
     boundi->dlg_global_valmax = 0.0;
   }
-  BoundsUpdate(BOUND_PATCH);
+  if(flag==1)BoundsUpdate(BOUND_PATCH);
   for(i = 0; i < npatchinfo; i++){
     patchdata *patchi;
     float valmin, valmax;
