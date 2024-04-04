@@ -1015,7 +1015,7 @@ void BoundsUpdateSetup(int file_type){
       }
     }
     fclose(stream);
-    RmGbndFile(file_type);
+   // RmGbndFile(file_type);
 #ifdef pp_NOBOUNDS
     if(no_bounds == 1 && force_bounds == 0){
       assert(FFALSE); // global bounds file shouldn't exist if the no_bounds option was set
