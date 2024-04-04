@@ -29,6 +29,7 @@
 #define pp_ONEBUFFER        // consolidate memory allocations when parsing .smv file
 #define pp_MESH_BOUNDARY    // display boundary files on blockages that are on mesh boundaries
 #define pp_MESHSKIP         // compute mesh skip arrays to display vector slices uniformly
+#define pp_NOBOUNDS           // add option to not compute global bounds at startup
 
 //*** options: windows
 
