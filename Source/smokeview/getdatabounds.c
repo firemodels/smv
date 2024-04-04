@@ -467,7 +467,11 @@ void GetGlobalPlot3DBounds(void){
   int i;
 
   if(nplot3dinfo <= 0)return;
+#ifdef pp_NOBOUNDS
+  if(no_bounds==0 || force_bounds==1)BoundsUpdate(BOUND_PLOT3D);
+#else
   BoundsUpdate(BOUND_PLOT3D);
+#endif
   for(i = 0; i<nplot3dinfo; i++){
     plot3ddata *plot3di;
 
@@ -1408,7 +1412,11 @@ void GetGlobalSliceBounds(int flag, int set_flag){
     boundi->dlg_global_valmin = 1.0;
     boundi->dlg_global_valmax = 0.0;
   }
+#ifdef pp_NOBOUNDS
+  if(no_bounds==0 || force_bounds==1)BoundsUpdate(BOUND_SLICE);
+#else
   BoundsUpdate(BOUND_SLICE);
+#endif
   INIT_PRINT_TIMER(slicebounds_timer);
   for(i = 0;i<nsliceinfo;i++){
     slicedata *slicei;
@@ -1693,7 +1701,11 @@ void GetGlobalHVACNodeBounds(int flag){
 void UpdateGlobalFEDSliceBounds(void){
   int i;
 
+#ifdef pp_NOBOUNDS
+  if(no_bounds==0 || force_bounds==1)BoundsUpdate(BOUND_SLICE);
+#else
   BoundsUpdate(BOUND_SLICE);
+#endif
   for(i = 0; i<nsliceinfo; i++){
     slicedata *slicei;
     float valmin, valmax;
