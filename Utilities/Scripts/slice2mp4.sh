@@ -5,6 +5,8 @@ cd $SCRIPTDIR/../../..
 FIREMODELS_ROOT=`pwd`
 cd $CURRENT_DIR
 
+NOBOUNDS=
+
 
 #---------------------------------------------
 #                   Usge
@@ -17,6 +19,7 @@ function Usage {
   echo "This script generates an mp4 animation of an FDS case by running multiple copies of smokeview"
   echo "where each copy produces images which are then combined to form the animation"
   echo ""
+  echo "-B      - don't compute bounds at smokeview startup"
   echo "-c file - config file"
   echo "-e path - full path of smokeview executable."
   echo "     [default: $SMOKEVIEW]"
@@ -679,15 +682,15 @@ EOF
 
 # turn off node sharing for now
 SHARE=
-
   cat << EOF > $img_scriptname
 #!/bin/bash
 NPROCS=$NPROCS
 QUEUE=$QUEUE
 SMOKEVIEW="$SMOKEVIEW"
+NOBOUNDS="$NOBOUNDS"
 SMOKEVIEWBINDIR="$SMOKEVIEWBINDIR"
 QSMV="${FIREMODELS_ROOT}/smv/Utilities/Scripts/qsmv.sh $SHARE $O_opt $v_opt"
-\$QSMV -j $JOBPREFIX -P \$NPROCS -q \$QUEUE -e \$SMOKEVIEW -b \$SMOKEVIEWBINDIR -c $smv_scriptname $input
+\$QSMV -j $JOBPREFIX -P \$NPROCS -q \$QUEUE -e \$SMOKEVIEW \$NOBOUNDS -b \$SMOKEVIEWBINDIR -c $smv_scriptname $input
 EOF
 chmod +x $img_scriptname
 }
@@ -764,9 +767,12 @@ fi
 #                  parse command line options 
 #---------------------------------------------
 
-while getopts 'c:e:hiOv' OPTION
+while getopts 'Bc:e:hiOv' OPTION
 do
 case $OPTION  in
+  B)
+   NOBOUNDS="-B"
+   ;;
   c)
    USER_CONFIG="$OPTARG"
    ;;
