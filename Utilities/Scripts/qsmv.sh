@@ -103,6 +103,7 @@ COMMAND=
 SMVBINDIR=
 SMVJOBPREFIX=
 b_arg=
+B_arg=
 c_arg=
 d_arg=
 e_arg=
@@ -115,6 +116,7 @@ r_arg=
 T_arg=
 v_arg=
 one_frame=
+NOBOUNDS=
 
 if [ $# -lt 1 ]; then
   usage
@@ -124,7 +126,7 @@ commandline=`echo $* | sed 's/-V//' | sed 's/-v//'`
 
 #*** read in parameters from command line
 
-while getopts 'Ab:c:C:d:e:fFhHij:n:N:Op:P:q:rs:S:tTv' OPTION
+while getopts 'Ab:Bc:C:d:e:fFhHij:n:N:Op:P:q:rs:S:tTv' OPTION
 do
 case $OPTION  in
   A)
@@ -133,6 +135,10 @@ case $OPTION  in
   b)
    SMVBINDIR="-bindir $OPTARG"
    b_arg="-b $OPTARG"
+   ;;
+  B)
+   NOBOUNDS=-nobounds
+   B_ARG="-B"
    ;;
   c)
    smv_script="$OPTARG"
@@ -234,10 +240,10 @@ N_ARG="-N $NRESERVE"
 if [ $nprocs != 1 ]; then
   if [ "$one_frame" == "" ]; then
     for i in $(seq 1 $nprocs); do
-      $QSMV $b_arg $c_arg $d_arg $e_arg $f_arg $i_arg $j_arg $N_ARG $q_arg $r_arg $v_arg $T_arg -s $i -S $nprocs $in
+      $QSMV $b_arg $B_ARG $c_arg $d_arg $e_arg $f_arg $i_arg $j_arg $N_ARG $q_arg $r_arg $v_arg $T_arg -s $i -S $nprocs $in
     done
   else
-    $QSMV $b_arg $c_arg $d_arg $e_arg $f_arg $i_arg $j_arg $N_ARG $q_arg $r_arg $v_arg $T_arg -s $nprocs -S $nprocs $in
+    $QSMV $b_arg $B_ARG $c_arg $d_arg $e_arg $f_arg $i_arg $j_arg $N_ARG $q_arg $r_arg $v_arg $T_arg -s $nprocs -S $nprocs $in
   fi
   exit
 fi
@@ -442,13 +448,14 @@ echo "   smokeview file: $smvfile"
 echo " smokeview script: $smokeview_script_file"
 echo "      start frame: $first"
 echo "       frame skip: $skip"
+echo "         nobounds: $NOBOUNDS"
 echo "             Host: \`hostname\`"
-echo "      Run command: $exe $script_file $smv_script $FED $redirect $render_opts $SMVBINDIR $infile"
+echo "      Run command: $exe $script_file $smv_script $NOBOUNDS $FED $redirect $render_opts $SMVBINDIR $infile"
 echo "            Queue: $queue"
 echo ""
 
 source $XSTART
-$exe $script_file $smv_script $FED $redirect $render_opts $SMVBINDIR $infile
+$exe $script_file $smv_script $NOBOUNDS $FED $redirect $render_opts $SMVBINDIR $infile
 source $XSTOP
 
 EOF
