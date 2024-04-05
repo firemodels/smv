@@ -201,6 +201,9 @@ case $OPTION  in
    ;;
   s)
    first="$OPTARG"
+   if [ "$FRAME_OFFSET" != "" ]; then
+     first=$(expr $first + $FRAME_OFFSET)
+   fi
    render_opts=1
    ;;
   S)
