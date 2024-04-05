@@ -120,6 +120,9 @@ restore_user_state()
     if [ "$USER_RENDERDIR" != "" ]; then
       RENDERDIR=$USER_RENDERDIR
     fi
+    if [ "$USER_FRAME_OFFSET" != "" ]; then
+      FRAME_OFFSET=$USER_FRAME_OFFSET
+    fi
     if [ "$USER_MOVIEDIR" != "" ]; then
       MOVIEDIR=$USER_MOVIEDIR
     fi
@@ -159,6 +162,7 @@ restore_state()
     if [ "$COLORBAR" == "" ]; then
       COLORBAR="0"
     fi
+    FRAME_OFFSET=${SLICE2MP4_FRAME_OFFSET}
     TIMEBAR=${SLICE2MP4_TIMEBAR}
     if [ "$TIMEBAR" == "" ]; then
       TIMEBAR="0"
@@ -205,6 +209,7 @@ save_state()
   echo "export SLICE2MP4_COLORBAR=$COLORBAR"          >> $LOCALCONFIG
   echo "export SLICE2MP4_FONTSIZE=$FONTSIZE"          >> $LOCALCONFIG
   echo "export SLICE2MP4_TIMEBAR=$TIMEBAR"            >> $LOCALCONFIG
+  echo "export SLICE2MP4_FRAME_OFFSET=$FRAME_OFFSET"  >> $LOCALCONFIG
 }
 
 #---------------------------------------------
@@ -274,6 +279,11 @@ if [ "$FONTSIZE" == "0" ]; then
 else
   echo "      font size: large"
 fi
+if [ "$FRAME_OFFSET" == "" ]; then
+  echo "   frame offset: 0"
+else
+  echo "   frame offset: $FRAME_OFFSET"
+fi
 if [ "$viewpointd" != "" ]; then
   echo "      viewpoint: $viewpointd"
 else
@@ -314,6 +324,7 @@ fi
   echo "v - set viewpoint"
 
   echo ""
+  echo "f - first frame [default: 0]"
   echo "r - set PNG dir "
   echo "a - set mp4 dir"
   echo "u - set web url"
@@ -338,6 +349,10 @@ fi
   if [ "$ans" == "a" ]; then
     read -p "   enter animation directory: " MOVIEDIR
     CHECK_WRITE $MOVIEDIR
+    continue
+  fi
+  if [ "$ans" == "f" ]; then
+    read -p "   enter frame offset: " FRAME_OFFSET
     continue
   fi
   if [ "$ans" == "u" ]; then
