@@ -4,7 +4,7 @@ GETNEWPORT ()
 {
   while [ -e $lockfile ] ; do
     echo waiting for lock file, $lockfile, to clear
-    sleep 15
+    sleep 1
   done
   touch $lockfile
   chmod 777 $lockfile
@@ -17,7 +17,7 @@ GETNEWPORT ()
 }
 
 if [ "`uname`" != "Darwin" ]; then
-  PAUSE=15
+  PAUSE=1
   echo "setting up graphics environment (pausing $PAUSE s)"
   XVFB=Xvfb
   GETNEWPORT 
