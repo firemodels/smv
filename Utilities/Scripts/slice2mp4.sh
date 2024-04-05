@@ -23,6 +23,7 @@ function Usage {
   echo "-c file - config file"
   echo "-e path - full path of smokeview executable."
   echo "     [default: $SMOKEVIEW]"
+  echo "-F - starting frame offset"
   echo "-h - show this message"
   echo "-i - use installed smokeview"
   echo "-O - only output frame from the last smokeview instance (debug option)"
@@ -757,6 +758,7 @@ EMAIL=
 SHARE=
 v_opt=
 O_opt=
+FRAME_OFFSET=
 USER_CONFIG=
 SMV_WEBHOST_default=
 if [ "$SMV_WEBHOST" != "" ]; then
@@ -767,11 +769,14 @@ fi
 #                  parse command line options 
 #---------------------------------------------
 
-while getopts 'Bc:e:hiOv' OPTION
+while getopts 'Bc:e:F:hiOv' OPTION
 do
 case $OPTION  in
   B)
    NOBOUNDS="-B"
+   ;;
+  F)
+   FRAME_OFFSET="$OPTARG"
    ;;
   c)
    USER_CONFIG="$OPTARG"
@@ -796,6 +801,8 @@ case $OPTION  in
 esac
 done
 shift $(($OPTIND-1))
+
+export FRAME_OFFSET
 
 if [ ! -e $SMOKEVIEW ]; then
   echo "***error: smokeview not found at $SMOKEVIEW"
