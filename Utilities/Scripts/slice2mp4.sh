@@ -5,7 +5,7 @@ cd $SCRIPTDIR/../../..
 FIREMODELS_ROOT=`pwd`
 cd $CURRENT_DIR
 
-NOBOUNDS=
+NOBOUNDS="-B"
 
 
 #---------------------------------------------
@@ -19,7 +19,6 @@ function Usage {
   echo "This script generates an mp4 animation of an FDS case by running multiple copies of smokeview"
   echo "where each copy produces images which are then combined to form the animation"
   echo ""
-  echo "-B      - don't compute bounds at smokeview startup"
   echo "-c file - config file"
   echo "-e path - full path of smokeview executable."
   echo "     [default: $SMOKEVIEW]"
@@ -258,7 +257,7 @@ echo "          slice: $slice_quantity/$slice_dir=$slice_pos "
 if [ "$have_bounds" == "1" ]; then
   echo "       min, max: $valmin $slice_quantity_unit, $valmax $slice_quantity_unit"
 else
-  echo "         bounds: default"
+  echo "         bounds: not specified"
 fi
 if [ "$COLORBAR" == "1" ]; then
   echo "      color bar: show"
@@ -331,6 +330,10 @@ fi
   echo "1 - create MP4 animation"
   echo "2 - create MP4 animation then exit"
   echo "x - exit"
+  if [ "$bound_error" != "" ]; then
+    echo "***error: must specify min/max bounds before making a mp4 file"
+    bound_error=
+  fi
   read -p "option: " ans
   if [ "$ans" == "a" ]; then
     read -p "   enter animation directory: " MOVIEDIR
@@ -351,6 +354,7 @@ fi
     read -p "   set $slice_quantity_short min: " valmin
     read -p "   set $slice_quantity_short max: " valmax
     have_bounds=1
+    bound_error=
     writeini
     continue;
   fi
@@ -452,12 +456,16 @@ fi
     save_state
   fi
   if [[ "$ans" == "1" ]] ||  [[ "$ans" == "2" ]]; then
-    writeini
-    GENERATE_SCRIPTS $slice_index
-    make_movie
-    if [ "$ans" == "2" ]; then
-      save_state
-      exit
+    if [ "$have_bounds" != "" ]; then
+      writeini
+      GENERATE_SCRIPTS $slice_index
+      make_movie
+      if [ "$ans" == "2" ]; then
+        save_state
+        exit
+      fi
+    else
+      bound_error=1
     fi
   fi
 done
@@ -529,6 +537,7 @@ done
 select_slicefile ()
 {
 have_bounds=
+bound_error=
 while true; do
   OUTPUT_SLICES
   re='^[0-9]+$'
@@ -769,12 +778,9 @@ fi
 #                  parse command line options 
 #---------------------------------------------
 
-while getopts 'Bc:e:F:hiOv' OPTION
+while getopts 'c:e:F:hiOv' OPTION
 do
 case $OPTION  in
-  B)
-   NOBOUNDS="-B"
-   ;;
   F)
    FRAME_OFFSET="$OPTARG"
    ;;
