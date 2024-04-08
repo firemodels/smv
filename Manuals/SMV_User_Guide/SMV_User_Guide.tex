@@ -1167,7 +1167,7 @@ to obtain:
 &SLCF PBY=1.50,QUANTITY='TEMPERATURE',VECTOR=.TRUE. /
 \end{lstlisting}
 
-When adjacent grids have different resolutions, vector slices may be displayed uniformly 
+When adjacent grids have different resolutions, vector slices may be displayed uniformly
 by selecting the {\em uniform spacing}\ checkbox in the Slice file settings dialog box.
 This is illustrated in Figure \ref{figvsliceuniformx}.
 
@@ -3961,6 +3961,32 @@ LOADVSLICEM
   1/2/3 (int)dir  (float)position
   mesh number (int)
 \end{lstlisting}
+
+%%+++++++++++++++++++++++
+\hitemssf{OUTPUTSLICEDATA}
+Use {\tt OUTPUTSLICEDATA}\ to output slice data to a spread
+sheet file whenever the `r' key is pressed to render an image.
+Usage:
+\begin{lstlisting}
+  OUTPUTSLICEDATA
+  flag (int)
+\end{lstlisting}
+
+where flag is 1 to turn on slice data output and 0 to turn it off.
+
+%%+++++++++++++++++++++++
+\hitemssf{SETSLICEAVERAGE}
+Use {\tt SETSLICEAVERAGE}\ to average slice data when loading.
+{\tt SETSLICEAVERAGE}\ must be used before a slice
+file is loaded. Usage:
+\begin{lstlisting}
+  SETSLICEAVERAGE
+  flag (int) interval (float)
+\end{lstlisting}
+
+where flag is 1 to turn slice averaging on and 0 to turn it off.
+The parmameter interval is specified the time interval used
+to perform the average.
 
 %%+++++++++++++++++++++++
 \hitemssf{SETSLICEBOUNDS}
