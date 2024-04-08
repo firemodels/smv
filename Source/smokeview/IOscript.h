@@ -97,6 +97,8 @@
 #define SCRIPT_SETCLIPY          317
 #define SCRIPT_SETCLIPZ          318
 #define SCRIPT_SETCLIPMODE       319
+#define SCRIPT_SETSLICEAVERAGE   320
+#define SCRIPT_OUTPUTSLICEDATA   321
 
 #define SCRIPT_SLICE_FILE          0
 #define SCRIPT_BOUNDARY_FILE       1

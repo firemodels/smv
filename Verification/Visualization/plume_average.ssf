@@ -1,0 +1,47 @@
+// put rendered files in specified directory
+
+RENDERDIR
+ ..\..\Manuals\SMV_Verification_Guide\SCRIPT_FIGURES
+
+// render average slice file
+
+UNLOADALL
+SETSLICEAVERAGE
+ 0 10.0
+LOADSLCF
+ QUANTITY='TEMPERATURE' PBY=0.8
+SETTIMEVAL
+ 1.0
+RENDERONCE
+ plume_orig_slice_01
+SETTIMEVAL
+ 2.0
+RENDERONCE
+ plume_orig_slice_02
+SETTIMEVAL
+ 5.0
+RENDERONCE
+ plume_orig_slice_05
+UNLOADALL
+
+UNLOADALL
+OUTPUTSLICEDATA
+ 1
+SETSLICEAVERAGE
+ 1 10.0
+LOADSLCF
+ QUANTITY='TEMPERATURE' PBY=0.8
+SETTIMEVAL
+ 1.0
+RENDERONCE
+ plume_average_slice_01
+SETTIMEVAL
+ 2.0
+RENDERONCE
+ plume_average_slice_02
+SETTIMEVAL
+ 5.0
+RENDERONCE
+ plume_average_slice_05
+
+

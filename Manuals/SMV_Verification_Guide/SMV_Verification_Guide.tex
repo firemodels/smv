@@ -626,6 +626,9 @@ all of the data in the slice.  The second column discards or chops data below
 \SI{140}{\degreeCelsius}. Note that the color near the chopped boundary should
 match the color in the color bar near \SI{140}{\degreeCelsius}.
 
+Figure \ref{figsliceaveragetest} presents images verifying slice averaging.  The left column shows regular slices.  The right column
+shows slices averaged over a 5~s time interval.
+
 Figure \ref{figslicesort} presents images verifying that two slices
 illustrated in Figure \ref{figslicexy}\
 are displayed without visual artifacts when drawn sorted from back to front.
@@ -673,6 +676,29 @@ files. Difference contours from these slice files are displayed at \SI{0}{s},
  contours, the color near the chop boundary should match the color near
  \SI{140}{\degreeCelsius} in the colorbar.}
 \label{fignodeslicetest}%
+\end{figure}
+
+\begin{figure}[bph]
+\begin{center}
+\begin{tabular}{rccp{1.0in}}
+1.0~s&
+ \includegraphics[height=2.5in]{SCRIPT_FIGURES/plume_orig_slice_01}&
+ \includegraphics[height=2.5in]{SCRIPT_FIGURES/plume_average_slice_01}\\
+
+2.0~s&
+ \includegraphics[height=2.5in]{SCRIPT_FIGURES/plume_orig_slice_02}&
+ \includegraphics[height=2.5in]{SCRIPT_FIGURES/plume_average_slice_02}\\
+
+ 5.0~s&
+\includegraphics[height=2.5in]{SCRIPT_FIGURES/plume_orig_slice_05}&
+ \includegraphics[height=2.5in]{SCRIPT_FIGURES/plume_average_slice_05}\\
+
+& regular slice&averaged slice\\
+&&&\raisebox{0.5in}[0pt]{\includegraphics[height=7.5in]{\SMVfigdir/colorbar_20_620}}\\
+ \end{tabular}
+\end{center}
+ \caption[A test showing regular and averaged slice file data]{A test showing regular and averaged slice file data}
+\label{figsliceaveragetest}%
 \end{figure}
 
 \begin{figure}[bph]
