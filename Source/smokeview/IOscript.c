@@ -290,6 +290,8 @@ void InitKeywords(void){
   InitKeyword("LOADVSLICE",          SCRIPT_LOADVSLICE, 2);          // documented
   InitKeyword("LOADVSLICEM",         SCRIPT_LOADVSLICEM, 3);         // documented
   InitKeyword("SETSLICEBOUNDS",      SCRIPT_SETSLICEBOUNDS, 1);      // documented
+  InitKeyword("SETSLICEAVERAGE",     SCRIPT_SETSLICEAVERAGE, 2);
+  InitKeyword("OUTPUTSLICEDATA",     SCRIPT_OUTPUTSLICEDATA, 2);
 
 // particle files
   InitKeyword("LOADPARTICLES",       SCRIPT_LOADPARTICLES, 0);       // documented
@@ -1443,7 +1445,21 @@ int CompileScript(char *scriptfile){
         sscanf(param_buffer," %i %f %i %f, %s",&scripti->ival,&scripti->fval, &scripti->ival2,&scripti->fval2, scripti->quantity2);
         break;
 
-// SETTOURVIEW
+// SETSLICEAVERAGE
+//  slice_average_flag (int) slice_average_interval (float)
+      case SCRIPT_SETSLICEAVERAGE:
+        SETbuffer;
+        sscanf(param_buffer, " %i %f", &scripti->ival, &scripti->fval);
+        break;
+        
+// OUTPUTSLICEDATA
+//  output_slicedata (int)
+      case SCRIPT_OUTPUTSLICEDATA:
+        SETbuffer;
+        sscanf(param_buffer, " %i", &scripti->ival);
+        break;
+
+        // SETTOURVIEW
 //   viewtype  showpath showtour_locus
       case SCRIPT_SETTOURVIEW:
         SETbuffer;
@@ -3437,6 +3453,19 @@ void ScriptSetSliceBounds(scriptdata *scripti){
   SetSliceBounds(set_valmin, valmin, set_valmax, valmax, quantity);
 }
 
+/* ------------------ ScriptSetSliceAverage ------------------------ */
+
+void ScriptSetSliceAverage(scriptdata *scripti){
+  slice_average_flag     = scripti->ival;
+  slice_average_interval = scripti->fval;
+}
+
+/* ------------------ ScriptOutputSlicedata ------------------------ */
+
+void ScriptOutputSliceData(scriptdata *scripti){
+  output_slicedata     = scripti->ival;
+}
+
 /* ------------------ ScriptSetBoundBounds ------------------------ */
 
 void ScriptSetBoundBounds(scriptdata *scripti){
@@ -4151,6 +4180,12 @@ int RunScriptCommand(scriptdata *script_command){
       break;
     case SCRIPT_SETSLICEBOUNDS:
       ScriptSetSliceBounds(scripti);
+      break;
+    case SCRIPT_SETSLICEAVERAGE:
+      ScriptSetSliceAverage(scripti);
+      break;
+    case SCRIPT_OUTPUTSLICEDATA:
+      ScriptOutputSliceData(scripti);
       break;
     case SCRIPT_SETBOUNDBOUNDS:
       ScriptSetBoundBounds(scripti);
