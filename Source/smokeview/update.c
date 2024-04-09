@@ -768,7 +768,6 @@ void SynchTimes(void){
       parti=partinfo+j;
       if(parti->loaded==0)continue;
       parti->timeslist[n] = GetDataTimeFrame(global_times[n], parti->times_map, parti->times,parti->ntimes);
-      if(j==0)printf("%i part time=%f\n", parti->timeslist[n], parti->times[parti->timeslist[n]]);
     }
 
   /* synchronize shooter times */
