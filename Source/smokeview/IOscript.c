@@ -290,8 +290,8 @@ void InitKeywords(void){
   InitKeyword("LOADVSLICE",          SCRIPT_LOADVSLICE, 2);          // documented
   InitKeyword("LOADVSLICEM",         SCRIPT_LOADVSLICEM, 3);         // documented
   InitKeyword("SETSLICEBOUNDS",      SCRIPT_SETSLICEBOUNDS, 1);      // documented
-  InitKeyword("SETSLICEAVERAGE",     SCRIPT_SETSLICEAVERAGE, 2);
-  InitKeyword("OUTPUTSLICEDATA",     SCRIPT_OUTPUTSLICEDATA, 2);
+  InitKeyword("SETSLICEAVERAGE",     SCRIPT_SETSLICEAVERAGE, 2);     // documented
+  InitKeyword("OUTPUTSLICEDATA",     SCRIPT_OUTPUTSLICEDATA, 1);     // documented
 
 // particle files
   InitKeyword("LOADPARTICLES",       SCRIPT_LOADPARTICLES, 0);       // documented
