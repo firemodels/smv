@@ -10,7 +10,6 @@
 //#define pp_PARTBOUND_MULTI // compute particle bounds in the background
 //#define pp_LUA            // turn on LUA option
 #define pp_CHOPFIX          // fix to saving chop values
-#define pp_OSX_1X           // use -1x option by default on macs
 //#define pp_SLICE_MENU     // make slice menu formation consistent (sort step, build step)
 #define pp_SLICE_MULTI      // load slice files in parallel
 //#define pp_CSV_MENU       // add menu for loading CSV files
