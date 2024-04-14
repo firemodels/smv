@@ -8032,6 +8032,7 @@ void InitSubSliceMenuInfo(){
   int i;
 
   if(nsliceinfo == 0 || subslicemenuinfo != NULL)return;
+  INIT_PRINT_TIMER(subslicemenu_timer);
   NewMemory((void **)&subslicemenuinfo, nsliceinfo * sizeof(subslicemenudata));
   nsubslicex = 0;
   nsubslicey = 0;
@@ -8083,6 +8084,7 @@ void InitSubSliceMenuInfo(){
   }
   ResizeMemory((void **)&subslicemenuinfo, nsubslicemenuinfo * sizeof(subslicemenudata));
   qsort((subslicemenudata *)subslicemenuinfo, (int)nsubslicemenuinfo, sizeof(subslicemenudata), CompareSubSliceMenu);
+  PRINT_TIMER(subslicemenu_timer, "Initialize load all slice menus");
 }
 
 /* ------------------ GetSliceBoundType ------------------------ */
