@@ -8137,7 +8137,7 @@ void LoadAllSliceZ(int var){
 /* ------------------ LoadAllSliceXYZ ------------------------ */
 
 void LoadAllSliceXYZ(int var){
-  if(SetupLoadAllSlices(var)==0)return 0;
+  if(SetupLoadAllSlices(var)==0)return;
   sliceload_dir=3;
   LoadAllMultiSliceMenu();
 }
