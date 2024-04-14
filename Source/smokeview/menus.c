@@ -8026,7 +8026,7 @@ int CompareSubSliceMenu(const void *arg1, const void *arg2){
   return strcmp(labeli, labelj);
 }
 
-/* ------------------ InitLoadMultiSliceMenu ------------------------ */
+/* ------------------ InitSubSliceMenuInfo ------------------------ */
 
 void InitSubSliceMenuInfo(){
   int i;
