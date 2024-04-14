@@ -2673,10 +2673,11 @@ GLUI_EditText *EDIT_ini=NULL;
 GLUI_EditText *EDIT_renderdir=NULL;
 GLUI_EditText *EDIT_rendersuffix=NULL;
 
-GLUI_Checkbox* CHECKBOX_sortslices = NULL;
-GLUI_Checkbox* CHECKBOX_sortslices_debug = NULL;
-GLUI_Checkbox* CHECKBOX_visColorbarHorizontal2 = NULL;
-GLUI_Checkbox* CHECKBOX_visColorbarVertical2 = NULL;
+GLUI_Checkbox *CHECKBOX_sliceload_isvector = NULL;
+GLUI_Checkbox *CHECKBOX_sortslices = NULL;
+GLUI_Checkbox *CHECKBOX_sortslices_debug = NULL;
+GLUI_Checkbox *CHECKBOX_visColorbarHorizontal2 = NULL;
+GLUI_Checkbox *CHECKBOX_visColorbarVertical2 = NULL;
 GLUI_Checkbox *CHECKBOX_show_boundary_outline=NULL;
 GLUI_Checkbox *CHECKBOX_use_partload_threads = NULL;
 GLUI_Checkbox *CHECKBOX_partfast = NULL;
@@ -2864,6 +2865,17 @@ int      nparticleprocinfo=0;
 
 procdata  subboundprocinfo[5];
 int       nsubboundprocinfo=0;
+
+#ifdef pp_LOADALL_SLICE
+/* ------------------ GLUIUpdateLoadAllSlices ------------------------ */
+
+extern "C" void GLUIUpdateLoadAllSlices(void){
+  if(RADIO_filetype!=NULL)RADIO_filetype->set_int_val(sliceload_filetype);
+  if(LISTBOX_sliceload!=NULL)LISTBOX_sliceload->set_int_val(sliceload_boundtype);
+  if(CHECKBOX_sliceload_isvector!=NULL)CHECKBOX_sliceload_isvector->set_int_val(sliceload_isvector);
+  if(RADIO_sliceload_dir!=NULL)RADIO_sliceload_dir->set_int_val(sliceload_dir);
+}
+#endif
 
 /* ------------------ GLUIUpdatePartPointSize ------------------------ */
 
@@ -5146,7 +5158,7 @@ hvacductboundsCPP.setup("hvac", ROLLOUT_hvacduct, hvacductbounds_cpp, nhvacductb
     }
     PANEL_sliceload_option = glui_bounds->add_panel_to_panel(ROLLOUT_slice_settings, "", true);
     glui_bounds->add_button_to_panel(PANEL_sliceload_option, _("Load all"), SLICE_LOADALL, SliceLoadCB);
-    glui_bounds->add_checkbox_to_panel(PANEL_sliceload_option, "vector slice", &sliceload_isvector);
+    CHECKBOX_sliceload_isvector = glui_bounds->add_checkbox_to_panel(PANEL_sliceload_option, "vector slice", &sliceload_isvector);
     PANEL_slice_xyz = glui_bounds->add_panel_to_panel(PANEL_sliceload_option, "orientation", true);
     RADIO_sliceload_dir = glui_bounds->add_radiogroup_to_panel(PANEL_slice_xyz, &sliceload_dir);
     RADIOBUTTON_sliceload_x   = glui_bounds->add_radiobutton_to_group(RADIO_sliceload_dir, "x");

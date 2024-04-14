@@ -8098,49 +8098,21 @@ int GetSliceBoundType(char *label){
   return -1;
 }
 
-/* ------------------ SetupLoadAllSlices ------------------------ */
+/* ------------------ LoadAllSlices ------------------------ */
 
-int SetupLoadAllSlices(int var){
+void LoadAllSlices(int var){
   int bound_type;
+  int quantity_index;
 
-  bound_type = GetSliceBoundType(subslicemenuinfo[var].shortlabel);
-  if(bound_type<0)return 0;
-  if(subslicemenuinfo[var].slicetype == SLICE_UNKNOWN)return 0;
-  sliceload_filetype = subslicemenuinfo[var].slicetype;
+  sliceload_dir = var%4;
+  quantity_index = var / 4;
+  bound_type = GetSliceBoundType(subslicemenuinfo[quantity_index].shortlabel);
+  if(bound_type<0)return;
+  if(subslicemenuinfo[quantity_index].slicetype == SLICE_UNKNOWN)return;
+  sliceload_filetype = subslicemenuinfo[quantity_index].slicetype;
   sliceload_boundtype = bound_type;
   sliceload_isvector = 0;
-  return 1;
-}
-
-/* ------------------ LoadAllSliceX ------------------------ */
-
-void LoadAllSliceX(int var){
-  if(SetupLoadAllSlices(var)==0)return;
-  sliceload_dir=0;
-  LoadAllMultiSliceMenu();
-}
-
-/* ------------------ LoadAllSliceY ------------------------ */
-
-void LoadAllSliceY(int var){
-  if(SetupLoadAllSlices(var)==0)return;
-  sliceload_dir=1;
-  LoadAllMultiSliceMenu();
-}
-
-/* ------------------ LoadAllSliceZ ------------------------ */
-
-void LoadAllSliceZ(int var){
-  if(SetupLoadAllSlices(var)==0)return;
-  sliceload_dir=2;
-  LoadAllMultiSliceMenu();
-}
-
-/* ------------------ LoadAllSliceXYZ ------------------------ */
-
-void LoadAllSliceXYZ(int var){
-  if(SetupLoadAllSlices(var)==0)return;
-  sliceload_dir=3;
+  GLUIUpdateLoadAllSlices();
   LoadAllMultiSliceMenu();
 }
 #endif
@@ -8162,37 +8134,49 @@ void InitLoadMultiSliceMenu(int *loadmultislicemenuptr, int *loadsubmslicemenu, 
 
   InitSubSliceMenuInfo();
   if(nsubslicemenuinfo>0){
-    CREATEMENU(loadsubslicexmenu,   LoadAllSliceX);
+  
+//*** load all x slices
+
+    CREATEMENU(loadsubslicexmenu,   LoadAllSlices);
     *loadsubslicexmenuptr = loadsubslicexmenu;
     for(i=0;i<nsubslicemenuinfo;i++){
       subslicemenudata *si;
 
       si = subslicemenuinfo + i;
-      if(si->havex==1)glutAddMenuEntry(si->menulabel,i);
+      if(si->havex==1)glutAddMenuEntry(si->menulabel,4*i);
     }
-    CREATEMENU(loadsubsliceymenu,   LoadAllSliceY);
+  
+//*** load all y slices
+
+    CREATEMENU(loadsubsliceymenu,   LoadAllSlices);
     *loadsubsliceymenuptr = loadsubsliceymenu;
     for(i = 0;i < nsubslicemenuinfo;i++){
       subslicemenudata *si;
 
       si = subslicemenuinfo + i;
-      if(si->havey == 1)glutAddMenuEntry(si->menulabel, i);
+      if(si->havey == 1)glutAddMenuEntry(si->menulabel, 4*i+1);
     }
-    CREATEMENU(loadsubslicezmenu,   LoadAllSliceZ);
+  
+//*** load all z slices
+
+    CREATEMENU(loadsubslicezmenu,   LoadAllSlices);
     *loadsubslicezmenuptr = loadsubslicezmenu;
     for(i = 0;i < nsubslicemenuinfo;i++){
       subslicemenudata *si;
 
       si = subslicemenuinfo + i;
-      if(si->havez == 1)glutAddMenuEntry(si->menulabel, i);
+      if(si->havez == 1)glutAddMenuEntry(si->menulabel, 4*i+2);
     }
-    CREATEMENU(loadsubslicexyzmenu, LoadAllSliceXYZ);
+  
+//*** load all x,y,z slices
+
+    CREATEMENU(loadsubslicexyzmenu, LoadAllSlices);
     *loadsubslicexyzmenuptr = loadsubslicexyzmenu;
     for(i = 0;i < nsubslicemenuinfo;i++){
       subslicemenudata *si;
 
       si = subslicemenuinfo + i;
-      if(si->havexyz == 1)glutAddMenuEntry(si->menulabel, i);
+      if(si->havexyz == 1)glutAddMenuEntry(si->menulabel, 4*i+3);
     }
   }
 #endif
