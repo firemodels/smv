@@ -8136,11 +8136,10 @@ void LoadAllSliceZ(int var){
 
 /* ------------------ LoadAllSliceXYZ ------------------------ */
 
-int LoadAllSliceXYZ(int var){
+void LoadAllSliceXYZ(int var){
   if(SetupLoadAllSlices(var)==0)return 0;
   sliceload_dir=3;
   LoadAllMultiSliceMenu();
-  return 1;
 }
 #endif
 
