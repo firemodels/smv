@@ -8012,15 +8012,189 @@ void InitDuplicateSliceMenu(int *duplicateslicemenuptr){
       }
 }
 
+/* ----------------------- CompareSubSliceMenu ----------------------------- */
+
+#ifdef pp_LOADALL_SLICE
+int CompareSubSliceMenu(const void *arg1, const void *arg2){
+  subslicemenudata *subslicemenui, *subslicemenuj;
+  char *labeli, *labelj;
+
+  subslicemenui = (subslicemenudata  *)arg1;
+  subslicemenuj = (subslicemenudata  *)arg2;
+  labeli = subslicemenui->menulabel;
+  labelj = subslicemenuj->menulabel;
+  return strcmp(labeli, labelj);
+}
+
+/* ------------------ InitLoadMultiSliceMenu ------------------------ */
+
+void InitSubSliceMenuInfo(){
+  int i;
+
+  if(nsliceinfo == 0 || subslicemenuinfo != NULL)return;
+  NewMemory((void **)&subslicemenuinfo, nsliceinfo * sizeof(subslicemenudata));
+  nsubslicex = 0;
+  nsubslicey = 0;
+  nsubslicez = 0;
+  nsubslicexyz = 0;
+  for(i = 0;i<nmultisliceinfo;i++){
+    slicedata *sd, *sdim1;
+    subslicemenudata *si;
+
+    sd = sliceinfo+(multisliceinfo+i)->islices[0];
+    if(i>0)sdim1 = sliceinfo+(multisliceinfo+i-1)->islices[0];
+
+    if(i==0||strcmp(sd->label.longlabel, sdim1->label.longlabel)!=0){
+      si = subslicemenuinfo + nsubslicemenuinfo;
+      si->menulabel  = sd->label.longlabel;
+      si->shortlabel = sd->label.shortlabel;
+      si->havex      = 0;
+      si->havey      = 0;
+      si->havez      = 0;
+      si->havexyz    = 0;
+      if(sd->slice_filetype == SLICE_NODE_CENTER || sd->slice_filetype == SLICE_CELL_CENTER){
+        si->slicetype = sd->slice_filetype-1;
+      }
+      else{
+        si->slicetype = SLICE_UNKNOWN;
+      }
+      nsubslicemenuinfo++;
+      continue;
+    }
+    si = subslicemenuinfo + nsubslicemenuinfo-1;
+    if(sd->volslice == 0){
+      if(sd->idir == 1){
+        si->havex = 1;
+        nsubslicex++;
+      }
+      if(sd->idir == 2){
+        si->havey = 1;
+        nsubslicey++;
+      }
+      if(sd->idir == 3){
+        si->havez = 1;
+        nsubslicez++;
+      }
+      if(si->havex == 1 || si->havey == 1 || si->havez == 1){
+        si->havexyz = 1;
+        nsubslicexyz++;
+      }
+    }
+  }
+  ResizeMemory((void **)&subslicemenuinfo, nsubslicemenuinfo * sizeof(subslicemenudata));
+  qsort((subslicemenudata *)subslicemenuinfo, (int)nsubslicemenuinfo, sizeof(subslicemenudata), CompareSubSliceMenu);
+}
+
+/* ------------------ GetSliceBoundType ------------------------ */
+
+int GetSliceBoundType(char *label){
+  int i;
+
+  for(i=0;i<nslicebounds_cpp;i++){
+    if(strcmp(label, slicebounds_cpp[i].label) == 0)return i;
+  }
+  return -1;
+}
+
+/* ------------------ SetupLoadAllSlices ------------------------ */
+
+int SetupLoadAllSlices(int var){
+  int bound_type;
+
+  bound_type = GetSliceBoundType(subslicemenuinfo[var].shortlabel);
+  if(bound_type<0)return 0;
+  if(subslicemenuinfo[var].slicetype == SLICE_UNKNOWN)return 0;
+  sliceload_filetype = subslicemenuinfo[var].slicetype;
+  sliceload_boundtype = bound_type;
+  sliceload_isvector = 0;
+  return 1;
+}
+
+/* ------------------ LoadAllSliceX ------------------------ */
+
+void LoadAllSliceX(int var){
+  if(SetupLoadAllSlices(var)==0)return;
+  sliceload_dir=0;
+  LoadAllMultiSliceMenu();
+}
+
+/* ------------------ LoadAllSliceY ------------------------ */
+
+void LoadAllSliceY(int var){
+  if(SetupLoadAllSlices(var)==0)return;
+  sliceload_dir=1;
+  LoadAllMultiSliceMenu();
+}
+
+/* ------------------ LoadAllSliceZ ------------------------ */
+
+void LoadAllSliceZ(int var){
+  if(SetupLoadAllSlices(var)==0)return;
+  sliceload_dir=2;
+  LoadAllMultiSliceMenu();
+}
+
+/* ------------------ LoadAllSliceXYZ ------------------------ */
+
+int LoadAllSliceXYZ(int var){
+  if(SetupLoadAllSlices(var)==0)return 0;
+  sliceload_dir=3;
+  LoadAllMultiSliceMenu();
+  return 1;
+}
+#endif
+
 /* ------------------ InitLoadMultiSliceMenu ------------------------ */
 
 void InitLoadMultiSliceMenu(int *loadmultislicemenuptr, int *loadsubmslicemenu, int *loadsubpatchmenu_s,
                             int *nsubpatchmenus_s, int sliceskipmenu, int sliceloadoptionmenu, int duplicateslicemenu,
-                            int loadslicemenu, int nmultisliceloaded, int unloadmultislicemenu){
+                            int loadslicemenu, int nmultisliceloaded, int unloadmultislicemenu
+#ifdef pp_LOADALL_SLICE
+                            , int *loadsubslicexmenuptr, int *loadsubsliceymenuptr, int *loadsubslicezmenuptr, int *loadsubslicexyzmenuptr
+#endif
+                            ){
   int i, loadmultislicemenu;
   int nloadsubmslicemenu;
   int iloadsubpatchmenu_s;
+#ifdef pp_LOADALL_SLICE
+  int loadsubslicexmenu, loadsubsliceymenu, loadsubslicezmenu, loadsubslicexyzmenu;
 
+  InitSubSliceMenuInfo();
+  if(nsubslicemenuinfo>0){
+    CREATEMENU(loadsubslicexmenu,   LoadAllSliceX);
+    *loadsubslicexmenuptr = loadsubslicexmenu;
+    for(i=0;i<nsubslicemenuinfo;i++){
+      subslicemenudata *si;
+
+      si = subslicemenuinfo + i;
+      if(si->havex==1)glutAddMenuEntry(si->menulabel,i);
+    }
+    CREATEMENU(loadsubsliceymenu,   LoadAllSliceY);
+    *loadsubsliceymenuptr = loadsubsliceymenu;
+    for(i = 0;i < nsubslicemenuinfo;i++){
+      subslicemenudata *si;
+
+      si = subslicemenuinfo + i;
+      if(si->havey == 1)glutAddMenuEntry(si->menulabel, i);
+    }
+    CREATEMENU(loadsubslicezmenu,   LoadAllSliceZ);
+    *loadsubslicezmenuptr = loadsubslicezmenu;
+    for(i = 0;i < nsubslicemenuinfo;i++){
+      subslicemenudata *si;
+
+      si = subslicemenuinfo + i;
+      if(si->havez == 1)glutAddMenuEntry(si->menulabel, i);
+    }
+    CREATEMENU(loadsubslicexyzmenu, LoadAllSliceXYZ);
+    *loadsubslicexyzmenuptr = loadsubslicexyzmenu;
+    for(i = 0;i < nsubslicemenuinfo;i++){
+      subslicemenudata *si;
+
+      si = subslicemenuinfo + i;
+      if(si->havexyz == 1)glutAddMenuEntry(si->menulabel, i);
+    }
+  }
+#endif
   CREATEMENU(loadmultislicemenu, LoadMultiSliceMenu);
   *loadmultislicemenuptr = loadmultislicemenu;
   nloadsubmslicemenu = 0;
@@ -8061,6 +8235,15 @@ void InitLoadMultiSliceMenu(int *loadmultislicemenuptr, int *loadsubmslicemenu, 
     }
   }
 
+#ifdef pp_LOADALL_SLICE
+  if(nsubslicemenuinfo>0&&(nsubslicex>0||nsubslicey>0||nsubslicez>0||nsubslicexyz>0)){
+    glutAddMenuEntry("-", MENU_DUMMY);
+    if(nsubslicex>0)GLUTADDSUBMENU("Load all x slices",     loadsubslicexmenu);
+    if(nsubslicey>0)GLUTADDSUBMENU("Load all y slices",     loadsubsliceymenu);
+    if(nsubslicez>0)GLUTADDSUBMENU("Load all z slices",     loadsubslicezmenu);
+    if(nsubslicexyz>0)GLUTADDSUBMENU("Load all x,y,z slices", loadsubslicexyzmenu);
+  }
+#endif
   if(nmultisliceinfo>0)glutAddMenuEntry("-", MENU_DUMMY);
 
   GLUTADDSUBMENU(_("Skip"), sliceskipmenu);
@@ -8497,6 +8680,9 @@ static int render_startmenu = 0;
 static int compressmenu=0;
 #endif
 static int showhideslicemenu=0, sliceskipmenu=0, showvslicemenu=0;
+#ifdef pp_LOADALL_SLICE
+static int loadsubslicexmenu=0, loadsubsliceymenu=0, loadsubslicezmenu=0, loadsubslicexyzmenu=0;
+#endif
 static int plot3dshowmenu=0, staticvariablemenu=0, helpmenu=0, webhelpmenu=0, keyboardhelpmenu=0, mousehelpmenu=0;
 static int vectorskipmenu=0,unitsmenu=0;
 static int sliceloadoptionmenu = 0, vectorsliceloadoptionmenu = 0;
@@ -11705,7 +11891,11 @@ static int menu_count=0;
       InitDuplicateSliceMenu(&duplicateslicemenu);
     }
     InitLoadMultiSliceMenu(&loadmultislicemenu, loadsubmslicemenu, loadsubpatchmenu_s, nsubpatchmenus_s,
-                           sliceskipmenu, sliceloadoptionmenu, duplicateslicemenu, loadslicemenu, nmultisliceloaded, unloadmultislicemenu);
+                           sliceskipmenu, sliceloadoptionmenu, duplicateslicemenu, loadslicemenu, nmultisliceloaded, unloadmultislicemenu
+#ifdef pp_LOADALL_SLICE
+                           ,&loadsubslicexmenu, &loadsubsliceymenu, &loadsubslicezmenu, &loadsubslicexyzmenu
+#endif
+                           );
   }
 
 

@@ -239,6 +239,11 @@ SVEXTERN char SVDECL(**movie_queues, NULL), movie_htmldir[256], movie_email[256]
 SVEXTERN char movie_basename[256], movie_ssf_script[256], movie_bash_script[256], movie_ini_filename[256];
 SVEXTERN slicedata SVDECL(*movie_sliceinfo, NULL);
 
+#ifdef pp_LOADALL_SLICE
+SVEXTERN subslicemenudata SVDECL(*subslicemenuinfo, NULL);
+SVEXTERN int SVDECL(nsubslicemenuinfo, 0);
+SVEXTERN int SVDECL(nsubslicex, 0), SVDECL(nsubslicey, 0), SVDECL(nsubslicez, 0), SVDECL(nsubslicexyz, 0);
+#endif
 SVEXTERN slicemenudata SVDECL(**slicemenu_sorted, NULL);
 SVEXTERN int SVDECL(handle_slice_files, 1);
 SVEXTERN int SVDECL(plot_option, 0);
