@@ -5097,7 +5097,7 @@ void LoadSliceMenu(int value){
   GLUTSETCURSOR(GLUT_CURSOR_LEFT_ARROW);
 }
 
-/* ------------------ LoadVMultiSliceMenu2 ------------------------ */
+/* ------------------ LoadMultiVSliceMenu ------------------------ */
 
 void LoadMultiVSliceMenu(int value){
   int i;
@@ -8087,6 +8087,73 @@ void InitSubSliceMenuInfo(){
   PRINT_TIMER(subslicemenu_timer, "Initialize load all slice menus");
 }
 
+#ifdef pp_LOADALL_SLICE
+/* ------------------ InitSubVectorSliceMenuInfo ------------------------ */
+
+void InitSubVectorSliceMenuInfo(){
+  int i;
+
+  if(nmultivsliceinfo == 0 || subvectorslicemenuinfo != NULL)return;
+  INIT_PRINT_TIMER(subvectorslicemenu_timer);
+  NewMemory((void **)&subvectorslicemenuinfo, nmultivsliceinfo * sizeof(subslicemenudata));
+  nsubvectorslicex = 0;
+  nsubvectorslicey = 0;
+  nsubvectorslicez = 0;
+  nsubvectorslicexyz = 0;
+  for(i = 0; i<nmultivsliceinfo; i++){
+    vslicedata *vi, *vim1;
+    slicedata *si, *sim1;
+    subslicemenudata *vd;
+
+    vi = vsliceinfo+(multivsliceinfo+i)->ivslices[0];
+    si = sliceinfo+vi->ival;
+
+    if(i>0){
+      vim1 = vsliceinfo+(multivsliceinfo+i-1)->ivslices[0];
+      sim1 = sliceinfo+vim1->ival;
+    }
+    if(i==0||(i>0&&strcmp(si->label.longlabel, sim1->label.longlabel)!=0)){
+      vd = subvectorslicemenuinfo + nsubvectorslicemenuinfo;
+      vd->menulabel  = si->label.longlabel;
+      vd->shortlabel = si->label.shortlabel;
+      vd->havex      = 0;
+      vd->havey      = 0;
+      vd->havez      = 0;
+      vd->havexyz    = 0;
+      if(si->slice_filetype == SLICE_NODE_CENTER || si->slice_filetype == SLICE_CELL_CENTER){
+        vd->slicetype = si->slice_filetype-1;
+      }
+      else{
+        vd->slicetype = SLICE_UNKNOWN;
+      }
+      nsubvectorslicemenuinfo++;
+      continue;
+    }
+    vd = subvectorslicemenuinfo + nsubvectorslicemenuinfo - 1;
+    if(si->volslice == 0){
+      if(si->idir == 1){
+        vd->havex = 1;
+        nsubvectorslicex++;
+      }
+      if(si->idir == 2){
+        vd->havey = 1;
+        nsubvectorslicey++;
+      }
+      if(si->idir == 3){
+        vd->havez = 1;
+        nsubvectorslicez++;
+      }
+      if(vd->havex == 1 || vd->havey == 1 || vd->havez == 1){
+        vd->havexyz = 1;
+        nsubvectorslicexyz++;
+      }
+    }
+  }
+  ResizeMemory((void **)&subvectorslicemenuinfo, nsubvectorslicemenuinfo * sizeof(subslicemenudata));
+  qsort((subslicemenudata *)subvectorslicemenuinfo, (int)nsubvectorslicemenuinfo, sizeof(subslicemenudata), CompareSubSliceMenu);
+  PRINT_TIMER(subvectorslicemenu_timer, "Initialize load all vector slice menus");
+}
+#endif
 /* ------------------ GetSliceBoundType ------------------------ */
 
 int GetSliceBoundType(char *label){
@@ -8114,6 +8181,24 @@ void LoadAllSlices(int var){
   sliceload_isvector = 0;
   GLUIUpdateLoadAllSlices();
   LoadAllMultiSliceMenu();
+}
+
+/* ------------------ LoadAllVectorSlices ------------------------ */
+
+void LoadAllVectorSlices(int var){
+  int bound_type;
+  int quantity_index;
+
+  sliceload_dir = var % 4;
+  quantity_index = var / 4;
+  bound_type = GetSliceBoundType(subvectorslicemenuinfo[quantity_index].shortlabel);
+  if(bound_type < 0)return;
+  if(subvectorslicemenuinfo[quantity_index].slicetype == SLICE_UNKNOWN)return;
+  sliceload_filetype = subvectorslicemenuinfo[quantity_index].slicetype;
+  sliceload_boundtype = bound_type;
+  sliceload_isvector = 1;
+  GLUIUpdateLoadAllSlices();
+  LoadAllMultiVSliceMenu();
 }
 #endif
 
@@ -8417,11 +8502,65 @@ void InitMultiVectorSubMenu(int **loadsubmvslicemenuptr){
 
 /* ------------------ InitMultiVectorLoadMenu ------------------------ */
 
-void InitMultiVectorLoadMenu(int *loadmultivslicemenuptr, int *loadsubmvslicemenu, int duplicatevectorslicemenu, int vsliceloadmenu, int sliceloadoptionmenu, int unloadmultivslicemenu){
+void InitMultiVectorLoadMenu(int *loadmultivslicemenuptr, int *loadsubmvslicemenu, int duplicatevectorslicemenu,
+                             int vsliceloadmenu, int sliceloadoptionmenu, int unloadmultivslicemenu
+#ifdef pp_LOADALL_SLICE
+                             , int *loadsubvectorslicexmenuptr, int *loadsubvectorsliceymenuptr, int *loadsubvectorslicezmenuptr, int *loadsubvectorslicexyzmenuptr
+#endif
+                             ){
   int loadmultivslicemenu;
   int nloadsubmvslicemenu;
   int i;
 
+#ifdef pp_LOADALL_SLICE
+  int loadsubvectorslicexmenu, loadsubvectorsliceymenu, loadsubvectorslicezmenu, loadsubvectorslicexyzmenu;
+
+  InitSubVectorSliceMenuInfo();
+  
+//*** load all x vector slices
+
+  CREATEMENU(loadsubvectorslicexmenu,   LoadAllVectorSlices);
+  *loadsubvectorslicexmenuptr = loadsubvectorslicexmenu;
+  for(i=0;i<nsubvectorslicemenuinfo;i++){
+    subslicemenudata *si;
+
+    si = subvectorslicemenuinfo + i;
+    if(si->havex==1)glutAddMenuEntry(si->menulabel,4*i);
+  }
+  
+//*** load all y vector slices
+
+  CREATEMENU(loadsubvectorsliceymenu,   LoadAllVectorSlices);
+  *loadsubvectorsliceymenuptr = loadsubvectorsliceymenu;
+  for(i=0;i<nsubvectorslicemenuinfo;i++){
+    subslicemenudata *si;
+
+    si = subvectorslicemenuinfo + i;
+    if(si->havey==1)glutAddMenuEntry(si->menulabel,4*i+1);
+  }
+  
+//*** load all z vector slices
+
+  CREATEMENU(loadsubvectorslicezmenu,   LoadAllVectorSlices);
+  *loadsubvectorslicezmenuptr = loadsubvectorslicezmenu;
+  for(i=0;i<nsubvectorslicemenuinfo;i++){
+    subslicemenudata *si;
+
+    si = subvectorslicemenuinfo + i;
+    if(si->havez==1)glutAddMenuEntry(si->menulabel,4*i+2);
+  }
+  
+//*** load all x,y,z vector slices
+
+  CREATEMENU(loadsubvectorslicexyzmenu,   LoadAllVectorSlices);
+  *loadsubvectorslicexyzmenuptr = loadsubvectorslicexyzmenu;
+  for(i=0;i<nsubvectorslicemenuinfo;i++){
+    subslicemenudata *si;
+
+    si = subvectorslicemenuinfo + i;
+    if(si->havexyz==1)glutAddMenuEntry(si->menulabel,4*i+3);
+  }
+#endif
   nloadsubmvslicemenu = 0;
   CREATEMENU(loadmultivslicemenu, LoadMultiVSliceMenu);
   *loadmultivslicemenuptr = loadmultivslicemenu;
@@ -8443,6 +8582,16 @@ void InitMultiVectorLoadMenu(int *loadmultivslicemenuptr, int *loadsubmvslicemen
       nloadsubmvslicemenu++;
     }
   }
+#ifdef pp_LOADALL_SLICE
+  if(nsubvectorslicemenuinfo>0&&(nsubvectorslicex>0||nsubvectorslicey>0||nsubvectorslicez>0||nsubvectorslicexyz>0)){
+    glutAddMenuEntry("-", MENU_DUMMY);
+    if(nsubvectorslicex>0)GLUTADDSUBMENU("Load all x vector slices",       loadsubvectorslicexmenu);
+    if(nsubvectorslicey>0)GLUTADDSUBMENU("Load all y vector slices",       loadsubvectorsliceymenu);
+    if(nsubvectorslicez>0)GLUTADDSUBMENU("Load all z vector slices",       loadsubvectorslicezmenu);
+    if(nsubvectorslicexyz>0)GLUTADDSUBMENU("Load all x,y,z vector slices", loadsubvectorslicexyzmenu);
+  }
+#endif
+
   if(nmultivsliceinfo>0)glutAddMenuEntry("-", MENU_DUMMY);
 
   if(nslicedups > 0){
@@ -8667,6 +8816,7 @@ static int compressmenu=0;
 static int showhideslicemenu=0, sliceskipmenu=0, showvslicemenu=0;
 #ifdef pp_LOADALL_SLICE
 static int loadsubslicexmenu=0, loadsubsliceymenu=0, loadsubslicezmenu=0, loadsubslicexyzmenu=0;
+static int loadsubvectorslicexmenu=0, loadsubvectorsliceymenu=0, loadsubvectorslicezmenu=0, loadsubvectorslicexyzmenu=0;
 #endif
 static int plot3dshowmenu=0, staticvariablemenu=0, helpmenu=0, webhelpmenu=0, keyboardhelpmenu=0, mousehelpmenu=0;
 static int vectorskipmenu=0,unitsmenu=0;
@@ -11850,7 +12000,12 @@ static int menu_count=0;
     if(have_multivslice==1){
       InitMultiVectorUnloadSliceMenu(&unloadmultivslicemenu);
       InitMultiVectorSubMenu(&loadsubmvslicemenu);
-      InitMultiVectorLoadMenu(&loadmultivslicemenu, loadsubmvslicemenu, duplicatevectorslicemenu, vsliceloadmenu, vectorsliceloadoptionmenu, unloadmultivslicemenu);
+      InitMultiVectorLoadMenu(&loadmultivslicemenu, loadsubmvslicemenu, duplicatevectorslicemenu, vsliceloadmenu,
+                              vectorsliceloadoptionmenu, unloadmultivslicemenu
+#ifdef pp_LOADALL_SLICE
+                              ,&loadsubvectorslicexmenu, &loadsubvectorsliceymenu, &loadsubvectorslicezmenu, &loadsubvectorslicexyzmenu
+#endif
+      );
     }
   }
 
