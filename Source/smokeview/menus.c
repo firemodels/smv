@@ -8053,7 +8053,9 @@ void InitSubSliceMenuInfo(){
       si->havey      = 0;
       si->havez      = 0;
       si->havexyz    = 0;
-      if(sd->slice_filetype == SLICE_NODE_CENTER || sd->slice_filetype == SLICE_CELL_CENTER){
+      if(sd->volslice==0&&
+        (sd->slice_filetype == SLICE_NODE_CENTER || sd->slice_filetype == SLICE_CELL_CENTER)
+      ){
         si->slicetype = sd->slice_filetype-1;
       }
       else{
@@ -8062,7 +8064,7 @@ void InitSubSliceMenuInfo(){
       nsubslicemenuinfo++;
     }
     si = subslicemenuinfo + nsubslicemenuinfo-1;
-    if(sd->volslice == 0){
+    if(si->slicetype!=SLICE_UNKNOWN){
       if(sd->idir == 1){
         si->havex = 1;
         nsubslicex++;
@@ -8086,7 +8088,6 @@ void InitSubSliceMenuInfo(){
   PRINT_TIMER(subslicemenu_timer, "Initialize load all slice menus");
 }
 
-#ifdef pp_LOADALL_SLICE
 /* ------------------ InitSubVectorSliceMenuInfo ------------------------ */
 
 void InitSubVectorSliceMenuInfo(){
@@ -8119,7 +8120,9 @@ void InitSubVectorSliceMenuInfo(){
       vd->havey      = 0;
       vd->havez      = 0;
       vd->havexyz    = 0;
-      if(si->slice_filetype == SLICE_NODE_CENTER || si->slice_filetype == SLICE_CELL_CENTER){
+      if( si->volslice==0&&
+         (si->slice_filetype == SLICE_NODE_CENTER || si->slice_filetype == SLICE_CELL_CENTER)
+      ){
         vd->slicetype = si->slice_filetype-1;
       }
       else{
@@ -8128,7 +8131,7 @@ void InitSubVectorSliceMenuInfo(){
       nsubvectorslicemenuinfo++;
     }
     vd = subvectorslicemenuinfo + nsubvectorslicemenuinfo - 1;
-    if(si->volslice == 0){
+    if(vd->slicetype!=SLICE_UNKNOWN){
       if(si->idir == 1){
         vd->havex = 1;
         nsubvectorslicex++;
@@ -8151,7 +8154,7 @@ void InitSubVectorSliceMenuInfo(){
   qsort((subslicemenudata *)subvectorslicemenuinfo, (int)nsubvectorslicemenuinfo, sizeof(subslicemenudata), CompareSubSliceMenu);
   PRINT_TIMER(subvectorslicemenu_timer, "Initialize load all vector slice menus");
 }
-#endif
+
 /* ------------------ GetSliceBoundType ------------------------ */
 
 int GetSliceBoundType(char *label){
