@@ -27,6 +27,7 @@
 #ifdef pp_GPU
 #define pp_GPUTHROTTLE      // pp_GPU directive must also be set
 #endif
+#define pp_LOADALL_SLICE    // add menus to load all x, y, z slice files
 #define pp_ONEBUFFER        // consolidate memory allocations when parsing .smv file
 #define pp_MESH_BOUNDARY    // display boundary files on blockages that are on mesh boundaries
 #define pp_MESHSKIP         // compute mesh skip arrays to display vector slices uniformly
