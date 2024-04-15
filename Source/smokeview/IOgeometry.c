@@ -3910,7 +3910,7 @@ FILE_SIZE ReadGeom2(geomdata *geomi, int load_flag, int type){
             triangles[ii].geomobj = geomi->geomobjinfo+geomi->file2_tris[ii]-1;
           }
           else{
-            triangles[ii].geomobj = NULL;
+            triangles[ii].geomobj = geomi->geomobjinfo;
           }
           break;
         case GEOM_SLICE:
