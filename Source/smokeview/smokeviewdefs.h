@@ -521,6 +521,9 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 #define FED_SLICE 0
 #define FED_ISO   1
 
+#ifdef pp_LOADALL_SLICE
+#define SLICE_UNKNOWN     -1
+#endif
 #define SLICE_NODE_CENTER 1
 #define SLICE_CELL_CENTER 2
 #define SLICE_TERRAIN     4
