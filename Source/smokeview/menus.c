@@ -8060,7 +8060,6 @@ void InitSubSliceMenuInfo(){
         si->slicetype = SLICE_UNKNOWN;
       }
       nsubslicemenuinfo++;
-      continue;
     }
     si = subslicemenuinfo + nsubslicemenuinfo-1;
     if(sd->volslice == 0){
@@ -8127,7 +8126,6 @@ void InitSubVectorSliceMenuInfo(){
         vd->slicetype = SLICE_UNKNOWN;
       }
       nsubvectorslicemenuinfo++;
-      continue;
     }
     vd = subvectorslicemenuinfo + nsubvectorslicemenuinfo - 1;
     if(si->volslice == 0){
