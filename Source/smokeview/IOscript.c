@@ -261,6 +261,7 @@ void InitKeywords(void){
   NewMemory((void **)&keywordinfo, 1000*sizeof(keyworddata));
   nkeywordinfo++;
 
+  InitKeyword("dummy", -999, 0);         // dummy entry used to report errors
 // 3d smoke
   InitKeyword("LOAD3DSMOKE",         SCRIPT_LOAD3DSMOKE, 1);         // documented
   InitKeyword("LOADVOLSMOKE",        SCRIPT_LOADVOLSMOKE, 1);        // documented
@@ -501,7 +502,7 @@ int CheckScript(char *file){
 /* ------------------ GetScriptKeyword ------------------------ */
 
 keyworddata *GetScriptKeyword(FILE *stream){
-  char *keyword, keyword_buffer[1024];
+  char *keyword=NULL, keyword_buffer[1024];
 
   for(;;){
     char *comment;
@@ -910,8 +911,8 @@ int CompileScript(char *scriptfile){
 #endif
           scripti->cval= GetCharPointer(param_buffer);
         }
-        }
         break;
+      }
 
 // SCENECLIP
 //  clip mode (int)

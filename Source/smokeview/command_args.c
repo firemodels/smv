@@ -51,11 +51,9 @@ CommandlineArgs ParseCommandlineNew(int argc, char **argv, char *message,
     strcpy(args.prog, argv[0]);
   }
   int i;
-#ifdef pp_OSX_1X
 #ifdef pp_OSX_HIGHRES
   args.x1 = true;
   args.x2 = false;
-#endif
 #endif
   for (i = 1; i < argc; i++) {
     if (strcmp(argv[i], "-ini") == 0) {

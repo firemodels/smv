@@ -2446,7 +2446,7 @@ void UpdateVsliceMenuLabels(sliceparmdata *sp){
 
 /* ------------------ NewMultiSlice ------------------------ */
 #ifdef pp_SLICE_MENU
-int NewMultiSlice(slicedata *sdold,slicedata *sd){
+int NewMultiSlice(slicedata *sdold, slicedata *sd){
   int i, j;
 
   i = sdold - sliceinfo;
