@@ -128,13 +128,11 @@ SVEXTERN int hvac_node_color[3];
 
 
 //*** buffers for consolidating memory allocations
-#ifdef pp_ONEBUFFER
 #define MAXFILELEN 360
 SVEXTERN float SVDECL(*part_bound_buffer, NULL);
 SVEXTERN char SVDECL(*part_buffer, NULL);
 SVEXTERN char SVDECL(*smoke3d_buffer, NULL);
 SVEXTERN char SVDECL(*slice_buffer, NULL);
-#endif
 
 SVEXTERN FILE_SIZE SVDECL(last_size_for_slice, 0);
 SVEXTERN FILE_SIZE SVDECL(last_size_for_boundary, 0);
