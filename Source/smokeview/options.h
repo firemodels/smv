@@ -27,7 +27,6 @@
 #ifdef pp_GPU
 #define pp_GPUTHROTTLE      // pp_GPU directive must also be set
 #endif
-#define pp_LOADALL_SLICE    // add menus to load all x, y, z slice files
 #define pp_NOBOUNDS           // add option to not compute global bounds at startup
 
 //*** options: windows

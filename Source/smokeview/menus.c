@@ -8014,7 +8014,6 @@ void InitDuplicateSliceMenu(int *duplicateslicemenuptr){
 
 /* ----------------------- CompareSubSliceMenu ----------------------------- */
 
-#ifdef pp_LOADALL_SLICE
 int CompareSubSliceMenu(const void *arg1, const void *arg2){
   subslicemenudata *subslicemenui, *subslicemenuj;
   char *labeli, *labelj;
@@ -8201,21 +8200,17 @@ void LoadAllVectorSlices(int var){
   GLUIUpdateLoadAllSlices();
   LoadAllMultiVSliceMenu();
 }
-#endif
 
 /* ------------------ InitLoadMultiSliceMenu ------------------------ */
 
 void InitLoadMultiSliceMenu(int *loadmultislicemenuptr, int *loadsubmslicemenu, int *loadsubpatchmenu_s,
                             int *nsubpatchmenus_s, int sliceskipmenu, int sliceloadoptionmenu, int duplicateslicemenu,
                             int loadslicemenu, int nmultisliceloaded, int unloadmultislicemenu
-#ifdef pp_LOADALL_SLICE
                             , int *loadsubslicexmenuptr, int *loadsubsliceymenuptr, int *loadsubslicezmenuptr, int *loadsubslicexyzmenuptr
-#endif
                             ){
   int i, loadmultislicemenu;
   int nloadsubmslicemenu;
   int iloadsubpatchmenu_s;
-#ifdef pp_LOADALL_SLICE
   int loadsubslicexmenu, loadsubsliceymenu, loadsubslicezmenu, loadsubslicexyzmenu;
 
   InitSubSliceMenuInfo();
@@ -8265,7 +8260,6 @@ void InitLoadMultiSliceMenu(int *loadmultislicemenuptr, int *loadsubmslicemenu, 
       if(si->havexyz == 1)glutAddMenuEntry(si->menulabel, 4*i+3);
     }
   }
-#endif
   CREATEMENU(loadmultislicemenu, LoadMultiSliceMenu);
   *loadmultislicemenuptr = loadmultislicemenu;
   nloadsubmslicemenu = 0;
@@ -8305,8 +8299,6 @@ void InitLoadMultiSliceMenu(int *loadmultislicemenuptr, int *loadsubmslicemenu, 
       }
     }
   }
-
-#ifdef pp_LOADALL_SLICE
   if(nsubslicemenuinfo>0&&(nsubslicex>0||nsubslicey>0||nsubslicez>0||nsubslicexyz>0)){
     glutAddMenuEntry("-", MENU_DUMMY);
     if(nsubslicex>0)GLUTADDSUBMENU("Load all x slices",     loadsubslicexmenu);
@@ -8314,7 +8306,6 @@ void InitLoadMultiSliceMenu(int *loadmultislicemenuptr, int *loadsubmslicemenu, 
     if(nsubslicez>0)GLUTADDSUBMENU("Load all z slices",     loadsubslicezmenu);
     if(nsubslicexyz>0)GLUTADDSUBMENU("Load all x,y,z slices", loadsubslicexyzmenu);
   }
-#endif
   if(nmultisliceinfo>0)glutAddMenuEntry("-", MENU_DUMMY);
 
   GLUTADDSUBMENU(_("Skip"), sliceskipmenu);
@@ -8505,15 +8496,11 @@ void InitMultiVectorSubMenu(int **loadsubmvslicemenuptr){
 
 void InitMultiVectorLoadMenu(int *loadmultivslicemenuptr, int *loadsubmvslicemenu, int duplicatevectorslicemenu,
                              int vsliceloadmenu, int sliceloadoptionmenu, int unloadmultivslicemenu
-#ifdef pp_LOADALL_SLICE
                              , int *loadsubvectorslicexmenuptr, int *loadsubvectorsliceymenuptr, int *loadsubvectorslicezmenuptr, int *loadsubvectorslicexyzmenuptr
-#endif
                              ){
   int loadmultivslicemenu;
   int nloadsubmvslicemenu;
   int i;
-
-#ifdef pp_LOADALL_SLICE
   int loadsubvectorslicexmenu, loadsubvectorsliceymenu, loadsubvectorslicezmenu, loadsubvectorslicexyzmenu;
 
   InitSubVectorSliceMenuInfo();
@@ -8561,7 +8548,6 @@ void InitMultiVectorLoadMenu(int *loadmultivslicemenuptr, int *loadsubmvslicemen
     si = subvectorslicemenuinfo + i;
     if(si->havexyz==1)glutAddMenuEntry(si->menulabel,4*i+3);
   }
-#endif
   nloadsubmvslicemenu = 0;
   CREATEMENU(loadmultivslicemenu, LoadMultiVSliceMenu);
   *loadmultivslicemenuptr = loadmultivslicemenu;
@@ -8583,7 +8569,6 @@ void InitMultiVectorLoadMenu(int *loadmultivslicemenuptr, int *loadsubmvslicemen
       nloadsubmvslicemenu++;
     }
   }
-#ifdef pp_LOADALL_SLICE
   if(nsubvectorslicemenuinfo>0&&(nsubvectorslicex>0||nsubvectorslicey>0||nsubvectorslicez>0||nsubvectorslicexyz>0)){
     glutAddMenuEntry("-", MENU_DUMMY);
     if(nsubvectorslicex>0)GLUTADDSUBMENU("Load all x vector slices",       loadsubvectorslicexmenu);
@@ -8591,8 +8576,6 @@ void InitMultiVectorLoadMenu(int *loadmultivslicemenuptr, int *loadsubmvslicemen
     if(nsubvectorslicez>0)GLUTADDSUBMENU("Load all z vector slices",       loadsubvectorslicezmenu);
     if(nsubvectorslicexyz>0)GLUTADDSUBMENU("Load all x,y,z vector slices", loadsubvectorslicexyzmenu);
   }
-#endif
-
   if(nmultivsliceinfo>0)glutAddMenuEntry("-", MENU_DUMMY);
 
   if(nslicedups > 0){
@@ -8815,10 +8798,8 @@ static int render_startmenu = 0;
 static int compressmenu=0;
 #endif
 static int showhideslicemenu=0, sliceskipmenu=0, showvslicemenu=0;
-#ifdef pp_LOADALL_SLICE
 static int loadsubslicexmenu=0, loadsubsliceymenu=0, loadsubslicezmenu=0, loadsubslicexyzmenu=0;
 static int loadsubvectorslicexmenu=0, loadsubvectorsliceymenu=0, loadsubvectorslicezmenu=0, loadsubvectorslicexyzmenu=0;
-#endif
 static int plot3dshowmenu=0, staticvariablemenu=0, helpmenu=0, webhelpmenu=0, keyboardhelpmenu=0, mousehelpmenu=0;
 static int vectorskipmenu=0,unitsmenu=0;
 static int sliceloadoptionmenu = 0, vectorsliceloadoptionmenu = 0;
@@ -12003,9 +11984,7 @@ static int menu_count=0;
       InitMultiVectorSubMenu(&loadsubmvslicemenu);
       InitMultiVectorLoadMenu(&loadmultivslicemenu, loadsubmvslicemenu, duplicatevectorslicemenu, vsliceloadmenu,
                               vectorsliceloadoptionmenu, unloadmultivslicemenu
-#ifdef pp_LOADALL_SLICE
                               ,&loadsubvectorslicexmenu, &loadsubvectorsliceymenu, &loadsubvectorslicezmenu, &loadsubvectorslicexyzmenu
-#endif
       );
     }
   }
@@ -12033,9 +12012,7 @@ static int menu_count=0;
     }
     InitLoadMultiSliceMenu(&loadmultislicemenu, loadsubmslicemenu, loadsubpatchmenu_s, nsubpatchmenus_s,
                            sliceskipmenu, sliceloadoptionmenu, duplicateslicemenu, loadslicemenu, nmultisliceloaded, unloadmultislicemenu
-#ifdef pp_LOADALL_SLICE
                            ,&loadsubslicexmenu, &loadsubsliceymenu, &loadsubslicezmenu, &loadsubslicexyzmenu
-#endif
                            );
   }
 

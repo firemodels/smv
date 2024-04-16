@@ -1477,7 +1477,6 @@ typedef struct _slicemenudata {
   slicedata *sliceinfo;
 } slicemenudata;
 
-#ifdef pp_LOADALL_SLICE
 /* --------------------------  _subslicemenudata ------------------------------------ */
 
 typedef struct _subslicemenudata {
@@ -1485,7 +1484,6 @@ typedef struct _subslicemenudata {
   int slicetype;
   int havex, havey, havez, havexyz;
 } subslicemenudata;
-#endif
 
 /* --------------------------  multislicedata ------------------------------------ */
 
