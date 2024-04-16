@@ -133,7 +133,7 @@ typedef struct _geomobjdata {
   char *texture_name;
   float texture_width, texture_height, texture_center[3];
   int texture_mapping;
-  int use_geom_color;
+  int use_geom_color, ntriangles;
 } geomobjdata;
 
 /* --------------------------  geomdata ------------------------------------ */
@@ -157,6 +157,8 @@ typedef struct _geomdata {
   struct _surfdata *surfgeom;
   geomlistdata *geomlistinfo,*geomlistinfo_0, *currentframe;
   geomobjdata *geomobjinfo;
+  int *geomobj_offsets;
+  int ngeomobj_offsets;
 } geomdata;
 
 

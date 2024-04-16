@@ -3876,6 +3876,7 @@ FILE_SIZE ReadGeom2(geomdata *geomi, int load_flag, int type){
       }
 
       CheckMemory;
+      assert(geomi->ngeomobj_offsets<=0 || ntris==geomi->ngeomobj_offsets);
       for(ii=0;ii<ntris;ii++){
         surfdata *surfi;
         int k;
@@ -3910,7 +3911,12 @@ FILE_SIZE ReadGeom2(geomdata *geomi, int load_flag, int type){
             triangles[ii].geomobj = geomi->geomobjinfo+geomi->file2_tris[ii]-1;
           }
           else{
-            triangles[ii].geomobj = NULL;
+            if(geomi->ngeomobj_offsets>0  && ii < geomi->ngeomobj_offsets && geomi->geomobj_offsets != NULL){
+              triangles[ii].geomobj = geomi->geomobjinfo + geomi->geomobj_offsets[ii];
+            }
+            else{
+              triangles[ii].geomobj = geomi->geomobjinfo;
+            }
           }
           break;
         case GEOM_SLICE:
@@ -5711,6 +5717,8 @@ void InitGeom(geomdata *geomi,int geomtype, int fdsblock, int have_cface_normals
   geomi->have_cface_normals = have_cface_normals_arg;
   geomi->ncface_normals = 0;
   geomi->cface_normals = NULL;
+  geomi->geomobj_offsets = NULL;
+  geomi->ngeomobj_offsets = 0;
 }
 
 /* ------------------ RotateU2V ------------------------ */
