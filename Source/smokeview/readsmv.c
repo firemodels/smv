@@ -8457,7 +8457,11 @@ int ReadSMV_Parse(bufferstreamdata *stream) {
 
       if(ngeomobjinfo>0){
         geomi->ngeomobjinfo = ngeomobjinfo;
+        geomi->geomobj_offsets = NULL;
         NewMemory((void **)&geomi->geomobjinfo,ngeomobjinfo*sizeof(geomobjdata));
+        int ntotal_triangles;
+
+        ntotal_triangles = 0;
         for(i=0;i<ngeomobjinfo;i++){
           geomobjdata *geomobji;
           float *center;
@@ -8468,6 +8472,7 @@ int ReadSMV_Parse(bufferstreamdata *stream) {
 
           geomobji->texture_name=NULL;
           geomobji->texture_mapping=TEXTURE_RECTANGULAR;
+          geomobji->ntriangles = -1;
 
           FGETS(buffer,255,stream);
 
@@ -8478,10 +8483,12 @@ int ReadSMV_Parse(bufferstreamdata *stream) {
           if(colorlabel!=NULL){
             int colors[3] = {-1, -1, -1};
             float transparency = -1.0;
+            int ntriangles;
 
             colorlabel++;
             if(colorlabel!=buffer)colorlabel[-1] = 0;
-            sscanf(colorlabel, "%i %i %i %f", colors, colors+1, colors+2, &transparency);
+            ntriangles = -1;
+            sscanf(colorlabel, "%i %i %i %f %i", colors, colors+1, colors+2, &transparency, &ntriangles);
             if(colors[0]>=0&&colors[1]>=0&&colors[2]>=0){
               float fcolors[4];
 
@@ -8493,6 +8500,8 @@ int ReadSMV_Parse(bufferstreamdata *stream) {
               geomobji->color = GetColorPtr(fcolors);
               geomobji->use_geom_color = 1;
             }
+            geomobji->ntriangles = ntriangles;
+            if(ntriangles > 0)ntotal_triangles += ntriangles;
           }
 
           texture_mapping = TrimFront(buffer);
@@ -8523,6 +8532,23 @@ int ReadSMV_Parse(bufferstreamdata *stream) {
           }
           if(texture_mapping!=NULL&&strcmp(texture_mapping,"SPHERICAL")==0){
             geomobji->texture_mapping=TEXTURE_SPHERICAL;
+          }
+        }
+        geomi->ngeomobj_offsets = ntotal_triangles;
+        geomi->geomobj_offsets  = NULL;
+        if(ntotal_triangles>0){
+          int count;
+          
+          NewMemory((void **)&geomi->geomobj_offsets,ntotal_triangles*sizeof(int));
+          count = 0;
+          for(i=0;i<ngeomobjinfo;i++){
+            geomobjdata *geomobji;
+            int j;
+
+            geomobji = geomi->geomobjinfo + i;
+            for(j=0;j<geomobji->ntriangles;j++){
+              geomi->geomobj_offsets[count++] = i;
+            }
           }
         }
       }
