@@ -8731,47 +8731,6 @@ void MakeColorbarMenu(int *menuptr,
   *menuptr     = menu;
 }
 
-/* ------------------ GetCSVLoadMenu ------------------------ */
-#ifdef pp_CSV_MENU
-char *GetCSVLoadMenu(void){
-  int ncsvloadmenu;
-  char *label;
-  int i, last;
-
-  ncsvloadmenu=ncsvfileinfo + strlen("*Load ()");
-  for(i = ncsvfileinfo-1;i >=0;i--){
-    csvfiledata *csvfi;
-
-    csvfi = csvfileinfo + i;
-    if(strcmp(csvfi->c_type, "ext") != 0){
-      last=i;
-      break;
-    }
-  }
-  for(i=0;i<ncsvfileinfo;i++){
-    csvfiledata *csvfi;
-
-    csvfi = csvfileinfo + i;
-    if(strcmp(csvfi->c_type, "ext") != 0){
-      ncsvloadmenu += strlen(csvfi->c_type);
-    }
-  }
-  NewMemory((void **)&label,ncsvloadmenu);
-  strcpy(label, "*Load(");
-  for(i=0;i<ncsvfileinfo;i++){
-    csvfiledata *csvfi;
-
-    csvfi = csvfileinfo + i;
-    if(strcmp(csvfi->c_type, "ext")!=0){
-      strcat(label, csvfi->c_type);
-      if(i!=last)strcat(label, ",");
-    }
-  }
-  strcat(label,")");
-  return label;
-}
-#endif
-
 /* ------------------ InitMenus ------------------------ */
 
 void InitMenus(void){
@@ -8814,10 +8773,6 @@ static int hvacmenu = 0, hvacnetworkmenu, showcomponentmenu = 0, showfiltermenu 
 static int hvacvaluemenu = 0, hvacnodevaluemenu = 0, hvacductvaluemenu = 0;
 static int scriptlistmenu=0,scriptsteplistmenu=0,scriptrecordmenu=0;
 static int loadplot3dmenu=0, unloadvslicemenu=0, unloadslicemenu=0;
-#ifdef pp_CSV_MENU
-static int loadcsvmenu=0;
-static char *csvloadmenu=NULL;
-#endif
 static int loadsmoke3dmenu = 0;
 static int loadvolsmoke3dmenu=0,showvolsmoke3dmenu=0;
 static int unloadsmoke3dmenu=0,unloadvolsmoke3dmenu=0;
@@ -12159,24 +12114,6 @@ static int menu_count=0;
       }
     }
 
-    /* --------------------------------CSV load menu -------------------------- */
-#ifdef pp_CSV_MENU
-    if(ncsvfileinfo > 0){
-      CREATEMENU(loadcsvmenu, LoadPlot2DMenu);
-      if(csvloadmenu == NULL){
-        csvloadmenu = GetCSVLoadMenu();
-      }
-      if(csv_loaded == 1){
-        glutAddMenuEntry(csvloadmenu,  MENU_PLOT2D_LOAD);
-        glutAddMenuEntry("Unload",   MENU_PLOT2D_UNLOAD);
-      }
-      else{
-        glutAddMenuEntry(csvloadmenu+1,      MENU_PLOT2D_LOAD);
-        glutAddMenuEntry("*Unloaded", MENU_PLOT2D_UNLOAD);
-      }
-    }
-#endif
-
     /* --------------------------------plot3d menu -------------------------- */
 
     if(nplot3dinfo>0){
@@ -12968,13 +12905,6 @@ static int menu_count=0;
         strcpy(loadmenulabel,"Zone fire");
         GLUTADDSUBMENU(loadmenulabel,zonemenu);
       }
-
-#ifdef pp_CSV_MENU
-      // CSV
-      if(ncsvfileinfo > 0){
-        GLUTADDSUBMENU(_("CSV"), loadcsvmenu);
-      }
-#endif
 
       if(glui_active==1){
         glutAddMenuEntry("-",MENU_DUMMY);

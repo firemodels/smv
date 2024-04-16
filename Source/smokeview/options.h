@@ -10,7 +10,6 @@
 //#define pp_PARTBOUND_MULTI // compute particle bounds in the background
 //#define pp_LUA            // turn on LUA option
 #define pp_SLICE_MULTI      // load slice files in parallel
-//#define pp_CSV_MENU       // add menu for loading CSV files
 //#define pp_SMOKE16        // load 16 bit smoke files
 //#define pp_GAMMA          // show gamma correction checkbox
 // #define pp_BLACKBODY_OUT // output generated blackbody color data 
