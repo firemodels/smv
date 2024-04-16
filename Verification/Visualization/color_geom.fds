@@ -1,10 +1,12 @@
 &HEAD CHID='color_geom', TITLE='color' /
 #Mesh
-&MESH XB= 0.0, 83.0, 0.0, 34.0, 0.0, 9.0, IJK= 80, 35, 36 /
+&MESH XB= 0.0, 83.0, 0.0, 54.0, 0.0, 9.0, IJK= 80, 54, 36 /
 
 &TIME T_END=0. /
-&SURF ID='WALL', RGB=255,0,0 /
-&GEOM ID='Wall_1', SURF_ID='WALL',
+&SURF ID='WALL1', RGB=255,0,0 /
+&SURF ID='WALL2', RGB=0,0,255 /
+
+&GEOM ID='Wall_1', SURF_ID='WALL1',
 VERTS=
 9.0,  5.0, 0.0,
 9.0,  5.0, 3.5,
@@ -14,12 +16,32 @@ POLY=1, 2, 3, 4,
 EXTRUDE=10.0
 COLOR='BLACK' /
 
-&GEOM ID='Wall_2', SURF_ID='WALL',
+&GEOM ID='Wall_2', SURF_ID='WALL1',
 VERTS=
 48.0, 5.0, 0.0,
 48.0, 5.0, 3.5,
 78.0, 20.0, 3.5,
 78.0, 20.0, 0.0
+POLY=1, 2, 3, 4,
+EXTRUDE=10.0
+ /
+
+&GEOM ID='Wall_1', SURF_ID='WALL2',
+VERTS=
+9.0,  25.0, 0.0,
+9.0,  25.0, 3.5,
+39.0, 40.0, 3.5,
+39.0, 40.0, 0.0
+POLY=1, 2, 3, 4,
+EXTRUDE=10.0
+COLOR='GREEN' /
+
+&GEOM ID='Wall_2', SURF_ID='WALL2',
+VERTS=
+48.0, 25.0, 0.0,
+48.0, 25.0, 3.5,
+78.0, 40.0, 3.5,
+78.0, 40.0, 0.0
 POLY=1, 2, 3, 4,
 EXTRUDE=10.0
  /
