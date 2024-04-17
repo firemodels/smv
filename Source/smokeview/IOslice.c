@@ -2220,7 +2220,6 @@ void UpdateAllMeshSkips(int skip){
     meshi->n_jmap = 0;
     meshi->n_kmap = 0;
   }
-#ifdef pp_MESHSKIP
   for(i = 0; i < nmeshes; i++){
     meshdata *meshi;
 
@@ -2229,7 +2228,6 @@ void UpdateAllMeshSkips(int skip){
     UpdateMeshSkip(meshi, skip, 1);
     UpdateMeshSkip(meshi, skip, 2);
   }
-#endif
 }
 
 /* ------------------ UpdateVectorSkipDefault ------------------------ */
@@ -2445,7 +2443,7 @@ void UpdateVsliceMenuLabels(sliceparmdata *sp){
 }
 
 /* ------------------ NewMultiSlice ------------------------ */
-#ifdef pp_SLICE_MENU
+
 int NewMultiSlice(slicedata *sdold, slicedata *sd){
   int i, j;
 
@@ -2454,14 +2452,6 @@ int NewMultiSlice(slicedata *sdold, slicedata *sd){
   if(SliceCompare(&i, &j) == 0)return 0;
   return 1;
 }
-
-#else
-
-int NewMultiSlice(slicedata *sdold,slicedata *sd){
-  if(strcmp(sd->label.longlabel, sdold->label.longlabel)==0&&sd->slcf_index==sdold->slcf_index)return 0;
-  return 1;
-}
-#endif
 
 /* ------------------ GetGSliceParams ------------------------ */
 

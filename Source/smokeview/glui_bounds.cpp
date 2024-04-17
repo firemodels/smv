@@ -2866,7 +2866,6 @@ int      nparticleprocinfo=0;
 procdata  subboundprocinfo[5];
 int       nsubboundprocinfo=0;
 
-#ifdef pp_LOADALL_SLICE
 /* ------------------ GLUIUpdateLoadAllSlices ------------------------ */
 
 extern "C" void GLUIUpdateLoadAllSlices(void){
@@ -2875,7 +2874,6 @@ extern "C" void GLUIUpdateLoadAllSlices(void){
   if(CHECKBOX_sliceload_isvector!=NULL)CHECKBOX_sliceload_isvector->set_int_val(sliceload_isvector);
   if(RADIO_sliceload_dir!=NULL)RADIO_sliceload_dir->set_int_val(sliceload_dir);
 }
-#endif
 
 /* ------------------ GLUIUpdatePartPointSize ------------------------ */
 

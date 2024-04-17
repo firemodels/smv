@@ -10,10 +10,7 @@
 //#define pp_PARTBOUND_MULTI // compute particle bounds in the background
 //#define pp_LUA            // turn on LUA option
 //#define pp_FED            // used to isolate fed code
-#define pp_CHOPFIX          // fix to saving chop values
-#define pp_SLICE_MENU     // make slice menu formation consistent (sort step, build step)
 #define pp_SLICE_MULTI      // load slice files in parallel
-//#define pp_CSV_MENU       // add menu for loading CSV files
 //#define pp_SMOKE16        // load 16 bit smoke files
 //#define pp_GAMMA          // show gamma correction checkbox
 // #define pp_BLACKBODY_OUT // output generated blackbody color data 
@@ -28,10 +25,6 @@
 #ifdef pp_GPU
 #define pp_GPUTHROTTLE      // pp_GPU directive must also be set
 #endif
-#define pp_LOADALL_SLICE    // add menus to load all x, y, z slice files
-#define pp_ONEBUFFER        // consolidate memory allocations when parsing .smv file
-#define pp_MESH_BOUNDARY    // display boundary files on blockages that are on mesh boundaries
-#define pp_MESHSKIP         // compute mesh skip arrays to display vector slices uniformly
 #define pp_NOBOUNDS           // add option to not compute global bounds at startup
 
 //*** options: windows
