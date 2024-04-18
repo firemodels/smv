@@ -384,6 +384,9 @@ SVEXTERN int SVDECL(slice_temp_bounds_defined, 0);
 SVEXTERN int nplot3dloaded, nsmoke3dloaded, nisoloaded, nsliceloaded, nvsliceloaded, npartloaded, npatchloaded;
 SVEXTERN int nvolsmoke3dloaded;
 SVEXTERN int npart5loaded, npartloaded;
+#ifdef pp_SMOKE_SPEEDUP
+SVEXTERN int SVDECL(smoke3d_compression_type, COMPRESSED_UNKNOWN);
+#endif
 
 SVEXTERN int SVDECL(global_have_global_bound_file, 0);
 SVEXTERN FILE_SIZE  SVDECL(global_part_boundsize, 0);
