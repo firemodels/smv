@@ -3730,8 +3730,11 @@ void FreeSmoke3D(smoke3ddata *smoke3di){
 
 /* ------------------ GetSmoke3DVersion ------------------------ */
 
+#ifdef pp_SMOKE_SPEEDUP
+int GetSmoke3DVersion2(smoke3ddata *smoke3di){
+#else
 int GetSmoke3DVersion(smoke3ddata *smoke3di){
-
+#endif
   FILE *SMOKE3DFILE = NULL, *SMOKE3D_REGFILE = NULL, *SMOKE3D_COMPFILE = NULL;
   int nxyz[8];
   char *file;
@@ -3766,6 +3769,23 @@ int GetSmoke3DVersion(smoke3ddata *smoke3di){
   return nxyz[1];
 }
 
+#ifdef pp_SMOKE_SPEEDUP
+/* ------------------ GetSmoke3DVersion ------------------------ */
+
+int GetSmoke3DVersion(smoke3ddata *smoke3di){
+  if(smoke3d_compression_type == COMPRESSED_UNKNOWN){
+    smoke3d_compression_type = GetSmoke3DVersion2(smoke3di);
+  }
+  else if(smoke3d_compression_type == COMPRESSED_RLE){
+    smoke3di->file = smoke3di->reg_file;
+  }
+  else{
+    smoke3di->file = smoke3di->comp_file;
+    smoke3d_compression_type = COMPRESSED_ZLIB;
+  }
+  return smoke3d_compression_type;
+}
+#endif
 /* ------------------ SetSmokeColorFlags ------------------------ */
 
 void SetSmokeColorFlags(void){
@@ -4057,7 +4077,11 @@ int SetupSmoke3D(smoke3ddata *smoke3di, int flag_arg, int iframe_arg, int *error
 
   if(smoke3di->compression_type==COMPRESSED_UNKNOWN){
     smoke3di->compression_type = GetSmoke3DVersion(smoke3di);
+#ifdef pp_SMOKE_SPEEDUP
+    update_smoke3dmenulabels = 1;
+#else
     UpdateSmoke3dMenuLabels();
+#endif
   }
   if(iframe_arg==ALL_SMOKE_FRAMES)PRINTF("Loading %s(%s)", smoke3di->file, smoke3di->label.shortlabel);
   CheckMemory;
