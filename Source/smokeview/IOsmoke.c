@@ -4077,7 +4077,11 @@ int SetupSmoke3D(smoke3ddata *smoke3di, int flag_arg, int iframe_arg, int *error
 
   if(smoke3di->compression_type==COMPRESSED_UNKNOWN){
     smoke3di->compression_type = GetSmoke3DVersion(smoke3di);
+#ifdef pp_SMOKE_SPEEDUP
+    update_smoke3dmenulabels = 1;
+#else
     UpdateSmoke3dMenuLabels();
+#endif
   }
   if(iframe_arg==ALL_SMOKE_FRAMES)PRINTF("Loading %s(%s)", smoke3di->file, smoke3di->label.shortlabel);
   CheckMemory;

@@ -386,6 +386,7 @@ SVEXTERN int nvolsmoke3dloaded;
 SVEXTERN int npart5loaded, npartloaded;
 #ifdef pp_SMOKE_SPEEDUP
 SVEXTERN int SVDECL(smoke3d_compression_type, COMPRESSED_UNKNOWN);
+SVEXTERN int SVDECL(update_smoke3dmenulabels, 0);
 #endif
 
 SVEXTERN int SVDECL(global_have_global_bound_file, 0);
