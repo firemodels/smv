@@ -4749,6 +4749,9 @@ FILE_SIZE LoadSmoke3D(int type, int frame, int *count, float *time_value){
     break;
     }
   }
+#ifdef pp_SMOKE_SPEEDUP
+  smoke3d_compression_type = COMPRESSED_UNKNOWN;
+#endif
   for(i=0;i<nsmoke3dinfo;i++){
     smoke3ddata *smoke3di;
 
@@ -8052,9 +8055,7 @@ void InitSubSliceMenuInfo(){
       si->havey      = 0;
       si->havez      = 0;
       si->havexyz    = 0;
-      if(sd->volslice==0&&
-        (sd->slice_filetype == SLICE_NODE_CENTER || sd->slice_filetype == SLICE_CELL_CENTER)
-      ){
+      if(sd->slice_filetype == SLICE_NODE_CENTER || sd->slice_filetype == SLICE_CELL_CENTER){
         si->slicetype = sd->slice_filetype-1;
       }
       else{
@@ -8063,7 +8064,7 @@ void InitSubSliceMenuInfo(){
       nsubslicemenuinfo++;
     }
     si = subslicemenuinfo + nsubslicemenuinfo-1;
-    if(si->slicetype!=SLICE_UNKNOWN){
+    if(si->slicetype!=SLICE_UNKNOWN&&sd->volslice==0){
       if(sd->idir == 1){
         si->havex = 1;
         nsubslicex++;
@@ -8119,9 +8120,7 @@ void InitSubVectorSliceMenuInfo(){
       vd->havey      = 0;
       vd->havez      = 0;
       vd->havexyz    = 0;
-      if( si->volslice==0&&
-         (si->slice_filetype == SLICE_NODE_CENTER || si->slice_filetype == SLICE_CELL_CENTER)
-      ){
+      if(si->slice_filetype == SLICE_NODE_CENTER || si->slice_filetype == SLICE_CELL_CENTER){
         vd->slicetype = si->slice_filetype-1;
       }
       else{
@@ -8130,7 +8129,7 @@ void InitSubVectorSliceMenuInfo(){
       nsubvectorslicemenuinfo++;
     }
     vd = subvectorslicemenuinfo + nsubvectorslicemenuinfo - 1;
-    if(vd->slicetype!=SLICE_UNKNOWN){
+    if(vd->slicetype!=SLICE_UNKNOWN&&si->volslice==0){
       if(si->idir == 1){
         vd->havex = 1;
         nsubvectorslicex++;

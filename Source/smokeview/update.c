@@ -1959,6 +1959,12 @@ void UpdateShowScene(void){
   have_fire  = HaveFireLoaded();
   have_smoke = HaveSootLoaded();
 
+#ifdef pp_SMOKE_SPEEDUP  
+  if(update_smoke3dmenulabels == 1){
+    update_smoke3dmenulabels = 0;
+    UpdateSmoke3dMenuLabels();
+  }
+#endif
   if(glui_meshclip_defined==1&&update_meshclip == 1){
     update_meshclip = 0;
     GLUIUpdateMeshBounds();
