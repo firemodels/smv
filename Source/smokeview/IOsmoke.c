@@ -4797,12 +4797,14 @@ void MergeSmoke3DBlack(smoke3ddata *smoke3dset){
 /* ------------------ MergeSmoke3D ------------------------ */
 
 void MergeSmoke3D(smoke3ddata *smoke3dset){
+  INIT_PRINT_TIMER(merge_smoke_time);
   if(smoke3d_black==1){
     MergeSmoke3DBlack(smoke3dset);
     }
   else{
     MergeSmoke3DColors(smoke3dset);
   }
+  PRINT_TIMER(merge_smoke_time, "MergeSmoke3D");
 }
 
 /* ------------------ UpdateSmoke3dMenuLabels ------------------------ */
