@@ -6811,7 +6811,7 @@ int ReadSMV_Init() {
     use_ffmpeg_threads      = 0;
     use_readallgeom_threads = 0;
     use_isosurface_threads  = 0;
-#ifdef pp_SMOKE_SPEEDUP
+#ifdef pp_SMOKEDRAW_SPEEDUP
     use_mergesmoke_threads  = 0; 
 #endif
   }
