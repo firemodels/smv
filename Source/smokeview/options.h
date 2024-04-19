@@ -19,7 +19,7 @@
 //#define pp_LOAD_INC       // add menu item for loading new data
 #define pp_PART_SPEEDUP     // improve efficiency of loading particles
 #define pp_SMOKE_SPEEDUP    // improve efficiency of loading 3d smoke
-#define pp_SMOKEDRAW_SPEEDUP    // improve efficiency of drawing 3d smoke
+//#define pp_SMOKEDRAW_SPEEDUP    // improve efficiency of drawing 3d smoke
 #define pp_GPU              // support the GPU
 #define pp_THREAD           // turn on multi-threading
 #ifdef pp_GPU
