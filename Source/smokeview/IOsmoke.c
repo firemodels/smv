@@ -3249,7 +3249,7 @@ void DrawSmokeFrame(void){
     if(smoke3di->loaded==0||smoke3di->display==0)continue;
     if(smoke3di->primary_file==0)continue;
 #ifdef pp_SMOKE_SPEEDUP
-//    if(smoke3di->max_alpha<=0)continue;
+    if(usegpu==0&&smoke3di->max_alpha<=0)continue;
 #endif
     IF_NOT_USEMESH_CONTINUE(USEMESH_DRAW,smoke3di->blocknumber);
     if(IsSmokeComponentPresent(smoke3di)==0)continue;
