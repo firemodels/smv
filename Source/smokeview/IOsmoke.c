@@ -4373,8 +4373,8 @@ int UpdateSmoke3D(smoke3ddata *smoke3di){
   countout=smoke3di->nchars_uncompressed;
   switch(smoke3di->compression_type){
     unsigned char *buffer_in;
-    case COMPRESSED_RLE:
 
+  case COMPRESSED_RLE:
     buffer_in = smoke3di->smokeframe_comp_list[iframe_local];
     countout = UnCompressRLE(buffer_in,countin,smoke3di->smokeframe_in);
     CheckMemory;
@@ -4387,9 +4387,7 @@ int UpdateSmoke3D(smoke3ddata *smoke3di){
     break;
   }
   CheckMemory;
-
-  if(
-    smoke3di->frame_all_zeros[iframe_local] == SMOKE3D_ZEROS_UNKNOWN){
+  if(smoke3di->frame_all_zeros[iframe_local] == SMOKE3D_ZEROS_UNKNOWN){
     int i;
     unsigned char *smokeframe_in;
 
@@ -4806,6 +4804,44 @@ void MergeSmoke3D(smoke3ddata *smoke3dset){
   }
   PRINT_TIMER(merge_smoke_time, "MergeSmoke3D");
 }
+
+#ifdef pp_SMOKEDRAW_SPEEDUP
+
+/* ------------------ UpdateGluiMergeSmoke ------------------------ */
+
+void UpdateGluiMergeSmoke(void){
+  THREADcontrol(mergesmoke_threads, THREAD_LOCK);
+  n_mergesmoke_threads = n_mergesmoke_glui_threads;
+  THREADcontrol(mergesmoke_threads, THREAD_UNLOCK);
+}
+
+/* ------------------ MtMergeSmoke3D ------------------------ */
+
+void *MtMergeSmoke3D(void *arg){
+  int nthreads, ithread;
+  int *nthreadptr, *ithreadptr;
+  int i;
+
+  nthreadptr = (int *)arg;
+  ithreadptr = (int *)arg+1;
+  nthreads   = *nthreadptr;
+  ithread    = *ithreadptr;
+  for(i = ithread;i < nsmoke3dinfo;i += nthreads){
+    smoke3ddata *smoke3di;
+
+    smoke3di = smoke3dinfo + i;
+    if(smoke3di->loaded == 0 || smoke3di->display == 0)continue;
+    smoke3di->ismoke3d_time = smoke3di->timeslist[itimes];
+    if(IsSmokeComponentPresent(smoke3di) == 0)continue;
+    if(smoke3di->ismoke3d_time != smoke3di->lastiframe){
+      smoke3di->lastiframe = smoke3di->ismoke3d_time;
+      UpdateSmoke3D(smoke3di);
+    }
+    MergeSmoke3D(smoke3di);
+  }
+  THREAD_EXIT(mergesmoke_threads);
+}
+#endif
 
 /* ------------------ UpdateSmoke3dMenuLabels ------------------------ */
 
