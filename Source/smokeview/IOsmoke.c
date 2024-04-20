@@ -3248,9 +3248,6 @@ void DrawSmokeFrame(void){
     smoke3di = smoke3dinfo_sorted[i];
     if(smoke3di->loaded==0||smoke3di->display==0)continue;
     if(smoke3di->primary_file==0)continue;
-#ifdef pp_SMOKE_SPEEDUP
-    if(usegpu==0&&smoke3di->max_alpha<=0)continue;
-#endif
     IF_NOT_USEMESH_CONTINUE(USEMESH_DRAW,smoke3di->blocknumber);
     if(IsSmokeComponentPresent(smoke3di)==0)continue;
     if(smoke3d_use_skip==1){
@@ -3850,16 +3847,6 @@ void SetSmokeColorFlags(void){
       }
     }
   }
-  for(i = 0;i<nsmoke3dinfo;i++){
-    int j;
-    smoke3ddata *smoke3di;
-
-    smoke3di = smoke3dinfo+i;
-    if(smoke3di->loaded==0||smoke3di->display==0||smoke3di->frame_all_zeros==NULL)continue;
-    for(j = 0;j<smoke3di->ntimes_full;j++){
-      smoke3di->frame_all_zeros[j] = SMOKE3D_ZEROS_UNKNOWN;
-    }
-  }
 }
 
 /* ------------------ UpdateLoadedSmoke ------------------------ */
@@ -4278,6 +4265,17 @@ FILE_SIZE ReadSmoke3D(int iframe_arg,int ifile_arg,int flag_arg, int first_time,
 
       nframes_found_local++;
       SKIP_SMOKE;FREAD_SMOKE(smoke3di->smokeframe_comp_list[iii],1,smoke3di->nchars_compressed_smoke[iii],SMOKE3DFILE); SKIP_SMOKE;
+      if(smoke3di->compression_type==COMPRESSED_RLE){
+        if(AllZeroRLE(smoke3di->smokeframe_comp_list[iii],smoke3di->nchars_compressed_smoke[iii])==1){
+          smoke3di->frame_all_zeros[iii] = SMOKE3D_ZEROS_ALL;
+        }
+        else{
+          smoke3di->frame_all_zeros[iii] = SMOKE3D_ZEROS_SOME;
+        }
+      }
+      else{
+        smoke3di->frame_all_zeros[iii] = SMOKE3D_ZEROS_UNKNOWN;
+      }
       file_size_local +=4+smoke3di->nchars_compressed_smoke[iii]+4;
       iii++;
       CheckMemory;
@@ -4497,9 +4495,6 @@ void MergeSmoke3DColors(smoke3ddata *smoke3dset){
     unsigned char smokeval_uc[3], co2val_uc[3];
 
     smoke3di = smoke3dinfo + i;
-#ifdef pp_SMOKE_SPEEDUP
-    smoke3di->max_alpha = 0;
-#endif
     if(smoke3dset!=NULL&&smoke3dset!=smoke3di)continue;
     if(smoke3di->loaded==0||smoke3di->primary_file==0)continue;
     mesh_smoke3d = meshinfo+smoke3di->blocknumber;
@@ -4579,10 +4574,6 @@ void MergeSmoke3DColors(smoke3ddata *smoke3dset){
     co2val_uc[1] = (unsigned char)co2_color_int255[1];
     co2val_uc[2] = (unsigned char)co2_color_int255[2];
 
-#ifdef pp_SMOKE_SPEEDUP
-    unsigned char max_alpha;
-    max_alpha = 0;
-#endif
     for(j=0;j<smoke3di->nchars_uncompressed;j++){
       unsigned char *firecolor_ptr, *smokecolor_ptr, *co2color_ptr;
        float alpha_fire_local, alpha_smoke_local, alpha_co2_local;
@@ -4674,15 +4665,9 @@ void MergeSmoke3DColors(smoke3ddata *smoke3dset){
         mergecolor[2] = f1*smokecolor_ptr[2] + f2*co2color_ptr[2];
         *mergealpha = alpha_smoke_local + alpha_co2_local - alpha_smoke_local*alpha_co2_local/255.0;
       }
-#ifdef pp_SMOKE_SPEEDUP
-      max_alpha = MAX(*mergealpha, max_alpha);
-#endif
       mergecolor+=4;
       mergealpha++;
     }
-#ifdef pp_SMOKE_SPEEDUP
-    smoke3di->max_alpha = max_alpha;
-#endif
   }
 }
 

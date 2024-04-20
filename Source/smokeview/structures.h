@@ -1637,9 +1637,6 @@ typedef struct _smoke3ddata {
   int *timeslist;
   int ntimes,ntimes_old,ismoke3d_time,lastiframe,ntimes_full;
   int nchars_uncompressed;
-#ifdef pp_SMOKE_SPEEDUP
-  unsigned char max_alpha;
-#endif
 
   int ncomp_smoke_total;
   int *nchars_compressed_smoke, *nchars_compressed_smoke_full;
