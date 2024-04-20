@@ -7,7 +7,9 @@
 #define MAX_THREADS 16
 
 enum threaderparms {
+  THREAD_UPDATE,
   THREAD_LOCK,
+  THREAD_FORCE_UNLOCK,
   THREAD_UNLOCK,
   THREAD_JOIN
 };

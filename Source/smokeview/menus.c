@@ -3380,6 +3380,9 @@ void UnloadSmoke3D(smoke3ddata *smoke3di){
 void UnloadAllSmoke3D(int type){
   int i;
 
+#ifdef pp_SMOKE_SPEEDUP  
+  update_merge_smoke = 1;
+#endif
   if(nsmoke3dinfo > 0){
     for(i = 0; i < nsmoke3dinfo; i++){
       smoke3ddata *smoke3di;

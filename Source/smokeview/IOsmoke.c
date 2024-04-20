@@ -4180,6 +4180,10 @@ FILE_SIZE ReadSmoke3D(int iframe_arg,int ifile_arg,int flag_arg, int first_time,
   char compstring_local[128];
   int fortran_skip=0;
 
+#ifdef pp_SMOKE_SPEEDUP  
+  update_merge_smoke = 1;
+  GLUTPOSTREDISPLAY;
+#endif
   SetTimeState();
   update_smokefire_colors = 1;
 #ifndef pp_FSEEK
@@ -4795,9 +4799,14 @@ void MergeSmoke3D(smoke3ddata *smoke3dset){
 /* ------------------ UpdateGluiMergeSmoke ------------------------ */
 
 void UpdateGluiMergeSmoke(void){
+  int use_threads_save;
+
+  use_threads_save = mergesmoke_threads->use_threads;
   THREADcontrol(mergesmoke_threads, THREAD_LOCK);
-  n_mergesmoke_threads = n_mergesmoke_glui_threads;
-  THREADcontrol(mergesmoke_threads, THREAD_UNLOCK);
+  n_mergesmoke_threads   = n_mergesmoke_glui_threads;
+  use_mergesmoke_threads = use_mergesmoke_glui_threads;
+  THREADcontrol(mergesmoke_threads, THREAD_UPDATE);
+  if(use_threads_save==1)THREADcontrol(mergesmoke_threads, THREAD_FORCE_UNLOCK);
 }
 
 /* ------------------ MtMergeSmoke3D ------------------------ */
