@@ -6811,6 +6811,9 @@ int ReadSMV_Init() {
     use_ffmpeg_threads      = 0;
     use_readallgeom_threads = 0;
     use_isosurface_threads  = 0;
+#ifdef pp_SMOKEDRAW_SPEEDUP
+    use_mergesmoke_threads  = 0; 
+#endif
   }
 
   START_TIMER(getfilelist_time);
@@ -11870,6 +11873,12 @@ int ReadSMV_Configure(){
 
   MakeIBlankCarve();
   PRINT_TIMER(timer_readsmv, "MakeIBlankCarve");
+
+#ifdef pp_SMOKEDRAW_SPEEDUP
+  if(mergesmoke_threads == NULL){
+    mergesmoke_threads = THREADinit(&n_mergesmoke_threads, &use_mergesmoke_threads, MtMergeSmoke3D);
+  }
+#endif
 
   if(ffmpeg_threads == NULL){
     ffmpeg_threads = THREADinit(&n_ffmpeg_threads, &use_ffmpeg_threads, SetupFF);

@@ -95,6 +95,29 @@ unsigned int UnCompressRLE(unsigned char *buffer_in, int nchars_in, unsigned cha
   return nn;
 }
 
+/* ------------------ AllZeroRLE ------------------------ */
+
+unsigned char AllZeroRLE(unsigned char *buffer_in, int nchars_in){
+  unsigned char *buffer_in_end;
+
+  buffer_in_end = buffer_in + nchars_in;
+  while(buffer_in < buffer_in_end){
+    if(*buffer_in == MARK){
+      unsigned char thischar;
+
+      if(buffer_in + 2 >= buffer_in_end)break;
+      thischar = buffer_in[1];
+      if(thischar > 0)return 0;
+      buffer_in+=3;
+    }
+    else{
+      if(*buffer_in > 0)return 0;
+      buffer_in++;
+    }
+  }
+  return 1;
+}
+
 /* ------------------ CompressVolSliceFrame ------------------------ */
 
 void CompressVolSliceFrame(float *data_in, int n_data_in, float timeval_in, float *vmin_in, float *vmax_in,

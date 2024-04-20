@@ -45,7 +45,10 @@ GLUI_Spinner *SPINNER_skipframe=NULL;
 GLUI_Spinner *SPINNER_hrrpuv_cutoff=NULL;
 GLUI_Spinner *SPINNER_nongpu_vol_factor=NULL;
 GLUI_Spinner *SPINNER_gpu_vol_factor=NULL;
-GLUI_Spinner *SPINNER_smoke3d_threads = NULL;
+GLUI_Spinner *SPINNER_smoke3d_load_threads = NULL;
+#ifdef pp_SMOKEDRAW_SPEEDUP
+GLUI_Spinner *SPINNER_smoke3d_draw_threads = NULL;
+#endif
 GLUI_Spinner *SPINNER_smoke3d_load_start=NULL;
 GLUI_Spinner *SPINNER_smoke3d_load_skip=NULL;
 
@@ -372,8 +375,14 @@ extern "C" void GLUI3dSmokeSetup(int main_window){
     CHECKBOX_show_smoke8 = glui_3dsmoke->add_checkbox_to_panel(PANEL_overall,  _("show 8 bit files"),  &show_3dsmoke_8bit,  SMOKE_SHOW8,  GLUISmoke3dCB);
   }
 #endif
-  SPINNER_smoke3d_threads = glui_3dsmoke->add_spinner_to_panel(PANEL_overall, _("threads"), GLUI_SPINNER_INT, &n_smokeload_threads);
-  SPINNER_smoke3d_threads->set_int_limits(1, 16);
+  SPINNER_smoke3d_load_threads = glui_3dsmoke->add_spinner_to_panel(PANEL_overall, _("load threads"), GLUI_SPINNER_INT, &n_smokeload_threads);
+  SPINNER_smoke3d_load_threads->set_int_limits(1, MAX_THREADS);
+#ifdef pp_SMOKEDRAW_SPEEDUP
+  SPINNER_smoke3d_draw_threads = glui_3dsmoke->add_spinner_to_panel(PANEL_overall, _("draw threads"), GLUI_SPINNER_INT, &n_mergesmoke_glui_threads, MERGE_SMOKE,  GLUISmoke3dCB);
+  SPINNER_smoke3d_draw_threads->disable();
+  SPINNER_smoke3d_draw_threads->set_int_limits(1, MAX_THREADS);
+#endif
+
   SPINNER_smoke3d_load_start = glui_3dsmoke->add_spinner_to_panel(PANEL_overall, _("start"), GLUI_SPINNER_INT, &smoke3d_start_frame);
   SPINNER_smoke3d_load_skip = glui_3dsmoke->add_spinner_to_panel(PANEL_overall, _("skip"), GLUI_SPINNER_INT, &smoke3d_skip_frame);
   CHECKBOX_smoke3d_use_skip = glui_3dsmoke->add_checkbox_to_panel(PANEL_overall, _("skip smoke frames"), &smoke3d_use_skip);
@@ -849,6 +858,30 @@ extern "C" void GLUISmoke3dCB(int var){
       CHECKBOX_show_smoke16->set_int_val(0);
     }
     updatemenu = 1;
+    break;
+#endif
+#ifdef pp_SMOKEDRAW_SPEEDUP
+  case MERGE_SMOKE:
+    int smoke_loaded;
+
+    smoke_loaded = 0;
+    for(i=0;i<nsmoke3dinfo;i++){
+      smoke3ddata *smoke3di;
+
+      smoke3di = smoke3dinfo + i;
+      if(smoke3di->loaded==1){
+        smoke_loaded = 1;
+        break;
+      }
+    }
+    if(smoke_loaded==1){
+      n_mergesmoke_glui_threads = n_mergesmoke_threads;
+      SPINNER_smoke3d_draw_threads->set_int_val(n_mergesmoke_glui_threads);
+    }
+    else{
+      n_mergesmoke_threads = n_mergesmoke_glui_threads;
+      UpdateGluiMergeSmoke();
+    }
     break;
 #endif
   case SMOKE_BLACK:
