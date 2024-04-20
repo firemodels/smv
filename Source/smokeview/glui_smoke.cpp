@@ -121,6 +121,9 @@ GLUI_Checkbox **CHECKBOX_meshvisptr = NULL;
 GLUI_Checkbox *CHECKBOX_meshvis = NULL;
 GLUI_Checkbox *CHECKBOX_edit_colormap=NULL;
 GLUI_Checkbox *CHECKBOX_plane_normal=NULL;
+#ifdef pp_SMOKEDRAW_SPEEDUP
+GLUI_Checkbox *CHECKBOX_view_parallel = NULL;
+#endif
 
 GLUI_Panel *PANEL_colormap3 = NULL;
 GLUI_Panel *PANEL_fire_opacity = NULL;
@@ -378,9 +381,12 @@ extern "C" void GLUI3dSmokeSetup(int main_window){
   SPINNER_smoke3d_load_threads = glui_3dsmoke->add_spinner_to_panel(PANEL_overall, _("load threads"), GLUI_SPINNER_INT, &n_smokeload_threads);
   SPINNER_smoke3d_load_threads->set_int_limits(1, MAX_THREADS);
 #ifdef pp_SMOKEDRAW_SPEEDUP
-  SPINNER_smoke3d_draw_threads = glui_3dsmoke->add_spinner_to_panel(PANEL_overall, _("draw threads"), GLUI_SPINNER_INT, &n_mergesmoke_glui_threads, MERGE_SMOKE,  GLUISmoke3dCB);
+  CHECKBOX_view_parallel = glui_3dsmoke->add_checkbox_to_panel(     PANEL_overall, _("draw computations in parallel"),  &use_mergesmoke_glui_threads, MERGE_SMOKE, GLUISmoke3dCB);
+  CHECKBOX_view_parallel->disable();
+  SPINNER_smoke3d_draw_threads = glui_3dsmoke->add_spinner_to_panel(PANEL_overall, _("draw threads"), GLUI_SPINNER_INT, &n_mergesmoke_glui_threads,   MERGE_SMOKE, GLUISmoke3dCB);
   SPINNER_smoke3d_draw_threads->disable();
   SPINNER_smoke3d_draw_threads->set_int_limits(1, MAX_THREADS);
+  GLUISmoke3dCB(MERGE_SMOKE);
 #endif
 
   SPINNER_smoke3d_load_start = glui_3dsmoke->add_spinner_to_panel(PANEL_overall, _("start"), GLUI_SPINNER_INT, &smoke3d_start_frame);
@@ -877,10 +883,14 @@ extern "C" void GLUISmoke3dCB(int var){
     if(smoke_loaded==1){
       n_mergesmoke_glui_threads = n_mergesmoke_threads;
       SPINNER_smoke3d_draw_threads->set_int_val(n_mergesmoke_glui_threads);
+      CHECKBOX_view_parallel->disable();
+      SPINNER_smoke3d_draw_threads->disable();
     }
     else{
       n_mergesmoke_threads = n_mergesmoke_glui_threads;
       UpdateGluiMergeSmoke();
+      CHECKBOX_view_parallel->enable();
+      SPINNER_smoke3d_draw_threads->enable();
     }
     break;
 #endif

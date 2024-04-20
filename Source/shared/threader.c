@@ -55,7 +55,7 @@ threaderdata *THREADinit(int *nthreads_ptr, int *use_threads_ptr, void *(*run_ar
   thi->use_threads     = use_threads_local;
   thi->run             = run_arg;
 #ifdef pp_THREAD
-  NewMemory(( void ** )&thi->thread_ids, nthreads_local * sizeof(pthread_t));
+  NewMemory(( void ** )&thi->thread_ids, MAX_THREADS * sizeof(pthread_t));
   pthread_mutex_init(&thi->mutex, NULL);
 #endif
   return thi;
@@ -67,8 +67,15 @@ void THREADcontrol(threaderdata *thi, int var){
 #ifdef pp_THREAD
   if(thi == NULL)return;
   switch(var){
+  case THREAD_UPDATE:
+    thi->use_threads = *thi->use_threads_ptr;
+    thi->n_threads   = *thi->n_threads_ptr;
+    break;
   case THREAD_LOCK:
     if(thi->use_threads == 1)pthread_mutex_lock(&thi->mutex);
+    break;
+  case THREAD_FORCE_UNLOCK:
+    pthread_mutex_unlock(&thi->mutex);
     break;
   case THREAD_UNLOCK:
     if(thi->use_threads == 1)pthread_mutex_unlock(&thi->mutex);

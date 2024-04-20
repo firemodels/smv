@@ -1971,6 +1971,10 @@ void UpdateShowScene(void){
     update_smoke3dmenulabels = 0;
     UpdateSmoke3dMenuLabels();
   }
+  if(update_merge_smoke == 1){
+    update_merge_smoke = 0;
+    GLUISmoke3dCB(MERGE_SMOKE);
+  }
 #endif
   if(glui_meshclip_defined==1&&update_meshclip == 1){
     update_meshclip = 0;
