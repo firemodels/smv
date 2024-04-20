@@ -95,6 +95,38 @@ unsigned int UnCompressRLE(unsigned char *buffer_in, int nchars_in, unsigned cha
   return nn;
 }
 
+/* ------------------ MaxValRLE ------------------------ */
+
+unsigned char MaxValRLE(unsigned char *buffer_in, int nchars_in){
+  int nn;
+  unsigned char *buffer_in_end, maxval;
+
+  nn = 0;
+  maxval = 0;
+  buffer_in_end = buffer_in + nchars_in;
+
+  while(buffer_in < buffer_in_end){
+    int nrepeats;
+
+    if(*buffer_in == MARK){
+      unsigned char thischar;
+
+      if(buffer_in + 2 >= buffer_in_end)break;
+      buffer_in++;
+      thischar = *buffer_in++;
+      nrepeats = *buffer_in++;
+      nn += nrepeats;
+      if(thischar > maxval)maxval = thischar;
+    }
+    else{
+      if(*buffer_in > maxval)maxval = *buffer_in;
+      buffer_in++;
+      nn++;
+    }
+  }
+  return maxval;
+}
+
 /* ------------------ CompressVolSliceFrame ------------------------ */
 
 void CompressVolSliceFrame(float *data_in, int n_data_in, float timeval_in, float *vmin_in, float *vmax_in,
