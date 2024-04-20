@@ -884,8 +884,8 @@ extern "C" void GLUISmoke3dCB(int var){
     }
     n_mergesmoke_threads = n_mergesmoke_glui_threads;
     UpdateGluiMergeSmoke();
-    CHECKBOX_view_parallel->enable();
-    SPINNER_smoke3d_draw_threads->enable();
+    if(CHECKBOX_view_parallel!=NULL)CHECKBOX_view_parallel->enable();
+    if(SPINNER_smoke3d_draw_threads!=NULL)SPINNER_smoke3d_draw_threads->enable();
     break;
 #endif
   case SMOKE_BLACK:
