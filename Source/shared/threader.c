@@ -124,22 +124,20 @@ void THREADruni(threaderdata *thi, int *args){
     thi->n_threads = *(thi->n_threads_ptr);
     if(thi->n_threads > MAX_THREADS)thi->n_threads = MAX_THREADS;
   }
-  if(thi->use_threads == 1){
-    int i;
+  int i;
 
-    for(i = 0; i < thi->n_threads; i++){
-      int *arg;
+  for(i = 0; i < thi->n_threads; i++){
+    int *arg;
 
-      arg = args + 2 * i;
-      arg[0] = thi->n_threads;
-      arg[1] = i;
+    arg = args + 2 * i;
+    arg[0] = thi->n_threads;
+    arg[1] = i;
+    if(thi->use_threads == 1){
       pthread_create(thi->thread_ids + i, NULL, thi->run, arg);
     }
-  }
-  else{
-    args[0] = 1;
-    args[1] = -1;
-    thi->run(args);
+    else{
+      thi->run(arg);
+    }
   }
 #else
   args[0] = 1;
