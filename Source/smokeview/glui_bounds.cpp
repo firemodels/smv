@@ -2515,7 +2515,7 @@ GLUI_Button *BUTTON_PLOT3D = NULL;
 GLUI_Button *BUTTON_3DSMOKE = NULL;
 GLUI_Button *BUTTON_BOUNDARY = NULL;
 GLUI_Button *BUTTON_ISO = NULL;
-GLUI_Button *BUTTON_OUTPUT_PLOT2D=NULL;;
+GLUI_Button *BUTTON_OUTPUT_PLOT2D=NULL;
 
 GLUI_Listbox *LIST_colortable = NULL;
 GLUI_Listbox *LIST_iso_colorbar = NULL;
@@ -2527,7 +2527,6 @@ GLUI_Rollout *ROLLOUT_iso_bounds;
 GLUI_Rollout *ROLLOUT_iso_color;
 GLUI_Rollout *ROLLOUT_script = NULL;
 GLUI_Rollout *ROLLOUT_config = NULL;
-GLUI_Rollout *ROLLOUT_autoload=NULL;
 GLUI_Rollout *ROLLOUT_compress=NULL;
 GLUI_Rollout *ROLLOUT_plot3d=NULL,*ROLLOUT_part=NULL,*ROLLOUT_slice=NULL,*ROLLOUT_bound=NULL,*ROLLOUT_iso=NULL;
 GLUI_Rollout *ROLLOUT_hvacduct=NULL, *ROLLOUT_hvacnode=NULL;
@@ -2613,12 +2612,14 @@ GLUI_Panel *PANEL_split2L = NULL, *PANEL_split2H = NULL;
 GLUI_Panel *PANEL_split3 = NULL;
 GLUI_Panel *PANEL_extreme = NULL, *PANEL_cb8 = NULL, *PANEL_cb7 = NULL;
 GLUI_Panel *PANEL_extreme_min = NULL, *PANEL_extreme_max = NULL;
-GLUI_Panel *PANEL_slice_plot2da = NULL;;
-GLUI_Panel *PANEL_slice_plot2db = NULL;;
-GLUI_Panel *PANEL_slice_plot2dc = NULL;;
-GLUI_Panel *PANEL_slice_plot2dd = NULL;;
-GLUI_Panel *PANEL_slice_plot2de = NULL;;
-GLUI_Panel *PANEL_slice_plot2df = NULL;;
+GLUI_Panel *PANEL_slice_plot2da = NULL;
+GLUI_Panel *PANEL_slice_plot2db = NULL;
+GLUI_Panel *PANEL_slice_plot2dc = NULL;
+GLUI_Panel *PANEL_slice_plot2dd = NULL;
+GLUI_Panel *PANEL_slice_plot2de = NULL;
+GLUI_Panel *PANEL_slice_plot2df = NULL;
+GLUI_Panel *PANEL_autoload = NULL;
+GLUI_Panel *PANEL_loadbounds = NULL;
 
 GLUI_Spinner *SPINNER_partdrawskip = NULL;
 GLUI_Spinner *SPINNER_sliceval_ndigits = NULL;
@@ -4428,15 +4429,6 @@ extern "C" void GLUIBoundsSetup(int main_window){
 
   ROLLOUT_files = glui_bounds->add_rollout("Files", false);
 
-  ROLLOUT_autoload = glui_bounds->add_rollout_to_panel(ROLLOUT_files,_("Auto load"), false, LOAD_ROLLOUT, FileRolloutCB);
-  INSERT_ROLLOUT(ROLLOUT_autoload, glui_bounds);
-  ADDPROCINFO(fileprocinfo, nfileprocinfo, ROLLOUT_autoload, LOAD_ROLLOUT, glui_bounds);
-
-  glui_bounds->add_checkbox_to_panel(ROLLOUT_autoload, _("Auto load at startup"),
-    &loadfiles_at_startup, STARTUP, BoundBoundCB);
-  glui_bounds->add_button_to_panel(ROLLOUT_autoload, _("Save auto load file list"), SAVE_FILE_LIST, BoundBoundCB);
-  glui_bounds->add_button_to_panel(ROLLOUT_autoload, _("Auto load now"), LOAD_FILES, BoundBoundCB);
-
   // -------------- Show/Hide Loaded files -------------------
 
   if(npartinfo > 0 || nsliceinfo > 0 || nvsliceinfo > 0 || nisoinfo > 0 || npatchinfo || nsmoke3dinfo > 0 || nplot3dinfo > 0){
@@ -5176,17 +5168,25 @@ hvacductboundsCPP.setup("hvac", ROLLOUT_hvacduct, hvacductbounds_cpp, nhvacductb
 
   // ----------------------------------- Time ----------------------------------------
 
-  ROLLOUT_time = glui_bounds->add_rollout_to_panel(ROLLOUT_filebounds, "Data loading options", false, TIME_ROLLOUT, BoundRolloutCB);
+  ROLLOUT_time = glui_bounds->add_rollout_to_panel(ROLLOUT_filebounds, "Loading options", false, TIME_ROLLOUT, BoundRolloutCB);
   INSERT_ROLLOUT(ROLLOUT_time, glui_bounds);
   ADDPROCINFO(fileprocinfo, nfileprocinfo, ROLLOUT_time, TIME_ROLLOUT, glui_bounds);
 
-  PANEL_time1a = glui_bounds->add_panel_to_panel(ROLLOUT_time, "Set time", true);
+  PANEL_loadbounds = glui_bounds->add_panel_to_panel(ROLLOUT_time,"", GLUI_PANEL_NONE);
+
+  PANEL_autoload = glui_bounds->add_panel_to_panel(PANEL_loadbounds,_("Auto load"));
+  glui_bounds->add_checkbox_to_panel(PANEL_autoload, _("Auto load at startup"), &loadfiles_at_startup, STARTUP, BoundBoundCB);
+  glui_bounds->add_button_to_panel(PANEL_autoload, _("Save auto load file list"), SAVE_FILE_LIST, BoundBoundCB);
+  glui_bounds->add_button_to_panel(PANEL_autoload, _("Auto load now"), LOAD_FILES, BoundBoundCB);
+
+  PANEL_time1a = glui_bounds->add_panel_to_panel(PANEL_loadbounds, "Set time", true);
   SPINNER_timebounds = glui_bounds->add_spinner_to_panel(PANEL_time1a, _("Time:"), GLUI_SPINNER_FLOAT, &glui_time);
   glui_bounds->add_spinner_to_panel(PANEL_time1a, _("Offset:"), GLUI_SPINNER_FLOAT, &timeoffset);
-  glui_bounds->add_column_to_panel(PANEL_time1a, false);
   BUTTON_SETTIME = glui_bounds->add_button_to_panel(PANEL_time1a, _("Set"), SET_TIME, TimeBoundCB);
 
-  PANEL_time2 = glui_bounds->add_panel_to_panel(ROLLOUT_time, _("Time bounds"), true);
+  glui_bounds->add_column_to_panel(PANEL_loadbounds, false);
+
+  PANEL_time2 = glui_bounds->add_panel_to_panel(PANEL_loadbounds, _("Time bounds"), true);
 
   glui_bounds->add_button_to_panel(PANEL_time2, _("Use FDS start/end times"), SET_FDS_TIMES, TimeBoundCB);
 
