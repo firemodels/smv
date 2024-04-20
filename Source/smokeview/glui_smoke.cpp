@@ -371,6 +371,7 @@ extern "C" void GLUI3dSmokeSetup(int main_window){
   glui_3dsmoke->add_checkbox_to_panel(PANEL_overall, _("max blending"), &hrrpuv_max_blending);
   CHECKBOX_smoke_flip    = glui_3dsmoke->add_checkbox_to_panel(PANEL_overall, _("flip background"), &background_flip,BACKGROUND_FLIP, GLUISmoke3dCB);
   CHECKBOX_load_parallel = glui_3dsmoke->add_checkbox_to_panel(PANEL_overall, _("load in parallel"), &use_smokeload_threads);
+  CHECKBOX_load_parallel->disable();
 #ifdef pp_SMOKE16
   if(have_smoke16 == 1){
     CHECKBOX_load_smoke16 = glui_3dsmoke->add_checkbox_to_panel(PANEL_overall, _("load 16 bit files"), &load_smoke16,       SMOKE_LOAD16, GLUISmoke3dCB);
@@ -380,6 +381,7 @@ extern "C" void GLUI3dSmokeSetup(int main_window){
 #endif
   SPINNER_smoke3d_load_threads = glui_3dsmoke->add_spinner_to_panel(PANEL_overall, _("load threads"), GLUI_SPINNER_INT, &n_smokeload_threads);
   SPINNER_smoke3d_load_threads->set_int_limits(1, MAX_THREADS);
+  SPINNER_smoke3d_load_threads->disable();
 #ifdef pp_SMOKEDRAW_SPEEDUP
   CHECKBOX_view_parallel = glui_3dsmoke->add_checkbox_to_panel(     PANEL_overall, _("draw computations in parallel"),  &use_mergesmoke_glui_threads, MERGE_SMOKE, GLUISmoke3dCB);
   CHECKBOX_view_parallel->disable();
@@ -880,18 +882,10 @@ extern "C" void GLUISmoke3dCB(int var){
         break;
       }
     }
-    if(smoke_loaded==1){
-      n_mergesmoke_glui_threads = n_mergesmoke_threads;
-      SPINNER_smoke3d_draw_threads->set_int_val(n_mergesmoke_glui_threads);
-      CHECKBOX_view_parallel->disable();
-      SPINNER_smoke3d_draw_threads->disable();
-    }
-    else{
-      n_mergesmoke_threads = n_mergesmoke_glui_threads;
-      UpdateGluiMergeSmoke();
-      CHECKBOX_view_parallel->enable();
-      SPINNER_smoke3d_draw_threads->enable();
-    }
+    n_mergesmoke_threads = n_mergesmoke_glui_threads;
+    UpdateGluiMergeSmoke();
+    CHECKBOX_view_parallel->enable();
+    SPINNER_smoke3d_draw_threads->enable();
     break;
 #endif
   case SMOKE_BLACK:
