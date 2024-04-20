@@ -14,6 +14,6 @@ void CompressVolSliceFrame(float *data_in, int n_data_in,
 int UnCompressVolSliceFrame(unsigned char *compressed_data_in,
                            float *data_out, int n_data_in, float *timeval_out,
                            unsigned char *fullbuffer);
-unsigned char MaxValRLE(unsigned char *buffer_in, int nchars_in);
+unsigned char AllZeroRLE(unsigned char *buffer_in, int nchars_in);
 #endif
 
