@@ -102,16 +102,13 @@ unsigned char AllZeroRLE(unsigned char *buffer_in, int nchars_in){
 
   buffer_in_end = buffer_in + nchars_in;
   while(buffer_in < buffer_in_end){
-    int nrepeats;
-
     if(*buffer_in == MARK){
       unsigned char thischar;
 
       if(buffer_in + 2 >= buffer_in_end)break;
-      buffer_in++;
-      thischar = *buffer_in++;
-      nrepeats = *buffer_in++;
+      thischar = buffer_in[1];
       if(thischar > 0)return 0;
+      buffer_in+=3;
     }
     else{
       if(*buffer_in > 0)return 0;
