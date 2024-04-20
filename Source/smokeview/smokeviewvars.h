@@ -26,6 +26,14 @@
 
 //*** threader variables
 
+//***mergesmoke
+#ifdef pp_SMOKEDRAW_SPEEDUP
+SVEXTERN int SVDECL(n_mergesmoke_threads, 4), SVDECL(use_mergesmoke_threads, 1);
+SVEXTERN threaderdata SVDECL(*mergesmoke_threads, NULL);
+SVEXTERN int merge_args[2 * MAX_THREADS];
+SVEXTERN int SVDECL(n_mergesmoke_glui_threads, 4);
+#endif
+
 //***isosurface
 SVEXTERN int SVDECL(n_isosurface_threads, 1), SVDECL(use_isosurface_threads, 1);
 SVEXTERN threaderdata SVDECL(*isosurface_threads, NULL);

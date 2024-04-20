@@ -19,6 +19,11 @@ EXTERNCPP void *GetGlobalSliceBoundsFull(void *arg);
 EXTERNCPP void *UpdateTrianglesAll(void *arg);
 EXTERNCPP void *ReadVolsmokeAllFramesAllMeshes2(void *arg);
 EXTERNCPP void *SetupAllIsosurfaces(void *arg);
+#ifdef pp_SMOKEDRAW_SPEEDUP
+EXTERNCPP void *MtMergeSmoke3D(void *arg);
+EXTERNCPP void UpdateGluiMergeSmoke(void);
+#endif
+
 
 //*** glui_bounds.cpp headers
 EXTERNCPP void GLUIUpdateLoadAllSlices(void);

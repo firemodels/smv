@@ -3847,16 +3847,6 @@ void SetSmokeColorFlags(void){
       }
     }
   }
-  for(i = 0;i<nsmoke3dinfo;i++){
-    int j;
-    smoke3ddata *smoke3di;
-
-    smoke3di = smoke3dinfo+i;
-    if(smoke3di->loaded==0||smoke3di->display==0||smoke3di->frame_all_zeros==NULL)continue;
-    for(j = 0;j<smoke3di->ntimes_full;j++){
-      smoke3di->frame_all_zeros[j] = SMOKE3D_ZEROS_UNKNOWN;
-    }
-  }
 }
 
 /* ------------------ UpdateLoadedSmoke ------------------------ */
@@ -4275,6 +4265,17 @@ FILE_SIZE ReadSmoke3D(int iframe_arg,int ifile_arg,int flag_arg, int first_time,
 
       nframes_found_local++;
       SKIP_SMOKE;FREAD_SMOKE(smoke3di->smokeframe_comp_list[iii],1,smoke3di->nchars_compressed_smoke[iii],SMOKE3DFILE); SKIP_SMOKE;
+      if(smoke3di->compression_type==COMPRESSED_RLE){
+        if(AllZeroRLE(smoke3di->smokeframe_comp_list[iii],smoke3di->nchars_compressed_smoke[iii])==1){
+          smoke3di->frame_all_zeros[iii] = SMOKE3D_ZEROS_ALL;
+        }
+        else{
+          smoke3di->frame_all_zeros[iii] = SMOKE3D_ZEROS_SOME;
+        }
+      }
+      else{
+        smoke3di->frame_all_zeros[iii] = SMOKE3D_ZEROS_UNKNOWN;
+      }
       file_size_local +=4+smoke3di->nchars_compressed_smoke[iii]+4;
       iii++;
       CheckMemory;
@@ -4370,8 +4371,8 @@ int UpdateSmoke3D(smoke3ddata *smoke3di){
   countout=smoke3di->nchars_uncompressed;
   switch(smoke3di->compression_type){
     unsigned char *buffer_in;
-    case COMPRESSED_RLE:
 
+  case COMPRESSED_RLE:
     buffer_in = smoke3di->smokeframe_comp_list[iframe_local];
     countout = UnCompressRLE(buffer_in,countin,smoke3di->smokeframe_in);
     CheckMemory;
@@ -4384,9 +4385,7 @@ int UpdateSmoke3D(smoke3ddata *smoke3di){
     break;
   }
   CheckMemory;
-
-  if(
-    smoke3di->frame_all_zeros[iframe_local] == SMOKE3D_ZEROS_UNKNOWN){
+  if(smoke3di->frame_all_zeros[iframe_local] == SMOKE3D_ZEROS_UNKNOWN){
     int i;
     unsigned char *smokeframe_in;
 
@@ -4638,7 +4637,7 @@ void MergeSmoke3DColors(smoke3ddata *smoke3dset){
         mergecolor[0] = firecolor_ptr[0];
         mergecolor[1] = firecolor_ptr[1];
         mergecolor[2] = firecolor_ptr[2];
-        *mergealpha++ = alpha_fire_local;
+        *mergealpha = alpha_fire_local;
       }
       else if(firecolor_data!=NULL && co2color_data!=NULL && smokecolor_data==NULL){
         float f1=0.0, f2=0.0, denom;
@@ -4651,7 +4650,7 @@ void MergeSmoke3DColors(smoke3ddata *smoke3dset){
         mergecolor[0] = f1*firecolor_ptr[0] + f2*co2color_ptr[0];
         mergecolor[1] = f1*firecolor_ptr[1] + f2*co2color_ptr[1];
         mergecolor[2] = f1*firecolor_ptr[2] + f2*co2color_ptr[2];
-        *mergealpha++ = alpha_fire_local + alpha_co2_local - alpha_fire_local*alpha_co2_local/255.0;
+        *mergealpha = alpha_fire_local + alpha_co2_local - alpha_fire_local*alpha_co2_local/255.0;
       }
       else{
         float f1=0.0, f2=0.0, denom;
@@ -4664,9 +4663,10 @@ void MergeSmoke3DColors(smoke3ddata *smoke3dset){
         mergecolor[0] = f1*smokecolor_ptr[0] + f2*co2color_ptr[0];
         mergecolor[1] = f1*smokecolor_ptr[1] + f2*co2color_ptr[1];
         mergecolor[2] = f1*smokecolor_ptr[2] + f2*co2color_ptr[2];
-        *mergealpha++ = alpha_smoke_local + alpha_co2_local - alpha_smoke_local*alpha_co2_local/255.0;
+        *mergealpha = alpha_smoke_local + alpha_co2_local - alpha_smoke_local*alpha_co2_local/255.0;
       }
       mergecolor+=4;
+      mergealpha++;
     }
   }
 }
@@ -4780,13 +4780,53 @@ void MergeSmoke3DBlack(smoke3ddata *smoke3dset){
 /* ------------------ MergeSmoke3D ------------------------ */
 
 void MergeSmoke3D(smoke3ddata *smoke3dset){
+  INIT_PRINT_TIMER(merge_smoke_time);
   if(smoke3d_black==1){
     MergeSmoke3DBlack(smoke3dset);
     }
   else{
     MergeSmoke3DColors(smoke3dset);
   }
+  PRINT_TIMER(merge_smoke_time, "MergeSmoke3D");
 }
+
+#ifdef pp_SMOKEDRAW_SPEEDUP
+
+/* ------------------ UpdateGluiMergeSmoke ------------------------ */
+
+void UpdateGluiMergeSmoke(void){
+  THREADcontrol(mergesmoke_threads, THREAD_LOCK);
+  n_mergesmoke_threads = n_mergesmoke_glui_threads;
+  THREADcontrol(mergesmoke_threads, THREAD_UNLOCK);
+}
+
+/* ------------------ MtMergeSmoke3D ------------------------ */
+
+void *MtMergeSmoke3D(void *arg){
+  int nthreads, ithread;
+  int *nthreadptr, *ithreadptr;
+  int i;
+
+  nthreadptr = (int *)arg;
+  ithreadptr = (int *)arg+1;
+  nthreads   = *nthreadptr;
+  ithread    = *ithreadptr;
+  for(i = ithread;i < nsmoke3dinfo;i += nthreads){
+    smoke3ddata *smoke3di;
+
+    smoke3di = smoke3dinfo + i;
+    if(smoke3di->loaded == 0 || smoke3di->display == 0)continue;
+    smoke3di->ismoke3d_time = smoke3di->timeslist[itimes];
+    if(IsSmokeComponentPresent(smoke3di) == 0)continue;
+    if(smoke3di->ismoke3d_time != smoke3di->lastiframe){
+      smoke3di->lastiframe = smoke3di->ismoke3d_time;
+      UpdateSmoke3D(smoke3di);
+    }
+    MergeSmoke3D(smoke3di);
+  }
+  THREAD_EXIT(mergesmoke_threads);
+}
+#endif
 
 /* ------------------ UpdateSmoke3dMenuLabels ------------------------ */
 
