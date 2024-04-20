@@ -98,10 +98,8 @@ unsigned int UnCompressRLE(unsigned char *buffer_in, int nchars_in, unsigned cha
 /* ------------------ AllZeroRLE ------------------------ */
 
 unsigned char AllZeroRLE(unsigned char *buffer_in, int nchars_in){
-  int nn;
   unsigned char *buffer_in_end;
 
-  nn = 0;
   buffer_in_end = buffer_in + nchars_in;
   while(buffer_in < buffer_in_end){
     int nrepeats;
@@ -113,13 +111,11 @@ unsigned char AllZeroRLE(unsigned char *buffer_in, int nchars_in){
       buffer_in++;
       thischar = *buffer_in++;
       nrepeats = *buffer_in++;
-      nn += nrepeats;
       if(thischar > 0)return 0;
     }
     else{
       if(*buffer_in > 0)return 0;
       buffer_in++;
-      nn++;
     }
   }
   return 1;
