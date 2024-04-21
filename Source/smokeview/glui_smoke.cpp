@@ -372,67 +372,6 @@ extern "C" void GLUI3dSmokeSetup(int main_window){
   glui_3dsmoke=glui_bounds;
 
   PANEL_overall = glui_3dsmoke->add_panel_to_panel(ROLLOUT_smoke3d,"",GLUI_PANEL_NONE);
-  ROLLOUT_smoke_settings = glui_3dsmoke->add_rollout_to_panel(PANEL_overall, "General settings", true, SMOKE_SETTINGS, SmokeRolloutCB);
-  INSERT_ROLLOUT(ROLLOUT_smoke_settings, glui_3dsmoke);
-  ADDPROCINFO(smokeprocinfo, nsmokeprocinfo, ROLLOUT_smoke_settings, SMOKE_SETTINGS, glui_3dsmoke);
-#ifdef pp_GPU
-  CHECKBOX_smokeGPU=glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_smoke_settings,_("Use GPU"),&usegpu,VOL_SMOKE,GLUISmoke3dCB);
-#endif
-  glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_smoke_settings, _("max blending"), &hrrpuv_max_blending);
-  CHECKBOX_smoke_flip    = glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_smoke_settings, _("flip background"), &background_flip,BACKGROUND_FLIP, GLUISmoke3dCB);
-#ifdef pp_SMOKE16
-  if(have_smoke16 == 1){
-    CHECKBOX_load_smoke16 = glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_smoke_settings, _("load 16 bit files"), &load_smoke16,       SMOKE_LOAD16, GLUISmoke3dCB);
-    CHECKBOX_show_smoke16 = glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_smoke_settings, _("show 16 bit files"), &show_3dsmoke_16bit, SMOKE_SHOW16, GLUISmoke3dCB);
-    CHECKBOX_show_smoke8 = glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_smoke_settings,  _("show 8 bit files"),  &show_3dsmoke_8bit,  SMOKE_SHOW8,  GLUISmoke3dCB);
-  }
-#endif
-  glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_smoke_settings, _("show triangle display rates"), &show_trirates);
-  PANEL_smoke_parallel = glui_3dsmoke->add_panel_to_panel(ROLLOUT_smoke_settings,"parallel");
-#ifdef pp_SMOKE_MULTI
-  CHECKBOX_load_parallel = glui_3dsmoke->add_checkbox_to_panel(PANEL_smoke_parallel, _("load"), &use_smokeload_threads);
-  CHECKBOX_load_parallel->disable();
-  SPINNER_smoke3d_load_threads = glui_3dsmoke->add_spinner_to_panel(PANEL_smoke_parallel, _("load threads"), GLUI_SPINNER_INT, &n_smokeload_threads);
-  SPINNER_smoke3d_load_threads->set_int_limits(1, MAX_THREADS);
-#endif
-#ifdef pp_SMOKEDRAW_SPEEDUP
-  CHECKBOX_view_parallel = glui_3dsmoke->add_checkbox_to_panel(PANEL_smoke_parallel, _("draw (setup only)"),  &use_mergesmoke_glui_threads, MERGE_SMOKE, GLUISmoke3dCB);
-  SPINNER_smoke3d_draw_threads = glui_3dsmoke->add_spinner_to_panel(PANEL_smoke_parallel, _("draw threads"), GLUI_SPINNER_INT, &n_mergesmoke_glui_threads,   MERGE_SMOKE, GLUISmoke3dCB);
-  SPINNER_smoke3d_draw_threads->set_int_limits(1, MAX_THREADS);
-  GLUISmoke3dCB(MERGE_SMOKE);
-#endif
-
-  if(active_smokesensors==1){
-    PANEL_smokesensor = glui_3dsmoke->add_panel_to_panel(ROLLOUT_smoke_settings,_("Visibility"));
-    RADIO_smokesensors = glui_3dsmoke->add_radiogroup_to_panel(PANEL_smokesensor,&show_smokesensors);
-    glui_3dsmoke->add_radiobutton_to_group(RADIO_smokesensors,_("Hidden"));                     // SMOKESENSORS_HIDDEN
-    glui_3dsmoke->add_radiobutton_to_group(RADIO_smokesensors,_("Grey (0-255)"));               // SMOKESENSORS_0255
-    glui_3dsmoke->add_radiobutton_to_group(RADIO_smokesensors,"I/I0 (0.0-1.0)");                 // SMOKESENSORS_01P0
-    glui_3dsmoke->add_radiobutton_to_group(RADIO_smokesensors,_("Scaled optical depth (SCD)")); // SMOKESENSORS_SCALED
-    glui_3dsmoke->add_statictext_to_panel(PANEL_smokesensor,"SCD=C/K=C*L/Ln(I/I0) (0-Inf)");     // SMOKESENSORS_0INF
-    SPINNER_cvis=glui_3dsmoke->add_spinner_to_panel(PANEL_smokesensor,"C",GLUI_SPINNER_FLOAT,&smoke3d_cvis);
-    SPINNER_cvis->set_float_limits(1.0,20.0);
-#ifdef _DEBUG
-    CHECKBOX_test_smokesensors=glui_3dsmoke->add_checkbox_to_panel(PANEL_smokesensor,_("Test visibility sensor"),&test_smokesensors);
-#endif
-  }
-
-  ROLLOUT_skip = glui_3dsmoke->add_rollout_to_panel(PANEL_overall, "Skip planes/frames", false, SKIP_ROLLOUT, SmokeRolloutCB);
-  INSERT_ROLLOUT(ROLLOUT_skip, glui_3dsmoke);
-  ADDPROCINFO(smokeprocinfo, nsmokeprocinfo, ROLLOUT_skip, SKIP_ROLLOUT, glui_3dsmoke);
-
-  PANEL_skip_planes = glui_3dsmoke->add_panel_to_panel(ROLLOUT_skip, "planes");
-  SPINNER_smoke3d_skip   = glui_3dsmoke->add_spinner_to_panel(PANEL_skip_planes, "x/y/z",   GLUI_SPINNER_INT, &smoke3d_skip,  SMOKE_SKIP,     GLUISmoke3dCB);
-  SPINNER_smoke3d_skipx  = glui_3dsmoke->add_spinner_to_panel(PANEL_skip_planes, "x",     GLUI_SPINNER_INT, &smoke3d_skipx, SMOKE_SKIP_XYZ, GLUISmoke3dCB);
-  SPINNER_smoke3d_skipy  = glui_3dsmoke->add_spinner_to_panel(PANEL_skip_planes, "y",     GLUI_SPINNER_INT, &smoke3d_skipy, SMOKE_SKIP_XYZ, GLUISmoke3dCB);
-  SPINNER_smoke3d_skipz  = glui_3dsmoke->add_spinner_to_panel(PANEL_skip_planes, "z",     GLUI_SPINNER_INT, &smoke3d_skipz, SMOKE_SKIP_XYZ, GLUISmoke3dCB);
-  SPINNER_smoke3d_kmax   = glui_3dsmoke->add_spinner_to_panel(PANEL_skip_planes, "max k", GLUI_SPINNER_INT, &smoke3d_kmax);
-  CHECKBOX_smokecullflag = glui_3dsmoke->add_checkbox_to_panel(PANEL_skip_planes,"Cull hidden planes", &smokecullflag);
-  PANEL_skip_frames = glui_3dsmoke->add_panel_to_panel(ROLLOUT_skip, "frames");
-  SPINNER_smoke3d_load_start = glui_3dsmoke->add_spinner_to_panel(PANEL_skip_frames, _("start"), GLUI_SPINNER_INT, &smoke3d_start_frame);
-  SPINNER_smoke3d_load_skip = glui_3dsmoke->add_spinner_to_panel(PANEL_skip_frames, _("skip"), GLUI_SPINNER_INT, &smoke3d_skip_frame);
-  CHECKBOX_smoke3d_use_skip = glui_3dsmoke->add_checkbox_to_panel(PANEL_skip_frames, _("skip smoke frames"), &smoke3d_use_skip);
-  PANEL_skip_frames->disable();
 
   if(fire_colormap_type==0){
     use_smoke_rgb      = 1;
@@ -446,7 +385,7 @@ extern "C" void GLUI3dSmokeSetup(int main_window){
     use_fire_rgb       = 0;
     use_fire_colormap  = 1;
   }
-  ROLLOUT_firecolor = glui_3dsmoke->add_rollout_to_panel(PANEL_overall, _("Smoke/fire color"),false, FIRECOLOR_ROLLOUT, SmokeRolloutCB);
+  ROLLOUT_firecolor = glui_3dsmoke->add_rollout_to_panel(PANEL_overall, _("Smoke/fire color"),true, FIRECOLOR_ROLLOUT, SmokeRolloutCB);
   INSERT_ROLLOUT(ROLLOUT_firecolor, glui_3dsmoke);
   ADDPROCINFO(smokeprocinfo, nsmokeprocinfo, ROLLOUT_firecolor, FIRECOLOR_ROLLOUT, glui_3dsmoke);
 
@@ -586,6 +525,67 @@ extern "C" void GLUI3dSmokeSetup(int main_window){
     if(nvolrenderinfo>0)smoke_render_option=RENDER_VOLUME;
   }
 
+  ROLLOUT_smoke_settings = glui_3dsmoke->add_rollout_to_panel(PANEL_overall, "General settings", false, SMOKE_SETTINGS, SmokeRolloutCB);
+  INSERT_ROLLOUT(ROLLOUT_smoke_settings, glui_3dsmoke);
+  ADDPROCINFO(smokeprocinfo, nsmokeprocinfo, ROLLOUT_smoke_settings, SMOKE_SETTINGS, glui_3dsmoke);
+#ifdef pp_GPU
+  CHECKBOX_smokeGPU=glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_smoke_settings,_("Use GPU"),&usegpu,VOL_SMOKE,GLUISmoke3dCB);
+#endif
+  glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_smoke_settings, _("max blending"), &hrrpuv_max_blending);
+  CHECKBOX_smoke_flip    = glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_smoke_settings, _("flip background"), &background_flip,BACKGROUND_FLIP, GLUISmoke3dCB);
+#ifdef pp_SMOKE16
+  if(have_smoke16 == 1){
+    CHECKBOX_load_smoke16 = glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_smoke_settings, _("load 16 bit files"), &load_smoke16,       SMOKE_LOAD16, GLUISmoke3dCB);
+    CHECKBOX_show_smoke16 = glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_smoke_settings, _("show 16 bit files"), &show_3dsmoke_16bit, SMOKE_SHOW16, GLUISmoke3dCB);
+    CHECKBOX_show_smoke8 = glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_smoke_settings,  _("show 8 bit files"),  &show_3dsmoke_8bit,  SMOKE_SHOW8,  GLUISmoke3dCB);
+  }
+#endif
+  glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_smoke_settings, _("triangle display rate"), &show_trirates);
+  PANEL_smoke_parallel = glui_3dsmoke->add_panel_to_panel(ROLLOUT_smoke_settings,"parallel");
+#ifdef pp_SMOKE_MULTI
+  CHECKBOX_load_parallel = glui_3dsmoke->add_checkbox_to_panel(PANEL_smoke_parallel, _("load"), &use_smokeload_threads);
+  CHECKBOX_load_parallel->disable();
+  SPINNER_smoke3d_load_threads = glui_3dsmoke->add_spinner_to_panel(PANEL_smoke_parallel, _("load threads"), GLUI_SPINNER_INT, &n_smokeload_threads);
+  SPINNER_smoke3d_load_threads->set_int_limits(1, MAX_THREADS);
+#endif
+#ifdef pp_SMOKEDRAW_SPEEDUP
+  CHECKBOX_view_parallel = glui_3dsmoke->add_checkbox_to_panel(PANEL_smoke_parallel, _("drawing setup"),  &use_mergesmoke_glui_threads, MERGE_SMOKE, GLUISmoke3dCB);
+  SPINNER_smoke3d_draw_threads = glui_3dsmoke->add_spinner_to_panel(PANEL_smoke_parallel, _("threads"), GLUI_SPINNER_INT, &n_mergesmoke_glui_threads,   MERGE_SMOKE, GLUISmoke3dCB);
+  SPINNER_smoke3d_draw_threads->set_int_limits(1, MAX_THREADS);
+  GLUISmoke3dCB(MERGE_SMOKE);
+#endif
+
+  if(active_smokesensors==1){
+    PANEL_smokesensor = glui_3dsmoke->add_panel_to_panel(ROLLOUT_smoke_settings,_("Visibility"));
+    RADIO_smokesensors = glui_3dsmoke->add_radiogroup_to_panel(PANEL_smokesensor,&show_smokesensors);
+    glui_3dsmoke->add_radiobutton_to_group(RADIO_smokesensors,_("Hidden"));                     // SMOKESENSORS_HIDDEN
+    glui_3dsmoke->add_radiobutton_to_group(RADIO_smokesensors,_("Grey (0-255)"));               // SMOKESENSORS_0255
+    glui_3dsmoke->add_radiobutton_to_group(RADIO_smokesensors,"I/I0 (0.0-1.0)");                 // SMOKESENSORS_01P0
+    glui_3dsmoke->add_radiobutton_to_group(RADIO_smokesensors,_("Scaled optical depth (SCD)")); // SMOKESENSORS_SCALED
+    glui_3dsmoke->add_statictext_to_panel(PANEL_smokesensor,"SCD=C/K=C*L/Ln(I/I0) (0-Inf)");     // SMOKESENSORS_0INF
+    SPINNER_cvis=glui_3dsmoke->add_spinner_to_panel(PANEL_smokesensor,"C",GLUI_SPINNER_FLOAT,&smoke3d_cvis);
+    SPINNER_cvis->set_float_limits(1.0,20.0);
+#ifdef _DEBUG
+    CHECKBOX_test_smokesensors=glui_3dsmoke->add_checkbox_to_panel(PANEL_smokesensor,_("Test visibility sensor"),&test_smokesensors);
+#endif
+  }
+
+  ROLLOUT_skip = glui_3dsmoke->add_rollout_to_panel(PANEL_overall, "Skip planes/frames", false, SKIP_ROLLOUT, SmokeRolloutCB);
+  INSERT_ROLLOUT(ROLLOUT_skip, glui_3dsmoke);
+  ADDPROCINFO(smokeprocinfo, nsmokeprocinfo, ROLLOUT_skip, SKIP_ROLLOUT, glui_3dsmoke);
+
+  PANEL_skip_planes = glui_3dsmoke->add_panel_to_panel(ROLLOUT_skip, "planes");
+  SPINNER_smoke3d_skip   = glui_3dsmoke->add_spinner_to_panel(PANEL_skip_planes, "x/y/z",   GLUI_SPINNER_INT, &smoke3d_skip,  SMOKE_SKIP,     GLUISmoke3dCB);
+  SPINNER_smoke3d_skipx  = glui_3dsmoke->add_spinner_to_panel(PANEL_skip_planes, "x",     GLUI_SPINNER_INT, &smoke3d_skipx, SMOKE_SKIP_XYZ, GLUISmoke3dCB);
+  SPINNER_smoke3d_skipy  = glui_3dsmoke->add_spinner_to_panel(PANEL_skip_planes, "y",     GLUI_SPINNER_INT, &smoke3d_skipy, SMOKE_SKIP_XYZ, GLUISmoke3dCB);
+  SPINNER_smoke3d_skipz  = glui_3dsmoke->add_spinner_to_panel(PANEL_skip_planes, "z",     GLUI_SPINNER_INT, &smoke3d_skipz, SMOKE_SKIP_XYZ, GLUISmoke3dCB);
+  SPINNER_smoke3d_kmax   = glui_3dsmoke->add_spinner_to_panel(PANEL_skip_planes, "max k", GLUI_SPINNER_INT, &smoke3d_kmax);
+  CHECKBOX_smokecullflag = glui_3dsmoke->add_checkbox_to_panel(PANEL_skip_planes,"Cull hidden planes", &smokecullflag);
+  PANEL_skip_frames = glui_3dsmoke->add_panel_to_panel(ROLLOUT_skip, "frames");
+  SPINNER_smoke3d_load_start = glui_3dsmoke->add_spinner_to_panel(PANEL_skip_frames, _("start"), GLUI_SPINNER_INT, &smoke3d_start_frame);
+  SPINNER_smoke3d_load_skip = glui_3dsmoke->add_spinner_to_panel(PANEL_skip_frames, _("skip"), GLUI_SPINNER_INT, &smoke3d_skip_frame);
+  CHECKBOX_smoke3d_use_skip = glui_3dsmoke->add_checkbox_to_panel(PANEL_skip_frames, _("skip smoke frames"), &smoke3d_use_skip);
+  PANEL_skip_frames->disable();
   // slice render dialog
 
   if(nsmoke3dinfo>0){
