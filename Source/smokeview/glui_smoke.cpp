@@ -175,6 +175,7 @@ GLUI_StaticText *STATIC_globalframelimit_min = NULL;
 GLUI_StaticText *STATIC_globalframelimit_max = NULL;
 GLUI_StaticText *STATIC_timelimit_min = NULL;
 GLUI_StaticText *STATIC_timelimit_max = NULL;
+GLUI_StaticText *STATIC_pixels_per_triangle=NULL;
 
 #define VOLRENDER_ROLLOUT   0
 #define SLICERENDER_ROLLOUT 1
@@ -628,8 +629,14 @@ extern "C" void GLUI3dSmokeSetup(int main_window){
   SPINNER_smoke3d_skipx = glui_3dsmoke->add_spinner_to_panel(PANEL_skip_planes, "x", GLUI_SPINNER_INT, &smoke3d_skipx, SMOKE_SKIP_XYZ, GLUISmoke3dCB);
   SPINNER_smoke3d_skipy = glui_3dsmoke->add_spinner_to_panel(PANEL_skip_planes, "y", GLUI_SPINNER_INT, &smoke3d_skipy, SMOKE_SKIP_XYZ, GLUISmoke3dCB);
   SPINNER_smoke3d_skipz = glui_3dsmoke->add_spinner_to_panel(PANEL_skip_planes, "z", GLUI_SPINNER_INT, &smoke3d_skipz, SMOKE_SKIP_XYZ, GLUISmoke3dCB);
+  char label[256];
+  strcpy(label, "");
+  STATIC_pixels_per_triangle = glui_3dsmoke->add_statictext_to_panel(PANEL_skip_planes, label);
+
   SPINNER_smoke3d_kmax = glui_3dsmoke->add_spinner_to_panel(PANEL_skip_planes, "max k", GLUI_SPINNER_INT, &smoke3d_kmax);
   CHECKBOX_smokecullflag = glui_3dsmoke->add_checkbox_to_panel(PANEL_skip_planes, "Cull hidden planes", &smokecullflag);
+  GLUISmoke3dCB(SMOKE_SKIP_XYZ);
+  
 
 
   //---------------------------------------------Volume render settings--------------------------------------------------------------
@@ -790,6 +797,27 @@ void SetRGBColorMapVars(int use_rgb){
   GLUISmoke3dCB(CO2COLORMAP_TYPE);
 }
 
+/* ------------------ GLUIGetPixelsPerTriangle ------------------------ */
+
+void GLUIGetPixelsPerTriangle(void){
+  float x_pixels_per_triangle=1000000.0, y_pixels_per_triangle=1000000.0, pixels_per_triangle;
+  char label[500];
+  
+  if(nplotx_all>0)x_pixels_per_triangle = smoke3d_skipx*(float)glui_screenWidth/(float)nplotx_all;
+  if(nploty_all>0)y_pixels_per_triangle = smoke3d_skipy*(float)glui_screenHeight/(float)nploty_all;
+  pixels_per_triangle = MIN(x_pixels_per_triangle, y_pixels_per_triangle);
+  if(pixels_per_triangle>10.0){
+    sprintf(label, "pixels per triangle: %.0f", pixels_per_triangle);
+  }
+  else if(pixels_per_triangle>1.0){
+    sprintf(label, "pixels per triangle: %.1f", pixels_per_triangle);
+  }
+  else{
+    sprintf(label, "pixels per triangle: %.2f", pixels_per_triangle);
+  }
+  STATIC_pixels_per_triangle->set_text(label);
+}
+
 /* ------------------ GLUISmoke3dCB ------------------------ */
 
 extern "C" void GLUISmoke3dCB(int var){
@@ -909,6 +937,7 @@ extern "C" void GLUISmoke3dCB(int var){
     SPINNER_smoke3d_skipx->set_int_val(smoke3d_skipx);
     SPINNER_smoke3d_skipy->set_int_val(smoke3d_skipy);
     SPINNER_smoke3d_skipz->set_int_val(smoke3d_skipz);
+    GLUIGetPixelsPerTriangle();
     break;
   case SMOKE_SKIP_XYZ:
     if(smoke3d_skipx<1)smoke3d_skipx = 1;
@@ -921,6 +950,7 @@ extern "C" void GLUISmoke3dCB(int var){
       smoke3d_skip = smoke3d_skipx;
       SPINNER_smoke3d_skip->set_int_val(smoke3d_skip);
     }
+    GLUIGetPixelsPerTriangle();
     break;
   case CO2SMOKE:
     UpdateCO2Colormap();
