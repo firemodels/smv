@@ -64,6 +64,7 @@ GLUI_Spinner *SPINNER_fire_opacity_factor=NULL;
 GLUI_Spinner *SPINNER_mass_extinct=NULL;
 GLUI_Spinner *SPINNER_cvis=NULL;
 GLUI_Spinner *SPINNER_smoke3d_skip = NULL;
+GLUI_Spinner *SPINNER_smoke3d_skipxy = NULL;
 GLUI_Spinner *SPINNER_smoke3d_skipx = NULL;
 GLUI_Spinner *SPINNER_smoke3d_skipy = NULL;
 GLUI_Spinner *SPINNER_smoke3d_skipz = NULL;
@@ -625,17 +626,18 @@ extern "C" void GLUI3dSmokeSetup(int main_window){
   ADDPROCINFO(smokeprocinfo, nsmokeprocinfo, ROLLOUT_skip, SKIP_ROLLOUT, glui_3dsmoke);
 
   PANEL_skip_planes = glui_3dsmoke->add_panel_to_panel(ROLLOUT_skip, "", GLUI_PANEL_NONE);
-  SPINNER_smoke3d_skip = glui_3dsmoke->add_spinner_to_panel(PANEL_skip_planes, "x/y/z", GLUI_SPINNER_INT, &smoke3d_skip, SMOKE_SKIP, GLUISmoke3dCB);
-  SPINNER_smoke3d_skipx = glui_3dsmoke->add_spinner_to_panel(PANEL_skip_planes, "x", GLUI_SPINNER_INT, &smoke3d_skipx, SMOKE_SKIP_XYZ, GLUISmoke3dCB);
-  SPINNER_smoke3d_skipy = glui_3dsmoke->add_spinner_to_panel(PANEL_skip_planes, "y", GLUI_SPINNER_INT, &smoke3d_skipy, SMOKE_SKIP_XYZ, GLUISmoke3dCB);
-  SPINNER_smoke3d_skipz = glui_3dsmoke->add_spinner_to_panel(PANEL_skip_planes, "z", GLUI_SPINNER_INT, &smoke3d_skipz, SMOKE_SKIP_XYZ, GLUISmoke3dCB);
+  SPINNER_smoke3d_skip   = glui_3dsmoke->add_spinner_to_panel(PANEL_skip_planes, "x/y/z", GLUI_SPINNER_INT, &smoke3d_skip,   SMOKE_SKIP_XYZ, GLUISmoke3dCB);
+  SPINNER_smoke3d_skipxy = glui_3dsmoke->add_spinner_to_panel(PANEL_skip_planes, "x/y",   GLUI_SPINNER_INT, &smoke3d_skipxy, SMOKE_SKIP_XY,  GLUISmoke3dCB);
+  SPINNER_smoke3d_skipx  = glui_3dsmoke->add_spinner_to_panel(PANEL_skip_planes, "x",     GLUI_SPINNER_INT, &smoke3d_skipx,  SMOKE_SKIP_X,   GLUISmoke3dCB);
+  SPINNER_smoke3d_skipy  = glui_3dsmoke->add_spinner_to_panel(PANEL_skip_planes, "y",     GLUI_SPINNER_INT, &smoke3d_skipy,  SMOKE_SKIP_Y,   GLUISmoke3dCB);
+  SPINNER_smoke3d_skipz  = glui_3dsmoke->add_spinner_to_panel(PANEL_skip_planes, "z",     GLUI_SPINNER_INT, &smoke3d_skipz,  SMOKE_SKIP_Z,   GLUISmoke3dCB);
   char label[256];
   strcpy(label, "");
   STATIC_pixels_per_triangle = glui_3dsmoke->add_statictext_to_panel(PANEL_skip_planes, label);
 
   SPINNER_smoke3d_kmax = glui_3dsmoke->add_spinner_to_panel(PANEL_skip_planes, "max k", GLUI_SPINNER_INT, &smoke3d_kmax);
   CHECKBOX_smokecullflag = glui_3dsmoke->add_checkbox_to_panel(PANEL_skip_planes, "Cull hidden planes", &smokecullflag);
-  GLUISmoke3dCB(SMOKE_SKIP_XYZ);
+  GLUISmoke3dCB(SMOKE_SKIP_X);
   
 
 
@@ -808,13 +810,13 @@ void GLUIGetPixelsPerTriangle(void){
   if(nploty_all>0)y_pixels_per_triangle = smoke3d_skipy*(float)glui_screenHeight/(float)nploty_all;
   pixels_per_triangle = MIN(x_pixels_per_triangle, y_pixels_per_triangle);
   if(pixels_per_triangle>10.0){
-    sprintf(label, "pixels per triangle: %.0f", pixels_per_triangle);
+    sprintf(label, "triangle/pixel size ratio: %.0f", pixels_per_triangle);
   }
   else if(pixels_per_triangle>1.0){
-    sprintf(label, "pixels per triangle: %.1f", pixels_per_triangle);
+    sprintf(label, "triangle/pixel size ratio: %.1f", pixels_per_triangle);
   }
   else{
-    sprintf(label, "pixels per triangle: %.2f", pixels_per_triangle);
+    sprintf(label, "triangle/pixel size ratio: %.2f", pixels_per_triangle);
   }
   STATIC_pixels_per_triangle->set_text(label);
 }
@@ -929,7 +931,7 @@ extern "C" void GLUISmoke3dCB(int var){
 #endif
   case SMOKE_BLACK:
     break;
-  case SMOKE_SKIP:
+  case SMOKE_SKIP_XYZ:
     if(smoke3d_skip<1)smoke3d_skip = 1;
     SPINNER_smoke3d_skip->set_int_val(smoke3d_skip);
     smoke3d_skipx = smoke3d_skip;
@@ -940,7 +942,18 @@ extern "C" void GLUISmoke3dCB(int var){
     SPINNER_smoke3d_skipz->set_int_val(smoke3d_skipz);
     GLUIGetPixelsPerTriangle();
     break;
-  case SMOKE_SKIP_XYZ:
+  case SMOKE_SKIP_XY:
+    if(smoke3d_skipxy<1)smoke3d_skipxy = 1;
+    SPINNER_smoke3d_skipxy->set_int_val(smoke3d_skipxy);
+    smoke3d_skipx = smoke3d_skipxy;
+    smoke3d_skipy = smoke3d_skipxy;
+    SPINNER_smoke3d_skipx->set_int_val(smoke3d_skipx);
+    SPINNER_smoke3d_skipy->set_int_val(smoke3d_skipy);
+    GLUIGetPixelsPerTriangle();
+    break;
+  case SMOKE_SKIP_X:
+  case SMOKE_SKIP_Y:
+  case SMOKE_SKIP_Z:
     if(smoke3d_skipx<1)smoke3d_skipx = 1;
     if(smoke3d_skipy<1)smoke3d_skipy = 1;
     if(smoke3d_skipz<1)smoke3d_skipz = 1;
