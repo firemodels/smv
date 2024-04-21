@@ -802,7 +802,8 @@ void SetRGBColorMapVars(int use_rgb){
 void GLUIGetPixelsPerTriangle(void){
   float x_pixels_per_triangle=1000000.0, y_pixels_per_triangle=1000000.0, pixels_per_triangle;
   char label[500];
-  
+ 
+  if(STATIC_pixels_per_triangle == NULL)return; 
   if(nplotx_all>0)x_pixels_per_triangle = smoke3d_skipx*(float)glui_screenWidth/(float)nplotx_all;
   if(nploty_all>0)y_pixels_per_triangle = smoke3d_skipy*(float)glui_screenHeight/(float)nploty_all;
   pixels_per_triangle = MIN(x_pixels_per_triangle, y_pixels_per_triangle);
