@@ -3289,7 +3289,7 @@ void DrawSmokeFrame(void){
 #endif
   }
   STOP_TIMER(smoke3d_timer);
-  if(nsmoke_triangles>0&&show_framerates==1&&smoke3d_timer>0.0){
+  if(nsmoke_triangles>0&&show_trirates==1&&smoke3d_timer>0.0){
     float tri_fps = -1.0;
 
     printf("3D smoke ");

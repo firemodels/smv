@@ -392,6 +392,7 @@ extern "C" void GLUI3dSmokeSetup(int main_window){
   SPINNER_smoke3d_load_start = glui_3dsmoke->add_spinner_to_panel(PANEL_overall, _("start"), GLUI_SPINNER_INT, &smoke3d_start_frame);
   SPINNER_smoke3d_load_skip = glui_3dsmoke->add_spinner_to_panel(PANEL_overall, _("skip"), GLUI_SPINNER_INT, &smoke3d_skip_frame);
   CHECKBOX_smoke3d_use_skip = glui_3dsmoke->add_checkbox_to_panel(PANEL_overall, _("skip smoke frames"), &smoke3d_use_skip);
+  glui_3dsmoke->add_checkbox_to_panel(PANEL_overall, _("show triangle display rates"), &show_trirates);
 
   if(active_smokesensors==1){
     PANEL_smokesensor = glui_3dsmoke->add_panel_to_panel(PANEL_overall,_("Visibility"));

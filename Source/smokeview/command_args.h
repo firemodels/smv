@@ -40,7 +40,7 @@ typedef struct CommandlineArgs {
   bool x2;
 #endif
   /// @brief show frame rates
-  bool framerates;
+  bool trirates;
   /// @brief show timings
   bool timings;
   bool convert_ini;

@@ -97,8 +97,8 @@ CommandlineArgs ParseCommandlineNew(int argc, char **argv, char *message,
       args.stereo = true;
     } else if (strcmp(argv[i], "-big") == 0) {
       args.big = true;
-    } else if(strcmp(argv[i], "-framerates") == 0) {
-      args.framerates = true;
+    } else if(strcmp(argv[i], "-trirates") == 0) {
+      args.trirates = true;
     } else if (strcmp(argv[i], "-timings") == 0) {
       args.timings = true;
     } else if (strcmp(argv[i], "-lang") == 0) {
