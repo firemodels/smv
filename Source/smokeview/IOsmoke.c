@@ -3289,34 +3289,34 @@ void DrawSmokeFrame(void){
 #endif
   }
   STOP_TIMER(smoke3d_timer);
-  if(nsmoke_triangles>0&&show_timings==1){
-    if(smoke3d_timer>0.0){
-      float tri_fps = -1.0;
+  if(nsmoke_triangles>0&&show_framerates==1&&smoke3d_timer>0.0){
+    float tri_fps = -1.0;
 
-      if(smoke3d_timer>0.1)printf("%s/%i/%s %.1f s\n", __FILE__, __LINE__, "3D smoke time", smoke3d_timer);
-      tri_fps = (float)nsmoke_triangles / smoke3d_timer;
-      if(nsmoke_triangles > 1000000000){
-        PRINTF("triangles: %.1f G, ", (float)nsmoke_triangles/1000000000.0);
-      }
-      else if(nsmoke_triangles > 1000000){
-        PRINTF("triangles: %.1f M, ", (float)nsmoke_triangles/1000000.0);
-      }
-      else if(nsmoke_triangles >1000){
-        PRINTF("triangles: %.1f K, ", (float)nsmoke_triangles/1000.0);
-      }
-      else{
-        PRINTF("triangles: %i, ", nsmoke_triangles);
-      }
-      if(tri_fps > 1000000000){
-        PRINTF("rate: %.1f Gtri/s\n", (float)tri_fps/1000000000.);
-      }
-      else if(tri_fps > 1000000){
-        PRINTF("rate: %.1f Mtri/s\n", (float)tri_fps/1000000.);
-      }
-      else{
-        PRINTF("rate: %.0f Ktri/s\n", (float)tri_fps/1000.);
-      }
+    printf("3D smoke ");
+    tri_fps = (float)nsmoke_triangles / smoke3d_timer;
+    if(nsmoke_triangles > 1000000000){
+      PRINTF("triangles: %.1f G, ", (float)nsmoke_triangles/1000000000.0);
     }
+    else if(nsmoke_triangles > 1000000){
+      PRINTF("triangles: %.1f M, ", (float)nsmoke_triangles/1000000.0);
+    }
+    else if(nsmoke_triangles >1000){
+      PRINTF("triangles: %.1f K, ", (float)nsmoke_triangles/1000.0);
+    }
+    else{
+      PRINTF("triangles: %i, ", nsmoke_triangles);
+    }
+    if(tri_fps > 1000000000){
+      PRINTF("rate: %.1f Gtri/s, ", (float)tri_fps/1000000000.);
+    }
+    else if(tri_fps > 1000000){
+      PRINTF("rate: %.1f Mtri/s, ", (float)tri_fps/1000000.);
+    }
+    else{
+      PRINTF("rate: %.0f Ktri/s, ", (float)tri_fps/1000.);
+    }
+    printf("time: %.1f s,", smoke3d_timer);
+    printf("\n");
   }
   if(blend_mode==1){
     glBlendEquation(GL_FUNC_ADD);

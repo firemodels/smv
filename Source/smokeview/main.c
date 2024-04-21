@@ -85,6 +85,7 @@ void Usage(char *prog,int option){
     PRINTF("%s\n", _(" -demo          - use demonstrator mode of Smokeview"));
     PRINTF("%s\n", _(" -fast          - assume slice files exist in order to reduce startup time,"));
     PRINTF("%s\n", _("                  don't compute blanking arrays"));
+    PRINTF("%s\n", _(" -framerates    - show frame rates"));
     PRINTF("%s\n", _(" -full          - full startup - check if files exist"));
     PRINTF("%s\n", _(" -fed           - pre-calculate all FED slice files"));
     PRINTF("%s\n", _(" -geominfo      - output information about geometry triangles"));
@@ -111,7 +112,7 @@ void Usage(char *prog,int option){
     PRINTF("%s\n", _(" -smoke3d       - only show 3D smoke"));
     PRINTF("%s\n", _(" -startframe n  - start rendering at frame n"));
     PRINTF("%s\n", _(" -stereo        - activate stereo mode"));
-    PRINTF("%s\n", _(" -timings       - show startup timings"));
+    PRINTF("%s\n", _(" -timings       - show timings"));
     PRINTF("%s\n", _(" -update_slice  - calculate slice file parameters"));
     PRINTF("%s\n", _(" -update        - equivalent to -update_bounds and -update_slice"));
     PRINTF("%s\n", _(" -update_ini case.ini - update case.ini to the current format"));
@@ -522,6 +523,9 @@ char *ProcessCommandLine(CommandlineArgs *args) {
     }
     if(args->timings){
       show_timings = 1;
+    }
+    if(args->framerates){
+      show_framerates = 1;
     }
     if(args->lang != NULL){
         FREEMEMORY(tr_name);
