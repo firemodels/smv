@@ -254,6 +254,7 @@ SVEXTERN void GLUIUpdatePlot2DSize(void);
 EXTERNCPP void GLUIUpdateDeviceAdd(void);
 
 //*** glui_smoke.cpp headers
+EXTERNCPP void GLUIGetPixelsPerTriangle(void);
 EXTERNCPP void GLUIForceAlphaOpaque(void);
 EXTERNCPP void GLUI3dSmokeSetup(int main_window);
 EXTERNCPP void GLUISmoke3dCB(int var);
