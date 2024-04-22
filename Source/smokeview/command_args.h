@@ -39,7 +39,9 @@ typedef struct CommandlineArgs {
   /// @brief On Mac, turn on 2x scene scaling
   bool x2;
 #endif
-  /// @brief show startup timings
+  /// @brief show frame rates
+  bool trirates;
+  /// @brief show timings
   bool timings;
   bool convert_ini;
   bool convert_ssf;

@@ -111,7 +111,8 @@ void Usage(char *prog,int option){
     PRINTF("%s\n", _(" -smoke3d       - only show 3D smoke"));
     PRINTF("%s\n", _(" -startframe n  - start rendering at frame n"));
     PRINTF("%s\n", _(" -stereo        - activate stereo mode"));
-    PRINTF("%s\n", _(" -timings       - show startup timings"));
+    PRINTF("%s\n", _(" -timings       - show timings"));
+    PRINTF("%s\n", _(" -trirates      - show triangle display rates"));
     PRINTF("%s\n", _(" -update_slice  - calculate slice file parameters"));
     PRINTF("%s\n", _(" -update        - equivalent to -update_bounds and -update_slice"));
     PRINTF("%s\n", _(" -update_ini case.ini - update case.ini to the current format"));
@@ -522,6 +523,9 @@ char *ProcessCommandLine(CommandlineArgs *args) {
     }
     if(args->timings){
       show_timings = 1;
+    }
+    if(args->trirates){
+      show_trirates = 1;
     }
     if(args->lang != NULL){
         FREEMEMORY(tr_name);

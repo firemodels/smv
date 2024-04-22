@@ -263,6 +263,7 @@ SVEXTERN int SVDECL(nztreedeviceinfo, 0);
 
 SVEXTERN int SVDECL(readini_output, 0);
 SVEXTERN int SVDECL(show_timings, 0);
+SVEXTERN int SVDECL(show_trirates, 0);
 
 SVEXTERN float SVDECL(pixel_dens, 1.0);
 
@@ -467,7 +468,8 @@ SVEXTERN int SVDECL(update_filesizes, 0);
 SVEXTERN int SVDECL(compute_smoke3d_planes_par, 0);
 SVEXTERN float SVDECL(smoke3d_delta_perp,0.5);
 SVEXTERN int SVDECL(smoke3d_black, 0);
-SVEXTERN int SVDECL(smoke3d_skip, 1), SVDECL(smoke3d_skipx, 1), SVDECL(smoke3d_skipy, 1), SVDECL(smoke3d_skipz, 1), SVDECL(smoke3d_kmax, -1);
+SVEXTERN int SVDECL(smoke3d_skip, 1),  SVDECL(smoke3d_skipxy, 1);
+SVEXTERN int SVDECL(smoke3d_skipx, 1), SVDECL(smoke3d_skipy, 1), SVDECL(smoke3d_skipz, 1), SVDECL(smoke3d_kmax, -1);
 SVEXTERN int SVDECL(slice_skip, 1), SVDECL(slice_skipx, 1), SVDECL(slice_skipy, 1), SVDECL(slice_skipz, 1), SVDECL(max_slice_skip,-1);
 
 SVEXTERN int SVDECL(update_research_mode, 1);
