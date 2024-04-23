@@ -647,6 +647,9 @@ of fractional effective dose (FED).  FED is a measure of human incapacitation or
 hazard due to combustion gases\cite{SFPE:Purser}. Images are drawn at \SI{30}{s},
 \SI{60}{s} and \SI{120}{s} and \SI{240}{s}. The FED is computed using three data slices with concentration of $1000~\mathrm{ppm}$ for $\mathrm{CO}$ and volume fractions of 0.02 and 0.07 for $\mathrm{CO_2}$ and $\mathrm{O_2}$ respectively. These values result in FED values of 1.5 at \SI{30}{s}, 3.0 at \SI{60}{s}, 6.0 at \SI{120}{s} and 12.0 at \SI{240}{s}.
 
+Figure \ref{figslice3D} presents images of shaded 3D slices oriented in XY, XY and YZ planes.
+Images are drawn at \SI{0}{s}, \SI{10}{s} and \SI{30}{s}.
+
 Figure \ref{figgslicetest} presents images of 3D slices oriented in two different
 ways. Images are drawn at \SI{0}{s}, \SI{10}{s} and \SI{30}{s}.
 
@@ -830,6 +833,19 @@ SI{30}{s}, FED=0.29&\SI{60}{s}, FED=0.59\\
 
 \begin{figure}[bph]
 \begin{center}
+\begin{tabular}{ccp{1.0in}}
+ \includegraphics[height=\figheightE]{SCRIPT_FIGURES/mplume5c8_slice_00}\\
+ \includegraphics[height=\figheightE]{SCRIPT_FIGURES/mplume5c8_slice_10}\\
+ \includegraphics[height=\figheightE]{SCRIPT_FIGURES/mplume5c8_slice_30}\\
+&&\raisebox{0.5in}[0pt]{\includegraphics[height=7.5in]{\SMVfigdir/colorbar_20_620}}\\
+ \end{tabular}
+\end{center}
+ \caption[A shaded 3D slice files]{A shaded 3D slice files at \SI{0}{s}, \SI{10}{s} and \SI{30}{s}.}
+\label{figslice3D}%
+\end{figure}
+
+\begin{figure}[bph]
+\begin{center}
 \begin{tabular}{cccp{1.0in}}
  \includegraphics[height=\figheightE]{SCRIPT_FIGURES/plume5c_gslice_00}&
  \includegraphics[height=\figheightE]{SCRIPT_FIGURES/plume5c_gslice2_00}\\
@@ -878,8 +894,12 @@ Figures \ref{figvsliceuniformx} and \ref{figvsliceuniformz} present images verif
 The test cases consist of three meshes with different resolutions.  With the uniform option selected, vector
 skipping is set in each mesh so that vectors are spaced uniformly.
 
+Figure \ref{figvslice3D} presents images of 3D vector slices oriented in XY, XY and YZ planes.
+Images are drawn at \SI{0}{s}, \SI{10}{s} and \SI{30}{s}.
+
 Figure \ref{figvgslicetest} presents images of 3D vector slices oriented in two different
 ways. Images are drawn at \SI{0}{s}, \SI{10}{s} and \SI{30}{s}.
+
 
 
 \begin{figure}[bph]
@@ -902,6 +922,19 @@ ways. Images are drawn at \SI{0}{s}, \SI{10}{s} and \SI{30}{s}.
  red for the $t=\SI{0}{s}$ images. For the chopped contours, the color near the chop
  boundary should match the color near \SI{140}{\degreeCelsius} in the colorbar.}
 \label{figvslicetest}%
+\end{figure}
+
+\begin{figure}[bph]
+\begin{center}
+\begin{tabular}{ccp{1.0in}}
+ \includegraphics[height=\figheightE]{SCRIPT_FIGURES/mplume5c8_vslice_00}\\
+ \includegraphics[height=\figheightE]{SCRIPT_FIGURES/mplume5c8_vslice_10}\\
+ \includegraphics[height=\figheightE]{SCRIPT_FIGURES/mplume5c8_vslice_30}\\
+&&\raisebox{0.5in}[0pt]{\includegraphics[height=7.5in]{\SMVfigdir/colorbar_20_620}}\\
+ \end{tabular}
+\end{center}
+ \caption[A test showing 3D vector slice data]{A test showing 3D vector slice data at \SI{0}{s}, \SI{10}{s} and \SI{30}{s}.}
+\label{figvslice3D}%
 \end{figure}
 
 \begin{figure}[bph]
