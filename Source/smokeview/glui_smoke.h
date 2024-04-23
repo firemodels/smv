@@ -56,8 +56,11 @@
 #define LOAD_TIMEFRAME 58
 #define SMOKE3D_LOAD_INCREMENTAL 18
 #define CO2_COLOR 71
-#define SMOKE_SKIP 74
-#define SMOKE_SKIP_XYZ 86
+#define SMOKE_SKIP_XYZ 107
+#define SMOKE_SKIP_XY  108
+#define SMOKE_SKIP_X   109
+#define SMOKE_SKIP_Y   110
+#define SMOKE_SKIP_Z   111
 #define SMOKE_BLACK 75
 #ifdef pp_SMOKE16
 #define SMOKE_LOAD16 101
@@ -83,5 +86,8 @@
 #define VOLTEST_DEPTH 102
 #define VOLTEST_UPDATE 103
 #define FORCE_ALPHA_OPAQUE 104
+#ifdef pp_SMOKEDRAW_SPEEDUP
+#define MERGE_SMOKE 105
+#endif
 #endif
 

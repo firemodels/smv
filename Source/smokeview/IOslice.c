@@ -2241,20 +2241,20 @@ void UpdateVectorSkipDefault(void){
 
     slicei = sliceinfo + i;
     if(slicei->loaded == 0)continue;
-    for(ii = slicei->is1; ii <= slicei->is2; ii++){
-      slicei->imap[ii - slicei->is1] = ii;
+    for(ii = slicei->iis1; ii <= slicei->iis2; ii++){
+      slicei->imap[ii - slicei->iis1] = ii;
     }
-    slicei->n_imap = slicei->is2 + 1 - slicei->is1;
+    slicei->n_imap = slicei->iis2 + 1 - slicei->iis1;
 
-    for(jj = slicei->js1; jj <= slicei->js2; jj++){
-      slicei->jmap[jj - slicei->js1] = jj;
+    for(jj = slicei->jjs1; jj <= slicei->jjs2; jj++){
+      slicei->jmap[jj - slicei->jjs1] = jj;
     }
-    slicei->n_jmap = slicei->js2 + 1 - slicei->js1;
+    slicei->n_jmap = slicei->jjs2 + 1 - slicei->jjs1;
 
-    for(kk = slicei->ks1; kk <= slicei->ks2; kk++){
-      slicei->kmap[kk - slicei->ks1] = kk;
+    for(kk = slicei->kks1; kk <= slicei->kks2; kk++){
+      slicei->kmap[kk - slicei->kks1] = kk;
     }
-    slicei->n_kmap = slicei->ks2 + 1 - slicei->ks1;
+    slicei->n_kmap = slicei->kks2 + 1 - slicei->kks1;
   }
 }
 
@@ -2272,7 +2272,7 @@ void UpdateVectorSkipNonUniform(slicedata *slicei, int factor_x, int factor_y, i
     int i;
 
     i = slicemesh->imap[ii];
-    if(slicei->is1<=i&&i<=slicei->is2)slicei->imap[n++] = i;
+    if(slicei->iis1<=i&&i<=slicei->iis2)slicei->imap[n++] = i;
   }
   slicei->n_imap = n;
 
@@ -2281,7 +2281,7 @@ void UpdateVectorSkipNonUniform(slicedata *slicei, int factor_x, int factor_y, i
     int j;
 
     j = slicemesh->jmap[jj];
-    if(slicei->js1<=j&&j<=slicei->js2)slicei->jmap[n++] = j;
+    if(slicei->jjs1<=j&&j<=slicei->jjs2)slicei->jmap[n++] = j;
   }
   slicei->n_jmap = n;
 
@@ -2290,7 +2290,7 @@ void UpdateVectorSkipNonUniform(slicedata *slicei, int factor_x, int factor_y, i
     int k;
 
     k = slicemesh->kmap[kk];
-    if(slicei->ks1<=k&&k<=slicei->ks2)slicei->kmap[n++] = k;
+    if(slicei->kks1<=k&&k<=slicei->kks2)slicei->kmap[n++] = k;
   }
   slicei->n_kmap = n;
 }

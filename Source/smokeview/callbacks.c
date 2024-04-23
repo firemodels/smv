@@ -3663,7 +3663,7 @@ void ReshapeCB(int width, int height){
   else{
     SetScreenSize(&width,&height);
   }
-
+  GLUIGetPixelsPerTriangle();
   windowresized=1;
   CopyCamera(camera_current,camera_save);
   windowsize_pointer_old = -1;

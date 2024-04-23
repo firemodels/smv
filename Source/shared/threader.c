@@ -55,7 +55,7 @@ threaderdata *THREADinit(int *nthreads_ptr, int *use_threads_ptr, void *(*run_ar
   thi->use_threads     = use_threads_local;
   thi->run             = run_arg;
 #ifdef pp_THREAD
-  NewMemory(( void ** )&thi->thread_ids, nthreads_local * sizeof(pthread_t));
+  NewMemory(( void ** )&thi->thread_ids, MAX_THREADS * sizeof(pthread_t));
   pthread_mutex_init(&thi->mutex, NULL);
 #endif
   return thi;
@@ -67,8 +67,15 @@ void THREADcontrol(threaderdata *thi, int var){
 #ifdef pp_THREAD
   if(thi == NULL)return;
   switch(var){
+  case THREAD_UPDATE:
+    thi->use_threads = *thi->use_threads_ptr;
+    thi->n_threads   = *thi->n_threads_ptr;
+    break;
   case THREAD_LOCK:
     if(thi->use_threads == 1)pthread_mutex_lock(&thi->mutex);
+    break;
+  case THREAD_FORCE_UNLOCK:
+    pthread_mutex_unlock(&thi->mutex);
     break;
   case THREAD_UNLOCK:
     if(thi->use_threads == 1)pthread_mutex_unlock(&thi->mutex);
@@ -111,5 +118,37 @@ void THREADrun(threaderdata *thi, void *arg){
   }
 #else
   thi->run(arg);
+#endif
+}
+
+/* ------------------ THREADruni ------------------------ */
+
+void THREADruni(threaderdata *thi, int *args){
+#ifdef pp_THREAD
+  if(thi == NULL)return;
+  if(thi->use_threads_ptr != NULL)thi->use_threads = *(thi->use_threads_ptr);
+  if(thi->n_threads_ptr != NULL){
+    thi->n_threads = *(thi->n_threads_ptr);
+    if(thi->n_threads > MAX_THREADS)thi->n_threads = MAX_THREADS;
+  }
+  int i;
+
+  for(i = 0; i < thi->n_threads; i++){
+    int *arg;
+
+    arg = args + 2 * i;
+    arg[0] = thi->n_threads;
+    arg[1] = i;
+    if(thi->use_threads == 1){
+      pthread_create(thi->thread_ids + i, NULL, thi->run, arg);
+    }
+    else{
+      thi->run(arg);
+    }
+  }
+#else
+  args[0] = 1;
+  args[1] = -1;
+  thi->run(args);
 #endif
 }

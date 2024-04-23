@@ -166,23 +166,30 @@ void UpdateFrameNumber(int changetime){
         patchi->geom_nval_dynamic = patchi->geom_ndynamics[patchi->geom_itime];
       }
     }
-    if(show3dsmoke==1){
-      if(nsmoke3dinfo > 0){
-        for(i = 0;i < nsmoke3dinfo;i++){
-          smoke3ddata *smoke3di;
+    if(show3dsmoke==1 && nsmoke3dinfo > 0){
+      INIT_PRINT_TIMER(merge_smoke_time);
+#ifdef pp_SMOKEDRAW_SPEEDUP
+      THREADcontrol(mergesmoke_threads, THREAD_LOCK);
+      THREADruni(mergesmoke_threads, merge_args);
+      THREADcontrol(mergesmoke_threads, THREAD_JOIN);
+      THREADcontrol(mergesmoke_threads, THREAD_UNLOCK);
+#else
+      for(i = 0;i < nsmoke3dinfo;i++){
+        smoke3ddata *smoke3di;
 
-          smoke3di = smoke3dinfo + i;
-          if(smoke3di->loaded == 0 || smoke3di->display == 0)continue;
-          smoke3di->ismoke3d_time = smoke3di->timeslist[itimes];
-          if(IsSmokeComponentPresent(smoke3di) == 0)continue;
-          if(smoke3di->ismoke3d_time != smoke3di->lastiframe){
-            smoke3di->lastiframe = smoke3di->ismoke3d_time;
-            UpdateSmoke3D(smoke3di);
-          }
+        smoke3di = smoke3dinfo + i;
+        if(smoke3di->loaded == 0 || smoke3di->display == 0)continue;
+        smoke3di->ismoke3d_time = smoke3di->timeslist[itimes];
+        if(IsSmokeComponentPresent(smoke3di) == 0)continue;
+        if(smoke3di->ismoke3d_time != smoke3di->lastiframe){
+          smoke3di->lastiframe = smoke3di->ismoke3d_time;
+          UpdateSmoke3D(smoke3di);
         }
-        MergeSmoke3D(NULL);
-        PrintMemoryInfo;
       }
+      MergeSmoke3D(NULL);
+#endif
+      PrintMemoryInfo;
+      PRINT_TIMER(merge_smoke_time, "UpdateSmoke3D + MergeSmoke3D");
     }
     if(showpatch==1){
       for(i=0;i<npatchinfo;i++){
@@ -1963,6 +1970,10 @@ void UpdateShowScene(void){
   if(update_smoke3dmenulabels == 1){
     update_smoke3dmenulabels = 0;
     UpdateSmoke3dMenuLabels();
+  }
+  if(update_merge_smoke == 1){
+    update_merge_smoke = 0;
+    GLUISmoke3dCB(MERGE_SMOKE);
   }
 #endif
   if(glui_meshclip_defined==1&&update_meshclip == 1){

@@ -7,7 +7,9 @@
 #define MAX_THREADS 16
 
 enum threaderparms {
+  THREAD_UPDATE,
   THREAD_LOCK,
+  THREAD_FORCE_UNLOCK,
   THREAD_UNLOCK,
   THREAD_JOIN
 };
@@ -28,6 +30,7 @@ typedef struct _threaderdata{
 
 EXTERNCPP void THREADcontrol(threaderdata *thi, int var);
 EXTERNCPP void THREADrun(threaderdata *thi, void *arg);
+EXTERNCPP void THREADruni(threaderdata *thi, int *args);
 EXTERNCPP threaderdata *THREADinit(int *nthreads_arg, int *threading_on_arg, void *(*run_arg)(void *arg));
 
 //*** threader controls
