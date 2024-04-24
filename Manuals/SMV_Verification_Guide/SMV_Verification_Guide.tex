@@ -647,6 +647,9 @@ of fractional effective dose (FED).  FED is a measure of human incapacitation or
 hazard due to combustion gases\cite{SFPE:Purser}. Images are drawn at \SI{30}{s},
 \SI{60}{s} and \SI{120}{s} and \SI{240}{s}. The FED is computed using three data slices with concentration of $1000~\mathrm{ppm}$ for $\mathrm{CO}$ and volume fractions of 0.02 and 0.07 for $\mathrm{CO_2}$ and $\mathrm{O_2}$ respectively. These values result in FED values of 1.5 at \SI{30}{s}, 3.0 at \SI{60}{s}, 6.0 at \SI{120}{s} and 12.0 at \SI{240}{s}.
 
+Figure \ref{figslice3D} presents images of shaded 3D slices oriented in XY, XY and YZ planes.
+Images are drawn at \SI{0}{s}, \SI{10}{s} and \SI{30}{s}.
+
 Figure \ref{figgslicetest} presents images of 3D slices oriented in two different
 ways. Images are drawn at \SI{0}{s}, \SI{10}{s} and \SI{30}{s}.
 
@@ -681,6 +684,7 @@ files. Difference contours from these slice files are displayed at \SI{0}{s},
 \label{fignodeslicetest}%
 \end{figure}
 
+
 \begin{figure}[bph]
 \begin{center}
 \begin{tabular}{rccp{1.0in}}
@@ -707,18 +711,6 @@ files. Difference contours from these slice files are displayed at \SI{0}{s},
 \begin{figure}[bph]
 \begin{center}
 \begin{tabular}{cccp{1.0in}}
- \includegraphics[height=\figheightE]{SCRIPT_FIGURES/testsort_x0p4}&
- \includegraphics[height=\figheightE]{SCRIPT_FIGURES/testsort_y1p2}\\
- $x=0.4$&$y=1.2$\\
- \end{tabular}
-\end{center}
- \caption[Two vertical slices drawn at $x=0.4$ and $y=1.2$.]{Two vertical slices drawn at $x=0.4$ and $y=1.2$.}
-\label{figslicexy}%
-\end{figure}
-
-\begin{figure}[bph]
-\begin{center}
-\begin{tabular}{cccp{1.0in}}
  \includegraphics[height=\figheightE]{SCRIPT_FIGURES/testsort_sort}&
  \includegraphics[height=\figheightE]{SCRIPT_FIGURES/testsort_unsort}\\
  sorted&unsorted\\
@@ -728,6 +720,18 @@ files. Difference contours from these slice files are displayed at \SI{0}{s},
  from back to front.]{A test showing two vertical slices drawn without visual artifacts when drawn sorted
  from back to front and drawn with visual artifacts (a portion of the slice in back appears in front) when drawn unsorted.}
 \label{figslicesort}%
+\end{figure}
+
+\begin{figure}[bph]
+\begin{center}
+\begin{tabular}{cccp{1.0in}}
+ \includegraphics[height=\figheightE]{SCRIPT_FIGURES/testsort_x0p4}&
+ \includegraphics[height=\figheightE]{SCRIPT_FIGURES/testsort_y1p2}\\
+ $x=0.4$&$y=1.2$\\
+ \end{tabular}
+\end{center}
+ \caption[Two vertical slices drawn at $x=0.4$ and $y=1.2$.]{Two vertical slices drawn at $x=0.4$ and $y=1.2$.}
+\label{figslicexy}%
 \end{figure}
 
 \begin{figure}[bph]
@@ -830,6 +834,19 @@ SI{30}{s}, FED=0.29&\SI{60}{s}, FED=0.59\\
 
 \begin{figure}[bph]
 \begin{center}
+\begin{tabular}{ccp{1.0in}}
+ \includegraphics[height=\figheightE]{SCRIPT_FIGURES/mplume5c8_slice_00}\\
+ \includegraphics[height=\figheightE]{SCRIPT_FIGURES/mplume5c8_slice_10}\\
+ \includegraphics[height=\figheightE]{SCRIPT_FIGURES/mplume5c8_slice_30}\\
+&&\raisebox{0.5in}[0pt]{\includegraphics[height=7.5in]{\SMVfigdir/colorbar_20_620}}\\
+ \end{tabular}
+\end{center}
+ \caption[A shaded 3D slice files]{A shaded 3D slice files at \SI{0}{s}, \SI{10}{s} and \SI{30}{s}.}
+\label{figslice3D}%
+\end{figure}
+
+\begin{figure}[bph]
+\begin{center}
 \begin{tabular}{cccp{1.0in}}
  \includegraphics[height=\figheightE]{SCRIPT_FIGURES/plume5c_gslice_00}&
  \includegraphics[height=\figheightE]{SCRIPT_FIGURES/plume5c_gslice2_00}\\
@@ -878,8 +895,12 @@ Figures \ref{figvsliceuniformx} and \ref{figvsliceuniformz} present images verif
 The test cases consist of three meshes with different resolutions.  With the uniform option selected, vector
 skipping is set in each mesh so that vectors are spaced uniformly.
 
+Figure \ref{figvslice3D} presents images of 3D vector slices oriented in XY, XY and YZ planes.
+Images are drawn at \SI{0}{s}, \SI{10}{s} and \SI{30}{s}.
+
 Figure \ref{figvgslicetest} presents images of 3D vector slices oriented in two different
 ways. Images are drawn at \SI{0}{s}, \SI{10}{s} and \SI{30}{s}.
+
 
 
 \begin{figure}[bph]
@@ -932,6 +953,19 @@ ways. Images are drawn at \SI{0}{s}, \SI{10}{s} and \SI{30}{s}.
  \caption[A test showing uniform vector slices where grids are non-uniform in the Z direction.]
 {A test showing uniform vector slices where grids are non-uniform in the Z direction.}
 \label{figvsliceuniformz}%
+\end{figure}
+
+\begin{figure}[bph]
+\begin{center}
+\begin{tabular}{ccp{1.0in}}
+ \includegraphics[height=\figheightE]{SCRIPT_FIGURES/mplume5c8_vslice_00}\\
+ \includegraphics[height=\figheightE]{SCRIPT_FIGURES/mplume5c8_vslice_10}\\
+ \includegraphics[height=\figheightE]{SCRIPT_FIGURES/mplume5c8_vslice_30}\\
+&&\raisebox{0.5in}[0pt]{\includegraphics[height=7.5in]{\SMVfigdir/colorbar_20_620}}\\
+ \end{tabular}
+\end{center}
+ \caption[A test showing 3D vector slice data]{A test showing 3D vector slice data at \SI{0}{s}, \SI{10}{s} and \SI{30}{s}.}
+\label{figvslice3D}%
 \end{figure}
 
 \begin{figure}[bph]
