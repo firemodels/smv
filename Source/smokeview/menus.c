@@ -7951,7 +7951,7 @@ void InitUnloadMultiSliceMenu(int *unloadmultislicemenuptr){
   glutAddMenuEntry(_("Unload all"), UNLOAD_ALL);
 }
 
-/* ------f------------ InitLoadMultiSubMenu ------------------------ */
+/* ------------------ InitLoadMultiSubMenu ------------------------ */
 
 void InitLoadMultiSubMenu(int **loadsubmslicemenuptr, int *nmultisliceloadedptr){
   int i, *loadsubmslicemenu, nloadsubmslicemenu;
