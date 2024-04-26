@@ -20,8 +20,10 @@ if (sys.platform == "win32"):
   os.environ["MPIEXEC_PORT_RANGE"]=""
   os.environ["MPICH_PORT_RANGE"]=""
   MAKECASE="makecase"
+  fdsrun="fdsrun.bat"
 else:
   MAKECASE="./makecase.sh"
+  fdsrun="./fdsrun.sh"
 
 button_width=8
 edit_width=10
@@ -31,11 +33,11 @@ def make_case1(): os.system(MAKECASE + " " + fire_size.get() + " " + door_height
 def make_case2(): os.system(MAKECASE + " " + fire_size.get() + " " + door_height.get() + " " + gravx.get() + " " + gravy.get() + " " + gravz.get() + " case2")
 
 # run the case (in background)
-cmdfds1 = "fds case1.fds"
+cmdfds1 = fdsrun + " case1.fds"
 argsfds1 = shlex.split(cmdfds1)
 def run_case1(): subprocess.Popen(argsfds1)
 
-cmdfds2 = "fds case2.fds"
+cmdfds2 = fdsrun + "case2.fds"
 argsfds2 = shlex.split(cmdfds2)
 def run_case2(): subprocess.Popen(argsfds2)
 
