@@ -19,6 +19,7 @@ if (sys.platform == "win32"):
   os.environ["PATH"]=os.environ["I_MPI_ROOT"]+";"+os.environ["PATH"]
   os.environ["MPIEXEC_PORT_RANGE"]=""
   os.environ["MPICH_PORT_RANGE"]=""
+  MAKECASE="makecase"
 else:
   MAKECASE="./makecase.sh"
 
@@ -27,7 +28,7 @@ edit_width=10
 
 # build the case (in foreground - but finishes instantly)
 def make_case1(): os.system(MAKECASE + " " + fire_size.get() + " " + door_height.get() + " " + gravx.get() + " " + gravy.get() + " " + gravz.get() + " case1")
-def make_case2(): os.system("makecase " + fire_size.get() + " " + door_height.get() + " " + gravx.get() + " " + gravy.get() + " " + gravz.get() + " case2")
+def make_case2(): os.system(MAKECASE + " " + fire_size.get() + " " + door_height.get() + " " + gravx.get() + " " + gravy.get() + " " + gravz.get() + " case2")
 
 # run the case (in background)
 cmdfds1 = "fds case1.fds"
