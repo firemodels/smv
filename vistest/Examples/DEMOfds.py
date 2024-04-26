@@ -20,13 +20,13 @@ if (sys.platform == "win32"):
   os.environ["MPIEXEC_PORT_RANGE"]=""
   os.environ["MPICH_PORT_RANGE"]=""
 else:
-  MAKECASE="makecase.sh"
+  MAKECASE="./makecase.sh"
 
 button_width=8
 edit_width=10
 
 # build the case (in foreground - but finishes instantly)
-def make_case1(): os.system("makecase " + fire_size.get() + " " + door_height.get() + " " + gravx.get() + " " + gravy.get() + " " + gravz.get() + " case1")
+def make_case1(): os.system(MAKECASE + " " + fire_size.get() + " " + door_height.get() + " " + gravx.get() + " " + gravy.get() + " " + gravz.get() + " case1")
 def make_case2(): os.system("makecase " + fire_size.get() + " " + door_height.get() + " " + gravx.get() + " " + gravy.get() + " " + gravz.get() + " case2")
 
 # run the case (in background)
