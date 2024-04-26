@@ -2,13 +2,14 @@
 firesize=$1
 doorheight=$2
 gravx=$3
-gravz=$4
-CHID=simple1
+gravy=$4
+gravz=$5
+CHID=$6
 outfile=${CHID}.fds
 cat << EOF > $outfile
 &HEAD CHID='$CHID', TITLE='Simple demonstration case.'  /   
 &MESH IJK=36,24,24, XB=0.0,3.6,0.0,2.4,0.0,2.4 /             
-&MISC GVEC=$gravx,0.0,$gravz /                                     
+&MISC GVEC=$gravx,$gravy,$gravz /                                     
 &TIME T_END=60.0 /                                           
 &REAC FUEL='PROPANE', SOOT_YIELD=0.01 /                        
 &SURF ID='BURNER', HRRPUA=$firesize, COLOR='RED' /          
