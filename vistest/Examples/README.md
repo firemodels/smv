@@ -10,4 +10,4 @@ on a Linux or Mac computer, type:
 
 on a Windows computer. The GUI runs a fds on a one room case.  It gives you options to change the fire size, door size and gravity vector.  You can set up two scenarios and compare the results.
 
-![DEMOfds gui](https://github.com/firemodels/fig/tree/master/smv/figures/DEMOfds.png)
+![DEMOfds gui](https://github.com/firemodels/fig/tree/master/smv/figures/DEMOSfds.png)
