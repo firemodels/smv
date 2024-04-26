@@ -47,7 +47,7 @@ cmdsmv2 = "smokeview case2"
 argssmv2 = shlex.split(cmdsmv2)
 def view_case2(): subprocess.Popen(argssmv2)
 
-root.title('FDS Demo')
+root.title('Fire Smoke Demo')
 root.resizable(0, 0)
 
 R=0
