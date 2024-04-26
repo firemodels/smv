@@ -11,22 +11,32 @@ root = Tk()
 # directory locations
 
 script_dir = os.path.dirname(os.path.realpath(__file__))
+os.chdir(script_dir)
 
+#update path for fds (batch files for now were not working when called from python)
+if (sys.platform == "win32"): 
+  os.environ["I_MPI_ROOT"]="C:\\Program Files\\firemodels\\FDS6\\bin\\mpi"
+  os.environ["PATH"]=os.environ["I_MPI_ROOT"]+";"+os.environ["PATH"]
+  os.environ["MPIEXEC_PORT_RANGE"]=""
+  os.environ["MPICH_PORT_RANGE"]=""
+else:
+  MAKECASE="makecase.sh"
 
 button_width=8
 edit_width=10
 
-# link windows batch files to python commands
-
+# build the case (in foreground - but finishes instantly)
 def make_case(): os.system("makecase " + fire_size.get() + " " + door_height.get() + " " + gravx.get() + " " + gravz.get())
 
-cmd = "fds_local simple1.fds"
-args = shlex.split(cmd)
-def run_case(): subprocess.Popen(args)
+# run the case (in background)
+cmdfds = "fds simple1.fds"
+argsfds = shlex.split(cmdfds)
+def run_case(): subprocess.Popen(argsfds)
 
-cmd = "smokeview simple1"
-args = shlex.split(cmd)
-def view_case(): subprocess.Popen(args)
+# view the case (in background)
+cmdsmv = "smokeview simple1"
+argssmv = shlex.split(cmdsmv)
+def view_case(): subprocess.Popen(argssmv)
 
 root.title('FDS Demo')
 root.resizable(0, 0)

@@ -18,3 +18,4 @@ echo ^&BNDF QUANTITY='GAUGE HEAT FLUX' /                           >> %outfile%
 echo ^&SLCF PBY=1.2, QUANTITY='TEMPERATURE', VECTOR=.TRUE. /       >> %outfile%
 echo ^&TAIL /                                                      >> %outfile%
 
+
