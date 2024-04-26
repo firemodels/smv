@@ -2191,8 +2191,10 @@ void Keyboard(unsigned char key, int flag){
         PRINTF("outline mode=%i\n",highlight_flag);
       }
       break;
-    case 'p':
     case 'P':
+      glutAttachMenu(GLUT_RIGHT_BUTTON);
+      break;
+    case 'p':
       {
         int is_part_loaded, is_plot3d_loaded;
 
