@@ -3,7 +3,7 @@ import sys
 import subprocess
 import shlex
 from functools import partial
-from tkinter import *
+from Tkinter import *
 import os
 
 root = Tk()
