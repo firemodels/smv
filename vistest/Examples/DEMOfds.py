@@ -5,10 +5,7 @@ import shlex
 from functools import partial
 import os
 
-if (sys.platform == "win32"): 
-  from tkinter import *
-else:
-  from Tkinter import *
+from tkinter import *
 
 root = Tk()
 
