@@ -3,8 +3,12 @@ import sys
 import subprocess
 import shlex
 from functools import partial
-from Tkinter import *
 import os
+
+if (sys.platform == "win32"): 
+  from tkinter import *
+else:
+  from Tkinter import *
 
 root = Tk()
 
