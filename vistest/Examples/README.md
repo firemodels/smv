@@ -17,4 +17,5 @@ The GUI gives options for changing fire size, door size and the gravity vector. 
 ### TO DO
 
 * input error checking - make sure inputs are numbers
+* add a note on how to install tkinter if it is not loaded
 
