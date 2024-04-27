@@ -8,7 +8,7 @@ in a command shell on a Windows computer.  You can also double click on this fil
 
 ```python DEMOfds.py```
 
-in a command shell a Linux or Macintosh computer. 
+in a command shell on a Linux or Macintosh computer. 
 
 ![DEMOfds](https://github.com/firemodels/smv/assets/12403014/9eb5173a-6be1-4b20-ae18-5c0e9083ea14)
 
