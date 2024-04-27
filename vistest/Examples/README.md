@@ -1,6 +1,6 @@
 # Fire and Smoke Demonstration GUI
 
-This directory contains a python GUI script and associated files for demonstrating fire and smoke behavior using FDS and Smokeview.  This GUI works on Windows, Macintosh and Linux computers.  The programs fds and smokeview need to be in the path.  The GUI uses the tkinter module for the interface.  To use the GUI, type:
+This directory contains a python GUI script and associated files for demonstrating fire and smoke behavior using FDS and Smokeview.  This GUI works on Windows, Macintosh and Linux computers.  The programs FDS and Smokeview need to be in the path.  The GUI uses the tkinter module for the interface.  To use the GUI, type:
 
 ```DEMOfds.py```
 
