@@ -6,4 +6,4 @@ if exist %chid%.running echo %casename% already running
 if exist %chid%.running exit /b
 echo 1 > %chid%.running
 fds %casename%
-if exit %chid%.running erase %chid%.running
+if exist %chid%.running erase %chid%.running
