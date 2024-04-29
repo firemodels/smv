@@ -8,7 +8,7 @@ CHID=$6
 outfile=${CHID}.fds
 cat << EOF > $outfile
 &HEAD CHID='$CHID', TITLE='Simple demonstration case.'  /   
-&MESH IJK=36,24,24, XB=0.0,3.6,0.0,2.4,0.0,2.4 /             
+&MESH IJK=36,24,24, XB=0.0,4.8,0.0,2.4,0.0,2.4 /             
 &MISC GVEC=$gravx,$gravy,$gravz /                                     
 &TIME T_END=60.0 /                                           
 &REAC FUEL='PROPANE', SOOT_YIELD=0.01 /                        
