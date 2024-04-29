@@ -2671,11 +2671,17 @@ void UpdateDisplay(void){
   }
   if(updatemenu == 1 && usemenu == 1 && menustatus == GLUT_MENU_NOT_IN_USE){
     glutDetachMenu(GLUT_RIGHT_BUTTON);
+    attachmenu_status = 0;
     THREADcontrol(checkfiles_threads, THREAD_LOCK);
     InitMenus();
     THREADcontrol(checkfiles_threads, THREAD_UNLOCK);
     glutAttachMenu(GLUT_RIGHT_BUTTON);
+    attachmenu_status = 1;
     updatemenu = 0;
+  }
+  if(attachmenu_print == 1){
+    if(attachmenu_status == 1)printf("menus attached(%i)\n",attachmenu_counter++);
+    if(attachmenu_status == 0)printf("menus detached(%i)\n",attachmenu_counter++);
   }
   if(update_patch_bounds!=-1||update_slice_bounds!=-1||update_part_bounds!=-1||update_plot3d_bounds!=-1){
 

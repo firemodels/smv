@@ -11,25 +11,31 @@ if (sys.platform == "win32"):
   os.environ["PATH"]=os.environ["I_MPI_ROOT"]+";"+os.environ["PATH"]
   os.environ["MPIEXEC_PORT_RANGE"]=""
   os.environ["MPICH_PORT_RANGE"]=""
-  MAKECASE="makecase"
-  fdsrun="fdsrun.bat"
+  MAKECASE="makecase.bat"
+  FDSSTOP="fdsstop.bat"
+  FDSRUN="fdsrun.bat"
 else:
   MAKECASE="./makecase.sh"
-  fdsrun="./fdsrun.sh"
+  FDSSTOP="./fdsstop.sh"
+  FDSRUN="./fdsrun.sh"
 
-button_width=8
-edit_width=10
+button_width=6
+edit_width=8
 
 # build the case (in foreground - finishes instantly)
 def make_case1(): os.system(MAKECASE + " " + fire_size.get() + " " + door_height.get() + " " + gravx.get() + " " + gravy.get() + " " + gravz.get() + " case1")
 def make_case2(): os.system(MAKECASE + " " + fire_size.get() + " " + door_height.get() + " " + gravx.get() + " " + gravy.get() + " " + gravz.get() + " case2")
 
+# stop case
+def stop_case1(): os.system(FDSSTOP + " case1")
+def stop_case2(): os.system(FDSSTOP + " case2")
+
 # run the case (in background)
-cmdfds1 = fdsrun + " case1.fds"
+cmdfds1 = FDSRUN + " case1"
 argsfds1 = shlex.split(cmdfds1)
 def run_case1(): subprocess.Popen(argsfds1)
 
-cmdfds2 = fdsrun + " case2.fds"
+cmdfds2 = FDSRUN + " case2"
 argsfds2 = shlex.split(cmdfds2)
 def run_case2(): subprocess.Popen(argsfds2)
 
@@ -76,14 +82,16 @@ gravz.insert(0,"-9.8")
 
 R=R+1
 Label(root, text="case 1:").grid(sticky="e",row=R, column=0)
-Button(root, text="Make input",  width=10, command=make_case1).grid(row=R, column=1)
-Button(root, text="Run",   width=button_width, command=run_case1).grid(row=R,  column=2)
-Button(root, text="View",  width=button_width, command=view_case1).grid(row=R, column=3)
+Button(root, text="Make", width=button_width, command=make_case1).grid(row=R, column=1)
+Button(root, text="Run",  width=button_width, command=run_case1).grid(row=R,  column=2)
+Button(root, text="Stop", width=button_width, command=stop_case1).grid(row=R, column=3)
+Button(root, text="View", width=button_width, command=view_case1).grid(row=R, column=4)
 
 R=R+1
 Label(root, text="case 2:").grid(sticky="e",row=R, column=0)
-Button(root, text="Make input",  width=10, command=make_case2).grid(row=R, column=1)
-Button(root, text="Run",   width=button_width, command=run_case2).grid(row=R,  column=2)
-Button(root, text="View",  width=button_width, command=view_case2).grid(row=R, column=3)
+Button(root, text="Make", width=button_width, command=make_case2).grid(row=R, column=1)
+Button(root, text="Run",  width=button_width, command=run_case2).grid(row=R,  column=2)
+Button(root, text="Stop", width=button_width, command=stop_case2).grid(row=R, column=3)
+Button(root, text="View", width=button_width, command=view_case2).grid(row=R, column=4)
 
 root.mainloop()
