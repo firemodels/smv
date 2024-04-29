@@ -331,10 +331,12 @@ int SetupCase(char *filename){
   InitMisc();
   GLUITrainerSetup(mainwindow_id);
   glutDetachMenu(GLUT_RIGHT_BUTTON);
+  attachmenu_status = 0;
   THREADcontrol(checkfiles_threads, THREAD_LOCK);
   InitMenus();
   THREADcontrol(checkfiles_threads, THREAD_UNLOCK);
   glutAttachMenu(GLUT_RIGHT_BUTTON);
+  attachmenu_status = 1;
   if(trainer_mode==1){
     GLUIShowTrainer();
     GLUIShowAlert();

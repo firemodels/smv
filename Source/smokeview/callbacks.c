@@ -2193,6 +2193,12 @@ void Keyboard(unsigned char key, int flag){
       break;
     case 'P':
       glutAttachMenu(GLUT_RIGHT_BUTTON);
+      attachmenu_status = 1;
+      attachmenu_print = 1 - attachmenu_print;
+      if(attachmenu_print == 1){
+        if(attachmenu_status == 1)printf("menus attached(%i)\n",attachmenu_counter++);
+        if(attachmenu_status == 0)printf("menus detached(%i)\n",attachmenu_counter++);
+      }
       break;
     case 'p':
       {

@@ -180,6 +180,8 @@ SVEXTERN float geom_bounding_box[6];
 SVEXTERN int glui_surface_color[4];
 #endif
 
+SVEXTERN int SVDECL(attachmenu_print, 0), SVDECL(attachmenu_status, 0), SVDECL(attachmenu_counter, 0);
+
 SVEXTERN int SVDECL(slice_plot_csv, 0);
 SVEXTERN char slice_plot_filename[256];
 SVEXTERN char slice_plot_label[256];
