@@ -4787,9 +4787,7 @@ extern "C" void GLUIBoundsSetup(int main_window){
 
     glui_bounds->add_separator_to_panel(ROLLOUT_iso_settings);
 
-#ifdef pp_BETA
     CHECKBOX_sort2 = glui_bounds->add_checkbox_to_panel(ROLLOUT_iso_settings, _("Sort transparent surfaces:"), &sort_iso_triangles, SORT_SURFACES, GLUISliceBoundCB);
-#endif
     CHECKBOX_smooth2 = glui_bounds->add_checkbox_to_panel(ROLLOUT_iso_settings, _("Smooth isosurfaces"), &smooth_iso_normal, SMOOTH_SURFACES, GLUISliceBoundCB);
     glui_bounds->add_checkbox_to_panel(ROLLOUT_iso_settings, _("wrapup in background"), &use_iso_threads);
     glui_bounds->add_button_to_panel(ROLLOUT_iso_settings, "Output isosurface bounds", ISO_BOUNDS_OUTPUT, GLUISliceBoundCB);

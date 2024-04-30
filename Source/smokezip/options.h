@@ -4,10 +4,6 @@
 #include "options_common.h"
 #define pp_SMOKEZIP
 
-//*** uncomment the following two lines to force all versions to be beta
-//#undef pp_BETA
-//#define pp_BETA
-
 #include "lint.h"
 
 //*** options: all platforms

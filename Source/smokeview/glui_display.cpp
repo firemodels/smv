@@ -12,9 +12,7 @@ GLUI *glui_labels=NULL;
 
 GLUI_EditText *EDIT_LB_label_string=NULL;
 
-#ifdef pp_BETA
 GLUI_Spinner *SPINNER_cullgeom_portsize=NULL;
-#endif
 
 GLUI_Listbox *LIST_LB_labels=NULL;
 GLUI_Listbox *LIST_surfs=NULL;
@@ -96,9 +94,7 @@ GLUI_Checkbox *CHECKBOX_labels_meshlabel = NULL;
 GLUI_Checkbox *CHECKBOX_labels_version=NULL;
 GLUI_Checkbox *CHECKBOX_visUSERticks=NULL;
 GLUI_Checkbox *CHECKBOX_visUSERticks2=NULL;
-#ifdef pp_BETA
 GLUI_Checkbox *CHECKBOX_cullgeom=NULL;
-#endif
 GLUI_Checkbox *CHECKBOX_LB_visLabels=NULL;
 GLUI_Checkbox *CHECKBOX_LB_label_use_foreground=NULL;
 GLUI_Checkbox *CHECKBOX_LB_label_show_always=NULL;
@@ -1208,29 +1204,9 @@ extern "C" void GLUILabelsCB(int var){
     UpdateHiddenFaces();
     glutPostRedisplay();
     break;
-#ifdef pp_BETA
   case LABELS_drawface:
-    /*
-    if(use_new_drawface==1){
-      CHECKBOX_cullgeom->enable();
-      if(cullgeom==1){
-        SPINNER_cullgeom_portsize->enable();
-      }
-      else{
-        SPINNER_cullgeom_portsize->disable();
-      }
-    }
-    else{
-      CHECKBOX_cullgeom->disable();
-      SPINNER_cullgeom_portsize->disable();
-    }
-    update_initcullgeom=1;
-    SetCullVis();
-    */
     updatefacelists=1;
     break;
-#endif
-
   case CB_USE_LIGHTING:
   case LABELS_shownorth:
   case LABELS_version:
