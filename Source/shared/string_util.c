@@ -1674,10 +1674,8 @@ void GetTitle(char *progname, char *fulltitle){
 
   STRCPY(fulltitle, title_base);
   STRCAT(fulltitle, __DATE__);
-#ifdef pp_BETA
   STRCAT(fulltitle, " - ");
   STRCAT(fulltitle, __TIME__);
-#endif
 }
 
 #ifdef pp_HASH

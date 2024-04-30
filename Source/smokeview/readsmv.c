@@ -13024,11 +13024,7 @@ int ReadIni2(char *inifile, int localfile){
       ONEORZERO(show_iso_points);
       ONEORZERO(show_iso_normal);
       ONEORZERO(smooth_iso_normal);
-#ifdef pp_BETA
       ONEORZERO(show_iso_normal);
-#else
-      show_iso_normal = 0;
-#endif
       ONEORZERO(sort_iso_triangles);
       sort_geometry = sort_iso_triangles;
       visAIso = show_iso_shaded * 1 + show_iso_outline * 2 + show_iso_points * 4;

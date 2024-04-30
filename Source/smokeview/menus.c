@@ -7625,25 +7625,22 @@ void PartLoadState(int  *load_state){
 #ifdef pp_DEBUG_SUBMENU
 
 #define CREATEMENU(menu,Menu) menu=glutCreateMenu(Menu);\
-  if(nmenus<10000){\
+  assert(nmenus<MAXMENUS);\
+  if(nmenus<MAXMENUS){\
     strcpy(menuinfo[nmenus].label,#Menu);\
     menuinfo[nmenus].menuvar_ptr=&menu;\
     menuinfo[nmenus].menuvar = menu;\
     menuinfo[nmenus++].status = 1;\
   }
 
-#ifdef _DEBUG
 #define GLUTADDSUBMENU(menu_label,menu_value){assert(menu_value!=0);glutAddSubMenu(menu_label,menu_value);}
-#else
-#define GLUTADDSUBMENU(menu_label,menu_value){if(menu_value==0){printf("*** warning: sub-menu entry %s added to non-existant menu at line %i in file %s\n",menu_label,__LINE__,__FILE__);};glutAddSubMenu(menu_label,menu_value);}
-#endif
 
 #else
 
 #define CREATEMENU(menu,Menu) menu=glutCreateMenu(Menu);\
-  if(nmenus<10000){\
-    strcpy(menuinfo[nmenus].label,#Menu);\
-    menuinfo[nmenus++].menuvar=menu;\
+  assert(nmenus<MAXMENUS);\
+  if(nmenus<MAXMENUS){\
+    menuinfo[nmenus].menuvar=menu;\
     menuinfo[nmenus++].status = 1;\
   }
 

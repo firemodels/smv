@@ -1783,7 +1783,8 @@ SVEXTERN int SVDECL(loadfiles_at_startup,0);
 SVEXTERN char SVDECL(*smokeview_scratchdir,NULL);
 
 SVEXTERN int SVDECL(nmenus,0);
-SVEXTERN menudata menuinfo[10000];
+#define MAXMENUS 10000
+SVEXTERN menudata menuinfo[MAXMENUS];
 SVEXTERN int max_screenWidth, max_screenHeight;
 SVEXTERN int saveW, saveH;
 SVEXTERN char SVDECL(*texturedir,NULL);

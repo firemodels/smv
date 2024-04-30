@@ -3,10 +3,6 @@
 
 #include "options_common.h"
 
-#ifdef pp_BETA
-#define pp_DEBUG_SUBMENU       // debug output and testing for building menus
-#endif
-
 //#define pp_PARTBOUND_MULTI // compute particle bounds in the background
 //#define pp_LUA            // turn on LUA option
 //#define pp_FED            // used to isolate fed code
@@ -72,6 +68,7 @@
 //*** options: for debugging
 
 #ifdef _DEBUG
+#define pp_DEBUG_SUBMENU     // debug output and testing for building menus
 #define pp_RECOMPUTE_DEBUG   // output debug message if bounds are recomputed
 #define pp_BOUND_DEBUG       // output debug message in some bound routines
 #define pp_MOVIE_BATCH_DEBUG // allow movei batch dialogs to be defined for testing

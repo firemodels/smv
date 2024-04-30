@@ -2678,6 +2678,9 @@ void UpdateDisplay(void){
     glutAttachMenu(GLUT_RIGHT_BUTTON);
     attachmenu_status = 1;
     updatemenu = 0;
+#ifdef _DEBUG
+    printf("nmenus=%i\n", nmenus);
+#endif
   }
   if(attachmenu_print == 1){
     if(attachmenu_status == 1)printf("menus attached(%i)\n",attachmenu_counter++);
