@@ -21,6 +21,9 @@ echo ^&VENT XB=3.6,4.8,0.0,0.0,0.0,2.4, SURF_ID='OPEN' /           >> %outfile%
 echo ^&VENT XB=3.6,4.8,2.4,2.4,0.0,2.4, SURF_ID='OPEN' /           >> %outfile%
 echo ^&VENT XB=4.8,4.8,0.0,2.4,0.0,2.4, SURF_ID='OPEN' /           >> %outfile%
 echo ^&BNDF QUANTITY='GAUGE HEAT FLUX' /                           >> %outfile%
+echo ^&BNDF QUANTITY='WALL TEMPERATURE' /                          >> %outfile%
+echo ^&ISOF QUANTITY='TEMPERATURE',VALUE(1)=100.0 /                >> %outfile%
+echo ^&ISOF QUANTITY='TEMPERATURE',VALUE(1)=620.0 /                >> %outfile%
 echo ^&SLCF PBY=1.2, QUANTITY='TEMPERATURE', VECTOR=.TRUE. /       >> %outfile%
 echo ^&TAIL /                                                      >> %outfile%
 

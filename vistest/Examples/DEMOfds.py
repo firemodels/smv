@@ -3,6 +3,11 @@ from tkinter import *
 
 root = Tk()
 
+x = 1300
+y = 0
+root.geometry("+%d+%d" %(x,y))
+
+
 script_dir = os.path.dirname(os.path.realpath(__file__))
 os.chdir(script_dir)
 
@@ -44,7 +49,7 @@ cmdsmv1 = "smokeview case1"
 argssmv1 = shlex.split(cmdsmv1)
 def view_case1(): subprocess.Popen(argssmv1)
 
-cmdsmv2 = "smokeview case2"
+cmdsmv2 = "smokeview -x0 660 case2"
 argssmv2 = shlex.split(cmdsmv2)
 def view_case2(): subprocess.Popen(argssmv2)
 
