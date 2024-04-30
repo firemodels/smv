@@ -7620,8 +7620,7 @@ void PartLoadState(int  *load_state){
 #define CREATEMENU(menu,Menu) menu=glutCreateMenu(Menu);\
   assert(nmenus<MAXMENUS);\
   if(nmenus<MAXMENUS){\
-    strcpy(menuinfo[nmenus].label,#Menu);\
-    menuinfo[nmenus++].menuvar=menu;\
+    menuinfo[nmenus].menuvar=menu;\
     menuinfo[nmenus++].status = 1;\
   }
 
