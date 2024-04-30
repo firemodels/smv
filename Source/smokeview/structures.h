@@ -1374,8 +1374,8 @@ typedef struct _menudata {
   int status;
 #ifdef pp_DEBUG_SUBMENU
   int *menuvar_ptr;
-#endif
   char label[256];
+#endif
 } menudata;
 
 /* --------------------------  filebounddata ------------------------------------ */
