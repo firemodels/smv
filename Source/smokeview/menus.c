@@ -7605,8 +7605,8 @@ void PartLoadState(int  *load_state){
 #ifdef pp_DEBUG_SUBMENU
 
 #define CREATEMENU(menu,Menu) menu=glutCreateMenu(Menu);\
-  assert(nmenus<10000);\
-  if(nmenus<10000){\
+  assert(nmenus<MAXMENUS);\
+  if(nmenus<MAXMENUS){\
     strcpy(menuinfo[nmenus].label,#Menu);\
     menuinfo[nmenus].menuvar_ptr=&menu;\
     menuinfo[nmenus].menuvar = menu;\
@@ -7618,8 +7618,8 @@ void PartLoadState(int  *load_state){
 #else
 
 #define CREATEMENU(menu,Menu) menu=glutCreateMenu(Menu);\
-  assert(nmenus<10000);\
-  if(nmenus<10000){\
+  assert(nmenus<MAXMENUS);\
+  if(nmenus<MAXMENUS){\
     strcpy(menuinfo[nmenus].label,#Menu);\
     menuinfo[nmenus++].menuvar=menu;\
     menuinfo[nmenus++].status = 1;\
