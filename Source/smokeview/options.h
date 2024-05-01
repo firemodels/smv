@@ -23,6 +23,7 @@
 #define pp_GPUTHROTTLE      // pp_GPU directive must also be set
 #endif
 #define pp_NOBOUNDS           // add option to not compute global bounds at startup
+#define pp_FRAME          // generalized routines to read in frame data
 
 //*** options: windows
 
