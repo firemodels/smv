@@ -1,35 +1,15 @@
 @echo off
 
-:: ---- FDS and smokeview version ----
-
-set fds_version=FDS-6.9.0
-set fds_tag=FDS-6.9.0
-set fds_versionbase=6.9.0
-
-set smv_version=SMV-6.9.0
-set smv_tag=SMV-6.9.0
-set smv_versionbase=6.9.0
-
-set fds_edition=FDS6
-set fds_debug=0
-
-set fds_tag_name=release
-set smv_tag_name=release
-
-:: ---- FDS and smokeview revision ----
+:: ---- smokeview revision ----
 
 set smv_revision=unknown
-set fds_revision=unknown
 if exist %userprofile%\.bundle\smv_revision.txt (
   set /p smv_revision=<%userprofile%\.bundle\smv_revision.txt
-)
-if exist %userprofile%\.bundle\fds_revision.txt (
-  set /p fds_revision=<%userprofile%\.bundle\fds_revision.txt
 )
 
 :: ---- log entry date ----
 
-set smvlogdate="1-Feb-2024"
+set smvlogdate="30-Apr-2024"
 
 :: ---- repo locations ----
 
