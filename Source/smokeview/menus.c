@@ -11701,8 +11701,6 @@ static int menu_count=0;
     glutAddMenuEntry("  $: force 3D smoke/fire to be opaque", MENU_DUMMY);
     glutAddMenuEntry(_("  u: reload files"), MENU_DUMMY);
     glutAddMenuEntry(_("  [,]: decrease/increase particle size"), MENU_DUMMY);
-    glutAddMenuEntry(_("  ,: toggle colorbar display (vertical, horizontal, hidden)"), MENU_DUMMY);
-    glutAddMenuEntry(_("  :: toggle timebar region overlap (always, never, only if timebar/horizontal colorbar hidden)"), MENU_DUMMY);
   }
   if(rotation_type==EYE_CENTERED){
     glutAddMenuEntry(_("Motion"), MENU_DUMMY);
