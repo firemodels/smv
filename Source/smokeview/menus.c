@@ -11691,7 +11691,7 @@ static int menu_count=0;
     glutAddMenuEntry(_("  0: reset animation to the initial time"), MENU_DUMMY);
     glutAddMenuEntry(_("  1-9: number of frames to skip"), MENU_DUMMY);
     glutAddMenuEntry(_("  a/ALT a: increase/decrease flow vector length by 1.5"), MENU_DUMMY);
-    glutAddMenuEntry(_("  H: toggle  visibility of slice and vector slice files"), MENU_DUMMY);
+    glutAddMenuEntry(_("  H: toggle  slice and vector slice visibility"), MENU_DUMMY);
     glutAddMenuEntry(_("  I: toggle  visibility of slices in blockages"), MENU_DUMMY);
     glutAddMenuEntry(_("  N: force bound update when loading files (assume fds is running)"), MENU_DUMMY);
     glutAddMenuEntry(_("  p,P: increment particle variable displayed"), MENU_DUMMY);
@@ -11757,13 +11757,13 @@ static int menu_count=0;
     glutAddMenuEntry(render_label, MENU_DUMMY);
   }
   glutAddMenuEntry("  ALT r: toggle research mode (global min/max for coloring data, turn off axis label smoothing)", MENU_DUMMY);
-  glutAddMenuEntry(_("  W: toggle clipping modes - ALT c to specify clipping planes"), MENU_DUMMY);
+  glutAddMenuEntry(_("  W: toggle clipping modes - use ALT c to specify clipping planes"), MENU_DUMMY);
   glutAddMenuEntry(_("  -/space bar: decrement/increment time step, 2D contour planes, 3D contour levels"), MENU_DUMMY);
   glutAddMenuEntry("", MENU_DUMMY);
   if(n_embedded_meshes > 0){
     glutAddMenuEntry(_("  ALT u: toggle coarse slice display in embedded mesh"), MENU_DUMMY);
   }
-  glutAddMenuEntry(_("  ALT v: toggle projection  method (between perspective and size preserving)"), MENU_DUMMY);
+  glutAddMenuEntry(_("  ALT v: toggle projection mode (perspective and size preserving)"), MENU_DUMMY);
   if(clip_commandline==1){
     glutAddMenuEntry(_("  x/y/z: toggle lower x/y/z clip planes"), MENU_DUMMY);
     glutAddMenuEntry(_("  X/Y/Z: toggle upper x/y/z clip planes"), MENU_DUMMY);
@@ -11781,7 +11781,7 @@ static int menu_count=0;
     glutAddMenuEntry(_("  =: toggle vertex selected in examine geometry dialog"), MENU_DUMMY);
     glutAddMenuEntry(_("  Z: toggle rotation center between FDS and FDS+GEOM center"), MENU_DUMMY);
   }
-  glutAddMenuEntry(_("  !: snap scene to closest 45 degree orientation"), MENU_DUMMY);
+  glutAddMenuEntry(_("  !: snap scene to closest 45 degree view direction"), MENU_DUMMY);
   glutAddMenuEntry(_("  ~: level the scene"),2);
   glutAddMenuEntry(_("  &&: toggle line anti-aliasing (draw lines smoothly)"), MENU_DUMMY);
   glutAddMenuEntry(_("  /: toggle parallel particle loading"), MENU_DUMMY);
