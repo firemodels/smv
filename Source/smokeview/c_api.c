@@ -1732,24 +1732,6 @@ void Unloadslice(int value) {
         }
       }
     }
-    else if (value == UNLOAD_LAST) {
-      int unload_index;
-
-      unload_index = LastSliceLoadstack();
-      if (unload_index >= 0 && unload_index < nsliceinfo) {
-        slicedata *slicei;
-
-        slicei = sliceinfo + unload_index;
-        if (slicei->slice_filetype == SLICE_GEOM) {
-          ReadGeomData(slicei->patchgeom, slicei, UNLOAD, ALL_FRAMES, NULL, 0,
-                       &errorcode);
-        }
-        else {
-          ReadSlice("", unload_index, ALL_FRAMES, NULL, UNLOAD, SET_SLICECOLOR,
-                    &errorcode);
-        }
-      }
-    }
   }
 }
 

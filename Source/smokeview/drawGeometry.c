@@ -5234,7 +5234,6 @@ void DrawFacesOLD(){
       glMaterialfv(GL_FRONT_AND_BACK,GL_SPECULAR,block_specular2);
       glEnable(GL_COLOR_MATERIAL);
     }
-    AntiAliasSurface(ON);
     glBegin(GL_TRIANGLES);
     for(j=0;j<nmeshes;j++){
       meshdata *meshi;
@@ -5298,7 +5297,6 @@ void DrawFacesOLD(){
       }
     }
     glEnd();
-    AntiAliasSurface(OFF);
     if(light_faces==1){
       glDisable(GL_COLOR_MATERIAL);
       DISABLE_LIGHTING;

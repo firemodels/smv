@@ -569,96 +569,6 @@ void DrawQuadVectorSlice(float *v1, float *v2, float *v3, float *v4, float del, 
   }
 }
 
-/* ------------------ PushSliceLoadstack ------------------------ */
-
-void PushSliceLoadstack(int sliceindex){
-  int i;
-
-  if(islice_loadstack < nslice_loadstack){
-    for(i = 0; i < islice_loadstack; i++){
-      if(slice_loadstack[i] == sliceindex)return;
-    }
-    slice_loadstack[islice_loadstack++] = sliceindex;
-  }
-}
-
-/* ------------------ RemoveSliceLoadstack ------------------------ */
-
-void RemoveSliceLoadstack(int sliceindex){
-  int i;
-
-  for(i = islice_loadstack - 1; i >= 0; i--){
-    if(slice_loadstack[i] == sliceindex){
-      int j;
-
-      for(j = i; j < islice_loadstack - 1; j++){
-        slice_loadstack[j] = slice_loadstack[j + 1];
-      }
-      islice_loadstack--;
-      break;
-    }
-  }
-}
-
-/* ------------------ LastSliceLoadstack ------------------------ */
-
-int LastSliceLoadstack(void){
-  int return_val;
-
-  if(islice_loadstack - 1 >= 0 && islice_loadstack - 1 < nslice_loadstack){
-    return_val = slice_loadstack[islice_loadstack - 1];
-  }
-  else{
-    return_val = -1;
-  }
-  return return_val;
-}
-
-/* ------------------ PushVSliceLoadstack ------------------------ */
-
-void PushVSliceLoadstack(int vsliceindex){
-  int i;
-
-  if(ivslice_loadstack < nvslice_loadstack){
-    for(i = 0; i < ivslice_loadstack; i++){
-      if(vslice_loadstack[i] == vsliceindex)return;
-    }
-    vslice_loadstack[ivslice_loadstack++] = vsliceindex;
-  }
-}
-
-/* ------------------ RemoveVSliceLoadstack ------------------------ */
-
-void RemoveVSliceLoadstack(int vsliceindex){
-  int i;
-
-  for(i = ivslice_loadstack - 1; i >= 0; i--){
-    if(vslice_loadstack[i] == vsliceindex){
-      int j;
-
-      for(j = i; j < ivslice_loadstack - 1; j++){
-        vslice_loadstack[j] = vslice_loadstack[j + 1];
-      }
-      ivslice_loadstack--;
-      break;
-    }
-  }
-}
-
-/* ------------------ LastVSliceLoadstack ------------------------ */
-
-int LastVSliceLoadstack(void){
-  int return_val;
-
-  if(ivslice_loadstack - 1 >= 0 && ivslice_loadstack - 1 < nvslice_loadstack){
-    return_val = vslice_loadstack[ivslice_loadstack - 1];
-  }
-  else{
-    return_val = -1;
-  }
-  return return_val;
-}
-
 /* ------------------ OutSlicefile ------------------------ */
 
 void OutSlicefile(slicedata *sd){
@@ -1341,7 +1251,6 @@ FILE_SIZE ReadVSlice(int ivslice, int time_frame, float *time_value, int flag, i
       val->display=display;
       val->vloaded=0;
     }
-    RemoveVSliceLoadstack(ivslice);
     vd->loaded=0;
     vd->display=0;
     showvslice=0;
@@ -1542,8 +1451,6 @@ FILE_SIZE ReadVSlice(int ivslice, int time_frame, float *time_value, int flag, i
       }
     }
   }
-  PushVSliceLoadstack(ivslice);
-
   PrintMemoryInfo;
   if(finalize==1){
     updatemenu = 1;
@@ -2796,14 +2703,10 @@ void UpdateFedinfo(sliceparmdata *sp){
     ResizeMemory((void **)&vsliceinfo, 3 * sp->nsliceinfo * sizeof(vslicedata));
     ResizeMemory((void **)&sliceinfo, sp->nsliceinfo * sizeof(slicedata));
     ResizeMemory((void **)&fedinfo, sp->nsliceinfo * sizeof(feddata));
-    ResizeMemory((void **)&slice_loadstack, sp->nsliceinfo * sizeof(int));
-    ResizeMemory((void **)&vslice_loadstack, sp->nsliceinfo * sizeof(int));
     ResizeMemory((void **)&subslice_menuindex, sp->nsliceinfo * sizeof(int));
     ResizeMemory((void **)&msubslice_menuindex, sp->nsliceinfo*sizeof(int));
     ResizeMemory((void **)&subvslice_menuindex, sp->nsliceinfo * sizeof(int));
     ResizeMemory((void **)&msubvslice_menuindex, sp->nsliceinfo*sizeof(int));
-    ResizeMemory((void **)&mslice_loadstack, sp->nsliceinfo * sizeof(int));
-    ResizeMemory((void **)&mvslice_loadstack, sp->nsliceinfo * sizeof(int));
     if(sp->nfediso > 0){
       nisoinfo += sp->nfediso;
       if(nisoinfo == sp->nfediso){
@@ -4788,7 +4691,6 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
       }
       UpdateUnitDefs();
       update_times = 1;
-      RemoveSliceLoadstack(slicefilenumber);
       PrintMemoryInfo;
       return 0;
     }
@@ -5202,8 +5104,6 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
       }
     }
   }
-  PushSliceLoadstack(slicefilenumber);
-
   if(sd->volslice == 1){
     meshdata *meshj;
 
