@@ -2032,12 +2032,6 @@ void Keyboard(unsigned char key, int flag){
         if(visTimebar==1)PRINTF("Time bar visible\n");
       }
       break;
-    case 'l':
-      LoadUnloadMenu(RELOADALL);
-      break;
-    case 'L':
-      UnloadSliceMenu(UNLOAD_LAST);
-      break;
     case 'm':
       switch(keystate){
       case GLUT_ACTIVE_ALT:
@@ -2754,52 +2748,6 @@ void Keyboard(unsigned char key, int flag){
     case '?':
       vector_debug = 1 - vector_debug;
       break;
-    case ':':
-      timebar_overlap++;
-      if (timebar_overlap > 2)timebar_overlap = 0;
-      GLUIUpdateTimebarOverlap();
-      printf("overlap time/colorbar region: ");
-      switch(timebar_overlap){
-      case 0:
-        printf("always\n");
-        break;
-      case 1:
-        printf("never\n");
-        break;
-      case 2:
-        printf("only if time/colorbar hidden\n");
-        break;
-      default:
-        assert(FFALSE);
-        break;
-      }
-      break;
- //    vis_colorbar                       state
- //    0/COLORBAR_HIDDEN                  hidden
- //    1/COLORBAR_SHOW_VERTICAL           vertical
- //    2->max/COLORBAR_SHOW_HORIZONTAL    horizontal
-    case ',':
-      {
-        int maxtoggle;
-
-        maxtoggle = MAX(3, 2 + CountColorbars());
-        vis_colorbar++;
-        if(vis_colorbar>= maxtoggle)vis_colorbar = 0;
-        if(vis_colorbar== COLORBAR_HIDDEN) {
-          visColorbarVertical = 0;
-          visColorbarHorizontal = 0;
-        }
-        else if(vis_colorbar== COLORBAR_SHOW_VERTICAL) {
-          visColorbarVertical = 1;
-          visColorbarHorizontal = 0;
-        }
-        else {
-          visColorbarVertical = 0;
-          visColorbarHorizontal = 1;
-        }
-      }
-      updatemenu = 1;
-      break;
     case '<':
       if(keystate == GLUT_ACTIVE_ALT){
         colorbartype--;
@@ -2860,14 +2808,15 @@ void Keyboard(unsigned char key, int flag){
           trainer_mode = 0;
           GLUIHideTrainer();
         }
-        break;
       }
-      force_alpha_opaque = 1 - force_alpha_opaque;
-      if(force_alpha_opaque == 1)printf("force smoke/fire opaqueness: yes\n");
-      if(force_alpha_opaque == 0)printf("force smoke/fire opaqueness: no\n");
-      update_smoke_alphas = 1;
-      GLUIForceAlphaOpaque();
-      GLUTPOSTREDISPLAY;
+      else{
+        force_alpha_opaque = 1 - force_alpha_opaque;
+        if(force_alpha_opaque == 1)printf("force smoke/fire opaqueness: yes\n");
+        if(force_alpha_opaque == 0)printf("force smoke/fire opaqueness: no\n");
+        update_smoke_alphas = 1;
+        GLUIForceAlphaOpaque();
+        GLUTPOSTREDISPLAY;
+      }
       break;
     case '%':
       script_step=1-script_step;

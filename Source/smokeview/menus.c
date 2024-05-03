@@ -26,6 +26,8 @@ float     part_load_time;
 #include <direct.h>
 #endif
 
+#define ABOUT_DATA_TRANSFER_TEST      2
+
 #define GEOM_Vents                   15
 #define GEOM_Compartments            16
 #define GEOM_Outline                  3
@@ -3038,13 +3040,13 @@ void OutputTimingStats(int i, float timer, char *label){
 
   rate = (float)i * (float)GIGA * (float)8 / timer;
   if(rate > (float)GIGA){
-    printf("%s stats: time: %f s, rate: %f Gb/s\n", label, timer, rate / (float)GIGA);
+    printf("%s stats: time: %.2f s, rate: %.2f Gb/s\n", label, timer, rate / (float)GIGA);
   }
   else if(rate > (float)MEGA){
-    printf("%s stats: time: %f s, rate: %f Mb/s\n", label, timer, rate/(float)MEGA);
+    printf("%s stats: time: %.2f s, rate: %.2f Mb/s\n", label, timer, rate/(float)MEGA);
   }
   else{
-    printf("%s stats: time: %f s, rate: %f b/s\n",  label, timer, rate);
+    printf("%s stats: time: %.2f s, rate: %.2f b/s\n",  label, timer, rate);
   }
 }
 
@@ -3114,7 +3116,7 @@ void MemoryTest(void){
 /* ------------------ AboutMenu ------------------------ */
 
 void AboutMenu(int value){
-  if(value == 2)MemoryTest();
+  if(value == ABOUT_DATA_TRANSFER_TEST)MemoryTest();
 }
 
 /* ------------------ LoadVolsmoke3DMenu ------------------------ */
@@ -4354,12 +4356,7 @@ void UnloadVSliceMenu(int value){
     }
   }
   else if(value==-2){
-    int unload_index;
-
-    unload_index=LastVSliceLoadstack();
-    if(unload_index>=0&&unload_index<nvsliceinfo){
-      ReadVSlice(unload_index,ALL_FRAMES, NULL, UNLOAD, SET_SLICECOLOR, &errorcode);
-    }
+    assert(0);
   }
 }
 
@@ -4556,22 +4553,6 @@ void UnloadSliceMenu(int value){
         patchi = patchinfo + i;
         if(patchi->filetype_label!=NULL&&strcmp(patchi->filetype_label, "INCLUDE_GEOM")==0){
           UnloadBoundaryMenu(i);
-        }
-      }
-    }
-    else if(value==UNLOAD_LAST){
-      int unload_index;
-
-      unload_index=LastSliceLoadstack();
-      if(unload_index>=0&&unload_index<nsliceinfo){
-        slicedata *slicei;
-
-        slicei = sliceinfo+unload_index;
-        if(slicei->slice_filetype==SLICE_GEOM){
-          ReadGeomData(slicei->patchgeom, slicei, UNLOAD, ALL_FRAMES, NULL, 0, &errorcode);
-        }
-        else{
-          ReadSlice("", unload_index, ALL_FRAMES, NULL, UNLOAD, SET_SLICECOLOR, &errorcode);
         }
       }
     }
@@ -7835,7 +7816,6 @@ void InitUnloadSliceMenu(int *unloadslicemenuptr){
   }
 
   glutAddMenuEntry("-",MENU_DUMMY);
-  glutAddMenuEntry(_("Unload last"),UNLOAD_LAST);
   glutAddMenuEntry(_("Unload all"), UNLOAD_ALL);
 }
 
@@ -11668,7 +11648,7 @@ static int menu_count=0;
     glutAddMenuEntry("  Platform: LINUX64", 1);
 #endif
     GLUTADDSUBMENU(_("Disclaimer"),disclaimermenu);
-    glutAddMenuEntry("Data transfer test", 2);
+    glutAddMenuEntry("Data transfer test", ABOUT_DATA_TRANSFER_TEST);
   }
 
   /* --------------------------------web help menu -------------------------- */
@@ -11710,22 +11690,21 @@ static int menu_count=0;
     glutAddMenuEntry(_("Animation"),MENU_DUMMY);
     glutAddMenuEntry(_("  0: reset animation to the initial time"), MENU_DUMMY);
     glutAddMenuEntry(_("  1-9: number of frames to skip"), MENU_DUMMY);
+    glutAddMenuEntry(_("  a/ALT a: increase/decrease flow vector length by 1.5"), MENU_DUMMY);
     glutAddMenuEntry(_("  H: toggle  visibility of slice and vector slice files"), MENU_DUMMY);
     glutAddMenuEntry(_("  I: toggle  visibility of slices in blockages"), MENU_DUMMY);
-    glutAddMenuEntry(_("  L: unload last slice file loaded"), MENU_DUMMY);
     glutAddMenuEntry(_("  N: force bound update when loading files (assume fds is running)"), MENU_DUMMY);
     glutAddMenuEntry(_("  p,P: increment particle variable displayed"), MENU_DUMMY);
+    glutAddMenuEntry(_("  s,S: increase/decrease interval between adjacent vectors"), MENU_DUMMY);
     glutAddMenuEntry(_("  t: set/unset single time step mode"), MENU_DUMMY);
     glutAddMenuEntry(_("  T: time display between 'Time s' and 'h:m:s'"), MENU_DUMMY);
     if(cellcenter_slice_active==1){
       glutAddMenuEntry(_("     (also, toggles cell center display on/off)"), MENU_DUMMY);
       glutAddMenuEntry(_("  @: display FDS values in cell centered slices"), MENU_DUMMY);
     }
-    glutAddMenuEntry("  ALT $: force 3D smoke/fire to be opaque", MENU_DUMMY);
+    glutAddMenuEntry("  $: force 3D smoke/fire to be opaque", MENU_DUMMY);
     glutAddMenuEntry(_("  u: reload files"), MENU_DUMMY);
     glutAddMenuEntry(_("  [,]: decrease/increase particle size"), MENU_DUMMY);
-    glutAddMenuEntry(_("  ,: toggle colorbar display (vertical, horizontal, hidden)"), MENU_DUMMY);
-    glutAddMenuEntry(_("  :: toggle timebar region overlap (always, never, only if timebar/horizontal colorbar hidden)"), MENU_DUMMY);
   }
   if(rotation_type==EYE_CENTERED){
     glutAddMenuEntry(_("Motion"), MENU_DUMMY);
@@ -11743,17 +11722,16 @@ static int menu_count=0;
     glutAddMenuEntry(_("  c: toggle between continuous and 2D stepped contours"), MENU_DUMMY);
     glutAddMenuEntry(_("  i: toggle iso-surface visibility"), MENU_DUMMY);
     glutAddMenuEntry(_("  p,P: increment plot3d variable displayed"), MENU_DUMMY);
-    glutAddMenuEntry(_("  s: change interval between adjacent vectors"), MENU_DUMMY);
+    glutAddMenuEntry(_("  s,S: increase/decrease interval between adjacent vectors"), MENU_DUMMY);
     glutAddMenuEntry(_("  v: toggle flow vector visiblity"), MENU_DUMMY);
     glutAddMenuEntry(_("  x,y,z: toggle contour plot visibility along x, y and z axis"), MENU_DUMMY);
-    glutAddMenuEntry(_("  {: load previous time Plot3D files"), MENU_DUMMY);
-    glutAddMenuEntry(_("  }: load next time Plot3D files"), MENU_DUMMY);
+    glutAddMenuEntry(_("  {,}: load previous/next time Plot3D files"), MENU_DUMMY);
   }
   glutAddMenuEntry(_("Misc"), MENU_DUMMY);
   glutAddMenuEntry(_("  A: toggle between plot types (device and HRRPUV)"), MENU_DUMMY);
   glutAddMenuEntry(_("  e: toggle between view rotation types: scene centered 2 axis, 1 axis, 3 axis and eye centered"), MENU_DUMMY);
   if(ntotal_blockages>0||isZoneFireModel==1){
-    glutAddMenuEntry(_("  g: toggle grid visibility"), MENU_DUMMY);
+    glutAddMenuEntry(_("  g: toggle grid visibility modes"), MENU_DUMMY);
   }
   if(ndeviceinfo > 0 && GetNumActiveDevices() > 0){
     glutAddMenuEntry("  j/ALT j: increase/decrease object size", MENU_DUMMY);
@@ -11764,7 +11742,7 @@ static int menu_count=0;
   glutAddMenuEntry(_("  M: toggle command line clipping"), MENU_DUMMY);
   if(ntotal_blockages > 0){
     glutAddMenuEntry(_("  O: toggle blockage view (normal <--> outline)"), MENU_DUMMY);
-    glutAddMenuEntry(_("  ALT o: cycle between all blockage view types"), MENU_DUMMY);
+    glutAddMenuEntry(_("  ALT o: cycle between blockage view types"), MENU_DUMMY);
   }
   glutAddMenuEntry(_("  q: display blockage locations as specified by user or by FDS"), MENU_DUMMY);
   glutAddMenuEntry(_("  r/R: render the current scene to an image file"), MENU_DUMMY);
@@ -11789,9 +11767,6 @@ static int menu_count=0;
   if(clip_commandline==1){
     glutAddMenuEntry(_("  x/y/z: toggle lower x/y/z clip planes"), MENU_DUMMY);
     glutAddMenuEntry(_("  X/Y/Z: toggle upper x/y/z clip planes"), MENU_DUMMY);
-  }
-  if(cellcenter_slice_active==1){
-    glutAddMenuEntry(_("  ALT y: if current slice is cell centered, toggle interpolation on/off"), MENU_DUMMY);
   }
   if(caseini_filename!=NULL&&strlen(caseini_filename)>0){
     char inilabel[512];
