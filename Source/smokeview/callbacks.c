@@ -2854,14 +2854,15 @@ void Keyboard(unsigned char key, int flag){
           trainer_mode = 0;
           GLUIHideTrainer();
         }
-        break;
       }
-      force_alpha_opaque = 1 - force_alpha_opaque;
-      if(force_alpha_opaque == 1)printf("force smoke/fire opaqueness: yes\n");
-      if(force_alpha_opaque == 0)printf("force smoke/fire opaqueness: no\n");
-      update_smoke_alphas = 1;
-      GLUIForceAlphaOpaque();
-      GLUTPOSTREDISPLAY;
+      else{
+        force_alpha_opaque = 1 - force_alpha_opaque;
+        if(force_alpha_opaque == 1)printf("force smoke/fire opaqueness: yes\n");
+        if(force_alpha_opaque == 0)printf("force smoke/fire opaqueness: no\n");
+        update_smoke_alphas = 1;
+        GLUIForceAlphaOpaque();
+        GLUTPOSTREDISPLAY;
+      }
       break;
     case '%':
       script_step=1-script_step;
