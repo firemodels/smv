@@ -7,7 +7,6 @@
 #include <sys/stat.h>
 #include GLUT_H
 
-
 #include "string_util.h"
 #include "smokeviewvars.h"
 #include "command_args.h"
