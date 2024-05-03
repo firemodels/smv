@@ -11757,7 +11757,7 @@ static int menu_count=0;
     glutAddMenuEntry(render_label, MENU_DUMMY);
   }
   glutAddMenuEntry("  ALT r: toggle research mode (global min/max for coloring data, turn off axis label smoothing)", MENU_DUMMY);
-  glutAddMenuEntry(_("  W: toggle clipping modes - use Options/Clip menu to specify clipping planes"), MENU_DUMMY);
+  glutAddMenuEntry(_("  W: toggle clipping modes - ALT c to specify clipping planes"), MENU_DUMMY);
   glutAddMenuEntry(_("  -/space bar: decrement/increment time step, 2D contour planes, 3D contour levels"), MENU_DUMMY);
   glutAddMenuEntry("", MENU_DUMMY);
   if(n_embedded_meshes > 0){
