@@ -2032,10 +2032,6 @@ void Keyboard(unsigned char key, int flag){
         if(visTimebar==1)PRINTF("Time bar visible\n");
       }
       break;
-    case 'l':
-    case 'L':
-      LoadUnloadMenu(RELOADALL);
-      break;
     case 'm':
       switch(keystate){
       case GLUT_ACTIVE_ALT:
