@@ -11721,8 +11721,7 @@ static int menu_count=0;
     glutAddMenuEntry(_("  s: change interval between adjacent vectors"), MENU_DUMMY);
     glutAddMenuEntry(_("  v: toggle flow vector visiblity"), MENU_DUMMY);
     glutAddMenuEntry(_("  x,y,z: toggle contour plot visibility along x, y and z axis"), MENU_DUMMY);
-    glutAddMenuEntry(_("  {: load previous time Plot3D files"), MENU_DUMMY);
-    glutAddMenuEntry(_("  }: load next time Plot3D files"), MENU_DUMMY);
+    glutAddMenuEntry(_("  {,}: load previous/next time Plot3D files"), MENU_DUMMY);
   }
   glutAddMenuEntry(_("Misc"), MENU_DUMMY);
   glutAddMenuEntry(_("  A: toggle between plot types (device and HRRPUV)"), MENU_DUMMY);
