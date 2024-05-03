@@ -1003,7 +1003,6 @@ EXTERNCPP void TransparentOn(void);
 EXTERNCPP void GetObstLabels(const char *filein);
 EXTERNCPP void UpdateUseTextures(void);
 EXTERNCPP void AntiAliasLine(int flag);
-EXTERNCPP void AntiAliasSurface(int flag);
 EXTERNCPP void SliceBounds2Glui(int slicefile_labelindex);
 EXTERNCPP void GLUI2GlobalBoundaryBounds(const char *key);
 EXTERNCPP void Global2GLUIBoundaryBounds(const char *key);
