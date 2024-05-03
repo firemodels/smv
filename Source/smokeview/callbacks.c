@@ -2033,10 +2033,8 @@ void Keyboard(unsigned char key, int flag){
       }
       break;
     case 'l':
-      LoadUnloadMenu(RELOADALL);
-      break;
     case 'L':
-      UnloadSliceMenu(UNLOAD_LAST);
+      LoadUnloadMenu(RELOADALL);
       break;
     case 'm':
       switch(keystate){

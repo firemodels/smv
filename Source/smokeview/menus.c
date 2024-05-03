@@ -4354,12 +4354,7 @@ void UnloadVSliceMenu(int value){
     }
   }
   else if(value==-2){
-    int unload_index;
-
-    unload_index=LastVSliceLoadstack();
-    if(unload_index>=0&&unload_index<nvsliceinfo){
-      ReadVSlice(unload_index,ALL_FRAMES, NULL, UNLOAD, SET_SLICECOLOR, &errorcode);
-    }
+    assert(0);
   }
 }
 
@@ -4556,22 +4551,6 @@ void UnloadSliceMenu(int value){
         patchi = patchinfo + i;
         if(patchi->filetype_label!=NULL&&strcmp(patchi->filetype_label, "INCLUDE_GEOM")==0){
           UnloadBoundaryMenu(i);
-        }
-      }
-    }
-    else if(value==UNLOAD_LAST){
-      int unload_index;
-
-      unload_index=LastSliceLoadstack();
-      if(unload_index>=0&&unload_index<nsliceinfo){
-        slicedata *slicei;
-
-        slicei = sliceinfo+unload_index;
-        if(slicei->slice_filetype==SLICE_GEOM){
-          ReadGeomData(slicei->patchgeom, slicei, UNLOAD, ALL_FRAMES, NULL, 0, &errorcode);
-        }
-        else{
-          ReadSlice("", unload_index, ALL_FRAMES, NULL, UNLOAD, SET_SLICECOLOR, &errorcode);
         }
       }
     }
@@ -7835,7 +7814,6 @@ void InitUnloadSliceMenu(int *unloadslicemenuptr){
   }
 
   glutAddMenuEntry("-",MENU_DUMMY);
-  glutAddMenuEntry(_("Unload last"),UNLOAD_LAST);
   glutAddMenuEntry(_("Unload all"), UNLOAD_ALL);
 }
 
@@ -11712,7 +11690,6 @@ static int menu_count=0;
     glutAddMenuEntry(_("  1-9: number of frames to skip"), MENU_DUMMY);
     glutAddMenuEntry(_("  H: toggle  visibility of slice and vector slice files"), MENU_DUMMY);
     glutAddMenuEntry(_("  I: toggle  visibility of slices in blockages"), MENU_DUMMY);
-    glutAddMenuEntry(_("  L: unload last slice file loaded"), MENU_DUMMY);
     glutAddMenuEntry(_("  N: force bound update when loading files (assume fds is running)"), MENU_DUMMY);
     glutAddMenuEntry(_("  p,P: increment particle variable displayed"), MENU_DUMMY);
     glutAddMenuEntry(_("  t: set/unset single time step mode"), MENU_DUMMY);

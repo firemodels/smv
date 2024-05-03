@@ -700,8 +700,6 @@ EXTERNCPP void SortIsoTriangles(float *mm);
 EXTERNCPP void UpdateIsoTriangles(int flag);
 EXTERNCPP void UpdateSliceMenuShow(sliceparmdata *sp);
 EXTERNCPP void UpdateHideBoundarySurface(void);
-EXTERNCPP int  LastSliceLoadstack(void);
-EXTERNCPP int  LastVSliceLoadstack(void);
 EXTERNCPP void UpdateDefer(void);
 EXTERNCPP void SetTimeVal(float timeval);
 EXTERNCPP void GetIndepVarIndices(sv_object *smv_object,char **var_indep_strings, int nvars_indep,int *index);

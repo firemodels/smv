@@ -7830,25 +7830,13 @@ int ReadSMV_Parse(bufferstreamdata *stream) {
        NewMemory((void **)&sliceinfo,            nsliceinfo*sizeof(slicedata))==0     ||
        NewMemory((void **)&sliceinfoptrs,        nsliceinfo*sizeof(slicedata *)) == 0 ||
        NewMemory((void **)&fedinfo,              nsliceinfo*sizeof(feddata)) == 0     ||
-       NewMemory((void **)&slice_loadstack,      nsliceinfo*sizeof(int))==0           ||
-       NewMemory((void **)&vslice_loadstack,     nsliceinfo*sizeof(int))==0           ||
        NewMemory((void **)&subslice_menuindex,   nsliceinfo*sizeof(int))==0           ||
        NewMemory((void **)&msubslice_menuindex,  nsliceinfo*sizeof(int))==0           ||
        NewMemory((void **)&subvslice_menuindex,  nsliceinfo*sizeof(int))==0           ||
-       NewMemory((void **)&msubvslice_menuindex, nsliceinfo*sizeof(int))==0           ||
-       NewMemory((void **)&mslice_loadstack,     nsliceinfo*sizeof(int))==0           ||
-       NewMemory((void **)&mvslice_loadstack,    nsliceinfo*sizeof(int))==0){
+       NewMemory((void **)&msubvslice_menuindex, nsliceinfo*sizeof(int))==0){
        return 2;
     }
     sliceinfo_copy=sliceinfo;
-    nslice_loadstack=nsliceinfo;
-    islice_loadstack=0;
-    nvslice_loadstack=nsliceinfo;
-    ivslice_loadstack=0;
-    nmslice_loadstack=nsliceinfo;
-    imslice_loadstack=0;
-    nmvslice_loadstack=nsliceinfo;
-    imvslice_loadstack=0;
   }
   if(nsmoke3dinfo>0){
     if(NewMemory( (void **)&smoke3dinfo, nsmoke3dinfo*sizeof(smoke3ddata))==0)return 2;
