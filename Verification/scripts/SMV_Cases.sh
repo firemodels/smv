@@ -1,10 +1,8 @@
 #!/bin/bash
 
-# add -A to any case that you wish to be a part of the benchmark timing suite
-
-$QFDS -d Visualization -t -A mplume5c8_bench.fds
-$QFDS -d Visualization -t -A plume5c_bench.fds
-$QFDS -p 2 -d Visualization -t -A thouse5_bench.fds
+$QFDS -d Visualization -t mplume5c8_bench.fds
+$QFDS -d Visualization -t plume5c_bench.fds
+$QFDS -p 2 -d Visualization -t thouse5_bench.fds
 
 $QFDS -d Visualization boundtest.fds
 $QFDS -d Visualization cell_test.fds
