@@ -4,7 +4,7 @@
 # For conditions of distribution and use, see copyright notice in png.h
 
 SIZE=-m32
-COMPILER=icc
+COMPILER=icx
 CC=$(COMPILER) $(SIZE)
 
 FILTERC=-Wno-implicit-int -Wno-implicit-function-declaration -Wint-to-pointer-cast
