@@ -1,10 +1,8 @@
 #!/bin/bash
 
-# add -A to any case that you wish to be a part of the benchmark timing suite
-
-$QFDS -d Visualization -t -A mplume5c8_bench.fds
-$QFDS -d Visualization -t -A plume5c_bench.fds
-$QFDS -p 2 -d Visualization -t -A thouse5_bench.fds
+$QFDS -d Visualization -t mplume5c8_bench.fds
+$QFDS -d Visualization -t plume5c_bench.fds
+$QFDS -d Visualization -p 2 -t thouse5_bench.fds
 
 $QFDS -d Visualization boundtest.fds
 $QFDS -d Visualization cell_test.fds
@@ -43,18 +41,18 @@ $QFDS -d Visualization smokex080.fds
 $QFDS -d Visualization smokex160.fds
 $QFDS -d Visualization smoke_test_geom.fds
 $QFDS -d Visualization sprinkler_many.fds
-$QFDS -p 6 -d Visualization sphere_propaneu.fds
-$QFDS -p 6 -d Visualization sphere_propanec.fds
+$QFDS -d Visualization -p 6 sphere_propaneu.fds
+$QFDS -d Visualization -p 6 sphere_propanec.fds
 $QFDS -d Visualization testsort.fds
-$QFDS -p 2 -d Visualization thouse5.fds
-$QFDS -p 2 -d Visualization thouse5delta.fds
+$QFDS -d Visualization -p 2 thouse5.fds
+$QFDS -d Visualization -p 2 thouse5delta.fds
 $QFDS -d Visualization tour.fds
 $QFDS -d Visualization transparency.fds
 $QFDS -d Visualization vcirctest.fds
 $QFDS -d Visualization vcirctest2.fds
-$QFDS -p 3 -d Visualization vectorskipx.fds
-$QFDS -p 3 -d Visualization vectorskipy.fds
-$QFDS -p 3 -d Visualization vectorskipz.fds
+$QFDS -d Visualization -p 3 vectorskipx.fds
+$QFDS -d Visualization -p 3 vectorskipy.fds
+$QFDS -d Visualization -p 3 vectorskipz.fds
 $QFDS -d Visualization version.fds
 $QFDS -d Visualization version2.fds
 $QFDS -d Visualization windrose.fds
