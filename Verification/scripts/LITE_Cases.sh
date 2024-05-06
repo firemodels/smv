@@ -3,6 +3,7 @@
 $QFDS -d Visualization plume5c.fds
 $QFDS -p 2 -d Visualization thouse5.fds
 $QFDS -d Visualization cell_test.fds
+$QFDS -d Visualization fed_test.fds
 $QFDS -d Visualization smokex010.fds
 $QFDS -d Visualization smokex020.fds
 $QFDS -d Visualization smokex040.fds
