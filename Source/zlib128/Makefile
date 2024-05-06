@@ -12,7 +12,7 @@
 # To install in $HOME instead of /usr/local, use:
 #    make install prefix=$HOME
 
-COMPILER=icc
+COMPILER=icx
 SIZE=-m64
 CC=$(COMPILER)
 

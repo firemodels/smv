@@ -1,4 +1,4 @@
-COMPILER=icc
+COMPILER=icx
 SIZE=-m64
 CC=$(COMPILER) $(SIZE)
 

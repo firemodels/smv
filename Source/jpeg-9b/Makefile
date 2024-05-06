@@ -9,7 +9,7 @@
 srcdir = .
 
 # The name of your C compiler:
-COMPILER=icc
+COMPILER=icx
 SIZE=-m32
 CC=$(COMPILER) $(SIZE)
 
