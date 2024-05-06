@@ -587,15 +587,20 @@ colorbardata *GetColorbar(char *menu_label){
 /* ------------------ UpdateCurrentColorbar ------------------------ */
 #define FILE_UPDATE 6
 void UpdateCurrentColorbar(colorbardata *cb){
-  int jj=0,fed_loaded=0;
+  int jj = 0;
+#ifdef pp_FED
+  int fed_loaded = 0;
+#endif
 
   current_colorbar = cb;
+#ifdef pp_FED
   if(current_colorbar != NULL&&strcmp(current_colorbar->menu_label, "FED") == 0){
     is_fed_colorbar = 1;
   }
   else{
     is_fed_colorbar = 0;
   }
+#endif
   for(jj=0;jj<nslice_loaded;jj++){
     slicedata *slicej;
     int j;
@@ -603,12 +608,16 @@ void UpdateCurrentColorbar(colorbardata *cb){
     j = slice_loaded_list[jj];
     slicej = sliceinfo + j;
     if(slicej->display==0)continue;
+#ifdef pp_FED
     if(slicej->is_fed==1){
       fed_loaded=1;
       break;
     }
+#endif
   }
+#ifdef pp_FED
   if(is_fed_colorbar==1&&fed_loaded==1)GLUISliceBoundCB(FILE_UPDATE);
+#endif
 }
 
 /* ------------------ AdjustColorBar ------------------------ */
@@ -2475,7 +2484,9 @@ void DrawHorizontalColorbarRegLabels(void){
   int type_label_left, type_label_down;
   int axis_label_left, axis_label_down;
 
+#ifdef pp_FED
   int fed_slice = 0;
+#endif
 
   GLfloat *foreground_color, *red_color;
 
@@ -2495,6 +2506,7 @@ void DrawHorizontalColorbarRegLabels(void){
   axis_label_left = -colorbar_label_width/4;
   axis_label_down = hcolorbar_down_pos-(VP_vcolorbar.text_height + v_space);
 
+#ifdef pp_FED
   if(showiso_colorbar==1||
     (showsmoke == 1 && parttype != 0) || show_slice_colorbar_local == 1 ||
     (showpatch == 1 && wall_cell_color_flag == 0) ||
@@ -2516,6 +2528,7 @@ void DrawHorizontalColorbarRegLabels(void){
       }
     }
   }
+#endif
 
   // -------------- particle file top labels ------------
 
@@ -2832,6 +2845,7 @@ void DrawHorizontalColorbarRegLabels(void){
       iposition = MIX2(global_colorbar_index, 255, nrgb - 1, 0);
       OutputBarText(horiz_position, 0.0, red_color, slicecolorlabel_ptr);
     }
+#ifdef pp_FED
     if(fed_slice == 1){
       for(i = 0; i < nrgb - 1; i++){
         float horiz_position;
@@ -2849,7 +2863,9 @@ void DrawHorizontalColorbarRegLabels(void){
         OutputBarText(horiz_position, 0.0, foreground_color, "3.00");
       }
     }
-    else{
+    else
+#endif
+    {
       for(i = 0; i < nrgb - 1; i++){
         float horiz_position;
         char slicecolorlabel[256];
@@ -3085,7 +3101,9 @@ void DrawVerticalColorbarRegLabels(void){
   float *partfactor = NULL;
   int dohist = 0;
 
+#ifdef pp_FED
   int fed_slice = 0;
+#endif
   float colorbar_max, colorbar_eps;
 
   GLfloat *foreground_color, *red_color;
@@ -3124,6 +3142,7 @@ void DrawVerticalColorbarRegLabels(void){
 
   foreground_color = &(foregroundcolor[0]);
   red_color = &(redcolor[0]);
+#ifdef pp_FED
   if(showiso_colorbar == 1 ||
     (showsmoke == 1 && parttype != 0) || show_slice_colorbar_local == 1 ||
     (showpatch == 1 && wall_cell_color_flag == 0) ||
@@ -3148,6 +3167,7 @@ void DrawVerticalColorbarRegLabels(void){
       }
     }
   }
+#endif
 
   // -------------- isosurface left labels ------------
 
@@ -3378,6 +3398,7 @@ void DrawVerticalColorbarRegLabels(void){
       iposition = MIX2(shifted_colorbar_index, 255, nrgb - 1, 0);
       OutputBarText(0.0, vert_position, red_color, slicecolorlabel_ptr);
     }
+#ifdef pp_FED
     if(fed_slice == 1){
       for(i = 0; i < nrgb - 1; i++){
         float vert_position;
@@ -3395,7 +3416,9 @@ void DrawVerticalColorbarRegLabels(void){
         OutputBarText(0.0, vert_position, foreground_color, "3.00");
       }
     }
-    else{
+    else
+#endif
+    {
       float valmin, valmax;
 
 

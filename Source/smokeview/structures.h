@@ -17,8 +17,10 @@ typedef struct _sliceparmdata {
   int nvsliceinfo;
   int nmultisliceinfo;
   int nmultivsliceinfo;
+#ifdef pp_FED
   int nfedinfo;
   int nfediso;
+#endif
 } sliceparmdata;
 
 /* --------------------------  circdata ------------------------------------ */
@@ -605,13 +607,14 @@ typedef struct _tickdata {
 } tickdata;
 
 /* --------------------------  feddata ------------------------------------ */
-
+#ifdef pp_FED
 typedef struct _feddata {
   struct _slicedata *co,*co2,*o2,*fed_slice;
   struct _isodata *fed_iso;
   int co_index, co2_index, o2_index, fed_index;
   int loaded,display;
 } feddata;
+#endif
 
 /* --------------------------  isodata ------------------------------------ */
 
@@ -627,8 +630,10 @@ typedef struct _isodata {
   int nnormaltable;
   char *file,*tfile;
   int dataflag,geomflag,get_isolevels;
+#ifdef pp_FED
   int is_fed;
   feddata *fedptr;
+#endif
   int type;
   int firstshort_iso;
   flowlabels surface_label, color_label;
@@ -1403,8 +1408,10 @@ typedef struct _slicedata {
   int ncompressed;
   int slice_filetype;
   struct _multislicedata *mslice;
+#ifdef pp_FED
   int is_fed;
   feddata *fedptr;
+#endif
   int menu_show;
   float *constant_color;
   float qval256[256];

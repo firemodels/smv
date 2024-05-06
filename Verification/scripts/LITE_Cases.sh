@@ -1,8 +1,12 @@
 #!/bin/bash
+FED=1
 
 $QFDS -d Visualization plume5c.fds
 $QFDS -p 2 -d Visualization thouse5.fds
 $QFDS -d Visualization cell_test.fds
+if [ "$FED" != "" ]; then
+  $QFDS -d Visualization fed_test.fds
+fi
 $QFDS -d Visualization smokex010.fds
 $QFDS -d Visualization smokex020.fds
 $QFDS -d Visualization smokex040.fds
@@ -10,7 +14,6 @@ $QFDS -d Visualization smokex080.fds
 $QFDS -d Visualization smokex160.fds
 $QFDS -d Visualization colorbar.fds
 $QFDS -d Visualization smoke_test2.fds
-$QFDS -d Visualization fed_test.fds
 $QFDS -d Visualization part_color.fds
 $QFDS -d Visualization slicemask.fds
 $QFDS -d Visualization smoke_sensor.fds

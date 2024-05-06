@@ -86,7 +86,9 @@ void Usage(char *prog,int option){
     PRINTF("%s\n", _(" -fast          - assume slice files exist in order to reduce startup time,"));
     PRINTF("%s\n", _("                  don't compute blanking arrays"));
     PRINTF("%s\n", _(" -full          - full startup - check if files exist"));
+#ifdef pp_FED
     PRINTF("%s\n", _(" -fed           - pre-calculate all FED slice files"));
+#endif
     PRINTF("%s\n", _(" -geominfo      - output information about geometry triangles"));
     PRINTF("%s\n", _(" -info            generate casename.slcf and casename.viewpoint files containing slice file and viewpiont info"));
     PRINTF("%s\n", _(" -lang xx       - where xx is de, es, fr, it for German, Spanish, French or Italian"));
@@ -412,11 +414,13 @@ char *ProcessCommandLine(CommandlineArgs *args) {
     STRCAT(ffmpeg_command_filename,".sh");
 #endif
   }
+#ifdef pp_FED
   if(fed_filename == NULL){
     STRCPY(fed_filename_base, fdsprefix);
     STRCAT(fed_filename_base, ".fed_smv");
     fed_filename = GetFileName(smokeview_scratchdir, fed_filename_base, NOT_FORCE_IN_DIR);
   }
+#endif
   if(stop_filename == NULL){
     NewMemory((void **)&stop_filename, (unsigned int)(len_casename + strlen(".stop") + 1));
     STRCPY(stop_filename, fdsprefix);
@@ -591,9 +595,11 @@ char *ProcessCommandLine(CommandlineArgs *args) {
       no_bounds = 1;
     }
 #endif
+#ifdef pp_FED
     if(args->fed){
       compute_fed = 1;
     }
+#endif
     if(args->verbose){
       verbose_output = 1;
     }

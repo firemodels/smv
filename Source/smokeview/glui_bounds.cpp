@@ -5136,9 +5136,11 @@ hvacductboundsCPP.setup("hvac", ROLLOUT_hvacduct, hvacductbounds_cpp, nhvacductb
     SPINNER_slice_skip = glui_bounds->add_spinner_to_panel(PANEL_slice_misc, "data skip", GLUI_SPINNER_INT, &slice_skip, SLICE_SKIP, GLUISliceBoundCB);
     GLUISliceBoundCB(SLICE_SKIP);
     glui_bounds->add_checkbox_to_panel(PANEL_slice_misc, _("Output data (press r)"), &output_slicedata);
+#ifdef pp_FED
     if(nfedinfo>0){
       glui_bounds->add_checkbox_to_panel(PANEL_slice_misc, "Regenerate FED data", &regenerate_fed);
     }
+#endif
 
     if(nterraininfo>0){
       glui_bounds->add_checkbox_to_panel(ROLLOUT_slice_settings, _("terrain slice overlap"), &terrain_slice_overlap);
@@ -6412,18 +6414,22 @@ extern "C" void GLUISliceBoundCB(int var){
   case SETVALMAX:
     break;
   case VALMIN:
+#ifdef pp_FED
     if(is_fed_colorbar==1&&glui_setslicemin==1&&ABS(glui_slicemin)>0.001){
         printf("***warning: min/max bounds for the FED colorbar are set to 0.0 and 3.0 respectively.\n");
       printf("   To use different min/max bounds, change the colorbar.\n");
       glui_slicemin = 0.0;
     }
+#endif
     break;
   case VALMAX:
+#ifdef pp_FED
     if(is_fed_colorbar==1&&glui_setslicemax==1&&ABS(glui_slicemax-3.0)>0.001){
         printf("***warning: min/max bounds for the FED colorbar are set to 0.0 and 3.0 respectively.\n");
       printf("   To use different min/max bounds, change the colorbar.\n");
       glui_slicemax = 3.0;
     }
+#endif
     break;
   case FILETYPE_INDEX:
     if(slice_bounds_dialog==1&&list_slice_index==fire_line_index){

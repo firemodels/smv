@@ -190,7 +190,9 @@ float     part_load_time;
 #define MENU_SHOWSLICE_CELLSLICEANDVECTORS -19
 #define MENU_SHOWSLICE_TERRAIN -13
 #define MENU_SHOWSLICE_OFFSET -12
+#ifdef pp_FED
 #define MENU_SHOWSLICE_FEDAREA -14
+#endif
 
 #define MENU_VENT_OPEN 14
 #define MENU_VENT_EXTERIOR 16
@@ -572,9 +574,11 @@ void ShowMultiSliceMenu(int value){
   case -12:
     offset_slice = 1 - offset_slice;
     break;
+#ifdef pp_FED
   case -14:
     show_fed_area = 1 - show_fed_area;
     break;
+#endif
   default:
     if(value<=-20){
       value = -20 - value;
@@ -1436,9 +1440,11 @@ void ShowHideSliceMenu(int value){
     case MENU_SHOWSLICE_TERRAIN:
       planar_terrain_slice=1-planar_terrain_slice;
       break;
+#ifdef pp_FED
     case MENU_SHOWSLICE_FEDAREA:
       show_fed_area=1-show_fed_area;
       break;
+#endif
     case MENU_SHOWSLICE_NODESLICEANDVECTORS:
       show_node_slices_and_vectors=1-show_node_slices_and_vectors;
       return;
@@ -1470,7 +1476,9 @@ void ShowHideSliceMenu(int value){
       slicefile_labelindex = sd->slicefile_labelindex;
       sd->display=1;
     }
-    if(value < nsliceinfo - nfedinfo){
+#ifdef pp_FED
+    if(value < nsliceinfo - nfedinfo)
+    {
       colorbardata *fed_colorbar;
       int reset_colorbar = 0;
 
@@ -1487,6 +1495,7 @@ void ShowHideSliceMenu(int value){
         ColorbarMenu(fed_colorbar - colorbarinfo);
       }
     }
+#endif
   }
   update_flipped_colorbar = 1;
   UpdateSliceFilenum();
@@ -4918,6 +4927,7 @@ int AnySlices(const char *type){
   return 0;
 }
 
+#ifdef pp_FED
 /* ------------------ DefineAllFEDs ------------------------ */
 
 void DefineAllFEDs(void){
@@ -4930,6 +4940,7 @@ void DefineAllFEDs(void){
   }
   SMV_EXIT(0);
 }
+#endif
 
 /* ------------------ LoadSlicei ------------------------ */
 
@@ -4948,22 +4959,30 @@ FILE_SIZE LoadSlicei(int set_slicecolor, int value, int time_frame, float *time_
     fprintf(scriptoutstream, " %i\n", slicei->blocknumber + 1);
   }
   if(scriptoutstream==NULL||script_defer_loading==0){
-    if(value < nsliceinfo - nfedinfo){
+#ifdef pp_FED
+    if(value < nsliceinfo - nfedinfo)
+#endif
+    {
+#ifdef pp_FED
       colorbardata *fed_colorbar;
       int reset_colorbar = 0;
 
       fed_colorbar = GetColorbar(default_fed_colorbar);
       if(fed_colorbar != NULL&&fed_colorbar - colorbarinfo == colorbartype)reset_colorbar = 1;
-
+#endif
       if(slicei->slice_filetype == SLICE_GEOM){
         return_filesize = ReadGeomData(slicei->patchgeom, slicei, LOAD, time_frame, time_value, 0, &errorcode);
       }
       else{
         return_filesize = ReadSlice(slicei->file, value, time_frame, time_value, LOAD, set_slicecolor, &errorcode);
       }
+#ifdef pp_FED
       if(reset_colorbar == 1)ColorbarMenu(colorbartype_save);
+#endif
     }
-    else{
+#ifdef pp_FED
+    else
+    {
       colorbardata *fed_colorbar;
 
       fed_colorbar = GetColorbar(default_fed_colorbar);
@@ -4972,6 +4991,7 @@ FILE_SIZE LoadSlicei(int set_slicecolor, int value, int time_frame, float *time_
       if(fed_colorbar != NULL)ColorbarMenu(fed_colorbar - colorbarinfo);
       return_filesize = 0;
     }
+#endif
   }
   slicei->loading=0;
   CheckMemory;
@@ -7656,6 +7676,7 @@ void InitShowSliceMenu(int *showhideslicemenuptr, int patchgeom_slice_showhide){
         if(show_cell_slices_and_vectors==1)glutAddMenuEntry(_("*Show cell centered slices and vectors"), MENU_SHOWSLICE_CELLSLICEANDVECTORS);
         if(show_cell_slices_and_vectors==0)glutAddMenuEntry(_("Show cell centered slices and vectors"), MENU_SHOWSLICE_CELLSLICEANDVECTORS);
       }
+#ifdef pp_FED
       if(nfedinfo>0){
         int showfedmenu = 0;
         int i;
@@ -7674,6 +7695,7 @@ void InitShowSliceMenu(int *showhideslicemenuptr, int patchgeom_slice_showhide){
           if(show_fed_area==0)glutAddMenuEntry(_("Show FED areas"), MENU_SHOWSLICE_FEDAREA);
         }
       }
+#endif
       if(nsliceloaded>0&&sd_shown!=NULL){
         char menulabel[1024];
 
@@ -7767,6 +7789,7 @@ void InitShowMultiSliceMenu(int *showmultislicemenuptr, int showhideslicemenu, i
       if(offset_slice==1)glutAddMenuEntry(_("*Offset slice"), MENU_SHOWSLICE_OFFSET);
       if(offset_slice==0)glutAddMenuEntry(_("Offset slice"), MENU_SHOWSLICE_OFFSET);
     }
+#ifdef pp_FED
     if(nfedinfo>0){
       int showfedmenu = 0;
 
@@ -7784,6 +7807,7 @@ void InitShowMultiSliceMenu(int *showmultislicemenuptr, int showhideslicemenu, i
         if(show_fed_area==0)glutAddMenuEntry(_("Show FED areas"), MENU_SHOWSLICE_FEDAREA);
       }
     }
+#endif
   }
 }
 

@@ -61,7 +61,9 @@ typedef struct CommandlineArgs {
   /// @brief check conversion between CIELabl and rgb color coordinates
   bool check_colorbar;
   /// @brief pre-calculate all FED slice files
+#ifdef pp_FED
   bool fed;
+#endif
   bool verbose;
   /// @brief show geometry bound boxes instead of geometry
   bool outline;

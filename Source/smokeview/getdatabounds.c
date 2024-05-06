@@ -1400,7 +1400,9 @@ void GetGlobalSliceBounds(int flag, int set_flag){
     int doit;
 
     slicei = sliceinfo+i;
+#ifdef pp_FED
     if(slicei->is_fed==1)continue;
+#endif
     if(slicei->valmin_slice>slicei->valmax_slice ||
        current_script_command==NULL || NOT_LOADRENDER)doit=1;
     if(flag==0){
@@ -1650,6 +1652,7 @@ void GetGlobalHVACNodeBounds(int flag){
   }
 }
 
+#ifdef pp_FED
 /* ------------------ UpdateGlobalFEDSliceBounds ------------------------ */
 
 void UpdateGlobalFEDSliceBounds(void){
@@ -1731,6 +1734,7 @@ void UpdateGlobalFEDSliceBounds(void){
     }
   }
 }
+#endif
 
 /* ------------------ GetSliceBoundsInfo ------------------------ */
 

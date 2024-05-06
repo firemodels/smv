@@ -1626,95 +1626,9 @@ a) Particles&b) Particle streaks\\
 \label{figpart}%
 \end{figure}
 
-\section{Computing and Visualizing Fractional Effective Dose data}
-The fractional effective dose (FED), developed by
-Purser~\cite{SFPE:Purser}, is a measure of human incapacitation
-due to combustion gases.  FED index data is computed by Smokeview
-using CO, $\mathrm{CO_2}$ and $\mathrm{O_2}$ gas concentration
-data computed by FDS. Future work involves incorporating other
-constituents such as soot or HCN.  Smokeview obtains this data
-from FDS using slice files.
-
-The total FED is computed here in terms of FED components for CO
-and $\mathrm{O_2}$.  A hyper-ventilating factor due to
-$\mathrm{CO_2}$ is applied to the FED for CO. The total FED is
-then given by
-
-\be \mathrm{FED}_\mathrm{tot} = \mathrm{FED}_\mathrm{CO} \times
-\mathrm{HV}_\mathrm{CO_2} + \mathrm{FED}_\mathrm{O_2} \ee
-
-Other terms involving CN, NOx and irritants are neglected. The
-fraction of an incapacitating dose due to CO,
-$\mathrm{FED}_\mathrm{CO}$ is calculated using
-
-\be \mathrm{FED}_\mathrm{CO}(t) = \int_0^t 2.764 \times 10^{-5} \,
-(C_\mathrm{CO}(t))^{1.036} \, dt \label{eq:fedCO} \ee
-
-where $t$ is time in minutes and $C_\mathrm{CO}$ is the CO
-concentration (ppm). The fraction of an incapacitating dose due to
-low O${}_2$ hypoxia , $\mathrm{FED}_\mathrm{O_2}$, is calculated
-using
-
-\be \mathrm{FED}_\mathrm{O_2}(t) =  \int_0^t \frac{dt}{\exp \left
-[ 8.13 - 0.54 \, (20.9 - C_\mathrm{O_2}(t)) \right ] }
-\label{eq:fedO2} \ee
-
-where $t$ is time in minutes and $C_\mathrm{O_2}$ is the O${}_2$
-concentration (volume per cent). The hyperventilation factor
-induced by carbon dioxide, $\mathrm{HV}_\mathrm{CO_2}$, is
-calculated using
-
-\be \mathrm{HV}_\mathrm{CO_2}(t) = \frac{ \exp( 0.1903 \,
-C_\mathrm{CO_2}(t) +  2.0004 ) }{7.1} \label{eq:co2hyp} \ee
-
-where $t$ is time in minutes and $C_\mathrm{CO_2}$ is the
-$\mathrm{CO_2}$ concentration (percent).
-
-\subsection{FED example}
-Assuming that $C_\mathrm{CO}(t)=\mathrm{CO}$,
-$C_\mathrm{CO_2}(t)=\mathrm{CO_2}$ and
-$C_\mathrm{O_2}(t)=\mathrm{O_2}$ are constant, equations
-\ref{eq:fedCO}, \ref{eq:fedO2} and \ref{eq:co2hyp} reduce to
-
-\be \mathrm{FED}_\mathrm{CO}(t) = 2.764 \times 10^{-5} \,
-\mathrm{CO}^{1.036} \, t \label{eq:fedCOcons} \ee
-
-\be \mathrm{FED}_\mathrm{O_2}(t) =   \exp( -8.13 + 0.54 \, (20.9 -
-\mathrm{O_2}) )t \label{eq:fedO2cons} \ee
-
-\be
-\mathrm{HV}_\mathrm{CO_2}(t) = \frac{ \exp( 0.1903 \, \mathrm{CO_2} +  2.0004 ) }{7.1}
-\label{eq:fedCO2cons}
-\ee
-
-so that the total FED is given by
-
-\begin{eqnarray}
-\mathrm{FED}_\mathrm{tot}
-&= &\mathrm{FED}_\mathrm{CO}(t)\times\mathrm{HV}_\mathrm{CO_2}(t)+\mathrm{FED}_\mathrm{O_2}(t)\\
-\nonumber
- &= &\left(2.764 \times 10^{-5} \, \mathrm{CO}^{1.036}\times
-\frac{ \exp( 0.1903 \, \mathrm{CO_2} +  2.0004 ) }{7.1} + \exp( -8.13
-+ 0.54 \, (20.9 - \mathrm{O_2}) )\right) t\\
-\end{eqnarray}
-
-Figure \ref{fig:fedplot} presents two FED computations where CO,
-$\mathrm{CO_2}$ and $\mathrm{O_2}$ are constant.
-The first for a smoke filled room with CO=\SI{10000}{ppm},
-$\mathrm{CO_2}=5 \%$ and $\mathrm{O_2}=10 \%$ and the second for a
-room with ambient conditions with CO=\SI{0}{ppm},
-$\mathrm{CO_2}=0.04 \%$ and $\mathrm{O_2}=21 \%$
-
-\begin{figure}[bph]
-\begin{center}
-\includegraphics[width=5.0in]{\SMVfigdir/fed_clear}\\
-a) ambient\\
-\includegraphics[width=5.0in]{\SMVfigdir/fed_smoke}\\
-b) smoke filled
-\end{center}
-\caption{Plot of FED vs. time for ambient and smoke filled rooms.}
-\label{fig:fedplot}%
-\end{figure}
+%%-----------------------------------------------------------------------
+%*** fed section
+\input smv_tg_fed1.tex
 
 %
 % -------------------  Volumetric Methods ------------------------

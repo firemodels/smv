@@ -642,10 +642,9 @@ Fig. \ref{figcellbslicetest} tests the transfer of data from FDS to Smokeview.
 Figure \ref{figslicenodemasktest} and \ref{figslicecellmasktest} presents images verifying that node and cell centered slices
 are masked properly when drawn through or near blockages. Images are drawn at \SI{10}{s}.
 
-Figure \ref{figfedslicetest} presents slice file images verifying the computation
-of fractional effective dose (FED).  FED is a measure of human incapacitation or
-hazard due to combustion gases\cite{SFPE:Purser}. Images are drawn at \SI{30}{s},
-\SI{60}{s} and \SI{120}{s} and \SI{240}{s}. The FED is computed using three data slices with concentration of $1000~\mathrm{ppm}$ for $\mathrm{CO}$ and volume fractions of 0.02 and 0.07 for $\mathrm{CO_2}$ and $\mathrm{O_2}$ respectively. These values result in FED values of 1.5 at \SI{30}{s}, 3.0 at \SI{60}{s}, 6.0 at \SI{120}{s} and 12.0 at \SI{240}{s}.
+%%-----------------------------------------------------------------------
+%*** fed section
+\input smv_vg_fed1.tex
 
 Figure \ref{figslice3D} presents images of shaded 3D slices oriented in XY, XY and YZ planes.
 Images are drawn at \SI{0}{s}, \SI{10}{s} and \SI{30}{s}.
