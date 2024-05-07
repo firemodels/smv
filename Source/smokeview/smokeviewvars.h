@@ -396,6 +396,9 @@ SVEXTERN int SVDECL(slice_temp_bounds_defined, 0);
 SVEXTERN int nplot3dloaded, nsmoke3dloaded, nisoloaded, nsliceloaded, nvsliceloaded, npartloaded, npatchloaded;
 SVEXTERN int nvolsmoke3dloaded;
 SVEXTERN int npart5loaded, npartloaded;
+#ifdef pp_SELECT_PART
+SVEXTERN int SVDECL(select_part, 0), SVDECL(selected_part_index, -1);
+#endif
 #ifdef pp_SMOKE_SPEEDUP
 SVEXTERN int SVDECL(smoke3d_compression_type, COMPRESSED_UNKNOWN);
 SVEXTERN int SVDECL(update_smoke3dmenulabels, 0);

@@ -312,6 +312,42 @@ void MouseEditTour(int x, int y){
   ENABLE_LIGHTING;
 }
 
+#ifdef pp_SELECT_PART
+/* ------------------ MouseSelectPart ------------------------ */
+
+void MouseSelectPart(int x, int y){
+  int val, val1;
+  int mouse_x, mouse_y;
+  GLubyte r, g, b;
+
+  mouse_x = x; mouse_y = screenHeight - y;
+  glDisable(GL_BLEND);
+  glDisable(GL_DITHER);
+  glDisable(GL_FOG);
+  DISABLE_LIGHTING;
+  glDisable(GL_TEXTURE_1D);
+  glDisable(GL_TEXTURE_2D);
+  glShadeModel(GL_FLAT);
+
+  ShowScene(SELECTOBJECT, VIEW_CENTER, 0, 0, 0, NULL);
+  glReadBuffer(GL_BACK);
+  glReadPixels(mouse_x, mouse_y, 1, 1, GL_RED, GL_UNSIGNED_BYTE, &r);
+  glReadPixels(mouse_x, mouse_y, 1, 1, GL_GREEN, GL_UNSIGNED_BYTE, &g);
+  glReadPixels(mouse_x, mouse_y, 1, 1, GL_BLUE, GL_UNSIGNED_BYTE, &b);
+
+  r = r >> nredshift;
+  g = g >> ngreenshift;
+  b = b >> nblueshift;
+
+  val1 = (r << (nbluebits + ngreenbits)) | (g << nbluebits) | b;
+  val = val1;
+  if(val>0)selected_part_index = val;
+  glShadeModel(GL_SMOOTH);
+  glEnable(GL_BLEND);
+  ENABLE_LIGHTING;
+}
+#endif
+
 /* ------------------ MouseEditBlockage ------------------------ */
 
 void MouseEditBlockage(int x, int y){
@@ -1023,8 +1059,6 @@ void MouseCB(int button, int state, int xm, int ym){
   if(button==GLUT_LEFT_BUTTON||button==GLUT_MIDDLE_BUTTON||button==GLUT_RIGHT_BUTTON){
     GLUTSETCURSOR(GLUT_CURSOR_INFO);
 
-    /* edit blockages */
-
     if(button==GLUT_LEFT_BUTTON){
       if(blockageSelect == 1){
         GLUIGetGeomDialogState();
@@ -1034,6 +1068,9 @@ void MouseCB(int button, int state, int xm, int ym){
       if(select_avatar==1)MouseSelectAvatar(xm,ym);
       if(select_device==1)MouseSelectDevice(xm,ym);
       if(select_geom!=GEOM_PROP_NONE)MouseSelectGeom(xm, ym);
+#ifdef pp_SELECT_PART
+      if(select_part == 1 && npartloaded>0)MouseSelectPart(xm, ym);
+#endif
     }
     glutPostRedisplay();
     if( showtime==1 || showplot3d==1){
