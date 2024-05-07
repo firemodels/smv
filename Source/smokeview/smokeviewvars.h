@@ -468,6 +468,8 @@ SVEXTERN float SVDECL(customview_azimuth, 0.0), SVDECL(customview_elevation, 0.0
 SVEXTERN int SVDECL(use_customview, 0);
 SVEXTERN screendata SVDECL(*screenglobal, NULL);
 
+SVEXTERN float casemin[3], SVDECL(*caseminptr, NULL);
+SVEXTERN float casemax[3], SVDECL(*casemaxptr, NULL);
 SVEXTERN int SVDECL(smoke_outline_type, SMOKE_OUTLINE_TRIANGLE);
 SVEXTERN int SVDECL(update_filesizes, 0);
 SVEXTERN int SVDECL(compute_smoke3d_planes_par, 0);
