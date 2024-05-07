@@ -899,7 +899,7 @@ EXTERNCPP int  RectangleInFrustum( float *x11, float *x12, float *x22, float *x2
 EXTERNCPP int UpdateSmoke3D(smoke3ddata *smoke3di);
 EXTERNCPP void DrawSmokeFrame(void);
 EXTERNCPP void DrawVolSmokeFrame(void);
-EXTERNCPP void DrawPartFrame(void);
+EXTERNCPP void DrawPartFrame(int mode);
 EXTERNCPP void DrawPlot3dFrame(void);
 EXTERNCPP void DrawVSliceFrame(void);
 EXTERNCPP void DrawSliceFrame(void);

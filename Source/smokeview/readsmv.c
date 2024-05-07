@@ -13972,6 +13972,14 @@ int ReadIni2(char *inifile, int localfile){
       ONEORZERO(show_tracers_always);
       continue;
     }
+#ifdef pp_SELECT_PART
+    if(MatchINI(buffer, "SHOWPARTTAG") == 1){ 
+      fgets(buffer, 255, stream);
+      sscanf(buffer, "%i", &select_part);
+      ONEORZERO(select_part);
+      continue;
+    }
+#endif
     if(MatchINI(buffer, "PARTSKIP") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%i", &partdrawskip);
@@ -17189,6 +17197,10 @@ void WriteIni(int flag,char *filename){
 #ifdef pp_memstatus
   fprintf(fileout, "SHOWMEMLOAD\n");
   fprintf(fileout, " %i\n", visAvailmemory);
+#endif
+#ifdef pp_SELECT_PART
+  fprintf(fileout, "SHOWPARTTAG\n");
+  fprintf(fileout, " %i\n", select_part);
 #endif
   fprintf(fileout, "SHOWOPENVENTS\n");
   fprintf(fileout, " %i %i\n", visOpenVents, visOpenVentsAsOutline);

@@ -219,7 +219,7 @@ void GetPartBounds(float *valmin, float *valmax){
 
 /* ------------------ DrawPart ------------------------ */
 
-void DrawPart(const partdata *parti){
+void DrawPart(const partdata *parti, int mode){
   int ipframe;
   part5data *datacopy, *datapast;
   int nclasses;
@@ -289,34 +289,92 @@ void DrawPart(const partdata *parti){
             // *** draw particles as points
 
             if(datacopy->partclassbase->vis_type == PART_POINTS){
+#ifdef pp_SELECT_PART
+              if(select_part == 1 && selected_part_index > 0 && mode == DRAWSCENE){
+                for(j = 0; j < datacopy->npoints_file; j += partdrawskip){
+                  if(vis[j] == 1 && datacopy->tags[j]==selected_part_index){
+                    char taglabel[32];
+
+                    sprintf(taglabel, "%i", selected_part_index);
+                    Output3Text(foregroundcolor, xplts[sx[j]], yplts[sy[j]], zplts[sz[j]], taglabel);
+                  }
+                }
+              }
+#endif
               glBegin(GL_POINTS);
               if(show_default == 1){
-                glColor4fv(datacopy->partclassbase->rgb);
-                for(j = 0;j < datacopy->npoints_file;j+=partdrawskip){
-                  if(vis[j] == 1){
-                    glVertex3f(xplts[sx[j]], yplts[sy[j]], zplts[sz[j]]);
+#ifdef pp_SELECT_PART
+                if(select_part == 0 || mode == DRAWSCENE){
+#else
+                if(mode == DRAWSCENE){
+#endif
+                  glColor4fv(datacopy->partclassbase->rgb);
+                  for(j = 0; j < datacopy->npoints_file; j += partdrawskip){
+                    if(vis[j] == 1){
+                      glVertex3f(xplts[sx[j]], yplts[sy[j]], zplts[sz[j]]);
+                    }
+                  }
+                }
+                else{
+                  for(j = 0; j < datacopy->npoints_file; j += partdrawskip){
+                    if(vis[j] == 1){
+                      unsigned char r, g, b;
+
+                      GetRGB((unsigned int)datacopy->tags[j], &r, &g, &b);
+                      glColor3ub(r, g, b);
+                      glVertex3f(xplts[sx[j]], yplts[sy[j]], zplts[sz[j]]);
+                    }
                   }
                 }
               }
               else{
                 float *rvals;
 
-                rvals = datacopy->rvals+itype*datacopy->npoints_file;
-                for(j = 0;j < datacopy->npoints_file;j+=partdrawskip){
-                  if(vis[j] == 1){
-                    int colorj;
-                    float rval;
-                    rval = CLAMP(255.0*(rvals[j]-valmin)/(valmax-valmin), 0.0, 255.0);
-                    colorj = rval;
-                    if(current_property != NULL && (colorj > current_property->imax || colorj < current_property->imin))continue;
-                    if(rgb_part[4*colorj+3]==0.0)continue;
-                    glColor4fv(rgb_part+4*colorj);
-                    glVertex3f(xplts[sx[j]], yplts[sy[j]], zplts[sz[j]]);
+                rvals = datacopy->rvals + itype * datacopy->npoints_file;
+#ifdef pp_SELECT_PART
+                if(select_part == 0 || mode == DRAWSCENE){
+#else
+                if(mode == DRAWSCENE){
+#endif
+                  for(j = 0; j < datacopy->npoints_file; j += partdrawskip){
+                    if(vis[j] == 1){
+                      int colorj;
+                      float rval;
+                      rval = CLAMP(255.0 * (rvals[j] - valmin) / (valmax - valmin), 0.0, 255.0);
+                      colorj = rval;
+                      if(current_property != NULL && (colorj > current_property->imax || colorj < current_property->imin))continue;
+                      if(rgb_part[4 * colorj + 3] == 0.0)continue;
+                      glColor4fv(rgb_part + 4 * colorj);
+                      glVertex3f(xplts[sx[j]], yplts[sy[j]], zplts[sz[j]]);
+                    }
+                  }
+                }
+                else{
+                  for(j = 0; j < datacopy->npoints_file; j += partdrawskip){
+                    if(vis[j] == 1){
+                      int colorj;
+                      float rval;
+                      rval = CLAMP(255.0 * (rvals[j] - valmin) / (valmax - valmin), 0.0, 255.0);
+                      colorj = rval;
+                      if(current_property != NULL && (colorj > current_property->imax || colorj < current_property->imin))continue;
+                      if(rgb_part[4 * colorj + 3] == 0.0)continue;
+                      unsigned char r, g, b;
+
+                      GetRGB((unsigned int)datacopy->tags[j], &r, &g, &b);
+                      glColor3ub(r, g, b);
+                      glVertex3f(xplts[sx[j]], yplts[sy[j]], zplts[sz[j]]);
+                    }
                   }
                 }
               }
               glEnd();
             }
+#ifdef pp_SELECT_PART
+            if(mode == SELECTOBJECT){
+              datacopy++;
+              continue;
+            }
+#endif
 
             // *** draw particles using smokeview object
 
@@ -441,7 +499,6 @@ void DrawPart(const partdata *parti){
             glEnd();
           }
         }
-
         datacopy++;
       }
     }
@@ -561,7 +618,7 @@ void DrawPart(const partdata *parti){
 
 /* ------------------ DrawPartFrame ------------------------ */
 
-void DrawPartFrame(void){
+void DrawPartFrame(int mode){
   partdata *parti;
   int i;
 
@@ -571,7 +628,7 @@ void DrawPartFrame(void){
     parti = partinfo + i;
     if(parti->loaded==0||parti->display==0)continue;
     IF_NOT_USEMESH_CONTINUE(USEMESH_DRAW,parti->blocknumber);
-    DrawPart(parti);
+    DrawPart(parti, mode);
     SNIFF_ERRORS("after DrawPart");
   }
 }

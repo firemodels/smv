@@ -86,7 +86,7 @@ void ShowScene2(int mode){
 
     if(showsmoke == 1 && geom_bounding_box_mousedown==0){
       CLIP_VALS;
-      DrawPartFrame();
+      DrawPartFrame(DRAWSCENE);
     }
 
     /* ++++++++++++++++++++++++ draw screeninfo +++++++++++++++++++++++++ */
@@ -238,7 +238,19 @@ void ShowScene2(int mode){
   } /* end of if(mode==DRAWSCENE) code segment */
 
 
-    /* ++++++++++++++++++++++++ draw selected devices +++++++++++++++++++++++++ */
+    /* ++++++++++++++++++++++++ draw selected particles +++++++++++++++++++++++++ */
+
+#ifdef pp_SELECT_PART
+  if(mode == SELECTOBJECT && select_part == 1){
+    if(showsmoke == 1 && geom_bounding_box_mousedown==0){
+      CLIP_VALS;
+      DrawPartFrame(SELECTOBJECT);
+      SNIFF_ERRORS("after DrawPartFrame(SELECTOBJECT)");
+      return;
+    }
+  }
+#endif  
+  /* ++++++++++++++++++++++++ draw selected devices +++++++++++++++++++++++++ */
 
   if(mode == SELECTOBJECT){
     if(select_device == 1){
