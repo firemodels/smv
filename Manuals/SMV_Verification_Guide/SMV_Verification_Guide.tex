@@ -1,5 +1,8 @@
 \documentclass[11pt,twoside]{book}
 
+\newcommand{\feda}{\input smv_vg_fed1.tex}
+%\newcommand{\feda}{}
+
 \UseRawInputEncoding
 
 %% include commands for bios, titles etc used in multiple documents
@@ -642,10 +645,6 @@ Fig. \ref{figcellbslicetest} tests the transfer of data from FDS to Smokeview.
 Figure \ref{figslicenodemasktest} and \ref{figslicecellmasktest} presents images verifying that node and cell centered slices
 are masked properly when drawn through or near blockages. Images are drawn at \SI{10}{s}.
 
-%%-----------------------------------------------------------------------
-%*** fed section
-\input smv_vg_fed1.tex
-
 Figure \ref{figslice3D} presents images of shaded 3D slices oriented in XY, XY and YZ planes.
 Images are drawn at \SI{0}{s}, \SI{10}{s} and \SI{30}{s}.
 
@@ -816,24 +815,6 @@ above on boundary&above
 \begin{figure}[bph]
 \begin{center}
 \begin{tabular}{ccp{1.0in}}
- \includegraphics[height=\figheightE]{SCRIPT_FIGURES/fed_test_030}&
- \includegraphics[height=\figheightE]{SCRIPT_FIGURES/fed_test_060}\\
-SI{30}{s}, FED=0.29&\SI{60}{s}, FED=0.59\\
- \includegraphics[height=\figheightE]{SCRIPT_FIGURES/fed_test_120}&
- \includegraphics[height=\figheightE]{SCRIPT_FIGURES/fed_test_360}\\
-\SI{120}{s}, FED=1.2&3\SI{60}{s}, FED=3.5\\
-&&\raisebox{0.25in}[0pt]{\includegraphics[height=5.5in]{\SMVfigdir/colorbar_fed}}
- \end{tabular}
-\end{center}
- \caption[A test showing cell centered FED slice file data]{A test showing cell
- centered FED slice file data.  These contours were generated using $\mathrm{CO}$,
- $\mathrm{CO_2}$ and $\mathrm{O_2}$ data slices. }
-\label{figfedslicetest}%
-\end{figure}
-
-\begin{figure}[bph]
-\begin{center}
-\begin{tabular}{ccp{1.0in}}
  \includegraphics[height=\figheightE]{SCRIPT_FIGURES/mplume5c8_slice_00}\\
  \includegraphics[height=\figheightE]{SCRIPT_FIGURES/mplume5c8_slice_10}\\
  \includegraphics[height=\figheightE]{SCRIPT_FIGURES/mplume5c8_slice_30}\\
@@ -881,6 +862,10 @@ SI{30}{s}, FED=0.29&\SI{60}{s}, FED=0.59\\
  two cases with Smokediff  at \SI{0}{s}, \SI{10}{s} and \SI{30}{s}.}
 \label{figdiffslicetest}%
 \end{figure}
+
+%%-----------------------------------------------------------------------
+%*** fed section
+\feda
 
 \clearpage
 
