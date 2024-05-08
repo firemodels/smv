@@ -3955,23 +3955,6 @@ void MeshBoundCB(int var){
   case USEMESH_DRAW_MESH:
     break;
   case USEMESH_XYZ:
-    if(caseminptr==NULL){
-      caseminptr = casemin;
-      casemaxptr = casemax;
-      memcpy(casemin, meshinfo->boxmin, 3*sizeof(float));
-      memcpy(casemax, meshinfo->boxmax, 3*sizeof(float));
-      for(i=1;i<nmeshes;i++){
-        meshdata *meshi;
-
-        meshi = meshinfo + i;
-        casemin[0] = MIN(casemin[0], meshi->boxmin[0]);
-        casemin[1] = MIN(casemin[1], meshi->boxmin[1]);
-        casemin[2] = MIN(casemin[2], meshi->boxmin[2]);
-        casemax[0] = MAX(casemax[0], meshi->boxmax[0]);
-        casemax[1] = MAX(casemax[1], meshi->boxmax[1]);
-        casemax[2] = MAX(casemax[2], meshi->boxmax[2]);
-      }
-    }
     for(i = 0;i < nmeshes;i++){
       meshdata *meshi;
 
@@ -3983,11 +3966,8 @@ void MeshBoundCB(int var){
        use_meshclip[3] == 0 && use_meshclip[4] == 0 && use_meshclip[5] == 0)break;
     for(i=0;i<nmeshes;i++){
       meshdata *meshi;
-      float *meshmin, *meshmax;
 
       meshi = meshinfo + i;
-      meshmin = meshi->boxmin;
-      meshmax = meshi->boxmax;
       float meshclip_min[3],  meshclip_max[3];
       int use_meshclip_min[3], use_meshclip_max[3];
       meshclip_min[0] = meshclip[0];
@@ -4002,34 +3982,34 @@ void MeshBoundCB(int var){
       use_meshclip_max[0] = use_meshclip[1];
       use_meshclip_max[1] = use_meshclip[3];
       use_meshclip_max[2] = use_meshclip[5];
-      if(use_meshclip_min[0] == 0)meshclip_min[0] = casemin[0];
-      if(use_meshclip_max[0] == 0)meshclip_min[0] = casemax[0];
-      if(use_meshclip_min[1] == 0)meshclip_min[1] = casemin[1];
-      if(use_meshclip_max[1] == 0)meshclip_min[1] = casemax[1];
-      if(use_meshclip_min[2] == 0)meshclip_min[2] = casemin[2];
-      if(use_meshclip_max[2] == 0)meshclip_min[2] = casemax[2];
+      if(use_meshclip_min[0] == 0)meshclip_min[0] = xbar0FDS;
+      if(use_meshclip_max[0] == 0)meshclip_max[0] = xbarFDS;
+      if(use_meshclip_min[1] == 0)meshclip_min[1] = ybar0FDS;
+      if(use_meshclip_max[1] == 0)meshclip_max[1] = ybarFDS;
+      if(use_meshclip_min[2] == 0)meshclip_min[2] = zbar0FDS;
+      if(use_meshclip_max[2] == 0)meshclip_max[2] = zbarFDS;
       
-      if(use_meshclip_min[0] == 1 && meshmin[0] > meshclip_max[0]){
+      if(use_meshclip_min[0] == 1 && meshclip_min[0] > meshi->boxmax[0]){
         meshi->use = 0;
         continue;
       }
-      if(use_meshclip_max[0] == 1 && meshmax[0] < meshclip_min[0]){
+      if(use_meshclip_max[0] == 1 && meshclip_max[0] < meshi->boxmin[0]){
         meshi->use = 0;
         continue;
       }
-      if(use_meshclip_min[1] == 1 && meshmin[1] > meshclip_max[1]){
+      if(use_meshclip_min[1] == 1 && meshclip_min[1] > meshi->boxmax[1]){
         meshi->use = 0;
         continue;
       }
-      if(use_meshclip_max[1] == 1 && meshmax[1] < meshclip_min[1]){
+      if(use_meshclip_max[1] == 1 && meshclip_max[1] < meshi->boxmin[1]){
         meshi->use = 0;
         continue;
       }
-      if(use_meshclip_min[2] == 1 && meshmin[2] > meshclip_max[2]){
+      if(use_meshclip_min[2] == 1 && meshclip_min[2] > meshi->boxmax[2]){
         meshi->use = 0;
         continue;
       }
-      if(use_meshclip_max[2] == 1 && meshmax[2] < meshclip_min[2]){
+      if(use_meshclip_max[2] == 1 && meshclip_max[2] < meshi->boxmin[2]){
         meshi->use = 0;
         continue;
       }
