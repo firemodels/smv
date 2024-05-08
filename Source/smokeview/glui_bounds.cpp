@@ -2562,6 +2562,8 @@ GLUI_Panel *PANEL_plot3d=NULL;
 GLUI_Panel *PANEL_setmesh = NULL;
 GLUI_Panel *PANEL_mesh1 = NULL;
 GLUI_Panel *PANEL_mesh2 = NULL;
+GLUI_Panel *PANEL_addmesh = NULL;
+GLUI_Panel *PANEL_addremovemesh = NULL;
 GLUI_Panel *PANEL_boundary_temp_threshold=NULL;
 GLUI_Panel *PANEL_slice_buttonsA = NULL;
 GLUI_Panel *PANEL_slice_buttonsB = NULL;
@@ -3927,6 +3929,14 @@ void MeshBoundCB(int var){
     }
     MeshBoundCB(USEMESH_XYZ);
     break;
+  case USEMESH_REMOVE_ALL:
+    for(i = 0; i < nmeshes; i++){
+      meshdata *meshi;
+
+      meshi = meshinfo + i;
+      meshi->use = 0;
+    }
+    break;
   case USEMESH_SET_ONE:
     {
       meshdata *meshi;
@@ -3938,6 +3948,7 @@ void MeshBoundCB(int var){
       meshclip[1] = meshi->boxmax[0];
       meshclip[3] = meshi->boxmax[1];
       meshclip[5] = meshi->boxmax[2];
+      meshi->use = 1;
     }
     for(i = 0;i < 6;i++){
       use_meshclip[i] = 1;
@@ -3945,7 +3956,6 @@ void MeshBoundCB(int var){
       SPINNER_meshclip[i]->set_float_val(meshclip[i]);
       SPINNER_meshclip[i]->enable();
     }
-    MeshBoundCB(USEMESH_XYZ);
     break;
   case USEMESH_DRAW_BOX:
     break;
@@ -3961,7 +3971,6 @@ void MeshBoundCB(int var){
       meshi = meshinfo + i;
       meshi->use = 1;
     }
-    #define MESH_EPS 0.01
     if(use_meshclip[0] == 0 && use_meshclip[1] == 0 && use_meshclip[2] == 0 &&
        use_meshclip[3] == 0 && use_meshclip[4] == 0 && use_meshclip[5] == 0)break;
     for(i=0;i<nmeshes;i++){
@@ -3988,7 +3997,6 @@ void MeshBoundCB(int var){
       if(use_meshclip_max[1] == 0)meshclip_max[1] = ybarFDS;
       if(use_meshclip_min[2] == 0)meshclip_min[2] = zbar0FDS;
       if(use_meshclip_max[2] == 0)meshclip_max[2] = zbarFDS;
-      
       if(use_meshclip_min[0] == 1 && meshclip_min[0] > meshi->boxmax[0]){
         meshi->use = 0;
         continue;
@@ -5255,9 +5263,17 @@ hvacductboundsCPP.setup("hvac", ROLLOUT_hvacduct, hvacductbounds_cpp, nhvacductb
   glui_bounds->add_column_to_panel(PANEL_mesh1, false);
 
   PANEL_setmesh = glui_bounds->add_panel_to_panel(PANEL_mesh1, "Set mesh(s)", true);
-  SPINNER_set_mesh = glui_bounds->add_spinner_to_panel(PANEL_setmesh, "set mesh", GLUI_SPINNER_INT, &set_mesh, USEMESH_SET_ONE, MeshBoundCB);
+
+  PANEL_addmesh = glui_bounds->add_panel_to_panel(PANEL_setmesh, "", false);
+  SPINNER_set_mesh = glui_bounds->add_spinner_to_panel(PANEL_addmesh, "mesh:", GLUI_SPINNER_INT, &set_mesh);
   SPINNER_set_mesh->set_int_limits(1, nmeshes);
-  glui_bounds->add_button_to_panel(PANEL_setmesh, "all meshes", USEMESH_SET_ALL, MeshBoundCB);
+  glui_bounds->add_column_to_panel(PANEL_addmesh, false);
+  glui_bounds->add_button_to_panel(PANEL_addmesh, "Add", USEMESH_SET_ONE, MeshBoundCB);
+
+  PANEL_addremovemesh = glui_bounds->add_panel_to_panel(PANEL_setmesh, "", false);
+  glui_bounds->add_button_to_panel(PANEL_addremovemesh, "Add all",    USEMESH_SET_ALL, MeshBoundCB);
+  glui_bounds->add_column_to_panel(PANEL_addremovemesh, false);
+  glui_bounds->add_button_to_panel(PANEL_addremovemesh, "Remove all", USEMESH_REMOVE_ALL, MeshBoundCB);
   MeshBoundCB(USEMESH_USE_XYZ_ALL);
   glui_meshclip_defined = 1;
 
