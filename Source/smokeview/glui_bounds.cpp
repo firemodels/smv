@@ -2553,7 +2553,7 @@ GLUI_Rollout *ROLLOUT_split=NULL;
 GLUI_Rollout *ROLLOUT_autoload = NULL;
 GLUI_Rollout *ROLLOUT_time1a = NULL;
 GLUI_Rollout *ROLLOUT_box_specify = NULL;
-GLUI_Panel *ROLLOUT_time2=NULL;
+GLUI_Rollout *ROLLOUT_time2=NULL;
 
 GLUI_Panel *PANEL_keep_bound_data = NULL;
 GLUI_Panel *PANEL_keep_plot3d_data = NULL;
@@ -2806,6 +2806,15 @@ GLUI_RadioButton *RADIOBUTTON_zone_permax=NULL;
 
 procdata  boundprocinfo[10];
 int      nboundprocinfo = 0;
+
+//*** loadprocinfo entries
+#define LOAD_AUTO_ROLLOUT       0
+#define LOAD_TIMESET_ROLLOUT    1
+#define LOAD_TIMEBOUND_ROLLOUT  2
+#define LOAD_SPACEBOUND_ROLLOUT 3
+
+procdata  loadprocinfo[4];
+int      nloadprocinfo = 0;
 
 //*** isoprocinfo entries
 #define ISO_ROLLOUT_BOUNDS   0
@@ -3277,6 +3286,12 @@ void SliceRolloutCB(int var){
 
 void IsoRolloutCB(int var){
   GLUIToggleRollout(isoprocinfo, nisoprocinfo, var);
+}
+
+/* ------------------ LoadRolloutCB ------------------------ */
+
+void LoadRolloutCB(int var){
+  GLUIToggleRollout(loadprocinfo, nloadprocinfo, var);
 }
 
 /* ------------------ BoundRolloutCB ------------------------ */
@@ -5228,17 +5243,25 @@ hvacductboundsCPP.setup("hvac", ROLLOUT_hvacduct, hvacductbounds_cpp, nhvacductb
 
   PANEL_loadbounds = glui_bounds->add_panel_to_panel(ROLLOUT_time,"", GLUI_PANEL_NONE);
 
-  ROLLOUT_autoload = glui_bounds->add_rollout_to_panel(PANEL_loadbounds,_("Auto load"), false);
+  ROLLOUT_autoload = glui_bounds->add_rollout_to_panel(PANEL_loadbounds,_("Auto load"), false, LOAD_AUTO_ROLLOUT, LoadRolloutCB);
+  INSERT_ROLLOUT(ROLLOUT_autoload, glui_bounds);
+  ADDPROCINFO(loadprocinfo, nloadprocinfo, ROLLOUT_autoload, LOAD_AUTO_ROLLOUT, glui_bounds);
+  
   glui_bounds->add_checkbox_to_panel(ROLLOUT_autoload, _("Auto load at startup"), &loadfiles_at_startup, STARTUP, BoundBoundCB);
   glui_bounds->add_button_to_panel(ROLLOUT_autoload, _("Save auto load file list"), SAVE_FILE_LIST, BoundBoundCB);
   glui_bounds->add_button_to_panel(ROLLOUT_autoload, _("Auto load now"), LOAD_FILES, BoundBoundCB);
 
-  ROLLOUT_time1a = glui_bounds->add_rollout_to_panel(PANEL_loadbounds, "Set time", false);
+  ROLLOUT_time1a = glui_bounds->add_rollout_to_panel(PANEL_loadbounds, "Set time", false, LOAD_TIMESET_ROLLOUT, LoadRolloutCB);
+  INSERT_ROLLOUT(ROLLOUT_time1a, glui_bounds);
+  ADDPROCINFO(loadprocinfo, nloadprocinfo, ROLLOUT_time1a, LOAD_TIMESET_ROLLOUT, glui_bounds);
+
   SPINNER_timebounds = glui_bounds->add_spinner_to_panel(ROLLOUT_time1a, _("Time:"), GLUI_SPINNER_FLOAT, &glui_time);
   glui_bounds->add_spinner_to_panel(ROLLOUT_time1a, _("Offset:"), GLUI_SPINNER_FLOAT, &timeoffset);
   BUTTON_SETTIME = glui_bounds->add_button_to_panel(ROLLOUT_time1a, _("Set"), SET_TIME, TimeBoundCB);
 
-  ROLLOUT_time2 = glui_bounds->add_rollout_to_panel(PANEL_loadbounds, _("Time bounds"), false);
+  ROLLOUT_time2 = glui_bounds->add_rollout_to_panel(PANEL_loadbounds, _("Set time limits"), false, LOAD_TIMEBOUND_ROLLOUT, LoadRolloutCB);
+  INSERT_ROLLOUT(ROLLOUT_time2, glui_bounds);
+  ADDPROCINFO(loadprocinfo, nloadprocinfo, ROLLOUT_time2, LOAD_TIMEBOUND_ROLLOUT, glui_bounds);
 
   glui_bounds->add_button_to_panel(ROLLOUT_time2, _("Use FDS start/end times"), SET_FDS_TIMES, TimeBoundCB);
 
@@ -5266,11 +5289,14 @@ hvacductboundsCPP.setup("hvac", ROLLOUT_hvacduct, hvacductbounds_cpp, nhvacductb
   TimeBoundCB(TBOUNDS_USE);
   TimeBoundCB(TBOUNDS);
 
-  ROLLOUT_box_specify = glui_bounds->add_rollout_to_panel(ROLLOUT_time, "Spatial bounds - Load data in specified meshes", false);
+  ROLLOUT_box_specify = glui_bounds->add_rollout_to_panel(ROLLOUT_time, "Set spatial limits", false, LOAD_SPACEBOUND_ROLLOUT, LoadRolloutCB);
+  INSERT_ROLLOUT(ROLLOUT_box_specify, glui_bounds);
+  ADDPROCINFO(loadprocinfo, nloadprocinfo, ROLLOUT_box_specify, LOAD_SPACEBOUND_ROLLOUT, glui_bounds);
+
   PANEL_box_specifyab = glui_bounds->add_panel_to_panel(ROLLOUT_box_specify, "", false);
   PANEL_box_specifya = glui_bounds->add_panel_to_panel(PANEL_box_specifyab, "", false);
   glui_bounds->add_column_to_panel(PANEL_box_specifyab, false);
-  PANEL_load_data = glui_bounds->add_panel_to_panel(PANEL_box_specifyab, "Load data for meshes", true);
+  PANEL_load_data = glui_bounds->add_panel_to_panel(PANEL_box_specifyab, "Load data for meshes that", true);
 
   CHECKBOX_show_intersection_box = glui_bounds->add_checkbox_to_panel(PANEL_box_specifya, "Show intersection box", &show_intersection_box, USEMESH_DRAW_BOX, MeshBoundCB);
   CHECKBOX_show_intersected_meshes = glui_bounds->add_checkbox_to_panel(PANEL_box_specifya, "Show specified meshes", &show_intersected_meshes, USEMESH_DRAW_MESH, MeshBoundCB);
@@ -5278,12 +5304,12 @@ hvacductboundsCPP.setup("hvac", ROLLOUT_hvacduct, hvacductbounds_cpp, nhvacductb
   CHECKBOX_load_only_when_unloaded = glui_bounds->add_checkbox_to_panel(PANEL_box_specifya, "Load a file only if unloaded", &load_only_when_unloaded, USEMESH_LOAD_WHEN_LOADED, MeshBoundCB);
 
   RADIO_intersect_option = glui_bounds->add_radiogroup_to_panel(PANEL_load_data, &glui_mesh_intersection_option, USEMESH_XYZ, MeshBoundCB);
-  glui_bounds->add_radiobutton_to_group(RADIO_intersect_option, _("that intersect box"));
-  glui_bounds->add_radiobutton_to_group(RADIO_intersect_option, _("completely within box"));
+  glui_bounds->add_radiobutton_to_group(RADIO_intersect_option, _("intersect box"));
+  glui_bounds->add_radiobutton_to_group(RADIO_intersect_option, _("are completely within box"));
 
 
   PANEL_mesh = glui_bounds->add_panel_to_panel(ROLLOUT_box_specify, "", false);
-  PANEL_mesh_minmax = glui_bounds->add_panel_to_panel(PANEL_mesh, "Specify meshes by setting intersection box");
+  PANEL_mesh_minmax = glui_bounds->add_panel_to_panel(PANEL_mesh, "Specify meshes by setting the intersection box");
   PANEL_meshxyz[0] = glui_bounds->add_panel_to_panel(PANEL_mesh_minmax, "", false);
   PANEL_meshxyz[2] = glui_bounds->add_panel_to_panel(PANEL_mesh_minmax, "", false);
   PANEL_meshxyz[4] = glui_bounds->add_panel_to_panel(PANEL_mesh_minmax, "", false);
