@@ -2548,11 +2548,15 @@ GLUI_Rollout *ROLLOUT_isosurface = NULL;
 GLUI_Rollout *ROLLOUT_boundary_settings = NULL;
 GLUI_Rollout *ROLLOUT_particle_settings=NULL;
 GLUI_Rollout *ROLLOUT_particle_histogram = NULL;
+GLUI_Rollout *ROLLOUT_files = NULL;
+GLUI_Rollout *ROLLOUT_split=NULL;
+GLUI_Rollout *ROLLOUT_autoload = NULL;
+GLUI_Rollout *ROLLOUT_time1a = NULL;
+GLUI_Rollout *ROLLOUT_box_specify = NULL;
+GLUI_Panel *ROLLOUT_time2=NULL;
+
 GLUI_Panel *PANEL_keep_bound_data = NULL;
 GLUI_Panel *PANEL_keep_plot3d_data = NULL;
-GLUI_Rollout *ROLLOUT_files = NULL;
-GLUI_Rollout     *ROLLOUT_split=NULL;
-
 GLUI_Panel *PANEL_vector1=NULL, *PANEL_vector2=NULL;
 GLUI_Panel *PANEL_partread = NULL;
 GLUI_Panel *PANEL_slice_misc=NULL, *PANEL_slice_vector=NULL, *PANEL_showslice=NULL;
@@ -2602,8 +2606,6 @@ GLUI_Panel *PANEL_mesh_min = NULL;
 GLUI_Panel *PANEL_meshxyz[6];
 GLUI_Panel *PANEL_mesh_max = NULL;
 GLUI_Panel *PANEL_mesh_minmax = NULL;
-GLUI_Panel *PANEL_time2=NULL;
-GLUI_Panel *PANEL_time1a=NULL;
 GLUI_Panel *PANEL_time2a=NULL;
 GLUI_Panel *PANEL_time2b=NULL;
 GLUI_Panel *PANEL_time2c=NULL;
@@ -2622,10 +2624,8 @@ GLUI_Panel *PANEL_slice_plot2dc = NULL;
 GLUI_Panel *PANEL_slice_plot2dd = NULL;
 GLUI_Panel *PANEL_slice_plot2de = NULL;
 GLUI_Panel *PANEL_slice_plot2df = NULL;
-GLUI_Panel *PANEL_autoload = NULL;
 GLUI_Panel *PANEL_loadbounds = NULL;
 GLUI_Panel *PANEL_box_option = NULL;
-GLUI_Panel *PANEL_box_specify = NULL;
 GLUI_Panel *PANEL_box_specifya = NULL;
 GLUI_Panel *PANEL_box_specifyb = NULL;
 GLUI_Panel *PANEL_box_specifyab = NULL;
@@ -5228,48 +5228,46 @@ hvacductboundsCPP.setup("hvac", ROLLOUT_hvacduct, hvacductbounds_cpp, nhvacductb
 
   PANEL_loadbounds = glui_bounds->add_panel_to_panel(ROLLOUT_time,"", GLUI_PANEL_NONE);
 
-  PANEL_autoload = glui_bounds->add_panel_to_panel(PANEL_loadbounds,_("Auto load"));
-  glui_bounds->add_checkbox_to_panel(PANEL_autoload, _("Auto load at startup"), &loadfiles_at_startup, STARTUP, BoundBoundCB);
-  glui_bounds->add_button_to_panel(PANEL_autoload, _("Save auto load file list"), SAVE_FILE_LIST, BoundBoundCB);
-  glui_bounds->add_button_to_panel(PANEL_autoload, _("Auto load now"), LOAD_FILES, BoundBoundCB);
+  ROLLOUT_autoload = glui_bounds->add_rollout_to_panel(PANEL_loadbounds,_("Auto load"), false);
+  glui_bounds->add_checkbox_to_panel(ROLLOUT_autoload, _("Auto load at startup"), &loadfiles_at_startup, STARTUP, BoundBoundCB);
+  glui_bounds->add_button_to_panel(ROLLOUT_autoload, _("Save auto load file list"), SAVE_FILE_LIST, BoundBoundCB);
+  glui_bounds->add_button_to_panel(ROLLOUT_autoload, _("Auto load now"), LOAD_FILES, BoundBoundCB);
 
-  PANEL_time1a = glui_bounds->add_panel_to_panel(PANEL_loadbounds, "Set time", true);
-  SPINNER_timebounds = glui_bounds->add_spinner_to_panel(PANEL_time1a, _("Time:"), GLUI_SPINNER_FLOAT, &glui_time);
-  glui_bounds->add_spinner_to_panel(PANEL_time1a, _("Offset:"), GLUI_SPINNER_FLOAT, &timeoffset);
-  BUTTON_SETTIME = glui_bounds->add_button_to_panel(PANEL_time1a, _("Set"), SET_TIME, TimeBoundCB);
+  ROLLOUT_time1a = glui_bounds->add_rollout_to_panel(PANEL_loadbounds, "Set time", false);
+  SPINNER_timebounds = glui_bounds->add_spinner_to_panel(ROLLOUT_time1a, _("Time:"), GLUI_SPINNER_FLOAT, &glui_time);
+  glui_bounds->add_spinner_to_panel(ROLLOUT_time1a, _("Offset:"), GLUI_SPINNER_FLOAT, &timeoffset);
+  BUTTON_SETTIME = glui_bounds->add_button_to_panel(ROLLOUT_time1a, _("Set"), SET_TIME, TimeBoundCB);
 
-  glui_bounds->add_column_to_panel(PANEL_loadbounds, false);
+  ROLLOUT_time2 = glui_bounds->add_rollout_to_panel(PANEL_loadbounds, _("Time bounds"), false);
 
-  PANEL_time2 = glui_bounds->add_panel_to_panel(PANEL_loadbounds, _("Time bounds"), true);
+  glui_bounds->add_button_to_panel(ROLLOUT_time2, _("Use FDS start/end times"), SET_FDS_TIMES, TimeBoundCB);
 
-  glui_bounds->add_button_to_panel(PANEL_time2, _("Use FDS start/end times"), SET_FDS_TIMES, TimeBoundCB);
-
-  PANEL_time2a = glui_bounds->add_panel_to_panel(PANEL_time2, "", false);
+  PANEL_time2a = glui_bounds->add_panel_to_panel(ROLLOUT_time2, "", false);
   SPINNER_tload_begin = glui_bounds->add_spinner_to_panel(PANEL_time2a, _("min time"), GLUI_SPINNER_FLOAT, &tload_begin, TBOUNDS, TimeBoundCB);
   glui_bounds->add_column_to_panel(PANEL_time2a, false);
   CHECKBOX_use_tload_begin = glui_bounds->add_checkbox_to_panel(PANEL_time2a, "", &use_tload_begin, TBOUNDS_USE, TimeBoundCB);
 
-  PANEL_time2b = glui_bounds->add_panel_to_panel(PANEL_time2, "", false);
+  PANEL_time2b = glui_bounds->add_panel_to_panel(ROLLOUT_time2, "", false);
   SPINNER_tload_end = glui_bounds->add_spinner_to_panel(PANEL_time2b, _("max time"), GLUI_SPINNER_FLOAT, &tload_end, TBOUNDS, TimeBoundCB);
   glui_bounds->add_column_to_panel(PANEL_time2b, false);
   CHECKBOX_use_tload_end = glui_bounds->add_checkbox_to_panel(PANEL_time2b, "", &use_tload_end, TBOUNDS_USE, TimeBoundCB);
 
-  PANEL_time2c = glui_bounds->add_panel_to_panel(PANEL_time2, "", false);
+  PANEL_time2c = glui_bounds->add_panel_to_panel(ROLLOUT_time2, "", false);
   SPINNER_tload_skip = glui_bounds->add_spinner_to_panel(PANEL_time2c, _("frame skip"), GLUI_SPINNER_INT, &tload_skip, TBOUNDS, TimeBoundCB);
   glui_bounds->add_column_to_panel(PANEL_time2c, false);
   CHECKBOX_use_tload_skip = glui_bounds->add_checkbox_to_panel(PANEL_time2c, "", &use_tload_skip, TBOUNDS_USE, TimeBoundCB);
   SPINNER_tload_skip->set_int_limits(0, 1000);
 
-  glui_bounds->add_button_to_panel(PANEL_time2, _("Reload all data"), RELOAD_ALL_DATA, TimeBoundCB);
+  glui_bounds->add_button_to_panel(ROLLOUT_time2, _("Reload all data"), RELOAD_ALL_DATA, TimeBoundCB);
 #ifdef pp_LOAD_INC
-  glui_bounds->add_button_to_panel(PANEL_time2, _("Reload new data"), RELOAD_INCREMENTAL_DATA, TimeBoundCB);
+  glui_bounds->add_button_to_panel(ROLLOUT_time2, _("Reload new data"), RELOAD_INCREMENTAL_DATA, TimeBoundCB);
 #endif
 
   TimeBoundCB(TBOUNDS_USE);
   TimeBoundCB(TBOUNDS);
 
-  PANEL_box_specify = glui_bounds->add_panel_to_panel(ROLLOUT_time, "Spatial bounds - Load data in specified meshes", true);
-  PANEL_box_specifyab = glui_bounds->add_panel_to_panel(PANEL_box_specify, "", false);
+  ROLLOUT_box_specify = glui_bounds->add_rollout_to_panel(ROLLOUT_time, "Spatial bounds - Load data in specified meshes", false);
+  PANEL_box_specifyab = glui_bounds->add_panel_to_panel(ROLLOUT_box_specify, "", false);
   PANEL_box_specifya = glui_bounds->add_panel_to_panel(PANEL_box_specifyab, "", false);
   glui_bounds->add_column_to_panel(PANEL_box_specifyab, false);
   PANEL_load_data = glui_bounds->add_panel_to_panel(PANEL_box_specifyab, "Load data for meshes", true);
@@ -5284,7 +5282,7 @@ hvacductboundsCPP.setup("hvac", ROLLOUT_hvacduct, hvacductbounds_cpp, nhvacductb
   glui_bounds->add_radiobutton_to_group(RADIO_intersect_option, _("completely within box"));
 
 
-  PANEL_mesh = glui_bounds->add_panel_to_panel(PANEL_box_specify, "", false);
+  PANEL_mesh = glui_bounds->add_panel_to_panel(ROLLOUT_box_specify, "", false);
   PANEL_mesh_minmax = glui_bounds->add_panel_to_panel(PANEL_mesh, "Specify meshes by setting intersection box");
   PANEL_meshxyz[0] = glui_bounds->add_panel_to_panel(PANEL_mesh_minmax, "", false);
   PANEL_meshxyz[2] = glui_bounds->add_panel_to_panel(PANEL_mesh_minmax, "", false);
