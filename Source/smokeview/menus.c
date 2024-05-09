@@ -7967,6 +7967,7 @@ void InitLoadMultiSubMenu(int **loadsubmslicemenuptr, int *nmultisliceloadedptr)
       nloadsubmslicemenu++;
     }
     STRCPY(menulabel, "");
+    if(mslicei->loadable == 0)strcat(menulabel, "***");
     if(mslicei->loaded==1){
       STRCAT(menulabel, "*");
       nmultisliceloaded++;
@@ -7986,6 +7987,7 @@ void InitLoadMultiSubMenu(int **loadsubmslicemenuptr, int *nmultisliceloadedptr)
     if(sd->compression_type == COMPRESSED_ZLIB){
       strcat(menulabel, "(ZLIB)");
     }
+    if(mslicei->loadable == 0)strcat(menulabel, " - offline");
     glutAddMenuEntry(menulabel, i);
   }
   *loadsubmslicemenuptr = loadsubmslicemenu;
@@ -8472,6 +8474,7 @@ void InitMultiVectorSubMenu(int **loadsubmvslicemenuptr){
     }
 
     STRCPY(menulabel, "");
+    if(mvslicei->loadable == 0)strcat(menulabel, "***");
     if(mvslicei->loaded==1){
       STRCAT(menulabel, "*");
     }
@@ -8488,6 +8491,7 @@ void InitMultiVectorSubMenu(int **loadsubmvslicemenuptr){
     if(si->compression_type == COMPRESSED_ZLIB){
       STRCAT(menulabel, "(ZLIB)");
     }
+    if(mvslicei->loadable == 0)strcat(menulabel, " - offline");
     glutAddMenuEntry(menulabel, i);
     if(i==0||strcmp(si->label.longlabel, sim1->label.longlabel)!=0){
       nloadsubmvslicemenu++;
@@ -8829,10 +8833,14 @@ static int menu_count=0;
     mslicei = multisliceinfo + i;
     mslicei->loaded=0;
     mslicei->display=0;
+    mslicei->loadable = 0;
     for(j=0;j<mslicei->nslices;j++){
       slicedata *sd;
+      meshdata *meshi;
 
       sd = sliceinfo + mslicei->islices[j];
+      meshi = meshinfo + sd->blocknumber;
+      if(meshi->use == 1)mslicei->loadable = 1;
       if(sd->loaded==1)mslicei->loaded++;
       if(sd->display==1)mslicei->display++;
     }
@@ -8854,12 +8862,18 @@ static int menu_count=0;
     int j;
 
     mvslicei = multivsliceinfo + i;
-    mvslicei->loaded=0;
-    mvslicei->display=0;
+    mvslicei->loaded   = 0;
+    mvslicei->display  = 0;
+    mvslicei->loadable = 0;
     for(j=0;j<mvslicei->nvslices;j++){
       vslicedata *vd;
+      meshdata *meshi;
+      slicedata *valslice;
 
       vd = vsliceinfo + mvslicei->ivslices[j];
+      valslice = sliceinfo + vd->ival;
+      meshi = meshinfo + valslice->blocknumber;
+      if(meshi->use==1)mvslicei->loadable = 1;
       if(vd->loaded==1)mvslicei->loaded++;
       if(vd->display==1)mvslicei->display++;
     }

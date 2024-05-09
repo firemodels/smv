@@ -1499,7 +1499,7 @@ typedef struct _subslicemenudata {
 
 typedef struct _multislicedata {
   int seq_id, autoload;
-  int loaded, display;
+  int loaded, display, loadable;
   int *islices, nslices;
   int slice_filetype;
   char menulabel[128];
@@ -1510,7 +1510,7 @@ typedef struct _multislicedata {
 
 typedef struct _multivslicedata {
   int seq_id, autoload;
-  int loaded,display,mvslicefile_labelindex;
+  int loaded,display,mvslicefile_labelindex,loadable;
   int nvslices;
   int *ivslices;
   char menulabel[128];

@@ -3993,6 +3993,7 @@ void MeshBoundCB(int var){
   case USEMESH_DRAW_MESH:
     break;
   case USEMESH_XYZ:
+    updatemenu = 1;
     for(i = 0;i < nmeshes;i++){
       meshdata *meshi;
 

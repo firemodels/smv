@@ -6153,6 +6153,7 @@ void FreeSliceData(void){
       multislicedata *mslicei;
 
       mslicei = multisliceinfo+i;
+      mslicei->loadable = 1;
       FREEMEMORY(mslicei->islices);
     }
     FREEMEMORY(multisliceinfo);
@@ -13405,6 +13406,7 @@ int ReadIni2(char *inifile, int localfile){
 
           mslicei = multisliceinfo + seq_id;
           mslicei->autoload = 1;
+          mslicei->loadable = 1;
         }
       }
       update_load_files = 1;
