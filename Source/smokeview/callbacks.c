@@ -986,13 +986,6 @@ void MouseCB(int button, int state, int xm, int ym){
   }
 #endif
 
-  {
-    float delta_time;
-
-    delta_time = glutGet(GLUT_ELAPSED_TIME)/1000.0 - timer_reshape;
-    if(delta_time<DELTA_TIME)return;
-  }
-
   if(autofreeze_volsmoke==ON&&nvolsmoke_loaded>0){
     if(state==GLUT_DOWN)GLUIUpdateFreeze(ON);
     if(state==GLUT_UP)GLUIUpdateFreeze(OFF);
@@ -1455,12 +1448,6 @@ void MouseDragCB(int xm, int ym){
     ym *= 2;
   }
 #endif
-  {
-    float delta_time;
-
-    delta_time = glutGet(GLUT_ELAPSED_TIME)/1000.0 - timer_reshape;
-    if(delta_time<DELTA_TIME)return;
-  }
 
   in_external=0;
 #ifdef pp_GPUTHROTTLE
@@ -3643,7 +3630,6 @@ void SetScreenSize(int *width, int *height){
 /* ------------------ ReshapeCB ------------------------ */
 
 void ReshapeCB(int width, int height){
-  START_TIMER(timer_reshape);
   if(disable_reshape==1)return;
   updatemenu=1;
   if(update_reshape==0){
