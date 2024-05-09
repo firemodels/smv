@@ -269,6 +269,23 @@ char *ProcessCommandLine(CommandlineArgs *args) {
       NewMemory((void **)&filename_local, (unsigned int)filelength);
       OpenSMVFile(filename_local, filelength, &openfile);
       if(openfile == 1 && ResizeMemory((void **)&filename_local, strlen(filename_local) + 1) != 0){
+        char *dirlast = NULL, *caselast = NULL;
+
+        FREEMEMORY(smokeview_casedir);
+        FREEMEMORY(fdsprefix);
+        NewMemory((void **)&smokeview_casedir, strlen(filename_local) + 1);
+        NewMemory((void **)&fdsprefix, strlen(filename_local) + 1);
+        strcpy(smokeview_casedir, filename_local);
+        dirlast = strrchr(smokeview_casedir, '\\');
+        if(dirlast != NULL){
+          strcpy(filename_local, dirlast + 1);
+          strcpy(fdsprefix, filename_local);
+          caselast = strrchr(fdsprefix, '.');
+          if(caselast != NULL)caselast[0] = 0;
+          dirlast[1] = 0;
+          len_casename = strlen(filename_local);
+        }
+        CHDIR(smokeview_casedir);
       }
       else{
         FREEMEMORY(filename_local);
