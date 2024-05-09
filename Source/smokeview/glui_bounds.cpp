@@ -2625,9 +2625,7 @@ GLUI_Panel *PANEL_slice_plot2dd = NULL;
 GLUI_Panel *PANEL_slice_plot2de = NULL;
 GLUI_Panel *PANEL_slice_plot2df = NULL;
 GLUI_Panel *PANEL_loadbounds = NULL;
-GLUI_Panel *PANEL_box_specifya = NULL;
-GLUI_Panel *PANEL_box_specifyb = NULL;
-GLUI_Panel *PANEL_box_specifyab = NULL;
+GLUI_Panel *PANEL_intersection_box = NULL;
 
 GLUI_Spinner *SPINNER_partdrawskip = NULL;
 GLUI_Spinner *SPINNER_sliceval_ndigits = NULL;
@@ -5291,20 +5289,18 @@ hvacductboundsCPP.setup("hvac", ROLLOUT_hvacduct, hvacductbounds_cpp, nhvacductb
   INSERT_ROLLOUT(ROLLOUT_box_specify, glui_bounds);
   ADDPROCINFO(loadprocinfo, nloadprocinfo, ROLLOUT_box_specify, LOAD_SPACEBOUND_ROLLOUT, glui_bounds);
 
-  PANEL_box_specifyab = glui_bounds->add_panel_to_panel(ROLLOUT_box_specify, "", false);
-  PANEL_box_specifya = glui_bounds->add_panel_to_panel(PANEL_box_specifyab, "", false);
-  glui_bounds->add_column_to_panel(PANEL_box_specifyab, false);
-  PANEL_box_specifyb = glui_bounds->add_panel_to_panel(PANEL_box_specifyab, "", false);
+  PANEL_intersection_box = glui_bounds->add_panel_to_panel(ROLLOUT_box_specify, "", false);
+  PANEL_intersection_box->set_alignment(GLUI_ALIGN_LEFT);
+  CHECKBOX_show_intersected_meshes = glui_bounds->add_checkbox_to_panel(PANEL_intersection_box, "Show selected meshes", &show_intersected_meshes, USEMESH_DRAW_MESH, MeshBoundCB);
+  glui_bounds->add_checkbox_to_panel(PANEL_intersection_box, "Show selected mesh indices", &show_mesh_labels);
+  CHECKBOX_load_only_when_unloaded = glui_bounds->add_checkbox_to_panel(PANEL_intersection_box, "Load a file only if unloaded", &load_only_when_unloaded, USEMESH_LOAD_WHEN_LOADED, MeshBoundCB);
 
-  CHECKBOX_show_intersection_box = glui_bounds->add_checkbox_to_panel(PANEL_box_specifya, "Show intersection box", &show_intersection_box, USEMESH_DRAW_BOX, MeshBoundCB);
-  CHECKBOX_show_intersected_meshes = glui_bounds->add_checkbox_to_panel(PANEL_box_specifya, "Show selected meshes", &show_intersected_meshes, USEMESH_DRAW_MESH, MeshBoundCB);
-  glui_bounds->add_checkbox_to_panel(PANEL_box_specifyb, "Show selected mesh indices", &show_mesh_labels);
-  CHECKBOX_load_only_when_unloaded = glui_bounds->add_checkbox_to_panel(PANEL_box_specifyb, "Load a file only if unloaded", &load_only_when_unloaded, USEMESH_LOAD_WHEN_LOADED, MeshBoundCB);
-
-  PANEL_mesh = glui_bounds->add_panel_to_panel(ROLLOUT_box_specify, "Select meshes by setting the intersection box");
+  PANEL_mesh = glui_bounds->add_panel_to_panel(ROLLOUT_box_specify, "Select meshes by specifying the intersection box");
   RADIO_intersect_option = glui_bounds->add_radiogroup_to_panel(PANEL_mesh, &glui_mesh_intersection_option, USEMESH_XYZ, MeshBoundCB);
   glui_bounds->add_radiobutton_to_group(RADIO_intersect_option, _("Select meshes that intersect the box"));
   glui_bounds->add_radiobutton_to_group(RADIO_intersect_option, _("Select meshes that are completely within the box"));
+  CHECKBOX_show_intersection_box = glui_bounds->add_checkbox_to_panel(PANEL_mesh, "Show intersection box", &show_intersection_box, USEMESH_DRAW_BOX, MeshBoundCB);
+
   PANEL_mesh_minmax = glui_bounds->add_panel_to_panel(PANEL_mesh, "",false);
   PANEL_meshxyz[0] = glui_bounds->add_panel_to_panel(PANEL_mesh_minmax, "", false);
   PANEL_meshxyz[2] = glui_bounds->add_panel_to_panel(PANEL_mesh_minmax, "", false);
