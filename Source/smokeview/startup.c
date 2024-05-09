@@ -934,6 +934,7 @@ void InitOpenGL(int option){
       multislicedata *mslicei;
 
       mslicei = multisliceinfo + i;
+      mslicei->loadable = 1;
 
       if(mslicei->loaded==1)nstartup++;
    }
@@ -944,6 +945,7 @@ void InitOpenGL(int option){
         multislicedata *mslicei;
 
         mslicei = multisliceinfo + i;
+        mslicei->loadable = 1;
         if(mslicei->loaded==1)fprintf(fileout," %i\n",i);
      }
    }
