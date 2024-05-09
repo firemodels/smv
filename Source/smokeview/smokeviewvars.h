@@ -408,6 +408,8 @@ SVEXTERN int SVDECL(global_have_global_bound_file, 0);
 SVEXTERN FILE_SIZE  SVDECL(global_part_boundsize, 0);
 SVEXTERN int SVDECL(nmemory_ids, 0);
 
+SVEXTERN int SVDECL(glui_mesh_intersection_option, 0);
+
 //---------------------------------------------------------------
 
 SVEXTERN int SVDECL(partfast, 1);
