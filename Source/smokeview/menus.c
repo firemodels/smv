@@ -7987,7 +7987,7 @@ void InitLoadMultiSubMenu(int **loadsubmslicemenuptr, int *nmultisliceloadedptr)
     if(sd->compression_type == COMPRESSED_ZLIB){
       strcat(menulabel, "(ZLIB)");
     }
-    if(mslicei->loadable == 0)strcat(menulabel, " - unavailable, meshes with this data deselected");
+    if(mslicei->loadable == 0)strcat(menulabel, " - unavailable, all meshes with this data deselected");
     glutAddMenuEntry(menulabel, i);
   }
   *loadsubmslicemenuptr = loadsubmslicemenu;
@@ -8491,7 +8491,7 @@ void InitMultiVectorSubMenu(int **loadsubmvslicemenuptr){
     if(si->compression_type == COMPRESSED_ZLIB){
       STRCAT(menulabel, "(ZLIB)");
     }
-    if(mvslicei->loadable == 0)strcat(menulabel, " - unavailable, meshes with this data deselected");
+    if(mvslicei->loadable == 0)strcat(menulabel, " - unavailable, all meshes with this data deselected");
     glutAddMenuEntry(menulabel, i);
     if(i==0||strcmp(si->label.longlabel, sim1->label.longlabel)!=0){
       nloadsubmvslicemenu++;
