@@ -1964,11 +1964,10 @@ by loading a temperature slice and setting the position to $x=0.5$, $z=1.5$ .}
 Data is loaded in smokeview by clicking the right mouse button and selecting one of the data types
 under the Load/Unload menu. Smokeview loads data for all available times and meshes by default.
 For large cases, it is useful to decrease the amount of data loaded in order to reduce load times .
-To do this, use the Data loading options tab of the Files/Data/Coloring dialog box
+To do this, use the Loading options tab of the Files/Data/Coloring dialog box
 illustrated in Figure \ref{figDataloading}.
-To open this dialog box select the Dialogs>File/Data/Coloring menu entry then select the Data loading options tab.
-To reduce the time interval over which
-data is loaded, specify a min and/or max time in this dialog box.
+To open this dialog box select the Dialogs>File/Data/Coloring menu entry then select the Loading options tab.
+To reduce the loading time interval, specify a min and/or max time.
 To reduce the number of meshes over which
 data is loaded specify an intersection box.
 The intersection box may be viewed by selecting the show intersection box checkbox.
@@ -1976,7 +1975,7 @@ The intersection box is colored red. The meshes that are contained within this b
 are drawn as outlines and colored black. Mesh indices (1 to number of meshes) may be displayed and used
 to set the intersection box to that mesh.
 Only data in meshes within the intersection box will
-then be loaded.
+then be loaded. Meshes can also be selected directly, allowing one to load data on a disjoint set of meshes.
 If the `Load a file only if unloaded` checkbox is selected and if the intersection box
 is expanded to include more meshes then only data in these extra meshes where data was not loaded before will be loaded
 (data will not be loaded twice).
@@ -1984,11 +1983,12 @@ is expanded to include more meshes then only data in these extra meshes where da
 \begin{figure}[bph]
 \centerline{
 \includegraphics[width=4.0in]{\SMVfigdir/figDataloading}}
-\caption[Dialog box for setting data loading constraints.]
-{Dialog box for setting data loading constraints.
-A subset of data files may be loaded by specifying min and/or max load times.
-Data may also be loaded on a selected subset of meshes.
-}\ \label{figDataloading}
+\caption[Dialog box for limiting data loaded by time or space.]
+{Dialog box for limiting data loaded by time or space.
+Data may be loaded within specified time bounds.
+Data may also be loaded from meshes within a specified box or from specified meshes.
+}
+\label{figDataloading}
 \end{figure}
 
 %---------------------------------------------------------------------------------
