@@ -1,6 +1,4 @@
 #!/bin/bash
-FED=1
-
 $QFDS -d Visualization      -t mplume5c8_bench.fds
 $QFDS -d Visualization      -t plume5c_bench.fds
 $QFDS -d Visualization -p 2 -t thouse5_bench.fds
@@ -12,9 +10,7 @@ $QFDS -d Visualization colorbar.fds
 $QFDS -d Visualization colorbar2.fds
 $QFDS -d Visualization colorconv.fds
 $QFDS -d Visualization color_geom.fds
-if [ "$FED" != "" ]; then
 $QFDS -d Visualization fed_test.fds
-fi
 $QFDS -d Visualization hvac_comp.fds
 $QFDS -d Visualization -p 8 -n 8 mplume5c8.fds
 $QFDS -d Visualization objects_dynamic.fds
