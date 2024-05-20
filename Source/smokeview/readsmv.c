@@ -4858,11 +4858,7 @@ void SetupIsosurface(isodata *isoi){
 void *SetupAllIsosurfaces(void *arg){
   int i;
 
-#ifdef pp_FED
-  for(i=0; i<nisoinfo-nfediso; i++){
-#else
   for(i = 0; i < nisoinfo; i++){
-#endif
     isodata *isoi;
 
     isoi = isoinfo + i;
@@ -4944,9 +4940,6 @@ int ParseISOFProcess(bufferstreamdata *stream, char *buffer, int *iiso_in, int *
   isoi->geomflag = geomflag;
   isoi->nlevels = 0;
   isoi->levels = NULL;
-#ifdef pp_FED
-  isoi->is_fed = 0;
-#endif
   isoi->memory_id = ++nmemory_ids;
   isoi->geom_nstatics = NULL;
   isoi->geom_ndynamics = NULL;
@@ -6059,9 +6052,6 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
   sd->ijk_max[1] = jj2;
   sd->ijk_min[2] = kk1;
   sd->ijk_max[2] = kk2;
-#ifdef pp_FED
-  sd->is_fed = 0;
-#endif
   sd->above_ground_level = above_ground_level;
   sd->have_agl_data = 0;
   sd->seq_id = nn_slice;
@@ -6784,10 +6774,6 @@ void GetSliceParmInfo(sliceparmdata *sp){
   nmultisliceinfo=sp->nmultisliceinfo;
   nvsliceinfo = sp->nvsliceinfo;
   nmultivsliceinfo =sp->nmultivsliceinfo;
-#ifdef pp_FED
-  nfedinfo =sp->nfedinfo;
-  nfediso =sp->nfediso;
-#endif
 }
 
 /* ------------------ SetSliceParmInfo ------------------------ */
@@ -6797,10 +6783,6 @@ void SetSliceParmInfo(sliceparmdata *sp){
   sp->nmultisliceinfo  = nmultisliceinfo;
   sp->nvsliceinfo      = nvsliceinfo;
   sp->nmultivsliceinfo = nmultivsliceinfo;
-#ifdef pp_FED
-  sp->nfedinfo         = nfedinfo;
-  sp->nfediso          = nfediso;
-#endif
 }
 
 /* ------------------ ReadSMV ------------------------ */
@@ -6825,11 +6807,7 @@ int ReadSMV_Init() {
   START_TIMER(processing_time);
 
 //** initialize multi-threading
-  if(runscript == 1
-#ifdef pp_FED
-    ||compute_fed == 1
-#endif
-    ){
+  if(runscript == 1){
     use_checkfiles_threads  = 0;
     use_ffmpeg_threads      = 0;
     use_readallgeom_threads = 0;
@@ -7841,16 +7819,10 @@ int ReadSMV_Parse(bufferstreamdata *stream) {
 
   FREEMEMORY(vsliceinfo);
   FREEMEMORY(sliceinfo);
-#ifdef pp_FED
-  FREEMEMORY(fedinfo);
-#endif
   if(nsliceinfo>0){
     if(NewMemory((void **)&vsliceinfo,         3*nsliceinfo*sizeof(vslicedata))==0    ||
        NewMemory((void **)&sliceinfo,            nsliceinfo*sizeof(slicedata))==0     ||
        NewMemory((void **)&sliceinfoptrs,        nsliceinfo*sizeof(slicedata *)) == 0 ||
-#ifdef pp_FED
-       NewMemory((void **)&fedinfo,              nsliceinfo*sizeof(feddata)) == 0     ||
-#endif
        NewMemory((void **)&subslice_menuindex,   nsliceinfo*sizeof(int))==0           ||
        NewMemory((void **)&msubslice_menuindex,  nsliceinfo*sizeof(int))==0           ||
        NewMemory((void **)&subvslice_menuindex,  nsliceinfo*sizeof(int))==0           ||
@@ -11841,10 +11813,6 @@ int ReadSMV_Configure(){
   nmultisliceinfo       = 0;
   nmultivsliceinfo      = 0;
   nvsliceinfo           = 0;
-#ifdef pp_FED
-  nfedinfo              = 0;
-  nfediso               = 0;
-#endif
   if(sliceparms_threads == NULL){
     sliceparms_threads = THREADinit(&n_sliceparms_threads, &use_sliceparms_threads, UpdateVSlices);
   }
@@ -12809,36 +12777,6 @@ int ReadIni2(char *inifile, int localfile){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%i %f %i", &scaled_font3d_height, &scaled_font3d_height2width, &scaled_font3d_thickness);
     }
-#ifdef pp_FED
-    if(MatchINI(buffer, "FEDCOLORBAR") == 1){
-      char *fbuff;
-
-      fgets(buffer, 255, stream);
-      TrimBack(buffer);
-      fbuff = TrimFront(buffer);
-      if(strlen(fbuff)>0)strcpy(default_fed_colorbar, fbuff);
-    }
-    if(MatchINI(buffer, "CSV") == 1){
-      int csv_load=0;
-
-      fgets(buffer, 255, stream);
-      sscanf(buffer, "%i", &csv_load);
-      if(csv_load == 1)update_csv_load = 1;
-      continue;
-    }
-    if(MatchINI(buffer, "FED") == 1){
-      fgets(buffer, 255, stream);
-      sscanf(buffer, "%i", &regenerate_fed);
-      ONEORZERO(regenerate_fed);
-      continue;
-    }
-    if(MatchINI(buffer, "SHOWFEDAREA") == 1){
-      fgets(buffer, 255, stream);
-      sscanf(buffer, "%i", &show_fed_area);
-      ONEORZERO(show_fed_area);
-      continue;
-    }
-#endif
     if(MatchINI(buffer, "USENEWDRAWFACE") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%i", &use_new_drawface);
@@ -16998,12 +16936,6 @@ void WriteIni(int flag,char *filename){
 
   fprintf(fileout, "CSV\n");
   fprintf(fileout, " %i\n", csv_loaded);
-#ifdef pp_FED
-  fprintf(fileout, "FED\n");
-  fprintf(fileout," %i\n",regenerate_fed);
-  fprintf(fileout, "FEDCOLORBAR\n");
-  fprintf(fileout, " %s\n", default_fed_colorbar);
-#endif
   fprintf(fileout, "LOADINC\n");
   fprintf(fileout, " %i\n", load_incremental);
   fprintf(fileout, "NOPART\n");
@@ -17012,10 +16944,6 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %i %i %i\n", partfast, use_partload_threads, n_partload_threads);
   fprintf(fileout, "RESEARCHMODE\n");
   fprintf(fileout, " %i %i %f %i %i %i %i %i\n", research_mode, 1, colorbar_shift, ncolorlabel_digits, force_fixedpoint, ngridloc_digits, sliceval_ndigits, force_exponential);
-#ifdef pp_FED
-  fprintf(fileout, "SHOWFEDAREA\n");
-  fprintf(fileout, " %i\n", show_fed_area);
-#endif
   fprintf(fileout, "SLICEAVERAGE\n");
   fprintf(fileout, " %i %f %i\n", slice_average_flag, slice_average_interval, vis_slice_average);
   fprintf(fileout, "SMOKELOAD\n");
