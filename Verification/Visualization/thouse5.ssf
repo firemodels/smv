@@ -395,6 +395,8 @@ LABEL
   render two left/right stereo images
 
 UNLOADALL
+LOADISO
+ TEMPERATURE: 30.0, 100.0
 LOADINIFILE
  thouse5_lr_stereo.ini
 SETTIMEVAL
