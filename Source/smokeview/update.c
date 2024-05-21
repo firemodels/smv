@@ -635,6 +635,7 @@ void UpdateShow(void){
   }
   if(showsmoke==1||showpatch==1||showslice==1||showvslice==1||showzone==1||showiso==1)RenderTime=1;
   if(showtours==1||show3dsmoke==1||touring==1||showvolrender==1)RenderTime=1;
+  if(showhvacflag == 1)RenderTime = 1;
   if(showshooter==1)RenderTime=1;
   if(plotstate==STATIC_PLOTS&&nplot3dloaded>0&&plotn>0&&plotn<=numplot3dvars)showplot3d=1;
   if(showplot3d==1){
