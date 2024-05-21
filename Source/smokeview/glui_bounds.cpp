@@ -785,7 +785,7 @@ void bounds_dialog::CB(int var){
 
     // quantity radio button
     case BOUND_VAL_TYPE:
-      if(all_boundsi == NULL)break;
+      if(all_bounds == NULL)break;
       valtype_save = bounds.set_valtype;
       memcpy(&bounds, all_boundsi, sizeof(cpp_boundsdata));
       bounds.set_valtype = valtype_save;
@@ -819,7 +819,7 @@ void bounds_dialog::CB(int var){
     case BOUND_VALMIN:
       bounds.valmin[BOUND_SET_MIN] = bounds.glui_valmin;
       bounds.set_valmin            = BOUND_SET_MIN;
-      memcpy(all_boundsi, &bounds, sizeof(cpp_boundsdata));
+      if(all_bounds != NULL)memcpy(all_boundsi, &bounds, sizeof(cpp_boundsdata));
       if(RADIO_set_valmin!=NULL)RADIO_set_valmin->set_int_val(BOUND_SET_MIN);
       if(InResearchMode()!=research_mode_cpp){
         SetResearchMode(1-research_mode_cpp);
@@ -828,7 +828,7 @@ void bounds_dialog::CB(int var){
     case BOUND_VALMAX:
       bounds.valmax[BOUND_SET_MAX] = bounds.glui_valmax;
       bounds.set_valmax = BOUND_SET_MAX;
-      memcpy(all_boundsi, &bounds, sizeof(cpp_boundsdata));
+      if(all_bounds != NULL)memcpy(all_boundsi, &bounds, sizeof(cpp_boundsdata));
       if(RADIO_set_valmax!=NULL)RADIO_set_valmax->set_int_val(BOUND_SET_MAX);
       if(InResearchMode()!=research_mode_cpp){
         SetResearchMode(1-research_mode_cpp);
@@ -837,17 +837,17 @@ void bounds_dialog::CB(int var){
 
       // min/max radio buttons
     case BOUND_SETVALMIN:
-      bounds.glui_valmin = all_boundsi->valmin[bounds.set_valmin];
+      if(all_bounds != NULL)bounds.glui_valmin = all_boundsi->valmin[bounds.set_valmin];
       if(EDIT_valmin!=NULL)EDIT_valmin->set_float_val(bounds.glui_valmin);
-      memcpy(all_boundsi, &bounds, sizeof(cpp_boundsdata));
+      if(all_bounds != NULL)memcpy(all_boundsi, &bounds, sizeof(cpp_boundsdata));
       if(InResearchMode()!=research_mode_cpp){
         SetResearchMode(1-research_mode_cpp);
       }
       break;
     case BOUND_SETVALMAX:
-      bounds.glui_valmax = all_boundsi->valmax[bounds.set_valmax];
+      if(all_bounds != NULL)bounds.glui_valmax = all_boundsi->valmax[bounds.set_valmax];
       if(EDIT_valmax!=NULL)EDIT_valmax->set_float_val(bounds.glui_valmax);
-      memcpy(all_boundsi, &bounds, sizeof(cpp_boundsdata));
+      if(all_bounds != NULL)memcpy(all_boundsi, &bounds, sizeof(cpp_boundsdata));
       if(InResearchMode()!=research_mode_cpp){
         SetResearchMode(1-research_mode_cpp);
       }
@@ -873,15 +873,15 @@ void bounds_dialog::CB(int var){
 
       // chop dialog boxes
     case BOUND_CHOPMIN:
-      all_boundsi->chopmin = bounds.chopmin;
+      if(all_bounds != NULL)all_boundsi->chopmin = bounds.chopmin;
       update_chop_colors = 1;
       break;
     case BOUND_CHOPMAX:
-      all_boundsi->chopmax = bounds.chopmax;
+      if(all_bounds != NULL)all_boundsi->chopmax = bounds.chopmax;
       update_chop_colors = 1;
       break;
     case BOUND_SETCHOPMIN:
-      all_boundsi->set_chopmin = bounds.set_chopmin;
+      if(all_bounds != NULL)all_boundsi->set_chopmin = bounds.set_chopmin;
       if(EDIT_chopmin!=NULL){
         if(bounds.set_chopmin==1){
           EDIT_chopmin->enable();
@@ -893,7 +893,7 @@ void bounds_dialog::CB(int var){
       update_chop_colors = 1;
       break;
     case BOUND_SETCHOPMAX:
-      all_boundsi->set_chopmax = bounds.set_chopmax;
+      if(all_bounds != NULL)all_boundsi->set_chopmax = bounds.set_chopmax;
       if(EDIT_chopmax!=NULL){
         if(bounds.set_chopmax==1){
           EDIT_chopmax->enable();
@@ -907,7 +907,7 @@ void bounds_dialog::CB(int var){
 
       // keep data checkbox
     case BOUND_CACHE_DATA:
-      {
+      if(all_bounds != NULL){
         int i;
 
         for(i = 0; i<nall_bounds; i++){
