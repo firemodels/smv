@@ -928,8 +928,16 @@ void BoundsUpdateSetup(int file_type){
   char **sorted_filenames;
 
   ninfo = GetNinfo(file_type);
-  globalboundsinfo = GetGlobalBoundsinfo(file_type);
-  sorted_filenames = GetSortedFilenames(file_type);
+  if(file_type == BOUND_PLOT3D){
+    FREEMEMORY(plot3dglobalboundsinfo);
+    FREEMEMORY(sorted_plot3d_filenames);
+    globalboundsinfo = NULL;
+    sorted_filenames = NULL;
+  }
+  else{
+    globalboundsinfo = GetGlobalBoundsinfo(file_type);
+    sorted_filenames = GetSortedFilenames(file_type);
+  }
 
   if(sorted_filenames == NULL){
     NewMemory((void **)&sorted_filenames, ninfo * sizeof(char *));

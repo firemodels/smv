@@ -3477,8 +3477,10 @@ void LoadUnloadMenu(int value){
         break;
       }
     }
+    int plot3d_loaded = 0;
     for(i=0;i<nplot3dinfo;i++){
       if(plot3dinfo[i].loaded==1){
+        plot3d_loaded = 1;
         ReadPlot3D(plot3dinfo[i].file,i,LOAD,&errorcode);
       }
     }
@@ -3541,9 +3543,9 @@ void LoadUnloadMenu(int value){
     }
     if(update_readiso_geom_wrapup == UPDATE_ISO_ALL_NOW)ReadIsoGeomWrapup(BACKGROUND);
     update_readiso_geom_wrapup = UPDATE_ISO_OFF;
-    UpdateSMVDynamic(smv_filename);
-  //  plotstate=DYNAMIC_PLOTS;
-  //  visParticles=1;
+
+    // reload .smv file only if a plot3d file is loaded
+    if(plot3d_loaded==1)UpdateSMVDynamic(smv_filename);
 
     //*** reload csv data
 

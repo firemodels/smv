@@ -3384,6 +3384,7 @@ int LuaSetBoundzipstep(lua_State *L) {
   return 1;
 }
 
+#ifdef pp_FED
 int LuaSetFed(lua_State *L) {
   int v = lua_tonumber(L, 1);
   int return_code = SetFed(v);
@@ -3397,7 +3398,7 @@ int LuaSetFedcolorbar(lua_State *L) {
   lua_pushnumber(L, return_code);
   return 1;
 }
-
+#endif
 int LuaSetIsozipstep(lua_State *L) {
   int v = lua_tonumber(L, 1);
   int return_code = SetIsozipstep(v);
@@ -3412,12 +3413,14 @@ int LuaSetNopart(lua_State *L) {
   return 1;
 }
 
+#ifdef pp_FED
 int LuaSetShowfedarea(lua_State *L) {
   int v = lua_tonumber(L, 1);
   int return_code = SetShowfedarea(v);
   lua_pushnumber(L, return_code);
   return 1;
 }
+#endif
 
 int LuaSetSliceaverage(lua_State *L) {
   int flag = lua_tonumber(L, 1);
@@ -5352,11 +5355,15 @@ static luaL_Reg const SMVLIB[] = {
     {"set_windowheight", LuaSetWindowheight},
 
     {"set_boundzipstep", LuaSetBoundzipstep},
+#ifdef pp_FED
     {"set_fed", LuaSetFed},
     {"set_fedcolorbar", LuaSetFedcolorbar},
+#endif
     {"set_isozipstep", LuaSetIsozipstep},
     {"set_nopart", LuaSetNopart},
+#ifdef pp_FED
     {"set_showfedarea", LuaSetShowfedarea},
+#endif
     {"set_sliceaverage", LuaSetSliceaverage},
     {"set_slicedataout", LuaSetSlicedataout},
     {"set_slicezipstep", LuaSetSlicezipstep},

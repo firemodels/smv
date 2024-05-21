@@ -1,5 +1,7 @@
 #!/bin/bash
 lockfile=/tmp/startXlock
+PAUSE=1
+XVFB=Xvfb
 GETNEWPORT () 
 {
   while [ -e $lockfile ] ; do
@@ -17,9 +19,7 @@ GETNEWPORT ()
 }
 
 if [ "`uname`" != "Darwin" ]; then
-  PAUSE=1
   echo "setting up graphics environment (pausing $PAUSE s)"
-  XVFB=Xvfb
   GETNEWPORT 
   $XVFB :$display_port -fp /usr/share/X11/fonts/misc -screen 0 1280x1024x24 &
   export SMV_ID=$!
