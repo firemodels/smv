@@ -1,7 +1,12 @@
 \documentclass[11pt,twoside]{book}
 
-\newcommand{\feda}{\input smv_vg_fed1.tex}
-%\newcommand{\feda}{}
+%\newcommand{\feda}{\input smv_vg_fed1.tex}
+%\newcommand{\fedb}{\section{fed\_test}\fdsinput{fed_test.fds}}
+%\newcommand{\fedc}{\section{fed\_test}\fdsinput{fed_test.ssf}}
+\newcommand{\feda}{}
+\newcommand{\fedb}{}
+\newcommand{\fedc}{}
+
 
 \UseRawInputEncoding
 
@@ -1714,8 +1719,7 @@ glasses are required to see the 3D stereo effect. }
 \label{FDScolorconv}
 \fdsinput{colorconv.fds}
 
-\section{fed\_test}
-\fdsinput{fed_test.fds}
+\fedb
 
 \section{plume5c}
 \label{FDSplume5c}
@@ -1760,8 +1764,7 @@ glasses are required to see the 3D stereo effect. }
 \label{SSFcolorconv}
 \fdsinput{colorconv.ssf}
 
-\section{fed\_test}
-\fdsinput{fed_test.ssf}
+\fedc
 
 \section{plume5c}
 \label{SSFplume5c}

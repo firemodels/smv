@@ -1182,11 +1182,15 @@ ventdata *GetCloseVent(meshdata *ventmesh, int ivent){
 /// @brief Re-read an *.smv file to read any updates.
 /// @param file The path to the *.smv file.
 void UpdateSMVDynamic(char *file){
+  INIT_PRINT_TIMER(smv_timer1);
   ReadSMVDynamic(file);
+  PRINT_TIMER(smv_timer1, "ReadSMVDynamic");
+  INIT_PRINT_TIMER(smv_timer2);
   UpdatePlot3dMenuLabels();
   InitPlot3dTimeList();
   UpdateTimes();
   GetGlobalPlot3DBounds();
+  PRINT_TIMER(smv_timer2, "UpdateSMVDynamic wrapup");
 }
 /* ------------------ ReadSMVDynamic ------------------------ */
 
