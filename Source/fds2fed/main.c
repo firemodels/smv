@@ -5,9 +5,6 @@
 #include <string.h>
 #include <math.h>
 #include "fds2fed.h"
-#include "string_util.h"
-#include "MALLOCC.h"
-#include "stdio_buffer.h"
 
 /* ------------------ usage ------------------------ */
 
@@ -54,12 +51,10 @@ int main(int argc, char **argv){
     PRINTVERSION("fds2fed", argv[0]);
     return 0;
   }
-
-  if(argc==1){
+    if(argc==1){
     PRINTVERSION("fds2fed ",argv[0]);
     return 0;
   }
-
   for(i=1;i<argc;i++){
     arg=argv[i];
     if(arg[0]=='-'&&strlen(arg)>1){
@@ -80,9 +75,8 @@ int main(int argc, char **argv){
       }
     }
   }
-
   if(smvbase!=NULL){
-    strcat(smvfile,smvbase);
+    strcpy(smvfile,smvbase);
     strcat(smvfile,".smv");
     FullFile(smvfullfile,sourcedir,smvfile);
   }
