@@ -58,9 +58,6 @@ int main(int argc, char **argv){
   for(i=1;i<argc;i++){
     arg=argv[i];
     if(arg[0]=='-'&&strlen(arg)>1){
-      char *key;
-
-      key = arg+1;
       switch(arg[1]){
       case 't':
         break;
