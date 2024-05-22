@@ -4136,7 +4136,7 @@ void DoNonStereo(void){
         FREEMEMORY(screeni->screenbuffer);
       }
     }
-    if(stop_rendering==1){
+    if(stop_rendering==1||stept==0){
       assert(render_skip>0);
       RenderState(RENDER_OFF);
     }

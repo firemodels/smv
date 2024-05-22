@@ -2003,14 +2003,14 @@ void ResetDefaultMenu(int var){
 
 void RenderState(int onoff){
   int scale = 1;
+  int n;
 
+  for(n = 0; n < nglobal_times; n++){
+    render_frame[n] = 0;
+  }
   if(onoff==RENDER_ON){
-    int n;
 
     if(render_status == RENDER_ON)return;
-    for(n = 0; n < nglobal_times; n++){
-      render_frame[n] = 0;
-    }
     render_status = RENDER_ON;
     render_firsttime = YES;
     update_screeninfo = 1;

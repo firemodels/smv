@@ -324,11 +324,11 @@ int GetRenderFileName(int view_mode, char *renderfile_dir, char *renderfile_full
       image_num = seqnum;
     }
     else{
-      if(render_skip > 1){
-        image_num = itimes / render_skip;
+      if(render_skip == 1 || render_skip == RENDER_CURRENT_SINGLE){
+        image_num = itimes;
       }
       else{
-        image_num = itimes;
+        image_num = itimes / render_skip;
       }
     }
     if(current_script_command!=NULL && IS_LOADRENDER){
