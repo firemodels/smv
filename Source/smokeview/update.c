@@ -1373,9 +1373,6 @@ void UpdateTimes(void){
 
   // allocate memory for individual timelist arrays
 
-  FREEMEMORY(render_frame);
-  if(nglobal_times>0)NewMemory((void **)&render_frame,nglobal_times*sizeof(int));
-
   for(i=0;i<ngeominfoptrs;i++){
     geomdata *geomi;
 
@@ -1473,27 +1470,11 @@ void UpdateTimes(void){
   if(nglobal_times>0)NewMemory((void **)&targtimeslist,  nglobal_times*sizeof(int));
   CheckMemory;
 
-  // reset render_frame array
-
   if(current_script_command!=NULL&&
     (current_script_command->command==SCRIPT_VOLSMOKERENDERALL||current_script_command->command==SCRIPT_ISORENDERALL)
     ){
     if(current_script_command->first==1){
-      int n;
-
-      for(n=0;n<nglobal_times;n++){
-        render_frame[n]=0;
-      }
       current_script_command->first=0;
-    }
-  }
-  else{
-    int n;
-
-    if(render_frame!=NULL){
-      for(n = 0; n<nglobal_times; n++){
-        render_frame[n] = 0;
-      }
     }
   }
 

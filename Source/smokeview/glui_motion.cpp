@@ -2764,13 +2764,6 @@ void RenderCB(int var){
       RenderMenu(RenderStartORIGRES);
       break;
     case RENDER_START:
-      if (render_frame != NULL) {
-        int i;
-
-        for (i = 0; i < nglobal_times; i++) {
-          render_frame[i] = 0;
-        }
-      }
       if(render_mode==RENDER_360){
         RenderMenu(RenderStart360);
       }
