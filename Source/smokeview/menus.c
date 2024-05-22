@@ -1972,12 +1972,8 @@ void RenderState(int onoff){
   int scale = 1;
 
   if(onoff==RENDER_ON){
-    int n;
 
     if(render_status == RENDER_ON)return;
-    for(n = 0; n < nglobal_times; n++){
-      render_frame[n] = 0;
-    }
     render_status = RENDER_ON;
     render_firsttime = YES;
     update_screeninfo = 1;
@@ -2029,7 +2025,7 @@ void SkipMenu(int value){
 
 void RenderMenu(int value){
   slicedata *sd;
-  int i,n;
+  int i;
   meshdata *meshi;
 
   if(value==MENU_DUMMY)return;
@@ -2164,9 +2160,6 @@ void RenderMenu(int value){
     RenderState(RENDER_ON);
     UpdateTimeLabels();
     FlowDir=1;
-    for(n=0;n<nglobal_times;n++){
-      render_frame[n]=0;
-    }
     if(scriptoutstream!=NULL){
       fprintf(scriptoutstream,"RENDERALL\n");
       fprintf(scriptoutstream," %i\n",render_skip);
