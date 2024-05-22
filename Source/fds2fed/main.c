@@ -76,6 +76,7 @@ int main(int argc, char **argv){
     strcpy(smvfile,smvbase);
     strcat(smvfile,".smv");
     FullFile(smvfullfile,sourcedir,smvfile);
+    ReadSMV(smvfullfile);
   }
   return 0;
 }

@@ -86,7 +86,7 @@ int ReadSMV(char *smvfile){
     }
   }
 
-  // read in smv file a second time_local to compress files
+  // read in smv file a second time
 
   ioffset=0, islice=0, ipdim=0, igrid=0;
   REWIND(streamsmv);
@@ -123,40 +123,46 @@ int ReadSMV(char *smvfile){
     ++++++++++++++++++++++ SLCF ++++++++++++++++++++++++++++++
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   */
-    if(
-      Match(buffer,"SLCF") == 1||
-      Match(buffer,"SLCC") == 1||
-      Match(buffer, "SLCD") == 1 ||
-      Match(buffer,"SLCT") == 1)
-    {
+    if(Match(buffer, "SLCF") == 1 || 
+       Match(buffer, "SLCC") == 1 || 
+       Match(buffer, "SLCD") == 1 || 
+       Match(buffer,"SLCT") == 1){
       int version_local=0,dummy;
       char *buffer2;
       int len;
       FILE_SIZE filesize;
       slicedata *slicei;
       int blocknumber;
+      int slicetype;
+      char *sliceparms;
+      int read_slice_header = 0;
+      int ii1, ii2, jj1, jj2, kk1, kk2;
+
+      if(Match(buffer, "SLCF") == 1)slicetype = SLCF;
+      if(Match(buffer, "SLCC") == 1)slicetype = SLCC;
+      if(Match(buffer, "SLCD") == 1)slicetype = SLCD;
+      if(Match(buffer, "SLCT") == 1)slicetype = SLCT;
 
       len=strlen(buffer);
       if(len>4){
         buffer2=buffer+4;
         sscanf(buffer2,"%i %i",&dummy,&version_local);
       }
-
-      if(nmeshes>1){
-        blocknumber=ioffset-1;
-      }
-      else{
-        blocknumber=0;
-      }
+      blocknumber = 0;
+      if(nmeshes>1)blocknumber=ioffset-1;
       if(len>5){
         buffer2=buffer+4;
         sscanf(buffer2,"%i",&blocknumber);
         blocknumber--;
       }
-
       slicei = sliceinfo + islice;
+      slicei->slicetype = slicetype;
       slicei->blocknumber=blocknumber;
-
+      sliceparms = strchr(buffer, '&');
+      if(sliceparms != NULL){
+        sliceparms[0] = 0;
+        sscanf(sliceparms, "%i %i %i %i %i %i", &ii1, &ii2, &jj1, &jj2, &kk1, &kk2);
+      }
       if(FGETS(buffer,BUFFERSIZE,streamsmv)==NULL)break;
       TrimBack(buffer);
       buffer2=TrimFront(buffer);
@@ -186,6 +192,17 @@ int ReadSMV(char *smvfile){
         if(ReadLabels(&sliceinfo[islice].label,streamsmv,NULL)==LABEL_ERR)break;
         nsliceinfo--;
       }
+      if(slicetype == SLCC){
+        ii1 = MAX(ii1, 1);
+        ii2 = MAX(ii1, ii2);
+      }
+      slicei->is1 = ii1;
+      slicei->is2 = ii2;
+      slicei->js1 = jj1;
+      slicei->js2 = jj2;
+      slicei->ks1 = kk1;
+      slicei->ks2 = kk2;
+
       continue;
     }
   }
