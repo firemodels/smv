@@ -202,25 +202,17 @@ void Render(int view_mode){
 
     command = current_script_command->command;
     if(command == SCRIPT_VOLSMOKERENDERALL || command == SCRIPT_ISORENDERALL){
-      if((render_frame[itimes] > 0 && stereotype == STEREO_NONE) || (render_frame[itimes] > 1 && stereotype != STEREO_NONE)){
-        if(itimes == 0){
-          current_script_command->remove_frame = itimes;
-          current_script_command->exit = 1;
-          stept = 0;
-          return;
-        }
-      }
-      //  render_frame[itimes]++; //xxx check whether this is needed
-      if((render_frame[itimes] > 0 && stereotype == STEREO_NONE) || (render_frame[itimes] > 1 && stereotype != STEREO_NONE)){
+      if(itimes == 0){
         current_script_command->remove_frame = itimes;
+        current_script_command->exit = 1;
+        stept = 0;
+        return;
       }
+      current_script_command->remove_frame = itimes;
     }
   }
   if(render_times == RENDER_ALLTIMES && render_status == RENDER_ON&&render_mode == RENDER_NORMAL && plotstate == DYNAMIC_PLOTS && nglobal_times > 0){
-    if(itimes>=0&&itimes<nglobal_times&&
-     ((render_frame[itimes] == 0&&stereotype==STEREO_NONE)||(render_frame[itimes]<2&&stereotype!=STEREO_NONE))
-     ){
-      render_frame[itimes]++;
+    if(itimes>=0&&itimes<nglobal_times){
       RenderFrame(view_mode);
     }
     else{
@@ -658,9 +650,6 @@ int MergeRenderScreenBuffers(int nfactor, GLubyte **screenbuffers){
   /* free up memory used by both OpenGL and GIF images */
 
   gdImageDestroy(RENDERimage);
-  if(render_frame != NULL&&itimes >= 0 && itimes < nglobal_times){
-    render_frame[itimes]++;
-  }
   if(RenderTime==1&&output_slicedata==1){
     OutputSliceData();
   }
@@ -1110,9 +1099,6 @@ int MergeRenderScreenBuffers360(void){
 
   gdImageDestroy(RENDERimage);
   FREEMEMORY(screenbuffer360);
-  if(render_frame!=NULL&&itimes>=0&&itimes<nglobal_times){
-    render_frame[itimes]++;
-  }
   PRINTF(" Completed\n");
   return 0;
 }

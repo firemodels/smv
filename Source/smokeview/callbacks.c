@@ -3535,7 +3535,12 @@ void UpdateFrame(float thisinterval, int *changetime, int *redisplay){
           itimes = first_frame_index;
         }
         else{
-          itimes += render_skip*FlowDir;
+          if(render_skip==RENDER_CURRENT_SINGLE){
+            itimes += FlowDir;
+          }
+          else{
+            itimes += render_skip*FlowDir;
+          }
         }
       }
       if(script_render_flag == 1&&IS_LOADRENDER)itimes = script_itime;
@@ -4079,14 +4084,7 @@ void DoNonStereo(void){
     IdleDisplay();
 
     stop_rendering = 1;
-    if(plotstate==DYNAMIC_PLOTS && nglobal_times>0){
-      if(itimes>=0&&itimes<nglobal_times&&
-        ((render_frame[itimes]==0&&stereotype==STEREO_NONE)||(render_frame[itimes]<2&&stereotype!=STEREO_NONE))
-        ){
-        render_frame[itimes]++;
-        stop_rendering = 0;
-      }
-    }
+    if(plotstate==DYNAMIC_PLOTS && nglobal_times>0&&itimes>=0&&itimes<nglobal_times)stop_rendering = 0;
     if(render_mode==RENDER_NORMAL){
       int i, ibuffer = 0;
       GLubyte **screenbuffers;
