@@ -72,11 +72,12 @@ int main(int argc, char **argv){
       }
     }
   }
-  if(smvbase!=NULL){
-    strcpy(smvfile,smvbase);
-    strcat(smvfile,".smv");
-    FullFile(smvfullfile,sourcedir,smvfile);
-    ReadSMV(smvfullfile);
-  }
+  if(smvbase == NULL)return 0;
+
+  strcpy(smvfile,smvbase);
+  strcat(smvfile,".smv");
+  FullFile(smvfullfile,sourcedir,smvfile);
+  ReadSMV(smvfullfile);
+
   return 0;
 }

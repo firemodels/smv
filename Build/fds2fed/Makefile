@@ -35,7 +35,7 @@ GNU_COMPINFO=-Dpp_COMPVER=\"$(GNU_COMPVERSION)\"
 
 # Definition of the object variables
  
-obj = main.o string_util.o dmalloc.o file_util.o sha1.o sha256.o md5.o stdio_buffer.o
+obj = main.o fd2fed.o string_util.o dmalloc.o file_util.o sha1.o sha256.o md5.o stdio_buffer.o
 objwin = $(obj:.o=.obj)
 
 #*** General Purpose Rules ***
@@ -53,7 +53,6 @@ no_target:
 
 # ------------- intel winx 64 db ----------------
 
-intel_win_64_db : INC_DIR   += -I $(SOURCE_DIR)/pthreads
 intel_win_64_db : FFLAGS    = /Od /iface:stdref /fpp -D WIN32 /nologo /debug:full /extend_source:132 /warn:unused /warn:nointerfaces /Qtrapuv /fp:strict /fp:except /traceback /check:all /stand:f18 /fpscomp:general
 intel_win_64_db : CFLAGS    = /Od /Wall /debug:full /W4 /ZI -D WIN32 -D _CONSOLE -D X64 -D GLEW_STATIC -D PTW32_STATIC_LIB $(SMV_TESTFLAG) $(GITINFO) $(INTEL_COMPINFO)
 intel_win_64_db : CC        = $(I_CC)
@@ -64,7 +63,6 @@ intel_win_64_db : $(objwin)
 
 # ------------- intel win 64 ----------------
 
-intel_win_64 : INC_DIR   += -I $(SOURCE_DIR)/pthreads
 intel_win_64 : FFLAGS    = /O2 -fpp -D WIN32 /nologo /iface:stdref /stand:f18 /fpscomp:general
 intel_win_64 : CFLAGS    = /O2 /nologo -D X64 -D WIN32 $(GITINFO) $(SMV_TESTFLAG) $(INTEL_COMPINFO)
 intel_win_64 : CC        = $(I_CC)

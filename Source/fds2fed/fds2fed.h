@@ -7,13 +7,6 @@
 
 //*** structures VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
 
-/* --------------------------  mesh ------------------------------------ */
-
-typedef struct _meshdata{
-  int ibar, jbar, kbar;
-  float xbar0, xbar, ybar0, ybar, zbar0, zbar;
-} meshdata;
-
 /* --------------------------  slicedata ------------------------------------ */
 
 typedef struct _slicedata{
@@ -21,8 +14,16 @@ typedef struct _slicedata{
   int blocknumber;
   int is1, is2, js1, js2, ks1, ks2;
   int slicetype;
+  int quant;
   flowlabels label;
 } slicedata;
+
+
+/* --------------------------  feddata ------------------------------------ */
+
+typedef struct _feddata{
+  slicedata *o2, *co2, *co;
+} feddata;
 
 //*** symbols VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
 
@@ -30,6 +31,11 @@ typedef struct _slicedata{
 #define SLCC 2
 #define SLCD 3
 #define SLCT 4
+
+#define OTHER -1
+#define O2     0
+#define CO     1
+#define CO2    2
 
 #ifndef ABS
 #define ABS(a) ((a)>=0 ? (a) : (-(a)))
@@ -49,9 +55,7 @@ EXTERNCPP int ReadSMV(char *smvfile);
 
 //*** global variables VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
 
-SVEXTERN int SVDECL(nsliceinfo, 0), SVDECL(nmeshes, 0);
+SVEXTERN int SVDECL(nfedinfo, 0), SVDECL(nsliceinfo, 0);
+SVEXTERN feddata SVDECL(*fedinfo, NULL);
 SVEXTERN slicedata SVDECL(*sliceinfo, NULL);
-SVEXTERN meshdata SVDECL(*meshinfo, NULL);
-SVEXTERN char SVDECL(*GLOBsourcedir, NULL);
-
 #endif
