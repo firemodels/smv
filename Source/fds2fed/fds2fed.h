@@ -13,6 +13,8 @@ typedef struct _slicedata{
   char *file, *filebase, kwlabel[256];
   int blocknumber, slicetype, quant, in_fed;
   int is1, is2, js1, js2, ks1, ks2;
+  float *vals, *times;
+  int headersize, diskframesize, memframesize, nframes;
   flowlabels label;
 } slicedata;
 
@@ -21,10 +23,22 @@ typedef struct _slicedata{
 
 typedef struct _feddata{
   char file[1024], *kwlabel;
-  slicedata *o2, *co2, *co;
+  slicedata *o2, *co2, *co, *fed;
+  float *times, *vals;
+  int nframes, memframesize;
 } feddata;
 
 //*** symbols VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
+
+#ifndef CLAMP
+#define CLAMP(x,lo,hi)  MIN(MAX((x),(lo)),(hi))
+#endif
+
+#define FEDCO(CO)  ( (2.764/100000.0)*pow(1000000.0*CLAMP(CO,0.0,0.1),1.036)/60.0 )
+#define FEDO2(O2)  ( exp( -(8.13-0.54*(20.9-100.0*CLAMP(O2,0.0,0.2))) )/60.0 )
+#define HVCO2(CO2) (exp(0.1930*CLAMP(CO2,0.0,0.1)*100.0+2.0004)/7.1)
+
+#define FORTREAD(var,count,STREAM) FSEEK(STREAM,4,SEEK_CUR);returncode=fread(var,4,count,STREAM);FSEEK(STREAM,4,SEEK_CUR)
 
 #define SLCF 1
 #define SLCC 2
