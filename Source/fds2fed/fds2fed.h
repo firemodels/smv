@@ -22,7 +22,7 @@ typedef struct _slicedata{
 /* --------------------------  feddata ------------------------------------ */
 
 typedef struct _feddata{
-  char file[1024], *kwlabel;
+  char file[1024], bndfile[1024], *kwlabel;
   slicedata *o2, *co2, *co, *fed;
   float *times, *vals;
   int nframes, memframesize;

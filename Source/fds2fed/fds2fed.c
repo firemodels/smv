@@ -4,6 +4,7 @@
 #include <string.h>
 #include <math.h>
 #include "fds2fed.h"
+#include "getdata.h"
 
 /* ------------------ ReadSMV ------------------------ */
 
@@ -171,13 +172,18 @@ int MatchFED(slicedata *slicei, slicedata *slicej){
 
 /* ------------------ MakeFEDSliceFileName ------------------------ */
 
-void MakeFEDSliceFileName(char *fedfile, char *slicefile){
+void MakeFEDSliceFileName(char *fedfile, char *bndfedfile, char *slicefile){
   char *ext;
 
   strcpy(fedfile, slicefile);
   ext = strrchr(fedfile, '.');
   if(ext != NULL)ext[0]=0;
   strcat(fedfile, ".fedsf");
+
+  strcpy(bndfedfile, slicefile);
+  ext = strrchr(bndfedfile, '.');
+  if(ext != NULL)ext[0] = 0;
+  strcat(bndfedfile, ".fedsf.bnd");
 }
 
 /* ------------------ AddSlice ------------------------ */
@@ -192,7 +198,7 @@ void AddSlice(slicedata *slicei){
       if(slicei->quant == O2)fedi->o2 = slicei;;
       if(slicei->quant == CO2)fedi->co2 = slicei;
       fedi->kwlabel = slicei->kwlabel;
-      MakeFEDSliceFileName(fedi->file, slicei->file);
+      MakeFEDSliceFileName(fedi->file, fedi->bndfile, slicei->file);
       slicei->in_fed = 1;
       return;
     }
@@ -200,7 +206,7 @@ void AddSlice(slicedata *slicei){
       if(slicei->quant == O2)fedi->o2 = slicei;;
       if(slicei->quant == CO)fedi->co = slicei;
       fedi->kwlabel = slicei->kwlabel;
-      MakeFEDSliceFileName(fedi->file, slicei->file);
+      MakeFEDSliceFileName(fedi->file, fedi->bndfile, slicei->file);
       slicei->in_fed = 1;
       return;
     }
@@ -208,7 +214,7 @@ void AddSlice(slicedata *slicei){
       if(slicei->quant == CO2)fedi->co2 = slicei;;
       if(slicei->quant == CO)fedi->co = slicei;
       fedi->kwlabel = slicei->kwlabel;
-      MakeFEDSliceFileName(fedi->file, slicei->file);
+      MakeFEDSliceFileName(fedi->file, fedi->bndfile, slicei->file);
       slicei->in_fed = 1;
       return;
     }
@@ -217,7 +223,7 @@ void AddSlice(slicedata *slicei){
   if(slicei->quant == CO2)fedi->co2 = slicei;;
   if(slicei->quant == CO)fedi->co = slicei;
   if(slicei->quant == O2)fedi->o2 = slicei;
-  MakeFEDSliceFileName(fedi->file, slicei->file);
+  MakeFEDSliceFileName(fedi->file, fedi->bndfile, slicei->file);
   fedi->kwlabel = slicei->kwlabel;
   slicei->in_fed = 1;
 }
@@ -370,6 +376,8 @@ void OutputFEDSlice(feddata *fedi){
 
 void MakeFEDSlice(feddata *fedi){
   float *vals, *times, *timesfrom = NULL;
+  float valmin, valmax;
+  float fedo20, fedco20, fedco0;
 
   ReadSlice(fedi->co);
   ReadSlice(fedi->co2);
@@ -407,12 +415,16 @@ void MakeFEDSlice(feddata *fedi){
     for(i = 0; i < fedi->memframesize; i++){
       vals[0] = 0.0;
     }
+    valmin = 0.0;
+    valmax = 0.0;
+    fedo20  = FEDO2(0.209);
+    fedco20 = HVCO2(0.0);
+    fedco0  = FEDCO(0.0);
     memcpy(fedi->times, timesfrom, fedi->nframes * sizeof(float));
     for(i = 1; i < fedi->nframes; i++){
       int j;
       float dt, *vali, *valim1;
       float *coi=NULL, *co2i=NULL, *o2i=NULL;
-      float fedo20, fedco20, fedco0;
 
       dt = fedi->times[i] - fedi->times[i-1];
       vali   = vals + i*fedi->memframesize;
@@ -420,9 +432,6 @@ void MakeFEDSlice(feddata *fedi){
       if(fedi->co!=NULL)coi = fedi->co->vals + i*fedi->memframesize;
       if(fedi->co2!=NULL)co2i = fedi->co2->vals + i*fedi->memframesize;
       if(fedi->o2!=NULL)o2i = fedi->o2->vals + i*fedi->memframesize;
-      fedo20  = FEDO2(0.209);
-      fedco20 = HVCO2(0.0);
-      fedco0  = FEDCO(0.0);
       for(j=0;j<fedi->memframesize;j++){
         float fedval, fedo2, fedco2, fedco;
 
@@ -434,8 +443,14 @@ void MakeFEDSlice(feddata *fedi){
         if(fedi->o2!=NULL)fedo2   = FEDO2(o2i[j]);
         fedval = fedco*fedco2 + fedo2;
         vali[j] = valim1[j] + dt*fedval;
+        valmin = MIN(valmin, vali[j]);
+        valmax = MAX(valmax, vali[j]);
       }
     }
+    FILE *stream;
+
+    stream = fopen(fedi->bndfile, "w");
+    fprintf(stream, "%f %f %f\n", 0.0, valmin, valmax);
     OutputFEDSlice(fedi);
   }
   FreeFEDData(fedi);
