@@ -138,9 +138,84 @@ int ReadSMV(char *smvfile){
       slicei->js2 = jj2;
       slicei->ks1 = kk1;
       slicei->ks2 = kk2;
+      slicei->in_fed = 0;
       continue;
     }
   }
   return 0;
+}
+
+/* ------------------ MatchFED ------------------------ */
+
+int MatchFED(slicedata *slicei, slicedata *slicej){
+  if(slicei->blocknumber != slicej->blocknumber)return 0;
+  if(slicei->is1 != slicej->is1 || slicei->is2 != slicej->is2)return 0;
+  if(slicei->js1 != slicej->js1 || slicei->js2 != slicej->js2)return 0;
+  if(slicei->ks1 != slicej->ks1 || slicei->ks2 != slicej->ks2)return 0;
+  if(slicei->slicetype != slicej->slicetype)return 0;
+  return 1;
+}
+
+/* ------------------ AddSlice ------------------------ */
+
+void AddSlice(slicedata *slicei){
+  feddata *fedi;
+  int i;
+
+  for(i = 0;i < nfedinfo;i++){
+    fedi = fedinfo + i;
+    if(fedi->co != NULL && slicei != fedi->co && MatchFED(slicei, fedi->co)==1){
+      if(slicei->quant == O2)fedi->o2 = slicei;;
+      if(slicei->quant == CO2)fedi->co2 = slicei;
+      slicei->in_fed = 1;
+      return;
+    }
+    if(fedi->co2 != NULL && slicei != fedi->co2 && MatchFED(slicei, fedi->co2)==1){
+      if(slicei->quant == O2)fedi->o2 = slicei;;
+      if(slicei->quant == CO)fedi->co = slicei;
+      slicei->in_fed = 1;
+      return;
+    }
+    if(fedi->o2 != NULL && slicei != fedi->o2 && MatchFED(slicei, fedi->o2)==1){
+      if(slicei->quant == CO2)fedi->co2 = slicei;;
+      if(slicei->quant == CO)fedi->co = slicei;
+      slicei->in_fed = 1;
+      return;
+    }
+    fedi = fedinfo + nfedinfo++;
+    if(slicei->quant == CO2)fedi->co2 = slicei;;
+    if(slicei->quant == CO)fedi->co = slicei;
+    if(slicei->quant == O2)fedi->o2 = slicei;
+    slicei->in_fed = 1;
+  }
+}
+
+/* ------------------ PrintFED ------------------------ */
+
+void PrintFED(void){
+  prit
+}
+
+/* ------------------ MakeFED ------------------------ */
+
+void MakeFED(void){
+  int i;
+
+  nfedinfo = 0;
+  NewMemory((void **)&fedinfo, nsliceinfo * sizeof(feddata));
+  for(i = 0;i < nsliceinfo; i++){
+    feddata *fedi;
+
+    fedi      = fedinfo + i;
+    fedi->co  = NULL;
+    fedi->co2 = NULL;
+    fedi->o2  = NULL;
+  }
+  for(i = 0;i < nsliceinfo;i++){
+    slicedata *slicei;
+
+    slicei = sliceinfo + i;
+    AddSlice(slicei);
+  }
 }
 

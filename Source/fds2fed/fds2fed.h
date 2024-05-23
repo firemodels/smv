@@ -10,11 +10,9 @@
 /* --------------------------  slicedata ------------------------------------ */
 
 typedef struct _slicedata{
-  char *file, *filebase, *size_file;
-  int blocknumber;
+  char *file, *filebase;
+  int blocknumber, slicetype, quant, in_fed;
   int is1, is2, js1, js2, ks1, ks2;
-  int slicetype;
-  int quant;
   flowlabels label;
 } slicedata;
 
@@ -52,6 +50,7 @@ typedef struct _feddata{
 //*** headers VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
 
 EXTERNCPP int ReadSMV(char *smvfile);
+EXTERNCPP void MakeFED(void);
 
 //*** global variables VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
 
