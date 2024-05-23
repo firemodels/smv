@@ -79,6 +79,7 @@ int main(int argc, char **argv){
   FullFile(smvfullfile,sourcedir,smvfile);
   ReadSMV(smvfullfile);
   MakeFED();
+  PrintFED();
 
   return 0;
 }

@@ -100,7 +100,8 @@ int ReadSMV(char *smvfile){
         nsliceinfo--;
         continue;
       }
-      sliceparms[0] = 0;
+      sliceparms++;
+      sliceparms[-1] = 0;
       sscanf(sliceparms, "%i %i %i %i %i %i", &ii1, &ii2, &jj1, &jj2, &kk1, &kk2);
 
       if(FGETS(buffer,BUFFERSIZE,streamsmv)==NULL)break;
@@ -122,7 +123,7 @@ int ReadSMV(char *smvfile){
       if(strcmp(shortlabel, "X_O2")  == 0)slicei->quant = O2;
       if(strcmp(shortlabel, "X_CO2") == 0)slicei->quant = CO2;
       if(strcmp(shortlabel, "X_CO")  == 0)slicei->quant = CO;
-      if(slicei->quant=OTHER){
+      if(slicei->quant==OTHER){
         nsliceinfo--;
         continue;
       }
@@ -182,18 +183,29 @@ void AddSlice(slicedata *slicei){
       slicei->in_fed = 1;
       return;
     }
-    fedi = fedinfo + nfedinfo++;
-    if(slicei->quant == CO2)fedi->co2 = slicei;;
-    if(slicei->quant == CO)fedi->co = slicei;
-    if(slicei->quant == O2)fedi->o2 = slicei;
-    slicei->in_fed = 1;
   }
+  fedi = fedinfo + nfedinfo++;
+  if(slicei->quant == CO2)fedi->co2 = slicei;;
+  if(slicei->quant == CO)fedi->co = slicei;
+  if(slicei->quant == O2)fedi->o2 = slicei;
+  slicei->in_fed = 1;
 }
 
 /* ------------------ PrintFED ------------------------ */
 
 void PrintFED(void){
-  prit
+  int i;
+
+  printf(" nsliceinfo=%i nfedinfo=%i\n", nsliceinfo, nfedinfo);
+  for(i = 0;i < nfedinfo;i++){
+    feddata *fedi;
+
+    fedi = fedinfo + i;
+    printf("i:%i\n", i);
+    if(fedi->co != NULL)printf("co:%s\n", fedi->co->file);
+    if(fedi->co2 != NULL)printf("co2:%s\n", fedi->co2->file);
+    if(fedi->o2 != NULL)printf("o2:%s\n", fedi->o2->file);
+  }
 }
 
 /* ------------------ MakeFED ------------------------ */
@@ -202,6 +214,7 @@ void MakeFED(void){
   int i;
 
   nfedinfo = 0;
+  if(nsliceinfo == 0)return;
   NewMemory((void **)&fedinfo, nsliceinfo * sizeof(feddata));
   for(i = 0;i < nsliceinfo; i++){
     feddata *fedi;
