@@ -37,7 +37,7 @@ int main(int argc, char **argv){
   char *smvbase=NULL, *arg;
   char *sourcedir=NULL;
   char smvfile[1024], smvfullfile[1024];
-
+  char fedsmvfile[1024], fedsmvfullfile[1024];
 
   SetStdOut(stdout);
   initMALLOC();
@@ -73,13 +73,22 @@ int main(int argc, char **argv){
     }
   }
   if(smvbase == NULL)return 0;
+  char *ext;
+
+  ext = strrchr(smvbase, '.');
+  if(ext != NULL)ext[0] = 0;
 
   strcpy(smvfile,smvbase);
   strcat(smvfile,".smv");
   FullFile(smvfullfile,sourcedir,smvfile);
+
+  strcpy(fedsmvfile, smvbase);
+  strcat(fedsmvfile, ".fedsmv");
+  FullFile(fedsmvfullfile, sourcedir, fedsmvfile);
+
   ReadSMV(smvfullfile);
   MakeFED();
-  PrintFED();
+  PrintFED(fedsmvfullfile);
 
   return 0;
 }
