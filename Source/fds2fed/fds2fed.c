@@ -162,15 +162,15 @@ int MatchFED(slicedata *slicei, slicedata *slicej){
   return 1;
 }
 
-/* ------------------ MakeFEDFileName ------------------------ */
+/* ------------------ MakeFEDSliceFileName ------------------------ */
 
-void MakeFEDFileName(char *fedfile, char *slicefile){
+void MakeFEDSliceFileName(char *fedfile, char *slicefile){
   char *ext;
 
   strcpy(fedfile, slicefile);
   ext = strrchr(fedfile, '.');
   if(ext != NULL)ext[0]=0;
-  strcat(fedfile, ".fedsmv");
+  strcat(fedfile, ".fedsf");
 }
 
 /* ------------------ AddSlice ------------------------ */
@@ -185,7 +185,7 @@ void AddSlice(slicedata *slicei){
       if(slicei->quant == O2)fedi->o2 = slicei;;
       if(slicei->quant == CO2)fedi->co2 = slicei;
       fedi->kwlabel = slicei->kwlabel;
-      MakeFEDFileName(fedi->file, slicei->file);
+      MakeFEDSliceFileName(fedi->file, slicei->file);
       slicei->in_fed = 1;
       return;
     }
@@ -193,7 +193,7 @@ void AddSlice(slicedata *slicei){
       if(slicei->quant == O2)fedi->o2 = slicei;;
       if(slicei->quant == CO)fedi->co = slicei;
       fedi->kwlabel = slicei->kwlabel;
-      MakeFEDFileName(fedi->file, slicei->file);
+      MakeFEDSliceFileName(fedi->file, slicei->file);
       slicei->in_fed = 1;
       return;
     }
@@ -201,7 +201,7 @@ void AddSlice(slicedata *slicei){
       if(slicei->quant == CO2)fedi->co2 = slicei;;
       if(slicei->quant == CO)fedi->co = slicei;
       fedi->kwlabel = slicei->kwlabel;
-      MakeFEDFileName(fedi->file, slicei->file);
+      MakeFEDSliceFileName(fedi->file, slicei->file);
       slicei->in_fed = 1;
       return;
     }
@@ -210,14 +210,14 @@ void AddSlice(slicedata *slicei){
   if(slicei->quant == CO2)fedi->co2 = slicei;;
   if(slicei->quant == CO)fedi->co = slicei;
   if(slicei->quant == O2)fedi->o2 = slicei;
-  MakeFEDFileName(fedi->file, slicei->file);
+  MakeFEDSliceFileName(fedi->file, slicei->file);
   fedi->kwlabel = slicei->kwlabel;
   slicei->in_fed = 1;
 }
 
-/* ------------------ PrintFED ------------------------ */
+/* ------------------ MakeFEDSmv ------------------------ */
 
-void PrintFED(char *file){
+void MakeFEDSmv(char *file){
   int i;
   FILE *stream;
 
@@ -231,11 +231,35 @@ void PrintFED(char *file){
     fedi = fedinfo + i;
     fprintf(stream, "%s\n", fedi->kwlabel);
     fprintf(stream, " %s\n", fedi->file);
+    fprintf(stream, " Fractional Effective Dose\n");
     fprintf(stream, " FED\n");
-    fprintf(stream, " fed\n");
     fprintf(stream, " \n");
   }
   fclose(stream);
+}
+
+/* ------------------ MakeFEDSlice ------------------------ */
+
+void MakeFEDSlice(feddata *fedi){
+  FILE *stream;
+
+  stream = fopen(fedi->file, "wb");
+  if(stream == NULL)return;
+
+  fclose(stream);
+}
+
+/* ------------------ MakeFEDSlices ------------------------ */
+
+void MakeFEDSlices(void){
+  int i;
+
+  for(i = 0;i < nfedinfo;i++){
+    feddata *fedi;
+
+    fedi = fedinfo + i;
+    MakeFEDSlice(fedi);
+  }
 }
 
 /* ------------------ MakeFED ------------------------ */

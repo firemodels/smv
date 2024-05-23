@@ -88,7 +88,7 @@ int main(int argc, char **argv){
 
   ReadSMV(smvfullfile);
   MakeFED();
-  PrintFED(fedsmvfullfile);
-
+  MakeFEDSmv(fedsmvfullfile);
+  MakeFEDSlices();
   return 0;
 }

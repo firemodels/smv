@@ -52,7 +52,8 @@ typedef struct _feddata{
 
 EXTERNCPP int ReadSMV(char *smvfile);
 EXTERNCPP void MakeFED(void);
-EXTERNCPP void PrintFED(char *file);
+EXTERNCPP void MakeFEDSmv(char *file);
+EXTERNCPP void MakeFEDSlices(void);
 
 //*** global variables VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
 
