@@ -338,8 +338,6 @@ void ReadSlice(slicedata *slicei){
   if(STREAM == NULL)return;
   FSEEK(STREAM, slicei->headersize, SEEK_CUR);
   for(i = 0; i < slicei->nframes; i++){
-    int returncode;
-
     FORTREAD(slicei->times + i, 1, STREAM);
     FORTREAD(slicei->vals + i*slicei->memframesize, slicei->memframesize, STREAM);
   }
