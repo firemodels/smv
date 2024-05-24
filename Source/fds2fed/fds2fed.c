@@ -593,6 +593,8 @@ void MakeFEDSlice(feddata *fedi){
 void MakeFEDSlices(void){
   int i;
 
+  if(nfedinfo == 0)printf("no fed slices were found\n");
+  if(nfedisos == 0)printf("no fed isosurfaces were found\n");
   for(i = 0; i < nfedinfo; i++){
     feddata *fedi;
     int output;
