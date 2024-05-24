@@ -483,10 +483,8 @@ void MakeFEDIso(feddata *fedi){
     float *vals;
 
     vals = fedi->vals + i * fedi->memframesize;
-    CCIsoSurface2File(fedi->iso_file, fedi->times + i, vals, iblank,
-      levels, &nlevels,
-      isomesh->xplt, &nx, isomesh->yplt, &ny, isomesh->zplt, &nz,
-      &reduce_triangles, &error_local);
+    CCIsoSurface2File(fedi->iso_file, fedi->times + i, vals, iblank, levels, &nlevels,
+      isomesh->xplt, &nx, isomesh->yplt, &ny, isomesh->zplt, &nz, &reduce_triangles, &error_local);
   }
   int output = 0;
   if(isocount == 0 || isocount == nfedisos - 1 || nfedisos < 100 || (nfedisos >= 100 && nfedisos < 1000 && isocount % 10 == 1))output = 1;
