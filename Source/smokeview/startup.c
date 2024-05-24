@@ -247,7 +247,9 @@ int SetupCase(char *filename){
     if(FileExistsOrig(smvzip_filename) == 1){
       lookfor_compressed_files = 1;
     }
-    smv_streaminfo = GetSMVBuffer(iso_filename, input_file);
+    smv_streaminfo = GetSMVBuffer(input_file);
+    smv_streaminfo = AppendFileBuffer(smv_streaminfo, iso_filename);
+    smv_streaminfo = AppendFileBuffer(smv_streaminfo, fedsmv_filename);
 
     return_code = ReadSMV(smv_streaminfo);
     if(smv_streaminfo!=NULL){

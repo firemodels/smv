@@ -31,9 +31,9 @@ typedef struct _readbufferdata {
 
 EXTERNCPP void              ReadBufferi(readbufferdata *readbufferi);
 EXTERNCPP bufferstreamdata *FOPEN_RB(char *file, int ntheads, int use_threads);
-EXTERNCPP bufferstreamdata *GetSMVBuffer(char *file, char *file2);
+EXTERNCPP bufferstreamdata *GetSMVBuffer(char *file);
 EXTERNCPP bufferstreamdata *CopySMVBuffer(bufferstreamdata *stream_in);
-EXTERNCPP int               AppendFileBuffer(filedata *file1, filedata *file2);
+EXTERNCPP bufferstreamdata *AppendFileBuffer(bufferstreamdata *stream, char *file2);
 EXTERNCPP void              OutputFileBuffer(filedata *fileinfo);
 EXTERNCPP void              fclose_buffer(filedata *fileinfo);
 EXTERNCPP FILE_SIZE         ftell_buffer(filedata *stream);

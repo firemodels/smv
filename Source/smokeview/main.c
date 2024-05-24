@@ -340,6 +340,11 @@ char *ProcessCommandLine(CommandlineArgs *args) {
   STRCPY(caseini_filename, fdsprefix);
   STRCAT(caseini_filename, ".ini");
 
+  FREEMEMORY(fedsmv_filename);
+  NewMemory((void **)&fedsmv_filename, len_casename + strlen(".fedsmv") + 1);
+  STRCPY(fedsmv_filename, fdsprefix);
+  STRCAT(fedsmv_filename, ".fedsmv");
+
   FREEMEMORY(expcsv_filename);
   NewMemory((void **)&expcsv_filename, len_casename + strlen("_exp.csv") + 1);
   STRCPY(expcsv_filename, fdsprefix);

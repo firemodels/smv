@@ -92,7 +92,7 @@ int ReadSMV(char *smvfile){
   }
   fclose(stream);
 
-  streamsmv = GetSMVBuffer(smvfile, NULL);
+  streamsmv = GetSMVBuffer(smvfile);
 
   while(!FEOF(streamsmv)){
     if(FGETS(buffer,BUFFERSIZE,streamsmv)==NULL)break;
