@@ -320,7 +320,6 @@ void MakeFEDSmv(char *file){
   nfedisos = 0;
   for(i = 0;i < nfedinfo;i++){
     feddata *fedi;
-    int isvol = 0;
     slicedata *fed;
 
     fedi = fedinfo + i;
@@ -470,7 +469,6 @@ void MakeFEDIso(feddata *fedi){
   int nlevels = 3;
   int error_local, reduce_triangles=1;
   char *iblank=NULL;
-  float *xplt=NULL, *yplt=NULL, *zplt=NULL;
   int nx=0, ny=0, nz=0;
   int i;
   meshdata *isomesh;
