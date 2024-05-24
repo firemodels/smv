@@ -36,7 +36,7 @@ typedef struct _feddata{
 
 #define FEDCO(CO)  ( (2.764/100000.0)*pow(1000000.0*CLAMP(CO,0.0,0.1),1.036)/60.0 )
 #define FEDO2(O2)  ( exp( -(8.13-0.54*(20.9-100.0*CLAMP(O2,0.0,0.2))) )/60.0 )
-#define HVCO2(CO2) (exp(0.1930*CLAMP(CO2,0.0,0.1)*100.0+2.0004)/7.1)
+#define HVCO2(CO2) ( exp(0.1930*CLAMP(CO2,0.0,0.1)*100.0+2.0004)/7.1 )
 
 #define FORTREAD(var,count,STREAM) FSEEK(STREAM,4,SEEK_CUR);returncode=fread(var,4,count,STREAM);FSEEK(STREAM,4,SEEK_CUR)
 
