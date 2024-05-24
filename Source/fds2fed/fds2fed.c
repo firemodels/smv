@@ -151,7 +151,8 @@ int ReadSMV(char *smvfile){
       slicei->headersize    = 0;
       slicei->diskframesize = 0;
       slicei->memframesize  = 0;
-
+      slicei->vol           = 0;
+      if(ii2 != ii1 && jj1 != jj2 && kk1 != kk2)slicei->vol = 1;
       slicei->in_fed = 0;
       continue;
     }
@@ -172,13 +173,18 @@ int MatchFED(slicedata *slicei, slicedata *slicej){
 
 /* ------------------ MakeFEDSliceFileName ------------------------ */
 
-void MakeFEDSliceFileName(char *fedfile, char *bndfedfile, char *slicefile){
+void MakeFEDFileNames(char *fedslicefile, char *fedisofile, char *bndfedfile, char *slicefile){
   char *ext;
 
-  strcpy(fedfile, slicefile);
-  ext = strrchr(fedfile, '.');
+  strcpy(fedslicefile, slicefile);
+  ext = strrchr(fedslicefile, '.');
   if(ext != NULL)ext[0]=0;
-  strcat(fedfile, ".fedsf");
+  strcat(fedslicefile, ".fedsf");
+
+  strcpy(fedisofile, slicefile);
+  ext = strrchr(fedisofile, '.');
+  if(ext != NULL)ext[0] = 0;
+  strcat(fedisofile, ".fediso");
 
   strcpy(bndfedfile, slicefile);
   ext = strrchr(bndfedfile, '.');
@@ -198,7 +204,7 @@ void AddSlice(slicedata *slicei){
       if(slicei->quant == O2)fedi->o2 = slicei;;
       if(slicei->quant == CO2)fedi->co2 = slicei;
       fedi->kwlabel = slicei->kwlabel;
-      MakeFEDSliceFileName(fedi->file, fedi->bndfile, slicei->file);
+      MakeFEDFileNames(fedi->sf_file, fedi->iso_file, fedi->bndfile, slicei->file);
       slicei->in_fed = 1;
       return;
     }
@@ -206,7 +212,7 @@ void AddSlice(slicedata *slicei){
       if(slicei->quant == O2)fedi->o2 = slicei;;
       if(slicei->quant == CO)fedi->co = slicei;
       fedi->kwlabel = slicei->kwlabel;
-      MakeFEDSliceFileName(fedi->file, fedi->bndfile, slicei->file);
+      MakeFEDFileNames(fedi->sf_file, fedi->iso_file, fedi->bndfile, slicei->file);
       slicei->in_fed = 1;
       return;
     }
@@ -214,7 +220,7 @@ void AddSlice(slicedata *slicei){
       if(slicei->quant == CO2)fedi->co2 = slicei;;
       if(slicei->quant == CO)fedi->co = slicei;
       fedi->kwlabel = slicei->kwlabel;
-      MakeFEDSliceFileName(fedi->file, fedi->bndfile, slicei->file);
+      MakeFEDFileNames(fedi->sf_file, fedi->iso_file, fedi->bndfile, slicei->file);
       slicei->in_fed = 1;
       return;
     }
@@ -223,7 +229,7 @@ void AddSlice(slicedata *slicei){
   if(slicei->quant == CO2)fedi->co2 = slicei;;
   if(slicei->quant == CO)fedi->co = slicei;
   if(slicei->quant == O2)fedi->o2 = slicei;
-  MakeFEDSliceFileName(fedi->file, fedi->bndfile, slicei->file);
+  MakeFEDFileNames(fedi->sf_file, fedi->iso_file, fedi->bndfile, slicei->file);
   fedi->kwlabel = slicei->kwlabel;
   slicei->in_fed = 1;
 }
@@ -240,13 +246,25 @@ void MakeFEDSmv(char *file){
 
   for(i = 0;i < nfedinfo;i++){
     feddata *fedi;
+    int isvol = 0;
 
     fedi = fedinfo + i;
     fprintf(stream, "%s\n", fedi->kwlabel);
-    fprintf(stream, " %s\n", fedi->file);
+    fprintf(stream, " %s\n", fedi->sf_file);
     fprintf(stream, " Fractional Effective Dose\n");
     fprintf(stream, " FED\n");
     fprintf(stream, " \n");
+
+    if(fedi->co  != NULL && fedi->co->vol  == 1)isvol = 1;
+    if(fedi->co2 != NULL && fedi->co2->vol == 1)isvol = 1;
+    if(fedi->o2  != NULL && fedi->o2->vol  == 1)isvol = 1;
+    if(isvol == 1){
+      fprintf(stream, "%s\n", "ISOF");
+      fprintf(stream, " %s\n", fedi->iso_file);
+      fprintf(stream, " Fractional Effective Dose\n");
+      fprintf(stream, " FED\n");
+      fprintf(stream, " \n");
+    }
   }
   fclose(stream);
 }
@@ -365,7 +383,7 @@ void FreeFEDData(feddata *fedi){
 /* ------------------ OutputFEDSlice ------------------------ */
 
 void OutputFEDSlice(feddata *fedi){
-  writeslicedata(fedi->file, fedi->fed->is1,
+  writeslicedata(fedi->sf_file, fedi->fed->is1,
     fedi->fed->is2, fedi->fed->js1, fedi->fed->js2, fedi->fed->ks1, fedi->fed->ks2,
     fedi->vals, fedi->times, fedi->nframes, 1);
 }
@@ -471,7 +489,7 @@ void MakeFEDSlices(void){
     MakeFEDSlice(fedi);
     output = 0;
     if(i == 0 || i == nfedinfo - 1||nfedinfo<100||(nfedinfo >= 100 && nfedinfo<1000 && i % 10 == 1))output = 1;
-    if(nfedinfo >= 1000 && i % 100 == 1))output = 1;
+    if(nfedinfo >= 1000 && i % 100 == 1)output = 1;
     if(output==1)printf("fed slice %i of %i generated\n", i + 1, nfedinfo);
   }
 }

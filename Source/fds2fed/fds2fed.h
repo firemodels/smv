@@ -13,6 +13,7 @@ typedef struct _slicedata{
   char *file, *filebase, kwlabel[256];
   int blocknumber, slicetype, quant, in_fed;
   int is1, is2, js1, js2, ks1, ks2;
+  int vol;
   float *vals, *times;
   int headersize, diskframesize, memframesize, nframes;
   flowlabels label;
@@ -22,7 +23,7 @@ typedef struct _slicedata{
 /* --------------------------  feddata ------------------------------------ */
 
 typedef struct _feddata{
-  char file[1024], bndfile[1024], *kwlabel;
+  char sf_file[1024], iso_file[1024], bndfile[1024], *kwlabel;
   slicedata *o2, *co2, *co, *fed;
   float *times, *vals;
   int nframes, memframesize;
