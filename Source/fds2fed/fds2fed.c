@@ -465,8 +465,13 @@ void MakeFEDSlices(void){
 
   for(i = 0; i < nfedinfo; i++){
     feddata *fedi;
+    int output;
 
     fedi = fedinfo + i;
     MakeFEDSlice(fedi);
+    output = 0;
+    if(i == 0 || i == nfedinfo - 1||nfedinfo<100||(nfedinfo >= 100 && nfedinfo<1000 && i % 10 == 1))output = 1;
+    if(nfedinfo >= 1000 && i % 100 == 1))output = 1;
+    if(output==1)printf("fed slice %i of %i generated\n", i + 1, nfedinfo);
   }
 }
