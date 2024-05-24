@@ -5,6 +5,7 @@
 #include <math.h>
 #include "fds2fed.h"
 #include "getdata.h"
+#include "isodefs.h"
 
 /* ------------------ ReadSMV ------------------------ */
 
@@ -39,6 +40,16 @@ int ReadSMV(char *smvfile){
       nsliceinfo++;
       continue;
     }
+    /*
+      +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+      ++++++++++++++++++++++ GRID ++++++++++++++++++++++++++++++
+      +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    */
+    if(
+      Match(buffer, "GRID") == 1){
+      nmeshinfo++;
+      continue;
+    }
   }
 
   // allocate memory for slice file info
@@ -54,16 +65,78 @@ int ReadSMV(char *smvfile){
       slicei->filebase=NULL;
     }
   }
+  if(nmeshinfo > 0){
+    int i;
+
+    NewMemory(( void ** )&meshinfo, nmeshinfo * sizeof(meshdata));
+    for(i = 0; i < nmeshinfo; i++){
+      meshdata *meshi;
+
+      meshi = meshinfo + i;
+      meshi->xplt = NULL;
+      meshi->yplt = NULL;
+      meshi->zplt = NULL;
+      meshi->ibar = 0;
+      meshi->jbar = 0;
+      meshi->kbar = 0;
+    }
+  }
+
 
   // read in smv file a second time
 
   islice=0;
+  nmeshinfo = 0;
   REWIND(streamsmv);
   while(!FEOF(streamsmv)){
     if(FGETS(buffer,BUFFERSIZE,streamsmv)==NULL)break;
     CheckMemory;
     if(strncmp(buffer," ",1)==0)continue;
-   /*
+    /*
+      +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+      ++++++++++++++++++++++ GRID ++++++++++++++++++++++++++++++
+      +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    */
+    if(Match(buffer, "GRID") == 1){
+      meshdata *meshi;
+      int ibar, jbar, kbar;
+
+      if(FGETS(buffer, BUFFERSIZE, streamsmv) == NULL)break;
+      meshi = meshinfo + nmeshinfo++;
+      sscanf(buffer, "%i %i %i", &ibar, &jbar, &kbar);
+      meshi->ibar = ibar;
+      meshi->jbar = jbar;
+      meshi->kbar = kbar;
+      if(meshi->ibar>0)NewMemory(( void ** )&meshi->xplt, (ibar+1)*sizeof(float));
+      if(meshi->jbar > 0)NewMemory(( void ** )&meshi->yplt, (jbar + 1) * sizeof(float));
+      if(meshi->kbar > 0)NewMemory(( void ** )&meshi->zplt, (kbar + 1) * sizeof(float));
+      continue;
+    }
+    if(Match(buffer, "TRNX") == 1|| Match(buffer, "TRNY") == 1|| Match(buffer, "TRNZ") == 1){
+      meshdata *meshi;
+      int i, dummy;
+      int nvals;
+      float *vals;
+
+      meshi = meshinfo + nmeshinfo-1;
+      nvals = meshi->ibar;
+      vals = meshi->xplt;
+      if(Match(buffer, "TRNY") == 1){
+        nvals = meshi->jbar;
+        vals = meshi->yplt;
+      }
+      if(Match(buffer, "TRNZ") == 1){
+        nvals = meshi->kbar;
+        vals = meshi->zplt;
+      }
+      if(FGETS(buffer, BUFFERSIZE, streamsmv) == NULL)break;
+      for(i = 0; i <= nvals; i++){
+        if(FGETS(buffer, BUFFERSIZE, streamsmv) == NULL)break;
+        sscanf(buffer, "%i %f", &dummy, vals + i);
+      }
+      continue;
+    }
+    /*
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     ++++++++++++++++++++++ SLCF ++++++++++++++++++++++++++++++
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -244,9 +317,11 @@ void MakeFEDSmv(char *file){
   stream = fopen(file, "w");
   if(stream == NULL)return;
 
+  nfedisos = 0;
   for(i = 0;i < nfedinfo;i++){
     feddata *fedi;
     int isvol = 0;
+    slicedata *fed;
 
     fedi = fedinfo + i;
     fprintf(stream, "%s\n", fedi->kwlabel);
@@ -255,15 +330,16 @@ void MakeFEDSmv(char *file){
     fprintf(stream, " FED\n");
     fprintf(stream, " \n");
 
-    if(fedi->co  != NULL && fedi->co->vol  == 1)isvol = 1;
-    if(fedi->co2 != NULL && fedi->co2->vol == 1)isvol = 1;
-    if(fedi->o2  != NULL && fedi->o2->vol  == 1)isvol = 1;
-    if(isvol == 1){
-      fprintf(stream, "%s\n", "ISOF");
+    if(fedi->co  != NULL)fed = fedi->co;
+    if(fedi->co2 != NULL)fed = fedi->co2;
+    if(fedi->o2  != NULL)fed = fedi->o2;
+    if(fed->vol == 1){
+      fprintf(stream, "%s %i\n", "ISOF", fed->blocknumber+1);
       fprintf(stream, " %s\n", fedi->iso_file);
       fprintf(stream, " Fractional Effective Dose\n");
       fprintf(stream, " FED\n");
       fprintf(stream, " \n");
+      nfedisos++;
     }
   }
   fclose(stream);
@@ -379,13 +455,46 @@ void FreeFEDData(feddata *fedi){
   FREEMEMORY(fedi->times);
 }
 
-
 /* ------------------ OutputFEDSlice ------------------------ */
 
 void OutputFEDSlice(feddata *fedi){
   writeslicedata(fedi->sf_file, fedi->fed->is1,
     fedi->fed->is2, fedi->fed->js1, fedi->fed->js2, fedi->fed->ks1, fedi->fed->ks2,
     fedi->vals, fedi->times, fedi->nframes, 1);
+}
+
+/* ------------------ MakeFEDIso ------------------------ */
+
+void MakeFEDIso(feddata *fedi){
+  float levels[3] = {0.3, 1.0, 3.0};
+  int nlevels = 3;
+  int error_local, reduce_triangles=1;
+  char *iblank=NULL;
+  float *xplt=NULL, *yplt=NULL, *zplt=NULL;
+  int nx=0, ny=0, nz=0;
+  int i;
+  meshdata *isomesh;
+
+  isomesh = meshinfo + fedi->fed->blocknumber;
+  nx = isomesh->ibar + 1;
+  ny = isomesh->jbar + 1;
+  nz = isomesh->kbar + 1;
+
+  CCIsoHeader(fedi->iso_file, "Fractional effective dose", "FED", "", levels, &nlevels, &error_local);
+  for(i = 0; i < fedi->nframes; i++){
+    float *vals;
+
+    vals = fedi->vals + i * fedi->memframesize;
+    CCIsoSurface2File(fedi->iso_file, fedi->times + i, vals, iblank,
+      levels, &nlevels,
+      isomesh->xplt, &nx, isomesh->yplt, &ny, isomesh->zplt, &nz,
+      &reduce_triangles, &error_local);
+  }
+  int output = 0;
+  if(isocount == 0 || isocount == nfedisos - 1 || nfedisos < 100 || (nfedisos >= 100 && nfedisos < 1000 && isocount % 10 == 1))output = 1;
+  if(nfedisos >= 1000 && isocount % 100 == 1)output = 1;
+  if(output == 1)printf("fed isosurface %i of %i generated\n", isocount + 1, nfedisos);
+  isocount++;
 }
 
 /* ------------------ MakeFEDSlice ------------------------ */
@@ -466,6 +575,9 @@ void MakeFEDSlice(feddata *fedi){
         valmin = MIN(valmin, vali[j]);
         valmax = MAX(valmax, vali[j]);
       }
+    }
+    if(fedi->fed->vol == 1){
+      MakeFEDIso(fedi);
     }
     FILE *stream;
 

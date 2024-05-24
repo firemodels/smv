@@ -7,6 +7,14 @@
 
 //*** structures VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
 
+
+/* --------------------------  meshdata ------------------------------------ */
+
+typedef struct _meshdata{
+  int ibar, jbar, kbar;
+  float *xplt, *yplt, *zplt;
+} meshdata;
+
 /* --------------------------  slicedata ------------------------------------ */
 
 typedef struct _slicedata{
@@ -18,7 +26,6 @@ typedef struct _slicedata{
   int headersize, diskframesize, memframesize, nframes;
   flowlabels label;
 } slicedata;
-
 
 /* --------------------------  feddata ------------------------------------ */
 
@@ -72,7 +79,9 @@ EXTERNCPP void MakeFEDSlices(void);
 
 //*** global variables VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
 
-SVEXTERN int SVDECL(nfedinfo, 0), SVDECL(nsliceinfo, 0);
+SVEXTERN int SVDECL(nfedinfo, 0), SVDECL(nsliceinfo, 0), SVDECL(nmeshinfo, 0);
+SVEXTERN int SVDECL(isocount, 0), SVDECL(nfedisos, 0);
 SVEXTERN feddata SVDECL(*fedinfo, NULL);
 SVEXTERN slicedata SVDECL(*sliceinfo, NULL);
+SVEXTERN meshdata SVDECL(*meshinfo, NULL);
 #endif
