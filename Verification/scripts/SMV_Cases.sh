@@ -10,6 +10,7 @@ $QFDS -d Visualization colorbar.fds
 $QFDS -d Visualization colorbar2.fds
 $QFDS -d Visualization colorconv.fds
 $QFDS -d Visualization color_geom.fds
+$QFDS -d Visualization fed_test.fds
 $QFDS -d Visualization hvac_comp.fds
 $QFDS -d Visualization -p 8 -n 8 mplume5c8.fds
 $QFDS -d Visualization objects_dynamic.fds
