@@ -1517,7 +1517,7 @@ SVEXTERN int SVDECL(showgluitrainer,0);
 SVEXTERN int SVDECL(colorbartype,0),SVDECL(colorbartype_ini,-1), SVDECL(colorbartype_default, 0), SVDECL(colorbartype_last, -1);
 SVEXTERN char colorbarname[1024];
 SVEXTERN int SVDECL(update_colorbartype,0);
-SVEXTERN int colorbartype_save;
+SVEXTERN int SVDECL(colorbartype_save,0);
 SVEXTERN int SVDECL(colorbarpoint,0);
 SVEXTERN int SVDECL(vectorspresent,0);
 SVEXTERN int SVDECL(colorbar_showscene,0);

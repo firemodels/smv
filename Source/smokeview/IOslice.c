@@ -4391,6 +4391,20 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
         sd->qval256[ii] = (qmin * (255 - ii) + qmax * ii) / 255;
       }
     }
+    if(strcmp(sd->label.shortlabel,"FED")==0){
+      colorbardata *cb;
+      
+      cb = GetColorbar("FED");
+      if(cb != NULL){
+        if(cb - colorbarinfo != colorbartype_save)colorbartype_save = colorbartype;
+        colorbartype = cb - colorbarinfo;
+        ColorbarMenu(colorbartype);
+      }
+    }
+    else{
+      colorbartype = colorbartype_save;
+      ColorbarMenu(colorbartype);
+    }
     CheckMemory;
 #ifdef pp_MEMDEBUG
     if(sd->compression_type==UNCOMPRESSED&&sd->slice_filetype!=SLICE_GEOM){

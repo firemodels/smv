@@ -585,19 +585,9 @@ colorbardata *GetColorbar(char *menu_label){
 }
 
 /* ------------------ UpdateCurrentColorbar ------------------------ */
-#define FILE_UPDATE 6
+
 void UpdateCurrentColorbar(colorbardata *cb){
-  int jj = 0;
-
   current_colorbar = cb;
-  for(jj=0;jj<nslice_loaded;jj++){
-    slicedata *slicej;
-    int j;
-
-    j = slice_loaded_list[jj];
-    slicej = sliceinfo + j;
-    if(slicej->display==0)continue;
-  }
 }
 
 /* ------------------ AdjustColorBar ------------------------ */
