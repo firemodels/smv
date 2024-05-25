@@ -325,7 +325,7 @@ void MakeFEDSmv(char *file){
     fedi = fedinfo + i;
     fprintf(stream, "%s\n", fedi->kwlabel);
     fprintf(stream, " %s\n", fedi->sf_file);
-    fprintf(stream, " Fractional Effective Dose\n");
+    fprintf(stream, " Fractional effective dose\n");
     fprintf(stream, " FED\n");
     fprintf(stream, " \n");
 
