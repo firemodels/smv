@@ -291,6 +291,10 @@ void bounds_dialog::setup(const char *file_type, GLUI_Rollout * ROLLOUT_dialog, 
 
   all_bounds = bounds_arg;
   nall_bounds = nbounds_arg;
+  bounds.chopmax = 0.0;
+  bounds.chopmin = 0.0;
+  bounds.set_chopmax = 0;
+  bounds.set_chopmin = 0;
   update_ini = 1;
 
   plot_min_cpp = 0.0;
