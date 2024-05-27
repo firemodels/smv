@@ -2242,6 +2242,12 @@ SVEXTERN float glui_p3min, glui_p3max;
 
 SVEXTERN smoke3ddata SVDECL(*smoke3dinfo,NULL);
 
+SVEXTERN int SVDECL(bound_slice_init, 1);
+SVEXTERN int SVDECL(bound_part_init, 1);
+SVEXTERN int SVDECL(bound_hvacduct_init, 1);
+SVEXTERN int SVDECL(bound_hvacnode_init, 1);
+SVEXTERN int SVDECL(bound_patch_init, 1);
+
 #ifdef INMAIN
 int fire_color_int255[3]  = { 255, 128,0 };
 int smoke_color_int255[4] = { 0,0,0,0 };

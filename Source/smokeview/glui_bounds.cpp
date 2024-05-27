@@ -54,7 +54,7 @@ GLUI *glui_bounds=NULL;
 #define SET_PERCENTILE_MAX_VAL         130
 #define SET_PERCENTILE_MIN_LEVEL       131
 #define SET_PERCENTILE_MAX_LEVEL       132
-#define BOUND_CHOP_INTERP              133
+#define BOUND_CHOP_HIDE                133
 
 #define PERCENTILE_DISABLED 0
 #define PERCENTILE_ENABLED  1
@@ -86,8 +86,8 @@ class bounds_dialog{
   GLUI_Checkbox    *CHECKBOX_set_chopmin, *CHECKBOX_set_chopmax, *CHECKBOX_cache;
   GLUI_Checkbox    *CHECKBOX_research_mode;
   GLUI_Checkbox    *CHECKBOX_hist_show_labels;
+  GLUI_Checkbox    *CHECKBOX_chop_hide = NULL;
   GLUI_RadioGroup  *RADIO_set_valtype,  *RADIO_set_valmin, *RADIO_set_valmax;
-  GLUI_RadioGroup  *RADIO_chop_interp=NULL;
   GLUI_RadioButton *RADIO_button_loaded_min, *RADIO_button_loaded_max;
   GLUI_RadioButton *RADIO_button_all_min, *RADIO_button_all_max;
   GLUI_Button      *BUTTON_reload_data;
@@ -124,9 +124,9 @@ class bounds_dialog{
     void Callback(int var), GLUI_Update_CB PROC_CB, procdata *procinfo, int *nprocinfo);
   void setupNoGraphics(const char *file_type, cpp_boundsdata *bounds, int nbounds);
   void set_cache_flag(int cache_flag);
-  int  get_chop_interp(char *label);
-  int get_chopmin(char *label, int *set_valmin, float *valmin);
-  int get_chopmax(char *label, int *set_valmax, float *valmax);
+  int  get_chop_hide(char *label);
+  int  get_chopmin(char *label, int *set_valmin, float *valmin);
+  int  get_chopmax(char *label, int *set_valmax, float *valmax);
   int  set_chopmin(char *label, int set_valmin, float valmin);
   int  set_chopmax(char *label, int set_valmax, float valmax);
   int  set_min(char *label, int set_valmin, float valmin);
@@ -300,6 +300,7 @@ void bounds_dialog::setup(const char *file_type, GLUI_Rollout * ROLLOUT_dialog, 
   bounds.chopmin = 0.0;
   bounds.set_chopmax = 0;
   bounds.set_chopmin = 0;
+  bounds.chop_hide   = 0;
   update_ini = 1;
 
   plot_min_cpp = 0.0;
@@ -438,17 +439,13 @@ void bounds_dialog::setup(const char *file_type, GLUI_Rollout * ROLLOUT_dialog, 
     glui_bounds->add_column_to_panel(PANEL_truncate_min, false);
     CHECKBOX_set_chopmin = glui_bounds->add_checkbox_to_panel(PANEL_truncate_min, _("Below"), &(bounds.set_chopmin), BOUND_SETCHOPMIN, Callback);
     if(strcmp(file_type, "slice")==0){
-      RADIO_chop_interp = glui_bounds->add_radiogroup_to_panel(ROLLOUT_truncate, &(bounds.chop_interp), BOUND_CHOP_INTERP, Callback);
-      glui_bounds->add_radiobutton_to_group(RADIO_chop_interp, "interpolate");
-      glui_bounds->add_radiobutton_to_group(RADIO_chop_interp, "drop");
+      CHECKBOX_chop_hide = glui_bounds->add_checkbox_to_panel(ROLLOUT_truncate, "hide triangles with truncated values", &(bounds.chop_hide), BOUND_CHOP_HIDE, Callback);
     }
     
     Callback(BOUND_VAL_TYPE);
     Callback(BOUND_SETCHOPMIN);
     Callback(BOUND_SETCHOPMAX);
-    if(strcmp(file_type, "slice")==0){
-      Callback(BOUND_CHOP_INTERP);
-    }
+    if(strcmp(file_type, "slice")==0)Callback(BOUND_CHOP_HIDE);
   }
   update_ini = 1;
 }
@@ -512,9 +509,9 @@ int bounds_dialog::get_valtype(void){
   return bounds.set_valtype;
 }
 
-/* ------------------ get_chop_interp ------------------------ */
+/* ------------------ get_chop_hide ------------------------ */
 
-int bounds_dialog::get_chop_interp(char *label){
+int bounds_dialog::get_chop_hide(char *label){
   int i;
 
   for(i = 0; i < nall_bounds; i++){
@@ -522,7 +519,7 @@ int bounds_dialog::get_chop_interp(char *label){
 
     boundi = all_bounds + i;
     if(strcmp(boundi->label, label) == 0){
-      return boundi->chop_interp;
+      return boundi->chop_hide;
     }
   }
   return 1;
@@ -877,7 +874,7 @@ void bounds_dialog::CB(int var){
       if(CHECKBOX_set_chopmax!=NULL)CHECKBOX_set_chopmax->set_int_val(bounds.set_chopmax);
       if(STATIC_chopmax_unit!=NULL)STATIC_chopmax_unit->set_name(bounds.unit);
 
-      if(RADIO_chop_interp!=NULL)RADIO_chop_interp->set_int_val(bounds.chop_interp);
+      if(CHECKBOX_chop_hide!=NULL)CHECKBOX_chop_hide->set_int_val(bounds.chop_hide);
       CB(BOUND_SETCHOPMIN);
       CB(BOUND_SETCHOPMAX);
 
@@ -962,8 +959,8 @@ void bounds_dialog::CB(int var){
       }
       update_chop_colors = 1;
       break;
-    case BOUND_CHOP_INTERP:
-      if(all_bounds != NULL)all_boundsi->chop_interp = bounds.chop_interp;
+    case BOUND_CHOP_HIDE:
+      if(all_bounds != NULL)all_boundsi->chop_hide = bounds.chop_hide;
       break;
     case BOUND_SETCHOPMAX:
       if(all_bounds != NULL)all_boundsi->set_chopmax = bounds.set_chopmax;
@@ -1254,7 +1251,7 @@ int GetValType(int type){
 /* ------------------ GLUIGetSliceInterp ------------------------ */
 
 extern "C" int GLUIGetSliceInterp(char *label){
-  if(nsliceinfo>0)return sliceboundsCPP.get_chop_interp(label);
+  if(nsliceinfo>0)return sliceboundsCPP.get_chop_hide(label);
   return 1;
 }
 
@@ -1831,7 +1828,7 @@ extern "C" void GLUIHVACSliceBoundsCPP_CB(int var){
     case BOUND_CHOPMAX:
     case BOUND_SETCHOPMIN:
     case BOUND_SETCHOPMAX:
-    case BOUND_CHOP_INTERP:
+    case BOUND_CHOP_HIDE:
     case BOUND_COLORBAR_DIGITS:
       break;
     case BOUND_PERCENTILE_MINVAL:
@@ -1971,7 +1968,7 @@ extern "C" void GLUIPlot3DBoundsCPP_CB(int var){
     case BOUND_CHOPMAX:
     case BOUND_SETCHOPMIN:
     case BOUND_SETCHOPMAX:
-    case BOUND_CHOP_INTERP:
+    case BOUND_CHOP_HIDE:
       break;
     case BOUND_CACHE_DATA:
       cache_plot3d_data = GetCacheFlag(BOUND_PLOT3D);
@@ -2081,7 +2078,7 @@ extern "C" void GLUIPartBoundsCPP_CB(int var){
     case BOUND_CHOPMAX:
     case BOUND_SETCHOPMIN:
     case BOUND_SETCHOPMAX:
-    case BOUND_CHOP_INTERP:
+    case BOUND_CHOP_HIDE:
       break;
     case BOUND_PERCENTILE_MINVAL:
     case BOUND_PERCENTILE_MAXVAL:
@@ -2213,7 +2210,7 @@ extern "C" void GLUIPatchBoundsCPP_CB(int var){
     case BOUND_SETCHOPMIN:
     case BOUND_SETCHOPMAX:
     case BOUND_COLORBAR_DIGITS:
-    case BOUND_CHOP_INTERP:
+    case BOUND_CHOP_HIDE:
       break;
     case BOUND_PERCENTILE_MINVAL:
     case BOUND_PERCENTILE_MAXVAL:
