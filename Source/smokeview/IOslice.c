@@ -4494,58 +4494,6 @@ void GetSliceTimes(char *file, float *times, int ntimes){
   }
 }
 
-#ifdef pp_FRAME
-
-/* ------------------ GetSliceFrameInfo ------------------------ */
-
-void GetSliceFrameInfo(char *file, char *size_file, int **sizesptr, int *nsizesptr){
-  FILE *stream;
-
-  int headersize, framesize, nsizes, *sizes;
-  int ijk[6];
-  int ip1, ip2, jp1, jp2, kp1, kp2;
-  int nxsp, nysp, nzsp;
-  
-  stream = fopen(file, "rb");
-  if(stream == NULL){
-    *nsizesptr = 0;
-    *sizesptr  = NULL;
-  }
-
-  headersize = 3*(4+30+4);
-
-  fseek(stream, 4+headersize, SEEK_CUR);
-
-  fread(ijk, 4, 6, stream);
-  fclose(stream);
-
-  ip1 = ijk[0];
-  ip2 = ijk[1];
-  jp1 = ijk[2];
-  jp2 = ijk[3];
-  kp1 = ijk[4];
-  kp2 = ijk[5];
-  headersize += 4+6*4+4;
-
-  nxsp = ip2 + 1 - ip1;
-  nysp = jp2 + 1 - jp1;
-  nzsp = kp2 + 1 - kp1;
-
-  framesize = 4*(1+nxsp*nysp*nzsp)+16;
-  
-  nsizes = 1;                                                     // header
-  nsizes += (int)(GetFileSizeSMV(file) - headersize) / framesize; // time frames
-  NewMemory((void **)&sizes, nsizes*sizeof(int));
-  int i;
-  sizes[0] = headersize;
-  for(i=1;i<nsizes;i++){
-    sizes[i] = framesize;
-  }
-  *sizesptr  = sizes;
-  *nsizesptr = nsizes;
-}
-#endif
-
 /* ------------------ ReadSlice ------------------------ */
 
 FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_value, int flag, int set_slicecolor, int *errorcode){
@@ -4604,9 +4552,6 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
       FREEMEMORY(sd->compindex);
       FREEMEMORY(sd->qslicedata_compressed);
       FREEMEMORY(sd->slicecomplevel);
-#ifdef pp_FRAME
-      FRAMEFree(sd->frameinfo);
-#endif
     }
 
     slicefilenum = ifile;
@@ -4704,9 +4649,6 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
       sd->ntimes_old = sd->ntimes;
       GetSliceSizes(file, time_frame, &sd->nslicei, &sd->nslicej, &sd->nslicek, &sd->ntimes, tload_step, &error,
                     use_tload_begin, use_tload_end, tload_begin, tload_end, &headersize, &framesize);
-#ifdef pp_FRAME
-      FRAMESetup(sd->frameinfo);
-#endif
     }
     else if(sd->compression_type != UNCOMPRESSED){
       if(

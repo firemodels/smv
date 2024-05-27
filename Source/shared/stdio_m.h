@@ -24,26 +24,3 @@ int    fseek_m(FILE_m *stream_m, long int offset, int whence);
 long   int ftell_m(FILE_m *stream_m);
 void   rewind_m(FILE_m *stream_m);
 #endif
-#ifndef STDIO_FRAME_H_DEFINED
-#define STDIO_FRAME_H_DEFINED
-
-#ifdef pp_FRAME
-
-/* --------------------------  smoke3dtypedata ------------------------------------ */
-
-typedef struct _framedata {
-  char *file, *size_file;
-  int nframes, *sizes;
-  FILE_SIZE *offsets;
-  unsigned char *vals;
-  void (*GetFrameInfo)(char *file, char *size_file, int **sizes, int *nsizes);
-} framedata;
-
-framedata *FRAMEInit(char *file, char *size_file, void GetFrameInfo(char *file, char *size_file, int **sizes, int *nsizes));
-void FRAMESetup(framedata *fi);
-void FRAMEFree(framedata *fi);
-void FRAMESetupVals(framedata *fi);
-void FRAMEReadFrame(framedata *fi, int iframe, FILE *stream);
-void *FRAMEGetFramePtr(framedata *fi, int iframe);
-#endif
-#endif
