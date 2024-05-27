@@ -6292,7 +6292,6 @@ void DrawVolSliceTexture(const slicedata *sd, int is1, int is2, int js1, int js2
   if(sd->volslice == 1 && visx_all == 0 && visy_all == 0 && visz_all == 0)return;
   meshi = meshinfo + sd->blocknumber;
 
-  float min_index=-1.0, max_index=-1.0;
   int slice_interp;
   int set_chopmin=0, set_chopmax=0;
   float chopmin, chopmax;
