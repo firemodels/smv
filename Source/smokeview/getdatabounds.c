@@ -177,8 +177,16 @@ int GetGlobalPartBounds(int flag){
       boundscppi->chopmin     = valmin;
       boundscppi->chopmax     = valmax;
       boundscppi->hist        = NULL;
+
+      if(bound_part_init == 1){
+        boundscppi->set_chopmin = 0;
+        boundscppi->set_chopmax = 0;
+        boundscppi->chopmin     = 0.0;
+        boundscppi->chopmax     = 0.0;
+      }
     }
   }
+  bound_part_init = 0;
   FREEMEMORY(partmins);
   FREEMEMORY(partmaxs);
   return nloaded_files;
@@ -387,10 +395,19 @@ void GetGlobalPatchBounds(int flag, int set_flag){
       boundscppi->valmax[BOUND_LOADED_MAX]     = boundi->dlg_global_valmax;
       boundscppi->valmax[BOUND_GLOBAL_MAX]     = boundi->dlg_global_valmax;
       boundscppi->valmax[BOUND_PERCENTILE_MAX] = boundi->dlg_global_valmax;
+
+      if(bound_patch_init == 1){
+        boundscppi->set_chopmin = 0;
+        boundscppi->set_chopmax = 0;
+        boundscppi->chopmin     = 0.0;
+        boundscppi->chopmax     = 0.0;
+      }
+
       if(set_flag==1)boundscppi->set_valmax = 0;
       boundscppi->hist = NULL;
     }
   }
+  bound_patch_init = 0;
 }
 
 /* ------------------ GetGlobalPatchBoundsFull ------------------------ */
@@ -1475,8 +1492,18 @@ void GetGlobalSliceBounds(int flag, int set_flag){
       boundscppi->valmax[BOUND_GLOBAL_MAX]     = boundi->dlg_global_valmax;
       boundscppi->valmax[BOUND_PERCENTILE_MAX] = boundi->dlg_global_valmax;
       boundscppi->hist = NULL;
+
+      if(bound_slice_init == 1){
+        boundscppi->chop_hide = 0;
+        boundscppi->set_chopmin = 0;
+        boundscppi->set_chopmax = 0;
+        boundscppi->chopmin = 0.0;
+        boundscppi->chopmax = 0.0;
+      }
     }
   }
+  bound_slice_init = 0;
+  printf("in global slice bounds\n");
   PRINT_TIMER(slicebounds_timer, "GlobalSliceBounds (not BoundsUpdate)");
 }
 
@@ -1598,8 +1625,16 @@ void GetGlobalHVACDuctBounds(int flag){
       boundscppi->valmax[BOUND_LOADED_MAX] = boundi->dlg_global_valmax;
       boundscppi->valmax[BOUND_GLOBAL_MAX] = boundi->dlg_global_valmax;
       boundscppi->valmax[BOUND_PERCENTILE_MAX] = boundi->dlg_global_valmax;
+
+      if(bound_hvacduct_init == 1){
+        boundscppi->set_chopmin = 0;
+        boundscppi->set_chopmax = 0;
+        boundscppi->chopmin     = 0.0;
+        boundscppi->chopmax     = 0.0;
+      }
     }
   }
+  bound_hvacduct_init = 0;
 }
 
 /* ------------------ GetGlobalHVACNodeBounds ------------------------ */
@@ -1653,8 +1688,16 @@ void GetGlobalHVACNodeBounds(int flag){
       boundscppi->valmax[BOUND_LOADED_MAX] = boundi->dlg_global_valmax;
       boundscppi->valmax[BOUND_GLOBAL_MAX] = boundi->dlg_global_valmax;
       boundscppi->valmax[BOUND_PERCENTILE_MAX] = boundi->dlg_global_valmax;
+
+      if(bound_hvacnode_init == 1){
+        boundscppi->set_chopmin = 0;
+        boundscppi->set_chopmax = 0;
+        boundscppi->chopmin     = 0.0;
+        boundscppi->chopmax     = 0.0;
+      }
     }
   }
+  bound_hvacnode_init = 0;
 }
 
 /* ------------------ GetSliceBoundsInfo ------------------------ */
