@@ -1216,10 +1216,6 @@ EXTERNCPP int SVimage2var(int rendertype, int woffset, int width, int hoffset, i
 
 EXTERNCPP void MakeFireColors(float temp_min, float temp_max, int nfire_colors_arg);
 
-#ifdef pp_FRAME
-EXTERNCPP void GetSliceFrameInfo(char *file, char *size_file, int **sizes, int *nsizes);
-#endif
-
 #define HEADER_SIZE 4
 #define TRAILER_SIZE 4
 

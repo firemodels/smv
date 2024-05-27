@@ -5846,9 +5846,6 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
   sd->loadstatus = FILE_UNLOADED;
 #endif
   sd->slice_mask       = NULL;
-#ifdef pp_FRAME
-  sd->frameinfo        = NULL;
-#endif
   sd->vals2d.vals      = NULL;
   sd->vals2d.vals_orig = NULL;
   sd->vals2d.times     = NULL;
@@ -6020,9 +6017,6 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
     sd->slicelabel = SLICEBUFFER(lenslicelabel);
     strcpy(sd->slicelabel, slicelabel);
   }
-#ifdef pp_FRAME
-  sd->frameinfo = FRAMEInit(sd->file, sd->size_file, GetSliceFrameInfo);
-#endif
   if(read_slice_header==1){
     int error;
 
