@@ -26,6 +26,9 @@ EXTERNCPP void UpdateGluiMergeSmoke(void);
 
 
 //*** glui_bounds.cpp headers
+EXTERNCPP int  GLUIGetSliceInterp(char *label);
+EXTERNCPP int  GLUIGetChopMin(int type, char *label, int *set_valmin, float *valmin);
+EXTERNCPP int  GLUIGetChopMax(int type, char *label, int *set_valmax, float *valmax);
 EXTERNCPP void GLUIUpdateLoadAllSlices(void);
 EXTERNCPP void GLUIUpdateMeshBounds(void);
 EXTERNCPP void DrawBoxMinMax(float *bbmin, float *bbmax, float *box_color);
