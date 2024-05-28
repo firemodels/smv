@@ -208,10 +208,6 @@ int ReadSMV(char *smvfile){
       }
       islice++;
 
-      if(slicetype == SLCC){
-        ii1 = MAX(ii1, 1);
-        ii2 = MAX(ii1, ii2);
-      }
       slicei->is1           = ii1;
       slicei->is2           = ii2;
       slicei->js1           = jj1;
@@ -457,8 +453,10 @@ void FreeFEDData(feddata *fedi){
 /* ------------------ OutputFEDSlice ------------------------ */
 
 void OutputFEDSlice(feddata *fedi){
-  writeslicedata(fedi->sf_file, fedi->fed->is1,
-    fedi->fed->is2, fedi->fed->js1, fedi->fed->js2, fedi->fed->ks1, fedi->fed->ks2,
+  writeslicedata(fedi->sf_file, 
+    fedi->fed->is1, fedi->fed->is2,
+    fedi->fed->js1, fedi->fed->js2,
+    fedi->fed->ks1, fedi->fed->ks2,
     fedi->vals, fedi->times, fedi->nframes, 1);
 }
 
@@ -554,9 +552,9 @@ void MakeFEDSlice(feddata *fedi){
       dt = fedi->times[i] - fedi->times[i-1];
       vali   = vals + i*fedi->memframesize;
       valim1 = vali - fedi->memframesize;
-      if(fedi->co!=NULL)coi = fedi->co->vals + i*fedi->memframesize;
+      if(fedi->co!=NULL)coi   = fedi->co->vals  + i*fedi->memframesize;
       if(fedi->co2!=NULL)co2i = fedi->co2->vals + i*fedi->memframesize;
-      if(fedi->o2!=NULL)o2i = fedi->o2->vals + i*fedi->memframesize;
+      if(fedi->o2!=NULL)o2i   = fedi->o2->vals  + i*fedi->memframesize;
       for(j=0;j<fedi->memframesize;j++){
         float fedval, fedo2, hvco2, fedco;
 
