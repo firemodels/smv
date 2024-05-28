@@ -22,19 +22,28 @@ void OutputFileBuffer(filedata *fileinfo){
 
 /* ------------------ AppendFileBuffer ------------------------ */
 
-int AppendFileBuffer(filedata *file1, filedata *file2){
+bufferstreamdata *AppendFileBuffer(bufferstreamdata *stream, char *file){
   char *buffer, **lines;
   int i;
+  bufferstreamdata *stream2;
+  filedata *file1, *file2;
 
+  if(file==NULL)return stream;
+  stream2 = GetSMVBuffer(file);
+  if(stream2==NULL)return stream;
+
+  file1 = stream->fileinfo;
+  file2 = stream2->fileinfo;
+  
   if(NewMemory((void **)&buffer, file1->filesize + file2->filesize)==0){
-    return -1;
+    return stream;
   }
   memcpy(buffer,                 file1->buffer, file1->filesize);
   memcpy(buffer+file1->filesize, file2->buffer, file2->filesize);
 
   if(NewMemory((void **)&lines, (file1->nlines+file2->nlines)*sizeof(char *))==0){
     FREEMEMORY(buffer);
-    return  -1;
+    return  stream;
   }
 
   for(i = 0;i<file1->nlines;i++){
@@ -50,7 +59,7 @@ int AppendFileBuffer(filedata *file1, filedata *file2){
   file1->lines    = lines;
   file1->filesize = file1->filesize + file2->filesize;
   file1->nlines   = file1->nlines   + file2->nlines;
-  return 0;
+  return stream;
 }
 
 /* ------------------ CopySMVBuffer ------------------------ */
@@ -73,35 +82,15 @@ bufferstreamdata *CopySMVBuffer(bufferstreamdata *stream_in){
 
 /* ------------------ GetSMVBuffer ------------------------ */
 
-bufferstreamdata *GetSMVBuffer(char *file, char *file2){
-  bufferstreamdata *stream, *stream2;
+bufferstreamdata *GetSMVBuffer(char *file){
+  bufferstreamdata *stream;
 
   NewMemory((void **)&stream, sizeof(bufferstreamdata));
-  NewMemory((void **)&stream2, sizeof(bufferstreamdata));
   stream->fileinfo = NULL;
-  stream2->fileinfo = NULL;
 
-  if(file!=NULL){
-    stream->fileinfo = fopen_buffer(file, "r", 1, 0);
-  }
-  if(file2!=NULL){
-    stream2->fileinfo = fopen_buffer(file2, "r", 1, 0);
-  }
-
-  if(stream->fileinfo==NULL&&stream2->fileinfo==NULL){
+  if(file!=NULL)stream->fileinfo = fopen_buffer(file, "r", 1, 0);
+  if(stream->fileinfo==NULL){
     FREEMEMORY(stream);
-    FREEMEMORY(stream2);
-  }
-  else if(stream->fileinfo!=NULL&&stream2->fileinfo==NULL){
-    FREEMEMORY(stream2);
-  }
-  else if(stream->fileinfo==NULL&&stream2->fileinfo!=NULL){
-    FREEMEMORY(stream);
-    stream = stream2;
-  }
-  else{
-    AppendFileBuffer(stream->fileinfo, stream2->fileinfo);
-    fclose_buffer(stream2->fileinfo);
   }
   return stream;
 }

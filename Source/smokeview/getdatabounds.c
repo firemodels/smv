@@ -1425,9 +1425,6 @@ void GetGlobalSliceBounds(int flag, int set_flag){
     int doit;
 
     slicei = sliceinfo+i;
-#ifdef pp_FED
-    if(slicei->is_fed==1)continue;
-#endif
     if(slicei->valmin_slice>slicei->valmax_slice ||
        current_script_command==NULL || NOT_LOADRENDER)doit=1;
     if(flag==0){
@@ -1702,90 +1699,6 @@ void GetGlobalHVACNodeBounds(int flag){
   }
   bound_hvacnode_init = 0;
 }
-
-#ifdef pp_FED
-/* ------------------ UpdateGlobalFEDSliceBounds ------------------------ */
-
-void UpdateGlobalFEDSliceBounds(void){
-  int i;
-
-#ifdef pp_NOBOUNDS
-  if(no_bounds==0 || force_bounds==1)BoundsUpdate(BOUND_SLICE);
-#else
-  BoundsUpdate(BOUND_SLICE);
-#endif
-  for(i = 0; i<nsliceinfo; i++){
-    slicedata *slicei;
-    float valmin, valmax;
-    boundsdata *boundi;
-
-    slicei = sliceinfo+i;
-    if(slicei->is_fed==0||slicei->have_bound_file==0)continue;
-    if(slicei->valmin_slice>slicei->valmax_slice||
-       current_script_command==NULL || NOT_LOADRENDER){
-
-      BoundsGet(slicei->reg_file, sliceglobalboundsinfo, sorted_slice_filenames, nsliceinfo, 1, &valmin, &valmax);
-
-      if(valmin>valmax)continue;
-      slicei->valmin_slice = valmin;
-      slicei->valmax_slice = valmax;
-    }
-    else{
-      valmin = slicei->valmin_slice;
-      valmax = slicei->valmax_slice;
-      slicei->have_bound_file = YES;
-    }
-    boundi = GetSliceBoundsInfo(slicei->label.shortlabel);
-    if(boundi==NULL)continue;
-    if(boundi->dlg_global_valmin>boundi->dlg_global_valmax){
-      boundi->dlg_global_valmin = valmin;
-      boundi->dlg_global_valmax = valmax;
-    }
-    else{
-      boundi->dlg_global_valmin = MIN(boundi->dlg_global_valmin, valmin);
-      boundi->dlg_global_valmax = MAX(boundi->dlg_global_valmax, valmax);
-    }
-  }
-  for(i = 0; i<nslicebounds; i++){
-    boundsdata *boundi;
-
-    boundi = slicebounds+i;
-    if(strcmp(boundi->label->shortlabel, "FED")==0){
-      boundi->dlg_valmin = 0.0;
-      boundi->dlg_valmax = 3.0;
-    }
-  }
-  nslicebounds_cpp = nslicebounds;
-  if(nslicebounds_cpp>0){
-    for(i = 0; i<nslicebounds_cpp; i++){
-      cpp_boundsdata *boundscppi;
-      boundsdata *boundi;
-
-      boundscppi = slicebounds_cpp+i;
-      boundi = slicebounds+i;
-      if(strcmp(boundi->label->shortlabel, "FED")!=0)continue;
-
-      strcpy(boundscppi->label, boundi->shortlabel);
-      strcpy(boundscppi->unit, boundi->label->unit);
-
-      boundscppi->cache = cache_slice_data;
-      boundscppi->set_valtype = 0;
-
-      boundscppi->set_valmin = BOUND_SET_MIN;
-      boundscppi->valmin[BOUND_SET_MIN] = 0.0;
-      boundscppi->valmin[BOUND_LOADED_MIN] = boundi->dlg_global_valmin;
-      boundscppi->valmin[BOUND_GLOBAL_MIN] = boundi->dlg_global_valmin;
-      boundscppi->valmin[BOUND_PERCENTILE_MIN] = boundi->dlg_global_valmin;
-
-      boundscppi->set_valmax = BOUND_SET_MAX;
-      boundscppi->valmax[BOUND_SET_MAX] = 3.0;
-      boundscppi->valmax[BOUND_LOADED_MAX] = boundi->dlg_global_valmax;
-      boundscppi->valmax[BOUND_GLOBAL_MAX] = boundi->dlg_global_valmax;
-      boundscppi->valmax[BOUND_PERCENTILE_MAX] = boundi->dlg_global_valmax;
-    }
-  }
-}
-#endif
 
 /* ------------------ GetSliceBoundsInfo ------------------------ */
 

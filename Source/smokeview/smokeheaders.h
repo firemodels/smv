@@ -443,7 +443,7 @@ EXTERNCPP int GetPartHeader(partdata *parti, int *nf_all, int option_arg, int pr
 EXTERNCPP void SetMainWindow(void);
 EXTERNCPP void GetSliceFileHeader(char *file, int *ip1, int *ip2, int *jp1, int *jp2, int *kp1, int *kp2, int *error);
 EXTERNCPP int TimeAverageData(float *data_out, float *data_in, int ndata, int data_per_timestep, float *times_local, int ntimes_local, float average_time);
-bufferstreamdata *GetSMVBuffer(char *file, char *file2);
+bufferstreamdata *GetSMVBuffer(char *file);
 EXTERNCPP void UpdateBlockType(void);
 boundsdata *GetSliceBoundsInfo(char *shortlabel);
 boundsdata *GetPatchBoundsInfo(char *shortlabel);
@@ -459,9 +459,6 @@ EXTERNCPP int BuildGbndFile(int file_type);
 EXTERNCPP void GetGlobalSliceBoundsReduced(void);
 EXTERNCPP void GetGlobalHVACDuctBounds(int flag);
 EXTERNCPP void GetGlobalHVACNodeBounds(int flag);
-#ifdef pp_FED
-EXTERNCPP void UpdateGlobalFEDSliceBounds(void);
-#endif
 
 EXTERNCPP void Slice2Device(void);
 EXTERNCPP void PauseTime(float pause_time);
@@ -626,9 +623,6 @@ EXTERNCPP void GetSliceParams2(void);
 
 EXTERNCPP void DrawWindRosesDevices(void);
 EXTERNCPP void DeviceData2WindRose(int nr, int ntheta);
-#ifdef pp_FED
-EXTERNCPP void DefineAllFEDs(void);
-#endif
 EXTERNCPP void AddDeleteKeyframe(int flag);
 EXTERNCPP void Slerp(float *p0, float *p1, float t, float *pout);
 EXTERNCPP void VentMenu(int value);
@@ -728,9 +722,6 @@ EXTERNCPP char *GetScriptFileName(int id);
 EXTERNCPP inifiledata *InsertIniFile(char *file);
 EXTERNCPP void Keyboard(unsigned char key, int flag);
 EXTERNCPP void GetNewScriptFileName(char *newscriptfilename);
-#ifdef pp_FED
-EXTERNCPP void OutputFedCSV(void);
-#endif
 EXTERNCPP void ParticlePropShowMenu(int value);
 EXTERNCPP int  GetGridIndex(float x, int dir, float *plotxyz, int nplotxyz);
 EXTERNCPP void UpdateSliceContours(int slice_type_index, float line_min, float line_max, int nline_values);
@@ -1140,9 +1131,6 @@ EXTERNCPP void FreeSmoke3D(smoke3ddata *smoke3di);
 EXTERNCPP void GetSmoke3DTimeSteps(int fortran_skip, char *smokefile, int version, int *ntimes_found, int *ntimes_full);
 EXTERNCPP void ReadSmoke3DAllMeshes(int iframe, int smoketype, int *errorcode);
 EXTERNCPP FILE_SIZE ReadSmoke3D(int iframe, int ifile, int flag, int first_time, float *time_value, int *errorcode);
-#ifdef pp_FED
-EXTERNCPP void ReadFed(int ifile, int time_frame, float *time_value, int flag, int file_type, int *errorcode);
-#endif
 EXTERNCPP FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_value, int flag, int set_slicecolor, int *errorcode);
 EXTERNCPP FILE_SIZE ReadIso(const char *file, int ifile, int flag, int *geom_frame_index, int *errorcode);
 

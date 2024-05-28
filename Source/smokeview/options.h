@@ -6,7 +6,6 @@
 #define pp_SELECT_PART     // option to select a particle and show its tag
 //#define pp_PARTBOUND_MULTI // compute particle bounds in the background
 //#define pp_LUA            // turn on LUA option
-//#define pp_FED            // used to isolate fed code
 #define pp_SLICE_MULTI      // load slice files in parallel
 //#define pp_SMOKE_MULTI      // load 3d smoke in parallel
 //#define pp_SMOKE16        // load 16 bit smoke files

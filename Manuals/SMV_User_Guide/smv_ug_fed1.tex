@@ -2,10 +2,10 @@
 The fractional effective dose (FED), developed by Purser~\cite{SFPE:Purser},
 is an estimate of human incapacitation
 due to a limited set of combustion gases.
-FED index data is computed by Smokeview using CO, $\mathrm{CO_2}$ and $\mathrm{O_2}$ gas
+FED index data is computed by the program fds2fed using CO, $\mathrm{CO_2}$ and $\mathrm{O_2}$ gas
 concentration data computed by FDS.
-This data is made available to Smokeview in the form of slice files.
-Smokeview computes FED data using
+This data is made available to fds2fed in the form of slice files.
+fds2fed computes FED data using
 \be
 \mathrm{FED}_\mathrm{tot}\ = \mathrm{FED}_\mathrm{CO}
 \times \mathrm{HV}_\mathrm{CO_2}\ + \mathrm{FED}_\mathrm{O_2}
@@ -23,10 +23,10 @@ same location.  To generate an FED slice at $y=1.6$, specify the following speci
 &SLCF PBY=1.6,QUANTITY='VOLUME FRACTION' SPEC_ID='OXYGEN' /
 \end{lstlisting}
 
-FED computations are stored by Smokeview in slice files for subsequent use.
-Since this computation
-is performed in Smokeview using data only found in the slices files, time step intervals
-should be chosen to ensure accuracy.  Figure \ref{figfedslice}\ illustrates
+FED computations are stored by fds2fed in slice files and an auxilliary .smv file named
+casename.fedsmv for subsequent use by smokeview where casename is the name of the case.
+Time step intervals
+should be chosen to ensure accuracy since this computation integrates data found in slice files.  Figure \ref{figfedslice}\ illustrates
 an FED slice file at several times.  The FED colorbar is split at values of 0.3, 1.0 and 3.0.  When FED slices are displayed using the FED colorbar (colorbar illustrated in Figure \ref{figfedslice}), Smokeview computes color levels assuming a minimum FED level of 0.0 and a maximum level of 3.0.  To display FED data using other data bounds, a different colorbar needs to be chosen.
 
 \begin{figure}[bph]

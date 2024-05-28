@@ -276,14 +276,14 @@ int main(int argc, char **argv){
   PRINTF("reading %s\n",smoke1);
   FFLUSH();
 
-  smv_buffer1 = GetSMVBuffer(smoke1, NULL);
+  smv_buffer1 = GetSMVBuffer(smoke1);
 
   ReadSMV(smv_buffer1, stream_out, caseinfo);
   FCLOSE(smv_buffer1);
 
   PRINTF("reading %s\n",smoke2);
   FFLUSH();
-  smv_buffer2 = GetSMVBuffer(smoke2, NULL);
+  smv_buffer2 = GetSMVBuffer(smoke2);
   ReadSMV(smv_buffer2, NULL, caseinfo+1);
   FCLOSE(smv_buffer2);
 

@@ -518,11 +518,6 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 
 #define STEPS_PER_DEG 10.0
 
-#ifdef pp_FED
-#define FED_SLICE 0
-#define FED_ISO   1
-#endif
-
 #define SLICE_UNKNOWN     -1
 #define SLICE_NODE_CENTER 1
 #define SLICE_CELL_CENTER 2

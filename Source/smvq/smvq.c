@@ -197,7 +197,7 @@ int RunBenchmark(char *input_file) {
   INIT_PRINT_TIMER(parse_time);
   fprintf(stderr, "reading:\t%s\n", input_file);
   {
-    bufferstreamdata *smv_streaminfo = GetSMVBuffer(NULL, input_file);
+    bufferstreamdata *smv_streaminfo = GetSMVBuffer(input_file);
     if (smv_streaminfo == NULL) {
       fprintf(stderr, "could not open %s\n", input_file);
       return 1;

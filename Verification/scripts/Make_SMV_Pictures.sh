@@ -185,6 +185,7 @@ if [ "$use_installed" == "1" ] ; then
   export SMV=smokeview
   export SMOKEZIP=smokediff
   export SMOKEDIFF=smokediff
+  export FDS2FED=fds2fed
   export WIND2FDS=wind2fds
   export BACKGROUND=background
   export SMVBINDIR=`which smokeview`
@@ -195,6 +196,7 @@ else
   export SMV=$GITROOT/smv/Build/smokeview/${COMPILER}_$VERSION2/smokeview_$VERSION
   export SMOKEZIP=$GITROOT/smv/Build/smokezip/${COMPILER}_$VERSION2/smokezip_$VERSION2
   export SMOKEDIFF=$GITROOT/smv/Build/smokediff/${COMPILER}_$VERSION2/smokediff_$VERSION2
+  export FDS2FED=$GITROOT/smv/Build/fds2fed/${COMPILER}_$VERSION2/fds2fed_$VERSION2
   export WIND2FDS=$GITROOT/smv/Build/wind2fds/${COMPILER}_$VERSION2/wind2fds_$VERSION2
   export BACKGROUND=$GITROOT/smv/Build/background/${COMPILER}_$VERSION2/background_$VERSION2
   export SMVBINDIR=$GITROOT/bot/Bundlebot/smv/for_bundle
@@ -245,17 +247,12 @@ $SMV -version > smokeview.version
 if [ "$RUN_SMV" == "1" ]; then
 
 # precompute FED slices
-  cd $GITROOT/smv/Verification
-  if [ "$QUEUE" == "none" ]; then
-    $QFDS -d Visualization plume5c
-  else
-    $QFDS -f -d Visualization plume5c
-  fi
-  $QFDS -f -d Visualization plume5cdelta
-  $QFDS -f -d Visualization thouse5
-  $QFDS -f -d Visualization thouse5delta
-
-  wait_cases_end
+  cd $GITROOT/smv/Verification/Visualization
+  $FDS2FED plume5c
+  $FDS2FED plume5cdelta
+  $FDS2FED thouse5
+  $FDS2FED thouse5delta
+  $FDS2FED fed_test
 
 # compute isosurface from particles
 
