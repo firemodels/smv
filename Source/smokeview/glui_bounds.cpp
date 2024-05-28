@@ -125,6 +125,7 @@ class bounds_dialog{
   void setupNoGraphics(const char *file_type, cpp_boundsdata *bounds, int nbounds);
   void set_cache_flag(int cache_flag);
   int  get_chop_hide(char *label);
+  void set_chop_hide(char *label, int val);
   int  get_chopmin(char *label, int *set_valmin, float *valmin);
   int  get_chopmax(char *label, int *set_valmax, float *valmax);
   int  set_chopmin(char *label, int set_valmin, float valmin);
@@ -523,6 +524,23 @@ int bounds_dialog::get_chop_hide(char *label){
     }
   }
   return 1;
+}
+
+/* ------------------ set_chop_hide ------------------------ */
+
+void bounds_dialog::set_chop_hide(char *label, int val){
+  int i;
+
+  for(i = 0; i < nall_bounds; i++){
+    cpp_boundsdata *boundi;
+
+    boundi = all_bounds + i;
+    if(strcmp(boundi->label, label) == 0){
+      if(val != 0)val = 1;
+      boundi->chop_hide = val;
+      return;
+    }
+  }
 }
 
 /* ------------------ set_chopmin ------------------------ */
@@ -1248,11 +1266,17 @@ int GetValType(int type){
   return 0;
 }
 
-/* ------------------ GLUIGetSliceInterp ------------------------ */
+/* ------------------ GLUIGetChopHide ------------------------ */
 
-extern "C" int GLUIGetSliceInterp(char *label){
+extern "C" int GLUIGetChopHide(char *label){
   if(nsliceinfo>0)return sliceboundsCPP.get_chop_hide(label);
   return 1;
+}
+
+/* ------------------ GLUISetChopHide ------------------------ */
+
+extern "C" void GLUISetChopHide(char *label, int val){
+  if(nsliceinfo>0)sliceboundsCPP.set_chop_hide(label, val);
 }
 
 /* ------------------ GLUIGetGetChopMin ------------------------ */
@@ -1309,6 +1333,64 @@ extern "C" int GLUIGetChopMax(int type, char *label, int *set_chopmax, float *ch
     default:
       assert(FFALSE);
       break;
+  }
+  return 0;
+}
+
+/* ------------------ GLUISetChopMin ------------------------ */
+
+extern "C" int GLUISetChopMin(int type, char *label, int set_chopmin, float chopmin){
+  switch(type){
+  case BOUND_HVACDUCT:
+    if(nhvacductbounds > 0)return hvacductboundsCPP.set_chopmin(label, set_chopmin, chopmin);
+    break;
+  case BOUND_HVACNODE:
+    if(nhvacnodebounds > 0)return hvacnodeboundsCPP.set_chopmin(label, set_chopmin, chopmin);
+    break;
+  case BOUND_PATCH:
+    if(npatchinfo > 0)return patchboundsCPP.set_chopmin(label, set_chopmin, chopmin);
+    break;
+  case BOUND_PART:
+    if(npartinfo > 0)return partboundsCPP.set_chopmin(label, set_chopmin, chopmin);
+    break;
+  case BOUND_PLOT3D:
+    if(nplot3dinfo > 0)return plot3dboundsCPP.set_chopmin(label, set_chopmin, chopmin);
+    break;
+  case BOUND_SLICE:
+    if(nsliceinfo > 0)return sliceboundsCPP.set_chopmin(label, set_chopmin, chopmin);
+    break;
+  default:
+    assert(FFALSE);
+    break;
+  }
+  return 0;
+}
+
+/* ------------------ GLUISetChopMax ------------------------ */
+
+extern "C" int GLUISetChopMax(int type, char *label, int set_chopmax, float chopmax){
+  switch(type){
+  case BOUND_HVACDUCT:
+    if(nhvacductbounds > 0)return hvacductboundsCPP.set_chopmax(label, set_chopmax, chopmax);
+    break;
+  case BOUND_HVACNODE:
+    if(nhvacnodebounds > 0)return hvacnodeboundsCPP.set_chopmax(label, set_chopmax, chopmax);
+    break;
+  case BOUND_PATCH:
+    if(npatchinfo > 0)return patchboundsCPP.set_chopmax(label, set_chopmax, chopmax);
+    break;
+  case BOUND_PART:
+    if(npartinfo > 0)return partboundsCPP.set_chopmax(label, set_chopmax, chopmax);
+    break;
+  case BOUND_PLOT3D:
+    if(nplot3dinfo > 0)return plot3dboundsCPP.set_chopmax(label, set_chopmax, chopmax);
+    break;
+  case BOUND_SLICE:
+    if(nsliceinfo > 0)return sliceboundsCPP.set_chopmax(label, set_chopmax, chopmax);
+    break;
+  default:
+    assert(FFALSE);
+    break;
   }
   return 0;
 }
