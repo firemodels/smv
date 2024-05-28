@@ -4349,6 +4349,21 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
       colorbartype = colorbartype_save;
       ColorbarMenu(colorbartype);
     }
+    if(strcmp(sd->label.shortlabel, "TOA")==0){
+      contour_type_save = contour_type;
+      ColorbarMenu(COLORBAR_LINES);
+      int set_chopmax = 1;
+      float chopmax = 121.0;
+
+      if(global_times != NULL)chopmax = global_times[nglobal_times-1] + 0.5;
+      GLUISetChopMax(BOUND_SLICE, sd->label.shortlabel, set_chopmax, chopmax);
+      GLUISetChopHide("TOA", 1);
+    }
+    else{
+      if(contour_type_save == SHADED_CONTOURS)ColorbarMenu(COLORBAR_CONTINUOUS);
+      if(contour_type_save == STEPPED_CONTOURS)ColorbarMenu(COLORBAR_STEPPED);
+      if(contour_type_save == LINE_CONTOURS)ColorbarMenu(COLORBAR_LINES);
+    }
     CheckMemory;
 #ifdef pp_MEMDEBUG
     if(sd->compression_type==UNCOMPRESSED&&sd->slice_filetype!=SLICE_GEOM){
@@ -5247,7 +5262,7 @@ void DrawVolSliceTerrain(const slicedata *sd){
   float chopmin, chopmax;
   int slice_interp;
 
-  slice_interp = GLUIGetSliceInterp(sd->label.shortlabel);
+  slice_interp = GLUIGetChopHide(sd->label.shortlabel);
   if(slice_interp == 1){
     GLUIGetChopMin(BOUND_SLICE, sd->label.shortlabel, &set_chopmin, &chopmin);
     GLUIGetChopMax(BOUND_SLICE, sd->label.shortlabel, &set_chopmax, &chopmax);
@@ -5591,7 +5606,7 @@ void DrawVolSliceTexture(const slicedata *sd, int is1, int is2, int js1, int js2
   int set_chopmin=0, set_chopmax=0;
   float chopmin, chopmax;
 
-  slice_interp = GLUIGetSliceInterp(sd->label.shortlabel);
+  slice_interp = GLUIGetChopHide(sd->label.shortlabel);
   if(slice_interp == 1){
     GLUIGetChopMin(BOUND_SLICE, sd->label.shortlabel, &set_chopmin, &chopmin);
     GLUIGetChopMax(BOUND_SLICE, sd->label.shortlabel, &set_chopmax, &chopmax);

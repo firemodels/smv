@@ -3,13 +3,14 @@
 :: ---- smokeview revision ----
 
 set smv_revision=unknown
+set fds_revision=unknown
 if exist %userprofile%\.bundle\smv_revision.txt (
   set /p smv_revision=<%userprofile%\.bundle\smv_revision.txt
 )
 
 :: ---- log entry date ----
 
-set smvlogdate="30-Apr-2024"
+set smvlogdate="28-May-2024"
 
 :: ---- repo locations ----
 

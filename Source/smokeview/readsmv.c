@@ -973,7 +973,7 @@ void InitMesh(meshdata *meshi){
   meshi->mesh_offset_ptr = NULL;
   meshi->cullgeominfo = NULL;
   meshi->blockvis = 1;
-  meshi->terrain = NULL;
+  // set meshi->terrain to NULL just after meshinfo is allocated
   meshi->meshrgb[0] = 0.0;
   meshi->meshrgb[1] = 0.0;
   meshi->meshrgb[2] = 0.0;
@@ -7767,6 +7767,9 @@ int ReadSMV_Parse(bufferstreamdata *stream) {
   }
   FREEMEMORY(meshinfo);
   if(NewMemory((void **)&meshinfo,nmeshes*sizeof(meshdata))==0)return 2;
+  for(i = 0; i < nmeshes; i++){
+    meshinfo[i].terrain = NULL; // set to NULL here so order of order GRID/TERRAIN keywords won't cause a problem
+  }
   FREEMEMORY(supermeshinfo);
   if(NewMemory((void **)&supermeshinfo,nmeshes*sizeof(supermeshdata))==0)return 2;
   meshinfo->plot3dfilenum=-1;
@@ -14611,6 +14614,7 @@ int ReadIni2(char *inifile, int localfile){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%i", &contour_type);
       contour_type = CLAMP(contour_type, 0, 2);
+      contour_type_save = contour_type;
       continue;
     }
     if(MatchINI(buffer, "P3CONT3DSMOOTH") == 1){

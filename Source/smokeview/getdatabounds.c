@@ -1503,7 +1503,6 @@ void GetGlobalSliceBounds(int flag, int set_flag){
     }
   }
   bound_slice_init = 0;
-  printf("in global slice bounds\n");
   PRINT_TIMER(slicebounds_timer, "GlobalSliceBounds (not BoundsUpdate)");
 }
 
