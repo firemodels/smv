@@ -4337,7 +4337,7 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
     }
     if(strcmp(sd->label.shortlabel,"FED")==0){
       colorbardata *cb;
-      
+
       cb = GetColorbar("FED");
       if(cb != NULL){
         if(cb - colorbarinfo != colorbartype_save)colorbartype_save = colorbartype;
@@ -4346,8 +4346,10 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
       }
     }
     else{
-      colorbartype = colorbartype_save;
-      ColorbarMenu(colorbartype);
+      if(colorbartype_save > -1){
+        colorbartype = colorbartype_save;
+        ColorbarMenu(colorbartype);
+      }
     }
     if(strcmp(sd->label.shortlabel, "TOA")==0){
       contour_type_save = contour_type;

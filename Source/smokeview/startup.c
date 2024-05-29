@@ -1573,7 +1573,6 @@ void InitVars(void){
   setpartmin_old=setpartmin;
   setpartmax_old=setpartmax;
   UpdateCurrentColorbar(colorbarinfo);
-  colorbartype_save=colorbartype;
   visBlocks=visBLOCKAsInput;
   blocklocation=BLOCKlocation_grid;
   render_window_size=RenderWindow;

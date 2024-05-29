@@ -1517,7 +1517,7 @@ SVEXTERN int SVDECL(showgluitrainer,0);
 SVEXTERN int SVDECL(colorbartype,0),SVDECL(colorbartype_ini,-1), SVDECL(colorbartype_default, 0), SVDECL(colorbartype_last, -1);
 SVEXTERN char colorbarname[1024];
 SVEXTERN int SVDECL(update_colorbartype,0);
-SVEXTERN int SVDECL(colorbartype_save,0);
+SVEXTERN int SVDECL(colorbartype_save,-1);
 SVEXTERN int SVDECL(colorbarpoint,0);
 SVEXTERN int SVDECL(vectorspresent,0);
 SVEXTERN int SVDECL(colorbar_showscene,0);
@@ -1557,7 +1557,7 @@ SVEXTERN int SVDECL(nopart,1);
 SVEXTERN int SVDECL(uindex,-1), SVDECL(vindex,-1), SVDECL(windex,-1);
 
 SVEXTERN int SVDECL(contour_type,0), SVDECL(p3cont3dsmooth,0);
-SVEXTERN int SVDECL(contour_type_save, 0);
+SVEXTERN int SVDECL(contour_type_save, -1);
 SVEXTERN int SVDECL(cullfaces,1);
 SVEXTERN int SVDECL(showonly_hiddenfaces,0);
 
