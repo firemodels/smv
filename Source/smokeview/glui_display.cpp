@@ -1245,7 +1245,7 @@ extern "C" void GLUILabelsCB(int var){
       ColorbarMenu(bw_colorbar_index);
     }
     else{
-      ColorbarMenu(colorbartype_save);
+      if(colorbartype_save>-1)ColorbarMenu(colorbartype_save);
     }
     break;
   case LABELS_close:

@@ -1009,7 +1009,7 @@ void ColorbarMenu(int value){
         ColorbarMenu(bw_colorbar_index);
       }
       else{
-        ColorbarMenu(colorbartype_save);
+        if(colorbartype_save>-1)ColorbarMenu(colorbartype_save);
       }
       GLUIIsoBoundCB(ISO_COLORS);
       break;
