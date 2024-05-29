@@ -17,5 +17,8 @@ if "%1" NEQ "-t" goto endif
 
 if x%ONEAPI_FORT_CAPS% == x1 set SMV_TESTFLAG=%SMV_TESTFLAG% -D pp_WIN_ONEAPI
 
+:: build libraries if one is missing
+call ..\..\scripts\test_libs.bat ..\..\LIBS\
+
 make -j %NUMBER_OF_PROCESSORS% ICON="%ICON%" GLUT="%GLUT%" SHELL="%ComSpec%" SMV_TESTFLAG="%SMV_TESTFLAG%" SMV_TESTSTRING="%SMV_TESTSTRING%" -f ..\Makefile intel_win_64%debug%
 pause

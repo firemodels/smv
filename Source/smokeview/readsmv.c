@@ -916,6 +916,7 @@ void InitMesh(meshdata *meshi){
   NewMemory((void **)&meshi->gsliceinfo,     sizeof(meshplanedata));
   NewMemory((void **)&meshi->volrenderinfo,  sizeof(volrenderdata));
 
+  meshi->terrain = NULL;
   meshi->boundary_mask = NULL;
   meshi->in_frustum = 1;
   meshi->imap = NULL;
@@ -7768,7 +7769,10 @@ int ReadSMV_Parse(bufferstreamdata *stream) {
   FREEMEMORY(meshinfo);
   if(NewMemory((void **)&meshinfo,nmeshes*sizeof(meshdata))==0)return 2;
   for(i = 0; i < nmeshes; i++){
-    meshinfo[i].terrain = NULL; // set to NULL here so order of order GRID/TERRAIN keywords won't cause a problem
+    meshdata *meshi;
+
+    meshi = meshinfo + i;
+    InitMesh(meshi); // initialize mesh here so order of order GRID/TERRAIN keywords won't cause a problem
   }
   FREEMEMORY(supermeshinfo);
   if(NewMemory((void **)&supermeshinfo,nmeshes*sizeof(supermeshdata))==0)return 2;
@@ -9217,29 +9221,25 @@ int ReadSMV_Parse(bufferstreamdata *stream) {
 
       igrid++;
       if(meshinfo!=NULL){
+        size_t len_meshlabel;
+        char *meshlabel;
+
         meshi=meshinfo+igrid-1;
-        InitMesh(meshi);
-        {
-          size_t len_meshlabel;
-          char *meshlabel;
-
-          len_meshlabel=0;
-          if(strlen(buffer)>5){
-            meshlabel=TrimFront(buffer+5);
-            TrimBack(meshlabel);
-            len_meshlabel=strlen(meshlabel);
-          }
-          if(len_meshlabel>0){
-            NewMemory((void **)&meshi->label,(len_meshlabel+1));
-            strcpy(meshi->label,meshlabel);
-          }
-          else{
-            sprintf(buffer,"%i",igrid);
-            NewMemory((void **)&meshi->label,strlen(buffer)+1);
-            strcpy(meshi->label,buffer);
-          }
+        len_meshlabel=0;
+        if(strlen(buffer)>5){
+          meshlabel=TrimFront(buffer+5);
+          TrimBack(meshlabel);
+          len_meshlabel=strlen(meshlabel);
         }
-
+        if(len_meshlabel>0){
+          NewMemory((void **)&meshi->label,(len_meshlabel+1));
+          strcpy(meshi->label,meshlabel);
+        }
+        else{
+          sprintf(buffer,"%i",igrid);
+          NewMemory((void **)&meshi->label,strlen(buffer)+1);
+          strcpy(meshi->label,buffer);
+        }
       }
       setGRID=1;
       if(GRIDpresent==0){
@@ -9466,7 +9466,7 @@ int ReadSMV_Parse(bufferstreamdata *stream) {
       zp[nn]=zbar0+(float)nn*(zbar-zbar0)/(float)kbartemp;
     }
     meshi=meshinfo;
-    InitMesh(meshi);
+
     meshi->xplt=xp;
     meshi->yplt=yp;
     meshi->zplt=zp;

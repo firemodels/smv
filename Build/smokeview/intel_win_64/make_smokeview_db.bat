@@ -27,6 +27,9 @@ if x%inc% == xinc goto skip_inc
 erase *.obj *.mod *.exe
 :skip_inc
 
+:: build libraries if one is missing
+call ..\..\scripts\test_libs.bat ..\..\LIBS\
+
 make -j %NUMBER_OF_PROCESSORS% ICON="%ICON%" GLUT="%GLUT%" SHELL="%ComSpec%" SMV_TESTFLAG="%SMV_TESTFLAG%" SMV_TESTSTRING="%SMV_TESTSTRING%" -f ..\Makefile intel_win_64_db
 
 if x%from% == xbot goto skip2
