@@ -19,7 +19,7 @@ if NOT exist %LIBDIR%\intel_win_64\zlib.lib set BUILDLIBS=1
 if %BUILDLIBS% == 0 goto eof
 
 cd %LIBDIR%\intel_win_64
-call makelibs 
+call make_LIBS_bot 
 cd %CURDIR%
 
 :eof
