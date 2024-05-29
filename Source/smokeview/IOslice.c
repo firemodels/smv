@@ -4352,7 +4352,10 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
       }
     }
     if(strcmp(sd->label.shortlabel, "TOA")==0){
-      contour_type_save = contour_type;
+      if(is_toa_slice != 1){
+        contour_type_save = contour_type;
+        is_toa_slice = 1;
+      }
       ColorbarMenu(COLORBAR_LINES);
       int set_chopmax = 1;
       float chopmax = 121.0;
@@ -4362,6 +4365,7 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
       GLUISetChopHide("TOA", 1);
     }
     else{
+      is_toa_slice = 0;
       if(contour_type_save == SHADED_CONTOURS)ColorbarMenu(COLORBAR_CONTINUOUS);
       if(contour_type_save == STEPPED_CONTOURS)ColorbarMenu(COLORBAR_STEPPED);
       if(contour_type_save == LINE_CONTOURS)ColorbarMenu(COLORBAR_LINES);

@@ -1558,6 +1558,7 @@ SVEXTERN int SVDECL(uindex,-1), SVDECL(vindex,-1), SVDECL(windex,-1);
 
 SVEXTERN int SVDECL(contour_type,0), SVDECL(p3cont3dsmooth,0);
 SVEXTERN int SVDECL(contour_type_save, -1);
+SVEXTERN int SVDECL(is_toa_slice, 0);
 SVEXTERN int SVDECL(cullfaces,1);
 SVEXTERN int SVDECL(showonly_hiddenfaces,0);
 

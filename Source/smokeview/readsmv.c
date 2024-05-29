@@ -14614,7 +14614,6 @@ int ReadIni2(char *inifile, int localfile){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%i", &contour_type);
       contour_type = CLAMP(contour_type, 0, 2);
-      contour_type_save = contour_type;
       continue;
     }
     if(MatchINI(buffer, "P3CONT3DSMOOTH") == 1){
