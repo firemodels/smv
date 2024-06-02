@@ -1516,9 +1516,7 @@ SVEXTERN int SVDECL(colorbartype_save,-1);
 SVEXTERN int SVDECL(colorbarpoint,0);
 SVEXTERN int SVDECL(vectorspresent,0);
 SVEXTERN int SVDECL(colorbar_showscene,0);
-#ifdef pp_NOBOUNDS
 SVEXTERN int SVDECL(no_bounds, 0), SVDECL(force_bounds, 0);
-#endif
 
 SVEXTERN int SVDECL(visAIso,1);
 SVEXTERN int SVDECL(surfincrement,0),SVDECL(visiso,0);

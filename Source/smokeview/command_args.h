@@ -54,9 +54,7 @@ typedef struct CommandlineArgs {
   bool no_slcf;
   bool show_help_summary;
   bool show_help_all;
-#ifdef pp_NOBOUNDS
   bool nobounds;
-#endif
   bool noblank;
   /// @brief check conversion between CIELabl and rgb color coordinates
   bool check_colorbar;
