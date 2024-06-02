@@ -440,9 +440,6 @@ EXTERNCPP int GetNSliceFrames(char *file, float *stime_min, float *stime_max);
 EXTERNCPP void GenerateSliceMenu(int from_commandline);
 void DrawTerrainGeom(int option);
 void GenerateTerrainGeom(float **vertices_arg, unsigned int **indices_arg, int *nindices_arg);
-#ifdef pp_DECIMATE
-EXTERNCPP void DecimateAllTerrains(void);
-#endif
 
 EXTERNCPP int GetPartHeader(partdata *parti, int *nf_all, int option_arg, int print_option_arg);
 EXTERNCPP void SetMainWindow(void);

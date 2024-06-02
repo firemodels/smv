@@ -11,7 +11,6 @@
 //#define pp_SMOKE16        // load 16 bit smoke files
 //#define pp_GAMMA          // show gamma correction checkbox
 // #define pp_BLACKBODY_OUT // output generated blackbody color data 
-//#define pp_DECIMATE       // decimate terrain geometry
 #define pp_FAST             // set fast startup by default
 //#define pp_DPRINT         // turn on debug print (file, line number)
 //#define pp_LOAD_INC       // add menu item for loading new data

@@ -297,194 +297,6 @@ void AverageVerts3(float v1[3], int v1type, float v2[3], int v2type,
   }
 }
 
-#ifdef pp_DECIMATE
-#define IJNODE(i,j) ((j)*nx+(i))
-
-// !  ------------------ PtInTriangle ------------------------
-
-int PtInTriangle(float *xy, float *v0, float *v1, float *v2, float *zval){
-  float l[3];
-  float denom;
-
-  // (   1   1   1 ) ( l0 )    ( 1 )
-  // ( v00 v10 v20 ) ( l1 ) =  ( x )
-  // ( v01 v11 v21 ) ( l2 )    ( y )
-
-  //      |   1   1   1 |
-  // l0 = |   x v10 v20 | / denom
-  //      |   y v11 v21 |
-
-  //      |   1   1   1 |
-  // l1 = |   v00 x v20 | / denom
-  //      |   v01 y v21 |
-
-  //      |   1   1   1 |
-  // l2 = |   v00 v10 x | / denom
-  //      |   v01 v11 y |
-
-  denom = (v1[0] * v2[1] - v1[1] * v2[0]) - (v0[0] * v2[1] - v0[1] * v2[0]) + (v0[0] * v1[1] - v0[1] * v1[0]);
-  if(denom == 0.0)return 0;
-
-  l[0] = (v1[0] * v2[1] - v1[1] * v2[0]) - (xy[0] * v2[1] - xy[1] * v2[0]) + (xy[0] * v1[1] - xy[1] * v1[0]);
-  l[0] /= denom;
-  if(ABS(l[0]) > 1.0)return 0;
-
-  l[1] = (xy[0] * v2[1] - xy[1] * v2[0]) - (v0[0] * v2[1] - v0[1] * v2[0]) + (v0[0] * xy[1] - v0[1] * xy[0]);
-  l[1] /= denom;
-  if(ABS(l[1]) > 1.0)return 0;
-
-  l[2] = (v1[0] * xy[1] - v1[1] * xy[0]) - (v0[0] * xy[1] - v0[1] * xy[0]) + (v0[0] * v1[1] - v0[1] * v1[0]);
-  l[2] /= denom;
-  if(ABS(l[2]) > 1.0)return 0;
-
-  *zval = l[0] * v0[2] + l[1] * v1[2] + l[2] * v2[2];
-  return 1;
-}
-
-/* ------------------ DecimateTerrain ------------------------ */
-
-void DecimateTerrain(vertdata *verts, int nverts, tridata *triangles, int ntriangles,
-              vertdata **verts_new, int *nverts_new, tridata **triangles_new, int *ntriangles_new,
-              float *boxmin, float *boxmax, int nx, int ny){
-  int i, j, nvnew, ntrinew;
-  int *tri_new;
-  float dx, dy;
-  vertdata *vertnewptr;
-  tridata *trinewptr;
-
-  nvnew = nx*ny;
-  NewMemory((void **)&vertnewptr, nvnew*sizeof(vertdata));
-  NewMemory((void **)&tri_new,        nvnew*sizeof(int));
-  *nverts_new = nvnew;
-  *verts_new  = vertnewptr;
-
-  ntrinew = 2*(nx - 1)*(ny - 1);
-  NewMemory((void **)&trinewptr, ntrinew * sizeof(tridata));
-  *ntriangles_new = ntrinew;
-  *triangles_new = trinewptr;
-
-  for(i = 0;i < nvnew;i++){
-    tri_new[i] = -1;
-  }
-  dx = (boxmax[0] - boxmin[0]) / (float)(nx-1);
-  dy = (boxmax[1] - boxmin[1]) / (float)(ny-1);
-  for(i = 0;i < ntriangles;i++){
-    tridata *trii;
-    float *v0, *v1, *v2;
-    float xtmin, xtmax, ytmin, ytmax;
-    int imin, imax, jmin, jmax;
-    int ii;
-    float xyz[3];
-
-    trii = triangles + i;
-    v0 = trii->verts[0]->xyz;
-    v1 = trii->verts[1]->xyz;
-    v2 = trii->verts[2]->xyz;
-    xtmin = MIN(MIN(v0[0], v1[0]), v2[0]);
-    xtmax = MAX(MAX(v0[0], v1[0]), v2[0]);
-    ytmin = MIN(MIN(v0[1], v1[1]), v2[1]);
-    ytmax = MAX(MAX(v0[1], v1[1]), v2[1]);
-
-    imin = CLAMP((xtmin - boxmin[0]) / dx,   0, nx-1);
-    imax = CLAMP((xtmax - boxmin[0]) / dx+1, 0, nx-1);
-    jmin = CLAMP((ytmin - boxmin[1]) / dy,   0, ny-1);
-    jmax = CLAMP((ytmax - boxmin[1]) / dy+1, 0, ny-1);
-    for(ii = imin;ii <= imax;ii++){
-      int jj, exit_loop;
-
-      xyz[0] = boxmin[0] + (float)ii * dx;
-
-      exit_loop = 0;
-      for(jj = jmin;jj <= jmax;jj++){
-        float zval;
-
-        xyz[1] = boxmin[1] + (float)jj * dy;
-
-        if(PtInTriangle(xyz, v0, v1, v2, &zval)==1){
-          int index;
-
-          xyz[2] = zval;
-          index = IJNODE(ii, jj);
-          tri_new[index]   = i;
-          memcpy(vertnewptr[index].xyz, xyz, 3*sizeof(float));
-          exit_loop = 1;
-          break;
-        }
-        if(exit_loop == 1)break;
-      }
-    }
-  }
-  int ij = 0;
-  int ncount2 = 0;
-  for(j = 0; j < ny-1; j++){
-    for(i = 0; i < nx-1; i++){
-      tridata *tri;
-      int ival;
-
-      tri           = trinewptr + ij++;
-      tri->verts[0] = *verts_new + IJNODE(i,   j);
-      tri->verts[1] = *verts_new + IJNODE(i+1, j);
-      tri->verts[2] = *verts_new + IJNODE(i,   j+1);
-      ival = tri_new[IJNODE(i, j)];
-      if(ival < 0){
-        ncount2++;
-        ival = 0;
-      }
-      tri->ival = ival;
-
-      tri           = trinewptr + ij++;
-      tri->verts[0] = *verts_new + IJNODE(i,   j+1);
-      tri->verts[1] = *verts_new + IJNODE(i+1, j);
-      tri->verts[2] = *verts_new + IJNODE(i+1, j+1);
-      ival = tri_new[IJNODE(i, j)];
-      if(ival < 0){
-        ncount2++;
-        ival = 0;
-      }
-      tri->ival = ival;
-    }
-  }
-  printf("ncount1=%i ncount2=%i\n", ntriangles, ncount2);
-  FREEMEMORY(tri_new);
-}
-
-/* ------------------ DecimateAllTerrains ------------------------ */
-
-void DecimateAllTerrains(void){
-  int i;
-
-  for(i=0;i<nmeshes;i++){
-    meshdata *meshi;
-
-    meshi = meshinfo + i;
-    meshi->decimated = 0;
-  }
-  for(i=0;i<npatchinfo;i++){
-    meshdata *meshi;
-    patchdata *patchi;
-    geomlistdata *geomlisti;
-    int nx, ny;
-    float *boxmin, *boxmax;
-
-    patchi = patchinfo + i;
-    if(patchi->loaded==0||patchi->display==0||patchi->blocknumber<0)continue;
-    meshi = meshinfo + patchi->blocknumber;
-    if(meshi->decimated == 1)continue;
-    if(patchi->geominfo == NULL || patchi->geominfo->display == 0 || patchi->geominfo->loaded == 0)continue;
-
-    meshi->decimated = 1;
-    geomlisti = patchi->geominfo->geomlistinfo - 1;
-    boxmin = meshi->boxmin;
-    boxmax = meshi->boxmax;
-    nx = MAX((boxmax[0] - boxmin[0]) / terrain_decimate_delta+1, 2);
-    ny = MAX((boxmax[1] - boxmin[1]) / terrain_decimate_delta+1, 2);
-    DecimateTerrain(geomlisti->verts, geomlisti->nverts,  geomlisti->triangles,  geomlisti->ntriangles,
-                    &meshi->dec_verts, &meshi->ndec_verts, &meshi->dec_triangles, &meshi->ndec_triangles,
-                    boxmin, boxmax, nx, ny);
-  }
-}
-#endif
-
   /* ------------------ GetTriangleNormal ------------------------ */
 
 void GetTriangleNormal(float *v1, float *v2, float *v3, float *normal, float *area){
@@ -4630,9 +4442,6 @@ void DrawGeomData(int flag, slicedata *sd, patchdata *patchi, int geom_type){
       geomdata *geomi;
       geomlistdata *geomlisti;
       int ntris, j, enable_lighting;
-#ifdef pp_DECIMATE
-      int decimate;
-#endif
 
       geomi = patchi->geominfo;
       if(geomi == NULL || geomi->display == 0 || geomi->loaded == 0)continue;
@@ -4653,21 +4462,8 @@ void DrawGeomData(int flag, slicedata *sd, patchdata *patchi, int geom_type){
       }
       tridata *triangles;
 
-#ifdef pp_DECIMATE
-      if(use_decimate_geom == 1 && patchi->blocknumber>=0 && meshinfo[patchi->blocknumber].dec_triangles != NULL){
-        triangles = meshinfo[patchi->blocknumber].dec_triangles;
-        ntris     = meshinfo[patchi->blocknumber].ndec_triangles;
-        decimate = 1;
-      }
-      else{
-        triangles = geomlisti->triangles;
-        ntris     = geomlisti->ntriangles;
-        decimate = 0;
-      }
-#else
       triangles = geomlisti->triangles;
       ntris     = geomlisti->ntriangles;
-#endif
       if(ntris == 0)continue;
 
       if(is_ccell==0&&flag == DRAW_TRANSPARENT&&use_transparency_data == 1 && patchi->patch_filetype == PATCH_GEOMETRY_SLICE)TransparentOn();
@@ -4702,16 +4498,7 @@ void DrawGeomData(int flag, slicedata *sd, patchdata *patchi, int geom_type){
 
           trianglei = triangles + j;
           if(patchi->patch_filetype==PATCH_GEOMETRY_BOUNDARY){
-#ifdef pp_DECIMATE
-            if(decimate == 1){
-              rvals[0] = GEOMTEXTURE(trianglei->ival, ttmin, ttmax);
-            }
-            else{
-              rvals[0] = GEOMTEXTURE(j, ttmin, ttmax);
-            }
-#else
             rvals[0] = GEOMTEXTURE(j, ttmin, ttmax);
-#endif
           }
           else if(patchi->patch_filetype==PATCH_GEOMETRY_SLICE){
             rvals[0] = GEOMTEXTURE(j, valmin, valmax);
@@ -4863,22 +4650,8 @@ void DrawGeomData(int flag, slicedata *sd, patchdata *patchi, int geom_type){
       }
       tridata *triangles;
 
-
-#ifdef pp_DECIMATE
-      if(use_decimate_geom == 1 && patchi->blocknumber >= 0 && meshinfo[patchi->blocknumber].dec_triangles != NULL){
-        triangles = meshinfo[patchi->blocknumber].dec_triangles;
-        ntris = meshinfo[patchi->blocknumber].ndec_triangles;
-       // decimate = 1;
-      }
-      else{
-        triangles = geomlisti->triangles;
-        ntris = geomlisti->ntriangles;
-       // decimate = 0;
-      }
-#else
       triangles = geomlisti->triangles;
       ntris = geomlisti->ntriangles;
-#endif
       if(ntris == 0)continue;
 
       glPushMatrix();
