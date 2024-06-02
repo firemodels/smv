@@ -200,11 +200,9 @@ CommandlineArgs ParseCommandlineNew(int argc, char **argv, char *message,
     } else if (strcmp(argv[i], "-noblank") == 0) {
       args.noblank = true;
     }
-#ifdef pp_NOBOUNDS
     else if(strcmp(argv[i], "-nobounds") == 0) {
       args.nobounds = true;
     }
-#endif
     else if (strcmp(argv[i], "-verbose") == 0) {
       args.verbose = true;
     } else if (strcmp(argv[i], "-outline") == 0) {

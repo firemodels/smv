@@ -289,7 +289,6 @@ void DrawPart(const partdata *parti, int mode){
             // *** draw particles as points
 
             if(datacopy->partclassbase->vis_type == PART_POINTS){
-#ifdef pp_SELECT_PART
               if(select_part == 1 && selected_part_index > 0 && mode == DRAWSCENE){
                 for(j = 0; j < datacopy->npoints_file; j += partdrawskip){
                   if(vis[j] == 1 && datacopy->tags[j]==selected_part_index){
@@ -300,14 +299,9 @@ void DrawPart(const partdata *parti, int mode){
                   }
                 }
               }
-#endif
               glBegin(GL_POINTS);
               if(show_default == 1){
-#ifdef pp_SELECT_PART
                 if(select_part == 0 || mode == DRAWSCENE){
-#else
-                if(mode == DRAWSCENE){
-#endif
                   glColor4fv(datacopy->partclassbase->rgb);
                   for(j = 0; j < datacopy->npoints_file; j += partdrawskip){
                     if(vis[j] == 1){
@@ -331,11 +325,7 @@ void DrawPart(const partdata *parti, int mode){
                 float *rvals;
 
                 rvals = datacopy->rvals + itype * datacopy->npoints_file;
-#ifdef pp_SELECT_PART
                 if(select_part == 0 || mode == DRAWSCENE){
-#else
-                if(mode == DRAWSCENE){
-#endif
                   for(j = 0; j < datacopy->npoints_file; j += partdrawskip){
                     if(vis[j] == 1){
                       int colorj;
@@ -369,12 +359,10 @@ void DrawPart(const partdata *parti, int mode){
               }
               glEnd();
             }
-#ifdef pp_SELECT_PART
             if(mode == SELECTOBJECT){
               datacopy++;
               continue;
             }
-#endif
 
             // *** draw particles using smokeview object
 

@@ -3,7 +3,6 @@
 
 #include "options_common.h"
 
-#define pp_SELECT_PART     // option to select a particle and show its tag
 //#define pp_PARTBOUND_MULTI // compute particle bounds in the background
 //#define pp_LUA            // turn on LUA option
 #define pp_SLICE_MULTI      // load slice files in parallel
@@ -11,9 +10,7 @@
 //#define pp_SMOKE16        // load 16 bit smoke files
 //#define pp_GAMMA          // show gamma correction checkbox
 // #define pp_BLACKBODY_OUT // output generated blackbody color data 
-//#define pp_DECIMATE       // decimate terrain geometry
 #define pp_FAST             // set fast startup by default
-//#define pp_DPRINT         // turn on debug print (file, line number)
 //#define pp_LOAD_INC       // add menu item for loading new data
 #define pp_PART_SPEEDUP     // improve efficiency of loading particles
 #define pp_SMOKE_SPEEDUP    // improve efficiency of loading 3d smoke
@@ -23,7 +20,6 @@
 #ifdef pp_GPU
 #define pp_GPUTHROTTLE      // pp_GPU directive must also be set
 #endif
-#define pp_NOBOUNDS           // add option to not compute global bounds at startup
 
 //*** options: windows
 

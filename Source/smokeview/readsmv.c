@@ -900,13 +900,6 @@ void InitMesh(meshdata *meshi){
     meshi->skip_nabors[i] = NULL;
     meshi->nabors[i]      = NULL;
   }
-#ifdef pp_DECIMATE
-  meshi->dec_verts      = NULL;
-  meshi->dec_triangles  = NULL;
-  meshi->ndec_triangles = 0;
-  meshi->ndec_verts     = 0;
-  meshi->decimated  = 0;
-#endif
   NewMemory((void **)&meshi->plot3dcontour1, sizeof(contour));
   NewMemory((void **)&meshi->plot3dcontour2, sizeof(contour));
   NewMemory((void **)&meshi->plot3dcontour3, sizeof(contour));
@@ -13933,14 +13926,12 @@ int ReadIni2(char *inifile, int localfile){
       ONEORZERO(show_tracers_always);
       continue;
     }
-#ifdef pp_SELECT_PART
     if(MatchINI(buffer, "SHOWPARTTAG") == 1){ 
       fgets(buffer, 255, stream);
       sscanf(buffer, "%i", &select_part);
       ONEORZERO(select_part);
       continue;
     }
-#endif
     if(MatchINI(buffer, "PARTSKIP") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%i", &partdrawskip);
@@ -17151,10 +17142,8 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, "SHOWMEMLOAD\n");
   fprintf(fileout, " %i\n", visAvailmemory);
 #endif
-#ifdef pp_SELECT_PART
   fprintf(fileout, "SHOWPARTTAG\n");
   fprintf(fileout, " %i\n", select_part);
-#endif
   fprintf(fileout, "SHOWOPENVENTS\n");
   fprintf(fileout, " %i %i\n", visOpenVents, visOpenVentsAsOutline);
   fprintf(fileout, "SHOWOTHERVENTS\n");

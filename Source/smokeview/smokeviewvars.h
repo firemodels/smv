@@ -396,9 +396,7 @@ SVEXTERN int SVDECL(slice_temp_bounds_defined, 0);
 SVEXTERN int nplot3dloaded, nsmoke3dloaded, nisoloaded, nsliceloaded, nvsliceloaded, npartloaded, npatchloaded;
 SVEXTERN int nvolsmoke3dloaded;
 SVEXTERN int npart5loaded, npartloaded;
-#ifdef pp_SELECT_PART
 SVEXTERN int SVDECL(select_part, 0), SVDECL(selected_part_index, -1);
-#endif
 #ifdef pp_SMOKE_SPEEDUP
 SVEXTERN int SVDECL(smoke3d_compression_type, COMPRESSED_UNKNOWN);
 SVEXTERN int SVDECL(update_smoke3dmenulabels, 0);
@@ -574,11 +572,6 @@ SVEXTERN int SVDECL(show_boundaryfiles, 1);
 
 SVEXTERN int SVDECL(smoke_framenumber, 0);
 SVEXTERN float SVDECL(time_frameval, 0.0), SVDECL(time_framemax,0.0), SVDECL(time_framemin,1.0);
-#ifdef pp_DECIMATE
-SVEXTERN float SVDECL(terrain_decimate_delta,0.1);
-SVEXTERN float SVDECL(terrain_decimate_delta_min, 0.1);
-SVEXTERN int SVDECL(use_decimate_geom, 0);
-#endif
 
 SVEXTERN int SVDECL(clip_rotate, 0);
 SVEXTERN int curdir_writable;
@@ -1521,9 +1514,7 @@ SVEXTERN int SVDECL(colorbartype_save,-1);
 SVEXTERN int SVDECL(colorbarpoint,0);
 SVEXTERN int SVDECL(vectorspresent,0);
 SVEXTERN int SVDECL(colorbar_showscene,0);
-#ifdef pp_NOBOUNDS
 SVEXTERN int SVDECL(no_bounds, 0), SVDECL(force_bounds, 0);
-#endif
 
 SVEXTERN int SVDECL(visAIso,1);
 SVEXTERN int SVDECL(surfincrement,0),SVDECL(visiso,0);
