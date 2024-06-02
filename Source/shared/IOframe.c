@@ -81,8 +81,7 @@ void FRAMEFree(framedata *fi){
 void FRAMEReadFrame(framedata *fi, int iframe, int nframes, FILE *stream){
   FILE_SIZE offset, total_size;
   unsigned char *cvalptr;
-  int size, i;
-  int first_frame, last_frame;
+  int i, first_frame, last_frame;
 
   if(iframe < 0)iframe = 0;
   first_frame = iframe;
@@ -95,7 +94,6 @@ void FRAMEReadFrame(framedata *fi, int iframe, int nframes, FILE *stream){
     total_size += fi->frame_sizes[iframe+i];
   }
   offset  = fi->offsets[iframe];
-  size    = fi->frame_sizes[iframe];
   cvalptr = fi->uc_vals + offset;
   fseek(stream, offset, SEEK_SET);
   fread(cvalptr, 1, total_size, stream);
