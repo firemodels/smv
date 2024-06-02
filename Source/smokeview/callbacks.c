@@ -312,7 +312,6 @@ void MouseEditTour(int x, int y){
   ENABLE_LIGHTING;
 }
 
-#ifdef pp_SELECT_PART
 /* ------------------ MouseSelectPart ------------------------ */
 
 void MouseSelectPart(int x, int y){
@@ -346,7 +345,6 @@ void MouseSelectPart(int x, int y){
   glEnable(GL_BLEND);
   ENABLE_LIGHTING;
 }
-#endif
 
 /* ------------------ MouseEditBlockage ------------------------ */
 
@@ -1061,9 +1059,7 @@ void MouseCB(int button, int state, int xm, int ym){
       if(select_avatar==1)MouseSelectAvatar(xm,ym);
       if(select_device==1)MouseSelectDevice(xm,ym);
       if(select_geom!=GEOM_PROP_NONE)MouseSelectGeom(xm, ym);
-#ifdef pp_SELECT_PART
       if(select_part == 1 && npartloaded>0)MouseSelectPart(xm, ym);
-#endif
     }
     glutPostRedisplay();
     if( showtime==1 || showplot3d==1){

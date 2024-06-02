@@ -240,7 +240,6 @@ void ShowScene2(int mode){
 
     /* ++++++++++++++++++++++++ draw selected particles +++++++++++++++++++++++++ */
 
-#ifdef pp_SELECT_PART
   if(mode == SELECTOBJECT && select_part == 1){
     if(showsmoke == 1 && geom_bounding_box_mousedown==0){
       CLIP_VALS;
@@ -249,7 +248,6 @@ void ShowScene2(int mode){
       return;
     }
   }
-#endif  
   /* ++++++++++++++++++++++++ draw selected devices +++++++++++++++++++++++++ */
 
   if(mode == SELECTOBJECT){

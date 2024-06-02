@@ -5108,9 +5108,7 @@ extern "C" void GLUIBoundsSetup(int main_window){
     SPINNER_partstreaklength->set_float_limits(0.0,tmax_part);
 
     CHECKBOX_showtracer=glui_bounds->add_checkbox_to_panel(ROLLOUT_particle_settings,_("Always show tracers"),&show_tracers_always,TRACERS,PartBoundCB);
-#ifdef pp_SELECT_PART
     glui_bounds->add_checkbox_to_panel(ROLLOUT_particle_settings, _("Show selected particle tag"), &select_part);
-#endif
 
     PANEL_partread=glui_bounds->add_panel_to_panel(ROLLOUT_particle_settings,_("Particle loading"));
     CHECKBOX_partfast = glui_bounds->add_checkbox_to_panel(PANEL_partread, _("Fast loading"), &partfast, PARTFAST, PartBoundCB);
