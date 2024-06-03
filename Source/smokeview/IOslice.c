@@ -3988,9 +3988,9 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
     if(sd->frameinfo == NULL)sd->frameinfo = FRAMEInit(sd->file, sd->size_file, FORTRAN_FILE, GetSliceFrameInfo);
     if(sd->frameinfo != NULL){
       FRAMESetup(sd->frameinfo);
-      FRAMEReadFrame(sd->frameinfo, 1, sd->frameinfo->nframes - 1);
-      GetFrameTimes(sd->frameinfo, 1, sd->frameinfo->nframes - 1);
-      GetFrameFloatValptrs(sd->frameinfo, 1, sd->frameinfo->nframes - 1);
+      FRAMEReadFrame(sd->frameinfo,       0, sd->frameinfo->nframes);
+      GetFrameTimes(sd->frameinfo,        0, sd->frameinfo->nframes);
+      GetFrameFloatValptrs(sd->frameinfo, 0, sd->frameinfo->nframes);
     }
 #endif
     if(sd->compression_type == UNCOMPRESSED){

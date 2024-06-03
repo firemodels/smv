@@ -7,10 +7,11 @@
 #define C_FILE       1
 typedef struct _framedata {
   char *file, *size_file;
-  int nframes, *frame_sizes, file_type;
-  FILE_SIZE *offsets, filesize;
-  unsigned char *uc_vals, **uc_valptrs;
-  float *times, **r_valptrs;
+  int nframes, file_type;
+  int *frame_sizes0, *frame_sizes;
+  FILE_SIZE *offsets0, *offsets, filesize;
+  unsigned char *uc_vals, **uc_valptrs0, **uc_valptrs;
+  float *times0, *times, **r_valptrs0, **r_valptrs;
   void (*GetFrameInfo)(char *file, char *size_file, int **sizes, int *nsizes, FILE_SIZE *filesizeptr);
 } framedata;
 

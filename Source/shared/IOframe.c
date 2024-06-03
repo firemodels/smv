@@ -39,6 +39,11 @@ framedata *FRAMEInit(char *file, char *size_file, int file_type, void GetFrameIn
   frame->uc_valptrs   = NULL;
   frame->r_valptrs    = NULL;
   frame->times        = NULL;
+  frame->frame_sizes0 = NULL;
+  frame->offsets0     = NULL;
+  frame->uc_valptrs0  = NULL;
+  frame->r_valptrs0   = NULL;
+  frame->times0       = NULL;
   frame->GetFrameInfo = GetFrameInfo;
   return frame;
 }
@@ -52,16 +57,22 @@ void FRAMESetup(framedata *fi){
 
   fi->GetFrameInfo(fi->file, fi->size_file, &frame_sizes, &nframes, &filesize);
   if(nframes <= 0)return;
-  fi->frame_sizes = frame_sizes;
-  fi->nframes     = nframes;
-  fi->filesize    = filesize;
+  fi->frame_sizes0 = frame_sizes;
+  fi->nframes      = nframes-1;
+  fi->filesize     = filesize;
   if(nframes > 0){
-    NewMemory((void **)&fi->offsets,    nframes*sizeof(FILE_SIZE));
-    NewMemory((void **)&fi->uc_valptrs, nframes*sizeof(unsigned char *));
-    NewMemory((void **)&fi->r_valptrs,  nframes*sizeof(float *));
-    NewMemory((void **)&fi->times,      nframes*sizeof(float));
-    NewMemory((void **)&fi->uc_vals,    fi->filesize);
-    fi->offsets[0] = 0;
+    NewMemory((void **)&fi->offsets0,    nframes*sizeof(FILE_SIZE));
+    NewMemory((void **)&fi->uc_valptrs0, nframes*sizeof(unsigned char *));
+    NewMemory((void **)&fi->r_valptrs0,  nframes*sizeof(float *));
+    NewMemory((void **)&fi->times0,      nframes*sizeof(float));
+    NewMemory((void **)&fi->uc_vals,     fi->filesize);
+    fi->offsets     = fi->offsets0     + 1;
+    fi->uc_valptrs  = fi->uc_valptrs0  + 1;
+    fi->r_valptrs   = fi->r_valptrs0   + 1;
+    fi->times       = fi->times0       + 1;
+    fi->frame_sizes = fi->frame_sizes0 + 1;
+
+    fi->offsets[0] = fi->frame_sizes0[0];
     for(i = 1;i < fi->nframes;i++){
       fi->offsets[i] = fi->offsets[i - 1] + fi->frame_sizes[i - 1];
     }
@@ -72,12 +83,12 @@ void FRAMESetup(framedata *fi){
 
 void FRAMEFree(framedata *fi){
   fi->nframes = 0;
-  FREEMEMORY(fi->frame_sizes);
+  FREEMEMORY(fi->frame_sizes0);
   FREEMEMORY(fi->uc_vals);
-  FREEMEMORY(fi->offsets);
-  FREEMEMORY(fi->uc_valptrs);
-  FREEMEMORY(fi->r_valptrs);
-  FREEMEMORY(fi->times);
+  FREEMEMORY(fi->offsets0);
+  FREEMEMORY(fi->uc_valptrs0);
+  FREEMEMORY(fi->r_valptrs0);
+  FREEMEMORY(fi->times0);
 }
 
 /* ------------------ FRAMEReadFrame ------------------------ */
@@ -125,9 +136,9 @@ unsigned char *FRAMEGetFramePtr(framedata *fi, int iframe){
 void GetFrameTimes(framedata *fi, int iframe, int nframes){
   int i, first_frame, last_frame;
 
-  if(iframe < 1)iframe = 1;
+  if(iframe < 0)iframe = 0;
   first_frame = iframe;
-  last_frame = first_frame + nframes - 2;
+  last_frame = first_frame + nframes - 1;
   if(last_frame>fi->nframes - 1)last_frame = fi->nframes-1;
   nframes = last_frame + 1 - first_frame;
   for(i = iframe;i < nframes;i++){
@@ -135,7 +146,7 @@ void GetFrameTimes(framedata *fi, int iframe, int nframes){
 
     offset = fi->offsets[i];
     if(fi->file_type == FORTRAN_FILE)offset += 4;
-    memcpy(fi->times + i - 1, fi->uc_vals + offset, sizeof(float));
+    memcpy(fi->times + i, fi->uc_vals + offset, sizeof(float));
   }
 }
 
@@ -144,19 +155,19 @@ void GetFrameTimes(framedata *fi, int iframe, int nframes){
 void GetFrameFloatValptrs(framedata *fi, int iframe, int nframes){
   int i, first_frame, last_frame;
 
-  if(iframe < 1)iframe = 1;
+  if(iframe < 0)iframe = 0;
   first_frame = iframe;
-  last_frame = first_frame + nframes - 2;
+  last_frame = first_frame + nframes - 1;
   if(last_frame > fi->nframes - 1)last_frame = fi->nframes - 1;
   nframes = last_frame + 1 - first_frame;
   if(fi->file_type == FORTRAN_FILE){
     for(i = iframe;i < nframes;i++){
-      fi->r_valptrs[i - 1] = (float *)(fi->uc_vals+fi->offsets[i] + 4);
+      fi->r_valptrs[i] = (float *)(fi->uc_vals+fi->offsets[i] + 4);
     }
   }
   else{
     for(i = iframe;i < nframes;i++){
-      fi->r_valptrs[i - 1] = (float *)(fi->uc_vals + fi->offsets[i]);
+      fi->r_valptrs[i] = (float *)(fi->uc_vals + fi->offsets[i]);
     }
   }
 }
@@ -167,19 +178,19 @@ void GetFrameFloatValptrs(framedata *fi, int iframe, int nframes){
 void GetFrameUCValptrs(framedata *fi, int iframe, int nframes){
   int i, first_frame, last_frame;
 
-  if(iframe < 1)iframe = 1;
+  if(iframe < 0)iframe = 0;
   first_frame = iframe;
-  last_frame = first_frame + nframes - 2;
+  last_frame = first_frame + nframes - 1;
   if(last_frame > fi->nframes - 1)last_frame = fi->nframes - 1;
   nframes = last_frame + 1 - first_frame;
   if(fi->file_type == FORTRAN_FILE){
     for(i = iframe;i < nframes;i++){
-      fi->uc_valptrs[i - 1] = (unsigned char *)(fi->uc_valptrs[i] + 4);
+      fi->uc_valptrs[i] = (unsigned char *)(fi->uc_valptrs[i] + 4);
     }
   }
   else{
     for(i = iframe;i < nframes;i++){
-      fi->uc_valptrs[i - 1] = (unsigned char *)fi->uc_valptrs[i];
+      fi->uc_valptrs[i] = (unsigned char *)fi->uc_valptrs[i];
     }
   }
 }
