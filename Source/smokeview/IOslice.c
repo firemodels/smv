@@ -3984,6 +3984,15 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
 // load entire slice file (flag=LOAD) or
 // load only portion of slice file written to since last time it was loaded (flag=RELOAD)
 
+#ifdef pp_FRAME
+    if(sd->frameinfo == NULL)sd->frameinfo = FRAMEInit(sd->file, sd->size_file, FORTRAN_FILE, GetSliceFrameInfo);
+    if(sd->frameinfo != NULL){
+      FRAMESetup(sd->frameinfo);
+      FRAMEReadFrame(sd->frameinfo, 1, sd->frameinfo->nframes - 1);
+      GetFrameTimes(sd->frameinfo, 1, sd->frameinfo->nframes - 1);
+      GetFrameFloatValptrs(sd->frameinfo, 1, sd->frameinfo->nframes - 1);
+    }
+#endif
     if(sd->compression_type == UNCOMPRESSED){
       sd->ntimes_old = sd->ntimes;
       GetSliceSizes(file, time_frame, &sd->nslicei, &sd->nslicej, &sd->nslicek, &sd->ntimes, tload_step, &error,
@@ -7228,7 +7237,11 @@ int SetupSlice(slicedata *sd){
     }
     else{
       sd->iqsliceframe = sd->slicelevel + sd->itime * sd->nsliceijk;
+#ifdef pp_FRAME
+      sd->qslice = sd->frameinfo->r_valptrs[sd->itime];
+#else
       sd->qslice = sd->qslicedata + sd->itime * sd->nsliceijk;
+#endif
     }
     sd->qsliceframe = NULL;
 #ifdef pp_MEMDEBUG

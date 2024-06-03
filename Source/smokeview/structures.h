@@ -9,6 +9,9 @@
 #include "stdio_m.h"
 #include "string_util.h" // necessary for flowlabels
 #include "smokestream.h"
+#ifdef pp_FRAME
+#include "IOframe.h"
+#endif
 
 /* --------------------------  circdata ------------------------------------ */
 
@@ -1442,6 +1445,9 @@ typedef struct _slicedata {
   FILE_SIZE file_size;
   int *geom_offsets;
   devicedata vals2d;
+#ifdef pp_FRAME
+  framedata *frameinfo;
+#endif
 #ifdef pp_SLICE_MULTI
   int loadstatus;
 #endif
