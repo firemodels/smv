@@ -73,14 +73,22 @@ void FRAMESetup(framedata *fi){
 
 /* ------------------ FRAMEFree ------------------------ */
 
-void FRAMEFree(framedata *fi){
+void FRAMEFree(framedata **fiptr){
+  framedata *fi;
+
+  fi = *fiptr;
+  if(fi == NULL)return;
   fi->nframes = 0;
+  FREEMEMORY(fi->file);
+  FREEMEMORY(fi->size_file);
   FREEMEMORY(fi->framesizes);
   FREEMEMORY(fi->frames);
   FREEMEMORY(fi->offsets);
   FREEMEMORY(fi->frameptrs);
   FREEMEMORY(fi->times);
   FREEMEMORY(fi->header);
+  FREEMEMORY(fi);
+  *fiptr = NULL;
 }
 
 /* ------------------ FRAMEGetMinMax ------------------------ */

@@ -18,7 +18,7 @@ typedef struct _framedata {
 // ----------------------- headers -----------------------
 
 framedata *FRAMEInit(char *file, char *size_file, int file_type, void GetFrameInfo(char *file, char *size_file, int *headersize, int **sizes, int *nsizes, FILE_SIZE *filesize_ptr));
-void FRAMEFree(framedata *fi);
+void FRAMEFree(framedata **fi);
 unsigned char *FRAMEGetFramePtr(framedata *fi, int iframe);
 int FRAMEGetMinMax(framedata *fi, float *valmin, float *valmax);
 void FRAMEReadFrame(framedata *fi, int iframe, int nframes);

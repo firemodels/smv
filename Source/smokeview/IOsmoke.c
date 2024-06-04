@@ -3755,6 +3755,9 @@ int GetSmoke3DSizes(smoke3ddata *smoke3di, int fortran_skip, char *smokefile, in
 void FreeSmoke3D(smoke3ddata *smoke3di){
 
   smoke3di->lastiframe = -999;
+#ifdef pp_FRAME
+  FRAMEFree(&smoke3di->frameinfo);
+#endif
   FREEMEMORY(smoke3di->smokeframe_in);
   FREEMEMORY(smoke3di->smokeframe_out);
   FREEMEMORY(smoke3di->timeslist);
@@ -3766,7 +3769,9 @@ void FreeSmoke3D(smoke3ddata *smoke3di){
   FREEMEMORY(smoke3di->frame_all_zeros);
   FREEMEMORY(smoke3di->smoke_boxmin);
   FREEMEMORY(smoke3di->smoke_boxmax);
+#ifndef pp_FRAME
   FREEMEMORY(smoke3di->smoke_comp_all);
+#endif
   FREEMEMORY(smoke3di->smokeframe_comp_list);
   FREEMEMORY(smoke3di->smokeview_tmp);
   FREEMEMORY(smoke3di->smokeframe_loaded);
@@ -4015,7 +4020,11 @@ void ReadSmoke16(smoke3ddata *smoke3di, int flag){
 
 int SetupSmoke3D(smoke3ddata *smoke3di, int flag_arg, int iframe_arg, int *errorcode_arg){
   meshdata *mesh_smoke3d;
-  int i,j,ii;
+#ifdef pp_FRAME
+  int i, j;
+#else
+  int i, j, ii;
+#endif
   int fortran_skip = 0;
   int error_local;
   int ncomp_smoke_total_local;
@@ -4185,13 +4194,14 @@ int SetupSmoke3D(smoke3ddata *smoke3di, int flag_arg, int iframe_arg, int *error
       ncomp_smoke_total_skipped_local += smoke3di->nchars_compressed_smoke_full[i];
     }
   }
+  smoke3di->ncomp_smoke_total = ncomp_smoke_total_skipped_local;
+#ifndef pp_FRAME
   if(NewResizeMemory(smoke3di->smoke_comp_all, ncomp_smoke_total_skipped_local*sizeof(unsigned char))==0){
     SetupSmoke3D(smoke3di, UNLOAD, iframe_arg, &error_local);
     *errorcode_arg = 1;
     fprintf(stderr, "\n*** Error: problems allocating memory for 3d smoke file: %s\n", smoke3di->file);
     return READSMOKE3D_RETURN;
   }
-  smoke3di->ncomp_smoke_total = ncomp_smoke_total_skipped_local;
 
   ncomp_smoke_total_local = 0;
   i = 0;
@@ -4202,6 +4212,7 @@ int SetupSmoke3D(smoke3ddata *smoke3di, int flag_arg, int iframe_arg, int *error
       i++;
     }
   }
+#endif
   return READSMOKE3D_CONTINUE_ON;
 }
 
