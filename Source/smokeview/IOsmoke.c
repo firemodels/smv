@@ -4307,7 +4307,6 @@ FILE_SIZE ReadSmoke3D(int iframe_arg,int ifile_arg,int flag_arg, int first_time,
   nframes_found_local = frame_start_local;
   for(i=frame_start_local;i<frame_end_local;i++){
     SKIP_SMOKE;FREAD_SMOKE(&time_local,4,1,SMOKE3DFILE);SKIP_SMOKE;
-    if(time_value != NULL)*time_value = time_local;
     file_size_local +=4+4+4;
     if(FEOF_SMOKE(SMOKE3DFILE)!=0||(use_tload_end==1&&time_local>tload_end)){
       smoke3di->ntimes_full=i;
