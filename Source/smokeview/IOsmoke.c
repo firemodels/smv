@@ -4225,11 +4225,11 @@ FILE_SIZE ReadSmoke3D(int iframe_arg,int ifile_arg,int flag_arg, int first_time,
   FILE_SIZE file_size_local=0;
   float total_time_local;
   int nxyz_local[8];
+#ifndef pp_FRAME
   float read_time_local;
   int iii;
   int nframes_found_local=0;
   int frame_start_local, frame_end_local;
-#ifndef pp_FRAME
   int nchars_local[2];
   int i;
   float time_local;
@@ -4286,6 +4286,7 @@ FILE_SIZE ReadSmoke3D(int iframe_arg,int ifile_arg,int flag_arg, int first_time,
   smoke3di->compression_type=nxyz_local[1];
 
   // read smoke data
+#ifndef pp_FRAME
   START_TIMER(read_time_local);
   if(iframe_arg==ALL_SMOKE_FRAMES){
     if(flag_arg== RELOAD&&smoke3di->ntimes_old > 0){
@@ -4304,7 +4305,6 @@ FILE_SIZE ReadSmoke3D(int iframe_arg,int ifile_arg,int flag_arg, int first_time,
   }
   iii = frame_start_local;
   nframes_found_local = frame_start_local;
-#ifndef pp_FRAME
   for(i=frame_start_local;i<frame_end_local;i++){
     SKIP_SMOKE;FREAD_SMOKE(&time_local,4,1,SMOKE3DFILE);SKIP_SMOKE;
     if(time_value != NULL)*time_value = time_local;
@@ -4364,11 +4364,10 @@ FILE_SIZE ReadSmoke3D(int iframe_arg,int ifile_arg,int flag_arg, int first_time,
       }
     }
   }
-  STOP_TIMER(read_time_local);
-
   if(SMOKE3DFILE!=NULL){
     FCLOSE_SMOKE(SMOKE3DFILE);
   }
+  STOP_TIMER(read_time_local);
 #endif
 
   smoke3di->loaded=1;
@@ -4442,20 +4441,8 @@ int UpdateSmoke3D(smoke3ddata *smoke3di){
 
       smoke3di->frameinfo = FRAMEInit(smoke3di->file, NULL, FORTRAN_FILE, GetSmoke3DFrameInfo);
       if(smoke3di->frameinfo != NULL){
-        int one, version, nx0, nx, ny0, ny, nz0, nz;
-
         FRAMESetup(smoke3di->frameinfo);
         FRAMEReadHeader(smoke3di->frameinfo);
-    // WRITE(LU_SMOKE3D) ONE, VERSION, 0, NX - 1, 0, NY - 1, 0, NZ - 1
-        one     = (int)*(smoke3di->frameinfo->header + 4);
-        version = (int)*(smoke3di->frameinfo->header + 8);
-        nx0     = (int)*(smoke3di->frameinfo->header + 12);
-        nx      = (int)*(smoke3di->frameinfo->header + 16);
-        ny0     = (int)*(smoke3di->frameinfo->header + 20);
-        ny      = (int)*(smoke3di->frameinfo->header + 24);
-        nz0     = (int)*(smoke3di->frameinfo->header + 28);
-        nz      = (int)*(smoke3di->frameinfo->header + 32);
-
         FRAMEReadFrame(smoke3di->frameinfo,    0, smoke3di->frameinfo->nframes);
         FRAMESetTimes(smoke3di->frameinfo,     0, smoke3di->frameinfo->nframes);
         FRAMESetFramePtrs(smoke3di->frameinfo, 0, smoke3di->frameinfo->nframes);

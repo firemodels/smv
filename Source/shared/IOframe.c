@@ -143,7 +143,6 @@ void FRAMEReadFrame(framedata *fi, int iframe, int nframes){
   FILE_SIZE total_size;
   int i, first_frame, last_frame;
   FILE *stream;
-  float time0;
 
   stream = fopen(fi->file, "rb");
   if(stream == NULL)return;
@@ -160,7 +159,6 @@ void FRAMEReadFrame(framedata *fi, int iframe, int nframes){
   }
   fseek(stream, fi->headersize+fi->offsets[iframe], SEEK_SET);
   fread(fi->frames + fi->offsets[iframe], 1, total_size, stream);
-  time0 = (float)*(fi->frames + 4);
   fclose(stream);
 }
 
