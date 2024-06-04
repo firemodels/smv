@@ -22,10 +22,12 @@ void FRAMEFree(framedata *fi);
 unsigned char *FRAMEGetFramePtr(framedata *fi, int iframe);
 int FRAMEGetMinMax(framedata *fi, float *valmin, float *valmax);
 void FRAMEReadFrame(framedata *fi, int iframe, int nframes);
-void FRAMESetFramePtrs(framedata *fi, int iframe, int nframes);
+void FRAMEReadHeader(framedata *fi);
+void FRAMESetFramePtrs(framedata * fi, int iframe, int nframes);
 void FRAMESetTimes(framedata *fi, int iframe, int nframes);
 void FRAMESetup(framedata *fi);
 void FRAMESetupVals(framedata *fi);
 
 void GetSliceFrameInfo(char *file, char *size_file, int *headersizeptr, int **sizesptr, int *nsizesptr, FILE_SIZE *filesizeptr);
+void GetSmoke3DFrameInfo(char *file, char *size_file, int *headersizeptr, int **sizesptr, int *nsizesptr, FILE_SIZE *filesizeptr);
 #endif

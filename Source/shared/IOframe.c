@@ -22,15 +22,13 @@ framedata *FRAMEInit(char *file, char *size_file, int file_type, void GetFrameIn
   }
   if(size_file != NULL && strlen(size_file) > 0){
     NewMemory((void **)&frame->size_file, strlen(size_file) + 1);
+    strcpy(frame->size_file, size_file);
   }
   else{
-    FREEMEMORY(frame->file);
-    FREEMEMORY(frame);
-    return NULL;
+    frame->size_file=NULL;
   }
   if(file_type != C_FILE)file_type = FORTRAN_FILE;
   strcpy(frame->file, file);
-  strcpy(frame->size_file, size_file);
   frame->file_type    = file_type;
   frame->nframes      = 0;
   frame->headersize   = 0;
@@ -119,12 +117,25 @@ int FRAMEGetMinMax(framedata *fi, float *valmin, float *valmax){
   return returnval;
 }
 
+/* ------------------ FRAMEReadHeader ------------------------ */
+
+void FRAMEReadHeader(framedata *fi){
+  FILE *stream;
+
+  if(fi->headersize == 0)return;
+  stream = fopen(fi->file, "rb");
+  if(stream == NULL)return;
+  fread(fi->header, 1, fi->headersize, stream);
+  fclose(stream);
+}
+
 /* ------------------ FRAMEReadFrame ------------------------ */
 
 void FRAMEReadFrame(framedata *fi, int iframe, int nframes){
   FILE_SIZE total_size;
   int i, first_frame, last_frame;
   FILE *stream;
+  float time0;
 
   stream = fopen(fi->file, "rb");
   if(stream == NULL)return;
@@ -141,6 +152,7 @@ void FRAMEReadFrame(framedata *fi, int iframe, int nframes){
   }
   fseek(stream, fi->headersize+fi->offsets[iframe], SEEK_SET);
   fread(fi->frames + fi->offsets[iframe], 1, total_size, stream);
+  time0 = (float)*(fi->frames + 4);
   fclose(stream);
 }
 
@@ -193,7 +205,64 @@ unsigned char *FRAMEGetFramePtr(framedata *fi, int iframe){
   return fi->frameptrs[iframe];
 }
 
-/* ------------------ GetSliceFrameInfo ------------------------ */
+
+/* ------------------ GetSmoke3DFrameInfo ------------------------ */
+
+void GetSmoke3DFrameInfo(char *file, char *size_file, int *headersizeptr, int **framesptr, int *nframesptr, FILE_SIZE *filesizeptr){
+  FILE *stream;
+  char buffer[255];
+  int headersize, nframes, *frames;
+  FILE_SIZE filesize;
+  char sizefile[1024];
+
+  strcpy(sizefile, file);
+  strcat(sizefile, ".sz");
+
+  stream = fopen(sizefile, "r");
+  if(stream == NULL){
+    *nframesptr = 0;
+    *framesptr = NULL;
+    return;
+  }
+
+  fgets(buffer, 255, stream);
+  nframes=0;
+  while(!feof(stream)){
+    if(fgets(buffer, 255, stream) == NULL)break;
+    nframes++;
+  }
+
+  NewMemory((void **)&frames, nframes *sizeof(int));
+
+  rewind(stream);
+  fgets(buffer, 255, stream);
+  nframes=0;
+  while(!feof(stream)){
+    int nchars, nchars_compressed;
+    float time_local;
+    int framesize;
+
+    //    WRITE(LU_SMOKE3D) TIME
+    //    WRITE(LU_SMOKE3D) NCHARS_IN, NCHARS_OUT
+    //    IF(NCHARS_OUT > 0) WRITE(LU_SMOKE3D)(BUFFER_OUT(I), I = 1, NCHARS_OUT)
+    if(fgets(buffer, 255, stream) == NULL)break;
+    sscanf(buffer, "%f %i %i", &time_local, &nchars, &nchars_compressed);
+    framesize = 4 + 4 + 4;
+    framesize += 4 + 8 + 4;
+    if(nchars_compressed > 0)framesize += 4 + nchars_compressed + 4;
+    frames[nframes++] = framesize;
+  }
+
+  headersize = 40;
+  filesize = GetFileSizeSMV(file);
+
+  *headersizeptr = headersize;
+  *framesptr = frames;
+  *nframesptr = nframes;
+  *filesizeptr = filesize;
+}
+  
+  /* ------------------ GetSliceFrameInfo ------------------------ */
 
 void GetSliceFrameInfo(char *file, char *size_file, int *headersizeptr, int **framesptr, int *nframesptr, FILE_SIZE *filesizeptr){
   FILE *stream;

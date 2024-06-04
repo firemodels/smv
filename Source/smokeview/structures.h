@@ -1635,6 +1635,9 @@ typedef struct _smoke3ddata {
   float *smoke_boxmin, *smoke_boxmax;
   smokedata smoke;
   int dir;
+#ifdef pp_FRAME
+  framedata *frameinfo;
+#endif
 } smoke3ddata;
 
   /* --------------------------  smoke3dtypedata ------------------------------------ */
