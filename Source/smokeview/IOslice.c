@@ -3994,9 +3994,9 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
       float valmin, valmax;
 
       FRAMESetup(sd->frameinfo);
-      FRAMEReadFrame(sd->frameinfo,       0, sd->frameinfo->nframes);
-      GetFrameTimes(sd->frameinfo,        0, sd->frameinfo->nframes);
-      GetFrameFloatValptrs(sd->frameinfo, 0, sd->frameinfo->nframes);
+      FRAMEReadFrame(sd->frameinfo, 0, sd->frameinfo->nframes);
+      FRAMESetTimes(sd->frameinfo,  0, sd->frameinfo->nframes);
+      FRAMESetFramePtrs(sd->frameinfo,   0, sd->frameinfo->nframes);
       FRAMEGetMinMax(sd->frameinfo, &valmin, &valmax);
     }
 #endif
@@ -7245,7 +7245,7 @@ int SetupSlice(slicedata *sd){
     else{
       sd->iqsliceframe = sd->slicelevel + sd->itime * sd->nsliceijk;
 #ifdef pp_FRAME
-      sd->qslice = sd->frameinfo->rframeptrs[sd->itime];
+      sd->qslice = (float *)FRAMEGetFramePtr(sd->frameinfo, sd->itime);
 #else
       sd->qslice = sd->qslicedata + sd->itime * sd->nsliceijk;
 #endif

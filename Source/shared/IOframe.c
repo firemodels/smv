@@ -38,7 +38,7 @@ framedata *FRAMEInit(char *file, char *size_file, int file_type, void GetFrameIn
   frame->framesizes   = NULL;
   frame->offsets      = NULL;
   frame->frames       = NULL;
-  frame->rframeptrs   = NULL;
+  frame->frameptrs    = NULL;
   frame->times        = NULL;
   frame->header       = NULL;
   frame->GetFrameInfo = GetFrameInfo;
@@ -62,7 +62,7 @@ void FRAMESetup(framedata *fi){
   if(nframes > 0){
     NewMemory((void **)&fi->header,     headersize*sizeof(unsigned char));
     NewMemory((void **)&fi->offsets,    nframes*sizeof(FILE_SIZE));
-    NewMemory((void **)&fi->rframeptrs, nframes*sizeof(float *));
+    NewMemory((void **)&fi->frameptrs,  nframes*sizeof(float *));
     NewMemory((void **)&fi->times,      nframes*sizeof(float));
     NewMemory((void **)&fi->frames,     fi->filesize);
 
@@ -80,7 +80,7 @@ void FRAMEFree(framedata *fi){
   FREEMEMORY(fi->framesizes);
   FREEMEMORY(fi->frames);
   FREEMEMORY(fi->offsets);
-  FREEMEMORY(fi->rframeptrs);
+  FREEMEMORY(fi->frameptrs);
   FREEMEMORY(fi->times);
   FREEMEMORY(fi->header);
 }
@@ -96,7 +96,7 @@ int FRAMEGetMinMax(framedata *fi, float *valmin, float *valmax){
     int j;
     float *rvals;
 
-    rvals = fi->rframeptrs[i];
+    rvals = (float *)fi->frameptrs[i];
     if(rvals == NULL||fi->framesizes[i]==0)continue;
     returnval = 1;
     nvals = (fi->framesizes[i] - 20) / 4;
@@ -144,9 +144,9 @@ void FRAMEReadFrame(framedata *fi, int iframe, int nframes){
   fclose(stream);
 }
 
-/* ------------------ GetFrameTimes ------------------------ */
+/* ------------------ FRAMESetTimes ------------------------ */
 
-void GetFrameTimes(framedata *fi, int iframe, int nframes){
+void FRAMESetTimes(framedata *fi, int iframe, int nframes){
   int i, first_frame, last_frame;
 
   if(iframe < 0)iframe = 0;
@@ -163,9 +163,9 @@ void GetFrameTimes(framedata *fi, int iframe, int nframes){
   }
 }
 
-/* ------------------ GetFrameFloatValptrs ------------------------ */
+/* ------------------ FRAMESetFramePtrs ------------------------ */
 
-void GetFrameFloatValptrs(framedata *fi, int iframe, int nframes){
+void FRAMESetFramePtrs(framedata *fi, int iframe, int nframes){
   int i, first_frame, last_frame;
 
   if(iframe < 0)iframe = 0;
@@ -175,14 +175,22 @@ void GetFrameFloatValptrs(framedata *fi, int iframe, int nframes){
   nframes = last_frame + 1 - first_frame;
   if(fi->file_type == FORTRAN_FILE){
     for(i = iframe;i < nframes;i++){
-      fi->rframeptrs[i] = (float *)(fi->frames+fi->offsets[i] + 16);
+      fi->frameptrs[i] = (fi->frames+fi->offsets[i] + 16);
     }
   }
   else{
     for(i = iframe;i < nframes;i++){
-      fi->rframeptrs[i] = (float *)(fi->frames+fi->offsets[i]);
+      fi->frameptrs[i] = (fi->frames+fi->offsets[i]);
     }
   }
+}
+
+/* ------------------ FRAMEGetPtr ------------------------ */
+
+unsigned char *FRAMEGetFramePtr(framedata *fi, int iframe){
+  if(iframe < 0)iframe = 0;
+  if(iframe > fi->nframes-1)iframe = fi->nframes-1;
+  return fi->frameptrs[iframe];
 }
 
 /* ------------------ GetSliceFrameInfo ------------------------ */
