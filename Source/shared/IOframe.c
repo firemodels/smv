@@ -85,6 +85,40 @@ void FRAMEFree(framedata *fi){
   FREEMEMORY(fi->header);
 }
 
+/* ------------------ FRAMEGetMinMax ------------------------ */
+
+int FRAMEGetMinMax(framedata *fi, float *valmin, float *valmax){
+  int i;
+  float vmin = 1.0, vmax = 0.0;
+  int returnval = 0, nvals;
+
+  for(i = 0;i < fi->nframes;i++){
+    int j;
+    float *rvals;
+
+    rvals = fi->rframeptrs[i];
+    if(rvals == NULL||fi->framesizes[i]==0)continue;
+    returnval = 1;
+    nvals = (fi->framesizes[i] - 20) / 4;
+    for(j = 0;j < nvals;j++){
+      float val;
+      
+      val = rvals[j];
+      if(vmin > vmax){
+        vmin = val;
+        vmax = val;
+      }
+      else{
+        if(val < vmin)vmin = val;
+        if(val > vmax)vmax = val;
+      }
+    }
+  }
+  *valmin = vmin;
+  *valmax = vmax;
+  return returnval;
+}
+
 /* ------------------ FRAMEReadFrame ------------------------ */
 
 void FRAMEReadFrame(framedata *fi, int iframe, int nframes){

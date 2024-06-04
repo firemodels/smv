@@ -26,4 +26,5 @@ unsigned char *FRAMEGetFramePtr(framedata *fi, int iframe);
 void GetSliceFrameInfo(char *file, char *size_file, int *headersizeptr, int **sizesptr, int *nsizesptr, FILE_SIZE *filesizeptr);
 void GetFrameFloatValptrs(framedata *fi, int iframe, int nframes);
 void GetFrameTimes(framedata *fi, int iframe, int nframes);
+int FRAMEGetMinMax(framedata *fi, float *valmin, float *valmax);
 #endif
