@@ -3372,7 +3372,7 @@ void DrawVolSmokeFrame(void){
 
 /* ------------------ SkipSmokeFrames ------------------------ */
 
-void SkipSmokeFrames(MFILE *SMOKE3DFILE, smoke3ddata *smoke3di, int nsteps, int fortran_skip){
+void SkipSmokeFrames(MFILE *SMOKE3DFILE, smoke3ddata *smoke3di, int nsteps){
   int i;
   int skip_local = 0;
 
@@ -4218,7 +4218,7 @@ int SetupSmoke3D(smoke3ddata *smoke3di, int flag_arg, int iframe_arg, int *error
 
 /* ------------------ ReadSmoke3D ------------------------ */
 
-FILE_SIZE ReadSmoke3D(int iframe_arg,int ifile_arg,int flag_arg, int first_time, float *time_value, int *errorcode_arg){
+FILE_SIZE ReadSmoke3D(int iframe_arg,int ifile_arg,int flag_arg, int first_time, int *errorcode_arg){
   smoke3ddata *smoke3di;
   MFILE *SMOKE3DFILE;
   int error_local;
@@ -4289,7 +4289,7 @@ FILE_SIZE ReadSmoke3D(int iframe_arg,int ifile_arg,int flag_arg, int first_time,
   START_TIMER(read_time_local);
   if(iframe_arg==ALL_SMOKE_FRAMES){
     if(flag_arg== RELOAD&&smoke3di->ntimes_old > 0){
-      SkipSmokeFrames(SMOKE3DFILE, smoke3di, smoke3di->ntimes_old, fortran_skip);
+      SkipSmokeFrames(SMOKE3DFILE, smoke3di, smoke3di->ntimes_old);
       frame_start_local = smoke3di->ntimes_old;
     }
     else {
@@ -4298,7 +4298,7 @@ FILE_SIZE ReadSmoke3D(int iframe_arg,int ifile_arg,int flag_arg, int first_time,
     frame_end_local = smoke3di->ntimes_full;
   }
   else {
-    SkipSmokeFrames(SMOKE3DFILE, smoke3di, iframe_arg, fortran_skip);
+    SkipSmokeFrames(SMOKE3DFILE, smoke3di, iframe_arg);
     frame_start_local = iframe_arg;
     frame_end_local = iframe_arg+1;
   }
@@ -4418,7 +4418,7 @@ void ReadSmoke3DAllMeshes(int iframe, int smoketype, int *errorcode){
     else{
       first_time = LATER_TIME;
     }
-    ReadSmoke3D(iframe, i, LOAD, first_time, NULL, errorcode);
+    ReadSmoke3D(iframe, i, LOAD, first_time, errorcode);
   }
 }
 
@@ -4671,7 +4671,7 @@ void MergeSmoke3DColors(smoke3ddata *smoke3dset){
     co2val_uc[2] = (unsigned char)co2_color_int255[2];
 
     for(j=0;j<smoke3di->nchars_uncompressed;j++){
-      unsigned char *firecolor_ptr, *smokecolor_ptr, *co2color_ptr;
+      unsigned char *firecolor_ptr=NULL, *smokecolor_ptr=NULL, *co2color_ptr=NULL;
        float alpha_fire_local, alpha_smoke_local, alpha_co2_local;
 
 // set fire color and opacity

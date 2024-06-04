@@ -2039,7 +2039,7 @@ void ScriptLoad3dSmoke(scriptdata *scripti){
 
     smoke3di = smoke3dinfo + i;
     if(MatchUpper(smoke3di->label.longlabel,scripti->cval) == MATCH){
-      ReadSmoke3D(ALL_SMOKE_FRAMES, i, LOAD, FIRST_TIME, NULL, &errorcode);
+      ReadSmoke3D(ALL_SMOKE_FRAMES, i, LOAD, FIRST_TIME, &errorcode);
       count++;
     }
   }
@@ -3236,7 +3236,7 @@ void ScriptLoadFile(scriptdata *scripti){
     if(strcmp(smoke3di->file,scripti->cval)==0){
       smoke3di->finalize = 1;
       smoke3di->finalize = 1;
-      ReadSmoke3D(ALL_SMOKE_FRAMES, i, LOAD, FIRST_TIME, NULL, &errorcode);
+      ReadSmoke3D(ALL_SMOKE_FRAMES, i, LOAD, FIRST_TIME, &errorcode);
       return;
     }
   }
