@@ -19,7 +19,11 @@
 #define SLICE_HEADER_SIZE 4
 #define SLICE_TRAILER_SIZE 4
 
+#ifdef pp_FRAME
+#define IJK_SLICE(i,j,k)  ( ((k)-sd->ks1)*sd->nslicei*sd->nslicej + ((j)-sd->js1)*sd->nslicei + ((i)-sd->is1) )
+#else
 #define IJK_SLICE(i,j,k)  ( ((i)-sd->is1)*sd->nslicej*sd->nslicek + ((j)-sd->js1)*sd->nslicek + ((k)-sd->ks1) )
+#endif
 
 #define SLICEVAL(i,j,k) \
     (sd->compression_type==UNCOMPRESSED ? \
@@ -7238,7 +7242,7 @@ int SetupSlice(slicedata *sd){
     else{
       sd->iqsliceframe = sd->slicelevel + sd->itime * sd->nsliceijk;
 #ifdef pp_FRAME
-      sd->qslice = sd->frameinfo->r_valptrs[sd->itime];
+      sd->qslice = sd->frameinfo->rframeptrs[sd->itime];
 #else
       sd->qslice = sd->qslicedata + sd->itime * sd->nsliceijk;
 #endif
