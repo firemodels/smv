@@ -4234,8 +4234,8 @@ FILE_SIZE ReadSmoke3D(int iframe_arg,int ifile_arg,int flag_arg, int first_time,
   int i;
   float time_local;
   char compstring_local[128];
-#endif
   int fortran_skip=0;
+#endif
 
 #ifdef pp_SMOKE_SPEEDUP  
   update_merge_smoke = 1;
@@ -4249,7 +4249,9 @@ FILE_SIZE ReadSmoke3D(int iframe_arg,int ifile_arg,int flag_arg, int first_time,
   START_TIMER(total_time_local);
   assert(ifile_arg>=0&&ifile_arg<nsmoke3dinfo);
   smoke3di = smoke3dinfo + ifile_arg;
+#ifndef pp_FRAME
   if(smoke3di->filetype==FORTRAN_GENERATED&&smoke3di->is_zlib==0)fortran_skip=4;
+#endif
 
 #ifdef pp_SMOKE16
   if(load_smoke16==1||flag_arg==UNLOAD ){
