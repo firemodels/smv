@@ -157,7 +157,7 @@ void FRAMEReadFrame(framedata *fi, int iframe, int nframes){
   for(i=0;i<nframes;i++){
     total_size += fi->framesizes[iframe+i];
   }
-  fseek(stream, fi->headersize+fi->offsets[iframe], SEEK_SET);
+  FRAME_FSEEK(stream, fi->headersize+fi->offsets[iframe], SEEK_SET);
   fread(fi->frames + fi->offsets[iframe], 1, total_size, stream);
   fclose(stream);
 }
@@ -178,6 +178,7 @@ void FRAMESetTimes(framedata *fi, int iframe, int nframes){
     offset = fi->offsets[i];
     if(fi->file_type == FORTRAN_FILE)offset += 4;
     memcpy(fi->times + i, fi->frames + offset, sizeof(float));
+//#define pp_FRAME_DEBUG
 #ifdef pp_FRAME_DEBUG
     float time;
     time = fi->times[i];
@@ -284,6 +285,7 @@ void GetSliceFrameInfo(char *file, char *size_file, int *headersizeptr, int **fr
   int ip1, ip2, jp1, jp2, kp1, kp2;
   int nxsp, nysp, nzsp;
   FILE_SIZE filesize;
+  int returncode;
   
   stream = fopen(file, "rb");
   if(stream == NULL){
@@ -293,9 +295,9 @@ void GetSliceFrameInfo(char *file, char *size_file, int *headersizeptr, int **fr
 
   headersize = 3*(4+30+4);  // 3 30 byte labels 
 
-  fseek(stream, 4+headersize, SEEK_CUR);
+  FRAME_FSEEK(stream, headersize, SEEK_CUR);
 
-  fread(ijk, 4, 6, stream);
+  FRAME_READ(ijk, 6, stream);
   fclose(stream);
 
   ip1 = ijk[0];
@@ -330,7 +332,7 @@ void GetSliceFrameInfo(char *file, char *size_file, int *headersizeptr, int **fr
 
 void GetIsoFrameInfo(char *file, char *size_file, int *headersizeptr, int **framesptr, int *nframesptr, FILE_SIZE *filesizeptr){
   FILE *stream;
-  int headersize, *frames;
+  int headersize, levelsize, *frames;
   int niso_levels;
   int nframes;
   int returncode;
@@ -351,25 +353,22 @@ void GetIsoFrameInfo(char *file, char *size_file, int *headersizeptr, int **fram
     return;
   }
 
-  headersize = 4 + 4 + 4;
-  headersize += 4 + 4 + 4;
-  fseek(stream, headersize, SEEK_CUR);
+  headersize  = 4 + 4 + 4; // ONE
+  headersize += 4 + 4 + 4; // VERSION
+  FRAME_FSEEK(stream, headersize, SEEK_CUR);
   FRAME_READ(&niso_levels, 1, stream);
-  headersize += 4+4+4;
-  if(niso_levels > 0){
-    int levelsize;
+  headersize += 4+4+4; // NISO_LEVELS
 
-    levelsize = 4 + niso_levels * sizeof(float) + 4;
-    headersize += levelsize;
-    fseek(stream, levelsize, SEEK_CUR);
-  }
+  levelsize = 0;
+  if(niso_levels > 0)levelsize = 4 + niso_levels*4 + 4;
 
-  headersize += 4 + 4 + 4;
-  headersize += 4 + 8 + 4;
-  fseek(stream, 28, SEEK_CUR);
+  headersize += 4 + 4 + 4; // ZERO (12 bytes)
+  headersize += 4 + 8 + 4; // ZERO, ZERO (16 bytes)
+  headersize += levelsize; // levels
+  FRAME_FSEEK(stream, 28+levelsize, SEEK_CUR);
 
   nframes = 0;
-  NewMemory((void **)&frames, 10000000*sizeof(int));
+  NewMemory((void **)&frames, 1000000*sizeof(int));
   while(!feof(stream)){
     //  WRITE(LU_ISO) STIME, ZERO
     //  WRITE(LU_ISO) N_VERT, N_FACE
@@ -377,23 +376,26 @@ void GetIsoFrameInfo(char *file, char *size_file, int *headersizeptr, int **fram
     //  IF(N_FACE_D > 0) WRITE(LU_ISO) (FACE1(I), FACE2(I), FACE3(I), I = 1, N_FACE)
     //  IF(N_FACE_D > 0) WRITE(LU_ISO) (ISO_LEVEL_INDICES(I), I = 1, N_FACE)
 
-    int framesize, geomframesize, nvals[2];
+    int nvals[2];
     float times[2];
 
-    FRAME_READ(times, 2, stream);
-    if(returncode != 2)break;
-    FRAME_READ(nvals, 2, stream);
-    if(returncode != 2)break;
-    framesize  = 4 + 8 + 4;
-    framesize += 4 + 8 + 4;
-    geomframesize = 0;
-    if(nvals[0] > 0)geomframesize += 4 + 3*nvals[0]*4 + 4;
-    if(nvals[1] > 0)geomframesize += (4 + 3*nvals[1]*4 + 4)+ (4 + nvals[1] * 4 + 4);
-    if(geomframesize > 0){
-      fseek(stream, geomframesize, SEEK_CUR);
-      framesize += geomframesize;
+    FRAME_READ(times, 2, stream);if(returncode != 2)break;
+    FRAME_READ(nvals, 2, stream);if(returncode != 2)break;
+    int vertspace, trispace;
+
+    vertspace = 0;
+    if(nvals[0] > 0){
+      vertspace = (4 + 3*nvals[0]*4 + 4);
+      FRAME_FSEEK(stream, vertspace, SEEK_CUR);
     }
-    frames[nframes++] = framesize;
+
+    trispace = 0;
+    if(nvals[1] > 0){
+      trispace = (4 + 3 * nvals[1] * 4 + 4) + (4 + nvals[1] * 4 + 4);
+      FRAME_FSEEK(stream, (4 + 3*nvals[1]*4 + 4), SEEK_CUR);
+      FRAME_FSEEK(stream, (4 +   nvals[1]*4 + 4), SEEK_CUR);
+    }
+    frames[nframes++] = 4 + 8 + 4 + 4 + 8 + 4 + vertspace + trispace;
   }
   if(nframes > 0)ResizeMemory((void **)&frames, nframes * sizeof(int));
 

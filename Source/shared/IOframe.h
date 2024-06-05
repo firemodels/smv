@@ -4,17 +4,13 @@
 // ----------------------- structures -----------------------
 
 #ifdef X64
-#define FSEEK_FRAME(a,b,c)       _fseeki64(a,b,c)
-#define FTELL_FRAME(a)           _ftelli64(a)
+#define FRAME_FSEEK(a,b,c)       _fseeki64(a,b,c)
 #else
-#define FSEEK_FRAME(a,b,c)       fseeko(a,b,c)
-#define FTELL_FRAME(a)           ftello(a)
+#define FRAME_FSEEK(a,b,c)       fseeko(a,b,c)
 #endif
 
 #define FRAME_READ(var,count,STREAM) \
-                           FSEEK_FRAME(STREAM,4,SEEK_CUR);\
-                           returncode=fread(var,4,count,STREAM);\
-                           FSEEK_FRAME(STREAM,4,SEEK_CUR)
+    FRAME_FSEEK(STREAM,4,SEEK_CUR);returncode=fread(var,4,(count),STREAM);FRAME_FSEEK(STREAM,4,SEEK_CUR)
 
 #define FORTRAN_FILE 0
 #define C_FILE       1
