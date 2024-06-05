@@ -178,6 +178,11 @@ void FRAMESetTimes(framedata *fi, int iframe, int nframes){
     offset = fi->offsets[i];
     if(fi->file_type == FORTRAN_FILE)offset += 4;
     memcpy(fi->times + i, fi->frames + offset, sizeof(float));
+#ifdef pp_FRAME_DEBUG
+    float time;
+    time = fi->times[i];
+    printf("time[%i]=%f\n", i,time);
+#endif
   }
 }
 
@@ -258,6 +263,7 @@ void GetSmoke3DFrameInfo(char *file, char *size_file, int *headersizeptr, int **
     if(nchars_compressed > 0)framesize += 4 + nchars_compressed + 4;
     frames[nframes++] = framesize;
   }
+  fclose(stream);
 
   headersize = 40;
   filesize = GetFileSizeSMV(file);
@@ -318,4 +324,85 @@ void GetSliceFrameInfo(char *file, char *size_file, int *headersizeptr, int **fr
   *framesptr  = frames;
   *nframesptr = nframes;
   *filesizeptr = filesize;
+}
+
+/* ------------------ GetIsoFrameInfo ------------------------ */
+
+void GetIsoFrameInfo(char *file, char *size_file, int *headersizeptr, int **framesptr, int *nframesptr, FILE_SIZE *filesizeptr){
+  FILE *stream;
+  int headersize, *frames;
+  int niso_levels;
+  int nframes;
+  int returncode;
+  FILE_SIZE filesize;
+
+  // header
+//    WRITE(LU_ISO) ONE
+//    WRITE(LU_ISO) VERSION
+//    WRITE(LU_ISO) NISO_LEVELS
+//    IF(NISO_LEVELS > 0) WRITE(LU_ISO) (ISO_LEVELS(I), I = 1, NISO_LEVELS)
+//    WRITE(LU_ISO) ZERO
+//    WRITE(LU_ISO) ZERO, ZERO
+
+  stream = fopen(file, "r");
+  if(stream == NULL){
+    *nframesptr = 0;
+    *framesptr = NULL;
+    return;
+  }
+
+  headersize = 4 + 4 + 4;
+  headersize += 4 + 4 + 4;
+  fseek(stream, headersize, SEEK_CUR);
+  FRAME_READ(&niso_levels, 1, stream);
+  headersize += 4+4+4;
+  if(niso_levels > 0){
+    int levelsize;
+
+    levelsize = 4 + niso_levels * sizeof(float) + 4;
+    headersize += levelsize;
+    fseek(stream, levelsize, SEEK_CUR);
+  }
+
+  headersize += 4 + 4 + 4;
+  headersize += 4 + 8 + 4;
+  fseek(stream, 28, SEEK_CUR);
+
+  nframes = 0;
+  NewMemory((void **)&frames, 10000000*sizeof(int));
+  while(!feof(stream)){
+    //  WRITE(LU_ISO) STIME, ZERO
+    //  WRITE(LU_ISO) N_VERT, N_FACE
+    //  IF(N_VERT_D > 0) WRITE(LU_ISO) (Xvert(I), Yvert(I), Zvert(I), I = 1, N_VERT)
+    //  IF(N_FACE_D > 0) WRITE(LU_ISO) (FACE1(I), FACE2(I), FACE3(I), I = 1, N_FACE)
+    //  IF(N_FACE_D > 0) WRITE(LU_ISO) (ISO_LEVEL_INDICES(I), I = 1, N_FACE)
+
+    int framesize, geomframesize, nvals[2];
+    float times[2];
+
+    FRAME_READ(times, 2, stream);
+    if(returncode != 2)break;
+    FRAME_READ(nvals, 2, stream);
+    if(returncode != 2)break;
+    framesize  = 4 + 8 + 4;
+    framesize += 4 + 8 + 4;
+    geomframesize = 0;
+    if(nvals[0] > 0)geomframesize += 4 + 3*nvals[0]*4 + 4;
+    if(nvals[1] > 0)geomframesize += (4 + 3*nvals[1]*4 + 4)+ (4 + nvals[1] * 4 + 4);
+    if(geomframesize > 0){
+      fseek(stream, geomframesize, SEEK_CUR);
+      framesize += geomframesize;
+    }
+    frames[nframes++] = framesize;
+  }
+  if(nframes > 0)ResizeMemory((void **)&frames, nframes * sizeof(int));
+
+
+  filesize = GetFileSizeSMV(file);
+
+  *headersizeptr = headersize;
+  *framesptr = frames;
+  *nframesptr = nframes;
+  *filesizeptr = filesize;
+  fclose(stream);
 }

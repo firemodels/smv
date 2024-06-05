@@ -4925,6 +4925,9 @@ int ParseISOFProcess(bufferstreamdata *stream, char *buffer, int *iiso_in, int *
     return RETURN_BREAK;
   }
 
+#ifdef pp_FRAME
+  isoi->frameinfo = NULL;
+#endif
   isoi->fds_skip = fds_skip;
   isoi->fds_delta = fds_delta;
   isoi->tfile = NULL;

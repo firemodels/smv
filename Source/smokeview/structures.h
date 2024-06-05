@@ -632,6 +632,9 @@ typedef struct _isodata {
   unsigned char *geom_times_map;
   float globalmin_iso, globalmax_iso;
   int geom_nvals;
+#ifdef pp_FRAME
+  framedata *frameinfo;
+#endif
 } isodata;
 
 /* --------------------------  volrenderdata ------------------------------------ */

@@ -3,6 +3,19 @@
 
 // ----------------------- structures -----------------------
 
+#ifdef X64
+#define FSEEK_FRAME(a,b,c)       _fseeki64(a,b,c)
+#define FTELL_FRAME(a)           _ftelli64(a)
+#else
+#define FSEEK_FRAME(a,b,c)       fseeko(a,b,c)
+#define FTELL_FRAME(a)           ftello(a)
+#endif
+
+#define FRAME_READ(var,count,STREAM) \
+                           FSEEK_FRAME(STREAM,4,SEEK_CUR);\
+                           returncode=fread(var,4,count,STREAM);\
+                           FSEEK_FRAME(STREAM,4,SEEK_CUR)
+
 #define FORTRAN_FILE 0
 #define C_FILE       1
 typedef struct _framedata {
@@ -28,6 +41,7 @@ void FRAMESetTimes(framedata *fi, int iframe, int nframes);
 void FRAMESetup(framedata *fi);
 void FRAMESetupVals(framedata *fi);
 
-void GetSliceFrameInfo(char *file, char *size_file, int *headersizeptr, int **sizesptr, int *nsizesptr, FILE_SIZE *filesizeptr);
+void GetIsoFrameInfo(    char *file, char *size_file, int *headersizeptr, int **sizesptr, int *nsizesptr, FILE_SIZE *filesizeptr);
+void GetSliceFrameInfo(  char *file, char *size_file, int *headersizeptr, int **sizesptr, int *nsizesptr, FILE_SIZE *filesizeptr);
 void GetSmoke3DFrameInfo(char *file, char *size_file, int *headersizeptr, int **sizesptr, int *nsizesptr, FILE_SIZE *filesizeptr);
 #endif
