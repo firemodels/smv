@@ -2,8 +2,8 @@
 
 QFDS=../../../fds/Utilities/Scripts/qfds.sh
 
-$QFDS -t       plume5c.fds
-$QFDS -t       plume5cr.fds
+$QFDS -t -p 64 plume64.fds
+$QFDS -t -p 64 plume64r.fds
 $QFDS -t -p  8 mplume5c8.fds
 $QFDS -t -p  8 mplume5c8r.fds
 $QFDS -t -p 18 levelset2.fds
