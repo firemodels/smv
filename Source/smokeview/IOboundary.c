@@ -2323,28 +2323,15 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
 
     patchstart = patchi->ntimes_old*meshi->npatchsize;
 
-    if(meshi->boundary_mask == NULL&&patchi->patch_filetype==PATCH_STRUCTURED_CELL_CENTER){
-      MakeBoundaryMask(patchi);
-    }
-    patchmin_global = 10000000000000.0;
-    patchmax_global = -patchmin_global;
-    if(meshi->boundary_mask != NULL && patchi->patch_filetype == PATCH_STRUCTURED_CELL_CENTER){
-      for(i = 0; i<npatchvals; i++){
-        if(meshi->boundary_mask[i % meshi->npatchsize] == 0){
-          patchmin_global = MIN(patchmin_global, meshi->patchval[i]);
-          patchmax_global = MAX(patchmax_global, meshi->patchval[i]);
-        }
-      }
-    }
-    else{
-      for(i = 0; i<npatchvals; i++){
+    if(patchi->have_bound_file==NO&&FileExistsOrig(patchi->bound_file)==NO){
+      patchmin_global = 10000000000000.0;
+      patchmax_global = -patchmin_global;
+      for(i = 0; i < npatchvals; i++){
         patchmin_global = MIN(patchmin_global, meshi->patchval[i]);
         patchmax_global = MAX(patchmax_global, meshi->patchval[i]);
       }
-    }
-    patchi->valmin_patch = patchmin_global;
-    patchi->valmax_patch = patchmax_global;
-    if(patchi->have_bound_file==NO){
+      patchi->valmin_patch = patchmin_global;
+      patchi->valmax_patch = patchmax_global;
       if(WriteFileBounds(patchi->bound_file, patchmin_global, patchmax_global)==1){
         patchi->have_bound_file = YES;
         patch_bounds_defined = 0;
