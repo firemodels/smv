@@ -298,6 +298,10 @@ void GetSliceFrameInfo(char *file, char *size_file, int *headersizeptr, int **fr
   FRAME_FSEEK(stream, headersize, SEEK_CUR);
 
   FRAME_READ(ijk, 6, stream);
+  if(returncode!=6){
+    fclose(stream);
+    return;
+  }
   fclose(stream);
 
   ip1 = ijk[0];
