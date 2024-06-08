@@ -449,19 +449,33 @@ FILE_SIZE ReadIsoGeom(int ifile, int load_flag, int *geom_frame_index, int *erro
   surfdata *surfi;
   FILE_SIZE return_filesize=0;
 
+  isoi = isoinfo + ifile;
   if(load_flag==LOAD){
     THREADcontrol(isosurface_threads, THREAD_JOIN);
   }
   if(load_flag==UNLOAD){
     CancelUpdateTriangles();
+#ifdef pp_FRAME
+    if(isoi->frameinfo != NULL)FRAMEFree(&isoi->frameinfo);
+#endif
   }
-  isoi = isoinfo + ifile;
   meshi = meshinfo + isoi->blocknumber;
   geomi = isoi->geominfo;
   UnloadIso(meshi);
   FreeAllMemory(isoi->memory_id);
   meshi->showlevels = NULL;
   meshi->isolevels = NULL;
+#ifdef pp_FRAME
+  if(load_flag == LOAD){
+    if(isoi->frameinfo == NULL)isoi->frameinfo = FRAMEInit(isoi->file, NULL, FORTRAN_FILE, GetIsoFrameInfo);
+    if(isoi->frameinfo != NULL){
+      FRAMESetup(isoi->frameinfo);
+      FRAMEReadFrame(isoi->frameinfo, 0, isoi->frameinfo->nframes);
+      FRAMESetTimes(isoi->frameinfo, 0, isoi->frameinfo->nframes);
+      FRAMESetFramePtrs(isoi->frameinfo, 0, isoi->frameinfo->nframes);
+    }
+  }
+#endif
 
   return_filesize=ReadGeom(geomi,load_flag,GEOM_ISO,geom_frame_index);
 

@@ -632,6 +632,9 @@ typedef struct _isodata {
   unsigned char *geom_times_map;
   float globalmin_iso, globalmax_iso;
   int geom_nvals;
+#ifdef pp_FRAME
+  framedata *frameinfo;
+#endif
 } isodata;
 
 /* --------------------------  volrenderdata ------------------------------------ */
@@ -1629,12 +1632,17 @@ typedef struct _smoke3ddata {
   float maxval;
   unsigned char *smokeframe_in, *smokeframe_out, **smokeframe_comp_list;
   unsigned char *smokeview_tmp;
+#ifndef pp_FRAME
   unsigned char *smoke_comp_all;
+#endif
   unsigned char *frame_all_zeros;
   FILE_SIZE file_size;
   float *smoke_boxmin, *smoke_boxmax;
   smokedata smoke;
   int dir;
+#ifdef pp_FRAME
+  framedata *frameinfo;
+#endif
 } smoke3ddata;
 
   /* --------------------------  smoke3dtypedata ------------------------------------ */
