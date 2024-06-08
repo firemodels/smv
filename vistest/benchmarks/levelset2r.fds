@@ -1,12 +1,13 @@
-&HEAD CHID='levelset2bench', TITLE='Level set example 900 m x 900 m level domain = FARSITE in physical fidelity' /
+&HEAD CHID='levelset2r', TITLE='Level set example 900 m x 900 m level domain = FARSITE in physical fidelity' /
 
 &MESH IJK=25,25,38, XB= 0,100,-150,-50,0,38, MULT_ID='mesh' /
 &MULT ID='mesh', DX=100, DY=100, DZ=38, I_UPPER=2, J_UPPER=2, K_UPPER=1 /
 
 &TIME T_END=60 /
-&DUMP SMOKE3D=.FALSE. /
 &MISC LEVEL_SET_MODE=4, LEVEL_SET_ELLIPSE=F /
 &WIND SPEED=5.0, DIRECTION=270.0  /
+
+&DUMP SMOKE3D=.FALSE. /
 
 &SURF ID = 'SPOT IGN',VEG_LSET_IGNITE_TIME = 1,COLOR = 'RED' /
 &VENT XB=48,52,-2,2,0,0,SURF_ID='SPOT IGN',GEOM=T /
