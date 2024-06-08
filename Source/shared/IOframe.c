@@ -350,7 +350,7 @@ void GetIsoFrameInfo(char *file, char *size_file, int *headersizeptr, int **fram
 //    WRITE(LU_ISO) ZERO
 //    WRITE(LU_ISO) ZERO, ZERO
 
-  stream = fopen(file, "r");
+  stream = fopen(file, "rb");
   if(stream == NULL){
     *nframesptr = 0;
     *framesptr = NULL;
