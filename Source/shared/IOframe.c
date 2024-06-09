@@ -385,21 +385,13 @@ void GetIsoFrameInfo(char *file, char *size_file, int *headersizeptr, int **fram
 
     FRAME_READ(times, 2, stream);if(returncode != 2)break;
     FRAME_READ(nvals, 2, stream);if(returncode != 2)break;
-    int vertspace, trispace;
+    int skip;
 
-    vertspace = 0;
-    if(nvals[0] > 0){
-      vertspace = (4 + 3*nvals[0]*4 + 4);
-      FRAME_FSEEK(stream, vertspace, SEEK_CUR);
-    }
-
-    trispace = 0;
-    if(nvals[1] > 0){
-      trispace = (4 + 3 * nvals[1] * 4 + 4) + (4 + nvals[1] * 4 + 4);
-      FRAME_FSEEK(stream, (4 + 3*nvals[1]*4 + 4), SEEK_CUR);
-      FRAME_FSEEK(stream, (4 +   nvals[1]*4 + 4), SEEK_CUR);
-    }
-    frames[nframes++] = 4 + 8 + 4 + 4 + 8 + 4 + vertspace + trispace;
+    skip = 0;
+    if(nvals[0] > 0)skip += (4 + 3*nvals[0]*4 + 4);
+    if(nvals[1] > 0)skip += (4 + 3 * nvals[1] * 4 + 4) + (4 + nvals[1] * 4 + 4);
+    FRAME_FSEEK(stream, skip, SEEK_CUR);
+    frames[nframes++] = 4 + 8 + 4 + 4 + 8 + 4 + skip;
   }
   if(nframes > 0)ResizeMemory((void **)&frames, nframes * sizeof(int));
 
