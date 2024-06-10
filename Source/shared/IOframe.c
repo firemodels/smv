@@ -463,19 +463,19 @@ void GetPartFrameInfo(char *file, char *size_file, int *headersizeptr, int **fra
     FRAME_READ(&time_arg, 1, stream);
     if(returncode != 1)break;
     framesize = 4 + 4 + 4;
-    int skip;
-    skip = 0;
     for(i=0; i<n_part; i++){
-      int nplim;
+      int nplim, skip;
 
       FRAME_READ(&nplim, 1, stream);
       framesize += 4 + 4 + 4;             // nplim
-      skip += 4 + 3*nplim*4 + 4;          // xp, yp, zp
+      skip  = 4 + 3*nplim*4 + 4;          // xp, yp, zp
       skip += 4 + nplim*4 + 4;            // tag
-      skip += 4 + nplim*nquants[i]*4 + 4; // qp
+      if(nquants[i]>0){
+        skip += 4 + nplim*nquants[i]*4 + 4; // qp
+      }
+      framesize += skip;
+      FRAME_FSEEK(stream, skip, SEEK_CUR);
     }
-    FRAME_FSEEK(stream, skip, SEEK_CUR);
-    framesize += skip;
     frames[nframes++] = framesize;
   }
   if(nframes > 0)ResizeMemory((void **)&frames, nframes * sizeof(int));
