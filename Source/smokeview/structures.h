@@ -1255,6 +1255,9 @@ typedef struct _partdata {
   int *sort_tags;
   short *sx, *sy, *sz;
   unsigned char *irvals;
+#ifdef pp_FRAME
+  framedata *frameinfo;
+#endif
 } partdata;
 
 /* --------------------------  compdata ------------------------------------ */

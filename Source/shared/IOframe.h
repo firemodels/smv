@@ -40,4 +40,5 @@ void FRAMESetupVals(framedata *fi);
 void GetIsoFrameInfo(    char *file, char *size_file, int *headersizeptr, int **sizesptr, int *nsizesptr, FILE_SIZE *filesizeptr);
 void GetSliceFrameInfo(  char *file, char *size_file, int *headersizeptr, int **sizesptr, int *nsizesptr, FILE_SIZE *filesizeptr);
 void GetSmoke3DFrameInfo(char *file, char *size_file, int *headersizeptr, int **sizesptr, int *nsizesptr, FILE_SIZE *filesizeptr);
+void GetPartFrameInfo(char *file, char *size_file, int *headersizeptr, int **framesptr, int *nframesptr, FILE_SIZE *filesizeptr);
 #endif

@@ -404,3 +404,87 @@ void GetIsoFrameInfo(char *file, char *size_file, int *headersizeptr, int **fram
   *filesizeptr = filesize;
   fclose(stream);
 }
+
+/* ------------------ GetPartFrameInfo ------------------------ */
+
+void GetPartFrameInfo(char *file, char *size_file, int *headersizeptr, int **framesptr, int *nframesptr, FILE_SIZE *filesizeptr){
+  FILE *stream;
+  FILE_SIZE filesize;
+  int headersize, *frames, nframes, returncode, n_part, *nquants;
+
+//  WRITE(LUPF) ONE_INTEGER ! Integer 1 to check Endian-ness
+//  WRITE(LUPF) NINT(VERSION*100.) ! FDS version number
+//  WRITE(LUPF) N_PART ! Number of PARTicle classes
+//  DO N=1,N_PART
+//    PC => PARTICLE_CLASS(N)
+//    WRITE(LUPF) PC%N_QUANTITIES,ZERO_INTEGER ! ZERO_INTEGER is a place holder
+//    DO NN=1,PC%N_QUANTITIES
+//      WRITE(LUPF) CDATA(PC%QUANTITIES_INDEX(NN)) ! 30 character output quantity
+//      WRITE(LUPF) UDATA(PC%QUANTITIES_INDEX(NN)) ! 30 character output units
+//    ENDDO
+//  ENDDO
+  stream = fopen(file, "rb");
+  if(stream == NULL){
+    *nframesptr = 0;
+    *framesptr = NULL;
+    return;
+  }
+
+  headersize  = 4 + 4 + 4; // ONE
+  headersize += 4 + 4 + 4; // FDS VERSION
+  
+  FRAME_FSEEK(stream, headersize, SEEK_CUR);
+  FRAME_READ(&n_part, 1, stream);
+  NewMemory((void **)&nquants, (n_part+1)*sizeof(int));
+  
+  headersize += 4 + 4 + 4;
+  int i;
+  for(i=0; i<n_part; i++){
+    int labelsize;
+
+    FRAME_READ(nquants+i, 2, stream);
+    labelsize = 2*nquants[0]*(4+30+4);
+    headersize += 4 + 8 + 4 + labelsize;
+    FRAME_FSEEK(stream, labelsize, SEEK_CUR);
+  }
+
+  nframes = 0;
+  NewMemory((void **)&frames, 1000000 * sizeof(int));
+  while(!feof(stream)){
+    int framesize;
+//  WRITE(LUPF) REAL(T,FB) ! Write out the time T as a 4 byte real
+//  DO N=1,N_PART
+//    WRITE(LUPF) NPLIM ! Number of particles in the PART class
+//    WRITE(LUPF) (XP(I),I=1,NPLIM),(YP(I),I=1,NPLIM),(ZP(I),I=1,NPLIM)
+//    WRITE(LUPF) (TA(I),I=1,NPLIM) ! Integer "tag" for each particle
+//    IF (PC%N_QUANTITIES > 0) WRITE(LUPF) ((QP(I,NN),I=1,NPLIM),NN=1,PC%N_QUANTITIES)
+//  ENDDO
+    float time_arg;
+    FRAME_READ(&time_arg, 1, stream);
+    if(returncode != 1)break;
+    framesize = 4 + 4 + 4;
+    int skip;
+    skip = 0;
+    for(i=0; i<n_part; i++){
+      int nplim;
+
+      FRAME_READ(&nplim, 1, stream);
+      framesize += 4 + 4 + 4;             // nplim
+      skip += 4 + 3*nplim*4 + 4;          // xp, yp, zp
+      skip += 4 + nplim*4 + 4;            // tag
+      skip += 4 + nplim*nquants[i]*4 + 4; // qp
+    }
+    FRAME_FSEEK(stream, skip, SEEK_CUR);
+    framesize += skip;
+    frames[nframes++] = framesize;
+  }
+  if(nframes > 0)ResizeMemory((void **)&frames, nframes * sizeof(int));
+
+  filesize = GetFileSizeSMV(file);
+
+  *headersizeptr = headersize;
+  *framesptr = frames;
+  *nframesptr = nframes;
+  *filesizeptr = filesize;
+  fclose(stream);
+}

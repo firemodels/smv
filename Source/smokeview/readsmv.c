@@ -5112,6 +5112,9 @@ int ParsePRT5Process(bufferstreamdata *stream, char *buffer, int *nn_part_in, in
     blocknumber--;
   }
 
+#ifdef pp_FRAME
+  parti->frameinfo = NULL;
+#endif
   parti->blocknumber = blocknumber;
   parti->seq_id = nn_part;
   parti->autoload = 0;
