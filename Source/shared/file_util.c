@@ -481,17 +481,20 @@ FILE_SIZE GetFileSizeSMV(const char *filename){
 
 /* ------------------ fread_mt ------------------------ */
 
-void *fread_mt(mtfiledata *mtfileinfo){
+void *fread_mt(void *mtfileinfo){
   FILE_SIZE first, last, length, file_size;
   FILE *stream;
   int i, nthreads;
   char *file, *buffer;
+  mtfiledata *mtf;
 
-  i         = mtfileinfo->i;
-  nthreads  = mtfileinfo->nthreads;
-  file      = mtfileinfo->file;
-  buffer    = mtfileinfo->buffer;
-  file_size = mtfileinfo->file_size;
+  mtf = (mtfiledata *)mtfileinfo;
+
+  i         = mtf->i;
+  nthreads  = mtf->nthreads;
+  file      = mtf->file;
+  buffer    = mtf->buffer;
+  file_size = mtf->file_size;
   
   first = i*file_size/nthreads;
   last  = first + file_size/nthreads - 1;
@@ -499,7 +502,7 @@ void *fread_mt(mtfiledata *mtfileinfo){
   length = last + 1 - first;
   stream = fopen(file, "rb");
   FSEEK(stream, first, SEEK_SET);
-  mtfileinfo->chars_read = fread(buffer + first, 1, length, stream);
+  mtf->chars_read = fread(buffer + first, 1, length, stream);
   fclose(stream);
 
 #ifdef pp_THREAD
