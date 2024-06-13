@@ -6475,11 +6475,153 @@ blockagedata *GetBlockagePtr(float *xyz){
   return NULL;
 }
 
+#ifdef pp_FDS
+/* ------------------ SkipFdsLines ------------------------ */
+
+void SkipFdsLines(FILE *streamin, FILE *streamout, char *buffer, int flag){
+  char *line, *first;
+
+  first = TrimFrontBack(buffer);
+  if(first[0] != '&')return;
+  for(line = first;;){
+    char *end;
+
+    end = strrchr(line, '/');
+    if(flag == 1)fprintf(streamout, "%s\n", buffer);
+    if(end != NULL)return;
+    if(fgets(buffer, 255, streamin) == NULL)return;
+    TrimBack(buffer);
+    line = TrimFront(buffer);
+  }
+}
+
+/* ------------------ ConvertFDS ------------------------ */
+
+int ConvertFDSInputFile(char *filein, int *ijk_arg, float *xb_arg){
+  FILE *streamin, *streamout;
+  char *ext, fileout[1024], chid0[1024];
+  int ijk[3] = {32, 32, 32};
+  float xb[6] = {0.0, 1.6, 0.0, 1.6, 0.0, 3.2};
+  int outmesh=1;
+
+  if(filein == NULL)return 0;
+
+  strcpy(fileout, filein);
+  ext = strrchr(fileout, '.');
+  if(ext != NULL)ext[0] = 0;
+  strcat(fileout, "_1m.fds");
+
+  strcpy(chid0, filein);
+  ext = strrchr(chid0, '.');
+  if(ext != NULL)ext[0] = 0;
+  strcat(chid0, "_1m");
+
+  streamin = fopen(filein, "r");
+  if(streamin == NULL)return 0;
+  streamout = fopen(fileout, "w");
+  if(streamout == NULL){
+    fclose(streamin);
+    return 0;
+  }
+
+  if(ijk_arg != NULL)memcpy(ijk, ijk_arg, 3 * sizeof(int));
+  if(xb_arg == NULL)memcpy(xb, xb_arg, 6 * sizeof(float));
+  while(!feof(streamin)){
+    char buffer[255], *first;
+
+    if(fgets(buffer, 255, streamin) == NULL)break;
+    first = TrimFrontBack(buffer);
+    if(first != NULL && first[0] != '&'){
+      SkipFdsLines(streamin, streamout, buffer, 1);
+      fprintf(streamout, "%s\n", buffer);
+      continue;
+    }
+    if(strncmp(first, "&HEAD", 5) == 0){
+      SkipFdsLines(streamin, streamout, buffer, 0);
+      fprintf(streamout, "&HEAD CHID='%s' /\n", chid0);
+      continue;
+    }
+    else if(strncmp(first, "&MESH", 5) == 0){
+      SkipFdsLines(streamin, streamout, buffer, 0);
+      if(outmesh==1){
+        outmesh=0;
+        fprintf(streamout, "&MESH XYZ=%i,%i,%i, XB=%f,%f,%f,%f,%f,%f /\n",
+          ijk[0], ijk[1], ijk[2], xb[0], xb[1], xb[2], xb[3], xb[4], xb[5]);
+      }
+      continue;
+    }
+    else if(strncmp(first, "&TIME", 5) == 0){
+      SkipFdsLines(streamin, streamout, buffer, 0);
+      fprintf(streamout, "&TIME T_END=0.0 /\n");
+      continue;
+    }
+    else{
+      SkipFdsLines(streamin, streamout, buffer, 1);
+      fprintf(streamout, "%s\n", buffer);
+      continue;
+    }
+  }
+  fclose(streamin);
+  fclose(streamout);
+  return 1;
+}
+
+/* ------------------ GenerateSMO ------------------------ */
+
+void GenerateSMO(void){
+  int returnval, i;
+  int ijk[6];
+  float xb[6];
+  float dxmin, dymin, dzmin;
+  
+  if(fdsprog == NULL)return;
+  xb[0] = xbar0ORIG;
+  xb[1] = xbarORIG;
+  xb[2] = ybar0ORIG;
+  xb[3] = ybarORIG;
+  xb[4] = zbar0ORIG;
+  xb[5] = zbarORIG;
+  for(i=0;i<nmeshes;i++){
+    meshdata *meshi;
+    float dx, dy, dz;
+    float *xplt, *yplt, *zplt;
+
+    meshi = meshinfo + i;
+    xplt = meshi->xplt_orig;
+    yplt = meshi->yplt_orig;
+    zplt = meshi->zplt_orig;
+    dx = xplt[1] - xplt[0];
+    dy = yplt[1] - yplt[0];
+    dz = zplt[1] - zplt[0];
+    if(i==0){
+      dxmin = dx;
+      dymin = dy;
+      dzmin = dz;
+    }
+    else{
+      dxmin = MIN(dx, dxmin);
+      dymin = MIN(dy, dymin);
+      dzmin = MIN(dz, dzmin);
+    }
+  }
+  ijk[0] = (xbarORIG -xbar0ORIG)/dxmin + 1;
+  ijk[1] = (ybarORIG -ybar0ORIG)/dymin + 1;
+  ijk[2] = (zbarORIG -zbar0ORIG)/dzmin + 1;
+  returnval = ConvertFDSInputFile(fds_filein, ijk, xb);
+  }
+#endif
+
 /* ------------------ ReadSMVOrig ------------------------ */
 
 void ReadSMVOrig(void){
   FILE *stream=NULL;
 
+#ifdef pp_FDS
+  if(FileExistsOrig(smv_orig_filename) == 0){
+    void GenerateSMO(void);
+    GenerateSMO();
+  }
+#endif
   stream = fopen(smv_orig_filename, "r");
   if(stream == NULL)return;
   PRINTF("reading  %s\n", smv_orig_filename);
