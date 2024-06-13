@@ -777,7 +777,7 @@ char *GetProgDir(char *progname, char **svpath){
   if(lastsep==NULL){
     char *dir;
 
-    dir = Which(progname);
+    dir = Which(progname, NULL);
     if(dir==NULL){
       NewMemory((void **)&progpath,(unsigned int)3);
       strcpy(progpath,".");
@@ -920,7 +920,7 @@ void GetProgFullPath(char *progexe, int maxlen_progexe){
   if(end == NULL){
     char *progpath;
 
-    progpath = Which(progexe);
+    progpath = Which(progexe, NULL);
     if(progpath != NULL){
       char copy[1024];
 
@@ -944,7 +944,7 @@ void GetProgFullPath(char *progexe, int maxlen_progexe){
 
 /* ------------------ Which ------------------------ */
 
-char *Which(char *progname){
+char *Which(char *progname, char **fullprognameptr){
 
 // returns the PATH directory containing the file progname
 
@@ -990,7 +990,12 @@ char *Which(char *progname){
       strcpy(pathentry,dir);
       strcat(pathentry,dirsep);
       FREEMEMORY(pathlistcopy);
-      FREEMEMORY(fullprogname);
+      if(fullprognameptr != NULL){
+        *fullprognameptr = fullprogname;
+      }
+      else{
+        FREEMEMORY(fullprogname);
+      }
       FREEMEMORY(prognamecopy);
       return pathentry;
     }

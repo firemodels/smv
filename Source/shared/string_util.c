@@ -1694,7 +1694,7 @@ unsigned char *GetHashSHA1(char *file){
   if(stream==NULL){
     char *pathentry, fullpath[1024];
 
-    pathentry = Which(file);
+    pathentry = Which(file, NULL);
     if(pathentry==NULL){
       strcpy(fullpath,".");
       strcat(fullpath,dirseparator);
@@ -1757,7 +1757,7 @@ unsigned char *GetHashMD5(char *file){
   if(stream == NULL){
     char *pathentry, fullpath[1024];
 
-    pathentry = Which(file);
+    pathentry = Which(file, NULL);
     if(pathentry==NULL){
       strcpy(fullpath,".");
       strcat(fullpath,dirseparator);
@@ -1811,7 +1811,7 @@ unsigned char *GetHashSHA256(char *file){
   if(stream==NULL){
     char *pathentry, fullpath[1024];
 
-    pathentry = Which(file);
+    pathentry = Which(file, NULL);
     if(pathentry==NULL){
       strcpy(fullpath,".");
       strcat(fullpath,dirseparator);
