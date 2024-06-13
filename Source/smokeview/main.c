@@ -856,7 +856,7 @@ int main(int argc, char **argv){
 #ifdef WIN32
   Which("fds.exe", &fdsprog);
 #else
-  Which("fds, &fdsprog);
+  Which("fds", &fdsprog);
 #endif
 
   prog_fullpath = progname;
