@@ -6536,9 +6536,15 @@ char *ConvertFDSInputFile(char *filein, int *ijk_arg, float *xb_arg){
     }
     else if(strncmp(first, "&MESH", 5) == 0){
       if(outmesh==1){
+        int i;
+        char czero[256];
+
         outmesh=0;
-        fprintf(streamout, "&MESH IJK=%i,%i,%i, XB=%f,%f,%f,%f,%f,%f /\n",
-          ijk[0], ijk[1], ijk[2], xb[0], xb[1], xb[2], xb[3], xb[4], xb[5]);
+        fprintf(streamout, "&MESH IJK=%i,%i,%i, XB=", ijk[0], ijk[1], ijk[2]);
+        for(i = 0;i < 5;i++){
+          fprintf(streamout, "%s,", Val2String(xb[i], czero));
+        }
+        fprintf(streamout, "%s /\n", Val2String(xb[5], czero));
       }
       SkipFdsContinueLines(streamin, streamout, buffer);
       continue;
@@ -6561,13 +6567,15 @@ char *ConvertFDSInputFile(char *filein, int *ijk_arg, float *xb_arg){
 
 /* ------------------ GenerateSMO ------------------------ */
 
-char *GenerateSMO(void){
+int GenerateSmvOrigFile(void){
   int i;
   int ijk[6];
   float xb[6];
   float dxmin, dymin, dzmin;
 
-  if(fdsprog == NULL)return NULL;
+  if(fdsprog == NULL)return 0;
+  if(FileExistsOrig(smv_orig_filename) == 1 && IsFileNewer(smv_orig_filename, smv_filename) == 1)return 0;
+
   xb[0] = xbar0ORIG;
   xb[1] = xbarORIG;
   xb[2] = ybar0ORIG;
@@ -6601,30 +6609,26 @@ char *GenerateSMO(void){
   ijk[1] = (ybarORIG - ybar0ORIG) / dymin + 1;
   ijk[2] = (zbarORIG - zbar0ORIG) / dzmin + 1;
 
-  char *fdsonemesh, command_line[1024], smvonemesh[1024], *ext, *smofile;
+  char *fdsonemesh, command_line[1024], smvonemesh[1024], *ext;
 
   fdsonemesh = ConvertFDSInputFile(fds_filein, ijk, xb);
-  if(FileExistsOrig(fdsonemesh) == 0 || fdsprog == NULL)return NULL;
+  if(FileExistsOrig(fdsonemesh) == 0 || fdsprog == NULL)return 0;
 
 // setup and run fds case
   strcpy(command_line, fdsprog);
   strcat(command_line, " ");
   strcat(command_line, fdsonemesh);
+  strcat(command_line, " > Nul 2> Nul");
   system(command_line);
 
   strcpy(smvonemesh, fdsonemesh);
   ext = strrchr(smvonemesh, '.');
   if(ext!=NULL)ext[0]=0;
   strcat(smvonemesh, ".smv");
-  if(FileExistsOrig(smvonemesh) == 0)return NULL;
+  if(FileExistsOrig(smvonemesh) == 0)return 0;
 
-  NewMemory((void **)&smofile, strlen(fds_filein) + 4 + 1);
-  strcpy(smofile, fds_filein);
-  ext = strrchr(smofile, '.');
-  if(ext != NULL)ext[0]=0;
-  strcat(smofile, ".smo");
-  FileCopy(smvonemesh, smofile);
-  return smofile;
+  FileCopy(smvonemesh, smv_orig_filename);
+  return 1;
 }
 #endif
 
@@ -6634,10 +6638,7 @@ void ReadSMVOrig(void){
   FILE *stream=NULL;
 
 #ifdef pp_FDS
-  if(FileExistsOrig(smv_orig_filename) == 0){
-    char *GenerateSMO(void);
-    GenerateSMO();
-  }
+  GenerateSmvOrigFile();
 #endif
   stream = fopen(smv_orig_filename, "r");
   if(stream == NULL)return;
