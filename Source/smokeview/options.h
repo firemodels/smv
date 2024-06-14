@@ -3,7 +3,6 @@
 
 #include "options_common.h"
 
-//#define pp_FDS            // create a 1 mesh input file
 //#define pp_PARTBOUND_MULTI // compute particle bounds in the background
 //#define pp_LUA            // turn on LUA option
 #define pp_SLICE_MULTI      // load slice files in parallel
@@ -21,6 +20,7 @@
 #ifdef pp_GPU
 #define pp_GPUTHROTTLE      // pp_GPU directive must also be set
 #endif
+//#define pp_FDS            // create a 1 mesh input file
 
 //*** options: windows
 
