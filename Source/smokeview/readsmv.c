@@ -6567,18 +6567,14 @@ char *ConvertFDSInputFile(char *filein, int *ijk_arg, float *xb_arg){
 
 /* ------------------ GenerateSmvOrigFile ------------------------ */
 
-void *GenerateSmvOrigFile(void *arg){
+void GenerateSmvOrigFile(void){
   int i;
   int ijk[6];
   float xb[6];
   float dxmin, dymin, dzmin;
 
-  if(fdsprog == NULL){
-    THREAD_EXIT(readsmvorig_threads);
-  }
-  if(FileExistsOrig(smv_orig_filename) == 1 && IsFileNewer(smv_orig_filename, smv_filename) == 1){
-    THREAD_EXIT(readsmvorig_threads);
-  }
+  if(fdsprog == NULL)return;
+  if(FileExistsOrig(smv_orig_filename) == 1 && IsFileNewer(smv_orig_filename, smv_filename) == 1)return;
 
   xb[0] = xbar0ORIG;
   xb[1] = xbarORIG;
@@ -6614,9 +6610,7 @@ void *GenerateSmvOrigFile(void *arg){
   nx = (xbarORIG - xbar0ORIG) / dxmin + 1;
   ny = (ybarORIG - ybar0ORIG) / dymin + 1;
   nz = (zbarORIG - zbar0ORIG) / dzmin + 1;
-  if(nx * ny * nz > 10000000.0){
-    THREAD_EXIT(readsmvorig_threads);
-  }
+  if(nx * ny * nz > 10000000.0)return;
 
   ijk[0] = (int)nx;
   ijk[1] = (int)ny;
@@ -6625,9 +6619,7 @@ void *GenerateSmvOrigFile(void *arg){
   char *fdsonemesh, command_line[1024], smvonemesh[1024], *ext;
 
   fdsonemesh = ConvertFDSInputFile(fds_filein, ijk, xb);
-  if(FileExistsOrig(fdsonemesh) == 0 || fdsprog == NULL){
-    THREAD_EXIT(readsmvorig_threads);
-  }
+  if(FileExistsOrig(fdsonemesh) == 0 || fdsprog == NULL)return;
 
 // setup and run fds case
   strcpy(command_line, fdsprog);
@@ -6640,11 +6632,17 @@ void *GenerateSmvOrigFile(void *arg){
   ext = strrchr(smvonemesh, '.');
   if(ext!=NULL)ext[0]=0;
   strcat(smvonemesh, ".smv");
-  if(FileExistsOrig(smvonemesh) == 0){
-    THREAD_EXIT(readsmvorig_threads);
-  }
+  if(FileExistsOrig(smvonemesh) == 0)return;
 
   FileCopy(smvonemesh, smv_orig_filename);
+}
+
+/* ------------------ GenerateSmvOrigFileWrapper ------------------------ */
+
+void *GenerateSmvOrigFileWrapper(void *arg){
+  INIT_PRINT_TIMER(timer_convert_case);
+  GenerateSmvOrigFile();
+  PRINT_TIMER(timer_convert_case, "convert case");
   THREAD_EXIT(readsmvorig_threads);
 }
 #endif
@@ -11923,7 +11921,7 @@ int ReadSMV_Configure(){
 
 #ifdef pp_FDS
     if(readsmvorig_threads == NULL){
-      readsmvorig_threads = THREADinit(&n_readsmvorig_threads, &use_readsmvorig_threads, GenerateSmvOrigFile);
+      readsmvorig_threads = THREADinit(&n_readsmvorig_threads, &use_readsmvorig_threads, GenerateSmvOrigFileWrapper);
     }
     THREADrun(readsmvorig_threads, NULL);
 #endif
