@@ -3242,7 +3242,7 @@ void UpdateMeshBoxBounds(void){
   for(i = 0; i<nmeshes;  i++){
     meshdata *meshi;
 
-    // xplt, yplt, zplt has original cooredinates because this routine is calld before UpdateMeshCoords
+    // xplt, yplt, zplt has original coordinates because this routine is called before UpdateMeshCoords
     meshi = meshinfo+i;
     meshi->boxmin[0] = meshi->xplt[0];
     meshi->boxmin[1] = meshi->yplt[0];
@@ -6565,16 +6565,20 @@ char *ConvertFDSInputFile(char *filein, int *ijk_arg, float *xb_arg){
   return outfile;
 }
 
-/* ------------------ GenerateSMO ------------------------ */
+/* ------------------ GenerateSmvOrigFile ------------------------ */
 
-int GenerateSmvOrigFile(void){
+void *GenerateSmvOrigFile(void *arg){
   int i;
   int ijk[6];
   float xb[6];
   float dxmin, dymin, dzmin;
 
-  if(fdsprog == NULL)return 0;
-  if(FileExistsOrig(smv_orig_filename) == 1 && IsFileNewer(smv_orig_filename, smv_filename) == 1)return 0;
+  if(fdsprog == NULL){
+    THREAD_EXIT(readsmvorig_threads);
+  }
+  if(FileExistsOrig(smv_orig_filename) == 1 && IsFileNewer(smv_orig_filename, smv_filename) == 1){
+    THREAD_EXIT(readsmvorig_threads);
+  }
 
   xb[0] = xbar0ORIG;
   xb[1] = xbarORIG;
@@ -6612,7 +6616,9 @@ int GenerateSmvOrigFile(void){
   char *fdsonemesh, command_line[1024], smvonemesh[1024], *ext;
 
   fdsonemesh = ConvertFDSInputFile(fds_filein, ijk, xb);
-  if(FileExistsOrig(fdsonemesh) == 0 || fdsprog == NULL)return 0;
+  if(FileExistsOrig(fdsonemesh) == 0 || fdsprog == NULL){
+    THREAD_EXIT(readsmvorig_threads);
+  }
 
 // setup and run fds case
   strcpy(command_line, fdsprog);
@@ -6625,10 +6631,12 @@ int GenerateSmvOrigFile(void){
   ext = strrchr(smvonemesh, '.');
   if(ext!=NULL)ext[0]=0;
   strcat(smvonemesh, ".smv");
-  if(FileExistsOrig(smvonemesh) == 0)return 0;
+  if(FileExistsOrig(smvonemesh) == 0){
+    THREAD_EXIT(readsmvorig_threads);
+  }
 
   FileCopy(smvonemesh, smv_orig_filename);
-  return 1;
+  THREAD_EXIT(readsmvorig_threads);
 }
 #endif
 
@@ -6638,7 +6646,7 @@ void ReadSMVOrig(void){
   FILE *stream=NULL;
 
 #ifdef pp_FDS
-  GenerateSmvOrigFile();
+  THREADcontrol(readsmvorig_threads, THREAD_JOIN);
 #endif
   stream = fopen(smv_orig_filename, "r");
   if(stream == NULL)return;
@@ -11903,6 +11911,13 @@ int ReadSMV_Configure(){
 
   UpdateMeshCoords();
   PRINT_TIMER(timer_readsmv, "UpdateMeshCoords");
+
+#ifdef pp_FDS
+    if(readsmvorig_threads == NULL){
+      readsmvorig_threads = THREADinit(&n_readsmvorig_threads, &use_readsmvorig_threads, GenerateSmvOrigFile);
+    }
+    THREADrun(readsmvorig_threads, NULL);
+#endif
 
   UpdateSmoke3DTypes();
   PRINT_TIMER(timer_readsmv, "UpdateSmoke3DTypes");
