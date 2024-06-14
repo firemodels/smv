@@ -6595,9 +6595,9 @@ void *GenerateSmvOrigFile(void *arg){
     xplt = meshi->xplt_orig;
     yplt = meshi->yplt_orig;
     zplt = meshi->zplt_orig;
-    dx = xplt[1] - xplt[0];
-    dy = yplt[1] - yplt[0];
-    dz = zplt[1] - zplt[0];
+    dx = (xplt[meshi->ibar] - xplt[0]) / (float)meshi->ibar;
+    dy = (yplt[meshi->jbar] - yplt[0]) / (float)meshi->jbar;
+    dz = (zplt[meshi->kbar] - zplt[0]) / (float)meshi->kbar;
     if(i == 0){
       dxmin = dx;
       dymin = dy;
@@ -6609,9 +6609,18 @@ void *GenerateSmvOrigFile(void *arg){
       dzmin = MIN(dz, dzmin);
     }
   }
-  ijk[0] = (xbarORIG - xbar0ORIG) / dxmin + 1;
-  ijk[1] = (ybarORIG - ybar0ORIG) / dymin + 1;
-  ijk[2] = (zbarORIG - zbar0ORIG) / dzmin + 1;
+  float nx, ny, nz;
+
+  nx = (xbarORIG - xbar0ORIG) / dxmin + 1;
+  ny = (ybarORIG - ybar0ORIG) / dymin + 1;
+  nz = (zbarORIG - zbar0ORIG) / dzmin + 1;
+  if(nx * ny * nz > 10000000.0){
+    THREAD_EXIT(readsmvorig_threads);
+  }
+
+  ijk[0] = (int)nx;
+  ijk[1] = (int)ny;
+  ijk[2] = (int)nz;
 
   char *fdsonemesh, command_line[1024], smvonemesh[1024], *ext;
 
