@@ -370,11 +370,19 @@ char *TrimFrontZeros(char *line){
   return line;
 }
 
+/* ------------------ Val2String ------------------------ */
+
+char *Val2String(float val, char *string){
+  sprintf(string, "%f", val);
+  TrimZeros(string);
+  return string;
+}
+
 /* ------------------ TrimMZeros ------------------------ */
 
 void TrimMZeros(char *line){
 
-//  removes trailing zeros in each floating point number found in line
+//  removes trailing zeros in each floating point number found in line separated by spaces
 
   char linecopy[1024];
   char *token;
