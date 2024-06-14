@@ -854,7 +854,7 @@ int main(int argc, char **argv){
   smv_filename = ParseCommandline(argc, argv);
 
 #ifdef WIN32
-  Which("fds.exe", &fdsprog);
+  if(Which("fds_local.bat", &fdsprog) != NULL)strcpy(fdsprog, "fds_local.bat");
 #else
   Which("fds", &fdsprog);
 #endif
