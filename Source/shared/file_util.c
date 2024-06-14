@@ -974,7 +974,7 @@ char *Which(char *progname, char **fullprognameptr){
     const char *ext;
 
     ext = prognamecopy+strlen(progname)-4;
-    if(strlen(progname)<=4||STRCMP(ext,".exe")!=0)strcat(prognamecopy, ".exe");
+    if(strlen(progname)<=4|| (STRCMP(ext,".exe")!=0 && STRCMP(ext, ".bat") != 0))strcat(prognamecopy, ".exe");
   }
 #endif
 
