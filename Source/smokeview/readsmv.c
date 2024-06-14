@@ -6443,7 +6443,7 @@ void UpdateObstBoundingBox(float *XB){
   }
 }
 
-/* ------------------ ReadSMVOrig ------------------------ */
+/* ------------------ GetBlockagePtr ------------------------ */
 
 blockagedata *GetBlockagePtr(float *xyz){
   float xyzcenter[3];
@@ -6476,35 +6476,28 @@ blockagedata *GetBlockagePtr(float *xyz){
 }
 
 #ifdef pp_FDS
-/* ------------------ SkipFdsLines ------------------------ */
+/* ------------------ SkipFdsContinueLines ------------------------ */
 
-void SkipFdsLines(FILE *streamin, FILE *streamout, char *buffer, int flag){
-  char *line, *first;
+void SkipFdsContinueLines(FILE *streamin, FILE *streamout, char *buffer){
+  char *slash;
 
-  first = TrimFrontBack(buffer);
-  if(first[0] != '&')return;
-  for(line = first;;){
-    char *end;
-
-    end = strrchr(line, '/');
-    if(flag == 1)fprintf(streamout, "%s\n", buffer);
-    if(end != NULL)return;
+  slash = strrchr(buffer, '/');
+  while(slash==NULL){
     if(fgets(buffer, 255, streamin) == NULL)return;
-    TrimBack(buffer);
-    line = TrimFront(buffer);
+    slash = strrchr(buffer, '/');
   }
 }
 
-/* ------------------ ConvertFDS ------------------------ */
+/* ------------------ ConvertFDSInputFile ------------------------ */
 
-int ConvertFDSInputFile(char *filein, int *ijk_arg, float *xb_arg){
+char *ConvertFDSInputFile(char *filein, int *ijk_arg, float *xb_arg){
   FILE *streamin, *streamout;
   char *ext, fileout[1024], chid0[1024];
   int ijk[3] = {32, 32, 32};
   float xb[6] = {0.0, 1.6, 0.0, 1.6, 0.0, 3.2};
   int outmesh=1;
 
-  if(filein == NULL)return 0;
+  if(filein == NULL)return NULL;
 
   strcpy(fileout, filein);
   ext = strrchr(fileout, '.');
@@ -6517,71 +6510,71 @@ int ConvertFDSInputFile(char *filein, int *ijk_arg, float *xb_arg){
   strcat(chid0, "_1m");
 
   streamin = fopen(filein, "r");
-  if(streamin == NULL)return 0;
+  if(streamin == NULL)return NULL;
+
   streamout = fopen(fileout, "w");
   if(streamout == NULL){
     fclose(streamin);
-    return 0;
+    return NULL;
   }
 
   if(ijk_arg != NULL)memcpy(ijk, ijk_arg, 3 * sizeof(int));
-  if(xb_arg == NULL)memcpy(xb, xb_arg, 6 * sizeof(float));
+  if(xb_arg != NULL)memcpy(xb, xb_arg, 6 * sizeof(float));
   while(!feof(streamin)){
     char buffer[255], *first;
 
     if(fgets(buffer, 255, streamin) == NULL)break;
     first = TrimFrontBack(buffer);
-    if(first != NULL && first[0] != '&'){
-      SkipFdsLines(streamin, streamout, buffer, 1);
+    if(first==NULL || first[0] != '&'){
       fprintf(streamout, "%s\n", buffer);
       continue;
     }
     if(strncmp(first, "&HEAD", 5) == 0){
-      SkipFdsLines(streamin, streamout, buffer, 0);
       fprintf(streamout, "&HEAD CHID='%s' /\n", chid0);
+      SkipFdsContinueLines(streamin, streamout, buffer);
       continue;
     }
     else if(strncmp(first, "&MESH", 5) == 0){
-      SkipFdsLines(streamin, streamout, buffer, 0);
       if(outmesh==1){
         outmesh=0;
-        fprintf(streamout, "&MESH XYZ=%i,%i,%i, XB=%f,%f,%f,%f,%f,%f /\n",
+        fprintf(streamout, "&MESH IJK=%i,%i,%i, XB=%f,%f,%f,%f,%f,%f /\n",
           ijk[0], ijk[1], ijk[2], xb[0], xb[1], xb[2], xb[3], xb[4], xb[5]);
       }
+      SkipFdsContinueLines(streamin, streamout, buffer);
       continue;
     }
     else if(strncmp(first, "&TIME", 5) == 0){
-      SkipFdsLines(streamin, streamout, buffer, 0);
       fprintf(streamout, "&TIME T_END=0.0 /\n");
+      SkipFdsContinueLines(streamin, streamout, buffer);
       continue;
     }
-    else{
-      SkipFdsLines(streamin, streamout, buffer, 1);
-      fprintf(streamout, "%s\n", buffer);
-      continue;
-    }
+    fprintf(streamout, "%s\n", buffer);
   }
   fclose(streamin);
   fclose(streamout);
-  return 1;
+
+  char *outfile;
+  NewMemory(( void ** )&outfile, strlen(fileout)+1);
+  strcpy(outfile, fileout);
+  return outfile;
 }
 
 /* ------------------ GenerateSMO ------------------------ */
 
-void GenerateSMO(void){
-  int returnval, i;
+char *GenerateSMO(void){
+  int i;
   int ijk[6];
   float xb[6];
   float dxmin, dymin, dzmin;
-  
-  if(fdsprog == NULL)return;
+
+  if(fdsprog == NULL)return NULL;
   xb[0] = xbar0ORIG;
   xb[1] = xbarORIG;
   xb[2] = ybar0ORIG;
   xb[3] = ybarORIG;
   xb[4] = zbar0ORIG;
   xb[5] = zbarORIG;
-  for(i=0;i<nmeshes;i++){
+  for(i = 0; i < nmeshes; i++){
     meshdata *meshi;
     float dx, dy, dz;
     float *xplt, *yplt, *zplt;
@@ -6593,7 +6586,7 @@ void GenerateSMO(void){
     dx = xplt[1] - xplt[0];
     dy = yplt[1] - yplt[0];
     dz = zplt[1] - zplt[0];
-    if(i==0){
+    if(i == 0){
       dxmin = dx;
       dymin = dy;
       dzmin = dz;
@@ -6604,11 +6597,35 @@ void GenerateSMO(void){
       dzmin = MIN(dz, dzmin);
     }
   }
-  ijk[0] = (xbarORIG -xbar0ORIG)/dxmin + 1;
-  ijk[1] = (ybarORIG -ybar0ORIG)/dymin + 1;
-  ijk[2] = (zbarORIG -zbar0ORIG)/dzmin + 1;
-  returnval = ConvertFDSInputFile(fds_filein, ijk, xb);
-  }
+  ijk[0] = (xbarORIG - xbar0ORIG) / dxmin + 1;
+  ijk[1] = (ybarORIG - ybar0ORIG) / dymin + 1;
+  ijk[2] = (zbarORIG - zbar0ORIG) / dzmin + 1;
+
+  char *fdsonemesh, command_line[1024], smvonemesh[1024], *ext, *smofile;
+
+  fdsonemesh = ConvertFDSInputFile(fds_filein, ijk, xb);
+  if(FileExistsOrig(fdsonemesh) == 0 || fdsprog == NULL)return NULL;
+
+// setup and run fds case
+  strcpy(command_line, fdsprog);
+  strcat(command_line, " ");
+  strcat(command_line, fdsonemesh);
+  system(command_line);
+
+  strcpy(smvonemesh, fdsonemesh);
+  ext = strrchr(smvonemesh, '.');
+  if(ext!=NULL)ext[0]=0;
+  strcat(smvonemesh, ".smv");
+  if(FileExistsOrig(smvonemesh) == 0)return NULL;
+
+  NewMemory((void **)&smofile, strlen(fds_filein) + 4 + 1);
+  strcpy(smofile, fds_filein);
+  ext = strrchr(smofile, '.');
+  if(ext != NULL)ext[0]=0;
+  strcat(smofile, ".smo");
+  FileCopy(smvonemesh, smofile);
+  return smofile;
+}
 #endif
 
 /* ------------------ ReadSMVOrig ------------------------ */
@@ -6618,7 +6635,7 @@ void ReadSMVOrig(void){
 
 #ifdef pp_FDS
   if(FileExistsOrig(smv_orig_filename) == 0){
-    void GenerateSMO(void);
+    char *GenerateSMO(void);
     GenerateSMO();
   }
 #endif
