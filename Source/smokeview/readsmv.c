@@ -6642,6 +6642,7 @@ void GenerateSmvOrigFile(void){
 void *GenerateSmvOrigFileWrapper(void *arg){
   INIT_PRINT_TIMER(timer_convert_case);
   GenerateSmvOrigFile();
+  ReadSMVOrig();
   PRINT_TIMER(timer_convert_case, "convert case");
   THREAD_EXIT(readsmvorig_threads);
 }
@@ -6652,9 +6653,6 @@ void *GenerateSmvOrigFileWrapper(void *arg){
 void ReadSMVOrig(void){
   FILE *stream=NULL;
 
-#ifdef pp_FDS
-  THREADcontrol(readsmvorig_threads, THREAD_JOIN);
-#endif
   stream = fopen(smv_orig_filename, "r");
   if(stream == NULL)return;
   PRINTF("reading  %s\n", smv_orig_filename);
@@ -6979,6 +6977,9 @@ int ReadSMV_Init() {
     use_ffmpeg_threads      = 0;
     use_readallgeom_threads = 0;
     use_isosurface_threads  = 0;
+#ifdef pp_FDS
+    use_readsmvorig_threads = 0;
+#endif
 #ifdef pp_SMOKEDRAW_SPEEDUP
     use_mergesmoke_threads  = 0; 
 #endif

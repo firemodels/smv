@@ -643,6 +643,10 @@ void DrawOrigObstOutlines(void){
   int i;
   float *color, *oldcolor=NULL;
 
+
+#ifdef pp_FDS
+  THREADcontrol(readsmvorig_threads, THREAD_JOIN);
+#endif
   glPushMatrix();
   glScalef(SCALE2SMV(1.0),SCALE2SMV(1.0),SCALE2SMV(1.0));
   glTranslatef(-xbar0,-ybar0,-zbar0);
