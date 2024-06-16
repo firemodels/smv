@@ -414,6 +414,7 @@ add_executable(smokezip
     Source/shared/file_util.c
     Source/shared/string_util.c
     Source/smokezip/threaderzip.c
+    Source/shared/threader.c
     Source/shared/compress.c
     Source/shared/md5.c
     Source/shared/sha1.c
