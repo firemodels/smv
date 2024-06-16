@@ -9,6 +9,9 @@
 #include "stdio_m.h"
 #include "string_util.h" // necessary for flowlabels
 #include "smokestream.h"
+#ifdef pp_FRAME
+#include "IOframe.h"
+#endif
 
 /* --------------------------  circdata ------------------------------------ */
 
@@ -629,6 +632,9 @@ typedef struct _isodata {
   unsigned char *geom_times_map;
   float globalmin_iso, globalmax_iso;
   int geom_nvals;
+#ifdef pp_FRAME
+  framedata *frameinfo;
+#endif
 } isodata;
 
 /* --------------------------  volrenderdata ------------------------------------ */
@@ -1249,6 +1255,9 @@ typedef struct _partdata {
   int *sort_tags;
   short *sx, *sy, *sz;
   unsigned char *irvals;
+#ifdef pp_FRAME
+  framedata *frameinfo;
+#endif
 } partdata;
 
 /* --------------------------  compdata ------------------------------------ */
@@ -1442,6 +1451,9 @@ typedef struct _slicedata {
   FILE_SIZE file_size;
   int *geom_offsets;
   devicedata vals2d;
+#ifdef pp_FRAME
+  framedata *frameinfo;
+#endif
 #ifdef pp_SLICE_MULTI
   int loadstatus;
 #endif
@@ -1623,12 +1635,17 @@ typedef struct _smoke3ddata {
   float maxval;
   unsigned char *smokeframe_in, *smokeframe_out, **smokeframe_comp_list;
   unsigned char *smokeview_tmp;
+#ifndef pp_FRAME
   unsigned char *smoke_comp_all;
+#endif
   unsigned char *frame_all_zeros;
   FILE_SIZE file_size;
   float *smoke_boxmin, *smoke_boxmax;
   smokedata smoke;
   int dir;
+#ifdef pp_FRAME
+  framedata *frameinfo;
+#endif
 } smoke3ddata;
 
   /* --------------------------  smoke3dtypedata ------------------------------------ */

@@ -2017,6 +2017,19 @@ FILE_SIZE ReadPart(char *file_arg, int ifile_arg, int loadflag_arg, int *errorco
   THREADcontrol(partload_threads, THREAD_UNLOCK);
 #endif
 
+#ifdef pp_FRAME
+  if(parti->frameinfo == NULL)parti->frameinfo = FRAMEInit(file_arg, NULL, FORTRAN_FILE, GetPartFrameInfo);
+  if(parti->frameinfo != NULL){
+   // float valmin, valmax;
+
+    FRAMESetup(parti->frameinfo);
+    FRAMEReadFrame(parti->frameinfo, 0, parti->frameinfo->nframes);
+    FRAMESetTimes(parti->frameinfo, 0, parti->frameinfo->nframes);
+    FRAMESetFramePtrs(parti->frameinfo, 0, parti->frameinfo->nframes);
+   // FRAMEGetMinMax(sd->frameinfo, &valmin, &valmax);
+  }
+#endif
+
   FREEMEMORY(parti->times);
   FREEMEMORY(parti->times_map);
   FREEMEMORY(parti->filepos);

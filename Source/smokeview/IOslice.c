@@ -19,7 +19,11 @@
 #define SLICE_HEADER_SIZE 4
 #define SLICE_TRAILER_SIZE 4
 
+#ifdef pp_FRAME
+#define IJK_SLICE(i,j,k)  ( ((k)-sd->ks1)*sd->nslicei*sd->nslicej + ((j)-sd->js1)*sd->nslicei + ((i)-sd->is1) )
+#else
 #define IJK_SLICE(i,j,k)  ( ((i)-sd->is1)*sd->nslicej*sd->nslicek + ((j)-sd->js1)*sd->nslicek + ((k)-sd->ks1) )
+#endif
 
 #define SLICEVAL(i,j,k) \
     (sd->compression_type==UNCOMPRESSED ? \
@@ -3891,6 +3895,9 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
       FREEMEMORY(sd->compindex);
       FREEMEMORY(sd->qslicedata_compressed);
       FREEMEMORY(sd->slicecomplevel);
+#ifdef pp_FRAME
+      FRAMEFree(&sd->frameinfo);
+#endif
     }
 
     slicefilenum = ifile;
@@ -3984,6 +3991,18 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
 // load entire slice file (flag=LOAD) or
 // load only portion of slice file written to since last time it was loaded (flag=RELOAD)
 
+#ifdef pp_FRAME
+    if(sd->frameinfo == NULL)sd->frameinfo = FRAMEInit(sd->file, sd->size_file, FORTRAN_FILE, GetSliceFrameInfo);
+    if(sd->frameinfo != NULL){
+      float valmin, valmax;
+
+      FRAMESetup(sd->frameinfo);
+      FRAMEReadFrame(sd->frameinfo, 0, sd->frameinfo->nframes);
+      FRAMESetTimes(sd->frameinfo,  0, sd->frameinfo->nframes);
+      FRAMESetFramePtrs(sd->frameinfo,   0, sd->frameinfo->nframes);
+      FRAMEGetMinMax(sd->frameinfo, &valmin, &valmax);
+    }
+#endif
     if(sd->compression_type == UNCOMPRESSED){
       sd->ntimes_old = sd->ntimes;
       GetSliceSizes(file, time_frame, &sd->nslicei, &sd->nslicej, &sd->nslicek, &sd->ntimes, tload_step, &error,
@@ -7228,7 +7247,11 @@ int SetupSlice(slicedata *sd){
     }
     else{
       sd->iqsliceframe = sd->slicelevel + sd->itime * sd->nsliceijk;
+#ifdef pp_FRAME
+      sd->qslice = (float *)FRAMEGetFramePtr(sd->frameinfo, sd->itime);
+#else
       sd->qslice = sd->qslicedata + sd->itime * sd->nsliceijk;
+#endif
     }
     sd->qsliceframe = NULL;
 #ifdef pp_MEMDEBUG

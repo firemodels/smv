@@ -14,7 +14,7 @@
 #include "file_util.h"
 
 #include "histogram.h"
-#include "threader.h"
+#include "threaderzip.h"
 
 #define rgb_white 12
 #define rgb_yellow 13
