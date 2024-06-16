@@ -6567,14 +6567,14 @@ char *ConvertFDSInputFile(char *filein, int *ijk_arg, float *xb_arg){
 
 /* ------------------ GenerateSmvOrigFile ------------------------ */
 
-void GenerateSmvOrigFile(void){
+int GenerateSmvOrigFile(void){
   int i;
   int ijk[6];
   float xb[6];
   float dxmin, dymin, dzmin;
 
-  if(fdsprog == NULL)return;
-  if(FileExistsOrig(smv_orig_filename) == 1 && IsFileNewer(smv_orig_filename, smv_filename) == 1)return;
+  if(fdsprog == NULL)return 0;
+  if(FileExistsOrig(smv_orig_filename) == 1 && IsFileNewer(smv_orig_filename, smv_filename) == 1)return 0;
 
   xb[0] = xbar0ORIG;
   xb[1] = xbarORIG;
@@ -6610,7 +6610,7 @@ void GenerateSmvOrigFile(void){
   nx = (xbarORIG - xbar0ORIG) / dxmin + 1;
   ny = (ybarORIG - ybar0ORIG) / dymin + 1;
   nz = (zbarORIG - zbar0ORIG) / dzmin + 1;
-  if(nx * ny * nz > 10000000.0)return;
+  if(nx * ny * nz > 10000000.0)return 0;
 
   ijk[0] = (int)nx;
   ijk[1] = (int)ny;
@@ -6619,7 +6619,7 @@ void GenerateSmvOrigFile(void){
   char *fdsonemesh, command_line[1024], smvonemesh[1024], gitonemesh[1024], *ext;
 
   fdsonemesh = ConvertFDSInputFile(fds_filein, ijk, xb);
-  if(FileExistsOrig(fdsonemesh) == 0 || fdsprog == NULL)return;
+  if(FileExistsOrig(fdsonemesh) == 0 || fdsprog == NULL)return 0;
 
 // setup and run fds case
   strcpy(command_line, fdsprog);
@@ -6632,7 +6632,7 @@ void GenerateSmvOrigFile(void){
   ext = strrchr(smvonemesh, '.');
   if(ext!=NULL)ext[0]=0;
   strcat(smvonemesh, ".smv");
-  if(FileExistsOrig(smvonemesh) == 0)return;
+  if(FileExistsOrig(smvonemesh) == 0)return 0;
 
   strcpy(gitonemesh, fdsonemesh);
   ext = strrchr(gitonemesh, '.');
@@ -6643,15 +6643,16 @@ void GenerateSmvOrigFile(void){
   FileErase(fdsonemesh);
   FileErase(smvonemesh);
   FileErase(gitonemesh);
+  return 1;
 }
 
 /* ------------------ GenerateSmvOrigFileWrapper ------------------------ */
 
 void *GenerateSmvOrigFileWrapper(void *arg){
-  INIT_PRINT_TIMER(timer_convert_case);
-  GenerateSmvOrigFile();
+  if(GenerateSmvOrigFile()==1){
+    printf("%s generated\n", smv_orig_filename);  
+  }
   ReadSMVOrig();
-  PRINT_TIMER(timer_convert_case, "convert case");
   THREAD_EXIT(readsmvorig_threads);
 }
 #endif
