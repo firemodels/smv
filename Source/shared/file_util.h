@@ -98,6 +98,7 @@ int FileExistsOrig(char *filename);
 #include "string_util.h"
 
 // vvvvvvvvvvvvvvvvvvvvvvvv headers vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+EXTERNCPP void FileErase(char *file);
 EXTERNCPP void GetProgFullPath(char *progexe, int maxlen_progexe);
 EXTERNCPP FILE *fopen_indir(char *dir, char *file, char *mode);
 EXTERNCPP FILE *fopen_2dir(char *file, char *mode, char *scratch_dir);

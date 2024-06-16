@@ -6616,7 +6616,7 @@ void GenerateSmvOrigFile(void){
   ijk[1] = (int)ny;
   ijk[2] = (int)nz;
 
-  char *fdsonemesh, command_line[1024], smvonemesh[1024], *ext;
+  char *fdsonemesh, command_line[1024], smvonemesh[1024], gitonemesh[1024], *ext;
 
   fdsonemesh = ConvertFDSInputFile(fds_filein, ijk, xb);
   if(FileExistsOrig(fdsonemesh) == 0 || fdsprog == NULL)return;
@@ -6634,7 +6634,15 @@ void GenerateSmvOrigFile(void){
   strcat(smvonemesh, ".smv");
   if(FileExistsOrig(smvonemesh) == 0)return;
 
+  strcpy(gitonemesh, fdsonemesh);
+  ext = strrchr(gitonemesh, '.');
+  if(ext != NULL)ext[0] = 0;
+  strcat(gitonemesh, "_git.txt");
+
   FileCopy(smvonemesh, smv_orig_filename);
+  FileErase(fdsonemesh);
+  FileErase(smvonemesh);
+  FileErase(gitonemesh);
 }
 
 /* ------------------ GenerateSmvOrigFileWrapper ------------------------ */

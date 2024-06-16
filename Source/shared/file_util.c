@@ -264,6 +264,14 @@ unsigned int StreamCopy(FILE *stream_in, FILE *stream_out, int flag){
   return nchars;
 }
 
+/* ------------------ FileErase ------------------------ */
+
+void FileErase(char *file){
+  if(FileExistsOrig(file) == 1){
+    UNLINK(file);
+  }
+}
+
 /* ------------------ FileCopy ------------------------ */
 
 void FileCopy(char *file_in, char *file_out){
