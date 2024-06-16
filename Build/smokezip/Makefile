@@ -41,7 +41,7 @@ GNU_COMPINFO=-Dpp_COMPVER=\"$(GNU_COMPVERSION)\"
 obj =    CNV3dsmoke.o CNVboundary.o CNVpart.o CNVslice.o  \
          compress.o dmalloc.o file_util.o getdata.o \
          isobox.o main.o md5.o readfiles.o sha1.o sha256.o stdio_buffer.o \
-         string_util.o threader.o utilities.o
+         string_util.o threaderzip.o threader.o utilities.o
 
 objwin = $(obj:.o=.obj)
 

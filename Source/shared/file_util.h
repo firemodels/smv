@@ -18,6 +18,14 @@
 #include <sys/stat.h>
 #endif
 
+/* --------------------------  mtfiledata ------------------------------------ */
+
+typedef struct {
+  char *file, *buffer;
+  FILE_SIZE file_size, chars_read;
+  int i, nthreads;
+} mtfiledata;
+
 // vvvvvvvvvvvvvvvvvvvvvvvv structures vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 
 /* --------------------------  filelistdata ------------------------------------ */

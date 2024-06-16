@@ -2017,7 +2017,7 @@ void UpdateTriangles(int flag,int update){
       }
       geomi->cache_defined = 1;
       fclose(stream);
-      stream = NULL;
+      stream = NULL; 
     }
     FREEMEMORY(vertnormals);
     FREEMEMORY(trinormals);

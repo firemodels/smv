@@ -31,6 +31,7 @@
 #include "MALLOCC.h"
 #include "string_util.h"
 #include "file_util.h"
+#include "threader.h"
 
 FILE *alt_stdout=NULL;
 
@@ -477,6 +478,140 @@ FILE_SIZE GetFileSizeSMV(const char *filename){
   return_val = statbuffer.st_size;
   return return_val;
 }
+
+/* ------------------ fread_mt ------------------------ */
+
+void *fread_mt(void *mtfileinfo){
+  FILE_SIZE first, last, length, file_size;
+  FILE *stream;
+  int i, nthreads;
+  char *file, *buffer;
+  mtfiledata *mtf;
+
+  mtf = (mtfiledata *)mtfileinfo;
+
+  i         = mtf->i;
+  nthreads  = mtf->nthreads;
+  file      = mtf->file;
+  buffer    = mtf->buffer;
+  file_size = mtf->file_size;
+  
+  first = i*file_size/nthreads;
+  last  = first + file_size/nthreads - 1;
+  if(last > file_size - 1)last = file_size - 1;
+  length = last + 1 - first;
+  stream = fopen(file, "rb");
+  FSEEK(stream, first, SEEK_SET);
+  mtf->chars_read = fread(buffer + first, 1, length, stream);
+  fclose(stream);
+
+#ifdef pp_THREAD
+  if(nthreads>1)pthread_exit(NULL);
+#endif
+  return NULL;
+}
+
+/* ------------------ SetMtFileInfo ------------------------ */
+
+mtfiledata *SetMtFileInfo(char *file, char *buffer, int nthreads){
+  mtfiledata *mtfileinfo;
+  int i;
+  FILE_SIZE file_size;
+
+  NewMemory((void **)&mtfileinfo,nthreads*sizeof(mtfiledata));
+  file_size = GetFileSizeSMV(file);
+
+  for(i=0;i<nthreads;i++){
+    mtfiledata *mti;
+
+    mti = mtfileinfo + i;
+    mti->i          = i;
+    mti->nthreads   = nthreads;
+    mti->file       = file;
+    mti->buffer     = buffer;
+    mti->file_size  = file_size;
+    mti->chars_read = 0;
+  }
+  return mtfileinfo;
+}
+    //chars_in=fread(buffer,1,FILE_BUFFER,stream_in1);
+
+/* ------------------ fread_p ------------------------ */
+
+FILE_SIZE fread_p(char *file, char *buffer, int nthreads){
+  FILE_SIZE chars_read;
+  mtfiledata *mtfileinfo;
+
+  mtfileinfo = SetMtFileInfo(file, buffer, nthreads);
+  if(nthreads == 1){
+    FILE *stream;
+
+    stream = fopen(file, "rb");
+    if(stream == NULL)return 0;
+    chars_read = fread(buffer, 1, mtfileinfo->file_size, stream);
+    fclose(stream);
+  }
+#ifdef pp_THREAD
+  else{
+    threaderdata *read_threads;
+    int use_read_threads, i;
+
+    use_read_threads = 1;
+    read_threads = THREADinit(&nthreads, &use_read_threads, fread_mt);
+    THREADrun(read_threads, &mtfileinfo);
+    THREADcontrol(read_threads, THREAD_JOIN);
+    chars_read = 0;
+    for(i = 0;i < nthreads;i++){
+      chars_read += mtfileinfo[i].chars_read;
+    }
+  }
+#else
+  else{
+    int i;
+    
+    chars_read = 0;
+    for(i = 0;i < nthreads;i++){
+      mtfiledata *mti;
+
+      mti = mtfileinfo + i;
+      fread_mt(mti);
+      chars_read += mti->chars_read;
+    }
+  }
+#endif
+  return chars_read;
+}
+
+/* ------------------ THREADreadi ------------------------ */
+
+void THREADreadi(threaderdata *thi, mtfiledata *mtfileinfo){
+#ifdef pp_THREAD
+  if(thi == NULL)return;
+  if(thi->use_threads_ptr != NULL)thi->use_threads = *(thi->use_threads_ptr);
+  if(thi->n_threads_ptr != NULL){
+    thi->n_threads = *(thi->n_threads_ptr);
+    if(thi->n_threads > MAX_THREADS)thi->n_threads = MAX_THREADS;
+  }
+  int i;
+
+  for(i = 0; i < thi->n_threads; i++){
+    mtfiledata *mti;
+
+    mti = mtfileinfo + i;
+    if(thi->use_threads == 1){
+      pthread_create(thi->thread_ids + i, NULL, thi->run, (void *)mti);
+    }
+    else{
+      thi->run((void *)mti);
+    }
+  }
+#else
+//  args[0] = 1;
+//  args[1] = -1;
+//  thi->run(args);
+#endif
+}
+
 
 /* ------------------ FileExistsOrig ------------------------ */
 
