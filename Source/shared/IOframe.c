@@ -7,6 +7,17 @@
 #include "IOframe.h"
 #include "file_util.h"
 
+// the routines is this file read files that consist of a header followed by 1 or 
+// more frames of data.  Each frame starts with a time value followed by a number 
+// of values.  The number of values in a frame may be different for each frame.  
+// The frame data structures are initialized with the FRAMEInit routine.  This 
+// routine is passed a data file name, a size data file name (which may be NULL), 
+// a file type parameter (C or Fortran, currently now only Fortran) and a routine 
+// that determines the size of each data frame.
+// 
+// The FRAMEsetup routine is then called when a file is read in define the header
+// and data frame sizes
+
   /* ------------------ FRAMEInit ------------------------ */
 
 framedata *FRAMEInit(char *file, char *size_file, int file_type, void GetFrameInfo(char *file, char *size_file, int *headersize, int **sizes, int *nsizes, FILE_SIZE *filesizeptr)){
@@ -27,6 +38,7 @@ framedata *FRAMEInit(char *file, char *size_file, int file_type, void GetFrameIn
   else{
     frame->size_file=NULL;
   }
+  // fortran files contain an extra 4 bytes at the beginning and end of each record
   if(file_type != C_FILE)file_type = FORTRAN_FILE;
   strcpy(frame->file, file);
   frame->file_type    = file_type;
@@ -178,6 +190,7 @@ void FRAMESetTimes(framedata *fi, int iframe, int nframes){
     offset = fi->offsets[i];
     if(fi->file_type == FORTRAN_FILE)offset += 4;
     memcpy(fi->times + i, fi->frames + offset, sizeof(float));
+// uncomment the following line to verify that files are read in correctly (times that are output should look sensible)
 //#define pp_FRAME_DEBUG
 #ifdef pp_FRAME_DEBUG
     float time;
@@ -217,7 +230,8 @@ unsigned char *FRAMEGetFramePtr(framedata *fi, int iframe){
   return fi->frameptrs[iframe];
 }
 
-
+//******* The following routines define header and frame sizes for each file type 
+//        (3d smoke, slice, isosurface, and particle - boundary file routine not implemente)
 /* ------------------ GetSmoke3DFrameInfo ------------------------ */
 
 void GetSmoke3DFrameInfo(char *file, char *size_file, int *headersizeptr, int **framesptr, int *nframesptr, FILE_SIZE *filesizeptr){
