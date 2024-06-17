@@ -593,6 +593,46 @@ FILE_SIZE fread_p(char *file, char *buffer, FILE_SIZE offset, FILE_SIZE nchars, 
   return chars_read;
 }
 
+/* ------------------ File2Buffer ------------------------ */
+
+unsigned char *File2Buffer(char *file, int nthreads, FILE_SIZE *filesizeptr){
+  unsigned char *buffer;
+  FILE_SIZE filesize, offset=0, nread;
+
+  *filesizeptr = 0;
+  if(file==NULL||FileExistsOrig(file) == 0)return NULL;
+  filesize = GetFileSizeSMV(file);
+  if(filesize == 0)return NULL;
+  NewMemory((void **)&buffer,(filesize+1)*sizeof(unsigned char));
+  nread = fread_p(file, buffer, offset, filesize, nthreads);
+  if(nread != filesize){
+    FREEMEMORY(buffer);
+  }
+  else{
+    *filesizeptr = filesize;
+  }
+  return buffer;
+}
+
+  /* ------------------ AppendFile2Buffer ------------------------ */
+
+unsigned char *AppendFile2Buffer(char *file, unsigned char *buffer, FILE_SIZE *filesize_ptr, int nthreads){
+  FILE_SIZE old_filesize, new_filesize;
+
+  if(file == NULL || buffer == NULL || FileExistsOrig(file) == 0)return NULL;
+  old_filesize = *filesize_ptr;
+  new_filesize = GetFileSizeSMV(file);
+  if(new_filesize > old_filesize){
+    FILE_SIZE delta_filesize, nread;
+
+    delta_filesize = new_filesize - old_filesize;
+    ResizeMemory((void **)&buffer, new_filesize * sizeof(unsigned char));
+    nread = fread_p(file, buffer + old_filesize, old_filesize, delta_filesize, nthreads);
+    *filesize_ptr = new_filesize;
+  }
+  return buffer;
+}
+
 /* ------------------ THREADreadi ------------------------ */
 
 void THREADreadi(threaderdata *thi, mtfiledata *mtfileinfo){
