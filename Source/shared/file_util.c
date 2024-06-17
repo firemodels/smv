@@ -482,27 +482,37 @@ FILE_SIZE GetFileSizeSMV(const char *filename){
 /* ------------------ fread_mt ------------------------ */
 
 void *fread_mt(void *mtfileinfo){
-  FILE_SIZE first, last, length, file_size;
+  FILE_SIZE first_file, first_buffer, last_file, length, file_size;
   FILE *stream;
   int i, nthreads;
   char *file, *buffer;
   mtfiledata *mtf;
+  FILE_SIZE file_offset, nchars;
 
   mtf = (mtfiledata *)mtfileinfo;
 
-  i         = mtf->i;
-  nthreads  = mtf->nthreads;
-  file      = mtf->file;
-  buffer    = mtf->buffer;
-  file_size = mtf->file_size;
+  i              = mtf->i;
+  nthreads       = mtf->nthreads;
+  file           = mtf->file;
+  buffer         = mtf->buffer;
+  file_size      = mtf->file_size;
+  file_offset    = mtf->file_offset;
+  nchars         = mtf->nchars;
   
-  first = i*file_size/nthreads;
-  last  = first + file_size/nthreads - 1;
-  if(last > file_size - 1)last = file_size - 1;
-  length = last + 1 - first;
+  first_buffer = i*nchars/nthreads;
+  first_file   = file_offset + first_buffer;
+  last_file    = first_file + nchars/nthreads - 1;
+  if(last_file > file_size - 1)last_file = file_size - 1;
+  length = last_file + 1 - first_file;
   stream = fopen(file, "rb");
-  FSEEK(stream, first, SEEK_SET);
-  mtf->chars_read = fread(buffer + first, 1, length, stream);
+  if(stream == NULL){
+#ifdef pp_THREAD
+    if(nthreads>1)pthread_exit(NULL);
+#endif
+    return NULL;
+  }
+  FSEEK(stream, first_file, SEEK_SET);
+  mtf->chars_read = fread(buffer + first_buffer, 1, length, stream);
   fclose(stream);
 
 #ifdef pp_THREAD
@@ -513,7 +523,7 @@ void *fread_mt(void *mtfileinfo){
 
 /* ------------------ SetMtFileInfo ------------------------ */
 
-mtfiledata *SetMtFileInfo(char *file, char *buffer, int nthreads){
+mtfiledata *SetMtFileInfo(char *file, char *buffer, FILE_SIZE file_offset, FILE_SIZE nchars, int nthreads){
   mtfiledata *mtfileinfo;
   int i;
   FILE_SIZE file_size;
@@ -525,24 +535,25 @@ mtfiledata *SetMtFileInfo(char *file, char *buffer, int nthreads){
     mtfiledata *mti;
 
     mti = mtfileinfo + i;
-    mti->i          = i;
-    mti->nthreads   = nthreads;
-    mti->file       = file;
-    mti->buffer     = buffer;
-    mti->file_size  = file_size;
-    mti->chars_read = 0;
+    mti->i               = i;
+    mti->nthreads        = nthreads;
+    mti->file            = file;
+    mti->buffer          = buffer;
+    mti->file_size       = file_size;
+    mti->file_offset     = file_offset;
+    mti->nchars          = nchars;
+    mti->chars_read      = 0;
   }
   return mtfileinfo;
 }
-    //chars_in=fread(buffer,1,FILE_BUFFER,stream_in1);
 
 /* ------------------ fread_p ------------------------ */
 
-FILE_SIZE fread_p(char *file, char *buffer, int nthreads){
+FILE_SIZE fread_p(char *file, char *buffer, FILE_SIZE offset, FILE_SIZE nchars, int nthreads){
   FILE_SIZE chars_read;
   mtfiledata *mtfileinfo;
 
-  mtfileinfo = SetMtFileInfo(file, buffer, nthreads);
+  mtfileinfo = SetMtFileInfo(file, buffer, offset, nchars, nthreads);
   if(nthreads == 1){
     FILE *stream;
 

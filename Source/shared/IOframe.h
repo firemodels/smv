@@ -16,7 +16,10 @@
 #define C_FILE       1
 typedef struct _framedata {
   char *file, *size_file;
-  int nframes,     file_type;
+  int nframes, file_type;
+#ifdef pp_THREAD
+  int nthreads;
+#endif
   int headersize, *framesizes;
   FILE_SIZE *offsets, filesize;
   unsigned char *header, *frames, **frameptrs;
@@ -28,6 +31,9 @@ typedef struct _framedata {
 
 framedata *FRAMEInit(char *file, char *size_file, int file_type, void GetFrameInfo(char *file, char *size_file, int *headersize, int **sizes, int *nsizes, FILE_SIZE *filesize_ptr));
 void FRAMEFree(framedata **fi);
+#ifdef pp_THREAD
+void FRAMESetNThreads(framedata *fi, int nthreads);
+#endif
 unsigned char *FRAMEGetFramePtr(framedata *fi, int iframe);
 int FRAMEGetMinMax(framedata *fi, float *valmin, float *valmax);
 void FRAMEReadFrame(framedata *fi, int iframe, int nframes);

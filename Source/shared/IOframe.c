@@ -45,6 +45,9 @@ framedata *FRAMEInit(char *file, char *size_file, int file_type, void GetFrameIn
   frame->nframes      = 0;
   frame->headersize   = 0;
   frame->filesize     = 0;
+#ifdef pp_THREAD
+  frame->nthreads     = 4;
+#endif
   frame->framesizes   = NULL;
   frame->offsets      = NULL;
   frame->frames       = NULL;
@@ -149,6 +152,14 @@ void FRAMEReadHeader(framedata *fi){
   fclose(stream);
 }
 
+#ifdef pp_THREAD
+/* ------------------ FRAMESetNThreads ------------------------ */
+
+void FRAMESetNThreads(framedata *fi, int nthreads){
+  fi->nthreads = nthreads;
+}
+#endif
+
 /* ------------------ FRAMEReadFrame ------------------------ */
 
 void FRAMEReadFrame(framedata *fi, int iframe, int nframes){
@@ -169,8 +180,12 @@ void FRAMEReadFrame(framedata *fi, int iframe, int nframes){
   for(i=0;i<nframes;i++){
     total_size += fi->framesizes[iframe+i];
   }
+#ifdef pp_THREADXX // change to pp_THREAD after below line is tested and working
+  fread_p(fi->file, fi->frames + fi->offsets[iframe], fi->headersize + fi->offsets[iframe], total_size, fi->nthreads);
+#else
   FRAME_FSEEK(stream, fi->headersize+fi->offsets[iframe], SEEK_SET);
   fread(fi->frames + fi->offsets[iframe], 1, total_size, stream);
+#endif
   fclose(stream);
 }
 

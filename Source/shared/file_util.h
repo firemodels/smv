@@ -22,7 +22,7 @@
 
 typedef struct {
   char *file, *buffer;
-  FILE_SIZE file_size, chars_read;
+  FILE_SIZE file_size, chars_read, file_offset, nchars;
   int i, nthreads;
 } mtfiledata;
 
@@ -106,6 +106,7 @@ int FileExistsOrig(char *filename);
 #include "string_util.h"
 
 // vvvvvvvvvvvvvvvvvvvvvvvv headers vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+FILE_SIZE fread_p(char *file, char *buffer, FILE_SIZE offset, FILE_SIZE nchars, int nthreads);
 EXTERNCPP void GetProgFullPath(char *progexe, int maxlen_progexe);
 EXTERNCPP FILE *fopen_indir(char *dir, char *file, char *mode);
 EXTERNCPP FILE *fopen_2dir(char *file, char *mode, char *scratch_dir);
