@@ -482,7 +482,7 @@ FILE_SIZE GetFileSizeSMV(const char *filename){
 /* ------------------ fread_mt ------------------------ */
 
 void *fread_mt(void *mtfileinfo){
-  FILE_SIZE first_file, first_buffer, last_file, length, file_size;
+  FILE_SIZE file_beg, buffer_beg, file_end, buffer_size, file_size;
   FILE *stream;
   int i, nthreads;
   char *file, *buffer;
@@ -499,11 +499,14 @@ void *fread_mt(void *mtfileinfo){
   file_offset    = mtf->file_offset;
   nchars         = mtf->nchars;
   
-  first_buffer = i*nchars/nthreads;
-  first_file   = file_offset + first_buffer;
-  last_file    = first_file + nchars/nthreads - 1;
-  if(last_file > file_size - 1)last_file = file_size - 1;
-  length = last_file + 1 - first_file;
+  buffer_size = nchars/nthreads;
+  buffer_beg  = i*buffer_size;
+  file_beg    = file_offset + buffer_beg;
+  file_end    = file_beg + buffer_size - 1;
+  if(i == nthreads - 1||file_end>file_size-1){
+    file_end    = file_size - 1;
+    buffer_size = file_end + 1 - file_beg;
+  }
   stream = fopen(file, "rb");
   if(stream == NULL){
 #ifdef pp_THREAD
@@ -511,8 +514,8 @@ void *fread_mt(void *mtfileinfo){
 #endif
     return NULL;
   }
-  FSEEK(stream, first_file, SEEK_SET);
-  mtf->chars_read = fread(buffer + first_buffer, 1, length, stream);
+  FSEEK(stream, file_beg, SEEK_SET);
+  mtf->chars_read = fread(buffer + buffer_beg, 1, buffer_size, stream);
   fclose(stream);
 
 #ifdef pp_THREAD
