@@ -190,8 +190,6 @@ void FRAMESetTimes(framedata *fi, int iframe, int nframes){
     offset = fi->offsets[i];
     if(fi->file_type == FORTRAN_FILE)offset += 4;
     memcpy(fi->times + i, fi->frames + offset, sizeof(float));
-// uncomment the following line to verify that files are read in correctly (times that are output should look sensible)
-//#define pp_FRAME_DEBUG
 #ifdef pp_FRAME_DEBUG
     float time;
     time = fi->times[i];
