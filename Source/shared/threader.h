@@ -32,7 +32,6 @@ typedef struct _threaderdata{
 EXTERNCPP void THREADcontrol(threaderdata *thi, int var);
 EXTERNCPP void THREADrun(threaderdata *thi, void *arg);
 EXTERNCPP void THREADrunfilei(threaderdata *thi, unsigned char *datainfo, int sizedatai);
-EXTERNCPP void THREADruni(threaderdata *thi, int *args);
 EXTERNCPP threaderdata *THREADinit(int *nthreads_arg, int *threading_on_arg, void *(*run_arg)(void *arg));
 
 //*** threader controls
