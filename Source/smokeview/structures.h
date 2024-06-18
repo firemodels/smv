@@ -30,6 +30,13 @@ typedef struct _circdata {
 } circdata;
 
 /* --------------------------  langlistdata ------------------------------------ */
+#ifdef pp_SMOKEDRAW_SPEEDUP
+typedef struct _smokethreaddata{
+  int ithread, nthreads;
+} smokethreaddata;
+#endif
+
+/* --------------------------  langlistdata ------------------------------------ */
 
 typedef struct _lanlistdata {
   char *file;

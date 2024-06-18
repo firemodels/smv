@@ -11870,6 +11870,10 @@ int ReadSMV_Configure(){
 #ifdef pp_SMOKEDRAW_SPEEDUP
   if(mergesmoke_threads == NULL){
     mergesmoke_threads = THREADinit(&n_mergesmoke_threads, &use_mergesmoke_threads, MtMergeSmoke3D);
+    for(i = 0; i < n_mergesmoke_threads; i++){
+      smokethreadinfo[i].ithread = i;
+      smokethreadinfo[i].nthreads = n_mergesmoke_threads;
+    }
   }
 #endif
 

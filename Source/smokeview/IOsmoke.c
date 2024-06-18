@@ -4903,13 +4903,13 @@ void UpdateGluiMergeSmoke(void){
 
 void *MtMergeSmoke3D(void *arg){
   int nthreads, ithread;
-  int *nthreadptr, *ithreadptr;
   int i;
+  smokethreaddata *smokei;
 
-  nthreadptr = (int *)arg;
-  ithreadptr = (int *)arg+1;
-  nthreads   = *nthreadptr;
-  ithread    = *ithreadptr;
+  smokei = ( smokethreaddata * )arg;
+
+  nthreads = smokei->nthreads;
+  ithread  = smokei->ithread;
   for(i = ithread;i < nsmoke3dinfo;i += nthreads){
     smoke3ddata *smoke3di;
 
