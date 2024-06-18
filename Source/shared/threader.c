@@ -121,6 +121,39 @@ void THREADrun(threaderdata *thi, void *arg){
 #endif
 }
 
+/* ------------------ THREADrunfilei ------------------------ */
+
+void THREADrunfilei(threaderdata *thi, mtfiledata *mtfileinfo){
+#ifdef pp_THREAD
+  if(thi == NULL)return;
+  if(thi->use_threads_ptr != NULL)thi->use_threads = *(thi->use_threads_ptr);
+  if(thi->n_threads_ptr != NULL){
+    thi->n_threads = *(thi->n_threads_ptr);
+    if(thi->n_threads > MAX_THREADS)thi->n_threads = MAX_THREADS;
+  }
+  int i;
+
+  for(i = 0; i < thi->n_threads; i++){
+    mtfiledata *mti;
+
+    mti = mtfileinfo + i;
+    if(thi->use_threads == 1){
+      pthread_create(thi->thread_ids + i, NULL, thi->run, mti);
+    }
+    else{
+      thi->run(mti);
+    }
+  }
+#else
+  for(i = 0; i < thi->n_threads; i++){
+    mtfiledata *mti;
+
+    mti = mtfileinfo + i;
+    thi->run(mti);
+  }
+#endif
+}
+
 /* ------------------ THREADruni ------------------------ */
 
 void THREADruni(threaderdata *thi, int *args){

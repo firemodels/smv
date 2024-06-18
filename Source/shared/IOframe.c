@@ -172,7 +172,7 @@ void FRAMEReadFrame(framedata *fi, int iframe, int nframes){
 
   if(iframe < 0)iframe = 0;
   first_frame = iframe;
-  last_frame = first_frame + nframes - 1;
+  last_frame  = first_frame + nframes - 1;
   if(last_frame>fi->nframes - 1)last_frame = fi->nframes-1;
   nframes = last_frame + 1 - first_frame;
   
@@ -180,7 +180,7 @@ void FRAMEReadFrame(framedata *fi, int iframe, int nframes){
   for(i=0;i<nframes;i++){
     total_size += fi->framesizes[iframe+i];
   }
-#ifdef pp_THREADXX // change to pp_THREAD after below line is tested and working
+#ifdef pp_THREAD
   fread_p(fi->file, fi->frames + fi->offsets[iframe], fi->headersize + fi->offsets[iframe], total_size, fi->nthreads);
 #else
   FRAME_FSEEK(stream, fi->headersize+fi->offsets[iframe], SEEK_SET);
