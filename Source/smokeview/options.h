@@ -22,6 +22,7 @@
 #ifdef pp_GPU
 #define pp_GPUTHROTTLE      // pp_GPU directive must also be set
 #endif
+//#define pp_FDS            // create a 1 mesh input file
 
 //*** options: windows
 

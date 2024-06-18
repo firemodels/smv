@@ -116,6 +116,7 @@ EXTERNCPP const char    *TrimFrontConst(const char *line);
 EXTERNCPP void           TrimZeros(char *line);
 EXTERNCPP char          *TrimFrontZeros(char *line);
 
+EXTERNCPP char           *Val2String(float val, char *string);
 EXTERNCPP void           TrimMZeros(char *line);
 EXTERNCPP char          *Strstr(char *c, char *key);
 EXTERNCPP char          *STRSTR(char *c, const char *key);

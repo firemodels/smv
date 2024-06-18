@@ -265,6 +265,14 @@ unsigned int StreamCopy(FILE *stream_in, FILE *stream_out, int flag){
   return nchars;
 }
 
+/* ------------------ FileErase ------------------------ */
+
+void FileErase(char *file){
+  if(FileExistsOrig(file) == 1){
+    UNLINK(file);
+  }
+}
+
 /* ------------------ FileCopy ------------------------ */
 
 void FileCopy(char *file_in, char *file_out){
@@ -967,7 +975,7 @@ char *GetProgDir(char *progname, char **svpath){
   if(lastsep==NULL){
     char *dir;
 
-    dir = Which(progname);
+    dir = Which(progname, NULL);
     if(dir==NULL){
       NewMemory((void **)&progpath,(unsigned int)3);
       strcpy(progpath,".");
@@ -1110,7 +1118,7 @@ void GetProgFullPath(char *progexe, int maxlen_progexe){
   if(end == NULL){
     char *progpath;
 
-    progpath = Which(progexe);
+    progpath = Which(progexe, NULL);
     if(progpath != NULL){
       char copy[1024];
 
@@ -1134,7 +1142,7 @@ void GetProgFullPath(char *progexe, int maxlen_progexe){
 
 /* ------------------ Which ------------------------ */
 
-char *Which(char *progname){
+char *Which(char *progname, char **fullprognameptr){
 
 // returns the PATH directory containing the file progname
 
@@ -1164,7 +1172,7 @@ char *Which(char *progname){
     const char *ext;
 
     ext = prognamecopy+strlen(progname)-4;
-    if(strlen(progname)<=4||STRCMP(ext,".exe")!=0)strcat(prognamecopy, ".exe");
+    if(strlen(progname)<=4|| (STRCMP(ext,".exe")!=0 && STRCMP(ext, ".bat") != 0))strcat(prognamecopy, ".exe");
   }
 #endif
 
@@ -1180,7 +1188,12 @@ char *Which(char *progname){
       strcpy(pathentry,dir);
       strcat(pathentry,dirsep);
       FREEMEMORY(pathlistcopy);
-      FREEMEMORY(fullprogname);
+      if(fullprognameptr != NULL){
+        *fullprognameptr = fullprogname;
+      }
+      else{
+        FREEMEMORY(fullprogname);
+      }
       FREEMEMORY(prognamecopy);
       return pathentry;
     }

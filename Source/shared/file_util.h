@@ -107,9 +107,10 @@ int FileExistsOrig(char *filename);
 #include "string_util.h"
 
 // vvvvvvvvvvvvvvvvvvvvvvvv headers vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
-unsigned char *File2Buffer(char *file, int nthreads, FILE_SIZE *filesize_ptr);
-unsigned char *AppendFile2Buffer(char *file, unsigned char *buffer, FILE_SIZE *filesize_ptr, int nthreads);
-FILE_SIZE fread_p(char *file, unsigned char *buffer, FILE_SIZE offset, FILE_SIZE nchars, int nthreads);
+EXTERNCPP unsigned char *File2Buffer(char *file, int nthreads, FILE_SIZE *filesize_ptr);
+EXTERNCPP unsigned char *AppendFile2Buffer(char *file, unsigned char *buffer, FILE_SIZE *filesize_ptr, int nthreads);
+EXTERNCPP FILE_SIZE fread_p(char *file, unsigned char *buffer, FILE_SIZE offset, FILE_SIZE nchars, int nthreads);
+EXTERNCPP void FileErase(char *file);
 EXTERNCPP void GetProgFullPath(char *progexe, int maxlen_progexe);
 EXTERNCPP FILE *fopen_indir(char *dir, char *file, char *mode);
 EXTERNCPP FILE *fopen_2dir(char *file, char *mode, char *scratch_dir);
@@ -143,7 +144,7 @@ EXTERNCPP void FreeFileList(filelistdata *filelist, int *nfilelist);
 #define DIR_MODE  1
 EXTERNCPP int GetFileListSize(const char *path, char *filter, int mode) ;
 EXTERNCPP int MakeFileList(const char *path, char *filter, int maxfiles, int sort_files, filelistdata **filelist, int mode);
-EXTERNCPP char *Which(char *progname);
+EXTERNCPP char *Which(char *progname, char **fullprognameptr);
 EXTERNCPP FILE_SIZE GetFileSizeSMV(const char *filename);
 EXTERNCPP time_t FileModtime(char *filename);
 EXTERNCPP int IsFileNewer(char *file1, char *file2);

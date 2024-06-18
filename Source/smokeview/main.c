@@ -853,6 +853,12 @@ int main(int argc, char **argv){
   GetProgFullPath(smokeview_progname, 1024);
   smv_filename = ParseCommandline(argc, argv);
 
+#ifdef WIN32
+  if(Which("fds_local.bat", &fdsprog) != NULL)strcpy(fdsprog, "fds_local.bat");
+#else
+  Which("fds", &fdsprog);
+#endif
+
   prog_fullpath = progname;
   if(smokeview_bindir==NULL){
     smokeview_bindir = GetProgDir(progname, &smokeviewpath);
