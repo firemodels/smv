@@ -123,7 +123,7 @@ void THREADrun(threaderdata *thi, void *arg){
 
 /* ------------------ THREADrunfilei ------------------------ */
 
-void THREADrunfilei(threaderdata *thi, mtfiledata *mtfileinfo){
+void THREADrunfilei(threaderdata *thi, unsigned char *datainfo, int sizedatai){
 #ifdef pp_THREAD
   if(thi == NULL)return;
   if(thi->use_threads_ptr != NULL)thi->use_threads = *(thi->use_threads_ptr);
@@ -134,22 +134,24 @@ void THREADrunfilei(threaderdata *thi, mtfiledata *mtfileinfo){
   int i;
 
   for(i = 0; i < thi->n_threads; i++){
-    mtfiledata *mti;
+    unsigned char *datai;
 
-    mti = mtfileinfo + i;
+    datai = datainfo + i*sizedatai;
     if(thi->use_threads == 1){
-      pthread_create(thi->thread_ids + i, NULL, thi->run, mti);
+      pthread_create(thi->thread_ids + i, NULL, thi->run, (void *)datai);
     }
     else{
-      thi->run(mti);
+      thi->run(datai);
     }
   }
 #else
-  for(i = 0; i < thi->n_threads; i++){
-    mtfiledata *mti;
+  int i;
 
-    mti = mtfileinfo + i;
-    thi->run(mti);
+  for(i = 0; i < thi->n_threads; i++){
+    unsigned char *data;
+
+    datai = datainfo + i*sizedatai;
+    thi->run(datai);
   }
 #endif
 }

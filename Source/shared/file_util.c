@@ -573,7 +573,7 @@ FILE_SIZE fread_p(char *file, unsigned char *buffer, FILE_SIZE offset, FILE_SIZE
 
     use_read_threads = 1;
     read_threads = THREADinit(&nthreads, &use_read_threads, fread_mt);
-    THREADrunfilei(read_threads, (mtfiledata *)mtfileinfo);
+    THREADrunfilei(read_threads, (mtfiledata *)mtfileinfo, sizeof(mtfiledata));
     THREADcontrol(read_threads, THREAD_JOIN);
     chars_read = 0;
     for(i = 0;i < nthreads;i++){
