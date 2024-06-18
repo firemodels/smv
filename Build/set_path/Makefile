@@ -53,7 +53,7 @@ no_target:
 
 # ------------- intel osx 64 ----------------
 
-intel_win_64 : CFLAGS    = -D WIN32 -O2 /nologo $(GITINFO) $(INTEL_COMPINFO)
+intel_win_64 : CFLAGS    = -I $(SOURCE_DIR)/pthreads -D X64 -D WIN32 -O2 /nologo $(GITINFO) $(INTEL_COMPINFO)
 intel_win_64 : CC        = $(I_CC)
 intel_win_64 : CPP       = $(I_CC)
 intel_win_64 : exe       = set_path_win_64.exe
