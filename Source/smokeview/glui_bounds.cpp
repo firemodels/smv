@@ -4057,7 +4057,7 @@ void BoundBoundCB(int var){
     if(compress_threads == NULL){
       compress_threads = THREADinit(&n_compress_threads, &use_compress_threads, Compress);
     }
-    THREADrun(compress_threads, NULL);
+    THREADrun(compress_threads);
     break;
   case COMPRESS_AUTOLOADED:
     updatemenu = 1;
