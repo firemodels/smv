@@ -8513,7 +8513,11 @@ void DrawVSliceFrame(void){
       else{
         if(val!=NULL){
           val->iqsliceframe = val->slicelevel+val->itime*val->nsliceijk;
+#ifdef pp_FRAME
+          val->qslice = (float *)FRAMEGetFramePtr(val->frameinfo, val->itime);
+#else
           val->qslice = val->qslicedata+val->itime*val->nsliceijk;
+#endif
         }
       }
       if(val->qslicedata!=NULL)val->qsliceframe = val->qslicedata+val->itime*val->nsliceijk;
@@ -8545,13 +8549,25 @@ void DrawVSliceFrame(void){
         }
       }
       if(u!=NULL&&u->compression_type==UNCOMPRESSED){
+#ifdef pp_FRAME
+        u->qslice = (float *)FRAMEGetFramePtr(u->frameinfo, u->itime);
+#else
         u->qslice = u->qslicedata+u->itime*u->nsliceijk;
+#endif
       }
       if(v!=NULL&&v->compression_type==UNCOMPRESSED){
+#ifdef pp_FRAME
+        v->qslice = (float *)FRAMEGetFramePtr(v->frameinfo, v->itime);
+#else
         v->qslice = v->qslicedata+v->itime*v->nsliceijk;
+#endif
       }
       if(w!=NULL&&w->compression_type==UNCOMPRESSED){
+#ifdef pp_FRAME
+        w->qslice = (float *)FRAMEGetFramePtr(w->frameinfo, w->itime);
+#else
         w->qslice = w->qslicedata+w->itime*w->nsliceijk;
+#endif
       }
     }
 

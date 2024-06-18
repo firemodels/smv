@@ -158,7 +158,7 @@ void ReadIsoGeomWrapup(int flag){
   if(triangles_threads == NULL){
     triangles_threads = THREADinit(&n_triangles_threads, &use_triangles_threads, UpdateTrianglesAll);
   }
-  THREADrun(triangles_threads, NULL);
+  THREADrun(triangles_threads);
   if(flag == FOREGROUND)THREADcontrol(triangles_threads, THREAD_JOIN);
   UpdateTimes();
   GetFaceInfo();

@@ -2737,7 +2737,7 @@ void CompressMenu(int value){
     if(compress_threads == NULL){
       compress_threads = THREADinit(&n_compress_threads, &use_compress_threads, Compress);
     }
-    THREADrun(compress_threads, NULL);
+    THREADrun(compress_threads);
     break;
   case MENU_OVERWRITECOMPRESS:
     erase_all=0;
@@ -2749,7 +2749,7 @@ void CompressMenu(int value){
     if(compress_threads == NULL){
       compress_threads = THREADinit(&n_compress_threads, &use_compress_threads, Compress);
     }
-    THREADrun(compress_threads, NULL);
+    THREADrun(compress_threads);
     break;
   case MENU_COMPRESSAUTOLOAD:
     compress_autoloaded=1-compress_autoloaded;
@@ -4109,7 +4109,9 @@ void LoadAllPartFilesMT(int partnum){
   if(partload_threads == NULL){
     partload_threads = THREADinit(&n_partload_threads, &use_partload_threads, MtLoadAllPartFiles);
   }
-  THREADrun(partload_threads, &partnum);
+  int partnuminfo[1];
+  partnuminfo[0] = partnum;
+  THREADruni(partload_threads, (unsigned char *)partnuminfo, 0);
   THREADcontrol(partload_threads, THREAD_JOIN);
 
   INIT_PRINT_TIMER(part_timer);

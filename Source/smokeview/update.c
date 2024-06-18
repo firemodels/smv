@@ -170,7 +170,7 @@ void UpdateFrameNumber(int changetime){
       INIT_PRINT_TIMER(merge_smoke_time);
 #ifdef pp_SMOKEDRAW_SPEEDUP
       THREADcontrol(mergesmoke_threads, THREAD_LOCK);
-      THREADruni(mergesmoke_threads, merge_args);
+      THREADruni(mergesmoke_threads, (unsigned char *)smokethreadinfo, sizeof(smokethreaddata));
       THREADcontrol(mergesmoke_threads, THREAD_JOIN);
       THREADcontrol(mergesmoke_threads, THREAD_UNLOCK);
 #else

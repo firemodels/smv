@@ -3023,7 +3023,7 @@ void UpdateBoundInfo(void){
 #ifdef pp_PARTBOUND_MULTI
   if(partbound_threads == NULL){
     partbound_threads = THREADinit(&n_partbound_threads, &use_partbound_threads, GetGlobalPartBoundsReduced);
-    THREADrun(partbound_threads, NULL);
+    THREADrun(partbound_threads);
   }
 #else
   GetGlobalPartBounds(0);
@@ -3034,14 +3034,14 @@ void UpdateBoundInfo(void){
   if(slicebound_threads == NULL){
     slicebound_threads = THREADinit(&n_slicebound_threads, &use_slicebound_threads, GetGlobalSliceBoundsFull);
   }
-  THREADrun(slicebound_threads, NULL);
+  THREADrun(slicebound_threads);
   PRINT_TIMER(bound_timer, "GetGlobalSliceBounds");
 
   GetGlobalPatchBoundsReduced();
   if(patchbound_threads == NULL){
     patchbound_threads = THREADinit(&n_patchbound_threads, &use_patchbound_threads, GetGlobalPatchBoundsFull);
   }
-  THREADrun(patchbound_threads, NULL);
+  THREADrun(patchbound_threads);
   PRINT_TIMER(bound_timer, "GetGlobalPatchBounds");
 
   GetGlobalHVACDuctBounds(0);
@@ -11679,7 +11679,7 @@ int ReadSMV_Configure(){
   if(checkfiles_threads != NULL){
     checkfiles_threads = THREADinit(&n_checkfiles_threads, &use_checkfiles_threads, CheckFiles);
   }
-  THREADrun(checkfiles_threads, NULL);
+  THREADrun(checkfiles_threads);
   PRINT_TIMER(timer_readsmv, "CheckFiles");
   CheckMemory;
   UpdateIsoColors();
@@ -11751,7 +11751,7 @@ int ReadSMV_Configure(){
   if(readallgeom_threads == NULL){
     readallgeom_threads = THREADinit(&n_readallgeom_threads, &use_readallgeom_threads, ReadAllGeom);
   }
-  THREADrun(readallgeom_threads, NULL);
+  THREADrun(readallgeom_threads);
   THREADcontrol(readallgeom_threads, THREAD_JOIN);
   PRINT_TIMER(timer_readsmv, "ReadAllGeomMT");
 
@@ -11824,7 +11824,7 @@ int ReadSMV_Configure(){
   if(sliceparms_threads == NULL){
     sliceparms_threads = THREADinit(&n_sliceparms_threads, &use_sliceparms_threads, UpdateVSlices);
   }
-  THREADrun(sliceparms_threads, &sliceparminfo);
+  THREADruni(sliceparms_threads, (unsigned char *)&sliceparminfo, 0);
   THREADcontrol(sliceparms_threads, THREAD_JOIN);
   PRINT_TIMER(timer_readsmv, "UpdateVSlices");
 
@@ -11870,19 +11870,23 @@ int ReadSMV_Configure(){
 #ifdef pp_SMOKEDRAW_SPEEDUP
   if(mergesmoke_threads == NULL){
     mergesmoke_threads = THREADinit(&n_mergesmoke_threads, &use_mergesmoke_threads, MtMergeSmoke3D);
+    for(i = 0; i < n_mergesmoke_threads; i++){
+      smokethreadinfo[i].ithread = i;
+      smokethreadinfo[i].nthreads = n_mergesmoke_threads;
+    }
   }
 #endif
 
   if(ffmpeg_threads == NULL){
     ffmpeg_threads = THREADinit(&n_ffmpeg_threads, &use_ffmpeg_threads, SetupFF);
   }
-  THREADrun(ffmpeg_threads, NULL);
+  THREADrun(ffmpeg_threads);
   PRINT_TIMER(timer_readsmv, "SetupFFMT");
 
   if(isosurface_threads == NULL){
     isosurface_threads = THREADinit(&n_isosurface_threads, &use_isosurface_threads, SetupAllIsosurfaces);
   }
-  THREADrun(isosurface_threads, NULL);
+  THREADrun(isosurface_threads);
   THREADcontrol(isosurface_threads, THREAD_JOIN);
   PRINT_TIMER(timer_readsmv, "SetupAllIsosurfaces");
 
@@ -11999,7 +12003,7 @@ int ReadSMV_Configure(){
     if(classifyallgeom_threads == NULL){
       classifyallgeom_threads = THREADinit(&n_readallgeom_threads, &use_readallgeom_threads, ClassifyAllGeom);
     }
-    THREADrun(classifyallgeom_threads, NULL);
+    THREADrun(classifyallgeom_threads);
   }
   PRINT_TIMER(timer_readsmv, "ClassifyGeom");
 

@@ -3264,7 +3264,7 @@ void ReadVolsmokeAllFramesAllMeshes(void){
   if(volsmokeload_threads == NULL){
     volsmokeload_threads = THREADinit(&n_volsmokeload_threads, &use_volsmokeload_threads, ReadVolsmokeAllFramesAllMeshes2);
   }
-  THREADrun(volsmokeload_threads, NULL);
+  THREADrun(volsmokeload_threads);
 }
 
 /* ------------------ UnloadVolsmokeTextures ------------------------ */

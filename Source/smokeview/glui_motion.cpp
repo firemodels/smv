@@ -2617,7 +2617,7 @@ void RenderCB(int var){
       if(playmovie_threads == NULL){
         playmovie_threads = THREADinit(&n_playmovie_threads, &use_playmovie_threads, PlayMovie);
       }
-      THREADrun(playmovie_threads, NULL);
+      THREADrun(playmovie_threads);
       break;
     case OUTPUT_FFMPEG:
       output_ffmpeg_command=1;
