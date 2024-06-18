@@ -53,7 +53,7 @@ no_target:
 
 # ------------- intel Win 64 ----------------
 
-intel_win_64 : CFLAGS    = -O1 /nologo -D WIN32 -I $(SOURCE_DIR)/shared $(GITINFO) $(INTEL_COMPINFO)
+intel_win_64 : CFLAGS    = -O1 /nologo -D X64 -D WIN32 -I $(SOURCE_DIR)/pthreads -I $(SOURCE_DIR)/shared $(GITINFO) $(INTEL_COMPINFO)
 intel_win_64 : CC        = $(I_CC)
 intel_win_64 : exe       = background_win_64.exe
 

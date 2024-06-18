@@ -53,8 +53,7 @@ no_target:
 
 # ------------- intel winx 64 db ----------------
 
-intel_win_64_db : FFLAGS    = /Od /iface:stdref /fpp -D WIN32 /nologo /debug:full /extend_source:132 /warn:unused /warn:nointerfaces /Qtrapuv /fp:strict /fp:except /traceback /check:all /stand:f18 /fpscomp:general
-intel_win_64_db : CFLAGS    = /Od /Wall /debug:full /W4 /ZI -D WIN32 -D _CONSOLE -D X64 -D GLEW_STATIC -D PTW32_STATIC_LIB $(SMV_TESTFLAG) $(GITINFO) $(INTEL_COMPINFO)
+intel_win_64_db : CFLAGS    = /Od /Wall /debug:full /W4 /ZI -I $(SOURCE_DIR)/pthreads -D WIN32 -D _CONSOLE -D X64 -D GLEW_STATIC -D PTW32_STATIC_LIB $(SMV_TESTFLAG) $(GITINFO) $(INTEL_COMPINFO)
 intel_win_64_db : CC        = $(I_CC)
 intel_win_64_db : exe       = fds2fed_win_64_db.exe
 
@@ -63,8 +62,7 @@ intel_win_64_db : $(objwin)
 
 # ------------- intel win 64 ----------------
 
-intel_win_64 : FFLAGS    = /O2 -fpp -D WIN32 /nologo /iface:stdref /stand:f18 /fpscomp:general
-intel_win_64 : CFLAGS    = /O2 /nologo -D X64 -D WIN32 $(GITINFO) $(SMV_TESTFLAG) $(INTEL_COMPINFO)
+intel_win_64 : CFLAGS    = /O2 /nologo -I $(SOURCE_DIR)/pthreads -D X64 -D WIN32 $(GITINFO) $(SMV_TESTFLAG) $(INTEL_COMPINFO)
 intel_win_64 : CC        = $(I_CC)
 intel_win_64 : exe       = fds2fed_win_64.exe
 
