@@ -485,7 +485,8 @@ void *fread_mt(void *mtfileinfo){
   FILE_SIZE file_beg, buffer_beg, file_end, buffer_size, file_size;
   FILE *stream;
   int i, nthreads;
-  char *file, *buffer;
+  char *file;
+  unsigned char *buffer;
   mtfiledata *mtf;
   FILE_SIZE file_offset, nchars;
 
@@ -526,7 +527,7 @@ void *fread_mt(void *mtfileinfo){
 
 /* ------------------ SetMtFileInfo ------------------------ */
 
-mtfiledata *SetMtFileInfo(char *file, char *buffer, FILE_SIZE file_offset, FILE_SIZE nchars, int nthreads){
+mtfiledata *SetMtFileInfo(char *file, unsigned char *buffer, FILE_SIZE file_offset, FILE_SIZE nchars, int nthreads){
   mtfiledata *mtfileinfo;
   int i;
   FILE_SIZE file_size;
@@ -552,7 +553,7 @@ mtfiledata *SetMtFileInfo(char *file, char *buffer, FILE_SIZE file_offset, FILE_
 
 /* ------------------ fread_p ------------------------ */
 
-FILE_SIZE fread_p(char *file, char *buffer, FILE_SIZE offset, FILE_SIZE nchars, int nthreads){
+FILE_SIZE fread_p(char *file, unsigned char *buffer, FILE_SIZE offset, FILE_SIZE nchars, int nthreads){
   FILE_SIZE chars_read;
   mtfiledata *mtfileinfo;
 
@@ -626,11 +627,11 @@ unsigned char *AppendFile2Buffer(char *file, unsigned char *buffer, FILE_SIZE *f
   old_filesize = *filesize_ptr;
   new_filesize = GetFileSizeSMV(file);
   if(new_filesize > old_filesize){
-    FILE_SIZE delta_filesize, nread;
+    FILE_SIZE delta_filesize;
 
     delta_filesize = new_filesize - old_filesize;
     ResizeMemory((void **)&buffer, new_filesize * sizeof(unsigned char));
-    nread = fread_p(file, buffer + old_filesize, old_filesize, delta_filesize, nthreads);
+    fread_p(file, buffer + old_filesize, old_filesize, delta_filesize, nthreads);
     *filesize_ptr = new_filesize;
   }
   return buffer;

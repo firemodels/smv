@@ -21,7 +21,8 @@
 /* --------------------------  mtfiledata ------------------------------------ */
 
 typedef struct {
-  char *file, *buffer;
+  char *file;
+  unsigned char *buffer;
   FILE_SIZE file_size, chars_read, file_offset, nchars;
   int i, nthreads;
 } mtfiledata;
@@ -108,7 +109,7 @@ int FileExistsOrig(char *filename);
 // vvvvvvvvvvvvvvvvvvvvvvvv headers vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 unsigned char *File2Buffer(char *file, int nthreads, FILE_SIZE *filesize_ptr);
 unsigned char *AppendFile2Buffer(char *file, unsigned char *buffer, FILE_SIZE *filesize_ptr, int nthreads);
-FILE_SIZE fread_p(char *file, char *buffer, FILE_SIZE offset, FILE_SIZE nchars, int nthreads);
+FILE_SIZE fread_p(char *file, unsigned char *buffer, FILE_SIZE offset, FILE_SIZE nchars, int nthreads);
 EXTERNCPP void GetProgFullPath(char *progexe, int maxlen_progexe);
 EXTERNCPP FILE *fopen_indir(char *dir, char *file, char *mode);
 EXTERNCPP FILE *fopen_2dir(char *file, char *mode, char *scratch_dir);
