@@ -629,78 +629,47 @@ void PrintTime(const char *filepath, int line, float *timer, const char *label, 
 
 /* ------------------ File2Buffer ------------------------ */
 
-unsigned char *File2Buffer(char *file, int nthreads, FILE_SIZE *filesizeptr){
+bufferdata *File2Buffer(char *file, bufferdata *bufferinfo, int nthreads){
   unsigned char *buffer;
-  FILE_SIZE filesize, offset=0, nread;
+  FILE_SIZE nbuffer, nfile, offset = 0, nread, delta;
+  bufferdata *buffinfo;
 
-  *filesizeptr = 0;
-  if(file==NULL||FileExistsOrig(file) == 0)return NULL;
+  if(file==NULL || strlen(file)==0 || FileExistsOrig(file) == 0)return NULL;
+
   INIT_PRINT_TIMER(timer_file2buffer);
-  filesize = GetFileSizeSMV(file);
-  if(filesize == 0)return NULL;
-  NewMemory((void **)&buffer,(filesize+1)*sizeof(unsigned char));
-  nread = fread_p(file, buffer, offset, filesize, nthreads);
-  if(nread != filesize){
-    FREEMEMORY(buffer);
+  if(bufferinfo == NULL){
+    NewMemory((void **)&buffinfo, sizeof(bufferdata));
+    buffinfo->file = file;
+    nbuffer = GetFileSizeSMV(file);
+    NewMemory((void **)&buffer, nbuffer*sizeof(unsigned char));
+    buffinfo->buffer  = buffer;
+    buffinfo->nbuffer = nbuffer;
+    offset            = 0;
+    delta             = nbuffer;
   }
   else{
-    *filesizeptr = filesize;
+    nfile = GetFileSizeSMV(file);
+    if(nfile == bufferinfo->nbuffer){
+      PRINT_TIMER(timer_file2buffer, "File2Buffer");
+      return bufferinfo;
+    }
+    buffer   = buffinfo->buffer;
+    ResizeMemory((void **)&buffer, nfile*sizeof(unsigned char));
+    buffinfo->buffer  = buffer;
+    buffinfo          = bufferinfo;
+    offset            = buffinfo->nbuffer;
+    delta             = nfile - offset;
+    buffinfo->nbuffer = nfile;
+  }
+
+  nread = fread_p(file, buffer, offset, delta, nthreads);
+  if(nread != delta){
+    FREEMEMORY(buffer);
+    FREEMEMORY(buffinfo);
   }
   PRINT_TIMER(timer_file2buffer, "File2Buffer");
-  return buffer;
+  return buffinfo;
 }
-
-  /* ------------------ AppendFile2Buffer ------------------------ */
-
-unsigned char *AppendFile2Buffer(char *file, unsigned char *buffer, FILE_SIZE *filesize_ptr, int nthreads){
-  FILE_SIZE old_filesize, new_filesize;
-
-  if(file == NULL || buffer == NULL || FileExistsOrig(file) == 0)return NULL;
-  INIT_PRINT_TIMER(append_file2buffer_timer);
-  old_filesize = *filesize_ptr;
-  new_filesize = GetFileSizeSMV(file);
-  if(new_filesize > old_filesize){
-    FILE_SIZE delta_filesize;
-
-    delta_filesize = new_filesize - old_filesize;
-    ResizeMemory((void **)&buffer, new_filesize * sizeof(unsigned char));
-    fread_p(file, buffer + old_filesize, old_filesize, delta_filesize, nthreads);
-    *filesize_ptr = new_filesize;
-  }
-  PRINT_TIMER(append_file2buffer_timer, "AppendFile2Buffer");
-  return buffer;
-}
-
-/* ------------------ THREADreadi ------------------------ */
-
-void THREADreadi(threaderdata *thi, mtfiledata *mtfileinfo){
-#ifdef pp_THREAD
-  if(thi == NULL)return;
-  if(thi->use_threads_ptr != NULL)thi->use_threads = *(thi->use_threads_ptr);
-  if(thi->n_threads_ptr != NULL){
-    thi->n_threads = *(thi->n_threads_ptr);
-    if(thi->n_threads > MAX_THREADS)thi->n_threads = MAX_THREADS;
-  }
-  int i;
-
-  for(i = 0; i < thi->n_threads; i++){
-    mtfiledata *mti;
-
-    mti = mtfileinfo + i;
-    if(thi->use_threads == 1){
-      pthread_create(thi->thread_ids + i, NULL, thi->run, (void *)mti);
-    }
-    else{
-      thi->run((void *)mti);
-    }
-  }
-#else
-//  args[0] = 1;
-//  args[1] = -1;
-//  thi->run(args);
-#endif
-}
-
 
 /* ------------------ FileExistsOrig ------------------------ */
 

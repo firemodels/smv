@@ -36,6 +36,14 @@ typedef struct {
   int type;
 } filelistdata;
 
+/* --------------------------  bufferdata ------------------------------------ */
+
+typedef struct {
+  char *file;
+  unsigned char *buffer;
+  FILE_SIZE nbuffer;
+} bufferdata;
+
 // vvvvvvvvvvvvvvvvvvvvvvvv preprocessing directives vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 
 #ifdef WIN32
@@ -107,8 +115,7 @@ int FileExistsOrig(char *filename);
 #include "string_util.h"
 
 // vvvvvvvvvvvvvvvvvvvvvvvv headers vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
-EXTERNCPP unsigned char *File2Buffer(char *file, int nthreads, FILE_SIZE *filesize_ptr);
-EXTERNCPP unsigned char *AppendFile2Buffer(char *file, unsigned char *buffer, FILE_SIZE *filesize_ptr, int nthreads);
+EXTERNCPP bufferdata *File2Buffer(char *file, bufferdata *bufferinfo, int nthreads);
 EXTERNCPP FILE_SIZE fread_p(char *file, unsigned char *buffer, FILE_SIZE offset, FILE_SIZE nchars, int nthreads);
 EXTERNCPP void FileErase(char *file);
 EXTERNCPP void GetProgFullPath(char *progexe, int maxlen_progexe);
