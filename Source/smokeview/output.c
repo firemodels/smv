@@ -18,27 +18,6 @@
 #define DENORMAL(x,i, n, min,max) ((min) + (i)*((max)-(min))/(n))
 #define NORMALH(x,min,max) (((x)-(min))/((max)-(min))   )
 
-/* ------------------ PrintTime ------------------------ */
-
-void PrintTime(const char *filepath, int line, float *timer, const char *label, int stop_flag){
-  char *file;
-
-  if(show_timings==0)return;
-  file = strrchr(filepath, '\\');
-  if(file==NULL)file = strrchr(filepath, '/');
-  if(file==NULL){
-    file = (char *)filepath;
-  }
-  else{
-    file++;
-  }
-  if(label!=NULL){
-    if(stop_flag==1)STOP_TIMER(*timer);
-    if(*timer>0.1)printf("%s/%i/%s %.1f s\n", file, line, label, *timer);
-  }
-  START_TIMER(*timer);
-}
-
 /* ------------------------ GetFontHeight ------------------------- */
 
 int GetFontHeight(void){

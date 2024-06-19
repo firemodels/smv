@@ -605,6 +605,28 @@ FILE_SIZE fread_p(char *file, unsigned char *buffer, FILE_SIZE offset, FILE_SIZE
   return chars_read;
 }
 
+
+/* ------------------ PrintTime ------------------------ */
+
+void PrintTime(const char *filepath, int line, float *timer, const char *label, int stop_flag){
+  char *file;
+
+  if(show_timings == 0)return;
+  file = strrchr(filepath, '\\');
+  if(file == NULL)file = strrchr(filepath, '/');
+  if(file == NULL){
+    file = (char *)filepath;
+  }
+  else{
+    file++;
+  }
+  if(label != NULL){
+    if(stop_flag == 1)STOP_TIMER(*timer);
+    if(*timer > 0.1)printf("%s/%i/%s %.1f s\n", file, line, label, *timer);
+  }
+  START_TIMER(*timer);
+}
+
 /* ------------------ File2Buffer ------------------------ */
 
 unsigned char *File2Buffer(char *file, int nthreads, FILE_SIZE *filesizeptr){
@@ -613,6 +635,7 @@ unsigned char *File2Buffer(char *file, int nthreads, FILE_SIZE *filesizeptr){
 
   *filesizeptr = 0;
   if(file==NULL||FileExistsOrig(file) == 0)return NULL;
+  INIT_PRINT_TIMER(timer_file2buffer);
   filesize = GetFileSizeSMV(file);
   if(filesize == 0)return NULL;
   NewMemory((void **)&buffer,(filesize+1)*sizeof(unsigned char));
@@ -623,6 +646,7 @@ unsigned char *File2Buffer(char *file, int nthreads, FILE_SIZE *filesizeptr){
   else{
     *filesizeptr = filesize;
   }
+  PRINT_TIMER(timer_file2buffer, "File2Buffer");
   return buffer;
 }
 
@@ -632,6 +656,7 @@ unsigned char *AppendFile2Buffer(char *file, unsigned char *buffer, FILE_SIZE *f
   FILE_SIZE old_filesize, new_filesize;
 
   if(file == NULL || buffer == NULL || FileExistsOrig(file) == 0)return NULL;
+  INIT_PRINT_TIMER(append_file2buffer_timer);
   old_filesize = *filesize_ptr;
   new_filesize = GetFileSizeSMV(file);
   if(new_filesize > old_filesize){
@@ -642,6 +667,7 @@ unsigned char *AppendFile2Buffer(char *file, unsigned char *buffer, FILE_SIZE *f
     fread_p(file, buffer + old_filesize, old_filesize, delta_filesize, nthreads);
     *filesize_ptr = new_filesize;
   }
+  PRINT_TIMER(append_file2buffer_timer, "AppendFile2Buffer");
   return buffer;
 }
 

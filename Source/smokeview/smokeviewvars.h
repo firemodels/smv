@@ -270,7 +270,6 @@ SVEXTERN devicedata SVDECL(**deviceinfo_sortedz, NULL);
 SVEXTERN int SVDECL(nztreedeviceinfo, 0);
 
 SVEXTERN int SVDECL(readini_output, 0);
-SVEXTERN int SVDECL(show_timings, 0);
 SVEXTERN int SVDECL(show_trirates, 0);
 
 SVEXTERN float SVDECL(pixel_dens, 1.0);

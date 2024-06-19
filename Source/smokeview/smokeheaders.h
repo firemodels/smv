@@ -359,8 +359,6 @@ EXTERNCPP void GLUIUpdateShowOnlyTop(void);
 EXTERNCPP void GeneratePartHistograms(void);
 FILE_SIZE LoadAllMSlicesMT(int last_slice, multislicedata *mslicei, int *fcount);
 
-EXTERNCPP void PrintTime(const char *tag, int line, float *timer, const char *label, int stop_flag);
-
 EXTERNCPP void DrawObstBoundingBox(void);
 EXTERNCPP void DrawGeomBoundingBox(float *boundingbox_color);
 EXTERNCPP void ClassifyGeom(geomdata *geomi, int *geom_frame_index);

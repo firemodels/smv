@@ -149,6 +149,7 @@ EXTERNCPP FILE_SIZE GetFileSizeSMV(const char *filename);
 EXTERNCPP time_t FileModtime(char *filename);
 EXTERNCPP int IsFileNewer(char *file1, char *file2);
 EXTERNCPP char *GetProgDir(char *progname, char **svpath);
+EXTERNCPP void PrintTime(const char *tag, int line, float *timer, const char *label, int stop_flag);
 
 EXTERNCPP int IsSootFile(char *shortlabel, char *longlabel);
 
