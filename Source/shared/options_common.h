@@ -161,30 +161,6 @@
 #define GLU_H <OpenGL/glu.h>
 #endif
 
-#ifndef START_TIMER
-#define START_TIMER(a) a = (float)clock()/(float)CLOCKS_PER_SEC
-#endif
-
-#ifndef STOP_TIMER
-#define STOP_TIMER(a) a = (float)clock()/(float)CLOCKS_PER_SEC - a
-#endif
-
-#ifndef CUM_TIMER
-#define CUM_TIMER(a,b) b += ((float)clock()/(float)CLOCKS_PER_SEC - a)
-#endif
-
-#ifndef INIT_PRINT_TIMER
-#define INIT_PRINT_TIMER(timer)   float timer;START_TIMER(timer)
-#endif
-
-#ifndef PRINT_TIMER
-#define PRINT_TIMER(timer, label) PrintTime(__FILE__, __LINE__, &timer, label, 1)
-#endif
-
-#ifndef PRINT_CUM_TIMER
-#define PRINT_CUM_TIMER(timer, label) PrintTime(__FILE__, __LINE__, &timer, label, 0)
-#endif
-
 #include "lint.h"
 
 #endif

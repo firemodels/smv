@@ -613,7 +613,6 @@ unsigned char *File2Buffer(char *file, int nthreads, FILE_SIZE *filesizeptr){
 
   *filesizeptr = 0;
   if(file==NULL||FileExistsOrig(file) == 0)return NULL;
-  INIT_PRINT_TIMER(timer_file2buffer);
   filesize = GetFileSizeSMV(file);
   if(filesize == 0)return NULL;
   NewMemory((void **)&buffer,(filesize+1)*sizeof(unsigned char));
@@ -624,7 +623,6 @@ unsigned char *File2Buffer(char *file, int nthreads, FILE_SIZE *filesizeptr){
   else{
     *filesizeptr = filesize;
   }
-  PRINT_TIMER(timer_file2buffer, "File2Buffer");
   return buffer;
 }
 
@@ -634,7 +632,6 @@ unsigned char *AppendFile2Buffer(char *file, unsigned char *buffer, FILE_SIZE *f
   FILE_SIZE old_filesize, new_filesize;
 
   if(file == NULL || buffer == NULL || FileExistsOrig(file) == 0)return NULL;
-  INIT_PRINT_TIMER(timer_append_file2buffer);
   old_filesize = *filesize_ptr;
   new_filesize = GetFileSizeSMV(file);
   if(new_filesize > old_filesize){
@@ -645,7 +642,6 @@ unsigned char *AppendFile2Buffer(char *file, unsigned char *buffer, FILE_SIZE *f
     fread_p(file, buffer + old_filesize, old_filesize, delta_filesize, nthreads);
     *filesize_ptr = new_filesize;
   }
-  PRINT_TIMER(timer_append_file2buffer, "AppendFile2Buffer");
   return buffer;
 }
 

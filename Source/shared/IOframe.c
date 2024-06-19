@@ -181,9 +181,7 @@ void FRAMEReadFrame(framedata *fi, int iframe, int nframes){
     total_size += fi->framesizes[iframe+i];
   }
 #ifdef pp_THREAD
-  INIT_PRINT_TIMER(fread_p_timer);
   fread_p(fi->file, fi->frames + fi->offsets[iframe], fi->headersize + fi->offsets[iframe], total_size, fi->nthreads);
-  PRINT_TIMER(fread_p_timer, "fread_p time");
 #else
   FRAME_FSEEK(stream, fi->headersize+fi->offsets[iframe], SEEK_SET);
   fread(fi->frames + fi->offsets[iframe], 1, total_size, stream);
