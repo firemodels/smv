@@ -3572,7 +3572,7 @@ void IdleCB(void){
   CheckMemory;
   if(use_graphics==1)SetMainWindow();
   UpdateShow();
-  START_TICKS(thistime);
+  thistime     = glutGet(GLUT_ELAPSED_TIME);
   thisinterval = thistime - lasttime;
   frame_count++;
 

@@ -252,13 +252,6 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 #define UPDATE_WINDROSE_CHECKBOX 1
 #define UPDATE_WINDROSE_SHOWHIDE 2
 
-#ifndef START_TICKS
-#define START_TICKS(a) a = glutGet(GLUT_ELAPSED_TIME)
-#endif
-#ifndef STOP_TICKS
-#define STOP_TICKS(a) a = glutGet(GLUT_ELAPSED_TIME) - a
-#endif
-
 #define TOBW(col) ( 0.299*(col)[0] + 0.587*(col)[1] + 0.114*(col)[2])
 
 #define TMAX 1000000000.0
