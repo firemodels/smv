@@ -11947,7 +11947,7 @@ int ReadSMV_Configure(){
     if(readsmvorig_threads == NULL){
       readsmvorig_threads = THREADinit(&n_readsmvorig_threads, &use_readsmvorig_threads, GenerateSmvOrigFileWrapper);
     }
-    THREADrun(readsmvorig_threads, NULL);
+    THREADrun(readsmvorig_threads);
 #endif
 
   UpdateSmoke3DTypes();
