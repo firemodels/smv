@@ -103,9 +103,9 @@ void FRAMEFree(framedata *fi){
 
 /* ------------------ FRAMEGetMinMax ------------------------ */
 
-int FRAMEGetMinMax(framedata *fi, float *valmin, float *valmax){
+int FRAMEGetMinMax(framedata *fi){
   int i;
-  float vmin = 1.0, vmax = 0.0;
+  float valmin = 1.0, valmax = 0.0;
   int returnval = 0, nvals;
 
   for(i = 0;i < fi->nframes;i++){
@@ -120,18 +120,18 @@ int FRAMEGetMinMax(framedata *fi, float *valmin, float *valmax){
       float val;
       
       val = rvals[j];
-      if(vmin > vmax){
-        vmin = val;
-        vmax = val;
+      if(valmin > valmax){
+        valmin = val;
+        valmax = val;
       }
       else{
-        if(val < vmin)vmin = val;
-        if(val > vmax)vmax = val;
+        if(val < valmin)valmin = val;
+        if(val > valmax)valmax = val;
       }
     }
   }
-  *valmin = vmin;
-  *valmax = vmax;
+  fi->valmin = valmin;
+  fi->valmax = valmax;
   return returnval;
 }
 

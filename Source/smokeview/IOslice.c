@@ -3160,7 +3160,7 @@ void GetSliceDataBounds(slicedata *sd, float *pmin, float *pmax){
 
   /* ------------------ TimeAverageData ------------------------ */
 
-int TimeAverageData(float *data_out, float *data_in, int ndata, int data_per_timestep, float *times_local, int ntimes_local, float average_time){
+int TimeAverageData(float **data_out, float **data_in, int ndata, int data_per_timestep, float *times_local, int ntimes_local, float average_time){
 
 #define IND(itime,ival) ((itime)*data_per_timestep + (ival))
   float *datatemp = NULL;
@@ -3197,15 +3197,23 @@ int TimeAverageData(float *data_out, float *data_in, int ndata, int data_per_tim
     naverage = above + 1 - below;
     for(k = 0; k < data_per_timestep; k++){
       for(j = below; j <= above; j++){
-        datatemp[IND(i, k)] += data_in[IND(j, k)];
+        float *valinptr;
+
+        valinptr = data_in[j];
+        datatemp[IND(i, k)] += valinptr[k];
       }
     }
     for(k = 0; k < data_per_timestep; k++){
       datatemp[IND(i, k)] /= (float)naverage;
     }
   }
-  for(i = 0; i < ndata; i++){
-    data_out[i] = datatemp[i];
+  for(k = 0; k < data_per_timestep; k++){
+    for(j = 0; j < ntimes_local;j++){
+      float *valoutptr;
+
+      valoutptr = data_out[j];
+      valoutptr[k] = datatemp[j*data_per_timestep + k];
+    }
   }
   FREEMEMORY(datatemp);
   return 0;
@@ -3844,6 +3852,9 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
   int blocknumber, error, headersize, framesize, flag2 = 0;
   slicedata *sd;
   int ntimes_slice_old;
+#ifdef pp_FRAME
+  float frame_valmin, frame_valmax;
+#endif
 
   SNIFF_ERRORS("ReadSlice: start");
   SetTimeState();
@@ -3997,7 +4008,6 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
 #ifdef pp_FRAME
     if(sd->frameinfo == NULL)sd->frameinfo = FRAMEInit(sd->file, sd->size_file, FORTRAN_FILE, GetSliceFrameInfo);
     if(sd->frameinfo != NULL){
-      float valmin, valmax;
       int nread;
 
       sd->frameinfo->bufferinfo = File2Buffer(sd->file, sd->frameinfo->bufferinfo, nframe_threads, &nread);
@@ -4005,14 +4015,23 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
         FRAMESetup(sd->frameinfo);
         FRAMESetTimes(sd->frameinfo, 0, sd->frameinfo->nframes);
         FRAMESetFramePtrs(sd->frameinfo, 0, sd->frameinfo->nframes);
-        FRAMEGetMinMax(sd->frameinfo, &valmin, &valmax);
+        sd->ntimes = sd->frameinfo->nframes;
+        NewMemory(( void ** )&sd->times, sd->ntimes*sizeof(float));
+        memcpy(sd->times, sd->frameinfo->times, sd->ntimes*sizeof(float));
+        FRAMEGetMinMax(sd->frameinfo);
       }
+      frame_valmin = sd->frameinfo->valmin;
+      frame_valmax = sd->frameinfo->valmax;
+      framesize = sd->frameinfo->framesizes[0];
+      headersize = sd->frameinfo->headersize;
     }
 #endif
     if(sd->compression_type == UNCOMPRESSED){
+#ifndef pp_FRAME
       sd->ntimes_old = sd->ntimes;
       GetSliceSizes(file, time_frame, &sd->nslicei, &sd->nslicej, &sd->nslicek, &sd->ntimes, tload_step, &error,
                     use_tload_begin, use_tload_end, tload_begin, tload_end, &headersize, &framesize);
+#endif
     }
     else if(sd->compression_type != UNCOMPRESSED){
       if(
@@ -4106,10 +4125,16 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
         qmax = -1.0e30;
       }
       if(sd->ntimes > ntimes_slice_old){
+#ifdef pp_FRAME
+        return_filesize = sd->frameinfo->filesize;
+        qmin = frame_valmin;
+        qmax = frame_valmax;
+#else
         return_filesize = GetSliceData(sd, file, time_frame, &sd->is1, &sd->is2, &sd->js1, &sd->js2, &sd->ks1, &sd->ks2, &sd->idir,
             &qmin, &qmax, sd->qslicedata, sd->times, ntimes_slice_old, &sd->ntimes,
             tload_step, use_tload_begin, use_tload_end, tload_begin, tload_end
           );
+#endif
         MakeTimesMap(sd->times, sd->times_map, sd->ntimes);
         file_size = (int)return_filesize;
         sd->valmin_slice = qmin;
@@ -4135,18 +4160,32 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
       int data_per_timestep;
       int ndata;
       int ntimes_local;
+      float **qvalptrs;
+
 
       data_per_timestep = sd->nslicei*sd->nslicej*sd->nslicek;
       ntimes_local = sd->ntimes;
       ndata = data_per_timestep*ntimes_local;
       show_slice_average = 1;
 
+#ifdef pp_FRAME
+      qvalptrs = ( float **)sd->frameinfo->frameptrs;
+#else
+      int i;
+      NewMemory(( void ** )&qvalptrs, sd->ntimes*sizeof(float *));
+      for(i=0; i< sd->ntimes ; i++){
+        qvalptrs[i] = sd->qslicedata + i*data_per_timestep;
+      }
+#endif
       if(
         sd->compression_type != UNCOMPRESSED ||
-        TimeAverageData(sd->qslicedata, sd->qslicedata, ndata, data_per_timestep, sd->times, ntimes_local, slice_average_interval) == 1
+        TimeAverageData(qvalptrs, qvalptrs, ndata, data_per_timestep, sd->times, ntimes_local, slice_average_interval) == 1
         ){
         show_slice_average = 0; // averaging failed
       }
+#ifndef pp_FRAME
+      FREEMEMORY(qvalptrs);
+#endif
     }
 
     /*  initialize slice data */

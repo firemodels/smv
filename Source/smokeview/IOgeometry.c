@@ -2820,15 +2820,22 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
     slicei->valmax_slice    = qmax;
     if(slice_average_flag==1){
       int data_per_timestep, nvals2, ntimes;
-      float *vals, *times;
+      float *times, **qvalptrs;
 
       show_slice_average = 1;
-      vals = slicei->patchgeom->geom_vals;
       nvals2 = slicei->patchgeom->geom_nvals;
       times = patchi->geom_times;
       ntimes = patchi->ngeom_times;
       data_per_timestep = nvals2/ntimes;
-      if(TimeAverageData(vals, vals, nvals2, data_per_timestep, times, ntimes, slice_average_interval)==1){
+#ifdef pp_FRAME
+      qvalptrs = ( float ** )slicei->frameinfo->frameptrs;
+#else
+      NewMemory(( void ** )&qvalptrs, ntimes*sizeof(float *));
+      for(i = 0; i < ntimes; i++){
+        qvalptrs[i] = slicei->patchgeom->geom_vals + i*data_per_timestep;
+      }
+#endif
+      if(TimeAverageData(qvalptrs, qvalptrs, nvals2, data_per_timestep, times, ntimes, slice_average_interval)==1){
         show_slice_average = 0;
       }
     }

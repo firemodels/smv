@@ -26,6 +26,7 @@ typedef struct _framedata {
   unsigned char *header, *frames, **frameptrs;
   bufferdata *bufferinfo;
   float *times;
+  float valmin, valmax;
   void (*GetFrameInfo)(char *file, char *size_file, int *headersize, int **sizes, int *nsizes, FILE_SIZE *filesizeptr);
 } framedata;
 
@@ -37,7 +38,7 @@ void FRAMEFree(framedata *fi);
 void FRAMESetNThreads(framedata *fi, int nthreads);
 #endif
 unsigned char *FRAMEGetFramePtr(framedata *fi, int iframe);
-int FRAMEGetMinMax(framedata *fi, float *valmin, float *valmax);
+int FRAMEGetMinMax(framedata *fi);
 void FRAMEReadFrame(framedata *fi, int iframe, int nframes);
 void FRAMESetFramePtrs(framedata * fi, int iframe, int nframes);
 void FRAMESetTimes(framedata *fi, int iframe, int nframes);
