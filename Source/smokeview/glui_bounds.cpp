@@ -5483,10 +5483,12 @@ hvacductboundsCPP.setup("hvac", ROLLOUT_hvacduct, hvacductbounds_cpp, nhvacductb
   SPINNER_nframe_threads = glui_bounds->add_spinner_to_panel(ROLLOUT_time, _("read threads:"), GLUI_SPINNER_INT, &nframe_threads);
   SPINNER_nframe_threads->set_int_limits(1, MAX_THREADS);
 
+#ifdef pp_FRAME_DEBUG
   PANEL_read_test = glui_bounds->add_panel_to_panel(ROLLOUT_time, "Timing test", true);
   SPINNER_read_buffer_size = glui_bounds->add_spinner_to_panel(PANEL_read_test, _("Buffer size (MB):"), GLUI_SPINNER_INT, &read_buffer_size);
   SPINNER_read_buffer_size->set_int_limits(1, 1000);
   glui_bounds->add_button_to_panel(PANEL_read_test, _("Test"), READ_TEST, BoundBoundCB);
+#endif
 
 #endif
 
