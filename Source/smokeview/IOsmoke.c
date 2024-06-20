@@ -4244,8 +4244,10 @@ FILE_SIZE ReadSmoke3D(int iframe_arg,int ifile_arg,int flag_arg, int first_time,
 #endif
   SetTimeState();
   update_smokefire_colors = 1;
+#ifndef pp_FRAME
 #ifndef pp_FSEEK
   if(flag_arg==RELOAD)flag_arg = LOAD;
+#endif
 #endif
   START_TIMER(total_time_local);
   assert(ifile_arg>=0&&ifile_arg<nsmoke3dinfo);
@@ -4267,8 +4269,45 @@ FILE_SIZE ReadSmoke3D(int iframe_arg,int ifile_arg,int flag_arg, int first_time,
   }
   if(smoke3di->smokeframe_comp_list==NULL)return 0;
 
-  IF_NOT_USEMESH_RETURN0(smoke3di->loaded,smoke3di->blocknumber);
+#ifdef pp_FRAME
+  if(flag_arg != RELOAD){
+    IF_NOT_USEMESH_RETURN0(smoke3di->loaded, smoke3di->blocknumber);
+  }
+#else
+  IF_NOT_USEMESH_RETURN0(smoke3di->loaded, smoke3di->blocknumber);
+#endif
 
+#ifdef pp_FRAME
+    {
+      int i, ii;
+      int *nxyz_local;
+
+      if(smoke3di->frameinfo == NULL)smoke3di->frameinfo = FRAMEInit(smoke3di->file, NULL, FORTRAN_FILE, GetSmoke3DFrameInfo);
+      if(smoke3di->frameinfo != NULL){
+        int nread;
+
+        smoke3di->frameinfo->bufferinfo = File2Buffer(smoke3di->file, smoke3di->frameinfo->bufferinfo, nframe_threads, &nread);
+        FRAMESetup(smoke3di->frameinfo);
+        FRAMESetTimes(smoke3di->frameinfo,     0, smoke3di->frameinfo->nframes);
+        FRAMESetFramePtrs(smoke3di->frameinfo, 0, smoke3di->frameinfo->nframes);
+        nxyz_local = (int *)smoke3di->frameinfo->header;
+        smoke3di->compression_type=nxyz_local[2];
+        smoke3di->is1=nxyz_local[3];
+        smoke3di->is2=nxyz_local[4];
+        smoke3di->js1=nxyz_local[5];
+        smoke3di->js2=nxyz_local[6];
+        smoke3di->ks1=nxyz_local[7];
+        smoke3di->ks2=nxyz_local[8];
+      }
+      i = 0;
+      for(ii = 0; ii < smoke3di->ntimes_full; ii++){
+        if(smoke3di->use_smokeframe[ii] == 1){
+          smoke3di->smokeframe_comp_list[i] = smoke3di->frameinfo->frameptrs[ii] + 16;
+          i++;
+        }
+      }
+    }
+#endif
 //*** read in data
 
 #ifndef pp_FRAME
@@ -4437,37 +4476,6 @@ int UpdateSmoke3D(smoke3ddata *smoke3di){
     unsigned char *buffer_in;
 
   case COMPRESSED_RLE:
-#ifdef pp_FRAME
-    if(smoke3di->frameinfo == NULL){
-      int i, ii;
-      int *nxyz_local;
-
-      smoke3di->frameinfo = FRAMEInit(smoke3di->file, NULL, FORTRAN_FILE, GetSmoke3DFrameInfo);
-      if(smoke3di->frameinfo != NULL){
-        int nread;
-
-        smoke3di->frameinfo->bufferinfo = File2Buffer(smoke3di->file, smoke3di->frameinfo->bufferinfo, nframe_threads, &nread);
-        FRAMESetup(smoke3di->frameinfo);
-        FRAMESetTimes(smoke3di->frameinfo,     0, smoke3di->frameinfo->nframes);
-        FRAMESetFramePtrs(smoke3di->frameinfo, 0, smoke3di->frameinfo->nframes);
-        nxyz_local = (int *)smoke3di->frameinfo->header;
-        smoke3di->compression_type=nxyz_local[2];
-        smoke3di->is1=nxyz_local[3];
-        smoke3di->is2=nxyz_local[4];
-        smoke3di->js1=nxyz_local[5];
-        smoke3di->js2=nxyz_local[6];
-        smoke3di->ks1=nxyz_local[7];
-        smoke3di->ks2=nxyz_local[8];
-      }
-      i = 0;
-      for(ii = 0; ii < smoke3di->ntimes_full; ii++){
-        if(smoke3di->use_smokeframe[ii] == 1){
-          smoke3di->smokeframe_comp_list[i] = smoke3di->frameinfo->frameptrs[ii] + 16;
-          i++;
-        }
-      }
-    }
-#endif
     buffer_in = smoke3di->smokeframe_comp_list[iframe_local];
     countout = UnCompressRLE(buffer_in,countin,smoke3di->smokeframe_in);
     CheckMemory;

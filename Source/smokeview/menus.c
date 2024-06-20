@@ -3504,7 +3504,11 @@ void LoadUnloadMenu(int value){
 
     for(i=0;i<nsmoke3dinfo;i++){
       if(smoke3dinfo[i].loaded==1||smoke3dinfo[i].request_load==1){
+#ifdef pp_FRAME
+        ReadSmoke3D(ALL_SMOKE_FRAMES, i, RELOAD, FIRST_TIME, &errorcode);
+#else
         ReadSmoke3D(ALL_SMOKE_FRAMES, i, LOAD, FIRST_TIME, &errorcode);
+#endif
       }
     }
 
