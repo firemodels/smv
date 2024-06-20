@@ -3544,7 +3544,11 @@ void LoadUnloadMenu(int value){
 
       isoi = isoinfo + i;
       if(isoi->loaded==0)continue;
+#ifdef pp_FRAME
+      ReadIso(isoi->file, i, RELOAD, NULL, &errorcode);
+#else
       ReadIso(isoi->file,i,LOAD,NULL,&errorcode);
+#endif
       printf("\n");
     }
     if(update_readiso_geom_wrapup == UPDATE_ISO_ALL_NOW)ReadIsoGeomWrapup(BACKGROUND);

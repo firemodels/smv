@@ -469,15 +469,17 @@ FILE_SIZE ReadIsoGeom(int ifile, int load_flag, int *geom_frame_index, int *erro
   meshi->showlevels = NULL;
   meshi->isolevels = NULL;
 #ifdef pp_FRAME
-  if(load_flag == LOAD){
+  if(load_flag == LOAD || load_flag==RELOAD){
     if(isoi->frameinfo == NULL)isoi->frameinfo = FRAMEInit(isoi->file, NULL, FORTRAN_FILE, GetIsoFrameInfo);
     if(isoi->frameinfo != NULL){
       int nread;
 
       isoi->frameinfo->bufferinfo = File2Buffer(isoi->file, isoi->frameinfo->bufferinfo, nframe_threads, &nread);
-      FRAMESetup(isoi->frameinfo);
-      FRAMESetTimes(isoi->frameinfo, 0, isoi->frameinfo->nframes);
-      FRAMESetFramePtrs(isoi->frameinfo, 0, isoi->frameinfo->nframes);
+      if(nread > 0){
+        FRAMESetup(isoi->frameinfo);
+        FRAMESetTimes(isoi->frameinfo, 0, isoi->frameinfo->nframes);
+        FRAMESetFramePtrs(isoi->frameinfo, 0, isoi->frameinfo->nframes);
+      }
     }
   }
 #endif

@@ -4287,17 +4287,19 @@ FILE_SIZE ReadSmoke3D(int iframe_arg,int ifile_arg,int flag_arg, int first_time,
         int nread;
 
         smoke3di->frameinfo->bufferinfo = File2Buffer(smoke3di->file, smoke3di->frameinfo->bufferinfo, nframe_threads, &nread);
-        FRAMESetup(smoke3di->frameinfo);
-        FRAMESetTimes(smoke3di->frameinfo,     0, smoke3di->frameinfo->nframes);
-        FRAMESetFramePtrs(smoke3di->frameinfo, 0, smoke3di->frameinfo->nframes);
-        nxyz_local = (int *)smoke3di->frameinfo->header;
-        smoke3di->compression_type=nxyz_local[2];
-        smoke3di->is1=nxyz_local[3];
-        smoke3di->is2=nxyz_local[4];
-        smoke3di->js1=nxyz_local[5];
-        smoke3di->js2=nxyz_local[6];
-        smoke3di->ks1=nxyz_local[7];
-        smoke3di->ks2=nxyz_local[8];
+        if(nread > 0){
+          FRAMESetup(smoke3di->frameinfo);
+          FRAMESetTimes(smoke3di->frameinfo, 0, smoke3di->frameinfo->nframes);
+          FRAMESetFramePtrs(smoke3di->frameinfo, 0, smoke3di->frameinfo->nframes);
+          nxyz_local = (int *)smoke3di->frameinfo->header;
+          smoke3di->compression_type = nxyz_local[2];
+          smoke3di->is1 = nxyz_local[3];
+          smoke3di->is2 = nxyz_local[4];
+          smoke3di->js1 = nxyz_local[5];
+          smoke3di->js2 = nxyz_local[6];
+          smoke3di->ks1 = nxyz_local[7];
+          smoke3di->ks2 = nxyz_local[8];
+        }
       }
       i = 0;
       for(ii = 0; ii < smoke3di->ntimes_full; ii++){
