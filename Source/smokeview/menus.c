@@ -4153,12 +4153,7 @@ void *MtLoadAllPartFiles(void *arg){
 void LoadAllPartFilesMT(int partnum){
   int i;
 
-#ifdef pp_FRAME
-  int partnuminfo[1];
-
-  partnuminfo[0] = partnum;
-  MtLoadAllPartFiles(partnuminfo);
-#else
+  INIT_PRINT_TIMER(part_load_timer);
   if(partload_threads == NULL){
     partload_threads = THREADinit(&n_partload_threads, &use_partload_threads, MtLoadAllPartFiles);
   }
@@ -4166,7 +4161,7 @@ void LoadAllPartFilesMT(int partnum){
   partnuminfo[0] = partnum;
   THREADruni(partload_threads, (unsigned char *)partnuminfo, 0);
   THREADcontrol(partload_threads, THREAD_JOIN);
-#endif
+  PRINT_TIMER(part_load_timer, "LoadAllPartFilesMT");
 
   INIT_PRINT_TIMER(part_timer);
   if(partnum < 0){
