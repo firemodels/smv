@@ -657,7 +657,7 @@ void PrintTime(const char *filepath, int line, float *timer, const char *label, 
 bufferdata *File2Buffer(char *file, bufferdata *bufferinfo, int nthreads, int *nreadptr){
   unsigned char *buffer;
   FILE_SIZE nbuffer, nfile, offset = 0, nread, delta;
-  bufferdata *buffinfo;
+  bufferdata *buffinfo=NULL;
 
   *nreadptr = 0;
   if(file==NULL || strlen(file)==0 || FileExistsOrig(file) == 0)return NULL;
