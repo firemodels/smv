@@ -13,7 +13,9 @@
 //#define pp_GAMMA          // show gamma correction checkbox
 // #define pp_BLACKBODY_OUT // output generated blackbody color data 
 #define pp_FAST             // set fast startup by default
-//#define pp_LOAD_INC       // add menu item for loading new data
+#ifdef pp_FRAME
+#define pp_LOAD_INC       // add menu item for loading new data
+#endif
 #define pp_PART_SPEEDUP     // improve efficiency of loading particles
 #define pp_SMOKE_SPEEDUP    // improve efficiency of loading 3d smoke
 #define pp_SMOKEDRAW_SPEEDUP    // improve efficiency of drawing 3d smoke
