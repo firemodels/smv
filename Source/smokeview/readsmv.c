@@ -12583,6 +12583,12 @@ int ReadIni2(char *inifile, int localfile){
       update_research_mode=1;
       continue;
     }
+#ifdef pp_FRAME
+    if(MatchINI(buffer, "FRAMETHREADS") == 1){
+      fgets(buffer, 255, stream);
+      sscanf(buffer, " %i", &nframe_threads);
+    }
+#endif
     if(MatchINI(buffer, "LOADMESH") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, " %i %i", &show_intersection_box, &show_intersected_meshes);
@@ -17160,6 +17166,10 @@ void WriteIni(int flag,char *filename){
 
   fprintf(fileout, "CSV\n");
   fprintf(fileout, " %i\n", csv_loaded);
+#ifdef pp_FRAME
+  fprintf(fileout, "FRAMETHREADS\n");
+  fprintf(fileout, " %i\n", nframe_threads);
+#endif
   fprintf(fileout, "LOADINC\n");
   fprintf(fileout, " %i\n", load_incremental);
   fprintf(fileout, "NOPART\n");
