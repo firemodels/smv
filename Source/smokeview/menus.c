@@ -4034,9 +4034,7 @@ void LoadAllPartFiles(int partnum){
 #endif
     if(parti->skipload==1)continue;
     if(partnum>=0&&i!=partnum)continue;  //  load only particle file with file index partnum
-#ifndef pp_FRAME
     THREADcontrol(partload_threads, THREAD_LOCK);                      //  or load all particle files
-#endif
     if(parti->loadstatus==FILE_UNLOADED
 #ifdef pp_FRAME
       || partnum==RELOAD_LOADED_PART_FILES
@@ -4044,9 +4042,7 @@ void LoadAllPartFiles(int partnum){
       ){
       if(partnum==LOAD_ALL_PART_FILES||(partnum==RELOAD_LOADED_PART_FILES&&parti->loaded==1)||partnum==i){
         parti->loadstatus = FILE_LOADING;
-#ifndef pp_FRAME
         THREADcontrol(partload_threads, THREAD_UNLOCK);
-#endif
 #ifdef pp_FRAME
         if(partnum == RELOAD_LOADED_PART_FILES){
           file_size = ReadPart(parti->file, i, RELOAD, &errorcode);
@@ -4057,18 +4053,14 @@ void LoadAllPartFiles(int partnum){
 #else
         file_size = ReadPart(parti->file, i, LOAD, &errorcode);
 #endif
-#ifndef pp_FRAME
         THREADcontrol(partload_threads, THREAD_LOCK);
-#endif
         parti->loadstatus = FILE_LOADED;
         part_load_size += file_size;
         part_file_count++;
         parti->file_size = file_size;
       }
     }
-#ifdef pp_FRAME
     THREADcontrol(partload_threads, THREAD_UNLOCK);
-#endif
   }
 }
 
