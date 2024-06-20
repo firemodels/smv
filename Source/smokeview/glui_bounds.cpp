@@ -2862,6 +2862,9 @@ GLUI_Spinner *SPINNER_line_contour_width=NULL;
 GLUI_Spinner *SPINNER_line_contour_min=NULL;
 GLUI_Spinner *SPINNER_line_contour_max=NULL;
 GLUI_Spinner *SPINNER_timebounds=NULL;
+#ifdef pp_FRAME
+GLUI_Spinner *SPINNER_nframe_threads = NULL;
+#endif
 GLUI_Spinner *SPINNER_tload_begin=NULL;
 GLUI_Spinner *SPINNER_tload_end=NULL;
 GLUI_Spinner *SPINNER_tload_skip=NULL;
@@ -5451,6 +5454,10 @@ hvacductboundsCPP.setup("hvac", ROLLOUT_hvacduct, hvacductbounds_cpp, nhvacductb
   ROLLOUT_time = glui_bounds->add_rollout_to_panel(ROLLOUT_filebounds, "Loading options", false, TIME_ROLLOUT, BoundRolloutCB);
   INSERT_ROLLOUT(ROLLOUT_time, glui_bounds);
   ADDPROCINFO(fileprocinfo, nfileprocinfo, ROLLOUT_time, TIME_ROLLOUT, glui_bounds);
+
+#ifdef pp_FRAME
+  SPINNER_nframe_threads = glui_bounds->add_spinner_to_panel(ROLLOUT_time, _("Number of threads when reading data:"), GLUI_SPINNER_INT, &nframe_threads);
+#endif
 
   PANEL_loadbounds = glui_bounds->add_panel_to_panel(ROLLOUT_time,"", GLUI_PANEL_NONE);
 
