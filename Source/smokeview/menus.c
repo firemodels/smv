@@ -3514,6 +3514,9 @@ void LoadUnloadMenu(int value){
 
     //*** reload particle files
 
+#ifdef pp_FRAME
+    LoadAllPartFilesMT(RELOAD_LOADED_PART_FILES);
+#else
     int npartloaded_local = 0;
     for(i=0;i<npartinfo;i++){
       partdata *parti;
@@ -3533,6 +3536,7 @@ void LoadUnloadMenu(int value){
       npartframes_max = GetMinPartFrames(PARTFILE_RELOADALL);
       LoadAllPartFilesMT(RELOAD_LOADED_PART_FILES);
     }
+#endif
 
 
     //*** reload isosurface files
@@ -4021,23 +4025,50 @@ void LoadAllPartFiles(int partnum){
     FILE_SIZE file_size;
 
     parti = partinfo+i;
+#ifdef pp_FRAME
+    if(partnum != RELOAD_LOADED_PART_FILES){
+      IF_NOT_USEMESH_CONTINUE(parti->loaded, parti->blocknumber);
+    }
+#else
     IF_NOT_USEMESH_CONTINUE(parti->loaded,parti->blocknumber);
+#endif
     if(parti->skipload==1)continue;
     if(partnum>=0&&i!=partnum)continue;  //  load only particle file with file index partnum
+#ifndef pp_FRAME
     THREADcontrol(partload_threads, THREAD_LOCK);                      //  or load all particle files
-    if(parti->loadstatus==FILE_UNLOADED){
-      if(partnum==LOAD_ALL_PART_FILES||(partnum==RELOAD_LOADED_PART_FILES&&parti->reload==1)||partnum==i){
+#endif
+    if(parti->loadstatus==FILE_UNLOADED
+#ifdef pp_FRAME
+      || partnum==RELOAD_LOADED_PART_FILES
+#endif
+      ){
+      if(partnum==LOAD_ALL_PART_FILES||(partnum==RELOAD_LOADED_PART_FILES&&parti->loaded==1)||partnum==i){
         parti->loadstatus = FILE_LOADING;
+#ifndef pp_FRAME
         THREADcontrol(partload_threads, THREAD_UNLOCK);
+#endif
+#ifdef pp_FRAME
+        if(partnum == RELOAD_LOADED_PART_FILES){
+          file_size = ReadPart(parti->file, i, RELOAD, &errorcode);
+        }
+        else{
+          file_size = ReadPart(parti->file, i, LOAD, &errorcode);
+        }
+#else
         file_size = ReadPart(parti->file, i, LOAD, &errorcode);
+#endif
+#ifndef pp_FRAME
         THREADcontrol(partload_threads, THREAD_LOCK);
+#endif
         parti->loadstatus = FILE_LOADED;
         part_load_size += file_size;
         part_file_count++;
         parti->file_size = file_size;
       }
     }
+#ifdef pp_FRAME
     THREADcontrol(partload_threads, THREAD_UNLOCK);
+#endif
   }
 }
 
@@ -4110,7 +4141,11 @@ void *MtLoadAllPartFiles(void *arg){
 
   valptr = ( int * )(arg);
   LoadAllPartFiles(*valptr);
+#ifdef pp_FRAME
+  return NULL;
+#else
   THREAD_EXIT(partload_threads);
+#endif
 }
 
 /* ------------------ LoadAllPartFilesMT ------------------------ */
@@ -4118,6 +4153,12 @@ void *MtLoadAllPartFiles(void *arg){
 void LoadAllPartFilesMT(int partnum){
   int i;
 
+#ifdef pp_FRAME
+  int partnuminfo[1];
+
+  partnuminfo[0] = partnum;
+  MtLoadAllPartFiles(partnuminfo);
+#else
   if(partload_threads == NULL){
     partload_threads = THREADinit(&n_partload_threads, &use_partload_threads, MtLoadAllPartFiles);
   }
@@ -4125,6 +4166,7 @@ void LoadAllPartFilesMT(int partnum){
   partnuminfo[0] = partnum;
   THREADruni(partload_threads, (unsigned char *)partnuminfo, 0);
   THREADcontrol(partload_threads, THREAD_JOIN);
+#endif
 
   INIT_PRINT_TIMER(part_timer);
   if(partnum < 0){
