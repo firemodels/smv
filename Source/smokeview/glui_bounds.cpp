@@ -5457,6 +5457,7 @@ hvacductboundsCPP.setup("hvac", ROLLOUT_hvacduct, hvacductbounds_cpp, nhvacductb
 
 #ifdef pp_FRAME
   SPINNER_nframe_threads = glui_bounds->add_spinner_to_panel(ROLLOUT_time, _("Number of threads when reading data:"), GLUI_SPINNER_INT, &nframe_threads);
+  SPINNER_nframe_threads->set_int_limits(1, MAX_THREADS);
 #endif
 
   PANEL_loadbounds = glui_bounds->add_panel_to_panel(ROLLOUT_time,"", GLUI_PANEL_NONE);
