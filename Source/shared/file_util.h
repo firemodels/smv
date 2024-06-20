@@ -116,7 +116,7 @@ int FileExistsOrig(char *filename);
 
 // vvvvvvvvvvvvvvvvvvvvvvvv headers vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 EXTERNCPP void FreeBufferInfo(bufferdata *bufferinfoptr);
-EXTERNCPP bufferdata *File2Buffer(char *file, bufferdata * bufferinfo, int nthreads);
+EXTERNCPP bufferdata *File2Buffer(char *file, bufferdata * bufferinfo, int nthreads, int *nreadptr);
 EXTERNCPP FILE_SIZE fread_p(char *file, unsigned char *buffer, FILE_SIZE offset, FILE_SIZE nchars, int nthreads);
 EXTERNCPP void FileErase(char *file);
 EXTERNCPP void GetProgFullPath(char *progexe, int maxlen_progexe);

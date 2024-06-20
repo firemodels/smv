@@ -3858,8 +3858,10 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
   unsigned int availmemory;
 #endif
 
+#ifndef pp_FRAME
 #ifndef pp_FSEEK
   if(flag==RELOAD)flag = LOAD;
+#endif
 #endif
   CheckMemory;
   START_TIMER(total_time);
@@ -3996,12 +3998,15 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
     if(sd->frameinfo == NULL)sd->frameinfo = FRAMEInit(sd->file, sd->size_file, FORTRAN_FILE, GetSliceFrameInfo);
     if(sd->frameinfo != NULL){
       float valmin, valmax;
+      int nread;
 
-      sd->frameinfo->bufferinfo = File2Buffer(sd->file, sd->frameinfo->bufferinfo, nframe_threads);
-      FRAMESetup(sd->frameinfo);
-      FRAMESetTimes(sd->frameinfo,  0, sd->frameinfo->nframes);
-      FRAMESetFramePtrs(sd->frameinfo,   0, sd->frameinfo->nframes);
-      FRAMEGetMinMax(sd->frameinfo, &valmin, &valmax);
+      sd->frameinfo->bufferinfo = File2Buffer(sd->file, sd->frameinfo->bufferinfo, nframe_threads, &nread);
+      if(nread > 0){
+        FRAMESetup(sd->frameinfo);
+        FRAMESetTimes(sd->frameinfo, 0, sd->frameinfo->nframes);
+        FRAMESetFramePtrs(sd->frameinfo, 0, sd->frameinfo->nframes);
+        FRAMEGetMinMax(sd->frameinfo, &valmin, &valmax);
+      }
     }
 #endif
     if(sd->compression_type == UNCOMPRESSED){

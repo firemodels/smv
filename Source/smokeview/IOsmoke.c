@@ -4444,7 +4444,9 @@ int UpdateSmoke3D(smoke3ddata *smoke3di){
 
       smoke3di->frameinfo = FRAMEInit(smoke3di->file, NULL, FORTRAN_FILE, GetSmoke3DFrameInfo);
       if(smoke3di->frameinfo != NULL){
-        smoke3di->frameinfo->bufferinfo = File2Buffer(smoke3di->file, smoke3di->frameinfo->bufferinfo, nframe_threads);
+        int nread;
+
+        smoke3di->frameinfo->bufferinfo = File2Buffer(smoke3di->file, smoke3di->frameinfo->bufferinfo, nframe_threads, &nread);
         FRAMESetup(smoke3di->frameinfo);
         FRAMESetTimes(smoke3di->frameinfo,     0, smoke3di->frameinfo->nframes);
         FRAMESetFramePtrs(smoke3di->frameinfo, 0, smoke3di->frameinfo->nframes);

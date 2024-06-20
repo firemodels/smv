@@ -2025,7 +2025,9 @@ FILE_SIZE ReadPart(char *file_arg, int ifile_arg, int loadflag_arg, int *errorco
 #ifdef pp_FRAME
   if(parti->frameinfo == NULL)parti->frameinfo = FRAMEInit(file_arg, NULL, FORTRAN_FILE, GetPartFrameInfo);
   if(parti->frameinfo != NULL){
-    parti->frameinfo->bufferinfo = File2Buffer(parti->file, parti->frameinfo->bufferinfo, nframe_threads);
+    int nread;
+
+    parti->frameinfo->bufferinfo = File2Buffer(parti->file, parti->frameinfo->bufferinfo, nframe_threads, &nread);
     FRAMESetup(parti->frameinfo);
     FRAMESetTimes(parti->frameinfo, 0, parti->frameinfo->nframes);
     FRAMESetFramePtrs(parti->frameinfo, 0, parti->frameinfo->nframes);

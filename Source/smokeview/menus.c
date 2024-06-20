@@ -3299,7 +3299,11 @@ void ReloadAllSliceFiles(void){
       load_size+=ReadGeomData(slicei->patchgeom, slicei, LOAD, ALL_FRAMES, NULL, 0, &errorcode);
     }
     else{
-      load_size+=ReadSlice(slicei->file, i, ALL_FRAMES, NULL, LOAD, DEFER_SLICECOLOR, &errorcode);
+#ifdef pp_FRAME
+      load_size += ReadSlice(slicei->file, i, ALL_FRAMES, NULL, RELOAD, DEFER_SLICECOLOR, &errorcode);
+#else
+      load_size += ReadSlice(slicei->file, i, ALL_FRAMES, NULL, LOAD, DEFER_SLICECOLOR, &errorcode);
+#endif
     }
     file_count++;
   }

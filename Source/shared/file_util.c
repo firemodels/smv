@@ -629,11 +629,12 @@ void PrintTime(const char *filepath, int line, float *timer, const char *label, 
 
 /* ------------------ File2Buffer ------------------------ */
 
-bufferdata *File2Buffer(char *file, bufferdata *bufferinfo, int nthreads){
+bufferdata *File2Buffer(char *file, bufferdata *bufferinfo, int nthreads, int *nreadptr){
   unsigned char *buffer;
   FILE_SIZE nbuffer, nfile, offset = 0, nread, delta;
   bufferdata *buffinfo;
 
+  *nreadptr = 0;
   if(file==NULL || strlen(file)==0 || FileExistsOrig(file) == 0)return NULL;
 
   INIT_PRINT_TIMER(timer_file2buffer);
@@ -651,6 +652,7 @@ bufferdata *File2Buffer(char *file, bufferdata *bufferinfo, int nthreads){
     nfile = GetFileSizeSMV(file);
     if(nfile == bufferinfo->nbuffer){
       PRINT_TIMER(timer_file2buffer, "File2Buffer");
+      *nreadptr = 0;
       return bufferinfo;
     }
     buffer   = buffinfo->buffer;
@@ -668,6 +670,7 @@ bufferdata *File2Buffer(char *file, bufferdata *bufferinfo, int nthreads){
     FREEMEMORY(buffinfo);
   }
   PRINT_TIMER(timer_file2buffer, "File2Buffer");
+  *nreadptr = nread;
   return buffinfo;
 }
 
