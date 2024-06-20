@@ -559,6 +559,31 @@ mtfiledata *SetMtFileInfo(char *file, unsigned char *buffer, FILE_SIZE file_offs
   return mtfileinfo;
 }
 
+/* ------------------ MakeFile ------------------------ */
+
+#define BUFFERSIZE 1000000
+int MakeFile(char *file, int size){
+  unsigned char *buffer;
+  FILE *stream;
+  int i;
+
+  if(file == NULL || strlen(file) == 0)return 0;
+  stream = fopen(file, "w");
+  if(stream == NULL)return 0;
+  
+  NewMemory(( void ** )&buffer, BUFFERSIZE);
+  for(i = 0; i < BUFFERSIZE; i++){
+    buffer[i] = i % 255;
+  }
+  for(i = 0; i < size; i++){
+    fwrite(buffer, 1, BUFFERSIZE, stream);
+  }
+  fclose(stream);
+
+  FREEMEMORY(buffer);
+  return 1;
+}
+
 /* ------------------ fread_p ------------------------ */
 
 FILE_SIZE fread_p(char *file, unsigned char *buffer, FILE_SIZE offset, FILE_SIZE nchars, int nthreads){

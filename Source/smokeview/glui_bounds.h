@@ -128,6 +128,9 @@
 #define SORTSLICES       126
 #define SORTSLICES_DEBUG 127
 #define SLICE_OPTION 131
+#ifdef pp_FRAME
+#define READ_TEST 132
+#endif
 
 #define UPDATE_VECTOR          101
 #define UPDATE_VECTOR_FROM_SMV 102
