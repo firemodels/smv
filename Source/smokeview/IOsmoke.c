@@ -3756,7 +3756,8 @@ void FreeSmoke3D(smoke3ddata *smoke3di){
 
   smoke3di->lastiframe = -999;
 #ifdef pp_FRAME
-  FRAMEFree(&smoke3di->frameinfo);
+  FRAMEFree(smoke3di->frameinfo);
+  smoke3di->frameinfo = NULL;
 #endif
   FREEMEMORY(smoke3di->smokeframe_in);
   FREEMEMORY(smoke3di->smokeframe_out);
@@ -4443,12 +4444,10 @@ int UpdateSmoke3D(smoke3ddata *smoke3di){
 
       smoke3di->frameinfo = FRAMEInit(smoke3di->file, NULL, FORTRAN_FILE, GetSmoke3DFrameInfo);
       if(smoke3di->frameinfo != NULL){
+        smoke3di->frameinfo->bufferinfo = File2Buffer(smoke3di->file, smoke3di->frameinfo->bufferinfo, nframe_threads);
         FRAMESetup(smoke3di->frameinfo);
-        FRAMEReadHeader(smoke3di->frameinfo);
-        FRAMEReadFrame(smoke3di->frameinfo,    0, smoke3di->frameinfo->nframes);
         FRAMESetTimes(smoke3di->frameinfo,     0, smoke3di->frameinfo->nframes);
         FRAMESetFramePtrs(smoke3di->frameinfo, 0, smoke3di->frameinfo->nframes);
-        FRAMEReadHeader(smoke3di->frameinfo);
         nxyz_local = (int *)smoke3di->frameinfo->header;
         smoke3di->compression_type=nxyz_local[2];
         smoke3di->is1=nxyz_local[3];

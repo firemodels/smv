@@ -51,6 +51,7 @@ framedata *FRAMEInit(char *file, char *size_file, int file_type, void GetFrameIn
   frame->framesizes   = NULL;
   frame->offsets      = NULL;
   frame->frames       = NULL;
+  frame->bufferinfo   = NULL;
   frame->frameptrs    = NULL;
   frame->times        = NULL;
   frame->header       = NULL;
@@ -72,14 +73,14 @@ void FRAMESetup(framedata *fi){
   fi->nframes      = nframes;
   fi->filesize     = filesize;
   fi->headersize   = headersize;
+  fi->frames       = fi->bufferinfo->buffer;
+  fi->header       = fi->bufferinfo->buffer;
   if(nframes > 0){
-    NewMemory((void **)&fi->header,     headersize*sizeof(unsigned char));
     NewMemory((void **)&fi->offsets,    nframes*sizeof(FILE_SIZE));
     NewMemory((void **)&fi->frameptrs,  nframes*sizeof(float *));
     NewMemory((void **)&fi->times,      nframes*sizeof(float));
-    NewMemory((void **)&fi->frames,     fi->filesize);
 
-    fi->offsets[0] = 0;
+    fi->offsets[0] = headersize;
     for(i = 1;i < fi->nframes;i++){
       fi->offsets[i] = fi->offsets[i - 1] + fi->framesizes[i - 1];
     }
@@ -88,22 +89,16 @@ void FRAMESetup(framedata *fi){
 
 /* ------------------ FRAMEFree ------------------------ */
 
-void FRAMEFree(framedata **fiptr){
-  framedata *fi;
-
-  fi = *fiptr;
+void FRAMEFree(framedata *fi){
   if(fi == NULL)return;
   fi->nframes = 0;
-  FREEMEMORY(fi->file);
-  FREEMEMORY(fi->size_file);
   FREEMEMORY(fi->framesizes);
-  FREEMEMORY(fi->frames);
   FREEMEMORY(fi->offsets);
   FREEMEMORY(fi->frameptrs);
   FREEMEMORY(fi->times);
-  FREEMEMORY(fi->header);
+  FreeBufferInfo(fi->bufferinfo);
+  fi->bufferinfo = NULL;
   FREEMEMORY(fi);
-  *fiptr = NULL;
 }
 
 /* ------------------ FRAMEGetMinMax ------------------------ */
@@ -138,18 +133,6 @@ int FRAMEGetMinMax(framedata *fi, float *valmin, float *valmax){
   *valmin = vmin;
   *valmax = vmax;
   return returnval;
-}
-
-/* ------------------ FRAMEReadHeader ------------------------ */
-
-void FRAMEReadHeader(framedata *fi){
-  FILE *stream;
-
-  if(fi->headersize == 0)return;
-  stream = fopen(fi->file, "rb");
-  if(stream == NULL)return;
-  fread(fi->header, 1, fi->headersize, stream);
-  fclose(stream);
 }
 
 #ifdef pp_THREAD

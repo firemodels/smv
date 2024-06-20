@@ -456,7 +456,10 @@ FILE_SIZE ReadIsoGeom(int ifile, int load_flag, int *geom_frame_index, int *erro
   if(load_flag==UNLOAD){
     CancelUpdateTriangles();
 #ifdef pp_FRAME
-    if(isoi->frameinfo != NULL)FRAMEFree(&isoi->frameinfo);
+    if(isoi->frameinfo != NULL){
+      FRAMEFree(isoi->frameinfo);
+      isoi->frameinfo = NULL;
+    }
 #endif
   }
   meshi = meshinfo + isoi->blocknumber;
@@ -469,8 +472,8 @@ FILE_SIZE ReadIsoGeom(int ifile, int load_flag, int *geom_frame_index, int *erro
   if(load_flag == LOAD){
     if(isoi->frameinfo == NULL)isoi->frameinfo = FRAMEInit(isoi->file, NULL, FORTRAN_FILE, GetIsoFrameInfo);
     if(isoi->frameinfo != NULL){
+      isoi->frameinfo->bufferinfo = File2Buffer(isoi->file, isoi->frameinfo->bufferinfo, nframe_threads);
       FRAMESetup(isoi->frameinfo);
-      FRAMEReadFrame(isoi->frameinfo, 0, isoi->frameinfo->nframes);
       FRAMESetTimes(isoi->frameinfo, 0, isoi->frameinfo->nframes);
       FRAMESetFramePtrs(isoi->frameinfo, 0, isoi->frameinfo->nframes);
     }

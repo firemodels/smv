@@ -585,6 +585,9 @@ SVEXTERN int SVDECL(light_faces, 1);
 SVEXTERN char SVDECL(*prog_fullpath, NULL);
 SVEXTERN int SVDECL(nwindrosez_checkboxes, 0);
 SVEXTERN float startup_time;
+#ifdef pp_FRAME
+SVEXTERN int SVDECL(nframe_threads, 4);
+#endif
 #ifdef pp_FAST
 SVEXTERN int SVDECL(fast_startup, 1), SVDECL(lookfor_compressed_files,0);
 #else

@@ -1,5 +1,6 @@
 #ifndef STDIO_FRAME_H_DEFINED
 #define STDIO_FRAME_H_DEFINED
+#include "file_util.h"
 
 // ----------------------- structures -----------------------
 
@@ -23,6 +24,7 @@ typedef struct _framedata {
   int headersize, *framesizes;
   FILE_SIZE *offsets, filesize;
   unsigned char *header, *frames, **frameptrs;
+  bufferdata *bufferinfo;
   float *times;
   void (*GetFrameInfo)(char *file, char *size_file, int *headersize, int **sizes, int *nsizes, FILE_SIZE *filesizeptr);
 } framedata;
@@ -30,14 +32,13 @@ typedef struct _framedata {
 // ----------------------- headers -----------------------
 
 framedata *FRAMEInit(char *file, char *size_file, int file_type, void GetFrameInfo(char *file, char *size_file, int *headersize, int **sizes, int *nsizes, FILE_SIZE *filesize_ptr));
-void FRAMEFree(framedata **fi);
+void FRAMEFree(framedata *fi);
 #ifdef pp_THREAD
 void FRAMESetNThreads(framedata *fi, int nthreads);
 #endif
 unsigned char *FRAMEGetFramePtr(framedata *fi, int iframe);
 int FRAMEGetMinMax(framedata *fi, float *valmin, float *valmax);
 void FRAMEReadFrame(framedata *fi, int iframe, int nframes);
-void FRAMEReadHeader(framedata *fi);
 void FRAMESetFramePtrs(framedata * fi, int iframe, int nframes);
 void FRAMESetTimes(framedata *fi, int iframe, int nframes);
 void FRAMESetup(framedata *fi);

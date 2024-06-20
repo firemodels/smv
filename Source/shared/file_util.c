@@ -671,6 +671,14 @@ bufferdata *File2Buffer(char *file, bufferdata *bufferinfo, int nthreads){
   return buffinfo;
 }
 
+/* ------------------ FreeBufferInfo ------------------------ */
+
+void FreeBufferInfo(bufferdata *bufferinfo){
+  if(bufferinfo == NULL)return;
+  FREEMEMORY(bufferinfo->buffer);
+  FREEMEMORY(bufferinfo);
+}
+
 /* ------------------ FileExistsOrig ------------------------ */
 
 int FileExistsOrig(char *filename){

@@ -3896,7 +3896,8 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
       FREEMEMORY(sd->qslicedata_compressed);
       FREEMEMORY(sd->slicecomplevel);
 #ifdef pp_FRAME
-      FRAMEFree(&sd->frameinfo);
+      FRAMEFree(sd->frameinfo);
+      sd->frameinfo = NULL;
 #endif
     }
 
@@ -3996,8 +3997,8 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
     if(sd->frameinfo != NULL){
       float valmin, valmax;
 
+      sd->frameinfo->bufferinfo = File2Buffer(sd->file, sd->frameinfo->bufferinfo, nframe_threads);
       FRAMESetup(sd->frameinfo);
-      FRAMEReadFrame(sd->frameinfo, 0, sd->frameinfo->nframes);
       FRAMESetTimes(sd->frameinfo,  0, sd->frameinfo->nframes);
       FRAMESetFramePtrs(sd->frameinfo,   0, sd->frameinfo->nframes);
       FRAMEGetMinMax(sd->frameinfo, &valmin, &valmax);
