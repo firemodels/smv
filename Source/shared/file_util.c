@@ -680,13 +680,13 @@ bufferdata *File2Buffer(char *file, bufferdata *bufferinfo, int nthreads, int *n
       *nreadptr = 0;
       return bufferinfo;
     }
-    buffer   = buffinfo->buffer;
+    buffer   = bufferinfo->buffer;
     ResizeMemory((void **)&buffer, nfile*sizeof(unsigned char));
-    buffinfo->buffer  = buffer;
-    buffinfo          = bufferinfo;
-    offset            = buffinfo->nbuffer;
+    bufferinfo->buffer  = buffer;
+    offset            = bufferinfo->nbuffer;
     delta             = nfile - offset;
-    buffinfo->nbuffer = nfile;
+    bufferinfo->nbuffer = nfile;
+    buffinfo = bufferinfo;
   }
 
   nread = fread_p(file, buffer, offset, delta, nthreads);
