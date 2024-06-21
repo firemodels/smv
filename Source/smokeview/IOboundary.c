@@ -15,7 +15,7 @@
 
 #define IJKBF(i,j) ((i)*ncol+(j))
 #define BOUNDCONVERT(index, valmin, valmax) (patchi->compression_type==UNCOMPRESSED ? \
-               ( (patchvals[index]-valmin)/(valmax-valmin) ) : \
+               ( valmin == valmax ? 0.0 : (patchvals[index]-valmin)/(valmax-valmin) ) : \
                (float)cpatchvals[index]/255 \
                )
 
