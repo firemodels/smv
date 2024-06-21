@@ -3,8 +3,12 @@
 
 #include "options_common.h"
 
-//#define pp_FRAME            // test frame code
-//#define pp_FRAME_DEBUG     // output time frames when loading data (debug)
+//#define pp_SMOKEFRAME    // turn on frame code for 3d smoke
+//#define pp_ISOFRAME      // turn on frame code for isosurfaces
+//#define pp_SLICEFRAME    // turn on frame code for slices
+//#define pp_PARTFRAME     // turn on frame code for particles
+//#define pp_FRAME_DEBUG // turn on debug frame code (output times)
+
 //#define pp_PARTBOUND_MULTI // compute particle bounds in the background
 //#define pp_LUA            // turn on LUA option
 #define pp_SLICE_MULTI      // load slice files in parallel
@@ -13,9 +17,6 @@
 //#define pp_GAMMA          // show gamma correction checkbox
 // #define pp_BLACKBODY_OUT // output generated blackbody color data 
 #define pp_FAST             // set fast startup by default
-#ifdef pp_FRAME
-#define pp_LOAD_INC       // add menu item for loading new data
-#endif
 #define pp_PART_SPEEDUP     // improve efficiency of loading particles
 #define pp_SMOKE_SPEEDUP    // improve efficiency of loading 3d smoke
 #define pp_SMOKEDRAW_SPEEDUP    // improve efficiency of drawing 3d smoke
@@ -25,6 +26,31 @@
 #define pp_GPUTHROTTLE      // pp_GPU directive must also be set
 #endif
 //#define pp_FDS            // create a 1 mesh input file
+
+// turn on pp_FRAME if a frame directive is set for one of the file types
+#ifdef pp_SMOKEFRAME
+#ifndef pp_FRAME
+#define pp_FRAME
+#endif
+#endif
+#ifdef pp_SLICEFRAME
+#ifndef pp_FRAME
+#define pp_FRAME
+#endif
+#endif
+#ifdef pp_ISOFRAME
+#ifndef pp_FRAME
+#define pp_FRAME
+#endif
+#endif
+#ifdef pp_PARTFRAME
+#ifndef pp_FRAME
+#define pp_FRAME
+#endif
+#endif
+#ifdef pp_FRAME
+#define pp_LOAD_INC       // add menu item for loading new data
+#endif
 
 //*** options: windows
 

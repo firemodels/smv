@@ -19,7 +19,7 @@
 #define SLICE_HEADER_SIZE 4
 #define SLICE_TRAILER_SIZE 4
 
-#ifdef pp_FRAME
+#ifdef pp_SLICEFRAME
 #define IJK_SLICE(i,j,k)  ( ((k)-sd->ks1)*sd->nslicei*sd->nslicej + ((j)-sd->js1)*sd->nslicei + ((i)-sd->is1) )
 #else
 #define IJK_SLICE(i,j,k)  ( ((i)-sd->is1)*sd->nslicej*sd->nslicek + ((j)-sd->js1)*sd->nslicek + ((k)-sd->ks1) )
@@ -3852,7 +3852,7 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
   int blocknumber, error, headersize, framesize, flag2 = 0;
   slicedata *sd;
   int ntimes_slice_old;
-#ifdef pp_FRAME
+#ifdef pp_SLICEFRAME
   float frame_valmin, frame_valmax;
 #endif
 
@@ -3869,7 +3869,7 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
   unsigned int availmemory;
 #endif
 
-#ifndef pp_FRAME
+#ifndef pp_SLICEFRAME
 #ifndef pp_FSEEK
   if(flag==RELOAD)flag = LOAD;
 #endif
@@ -3908,7 +3908,7 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
       FREEMEMORY(sd->compindex);
       FREEMEMORY(sd->qslicedata_compressed);
       FREEMEMORY(sd->slicecomplevel);
-#ifdef pp_FRAME
+#ifdef pp_SLICEFRAME
       FRAMEFree(sd->frameinfo);
       sd->frameinfo = NULL;
 #endif
@@ -4005,7 +4005,7 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
 // load entire slice file (flag=LOAD) or
 // load only portion of slice file written to since last time it was loaded (flag=RELOAD)
 
-#ifdef pp_FRAME
+#ifdef pp_SLICEFRAME
     if(sd->frameinfo == NULL)sd->frameinfo = FRAMEInit(sd->file, sd->size_file, FORTRAN_FILE, GetSliceFrameInfo);
     if(sd->frameinfo != NULL){
       int nread;
@@ -4027,7 +4027,7 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
     }
 #endif
     if(sd->compression_type == UNCOMPRESSED){
-#ifndef pp_FRAME
+#ifndef pp_SLICEFRAME
       sd->ntimes_old = sd->ntimes;
       GetSliceSizes(file, time_frame, &sd->nslicei, &sd->nslicej, &sd->nslicek, &sd->ntimes, tload_step, &error,
                     use_tload_begin, use_tload_end, tload_begin, tload_end, &headersize, &framesize);
@@ -4125,7 +4125,7 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
         qmax = -1.0e30;
       }
       if(sd->ntimes > ntimes_slice_old){
-#ifdef pp_FRAME
+#ifdef pp_SLICEFRAME
         return_filesize = sd->frameinfo->filesize;
         qmin = frame_valmin;
         qmax = frame_valmax;
@@ -4168,7 +4168,7 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
       ndata = data_per_timestep*ntimes_local;
       show_slice_average = 1;
 
-#ifdef pp_FRAME
+#ifdef pp_SLICEFRAME
       qvalptrs = ( float **)sd->frameinfo->frameptrs;
 #else
       int i;
@@ -4183,7 +4183,7 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
         ){
         show_slice_average = 0; // averaging failed
       }
-#ifndef pp_FRAME
+#ifndef pp_SLICEFRAME
       FREEMEMORY(qvalptrs);
 #endif
     }
@@ -7292,7 +7292,7 @@ int SetupSlice(slicedata *sd){
     }
     else{
       sd->iqsliceframe = sd->slicelevel + sd->itime * sd->nsliceijk;
-#ifdef pp_FRAME
+#ifdef pp_SLICEFRAME
       sd->qslice = (float *)FRAMEGetFramePtr(sd->frameinfo, sd->itime);
 #else
       sd->qslice = sd->qslicedata + sd->itime * sd->nsliceijk;
@@ -8558,7 +8558,7 @@ void DrawVSliceFrame(void){
       else{
         if(val!=NULL){
           val->iqsliceframe = val->slicelevel+val->itime*val->nsliceijk;
-#ifdef pp_FRAME
+#ifdef pp_SLICEFRAME
           val->qslice = (float *)FRAMEGetFramePtr(val->frameinfo, val->itime);
 #else
           val->qslice = val->qslicedata+val->itime*val->nsliceijk;
@@ -8594,21 +8594,21 @@ void DrawVSliceFrame(void){
         }
       }
       if(u!=NULL&&u->compression_type==UNCOMPRESSED){
-#ifdef pp_FRAME
+#ifdef pp_SLICEFRAME
         u->qslice = (float *)FRAMEGetFramePtr(u->frameinfo, u->itime);
 #else
         u->qslice = u->qslicedata+u->itime*u->nsliceijk;
 #endif
       }
       if(v!=NULL&&v->compression_type==UNCOMPRESSED){
-#ifdef pp_FRAME
+#ifdef pp_SLICEFRAME
         v->qslice = (float *)FRAMEGetFramePtr(v->frameinfo, v->itime);
 #else
         v->qslice = v->qslicedata+v->itime*v->nsliceijk;
 #endif
       }
       if(w!=NULL&&w->compression_type==UNCOMPRESSED){
-#ifdef pp_FRAME
+#ifdef pp_SLICEFRAME
         w->qslice = (float *)FRAMEGetFramePtr(w->frameinfo, w->itime);
 #else
         w->qslice = w->qslicedata+w->itime*w->nsliceijk;

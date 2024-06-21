@@ -3299,7 +3299,7 @@ void ReloadAllSliceFiles(void){
       load_size+=ReadGeomData(slicei->patchgeom, slicei, LOAD, ALL_FRAMES, NULL, 0, &errorcode);
     }
     else{
-#ifdef pp_FRAME
+#ifdef pp_SLICEFRAME
       load_size += ReadSlice(slicei->file, i, ALL_FRAMES, NULL, RELOAD, DEFER_SLICECOLOR, &errorcode);
 #else
       load_size += ReadSlice(slicei->file, i, ALL_FRAMES, NULL, LOAD, DEFER_SLICECOLOR, &errorcode);
@@ -3504,7 +3504,7 @@ void LoadUnloadMenu(int value){
 
     for(i=0;i<nsmoke3dinfo;i++){
       if(smoke3dinfo[i].loaded==1||smoke3dinfo[i].request_load==1){
-#ifdef pp_FRAME
+#ifdef pp_SMOKEFRAME
         ReadSmoke3D(ALL_SMOKE_FRAMES, i, RELOAD, FIRST_TIME, &errorcode);
 #else
         ReadSmoke3D(ALL_SMOKE_FRAMES, i, LOAD, FIRST_TIME, &errorcode);
@@ -3514,7 +3514,7 @@ void LoadUnloadMenu(int value){
 
     //*** reload particle files
 
-#ifdef pp_FRAME
+#ifdef pp_PARTFRAME
     LoadAllPartFilesMT(RELOAD_LOADED_PART_FILES);
 #else
     int npartloaded_local = 0;
@@ -3548,7 +3548,7 @@ void LoadUnloadMenu(int value){
 
       isoi = isoinfo + i;
       if(isoi->loaded==0)continue;
-#ifdef pp_FRAME
+#ifdef pp_ISOFRAME
       ReadIso(isoi->file, i, RELOAD, NULL, &errorcode);
 #else
       ReadIso(isoi->file,i,LOAD,NULL,&errorcode);
@@ -4025,7 +4025,7 @@ void LoadAllPartFiles(int partnum){
     FILE_SIZE file_size;
 
     parti = partinfo+i;
-#ifdef pp_FRAME
+#ifdef pp_PARTFRAME
     if(partnum != RELOAD_LOADED_PART_FILES){
       IF_NOT_USEMESH_CONTINUE(parti->loaded, parti->blocknumber);
     }
@@ -4036,14 +4036,14 @@ void LoadAllPartFiles(int partnum){
     if(partnum>=0&&i!=partnum)continue;  //  load only particle file with file index partnum
     THREADcontrol(partload_threads, THREAD_LOCK);                      //  or load all particle files
     if(parti->loadstatus==FILE_UNLOADED
-#ifdef pp_FRAME
+#ifdef pp_PARTFRAME
       || partnum==RELOAD_LOADED_PART_FILES
 #endif
       ){
       if(partnum==LOAD_ALL_PART_FILES||(partnum==RELOAD_LOADED_PART_FILES&&parti->loaded==1)||partnum==i){
         parti->loadstatus = FILE_LOADING;
         THREADcontrol(partload_threads, THREAD_UNLOCK);
-#ifdef pp_FRAME
+#ifdef pp_PARTFRAME
         if(partnum == RELOAD_LOADED_PART_FILES){
           file_size = ReadPart(parti->file, i, RELOAD, &errorcode);
         }
@@ -4133,7 +4133,7 @@ void *MtLoadAllPartFiles(void *arg){
 
   valptr = ( int * )(arg);
   LoadAllPartFiles(*valptr);
-#ifdef pp_FRAME
+#ifdef pp_PARTFRAME
   return NULL;
 #else
   THREAD_EXIT(partload_threads);

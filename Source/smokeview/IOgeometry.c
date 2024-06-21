@@ -2827,7 +2827,7 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
       times = patchi->geom_times;
       ntimes = patchi->ngeom_times;
       data_per_timestep = nvals2/ntimes;
-#ifdef pp_FRAME
+#ifdef pp_SLICEFRAME
       qvalptrs = ( float ** )slicei->frameinfo->frameptrs;
 #else
       NewMemory(( void ** )&qvalptrs, ntimes*sizeof(float *));

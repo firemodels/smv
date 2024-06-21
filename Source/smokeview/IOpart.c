@@ -654,7 +654,7 @@ void FreeAllPart5Data(partdata *parti){
   FREEMEMORY(parti->sy);
   FREEMEMORY(parti->sz);
   FREEMEMORY(parti->irvals);
-#ifdef pp_FRAME
+#ifdef pp_PARTFRAME
   FRAMEFree(parti->frameinfo);
   parti->frameinfo = NULL;
 #endif
@@ -2007,7 +2007,7 @@ FILE_SIZE ReadPart(char *file_arg, int ifile_arg, int loadflag_arg, int *errorco
   assert(ifile_arg>=0&&ifile_arg<npartinfo);
   parti=partinfo+ifile_arg;
 
-#ifdef pp_FRAME
+#ifdef pp_PARTFRAME
   if(loadflag_arg!=RELOAD)FreeAllPart5Data(parti);
 #else
   FreeAllPart5Data(parti);
@@ -2026,7 +2026,7 @@ FILE_SIZE ReadPart(char *file_arg, int ifile_arg, int loadflag_arg, int *errorco
   THREADcontrol(partload_threads, THREAD_UNLOCK);
 #endif
 
-#ifdef pp_FRAME
+#ifdef pp_PARTFRAME
   if(parti->frameinfo == NULL)parti->frameinfo = FRAMEInit(file_arg, NULL, FORTRAN_FILE, GetPartFrameInfo);
   if(parti->frameinfo != NULL){
     int nread;

@@ -4922,7 +4922,7 @@ int ParseISOFProcess(bufferstreamdata *stream, char *buffer, int *iiso_in, int *
     return RETURN_BREAK;
   }
 
-#ifdef pp_FRAME
+#ifdef pp_ISOFRAME
   isoi->frameinfo = NULL;
 #endif
   isoi->fds_skip = fds_skip;
@@ -5109,7 +5109,7 @@ int ParsePRT5Process(bufferstreamdata *stream, char *buffer, int *nn_part_in, in
     blocknumber--;
   }
 
-#ifdef pp_FRAME
+#ifdef pp_PARTFRAME
   parti->frameinfo = NULL;
 #endif
   parti->blocknumber = blocknumber;
@@ -5587,7 +5587,7 @@ int ParseSMOKE3DProcess(bufferstreamdata *stream, char *buffer, int *nn_smoke3d_
     smoke3di->val16_maxs = NULL;
     smoke3di->times16    = NULL;
 #endif
-#ifdef pp_FRAME
+#ifdef pp_SMOKEFRAME
     smoke3di->frameinfo = NULL;
 #endif
     smoke3di->seq_id = nn_smoke3d;
@@ -5598,7 +5598,7 @@ int ParseSMOKE3DProcess(bufferstreamdata *stream, char *buffer, int *nn_smoke3d_
     smoke3di->smokeframe_comp_list = NULL;
     smoke3di->smokeframe_out = NULL;
     smoke3di->timeslist = NULL;
-#ifndef pp_FRAME
+#ifndef pp_SMOKEFRAME
     smoke3di->smoke_comp_all = NULL;
 #endif
     smoke3di->smokeview_tmp = NULL;
@@ -5847,7 +5847,7 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
 #ifdef pp_SLICE_MULTI
   sd->loadstatus = FILE_UNLOADED;
 #endif
-#ifdef pp_FRAME
+#ifdef pp_SLICEFRAME
   sd->frameinfo        = NULL;
 #endif
   sd->slice_mask       = NULL;

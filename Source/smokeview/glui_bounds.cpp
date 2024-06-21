@@ -2866,6 +2866,8 @@ GLUI_Spinner *SPINNER_line_contour_max=NULL;
 GLUI_Spinner *SPINNER_timebounds=NULL;
 #ifdef pp_FRAME
 GLUI_Spinner *SPINNER_nframe_threads = NULL;
+#endif
+#ifdef pp_FRAME_DEBUG
 GLUI_Spinner *SPINNER_read_buffer_size = NULL;
 #endif
 GLUI_Spinner *SPINNER_tload_begin=NULL;
