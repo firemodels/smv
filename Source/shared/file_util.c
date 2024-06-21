@@ -551,7 +551,7 @@ mtfiledata *SetMtFileInfo(char *file, unsigned char *buffer, FILE_SIZE file_offs
     mti->nthreads        = nthreads;
     mti->file            = file;
     mti->buffer          = buffer;
-    mti->file_size       = file_size;
+    mti->file_size       = nchars;
     mti->file_offset     = file_offset;
     mti->nchars          = nchars;
     mti->chars_read      = 0;
@@ -688,8 +688,15 @@ bufferdata *File2Buffer(char *file, bufferdata *bufferinfo, int nthreads, int *n
     bufferinfo->nbuffer = nfile;
     buffinfo = bufferinfo;
   }
+//  nread = fread_p(file, buffer, offset, delta, nthreads);
 
-  nread = fread_p(file, buffer, offset, delta, nthreads);
+  FILE *stream;
+  stream = fopen(file, "rb");
+  fseek(stream, offset, SEEK_SET);
+  nread = fread(buffinfo->buffer+offset, 1, delta, stream);
+  if(stream != NULL){
+    fclose(stream);
+  }
   if(nread != delta){
     FREEMEMORY(buffer);
     FREEMEMORY(buffinfo);

@@ -2026,6 +2026,26 @@ FILE_SIZE ReadPart(char *file_arg, int ifile_arg, int loadflag_arg, int *errorco
   THREADcontrol(partload_threads, THREAD_UNLOCK);
 #endif
 
+  FREEMEMORY(parti->times);
+  FREEMEMORY(parti->times_map);
+  FREEMEMORY(parti->filepos);
+
+  if(loadflag_arg == UNLOAD){
+    if(parti->finalize == 1){
+      UpdatePartColors(parti, 0);
+      UpdateTimes();
+      updatemenu = 1;
+      UpdatePart5Extremes();
+      PrintMemoryInfo;
+#ifdef pp_PART_SPEEDUP
+      THREADcontrol(partload_threads, THREAD_LOCK);
+      plotstate = GetPlotState(DYNAMIC_PLOTS);
+      THREADcontrol(partload_threads, THREAD_UNLOCK);
+#endif
+    }
+    return 0.0;
+  }
+
 #ifdef pp_PARTFRAME
   if(parti->frameinfo == NULL)parti->frameinfo = FRAMEInit(file_arg, NULL, FORTRAN_FILE, GetPartFrameInfo);
 #ifdef pp_FRAME_DEBUG
@@ -2047,26 +2067,6 @@ FILE_SIZE ReadPart(char *file_arg, int ifile_arg, int loadflag_arg, int *errorco
     printf("particle frames read: %i\n", nframes_after - nframes_before);
 #endif
 #endif
-
-  FREEMEMORY(parti->times);
-  FREEMEMORY(parti->times_map);
-  FREEMEMORY(parti->filepos);
-
-  if(loadflag_arg==UNLOAD){
-    if(parti->finalize == 1){
-      UpdatePartColors(parti, 0);
-      UpdateTimes();
-      updatemenu = 1;
-      UpdatePart5Extremes();
-      PrintMemoryInfo;
-#ifdef pp_PART_SPEEDUP
-      THREADcontrol(partload_threads, THREAD_LOCK);
-      plotstate=GetPlotState(DYNAMIC_PLOTS);
-      THREADcontrol(partload_threads, THREAD_UNLOCK);
-#endif
-    }
-    return 0.0;
-  }
 
   lenfile_local = strlen(file_arg);
   if(lenfile_local==0){

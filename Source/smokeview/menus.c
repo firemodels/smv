@@ -3350,6 +3350,7 @@ void UnloadSmoke3D(smoke3ddata *smoke3di){
   FreeSmoke3D(smoke3di);
   smoke3di->loaded  = 0;
   smoke3di->display = 0;
+  smoke3di->request_load = 0;
 }
 
 /* ------------------ UnloadAllSmoke3D ------------------------ */

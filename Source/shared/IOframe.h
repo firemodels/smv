@@ -4,14 +4,10 @@
 
 // ----------------------- structures -----------------------
 
-#ifdef X64
-#define FRAME_FSEEK(a,b,c)       _fseeki64(a,b,c)
-#else
-#define FRAME_FSEEK(a,b,c)       fseeko(a,b,c)
-#endif
+#define FRAME_FSEEK(a,b,c)       fseek_m(a,b,c)
 
 #define FRAME_READ(var,count,STREAM) \
-    FRAME_FSEEK(STREAM,4,SEEK_CUR);returncode=fread(var,4,(count),STREAM);FRAME_FSEEK(STREAM,4,SEEK_CUR)
+    FRAME_FSEEK(STREAM,4,SEEK_CUR);returncode=fread_m(var,4,(count),STREAM);FRAME_FSEEK(STREAM,4,SEEK_CUR)
 
 #define FORTRAN_FILE 0
 #define C_FILE       1
@@ -27,12 +23,12 @@ typedef struct _framedata {
   bufferdata *bufferinfo;
   float *times;
   float valmin, valmax;
-  void (*GetFrameInfo)(char *file, char *size_file, int *headersize, int **sizes, int *nsizes, FILE_SIZE *filesizeptr);
+  void (*GetFrameInfo)(bufferdata *bufferinfo, int *headersize, int **sizes, int *nsizes, FILE_SIZE *filesizeptr);
 } framedata;
 
 // ----------------------- headers -----------------------
 
-framedata *FRAMEInit(char *file, char *size_file, int file_type, void GetFrameInfo(char *file, char *size_file, int *headersize, int **sizes, int *nsizes, FILE_SIZE *filesize_ptr));
+framedata *FRAMEInit(char *file, char *size_file, int file_type, void GetFrameInfo(bufferdata *bufferinfo, int *headersize, int **sizes, int *nsizes, FILE_SIZE *filesize_ptr));
 void FRAMEFree(framedata *fi);
 #ifdef pp_THREAD
 void FRAMESetNThreads(framedata *fi, int nthreads);
@@ -45,8 +41,8 @@ void FRAMESetTimes(framedata *fi, int iframe, int nframes);
 void FRAMESetup(framedata *fi);
 void FRAMESetupVals(framedata *fi);
 
-void GetIsoFrameInfo(    char *file, char *size_file, int *headersizeptr, int **sizesptr, int *nsizesptr, FILE_SIZE *filesizeptr);
-void GetSliceFrameInfo(  char *file, char *size_file, int *headersizeptr, int **sizesptr, int *nsizesptr, FILE_SIZE *filesizeptr);
-void GetSmoke3DFrameInfo(char *file, char *size_file, int *headersizeptr, int **sizesptr, int *nsizesptr, FILE_SIZE *filesizeptr);
-void GetPartFrameInfo(char *file, char *size_file, int *headersizeptr, int **framesptr, int *nframesptr, FILE_SIZE *filesizeptr);
+void GetIsoFrameInfo(    bufferdata *bufferinfo, int *headersizeptr, int **sizesptr, int *nsizesptr, FILE_SIZE *filesizeptr);
+void GetSliceFrameInfo(  bufferdata *bufferinfo, int *headersizeptr, int **sizesptr, int *nsizesptr, FILE_SIZE *filesizeptr);
+void GetSmoke3DFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **sizesptr, int *nsizesptr, FILE_SIZE *filesizeptr);
+void GetPartFrameInfo(   bufferdata *bufferinfo, int *headersizeptr, int **framesptr, int *nframesptr, FILE_SIZE *filesizeptr);
 #endif
