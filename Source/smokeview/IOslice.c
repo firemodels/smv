@@ -3849,7 +3849,7 @@ void GetSliceTimes(char *file, float *times, int ntimes){
 
 FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_value, int flag, int set_slicecolor, int *errorcode){
   float *xplt_local, *yplt_local, *zplt_local, offset, qmin, qmax, read_time, total_time;
-  int blocknumber, error, headersize, framesize, flag2 = 0;
+  int blocknumber, error, flag2 = 0;
   slicedata *sd;
   int ntimes_slice_old;
 #ifdef pp_SLICEFRAME
@@ -4027,8 +4027,6 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
       }
       frame_valmin = sd->frameinfo->valmin;
       frame_valmax = sd->frameinfo->valmax;
-      framesize = sd->frameinfo->framesizes[0];
-      headersize = sd->frameinfo->headersize;
     }
 #ifdef pp_FRAME_DEBUG
     nframes_after = sd->frameinfo->nframes;
@@ -4082,8 +4080,8 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
     if(time_frame==ALL_FRAMES){
       PRINTF("Loading %s(%s)", file, sd->label.shortlabel);
     }
-    MEMSTATUS(1, &availmemory, NULL, NULL);
 #endif
+    MEMSTATUS(1, &availmemory, NULL, NULL);
     START_TIMER(read_time);
     if(sd->compression_type != UNCOMPRESSED){
       int return_code;
