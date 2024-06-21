@@ -2351,10 +2351,6 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
     assert(FFALSE);
     break;
   }
-  if(do_threshold==1){
-    meshi->surface_tempmax=patchmax_global;
-    meshi->surface_tempmin=patchmin_global;
-  }
 
   GLUI2GlobalBoundaryBounds(patchi->label.shortlabel);
 

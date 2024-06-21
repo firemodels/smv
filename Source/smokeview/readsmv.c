@@ -1082,9 +1082,6 @@ void InitMesh(meshdata *meshi){
   meshi->theat = NULL;
   meshi->blockageinfoptrs = NULL;
 
-  meshi->surface_tempmax = SURFACE_TEMPMAX;
-  meshi->surface_tempmin = SURFACE_TEMPMIN;
-
   meshi->faceinfo = NULL;
   meshi->face_normals_single = NULL;
   meshi->face_normals_double = NULL;

@@ -829,7 +829,6 @@ typedef struct _meshdata {
   int *patch_timeslist;
   int npatchsize;
   int visInteriorBoundaries;
-  float surface_tempmin, surface_tempmax;
 
   int nface_textures, nface_outlines, nfaces;
   int nface_normals_single, nface_normals_double, nface_transparent_double;
