@@ -538,10 +538,8 @@ void *fread_mt(void *mtfileinfo){
 mtfiledata *SetMtFileInfo(char *file, unsigned char *buffer, FILE_SIZE file_offset, FILE_SIZE nchars, int nthreads){
   mtfiledata *mtfileinfo;
   int i;
-  FILE_SIZE file_size;
 
   NewMemory((void **)&mtfileinfo,nthreads*sizeof(mtfiledata));
-  file_size = GetFileSizeSMV(file);
 
   for(i=0;i<nthreads;i++){
     mtfiledata *mti;
