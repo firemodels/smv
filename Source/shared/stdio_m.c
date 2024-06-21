@@ -92,6 +92,31 @@ FILE_m *fopen_m(char *file, char *mode){
   return fopen_mo(file, 0, 0, mode);
 }
 
+/* ------------------ fopen_b ------------------------ */
+
+FILE_m *fopen_b(char *file, unsigned char *buffer, size_t nbuffer, char *mode){
+  FILE_m *stream_m = NULL;
+  char *m_file;
+
+  if(file == NULL || strlen(file) == 0 || mode == NULL || strlen(mode) < 2)return NULL;
+  if(strcmp(mode, "rb") !=0)return NULL;
+
+  if(NewMemory(( void ** )&m_file, strlen(file) + 1) == 0){ // memory allocation failed so abort
+    return NULL;
+  }
+
+  if(NewMemory(( void ** )&stream_m, sizeof(FILE_m)) == 0){
+    FREEMEMORY(m_file);
+    return NULL;
+  }
+  stream_m->buffer = buffer;
+  stream_m->buffer_beg = buffer;
+  stream_m->buffer_end = buffer + nbuffer;
+  stream_m->file = m_file;
+  stream_m->stream = NULL;
+  return stream_m;
+}
+
 /* ------------------ fclose_m ------------------------ */
 
 void fclose_m(FILE_m *stream_m){
