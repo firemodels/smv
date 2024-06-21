@@ -48,9 +48,6 @@
 #define pp_FRAME
 #endif
 #endif
-#ifdef pp_FRAME
-#define pp_LOAD_INC       // add menu item for loading new data
-#endif
 
 //*** options: windows
 

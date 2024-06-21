@@ -2991,9 +2991,6 @@ void ReloadMenu(int value){
   case RELOAD_SMV_FILE:
     UpdateSMVDynamic(smv_filename);
     break;
-  case RELOAD_MODE_INCREMENTAL:
-    load_incremental = 1;
-    break;
   case RELOAD_MODE_ALL:
     load_incremental = 0;
     break;
@@ -3384,6 +3381,9 @@ void LoadUnloadMenu(int value){
   int i;
   int file_count = 0;
   float load_size = 0.0, load_time;
+#ifdef pp_FRAME
+  int load_flag;
+#endif
 
   if(value==MENU_DUMMY)return;
   GLUTSETCURSOR(GLUT_CURSOR_WAIT);
@@ -3446,6 +3446,14 @@ void LoadUnloadMenu(int value){
     break;
   case RELOADALL:
   case RELOAD_INCREMENTAL_ALL:
+#ifdef pp_FRAME
+    if(value == RELOADALL){
+      load_flag = LOAD;
+    }
+    else{
+      load_flag = RELOAD;
+    }
+#endif
     THREADcontrol(compress_threads, THREAD_LOCK);
     if(hrr_csv_filename!=NULL){
       ReadHRR(LOAD);
@@ -3505,7 +3513,7 @@ void LoadUnloadMenu(int value){
     for(i=0;i<nsmoke3dinfo;i++){
       if(smoke3dinfo[i].loaded==1||smoke3dinfo[i].request_load==1){
 #ifdef pp_SMOKEFRAME
-        ReadSmoke3D(ALL_SMOKE_FRAMES, i, RELOAD, FIRST_TIME, &errorcode);
+        ReadSmoke3D(ALL_SMOKE_FRAMES, i, load_flag, FIRST_TIME, &errorcode);
 #else
         ReadSmoke3D(ALL_SMOKE_FRAMES, i, LOAD, FIRST_TIME, &errorcode);
 #endif
@@ -3549,7 +3557,7 @@ void LoadUnloadMenu(int value){
       isoi = isoinfo + i;
       if(isoi->loaded==0)continue;
 #ifdef pp_ISOFRAME
-      ReadIso(isoi->file, i, RELOAD, NULL, &errorcode);
+      ReadIso(isoi->file, i, load_flag, NULL, &errorcode);
 #else
       ReadIso(isoi->file,i,LOAD,NULL,&errorcode);
 #endif
@@ -12626,16 +12634,6 @@ static int menu_count=0;
 
     CREATEMENU(reloadmenu,ReloadMenu);
     glutAddMenuEntry(_("smv"), RELOAD_SMV_FILE);
-#ifdef pp_LOAD_INC
-    if(load_incremental==1){
-      glutAddMenuEntry(_("*New data"), RELOAD_MODE_INCREMENTAL);
-      glutAddMenuEntry(_("All data"), RELOAD_MODE_ALL);
-    }
-    if(load_incremental==0){
-      glutAddMenuEntry(_("New data"), RELOAD_MODE_INCREMENTAL);
-      glutAddMenuEntry(_("*All data"), RELOAD_MODE_ALL);
-    }
-#endif
     glutAddMenuEntry("-", MENU_DUMMY);
     glutAddMenuEntry(_("When:"), MENU_DUMMY);
     glutAddMenuEntry(_("  now (all meshes)"),RELOAD_SWITCH);

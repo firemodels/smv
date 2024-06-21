@@ -4283,9 +4283,13 @@ FILE_SIZE ReadSmoke3D(int iframe_arg,int ifile_arg,int flag_arg, int first_time,
       int *nxyz_local;
 
       if(smoke3di->frameinfo == NULL)smoke3di->frameinfo = FRAMEInit(smoke3di->file, NULL, FORTRAN_FILE, GetSmoke3DFrameInfo);
+#ifdef pp_FRAME_DEBUG
+        int nframes_before, nframes_after;
+
+        nframes_before = smoke3di->frameinfo->nframes;
+#endif
       if(smoke3di->frameinfo != NULL){
         int nread;
-
         smoke3di->frameinfo->bufferinfo = File2Buffer(smoke3di->file, smoke3di->frameinfo->bufferinfo, nframe_threads, &nread);
         if(nread > 0){
           FRAMESetup(smoke3di->frameinfo);
@@ -4301,6 +4305,10 @@ FILE_SIZE ReadSmoke3D(int iframe_arg,int ifile_arg,int flag_arg, int first_time,
           smoke3di->ks2 = nxyz_local[8];
         }
       }
+#ifdef pp_FRAME_DEBUG
+        nframes_after = smoke3di->frameinfo->nframes;
+        printf("3D smoke frames read: %i\n", nframes_after - nframes_before);
+#endif
       i = 0;
       for(ii = 0; ii < smoke3di->ntimes_full; ii++){
         if(smoke3di->use_smokeframe[ii] == 1){

@@ -2028,6 +2028,11 @@ FILE_SIZE ReadPart(char *file_arg, int ifile_arg, int loadflag_arg, int *errorco
 
 #ifdef pp_PARTFRAME
   if(parti->frameinfo == NULL)parti->frameinfo = FRAMEInit(file_arg, NULL, FORTRAN_FILE, GetPartFrameInfo);
+#ifdef pp_FRAME_DEBUG
+    int nframes_before, nframes_after;
+
+    nframes_before = parti->frameinfo->nframes;
+#endif
   if(parti->frameinfo != NULL){
     int nread;
 
@@ -2037,6 +2042,10 @@ FILE_SIZE ReadPart(char *file_arg, int ifile_arg, int loadflag_arg, int *errorco
     FRAMESetFramePtrs(parti->frameinfo, 0, parti->frameinfo->nframes);
    // FRAMEGetMinMax(sd->frameinfo, &valmin, &valmax);
   }
+#ifdef pp_FRAME_DEBUG
+    nframes_after = parti->frameinfo->nframes;
+    printf("particle frames read: %i\n", nframes_after - nframes_before);
+#endif
 #endif
 
   FREEMEMORY(parti->times);
