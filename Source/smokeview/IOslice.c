@@ -3855,6 +3855,9 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
 #ifdef pp_SLICEFRAME
   float frame_valmin, frame_valmax;
 #endif
+#ifndef pp_SLICEFRAME
+  int headersize, framesize;
+#endif
 
   SNIFF_ERRORS("ReadSlice: start");
   SetTimeState();
