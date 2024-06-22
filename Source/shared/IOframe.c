@@ -192,7 +192,7 @@ void FRAMESetTimes(framedata *fi, int iframe, int nframes){
     offset = fi->offsets[i];
     if(fi->file_type == FORTRAN_FILE)offset += 4;
     memcpy(fi->times + i, fi->frames + offset, sizeof(float));
-#ifdef pp_FRAME_DEBUG
+#ifdef pp_FRAME_DEBUG2
     float time;
     time = fi->times[i];
     printf("time[%i]=%f\n", i,time);
@@ -446,19 +446,22 @@ void GetPartFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **framespt
 
   headersize  = 4 + 4 + 4; // ONE
   headersize += 4 + 4 + 4; // FDS VERSION
-  
   FRAME_FSEEK(stream, headersize, SEEK_CUR);
+
   FRAME_READ(&n_part, 1, stream);
-  NewMemory((void **)&nquants, (n_part+1)*sizeof(int));
+  headersize += 4 + 4 + 4; // n_part
+
+  NewMemory((void **)&nquants, 2*n_part*sizeof(int));
   
-  headersize += 4 + 4 + 4;
   int i;
   for(i=0; i<n_part; i++){
     int labelsize;
 
-    FRAME_READ(nquants+i, 2, stream);
+    FRAME_READ(nquants+2*i, 2, stream);
+    headersize += 4 + 2*4 + 4;
+    
     labelsize = 2*nquants[0]*(4+30+4);
-    headersize += 4 + 8 + 4 + labelsize;
+    headersize += labelsize;
     FRAME_FSEEK(stream, labelsize, SEEK_CUR);
   }
 
@@ -475,17 +478,22 @@ void GetPartFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **framespt
 //  ENDDO
     float time_arg;
     FRAME_READ(&time_arg, 1, stream);
-    if(returncode != 1*sizeof(float))break;
     framesize = 4 + 4 + 4;
+
+//    printf("time_arg=%f\n", time_arg);
+    if(returncode != 1*sizeof(float))break;
     for(i=0; i<n_part; i++){
-      int nplim, skip;
+      int nplim;
+      long int skip;
 
       FRAME_READ(&nplim, 1, stream);
       framesize += 4 + 4 + 4;             // nplim
+
+//      printf("nplim %i: %i\n",i, nplim);
       skip  = 4 + 3*nplim*4 + 4;          // xp, yp, zp
-      skip += 4 + nplim*4 + 4;            // tag
-      if(nquants[i]>0){
-        skip += 4 + nplim*nquants[i]*4 + 4; // qp
+      skip += 4 +   nplim*4 + 4;          // tag
+      if(nquants[2*i] > 0){
+        skip += 4 + nplim*nquants[2*i]*4 + 4; // qp
       }
       framesize += skip;
       FRAME_FSEEK(stream, skip, SEEK_CUR);
