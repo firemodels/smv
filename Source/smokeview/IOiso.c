@@ -201,6 +201,11 @@ void UnloadIso(meshdata *meshi){
 
   if(meshi->isofilenum == -1)return;
   ib = isoinfo + meshi->isofilenum;
+#ifdef pp_SLICEFRAME
+  FRAMEFree(ib->frameinfo);
+  ib->frameinfo = NULL;
+#endif
+
   FreeAllMemory(ib->memory_id);
   meshi->iso_times = NULL;
   meshi->iso_times_map = NULL;
@@ -450,7 +455,7 @@ FILE_SIZE ReadIsoGeom(int ifile, int load_flag, int *geom_frame_index, int *erro
   FILE_SIZE return_filesize=0;
 
   isoi = isoinfo + ifile;
-  if(load_flag==LOAD){
+  if(load_flag==LOAD||load_flag==RELOAD){
     THREADcontrol(isosurface_threads, THREAD_JOIN);
   }
   if(load_flag==UNLOAD){
@@ -464,8 +469,15 @@ FILE_SIZE ReadIsoGeom(int ifile, int load_flag, int *geom_frame_index, int *erro
   }
   meshi = meshinfo + isoi->blocknumber;
   geomi = isoi->geominfo;
+#ifdef pp_ISOFRAME
+  if(load_flag != RELOAD){
+    UnloadIso(meshi);
+    FreeAllMemory(isoi->memory_id);
+  }
+#else
   UnloadIso(meshi);
   FreeAllMemory(isoi->memory_id);
+#endif
   meshi->showlevels = NULL;
   meshi->isolevels = NULL;
 #ifdef pp_ISOFRAME
