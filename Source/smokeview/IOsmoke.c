@@ -4307,7 +4307,7 @@ FILE_SIZE ReadSmoke3D(int iframe_arg,int ifile_arg,int flag_arg, int first_time,
       }
 #ifdef pp_FRAME_DEBUG
         nframes_after = smoke3di->frameinfo->nframes;
-        printf("3D smoke frames read: %i\n", nframes_after - nframes_before);
+        printf(", 3D smoke frames read: %i ", nframes_after - nframes_before);
 #endif
       i = 0;
       for(ii = 0; ii < smoke3di->ntimes_full; ii++){

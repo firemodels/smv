@@ -2064,7 +2064,7 @@ FILE_SIZE ReadPart(char *file_arg, int ifile_arg, int loadflag_arg, int *errorco
   }
 #ifdef pp_FRAME_DEBUG
     nframes_after = parti->frameinfo->nframes;
-    printf("particle frames read: %i\n", nframes_after - nframes_before);
+    printf(", particle frames read: %i, ", nframes_after - nframes_before);
 #endif
 #endif
 

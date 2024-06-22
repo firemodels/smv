@@ -500,7 +500,7 @@ FILE_SIZE ReadIsoGeom(int ifile, int load_flag, int *geom_frame_index, int *erro
     }
 #ifdef pp_FRAME_DEBUG
       nframes_after = isoi->frameinfo->nframes;
-      printf("isosurface frames read: %i\n", nframes_after - nframes_before);
+      printf(", isosurface frames read: %i, ", nframes_after - nframes_before);
 #endif
   }
 #endif

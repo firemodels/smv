@@ -4033,7 +4033,7 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
     }
 #ifdef pp_FRAME_DEBUG
     nframes_after = sd->frameinfo->nframes;
-    printf("slice frames read: %i\n", nframes_after - nframes_before);
+    printf(", slice frames read: %i, ", nframes_after - nframes_before);
 #endif
 #endif
     if(sd->compression_type == UNCOMPRESSED){
