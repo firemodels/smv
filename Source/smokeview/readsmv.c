@@ -16,6 +16,7 @@
 #include "IOvolsmoke.h"
 #include "stdio_buffer.h"
 #include "glui_motion.h"
+#include "readimage.h"
 
 #define BREAK break
 #define BREAK2 \
@@ -2598,7 +2599,7 @@ void InitTextures0(void){
     if(verbose_output==1)printf("  reading in texture image: %s",texti->file);
     glGetIntegerv(GL_MAX_TEXTURE_SIZE, &max_texture_size);
 
-    floortex=ReadPicture(texti->file,&texwid,&texht,&is_transparent,0);
+    floortex=ReadPicture(texturedir, texti->file,&texwid,&texht,&is_transparent,0);
     texti->is_transparent = is_transparent;
     if(floortex==NULL){
       PRINTF("\n***Error: Texture %s failed to load\n", filename);
@@ -2749,7 +2750,7 @@ void InitTextures0(void){
 #ifdef _DEBUG
         PRINTF("terrain texture file: %s\n",tt->file);
 #endif
-        floortex=ReadPicture(tt->file,&texwid,&texht,&is_transparent,0);
+        floortex=ReadPicture(texturedir, tt->file,&texwid,&texht,&is_transparent,0);
         tt->is_transparent = is_transparent;
         if(floortex==NULL)PRINTF("***Error: Texture file %s failed to load\n",tt->file);
       }

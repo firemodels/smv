@@ -7,6 +7,7 @@
 #include GLUT_H
 
 #include "smokeviewvars.h"
+#include "readimage.h"
 
 cadgeomdata *current_cadgeom;
 
@@ -1826,7 +1827,7 @@ void ReadCAD2Geom(cadgeomdata *cd){
       PRINTF("       Loading texture: %s",texti->file);
       glGenTextures(1,&texti->name);
       glBindTexture(GL_TEXTURE_2D,texti->name);
-      floortex=ReadPicture(texti->file,&texwid,&texht,&is_transparent,0);
+      floortex=ReadPicture(texturedir, texti->file,&texwid,&texht,&is_transparent,0);
       texti->is_transparent = is_transparent;
       if(floortex==NULL){
         PRINTF(" - failed\n");
