@@ -460,7 +460,7 @@ void GetPartFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **framespt
     FRAME_READ(nquants+2*i, 2, stream);
     headersize += 4 + 2*4 + 4;
     
-    labelsize = 2*nquants[0]*(4+30+4);
+    labelsize = 2*nquants[2*i]*(4+30+4);
     headersize += labelsize;
     FRAME_FSEEK(stream, labelsize, SEEK_CUR);
   }
@@ -490,10 +490,10 @@ void GetPartFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **framespt
       framesize += 4 + 4 + 4;             // nplim
 
 //      printf("nplim %i: %i\n",i, nplim);
-      skip  = 4 + 3*nplim*4 + 4;          // xp, yp, zp
-      skip += 4 +   nplim*4 + 4;          // tag
+      skip  = 4 + 3*nplim*sizeof(float) + 4;          // xp, yp, zp
+      skip += 4 +   nplim*sizeof(int)   + 4;          // tag
       if(nquants[2*i] > 0){
-        skip += 4 + nplim*nquants[2*i]*4 + 4; // qp
+        skip += 4 + nplim*nquants[2*i]*sizeof(float) + 4; // qp
       }
       framesize += skip;
       FRAME_FSEEK(stream, skip, SEEK_CUR);
