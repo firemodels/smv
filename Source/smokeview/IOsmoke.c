@@ -4025,11 +4025,11 @@ int SetupSmoke3D(smoke3ddata *smoke3di, int flag_arg, int iframe_arg, int *error
   int i, j;
 #else
   int ncomp_smoke_total_local;
+  int ncomp_smoke_total_skipped_local;
   int i, j, ii;
 #endif
   int fortran_skip = 0;
   int error_local;
-  int ncomp_smoke_total_skipped_local;
 
   mesh_smoke3d = meshinfo+smoke3di->blocknumber;
   if(smoke3di->extinct>0.0){

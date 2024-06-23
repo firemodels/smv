@@ -3935,7 +3935,7 @@ extern "C" void GLUIImmersedBoundCB(int var){
 void BoundBoundCB(int var){
   int i;
 #ifdef pp_FRAME
-  char *read_file, file[1024], ctime[1024];
+  char ctime[1024];
   bufferdata *bufferinfo=NULL;
   int nread;
   float read_time;
@@ -3945,17 +3945,16 @@ void BoundBoundCB(int var){
   switch(var){
 #ifdef pp_FRAME
   case READ_TEST:
-    strcpy(file, "test");
-    read_file = tmpnam(file);
-    MakeFile(read_file, read_buffer_size);
-    START_TIMER(read_time);
-    bufferinfo = File2Buffer(read_file, bufferinfo,  nframe_threads, &nread);
-    STOP_TIMER(read_time);
-    sprintf(ctime, "%f", read_time);
-    TrimZeros(ctime);
-    printf("threads: %i time (s): %s\n", nframe_threads, ctime);
-    FreeBufferInfo(bufferinfo);
-    FileErase(read_file);
+    if(MakeFile(frametest_filename, read_buffer_size) == 1){
+      START_TIMER(read_time);
+      bufferinfo = File2Buffer(frametest_filename, bufferinfo, nframe_threads, &nread);
+      STOP_TIMER(read_time);
+      sprintf(ctime, "%f", read_time);
+      TrimZeros(ctime);
+      printf("threads: %i time (s): %s\n", nframe_threads, ctime);
+      FreeBufferInfo(bufferinfo);
+      FileErase(frametest_filename);
+    }
     break;
 #endif
   case SHOW_BOUNDARY_OUTLINE:
