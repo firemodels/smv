@@ -643,7 +643,7 @@ int GetNinfo(int file_type){
 
   ASSERT_BOUND_TYPE;
   if(file_type == BOUND_SLICE){
-    ninfo = nsliceinfo;
+    ninfo = slicecoll.nsliceinfo;
   }
   else if(file_type == BOUND_PATCH){
     ninfo = npatchinfo;
@@ -779,7 +779,7 @@ char *GetShortLabel(int file_type, int i, int ilabel){
 
   ASSERT_BOUND_TYPE;
   if(file_type == BOUND_SLICE){
-    shortlabel = sliceinfo[i].label.shortlabel;
+    shortlabel = slicecoll.sliceinfo[i].label.shortlabel;
   }
   else if(file_type == BOUND_PATCH){
     shortlabel = patchinfo[i].label.shortlabel;
@@ -797,7 +797,7 @@ char *GetRegFile(int file_type, int i){
 
   ASSERT_BOUND_TYPE;
   if(file_type == BOUND_SLICE){
-    reg_file = sliceinfo[i].reg_file;
+    reg_file = slicecoll.sliceinfo[i].reg_file;
   }
   else if(file_type == BOUND_PATCH){
     reg_file = patchinfo[i].reg_file;
@@ -872,7 +872,7 @@ char *GetBoundFile(int file_type, int i){
 
   ASSERT_BOUND_TYPE;
   if(file_type == BOUND_SLICE){
-    bound_file = sliceinfo[i].bound_file;
+    bound_file = slicecoll.sliceinfo[i].bound_file;
   }
   else if(file_type == BOUND_PATCH){
     bound_file = patchinfo[i].bound_file;
@@ -987,7 +987,7 @@ void BoundsUpdateSetup(int file_type){
 
       if(fgets(buffer, 255, stream) == NULL)break;
       if(file_type==BOUND_PLOT3D){
-        sscanf(buffer, "%s %f %f %f %f %f %f %f %f %f %f %f %f ", file, 
+        sscanf(buffer, "%s %f %f %f %f %f %f %f %f %f %f %f %f ", file,
           valmins + 0, valmaxs + 0,
           valmins + 1, valmaxs + 1,
           valmins + 2, valmaxs + 2,
@@ -1094,7 +1094,7 @@ void BoundsUpdateDoit(int file_type){
     plot3ddata *plot3di;
 
     if(file_type == BOUND_SLICE){
-      slicei = sliceinfo + i;
+      slicei = slicecoll.sliceinfo + i;
       if(slicei->loaded == 0)continue;
     }
     else if(file_type == BOUND_PATCH){
@@ -1109,7 +1109,7 @@ void BoundsUpdateDoit(int file_type){
     key_index = (char **)bsearch((char *)&reg_file, sorted_filenames, ninfo, sizeof(char *), CompareBoundFileName);
     if(key_index == NULL)continue;
     index = (int)(key_index - sorted_filenames);
-    if(index<0 || index>nsliceinfo - 1)continue;
+    if(index<0 || index>slicecoll.nsliceinfo - 1)continue;
     fi = globalboundsinfo + index;
     if(fi->defined == 1 && is_fds_running == 0)continue;
     valmin = 0.0;
@@ -1227,7 +1227,7 @@ void BoundsUpdateDoit(int file_type){
               val = meshi->qdata[IJKN(ii,jj,kk,nn)];
               valmins[nn] = MIN(val, valmins[nn]);
               valmaxs[nn] = MAX(val, valmaxs[nn]);
-              
+
             }
           }
         }
@@ -1336,13 +1336,13 @@ void BoundsUpdateWrapup(int file_type){
     key_index = (char **)bsearch((char *)&reg_file, sorted_filenames, ninfo, sizeof(char *), CompareBoundFileName);
     if(key_index == NULL)continue;
     index = (int)(key_index - sorted_filenames);
-    if(index<0 || index>nsliceinfo - 1)continue;
+    if(index<0 || index>slicecoll.nsliceinfo - 1)continue;
     fi = globalboundsinfo + index;
     if(fi->defined == 0)continue;
     if(file_type == BOUND_SLICE){
       slicedata *slicei;
 
-      slicei = sliceinfo + i;
+      slicei = slicecoll.sliceinfo + i;
       slicei->valmin_slice = fi->valmins[0];
       slicei->valmax_slice = fi->valmaxs[0];
     }
@@ -1413,7 +1413,7 @@ void GetGlobalSliceBounds(int flag, int set_flag){
   int i;
 
   if(no_bounds == 1 && force_bounds==0)flag = 0;
-  if(nsliceinfo==0)return;
+  if(slicecoll.nsliceinfo==0)return;
   for(i = 0;i<nslicebounds;i++){
     boundsdata *boundi;
 
@@ -1423,13 +1423,13 @@ void GetGlobalSliceBounds(int flag, int set_flag){
   }
   if(no_bounds==0 || force_bounds==1)BoundsUpdate(BOUND_SLICE);
   INIT_PRINT_TIMER(slicebounds_timer);
-  for(i = 0;i<nsliceinfo;i++){
+  for(i = 0;i<slicecoll.nsliceinfo;i++){
     slicedata *slicei;
     float valmin, valmax;
     boundsdata *boundi;
     int doit;
 
-    slicei = sliceinfo+i;
+    slicei = slicecoll.sliceinfo+i;
     if(slicei->valmin_slice>slicei->valmax_slice ||
        current_script_command==NULL || NOT_LOADRENDER)doit=1;
     if(flag==0){
@@ -1440,7 +1440,7 @@ void GetGlobalSliceBounds(int flag, int set_flag){
     if(force_bound_update == 1||nzoneinfo>0)doit = 1;
 
     if(doit==1){
-      BoundsGet(slicei->reg_file, sliceglobalboundsinfo, sorted_slice_filenames, nsliceinfo, 1, &valmin, &valmax);
+      BoundsGet(slicei->reg_file, sliceglobalboundsinfo, sorted_slice_filenames, slicecoll.nsliceinfo, 1, &valmin, &valmax);
       if(valmin>valmax)continue;
       slicei->valmin_slice = valmin;
       slicei->valmax_slice = valmax;

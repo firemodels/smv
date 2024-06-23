@@ -56,8 +56,3 @@ void FreeContour(contour *ci);
 void FreeContours(contour *contours,int ncontours);
 
 #endif
-
-
-
-
-

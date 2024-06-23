@@ -466,7 +466,7 @@ int LuaLoadslice(lua_State *L) {
   return 0;
 }
 
-/// @brief Load a slice based on its index in sliceinfo.
+/// @brief Load a slice based on its index in slicecoll.sliceinfo.
 int LuaLoadsliceindex(lua_State *L) {
   size_t index = lua_tonumber(L, 1);
   int error = 0;
@@ -1311,7 +1311,7 @@ int LuaCreateCase(lua_State *L) {
   lua_setmetatable(L, -2);
   lua_setfield(L, -2, "devices");
 
-  // sliceinfo is a 1-indexed array so the lua length operator
+  // slicecoll.sliceinfo is a 1-indexed array so the lua length operator
   // works without the need for a metatable
   LuaGetSliceinfo(L);
   lua_setfield(L, -2, "slices");
@@ -1397,12 +1397,12 @@ int LuaInitsmvproginfo(lua_State *L) {
 
 int LuaGetSlice(lua_State *L) {
   // This should push a lightuserdata onto the stack which is a pointer to the
-  // slicedata. This takes the index of the slice (in the sliceinfo array) as an
+  // slicedata. This takes the index of the slice (in the slicecoll.sliceinfo array) as an
   // argument.
   // Get the index of the slice as an argument to the lua function.
   int slice_index = lua_tonumber(L, 1);
   // Get the pointer to the slicedata struct.
-  slicedata *slice = &sliceinfo[slice_index];
+  slicedata *slice = &slicecoll.sliceinfo[slice_index];
   // Push the pointer onto the lua stack as lightuserdata.
   lua_pushlightuserdata(L, slice);
   // lua_newuserdata places the data on the stack, so return a single stack
@@ -1714,7 +1714,7 @@ int LuaSliceDataMapFramesCountGreaterEq(lua_State *L) {
 /// 4. ink k
 /// The slice index is stored as part of a closure.
 int LuaGetslicedata(lua_State *L) {
-  // The offset in the global sliceinfo table of the slice.
+  // The offset in the global slicecoll.sliceinfo table of the slice.
   int slice_index = lua_tonumber(L, lua_upvalueindex(1));
   // The time frame to use
   int f = lua_tonumber(L, 1);
@@ -1724,34 +1724,34 @@ int LuaGetslicedata(lua_State *L) {
   int k = lua_tonumber(L, 4);
   // printf("getting slice data: %d, %d, %d-%d-%d\n", slice_index, f, i, j, k);
   // print all the times
-  // printf("times: %d\n", sliceinfo[slice_index].ntimes);
+  // printf("times: %d\n", slicecoll.sliceinfo[slice_index].ntimes);
   // int n = 0;
-  // for (n; n < sliceinfo[slice_index].ntimes; n++) {
-  //   fprintf(stderr, "t:%.2f s\n", sliceinfo[slice_index].times[n]);
+  // for (n; n < slicecoll.sliceinfo[slice_index].ntimes; n++) {
+  //   fprintf(stderr, "t:%.2f s\n", slicecoll.sliceinfo[slice_index].times[n]);
   // }
   // fprintf(stderr, "f:%d i:%d j:%d  k:%d\n", f, i,j,k);
 
-  int imax = sliceinfo[slice_index].ijk_max[0];
-  int jmax = sliceinfo[slice_index].ijk_max[1];
-  int kmax = sliceinfo[slice_index].ijk_max[2];
+  int imax = slicecoll.sliceinfo[slice_index].ijk_max[0];
+  int jmax = slicecoll.sliceinfo[slice_index].ijk_max[1];
+  int kmax = slicecoll.sliceinfo[slice_index].ijk_max[2];
 
-  int di = sliceinfo[slice_index].nslicei;
-  int dj = sliceinfo[slice_index].nslicej;
-  int dk = sliceinfo[slice_index].nslicek;
+  int di = slicecoll.sliceinfo[slice_index].nslicei;
+  int dj = slicecoll.sliceinfo[slice_index].nslicej;
+  int dk = slicecoll.sliceinfo[slice_index].nslicek;
   // Check that the offsets do not exceed the bounds of a single data frame
   if(i > imax || j > jmax || k > kmax) {
     fprintf(stderr, "ERROR: offsets exceed bounds");
     exit(1);
   }
   // Convert the offsets into the mesh into offsets into the data array
-  int i_offset = i - sliceinfo[slice_index].ijk_min[0];
-  int j_offset = j - sliceinfo[slice_index].ijk_min[1];
-  int k_offset = k - sliceinfo[slice_index].ijk_min[2];
+  int i_offset = i - slicecoll.sliceinfo[slice_index].ijk_min[0];
+  int j_offset = j - slicecoll.sliceinfo[slice_index].ijk_min[1];
+  int k_offset = k - slicecoll.sliceinfo[slice_index].ijk_min[2];
 
   // Offset into a single frame
   int offset = (dk * dj) * i_offset + dk * j_offset + k_offset;
   int framesize = di * dj * dk;
-  float val = sliceinfo[slice_index].qslicedata[offset + f * framesize];
+  float val = slicecoll.sliceinfo[slice_index].qslicedata[offset + f * framesize];
   // lua_pushstring(L,sliceinfo[slice_index].file);
   lua_pushnumber(L, val);
   return 1;
@@ -1760,77 +1760,77 @@ int LuaGetslicedata(lua_State *L) {
 /// @brief Build a Lua table with information on the slices of the model.
 // TODO: change this to use userdata instead
 int LuaGetSliceinfo(lua_State *L) {
-  lua_createtable(L, 0, nsliceinfo);
+  lua_createtable(L, 0, slicecoll.nsliceinfo);
   int i;
-  for(i = 0; i < nsliceinfo; i++) {
+  for(i = 0; i < slicecoll.nsliceinfo; i++) {
     lua_pushnumber(L, i + 1);
     lua_createtable(L, 0, 21);
 
-    if(sliceinfo[i].slicelabel != NULL) {
-      lua_pushstring(L, sliceinfo[i].slicelabel);
+    if(slicecoll.sliceinfo[i].slicelabel != NULL) {
+      lua_pushstring(L, slicecoll.sliceinfo[i].slicelabel);
       lua_setfield(L, -2, "label");
     }
 
     lua_pushnumber(L, i);
     lua_setfield(L, -2, "n");
 
-    if(sliceinfo[i].label.longlabel != NULL) {
-      lua_pushstring(L, sliceinfo[i].label.longlabel);
+    if(slicecoll.sliceinfo[i].label.longlabel != NULL) {
+      lua_pushstring(L, slicecoll.sliceinfo[i].label.longlabel);
       lua_setfield(L, -2, "longlabel");
     }
 
-    if(sliceinfo[i].label.shortlabel != NULL) {
-      lua_pushstring(L, sliceinfo[i].label.shortlabel);
+    if(slicecoll.sliceinfo[i].label.shortlabel != NULL) {
+      lua_pushstring(L, slicecoll.sliceinfo[i].label.shortlabel);
       lua_setfield(L, -2, "shortlabel");
     }
 
-    lua_pushstring(L, sliceinfo[i].file);
+    lua_pushstring(L, slicecoll.sliceinfo[i].file);
     lua_setfield(L, -2, "file");
 
-    lua_pushnumber(L, sliceinfo[i].slice_filetype);
+    lua_pushnumber(L, slicecoll.sliceinfo[i].slice_filetype);
     lua_setfield(L, -2, "slicefile_type");
 
-    lua_pushnumber(L, sliceinfo[i].idir);
+    lua_pushnumber(L, slicecoll.sliceinfo[i].idir);
     lua_setfield(L, -2, "idir");
 
-    lua_pushnumber(L, sliceinfo[i].sliceoffset);
+    lua_pushnumber(L, slicecoll.sliceinfo[i].sliceoffset);
     lua_setfield(L, -2, "sliceoffset");
 
-    lua_pushnumber(L, sliceinfo[i].ijk_min[0]);
+    lua_pushnumber(L, slicecoll.sliceinfo[i].ijk_min[0]);
     lua_setfield(L, -2, "imin");
 
-    lua_pushnumber(L, sliceinfo[i].ijk_max[0]);
+    lua_pushnumber(L, slicecoll.sliceinfo[i].ijk_max[0]);
     lua_setfield(L, -2, "imax");
 
-    lua_pushnumber(L, sliceinfo[i].ijk_min[1]);
+    lua_pushnumber(L, slicecoll.sliceinfo[i].ijk_min[1]);
     lua_setfield(L, -2, "jmin");
 
-    lua_pushnumber(L, sliceinfo[i].ijk_max[1]);
+    lua_pushnumber(L, slicecoll.sliceinfo[i].ijk_max[1]);
     lua_setfield(L, -2, "jmax");
 
-    lua_pushnumber(L, sliceinfo[i].ijk_min[2]);
+    lua_pushnumber(L, slicecoll.sliceinfo[i].ijk_min[2]);
     lua_setfield(L, -2, "kmin");
 
-    lua_pushnumber(L, sliceinfo[i].ijk_max[2]);
+    lua_pushnumber(L, slicecoll.sliceinfo[i].ijk_max[2]);
     lua_setfield(L, -2, "kmax");
 
-    lua_pushnumber(L, sliceinfo[i].blocknumber);
+    lua_pushnumber(L, slicecoll.sliceinfo[i].blocknumber);
     lua_setfield(L, -2, "blocknumber");
 
-    lua_pushnumber(L, sliceinfo[i].position_orig);
+    lua_pushnumber(L, slicecoll.sliceinfo[i].position_orig);
     lua_setfield(L, -2, "position_orig");
 
-    lua_pushnumber(L, sliceinfo[i].nslicex);
+    lua_pushnumber(L, slicecoll.sliceinfo[i].nslicex);
     lua_setfield(L, -2, "nslicex");
 
-    lua_pushnumber(L, sliceinfo[i].nslicey);
+    lua_pushnumber(L, slicecoll.sliceinfo[i].nslicey);
     lua_setfield(L, -2, "nslicey");
 
-    lua_pushstring(L, sliceinfo[i].cdir);
+    lua_pushstring(L, slicecoll.sliceinfo[i].cdir);
     lua_setfield(L, -2, "slicedir");
 
     // can't be done until loaded
-    // lua_pushnumber(L, sliceinfo[i].ntimes);
+    // lua_pushnumber(L, slicecoll.sliceinfo[i].ntimes);
     // lua_setfield(L, -2, "ntimes");
 
     // Push the slice index so that getslicedata knows which slice to operate

@@ -227,6 +227,7 @@ add_executable(smokeview
     Source/shared/readhvac.c
     Source/shared/readgeom.c
     Source/shared/readsmoke.c
+    Source/shared/readslice.c
     Source/shared/readobject.c
     Source/shared/readtour.c
     Source/shared/readlabel.c
