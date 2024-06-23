@@ -1089,14 +1089,11 @@ EXTERNCPP void Num2String(char *string, float tval);
 EXTERNCPP int  SetupCase(char *file);
 EXTERNCPP int  GetMinPartFrames(int flag);
 
-EXTERNCPP void FreeCADInfo(void);
 
 EXTERNCPP void InitUnitDefs(void);
 EXTERNCPP void InitUnits(void);
 EXTERNCPP f_units *GetUnitClass(char *unit);
 
-EXTERNCPP void ReadCAD2Geom(cadgeomdata *cd);
-EXTERNCPP void ReadCADGeom(cadgeomdata *cd);
 EXTERNCPP void DrawCADGeom(const cadgeomdata *cd);
 
 EXTERNCPP FILE_SIZE ReadPlot3D(char *file, int ifile, int flag,int *errorcode);
