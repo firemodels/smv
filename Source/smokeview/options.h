@@ -3,11 +3,12 @@
 
 #include "options_common.h"
 
-//#define pp_SMOKEFRAME    // turn on frame code for 3d smoke
-//#define pp_ISOFRAME      // turn on frame code for isosurfaces
-//#define pp_SLICEFRAME    // turn on frame code for slices
-//#define pp_PARTFRAME     // turn on frame code for particles
-//#define pp_FRAME_DEBUG // turn on debug frame code (output times)
+#define pp_SMOKEFRAME    // turn on frame code for 3d smoke
+#define pp_ISOFRAME      // turn on frame code for isosurfaces
+#define pp_SLICEFRAME    // turn on frame code for slices
+#define pp_PARTFRAME     // turn on frame code for particles
+//#define pp_FRAME_DEBUG   // output frames read in
+//#define pp_FRAME_DEBUG2  // output frame times
 
 //#define pp_PARTBOUND_MULTI // compute particle bounds in the background
 //#define pp_LUA            // turn on LUA option
