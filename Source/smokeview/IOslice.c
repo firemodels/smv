@@ -20,9 +20,11 @@
 #define SLICE_TRAILER_SIZE 4
 
 #ifdef pp_SLICEFRAME
-#define IJK_SLICE(i,j,k)  ( ((k)-sd->ks1)*sd->nslicei*sd->nslicej + ((j)-sd->js1)*sd->nslicei + ((i)-sd->is1) )
+#define IJK_SLICE(i,j,k)      ( ((k)-sd->ks1)* sd->nslicei   *sd->nslicej + ((j)-sd->js1)* sd->nslicei +    ((i)-sd->is1) )
+#define IJKCELL_SLICE(i,j,k)  ( ((k)-sd->ks1)*(sd->nslicei+1)*sd->nslicej + ((j)-sd->js1)*(sd->nslicei+1) + ((i)-sd->is1) )
 #else
-#define IJK_SLICE(i,j,k)  ( ((i)-sd->is1)*sd->nslicej*sd->nslicek + ((j)-sd->js1)*sd->nslicek + ((k)-sd->ks1) )
+#define IJK_SLICE(i,j,k)      ( ((i)-sd->is1)*sd->nslicej*sd->nslicek + ((j)-sd->js1)*sd->nslicek + ((k)-sd->ks1) )
+#define IJKCELL_SLICE(i,j,k)  ( ((i)-sd->is1)*sd->nslicej*sd->nslicek + ((j)-sd->js1)*sd->nslicek + ((k)-sd->ks1) )
 #endif
 
 #define SLICEVAL(i,j,k) \
@@ -4646,8 +4648,7 @@ void DrawGSliceDataGpu(slicedata *slicei){
 
 /* ------------------ DrawVolSliceCellFaceCenter ------------------------ */
 
-void DrawVolSliceCellFaceCenter(const slicedata *sd, int flag,
-                                int is1, int is2, int js1, int js2, int ks1, int ks2, int slicedir){
+void DrawVolSliceCellFaceCenter(const slicedata *sd, int is1, int is2, int js1, int js2, int ks1, int ks2, int slicedir){
   float *xplt, *yplt, *zplt;
   int plotx, ploty, plotz;
   int ibar, jbar;
@@ -4714,16 +4715,7 @@ void DrawVolSliceCellFaceCenter(const slicedata *sd, int flag,
 
     int plotxm1;
     plotxm1 = MAX(plotx-1, 0);
-    switch(flag){
-    case SLICE_CELL_CENTER:
-      constval = (xplt[plotx] + xplt[plotxm1]) / 2.0;
-      break;
-    default:
-      constval = (xplt[plotx] + xplt[plotxm1]) / 2.0;
-      assert(FFALSE);
-      break;
-    }
-    constval += SCALE2SMV(slice_dz);
+    constval = (xplt[plotx] + xplt[plotxm1])/2.0 + SCALE2SMV(slice_dz);
 
     glBegin(GL_TRIANGLES);
     maxj = MAX(js2, js1 + 1);
@@ -4752,7 +4744,8 @@ void DrawVolSliceCellFaceCenter(const slicedata *sd, int flag,
         }
         if(skip_slice_in_embedded_mesh == 1 && iblank_embed != NULL&&iblank_embed[IJKCELL(plotx, j, k)] == EMBED_YES)continue;
 
-        index_cell = (plotx+1-incx-iimin)*sd->nslicej*sd->nslicek + (j+1-sd->js1)*sd->nslicek + k+1-sd->ks1;
+//        index_cell = (plotx+1-incx-iimin)*sd->nslicej*sd->nslicek + (j+1-sd->js1)*sd->nslicek + k+1-sd->ks1;
+          index_cell = IJKCELL_SLICE(plotx+1-incx-iimin+sd->is1, j+1, k+1);
         i33 = SLICECOLOR(index_cell);
         z1 = zplt[k];
         z3 = zplt[k + 1];
@@ -4779,23 +4772,17 @@ void DrawVolSliceCellFaceCenter(const slicedata *sd, int flag,
   if(slicedir>0&&slicedir!=YDIR)doit = 0;
   if(doit == 1){
     float constval;
-    int i;
+    int i,imin;
     int maxi;
 
-    switch(flag){
-    case SLICE_CELL_CENTER:
-      constval = (yplt[ploty] + yplt[ploty - 1]) / 2.0;
-      break;
-    default:
-      constval = (yplt[ploty] + yplt[ploty - 1]) / 2.0;
-      assert(FFALSE);
-      break;
-    }
-    constval += SCALE2SMV(slice_dz);
+    constval = (yplt[ploty] + yplt[ploty - 1])/2.0 + SCALE2SMV(slice_dz);
 
     glBegin(GL_TRIANGLES);
     maxi = MAX(is2, is1 + 1);
-    for(i = is1; i<maxi; i++){
+    assert(is1 > 0);
+
+    imin = MAX(is1 - 1, 0);
+    for(i = imin; i<maxi; i++){
       int index_cell;
       float x1, x3;
       int k;
@@ -4817,7 +4804,8 @@ void DrawVolSliceCellFaceCenter(const slicedata *sd, int flag,
         }
         if(skip_slice_in_embedded_mesh == 1 && iblank_embed != NULL&&iblank_embed[IJKCELL(i, ploty, k)] == EMBED_YES)continue;
 
-        index_cell = (i+incx-sd->is1)*sd->nslicej*sd->nslicek + (ploty+1-incy-sd->js1)*sd->nslicek + k+1-sd->ks1;
+//        index_cell = (i+incx-sd->is1)*sd->nslicej*sd->nslicek + (ploty+1-incy-sd->js1)*sd->nslicek + k+1-sd->ks1;
+        index_cell = IJKCELL_SLICE(i+incx+1, ploty+1-incy, k+1);
         i33 = SLICECOLOR(index_cell);
         z1 = zplt[k];
         z3 = zplt[k + 1];
@@ -4848,16 +4836,7 @@ void DrawVolSliceCellFaceCenter(const slicedata *sd, int flag,
     int i;
     int maxi;
 
-    switch(flag){
-    case SLICE_CELL_CENTER:
-      constval = (zplt[plotz] + zplt[plotz - 1]) / 2.0;
-      break;
-    default:
-      constval = (zplt[plotz] + zplt[plotz - 1]) / 2.0;
-      assert(FFALSE);
-      break;
-    }
-    constval += SCALE2SMV(slice_dz);
+    constval = (zplt[plotz] + zplt[plotz - 1]) / 2.0 + SCALE2SMV(slice_dz);
 
     glBegin(GL_TRIANGLES);
     maxi = MAX(is2, is1 + 1);
@@ -4883,7 +4862,8 @@ void DrawVolSliceCellFaceCenter(const slicedata *sd, int flag,
         }
         if(skip_slice_in_embedded_mesh == 1 && iblank_embed != NULL&&iblank_embed[IJKCELL(i, j, plotz)] == EMBED_YES)continue;
 
-        index_cell = (i+1-sd->is1)*sd->nslicej*sd->nslicek + (j+incy-sd->js1)*sd->nslicek + plotz+1-incz-sd->ks1;
+//        index_cell = (i+1-sd->is1)*sd->nslicej*sd->nslicek + (j+incy-sd->js1)*sd->nslicek + plotz+1-incz-sd->ks1;
+        index_cell = IJKCELL_SLICE(i+1, j+incy, plotz+1-incz);
         i33 = SLICECOLOR(index_cell);
         yy1 = yplt[j];
         y3 = yplt[j + 1];
@@ -5085,7 +5065,7 @@ void DrawVolSliceValues(slicedata *sd){
 
 /* ------------------ DrawVolSliceCellValues ------------------------ */
 
-void DrawVolSliceCellFaceCenterValues(const slicedata *sd, int flag){
+void DrawVolSliceCellFaceCenterValues(const slicedata *sd){
   float *xplt, *yplt, *zplt;
   int plotx, ploty, plotz;
   int ibar, jbar;
@@ -5132,16 +5112,7 @@ void DrawVolSliceCellFaceCenterValues(const slicedata *sd, int flag){
 
     int plotxm1;
     plotxm1 = MAX(plotx-1, 0);
-    switch(flag){
-    case SLICE_CELL_CENTER:
-      constval = (xplt[plotx] + xplt[plotxm1]) / 2.0;
-      break;
-    default:
-      constval = (xplt[plotx] + xplt[plotxm1]) / 2.0;
-      assert(FFALSE);
-      break;
-    }
-    constval += SCALE2SMV(slice_dz);
+    constval = (xplt[plotx] + xplt[plotxm1]) / 2.0 + SCALE2SMV(slice_dz);
 
     if(show_slice_values[0]==1||show_slice_values[1]==1||show_slice_values[2]==1){
       maxj = sd->js2;
@@ -5177,6 +5148,7 @@ void DrawVolSliceCellFaceCenterValues(const slicedata *sd, int flag){
           n (y1,z1)     n2 (y3,z1)
           */
           index_cell = (plotx+1-incx-iimin)*sd->nslicej*sd->nslicek + (j+1-sd->js1)*sd->nslicek + k+1-sd->ks1;
+          index_cell = IJKCELL_SLICE(plotx+1-incx-iimin+sd->is1, j+1, k+1);
 
           GET_VAL(sd, val, index_cell);
           Output3Val(constval, (yy1 + y3) / 2.0, (z1 + z3) / 2.0, val);
@@ -5189,16 +5161,7 @@ void DrawVolSliceCellFaceCenterValues(const slicedata *sd, int flag){
     int i;
     int maxi;
 
-    switch(flag){
-    case SLICE_CELL_CENTER:
-      constval = (yplt[ploty] + yplt[ploty - 1]) / 2.0;
-      break;
-    default:
-      constval = (yplt[ploty] + yplt[ploty - 1]) / 2.0;
-      assert(FFALSE);
-      break;
-    }
-    constval += SCALE2SMV(slice_dz);
+    constval = (yplt[ploty] + yplt[ploty - 1]) / 2.0 + SCALE2SMV(slice_dz);
 
     if(show_slice_values[0]==1||show_slice_values[1]==1||show_slice_values[2]==1){
       maxi = sd->is1 + sd->nslicei - 1;
@@ -5227,7 +5190,8 @@ void DrawVolSliceCellFaceCenterValues(const slicedata *sd, int flag){
           }
           if(skip_slice_in_embedded_mesh == 1 && iblank_embed != NULL&&iblank_embed[IJKCELL(i, ploty, k)] == EMBED_YES)continue;
 
-          index_cell = (i+incx-sd->is1)*sd->nslicej*sd->nslicek + (ploty+1-incy-sd->js1)*sd->nslicek + k+1-sd->ks1;
+//          index_cell = (i+incx-sd->is1)*sd->nslicej*sd->nslicek + (ploty+1-incy-sd->js1)*sd->nslicek + k+1-sd->ks1;
+          index_cell = IJKCELL_SLICE(i+incx+1, ploty+1-incy, k+1);
           z1 = zplt[k];
           z3 = zplt[k + 1];
           /*
@@ -5247,16 +5211,7 @@ void DrawVolSliceCellFaceCenterValues(const slicedata *sd, int flag){
     int i;
     int maxi;
 
-    switch(flag){
-    case SLICE_CELL_CENTER:
-      constval = (zplt[plotz] + zplt[plotz - 1]) / 2.0;
-      break;
-    default:
-      constval = (zplt[plotz] + zplt[plotz - 1]) / 2.0;
-      assert(FFALSE);
-      break;
-    }
-    constval += SCALE2SMV(slice_dz);
+    constval = (zplt[plotz] + zplt[plotz - 1]) / 2.0 + SCALE2SMV(slice_dz);
 
     if(show_slice_values[0]==1||show_slice_values[1]==1||show_slice_values[2]==1){
       maxi = sd->is1 + sd->nslicei - 1;
@@ -5285,7 +5240,8 @@ void DrawVolSliceCellFaceCenterValues(const slicedata *sd, int flag){
           }
           if(skip_slice_in_embedded_mesh == 1 && iblank_embed != NULL&&iblank_embed[IJKCELL(i, j, plotz)] == EMBED_YES)continue;
 
-          index_cell = (i+1-sd->is1)*sd->nslicej*sd->nslicek + (j+incy-sd->js1)*sd->nslicek + plotz+1-incz-sd->ks1;
+//          index_cell = (i+1-sd->is1)*sd->nslicej*sd->nslicek + (j+incy-sd->js1)*sd->nslicek + plotz+1-incz-sd->ks1;
+          index_cell = IJKCELL_SLICE(i+1, j+incy, plotz+1-incz);
           yy1 = yplt[j];
           y3 = yplt[j + 1];
           /*
@@ -7497,19 +7453,16 @@ void DrawSliceFrame(){
 #endif
         break;
       case SLICE_CELL_CENTER:
-        {
+        if(sortslices==0||sd->volslice==1){
           int is2;
 
-          if(sd->volslice==1){
+          if(sd->volslice == 1){
             is2 = sd->is1 + sd->nslicei - 1;
           }
           else{
             is2 = sd->is2;
           }
-          if(sortslices==0||sd->volslice==1){
-            DrawVolSliceCellFaceCenter(sd, SLICE_CELL_CENTER,
-                                       sd->is1, is2, sd->js1, sd->js2, sd->ks1, sd->ks2, 0);
-          }
+          DrawVolSliceCellFaceCenter(sd, sd->is1, is2, sd->js1, sd->js2, sd->ks1, sd->ks2, 0);
         }
         SNIFF_ERRORS("after DrawVolSliceCellFaceCenter SLICE_CELL_CENTER");
         if(show_slice_outlines[IN_SOLID_GLUI]==1||show_slice_outlines[IN_GAS_GLUI]==1){
@@ -7521,7 +7474,7 @@ void DrawSliceFrame(){
           SNIFF_ERRORS("after DrawVolSliceVerts SLICE_CELL_CENTER");
         }
         if(show_slice_values[IN_SOLID_GLUI]==1||show_slice_values[IN_GAS_GLUI]==1){
-          DrawVolSliceCellFaceCenterValues(sd, SLICE_CELL_CENTER);
+          DrawVolSliceCellFaceCenterValues(sd);
           SNIFF_ERRORS("after DrawVolSliceVerts SLICE_CELL_CENTER");
         }
         break;
@@ -9525,8 +9478,7 @@ void DrawSortSlices(void){
         DrawVolSliceTexture(sd, si->is1, si->is2, si->js1, si->js2, si->ks1, si->ks2, si->splitdir);
         break;
       case SLICE_CELL_CENTER:
-        DrawVolSliceCellFaceCenter(sd, SLICE_CELL_CENTER,
-                                   si->is1, si->is2, si->js1, si->js2, si->ks1, si->ks2, si->splitdir);
+        DrawVolSliceCellFaceCenter(sd, si->is1, si->is2, si->js1, si->js2, si->ks1, si->ks2, si->splitdir);
         break;
       default:
         assert(FFALSE);
