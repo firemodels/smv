@@ -8613,7 +8613,11 @@ void DrawVSliceFrame(void){
 #endif
         }
       }
+#ifdef pp_SLICEFRAME
+      val->qsliceframe = (float *)FRAMEGetFramePtr(val->frameinfo, val->itime);
+#else
       if(val->qslicedata!=NULL)val->qsliceframe = val->qslicedata+val->itime*val->nsliceijk;
+#endif
       if(u!=NULL){
         if(u->compression_type!=UNCOMPRESSED){
           UncompressSliceDataFrame(u, u->itime);
