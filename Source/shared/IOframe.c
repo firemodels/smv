@@ -297,7 +297,6 @@ void GetBoundaryFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **fram
   int headersize, framesize, nframes, *frames, datasize;
   FILE_SIZE filesize;
   int npatch, i;
-  float time;
 
   stream = fopen(bufferinfo->file, "rb");
   if(stream == NULL){
@@ -306,12 +305,23 @@ void GetBoundaryFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **fram
     *filesizeptr = 0;
   }
 
+  // header
+  // WRITE(LUBF) QUANTITY   (30 chars)
+  // WRITE(LUBF) SHORT_NAME (30 chars)
+  // WRITE(LUBF) UNITS      (30 chars)
+  // WRITE(LUBF) NPATCH
+  // WRITE(LUBF) I1, I2, J1, J2, K1, K2, IOR, NB, NM  (NPATCH entries)
+  // WRITE(LUBF) I1, I2, J1, J2, K1, K2, IOR, NB, NM
+
   headersize = 3 * (4 + 30 + 4);            // QUANTITY, SHORT_NAME, UNITS
   FSEEK(stream, headersize, SEEK_SET);
 
   FSEEK(stream, 4, SEEK_CUR);fread(&npatch, sizeof(int), 1, stream);FSEEK(stream, 4, SEEK_CUR);
   headersize += (4 + sizeof(int) + 4);       // NPATCH
 
+  // frame
+  // WRITE(LUBF) TIME
+  // WRITE(LUBF) (((QQ(I, J, K), I = 11, I2), J = J1, J2), K = K1, K2) (NPATH entries)
   framesize = 4 + sizeof(float) + 4; // time
   datasize = 0;
   for(i = 0;i < npatch;i++){
