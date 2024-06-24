@@ -7615,7 +7615,8 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
           int index_v;
           float dy;
 
-          index_v = (plotx - sd->is1)*sd->nslicej*sd->nslicek + (j - sd->js1)*sd->nslicek + k + 1 - sd->ks1;
+ //         index_v = (plotx - sd->is1)*sd->nslicej*sd->nslicek + (j - sd->js1)*sd->nslicek + k + 1 - sd->ks1;
+          index_v = IJKCELL_SLICE(plotx, j, k+1);
           GET_VEC_DXYZ(v, dy, index_v);
           ADJUST_VEC_DX(dy);
           glVertex3f(constval, yy1 - dy, zhalf);
@@ -7625,7 +7626,8 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
           int index_w;
           float dz;
 
-          index_w = (plotx - sd->is1)*sd->nslicej*sd->nslicek + (j - sd->js1 + 1)*sd->nslicek + k - sd->ks1;
+//          index_w = (plotx - sd->is1)*sd->nslicej*sd->nslicek + (j - sd->js1 + 1)*sd->nslicek + k - sd->ks1;
+          index_w = IJKCELL_SLICE(plotx, j, k);
           GET_VEC_DXYZ(w, dz, index_w);
           ADJUST_VEC_DX(dz);
           glVertex3f(constval, yhalf, z1 - dz);
@@ -7674,7 +7676,8 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
           int index_v;
           float dy;
 
-          index_v = (plotx - sd->is1)*sd->nslicej*sd->nslicek + (j - sd->js1)*sd->nslicek + k - sd->ks1 + 1;
+//          index_v = (plotx - sd->is1)*sd->nslicej*sd->nslicek + (j - sd->js1)*sd->nslicek + k - sd->ks1 + 1;
+          index_v = IJKCELL_SLICE(plotx, j, k+1);
           GET_VEC_DXYZ(v, dy, index_v);
           ADJUST_VEC_DX(dy);
           glVertex3f(constval, yy1 + dy, zhalf);
@@ -7683,7 +7686,8 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
           int index_w;
           float dz;
 
-          index_w = (plotx - sd->is1)*sd->nslicej*sd->nslicek + (j - sd->js1 + 1)*sd->nslicek + k - sd->ks1;
+//          index_w = (plotx - sd->is1)*sd->nslicej*sd->nslicek + (j - sd->js1 + 1)*sd->nslicek + k - sd->ks1;
+          index_w = IJKCELL_SLICE(plotx, j, k);
           GET_VEC_DXYZ(w, dz, index_w);
           ADJUST_VEC_DX(dz);
           glVertex3f(constval, yhalf, z1 + dz);
@@ -7740,7 +7744,8 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
           int index_u;
           float dx;
 
-          index_u = (i - sd->is1)*sd->nslicej*sd->nslicek + (ploty - sd->js1)*sd->nslicek + k + 1 - sd->ks1;
+//          index_u = (i - sd->is1)*sd->nslicej*sd->nslicek + (ploty - sd->js1)*sd->nslicek + k + 1 - sd->ks1;
+          index_u = IJKCELL_SLICE(i, ploty, k+1);
           GET_VEC_DXYZ(u, dx, index_u);
           ADJUST_VEC_DX(dx);
           glVertex3f(x1 - dx, constval, zhalf);
@@ -7750,7 +7755,8 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
           int index_w;
           float dz;
 
-          index_w = (i + 1 - sd->is1)*sd->nslicej*sd->nslicek + (ploty - sd->js1)*sd->nslicek + k - sd->ks1;
+//          index_w = (i + 1 - sd->is1)*sd->nslicej*sd->nslicek + (ploty - sd->js1)*sd->nslicek + k - sd->ks1;
+          index_w = IJKCELL_SLICE(i+1, ploty, k);
           GET_VEC_DXYZ(w, dz, index_w);
           ADJUST_VEC_DX(dz);
           glVertex3f(xhalf, constval, z1 - dz);
@@ -7795,7 +7801,8 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
           int index_u;
           float dx;
 
-          index_u = (i - sd->is1)*sd->nslicej*sd->nslicek + (ploty - sd->js1)*sd->nslicek + k + 1 - sd->ks1;
+//          index_u = (i - sd->is1)*sd->nslicej*sd->nslicek + (ploty - sd->js1)*sd->nslicek + k + 1 - sd->ks1;
+          index_u = IJKCELL_SLICE(i, ploty, k+1);
           GET_VEC_DXYZ(u, dx, index_u);
           ADJUST_VEC_DX(dx);
           glVertex3f(x1 + dx, constval, zhalf);
@@ -7804,7 +7811,8 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
           int index_w;
           float dz;
 
-          index_w = (i + 1 - sd->is1)*sd->nslicej*sd->nslicek + (ploty - sd->js1)*sd->nslicek + k - sd->ks1;
+//          index_w = (i + 1 - sd->is1)*sd->nslicej*sd->nslicek + (ploty - sd->js1)*sd->nslicek + k - sd->ks1;
+          index_w = IJKCELL_SLICE(i+1, ploty, k);
           GET_VEC_DXYZ(w, dz, index_w);
           ADJUST_VEC_DX(dz);
           glVertex3f(xhalf, constval, z1 + dz);
@@ -7861,7 +7869,8 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
           int index_u;
           float dx;
 
-          index_u = (i - sd->is1)*sd->nslicej*sd->nslicek + (plotz - sd->ks1) + (j + 1 - sd->js1)*sd->nslicek;
+//          index_u = (i - sd->is1)*sd->nslicej*sd->nslicek + (plotz - sd->ks1) + (j + 1 - sd->js1)*sd->nslicek;
+          index_u = IJKCELL_SLICE(i, j+1, plotz);
           GET_VEC_DXYZ(u, dx, index_u);
           ADJUST_VEC_DX(dx);
           glVertex3f(x1 - dx, yhalf, constval);
@@ -7871,7 +7880,8 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
           int index_v;
           float dy;
 
-          index_v = (i + 1 - sd->is1)*sd->nslicej*sd->nslicek + (plotz - sd->ks1) + (j - sd->js1)*sd->nslicek;
+//          index_v = (i + 1 - sd->is1)*sd->nslicej*sd->nslicek + (plotz - sd->ks1) + (j - sd->js1)*sd->nslicek;
+          index_v = IJKCELL_SLICE(i+1, j, plotz);
           GET_VEC_DXYZ(v, dy, index_v);
           ADJUST_VEC_DX(dy);
           glVertex3f(xhalf, yy1 - dy, constval);
@@ -7918,7 +7928,8 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
           int index_u;
           float dx;
 
-          index_u = (i - sd->is1)*sd->nslicej*sd->nslicek + (plotz - sd->ks1) + (j + 1 - sd->js1)*sd->nslicek;
+//          index_u = (i - sd->is1)*sd->nslicej*sd->nslicek + (plotz - sd->ks1) + (j + 1 - sd->js1)*sd->nslicek;
+          index_u = IJKCELL_SLICE(i, j+1, plotz);
           GET_VEC_DXYZ(u, dx, index_u);
           ADJUST_VEC_DX(dx);
           glVertex3f(x1 + dx, yhalf, constval);
@@ -7927,7 +7938,8 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
           int index_v;
           float dy;
 
-          index_v = (i + 1 - sd->is1)*sd->nslicej*sd->nslicek + (plotz - sd->ks1) + (j - sd->js1)*sd->nslicek;
+//          index_v = (i + 1 - sd->is1)*sd->nslicej*sd->nslicek + (plotz - sd->ks1) + (j - sd->js1)*sd->nslicek;
+          index_v = IJKCELL_SLICE(i+1, j, plotz);
           GET_VEC_DXYZ(v, dy, index_v);
           ADJUST_VEC_DX(dy);
           glVertex3f(xhalf, yy1 + dy, constval);
