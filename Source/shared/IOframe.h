@@ -41,8 +41,9 @@ void FRAMESetTimes(framedata *fi, int iframe, int nframes);
 void FRAMESetup(framedata *fi);
 void FRAMESetupVals(framedata *fi);
 
+void GetBoundaryFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **framesptr, int *nframesptr, FILE_SIZE *filesizeptr);
 void GetIsoFrameInfo(    bufferdata *bufferinfo, int *headersizeptr, int **sizesptr, int *nsizesptr, FILE_SIZE *filesizeptr);
+void GetPartFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **framesptr, int *nframesptr, FILE_SIZE *filesizeptr);
 void GetSliceFrameInfo(  bufferdata *bufferinfo, int *headersizeptr, int **sizesptr, int *nsizesptr, FILE_SIZE *filesizeptr);
 void GetSmoke3DFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **sizesptr, int *nsizesptr, FILE_SIZE *filesizeptr);
-void GetPartFrameInfo(   bufferdata *bufferinfo, int *headersizeptr, int **framesptr, int *nframesptr, FILE_SIZE *filesizeptr);
 #endif

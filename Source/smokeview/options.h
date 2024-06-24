@@ -3,6 +3,7 @@
 
 #include "options_common.h"
 
+//#define pp_BOUNDFRAME    // turn on frame code for boundary files
 //#define pp_SMOKEFRAME    // turn on frame code for 3d smoke
 //#define pp_ISOFRAME      // turn on frame code for isosurfaces
 //#define pp_SLICEFRAME    // turn on frame code for slices
@@ -29,6 +30,11 @@
 //#define pp_FDS            // create a 1 mesh input file
 
 // turn on pp_FRAME if a frame directive is set for one of the file types
+#ifdef pp_BOUNDFRAME
+#ifndef pp_FRAME
+#define pp_FRAME
+#endif
+#endif
 #ifdef pp_SMOKEFRAME
 #ifndef pp_FRAME
 #define pp_FRAME

@@ -5294,9 +5294,12 @@ int ParseBNDFProcess(bufferstreamdata *stream, char *buffer, int *nn_patch_in, i
   for(i = 0; i<6; i++){
     patchi->ijk[i] = -1;
   }
+#ifdef pp_BOUNDFRAME
+  patchi->frameinfo         = NULL;
+#endif
   patchi->finalize          = 1;
-  patchi->valmin_patch        = 1.0;
-  patchi->valmax_patch        = 0.0;
+  patchi->valmin_patch      = 1.0;
+  patchi->valmax_patch      = 0.0;
   patchi->skip              = 0;
   patchi->version           = version;
   patchi->ntimes            = 0;

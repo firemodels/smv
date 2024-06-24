@@ -1715,6 +1715,9 @@ typedef struct _patchdata {
   int hist_update;
   bounddata bounds;
   boundsdata *bounds2;
+#ifdef pp_BOUNDFRAME
+  framedata *frameinfo;
+#endif
 } patchdata;
 
 /* --------------------------  plot3ddata ------------------------------------ */

@@ -289,6 +289,57 @@ void GetSmoke3DFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **frame
   *filesizeptr = filesize;
 }
   
+/* ------------------ GetBoundaryFrameInfo ------------------------ */
+
+void GetBoundaryFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **framesptr, int *nframesptr, FILE_SIZE *filesizeptr){
+  FILE *stream;
+
+  int headersize, framesize, nframes, *frames, datasize;
+  FILE_SIZE filesize;
+  int npatch, i;
+  float time;
+
+  stream = fopen(bufferinfo->file, "rb");
+  if(stream == NULL){
+    *nframesptr = 0;
+    *framesptr = NULL;
+    *filesizeptr = 0;
+  }
+
+  headersize = 3 * (4 + 30 + 4);            // QUANTITY, SHORT_NAME, UNITS
+  FSEEK(stream, headersize, SEEK_SET);
+
+  FSEEK(stream, 4, SEEK_CUR);fread(&npatch, sizeof(int), 1, stream);FSEEK(stream, 4, SEEK_CUR);
+  headersize += (4 + sizeof(int) + 4);       // NPATCH
+
+  framesize = 4 + sizeof(float) + 4; // time
+  datasize = 0;
+  for(i = 0;i < npatch;i++){
+    int parms[9], ncells;
+
+    FSEEK(stream, 4, SEEK_CUR);fread(parms, sizeof(int), 9, stream);FSEEK(stream, 4, SEEK_CUR);
+    ncells  = (parms[1] + 1 - parms[0]);
+    ncells *= (parms[3] + 1 - parms[2]);
+    ncells *= (parms[5] + 1 - parms[4]);
+    datasize += (4 + ncells * sizeof(float) + 4);
+  }
+  framesize += datasize;
+  headersize += npatch*(4 + 9 * sizeof(int) + 4); // I1, I2, J1, J2, K1, K2, IOR, NB, NM
+  fclose(stream);
+
+  filesize = GetFileSizeSMV(bufferinfo->file);
+  nframes = (filesize - headersize) / framesize;
+
+  NewMemory((void **)&frames, nframes * sizeof(int));
+  for(i = 0;i < nframes;i++){
+    frames[i] = framesize;
+  }
+  *headersizeptr = headersize;
+  *framesptr = frames;
+  *nframesptr = nframes;
+  *filesizeptr = filesize;
+}
+
   /* ------------------ GetSliceFrameInfo ------------------------ */
 
 void GetSliceFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **framesptr, int *nframesptr, FILE_SIZE *filesizeptr){
