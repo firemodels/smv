@@ -4786,7 +4786,13 @@ void DrawVolSliceCellFaceCenter(const slicedata *sd, int is1, int is2, int js1, 
 
     glBegin(GL_TRIANGLES);
     maxj = MAX(js2, js1 + 1);
+#ifdef pp_SLICEFRAME
+    int minj;
+    minj = MAX(js1,0);
+    for(j = minj; j<maxj; j++){
+#else
     for(j = js1; j<maxj; j++){
+#endif
       float yy1;
       int k;
       float y3;
@@ -4907,7 +4913,13 @@ void DrawVolSliceCellFaceCenter(const slicedata *sd, int is1, int is2, int js1, 
 
     glBegin(GL_TRIANGLES);
     maxi = MAX(is2, is1 + 1);
+#ifdef pp_SLICEFRAME
+    int mini;
+    mini = MAX(is1-1,0);
+    for(i = mini; i<maxi; i++){
+#else
     for(i = is1; i<maxi; i++){
+#endif
       float x1, x3;
       int j;
 
@@ -4930,7 +4942,11 @@ void DrawVolSliceCellFaceCenter(const slicedata *sd, int is1, int is2, int js1, 
         if(skip_slice_in_embedded_mesh == 1 && iblank_embed != NULL&&iblank_embed[IJKCELL(i, j, plotz)] == EMBED_YES)continue;
 
 //        index_cell = (i+1-sd->is1)*sd->nslicej*sd->nslicek + (j+incy-sd->js1)*sd->nslicek + plotz+1-incz-sd->ks1;
+#ifdef pp_SLICEFRAME
+        index_cell = IJKCELL_SLICE(i+1+1, j+incy, plotz+1-incz);
+#else
         index_cell = IJKCELL_SLICE(i+1, j+incy, plotz+1-incz);
+#endif
         i33 = SLICECOLOR(index_cell);
         yy1 = yplt[j];
         y3 = yplt[j + 1];
@@ -5235,7 +5251,13 @@ void DrawVolSliceCellFaceCenterValues(const slicedata *sd){
       if(sd->is1 + 1>maxi){
         maxi = sd->is1 + 1;
       }
+#ifdef pp_SLICEFRAME
+      int mini;
+      mini = MAX(sd->is1-1,0);
+      for(i = mini; i<maxi; i++){
+#else
       for(i = sd->is1; i<maxi; i++){
+#endif
         float x1, x3;
         int k;
 
@@ -5285,7 +5307,13 @@ void DrawVolSliceCellFaceCenterValues(const slicedata *sd){
       if(sd->is1 + 1>maxi){
         maxi = sd->is1 + 1;
       }
+#ifdef pp_SLICEFRAME
+      int mini;
+      mini = MAX(sd->is1-1,0);
+      for(i = mini; i<maxi; i++){
+#else
       for(i = sd->is1; i<maxi; i++){
+#endif
         float x1, x3;
         int j;
 
@@ -5308,7 +5336,11 @@ void DrawVolSliceCellFaceCenterValues(const slicedata *sd){
           if(skip_slice_in_embedded_mesh == 1 && iblank_embed != NULL&&iblank_embed[IJKCELL(i, j, plotz)] == EMBED_YES)continue;
 
 //          index_cell = (i+1-sd->is1)*sd->nslicej*sd->nslicek + (j+incy-sd->js1)*sd->nslicek + plotz+1-incz-sd->ks1;
+#ifdef pp_SLICEFRAME
+          index_cell = IJKCELL_SLICE(i+1+1, j+incy, plotz+1-incz);
+#else
           index_cell = IJKCELL_SLICE(i+1, j+incy, plotz+1-incz);
+#endif
           yy1 = yplt[j];
           y3 = yplt[j + 1];
           /*
