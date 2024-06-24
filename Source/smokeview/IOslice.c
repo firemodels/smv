@@ -152,7 +152,11 @@ float Get3DSliceVal(slicedata *sd, float *xyz){
   float dxbar, dybar, dzbar;
   int ibar, jbar, kbar;
   int nx, ny, nz;
+#ifdef pp_SLICEFRAME
+  int slice_nx, slice_ny;
+#else
   int slice_ny, slice_nz;
+#endif
   float dx, dy, dz;
   float val000, val100, val010, val110;
   float val001, val101, val011, val111;
@@ -178,8 +182,13 @@ float Get3DSliceVal(slicedata *sd, float *xyz){
   nx = ibar + 1;
   ny = jbar + 1;
   nz = kbar + 1;
+#ifdef pp_SLICEFRAME
+  slice_nx = sd->ijk_max[0] - sd->ijk_min[0] + 1;
+  slice_ny = sd->ijk_max[1] - sd->ijk_min[1] + 1;
+#else
   slice_ny = sd->ijk_max[1] - sd->ijk_min[1] + 1;
   slice_nz = sd->ijk_max[2] - sd->ijk_min[2] + 1;
+#endif
 
   i = GETINDEX(xyz[0], xplt[0], dxbar, nx);
   j = GETINDEX(xyz[1], yplt[0], dybar, ny);
@@ -189,7 +198,11 @@ float Get3DSliceVal(slicedata *sd, float *xyz){
   ijk_min = sd->ijk_min;
   ijk_max = sd->ijk_max;
 
+#ifdef pp_SLICEFRAME
+  ijk = (k-ijk_min[2])*slice_nx*slice_ny + (j-ijk_min[1])*slice_nx + (i-ijk_min[0]);
+#else
   ijk = (i - ijk_min[0])*slice_nz*slice_ny + (j - ijk_min[1])*slice_nz + (k - ijk_min[2]);
+#endif
 
   dx = (xyz[0] - xplt[i]) / dxbar;
   dx = CLAMP(dx, 0.0, 1.0);
@@ -200,9 +213,15 @@ float Get3DSliceVal(slicedata *sd, float *xyz){
 
 
   // ijk
+#ifdef pp_SLICEFRAME
+  if(i <= ijk_max[0])ip1 = 1;
+  if(j <= ijk_max[1])jp1 = slice_nx;
+  if(k <= ijk_max[2])kp1 = slice_nx*slice_ny;
+#else
   if(i <= ijk_max[0])ip1 = slice_nz*slice_ny;
   if(j <= ijk_max[1])jp1 = slice_nz;
   if(k <= ijk_max[2])kp1 = 1;
+#endif
 
   val000 = (float)GET_VAL_N(sd, ijk);     // i,j,k
   val001 = (float)GET_VAL_N(sd, ijk + kp1); // i,j,k+1
@@ -239,7 +258,11 @@ float GetSliceTextureIndex(float *xyz){
   float dxbar, dybar, dzbar;
   int ibar, jbar, kbar;
   int nx, ny, nz;
+#ifdef pp_SLICEFRAME
+  int slice_nx, slice_ny;
+#else
   int slice_ny, slice_nz;
+#endif
   float dx, dy, dz;
   float val000, val100, val010, val110;
   float val001, val101, val011, val111;
@@ -271,8 +294,13 @@ float GetSliceTextureIndex(float *xyz){
   nx = ibar + 1;
   ny = jbar + 1;
   nz = kbar + 1;
+#ifdef pp_SLICEFRAME
+  slice_nx = gslice->ijk_max[0] - gslice->ijk_min[0] + 1;
+  slice_ny = gslice->ijk_max[1] - gslice->ijk_min[1] + 1;
+#else
   slice_ny = gslice->ijk_max[1] - gslice->ijk_min[1] + 1;
   slice_nz = gslice->ijk_max[2] - gslice->ijk_min[2] + 1;
+#endif
 
   i = GETINDEX(xyz[0], xplt[0], dxbar, nx);
   j = GETINDEX(xyz[1], yplt[0], dybar, ny);
@@ -281,7 +309,11 @@ float GetSliceTextureIndex(float *xyz){
   // val(i,j,k) = di*nj*nk + dj*nk + dk
   ijk_min = gslice->ijk_min;
   ijk_max = gslice->ijk_max;
-  ijk = (i - ijk_min[0])*slice_nz*slice_ny + (j - ijk_min[1])*slice_nz + (k - ijk_min[2]);
+#ifdef pp_SLICEFRAME
+  ijk = (i - ijk_min[0]) + (j - ijk_min[1])*slice_nx + (k - ijk_min[2])*slice_nx*slice_ny;
+#else
+  ijk = (i - ijk_min[0]) * slice_nz * slice_ny + (j - ijk_min[1]) * slice_nz + (k - ijk_min[2]);
+#endif
 
   dx = (xyz[0] - xplt[i]) / dxbar;
   dx = CLAMP(dx, 0.0, 1.0);
@@ -291,9 +323,15 @@ float GetSliceTextureIndex(float *xyz){
   dz = CLAMP(dz, 0.0, 1.0);
 
   vv = slicedata0 + ijk;
+#ifdef pp_SLICEFRAME
+  if(i + 1 <= ijk_max[0])iplus = 1;
+  if(j + 1 <= ijk_max[1])jplus = slice_nx;
+  if(k + 1 <= ijk_max[2])kplus = slice_nx*slice_ny;
+#else
   if(i + 1 <= ijk_max[0])iplus = slice_nz*slice_ny;
   if(j + 1 <= ijk_max[1])jplus = slice_nz;
   if(k + 1 <= ijk_max[2])kplus = 1;
+#endif
 
   val000 = (float)vv[0]; // i,j,k
   val001 = (float)vv[kplus]; // i,j,k+1
@@ -4548,12 +4586,17 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
 void UpdateSlice3DTexture(meshdata *meshi, slicedata *slicei, float *valdata){
   GLint xoffset = 0, yoffset = 0, zoffset = 0;
   GLsizei nx, ny, nz, nxy;
+#ifdef pp_SLICEFRAME
+  int slice_nx, slice_ny;
+  int slice_nxy;
+#else
   int slice_ny, slice_nz;
+  int slice_nyz;
+#endif
   int i, j, k;
   float *cbuffer;
   int *ijk_min, *ijk_max;
   int kindex;
-  int slice_nyz;
 
 
   nx = meshi->ibar + 1;
@@ -4562,10 +4605,33 @@ void UpdateSlice3DTexture(meshdata *meshi, slicedata *slicei, float *valdata){
   ijk_min = slicei->ijk_min;
   ijk_max = slicei->ijk_max;
 
+#ifdef pp_SLICEFRAME
+  slice_nx = ijk_max[0] - ijk_min[0] + 1;
+  slice_ny = ijk_max[1] - ijk_min[1] + 1;
+  slice_nxy = slice_nx * slice_ny;
+#else
   slice_ny = ijk_max[1] - ijk_min[1] + 1;
   slice_nz = ijk_max[2] - ijk_min[2] + 1;
   slice_nyz = slice_ny*slice_nz;
+#endif
 
+#ifdef pp_SLICEFRAME
+  nxy = nx * ny;
+  for(k = ijk_min[2], kindex = 0; k < ijk_max[2] + 1; k++, kindex+=slice_nxy){
+    int jindex;
+
+    for(j = ijk_min[1], jindex = 0; j < ijk_max[1] + 1; j++, jindex += slice_nx){
+      float *v;
+
+      cbuffer = meshi->slice3d_c_buffer + IJKNODE(ijk_min[0], j, k);
+      v = valdata + jindex + kindex;
+      for(i = ijk_min[0]; i < ijk_max[0] + 1; i++){
+        *cbuffer++ = *v;
+        v ++;
+      }
+    }
+  }
+#else
   nxy = nx*ny;
   for(k = ijk_min[2],kindex=0; k<ijk_max[2]+1; k++,kindex++){
     int jindex;
@@ -4581,6 +4647,7 @@ void UpdateSlice3DTexture(meshdata *meshi, slicedata *slicei, float *valdata){
       }
     }
   }
+#endif
 
   cbuffer = meshi->slice3d_c_buffer;
   glActiveTexture(GL_TEXTURE0);
@@ -7272,7 +7339,11 @@ int SetupSlice(slicedata *sd){
       assert(ValidPointer(sd->qslicedata, sizeof(float) * sd->nslicetotal));
     }
 #endif
+#ifdef pp_SLICEFRAME
+    sd->qsliceframe = (float *)FRAMEGetFramePtr(sd->frameinfo, sd->itime);
+#else
     if(sd->qslicedata != NULL)sd->qsliceframe = sd->qslicedata + sd->itime * sd->nsliceijk;
+#endif
   }
   return 1;
 }
