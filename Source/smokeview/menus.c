@@ -2991,9 +2991,6 @@ void ReloadMenu(int value){
   case RELOAD_SMV_FILE:
     UpdateSMVDynamic(smv_filename);
     break;
-  case RELOAD_MODE_INCREMENTAL:
-    load_incremental = 1;
-    break;
   case RELOAD_MODE_ALL:
     load_incremental = 0;
     break;
@@ -3299,7 +3296,7 @@ void ReloadAllSliceFiles(void){
       load_size+=ReadGeomData(slicei->patchgeom, slicei, LOAD, ALL_FRAMES, NULL, 0, &errorcode);
     }
     else{
-#ifdef pp_FRAME
+#ifdef pp_SLICEFRAME
       load_size += ReadSlice(slicei->file, i, ALL_FRAMES, NULL, RELOAD, DEFER_SLICECOLOR, &errorcode);
 #else
       load_size += ReadSlice(slicei->file, i, ALL_FRAMES, NULL, LOAD, DEFER_SLICECOLOR, &errorcode);
@@ -3353,6 +3350,7 @@ void UnloadSmoke3D(smoke3ddata *smoke3di){
   FreeSmoke3D(smoke3di);
   smoke3di->loaded  = 0;
   smoke3di->display = 0;
+  smoke3di->request_load = 0;
 }
 
 /* ------------------ UnloadAllSmoke3D ------------------------ */
@@ -3384,6 +3382,9 @@ void LoadUnloadMenu(int value){
   int i;
   int file_count = 0;
   float load_size = 0.0, load_time;
+#ifdef pp_FRAME
+  int load_flag;
+#endif
 
   if(value==MENU_DUMMY)return;
   GLUTSETCURSOR(GLUT_CURSOR_WAIT);
@@ -3446,6 +3447,14 @@ void LoadUnloadMenu(int value){
     break;
   case RELOADALL:
   case RELOAD_INCREMENTAL_ALL:
+#ifdef pp_FRAME
+    if(value == RELOADALL){
+      load_flag = LOAD;
+    }
+    else{
+      load_flag = RELOAD;
+    }
+#endif
     THREADcontrol(compress_threads, THREAD_LOCK);
     if(hrr_csv_filename!=NULL){
       ReadHRR(LOAD);
@@ -3504,8 +3513,8 @@ void LoadUnloadMenu(int value){
 
     for(i=0;i<nsmoke3dinfo;i++){
       if(smoke3dinfo[i].loaded==1||smoke3dinfo[i].request_load==1){
-#ifdef pp_FRAME
-        ReadSmoke3D(ALL_SMOKE_FRAMES, i, RELOAD, FIRST_TIME, &errorcode);
+#ifdef pp_SMOKEFRAME
+        ReadSmoke3D(ALL_SMOKE_FRAMES, i, load_flag, FIRST_TIME, &errorcode);
 #else
         ReadSmoke3D(ALL_SMOKE_FRAMES, i, LOAD, FIRST_TIME, &errorcode);
 #endif
@@ -3514,7 +3523,7 @@ void LoadUnloadMenu(int value){
 
     //*** reload particle files
 
-#ifdef pp_FRAME
+#ifdef pp_PARTFRAME
     LoadAllPartFilesMT(RELOAD_LOADED_PART_FILES);
 #else
     int npartloaded_local = 0;
@@ -3548,8 +3557,8 @@ void LoadUnloadMenu(int value){
 
       isoi = isoinfo + i;
       if(isoi->loaded==0)continue;
-#ifdef pp_FRAME
-      ReadIso(isoi->file, i, RELOAD, NULL, &errorcode);
+#ifdef pp_ISOFRAME
+      ReadIso(isoi->file, i, load_flag, NULL, &errorcode);
 #else
       ReadIso(isoi->file,i,LOAD,NULL,&errorcode);
 #endif
@@ -4025,7 +4034,7 @@ void LoadAllPartFiles(int partnum){
     FILE_SIZE file_size;
 
     parti = partinfo+i;
-#ifdef pp_FRAME
+#ifdef pp_PARTFRAME
     if(partnum != RELOAD_LOADED_PART_FILES){
       IF_NOT_USEMESH_CONTINUE(parti->loaded, parti->blocknumber);
     }
@@ -4034,20 +4043,16 @@ void LoadAllPartFiles(int partnum){
 #endif
     if(parti->skipload==1)continue;
     if(partnum>=0&&i!=partnum)continue;  //  load only particle file with file index partnum
-#ifndef pp_FRAME
     THREADcontrol(partload_threads, THREAD_LOCK);                      //  or load all particle files
-#endif
     if(parti->loadstatus==FILE_UNLOADED
-#ifdef pp_FRAME
+#ifdef pp_PARTFRAME
       || partnum==RELOAD_LOADED_PART_FILES
 #endif
       ){
       if(partnum==LOAD_ALL_PART_FILES||(partnum==RELOAD_LOADED_PART_FILES&&parti->loaded==1)||partnum==i){
         parti->loadstatus = FILE_LOADING;
-#ifndef pp_FRAME
         THREADcontrol(partload_threads, THREAD_UNLOCK);
-#endif
-#ifdef pp_FRAME
+#ifdef pp_PARTFRAME
         if(partnum == RELOAD_LOADED_PART_FILES){
           file_size = ReadPart(parti->file, i, RELOAD, &errorcode);
         }
@@ -4057,18 +4062,14 @@ void LoadAllPartFiles(int partnum){
 #else
         file_size = ReadPart(parti->file, i, LOAD, &errorcode);
 #endif
-#ifndef pp_FRAME
         THREADcontrol(partload_threads, THREAD_LOCK);
-#endif
         parti->loadstatus = FILE_LOADED;
         part_load_size += file_size;
         part_file_count++;
         parti->file_size = file_size;
       }
     }
-#ifdef pp_FRAME
     THREADcontrol(partload_threads, THREAD_UNLOCK);
-#endif
   }
 }
 
@@ -4141,7 +4142,7 @@ void *MtLoadAllPartFiles(void *arg){
 
   valptr = ( int * )(arg);
   LoadAllPartFiles(*valptr);
-#ifdef pp_FRAME
+#ifdef pp_PARTFRAME
   return NULL;
 #else
   THREAD_EXIT(partload_threads);
@@ -4153,12 +4154,7 @@ void *MtLoadAllPartFiles(void *arg){
 void LoadAllPartFilesMT(int partnum){
   int i;
 
-#ifdef pp_FRAME
-  int partnuminfo[1];
-
-  partnuminfo[0] = partnum;
-  MtLoadAllPartFiles(partnuminfo);
-#else
+  INIT_PRINT_TIMER(part_load_timer);
   if(partload_threads == NULL){
     partload_threads = THREADinit(&n_partload_threads, &use_partload_threads, MtLoadAllPartFiles);
   }
@@ -4166,7 +4162,7 @@ void LoadAllPartFilesMT(int partnum){
   partnuminfo[0] = partnum;
   THREADruni(partload_threads, (unsigned char *)partnuminfo, 0);
   THREADcontrol(partload_threads, THREAD_JOIN);
-#endif
+  PRINT_TIMER(part_load_timer, "LoadAllPartFilesMT");
 
   INIT_PRINT_TIMER(part_timer);
   if(partnum < 0){
@@ -12639,16 +12635,6 @@ static int menu_count=0;
 
     CREATEMENU(reloadmenu,ReloadMenu);
     glutAddMenuEntry(_("smv"), RELOAD_SMV_FILE);
-#ifdef pp_LOAD_INC
-    if(load_incremental==1){
-      glutAddMenuEntry(_("*New data"), RELOAD_MODE_INCREMENTAL);
-      glutAddMenuEntry(_("All data"), RELOAD_MODE_ALL);
-    }
-    if(load_incremental==0){
-      glutAddMenuEntry(_("New data"), RELOAD_MODE_INCREMENTAL);
-      glutAddMenuEntry(_("*All data"), RELOAD_MODE_ALL);
-    }
-#endif
     glutAddMenuEntry("-", MENU_DUMMY);
     glutAddMenuEntry(_("When:"), MENU_DUMMY);
     glutAddMenuEntry(_("  now (all meshes)"),RELOAD_SWITCH);

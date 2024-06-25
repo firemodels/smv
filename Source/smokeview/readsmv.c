@@ -1084,9 +1084,6 @@ void InitMesh(meshdata *meshi){
   meshi->theat = NULL;
   meshi->blockageinfoptrs = NULL;
 
-  meshi->surface_tempmax = SURFACE_TEMPMAX;
-  meshi->surface_tempmin = SURFACE_TEMPMIN;
-
   meshi->faceinfo = NULL;
   meshi->face_normals_single = NULL;
   meshi->face_normals_double = NULL;
@@ -4927,7 +4924,7 @@ int ParseISOFProcess(bufferstreamdata *stream, char *buffer, int *iiso_in, int *
     return RETURN_BREAK;
   }
 
-#ifdef pp_FRAME
+#ifdef pp_ISOFRAME
   isoi->frameinfo = NULL;
 #endif
   isoi->fds_skip = fds_skip;
@@ -5114,7 +5111,7 @@ int ParsePRT5Process(bufferstreamdata *stream, char *buffer, int *nn_part_in, in
     blocknumber--;
   }
 
-#ifdef pp_FRAME
+#ifdef pp_PARTFRAME
   parti->frameinfo = NULL;
 #endif
   parti->blocknumber = blocknumber;
@@ -5298,9 +5295,12 @@ int ParseBNDFProcess(bufferstreamdata *stream, char *buffer, int *nn_patch_in, i
   for(i = 0; i<6; i++){
     patchi->ijk[i] = -1;
   }
+#ifdef pp_BOUNDFRAME
+  patchi->frameinfo         = NULL;
+#endif
   patchi->finalize          = 1;
-  patchi->valmin_patch        = 1.0;
-  patchi->valmax_patch        = 0.0;
+  patchi->valmin_patch      = 1.0;
+  patchi->valmax_patch      = 0.0;
   patchi->skip              = 0;
   patchi->version           = version;
   patchi->ntimes            = 0;
@@ -5592,7 +5592,7 @@ int ParseSMOKE3DProcess(bufferstreamdata *stream, char *buffer, int *nn_smoke3d_
     smoke3di->val16_maxs = NULL;
     smoke3di->times16    = NULL;
 #endif
-#ifdef pp_FRAME
+#ifdef pp_SMOKEFRAME
     smoke3di->frameinfo = NULL;
 #endif
     smoke3di->seq_id = nn_smoke3d;
@@ -5603,7 +5603,7 @@ int ParseSMOKE3DProcess(bufferstreamdata *stream, char *buffer, int *nn_smoke3d_
     smoke3di->smokeframe_comp_list = NULL;
     smoke3di->smokeframe_out = NULL;
     smoke3di->timeslist = NULL;
-#ifndef pp_FRAME
+#ifndef pp_SMOKEFRAME
     smoke3di->smoke_comp_all = NULL;
 #endif
     smoke3di->smokeview_tmp = NULL;
@@ -5852,7 +5852,7 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
 #ifdef pp_SLICE_MULTI
   sd->loadstatus = FILE_UNLOADED;
 #endif
-#ifdef pp_FRAME
+#ifdef pp_SLICEFRAME
   sd->frameinfo        = NULL;
 #endif
   sd->slice_mask       = NULL;

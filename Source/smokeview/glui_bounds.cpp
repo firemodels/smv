@@ -2866,6 +2866,8 @@ GLUI_Spinner *SPINNER_line_contour_max=NULL;
 GLUI_Spinner *SPINNER_timebounds=NULL;
 #ifdef pp_FRAME
 GLUI_Spinner *SPINNER_nframe_threads = NULL;
+#endif
+#ifdef pp_FRAME_DEBUG
 GLUI_Spinner *SPINNER_read_buffer_size = NULL;
 #endif
 GLUI_Spinner *SPINNER_tload_begin=NULL;
@@ -3933,7 +3935,7 @@ extern "C" void GLUIImmersedBoundCB(int var){
 void BoundBoundCB(int var){
   int i;
 #ifdef pp_FRAME
-  char *read_file, file[1024], ctime[1024];
+  char ctime[1024];
   bufferdata *bufferinfo=NULL;
   int nread;
   float read_time;
@@ -3943,17 +3945,16 @@ void BoundBoundCB(int var){
   switch(var){
 #ifdef pp_FRAME
   case READ_TEST:
-    strcpy(file, "test");
-    read_file = tmpnam(file);
-    MakeFile(read_file, read_buffer_size);
-    START_TIMER(read_time);
-    bufferinfo = File2Buffer(read_file, bufferinfo,  nframe_threads, &nread);
-    STOP_TIMER(read_time);
-    sprintf(ctime, "%f", read_time);
-    TrimZeros(ctime);
-    printf("threads: %i time (s): %s\n", nframe_threads, ctime);
-    FreeBufferInfo(bufferinfo);
-    FileErase(read_file);
+    if(MakeFile(frametest_filename, read_buffer_size) == 1){
+      START_TIMER(read_time);
+      bufferinfo = File2Buffer(frametest_filename, bufferinfo, nframe_threads, &nread);
+      STOP_TIMER(read_time);
+      sprintf(ctime, "%f", read_time);
+      TrimZeros(ctime);
+      printf("threads: %i time (s): %s\n", nframe_threads, ctime);
+      FreeBufferInfo(bufferinfo);
+      FileErase(frametest_filename);
+    }
     break;
 #endif
   case SHOW_BOUNDARY_OUTLINE:
@@ -5483,10 +5484,12 @@ hvacductboundsCPP.setup("hvac", ROLLOUT_hvacduct, hvacductbounds_cpp, nhvacductb
   SPINNER_nframe_threads = glui_bounds->add_spinner_to_panel(ROLLOUT_time, _("read threads:"), GLUI_SPINNER_INT, &nframe_threads);
   SPINNER_nframe_threads->set_int_limits(1, MAX_THREADS);
 
+#ifdef pp_FRAME_DEBUG
   PANEL_read_test = glui_bounds->add_panel_to_panel(ROLLOUT_time, "Timing test", true);
   SPINNER_read_buffer_size = glui_bounds->add_spinner_to_panel(PANEL_read_test, _("Buffer size (MB):"), GLUI_SPINNER_INT, &read_buffer_size);
   SPINNER_read_buffer_size->set_int_limits(1, 1000);
   glui_bounds->add_button_to_panel(PANEL_read_test, _("Test"), READ_TEST, BoundBoundCB);
+#endif
 
 #endif
 
@@ -5531,9 +5534,6 @@ hvacductboundsCPP.setup("hvac", ROLLOUT_hvacduct, hvacductbounds_cpp, nhvacductb
   SPINNER_tload_skip->set_int_limits(0, 1000);
 
   glui_bounds->add_button_to_panel(ROLLOUT_time2, _("Reload all data"), RELOAD_ALL_DATA, TimeBoundCB);
-#ifdef pp_LOAD_INC
-  glui_bounds->add_button_to_panel(ROLLOUT_time2, _("Reload new data"), RELOAD_INCREMENTAL_DATA, TimeBoundCB);
-#endif
 
   TimeBoundCB(TBOUNDS_USE);
   TimeBoundCB(TBOUNDS);

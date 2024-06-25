@@ -20,7 +20,7 @@
 
   /* ------------------ FRAMEInit ------------------------ */
 
-framedata *FRAMEInit(char *file, char *size_file, int file_type, void GetFrameInfo(char *file, char *size_file, int *headersize, int **sizes, int *nsizes, FILE_SIZE *filesizeptr)){
+framedata *FRAMEInit(char *file, char *size_file, int file_type, void GetFrameInfo(bufferdata *bufferinfo, int *headersize, int **sizes, int *nsizes, FILE_SIZE *filesizeptr)){
   framedata *frame=NULL;
 
   NewMemory((void **)&frame, sizeof(framedata));
@@ -67,7 +67,7 @@ void FRAMESetup(framedata *fi){
   FILE_SIZE filesize;
   int headersize;
 
-  fi->GetFrameInfo(fi->file, fi->size_file, &headersize, &framesizes, &nframes, &filesize);
+  fi->GetFrameInfo(fi->bufferinfo, &headersize, &framesizes, &nframes, &filesize);
   if(nframes <= 0)return;
   fi->framesizes   = framesizes;
   fi->nframes      = nframes;
@@ -76,9 +76,11 @@ void FRAMESetup(framedata *fi){
   fi->frames       = fi->bufferinfo->buffer;
   fi->header       = fi->bufferinfo->buffer;
   if(nframes > 0){
-    NewMemory((void **)&fi->offsets,    nframes*sizeof(FILE_SIZE));
-    NewMemory((void **)&fi->frameptrs,  nframes*sizeof(float *));
-    NewMemory((void **)&fi->times,      nframes*sizeof(float));
+#define NEWMEM(a,b) ((a)==NULL ? NewMemory((void **)&a,b): ResizeMemory((void **)&a,b))
+
+    NEWMEM(fi->offsets,   nframes*sizeof(FILE_SIZE));
+    NEWMEM(fi->frameptrs, nframes*sizeof(float *));
+    NEWMEM(fi->times,     nframes*sizeof(float));
 
     fi->offsets[0] = headersize;
     for(i = 1;i < fi->nframes;i++){
@@ -103,9 +105,9 @@ void FRAMEFree(framedata *fi){
 
 /* ------------------ FRAMEGetMinMax ------------------------ */
 
-int FRAMEGetMinMax(framedata *fi, float *valmin, float *valmax){
+int FRAMEGetMinMax(framedata *fi){
   int i;
-  float vmin = 1.0, vmax = 0.0;
+  float valmin = 1.0, valmax = 0.0;
   int returnval = 0, nvals;
 
   for(i = 0;i < fi->nframes;i++){
@@ -120,18 +122,18 @@ int FRAMEGetMinMax(framedata *fi, float *valmin, float *valmax){
       float val;
       
       val = rvals[j];
-      if(vmin > vmax){
-        vmin = val;
-        vmax = val;
+      if(valmin > valmax){
+        valmin = val;
+        valmax = val;
       }
       else{
-        if(val < vmin)vmin = val;
-        if(val > vmax)vmax = val;
+        if(val < valmin)valmin = val;
+        if(val > valmax)valmax = val;
       }
     }
   }
-  *valmin = vmin;
-  *valmax = vmax;
+  fi->valmin = valmin;
+  fi->valmax = valmax;
   return returnval;
 }
 
@@ -171,7 +173,7 @@ void FRAMEReadFrame(framedata *fi, int iframe, int nframes){
   FRAME_FSEEK(stream, fi->headersize+fi->offsets[iframe], SEEK_SET);
   fread(fi->frames + fi->offsets[iframe], 1, total_size, stream);
 #endif
-  fclose(stream);
+  //fclose(stream);
 }
 
 /* ------------------ FRAMESetTimes ------------------------ */
@@ -190,7 +192,7 @@ void FRAMESetTimes(framedata *fi, int iframe, int nframes){
     offset = fi->offsets[i];
     if(fi->file_type == FORTRAN_FILE)offset += 4;
     memcpy(fi->times + i, fi->frames + offset, sizeof(float));
-#ifdef pp_FRAME_DEBUG
+#ifdef pp_FRAME_DEBUG2
     float time;
     time = fi->times[i];
     printf("time[%i]=%f\n", i,time);
@@ -232,14 +234,14 @@ unsigned char *FRAMEGetFramePtr(framedata *fi, int iframe){
 //        (3d smoke, slice, isosurface, and particle - boundary file routine not implemente)
 /* ------------------ GetSmoke3DFrameInfo ------------------------ */
 
-void GetSmoke3DFrameInfo(char *file, char *size_file, int *headersizeptr, int **framesptr, int *nframesptr, FILE_SIZE *filesizeptr){
+void GetSmoke3DFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **framesptr, int *nframesptr, FILE_SIZE *filesizeptr){
   FILE *stream;
   char buffer[255];
   int headersize, nframes, *frames;
   FILE_SIZE filesize;
   char sizefile[1024];
 
-  strcpy(sizefile, file);
+  strcpy(sizefile, bufferinfo->file);
   strcat(sizefile, ".sz");
 
   stream = fopen(sizefile, "r");
@@ -279,7 +281,7 @@ void GetSmoke3DFrameInfo(char *file, char *size_file, int *headersizeptr, int **
   fclose(stream);
 
   headersize = 40;
-  filesize = GetFileSizeSMV(file);
+  filesize = bufferinfo->nbuffer;
 
   *headersizeptr = headersize;
   *framesptr = frames;
@@ -287,10 +289,71 @@ void GetSmoke3DFrameInfo(char *file, char *size_file, int *headersizeptr, int **
   *filesizeptr = filesize;
 }
   
+/* ------------------ GetBoundaryFrameInfo ------------------------ */
+
+void GetBoundaryFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **framesptr, int *nframesptr, FILE_SIZE *filesizeptr){
+  FILE *stream;
+
+  int headersize, framesize, nframes, *frames, datasize;
+  FILE_SIZE filesize;
+  int npatch, i;
+
+  stream = fopen(bufferinfo->file, "rb");
+  if(stream == NULL){
+    *nframesptr = 0;
+    *framesptr = NULL;
+    *filesizeptr = 0;
+  }
+
+  // header
+  // WRITE(LUBF) QUANTITY   (30 chars)
+  // WRITE(LUBF) SHORT_NAME (30 chars)
+  // WRITE(LUBF) UNITS      (30 chars)
+  // WRITE(LUBF) NPATCH
+  // WRITE(LUBF) I1, I2, J1, J2, K1, K2, IOR, NB, NM  (NPATCH entries)
+  // WRITE(LUBF) I1, I2, J1, J2, K1, K2, IOR, NB, NM
+
+  headersize = 3 * (4 + 30 + 4);            // QUANTITY, SHORT_NAME, UNITS
+  FSEEK(stream, headersize, SEEK_SET);
+
+  FSEEK(stream, 4, SEEK_CUR);fread(&npatch, sizeof(int), 1, stream);FSEEK(stream, 4, SEEK_CUR);
+  headersize += (4 + sizeof(int) + 4);       // NPATCH
+
+  // frame
+  // WRITE(LUBF) TIME
+  // WRITE(LUBF) (((QQ(I, J, K), I = 11, I2), J = J1, J2), K = K1, K2) (NPATH entries)
+  framesize = 4 + sizeof(float) + 4; // time
+  datasize = 0;
+  for(i = 0;i < npatch;i++){
+    int parms[9], ncells;
+
+    FSEEK(stream, 4, SEEK_CUR);fread(parms, sizeof(int), 9, stream);FSEEK(stream, 4, SEEK_CUR);
+    ncells  = (parms[1] + 1 - parms[0]);
+    ncells *= (parms[3] + 1 - parms[2]);
+    ncells *= (parms[5] + 1 - parms[4]);
+    datasize += (4 + ncells * sizeof(float) + 4);
+  }
+  framesize += datasize;
+  headersize += npatch*(4 + 9 * sizeof(int) + 4); // I1, I2, J1, J2, K1, K2, IOR, NB, NM
+  fclose(stream);
+
+  filesize = GetFileSizeSMV(bufferinfo->file);
+  nframes = (filesize - headersize) / framesize;
+
+  NewMemory((void **)&frames, nframes * sizeof(int));
+  for(i = 0;i < nframes;i++){
+    frames[i] = framesize;
+  }
+  *headersizeptr = headersize;
+  *framesptr = frames;
+  *nframesptr = nframes;
+  *filesizeptr = filesize;
+}
+
   /* ------------------ GetSliceFrameInfo ------------------------ */
 
-void GetSliceFrameInfo(char *file, char *size_file, int *headersizeptr, int **framesptr, int *nframesptr, FILE_SIZE *filesizeptr){
-  FILE *stream;
+void GetSliceFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **framesptr, int *nframesptr, FILE_SIZE *filesizeptr){
+  FILE_m *stream;
 
   int headersize, framesize, nframes, *frames;
   int ijk[6];
@@ -299,22 +362,21 @@ void GetSliceFrameInfo(char *file, char *size_file, int *headersizeptr, int **fr
   FILE_SIZE filesize;
   int returncode;
   
-  stream = fopen(file, "rb");
+  stream = fopen_b(bufferinfo->file, bufferinfo->buffer, bufferinfo->nbuffer, "rb");
   if(stream == NULL){
     *nframesptr = 0;
     *framesptr = NULL;
   }
 
   headersize = 3*(4+30+4);  // 3 30 byte labels 
-
   FRAME_FSEEK(stream, headersize, SEEK_CUR);
 
   FRAME_READ(ijk, 6, stream);
-  if(returncode!=6){
-    fclose(stream);
+  if(returncode!=6*sizeof(int)){
+//    fclose(stream);
     return;
   }
-  fclose(stream);
+  //fclose(stream);
 
   ip1 = ijk[0];
   ip2 = ijk[1];
@@ -331,7 +393,7 @@ void GetSliceFrameInfo(char *file, char *size_file, int *headersizeptr, int **fr
   framesize  = 4 + 4 + 4;                  // time
   framesize += 4 + 4*(nxsp*nysp*nzsp) + 4; // data
   
-  filesize = GetFileSizeSMV(file);
+  filesize = bufferinfo->nbuffer;
   nframes = (int)(filesize - headersize)/framesize; // time frames
   NewMemory((void **)&frames, nframes *sizeof(int));
   int i;
@@ -346,8 +408,8 @@ void GetSliceFrameInfo(char *file, char *size_file, int *headersizeptr, int **fr
 
 /* ------------------ GetIsoFrameInfo ------------------------ */
 
-void GetIsoFrameInfo(char *file, char *size_file, int *headersizeptr, int **framesptr, int *nframesptr, FILE_SIZE *filesizeptr){
-  FILE *stream;
+void GetIsoFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **framesptr, int *nframesptr, FILE_SIZE *filesizeptr){
+  FILE_m *stream;
   int headersize, levelsize, *frames;
   int niso_levels;
   int nframes;
@@ -362,7 +424,8 @@ void GetIsoFrameInfo(char *file, char *size_file, int *headersizeptr, int **fram
 //    WRITE(LU_ISO) ZERO
 //    WRITE(LU_ISO) ZERO, ZERO
 
-  stream = fopen(file, "rb");
+
+  stream = fopen_b(bufferinfo->file, bufferinfo->buffer, bufferinfo->nbuffer, "rb");
   if(stream == NULL){
     *nframesptr = 0;
     *framesptr = NULL;
@@ -385,7 +448,7 @@ void GetIsoFrameInfo(char *file, char *size_file, int *headersizeptr, int **fram
 
   nframes = 0;
   NewMemory((void **)&frames, 1000000*sizeof(int));
-  while(!feof(stream)){
+  while(!feof_m(stream)){
     //  WRITE(LU_ISO) STIME, ZERO
     //  WRITE(LU_ISO) N_VERT, N_FACE
     //  IF(N_VERT_D > 0) WRITE(LU_ISO) (Xvert(I), Yvert(I), Zvert(I), I = 1, N_VERT)
@@ -395,8 +458,8 @@ void GetIsoFrameInfo(char *file, char *size_file, int *headersizeptr, int **fram
     int nvals[2];
     float times[2];
 
-    FRAME_READ(times, 2, stream);if(returncode != 2)break;
-    FRAME_READ(nvals, 2, stream);if(returncode != 2)break;
+    FRAME_READ(times, 2, stream);if(returncode != 2*sizeof(float))break;
+    FRAME_READ(nvals, 2, stream);if(returncode != 2*sizeof(int))break;
     int skip;
 
     skip = 0;
@@ -408,19 +471,19 @@ void GetIsoFrameInfo(char *file, char *size_file, int *headersizeptr, int **fram
   if(nframes > 0)ResizeMemory((void **)&frames, nframes * sizeof(int));
 
 
-  filesize = GetFileSizeSMV(file);
+  filesize = bufferinfo->nbuffer;
 
   *headersizeptr = headersize;
   *framesptr = frames;
   *nframesptr = nframes;
   *filesizeptr = filesize;
-  fclose(stream);
+  //fclose(stream);
 }
 
 /* ------------------ GetPartFrameInfo ------------------------ */
 
-void GetPartFrameInfo(char *file, char *size_file, int *headersizeptr, int **framesptr, int *nframesptr, FILE_SIZE *filesizeptr){
-  FILE *stream;
+void GetPartFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **framesptr, int *nframesptr, FILE_SIZE *filesizeptr){
+  FILE_m *stream;
   FILE_SIZE filesize;
   int headersize, *frames, nframes, returncode, n_part, *nquants;
 
@@ -435,7 +498,7 @@ void GetPartFrameInfo(char *file, char *size_file, int *headersizeptr, int **fra
 //      WRITE(LUPF) UDATA(PC%QUANTITIES_INDEX(NN)) ! 30 character output units
 //    ENDDO
 //  ENDDO
-  stream = fopen(file, "rb");
+  stream = fopen_b(bufferinfo->file, bufferinfo->buffer, bufferinfo->nbuffer, "rb");
   if(stream == NULL){
     *nframesptr = 0;
     *framesptr = NULL;
@@ -444,25 +507,28 @@ void GetPartFrameInfo(char *file, char *size_file, int *headersizeptr, int **fra
 
   headersize  = 4 + 4 + 4; // ONE
   headersize += 4 + 4 + 4; // FDS VERSION
-  
   FRAME_FSEEK(stream, headersize, SEEK_CUR);
+
   FRAME_READ(&n_part, 1, stream);
-  NewMemory((void **)&nquants, (n_part+1)*sizeof(int));
+  headersize += 4 + 4 + 4; // n_part
+
+  NewMemory((void **)&nquants, 2*n_part*sizeof(int));
   
-  headersize += 4 + 4 + 4;
   int i;
   for(i=0; i<n_part; i++){
     int labelsize;
 
-    FRAME_READ(nquants+i, 2, stream);
-    labelsize = 2*nquants[0]*(4+30+4);
-    headersize += 4 + 8 + 4 + labelsize;
+    FRAME_READ(nquants+2*i, 2, stream);
+    headersize += 4 + 2*4 + 4;
+    
+    labelsize = 2*nquants[2*i]*(4+30+4);
+    headersize += labelsize;
     FRAME_FSEEK(stream, labelsize, SEEK_CUR);
   }
 
   nframes = 0;
   NewMemory((void **)&frames, 1000000 * sizeof(int));
-  while(!feof(stream)){
+  while(!feof_m(stream)){
     int framesize;
 //  WRITE(LUPF) REAL(T,FB) ! Write out the time T as a 4 byte real
 //  DO N=1,N_PART
@@ -473,17 +539,22 @@ void GetPartFrameInfo(char *file, char *size_file, int *headersizeptr, int **fra
 //  ENDDO
     float time_arg;
     FRAME_READ(&time_arg, 1, stream);
-    if(returncode != 1)break;
     framesize = 4 + 4 + 4;
+
+//    printf("time_arg=%f\n", time_arg);
+    if(returncode != 1*sizeof(float))break;
     for(i=0; i<n_part; i++){
-      int nplim, skip;
+      int nplim;
+      long int skip;
 
       FRAME_READ(&nplim, 1, stream);
       framesize += 4 + 4 + 4;             // nplim
-      skip  = 4 + 3*nplim*4 + 4;          // xp, yp, zp
-      skip += 4 + nplim*4 + 4;            // tag
-      if(nquants[i]>0){
-        skip += 4 + nplim*nquants[i]*4 + 4; // qp
+
+//      printf("nplim %i: %i\n",i, nplim);
+      skip  = 4 + 3*nplim*sizeof(float) + 4;          // xp, yp, zp
+      skip += 4 +   nplim*sizeof(int)   + 4;          // tag
+      if(nquants[2*i] > 0){
+        skip += 4 + nplim*nquants[2*i]*sizeof(float) + 4; // qp
       }
       framesize += skip;
       FRAME_FSEEK(stream, skip, SEEK_CUR);
@@ -492,11 +563,10 @@ void GetPartFrameInfo(char *file, char *size_file, int *headersizeptr, int **fra
   }
   if(nframes > 0)ResizeMemory((void **)&frames, nframes * sizeof(int));
 
-  filesize = GetFileSizeSMV(file);
+  filesize = bufferinfo->nbuffer;
 
   *headersizeptr = headersize;
   *framesptr = frames;
   *nframesptr = nframes;
   *filesizeptr = filesize;
-  fclose(stream);
 }

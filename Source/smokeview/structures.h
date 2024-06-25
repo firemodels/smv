@@ -557,7 +557,7 @@ typedef struct _isodata {
   unsigned char *geom_times_map;
   float globalmin_iso, globalmax_iso;
   int geom_nvals;
-#ifdef pp_FRAME
+#ifdef pp_ISOFRAME
   framedata *frameinfo;
 #endif
 } isodata;
@@ -747,7 +747,6 @@ typedef struct _meshdata {
   int *patch_timeslist;
   int npatchsize;
   int visInteriorBoundaries;
-  float surface_tempmin, surface_tempmax;
 
   int nface_textures, nface_outlines, nfaces;
   int nface_normals_single, nface_normals_double, nface_transparent_double;
@@ -1180,7 +1179,7 @@ typedef struct _partdata {
   int *sort_tags;
   short *sx, *sy, *sz;
   unsigned char *irvals;
-#ifdef pp_FRAME
+#ifdef pp_PARTFRAME
   framedata *frameinfo;
 #endif
 } partdata;
@@ -1376,7 +1375,7 @@ typedef struct _slicedata {
   FILE_SIZE file_size;
   int *geom_offsets;
   devicedata vals2d;
-#ifdef pp_FRAME
+#ifdef pp_SLICEFRAME
   framedata *frameinfo;
 #endif
 #ifdef pp_SLICE_MULTI
@@ -1560,7 +1559,7 @@ typedef struct _smoke3ddata {
   float maxval;
   unsigned char *smokeframe_in, *smokeframe_out, **smokeframe_comp_list;
   unsigned char *smokeview_tmp;
-#ifndef pp_FRAME
+#ifndef pp_SMOKEFRAME
   unsigned char *smoke_comp_all;
 #endif
   unsigned char *frame_all_zeros;
@@ -1568,7 +1567,7 @@ typedef struct _smoke3ddata {
   float *smoke_boxmin, *smoke_boxmax;
   smokedata smoke;
   int dir;
-#ifdef pp_FRAME
+#ifdef pp_SMOKEFRAME
   framedata *frameinfo;
 #endif
 } smoke3ddata;
@@ -1634,6 +1633,9 @@ typedef struct _patchdata {
   int hist_update;
   bounddata bounds;
   boundsdata *bounds2;
+#ifdef pp_BOUNDFRAME
+  framedata *frameinfo;
+#endif
 } patchdata;
 
 /* --------------------------  plot3ddata ------------------------------------ */

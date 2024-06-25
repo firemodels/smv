@@ -739,7 +739,6 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 #define RELOAD_INCREMENTAL_NOW  -2
 #define RELOAD_SWITCH           -4
 #define STOP_RELOADING          -1
-#define RELOAD_MODE_INCREMENTAL -5
 #define RELOAD_MODE_ALL         -6
 #define RELOAD_SMV_FILE         -7
 
