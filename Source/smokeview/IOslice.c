@@ -4893,7 +4893,7 @@ void DrawVolSliceCellFaceCenter(const slicedata *sd, int is1, int is2, int js1, 
         if(skip_slice_in_embedded_mesh == 1 && iblank_embed != NULL&&iblank_embed[IJKCELL(i, ploty, k)] == EMBED_YES)continue;
 
 //        index_cell = (i+incx-sd->is1)*sd->nslicej*sd->nslicek + (ploty+1-incy-sd->js1)*sd->nslicek + k+1-sd->ks1;
-        index_cell = IJK_SLICE(i+incx+1, yindex, k+1);
+        index_cell = IJK_SLICE(i+incx, yindex, k+1);
         i33 = SLICECOLOR(index_cell);
         z1 = zplt[k];
         z3 = zplt[k + 1];
