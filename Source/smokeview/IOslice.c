@@ -21,10 +21,8 @@
 
 #ifdef pp_SLICEFRAME
 #define IJK_SLICE(i,j,k)      ( ((k)-sd->ks1)*sd->nslicei*sd->nslicej + ((j)-sd->js1)*sd->nslicei + ((i)-sd->is1) )
-#define IJKCELL_SLICE(i,j,k)  ( ((k)-sd->ks1)*sd->nslicei*sd->nslicej + ((j)-sd->js1)*sd->nslicei + ((i)-sd->is1) )
 #else
 #define IJK_SLICE(i,j,k)      ( ((i)-sd->is1)*sd->nslicej*sd->nslicek + ((j)-sd->js1)*sd->nslicek + ((k)-sd->ks1) )
-#define IJKCELL_SLICE(i,j,k)  ( ((i)-sd->is1)*sd->nslicej*sd->nslicek + ((j)-sd->js1)*sd->nslicek + ((k)-sd->ks1) )
 #endif
 
 #define SLICEVAL(i,j,k) \
@@ -4832,7 +4830,7 @@ void DrawVolSliceCellFaceCenter(const slicedata *sd, int is1, int is2, int js1, 
         if(skip_slice_in_embedded_mesh == 1 && iblank_embed != NULL&&iblank_embed[IJKCELL(plotx, j, k)] == EMBED_YES)continue;
 
 //        index_cell = (plotx+1-incx-iimin)*sd->nslicej*sd->nslicek + (j+1-sd->js1)*sd->nslicek + k+1-sd->ks1;
-          index_cell = IJKCELL_SLICE(xindex, j+1, k+1);
+          index_cell = IJK_SLICE(xindex, j+1, k+1);
         i33 = SLICECOLOR(index_cell);
         z1 = zplt[k];
         z3 = zplt[k + 1];
@@ -4895,7 +4893,7 @@ void DrawVolSliceCellFaceCenter(const slicedata *sd, int is1, int is2, int js1, 
         if(skip_slice_in_embedded_mesh == 1 && iblank_embed != NULL&&iblank_embed[IJKCELL(i, ploty, k)] == EMBED_YES)continue;
 
 //        index_cell = (i+incx-sd->is1)*sd->nslicej*sd->nslicek + (ploty+1-incy-sd->js1)*sd->nslicek + k+1-sd->ks1;
-        index_cell = IJKCELL_SLICE(i+incx+1, yindex, k+1);
+        index_cell = IJK_SLICE(i+incx+1, yindex, k+1);
         i33 = SLICECOLOR(index_cell);
         z1 = zplt[k];
         z3 = zplt[k + 1];
@@ -4959,7 +4957,7 @@ void DrawVolSliceCellFaceCenter(const slicedata *sd, int is1, int is2, int js1, 
         if(skip_slice_in_embedded_mesh == 1 && iblank_embed != NULL&&iblank_embed[IJKCELL(i, j, plotz)] == EMBED_YES)continue;
 
 //        index_cell = (i+1-sd->is1)*sd->nslicej*sd->nslicek + (j+incy-sd->js1)*sd->nslicek + plotz+1-incz-sd->ks1;
-        index_cell = IJKCELL_SLICE(i+1, j+incy, zindex);
+        index_cell = IJK_SLICE(i+1, j+incy, zindex);
         i33 = SLICECOLOR(index_cell);
         yy1 = yplt[j];
         y3 = yplt[j + 1];
@@ -5257,7 +5255,7 @@ void DrawVolSliceCellFaceCenterValues(const slicedata *sd){
           n (y1,z1)     n2 (y3,z1)
           */
 //          index_cell = (plotx+1-incx-iimin)*sd->nslicej*sd->nslicek + (j+1-sd->js1)*sd->nslicek + k+1-sd->ks1;
-          index_cell = IJKCELL_SLICE(xindex, j+1, k+1);
+          index_cell = IJK_SLICE(xindex, j+1, k+1);
 
           GET_VAL(sd, val, index_cell);
           Output3Val(constval, (yy1 + y3) / 2.0, (z1 + z3) / 2.0, val);
@@ -5306,7 +5304,7 @@ void DrawVolSliceCellFaceCenterValues(const slicedata *sd){
           if(skip_slice_in_embedded_mesh == 1 && iblank_embed != NULL&&iblank_embed[IJKCELL(i, ploty, k)] == EMBED_YES)continue;
 
 //          index_cell = (i+incx-sd->is1)*sd->nslicej*sd->nslicek + (ploty+1-incy-sd->js1)*sd->nslicek + k+1-sd->ks1;
-          index_cell = IJKCELL_SLICE(i+incx, yindex, k+1);
+          index_cell = IJK_SLICE(i+incx, yindex, k+1);
           z1 = zplt[k];
           z3 = zplt[k + 1];
           /*
@@ -5362,7 +5360,7 @@ void DrawVolSliceCellFaceCenterValues(const slicedata *sd){
           if(skip_slice_in_embedded_mesh == 1 && iblank_embed != NULL&&iblank_embed[IJKCELL(i, j, plotz)] == EMBED_YES)continue;
 
 //          index_cell = (i+1-sd->is1)*sd->nslicej*sd->nslicek + (j+incy-sd->js1)*sd->nslicek + plotz+1-incz-sd->ks1;
-          index_cell = IJKCELL_SLICE(i+1, j+incy, zindex);
+          index_cell = IJK_SLICE(i+1, j+incy, zindex);
           yy1 = yplt[j];
           y3 = yplt[j + 1];
           /*
@@ -7741,7 +7739,7 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
           float dy;
 
  //         index_v = (plotx - sd->is1)*sd->nslicej*sd->nslicek + (j - sd->js1)*sd->nslicek + k + 1 - sd->ks1;
-          index_v = IJKCELL_SLICE(plotx, j, k+1);
+          index_v = IJK_SLICE(plotx, j, k+1);
           GET_VEC_DXYZ(v, dy, index_v);
           ADJUST_VEC_DX(dy);
           glVertex3f(constval, yy1 - dy, zhalf);
@@ -7752,7 +7750,7 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
           float dz;
 
 //          index_w = (plotx - sd->is1)*sd->nslicej*sd->nslicek + (j - sd->js1 + 1)*sd->nslicek + k - sd->ks1;
-          index_w = IJKCELL_SLICE(plotx, j, k);
+          index_w = IJK_SLICE(plotx, j, k);
           GET_VEC_DXYZ(w, dz, index_w);
           ADJUST_VEC_DX(dz);
           glVertex3f(constval, yhalf, z1 - dz);
@@ -7802,7 +7800,7 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
           float dy;
 
 //          index_v = (plotx - sd->is1)*sd->nslicej*sd->nslicek + (j - sd->js1)*sd->nslicek + k - sd->ks1 + 1;
-          index_v = IJKCELL_SLICE(plotx, j, k+1);
+          index_v = IJK_SLICE(plotx, j, k+1);
           GET_VEC_DXYZ(v, dy, index_v);
           ADJUST_VEC_DX(dy);
           glVertex3f(constval, yy1 + dy, zhalf);
@@ -7812,7 +7810,7 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
           float dz;
 
 //          index_w = (plotx - sd->is1)*sd->nslicej*sd->nslicek + (j - sd->js1 + 1)*sd->nslicek + k - sd->ks1;
-          index_w = IJKCELL_SLICE(plotx, j, k);
+          index_w = IJK_SLICE(plotx, j, k);
           GET_VEC_DXYZ(w, dz, index_w);
           ADJUST_VEC_DX(dz);
           glVertex3f(constval, yhalf, z1 + dz);
@@ -7870,7 +7868,7 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
           float dx;
 
 //          index_u = (i - sd->is1)*sd->nslicej*sd->nslicek + (ploty - sd->js1)*sd->nslicek + k + 1 - sd->ks1;
-          index_u = IJKCELL_SLICE(i, ploty, k+1);
+          index_u = IJK_SLICE(i, ploty, k+1);
           GET_VEC_DXYZ(u, dx, index_u);
           ADJUST_VEC_DX(dx);
           glVertex3f(x1 - dx, constval, zhalf);
@@ -7881,7 +7879,7 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
           float dz;
 
 //          index_w = (i + 1 - sd->is1)*sd->nslicej*sd->nslicek + (ploty - sd->js1)*sd->nslicek + k - sd->ks1;
-          index_w = IJKCELL_SLICE(i+1, ploty, k);
+          index_w = IJK_SLICE(i+1, ploty, k);
           GET_VEC_DXYZ(w, dz, index_w);
           ADJUST_VEC_DX(dz);
           glVertex3f(xhalf, constval, z1 - dz);
@@ -7927,7 +7925,7 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
           float dx;
 
 //          index_u = (i - sd->is1)*sd->nslicej*sd->nslicek + (ploty - sd->js1)*sd->nslicek + k + 1 - sd->ks1;
-          index_u = IJKCELL_SLICE(i, ploty, k+1);
+          index_u = IJK_SLICE(i, ploty, k+1);
           GET_VEC_DXYZ(u, dx, index_u);
           ADJUST_VEC_DX(dx);
           glVertex3f(x1 + dx, constval, zhalf);
@@ -7937,7 +7935,7 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
           float dz;
 
 //          index_w = (i + 1 - sd->is1)*sd->nslicej*sd->nslicek + (ploty - sd->js1)*sd->nslicek + k - sd->ks1;
-          index_w = IJKCELL_SLICE(i+1, ploty, k);
+          index_w = IJK_SLICE(i+1, ploty, k);
           GET_VEC_DXYZ(w, dz, index_w);
           ADJUST_VEC_DX(dz);
           glVertex3f(xhalf, constval, z1 + dz);
@@ -7995,7 +7993,7 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
           float dx;
 
 //          index_u = (i - sd->is1)*sd->nslicej*sd->nslicek + (plotz - sd->ks1) + (j + 1 - sd->js1)*sd->nslicek;
-          index_u = IJKCELL_SLICE(i, j+1, plotz);
+          index_u = IJK_SLICE(i, j+1, plotz);
           GET_VEC_DXYZ(u, dx, index_u);
           ADJUST_VEC_DX(dx);
           glVertex3f(x1 - dx, yhalf, constval);
@@ -8006,7 +8004,7 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
           float dy;
 
 //          index_v = (i + 1 - sd->is1)*sd->nslicej*sd->nslicek + (plotz - sd->ks1) + (j - sd->js1)*sd->nslicek;
-          index_v = IJKCELL_SLICE(i+1, j, plotz);
+          index_v = IJK_SLICE(i+1, j, plotz);
           GET_VEC_DXYZ(v, dy, index_v);
           ADJUST_VEC_DX(dy);
           glVertex3f(xhalf, yy1 - dy, constval);
@@ -8054,7 +8052,7 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
           float dx;
 
 //          index_u = (i - sd->is1)*sd->nslicej*sd->nslicek + (plotz - sd->ks1) + (j + 1 - sd->js1)*sd->nslicek;
-          index_u = IJKCELL_SLICE(i, j+1, plotz);
+          index_u = IJK_SLICE(i, j+1, plotz);
           GET_VEC_DXYZ(u, dx, index_u);
           ADJUST_VEC_DX(dx);
           glVertex3f(x1 + dx, yhalf, constval);
@@ -8064,7 +8062,7 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
           float dy;
 
 //          index_v = (i + 1 - sd->is1)*sd->nslicej*sd->nslicek + (plotz - sd->ks1) + (j - sd->js1)*sd->nslicek;
-          index_v = IJKCELL_SLICE(i+1, j, plotz);
+          index_v = IJK_SLICE(i+1, j, plotz);
           GET_VEC_DXYZ(v, dy, index_v);
           ADJUST_VEC_DX(dy);
           glVertex3f(xhalf, yy1 + dy, constval);
