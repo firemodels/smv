@@ -186,6 +186,8 @@ add_executable(smokeview
     Source/shared/stdio_buffer.c
     Source/shared/getdata.c
     Source/shared/color2rgb.c
+    Source/shared/readimage.c
+    Source/shared/readgeom.c
     Source/smokeview/colortable.c
     Source/smokeview/command_args.c
 )
@@ -472,6 +474,14 @@ target_include_directories(background PRIVATE
 if (LINUX)
     target_link_libraries(background m)
 endif()
+if(WIN32)
+    if (PThreads4W_FOUND)
+        target_link_libraries(background PRIVATE PThreads4W::PThreads4W)
+    else()
+        target_include_directories(background PRIVATE Source/pthreads)
+        target_link_libraries(background PRIVATE pthread_static)
+    endif()
+endif()
 
 # convert
 add_executable(convert
@@ -492,6 +502,14 @@ target_include_directories(convert PRIVATE
 
 if (LINUX)
     target_link_libraries(convert m)
+endif()
+if(WIN32)
+    if (PThreads4W_FOUND)
+        target_link_libraries(convert PRIVATE PThreads4W::PThreads4W)
+    else()
+        target_include_directories(convert PRIVATE Source/pthreads)
+        target_link_libraries(convert PRIVATE pthread_static)
+    endif()
 endif()
 
 # env2mod
@@ -515,6 +533,14 @@ target_include_directories(env2mod PRIVATE
 if (LINUX)
     target_link_libraries(env2mod m)
 endif()
+if(WIN32)
+    if (PThreads4W_FOUND)
+        target_link_libraries(env2mod PRIVATE PThreads4W::PThreads4W)
+    else()
+        target_include_directories(env2mod PRIVATE Source/pthreads)
+        target_link_libraries(env2mod PRIVATE pthread_static)
+    endif()
+endif()
 
 # flush
 add_executable(flush
@@ -535,6 +561,14 @@ target_include_directories(flush PRIVATE
 
 if (LINUX)
     target_link_libraries(flush m)
+endif()
+if(WIN32)
+    if (PThreads4W_FOUND)
+        target_link_libraries(flush PRIVATE PThreads4W::PThreads4W)
+    else()
+        target_include_directories(flush PRIVATE Source/pthreads)
+        target_link_libraries(flush PRIVATE pthread_static)
+    endif()
 endif()
 
 # get_time
@@ -570,6 +604,14 @@ target_include_directories(hashfile PRIVATE
 if (LINUX)
     target_link_libraries(hashfile m)
 endif()
+if(WIN32)
+    if (PThreads4W_FOUND)
+        target_link_libraries(hashfile PRIVATE PThreads4W::PThreads4W)
+    else()
+        target_include_directories(hashfile PRIVATE Source/pthreads)
+        target_link_libraries(hashfile PRIVATE pthread_static)
+    endif()
+endif()
 
 # makepo
 add_executable(makepo
@@ -590,6 +632,14 @@ target_include_directories(makepo PRIVATE
 
 if (LINUX)
     target_link_libraries(makepo m)
+endif()
+if(WIN32)
+    if (PThreads4W_FOUND)
+        target_link_libraries(makepo PRIVATE PThreads4W::PThreads4W)
+    else()
+        target_include_directories(makepo PRIVATE Source/pthreads)
+        target_link_libraries(makepo PRIVATE pthread_static)
+    endif()
 endif()
 
 # mergepo
@@ -613,6 +663,14 @@ target_include_directories(mergepo PRIVATE
 if (LINUX)
     target_link_libraries(mergepo m)
 endif()
+if(WIN32)
+    if (PThreads4W_FOUND)
+        target_link_libraries(mergepo PRIVATE PThreads4W::PThreads4W)
+    else()
+        target_include_directories(mergepo PRIVATE Source/pthreads)
+        target_link_libraries(mergepo PRIVATE pthread_static)
+    endif()
+endif()
 
 if (WIN32)
     # set_path
@@ -631,6 +689,14 @@ if (WIN32)
         Source/set_path
         Source/shared
     )
+    if(WIN32)
+        if (PThreads4W_FOUND)
+            target_link_libraries(set_path PRIVATE PThreads4W::PThreads4W)
+        else()
+            target_include_directories(set_path PRIVATE Source/pthreads)
+            target_link_libraries(set_path PRIVATE pthread_static)
+        endif()
+    endif()
 endif ()
 
 # sh2bat
@@ -653,6 +719,14 @@ target_include_directories(sh2bat PRIVATE
 if (LINUX)
     target_link_libraries(sh2bat m)
 endif()
+if(WIN32)
+    if (PThreads4W_FOUND)
+        target_link_libraries(sh2bat PRIVATE PThreads4W::PThreads4W)
+    else()
+        target_include_directories(sh2bat PRIVATE Source/pthreads)
+        target_link_libraries(sh2bat PRIVATE pthread_static)
+    endif()
+endif()
 
 # timep
 add_executable(timep
@@ -674,6 +748,14 @@ target_include_directories(timep PRIVATE
 if (LINUX)
     target_link_libraries(timep m)
 endif()
+if(WIN32)
+    if (PThreads4W_FOUND)
+        target_link_libraries(timep PRIVATE PThreads4W::PThreads4W)
+    else()
+        target_include_directories(timep PRIVATE Source/pthreads)
+        target_link_libraries(timep PRIVATE pthread_static)
+    endif()
+endif()
 
 # wind2fds
 add_executable(wind2fds
@@ -694,6 +776,14 @@ target_include_directories(wind2fds PRIVATE
 
 if (LINUX)
     target_link_libraries(wind2fds m)
+endif()
+if(WIN32)
+    if (PThreads4W_FOUND)
+        target_link_libraries(wind2fds PRIVATE PThreads4W::PThreads4W)
+    else()
+        target_include_directories(wind2fds PRIVATE Source/pthreads)
+        target_link_libraries(wind2fds PRIVATE pthread_static)
+    endif()
 endif()
 
 include(CTest)

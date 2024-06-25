@@ -16,6 +16,8 @@
 #include "IOvolsmoke.h"
 #include "stdio_buffer.h"
 #include "glui_motion.h"
+#include "readimage.h"
+#include "readgeom.h"
 
 #define BREAK break
 #define BREAK2 \
@@ -2598,7 +2600,7 @@ void InitTextures0(void){
     if(verbose_output==1)printf("  reading in texture image: %s",texti->file);
     glGetIntegerv(GL_MAX_TEXTURE_SIZE, &max_texture_size);
 
-    floortex=ReadPicture(texti->file,&texwid,&texht,&is_transparent,0);
+    floortex=ReadPicture(texturedir, texti->file,&texwid,&texht,&is_transparent,0);
     texti->is_transparent = is_transparent;
     if(floortex==NULL){
       PRINTF("\n***Error: Texture %s failed to load\n", filename);
@@ -2749,7 +2751,7 @@ void InitTextures0(void){
 #ifdef _DEBUG
         PRINTF("terrain texture file: %s\n",tt->file);
 #endif
-        floortex=ReadPicture(tt->file,&texwid,&texht,&is_transparent,0);
+        floortex=ReadPicture(texturedir, tt->file,&texwid,&texht,&is_transparent,0);
         tt->is_transparent = is_transparent;
         if(floortex==NULL)PRINTF("***Error: Texture file %s failed to load\n",tt->file);
       }
@@ -4668,7 +4670,7 @@ void InitCellMeshInfo(void){
   NewMemory(( void ** )&cellmeshinfo->cellmeshes, ntotal*sizeof(meshdata *));
   cellmeshes = cellmeshinfo->cellmeshes;
   for(i=0;i<ntotal;i++){
-    cellmeshinfo->cellmeshes[i] = NULL; 
+    cellmeshinfo->cellmeshes[i] = NULL;
   }
   for(i = 0;i < nmeshes;i++){
     meshdata *meshi;
@@ -7004,7 +7006,7 @@ int ReadSMV_Init() {
     use_readsmvorig_threads = 0;
 #endif
 #ifdef pp_SMOKEDRAW_SPEEDUP
-    use_mergesmoke_threads  = 0; 
+    use_mergesmoke_threads  = 0;
 #endif
   }
 
@@ -8657,7 +8659,7 @@ int ReadSMV_Parse(bufferstreamdata *stream) {
         geomi->geomobj_offsets  = NULL;
         if(ntotal_triangles>0){
           int count;
-          
+
           NewMemory((void **)&geomi->geomobj_offsets,ntotal_triangles*sizeof(int));
           count = 0;
           for(i=0;i<ngeomobjinfo;i++){
@@ -11845,7 +11847,7 @@ int ReadSMV_Configure(){
   PRINTF("  wrapping up\n");
 
   INIT_PRINT_TIMER(fdsrunning_timer);
-  last_size_for_slice = GetFileSizeSMV(stepcsv_filename); // used by IsFDSRunning 
+  last_size_for_slice = GetFileSizeSMV(stepcsv_filename); // used by IsFDSRunning
   last_size_for_boundary = last_size_for_slice;
   PRINT_TIMER(fdsrunning_timer, "filesize_timer");   // if file size changes then assume fds is running
 
@@ -14142,7 +14144,7 @@ int ReadIni2(char *inifile, int localfile){
       ONEORZERO(show_tracers_always);
       continue;
     }
-    if(MatchINI(buffer, "SHOWPARTTAG") == 1){ 
+    if(MatchINI(buffer, "SHOWPARTTAG") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%i", &select_part);
       ONEORZERO(select_part);
