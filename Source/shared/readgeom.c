@@ -788,7 +788,6 @@ void ReadGeomHeader0(geomdata *geomi, int *geom_frame_index, int *ntimes_local){
   int *int_vals;
   float *float_vals;
   int nverts=0, ntris=0;
-  int icount;
 
   //***format
   // one  (endian)
@@ -857,10 +856,8 @@ void ReadGeomHeader0(geomdata *geomi, int *geom_frame_index, int *ntimes_local){
   }
 
   nt=0;
-  icount=-1;
   for(;;){
     FORTREADBR(times_local,2,stream);
-    icount++;
     FORTREADBR(nvertfaces,2,stream);
     nverts=nvertfaces[0];
     ntris=nvertfaces[1];
