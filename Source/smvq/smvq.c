@@ -333,6 +333,10 @@ int RunBenchmark(char *input_file) {
       json_object_object_add(slice_obj, "shortlabel",
                              json_object_new_string(slice->label.shortlabel));
     }
+    if (slice->slicelabel) {
+      json_object_object_add(slice_obj, "id",
+                             json_object_new_string(slice->slicelabel));
+    }
     if (slice->label.unit) {
       json_object_object_add(slice_obj, "unit",
                              json_object_new_string(slice->label.unit));

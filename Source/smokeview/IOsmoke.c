@@ -4024,12 +4024,12 @@ int SetupSmoke3D(smoke3ddata *smoke3di, int flag_arg, int iframe_arg, int *error
 #ifdef pp_SMOKEFRAME
   int i, j;
 #else
+  int ncomp_smoke_total_local;
+  int ncomp_smoke_total_skipped_local;
   int i, j, ii;
 #endif
   int fortran_skip = 0;
   int error_local;
-  int ncomp_smoke_total_local;
-  int ncomp_smoke_total_skipped_local;
 
   mesh_smoke3d = meshinfo+smoke3di->blocknumber;
   if(smoke3di->extinct>0.0){
@@ -4187,6 +4187,7 @@ int SetupSmoke3D(smoke3ddata *smoke3di, int flag_arg, int iframe_arg, int *error
     smoke3di->frame_all_zeros[i] = SMOKE3D_ZEROS_UNKNOWN;
   }
 
+#ifndef pp_SMOKEFRAME
   ncomp_smoke_total_local = 0;
   ncomp_smoke_total_skipped_local = 0;
   for(i = 0; i<smoke3di->ntimes_full; i++){
@@ -4196,7 +4197,6 @@ int SetupSmoke3D(smoke3ddata *smoke3di, int flag_arg, int iframe_arg, int *error
     }
   }
   smoke3di->ncomp_smoke_total = ncomp_smoke_total_skipped_local;
-#ifndef pp_SMOKEFRAME
   if(NewResizeMemory(smoke3di->smoke_comp_all, ncomp_smoke_total_skipped_local*sizeof(unsigned char))==0){
     SetupSmoke3D(smoke3di, UNLOAD, iframe_arg, &error_local);
     *errorcode_arg = 1;
@@ -4307,7 +4307,7 @@ FILE_SIZE ReadSmoke3D(int iframe_arg,int ifile_arg,int flag_arg, int first_time,
       }
 #ifdef pp_FRAME_DEBUG
         nframes_after = smoke3di->frameinfo->nframes;
-        printf("3D smoke frames read: %i\n", nframes_after - nframes_before);
+        printf(", 3D smoke frames read: %i ", nframes_after - nframes_before);
 #endif
       i = 0;
       for(ii = 0; ii < smoke3di->ntimes_full; ii++){

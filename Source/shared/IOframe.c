@@ -192,7 +192,7 @@ void FRAMESetTimes(framedata *fi, int iframe, int nframes){
     offset = fi->offsets[i];
     if(fi->file_type == FORTRAN_FILE)offset += 4;
     memcpy(fi->times + i, fi->frames + offset, sizeof(float));
-#ifdef pp_FRAME_DEBUG
+#ifdef pp_FRAME_DEBUG2
     float time;
     time = fi->times[i];
     printf("time[%i]=%f\n", i,time);
@@ -289,6 +289,67 @@ void GetSmoke3DFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **frame
   *filesizeptr = filesize;
 }
   
+/* ------------------ GetBoundaryFrameInfo ------------------------ */
+
+void GetBoundaryFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **framesptr, int *nframesptr, FILE_SIZE *filesizeptr){
+  FILE *stream;
+
+  int headersize, framesize, nframes, *frames, datasize;
+  FILE_SIZE filesize;
+  int npatch, i;
+
+  stream = fopen(bufferinfo->file, "rb");
+  if(stream == NULL){
+    *nframesptr = 0;
+    *framesptr = NULL;
+    *filesizeptr = 0;
+  }
+
+  // header
+  // WRITE(LUBF) QUANTITY   (30 chars)
+  // WRITE(LUBF) SHORT_NAME (30 chars)
+  // WRITE(LUBF) UNITS      (30 chars)
+  // WRITE(LUBF) NPATCH
+  // WRITE(LUBF) I1, I2, J1, J2, K1, K2, IOR, NB, NM  (NPATCH entries)
+  // WRITE(LUBF) I1, I2, J1, J2, K1, K2, IOR, NB, NM
+
+  headersize = 3 * (4 + 30 + 4);            // QUANTITY, SHORT_NAME, UNITS
+  FSEEK(stream, headersize, SEEK_SET);
+
+  FSEEK(stream, 4, SEEK_CUR);fread(&npatch, sizeof(int), 1, stream);FSEEK(stream, 4, SEEK_CUR);
+  headersize += (4 + sizeof(int) + 4);       // NPATCH
+
+  // frame
+  // WRITE(LUBF) TIME
+  // WRITE(LUBF) (((QQ(I, J, K), I = 11, I2), J = J1, J2), K = K1, K2) (NPATH entries)
+  framesize = 4 + sizeof(float) + 4; // time
+  datasize = 0;
+  for(i = 0;i < npatch;i++){
+    int parms[9], ncells;
+
+    FSEEK(stream, 4, SEEK_CUR);fread(parms, sizeof(int), 9, stream);FSEEK(stream, 4, SEEK_CUR);
+    ncells  = (parms[1] + 1 - parms[0]);
+    ncells *= (parms[3] + 1 - parms[2]);
+    ncells *= (parms[5] + 1 - parms[4]);
+    datasize += (4 + ncells * sizeof(float) + 4);
+  }
+  framesize += datasize;
+  headersize += npatch*(4 + 9 * sizeof(int) + 4); // I1, I2, J1, J2, K1, K2, IOR, NB, NM
+  fclose(stream);
+
+  filesize = GetFileSizeSMV(bufferinfo->file);
+  nframes = (filesize - headersize) / framesize;
+
+  NewMemory((void **)&frames, nframes * sizeof(int));
+  for(i = 0;i < nframes;i++){
+    frames[i] = framesize;
+  }
+  *headersizeptr = headersize;
+  *framesptr = frames;
+  *nframesptr = nframes;
+  *filesizeptr = filesize;
+}
+
   /* ------------------ GetSliceFrameInfo ------------------------ */
 
 void GetSliceFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **framesptr, int *nframesptr, FILE_SIZE *filesizeptr){
@@ -446,19 +507,22 @@ void GetPartFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **framespt
 
   headersize  = 4 + 4 + 4; // ONE
   headersize += 4 + 4 + 4; // FDS VERSION
-  
   FRAME_FSEEK(stream, headersize, SEEK_CUR);
+
   FRAME_READ(&n_part, 1, stream);
-  NewMemory((void **)&nquants, (n_part+1)*sizeof(int));
+  headersize += 4 + 4 + 4; // n_part
+
+  NewMemory((void **)&nquants, 2*n_part*sizeof(int));
   
-  headersize += 4 + 4 + 4;
   int i;
   for(i=0; i<n_part; i++){
     int labelsize;
 
-    FRAME_READ(nquants+i, 2, stream);
-    labelsize = 2*nquants[0]*(4+30+4);
-    headersize += 4 + 8 + 4 + labelsize;
+    FRAME_READ(nquants+2*i, 2, stream);
+    headersize += 4 + 2*4 + 4;
+    
+    labelsize = 2*nquants[2*i]*(4+30+4);
+    headersize += labelsize;
     FRAME_FSEEK(stream, labelsize, SEEK_CUR);
   }
 
@@ -475,17 +539,22 @@ void GetPartFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **framespt
 //  ENDDO
     float time_arg;
     FRAME_READ(&time_arg, 1, stream);
-    if(returncode != 1*sizeof(float))break;
     framesize = 4 + 4 + 4;
+
+//    printf("time_arg=%f\n", time_arg);
+    if(returncode != 1*sizeof(float))break;
     for(i=0; i<n_part; i++){
-      int nplim, skip;
+      int nplim;
+      long int skip;
 
       FRAME_READ(&nplim, 1, stream);
       framesize += 4 + 4 + 4;             // nplim
-      skip  = 4 + 3*nplim*4 + 4;          // xp, yp, zp
-      skip += 4 + nplim*4 + 4;            // tag
-      if(nquants[i]>0){
-        skip += 4 + nplim*nquants[i]*4 + 4; // qp
+
+//      printf("nplim %i: %i\n",i, nplim);
+      skip  = 4 + 3*nplim*sizeof(float) + 4;          // xp, yp, zp
+      skip += 4 +   nplim*sizeof(int)   + 4;          // tag
+      if(nquants[2*i] > 0){
+        skip += 4 + nplim*nquants[2*i]*sizeof(float) + 4; // qp
       }
       framesize += skip;
       FRAME_FSEEK(stream, skip, SEEK_CUR);

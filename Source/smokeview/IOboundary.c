@@ -1511,6 +1511,34 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
     PrintMemoryInfo;
     return 0;
   }
+
+#ifdef pp_BOUNDFRAME
+  if(patchi->frameinfo == NULL)patchi->frameinfo = FRAMEInit(patchi->file, patchi->size_file, FORTRAN_FILE, GetBoundaryFrameInfo);
+#ifdef pp_FRAME_DEBUG
+  int nframes_before, nframes_after;
+
+  nframes_before = patchi->frameinfo->nframes;
+#endif
+  if(patchi->frameinfo != NULL){
+    int nread;
+
+    patchi->frameinfo->bufferinfo = File2Buffer(patchi->file, patchi->frameinfo->bufferinfo, nframe_threads, &nread);
+    if(nread > 0){
+      FRAMESetup(patchi->frameinfo);
+      FRAMESetTimes(patchi->frameinfo, 0, patchi->frameinfo->nframes);
+      FRAMESetFramePtrs(patchi->frameinfo, 0, patchi->frameinfo->nframes);
+      patchi->ntimes = patchi->frameinfo->nframes;
+      NewMemory((void **)&meshi->patch_times, patchi->ntimes * sizeof(float));
+      memcpy(meshi->patch_times, patchi->frameinfo->times, patchi->ntimes*sizeof(float));
+      FRAMEGetMinMax(patchi->frameinfo);
+    }
+  }
+#ifdef pp_FRAME_DEBUG
+  nframes_after = patchi->frameinfo->nframes;
+  printf(", boundary frames read: %i, ", nframes_after - nframes_before);
+#endif
+#endif
+
   if(ifile>=0&&ifile<npatchinfo){
     Global2GLUIBoundaryBounds(patchi->label.shortlabel);
   }
