@@ -187,6 +187,7 @@ add_executable(smokeview
     Source/shared/getdata.c
     Source/shared/color2rgb.c
     Source/shared/readimage.c
+    Source/shared/readgeom.c
     Source/smokeview/colortable.c
     Source/smokeview/command_args.c
 )

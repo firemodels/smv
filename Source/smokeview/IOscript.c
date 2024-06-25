@@ -228,7 +228,7 @@ void InitScriptI(scriptdata *scripti, int command,char *label){
 int GetParamBuffer(FILE *stream){
   for(;;){
     char *comment;
-    
+
     if(fgets(param_buffer, 1024, stream)==NULL)return SCRIPT_EOF;
     line_number++;
     comment = strstr(param_buffer, "//");
@@ -1092,7 +1092,7 @@ int CompileScript(char *scriptfile){
 // GPUOFF
       case SCRIPT_GPUOFF:
         break;
-        
+
 // SETVIEWPOINT
 //  viewpoint (char)
       case SCRIPT_SETVIEWPOINT:
@@ -1244,7 +1244,7 @@ int CompileScript(char *scriptfile){
 // LOADSMOKERENDER
 //  (char)quantity (soot, hrrpuv, temp or co2)
 //  (char)renderfile_base
-// (int)start (int)skip 
+// (int)start (int)skip
       case SCRIPT_LOADSMOKERENDER:
         SETcval;
         if(scripti->cval != NULL){
@@ -1273,7 +1273,7 @@ int CompileScript(char *scriptfile){
         if(script_skipframe>0)scripti->ival3=script_skipframe;
         if(render_skipframe0>0)scripti->ival3=render_skipframe0;
         break;
-        
+
 // LOADSLCF
 //  PBX=val QUANTITY='quantity'
 #define KW_QUANTITY      0
@@ -1452,7 +1452,7 @@ int CompileScript(char *scriptfile){
         SETbuffer;
         sscanf(param_buffer, " %i %f", &scripti->ival, &scripti->fval);
         break;
-        
+
 // OUTPUTSLICEDATA
 //  output_slicedata (int)
       case SCRIPT_OUTPUTSLICEDATA:

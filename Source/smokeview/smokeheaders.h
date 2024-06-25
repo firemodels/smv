@@ -5,6 +5,8 @@
 #include "gd.h"
 #endif
 
+#include "readgeom.h"
+
 //*** threader headers
 EXTERNCPP void *CheckFiles(void *arg);
 EXTERNCPP void *ClassifyAllGeom(void *arg);
@@ -388,7 +390,7 @@ EXTERNCPP int GetFontHeight(void);
 EXTERNCPP void LoadAllMultiSliceMenu(void);
 EXTERNCPP void LoadAllMultiVSliceMenu(void);
 
-EXTERNCPP void UpdateShowColorbar(int *showcfast_arg, int *show_slice_colorbar_arg, 
+EXTERNCPP void UpdateShowColorbar(int *showcfast_arg, int *show_slice_colorbar_arg,
   int *show_hvacduct_colorbar_arg, int *show_hvacnode_colorbar_arg);
 
 EXTERNCPP void DrawPlot2D(int option, float *x, float *z, float *z2, int n,
@@ -599,7 +601,6 @@ EXTERNCPP void UpdateMovieType(int type);
 EXTERNCPP void UpdateDisplay(void);
 EXTERNCPP void UpdateShowScene(void);
 EXTERNCPP void DrawGravityAxis(void);
-EXTERNCPP void XYZ2AzElev(float *xyz,float *azimuth, float *elevation);
 EXTERNCPP void UpdateColorDevices(void);
 EXTERNCPP void InitVolrenderScript(char *prefix, char *tour_label, int startframe, int skipframe);
 
@@ -661,12 +662,6 @@ EXTERNCPP labeldata *LabelGet(char *name);
 EXTERNCPP void LabelDelete(labeldata *label);
 EXTERNCPP void LabelPrint(void);
 EXTERNCPP labeldata *LabelInsert(labeldata *labeltemp);
-
-EXTERNCPP void RotateU2V(float *u, float *v, float *axis, float *angle);
-
-EXTERNCPP void AngleAxis2Quat(float angle, float *axis, float *quat);
-EXTERNCPP void Quat2Rot(float quat[4],float rot[16]);
-EXTERNCPP void MultQuat(float x[4], float y[4], float z[4]);
 
 EXTERNCPP void SetScreenSize(int *width, int *height);
 EXTERNCPP void KeyboardCB(unsigned char key, int x, int y);
@@ -1113,11 +1108,8 @@ EXTERNCPP void ReadCADGeom(cadgeomdata *cd);
 EXTERNCPP void DrawCADGeom(const cadgeomdata *cd);
 
 EXTERNCPP void ReadPlot3D(char *file, int ifile, int flag,int *errorcode);
-EXTERNCPP void ReadGeomHeader(geomdata *geomi, int *geom_frame_index, int *ntimes_local);
 EXTERNCPP void SetupReadAllGeom(void);
 EXTERNCPP FILE_SIZE ReadGeom(geomdata *geomi, int load_flag, int type, int *geom_frame_index);
-EXTERNCPP void ReadGeomFile2(geomdata *geomi);
-EXTERNCPP void InitGeom(geomdata *geomi, int hasdata, int fdsblock, int have_vectors, int block_number);
 EXTERNCPP FILE_SIZE ReadBoundary(int ifile, int flag, int *errorcode);
 EXTERNCPP FILE_SIZE ReadPart(char *file, int ifile, int loadflag, int *errorcode);
 
@@ -1213,13 +1205,5 @@ EXTERNCPP int SVimage2var(int rendertype, int woffset, int width, int hoffset, i
 
 EXTERNCPP void MakeFireColors(float temp_min, float temp_max, int nfire_colors_arg);
 
-#define HEADER_SIZE 4
-#define TRAILER_SIZE 4
-
-#define FORTREAD(var,size,count,STREAM) \
-                           FSEEK(STREAM,HEADER_SIZE,SEEK_CUR);\
-                           returncode=fread(var,size,count,STREAM);\
-                           if(returncode!=count)returncode=0;\
-                           FSEEK(STREAM,TRAILER_SIZE,SEEK_CUR)
 
 #endif
