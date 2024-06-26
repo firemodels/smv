@@ -131,6 +131,7 @@
 #ifdef pp_FRAME
 #define READ_TEST 132
 #endif
+#define COLORINDEX 133
 
 #define UPDATE_VECTOR          101
 #define UPDATE_VECTOR_FROM_SMV 102
