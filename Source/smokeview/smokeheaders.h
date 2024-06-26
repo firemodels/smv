@@ -566,6 +566,8 @@ EXTERNCPP void UnloadVSliceMenu(int value);
 EXTERNCPP void UpdateSliceDups(sliceparmdata *sp);
 EXTERNCPP void GetSliceParmInfo(sliceparmdata *sp);
 EXTERNCPP void SetSliceParmInfo(sliceparmdata *sp);
+EXTERNCPP int HandleColorbarIndex(int colorbar_index);
+EXTERNCPP void UpdateColorbarSelectionIndex(int val);
 
 EXTERNCPP void UpdateSmokeAlphas(void);
 EXTERNCPP void InitAlphas(unsigned char *alphanew,

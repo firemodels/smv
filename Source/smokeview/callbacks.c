@@ -745,12 +745,9 @@ int GlutGetModifiersNew(void){
   return modifier;
 }
 
-/* ------------------ ColorbarClick ------------------------ */
+/* ------------------ HandleColorbarIndex ------------------------ */
 
-int ColorbarClick(int x, int y){
-  int colorbar_index;
-
-  colorbar_index = GetColorbarIndex(1,x,y);
+int HandleColorbarIndex(int colorbar_index){
   if(colorbar_index>=0){
     colorbar_select_index=colorbar_index;
     colorbar_drag=1;
@@ -770,7 +767,19 @@ int ColorbarClick(int x, int y){
   return 0;
 }
 
-/* ------------------ GetTimeBarFrame ------------------------ */
+/* ------------------ ColorbarClick ------------------------ */
+
+int ColorbarClick(int x, int y){
+  int colorbar_index;
+  int return_val;
+
+  colorbar_index = GetColorbarIndex(1, x, y);
+  UpdateColorbarSelectionIndex(colorbar_index);
+  return_val = HandleColorbarIndex(colorbar_index);
+  return return_val;
+}
+  
+  /* ------------------ GetTimeBarFrame ------------------------ */
 
 int GetTimeBarFrame(int xm){
   int timebar_right_pos, timebar_left_pos, iframe;

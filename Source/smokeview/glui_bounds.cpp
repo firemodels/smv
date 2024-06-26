@@ -2884,6 +2884,7 @@ GLUI_Spinner *SPINNER_colorbar_shift = NULL;
 GLUI_Spinner *SPINNER_ncolorlabel_digits = NULL;
 GLUI_Spinner *SPINNER_ncolorlabel_padding = NULL;
 GLUI_Spinner *SPINNER_colorbar_selection_width = NULL;
+GLUI_Spinner *SPINNER_colorbar_select_index = NULL;
 GLUI_Spinner *SPINNER_labels_transparency_data = NULL;
 GLUI_Spinner *SPINNER_down_red = NULL, *SPINNER_down_green = NULL, *SPINNER_down_blue = NULL;
 GLUI_Spinner *SPINNER_up_red = NULL, *SPINNER_up_green = NULL, *SPINNER_up_blue = NULL;
@@ -3103,6 +3104,13 @@ int      nparticleprocinfo=0;
 
 procdata  subboundprocinfo[5];
 int       nsubboundprocinfo=0;
+
+/* ------------------ UpdateColorbarSelectionIndex ------------------------ */
+
+extern "C" void UpdateColorbarSelectionIndex(int val){
+  colorbar_select_index = val;
+  if(SPINNER_colorbar_select_index != NULL)SPINNER_colorbar_select_index->set_int_val(val);
+}
 
 /* ------------------ GLUIUpdateLoadAllSlices ------------------------ */
 
@@ -5594,9 +5602,11 @@ hvacductboundsCPP.setup("hvac", ROLLOUT_hvacduct, hvacductbounds_cpp, nhvacductb
 
   glui_bounds->add_separator_to_panel(PANEL_colorbar_properties);
 
-  SPINNER_colorbar_selection_width = glui_bounds->add_spinner_to_panel(PANEL_colorbar_properties, _("Selection width:"), GLUI_SPINNER_INT, &colorbar_selection_width, COLORBAND, GLUISliceBoundCB);
+  SPINNER_colorbar_select_index = glui_bounds->add_spinner_to_panel(PANEL_colorbar_properties, _("selection index:"), GLUI_SPINNER_INT, &colorbar_select_index,  COLORINDEX, GLUISliceBoundCB);
+  SPINNER_colorbar_select_index->set_int_limits(-1, 255);
+  SPINNER_colorbar_selection_width = glui_bounds->add_spinner_to_panel(PANEL_colorbar_properties, _("selection width:"),    GLUI_SPINNER_INT, &colorbar_selection_width, COLORBAND,  GLUISliceBoundCB);
   SPINNER_colorbar_selection_width->set_int_limits(COLORBAR_SELECTION_WIDTH_MIN, COLORBAR_SELECTION_WIDTH_MAX);
-  SPINNER_ncolorlabel_digits = glui_bounds->add_spinner_to_panel(PANEL_colorbar_properties, _("colorbar digits:"), GLUI_SPINNER_INT, &ncolorlabel_digits, COLORLABEL_DIGITS, GLUISliceBoundCB);
+  SPINNER_ncolorlabel_digits = glui_bounds->add_spinner_to_panel(PANEL_colorbar_properties, _("label digits:"), GLUI_SPINNER_INT, &ncolorlabel_digits, COLORLABEL_DIGITS, GLUISliceBoundCB);
   SPINNER_ncolorlabel_digits->set_int_limits(COLORBAR_NDECIMALS_MIN, COLORBAR_NDECIMALS_MAX, GLUI_LIMIT_CLAMP);
   SPINNER_ncolorlabel_padding = glui_bounds->add_spinner_to_panel(PANEL_colorbar_properties, _("padding:"), GLUI_SPINNER_INT, &ncolorlabel_padding, COLORLABEL_DIGITS, GLUISliceBoundCB);
   SPINNER_ncolorlabel_padding->set_int_limits(0, 8, GLUI_LIMIT_CLAMP);
@@ -6591,8 +6601,14 @@ extern "C" void GLUISliceBoundCB(int var){
       CHECKBOX_sort2->set_int_val(sort_iso_triangles);
       GLUIIsoBoundCB(GLOBAL_ALPHA);
       break;
+    case COLORINDEX:
+      HandleColorbarIndex(colorbar_select_index);
+      break;
     case COLORBAND:
       UpdateRGBColors(colorbar_select_index);
+      if(colorbar_select_index == -1){
+        HandleColorbarIndex(colorbar_select_index);
+      }
       break;
     case FORCE_EXPONENTIAL:
       if(force_exponential==1&&force_fixedpoint==1)force_fixedpoint=0;
