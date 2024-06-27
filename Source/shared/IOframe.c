@@ -319,10 +319,6 @@ void GetBoundaryFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **fram
   FSEEK(stream, 4, SEEK_CUR);fread(&npatch, sizeof(int), 1, stream);FSEEK(stream, 4, SEEK_CUR);
   headersize += (4 + sizeof(int) + 4);       // NPATCH
 
-  // frame
-  // WRITE(LUBF) TIME
-  // WRITE(LUBF) (((QQ(I, J, K), I = 11, I2), J = J1, J2), K = K1, K2) (NPATH entries)
-  framesize = 4 + sizeof(float) + 4; // time
   datasize = 0;
   for(i = 0;i < npatch;i++){
     int parms[9], ncells;
@@ -333,8 +329,13 @@ void GetBoundaryFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **fram
     ncells *= (parms[5] + 1 - parms[4]);
     datasize += (4 + ncells * sizeof(float) + 4);
   }
-  framesize += datasize;
   headersize += npatch*(4 + 9 * sizeof(int) + 4); // I1, I2, J1, J2, K1, K2, IOR, NB, NM
+
+  // frame
+  // WRITE(LUBF) TIME
+  // WRITE(LUBF) (((QQ(I, J, K), I = 11, I2), J = J1, J2), K = K1, K2) (NPATH entries)
+  framesize = 4 + sizeof(float) + 4; // time
+  framesize += datasize;
   fclose(stream);
 
   filesize = GetFileSizeSMV(bufferinfo->file);
