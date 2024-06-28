@@ -2241,6 +2241,9 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
           meshdata *meshblock;
           float dval;
           int j;
+#ifdef pp_BOUNDFRAME
+              float *patchn;
+#endif
 
           iblock=meshi->blockonpatch[n];
           meshblock = meshi->meshonpatch[n];
@@ -2250,8 +2253,6 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
             switch(loadpatchbysteps){
             case UNCOMPRESSED_ALLFRAMES:
 #ifdef pp_BOUNDFRAME
-              float *patchn;
-
               patchn = (float *)FRAMEGetSubFramePtr(patchi->frameinfo, meshi->patch_itime, n);
               for(j=0;j<nsize;j++){
                   if(meshi->thresholdtime[nn+j]<0.0&&patchn[j]>=temp_threshold){
