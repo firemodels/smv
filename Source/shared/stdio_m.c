@@ -113,7 +113,16 @@ FILE_m *fopen_b(char *file, unsigned char *buffer, size_t nbuffer, char *mode){
   stream_m->buffer_beg = buffer;
   stream_m->buffer_end = buffer + nbuffer;
   stream_m->file = m_file;
-  stream_m->stream = NULL;
+  if(buffer == NULL){
+    stream_m->stream = fopen(file, mode);
+    if(stream_m->stream == NULL){
+      FREEMEMORY(stream_m);
+      FREEMEMORY(m_file);
+    }
+  }
+  else{
+    stream_m->stream = NULL;
+  }
   return stream_m;
 }
 
