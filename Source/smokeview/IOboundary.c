@@ -2190,9 +2190,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
   START_TIMER(read_time);
   for(ii=framestart;ii<maxtimes_boundary;){
     if(loadpatchbysteps==UNCOMPRESSED_ALLFRAMES){
-#ifdef pp_BOUNDFRAME
-      meshi->patchval_iframe = (float *)FRAMEGetFramePtr(patchi->frameinfo,ii);
-#else
+#ifndef pp_BOUNDFRAME
       meshi->patchval_iframe = meshi->patchval + ii*meshi->npatchsize;
 #endif
     }
@@ -2596,7 +2594,10 @@ void DrawBoundaryTexture(const meshdata *meshi){
   float r11, r12, r21, r22;
   int n;
   int nrow, ncol, irow, icol;
-  float *patchvals, *patchval_iframe;
+  float *patchvals;
+#ifndef pp_BOUNDFRAME
+  float *patchval_iframe;
+#endif
   unsigned char *cpatchvals;
   float *xyzpatchcopy;
   int *patchblankcopy;
@@ -2637,8 +2638,10 @@ void DrawBoundaryTexture(const meshdata *meshi){
   patchi=patchinfo+meshi->patchfilenum;
   switch(patchi->compression_type){
   case UNCOMPRESSED:
+#ifndef pp_BOUNDFRAME
     assert(meshi->cpatchval_iframe!=NULL);
     patchval_iframe=meshi->patchval_iframe;
+#endif
     break;
   case COMPRESSED_ZLIB:
     break;
@@ -2993,7 +2996,9 @@ void DrawBoundaryTextureThreshold(const meshdata *meshi){
   int nrow, ncol, irow, icol;
   float *patchvals;
   unsigned char *cpatchvals;
+#ifndef pp_BOUNDFRAME
   float *patchval_iframe;
+#endif
   float *xyzpatchcopy;
   int *patchblankcopy;
   float *patch_times;
@@ -3023,8 +3028,10 @@ void DrawBoundaryTextureThreshold(const meshdata *meshi){
   patchi=patchinfo+meshi->patchfilenum;
   switch(patchi->compression_type){
   case UNCOMPRESSED:
+#ifndef pp_BOUNDFRAME
     assert(meshi->patchval_iframe!=NULL);
     patchval_iframe=meshi->patchval_iframe;
+#endif
     break;
   case COMPRESSED_ZLIB:
     break;
@@ -3559,7 +3566,9 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
   int nrow, ncol, irow, icol;
   float *patchvals;
   unsigned char *cpatchvals;
+#ifndef pp_BOUNDFRAME
   float *patchval_iframe;
+#endif
   float *patch_times;
   int *vis_boundaries;
   int *patchdir, *boundary_row, *boundary_col, *boundarytype;
@@ -3608,8 +3617,10 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
 
   switch(patchi->compression_type){
   case UNCOMPRESSED:
+#ifndef pp_BOUNDFRAME
     patchval_iframe = meshi->patchval_iframe;
     if(patchval_iframe==NULL)return;
+#endif
     break;
   case COMPRESSED_ZLIB:
     break;

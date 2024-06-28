@@ -1061,7 +1061,9 @@ void InitMesh(meshdata *meshi){
   meshi->patch_times = NULL;
   meshi->patch_times_map = NULL;
   meshi->patchval = NULL;
+#ifndef pp_BOUNDFRAME
   meshi->patchval_iframe = NULL;
+#endif
   meshi->thresholdtime = NULL;
   meshi->patchblank = NULL;
   meshi->patch_timeslist = NULL;

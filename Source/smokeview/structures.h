@@ -737,7 +737,10 @@ typedef struct _meshdata {
   float *xyzpatch, *xyzpatch_threshold;
   unsigned char *cpatchval_zlib, *cpatchval_iframe_zlib;
   unsigned char *cpatchval, *cpatchval_iframe;
-  float *patch_times, *patch_timesi, *patchval, *patchval_iframe;
+  float *patch_times, *patch_timesi, *patchval;
+#ifndef pp_BOUNDFRAME
+  float *patchval_iframe;
+#endif
   unsigned char *patch_times_map;
   float **patchventcolors;
   float *thresholdtime;
