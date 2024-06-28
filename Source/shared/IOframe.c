@@ -20,7 +20,7 @@
 
   /* ------------------ FRAMEInit ------------------------ */
 
-framedata *FRAMEInit(char *file, char *size_file, int file_type, void GetFrameInfo(bufferdata *bufferinfo, int *headersize, int **sizes, int *nsizes, FILE_SIZE *filesizeptr)){
+framedata *FRAMEInit(char *file, char *size_file, int file_type, void GetFrameInfo(bufferdata *bufferinfo, int *headersize, int **sizes, int *nsizes, int **subframeptrs, int *nsubframes, FILE_SIZE *filesizeptr)){
   framedata *frame=NULL;
 
   NewMemory((void **)&frame, sizeof(framedata));
@@ -55,6 +55,8 @@ framedata *FRAMEInit(char *file, char *size_file, int file_type, void GetFrameIn
   frame->frameptrs    = NULL;
   frame->times        = NULL;
   frame->header       = NULL;
+  frame->subframeoffsets = NULL;
+  frame->nsubframes = 0;
   frame->GetFrameInfo = GetFrameInfo;
   return frame;
 }
@@ -66,15 +68,18 @@ void FRAMESetup(framedata *fi){
   int i;
   FILE_SIZE filesize;
   int headersize;
+  int *subframeoffsets, nsubframes;
 
-  fi->GetFrameInfo(fi->bufferinfo, &headersize, &framesizes, &nframes, &filesize);
+  fi->GetFrameInfo(fi->bufferinfo, &headersize, &framesizes, &nframes, &subframeoffsets, &nsubframes, &filesize);
   if(nframes <= 0)return;
-  fi->framesizes   = framesizes;
-  fi->nframes      = nframes;
-  fi->filesize     = filesize;
-  fi->headersize   = headersize;
-  fi->frames       = fi->bufferinfo->buffer;
-  fi->header       = fi->bufferinfo->buffer;
+  fi->subframeoffsets = subframeoffsets;
+  fi->nsubframes      = nsubframes;
+  fi->framesizes      = framesizes;
+  fi->nframes         = nframes;
+  fi->filesize        = filesize;
+  fi->headersize      = headersize;
+  fi->frames          = fi->bufferinfo->buffer;
+  fi->header          = fi->bufferinfo->buffer;
   if(nframes > 0){
 #define NEWMEM(a,b) ((a)==NULL ? NewMemory((void **)&a,b): ResizeMemory((void **)&a,b))
 
@@ -230,11 +235,24 @@ unsigned char *FRAMEGetFramePtr(framedata *fi, int iframe){
   return fi->frameptrs[iframe];
 }
 
+/* ------------------ FRAMEGetPtr ------------------------ */
+
+unsigned char *FRAMEGetSubFramePtr(framedata *fi, int iframe, int isubframe){
+  unsigned char *ptr;
+
+  ptr = FRAMEGetFramePtr(fi, iframe);
+  if(isubframe <0)isubframe = 0;
+  if(isubframe >fi->nsubframes-1)isubframe = fi->nsubframes - 1;;
+  ptr += fi->subframeoffsets[isubframe];
+  return ptr;
+}
+
 //******* The following routines define header and frame sizes for each file type 
 //        (3d smoke, slice, isosurface, and particle - boundary file routine not implemente)
 /* ------------------ GetSmoke3DFrameInfo ------------------------ */
 
-void GetSmoke3DFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **framesptr, int *nframesptr, FILE_SIZE *filesizeptr){
+void GetSmoke3DFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **framesptr, int *nframesptr,
+                         int **subframeoffsetsptr, int *nsubframesptr, FILE_SIZE *filesizeptr){
   FILE *stream;
   char buffer[255];
   int headersize, nframes, *frames;
@@ -291,12 +309,14 @@ void GetSmoke3DFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **frame
   
 /* ------------------ GetBoundaryFrameInfo ------------------------ */
 
-void GetBoundaryFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **framesptr, int *nframesptr, FILE_SIZE *filesizeptr){
+void GetBoundaryFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **framesptr, int *nframesptr, 
+  int **subframeoffsetsptr, int *nsubframesptr, FILE_SIZE *filesizeptr){
   FILE *stream;
 
   int headersize, framesize, nframes, *frames, datasize;
   FILE_SIZE filesize;
   int npatch, i;
+  int *subframeoffsets=NULL, nsubframes=0;
 
   stream = fopen(bufferinfo->file, "rb");
   if(stream == NULL){
@@ -322,7 +342,13 @@ void GetBoundaryFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **fram
   // frame
   // WRITE(LUBF) TIME
   // WRITE(LUBF) (((QQ(I, J, K), I = 11, I2), J = J1, J2), K = K1, K2) (NPATH entries)
+
+  nsubframes = npatch;
+  NewMemory(( void ** )&subframeoffsets, nsubframes*sizeof(int));
+
+
   framesize = 4 + sizeof(float) + 4; // time
+  subframeoffsets[0] = 0;
   datasize = 0;
   for(i = 0;i < npatch;i++){
     int parms[9], ncells;
@@ -332,6 +358,7 @@ void GetBoundaryFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **fram
     ncells *= (parms[3] + 1 - parms[2]);
     ncells *= (parms[5] + 1 - parms[4]);
     datasize += (4 + ncells * sizeof(float) + 4);
+    if(i <npatch-1)subframeoffsets[i+1] = subframeoffsets[i] + datasize;
   }
   framesize += datasize;
   headersize += npatch*(4 + 9 * sizeof(int) + 4); // I1, I2, J1, J2, K1, K2, IOR, NB, NM
@@ -352,7 +379,8 @@ void GetBoundaryFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **fram
 
   /* ------------------ GetSliceFrameInfo ------------------------ */
 
-void GetSliceFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **framesptr, int *nframesptr, FILE_SIZE *filesizeptr){
+void GetSliceFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **framesptr, int *nframesptr,
+                       int **subframeoffsetsptr, int *nsubframesptr, FILE_SIZE *filesizeptr){
   FILE_m *stream;
 
   int headersize, framesize, nframes, *frames;
@@ -408,7 +436,8 @@ void GetSliceFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **framesp
 
 /* ------------------ GetIsoFrameInfo ------------------------ */
 
-void GetIsoFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **framesptr, int *nframesptr, FILE_SIZE *filesizeptr){
+void GetIsoFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **framesptr, int *nframesptr,
+                     int **subframeoffsetsptr, int *nsubframesptr, FILE_SIZE *filesizeptr){
   FILE_m *stream;
   int headersize, levelsize, *frames;
   int niso_levels;
@@ -482,7 +511,8 @@ void GetIsoFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **framesptr
 
 /* ------------------ GetPartFrameInfo ------------------------ */
 
-void GetPartFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **framesptr, int *nframesptr, FILE_SIZE *filesizeptr){
+void GetPartFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **framesptr, int *nframesptr,
+                      int **subframeoffsetsptr, int *nsubframesptr, FILE_SIZE *filesizeptr){
   FILE_m *stream;
   FILE_SIZE filesize;
   int headersize, *frames, nframes, returncode, n_part, *nquants;

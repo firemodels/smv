@@ -18,22 +18,24 @@ typedef struct _framedata {
   int nthreads;
 #endif
   int headersize, *framesizes;
+  int *subframeoffsets, nsubframes;
   FILE_SIZE *offsets, filesize;
   unsigned char *header, *frames, **frameptrs;
   bufferdata *bufferinfo;
   float *times;
   float valmin, valmax;
-  void (*GetFrameInfo)(bufferdata *bufferinfo, int *headersize, int **sizes, int *nsizes, FILE_SIZE *filesizeptr);
+  void (*GetFrameInfo)(bufferdata *bufferinfo, int *headersize, int **sizes, int *nsizes, int **subframeoffsets, int *nsubframes, FILE_SIZE *filesizeptr);
 } framedata;
 
 // ----------------------- headers -----------------------
 
-framedata *FRAMEInit(char *file, char *size_file, int file_type, void GetFrameInfo(bufferdata *bufferinfo, int *headersize, int **sizes, int *nsizes, FILE_SIZE *filesize_ptr));
+framedata *FRAMEInit(char *file, char *size_file, int file_type, void GetFrameInfo(bufferdata *bufferinfo, int *headersize, int **sizes, int *nsizes, int **subframeptrs, int *nsubframes, FILE_SIZE *filesize_ptr));
 void FRAMEFree(framedata *fi);
 #ifdef pp_THREAD
 void FRAMESetNThreads(framedata *fi, int nthreads);
 #endif
 unsigned char *FRAMEGetFramePtr(framedata *fi, int iframe);
+unsigned char *FRAMEGetSubFramePtr(framedata *fi, int iframe, int isubframe);
 int FRAMEGetMinMax(framedata *fi);
 void FRAMEReadFrame(framedata *fi, int iframe, int nframes);
 void FRAMESetFramePtrs(framedata * fi, int iframe, int nframes);
@@ -41,9 +43,9 @@ void FRAMESetTimes(framedata *fi, int iframe, int nframes);
 void FRAMESetup(framedata *fi);
 void FRAMESetupVals(framedata *fi);
 
-void GetBoundaryFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **framesptr, int *nframesptr, FILE_SIZE *filesizeptr);
-void GetIsoFrameInfo(    bufferdata *bufferinfo, int *headersizeptr, int **sizesptr, int *nsizesptr, FILE_SIZE *filesizeptr);
-void GetPartFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **framesptr, int *nframesptr, FILE_SIZE *filesizeptr);
-void GetSliceFrameInfo(  bufferdata *bufferinfo, int *headersizeptr, int **sizesptr, int *nsizesptr, FILE_SIZE *filesizeptr);
-void GetSmoke3DFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **sizesptr, int *nsizesptr, FILE_SIZE *filesizeptr);
+void GetBoundaryFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **framesptr, int *nframesptr, int **subframeoffsetptrs, int *nsubframeoffsets, FILE_SIZE *filesizeptr);
+void GetIsoFrameInfo(     bufferdata *bufferinfo, int *headersizeptr, int **framesptr, int *nframesptr, int **subframeoffsetptrs, int *nsubframeoffsets, FILE_SIZE *filesizeptr);
+void GetPartFrameInfo(    bufferdata *bufferinfo, int *headersizeptr, int **framesptr, int *nframesptr, int **subframeoffsetptrs, int *nsubframeoffsets, FILE_SIZE *filesizeptr);
+void GetSliceFrameInfo(   bufferdata *bufferinfo, int *headersizeptr, int **framesptr, int *nframesptr, int **subframeoffsetptrs, int *nsubframeoffsets, FILE_SIZE *filesizeptr);
+void GetSmoke3DFrameInfo( bufferdata *bufferinfo, int *headersizeptr, int **framesptr, int *nframesptr, int **subframeoffsetptrs, int *nsubframeoffsets, FILE_SIZE *filesizeptr);
 #endif
