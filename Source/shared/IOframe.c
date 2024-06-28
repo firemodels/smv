@@ -350,8 +350,8 @@ void GetBoundaryFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **fram
     ncells  = (parms[1] + 1 - parms[0]);
     ncells *= (parms[3] + 1 - parms[2]);
     ncells *= (parms[5] + 1 - parms[4]);
-    datasize += (4 + ncells * sizeof(float) + 4);
-    if(i <npatch-1)subframeoffsets[i+1] = subframeoffsets[i] + datasize;
+    datasize += (4 + ncells* sizeof(float) + 4);
+    if(i <npatch-1)subframeoffsets[i+1] = subframeoffsets[i] + (4 + ncells * sizeof(float) + 4);
   }
   headersize += npatch*(4 + 9 * sizeof(int) + 4); // I1, I2, J1, J2, K1, K2, IOR, NB, NM
 
