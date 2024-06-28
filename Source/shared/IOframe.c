@@ -369,10 +369,12 @@ void GetBoundaryFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **fram
   for(i = 0;i < nframes;i++){
     frames[i] = framesize;
   }
-  *headersizeptr = headersize;
-  *framesptr = frames;
-  *nframesptr = nframes;
-  *filesizeptr = filesize;
+  *headersizeptr      = headersize;
+  *framesptr          = frames;
+  *nframesptr         = nframes;
+  *filesizeptr        = filesize;
+  *subframeoffsetsptr = subframeoffsets;
+  *nsubframesptr      = nsubframes;
 }
 
   /* ------------------ GetSliceFrameInfo ------------------------ */
