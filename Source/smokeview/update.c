@@ -216,8 +216,13 @@ void UpdateFrameNumber(int changetime){
         if(patchi->structured == NO||meshi->patch_times==NULL||meshi->patch_timeslist==NULL)continue;
         meshi->patch_itime=meshi->patch_timeslist[itimes];
         if(patchi->compression_type==UNCOMPRESSED){
-          meshi->cpatchval_iframe = meshi->cpatchval + meshi->patch_itime*meshi->npatchsize;
-          meshi->patchval_iframe  = meshi->patchval+meshi->patch_itime*meshi->npatchsize;
+
+#ifdef pp_BOUNDFRAME
+          meshi->patchval_iframe = (float *)FRAMEGetFramePtr(patchi->frameinfo, meshi->patch_itime)-4;
+#else
+          meshi->patchval_iframe  = meshi->patchval  + meshi->patch_itime*meshi->npatchsize;
+#endif
+          meshi->cpatchval_iframe = meshi->cpatchval + meshi->patch_itime * meshi->npatchsize;
         }
         else{
           UncompressBoundaryDataBNDF(meshi, meshi->patch_itime);
