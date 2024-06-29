@@ -155,7 +155,7 @@ size_t fread_m(void *ptr, size_t size, size_t nmemb, FILE_m *stream_m){
     }
     memcpy(ptr, stream_m->buffer, size*nmemb);
     stream_m->buffer = buffer_end;
-    return_val = size*nmemb;
+    return_val = nmemb;
   }
   else{
     return_val =  fread(ptr, size, nmemb, stream_m->stream);
