@@ -672,7 +672,7 @@ bufferdata *InitBufferData(char *file, int flag){
 
 bufferdata *File2Buffer(char *file, bufferdata *bufferinfo, int nthreads, int *nreadptr){
   unsigned char *buffer;
-  FILE_SIZE nbuffer, nfile, offset = 0, nread, delta;
+  FILE_SIZE nfile, offset = 0, nread, delta;
   bufferdata *buffinfo=NULL;
 
   *nreadptr = 0;
@@ -680,14 +680,9 @@ bufferdata *File2Buffer(char *file, bufferdata *bufferinfo, int nthreads, int *n
 
   INIT_PRINT_TIMER(timer_file2buffer);
   if(bufferinfo == NULL){
-    NewMemory((void **)&buffinfo, sizeof(bufferdata));
-    buffinfo->file = file;
-    nbuffer = GetFileSizeSMV(file);
-    NewMemory((void **)&buffer, nbuffer*sizeof(unsigned char));
-    buffinfo->buffer  = buffer;
-    buffinfo->nbuffer = nbuffer;
+    buffinfo = InitBufferData(file, 1);
     offset            = 0;
-    delta             = nbuffer;
+    delta             = buffinfo->nbuffer;
   }
   else{
     nfile = GetFileSizeSMV(file);
