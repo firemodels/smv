@@ -81,8 +81,6 @@ void FRAMESetup(framedata *fi){
   fi->frames          = fi->bufferinfo->buffer;
   fi->header          = fi->bufferinfo->buffer;
   if(nframes > 0){
-#define NEWMEM(a,b) ((a)==NULL ? NewMemory((void **)&a,b): ResizeMemory((void **)&a,b))
-
     NEWMEM(fi->offsets,   nframes*sizeof(FILE_SIZE));
     NEWMEM(fi->frameptrs, nframes*sizeof(float *));
     NEWMEM(fi->times,     nframes*sizeof(float));

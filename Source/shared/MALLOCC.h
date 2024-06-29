@@ -73,6 +73,10 @@ MMEXTERN pthread_mutex_t mutexMEM;
 #define ResizeMemoryMemID(f,g,h) _ResizeMemory((f),(g),(h),(#f),__FILE__,__LINE__)
 #endif
 
+#ifndef NEWMEM
+#define NEWMEM(a,b) ((a)==NULL ? NewMemory((void **)&a,b): ResizeMemory((void **)&a,b))
+#endif
+
 #define NewResizeMemory(f,g) ((f)==NULL ? NewMemory((void **)&f,g) : ResizeMemory((void **)&f,g))
 
 #define NEWMEMORY(f,g)       NewMemory((void **)&(f),(g))
