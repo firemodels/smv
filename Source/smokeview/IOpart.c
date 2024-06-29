@@ -2058,7 +2058,7 @@ FILE_SIZE ReadPart(char *file_arg, int ifile_arg, int loadflag_arg, int *errorco
   if(parti->frameinfo != NULL){
     int nread;
 
-    parti->frameinfo->bufferinfo = File2Buffer(parti->file, parti->frameinfo->bufferinfo, nframe_threads, &nread);
+    parti->frameinfo->bufferinfo = File2Buffer(parti->file, parti->frameinfo->bufferinfo, ALLDATA_OFFSET, ALLDATA_NVALS, nframe_threads, &nread);
     FRAMESetTimes(parti->frameinfo, 0, parti->frameinfo->nframes);
     FRAMESetFramePtrs(parti->frameinfo, 0, parti->frameinfo->nframes);
    // FRAMEGetMinMax(sd->frameinfo, &valmin, &valmax);

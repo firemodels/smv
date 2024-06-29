@@ -1524,7 +1524,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
   if(patchi->frameinfo != NULL){
     int nread;
 
-    patchi->frameinfo->bufferinfo = File2Buffer(patchi->file, patchi->frameinfo->bufferinfo, nframe_threads, &nread);
+    patchi->frameinfo->bufferinfo = File2Buffer(patchi->file, patchi->frameinfo->bufferinfo, ALLDATA_OFFSET, ALLDATA_NVALS, nframe_threads, &nread);
     if(nread > 0){
       FRAMESetTimes(patchi->frameinfo, 0, patchi->frameinfo->nframes);
       FRAMESetFramePtrs(patchi->frameinfo, 0, patchi->frameinfo->nframes);

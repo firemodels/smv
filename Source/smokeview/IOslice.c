@@ -3993,7 +3993,7 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
     if(sd->frameinfo != NULL){
       int nread;
 
-      sd->frameinfo->bufferinfo = File2Buffer(sd->file, sd->frameinfo->bufferinfo, nframe_threads, &nread);
+      sd->frameinfo->bufferinfo = File2Buffer(sd->file, sd->frameinfo->bufferinfo, ALLDATA_OFFSET, ALLDATA_NVALS, nframe_threads, &nread);
       if(nread > 0){
         FRAMESetTimes(sd->frameinfo, 0, sd->frameinfo->nframes);
         FRAMESetFramePtrs(sd->frameinfo, 0, sd->frameinfo->nframes);

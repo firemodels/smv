@@ -4292,7 +4292,7 @@ FILE_SIZE ReadSmoke3D(int iframe_arg,int ifile_arg,int flag_arg, int first_time,
 #endif
       if(smoke3di->frameinfo != NULL){
         int nread;
-        smoke3di->frameinfo->bufferinfo = File2Buffer(smoke3di->file, smoke3di->frameinfo->bufferinfo, nframe_threads, &nread);
+        smoke3di->frameinfo->bufferinfo = File2Buffer(smoke3di->file, smoke3di->frameinfo->bufferinfo, ALLDATA_OFFSET, ALLDATA_NVALS, nframe_threads, &nread);
         if(nread > 0){
           FRAMESetTimes(smoke3di->frameinfo, 0, smoke3di->frameinfo->nframes);
           FRAMESetFramePtrs(smoke3di->frameinfo, 0, smoke3di->frameinfo->nframes);
