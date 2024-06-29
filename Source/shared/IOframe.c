@@ -186,6 +186,8 @@ void FRAMEReadFrame(framedata *fi, int iframe, int nframes){
 void FRAMESetTimes(framedata *fi, int iframe, int nframes){
   int i, first_frame, last_frame;
 
+  if(fi->frames == NULL)fi->frames =  fi->bufferinfo->buffer;
+  if(fi->header == NULL)fi->header = fi->bufferinfo->buffer;
   if(iframe < 0)iframe = 0;
   first_frame = iframe;
   last_frame = first_frame + nframes - 1;
@@ -400,7 +402,7 @@ void GetSliceFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **framesp
   FRAME_FSEEK(stream, headersize, SEEK_CUR);
 
   FRAME_READ(ijk, 6, stream);
-  if(returncode!=6*sizeof(int)){
+  if(returncode!=6){
 //    fclose(stream);
     return;
   }

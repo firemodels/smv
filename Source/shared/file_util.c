@@ -650,6 +650,24 @@ void PrintTime(const char *filepath, int line, float *timer, const char *label, 
   START_TIMER(*timer);
 }
 
+/* ------------------ InitBufferData ------------------------ */
+
+bufferdata *InitBufferData(char *file, int flag){
+  bufferdata *buffinfo = NULL;
+  unsigned char *buffer = NULL;
+  int nbuffer = 0;
+
+  NewMemory((void **)&buffinfo, sizeof(bufferdata));
+  buffinfo->file = file;
+  nbuffer = GetFileSizeSMV(file);
+  if(flag == 1){
+    NewMemory((void **)&buffer, nbuffer * sizeof(unsigned char));
+  }
+  buffinfo->buffer  = buffer;
+  buffinfo->nbuffer = nbuffer;
+  return buffinfo;
+}
+
 /* ------------------ File2Buffer ------------------------ */
 
 bufferdata *File2Buffer(char *file, bufferdata *bufferinfo, int nthreads, int *nreadptr){
@@ -673,15 +691,21 @@ bufferdata *File2Buffer(char *file, bufferdata *bufferinfo, int nthreads, int *n
   }
   else{
     nfile = GetFileSizeSMV(file);
-    if(nfile == bufferinfo->nbuffer){
+    if(bufferinfo->buffer!=NULL&&nfile == bufferinfo->nbuffer){
       PRINT_TIMER(timer_file2buffer, "File2Buffer");
       *nreadptr = 0;
       return bufferinfo;
     }
     buffer   = bufferinfo->buffer;
-    ResizeMemory((void **)&buffer, nfile*sizeof(unsigned char));
+    if(buffer == NULL){
+      NewMemory((void **)&buffer, nfile * sizeof(unsigned char));
+      offset = 0;
+    }
+    else{
+      ResizeMemory((void **)&buffer, nfile * sizeof(unsigned char));
+      offset = bufferinfo->nbuffer;
+    }
     bufferinfo->buffer  = buffer;
-    offset            = bufferinfo->nbuffer;
     delta             = nfile - offset;
     bufferinfo->nbuffer = nfile;
     buffinfo = bufferinfo;

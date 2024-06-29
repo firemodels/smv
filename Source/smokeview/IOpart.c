@@ -2048,6 +2048,8 @@ FILE_SIZE ReadPart(char *file_arg, int ifile_arg, int loadflag_arg, int *errorco
 
 #ifdef pp_PARTFRAME
   if(parti->frameinfo == NULL)parti->frameinfo = FRAMEInit(file_arg, NULL, FORTRAN_FILE, GetPartFrameInfo);
+  parti->frameinfo->bufferinfo = InitBufferData(parti->file, 0);
+  FRAMESetup(parti->frameinfo);
 #ifdef pp_FRAME_DEBUG
     int nframes_before, nframes_after;
 
@@ -2057,7 +2059,6 @@ FILE_SIZE ReadPart(char *file_arg, int ifile_arg, int loadflag_arg, int *errorco
     int nread;
 
     parti->frameinfo->bufferinfo = File2Buffer(parti->file, parti->frameinfo->bufferinfo, nframe_threads, &nread);
-    FRAMESetup(parti->frameinfo);
     FRAMESetTimes(parti->frameinfo, 0, parti->frameinfo->nframes);
     FRAMESetFramePtrs(parti->frameinfo, 0, parti->frameinfo->nframes);
    // FRAMEGetMinMax(sd->frameinfo, &valmin, &valmax);

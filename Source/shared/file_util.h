@@ -117,6 +117,7 @@ int FileExistsOrig(char *filename);
 // vvvvvvvvvvvvvvvvvvvvvvvv headers vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 EXTERNCPP int MakeFile(char *file, int size);
 EXTERNCPP void FreeBufferInfo(bufferdata * bufferinfoptr);
+EXTERNCPP bufferdata *InitBufferData(char *file, int flag);
 EXTERNCPP bufferdata *File2Buffer(char *file, bufferdata * bufferinfo, int nthreads, int *nreadptr);
 EXTERNCPP FILE_SIZE fread_p(char *file, unsigned char *buffer, FILE_SIZE offset, FILE_SIZE nchars, int nthreads);
 EXTERNCPP void FileErase(char *file);
