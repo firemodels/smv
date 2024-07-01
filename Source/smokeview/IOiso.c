@@ -453,6 +453,9 @@ FILE_SIZE ReadIsoGeom(int ifile, int load_flag, int *geom_frame_index, int *erro
   int i;
   surfdata *surfi;
   FILE_SIZE return_filesize=0;
+#ifdef pp_ISOFRAME
+  int time_frame = ALL_FRAMES;
+#endif
 
   isoi = isoinfo + ifile;
   if(load_flag==LOAD||load_flag==RELOAD){
@@ -493,7 +496,12 @@ FILE_SIZE ReadIsoGeom(int ifile, int load_flag, int *geom_frame_index, int *erro
     if(isoi->frameinfo != NULL){
       int nread;
 
-      isoi->frameinfo->bufferinfo = File2Buffer(isoi->file, isoi->frameinfo->bufferinfo, ALLDATA_OFFSET, ALLDATA_NVALS, nframe_threads, &nread);
+      if(time_frame==ALL_FRAMES){
+        isoi->frameinfo->bufferinfo = File2Buffer(isoi->file, isoi->frameinfo->bufferinfo, isoi->frameinfo->headersize, ALLDATA_OFFSET, ALLDATA_NVALS, nframe_threads, &nread);
+      }
+      else{
+        isoi->frameinfo->bufferinfo = FRAMEReadFrame(isoi->frameinfo, time_frame, 1, &nread);
+      }
       if(nread > 0){
         FRAMESetTimes(isoi->frameinfo, 0, isoi->frameinfo->nframes);
         FRAMESetFramePtrs(isoi->frameinfo, 0, isoi->frameinfo->nframes);

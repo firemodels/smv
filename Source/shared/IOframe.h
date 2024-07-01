@@ -37,7 +37,7 @@ void FRAMESetNThreads(framedata *fi, int nthreads);
 unsigned char *FRAMEGetFramePtr(framedata *fi, int iframe);
 unsigned char *FRAMEGetSubFramePtr(framedata *fi, int iframe, int isubframe);
 int FRAMEGetMinMax(framedata *fi);
-void FRAMEReadFrame(framedata *fi, int iframe, int nframes);
+bufferdata *FRAMEReadFrame(framedata *fi, int iframe, int nframes, int *nread);
 void FRAMESetFramePtrs(framedata * fi, int iframe, int nframes);
 void FRAMESetTimes(framedata *fi, int iframe, int nframes);
 void FRAMESetup(framedata *fi);

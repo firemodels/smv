@@ -2001,6 +2001,9 @@ FILE_SIZE ReadPart(char *file_arg, int ifile_arg, int loadflag_arg, int *errorco
   partdata *parti;
   FILE_SIZE file_size_local;
   float load_time_local;
+#ifdef pp_PARTFRAME
+  int time_frame = ALL_FRAMES;
+#endif
 
   SetTimeState();
   START_TIMER(load_time_local);
@@ -2058,7 +2061,12 @@ FILE_SIZE ReadPart(char *file_arg, int ifile_arg, int loadflag_arg, int *errorco
   if(parti->frameinfo != NULL){
     int nread;
 
-    parti->frameinfo->bufferinfo = File2Buffer(parti->file, parti->frameinfo->bufferinfo, ALLDATA_OFFSET, ALLDATA_NVALS, nframe_threads, &nread);
+    if(time_frame==ALL_FRAMES){
+      parti->frameinfo->bufferinfo = File2Buffer(parti->file, parti->frameinfo->bufferinfo, parti->frameinfo->headersize, ALLDATA_OFFSET, ALLDATA_NVALS, nframe_threads, &nread);
+    }
+    else{
+      parti->frameinfo->bufferinfo = FRAMEReadFrame(parti->frameinfo, time_frame, 1, &nread);
+    }
     FRAMESetTimes(parti->frameinfo, 0, parti->frameinfo->nframes);
     FRAMESetFramePtrs(parti->frameinfo, 0, parti->frameinfo->nframes);
    // FRAMEGetMinMax(sd->frameinfo, &valmin, &valmax);

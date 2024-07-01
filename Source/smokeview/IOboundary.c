@@ -1414,6 +1414,9 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
   int npatchvals;
   char patchcsvfile[1024];
   int framestart;
+#ifdef pp_BOUNDFRAME
+  int time_frame = ALL_FRAMES;
+#endif
 
   int nn;
   int filenum;
@@ -1524,7 +1527,12 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
   if(patchi->frameinfo != NULL){
     int nread;
 
-    patchi->frameinfo->bufferinfo = File2Buffer(patchi->file, patchi->frameinfo->bufferinfo, ALLDATA_OFFSET, ALLDATA_NVALS, nframe_threads, &nread);
+    if(time_frame==ALL_FRAMES){
+      patchi->frameinfo->bufferinfo = File2Buffer(patchi->file, patchi->frameinfo->bufferinfo, patchi->frameinfo->headersize, ALLDATA_OFFSET, ALLDATA_NVALS, nframe_threads, &nread);
+    }
+    else{
+      patchi->frameinfo->bufferinfo = FRAMEReadFrame(patchi->frameinfo, time_frame, 1, &nread);
+    }
     if(nread > 0){
       FRAMESetTimes(patchi->frameinfo, 0, patchi->frameinfo->nframes);
       FRAMESetFramePtrs(patchi->frameinfo, 0, patchi->frameinfo->nframes);
@@ -2262,7 +2270,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
                 }
 #else
               for(j = 0; j < nsize; j++){
-                if(meshi->thresholdtime[nn + j] < 0.0 && meshi->patchval_iframe[nn + offset + j] >= temp_threshold){
+                if(meshi->thresholdtime[nn + j] < 0.0 && meshi->patchval_iframe[nn + j] >= temp_threshold){
                   meshi->thresholdtime[nn + j] = meshi->patch_times[ii];
                 }
               }

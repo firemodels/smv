@@ -150,33 +150,25 @@ void FRAMESetNThreads(framedata *fi, int nthreads){
 
 /* ------------------ FRAMEReadFrame ------------------------ */
 
-void FRAMEReadFrame(framedata *fi, int iframe, int nframes){
-  FILE_SIZE total_size;
-  int i, first_frame, last_frame;
-  FILE *stream;
+bufferdata *FRAMEReadFrame(framedata *fi, int iframe, int nframes, int *nreadptr){
+  FILE_SIZE total_size, offset;
+  bufferdata *bufferinfo, *bufferinfoptr;
+  unsigned char *buffer;
+  int i, nread, nframe_threads = 4;
 
-  stream = fopen(fi->file, "rb");
-  if(stream == NULL)return;
-
-  if(iframe < 0)iframe = 0;
-  first_frame = iframe;
-  last_frame  = first_frame + nframes - 1;
-  if(last_frame>fi->nframes - 1)last_frame = fi->nframes-1;
-  nframes = last_frame + 1 - first_frame;
-  
   total_size = 0;
   for(i=0;i<nframes;i++){
     total_size += fi->framesizes[iframe+i];
   }
-#ifdef pp_THREAD
-  INIT_PRINT_TIMER(fread_p_timer);
-  fread_p(fi->file, fi->frames + fi->offsets[iframe], fi->headersize + fi->offsets[iframe], total_size, fi->nthreads);
-  PRINT_TIMER(fread_p_timer, "fread_p");
-#else
-  FRAME_FSEEK(stream, fi->headersize+fi->offsets[iframe], SEEK_SET);
-  fread(fi->frames + fi->offsets[iframe], 1, total_size, stream);
-#endif
-  //fclose(stream);
+  offset = fi->offsets[iframe];
+  NewMemory((void **)&bufferinfo, sizeof(bufferdata));
+  NewMemory((void **)&buffer, fi->headersize+total_size);
+  bufferinfo->file    = fi->file;
+  bufferinfo->buffer  = buffer;
+  bufferinfo->nbuffer = total_size;
+  bufferinfoptr       = File2Buffer(fi->file, bufferinfo, fi->headersize, offset, total_size, nframe_threads, &nread);
+  *nreadptr = nread;
+  return bufferinfoptr;
 }
 
 /* ------------------ FRAMESetTimes ------------------------ */
@@ -187,16 +179,18 @@ void FRAMESetTimes(framedata *fi, int iframe, int nframes){
   if(fi->frames == NULL)fi->frames =  fi->bufferinfo->buffer;
   if(fi->header == NULL)fi->header = fi->bufferinfo->buffer;
   if(iframe < 0)iframe = 0;
+  if(iframe > fi->nframes - 1)iframe = fi->nframes - 1;
   first_frame = iframe;
+
   last_frame = first_frame + nframes - 1;
   if(last_frame>fi->nframes - 1)last_frame = fi->nframes-1;
   nframes = last_frame + 1 - first_frame;
-  for(i = iframe;i < nframes;i++){
+  for(i = first_frame;i <= last_frame;i++){
     int offset;
 
     offset = fi->offsets[i];
     if(fi->file_type == FORTRAN_FILE)offset += 4;
-    memcpy(fi->times + i, fi->frames + offset, sizeof(float));
+    memcpy(fi->times + i - first_frame, fi->frames + offset, sizeof(float));
 #ifdef pp_FRAME_DEBUG2
     float time;
     time = fi->times[i];

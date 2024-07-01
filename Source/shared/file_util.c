@@ -670,47 +670,58 @@ bufferdata *InitBufferData(char *file, int flag){
 
 /* ------------------ File2Buffer ------------------------ */
 
-bufferdata *File2Buffer(char *file, bufferdata *bufferinfo, FILE_SIZE offset_arg, FILE_SIZE nbuffer_arg, int nthreads, int *nreadptr){
+bufferdata *File2Buffer(char *file, bufferdata *bufferinfo, FILE_SIZE header_size_arg, FILE_SIZE offset_arg, FILE_SIZE nbuffer_arg, int nthreads, int *nreadptr){
   unsigned char *buffer;
-  FILE_SIZE nfile, offset = 0, nread, delta;
+  FILE_SIZE nfile, offset_buffer = 0, offset_file = 0, nread, delta;
   bufferdata *buffinfo=NULL;
 
   *nreadptr = 0;
   if(file==NULL || strlen(file)==0 || FileExistsOrig(file) == 0)return NULL;
 
   INIT_PRINT_TIMER(timer_file2buffer);
-  if(bufferinfo == NULL){
-    buffinfo = InitBufferData(file, 1);
-    offset            = 0;
-    delta             = buffinfo->nbuffer;
+  if(nbuffer_arg > 0){
+    offset_file   = offset_arg;
+    offset_buffer = header_size_arg;
+    delta         = nbuffer_arg;
+    buffinfo      = bufferinfo;
   }
   else{
-    nfile = GetFileSizeSMV(file);
-    if(bufferinfo->buffer!=NULL&&nfile == bufferinfo->nbuffer){
-      PRINT_TIMER(timer_file2buffer, "File2Buffer");
-      *nreadptr = 0;
-      return bufferinfo;
-    }
-    buffer   = bufferinfo->buffer;
-    if(buffer == NULL){
-      NewMemory((void **)&buffer, nfile * sizeof(unsigned char));
-      offset = 0;
+    if(bufferinfo == NULL){
+      buffinfo = InitBufferData(file, 1);
+      offset_file       = 0;
+      offset_buffer     = offset_file;
+      delta             = buffinfo->nbuffer;
     }
     else{
-      ResizeMemory((void **)&buffer, nfile * sizeof(unsigned char));
-      offset = bufferinfo->nbuffer;
+      nfile = GetFileSizeSMV(file);
+      if(bufferinfo->buffer!=NULL&&nfile == bufferinfo->nbuffer){
+        PRINT_TIMER(timer_file2buffer, "File2Buffer");
+        *nreadptr = 0;
+        return bufferinfo;
+      }
+      buffer   = bufferinfo->buffer;
+      if(buffer == NULL){
+        NewMemory((void **)&buffer, nfile * sizeof(unsigned char));
+        offset_file   = 0;
+        offset_buffer = offset_file;
+      }
+      else{
+        ResizeMemory((void **)&buffer, nfile * sizeof(unsigned char));
+        offset_file   = bufferinfo->nbuffer;
+        offset_buffer = offset_file;
+      }
+      bufferinfo->buffer  = buffer;
+      delta               = nfile - offset_file;
+      bufferinfo->nbuffer = nfile;
+      buffinfo = bufferinfo;
     }
-    bufferinfo->buffer  = buffer;
-    delta             = nfile - offset;
-    bufferinfo->nbuffer = nfile;
-    buffinfo = bufferinfo;
   }
 //  nread = fread_p(file, buffer, offset, delta, nthreads);
 
   FILE *stream;
   stream = fopen(file, "rb");
-  fseek(stream, offset, SEEK_SET);
-  nread = fread(buffinfo->buffer+offset, 1, delta, stream);
+  fseek(stream, offset_file, SEEK_SET);
+  nread = fread(buffinfo->buffer+offset_buffer, 1, delta, stream);
   if(stream != NULL){
     fclose(stream);
   }

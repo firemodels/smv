@@ -3985,6 +3985,7 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
     if(sd->frameinfo == NULL)sd->frameinfo = FRAMEInit(sd->file, sd->size_file, FORTRAN_FILE, GetSliceFrameInfo);
     sd->frameinfo->bufferinfo = InitBufferData(sd->file, 0);
     FRAMESetup(sd->frameinfo);
+    if(time_frame != ALL_FRAMES)sd->frameinfo->nframes = 1;
 #ifdef pp_FRAME_DEBUG
     int nframes_before, nframes_after;
 
@@ -3993,7 +3994,12 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
     if(sd->frameinfo != NULL){
       int nread;
 
-      sd->frameinfo->bufferinfo = File2Buffer(sd->file, sd->frameinfo->bufferinfo, ALLDATA_OFFSET, ALLDATA_NVALS, nframe_threads, &nread);
+      if(time_frame==ALL_FRAMES){
+        sd->frameinfo->bufferinfo = File2Buffer(sd->file, sd->frameinfo->bufferinfo, sd->frameinfo->headersize, ALLDATA_OFFSET, ALLDATA_NVALS, nframe_threads, &nread);
+      }
+      else{
+        sd->frameinfo->bufferinfo = FRAMEReadFrame(sd->frameinfo, time_frame, 1, &nread);
+      }
       if(nread > 0){
         FRAMESetTimes(sd->frameinfo, 0, sd->frameinfo->nframes);
         FRAMESetFramePtrs(sd->frameinfo, 0, sd->frameinfo->nframes);
