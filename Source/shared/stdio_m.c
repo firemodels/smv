@@ -126,6 +126,19 @@ FILE_m *fopen_b(char *file, unsigned char *buffer, size_t nbuffer, char *mode){
   return stream_m;
 }
 
+/* ------------------ fclose_b ------------------------ */
+
+void fclose_b(FILE_m *stream_m){
+  if(stream_m == NULL)return;
+  if(stream_m->stream == NULL){
+    FREEMEMORY(stream_m->file);
+    FREEMEMORY(stream_m);
+  }
+  else{
+    fclose(stream_m->stream);
+  }
+}
+
 /* ------------------ fclose_m ------------------------ */
 
 void fclose_m(FILE_m *stream_m){
