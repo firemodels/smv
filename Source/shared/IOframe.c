@@ -481,8 +481,11 @@ void GetIsoFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **framesptr
     int nvals[2];
     float times[2];
 
-    FRAME_READ(times, 2, stream);if(returncode != 2*sizeof(float))break;
-    FRAME_READ(nvals, 2, stream);if(returncode != 2*sizeof(int))break;
+    FRAME_READ(times, 2, stream);
+    if(returncode != 2)break;
+    FRAME_READ(nvals, 2, stream);
+    if(returncode != 2)break;
+
     int skip;
 
     skip = 0;
