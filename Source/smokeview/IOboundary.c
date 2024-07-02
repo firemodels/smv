@@ -2304,7 +2304,9 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
 
     switch(loadpatchbysteps){
       case UNCOMPRESSED_ALLFRAMES:
-#ifdef xxx
+#ifdef pp_BOUNDFRAME
+        ii++;
+#else
         if(!(use_tload_begin!=0&&*meshi->patch_timesi<tload_begin)){
            meshi->npatch_times++;
           patchi->ntimes=meshi->npatch_times;
@@ -2324,8 +2326,6 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
           }
           ii++;
         }
-#else
-        ii++;
 #endif
         break;
       case COMPRESSED_ALLFRAMES:
