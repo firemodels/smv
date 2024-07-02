@@ -1714,18 +1714,18 @@ int GetGeomDataSize(char *filename, int *nvars, int time_frame, int *cvals_offse
   float time;
   int one, version;
   int nvert_s, nvert_d, nface_s, nface_d;
-  FILE *stream=NULL;
-  int returncode=0;
+  FILE_m *stream=NULL;
   int nvars_local, ntimes_local;
   int iframe;
   int geom_offset_index=0, geom_offset = 0, frame_start;
   int is_compressed=0;
+  int count_read;
 
   *error=1;
   *nvars = 0;
   if(filename==NULL)return 0;
   if(cvals_sizes != NULL)is_compressed = 1;
-  stream = fopen(filename,"rb");
+  stream = fopen_b(filename,NULL,0,"rb");
   if(stream == NULL){
     if(is_compressed == 1){
       printf(" The compressed boundary file %s failed to open\n", filename);
@@ -1749,11 +1749,11 @@ int GetGeomDataSize(char *filename, int *nvars, int time_frame, int *cvals_offse
     // nval1,nval2,nval3,nval4
     // ncompressed
     // compressed_1,...,compressed_ncompressed
-    fseek(stream, 20, SEEK_CUR);
+    fseek_m(stream, 20, SEEK_CUR);
   }
   else{
-    FORTREAD(&one, 4, 1, stream);
-    FORTREAD(&version, 4, 1, stream);
+    FORTREAD_m(&one, 4, 1, stream);
+    FORTREAD_m(&version, 4, 1, stream);
   }
 
   geom_offset = 0;
@@ -1764,7 +1764,7 @@ int GetGeomDataSize(char *filename, int *nvars, int time_frame, int *cvals_offse
   }
   else{
     frame_start = time_frame;
-    fseek(stream, geom_offsets[time_frame], SEEK_CUR);
+    fseek_m(stream, geom_offsets[time_frame], SEEK_CUR);
   }
   int count = 0;
   for(iframe=frame_start;;iframe++){
@@ -1772,25 +1772,25 @@ int GetGeomDataSize(char *filename, int *nvars, int time_frame, int *cvals_offse
 
     if(geom_offset_flag!=NULL&&*geom_offset_flag==BUILD_GEOM_OFFSETS)geom_offsets[geom_offset_index] = geom_offset;
     if(is_compressed==1){
-      returncode = fread(&time, 4, 1, stream);
+      count_read = fread_m(&time, 4, 1, stream);
       geom_offset += 4;
     }
     else{
-      FORTREAD(&time, 4, 1, stream);
+      FORTREAD_m(&time, 4, 1, stream);
       geom_offset += (4+4+4);
     }
-    if(returncode==0)break;
+    if(count_read != 1)break;
     if(is_compressed==1){
       int ncvals;
       int ntotal;
 
-      fread(nvals, 4, 4, stream);
+      fread_m(nvals, 4, 4, stream);
       if(max_buffer_size != NULL){
         ntotal = nvals[0] + nvals[1] + nvals[2] + nvals[3];
         *max_buffer_size = MAX(*max_buffer_size, ntotal);
       }
       geom_offset += 16;
-      fread(&ncvals, 4, 1, stream);
+      fread_m(&ncvals, 4, 1, stream);
       if(cvals_offsets != NULL){
         if(count == 0){
           cvals_offsets[count] = 0;
@@ -1803,13 +1803,13 @@ int GetGeomDataSize(char *filename, int *nvars, int time_frame, int *cvals_offse
       }
       geom_offset += 4;
       nvars_local += ncvals;
-      fseek(stream, ncvals, SEEK_CUR);
+      fseek_m(stream, ncvals, SEEK_CUR);
       geom_offset += ncvals;
     }
     else{
-      FORTREAD(nvals, 4, 4, stream);
+      FORTREAD_m(nvals, 4, 4, stream);
       geom_offset += (4+4*4+4);
-      if(returncode==0)break;
+      if(count_read != 4)break;
       nvert_s = nvals[0];
       nface_s = nvals[1];
       nvert_d = nvals[2];
@@ -1830,10 +1830,10 @@ int GetGeomDataSize(char *filename, int *nvars, int time_frame, int *cvals_offse
     geom_offset_index++;
     if(geom_offset_flag!=NULL&&*geom_offset_flag==GET_GEOM_OFFSETS&&time_frame==iframe)break;
     if(is_compressed == 0){
-      if(fseek(stream, nskip, SEEK_CUR) != 0)break;
+      if(fseek_m(stream, nskip, SEEK_CUR) != 0)break;
     }
   }
-  fclose(stream);
+  fclose_b(stream);
   *nvars = nvars_local;
   if(geom_offset_flag!=NULL&&*geom_offset_flag==BUILD_GEOM_OFFSETS)*geom_offset_flag = geom_offset_index;
   return ntimes_local;
@@ -2539,7 +2539,7 @@ void UpdateAllGeomTriangles(void){
 /* ------------------ ReadGeom0 ------------------------ */
 
 FILE_SIZE ReadGeom0(geomdata *geomi, int load_flag, int type, int *geom_frame_index){
-  FILE *stream;
+  FILE_m *stream;
   int one=1;
   int returncode=0;
   int ntimes_local;
@@ -2548,6 +2548,7 @@ FILE_SIZE ReadGeom0(geomdata *geomi, int load_flag, int type, int *geom_frame_in
   int nfloat_vals, nint_vals;
   int iframe, icount;
   FILE_SIZE return_filesize;
+  int count_read;
 
   FreeAllMemory(geomi->memory_id);
   geomi->geomlistinfo = NULL;
@@ -2563,27 +2564,26 @@ FILE_SIZE ReadGeom0(geomdata *geomi, int load_flag, int type, int *geom_frame_in
 
   ReadGeomHeader(geomi,geom_frame_index,&ntimes_local);
   if(ntimes_local<0)return 0;
-  stream = fopen(geomi->file,"rb");
+  stream = fopen_b(geomi->file,NULL,0,"rb");
   if(stream==NULL)return 0;
 
-  FSEEK(stream,4,SEEK_CUR);fread(&one,4,1,stream);FSEEK(stream,4,SEEK_CUR);
-
-  FORTREAD(&version,4,1,stream);
+  FORTREAD_m(&one,4,1,stream);
+  FORTREAD_m(&version, 4, 1, stream);
   return_filesize = 2*(4+4+4);
 
-  FORTREAD(&nfloat_vals,4,1,stream);
+  FORTREAD_m(&nfloat_vals, 4, 1, stream);
   return_filesize += (4+4+4);
 
   if(nfloat_vals>0){
-    FSEEK(stream, 4+nfloat_vals*4+4, SEEK_CUR);
+    fseek_m(stream, 4+nfloat_vals*4+4, SEEK_CUR);
     return_filesize += 4+nfloat_vals*4+4;
   }
 
-  FORTREAD(&nint_vals,4,1,stream);
+  FORTREAD_m(&nint_vals, 4, 1, stream);
   return_filesize += (4+4+4);
 
   if(nint_vals>0){
-    FSEEK(stream, 4+nint_vals*4+4, SEEK_CUR);
+    fseek_m(stream, 4+nint_vals*4+4, SEEK_CUR);
     return_filesize += 4+nint_vals*4+4;
   }
 
@@ -2606,8 +2606,8 @@ FILE_SIZE ReadGeom0(geomdata *geomi, int load_flag, int type, int *geom_frame_in
     skipframe = 0;
 
     if(iframe>=0){
-
-      FORTREADBR(times_local,2,stream);
+      FORTREAD_m(times_local, 4, 2, stream);
+      if(count_read != 2)break;
       return_filesize += 4+4+4;
 
       icount++;
@@ -2623,8 +2623,8 @@ FILE_SIZE ReadGeom0(geomdata *geomi, int load_flag, int type, int *geom_frame_in
         if(skipframe == 0)geomi->currentframe = geomlisti;
       }
     }
-
-    FORTREADBR(nvertfacesvolumes,2,stream);
+    FORTREAD_m(nvertfacesvolumes, 4, 2, stream);
+    if(count_read != 2)break;
     return_filesize += (4+8+4);
 
     nverts=nvertfacesvolumes[0];
@@ -2633,7 +2633,7 @@ FILE_SIZE ReadGeom0(geomdata *geomi, int load_flag, int type, int *geom_frame_in
       int file_offset = 0;
       if(nverts>0)file_offset += 4+3*nverts*4+4;
       if(ntris>0)file_offset += (4+3*ntris*4+4)+(4+ntris*4+4);
-      if(file_offset>0)FSEEK(stream, file_offset, SEEK_CUR);
+      if(file_offset>0)fseek_m(stream, file_offset, SEEK_CUR);
     }
     if(skipframe==0&&nverts>0){
       int ii;
@@ -2647,7 +2647,8 @@ FILE_SIZE ReadGeom0(geomdata *geomi, int load_flag, int type, int *geom_frame_in
       geomlisti->verts = verts;
       geomlisti->nverts=nverts;
 
-      FORTREADBR(xyz,3*nverts,stream);
+      FORTREAD_m(xyz, 4, 3*nverts, stream);
+      if(count_read != 3 * nverts)break;
       return_filesize += 4+3*nverts*4+4;
 
       for(ii=0;ii<nverts;ii++){
@@ -2670,10 +2671,12 @@ FILE_SIZE ReadGeom0(geomdata *geomi, int load_flag, int type, int *geom_frame_in
       geomlisti->triangles=triangles;
       geomlisti->ntriangles=ntris;
 
-      FORTREADBR(ijk,3*ntris,stream);
+      FORTREAD_m(ijk, 4, 3*ntris, stream);
+      if(count_read != 3 * ntris)break;
       return_filesize += 4+3*ntris*4+4;
 
-      FORTREADBR(surf_ind,ntris,stream);
+      FORTREAD_m(surf_ind, 4, ntris, stream);
+      if(count_read != ntris)break;
       return_filesize += 4+ntris*4+4;
 
       if(type==GEOM_ISO)offset=nsurfinfo;
@@ -2707,7 +2710,7 @@ FILE_SIZE ReadGeom0(geomdata *geomi, int load_flag, int type, int *geom_frame_in
   }
   geomi->loaded = 1;
   geomi->display=1;
-  fclose(stream);
+  fclose_b(stream);
   return return_filesize;
 }
 
@@ -3482,18 +3485,19 @@ void ClassifyGeom(geomdata *geomi,int *geom_frame_index){
 /* ------------------ ReadGeom ------------------------ */
 
 FILE_SIZE ReadGeom(geomdata *geomi, int load_flag, int type, int *geom_frame_index){
-  FILE *stream;
+  FILE_m *stream;
   int version;
   int returncode=0;
   int one=0;
+  int count_read;
   FILE_SIZE return_filesize=0;
 
   if(geomi->file==NULL)return 0;
-  stream = fopen(geomi->file,"rb");
+  stream = fopen_b(geomi->file,NULL,0,"rb");
   if(stream==NULL)return 0;
-  FSEEK(stream,4,SEEK_CUR);fread(&one,4,1,stream);FSEEK(stream,4,SEEK_CUR);
-  FORTREAD(&version,4,1,stream);
-  fclose(stream);
+  FORTREAD_m(&one,4,1,stream);
+  FORTREAD_m(&version, 4, 1, stream);
+  fclose_b(stream);
   return_filesize = 2*(4+4+4);
 
   if(version<=1){

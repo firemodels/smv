@@ -13,6 +13,11 @@ typedef struct {
 #define FFALSE 0
 #endif
 
+#ifndef FORTREAD_m
+#define FORTREAD_m(a,b,c,d)  fseek_m(stream,4,SEEK_CUR);count_read=fread_m(a,b,c,d);fseek_m(stream,4,SEEK_CUR)
+#endif
+
+
 void   fclose_b(FILE_m *stream_m);
 void   fclose_m(FILE_m *stream_m);
 char   *fgets_m(char * str, int num, FILE_m *stream_m);
