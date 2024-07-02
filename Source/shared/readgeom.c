@@ -52,6 +52,9 @@ void InitGeom(geomdata *geomi,int geomtype, int fdsblock, int have_cface_normals
   geomi->have_cface_normals = have_cface_normals_arg;
   geomi->ncface_normals = 0;
   geomi->cface_normals = NULL;
+#ifdef pp_ISOFRAME
+  geomi->frameinfo = NULL;
+#endif
 }
 
 /* ------------------ RotateU2V ------------------------ */

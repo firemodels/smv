@@ -204,6 +204,7 @@ void UnloadIso(meshdata *meshi){
 #ifdef pp_SLICEFRAME
   FRAMEFree(ib->frameinfo);
   ib->frameinfo = NULL;
+  ib->geominfo->frameinfo = NULL;
 #endif
 
   FreeAllMemory(ib->memory_id);
@@ -515,6 +516,9 @@ FILE_SIZE ReadIsoGeom(int ifile, int load_flag, int *geom_frame_index, int *erro
   }
 #endif
 
+#ifdef pp_ISOFRAME
+  geomi->frameinfo = isoi->frameinfo;
+#endif
   return_filesize=ReadGeom(geomi,load_flag,GEOM_ISO,geom_frame_index);
 
   if(load_flag==UNLOAD){

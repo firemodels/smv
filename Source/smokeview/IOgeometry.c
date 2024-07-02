@@ -2564,7 +2564,18 @@ FILE_SIZE ReadGeom0(geomdata *geomi, int load_flag, int type, int *geom_frame_in
 
   ReadGeomHeader(geomi,geom_frame_index,&ntimes_local);
   if(ntimes_local<0)return 0;
-  stream = fopen_b(geomi->file,NULL,0,"rb");
+  unsigned char *filebuffer=NULL;
+  int nfilebuffer=0;
+
+  filebuffer  = NULL;
+  nfilebuffer = 0;
+#ifdef pp_ISOFRAME
+  if(geomi->frameinfo != NULL && geomi->frameinfo->bufferinfo != NULL){
+    filebuffer  = geomi->frameinfo->bufferinfo->buffer;
+    nfilebuffer = geomi->frameinfo->bufferinfo->nbuffer;
+  }
+#endif
+  stream = fopen_b(geomi->file, filebuffer, nfilebuffer, "rb");
   if(stream==NULL)return 0;
 
   FORTREAD_m(&one,4,1,stream);

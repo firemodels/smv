@@ -4,6 +4,9 @@
 #include "gd.h"
 #include "options.h"
 #include "string_util.h"
+#ifdef pp_ISOFRAME
+#include "IOframe.h"
+#endif
 
 #include <string.h>
 
@@ -108,6 +111,9 @@ typedef struct _geomdata {
   geomobjdata *geomobjinfo;
   int *geomobj_offsets;
   int ngeomobj_offsets;
+#ifdef pp_ISOFRAME
+  framedata *frameinfo;
+#endif
 } geomdata;
 
 float Distance3(float v1[3], float v2[3]);
