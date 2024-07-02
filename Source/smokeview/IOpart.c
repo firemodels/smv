@@ -18,38 +18,6 @@
 #define LOADING 0
 #define DRAWING 1
 
-#define FORTPART5READ_mv(var,size) \
-fseek_m(PART5FILE,4,SEEK_CUR);\
-fread_mv(var,4,size,PART5FILE);\
-fseek_m(PART5FILE,4,SEEK_CUR);\
-returncode=feof_m(PART5FILE)
-
-#define FORTPART5READ_m(var,size) \
-fseek_m(PART5FILE,4,SEEK_CUR);\
-fread_m(var,4,size,PART5FILE);\
-fseek_m(PART5FILE,4,SEEK_CUR);\
-returncode = feof_m(PART5FILE)
-
-#define FCLOSE_m(a) fclose_m((a))
-
-#define FSEEK_m(a,b,c) \
-  fseek_m((a),(b),(c));\
-  returncode = feof_m(PART5FILE)
-
-#define FREAD_m(a,b,c,d) fread_m((a),(b),(c),(d))
-
-#define FORTPART5READ(var,size) \
-returncode=PASS_m;\
-FSEEK(PART5FILE,4,SEEK_CUR);if(ferror(PART5FILE)==1||feof(PART5FILE)==1)returncode=FAIL_m;\
-if(returncode==PASS_m){\
-  fread(var,4,size,PART5FILE);\
-  if(ferror(PART5FILE)==1||feof(PART5FILE)==1)returncode=FAIL_m;\
-}\
-if(returncode==PASS_m){\
-  FSEEK(PART5FILE,4,SEEK_CUR);\
-  if(ferror(PART5FILE)==1||feof(PART5FILE)==1)returncode=FAIL_m;\
-}
-
 /* ------------------ ClosePartFiles ------------------------ */
 
 void ClosePartFiles(void){
@@ -60,7 +28,7 @@ void ClosePartFiles(void){
 
     parti = partinfo+i;
     if(parti->loaded==1&&parti->stream!=NULL){
-      FCLOSE_m(parti->stream);
+      fclose_m(parti->stream);
       parti->stream = NULL;
     }
   }
@@ -851,46 +819,46 @@ void CreatePartSizeFileFromBound(char *part5boundfile_arg, char *part5sizefile_a
 /* ------------------ CreatePartSizeFileFromPart ------------------------ */
 
 void CreatePartSizeFileFromPart(char *part5file_arg, char *part5sizefile_arg, LINT file_offset_arg){
-  FILE *PART5FILE, *streamout_local;
-  int returncode=0;
+  FILE *streamout_local;
+  FILE_m *stream;
+  int count_read;
   int one_local, version_local, nclasses_local=0;
   int i;
   int *numtypes_local, *numpoints_local;
   int skip_local, numvals_local;
 
-  PART5FILE       = fopen(part5file_arg, "rb");
+  stream       = fopen_b(part5file_arg, NULL, 0, "rb");
   streamout_local = FOPEN_2DIR(part5sizefile_arg, "w");
 
-  FSEEK(PART5FILE, 4, SEEK_CUR); fread(&one_local, 4, 1, PART5FILE); FSEEK(PART5FILE, 4, SEEK_CUR);
-  FORTPART5READ(&version_local, 1);
-
-  FORTPART5READ(&nclasses_local, 1);
+  FORTREAD_m(&one_local, 4, 1, stream);
+  FORTREAD_m(&version_local, 4, 1, stream);
+  FORTREAD_m(&nclasses_local, 4, 1, stream);
   NewMemory((void **)&numtypes_local, 2*nclasses_local* sizeof(int));
   NewMemory((void **)&numpoints_local, nclasses_local* sizeof(int));
   for (i = 0; i < nclasses_local; i++){
-    FORTPART5READ(numtypes_local+2*i, 2);
+    FORTREAD_m(numtypes_local+2*i, 4, 2, stream);
     numvals_local = numtypes_local[2 * i] + numtypes_local[2 * i + 1];
     skip_local = 2*numvals_local*(4 + 30 + 4);
-    FSEEK(PART5FILE, skip_local, SEEK_CUR);
+    fseek_m(stream, skip_local, SEEK_CUR);
   }
-  while (!feof(PART5FILE)){
+  while (!feof_m(stream)){
     float time_local;
     LINT frame_size_local;
     char format[128];
 
     frame_size_local =0;
 
-    FORTPART5READ(&time_local, 1);
+    FORTREAD_m(&time_local, 4, 1, stream);
     frame_size_local += 12;
-    if(returncode == FAIL_m)break;
+    if(count_read != 1)break;
     for (i = 0; i < nclasses_local; i++){
-      FORTPART5READ(numpoints_local+ i, 1);
+      FORTREAD_m(numpoints_local+ i, 4, 1, stream);
       frame_size_local += 12;
       skip_local = 4+4*NXYZ_COMP_PART*numpoints_local[i]+4;
       skip_local += 4 + 4 * numpoints_local[i] + 4;
       if(numtypes_local[2 * i] > 0)    skip_local += 4 + 4 * numpoints_local[i] * numtypes_local[2 * i] + 4;
       if(numtypes_local[2 * i + 1] > 0)skip_local += 4 + 4 * numpoints_local[i] * numtypes_local[2 * i + 1] + 4;
-      FSEEK(PART5FILE, skip_local, SEEK_CUR);
+      fseek_m(stream, skip_local, SEEK_CUR);
       frame_size_local +=skip_local;
     }
 #ifdef INTEL_WIN_COMPILER
@@ -905,7 +873,7 @@ void CreatePartSizeFileFromPart(char *part5file_arg, char *part5sizefile_arg, LI
       fprintf(streamout_local, " %i\n", numpoints_local[i]);
     }
   }
-  fclose(PART5FILE);
+  fclose_m(stream);
   fclose(streamout_local);
   FREEMEMORY(numtypes_local);
   FREEMEMORY(numpoints_local);
@@ -916,26 +884,26 @@ void CreatePartSizeFileFromPart(char *part5file_arg, char *part5sizefile_arg, LI
 LINT GetPartHeaderOffset(partdata *parti_arg){
   LINT file_offset_local=0;
   int nclasses_local, one_local;
-  FILE *PART5FILE=NULL;
+  FILE_m *stream=NULL;
   int version_local;
-  int returncode=0;
+  int count_read;
   int skip_local;
   int i;
   int *numtypes_local = NULL, *numtypescopy_local, *numpoints_local = NULL;
   int numtypes_temp_local[2];
 
-  PART5FILE = fopen(parti_arg->reg_file,"rb");
-  if(PART5FILE==NULL)return 0;
+  stream = fopen_b(parti_arg->reg_file, NULL, 0, "rb");
+  if(stream==NULL)return 0;
 
-  FSEEK(PART5FILE,4,SEEK_CUR);fread(&one_local,4,1,PART5FILE);FSEEK(PART5FILE,4,SEEK_CUR);
+  FORTREAD_m(&one_local, 4, 1, stream);
   file_offset_local += 12;
 
-  FORTPART5READ(&version_local, 1);
-  if(returncode == FAIL_m)goto wrapup;
+  FORTREAD_m(&version_local, 4, 1, stream);
+  if(count_read != 1)goto wrapup;
   file_offset_local += 12;
 
-  FORTPART5READ(&nclasses_local,1);
-  if(returncode == FAIL_m)goto wrapup;
+  FORTREAD_m(&nclasses_local, 4, 1, stream);
+  if(count_read != 1)goto wrapup;
   file_offset_local += 12;
 
   NewMemory((void **)&numtypes_local,2*nclasses_local*sizeof(int));
@@ -945,54 +913,55 @@ LINT GetPartHeaderOffset(partdata *parti_arg){
   numtypes_temp_local[1]=0;
   CheckMemory;
   for(i=0;i<nclasses_local;i++){
-    FORTPART5READ(numtypes_temp_local,2);
+    int returncode;
+
+    FORTREAD_m(numtypes_local, 4, 2, stream);
+    if(count_read != 2)goto wrapup;
     file_offset_local += 16;
-    if(returncode == FAIL_m)goto wrapup;
     *numtypescopy_local++=numtypes_temp_local[0];
     *numtypescopy_local++=numtypes_temp_local[1];
     skip_local = 2*(numtypes_temp_local[0]+numtypes_temp_local[1])*(8 + 30);
     file_offset_local +=skip_local;
-    returncode=FSEEK(PART5FILE,skip_local,SEEK_CUR);
-    if(returncode == FAIL_m)goto wrapup;
+    returncode=fseek_m(stream,skip_local,SEEK_CUR);
+    if(returncode != PASS_m)goto wrapup;
   }
   CheckMemory;
 
   wrapup:
   FREEMEMORY(numtypes_local);
   FREEMEMORY(numpoints_local);
-  fclose(PART5FILE);
+  fclose_b(stream);
   return file_offset_local;
 }
 
 /* ------------------ CreatePartBoundFile ------------------------ */
 
 void CreatePartBoundFile(partdata *parti){
-  FILE_m *PART5FILE=NULL;
+  FILE_m *stream=NULL;
   int one_local, version_local, nclasses_local;
   int i;
+  int count_read;
   size_t returncode;
   float time_local;
   int nparts_local, *numtypes_local = NULL, numtypes_temp_local[2];
   FILE *stream_out_local=NULL;
 
   
-  if(parti->reg_file!=NULL)PART5FILE = fopen_m(parti->reg_file, "rbm");
-  if(parti->reg_file==NULL||PART5FILE==NULL)return;
+  if(parti->reg_file == NULL)return;
+  stream = fopen_b(parti->reg_file, NULL, 0, "rb");
+  if(stream==NULL)return;
   if(parti->bound_file!=NULL)stream_out_local = FOPEN_2DIR(parti->bound_file, "w");
   if(stream_out_local==NULL){
-    FCLOSE_m(PART5FILE);
+    fclose_b(stream);
     return;
   }
 
-  FSEEK_m(PART5FILE, 4, SEEK_CUR);
-  FREAD_m(&one_local, 4, 1, PART5FILE);
-  FSEEK_m(PART5FILE, 4, SEEK_CUR);
+  FORTREAD_m(&one_local, 4, 1, stream);
+  FORTREAD_m(&version_local, 4, 1, stream);
+  if(count_read != 1)goto wrapup;
 
-  FORTPART5READ_m(&version_local, 1);
-  if(returncode == FAIL_m)goto wrapup;
-
-  FORTPART5READ_m(&nclasses_local, 1);
-  if(returncode == FAIL_m)goto wrapup;
+  FORTREAD_m(&nclasses_local, 4, 1, stream);
+  if(count_read != 1)goto wrapup;
 
   NewMemory((void **)&numtypes_local, 2*nclasses_local*sizeof(int));
   numtypes_temp_local[0] = 0;
@@ -1001,15 +970,13 @@ void CreatePartBoundFile(partdata *parti){
   for(i = 0; i<nclasses_local; i++){
     int skip_local;
 
-    FORTPART5READ_m(numtypes_temp_local, 2);
-    if(returncode == FAIL_m)goto wrapup;
+    FORTREAD_m(numtypes_temp_local, 4, 2, stream);
+    if(count_read != 2)goto wrapup;
     numtypes_local[2*i+0] = numtypes_temp_local[0];
     numtypes_local[2*i+1] = numtypes_temp_local[1];
     skip_local = 2*(numtypes_temp_local[0]+numtypes_temp_local[1])*(8+30);
-    FSEEK_m(PART5FILE, skip_local, SEEK_CUR);
-    if(returncode == FAIL_m){
-      goto wrapup;
-    }
+    returncode = fseek_m(stream, skip_local, SEEK_CUR);
+    if(returncode != PASS_m)goto wrapup;
   }
   CheckMemory;
 
@@ -1017,28 +984,28 @@ void CreatePartBoundFile(partdata *parti){
     int jj;
 
     CheckMemory;
-    FORTPART5READ_m(&time_local, 1);
-    if(returncode == FAIL_m)goto wrapup;
+    FORTREAD_m(&time_local, 4, 1, stream);
+    if(count_read != 1)goto wrapup;
     fprintf(stream_out_local, "%f %i 1\n", time_local, nclasses_local);
 
     for(jj = 0; jj<nclasses_local; jj++){
       int skip_local, kk;
       float *rvals_local;
 
-      FORTPART5READ_m(&nparts_local, 1);
-      if(returncode == FAIL_m)goto wrapup;
+      FORTREAD_m(&nparts_local, 4, 1, stream);
+      if(count_read != 1)goto wrapup;
 
       fprintf(stream_out_local, "%i %i\n", numtypes_local[2*jj], nparts_local);
       CheckMemory;
 
       skip_local = 4+NXYZ_COMP_PART*nparts_local*sizeof(float)+4; // skip over particle xyz coords
       skip_local += 4+nparts_local*sizeof(int)+4;                   // skip over tags
-      FSEEK_m(PART5FILE, skip_local, SEEK_CUR);
-      if(returncode == FAIL_m)goto wrapup;
+      returncode = fseek_m(stream, skip_local, SEEK_CUR);
+      if(returncode != PASS_m)goto wrapup;
       CheckMemory;
       if(numtypes_local[2*jj]>0){
-        FORTPART5READ_mv((void **)&rvals_local, nparts_local*numtypes_local[2*jj]);
-        if(returncode == FAIL_m)goto wrapup;
+        FORTREAD_mv((void **)&rvals_local, 4, nparts_local*numtypes_local[2*jj], stream);
+        if(count_read != nparts_local * numtypes_local[2 * jj])goto wrapup;
       }
       CheckMemory;
       for(kk = 0; kk<numtypes_local[2*jj]; kk++){
@@ -1063,7 +1030,7 @@ void CreatePartBoundFile(partdata *parti){
     CheckMemory;
   }
 wrapup:
-  FCLOSE_m(PART5FILE);
+  fclose_b(stream);
   fclose(stream_out_local);
   CheckMemory;
   FREEMEMORY(numtypes_local);
@@ -1208,13 +1175,14 @@ void GeneratePartHistograms(void){
 /* ------------------ GetPartData ------------------------ */
 
 void GetPartData(partdata *parti, int nf_all_arg, FILE_SIZE *file_size_arg){
-  FILE_m *PART5FILE;
+  FILE_m *stream;
   int class_index;
   int one_local, version_local, nclasses_local;
   int skip_local, nparts_local;
   int *numtypes_local = NULL, *numtypescopy_local, *numpoints_local = NULL;
   int numtypes_temp_local[2];
   int count_local, count2_local, first_frame_local = 1;
+  int count_read;
   size_t returncode;
   float time_local;
   part5data *datacopy_local;
@@ -1222,22 +1190,33 @@ void GetPartData(partdata *parti, int nf_all_arg, FILE_SIZE *file_size_arg){
   *file_size_arg = GetFileSizeSMV(parti->reg_file);
 
   if(parti->stream!=NULL){
-    FCLOSE_m(parti->stream);
+    fclose_m(parti->stream);
     parti->stream = NULL;
   }
-  PART5FILE = fopen_m(parti->reg_file, "rbm");
-  parti->stream = PART5FILE;
-  if(PART5FILE==NULL)return;
+#ifdef pp_PARTFRAME
+  if(parti->frameinfo!=NULL&&parti->frameinfo->bufferinfo!=NULL){
+    bufferdata *bufferinfo;
 
-  FSEEK_m(PART5FILE,4,SEEK_CUR);
-  FREAD_m(&one_local,4,1,PART5FILE);
-  FSEEK_m(PART5FILE,4,SEEK_CUR);
+    bufferinfo = parti->frameinfo->bufferinfo;
+    stream = fopen_b(parti->reg_file, bufferinfo->buffer, bufferinfo->nbuffer, "rb");
+  }
+  else{
+    stream = fopen_b(parti->reg_file, NULL, 0, "rb");
+  }
+#else
+  stream = fopen_m(parti->reg_file, "rbm");
+#endif
+  parti->stream = stream;
+  if(stream==NULL)return;
 
-  FORTPART5READ_m(&version_local, 1);
-  if(returncode==FAIL_m)goto wrapup;
+  FORTREAD_m(&one_local,4,1,stream);
+  if(count_read!=1)goto wrapup;
 
-  FORTPART5READ_m(&nclasses_local,1);
-  if(returncode==FAIL_m)goto wrapup;
+  FORTREAD_m(&version_local, 4, 1, stream);
+  if(count_read!=1)goto wrapup;
+
+  FORTREAD_m(&nclasses_local,4, 1, stream);
+  if(count_read!=1)goto wrapup;
 
   NewMemory((void **)&numtypes_local,2*nclasses_local*sizeof(int));
   NewMemory((void **)&numpoints_local,nclasses_local*sizeof(int));
@@ -1246,13 +1225,14 @@ void GetPartData(partdata *parti, int nf_all_arg, FILE_SIZE *file_size_arg){
   numtypes_temp_local[1]=0;
   CheckMemory;
   for(class_index=0;class_index<nclasses_local;class_index++){
-    FORTPART5READ_m(numtypes_temp_local,2);
-    if(returncode==FAIL_m)goto wrapup;
+    FORTREAD_m(numtypes_temp_local,4,2,stream);
+    if(count_read!=2)goto wrapup;
+
     *numtypescopy_local++=numtypes_temp_local[0];
     *numtypescopy_local++=numtypes_temp_local[1];
     skip_local = 2*(numtypes_temp_local[0]+numtypes_temp_local[1])*(8 + 30);
-    FSEEK_m(PART5FILE,skip_local,SEEK_CUR);
-    if(returncode==FAIL_m)goto wrapup;
+    returncode = fseek_m(stream,skip_local,SEEK_CUR);
+    if(returncode!=PASS_m)goto wrapup;
   }
   CheckMemory;
 
@@ -1265,8 +1245,8 @@ void GetPartData(partdata *parti, int nf_all_arg, FILE_SIZE *file_size_arg){
 
     CheckMemory;
     if(count_local>=nf_all_arg)break;
-    FORTPART5READ_m(&time_local,1);
-    if(returncode==FAIL_m)break;
+    FORTREAD_m(&time_local,4,1,stream);
+    if(count_read!=1)goto wrapup;
 
     if((tload_step>1       && count_local%tload_step!=0)||
        (use_tload_begin==1 && time_local<tload_begin-TEPS)||
@@ -1284,8 +1264,8 @@ void GetPartData(partdata *parti, int nf_all_arg, FILE_SIZE *file_size_arg){
       parti->ntimes = count2_local+1;
     }
     for(class_index=0;class_index<nclasses_local;class_index++){
-      FORTPART5READ_m(&nparts_local,1);
-      if(returncode==FAIL_m)goto wrapup;
+      FORTREAD_m(&nparts_local,4,1,stream);
+      if(count_read!=1)goto wrapup;
       numpoints_local[class_index] = nparts_local;
       skip_local=0;
       CheckMemory;
@@ -1293,8 +1273,8 @@ void GetPartData(partdata *parti, int nf_all_arg, FILE_SIZE *file_size_arg){
         float *xyz;
         int j;
 
-        FORTPART5READ_mv((void **)&xyz, NXYZ_COMP_PART*nparts_local);
-        if(returncode==FAIL_m)goto wrapup;
+        FORTREAD_mv((void **)&xyz, 4, NXYZ_COMP_PART*nparts_local, stream);
+        if(count_read!=NXYZ_COMP_PART*nparts_local)goto wrapup;
         CheckMemory;
         if(nparts_local>0){
           float *x_local, *y_local, *z_local;
@@ -1330,8 +1310,8 @@ void GetPartData(partdata *parti, int nf_all_arg, FILE_SIZE *file_size_arg){
         int j;
 
         sort_tags_local = datacopy_local->sort_tags;
-        FORTPART5READ_m(datacopy_local->tags,nparts_local);
-        if(returncode==FAIL_m)goto wrapup;
+        FORTREAD_m(datacopy_local->tags,4, nparts_local, stream);
+        if(count_read!=nparts_local)goto wrapup;
         CheckMemory;
         if(nparts_local>0){
           for(j=0;j<nparts_local;j++){
@@ -1350,8 +1330,8 @@ void GetPartData(partdata *parti, int nf_all_arg, FILE_SIZE *file_size_arg){
         if(numtypes_local[2*class_index]>0){
           float *valmin_part, *valmax_part;
 
-          FORTPART5READ_mv((void **)&(datacopy_local->rvals), nparts_local*numtypes_local[2*class_index]);
-          if(returncode==FAIL_m)goto wrapup;
+          FORTREAD_mv((void **)&(datacopy_local->rvals), 4, nparts_local*numtypes_local[2*class_index], stream);
+          if(count_read!=nparts_local*numtypes_local[2*class_index])goto wrapup;
 
           valmin_part = parti->valmin_part;
           valmax_part = parti->valmax_part;
@@ -1375,7 +1355,6 @@ void GetPartData(partdata *parti, int nf_all_arg, FILE_SIZE *file_size_arg){
               }
             }
           }
-          if(returncode==FAIL_m)goto wrapup;
         }
       }
       else{
@@ -1386,8 +1365,8 @@ void GetPartData(partdata *parti, int nf_all_arg, FILE_SIZE *file_size_arg){
       CheckMemory;
 
       if(skip_local>0){
-        FSEEK_m(PART5FILE,skip_local,SEEK_CUR);
-        if(returncode==FAIL_m)goto wrapup;
+        returncode = fseek_m(stream,skip_local,SEEK_CUR);
+        if(returncode!=PASS_m)goto wrapup;
       }
       else{
         datacopy_local++;
@@ -2111,7 +2090,7 @@ FILE_SIZE ReadPart(char *file_arg, int ifile_arg, int loadflag_arg, int *errorco
   }
   THREADcontrol(partload_threads, THREAD_UNLOCK);
   if(cache_part_data==0){
-    FCLOSE_m(parti->stream);
+    fclose_m(parti->stream);
     parti->stream = NULL;
   }
 
