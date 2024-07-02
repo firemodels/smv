@@ -13,7 +13,7 @@
 #define C_FILE       1
 typedef struct _framedata {
   char *file, *size_file;
-  int nframes, file_type;
+  int nframes, frames_read, file_type;
 #ifdef pp_THREAD
   int nthreads;
 #endif
