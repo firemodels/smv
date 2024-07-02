@@ -502,6 +502,7 @@ FILE_SIZE ReadIsoGeom(int ifile, int load_flag, int *geom_frame_index, int *erro
       else{
         isoi->frameinfo->bufferinfo = FRAMEReadFrame(isoi->frameinfo, time_frame, 1, &nread);
       }
+      return_filesize = nread;
       if(nread > 0){
         FRAMESetTimes(isoi->frameinfo, 0, isoi->frameinfo->nframes);
         FRAMESetFramePtrs(isoi->frameinfo, 0, isoi->frameinfo->nframes);
