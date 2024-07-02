@@ -42,7 +42,7 @@ void TestWrite(char *scratchdir, char **fileptr){
 
   if(Writable(".")==1||fileptr==NULL||scratchdir==NULL)return;
   strcpy(filecopy, *fileptr);
-  FREEMEMORY(*fileptr);
+  //FREEMEMORY(*fileptr); possible memory leak if commented but line was causing crash
 
   strcpy(newfile, scratchdir);
   strcat(newfile, dirseparator);
