@@ -2541,7 +2541,6 @@ void UpdateAllGeomTriangles(void){
 FILE_SIZE ReadGeom0(geomdata *geomi, int load_flag, int type, int *geom_frame_index){
   FILE_m *stream;
   int one=1;
-  int returncode=0;
   int ntimes_local;
   int version;
   int nvertfacesvolumes[3];
@@ -3498,7 +3497,6 @@ void ClassifyGeom(geomdata *geomi,int *geom_frame_index){
 FILE_SIZE ReadGeom(geomdata *geomi, int load_flag, int type, int *geom_frame_index){
   FILE_m *stream;
   int version;
-  int returncode=0;
   int one=0;
   int count_read;
   FILE_SIZE return_filesize=0;
@@ -3508,6 +3506,7 @@ FILE_SIZE ReadGeom(geomdata *geomi, int load_flag, int type, int *geom_frame_ind
   if(stream==NULL)return 0;
   FORTREAD_m(&one,4,1,stream);
   FORTREAD_m(&version, 4, 1, stream);
+  if(count_read!=1)fclose_b(stream);
   fclose_b(stream);
   return_filesize = 2*(4+4+4);
 

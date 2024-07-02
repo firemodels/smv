@@ -785,7 +785,6 @@ void ReadGeomHeader0(geomdata *geomi, int *geom_frame_index, int *ntimes_local){
   int nvertfaces[2];
   float times_local[2];
   int nt;
-  int returncode=0;
   int version;
   int nfloat_vals, nint_vals;
   int *int_vals;
@@ -983,7 +982,7 @@ void ReadGeomHeader2(geomdata *geomi, int *ntimes_local){
 
 void ReadGeomHeader(geomdata *geomi, int *geom_frame_index, int *ntimes_local){
   FILE_m *stream;
-  int version, returncode=0, one=0, count_read;
+  int version, one=0, count_read;
 
   stream = fopen_b(geomi->file, NULL, 0, "rb");
   if(stream==NULL){
@@ -992,6 +991,11 @@ void ReadGeomHeader(geomdata *geomi, int *geom_frame_index, int *ntimes_local){
   }
   FORTREAD_m(&one,4,1,stream);
   FORTREAD_m(&version, 4, 1, stream);
+  if(count_read != 1){
+    fclose_b(stream);
+    *ntimes_local = -1;
+    return;
+  }
   fclose_b(stream);
 
   if(version<=1){
