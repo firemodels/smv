@@ -1190,7 +1190,11 @@ void GetPartData(partdata *parti, int nf_all_arg, FILE_SIZE *file_size_arg){
   *file_size_arg = GetFileSizeSMV(parti->reg_file);
 
   if(parti->stream!=NULL){
+#ifdef pp_PARTFRAME
+    fclose_b(parti->stream);
+#else
     fclose_m(parti->stream);
+#endif
     parti->stream = NULL;
   }
 #ifdef pp_PARTFRAME
