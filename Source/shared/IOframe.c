@@ -43,6 +43,7 @@ framedata *FRAMEInit(char *file, char *size_file, int file_type, void GetFrameIn
   strcpy(frame->file, file);
   frame->file_type    = file_type;
   frame->nframes      = 0;
+  frame->frames_read  = 0;
   frame->headersize   = 0;
   frame->filesize     = 0;
 #ifdef pp_THREAD
@@ -166,6 +167,7 @@ bufferdata *FRAMEReadFrame(framedata *fi, int iframe, int nframes, int *nreadptr
   bufferinfo->file    = fi->file;
   bufferinfo->buffer  = buffer;
   bufferinfo->nbuffer = total_size;
+  fi->frames_read     = nframes;
   bufferinfoptr       = File2Buffer(fi->file, bufferinfo, fi->headersize, offset, total_size, nframe_threads, &nread);
   *nreadptr = nread;
   return bufferinfoptr;
