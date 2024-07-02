@@ -2650,24 +2650,30 @@ FILE_SIZE ReadGeom0(geomdata *geomi, int load_flag, int type, int *geom_frame_in
       float *xyz=NULL;
       float *zORIG;
 
+#ifndef pp_ISOFRAME
       NewMemoryMemID((void **)&xyz,3*nverts*sizeof(float),    geomi->memory_id);
+#endif
       NewMemoryMemID((void **)&verts,nverts*sizeof(vertdata), geomi->memory_id);
       NewMemoryMemID((void **)&zORIG, nverts*sizeof(float),   geomi->memory_id);
       geomlisti->zORIG = zORIG;
       geomlisti->verts = verts;
       geomlisti->nverts=nverts;
 
+#ifdef pp_ISOFRAME
+      FORTREAD_mv(&xyz, 4, 3*nverts, stream);
+#else
       FORTREAD_m(xyz, 4, 3*nverts, stream);
+#endif
       if(count_read != 3 * nverts)break;
       return_filesize += 4+3*nverts*4+4;
 
       for(ii=0;ii<nverts;ii++){
-        verts[ii].xyz[0]=xyz[3*ii];
-        verts[ii].xyz[1]=xyz[3*ii+1];
-        verts[ii].xyz[2]=xyz[3*ii+2];
+        memcpy(verts[ii].xyz, xyz + 3*ii, 3*sizeof(float));
         zORIG[ii] = xyz[3 * ii+2];
       }
+#ifndef pp_ISOFRAME
       FREEMEMORY(xyz);
+#endif
     }
     if(skipframe==0&&ntris>0){
       int *surf_ind=NULL,*ijk=NULL;
@@ -2676,16 +2682,26 @@ FILE_SIZE ReadGeom0(geomdata *geomi, int load_flag, int type, int *geom_frame_in
       tridata *triangles;
 
       NewMemoryMemID((void **)&triangles,ntris*sizeof(tridata), geomi->memory_id);
+#ifndef pp_ISOFRAME
       NewMemoryMemID((void **)&ijk,3*ntris*sizeof(int),         geomi->memory_id);
       NewMemoryMemID((void **)&surf_ind,ntris*sizeof(int),      geomi->memory_id);
+#endif
       geomlisti->triangles=triangles;
       geomlisti->ntriangles=ntris;
 
+#ifdef pp_ISOFRAME
+      FORTREAD_mv(&ijk, 4, 3*ntris, stream);
+#else
       FORTREAD_m(ijk, 4, 3*ntris, stream);
+#endif
       if(count_read != 3 * ntris)break;
       return_filesize += 4+3*ntris*4+4;
 
+#ifdef pp_ISOFRAME
+      FORTREAD_mv(&surf_ind, 4, ntris, stream);
+#else
       FORTREAD_m(surf_ind, 4, ntris, stream);
+#endif
       if(count_read != ntris)break;
       return_filesize += 4+ntris*4+4;
 
@@ -2708,8 +2724,10 @@ FILE_SIZE ReadGeom0(geomdata *geomi, int load_flag, int type, int *geom_frame_in
         surfi->used_by_geom = 1;
         triangles[ii].textureinfo=NULL;
       }
+#ifndef pp_ISOFRAME
       FREEMEMORY(ijk);
       FREEMEMORY(surf_ind);
+#endif
     }
 
     if(skipframe==0||geom_frame_index!=NULL){
