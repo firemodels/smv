@@ -2660,7 +2660,7 @@ FILE_SIZE ReadGeom0(geomdata *geomi, int load_flag, int type, int *geom_frame_in
       geomlisti->nverts=nverts;
 
 #ifdef pp_ISOFRAME
-      FORTREAD_mv(&xyz, 4, 3*nverts, stream);
+      FORTREAD_mv((void **)&xyz, 4, 3*nverts, stream);
 #else
       FORTREAD_m(xyz, 4, 3*nverts, stream);
 #endif
@@ -2690,7 +2690,7 @@ FILE_SIZE ReadGeom0(geomdata *geomi, int load_flag, int type, int *geom_frame_in
       geomlisti->ntriangles=ntris;
 
 #ifdef pp_ISOFRAME
-      FORTREAD_mv(&ijk, 4, 3*ntris, stream);
+      FORTREAD_mv((void **)&ijk, 4, 3*ntris, stream);
 #else
       FORTREAD_m(ijk, 4, 3*ntris, stream);
 #endif
@@ -2698,7 +2698,7 @@ FILE_SIZE ReadGeom0(geomdata *geomi, int load_flag, int type, int *geom_frame_in
       return_filesize += 4+3*ntris*4+4;
 
 #ifdef pp_ISOFRAME
-      FORTREAD_mv(&surf_ind, 4, ntris, stream);
+      FORTREAD_mv((void **)&surf_ind, 4, ntris, stream);
 #else
       FORTREAD_m(surf_ind, 4, ntris, stream);
 #endif
