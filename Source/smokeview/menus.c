@@ -3203,7 +3203,7 @@ void UnloadAllSliceFiles(char *longlabel){
 
 /* ------------------ ReloadAllVectorSliceFiles ------------------------ */
 
-void ReloadAllVectorSliceFiles(void){
+void ReloadAllVectorSliceFiles(int load_flag){
   int i, errorcode;
 
   for(i = 0; i<nsliceinfo; i++){
@@ -3225,6 +3225,7 @@ void ReloadAllVectorSliceFiles(void){
 
     //*** reload vector slice files
 
+#ifndef pp_SLICEFRAME
   for(i = 0; i<nvsliceinfo; i++){
     vslicedata *vslicei;
 
@@ -3233,6 +3234,7 @@ void ReloadAllVectorSliceFiles(void){
       ReadVSlice(i, ALL_FRAMES, NULL, UNLOAD, DEFER_SLICECOLOR, &errorcode);
     }
   }
+#endif
   int lastslice=0;
 
   for(i = nvsliceinfo-1; i>=0; i--){
@@ -3250,10 +3252,10 @@ void ReloadAllVectorSliceFiles(void){
     vslicei = vsliceinfo+i;
     if(vslicei->reload==1){
       if(i==lastslice){
-        ReadVSlice(i, ALL_FRAMES, NULL, LOAD, SET_SLICECOLOR, &errorcode);
+        ReadVSlice(i, ALL_FRAMES, NULL, load_flag, SET_SLICECOLOR, &errorcode);
       }
       else{
-        ReadVSlice(i, ALL_FRAMES, NULL, LOAD, DEFER_SLICECOLOR, &errorcode);
+        ReadVSlice(i, ALL_FRAMES, NULL, load_flag, DEFER_SLICECOLOR, &errorcode);
       }
     }
   }
@@ -3261,7 +3263,7 @@ void ReloadAllVectorSliceFiles(void){
 
 /* ------------------ ReloadAllSliceFiles ------------------------ */
 
-void ReloadAllSliceFiles(void){
+void ReloadAllSliceFiles(int load_flag){
   int ii;
   int file_count = 0;
   float load_size = 0.0, load_time;
@@ -3297,7 +3299,7 @@ void ReloadAllSliceFiles(void){
     }
     else{
 #ifdef pp_SLICEFRAME
-      load_size += ReadSlice(slicei->file, i, ALL_FRAMES, NULL, RELOAD, DEFER_SLICECOLOR, &errorcode);
+      load_size += ReadSlice(slicei->file, i, ALL_FRAMES, NULL, load_flag, DEFER_SLICECOLOR, &errorcode);
 #else
       load_size += ReadSlice(slicei->file, i, ALL_FRAMES, NULL, LOAD, DEFER_SLICECOLOR, &errorcode);
 #endif
@@ -3470,8 +3472,8 @@ void LoadUnloadMenu(int value){
     slicefile_labelindex_save = slicefile_labelindex;
     START_TIMER(load_time);
     SetLoadedSliceBounds(NULL, 0);
-    ReloadAllVectorSliceFiles();
-    ReloadAllSliceFiles();
+    ReloadAllVectorSliceFiles(load_flag);
+    ReloadAllSliceFiles(load_flag);
     GLUIHVACSliceBoundsCPP_CB(BOUND_UPDATE_COLORS);
     STOP_TIMER(load_time);
     PrintFileLoadTimes(file_count,load_size,load_time);
@@ -3528,7 +3530,12 @@ void LoadUnloadMenu(int value){
     //*** reload particle files
 
 #ifdef pp_PARTFRAME
-    LoadAllPartFilesMT(RELOAD_LOADED_PART_FILES);
+    if(value == RELOADALL){
+      LoadAllPartFilesMT(LOAD_ALL_PART_FILES);
+    }
+    else{
+      LoadAllPartFilesMT(RELOAD_LOADED_PART_FILES);
+    }
 #else
     int npartloaded_local = 0;
     for(i=0;i<npartinfo;i++){
@@ -4039,7 +4046,7 @@ void LoadAllPartFiles(int partnum){
 
     parti = partinfo+i;
 #ifdef pp_PARTFRAME
-    if(partnum != RELOAD_LOADED_PART_FILES){
+    if(partnum != RELOAD_LOADED_PART_FILES && partnum != LOAD_ALL_PART_FILES){
       IF_NOT_USEMESH_CONTINUE(parti->loaded, parti->blocknumber);
     }
 #else
@@ -4050,7 +4057,7 @@ void LoadAllPartFiles(int partnum){
     THREADcontrol(partload_threads, THREAD_LOCK);                      //  or load all particle files
     if(parti->loadstatus==FILE_UNLOADED
 #ifdef pp_PARTFRAME
-      || partnum==RELOAD_LOADED_PART_FILES
+      || partnum==RELOAD_LOADED_PART_FILES || partnum == LOAD_ALL_PART_FILES
 #endif
       ){
       if(partnum==LOAD_ALL_PART_FILES||(partnum==RELOAD_LOADED_PART_FILES&&parti->loaded==1)||partnum==i){

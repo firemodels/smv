@@ -1948,8 +1948,8 @@ extern "C" void GLUIHVACSliceBoundsCPP_CB(int var){
       SetLoadedSliceBounds(NULL, 0);
       THREADcontrol(compress_threads, THREAD_LOCK);
       SetLoadedSliceBounds(NULL, 0);
-      ReloadAllVectorSliceFiles();
-      ReloadAllSliceFiles();
+      ReloadAllVectorSliceFiles(LOAD);
+      ReloadAllSliceFiles(LOAD);
       THREADcontrol(compress_threads, THREAD_UNLOCK);
       GLUIHVACSliceBoundsCPP_CB(BOUND_UPDATE_COLORS);
       break;
@@ -6833,8 +6833,8 @@ extern "C" void GLUISliceBoundCB(int var){
       GLUISliceBoundCB(SET_GLOBAL_BOUNDS);
     }
     SetLoadedSliceBounds(NULL, 0);
-    ReloadAllVectorSliceFiles();
-    ReloadAllSliceFiles();
+    ReloadAllVectorSliceFiles(RELOAD);
+    ReloadAllSliceFiles(RELOAD);
     GLUIHVACSliceBoundsCPP_CB(BOUND_UPDATE_COLORS);
     break;
   default:
