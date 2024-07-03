@@ -3984,13 +3984,11 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
 #ifdef pp_SLICEFRAME
     if(sd->frameinfo == NULL)sd->frameinfo = FRAMEInit(sd->file, sd->size_file, FORTRAN_FILE, GetSliceFrameInfo);
     sd->frameinfo->bufferinfo = InitBufferData(sd->file, 0);
+    int nframes_before, nframes_after;
+    nframes_before = sd->frameinfo->nframes;
     FRAMESetup(sd->frameinfo);
     if(time_frame != ALL_FRAMES)sd->frameinfo->nframes = 1;
-#ifdef pp_FRAME_DEBUG
-    int nframes_before, nframes_after;
 
-    nframes_before = sd->frameinfo->nframes;
-#endif
     if(sd->frameinfo != NULL){
       int nread;
 
@@ -4011,10 +4009,10 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
       frame_valmin = sd->frameinfo->valmin;
       frame_valmax = sd->frameinfo->valmax;
     }
-#ifdef pp_FRAME_DEBUG
+    update_frame_output = 1;
+    sd->frameinfo->update = 1;
     nframes_after = sd->frameinfo->nframes;
-    printf(", slice frames read: %i, ", nframes_after - nframes_before);
-#endif
+    if(time_frame == ALL_FRAMES)sd->frameinfo->frames_read = nframes_after - nframes_before;
 #endif
     if(sd->compression_type == UNCOMPRESSED){
 #ifndef pp_SLICEFRAME

@@ -1945,12 +1945,166 @@ void UpdateIsoIni(void){
   }
 }
 
+/* ------------------ OutputFrameSteps ------------------------ */
+
+#ifdef pp_FRAME
+void OutputFrameSteps(void){
+  int i, count, sum;
+
+  printf("frames read\n");
+
+  //*** slice files
+
+  count = 0;
+  sum = 0;
+  for(i = 0;i < nsliceinfo;i++){
+    slicedata *slicei;
+
+    slicei = sliceinfo + i;
+    if(slicei->loaded == 0 || slicei->frameinfo == NULL || slicei->frameinfo->update == 0)continue;
+    count++;
+    sum += slicei->frameinfo->frames_read;
+  }
+  if(count > 0 && count < 100){
+    printf("  slice(mesh/num): ");
+    for(i = 0;i < nsliceinfo;i++){
+      slicedata *slicei;
+
+      slicei = sliceinfo + i;
+      if(slicei->loaded == 0 || slicei->frameinfo == NULL || slicei->frameinfo->update == 0)continue;
+      printf("%i:%i ", slicei->blocknumber + 1, slicei->frameinfo->frames_read);
+      slicei->frameinfo->update = 0;
+    }
+    printf("\n");
+  }
+  else if(count >= 100){
+    printf("slice(num): %i\n", sum);
+  }
+
+  //*** 3d smoke files
+
+  count = 0;
+  sum = 0;
+  for(i = 0;i < nsmoke3dinfo;i++){
+    smoke3ddata *smoke3di;
+
+    smoke3di = smoke3dinfo + i;
+    if(smoke3di->loaded == 0 || smoke3di->frameinfo == NULL || smoke3di->frameinfo->update == 0)continue;
+    count++;
+    sum += smoke3di->frameinfo->frames_read;
+  }
+  if(count > 0 && count < 100){
+    printf("  3D smoke(mesh/num): ");
+    for(i = 0;i < nsmoke3dinfo;i++){
+      smoke3ddata *smoke3di;
+
+      smoke3di = smoke3dinfo + i;
+      if(smoke3di->loaded == 0 || smoke3di->frameinfo == NULL || smoke3di->frameinfo->update == 0)continue;
+      printf("%i:%i ", smoke3di->blocknumber + 1, smoke3di->frameinfo->frames_read);
+      smoke3di->frameinfo->update = 0;
+    }
+    printf("\n");
+  }
+  else if(count >= 100){
+    printf("3D smoke(num): %i\n", sum);
+  }
+
+  //*** isosurface files
+
+  count = 0;
+  sum = 0;
+  for(i = 0;i < nisoinfo;i++){
+    isodata *isoi;
+
+    isoi = isoinfo + i;
+    if(isoi->loaded == 0 || isoi->frameinfo == NULL || isoi->frameinfo->update == 0)continue;
+    count++;
+    sum += isoi->frameinfo->frames_read;
+  }
+  if(count > 0 && count < 100){
+    printf("  isosurface(mesh/num): ");
+    for(i = 0;i < nisoinfo;i++){
+      isodata *isoi;
+
+      isoi = isoinfo + i;
+      if(isoi->loaded == 0 || isoi->frameinfo == NULL || isoi->frameinfo->update == 0)continue;
+      printf("%i:%i ", isoi->blocknumber + 1, isoi->frameinfo->frames_read);
+      isoi->frameinfo->update = 0;
+    }
+    printf("\n");
+  }
+  else if(count >= 100){
+    printf("isosurface(num): %i\n", sum);
+  }
+
+  //*** boundary files
+
+  count = 0;
+  for(i = 0;i < npatchinfo;i++){
+    patchdata *patchi;
+
+    patchi = patchinfo + i;
+    if(patchi->loaded == 0 || patchi->frameinfo == NULL || patchi->frameinfo->update == 0)continue;
+    count++;
+    sum += patchi->frameinfo->frames_read;
+  }
+  if(count > 0 && count < 100){
+    printf("  patch(mesh/num): ");
+    for(i = 0;i < npatchinfo;i++){
+      patchdata *patchi;
+
+      patchi = patchinfo + i;
+      if(patchi->loaded == 0 || patchi->frameinfo == NULL || patchi->frameinfo->update == 0)continue;
+      printf("%i:%i ", patchi->blocknumber + 1, patchi->frameinfo->frames_read);
+      patchi->frameinfo->update = 0;
+    }
+    printf("\n");
+  }
+  else if(count >= 100){
+    printf("boundary(num): %i\n", sum);
+  }
+
+  //*** particle files
+
+  count = 0;
+  for(i = 0;i < npartinfo;i++){
+    partdata *parti;
+
+    parti = partinfo + i;
+    if(parti->loaded == 0 || parti->frameinfo == NULL || parti->frameinfo->update == 0)continue;
+    sum += parti->frameinfo->frames_read;
+    count++;
+  }
+  if(count > 0 && count < 100){
+    printf("  part(mesh/frames num): ");
+    for(i = 0;i < npartinfo;i++){
+      partdata *parti;
+
+      parti = partinfo + i;
+      if(parti->loaded == 0 || parti->frameinfo == NULL || parti->frameinfo->update == 0)continue;
+      printf("%i:%i ", parti->blocknumber + 1, parti->frameinfo->frames_read);
+      parti->frameinfo->update = 0;
+    }
+    printf("\n");
+  }
+  else if(count >= 100){
+    printf("part(num): %i\n", sum);
+  }
+}
+#endif
+
 /* ------------------ UpdateShowScene ------------------------ */
 
 void UpdateShowScene(void){
   have_fire  = HaveFireLoaded();
   have_smoke = HaveSootLoaded();
 
+#ifdef pp_FRAME
+  if(update_frame_output == 1){
+    update_frame_output = 0;
+    OutputFrameSteps();
+  }
+#endif
 #ifdef pp_SMOKE_SPEEDUP  
   if(update_smoke3dmenulabels == 1){
     update_smoke3dmenulabels = 0;

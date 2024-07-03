@@ -4284,13 +4284,12 @@ FILE_SIZE ReadSmoke3D(int time_frame,int ifile_arg,int flag_arg, int first_time,
 
       if(smoke3di->frameinfo == NULL)smoke3di->frameinfo = FRAMEInit(smoke3di->file, NULL, FORTRAN_FILE, GetSmoke3DFrameInfo);
       smoke3di->frameinfo->bufferinfo = InitBufferData(smoke3di->file, 0);
+
+      int nframes_before, nframes_after;
+
+      nframes_before = smoke3di->frameinfo->nframes;
       FRAMESetup(smoke3di->frameinfo);
       if(time_frame != ALL_FRAMES)smoke3di->frameinfo->nframes = 1;
-#ifdef pp_FRAME_DEBUG
-        int nframes_before, nframes_after;
-
-        nframes_before = smoke3di->frameinfo->nframes;
-#endif
       if(smoke3di->frameinfo != NULL){
         int nread;
         if(time_frame==ALL_FRAMES){
@@ -4299,6 +4298,7 @@ FILE_SIZE ReadSmoke3D(int time_frame,int ifile_arg,int flag_arg, int first_time,
         else{
           smoke3di->frameinfo->bufferinfo = FRAMEReadFrame(smoke3di->frameinfo, time_frame, 1, &nread);
         }
+        update_frame_output = 1;
         if(nread > 0){
           FRAMESetTimes(smoke3di->frameinfo, 0, smoke3di->frameinfo->nframes);
           FRAMESetFramePtrs(smoke3di->frameinfo, 0, smoke3di->frameinfo->nframes);
@@ -4312,10 +4312,10 @@ FILE_SIZE ReadSmoke3D(int time_frame,int ifile_arg,int flag_arg, int first_time,
           smoke3di->ks2 = nxyz_local[8];
         }
       }
-#ifdef pp_FRAME_DEBUG
         nframes_after = smoke3di->frameinfo->nframes;
-        printf(", 3D smoke frames read: %i ", nframes_after - nframes_before);
-#endif
+        smoke3di->frameinfo->frames_read = nframes_after - nframes_before;
+        update_frame_output = 1;
+        smoke3di->frameinfo->update = 1;
       i = 0;
       for(ii = 0; ii < smoke3di->ntimes_full; ii++){
         if(smoke3di->use_smokeframe[ii] == 1){

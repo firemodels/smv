@@ -488,12 +488,11 @@ FILE_SIZE ReadIsoGeom(int ifile, int load_flag, int *geom_frame_index, int *erro
   if(load_flag == LOAD || load_flag==RELOAD){
     if(isoi->frameinfo == NULL)isoi->frameinfo = FRAMEInit(isoi->file, NULL, FORTRAN_FILE, GetIsoFrameInfo);
     isoi->frameinfo->bufferinfo = InitBufferData(isoi->file, 0);
-    FRAMESetup(isoi->frameinfo);
-#ifdef pp_FRAME_DEBUG
-      int nframes_before, nframes_after;
 
-      nframes_before = isoi->frameinfo->nframes;
-#endif
+    int nframes_before, nframes_after;
+
+    nframes_before = isoi->frameinfo->nframes;
+    FRAMESetup(isoi->frameinfo);
     if(isoi->frameinfo != NULL){
       int nread;
 
@@ -503,16 +502,17 @@ FILE_SIZE ReadIsoGeom(int ifile, int load_flag, int *geom_frame_index, int *erro
       else{
         isoi->frameinfo->bufferinfo = FRAMEReadFrame(isoi->frameinfo, time_frame, 1, &nread);
       }
+      update_frame_output = 1;
       return_filesize = nread;
       if(nread > 0){
         FRAMESetTimes(isoi->frameinfo, 0, isoi->frameinfo->nframes);
         FRAMESetFramePtrs(isoi->frameinfo, 0, isoi->frameinfo->nframes);
       }
     }
-#ifdef pp_FRAME_DEBUG
-      nframes_after = isoi->frameinfo->nframes;
-      printf(", isosurface frames read: %i, ", nframes_after - nframes_before);
-#endif
+    nframes_after = isoi->frameinfo->nframes;
+    update_frame_output = 1;
+    isoi->frameinfo->update = 1;
+    isoi->frameinfo->frames_read = nframes_after - nframes_before;
   }
 #endif
 

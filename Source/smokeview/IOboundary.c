@@ -1518,12 +1518,11 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
 #ifdef pp_BOUNDFRAME
   if(patchi->frameinfo == NULL)patchi->frameinfo = FRAMEInit(patchi->file, patchi->size_file, FORTRAN_FILE, GetBoundaryFrameInfo);
   patchi->frameinfo->bufferinfo = InitBufferData(patchi->file, 0);
-  FRAMESetup(patchi->frameinfo);
-#ifdef pp_FRAME_DEBUG
+
   int nframes_before, nframes_after;
 
   nframes_before = patchi->frameinfo->nframes;
-#endif
+  FRAMESetup(patchi->frameinfo);
   if(patchi->frameinfo != NULL){
     int nread;
 
@@ -1533,6 +1532,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
     else{
       patchi->frameinfo->bufferinfo = FRAMEReadFrame(patchi->frameinfo, time_frame, 1, &nread);
     }
+    update_frame_output = 1;
     if(nread > 0){
       FRAMESetTimes(patchi->frameinfo, 0, patchi->frameinfo->nframes);
       FRAMESetFramePtrs(patchi->frameinfo, 0, patchi->frameinfo->nframes);
@@ -1542,10 +1542,10 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
       FRAMEGetMinMax(patchi->frameinfo);
     }
   }
-#ifdef pp_FRAME_DEBUG
   nframes_after = patchi->frameinfo->nframes;
-  printf(", boundary frames read: %i, ", nframes_after - nframes_before);
-#endif
+  patchi->frameinfo->frames_read = nframes_after - nframes_before;
+  update_frame_output = 1;
+  patchi->frameinfo->update = 1;
 #endif
 
   if(ifile>=0&&ifile<npatchinfo){

@@ -114,6 +114,9 @@ SVEXTERN int SVDECL(update_device_timeaverage, 0);
 SVEXTERN int SVDECL(update_colorbar_list, 0);
 SVEXTERN int SVDECL(force_bound_update, 0);
 SVEXTERN int SVDECL(update_colorbar_dialog, 1);
+#ifdef pp_FRAME
+SVEXTERN int SVDECL(update_frame_output, 0);
+#endif
 
 // hvac data
 SVEXTERN int SVDECL(hvacductvar_index, -1), SVDECL(hvacnodevar_index, -1);

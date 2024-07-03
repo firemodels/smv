@@ -44,6 +44,7 @@ framedata *FRAMEInit(char *file, char *size_file, int file_type, void GetFrameIn
   frame->file_type    = file_type;
   frame->nframes      = 0;
   frame->frames_read  = 0;
+  frame->update       = 0;
   frame->headersize   = 0;
   frame->filesize     = 0;
 #ifdef pp_THREAD
@@ -168,6 +169,7 @@ bufferdata *FRAMEReadFrame(framedata *fi, int iframe, int nframes, int *nreadptr
   bufferinfo->buffer  = buffer;
   bufferinfo->nbuffer = total_size;
   fi->frames_read     = nframes;
+  fi->update          = 1;
   bufferinfoptr       = File2Buffer(fi->file, bufferinfo, fi->headersize, offset, total_size, nframe_threads, &nread);
   *nreadptr = nread;
   return bufferinfoptr;
@@ -571,7 +573,7 @@ void GetPartFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **framespt
     framesize = 4 + 4 + 4;
 
 //    printf("time_arg=%f\n", time_arg);
-    if(returncode != 1*sizeof(float))break;
+    if(returncode != 1)break;
     for(i=0; i<n_part; i++){
       int nplim;
       long int skip;
