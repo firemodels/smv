@@ -3384,9 +3384,7 @@ void LoadUnloadMenu(int value){
   int i;
   int file_count = 0;
   float load_size = 0.0, load_time;
-#ifdef pp_FRAME
   int load_flag;
-#endif
 
   if(value==MENU_DUMMY)return;
   GLUTSETCURSOR(GLUT_CURSOR_WAIT);
@@ -3456,6 +3454,8 @@ void LoadUnloadMenu(int value){
     else{
       load_flag = RELOAD;
     }
+#else
+    load_flag = LOAD;
 #endif
     THREADcontrol(compress_threads, THREAD_LOCK);
     if(hrr_csv_filename!=NULL){
