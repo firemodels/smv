@@ -150,6 +150,39 @@ void FRAMESetNThreads(framedata *fi, int nthreads){
 }
 #endif
 
+/* ------------------ FRAMEAppendFrames ------------------------ */
+
+bufferdata *FRAMEAppendFrames(framedata *fi, int iframe, int nframes, int *nreadptr){
+  FILE_SIZE total_size, offset;
+  bufferdata *bufferinfo, *bufferinfoptr;
+  unsigned char *buffer;
+  int i, nread, nframe_threads = 4;
+  int last_frame;
+
+  if(iframe > fi->nframes - 1)return NULL;
+  last_frame = iframe + nframes - 1;
+  if(last_frame > fi->nframes - 1){
+    last_frame = fi->nframes - 1;
+    nframes = last_frame + 1 - iframe;
+  }
+
+  total_size = 0;
+  for(i = 0; i < nframes; i++){
+    total_size += fi->framesizes[iframe + i];
+  }
+  offset = fi->offsets[iframe];
+  NewMemory(( void ** )&bufferinfo, sizeof(bufferdata));
+  NewMemory(( void ** )&buffer, fi->headersize + total_size);
+  bufferinfo->file = fi->file;
+  bufferinfo->buffer = buffer;
+  bufferinfo->nbuffer = total_size;
+  fi->frames_read = nframes;
+  fi->update = 1;
+  bufferinfoptr = File2Buffer(fi->file, bufferinfo, fi->headersize, offset, total_size, nframe_threads, &nread);
+  *nreadptr = nread;
+  return bufferinfoptr;
+}
+
 /* ------------------ FRAMEReadFrame ------------------------ */
 
 bufferdata *FRAMEReadFrame(framedata *fi, int iframe, int nframes, int *nreadptr){
