@@ -1200,6 +1200,10 @@ void UpdateTimes(void){
   GetGeomInfoPtrs(0);
 
   UpdateShow();
+
+  UpdateRGBColors(colorbar_select_index);
+  HandleColorbarIndex(colorbar_select_index);
+
   CheckMemory;
   nglobal_times = 0;
 
