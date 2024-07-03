@@ -15024,6 +15024,9 @@ int ReadIni2(char *inifile, int localfile){
       if(current_script_command==NULL){
         sscanf(buffer, "%i %i %i", &partfast, &use_partload_threads, &n_partload_threads);
       }
+#ifdef pp_PARTFRAME
+      use_part_threads = 0;
+#endif
       continue;
     }
     if(MatchINI(buffer, "WINDOWOFFSET") == 1){

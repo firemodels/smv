@@ -65,7 +65,12 @@ SVEXTERN threaderdata SVDECL(*ffmpeg_threads,         NULL);
 SVEXTERN int SVDECL(n_iso_threads, 1), SVDECL(use_iso_threads, 0), SVDECL(use_iso_threads_save,0);
 
 //*** part
-SVEXTERN int SVDECL(n_partload_threads, 2), SVDECL(use_partload_threads, 1);
+SVEXTERN int SVDECL(n_partload_threads, 2);
+#ifdef pp_PARTFRAME
+SVEXTERN int SVDECL(use_partload_threads, 0);
+#else
+SVEXTERN int SVDECL(use_partload_threads, 1);
+#endif
 SVEXTERN threaderdata SVDECL(*partload_threads,         NULL);
 
 //*** patchbounds
