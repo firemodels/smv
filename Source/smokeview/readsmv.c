@@ -15025,7 +15025,7 @@ int ReadIni2(char *inifile, int localfile){
         sscanf(buffer, "%i %i %i", &partfast, &use_partload_threads, &n_partload_threads);
       }
 #ifdef pp_PARTFRAME
-      use_part_threads = 0;
+      use_partload_threads = 0;
 #endif
       continue;
     }
