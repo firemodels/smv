@@ -1949,150 +1949,149 @@ void UpdateIsoIni(void){
   }
 }
 
+/* ------------------ Bytes2Label ------------------------ */
+
+char *Bytes2Label(char *label, FILE_SIZE bytes){
+  char vallabel[256];
+
+  if(bytes >= 0 && bytes < 1000){
+    sprintf(label, "%i", (int)bytes);
+  }
+  else if(bytes >= 1000 && bytes < 1000000){
+    Float2String(vallabel, (float)bytes/1000.0, ncolorlabel_digits, force_fixedpoint);
+    sprintf(label, "%sKB", vallabel);
+  }
+  else if(bytes >= 1000000 && bytes < 1000000000){
+    Float2String(vallabel, (float)bytes/1000000.0, ncolorlabel_digits, force_fixedpoint);
+    sprintf(label, "%sMB", vallabel);
+  }
+  else{
+    Float2String(vallabel, (float)bytes/1000000000.0, ncolorlabel_digits, force_fixedpoint);
+    sprintf(label, "%sGB", vallabel);
+  }
+  return label;
+}
+
 /* ------------------ OutputFrameSteps ------------------------ */
 
 #ifdef pp_FRAME
 void OutputFrameSteps(void){
-  int i, count, sum;
+  int i, count, frames_read, show;
+  FILE_SIZE bytes_read;
+  char size_label[256], slice_label[256], part_label[256], iso_label[256], smoke_label[256], bound_label[256];
 
-  printf("frames read\n");
+  show = 0;
+  strcpy(slice_label, "");
+  strcpy(part_label, "");
+  strcpy(iso_label, "");
+  strcpy(smoke_label, "");
+  strcpy(bound_label, "");
 
   //*** slice files
 
   count = 0;
-  sum = 0;
+  bytes_read = 0;
+  frames_read = 0;
   for(i = 0;i < nsliceinfo;i++){
     slicedata *slicei;
 
     slicei = sliceinfo + i;
     if(slicei->loaded == 0 || slicei->frameinfo == NULL || slicei->frameinfo->update == 0)continue;
+    slicei->frameinfo->update = 0;
     count++;
-    sum += slicei->frameinfo->frames_read;
+    frames_read = MAX(frames_read, slicei->frameinfo->frames_read);
+    bytes_read += slicei->frameinfo->bytes_read;
   }
-  if(count > 0 && count < 100){
-    printf("  slice(mesh/num): ");
-    for(i = 0;i < nsliceinfo;i++){
-      slicedata *slicei;
-
-      slicei = sliceinfo + i;
-      if(slicei->loaded == 0 || slicei->frameinfo == NULL || slicei->frameinfo->update == 0)continue;
-      printf("%i:%i ", slicei->blocknumber + 1, slicei->frameinfo->frames_read);
-      slicei->frameinfo->update = 0;
-    }
-    printf("\n");
-  }
-  else if(count >= 100){
-    printf("slice(num): %i\n", sum);
+  if(count > 0){
+    show = 1;
+    sprintf(slice_label, "slice frames/size input: %i/%s", frames_read, Bytes2Label(size_label, bytes_read));
   }
 
   //*** 3d smoke files
 
   count = 0;
-  sum = 0;
+  bytes_read = 0;
+  frames_read = 0;
   for(i = 0;i < nsmoke3dinfo;i++){
     smoke3ddata *smoke3di;
 
     smoke3di = smoke3dinfo + i;
     if(smoke3di->loaded == 0 || smoke3di->frameinfo == NULL || smoke3di->frameinfo->update == 0)continue;
+    smoke3di->frameinfo->update = 0;
     count++;
-    sum += smoke3di->frameinfo->frames_read;
+    frames_read = MAX(frames_read, smoke3di->frameinfo->frames_read);
+    bytes_read += smoke3di->frameinfo->bytes_read;
   }
-  if(count > 0 && count < 100){
-    printf("  3D smoke(mesh/num): ");
-    for(i = 0;i < nsmoke3dinfo;i++){
-      smoke3ddata *smoke3di;
-
-      smoke3di = smoke3dinfo + i;
-      if(smoke3di->loaded == 0 || smoke3di->frameinfo == NULL || smoke3di->frameinfo->update == 0)continue;
-      printf("%i:%i ", smoke3di->blocknumber + 1, smoke3di->frameinfo->frames_read);
-      smoke3di->frameinfo->update = 0;
-    }
-    printf("\n");
-  }
-  else if(count >= 100){
-    printf("3D smoke(num): %i\n", sum);
-  }
-
-  //*** isosurface files
-
-  count = 0;
-  sum = 0;
-  for(i = 0;i < nisoinfo;i++){
-    isodata *isoi;
-
-    isoi = isoinfo + i;
-    if(isoi->loaded == 0 || isoi->frameinfo == NULL || isoi->frameinfo->update == 0)continue;
-    count++;
-    sum += isoi->frameinfo->frames_read;
-  }
-  if(count > 0 && count < 100){
-    printf("  isosurface(mesh/num): ");
-    for(i = 0;i < nisoinfo;i++){
-      isodata *isoi;
-
-      isoi = isoinfo + i;
-      if(isoi->loaded == 0 || isoi->frameinfo == NULL || isoi->frameinfo->update == 0)continue;
-      printf("%i:%i ", isoi->blocknumber + 1, isoi->frameinfo->frames_read);
-      isoi->frameinfo->update = 0;
-    }
-    printf("\n");
-  }
-  else if(count >= 100){
-    printf("isosurface(num): %i\n", sum);
+  if(count > 0){
+    sprintf(smoke_label, "3D smoke frames/size input: %i/%s", frames_read, Bytes2Label(size_label, bytes_read));
+    show = 1;
   }
 
   //*** boundary files
 
   count = 0;
+  bytes_read = 0;
+  frames_read = 0;
   for(i = 0;i < npatchinfo;i++){
     patchdata *patchi;
 
     patchi = patchinfo + i;
     if(patchi->loaded == 0 || patchi->frameinfo == NULL || patchi->frameinfo->update == 0)continue;
+    patchi->frameinfo->update = 0;
     count++;
-    sum += patchi->frameinfo->frames_read;
+    frames_read = MAX(frames_read, patchi->frameinfo->frames_read);
+      bytes_read += patchi->frameinfo->bytes_read;
   }
-  if(count > 0 && count < 100){
-    printf("  patch(mesh/num): ");
-    for(i = 0;i < npatchinfo;i++){
-      patchdata *patchi;
+  if(count > 0){
+    sprintf(bound_label, "boundary frames/size input: %i/%s", frames_read, Bytes2Label(size_label, bytes_read));
+    show = 1;
+  }
 
-      patchi = patchinfo + i;
-      if(patchi->loaded == 0 || patchi->frameinfo == NULL || patchi->frameinfo->update == 0)continue;
-      printf("%i:%i ", patchi->blocknumber + 1, patchi->frameinfo->frames_read);
-      patchi->frameinfo->update = 0;
-    }
-    printf("\n");
+  //*** isosurface files
+
+  count = 0;
+  bytes_read = 0;
+  frames_read = 0;
+  for(i = 0;i < nisoinfo;i++){
+    isodata *isoi;
+
+    isoi = isoinfo + i;
+    if(isoi->loaded == 0 || isoi->frameinfo == NULL || isoi->frameinfo->update == 0)continue;
+    isoi->frameinfo->update = 0;
+    count++;
+    frames_read = MAX(frames_read, isoi->frameinfo->frames_read);
+      bytes_read += isoi->frameinfo->bytes_read;
   }
-  else if(count >= 100){
-    printf("boundary(num): %i\n", sum);
+  if(count > 0){
+    sprintf(iso_label, "isosurface frames/size input: %i/%s", frames_read, Bytes2Label(size_label, bytes_read));
+    show = 1;
   }
 
   //*** particle files
 
   count = 0;
+  bytes_read = 0;
+  frames_read = 0;
   for(i = 0;i < npartinfo;i++){
     partdata *parti;
 
     parti = partinfo + i;
     if(parti->loaded == 0 || parti->frameinfo == NULL || parti->frameinfo->update == 0)continue;
-    sum += parti->frameinfo->frames_read;
+    parti->frameinfo->update = 0;
     count++;
+    frames_read  = MAX(frames_read, parti->frameinfo->frames_read);
+    bytes_read  += parti->frameinfo->bytes_read;
   }
-  if(count > 0 && count < 100){
-    printf("  part(mesh/frames num): ");
-    for(i = 0;i < npartinfo;i++){
-      partdata *parti;
-
-      parti = partinfo + i;
-      if(parti->loaded == 0 || parti->frameinfo == NULL || parti->frameinfo->update == 0)continue;
-      printf("%i:%i ", parti->blocknumber + 1, parti->frameinfo->frames_read);
-      parti->frameinfo->update = 0;
-    }
-    printf("\n");
+  if(count > 0){
+    sprintf(part_label, "  particle frames/size input: %i/%s", frames_read, Bytes2Label(size_label, bytes_read));
+    show = 1;
   }
-  else if(count >= 100){
-    printf("part(num): %i\n", sum);
+  if(show == 1){
+    if(strlen(bound_label) > 0)printf("%s\n", bound_label);
+    if(strlen(part_label) > 0)printf("%s\n",  part_label);
+    if(strlen(iso_label) > 0)printf("%s\n",   iso_label);
+    if(strlen(slice_label) > 0)printf("%s\n", slice_label);
+    if(strlen(smoke_label) > 0)printf("%s\n", smoke_label);
   }
 }
 #endif

@@ -1391,7 +1391,7 @@ int GetPatchNTimes(char *file){
 
 /* ------------------ ReadBoundaryBndf ------------------------ */
 
-FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
+FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
   int error;
   int patchfilenum;
   float *xyzpatchcopy;
@@ -1428,7 +1428,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
   FILE_SIZE return_filesize = 0;
 
   patchi = patchinfo + ifile;
-  if(patchi->loaded==0&&flag==UNLOAD)return 0;
+  if(patchi->loaded==0&&load_flag==UNLOAD)return 0;
   if(strcmp(patchi->label.shortlabel,"wc")==0)wallcenter=1;
 
   if(output_patchdata==1){
@@ -1444,7 +1444,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
   highlight_mesh = blocknumber;
   meshi = meshinfo+blocknumber;
   UpdateCurrentMesh(meshi);
-  if(flag!=UNLOAD&&meshi->patchfilenum >= 0 && meshi->patchfilenum < npatchinfo){
+  if(load_flag!=RELOAD&&load_flag!=UNLOAD&&meshi->patchfilenum >= 0 && meshi->patchfilenum < npatchinfo){
     patchdata *patchold;
 
     patchold = patchinfo + meshi->patchfilenum;
@@ -1457,11 +1457,13 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
   meshi->patchfilenum = ifile;
   filenum = meshi->patchfilenum;
 
+#ifndef pp_BOUNDFRAME
 #ifndef pp_FSEEK
-  if(flag==RELOAD)flag = LOAD;
+  if(load_flag==RELOAD)load_flag = LOAD;
+#endif
 #endif
 
-  if(flag!=RELOAD&&filenum>=0&&filenum<npatchinfo){
+  if(load_flag!=RELOAD&&filenum>=0&&filenum<npatchinfo){
     patchi->loaded=0;
   }
 
@@ -1472,7 +1474,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
   if(nbb==0)nbb=1;
   updatefaces=1;
   *errorcode=0;
-  if(flag != RELOAD){
+  if(load_flag != RELOAD){
     FREEMEMORY(meshi->blockonpatch);
     FREEMEMORY(meshi->meshonpatch);
     FREEMEMORY(meshi->patchdir);
@@ -1501,9 +1503,13 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
     FREEMEMORY(meshi->patch_times);
     FREEMEMORY(meshi->patch_times_map);
     FREEMEMORY(meshi->patchblank);
+#ifdef pp_BOUNDFRAME
+    FRAMEFree(patchi->frameinfo);
+    patchi->frameinfo = NULL;
+#endif
   }
 
-  if(flag==UNLOAD){
+  if(load_flag==UNLOAD){
     UpdateBoundaryType();
     UpdateUnitDefs();
     UpdateTimes();
@@ -1517,20 +1523,21 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
 
 #ifdef pp_BOUNDFRAME
   if(patchi->frameinfo == NULL)patchi->frameinfo = FRAMEInit(patchi->file, patchi->size_file, FORTRAN_FILE, GetBoundaryFrameInfo);
-  patchi->frameinfo->bufferinfo = InitBufferData(patchi->file, 0);
+  if(patchi->frameinfo->bufferinfo == NULL || load_flag != RELOAD){
+    patchi->frameinfo->bufferinfo = InitBufferData(patchi->file, 0);
+  }
 
   int nframes_before, nframes_after;
 
   nframes_before = patchi->frameinfo->nframes;
   FRAMESetup(patchi->frameinfo);
+  int nread=0;
   if(patchi->frameinfo != NULL){
-    int nread;
-
     if(time_frame==ALL_FRAMES){
-      patchi->frameinfo->bufferinfo = File2Buffer(patchi->file, patchi->frameinfo->bufferinfo, patchi->frameinfo->headersize, ALLDATA_OFFSET, ALLDATA_NVALS, nframe_threads, &nread);
+      patchi->frameinfo->bufferinfo = File2Buffer(patchi->file, patchi->frameinfo->bufferinfo, DATA_MAPPED, patchi->frameinfo->headersize, ALLDATA_OFFSET, ALLDATA_NVALS, nframe_threads, &nread);
     }
     else{
-      patchi->frameinfo->bufferinfo = FRAMEReadFrame(patchi->frameinfo, time_frame, 1, &nread);
+      patchi->frameinfo->bufferinfo = FRAMEReadFrame(patchi->frameinfo, DATA_AT_START, time_frame, 1, &nread);
     }
     update_frame_output = 1;
     if(nread > 0){
@@ -1544,6 +1551,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
   }
   nframes_after = patchi->frameinfo->nframes;
   patchi->frameinfo->frames_read = nframes_after - nframes_before;
+  patchi->frameinfo->bytes_read = nread;
   update_frame_output = 1;
   patchi->frameinfo->update = 1;
 #endif
@@ -1628,7 +1636,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
     //  1 - load compressed data set
 
     loadpatchbysteps=UNCOMPRESSED_ALLFRAMES;
-    if(flag==LOAD||flag==RELOAD){
+    if(load_flag==LOAD||load_flag==RELOAD){
       maxtimes_boundary = MAXFRAMES+51;
       statfile=STAT(file,&statbuffer);
       if(statfile==0&&framesize!=0){
@@ -2188,7 +2196,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
       ReadBoundary(ifile, UNLOAD, &error);
       return 0;
     }
-    if(flag == RELOAD&&patchi->ntimes_old > 0){
+    if(load_flag == RELOAD&&patchi->ntimes_old > 0){
       framestart = patchi->ntimes_old;
     }
     else{

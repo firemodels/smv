@@ -3955,7 +3955,7 @@ void BoundBoundCB(int var){
   case READ_TEST:
     if(MakeFile(frametest_filename, read_buffer_size) == 1){
       START_TIMER(read_time);
-      bufferinfo = File2Buffer(frametest_filename, bufferinfo, 0, ALLDATA_OFFSET, ALLDATA_NVALS, nframe_threads, &nread);
+      bufferinfo = File2Buffer(frametest_filename, bufferinfo, DATA_MAPPED, 0, ALLDATA_OFFSET, ALLDATA_NVALS, nframe_threads, &nread);
       STOP_TIMER(read_time);
       sprintf(ctime, "%f", read_time);
       TrimZeros(ctime);
