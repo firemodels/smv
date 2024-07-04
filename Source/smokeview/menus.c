@@ -3384,8 +3384,12 @@ void UnloadAllSmoke3D(int type){
 void LoadUnloadMenu(int value){
   int errorcode;
   int i;
+
+#ifndef pp_SLICEFRAME
   int file_count = 0;
-  float load_size = 0.0, load_time;
+  float load_size = 0.0;
+#endif
+  float load_time;
   int load_flag;
 
   if(value==MENU_DUMMY)return;
