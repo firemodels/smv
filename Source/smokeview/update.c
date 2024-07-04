@@ -1980,6 +1980,7 @@ void OutputFrameSteps(void){
   float total_time;
   FILE_SIZE bytes_read;
   char size_label[256], slice_label[256], part_label[256], iso_label[256], smoke_label[256], bound_label[256];
+  char time_label[256], time_label2[256];
 
   show = 0;
   strcpy(slice_label, "");
@@ -2006,8 +2007,14 @@ void OutputFrameSteps(void){
     total_time += slicei->frameinfo->load_time;
   }
   if(count > 0){
+    sprintf(slice_label, "Loaded %i slice frames, %s", frames_read, Bytes2Label(size_label, bytes_read));
+    strcpy(time_label, "");
+    if(show_timings){
+      Float2String(time_label2, total_time, ncolorlabel_digits, force_fixedpoint);
+      sprintf(time_label, " in %ss", time_label2);
+    }
+    strcat(slice_label, time_label);
     show = 1;
-    sprintf(slice_label, "Loaded %i slice frames, %s in %fs", frames_read, Bytes2Label(size_label, bytes_read), total_time);
   }
 
   //*** 3d smoke files
@@ -2028,7 +2035,13 @@ void OutputFrameSteps(void){
     total_time += smoke3di->frameinfo->load_time;
   }
   if(count > 0){
-    sprintf(smoke_label, "Loaded %i 3D smoke frames, %s in %fs", frames_read, Bytes2Label(size_label, bytes_read), total_time);
+    sprintf(smoke_label, "Loaded %i 3D smoke frames, %s", frames_read, Bytes2Label(size_label, bytes_read));
+    strcpy(time_label, "");
+    if(show_timings){
+      Float2String(time_label2, total_time, ncolorlabel_digits, force_fixedpoint);
+      sprintf(time_label, " in %ss", time_label2);
+    }
+    strcat(smoke_label, time_label);
     show = 1;
   }
 
@@ -2050,7 +2063,13 @@ void OutputFrameSteps(void){
     total_time += patchi->frameinfo->load_time;
   }
   if(count > 0){
-    sprintf(bound_label, "Loaded %i boundary frames, %s in %fs", frames_read, Bytes2Label(size_label, bytes_read), total_time);
+    sprintf(bound_label, "Loaded %i boundary frames, %s", frames_read, Bytes2Label(size_label, bytes_read));
+    strcpy(time_label, "");
+    if(show_timings){
+      Float2String(time_label2, total_time, ncolorlabel_digits, force_fixedpoint);
+      sprintf(time_label, " in %ss", time_label2);
+    }
+    strcat(bound_label, time_label);
     show = 1;
   }
 
@@ -2072,7 +2091,13 @@ void OutputFrameSteps(void){
     total_time += isoi->frameinfo->load_time;
   }
   if(count > 0){
-    sprintf(iso_label, "Loaded %i isosurface frames, %s in %fs", frames_read, Bytes2Label(size_label, bytes_read), total_time);
+    sprintf(iso_label, "Loaded %i isosurface frames, %s", frames_read, Bytes2Label(size_label, bytes_read));
+    strcpy(time_label, "");
+    if(show_timings){
+      Float2String(time_label2, total_time, ncolorlabel_digits, force_fixedpoint);
+      sprintf(time_label, " in %ss", time_label2);
+    }
+    strcat(iso_label, time_label);
     show = 1;
   }
 
@@ -2094,7 +2119,13 @@ void OutputFrameSteps(void){
     total_time += parti->frameinfo->load_time;
   }
   if(count > 0){
-    sprintf(part_label, "Loaded %i particle frames, %s in %fs", frames_read, Bytes2Label(size_label, bytes_read), total_time);
+    sprintf(part_label, "Loaded %i particle frames, %s", frames_read, Bytes2Label(size_label, bytes_read));
+    strcpy(time_label, "");
+    if(show_timings){
+      Float2String(time_label2, total_time, ncolorlabel_digits, force_fixedpoint);
+      sprintf(time_label, " in %ss", time_label2);
+    }
+    strcat(part_label, time_label);
     show = 1;
   }
   if(show == 1){
