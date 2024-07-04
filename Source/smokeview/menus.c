@@ -4808,8 +4808,12 @@ FILE_SIZE LoadSmoke3D(int type, int frame, int *count, float *time_value){
 
 void LoadSmoke3DMenu(int value){
   int i,errorcode;
+#ifdef pp_SMOKEFRAME
+  float load_time;
+#else
   int file_count;
   float load_time, load_size;
+#endif
 
 #define MENU_DUMMY_SMOKE           -9
 #define MENU_SMOKE_SETTINGS        -4
@@ -4820,8 +4824,10 @@ void LoadSmoke3DMenu(int value){
 
   if(value == MENU_DUMMY_SMOKE)return;
   START_TIMER(load_time);
+#ifndef pp_SMOKEFRAME
   load_size = 0.0;
   file_count=0;
+#endif
   GLUTSETCURSOR(GLUT_CURSOR_WAIT);
   if(value>=0){
     if(scriptoutstream!=NULL){
@@ -4935,12 +4941,14 @@ void LoadSmoke3DMenu(int value){
         }
         if(add_blank==1)printf("\n");
       }
+#ifndef pp_SMOKEFRAME
       int type;
       type = 1;
       if(smoke3di->type == HRRPUV_index)type = 2;
       if(smoke3di->type == TEMP_index)type = 4;
       if(smoke3di->type == CO2_index)type = 8;
       load_size=LoadSmoke3D(type, ALL_SMOKE_FRAMES, &file_count, NULL);
+#endif
     }
   }
   STOP_TIMER(load_time);
@@ -5035,8 +5043,10 @@ FILE_SIZE LoadAllSliceFiles(int last_slice, char *submenulabel, int dir, int *fc
 
 void LoadSliceMenu(int value){
   int errorcode,i;
+#ifndef pp_SLICEFRAME
   float load_time, load_size = 0.0;
   int file_count=0;
+#endif
 
   SNIFF_ERRORS("LoadSliceMenu: start");
   if(value==MENU_DUMMY)return;
@@ -5048,10 +5058,12 @@ void LoadSliceMenu(int value){
   else{
     switch (value){
       int submenutype;
-      char *submenulabel;
       slicedata *slicei;
+#ifndef pp_SLICEFRAME
+      char *submenulabel;
       int dir;
       int last_slice;
+#endif
 
       case UNLOAD_ALL:
         for(i=0;i<nsliceinfo;i++){
@@ -5081,10 +5093,11 @@ void LoadSliceMenu(int value){
       default:
         value = -(1000 + value);
         submenutype=value/4;
-        dir=value%4;
         submenutype=subslice_menuindex[submenutype];
         slicei = sliceinfo + submenutype;
+#ifndef pp_SLICEFRAME
         submenulabel = slicei->label.longlabel;
+        dir=value%4;
         last_slice = nsliceinfo - 1;
         for(i = nsliceinfo-1; i>=0; i--){
           char *longlabel;
@@ -5099,7 +5112,6 @@ void LoadSliceMenu(int value){
         START_TIMER(load_time);
         load_size = LoadAllSliceFiles(last_slice, submenulabel, dir, &file_count);
         STOP_TIMER(load_time);
-#ifndef pp_SLICEFRAME
         PrintFileLoadTimes(file_count,load_size,load_time);
 #endif
       }
