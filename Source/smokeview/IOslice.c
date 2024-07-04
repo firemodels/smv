@@ -4528,6 +4528,11 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
     PrintMemoryInfo;
   }
   SNIFF_ERRORS("ReadSlice: end");
+#ifdef pp_SLICEFRAME
+  if(sd->frameinfo != NULL){
+    sd->frameinfo->total_time = total_time;
+  }
+#endif
   return return_filesize;
 }
 

@@ -456,8 +456,12 @@ FILE_SIZE ReadIsoGeom(int ifile, int load_flag, int *geom_frame_index, int *erro
   FILE_SIZE return_filesize=0;
 #ifdef pp_ISOFRAME
   int time_frame = ALL_FRAMES;
+  float total_time;
 #endif
 
+#ifdef pp_ISOFRAME
+  START_TIMER(total_time);
+#endif
   isoi = isoinfo + ifile;
   if(load_flag==LOAD||load_flag==RELOAD){
     THREADcontrol(isosurface_threads, THREAD_JOIN);
@@ -658,6 +662,12 @@ FILE_SIZE ReadIsoGeom(int ifile, int load_flag, int *geom_frame_index, int *erro
 
   GLUTPOSTREDISPLAY;
   CheckMemory;
+#ifdef pp_ISOFRAME
+  if(isoi->frameinfo != NULL){
+    STOP_TIMER(total_time);
+    isoi->frameinfo->total_time = total_time;
+  }
+#endif
   return return_filesize;
 }
 

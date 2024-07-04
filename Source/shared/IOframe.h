@@ -22,7 +22,7 @@ typedef struct _framedata {
   FILE_SIZE *offsets, filesize, bytes_read;
   unsigned char *header, *frames, **frameptrs;
   bufferdata *bufferinfo;
-  float *times, load_time;
+  float *times, load_time, total_time;
   float valmin, valmax;
   void (*GetFrameInfo)(bufferdata *bufferinfo, int *headersize, int **sizes, int *nsizes, int **subframeoffsets, int *nsubframes, FILE_SIZE *filesizeptr);
 } framedata;

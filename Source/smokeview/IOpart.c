@@ -1986,9 +1986,13 @@ FILE_SIZE ReadPart(char *file_arg, int ifile_arg, int load_flag, int *errorcode_
   float load_time_local;
 #ifdef pp_PARTFRAME
   int time_frame = ALL_FRAMES;
+  float total_time;
 #endif
 
   SetTimeState();
+#ifdef pp_PARTFRAME
+  START_TIMER(total_time);
+#endif
   START_TIMER(load_time_local);
   assert(ifile_arg>=0&&ifile_arg<npartinfo);
   parti=partinfo+ifile_arg;
@@ -2137,6 +2141,12 @@ FILE_SIZE ReadPart(char *file_arg, int ifile_arg, int load_flag, int *errorcode_
     }
     update_part_bounds = 1;
   }
+#ifdef pp_PARTFRAME
+  if(parti->frameinfo != NULL){
+    STOP_TIMER(total_time);
+    parti->frameinfo->total_time = total_time;
+  }
+#endif
   return file_size_local;
 }
 

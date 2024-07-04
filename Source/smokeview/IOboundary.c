@@ -2523,6 +2523,11 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
   update_patch_bounds = ifile;
 
   GLUTPOSTREDISPLAY;
+#ifdef pp_BOUNDFRAME
+  if(patchi->frameinfo != NULL){
+    patchi->frameinfo->total_time = total_time;
+  }
+#endif
   return return_filesize;
 }
 

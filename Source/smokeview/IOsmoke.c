@@ -4222,7 +4222,7 @@ int SetupSmoke3D(smoke3ddata *smoke3di, int load_flag, int iframe_arg, int *erro
 FILE_SIZE ReadSmoke3D(int time_frame,int ifile_arg,int load_flag, int first_time, int *errorcode_arg){
   smoke3ddata *smoke3di;
   FILE_SIZE file_size_local=0;
-  float total_time_local;
+  float total_time;
 #ifndef pp_SMOKEFRAME
   int error_local;
   int nxyz_local[8];
@@ -4249,7 +4249,7 @@ FILE_SIZE ReadSmoke3D(int time_frame,int ifile_arg,int load_flag, int first_time
   if(load_flag==RELOAD)load_flag = LOAD;
 #endif
 #endif
-  START_TIMER(total_time_local);
+  START_TIMER(total_time);
   assert(ifile_arg>=0&&ifile_arg<nsmoke3dinfo);
   smoke3di = smoke3dinfo + ifile_arg;
 #ifndef pp_SMOKEFRAME
@@ -4444,13 +4444,13 @@ FILE_SIZE ReadSmoke3D(int time_frame,int ifile_arg,int load_flag, int first_time
   if(smoke3di->finalize == 1){
     SmokeWrapup();
   }
-  STOP_TIMER(total_time_local);
+  STOP_TIMER(total_time);
   if(time_frame==ALL_SMOKE_FRAMES){
     if(file_size_local>1000000){
-      PRINTF(" - %.1f MB/%.1f s", (float)file_size_local/1000000., total_time_local);
+      PRINTF(" - %.1f MB/%.1f s", (float)file_size_local/1000000., total_time);
     }
     else{
-      PRINTF(" - %.0f kB/%.1f s", (float)file_size_local/1000., total_time_local);
+      PRINTF(" - %.0f kB/%.1f s", (float)file_size_local/1000., total_time);
     }
     char max_label[256];
 
@@ -4465,6 +4465,11 @@ FILE_SIZE ReadSmoke3D(int time_frame,int ifile_arg,int load_flag, int first_time
     GLUISmoke3dCB(SMOKE_EXTINCT);
   }
   *errorcode_arg = 0;
+#ifdef pp_SMOKEFRAME
+  if(smoke3di->frameinfo != NULL){
+    smoke3di->frameinfo->total_time = total_time;
+  }
+#endif
   return file_size_local;
 }
 
