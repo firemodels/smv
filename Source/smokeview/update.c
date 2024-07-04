@@ -1977,6 +1977,7 @@ char *Bytes2Label(char *label, FILE_SIZE bytes){
 #ifdef pp_FRAME
 void OutputFrameSteps(void){
   int i, count, frames_read, show;
+  float total_time;
   FILE_SIZE bytes_read;
   char size_label[256], slice_label[256], part_label[256], iso_label[256], smoke_label[256], bound_label[256];
 
@@ -1992,6 +1993,7 @@ void OutputFrameSteps(void){
   count = 0;
   bytes_read = 0;
   frames_read = 0;
+  total_time = 0.0;
   for(i = 0;i < nsliceinfo;i++){
     slicedata *slicei;
 
@@ -2001,10 +2003,11 @@ void OutputFrameSteps(void){
     count++;
     frames_read = MAX(frames_read, slicei->frameinfo->frames_read);
     bytes_read += slicei->frameinfo->bytes_read;
+    total_time += slicei->frameinfo->load_time;
   }
   if(count > 0){
     show = 1;
-    sprintf(slice_label, "Loaded %i slice frames, %s", frames_read, Bytes2Label(size_label, bytes_read));
+    sprintf(slice_label, "Loaded %i slice frames, %s in %fs", frames_read, Bytes2Label(size_label, bytes_read), total_time);
   }
 
   //*** 3d smoke files
@@ -2012,6 +2015,7 @@ void OutputFrameSteps(void){
   count = 0;
   bytes_read = 0;
   frames_read = 0;
+  total_time = 0.0;
   for(i = 0;i < nsmoke3dinfo;i++){
     smoke3ddata *smoke3di;
 
@@ -2021,9 +2025,10 @@ void OutputFrameSteps(void){
     count++;
     frames_read = MAX(frames_read, smoke3di->frameinfo->frames_read);
     bytes_read += smoke3di->frameinfo->bytes_read;
+    total_time += smoke3di->frameinfo->load_time;
   }
   if(count > 0){
-    sprintf(smoke_label, "Loaded %i 3D smoke frames, %s", frames_read, Bytes2Label(size_label, bytes_read));
+    sprintf(smoke_label, "Loaded %i 3D smoke frames, %s in %fs", frames_read, Bytes2Label(size_label, bytes_read), total_time);
     show = 1;
   }
 
@@ -2032,6 +2037,7 @@ void OutputFrameSteps(void){
   count = 0;
   bytes_read = 0;
   frames_read = 0;
+  total_time = 0.0;
   for(i = 0;i < npatchinfo;i++){
     patchdata *patchi;
 
@@ -2040,10 +2046,11 @@ void OutputFrameSteps(void){
     patchi->frameinfo->update = 0;
     count++;
     frames_read = MAX(frames_read, patchi->frameinfo->frames_read);
-      bytes_read += patchi->frameinfo->bytes_read;
+    bytes_read += patchi->frameinfo->bytes_read;
+    total_time += patchi->frameinfo->load_time;
   }
   if(count > 0){
-    sprintf(bound_label, "Loaded %i boundary frames, %s", frames_read, Bytes2Label(size_label, bytes_read));
+    sprintf(bound_label, "Loaded %i boundary frames, %s in %fs", frames_read, Bytes2Label(size_label, bytes_read), total_time);
     show = 1;
   }
 
@@ -2052,6 +2059,7 @@ void OutputFrameSteps(void){
   count = 0;
   bytes_read = 0;
   frames_read = 0;
+  total_time = 0.0;
   for(i = 0;i < nisoinfo;i++){
     isodata *isoi;
 
@@ -2060,10 +2068,11 @@ void OutputFrameSteps(void){
     isoi->frameinfo->update = 0;
     count++;
     frames_read = MAX(frames_read, isoi->frameinfo->frames_read);
-      bytes_read += isoi->frameinfo->bytes_read;
+    bytes_read += isoi->frameinfo->bytes_read;
+    total_time += isoi->frameinfo->load_time;
   }
   if(count > 0){
-    sprintf(iso_label, "Loaded %i isosurface frames, %s", frames_read, Bytes2Label(size_label, bytes_read));
+    sprintf(iso_label, "Loaded %i isosurface frames, %s in %fs", frames_read, Bytes2Label(size_label, bytes_read), total_time);
     show = 1;
   }
 
@@ -2072,6 +2081,7 @@ void OutputFrameSteps(void){
   count = 0;
   bytes_read = 0;
   frames_read = 0;
+  total_time = 0.0;
   for(i = 0;i < npartinfo;i++){
     partdata *parti;
 
@@ -2081,9 +2091,10 @@ void OutputFrameSteps(void){
     count++;
     frames_read  = MAX(frames_read, parti->frameinfo->frames_read);
     bytes_read  += parti->frameinfo->bytes_read;
+    total_time += parti->frameinfo->load_time;
   }
   if(count > 0){
-    sprintf(part_label, "Loaded %i particle frames, %s", frames_read, Bytes2Label(size_label, bytes_read));
+    sprintf(part_label, "Loaded %i particle frames, %s in %fs", frames_read, Bytes2Label(size_label, bytes_read), total_time);
     show = 1;
   }
   if(show == 1){

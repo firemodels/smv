@@ -2046,12 +2046,14 @@ FILE_SIZE ReadPart(char *file_arg, int ifile_arg, int load_flag, int *errorcode_
   if(parti->frameinfo != NULL){
     int nread;
 
+    START_TIMER(parti->frameinfo->load_time);
     if(time_frame==ALL_FRAMES){
       parti->frameinfo->bufferinfo = File2Buffer(parti->file, parti->frameinfo->bufferinfo, DATA_MAPPED, parti->frameinfo->headersize, ALLDATA_OFFSET, ALLDATA_NVALS, nframe_threads, &nread);
     }
     else{
       parti->frameinfo->bufferinfo = FRAMEReadFrame(parti->frameinfo, DATA_AT_START, time_frame, 1, &nread);
     }
+    STOP_TIMER(parti->frameinfo->load_time);
     parti->frameinfo->bytes_read = nread;
     update_frame_output = 1;
     FRAMESetTimes(parti->frameinfo, 0, parti->frameinfo->nframes);

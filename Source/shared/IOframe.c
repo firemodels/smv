@@ -82,6 +82,7 @@ void FRAMESetup(framedata *fi){
   fi->filesize        = filesize;
   fi->headersize      = headersize;
   fi->bytes_read      = 0;
+  fi->load_time       = 0.0;
   fi->frames_read = 0;
   fi->frames          = fi->bufferinfo->buffer;
   fi->header          = fi->bufferinfo->buffer;

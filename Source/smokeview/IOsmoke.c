@@ -4294,12 +4294,15 @@ FILE_SIZE ReadSmoke3D(int time_frame,int ifile_arg,int load_flag, int first_time
       if(time_frame != ALL_FRAMES)smoke3di->frameinfo->nframes = 1;
       if(smoke3di->frameinfo != NULL){
         int nread;
+
+        START_TIMER(smoke3di->frameinfo->load_time);
         if(time_frame==ALL_FRAMES){
           smoke3di->frameinfo->bufferinfo = File2Buffer(smoke3di->file, smoke3di->frameinfo->bufferinfo, DATA_MAPPED, smoke3di->frameinfo->headersize, ALLDATA_OFFSET, ALLDATA_NVALS, nframe_threads, &nread);
         }
         else{
           smoke3di->frameinfo->bufferinfo = FRAMEReadFrame(smoke3di->frameinfo, DATA_AT_START, time_frame, 1, &nread);
         }
+        STOP_TIMER(smoke3di->frameinfo->load_time);
         smoke3di->frameinfo->bytes_read = nread;
         update_frame_output = 1;
         if(nread > 0){
