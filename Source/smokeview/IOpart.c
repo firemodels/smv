@@ -2034,6 +2034,10 @@ FILE_SIZE ReadPart(char *file_arg, int ifile_arg, int load_flag, int *errorcode_
 
 #ifdef pp_PARTFRAME
   if(parti->frameinfo == NULL)parti->frameinfo = FRAMEInit(file_arg, NULL, FORTRAN_FILE, GetPartFrameInfo);
+
+  float load_time;
+  START_TIMER(load_time);
+
   if(parti->frameinfo->bufferinfo == NULL || load_flag != RELOAD){
     parti->frameinfo->bufferinfo = InitBufferData(parti->file, 0);
   }
@@ -2046,14 +2050,12 @@ FILE_SIZE ReadPart(char *file_arg, int ifile_arg, int load_flag, int *errorcode_
   if(parti->frameinfo != NULL){
     int nread;
 
-    START_TIMER(parti->frameinfo->load_time);
     if(time_frame==ALL_FRAMES){
       parti->frameinfo->bufferinfo = File2Buffer(parti->file, parti->frameinfo->bufferinfo, DATA_MAPPED, parti->frameinfo->headersize, ALLDATA_OFFSET, ALLDATA_NVALS, nframe_threads, &nread);
     }
     else{
       parti->frameinfo->bufferinfo = FRAMEReadFrame(parti->frameinfo, DATA_AT_START, time_frame, 1, &nread);
     }
-    STOP_TIMER(parti->frameinfo->load_time);
     parti->frameinfo->bytes_read = nread;
     update_frame_output = 1;
     FRAMESetTimes(parti->frameinfo, 0, parti->frameinfo->nframes);
@@ -2064,6 +2066,9 @@ FILE_SIZE ReadPart(char *file_arg, int ifile_arg, int load_flag, int *errorcode_
   nframes_after = parti->frameinfo->nframes;
   parti->frameinfo->frames_read = nframes_after - nframes_before;
   parti->frameinfo->update = 1;
+
+  STOP_TIMER(load_time);
+  if(parti->frameinfo != NULL)parti->frameinfo->load_time = load_time;
 #endif
 
   lenfile_local = strlen(file_arg);

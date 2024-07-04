@@ -1523,6 +1523,10 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
 
 #ifdef pp_BOUNDFRAME
   if(patchi->frameinfo == NULL)patchi->frameinfo = FRAMEInit(patchi->file, patchi->size_file, FORTRAN_FILE, GetBoundaryFrameInfo);
+
+  float load_time;
+  START_TIMER(load_time);
+
   if(patchi->frameinfo->bufferinfo == NULL || load_flag != RELOAD){
     patchi->frameinfo->bufferinfo = InitBufferData(patchi->file, 0);
   }
@@ -1533,7 +1537,6 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
   FRAMESetup(patchi->frameinfo);
   int nread=0;
 
-  START_TIMER(patchi->frameinfo->load_time);
   if(patchi->frameinfo != NULL){
     if(time_frame==ALL_FRAMES){
       patchi->frameinfo->bufferinfo = File2Buffer(patchi->file, patchi->frameinfo->bufferinfo, DATA_MAPPED, patchi->frameinfo->headersize, ALLDATA_OFFSET, ALLDATA_NVALS, nframe_threads, &nread);
@@ -1541,7 +1544,6 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
     else{
       patchi->frameinfo->bufferinfo = FRAMEReadFrame(patchi->frameinfo, DATA_AT_START, time_frame, 1, &nread);
     }
-    STOP_TIMER(patchi->frameinfo->load_time);
     update_frame_output = 1;
     if(nread > 0){
       FRAMESetTimes(patchi->frameinfo, 0, patchi->frameinfo->nframes);
@@ -1557,6 +1559,9 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
   patchi->frameinfo->bytes_read = nread;
   update_frame_output = 1;
   patchi->frameinfo->update = 1;
+
+  STOP_TIMER(load_time);
+  if(patchi->frameinfo != NULL)patchi->frameinfo->load_time = load_time;
 #endif
 
   if(ifile>=0&&ifile<npatchinfo){
