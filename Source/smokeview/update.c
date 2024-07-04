@@ -1955,7 +1955,7 @@ char *Bytes2Label(char *label, FILE_SIZE bytes){
   char vallabel[256];
 
   if(bytes >= 0 && bytes < 1000){
-    sprintf(label, "%i", (int)bytes);
+    sprintf(label, "%iB", (int)bytes);
   }
   else if(bytes >= 1000 && bytes < 1000000){
     Float2String(vallabel, (float)bytes/1000.0, ncolorlabel_digits, force_fixedpoint);
@@ -2004,7 +2004,7 @@ void OutputFrameSteps(void){
   }
   if(count > 0){
     show = 1;
-    sprintf(slice_label, "slice frames/size input: %i/%s", frames_read, Bytes2Label(size_label, bytes_read));
+    sprintf(slice_label, "Loaded %i slice frames, %s", frames_read, Bytes2Label(size_label, bytes_read));
   }
 
   //*** 3d smoke files
@@ -2023,7 +2023,7 @@ void OutputFrameSteps(void){
     bytes_read += smoke3di->frameinfo->bytes_read;
   }
   if(count > 0){
-    sprintf(smoke_label, "3D smoke frames/size input: %i/%s", frames_read, Bytes2Label(size_label, bytes_read));
+    sprintf(smoke_label, "Loaded %i 3D smoke frames, %s", frames_read, Bytes2Label(size_label, bytes_read));
     show = 1;
   }
 
@@ -2043,7 +2043,7 @@ void OutputFrameSteps(void){
       bytes_read += patchi->frameinfo->bytes_read;
   }
   if(count > 0){
-    sprintf(bound_label, "boundary frames/size input: %i/%s", frames_read, Bytes2Label(size_label, bytes_read));
+    sprintf(bound_label, "Loaded %i boundary frames, %s", frames_read, Bytes2Label(size_label, bytes_read));
     show = 1;
   }
 
@@ -2063,7 +2063,7 @@ void OutputFrameSteps(void){
       bytes_read += isoi->frameinfo->bytes_read;
   }
   if(count > 0){
-    sprintf(iso_label, "isosurface frames/size input: %i/%s", frames_read, Bytes2Label(size_label, bytes_read));
+    sprintf(iso_label, "Loaded %i isosurface frames, %s", frames_read, Bytes2Label(size_label, bytes_read));
     show = 1;
   }
 
@@ -2083,7 +2083,7 @@ void OutputFrameSteps(void){
     bytes_read  += parti->frameinfo->bytes_read;
   }
   if(count > 0){
-    sprintf(part_label, "  particle frames/size input: %i/%s", frames_read, Bytes2Label(size_label, bytes_read));
+    sprintf(part_label, "Loaded %i particle frames, %s", frames_read, Bytes2Label(size_label, bytes_read));
     show = 1;
   }
   if(show == 1){

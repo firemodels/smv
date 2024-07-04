@@ -3308,7 +3308,7 @@ void ReloadAllSliceFiles(int load_flag){
   }
   STOP_TIMER(load_time);
   FREEMEMORY(reload_slicelist);
-  PrintFileLoadTimes(file_count,load_size,load_time);
+  //PrintFileLoadTimes(file_count,load_size,load_time);
   slicefile_labelindex = slicefile_labelindex_save;
 }
 
@@ -3476,7 +3476,7 @@ void LoadUnloadMenu(int value){
     ReloadAllSliceFiles(load_flag);
     GLUIHVACSliceBoundsCPP_CB(BOUND_UPDATE_COLORS);
     STOP_TIMER(load_time);
-    PrintFileLoadTimes(file_count,load_size,load_time);
+   // PrintFileLoadTimes(file_count,load_size,load_time);
     slicefile_labelindex=slicefile_labelindex_save;
 
     //*** reload plot3d files
@@ -4321,7 +4321,7 @@ void LoadParticleMenu(int value){
             }
           }
           STOP_TIMER(part_load_time);
-          PrintFileLoadTimes(part_file_count,part_load_size,part_load_time);
+         // PrintFileLoadTimes(part_file_count,part_load_size,part_load_time);
           if(have_particles==0)printf("***warning: particle files have no particles\n");
         }
 
@@ -4538,7 +4538,7 @@ FILE_SIZE LoadVSliceMenu2(int value){
       }
     }
     STOP_TIMER(load_time);
-    PrintFileLoadTimes(file_count,load_size,load_time);
+    //PrintFileLoadTimes(file_count,load_size,load_time);
   }
   GLUTSETCURSOR(GLUT_CURSOR_LEFT_ARROW);
   return return_filesize;
@@ -4932,7 +4932,7 @@ void LoadSmoke3DMenu(int value){
     }
   }
   STOP_TIMER(load_time);
-  PrintFileLoadTimes(file_count, load_size, load_time);
+  //PrintFileLoadTimes(file_count, load_size, load_time);
   updatemenu=1;
   GLUTPOSTREDISPLAY;
   GLUTSETCURSOR(GLUT_CURSOR_LEFT_ARROW);
@@ -5085,7 +5085,7 @@ void LoadSliceMenu(int value){
         START_TIMER(load_time);
         load_size = LoadAllSliceFiles(last_slice, submenulabel, dir, &file_count);
         STOP_TIMER(load_time);
-        PrintFileLoadTimes(file_count,load_size,load_time);
+        //PrintFileLoadTimes(file_count,load_size,load_time);
       }
   }
   updatemenu=1;
@@ -5159,7 +5159,7 @@ void LoadMultiVSliceMenu(int value){
         if(vslicei->skip==1&&vslicei->loaded==1)UnloadVSliceMenu(mvslicei->ivslices[i]);
       }
       STOP_TIMER(load_time);
-      PrintFileLoadTimes(file_count,load_size,load_time);
+      //PrintFileLoadTimes(file_count,load_size,load_time);
     }
     script_multivslice=0;
   }
@@ -5192,7 +5192,7 @@ void LoadMultiVSliceMenu(int value){
       file_count++;
     }
     STOP_TIMER(load_time);
-    PrintFileLoadTimes(file_count,load_size,load_time);
+    //PrintFileLoadTimes(file_count,load_size,load_time);
   }
   else{
     switch(value){
@@ -5284,7 +5284,7 @@ FILE_SIZE LoadAllMSlices(int last_slice, multislicedata *mslicei){
   SetLoadedSliceBounds(mslicei->islices, mslicei->nslices);
   file_size = LoadAllMSlicesMT(last_slice, mslicei, &file_count);
   STOP_TIMER(load_time);
-  PrintFileLoadTimes(file_count,(float)file_size,load_time);
+  //PrintFileLoadTimes(file_count,(float)file_size,load_time);
   return file_size;
 }
 
@@ -5394,7 +5394,7 @@ void LoadMultiSliceMenu(int value){
       file_count++;
     }
     STOP_TIMER(load_time);
-    PrintFileLoadTimes(file_count,load_size,load_time);
+   // PrintFileLoadTimes(file_count,load_size,load_time);
   }
   else{
     switch(value){
@@ -5808,7 +5808,7 @@ void LoadAllIsos(int iso_type){
     }
   }
   STOP_TIMER(load_time);
-  PrintFileLoadTimes(file_count,load_size,load_time);
+  //PrintFileLoadTimes(file_count,load_size,load_time);
 }
 
 /* ------------------ LoadIsoMenu ------------------------ */
@@ -6000,7 +6000,7 @@ void LoadBoundaryMenu(int value){
         }
       }
       STOP_TIMER(load_time);
-      PrintFileLoadTimes(file_count,load_size,load_time);
+      //PrintFileLoadTimes(file_count,load_size,load_time);
     }
     force_redisplay=1;
     UpdateFrameNumber(0);

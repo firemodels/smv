@@ -4443,6 +4443,7 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
 
   STOP_TIMER(total_time);
 
+#ifndef pp_SLICEFRAME
   if(time_frame==ALL_FRAMES&&load_flag != RESETBOUNDS){
     if(file_size>1000000000){
       PRINTF(" - %.1f GB/%.1f s\n", (float)file_size / 1000000000., total_time);
@@ -4454,6 +4455,7 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
       PRINTF(" - %.0f KB/%.1f s\n", (float)file_size / 1000., total_time);
     }
   }
+#endif
 #ifdef pp_RECOMPUTE_DEBUG
   if(recompute==1)printf("***recomputing bounds\n");
 #endif
