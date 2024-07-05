@@ -538,8 +538,8 @@ void ReadHRR(int flag){
     hrrdata *hi;
 
     hi = hrrinfo+i;
-    NewMemory((void **)&hi->vals,      MAX(1,(nrows-2))*sizeof(float));
-    NewMemory((void **)&hi->vals_orig, MAX(1,(nrows-2))*sizeof(float));
+    NewMemory((void **)&hi->vals,      MAX(1,(nrows+10))*sizeof(float));
+    NewMemory((void **)&hi->vals_orig, MAX(1,(nrows+10))*sizeof(float));
     hi->base_col = -1;
     hi->nvals = nrows-2;
   }
