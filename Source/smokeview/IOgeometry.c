@@ -112,6 +112,7 @@ void GetFaceInfo(void){
       for(j=0;j<geomlisti->nverts;j++){
         if(verts[j]->nused>0)nused++;
       }
+#ifndef pp_ISOFRAME
       if(print_geominfo==1){
         PRINTF("Face/Vertex Summary\n");
         PRINTF("      Faces: %i\n", geomlisti->ntriangles);
@@ -120,6 +121,7 @@ void GetFaceInfo(void){
         PRINTF("     unused: %i\n", geomlisti->nverts-nused);
         PRINTF(" duplicates: %i\n\n", ndups);
       }
+#endif
       FREEMEMORY(verts);
     }
   }

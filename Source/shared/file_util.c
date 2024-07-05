@@ -670,7 +670,9 @@ bufferdata *InitBufferData(char *file, int flag){
 
 /* ------------------ File2Buffer ------------------------ */
 
-bufferdata *File2Buffer(char *file, bufferdata *bufferinfo, FILE_SIZE header_size_arg, FILE_SIZE offset_arg, FILE_SIZE nbuffer_arg, int nthreads, int *nreadptr){
+bufferdata *File2Buffer(char *file, bufferdata *bufferinfo, int option,
+                        FILE_SIZE header_size_arg, FILE_SIZE offset_arg, FILE_SIZE nbuffer_arg, 
+                        int nthreads, int *nreadptr){
   unsigned char *buffer;
   FILE_SIZE nfile, offset_buffer = 0, offset_file = 0, nread, delta;
   bufferdata *buffinfo=NULL;

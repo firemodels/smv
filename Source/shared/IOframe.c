@@ -44,6 +44,8 @@ framedata *FRAMEInit(char *file, char *size_file, int file_type, void GetFrameIn
   frame->file_type    = file_type;
   frame->nframes      = 0;
   frame->frames_read  = 0;
+  frame->bytes_read   = 0;
+  frame->update       = 0;
   frame->headersize   = 0;
   frame->filesize     = 0;
 #ifdef pp_THREAD
@@ -79,6 +81,10 @@ void FRAMESetup(framedata *fi){
   fi->nframes         = nframes;
   fi->filesize        = filesize;
   fi->headersize      = headersize;
+  fi->bytes_read      = 0;
+  fi->load_time       = 0.0;
+  fi->total_time      = 0.0;
+  fi->frames_read     = 0;
   fi->frames          = fi->bufferinfo->buffer;
   fi->header          = fi->bufferinfo->buffer;
   if(nframes > 0){
@@ -151,7 +157,7 @@ void FRAMESetNThreads(framedata *fi, int nthreads){
 
 /* ------------------ FRAMEReadFrame ------------------------ */
 
-bufferdata *FRAMEReadFrame(framedata *fi, int iframe, int nframes, int *nreadptr){
+bufferdata *FRAMEReadFrame(framedata *fi, int option, int iframe, int nframes, int *nreadptr){
   FILE_SIZE total_size, offset;
   bufferdata *bufferinfo, *bufferinfoptr;
   unsigned char *buffer;
@@ -168,7 +174,8 @@ bufferdata *FRAMEReadFrame(framedata *fi, int iframe, int nframes, int *nreadptr
   bufferinfo->buffer  = buffer;
   bufferinfo->nbuffer = total_size;
   fi->frames_read     = nframes;
-  bufferinfoptr       = File2Buffer(fi->file, bufferinfo, fi->headersize, offset, total_size, nframe_threads, &nread);
+  fi->update          = 1;
+  bufferinfoptr       = File2Buffer(fi->file, bufferinfo, option, fi->headersize, offset, total_size, nframe_threads, &nread);
   *nreadptr = nread;
   return bufferinfoptr;
 }
@@ -178,8 +185,8 @@ bufferdata *FRAMEReadFrame(framedata *fi, int iframe, int nframes, int *nreadptr
 void FRAMESetTimes(framedata *fi, int iframe, int nframes){
   int i, first_frame, last_frame;
 
-  if(fi->frames == NULL)fi->frames =  fi->bufferinfo->buffer;
-  if(fi->header == NULL)fi->header = fi->bufferinfo->buffer;
+  fi->frames = fi->bufferinfo->buffer;
+  fi->header = fi->bufferinfo->buffer;
   if(iframe < 0)iframe = 0;
   if(iframe > fi->nframes - 1)iframe = fi->nframes - 1;
   first_frame = iframe;
@@ -571,7 +578,7 @@ void GetPartFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **framespt
     framesize = 4 + 4 + 4;
 
 //    printf("time_arg=%f\n", time_arg);
-    if(returncode != 1*sizeof(float))break;
+    if(returncode != 1)break;
     for(i=0; i<n_part; i++){
       int nplim;
       long int skip;

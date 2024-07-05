@@ -538,8 +538,8 @@ void ReadHRR(int flag){
     hrrdata *hi;
 
     hi = hrrinfo+i;
-    NewMemory((void **)&hi->vals,      MAX(1,(nrows-2))*sizeof(float));
-    NewMemory((void **)&hi->vals_orig, MAX(1,(nrows-2))*sizeof(float));
+    NewMemory((void **)&hi->vals,      MAX(1,(nrows+10))*sizeof(float));
+    NewMemory((void **)&hi->vals_orig, MAX(1,(nrows+10))*sizeof(float));
     hi->base_col = -1;
     hi->nvals = nrows-2;
   }
@@ -5125,6 +5125,7 @@ int ParsePRT5Process(bufferstreamdata *stream, char *buffer, int *nn_part_in, in
   parti->valmax_part = NULL;
   parti->stream     = NULL;
   parti->hist_update = 0;
+  parti->skipload = 1;
   if(FGETS(buffer, 255, stream)==NULL){
     npartinfo--;
     return RETURN_BREAK;
@@ -15024,6 +15025,9 @@ int ReadIni2(char *inifile, int localfile){
       if(current_script_command==NULL){
         sscanf(buffer, "%i %i %i", &partfast, &use_partload_threads, &n_partload_threads);
       }
+#ifdef pp_PARTFRAME
+      use_partload_threads = 0;
+#endif
       continue;
     }
     if(MatchINI(buffer, "WINDOWOFFSET") == 1){

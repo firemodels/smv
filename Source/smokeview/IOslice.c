@@ -790,7 +790,7 @@ int GetSliceHeader(char *comp_file, char *size_file, int compression_type,
 
 /* ------------------ ReadVSlice ------------------------ */
 
-FILE_SIZE ReadVSlice(int ivslice, int time_frame, float *time_value, int flag, int set_slicecolor, int *errorcode){
+FILE_SIZE ReadVSlice(int ivslice, int time_frame, float *time_value, int load_flag, int set_slicecolor, int *errorcode){
   vslicedata *vd;
   float valmin, valmax;
   int display;
@@ -809,7 +809,7 @@ FILE_SIZE ReadVSlice(int ivslice, int time_frame, float *time_value, int flag, i
   if(vd->iu!=-1)sliceinfo[vd->iu].uvw = 1;
   if(vd->iv!=-1)sliceinfo[vd->iv].uvw = 1;
   if(vd->iw!=-1)sliceinfo[vd->iw].uvw = 1;
-  if(flag==UNLOAD){
+  if(load_flag==UNLOAD){
     if(vd->loaded==0)return 0;
     if(vd->iu!=-1){
       slicedata *u=NULL;
@@ -905,7 +905,7 @@ FILE_SIZE ReadVSlice(int ivslice, int time_frame, float *time_value, int flag, i
         return_filesize += ReadGeomData(u->patchgeom, u, LOAD, time_frame, time_value, 0, errorcode);
       }
       else{
-        return_filesize += ReadSlice(u->file, vd->iu, time_frame,time_value, flag, set_slicecolor, errorcode);
+        return_filesize += ReadSlice(u->file, vd->iu, time_frame,time_value, load_flag, set_slicecolor, errorcode);
       }
       if(*errorcode!=0){
         vd->loaded = 1;
@@ -932,7 +932,7 @@ FILE_SIZE ReadVSlice(int ivslice, int time_frame, float *time_value, int flag, i
         return_filesize += ReadGeomData(v->patchgeom, v, LOAD, time_frame, time_value, 0, errorcode);
       }
       else{
-        return_filesize += ReadSlice(v->file, vd->iv, time_frame,time_value,flag, set_slicecolor, errorcode);
+        return_filesize += ReadSlice(v->file, vd->iv, time_frame,time_value,load_flag, set_slicecolor, errorcode);
       }
       if(*errorcode!=0){
         fprintf(stderr, "*** Error: unable to load V velocity vector components in %s . Vector load aborted\n", v->file);
@@ -960,7 +960,7 @@ FILE_SIZE ReadVSlice(int ivslice, int time_frame, float *time_value, int flag, i
         return_filesize += ReadGeomData(w->patchgeom, w, LOAD, time_frame, time_value, 0, errorcode);
       }
       else{
-        return_filesize += ReadSlice(w->file, vd->iw, time_frame,time_value,flag, set_slicecolor, errorcode);
+        return_filesize += ReadSlice(w->file, vd->iw, time_frame,time_value,load_flag, set_slicecolor, errorcode);
       }
       if(*errorcode!=0){
         fprintf(stderr, "*** Error: unable to load W velocity vector components in %s . Vector load aborted\n", w->file);
@@ -989,7 +989,7 @@ FILE_SIZE ReadVSlice(int ivslice, int time_frame, float *time_value, int flag, i
         return_filesize += ReadGeomData(val->patchgeom, val, LOAD, time_frame, time_value, 0, errorcode);
       }
       else{
-        return_filesize += ReadSlice(val->file, vd->ival, time_frame,time_value,flag, set_slicecolor, errorcode);
+        return_filesize += ReadSlice(val->file, vd->ival, time_frame,time_value,load_flag, set_slicecolor, errorcode);
       }
       if(*errorcode!=0){
         fprintf(stderr, "*** Error: unable to load vector values in %s . Vector load aborted\n", val->file);
@@ -3820,7 +3820,7 @@ void GetSliceTimes(char *file, float *times, int ntimes){
 
 /* ------------------ ReadSlice ------------------------ */
 
-FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_value, int flag, int set_slicecolor, int *errorcode){
+FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_value, int load_flag, int set_slicecolor, int *errorcode){
   float *xplt_local, *yplt_local, *zplt_local, offset, qmin, qmax, read_time, total_time;
   int blocknumber, error, flag2 = 0;
   slicedata *sd;
@@ -3847,7 +3847,7 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
 
 #ifndef pp_SLICEFRAME
 #ifndef pp_FSEEK
-  if(flag==RELOAD)flag = LOAD;
+  if(load_flag==RELOAD)load_flag = LOAD;
 #endif
 #endif
   CheckMemory;
@@ -3863,8 +3863,8 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
   blocknumber = sd->blocknumber;
   meshi = meshinfo + blocknumber;
 
-  if(flag != RESETBOUNDS){
-    if(sd->loaded == 0 && flag == UNLOAD)return 0;
+  if(load_flag != RESETBOUNDS){
+    if(sd->loaded == 0 && load_flag == UNLOAD)return 0;
     sd->display = 0;
 #ifdef pp_MEMDEBUG
     if(sd->qslicedata != NULL){
@@ -3874,7 +3874,7 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
 
 // free memory buffers
 
-    if(flag!=RELOAD){
+    if(load_flag!=RELOAD){
       if(sd->qslicedata != NULL){
         FreeMemory(sd->qslicedata);
         sd->qslicedata = NULL;
@@ -3894,7 +3894,7 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
 
 // reset slice variables to an unloaded state
 
-    if(flag == UNLOAD){
+    if(load_flag == UNLOAD){
       int ii;
 
       update_flipped_colorbar = 1;
@@ -3978,28 +3978,33 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
       return 0;
     }
 
-// load entire slice file (flag=LOAD) or
-// load only portion of slice file written to since last time it was loaded (flag=RELOAD)
+// load entire slice file (load_flag=LOAD) or
+// load only portion of slice file written to since last time it was loaded (load_flag=RELOAD)
 
 #ifdef pp_SLICEFRAME
     if(sd->frameinfo == NULL)sd->frameinfo = FRAMEInit(sd->file, sd->size_file, FORTRAN_FILE, GetSliceFrameInfo);
-    sd->frameinfo->bufferinfo = InitBufferData(sd->file, 0);
+
+    float load_time;
+    START_TIMER(load_time);
+
+    if(sd->frameinfo->bufferinfo == NULL || load_flag != RELOAD){
+      sd->frameinfo->bufferinfo = InitBufferData(sd->file, 0);
+    }
+    int nframes_before, nframes_after;
+    nframes_before = sd->frameinfo->nframes;
     FRAMESetup(sd->frameinfo);
     if(time_frame != ALL_FRAMES)sd->frameinfo->nframes = 1;
-#ifdef pp_FRAME_DEBUG
-    int nframes_before, nframes_after;
 
-    nframes_before = sd->frameinfo->nframes;
-#endif
     if(sd->frameinfo != NULL){
       int nread;
 
       if(time_frame==ALL_FRAMES){
-        sd->frameinfo->bufferinfo = File2Buffer(sd->file, sd->frameinfo->bufferinfo, sd->frameinfo->headersize, ALLDATA_OFFSET, ALLDATA_NVALS, nframe_threads, &nread);
+        sd->frameinfo->bufferinfo = File2Buffer(sd->file, sd->frameinfo->bufferinfo, DATA_MAPPED, sd->frameinfo->headersize, ALLDATA_OFFSET, ALLDATA_NVALS, nframe_threads, &nread);
       }
       else{
-        sd->frameinfo->bufferinfo = FRAMEReadFrame(sd->frameinfo, time_frame, 1, &nread);
+        sd->frameinfo->bufferinfo = FRAMEReadFrame(sd->frameinfo, DATA_AT_START, time_frame, 1, &nread);
       }
+      sd->frameinfo->bytes_read = nread;
       if(nread > 0){
         FRAMESetTimes(sd->frameinfo, 0, sd->frameinfo->nframes);
         FRAMESetFramePtrs(sd->frameinfo, 0, sd->frameinfo->nframes);
@@ -4011,10 +4016,13 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
       frame_valmin = sd->frameinfo->valmin;
       frame_valmax = sd->frameinfo->valmax;
     }
-#ifdef pp_FRAME_DEBUG
+    update_frame_output = 1;
+    sd->frameinfo->update = 1;
     nframes_after = sd->frameinfo->nframes;
-    printf(", slice frames read: %i, ", nframes_after - nframes_before);
-#endif
+    if(time_frame == ALL_FRAMES)sd->frameinfo->frames_read = nframes_after - nframes_before;
+
+    STOP_TIMER(load_time);
+    if(sd->frameinfo != NULL)sd->frameinfo->load_time = load_time;
 #endif
     if(sd->compression_type == UNCOMPRESSED){
 #ifndef pp_SLICEFRAME
@@ -4107,7 +4115,7 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
 #endif
 
       ntimes_slice_old = 0;
-      if(flag==RELOAD){
+      if(load_flag==RELOAD){
         ntimes_slice_old = sd->ntimes_old;
         qmin = sd->globalmin_slice;
         qmax = sd->globalmax_slice;
@@ -4350,7 +4358,7 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
     CheckMemory;
 
     //*** comment out following line to prevent crash when loading a slice when particles are loaded
-    //if(flag!=RESETBOUNDS)update_research_mode=1;
+    //if(load_flag!=RESETBOUNDS)update_research_mode=1;
     if(use_set_slicecolor==0||set_slicecolor==SET_SLICECOLOR){
       if(sd->compression_type==UNCOMPRESSED){
         int i;
@@ -4442,7 +4450,8 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
 
   STOP_TIMER(total_time);
 
-  if(time_frame==ALL_FRAMES&&flag != RESETBOUNDS){
+#ifndef pp_SLICEFRAME
+  if(time_frame==ALL_FRAMES&&load_flag != RESETBOUNDS){
     if(file_size>1000000000){
       PRINTF(" - %.1f GB/%.1f s\n", (float)file_size / 1000000000., total_time);
     }
@@ -4453,6 +4462,7 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
       PRINTF(" - %.0f KB/%.1f s\n", (float)file_size / 1000., total_time);
     }
   }
+#endif
 #ifdef pp_RECOMPUTE_DEBUG
   if(recompute==1)printf("***recomputing bounds\n");
 #endif
@@ -4518,6 +4528,11 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
     PrintMemoryInfo;
   }
   SNIFF_ERRORS("ReadSlice: end");
+#ifdef pp_SLICEFRAME
+  if(sd->frameinfo != NULL){
+    sd->frameinfo->total_time = total_time;
+  }
+#endif
   return return_filesize;
 }
 

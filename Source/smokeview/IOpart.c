@@ -1978,7 +1978,7 @@ void FinalizePartLoad(partdata *parti){
 
 /* -----  ------------- ReadPart ------------------------ */
 
-FILE_SIZE ReadPart(char *file_arg, int ifile_arg, int loadflag_arg, int *errorcode_arg){
+FILE_SIZE ReadPart(char *file_arg, int ifile_arg, int load_flag, int *errorcode_arg){
   size_t lenfile_local;
   int error_local=0, nf_all_local;
   partdata *parti;
@@ -1986,20 +1986,25 @@ FILE_SIZE ReadPart(char *file_arg, int ifile_arg, int loadflag_arg, int *errorco
   float load_time_local;
 #ifdef pp_PARTFRAME
   int time_frame = ALL_FRAMES;
+  float total_time;
 #endif
 
   SetTimeState();
+#ifdef pp_PARTFRAME
+  START_TIMER(total_time);
+#endif
   START_TIMER(load_time_local);
   assert(ifile_arg>=0&&ifile_arg<npartinfo);
   parti=partinfo+ifile_arg;
 
 #ifdef pp_PARTFRAME
-  if(loadflag_arg!=RELOAD)FreeAllPart5Data(parti);
+  if(load_flag!=RELOAD)FreeAllPart5Data(parti);
 #else
   FreeAllPart5Data(parti);
 #endif
 
-  if(parti->loaded==0&&loadflag_arg==UNLOAD)return 0.0;
+  if(load_flag==UNLOAD)parti->skipload = 1;
+  if(parti->loaded==0&&load_flag==UNLOAD)return 0.0;
 
   *errorcode_arg =0;
   parti->loaded = 0;
@@ -2016,7 +2021,7 @@ FILE_SIZE ReadPart(char *file_arg, int ifile_arg, int loadflag_arg, int *errorco
   FREEMEMORY(parti->times_map);
   FREEMEMORY(parti->filepos);
 
-  if(loadflag_arg == UNLOAD){
+  if(load_flag == UNLOAD){
     if(parti->finalize == 1){
       UpdatePartColors(parti, 0);
       UpdateTimes();
@@ -2034,30 +2039,41 @@ FILE_SIZE ReadPart(char *file_arg, int ifile_arg, int loadflag_arg, int *errorco
 
 #ifdef pp_PARTFRAME
   if(parti->frameinfo == NULL)parti->frameinfo = FRAMEInit(file_arg, NULL, FORTRAN_FILE, GetPartFrameInfo);
-  parti->frameinfo->bufferinfo = InitBufferData(parti->file, 0);
-  FRAMESetup(parti->frameinfo);
-#ifdef pp_FRAME_DEBUG
-    int nframes_before, nframes_after;
 
-    nframes_before = parti->frameinfo->nframes;
-#endif
+  float load_time;
+  START_TIMER(load_time);
+
+  if(parti->frameinfo->bufferinfo == NULL || load_flag != RELOAD){
+    parti->frameinfo->bufferinfo = InitBufferData(parti->file, 0);
+  }
+
+  int nframes_before, nframes_after;
+
+  nframes_before = parti->frameinfo->nframes;
+
+  FRAMESetup(parti->frameinfo);
   if(parti->frameinfo != NULL){
     int nread;
 
     if(time_frame==ALL_FRAMES){
-      parti->frameinfo->bufferinfo = File2Buffer(parti->file, parti->frameinfo->bufferinfo, parti->frameinfo->headersize, ALLDATA_OFFSET, ALLDATA_NVALS, nframe_threads, &nread);
+      parti->frameinfo->bufferinfo = File2Buffer(parti->file, parti->frameinfo->bufferinfo, DATA_MAPPED, parti->frameinfo->headersize, ALLDATA_OFFSET, ALLDATA_NVALS, nframe_threads, &nread);
     }
     else{
-      parti->frameinfo->bufferinfo = FRAMEReadFrame(parti->frameinfo, time_frame, 1, &nread);
+      parti->frameinfo->bufferinfo = FRAMEReadFrame(parti->frameinfo, DATA_AT_START, time_frame, 1, &nread);
     }
+    parti->frameinfo->bytes_read = nread;
+    update_frame_output = 1;
     FRAMESetTimes(parti->frameinfo, 0, parti->frameinfo->nframes);
     FRAMESetFramePtrs(parti->frameinfo, 0, parti->frameinfo->nframes);
    // FRAMEGetMinMax(sd->frameinfo, &valmin, &valmax);
   }
-#ifdef pp_FRAME_DEBUG
-    nframes_after = parti->frameinfo->nframes;
-    printf(", particle frames read: %i, ", nframes_after - nframes_before);
-#endif
+  update_frame_output = 1;
+  nframes_after = parti->frameinfo->nframes;
+  parti->frameinfo->frames_read = nframes_after - nframes_before;
+  parti->frameinfo->update = 1;
+
+  STOP_TIMER(load_time);
+  if(parti->frameinfo != NULL)parti->frameinfo->load_time = load_time;
 #endif
 
   lenfile_local = strlen(file_arg);
@@ -2126,6 +2142,12 @@ FILE_SIZE ReadPart(char *file_arg, int ifile_arg, int loadflag_arg, int *errorco
     }
     update_part_bounds = 1;
   }
+#ifdef pp_PARTFRAME
+  if(parti->frameinfo != NULL){
+    STOP_TIMER(total_time);
+    parti->frameinfo->total_time = total_time;
+  }
+#endif
   return file_size_local;
 }
 

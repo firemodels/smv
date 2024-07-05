@@ -1949,12 +1949,222 @@ void UpdateIsoIni(void){
   }
 }
 
+/* ------------------ Bytes2Label ------------------------ */
+
+char *Bytes2Label(char *label, FILE_SIZE bytes){
+  char vallabel[256];
+
+  if(bytes >= 0 && bytes < 1000){
+    sprintf(label, "%iB", (int)bytes);
+  }
+  else if(bytes >= 1000 && bytes < 1000000){
+    Float2String(vallabel, (float)bytes/1000.0, ncolorlabel_digits, force_fixedpoint);
+    sprintf(label, "%sKB", vallabel);
+  }
+  else if(bytes >= 1000000 && bytes < 1000000000){
+    Float2String(vallabel, (float)bytes/1000000.0, ncolorlabel_digits, force_fixedpoint);
+    sprintf(label, "%sMB", vallabel);
+  }
+  else{
+    Float2String(vallabel, (float)bytes/1000000000.0, ncolorlabel_digits, force_fixedpoint);
+    sprintf(label, "%sGB", vallabel);
+  }
+  return label;
+}
+
+/* ------------------ OutputFrameSteps ------------------------ */
+
+#ifdef pp_FRAME
+void OutputFrameSteps(void){
+  int i, count, frames_read, show;
+  float total_time, total_wrapup_time;
+  FILE_SIZE bytes_read;
+  char size_label[256], slice_label[256], part_label[256], iso_label[256], smoke_label[256], bound_label[256];
+  char time_label[256], time_label2[256], time_label3[256];
+
+  show = 0;
+  strcpy(slice_label, "");
+  strcpy(part_label, "");
+  strcpy(iso_label, "");
+  strcpy(smoke_label, "");
+  strcpy(bound_label, "");
+
+  //*** slice files
+
+  count             = 0;
+  bytes_read        = 0;
+  frames_read       = 0;
+  total_time        = 0.0;
+  total_wrapup_time = 0.0;
+  for(i = 0;i < nsliceinfo;i++){
+    slicedata *slicei;
+
+    slicei = sliceinfo + i;
+    if(slicei->loaded == 0 || slicei->frameinfo == NULL || slicei->frameinfo->update == 0)continue;
+    slicei->frameinfo->update = 0;
+    count++;
+    frames_read = MAX(frames_read, slicei->frameinfo->frames_read);
+    bytes_read += slicei->frameinfo->bytes_read;
+    total_time += slicei->frameinfo->load_time;
+    total_wrapup_time += slicei->frameinfo->total_time;
+  }
+  if(count > 0){
+    sprintf(slice_label, "Loaded %i slice frames, %s", frames_read, Bytes2Label(size_label, bytes_read));
+    strcpy(time_label, "");
+    if(show_timings){
+      Float2String(time_label2, total_time, ncolorlabel_digits, force_fixedpoint);
+      Float2String(time_label3, total_wrapup_time, ncolorlabel_digits, force_fixedpoint);
+      sprintf(time_label, " in %ss/%ss", time_label2, time_label3);
+    }
+    strcat(slice_label, time_label);
+    show = 1;
+  }
+
+  //*** 3d smoke files
+
+  count             = 0;
+  bytes_read        = 0;
+  frames_read       = 0;
+  total_time        = 0.0;
+  total_wrapup_time = 0.0;
+  for(i = 0;i < nsmoke3dinfo;i++){
+    smoke3ddata *smoke3di;
+
+    smoke3di = smoke3dinfo + i;
+    if(smoke3di->loaded == 0 || smoke3di->frameinfo == NULL || smoke3di->frameinfo->update == 0)continue;
+    smoke3di->frameinfo->update = 0;
+    count++;
+    frames_read = MAX(frames_read, smoke3di->frameinfo->frames_read);
+    bytes_read += smoke3di->frameinfo->bytes_read;
+    total_time += smoke3di->frameinfo->load_time;
+    total_wrapup_time += smoke3di->frameinfo->total_time;
+  }
+  if(count > 0){
+    sprintf(smoke_label, "Loaded %i 3D smoke frames, %s", frames_read, Bytes2Label(size_label, bytes_read));
+    strcpy(time_label, "");
+    if(show_timings){
+      Float2String(time_label2, total_time, ncolorlabel_digits, force_fixedpoint);
+      Float2String(time_label3, total_wrapup_time, ncolorlabel_digits, force_fixedpoint);
+      sprintf(time_label, " in %ss/%ss", time_label2, time_label3);
+    }
+    strcat(smoke_label, time_label);
+    show = 1;
+  }
+
+  //*** boundary files
+
+  count = 0;
+  bytes_read = 0;
+  frames_read = 0;
+  total_time = 0.0;
+  total_wrapup_time = 0.0;
+  for(i = 0;i < npatchinfo;i++){
+    patchdata *patchi;
+
+    patchi = patchinfo + i;
+    if(patchi->loaded == 0 || patchi->frameinfo == NULL || patchi->frameinfo->update == 0)continue;
+    patchi->frameinfo->update = 0;
+    count++;
+    frames_read = MAX(frames_read, patchi->frameinfo->frames_read);
+    bytes_read += patchi->frameinfo->bytes_read;
+    total_time += patchi->frameinfo->load_time;
+    total_wrapup_time += patchi->frameinfo->total_time;
+  }
+  if(count > 0){
+    sprintf(bound_label, "Loaded %i boundary frames, %s", frames_read, Bytes2Label(size_label, bytes_read));
+    strcpy(time_label, "");
+    if(show_timings){
+      Float2String(time_label2, total_time, ncolorlabel_digits, force_fixedpoint);
+      Float2String(time_label3, total_wrapup_time, ncolorlabel_digits, force_fixedpoint);
+      sprintf(time_label, " in %ss/%ss", time_label2, time_label3);
+    }
+    strcat(bound_label, time_label);
+    show = 1;
+  }
+
+  //*** isosurface files
+
+  count = 0;
+  bytes_read = 0;
+  frames_read = 0;
+  total_time = 0.0;
+  total_wrapup_time = 0.0;
+  for(i = 0;i < nisoinfo;i++){
+    isodata *isoi;
+
+    isoi = isoinfo + i;
+    if(isoi->loaded == 0 || isoi->frameinfo == NULL || isoi->frameinfo->update == 0)continue;
+    isoi->frameinfo->update = 0;
+    count++;
+    frames_read = MAX(frames_read, isoi->frameinfo->frames_read);
+    bytes_read += isoi->frameinfo->bytes_read;
+    total_time += isoi->frameinfo->load_time;
+    total_wrapup_time += isoi->frameinfo->total_time;
+  }
+  if(count > 0){
+    sprintf(iso_label, "Loaded %i isosurface frames, %s", frames_read, Bytes2Label(size_label, bytes_read));
+    strcpy(time_label, "");
+    if(show_timings){
+      Float2String(time_label2, total_time, ncolorlabel_digits, force_fixedpoint);
+      Float2String(time_label3, total_wrapup_time, ncolorlabel_digits, force_fixedpoint);
+      sprintf(time_label, " in %ss/%ss", time_label2, time_label3);
+    }
+    strcat(iso_label, time_label);
+    show = 1;
+  }
+
+  //*** particle files
+
+  count = 0;
+  bytes_read = 0;
+  frames_read = 0;
+  total_time = 0.0;
+  total_wrapup_time = 0.0;
+  for(i = 0;i < npartinfo;i++){
+    partdata *parti;
+
+    parti = partinfo + i;
+    if(parti->loaded == 0 || parti->frameinfo == NULL || parti->frameinfo->update == 0)continue;
+    parti->frameinfo->update = 0;
+    count++;
+    frames_read  = MAX(frames_read, parti->frameinfo->frames_read);
+    bytes_read  += parti->frameinfo->bytes_read;
+    total_time += parti->frameinfo->load_time;
+    total_wrapup_time += parti->frameinfo->total_time;
+  }
+  if(count > 0){
+    sprintf(part_label, "Loaded %i particle frames, %s", frames_read, Bytes2Label(size_label, bytes_read));
+    strcpy(time_label, "");
+    if(show_timings){
+      Float2String(time_label2, total_time, ncolorlabel_digits, force_fixedpoint);
+      Float2String(time_label3, total_wrapup_time, ncolorlabel_digits, force_fixedpoint);
+      sprintf(time_label, " in %ss/%ss", time_label2, time_label3);
+    }
+    strcat(part_label, time_label);
+    show = 1;
+  }
+  if(show == 1){
+    if(strlen(bound_label) > 0)printf("%s\n", bound_label);
+    if(strlen(part_label) > 0)printf("%s\n",  part_label);
+    if(strlen(iso_label) > 0)printf("%s\n",   iso_label);
+    if(strlen(slice_label) > 0)printf("%s\n", slice_label);
+    if(strlen(smoke_label) > 0)printf("%s\n", smoke_label);
+  }
+}
+#endif
+
 /* ------------------ UpdateShowScene ------------------------ */
 
 void UpdateShowScene(void){
   have_fire  = HaveFireLoaded();
   have_smoke = HaveSootLoaded();
 
+#ifdef pp_FRAME
+  if(update_frame_output == 1){
+    update_frame_output = 0;
+    OutputFrameSteps();
+  }
+#endif
 #ifdef pp_SMOKE_SPEEDUP  
   if(update_smoke3dmenulabels == 1){
     update_smoke3dmenulabels = 0;

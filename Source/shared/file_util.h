@@ -72,6 +72,9 @@ typedef struct {
 #define NOT_FORCE_IN_DIR 0
 #define FORCE_IN_DIR 1
 
+#define DATA_AT_START 0
+#define DATA_MAPPED   1
+
 #define FEOF(stream)              feof_buffer(stream->fileinfo)
 #define FGETS(buffer,size,stream) fgets_buffer(stream->fileinfo,buffer,size)
 #define REWIND(stream)            rewind_buffer(stream->fileinfo)
@@ -121,7 +124,9 @@ int FileExistsOrig(char *filename);
 EXTERNCPP int MakeFile(char *file, int size);
 EXTERNCPP void FreeBufferInfo(bufferdata * bufferinfoptr);
 EXTERNCPP bufferdata *InitBufferData(char *file, int flag);
-EXTERNCPP bufferdata *File2Buffer(char *file, bufferdata * bufferinfo, FILE_SIZE header_size_arg, FILE_SIZE offset_arg, FILE_SIZE nbuffer_arg, int nthreads, int *nreadptr);
+EXTERNCPP bufferdata *File2Buffer(char *file, bufferdata * bufferinfo, int option,
+                                  FILE_SIZE header_size_arg, FILE_SIZE offset_arg, FILE_SIZE nbuffer_arg,
+                                  int nthreads, int *nreadptr);
 EXTERNCPP FILE_SIZE fread_p(char *file, unsigned char *buffer, FILE_SIZE offset, FILE_SIZE nchars, int nthreads);
 EXTERNCPP void FileErase(char *file);
 EXTERNCPP void GetProgFullPath(char *progexe, int maxlen_progexe);

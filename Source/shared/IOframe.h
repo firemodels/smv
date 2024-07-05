@@ -13,16 +13,16 @@
 #define C_FILE       1
 typedef struct _framedata {
   char *file, *size_file;
-  int nframes, frames_read, file_type;
+  int nframes, frames_read, update, file_type;
 #ifdef pp_THREAD
   int nthreads;
 #endif
   int headersize, *framesizes;
   int *subframeoffsets, nsubframes;
-  FILE_SIZE *offsets, filesize;
+  FILE_SIZE *offsets, filesize, bytes_read;
   unsigned char *header, *frames, **frameptrs;
   bufferdata *bufferinfo;
-  float *times;
+  float *times, load_time, total_time;
   float valmin, valmax;
   void (*GetFrameInfo)(bufferdata *bufferinfo, int *headersize, int **sizes, int *nsizes, int **subframeoffsets, int *nsubframes, FILE_SIZE *filesizeptr);
 } framedata;
@@ -37,7 +37,7 @@ void FRAMESetNThreads(framedata *fi, int nthreads);
 unsigned char *FRAMEGetFramePtr(framedata *fi, int iframe);
 unsigned char *FRAMEGetSubFramePtr(framedata *fi, int iframe, int isubframe);
 int FRAMEGetMinMax(framedata *fi);
-bufferdata *FRAMEReadFrame(framedata *fi, int iframe, int nframes, int *nread);
+bufferdata *FRAMEReadFrame(framedata *fi, int option, int iframe, int nframes, int *nread);
 void FRAMESetFramePtrs(framedata * fi, int iframe, int nframes);
 void FRAMESetTimes(framedata *fi, int iframe, int nframes);
 void FRAMESetup(framedata *fi);

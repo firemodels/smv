@@ -65,7 +65,12 @@ SVEXTERN threaderdata SVDECL(*ffmpeg_threads,         NULL);
 SVEXTERN int SVDECL(n_iso_threads, 1), SVDECL(use_iso_threads, 0), SVDECL(use_iso_threads_save,0);
 
 //*** part
-SVEXTERN int SVDECL(n_partload_threads, 2), SVDECL(use_partload_threads, 1);
+SVEXTERN int SVDECL(n_partload_threads, 2);
+#ifdef pp_PARTFRAME
+SVEXTERN int SVDECL(use_partload_threads, 0);
+#else
+SVEXTERN int SVDECL(use_partload_threads, 1);
+#endif
 SVEXTERN threaderdata SVDECL(*partload_threads,         NULL);
 
 //*** patchbounds
@@ -114,6 +119,9 @@ SVEXTERN int SVDECL(update_device_timeaverage, 0);
 SVEXTERN int SVDECL(update_colorbar_list, 0);
 SVEXTERN int SVDECL(force_bound_update, 0);
 SVEXTERN int SVDECL(update_colorbar_dialog, 1);
+#ifdef pp_FRAME
+SVEXTERN int SVDECL(update_frame_output, 0);
+#endif
 
 // hvac data
 SVEXTERN int SVDECL(hvacductvar_index, -1), SVDECL(hvacnodevar_index, -1);
