@@ -2003,6 +2003,7 @@ FILE_SIZE ReadPart(char *file_arg, int ifile_arg, int load_flag, int *errorcode_
   FreeAllPart5Data(parti);
 #endif
 
+  if(load_flag==UNLOAD)parti->skipload = 1;
   if(parti->loaded==0&&load_flag==UNLOAD)return 0.0;
 
   *errorcode_arg =0;

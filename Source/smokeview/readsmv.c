@@ -5125,6 +5125,7 @@ int ParsePRT5Process(bufferstreamdata *stream, char *buffer, int *nn_part_in, in
   parti->valmax_part = NULL;
   parti->stream     = NULL;
   parti->hist_update = 0;
+  parti->skipload = 1;
   if(FGETS(buffer, 255, stream)==NULL){
     npartinfo--;
     return RETURN_BREAK;
