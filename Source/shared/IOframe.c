@@ -185,8 +185,8 @@ bufferdata *FRAMEReadFrame(framedata *fi, int option, int iframe, int nframes, i
 void FRAMESetTimes(framedata *fi, int iframe, int nframes){
   int i, first_frame, last_frame;
 
-  if(fi->frames == NULL)fi->frames =  fi->bufferinfo->buffer;
-  if(fi->header == NULL)fi->header = fi->bufferinfo->buffer;
+  fi->frames = fi->bufferinfo->buffer;
+  fi->header = fi->bufferinfo->buffer;
   if(iframe < 0)iframe = 0;
   if(iframe > fi->nframes - 1)iframe = fi->nframes - 1;
   first_frame = iframe;
