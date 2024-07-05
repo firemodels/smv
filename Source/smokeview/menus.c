@@ -4175,6 +4175,9 @@ void LoadAllPartFilesMT(int partnum){
   int i;
 
   INIT_PRINT_TIMER(part_load_timer);
+#ifdef pp_PARTFRAME
+  LoadAllPartFiles(partnum);
+#else
   if(partload_threads == NULL){
     partload_threads = THREADinit(&n_partload_threads, &use_partload_threads, MtLoadAllPartFiles);
   }
@@ -4182,6 +4185,7 @@ void LoadAllPartFilesMT(int partnum){
   partnuminfo[0] = partnum;
   THREADruni(partload_threads, (unsigned char *)partnuminfo, 0);
   THREADcontrol(partload_threads, THREAD_JOIN);
+#endif
   PRINT_TIMER(part_load_timer, "LoadAllPartFilesMT");
 
   INIT_PRINT_TIMER(part_timer);
@@ -4809,12 +4813,8 @@ FILE_SIZE LoadSmoke3D(int type, int frame, int *count, float *time_value){
 
 void LoadSmoke3DMenu(int value){
   int i,errorcode;
-#ifdef pp_SMOKEFRAME
-  float load_time;
-#else
   int file_count;
   float load_time, load_size;
-#endif
 
 #define MENU_DUMMY_SMOKE           -9
 #define MENU_SMOKE_SETTINGS        -4
@@ -4825,10 +4825,8 @@ void LoadSmoke3DMenu(int value){
 
   if(value == MENU_DUMMY_SMOKE)return;
   START_TIMER(load_time);
-#ifndef pp_SMOKEFRAME
   load_size = 0.0;
   file_count=0;
-#endif
   GLUTSETCURSOR(GLUT_CURSOR_WAIT);
   if(value>=0){
     if(scriptoutstream!=NULL){
@@ -4942,14 +4940,12 @@ void LoadSmoke3DMenu(int value){
         }
         if(add_blank==1)printf("\n");
       }
-#ifndef pp_SMOKEFRAME
       int type;
       type = 1;
       if(smoke3di->type == HRRPUV_index)type = 2;
       if(smoke3di->type == TEMP_index)type = 4;
       if(smoke3di->type == CO2_index)type = 8;
       load_size=LoadSmoke3D(type, ALL_SMOKE_FRAMES, &file_count, NULL);
-#endif
     }
   }
   STOP_TIMER(load_time);

@@ -4050,7 +4050,11 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
       *errorcode = 1;
       return 0;
     }
-#ifndef pp_SLICEFRAME
+#ifdef pp_SLICEFRAME
+    if(time_frame == ALL_FRAMES){
+      PRINTF("Loading %s(%s)\n", file, sd->label.shortlabel);
+    }
+#else
     if(use_tload_begin== 0 &&use_tload_end == 0 && sd->compression_type == UNCOMPRESSED){
       if(framesize <= 0){
         fprintf(stderr, "*** Error: frame size is 0 in slice file %s . \n", file);

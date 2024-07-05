@@ -2089,7 +2089,11 @@ FILE_SIZE ReadPart(char *file_arg, int ifile_arg, int load_flag, int *errorcode_
     THREADcontrol(partload_threads, THREAD_UNLOCK);
   }
   else{
+#ifdef pp_PARTFRAME
+    PRINTF("Loading %s\n", file_arg);
+#else
     PRINTF("Loading %s", file_arg);
+#endif
   }
   int have_particles;
 
@@ -2131,6 +2135,7 @@ FILE_SIZE ReadPart(char *file_arg, int ifile_arg, int load_flag, int *errorcode_
       PRINT_TIMER(finalize_part, "finalize particle time");
     }
     STOP_TIMER(load_time_local);
+#ifndef pp_PARTFRAME
     if(file_size_local>1000000000){
       PRINTF(" - %.1f GB/%.1f s\n", (float)file_size_local/1000000000., load_time_local);
     }
@@ -2140,6 +2145,7 @@ FILE_SIZE ReadPart(char *file_arg, int ifile_arg, int load_flag, int *errorcode_
     else{
       PRINTF(" - %.0f kB/%.1f s\n", (float)file_size_local/1000., load_time_local);
     }
+#endif
     update_part_bounds = 1;
   }
 #ifdef pp_PARTFRAME

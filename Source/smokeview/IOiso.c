@@ -1135,6 +1135,7 @@ FILE_SIZE ReadIso(const char *file, int ifile, int flag, int *geom_frame_index, 
   if(ifile>=0&&ifile<nisoinfo){
 
     isoi = isoinfo+ifile;
+    if(flag == UNLOAD && isoi->loaded == 0)return 0;
     if(flag==LOAD)PRINTF("Loading %s(%s)", file,isoi->surface_label.shortlabel);
       if(isoi->geomflag==1){
         return_filesize=ReadIsoGeom(ifile,flag,geom_frame_index,errorcode);
