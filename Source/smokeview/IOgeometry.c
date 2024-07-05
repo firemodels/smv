@@ -2498,7 +2498,7 @@ void *ReadAllGeom(void *arg){
     geomi->read_status = 1;
     THREADcontrol(readallgeom_threads, THREAD_UNLOCK);
 
-    ReadGeom(geomi, LOAD, GEOM_GEOM, NULL);
+    ReadGeom(geomi, NULL, 0, LOAD, GEOM_GEOM, NULL);
     THREADcontrol(readallgeom_threads, THREAD_LOCK);
     geomi->read_status = 2;
     THREADcontrol(readallgeom_threads, THREAD_UNLOCK);
@@ -2515,7 +2515,7 @@ void *ReadAllGeom(void *arg){
     geomi->read_status = 1;
     THREADcontrol(readallgeom_threads, THREAD_UNLOCK);
 
-    ReadGeom(geomi, LOAD, GEOM_CGEOM, NULL);
+    ReadGeom(geomi, NULL, 0, LOAD, GEOM_CGEOM, NULL);
     UpdateGeomTriangles(geomi, GEOM_STATIC);
     THREADcontrol(readallgeom_threads, THREAD_LOCK);
     geomi->read_status = 2;
@@ -3514,16 +3514,16 @@ void ClassifyGeom(geomdata *geomi,int *geom_frame_index){
 
 /* ------------------ ReadGeom ------------------------ */
 
-FILE_SIZE ReadGeom(geomdata *geomi, int load_flag, int type, int *geom_frame_index){
+FILE_SIZE ReadGeom(geomdata *geomi, unsigned char *buffer, int nbuffer, int load_flag, int type, int *geom_frame_index){
   FILE_m *stream;
   int version;
   int one=0;
   int count_read;
   FILE_SIZE return_filesize=0;
 
-  if(geomi->file==NULL)return 0;
-  stream = fopen_b(geomi->file,NULL,0,"rb");
-  if(stream==NULL)return 0;
+  if(geomi->file == NULL && buffer==NULL)return 0;
+  stream = fopen_b(geomi->file, buffer, nbuffer, "rb");
+  if(stream == NULL)return 0;
   FORTREAD_m(&one,4,1,stream);
   FORTREAD_m(&version, 4, 1, stream);
   if(count_read!=1)fclose_b(stream);
