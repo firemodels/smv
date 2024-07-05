@@ -3706,10 +3706,10 @@ void UpdateCurrentMesh(meshdata *meshi){
 
 void ClearBuffers(int mode){
   if(mode==DRAWSCENE){
-    glClearColor(backgroundcolor[0],backgroundcolor[1],backgroundcolor[2], 0.0f);
+    glClearColor(backgroundcolor[0],backgroundcolor[1],backgroundcolor[2], 1.0f);
   }
   else{
-    glClearColor((float)0.0,(float)0.0,(float)0.0, (float)0.0);
+    glClearColor((float)0.0,(float)0.0,(float)0.0, (float)1.0);
   }
 
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -3819,7 +3819,7 @@ void DoStereo(void){
     if(stereotype_frame==RIGHT_EYE||stereotype_frame==BOTH_EYES){
       glDrawBuffer(GL_BACK);
       glColorMask(GL_FALSE,GL_TRUE,GL_TRUE,GL_TRUE);
-      glClearColor(0.0, 1.0, 1.0, 0.0);
+      glClearColor(0.0, 1.0, 1.0, 1.0);
       glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 
       ShowScene(DRAWSCENE,VIEW_RIGHT,0,0,0,NULL);

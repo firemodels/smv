@@ -1400,6 +1400,7 @@ void UpdateRGBColors(int colorbar_index){
     meshi=meshinfo + i;
     vent_offset = 6*meshi->nbptrs;
     outline_offset = vent_offset + meshi->nvents;
+    if(meshi->faceinfo == NULL)continue;
     for(j=outline_offset;j<outline_offset+6;j++){
       facej = meshi->faceinfo + j;
       facej->color=foregroundcolor;

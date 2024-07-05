@@ -124,7 +124,7 @@ void InitMisc(void){
   glEnable(GL_NORMALIZE);
   if(cullfaces==1)glEnable(GL_CULL_FACE);
 
-  glClearColor(backgroundcolor[0],backgroundcolor[1],backgroundcolor[2], 0.0f);
+  glClearColor(backgroundcolor[0],backgroundcolor[1],backgroundcolor[2], 1.0f);
   glShadeModel(GL_SMOOTH);
   glDisable(GL_DITHER);
 
