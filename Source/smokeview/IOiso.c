@@ -530,10 +530,27 @@ FILE_SIZE ReadIsoGeom(int ifile, int load_flag, int *geom_frame_index, int *erro
   }
 #endif
 
+  unsigned char *buffer;
+  int nbuffer;
 #ifdef pp_ISOFRAME
   geomi->frameinfo = isoi->frameinfo;
+  bufferdata *bufferinfo;
+  if(geomi->frameinfo!=NULL){
+    bufferinfo = geomi->frameinfo->bufferinfo;
+    buffer = bufferinfo->buffer;
+    nbuffer = bufferinfo->nbuffer;
+  }
+  else{
+    buffer = NULL;
+    nbuffer = 0;
+  }
+  ReadGeom(geomi, buffer, nbuffer, load_flag, GEOM_ISO, geom_frame_index);
+  return_filesize = isoi->frameinfo->bytes_read;
+#else
+  buffer = NULL;
+  nbuffer = 0;
+  return_filesize = ReadGeom(geomi, buffer, nbuffer, load_flag, GEOM_ISO, geom_frame_index);
 #endif
-  return_filesize=ReadGeom(geomi,load_flag,GEOM_ISO,geom_frame_index);
 
   if(load_flag==UNLOAD){
     meshi->isofilenum = -1;
