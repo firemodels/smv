@@ -3908,7 +3908,7 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
       ReadVolSlice = 0;
       for(ii = 0; ii<nslice_loaded; ii++){
         slicedata *sdi;
-	int i;
+        int i;
 
         i = slice_loaded_list[ii];
         sdi = sliceinfo + i;
@@ -3916,7 +3916,7 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
       }
       for(ii = 0; ii<nslice_loaded; ii++){
         slicedata *sdi;
-	int i;
+      	int i;
 
         i = slice_loaded_list[ii];
         sdi = sliceinfo + i;
@@ -3929,7 +3929,7 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
       if(flag2 == 0){
         for(ii = 0; ii<nslice_loaded; ii++){
           slicedata *sdi;
-	  int i;
+          int i;
 
           i = slice_loaded_list[ii];
           sdi = sliceinfo + i;
