@@ -11,6 +11,15 @@
 
 #define FORTRAN_FILE 0
 #define C_FILE       1
+
+#ifndef RELOAD
+#define RELOAD      3
+#endif
+#ifndef ALL_FRAMES
+#define ALL_FRAMES       -1
+#endif
+
+
 typedef struct _framedata {
   char *file, *size_file;
   int nframes, frames_read, update, file_type;
@@ -29,6 +38,7 @@ typedef struct _framedata {
 
 // ----------------------- headers -----------------------
 
+framedata *FRAMELoadFrameData(framedata *frameinfo, char *file, char *size_file, int load_flag, int time_frame, void GetFrameInfo(bufferdata *bufferinfo, int *headersize, int **sizes, int *nsizes, int **subframeptrs, int *nsubframes, FILE_SIZE *filesizeptr));
 framedata *FRAMEInit(char *file, char *size_file, int file_type, void GetFrameInfo(bufferdata *bufferinfo, int *headersize, int **sizes, int *nsizes, int **subframeptrs, int *nsubframes, FILE_SIZE *filesize_ptr));
 void FRAMEFree(framedata *fi);
 #ifdef pp_THREAD

@@ -250,6 +250,44 @@ unsigned char *FRAMEGetSubFramePtr(framedata *fi, int iframe, int isubframe){
   return ptr;
 }
 
+/* ------------------ FRAMELoadFrameData ------------------------ */
+
+framedata *FRAMELoadFrameData(framedata *frameinfo, char *file, char *size_file, int load_flag, int time_frame, void GetFrameInfo(bufferdata *bufferinfo, int *headersize, int **sizes, int *nsizes, int **subframeptrs, int *nsubframes, FILE_SIZE *filesizeptr)){
+  int nthreads = 4;
+  int nframes_before, nframes_after;
+  float load_time;
+
+  if(frameinfo == NULL)frameinfo = FRAMEInit(file, size_file, FORTRAN_FILE, GetFrameInfo);
+  START_TIMER(load_time);
+  if(frameinfo->bufferinfo == NULL || load_flag != RELOAD){
+    frameinfo->bufferinfo = InitBufferData(file, 0);
+  }
+  nframes_before = frameinfo->nframes;
+  FRAMESetup(frameinfo);
+  if(time_frame != ALL_FRAMES)frameinfo->nframes = 1;
+  if(frameinfo != NULL){
+    int nread;
+
+    if(time_frame == ALL_FRAMES){
+      frameinfo->bufferinfo = File2Buffer(file, frameinfo->bufferinfo, DATA_MAPPED, frameinfo->headersize, ALLDATA_OFFSET, ALLDATA_NVALS, nthreads, &nread);
+    }
+    else{
+      frameinfo->bufferinfo = FRAMEReadFrame(frameinfo, DATA_AT_START, time_frame, 1, &nread);
+    }
+    frameinfo->bytes_read = nread;
+    if(nread > 0){
+      FRAMESetTimes(frameinfo, 0, frameinfo->nframes);
+      FRAMESetFramePtrs(frameinfo, 0, frameinfo->nframes);
+    }
+  }
+  frameinfo->update = 1;
+  nframes_after = frameinfo->nframes;
+  if(time_frame == ALL_FRAMES)frameinfo->frames_read = nframes_after - nframes_before;
+  STOP_TIMER(load_time);
+  if(frameinfo != NULL)frameinfo->load_time = load_time;
+  return frameinfo;
+}
+
 //******* The following routines define header and frame sizes for each file type 
 //        (3d smoke, slice, isosurface, and particle - boundary file routine not implemente)
 /* ------------------ GetSmoke3DFrameInfo ------------------------ */
