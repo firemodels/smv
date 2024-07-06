@@ -457,7 +457,7 @@ void GetIsoFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **framesptr
 //    WRITE(LU_ISO) ZERO, ZERO
 
 
-  stream = fopen_b(bufferinfo->file, bufferinfo->buffer, bufferinfo->nbuffer, "rb");
+  stream = fopen_b(bufferinfo->file, NULL, 0, "rb");
   if(stream == NULL){
     *nframesptr = 0;
     *framesptr = NULL;
