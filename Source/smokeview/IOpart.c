@@ -2038,42 +2038,8 @@ FILE_SIZE ReadPart(char *file_arg, int ifile_arg, int load_flag, int *errorcode_
   }
 
 #ifdef pp_PARTFRAME
-  if(parti->frameinfo == NULL)parti->frameinfo = FRAMEInit(file_arg, NULL, FORTRAN_FILE, GetPartFrameInfo);
-
-  float load_time;
-  START_TIMER(load_time);
-
-  if(parti->frameinfo->bufferinfo == NULL || load_flag != RELOAD){
-    parti->frameinfo->bufferinfo = InitBufferData(parti->file, 0);
-  }
-
-  int nframes_before, nframes_after;
-
-  nframes_before = parti->frameinfo->nframes;
-
-  FRAMESetup(parti->frameinfo);
-  if(parti->frameinfo != NULL){
-    int nread;
-
-    if(time_frame==ALL_FRAMES){
-      parti->frameinfo->bufferinfo = File2Buffer(parti->file, parti->frameinfo->bufferinfo, DATA_MAPPED, parti->frameinfo->headersize, ALLDATA_OFFSET, ALLDATA_NVALS, nframe_threads, &nread);
-    }
-    else{
-      parti->frameinfo->bufferinfo = FRAMEReadFrame(parti->frameinfo, DATA_AT_START, time_frame, 1, &nread);
-    }
-    parti->frameinfo->bytes_read = nread;
-    update_frame_output = 1;
-    FRAMESetTimes(parti->frameinfo, 0, parti->frameinfo->nframes);
-    FRAMESetFramePtrs(parti->frameinfo, 0, parti->frameinfo->nframes);
-   // FRAMEGetMinMax(sd->frameinfo, &valmin, &valmax);
-  }
+  parti->frameinfo = FRAMELoadFrameData(parti->frameinfo, parti->file, NULL, load_flag, time_frame, GetPartFrameInfo);
   update_frame_output = 1;
-  nframes_after = parti->frameinfo->nframes;
-  parti->frameinfo->frames_read = nframes_after - nframes_before;
-  parti->frameinfo->update = 1;
-
-  STOP_TIMER(load_time);
-  if(parti->frameinfo != NULL)parti->frameinfo->load_time = load_time;
 #endif
 
   lenfile_local = strlen(file_arg);
