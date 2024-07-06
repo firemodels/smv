@@ -1522,7 +1522,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
   }
 
 #ifdef pp_BOUNDFRAME
-  patchi->frameinfo = FRAMELoadFrameData(patchi->frameinfo, patchi->file, patchi->size_file, load_flag, time_frame, GetBoundaryFrameInfo);
+  patchi->frameinfo = FRAMELoadFrameData(patchi->frameinfo, patchi->file, load_flag, time_frame, GetBoundaryFrameInfo);
   patchi->ntimes = patchi->frameinfo->nframes;
   NewMemory((void **)&meshi->patch_times, patchi->ntimes * sizeof(float));
   memcpy(meshi->patch_times, patchi->frameinfo->times, patchi->ntimes*sizeof(float));

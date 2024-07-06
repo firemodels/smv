@@ -20,7 +20,7 @@
 
   /* ------------------ FRAMEInit ------------------------ */
 
-framedata *FRAMEInit(char *file, char *size_file, int file_type, void GetFrameInfo(bufferdata *bufferinfo, int *headersize, int **sizes, int *nsizes, int **subframeptrs, int *nsubframes, FILE_SIZE *filesizeptr)){
+framedata *FRAMEInit(char *file, int file_type, void GetFrameInfo(bufferdata *bufferinfo, int *headersize, int **sizes, int *nsizes, int **subframeptrs, int *nsubframes, FILE_SIZE *filesizeptr)){
   framedata *frame=NULL;
 
   NewMemory((void **)&frame, sizeof(framedata));
@@ -30,13 +30,6 @@ framedata *FRAMEInit(char *file, char *size_file, int file_type, void GetFrameIn
   else{
     FREEMEMORY(frame);
     return NULL;
-  }
-  if(size_file != NULL && strlen(size_file) > 0){
-    NewMemory((void **)&frame->size_file, strlen(size_file) + 1);
-    strcpy(frame->size_file, size_file);
-  }
-  else{
-    frame->size_file=NULL;
   }
   // fortran files contain an extra 4 bytes at the beginning and end of each record
   if(file_type != C_FILE)file_type = FORTRAN_FILE;
@@ -252,12 +245,12 @@ unsigned char *FRAMEGetSubFramePtr(framedata *fi, int iframe, int isubframe){
 
 /* ------------------ FRAMELoadFrameData ------------------------ */
 
-framedata *FRAMELoadFrameData(framedata *frameinfo, char *file, char *size_file, int load_flag, int time_frame, void GetFrameInfo(bufferdata *bufferinfo, int *headersize, int **sizes, int *nsizes, int **subframeptrs, int *nsubframes, FILE_SIZE *filesizeptr)){
+framedata *FRAMELoadFrameData(framedata *frameinfo, char *file, int load_flag, int time_frame, void GetFrameInfo(bufferdata *bufferinfo, int *headersize, int **sizes, int *nsizes, int **subframeptrs, int *nsubframes, FILE_SIZE *filesizeptr)){
   int nthreads = 4;
   int nframes_before, nframes_after;
   float load_time;
 
-  if(frameinfo == NULL)frameinfo = FRAMEInit(file, size_file, FORTRAN_FILE, GetFrameInfo);
+  if(frameinfo == NULL)frameinfo = FRAMEInit(file, FORTRAN_FILE, GetFrameInfo);
   START_TIMER(load_time);
   if(frameinfo->bufferinfo == NULL || load_flag != RELOAD){
     frameinfo->bufferinfo = InitBufferData(file, 0);

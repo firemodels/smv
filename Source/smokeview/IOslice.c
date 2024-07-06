@@ -3982,7 +3982,7 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
 // load only portion of slice file written to since last time it was loaded (load_flag=RELOAD)
 
 #ifdef pp_SLICEFRAME
-    sd->frameinfo = FRAMELoadFrameData(sd->frameinfo, sd->file, sd->size_file, load_flag, time_frame, GetSliceFrameInfo);
+    sd->frameinfo = FRAMELoadFrameData(sd->frameinfo, sd->file, load_flag, time_frame, GetSliceFrameInfo);
     sd->ntimes = sd->frameinfo->nframes;
     NewMemory(( void ** )&sd->times, sd->ntimes*sizeof(float));
     memcpy(sd->times, sd->frameinfo->times, sd->ntimes*sizeof(float));

@@ -489,7 +489,7 @@ FILE_SIZE ReadIsoGeom(int ifile, int load_flag, int *geom_frame_index, int *erro
   meshi->showlevels = NULL;
   meshi->isolevels = NULL;
 #ifdef pp_ISOFRAME
-  isoi->frameinfo = FRAMELoadFrameData(isoi->frameinfo, isoi->file, NULL, load_flag, time_frame, GetIsoFrameInfo);
+  isoi->frameinfo = FRAMELoadFrameData(isoi->frameinfo, isoi->file, load_flag, time_frame, GetIsoFrameInfo);
   update_frame_output = 1;
 #endif
 

@@ -38,8 +38,8 @@ typedef struct _framedata {
 
 // ----------------------- headers -----------------------
 
-framedata *FRAMELoadFrameData(framedata *frameinfo, char *file, char *size_file, int load_flag, int time_frame, void GetFrameInfo(bufferdata *bufferinfo, int *headersize, int **sizes, int *nsizes, int **subframeptrs, int *nsubframes, FILE_SIZE *filesizeptr));
-framedata *FRAMEInit(char *file, char *size_file, int file_type, void GetFrameInfo(bufferdata *bufferinfo, int *headersize, int **sizes, int *nsizes, int **subframeptrs, int *nsubframes, FILE_SIZE *filesize_ptr));
+framedata *FRAMELoadFrameData(framedata *frameinfo, char *file, int load_flag, int time_frame, void GetFrameInfo(bufferdata *bufferinfo, int *headersize, int **sizes, int *nsizes, int **subframeptrs, int *nsubframes, FILE_SIZE *filesizeptr));
+framedata *FRAMEInit(char *file, int file_type, void GetFrameInfo(bufferdata *bufferinfo, int *headersize, int **sizes, int *nsizes, int **subframeptrs, int *nsubframes, FILE_SIZE *filesize_ptr));
 void FRAMEFree(framedata *fi);
 #ifdef pp_THREAD
 void FRAMESetNThreads(framedata *fi, int nthreads);
