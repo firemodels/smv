@@ -1522,46 +1522,11 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
   }
 
 #ifdef pp_BOUNDFRAME
-  if(patchi->frameinfo == NULL)patchi->frameinfo = FRAMEInit(patchi->file, patchi->size_file, FORTRAN_FILE, GetBoundaryFrameInfo);
-
-  float load_time;
-  START_TIMER(load_time);
-
-  if(patchi->frameinfo->bufferinfo == NULL || load_flag != RELOAD){
-    patchi->frameinfo->bufferinfo = InitBufferData(patchi->file, 0);
-  }
-
-  int nframes_before, nframes_after;
-
-  nframes_before = patchi->frameinfo->nframes;
-  FRAMESetup(patchi->frameinfo);
-  int nread=0;
-
-  if(patchi->frameinfo != NULL){
-    if(time_frame==ALL_FRAMES){
-      patchi->frameinfo->bufferinfo = File2Buffer(patchi->file, patchi->frameinfo->bufferinfo, DATA_MAPPED, patchi->frameinfo->headersize, ALLDATA_OFFSET, ALLDATA_NVALS, nframe_threads, &nread);
-    }
-    else{
-      patchi->frameinfo->bufferinfo = FRAMEReadFrame(patchi->frameinfo, DATA_AT_START, time_frame, 1, &nread);
-    }
-    update_frame_output = 1;
-    if(nread > 0){
-      FRAMESetTimes(patchi->frameinfo, 0, patchi->frameinfo->nframes);
-      FRAMESetFramePtrs(patchi->frameinfo, 0, patchi->frameinfo->nframes);
-      patchi->ntimes = patchi->frameinfo->nframes;
-      NewMemory((void **)&meshi->patch_times, patchi->ntimes * sizeof(float));
-      memcpy(meshi->patch_times, patchi->frameinfo->times, patchi->ntimes*sizeof(float));
-      FRAMEGetMinMax(patchi->frameinfo);
-    }
-  }
-  nframes_after = patchi->frameinfo->nframes;
-  patchi->frameinfo->frames_read = nframes_after - nframes_before;
-  patchi->frameinfo->bytes_read = nread;
+  patchi->frameinfo = FRAMELoadFrameData(patchi->frameinfo, patchi->file, patchi->size_file, load_flag, time_frame, GetBoundaryFrameInfo);
+  patchi->ntimes = patchi->frameinfo->nframes;
+  NewMemory((void **)&meshi->patch_times, patchi->ntimes * sizeof(float));
+  memcpy(meshi->patch_times, patchi->frameinfo->times, patchi->ntimes*sizeof(float));
   update_frame_output = 1;
-  patchi->frameinfo->update = 1;
-
-  STOP_TIMER(load_time);
-  if(patchi->frameinfo != NULL)patchi->frameinfo->load_time = load_time;
 #endif
 
   if(ifile>=0&&ifile<npatchinfo){
