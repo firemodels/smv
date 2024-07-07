@@ -16,7 +16,7 @@
 #define RELOAD      3
 #endif
 #ifndef ALL_FRAMES
-#define ALL_FRAMES       -1
+#define ALL_FRAMES -1
 #endif
 
 
@@ -38,8 +38,8 @@ typedef struct _framedata {
 
 // ----------------------- headers -----------------------
 
-framedata *FRAMELoadFrameData(framedata *frameinfo, char *file, int load_flag, int time_frame, void GetFrameInfo(bufferdata *bufferinfo, int *headersize, int **sizes, int *nsizes, int **subframeptrs, int *nsubframes, FILE_SIZE *filesizeptr));
-framedata *FRAMEInit(char *file, int file_type, void GetFrameInfo(bufferdata *bufferinfo, int *headersize, int **sizes, int *nsizes, int **subframeptrs, int *nsubframes, FILE_SIZE *filesize_ptr));
+framedata *FRAMELoadFrameData(framedata *frameinfo, char *file, int load_flag, int time_frame, int file_type,
+                              void GetFrameInfo(bufferdata *bufferinfo, int *headersize, int **sizes, int *nsizes, int **subframeptrs, int *nsubframes, FILE_SIZE *filesizeptr));
 void FRAMEFree(framedata *fi);
 #ifdef pp_THREAD
 void FRAMESetNThreads(framedata *fi, int nthreads);
@@ -47,11 +47,6 @@ void FRAMESetNThreads(framedata *fi, int nthreads);
 unsigned char *FRAMEGetFramePtr(framedata *fi, int iframe);
 unsigned char *FRAMEGetSubFramePtr(framedata *fi, int iframe, int isubframe);
 int FRAMEGetMinMax(framedata *fi);
-bufferdata *FRAMEReadFrame(framedata *fi, int option, int iframe, int nframes, int *nread);
-void FRAMESetFramePtrs(framedata * fi, int iframe, int nframes);
-void FRAMESetTimes(framedata *fi, int iframe, int nframes);
-void FRAMESetup(framedata *fi);
-void FRAMESetupVals(framedata *fi);
 
 void GetBoundaryFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **framesptr, int *nframesptr, int **subframeoffsetptrs, int *nsubframeoffsets, FILE_SIZE *filesizeptr);
 void GetIsoFrameInfo(     bufferdata *bufferinfo, int *headersizeptr, int **framesptr, int *nframesptr, int **subframeoffsetptrs, int *nsubframeoffsets, FILE_SIZE *filesizeptr);

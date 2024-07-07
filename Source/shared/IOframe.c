@@ -64,7 +64,7 @@ void FRAMESetup(framedata *fi){
   int i;
   FILE_SIZE filesize;
   int headersize;
-  int *subframeoffsets, nsubframes;
+  int *subframeoffsets=NULL, nsubframes=0;
 
   fi->GetFrameInfo(fi->bufferinfo, &headersize, &framesizes, &nframes, &subframeoffsets, &nsubframes, &filesize);
   if(nframes <= 0)return;
@@ -245,12 +245,13 @@ unsigned char *FRAMEGetSubFramePtr(framedata *fi, int iframe, int isubframe){
 
 /* ------------------ FRAMELoadFrameData ------------------------ */
 
-framedata *FRAMELoadFrameData(framedata *frameinfo, char *file, int load_flag, int time_frame, void GetFrameInfo(bufferdata *bufferinfo, int *headersize, int **sizes, int *nsizes, int **subframeptrs, int *nsubframes, FILE_SIZE *filesizeptr)){
+framedata *FRAMELoadFrameData(framedata *frameinfo, char *file, int load_flag, int time_frame, int file_type, void GetFrameInfo(bufferdata *bufferinfo, int *headersize, int **sizes, int *nsizes, int **subframeptrs, int *nsubframes, FILE_SIZE *filesizeptr)){
   int nthreads = 4;
   int nframes_before, nframes_after;
   float load_time;
 
-  if(frameinfo == NULL)frameinfo = FRAMEInit(file, FORTRAN_FILE, GetFrameInfo);
+  if(file_type != C_FILE)file_type = FORTRAN_FILE;
+  if(frameinfo == NULL)frameinfo = FRAMEInit(file, file_type, GetFrameInfo);
   START_TIMER(load_time);
   if(frameinfo->bufferinfo == NULL || load_flag != RELOAD){
     frameinfo->bufferinfo = InitBufferData(file, 0);
@@ -423,7 +424,13 @@ void GetSliceFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **framesp
   int nxsp, nysp, nzsp;
   FILE_SIZE filesize;
   int returncode;
+  int *subframeoffsets = NULL;
+  int nsubframes;
   
+  nsubframes = 1;
+  NewMemory((void **)&subframeoffsets, nsubframes * sizeof(int));
+  subframeoffsets[0] = 0;
+
   stream = fopen_b(bufferinfo->file, bufferinfo->buffer, bufferinfo->nbuffer, "rb");
   if(stream == NULL){
     *nframesptr = 0;
@@ -462,10 +469,12 @@ void GetSliceFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **framesp
   for(i=0;i< nframes;i++){
     frames[i] = framesize;
   }
-  *headersizeptr = headersize;
-  *framesptr  = frames;
-  *nframesptr = nframes;
-  *filesizeptr = filesize;
+  *headersizeptr      = headersize;
+  *framesptr          = frames;
+  *nframesptr         = nframes;
+  *filesizeptr        = filesize;
+  *subframeoffsetsptr = subframeoffsets;
+  *nsubframesptr      = nsubframes;
 }
 
 /* ------------------ GetIsoFrameInfo ------------------------ */
