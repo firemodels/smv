@@ -113,7 +113,7 @@ void FRAMEFree(framedata *fi){
 int FRAMEGetMinMax(framedata *fi){
   int i;
   float valmin = 1.0, valmax = 0.0;
-  int returnval = 0, nvals;
+  int returnval = 0;
 
   for(i=0; i<fi->nframes; i++){
     int j;
@@ -125,7 +125,6 @@ int FRAMEGetMinMax(framedata *fi){
       rvals = (float *)FRAMEGetSubFramePtr(fi, i, j);
       if(rvals == NULL || fi->framesizes[i] == 0)continue;
       returnval = 1;
-      nvals = (fi->framesizes[i] - 20) / 4;
       for(k = 0;k < fi->subframesizes[j];k++){
         float val;
 
