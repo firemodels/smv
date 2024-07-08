@@ -2554,6 +2554,7 @@ void TextureShowMenu(int value){
       }
     }
   }
+  GLUIUpdateTextureDisplay();
   updatemenu=1;
   GLUTPOSTREDISPLAY;
 }
@@ -9359,8 +9360,10 @@ static int menu_count=0;
       char menulabel[1024];
 
       texti = textureinfo + i;
-      if(texti->loaded==0||texti->used==0||terrain_textures==NULL)continue;
-      if(texti>=terrain_textures&&texti<terrain_textures+nterrain_textures)continue;
+      if(texti->loaded == 0 || texti->used == 0)continue;
+      if(terrain_textures != NULL){
+        if(texti >= terrain_textures && texti < terrain_textures + nterrain_textures)continue;
+      }
       ntextures_used++;
       if(texti->display==1){
         STRCPY(menulabel,"*");
