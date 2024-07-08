@@ -129,6 +129,8 @@ GLUI_Checkbox *CHECKBOX_shownorth = NULL;
 GLUI_Checkbox *CHECKBOX_ticks_inside = NULL;
 GLUI_Checkbox *CHECKBOX_ticks_outside = NULL;
 GLUI_Checkbox *CHECKBOX_labels_fds_title = NULL;
+GLUI_Checkbox *CHECKBOX_texture_showall = NULL;
+GLUI_Checkbox *CHECKBOX_texture_hideall = NULL;
 
 GLUI_Rollout *ROLLOUT_LB_tick0 = NULL;
 GLUI_Rollout *ROLLOUT_font=NULL;
@@ -167,6 +169,7 @@ GLUI_Panel *PANEL_LB_tick = NULL;
 GLUI_Panel *PANEL_linewidth = NULL;
 GLUI_Panel *PANEL_offset = NULL;
 GLUI_Panel *PANEL_surfs = NULL;
+GLUI_Panel *PANEL_texture_display = NULL;
 
 GLUI_RadioGroup *RADIO_show_geom_boundingbox = NULL;
 GLUI_RadioGroup *RADIO_timebar_overlap = NULL;
@@ -185,6 +188,9 @@ GLUI_Button *BUTTON_label_1=NULL;
 GLUI_Button *BUTTON_label_2=NULL;
 GLUI_Button *BUTTON_label_3=NULL;
 GLUI_Button *BUTTON_label_4=NULL;
+
+#define TEXTURE_SHOWALL 0
+#define TEXTURE_HIDEALL 1
 
 #define COLORBAR_EXTREME_RGB 15
 #define COLORBAR_EXTREME     16
@@ -659,6 +665,55 @@ void SurfaceCB(int var){
   }
 }
 
+/* ------------------ GLUIUpdateTextureDisplay ------------------------ */
+
+extern "C" void GLUIUpdateTextureDisplay(void){
+  texturedata *texti;
+  int i;
+  int showall = 1, hideall = 1, update=0;
+
+  for(i = 0;i < ntextureinfo;i++){
+    texti = textureinfo + i;
+    if(texti->loaded == 0 || texti->used == 0)continue;
+    if(texti->display == 0)showall=0;
+    if(texti->display == 1)hideall = 0;
+    update = 1;
+  }
+  if(update==1){
+    if(CHECKBOX_texture_hideall!=NULL)CHECKBOX_texture_hideall->set_int_val(hideall);
+    if(CHECKBOX_texture_showall!=NULL)CHECKBOX_texture_showall->set_int_val(showall);
+  }
+
+}
+
+/* ------------------ GLUITextureCB ------------------------ */
+
+extern "C" void GLUITextureCB(int var){
+  switch(var){
+    case TEXTURE_SHOWALL:
+      if(texture_showall==1){
+        TextureShowMenu(MENU_TEXTURE_SHOWALL);
+        if(texture_hideall==1){
+          texture_hideall = 0;
+          if(CHECKBOX_texture_hideall!=NULL)CHECKBOX_texture_hideall->set_int_val(0);
+        }
+      }
+      break;
+    case TEXTURE_HIDEALL:
+      if(texture_hideall==1){
+        TextureShowMenu(MENU_TEXTURE_HIDEALL);
+        if(texture_showall==1){
+          texture_showall = 0;
+          if(CHECKBOX_texture_showall!=NULL)CHECKBOX_texture_showall->set_int_val(0);
+        }
+      }
+      break;
+    default:
+      assert(FFALSE);
+      break;
+  }
+}
+
 /* ------------------ GLUIDisplaySetup ------------------------ */
 
 extern "C" void GLUIDisplaySetup(int main_window){
@@ -833,6 +888,9 @@ extern "C" void GLUIDisplaySetup(int main_window){
     GLUILabelsCB(LABELS_transparent);
   }
 
+  PANEL_texture_display = glui_labels->add_panel_to_panel(PANEL_gen3, _("Textures"));
+  CHECKBOX_texture_showall = glui_labels->add_checkbox_to_panel(PANEL_texture_display, _("show all"), &texture_showall, TEXTURE_SHOWALL, GLUITextureCB);
+  CHECKBOX_texture_hideall = glui_labels->add_checkbox_to_panel(PANEL_texture_display, _("hide all"), &texture_hideall, TEXTURE_HIDEALL, GLUITextureCB);
 
   ROLLOUT_light2 = glui_labels->add_rollout("Light",false,LIGHT_ROLLOUT,DisplayRolloutCB);
   INSERT_ROLLOUT(ROLLOUT_light2, glui_labels);
@@ -1138,7 +1196,6 @@ extern "C" void GLUIUpdateGeomBoundingBox(void){
 }
 
 /* ------------------ GLUILabelsCB ------------------------ */
-
 
 extern "C" void GLUILabelsCB(int var){
   updatemenu=1;

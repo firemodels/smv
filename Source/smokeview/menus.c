@@ -2554,6 +2554,7 @@ void TextureShowMenu(int value){
       }
     }
   }
+  GLUIUpdateTextureDisplay();
   updatemenu=1;
   GLUTPOSTREDISPLAY;
 }
