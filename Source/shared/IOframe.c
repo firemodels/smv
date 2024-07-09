@@ -155,27 +155,36 @@ void FRAMESetNThreads(framedata *fi, int nthreads){
 
 /* ------------------ FRAMEReadFrame ------------------------ */
 
-bufferdata *FRAMEReadFrame(framedata *fi, int option, int iframe, int nframes, int *nreadptr){
-  FILE_SIZE total_size, offset;
-  bufferdata *bufferinfo, *bufferinfoptr;
+bufferdata *FRAMEReadFrame(framedata *fi, int iframe, int nframes, int *nreadptr){
+  FILE_SIZE total_size;
+  bufferdata *bufferinfo;
   unsigned char *buffer;
-  int i, nread, nframe_threads = 4;
+  int i, nread;
+  FILE *stream;
+
+  if(fi == NULL)return NULL;
+  stream = fopen(fi->file, "rb");
+  if(stream == NULL)return NULL;
 
   total_size = 0;
   for(i=0;i<nframes;i++){
     total_size += fi->framesizes[iframe+i];
   }
-  offset = fi->offsets[iframe];
+
   NewMemory((void **)&bufferinfo, sizeof(bufferdata));
-  NewMemory((void **)&buffer, fi->headersize+total_size);
+  NewMemory((void **)&buffer,     fi->headersize+total_size);
   bufferinfo->file    = fi->file;
   bufferinfo->buffer  = buffer;
   bufferinfo->nbuffer = total_size;
   fi->frames_read     = nframes;
   fi->update          = 1;
-  bufferinfoptr       = File2Buffer(fi->file, bufferinfo, option, fi->headersize, offset, total_size, nframe_threads, &nread);
+  
+  fread(buffer, 1, fi->headersize, stream);
+  fseek(stream, fi->offsets[iframe], SEEK_SET);
+  nread = fread(buffer+fi->headersize, 1, total_size, stream);
+  bufferinfo->nfile  = bufferinfo->nbuffer;
   *nreadptr = nread;
-  return bufferinfoptr;
+  return bufferinfo;
 }
 
 /* ------------------ FRAMESetTimes ------------------------ */
@@ -251,33 +260,26 @@ unsigned char *FRAMEGetSubFramePtr(framedata *fi, int iframe, int isubframe){
 /* ------------------ FRAMELoadFrameData ------------------------ */
 
 framedata *FRAMELoadFrameData(framedata *frameinfo, char *file, int load_flag, int time_frame, int file_type, void GetFrameInfo(bufferdata *bufferinfo, int *headersize, int **sizes, int *nsizes, int **subframeptrs, int **subframesizesptr, int *nsubframes, FILE_SIZE *filesizeptr)){
-  int nthreads = 4;
-  int nframes_before, nframes_after;
+  int nframes_before, nframes_after, nread;
   float load_time;
 
   if(file_type != C_FILE)file_type = FORTRAN_FILE;
   if(frameinfo == NULL)frameinfo = FRAMEInit(file, file_type, GetFrameInfo);
+
   START_TIMER(load_time);
   if(frameinfo->bufferinfo == NULL || load_flag != RELOAD){
-    frameinfo->bufferinfo = InitBufferData(file, 0);
+    if(frameinfo->bufferinfo!=NULL){
+      FreeBufferInfo(frameinfo->bufferinfo);
+    }
+    frameinfo->bufferinfo = InitBufferData(file);
   }
   nframes_before = frameinfo->nframes;
+  frameinfo->bufferinfo = File2Buffer(file, frameinfo->bufferinfo, &nread);
   FRAMESetup(frameinfo);
-  if(time_frame != ALL_FRAMES)frameinfo->nframes = 1;
-  if(frameinfo != NULL){
-    int nread;
-
-    if(time_frame == ALL_FRAMES){
-      frameinfo->bufferinfo = File2Buffer(file, frameinfo->bufferinfo, DATA_MAPPED, frameinfo->headersize, ALLDATA_OFFSET, ALLDATA_NVALS, nthreads, &nread);
-    }
-    else{
-      frameinfo->bufferinfo = FRAMEReadFrame(frameinfo, DATA_AT_START, time_frame, 1, &nread);
-    }
-    frameinfo->bytes_read = nread;
-    if(nread > 0){
-      FRAMESetTimes(frameinfo, 0, frameinfo->nframes);
-      FRAMESetFramePtrs(frameinfo, 0, frameinfo->nframes);
-    }
+  frameinfo->bytes_read = nread;
+  if(nread > 0){
+    FRAMESetTimes(    frameinfo, 0, frameinfo->nframes);
+    FRAMESetFramePtrs(frameinfo, 0, frameinfo->nframes);
   }
   frameinfo->update = 1;
   nframes_after = frameinfo->nframes;
@@ -508,7 +510,7 @@ void GetIsoFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **framesptr
 //    WRITE(LU_ISO) ZERO, ZERO
 
 
-  stream = fopen_b(bufferinfo->file, NULL, 0, "rb");
+  stream = fopen_b(bufferinfo->file, bufferinfo->buffer, bufferinfo->nbuffer, "rb");
   if(stream == NULL){
     *nframesptr = 0;
     *framesptr = NULL;

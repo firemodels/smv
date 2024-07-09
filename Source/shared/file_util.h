@@ -40,8 +40,9 @@ typedef struct {
 
 typedef struct {
   char *file;
-  unsigned char *buffer;
-  FILE_SIZE nbuffer;
+  unsigned char *buffer; // copy of file
+  FILE_SIZE nbuffer;     // size of buffer
+  FILE_SIZE nfile;       // amount of data in buffer
 } bufferdata;
 
 // vvvvvvvvvvvvvvvvvvvvvvvv preprocessing directives vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
@@ -123,10 +124,8 @@ int FileExistsOrig(char *filename);
 // vvvvvvvvvvvvvvvvvvvvvvvv headers vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 EXTERNCPP int MakeFile(char *file, int size);
 EXTERNCPP void FreeBufferInfo(bufferdata * bufferinfoptr);
-EXTERNCPP bufferdata *InitBufferData(char *file, int flag);
-EXTERNCPP bufferdata *File2Buffer(char *file, bufferdata * bufferinfo, int option,
-                                  FILE_SIZE header_size_arg, FILE_SIZE offset_arg, FILE_SIZE nbuffer_arg,
-                                  int nthreads, int *nreadptr);
+EXTERNCPP bufferdata *InitBufferData(char *file);
+EXTERNCPP bufferdata *File2Buffer(char *file, bufferdata *bufferinfo, int *nreadptr);
 EXTERNCPP FILE_SIZE fread_p(char *file, unsigned char *buffer, FILE_SIZE offset, FILE_SIZE nchars, int nthreads);
 EXTERNCPP void FileErase(char *file);
 EXTERNCPP void GetProgFullPath(char *progexe, int maxlen_progexe);

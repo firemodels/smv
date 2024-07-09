@@ -489,30 +489,27 @@ FILE_SIZE ReadIsoGeom(int ifile, int load_flag, int *geom_frame_index, int *erro
   meshi->showlevels = NULL;
   meshi->isolevels = NULL;
 #ifdef pp_ISOFRAME
-  isoi->frameinfo = FRAMELoadFrameData(isoi->frameinfo, isoi->file, load_flag, time_frame, FORTRAN_FILE, GetIsoFrameInfo);
-  update_frame_output = 1;
-#endif
+  unsigned char *buffer=NULL;
+  int nbuffer=0;
 
-  unsigned char *buffer;
-  int nbuffer;
-#ifdef pp_ISOFRAME
-  geomi->frameinfo = isoi->frameinfo;
-  bufferdata *bufferinfo;
-  if(geomi->frameinfo!=NULL){
-    bufferinfo = geomi->frameinfo->bufferinfo;
-    buffer = bufferinfo->buffer;
-    nbuffer = bufferinfo->nbuffer;
+  if(load_flag != UNLOAD){
+    isoi->frameinfo = FRAMELoadFrameData(isoi->frameinfo, isoi->file, load_flag, time_frame, FORTRAN_FILE, GetIsoFrameInfo);
+    update_frame_output = 1;
+
+    geomi->frameinfo = isoi->frameinfo;
+    if(isoi->frameinfo != NULL){
+      buffer  = isoi->frameinfo->bufferinfo->buffer;
+      nbuffer = isoi->frameinfo->bufferinfo->nbuffer;
+    }
+    else{
+      buffer  = NULL;
+      nbuffer = 0;
+    }
   }
-  else{
-    buffer = NULL;
-    nbuffer = 0;
-  }
-  ReadGeom(geomi, buffer, nbuffer, load_flag, GEOM_ISO, geom_frame_index);
-  return_filesize = isoi->frameinfo->bytes_read;
-#else
-  buffer = NULL;
-  nbuffer = 0;
   return_filesize = ReadGeom(geomi, buffer, nbuffer, load_flag, GEOM_ISO, geom_frame_index);
+  if(load_flag != UNLOAD && isoi->frameinfo != NULL)return_filesize = isoi->frameinfo->bytes_read;
+#else
+  return_filesize = ReadGeom(geomi, NULL, 0, load_flag, GEOM_ISO, geom_frame_index);
 #endif
 
   if(load_flag==UNLOAD){

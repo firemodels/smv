@@ -21,7 +21,8 @@
 
 
 typedef struct _framedata {
-  char *file, *size_file;
+  char *file;
+  unsigned char *header, *frames, **frameptrs;
   int nframes, frames_read, update, file_type;
 #ifdef pp_THREAD
   int nthreads;
@@ -29,7 +30,6 @@ typedef struct _framedata {
   int headersize, *framesizes;
   int *subframeoffsets, *subframesizes, nsubframes;
   FILE_SIZE *offsets, filesize, bytes_read;
-  unsigned char *header, *frames, **frameptrs;
   bufferdata *bufferinfo;
   float *times, load_time, total_time;
   float valmin, valmax;

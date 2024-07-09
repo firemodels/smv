@@ -652,7 +652,7 @@ void PrintTime(const char *filepath, int line, float *timer, const char *label, 
 
 /* ------------------ InitBufferData ------------------------ */
 
-bufferdata *InitBufferData(char *file, int flag){
+bufferdata *InitBufferData(char *file){
   bufferdata *buffinfo = NULL;
   unsigned char *buffer = NULL;
   int nbuffer = 0;
@@ -660,79 +660,10 @@ bufferdata *InitBufferData(char *file, int flag){
   NewMemory((void **)&buffinfo, sizeof(bufferdata));
   buffinfo->file = file;
   nbuffer = GetFileSizeSMV(file);
-  if(flag == 1){
-    NewMemory((void **)&buffer, nbuffer * sizeof(unsigned char));
-  }
-  buffinfo->buffer  = buffer;
-  buffinfo->nbuffer = nbuffer;
-  return buffinfo;
-}
-
-/* ------------------ File2Buffer ------------------------ */
-
-bufferdata *File2Buffer(char *file, bufferdata *bufferinfo, int option,
-                        FILE_SIZE header_size_arg, FILE_SIZE offset_arg, FILE_SIZE nbuffer_arg, 
-                        int nthreads, int *nreadptr){
-  unsigned char *buffer;
-  FILE_SIZE nfile, offset_buffer = 0, offset_file = 0, nread, delta;
-  bufferdata *buffinfo=NULL;
-
-  *nreadptr = 0;
-  if(file==NULL || strlen(file)==0 || FileExistsOrig(file) == 0)return NULL;
-
-  INIT_PRINT_TIMER(timer_file2buffer);
-  if(nbuffer_arg > 0){
-    offset_file   = offset_arg;
-    offset_buffer = header_size_arg;
-    delta         = nbuffer_arg;
-    buffinfo      = bufferinfo;
-  }
-  else{
-    if(bufferinfo == NULL){
-      buffinfo = InitBufferData(file, 1);
-      offset_file       = 0;
-      offset_buffer     = offset_file;
-      delta             = buffinfo->nbuffer;
-    }
-    else{
-      nfile = GetFileSizeSMV(file);
-      if(bufferinfo->buffer!=NULL&&nfile == bufferinfo->nbuffer){
-        PRINT_TIMER(timer_file2buffer, "File2Buffer");
-        *nreadptr = 0;
-        return bufferinfo;
-      }
-      buffer   = bufferinfo->buffer;
-      if(buffer == NULL){
-        NewMemory((void **)&buffer, nfile * sizeof(unsigned char));
-        offset_file   = 0;
-        offset_buffer = offset_file;
-      }
-      else{
-        ResizeMemory((void **)&buffer, nfile * sizeof(unsigned char));
-        offset_file   = bufferinfo->nbuffer;
-        offset_buffer = offset_file;
-      }
-      bufferinfo->buffer  = buffer;
-      delta               = nfile - offset_file;
-      bufferinfo->nbuffer = nfile;
-      buffinfo = bufferinfo;
-    }
-  }
-//  nread = fread_p(file, buffer, offset, delta, nthreads);
-
-  FILE *stream;
-  stream = fopen(file, "rb");
-  fseek(stream, offset_file, SEEK_SET);
-  nread = fread(buffinfo->buffer+offset_buffer, 1, delta, stream);
-  if(stream != NULL){
-    fclose(stream);
-  }
-  if(nread != delta){
-    FREEMEMORY(buffer);
-    FREEMEMORY(buffinfo);
-  }
-  PRINT_TIMER(timer_file2buffer, "File2Buffer");
-  *nreadptr = nread;
+  NewMemory((void **)&buffer, nbuffer);
+  buffinfo->buffer   = buffer;
+  buffinfo->nbuffer  = nbuffer;
+  buffinfo->nfile    = 0;
   return buffinfo;
 }
 
@@ -742,6 +673,71 @@ void FreeBufferInfo(bufferdata *bufferinfo){
   if(bufferinfo == NULL)return;
   FREEMEMORY(bufferinfo->buffer);
   FREEMEMORY(bufferinfo);
+}
+
+/* ------------------ File2Buffer ------------------------ */
+
+bufferdata *File2Buffer(char *file, bufferdata *bufferinfo,  int *nreadptr){
+  FILE_SIZE nfile, offset_buffer = 0, offset_file = 0, nread_actual, nread_try;
+
+  *nreadptr = 0;
+  if(file==NULL || strlen(file)==0 || FileExistsOrig(file) == 0)return NULL;
+
+  INIT_PRINT_TIMER(timer_file2buffer);
+  if(bufferinfo == NULL){ // read entire file
+    bufferinfo     = InitBufferData(file);
+    offset_file    = 0;
+    offset_buffer  = 0;
+    nread_try      = bufferinfo->nbuffer;
+  }
+  else{ // read in part of file that was not read in previously
+    unsigned char *buffer;
+
+    buffer  = bufferinfo->buffer;
+    nfile   = GetFileSizeSMV(file);
+    if(nfile == 0){
+      FreeBufferInfo(bufferinfo);
+      *nreadptr = 0;
+      return NULL;
+    }
+    if(buffer!=NULL&&nfile == bufferinfo->nfile){ // file hasn't changed so nothing more to read in
+      PRINT_TIMER(timer_file2buffer, "File2Buffer");
+      *nreadptr = 0;
+      return bufferinfo;
+    }
+    if(buffer == NULL){
+      NewMemory((void **)&buffer, nfile*sizeof(unsigned char));
+      offset_file   = 0;
+      offset_buffer = 0;
+    }
+    else{
+      ResizeMemory((void **)&buffer, nfile);
+      offset_file   = bufferinfo->nfile;
+      offset_buffer = bufferinfo->nfile;
+    }
+    bufferinfo->buffer  = buffer;
+    nread_try           = nfile - offset_file;
+    bufferinfo->nbuffer = nfile;
+  }
+//  nread = fread_p(file, buffer, offset, delta, nthreads);
+
+  FILE *stream;
+  stream = fopen(file, "rb");
+  if(stream == NULL){
+    FreeBufferInfo(bufferinfo);
+    return NULL;
+  }
+  if(offset_file!=0)fseek(stream, offset_file, SEEK_SET);
+  nread_actual = fread(bufferinfo->buffer+offset_buffer, 1, nread_try, stream);
+  fclose(stream);
+  if(nread_actual != nread_try){
+    FreeBufferInfo(bufferinfo);
+    return NULL;
+  }
+  bufferinfo->nfile = nfile;
+  PRINT_TIMER(timer_file2buffer, "File2Buffer");
+  *nreadptr = nread_actual;
+  return bufferinfo;
 }
 
 /* ------------------ FileExistsOrig ------------------------ */
