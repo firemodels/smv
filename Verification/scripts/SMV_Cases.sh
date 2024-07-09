@@ -1,8 +1,4 @@
 #!/bin/bash
-$QFDS -d Visualization      -t mplume5c8_bench.fds
-$QFDS -d Visualization      -t plume5c_bench.fds
-$QFDS -d Visualization -p 2 -t thouse5_bench.fds
-
 $QFDS -d Visualization boundtest.fds
 $QFDS -d Visualization cell_test.fds
 $RUNCFAST -d Visualization cfast_test.in
