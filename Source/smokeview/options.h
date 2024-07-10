@@ -8,7 +8,6 @@
 //#define pp_ISOFRAME      // turn on frame code for isosurfaces
 //#define pp_SLICEFRAME    // turn on frame code for slices
 //#define pp_PARTFRAME     // turn on frame code for particles
-#define pp_ISOFRAME_RELOADALL // reload all isosurface frames for both 'u' and 'U' shortcuets
 //#define pp_FRAME_DEBUG   // frame timing test
 //#define pp_FRAME_DEBUG2  // output frame times
 
