@@ -11,25 +11,43 @@
 
 #define FORTRAN_FILE 0
 #define C_FILE       1
+
+#ifndef RELOAD
+#define RELOAD      3
+#endif
+#ifndef ALL_FRAMES
+#define ALL_FRAMES -1
+#endif
+
+#define FRAME_SLICE    0
+#define FRAME_BOUNDARY 1
+#define FRAME_3DSMOKE  2
+#define FRAME_PART     3
+#define FRAME_ISO      4
+
+#define FRAME_LOAD     0
+
 typedef struct _framedata {
-  char *file, *size_file;
+  char *file;
+  unsigned char *header, *frames, **frameptrs;
   int nframes, frames_read, update, file_type;
 #ifdef pp_THREAD
   int nthreads;
 #endif
   int headersize, *framesizes;
-  int *subframeoffsets, nsubframes;
+  int *subframeoffsets, *subframesizes, nsubframes;
   FILE_SIZE *offsets, filesize, bytes_read;
-  unsigned char *header, *frames, **frameptrs;
   bufferdata *bufferinfo;
   float *times, load_time, total_time;
   float valmin, valmax;
-  void (*GetFrameInfo)(bufferdata *bufferinfo, int *headersize, int **sizes, int *nsizes, int **subframeoffsets, int *nsubframes, FILE_SIZE *filesizeptr);
+  void (*GetFrameInfo)(bufferdata *bufferinfo, int *headersize, int **sizes, int *nsizes, int **subframeoffsets, int **subframesizes, int *nsubframes, FILE_SIZE *filesizeptr);
 } framedata;
 
 // ----------------------- headers -----------------------
 
-framedata *FRAMEInit(char *file, char *size_file, int file_type, void GetFrameInfo(bufferdata *bufferinfo, int *headersize, int **sizes, int *nsizes, int **subframeptrs, int *nsubframes, FILE_SIZE *filesize_ptr));
+framedata *FRAMELoadData(char *file, int type, FILE_SIZE *filesizeptr);
+framedata *FRAMELoadFrameData(framedata *frameinfo, char *file, int load_flag, int time_frame, int file_type,
+                              void GetFrameInfo(bufferdata *bufferinfo, int *headersize, int **sizes, int *nsizes, int **subframeptrs, int **subframesizesptr, int *nsubframes, FILE_SIZE *filesizeptr));
 void FRAMEFree(framedata *fi);
 #ifdef pp_THREAD
 void FRAMESetNThreads(framedata *fi, int nthreads);
@@ -37,15 +55,10 @@ void FRAMESetNThreads(framedata *fi, int nthreads);
 unsigned char *FRAMEGetFramePtr(framedata *fi, int iframe);
 unsigned char *FRAMEGetSubFramePtr(framedata *fi, int iframe, int isubframe);
 int FRAMEGetMinMax(framedata *fi);
-bufferdata *FRAMEReadFrame(framedata *fi, int option, int iframe, int nframes, int *nread);
-void FRAMESetFramePtrs(framedata * fi, int iframe, int nframes);
-void FRAMESetTimes(framedata *fi, int iframe, int nframes);
-void FRAMESetup(framedata *fi);
-void FRAMESetupVals(framedata *fi);
 
-void GetBoundaryFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **framesptr, int *nframesptr, int **subframeoffsetptrs, int *nsubframeoffsets, FILE_SIZE *filesizeptr);
-void GetIsoFrameInfo(     bufferdata *bufferinfo, int *headersizeptr, int **framesptr, int *nframesptr, int **subframeoffsetptrs, int *nsubframeoffsets, FILE_SIZE *filesizeptr);
-void GetPartFrameInfo(    bufferdata *bufferinfo, int *headersizeptr, int **framesptr, int *nframesptr, int **subframeoffsetptrs, int *nsubframeoffsets, FILE_SIZE *filesizeptr);
-void GetSliceFrameInfo(   bufferdata *bufferinfo, int *headersizeptr, int **framesptr, int *nframesptr, int **subframeoffsetptrs, int *nsubframeoffsets, FILE_SIZE *filesizeptr);
-void GetSmoke3DFrameInfo( bufferdata *bufferinfo, int *headersizeptr, int **framesptr, int *nframesptr, int **subframeoffsetptrs, int *nsubframeoffsets, FILE_SIZE *filesizeptr);
+void GetBoundaryFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **framesptr, int *nframesptr, int **subframeoffsetptrs, int **subframesizesptr, int *nsubframeoffsets, FILE_SIZE *filesizeptr);
+void GetIsoFrameInfo(     bufferdata *bufferinfo, int *headersizeptr, int **framesptr, int *nframesptr, int **subframeoffsetptrs, int **subframesizesptr, int *nsubframeoffsets, FILE_SIZE *filesizeptr);
+void GetPartFrameInfo(    bufferdata *bufferinfo, int *headersizeptr, int **framesptr, int *nframesptr, int **subframeoffsetptrs, int **subframesizesptr, int *nsubframeoffsets, FILE_SIZE *filesizeptr);
+void GetSliceFrameInfo(   bufferdata *bufferinfo, int *headersizeptr, int **framesptr, int *nframesptr, int **subframeoffsetptrs, int **subframesizesptr, int *nsubframeoffsets, FILE_SIZE *filesizeptr);
+void GetSmoke3DFrameInfo( bufferdata *bufferinfo, int *headersizeptr, int **framesptr, int *nframesptr, int **subframeoffsetptrs, int **subframesizesptr, int *nsubframeoffsets, FILE_SIZE *filesizeptr);
 #endif

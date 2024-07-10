@@ -71,7 +71,9 @@ void GetFaceInfo(void){
     geomlistdata *geomlisti;
     vertdata **verts;
     int j;
+#ifndef pp_ISOFRAME
     int ndups=0,nused=0,nskinny=0;
+#endif
 
     geomi = geominfoptrs[i];
     geomlisti = geomi->geomlistinfo;
@@ -91,9 +93,11 @@ void GetFaceInfo(void){
         trii->verts[2]->nused=0;
       }
       qsort(verts,geomlisti->nverts,sizeof(vertdata *),CompareVerts);
+#ifndef pp_ISOFRAME
       for(j=1;j<geomlisti->nverts;j++){
         if(CompareVerts(verts[j-1],verts[j])==0)ndups++;
       }
+#endif
       for(j=0;j<geomlisti->ntriangles;j++){
         tridata *trii;
 
@@ -103,16 +107,18 @@ void GetFaceInfo(void){
         trii->verts[2]->nused++;
         if(GetMinAngle(trii)<=10.0){
           trii->skinny=1;
+#ifndef pp_ISOFRAME
           nskinny++;
+#endif
         }
         else{
           trii->skinny=0;
         }
       }
+#ifndef pp_ISOFRAME
       for(j=0;j<geomlisti->nverts;j++){
         if(verts[j]->nused>0)nused++;
       }
-#ifndef pp_ISOFRAME
       if(print_geominfo==1){
         PRINTF("Face/Vertex Summary\n");
         PRINTF("      Faces: %i\n", geomlisti->ntriangles);

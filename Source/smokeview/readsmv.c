@@ -6999,6 +6999,9 @@ int ReadSMV_Init() {
   START_TIMER(timer_readsmv);
   START_TIMER(processing_time);
 
+#ifdef pp_ISOFRAME
+  use_isosurface_threads = 0;
+#endif
 //** initialize multi-threading
   if(runscript == 1){
     use_checkfiles_threads  = 0;

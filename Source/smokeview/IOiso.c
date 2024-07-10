@@ -489,67 +489,27 @@ FILE_SIZE ReadIsoGeom(int ifile, int load_flag, int *geom_frame_index, int *erro
   meshi->showlevels = NULL;
   meshi->isolevels = NULL;
 #ifdef pp_ISOFRAME
-  if(load_flag == LOAD || load_flag==RELOAD){
-    if(isoi->frameinfo == NULL)isoi->frameinfo = FRAMEInit(isoi->file, NULL, FORTRAN_FILE, GetIsoFrameInfo);
+  unsigned char *buffer=NULL;
+  int nbuffer=0;
 
-    float load_time;
-    START_TIMER(load_time);
-
-    if(isoi->frameinfo->bufferinfo == NULL || load_flag != RELOAD){
-      isoi->frameinfo->bufferinfo = InitBufferData(isoi->file, 0);
-    }
-
-    int nframes_before, nframes_after;
-
-    nframes_before = isoi->frameinfo->nframes;
-    FRAMESetup(isoi->frameinfo);
-    if(isoi->frameinfo != NULL){
-      int nread;
-
-      if(time_frame==ALL_FRAMES){
-        isoi->frameinfo->bufferinfo = File2Buffer(isoi->file, isoi->frameinfo->bufferinfo, DATA_MAPPED, isoi->frameinfo->headersize, ALLDATA_OFFSET, ALLDATA_NVALS, nframe_threads, &nread);
-      }
-      else{
-        isoi->frameinfo->bufferinfo = FRAMEReadFrame(isoi->frameinfo, DATA_AT_START, time_frame, 1, &nread);
-      }
-      isoi->frameinfo->bytes_read = nread;
-      update_frame_output = 1;
-      return_filesize = nread;
-      if(nread > 0){
-        FRAMESetTimes(isoi->frameinfo, 0, isoi->frameinfo->nframes);
-        FRAMESetFramePtrs(isoi->frameinfo, 0, isoi->frameinfo->nframes);
-      }
-    }
-    nframes_after = isoi->frameinfo->nframes;
+  if(load_flag != UNLOAD){
+    isoi->frameinfo = FRAMELoadFrameData(isoi->frameinfo, isoi->file, load_flag, time_frame, FORTRAN_FILE, GetIsoFrameInfo);
     update_frame_output = 1;
-    isoi->frameinfo->update = 1;
-    isoi->frameinfo->frames_read = nframes_after - nframes_before;
 
-    STOP_TIMER(load_time);
-    if(isoi->frameinfo != NULL)isoi->frameinfo->load_time = load_time;
+    geomi->frameinfo = isoi->frameinfo;
+    if(isoi->frameinfo != NULL){
+      buffer  = isoi->frameinfo->bufferinfo->buffer;
+      nbuffer = isoi->frameinfo->bufferinfo->nbuffer;
+    }
+    else{
+      buffer  = NULL;
+      nbuffer = 0;
+    }
   }
-#endif
-
-  unsigned char *buffer;
-  int nbuffer;
-#ifdef pp_ISOFRAME
-  geomi->frameinfo = isoi->frameinfo;
-  bufferdata *bufferinfo;
-  if(geomi->frameinfo!=NULL){
-    bufferinfo = geomi->frameinfo->bufferinfo;
-    buffer = bufferinfo->buffer;
-    nbuffer = bufferinfo->nbuffer;
-  }
-  else{
-    buffer = NULL;
-    nbuffer = 0;
-  }
-  ReadGeom(geomi, buffer, nbuffer, load_flag, GEOM_ISO, geom_frame_index);
-  return_filesize = isoi->frameinfo->bytes_read;
-#else
-  buffer = NULL;
-  nbuffer = 0;
   return_filesize = ReadGeom(geomi, buffer, nbuffer, load_flag, GEOM_ISO, geom_frame_index);
+  if(load_flag != UNLOAD && isoi->frameinfo != NULL)return_filesize = isoi->frameinfo->bytes_read;
+#else
+  return_filesize = ReadGeom(geomi, NULL, 0, load_flag, GEOM_ISO, geom_frame_index);
 #endif
 
   if(load_flag==UNLOAD){
@@ -1135,6 +1095,7 @@ FILE_SIZE ReadIso(const char *file, int ifile, int flag, int *geom_frame_index, 
   if(ifile>=0&&ifile<nisoinfo){
 
     isoi = isoinfo+ifile;
+    if(flag == UNLOAD && isoi->loaded == 0)return 0;
     if(flag==LOAD)PRINTF("Loading %s(%s)", file,isoi->surface_label.shortlabel);
       if(isoi->geomflag==1){
         return_filesize=ReadIsoGeom(ifile,flag,geom_frame_index,errorcode);

@@ -2554,6 +2554,7 @@ void TextureShowMenu(int value){
       }
     }
   }
+  GLUIUpdateTextureDisplay();
   updatemenu=1;
   GLUTPOSTREDISPLAY;
 }
@@ -3265,8 +3266,11 @@ void ReloadAllVectorSliceFiles(int load_flag){
 
 void ReloadAllSliceFiles(int load_flag){
   int ii;
+#ifndef pp_SLICEFRAME
   int file_count = 0;
-  float load_size = 0.0, load_time;
+  float load_size = 0.0;
+#endif
+  float load_time;
   slicedata **reload_slicelist;
 
   if(nsliceinfo == 0)return;
@@ -3295,16 +3299,22 @@ void ReloadAllSliceFiles(int load_flag){
     i = slicei-sliceinfo;
 
     if(slicei->slice_filetype == SLICE_GEOM){
+#ifdef pp_SLICEFRAME
+      ReadGeomData(slicei->patchgeom, slicei, LOAD, ALL_FRAMES, NULL, 0, &errorcode);
+#else
       load_size+=ReadGeomData(slicei->patchgeom, slicei, LOAD, ALL_FRAMES, NULL, 0, &errorcode);
+#endif
     }
     else{
 #ifdef pp_SLICEFRAME
-      load_size += ReadSlice(slicei->file, i, ALL_FRAMES, NULL, load_flag, DEFER_SLICECOLOR, &errorcode);
+      ReadSlice(slicei->file, i, ALL_FRAMES, NULL, load_flag, DEFER_SLICECOLOR, &errorcode);
 #else
       load_size += ReadSlice(slicei->file, i, ALL_FRAMES, NULL, LOAD, DEFER_SLICECOLOR, &errorcode);
 #endif
     }
+#ifndef pp_SLICEFRAME
     file_count++;
+#endif
   }
   STOP_TIMER(load_time);
   FREEMEMORY(reload_slicelist);
@@ -3577,7 +3587,8 @@ void LoadUnloadMenu(int value){
       isoi = isoinfo + i;
       if(isoi->loaded==0)continue;
 #ifdef pp_ISOFRAME
-      ReadIso(isoi->file, i, load_flag, NULL, &errorcode);
+      ReadIso(isoi->file, i, UNLOAD, NULL, &errorcode);
+      ReadIso(isoi->file, i, LOAD, NULL, &errorcode);
       if(isoi->frameinfo==NULL||isoi->frameinfo->frames_read>0)printf("\n");
 #else
       ReadIso(isoi->file,i,LOAD,NULL,&errorcode);
@@ -4175,6 +4186,9 @@ void LoadAllPartFilesMT(int partnum){
   int i;
 
   INIT_PRINT_TIMER(part_load_timer);
+#ifdef pp_PARTFRAME
+  LoadAllPartFiles(partnum);
+#else
   if(partload_threads == NULL){
     partload_threads = THREADinit(&n_partload_threads, &use_partload_threads, MtLoadAllPartFiles);
   }
@@ -4182,6 +4196,7 @@ void LoadAllPartFilesMT(int partnum){
   partnuminfo[0] = partnum;
   THREADruni(partload_threads, (unsigned char *)partnuminfo, 0);
   THREADcontrol(partload_threads, THREAD_JOIN);
+#endif
   PRINT_TIMER(part_load_timer, "LoadAllPartFilesMT");
 
   INIT_PRINT_TIMER(part_timer);
@@ -4508,8 +4523,11 @@ FILE_SIZE LoadVSliceMenu2(int value){
     vslicedata *vslicei;
     slicedata *slicei;
     int dir;
+#ifndef pp_SLICEFRAME
     int file_count = 0;
-    float load_size = 0.0, load_time;
+    float load_size = 0.0;
+#endif
+    float load_time;
     int lastslice=0;
 
     value = -(1000 + value);
@@ -4540,13 +4558,24 @@ FILE_SIZE LoadVSliceMenu2(int value){
       longlabel = slicei->label.longlabel;
       if(strcmp(longlabel,submenulabel)!=0)continue;
       if(dir!=0&&dir!=slicei->idir)continue;
+#ifndef pp_SLICEFRAME
       file_count++;
+#endif
+#ifdef pp_SLICEFRAME
+      if(lastslice==i){
+        ReadVSlice(i,ALL_FRAMES, NULL, LOAD, SET_SLICECOLOR, &errorcode);
+      }
+      else{
+        ReadVSlice(i,ALL_FRAMES, NULL, LOAD, DEFER_SLICECOLOR, &errorcode);
+      }
+#else
       if(lastslice==i){
         load_size+=ReadVSlice(i,ALL_FRAMES, NULL, LOAD, SET_SLICECOLOR, &errorcode);
       }
       else{
         load_size+=ReadVSlice(i,ALL_FRAMES, NULL, LOAD, DEFER_SLICECOLOR, &errorcode);
       }
+#endif
     }
     STOP_TIMER(load_time);
 #ifndef pp_SLICEFRAME
@@ -4809,11 +4838,10 @@ FILE_SIZE LoadSmoke3D(int type, int frame, int *count, float *time_value){
 
 void LoadSmoke3DMenu(int value){
   int i,errorcode;
-#ifdef pp_SMOKEFRAME
-  float load_time;
-#else
   int file_count;
-  float load_time, load_size;
+  float load_time;
+#ifndef pp_SMOKEFRAME
+  float load_size;
 #endif
 
 #define MENU_DUMMY_SMOKE           -9
@@ -4827,8 +4855,8 @@ void LoadSmoke3DMenu(int value){
   START_TIMER(load_time);
 #ifndef pp_SMOKEFRAME
   load_size = 0.0;
-  file_count=0;
 #endif
+  file_count=0;
   GLUTSETCURSOR(GLUT_CURSOR_WAIT);
   if(value>=0){
     if(scriptoutstream!=NULL){
@@ -4942,12 +4970,14 @@ void LoadSmoke3DMenu(int value){
         }
         if(add_blank==1)printf("\n");
       }
-#ifndef pp_SMOKEFRAME
       int type;
       type = 1;
       if(smoke3di->type == HRRPUV_index)type = 2;
       if(smoke3di->type == TEMP_index)type = 4;
       if(smoke3di->type == CO2_index)type = 8;
+#ifdef pp_SMOKEFRAME
+      LoadSmoke3D(type, ALL_SMOKE_FRAMES, &file_count, NULL);
+#else
       load_size=LoadSmoke3D(type, ALL_SMOKE_FRAMES, &file_count, NULL);
 #endif
     }
@@ -5127,8 +5157,11 @@ void LoadSliceMenu(int value){
 
 void LoadMultiVSliceMenu(int value){
   int i;
+#ifndef pp_SLICEFRAME
   int file_count = 0;
-  float load_size = 0.0, load_time;
+  float load_size = 0.0;
+#endif
+  float load_time;
 
   if(value==MENU_DUMMY)return;
   if(value>=0){
@@ -5182,8 +5215,12 @@ void LoadMultiVSliceMenu(int value){
         vslicei = vsliceinfo + mvslicei->ivslices[i];
         IF_NOT_USEMESH_CONTINUE(vslicei->loaded,sliceinfo[vslicei->ival].blocknumber);
         if(vslicei->skip==0&&vslicei->loaded==0){
+#ifdef pp_SLICEFRAME
+          LoadVSliceMenu2(mvslicei->ivslices[i]);
+#else
           load_size+=LoadVSliceMenu2(mvslicei->ivslices[i]);
           file_count++;
+#endif
         }
         if(vslicei->skip==1&&vslicei->loaded==1)UnloadVSliceMenu(mvslicei->ivslices[i]);
       }
@@ -5220,7 +5257,9 @@ void LoadMultiVSliceMenu(int value){
       if(strcmp(longlabel,submenulabel)!=0)continue;
       if(dir!=0&&dir!=slicej->idir)continue;
       LoadMultiVSliceMenu(i);
+#ifndef pp_SLICEFRAME
       file_count++;
+#endif
     }
     STOP_TIMER(load_time);
 #ifndef pp_SLICEFRAME
@@ -5401,8 +5440,11 @@ void LoadMultiSliceMenu(int value){
     int submenutype, dir, errorcode;
     char *submenulabel;
     slicedata *slicei;
-    float load_time, load_size = 0.0;
+    float load_time;
+#ifndef pp_SLICEFRAME
+    float load_size = 0.0;
     int file_count = 0;
+#endif
 
     value = -(1000 + value);
     submenutype=value/4;
@@ -5420,6 +5462,14 @@ void LoadMultiSliceMenu(int value){
       if(strcmp(longlabel,submenulabel)!=0)continue;
       if(dir!=0&&dir!=slicei->idir)continue;
       if(dir!=0&&slicei->volslice==1)continue;
+#ifdef pp_SLICEFRAME
+      if(slicei->slice_filetype == SLICE_GEOM){
+        ReadGeomData(slicei->patchgeom, slicei, LOAD, ALL_FRAMES, NULL, 0, &errorcode);
+      }
+      else{
+        ReadSlice(slicei->file,i, ALL_FRAMES, NULL, LOAD,SET_SLICECOLOR,&errorcode);
+      }
+#else
       if(slicei->slice_filetype == SLICE_GEOM){
         load_size += ReadGeomData(slicei->patchgeom, slicei, LOAD, ALL_FRAMES, NULL, 0, &errorcode);
       }
@@ -5427,6 +5477,7 @@ void LoadMultiSliceMenu(int value){
         load_size += ReadSlice(slicei->file,i, ALL_FRAMES, NULL, LOAD,SET_SLICECOLOR,&errorcode);
       }
       file_count++;
+#endif
     }
     STOP_TIMER(load_time);
 #ifndef pp_SLICEFRAME
@@ -5800,8 +5851,11 @@ FILE_SIZE LoadIsoI(int value){
 
 void LoadAllIsos(int iso_type){
   int i;
+#ifndef pp_ISOFRAME
   int file_count=0;
-  float load_time=0.0, load_size=0.0;
+  float load_size=0.0;
+#endif
+  float load_time=0.0;
 
   if(load_only_when_unloaded == 0){
     for(i = 0; i < nisoinfo; i++){
@@ -5834,6 +5888,7 @@ void LoadAllIsos(int iso_type){
       break;
     }
   }
+#ifndef pp_ISOFRAME
   for(i = 0; i < nisoinfo; i++){
     isodata *isoi;
 
@@ -5844,6 +5899,7 @@ void LoadAllIsos(int iso_type){
       file_count++;
     }
   }
+#endif
   STOP_TIMER(load_time);
 #ifndef pp_ISOFRAME
   PrintFileLoadTimes(file_count,load_size,load_time);
@@ -5976,8 +6032,11 @@ void LoadBoundaryMenu(int value){
       fprintf(scriptoutstream," %s\n",patchj->label.longlabel);
     }
     if(scriptoutstream==NULL||script_defer_loading==0){
+#ifndef pp_BOUNDFRAME
       int file_count=0;
-      float load_time=0.0, load_size=0.0;
+      float load_size=0.0;
+#endif
+      float load_time=0.0;
 
       START_TIMER(load_time);
 
@@ -6030,11 +6089,17 @@ void LoadBoundaryMenu(int value){
           if(patchi->structured == YES){
             PRINTF("Loading %s(%s)", patchi->file, patchi->label.shortlabel);
           }
+#ifdef pp_BOUNDFRAME
+          ReadBoundary(i, LOAD, &errorcode);
+#else
           load_size+=ReadBoundary(i, LOAD, &errorcode);
+#endif
           if(patchi->structured!=NO&&patchi->finalize==1){
             UpdateTriangles(GEOM_STATIC, GEOM_UPDATE_ALL);
           }
+#ifndef pp_BOUNDFRAME
           file_count++;
+#endif
           THREADcontrol(compress_threads, THREAD_UNLOCK);
         }
       }
@@ -9359,8 +9424,10 @@ static int menu_count=0;
       char menulabel[1024];
 
       texti = textureinfo + i;
-      if(texti->loaded==0||texti->used==0||terrain_textures==NULL)continue;
-      if(texti>=terrain_textures&&texti<terrain_textures+nterrain_textures)continue;
+      if(texti->loaded == 0 || texti->used == 0)continue;
+      if(terrain_textures != NULL){
+        if(texti >= terrain_textures && texti < terrain_textures + nterrain_textures)continue;
+      }
       ntextures_used++;
       if(texti->display==1){
         STRCPY(menulabel,"*");

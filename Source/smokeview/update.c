@@ -2519,7 +2519,7 @@ void OutputBounds(void){
         valmax_smv = MAX(slicei->valmax_slice, valmax_smv);
       }
     }
-    OutputMinMax("global", label, unit, valmin_fds, valmax_fds, valmin_smv, valmax_smv);
+    OutputMinMax("slice min/max", label, unit, valmin_fds, valmax_fds, valmin_smv, valmax_smv);
   }
 
 // boundary file bounds
@@ -2552,7 +2552,7 @@ void OutputBounds(void){
         valmax_patch = MAX(patchi->valmax_patch, valmax_patch);
       }
     }
-    OutputMinMax("global", label, unit, valmin_patch, valmax_patch, valmin_patch, valmax_patch);
+    OutputMinMax("boundary min/max", label, unit, valmin_patch, valmax_patch, valmin_patch, valmax_patch);
   }
 
 // particle file bounds
@@ -2607,7 +2607,7 @@ void OutputBounds(void){
           valmax_part = MAX(parti->valmax_part[j], valmax_part);
         }
       }
-      OutputMinMax("global", label, unit, valmin_part, valmax_part, valmin_part, valmax_part);
+      OutputMinMax("particle min/max:", label, unit, valmin_part, valmax_part, valmin_part, valmax_part);
     }
   }
 
@@ -2671,7 +2671,7 @@ void OutputBounds(void){
           valmax_smv = MAX(plot3di->valmax_plot3d[j], valmax_smv);
         }
       }
-      OutputMinMax("global", label, unit, valmin_fds, valmax_fds, valmin_smv, valmax_smv);
+      OutputMinMax("PLOT3D min/max", label, unit, valmin_fds, valmax_fds, valmin_smv, valmax_smv);
     }
   }
   printf("\n");

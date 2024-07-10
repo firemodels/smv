@@ -4278,62 +4278,25 @@ FILE_SIZE ReadSmoke3D(int time_frame,int ifile_arg,int load_flag, int first_time
 #endif
 
 #ifdef pp_SMOKEFRAME
-    {
-      int i, ii;
-      int *nxyz_local;
-      float load_time;
-
-      if(smoke3di->frameinfo == NULL)smoke3di->frameinfo = FRAMEInit(smoke3di->file, NULL, FORTRAN_FILE, GetSmoke3DFrameInfo);
-      START_TIMER(load_time);
-
-      if(smoke3di->frameinfo->bufferinfo == NULL || load_flag != RELOAD){
-        smoke3di->frameinfo->bufferinfo = InitBufferData(smoke3di->file, 0);
-      }
-
-      int nframes_before, nframes_after;
-
-      nframes_before = smoke3di->frameinfo->nframes;
-      FRAMESetup(smoke3di->frameinfo);
-      if(time_frame != ALL_FRAMES)smoke3di->frameinfo->nframes = 1;
-      if(smoke3di->frameinfo != NULL){
-        int nread;
-
-        if(time_frame==ALL_FRAMES){
-          smoke3di->frameinfo->bufferinfo = File2Buffer(smoke3di->file, smoke3di->frameinfo->bufferinfo, DATA_MAPPED, smoke3di->frameinfo->headersize, ALLDATA_OFFSET, ALLDATA_NVALS, nframe_threads, &nread);
-        }
-        else{
-          smoke3di->frameinfo->bufferinfo = FRAMEReadFrame(smoke3di->frameinfo, DATA_AT_START, time_frame, 1, &nread);
-        }
-        smoke3di->frameinfo->bytes_read = nread;
-        update_frame_output = 1;
-        if(nread > 0){
-          FRAMESetTimes(smoke3di->frameinfo, 0, smoke3di->frameinfo->nframes);
-          FRAMESetFramePtrs(smoke3di->frameinfo, 0, smoke3di->frameinfo->nframes);
-          nxyz_local = (int *)smoke3di->frameinfo->header;
-          smoke3di->compression_type = nxyz_local[2];
-          smoke3di->is1 = nxyz_local[3];
-          smoke3di->is2 = nxyz_local[4];
-          smoke3di->js1 = nxyz_local[5];
-          smoke3di->js2 = nxyz_local[6];
-          smoke3di->ks1 = nxyz_local[7];
-          smoke3di->ks2 = nxyz_local[8];
-        }
-      }
-        nframes_after = smoke3di->frameinfo->nframes;
-        smoke3di->frameinfo->frames_read = nframes_after - nframes_before;
-        update_frame_output = 1;
-        smoke3di->frameinfo->update = 1;
-      i = 0;
-      for(ii = 0; ii < smoke3di->ntimes_full; ii++){
-        if(smoke3di->use_smokeframe[ii] == 1){
-          smoke3di->smokeframe_comp_list[i] = smoke3di->frameinfo->frameptrs[ii] + 16;
-          i++;
-        }
-      }
-
-      STOP_TIMER(load_time);
-      if(smoke3di->frameinfo!=NULL)smoke3di->frameinfo->load_time = load_time;
+  smoke3di->frameinfo = FRAMELoadFrameData(smoke3di->frameinfo, smoke3di->file, load_flag, time_frame, FORTRAN_FILE, GetSmoke3DFrameInfo);
+  update_frame_output = 1;
+  int i, ii;
+  int *nxyz_local;
+  nxyz_local = (int *)smoke3di->frameinfo->header;
+  smoke3di->compression_type = nxyz_local[2];
+  smoke3di->is1 = nxyz_local[3];
+  smoke3di->is2 = nxyz_local[4];
+  smoke3di->js1 = nxyz_local[5];
+  smoke3di->js2 = nxyz_local[6];
+  smoke3di->ks1 = nxyz_local[7];
+  smoke3di->ks2 = nxyz_local[8];
+  i = 0;
+  for(ii = 0; ii < smoke3di->ntimes_full; ii++){
+    if(smoke3di->use_smokeframe[ii] == 1){
+      smoke3di->smokeframe_comp_list[i] = smoke3di->frameinfo->frameptrs[ii] + 16;
+      i++;
     }
+  }
 #endif
 //*** read in data
 
@@ -4445,6 +4408,9 @@ FILE_SIZE ReadSmoke3D(int time_frame,int ifile_arg,int load_flag, int first_time
     SmokeWrapup();
   }
   STOP_TIMER(total_time);
+#ifdef pp_SMOKEFRAME
+  printf("\n");
+#else
   if(time_frame==ALL_SMOKE_FRAMES){
     if(file_size_local>1000000){
       PRINTF(" - %.1f MB/%.1f s", (float)file_size_local/1000000., total_time);
@@ -4458,6 +4424,7 @@ FILE_SIZE ReadSmoke3D(int time_frame,int ifile_arg,int load_flag, int first_time
     PRINTF(" - max: %s\n", max_label);
     PrintMemoryInfo;
   }
+#endif
   if(smoke3di->extinct>0.0){
     SOOT_index = GetSmoke3DType(smoke3di->label.shortlabel);
     update_smoke_alphas = 1;

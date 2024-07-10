@@ -36,6 +36,7 @@ EXTERNCPP int  GLUIGetChopMax(int type, char *label, int *set_valmax, float *val
 EXTERNCPP int  GLUISetChopMin(int type, char *label, int set_chopmin, float chopmin);
 EXTERNCPP int  GLUISetChopMax(int type, char *label, int set_chopmax, float chopmax);
 
+EXTERNCPP void GLUIUpdateTextureDisplay(void);
 EXTERNCPP void GLUIUpdateLoadAllSlices(void);
 EXTERNCPP void GLUIUpdateMeshBounds(void);
 EXTERNCPP void DrawBoxMinMax(float *bbmin, float *bbmax, float *box_color);

@@ -3908,7 +3908,7 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
       ReadVolSlice = 0;
       for(ii = 0; ii<nslice_loaded; ii++){
         slicedata *sdi;
-	int i;
+        int i;
 
         i = slice_loaded_list[ii];
         sdi = sliceinfo + i;
@@ -3916,7 +3916,7 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
       }
       for(ii = 0; ii<nslice_loaded; ii++){
         slicedata *sdi;
-	int i;
+      	int i;
 
         i = slice_loaded_list[ii];
         sdi = sliceinfo + i;
@@ -3929,7 +3929,7 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
       if(flag2 == 0){
         for(ii = 0; ii<nslice_loaded; ii++){
           slicedata *sdi;
-	  int i;
+          int i;
 
           i = slice_loaded_list[ii];
           sdi = sliceinfo + i;
@@ -3982,47 +3982,14 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
 // load only portion of slice file written to since last time it was loaded (load_flag=RELOAD)
 
 #ifdef pp_SLICEFRAME
-    if(sd->frameinfo == NULL)sd->frameinfo = FRAMEInit(sd->file, sd->size_file, FORTRAN_FILE, GetSliceFrameInfo);
-
-    float load_time;
-    START_TIMER(load_time);
-
-    if(sd->frameinfo->bufferinfo == NULL || load_flag != RELOAD){
-      sd->frameinfo->bufferinfo = InitBufferData(sd->file, 0);
-    }
-    int nframes_before, nframes_after;
-    nframes_before = sd->frameinfo->nframes;
-    FRAMESetup(sd->frameinfo);
-    if(time_frame != ALL_FRAMES)sd->frameinfo->nframes = 1;
-
-    if(sd->frameinfo != NULL){
-      int nread;
-
-      if(time_frame==ALL_FRAMES){
-        sd->frameinfo->bufferinfo = File2Buffer(sd->file, sd->frameinfo->bufferinfo, DATA_MAPPED, sd->frameinfo->headersize, ALLDATA_OFFSET, ALLDATA_NVALS, nframe_threads, &nread);
-      }
-      else{
-        sd->frameinfo->bufferinfo = FRAMEReadFrame(sd->frameinfo, DATA_AT_START, time_frame, 1, &nread);
-      }
-      sd->frameinfo->bytes_read = nread;
-      if(nread > 0){
-        FRAMESetTimes(sd->frameinfo, 0, sd->frameinfo->nframes);
-        FRAMESetFramePtrs(sd->frameinfo, 0, sd->frameinfo->nframes);
-        sd->ntimes = sd->frameinfo->nframes;
-        NewMemory(( void ** )&sd->times, sd->ntimes*sizeof(float));
-        memcpy(sd->times, sd->frameinfo->times, sd->ntimes*sizeof(float));
-        FRAMEGetMinMax(sd->frameinfo);
-      }
-      frame_valmin = sd->frameinfo->valmin;
-      frame_valmax = sd->frameinfo->valmax;
-    }
+    sd->frameinfo = FRAMELoadFrameData(sd->frameinfo, sd->file, load_flag, time_frame, FORTRAN_FILE, GetSliceFrameInfo);
+    sd->ntimes = sd->frameinfo->nframes;
+    NewMemory(( void ** )&sd->times, sd->ntimes*sizeof(float));
+    memcpy(sd->times, sd->frameinfo->times, sd->ntimes*sizeof(float));
+    FRAMEGetMinMax(sd->frameinfo);
+    frame_valmin = sd->frameinfo->valmin;
+    frame_valmax = sd->frameinfo->valmax;
     update_frame_output = 1;
-    sd->frameinfo->update = 1;
-    nframes_after = sd->frameinfo->nframes;
-    if(time_frame == ALL_FRAMES)sd->frameinfo->frames_read = nframes_after - nframes_before;
-
-    STOP_TIMER(load_time);
-    if(sd->frameinfo != NULL)sd->frameinfo->load_time = load_time;
 #endif
     if(sd->compression_type == UNCOMPRESSED){
 #ifndef pp_SLICEFRAME
@@ -4050,7 +4017,11 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
       *errorcode = 1;
       return 0;
     }
-#ifndef pp_SLICEFRAME
+#ifdef pp_SLICEFRAME
+    if(time_frame == ALL_FRAMES){
+      PRINTF("Loading %s(%s)\n", file, sd->label.shortlabel);
+    }
+#else
     if(use_tload_begin== 0 &&use_tload_end == 0 && sd->compression_type == UNCOMPRESSED){
       if(framesize <= 0){
         fprintf(stderr, "*** Error: frame size is 0 in slice file %s . \n", file);
