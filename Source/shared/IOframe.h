@@ -19,6 +19,13 @@
 #define ALL_FRAMES -1
 #endif
 
+#define FRAME_SLICE    0
+#define FRAME_BOUNDARY 1
+#define FRAME_3DSMOKE  2
+#define FRAME_PART     3
+#define FRAME_ISO      4
+
+#define FRAME_LOAD     0
 
 typedef struct _framedata {
   char *file;
@@ -38,6 +45,7 @@ typedef struct _framedata {
 
 // ----------------------- headers -----------------------
 
+framedata *FRAMELoadData(char *file, int type, FILE_SIZE *filesizeptr);
 framedata *FRAMELoadFrameData(framedata *frameinfo, char *file, int load_flag, int time_frame, int file_type,
                               void GetFrameInfo(bufferdata *bufferinfo, int *headersize, int **sizes, int *nsizes, int **subframeptrs, int **subframesizesptr, int *nsubframes, FILE_SIZE *filesizeptr));
 void FRAMEFree(framedata *fi);

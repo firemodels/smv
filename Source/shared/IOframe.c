@@ -289,6 +289,35 @@ framedata *FRAMELoadFrameData(framedata *frameinfo, char *file, int load_flag, i
   return frameinfo;
 }
 
+/* ------------------ FRAMELoadData ------------------------ */
+
+framedata *FRAMELoadData(char *file, int type, FILE_SIZE *filesizeptr){
+  framedata *frameinfo = NULL;
+
+  if(file == NULL || FileExistsOrig(file) == 0)return NULL;
+  switch(type){
+  case FRAME_3DSMOKE:
+    frameinfo = FRAMELoadFrameData(NULL, file, FRAME_LOAD, ALL_FRAMES, FORTRAN_FILE, GetSmoke3DFrameInfo);
+    break;
+  case FRAME_BOUNDARY:
+    frameinfo = FRAMELoadFrameData(NULL, file, FRAME_LOAD, ALL_FRAMES, FORTRAN_FILE, GetBoundaryFrameInfo);
+    break;
+  case FRAME_PART:
+    frameinfo = FRAMELoadFrameData(NULL, file, FRAME_LOAD, ALL_FRAMES, FORTRAN_FILE, GetPartFrameInfo);
+    break;
+  case FRAME_ISO:
+    frameinfo = FRAMELoadFrameData(NULL, file, FRAME_LOAD, ALL_FRAMES, FORTRAN_FILE, GetIsoFrameInfo);
+    break;
+  case FRAME_SLICE:
+    frameinfo = FRAMELoadFrameData(NULL, file, FRAME_LOAD, ALL_FRAMES, FORTRAN_FILE, GetSliceFrameInfo);
+    break;
+  default:
+    assert(0);
+    return NULL;
+  }
+  return frameinfo;
+}
+
 //******* The following routines define header and frame sizes for each file type 
 //        (3d smoke, slice, isosurface, and particle - boundary file routine not implemente)
 /* ------------------ GetSmoke3DFrameInfo ------------------------ */
