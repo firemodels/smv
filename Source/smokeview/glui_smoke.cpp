@@ -1200,7 +1200,7 @@ extern "C" void GLUISmoke3dCB(int var){
       break;
     case FIRECOLORMAP_DIRECT:
       fire_colorbar_index_save = fire_colorbar_index;
-      UpdateRGBColors(COLORBAR_INDEX_NONE);
+      UpdateRGBColors(colorbar_select_index);
       UpdateSmokeColormap(smoke_render_option);
       break;
     default:
@@ -1276,7 +1276,7 @@ extern "C" void GLUISmoke3dCB(int var){
   case UPDATE_SMOKEFIRE_COLORS_COMMON:
     glutPostRedisplay();
     force_redisplay = 1;
-    UpdateRGBColors(COLORBAR_INDEX_NONE);
+    UpdateRGBColors(colorbar_select_index);
     UpdateSmokeColormap(smoke_render_option);
     GLUISmoke3dCB(UPDATE_SMOKECOLORS);
     IdleCB();

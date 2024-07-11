@@ -16315,7 +16315,7 @@ int ReadIni(char *inifile){
     }
     if(return_code==2)return 2;
 
-    UpdateRGBColors(COLORBAR_INDEX_NONE);
+    UpdateRGBColors(colorbar_select_index);
   }
 
   if(use_graphics==1){

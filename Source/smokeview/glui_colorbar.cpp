@@ -458,7 +458,7 @@ extern "C" void GLUIColorbarCB(int var){
 
       GLUIColorbarGlobal2Local();
       RemapColorbar(cbi);
-      UpdateRGBColors(COLORBAR_INDEX_NONE);
+      UpdateRGBColors(colorbar_select_index);
       ColorbarGeneral2Simple(cbi);
       cbi->adjusted = 0;
     }
@@ -519,7 +519,7 @@ extern "C" void GLUIColorbarCB(int var){
 
     GLUIColorbarGlobal2Local();
     RemapColorbar(cbi);
-    UpdateRGBColors(COLORBAR_INDEX_NONE);
+    UpdateRGBColors(colorbar_select_index);
 
     if(colorbarpoint == cbi->nnodes)colorbarpoint = cbi->nnodes - 1;
     ColorbarGeneral2Simple(colorbarinfo + colorbartype);
@@ -549,7 +549,7 @@ extern "C" void GLUIColorbarCB(int var){
     }
     if(colorbarpoint == 0)cbi->node_index[colorbarpoint] = 0;
     RemapColorbar(cbi);
-    UpdateRGBColors(COLORBAR_INDEX_NONE);
+    UpdateRGBColors(colorbar_select_index);
     nodes_rgb = cbi->node_rgb + 3 * colorbarpoint;
     for(i = 0;i < 3;i++){
       cb_rgb[i] = nodes_rgb[i];
@@ -714,7 +714,7 @@ extern "C" void GLUIColorbarCB(int var){
       nodes_rgb[i] = cb_rgb[i];
     }
     RemapColorbar(cbi);
-    UpdateRGBColors(COLORBAR_INDEX_NONE);
+    UpdateRGBColors(colorbar_select_index);
     break;
   case COLORBAR_S0_RGB:
     ColorbarSimple(0);

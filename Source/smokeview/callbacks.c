@@ -706,9 +706,8 @@ void CheckTimeBound(void){
 #define CB_SELECT_STOP -1
 /* ------------------ GetColorbarIndex ------------------------ */
 
-int GetColorbarIndex(int flag, int x, int y){
-
-  if(flag==0||(vcolorbar_left_pos<=x&&x<=vcolorbar_right_pos)){
+int GetColorbarIndex(int x, int y){
+  if(vcolorbar_left_pos<=x&&x<=vcolorbar_right_pos){
       y = screenHeight - y;
       if(vcolorbar_down_pos<=y&&y<=vcolorbar_top_pos){
         int index;
@@ -773,7 +772,7 @@ int ColorbarClick(int x, int y){
   int colorbar_index;
   int return_val;
 
-  colorbar_index = GetColorbarIndex(1, x, y);
+  colorbar_index = GetColorbarIndex(x, y);
   UpdateColorbarSelectionIndex(colorbar_index);
   return_val = HandleColorbarIndex(colorbar_index);
   return return_val;
@@ -993,6 +992,9 @@ void MouseCB(int button, int state, int xm, int ym){
   }
 #endif
 
+  colorbar_drag = 0;
+  timebar_drag  = 0;
+
   if(autofreeze_volsmoke==ON&&nvolsmoke_loaded>0){
     if(state==GLUT_DOWN)GLUIUpdateFreeze(ON);
     if(state==GLUT_UP)GLUIUpdateFreeze(OFF);
@@ -1136,7 +1138,7 @@ void MouseCB(int button, int state, int xm, int ym){
 void ColorbarDrag(int xm, int ym){
   int colorbar_index;
 
-  colorbar_index = GetColorbarIndex(0,xm,ym);
+  colorbar_index = GetColorbarIndex(xm,ym);
   if(colorbar_index>=0){
     colorbar_select_index=colorbar_index;
     UpdateRGBColors(colorbar_index);

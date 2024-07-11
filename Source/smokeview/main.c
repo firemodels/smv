@@ -211,7 +211,7 @@ char *ProcessCommandLine(CommandlineArgs *args) {
   if (args->ini) {
     InitCameraList();
     InitOpenGL(NO_PRINT);
-    UpdateRGBColors(COLORBAR_INDEX_NONE);
+    UpdateRGBColors(colorbar_select_index);
     InitStartupDirs();
     WriteIni(GLOBAL_INI, NULL);
     SMV_EXIT(0);
@@ -219,7 +219,7 @@ char *ProcessCommandLine(CommandlineArgs *args) {
   if (args->ng_ini) {
     InitCameraList();
     use_graphics = 0;
-    UpdateRGBColors(COLORBAR_INDEX_NONE);
+    UpdateRGBColors(colorbar_select_index);
     InitStartupDirs();
     WriteIni(GLOBAL_INI, NULL);
     SMV_EXIT(0);

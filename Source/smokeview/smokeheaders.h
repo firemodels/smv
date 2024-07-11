@@ -650,7 +650,6 @@ EXTERNCPP void DrawCircVents(int option);
 EXTERNCPP void UpdateSmokeColormap(int option);
 EXTERNCPP void UpdateCO2Colormap(void);
 EXTERNCPP void DefineVolsmokeTextures(void);
-EXTERNCPP int  GetColorbarIndex(int flag, int x, int y);
 EXTERNCPP void GetViewportInfo(void);
 
 EXTERNCPP void ScaleFont2D(void);
