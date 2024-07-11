@@ -1289,6 +1289,23 @@ void UpdateTimes(void){
       MergeGlobalTimes(ptime, 1);
     }
   }
+#ifdef pp_SLICEFRAME
+  int minslice_index = 1000000000;
+  for(i = 0;i < nsliceinfo;i++){
+    slicedata *sd;
+
+    sd = sliceinfo + i;
+    if(sd->loaded == 0 && sd->vloaded == 0)continue;
+    minslice_index = MIN(minslice_index, sd->ntimes);
+  }
+  for(i = 0;i < nsliceinfo;i++){
+    slicedata *sd;
+
+    sd = sliceinfo + i;
+    if(sd->loaded == 0 && sd->vloaded == 0)continue;
+    sd->ntimes = minslice_index;
+  }
+#endif
   for(i=0;i<nsliceinfo;i++){
     slicedata *sd;
 
