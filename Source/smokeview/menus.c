@@ -945,7 +945,7 @@ void SmokeColorbarMenu(int value){
   value = CLAMP(value, 0, ncolorbars - 1);
   fire_colorbar_index=value;
   fire_colorbar = colorbarinfo + value;
-  UpdateRGBColors(COLORBAR_INDEX_NONE);
+  UpdateRGBColors(colorbar_select_index);
   if(FlowDir>0){
     Keyboard('-',FROM_SMOKEVIEW);
     Keyboard(' ',FROM_SMOKEVIEW);
@@ -990,17 +990,17 @@ void ColorbarMenu(int value){
       contour_type=SHADED_CONTOURS;
       setbw=0;
       GLUIUpdateExtreme();
-      UpdateRGBColors(COLORBAR_INDEX_NONE);
+      UpdateRGBColors(colorbar_select_index);
       break;
     case COLORBAR_HIGHLIGHT_BELOW:
       show_extreme_mindata=1-show_extreme_mindata;
       GLUIUpdateExtreme();
-      UpdateRGBColors(COLORBAR_INDEX_NONE);
+      UpdateRGBColors(colorbar_select_index);
       break;
     case COLORBAR_HIGHLIGHT_ABOVE:
       show_extreme_maxdata=1-show_extreme_maxdata;
       GLUIUpdateExtreme();
-      UpdateRGBColors(COLORBAR_INDEX_NONE);
+      UpdateRGBColors(colorbar_select_index);
       break;
     case COLORBAR_TOGGLE_BW_DATA:
       setbwdata = 1 - setbwdata;
@@ -1027,21 +1027,21 @@ void ColorbarMenu(int value){
       break;
    case COLORBAR_TRANSPARENT:
      use_transparency_data=1-use_transparency_data;
-     UpdateRGBColors(COLORBAR_INDEX_NONE);
+     UpdateRGBColors(colorbar_select_index);
      GLUISetLabelControls();
      GLUIUpdateTransparency();
      break;
    case COLORBAR_CONTINUOUS:
      contour_type=SHADED_CONTOURS;
-     UpdateRGBColors(COLORBAR_INDEX_NONE);
+     UpdateRGBColors(colorbar_select_index);
      break;
    case COLORBAR_STEPPED:
      contour_type=STEPPED_CONTOURS;
-     UpdateRGBColors(COLORBAR_INDEX_NONE);
+     UpdateRGBColors(colorbar_select_index);
      break;
    case COLORBAR_LINES:
      contour_type=LINE_CONTOURS;
-     UpdateRGBColors(COLORBAR_INDEX_NONE);
+     UpdateRGBColors(colorbar_select_index);
      break;
    case COLORBAR_HORIZONTAL:
      LabelMenu(MENU_LABEL_colorbar_horizontal);
@@ -1080,7 +1080,7 @@ void ColorbarMenu(int value){
     if(ext!=NULL)*ext=0;
   }
   if(value>-10){
-    UpdateRGBColors(COLORBAR_INDEX_NONE);
+    UpdateRGBColors(colorbar_select_index);
   }
 }
 
@@ -1485,7 +1485,7 @@ void ShowHideMenu(int value){
 #endif
   case MENU_SHOWHIDE_FLIP:
    background_flip = 1-background_flip;
-   UpdateRGBColors(COLORBAR_INDEX_NONE);
+   UpdateRGBColors(colorbar_select_index);
    GLUISetLabelControls();
    GLUISetColorControls();
    GLUIUpdateBackgroundFlip(background_flip);
@@ -2789,7 +2789,7 @@ void SmokeviewIniMenu(int value){
   switch(value){
   case MENU_READINI:
     ReadIni(NULL);
-    UpdateRGBColors(COLORBAR_INDEX_NONE);
+    UpdateRGBColors(colorbar_select_index);
     break;
   case MENU_REVERT_WRITEINI:
     ReadBinIni();
