@@ -1786,7 +1786,7 @@ void Keyboard(unsigned char key, int flag){
           if(contour_type==STEPPED_CONTOURS)printf("stepped coloring\n");
           if(contour_type==SHADED_CONTOURS)printf("continuous coloring\n");
           GLUIUpdatePlot3dDisplay();
-          UpdateRGBColors(COLORBAR_INDEX_NONE);
+          UpdateRGBColors(colorbar_select_index);
         }
       }
       break;
