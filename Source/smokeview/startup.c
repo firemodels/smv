@@ -295,7 +295,7 @@ int SetupCase(char *filename){
   ReadBoundINI();
   PRINT_TIMER(timer_start, "ReadBoundINI");
 
-  UpdateRGBColors(COLORBAR_INDEX_NONE);
+  UpdateRGBColors(colorbar_select_index);
   PRINT_TIMER(timer_start, "UpdateRGBColors");
 
   if(use_graphics==0){

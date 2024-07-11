@@ -3221,7 +3221,7 @@ extern "C" void GLUISplitCB(int var){
       split_colorbar->node_rgb[i] = colorsplit[i] & 0xFF;
     }
     RemapColorbar(split_colorbar);
-    UpdateRGBColors(COLORBAR_INDEX_NONE);
+    UpdateRGBColors(colorbar_select_index);
     break;
   default:
     assert(FFALSE);
@@ -3261,7 +3261,7 @@ extern "C" void GLUIExtremeCB(int var){
     if(colorbartype<0||colorbartype>=ncolorbars)return;
     cbi = colorbarinfo+colorbartype;
     RemapColorbar(cbi);
-    UpdateRGBColors(COLORBAR_INDEX_NONE);
+    UpdateRGBColors(colorbar_select_index);
     updatemenu = 1;
     break;
   case COLORBAR_EXTREME_RGB:
@@ -3277,7 +3277,7 @@ extern "C" void GLUIExtremeCB(int var){
       rgb_nodes[i] = cb_down_rgb[i];
     }
     RemapColorbar(cbi);
-    UpdateRGBColors(COLORBAR_INDEX_NONE);
+    UpdateRGBColors(colorbar_select_index);
     break;
   default:
     break;
@@ -5820,7 +5820,7 @@ extern "C" void GLUIPlot3DBoundCB(int var){
     updatemenu=1;
     break;
   case UPDATEPLOT:
-    UpdateRGBColors(COLORBAR_INDEX_NONE);
+    UpdateRGBColors(colorbar_select_index);
     updatemenu=1;
     glutPostRedisplay();
     break;
@@ -6654,7 +6654,7 @@ extern "C" void GLUISliceBoundCB(int var){
         surfi = surfinfo + i;
         surfi->transparent_level=transparent_level;
       }
-      UpdateRGBColors(COLORBAR_INDEX_NONE);
+      UpdateRGBColors(colorbar_select_index);
       if(SPINNER_transparent_level!=NULL)SPINNER_transparent_level->set_float_val(transparent_level);
       if(SPINNER_labels_transparency_data != NULL)SPINNER_labels_transparency_data->set_float_val(transparent_level);
       if(transparent_level > 0.999){
