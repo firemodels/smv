@@ -1677,7 +1677,7 @@ int GetMinPartFrames(int flag){
 /* ------------------ GetPartHeader ------------------------ */
 
 #ifdef pp_PARTFRAME
-int GetPartHeader(partdata *parti, int *nf_all, int option_arg, int print_option_arg, int npart_frames){
+int GetPartHeader(partdata *parti, int *nf_all, int option_arg, int print_option_arg, int npart_frames_max){
 #else
 int GetPartHeader(partdata * parti, int *nf_all, int option_arg, int print_option_arg){
 #endif
@@ -1704,10 +1704,8 @@ int GetPartHeader(partdata * parti, int *nf_all, int option_arg, int print_optio
 
     // pass 1: count frames
 
-#ifdef pp_PARTFRAME
-  nframes_all_local = npart_frames;
-#else
   nframes_all_local =0;
+  parti->ntimes = 0;
   for(;;){
     int exitloop_local;
 
@@ -1720,7 +1718,10 @@ int GetPartHeader(partdata * parti, int *nf_all, int option_arg, int print_optio
         break;
       }
     }
-    if(exitloop_local==1)break;
+    if(exitloop_local == 1)break;
+#ifdef pp_PARTFRAME
+    if(nframes_all_local == npart_frames_max)break;
+#endif
     nframes_all_local++;
     if(tload_step>1       && (nframes_all_local-1)%tload_step!=0)continue;
     if(use_tload_begin==1 && time_local<tload_begin-TEPS)continue;
@@ -1728,9 +1729,7 @@ int GetPartHeader(partdata * parti, int *nf_all, int option_arg, int print_optio
     (parti->ntimes)++;
   }
   rewind(stream);
-#endif
-  *nf_all = nframes_all_local;
-  parti->ntimes = nframes_all_local;
+  *nf_all       = nframes_all_local;
   if(parti->ntimes==0){
     fclose(stream);
     return 0;
