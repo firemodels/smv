@@ -1187,8 +1187,6 @@ void GetPartData(partdata *parti, int nf_all_arg, FILE_SIZE *file_size_arg){
   float time_local;
   part5data *datacopy_local;
 
-  *file_size_arg = GetFileSizeSMV(parti->reg_file);
-
   if(parti->stream!=NULL){
 #ifdef pp_PARTFRAME
     fclose_b(parti->stream);
@@ -1203,12 +1201,15 @@ void GetPartData(partdata *parti, int nf_all_arg, FILE_SIZE *file_size_arg){
 
     bufferinfo = parti->frameinfo->bufferinfo;
     stream = fopen_b(parti->reg_file, bufferinfo->buffer, bufferinfo->nbuffer, "rb");
+    *file_size_arg = parti->frameinfo->filesize;
   }
   else{
     stream = fopen_b(parti->reg_file, NULL, 0, "rb");
+    *file_size_arg = GetFileSizeSMV(parti->reg_file);
   }
 #else
   stream = fopen_m(parti->reg_file, "rbm");
+  *file_size_arg = GetFileSizeSMV(parti->reg_file);
 #endif
   parti->stream = stream;
   if(stream==NULL)return;
@@ -1675,14 +1676,20 @@ int GetMinPartFrames(int flag){
 
 /* ------------------ GetPartHeader ------------------------ */
 
-int GetPartHeader(partdata *parti, int *nf_all, int option_arg, int print_option_arg){
+#ifdef pp_PARTFRAME
+int GetPartHeader(partdata *parti, int *nf_all, int option_arg, int print_option_arg, int npart_frames){
+#else
+int GetPartHeader(partdata * parti, int *nf_all, int option_arg, int print_option_arg){
+#endif
   FILE *stream;
   char buffer_local[256];
   float time_local;
   int i;
   int count_local, nframes_all_local, sizefile_status_local;
 
+#ifndef pp_PARTFRAME
   parti->ntimes=0;
+#endif
 
   sizefile_status_local = GetSizeFileStatus(parti);
   if(sizefile_status_local== -1)return 0; // particle file does not exist so cannot be sized
@@ -1697,6 +1704,9 @@ int GetPartHeader(partdata *parti, int *nf_all, int option_arg, int print_option
 
     // pass 1: count frames
 
+#ifdef pp_PARTFRAME
+  nframes_all_local = npart_frames;
+#else
   nframes_all_local =0;
   for(;;){
     int exitloop_local;
@@ -1718,7 +1728,9 @@ int GetPartHeader(partdata *parti, int *nf_all, int option_arg, int print_option
     (parti->ntimes)++;
   }
   rewind(stream);
+#endif
   *nf_all = nframes_all_local;
+  parti->ntimes = nframes_all_local;
   if(parti->ntimes==0){
     fclose(stream);
     return 0;
@@ -2063,7 +2075,11 @@ FILE_SIZE ReadPart(char *file_arg, int ifile_arg, int load_flag, int *errorcode_
   }
   int have_particles;
 
+#ifdef pp_PARTFRAME
+  have_particles = GetPartHeader(parti, &nf_all_local, NOT_FORCE, 1, parti->frameinfo->nframes);
+#else
   have_particles = GetPartHeader(parti, &nf_all_local, NOT_FORCE, 1);
+#endif
   if(have_particles==0){
     ReadPart("", ifile_arg, UNLOAD, &error_local);
     return 0.0;
