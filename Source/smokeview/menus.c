@@ -5888,18 +5888,20 @@ void LoadAllIsos(int iso_type){
       break;
     }
   }
-#ifndef pp_ISOFRAME
   for(i = 0; i < nisoinfo; i++){
     isodata *isoi;
 
     isoi = isoinfo + i;
     IF_NOT_USEMESH_CONTINUE(isoi->loaded,isoi->blocknumber);
     if(iso_type==isoi->type){
+#ifdef pp_ISOFRAME
+      LoadIsoI(i);
+#else
       load_size+=LoadIsoI(i);
       file_count++;
+#endif
     }
   }
-#endif
   STOP_TIMER(load_time);
 #ifndef pp_ISOFRAME
   PrintFileLoadTimes(file_count,load_size,load_time);
