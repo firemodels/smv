@@ -240,17 +240,19 @@ void FRAMESetFramePtrs(framedata *fi, int iframe, int nframes){
 /* ------------------ FRAMEGetPtr ------------------------ */
 
 unsigned char *FRAMEGetFramePtr(framedata *fi, int iframe){
+  if(fi == NULL)return NULL;
   if(iframe < 0)iframe = 0;
   if(iframe > fi->nframes-1)iframe = fi->nframes-1;
   return fi->frameptrs[iframe];
 }
 
-/* ------------------ FRAMEGetPtr ------------------------ */
+/* ------------------ FRAMEGetSubFramePtr ------------------------ */
 
 unsigned char *FRAMEGetSubFramePtr(framedata *fi, int iframe, int isubframe){
   unsigned char *ptr;
 
   ptr = FRAMEGetFramePtr(fi, iframe);
+  if(ptr == NULL)return NULL;
   if(isubframe <0)isubframe = 0;
   if(isubframe >fi->nsubframes-1)isubframe = fi->nsubframes - 1;;
   ptr += fi->subframeoffsets[isubframe];
