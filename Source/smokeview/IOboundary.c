@@ -2788,7 +2788,7 @@ void DrawBoundaryTexture(const meshdata *meshi){
       patchvals = ( float * )FRAMEGetSubFramePtr(patchi->frameinfo, meshi->patch_itime, n);
 
 #else
-      patchvals  = patchval_iframe+blockstart[n];
+      if(patchi->compression_type != COMPRESSED_ZLIB)patchvals  = patchval_iframe+blockstart[n];
 #endif
       if(patchi->compression_type == COMPRESSED_ZLIB)cpatchvals = meshi->cpatchval_iframe_zlib + blockstart[n];
       if(hidepatchsurface==0){
@@ -2900,7 +2900,7 @@ void DrawBoundaryTexture(const meshdata *meshi){
 #ifdef pp_BOUNDFRAME
       patchvals = ( float * )FRAMEGetSubFramePtr(patchi->frameinfo, meshi->patch_itime, n);
 #else
-      patchvals  = patchval_iframe+blockstart[n];
+      if(patchi->compression_type != COMPRESSED_ZLIB)patchvals  = patchval_iframe+blockstart[n];
 #endif
       if(patchi->compression_type == COMPRESSED_ZLIB)cpatchvals = meshi->cpatchval_iframe_zlib + blockstart[n];
       if(hidepatchsurface==0){
