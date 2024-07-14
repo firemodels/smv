@@ -20,7 +20,10 @@
 #define SLICE_TRAILER_SIZE 4
 
 #ifdef pp_SLICEFRAME
-#define IJK_SLICE(i,j,k)      ( ((k)-sd->ks1)*sd->nslicei*sd->nslicej + ((j)-sd->js1)*sd->nslicei + ((i)-sd->is1) )
+#define IJK_SLICE(i,j,k)     ( sd->compression_type==UNCOMPRESSED ? \
+                             ( ((k)-sd->ks1)*sd->nslicei*sd->nslicej + ((j)-sd->js1)*sd->nslicei + ((i)-sd->is1) ) :\
+                             ( ((i)-sd->is1)*sd->nslicej*sd->nslicek + ((j)-sd->js1)*sd->nslicek + ((k)-sd->ks1) ) \
+                             )
 #else
 #define IJK_SLICE(i,j,k)      ( ((i)-sd->is1)*sd->nslicej*sd->nslicek + ((j)-sd->js1)*sd->nslicek + ((k)-sd->ks1) )
 #endif
@@ -3982,14 +3985,16 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
 // load only portion of slice file written to since last time it was loaded (load_flag=RELOAD)
 
 #ifdef pp_SLICEFRAME
-    sd->frameinfo = FRAMELoadFrameData(sd->frameinfo, sd->file, load_flag, time_frame, FORTRAN_FILE, GetSliceFrameInfo);
-    sd->ntimes = sd->frameinfo->nframes;
-    NewMemory(( void ** )&sd->times, sd->ntimes*sizeof(float));
-    memcpy(sd->times, sd->frameinfo->times, sd->ntimes*sizeof(float));
-    FRAMEGetMinMax(sd->frameinfo);
-    frame_valmin = sd->frameinfo->valmin;
-    frame_valmax = sd->frameinfo->valmax;
-    update_frame_output = 1;
+    if(sd->compression_type == UNCOMPRESSED){
+      sd->frameinfo = FRAMELoadFrameData(sd->frameinfo, sd->file, load_flag, time_frame, FORTRAN_FILE, GetSliceFrameInfo);
+      sd->ntimes = sd->frameinfo->nframes;
+      NewMemory((void **)&sd->times, sd->ntimes * sizeof(float));
+      memcpy(sd->times, sd->frameinfo->times, sd->ntimes * sizeof(float));
+      FRAMEGetMinMax(sd->frameinfo);
+      frame_valmin = sd->frameinfo->valmin;
+      frame_valmax = sd->frameinfo->valmax;
+      update_frame_output = 1;
+    }
 #endif
     if(sd->compression_type == UNCOMPRESSED){
 #ifndef pp_SLICEFRAME
