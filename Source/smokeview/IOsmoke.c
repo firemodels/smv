@@ -3793,7 +3793,7 @@ int GetSmoke3DVersion(smoke3ddata *smoke3di){
   if(smoke3di->filetype==FORTRAN_GENERATED&&smoke3di->is_zlib==0)fortran_skip = 4;
 
   file = smoke3di->comp_file;
-  SMOKE3D_COMPFILE = fopen(file, "rb");
+  if(file!=NULL)SMOKE3D_COMPFILE = fopen(file, "rb");
   if(SMOKE3D_COMPFILE==NULL){
     file = smoke3di->reg_file;
     SMOKE3D_REGFILE = fopen(file, "rb");
