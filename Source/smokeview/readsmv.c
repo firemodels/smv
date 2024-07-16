@@ -5640,10 +5640,6 @@ int ParseSMOKE3DProcess(bufferstreamdata *stream, char *buffer, int *nn_smoke3d_
     smoke3di->comp_file = SMOKE3DBUFFER(len + 1);
     STRCPY(smoke3di->comp_file, buffer2);
 
-#ifdef pp_SMOKEFRAME
-    smoke3di->comp_file = NULL;
-    smoke3di->file      = smoke3di->reg_file;
-#else
     if(FILE_EXISTS_CASEDIR(smoke3di->comp_file) == YES){
       smoke3di->file = smoke3di->comp_file;
       smoke3di->is_zlib = 1;
@@ -5652,7 +5648,6 @@ int ParseSMOKE3DProcess(bufferstreamdata *stream, char *buffer, int *nn_smoke3d_
     else{
       smoke3di->file = smoke3di->reg_file;
     }
-#endif
 
 #ifdef pp_SMOKE16
     char buffer16[256];

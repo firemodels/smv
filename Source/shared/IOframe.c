@@ -20,7 +20,9 @@
 
   /* ------------------ FRAMEInit ------------------------ */
 
-framedata *FRAMEInit(char *file, int file_type, void GetFrameInfo(bufferdata *bufferinfo, int *headersize, int **sizes, int *nsizes, int **subframeptrs, int **subframessizes, int *nsubframes, FILE_SIZE *filesizeptr)){
+framedata *FRAMEInit(char *file, int file_type, void GetFrameInfo(bufferdata *bufferinfo, int *headersize, int **sizes, int *nsizes,
+                     int **subframeptrs, int **subframessizes, int *nsubframes,
+                     int *compression_type, FILE_SIZE *filesizeptr)){
   framedata *frame=NULL;
 
   NewMemory((void **)&frame, sizeof(framedata));
@@ -35,6 +37,7 @@ framedata *FRAMEInit(char *file, int file_type, void GetFrameInfo(bufferdata *bu
   if(file_type != C_FILE)file_type = FORTRAN_FILE;
   strcpy(frame->file, file);
   frame->file_type    = file_type;
+  frame->compression_type  = FRAME_UNCOMPRESSED;
   frame->nframes      = 0;
   frame->frames_read  = 0;
   frame->bytes_read   = 0;
@@ -67,8 +70,11 @@ void FRAMESetup(framedata *fi){
   int headersize;
   int *subframeoffsets=NULL, *subframesizes=NULL, nsubframes=0;
 
-  fi->GetFrameInfo(fi->bufferinfo, &headersize, &framesizes, &nframes, &subframeoffsets, &subframesizes, &nsubframes, &filesize);
+  fi->GetFrameInfo(fi->bufferinfo, &headersize, &framesizes, &nframes,
+                   &subframeoffsets, &subframesizes, &nsubframes,
+                   &fi->compression_type, &filesize);
   if(nframes <= 0)return;
+  if(fi->compression_type == FRAME_ZLIB)fi->file_type = C_FILE;
   fi->subframeoffsets = subframeoffsets;
   fi->subframesizes   = subframesizes;
   fi->nsubframes      = nsubframes;
@@ -261,7 +267,10 @@ unsigned char *FRAMEGetSubFramePtr(framedata *fi, int iframe, int isubframe){
 
 /* ------------------ FRAMELoadFrameData ------------------------ */
 
-framedata *FRAMELoadFrameData(framedata *frameinfo, char *file, int load_flag, int time_frame, int file_type, void GetFrameInfo(bufferdata *bufferinfo, int *headersize, int **sizes, int *nsizes, int **subframeptrs, int **subframesizesptr, int *nsubframes, FILE_SIZE *filesizeptr)){
+framedata *FRAMELoadFrameData(framedata *frameinfo, char *file, int load_flag, int time_frame, int file_type,
+                  void GetFrameInfo(bufferdata *bufferinfo, int *headersize, int **sizes, int *nsizes,
+                                    int **subframeptrs, int **subframesizesptr, int *nsubframes,
+                                    int *compression_type, FILE_SIZE *filesizeptr)){
   int nframes_before, nframes_after, nread;
   float load_time;
 
@@ -325,21 +334,40 @@ framedata *FRAMELoadData(char *file, int type, FILE_SIZE *filesizeptr){
 /* ------------------ GetSmoke3DFrameInfo ------------------------ */
 
 void GetSmoke3DFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **framesptr, int *nframesptr,
-                         int **subframeoffsetsptr, int **subframesizesptr, int *nsubframesptr, FILE_SIZE *filesizeptr){
+                         int **subframeoffsetsptr, int **subframesizesptr, int *nsubframesptr,
+                         int *compression_type,
+                         FILE_SIZE *filesizeptr){
   FILE *stream;
   char buffer[255];
   int headersize, nframes, *frames;
   FILE_SIZE filesize;
   char sizefile[1024];
+  char *ext;
+
+  *compression_type = FRAME_RLE;
+  if(bufferinfo == NULL)return;
+
+  stream = fopen(bufferinfo->file, "rb");
+  if(stream == NULL)return;
+  fclose(stream);
 
   strcpy(sizefile, bufferinfo->file);
-  strcat(sizefile, ".sz");
-
+  ext = strrchr(sizefile, '.');
+  if(ext != NULL)ext[0] = 0;
+  strcat(sizefile, ".szz");
   stream = fopen(sizefile, "r");
-  if(stream == NULL){
-    *nframesptr = 0;
-    *framesptr = NULL;
-    return;
+  if(stream!=NULL){
+    *compression_type = FRAME_ZLIB;
+  }
+  else{
+    strcpy(sizefile, bufferinfo->file);
+    strcat(sizefile, ".sz");
+    stream = fopen(sizefile, "r");
+    if(stream == NULL){
+      *nframesptr = 0;
+      *framesptr = NULL;
+      return;
+    }
   }
 
   fgets(buffer, 255, stream);
@@ -354,6 +382,12 @@ void GetSmoke3DFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **frame
   rewind(stream);
   fgets(buffer, 255, stream);
   nframes=0;
+  if(*compression_type == FRAME_RLE){
+    headersize = 40;
+  }
+  else{
+    headersize = 32;
+  }
   while(!feof(stream)){
     int nchars, nchars_compressed;
     float time_local;
@@ -363,15 +397,24 @@ void GetSmoke3DFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **frame
     //    WRITE(LU_SMOKE3D) NCHARS_IN, NCHARS_OUT
     //    IF(NCHARS_OUT > 0) WRITE(LU_SMOKE3D)(BUFFER_OUT(I), I = 1, NCHARS_OUT)
     if(fgets(buffer, 255, stream) == NULL)break;
-    sscanf(buffer, "%f %i %i", &time_local, &nchars, &nchars_compressed);
-    framesize = 4 + 4 + 4;
-    framesize += 4 + 8 + 4;
-    if(nchars_compressed > 0)framesize += 4 + nchars_compressed + 4;
+    if(*compression_type == FRAME_RLE){
+      sscanf(buffer, "%f %i %i", &time_local, &nchars, &nchars_compressed);
+      framesize = 4 + 4 + 4;
+      framesize += 4 + 8 + 4;
+      if(nchars_compressed > 0)framesize += 4 + nchars_compressed + 4;
+    }
+    else{
+      int dummy;
+
+      sscanf(buffer, "%f %i %i %i", &time_local, &nchars, &dummy, &nchars_compressed);
+      framesize = 4;
+      framesize += 8;
+      if(nchars_compressed > 0)framesize += nchars_compressed;
+    }
     frames[nframes++] = framesize;
   }
   fclose(stream);
 
-  headersize = 40;
   filesize = bufferinfo->nbuffer;
 
   *headersizeptr = headersize;
@@ -383,7 +426,8 @@ void GetSmoke3DFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **frame
 /* ------------------ GetBoundaryFrameInfo ------------------------ */
 
 void GetBoundaryFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **framesptr, int *nframesptr, 
-  int **subframeoffsetsptr, int **subframesizesptr, int *nsubframesptr, FILE_SIZE *filesizeptr){
+                          int **subframeoffsetsptr, int **subframesizesptr, int *nsubframesptr,
+                          int *compression_type, FILE_SIZE *filesizeptr){
   FILE *stream;
 
   int headersize, framesize, nframes, *frames, datasize;
@@ -456,7 +500,8 @@ void GetBoundaryFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **fram
   /* ------------------ GetSliceFrameInfo ------------------------ */
 
 void GetSliceFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **framesptr, int *nframesptr,
-                       int **subframeoffsetsptr, int **subframesizesptr, int *nsubframesptr, FILE_SIZE *filesizeptr){
+                       int **subframeoffsetsptr, int **subframesizesptr, int *nsubframesptr,
+                       int *compression_type, FILE_SIZE *filesizeptr){
   FILE_m *stream;
 
   int headersize, framesize, nframes, *frames;
@@ -524,7 +569,8 @@ void GetSliceFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **framesp
 /* ------------------ GetIsoFrameInfo ------------------------ */
 
 void GetIsoFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **framesptr, int *nframesptr,
-                     int **subframeoffsetsptr, int **subframesizesptr, int *nsubframesptr, FILE_SIZE *filesizeptr){
+                     int **subframeoffsetsptr, int **subframesizesptr, int *nsubframesptr,
+                     int *compression_type, FILE_SIZE *filesizeptr){
   FILE_m *stream;
   int headersize, levelsize, *frames;
   int niso_levels;
@@ -602,7 +648,8 @@ void GetIsoFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **framesptr
 /* ------------------ GetPartFrameInfo ------------------------ */
 
 void GetPartFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **framesptr, int *nframesptr,
-                      int **subframeoffsetsptr, int **subframesizesptr, int *nsubframesptr, FILE_SIZE *filesizeptr){
+                      int **subframeoffsetsptr, int **subframesizesptr, int *nsubframesptr,
+                      int *compression_type, FILE_SIZE *filesizeptr){
   FILE_m *stream;
   FILE_SIZE filesize;
   int headersize, *frames, nframes, returncode, n_part, *nquants;

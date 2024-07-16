@@ -25,12 +25,16 @@
 #define FRAME_PART     3
 #define FRAME_ISO      4
 
+#define FRAME_UNCOMPRESSED 0
+#define FRAME_RLE          1
+#define FRAME_ZLIB         2
+
 #define FRAME_LOAD     0
 
 typedef struct _framedata {
   char *file;
   unsigned char *header, *frames, **frameptrs;
-  int nframes, frames_read, update, file_type;
+  int nframes, frames_read, update, file_type, compression_type;
 #ifdef pp_THREAD
   int nthreads;
 #endif
@@ -40,14 +44,14 @@ typedef struct _framedata {
   bufferdata *bufferinfo;
   float *times, load_time, total_time;
   float valmin, valmax;
-  void (*GetFrameInfo)(bufferdata *bufferinfo, int *headersize, int **sizes, int *nsizes, int **subframeoffsets, int **subframesizes, int *nsubframes, FILE_SIZE *filesizeptr);
+  void (*GetFrameInfo)(bufferdata *bufferinfo, int *headersize, int **sizes, int *nsizes, int **subframeoffsets, int **subframesizes, int *nsubframes, int *compression_type, FILE_SIZE *filesizeptr);
 } framedata;
 
 // ----------------------- headers -----------------------
 
 framedata *FRAMELoadData(char *file, int type, FILE_SIZE *filesizeptr);
 framedata *FRAMELoadFrameData(framedata *frameinfo, char *file, int load_flag, int time_frame, int file_type,
-                              void GetFrameInfo(bufferdata *bufferinfo, int *headersize, int **sizes, int *nsizes, int **subframeptrs, int **subframesizesptr, int *nsubframes, FILE_SIZE *filesizeptr));
+                              void GetFrameInfo(bufferdata *bufferinfo, int *headersize, int **sizes, int *nsizes, int **subframeptrs, int **subframesizesptr, int *nsubframes, int *compression_type, FILE_SIZE *filesizeptr));
 void FRAMEFree(framedata *fi);
 #ifdef pp_THREAD
 void FRAMESetNThreads(framedata *fi, int nthreads);
@@ -56,9 +60,19 @@ unsigned char *FRAMEGetFramePtr(framedata *fi, int iframe);
 unsigned char *FRAMEGetSubFramePtr(framedata *fi, int iframe, int isubframe);
 int FRAMEGetMinMax(framedata *fi);
 
-void GetBoundaryFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **framesptr, int *nframesptr, int **subframeoffsetptrs, int **subframesizesptr, int *nsubframeoffsets, FILE_SIZE *filesizeptr);
-void GetIsoFrameInfo(     bufferdata *bufferinfo, int *headersizeptr, int **framesptr, int *nframesptr, int **subframeoffsetptrs, int **subframesizesptr, int *nsubframeoffsets, FILE_SIZE *filesizeptr);
-void GetPartFrameInfo(    bufferdata *bufferinfo, int *headersizeptr, int **framesptr, int *nframesptr, int **subframeoffsetptrs, int **subframesizesptr, int *nsubframeoffsets, FILE_SIZE *filesizeptr);
-void GetSliceFrameInfo(   bufferdata *bufferinfo, int *headersizeptr, int **framesptr, int *nframesptr, int **subframeoffsetptrs, int **subframesizesptr, int *nsubframeoffsets, FILE_SIZE *filesizeptr);
-void GetSmoke3DFrameInfo( bufferdata *bufferinfo, int *headersizeptr, int **framesptr, int *nframesptr, int **subframeoffsetptrs, int **subframesizesptr, int *nsubframeoffsets, FILE_SIZE *filesizeptr);
+void GetBoundaryFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **framesptr, int *nframesptr,
+                          int **subframeoffsetptrs, int **subframesizesptr, int *nsubframeoffsets,
+                          int *compression_type, FILE_SIZE *filesizeptr);
+void GetIsoFrameInfo(     bufferdata *bufferinfo, int *headersizeptr, int **framesptr, int *nframesptr,
+                          int **subframeoffsetptrs, int **subframesizesptr, int *nsubframeoffsets,
+                          int *compression_type, FILE_SIZE *filesizeptr);
+void GetPartFrameInfo(    bufferdata *bufferinfo, int *headersizeptr, int **framesptr, int *nframesptr,
+                          int **subframeoffsetptrs, int **subframesizesptr, int *nsubframeoffsets,
+                          int *compression_type, FILE_SIZE *filesizeptr);
+void GetSliceFrameInfo(   bufferdata *bufferinfo, int *headersizeptr, int **framesptr, int *nframesptr,
+                          int **subframeoffsetptrs, int **subframesizesptr, int *nsubframeoffsets,
+                          int *compression_type, FILE_SIZE *filesizeptr);
+void GetSmoke3DFrameInfo( bufferdata *bufferinfo, int *headersizeptr, int **framesptr, int *nframesptr,
+                          int **subframeoffsetptrs, int **subframesizesptr, int *nsubframeoffsets,
+                          int *compression_type, FILE_SIZE *filesizeptr);
 #endif

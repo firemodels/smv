@@ -4225,7 +4225,6 @@ FILE_SIZE ReadSmoke3D(int time_frame,int ifile_arg,int load_flag, int first_time
   float total_time;
 #ifndef pp_SMOKEFRAME
   int error_local;
-  int nxyz_local[8];
   MFILE *SMOKE3DFILE;
   float read_time_local;
   int iii;
@@ -4279,34 +4278,47 @@ FILE_SIZE ReadSmoke3D(int time_frame,int ifile_arg,int load_flag, int first_time
 
 #ifdef pp_SMOKEFRAME
   smoke3di->frameinfo = FRAMELoadFrameData(smoke3di->frameinfo, smoke3di->file, load_flag, time_frame, FORTRAN_FILE, GetSmoke3DFrameInfo);
+  if(smoke3di->frameinfo->compression_type == FRAME_ZLIB)smoke3di->compression_type = COMPRESSED_ZLIB;
   update_frame_output = 1;
   int i, ii;
-  int *nxyz_local;
-  nxyz_local = (int *)smoke3di->frameinfo->header;
-  smoke3di->compression_type = nxyz_local[2];
-  smoke3di->is1 = nxyz_local[3];
-  smoke3di->is2 = nxyz_local[4];
-  smoke3di->js1 = nxyz_local[5];
-  smoke3di->js2 = nxyz_local[6];
-  smoke3di->ks1 = nxyz_local[7];
-  smoke3di->ks2 = nxyz_local[8];
+  int *nxyzptr;
+  int offset;
+
+  nxyzptr = ( int * )smoke3di->frameinfo->header;
+  if(smoke3di->compression_type == COMPRESSED_ZLIB){
+    offset = 12;
+    smoke3di->is1 = nxyzptr[2];
+    smoke3di->is2 = nxyzptr[3];
+    smoke3di->js1 = nxyzptr[4];
+    smoke3di->js2 = nxyzptr[5];
+    smoke3di->ks1 = nxyzptr[6];
+    smoke3di->ks2 = nxyzptr[7];
+  }
+  else{
+    offset = 16;
+    smoke3di->is1 = nxyzptr[3];
+    smoke3di->is2 = nxyzptr[4];
+    smoke3di->js1 = nxyzptr[5];
+    smoke3di->js2 = nxyzptr[6];
+    smoke3di->ks1 = nxyzptr[7];
+    smoke3di->ks2 = nxyzptr[8];
+  }
   i = 0;
   for(ii = 0; ii < smoke3di->ntimes_full; ii++){
     if(smoke3di->use_smokeframe[ii] == 1){
-      smoke3di->smokeframe_comp_list[i] = smoke3di->frameinfo->frameptrs[ii] + 16;
+      smoke3di->smokeframe_comp_list[i] = smoke3di->frameinfo->frameptrs[ii] + offset;
       i++;
     }
   }
-#endif
-//*** read in data
-
-#ifndef pp_SMOKEFRAME
+#else
   SMOKE3DFILE=FOPEN_SMOKE(smoke3di->file,"rb", n_smokeload_threads, use_smokeload_threads);
   if(SMOKE3DFILE==NULL){
     SetupSmoke3D(smoke3di,UNLOAD, time_frame, &error_local);
     *errorcode_arg =1;
     return 0;
   }
+
+  int nxyz_local[8];
 
   SKIP_SMOKE;FREAD_SMOKE(nxyz_local,4,8,SMOKE3DFILE);SKIP_SMOKE;
   file_size_local +=4+4*8+4;
