@@ -104,15 +104,16 @@ FILE_m *fopen_b(char *file, unsigned char *buffer, size_t nbuffer, char *mode){
   if(NewMemory(( void ** )&m_file, strlen(file) + 1) == 0){ // memory allocation failed so abort
     return NULL;
   }
+  strcpy(m_file, file);
 
   if(NewMemory(( void ** )&stream_m, sizeof(FILE_m)) == 0){
     FREEMEMORY(m_file);
     return NULL;
   }
-  stream_m->buffer = buffer;
+  stream_m->buffer     = buffer;
   stream_m->buffer_beg = buffer;
   stream_m->buffer_end = buffer + nbuffer;
-  stream_m->file = m_file;
+  stream_m->file       = m_file;
   if(buffer == NULL){
     stream_m->stream = fopen(file, mode);
     if(stream_m->stream == NULL){
@@ -162,7 +163,7 @@ size_t fread_m(void *ptr, size_t size, size_t nmemb, FILE_m *stream_m){
     unsigned char *buffer_end;
 
     buffer_end = stream_m->buffer + size*nmemb;
-    if(buffer_end-stream_m->buffer_end>=0){
+    if(buffer_end-stream_m->buffer_end>0){
       stream_m->buffer = buffer_end;
       return 0;
     }

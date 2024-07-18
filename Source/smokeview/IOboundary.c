@@ -1030,7 +1030,7 @@ void DrawOnlyThreshold(const meshdata *meshi){
 
 void GetBoundaryDataZlib(patchdata *patchi, unsigned char *data, int ndata,
   float *local_times, unsigned int *zipoffset, unsigned int *zipsize, int ntimes_local){
-  FILE *stream;
+  FILE_m *stream;
   float local_time;
   unsigned int compressed_size;
   int npatches;
@@ -1055,22 +1055,34 @@ void GetBoundaryDataZlib(patchdata *patchi, unsigned char *data, int ndata,
   // compressed size of frame
   // compressed buffer
 
-  stream = fopen(patchi->file, "rb");
+
+#ifdef pp_BOUNDFRAME
+  char *buffer=NULL;
+  int nbuffer=0;
+
+  if(patchi->frameinfo!=NULL&&patchi->frameinfo->bufferinfo!=NULL){
+    buffer  = patchi->frameinfo->bufferinfo->buffer;
+    nbuffer = patchi->frameinfo->bufferinfo->nbuffer;
+  }
+  stream = fopen_b(( char * )patchi->file, buffer, nbuffer, "rb");
+#else
+  stream = fopen_m((char *)patchi->file, "rb");
+#endif
   if(stream==NULL)return;
 
-  FSEEK(stream, 12, SEEK_CUR);
-  fread(&version, 4, 1, stream);
-  FSEEK(stream, 16, SEEK_CUR);
-  fread(&npatches, 4, 1, stream);
+  fseek_m(stream, 12, SEEK_CUR);
+  fread_m(&version, 4, 1, stream);
+  fseek_m(stream, 16, SEEK_CUR);
+  fread_m(&npatches, 4, 1, stream);
   if(version==0){
     local_skip = 6*npatches*4;
   }
   else{
     local_skip = 9*npatches*4;
   }
-  return_code = FSEEK(stream, local_skip, SEEK_CUR);
+  return_code = fseek_m(stream, local_skip, SEEK_CUR);
   if(return_code!=0){
-    fclose(stream);
+    fclose_m(stream);
     return;
   }
   datacopy = data;
@@ -1082,19 +1094,22 @@ void GetBoundaryDataZlib(patchdata *patchi, unsigned char *data, int ndata,
   for(;;){
     int skip_frame;
 
-    if(fread(&local_time, 4, 1, stream)==0)break;
+    if(fread_m(&local_time, 4, 1, stream)!=1)break;
     skip_frame = 1;
     if(local_time>time_max){
       time_max = local_time;
       skip_frame = 0;
       local_count++;
     }
-    if(fread(&compressed_size, 4, 1, stream)==0)break;
+    if(fread_m(&compressed_size, 4, 1, stream) != 1)break;
     if(skip_frame==0&&local_count%tload_step==0){
-      if(fread(datacopy, 1, compressed_size, stream)==0)break;
+      int count;
+
+      count = fread_m(datacopy, 1, compressed_size, stream);
+      if(count != compressed_size)break;
     }
     else{
-      FSEEK(stream, compressed_size, SEEK_CUR);
+      if(fseek_m(stream, compressed_size, SEEK_CUR) != 0)break;
     }
 
     if(skip_frame==1||local_count%tload_step!=0)continue;
@@ -1107,7 +1122,7 @@ void GetBoundaryDataZlib(patchdata *patchi, unsigned char *data, int ndata,
     datacopy += compressed_size;
     offset += compressed_size;
   }
-  fclose(stream);
+  fclose_m(stream);
 }
 /* ------------------ GetBoundaryHeader ------------------------ */
 
@@ -1391,8 +1406,7 @@ int GetPatchNTimes(char *file){
 
 // !  ------------------ GetPatchSizes1 ------------------------
 
-void GetPatchSizes1(FILE_m **stream, const char *patchfilename, char *buffer, int *npatch,
-                    int *headersize, int *error){
+void GetPatchSizes1(FILE_m **stream, const char *patchfilename, char *buffer, int nbuffer, int *npatch, int *headersize, int *error){
 
   *error = 0;
   assert(stream !=NULL);
@@ -1401,7 +1415,11 @@ void GetPatchSizes1(FILE_m **stream, const char *patchfilename, char *buffer, in
     *error = 1;
     return;
   }
+#ifdef pp_BOUNDFRAME
+  *stream = fopen_b(( char * )patchfilename, buffer, nbuffer, "rb");
+#else
   *stream = fopen_m((char *)patchfilename, "rb");
+#endif
   if(*stream == NULL){
     printf(" The boundary file , %s, failed to open\n", patchfilename);
     *error = 1;
@@ -1670,7 +1688,15 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
   }
 
   if(patchi->compression_type==UNCOMPRESSED){
-    GetPatchSizes1(&stream,file,NULL,&meshi->npatches,&headersize,&error);
+    char *buffer = NULL;
+    int nbuffer = 0;
+#ifdef pp_BOUNDFRAME
+    if(patchi->frameinfo != NULL && patchi->frameinfo->bufferinfo != NULL){
+      buffer  = patchi->frameinfo->bufferinfo->buffer;
+      nbuffer = patchi->frameinfo->bufferinfo->nbuffer;
+    }
+#endif
+    GetPatchSizes1(&stream, file, buffer, nbuffer, &meshi->npatches, &headersize, &error);
     if(error!=0){
       ReadBoundary(ifile,UNLOAD,&error);
       *errorcode=1;
@@ -2337,7 +2363,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
       {
 
         nn=0;
-        if(loadpatchbysteps==COMPRESSED_ALLFRAMES)UncompressBoundaryDataBNDF(meshi,ii);
+        if(loadpatchbysteps == COMPRESSED_ALLFRAMES)UncompressBoundaryDataBNDF(meshi, ii);
         for(n=0;n<meshi->npatches;n++){
           meshdata *meshblock;
           float dval;

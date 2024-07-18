@@ -527,12 +527,11 @@ void GetBoundaryFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **fram
     for(;;){
       int nchars;
       float time;
-      int count;
-      count = fread(&time, 4, 1, stream);
-      if(count!=1)break;
-      count = fread(&nchars, 4, 1, stream);
-      if(count!=1)break;
-      FSEEK(stream, nchars, SEEK_CUR);
+      int count, error;
+
+      count = fread(&time,   4, 1, stream);    if(count!=1)break;
+      count = fread(&nchars, 4, 1, stream);    if(count!=1)break;
+      error = FSEEK(stream, nchars, SEEK_CUR); if(error != 0)break;
       frames[nframes++]=nchars+8;
     }
     if(nframes > 0){
