@@ -1057,7 +1057,7 @@ void GetBoundaryDataZlib(patchdata *patchi, unsigned char *data, int ndata,
 
 
 #ifdef pp_BOUNDFRAME
-  char *buffer=NULL;
+  unsigned char *buffer=NULL;
   int nbuffer=0;
 
   if(patchi->frameinfo!=NULL&&patchi->frameinfo->bufferinfo!=NULL){
@@ -1406,7 +1406,7 @@ int GetPatchNTimes(char *file){
 
 // !  ------------------ GetPatchSizes1 ------------------------
 
-void GetPatchSizes1(FILE_m **stream, const char *patchfilename, char *buffer, int nbuffer, int *npatch, int *headersize, int *error){
+void GetPatchSizes1(FILE_m **stream, const char *patchfilename, unsigned char *buffer, int nbuffer, int *npatch, int *headersize, int *error){
 
   *error = 0;
   assert(stream !=NULL);
@@ -1688,7 +1688,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
   }
 
   if(patchi->compression_type==UNCOMPRESSED){
-    char *buffer = NULL;
+    unsigned char *buffer = NULL;
     int nbuffer = 0;
 #ifdef pp_BOUNDFRAME
     if(patchi->frameinfo != NULL && patchi->frameinfo->bufferinfo != NULL){
