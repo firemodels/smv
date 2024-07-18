@@ -1391,8 +1391,8 @@ int GetPatchNTimes(char *file){
 
 // !  ------------------ GetPatchSizes1 ------------------------
 
-void GetPatchSizes1(FILE **stream, const char *patchfilename, int *npatch,
-                    int *headersize, int *error) {
+void GetPatchSizes1(FILE_m **stream, const char *patchfilename, char *buffer, int *npatch,
+                    int *headersize, int *error){
 
   *error = 0;
   assert(stream !=NULL);
@@ -1401,38 +1401,40 @@ void GetPatchSizes1(FILE **stream, const char *patchfilename, int *npatch,
     *error = 1;
     return;
   }
-  *stream = FOPEN(patchfilename, "rb");
-  if (*stream == NULL) {
-    printf(" The boundary file name, %s does not exist\n", patchfilename);
+  *stream = fopen_m((char *)patchfilename, "rb");
+  if(*stream == NULL){
+    printf(" The boundary file , %s, failed to open\n", patchfilename);
     *error = 1;
     return;
   }
 
   // skip over long, short and unit labels (each 30 characters in length);
-  *error = fseek(*stream, 4+30+4, SEEK_SET);
-  *error = fseek(*stream, 4+30+4, SEEK_CUR);
-  *error = fseek(*stream, 4+30+4, SEEK_CUR);
-  if (*error == 0) fortread(npatch, sizeof(*npatch), 1, *stream);
+  *error = fseek_m(*stream, 4+30+4, SEEK_SET);
+  *error = fseek_m(*stream, 4+30+4, SEEK_CUR);
+  *error = fseek_m(*stream, 4+30+4, SEEK_CUR);
+  if(*error == 0){
+    fseek_m(*stream, 4, SEEK_CUR); fread_m(npatch, sizeof(*npatch), 1, *stream); fseek_m(*stream, 4, SEEK_CUR);
+  }
   *headersize = 3 * (4 + 30 + 4) + 4 + 4 + 4;
-
   return;
 }
 
 // !  ------------------ GetPatchSizes2 ------------------------
 
-void GetPatchSizes2(FILE *stream, int version, int npatch, int *npatchsize,
+void GetPatchSizes2(FILE_m *stream, int version, int npatch, int *npatchsize,
                     int *pi1, int *pi2, int *pj1, int *pj2, int *pk1, int *pk2,
-                    int *patchdir, int *headersize, int *framesize) {
+                    int *patchdir, int *headersize, int *framesize){
   int ijkp[9] = {0};
 
   *npatchsize = 0;
 
   int n;
-  for (n = 0; n < npatch; n++) {
-    if (version == 0) {
-      fortread(ijkp, sizeof(*ijkp), 6, stream);
-    } else {
-      fortread(ijkp, sizeof(*ijkp), 9, stream);
+  for (n = 0; n < npatch; n++){
+    if(version == 0){
+      fseek_m(stream, 4, SEEK_CUR);fread_m(ijkp, sizeof(*ijkp), 6, stream);fseek_m(stream, 4, SEEK_CUR);
+    }
+    else {
+      fseek_m(stream, 4, SEEK_CUR); fread_m(ijkp, sizeof(*ijkp), 9, stream); fseek_m(stream, 4, SEEK_CUR);
       patchdir[n] = ijkp[6];
     }
     pi1[n] = ijkp[0];
@@ -1451,7 +1453,7 @@ void GetPatchSizes2(FILE *stream, int version, int npatch, int *npatchsize,
     *npatchsize += (i2 + 1 - i1) * (j2 + 1 - j1) * (k2 + 1 - k1);
   }
   *headersize += npatch * (4 + 6 * 4 + 4);
-  if (version == 1) {
+  if(version == 1){
     *headersize += npatch * 4;
   }
   *framesize = 8 + 4 + 8 * npatch + (*npatchsize) * 4;
@@ -1460,22 +1462,24 @@ void GetPatchSizes2(FILE *stream, int version, int npatch, int *npatchsize,
 }
 /* ------------------ GetPatchData ------------------------ */
 
-void GetPatchData(FILE *stream, int npatch, int *pi1, int *pi2, int *pj1,
+void GetPatchData(FILE_m *stream, int npatch, int *pi1, int *pi2, int *pj1,
   int *pj2, int *pk1, int *pk2, float *patchtime, float *pqq,
-  int *npqq, int *file_sizeptr, int *error) {
+  int *npqq, int *file_sizeptr, int *error){
   int i1, i2, j1, j2, k1, k2, size, ibeg;
   int file_size;
+  int count;
 
   file_size = 0;
   *error = 0;
-  *error = fortread(patchtime, sizeof(*patchtime), 1, stream);
+  fseek_m(stream, 4, SEEK_CUR); count = fread_m(patchtime, sizeof(*patchtime), 1, stream); fseek_m(stream, 4, SEEK_CUR);
+  if(count != 1)*error = 1;
   file_size = file_size + 4;
   if(*error != 0) return;
   ibeg = 0;
   *npqq = 0;
 
   int i;
-  for(i = 0; i < npatch; i++) {
+  for(i = 0; i < npatch; i++){
     i1 = pi1[i];
     i2 = pi2[i];
     j1 = pj1[i];
@@ -1484,7 +1488,8 @@ void GetPatchData(FILE *stream, int npatch, int *pi1, int *pi2, int *pj1,
     k2 = pk2[i];
     size = (i2 + 1 - i1) * (j2 + 1 - j1) * (k2 + 1 - k1);
     *npqq += size;
-    *error = fortread(&pqq[ibeg], sizeof(*pqq), size, stream);
+    fseek_m(stream, 4, SEEK_CUR); count = fread_m(&pqq[ibeg], sizeof(*pqq), size, stream); fseek_m(stream, 4, SEEK_CUR);
+    if(count != size)*error = 1;
     // TODO: hardcodes float size.
     file_size += 4 * size;
     if(*error != 0) break;
@@ -1528,7 +1533,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
   int ncompressed_buffer;
   char *file;
   float read_time, total_time;
-  FILE *stream = NULL;
+  FILE_m *stream = NULL;
   int wallcenter=0;
   FILE_SIZE return_filesize = 0;
 
@@ -1665,7 +1670,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
   }
 
   if(patchi->compression_type==UNCOMPRESSED){
-    GetPatchSizes1(&stream,file,&meshi->npatches,&headersize,&error);
+    GetPatchSizes1(&stream,file,NULL,&meshi->npatches,&headersize,&error);
     if(error!=0){
       ReadBoundary(ifile,UNLOAD,&error);
       *errorcode=1;
@@ -1697,7 +1702,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
        NewResizeMemory(meshi->blockstart,        sizeof(int)*(1+meshi->npatches))==0){
       *errorcode=1;
       if(patchi->compression_type==UNCOMPRESSED){
-        fclose(stream);
+        fclose_m(stream);
       }
       ReadBoundary(ifile,UNLOAD,&error);
       return 0;
@@ -1765,7 +1770,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
       patchi->loaded=0;
       patchi->display=0;
       if(patchi->compression_type==UNCOMPRESSED){
-        fclose(stream);
+        fclose_m(stream);
       }
       ReadBoundary(ifile,UNLOAD,&error);
       return 0;
@@ -2257,7 +2262,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
   NewResizeMemory(meshi->zipsize,    sizeof(unsigned int)*maxtimes_boundary);
   if(meshi->patch_times==NULL){
     *errorcode=1;
-    fclose(stream);
+    fclose_m(stream);
     ReadBoundary(ifile,UNLOAD,&error);
     return 0;
   }
@@ -2271,7 +2276,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
   else{
     if(meshi->patchval == NULL){
       *errorcode = 1;
-      fclose(stream);
+      fclose_m(stream);
       ReadBoundary(ifile, UNLOAD, &error);
       return 0;
     }
@@ -2298,7 +2303,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
         int framesizes;
 
         framesizes = framesize*framestart-8;
-        fseek(stream, framesizes, SEEK_CUR);
+        fseek_m(stream, framesizes, SEEK_CUR);
         local_first = 0;
       }
 #ifdef pp_BOUNDFRAME
@@ -2407,7 +2412,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
              ){
               *errorcode=1;
               ReadBoundary(ifile,UNLOAD,&error);
-              fclose(stream);
+              fclose_m(stream);
               return 0;
             }
           }
@@ -2434,7 +2439,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
     npatchvals = meshi->npatch_times*meshi->npatchsize;
     if(npatchvals==0||NewResizeMemory(meshi->cpatchval,sizeof(unsigned char)*npatchvals)==0){
       *errorcode=1;
-      fclose(stream);
+      fclose_m(stream);
       ReadBoundary(ifile,UNLOAD,&error);
       return 0;
     }
@@ -2442,7 +2447,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
   if(NewResizeMemory(colorlabelpatch,MAXRGB*sizeof(char *))==0){
     *errorcode=1;
     if(loadpatchbysteps!=COMPRESSED_ALLFRAMES){
-      fclose(stream);
+      fclose_m(stream);
     }
     ReadBoundary(ifile,UNLOAD,&error);
     return 0;
@@ -2454,7 +2459,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
     if(NewResizeMemory(colorlabelpatch[n],11)==0){
       *errorcode=1;
       if(loadpatchbysteps!=COMPRESSED_ALLFRAMES){
-        fclose(stream);
+        fclose_m(stream);
       }
       ReadBoundary(ifile,UNLOAD,&error);
       return 0;
