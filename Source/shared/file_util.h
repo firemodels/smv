@@ -129,6 +129,7 @@ EXTERNCPP bufferdata *File2Buffer(char *file, bufferdata *bufferinfo, int *nread
 EXTERNCPP FILE_SIZE fread_p(char *file, unsigned char *buffer, FILE_SIZE offset, FILE_SIZE nchars, int nthreads);
 EXTERNCPP void FileErase(char *file);
 EXTERNCPP void GetProgFullPath(char *progexe, int maxlen_progexe);
+EXTERNCPP FILE *FOPEN(const char *file, const char *mode);
 EXTERNCPP FILE *fopen_indir(char *dir, char *file, char *mode);
 EXTERNCPP FILE *fopen_2dir(char *file, char *mode, char *scratch_dir);
 EXTERNCPP void TestWrite(char *scratchdir, char **fileptr);
