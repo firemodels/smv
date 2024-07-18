@@ -5378,13 +5378,9 @@ int ParseBNDFProcess(bufferstreamdata *stream, char *buffer, int *nn_patch_in, i
   strcat(patchi->bound_file, ".bnd");
   patchi->have_bound_file = NO;
 
-#ifdef pp_BOUNDFRAME
-  patchi->comp_file = NULL;
-#else
   NewMemory((void **)&patchi->comp_file, (unsigned int)(len + 4 + 1));
   STRCPY(patchi->comp_file, bufferptr);
   STRCAT(patchi->comp_file, ".svz");
-#endif
 
   NewMemory((void **)&patchi->size_file, (unsigned int)(len+4+1));
   STRCPY(patchi->size_file, bufferptr);

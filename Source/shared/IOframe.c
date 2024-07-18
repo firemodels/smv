@@ -434,6 +434,12 @@ void GetBoundaryFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **fram
   FILE_SIZE filesize;
   int npatch, i;
   int *subframeoffsets=NULL, *subframesizes=NULL, nsubframes=0;
+  char *ext;
+
+  ext = strrchr(bufferinfo->file, '.');
+  if(ext != NULL && strcmp(ext, ".svz") == 0){
+    *compression_type = FRAME_ZLIB;
+  }
 
   stream = fopen(bufferinfo->file, "rb");
   if(stream == NULL){
@@ -442,6 +448,7 @@ void GetBoundaryFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **fram
     *filesizeptr = 0;
   }
 
+  // uncompressed format
   // header
   // WRITE(LUBF) QUANTITY   (30 chars)
   // WRITE(LUBF) SHORT_NAME (30 chars)
@@ -450,11 +457,36 @@ void GetBoundaryFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **fram
   // WRITE(LUBF) I1, I2, J1, J2, K1, K2, IOR, NB, NM  (NPATCH entries)
   // WRITE(LUBF) I1, I2, J1, J2, K1, K2, IOR, NB, NM
 
-  headersize = 3 * (4 + 30 + 4);            // QUANTITY, SHORT_NAME, UNITS
+  // compressed format
+  // endian
+  // completion (0/1)
+  // fileversion (compressed format)
+  // version  (bndf version)
+  // global min max (used to perform conversion)
+  // local min max  (min max found for this file)
+  // npatch
+  // i1,i2,j1,j2,k1,k2,idir,dummy,dummy (npatch times)
+
+
+
+  if(*compression_type == FRAME_ZLIB){
+    headersize = 32;            // QUANTITY, SHORT_NAME, UNITS
+  }
+  else{
+    headersize = 3 * (4 + 30 + 4);            // QUANTITY, SHORT_NAME, UNITS
+  }
   FSEEK(stream, headersize, SEEK_SET);
 
-  FSEEK(stream, 4, SEEK_CUR);fread(&npatch, sizeof(int), 1, stream);FSEEK(stream, 4, SEEK_CUR);
-  headersize += (4 + sizeof(int) + 4);       // NPATCH
+
+  if(*compression_type == FRAME_ZLIB){
+    headersize += 4;
+    fread(&npatch, sizeof(int), 1, stream);
+  }
+  else{
+    FSEEK(stream, 4, SEEK_CUR);fread(&npatch, sizeof(int), 1, stream);FSEEK(stream, 4, SEEK_CUR);
+    headersize += (4 + sizeof(int) + 4);       // NPATCH
+  }
+
 
   nsubframes = npatch;
   NewMemory(( void ** )&subframeoffsets, nsubframes*sizeof(int));
@@ -464,7 +496,12 @@ void GetBoundaryFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **fram
   for(i = 0;i < npatch;i++){
     int parms[9], ncells;
 
-    FSEEK(stream, 4, SEEK_CUR);fread(parms, sizeof(int), 9, stream);FSEEK(stream, 4, SEEK_CUR);
+    if(*compression_type == FRAME_ZLIB){
+      fread(parms, sizeof(int), 9, stream);
+    }
+    else{
+      FSEEK(stream, 4, SEEK_CUR);fread(parms, sizeof(int), 9, stream);FSEEK(stream, 4, SEEK_CUR);
+    }
     ncells  = (parms[1] + 1 - parms[0]);
     ncells *= (parms[3] + 1 - parms[2]);
     ncells *= (parms[5] + 1 - parms[4]);
@@ -472,22 +509,57 @@ void GetBoundaryFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **fram
     if(i <npatch-1)subframeoffsets[i+1] = subframeoffsets[i] + (4 + ncells*sizeof(float) + 4);
     subframesizes[i] = ncells;
   }
-  headersize += npatch*(4 + 9 * sizeof(int) + 4); // I1, I2, J1, J2, K1, K2, IOR, NB, NM
-
-  // frame
-  // WRITE(LUBF) TIME
-  // WRITE(LUBF) (((QQ(I, J, K), I = 11, I2), J = J1, J2), K = K1, K2) (NPATH entries)
-  framesize = 4 + sizeof(float) + 4; // time
-  framesize += datasize;
-  fclose(stream);
-
-  filesize = GetFileSizeSMV(bufferinfo->file);
-  nframes = (filesize - headersize) / framesize;
-
-  NewMemory((void **)&frames, nframes * sizeof(int));
-  for(i = 0;i < nframes;i++){
-    frames[i] = framesize;
+  if(*compression_type == FRAME_ZLIB){
+    headersize += npatch*9*sizeof(int); // I1, I2, J1, J2, K1, K2, IOR, NB, NM
   }
+  else{
+    headersize += npatch * (4 + 9 * sizeof(int) + 4); // I1, I2, J1, J2, K1, K2, IOR, NB, NM
+  }
+
+
+  if(*compression_type == FRAME_ZLIB){
+    // compressed format
+    // time_local
+    // compressed size of frame
+    // compressed buffer
+    NewMemory((void **)&frames, 1000000 * sizeof(int));
+    nframes=0;
+    for(;;){
+      int nchars;
+      float time;
+      int count;
+      count = fread(&time, 4, 1, stream);
+      if(count!=1)break;
+      count = fread(&nchars, 4, 1, stream);
+      if(count!=1)break;
+      FSEEK(stream, nchars, SEEK_CUR);
+      frames[nframes++]=nchars+8;
+    }
+    if(nframes > 0){
+      ResizeMemory((void **)&frames, nframes * sizeof(int));
+    }
+    else{
+      FREEMEMORY(frames);
+    }
+    filesize = GetFileSizeSMV(bufferinfo->file);
+  }
+  else{
+    // UNCOMPRESSED format
+    // frame
+    // WRITE(LUBF) TIME
+    // WRITE(LUBF) (((QQ(I, J, K), I = 11, I2), J = J1, J2), K = K1, K2) (NPATH entries)
+    framesize = 4 + sizeof(float) + 4; // time
+    framesize += datasize;
+
+    filesize = GetFileSizeSMV(bufferinfo->file);
+    nframes = (filesize - headersize) / framesize;
+
+    NewMemory((void **)&frames, nframes * sizeof(int));
+    for(i = 0;i < nframes;i++){
+      frames[i] = framesize;
+    }
+  }
+  fclose(stream);
   *headersizeptr      = headersize;
   *framesptr          = frames;
   *nframesptr         = nframes;
