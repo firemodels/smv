@@ -740,6 +740,7 @@ void UpdateAllPartVis(partdata *parti){
   }
 }
 
+#ifndef pp_PARTFRAME
 /* ------------------ GetSizeFileStatus ------------------------ */
 
 int GetSizeFileStatus(partdata *parti){
@@ -939,6 +940,7 @@ LINT GetPartHeaderOffset(partdata *parti_arg){
   fclose_b(stream);
   return file_offset_local;
 }
+#endif
 
 /* ------------------ CreatePartBoundFile ------------------------ */
 
@@ -1043,7 +1045,7 @@ wrapup:
 }
 
 /* ------------------ CreatePartSizeFile ------------------------ */
-
+#ifndef pp_PARTFRAME
 void CreatePartSizeFile(partdata *parti){
   FILE *stream_local=NULL;
   LINT header_offset_local;
@@ -1069,6 +1071,7 @@ void CreatePartSizeFile(partdata *parti){
   TestWrite(smokeview_scratchdir, &(parti->size_file));
   CreatePartSizeFileFromPart(parti->reg_file, parti->size_file, header_offset_local);
 }
+#endif
 
   /* ------------------ GetPartHistogramFile ------------------------ */
 void GetPartHistogramFile(partdata *parti){
@@ -1586,6 +1589,16 @@ void InitPartProp(void){
   }
 }
 
+#ifdef pp_PARTFRAME
+/* ------------------ GetNPartFrames ------------------------ */
+
+int GetNPartFrames(partdata *parti){
+  int nframes;
+
+  nframes = FRAMEGetNFrames(parti->file, FRAME_PART);
+  return nframes;
+}
+#else
 /* ------------------ GetNPartFrames ------------------------ */
 
 int GetNPartFrames(partdata *parti){
@@ -1647,6 +1660,7 @@ int GetNPartFrames(partdata *parti){
   fclose(stream);
   return nframes_all;
 }
+#endif
 
 /* ------------------ GetMinPartFrames ------------------------ */
 

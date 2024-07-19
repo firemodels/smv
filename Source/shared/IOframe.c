@@ -300,6 +300,46 @@ framedata *FRAMELoadFrameData(framedata *frameinfo, char *file, int load_flag, i
   return frameinfo;
 }
 
+/* ------------------ FRAMEGetNFrames ------------------------ */
+// only used for FRAME_PART
+// when used for other types, needs to work when files are compressed
+int FRAMEGetNFrames(char *file, int type){
+  framedata *frameinfo = NULL;
+  int nframes = 0;
+
+  if(file == NULL || FileExistsOrig(file) == 0)return 0;
+  switch(type){
+  case FRAME_3DSMOKE:
+    frameinfo = FRAMEInit(file, FORTRAN_FILE, GetSmoke3DFrameInfo);
+    break;
+  case FRAME_BOUNDARY:
+    frameinfo = FRAMEInit(file, FORTRAN_FILE, GetBoundaryFrameInfo);
+    break;
+  case FRAME_PART:
+    frameinfo = FRAMEInit(file, FORTRAN_FILE, GetPartFrameInfo);
+    break;
+  case FRAME_ISO:
+    frameinfo = FRAMEInit(file, FORTRAN_FILE, GetIsoFrameInfo);
+    break;
+  case FRAME_SLICE:
+    frameinfo = FRAMEInit(file, FORTRAN_FILE, GetSliceFrameInfo);
+    break;
+  default:
+    assert(0);
+    return 0;
+  }
+  if(frameinfo != NULL){
+    NewMemory(( void ** )&frameinfo->bufferinfo, sizeof(bufferdata));
+    frameinfo->bufferinfo->file = file;
+    frameinfo->bufferinfo->buffer = NULL;
+    frameinfo->bufferinfo->nbuffer = 0;
+    FRAMESetup(frameinfo);
+    nframes = frameinfo->nframes;
+    FRAMEFree(frameinfo);
+  }
+  return nframes;
+}
+
 /* ------------------ FRAMELoadData ------------------------ */
 
 framedata *FRAMELoadData(char *file, int type, FILE_SIZE *filesizeptr){
