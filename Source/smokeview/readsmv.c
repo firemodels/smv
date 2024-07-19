@@ -5178,7 +5178,9 @@ int ParsePRT5Process(bufferstreamdata *stream, char *buffer, int *nn_part_in, in
   parti->timeslist = NULL;
   parti->histograms = NULL;
   parti->bounds_set = 0;
+#ifndef pp_PARTFRAME
   parti->filepos = NULL;
+#endif
   parti->tags = NULL;
   parti->sort_tags = NULL;
   parti->vis_part = NULL;
