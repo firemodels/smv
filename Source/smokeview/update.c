@@ -1195,6 +1195,28 @@ void MergeGlobalTimes(float *time_in, int ntimes_in){
   FREEMEMORY(times_map);
 }
 
+  /* ------------------ UpdateSliceNtimes ------------------------ */
+
+#ifdef pp_SLICEFRAME
+void UpdateSliceNtimes(void){
+  int minslice_index = 1000000000, i;
+  for(i = 0;i < nsliceinfo;i++){
+    slicedata *sd;
+
+    sd = sliceinfo + i;
+    if(sd->loaded == 0 || sd->display == 0)continue;
+    minslice_index = MIN(minslice_index, sd->ntimes);
+  }
+  for(i = 0;i < nsliceinfo;i++){
+    slicedata *sd;
+
+    sd = sliceinfo + i;
+    if(sd->loaded == 0 || sd->display == 0)continue;
+    sd->ntimes = minslice_index;
+  }
+}
+#endif
+
   /* ------------------ UpdateTimes ------------------------ */
 
 void UpdateTimes(void){
@@ -1289,23 +1311,6 @@ void UpdateTimes(void){
       MergeGlobalTimes(ptime, 1);
     }
   }
-#ifdef pp_SLICEFRAME
-  int minslice_index = 1000000000;
-  for(i = 0;i < nsliceinfo;i++){
-    slicedata *sd;
-
-    sd = sliceinfo + i;
-    if(sd->loaded == 0 && sd->vloaded == 0)continue;
-    minslice_index = MIN(minslice_index, sd->ntimes);
-  }
-  for(i = 0;i < nsliceinfo;i++){
-    slicedata *sd;
-
-    sd = sliceinfo + i;
-    if(sd->loaded == 0 && sd->vloaded == 0)continue;
-    sd->ntimes = minslice_index;
-  }
-#endif
   for(i=0;i<nsliceinfo;i++){
     slicedata *sd;
 
@@ -2177,9 +2182,11 @@ void UpdateShowScene(void){
   have_smoke = HaveSootLoaded();
 
 #ifdef pp_FRAME
-  if(update_frame_output == 1){
-    update_frame_output = 0;
+  if(update_frame == 1){
+    update_frame = 0;
     OutputFrameSteps();
+    UpdateSliceNtimes();
+    UpdateTimes();
   }
 #endif
 #ifdef pp_SMOKE_SPEEDUP  

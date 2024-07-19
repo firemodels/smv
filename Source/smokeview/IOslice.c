@@ -3993,7 +3993,7 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
       FRAMEGetMinMax(sd->frameinfo);
       frame_valmin = sd->frameinfo->valmin;
       frame_valmax = sd->frameinfo->valmax;
-      update_frame_output = 1;
+      update_frame = 1;
     }
 #endif
     if(sd->compression_type == UNCOMPRESSED){

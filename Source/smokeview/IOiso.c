@@ -494,7 +494,7 @@ FILE_SIZE ReadIsoGeom(int ifile, int load_flag, int *geom_frame_index, int *erro
 
   if(load_flag != UNLOAD){
     isoi->frameinfo = FRAMELoadFrameData(isoi->frameinfo, isoi->file, load_flag, time_frame, FORTRAN_FILE, GetIsoFrameInfo);
-    update_frame_output = 1;
+    update_frame = 1;
 
     geomi->frameinfo = isoi->frameinfo;
     if(isoi->frameinfo != NULL){
