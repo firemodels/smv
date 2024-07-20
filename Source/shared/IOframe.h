@@ -2,12 +2,7 @@
 #define STDIO_FRAME_H_DEFINED
 #include "file_util.h"
 
-// ----------------------- structures -----------------------
-
-#define FRAME_FSEEK(a,b,c)       fseek_m(a,b,c)
-
-#define FRAME_READ(var,count,STREAM) \
-    FRAME_FSEEK(STREAM,4,SEEK_CUR);returncode=fread_m(var,4,(count),STREAM);FRAME_FSEEK(STREAM,4,SEEK_CUR)
+// ----------------------- defines -----------------------
 
 #define FORTRAN_FILE 0
 #define C_FILE       1
@@ -30,6 +25,8 @@
 #define FRAME_ZLIB         2
 
 #define FRAME_LOAD     0
+
+// ----------------------- structure -----------------------
 
 typedef struct _framedata {
   char *file;

@@ -636,9 +636,10 @@ void GetSliceFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **framesp
   }
 
   headersize = 3*(4+30+4);  // 3 30 byte labels 
-  FRAME_FSEEK(stream, headersize, SEEK_CUR);
+  fseek_m(stream, headersize, SEEK_CUR);
 
-  FRAME_READ(ijk, 6, stream);
+  fseek_m(stream, 4, SEEK_CUR);returncode = fread_m(ijk, 4, 6, stream);fseek_m(stream, 4, SEEK_CUR);
+
   if(returncode!=6){
 //    fclose(stream);
     return;
@@ -707,8 +708,8 @@ void GetIsoFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **framesptr
 
   headersize  = 4 + 4 + 4; // ONE
   headersize += 4 + 4 + 4; // VERSION
-  FRAME_FSEEK(stream, headersize, SEEK_CUR);
-  FRAME_READ(&niso_levels, 1, stream);
+  fseek_m(stream, headersize, SEEK_CUR);
+  fseek_m(stream, 4, SEEK_CUR);returncode = fread_m(&niso_levels, 4, 1, stream);fseek_m(stream, 4, SEEK_CUR);
   headersize += 4+4+4; // NISO_LEVELS
 
   levelsize = 0;
@@ -717,7 +718,7 @@ void GetIsoFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **framesptr
   headersize += 4 + 4 + 4; // ZERO (12 bytes)
   headersize += 4 + 8 + 4; // ZERO, ZERO (16 bytes)
   headersize += levelsize; // levels
-  FRAME_FSEEK(stream, 28+levelsize, SEEK_CUR);
+  fseek_m(stream, 28+levelsize, SEEK_CUR);
 
   nframes = 0;
   NewMemory((void **)&frames, 1000000*sizeof(int));
@@ -731,9 +732,9 @@ void GetIsoFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **framesptr
     int nvals[2];
     float times[2];
 
-    FRAME_READ(times, 2, stream);
+    fseek_m(stream, 4, SEEK_CUR);returncode = fread_m(times, 4, 2, stream);fseek_m(stream, 4, SEEK_CUR);
     if(returncode != 2)break;
-    FRAME_READ(nvals, 2, stream);
+    fseek_m(stream, 4, SEEK_CUR);returncode = fread_m(nvals, 4, 2, stream);fseek_m(stream, 4, SEEK_CUR);
     if(returncode != 2)break;
 
     int skip;
@@ -741,7 +742,7 @@ void GetIsoFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **framesptr
     skip = 0;
     if(nvals[0] > 0)skip += (4 + 3*nvals[0]*4 + 4);
     if(nvals[1] > 0)skip += (4 + 3 * nvals[1] * 4 + 4) + (4 + nvals[1] * 4 + 4);
-    FRAME_FSEEK(stream, skip, SEEK_CUR);
+    fseek_m(stream, skip, SEEK_CUR);
     frames[nframes++] = 4 + 8 + 4 + 4 + 8 + 4 + skip;
   }
   if(nframes > 0)ResizeMemory((void **)&frames, nframes * sizeof(int));
@@ -785,9 +786,9 @@ void GetPartFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **framespt
 
   headersize  = 4 + 4 + 4; // ONE
   headersize += 4 + 4 + 4; // FDS VERSION
-  FRAME_FSEEK(stream, headersize, SEEK_CUR);
+  fseek_m(stream, headersize, SEEK_CUR);
 
-  FRAME_READ(&n_part, 1, stream);
+  fseek_m(stream, 4, SEEK_CUR);returncode = fread_m(&n_part, 4, 1, stream);fseek_m(stream, 4, SEEK_CUR);
   headersize += 4 + 4 + 4; // n_part
 
   NewMemory((void **)&nquants, 2*n_part*sizeof(int));
@@ -796,12 +797,12 @@ void GetPartFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **framespt
   for(i=0; i<n_part; i++){
     int labelsize;
 
-    FRAME_READ(nquants+2*i, 2, stream);
+    fseek_m(stream, 4, SEEK_CUR);returncode = fread_m(nquants + 2 * i, 4, 2, stream);fseek_m(stream, 4, SEEK_CUR);
     headersize += 4 + 2*4 + 4;
     
     labelsize = 2*nquants[2*i]*(4+30+4);
     headersize += labelsize;
-    FRAME_FSEEK(stream, labelsize, SEEK_CUR);
+    fseek_m(stream, labelsize, SEEK_CUR);
   }
 
   nframes = 0;
@@ -816,7 +817,7 @@ void GetPartFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **framespt
 //    IF (PC%N_QUANTITIES > 0) WRITE(LUPF) ((QP(I,NN),I=1,NPLIM),NN=1,PC%N_QUANTITIES)
 //  ENDDO
     float time_arg;
-    FRAME_READ(&time_arg, 1, stream);
+    fseek_m(stream, 4, SEEK_CUR);returncode = fread_m(&time_arg, 4, 1, stream);fseek_m(stream, 4, SEEK_CUR);
     framesize = 4 + 4 + 4;
 
     if(returncode != 1)break;
@@ -824,7 +825,7 @@ void GetPartFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **framespt
       int nplim;
       long int skip;
 
-      FRAME_READ(&nplim, 1, stream);
+      fseek_m(stream, 4, SEEK_CUR);returncode = fread_m(&nplim, 4, 1, stream);fseek_m(stream, 4, SEEK_CUR);
       framesize += 4 + 4 + 4;             // nplim
 
 //      printf("nplim %i: %i\n",i, nplim);
@@ -834,7 +835,7 @@ void GetPartFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **framespt
         skip += 4 + nplim*nquants[2*i]*sizeof(float) + 4; // qp
       }
       framesize += skip;
-      FRAME_FSEEK(stream, skip, SEEK_CUR);
+      fseek_m(stream, skip, SEEK_CUR);
     }
     frames[nframes++] = framesize;
   }
