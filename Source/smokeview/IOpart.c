@@ -1668,6 +1668,7 @@ int GetMinPartFrames(int flag){
   int i;
   int min_frames=-1;
 
+  INIT_PRINT_TIMER(timer_nparts);
   for(i=0;i<npartinfo;i++){
     partdata *parti;
     int nframes;
@@ -1688,6 +1689,7 @@ int GetMinPartFrames(int flag){
       }
     }
   }
+  PRINT_TIMER(timer_nparts, "GetMinPartFrames");
   return min_frames;
 }
 
