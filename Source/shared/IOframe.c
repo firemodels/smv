@@ -819,7 +819,6 @@ void GetPartFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **framespt
     FRAME_READ(&time_arg, 1, stream);
     framesize = 4 + 4 + 4;
 
-//    printf("time_arg=%f\n", time_arg);
     if(returncode != 1)break;
     for(i=0; i<n_part; i++){
       int nplim;

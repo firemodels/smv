@@ -1703,9 +1703,33 @@ int GetPartHeader(partdata *parti, int *nf_all, int option_arg, int print_option
   FILE_m *stream;
   int nframes_all_local;
   framedata *frameinfo;
+  int i, n_part, *n_quants;
 
   frameinfo = parti->frameinfo;
   stream = fopen_b(parti->file, frameinfo->bufferinfo->buffer, frameinfo->bufferinfo->nbuffer, "rb");
+
+  fseek_m(stream, 2 * (4 + 4 + 4), SEEK_SET);
+  fseek_m(stream, 4, SEEK_CUR); fread_m(&n_part, sizeof(int), 1, stream); fseek_m(stream, 4, SEEK_CUR);
+  NewMemory(( void ** )&n_quants, n_part*sizeof(int));
+  for(i = 0; i < n_part; i++){
+    int vals[2];
+
+    fseek_m(stream, 4, SEEK_CUR); fread_m(vals, sizeof(int), 2, stream); fseek_m(stream, 4, SEEK_CUR);
+    n_quants[i] = vals[0];
+    fseek_m(stream, 2*vals[0]*(4 + 30 + 4), SEEK_CUR);
+  }
+//  WRITE(LUPF) ONE_INTEGER ! Integer 1 to check Endian-ness
+//  WRITE(LUPF) NINT(VERSION*100.) ! FDS version number
+//  WRITE(LUPF) N_PART ! Number of PARTicle classes
+//  DO N=1,N_PART
+//    PC => PARTICLE_CLASS(N)
+//    WRITE(LUPF) PC%N_QUANTITIES,ZERO_INTEGER ! ZERO_INTEGER is a place holder
+//    DO NN=1,PC%N_QUANTITIES
+//      WRITE(LUPF) CDATA(PC%QUANTITIES_INDEX(NN)) ! 30 character output quantity
+//      WRITE(LUPF) UDATA(PC%QUANTITIES_INDEX(NN)) ! 30 character output units
+//    ENDDO
+//  ENDDO
+
   // pass 1: count frames
 
   nframes_all_local = 0;
@@ -1738,7 +1762,7 @@ int GetPartHeader(partdata *parti, int *nf_all, int option_arg, int print_option
   NewMemory(( void ** )&parti->times_map, parti->ntimes);
 
   // free memory for x, y, z frame data
-  int i;
+
   for(i = 0; i < parti->nclasses; i++){
     partclassdata *partclassi;
 
@@ -1780,7 +1804,7 @@ int GetPartHeader(partdata *parti, int *nf_all, int option_arg, int print_option
       npoints_local = datacopy_local->npoints_file;
       fseek_m(stream, 4 + 3*sizeof(float)*npoints_local               + 4, SEEK_CUR);
       fseek_m(stream, 4 + sizeof(int)*npoints_local                   + 4, SEEK_CUR);
-      fseek_m(stream, 4 + parti->nclasses*sizeof(float)*npoints_local + 4, SEEK_CUR);
+      if(n_quants[j]>0)fseek_m(stream, 4 + n_quants[j]*sizeof(float)*npoints_local + 4, SEEK_CUR);
 
       if(npoints_local > partclassj->maxpoints)partclassj->maxpoints = npoints_local;
       if(npoints_local > 0){
@@ -1820,6 +1844,7 @@ int GetPartHeader(partdata *parti, int *nf_all, int option_arg, int print_option
   FREEMEMORY(parti->sy);
   FREEMEMORY(parti->sz);
   FREEMEMORY(parti->irvals);
+  FREEMEMORY(n_quants);
 
   NewMemory(( void ** )&parti->vis_part,    MAX(nall_points_local, 1));
   NewMemory(( void ** )&parti->tags,        MAX(nall_points_local, 1)*sizeof(int));
