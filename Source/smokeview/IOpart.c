@@ -1736,9 +1736,6 @@ int GetPartHeader(partdata *parti, int *nf_all, int option_arg, int print_option
   NewMemory(( void ** )&parti->data5, parti->nclasses * parti->ntimes * sizeof(part5data));
   NewMemory(( void ** )&parti->times, parti->ntimes * sizeof(float));
   NewMemory(( void ** )&parti->times_map, parti->ntimes);
-#ifndef pp_PARTFRAME
-  NewMemory(( void ** )&parti->filepos, nframes_all_local * sizeof(LINT));
-#endif
 
   // free memory for x, y, z frame data
   int i;
@@ -1752,110 +1749,108 @@ int GetPartHeader(partdata *parti, int *nf_all, int option_arg, int print_option
   // pass 2 - allocate memory for x, y, z frame data
 
   int nall_points_local;
-  {
-    part5data *datacopy_local;
-    int fail_local;
-    int nall_points_types_local;
+  part5data *datacopy_local;
+  int fail_local;
+  int nall_points_types_local;
 
-    fail_local = 0;
-    datacopy_local = parti->data5;
-    for(i = 0; i < nframes_all_local; i++){
-      int j, count;
-      float time_local;
+  fail_local = 0;
+  datacopy_local = parti->data5;
+  for(i = 0; i < nframes_all_local; i++){
+    int j, count;
+    float time_local;
 
-      fseek_m(stream, 4 + frameinfo->offsets[i], SEEK_SET);
-      count = fread_m(&time_local, 4, 1, stream);
-      fseek_m(stream, 4, SEEK_CUR);
+    fseek_m(stream, 4 + frameinfo->offsets[i], SEEK_SET);
+    count = fread_m(&time_local, 4, 1, stream);
+    fseek_m(stream, 4, SEEK_CUR);
+    if(count != 1)break;
+
+//   int skip = 0;
+//   if(tload_step > 1 && i % tload_step != 0)skipit = 1;
+//   if(use_tload_begin == 1 && time_local < tload_begin - TEPS)skipit = 1;
+//   if(use_tload_end == 1 && time_local > tload_end + TEPS)break;
+    for(j = 0; j < parti->nclasses; j++){
+      int npoints_local;
+      partclassdata *partclassj;
+
+      datacopy_local->time = time_local;
+      partclassj = parti->partclassptr[j];
+      InitPart5Data(datacopy_local, partclassj);
+      fseek_m(stream, 4, SEEK_CUR); count = fread_m(&datacopy_local->npoints_file, 4, 1, stream); fseek_m(stream, 4, SEEK_CUR);
       if(count != 1)break;
+      npoints_local = datacopy_local->npoints_file;
+      fseek_m(stream, 4 + 3*sizeof(float)*npoints_local               + 4, SEEK_CUR);
+      fseek_m(stream, 4 + sizeof(int)*npoints_local                   + 4, SEEK_CUR);
+      fseek_m(stream, 4 + parti->nclasses*sizeof(float)*npoints_local + 4, SEEK_CUR);
 
-   //   int skip = 0;
-   //   if(tload_step > 1 && i % tload_step != 0)skipit = 1;
-   //   if(use_tload_begin == 1 && time_local < tload_begin - TEPS)skipit = 1;
-   //   if(use_tload_end == 1 && time_local > tload_end + TEPS)break;
-      for(j = 0; j < parti->nclasses; j++){
-        int npoints_local;
-        partclassdata *partclassj;
-
-        datacopy_local->time = time_local;
-        partclassj = parti->partclassptr[j];
-        InitPart5Data(datacopy_local, partclassj);
-        fseek_m(stream, 4, SEEK_CUR); count = fread_m(&datacopy_local->npoints_file, 4, 1, stream); fseek_m(stream, 4, SEEK_CUR);
-        if(count != 1)break;
-        npoints_local = datacopy_local->npoints_file;
-        fseek_m(stream, 4 + 3*sizeof(float)*npoints_local               + 4, SEEK_CUR);
-        fseek_m(stream, 4 + sizeof(int)*npoints_local                   + 4, SEEK_CUR);
-        fseek_m(stream, 4 + parti->nclasses*sizeof(float)*npoints_local + 4, SEEK_CUR);
-
-        if(npoints_local > partclassj->maxpoints)partclassj->maxpoints = npoints_local;
-        if(npoints_local > 0){
-          if(partfast == NO){
-            NewMemory(( void ** )&datacopy_local->dsx, npoints_local * sizeof(float));
-            NewMemory(( void ** )&datacopy_local->dsy, npoints_local * sizeof(float));
-            NewMemory(( void ** )&datacopy_local->dsz, npoints_local * sizeof(float));
-          }
+      if(npoints_local > partclassj->maxpoints)partclassj->maxpoints = npoints_local;
+      if(npoints_local > 0){
+        if(partfast == NO){
+          NewMemory(( void ** )&datacopy_local->dsx, npoints_local * sizeof(float));
+          NewMemory(( void ** )&datacopy_local->dsy, npoints_local * sizeof(float));
+          NewMemory(( void ** )&datacopy_local->dsz, npoints_local * sizeof(float));
         }
-        datacopy_local++;
       }
-      if(fail_local == 1)break;
+      datacopy_local++;
     }
-    if(fail_local == 1)parti->ntimes = i;
-    rewind_m(stream);
+    if(fail_local == 1)break;
+  }
+  if(fail_local == 1)parti->ntimes = i;
+  rewind_m(stream);
 
-    nall_points_types_local = 0;
-    nall_points_local = 0;
-    datacopy_local = parti->data5;
-    for(i = 0; i < parti->ntimes; i++){
-      int j;
+  nall_points_types_local = 0;
+  nall_points_local = 0;
+  datacopy_local = parti->data5;
+  for(i = 0; i < parti->ntimes; i++){
+    int j;
 
-      for(j = 0; j < parti->nclasses; j++){
-        int npoints_local, ntypes_local;
+    for(j = 0; j < parti->nclasses; j++){
+      int npoints_local, ntypes_local;
 
-        npoints_local = datacopy_local->npoints_file;
-        ntypes_local = datacopy_local->partclassbase->ntypes;
-        nall_points_types_local += npoints_local * ntypes_local;
-        nall_points_local += npoints_local;
-        datacopy_local++;
-      }
+      npoints_local = datacopy_local->npoints_file;
+      ntypes_local = datacopy_local->partclassbase->ntypes;
+      nall_points_types_local += npoints_local * ntypes_local;
+      nall_points_local += npoints_local;
+      datacopy_local++;
     }
-    FREEMEMORY(parti->vis_part);
-    FREEMEMORY(parti->tags);
-    FREEMEMORY(parti->sort_tags);
-    FREEMEMORY(parti->sx);
-    FREEMEMORY(parti->sy);
-    FREEMEMORY(parti->sz);
-    FREEMEMORY(parti->irvals);
+  }
+  FREEMEMORY(parti->vis_part);
+  FREEMEMORY(parti->tags);
+  FREEMEMORY(parti->sort_tags);
+  FREEMEMORY(parti->sx);
+  FREEMEMORY(parti->sy);
+  FREEMEMORY(parti->sz);
+  FREEMEMORY(parti->irvals);
 
-    NewMemory(( void ** )&parti->vis_part,    MAX(nall_points_local, 1));
-    NewMemory(( void ** )&parti->tags,        MAX(nall_points_local, 1)*sizeof(int));
-    NewMemory(( void ** )&parti->sort_tags, 2*MAX(nall_points_local, 1)*sizeof(int));
-    NewMemory(( void ** )&parti->sx,          MAX(nall_points_local, 1)*sizeof(short));
-    NewMemory(( void ** )&parti->sy,          MAX(nall_points_local, 1)*sizeof(short));
-    NewMemory(( void ** )&parti->sz,          MAX(nall_points_local, 1)*sizeof(short));
-    NewMemory(( void ** )&parti->irvals,      MAX(nall_points_types_local, 1));
+  NewMemory(( void ** )&parti->vis_part,    MAX(nall_points_local, 1));
+  NewMemory(( void ** )&parti->tags,        MAX(nall_points_local, 1)*sizeof(int));
+  NewMemory(( void ** )&parti->sort_tags, 2*MAX(nall_points_local, 1)*sizeof(int));
+  NewMemory(( void ** )&parti->sx,          MAX(nall_points_local, 1)*sizeof(short));
+  NewMemory(( void ** )&parti->sy,          MAX(nall_points_local, 1)*sizeof(short));
+  NewMemory(( void ** )&parti->sz,          MAX(nall_points_local, 1)*sizeof(short));
+  NewMemory(( void ** )&parti->irvals,      MAX(nall_points_types_local, 1));
 
-    datacopy_local = parti->data5;
-    nall_points_types_local = 0;
-    nall_points_local = 0;
-    for(i = 0; i < parti->ntimes; i++){
-      int j;
+  datacopy_local = parti->data5;
+  nall_points_types_local = 0;
+  nall_points_local = 0;
+  for(i = 0; i < parti->ntimes; i++){
+    int j;
 
-      for(j = 0; j < parti->nclasses; j++){
-        int npoints_local, ntypes_local;
+    for(j = 0; j < parti->nclasses; j++){
+      int npoints_local, ntypes_local;
 
-        datacopy_local->irvals = parti->irvals + nall_points_types_local;
-        datacopy_local->vis_part = parti->vis_part + nall_points_local;
-        datacopy_local->tags = parti->tags + nall_points_local;
-        datacopy_local->sort_tags = parti->sort_tags + 2 * nall_points_local;
-        datacopy_local->sx = parti->sx + nall_points_local;
-        datacopy_local->sy = parti->sy + nall_points_local;
-        datacopy_local->sz = parti->sz + nall_points_local;
+      datacopy_local->irvals = parti->irvals + nall_points_types_local;
+      datacopy_local->vis_part = parti->vis_part + nall_points_local;
+      datacopy_local->tags = parti->tags + nall_points_local;
+      datacopy_local->sort_tags = parti->sort_tags + 2 * nall_points_local;
+      datacopy_local->sx = parti->sx + nall_points_local;
+      datacopy_local->sy = parti->sy + nall_points_local;
+      datacopy_local->sz = parti->sz + nall_points_local;
 
-        npoints_local = datacopy_local->npoints_file;
-        ntypes_local = datacopy_local->partclassbase->ntypes;
-        nall_points_types_local += npoints_local * ntypes_local;
-        nall_points_local += npoints_local;
-        datacopy_local++;
-      }
+      npoints_local = datacopy_local->npoints_file;
+      ntypes_local = datacopy_local->partclassbase->ntypes;
+      nall_points_types_local += npoints_local * ntypes_local;
+      nall_points_local += npoints_local;
+      datacopy_local++;
     }
   }
   if(nall_points_local == 0)return 0;
