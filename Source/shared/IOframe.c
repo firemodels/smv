@@ -7,16 +7,15 @@
 #include "IOframe.h"
 #include "file_util.h"
 
-// the routines is this file read files that consist of a header followed by 1 or 
-// more frames of data.  Each frame starts with a time value followed by a number 
-// of values.  The number of values in a frame may be different for each frame.  
-// The frame data structures are initialized with the FRAMEInit routine.  This 
-// routine is passed a data file name, a size data file name (which may be NULL), 
-// a file type parameter (C or Fortran, currently now only Fortran) and a routine 
-// that determines the size of each data frame.
-// 
-// The FRAMEsetup routine is then called when a file is read in define the header
-// and data frame sizes
+// The routines is this file read data files consisting of a header followed by one or 
+// more data frames.  Each data frame starts with a time value followed by a number 
+// data of values.  The number of values in a frame may vary.  The frame data structures 
+// are initialized using FRAMEInit.  This routine is passed a file name,  a file type 
+// parameter (C or Fortran) and a routine that determines the size of each data frame.
+// FDS generated files use the Fortran file type. Each Fortran generated data record 
+// is prefixed and suffixed with four bytes. Files compressed with smokezip use the
+// C file type. The FRAMEsetup routine is then called when a file is read in define the 
+// header and data frame sizes.  These operations are consolidated by the FRAMELoadFrame routine.
 
   /* ------------------ FRAMEInit ------------------------ */
 
@@ -254,9 +253,9 @@ unsigned char *FRAMEGetSubFramePtr(framedata *fi, int iframe, int isubframe){
   return ptr;
 }
 
-/* ------------------ FRAMELoadFrameData ------------------------ */
+/* ------------------ FRAMELoadData ------------------------ */
 
-framedata *FRAMELoadFrameData(framedata *frameinfo, char *file, int load_flag, int time_frame, int file_type,
+framedata *FRAMELoadData(framedata *frameinfo, char *file, int load_flag, int time_frame, int file_type,
                   void GetFrameInfo(bufferdata *bufferinfo, int *headersize, int **sizes, int *nsizes,
                                     int **subframeptrs, int **subframesizesptr, int *nsubframes,
                                     int *compression_type, FILE_SIZE *filesizeptr)){
