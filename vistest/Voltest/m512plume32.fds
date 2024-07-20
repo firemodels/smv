@@ -1,10 +1,10 @@
-&HEAD CHID='m128plume64',TITLE='Plume whirl case' /
+&HEAD CHID='m512plume32',TITLE='Plume whirl case' /
 
   same as plume5a except there is a blockage in the middle of the scene to block the flow
   The purpose of this case is to demonstrate the curved flow (via streak lines) that results.
 
-&MULT ID='mesh array', DX=0.4,DY=0.4,DZ=0.4, I_UPPER=3,J_UPPER=3,K_UPPER=7 /
-&MESH IJK=64,64,64, XB=0.0,0.4,0.0,0.4,0.0,0.4, MULT_ID='mesh array' /
+&MULT ID='mesh array', DX=0.2,DY=0.2,DZ=0.4, I_UPPER=7,J_UPPER=7,K_UPPER=7 /
+&MESH IJK=32,32,64, XB=0.0,0.2,0.0,0.2,0.0,0.4, MULT_ID='mesh array' /
 
 &MISC IBLANK_SMV=.TRUE. /
 
