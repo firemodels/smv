@@ -44,9 +44,6 @@ framedata *FRAMEInit(char *file, int file_type, void GetFrameInfo(bufferdata *bu
   frame->update       = 0;
   frame->headersize   = 0;
   frame->filesize     = 0;
-#ifdef pp_THREAD
-  frame->nthreads     = 4;
-#endif
   frame->framesizes   = NULL;
   frame->offsets      = NULL;
   frame->frames       = NULL;
@@ -150,14 +147,6 @@ int FRAMEGetMinMax(framedata *fi){
   fi->valmax = valmax;
   return returnval;
 }
-
-#ifdef pp_THREAD
-/* ------------------ FRAMESetNThreads ------------------------ */
-
-void FRAMESetNThreads(framedata *fi, int nthreads){
-  fi->nthreads = nthreads;
-}
-#endif
 
 /* ------------------ FRAMEReadFrame ------------------------ */
 
@@ -338,35 +327,6 @@ int FRAMEGetNFrames(char *file, int type){
     FRAMEFree(frameinfo);
   }
   return nframes;
-}
-
-/* ------------------ FRAMELoadData ------------------------ */
-
-framedata *FRAMELoadData(char *file, int type, FILE_SIZE *filesizeptr){
-  framedata *frameinfo = NULL;
-
-  if(file == NULL || FileExistsOrig(file) == 0)return NULL;
-  switch(type){
-  case FRAME_3DSMOKE:
-    frameinfo = FRAMELoadFrameData(NULL, file, FRAME_LOAD, ALL_FRAMES, FORTRAN_FILE, GetSmoke3DFrameInfo);
-    break;
-  case FRAME_BOUNDARY:
-    frameinfo = FRAMELoadFrameData(NULL, file, FRAME_LOAD, ALL_FRAMES, FORTRAN_FILE, GetBoundaryFrameInfo);
-    break;
-  case FRAME_PART:
-    frameinfo = FRAMELoadFrameData(NULL, file, FRAME_LOAD, ALL_FRAMES, FORTRAN_FILE, GetPartFrameInfo);
-    break;
-  case FRAME_ISO:
-    frameinfo = FRAMELoadFrameData(NULL, file, FRAME_LOAD, ALL_FRAMES, FORTRAN_FILE, GetIsoFrameInfo);
-    break;
-  case FRAME_SLICE:
-    frameinfo = FRAMELoadFrameData(NULL, file, FRAME_LOAD, ALL_FRAMES, FORTRAN_FILE, GetSliceFrameInfo);
-    break;
-  default:
-    assert(0);
-    return NULL;
-  }
-  return frameinfo;
 }
 
 //******* The following routines define header and frame sizes for each file type 

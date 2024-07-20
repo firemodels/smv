@@ -32,9 +32,6 @@ typedef struct _framedata {
   char *file;
   unsigned char *header, *frames, **frameptrs;
   int nframes, frames_read, update, file_type, compression_type;
-#ifdef pp_THREAD
-  int nthreads;
-#endif
   int headersize, *framesizes;
   int *subframeoffsets, *subframesizes, nsubframes;
   FILE_SIZE *offsets, filesize, bytes_read;
@@ -47,19 +44,15 @@ typedef struct _framedata {
 // ----------------------- headers -----------------------
 
 //*** frame routines
-framedata *FRAMELoadData(char *file, int type, FILE_SIZE *filesizeptr);
 framedata *FRAMELoadFrameData(framedata *frameinfo, char *file, int load_flag, int time_frame, int file_type,
                               void GetFrameInfo(bufferdata *bufferinfo, int *headersize, int **sizes, int *nsizes, int **subframeptrs, int **subframesizesptr, int *nsubframes, int *compression_type, FILE_SIZE *filesizeptr));
 void FRAMEFree(framedata *fi);
-#ifdef pp_THREAD
-void FRAMESetNThreads(framedata *fi, int nthreads);
-#endif
 unsigned char *FRAMEGetFramePtr(framedata *fi, int iframe);
 unsigned char *FRAMEGetSubFramePtr(framedata *fi, int iframe, int isubframe);
 int FRAMEGetMinMax(framedata *fi);
 int FRAMEGetNFrames(char *file, int type);
 
-//*** setup various file types
+//*** setup routines for various file types
 void GetBoundaryFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **framesptr, int *nframesptr,
                           int **subframeoffsetptrs, int **subframesizesptr, int *nsubframeoffsets,
                           int *compression_type, FILE_SIZE *filesizeptr);
