@@ -1849,7 +1849,7 @@ int GetGeomDataSize(char *filename, int *nvars, int time_frame, int *cvals_offse
 
 /* ------------------ GetGeomData------------------------ */
 
-FILE_SIZE GetGeomData(char *filename, int ntimes, int nvals, float *times, int *nstatics, int *ndynamics, float *vals,
+FILE_SIZE GetGeomData(patchdata *patchi, char *filename, int ntimes, int nvals, float *times, int *nstatics, int *ndynamics, float *vals,
                       int time_frame, float *time_value, int *geom_offsets, int *error){
   FILE_SIZE file_size;
 
@@ -1887,7 +1887,8 @@ FILE_SIZE GetGeomData(char *filename, int ntimes, int nvals, float *times, int *
   // compressed_1,...,compressed_ncompressed
 
 
-  FILE *stream;
+  FILE_m *stream;
+  int count_read;
 
   cvals = (unsigned char *)vals;
   file_size = 0;
@@ -1895,7 +1896,16 @@ FILE_SIZE GetGeomData(char *filename, int ntimes, int nvals, float *times, int *
   if(filename==NULL)return 0;
   ext = strrchr(filename, '.');
   if(ext != NULL && strcmp(ext, ".svz") == 0)is_compressed = 1;
-  stream = fopen(filename, "rb");
+#ifdef pp_BOUNDFRAME
+  if(patchi != NULL){
+    stream = fopen_b(filename, NULL, 0, "rb");
+  }
+  else{
+    stream = fopen_b(filename, NULL, 0, "rb");
+  }
+#else
+  stream = fopen_b(filename, NULL, 0, "rb");
+#endif
   if(stream == NULL){
     if(is_compressed == 1){
       printf(" The compressed boundary file %s failed to open\n", filename);
@@ -1910,15 +1920,15 @@ FILE_SIZE GetGeomData(char *filename, int ntimes, int nvals, float *times, int *
   if(is_compressed == 1){
     int completion;
 
-    fread(&one, 4, 1, stream);
-    fread(&completion, 4, 1, stream);
-    fread(&version, 4, 1, stream);
-    fread(valminmax, 4, 2, stream);
+    fread_m(&one, 4, 1, stream);
+    fread_m(&completion, 4, 1, stream);
+    fread_m(&version, 4, 1, stream);
+    fread_m(valminmax, 4, 2, stream);
     file_size = 20;
   }
   else{
-    FORTREAD(&one, 4, 1, stream);
-    FORTREAD(&version, 4, 1, stream);
+    FORTREAD_m(&one, 4, 1, stream);
+    FORTREAD_m(&version, 4, 1, stream);
     file_size = 2 * (4 + 4 + 4);
   }
   nvars = 0;
@@ -1930,29 +1940,29 @@ FILE_SIZE GetGeomData(char *filename, int ntimes, int nvals, float *times, int *
   else{
     frame_start = time_frame;
     frame_stop = time_frame+1;
-    fseek(stream, geom_offsets[time_frame], SEEK_CUR);
+    fseek_m(stream, geom_offsets[time_frame], SEEK_CUR);
   }
   for(iframe = frame_start; iframe<frame_stop; iframe++){
     int nvals_local[4];
     int ncompressed;
 
     if(is_compressed == 1){
-      returncode = fread(&time, 4, 1, stream);
+      returncode = fread_m(&time, 4, 1, stream);
       file_size += 4;
     }
     else{
-      FORTREAD(&time, 4, 1, stream);
+      FORTREAD_m(&time, 4, 1, stream);
       file_size += (4 + 4 + 4);
     }
     if(time_frame==ALL_FRAMES||time_frame==iframe)times[count] = time;
     if(returncode==0)break;
     if(is_compressed == 1){
-      fread(nvals_local, 4, 4, stream);
-      fread(&ncompressed, 4, 1, stream);
+      fread_m(nvals_local, 4, 4, stream);
+      fread_m(&ncompressed, 4, 1, stream);
       file_size += 20;
     }
     else{
-      FORTREAD(nvals_local, 4, 4, stream);
+      FORTREAD_m(nvals_local, 4, 4, stream);
       file_size += 8 + 16;
     }
     nvert_s = nvals_local[0];
@@ -1963,31 +1973,31 @@ FILE_SIZE GetGeomData(char *filename, int ntimes, int nvals, float *times, int *
 
     if(is_compressed == 1){
       if(ncompressed>0){
-        fread(cvals, 1, ncompressed, stream);
+        fread_m(cvals, 1, ncompressed, stream);
         cvals += ncompressed;
       }
     }
     else{
       if(nvert_s > 0){
         if(time_frame == ALL_FRAMES || time_frame == iframe){
-          FORTREAD(vals + nvars, 4, nvert_s, stream);
+          FORTREAD_m(vals + nvars, 4, nvert_s, stream);
           if(returncode == 0)break;
           file_size += (4 + 4 * nvert_s + 4);
           nvars += nvert_s;
         }
         else{
-          fseek(stream, 4 + 4 * nvert_s + 4, SEEK_CUR);
+          fseek_m(stream, 4 + 4 * nvert_s + 4, SEEK_CUR);
         }
       }
       if(ntri_s > 0){
         if(time_frame == ALL_FRAMES || time_frame == iframe){
-          FORTREAD(vals + nvars, 4, ntri_s, stream);
+          FORTREAD_m(vals + nvars, 4, ntri_s, stream);
           if(returncode == 0)break;
           file_size += (4 + 4 * ntri_s + 4);
           nvars += ntri_s;
         }
         else{
-          fseek(stream, (4 + 4 * ntri_s + 4), SEEK_CUR);
+          fseek_m(stream, (4 + 4 * ntri_s + 4), SEEK_CUR);
         }
       }
     }
@@ -1995,24 +2005,24 @@ FILE_SIZE GetGeomData(char *filename, int ntimes, int nvals, float *times, int *
     if(is_compressed == 0){
       if(nvert_d > 0){
         if(time_frame == ALL_FRAMES || time_frame == iframe){
-          FORTREAD(vals + nvars, 4, nvert_d, stream);
+          FORTREAD_m(vals + nvars, 4, nvert_d, stream);
           if(returncode == 0)break;
           file_size += (4 + 4 * nvert_d + 4);
           nvars += nvert_d;
         }
         else{
-          fseek(stream, 4 + 4 * nvert_d + 4, SEEK_CUR);
+          fseek_m(stream, 4 + 4 * nvert_d + 4, SEEK_CUR);
         }
       }
       if(ntri_d > 0){
         if(time_frame == ALL_FRAMES || time_frame == iframe){
-          FORTREAD(vals + nvars, 4, ntri_d, stream);
+          FORTREAD_m(vals + nvars, 4, ntri_d, stream);
           if(returncode == 0)break;
           file_size += (4 + 4 * ntri_d + 4);
           nvars += ntri_d;
         }
         else{
-          fseek(stream, 4 + 4 * ntri_d + 4, SEEK_CUR);
+          fseek_m(stream, 4 + 4 * ntri_d + 4, SEEK_CUR);
         }
       }
     }
@@ -2022,7 +2032,7 @@ FILE_SIZE GetGeomData(char *filename, int ntimes, int nvals, float *times, int *
     }
     if(time_frame==ALL_FRAMES)count++;
   }
-  fclose(stream);
+  fclose_m(stream);
   return file_size;
 }
 
@@ -2149,7 +2159,7 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
   if(current_script_command==NULL||NOT_LOADRENDER){
     PRINTF("Loading %s(%s)", patchi->file, patchi->label.shortlabel);
   }
-  filesize=GetGeomData(patchi->file, ntimes_local, nvals, patchi->geom_times,
+  filesize=GetGeomData(patchi, patchi->file, ntimes_local, nvals, patchi->geom_times,
     patchi->geom_nstatics, patchi->geom_ndynamics, patchi->geom_vals, time_frame, time_value, geom_offsets, &error);
   MakeTimesMap(patchi->geom_times, patchi->geom_times_map, ntimes_local);
 

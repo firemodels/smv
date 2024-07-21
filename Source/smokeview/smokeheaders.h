@@ -373,7 +373,7 @@ EXTERNCPP void SetTimeState(void);
 EXTERNCPP int GetGeomDataSize(char *file, int *nvals, int time_frame,
               int *cvals_offsets, int *cvals_sizes, int *geom_offsets, int *geom_offset_flag,
               int *max_buffer_size, int *error);
-EXTERNCPP FILE_SIZE GetGeomData(char *filename, int ntimes, int nvals, float *times,
+EXTERNCPP FILE_SIZE GetGeomData(patchdata *patchi, char *filename, int ntimes, int nvals, float *times,
               int *nstatics, int *ndynamics, float *vals, int time_frame, float *time_value,
               int *geom_offsets, int *error);
 
