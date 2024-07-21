@@ -7,16 +7,15 @@
 #include "IOframe.h"
 #include "file_util.h"
 
-// the routines is this file read files that consist of a header followed by 1 or 
-// more frames of data.  Each frame starts with a time value followed by a number 
-// of values.  The number of values in a frame may be different for each frame.  
-// The frame data structures are initialized with the FRAMEInit routine.  This 
-// routine is passed a data file name, a size data file name (which may be NULL), 
-// a file type parameter (C or Fortran, currently now only Fortran) and a routine 
-// that determines the size of each data frame.
-// 
-// The FRAMEsetup routine is then called when a file is read in define the header
-// and data frame sizes
+// The routines is this file read data files consisting of a header followed by one or 
+// more data frames.  Each data frame starts with a time value followed by a number 
+// data of values.  The number of values in a frame may vary.  The frame data structures 
+// are initialized using FRAMEInit.  This routine is passed a file name,  a file type 
+// parameter (C or Fortran) and a routine that determines the size of each data frame.
+// FDS generated files use the Fortran file type. Each Fortran generated data record 
+// is prefixed and suffixed with four bytes. Files compressed with smokezip use the
+// C file type. The FRAMEsetup routine is then called when a file is read in define the 
+// header and data frame sizes.  These operations are consolidated by the FRAMELoadFrame routine.
 
   /* ------------------ FRAMEInit ------------------------ */
 
@@ -44,9 +43,6 @@ framedata *FRAMEInit(char *file, int file_type, void GetFrameInfo(bufferdata *bu
   frame->update       = 0;
   frame->headersize   = 0;
   frame->filesize     = 0;
-#ifdef pp_THREAD
-  frame->nthreads     = 4;
-#endif
   frame->framesizes   = NULL;
   frame->offsets      = NULL;
   frame->frames       = NULL;
@@ -150,14 +146,6 @@ int FRAMEGetMinMax(framedata *fi){
   fi->valmax = valmax;
   return returnval;
 }
-
-#ifdef pp_THREAD
-/* ------------------ FRAMESetNThreads ------------------------ */
-
-void FRAMESetNThreads(framedata *fi, int nthreads){
-  fi->nthreads = nthreads;
-}
-#endif
 
 /* ------------------ FRAMEReadFrame ------------------------ */
 
@@ -265,9 +253,9 @@ unsigned char *FRAMEGetSubFramePtr(framedata *fi, int iframe, int isubframe){
   return ptr;
 }
 
-/* ------------------ FRAMELoadFrameData ------------------------ */
+/* ------------------ FRAMELoadData ------------------------ */
 
-framedata *FRAMELoadFrameData(framedata *frameinfo, char *file, int load_flag, int time_frame, int file_type,
+framedata *FRAMELoadData(framedata *frameinfo, char *file, int load_flag, int time_frame, int file_type,
                   void GetFrameInfo(bufferdata *bufferinfo, int *headersize, int **sizes, int *nsizes,
                                     int **subframeptrs, int **subframesizesptr, int *nsubframes,
                                     int *compression_type, FILE_SIZE *filesizeptr)){
@@ -300,33 +288,44 @@ framedata *FRAMELoadFrameData(framedata *frameinfo, char *file, int load_flag, i
   return frameinfo;
 }
 
-/* ------------------ FRAMELoadData ------------------------ */
-
-framedata *FRAMELoadData(char *file, int type, FILE_SIZE *filesizeptr){
+/* ------------------ FRAMEGetNFrames ------------------------ */
+// only used for FRAME_PART
+// when used for other types, needs to work when files are compressed
+int FRAMEGetNFrames(char *file, int type){
   framedata *frameinfo = NULL;
+  int nframes = 0;
 
-  if(file == NULL || FileExistsOrig(file) == 0)return NULL;
+  if(file == NULL || FileExistsOrig(file) == 0)return 0;
   switch(type){
   case FRAME_3DSMOKE:
-    frameinfo = FRAMELoadFrameData(NULL, file, FRAME_LOAD, ALL_FRAMES, FORTRAN_FILE, GetSmoke3DFrameInfo);
+    frameinfo = FRAMEInit(file, FORTRAN_FILE, GetSmoke3DFrameInfo);
     break;
   case FRAME_BOUNDARY:
-    frameinfo = FRAMELoadFrameData(NULL, file, FRAME_LOAD, ALL_FRAMES, FORTRAN_FILE, GetBoundaryFrameInfo);
+    frameinfo = FRAMEInit(file, FORTRAN_FILE, GetBoundaryFrameInfo);
     break;
   case FRAME_PART:
-    frameinfo = FRAMELoadFrameData(NULL, file, FRAME_LOAD, ALL_FRAMES, FORTRAN_FILE, GetPartFrameInfo);
+    frameinfo = FRAMEInit(file, FORTRAN_FILE, GetPartFrameInfo);
     break;
   case FRAME_ISO:
-    frameinfo = FRAMELoadFrameData(NULL, file, FRAME_LOAD, ALL_FRAMES, FORTRAN_FILE, GetIsoFrameInfo);
+    frameinfo = FRAMEInit(file, FORTRAN_FILE, GetIsoFrameInfo);
     break;
   case FRAME_SLICE:
-    frameinfo = FRAMELoadFrameData(NULL, file, FRAME_LOAD, ALL_FRAMES, FORTRAN_FILE, GetSliceFrameInfo);
+    frameinfo = FRAMEInit(file, FORTRAN_FILE, GetSliceFrameInfo);
     break;
   default:
     assert(0);
-    return NULL;
+    return 0;
   }
-  return frameinfo;
+  if(frameinfo != NULL){
+    NewMemory(( void ** )&frameinfo->bufferinfo, sizeof(bufferdata));
+    frameinfo->bufferinfo->file = file;
+    frameinfo->bufferinfo->buffer = NULL;
+    frameinfo->bufferinfo->nbuffer = 0;
+    FRAMESetup(frameinfo);
+    nframes = frameinfo->nframes;
+    FRAMEFree(frameinfo);
+  }
+  return nframes;
 }
 
 //******* The following routines define header and frame sizes for each file type 
@@ -527,12 +526,11 @@ void GetBoundaryFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **fram
     for(;;){
       int nchars;
       float time;
-      int count;
-      count = fread(&time, 4, 1, stream);
-      if(count!=1)break;
-      count = fread(&nchars, 4, 1, stream);
-      if(count!=1)break;
-      FSEEK(stream, nchars, SEEK_CUR);
+      int count, error;
+
+      count = fread(&time,   4, 1, stream);    if(count!=1)break;
+      count = fread(&nchars, 4, 1, stream);    if(count!=1)break;
+      error = FSEEK(stream, nchars, SEEK_CUR); if(error != 0)break;
       frames[nframes++]=nchars+8;
     }
     if(nframes > 0){
@@ -597,9 +595,10 @@ void GetSliceFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **framesp
   }
 
   headersize = 3*(4+30+4);  // 3 30 byte labels 
-  FRAME_FSEEK(stream, headersize, SEEK_CUR);
+  fseek_m(stream, headersize, SEEK_CUR);
 
-  FRAME_READ(ijk, 6, stream);
+  fseek_m(stream, 4, SEEK_CUR);returncode = fread_m(ijk, 4, 6, stream);fseek_m(stream, 4, SEEK_CUR);
+
   if(returncode!=6){
 //    fclose(stream);
     return;
@@ -668,8 +667,8 @@ void GetIsoFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **framesptr
 
   headersize  = 4 + 4 + 4; // ONE
   headersize += 4 + 4 + 4; // VERSION
-  FRAME_FSEEK(stream, headersize, SEEK_CUR);
-  FRAME_READ(&niso_levels, 1, stream);
+  fseek_m(stream, headersize, SEEK_CUR);
+  fseek_m(stream, 4, SEEK_CUR);returncode = fread_m(&niso_levels, 4, 1, stream);fseek_m(stream, 4, SEEK_CUR);
   headersize += 4+4+4; // NISO_LEVELS
 
   levelsize = 0;
@@ -678,7 +677,7 @@ void GetIsoFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **framesptr
   headersize += 4 + 4 + 4; // ZERO (12 bytes)
   headersize += 4 + 8 + 4; // ZERO, ZERO (16 bytes)
   headersize += levelsize; // levels
-  FRAME_FSEEK(stream, 28+levelsize, SEEK_CUR);
+  fseek_m(stream, 28+levelsize, SEEK_CUR);
 
   nframes = 0;
   NewMemory((void **)&frames, 1000000*sizeof(int));
@@ -692,9 +691,9 @@ void GetIsoFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **framesptr
     int nvals[2];
     float times[2];
 
-    FRAME_READ(times, 2, stream);
+    fseek_m(stream, 4, SEEK_CUR);returncode = fread_m(times, 4, 2, stream);fseek_m(stream, 4, SEEK_CUR);
     if(returncode != 2)break;
-    FRAME_READ(nvals, 2, stream);
+    fseek_m(stream, 4, SEEK_CUR);returncode = fread_m(nvals, 4, 2, stream);fseek_m(stream, 4, SEEK_CUR);
     if(returncode != 2)break;
 
     int skip;
@@ -702,7 +701,7 @@ void GetIsoFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **framesptr
     skip = 0;
     if(nvals[0] > 0)skip += (4 + 3*nvals[0]*4 + 4);
     if(nvals[1] > 0)skip += (4 + 3 * nvals[1] * 4 + 4) + (4 + nvals[1] * 4 + 4);
-    FRAME_FSEEK(stream, skip, SEEK_CUR);
+    fseek_m(stream, skip, SEEK_CUR);
     frames[nframes++] = 4 + 8 + 4 + 4 + 8 + 4 + skip;
   }
   if(nframes > 0)ResizeMemory((void **)&frames, nframes * sizeof(int));
@@ -746,9 +745,9 @@ void GetPartFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **framespt
 
   headersize  = 4 + 4 + 4; // ONE
   headersize += 4 + 4 + 4; // FDS VERSION
-  FRAME_FSEEK(stream, headersize, SEEK_CUR);
+  fseek_m(stream, headersize, SEEK_CUR);
 
-  FRAME_READ(&n_part, 1, stream);
+  fseek_m(stream, 4, SEEK_CUR);returncode = fread_m(&n_part, 4, 1, stream);fseek_m(stream, 4, SEEK_CUR);
   headersize += 4 + 4 + 4; // n_part
 
   NewMemory((void **)&nquants, 2*n_part*sizeof(int));
@@ -757,12 +756,12 @@ void GetPartFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **framespt
   for(i=0; i<n_part; i++){
     int labelsize;
 
-    FRAME_READ(nquants+2*i, 2, stream);
+    fseek_m(stream, 4, SEEK_CUR);returncode = fread_m(nquants + 2 * i, 4, 2, stream);fseek_m(stream, 4, SEEK_CUR);
     headersize += 4 + 2*4 + 4;
     
     labelsize = 2*nquants[2*i]*(4+30+4);
     headersize += labelsize;
-    FRAME_FSEEK(stream, labelsize, SEEK_CUR);
+    fseek_m(stream, labelsize, SEEK_CUR);
   }
 
   nframes = 0;
@@ -777,16 +776,15 @@ void GetPartFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **framespt
 //    IF (PC%N_QUANTITIES > 0) WRITE(LUPF) ((QP(I,NN),I=1,NPLIM),NN=1,PC%N_QUANTITIES)
 //  ENDDO
     float time_arg;
-    FRAME_READ(&time_arg, 1, stream);
+    fseek_m(stream, 4, SEEK_CUR);returncode = fread_m(&time_arg, 4, 1, stream);fseek_m(stream, 4, SEEK_CUR);
     framesize = 4 + 4 + 4;
 
-//    printf("time_arg=%f\n", time_arg);
     if(returncode != 1)break;
     for(i=0; i<n_part; i++){
       int nplim;
       long int skip;
 
-      FRAME_READ(&nplim, 1, stream);
+      fseek_m(stream, 4, SEEK_CUR);returncode = fread_m(&nplim, 4, 1, stream);fseek_m(stream, 4, SEEK_CUR);
       framesize += 4 + 4 + 4;             // nplim
 
 //      printf("nplim %i: %i\n",i, nplim);
@@ -796,7 +794,7 @@ void GetPartFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **framespt
         skip += 4 + nplim*nquants[2*i]*sizeof(float) + 4; // qp
       }
       framesize += skip;
-      FRAME_FSEEK(stream, skip, SEEK_CUR);
+      fseek_m(stream, skip, SEEK_CUR);
     }
     frames[nframes++] = framesize;
   }

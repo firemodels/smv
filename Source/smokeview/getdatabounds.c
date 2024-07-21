@@ -1739,6 +1739,7 @@ int ReadPartBounds(partdata *parti,int read_bounds_arg){
       globalmax_part[j] = -1000000000.0;
     }
   }
+#ifndef pp_PARTFRAME
 
   // make sure a size file exists
 
@@ -1752,6 +1753,7 @@ int ReadPartBounds(partdata *parti,int read_bounds_arg){
     fclose(stream);
     stream = NULL;
   }
+#endif
 
   // make sure a bound file exists
 

@@ -7,11 +7,6 @@ int fortread(void *ptr, size_t size, size_t count, FILE *file);
 
 void getzonesize(const char *zonefilename, int *nzonet, int *nrooms,
                  int *nfires, int *error);
-void getpatchsizes1(FILE **file, const char *patchfilename, int *npatch,
-                    int *headersize, int *error);
-void getpatchsizes2(FILE *file, int version, int npatch, int *npatchsize,
-                    int *pi1, int *pi2, int *pj1, int *pj2, int *pk1, int *pk2,
-                    int *patchdir, int *headersize, int *framesize);
 void GetSliceParms(const char *slicefilename, int *ip1, int *ip2, int *jp1,
   int *jp2, int *kp1, int *kp2, int *ni, int *nj, int *nk,
   int *slice3d, int *error);
@@ -32,7 +27,6 @@ void getpartdataframe(FILE *file, int nclasses, int *nquantities, int *npoints,
 void getzonedata(const char *zonefilename, int *nzonet, int *nrooms,
                  int *nfires, float *zonet, float *zoneqfire, float *zonepr,
                  float *zoneylay, float *zonetl, float *zonetu, int *error);
-int skipdata(FILE *file, int skip);
 void getpatchdata(FILE *file, int npatch, int *pi1, int *pi2, int *pj1,
                   int *pj2, int *pk1, int *pk2, float *patchtime, float *pqq,
                   int *npqq, int *file_size, int *error);

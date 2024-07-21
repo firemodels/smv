@@ -4277,9 +4277,9 @@ FILE_SIZE ReadSmoke3D(int time_frame,int ifile_arg,int load_flag, int first_time
 #endif
 
 #ifdef pp_SMOKEFRAME
-  smoke3di->frameinfo = FRAMELoadFrameData(smoke3di->frameinfo, smoke3di->file, load_flag, time_frame, FORTRAN_FILE, GetSmoke3DFrameInfo);
+  smoke3di->frameinfo = FRAMELoadData(smoke3di->frameinfo, smoke3di->file, load_flag, time_frame, FORTRAN_FILE, GetSmoke3DFrameInfo);
   if(smoke3di->frameinfo->compression_type == FRAME_ZLIB)smoke3di->compression_type = COMPRESSED_ZLIB;
-  update_frame_output = 1;
+  update_frame = 1;
   int i, ii;
   int *nxyzptr;
   int offset;

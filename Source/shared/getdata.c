@@ -31,16 +31,6 @@ _Static_assert(sizeof(float) == 4, "getdata.c assumes that float is 4 bytes");
 #endif
 #endif
 
-//  ------------------ getzonesize ------------------------
-
-#ifdef WIN32
-FILE *FOPEN(const char *file, const char *mode) {
-  return _fsopen(file, mode, _SH_DENYNO);
-}
-#else
-FILE *FOPEN(const char *file, const char *mode) { return fopen(file, mode); }
-#endif
-
 //  ------------------ fortread ------------------------
 
 int fortread(void *ptr, size_t size, size_t count, FILE *file) {
@@ -103,13 +93,6 @@ int fortwrite(void *ptr, size_t size, size_t count, FILE *file) {
   return 0;
 }
 
-//  ------------------ fortseek ------------------------
-
-int fortseek(FILE *file, size_t size, size_t count, int whence) {
-  return fseek(file, sizeof(uint32_t) + size * count + sizeof(uint32_t),
-               whence);
-}
-
 //  ------------------ getzonesize ------------------------
 
 void getzonesize(const char *zonefilename, int *nzonet, int *nrooms,
@@ -169,76 +152,6 @@ void getzonesize(const char *zonefilename, int *nzonet, int *nrooms,
     (*nzonet)++;
   }
   fclose(file);
-}
-
-// !  ------------------ getpatchsizes1 ------------------------
-
-void getpatchsizes1(FILE **file, const char *patchfilename, int *npatch,
-                    int *headersize, int *error) {
-
-  *error = 0;
-  assert(file!=NULL);
-  if(file == NULL){
-    printf("***Error: null pointer in getpatchsizes1 routine\n");
-    *error = 1;
-    return;
-  }
-  *file = FOPEN(patchfilename, "rb");
-  if (*file == NULL) {
-    printf(" The boundary file name, %s does not exist\n", patchfilename);
-    *error = 1;
-    return;
-  }
-
-  // skip over long, short and unit labels (each 30 characters in length);
-  *error = fortseek(*file, sizeof(char), 30, SEEK_SET);
-  *error = fortseek(*file, sizeof(char), 30, SEEK_CUR);
-  *error = fortseek(*file, sizeof(char), 30, SEEK_CUR);
-  if (*error == 0) fortread(npatch, sizeof(*npatch), 1, *file);
-  *headersize = 3 * (4 + 30 + 4) + 4 + 4 + 4;
-
-  return;
-}
-
-// !  ------------------ getpatchsizes2 ------------------------
-
-void getpatchsizes2(FILE *file, int version, int npatch, int *npatchsize,
-                    int *pi1, int *pi2, int *pj1, int *pj2, int *pk1, int *pk2,
-                    int *patchdir, int *headersize, int *framesize) {
-  uint32_t ijkp[9] = {0};
-
-  *npatchsize = 0;
-
-  int n;
-  for (n = 0; n < npatch; n++) {
-    if (version == 0) {
-      fortread(ijkp, sizeof(*ijkp), 6, file);
-    } else {
-      fortread(ijkp, sizeof(*ijkp), 9, file);
-      patchdir[n] = ijkp[6];
-    }
-    pi1[n] = ijkp[0];
-    pi2[n] = ijkp[1];
-    pj1[n] = ijkp[2];
-    pj2[n] = ijkp[3];
-    pk1[n] = ijkp[4];
-    pk2[n] = ijkp[5];
-
-    int i1 = ijkp[0];
-    int i2 = ijkp[1];
-    int j1 = ijkp[2];
-    int j2 = ijkp[3];
-    int k1 = ijkp[4];
-    int k2 = ijkp[5];
-    *npatchsize += (i2 + 1 - i1) * (j2 + 1 - j1) * (k2 + 1 - k1);
-  }
-  *headersize += npatch * (4 + 6 * 4 + 4);
-  if (version == 1) {
-    *headersize += npatch * 4;
-  }
-  *framesize = 8 + 4 + 8 * npatch + (*npatchsize) * 4;
-
-  return;
 }
 
 /* ------------------ GetSliceFileDirection ------------------------ */
@@ -646,10 +559,6 @@ void getzonedata(const char *zonefilename, int *nzonet, int *nrooms,
   return;
 }
 
-// !  ------------------ skipdata ------------------------
-
-int skipdata(FILE *file, int skip) { return fortseek(file, 1, skip, SEEK_CUR); }
-
 // !  ------------------ getpatchdata ------------------------
 // TODO: distinguish between more error conditions
 void getpatchdata(FILE *file, int npatch, int *pi1, int *pi2, int *pj1,
@@ -706,7 +615,7 @@ void getdata1(FILE *file, int *ipart, int *error) {
   if (*error != 0) return;
 
   // Skip over irrelevant data.
-  *error = fortseek(file, sizeof(float), ibar * jbar * kbar, SEEK_CUR);
+  *error = fseek(file, 4+sizeof(float)*ibar*jbar*kbar+4, SEEK_CUR);
   if (*error != 0) return;
 
   *error = fortread(&nb1, sizeof(nb1), 1, file);

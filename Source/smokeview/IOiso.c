@@ -493,8 +493,8 @@ FILE_SIZE ReadIsoGeom(int ifile, int load_flag, int *geom_frame_index, int *erro
   int nbuffer=0;
 
   if(load_flag != UNLOAD){
-    isoi->frameinfo = FRAMELoadFrameData(isoi->frameinfo, isoi->file, load_flag, time_frame, FORTRAN_FILE, GetIsoFrameInfo);
-    update_frame_output = 1;
+    isoi->frameinfo = FRAMELoadData(isoi->frameinfo, isoi->file, load_flag, time_frame, FORTRAN_FILE, GetIsoFrameInfo);
+    update_frame = 1;
 
     geomi->frameinfo = isoi->frameinfo;
     if(isoi->frameinfo != NULL){
@@ -531,7 +531,7 @@ FILE_SIZE ReadIsoGeom(int ifile, int load_flag, int *geom_frame_index, int *erro
       NewMemoryMemID((void **)&isoi->geom_vals,      isoi->geom_nvals*sizeof(float), isoi->memory_id);
     }
 
-    filesize = GetGeomData(isoi->tfile, ntimes_local, isoi->geom_nvals, isoi->geom_times,
+    filesize = GetGeomData(NULL, isoi->tfile, ntimes_local, isoi->geom_nvals, isoi->geom_times,
                            isoi->geom_nstatics, isoi->geom_ndynamics, isoi->geom_vals,
                            ALL_FRAMES, NULL, NULL, &error);
     return_filesize += filesize;
