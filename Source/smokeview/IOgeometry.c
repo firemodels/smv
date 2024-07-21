@@ -1956,7 +1956,6 @@ FILE_SIZE GetGeomData(patchdata *patchi, char *filename, int ntimes, int nvals, 
       file_size += (4 + 4 + 4);
     }
     if(time_frame==ALL_FRAMES||time_frame==iframe)times[count] = time;
-    if(returncode==0)break;
     if(is_compressed == 1){
       fread_m(nvals_local, 4, 4, stream);
       fread_m(&ncompressed, 4, 1, stream);
@@ -1964,6 +1963,7 @@ FILE_SIZE GetGeomData(patchdata *patchi, char *filename, int ntimes, int nvals, 
     }
     else{
       FORTREAD_m(nvals_local, 4, 4, stream);
+      if(count_read != 4)break;
       file_size += 8 + 16;
     }
     nvert_s = nvals_local[0];
@@ -1982,7 +1982,7 @@ FILE_SIZE GetGeomData(patchdata *patchi, char *filename, int ntimes, int nvals, 
       if(nvert_s > 0){
         if(time_frame == ALL_FRAMES || time_frame == iframe){
           FORTREAD_m(vals + nvars, 4, nvert_s, stream);
-          if(returncode == 0)break;
+          if(count_read!=nvert_s)break;
           file_size += (4 + 4 * nvert_s + 4);
           nvars += nvert_s;
         }
@@ -1993,7 +1993,7 @@ FILE_SIZE GetGeomData(patchdata *patchi, char *filename, int ntimes, int nvals, 
       if(ntri_s > 0){
         if(time_frame == ALL_FRAMES || time_frame == iframe){
           FORTREAD_m(vals + nvars, 4, ntri_s, stream);
-          if(returncode == 0)break;
+          if(count_read!=ntri_s)break;
           file_size += (4 + 4 * ntri_s + 4);
           nvars += ntri_s;
         }
@@ -2007,7 +2007,7 @@ FILE_SIZE GetGeomData(patchdata *patchi, char *filename, int ntimes, int nvals, 
       if(nvert_d > 0){
         if(time_frame == ALL_FRAMES || time_frame == iframe){
           FORTREAD_m(vals + nvars, 4, nvert_d, stream);
-          if(returncode == 0)break;
+          if(count_read!=nvert_d)break;
           file_size += (4 + 4 * nvert_d + 4);
           nvars += nvert_d;
         }
@@ -2018,7 +2018,7 @@ FILE_SIZE GetGeomData(patchdata *patchi, char *filename, int ntimes, int nvals, 
       if(ntri_d > 0){
         if(time_frame == ALL_FRAMES || time_frame == iframe){
           FORTREAD_m(vals + nvars, 4, ntri_d, stream);
-          if(returncode == 0)break;
+          if(count_read!=ntri_d)break;
           file_size += (4 + 4 * ntri_d + 4);
           nvars += ntri_d;
         }
@@ -2593,6 +2593,15 @@ FILE_SIZE ReadGeom0(geomdata *geomi, int load_flag, int type, int *geom_frame_in
     nfilebuffer = geomi->frameinfo->bufferinfo->nbuffer;
   }
 #endif
+  // header
+  // one
+  // version
+  // nfloats
+  // nfloat vals
+  // nints
+  // nint vals
+
+
   stream = fopen_b(geomi->file, filebuffer, nfilebuffer, "rb");
   if(stream==NULL)return 0;
 
@@ -2622,6 +2631,12 @@ FILE_SIZE ReadGeom0(geomdata *geomi, int load_flag, int type, int *geom_frame_in
   geomi->geomlistinfo=geomi->geomlistinfo_0+1;
   NewMemoryMemID((void **)&geomi->times,ntimes_local*sizeof(float),geomi->memory_id);
 
+  // frame
+  // time
+  // nverts nfaces
+  // xyz 3*nverts
+  // ijk 3*ntris
+  // surf_ind ntris
   icount=-1;
   for(iframe=-1;iframe<ntimes_local;){
     float times_local[2];
