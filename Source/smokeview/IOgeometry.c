@@ -1952,6 +1952,7 @@ FILE_SIZE GetGeomData(patchdata *patchi, char *filename, int ntimes, int nvals, 
     }
     else{
       FORTREAD_m(&time, 4, 1, stream);
+      if(count_read!=1)break;
       file_size += (4 + 4 + 4);
     }
     if(time_frame==ALL_FRAMES||time_frame==iframe)times[count] = time;
