@@ -1122,7 +1122,9 @@ void GetBoundaryDataZlib(patchdata *patchi, unsigned char *data, int ndata,
     datacopy += compressed_size;
     offset += compressed_size;
   }
+#ifndef pp_BOUNDFRAME
   fclose_m(stream);
+#endif
 }
 /* ------------------ GetBoundaryHeader ------------------------ */
 
