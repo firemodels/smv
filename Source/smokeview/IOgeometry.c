@@ -1856,7 +1856,6 @@ FILE_SIZE GetGeomData(patchdata *patchi, char *filename, int ntimes, int nvals, 
   int one, nvars;
   int nvert_s, ntri_s, nvert_d, ntri_d;
   int version;
-  int returncode=0;
   int count;
   float time;
   int iframe, frame_start, frame_stop;
@@ -1947,7 +1946,7 @@ FILE_SIZE GetGeomData(patchdata *patchi, char *filename, int ntimes, int nvals, 
     int ncompressed;
 
     if(is_compressed == 1){
-      returncode = fread_m(&time, 4, 1, stream);
+      fread_m(&time, 4, 1, stream);
       file_size += 4;
     }
     else{
