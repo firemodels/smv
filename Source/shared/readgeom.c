@@ -1,14 +1,15 @@
+#include "options.h"
+
 #include "MALLOCC.h"
 #include "gd.h"
-#include "options.h"
 #include "string_util.h"
-#include <math.h>
 
 #include "datadefs.h"
 #include "histogram.h"
 #include "isodefs.h"
 #include "readgeom.h"
 #include "smokeviewdefs.h"
+#include <math.h>
 #include <string.h>
 
 // !  ------------------ Dist ------------------------
@@ -845,7 +846,7 @@ void ReadGeomHeader0(geomdata *geomi, int *geom_frame_index,
   // nints
   // if(nints>0) int_1, ..., int_nints
   //*** static verts and triangles (verts and triangles that appear at all time
-  //steps)
+  // steps)
   // nverts, ntris
   // vert_1, ..., vert_nverts   (each vert_i is a triple x_i,y_i,z_i of floats)
   // tri_1a,tri_1b,tri_1c ..., tri_ntrisa,tri_ntrisb,tri_ntrisc
