@@ -269,6 +269,7 @@ framedata *FRAMELoadData(framedata *frameinfo, char *file, int load_flag, int ti
   if(frameinfo->bufferinfo == NULL || load_flag != RELOAD){
     if(frameinfo->bufferinfo!=NULL){
       FreeBufferInfo(frameinfo->bufferinfo);
+      frameinfo->bufferinfo = NULL;
     }
     frameinfo->bufferinfo = InitBufferData(file);
   }
@@ -718,7 +719,6 @@ void GetIsoFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **framesptr
   *framesptr = frames;
   *nframesptr = nframes;
   *filesizeptr = filesize;
-  //fclose(stream);
 }
 
 /* ------------------ GetIsoFrameInfo ------------------------ */
@@ -730,10 +730,21 @@ void GetGeomDataFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **fram
   int headersize, *frames;
   int nframes;
   FILE_SIZE filesize;
+  char *ext=NULL;
 
-  // header
+  // uncompressed header
   // 1
   // version
+  // compressed header
+  // 1
+  // completion (0/1)
+  // fileversion (compressed format)
+  // min max (used to perform conversion)
+
+  ext = strrchr(bufferinfo->file, '.');
+  if(ext != NULL && strcmp(ext, ".svz") == 0){
+    *compression_type = FRAME_ZLIB;
+  }
 
   stream = fopen_b(bufferinfo->file, bufferinfo->buffer, bufferinfo->nbuffer, "rb");
   if(stream == NULL){
@@ -742,10 +753,18 @@ void GetGeomDataFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **fram
     return;
   }
 
-  headersize  = 4+4+4;  // 1 
-  headersize += 4+4+4;  // version 
+  if(*compression_type != FRAME_ZLIB){
+    headersize  = 4+4+4;  // 1 
+    headersize += 4+4+4;  // version 
+  }
+  else{
+    headersize  = 4;  // 1
+    headersize += 4;  // complesion
+    headersize += 4;  // compressed format
+    headersize += 8;  // min max
+  }
 
-  // data frame
+  // uncompressed data frame
   // for each time step:
   // time
   // nvert_static, ntri_static, nvert_dynamic, ntri_dynamic
@@ -753,22 +772,36 @@ void GetGeomDataFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **fram
   // if(ntri_static>0)  vals_1, ...vals_ntri_static
   // if(nvert_dynamic>0)vals_1, ...vals_nvert_dynamic
   // if(ntri_dynamic>0) vals_1, ...vals_ntri_dynamic
+  // compressed data frame
+  // for each time step
+  // time
+  // ncompressed
+  // compressed_1,...,compressed_ncompressed
 
+
+  fseek_m(stream, headersize, SEEK_CUR);
   NewMemory((void **)&frames, 1000000 * sizeof(int));
   nframes = 0;
   while(!feof_m(stream)){
     int nvals[4];
     int skip;
 
-    fseek_m(stream, 12, SEEK_CUR); // time
-    fseek_m(stream, 4, SEEK_CUR); fread_m(nvals, 4, 4, stream); fseek_m(stream, 4, SEEK_CUR);
-    skip = 0;
-    if(nvals[0] > 0)skip += 4 + 4*nvals[0] + 4;
-    if(nvals[1] > 0)skip += 4 + 4*nvals[1] + 4;
-    if(nvals[2] > 0)skip += 4 + 4*nvals[2] + 4;
-    if(nvals[3] > 0)skip += 4 + 4*nvals[3] + 4;
-    fseek_m(stream, skip, SEEK_CUR);
-    frames[nframes++] = 12 + 4 + 24 + 4 + skip;
+    if(*compression_type != FRAME_ZLIB){
+      fseek_m(stream, 12, SEEK_CUR); // time
+      fseek_m(stream, 4, SEEK_CUR); fread_m(nvals, 4, 4, stream); fseek_m(stream, 4, SEEK_CUR);
+      skip = 0;
+      if(nvals[0] > 0)skip += 4 + 4*nvals[0] + 4;
+      if(nvals[1] > 0)skip += 4 + 4*nvals[1] + 4;
+      if(nvals[2] > 0)skip += 4 + 4*nvals[2] + 4;
+      if(nvals[3] > 0)skip += 4 + 4*nvals[3] + 4;
+      fseek_m(stream, skip, SEEK_CUR);
+      frames[nframes++] = 12 + 4 + 24 + 4 + skip;
+    }
+    else{
+      fseek_m(stream, 4, SEEK_CUR);        // time
+      fread_m(nvals,  4, 1, stream);       // ncompressed
+      fseek_m(stream, nvals[0], SEEK_CUR); // ncompressed chars
+    }
   }
   if(nframes > 0){
     ResizeMemory((void **)&frames, nframes * sizeof(int));
@@ -782,7 +815,6 @@ void GetGeomDataFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **fram
   *framesptr = frames;
   *nframesptr = nframes;
   *filesizeptr = filesize;
-  //fclose(stream);
 }
 
 /* ------------------ GetPartFrameInfo ------------------------ */
@@ -827,7 +859,7 @@ void GetPartFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **framespt
 
     fseek_m(stream, 4, SEEK_CUR);returncode = fread_m(nquants + 2 * i, 4, 2, stream);fseek_m(stream, 4, SEEK_CUR);
     headersize += 4 + 2*4 + 4;
-    
+
     labelsize = 2*nquants[2*i]*(4+30+4);
     headersize += labelsize;
     fseek_m(stream, labelsize, SEEK_CUR);

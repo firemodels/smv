@@ -7,6 +7,14 @@
 #define FORTRAN_FILE 0
 #define C_FILE       1
 
+#ifndef LOAD
+#define LOAD        0
+#endif
+
+#ifndef UNLOAD
+#define UNLOAD      1
+#endif
+
 #ifndef RELOAD
 #define RELOAD      3
 #endif

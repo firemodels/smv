@@ -3524,7 +3524,6 @@ void LoadUnloadMenu(int value){
       patchi = patchinfo + i;
       assert(patchi->loaded==0||patchi->loaded==1);
       if(patchi->loaded == 1){
-        PRINTF("Loading %s(%s)", patchi->file, patchi->label.shortlabel);
 #ifdef pp_BOUNDFRAME
         ReadBoundary(i, load_flag, &errorcode);
 #else

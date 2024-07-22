@@ -531,7 +531,7 @@ FILE_SIZE ReadIsoGeom(int ifile, int load_flag, int *geom_frame_index, int *erro
       NewMemoryMemID((void **)&isoi->geom_vals,      isoi->geom_nvals*sizeof(float), isoi->memory_id);
     }
 
-    filesize = GetGeomData(NULL, isoi->tfile, ntimes_local, isoi->geom_nvals, isoi->geom_times,
+    filesize = GetGeomData(NULL, isoi->tfile, load_flag, ntimes_local, isoi->geom_nvals, isoi->geom_times,
                            isoi->geom_nstatics, isoi->geom_ndynamics, isoi->geom_vals,
                            ALL_FRAMES, NULL, NULL, &error);
     return_filesize += filesize;

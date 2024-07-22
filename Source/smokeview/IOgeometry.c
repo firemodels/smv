@@ -1849,7 +1849,7 @@ int GetGeomDataSize(char *filename, int *nvars, int time_frame, int *cvals_offse
 
 /* ------------------ GetGeomData------------------------ */
 
-FILE_SIZE GetGeomData(patchdata *patchi, char *filename, int ntimes, int nvals, float *times, int *nstatics, int *ndynamics, float *vals,
+FILE_SIZE GetGeomData(patchdata *patchi, char *filename, int load_flag, int ntimes, int nvals, float *times, int *nstatics, int *ndynamics, float *vals,
                       int time_frame, float *time_value, int *geom_offsets, int *error){
   FILE_SIZE file_size;
 
@@ -1885,25 +1885,36 @@ FILE_SIZE GetGeomData(patchdata *patchi, char *filename, int ntimes, int nvals, 
   // ncompressed
   // compressed_1,...,compressed_ncompressed
 
-
   FILE_m *stream;
   int count_read;
 
+#ifdef pp_BOUNDFRAME
+  if(patchi != NULL&&load_flag!=UNLOAD){
+    patchi->frameinfo = FRAMELoadData(patchi->frameinfo, patchi->file, load_flag, time_frame, FORTRAN_FILE, GetGeomDataFrameInfo);
+    update_frame = 1;
+  }
+#endif
+
   cvals = (unsigned char *)vals;
-  file_size = 0;
   *error = 1;
   if(filename==NULL)return 0;
   ext = strrchr(filename, '.');
   if(ext != NULL && strcmp(ext, ".svz") == 0)is_compressed = 1;
 #ifdef pp_BOUNDFRAME
-  if(patchi != NULL){
-    stream = fopen_b(filename, NULL, 0, "rb");
+  if(patchi!=NULL && patchi->frameinfo!=NULL && patchi->frameinfo->bufferinfo!=NULL){
+    bufferdata *bufferinfo;
+
+    bufferinfo = patchi->frameinfo->bufferinfo;
+    stream     = fopen_b(patchi->reg_file, bufferinfo->buffer, bufferinfo->nbuffer, "rb");
+    file_size  = patchi->frameinfo->filesize;
   }
   else{
-    stream = fopen_b(filename, NULL, 0, "rb");
+    stream    = fopen_b(filename, NULL, 0, "rb");
+    file_size = GetFileSizeSMV(filename);
   }
 #else
   stream = fopen_b(filename, NULL, 0, "rb");
+  file_size = GetFileSizeSMV(filename);
 #endif
   if(stream == NULL){
     if(is_compressed == 1){
@@ -1923,12 +1934,10 @@ FILE_SIZE GetGeomData(patchdata *patchi, char *filename, int ntimes, int nvals, 
     fread_m(&completion, 4, 1, stream);
     fread_m(&version, 4, 1, stream);
     fread_m(valminmax, 4, 2, stream);
-    file_size = 20;
   }
   else{
     FORTREAD_m(&one, 4, 1, stream);
     FORTREAD_m(&version, 4, 1, stream);
-    file_size = 2 * (4 + 4 + 4);
   }
   nvars = 0;
   count = 0;
@@ -1947,23 +1956,19 @@ FILE_SIZE GetGeomData(patchdata *patchi, char *filename, int ntimes, int nvals, 
 
     if(is_compressed == 1){
       fread_m(&time, 4, 1, stream);
-      file_size += 4;
     }
     else{
       FORTREAD_m(&time, 4, 1, stream);
       if(count_read!=1)break;
-      file_size += (4 + 4 + 4);
     }
     if(time_frame==ALL_FRAMES||time_frame==iframe)times[count] = time;
     if(is_compressed == 1){
       fread_m(nvals_local, 4, 4, stream);
       fread_m(&ncompressed, 4, 1, stream);
-      file_size += 20;
     }
     else{
       FORTREAD_m(nvals_local, 4, 4, stream);
       if(count_read != 4)break;
-      file_size += 8 + 16;
     }
     nvert_s = nvals_local[0];
     ntri_s  = nvals_local[1];
@@ -1982,7 +1987,6 @@ FILE_SIZE GetGeomData(patchdata *patchi, char *filename, int ntimes, int nvals, 
         if(time_frame == ALL_FRAMES || time_frame == iframe){
           FORTREAD_m(vals + nvars, 4, nvert_s, stream);
           if(count_read!=nvert_s)break;
-          file_size += (4 + 4 * nvert_s + 4);
           nvars += nvert_s;
         }
         else{
@@ -1993,7 +1997,6 @@ FILE_SIZE GetGeomData(patchdata *patchi, char *filename, int ntimes, int nvals, 
         if(time_frame == ALL_FRAMES || time_frame == iframe){
           FORTREAD_m(vals + nvars, 4, ntri_s, stream);
           if(count_read!=ntri_s)break;
-          file_size += (4 + 4 * ntri_s + 4);
           nvars += ntri_s;
         }
         else{
@@ -2007,7 +2010,6 @@ FILE_SIZE GetGeomData(patchdata *patchi, char *filename, int ntimes, int nvals, 
         if(time_frame == ALL_FRAMES || time_frame == iframe){
           FORTREAD_m(vals + nvars, 4, nvert_d, stream);
           if(count_read!=nvert_d)break;
-          file_size += (4 + 4 * nvert_d + 4);
           nvars += nvert_d;
         }
         else{
@@ -2018,7 +2020,6 @@ FILE_SIZE GetGeomData(patchdata *patchi, char *filename, int ntimes, int nvals, 
         if(time_frame == ALL_FRAMES || time_frame == iframe){
           FORTREAD_m(vals + nvars, 4, ntri_d, stream);
           if(count_read!=ntri_d)break;
-          file_size += (4 + 4 * ntri_d + 4);
           nvars += ntri_d;
         }
         else{
@@ -2032,7 +2033,9 @@ FILE_SIZE GetGeomData(patchdata *patchi, char *filename, int ntimes, int nvals, 
     }
     if(time_frame==ALL_FRAMES)count++;
   }
+#ifndef pp_BOUNDFRAME
   fclose_m(stream);
+#endif
   return file_size;
 }
 
@@ -2046,9 +2049,9 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
   int error;
   FILE_SIZE return_filesize = 0;
   float total_time;
-  int *geom_offsets=NULL, geom_offset_flag;
-  int *cvals_offsets=NULL, *cvals_sizes=NULL;
-  int max_buffer_size=0;
+  int *geom_offsets = NULL, geom_offset_flag;
+  int *cvals_offsets = NULL, *cvals_sizes = NULL;
+  int max_buffer_size = 0;
   unsigned char *cbuffer = NULL;
 
   if(patchi->structured == YES)return 0;
@@ -2064,7 +2067,7 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
     slicei->ntimes = 0;
     slicei->times = NULL;
   }
-  patchi->bounds.defined=0;
+  patchi->bounds.defined = 0;
 
   FREEMEMORY(patchi->geom_nstatics);
   FREEMEMORY(patchi->geom_ndynamics);
@@ -2076,6 +2079,13 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
   FREEMEMORY(patchi->geom_ivals);
   FREEMEMORY(patchi->geom_times);
   FREEMEMORY(patchi->geom_times_map);
+#ifdef pp_BOUNDFRAME
+  if(load_flag != RELOAD){
+    FRAMEFree(patchi->frameinfo);
+    patchi->frameinfo = NULL;
+  }
+#endif
+
   if(load_flag==UNLOAD){
     plotstate = GetPlotState(DYNAMIC_PLOTS);
     if(patchi->boundary==1)UpdateBoundaryType();
@@ -2159,7 +2169,7 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
   if(current_script_command==NULL||NOT_LOADRENDER){
     PRINTF("Loading %s(%s)", patchi->file, patchi->label.shortlabel);
   }
-  filesize=GetGeomData(patchi, patchi->file, ntimes_local, nvals, patchi->geom_times,
+  filesize=GetGeomData(patchi, patchi->file, load_flag, ntimes_local, nvals, patchi->geom_times,
     patchi->geom_nstatics, patchi->geom_ndynamics, patchi->geom_vals, time_frame, time_value, geom_offsets, &error);
   MakeTimesMap(patchi->geom_times, patchi->geom_times_map, ntimes_local);
 
