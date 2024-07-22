@@ -59,7 +59,10 @@ bufferdata *FRAMEReadFrame(framedata *fi, int iframe, int nframes, int *nreadptr
 void GetBoundaryFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **framesptr, int *nframesptr,
                           int **subframeoffsetptrs, int **subframesizesptr, int *nsubframeoffsets,
                           int *compression_type, FILE_SIZE *filesizeptr);
-void GetIsoFrameInfo(     bufferdata *bufferinfo, int *headersizeptr, int **framesptr, int *nframesptr,
+void GetGeomDataFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **framesptr, int *nframesptr,
+                          int **subframeoffsetsptr, int **subframesizesptr, int *nsubframesptr,
+                          int *compression_type, FILE_SIZE *filesizeptr);
+void GetIsoFrameInfo(bufferdata * bufferinfo, int *headersizeptr, int **framesptr, int *nframesptr,
                           int **subframeoffsetptrs, int **subframesizesptr, int *nsubframeoffsets,
                           int *compression_type, FILE_SIZE *filesizeptr);
 void GetPartFrameInfo(    bufferdata *bufferinfo, int *headersizeptr, int **framesptr, int *nframesptr,

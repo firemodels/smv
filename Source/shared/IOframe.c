@@ -704,9 +704,78 @@ void GetIsoFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **framesptr
     fseek_m(stream, skip, SEEK_CUR);
     frames[nframes++] = 4 + 8 + 4 + 4 + 8 + 4 + skip;
   }
-  if(nframes > 0)ResizeMemory((void **)&frames, nframes * sizeof(int));
+  if(nframes > 0){
+    ResizeMemory((void **)&frames, nframes * sizeof(int));
+  }
+  else{
+    FREEMEMORY(frames);
+  }
 
 
+  filesize = bufferinfo->nbuffer;
+
+  *headersizeptr = headersize;
+  *framesptr = frames;
+  *nframesptr = nframes;
+  *filesizeptr = filesize;
+  //fclose(stream);
+}
+
+/* ------------------ GetIsoFrameInfo ------------------------ */
+
+void GetGeomDataFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **framesptr, int *nframesptr,
+  int **subframeoffsetsptr, int **subframesizesptr, int *nsubframesptr,
+  int *compression_type, FILE_SIZE *filesizeptr){
+  FILE_m *stream;
+  int headersize, *frames;
+  int nframes;
+  FILE_SIZE filesize;
+
+  // header
+  // 1
+  // version
+
+  stream = fopen_b(bufferinfo->file, bufferinfo->buffer, bufferinfo->nbuffer, "rb");
+  if(stream == NULL){
+    *nframesptr = 0;
+    *framesptr = NULL;
+    return;
+  }
+
+  headersize  = 4+4+4;  // 1 
+  headersize += 4+4+4;  // version 
+
+  // data frame
+  // for each time step:
+  // time
+  // nvert_static, ntri_static, nvert_dynamic, ntri_dynamic
+  // if(nvert_static>0) vals_1, ...vals_nvert_static
+  // if(ntri_static>0)  vals_1, ...vals_ntri_static
+  // if(nvert_dynamic>0)vals_1, ...vals_nvert_dynamic
+  // if(ntri_dynamic>0) vals_1, ...vals_ntri_dynamic
+
+  NewMemory((void **)&frames, 1000000 * sizeof(int));
+  nframes = 0;
+  while(!feof_m(stream)){
+    int nvals[4];
+    int skip;
+
+    fseek_m(stream, 12, SEEK_CUR); // time
+    fseek_m(stream, 4, SEEK_CUR); fread_m(nvals, 4, 4, stream); fseek_m(stream, 4, SEEK_CUR);
+    skip = 0;
+    if(nvals[0] > 0)skip += 4 + 4*nvals[0] + 4;
+    if(nvals[1] > 0)skip += 4 + 4*nvals[1] + 4;
+    if(nvals[2] > 0)skip += 4 + 4*nvals[2] + 4;
+    if(nvals[3] > 0)skip += 4 + 4*nvals[3] + 4;
+    fseek_m(stream, skip, SEEK_CUR);
+    frames[nframes++] = 12 + 4 + 24 + 4 + skip;
+  }
+  if(nframes > 0){
+    ResizeMemory((void **)&frames, nframes * sizeof(int));
+  }
+  else{
+    FREEMEMORY(frames);
+  }
   filesize = bufferinfo->nbuffer;
 
   *headersizeptr = headersize;
@@ -798,7 +867,12 @@ void GetPartFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **framespt
     }
     frames[nframes++] = framesize;
   }
-  if(nframes > 0)ResizeMemory((void **)&frames, nframes * sizeof(int));
+  if(nframes > 0){
+    ResizeMemory((void **)&frames, nframes * sizeof(int));
+  }
+  else{
+    FREEMEMORY(frames);
+  }
 
   filesize = bufferinfo->nbuffer;
 
