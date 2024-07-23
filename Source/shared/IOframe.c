@@ -787,15 +787,15 @@ void GetGeomDataFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **fram
     int skip;
 
     if(*compression_type != FRAME_ZLIB){
-      fseek_m(stream, 12, SEEK_CUR); // time
-      fseek_m(stream, 4, SEEK_CUR); fread_m(nvals, 4, 4, stream); fseek_m(stream, 4, SEEK_CUR);
+      fseek_m(stream, 12, SEEK_CUR); // time 12 bytes
+      fseek_m(stream, 4, SEEK_CUR); fread_m(nvals, 4, 4, stream); fseek_m(stream, 4, SEEK_CUR); // nvals 24 bytes
       skip = 0;
       if(nvals[0] > 0)skip += 4 + 4*nvals[0] + 4;
       if(nvals[1] > 0)skip += 4 + 4*nvals[1] + 4;
       if(nvals[2] > 0)skip += 4 + 4*nvals[2] + 4;
       if(nvals[3] > 0)skip += 4 + 4*nvals[3] + 4;
       fseek_m(stream, skip, SEEK_CUR);
-      frames[nframes++] = 12 + 4 + 24 + 4 + skip;
+      frames[nframes++] = 36 + skip;
     }
     else{
       fseek_m(stream, 4, SEEK_CUR);        // time
