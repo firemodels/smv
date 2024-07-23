@@ -2001,15 +2001,18 @@ void OutputFrameSteps(void){
   int i, count, frames_read, show;
   float total_time, total_wrapup_time;
   FILE_SIZE bytes_read;
-  char size_label[256], slice_label[256], part_label[256], iso_label[256], smoke_label[256], bound_label[256];
-  char time_label[256], time_label2[256], time_label3[256];
+  char size_label[256], geom_slice_label[256], slice_label[256], part_label[256];
+  char iso_label[256],  smoke_label[256],      bound_label[256], geom_bound_label[256];
+  char time_label[256], time_label2[256],      time_label3[256];
 
   show = 0;
+  strcpy(geom_slice_label, "");
   strcpy(slice_label, "");
   strcpy(part_label, "");
   strcpy(iso_label, "");
   strcpy(smoke_label, "");
   strcpy(bound_label, "");
+  strcpy(geom_bound_label, "");
 
   //*** slice files
 
@@ -2020,15 +2023,19 @@ void OutputFrameSteps(void){
   total_wrapup_time = 0.0;
   for(i = 0;i < nsliceinfo;i++){
     slicedata *slicei;
+    framedata *frameinfo=NULL;
 
     slicei = sliceinfo + i;
-    if(slicei->loaded == 0 || slicei->frameinfo == NULL || slicei->frameinfo->update == 0)continue;
-    slicei->frameinfo->update = 0;
+    if(slicei->loaded == 0)continue;
+    if(slicei->slice_filetype == SLICE_GEOM)continue;
+    frameinfo = slicei->frameinfo;
+    if(frameinfo == NULL || frameinfo->update == 0)continue;
     count++;
-    frames_read = MAX(frames_read, slicei->frameinfo->frames_read);
-    bytes_read += slicei->frameinfo->bytes_read;
-    total_time += slicei->frameinfo->load_time;
-    total_wrapup_time += slicei->frameinfo->total_time;
+    frameinfo->update = 0;
+    frames_read = MAX(frames_read, frameinfo->frames_read);
+    bytes_read += frameinfo->bytes_read;
+    total_time += frameinfo->load_time;
+    total_wrapup_time += frameinfo->total_time;
   }
   if(count > 0){
     sprintf(slice_label, "Loaded %i slice frames, %s", frames_read, Bytes2Label(size_label, bytes_read));
@@ -2039,6 +2046,41 @@ void OutputFrameSteps(void){
       sprintf(time_label, " in %ss/%ss", time_label2, time_label3);
     }
     strcat(slice_label, time_label);
+    show = 1;
+  }
+
+  //*** geometry slice files
+
+  count = 0;
+  bytes_read = 0;
+  frames_read = 0;
+  total_time = 0.0;
+  total_wrapup_time = 0.0;
+  for(i = 0; i < nsliceinfo; i++){
+    slicedata *slicei;
+    framedata *frameinfo = NULL;
+
+    slicei = sliceinfo + i;
+    if(slicei->loaded == 0 || slicei->slice_filetype != SLICE_GEOM)continue;
+    frameinfo = slicei->frameinfo;
+    if(slicei->patchgeom != NULL)frameinfo = slicei->patchgeom->frameinfo;
+    if(frameinfo == NULL || frameinfo->update == 0)continue;
+    frameinfo->update = 0;
+    count++;
+    frames_read = MAX(frames_read, frameinfo->frames_read);
+    bytes_read += frameinfo->bytes_read;
+    total_time += frameinfo->load_time;
+    total_wrapup_time += frameinfo->total_time;
+  }
+  if(count > 0){
+    sprintf(geom_slice_label, "Loaded %i geometry slice frames, %s", frames_read, Bytes2Label(size_label, bytes_read));
+    strcpy(time_label, "");
+    if(show_timings){
+      Float2String(time_label2, total_time, ncolorlabel_digits, force_fixedpoint);
+      Float2String(time_label3, total_wrapup_time, ncolorlabel_digits, force_fixedpoint);
+      sprintf(time_label, " in %ss/%ss", time_label2, time_label3);
+    }
+    strcat(geom_slice_label, time_label);
     show = 1;
   }
 
@@ -2084,7 +2126,10 @@ void OutputFrameSteps(void){
     patchdata *patchi;
 
     patchi = patchinfo + i;
-    if(patchi->loaded == 0 || patchi->frameinfo == NULL || patchi->frameinfo->update == 0)continue;
+    if(patchi->loaded == 0)continue;
+    if(patchi->patch_filetype !=PATCH_STRUCTURED_NODE_CENTER &&  patchi->patch_filetype != PATCH_STRUCTURED_CELL_CENTER)continue;
+    if(patchi->frameinfo == NULL || patchi->frameinfo->update == 0)continue;
+
     patchi->frameinfo->update = 0;
     count++;
     frames_read = MAX(frames_read, patchi->frameinfo->frames_read);
@@ -2101,6 +2146,38 @@ void OutputFrameSteps(void){
       sprintf(time_label, " in %ss/%ss", time_label2, time_label3);
     }
     strcat(bound_label, time_label);
+    show = 1;
+  }
+
+  //*** geometry boundary files
+
+  count = 0;
+  bytes_read = 0;
+  frames_read = 0;
+  total_time = 0.0;
+  total_wrapup_time = 0.0;
+  for(i = 0;i < npatchinfo;i++){
+    patchdata *patchi;
+
+    patchi = patchinfo + i;
+    if(patchi->loaded == 0 || patchi->patch_filetype != PATCH_GEOMETRY_BOUNDARY)continue;
+    if(patchi->frameinfo == NULL || patchi->frameinfo->update == 0)continue;
+    patchi->frameinfo->update = 0;
+    count++;
+    frames_read = MAX(frames_read, patchi->frameinfo->frames_read);
+    bytes_read += patchi->frameinfo->bytes_read;
+    total_time += patchi->frameinfo->load_time;
+    total_wrapup_time += patchi->frameinfo->total_time;
+  }
+  if(count > 0){
+    sprintf(geom_bound_label, "Loaded %i geometry boundary frames, %s", frames_read, Bytes2Label(size_label, bytes_read));
+    strcpy(time_label, "");
+    if(show_timings){
+      Float2String(time_label2, total_time, ncolorlabel_digits, force_fixedpoint);
+      Float2String(time_label3, total_wrapup_time, ncolorlabel_digits, force_fixedpoint);
+      sprintf(time_label, " in %ss/%ss", time_label2, time_label3);
+    }
+    strcat(geom_bound_label, time_label);
     show = 1;
   }
 
@@ -2167,9 +2244,11 @@ void OutputFrameSteps(void){
   }
   if(show == 1){
     if(strlen(bound_label) > 0)printf("%s\n", bound_label);
+    if(strlen(geom_bound_label) > 0)printf("%s\n", geom_bound_label);
     if(strlen(part_label) > 0)printf("%s\n",  part_label);
     if(strlen(iso_label) > 0)printf("%s\n",   iso_label);
     if(strlen(slice_label) > 0)printf("%s\n", slice_label);
+    if(strlen(geom_slice_label) > 0)printf("%s\n", geom_slice_label);
     if(strlen(smoke_label) > 0)printf("%s\n", smoke_label);
   }
 }
