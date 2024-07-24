@@ -47,6 +47,15 @@ typedef struct {
 
 // vvvvvvvvvvvvvvvvvvvvvvvv preprocessing directives vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 
+#ifdef pp_OPEN_TEST
+#ifndef fopen
+#define fopen(x,y) fopen_counting(x,y)
+#endif
+#ifndef fclose
+#define fclose(x) fclose_counting(x)
+#endif
+#endif
+
 #ifdef WIN32
 #define UNLINK _unlink
 #else
@@ -122,6 +131,8 @@ int FileExistsOrig(char *filename);
 #include "string_util.h"
 
 // vvvvvvvvvvvvvvvvvvvvvvvv headers vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+EXTERNCPP FILE *fopen_counting(const char *path, const char *mode);
+EXTERNCPP int fclose_counting(FILE *fp);
 EXTERNCPP int MakeFile(char *file, int size);
 EXTERNCPP void FreeBufferInfo(bufferdata * bufferinfoptr);
 EXTERNCPP bufferdata *InitBufferData(char *file);

@@ -8,6 +8,7 @@
 #define pp_ISOFRAME      // turn on frame code for isosurfaces
 #define pp_SLICEFRAME    // turn on frame code for slices
 #define pp_PARTFRAME     // turn on frame code for particles
+//#define pp_OPEN_TEST     // count number of file opens and closes
 //#define pp_FRAME_DEBUG   // frame timing test
 //#define pp_FRAME_DEBUG2  // output frame times
 
@@ -99,7 +100,7 @@
 //*** options: for debugging
 
 #ifdef _DEBUG
-#define pp_MEM_DEBUG_PRINT   // output file/line number for each memory allocation call
+//#define pp_MEM_DEBUG_PRINT   // output file/line number for each memory allocation call
 #define pp_DEBUG_SUBMENU     // debug output and testing for building menus
 #define pp_RECOMPUTE_DEBUG   // output debug message if bounds are recomputed
 #define pp_BOUND_DEBUG       // output debug message in some bound routines

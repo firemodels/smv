@@ -856,6 +856,10 @@ FILE *fopen_2dir(char *file, char *mode, char *scratch_dir){
   if(file == NULL)return NULL;
 #ifdef WIN32
   stream = _fsopen(file,mode,_SH_DENYNO);
+#ifdef pp_OPEN_TEST
+  extern int open_files;
+  open_files++;
+#endif
 #else
   stream = fopen(file,mode);
 #endif
