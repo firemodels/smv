@@ -10,7 +10,9 @@ FILE *fopen_counting(const char *path, const char *mode)
   FILE *v;
 
   v = fopen(path, mode);
-  if(v != NULL)open_files++;
+  if(v != NULL){
+    open_files++;
+  }
   return v;
 }
 
@@ -20,7 +22,9 @@ int fclose_counting(FILE *fp)
 {
   int v;
   v = fclose(fp);
-  if(v  != EOF)open_files--;
+  if(v != EOF){
+    open_files--;
+  }
   return v;
 }
 #endif

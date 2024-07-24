@@ -34,6 +34,9 @@
 #include "threader.h"
 
 FILE *alt_stdout=NULL;
+#ifdef pp_OPEN_TEST
+extern int open_files;
+#endif
 
 /* ------------------ TestWrite ------------------------ */
 
@@ -808,7 +811,14 @@ int GetFileListSize(const char *path, char *filter, int mode){
 
 #ifdef WIN32
 FILE *FOPEN(const char *file, const char *mode) {
-  return _fsopen(file, mode, _SH_DENYNO);
+  FILE *stream;
+  stream =  _fsopen(file, mode, _SH_DENYNO);
+#ifdef pp_OPEN_TEST
+  if(stream != NULL){
+    open_files++;
+  }
+#endif
+  return stream;
 }
 #else
 FILE *FOPEN(const char *file, const char *mode) {
@@ -825,6 +835,11 @@ FILE *fopen_indir(char *dir, char *file, char *mode){
   if(dir==NULL||strlen(dir)==0){
 #ifdef WIN32
     stream = _fsopen(file, mode, _SH_DENYNO);
+#ifdef pp_OPEN_TEST
+    if(stream != NULL){
+      open_files++;
+    }
+#endif
 #else
     stream = fopen(file,mode);
 #endif
@@ -840,6 +855,11 @@ FILE *fopen_indir(char *dir, char *file, char *mode){
     strcat(filebuffer,file);
 #ifdef WIN32
     stream = _fsopen(filebuffer, mode, _SH_DENYNO);
+#ifdef pp_OPEN_TEST
+    if(stream != NULL){
+      open_files++;
+    }
+#endif
 #else
     stream = fopen(filebuffer, mode);
 #endif
@@ -857,8 +877,9 @@ FILE *fopen_2dir(char *file, char *mode, char *scratch_dir){
 #ifdef WIN32
   stream = _fsopen(file,mode,_SH_DENYNO);
 #ifdef pp_OPEN_TEST
-  extern int open_files;
-  open_files++;
+  if(stream != NULL){
+    open_files++;
+  }
 #endif
 #else
   stream = fopen(file,mode);
