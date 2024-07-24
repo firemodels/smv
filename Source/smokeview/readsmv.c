@@ -503,6 +503,9 @@ void ReadHRR(int flag){
       hi = hrrinfo + i;
       FREEMEMORY(hi->vals);
       FREEMEMORY(hi->vals_orig);
+      FREEMEMORY(hi->label.longlabel);
+      FREEMEMORY(hi->label.shortlabel);
+      FREEMEMORY(hi->label.unit);
     }
     FREEMEMORY(hrrinfo);
     nhrrinfo = 0;
@@ -560,6 +563,9 @@ void ReadHRR(int flag){
     hi = hrrinfo+i;
     TrimBack(labels[i]);
     TrimBack(units[i]);
+    hi->label.longlabel = NULL;
+    hi->label.shortlabel = NULL;
+    hi->label.unit = NULL;
     SetLabels(&(hi->label), labels[i], labels[i], units[i]);
   }
   CheckMemory;
@@ -593,6 +599,9 @@ void ReadHRR(int flag){
       hi2->base_col = i;
       strcpy(label, "HOC*");
       strcat(label, hi->label.longlabel);
+      hi2->label.longlabel = NULL;
+      hi2->label.shortlabel = NULL;
+      hi2->label.unit = NULL;
       SetLabels(&(hi2->label), label, label, "kW");
       mlr_col = hi2-hrrinfo;
       have_mlr = 1;
@@ -631,6 +640,9 @@ void ReadHRR(int flag){
     hi_chirad = hrrinfo+chirad_col;
 
     strcpy(label, "CHIRAD");
+    hi_chirad->label.longlabel = NULL;
+    hi_chirad->label.shortlabel = NULL;
+    hi_chirad->label.unit = NULL;
     SetLabels(&(hi_chirad->label), label, label, "-");
     hi_chirad->nvals = nrows - 2;
     nhrrhcinfo++;

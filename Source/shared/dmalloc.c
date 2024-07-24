@@ -363,6 +363,9 @@ mallocflag __NewMemory(void **ppv, size_t size, int memory_id, const char *varna
   char dirsep='/';
 #endif
 
+#ifdef pp_MEM_DEBUG_PRINT
+  printf("file: %s line: %i\n", file, linenumber);
+#endif
   LOCK_MEM;
   return_code=_NewMemoryNOTHREAD(ppb,size,memory_id);
   if(return_code != 1){

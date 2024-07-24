@@ -8000,7 +8000,8 @@ void InitLoadMultiSubMenu(int **loadsubmslicemenuptr, int *nmultisliceloadedptr)
     sdim1 = sliceinfo+(multisliceinfo+i-1)->islices[0];
     if(strcmp(sd->label.longlabel, sdim1->label.longlabel)!=0)nloadsubmslicemenu++;
   }
-  NewMemory((void **)&loadsubmslicemenu, nloadsubmslicemenu*sizeof(int));
+  loadsubmslicemenu = *loadsubmslicemenuptr;
+  NEWMEM(loadsubmslicemenu, nloadsubmslicemenu*sizeof(int));
   *loadsubmslicemenuptr = loadsubmslicemenu;
   for(i = 0;i<nloadsubmslicemenu;i++){
     loadsubmslicemenu[i] = 0;
@@ -8504,7 +8505,8 @@ void InitMultiVectorSubMenu(int **loadsubmvslicemenuptr){
       nloadsubmvslicemenu++;
     }
   }
-  NewMemory((void **)&loadsubmvslicemenu, nloadsubmvslicemenu*sizeof(int));
+  loadsubmvslicemenu = *loadsubmvslicemenuptr;
+  NEWMEM(loadsubmvslicemenu, nloadsubmvslicemenu * sizeof(int));
   *loadsubmvslicemenuptr = loadsubmvslicemenu;
   for(i = 0; i<nloadsubmvslicemenu; i++){
     loadsubmvslicemenu[i] = 0;
@@ -8682,9 +8684,12 @@ void InitPatchSubMenus(int **loadsubpatchmenu_sptr, int **nsubpatchmenus_sptr){
 // create patch submenus
 
   if(nloadsubpatchmenu_s > 0){
-    NewMemory((void **)&loadsubpatchmenu_s, nloadsubpatchmenu_s * sizeof(int));
-    NewMemory((void **)&nsubpatchmenus_s, nloadsubpatchmenu_s * sizeof(int));
+    loadsubpatchmenu_s  = *loadsubpatchmenu_sptr;
+    NEWMEM(loadsubpatchmenu_s, nloadsubpatchmenu_s * sizeof(int));
     *loadsubpatchmenu_sptr = loadsubpatchmenu_s;
+
+    nsubpatchmenus_s  = *nsubpatchmenus_sptr;
+    NEWMEM(nsubpatchmenus_s, nloadsubpatchmenu_s * sizeof(int));
     *nsubpatchmenus_sptr = nsubpatchmenus_s;
   }
   for(ii = 0;ii<nloadsubpatchmenu_s;ii++){

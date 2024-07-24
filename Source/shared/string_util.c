@@ -1307,7 +1307,7 @@ int SetLabels(flowlabels *flowlabel, char *longlabel, char *shortlabel, char *un
     strcpy(buffer,longlabel);
   }
   len=strlen(buffer);
-  if(NewMemory((void **)&flowlabel->longlabel,(unsigned int)(len+1))==0)return LABEL_ERR;
+  if(NEWMEM(flowlabel->longlabel,(unsigned int)(len+1))==0)return LABEL_ERR;
   STRCPY(flowlabel->longlabel,buffer);
 
   if(shortlabel==NULL){
@@ -1317,7 +1317,7 @@ int SetLabels(flowlabels *flowlabel, char *longlabel, char *shortlabel, char *un
     strcpy(buffer,shortlabel);
   }
   len=strlen(buffer);
-  if(NewMemory((void **)&flowlabel->shortlabel,(unsigned int)(len+1))==0)return LABEL_ERR;
+  if(NEWMEM(flowlabel->shortlabel,(unsigned int)(len+1))==0)return LABEL_ERR;
   STRCPY(flowlabel->shortlabel,buffer);
 
   if(unit==NULL){
@@ -1327,7 +1327,7 @@ int SetLabels(flowlabels *flowlabel, char *longlabel, char *shortlabel, char *un
     strcpy(buffer,unit);
   }
   len=strlen(buffer);
-  if(NewMemory((void **)&flowlabel->unit,(unsigned int)(len+1))==0)return LABEL_ERR;
+  if(NEWMEM(flowlabel->unit,(unsigned int)(len+1))==0)return LABEL_ERR;
   STRCPY(flowlabel->unit,buffer);
 
   return LABEL_OK;

@@ -4865,8 +4865,7 @@ void ShowHideSortGeometry(int sort_geom, float *mm){
     if(iter == 0){
       CheckMemory;
       if(count_transparent == 0 && count_opaque == 0)return;
-      FREEMEMORY(alltriangles);
-      NewMemory((void **)&alltriangles, (count_opaque + count_transparent)*sizeof(tridata **));
+      NEWMEM(alltriangles, (count_opaque + count_transparent) * sizeof(tridata **));
       transparent_triangles = alltriangles;
       opaque_triangles = alltriangles + count_transparent;
     }

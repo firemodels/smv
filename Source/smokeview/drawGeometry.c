@@ -4023,35 +4023,29 @@ void AllocateFaces(){
     ntotal = 6*meshi->nbptrs + meshi->nvents+12;
     ntotal2 += ntotal;
 
-    FREEMEMORY(meshi->faceinfo);
-    FREEMEMORY(meshi->face_normals_single);
-    FREEMEMORY(meshi->face_normals_double);
-    FREEMEMORY(meshi->face_transparent_double);
-    FREEMEMORY(meshi->face_textures);
-    FREEMEMORY(meshi->face_outlines);
     if(ntotal>0){
-      if(abortflag==0&&NewMemory((void **)&meshi->faceinfo,sizeof(facedata)*ntotal)==0){
+      if(abortflag==0 && NEWMEM(meshi->faceinfo,sizeof(facedata)*ntotal)==0){
         abortflag=1;
       }
-      if(abortflag==0&&NewMemory((void **)&meshi->face_normals_single,sizeof(facedata *)*ntotal)==0){
+      if(abortflag==0 && NEWMEM(meshi->face_normals_single,sizeof(facedata *)*ntotal)==0){
+        abortflag = 1;
+      }
+      if(abortflag==0 && NEWMEM(meshi->face_normals_double,sizeof(facedata *)*ntotal)==0){
         abortflag=1;
       }
-      if(abortflag==0&&NewMemory((void **)&meshi->face_normals_double,sizeof(facedata *)*ntotal)==0){
+      if(abortflag==0 && NEWMEM(meshi->face_transparent_double,sizeof(facedata *)*ntotal)==0){
         abortflag=1;
       }
-      if(abortflag==0&&NewMemory((void **)&meshi->face_transparent_double,sizeof(facedata *)*ntotal)==0){
+      if(abortflag==0 && NEWMEM(meshi->face_textures,sizeof(facedata *)*ntotal)==0){
         abortflag=1;
       }
-      if(abortflag==0&&NewMemory((void **)&meshi->face_textures,sizeof(facedata *)*ntotal)==0){
-        abortflag=1;
-      }
-      if(abortflag==0&&NewMemory((void **)&meshi->face_outlines,sizeof(facedata *)*ntotal)==0){
+      if(abortflag==0 && NEWMEM(meshi->face_outlines,sizeof(facedata *)*ntotal)==0){
         abortflag=1;
       }
     }
   }
   if(ntotal2>0){
-    if(abortflag==0&&NewMemory((void **)&face_transparent,sizeof(facedata *)*ntotal2)==0){
+    if(abortflag==0&&NEWMEM(face_transparent,sizeof(facedata *)*ntotal2)==0){
       abortflag=1;
     }
   }
