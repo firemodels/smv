@@ -3300,7 +3300,7 @@ void ReloadAllSliceFiles(int load_flag){
 
     if(slicei->slice_filetype == SLICE_GEOM){
 #ifdef pp_SLICEFRAME
-      ReadGeomData(slicei->patchgeom, slicei, LOAD, ALL_FRAMES, NULL, 0, &errorcode);
+      ReadGeomData(slicei->patchgeom, slicei, load_flag, ALL_FRAMES, NULL, 0, &errorcode);
 #else
       load_size+=ReadGeomData(slicei->patchgeom, slicei, LOAD, ALL_FRAMES, NULL, 0, &errorcode);
 #endif
@@ -3574,7 +3574,6 @@ void LoadUnloadMenu(int value){
       LoadAllPartFilesMT(RELOAD_LOADED_PART_FILES);
     }
 #endif
-
 
     //*** reload isosurface files
 
