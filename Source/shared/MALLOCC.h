@@ -119,27 +119,27 @@ void _CheckMemoryOff(void);
 void _PrintAllMemoryInfo(void);
 int _CountMemoryBlocks(void);
 #define ValidPointer(pv,size) _ValidPointer(pv, size)
-#define GetTotalMemory(size) size=_GetTotalMemory()
+#define GETTOTALMEMORY (_GetTotalMemory())
 #define CheckMemory _CheckMemory()
 #define CheckMemoryNOTHREAD _CheckMemoryNOTHREAD()
 #define CheckMemoryOn _CheckMemoryOn()
 #define CheckMemoryOff _CheckMemoryOff()
 #define PrintAllMemoryInfo _PrintAllMemoryInfo()
-#define CountMemoryBlocks(f,g)  f=_CountMemoryBlocks()-g
+#define COUNTMEMORYBLOCKS(f)  (_CountMemoryBlocks()-f)
 char *_strcpy(char *s1, const char *s2);
 char *_strcat(char *s1, const char *s2);
 #define STRCPY(f,g) _strcpy((f),(g))
 #define STRCAT(f,g) _strcat((f),(g))
 #else
 #define ValidPointer(pv,size)
-#define GetTotalMemory
+#define GETTOTALMEMORY
 #define CheckMemory
 #define CheckMemoryOn
 #define CheckMemoryOff
 #define PrintAllMemoryInfo
 #define STRCPY(f,g) strcpy((f),(g))
 #define STRCAT(f,g) strcat((f),(g))
-#define CountMemoryBlocks(f,g)
+#define COUNTMEMORYBLOCKS(f)
 #endif
 
 #ifdef pp_MEMDEBUG

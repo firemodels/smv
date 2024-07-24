@@ -2079,6 +2079,12 @@ void Keyboard(unsigned char key, int flag){
         }
       }
       break;
+#ifdef pp_MEMDEBUG
+    case 'l':
+    case 'L':
+      printf("memory blocks: %i total size: %i\n", COUNTMEMORYBLOCKS(0), (int)GETTOTALMEMORY);
+      break;
+#endif
     case 'M':
       clip_commandline = 1-clip_commandline;
       if(clip_commandline==1){
