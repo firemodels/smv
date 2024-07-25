@@ -825,6 +825,10 @@ EXTERNCPP void LoadSliceMenu(int value);
 EXTERNCPP void LoadVSliceMenu(int value);
 
 EXTERNCPP void InitVars(void);
+/**
+ * @brief Free the global variables initialized by @ref InitVars.
+ */
+EXTERNCPP void FreeVars(void);
 EXTERNCPP void RenderState(int onoff);
 EXTERNCPP void ResizeWindow(int width, int height);
 EXTERNCPP meshdata *GetMesh(float *xyz);

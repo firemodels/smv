@@ -3823,15 +3823,15 @@ void DrawSmvObject(sv_object *object_dev, int iframe_local, propdata *prop, int 
     object = object_dev;
   }
   if(object->visible == 0 && vis_override == 0)return;
-  if(object == objectscoll.std_object_defs.missing_device&&show_missing_objects == 0)return;
+  if(object == objectscoll->std_object_defs.missing_device&&show_missing_objects == 0)return;
   if(iframe_local > object->nframes - 1 || iframe_local < 0)iframe_local = 0;
   framei = object->obj_frames[iframe_local];
 
   assert(framei->error == 0 || framei->error == 1);
 
   if(framei->error == 1){
-    object = objectscoll.std_object_defs.error_device;
-    framei = objectscoll.std_object_defs.error_device->obj_frames[0];
+    object = objectscoll->std_object_defs.error_device;
+    framei = objectscoll->std_object_defs.error_device->obj_frames[0];
     prop = NULL;
   }
 
@@ -4059,7 +4059,7 @@ void DrawSmvObject(sv_object *object_dev, int iframe_local, propdata *prop, int 
           iframe_local2 = 0;
         }
         object_name = (toki - 1)->string;
-        included_object = GetSmvObjectType(&objectscoll, object_name, objectscoll.std_object_defs.missing_device);
+        included_object = GetSmvObjectType(objectscoll, object_name, objectscoll->std_object_defs.missing_device);
         toki->included_frame = iframe_local2;
         toki->included_object = included_object;
       }
@@ -5863,10 +5863,10 @@ void InitializeDeviceCsvData(int flag){
 void UpdateObjectUsed(void){
   int i;
 
-  for(i = 0; i<objectscoll.nobject_defs; i++){
+  for(i = 0; i<objectscoll->nobject_defs; i++){
     sv_object *obj_typei;
 
-    obj_typei = objectscoll.object_defs[i];
+    obj_typei = objectscoll->object_defs[i];
     obj_typei->used_by_device = 0;
   }
   for(i = 0; i<ndeviceinfo; i++){

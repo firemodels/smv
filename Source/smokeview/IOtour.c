@@ -396,7 +396,7 @@ void DrawTours(void){
 
           glRotatef(az_angle,0.0,0.0,1.0);
 
-          DrawSmvObject(avatar_types[touri->glui_avatar_index],0,NULL,0,NULL,0);
+          DrawSmvObject(objectscoll->avatar_types[touri->glui_avatar_index],0,NULL,0,NULL,0);
           glPopMatrix();
         }
         break;

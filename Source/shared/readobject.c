@@ -1,4 +1,5 @@
 #include "options.h"
+
 #include <assert.h>
 #include <math.h>
 #include <stdio.h>
@@ -28,16 +29,16 @@ int GetTokenId(char *token, int *opptr, int *num_opptr, int *num_outopptr,
                int *use_displaylist);
 void ParseSmvObjectString(object_collection *objectscoll, char *string,
                           char **tokens, int *ntokens, int setbw);
-sv_object *InitSmvObject1(object_collection *objectscoll, char *label,
-                          char *commands, int visible, int setbw);
-sv_object *InitSmvObject2(object_collection *objectscoll, char *label,
-                          char *commandsoff, char *commandson, int visible,
-                          int setbw);
+sv_object *InitSmvObject1(object_collection *objectscoll, const char *label,
+                          const char *commands, int visible, int setbw);
+sv_object *InitSmvObject2(object_collection *objectscoll, const char *label,
+                          const char *commandsoff, const char *commandson,
+                          int visible, int setbw);
 sv_object *GetSmvObjectType2(object_collection *objectscoll, char *olabel,
                              sv_object *default_object);
 void FreeObject(sv_object *object);
 
-char *ParseObjectFrame(object_collection *objectscoll, char *buffer,
+char *ParseObjectFrame(object_collection *objectscoll, const char *buffer,
                        FILE *stream, int *eof, sv_object_frame *frame,
                        int setbw);
 
@@ -100,7 +101,6 @@ sv_object *GetSmvObjectType(object_collection *objectscoll, char *olabel,
 
   if (olabel == NULL) return default_object;
   strcpy(label, olabel);
-  labelptr = label;
   TrimBack(label);
   labelptr = TrimFront(label);
   if (strlen(labelptr) == 0) return default_object;
@@ -123,7 +123,6 @@ sv_object *GetSmvObjectType2(object_collection *objectscoll, char *olabel,
 
   if (olabel == NULL) return default_object;
   strcpy(label, olabel);
-  labelptr = label;
   TrimBack(label);
   labelptr = TrimFront(label);
   if (strlen(labelptr) == 0) return default_object;
@@ -285,9 +284,11 @@ void GetIndepVarIndices(sv_object *smv_object, char **var_indep_strings,
 
 /* ----------------------- ParseObjectFrame ----------------------------- */
 // Previously ParseDeviceFrame
-char *ParseObjectFrame(object_collection *objectscoll, char *buffer,
+char *ParseObjectFrame(object_collection *objectscoll, const char *buffer_in,
                        FILE *stream, int *eof, sv_object_frame *frame,
                        int setbw) {
+  char buffer[1024];
+  strcpy(buffer, buffer_in);
 
   char object_buffer[10 * BUFFER_SIZE];
   int ntokens;
@@ -395,7 +396,6 @@ char *ParseObjectFrame(object_collection *objectscoll, char *buffer,
         nargs_actual = i - last_command_index - 1;
       }
       else {
-        nargs_actual = toki - first_token;
         nargs_actual = toki->nvars;
       }
       if (nargs_actual != toki->nvars) {
@@ -1079,9 +1079,9 @@ int GetObjectFrameTokenLoc(char *var, sv_object_frame *frame) {
 
 /* ----------------------- init_SMVOBJECT2 ----------------------------- */
 
-sv_object *InitSmvObject2(object_collection *objectscoll, char *label,
-                          char *commandsoff, char *commandson, int visible,
-                          int setbw) {
+sv_object *InitSmvObject2(object_collection *objectscoll, const char *label,
+                          const char *commandsoff, const char *commandson,
+                          int visible, int setbw) {
   sv_object *object;
   int i;
 
@@ -1126,8 +1126,8 @@ sv_object *InitSmvObject2(object_collection *objectscoll, char *label,
 
 /* ----------------------- InitSmvObject1 ----------------------------- */
 
-sv_object *InitSmvObject1(object_collection *objectscoll, char *label,
-                          char *commands, int visible, int setbw) {
+sv_object *InitSmvObject1(object_collection *objectscoll, const char *label,
+                          const char *commands, int visible, int setbw) {
   sv_object *object;
   sv_object_frame *framei;
   int eof;
@@ -1164,6 +1164,7 @@ void FreeObjectCollection(object_collection *objectscoll) {
     if (object->prev == NULL) break;
     FreeObject(object);
   }
+  FreeMemory(objectscoll);
 }
 
 /* ----------------------- GetSmvObject ----------------------------- */
@@ -1180,24 +1181,19 @@ sv_object *GetSmvObject(object_collection *objectscoll, char *label) {
 }
 
 /* ----------------------- ReadObjectDefs ----------------------------- */
-/** @brief Read in object definitions from an object file.
- * @param[inout] nobject_defs The number of object definitions in object_defs
- * @param[out] object_defs
- * @param[in] file The file path to read from
- */
-int ReadObjectDefs(object_collection *objectscoll, char *file, int setbw) {
+
+int ReadObjectDefs(object_collection *objectscoll, const char *file,
+                   int setbw) {
   FILE *stream;
   char buffer[256], *trim_buffer;
   char *buffer_ptr;
   sv_object *temp_object, *prev_object, *next_object, *current_object;
-  sv_object_frame *current_frame;
+  sv_object_frame *current_frame = NULL;
   int firstdef;
   sv_object *object_start, *objecti;
   size_t lenbuffer;
   int ndevices = 0;
   int eof = 0;
-
-  // FreeObjectCollection();
 
   stream = fopen(file, "r");
   if (stream == NULL) return 0;
@@ -1292,8 +1288,11 @@ int ReadObjectDefs(object_collection *objectscoll, char *file, int setbw) {
         continue;
       }
     }
-    buffer_ptr = ParseObjectFrame(objectscoll, buffer, stream, &eof,
-                                  current_frame, setbw);
+    // If a frame has not been started, don't try and parse it.
+    if (current_frame != NULL) {
+      buffer_ptr = ParseObjectFrame(objectscoll, buffer, stream, &eof,
+                                    current_frame, setbw);
+    }
   }
   fclose(stream);
 
@@ -1373,9 +1372,7 @@ int ReadObjectDefs(object_collection *objectscoll, char *file, int setbw) {
 
 /* ----------------------- InitAvatar ----------------------------- */
 
-void InitAvatar(object_collection *objectscoll, int navatar_types,
-                sv_object **avatar_types, sv_object *avatar_defs_backup[2],
-                int setbw) {
+void InitAvatar(object_collection *objectscoll, int setbw) {
   int iavatar_types_local;
   sv_object *objecti, *object_start;
   char com_buffer[1024];
@@ -1385,45 +1382,113 @@ void InitAvatar(object_collection *objectscoll, int navatar_types,
          ":DUM1 :DUM2 :DUM3 :W :D :H1 :SX :SY :SZ :R :G :B :HX :HY :HZ ");
 
   object_start = objectscoll->object_def_first.next;
-  navatar_types = 2;
+  objectscoll->navatar_types = 2;
   for (objecti = object_start; objecti->next != NULL; objecti = objecti->next) {
-    if (objecti->type == IS_AVATAR) navatar_types++;
+    if (objecti->type == IS_AVATAR) objectscoll->navatar_types++;
   }
-  NewMemory((void **)&avatar_types, navatar_types * sizeof(sv_object *));
+  NewMemory((void **)&objectscoll->avatar_types,
+            objectscoll->navatar_types * sizeof(sv_object *));
 
   strcpy(com_buffer, labels);
   strcat(com_buffer, "0.0 0.0 1.0 translate 255 0 0 setrgb 0.03 0.1 drawdisk 0 "
                      "0 255 setrgb 90.0 rotatey 0.03 0.2 drawdisk");
-  avatar_defs_backup[0] =
+  objectscoll->avatar_defs_backup[0] =
       InitSmvObject1(objectscoll, "Avatar_1", com_buffer, 1, setbw);
-  avatar_defs_backup[0]->type = IS_AVATAR;
+  objectscoll->avatar_defs_backup[0]->type = IS_AVATAR;
 
   strcpy(com_buffer, labels);
   strcat(com_buffer, "255 255 0 setrgb 0.02 0.05 drawdisk");
-  avatar_defs_backup[1] =
+  objectscoll->avatar_defs_backup[1] =
       InitSmvObject1(objectscoll, "Avatar_2", com_buffer, 1, setbw);
-  avatar_defs_backup[1]->type = IS_AVATAR;
+  objectscoll->avatar_defs_backup[1]->type = IS_AVATAR;
 
-  avatar_types[0] = avatar_defs_backup[0];
-  avatar_types[1] = avatar_defs_backup[1];
+  objectscoll->avatar_types[0] = objectscoll->avatar_defs_backup[0];
+  objectscoll->avatar_types[1] = objectscoll->avatar_defs_backup[1];
 
   iavatar_types_local = 2;
   for (objecti = object_start; objecti->next != NULL; objecti = objecti->next) {
     if (objecti->type == IS_NOT_AVATAR) continue;
-    avatar_types[iavatar_types_local++] = objecti;
+    objectscoll->avatar_types[iavatar_types_local++] = objecti;
   }
-  iavatar_types_local = 0;
+}
+
+void InitStdObjectDefs(object_collection *objectscoll, int setbw,
+                       int isZoneFireModel) {
+  if (isZoneFireModel == 1) {
+    objectscoll->std_object_defs.target_object_backup = InitSmvObject1(
+        objectscoll, "target", "255 255 0 setrgb 0.02 0.05 drawdisk", 1, setbw);
+  }
+  else {
+    objectscoll->std_object_defs.target_object_backup = InitSmvObject1(
+        objectscoll, "sensor", "255 255 0 setrgb 0.038 drawcube", 1, setbw);
+  }
+
+  objectscoll->std_object_defs.thcp_object_backup = InitSmvObject1(
+      objectscoll, "thcp", "255 255 0 setrgb 0.038 drawcube", 1, setbw);
+
+  objectscoll->std_object_defs.heat_detector_object_backup = InitSmvObject2(
+      objectscoll, "heat_detector", "0 255 0 setrgb 0.038 drawcube",
+      "255 0 0 setrgb 0.038 drawcube", 1, setbw);
+
+  objectscoll->std_object_defs.sprinkler_upright_object_backup = InitSmvObject2(
+      objectscoll, "sprinkler_upright", "0 255 0 setrgb 0.038 drawcube",
+      "255 0 0 setrgb 0.038 drawcube", 1, setbw);
+
+  objectscoll->std_object_defs.smoke_detector_object_backup = InitSmvObject2(
+      objectscoll, "smoke_detector", "127 127 127 setrgb 0.2 0.05 drawdisk",
+      "255 0 0 setrgb 0.2 0.05 drawdisk", 1, setbw);
+
+  objectscoll->std_object_defs.error_device = InitSmvObject1(
+      objectscoll, "error_device",
+      "255 0 0 setrgb push 45.0 rotatey -0.1 offsetz 0.05 0.2 drawdisk pop "
+      "push -45.0 rotatey -0.1 offsetz 0.05 0.2 drawdisk pop",
+      1, setbw);
+
+  if (objectscoll->std_object_defs.missing_device == NULL) {
+    objectscoll->std_object_defs.missing_device = InitSmvObject1(
+        objectscoll, "missing_device",
+        "0 0 255 setrgb push 45.0 rotatey -0.1 offsetz 0.05 0.2 drawdisk "
+        "pop push -45.0 rotatey -0.1 offsetz 0.05 0.2 drawdisk pop",
+        1, setbw);
+  }
+}
+
+object_collection *CreateObjectCollection(void) {
+  object_collection *objectscoll;
+  NewMemory((void **)&objectscoll, sizeof(object_collection));
+  // Set everything to NULL
+  memset(objectscoll, 0, sizeof(object_collection));
+  strcpy(objectscoll->object_def_first.label, "first");
+  objectscoll->object_def_first.next = &objectscoll->object_def_last;
+  objectscoll->object_def_first.prev = NULL;
+
+  strcpy(objectscoll->object_def_last.label, "last");
+  objectscoll->object_def_last.next = NULL;
+  objectscoll->object_def_last.prev = &objectscoll->object_def_first;
+  objectscoll->object_defs = NULL;
+  return objectscoll;
+}
+
+void LoadDefaultObjectDefs(object_collection *objectscoll) {
+  objectscoll->nobject_defs = 4;
+  FREEMEMORY(objectscoll->object_defs);
+  NewMemory((void **)&objectscoll->object_defs, 4 * sizeof(sv_object *));
+  objectscoll->object_defs[0] =
+      objectscoll->std_object_defs.target_object_backup;
+  objectscoll->object_defs[1] =
+      objectscoll->std_object_defs.heat_detector_object_backup;
+  objectscoll->object_defs[2] =
+      objectscoll->std_object_defs.sprinkler_upright_object_backup;
+  objectscoll->object_defs[3] =
+      objectscoll->std_object_defs.smoke_detector_object_backup;
 }
 
 /* ----------------------- InitObjectDefs ----------------------------- */
 
-void InitObjectCollection(object_collection *objectscoll, int navatar_types,
-                          sv_object **avatar_types,
-                          sv_object *avatar_defs_backup[2],
-                          const char *smokeview_bindir, const char *fdsprefix,
-                          int setbw, int isZoneFireModel) {
-  char com_buffer[1024];
-  char com_buffer2[1024];
+void ReadDefaultObjectCollection(object_collection *objectscoll,
+                                 const char *smokeview_bindir,
+                                 const char *fdsprefix, int setbw,
+                                 int isZoneFireModel) {
   char objectfile[1024];
 
   // There are 5 places to retrieve object definitions from:
@@ -1449,14 +1514,16 @@ void InitObjectCollection(object_collection *objectscoll, int navatar_types,
   ReadObjectDefs(objectscoll, objectfile, setbw);
 
   // Read "${fdsprefix}.svo" from the current directory
-  strcpy(objectfile, fdsprefix);
-  strcat(objectfile, ".svo");
-  ReadObjectDefs(objectscoll, objectfile, setbw);
+  if (fdsprefix != NULL) {
+    strcpy(objectfile, fdsprefix);
+    strcat(objectfile, ".svo");
+    ReadObjectDefs(objectscoll, objectfile, setbw);
+  }
 
 #ifdef SMOKEVIEW_OBJECT_DEFS_PATH
-  // Read objects file pointed to be macro SMOKEVIEW_OBJECT_DEFS_PATH. Useful
-  // when install paths differ per platform.
-  ReadObjectDefs(SMOKEVIEW_OBJECT_DEFS_PATH);
+  // Read objects file pointed to be macro SMOKEVIEW_OBJECT_DEFS_PATH.
+  // Useful when install paths differ per platform.
+  ReadObjectDefs(objectscoll, SMOKEVIEW_OBJECT_DEFS_PATH, set_bw);
 #endif
 
   // Read objects file from the envar SMOKEVIEW_OBJECT_DEFS
@@ -1465,65 +1532,13 @@ void InitObjectCollection(object_collection *objectscoll, int navatar_types,
     ReadObjectDefs(objectscoll, envar_object_path, setbw);
   }
 
-  InitAvatar(objectscoll, navatar_types, avatar_types, avatar_defs_backup,
-             setbw);
+  InitAvatar(objectscoll, setbw);
 
-  if (isZoneFireModel == 1) {
-    strcpy(com_buffer, "255 255 0 setrgb 0.02 0.05 drawdisk");
-    objectscoll->std_object_defs.target_object_backup =
-        InitSmvObject1(objectscoll, "target", com_buffer, 1, setbw);
-  }
-  else {
-    strcpy(com_buffer, "255 255 0 setrgb 0.038 drawcube");
-    objectscoll->std_object_defs.target_object_backup =
-        InitSmvObject1(objectscoll, "sensor", com_buffer, 1, setbw);
-  }
+  InitStdObjectDefs(objectscoll, setbw, isZoneFireModel);
 
-  strcpy(com_buffer, "255 255 0 setrgb 0.038 drawcube");
-  objectscoll->std_object_defs.thcp_object_backup =
-      InitSmvObject1(objectscoll, "thcp", com_buffer, 1, setbw);
-
-  strcpy(com_buffer, "0 255 0 setrgb 0.038 drawcube");
-  strcpy(com_buffer2, "255 0 0 setrgb 0.038 drawcube");
-  objectscoll->std_object_defs.heat_detector_object_backup = InitSmvObject2(
-      objectscoll, "heat_detector", com_buffer, com_buffer2, 1, setbw);
-
-  strcpy(com_buffer, "0 255 0 setrgb 0.038 drawcube");
-  strcpy(com_buffer2, "255 0 0 setrgb 0.038 drawcube");
-  objectscoll->std_object_defs.sprinkler_upright_object_backup = InitSmvObject2(
-      objectscoll, "sprinkler_upright", com_buffer, com_buffer2, 1, setbw);
-
-  strcpy(com_buffer, "127 127 127 setrgb 0.2 0.05 drawdisk");
-  strcpy(com_buffer2, "255 0 0 setrgb 0.2 0.05 drawdisk");
-  objectscoll->std_object_defs.smoke_detector_object_backup = InitSmvObject2(
-      objectscoll, "smoke_detector", com_buffer, com_buffer2, 1, setbw);
-
-  strcpy(com_buffer,
-         "255 0 0 setrgb push 45.0 rotatey -0.1 offsetz 0.05 0.2 drawdisk pop "
-         "push -45.0 rotatey -0.1 offsetz 0.05 0.2 drawdisk pop");
-  objectscoll->std_object_defs.error_device =
-      InitSmvObject1(objectscoll, "error_device", com_buffer, 1, setbw);
-
-  if (objectscoll->std_object_defs.missing_device == NULL) {
-    strcpy(com_buffer,
-           "0 0 255 setrgb push 45.0 rotatey -0.1 offsetz 0.05 0.2 drawdisk "
-           "pop push -45.0 rotatey -0.1 offsetz 0.05 0.2 drawdisk pop");
-    objectscoll->std_object_defs.missing_device =
-        InitSmvObject1(objectscoll, "missing_device", com_buffer, 1, setbw);
-  }
-
+  // If no objects were read, insert the 4 standard objects
   if (objectscoll->nobject_defs == 0) {
-    objectscoll->nobject_defs = 4;
-    FREEMEMORY(objectscoll->object_defs);
-    NewMemory((void **)&objectscoll->object_defs, 4 * sizeof(sv_object *));
-    objectscoll->object_defs[0] =
-        objectscoll->std_object_defs.target_object_backup;
-    objectscoll->object_defs[1] =
-        objectscoll->std_object_defs.heat_detector_object_backup;
-    objectscoll->object_defs[2] =
-        objectscoll->std_object_defs.sprinkler_upright_object_backup;
-    objectscoll->object_defs[3] =
-        objectscoll->std_object_defs.smoke_detector_object_backup;
+    LoadDefaultObjectDefs(objectscoll);
   }
 }
 

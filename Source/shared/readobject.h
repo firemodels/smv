@@ -371,33 +371,41 @@ typedef struct {
   sv_object object_def_last;
   /** @brief A number of standard objects to be used. */
   std_objects std_object_defs;
+  int iavatar_types;
+  int navatar_types;
+  sv_object **avatar_types;
+  sv_object *avatar_defs_backup[2];
 } object_collection;
 
 /**
- * @brief Initialise an @ref object_collection and avatar types.
+ * @brief Initialise an @ref object_collection.
+ *
+ * @returns A @ref object_collection which has been properly initialized.
+ */
+object_collection *CreateObjectCollection(void);
+
+/**
+ * @brief Read objects from the standard file locations, using fallback objects
+ * if object definitions are not found.
  *
  * @param[inout] objectscoll Pointer to the location of the @ref
- * object_collection to initialize.
- * @param[in] setbw Set the colors to black and white.
- * @param[inout] avatar_types Linked-list of avatar types. TODO: include in
- * object_collection.
- * @param[in] avatar_defs_backup Backup avatar types. TODO: include in
- * object_collection.
+ * object_collection to read object definitions into. This @ref
+ * object_collection
  * @param[in] smokeview_bindir The path which contains the smokeview binary.
- * Object definition files from this directory are read.
+ * Object definition files from this directory are read. If NULL, this step is
+ * skipped.
  * @param[in] setbw Set the colors to black and white.
  * @param[in] fdsprefix The fdsprefix. This is used to find case-specific object
- * files (e.g., "${fdsprefix}.svo").
+ * files (e.g., "${fdsprefix}.svo"). If NULL, such files are never read.
  * @param[in] isZoneFireModel Is this model a zone fire model.
  */
-void InitObjectCollection(object_collection *objectscoll, int navatar_types,
-                          sv_object **avatar_types,
-                          sv_object *avatar_defs_backup[2],
-                          const char *smokeview_bindir, const char *fdsprefix,
-                          int setbw, int isZoneFireModel);
+void ReadDefaultObjectCollection(object_collection *objectscoll,
+                                 const char *smokeview_bindir,
+                                 const char *fdsprefix, int setbw,
+                                 int isZoneFireModel);
 /**
- * @brief Free an @ref object_collection previously initialized by @ref
- * InitObjectCollection.
+ * @brief Free an @ref object_collection previously created by @ref
+ * CreateObjectCollection.
  *
  * @param[inout] objectscoll The @ref object_collection to free.
  */
@@ -424,7 +432,18 @@ sv_object *GetSmvObject(object_collection *objectscoll, char *label);
  */
 sv_object *GetSmvObjectType(object_collection *objectscoll, char *olabel,
                             sv_object *default_object);
-
+/**
+ * @brief Read in object definitions from an object file and add them to an
+ * object collection.
+ *
+ * @param[inout] nobject_defs The number of object definitions in object_defs
+ * @param[in] file The file path to read from
+ * @param[out] setbw A boolean value to set wether these objects should be set
+ * to black and white
+ *
+ * @returns The number of objects read
+ */
+int ReadObjectDefs(object_collection *objectscoll, const char *file, int setbw);
 // END MAIN API
 
 // These still need to be documented.

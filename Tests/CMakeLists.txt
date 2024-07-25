@@ -75,6 +75,29 @@ if ((NOT MACOSX) AND UNIX)
 endif()
 
 
+# test_objects
+add_executable(test_objects test_objects.c
+    ../Source/shared/dmalloc.c
+    ../Source/shared/readobject.c
+    ../Source/shared/string_util.c
+    ../Source/shared/file_util.c
+    ../Source/shared/stdio_buffer.c
+    ../Source/shared/sha256.c
+    ../Source/shared/sha1.c
+    ../Source/shared/md5.c
+)
+
+target_include_directories(test_objects PRIVATE
+    ../Tests
+    ../Source/shared
+    ../Source/glew
+)
+if (WIN32)
+    target_include_directories(test_objects PRIVATE ../Source/pthreads)
+endif()
+if ((NOT MACOSX) AND UNIX)
+    target_link_libraries(test_objects m)
+endif()
 
 # Arguments to this tests are <slice path> <number of frames in slice>
 # Simple slice is a finished slice file with 3 frames
@@ -100,3 +123,6 @@ COMMAND parse_simple_part ${CMAKE_SOURCE_DIR}/Tests/fig/smv/Tests/simple_part.pr
 # Simple slice is a finished slice file with 3 frames
 add_test(NAME "Simple PL3d - Complete"
 COMMAND parse_simple_pl3d ${CMAKE_SOURCE_DIR}/Tests/fig/smv/Tests/simple_pl3d.q)
+
+add_test(NAME "Test Object API"
+COMMAND test_objects ${CMAKE_SOURCE_DIR}/Tests/bad_objects.svo)
