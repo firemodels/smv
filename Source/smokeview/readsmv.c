@@ -192,6 +192,9 @@ FILE_SIZE ReadCSVFile(csvfiledata *csvfi, int flag){
       ci = csvfi->csvinfo + i;
       FREEMEMORY(ci->vals);
       FREEMEMORY(ci->vals_orig);
+      FREEMEMORY(ci->label.longlabel);
+      FREEMEMORY(ci->label.shortlabel);
+      FREEMEMORY(ci->label.unit);
     }
     FREEMEMORY(csvfi->csvinfo);
   }
@@ -310,6 +313,9 @@ FILE_SIZE ReadCSVFile(csvfiledata *csvfi, int flag){
     ci->skip = 0;
     if(strcmp(unit, "status") == 0)ci->skip = 1;
     ci->dimensionless = IsDimensionless(unit);
+    ci->label.longlabel = NULL;
+    ci->label.shortlabel = NULL;
+    ci->label.unit = NULL;
     SetLabels(&(ci->label), label, label, unit);
   }
   CheckMemory;
@@ -402,6 +408,9 @@ FILE_SIZE ReadCSVFile(csvfiledata *csvfi, int flag){
         cchirad->valmax = MAX(cchirad->valmax, vals2[i]);
       }
     }
+    cchirad->label.longlabel = NULL;
+    cchirad->label.shortlabel = NULL;
+    cchirad->label.unit = NULL;
     SetLabels(&(cchirad->label), "-QRAD_I/HRR", "-QRAD_I/HRR", "");
     csvfi->ncsvinfo++;
   }
