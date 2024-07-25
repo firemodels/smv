@@ -724,8 +724,25 @@ bufferdata *File2Buffer(char *file, bufferdata *bufferinfo,  int *nreadptr){
   }
 //  nread = fread_p(file, buffer, offset, delta, nthreads);
 
+//#define XXX
+#ifdef XXX
+  FILE *stream;
+#ifdef WIN32
+  stream = _fsopen(file, "rb", _SH_DENYNO);
+#ifdef pp_OPEN_TEST
+  if(stream != NULL){
+    open_files++;
+  }
+#endif
+#else
+  stream = fopen(file, "rb");
+#endif
+#endif
+
+#ifndef XXX
   FILE *stream;
   stream = fopen(file, "rb");
+#endif
   if(stream == NULL){
     FreeBufferInfo(bufferinfo);
     return NULL;

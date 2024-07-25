@@ -24,6 +24,9 @@ int fclose_counting(FILE *fp)
   v = fclose(fp);
   if(v != EOF){
     open_files--;
+    if(open_files < 0){
+      printf("file count negative\n");
+    }
   }
   return v;
 }
