@@ -1,5 +1,6 @@
 #ifndef FILE_UTIL_H_DEFINED
 #define FILE_UTIL_H_DEFINED
+#include "fopen.h"
 
 // vvvvvvvvvvvvvvvvvvvvvvvv header files vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 
@@ -49,7 +50,7 @@ typedef struct {
 
 #ifdef pp_OPEN_TEST
 #ifndef fopen
-#define fopen(x,y) fopen_counting(x,y)
+#define fopen(x,y) fopen_counting(x,y,__FILE__,__LINE__)
 #endif
 #ifndef fclose
 #define fclose(x) fclose_counting(x)
@@ -131,8 +132,6 @@ int FileExistsOrig(char *filename);
 #include "string_util.h"
 
 // vvvvvvvvvvvvvvvvvvvvvvvv headers vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
-EXTERNCPP FILE *fopen_counting(const char *path, const char *mode);
-EXTERNCPP int fclose_counting(FILE *fp);
 EXTERNCPP int MakeFile(char *file, int size);
 EXTERNCPP void FreeBufferInfo(bufferdata * bufferinfoptr);
 EXTERNCPP bufferdata *InitBufferData(char *file);

@@ -10,6 +10,7 @@
 #include "smokeviewvars.h"
 #include "IOvolsmoke.h"
 #include "glui_motion.h"
+#include "fopen.h"
 
 #ifdef pp_LUA
 #include "lua_api.h"
@@ -2085,8 +2086,18 @@ void Keyboard(unsigned char key, int flag){
       printf("memory blocks: %i total size: %i\n", COUNTMEMORYBLOCKS(0), (int)GETTOTALMEMORY);
 #endif
 #ifdef pp_OPEN_TEST
-      extern int open_files;
       printf("open files: %i\n", open_files);
+      if(nopeninfo > 0){
+        for(i = 0; i < nopeninfo; i++){
+          opendata *oi;
+
+          oi = openinfo + i;
+          printf("file: %s\n",   oi->file);
+          printf("source: %s\n", oi->source);
+          printf("line: %i\n\n", oi->line);
+        }
+      }
+      printf("nopeninfo: %i\n", nopeninfo);
 #endif
       break;
     case 'M':

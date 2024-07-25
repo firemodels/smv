@@ -32,11 +32,9 @@
 #include "string_util.h"
 #include "file_util.h"
 #include "threader.h"
+#include "fopen.h"
 
 FILE *alt_stdout=NULL;
-#ifdef pp_OPEN_TEST
-extern int open_files;
-#endif
 
 /* ------------------ TestWrite ------------------------ */
 
@@ -731,6 +729,7 @@ bufferdata *File2Buffer(char *file, bufferdata *bufferinfo,  int *nreadptr){
   stream = _fsopen(file, "rb", _SH_DENYNO);
 #ifdef pp_OPEN_TEST
   if(stream != NULL){
+    AddOpenFile(file, stream, __FILE__, __LINE__);
     open_files++;
   }
 #endif
@@ -832,6 +831,7 @@ FILE *FOPEN(const char *file, const char *mode) {
   stream =  _fsopen(file, mode, _SH_DENYNO);
 #ifdef pp_OPEN_TEST
   if(stream != NULL){
+    AddOpenFile(file, stream, __FILE__, __LINE__);
     open_files++;
   }
 #endif
@@ -854,6 +854,7 @@ FILE *fopen_indir(char *dir, char *file, char *mode){
     stream = _fsopen(file, mode, _SH_DENYNO);
 #ifdef pp_OPEN_TEST
     if(stream != NULL){
+      AddOpenFile(file, stream, __FILE__, __LINE__);
       open_files++;
     }
 #endif
@@ -874,6 +875,7 @@ FILE *fopen_indir(char *dir, char *file, char *mode){
     stream = _fsopen(filebuffer, mode, _SH_DENYNO);
 #ifdef pp_OPEN_TEST
     if(stream != NULL){
+      AddOpenFile(filebuffer, stream, __FILE__, __LINE__);
       open_files++;
     }
 #endif
@@ -895,6 +897,7 @@ FILE *fopen_2dir(char *file, char *mode, char *scratch_dir){
   stream = _fsopen(file,mode,_SH_DENYNO);
 #ifdef pp_OPEN_TEST
   if(stream != NULL){
+    AddOpenFile(file, stream, __FILE__, __LINE__);
     open_files++;
   }
 #endif
