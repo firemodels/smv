@@ -1546,13 +1546,16 @@ void ReadDefaultObjectCollection(object_collection *objectscoll,
 
 void UpdateDeviceTextures(object_collection *objectscoll, int ndeviceinfo,
                           devicedata *deviceinfo, int npropinfo,
-                          propdata *propinfo, int ndevice_texture_list,
-                          int *device_texture_list_index,
-                          char **device_texture_list) {
+                          propdata *propinfo, int *ndevice_texture_listptr,
+                          int **device_texture_list_indexptr,
+                          char ***device_texture_listptr) {
 
   // create a list of device textures
 
   int i;
+  int ndevice_texture_list;
+  char **device_texture_list;
+  int *device_texture_list_index;
 
   for (i = 0; i < ndeviceinfo; i++) {
     devicedata *devicei;
@@ -1656,4 +1659,7 @@ void UpdateDeviceTextures(object_collection *objectscoll, int ndeviceinfo,
       }
     }
   }
+  *ndevice_texture_listptr      = ndevice_texture_list;
+  *device_texture_listptr       = device_texture_list;
+  *device_texture_list_indexptr = device_texture_list_index;
 }

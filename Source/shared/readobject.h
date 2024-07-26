@@ -453,8 +453,8 @@ void GetIndepVarIndices(sv_object *smv_object, char **var_indep_strings,
                         int nvars_indep, int *index);
 void UpdateDeviceTextures(object_collection *objectscoll, int ndeviceinfo,
                           devicedata *deviceinfo, int npropinfo,
-                          propdata *propinfo, int ndevice_texture_list,
-                          int *device_texture_list_index,
-                          char **device_texture_list);
+                          propdata *propinfo, int *ndevice_texture_list,
+                          int **device_texture_list_indexptr,
+                          char ***device_texture_listptr);
 
 #endif

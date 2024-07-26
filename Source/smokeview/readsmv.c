@@ -2780,8 +2780,8 @@ void InitTextures0(void){
 void InitTextures(int use_graphics_arg){
   INIT_PRINT_TIMER(total_texture_time);
   UpdateDeviceTextures(objectscoll, ndeviceinfo, deviceinfo,
-                       npropinfo, propinfo, ndevice_texture_list,
-                       device_texture_list_index, device_texture_list);
+                       npropinfo, propinfo, &ndevice_texture_list,
+                       &device_texture_list_index, &device_texture_list);
   if(nsurfinfo>0||ndevice_texture_list>0){
     if(NewMemory((void **)&textureinfo, (nsurfinfo+ndevice_texture_list+nterrain_textures)*sizeof(texturedata))==0)return;
   }
