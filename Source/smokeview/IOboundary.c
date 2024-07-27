@@ -2612,7 +2612,9 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
   STOP_TIMER(total_time);
 
 #ifdef pp_BOUNDFRAME
-  printf("\n");
+  if(load_flag != RELOAD){
+    printf("\n");
+  }
 #else
   if(return_filesize > 1000000000){
     PRINTF(" - %.1f GB in %.1f s\n", (float)return_filesize / 1000000000., total_time);

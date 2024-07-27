@@ -4127,7 +4127,11 @@ int SetupSmoke3D(smoke3ddata *smoke3di, int load_flag, int iframe_arg, int *erro
     UpdateSmoke3dMenuLabels();
 #endif
   }
+#ifdef pp_SMOKEFRAME
+  if(iframe_arg == ALL_SMOKE_FRAMES&&load_flag!=RELOAD)PRINTF("Loading %s(%s)", smoke3di->file, smoke3di->label.shortlabel);
+#else
   if(iframe_arg==ALL_SMOKE_FRAMES)PRINTF("Loading %s(%s)", smoke3di->file, smoke3di->label.shortlabel);
+#endif
   CheckMemory;
   smoke3di->request_load = 1;
   smoke3di->ntimes_old = smoke3di->ntimes;
@@ -4157,7 +4161,11 @@ int SetupSmoke3D(smoke3ddata *smoke3di, int load_flag, int iframe_arg, int *erro
     if(smoke3di->type==SOOT_index&&smoke3di->maxval<=load_3dsmoke_cutoff){
       SetupSmoke3D(smoke3di, UNLOAD, iframe_arg, &error_local);
       *errorcode_arg = 0;
+#ifdef pp_SMOKEFRAME
+      if(load_flag!=RELOAD)PRINTF(" - skipped (opacity<%0.f)\n", load_3dsmoke_cutoff);
+#else
       PRINTF(" - skipped (opacity<%0.f)\n", load_3dsmoke_cutoff);
+#endif
       return_flag_local = 1;
     }
     if(return_flag_local==1){
@@ -4421,7 +4429,7 @@ FILE_SIZE ReadSmoke3D(int time_frame,int ifile_arg,int load_flag, int first_time
   }
   STOP_TIMER(total_time);
 #ifdef pp_SMOKEFRAME
-  printf("\n");
+  if(load_flag!=RELOAD)printf("\n");
 #else
   if(time_frame==ALL_SMOKE_FRAMES){
     if(file_size_local>1000000){

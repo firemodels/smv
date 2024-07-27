@@ -2271,7 +2271,7 @@ FILE_SIZE ReadPart(char *file_arg, int ifile_arg, int load_flag, int *errorcode_
   }
   else{
 #ifdef pp_PARTFRAME
-    PRINTF("Loading %s\n", file_arg);
+    if(load_flag!=RELOAD)PRINTF("Loading %s\n", file_arg);
 #else
     PRINTF("Loading %s", file_arg);
 #endif
