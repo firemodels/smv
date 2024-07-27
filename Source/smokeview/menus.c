@@ -3585,8 +3585,7 @@ void LoadUnloadMenu(int value){
       isoi = isoinfo + i;
       if(isoi->loaded==0)continue;
 #ifdef pp_ISOFRAME
-      ReadIso(isoi->file, i, UNLOAD, NULL, &errorcode);
-      ReadIso(isoi->file, i, LOAD, NULL, &errorcode);
+      ReadIso(isoi->file, i, load_flag, NULL, &errorcode);
       if(isoi->frameinfo==NULL||isoi->frameinfo->frames_read>0)printf("\n");
 #else
       ReadIso(isoi->file,i,LOAD,NULL,&errorcode);
