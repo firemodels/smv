@@ -1656,7 +1656,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
   patchi->ntimes = patchi->frameinfo->nframes;
   NewMemory((void **)&meshi->patch_times, patchi->ntimes*sizeof(float));
   memcpy(meshi->patch_times, patchi->frameinfo->times, patchi->ntimes*sizeof(float));
-  //FRAMEGetMinMax(patchi->frameinfo);
+  FRAMEGetMinMax(patchi->frameinfo);
   update_frame = 1;
 #endif
 

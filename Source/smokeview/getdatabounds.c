@@ -327,7 +327,17 @@ void GetGlobalPatchBounds(int flag, int set_flag){
     }
     if(force_bound_update == 1)doit = 1;
     if(doit==1){
+#ifdef pp_BOUNDFRAME
+      if(patchi->frameinfo != NULL){
+        valmin = patchi->frameinfo->valmin;
+        valmax = patchi->frameinfo->valmax;
+      }
+      else{
+        BoundsGet(patchi->reg_file, patchglobalboundsinfo, sorted_patch_filenames, npatchinfo, 1, &valmin, &valmax);
+      }
+#else
       BoundsGet(patchi->reg_file, patchglobalboundsinfo, sorted_patch_filenames, npatchinfo, 1, &valmin, &valmax);
+#endif
       if(valmin > valmax)continue;
       patchi->valmin_patch = valmin;
       patchi->valmax_patch = valmax;
