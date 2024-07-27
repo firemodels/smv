@@ -2038,13 +2038,11 @@ void OutputFrameSteps(void){
     total_wrapup_time += frameinfo->total_time;
   }
   if(count > 0){
-    sprintf(slice_label, "Loaded %i slice frames, %s", frames_read, Bytes2Label(size_label, bytes_read));
+    sprintf(slice_label, "slice(structured): loaded %i frames, %i files, %s", frames_read, count, Bytes2Label(size_label, bytes_read));
     strcpy(time_label, "");
-    if(show_timings){
-      Float2String(time_label2, total_time, ncolorlabel_digits, force_fixedpoint);
-      Float2String(time_label3, total_wrapup_time, ncolorlabel_digits, force_fixedpoint);
-      sprintf(time_label, " in %ss/%ss", time_label2, time_label3);
-    }
+    Float2String(time_label2, total_time, ncolorlabel_digits, force_fixedpoint);
+    Float2String(time_label3, total_wrapup_time, ncolorlabel_digits, force_fixedpoint);
+    sprintf(time_label, " in %ss/%ss", time_label2, time_label3);
     strcat(slice_label, time_label);
     show = 1;
   }
@@ -2073,13 +2071,11 @@ void OutputFrameSteps(void){
     total_wrapup_time += frameinfo->total_time;
   }
   if(count > 0){
-    sprintf(geom_slice_label, "Loaded %i geometry slice frames, %s", frames_read, Bytes2Label(size_label, bytes_read));
+    sprintf(geom_slice_label, "slice(geom): loaded %i frames, %i files, %s", frames_read, count, Bytes2Label(size_label, bytes_read));
     strcpy(time_label, "");
-    if(show_timings){
-      Float2String(time_label2, total_time, ncolorlabel_digits, force_fixedpoint);
-      Float2String(time_label3, total_wrapup_time, ncolorlabel_digits, force_fixedpoint);
-      sprintf(time_label, " in %ss/%ss", time_label2, time_label3);
-    }
+    Float2String(time_label2, total_time, ncolorlabel_digits, force_fixedpoint);
+    Float2String(time_label3, total_wrapup_time, ncolorlabel_digits, force_fixedpoint);
+    sprintf(time_label, " in %ss/%ss", time_label2, time_label3);
     strcat(geom_slice_label, time_label);
     show = 1;
   }
@@ -2104,13 +2100,11 @@ void OutputFrameSteps(void){
     total_wrapup_time += smoke3di->frameinfo->total_time;
   }
   if(count > 0){
-    sprintf(smoke_label, "Loaded %i 3D smoke frames, %s", frames_read, Bytes2Label(size_label, bytes_read));
+    sprintf(smoke_label, "3D smoke: loaded %i frames, %i files, %s", frames_read, count, Bytes2Label(size_label, bytes_read));
     strcpy(time_label, "");
-    if(show_timings){
-      Float2String(time_label2, total_time, ncolorlabel_digits, force_fixedpoint);
-      Float2String(time_label3, total_wrapup_time, ncolorlabel_digits, force_fixedpoint);
-      sprintf(time_label, " in %ss/%ss", time_label2, time_label3);
-    }
+    Float2String(time_label2, total_time, ncolorlabel_digits, force_fixedpoint);
+    Float2String(time_label3, total_wrapup_time, ncolorlabel_digits, force_fixedpoint);
+    sprintf(time_label, " in %ss/%ss", time_label2, time_label3);
     strcat(smoke_label, time_label);
     show = 1;
   }
@@ -2138,13 +2132,11 @@ void OutputFrameSteps(void){
     total_wrapup_time += patchi->frameinfo->total_time;
   }
   if(count > 0){
-    sprintf(bound_label, "Loaded %i boundary frames, %s", frames_read, Bytes2Label(size_label, bytes_read));
+    sprintf(bound_label, "boundary(structured): loaded %i frames, %i files, %s", frames_read, count, Bytes2Label(size_label, bytes_read));
     strcpy(time_label, "");
-    if(show_timings){
-      Float2String(time_label2, total_time, ncolorlabel_digits, force_fixedpoint);
-      Float2String(time_label3, total_wrapup_time, ncolorlabel_digits, force_fixedpoint);
-      sprintf(time_label, " in %ss/%ss", time_label2, time_label3);
-    }
+    Float2String(time_label2, total_time, ncolorlabel_digits, force_fixedpoint);
+    Float2String(time_label3, total_wrapup_time, ncolorlabel_digits, force_fixedpoint);
+    sprintf(time_label, " in %ss/%ss", time_label2, time_label3);
     strcat(bound_label, time_label);
     show = 1;
   }
@@ -2170,13 +2162,11 @@ void OutputFrameSteps(void){
     total_wrapup_time += patchi->frameinfo->total_time;
   }
   if(count > 0){
-    sprintf(geom_bound_label, "Loaded %i geometry boundary frames, %s", frames_read, Bytes2Label(size_label, bytes_read));
+    sprintf(geom_bound_label, "boundary(geom): loaded %i frames, %i files, %s", frames_read, count, Bytes2Label(size_label, bytes_read));
     strcpy(time_label, "");
-    if(show_timings){
-      Float2String(time_label2, total_time, ncolorlabel_digits, force_fixedpoint);
-      Float2String(time_label3, total_wrapup_time, ncolorlabel_digits, force_fixedpoint);
-      sprintf(time_label, " in %ss/%ss", time_label2, time_label3);
-    }
+    Float2String(time_label2, total_time, ncolorlabel_digits, force_fixedpoint);
+    Float2String(time_label3, total_wrapup_time, ncolorlabel_digits, force_fixedpoint);
+    sprintf(time_label, " in %ss/%ss", time_label2, time_label3);
     strcat(geom_bound_label, time_label);
     show = 1;
   }
@@ -2201,13 +2191,11 @@ void OutputFrameSteps(void){
     total_wrapup_time += isoi->frameinfo->total_time;
   }
   if(count > 0){
-    sprintf(iso_label, "Loaded %i isosurface frames, %s", frames_read, Bytes2Label(size_label, bytes_read));
+    sprintf(iso_label, "isosurface: loaded %i frames, %i files, %s", frames_read, count, Bytes2Label(size_label, bytes_read));
     strcpy(time_label, "");
-    if(show_timings){
-      Float2String(time_label2, total_time, ncolorlabel_digits, force_fixedpoint);
-      Float2String(time_label3, total_wrapup_time, ncolorlabel_digits, force_fixedpoint);
-      sprintf(time_label, " in %ss/%ss", time_label2, time_label3);
-    }
+    Float2String(time_label2, total_time, ncolorlabel_digits, force_fixedpoint);
+    Float2String(time_label3, total_wrapup_time, ncolorlabel_digits, force_fixedpoint);
+    sprintf(time_label, " in %ss/%ss", time_label2, time_label3);
     strcat(iso_label, time_label);
     show = 1;
   }
@@ -2232,23 +2220,21 @@ void OutputFrameSteps(void){
     total_wrapup_time += parti->frameinfo->total_time;
   }
   if(count > 0){
-    sprintf(part_label, "Loaded %i particle frames, %s", frames_read, Bytes2Label(size_label, bytes_read));
+    sprintf(part_label, "particle: loaded %i frames, %i files, %s", frames_read, count, Bytes2Label(size_label, bytes_read));
     strcpy(time_label, "");
-    if(show_timings){
-      Float2String(time_label2, total_time, ncolorlabel_digits, force_fixedpoint);
-      Float2String(time_label3, total_wrapup_time, ncolorlabel_digits, force_fixedpoint);
-      sprintf(time_label, " in %ss/%ss", time_label2, time_label3);
-    }
+    Float2String(time_label2, total_time, ncolorlabel_digits, force_fixedpoint);
+    Float2String(time_label3, total_wrapup_time, ncolorlabel_digits, force_fixedpoint);
+    sprintf(time_label, " in %ss/%ss", time_label2, time_label3);
     strcat(part_label, time_label);
     show = 1;
   }
   if(show == 1){
-    if(strlen(bound_label) > 0)printf("%s\n", bound_label);
     if(strlen(geom_bound_label) > 0)printf("%s\n", geom_bound_label);
-    if(strlen(part_label) > 0)printf("%s\n",  part_label);
+    if(strlen(bound_label) > 0)printf("%s\n", bound_label);
     if(strlen(iso_label) > 0)printf("%s\n",   iso_label);
-    if(strlen(slice_label) > 0)printf("%s\n", slice_label);
+    if(strlen(part_label) > 0)printf("%s\n",  part_label);
     if(strlen(geom_slice_label) > 0)printf("%s\n", geom_slice_label);
+    if(strlen(slice_label) > 0)printf("%s\n", slice_label);
     if(strlen(smoke_label) > 0)printf("%s\n", smoke_label);
   }
 }
