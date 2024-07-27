@@ -4,6 +4,8 @@
 #include <string.h>
 #include <stdlib.h>
 #include <math.h>
+
+
 #ifdef pp_OSX
 #include <unistd.h>
 #endif
@@ -15,6 +17,8 @@
 #include "lua_api.h"
 #endif
 #include "stdio_buffer.h"
+
+#include "readobject.h"
 
 /* ------------------ InitDefaultCameras ------------------------ */
 
@@ -1619,14 +1623,7 @@ void InitVars(void){
   strcpy(surfacedefaultlabel,"");
   if(streak_index>=0)float_streak5value=streak_rvalue[streak_index];
 
-  strcpy(object_def_first.label,"first");
-  object_def_first.next=&object_def_last;
-  object_def_first.prev=NULL;
-
-  strcpy(object_def_last.label,"last");
-  object_def_last.next=NULL;
-  object_def_last.prev=&object_def_first;
-  object_defs=NULL;
+  objectscoll = CreateObjectCollection();
 
   GetTitle("Smokeview ", release_title);
   GetTitle("Smokeview ", plot3d_title);
@@ -1744,4 +1741,8 @@ void InitVars(void){
       p3chopmax[iii]    = 0.0f;
     }
   }
+}
+
+void FreeVars(void) {
+  FreeObjectCollection(objectscoll);
 }

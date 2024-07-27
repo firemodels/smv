@@ -14,6 +14,7 @@
 #include "string_util.h"
 #include "smokeviewvars.h"
 #include "IOvolsmoke.h"
+#include "readobject.h"
 
 void LoadHVACMenu(int value);
 void LoadPlot2DMenu(int value);
@@ -2802,7 +2803,8 @@ void SmokeviewIniMenu(int value){
     WriteIni(LOCAL_INI,NULL);
     break;
   case MENU_READSVO:
-    InitObjectDefs();
+    ReadDefaultObjectCollection(objectscoll, smokeview_bindir, fdsprefix, setbw,
+                         isZoneFireModel);
     break;
   case MENU_DUMMY:
     break;
@@ -3357,7 +3359,7 @@ void UnloadSmoke3D(smoke3ddata *smoke3di){
 void UnloadAllSmoke3D(int type){
   int i;
 
-#ifdef pp_SMOKE_SPEEDUP  
+#ifdef pp_SMOKE_SPEEDUP
   update_merge_smoke = 1;
 #endif
   if(nsmoke3dinfo > 0){
@@ -3437,7 +3439,7 @@ void LoadUnloadMenu(int value){
       showdevice_val = 0;
       GLUIUpdateDeviceShow();
     }
-    LoadPlot2DMenu(MENU_PLOT2D_UNLOAD);    
+    LoadPlot2DMenu(MENU_PLOT2D_UNLOAD);
     updatemenu=1;
     GLUTPOSTREDISPLAY;
     break;
@@ -3702,9 +3704,9 @@ void TourMenu(int value){
   default:
     if(value<-22){
       tourlocus_type=2;
-      iavatar_types=(-value-23);
+      objectscoll->iavatar_types=(-value-23);
       if(selectedtour_index>=0&&selectedtour_index<ntourinfo){
-        tourinfo[selectedtour_index].glui_avatar_index=iavatar_types;
+        tourinfo[selectedtour_index].glui_avatar_index=objectscoll->iavatar_types;
       }
     }
 
@@ -4048,7 +4050,7 @@ void SetupPart(int value){
       load_only_when_unloaded == 0 &&
       parti->loaded == 1){
       int errorcode;
-      
+
       ReadPart("", i, UNLOAD, &errorcode);
     }
     if(parti->loaded==1)continue;
@@ -5886,7 +5888,7 @@ void LoadBoundaryMenu(int value){
 
         patchi = patchinfo+i;
         patchi->finalize = 0;
-        if(patchi->loaded == 1 
+        if(patchi->loaded == 1
           && load_only_when_unloaded == 0
           ){
           ReadBoundary(i, UNLOAD, &errorcode);
@@ -6584,16 +6586,16 @@ void TitleMenu(int value){
 void ShowADeviceType(void){
   int i;
 
-  for(i=0;i<nobject_defs;i++){
+  for(i=0;i<objectscoll->nobject_defs;i++){
     sv_object *obj_typei;
 
-    obj_typei = object_defs[i];
+    obj_typei = objectscoll->object_defs[i];
     if(obj_typei->used_by_device==1&&obj_typei->visible==1)return;
   }
-  for(i=0;i<nobject_defs;i++){
+  for(i=0;i<objectscoll->nobject_defs;i++){
     sv_object *obj_typei;
 
-    obj_typei = object_defs[i];
+    obj_typei = objectscoll->object_defs[i];
     if(obj_typei->used_by_device==1){
       obj_typei->visible=1;
       return;
@@ -6654,8 +6656,8 @@ void ShowObjectsMenu(int value){
   sv_object *objecti;
   int i;
 
-  if(value>=0&&value<nobject_defs){
-    objecti = object_defs[value];
+  if(value>=0&&value<objectscoll->nobject_defs){
+    objecti = objectscoll->object_defs[value];
     objecti->visible = 1 - objecti->visible;
     if(showdevice_val==1||vis_device_plot!=DEVICE_PLOT_HIDDEN){
       update_times = 1;
@@ -6668,14 +6670,14 @@ void ShowObjectsMenu(int value){
     show_missing_objects = 1 - show_missing_objects;
   }
   else if(value==OBJECT_SHOWALL){
-    for(i=0;i<nobject_defs;i++){
-      objecti = object_defs[i];
+    for(i=0;i<objectscoll->nobject_defs;i++){
+      objecti = objectscoll->object_defs[i];
       objecti->visible=1;
     }
   }
   else if(value==OBJECT_HIDEALL){
-    for(i=0;i<nobject_defs;i++){
-      objecti = object_defs[i];
+    for(i=0;i<objectscoll->nobject_defs;i++){
+      objecti = objectscoll->object_defs[i];
       objecti->visible=0;
     }
   }
@@ -7273,7 +7275,7 @@ void ToggleMetroMode(void){
 
   /* ------------------ GeometryMenu ------------------------ */
 
-  
+
 void GeometryMenu(int value){
 
   switch(value){
@@ -7384,13 +7386,13 @@ void GeometryMainMenu(int value){
 int GetNumActiveDevices(void){
   int num_activedevices = 0;
 
-  if(nobject_defs > 0){
+  if(objectscoll->nobject_defs > 0){
     int i;
 
-    for(i = 0; i < nobject_defs; i++){
+    for(i = 0; i < objectscoll->nobject_defs; i++){
       sv_object *obj_typei;
 
-      obj_typei = object_defs[i];
+      obj_typei = objectscoll->object_defs[i];
       if(obj_typei->used_by_device == 1)num_activedevices++;
     }
   }
@@ -8109,7 +8111,7 @@ void InitLoadMultiSliceMenu(int *loadmultislicemenuptr, int *loadsubmslicemenu, 
 
   InitSubSliceMenuInfo();
   if(nsubslicemenuinfo>0){
-  
+
 //*** load all x slices
 
     CREATEMENU(loadsubslicexmenu,   LoadAllSlices);
@@ -8120,7 +8122,7 @@ void InitLoadMultiSliceMenu(int *loadmultislicemenuptr, int *loadsubmslicemenu, 
       si = subslicemenuinfo + i;
       if(si->havex==1)glutAddMenuEntry(si->menulabel,4*i);
     }
-  
+
 //*** load all y slices
 
     CREATEMENU(loadsubsliceymenu,   LoadAllSlices);
@@ -8131,7 +8133,7 @@ void InitLoadMultiSliceMenu(int *loadmultislicemenuptr, int *loadsubmslicemenu, 
       si = subslicemenuinfo + i;
       if(si->havey == 1)glutAddMenuEntry(si->menulabel, 4*i+1);
     }
-  
+
 //*** load all z slices
 
     CREATEMENU(loadsubslicezmenu,   LoadAllSlices);
@@ -8142,7 +8144,7 @@ void InitLoadMultiSliceMenu(int *loadmultislicemenuptr, int *loadsubmslicemenu, 
       si = subslicemenuinfo + i;
       if(si->havez == 1)glutAddMenuEntry(si->menulabel, 4*i+2);
     }
-  
+
 //*** load all x,y,z slices
 
     CREATEMENU(loadsubslicexyzmenu, LoadAllSlices);
@@ -8400,7 +8402,7 @@ void InitMultiVectorLoadMenu(int *loadmultivslicemenuptr, int *loadsubmvslicemen
   int loadsubvectorslicexmenu, loadsubvectorsliceymenu, loadsubvectorslicezmenu, loadsubvectorslicexyzmenu;
 
   InitSubVectorSliceMenuInfo();
-  
+
 //*** load all x vector slices
 
   CREATEMENU(loadsubvectorslicexmenu,   LoadAllVectorSlices);
@@ -8411,7 +8413,7 @@ void InitMultiVectorLoadMenu(int *loadmultivslicemenuptr, int *loadsubmvslicemen
     si = subvectorslicemenuinfo + i;
     if(si->havex==1)glutAddMenuEntry(si->menulabel,4*i);
   }
-  
+
 //*** load all y vector slices
 
   CREATEMENU(loadsubvectorsliceymenu,   LoadAllVectorSlices);
@@ -8422,7 +8424,7 @@ void InitMultiVectorLoadMenu(int *loadmultivslicemenuptr, int *loadsubmvslicemen
     si = subvectorslicemenuinfo + i;
     if(si->havey==1)glutAddMenuEntry(si->menulabel,4*i+1);
   }
-  
+
 //*** load all z vector slices
 
   CREATEMENU(loadsubvectorslicezmenu,   LoadAllVectorSlices);
@@ -8433,7 +8435,7 @@ void InitMultiVectorLoadMenu(int *loadmultivslicemenuptr, int *loadsubmvslicemen
     si = subvectorslicemenuinfo + i;
     if(si->havez==1)glutAddMenuEntry(si->menulabel,4*i+2);
   }
-  
+
 //*** load all x,y,z vector slices
 
   CREATEMENU(loadsubvectorslicexyzmenu,   LoadAllVectorSlices);
@@ -9462,7 +9464,7 @@ static int menu_count=0;
   if(visTerrainType==TERRAIN_HIDDEN)glutAddMenuEntry(_("*Hidden"),17+TERRAIN_HIDDEN);
   if(visTerrainType!=TERRAIN_HIDDEN)glutAddMenuEntry(_("Hidden"),17+TERRAIN_HIDDEN);
 
-  if(nobject_defs>0){
+  if(objectscoll->nobject_defs>0){
     int multiprop;
 
     multiprop=0;
@@ -9541,12 +9543,12 @@ static int menu_count=0;
       glutAddMenuEntry(qlabel, i);
     }
   }
-  if(nobject_defs>0||hrrptr!=NULL){
+  if(objectscoll->nobject_defs>0||hrrptr!=NULL){
     CREATEMENU(showobjectsplotmenu,ShowObjectsMenu);
     if(ndevicetypes>0){
       GLUTADDSUBMENU(_("quantity"),devicetypemenu);
     }
-    if(nobject_defs>0){
+    if(objectscoll->nobject_defs>0){
       if(vis_device_plot==DEVICE_PLOT_SHOW_ALL)glutAddMenuEntry(      "*All devices",           OBJECT_PLOT_SHOW_ALL);
       if(vis_device_plot!=DEVICE_PLOT_SHOW_ALL)glutAddMenuEntry(      "All devices",            OBJECT_PLOT_SHOW_ALL);
       if(vis_device_plot==DEVICE_PLOT_SHOW_SELECTED)glutAddMenuEntry( "*Selected devices",      OBJECT_PLOT_SHOW_SELECTED);
@@ -9561,7 +9563,7 @@ static int menu_count=0;
     if(showdevice_val==0)glutAddMenuEntry(_("Show values"),  OBJECT_VALUES);
     glutAddMenuEntry(_("Settings..."), MENU_DEVICE_SETTINGS);
   }
-  if(nobject_defs>0){
+  if(objectscoll->nobject_defs>0){
     if(ndeviceinfo > 0){
       int showall=1, hideall=1;
 
@@ -9590,10 +9592,10 @@ static int menu_count=0;
     }
 
     CREATEMENU(showobjectsmenu,ShowObjectsMenu);
-    for(i=0;i<nobject_defs;i++){
+    for(i=0;i<objectscoll->nobject_defs;i++){
       sv_object *obj_typei;
 
-      obj_typei = object_defs[i];
+      obj_typei = objectscoll->object_defs[i];
       if(obj_typei->used_by_device==1){
         char obj_menu[256];
 
@@ -9645,7 +9647,7 @@ static int menu_count=0;
       GLUTADDSUBMENU(_("Show/Hide devices"), showdevicesmenu);
     }
     GLUTADDSUBMENU(_("Segments"),spheresegmentmenu);
-    if(nobject_defs>0&&ndeviceinfo>0){
+    if(objectscoll->nobject_defs>0&&ndeviceinfo>0){
       glutAddMenuEntry("-",MENU_DUMMY);
       GLUTADDSUBMENU(_("Plot data"),showobjectsplotmenu);
     }
@@ -10797,10 +10799,10 @@ static int menu_count=0;
         STRCPY(menulabel,touri->menulabel);
       }
       glui_avatar_index_local = touri->glui_avatar_index;
-      if(glui_avatar_index_local>=0&&glui_avatar_index_local<navatar_types){
+      if(glui_avatar_index_local>=0&&glui_avatar_index_local<objectscoll->navatar_types){
         sv_object *avatari;
 
-        avatari=avatar_types[glui_avatar_index_local];
+        avatari=objectscoll->avatar_types[glui_avatar_index_local];
         strcat(menulabel,"(");
         strcat(menulabel,avatari->label);
         strcat(menulabel,")");
@@ -11048,13 +11050,13 @@ static int menu_count=0;
     showhide_data = 1;
     GLUTADDSUBMENU(_("Zone"), zoneshowmenu);
   }
-  if(nobject_defs>0){
+  if(objectscoll->nobject_defs>0){
     int num_activedevices=0;
 
-    for(i = 0; i<nobject_defs; i++){
+    for(i = 0; i<objectscoll->nobject_defs; i++){
       sv_object *obj_typei;
 
-      obj_typei = object_defs[i];
+      obj_typei = objectscoll->object_defs[i];
       if(obj_typei->used==1)num_activedevices++;
     }
 
@@ -11066,10 +11068,10 @@ static int menu_count=0;
       */
     }
     else{
-      for(i=0;i<nobject_defs;i++){
+      for(i=0;i<objectscoll->nobject_defs;i++){
         sv_object *obj_typei;
 
-        obj_typei = object_defs[i];
+        obj_typei = objectscoll->object_defs[i];
         if(obj_typei->used==1){
           char obj_menu[256];
 

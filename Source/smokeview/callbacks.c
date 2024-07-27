@@ -777,7 +777,7 @@ int ColorbarClick(int x, int y){
   return_val = HandleColorbarIndex(colorbar_index);
   return return_val;
 }
-  
+
   /* ------------------ GetTimeBarFrame ------------------------ */
 
 int GetTimeBarFrame(int xm){
@@ -1969,14 +1969,14 @@ void Keyboard(unsigned char key, int flag){
       break;
     case 'i':
       if(keystate==GLUT_ACTIVE_ALT){ // toggle device visibility
-        if(nobject_defs>0){
+        if(objectscoll->nobject_defs>0){
           int vis;
 
-          vis = 1-object_defs[0]->visible;
-          for(i = 0; i<nobject_defs; i++){
+          vis = 1-objectscoll->object_defs[0]->visible;
+          for(i = 0; i<objectscoll->nobject_defs; i++){
             sv_object *objecti;
 
-            objecti = object_defs[i];
+            objecti = objectscoll->object_defs[i];
             objecti->visible = vis;
           }
           updatemenu = 1;
@@ -2016,23 +2016,23 @@ void Keyboard(unsigned char key, int flag){
           devicei->selected = selected;
         }
       }
-      if(nobject_defs>0){
+      if(objectscoll->nobject_defs>0){
         int makevis=1;
 
-        for(i = 0; i<nobject_defs; i++){
+        for(i = 0; i<objectscoll->nobject_defs; i++){
           sv_object *objecti;
 
-          objecti = object_defs[i];
+          objecti = objectscoll->object_defs[i];
           if(objecti->visible==1){
             makevis = 0;
             break;
           }
         }
         if(makevis==1){
-          for(i = 0; i<nobject_defs; i++){
+          for(i = 0; i<objectscoll->nobject_defs; i++){
             sv_object *objecti;
 
-            objecti = object_defs[i];
+            objecti = objectscoll->object_defs[i];
             objecti->visible = 1;
           }
         }

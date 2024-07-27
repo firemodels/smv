@@ -5,13 +5,15 @@
 #include "options.h"
 #include "string_util.h"
 
+#include "shared_structures.h"
+
 #include <string.h>
 
-#define GEOM_GEOM     0
-#define GEOM_ISO      1
-#define GEOM_SLICE    2
+#define GEOM_GEOM 0
+#define GEOM_ISO 1
+#define GEOM_SLICE 2
 #define GEOM_BOUNDARY 3
-#define GEOM_CGEOM    4
+#define GEOM_CGEOM 4
 
 #define HEADER_SIZE 4
 #define TRAILER_SIZE 4
@@ -110,7 +112,6 @@ typedef struct _geomdata {
   int ngeomobj_offsets;
 } geomdata;
 
-float Distance3(float v1[3], float v2[3]);
 void InitGeom(geomdata *geomi, int geomtype, int fdsblock,
               int have_cface_normals_arg, int block_number);
 void RotateU2V(float *u, float *v, float *axis, float *angle);
@@ -147,4 +148,10 @@ void ReadGeomHeader0(geomdata *geomi, int *geom_frame_index, int *ntimes_local);
 void ReadGeomHeader2(geomdata *geomi, int *ntimes_local);
 void ReadGeomHeader(geomdata *geomi, int *geom_frame_index, int *ntimes_local);
 void GetGeomDataHeader(char *file, int *ntimes_local, int *nvals);
+void Normalize(float *xyz, int n);
+float Dist2Plane(float x, float y, float z, float xyzp[3], float xyzpn[3]);
+void InitBoxClipInfo(clipdata *ci, float xmin, float xmax, float ymin,
+                     float ymax, float zmin, float zmax);
+void InitCircle(unsigned int npoints, circdata *circinfo);
+float Dist(float v1[3], float v2[3]);
 #endif

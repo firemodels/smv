@@ -59,6 +59,7 @@ add_executable(smvq smvq.c
     ../shared/color2rgb.c
     ../shared/readimage.c
     ../shared/readgeom.c
+    ../shared/readobject.c
     ../smokeview/colortable.c
     ../smokeview/command_args.c
 

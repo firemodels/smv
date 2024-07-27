@@ -1564,25 +1564,6 @@ void InitTetraClipInfo(clipdata *ci,float *v1, float *v2, float *v3, float *v4){
   clipvals[3]=-DOT3(clipvals,v1);
 }
 
-/* ----------------------- InitBoxClipInfo ----------------------------- */
-
-void InitBoxClipInfo(clipdata *ci,float xmin, float xmax, float ymin, float ymax, float zmin, float zmax){
-  ci->option=BOX_CLIPPLANES;
-  ci->clip_xmin=1;
-  ci->clip_xmax=1;
-  ci->clip_ymin=1;
-  ci->clip_ymax=1;
-  ci->clip_zmin=1;
-  ci->clip_zmax=1;
-  ci->xmin=xmin;
-  ci->xmax=xmax;
-  ci->ymin=ymin;
-  ci->ymax=ymax;
-  ci->zmin=zmin;
-  ci->zmax=zmax;
-}
-
-
 /* ----------------------- MergeMax ----------------------------- */
 
 float MergeMax(int opti, float vali, int optj, float valj){
