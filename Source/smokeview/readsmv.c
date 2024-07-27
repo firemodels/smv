@@ -12018,7 +12018,9 @@ int ReadSMV_Configure(){
     }
   }
   if(npartinfo>=64){
+#ifndef pp_PARTFRAME
     use_partload_threads = 1;
+#endif
     partfast = 1;
   }
 
