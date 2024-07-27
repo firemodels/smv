@@ -1553,9 +1553,9 @@ void UpdateDeviceTextures(object_collection *objectscoll, int ndeviceinfo,
   // create a list of device textures
 
   int i;
-  int ndevice_texture_list;
-  char **device_texture_list;
-  int *device_texture_list_index;
+  int ndevice_texture_list=0;
+  char **device_texture_list=NULL;
+  int *device_texture_list_index=NULL;
 
   for (i = 0; i < ndeviceinfo; i++) {
     devicedata *devicei;
@@ -1568,9 +1568,6 @@ void UpdateDeviceTextures(object_collection *objectscoll, int ndeviceinfo,
                            objectscoll->std_object_defs.missing_device);
     }
   }
-
-  device_texture_list = NULL;
-  ndevice_texture_list = 0;
 
   // count device textures
 
