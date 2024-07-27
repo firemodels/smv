@@ -961,5 +961,6 @@ int main(int argc, char **argv){
   PRINTF("Startup time: %.1f s\n", startup_time);
 
   glutMainLoop();
+  FreeVars();
   return 0;
 }

@@ -327,4 +327,7 @@
 #endif
 
 #define FOPEN_2DIR(file, mode) fopen_2dir(file, mode, smokeview_scratchdir)
+
+#define PI           3.14159265359f
+
 #endif

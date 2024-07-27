@@ -254,11 +254,11 @@ extern "C" void GLUITourSetup(int main_window){
   glui_tour->add_spinner_to_panel(PANEL_path, _("points"),     GLUI_SPINNER_INT,   &tour_ntimes, VIEW_times, TourCB);
   PANEL_misc = glui_tour->add_panel_to_panel(ROLLOUT_settings, "Misc", true);
   CHECKBOX_showintermediate = glui_tour->add_checkbox_to_panel(PANEL_misc, _("Show intermediate path nodes"), &show_path_knots);
-  if(navatar_types > 0){
+  if(objectscoll->navatar_types > 0){
     glui_tour->add_checkbox_to_panel(PANEL_misc, _("Show avatar"), &show_avatar);
     LISTBOX_avatar = glui_tour->add_listbox_to_panel(PANEL_misc, _("Avatar:"), &glui_avatar_index, TOUR_AVATAR, TourCB);
-    for(i = 0;i < navatar_types;i++){
-      LISTBOX_avatar->add_item(i, avatar_types[i]->label);
+    for(i = 0;i < objectscoll->navatar_types;i++){
+      LISTBOX_avatar->add_item(i, objectscoll->avatar_types[i]->label);
     }
     if(tourlocus_type == 0){
       glui_avatar_index = -1;
@@ -267,7 +267,7 @@ extern "C" void GLUITourSetup(int main_window){
       glui_avatar_index = -2;
     }
     else{
-      glui_avatar_index = iavatar_types;
+      glui_avatar_index = objectscoll->iavatar_types;
     }
     LISTBOX_avatar->set_int_val(glui_avatar_index);
   }
@@ -690,7 +690,7 @@ void TourCB(int var){
     if(selected_tour->glui_avatar_index!=glui_avatar_index){
       selected_tour->glui_avatar_index=glui_avatar_index;
 // hack to make touring avatar show up
-      avatar_types[glui_avatar_index]->visible=1;
+      objectscoll->avatar_types[glui_avatar_index]->visible=1;
       updatemenu=1;
     }
     if(glui_avatar_index==-1){
@@ -701,7 +701,7 @@ void TourCB(int var){
     }
     else{
       tourlocus_type=2;
-      iavatar_types=glui_avatar_index;
+      objectscoll->iavatar_types=glui_avatar_index;
     }
     break;
   case TOUR_UPDATELABEL:

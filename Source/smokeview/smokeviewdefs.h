@@ -375,8 +375,6 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 #define ADD_KEYFRAME     1
 #define DELETE_KEYFRAME -1
 
-#define IS_AVATAR     1
-#define IS_NOT_AVATAR 0
 
 #define C_GENERATED       0
 #define FORTRAN_GENERATED 1
@@ -565,7 +563,6 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 #define VENT_HIDE      2
 
 #define TETRA_CLIPPLANES 1
-#define BOX_CLIPPLANES   0
 
 #define DIR_UNDEFINED -1
 #define DOWN_Y 0
@@ -838,7 +835,6 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 #define MAXPOINTS          50000000
 #define INCFRAMES                20
 #define MAXFRAMES              5001
-#define PI           3.14159265359f
 #define MAXRGB                  256
 #define MAXSMOKERGB             256
 #define StepOn                10000

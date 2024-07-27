@@ -1,13 +1,13 @@
 #define INMAIN
 #include "options.h"
 #include <ctype.h>
+#include <getopt.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
 #include <sys/types.h>
-#include <getopt.h>
 
 #include "MALLOCC.h"
 #include "smokeviewvars.h"
@@ -387,6 +387,7 @@ int RunBenchmark(char *input_file) {
       json_object_to_json_string_ext(jobj, JSON_C_TO_STRING_PRETTY);
   printf("%s\n", json_output);
   json_object_put(jobj);
+  FreeVars();
   return 0;
 }
 
