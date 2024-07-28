@@ -3,15 +3,7 @@
 
 #include "options_common.h"
 
-//#define pp_BOUNDFRAME    // turn on frame code for boundary files
-//#define pp_SMOKEFRAME    // turn on frame code for 3d smoke
-//#define pp_ISOFRAME      // turn on frame code for isosurfaces
-//#define pp_SLICEFRAME    // turn on frame code for slices
-//#define pp_PARTFRAME     // turn on frame code for particles
-//#define pp_OPEN_TEST     // count number of file opens and closes
-//#define pp_FRAME_DEBUG   // frame timing test
-//#define pp_FRAME_DEBUG2  // output frame times
-
+//#define pp_FRAME           // turn on frame code
 //#define pp_PARTBOUND_MULTI // compute particle bounds in the background
 //#define pp_LUA            // turn on LUA option
 #define pp_SLICE_MULTI      // load slice files in parallel
@@ -30,31 +22,15 @@
 #endif
 //#define pp_FDS            // create a 1 mesh input file
 
-// turn on pp_FRAME if a frame directive is set for one of the file types
-#ifdef pp_BOUNDFRAME
-#ifndef pp_FRAME
-#define pp_FRAME
-#endif
-#endif
-#ifdef pp_SMOKEFRAME
-#ifndef pp_FRAME
-#define pp_FRAME
-#endif
-#endif
-#ifdef pp_SLICEFRAME
-#ifndef pp_FRAME
-#define pp_FRAME
-#endif
-#endif
-#ifdef pp_ISOFRAME
-#ifndef pp_FRAME
-#define pp_FRAME
-#endif
-#endif
-#ifdef pp_PARTFRAME
-#ifndef pp_FRAME
-#define pp_FRAME
-#endif
+#ifdef pp_FRAME          // turn on each frame type if pp_FRAME is set
+#define pp_BOUNDFRAME    // turn on frame code for boundary files
+#define pp_SMOKEFRAME    // turn on frame code for 3d smoke
+#define pp_ISOFRAME      // turn on frame code for isosurfaces
+#define pp_SLICEFRAME    // turn on frame code for slices
+#define pp_PARTFRAME     // turn on frame code for particles
+//#define pp_OPEN_TEST     // count number of file opens and closes
+//#define pp_FRAME_DEBUG   // frame timing test
+//#define pp_FRAME_DEBUG2  // output frame times
 #endif
 
 //*** options: windows
