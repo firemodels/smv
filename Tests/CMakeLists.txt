@@ -26,6 +26,9 @@ endif()
 
 # parse_simple_bndf
 add_executable(parse_simple_bndf parse_simple_bndf.c
+    ../Source/shared/dmalloc.c
+    ../Source/shared/string_util.c
+    ../Source/shared/file_util.c
     ../Source/shared/getdata.c
     ../Source/shared/dmalloc.c
 )
@@ -44,6 +47,9 @@ endif()
 
 # parse_simple_part
 add_executable(parse_simple_part parse_simple_part.c
+    ../Source/shared/dmalloc.c
+    ../Source/shared/string_util.c
+    ../Source/shared/file_util.c
     ../Source/shared/getdata.c
     ../Source/shared/dmalloc.c
 )
