@@ -197,9 +197,4 @@ STREXTERN char STRDECL(dirseparator[],"/");
 #endif
 #endif
 
-#ifdef IN_FILE_UTIL
-int show_timings=0;
-#else
-extern int show_timings;
-#endif
 #endif
