@@ -13,6 +13,7 @@
 #include "datadefs.h"
 #include "getdata.h"
 #include "string_util.h"
+#include "file_util.h"
 #include <ctype.h>
 #include <errno.h>
 #ifdef __STDC_VERSION__
