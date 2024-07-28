@@ -6,6 +6,7 @@ add_test(NAME "Execute smokezip" COMMAND smokezip)
 
 # parse_simple_slice
 add_executable(parse_simple_slice parse_simple_slice.c
+    ../Source/shared/file_util.c
     ../Source/shared/getdata.c
     ../Source/shared/dmalloc.c
 )
