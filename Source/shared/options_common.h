@@ -185,6 +185,8 @@
 #define PRINT_CUM_TIMER(timer, label) PrintTime(__FILE__, __LINE__, &timer, label, 0)
 #endif
 
+SVEXTERN int SVDECL(show_timings, 0);
+
 #include "lint.h"
 
 #endif

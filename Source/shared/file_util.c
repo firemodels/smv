@@ -1,5 +1,4 @@
 #include "options.h"
-#define IN_FILE_UTIL
 #include <assert.h>
 #include <stdio.h>
 #include <stdarg.h>

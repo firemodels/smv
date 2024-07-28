@@ -26,6 +26,8 @@ typedef struct {
 
 // vvvvvvvvvvvvvvvvvvvvvvvv preprocessing directives vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 
+#define _A(String1,String2) AppendString((char *)String1,(char *)String2)
+
 #define MATCH 1
 #define NOTMATCH 0
 
@@ -69,6 +71,7 @@ typedef struct {
 EXTERNCPP char          *GetStringPtr(char *buffer);
 EXTERNCPP char          *GetFloatLabel(float val, char *label);
 EXTERNCPP char          *GetIntLabel(int val, char *label);
+EXTERNCPP char          *AppendString(char *S1, char *S2);
 EXTERNCPP void           UsageCommon(int option);
 EXTERNCPP int            ParseCommonOptions(int argc, char **argv);
 EXTERNCPP void           InitRandAB(int size);
@@ -148,6 +151,7 @@ EXTERNCPP void           PRINTversion(char *progname);
 SVEXTERN int SVDECL(hash_option, HASH_SHA1);
 #endif
 SVEXTERN int SVDECL(show_version, 0), SVDECL(show_help, 0);
+SVEXTERN char append_string[1024];
 
 #ifdef WIN32
 STREXTERN char STRDECL(dirseparator[],"\\");
