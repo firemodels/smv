@@ -2,6 +2,12 @@
 #define FILE_UTIL_H_DEFINED
 #include "fopen.h"
 
+#ifdef IN_FILE_UTIL
+int show_timings=0;
+#else
+extern int show_timings;
+#endif
+
 // vvvvvvvvvvvvvvvvvvvvvvvv header files vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 
 #include <time.h>
