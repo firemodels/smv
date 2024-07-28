@@ -823,26 +823,6 @@ int GetFileListSize(const char *path, char *filter, int mode){
   return maxfiles;
 }
 
-/* ------------------ FOPEN  ------------------------ */
-
-#ifdef WIN32
-FILE *FOPEN(const char *file, const char *mode) {
-  FILE *stream;
-  stream =  _fsopen(file, mode, _SH_DENYNO);
-#ifdef pp_OPEN_TEST
-  if(stream != NULL){
-    AddOpenFile(file, stream, __FILE__, __LINE__);
-    open_files++;
-  }
-#endif
-  return stream;
-}
-#else
-FILE *FOPEN(const char *file, const char *mode) {
-  return fopen(file, mode);
-}
-#endif
-
 /* ------------------ fopen_indir  ------------------------ */
 
 FILE *fopen_indir(char *dir, char *file, char *mode){
