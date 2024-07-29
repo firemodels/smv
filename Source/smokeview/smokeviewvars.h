@@ -33,7 +33,7 @@ SVEXTERN int SVDECL(n_mergesmoke_threads, 4), SVDECL(use_mergesmoke_threads, 1);
 SVEXTERN threaderdata SVDECL(*mergesmoke_threads, NULL);
 SVEXTERN smokethreaddata smokethreadinfo[MAX_THREADS];
 SVEXTERN int SVDECL(n_mergesmoke_glui_threads, 4), SVDECL(use_mergesmoke_glui_threads, 1);
-SVEXTERN int SVDECL(update_merge_smoke, 1);
+SVEXTERN int SVDECL(update_glui_merge_smoke, 1);
 #endif
 
 //***readsmvorig

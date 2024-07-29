@@ -2250,19 +2250,19 @@ void OutputFrameSteps(void){
 /* ------------------ UpdateShowScene ------------------------ */
 
 void UpdateShowScene(void){
-  have_fire  = HaveFireLoaded();
-  have_smoke = HaveSootLoaded();
 #ifdef pp_SHOW_UPDATE
-  int updating=0;
+  int updating = 0;
 #endif
 
+  have_fire  = HaveFireLoaded();
+  have_smoke = HaveSootLoaded();
 #ifdef pp_FRAME
   if(update_frame == 1){
     SHOW_UPDATE(update_frame);
     update_frame = 0;
     OutputFrameSteps();
     UpdateSliceNtimes();
-    UpdateTimes();
+    update_times = 1;
     END_SHOW_UPDATE(update_frame);
   }
 #endif
@@ -2273,11 +2273,11 @@ void UpdateShowScene(void){
     UpdateSmoke3dMenuLabels();
     END_SHOW_UPDATE(update_smoke3dmenulabels);
   }
-  if(update_merge_smoke == 1){
-    SHOW_UPDATE(update_merge_smoke);
-    update_merge_smoke = 0;
+  if(update_glui_merge_smoke == 1){
+    SHOW_UPDATE(update_glui_merge_smoke);
+    update_glui_merge_smoke = 0;
     GLUISmoke3dCB(MERGE_SMOKE);
-    END_SHOW_UPDATE(update_merge_smoke);
+    END_SHOW_UPDATE(update_glui_merge_smoke);
   }
 #endif
   if(glui_meshclip_defined==1&&update_meshclip == 1){

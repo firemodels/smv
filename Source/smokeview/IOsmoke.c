@@ -4246,7 +4246,7 @@ FILE_SIZE ReadSmoke3D(int time_frame,int ifile_arg,int load_flag, int first_time
 #endif
 
 #ifdef pp_SMOKE_SPEEDUP  
-  update_merge_smoke = 1;
+  update_glui_merge_smoke = 1;
   GLUTPOSTREDISPLAY;
 #endif
   SetTimeState();
