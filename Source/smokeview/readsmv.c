@@ -5651,6 +5651,8 @@ int ParseSMOKE3DProcess(bufferstreamdata *stream, char *buffer, int *nn_smoke3d_
     smoke3di->finalize = 0;
     smoke3di->request_load = 0;
     smoke3di->primary_file = 0;
+    smoke3di->is_smoke = 0;
+    smoke3di->is_fire = 0;
     smoke3di->file_size = 0;
     smoke3di->blocknumber = blocknumber;
     smoke3di->lastiframe = -999;
@@ -5689,11 +5691,16 @@ int ParseSMOKE3DProcess(bufferstreamdata *stream, char *buffer, int *nn_smoke3d_
 
     {
       if(ReadLabels(&smoke3di->label, stream, NULL)==LABEL_ERR)return RETURN_TWO;
+      if(strcmp(smoke3di->label.longlabel, "SOOT DENSITY") == 0){
+        smoke3di->is_smoke = 1;
+      }
       if(strcmp(smoke3di->label.longlabel, "HRRPUV")==0){
         show_hrrcutoff_active = 1;
+        smoke3di->is_fire = 1;
       }
       if(strstr(smoke3di->label.longlabel, "TEMPERATURE") !=NULL){
         show_tempcutoff_active = 1;
+        smoke3di->is_fire = 1;
       }
       ismoke3d++;
       *ismoke3d_in = ismoke3d;

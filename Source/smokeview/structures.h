@@ -1205,6 +1205,8 @@ typedef struct _smoke3ddata {
   char *s16_file;
 #endif
   int filetype;
+  int skip_smoke, skip_fire;
+  int is_smoke, is_fire;
   int loaded, finalize, display, request_load, primary_file;
   int is_zlib;
 #ifdef pp_SMOKE16
