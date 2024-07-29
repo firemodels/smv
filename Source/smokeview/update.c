@@ -2239,89 +2239,134 @@ void OutputFrameSteps(void){
   }
 }
 #endif
+#ifdef pp_SHOW_UPDATE
+#define SHOW_UPDATE(var) printf("updating: %s\n", #var);INIT_PRINT_TIMER(update_timer);
+#define END_SHOW_UPDATE(var) PRINT_TIMER(update_timer,#var)
+#else
+#define SHOW_UPDATE(var)
+#define END_SHOW_UPDATE(var)
+#endif
 
 /* ------------------ UpdateShowScene ------------------------ */
 
 void UpdateShowScene(void){
   have_fire  = HaveFireLoaded();
   have_smoke = HaveSootLoaded();
+#ifdef pp_SHOW_UPDATE
+  int updating=0;
+#endif
 
 #ifdef pp_FRAME
   if(update_frame == 1){
+    SHOW_UPDATE(update_frame);
     update_frame = 0;
     OutputFrameSteps();
     UpdateSliceNtimes();
     UpdateTimes();
+    END_SHOW_UPDATE(update_frame);
   }
 #endif
 #ifdef pp_SMOKE_SPEEDUP  
   if(update_smoke3dmenulabels == 1){
+    SHOW_UPDATE(update_smoke3dmenulabels);
     update_smoke3dmenulabels = 0;
     UpdateSmoke3dMenuLabels();
+    END_SHOW_UPDATE(update_smoke3dmenulabels);
   }
   if(update_merge_smoke == 1){
+    SHOW_UPDATE(update_merge_smoke);
     update_merge_smoke = 0;
     GLUISmoke3dCB(MERGE_SMOKE);
+    END_SHOW_UPDATE(update_merge_smoke);
   }
 #endif
   if(glui_meshclip_defined==1&&update_meshclip == 1){
+    SHOW_UPDATE(update_meshclip);
     update_meshclip = 0;
     GLUIUpdateMeshBounds();
+    END_SHOW_UPDATE(update_meshclip);
   }
   if(update_csv_load == 1){
+    SHOW_UPDATE(update_csv_load);
     InitializeDeviceCsvData(LOAD);
     update_csv_load = 0;
+    END_SHOW_UPDATE(update_csv_load);
   }
   if(update_terrain_type == 1){
+    SHOW_UPDATE(update_terrain_type);
     update_terrain_type = 0;
     GLUIUpdateTerrain();
+    END_SHOW_UPDATE(update_terrain_type);
   }
   if(update_iso_ini == 1){
+    SHOW_UPDATE(update_iso_ini);
     UpdateIsoIni();
     update_iso_ini = 0;
+    END_SHOW_UPDATE(update_iso_ini);
   }
   if(check_colorbar == 1){
+    SHOW_UPDATE(check_colorbar);
     CheckLab();
     check_colorbar++;
+    END_SHOW_UPDATE(check_colorbar);
   }
   if(update_colorbar_orig == 1){
+    SHOW_UPDATE(update_colorbar_orig);
     UpdateColorbarOrig();
     update_colorbar_orig = 0;
+    END_SHOW_UPDATE(update_colorbar_orig);
   }
   if(update_loadall_textures == 1){
+    SHOW_UPDATE(update_loadall_textures);
     update_loadall_textures = 0;
     TextureShowMenu(MENU_TEXTURE_SHOWALL2);
+    END_SHOW_UPDATE(update_loadall_textures);
   }
   if(update_plot2dini == 1){
+    SHOW_UPDATE(update_plot2dini);
     update_plot2dini = 0;
     GLUIUpdatePlot2DINI();
+    END_SHOW_UPDATE(update_plot2dini);
   }
   if(update_device_timeaverage == 1){
+    SHOW_UPDATE(update_device_timeaverage);
     update_device_timeaverage = 0;
     GLUIDeviceCB(DEVICE_TIMEAVERAGE);
+    END_SHOW_UPDATE(update_device_timeaverage);
   }
   if(update_smoke_alphas==1){
+    SHOW_UPDATE(update_smoke_alphas);
     update_smoke_alphas = 0;
     UpdateSmokeAlphas();
+    END_SHOW_UPDATE(update_smoke_alphas);
   }
   if(update_slice2device==1){
+    SHOW_UPDATE(update_slice2device);
     update_slice2device = 0;
     Slice2Device();
     update_slicexyz = 1;
+    END_SHOW_UPDATE(update_slice2device);
   }
   if(update_slicexyz==1){
+    SHOW_UPDATE(update_slicexyz);
     update_slicexyz = 0;
     GLUIUpdateSliceXYZ();
+    END_SHOW_UPDATE(update_slicexyz);
   }
   if(update_vectorskip == 1){
+    SHOW_UPDATE(update_vectorskip);
     update_vectorskip = 0;
     UpdateVectorSkip(vectorskip);
+    END_SHOW_UPDATE(update_vectorskip);
   }
   if(update_plot_label == 1){
+    SHOW_UPDATE(update_plot_label);
     update_plot_label = 0;
     GLUIUpdatePlotLabel();
+    END_SHOW_UPDATE(update_plot_label);
   }
   if(open_movie_dialog==1){
+    SHOW_UPDATE(open_movie_dialog);
     open_movie_dialog = 0;
     if(have_slurm==1&&nmovie_queues>0){
       GLUIShowMotion(DIALOG_MOVIE_BATCH);
@@ -2329,141 +2374,219 @@ void UpdateShowScene(void){
     else{
       GLUIShowMotion(DIALOG_MOVIE);
     }
+    END_SHOW_UPDATE(open_movie_dialog);
   }
   if(terrain_update_normals==1&&ngeominfo>0){
+    SHOW_UPDATE(terrain_update_normals);
     terrain_update_normals = 0;
     UpdateAllGeomTriangles();
     if(auto_terrain==1){
       GenerateTerrainGeom(&terrain_vertices, &terrain_indices, &terrain_nindices);
     }
+    END_SHOW_UPDATE(terrain_update_normals);
   }
   if(update_smokefire_colors==1){
+    SHOW_UPDATE(update_smokefire_colors);
     update_smokefire_colors = 0;
     GLUISmoke3dCB(UPDATE_SMOKEFIRE_COLORS);
     GLUISmoke3dCB(UPDATE_SMOKEFIRE_COLORS2);
     GLUISmoke3dCB(USE_OPACITY_DEPTH);
+    END_SHOW_UPDATE(update_smokefire_colors);
   }
   if(update_splitcolorbar==1){
+    SHOW_UPDATE(update_splitcolorbar);
     GLUISplitCB(SPLIT_COLORBAR);
     update_splitcolorbar = 0;
+    END_SHOW_UPDATE(update_splitcolorbar);
   }
   if(update_stept==1){
+    SHOW_UPDATE(update_stept);
     update_stept = 0;
     SetTimeVal(time_paused);
+    END_SHOW_UPDATE(update_stept);
   }
   if(update_movie_parms==1){
+    SHOW_UPDATE(update_movie_parms);
     update_movie_parms = 0;
     GLUIUpdateMovieParms();
+    END_SHOW_UPDATE(update_movie_parms);
   }
 #ifdef pp_REFRESH
   if(update_refresh==1){
+    SHOW_UPDATE(update_refresh);
     update_refresh = 0;
     PeriodicRefresh(refresh_interval);
+    END_SHOW_UPDATE(update_refresh);
   }
 #endif
   if(update_glui_devices==1){
+    SHOW_UPDATE(update_glui_devices);
     update_glui_devices = 0;
     GLUIUpdateDevices();
+    END_SHOW_UPDATE(update_glui_devices);
   }
   if(update_times==1){
+    SHOW_UPDATE(update_times);
     update_times = 0;
     UpdateTimes();
+    END_SHOW_UPDATE(update_times);
   }
   if(update_device==1){
+    SHOW_UPDATE(update_device);
     update_device = 0;
     if(HaveSmokeSensor()==1){
       use_lighting = 0;
       update_use_lighting = 1;
     }
+    END_SHOW_UPDATE(update_device);
   }
   if(update_use_lighting==1){
+    SHOW_UPDATE(update_use_lighting);
     ColorbarMenu(USE_LIGHTING);
     update_use_lighting = 0;
+    END_SHOW_UPDATE(update_use_lighting);
   }
   if(update_playmovie==1){
+    SHOW_UPDATE(update_playmovie);
     EnableDisablePlayMovie();
     update_playmovie = 0;
+    END_SHOW_UPDATE(update_playmovie);
   }
   UpdateRenderStartButton();
-  if(update_makemovie == 1||output_ffmpeg_command==1)MakeMovie();
+  if(update_makemovie == 1||output_ffmpeg_command==1){
+    SHOW_UPDATE(update_makemovie);
+    MakeMovie();
+    update_makemovie = 0;
+    END_SHOW_UPDATE(update_makemovie);
+  }
   if(restart_time == 1){
+    SHOW_UPDATE(restart_time);
     restart_time = 0;
     ResetItimes0();
+    END_SHOW_UPDATE(restart_time);
   }
   if(loadfiles_at_startup==1&&update_load_files == 1){
+    SHOW_UPDATE(update_load_files);
     LoadFiles();
+    END_SHOW_UPDATE(update_load_files);
   }
   if(update_startup_view>0){
+    SHOW_UPDATE(update_startup_view);
     GLUISetCurrentViewPoint(viewpoint_label_startup);
     update_rotation_center = 0;
     update_rotation_center_ini = 0;
     update_startup_view--;
+    END_SHOW_UPDATE(update_startup_view);
   }
   if(update_saving_viewpoint>0){
+    SHOW_UPDATE(update_saving_viewpoint);
     GLUISetCurrentViewPoint(viewpoint_label_saved);
     update_saving_viewpoint--;
+    END_SHOW_UPDATE(update_saving_viewpoint);
   }
   if(update_viewpoint_script>0){
+    SHOW_UPDATE(update_viewpoint_script);
     GLUISetCurrentViewPoint(viewpoint_script);
     update_viewpoint_script--;
+    END_SHOW_UPDATE(update_viewpoint_script);
   }
   if(update_tour_list == 1){
+    SHOW_UPDATE(update_tour_list);
     GLUIUpdateTourList();
+    END_SHOW_UPDATE(update_tour_list);
   }
   if(update_gslice == 1){
+    SHOW_UPDATE(update_gslice);
     GLUIUpdateGsliceParms();
+    END_SHOW_UPDATE(update_gslice);
   }
   if(update_rotation_center == 1){
+    SHOW_UPDATE(update_rotation_center);
     camera_current->rotation_index = glui_rotation_index;
     GLUISceneMotionCB(ROTATE_ABOUT);
     update_rotation_center = 0;
+    END_SHOW_UPDATE(update_rotation_center);
   }
   if(update_rotation_center_ini == 1){
+    SHOW_UPDATE(update_rotation_center_ini);
     camera_current->rotation_index = glui_rotation_index_ini;
     GLUISceneMotionCB(ROTATE_ABOUT);
     update_rotation_center_ini = 0;
+    END_SHOW_UPDATE(update_rotation_center_ini);
   }
   if(camera_current->dirty == 1){
+    SHOW_UPDATE(camera_current->dirty);
     UpdateCamera(camera_current);
+    END_SHOW_UPDATE(camera_current->dirty);
   }
   if(updateclipvals == 1){
+    SHOW_UPDATE(updateclipvals);
     Clip2Cam(camera_current);
     GLUIUpdateClipAll();
     updateclipvals = 0;
+    END_SHOW_UPDATE(updateclipvals);
   }
   if(update_selectedtour_index == 1){
+    SHOW_UPDATE(update_selectedtour_index);
     GLUIUpdateTourIndex();
+    END_SHOW_UPDATE(update_selectedtour_index);
   }
-  if(trainer_mode == 1 && fontindex != LARGE_FONT)FontMenu(LARGE_FONT);
+  if(trainer_mode == 1 && fontindex != LARGE_FONT){
+    SHOW_UPDATE(trainer_mode);
+    FontMenu(LARGE_FONT);
+    END_SHOW_UPDATE(trainer_mode);
+  }
   if(updateindexcolors == 1){
+    SHOW_UPDATE(updateindexcolors);
     UpdateIndexColors();
+    END_SHOW_UPDATE(updateindexcolors);
   }
   if(force_isometric == 1){
+    SHOW_UPDATE(force_isometric);
     force_isometric = 0;
     projection_type = PROJECTION_ORTHOGRAPHIC;
     camera_current->projection_type = projection_type;
     ZoomMenu(UPDATE_PROJECTION);
+    END_SHOW_UPDATE(force_isometric);
   }
   if(convert_ini == 1){
+    SHOW_UPDATE(convert_ini);
     WriteIni(SCRIPT_INI, ini_to);
     SMV_EXIT(0);
+    END_SHOW_UPDATE(convert_ini);
   }
   if(convert_ssf==1||update_ssf==1){
+    SHOW_UPDATE(update_ssf);
     ConvertSsf();
     SMV_EXIT(0);
+    END_SHOW_UPDATE(update_ssf);
   }
   UpdateShow();
-  if(global_times!=NULL&&updateUpdateFrameRateMenu==1)FrameRateMenu(frameratevalue);
+  if(global_times!=NULL&&updateUpdateFrameRateMenu==1){
+    SHOW_UPDATE(updateUpdateFrameRateMenu);
+    FrameRateMenu(frameratevalue);
+    END_SHOW_UPDATE(updateUpdateFrameRateMenu);
+  }
   if(updatefaces == 1){
+    SHOW_UPDATE(updatefaces);
     INIT_PRINT_TIMER(timer_update_faces);
     UpdateFaces();
     PRINT_TIMER(timer_update_faces, "UpdateFaces");
+    END_SHOW_UPDATE(updatefaces);
   }
   if(updatefacelists == 1){
+    SHOW_UPDATE(updatefacelists);
     INIT_PRINT_TIMER(timer_update_facelists);
     UpdateFaceLists();
     PRINT_TIMER(timer_update_facelists, "UpdateFaceLists");
+    END_SHOW_UPDATE(updatefacelists);
   }
+#ifdef pp_SHOW_UPDATE
+  if(updating==1){
+    printf("update complete\n\n");
+  }
+#endif
+
 }
 
 /* ------------------ UpdateFlippedColorbar ------------------------ */

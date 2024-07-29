@@ -4,6 +4,7 @@
 #include "options_common.h"
 
 //#define pp_FRAME           // turn on frame code
+//#define pp_SHOW_UPDATE      // show what is being update in UpdateShowScene routine
 //#define pp_PARTBOUND_MULTI // compute particle bounds in the background
 //#define pp_LUA            // turn on LUA option
 #define pp_SLICE_MULTI      // load slice files in parallel
