@@ -27,7 +27,7 @@ void *Sample(void *arg){
 sample_threads = THREADinit(&n_sample_threads, &use_sample_threads, Sample);
 
 //*** call to do the work
-THREADrun(sample_threads, arg);
+THREADrun(sample_threads);
 #endif
 
 /* ------------------ THREADinit ------------------------ */
@@ -96,34 +96,9 @@ void THREADcontrol(threaderdata *thi, int var){
 #endif
 }
 
-/* ------------------ THREADrun ------------------------ */
-
-void THREADrun(threaderdata *thi, void *arg){
-#ifdef pp_THREAD
-  if(thi == NULL)return;
-  if(thi->use_threads_ptr!=NULL)thi->use_threads = *(thi->use_threads_ptr);
-  if(thi->n_threads_ptr != NULL){
-    thi->n_threads = *(thi->n_threads_ptr);
-    if(thi->n_threads>MAX_THREADS)thi->n_threads = MAX_THREADS;
-  }
-  if(thi->use_threads == 1){
-    int i;
-
-    for(i = 0; i < thi->n_threads; i++){
-      pthread_create(thi->thread_ids + i, NULL, thi->run, arg);
-    }
-  }
-  else{
-    thi->run(arg);
-  }
-#else
-  thi->run(arg);
-#endif
-}
-
 /* ------------------ THREADruni ------------------------ */
 
-void THREADruni(threaderdata *thi, int *args){
+void THREADruni(threaderdata *thi, unsigned char *datainfo, int sizedatai){
 #ifdef pp_THREAD
   if(thi == NULL)return;
   if(thi->use_threads_ptr != NULL)thi->use_threads = *(thi->use_threads_ptr);
@@ -134,21 +109,30 @@ void THREADruni(threaderdata *thi, int *args){
   int i;
 
   for(i = 0; i < thi->n_threads; i++){
-    int *arg;
+    unsigned char *datai;
 
-    arg = args + 2 * i;
-    arg[0] = thi->n_threads;
-    arg[1] = i;
+    datai = datainfo + i*sizedatai;
     if(thi->use_threads == 1){
-      pthread_create(thi->thread_ids + i, NULL, thi->run, arg);
+      pthread_create(thi->thread_ids + i, NULL, thi->run, (void *)datai);
     }
     else{
-      thi->run(arg);
+      thi->run(datai);
     }
   }
 #else
-  args[0] = 1;
-  args[1] = -1;
-  thi->run(args);
+  int i;
+
+  for(i = 0; i < thi->n_threads; i++){
+    unsigned char *data;
+
+    datai = datainfo + i*sizedatai;
+    thi->run(datai);
+  }
 #endif
+}
+
+/* ------------------ THREADrun ------------------------ */
+
+void THREADrun(threaderdata *thi){
+  THREADruni(thi, NULL, 0);
 }

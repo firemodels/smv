@@ -426,13 +426,12 @@ void SortCameras(void){
   cameradata *ca;
   int i;
 
-  FREEMEMORY(cameras_sorted);
   ncameras_sorted=0;
   for(ca = camera_list_first.next; ca->next != NULL; ca = ca->next){
     ncameras_sorted++;
   }
   if(ncameras_sorted == 0)return;
-  NewMemory((void **)&cameras_sorted, ncameras_sorted*sizeof(cameradata *));
+  NEWMEM(cameras_sorted, ncameras_sorted*sizeof(cameradata *));
   for(i=0,ca = camera_list_first.next; ca->next != NULL; ca = ca->next,i++){
     cameras_sorted[i] = ca;
   }
@@ -516,13 +515,12 @@ void SortCamerasID(void){
   cameradata *ca;
   int i;
 
-  FREEMEMORY(cameras_sorted);
   ncameras_sorted = 0;
   for(ca = camera_list_first.next; ca->next!=NULL; ca = ca->next){
     ncameras_sorted++;
   }
   if(ncameras_sorted==0)return;
-  NewMemory((void **)&cameras_sorted, ncameras_sorted*sizeof(cameradata *));
+  NEWMEM(cameras_sorted, ncameras_sorted*sizeof(cameradata *));
   for(i = 0, ca = camera_list_first.next; ca->next!=NULL; ca = ca->next, i++){
     cameras_sorted[i] = ca;
   }

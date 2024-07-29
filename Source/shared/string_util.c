@@ -370,11 +370,19 @@ char *TrimFrontZeros(char *line){
   return line;
 }
 
+/* ------------------ Val2String ------------------------ */
+
+char *Val2String(float val, char *string){
+  sprintf(string, "%f", val);
+  TrimZeros(string);
+  return string;
+}
+
 /* ------------------ TrimMZeros ------------------------ */
 
 void TrimMZeros(char *line){
 
-//  removes trailing zeros in each floating point number found in line
+//  removes trailing zeros in each floating point number found in line separated by spaces
 
   char linecopy[1024];
   char *token;
@@ -1299,7 +1307,7 @@ int SetLabels(flowlabels *flowlabel, char *longlabel, char *shortlabel, char *un
     strcpy(buffer,longlabel);
   }
   len=strlen(buffer);
-  if(NewMemory((void **)&flowlabel->longlabel,(unsigned int)(len+1))==0)return LABEL_ERR;
+  if(NEWMEM(flowlabel->longlabel,(unsigned int)(len+1))==0)return LABEL_ERR;
   STRCPY(flowlabel->longlabel,buffer);
 
   if(shortlabel==NULL){
@@ -1309,7 +1317,7 @@ int SetLabels(flowlabels *flowlabel, char *longlabel, char *shortlabel, char *un
     strcpy(buffer,shortlabel);
   }
   len=strlen(buffer);
-  if(NewMemory((void **)&flowlabel->shortlabel,(unsigned int)(len+1))==0)return LABEL_ERR;
+  if(NEWMEM(flowlabel->shortlabel,(unsigned int)(len+1))==0)return LABEL_ERR;
   STRCPY(flowlabel->shortlabel,buffer);
 
   if(unit==NULL){
@@ -1319,7 +1327,7 @@ int SetLabels(flowlabels *flowlabel, char *longlabel, char *shortlabel, char *un
     strcpy(buffer,unit);
   }
   len=strlen(buffer);
-  if(NewMemory((void **)&flowlabel->unit,(unsigned int)(len+1))==0)return LABEL_ERR;
+  if(NEWMEM(flowlabel->unit,(unsigned int)(len+1))==0)return LABEL_ERR;
   STRCPY(flowlabel->unit,buffer);
 
   return LABEL_OK;
@@ -1694,7 +1702,7 @@ unsigned char *GetHashSHA1(char *file){
   if(stream==NULL){
     char *pathentry, fullpath[1024];
 
-    pathentry = Which(file);
+    pathentry = Which(file, NULL);
     if(pathentry==NULL){
       strcpy(fullpath,".");
       strcat(fullpath,dirseparator);
@@ -1757,7 +1765,7 @@ unsigned char *GetHashMD5(char *file){
   if(stream == NULL){
     char *pathentry, fullpath[1024];
 
-    pathentry = Which(file);
+    pathentry = Which(file, NULL);
     if(pathentry==NULL){
       strcpy(fullpath,".");
       strcat(fullpath,dirseparator);
@@ -1811,7 +1819,7 @@ unsigned char *GetHashSHA256(char *file){
   if(stream==NULL){
     char *pathentry, fullpath[1024];
 
-    pathentry = Which(file);
+    pathentry = Which(file, NULL);
     if(pathentry==NULL){
       strcpy(fullpath,".");
       strcat(fullpath,dirseparator);

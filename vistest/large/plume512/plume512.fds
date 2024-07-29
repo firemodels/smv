@@ -1,17 +1,15 @@
-&HEAD CHID='plume_timing',TITLE='Plume whirl case' /
+&HEAD CHID='plume512',TITLE='Plume whirl case' /
 
   same as plume5a except there is a blockage in the middle of the scene to block the flow
   The purpose of this case is to demonstrate the curved flow (via streak lines) that results.
 
-&MESH IJK=32,32,64, XB=0.0,0.8,0.0,0.8,0.0,1.6, MULT_ID='mesh'/
-&MULT ID='mesh', DX=0.8, DY=0.8, DZ=1.6, I_UPPER=1, J_UPPER=1, K_UPPER=1 /
+&MESH IJK=32,32,32, XB=0.0,0.2,0.0,0.2,0.0,0.2, MULT_ID='mesh'/
+&MULT ID='mesh', DX=0.2, DY=0.2, DZ=0.2, I_UPPER=7, J_UPPER=7, K_UPPER=7 /
 
 
-&DUMP NFRAMES=1000 DT_PL3D=8.0, DT_SL3D=0.1 /
+&DUMP NFRAMES=4000 DT_PL3D=8.0, DT_SL3D=0.1 /
 
-&INIT XB=0.2,1.4,0.2,1.4,0.5,2.2  TEMPERATURE=600.0 /
-
-&TIME T_END=5. /  Total simulation time
+&TIME T_END=10. /  Total simulation time
 
 &MATL ID                    = 'FABRIC'
       FYI                   = 'Properties completely fabricated'
@@ -45,7 +43,7 @@
       THICKNESS(1:2) = 0.002,0.1 
 /
 
-&SURF ID             = 'UPHOLSTERY_UPPER'
+&SURF ID             = 'UPHOLSTERY'
       FYI            = 'Properties completely fabricated'
       RGB            = 151,96,88
       BURN_AWAY      = .FALSE.
@@ -57,24 +55,49 @@
 &VENT XB=0.5,1.1,0.5,1.1,0.1,0.1,SURF_ID='BURNER' /  fire source on kitchen stove
 &OBST XB=0.5,1.1,0.5,1.1,0.0,0.1 /
 
+&OBST XB=0.5,1.1,0.5,1.1,0.6,1.0, SURF_ID='UPHOLSTERY' /
+&HOLE XB=0.7,0.9,0.7,0.9,0.4,1.2 /
+
 &VENT MB='XMIN', SURF_ID='OPEN' /
 &VENT MB='XMAX', SURF_ID='OPEN' /
 &VENT MB='YMIN', SURF_ID='OPEN' /
 &VENT MB='YMAX', SURF_ID='OPEN' /
 &VENT MB='ZMAX', SURF_ID='OPEN' /
 
-&ISOF QUANTITY='TEMPERATURE',VALUE(1)=100.0 /  Show 3D contours of temperature at 100 C
-&ISOF QUANTITY='TEMPERATURE',VALUE(1)=200.0 /  Show 3D contours of temperature at 200 C
-&ISOF QUANTITY='TEMPERATURE',VALUE(1)=400.0 /  Show 3D contours of temperature at 200 C
-&ISOF QUANTITY='TEMPERATURE',VALUE(1)=620.0 /  Show 3D contours of temperature at 620 C
-
 &PART ID='tracers',MASSLESS=.TRUE.,
-   QUANTITIES(1:4)='PARTICLE U','PARTICLE V','PARTICLE W'
+   QUANTITIES(1:3)='PARTICLE U','PARTICLE V','PARTICLE W'
    SAMPLING_FACTOR=10 /  Description of massless tracer particles. Apply at a
                                                              solid surface with the PART_ID='tracers'
+
+ X slices
+
+&SLCF PBX=0.8,QUANTITY='TEMPERATURE',VECTOR=.TRUE. /  Add vector slices colored by temperature
+&SLCF PBX=0.8,QUANTITY='TEMPERATURE',CELL_CENTERED=.TRUE. / 
 
  Y slices
 
 &SLCF PBY=0.8,QUANTITY='TEMPERATURE',VECTOR=.TRUE. /
+&SLCF PBY=0.8,QUANTITY='TEMPERATURE',CELL_CENTERED=.TRUE. /
+
+ Z slices
+
+&SLCF PBZ=0.4,QUANTITY='TEMPERATURE',VECTOR=.TRUE. /
+&SLCF PBZ=0.4,QUANTITY='TEMPERATURE',CELL_CENTERED=.TRUE. /
+&SLCF PBZ=1.8,QUANTITY='TEMPERATURE',VECTOR=.TRUE. /
+&SLCF PBZ=1.8,QUANTITY='TEMPERATURE',CELL_CENTERED=.TRUE. /
+&SLCF PBZ=1.2,QUANTITY='TEMPERATURE',VECTOR=.TRUE. /
+&SLCF PBZ=1.2,QUANTITY='TEMPERATURE',CELL_CENTERED=.TRUE. /
+
+ boundary files
+
+&BNDF QUANTITY='WALL TEMPERATURE' /
+&BNDF QUANTITY='WALL TEMPERATURE' CELL_CENTERED=.TRUE. /
+
+ isosurface
+
+&ISOF QUANTITY='TEMPERATURE',VALUE(1)=100.0 /  Show 3D contours of temperature at 100 C
+&ISOF QUANTITY='TEMPERATURE',VALUE(1)=200.0 /  Show 3D contours of temperature at 200 C
+&ISOF QUANTITY='TEMPERATURE',VALUE(1)=620.0 /  Show 3D contours of temperature at 620 C
+&ISOF QUANTITY='TEMPERATURE',VALUE(1:2)=200.0,400.0 /  Show 3D contours of temperature at 200 C
 
 &TAIL /

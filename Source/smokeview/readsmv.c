@@ -193,6 +193,9 @@ FILE_SIZE ReadCSVFile(csvfiledata *csvfi, int flag){
       ci = csvfi->csvinfo + i;
       FREEMEMORY(ci->vals);
       FREEMEMORY(ci->vals_orig);
+      FREEMEMORY(ci->label.longlabel);
+      FREEMEMORY(ci->label.shortlabel);
+      FREEMEMORY(ci->label.unit);
     }
     FREEMEMORY(csvfi->csvinfo);
   }
@@ -311,6 +314,9 @@ FILE_SIZE ReadCSVFile(csvfiledata *csvfi, int flag){
     ci->skip = 0;
     if(strcmp(unit, "status") == 0)ci->skip = 1;
     ci->dimensionless = IsDimensionless(unit);
+    ci->label.longlabel = NULL;
+    ci->label.shortlabel = NULL;
+    ci->label.unit = NULL;
     SetLabels(&(ci->label), label, label, unit);
   }
   CheckMemory;
@@ -403,6 +409,9 @@ FILE_SIZE ReadCSVFile(csvfiledata *csvfi, int flag){
         cchirad->valmax = MAX(cchirad->valmax, vals2[i]);
       }
     }
+    cchirad->label.longlabel = NULL;
+    cchirad->label.shortlabel = NULL;
+    cchirad->label.unit = NULL;
     SetLabels(&(cchirad->label), "-QRAD_I/HRR", "-QRAD_I/HRR", "");
     csvfi->ncsvinfo++;
   }
@@ -504,6 +513,9 @@ void ReadHRR(int flag){
       hi = hrrinfo + i;
       FREEMEMORY(hi->vals);
       FREEMEMORY(hi->vals_orig);
+      FREEMEMORY(hi->label.longlabel);
+      FREEMEMORY(hi->label.shortlabel);
+      FREEMEMORY(hi->label.unit);
     }
     FREEMEMORY(hrrinfo);
     nhrrinfo = 0;
@@ -561,6 +573,9 @@ void ReadHRR(int flag){
     hi = hrrinfo+i;
     TrimBack(labels[i]);
     TrimBack(units[i]);
+    hi->label.longlabel = NULL;
+    hi->label.shortlabel = NULL;
+    hi->label.unit = NULL;
     SetLabels(&(hi->label), labels[i], labels[i], units[i]);
   }
   CheckMemory;
@@ -594,6 +609,9 @@ void ReadHRR(int flag){
       hi2->base_col = i;
       strcpy(label, "HOC*");
       strcat(label, hi->label.longlabel);
+      hi2->label.longlabel = NULL;
+      hi2->label.shortlabel = NULL;
+      hi2->label.unit = NULL;
       SetLabels(&(hi2->label), label, label, "kW");
       mlr_col = hi2-hrrinfo;
       have_mlr = 1;
@@ -632,6 +650,9 @@ void ReadHRR(int flag){
     hi_chirad = hrrinfo+chirad_col;
 
     strcpy(label, "CHIRAD");
+    hi_chirad->label.longlabel = NULL;
+    hi_chirad->label.shortlabel = NULL;
+    hi_chirad->label.unit = NULL;
     SetLabels(&(hi_chirad->label), label, label, "-");
     hi_chirad->nvals = nrows - 2;
     nhrrhcinfo++;
@@ -1062,7 +1083,9 @@ void InitMesh(meshdata *meshi){
   meshi->patch_times = NULL;
   meshi->patch_times_map = NULL;
   meshi->patchval = NULL;
+#ifndef pp_BOUNDFRAME
   meshi->patchval_iframe = NULL;
+#endif
   meshi->thresholdtime = NULL;
   meshi->patchblank = NULL;
   meshi->patch_timeslist = NULL;
@@ -1084,9 +1107,6 @@ void InitMesh(meshdata *meshi){
   meshi->zheat = NULL;
   meshi->theat = NULL;
   meshi->blockageinfoptrs = NULL;
-
-  meshi->surface_tempmax = SURFACE_TEMPMAX;
-  meshi->surface_tempmin = SURFACE_TEMPMIN;
 
   meshi->faceinfo = NULL;
   meshi->face_normals_single = NULL;
@@ -3028,7 +3048,7 @@ void UpdateBoundInfo(void){
 #ifdef pp_PARTBOUND_MULTI
   if(partbound_threads == NULL){
     partbound_threads = THREADinit(&n_partbound_threads, &use_partbound_threads, GetGlobalPartBoundsReduced);
-    THREADrun(partbound_threads, NULL);
+    THREADrun(partbound_threads);
   }
 #else
   GetGlobalPartBounds(0);
@@ -3039,14 +3059,14 @@ void UpdateBoundInfo(void){
   if(slicebound_threads == NULL){
     slicebound_threads = THREADinit(&n_slicebound_threads, &use_slicebound_threads, GetGlobalSliceBoundsFull);
   }
-  THREADrun(slicebound_threads, NULL);
+  THREADrun(slicebound_threads);
   PRINT_TIMER(bound_timer, "GetGlobalSliceBounds");
 
   GetGlobalPatchBoundsReduced();
   if(patchbound_threads == NULL){
     patchbound_threads = THREADinit(&n_patchbound_threads, &use_patchbound_threads, GetGlobalPatchBoundsFull);
   }
-  THREADrun(patchbound_threads, NULL);
+  THREADrun(patchbound_threads);
   PRINT_TIMER(bound_timer, "GetGlobalPatchBounds");
 
   GetGlobalHVACDuctBounds(0);
@@ -3247,7 +3267,7 @@ void UpdateMeshBoxBounds(void){
   for(i = 0; i<nmeshes;  i++){
     meshdata *meshi;
 
-    // xplt, yplt, zplt has original cooredinates because this routine is calld before UpdateMeshCoords
+    // xplt, yplt, zplt has original coordinates because this routine is called before UpdateMeshCoords
     meshi = meshinfo+i;
     meshi->boxmin[0] = meshi->xplt[0];
     meshi->boxmin[1] = meshi->yplt[0];
@@ -4930,7 +4950,7 @@ int ParseISOFProcess(bufferstreamdata *stream, char *buffer, int *iiso_in, int *
     return RETURN_BREAK;
   }
 
-#ifdef pp_FRAME
+#ifdef pp_ISOFRAME
   isoi->frameinfo = NULL;
 #endif
   isoi->fds_skip = fds_skip;
@@ -5117,7 +5137,7 @@ int ParsePRT5Process(bufferstreamdata *stream, char *buffer, int *nn_part_in, in
     blocknumber--;
   }
 
-#ifdef pp_FRAME
+#ifdef pp_PARTFRAME
   parti->frameinfo = NULL;
 #endif
   parti->blocknumber = blocknumber;
@@ -5129,6 +5149,7 @@ int ParsePRT5Process(bufferstreamdata *stream, char *buffer, int *nn_part_in, in
   parti->valmax_part = NULL;
   parti->stream     = NULL;
   parti->hist_update = 0;
+  parti->skipload = 1;
   if(FGETS(buffer, 255, stream)==NULL){
     npartinfo--;
     return RETURN_BREAK;
@@ -5181,7 +5202,9 @@ int ParsePRT5Process(bufferstreamdata *stream, char *buffer, int *nn_part_in, in
   parti->timeslist = NULL;
   parti->histograms = NULL;
   parti->bounds_set = 0;
+#ifndef pp_PARTFRAME
   parti->filepos = NULL;
+#endif
   parti->tags = NULL;
   parti->sort_tags = NULL;
   parti->vis_part = NULL;
@@ -5301,9 +5324,12 @@ int ParseBNDFProcess(bufferstreamdata *stream, char *buffer, int *nn_patch_in, i
   for(i = 0; i<6; i++){
     patchi->ijk[i] = -1;
   }
+#ifdef pp_BOUNDFRAME
+  patchi->frameinfo         = NULL;
+#endif
   patchi->finalize          = 1;
-  patchi->valmin_patch        = 1.0;
-  patchi->valmax_patch        = 0.0;
+  patchi->valmin_patch      = 1.0;
+  patchi->valmax_patch      = 0.0;
   patchi->skip              = 0;
   patchi->version           = version;
   patchi->ntimes            = 0;
@@ -5378,7 +5404,7 @@ int ParseBNDFProcess(bufferstreamdata *stream, char *buffer, int *nn_patch_in, i
   strcat(patchi->bound_file, ".bnd");
   patchi->have_bound_file = NO;
 
-  NewMemory((void **)&patchi->comp_file, (unsigned int)(len+4+1));
+  NewMemory((void **)&patchi->comp_file, (unsigned int)(len + 4 + 1));
   STRCPY(patchi->comp_file, bufferptr);
   STRCAT(patchi->comp_file, ".svz");
 
@@ -5595,7 +5621,7 @@ int ParseSMOKE3DProcess(bufferstreamdata *stream, char *buffer, int *nn_smoke3d_
     smoke3di->val16_maxs = NULL;
     smoke3di->times16    = NULL;
 #endif
-#ifdef pp_FRAME
+#ifdef pp_SMOKEFRAME
     smoke3di->frameinfo = NULL;
 #endif
     smoke3di->seq_id = nn_smoke3d;
@@ -5606,7 +5632,7 @@ int ParseSMOKE3DProcess(bufferstreamdata *stream, char *buffer, int *nn_smoke3d_
     smoke3di->smokeframe_comp_list = NULL;
     smoke3di->smokeframe_out = NULL;
     smoke3di->timeslist = NULL;
-#ifndef pp_FRAME
+#ifndef pp_SMOKEFRAME
     smoke3di->smoke_comp_all = NULL;
 #endif
     smoke3di->smokeview_tmp = NULL;
@@ -5636,7 +5662,7 @@ int ParseSMOKE3DProcess(bufferstreamdata *stream, char *buffer, int *nn_smoke3d_
     smoke3di->comp_file = SMOKE3DBUFFER(len + 1);
     STRCPY(smoke3di->comp_file, buffer2);
 
-    if(have_compressed_files==1&&FILE_EXISTS_CASEDIR(smoke3di->comp_file) == YES){
+    if(FILE_EXISTS_CASEDIR(smoke3di->comp_file) == YES){
       smoke3di->file = smoke3di->comp_file;
       smoke3di->is_zlib = 1;
       smoke3di->compression_type = COMPRESSED_ZLIB;
@@ -5855,7 +5881,7 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
 #ifdef pp_SLICE_MULTI
   sd->loadstatus = FILE_UNLOADED;
 #endif
-#ifdef pp_FRAME
+#ifdef pp_SLICEFRAME
   sd->frameinfo        = NULL;
 #endif
   sd->slice_mask       = NULL;
@@ -6462,7 +6488,7 @@ void UpdateObstBoundingBox(float *XB){
   }
 }
 
-/* ------------------ ReadSMVOrig ------------------------ */
+/* ------------------ GetBlockagePtr ------------------------ */
 
 blockagedata *GetBlockagePtr(float *xyz){
   float xyzcenter[3];
@@ -6493,6 +6519,188 @@ blockagedata *GetBlockagePtr(float *xyz){
   }
   return NULL;
 }
+
+#ifdef pp_FDS
+/* ------------------ SkipFdsContinueLines ------------------------ */
+
+void SkipFdsContinueLines(FILE *streamin, FILE *streamout, char *buffer){
+  char *slash;
+
+  slash = strrchr(buffer, '/');
+  while(slash==NULL){
+    if(fgets(buffer, 255, streamin) == NULL)return;
+    slash = strrchr(buffer, '/');
+  }
+}
+
+/* ------------------ ConvertFDSInputFile ------------------------ */
+
+char *ConvertFDSInputFile(char *filein, int *ijk_arg, float *xb_arg){
+  FILE *streamin, *streamout;
+  char *ext, fileout[1024], chid0[1024];
+  int ijk[3] = {32, 32, 32};
+  float xb[6] = {0.0, 1.6, 0.0, 1.6, 0.0, 3.2};
+  int outmesh=1;
+
+  if(filein == NULL)return NULL;
+
+  strcpy(fileout, filein);
+  ext = strrchr(fileout, '.');
+  if(ext != NULL)ext[0] = 0;
+  strcat(fileout, "_1m.fds");
+
+  strcpy(chid0, filein);
+  ext = strrchr(chid0, '.');
+  if(ext != NULL)ext[0] = 0;
+  strcat(chid0, "_1m");
+
+  streamin = fopen(filein, "r");
+  if(streamin == NULL)return NULL;
+
+  streamout = fopen(fileout, "w");
+  if(streamout == NULL){
+    fclose(streamin);
+    return NULL;
+  }
+
+  if(ijk_arg != NULL)memcpy(ijk, ijk_arg, 3 * sizeof(int));
+  if(xb_arg != NULL)memcpy(xb, xb_arg, 6 * sizeof(float));
+  while(!feof(streamin)){
+    char buffer[255], *first;
+
+    if(fgets(buffer, 255, streamin) == NULL)break;
+    first = TrimFrontBack(buffer);
+    if(first==NULL || first[0] != '&'){
+      fprintf(streamout, "%s\n", buffer);
+      continue;
+    }
+    if(strncmp(first, "&HEAD", 5) == 0){
+      fprintf(streamout, "&HEAD CHID='%s' /\n", chid0);
+      SkipFdsContinueLines(streamin, streamout, buffer);
+      continue;
+    }
+    else if(strncmp(first, "&MESH", 5) == 0){
+      if(outmesh==1){
+        int i;
+        char czero[256];
+
+        outmesh=0;
+        fprintf(streamout, "&MESH IJK=%i,%i,%i, XB=", ijk[0], ijk[1], ijk[2]);
+        for(i = 0;i < 5;i++){
+          fprintf(streamout, "%s,", Val2String(xb[i], czero));
+        }
+        fprintf(streamout, "%s /\n", Val2String(xb[5], czero));
+      }
+      SkipFdsContinueLines(streamin, streamout, buffer);
+      continue;
+    }
+    else if(strncmp(first, "&TIME", 5) == 0){
+      fprintf(streamout, "&TIME T_END=0.0 /\n");
+      SkipFdsContinueLines(streamin, streamout, buffer);
+      continue;
+    }
+    fprintf(streamout, "%s\n", buffer);
+  }
+  fclose(streamin);
+  fclose(streamout);
+
+  char *outfile;
+  NewMemory(( void ** )&outfile, strlen(fileout)+1);
+  strcpy(outfile, fileout);
+  return outfile;
+}
+
+/* ------------------ GenerateSmvOrigFile ------------------------ */
+
+int GenerateSmvOrigFile(void){
+  int i;
+  int ijk[6];
+  float xb[6];
+  float dxmin, dymin, dzmin;
+
+  if(fdsprog == NULL)return 0;
+  if(FileExistsOrig(smv_orig_filename) == 1 && IsFileNewer(smv_orig_filename, smv_filename) == 1)return 0;
+
+  xb[0] = xbar0ORIG;
+  xb[1] = xbarORIG;
+  xb[2] = ybar0ORIG;
+  xb[3] = ybarORIG;
+  xb[4] = zbar0ORIG;
+  xb[5] = zbarORIG;
+  for(i = 0; i < nmeshes; i++){
+    meshdata *meshi;
+    float dx, dy, dz;
+    float *xplt, *yplt, *zplt;
+
+    meshi = meshinfo + i;
+    xplt = meshi->xplt_orig;
+    yplt = meshi->yplt_orig;
+    zplt = meshi->zplt_orig;
+    dx = (xplt[meshi->ibar] - xplt[0]) / (float)meshi->ibar;
+    dy = (yplt[meshi->jbar] - yplt[0]) / (float)meshi->jbar;
+    dz = (zplt[meshi->kbar] - zplt[0]) / (float)meshi->kbar;
+    if(i == 0){
+      dxmin = dx;
+      dymin = dy;
+      dzmin = dz;
+    }
+    else{
+      dxmin = MIN(dx, dxmin);
+      dymin = MIN(dy, dymin);
+      dzmin = MIN(dz, dzmin);
+    }
+  }
+  float nx, ny, nz;
+
+  nx = (xbarORIG - xbar0ORIG) / dxmin + 1;
+  ny = (ybarORIG - ybar0ORIG) / dymin + 1;
+  nz = (zbarORIG - zbar0ORIG) / dzmin + 1;
+  if(nx * ny * nz > 10000000.0)return 0;
+
+  ijk[0] = (int)nx;
+  ijk[1] = (int)ny;
+  ijk[2] = (int)nz;
+
+  char *fdsonemesh, command_line[1024], smvonemesh[1024], gitonemesh[1024], *ext;
+
+  fdsonemesh = ConvertFDSInputFile(fds_filein, ijk, xb);
+  if(FileExistsOrig(fdsonemesh) == 0 || fdsprog == NULL)return 0;
+
+// setup and run fds case
+  strcpy(command_line, fdsprog);
+  strcat(command_line, " ");
+  strcat(command_line, fdsonemesh);
+  strcat(command_line, " > Nul 2> Nul");
+  system(command_line);
+
+  strcpy(smvonemesh, fdsonemesh);
+  ext = strrchr(smvonemesh, '.');
+  if(ext!=NULL)ext[0]=0;
+  strcat(smvonemesh, ".smv");
+  if(FileExistsOrig(smvonemesh) == 0)return 0;
+
+  strcpy(gitonemesh, fdsonemesh);
+  ext = strrchr(gitonemesh, '.');
+  if(ext != NULL)ext[0] = 0;
+  strcat(gitonemesh, "_git.txt");
+
+  FileCopy(smvonemesh, smv_orig_filename);
+  FileErase(fdsonemesh);
+  FileErase(smvonemesh);
+  FileErase(gitonemesh);
+  return 1;
+}
+
+/* ------------------ GenerateSmvOrigFileWrapper ------------------------ */
+
+void *GenerateSmvOrigFileWrapper(void *arg){
+  if(GenerateSmvOrigFile()==1){
+    printf("%s generated\n", smv_orig_filename);  
+  }
+  ReadSMVOrig();
+  THREAD_EXIT(readsmvorig_threads);
+}
+#endif
 
 /* ------------------ ReadSMVOrig ------------------------ */
 
@@ -6817,12 +7025,18 @@ int ReadSMV_Init() {
   START_TIMER(timer_readsmv);
   START_TIMER(processing_time);
 
+#ifdef pp_ISOFRAME
+  use_isosurface_threads = 0;
+#endif
 //** initialize multi-threading
   if(runscript == 1){
     use_checkfiles_threads  = 0;
     use_ffmpeg_threads      = 0;
     use_readallgeom_threads = 0;
     use_isosurface_threads  = 0;
+#ifdef pp_FDS
+    use_readsmvorig_threads = 0;
+#endif
 #ifdef pp_SMOKEDRAW_SPEEDUP
     use_mergesmoke_threads  = 0;
 #endif
@@ -11684,7 +11898,7 @@ int ReadSMV_Configure(){
   if(checkfiles_threads != NULL){
     checkfiles_threads = THREADinit(&n_checkfiles_threads, &use_checkfiles_threads, CheckFiles);
   }
-  THREADrun(checkfiles_threads, NULL);
+  THREADrun(checkfiles_threads);
   PRINT_TIMER(timer_readsmv, "CheckFiles");
   CheckMemory;
   UpdateIsoColors();
@@ -11756,12 +11970,19 @@ int ReadSMV_Configure(){
   if(readallgeom_threads == NULL){
     readallgeom_threads = THREADinit(&n_readallgeom_threads, &use_readallgeom_threads, ReadAllGeom);
   }
-  THREADrun(readallgeom_threads, NULL);
+  THREADrun(readallgeom_threads);
   THREADcontrol(readallgeom_threads, THREAD_JOIN);
   PRINT_TIMER(timer_readsmv, "ReadAllGeomMT");
 
   UpdateMeshCoords();
   PRINT_TIMER(timer_readsmv, "UpdateMeshCoords");
+
+#ifdef pp_FDS
+    if(readsmvorig_threads == NULL){
+      readsmvorig_threads = THREADinit(&n_readsmvorig_threads, &use_readsmvorig_threads, GenerateSmvOrigFileWrapper);
+    }
+    THREADrun(readsmvorig_threads);
+#endif
 
   UpdateSmoke3DTypes();
   PRINT_TIMER(timer_readsmv, "UpdateSmoke3DTypes");
@@ -11800,7 +12021,9 @@ int ReadSMV_Configure(){
     }
   }
   if(npartinfo>=64){
+#ifndef pp_PARTFRAME
     use_partload_threads = 1;
+#endif
     partfast = 1;
   }
 
@@ -11829,7 +12052,7 @@ int ReadSMV_Configure(){
   if(sliceparms_threads == NULL){
     sliceparms_threads = THREADinit(&n_sliceparms_threads, &use_sliceparms_threads, UpdateVSlices);
   }
-  THREADrun(sliceparms_threads, &sliceparminfo);
+  THREADruni(sliceparms_threads, (unsigned char *)&sliceparminfo, 0);
   THREADcontrol(sliceparms_threads, THREAD_JOIN);
   PRINT_TIMER(timer_readsmv, "UpdateVSlices");
 
@@ -11875,19 +12098,23 @@ int ReadSMV_Configure(){
 #ifdef pp_SMOKEDRAW_SPEEDUP
   if(mergesmoke_threads == NULL){
     mergesmoke_threads = THREADinit(&n_mergesmoke_threads, &use_mergesmoke_threads, MtMergeSmoke3D);
+    for(i = 0; i < n_mergesmoke_threads; i++){
+      smokethreadinfo[i].ithread = i;
+      smokethreadinfo[i].nthreads = n_mergesmoke_threads;
+    }
   }
 #endif
 
   if(ffmpeg_threads == NULL){
     ffmpeg_threads = THREADinit(&n_ffmpeg_threads, &use_ffmpeg_threads, SetupFF);
   }
-  THREADrun(ffmpeg_threads, NULL);
+  THREADrun(ffmpeg_threads);
   PRINT_TIMER(timer_readsmv, "SetupFFMT");
 
   if(isosurface_threads == NULL){
     isosurface_threads = THREADinit(&n_isosurface_threads, &use_isosurface_threads, SetupAllIsosurfaces);
   }
-  THREADrun(isosurface_threads, NULL);
+  THREADrun(isosurface_threads);
   THREADcontrol(isosurface_threads, THREAD_JOIN);
   PRINT_TIMER(timer_readsmv, "SetupAllIsosurfaces");
 
@@ -12004,7 +12231,7 @@ int ReadSMV_Configure(){
     if(classifyallgeom_threads == NULL){
       classifyallgeom_threads = THREADinit(&n_readallgeom_threads, &use_readallgeom_threads, ClassifyAllGeom);
     }
-    THREADrun(classifyallgeom_threads, NULL);
+    THREADrun(classifyallgeom_threads);
   }
   PRINT_TIMER(timer_readsmv, "ClassifyGeom");
 
@@ -12392,6 +12619,12 @@ int ReadIni2(char *inifile, int localfile){
       update_research_mode=1;
       continue;
     }
+#ifdef pp_FRAME
+    if(MatchINI(buffer, "FRAMETHREADS") == 1){
+      fgets(buffer, 255, stream);
+      sscanf(buffer, " %i", &nframe_threads);
+    }
+#endif
     if(MatchINI(buffer, "LOADMESH") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, " %i %i", &show_intersection_box, &show_intersected_meshes);
@@ -14823,6 +15056,9 @@ int ReadIni2(char *inifile, int localfile){
       if(current_script_command==NULL){
         sscanf(buffer, "%i %i %i", &partfast, &use_partload_threads, &n_partload_threads);
       }
+#ifdef pp_PARTFRAME
+      use_partload_threads = 0;
+#endif
       continue;
     }
     if(MatchINI(buffer, "WINDOWOFFSET") == 1){
@@ -16969,6 +17205,10 @@ void WriteIni(int flag,char *filename){
 
   fprintf(fileout, "CSV\n");
   fprintf(fileout, " %i\n", csv_loaded);
+#ifdef pp_FRAME
+  fprintf(fileout, "FRAMETHREADS\n");
+  fprintf(fileout, " %i\n", nframe_threads);
+#endif
   fprintf(fileout, "LOADINC\n");
   fprintf(fileout, " %i\n", load_incremental);
   fprintf(fileout, "NOPART\n");

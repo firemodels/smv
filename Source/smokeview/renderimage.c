@@ -165,8 +165,6 @@ void MakeMovie(void){
 
   EnableDisableMakeMovie(ON);
   EnableDisablePlayMovie();
-
-  update_makemovie = 0;
 }
 
 /* ------------------ ResetRenderResolution ------------------------ */

@@ -1,5 +1,12 @@
 #ifndef FILE_UTIL_H_DEFINED
 #define FILE_UTIL_H_DEFINED
+#include "fopen.h"
+
+#ifdef IN_FILE_UTIL
+int show_timings=0;
+#else
+extern int show_timings;
+#endif
 
 // vvvvvvvvvvvvvvvvvvvvvvvv header files vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 
@@ -21,8 +28,9 @@
 /* --------------------------  mtfiledata ------------------------------------ */
 
 typedef struct {
-  char *file, *buffer;
-  FILE_SIZE file_size, chars_read;
+  char *file;
+  unsigned char *buffer;
+  FILE_SIZE file_size, chars_read, file_offset, nchars;
   int i, nthreads;
 } mtfiledata;
 
@@ -35,7 +43,25 @@ typedef struct {
   int type;
 } filelistdata;
 
+/* --------------------------  bufferdata ------------------------------------ */
+
+typedef struct {
+  char *file;
+  unsigned char *buffer; // copy of file
+  FILE_SIZE nbuffer;     // size of buffer
+  FILE_SIZE nfile;       // amount of data in buffer
+} bufferdata;
+
 // vvvvvvvvvvvvvvvvvvvvvvvv preprocessing directives vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+
+#ifdef pp_OPEN_TEST
+#ifndef fopen
+#define fopen(x,y) fopen_counting(x,y,__FILE__,__LINE__)
+#endif
+#ifndef fclose
+#define fclose(x) fclose_counting(x)
+#endif
+#endif
 
 #ifdef WIN32
 #define UNLINK _unlink
@@ -51,6 +77,9 @@ typedef struct {
 #define FTELL(a) ftello(a)
 #endif
 
+#define ALLDATA_OFFSET 0
+#define ALLDATA_NVALS  0
+
 #define REPLACE_FILE 0
 #define APPEND_FILE 1
 
@@ -59,6 +88,9 @@ typedef struct {
 
 #define NOT_FORCE_IN_DIR 0
 #define FORCE_IN_DIR 1
+
+#define DATA_AT_START 0
+#define DATA_MAPPED   1
 
 #define FEOF(stream)              feof_buffer(stream->fileinfo)
 #define FGETS(buffer,size,stream) fgets_buffer(stream->fileinfo,buffer,size)
@@ -106,7 +138,14 @@ int FileExistsOrig(char *filename);
 #include "string_util.h"
 
 // vvvvvvvvvvvvvvvvvvvvvvvv headers vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+EXTERNCPP int MakeFile(char *file, int size);
+EXTERNCPP void FreeBufferInfo(bufferdata * bufferinfoptr);
+EXTERNCPP bufferdata *InitBufferData(char *file);
+EXTERNCPP bufferdata *File2Buffer(char *file, bufferdata *bufferinfo, int *nreadptr);
+EXTERNCPP FILE_SIZE fread_p(char *file, unsigned char *buffer, FILE_SIZE offset, FILE_SIZE nchars, int nthreads);
+EXTERNCPP void FileErase(char *file);
 EXTERNCPP void GetProgFullPath(char *progexe, int maxlen_progexe);
+EXTERNCPP FILE *FOPEN(const char *file, const char *mode);
 EXTERNCPP FILE *fopen_indir(char *dir, char *file, char *mode);
 EXTERNCPP FILE *fopen_2dir(char *file, char *mode, char *scratch_dir);
 EXTERNCPP void TestWrite(char *scratchdir, char **fileptr);
@@ -139,11 +178,12 @@ EXTERNCPP void FreeFileList(filelistdata *filelist, int *nfilelist);
 #define DIR_MODE  1
 EXTERNCPP int GetFileListSize(const char *path, char *filter, int mode) ;
 EXTERNCPP int MakeFileList(const char *path, char *filter, int maxfiles, int sort_files, filelistdata **filelist, int mode);
-EXTERNCPP char *Which(char *progname);
+EXTERNCPP char *Which(char *progname, char **fullprognameptr);
 EXTERNCPP FILE_SIZE GetFileSizeSMV(const char *filename);
 EXTERNCPP time_t FileModtime(char *filename);
 EXTERNCPP int IsFileNewer(char *file1, char *file2);
 EXTERNCPP char *GetProgDir(char *progname, char **svpath);
+EXTERNCPP void PrintTime(const char *tag, int line, float *timer, const char *label, int stop_flag);
 
 EXTERNCPP int IsSootFile(char *shortlabel, char *longlabel);
 

@@ -10,6 +10,7 @@
 #include "string_util.h"
 #include "smokeviewvars.h"
 #include "command_args.h"
+#include "fopen.h"
 
 #ifdef WIN32
 #include <direct.h>
@@ -339,6 +340,13 @@ char *ProcessCommandLine(CommandlineArgs *args) {
   NewMemory((void **)&caseini_filename, len_casename + strlen(".ini") + 1);
   STRCPY(caseini_filename, fdsprefix);
   STRCAT(caseini_filename, ".ini");
+
+#ifdef p_FRAME
+  FREEMEMORY(frametest_filename);
+  NewMemory((void **)&frametest_filename, len_casename + strlen(".tst") + 1);
+  STRCPY(caseini_filename, fdsprefix);
+  STRCAT(caseini_filename, ".tst");
+#endif
 
   FREEMEMORY(fedsmv_filename);
   NewMemory((void **)&fedsmv_filename, len_casename + strlen(".fedsmv") + 1);
@@ -833,6 +841,9 @@ int main(int argc, char **argv){
   // run is complete.
   return return_code;
 #endif
+#ifdef pp_OPEN_TEST
+  InitOpenTest();
+#endif
   SetStdOut(stdout);
   initMALLOC();
   InitRandAB(1000000);
@@ -852,6 +863,12 @@ int main(int argc, char **argv){
   strcpy(smokeview_progname, progname);
   GetProgFullPath(smokeview_progname, 1024);
   smv_filename = ParseCommandline(argc, argv);
+
+#ifdef WIN32
+  if(Which("fds_local.bat", &fdsprog) != NULL)strcpy(fdsprog, "fds_local.bat");
+#else
+  Which("fds", &fdsprog);
+#endif
 
   prog_fullpath = progname;
   if(smokeview_bindir==NULL){

@@ -1,4 +1,5 @@
 #include "options.h"
+#define IN_FILE_UTIL
 #include <assert.h>
 #include <stdio.h>
 #include <stdarg.h>
@@ -32,6 +33,7 @@
 #include "string_util.h"
 #include "file_util.h"
 #include "threader.h"
+#include "fopen.h"
 
 FILE *alt_stdout=NULL;
 
@@ -265,6 +267,14 @@ unsigned int StreamCopy(FILE *stream_in, FILE *stream_out, int flag){
   return nchars;
 }
 
+/* ------------------ FileErase ------------------------ */
+
+void FileErase(char *file){
+  if(FileExistsOrig(file) == 1){
+    UNLINK(file);
+  }
+}
+
 /* ------------------ FileCopy ------------------------ */
 
 void FileCopy(char *file_in, char *file_out){
@@ -482,27 +492,41 @@ FILE_SIZE GetFileSizeSMV(const char *filename){
 /* ------------------ fread_mt ------------------------ */
 
 void *fread_mt(void *mtfileinfo){
-  FILE_SIZE first, last, length, file_size;
+  FILE_SIZE file_beg, buffer_beg, file_end, buffer_size, file_size;
   FILE *stream;
   int i, nthreads;
-  char *file, *buffer;
+  char *file;
+  unsigned char *buffer;
   mtfiledata *mtf;
+  FILE_SIZE file_offset, nchars;
 
   mtf = (mtfiledata *)mtfileinfo;
 
-  i         = mtf->i;
-  nthreads  = mtf->nthreads;
-  file      = mtf->file;
-  buffer    = mtf->buffer;
-  file_size = mtf->file_size;
+  i              = mtf->i;
+  nthreads       = mtf->nthreads;
+  file           = mtf->file;
+  buffer         = mtf->buffer;
+  file_size      = mtf->file_size;
+  file_offset    = mtf->file_offset;
+  nchars         = mtf->nchars;
   
-  first = i*file_size/nthreads;
-  last  = first + file_size/nthreads - 1;
-  if(last > file_size - 1)last = file_size - 1;
-  length = last + 1 - first;
+  buffer_size = nchars/nthreads;
+  buffer_beg  = i*buffer_size;
+  file_beg    = file_offset + buffer_beg;
+  file_end    = file_beg + buffer_size - 1;
+  if(i == nthreads - 1||file_end>file_size-1){
+    file_end    = file_size - 1;
+    buffer_size = file_end + 1 - file_beg;
+  }
   stream = fopen(file, "rb");
-  FSEEK(stream, first, SEEK_SET);
-  mtf->chars_read = fread(buffer + first, 1, length, stream);
+  if(stream == NULL){
+#ifdef pp_THREAD
+    if(nthreads>1)pthread_exit(NULL);
+#endif
+    return NULL;
+  }
+  FSEEK(stream, file_beg, SEEK_SET);
+  mtf->chars_read = fread(buffer + buffer_beg, 1, buffer_size, stream);
   fclose(stream);
 
 #ifdef pp_THREAD
@@ -513,36 +537,60 @@ void *fread_mt(void *mtfileinfo){
 
 /* ------------------ SetMtFileInfo ------------------------ */
 
-mtfiledata *SetMtFileInfo(char *file, char *buffer, int nthreads){
+mtfiledata *SetMtFileInfo(char *file, unsigned char *buffer, FILE_SIZE file_offset, FILE_SIZE nchars, int nthreads){
   mtfiledata *mtfileinfo;
   int i;
-  FILE_SIZE file_size;
 
   NewMemory((void **)&mtfileinfo,nthreads*sizeof(mtfiledata));
-  file_size = GetFileSizeSMV(file);
 
   for(i=0;i<nthreads;i++){
     mtfiledata *mti;
 
     mti = mtfileinfo + i;
-    mti->i          = i;
-    mti->nthreads   = nthreads;
-    mti->file       = file;
-    mti->buffer     = buffer;
-    mti->file_size  = file_size;
-    mti->chars_read = 0;
+    mti->i               = i;
+    mti->nthreads        = nthreads;
+    mti->file            = file;
+    mti->buffer          = buffer;
+    mti->file_size       = nchars;
+    mti->file_offset     = file_offset;
+    mti->nchars          = nchars;
+    mti->chars_read      = 0;
   }
   return mtfileinfo;
 }
-    //chars_in=fread(buffer,1,FILE_BUFFER,stream_in1);
+
+/* ------------------ MakeFile ------------------------ */
+
+#define BUFFERSIZE 1000000
+int MakeFile(char *file, int size){
+  unsigned char *buffer;
+  FILE *stream;
+  int i;
+
+  if(file == NULL || strlen(file) == 0)return 0;
+  stream = fopen(file, "w");
+  if(stream == NULL)return 0;
+  
+  NewMemory(( void ** )&buffer, BUFFERSIZE);
+  for(i = 0; i < BUFFERSIZE; i++){
+    buffer[i] = i % 255;
+  }
+  for(i = 0; i < size; i++){
+    fwrite(buffer, 1, BUFFERSIZE, stream);
+  }
+  fclose(stream);
+
+  FREEMEMORY(buffer);
+  return 1;
+}
 
 /* ------------------ fread_p ------------------------ */
 
-FILE_SIZE fread_p(char *file, char *buffer, int nthreads){
+FILE_SIZE fread_p(char *file, unsigned char *buffer, FILE_SIZE offset, FILE_SIZE nchars, int nthreads){
   FILE_SIZE chars_read;
   mtfiledata *mtfileinfo;
 
-  mtfileinfo = SetMtFileInfo(file, buffer, nthreads);
+  mtfileinfo = SetMtFileInfo(file, buffer, offset, nchars, nthreads);
   if(nthreads == 1){
     FILE *stream;
 
@@ -558,7 +606,7 @@ FILE_SIZE fread_p(char *file, char *buffer, int nthreads){
 
     use_read_threads = 1;
     read_threads = THREADinit(&nthreads, &use_read_threads, fread_mt);
-    THREADrun(read_threads, &mtfileinfo);
+    THREADruni(read_threads, (unsigned char *)mtfileinfo, sizeof(mtfiledata));
     THREADcontrol(read_threads, THREAD_JOIN);
     chars_read = 0;
     for(i = 0;i < nthreads;i++){
@@ -582,36 +630,135 @@ FILE_SIZE fread_p(char *file, char *buffer, int nthreads){
   return chars_read;
 }
 
-/* ------------------ THREADreadi ------------------------ */
 
-void THREADreadi(threaderdata *thi, mtfiledata *mtfileinfo){
-#ifdef pp_THREAD
-  if(thi == NULL)return;
-  if(thi->use_threads_ptr != NULL)thi->use_threads = *(thi->use_threads_ptr);
-  if(thi->n_threads_ptr != NULL){
-    thi->n_threads = *(thi->n_threads_ptr);
-    if(thi->n_threads > MAX_THREADS)thi->n_threads = MAX_THREADS;
+/* ------------------ PrintTime ------------------------ */
+
+void PrintTime(const char *filepath, int line, float *timer, const char *label, int stop_flag){
+  char *file;
+
+  if(show_timings == 0)return;
+  file = strrchr(filepath, '\\');
+  if(file == NULL)file = strrchr(filepath, '/');
+  if(file == NULL){
+    file = (char *)filepath;
   }
-  int i;
-
-  for(i = 0; i < thi->n_threads; i++){
-    mtfiledata *mti;
-
-    mti = mtfileinfo + i;
-    if(thi->use_threads == 1){
-      pthread_create(thi->thread_ids + i, NULL, thi->run, (void *)mti);
-    }
-    else{
-      thi->run((void *)mti);
-    }
+  else{
+    file++;
   }
-#else
-//  args[0] = 1;
-//  args[1] = -1;
-//  thi->run(args);
-#endif
+  if(label != NULL){
+    if(stop_flag == 1)STOP_TIMER(*timer);
+    if(*timer > 0.1)printf("%s/%i/%s %.1f s\n", file, line, label, *timer);
+  }
+  START_TIMER(*timer);
 }
 
+/* ------------------ InitBufferData ------------------------ */
+
+bufferdata *InitBufferData(char *file){
+  bufferdata *buffinfo = NULL;
+  unsigned char *buffer = NULL;
+  int nbuffer = 0;
+
+  NewMemory((void **)&buffinfo, sizeof(bufferdata));
+  buffinfo->file = file;
+  nbuffer = GetFileSizeSMV(file);
+  NewMemory((void **)&buffer, nbuffer);
+  buffinfo->buffer   = buffer;
+  buffinfo->nbuffer  = nbuffer;
+  buffinfo->nfile    = 0;
+  return buffinfo;
+}
+
+/* ------------------ FreeBufferInfo ------------------------ */
+
+void FreeBufferInfo(bufferdata *bufferinfo){
+  if(bufferinfo == NULL)return;
+  FREEMEMORY(bufferinfo->buffer);
+  FREEMEMORY(bufferinfo);
+}
+
+/* ------------------ File2Buffer ------------------------ */
+
+bufferdata *File2Buffer(char *file, bufferdata *bufferinfo,  int *nreadptr){
+  FILE_SIZE nfile, offset_buffer = 0, offset_file = 0, nread_actual, nread_try;
+
+  *nreadptr = 0;
+  if(file==NULL || strlen(file)==0 || FileExistsOrig(file) == 0)return NULL;
+
+  INIT_PRINT_TIMER(timer_file2buffer);
+  if(bufferinfo == NULL){ // read entire file
+    bufferinfo     = InitBufferData(file);
+    offset_file    = 0;
+    offset_buffer  = 0;
+    nread_try      = bufferinfo->nbuffer;
+  }
+  else{ // read in part of file that was not read in previously
+    unsigned char *buffer;
+
+    buffer  = bufferinfo->buffer;
+    nfile   = GetFileSizeSMV(file);
+    if(nfile == 0){
+      FreeBufferInfo(bufferinfo);
+      *nreadptr = 0;
+      return NULL;
+    }
+    if(buffer!=NULL&&nfile == bufferinfo->nfile){ // file hasn't changed so nothing more to read in
+      PRINT_TIMER(timer_file2buffer, "File2Buffer");
+      *nreadptr = 0;
+      return bufferinfo;
+    }
+    if(buffer == NULL){
+      NewMemory((void **)&buffer, nfile*sizeof(unsigned char));
+      offset_file   = 0;
+      offset_buffer = 0;
+    }
+    else{
+      ResizeMemory((void **)&buffer, nfile);
+      offset_file   = bufferinfo->nfile;
+      offset_buffer = bufferinfo->nfile;
+    }
+    bufferinfo->buffer  = buffer;
+    nread_try           = nfile - offset_file;
+    bufferinfo->nbuffer = nfile;
+  }
+//  nread = fread_p(file, buffer, offset, delta, nthreads);
+
+//#define XXX
+#ifdef XXX
+  FILE *stream;
+#ifdef WIN32
+  stream = _fsopen(file, "rb", _SH_DENYNO);
+#ifdef pp_OPEN_TEST
+  if(stream != NULL){
+    AddOpenFile(file, stream, __FILE__, __LINE__);
+    open_files++;
+  }
+#endif
+#else
+  stream = fopen(file, "rb");
+#endif
+#endif
+
+#ifndef XXX
+  FILE *stream;
+  stream = fopen(file, "rb");
+#endif
+  if(stream == NULL){
+    FreeBufferInfo(bufferinfo);
+    return NULL;
+  }
+  if(offset_file!=0)fseek(stream, offset_file, SEEK_SET);
+  nread_actual = fread(bufferinfo->buffer+offset_buffer, 1, nread_try, stream);
+  fclose(stream);
+  if(nread_actual != nread_try){
+    FreeBufferInfo(bufferinfo);
+    return NULL;
+  }
+  bufferinfo->nfile = nfile;
+  PRINT_TIMER(timer_file2buffer, "File2Buffer");
+  *nreadptr = nread_actual;
+  return bufferinfo;
+}
 
 /* ------------------ FileExistsOrig ------------------------ */
 
@@ -686,6 +833,12 @@ FILE *fopen_indir(char *dir, char *file, char *mode){
   if(dir==NULL||strlen(dir)==0){
 #ifdef WIN32
     stream = _fsopen(file, mode, _SH_DENYNO);
+#ifdef pp_OPEN_TEST
+    if(stream != NULL){
+      AddOpenFile(file, stream, __FILE__, __LINE__);
+      open_files++;
+    }
+#endif
 #else
     stream = fopen(file,mode);
 #endif
@@ -701,6 +854,12 @@ FILE *fopen_indir(char *dir, char *file, char *mode){
     strcat(filebuffer,file);
 #ifdef WIN32
     stream = _fsopen(filebuffer, mode, _SH_DENYNO);
+#ifdef pp_OPEN_TEST
+    if(stream != NULL){
+      AddOpenFile(filebuffer, stream, __FILE__, __LINE__);
+      open_files++;
+    }
+#endif
 #else
     stream = fopen(filebuffer, mode);
 #endif
@@ -717,6 +876,12 @@ FILE *fopen_2dir(char *file, char *mode, char *scratch_dir){
   if(file == NULL)return NULL;
 #ifdef WIN32
   stream = _fsopen(file,mode,_SH_DENYNO);
+#ifdef pp_OPEN_TEST
+  if(stream != NULL){
+    AddOpenFile(file, stream, __FILE__, __LINE__);
+    open_files++;
+  }
+#endif
 #else
   stream = fopen(file,mode);
 #endif
@@ -912,7 +1077,7 @@ char *GetProgDir(char *progname, char **svpath){
   if(lastsep==NULL){
     char *dir;
 
-    dir = Which(progname);
+    dir = Which(progname, NULL);
     if(dir==NULL){
       NewMemory((void **)&progpath,(unsigned int)3);
       strcpy(progpath,".");
@@ -1055,7 +1220,7 @@ void GetProgFullPath(char *progexe, int maxlen_progexe){
   if(end == NULL){
     char *progpath;
 
-    progpath = Which(progexe);
+    progpath = Which(progexe, NULL);
     if(progpath != NULL){
       char copy[1024];
 
@@ -1079,7 +1244,7 @@ void GetProgFullPath(char *progexe, int maxlen_progexe){
 
 /* ------------------ Which ------------------------ */
 
-char *Which(char *progname){
+char *Which(char *progname, char **fullprognameptr){
 
 // returns the PATH directory containing the file progname
 
@@ -1109,7 +1274,7 @@ char *Which(char *progname){
     const char *ext;
 
     ext = prognamecopy+strlen(progname)-4;
-    if(strlen(progname)<=4||STRCMP(ext,".exe")!=0)strcat(prognamecopy, ".exe");
+    if(strlen(progname)<=4|| (STRCMP(ext,".exe")!=0 && STRCMP(ext, ".bat") != 0))strcat(prognamecopy, ".exe");
   }
 #endif
 
@@ -1125,7 +1290,12 @@ char *Which(char *progname){
       strcpy(pathentry,dir);
       strcat(pathentry,dirsep);
       FREEMEMORY(pathlistcopy);
-      FREEMEMORY(fullprogname);
+      if(fullprognameptr != NULL){
+        *fullprognameptr = fullprogname;
+      }
+      else{
+        FREEMEMORY(fullprogname);
+      }
       FREEMEMORY(prognamecopy);
       return pathentry;
     }

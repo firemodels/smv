@@ -86,7 +86,7 @@ class bounds_dialog{
   GLUI_Checkbox    *CHECKBOX_set_chopmin, *CHECKBOX_set_chopmax, *CHECKBOX_cache;
   GLUI_Checkbox    *CHECKBOX_research_mode;
   GLUI_Checkbox    *CHECKBOX_hist_show_labels;
-  GLUI_Checkbox    *CHECKBOX_chop_hide = NULL;
+  GLUI_Checkbox    *CHECKBOX_chop_hide;
   GLUI_RadioGroup  *RADIO_set_valtype,  *RADIO_set_valmin, *RADIO_set_valmax;
   GLUI_RadioButton *RADIO_button_loaded_min, *RADIO_button_loaded_max;
   GLUI_RadioButton *RADIO_button_all_min, *RADIO_button_all_max;
@@ -439,6 +439,7 @@ void bounds_dialog::setup(const char *file_type, GLUI_Rollout * ROLLOUT_dialog, 
     STATIC_chopmin_unit->set_w(10);
     glui_bounds->add_column_to_panel(PANEL_truncate_min, false);
     CHECKBOX_set_chopmin = glui_bounds->add_checkbox_to_panel(PANEL_truncate_min, _("Below"), &(bounds.set_chopmin), BOUND_SETCHOPMIN, Callback);
+    CHECKBOX_chop_hide = NULL;
     if(strcmp(file_type, "slice")==0){
       CHECKBOX_chop_hide = glui_bounds->add_checkbox_to_panel(ROLLOUT_truncate, "hide triangles with truncated values", &(bounds.chop_hide), BOUND_CHOP_HIDE, Callback);
     }
@@ -1947,8 +1948,8 @@ extern "C" void GLUIHVACSliceBoundsCPP_CB(int var){
       SetLoadedSliceBounds(NULL, 0);
       THREADcontrol(compress_threads, THREAD_LOCK);
       SetLoadedSliceBounds(NULL, 0);
-      ReloadAllVectorSliceFiles();
-      ReloadAllSliceFiles();
+      ReloadAllVectorSliceFiles(LOAD);
+      ReloadAllSliceFiles(LOAD);
       THREADcontrol(compress_threads, THREAD_UNLOCK);
       GLUIHVACSliceBoundsCPP_CB(BOUND_UPDATE_COLORS);
       break;
@@ -2847,10 +2848,13 @@ GLUI_Panel *PANEL_slice_plot2de = NULL;
 GLUI_Panel *PANEL_slice_plot2df = NULL;
 GLUI_Panel *PANEL_loadbounds = NULL;
 GLUI_Panel *PANEL_intersection_box = NULL;
+GLUI_Panel *PANEL_read_test = NULL;
 
 GLUI_Spinner *SPINNER_partdrawskip = NULL;
 GLUI_Spinner *SPINNER_sliceval_ndigits = NULL;
+#ifndef pp_PARTFRAME
 GLUI_Spinner *SPINNER_n_part_threads = NULL;
+#endif
 GLUI_Spinner *SPINNER_iso_outline_ioffset = NULL;
 GLUI_Spinner *SPINNER_iso_level = NULL;
 GLUI_Spinner *SPINNER_iso_colors[4];
@@ -2862,6 +2866,12 @@ GLUI_Spinner *SPINNER_line_contour_width=NULL;
 GLUI_Spinner *SPINNER_line_contour_min=NULL;
 GLUI_Spinner *SPINNER_line_contour_max=NULL;
 GLUI_Spinner *SPINNER_timebounds=NULL;
+#ifdef pp_FRAME
+GLUI_Spinner *SPINNER_nframe_threads = NULL;
+#endif
+#ifdef pp_FRAME_DEBUG
+GLUI_Spinner *SPINNER_read_buffer_size = NULL;
+#endif
 GLUI_Spinner *SPINNER_tload_begin=NULL;
 GLUI_Spinner *SPINNER_tload_end=NULL;
 GLUI_Spinner *SPINNER_tload_skip=NULL;
@@ -2908,7 +2918,9 @@ GLUI_Checkbox *CHECKBOX_sortslices_debug = NULL;
 GLUI_Checkbox *CHECKBOX_visColorbarHorizontal2 = NULL;
 GLUI_Checkbox *CHECKBOX_visColorbarVertical2 = NULL;
 GLUI_Checkbox *CHECKBOX_show_boundary_outline=NULL;
+#ifndef pp_PARTFRAME
 GLUI_Checkbox *CHECKBOX_use_partload_threads = NULL;
+#endif
 GLUI_Checkbox *CHECKBOX_partfast = NULL;
 GLUI_Checkbox *CHECKBOX_show_slice_shaded = NULL;
 GLUI_Checkbox *CHECKBOX_show_vector_slice = NULL;
@@ -3352,7 +3364,9 @@ extern "C" void GLUISetLabelControls2(){
 
 extern "C" void GLUIUpdatePartFast(void){
   if(CHECKBOX_partfast!=NULL)CHECKBOX_partfast->set_int_val(partfast);
+#ifndef pp_PARTFRAME
   if(CHECKBOX_use_partload_threads!=NULL)CHECKBOX_use_partload_threads->set_int_val(use_partload_threads);
+#endif
   PartBoundCB(PARTFAST);
 }
 
@@ -3934,9 +3948,29 @@ extern "C" void GLUIImmersedBoundCB(int var){
 
 void BoundBoundCB(int var){
   int i;
+#ifdef pp_FRAME
+  char ctime[1024];
+  bufferdata *bufferinfo=NULL;
+  int nread;
+  float read_time;
+#endif
 
   SNIFF_ERRORS("BoundBoundCB: start");
   switch(var){
+#ifdef pp_FRAME
+  case READ_TEST:
+    if(MakeFile(frametest_filename, read_buffer_size) == 1){
+      START_TIMER(read_time);
+      bufferinfo = File2Buffer(frametest_filename, bufferinfo, &nread);
+      STOP_TIMER(read_time);
+      sprintf(ctime, "%f", read_time);
+      TrimZeros(ctime);
+      printf("threads: %i time (s): %s\n", nframe_threads, ctime);
+      FreeBufferInfo(bufferinfo);
+      FileErase(frametest_filename);
+    }
+    break;
+#endif
   case SHOW_BOUNDARY_OUTLINE:
     if(ngeom_data==0)break;
     if(show_boundary_outline==1&&boundary_edgetype==OUTLINE_HIDDEN)boundary_edgetype = OUTLINE_POLYGON;
@@ -4065,7 +4099,7 @@ void BoundBoundCB(int var){
     if(compress_threads == NULL){
       compress_threads = THREADinit(&n_compress_threads, &use_compress_threads, Compress);
     }
-    THREADrun(compress_threads, NULL);
+    THREADrun(compress_threads);
     break;
   case COMPRESS_AUTOLOADED:
     updatemenu = 1;
@@ -5120,6 +5154,7 @@ extern "C" void GLUIBoundsSetup(int main_window){
 
     PANEL_partread=glui_bounds->add_panel_to_panel(ROLLOUT_particle_settings,_("Particle loading"));
     CHECKBOX_partfast = glui_bounds->add_checkbox_to_panel(PANEL_partread, _("Fast loading"), &partfast, PARTFAST, PartBoundCB);
+#ifndef pp_PARTFRAME
     CHECKBOX_use_partload_threads = glui_bounds->add_checkbox_to_panel(PANEL_partread, _("Parallel loading"), &use_partload_threads);
     SPINNER_n_part_threads = glui_bounds->add_spinner_to_panel(PANEL_partread, _("Files loaded at once:"), GLUI_SPINNER_INT, &n_partload_threads);
     if(npartinfo>1){
@@ -5128,6 +5163,7 @@ extern "C" void GLUIBoundsSetup(int main_window){
     else{
       SPINNER_n_part_threads->set_int_limits(1,1);
     }
+#endif
     SPINNER_partdrawskip = glui_bounds->add_spinner_to_panel(PANEL_partread, _("Draw skip:"), GLUI_SPINNER_INT, &partdrawskip, PARTSKIP, PartBoundCB);
     PartBoundCB(PARTFAST);
     PartBoundCB(PARTSKIP);
@@ -5460,6 +5496,19 @@ hvacductboundsCPP.setup("hvac", ROLLOUT_hvacduct, hvacductbounds_cpp, nhvacductb
   INSERT_ROLLOUT(ROLLOUT_time, glui_bounds);
   ADDPROCINFO(fileprocinfo, nfileprocinfo, ROLLOUT_time, TIME_ROLLOUT, glui_bounds);
 
+#ifdef pp_FRAME
+  SPINNER_nframe_threads = glui_bounds->add_spinner_to_panel(ROLLOUT_time, _("read threads:"), GLUI_SPINNER_INT, &nframe_threads);
+  SPINNER_nframe_threads->set_int_limits(1, MAX_THREADS);
+
+#ifdef pp_FRAME_DEBUG
+  PANEL_read_test = glui_bounds->add_panel_to_panel(ROLLOUT_time, "Timing test", true);
+  SPINNER_read_buffer_size = glui_bounds->add_spinner_to_panel(PANEL_read_test, _("Buffer size (MB):"), GLUI_SPINNER_INT, &read_buffer_size);
+  SPINNER_read_buffer_size->set_int_limits(1, 1000);
+  glui_bounds->add_button_to_panel(PANEL_read_test, _("Test"), READ_TEST, BoundBoundCB);
+#endif
+
+#endif
+
   PANEL_loadbounds = glui_bounds->add_panel_to_panel(ROLLOUT_time,"", GLUI_PANEL_NONE);
 
   ROLLOUT_autoload = glui_bounds->add_rollout_to_panel(PANEL_loadbounds,_("Auto load"), false, LOAD_AUTO_ROLLOUT, LoadRolloutCB);
@@ -5501,9 +5550,6 @@ hvacductboundsCPP.setup("hvac", ROLLOUT_hvacduct, hvacductbounds_cpp, nhvacductb
   SPINNER_tload_skip->set_int_limits(0, 1000);
 
   glui_bounds->add_button_to_panel(ROLLOUT_time2, _("Reload all data"), RELOAD_ALL_DATA, TimeBoundCB);
-#ifdef pp_LOAD_INC
-  glui_bounds->add_button_to_panel(ROLLOUT_time2, _("Reload new data"), RELOAD_INCREMENTAL_DATA, TimeBoundCB);
-#endif
 
   TimeBoundCB(TBOUNDS_USE);
   TimeBoundCB(TBOUNDS);
@@ -6314,6 +6360,7 @@ void PartBoundCB(int var){
     break;
   case TRACERS:
   case PARTFAST:
+#ifndef pp_PARTFRAME
     if(npartinfo<=1){
       CHECKBOX_use_partload_threads->disable();
       SPINNER_n_part_threads->disable();
@@ -6324,6 +6371,7 @@ void PartBoundCB(int var){
       CHECKBOX_use_partload_threads->set_int_val(use_partload_threads);
     }
     updatemenu=1;
+#endif
     break;
   case CHOPUPDATE:
     UpdateChopColors();
@@ -6795,8 +6843,8 @@ extern "C" void GLUISliceBoundCB(int var){
       GLUISliceBoundCB(SET_GLOBAL_BOUNDS);
     }
     SetLoadedSliceBounds(NULL, 0);
-    ReloadAllVectorSliceFiles();
-    ReloadAllSliceFiles();
+    ReloadAllVectorSliceFiles(RELOAD);
+    ReloadAllSliceFiles(RELOAD);
     GLUIHVACSliceBoundsCPP_CB(BOUND_UPDATE_COLORS);
     break;
   default:

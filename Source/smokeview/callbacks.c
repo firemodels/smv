@@ -10,6 +10,7 @@
 #include "smokeviewvars.h"
 #include "IOvolsmoke.h"
 #include "glui_motion.h"
+#include "fopen.h"
 
 #ifdef pp_LUA
 #include "lua_api.h"
@@ -2079,6 +2080,26 @@ void Keyboard(unsigned char key, int flag){
         }
       }
       break;
+    case 'l':
+    case 'L':
+#ifdef pp_MEMDEBUG
+      printf("memory blocks: %i total size: %i\n", COUNTMEMORYBLOCKS(0), (int)GETTOTALMEMORY);
+#endif
+#ifdef pp_OPEN_TEST
+      printf("open files: %i\n", open_files);
+      if(nopeninfo > 0){
+        for(i = 0; i < nopeninfo; i++){
+          opendata *oi;
+
+          oi = openinfo + i;
+          printf("file: %s\n",   oi->file);
+          printf("source: %s\n", oi->source);
+          printf("line: %i\n\n", oi->line);
+        }
+      }
+      printf("nopeninfo: %i\n", nopeninfo);
+#endif
+      break;
     case 'M':
       clip_commandline = 1-clip_commandline;
       if(clip_commandline==1){
@@ -2537,7 +2558,7 @@ void Keyboard(unsigned char key, int flag){
           skip_slice_in_embedded_mesh = 1 - skip_slice_in_embedded_mesh;
           break;
         default:
-          if(key2=='U'){
+          if(key2=='u'){
             ReloadMenu(RELOAD_INCREMENTAL_NOW);
           }
           else{
@@ -2811,6 +2832,7 @@ void Keyboard(unsigned char key, int flag){
     case '/':
       updatemenu=1;
       partfast = 1 - partfast;
+#ifndef pp_PARTFRAME
       if(current_script_command==NULL){
         if(npartinfo>1){
           use_partload_threads = partfast;
@@ -2819,6 +2841,7 @@ void Keyboard(unsigned char key, int flag){
           use_partload_threads = 0;
         }
       }
+#endif
       if(use_partload_threads==1){
         if(n_partload_threads > 1)printf("parallel particle loading: on(%i threads)\n", n_partload_threads);
         if(n_partload_threads == 1)printf("parallel particle loading: on(1 thread)\n");
@@ -3583,7 +3606,7 @@ void IdleCB(void){
   CheckMemory;
   if(use_graphics==1)SetMainWindow();
   UpdateShow();
-  START_TICKS(thistime);
+  thistime     = glutGet(GLUT_ELAPSED_TIME);
   thisinterval = thistime - lasttime;
   frame_count++;
 

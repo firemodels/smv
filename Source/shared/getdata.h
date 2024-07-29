@@ -32,7 +32,6 @@ void getpartdataframe(FILE *file, int nclasses, int *nquantities, int *npoints,
 void getzonedata(const char *zonefilename, int *nzonet, int *nrooms,
                  int *nfires, float *zonet, float *zoneqfire, float *zonepr,
                  float *zoneylay, float *zonetl, float *zonetu, int *error);
-int skipdata(FILE *file, int skip);
 void getpatchdata(FILE *file, int npatch, int *pi1, int *pi2, int *pj1,
                   int *pj2, int *pk1, int *pk2, float *patchtime, float *pqq,
                   int *npqq, int *file_size, int *error);

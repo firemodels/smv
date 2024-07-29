@@ -327,7 +327,17 @@ void GetGlobalPatchBounds(int flag, int set_flag){
     }
     if(force_bound_update == 1)doit = 1;
     if(doit==1){
+#ifdef pp_BOUNDFRAME
+      if(patchi->frameinfo != NULL){
+        valmin = patchi->frameinfo->valmin;
+        valmax = patchi->frameinfo->valmax;
+      }
+      else{
+        BoundsGet(patchi->reg_file, patchglobalboundsinfo, sorted_patch_filenames, npatchinfo, 1, &valmin, &valmax);
+      }
+#else
       BoundsGet(patchi->reg_file, patchglobalboundsinfo, sorted_patch_filenames, npatchinfo, 1, &valmin, &valmax);
+#endif
       if(valmin > valmax)continue;
       patchi->valmin_patch = valmin;
       patchi->valmax_patch = valmax;
@@ -1124,10 +1134,23 @@ void BoundsUpdateDoit(int file_type){
         }
       }
       else{
+#ifdef pp_SLICEFRAME
+        int itime;
+        for(itime=0;itime<slicei->ntimes;itime++){
+          vals = (float *)FRAMEGetFramePtr(slicei->frameinfo, slicei->itime);
+          if(vals != NULL){
+            for(j = 0;j < slicei->ntimes * slicei->nsliceijk;j++){
+              valmin = MIN(valmin, vals[j]);
+              valmax = MAX(valmax, vals[j]);
+            }
+          }
+        }
+#else
         for(j = 0;j < slicei->ntimes * slicei->nsliceijk;j++){
           valmin = MIN(valmin, vals[j]);
           valmax = MAX(valmax, vals[j]);
         }
+#endif
       }
       fi->defined = 1;
     }
@@ -1739,6 +1762,7 @@ int ReadPartBounds(partdata *parti,int read_bounds_arg){
       globalmax_part[j] = -1000000000.0;
     }
   }
+#ifndef pp_PARTFRAME
 
   // make sure a size file exists
 
@@ -1752,6 +1776,7 @@ int ReadPartBounds(partdata *parti,int read_bounds_arg){
     fclose(stream);
     stream = NULL;
   }
+#endif
 
   // make sure a bound file exists
 

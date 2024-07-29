@@ -4,6 +4,9 @@
 #include "gd.h"
 #include "options.h"
 #include "string_util.h"
+#ifdef pp_ISOFRAME
+#include "IOframe.h"
+#endif
 
 #include "shared_structures.h"
 
@@ -110,6 +113,9 @@ typedef struct _geomdata {
   geomobjdata *geomobjinfo;
   int *geomobj_offsets;
   int ngeomobj_offsets;
+#ifdef pp_ISOFRAME
+  framedata *frameinfo;
+#endif
 } geomdata;
 
 void InitGeom(geomdata *geomi, int geomtype, int fdsblock,

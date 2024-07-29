@@ -13,6 +13,7 @@
 #include "datadefs.h"
 #include "getdata.h"
 #include "string_util.h"
+#include "file_util.h"
 #include <ctype.h>
 #include <errno.h>
 #ifdef __STDC_VERSION__
@@ -31,14 +32,24 @@ _Static_assert(sizeof(float) == 4, "getdata.c assumes that float is 4 bytes");
 #endif
 #endif
 
-//  ------------------ getzonesize ------------------------
+/* ------------------ FOPEN  ------------------------ */
 
 #ifdef WIN32
-FILE *FOPEN(const char *file, const char *mode) {
-  return _fsopen(file, mode, _SH_DENYNO);
+FILE* FOPEN(const char* file, const char* mode) {
+  FILE* stream;
+  stream = _fsopen(file, mode, _SH_DENYNO);
+#ifdef pp_OPEN_TEST
+  if (stream != NULL) {
+    AddOpenFile(file, stream, __FILE__, __LINE__);
+    open_files++;
+  }
+#endif
+  return stream;
 }
 #else
-FILE *FOPEN(const char *file, const char *mode) { return fopen(file, mode); }
+FILE* FOPEN(const char* file, const char* mode) {
+  return fopen(file, mode);
+}
 #endif
 
 //  ------------------ fortread ------------------------
@@ -646,10 +657,6 @@ void getzonedata(const char *zonefilename, int *nzonet, int *nrooms,
   return;
 }
 
-// !  ------------------ skipdata ------------------------
-
-int skipdata(FILE *file, int skip) { return fortseek(file, 1, skip, SEEK_CUR); }
-
 // !  ------------------ getpatchdata ------------------------
 // TODO: distinguish between more error conditions
 void getpatchdata(FILE *file, int npatch, int *pi1, int *pi2, int *pj1,
@@ -706,7 +713,7 @@ void getdata1(FILE *file, int *ipart, int *error) {
   if (*error != 0) return;
 
   // Skip over irrelevant data.
-  *error = fortseek(file, sizeof(float), ibar * jbar * kbar, SEEK_CUR);
+  *error = fseek(file, 4+sizeof(float)*ibar*jbar*kbar+4, SEEK_CUR);
   if (*error != 0) return;
 
   *error = fortread(&nb1, sizeof(nb1), 1, file);

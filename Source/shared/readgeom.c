@@ -1,16 +1,16 @@
 #include "options.h"
-
 #include "MALLOCC.h"
-#include "gd.h"
 #include "string_util.h"
-
-#include "datadefs.h"
-#include "histogram.h"
-#include "isodefs.h"
-#include "readgeom.h"
-#include "smokeviewdefs.h"
+#include "gd.h"
 #include <math.h>
+
 #include <string.h>
+#include "smokeviewdefs.h"
+#include "isodefs.h"
+#include "histogram.h"
+#include "datadefs.h"
+#include "readgeom.h"
+#include "stdio_m.h"
 
 // !  ------------------ Dist ------------------------
 
@@ -19,48 +19,6 @@ float Dist(float v1[3], float v2[3]) {
   float dy = v1[1] - v2[1];
   float dz = v1[2] - v2[2];
   return sqrt(dx * dx + dy * dy + dz * dz);
-}
-
-/* ------------------ Normalize ------------------------ */
-
-void Normalize(float *xyz, int n) {
-  float norm, norm2;
-  int i;
-
-  norm2 = 0.0;
-
-  for (i = 0; i < n; i++) {
-    norm2 += xyz[i] * xyz[i];
-  }
-  norm = sqrt(norm2);
-  if (norm < 0.00001) {
-    for (i = 0; i < n - 1; i++) {
-      xyz[i] = 0.0;
-    }
-    xyz[n - 1] = 1.0;
-  }
-  else {
-    for (i = 0; i < n; i++) {
-      xyz[i] /= norm;
-    }
-  }
-}
-
-/* ----------------------- Dist2Plane ------------------------ */
-
-float Dist2Plane(float x, float y, float z, float xyzp[3], float xyzpn[3]) {
-  float return_val;
-  float xyz[3];
-  int i;
-
-  xyz[0] = x;
-  xyz[1] = y;
-  xyz[2] = z;
-  return_val = 0.0;
-  for (i = 0; i < 3; i++) {
-    return_val += (xyz[i] - xyzp[i]) * xyzpn[i];
-  }
-  return return_val;
 }
 
 /* ------------------ InitGeom ------------------------ */
@@ -93,6 +51,9 @@ void InitGeom(geomdata *geomi, int geomtype, int fdsblock,
   geomi->have_cface_normals = have_cface_normals_arg;
   geomi->ncface_normals = 0;
   geomi->cface_normals = NULL;
+#ifdef pp_ISOFRAME
+  geomi->frameinfo = NULL;
+#endif
 }
 
 /* ------------------ RotateU2V ------------------------ */
@@ -824,14 +785,13 @@ void ReadGeomFile2(geomdata *geomi) {
 
 /* ------------------ ReadGeomHeader0 ------------------------ */
 
-void ReadGeomHeader0(geomdata *geomi, int *geom_frame_index,
-                     int *ntimes_local) {
-  FILE *stream;
-  int one = 0;
+void ReadGeomHeader0(geomdata *geomi, int *geom_frame_index, int *ntimes_local){
+  FILE_m *stream;
+  int count_read;
+  int one=0;
   int nvertfaces[2];
   float times_local[2];
   int nt;
-  int returncode = 0;
   int version;
   int nfloat_vals, nint_vals;
   int *int_vals;
@@ -860,75 +820,73 @@ void ReadGeomHeader0(geomdata *geomi, int *geom_frame_index,
   // surf_1, ..., surf_ntris      (each tri_i is a triple I,J,K triangle int
   // indices )
 
-  stream = fopen(geomi->file, "rb");
-  if (stream == NULL) {
-    *ntimes_local = -1;
+  stream = fopen_b(geomi->file, NULL, 0, "rb");
+  if(stream==NULL){
+    *ntimes_local=-1;
     return;
   }
-  FSEEK(stream, 4, SEEK_CUR);
-  fread(&one, 4, 1, stream);
-  FSEEK(stream, 4, SEEK_CUR);
-  FORTREAD(&version, 4, 1, stream);
+  FORTREAD_m(&one,4,1,stream);
+  FORTREAD_m(&version, 4, 1, stream);
 
   // floating point header
 
-  FORTREAD(&nfloat_vals, 4, 1, stream);
-  if (nfloat_vals > 0) {
-    NewMemoryMemID((void **)&float_vals, nfloat_vals * sizeof(float),
-                   geomi->memory_id);
-    FORTREAD(float_vals, 4, nfloat_vals, stream);
-    geomi->float_vals = float_vals;
-    geomi->nfloat_vals = nfloat_vals;
+  FORTREAD_m(&nfloat_vals, 4, 1, stream);
+  if(nfloat_vals>0){
+    NewMemoryMemID((void **)&float_vals,nfloat_vals*sizeof(float),geomi->memory_id);
+    FORTREAD_m(float_vals, 4, nfloat_vals, stream);
+    geomi->float_vals=float_vals;
+    geomi->nfloat_vals=nfloat_vals;
   }
 
   // integer header
 
-  FORTREAD(&nint_vals, 4, 1, stream);
-  if (nint_vals > 0) {
-    NewMemoryMemID((void **)&int_vals, nint_vals * sizeof(float),
-                   geomi->memory_id);
-    FORTREAD(int_vals, 4, nint_vals, stream);
-    geomi->int_vals = int_vals;
-    geomi->nint_vals = nint_vals;
+  FORTREAD_m(&nint_vals, 4, 1, stream);
+  if(nint_vals>0){
+    NewMemoryMemID((void **)&int_vals,nint_vals*sizeof(float),geomi->memory_id);
+    FORTREAD_m(int_vals, 4, nint_vals, stream);
+    geomi->int_vals=int_vals;
+    geomi->nint_vals=nint_vals;
   }
 
   // static verts
 
-  FORTREAD(nvertfaces, 4, 2, stream);
-  nverts = nvertfaces[0];
-  ntris = nvertfaces[1];
+  FORTREAD_m(nvertfaces, 4, 2, stream);
+  nverts=nvertfaces[0];
+  ntris=nvertfaces[1];
 
   // static vertices
 
-  if (nverts > 0) {
-    FSEEK(stream, 4 + 3 * nverts * 4 + 4, SEEK_CUR);
+  if(nverts>0){
+    fseek_m(stream,4+3*nverts*4+4,SEEK_CUR);
   }
 
   // static triangles
 
-  if (ntris > 0) {
-    FSEEK(stream, 4 + 3 * ntris * 4 + 4, SEEK_CUR);
-    FSEEK(stream, 4 + ntris * 4 + 4, SEEK_CUR);
+  if(ntris>0){
+    fseek_m(stream,4+3*ntris*4+4,SEEK_CUR);
+    fseek_m(stream,4+ntris*4+4,SEEK_CUR);
   }
 
-  nt = 0;
-  for (;;) {
-    FORTREADBR(times_local, 2, stream);
-    FORTREADBR(nvertfaces, 2, stream);
-    nverts = nvertfaces[0];
-    ntris = nvertfaces[1];
+  nt=0;
+  for(;;){
+    FORTREAD_m(times_local, 4, 2, stream);
+    if(count_read!=2)break;
+    FORTREAD_m(nvertfaces, 4, 2, stream);
+    if(count_read!=2)break;
+    nverts=nvertfaces[0];
+    ntris=nvertfaces[1];
 
     // dynamic vertices
 
-    if (nverts > 0) {
-      FSEEK(stream, 4 + 3 * nverts * 4 + 4, SEEK_CUR);
+    if(nverts>0){
+      fseek_m(stream,4+3*nverts*4+4,SEEK_CUR);
     }
 
     // dynamic faces
 
-    if (ntris > 0) {
-      FSEEK(stream, 4 + 3 * ntris * 4 + 4, SEEK_CUR);
-      FSEEK(stream, 4 + ntris * 4 + 4, SEEK_CUR);
+    if(ntris>0){
+      fseek_m(stream,4+3*ntris*4+4,SEEK_CUR);
+      fseek_m(stream,4+ntris*4+4,SEEK_CUR);
     }
 
     if (geom_frame_index == NULL) {
@@ -938,8 +896,8 @@ void ReadGeomHeader0(geomdata *geomi, int *geom_frame_index,
     }
     nt++;
   }
-  *ntimes_local = nt;
-  fclose(stream);
+  *ntimes_local=nt;
+  fclose_b(stream);
 }
 
 /* ------------------ ReadGeomHeader2 ------------------------ */
@@ -1036,22 +994,23 @@ void ReadGeomHeader2(geomdata *geomi, int *ntimes_local) {
 
 /* ------------------ ReadGeomHeader ------------------------ */
 
-void ReadGeomHeader(geomdata *geomi, int *geom_frame_index, int *ntimes_local) {
-  FILE *stream;
-  int version;
-  int returncode = 0;
-  int one = 0;
+void ReadGeomHeader(geomdata *geomi, int *geom_frame_index, int *ntimes_local){
+  FILE_m *stream;
+  int version, one=0, count_read;
 
-  stream = fopen(geomi->file, "rb");
-  if (stream == NULL) {
+  stream = fopen_b(geomi->file, NULL, 0, "rb");
+  if(stream==NULL){
+    *ntimes_local=-1;
+    return;
+  }
+  FORTREAD_m(&one,4,1,stream);
+  FORTREAD_m(&version, 4, 1, stream);
+  if(count_read != 1){
+    fclose_b(stream);
     *ntimes_local = -1;
     return;
   }
-  FSEEK(stream, 4, SEEK_CUR);
-  fread(&one, 4, 1, stream);
-  FSEEK(stream, 4, SEEK_CUR);
-  FORTREAD(&version, 4, 1, stream);
-  fclose(stream);
+  fclose_b(stream);
 
   if (version <= 1) {
     ReadGeomHeader0(geomi, geom_frame_index, ntimes_local);

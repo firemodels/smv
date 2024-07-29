@@ -31,9 +31,15 @@
 #ifdef pp_SMOKEDRAW_SPEEDUP
 SVEXTERN int SVDECL(n_mergesmoke_threads, 4), SVDECL(use_mergesmoke_threads, 1);
 SVEXTERN threaderdata SVDECL(*mergesmoke_threads, NULL);
-SVEXTERN int merge_args[2 * MAX_THREADS];
+SVEXTERN smokethreaddata smokethreadinfo[MAX_THREADS];
 SVEXTERN int SVDECL(n_mergesmoke_glui_threads, 4), SVDECL(use_mergesmoke_glui_threads, 1);
-SVEXTERN int SVDECL(update_merge_smoke, 1);
+SVEXTERN int SVDECL(update_glui_merge_smoke, 1);
+#endif
+
+//***readsmvorig
+#ifdef pp_FDS
+SVEXTERN int SVDECL(n_readsmvorig_threads, 1), SVDECL(use_readsmvorig_threads, 1);
+SVEXTERN threaderdata SVDECL(*readsmvorig_threads, NULL);
 #endif
 
 //***isosurface
@@ -60,7 +66,12 @@ SVEXTERN threaderdata SVDECL(*ffmpeg_threads,         NULL);
 SVEXTERN int SVDECL(n_iso_threads, 1), SVDECL(use_iso_threads, 0), SVDECL(use_iso_threads_save,0);
 
 //*** part
-SVEXTERN int SVDECL(n_partload_threads, 2), SVDECL(use_partload_threads, 1);
+SVEXTERN int SVDECL(n_partload_threads, 2);
+#ifdef pp_PARTFRAME
+SVEXTERN int SVDECL(use_partload_threads, 0);
+#else
+SVEXTERN int SVDECL(use_partload_threads, 1);
+#endif
 SVEXTERN threaderdata SVDECL(*partload_threads,         NULL);
 
 //*** patchbounds
@@ -109,6 +120,9 @@ SVEXTERN int SVDECL(update_device_timeaverage, 0);
 SVEXTERN int SVDECL(update_colorbar_list, 0);
 SVEXTERN int SVDECL(force_bound_update, 0);
 SVEXTERN int SVDECL(update_colorbar_dialog, 1);
+#ifdef pp_FRAME
+SVEXTERN int SVDECL(update_frame, 0);
+#endif
 
 // hvac data
 SVEXTERN int SVDECL(hvacductvar_index, -1), SVDECL(hvacnodevar_index, -1);
@@ -267,7 +281,6 @@ SVEXTERN devicedata SVDECL(**deviceinfo_sortedz, NULL);
 SVEXTERN int SVDECL(nztreedeviceinfo, 0);
 
 SVEXTERN int SVDECL(readini_output, 0);
-SVEXTERN int SVDECL(show_timings, 0);
 SVEXTERN int SVDECL(show_trirates, 0);
 
 SVEXTERN float SVDECL(pixel_dens, 1.0);
@@ -583,6 +596,9 @@ SVEXTERN int SVDECL(light_faces, 1);
 SVEXTERN char SVDECL(*prog_fullpath, NULL);
 SVEXTERN int SVDECL(nwindrosez_checkboxes, 0);
 SVEXTERN float startup_time;
+#ifdef pp_FRAME
+SVEXTERN int SVDECL(nframe_threads, 4), SVDECL(read_buffer_size, 10);
+#endif
 #ifdef pp_FAST
 SVEXTERN int SVDECL(fast_startup, 1), SVDECL(lookfor_compressed_files,0);
 #else
@@ -1949,9 +1965,12 @@ SVEXTERN FILE SVDECL(*LOG_FILENAME,NULL);
 SVEXTERN char SVDECL(*flushfile,NULL), SVDECL(*chidfilebase,NULL);
 SVEXTERN int SVDECL(csv_loaded, 0), SVDECL(devices_setup,0),SVDECL(update_csv_load,0);
 SVEXTERN char SVDECL(*hrr_csv_filename,NULL),SVDECL(*devc_csv_filename,NULL),SVDECL(*exp_csv_filename,NULL);
-SVEXTERN char SVDECL(*smokezippath,NULL),SVDECL(*smokeviewpath,NULL);
+SVEXTERN char SVDECL(*smokezippath,NULL), SVDECL(*smokeviewpath,NULL), SVDECL(*fdsprog, NULL);
 SVEXTERN char SVDECL(*INI_fds_filein,NULL), SVDECL(*fds_filein,NULL);
 SVEXTERN char SVDECL(*caseini_filename,NULL);
+#ifdef pp_FRAME
+SVEXTERN char SVDECL(*frametest_filename, NULL);
+#endif
 SVEXTERN char SVDECL(*fedsmv_filename, NULL);
 SVEXTERN char SVDECL(*expcsv_filename, NULL);
 SVEXTERN char SVDECL(*event_filename, NULL);

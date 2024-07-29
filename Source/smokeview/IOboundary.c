@@ -1030,7 +1030,7 @@ void DrawOnlyThreshold(const meshdata *meshi){
 
 void GetBoundaryDataZlib(patchdata *patchi, unsigned char *data, int ndata,
   float *local_times, unsigned int *zipoffset, unsigned int *zipsize, int ntimes_local){
-  FILE *stream;
+  FILE_m *stream;
   float local_time;
   unsigned int compressed_size;
   int npatches;
@@ -1055,22 +1055,34 @@ void GetBoundaryDataZlib(patchdata *patchi, unsigned char *data, int ndata,
   // compressed size of frame
   // compressed buffer
 
-  stream = fopen(patchi->file, "rb");
+
+#ifdef pp_BOUNDFRAME
+  unsigned char *buffer=NULL;
+  int nbuffer=0;
+
+  if(patchi->frameinfo!=NULL&&patchi->frameinfo->bufferinfo!=NULL){
+    buffer  = patchi->frameinfo->bufferinfo->buffer;
+    nbuffer = patchi->frameinfo->bufferinfo->nbuffer;
+  }
+  stream = fopen_b(( char * )patchi->file, buffer, nbuffer, "rb");
+#else
+  stream = fopen_m((char *)patchi->file, "rb");
+#endif
   if(stream==NULL)return;
 
-  FSEEK(stream, 12, SEEK_CUR);
-  fread(&version, 4, 1, stream);
-  FSEEK(stream, 16, SEEK_CUR);
-  fread(&npatches, 4, 1, stream);
+  fseek_m(stream, 12, SEEK_CUR);
+  fread_m(&version, 4, 1, stream);
+  fseek_m(stream, 16, SEEK_CUR);
+  fread_m(&npatches, 4, 1, stream);
   if(version==0){
     local_skip = 6*npatches*4;
   }
   else{
     local_skip = 9*npatches*4;
   }
-  return_code = FSEEK(stream, local_skip, SEEK_CUR);
+  return_code = fseek_m(stream, local_skip, SEEK_CUR);
   if(return_code!=0){
-    fclose(stream);
+    fclose_m(stream);
     return;
   }
   datacopy = data;
@@ -1082,19 +1094,22 @@ void GetBoundaryDataZlib(patchdata *patchi, unsigned char *data, int ndata,
   for(;;){
     int skip_frame;
 
-    if(fread(&local_time, 4, 1, stream)==0)break;
+    if(fread_m(&local_time, 4, 1, stream)!=1)break;
     skip_frame = 1;
     if(local_time>time_max){
       time_max = local_time;
       skip_frame = 0;
       local_count++;
     }
-    if(fread(&compressed_size, 4, 1, stream)==0)break;
+    if(fread_m(&compressed_size, 4, 1, stream) != 1)break;
     if(skip_frame==0&&local_count%tload_step==0){
-      if(fread(datacopy, 1, compressed_size, stream)==0)break;
+      int count;
+
+      count = fread_m(datacopy, 1, compressed_size, stream);
+      if(count != compressed_size)break;
     }
     else{
-      FSEEK(stream, compressed_size, SEEK_CUR);
+      if(fseek_m(stream, compressed_size, SEEK_CUR) != 0)break;
     }
 
     if(skip_frame==1||local_count%tload_step!=0)continue;
@@ -1107,7 +1122,9 @@ void GetBoundaryDataZlib(patchdata *patchi, unsigned char *data, int ndata,
     datacopy += compressed_size;
     offset += compressed_size;
   }
-  fclose(stream);
+#ifndef pp_BOUNDFRAME
+  fclose_m(stream);
+#endif
 }
 /* ------------------ GetBoundaryHeader ------------------------ */
 
@@ -1389,9 +1406,122 @@ int GetPatchNTimes(char *file){
   return count;
 }
 
+// !  ------------------ GetPatchSizes1 ------------------------
+
+void GetPatchSizes1(FILE_m **stream, const char *patchfilename, unsigned char *buffer, int nbuffer, int *npatch, int *headersize, int *error){
+
+  *error = 0;
+  assert(stream !=NULL);
+  if(stream == NULL){
+    printf("***Error: null pointer in getpatchsizes1 routine\n");
+    *error = 1;
+    return;
+  }
+#ifdef pp_BOUNDFRAME
+  *stream = fopen_b(( char * )patchfilename, buffer, nbuffer, "rb");
+#else
+  *stream = fopen_m((char *)patchfilename, "rb");
+#endif
+  if(*stream == NULL){
+    printf(" The boundary file , %s, failed to open\n", patchfilename);
+    *error = 1;
+    return;
+  }
+
+  // skip over long, short and unit labels (each 30 characters in length);
+  *error = fseek_m(*stream, 4+30+4, SEEK_SET);
+  *error = fseek_m(*stream, 4+30+4, SEEK_CUR);
+  *error = fseek_m(*stream, 4+30+4, SEEK_CUR);
+  if(*error == 0){
+    fseek_m(*stream, 4, SEEK_CUR); fread_m(npatch, sizeof(*npatch), 1, *stream); fseek_m(*stream, 4, SEEK_CUR);
+  }
+  *headersize = 3 * (4 + 30 + 4) + 4 + 4 + 4;
+  return;
+}
+
+// !  ------------------ GetPatchSizes2 ------------------------
+
+void GetPatchSizes2(FILE_m *stream, int version, int npatch, int *npatchsize,
+                    int *pi1, int *pi2, int *pj1, int *pj2, int *pk1, int *pk2,
+                    int *patchdir, int *headersize, int *framesize){
+  int ijkp[9] = {0};
+
+  *npatchsize = 0;
+
+  int n;
+  for (n = 0; n < npatch; n++){
+    if(version == 0){
+      fseek_m(stream, 4, SEEK_CUR);fread_m(ijkp, sizeof(*ijkp), 6, stream);fseek_m(stream, 4, SEEK_CUR);
+    }
+    else {
+      fseek_m(stream, 4, SEEK_CUR); fread_m(ijkp, sizeof(*ijkp), 9, stream); fseek_m(stream, 4, SEEK_CUR);
+      patchdir[n] = ijkp[6];
+    }
+    pi1[n] = ijkp[0];
+    pi2[n] = ijkp[1];
+    pj1[n] = ijkp[2];
+    pj2[n] = ijkp[3];
+    pk1[n] = ijkp[4];
+    pk2[n] = ijkp[5];
+
+    int i1 = ijkp[0];
+    int i2 = ijkp[1];
+    int j1 = ijkp[2];
+    int j2 = ijkp[3];
+    int k1 = ijkp[4];
+    int k2 = ijkp[5];
+    *npatchsize += (i2 + 1 - i1) * (j2 + 1 - j1) * (k2 + 1 - k1);
+  }
+  *headersize += npatch * (4 + 6 * 4 + 4);
+  if(version == 1){
+    *headersize += npatch * 4;
+  }
+  *framesize = 8 + 4 + 8 * npatch + (*npatchsize) * 4;
+
+  return;
+}
+/* ------------------ GetPatchData ------------------------ */
+
+void GetPatchData(FILE_m *stream, int npatch, int *pi1, int *pi2, int *pj1,
+  int *pj2, int *pk1, int *pk2, float *patchtime, float *pqq,
+  int *npqq, int *file_sizeptr, int *error){
+  int i1, i2, j1, j2, k1, k2, size, ibeg;
+  int file_size;
+  int count;
+
+  file_size = 0;
+  *error = 0;
+  fseek_m(stream, 4, SEEK_CUR); count = fread_m(patchtime, sizeof(*patchtime), 1, stream); fseek_m(stream, 4, SEEK_CUR);
+  if(count != 1)*error = 1;
+  file_size = file_size + 4;
+  if(*error != 0) return;
+  ibeg = 0;
+  *npqq = 0;
+
+  int i;
+  for(i = 0; i < npatch; i++){
+    i1 = pi1[i];
+    i2 = pi2[i];
+    j1 = pj1[i];
+    j2 = pj2[i];
+    k1 = pk1[i];
+    k2 = pk2[i];
+    size = (i2 + 1 - i1) * (j2 + 1 - j1) * (k2 + 1 - k1);
+    *npqq += size;
+    fseek_m(stream, 4, SEEK_CUR); count = fread_m(&pqq[ibeg], sizeof(*pqq), size, stream); fseek_m(stream, 4, SEEK_CUR);
+    if(count != size)*error = 1;
+    // TODO: hardcodes float size.
+    file_size += 4 * size;
+    if(*error != 0) break;
+    ibeg += size;
+  }
+  *file_sizeptr = file_size;
+  return;
+}
+
 /* ------------------ ReadBoundaryBndf ------------------------ */
 
-FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
+FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
   int error;
   int patchfilenum;
   float *xyzpatchcopy;
@@ -1414,18 +1544,21 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
   int npatchvals;
   char patchcsvfile[1024];
   int framestart;
+#ifdef pp_BOUNDFRAME
+  int time_frame = ALL_FRAMES;
+#endif
 
   int nn;
   int filenum;
   int ncompressed_buffer;
   char *file;
   float read_time, total_time;
-  FILE *file_unit = NULL;
+  FILE_m *stream = NULL;
   int wallcenter=0;
   FILE_SIZE return_filesize = 0;
 
   patchi = patchinfo + ifile;
-  if(patchi->loaded==0&&flag==UNLOAD)return 0;
+  if(patchi->loaded==0&&load_flag==UNLOAD)return 0;
   if(strcmp(patchi->label.shortlabel,"wc")==0)wallcenter=1;
 
   if(output_patchdata==1){
@@ -1441,7 +1574,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
   highlight_mesh = blocknumber;
   meshi = meshinfo+blocknumber;
   UpdateCurrentMesh(meshi);
-  if(flag!=UNLOAD&&meshi->patchfilenum >= 0 && meshi->patchfilenum < npatchinfo){
+  if(load_flag!=RELOAD&&load_flag!=UNLOAD&&meshi->patchfilenum >= 0 && meshi->patchfilenum < npatchinfo){
     patchdata *patchold;
 
     patchold = patchinfo + meshi->patchfilenum;
@@ -1454,11 +1587,13 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
   meshi->patchfilenum = ifile;
   filenum = meshi->patchfilenum;
 
+#ifndef pp_BOUNDFRAME
 #ifndef pp_FSEEK
-  if(flag==RELOAD)flag = LOAD;
+  if(load_flag==RELOAD)load_flag = LOAD;
+#endif
 #endif
 
-  if(flag!=RELOAD&&filenum>=0&&filenum<npatchinfo){
+  if(load_flag!=RELOAD&&filenum>=0&&filenum<npatchinfo){
     patchi->loaded=0;
   }
 
@@ -1469,7 +1604,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
   if(nbb==0)nbb=1;
   updatefaces=1;
   *errorcode=0;
-  if(flag != RELOAD){
+  if(load_flag != RELOAD){
     FREEMEMORY(meshi->blockonpatch);
     FREEMEMORY(meshi->meshonpatch);
     FREEMEMORY(meshi->patchdir);
@@ -1498,9 +1633,13 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
     FREEMEMORY(meshi->patch_times);
     FREEMEMORY(meshi->patch_times_map);
     FREEMEMORY(meshi->patchblank);
+#ifdef pp_BOUNDFRAME
+    FRAMEFree(patchi->frameinfo);
+    patchi->frameinfo = NULL;
+#endif
   }
 
-  if(flag==UNLOAD){
+  if(load_flag==UNLOAD){
     UpdateBoundaryType();
     UpdateUnitDefs();
     UpdateTimes();
@@ -1511,6 +1650,16 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
     PrintMemoryInfo;
     return 0;
   }
+
+#ifdef pp_BOUNDFRAME
+  patchi->frameinfo = FRAMELoadData(patchi->frameinfo, patchi->file, load_flag, time_frame, FORTRAN_FILE, GetBoundaryFrameInfo);
+  patchi->ntimes = patchi->frameinfo->nframes;
+  NewMemory((void **)&meshi->patch_times, patchi->ntimes*sizeof(float));
+  memcpy(meshi->patch_times, patchi->frameinfo->times, patchi->ntimes*sizeof(float));
+  FRAMEGetMinMax(patchi->frameinfo);
+  update_frame = 1;
+#endif
+
   if(ifile>=0&&ifile<npatchinfo){
     Global2GLUIBoundaryBounds(patchi->label.shortlabel);
   }
@@ -1541,7 +1690,15 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
   }
 
   if(patchi->compression_type==UNCOMPRESSED){
-    getpatchsizes1(&file_unit,file,&meshi->npatches,&headersize,&error);
+    unsigned char *buffer = NULL;
+    int nbuffer = 0;
+#ifdef pp_BOUNDFRAME
+    if(patchi->frameinfo != NULL && patchi->frameinfo->bufferinfo != NULL){
+      buffer  = patchi->frameinfo->bufferinfo->buffer;
+      nbuffer = patchi->frameinfo->bufferinfo->nbuffer;
+    }
+#endif
+    GetPatchSizes1(&stream, file, buffer, nbuffer, &meshi->npatches, &headersize, &error);
     if(error!=0){
       ReadBoundary(ifile,UNLOAD,&error);
       *errorcode=1;
@@ -1573,7 +1730,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
        NewResizeMemory(meshi->blockstart,        sizeof(int)*(1+meshi->npatches))==0){
       *errorcode=1;
       if(patchi->compression_type==UNCOMPRESSED){
-        closefortranfile(file_unit);
+        fclose_m(stream);
       }
       ReadBoundary(ifile,UNLOAD,&error);
       return 0;
@@ -1581,7 +1738,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
   }
 
   if(patchi->compression_type==UNCOMPRESSED){
-    getpatchsizes2(file_unit,patchi->version,
+    GetPatchSizes2(stream,patchi->version,
       meshi->npatches,&meshi->npatchsize,
       meshi->pi1,meshi->pi2,meshi->pj1,meshi->pj2,meshi->pk1,meshi->pk2,meshi->patchdir,
       &headersize,&framesize);
@@ -1591,7 +1748,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
     //  1 - load compressed data set
 
     loadpatchbysteps=UNCOMPRESSED_ALLFRAMES;
-    if(flag==LOAD||flag==RELOAD){
+    if(load_flag==LOAD||load_flag==RELOAD){
       maxtimes_boundary = MAXFRAMES+51;
       statfile=STAT(file,&statbuffer);
       if(statfile==0&&framesize!=0){
@@ -1641,7 +1798,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
       patchi->loaded=0;
       patchi->display=0;
       if(patchi->compression_type==UNCOMPRESSED){
-        closefortranfile(file_unit);
+        fclose_m(stream);
       }
       ReadBoundary(ifile,UNLOAD,&error);
       return 0;
@@ -2133,7 +2290,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
   NewResizeMemory(meshi->zipsize,    sizeof(unsigned int)*maxtimes_boundary);
   if(meshi->patch_times==NULL){
     *errorcode=1;
-    closefortranfile(file_unit);
+    fclose_m(stream);
     ReadBoundary(ifile,UNLOAD,&error);
     return 0;
   }
@@ -2147,11 +2304,11 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
   else{
     if(meshi->patchval == NULL){
       *errorcode = 1;
-      closefortranfile(file_unit);
+      fclose_m(stream);
       ReadBoundary(ifile, UNLOAD, &error);
       return 0;
     }
-    if(flag == RELOAD&&patchi->ntimes_old > 0){
+    if(load_flag == RELOAD&&patchi->ntimes_old > 0){
       framestart = patchi->ntimes_old;
     }
     else{
@@ -2162,7 +2319,9 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
   START_TIMER(read_time);
   for(ii=framestart;ii<maxtimes_boundary;){
     if(loadpatchbysteps==UNCOMPRESSED_ALLFRAMES){
+#ifndef pp_BOUNDFRAME
       meshi->patchval_iframe = meshi->patchval + ii*meshi->npatchsize;
+#endif
     }
     meshi->patch_timesi = meshi->patch_times + ii;
 
@@ -2172,20 +2331,25 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
         int framesizes;
 
         framesizes = framesize*framestart-8;
-        skipdata(file_unit,framesizes);
+        fseek_m(stream, framesizes, SEEK_CUR);
         local_first = 0;
       }
+#ifdef pp_BOUNDFRAME
+      return_filesize = patchi->frameinfo->filesize;
+      meshi->npatch_times = patchi->frameinfo->nframes;
+#else
       for(n=0;n<tload_step;n++){
         if(error==0){
           int npatchval_iframe;
           int filesize;
 
-          getpatchdata(file_unit,meshi->npatches,
+          GetPatchData(stream,meshi->npatches,
           meshi->pi1,meshi->pi2,meshi->pj1,meshi->pj2,meshi->pk1,meshi->pk2,
           meshi->patch_timesi,meshi->patchval_iframe,&npatchval_iframe,&filesize, &error);
           return_filesize += filesize;
         }
       }
+#endif
     }
     if(do_threshold==1){
       if(local_first==1){
@@ -2201,11 +2365,14 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
       {
 
         nn=0;
-        if(loadpatchbysteps==COMPRESSED_ALLFRAMES)UncompressBoundaryDataBNDF(meshi,ii);
+        if(loadpatchbysteps == COMPRESSED_ALLFRAMES)UncompressBoundaryDataBNDF(meshi, ii);
         for(n=0;n<meshi->npatches;n++){
           meshdata *meshblock;
           float dval;
           int j;
+#ifdef pp_BOUNDFRAME
+              float *patchn;
+#endif
 
           iblock=meshi->blockonpatch[n];
           meshblock = meshi->meshonpatch[n];
@@ -2214,11 +2381,20 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
           if(iblock!=-1&&meshblock!=NULL){
             switch(loadpatchbysteps){
             case UNCOMPRESSED_ALLFRAMES:
+#ifdef pp_BOUNDFRAME
+              patchn = (float *)FRAMEGetSubFramePtr(patchi->frameinfo, meshi->patch_itime, n);
               for(j=0;j<nsize;j++){
-                if(meshi->thresholdtime[nn+j]<0.0&&meshi->patchval_iframe[nn+j]>=temp_threshold){
-                  meshi->thresholdtime[nn+j]=meshi->patch_times[ii];
+                  if(meshi->thresholdtime[nn+j]<0.0&&patchn[j]>=temp_threshold){
+                    meshi->thresholdtime[nn+j]=meshi->patch_times[ii];
+                  }
+                }
+#else
+              for(j = 0; j < nsize; j++){
+                if(meshi->thresholdtime[nn + j] < 0.0 && meshi->patchval_iframe[nn + j] >= temp_threshold){
+                  meshi->thresholdtime[nn + j] = meshi->patch_times[ii];
                 }
               }
+#endif
               break;
             case COMPRESSED_ALLFRAMES:
               dval = (glui_patchmax-glui_patchmin)/255.0;
@@ -2248,6 +2424,9 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
 
     switch(loadpatchbysteps){
       case UNCOMPRESSED_ALLFRAMES:
+#ifdef pp_BOUNDFRAME
+        ii++;
+#else
         if(!(use_tload_begin!=0&&*meshi->patch_timesi<tload_begin)){
            meshi->npatch_times++;
           patchi->ntimes=meshi->npatch_times;
@@ -2261,12 +2440,13 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
              ){
               *errorcode=1;
               ReadBoundary(ifile,UNLOAD,&error);
-              closefortranfile(file_unit);
+              fclose_m(stream);
               return 0;
             }
           }
           ii++;
         }
+#endif
         break;
       case COMPRESSED_ALLFRAMES:
         ii++;
@@ -2287,7 +2467,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
     npatchvals = meshi->npatch_times*meshi->npatchsize;
     if(npatchvals==0||NewResizeMemory(meshi->cpatchval,sizeof(unsigned char)*npatchvals)==0){
       *errorcode=1;
-      closefortranfile(file_unit);
+      fclose_m(stream);
       ReadBoundary(ifile,UNLOAD,&error);
       return 0;
     }
@@ -2295,7 +2475,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
   if(NewResizeMemory(colorlabelpatch,MAXRGB*sizeof(char *))==0){
     *errorcode=1;
     if(loadpatchbysteps!=COMPRESSED_ALLFRAMES){
-      closefortranfile(file_unit);
+      fclose_m(stream);
     }
     ReadBoundary(ifile,UNLOAD,&error);
     return 0;
@@ -2307,7 +2487,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
     if(NewResizeMemory(colorlabelpatch[n],11)==0){
       *errorcode=1;
       if(loadpatchbysteps!=COMPRESSED_ALLFRAMES){
-        closefortranfile(file_unit);
+        fclose_m(stream);
       }
       ReadBoundary(ifile,UNLOAD,&error);
       return 0;
@@ -2350,10 +2530,6 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
   default:
     assert(FFALSE);
     break;
-  }
-  if(do_threshold==1){
-    meshi->surface_tempmax=patchmax_global;
-    meshi->surface_tempmin=patchmin_global;
   }
 
   GLUI2GlobalBoundaryBounds(patchi->label.shortlabel);
@@ -2435,6 +2611,11 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
 
   STOP_TIMER(total_time);
 
+#ifdef pp_BOUNDFRAME
+  if(load_flag != RELOAD){
+    printf("\n");
+  }
+#else
   if(return_filesize > 1000000000){
     PRINTF(" - %.1f GB in %.1f s\n", (float)return_filesize / 1000000000., total_time);
   }
@@ -2444,6 +2625,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
  else{
    PRINTF(" - %.0f kB in %.1f s\n", (float)return_filesize / 1000., total_time);
   }
+#endif
 #ifdef pp_RECOMPUTE_DEBUG
   if(recompute == 1)printf("***recomputing bounds\n");
 #endif
@@ -2451,6 +2633,11 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
   update_patch_bounds = ifile;
 
   GLUTPOSTREDISPLAY;
+#ifdef pp_BOUNDFRAME
+  if(patchi->frameinfo != NULL){
+    patchi->frameinfo->total_time = total_time;
+  }
+#endif
   return return_filesize;
 }
 
@@ -2548,7 +2735,10 @@ void DrawBoundaryTexture(const meshdata *meshi){
   float r11, r12, r21, r22;
   int n;
   int nrow, ncol, irow, icol;
-  float *patchvals, *patchval_iframe;
+  float *patchvals;
+#ifndef pp_BOUNDFRAME
+  float *patchval_iframe;
+#endif
   unsigned char *cpatchvals;
   float *xyzpatchcopy;
   int *patchblankcopy;
@@ -2589,8 +2779,10 @@ void DrawBoundaryTexture(const meshdata *meshi){
   patchi=patchinfo+meshi->patchfilenum;
   switch(patchi->compression_type){
   case UNCOMPRESSED:
+#ifndef pp_BOUNDFRAME
     assert(meshi->cpatchval_iframe!=NULL);
     patchval_iframe=meshi->patchval_iframe;
+#endif
     break;
   case COMPRESSED_ZLIB:
     break;
@@ -2636,7 +2828,11 @@ void DrawBoundaryTexture(const meshdata *meshi){
       ncol=boundary_col[n];
       xyzpatchcopy = xyzpatch + 3*blockstart[n];
       patchblankcopy = patchblank + blockstart[n];
+#ifdef pp_BOUNDFRAME
+      patchvals = ( float * )FRAMEGetSubFramePtr(patchi->frameinfo, meshi->patch_itime, n);
+#else
       patchvals = patchval_iframe + blockstart[n];
+#endif
       if(patchi->compression_type == COMPRESSED_ZLIB)cpatchvals = meshi->cpatchval_iframe_zlib + blockstart[n];
 
       for(irow=0;irow<nrow-1;irow++){
@@ -2728,7 +2924,12 @@ void DrawBoundaryTexture(const meshdata *meshi){
       ncol=boundary_col[n];
       xyzpatchcopy = xyzpatch + 3*blockstart[n];
       patchblankcopy = patchblank + blockstart[n];
-      patchvals  = patchval_iframe+blockstart[n];
+#ifdef pp_BOUNDFRAME
+      patchvals = ( float * )FRAMEGetSubFramePtr(patchi->frameinfo, meshi->patch_itime, n);
+
+#else
+      if(patchi->compression_type != COMPRESSED_ZLIB)patchvals  = patchval_iframe+blockstart[n];
+#endif
       if(patchi->compression_type == COMPRESSED_ZLIB)cpatchvals = meshi->cpatchval_iframe_zlib + blockstart[n];
       if(hidepatchsurface==0){
         glPushMatrix();
@@ -2836,7 +3037,11 @@ void DrawBoundaryTexture(const meshdata *meshi){
       ncol=boundary_col[n];
       xyzpatchcopy = xyzpatch + 3*blockstart[n];
       patchblankcopy = patchblank + blockstart[n];
-      patchvals  = patchval_iframe+blockstart[n];
+#ifdef pp_BOUNDFRAME
+      patchvals = ( float * )FRAMEGetSubFramePtr(patchi->frameinfo, meshi->patch_itime, n);
+#else
+      if(patchi->compression_type != COMPRESSED_ZLIB)patchvals  = patchval_iframe+blockstart[n];
+#endif
       if(patchi->compression_type == COMPRESSED_ZLIB)cpatchvals = meshi->cpatchval_iframe_zlib + blockstart[n];
       if(hidepatchsurface==0){
         glPushMatrix();
@@ -2932,7 +3137,9 @@ void DrawBoundaryTextureThreshold(const meshdata *meshi){
   int nrow, ncol, irow, icol;
   float *patchvals;
   unsigned char *cpatchvals;
+#ifndef pp_BOUNDFRAME
   float *patchval_iframe;
+#endif
   float *xyzpatchcopy;
   int *patchblankcopy;
   float *patch_times;
@@ -2962,8 +3169,10 @@ void DrawBoundaryTextureThreshold(const meshdata *meshi){
   patchi=patchinfo+meshi->patchfilenum;
   switch(patchi->compression_type){
   case UNCOMPRESSED:
+#ifndef pp_BOUNDFRAME
     assert(meshi->patchval_iframe!=NULL);
     patchval_iframe=meshi->patchval_iframe;
+#endif
     break;
   case COMPRESSED_ZLIB:
     break;
@@ -3007,7 +3216,12 @@ void DrawBoundaryTextureThreshold(const meshdata *meshi){
       ncol=boundary_col[n];
       xyzpatchcopy = xyzpatch + 3*blockstart[n];
       patchblankcopy = patchblank + blockstart[n];
+
+#ifdef pp_BOUNDFRAME
+      patchvals = ( float * )FRAMEGetSubFramePtr(patchi->frameinfo, meshi->patch_itime, n);
+#else
       patchvals = patchval_iframe + blockstart[n];
+#endif
       if(patchi->compression_type == COMPRESSED_ZLIB)cpatchvals = meshi->cpatchval_iframe_zlib + blockstart[n];
       for(irow=0;irow<nrow-1;irow++){
         int *patchblank1, *patchblank2;
@@ -3093,7 +3307,11 @@ void DrawBoundaryTextureThreshold(const meshdata *meshi){
       ncol=boundary_col[n];
       xyzpatchcopy = xyzpatch + 3*blockstart[n];
       patchblankcopy = patchblank + blockstart[n];
+#ifdef pp_BOUNDFRAME
+      patchvals = ( float * )FRAMEGetSubFramePtr(patchi->frameinfo, meshi->patch_itime, n);
+#else
       patchvals  = patchval_iframe + blockstart[n];
+#endif
       if(patchi->compression_type == COMPRESSED_ZLIB)cpatchvals = meshi->cpatchval_iframe_zlib + blockstart[n];
       for(irow=0;irow<nrow-1;irow++){
         int *patchblank1, *patchblank2;
@@ -3176,7 +3394,11 @@ void DrawBoundaryTextureThreshold(const meshdata *meshi){
       ncol=boundary_col[n];
       xyzpatchcopy = xyzpatch + 3*blockstart[n];
       patchblankcopy = patchblank + blockstart[n];
+#ifdef pp_BOUNDFRAME
+      patchvals = ( float * )FRAMEGetSubFramePtr(patchi->frameinfo, meshi->patch_itime, n);
+#else
       patchvals  = patchval_iframe + blockstart[n];
+#endif
       if(patchi->compression_type == COMPRESSED_ZLIB)cpatchvals = meshi->cpatchval_iframe_zlib + blockstart[n];
       for(irow=0;irow<nrow-1;irow++){
         int *patchblank1, *patchblank2;
@@ -3485,7 +3707,9 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
   int nrow, ncol, irow, icol;
   float *patchvals;
   unsigned char *cpatchvals;
+#ifndef pp_BOUNDFRAME
   float *patchval_iframe;
+#endif
   float *patch_times;
   int *vis_boundaries;
   int *patchdir, *boundary_row, *boundary_col, *boundarytype;
@@ -3534,8 +3758,10 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
 
   switch(patchi->compression_type){
   case UNCOMPRESSED:
+#ifndef pp_BOUNDFRAME
     patchval_iframe = meshi->patchval_iframe;
     if(patchval_iframe==NULL)return;
+#endif
     break;
   case COMPRESSED_ZLIB:
     break;
@@ -3570,7 +3796,11 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
     if(drawit==1){
       nrow = boundary_row[n];
       ncol = boundary_col[n];
+#ifdef pp_BOUNDFRAME
+      patchvals = ( float * )FRAMEGetSubFramePtr(patchi->frameinfo, meshi->patch_itime, n);
+#else
       patchvals  = patchval_iframe+blockstart[n];
+#endif
       if(patchi->compression_type == COMPRESSED_ZLIB)cpatchvals = meshi->cpatchval_iframe_zlib + blockstart[n];
       for(irow = 0;irow<nrow-1;irow++){
         int *patchblank1, *patchblank2;
@@ -3651,7 +3881,11 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
     if(drawit==1){
       nrow = boundary_row[n];
       ncol = boundary_col[n];
+#ifdef pp_BOUNDFRAME
+      patchvals = ( float * )FRAMEGetSubFramePtr(patchi->frameinfo, meshi->patch_itime, n);
+#else
       patchvals = patchval_iframe+blockstart[n];
+#endif
       if(patchi->compression_type == COMPRESSED_ZLIB)cpatchvals = meshi->cpatchval_iframe_zlib + blockstart[n];
       if(hidepatchsurface==0){
         glPushMatrix();
@@ -3750,7 +3984,11 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
     if(drawit==1){
       nrow = boundary_row[n];
       ncol = boundary_col[n];
+#ifdef pp_BOUNDFRAME
+      patchvals = ( float * )FRAMEGetSubFramePtr(patchi->frameinfo, meshi->patch_itime, n);
+#else
       patchvals  = patchval_iframe+blockstart[n];
+#endif
       if(patchi->compression_type == COMPRESSED_ZLIB)cpatchvals = meshi->cpatchval_iframe_zlib + blockstart[n];
       if(hidepatchsurface==0){
         glPushMatrix();

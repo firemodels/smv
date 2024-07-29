@@ -830,7 +830,7 @@ void GetZoneGlobalBounds(const float *pdata, int ndata, float *pglobalmin, float
   *pglobalmax = pmax2;
 }
 
- /* ------------------ LoadTempSlices ------------------------ */
+ /* ------------------ GetSliceTempBounds ------------------------ */
 
 void GetSliceTempBounds(void){
   int i;

@@ -362,8 +362,6 @@ EXTERNCPP void GLUIUpdateShowOnlyTop(void);
 EXTERNCPP void GeneratePartHistograms(void);
 FILE_SIZE LoadAllMSlicesMT(int last_slice, multislicedata *mslicei, int *fcount);
 
-EXTERNCPP void PrintTime(const char *tag, int line, float *timer, const char *label, int stop_flag);
-
 EXTERNCPP void DrawObstBoundingBox(void);
 EXTERNCPP void DrawGeomBoundingBox(float *boundingbox_color);
 EXTERNCPP void ClassifyGeom(geomdata *geomi, int *geom_frame_index);
@@ -375,7 +373,7 @@ EXTERNCPP void SetTimeState(void);
 EXTERNCPP int GetGeomDataSize(char *file, int *nvals, int time_frame,
               int *cvals_offsets, int *cvals_sizes, int *geom_offsets, int *geom_offset_flag,
               int *max_buffer_size, int *error);
-EXTERNCPP FILE_SIZE GetGeomData(char *filename, int ntimes, int nvals, float *times,
+EXTERNCPP FILE_SIZE GetGeomData(patchdata *patchi, char *filename, int load_flag, int ntimes, int nvals, float *times,
               int *nstatics, int *ndynamics, float *vals, int time_frame, float *time_value,
               int *geom_offsets, int *error);
 
@@ -444,10 +442,9 @@ EXTERNCPP void GenerateSliceMenu(int from_commandline);
 void DrawTerrainGeom(int option);
 void GenerateTerrainGeom(float **vertices_arg, unsigned int **indices_arg, int *nindices_arg);
 
-EXTERNCPP int GetPartHeader(partdata *parti, int *nf_all, int option_arg, int print_option_arg);
 EXTERNCPP void SetMainWindow(void);
 EXTERNCPP void GetSliceFileHeader(char *file, int *ip1, int *ip2, int *jp1, int *jp2, int *kp1, int *kp2, int *error);
-EXTERNCPP int TimeAverageData(float *data_out, float *data_in, int ndata, int data_per_timestep, float *times_local, int ntimes_local, float average_time);
+EXTERNCPP int TimeAverageData(float **data_out, float **data_in, int ndata, int data_per_timestep, float *times_local, int ntimes_local, float average_time);
 bufferstreamdata *GetSMVBuffer(char *file);
 EXTERNCPP void UpdateBlockType(void);
 boundsdata *GetSliceBoundsInfo(char *shortlabel);
@@ -550,8 +547,8 @@ EXTERNCPP void UpdateVentOffset(void);
 EXTERNCPP void UpdateOpacityMap(void);
 EXTERNCPP int  GetVolFrameMax(int meshnum);
 EXTERNCPP void UpdateGluiRotateAbout(int val);
-EXTERNCPP void ReloadAllSliceFiles(void);
-EXTERNCPP void ReloadAllVectorSliceFiles(void);
+EXTERNCPP void ReloadAllSliceFiles(int load_flag);
+EXTERNCPP void ReloadAllVectorSliceFiles(int load_flag);
 EXTERNCPP void UnloadAllSliceFiles(char *longlabel);
 EXTERNCPP void ParticleStreakShowMenu(int var);
 EXTERNCPP void UpdateGeomNormals();
@@ -1105,7 +1102,7 @@ EXTERNCPP void DrawCADGeom(const cadgeomdata *cd);
 
 EXTERNCPP void ReadPlot3D(char *file, int ifile, int flag,int *errorcode);
 EXTERNCPP void SetupReadAllGeom(void);
-EXTERNCPP FILE_SIZE ReadGeom(geomdata *geomi, int load_flag, int type, int *geom_frame_index);
+EXTERNCPP FILE_SIZE ReadGeom(geomdata *geomi, unsigned char *buffer, int nbuffer, int load_flag, int type, int *geom_frame_index);
 EXTERNCPP FILE_SIZE ReadBoundary(int ifile, int flag, int *errorcode);
 EXTERNCPP FILE_SIZE ReadPart(char *file, int ifile, int loadflag, int *errorcode);
 

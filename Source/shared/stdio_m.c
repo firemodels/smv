@@ -92,6 +92,54 @@ FILE_m *fopen_m(char *file, char *mode){
   return fopen_mo(file, 0, 0, mode);
 }
 
+/* ------------------ fopen_b ------------------------ */
+
+FILE_m *fopen_b(char *file, unsigned char *buffer, size_t nbuffer, char *mode){
+  FILE_m *stream_m = NULL;
+  char *m_file;
+
+  if(file == NULL || strlen(file) == 0 || mode == NULL || strlen(mode) < 2)return NULL;
+  if(strcmp(mode, "rb") !=0)return NULL;
+
+  if(NewMemory(( void ** )&m_file, strlen(file) + 1) == 0){ // memory allocation failed so abort
+    return NULL;
+  }
+  strcpy(m_file, file);
+
+  if(NewMemory(( void ** )&stream_m, sizeof(FILE_m)) == 0){
+    FREEMEMORY(m_file);
+    return NULL;
+  }
+  stream_m->buffer     = buffer;
+  stream_m->buffer_beg = buffer;
+  stream_m->buffer_end = buffer + nbuffer;
+  stream_m->file       = m_file;
+  if(buffer == NULL){
+    stream_m->stream = fopen(file, mode);
+    if(stream_m->stream == NULL){
+      FREEMEMORY(stream_m);
+      FREEMEMORY(m_file);
+    }
+  }
+  else{
+    stream_m->stream = NULL;
+  }
+  return stream_m;
+}
+
+/* ------------------ fclose_b ------------------------ */
+
+void fclose_b(FILE_m *stream_m){
+  if(stream_m == NULL)return;
+  if(stream_m->stream == NULL){
+    FREEMEMORY(stream_m->file);
+    FREEMEMORY(stream_m);
+  }
+  else{
+    fclose(stream_m->stream);
+  }
+}
+
 /* ------------------ fclose_m ------------------------ */
 
 void fclose_m(FILE_m *stream_m){
@@ -115,13 +163,13 @@ size_t fread_m(void *ptr, size_t size, size_t nmemb, FILE_m *stream_m){
     unsigned char *buffer_end;
 
     buffer_end = stream_m->buffer + size*nmemb;
-    if(buffer_end-stream_m->buffer_end>=0){
+    if(buffer_end-stream_m->buffer_end>0){
       stream_m->buffer = buffer_end;
       return 0;
     }
     memcpy(ptr, stream_m->buffer, size*nmemb);
     stream_m->buffer = buffer_end;
-    return_val = size*nmemb;
+    return_val = nmemb;
   }
   else{
     return_val =  fread(ptr, size, nmemb, stream_m->stream);
@@ -135,7 +183,7 @@ size_t fread_mv(void **ptr, size_t size, size_t nmemb, FILE_m *stream_m){
   if(stream_m->stream!=NULL)return 0;
   *ptr= stream_m->buffer;
   stream_m->buffer += size*nmemb;
-  return size*nmemb;
+  return nmemb;
 }
 
 /* ------------------ feof_m ------------------------ */
