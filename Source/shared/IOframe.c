@@ -912,4 +912,5 @@ void GetPartFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **framespt
   *framesptr = frames;
   *nframesptr = nframes;
   *filesizeptr = filesize;
+  if(stream->stream != NULL)fclose(stream->stream);
 }
