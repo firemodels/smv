@@ -1,6 +1,6 @@
+#define IN_FOPEN
 #include "options.h"
 #ifdef pp_OPEN_TEST
-#define IN_FOPEN
 #include <assert.h>
 #include <stdio.h>
 #include <string.h>
@@ -48,6 +48,7 @@ void RemoveOpenFile(FILE *stream){
 
     oi = openinfo + i;
     if(oi->stream == stream){
+      printf("close file:%s\n", oi->file);
       oi->stream = NULL;
       remove_index = i;
     }
