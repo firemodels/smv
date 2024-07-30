@@ -4,6 +4,7 @@
 #ifdef pp_THREAD
 #include <pthread.h>
 #endif
+#include <stdio.h>
 
 //*** structure
 
@@ -40,6 +41,25 @@ pthread_mutex_t fopen_mutex;
 #endif
 
 #else
+
+#ifdef pp_OPEN_TEST
+#ifndef fopen
+#define fopen(x,y) fopen_counting(x,y,__FILE__,__LINE__)
+#endif
+#ifndef fclose
+#define fclose(x) fclose_counting(x)
+#endif
+#endif
+
+#ifdef IN_FOPEN
+#ifdef fopen
+#undef fopen
+#endif
+#ifdef fclose
+#undef fclose
+#endif
+#endif
+
 
 extern int open_files, nopeninfo;
 extern opendata *openinfo;

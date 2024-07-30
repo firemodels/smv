@@ -54,15 +54,6 @@ typedef struct {
 
 // vvvvvvvvvvvvvvvvvvvvvvvv preprocessing directives vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 
-#ifdef pp_OPEN_TEST
-#ifndef fopen
-#define fopen(x,y) fopen_counting(x,y,__FILE__,__LINE__)
-#endif
-#ifndef fclose
-#define fclose(x) fclose_counting(x)
-#endif
-#endif
-
 #ifdef WIN32
 #define UNLINK _unlink
 #else

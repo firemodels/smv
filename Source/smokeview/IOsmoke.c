@@ -4147,19 +4147,25 @@ int SetupSmoke3D(smoke3ddata *smoke3di, int load_flag, int iframe_arg, int *erro
     fprintf(stderr, "\n*** Error: problems sizing 3d smoke data for %s\n", smoke3di->file);
     return READSMOKE3D_RETURN;
   }
+  smoke3di->skip_smoke = 0;
+  smoke3di->skip_fire  = 0;
   if(smoke3di->maxval>=0.0){
     int return_flag_local = 0;
 
     if(smoke3di->type==HRRPUV_index && smoke3di->maxval<=load_hrrpuv_cutoff && override_3dsmoke_cutoff==0){
-      SetupSmoke3D(smoke3di, UNLOAD, iframe_arg, &error_local);
+      smoke3di->skip_fire = 1;
       *errorcode_arg = 0;
       if(iframe_arg==ALL_SMOKE_FRAMES){
+#ifdef pp_SMOKEFRAME
+        if(load_flag!=RELOAD)PRINTF(" - skipped (hrrpuv<%0.f)\n", load_hrrpuv_cutoff);
+#else
         PRINTF(" - skipped (hrrpuv<%0.f)\n", load_hrrpuv_cutoff);
+#endif
       }
       return_flag_local = 1;
     }
     if(smoke3di->type==SOOT_index&&smoke3di->maxval<=load_3dsmoke_cutoff){
-      SetupSmoke3D(smoke3di, UNLOAD, iframe_arg, &error_local);
+      smoke3di->skip_smoke = 1;
       *errorcode_arg = 0;
 #ifdef pp_SMOKEFRAME
       if(load_flag!=RELOAD)PRINTF(" - skipped (opacity<%0.f)\n", load_3dsmoke_cutoff);
@@ -4569,6 +4575,8 @@ void MergeSmoke3DColors(smoke3ddata *smoke3dset){
     if(smoke3dset!=NULL&&smoke3dset!=smoke3di)continue;
     smoke3di->primary_file=0;
     if(smoke3di->loaded==0||smoke3di->display==0)continue;
+    if(smoke3di->is_fire == 1  && smoke3di->skip_fire == 1)continue;
+    if(smoke3di->is_smoke == 1 && smoke3di->skip_smoke == 1)continue;
     mesh_smoke3d = meshinfo+smoke3di->blocknumber;
     smoke3d_soot = mesh_smoke3d->smoke3d_soot;
     if(smoke3di->type==SOOT_index){
@@ -4619,6 +4627,8 @@ void MergeSmoke3DColors(smoke3ddata *smoke3dset){
     smoke3di = smoke3dinfo + i;
     if(smoke3dset!=NULL&&smoke3dset!=smoke3di)continue;
     if(smoke3di->loaded==0||smoke3di->primary_file==0)continue;
+    if(smoke3di->is_fire == 1  && smoke3di->skip_fire == 1)continue;
+    if(smoke3di->is_smoke == 1 && smoke3di->skip_smoke == 1)continue;
     mesh_smoke3d = meshinfo+smoke3di->blocknumber;
     if(IsSmokeComponentPresent(smoke3di)==0)continue;
 
