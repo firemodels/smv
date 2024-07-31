@@ -1648,7 +1648,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
   if(load_flag==UNLOAD){
     UpdateBoundaryType();
     UpdateUnitDefs();
-    UpdateTimes();
+    update_times = 1;
     meshi->npatches=0;
     patchi->ntimes_old=0;
     patchi->ntimes=0;
