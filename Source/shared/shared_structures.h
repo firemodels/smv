@@ -45,6 +45,7 @@ typedef struct _meshdata {
   int nbptrs;
   int is_bottom;
 
+  int removable_obsts;
   int *cutcells, ncutcells;
   int update_smoke3dcolors;
   struct _terraindata *terrain;
