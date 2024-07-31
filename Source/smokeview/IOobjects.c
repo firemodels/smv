@@ -1696,6 +1696,17 @@ void DrawCircle(float diameter,unsigned char *rgbcolor, circdata *circinfo){
 
 /* ----------------------- DrawCuboid ----------------------------- */
 
+//     7--------6
+//    /|       /
+//   / |      / |
+//  4--------5  |
+//  |  |     |  |
+//  |  |     |  |
+//  |  3--------2
+//  | /      | /
+//  |/       |/
+//  0--------1
+
 void DrawCuboid(float *origin, float verts[8][3], unsigned char *rgbcolor, int draw_outline){
   if(origin!=NULL){
     glPushMatrix();
@@ -1856,7 +1867,7 @@ void DrawCubeC(float size, unsigned char *rgbcolor){
   float s1=size/2.0;
   float verts[8][3]={
     {-s1,-s1,-s1},{s1,-s1,-s1},{s1,s1,-s1},{-s1,s1,-s1},
-    {-s1,-s1,-s1},{s1,-s1,-s1},{s1,s1,-s1},{-s1,s1,-s1}
+    {-s1,-s1, s1},{s1,-s1, s1},{s1,s1, s1},{-s1,s1, s1}
   };
 
   DrawCuboid(NULL,verts,rgbcolor,object_outlines);
