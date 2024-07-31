@@ -1605,8 +1605,12 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
   updatefaces=1;
   *errorcode=0;
   if(load_flag != RELOAD){
-    FREEMEMORY(meshi->blockonpatch);
+#ifdef pp_BOUNDMEM
+    FREEMEMORY(meshi->buffer1);
+    FREEMEMORY(meshi->buffer2);
+#else
     FREEMEMORY(meshi->meshonpatch);
+    FREEMEMORY(meshi->blockonpatch);
     FREEMEMORY(meshi->patchdir);
     FREEMEMORY(meshi->patch_surfindex);
     FREEMEMORY(meshi->pi1);
@@ -1615,24 +1619,26 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
     FREEMEMORY(meshi->pj2);
     FREEMEMORY(meshi->pk1);
     FREEMEMORY(meshi->pk2);
+    FREEMEMORY(meshi->boundarytype);
+    FREEMEMORY(meshi->vis_boundaries);
     FREEMEMORY(meshi->boundary_row);
     FREEMEMORY(meshi->boundary_col);
     FREEMEMORY(meshi->blockstart);
-    FREEMEMORY(meshi->zipoffset);
-    FREEMEMORY(meshi->zipsize);
-    FREEMEMORY(meshi->boundarytype);
-    FREEMEMORY(meshi->vis_boundaries);
+
     FREEMEMORY(meshi->xyzpatch);
     FREEMEMORY(meshi->xyzpatch_threshold);
+    FREEMEMORY(meshi->thresholdtime);
+    FREEMEMORY(meshi->patchblank);
+#endif
+    FREEMEMORY(meshi->zipoffset);
+    FREEMEMORY(meshi->zipsize);
     FREEMEMORY(meshi->patchventcolors);
     FREEMEMORY(meshi->cpatchval);
     FREEMEMORY(meshi->cpatchval_zlib);
     FREEMEMORY(meshi->cpatchval_iframe_zlib);
     FREEMEMORY(meshi->patchval);
-    FREEMEMORY(meshi->thresholdtime);
     FREEMEMORY(meshi->patch_times);
     FREEMEMORY(meshi->patch_times_map);
-    FREEMEMORY(meshi->patchblank);
 #ifdef pp_BOUNDFRAME
     FRAMEFree(patchi->frameinfo);
     patchi->frameinfo = NULL;
@@ -1712,7 +1718,29 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
     patchmax_global = glui_patchmax;
   }
   if(meshi->npatches>0){
+#ifdef pp_BOUNDMEM
+    int offsets[15];
+
+       offsets[0]  =               sizeof(meshdata *)*meshi->npatches;
+       offsets[1]  = offsets[0]  + sizeof(int)*meshi->npatches;
+       offsets[2]  = offsets[1]  + sizeof(int)*meshi->npatches;
+       offsets[3]  = offsets[2]  + sizeof(int)*meshi->npatches;
+       offsets[4]  = offsets[3]  + sizeof(int)*meshi->npatches;
+       offsets[5]  = offsets[4]  + sizeof(int)*meshi->npatches;
+       offsets[6]  = offsets[5]  + sizeof(int)*meshi->npatches;
+       offsets[7]  = offsets[6]  + sizeof(int)*meshi->npatches;
+       offsets[8]  = offsets[7]  + sizeof(int)*meshi->npatches;
+       offsets[9]  = offsets[8]  + sizeof(int)*meshi->npatches;
+       offsets[10] = offsets[9]  + sizeof(int)*meshi->npatches;
+       offsets[11] = offsets[10] + sizeof(int)*meshi->npatches;
+       offsets[12] = offsets[11] + sizeof(int)*meshi->npatches;
+       offsets[13] = offsets[12] + sizeof(int)*meshi->npatches;
+       offsets[14] = offsets[13] + sizeof(int)*(1+meshi->npatches);
+#endif
     if(
+#ifdef pp_BOUNDMEM
+       NewResizeMemory(meshi->buffer1, offsets[14]) == 0
+#else
        NewResizeMemory(meshi->meshonpatch,       sizeof(meshdata *)*meshi->npatches)==0||
        NewResizeMemory(meshi->blockonpatch,      sizeof(int)*meshi->npatches)==0||
        NewResizeMemory(meshi->patchdir,          sizeof(int)*meshi->npatches)==0||
@@ -1727,7 +1755,9 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
        NewResizeMemory(meshi->vis_boundaries,    sizeof(int)*meshi->npatches)==0||
        NewResizeMemory(meshi->boundary_row,      sizeof(int)*meshi->npatches)==0||
        NewResizeMemory(meshi->boundary_col,      sizeof(int)*meshi->npatches)==0||
-       NewResizeMemory(meshi->blockstart,        sizeof(int)*(1+meshi->npatches))==0){
+       NewResizeMemory(meshi->blockstart,        sizeof(int)*(1+meshi->npatches))==0
+#endif
+      ){
       *errorcode=1;
       if(patchi->compression_type==UNCOMPRESSED){
         fclose_m(stream);
@@ -1735,6 +1765,23 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
       ReadBoundary(ifile,UNLOAD,&error);
       return 0;
     }
+#ifdef pp_BOUNDMEM
+       meshi->meshonpatch     = (meshdata **)(meshi->buffer1);
+       meshi->blockonpatch    = (int *)(meshi->buffer1 + offsets[0]);
+       meshi->patchdir        = (int *)(meshi->buffer1 + offsets[1]);
+       meshi->patch_surfindex = (int *)(meshi->buffer1 + offsets[2]);
+       meshi->pi1             = (int *)(meshi->buffer1 + offsets[3]);
+       meshi->pi2             = (int *)(meshi->buffer1 + offsets[4]);
+       meshi->pj1             = (int *)(meshi->buffer1 + offsets[5]);
+       meshi->pj2             = (int *)(meshi->buffer1 + offsets[6]);
+       meshi->pk1             = (int *)(meshi->buffer1 + offsets[7]);
+       meshi->pk2             = (int *)(meshi->buffer1 + offsets[8]);
+       meshi->boundarytype    = (int *)(meshi->buffer1 + offsets[9]);
+       meshi->vis_boundaries  = (int *)(meshi->buffer1 + offsets[10]);
+       meshi->boundary_row    = (int *)(meshi->buffer1 + offsets[11]);
+       meshi->boundary_col    = (int *)(meshi->buffer1 + offsets[12]);
+       meshi->blockstart      = (int *)(meshi->buffer1 + offsets[13]);
+#endif
   }
 
   if(patchi->compression_type==UNCOMPRESSED){
@@ -1788,11 +1835,24 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
   }
 
   if(meshi->npatchsize>0){
+#ifdef pp_BOUNDMEM
+    int offsets[4];
+
+    offsets[0]  =               3*sizeof(float)*meshi->npatchsize;
+    offsets[1]  = offsets[0]  + 3*sizeof(float)*meshi->npatchsize;
+    offsets[2]  = offsets[1]  + sizeof(float)*meshi->npatchsize;
+    offsets[3]  = offsets[2]  + meshi->npatchsize*sizeof(int);
+#endif
     if(
+
+#ifdef pp_BOUNDMEM
+       NewResizeMemory(meshi->buffer2, offsets[3]) == 0
+#else
        NewResizeMemory(meshi->xyzpatch,          3*sizeof(float)*meshi->npatchsize)==0||
        NewResizeMemory(meshi->xyzpatch_threshold,3*sizeof(float)*meshi->npatchsize)==0||
        NewResizeMemory(meshi->thresholdtime,     sizeof(float)*meshi->npatchsize)==0||
        NewResizeMemory(meshi->patchblank,        meshi->npatchsize*sizeof(int))==0
+#endif
        ){
       *errorcode=1;
       patchi->loaded=0;
@@ -1803,6 +1863,12 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
       ReadBoundary(ifile,UNLOAD,&error);
       return 0;
     }
+#ifdef pp_BOUNDMEM
+    meshi->xyzpatch           = (float *)(meshi->buffer2);
+    meshi->xyzpatch_threshold = (float *)(meshi->buffer2 + offsets[0]);
+    meshi->thresholdtime      = (float *)(meshi->buffer2 + offsets[1]);
+    meshi->patchblank         = (int *)(meshi->buffer2 + offsets[2]);
+#endif
   }
   for(n=0;n<meshi->npatchsize;n++){
     meshi->patchblank[n]=GAS;
