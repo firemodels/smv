@@ -2663,17 +2663,21 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
     FREEMEMORY(meshi->patchval);
   }
   iboundarytype=GetBoundaryType(patchi);
-  ShowBoundaryMenu(INI_EXTERIORwallmenu);
+  if(patchi->finalize==1){
+    ShowBoundaryMenu(INI_EXTERIORwallmenu);
+  }
   for(n = 0;n<meshi->npatches;n++){
     meshi->vis_boundaries[n] = vis_boundary_type[meshi->boundarytype[n]];
   }
   plotstate=GetPlotState(DYNAMIC_PLOTS);
   MakeTimesMap(meshi->patch_times, meshi->patch_times_map, meshi->npatch_times);
-  UpdateTimes();
-  UpdateUnitDefs();
-  UpdateChopColors();
+  if(patchi->finalize==1){
+    UpdateTimes();
+    ForceIdle();
+    UpdateUnitDefs();
+    UpdateChopColors();
+  }
   PrintMemoryInfo;
-  ForceIdle();
 
   STOP_TIMER(total_time);
 
