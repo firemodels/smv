@@ -358,6 +358,7 @@ typedef struct _xbdata {
 /* -------------------------- blockagedata ------------------------------------ */
 
 typedef struct _blockagedata {
+  int removable_obst;
   int ijk[6];
   float xmin, xmax, ymin, ymax, zmin, zmax;
   float xyzEXACT[6], xyzDELTA[18];
