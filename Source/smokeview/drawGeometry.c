@@ -4206,17 +4206,6 @@ void UpdateSelectFaces(void){
   }
 }
 
-/* ------------------ IsBlockageVisible ------------------------ */
-
-int IsBlockageVisible(blockagedata *bc, float local_time){
-  int listindex,val;
-
-  if(bc->showhide==NULL||local_time<0.0)return 1;
-  listindex=GetIndex(local_time,bc->showtime,bc->nshowtime);
-  val = bc->showhide[listindex];
-  return val;
-}
-
 /* ------------------ InitDemo ------------------------ */
 
 void InitDemo(float rad, int nlat, int nlong){
