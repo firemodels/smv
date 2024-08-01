@@ -824,7 +824,7 @@ void CreatePartSizeFileFromBound(char *part5boundfile_arg, char *part5sizefile_a
 }
 
 /* ------------------ CreatePartSizeFileFromPart ------------------------ */
-
+#ifndef pp_PARTFRAME
 void CreatePartSizeFileFromPart(char *part5file_arg, char *part5sizefile_arg, LINT file_offset_arg){
   FILE *streamout_local;
   FILE_m *stream;
@@ -885,6 +885,7 @@ void CreatePartSizeFileFromPart(char *part5file_arg, char *part5sizefile_arg, LI
   FREEMEMORY(numtypes_local);
   FREEMEMORY(numpoints_local);
 }
+#endif
 
 /* ------------------ GetPartHeaderOffset ------------------------ */
 
@@ -1324,7 +1325,7 @@ void GetPartData(partdata *parti, int nf_all_arg, FILE_SIZE *file_size_arg){
         int j;
 
         sort_tags_local = datacopy_local->sort_tags;
-        FORTREAD_m(datacopy_local->tags,4, nparts_local, stream);
+        FORTREAD_mv((void **)&(datacopy_local->tags),4, nparts_local, stream);
         if(count_read!=nparts_local)goto wrapup;
         CheckMemory;
         if(nparts_local>0){
@@ -1864,18 +1865,18 @@ int GetPartHeader(partdata *parti, int *nf_all, int option_arg, int print_option
     for(j = 0; j < parti->nclasses; j++){
       int npoints_local, ntypes_local;
 
-      datacopy_local->irvals = parti->irvals + nall_points_types_local;
-      datacopy_local->vis_part = parti->vis_part + nall_points_local;
-      datacopy_local->tags = parti->tags + nall_points_local;
-      datacopy_local->sort_tags = parti->sort_tags + 2 * nall_points_local;
-      datacopy_local->sx = parti->sx + nall_points_local;
-      datacopy_local->sy = parti->sy + nall_points_local;
-      datacopy_local->sz = parti->sz + nall_points_local;
+      datacopy_local->irvals    = parti->irvals    +   nall_points_types_local;
+      datacopy_local->vis_part  = parti->vis_part  +   nall_points_local;
+      datacopy_local->tags      = parti->tags      +   nall_points_local;
+      datacopy_local->sort_tags = parti->sort_tags + 2*nall_points_local;
+      datacopy_local->sx        = parti->sx        +   nall_points_local;
+      datacopy_local->sy        = parti->sy        +   nall_points_local;
+      datacopy_local->sz        = parti->sz        +   nall_points_local;
 
-      npoints_local = datacopy_local->npoints_file;
-      ntypes_local = datacopy_local->partclassbase->ntypes;
-      nall_points_types_local += npoints_local * ntypes_local;
-      nall_points_local += npoints_local;
+      npoints_local             = datacopy_local->npoints_file;
+      ntypes_local              = datacopy_local->partclassbase->ntypes;
+      nall_points_types_local  += npoints_local*ntypes_local;
+      nall_points_local        += npoints_local;
       datacopy_local++;
     }
   }
