@@ -818,7 +818,7 @@ typedef struct _part5data {
   partclassdata *partclassbase;
   float time;
   int npoints_file,npoints_loaded,n_rtypes, n_itypes;
-  short *sx, *sy, *sz;
+  float *xpos, *ypos, *zpos;
   float *dsx, *dsy, *dsz;
   float *avatar_angle, *avatar_width, *avatar_depth, *avatar_height;
   int *tags,*sort_tags;
@@ -861,9 +861,7 @@ typedef struct _partdata {
   float *valmin_part,    *valmax_part;
   int nfilebounds;
   unsigned char *vis_part;
-  int *tags;
   int *sort_tags;
-  short *sx, *sy, *sz;
   unsigned char *irvals;
 #ifdef pp_PARTFRAME
   framedata *frameinfo;

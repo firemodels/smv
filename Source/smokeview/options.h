@@ -4,7 +4,8 @@
 #include "options_common.h"
 
 //#define pp_FRAME           // turn on frame code
-//#define pp_SHOW_UPDATE      // show what is being update in UpdateShowScene routine
+#define pp_BOUNDMEM        // reduce memory allocations for boundary files
+#define pp_SHOW_UPDATE      // show what is being update in UpdateShowScene routine
 //#define pp_PARTBOUND_MULTI // compute particle bounds in the background
 //#define pp_LUA            // turn on LUA option
 #define pp_SLICE_MULTI      // load slice files in parallel
@@ -32,6 +33,10 @@
 //#define pp_OPEN_TEST     // count number of file opens and closes
 //#define pp_FRAME_DEBUG   // frame timing test
 //#define pp_FRAME_DEBUG2  // output frame times
+#endif
+
+#ifndef pp_FRAME          // turn on option if pp_FRAME is not set
+#define pp_PART_COUNT    // precompute particle frame counting when loading all particle files
 #endif
 
 //*** options: windows

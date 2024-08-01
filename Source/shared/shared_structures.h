@@ -162,19 +162,31 @@ typedef struct _meshdata {
   float norm[3];
   float dplane_min[4], dplane_max[4];
 
-  int *boundarytype;
+  struct _meshdata *skip_nabors[6];
+
+#ifdef pp_BOUNDMEM
+  unsigned char *buffer1;
+#endif
+  struct _meshdata **meshonpatch;
+  int *blockonpatch;
   int *patchdir,*patch_surfindex;
   int *pi1, *pi2, *pj1, *pj2, *pk1, *pk2;
-  struct _meshdata *skip_nabors[6];
-  int *blockonpatch;
-  struct _meshdata **meshonpatch;
+  int *boundarytype;
+  int *vis_boundaries;
+  int *boundary_row, *boundary_col, *blockstart;
+
   struct _meshdata *nabors[6];
   struct _supermeshdata *super;
   int *ptype;
-  int *boundary_row, *boundary_col, *blockstart;
   unsigned int *zipoffset, *zipsize;
-  int *vis_boundaries;
+
+#ifdef pp_BOUNDMEM
+  unsigned char *buffer2;
+#endif
   float *xyzpatch, *xyzpatch_threshold;
+  float *thresholdtime;
+  int *patchblank;
+
   unsigned char *cpatchval_zlib, *cpatchval_iframe_zlib;
   unsigned char *cpatchval, *cpatchval_iframe;
   float *patch_times, *patch_timesi, *patchval;
@@ -183,8 +195,6 @@ typedef struct _meshdata {
 #endif
   unsigned char *patch_times_map;
   float **patchventcolors;
-  float *thresholdtime;
-  int *patchblank;
   int npatch_times,npatches;
   int patch_itime;
   int *patch_timeslist;

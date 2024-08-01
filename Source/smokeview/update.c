@@ -2240,7 +2240,7 @@ void OutputFrameSteps(void){
 }
 #endif
 #ifdef pp_SHOW_UPDATE
-#define SHOW_UPDATE(var) printf("updating: %s\n", #var);INIT_PRINT_TIMER(update_timer);
+#define SHOW_UPDATE(var) printf("updating: %s\n", #var);INIT_PRINT_TIMER(update_timer);updating=1
 #define END_SHOW_UPDATE(var) PRINT_TIMER(update_timer,#var)
 #else
 #define SHOW_UPDATE(var)
@@ -2568,6 +2568,7 @@ void UpdateShowScene(void){
     END_SHOW_UPDATE(updateUpdateFrameRateMenu);
   }
   if(updatefaces == 1){
+    updatefaces = 0;
     SHOW_UPDATE(updatefaces);
     INIT_PRINT_TIMER(timer_update_faces);
     UpdateFaces();
