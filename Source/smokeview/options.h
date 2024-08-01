@@ -33,6 +33,7 @@
 //#define pp_OPEN_TEST     // count number of file opens and closes
 //#define pp_FRAME_DEBUG   // frame timing test
 //#define pp_FRAME_DEBUG2  // output frame times
+#endif
 
 #ifndef pp_FRAME          // turn on option if pp_FRAME is not set
 #define pp_PART_COUNT    // precompute particle frame counting when loading all particle files
