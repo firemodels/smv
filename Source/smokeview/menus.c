@@ -4301,6 +4301,11 @@ void LoadParticleMenu(int value){
       if(scriptoutstream!=NULL){
         fprintf(scriptoutstream,"LOADPARTICLES\n");
       }
+#ifdef pp_PART_NOCOUNT
+      if(value==PARTFILE_LOADALL){
+        SetupPart(value);
+      }
+#else
       if(value==PARTFILE_LOADALL){
         SetupPart(value);
         npartframes_max=GetMinPartFrames(PARTFILE_LOADALL);
@@ -4308,6 +4313,7 @@ void LoadParticleMenu(int value){
       else{
         npartframes_max=GetMinPartFrames(PARTFILE_RELOADALL);
       }
+#endif
 
       if(scriptoutstream==NULL||script_defer_loading==0){
 
