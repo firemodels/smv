@@ -3,7 +3,7 @@
   same as plume5a except there is a blockage in the middle of the scene to block the flow
   The purpose of this case is to demonstrate the curved flow (via streak lines) that results.
 
-&MESH IJK=32,32,32, XB=0.0,0.2,0.0,0.2,0.0,0.2, MULT_ID='mesh'/
+&MESH IJK=16,16,16, XB=0.0,0.2,0.0,0.2,0.0,0.2, MULT_ID='mesh'/
 &MULT ID='mesh', DX=0.2, DY=0.2, DZ=0.2, I_UPPER=7, J_UPPER=7, K_UPPER=7 /
 
 
