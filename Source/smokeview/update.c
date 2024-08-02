@@ -1222,6 +1222,7 @@ void UpdateSliceNtimes(void){
 void UpdateTimes(void){
   int i;
 
+  INIT_PRINT_TIMER(setup_timer);
   GetGeomInfoPtrs(0);
 
   UpdateShow();
@@ -1236,6 +1237,8 @@ void UpdateTimes(void){
   nglobal_times = 0;
   FREEMEMORY(times_buffer);
   ntimes_buffer = 0;
+
+  PRINT_TIMER(setup_timer, "UpdateTimes: setup");
 
   // determine min time, max time and number of times
 
@@ -1311,6 +1314,7 @@ void UpdateTimes(void){
       MergeGlobalTimes(ptime, 1);
     }
   }
+  INIT_PRINT_TIMER(slice_timer);
   for(i=0;i<nsliceinfo;i++){
     slicedata *sd;
 
@@ -1319,6 +1323,7 @@ void UpdateTimes(void){
       MergeGlobalTimes(sd->times, sd->ntimes);
     }
   }
+  PRINT_TIMER(slice_timer, "UpdateTimes: slice");
   for(i=0;i<npatchinfo;i++){
     patchdata *patchi;
 
@@ -1327,6 +1332,7 @@ void UpdateTimes(void){
       MergeGlobalTimes(patchi->geom_times, patchi->ngeom_times);
     }
   }
+  INIT_PRINT_TIMER(boundary_timer);
   for(i=0;i<nmeshes;i++){
     patchdata *patchi;
     meshdata *meshi;
@@ -1341,10 +1347,12 @@ void UpdateTimes(void){
       }
     }
   }
+  PRINT_TIMER(boundary_timer, "UpdateTimes: boundary");
   if(ReadZoneFile==1&&visZone==1){
     MergeGlobalTimes(zone_times, nzone_times);
   }
   if(ReadIsoFile==1&&visAIso!=0){
+    INIT_PRINT_TIMER(iso_timer);
     for(i=0;i<nisoinfo;i++){
       meshdata *meshi;
       isodata *ib;
@@ -1354,6 +1362,7 @@ void UpdateTimes(void){
       meshi=meshinfo + ib->blocknumber;
       MergeGlobalTimes(meshi->iso_times, meshi->niso_times);
     }
+    PRINT_TIMER(iso_timer, "UpdateTimes: iso");
   }
   if(nvolrenderinfo>0){
     for(i=0;i<nmeshes;i++){
@@ -1371,11 +1380,13 @@ void UpdateTimes(void){
     smoke3ddata *smoke3di;
 
     if(nsmoke3dloaded>0&&vis3DSmoke3D==1){
+      INIT_PRINT_TIMER(smoke3d_timer);
       for(i=0;i<nsmoke3dinfo;i++){
         smoke3di = smoke3dinfo + i;
         if(smoke3di->loaded==0)continue;
         MergeGlobalTimes(smoke3di->times, smoke3di->ntimes);
       }
+      PRINT_TIMER(smoke3d_timer, "UpdateTimes: smoke3d");
     }
   }
   for(i = 0; i < npartinfo; i++){
@@ -1398,6 +1409,7 @@ void UpdateTimes(void){
 
   //--------------------------------------------------------------
 
+  INIT_PRINT_TIMER(timer_allocate);
   CheckMemory;
 
   // allocate memory for individual timelist arrays
@@ -1506,6 +1518,7 @@ void UpdateTimes(void){
       current_script_command->first=0;
     }
   }
+  PRINT_TIMER(timer_allocate, "UpdateTimes: allocate memory");
 
   // initialize individual time pointers
 
