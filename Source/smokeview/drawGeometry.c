@@ -3902,13 +3902,22 @@ void UpdateHiddenFaces(){
       facej->hidden=0;
 
     }
+  }
+  if(have_removable_obsts == 1){ 
+    if(hide_overlaps!=0)PRINTF(" complete\n");
+    return;
+  }
+  for(i=0;i<nmeshes;i++){
+    int j;
+    meshdata *meshi;
+
+    meshi=meshinfo + i;
     if(hide_overlaps==0)continue;
     for(j=0;j<6*meshi->nbptrs;j++){
       int k;
       facedata *facej;
 
       facej = meshi->faceinfo+j;
-
       for(k=0;k<6*meshi->nbptrs;k++){
         facedata *facek;
 
