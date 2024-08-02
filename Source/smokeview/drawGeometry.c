@@ -2305,9 +2305,7 @@ void ObstOrVent2Faces(const meshdata *meshi,blockagedata *bc,
     faceptr->bc=NULL;
     faceptr->interior = 0;
 
-    faceptr->removable_face = 0;
     if(bc!=NULL){
-      faceptr->removable_face = bc->removable_obst;
       faceptr->bc=bc;
       faceptr->hidden=0;
       faceptr->patchpresent=0;
@@ -3935,7 +3933,6 @@ void UpdateHiddenFaces(){
       facedata *facej;
 
       facej = meshi->faceinfo + j;
-      if(facej->removable_face == 1)continue;
       if(facej->hidden == 0){
         facedata *facej2;
 
@@ -3961,7 +3958,6 @@ void UpdateHiddenFaces(){
       facedata *facej;
 
       facej = meshi->faceinfo + j;
-      if(facej->removable_face == 1)continue;
       if(facej->hidden == 0){
         facedata *facej2;
 
@@ -3987,7 +3983,6 @@ void UpdateHiddenFaces(){
       facedata *facej;
 
       facej = meshi->faceinfo + j;
-      if(facej->removable_face == 1)continue;
       if(facej->hidden == 0){
         facedata *facej2;
 

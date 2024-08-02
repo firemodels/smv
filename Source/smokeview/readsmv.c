@@ -917,7 +917,7 @@ void FreeLabels(flowlabels *flowlabel){
 void InitMesh(meshdata *meshi){
   int i;
 
-  meshi->removable_obsts = 0;
+  meshi->removable_obsts = 1;
   meshi->use = 1;
   meshi->isliceinfo    = 0;
   meshi->nsliceinfo    = 0;
@@ -4123,7 +4123,6 @@ void InitObst(blockagedata *bc, surfdata *surf, int index, int meshindex){
   char blocklabel[255];
   size_t len;
 
-  bc->removable_obst = 0;
   bc->prop = NULL;
   bc->is_wuiblock = 0;
   bc->transparent = 0;
@@ -10946,13 +10945,12 @@ typedef struct {
         int removable_obst;
 
         exclaim = strchr(buffer, '!');
-        removable_obst = 0;
+        removable_obst = 1;
         if(exclaim != NULL){
           exclaim[0] = 0;
           exclaim = TrimFront(exclaim + 1);
-          if(exclaim[0] == 'T' || exclaim[0] == 't')removable_obst = 1;
+          if(exclaim[0] == 'F' || exclaim[0] == 'f')removable_obst = 0;
         }
-        bc->removable_obst = removable_obst;
         if(removable_obst == 1)meshi->removable_obsts = 1;
         ijk = bc->ijk;
         sscanf(buffer,"%i %i %i %i %i %i %i %i",

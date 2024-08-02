@@ -309,7 +309,6 @@ typedef struct _surfdata {
 /* --------------------------  facedata ------------------------------------ */
 
 typedef struct _facedata {
-  int removable_face;
   int type,type2;
   float approx_vertex_coords[12];
   float exact_vertex_coords[12];
@@ -359,7 +358,6 @@ typedef struct _xbdata {
 /* -------------------------- blockagedata ------------------------------------ */
 
 typedef struct _blockagedata {
-  int removable_obst;
   int ijk[6];
   float xmin, xmax, ymin, ymax, zmin, zmax;
   float xyzEXACT[6], xyzDELTA[18];
