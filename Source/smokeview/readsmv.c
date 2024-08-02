@@ -921,7 +921,6 @@ void InitMesh(meshdata *meshi){
   meshi->buffer1 = NULL;
   meshi->buffer2 = NULL;
 #endif
-  meshi->removable_obsts = 1;
   meshi->use = 1;
   meshi->isliceinfo    = 0;
   meshi->nsliceinfo    = 0;
@@ -1422,6 +1421,7 @@ void ReadSMVDynamic(char *file){
       bc=meshi->blockageinfoptrs[tempval];
       bc->nshowtime++;
       have_animate_blockages = 1;
+      have_removable_obsts = 1;
       continue;
     }
 
@@ -10894,7 +10894,6 @@ typedef struct {
       }
 
       nn=-1;
-      meshi->removable_obsts = 0;
       for(iblock=0;iblock<n_blocks;iblock++){
         blockagedata *bc;
         int *ijk;
@@ -10940,18 +10939,16 @@ typedef struct {
         */
 
         FGETS(buffer,255,stream);
+        {
+          char *exclaim;
 
-        char *exclaim;
-        int removable_obst;
-
-        exclaim = strchr(buffer, '!');
-        removable_obst = 1;
-        if(exclaim != NULL){
-          exclaim[0] = 0;
-          exclaim = TrimFront(exclaim + 1);
-          if(exclaim[0] == 'F' || exclaim[0] == 'f')removable_obst = 0;
+          exclaim = strchr(buffer, '!');
+          if(exclaim != NULL){
+            exclaim[0] = 0;
+            exclaim = TrimFront(exclaim + 1);
+            if(exclaim[0] == 'F' || exclaim[0] == 'f')have_removable_obsts = 1;
+          }
         }
-        if(removable_obst == 1)meshi->removable_obsts = 1;
         ijk = bc->ijk;
         sscanf(buffer,"%i %i %i %i %i %i %i %i",
           ijk,ijk+1,ijk+2,ijk+3,ijk+4,ijk+5,
