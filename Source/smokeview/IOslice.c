@@ -4070,7 +4070,7 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
         *errorcode = 1;
         return 0;
       }
-      MakeTimesMap(sd->times, sd->times_map, sd->ntimes);
+      MakeTimesMap(sd->times, &sd->times_map, sd->ntimes);
       file_size = sd->ncompressed;
       return_filesize = (FILE_SIZE)file_size;
     }
@@ -4111,7 +4111,7 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
             tload_step, use_tload_begin, use_tload_end, tload_begin, tload_end
           );
 #endif
-        MakeTimesMap(sd->times, sd->times_map, sd->ntimes);
+        MakeTimesMap(sd->times, &sd->times_map, sd->ntimes);
         file_size = (int)return_filesize;
         sd->valmin_slice = qmin;
         sd->valmax_slice = qmax;
