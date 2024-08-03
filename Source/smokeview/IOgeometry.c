@@ -2171,7 +2171,7 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
   }
   filesize=GetGeomData(patchi, patchi->file, load_flag, ntimes_local, nvals, patchi->geom_times,
     patchi->geom_nstatics, patchi->geom_ndynamics, patchi->geom_vals, time_frame, time_value, geom_offsets, &error);
-  MakeTimesMap(patchi->geom_times, patchi->geom_times_map, ntimes_local);
+  MakeTimesMap(patchi->geom_times, &patchi->geom_times_map, ntimes_local);
 
   return_filesize += filesize;
   if(error == 1){

@@ -710,16 +710,27 @@ int GetItime(int n, int *timeslist, unsigned char *times_map, float *times, int 
   int istart=0;
 
   if(n>0)istart=timeslist[n-1];
-  while(1){
-    if(times_map!=NULL&&istart>=0&&istart<ntimes-1&&times_map[istart]==0){
-      istart++;
-      continue;
+  if(times_map == NULL){
+    while(1){
+      if(istart < ntimes - 1 && times[istart] <= global_times[n]){
+        istart++;
+        continue;
+      }
+      break;
     }
-    if(istart<ntimes-1&&times[istart]<=global_times[n]){
-      istart++;
-      continue;
+  }
+  else{
+    while(1){
+      if(times_map != NULL && istart >= 0 && istart < ntimes - 1 && times_map[istart] == 0){
+        istart++;
+        continue;
+      }
+      if(istart < ntimes - 1 && times[istart] <= global_times[n]){
+        istart++;
+        continue;
+      }
+      break;
     }
-    break;
   }
   istart=CLAMP(istart,0,ntimes-1);
   return istart;
@@ -730,9 +741,14 @@ int GetItime(int n, int *timeslist, unsigned char *times_map, float *times, int 
 int GetDataTimeFrame(float time, unsigned char *times_map, float *times, int ntimes){
   int i;
 
-  for(i = 0; i < ntimes-1; i++){
-    if(times_map!=NULL&&times_map[i] == 0)continue;
-    if(times[i]<=time&&time<times[i+1])return i;
+  if(times_map == NULL){
+    return GetTimeInterval(time, times, ntimes);
+  }
+  else{
+    for(i = 0; i < ntimes - 1; i++){
+      if(times_map[i] == 0)continue;
+      if(times[i]<=time&&time<times[i+1])return i;
+    }
   }
   return ntimes-1;
 }
@@ -1119,13 +1135,12 @@ void MergeGlobalTimes(float *time_in, int ntimes_in){
     nglobal_times = ntimes_in;
 
     unsigned char *times_map = NULL;
-    NewMemory((void **)&times_map, nglobal_times*sizeof(unsigned char));
-    MakeTimesMap(global_times, times_map, nglobal_times);
+    MakeTimesMap(global_times, &times_map, nglobal_times);
     int n;
 
     n = 0;
     for(i = 0; i < nglobal_times; i++){
-      if(times_map[i] == 1){
+      if(times_map==NULL || times_map[i] == 1){
         if(i != n)global_times[n] = global_times[i];
         n++;
       }
@@ -1181,12 +1196,12 @@ void MergeGlobalTimes(float *time_in, int ntimes_in){
 
   unsigned char *times_map = NULL;
   NewMemory((void **)&times_map, nglobal_times*sizeof(unsigned char));
-  MakeTimesMap(global_times, times_map, nglobal_times);
+  MakeTimesMap(global_times, &times_map, nglobal_times);
   int n;
 
   n = 0;
   for(i = 0; i < nglobal_times; i++){
-    if(times_map[i] == 1){
+    if(times_map==NULL || times_map[i] == 1){
       if(i != n)global_times[n] = global_times[i];
       n++;
     }
