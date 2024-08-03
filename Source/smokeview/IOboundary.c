@@ -2670,7 +2670,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
     meshi->vis_boundaries[n] = vis_boundary_type[meshi->boundarytype[n]];
   }
   plotstate=GetPlotState(DYNAMIC_PLOTS);
-  MakeTimesMap(meshi->patch_times, meshi->patch_times_map, meshi->npatch_times);
+  MakeTimesMap(meshi->patch_times, &meshi->patch_times_map, meshi->npatch_times);
   if(patchi->finalize==1){
     UpdateTimes();
     ForceIdle();

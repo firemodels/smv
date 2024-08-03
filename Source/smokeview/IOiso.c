@@ -571,7 +571,7 @@ FILE_SIZE ReadIsoGeom(int ifile, int load_flag, int *geom_frame_index, int *erro
     meshi->iso_times[i]=geomi->times[i];
     meshi->iso_times_map[i] = 1;
   }
-  MakeTimesMap(meshi->iso_times, meshi->iso_times_map, geomi->ntimes);
+  MakeTimesMap(meshi->iso_times, &meshi->iso_times_map, geomi->ntimes);
   meshi->nisolevels=geomi->nfloat_vals;
   if(
     NewMemoryMemID((void **)&meshi->showlevels, sizeof(int)*meshi->nisolevels, isoi->memory_id) == 0 ||
