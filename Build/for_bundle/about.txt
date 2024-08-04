@@ -1,0 +1,2 @@
+Smokeview is a visualization program used to display
+results of a Fire Dynamics Simulator (FDS) simulation.
