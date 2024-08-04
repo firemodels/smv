@@ -1,0 +1,88 @@
+#!/bin/bash
+repo=
+profile=
+
+#---------------------------------------------
+
+function usage {
+option=$1
+if [ "$platform" == "linux" ]; then
+  echo "run smokeview built with gcc/gfortran and generate profile information"
+else
+  echo "run smokeview built with gcc/gfortran"
+fi
+echo ""
+echo "Options:"
+echo "-h - display this message"
+if [ "$platform" == "linux" ]; then
+  echo "-p - only generate and view profile information"
+fi
+echo "-r repo_root - directory in $HOME containing smv repo"
+echo "-R - assume FireModels_fork is in $HOME containing the smv repo"
+exit 0
+}
+
+if [ "`uname`" == "Darwin"  ]; then
+  platform=osx
+else
+  platform=linux
+fi
+
+while getopts 'hpr:Rv' OPTION
+do
+case $OPTION in
+  h)
+  usage
+  ;;
+  p)
+  if [ "$platform" == "linux" ]; then
+    profile=1
+  fi
+  ;;
+  r)
+  repo="$OPTARG"
+  ;;
+  R)
+  repo="FireModels_fork"
+  ;;
+esac
+done
+shift $((OPTIND-1))
+casename=$1
+
+if [ "$repo" == "" ]; then
+  smokeview=smokeview_gnu
+  is_file_installed=`$smokeview -v |& grep 'not found' | head -1 | wc -l`
+  if [ "$is_file_installed" == "1" ]; then
+    echo "***error: $smokeview not installed"
+    exit 1
+  fi
+  smokeview=`which $smokeview`
+else
+  if [ ! -d $HOME/$repo ]; then
+    echo "***error: the repo root $HOME/$repo does not exist"
+    exit 1
+  fi
+  smokeview=$HOME/$repo/smv/Build/smokeview/gnu_${platform}_64/smokeview_${platform}_64p
+  if [ ! -e $smokeview ]; then
+    echo ***error: $smokeview does not exist
+    exit 1
+  fi
+fi
+
+
+if [ "$profile" == "" ]; then
+  $smokeview $casename
+fi
+
+if [ "$platform" == "linux" ]; then
+  have_gprof=`which gprof | wc -l ` 
+  if [ "$have_gprof" == "0" ]; then
+    echo "***error: gprof not found:"
+    exit /b
+  fi
+  gprof $smokeview > ${casename}_profile.txt
+  if [ -e ${casename}_profile.txt ]; then
+    vi ${casename}_profile.txt
+  fi
+fi
