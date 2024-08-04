@@ -1023,7 +1023,7 @@ int GetInterval(float val, float *array, int n){
   high=n-1;
   while(high-low>1){
     mid=(low+high)/2;
-    if(val>array[mid]){
+    if(val>=array[mid]){
       low=mid;
     }
     else{
