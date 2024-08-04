@@ -3527,6 +3527,9 @@ void LoadUnloadMenu(int value){
       assert(patchi->loaded==0||patchi->loaded==1);
       if(patchi->loaded == 1){
 #ifdef pp_BOUNDFRAME
+        if(patchi->structured == YES){
+          PRINTF("Loading %s(%s)", patchi->file, patchi->label.shortlabel);
+        }
         ReadBoundary(i, load_flag, &errorcode);
 #else
         ReadBoundary(i, LOAD,&errorcode);
