@@ -2834,7 +2834,7 @@ void ScriptLoadBoundary(scriptdata *scripti, int meshnum){
         ReadBoundary(i, LOAD, &errorcode);
         count++;
         THREADcontrol(compress_threads, THREAD_UNLOCK);
-        if(meshnum == -1)break;
+        if(meshnum != -1)break;
       }
     }
   }
