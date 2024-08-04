@@ -1680,8 +1680,14 @@ void UpdateTimes(void){
     }
   }
 
-  if(nglobal_times>0)SynchTimes();
+  if(nglobal_times>0){
+    INIT_PRINT_TIMER(timer_synch_times);
+    SynchTimes();
+    PRINT_TIMER(timer_synch_times, "timer: SyncTimes");
+  }
+#ifdef pp_UPDATE_FACES
   updatefaces=1;
+#endif
   if(nglobal_times>0){
     UpdateTimeLabels();
     GLUIUpdateTimeBounds(global_times[0],global_times[nglobal_times-1]);
