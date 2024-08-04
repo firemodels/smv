@@ -1,0 +1,49 @@
+
+// put rendered files in specified directory
+
+LABEL
+  put rendered files in specified directory
+
+RENDERDIR
+ ..\..\Manuals\SMV_User_Guide\SCRIPT_FIGURES
+RENDERDIR
+ .
+
+UNLOADTOUR
+LOADTOUR
+ Tour 2
+SETTOURVIEW
+  0   0 0 0.0
+SETVIEWPOINT
+ view 1
+SETTIMEVAL
+ 0.000000
+RENDERONCE
+ burn_away_tour_00
+SETTIMEVAL
+ 15.000000
+RENDERONCE
+ burn_away_tour_15
+SETTIMEVAL
+ 30.000000
+RENDERONCE
+ burn_away_tour_30
+UNLOADALL
+
+UNLOADTOUR
+LOADBOUNDARY
+ WALL TEMPERATURE
+SETTIMEVAL
+ 0.0
+RENDERONCE
+ burn_away_bound_00
+SETTIMEVAL
+ 15.0
+RENDERONCE
+ burn_away_bound_15
+SETTIMEVAL
+ 30.0
+RENDERONCE
+ burn_away_bound_30
+
+
