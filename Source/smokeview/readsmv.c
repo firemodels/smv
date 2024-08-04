@@ -5789,6 +5789,7 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
   int read_slice_header = 0;
   char zlib_file[255], rle_file[255];
   int cell_center_flag = -1;
+  int fds_dir = -1;
 
   char *bufferptr, *bufferptr2;
   int nslicefiles, nn_slice;
@@ -5819,7 +5820,7 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
   if(char_slcf_index!=NULL){
     *char_slcf_index = 0;
     char_slcf_index++;
-    sscanf(char_slcf_index, "%i %i", &slcf_index, &cell_center_flag);
+    sscanf(char_slcf_index, "%i %i %i", &slcf_index, &cell_center_flag, &fds_dir);
   }
 
   sliceparms = strchr(buffer, '&');
@@ -5892,6 +5893,7 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
 #ifdef pp_SLICEFRAME
   sd->frameinfo        = NULL;
 #endif
+  sd->fds_dir          = fds_dir;
   sd->slice_mask       = NULL;
   sd->vals2d.vals      = NULL;
   sd->vals2d.vals_orig = NULL;

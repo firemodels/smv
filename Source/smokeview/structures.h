@@ -1043,7 +1043,7 @@ typedef struct _slicedata {
   int nsliceijk;
   int *timeslist;
   char cdir[256];
-  int idir;
+  int idir, fds_dir;
   float sliceoffset;
   int nslicei, nslicej, nslicek;
   int nslicex, nslicey;
