@@ -4140,7 +4140,7 @@ int SetupSmoke3D(smoke3ddata *smoke3di, int load_flag, int iframe_arg, int *erro
 #endif
   }
 #ifdef pp_SMOKEFRAME
-  if(iframe_arg == ALL_SMOKE_FRAMES&&load_flag!=RELOAD)PRINTF("Loading %s(%s)", smoke3di->file, smoke3di->label.shortlabel);
+  if(iframe_arg == ALL_SMOKE_FRAMES)PRINTF("Loading %s(%s)", smoke3di->file, smoke3di->label.shortlabel);
 #else
   if(iframe_arg==ALL_SMOKE_FRAMES)PRINTF("Loading %s(%s)", smoke3di->file, smoke3di->label.shortlabel);
 #endif
@@ -4447,7 +4447,7 @@ FILE_SIZE ReadSmoke3D(int time_frame,int ifile_arg,int load_flag, int first_time
   }
   STOP_TIMER(total_time);
 #ifdef pp_SMOKEFRAME
-  if(load_flag!=RELOAD)printf("\n");
+  printf("\n");
 #else
   if(time_frame==ALL_SMOKE_FRAMES){
     if(file_size_local>1000000){
