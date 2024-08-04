@@ -2353,12 +2353,27 @@ void GetSliceParams(sliceparmdata *sp){
     ks2=sd->ks2;
     if(error==0){
       float position;
+      int direction=1;
 
       sd->idir=-1;
 
       strcpy(sd->cdir,"");
       position=-999.0;
-      if(sd->is1==sd->is2||(sd->js1!=sd->js2&&sd->ks1!=sd->ks2)){
+      direction = sd->fds_dir;
+      if(direction == 0)direction = 1;
+      if(direction == -1){
+        if(sd->is1==sd->is2||(sd->js1!=sd->js2&&sd->ks1!=sd->ks2)){
+          direction = 1;
+        }
+        else if(sd->js1==sd->js2){
+          direction = 2;
+        }
+        else{
+          direction = 3;
+        }
+      }
+      
+      if(direction==1){
         sd->idir=1;
         position = meshi->xplt_orig[is1];
         if(sd->slice_filetype==SLICE_CELL_CENTER){
@@ -2386,7 +2401,7 @@ void GetSliceParams(sliceparmdata *sp){
           sprintf(sd->cdir, "3D slice");
         }
       }
-      if(sd->js1==sd->js2){
+      if(direction==2){
         sd->dplane_min = meshi->dplane_min[2];
         sd->dplane_max = meshi->dplane_max[2];
 
@@ -2408,7 +2423,7 @@ void GetSliceParams(sliceparmdata *sp){
         }
         sprintf(sd->cdir,"Y=%f",position);
       }
-      if(sd->ks1==sd->ks2){
+      if(direction==3){
         sd->dplane_min = meshi->dplane_min[3];
         sd->dplane_max = meshi->dplane_max[3];
 
