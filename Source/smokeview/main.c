@@ -7,6 +7,7 @@
 #include <sys/stat.h>
 #include GLUT_H
 
+#include "file_util.h"
 #include "string_util.h"
 #include "smokeviewvars.h"
 #include "command_args.h"
@@ -22,43 +23,6 @@
 #endif
 
 #include <assert.h>
-
-/* ------------------ IsInstallBinDir ------------------------ */
-
-int IsInstallBinDir(char *bindir){
-  char smvfile[1024];
-
-  if(bindir == NULL)return 0;
-  strcpy(smvfile, bindir);
-  strcat(smvfile, dirseparator);
-  strcat(smvfile, ".smokeview_bin");
-  return FileExistsOrig(smvfile);
-}
-
-/* ------------------ SetBinDirAlways ------------------------ */
-
-void SetBinDirAlways(char *new_bindir){
-  char savedir[1024], new_bindir_local[1024];
-
-  GETCWD(savedir, 1024);
-  CHDIR(new_bindir);
-  GETCWD(new_bindir_local, 1024);
-  CHDIR(savedir);
-  FREEMEMORY(smokeview_bindir);
-  NewMemory((void **)&smokeview_bindir, strlen(new_bindir_local) + 2);
-  strcpy(smokeview_bindir, new_bindir_local);
-  if(smokeview_bindir[strlen(smokeview_bindir) - 1] != dirseparator[0])strcat(smokeview_bindir, dirseparator);
-}
-
-/* ------------------ SetBinDir ------------------------ */
-
-int SetBinDir(char *new_bindir){
-  if(IsInstallBinDir(new_bindir) == 1){
-    SetBinDirAlways(new_bindir);
-    return 1;
-  }
-  return 0;
-}
 
 /* ------------------ Usage ------------------------ */
 
@@ -140,16 +104,7 @@ char *ParseCommandline(int argc, char **argv) {
     }
     SMV_EXIT(0);
   }
-  return_val = ProcessCommandLine(&args);
-  if(args.bindir == NULL){
-    have_bindir_arg = 0;
-  }
-  else{
-    have_bindir_arg = 1;
-    SetBinDirAlways(args.bindir);
-    if(smokeview_bindir[strlen(smokeview_bindir) - 1] != dirseparator[0])strcat(smokeview_bindir, dirseparator);
-  }
-  return return_val;
+  return ProcessCommandLine(&args);
 }
 
 /// @brief Once the commandline arguments ahve been parsed, they can be passed
@@ -742,7 +697,7 @@ char *ProcessCommandLine(CommandlineArgs *args) {
       setup_only = 1;
     }
     if(args->bindir != NULL){
-      SetBinDirAlways(args->bindir);
+      SetSmvRootOverride(args->bindir);
     }
     if(args->casedir){
       NewMemory((void **)&smokeview_casedir, strlen(args->casedir) +2);
@@ -860,8 +815,6 @@ int main(int argc, char **argv){
   }
 
   progname=argv[0];
-  strcpy(smokeview_progname, progname);
-  GetProgFullPath(smokeview_progname, 1024);
   smv_filename = ParseCommandline(argc, argv);
 
 #ifdef WIN32
@@ -870,61 +823,12 @@ int main(int argc, char **argv){
   Which("fds", &fdsprog);
 #endif
 
-  prog_fullpath = progname;
-  if(smokeview_bindir==NULL){
-    smokeview_bindir = GetProgDir(progname, &smokeviewpath);
-  }
-  int valid_bindir;
-
-  valid_bindir = have_bindir_arg;
-  if(valid_bindir == 0&&smokeview_bindir!=NULL&&IsInstallBinDir(smokeview_bindir)==0){
-    char new_bindir[1024];
-    char *bins[] = {"bot","Bundlebot","smv","for_bundle"};
-    int i;
-
-    strcpy(new_bindir, smokeview_bindir);
-    for(i = 0; i < 4; i++){
-      strcat(new_bindir, dirseparator);
-      strcat(new_bindir, "..");
-    }
-    for(i = 0; i < 4; i++){
-      strcat(new_bindir, dirseparator);
-      strcat(new_bindir, bins[i]);
-    }
-    strcat(new_bindir, dirseparator);
-    if(IsInstallBinDir(new_bindir) == 1){
-      char savedir[1024];
-
-      FreeMemory(smokeview_bindir);
-      GETCWD(savedir, 1024);
-      CHDIR(new_bindir);
-      GETCWD(new_bindir, 1024);
-      CHDIR(savedir);
-      NewMemory((void **)&smokeview_bindir, strlen(new_bindir)+2);
-      strcpy(smokeview_bindir, new_bindir);
-      valid_bindir = 1;
-    }
-  }
-#ifdef WIN32
-  if(valid_bindir == 0){
-    char new_bindir[1024];
-
-    strcpy(new_bindir, "C:\\Program Files\\firemodels\\SMV6\\");
-    valid_bindir = SetBinDir(new_bindir);
-  }
-  if(valid_bindir == 0){
-    char new_bindir[1024];
-
-    strcpy(new_bindir, "C:\\Program Files\\firemodels\\SMV7");
-    valid_bindir = SetBinDir(new_bindir);
-  }
-#endif
   if(smv_filename == NULL){
     DisplayVersionInfo("Smokeview ");
     SMV_EXIT(0);
   }
   if(show_version==1 || smv_filename==NULL){
-    PRINTVERSION("smokeview", argv[0]);
+    PRINTVERSION("smokeview");
     return 1;
   }
   if(CheckSMVFile(smv_filename, smokeview_casedir)==0){
@@ -933,9 +837,10 @@ int main(int argc, char **argv){
   MakeFireColors(fire_temp_min, fire_temp_max, nfire_colors);
 
   InitTextureDir();
-  InitColorbarsDir();
   InitScriptErrorFiles();
-  smokezippath= GetSmokeZipPath(smokeview_bindir);
+  char *smv_bindir = GetSmvRootDir();
+  smokezippath= GetSmokeZipPath(smv_bindir);
+  FREEMEMORY(smv_bindir);
   DisplayVersionInfo("Smokeview ");
   InitStartupDirs();
   SetupGlut(argc,argv);

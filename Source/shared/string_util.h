@@ -157,7 +157,7 @@ EXTERNCPP char          *RandStr(char* str, int length);
 EXTERNCPP void           GetBaseTitle(char *progname, char *title_base);
 EXTERNCPP void           GetTitle(char *progname, char *fulltitle);
 #ifdef pp_HASH
-EXTERNCPP void           PRINTversion(char *progname, char *progfullpath, int hash_option);
+EXTERNCPP void           PRINTversion(char *progname, int hash_option);
 #else
 EXTERNCPP void           PRINTversion(char *progname);
 #endif

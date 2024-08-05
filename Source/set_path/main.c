@@ -131,7 +131,7 @@ int main(int argc, char **argv){
     return 1;
   }
   if(show_version==1){
-    PRINTVERSION("set_file", argv[0]);
+    PRINTVERSION("set_file");
     return 1;
   }
 

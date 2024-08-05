@@ -45,7 +45,7 @@ int main(int argc, char **argv){
     return 1;
   }
   if(show_version==1){
-    PRINTVERSION("sh2bat", argv[0]);
+    PRINTVERSION("sh2bat");
     return 1;
   }
 
