@@ -1958,9 +1958,6 @@ void PRINTversion(char *progname){
   PRINTF("Revision         : %s\n", githash);
   PRINTF("Revision Date    : %s\n", gitdate);
   PRINTF("Compilation Date : %s %s\n", __DATE__, __TIME__);
-#ifndef pp_COMPVER
-#define pp_COMPVER "unknown"
-#endif
   PRINTF("Compiler         : %s\n", pp_COMPVER);
 #ifdef pp_SANITIZE
   PRINTF("Sanitize checks  : enabled\n");
