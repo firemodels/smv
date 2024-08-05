@@ -1680,8 +1680,14 @@ void UpdateTimes(void){
     }
   }
 
-  if(nglobal_times>0)SynchTimes();
+  if(nglobal_times>0){
+    INIT_PRINT_TIMER(timer_synch_times);
+    SynchTimes();
+    PRINT_TIMER(timer_synch_times, "timer: SyncTimes");
+  }
+#ifdef pp_UPDATE_FACES
   updatefaces=1;
+#endif
   if(nglobal_times>0){
     UpdateTimeLabels();
     GLUIUpdateTimeBounds(global_times[0],global_times[nglobal_times-1]);
@@ -2066,7 +2072,7 @@ void OutputFrameSteps(void){
     total_wrapup_time += frameinfo->total_time;
   }
   if(count > 0){
-    sprintf(slice_label, "slice(structured): loaded %i frames, %i files, %s", frames_read, count, Bytes2Label(size_label, bytes_read));
+    sprintf(slice_label, "   slice(structured): loaded %i frames, %i files, %s", frames_read, count, Bytes2Label(size_label, bytes_read));
     strcpy(time_label, "");
     Float2String(time_label2, total_time, ncolorlabel_digits, force_fixedpoint);
     Float2String(time_label3, total_wrapup_time, ncolorlabel_digits, force_fixedpoint);
@@ -2099,7 +2105,7 @@ void OutputFrameSteps(void){
     total_wrapup_time += frameinfo->total_time;
   }
   if(count > 0){
-    sprintf(geom_slice_label, "slice(geom): loaded %i frames, %i files, %s", frames_read, count, Bytes2Label(size_label, bytes_read));
+    sprintf(geom_slice_label, "         slice(geom): loaded %i frames, %i files, %s", frames_read, count, Bytes2Label(size_label, bytes_read));
     strcpy(time_label, "");
     Float2String(time_label2, total_time, ncolorlabel_digits, force_fixedpoint);
     Float2String(time_label3, total_wrapup_time, ncolorlabel_digits, force_fixedpoint);
@@ -2128,7 +2134,7 @@ void OutputFrameSteps(void){
     total_wrapup_time += smoke3di->frameinfo->total_time;
   }
   if(count > 0){
-    sprintf(smoke_label, "3D smoke: loaded %i frames, %i files, %s", frames_read, count, Bytes2Label(size_label, bytes_read));
+    sprintf(smoke_label, "            3D smoke: loaded %i frames, %i files, %s", frames_read, count, Bytes2Label(size_label, bytes_read));
     strcpy(time_label, "");
     Float2String(time_label2, total_time, ncolorlabel_digits, force_fixedpoint);
     Float2String(time_label3, total_wrapup_time, ncolorlabel_digits, force_fixedpoint);
@@ -2190,7 +2196,7 @@ void OutputFrameSteps(void){
     total_wrapup_time += patchi->frameinfo->total_time;
   }
   if(count > 0){
-    sprintf(geom_bound_label, "boundary(geom): loaded %i frames, %i files, %s", frames_read, count, Bytes2Label(size_label, bytes_read));
+    sprintf(geom_bound_label, "      boundary(geom): loaded %i frames, %i files, %s", frames_read, count, Bytes2Label(size_label, bytes_read));
     strcpy(time_label, "");
     Float2String(time_label2, total_time, ncolorlabel_digits, force_fixedpoint);
     Float2String(time_label3, total_wrapup_time, ncolorlabel_digits, force_fixedpoint);
@@ -2219,7 +2225,7 @@ void OutputFrameSteps(void){
     total_wrapup_time += isoi->frameinfo->total_time;
   }
   if(count > 0){
-    sprintf(iso_label, "isosurface: loaded %i frames, %i files, %s", frames_read, count, Bytes2Label(size_label, bytes_read));
+    sprintf(iso_label, "          isosurface: loaded %i frames, %i files, %s", frames_read, count, Bytes2Label(size_label, bytes_read));
     strcpy(time_label, "");
     Float2String(time_label2, total_time, ncolorlabel_digits, force_fixedpoint);
     Float2String(time_label3, total_wrapup_time, ncolorlabel_digits, force_fixedpoint);
@@ -2248,7 +2254,7 @@ void OutputFrameSteps(void){
     total_wrapup_time += parti->frameinfo->total_time;
   }
   if(count > 0){
-    sprintf(part_label, "particle: loaded %i frames, %i files, %s", frames_read, count, Bytes2Label(size_label, bytes_read));
+    sprintf(part_label, "            particle: loaded %i frames, %i files, %s", frames_read, count, Bytes2Label(size_label, bytes_read));
     strcpy(time_label, "");
     Float2String(time_label2, total_time, ncolorlabel_digits, force_fixedpoint);
     Float2String(time_label3, total_wrapup_time, ncolorlabel_digits, force_fixedpoint);
@@ -2257,6 +2263,7 @@ void OutputFrameSteps(void){
     show = 1;
   }
   if(show == 1){
+    printf("\n");
     if(strlen(geom_bound_label) > 0)printf("%s\n", geom_bound_label);
     if(strlen(bound_label) > 0)printf("%s\n", bound_label);
     if(strlen(iso_label) > 0)printf("%s\n",   iso_label);

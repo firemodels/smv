@@ -4038,7 +4038,7 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
       return 0;
     }
 #ifdef pp_SLICEFRAME
-    if(time_frame == ALL_FRAMES&&load_flag!=RELOAD){
+    if(time_frame == ALL_FRAMES){
       PRINTF("Loading %s(%s)\n", file, sd->label.shortlabel);
     }
 #else
