@@ -11698,9 +11698,6 @@ static int menu_count=0;
 
     sprintf(menulabel,"  Smokeview build: %s",smv_githash);
     glutAddMenuEntry(menulabel,1);
-#ifndef pp_COMPVER
-#define pp_COMPVER "unknown"
-#endif
     strcpy(compiler_version_label, _("    Compiler version:"));
     strcat(compiler_version_label, " ");
     strcat(compiler_version_label, pp_COMPVER);
