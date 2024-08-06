@@ -4168,22 +4168,14 @@ int SetupSmoke3D(smoke3ddata *smoke3di, int load_flag, int iframe_arg, int *erro
       smoke3di->skip_fire = 1;
       *errorcode_arg = 0;
       if(iframe_arg==ALL_SMOKE_FRAMES){
-#ifdef pp_SMOKEFRAME
-        if(load_flag!=RELOAD)PRINTF(" - skipped (hrrpuv<%0.f)\n", load_hrrpuv_cutoff);
-#else
         PRINTF(" - skipped (hrrpuv<%0.f)\n", load_hrrpuv_cutoff);
-#endif
       }
       return_flag_local = 1;
     }
     if(smoke3di->type==SOOT_index&&smoke3di->maxval<=load_3dsmoke_cutoff){
       smoke3di->skip_smoke = 1;
       *errorcode_arg = 0;
-#ifdef pp_SMOKEFRAME
-      if(load_flag!=RELOAD)PRINTF(" - skipped (opacity<%0.f)\n", load_3dsmoke_cutoff);
-#else
       PRINTF(" - skipped (opacity<%0.f)\n", load_3dsmoke_cutoff);
-#endif
       return_flag_local = 1;
     }
     if(return_flag_local==1){
