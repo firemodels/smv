@@ -3362,6 +3362,7 @@ void LoadPlot2DMenu(int value){
 /* ------------------ UnloadSmoke3D ------------------------ */
 
 void UnloadSmoke3D(smoke3ddata *smoke3di){
+  smoke3di->request_load = 0;
   if(smoke3di->loaded == 0)return;
   FreeSmoke3D(smoke3di);
   smoke3di->loaded  = 0;
@@ -3381,6 +3382,7 @@ void UnloadAllSmoke3D(int type){
       smoke3ddata *smoke3di;
 
       smoke3di = smoke3dinfo + i;
+      if(type == -1 || smoke3di->type == type)smoke3di->request_load = 0;
       if(smoke3di->loaded == 0)continue;
       if(type == -1 || smoke3di->type == type){
         UnloadSmoke3D(smoke3di);
@@ -3542,7 +3544,7 @@ void LoadUnloadMenu(int value){
       smoke3ddata *smoke3di;
 
       smoke3di = smoke3dinfo + i;
-      if(smoke3di->loaded==1||smoke3di->skip_fire==1||smoke3di->skip_smoke==1){
+      if(smoke3di->request_load==1){
 #ifdef pp_SMOKEFRAME
         ReadSmoke3D(ALL_SMOKE_FRAMES, i, load_flag, FIRST_TIME, &errorcode);
 #else

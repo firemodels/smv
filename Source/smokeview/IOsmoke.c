@@ -4059,6 +4059,7 @@ int SetupSmoke3D(smoke3ddata *smoke3di, int load_flag, int iframe_arg, int *erro
     }
   }
 
+  smoke3di->request_load = 1;
   if(smoke3di->filetype==FORTRAN_GENERATED&&smoke3di->is_zlib==0)fortran_skip = 4;
 
   if(smoke3di->loaded==1&&load_flag!=RELOAD){
@@ -4074,6 +4075,7 @@ int SetupSmoke3D(smoke3ddata *smoke3di, int load_flag, int iframe_arg, int *erro
   }
 
   if(load_flag==UNLOAD){
+    smoke3di->request_load = 0;
     plotstate = GetPlotState(DYNAMIC_PLOTS);
     UpdateTimes();
     SetSmokeColorFlags();
@@ -4955,6 +4957,8 @@ void *MtMergeSmoke3D(void *arg){
 
     smoke3di = smoke3dinfo + i;
     if(smoke3di->loaded == 0 || smoke3di->display == 0)continue;
+    assert(smoke3di->timeslist != NULL);
+    if(smoke3di->timeslist==NULL)continue;
     smoke3di->ismoke3d_time = smoke3di->timeslist[itimes];
     if(IsSmokeComponentPresent(smoke3di) == 0)continue;
     if(smoke3di->ismoke3d_time != smoke3di->lastiframe){
