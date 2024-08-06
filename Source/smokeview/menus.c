@@ -3366,7 +3366,6 @@ void UnloadSmoke3D(smoke3ddata *smoke3di){
   FreeSmoke3D(smoke3di);
   smoke3di->loaded  = 0;
   smoke3di->display = 0;
-  smoke3di->request_load = 0;
 }
 
 /* ------------------ UnloadAllSmoke3D ------------------------ */
@@ -3540,7 +3539,10 @@ void LoadUnloadMenu(int value){
     //*** reload 3d smoke files
 
     for(i=0;i<nsmoke3dinfo;i++){
-      if(smoke3dinfo[i].loaded==1||smoke3dinfo[i].request_load==1){
+      smoke3ddata *smoke3di;
+
+      smoke3di = smoke3dinfo + i;
+      if(smoke3di->loaded==1||smoke3di->skip_fire==1||smoke3di->skip_smoke==1){
 #ifdef pp_SMOKEFRAME
         ReadSmoke3D(ALL_SMOKE_FRAMES, i, load_flag, FIRST_TIME, &errorcode);
 #else
