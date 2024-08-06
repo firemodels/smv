@@ -67,7 +67,9 @@ typedef struct {
 #define HELP_ALL 2
 
 #ifndef pp_COMPVER
-#ifdef __VERSION__
+#if defined(__VERSION__) && defined(__GNUC__) && !defined(__clang__)
+#define pp_COMPVER "GCC " __VERSION__
+#elif defined(__VERSION__)
 #define pp_COMPVER __VERSION__
 #elif defined(__VERSION)
 #define pp_COMPVER __VERSION
