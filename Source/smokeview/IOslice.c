@@ -3538,6 +3538,27 @@ FILE_SIZE GetSliceData(slicedata *sd, const char *slicefilename, int time_frame,
     FCLOSE_SLICE(stream);
     return file_size;
   }
+
+ // 1D not X dir
+ 
+  if(ijk[0] == ijk[1] && sd->idir != 1){
+    ijk[0]--;
+    ijk[1]--;
+  }
+
+ // 1D not Y dir
+ 
+  if(ijk[2] == ijk[3] && sd->idir != 2){
+    ijk[2]--;
+    ijk[3]--;
+  }
+
+ // 1D not Z dir
+ 
+  if(ijk[4] == ijk[5] && sd->idir != 3){
+    ijk[4]--;
+    ijk[5]--;
+  }
   ip1 = ijk[0];
   ip2 = ijk[1];
   jp1 = ijk[2];
