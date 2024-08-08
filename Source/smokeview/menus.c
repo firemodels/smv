@@ -3431,10 +3431,6 @@ void LoadUnloadMenu(int value){
   int errorcode;
   int i;
 
-#ifndef pp_SLICEFRAME
-  int file_count = 0;
-  float load_size = 0.0;
-#endif
   float load_time;
   int load_flag;
 
@@ -3528,9 +3524,6 @@ void LoadUnloadMenu(int value){
     ReloadAllSliceFiles(load_flag);
     GLUIHVACSliceBoundsCPP_CB(BOUND_UPDATE_COLORS);
     STOP_TIMER(load_time);
-#ifndef pp_SLICEFRAME
-    PrintFileLoadTimes(file_count,load_size,load_time);
-#endif
     slicefile_labelindex=slicefile_labelindex_save;
 
     //*** reload plot3d files
