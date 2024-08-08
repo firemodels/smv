@@ -307,7 +307,7 @@ void ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
     }
     updatemenu=1;
     PrintMemoryInfo;
-    UpdateTimes();
+    update_times = 1;
     UpdateUnitDefs();
     return;
   }
@@ -494,7 +494,7 @@ void ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
 
   GLUIUpdatePlot3dListIndex();
   PrintMemoryInfo;
-  UpdateTimes();
+  update_times = 1;
   UpdateUnitDefs();
   ForceIdle();
   STOP_TIMER(total_time);
@@ -1475,7 +1475,7 @@ void UpdateShowStep(int val, int slicedir){
   }
   plotstate=GetPlotState(STATIC_PLOTS);
   stept=0;
-  if(ReadVolSlice==0&&plotstate==DYNAMIC_PLOTS&&visGrid==0)UpdateTimes();
+  if(ReadVolSlice==0&&plotstate==DYNAMIC_PLOTS&&visGrid==0)update_times = 1;
   {
     int i;
     float xmin, xmax;
