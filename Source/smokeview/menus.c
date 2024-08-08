@@ -3391,6 +3391,40 @@ void UnloadAllSmoke3D(int type){
   }
 }
 
+/* ------------------ FileSize2Label ------------------------ */
+
+char *FileSize2Label(char *label, FILE_SIZE bytes){
+  char vallabel[256];
+
+  if(bytes >= 0 && bytes < 1000){
+    sprintf(label, "%iB", (int)bytes);
+  }
+  else if(bytes >= 1000 && bytes < 1000000){
+    Float2String(vallabel, (float)bytes/1000.0, ncolorlabel_digits, force_fixedpoint);
+    sprintf(label, "%sKB", vallabel);
+  }
+  else if(bytes >= 1000000 && bytes < 1000000000){
+    Float2String(vallabel, (float)bytes/1000000.0, ncolorlabel_digits, force_fixedpoint);
+    sprintf(label, "%sMB", vallabel);
+  }
+  else{
+    Float2String(vallabel, (float)bytes/1000000000.0, ncolorlabel_digits, force_fixedpoint);
+    sprintf(label, "%sGB", vallabel);
+  }
+  return label;
+}
+
+/* ------------------ Plot3DSummary ------------------------ */
+
+void Plot3DSummary(char *label, int count, FILE_SIZE file_size, float timer){
+  char size_label[256], time_label[256], time_label2[256];
+  
+  sprintf(label, "PLOT3D: loaded %i files, %s", count, FileSize2Label(size_label, file_size));
+  Float2String(time_label2, timer, ncolorlabel_digits, force_fixedpoint);
+  sprintf(time_label, " in %ss", time_label2);
+  strcat(label, time_label);
+}
+
 /* ------------------ LoadUnloadMenu ------------------------ */
 
 void LoadUnloadMenu(int value){
@@ -3511,11 +3545,23 @@ void LoadUnloadMenu(int value){
       }
     }
     int plot3d_loaded = 0;
+    FILE_SIZE total_plot3d_filesize = 0;
+    int file_count=0;
+    float plot3d_timer;
+    START_TIMER(plot3d_timer);
     for(i=0;i<nplot3dinfo;i++){
       if(plot3dinfo[i].loaded==1){
         plot3d_loaded = 1;
-        ReadPlot3D(plot3dinfo[i].file,i,LOAD,&errorcode);
+        total_plot3d_filesize += ReadPlot3D(plot3dinfo[i].file,i,LOAD,&errorcode);
+        file_count++;
       }
+    }
+    STOP_TIMER(plot3d_timer);
+    if(file_count>0){
+      char label[256];
+      
+      Plot3DSummary(label, file_count, total_plot3d_filesize, plot3d_timer);
+      printf("%s\n",label);
     }
 
     //*** reload boundary files
@@ -5659,13 +5705,25 @@ void Plot3DListMenu(int value){
     plot3di->finalize = 1;
     break;
   }
+  FILE_SIZE total_plot3d_filesize = 0;
+  int file_count=0;
+  float plot3d_timer;
+  START_TIMER(plot3d_timer);
   for(i=0;i<nplot3dinfo;i++){
     int errorcode;
     plot3ddata *plot3di;
 
     plot3di = plot3dinfo + i;
     if(plot3di->loadnow==0)continue;
-    ReadPlot3D(plot3di->file, i, LOAD, &errorcode);
+    total_plot3d_filesize += ReadPlot3D(plot3di->file, i, LOAD, &errorcode);
+    file_count++;
+  }
+  STOP_TIMER(plot3d_timer);
+  if(file_count>0){
+    char label[256];
+      
+    Plot3DSummary(label, file_count, total_plot3d_filesize, plot3d_timer);
+    printf("%s\n",label);
   }
   printf("\n");
 }
@@ -5705,13 +5763,25 @@ int LoadAllPlot3D(float time){
       break;
     }
   }
+  FILE_SIZE total_plot3d_filesize = 0;
+  int file_count=0;
+  float plot3d_timer;
+  START_TIMER(plot3d_timer);
   for(i = 0; i < nplot3dinfo; i++){
     plot3ddata *plot3di;
 
     plot3di = plot3dinfo + i;
     if(ABS(plot3di->time - time) > 0.5)continue;;
-    ReadPlot3D(plot3di->file, plot3di - plot3dinfo, LOAD, &errorcode);
+    total_plot3d_filesize += ReadPlot3D(plot3di->file, plot3di - plot3dinfo, LOAD, &errorcode);
+    file_count++;
     if(errorcode==0)count++;
+  }
+  STOP_TIMER(plot3d_timer);
+  if(file_count>0){
+    char label[256];
+      
+    Plot3DSummary(label, file_count, total_plot3d_filesize, plot3d_timer);
+    printf("%s\n",label);
   }
   return count;
 }
@@ -5752,12 +5822,24 @@ void LoadPlot3dMenu(int value){
           }
         }
       }
+      FILE_SIZE total_plot3d_filesize = 0;
+      int file_count=0;
+      float plot3d_timer;
+      START_TIMER(plot3d_timer);
       for(i = 0;i < 1;i++){
         plot3ddata *plot3di;
 
         plot3di = plot3dinfo + value;
         IF_NOT_USEMESH_CONTINUE(plot3di->loaded, plot3di->blocknumber);
-        ReadPlot3D(plot3di->file, value, LOAD, &errorcode);
+        total_plot3d_filesize += ReadPlot3D(plot3di->file, value, LOAD, &errorcode);
+        file_count++;
+      }
+      STOP_TIMER(plot3d_timer);
+      if(file_count>0){
+        char label[256];
+      
+        Plot3DSummary(label, file_count, total_plot3d_filesize, plot3d_timer);
+        printf("%s\n",label);
       }
     }
   }
@@ -5790,13 +5872,25 @@ void LoadPlot3dMenu(int value){
         ReadPlot3D("", plot3di-plot3dinfo, UNLOAD, &errorcode);
       }
     }
+    FILE_SIZE total_plot3d_filesize = 0;
+    int file_count=0;
+    float plot3d_timer;
+    START_TIMER(plot3d_timer);
     for(i = 0; i<nplot3dinfo; i++){
       plot3ddata *plot3di;
 
       plot3di = plot3dinfo + i;
       if(plot3di->loadnow == 1){
-        ReadPlot3D(plot3di->file, plot3di-plot3dinfo, LOAD, &errorcode);
+        total_plot3d_filesize += ReadPlot3D(plot3di->file, plot3di-plot3dinfo, LOAD, &errorcode);
+        file_count++;
       }
+    }
+    STOP_TIMER(plot3d_timer);
+    if(file_count>0){
+      char label[256];
+      
+      Plot3DSummary(label, file_count, total_plot3d_filesize, plot3d_timer);
+      printf("%s\n",label);
     }
   }
   else if(value==UNLOAD_ALL){

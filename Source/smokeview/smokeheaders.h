@@ -1099,7 +1099,7 @@ EXTERNCPP void ReadCAD2Geom(cadgeomdata *cd);
 EXTERNCPP void ReadCADGeom(cadgeomdata *cd);
 EXTERNCPP void DrawCADGeom(const cadgeomdata *cd);
 
-EXTERNCPP void ReadPlot3D(char *file, int ifile, int flag,int *errorcode);
+EXTERNCPP FILE_SIZE ReadPlot3D(char *file, int ifile, int flag,int *errorcode);
 EXTERNCPP void SetupReadAllGeom(void);
 EXTERNCPP FILE_SIZE ReadGeom(geomdata *geomi, unsigned char *buffer, int nbuffer, int load_flag, int type, int *geom_frame_index);
 EXTERNCPP FILE_SIZE ReadBoundary(int ifile, int flag, int *errorcode);
