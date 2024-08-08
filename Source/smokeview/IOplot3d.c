@@ -234,7 +234,7 @@ void UpdatePlot3DFileLoad(void){
 
 /* ------------------ ReadPlot3d  ------------------------ */
 
-void ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
+FILE_SIZE ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
   int ntotal, i;
   float *udata, *vdata, *wdata, *sdata;
   float sum;
@@ -254,7 +254,7 @@ void ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
 
   assert(ifile>=0&&ifile<nplot3dinfo);
   p=plot3dinfo+ifile;
-  if(flag==UNLOAD&&p->loaded==0)return;
+  if(flag==UNLOAD&&p->loaded==0)return 0;
 
   highlight_mesh=p->blocknumber;
   meshi=meshinfo+highlight_mesh;
@@ -307,9 +307,9 @@ void ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
     }
     updatemenu=1;
     PrintMemoryInfo;
-    UpdateTimes();
+    update_times = 1;
     UpdateUnitDefs();
-    return;
+    return 0;
   }
 
   ibar=meshi->ibar;
@@ -329,7 +329,7 @@ void ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
   if(NewMemoryMemID((void **)&meshi->qdata,numplot3dvars*ntotal*sizeof(float), p->memory_id)==0){
     *errorcode=1;
     ReadPlot3D("",ifile,UNLOAD,&error);
-    return;
+    return 0;
   }
 
   if(NewMemoryMemID((void **)&meshi->yzcolorbase ,ny*nz*sizeof(unsigned char), p->memory_id)==0||
@@ -352,11 +352,11 @@ void ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
      NewMemoryMemID((void **)&meshi->dz_yz       ,ny*nz*sizeof(float),         p->memory_id)==0){
      *errorcode=1;
      ReadPlot3D("",ifile,UNLOAD,&error);
-     return;
+     return 0;
   }
 
   file_size= GetFileSizeSMV(file);
-  PRINTF("Loading plot3d data: %s",file);
+  PRINTF("Loading %s\n", file);
   START_TIMER(read_time);
   float qmin[6], qmax[6], *qminptr=NULL, *qmaxptr=NULL;
 
@@ -369,7 +369,7 @@ void ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
   if(NewMemoryMemID((void **)&meshi->iqdata,numplot3dvars*ntotal*sizeof(unsigned char), p->memory_id)==0){
     *errorcode=1;
     ReadPlot3D("",ifile,UNLOAD,&error);
-    return;
+    return 0;
   }
   STOP_TIMER(read_time);
   p->loaded=1;
@@ -403,7 +403,7 @@ void ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
      NewMemoryMemID((void **)&colorlabeliso, MAXPLOT3DVARS*sizeof(char **), p->memory_id)==0){
     *errorcode=1;
     ReadPlot3D("",ifile,UNLOAD,&error);
-    return;
+    return 0;
   }
   {
     int nn;
@@ -417,7 +417,7 @@ void ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
          NewMemoryMemID((void **)&colorlabeliso[nn],MAXRGB*sizeof(char *), p->memory_id)==0){
         *errorcode=1;
         ReadPlot3D("",ifile,UNLOAD,&error);
-        return;
+        return 0;
       }
     }
   }
@@ -426,7 +426,7 @@ void ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
      NewMemoryMemID((void **)&p3levels256, MAXPLOT3DVARS*sizeof(float *), p->memory_id)==0){
     *errorcode=1;
     ReadPlot3D("",ifile,UNLOAD,&error);
-    return;
+    return 0;
   }
   {
     int nn;
@@ -494,22 +494,11 @@ void ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
 
   GLUIUpdatePlot3dListIndex();
   PrintMemoryInfo;
-  UpdateTimes();
+  update_times = 1;
   UpdateUnitDefs();
   ForceIdle();
   STOP_TIMER(total_time);
 
-  if(file_size!=0&&read_time>0.0){
-    float loadrate;
-
-    loadrate = ((float)file_size*8.0/1000000.0)/read_time;
-    PRINTF(" %.1f MB loaded in %.2f s - rate: %.1f Mb/s (overhead: %.2f s)\n",
-    (float)file_size/1000000.,read_time,loadrate,total_time-read_time);
-  }
-  else{
-    PRINTF(" %.1f MB downloaded in %.2f s (overhead: %.2f s)\n",
-    (float)file_size/1000000.,read_time,total_time-read_time);
-  }
   update_plot3d_bounds = ifile;
   GetPlot3DBounds(p);
   if(cache_plot3d_data==0){
@@ -530,6 +519,7 @@ void ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
   }
   show_plot3dfiles = 1;
   glutPostRedisplay();
+  return file_size;
 }
 
 /* ------------------ DrawPlot3dTexture ------------------------ */
@@ -1475,7 +1465,7 @@ void UpdateShowStep(int val, int slicedir){
   }
   plotstate=GetPlotState(STATIC_PLOTS);
   stept=0;
-  if(ReadVolSlice==0&&plotstate==DYNAMIC_PLOTS&&visGrid==0)UpdateTimes();
+  if(ReadVolSlice==0&&plotstate==DYNAMIC_PLOTS&&visGrid==0)update_times = 1;
   {
     int i;
     float xmin, xmax;
