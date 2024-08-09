@@ -1064,9 +1064,6 @@ typedef struct _slicedata {
 #ifdef pp_SLICEFRAME
   framedata *frameinfo;
 #endif
-#ifdef pp_SLICE_MULTI
-  int loadstatus;
-#endif
 } slicedata;
 
 /* --------------------------  slicemenudata ------------------------------------ */
