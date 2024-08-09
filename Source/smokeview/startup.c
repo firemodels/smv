@@ -1137,7 +1137,6 @@ void InitOpenGL(int option){
         break;
       }
     }
-    FILE_SIZE total_plot3d_filesize = 0;
     for(i=0;i<nplot3dinfo;i++){
       plot3ddata *plot3di;
 
@@ -1146,7 +1145,7 @@ void InitOpenGL(int option){
         ReadPlot3D(plot3di->file,i,UNLOAD,&errorcode);
       }
       if(plot3di->autoload==1){
-        total_plot3d_filesize += ReadPlot3D(plot3di->file,i,LOAD,&errorcode);
+        ReadPlot3D(plot3di->file,i,LOAD,&errorcode);
       }
     }
     npartframes_max=GetMinPartFrames(PARTFILE_RELOADALL);
