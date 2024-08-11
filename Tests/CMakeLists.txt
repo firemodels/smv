@@ -99,6 +99,16 @@ if ((NOT MACOSX) AND UNIX)
     target_link_libraries(test_objects m)
 endif()
 
+# mem_test
+add_executable(mem_test mem_test.c
+    ../Source/shared/dmalloc.c
+)
+
+target_include_directories(mem_test PRIVATE
+    ../Tests
+    ../Source/shared
+)
+
 # Arguments to this tests are <slice path> <number of frames in slice>
 # Simple slice is a finished slice file with 3 frames
 add_test(NAME "Simple Slice - Complete"
@@ -126,3 +136,6 @@ COMMAND parse_simple_pl3d ${CMAKE_SOURCE_DIR}/Tests/fig/smv/Tests/simple_pl3d.q)
 
 add_test(NAME "Test Object API"
 COMMAND test_objects ${CMAKE_SOURCE_DIR}/Tests/bad_objects.svo)
+
+add_test(NAME "Mem Test"
+    COMMAND mem_test)
