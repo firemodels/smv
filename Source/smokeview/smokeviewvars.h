@@ -95,12 +95,6 @@ SVEXTERN threaderdata SVDECL(*slicebound_threads, NULL);
 SVEXTERN int SVDECL(n_partbound_threads, 1), SVDECL(use_partbound_threads, 1);
 SVEXTERN threaderdata SVDECL(*partbound_threads, NULL);
 
-//*** slice
-#ifdef pp_SLICE_MULTI // not implemented
-SVEXTERN int SVDECL(n_sliceload_threads, 4), SVDECL(use_sliceload_threads, 0);
-SVEXTERN threaderdata SVDECL(*sliceload_threads, NULL);
-#endif
-
 //*** smoke
 SVEXTERN int SVDECL(n_smokeload_threads, 1), SVDECL(use_smokeload_threads, 0);
 
