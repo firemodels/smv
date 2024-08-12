@@ -93,7 +93,6 @@ char *ProcessCommandLine(CommandlineArgs *args);
 
 char *ParseCommandline(int argc, char **argv) {
   enum CommandLineError error;
-  char *return_val;
   char message[256];
 
   CommandlineArgs args = ParseCommandlineNew(argc, argv, message, &error);
@@ -765,7 +764,6 @@ int CheckSMVFile(char *file, char *subdir){
 
 int main(int argc, char **argv){
   int return_code;
-  char *progname;
 
   START_TIMER(timer_startup);
   // uncomment following block of code to test crash detection
@@ -814,7 +812,6 @@ int main(int argc, char **argv){
     return 1;
   }
 
-  progname=argv[0];
   smv_filename = ParseCommandline(argc, argv);
 
 #ifdef WIN32
