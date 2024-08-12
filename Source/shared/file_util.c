@@ -1174,7 +1174,7 @@ void SetSmvRootOverride(const char *path) {
   size_t len = strlen(path);
   NEWMEMORY(smv_root_override, (len + 2) * sizeof(char));
   STRCPY(smv_root_override, path);
-  if(path[len - 1] != dirseparator){
+  if(path[len - 1] != dirseparator[0]){
     STRCAT(smv_root_override, dirseparator);
   }
 }
