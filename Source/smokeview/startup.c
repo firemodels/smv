@@ -309,7 +309,9 @@ int SetupCase(char *filename){
     return 0;
   }
   glui_defined = 1;
-  InitTranslate(smokeview_bindir, tr_name);
+  char *smv_bindir = GetSmvRootDir();
+  InitTranslate(smv_bindir, tr_name);
+  FREEMEMORY(smv_bindir);
   PRINT_TIMER(timer_start, "InitTranslate");
 
   if(ntourinfo==0)SetupTour();
@@ -403,24 +405,25 @@ char *GetHomeDir(){
 
 void InitStartupDirs(void){
   char *homedir = NULL;
-
+  char *smv_bindir = GetSmvRootDir();
 // get smokeview bin directory from argv[0] which contains the full path of the smokeview binary
 
   // create full path for smokeview.ini file
 
-  NewMemory((void **)&smokeviewini, (unsigned int)(strlen(smokeview_bindir)+14));
-  STRCPY(smokeviewini, smokeview_bindir);
+  NewMemory((void **)&smokeviewini, (unsigned int)(strlen(smv_bindir)+14));
+  STRCPY(smokeviewini, smv_bindir);
   STRCAT(smokeviewini, "smokeview.ini");
 
   // create full path for html template file
 
-  NewMemory((void **)&smokeview_html, (unsigned int)(strlen(smokeview_bindir)+strlen("smokeview.html")+1));
-  STRCPY(smokeview_html, smokeview_bindir);
+  NewMemory((void **)&smokeview_html, (unsigned int)(strlen(smv_bindir)+strlen("smokeview.html")+1));
+  STRCPY(smokeview_html, smv_bindir);
   STRCAT(smokeview_html, "smokeview.html");
 
-  NewMemory((void **)&smokeviewvr_html, (unsigned int)(strlen(smokeview_bindir)+strlen("smokeview_vr.html")+1));
-  STRCPY(smokeviewvr_html, smokeview_bindir);
+  NewMemory((void **)&smokeviewvr_html, (unsigned int)(strlen(smv_bindir)+strlen("smokeview_vr.html")+1));
+  STRCPY(smokeviewvr_html, smv_bindir);
   STRCAT(smokeviewvr_html, "smokeview_vr.html");
+  FREEMEMORY(smv_bindir);
 
   startup_pass = 2;
 
@@ -1255,15 +1258,16 @@ void InitOpenGL(int option){
 
   char *InitColorbarsSubDir(char *subdir){
     char *return_path = NULL;
-
-    if(smokeview_bindir == NULL || subdir==NULL)return return_path;
+    char *smv_bindir = GetSmvRootDir();
+    if(subdir==NULL)return return_path;
 
     NewMemory((void **)&return_path,
-              strlen(smokeview_bindir) + strlen("colorbars") + strlen(dirseparator) + strlen(subdir) + 2);
-    strcpy(return_path, smokeview_bindir);
+              strlen(smv_bindir) + strlen("colorbars") + strlen(dirseparator) + strlen(subdir) + 2);
+    strcpy(return_path, smv_bindir);
     strcat(return_path, "colorbars");
     strcat(return_path, dirseparator);
     if(strlen(subdir)>0)strcat(return_path, subdir);
+    FREEMEMORY(smv_bindir);
     return return_path;
   }
 
@@ -1290,22 +1294,24 @@ void InitTextureDir(void){
     NewMemory((void **)&texturedir,texture_len+1);
     strcpy(texturedir,texture_buffer);
   }
-  if(texturedir==NULL&&smokeview_bindir!=NULL){
-    texture_len=strlen(smokeview_bindir)+strlen("textures");
+  char *smv_bindir = GetSmvRootDir();
+  if(texturedir==NULL){
+    texture_len=strlen(smv_bindir)+strlen("textures");
     NewMemory((void **)&texturedir,texture_len+2);
-    strcpy(texturedir,smokeview_bindir);
+    strcpy(texturedir,smv_bindir);
     strcat(texturedir,"textures");
   }
+  FREEMEMORY(smv_bindir);
 }
 
 /* ------------------ InitScriptError ------------------------ */
 
 void InitScriptErrorFiles(void){
-  if(smokeview_bindir != NULL){
-    NewMemory((void **)&script_error1_filename, strlen(smokeview_bindir)+strlen("script_error1.png") + 1);
-    strcpy(script_error1_filename, smokeview_bindir);
-    strcat(script_error1_filename, "script_error1.png");
-  }
+  char *smv_bindir = GetSmvRootDir();
+  NewMemory((void **)&script_error1_filename, strlen(smv_bindir)+strlen("script_error1.png") + 1);
+  strcpy(script_error1_filename, smv_bindir);
+  strcat(script_error1_filename, "script_error1.png");
+  FREEMEMORY(smv_bindir);
 }
 
 /* ------------------ InitVars ------------------------ */

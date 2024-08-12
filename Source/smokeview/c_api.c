@@ -276,7 +276,9 @@ int Loadsmv(char *input_filename, char *input_filename_ext) {
 
   if (use_graphics == 0) return 0;
   glui_defined = 1;
-  InitTranslate(smokeview_bindir, tr_name);
+  char *smv_bindir = GetSmvRootDir();
+  InitTranslate(smv_bindir, tr_name);
+  FREEMEMORY(smv_bindir);
 
   if (ntourinfo == 0) SetupTour();
   InitRolloutList();

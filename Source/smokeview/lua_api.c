@@ -72,14 +72,6 @@ int ProgramSetupLua(lua_State *L, int argc, char **argv) {
   smv_filename = ParseCommandline(argc, argv);
   printf("smv_filename: %s\n", smv_filename);
 
-  progname = argv[0];
-  prog_fullpath = progname;
-#ifdef pp_LUA
-  smokeview_bindir_abs = getprogdirabs(progname, &smokeviewpath);
-#endif
-  if (smokeview_bindir == NULL) {
-    smokeview_bindir = GetProgDir(progname, &smokeviewpath);
-  }
   if (show_version == 1 || smv_filename == NULL) {
     DisplayVersionInfo("Smokeview ");
     SMV_EXIT(0);
@@ -89,7 +81,8 @@ int ProgramSetupLua(lua_State *L, int argc, char **argv) {
   }
   InitTextureDir();
   InitScriptErrorFiles();
-  smokezippath = GetSmokeZipPath(smokeview_bindir);
+  char *smv_bindir = GetSmvRootDir();
+  smokezippath = GetSmokeZipPath(smv_bindir);
 #ifdef WIN32
   have_ffmpeg = HaveProg("ffmpeg -version> Nul 2>Nul");
   have_ffplay = HaveProg("ffplay -version> Nul 2>Nul");
@@ -99,6 +92,7 @@ int ProgramSetupLua(lua_State *L, int argc, char **argv) {
 #endif
   DisplayVersionInfo("Smokeview ");
 
+  FREEMEMORY(smv_bindir)
   return 0;
 }
 
@@ -4991,6 +4985,7 @@ int LuaClearTitleLines(lua_State *L) {
 /// are written in Lua.
 /// @param L The Lua interpreter state
 void AddScriptPath(lua_State *L) {
+  char *smv_bindir = GetSmvRootDir();
   // package.path is a path variable where Lua scripts and modules may be
   // found, typically text based files with the .lua extension.
   lua_getglobal(L, "package");
@@ -5004,8 +4999,8 @@ void AddScriptPath(lua_State *L) {
 #endif
   // Add the location of the smokeview binary as a place for scripts. This is
   // mostly useful for running tests.
-  char *bin_path = malloc(sizeof(char) * (strlen(smokeview_bindir_abs) + 8));
-  sprintf(bin_path, ";%s/?.lua", smokeview_bindir_abs);
+  char *bin_path = malloc(sizeof(char) * (strlen(smv_bindir) + 8));
+  sprintf(bin_path, ";%s/?.lua", smv_bindir);
   new_length += strlen(bin_path);
   // Create the path.
   char *new_path = malloc(sizeof(char) * new_length);
@@ -5020,12 +5015,14 @@ void AddScriptPath(lua_State *L) {
   lua_pop(L, 1); // pop the now redundant "package" variable from the stack
   free(new_path);
   free(bin_path);
+  FREEMEMORY(smv_bindir);
 }
 
 /// @brief Add paths for the Lua interpreter to find libraries that are compiled
 /// to shared libraries.
 /// @param L The Lua interpreter state
 void AddCPath(lua_State *L) {
+  char *smv_bindir = GetSmvRootDir();
   // package.path is a path variable where Lua scripts and modules may be
   // found, typically text based files with the .lua extension.
   lua_getglobal(L, "package");
@@ -5039,8 +5036,8 @@ void AddCPath(lua_State *L) {
 #endif
   // Add the location of the smokeview binary as a place for scripts. This is
   // mostly useful for running tests.
-  char *bin_path = malloc(sizeof(char) * (strlen(smokeview_bindir_abs) + 8));
-  sprintf(bin_path, ";%s/?%s", smokeview_bindir_abs, so_extension);
+  char *bin_path = malloc(sizeof(char) * (strlen(smv_bindir) + 8));
+  sprintf(bin_path, ";%s/?%s", smv_bindir, so_extension);
   new_length += strlen(bin_path);
   // Create the path.
   char *new_path = malloc(sizeof(char) * new_length);
@@ -5052,6 +5049,7 @@ void AddCPath(lua_State *L) {
   lua_pop(L, 1); // pop the now redundant "package" variable from the stack
   free(new_path);
   free(bin_path);
+  FREEMEMORY(smv_bindir);
 }
 
 /// @brief Add paths for the Lua interpreter to find scripts and libraries.

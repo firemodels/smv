@@ -1486,15 +1486,13 @@ void LoadDefaultObjectDefs(object_collection *objectscoll) {
 /* ----------------------- InitObjectDefs ----------------------------- */
 
 void ReadDefaultObjectCollection(object_collection *objectscoll,
-                                 const char *smokeview_bindir,
                                  const char *fdsprefix, int setbw,
                                  int isZoneFireModel) {
   char objectfile[1024];
 
   // There are 5 places to retrieve object definitions from:
   //
-  //   1. A file within the same directory as the smokeview executable named
-  //      "objects.svo".
+  //   1. A file within SMV root directory named "objects.svo".
   //   2. A file in the current directory named "objects.svo".
   //   3. A file in the current directory named "${fdsprefix}.svo".
   //   4. A file pointed to by SMOKEVIEW_OBJECT_DEFS_PATH.
@@ -1503,11 +1501,13 @@ void ReadDefaultObjectCollection(object_collection *objectscoll,
   // Last definition wins.
 
   // Read "objects.svo" from bin dir
-  if (smokeview_bindir != NULL) {
-    strcpy(objectfile, smokeview_bindir);
+  char *smv_bindir = GetSmvRootDir();
+  if (smv_bindir) {
+    strcpy(objectfile, smv_bindir);
     strcat(objectfile, "objects.svo");
     ReadObjectDefs(objectscoll, objectfile, setbw);
   }
+  FREEMEMORY(smv_bindir);
 
   // Read "objects.svo" from the current directory.
   strcpy(objectfile, "objects.svo");
