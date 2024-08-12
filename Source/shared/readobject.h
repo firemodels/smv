@@ -299,47 +299,6 @@
 // BEGIN MAIN API
 
 /**
- * @brief The graphical definition of an object. This represents a single state.
- * This can form a node in a linked-list.
- */
-typedef struct _sv_object_frame {
-  int use_bw;
-  int error;
-  int display_list_ID;
-  int *symbols, nsymbols;
-  tokendata *tokens, **command_list;
-  int ntokens, ncommands, ntextures;
-  struct _sv_object *device;
-  struct _sv_object_frame *prev, *next;
-} sv_object_frame;
-
-/**
- * @brief An object that can be rendered. This can form a node in a linked-list.
- */
-typedef struct _sv_object {
-  char label[256];
-  /** @brief Is this object an avatar? */
-  int type;
-  int visible;
-  int used, used_by_device;
-  int use_displaylist;
-  int select_mode;
-  /** @brief The number of frames (i.e., possible states) associated with this
-   * object. */
-  int nframes;
-  /** @brief A list of possible graphical representations of this object. While
-   * described as a series of frames this is used as a number of different
-   * possible states, not an animation. */
-  sv_object_frame **obj_frames, first_frame, last_frame;
-  /** @brief If this sv_object is part of a linked list, a pointer to the
-   * previous sv_object in the list */
-  struct _sv_object *prev;
-  /** @brief If this sv_object is part of a linked list, a pointer to the
-   * next sv_object in the list */
-  struct _sv_object *next;
-} sv_object;
-
-/**
  * @brief A number of standard objects to be used.
  *
  */
@@ -452,5 +411,6 @@ void UpdateDeviceTextures(object_collection *objectscoll, int ndeviceinfo,
                           propdata *propinfo, int *ndevice_texture_list,
                           int **device_texture_list_indexptr,
                           char ***device_texture_listptr);
+EXTERNCPP void UpdatePartClassDepend(partclassdata *partclassi);
 
 #endif
