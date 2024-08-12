@@ -45,7 +45,7 @@ int main(int argc, char **argv){
     return 1;
   }
   if(show_version==1){
-    PRINTVERSION("hashfile",argv[0]);
+    PRINTVERSION("hashfile");
     return 1;
   }
   casename = argv[argc-1];

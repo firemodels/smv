@@ -56,7 +56,7 @@ int main(int argc, char **argv){
     return 1;
   }
   if(show_version==1){
-    PRINTVERSION("timep", argv[0]);
+    PRINTVERSION("timep");
     return 1;
   }
   if(nargs<argc){

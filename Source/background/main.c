@@ -129,7 +129,7 @@ int main(int argc, char **argv){
 #endif
 
   if(argc==1){
-    PRINTVERSION("background ", argv[0]);
+    PRINTVERSION("background ");
     return 1;
   }
 
@@ -139,7 +139,7 @@ int main(int argc, char **argv){
     return 1;
   }
   if(show_version==1){
-    PRINTVERSION("background", argv[0]);
+    PRINTVERSION("background");
     return 1;
   }
 

@@ -1937,10 +1937,11 @@ int ParseCommonOptions(int argc, char **argv){
 /* ------------------ version ------------------------ */
 
 #ifdef pp_HASH
-void PRINTversion(char *progname, char *progfullpath, int option){
+void PRINTversion(char *progname, int option){
 #else
 void PRINTversion(char *progname){
 #endif
+  char *progfullpath = GetBinPath();
   char version[256];
   char githash[256];
   char gitdate[256];
@@ -2003,4 +2004,5 @@ void PRINTversion(char *progname){
 #ifdef pp_LINUX
   PRINTF("Platform         : LINUX64\n");
 #endif
+  FREEMEMORY(progfullpath);
 }

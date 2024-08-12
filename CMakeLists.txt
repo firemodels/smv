@@ -285,6 +285,10 @@ if (BETA)
     add_compile_definitions(pp_BETA)
 endif ()
 
+if (SMV_ROOT_OVERRIDE)
+    target_compile_definitions(smokeview PRIVATE SMV_ROOT_OVERRIDE="${SMV_ROOT_OVERRIDE}")
+endif()
+
 if (SMOKEVIEW_CONFIG_PATH)
     target_compile_definitions(smokeview PRIVATE SMOKEVIEW_CONFIG_PATH="${SMOKEVIEW_CONFIG_PATH}")
 endif()

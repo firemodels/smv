@@ -2803,8 +2803,7 @@ void SmokeviewIniMenu(int value){
     WriteIni(LOCAL_INI,NULL);
     break;
   case MENU_READSVO:
-    ReadDefaultObjectCollection(objectscoll, smokeview_bindir, fdsprefix, setbw,
-                         isZoneFireModel);
+    ReadDefaultObjectCollection(objectscoll, fdsprefix, setbw, isZoneFireModel);
     break;
   case MENU_DUMMY:
     break;

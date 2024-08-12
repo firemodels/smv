@@ -6702,7 +6702,7 @@ int GenerateSmvOrigFile(void){
 
 void *GenerateSmvOrigFileWrapper(void *arg){
   if(GenerateSmvOrigFile()==1){
-    printf("%s generated\n", smv_orig_filename);  
+    printf("%s generated\n", smv_orig_filename);
   }
   ReadSMVOrig();
   THREAD_EXIT(readsmvorig_threads);
@@ -7208,8 +7208,7 @@ int ReadSMV_Init() {
   // read in device (.svo) definitions
 
   START_TIMER(timer_setup);
-  ReadDefaultObjectCollection(objectscoll, smokeview_bindir, fdsprefix, setbw,
-                       isZoneFireModel);
+  ReadDefaultObjectCollection(objectscoll, fdsprefix, setbw, isZoneFireModel);
   PRINT_TIMER(timer_setup, "InitSurface");
 
   if(noutlineinfo>0){
@@ -16248,7 +16247,9 @@ int ReadBinIni(void){
   char *smvprogini_ptr = NULL;
 
   strcpy(smvprogini, "");
-  if(smokeview_bindir!=NULL)strcat(smvprogini, smokeview_bindir);
+  char *smv_bindir = GetSmvRootDir();
+  strcat(smvprogini, smv_bindir);
+  FREEMEMORY(smv_bindir);
   strcat(smvprogini, "smokeview.ini");
   smvprogini_ptr = smokeviewini;
   if(smokeviewini!=NULL){
@@ -16293,7 +16294,9 @@ int ReadIni(char *inifile){
 
   ntickinfo=ntickinfo_smv;
   strcpy(smvprogini,"");
-  if(smokeview_bindir!=NULL)strcat(smvprogini,smokeview_bindir);
+  char *smv_bindir = GetSmvRootDir();
+  strcat(smvprogini,smv_bindir);
+  FREEMEMORY(smv_bindir);
   strcat(smvprogini,"smokeview.ini");
   smvprogini_ptr=smokeviewini;
   if(smokeviewini!=NULL){

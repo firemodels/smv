@@ -106,7 +106,7 @@ int main(int argc, char **argv){
     return 1;
   }
   if(show_version==1){
-    PRINTVERSION("wind2fds", argv[0]);
+    PRINTVERSION("wind2fds");
     return 1;
   }
 
@@ -114,7 +114,7 @@ int main(int argc, char **argv){
   strcpy(prefix,"");
 
   if(argc==1){
-    PRINTVERSION("wind2fds ", argv[0]);
+    PRINTVERSION("wind2fds ");
    return 1;
   }
 
@@ -524,4 +524,3 @@ int main(int argc, char **argv){
   if(stream_out!=NULL)fclose(stream_out);
   return 0;
 }
-

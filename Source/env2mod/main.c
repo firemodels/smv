@@ -103,7 +103,7 @@ int main(int argc, char **argv){
     return 1;
   }
   if(show_version == 1){
-    PRINTVERSION("env2mod", argv[0]);
+    PRINTVERSION("env2mod");
     return 1;
   }
 

@@ -85,9 +85,9 @@
 //*** hash output
 
 #ifdef pp_HASH
-#define PRINTVERSION(a,b) PRINTversion(a,b,hash_option)
+#define PRINTVERSION(a) PRINTversion(a,hash_option)
 #else
-#define PRINTVERSION(a,b) PRINTversion(a)
+#define PRINTVERSION(a) PRINTversion(a)
 #endif
 
 // debugging macros
