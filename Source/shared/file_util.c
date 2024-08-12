@@ -1172,8 +1172,11 @@ void SetSmvRootOverride(const char *path) {
   FREEMEMORY(smv_root_override);
   if (path == NULL) return;
   size_t len = strlen(path);
-  NEWMEMORY(smv_root_override, (len + 1) * sizeof(char));
+  NEWMEMORY(smv_root_override, (len + 2) * sizeof(char));
   STRCPY(smv_root_override, path);
+  if(path[len - 1] != dirseparator[0]){
+    STRCAT(smv_root_override, dirseparator);
+  }
 }
 
 char *GetSmvRootDir() {
