@@ -4948,7 +4948,7 @@ void *MtMergeSmoke3D(void *arg){
   int i;
   smokethreaddata *smokei;
 
-  smokei = ( smokethreaddata * )arg;
+  smokei = (smokethreaddata *)arg;
 
   nthreads = smokei->nthreads;
   ithread  = smokei->ithread;

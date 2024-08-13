@@ -1698,7 +1698,7 @@ void ReadCADGeom(cadgeomdata *cd){
 
 /* ------------------ CompareQuad ------------------------ */
 
-int CompareQuad( const void *arg1, const void *arg2 ){
+int CompareQuad(const void *arg1, const void *arg2 ){
   int i1, i2;
   cadgeomdata *cd;
   cadquad *quadi, *quadj;
@@ -2772,7 +2772,7 @@ void SetCullVis(void){
 
 /* ------------------ CompareSingleFaces0 ------------------------ */
 
-int CompareSingleFaces0( const void *arg1, const void *arg2 ){
+int CompareSingleFaces0(const void *arg1, const void *arg2 ){
   facedata *facei, *facej;
   int dirs[6];
 
@@ -2844,7 +2844,7 @@ int CompareSingleFaces0( const void *arg1, const void *arg2 ){
 
 /* ------------------ CompareSingleFaces ------------------------ */
 
-int CompareSingleFaces( const void *arg1, const void *arg2 ){
+int CompareSingleFaces(const void *arg1, const void *arg2 ){
   facedata *facei, *facej;
 
   facei = *(facedata **)arg1;
@@ -2888,7 +2888,7 @@ int CompareSingleFaces( const void *arg1, const void *arg2 ){
 
 /* ------------------ CompareColorFaces ------------------------ */
 
-int CompareColorFaces( const void *arg1, const void *arg2 ){
+int CompareColorFaces(const void *arg1, const void *arg2 ){
   facedata *facei, *facej;
 
   facei = *(facedata **)arg1;
@@ -3610,7 +3610,7 @@ void DrawFaces(){
 
 /* ------------------ CompareTransparentFaces ------------------------ */
 
-int CompareTransparentFaces( const void *arg1, const void *arg2 ){
+int CompareTransparentFaces(const void *arg1, const void *arg2 ){
   facedata *facei, *facej;
 
   facei = *(facedata **)arg1;
@@ -4099,7 +4099,7 @@ void AllocateFaces(){
 
 /* ------------------ CompareBlock ------------------------ */
 
-int CompareBlock( const void *arg1, const void *arg2 ){
+int CompareBlock(const void *arg1, const void *arg2 ){
   blockagedata *bc1,*bc2;
   int i1, i2;
 
@@ -5679,7 +5679,7 @@ culldata *GetFacePort(meshdata *meshi, facedata *facei){
 
 /* ------------------ CompareBlockage ------------------------ */
 
-int CompareBlockage( const void *arg1, const void *arg2 ){
+int CompareBlockage(const void *arg1, const void *arg2 ){
   blockagedata *bc1, *bc2;
   int *ijk1, *ijk2;
 

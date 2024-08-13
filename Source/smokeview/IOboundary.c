@@ -4255,7 +4255,7 @@ void UpdateBoundaryType(void){
 
 /* ------------------ BoundaryCompare ------------------------ */
 
-int BoundaryCompare( const void *arg1, const void *arg2 ){
+int BoundaryCompare(const void *arg1, const void *arg2 ){
   patchdata *patchi, *patchj;
 
   patchi = patchinfo + *(int *)arg1;

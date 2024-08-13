@@ -68,7 +68,7 @@ void MergePlot3DHistograms(void){
 
 /* ------------------ Plot3dCompare  ------------------------ */
 
-int Plot3dCompare( const void *arg1, const void *arg2 ){
+int Plot3dCompare(const void *arg1, const void *arg2 ){
   plot3ddata *plot3di, *plot3dj;
 
   plot3di = plot3dinfo + *(int *)arg1;
@@ -1665,7 +1665,7 @@ void UpdatePlot3dMenuLabels(void){
 
 /* ------------------ Plot3dListCompare  ------------------------ */
 
-int Plot3dListCompare( const void *arg1, const void *arg2 ){
+int Plot3dListCompare(const void *arg1, const void *arg2 ){
   float val1, val2;
 
   val1 = *(float *)arg1;

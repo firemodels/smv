@@ -1510,7 +1510,7 @@ void UpdateAllSliceColors(int slicetype, int *errorcode){
 
 /* ------------------ SliceCompare ------------------------ */
 
-int SliceCompare( const void *arg1, const void *arg2 ){
+int SliceCompare(const void *arg1, const void *arg2 ){
   slicedata *slicei, *slicej;
 
   slicei = sliceinfo + *(int *)arg1;
@@ -6801,7 +6801,7 @@ void ComputeOpacityCorrections(meshdata *meshi, float *xyz0, float *normal){
 
 /* ------------------ CompareLoadedSliceList ------------------------ */
 
-int CompareLoadedSliceList( const void *arg1, const void *arg2 ){
+int CompareLoadedSliceList(const void *arg1, const void *arg2 ){
   slicedata *slicei, *slicej;
   float position_i, position_j;
   int dir;
@@ -9556,7 +9556,7 @@ void SortSlices(void){
     splitsliceinfoptr[i] = splitsliceinfo + i;
   }
   if(nsplitsliceinfo > 1){
-    qsort(( splitslicedata ** )splitsliceinfoptr, ( size_t )nsplitsliceinfo, sizeof(splitslicedata *), CompareSortSlices);
+    qsort((splitslicedata **)splitsliceinfoptr, ( size_t )nsplitsliceinfo, sizeof(splitslicedata *), CompareSortSlices);
   }
 }
 

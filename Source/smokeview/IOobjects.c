@@ -4717,7 +4717,7 @@ int CompareV2Devices(const void *arg1, const void *arg2){
 
 /* ------------------ CompareV3Devices ------------------------ */
 
-int CompareV3Devices( const void *arg1, const void *arg2 ){
+int CompareV3Devices(const void *arg1, const void *arg2 ){
   vdevicesortdata *vdevi, *vdevj;
   float *xyzi, *xyzj;
   int diri, dirj;

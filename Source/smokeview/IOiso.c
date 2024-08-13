@@ -1647,7 +1647,7 @@ void UpdateIsoType(void){
 
 /* ------------------ IsoCompare ------------------------ */
 
-int IsoCompare( const void *arg1, const void *arg2 ){
+int IsoCompare(const void *arg1, const void *arg2 ){
   isodata *isoi, *isoj;
 
   isoi = isoinfo + *(int *)arg1;
@@ -1736,7 +1736,7 @@ void SetIsoLabels(float smin, float smax,
 
 /* ------------------ CompareIsoTriangles ------------------------ */
 
-int CompareIsoTriangles( const void *arg1, const void *arg2 ){
+int CompareIsoTriangles(const void *arg1, const void *arg2 ){
   isotri *trii, *trij;
   float disti, distj;
 

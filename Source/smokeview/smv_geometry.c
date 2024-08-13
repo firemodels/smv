@@ -226,7 +226,7 @@ void DrawFilled2Tetra(float *v1, float *v2, float *v3, float *v4,
 
 /* ------------------ CompareFloats ------------------------ */
 
-int CompareFloats( const void *arg1, const void *arg2 ){
+int CompareFloats(const void *arg1, const void *arg2 ){
   float x, y;
   x=*(float *)arg1;
   y=*(float *)arg2;
