@@ -73,7 +73,7 @@ int FFLUSH(void){
 
 /* ------------------ PRINTF ------------------------ */
 
-int PRINTF(const char * format, ...){
+int PRINTF(const char *format, ...){
   va_list args;
   int return_val=0;
 

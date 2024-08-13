@@ -23,7 +23,7 @@ typedef struct {
 
 void   fclose_b(FILE_m *stream_m);
 void   fclose_m(FILE_m *stream_m);
-char   *fgets_m(char * str, int num, FILE_m *stream_m);
+char   *fgets_m(char *str, int num, FILE_m *stream_m);
 int    feof_m(FILE_m *stream_m);
 FILE_m *fopen_m(char *file, char *mode);
 FILE_m *fopen_b(char *file, unsigned char *buffer, size_t nbuffer, char *mode);

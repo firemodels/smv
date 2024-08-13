@@ -3305,8 +3305,8 @@ int GetSmoke3DType(char *label){
 int CompareLabel(const void *arg1, const void *arg2){
   char *x, *y;
 
-  x = *( char ** )arg1;
-  y = *( char ** )arg2;
+  x = *(char **)arg1;
+  y = *(char **)arg2;
 
   return strcmp(x, y);
 }
@@ -5608,7 +5608,7 @@ int ParseSMOKE3DProcess(bufferstreamdata *stream, char *buffer, int *nn_smoke3d_
     smoke3di->reg_file = SMOKE3DBUFFER(len + 1);
     STRCPY(smoke3di->reg_file, bufferptr);
     for(i=0; i<6; i++){
-      smoke3di->alphas_dir[i] = ( unsigned char * )smoke3d_buffer;
+      smoke3di->alphas_dir[i] = ( unsigned char *)smoke3d_buffer;
       smoke3d_buffer += 256;
     }
     smoke3di->ntimes = 0;
@@ -8429,7 +8429,7 @@ int ReadSMV_Parse(bufferstreamdata *stream){
       for(i = 0; i < nhvacductinfo; i++){
         hvac_network_labels[i+nhvacnodeinfo] = hvacductinfo[i].network_name;
       }
-      qsort(( char * )hvac_network_labels, ( size_t )(nhvacnodeinfo + nhvacductinfo), sizeof(char *), CompareLabel);
+      qsort((char *)hvac_network_labels, ( size_t )(nhvacnodeinfo + nhvacductinfo), sizeof(char *), CompareLabel);
       nhvacinfo = 1;
       for(i = 1; i < nhvacnodeinfo + nhvacductinfo; i++){
         if(strcmp(hvac_network_labels[nhvacinfo-1], hvac_network_labels[i]) == 0)continue;

@@ -1064,7 +1064,7 @@ void GetBoundaryDataZlib(patchdata *patchi, unsigned char *data, int ndata,
     buffer  = patchi->frameinfo->bufferinfo->buffer;
     nbuffer = patchi->frameinfo->bufferinfo->nbuffer;
   }
-  stream = fopen_b(( char * )patchi->file, buffer, nbuffer, "rb");
+  stream = fopen_b((char *)patchi->file, buffer, nbuffer, "rb");
 #else
   stream = fopen_m((char *)patchi->file, "rb");
 #endif
@@ -1418,7 +1418,7 @@ void GetPatchSizes1(FILE_m **stream, const char *patchfilename, unsigned char *b
     return;
   }
 #ifdef pp_BOUNDFRAME
-  *stream = fopen_b(( char * )patchfilename, buffer, nbuffer, "rb");
+  *stream = fopen_b((char *)patchfilename, buffer, nbuffer, "rb");
 #else
   *stream = fopen_m((char *)patchfilename, "rb");
 #endif
