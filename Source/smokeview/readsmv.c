@@ -1057,7 +1057,6 @@ void InitMesh(meshdata *meshi){
   meshi->nvents = 0;
   meshi->ndummyvents = 0;
   meshi->ncvents = 0;
-  meshi->npatches = 0;
   meshi->boundarytype = NULL;
   meshi->offset[XXX] = 0.0;
   meshi->offset[YYY] = 0.0;
@@ -1065,12 +1064,6 @@ void InitMesh(meshdata *meshi){
   meshi->boundarytype = NULL;
   meshi->patchdir = NULL;
   meshi->patch_surfindex = NULL;
-  meshi->pi1 = NULL;
-  meshi->pi2 = NULL;
-  meshi->pj1 = NULL;
-  meshi->pj2 = NULL;
-  meshi->pk1 = NULL;
-  meshi->pk2 = NULL;
   meshi->meshonpatch = NULL;
   meshi->blockonpatch = NULL;
   meshi->ptype = NULL;
@@ -5335,6 +5328,7 @@ int ParseBNDFProcess(bufferstreamdata *stream, char *buffer, int *nn_patch_in, i
   patchi->ntimes_old        = 0;
   patchi->hist_update = 0;
   patchi->filetype_label    = NULL;
+  patchi->patchfaceinfo = NULL;
   patchi->patch_filetype    = PATCH_STRUCTURED_NODE_CENTER;
   patchi->structured        = YES;
   patchi->boundary          = 1;

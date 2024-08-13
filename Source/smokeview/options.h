@@ -4,7 +4,7 @@
 #include "options_common.h"
 
 //#define pp_FRAME           // turn on frame code
-#define pp_BOUNDMEM        // reduce memory allocations for boundary files
+//#define pp_BOUNDMEM        // reduce memory allocations for boundary files
 //#define pp_SHOW_UPDATE      // show what is being update in UpdateShowScene routine
 //#define pp_UPDATE_FACES     // update faces in UpdateTimes routine (probably not necessary)
 //#define pp_PARTBOUND_MULTI // compute particle bounds in the background

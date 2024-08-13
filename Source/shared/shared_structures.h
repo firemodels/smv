@@ -169,7 +169,6 @@ typedef struct _meshdata {
   struct _meshdata **meshonpatch;
   int *blockonpatch;
   int *patchdir,*patch_surfindex;
-  int *pi1, *pi2, *pj1, *pj2, *pk1, *pk2;
   int *boundarytype;
   int *vis_boundaries;
   int *boundary_row, *boundary_col, *blockstart;
@@ -194,7 +193,7 @@ typedef struct _meshdata {
 #endif
   unsigned char *patch_times_map;
   float **patchventcolors;
-  int npatch_times,npatches;
+  int npatch_times;
   int patch_itime;
   int *patch_timeslist;
   int npatchsize;

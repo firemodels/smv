@@ -195,7 +195,7 @@ void GetBndfNodeVerts(int option, int option2, int *offset,
 
       cpatch_time = meshpatch->cpatchval+itime*meshpatch->npatchsize;
       if(itime==ibeg){
-        for(n = 0;n<meshpatch->npatches;n++){
+        for(n = 0;n<patchi->npatches;n++){
           int drawit;
 
           drawit = 0;
@@ -218,7 +218,7 @@ void GetBndfNodeVerts(int option, int option2, int *offset,
         *frame_size += nv;
       }
       if(option==1){
-        for(n = 0;n<meshpatch->npatches;n++){
+        for(n = 0;n<patchi->npatches;n++){
           int drawit, irow, nrow, ncol;
 
           drawit = 0;

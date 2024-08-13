@@ -6333,7 +6333,7 @@ void ShowBoundaryMenu(int value){
         patchi = patchinfo + i;
         if(patchi->loaded == 0)continue;
         meshi = meshinfo + patchi->blocknumber;
-        for(n = 0;n < meshi->npatches;n++){
+        for(n = 0;n < patchi->npatches;n++){
           if(meshi->boundarytype[n] != INTERIORwall){
             meshi->vis_boundaries[n] = val;
           }
@@ -6358,7 +6358,7 @@ void ShowBoundaryMenu(int value){
         patchi = patchinfo + i;
         if(patchi->loaded == 0)continue;
         meshi = meshinfo + patchi->blocknumber;
-        for(n = 0;n < meshi->npatches;n++){
+        for(n = 0;n < patchi->npatches;n++){
           if(meshi->boundarytype[n] == INTERIORwall){
             meshi->vis_boundaries[n] = val;
           }
@@ -6377,7 +6377,7 @@ void ShowBoundaryMenu(int value){
         patchi = patchinfo + i;
         if(patchi->loaded == 0)continue;
         meshi = meshinfo + patchi->blocknumber;
-        for(n = 0;n < meshi->npatches;n++){
+        for(n = 0;n < patchi->npatches;n++){
           if(meshi->boundarytype[n] != INTERIORwall){
             meshi->vis_boundaries[n] = vis_boundary_type[meshi->boundarytype[n]];
           }
@@ -6396,7 +6396,7 @@ void ShowBoundaryMenu(int value){
         patchi = patchinfo + i;
         if(patchi->loaded == 0)continue;
         meshi = meshinfo + patchi->blocknumber;
-        for(n = 0;n < meshi->npatches;n++){
+        for(n = 0;n < patchi->npatches;n++){
           if(meshi->boundarytype[n] == value){
             meshi->vis_boundaries[n] = 1 - meshi->vis_boundaries[n];
             vis_boundary_type[value] = meshi->vis_boundaries[n];
@@ -7683,12 +7683,14 @@ int GetNTotalVents(void){
 int IsBoundaryType(int type){
   int i;
 
-  for(i = 0; i < nmeshes; i++){
+  for(i = 0; i < npatchinfo; i++){
+    patchdata *patchi;
     meshdata *meshi;
     int n;
 
-    meshi = meshinfo + i;
-    for(n = 0; n < meshi->npatches; n++){
+    patchi = patchinfo + i;
+    meshi = meshinfo + patchi->blocknumber;
+    for(n = 0; n < patchi->npatches; n++){
       if(meshi->boundarytype[n] == type)return 1;
     }
   }

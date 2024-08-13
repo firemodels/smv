@@ -1265,6 +1265,12 @@ typedef struct _smoke3dtypedata {
   float extinction, valmin, valmax;
 } smoke3dtypedata;
 
+/* --------------------------  patchfacedata ------------------------------------ */
+
+typedef struct _patchfacedata{
+  int ib[6];
+} patchfacedata;
+
 /* --------------------------  patchdata ------------------------------------ */
 
 typedef struct _patchdata {
@@ -1315,6 +1321,8 @@ typedef struct _patchdata {
   int hist_update;
   bounddata bounds;
   boundsdata *bounds2;
+  int npatches;
+  patchfacedata *patchfaceinfo;
 #ifdef pp_BOUNDFRAME
   framedata *frameinfo;
 #endif
