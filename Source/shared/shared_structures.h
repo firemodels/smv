@@ -168,7 +168,7 @@ typedef struct _meshdata {
 #endif
   struct _meshdata **meshonpatch;
   int *blockonpatch;
-  int *patchdir,*patch_surfindex;
+  int *patch_surfindex;
   int *boundarytype;
   int *vis_boundaries;
   int *boundary_row, *boundary_col, *blockstart;
