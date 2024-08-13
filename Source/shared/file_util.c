@@ -1070,6 +1070,9 @@ char *GetFloatFileSizeLabel(float size, char *sizelabel){
 }
 
 #ifdef _WIN32
+
+/* ------------------ GetBinPath - windows ------------------------ */
+
 char *GetBinPath(){
   size_t MAX_BUFFER_SIZE = MAX_PATH * 20;
   char *buffer;
@@ -1093,6 +1096,8 @@ char *GetBinPath(){
   }
 }
 
+/* ------------------ GetBinDir - windows ------------------------ */
+
 char *GetBinDir(){
   char *buffer = GetBinPath();
   // NB: This uses on older function in order to support "char *".
@@ -1101,6 +1106,9 @@ char *GetBinDir(){
   return buffer;
 }
 #elif __linux__
+
+/* ------------------ GetBinPath - linux ------------------------ */
+
 char *GetBinPath(){
   size_t MAX_BUFFER_SIZE = 2048 * 20;
   char *buffer;
@@ -1124,12 +1132,17 @@ char *GetBinPath(){
   }
 }
 
+/* ------------------ GetBinDir - linux ------------------------ */
+
 char *GetBinDir(){
   char *buffer = GetBinPath();
   dirname(buffer);
   return buffer;
 }
 #else
+
+/* ------------------ GetBinPath - osx ------------------------ */
+
 char *GetBinPath(){
   uint32_t  MAX_BUFFER_SIZE = 2048 * 20;
   char *buffer;
@@ -1152,6 +1165,8 @@ char *GetBinPath(){
   }
 }
 
+/* ------------------ GetBinDir - osx ------------------------ */
+
 char *GetBinDir(){
   char *buffer = GetBinPath();
   // The BSD and OSX version of dirname uses an internal buffer, therefore we
@@ -1168,6 +1183,8 @@ char *GetBinDir(){
 /// GetSmvRootDir.
 char *smv_root_override = NULL;
 
+/* ------------------ SetSmvRootOverride ------------------------ */
+
 void SetSmvRootOverride(const char *path){
   FREEMEMORY(smv_root_override);
   if(path == NULL) return;
@@ -1178,6 +1195,8 @@ void SetSmvRootOverride(const char *path){
     STRCAT(smv_root_override, dirseparator);
   }
 }
+
+/* ------------------ GetSmvRootDir ------------------------ */
 
 char *GetSmvRootDir(){
   char *envar_path = getenv("SMV_ROOT_OVERRIDE");
