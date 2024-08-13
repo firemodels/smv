@@ -216,11 +216,11 @@ void GetVertType(int nverts, int *triangles, int ntriangles, int *vert_type){
   memset(tri_count, 0, nverts * sizeof(*tri_count));
 
   int i;
-  for (i = 0; i < ntriangles; i++){
+  for(i = 0; i < ntriangles; i++){
     trii = triangles + 3 * i;
 
     int j;
-    for (j = 0; j < 3; j++){
+    for(j = 0; j < 3; j++){
       int vertj_index = trii[j];
 
       if(vertj_index >= 1 && vertj_index <= nverts) tri_count[vertj_index]++;
@@ -228,7 +228,7 @@ void GetVertType(int nverts, int *triangles, int ntriangles, int *vert_type){
   }
 
   int maxcount = tri_count[0];
-  for (i = 1; i < nverts; i++){
+  for(i = 1; i < nverts; i++){
     maxcount = MAX(maxcount, tri_count[i]);
   }
   FREEMEMORY(tri_count);
@@ -241,11 +241,11 @@ void GetVertType(int nverts, int *triangles, int ntriangles, int *vert_type){
   NewMemory((void **)&vert_trilist, nverts * (maxcount + 1) * sizeof(int));
   memset(vert_trilist, 0, nverts * (maxcount + 1) * sizeof(*vert_trilist));
 
-  for (i = 0; i < ntriangles; i++){
+  for(i = 0; i < ntriangles; i++){
     trii = &triangles[3 * i];
 
     int j;
-    for (j = 0; j < 3; j++){
+    for(j = 0; j < 3; j++){
       int vertj_index = trii[j];
       if(vertj_index >= 1 && vertj_index <= nverts){
         vert_trilist[vertj_index * nverts +
@@ -264,21 +264,21 @@ void GetVertType(int nverts, int *triangles, int ntriangles, int *vert_type){
   memset(vert_count, 0, nverts * sizeof(*vert_count));
 
   // ! count vertices connected to each vertex
-  for (i = 1; i < nverts; i++){
+  for(i = 1; i < nverts; i++){
     memset(vert_count, 0, nverts * sizeof(*vert_count));
 
     int j;
-    for (j = 1; j <= vert_trilist[i * nverts + 1];
+    for(j = 1; j <= vert_trilist[i * nverts + 1];
          j++){ // loop over triangles connected to vertex I
       int trij_index = vert_trilist[i * nverts + j];
 
       int k;
-      for (k = 1; k <= 3; k++){ // loop over vertices of triangle J
+      for(k = 1; k <= 3; k++){ // loop over vertices of triangle J
         int vertk_index = triangles[3 * trij_index - 3 + k];
         if(vertk_index != i) vert_count[vertk_index]++;
       }
     }
-    for (j = 1; j < nverts; j++){
+    for(j = 1; j < nverts; j++){
       if(vert_count[j] ==
           1){ // consider all vertices that are connected to vertex I
         vert_type[i] = 0; // if all of these neighbors have two neighbors among
@@ -497,12 +497,12 @@ void DecimateTerrain(vertdata *verts, int nverts, tridata *triangles,
   *ntriangles_new = ntrinew;
   *triangles_new = trinewptr;
 
-  for (i = 0; i < nvnew; i++){
+  for(i = 0; i < nvnew; i++){
     tri_new[i] = -1;
   }
   dx = (boxmax[0] - boxmin[0]) / (float)(nx - 1);
   dy = (boxmax[1] - boxmin[1]) / (float)(ny - 1);
-  for (i = 0; i < ntriangles; i++){
+  for(i = 0; i < ntriangles; i++){
     tridata *trii;
     float *v0, *v1, *v2;
     float xtmin, xtmax, ytmin, ytmax;
@@ -523,13 +523,13 @@ void DecimateTerrain(vertdata *verts, int nverts, tridata *triangles,
     imax = CLAMP((xtmax - boxmin[0]) / dx + 1, 0, nx - 1);
     jmin = CLAMP((ytmin - boxmin[1]) / dy, 0, ny - 1);
     jmax = CLAMP((ytmax - boxmin[1]) / dy + 1, 0, ny - 1);
-    for (ii = imin; ii <= imax; ii++){
+    for(ii = imin; ii <= imax; ii++){
       int jj, exit_loop;
 
       xyz[0] = boxmin[0] + (float)ii * dx;
 
       exit_loop = 0;
-      for (jj = jmin; jj <= jmax; jj++){
+      for(jj = jmin; jj <= jmax; jj++){
         float zval;
 
         xyz[1] = boxmin[1] + (float)jj * dy;
@@ -550,8 +550,8 @@ void DecimateTerrain(vertdata *verts, int nverts, tridata *triangles,
   }
   int ij = 0;
   int ncount2 = 0;
-  for (j = 0; j < ny - 1; j++){
-    for (i = 0; i < nx - 1; i++){
+  for(j = 0; j < ny - 1; j++){
+    for(i = 0; i < nx - 1; i++){
       tridata *tri;
       int ival;
 
@@ -587,13 +587,13 @@ void DecimateTerrain(vertdata *verts, int nverts, tridata *triangles,
 void DecimateAllTerrains(void){
   int i;
 
-  for (i = 0; i < nmeshes; i++){
+  for(i = 0; i < nmeshes; i++){
     meshdata *meshi;
 
     meshi = meshinfo + i;
     meshi->decimated = 0;
   }
-  for (i = 0; i < npatchinfo; i++){
+  for(i = 0; i < npatchinfo; i++){
     meshdata *meshi;
     patchdata *patchi;
     geomlistdata *geomlisti;
@@ -631,7 +631,7 @@ void GetTriangleNormal(float *v1, float *v2, float *v3, float *normal,
   float norm;
   int i;
 
-  for (i = 0; i < 3; i++){
+  for(i = 0; i < 3; i++){
     u[i] = (double)v2[i] - (double)v1[i];
     v[i] = (double)v3[i] - (double)v1[i];
   }
@@ -949,7 +949,7 @@ void ReadGeomHeader2(geomdata *geomi, int *ntimes_local){
 
   nt = 0;
   if(first_frame_all == 1) nt = -1;
-  for (;;){
+  for(;;){
     FORTREADBR(&time_local, 1, stream);
     FORTREADBR(nvertfacesvolumes, 3, stream);
     nverts = nvertfacesvolumes[0];
@@ -1040,7 +1040,7 @@ void GetGeomDataHeader(char *file, int *ntimes_local, int *nvals){
   FSEEK(stream, 4, SEEK_CUR);
   nt = -1;
   nv = 0;
-  for (;;){
+  for(;;){
     FORTREADBR(&time_local, 1, stream);
     FORTREADBR(&nface_static, 1, stream);
     if(nface_static != 0) FSEEK(stream, 4 + nface_static * 4 + 4, SEEK_CUR);
@@ -1077,7 +1077,7 @@ void InitCircle(unsigned int npoints, circdata *circinfo){
   NewMemory((void **)&ycirc, (ncirc + 1) * sizeof(float));
   drad = 2.0 * PI / (float)ncirc;
 
-  for (i = 0; i < ncirc; i++){
+  for(i = 0; i < ncirc; i++){
     xcirc[i] = cos(i * drad);
     ycirc[i] = sin(i * drad);
   }

@@ -918,7 +918,7 @@ int GetIsoSurface(isosurface *surface,
 
 /* ------------------ CompareIsoNodes ------------------------ */
 
-int CompareIsoNodes( const void *arg1, const void *arg2 ){
+int CompareIsoNodes(const void *arg1, const void *arg2){
   sortdata *sdi, *sdj;
   unsigned short *vi, *vj;
 
@@ -937,7 +937,7 @@ int CompareIsoNodes( const void *arg1, const void *arg2 ){
 
 /* ------------------ ComputeRank ------------------------ */
 
-int ComputeRank( const void *arg1, const void *arg2 ){
+int ComputeRank(const void *arg1, const void *arg2){
   rankdata *rdi, *rdj;
   int sorti, sortj;
 
@@ -952,7 +952,7 @@ int ComputeRank( const void *arg1, const void *arg2 ){
 
 /* ------------------ OrderClosestNodes ------------------------ */
 
-int OrderClosestNodes( const void *arg1, const void *arg2 ){
+int OrderClosestNodes(const void *arg1, const void *arg2){
   orderdata *oi, *oj;
   int ii, jj;
 
@@ -1830,7 +1830,7 @@ void CCIsoSurfaceT2File(char *isofile, float *t, float *data, int *data2flag, fl
                    float *yplt, int *ny,
                    float *zplt, int *nz,
                    int *reduce_triangles, int *error
-                   ){
+                  ){
   isosurface surface;
   int i;
   FILE *isostream=NULL;

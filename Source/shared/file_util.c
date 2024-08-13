@@ -73,7 +73,7 @@ int FFLUSH(void){
 
 /* ------------------ PRINTF ------------------------ */
 
-int PRINTF(const char * format, ...){
+int PRINTF(const char *format, ...){
   va_list args;
   int return_val=0;
 
@@ -818,7 +818,7 @@ int GetFileListSize(const char *path, char *filter, int mode){
   if(dp == NULL)return 0;
   d_type = DT_REG;
   if(mode==DIR_MODE)d_type = DT_DIR;
-  while( (entry = readdir(dp))!=NULL ){
+  while((entry = readdir(dp))!=NULL){
     if(((entry->d_type==d_type||entry->d_type==DT_UNKNOWN)&&MatchWild(entry->d_name,filter)==1)){
       if(strcmp(entry->d_name,".")==0||strcmp(entry->d_name,"..")==0)continue;
       maxfiles++;
@@ -947,7 +947,7 @@ int MakeFileList(const char *path, char *filter, int maxfiles, int sort_files, f
   NewMemory((void **)&flist,maxfiles*sizeof(filelistdata));
   d_type = DT_REG;
   if(mode==DIR_MODE)d_type = DT_DIR;
-  while( (entry = readdir(dp))!=NULL&&nfiles<maxfiles ){
+  while((entry = readdir(dp))!=NULL&&nfiles<maxfiles){
     if((entry->d_type==d_type||entry->d_type==DT_UNKNOWN)&&MatchWild(entry->d_name,filter)==1){
       char *file;
       filelistdata *flisti;
@@ -1070,12 +1070,15 @@ char *GetFloatFileSizeLabel(float size, char *sizelabel){
 }
 
 #ifdef _WIN32
+
+/* ------------------ GetBinPath - windows ------------------------ */
+
 char *GetBinPath(){
   size_t MAX_BUFFER_SIZE = MAX_PATH * 20;
   char *buffer;
   size_t buffer_size = MAX_PATH * sizeof(char);
   NEWMEMORY(buffer, buffer_size);
-  for (;;){
+  for(;;){
     GetModuleFileNameA(NULL, buffer, buffer_size);
     DWORD dw = GetLastError();
     if(dw == ERROR_SUCCESS){
@@ -1093,6 +1096,8 @@ char *GetBinPath(){
   }
 }
 
+/* ------------------ GetBinDir - windows ------------------------ */
+
 char *GetBinDir(){
   char *buffer = GetBinPath();
   // NB: This uses on older function in order to support "char *".
@@ -1101,12 +1106,15 @@ char *GetBinDir(){
   return buffer;
 }
 #elif __linux__
+
+/* ------------------ GetBinPath - linux ------------------------ */
+
 char *GetBinPath(){
   size_t MAX_BUFFER_SIZE = 2048 * 20;
   char *buffer;
   size_t buffer_size = 256 * sizeof(char);
   NEWMEMORY(buffer, buffer_size);
-  for (;;){
+  for(;;){
     int ret = readlink("/proc/self/exe", buffer, buffer_size);
     if(ret < buffer_size){
       buffer[ret] = '\0';
@@ -1124,18 +1132,23 @@ char *GetBinPath(){
   }
 }
 
+/* ------------------ GetBinDir - linux ------------------------ */
+
 char *GetBinDir(){
   char *buffer = GetBinPath();
   dirname(buffer);
   return buffer;
 }
 #else
+
+/* ------------------ GetBinPath - osx ------------------------ */
+
 char *GetBinPath(){
   uint32_t  MAX_BUFFER_SIZE = 2048 * 20;
   char *buffer;
   uint32_t buffer_size = 256 * sizeof(char);
   NEWMEMORY(buffer, buffer_size);
-  for (;;){
+  for(;;){
     int ret = _NSGetExecutablePath(buffer, &buffer_size);
     if(ret == 0){
       return buffer;
@@ -1151,6 +1164,8 @@ char *GetBinPath(){
     }
   }
 }
+
+/* ------------------ GetBinDir - osx ------------------------ */
 
 char *GetBinDir(){
   char *buffer = GetBinPath();
@@ -1168,6 +1183,8 @@ char *GetBinDir(){
 /// GetSmvRootDir.
 char *smv_root_override = NULL;
 
+/* ------------------ SetSmvRootOverride ------------------------ */
+
 void SetSmvRootOverride(const char *path){
   FREEMEMORY(smv_root_override);
   if(path == NULL) return;
@@ -1178,6 +1195,8 @@ void SetSmvRootOverride(const char *path){
     STRCAT(smv_root_override, dirseparator);
   }
 }
+
+/* ------------------ GetSmvRootDir ------------------------ */
 
 char *GetSmvRootDir(){
   char *envar_path = getenv("SMV_ROOT_OVERRIDE");

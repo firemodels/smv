@@ -149,7 +149,7 @@ void getzonesize(const char *zonefilename, int *nzonet, int *nrooms,
     rewind(file);
     return;
   }
-  while (1){
+  while(1){
     exit_all = 0;
     *error = fortread(&dummy, sizeof(dummy), 1, file);
     if(*error != 0){
@@ -159,7 +159,7 @@ void getzonesize(const char *zonefilename, int *nzonet, int *nrooms,
     uint32_t dummies[4];
 
     int i;
-    for (i = 0; i < *nrooms; i++){
+    for(i = 0; i < *nrooms; i++){
       *error = fortread(dummies, sizeof(*dummies), 4, file);
       if(*error == 0) continue;
       *error = 0;
@@ -169,7 +169,7 @@ void getzonesize(const char *zonefilename, int *nzonet, int *nrooms,
     if(exit_all == 1) break;
     // TODO: technically float is not fixed width here.
     float fdummies[2];
-    for (i = 0; i < *nfires; i++){
+    for(i = 0; i < *nfires; i++){
       *error = fortread(fdummies, sizeof(*fdummies), 2, file);
       if(*error == 0) continue;
       *error = 0;
@@ -221,7 +221,7 @@ void getpatchsizes2(FILE *file, int version, int npatch, int *npatchsize,
   *npatchsize = 0;
 
   int n;
-  for (n = 0; n < npatch; n++){
+  for(n = 0; n < npatch; n++){
     if(version == 0){
       fortread(ijkp, sizeof(*ijkp), 6, file);
     } else{
@@ -443,7 +443,7 @@ void getboundaryheader2(FILE *file, int version, int npatch, int *pi1, int *pi2,
   uint32_t ijk[9];
 
   int n;
-  for (n = 0; n < npatch; n++){
+  for(n = 0; n < npatch; n++){
     if(version == 0){
       fortread(ijk, sizeof(*ijk), 6, file);
     } else{
@@ -491,7 +491,7 @@ FILE *openboundary(const char *boundaryfilename, int version, int *error){
   uint32_t ijk[9] = {0};
 
   int n;
-  for (n = 0; n < npatch; n++){
+  for(n = 0; n < npatch; n++){
     if(version == 0){
       if(*error == 0){
         *error = fortread(ijk, sizeof(*ijk), 6, file);
@@ -536,14 +536,14 @@ void getpartheader2(FILE *file, int nclasses, int *nquantities, int *size){
   *size = 0;
 
   int i;
-  for (i = 0; i < nclasses; i++){
+  for(i = 0; i < nclasses; i++){
     int t[2] = {0};
     fortread(t, sizeof(*t), 2, file);
     nquantities[i] = t[0];
     *size += 4 + 2 * nquantities[i] * (4 + 30 + 4);
 
     int j;
-    for (j = 0; j < nquantities[i]; j++){
+    for(j = 0; j < nquantities[i]; j++){
       fortread(clabel, 30, 1, file);
       fortread(clabel, 30, 1, file);
     }
@@ -568,7 +568,7 @@ void getpartdataframe(FILE *file, int nclasses, int *nquantities, int *npoints,
   if(*error != 0) return;
 
   int i;
-  for (i = 0; i < nclasses; i++){
+  for(i = 0; i < nclasses; i++){
     *error = fortread(&nparticles, sizeof(nparticles), 1, file);
     if(*error != 0) return;
     npoints[i] = nparticles;
@@ -619,11 +619,11 @@ void getzonedata(const char *zonefilename, int *nzonet, int *nrooms,
   ii2 = 0;
 
   int j;
-  for (j = 0; j < *nzonet; j++){
+  for(j = 0; j < *nzonet; j++){
     *error = fortread(&zonet[j], sizeof(zonet[j]), 1, file);
 
     int i;
-    for (i = 0; i < *nrooms; i++){
+    for(i = 0; i < *nrooms; i++){
       float zonevals[4];
       *error = fortread(zonevals, sizeof(*zonevals), 4, file);
       zonepr[ii] = zonevals[0];
@@ -638,7 +638,7 @@ void getzonedata(const char *zonefilename, int *nzonet, int *nrooms,
         return;
       }
     }
-    for (i = 1; i <= *nfires; i++){
+    for(i = 1; i <= *nfires; i++){
       ii2 = ii2 + 1;
       float qdot_arr[2];
       *error = fortread(&qdot_arr, sizeof(*qdot_arr), 2, file);
@@ -674,7 +674,7 @@ void getpatchdata(FILE *file, int npatch, int *pi1, int *pi2, int *pj1,
   *npqq = 0;
 
   int i;
-  for (i = 0; i < npatch; i++){
+  for(i = 0; i < npatch; i++){
     i1 = pi1[i];
     i2 = pi2[i];
     j1 = pj1[i];
@@ -722,14 +722,14 @@ void getdata1(FILE *file, int *ipart, int *error){
   int idummy[7];
 
   int i;
-  for (i = 1; i <= nb1; i++){
+  for(i = 1; i <= nb1; i++){
     *error = fortread(idummy, sizeof(*idummy), 7, file);
     if(*error != 0) return;
   }
 
   *error = fortread(&nv, sizeof(nv), 1, file);
   if(*error != 0) return;
-  for (i = 1; i <= nv; i++){
+  for(i = 1; i <= nv; i++){
     *error = fortread(idummy, sizeof(*idummy), 7, file);
     if(*error != 0) return;
   }
@@ -738,7 +738,7 @@ void getdata1(FILE *file, int *ipart, int *error){
   if(*error != 0) return;
 
   float dummy[3];
-  for (i = 1; i <= nspr; i++){
+  for(i = 1; i <= nspr; i++){
     *error = fortread(dummy, sizeof(*dummy), 3, file);
     if(*error != 0) return;
   }
@@ -782,7 +782,7 @@ void writeslicedata(const char *slicefilename, int is1, int is2, int js1,
   nframe = nxsp * nysp * nzsp;
   if(redirect_flag == 0) printf("output slice data to %s\n", slicefilename);
   int i;
-  for (i = 0; i < ntimes; i++){
+  for(i = 0; i < ntimes; i++){
     fortwrite(times + i, sizeof(float), 1, file);
     fortwrite(qdata + i*nframe, sizeof(float), nframe, file);
   }
@@ -809,15 +809,15 @@ void getsliceframe(FILE *file, int is1, int is2, int js1, int js2, int ks1,
     if(testslice == 2) factor = 1.1;
 
     size_t k;
-    for (k = 0; k < nzsp; k++){
+    for(k = 0; k < nzsp; k++){
       float kk = 2.0 * ((nzsp - 1) / 2.0 - k) / (nzsp - 1.0);
 
       size_t j;
-      for (j = 0; j < nysp; j++){
+      for(j = 0; j < nysp; j++){
         float jj = 2.0 * ((nysp - 1) / 2.0 - j) / (nysp - 1.0);
 
 	size_t i;
-        for (i = 0; i < nxsp; i++){
+        for(i = 0; i < nxsp; i++){
           float ii = 2.0 * ((nxsp - 1) / 2.0 - i) / (nxsp - 1.0);
           float val =
               factor * (*time - 20.0) * (ii * ii + jj * jj + kk * kk) / 20.0;
@@ -891,7 +891,7 @@ void outboundaryheader(const char *boundaryfilename, FILE **file, int npatches,
   uint32_t ijk[7] = {0};
 
   int n;
-  for (n = 0; n < npatches; n++){
+  for(n = 0; n < npatches; n++){
     ijk[0] = pi1[n];
     ijk[1] = pi2[n];
     ijk[2] = pj1[n];
@@ -915,7 +915,7 @@ void outpatchframe(FILE *file, int npatch, int *pi1, int *pi2, int *pj1,
   ibeg = 1;
 
   int i;
-  for (i = 0; i < npatch; i++){
+  for(i = 0; i < npatch; i++){
     i1 = pi1[i];
     i2 = pi2[i];
     j1 = pj1[i];
@@ -976,13 +976,13 @@ void getplot3dq(const char *qfilename, int nx, int ny, int nz, float *qq, float 
   }
   else{
     int i;
-    for (i = 0; i < nx; i++){
+    for(i = 0; i < nx; i++){
 
       int j;
-      for (j = 0; j < ny; j++){
+      for(j = 0; j < ny; j++){
 
         int k;
-        for (k = 0; k < nz; k++){
+        for(k = 0; k < nz; k++){
           qval = pow(i - nx / 2, 2) + pow(j - ny / 2, 2) + pow(k - nz / 2, 2);
           qval = sqrt(qval);
           if(isotest == 1){

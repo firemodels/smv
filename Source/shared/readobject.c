@@ -56,7 +56,7 @@ void FreeObject(sv_object *object){
 
   frame_start = &object->first_frame;
   framei = frame_start->next;
-  for (; framei->next != NULL;){
+  for(; framei->next != NULL;){
     sv_object_frame *next_frame;
 
     next_frame = framei->next;
@@ -104,7 +104,7 @@ sv_object *GetSmvObjectType(object_collection *objectscoll, char *olabel,
   TrimBack(label);
   labelptr = TrimFront(label);
   if(strlen(labelptr) == 0) return default_object;
-  for (i = 0; i < objectscoll->nobject_defs; i++){
+  for(i = 0; i < objectscoll->nobject_defs; i++){
     objecti = objectscoll->object_defs[i];
     if(STRCMP(labelptr, objecti->label) == 0){
       objecti->used = 1;
@@ -128,7 +128,7 @@ sv_object *GetSmvObjectType2(object_collection *objectscoll, char *olabel,
   if(strlen(labelptr) == 0) return default_object;
   object_start = objectscoll->object_def_first.next;
   objecti = object_start;
-  for (; objecti->next != NULL;){
+  for(; objecti->next != NULL;){
     if(STRCMP(labelptr, objecti->label) == 0){
       objecti->used = 1;
       return objecti;
@@ -152,7 +152,7 @@ void ParseSmvObjectString(object_collection *objectscoll, char *string,
   in_token = 0;
   last_in_token = 0;
   len = strlen(string);
-  for (i = 0; i <= len; i++){
+  for(i = 0; i <= len; i++){
     switch(*c){
     case '"':
       in_quote = 1 - in_quote;
@@ -232,12 +232,12 @@ void ParseSmvObjectString(object_collection *objectscoll, char *string,
           nparms = 2;
         }
         ntail -= nparms;
-        for (j = 0, frame = included_object->first_frame.next;
+        for(j = 0, frame = included_object->first_frame.next;
              frame->next != NULL; j++, frame = frame->next){
           if(j == iframe_local) break;
         }
         in_head2 = 1;
-        for (j = 0; j < frame->ntokens; j++){
+        for(j = 0; j < frame->ntokens; j++){
           char *cc;
 
           cc = frame->tokens[j].tokenlabel;
@@ -255,10 +255,10 @@ void ParseSmvObjectString(object_collection *objectscoll, char *string,
     c++;
   }
   ntok2 = 0;
-  for (i = 0; i < nhead; i++){
+  for(i = 0; i < nhead; i++){
     tokens[ntok2++] = tokens_head[i];
   }
-  for (i = 0; i < ntail; i++){
+  for(i = 0; i < ntail; i++){
     tokens[ntok2++] = tokens_tail[i];
   }
   *ntokens = ntok2;
@@ -274,7 +274,7 @@ void GetIndepVarIndices(sv_object *smv_object, char **var_indep_strings,
 
   obj_frame = smv_object->obj_frames[0];
 
-  for (i = 0; i < nvars_indep; i++){
+  for(i = 0; i < nvars_indep; i++){
     char *var;
 
     var = var_indep_strings[i];
@@ -304,7 +304,7 @@ char *ParseObjectFrame(object_collection *objectscoll, const char *buffer_in,
   frame->error = 0;
   TrimBack(buffer);
   strcpy(object_buffer, buffer);
-  while (stream != NULL && !feof(stream)){
+  while(stream != NULL && !feof(stream)){
     if(fgets(buffer, 255, stream) == NULL){
       *eof = 1;
       break;
@@ -330,7 +330,7 @@ char *ParseObjectFrame(object_collection *objectscoll, const char *buffer_in,
 
   nsymbols = 0;
   ncommands = 0;
-  for (i = 0; i < ntokens; i++){
+  for(i = 0; i < ntokens; i++){
     tokendata *toki;
     char c;
     token = tokens[i];
@@ -354,7 +354,7 @@ char *ParseObjectFrame(object_collection *objectscoll, const char *buffer_in,
 
   nsymbols = 0;
   ncommands = 0;
-  for (i = 0; i < ntokens; i++){
+  for(i = 0; i < ntokens; i++){
     tokendata *toki, *first_token = NULL;
     char c;
 
@@ -417,7 +417,7 @@ char *ParseObjectFrame(object_collection *objectscoll, const char *buffer_in,
         int ii;
 
         noutargs_actual = 0;
-        for (ii = 0; ii < nargs_actual; ii++){
+        for(ii = 0; ii < nargs_actual; ii++){
           tokendata *tokii;
 
           tokii = toki - 1 - ii;
@@ -544,7 +544,7 @@ char *ParseObjectFrame(object_collection *objectscoll, const char *buffer_in,
     }
   }
   frame->ntextures = ntextures_local;
-  for (i = 0; i < ntokens; i++){
+  for(i = 0; i < ntokens; i++){
     tokendata *toki;
     char c;
 
@@ -555,7 +555,7 @@ char *ParseObjectFrame(object_collection *objectscoll, const char *buffer_in,
 
   // define data structures for conditional tokens
 
-  for (i = 0; i < ncommands; i++){
+  for(i = 0; i < ncommands; i++){
     tokendata *toki;
 
     toki = frame->command_list[i];
@@ -564,7 +564,7 @@ char *ParseObjectFrame(object_collection *objectscoll, const char *buffer_in,
 
     case SV_IF:
       if_level = 0;
-      for (j = i + 1; j < ncommands; j++){
+      for(j = i + 1; j < ncommands; j++){
         tokendata *tokj;
 
         tokj = frame->command_list[j];
@@ -585,7 +585,7 @@ char *ParseObjectFrame(object_collection *objectscoll, const char *buffer_in,
       break;
     case SV_ELSE:
       if_level = 0;
-      for (j = i + 1; j < ncommands; j++){
+      for(j = i + 1; j < ncommands; j++){
         tokendata *tokj;
 
         tokj = frame->command_list[j];
@@ -1064,7 +1064,7 @@ int GetTokenId(char *token, int *opptr, int *num_opptr, int *num_outopptr,
 int GetObjectFrameTokenLoc(char *var, sv_object_frame *frame){
   int i;
 
-  for (i = 0; i < frame->nsymbols; i++){
+  for(i = 0; i < frame->nsymbols; i++){
     int ii;
     tokendata *toki;
     char *token_var;
@@ -1096,7 +1096,7 @@ sv_object *InitSmvObject2(object_collection *objectscoll, const char *label,
   NewMemory((void **)&object->obj_frames,
             object->nframes * sizeof(sv_object_frame *));
 
-  for (i = 0; i < object->nframes; i++){
+  for(i = 0; i < object->nframes; i++){
     sv_object_frame *framei;
     int eof;
 
@@ -1159,7 +1159,7 @@ sv_object *InitSmvObject1(object_collection *objectscoll, const char *label,
 void FreeObjectCollection(object_collection *objectscoll){
   sv_object *object;
 
-  for (;;){
+  for(;;){
     object = objectscoll->object_def_last.prev;
     if(object->prev == NULL) break;
     FreeObject(object);
@@ -1174,7 +1174,7 @@ sv_object *GetSmvObject(object_collection *objectscoll, char *label){
 
   object_start = objectscoll->object_def_first.next;
   objecti = object_start;
-  for (; objecti->next != NULL; objecti = objecti->next){
+  for(; objecti->next != NULL; objecti = objecti->next){
     if(STRCMP(objecti->label, label) == 0) return objecti;
   }
   return NULL;
@@ -1201,7 +1201,7 @@ int ReadObjectDefs(object_collection *objectscoll, const char *file,
 
   firstdef = -1;
   buffer_ptr = NULL;
-  while (!feof(stream)){
+  while(!feof(stream)){
     CheckMemory;
     if(buffer_ptr == NULL){
       if(eof == 1 || fgets(buffer, 255, stream) == NULL) break;
@@ -1299,7 +1299,7 @@ int ReadObjectDefs(object_collection *objectscoll, const char *file,
   object_start = objectscoll->object_def_first.next;
   objecti = object_start;
   objectscoll->nobject_defs = 0;
-  for (; objecti->next != NULL;){
+  for(; objecti->next != NULL;){
     CheckMemory;
     (objectscoll->nobject_defs)++;
     objecti->obj_frames = NULL;
@@ -1319,7 +1319,7 @@ int ReadObjectDefs(object_collection *objectscoll, const char *file,
     object_start = objectscoll->object_def_first.next;
     objecti = object_start;
     i = 0;
-    for (; objecti->next != NULL;){
+    for(; objecti->next != NULL;){
       sv_object_frame *frame_start, *framei;
 
       CheckMemory;
@@ -1328,12 +1328,12 @@ int ReadObjectDefs(object_collection *objectscoll, const char *file,
       frame_start = objecti->first_frame.next;
       framei = frame_start;
       j = 0;
-      for (; framei->next != NULL;){
+      for(; framei->next != NULL;){
         int npushpop = 0, ii;
 
         CheckMemory;
         objecti->obj_frames[j] = framei;
-        for (ii = 0; ii < framei->ncommands; ii++){
+        for(ii = 0; ii < framei->ncommands; ii++){
           tokendata *command;
           int op;
 
@@ -1383,7 +1383,7 @@ void InitAvatar(object_collection *objectscoll, int setbw){
 
   object_start = objectscoll->object_def_first.next;
   objectscoll->navatar_types = 2;
-  for (objecti = object_start; objecti->next != NULL; objecti = objecti->next){
+  for(objecti = object_start; objecti->next != NULL; objecti = objecti->next){
     if(objecti->type == IS_AVATAR) objectscoll->navatar_types++;
   }
   NewMemory((void **)&objectscoll->avatar_types,
@@ -1406,7 +1406,7 @@ void InitAvatar(object_collection *objectscoll, int setbw){
   objectscoll->avatar_types[1] = objectscoll->avatar_defs_backup[1];
 
   iavatar_types_local = 2;
-  for (objecti = object_start; objecti->next != NULL; objecti = objecti->next){
+  for(objecti = object_start; objecti->next != NULL; objecti = objecti->next){
     if(objecti->type == IS_NOT_AVATAR) continue;
     objectscoll->avatar_types[iavatar_types_local++] = objecti;
   }
@@ -1557,7 +1557,7 @@ void UpdateDeviceTextures(object_collection *objectscoll, int ndeviceinfo,
   char **device_texture_list=NULL;
   int *device_texture_list_index=NULL;
 
-  for (i = 0; i < ndeviceinfo; i++){
+  for(i = 0; i < ndeviceinfo; i++){
     devicedata *devicei;
 
     devicei = deviceinfo + i;
@@ -1571,21 +1571,21 @@ void UpdateDeviceTextures(object_collection *objectscoll, int ndeviceinfo,
 
   // count device textures
 
-  for (i = 0; i < ndeviceinfo; i++){
+  for(i = 0; i < ndeviceinfo; i++){
     devicedata *devicei;
     sv_object *object;
     int j;
 
     devicei = deviceinfo + i;
     object = devicei->object;
-    for (j = 0; j < object->nframes; j++){
+    for(j = 0; j < object->nframes; j++){
       sv_object_frame *frame;
 
       frame = object->obj_frames[j];
       ndevice_texture_list += frame->ntextures;
     }
   }
-  for (i = 0; i < npropinfo; i++){
+  for(i = 0; i < npropinfo; i++){
     propdata *propi;
 
     propi = propinfo + i;
@@ -1601,20 +1601,20 @@ void UpdateDeviceTextures(object_collection *objectscoll, int ndeviceinfo,
     NewMemory((void **)&device_texture_list_index,
               ndevice_texture_list * sizeof(int));
     ndevice_texture_list = 0;
-    for (i = 0; i < ndeviceinfo; i++){
+    for(i = 0; i < ndeviceinfo; i++){
       devicedata *devicei;
       sv_object *object;
       int j;
 
       devicei = deviceinfo + i;
       object = devicei->object;
-      for (j = 0; j < object->nframes; j++){
+      for(j = 0; j < object->nframes; j++){
         sv_object_frame *frame;
         int k;
 
         frame = object->obj_frames[j];
         if(frame->ntextures == 0) continue;
-        for (k = 0; k < frame->ntokens; k++){
+        for(k = 0; k < frame->ntokens; k++){
           tokendata *toki;
           int kk;
           int dup;
@@ -1622,7 +1622,7 @@ void UpdateDeviceTextures(object_collection *objectscoll, int ndeviceinfo,
           toki = frame->tokens + k;
           if(toki->type != TOKEN_TEXTURE) continue;
           dup = 0;
-          for (kk = 0; kk < ndevice_texture_list; kk++){
+          for(kk = 0; kk < ndevice_texture_list; kk++){
             if(strcmp(device_texture_list[kk], toki->string) == 0){
               dup = 1;
               break;
@@ -1633,20 +1633,20 @@ void UpdateDeviceTextures(object_collection *objectscoll, int ndeviceinfo,
         }
       }
     }
-    for (i = 0; i < npropinfo; i++){
+    for(i = 0; i < npropinfo; i++){
       propdata *propi;
       int j;
 
       propi = propinfo + i;
       if(propi->ntextures == 0) continue;
-      for (j = 0; j < propi->ntextures; j++){
+      for(j = 0; j < propi->ntextures; j++){
         int dup;
         char *texturefile;
         int kk;
 
         texturefile = propi->texturefiles[j];
         dup = 0;
-        for (kk = 0; kk < ndevice_texture_list; kk++){
+        for(kk = 0; kk < ndevice_texture_list; kk++){
           if(strcmp(device_texture_list[kk], texturefile) == 0){
             dup = 1;
             break;

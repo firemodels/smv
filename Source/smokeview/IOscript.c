@@ -1939,13 +1939,13 @@ void ScriptLoadIso(scriptdata *scripti, int meshnum){
 
   update_readiso_geom_wrapup = UPDATE_ISO_START_ALL;
   CancelUpdateTriangles();
-  for (i = nisoinfo - 1; i >= 0; i--){
+  for(i = nisoinfo - 1; i >= 0; i--){
     isodata* isoi;
 
     isoi = isoinfo + i;
     isoi->finalize = 0;
   }
-  for (i = nisoinfo-1; i >=0; i--){
+  for(i = nisoinfo-1; i >=0; i--){
     isodata* isoi;
     char label2[100];
     int lencval, lenlabel;

@@ -1059,7 +1059,7 @@ void DrawPlot2D(int option, float *x, float *z, float *z2, int n,
   char tvalmin[20], tvalmax[20];
   int ndigits = 3;
 
-  float dfont = ( float )GetFontHeight();
+  float dfont = (float)GetFontHeight();
 
   xmin = x[0];
   xmax = xmin;

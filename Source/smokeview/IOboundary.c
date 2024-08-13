@@ -1064,7 +1064,7 @@ void GetBoundaryDataZlib(patchdata *patchi, unsigned char *data, int ndata,
     buffer  = patchi->frameinfo->bufferinfo->buffer;
     nbuffer = patchi->frameinfo->bufferinfo->nbuffer;
   }
-  stream = fopen_b(( char * )patchi->file, buffer, nbuffer, "rb");
+  stream = fopen_b((char *)patchi->file, buffer, nbuffer, "rb");
 #else
   stream = fopen_m((char *)patchi->file, "rb");
 #endif
@@ -1397,7 +1397,7 @@ int GetPatchNTimes(char *file){
 
   int count = 0;
   char buffer[255];
-  for (;;){
+  for(;;){
 
     if(fgets(buffer, 255, stream) == NULL) break;
     count++;
@@ -1418,7 +1418,7 @@ void GetPatchSizes1(FILE_m **stream, const char *patchfilename, unsigned char *b
     return;
   }
 #ifdef pp_BOUNDFRAME
-  *stream = fopen_b(( char * )patchfilename, buffer, nbuffer, "rb");
+  *stream = fopen_b((char *)patchfilename, buffer, nbuffer, "rb");
 #else
   *stream = fopen_m((char *)patchfilename, "rb");
 #endif
@@ -1449,7 +1449,7 @@ void GetPatchSizes2(FILE_m *stream, int version, int npatch, int *npatchsize,
   *npatchsize = 0;
 
   int n;
-  for (n = 0; n < npatch; n++){
+  for(n = 0; n < npatch; n++){
     if(version == 0){
       fseek_m(stream, 4, SEEK_CUR);fread_m(ijkp, sizeof(*ijkp), 6, stream);fseek_m(stream, 4, SEEK_CUR);
     }
@@ -2897,7 +2897,7 @@ void DrawBoundaryTexture(const meshdata *meshi){
       xyzpatchcopy = xyzpatch + 3*blockstart[n];
       patchblankcopy = patchblank + blockstart[n];
 #ifdef pp_BOUNDFRAME
-      patchvals = ( float * )FRAMEGetSubFramePtr(patchi->frameinfo, meshi->patch_itime, n);
+      patchvals = (float *)FRAMEGetSubFramePtr(patchi->frameinfo, meshi->patch_itime, n);
 #else
       patchvals = patchval_iframe + blockstart[n];
 #endif
@@ -2993,7 +2993,7 @@ void DrawBoundaryTexture(const meshdata *meshi){
       xyzpatchcopy = xyzpatch + 3*blockstart[n];
       patchblankcopy = patchblank + blockstart[n];
 #ifdef pp_BOUNDFRAME
-      patchvals = ( float * )FRAMEGetSubFramePtr(patchi->frameinfo, meshi->patch_itime, n);
+      patchvals = (float *)FRAMEGetSubFramePtr(patchi->frameinfo, meshi->patch_itime, n);
 
 #else
       if(patchi->compression_type != COMPRESSED_ZLIB)patchvals  = patchval_iframe+blockstart[n];
@@ -3106,7 +3106,7 @@ void DrawBoundaryTexture(const meshdata *meshi){
       xyzpatchcopy = xyzpatch + 3*blockstart[n];
       patchblankcopy = patchblank + blockstart[n];
 #ifdef pp_BOUNDFRAME
-      patchvals = ( float * )FRAMEGetSubFramePtr(patchi->frameinfo, meshi->patch_itime, n);
+      patchvals = (float *)FRAMEGetSubFramePtr(patchi->frameinfo, meshi->patch_itime, n);
 #else
       if(patchi->compression_type != COMPRESSED_ZLIB)patchvals  = patchval_iframe+blockstart[n];
 #endif
@@ -3286,7 +3286,7 @@ void DrawBoundaryTextureThreshold(const meshdata *meshi){
       patchblankcopy = patchblank + blockstart[n];
 
 #ifdef pp_BOUNDFRAME
-      patchvals = ( float * )FRAMEGetSubFramePtr(patchi->frameinfo, meshi->patch_itime, n);
+      patchvals = (float *)FRAMEGetSubFramePtr(patchi->frameinfo, meshi->patch_itime, n);
 #else
       patchvals = patchval_iframe + blockstart[n];
 #endif
@@ -3376,7 +3376,7 @@ void DrawBoundaryTextureThreshold(const meshdata *meshi){
       xyzpatchcopy = xyzpatch + 3*blockstart[n];
       patchblankcopy = patchblank + blockstart[n];
 #ifdef pp_BOUNDFRAME
-      patchvals = ( float * )FRAMEGetSubFramePtr(patchi->frameinfo, meshi->patch_itime, n);
+      patchvals = (float *)FRAMEGetSubFramePtr(patchi->frameinfo, meshi->patch_itime, n);
 #else
       patchvals  = patchval_iframe + blockstart[n];
 #endif
@@ -3463,7 +3463,7 @@ void DrawBoundaryTextureThreshold(const meshdata *meshi){
       xyzpatchcopy = xyzpatch + 3*blockstart[n];
       patchblankcopy = patchblank + blockstart[n];
 #ifdef pp_BOUNDFRAME
-      patchvals = ( float * )FRAMEGetSubFramePtr(patchi->frameinfo, meshi->patch_itime, n);
+      patchvals = (float *)FRAMEGetSubFramePtr(patchi->frameinfo, meshi->patch_itime, n);
 #else
       patchvals  = patchval_iframe + blockstart[n];
 #endif
@@ -3865,7 +3865,7 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
       nrow = boundary_row[n];
       ncol = boundary_col[n];
 #ifdef pp_BOUNDFRAME
-      patchvals = ( float * )FRAMEGetSubFramePtr(patchi->frameinfo, meshi->patch_itime, n);
+      patchvals = (float *)FRAMEGetSubFramePtr(patchi->frameinfo, meshi->patch_itime, n);
 #else
       patchvals  = patchval_iframe+blockstart[n];
 #endif
@@ -3950,7 +3950,7 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
       nrow = boundary_row[n];
       ncol = boundary_col[n];
 #ifdef pp_BOUNDFRAME
-      patchvals = ( float * )FRAMEGetSubFramePtr(patchi->frameinfo, meshi->patch_itime, n);
+      patchvals = (float *)FRAMEGetSubFramePtr(patchi->frameinfo, meshi->patch_itime, n);
 #else
       patchvals = patchval_iframe+blockstart[n];
 #endif
@@ -4053,7 +4053,7 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
       nrow = boundary_row[n];
       ncol = boundary_col[n];
 #ifdef pp_BOUNDFRAME
-      patchvals = ( float * )FRAMEGetSubFramePtr(patchi->frameinfo, meshi->patch_itime, n);
+      patchvals = (float *)FRAMEGetSubFramePtr(patchi->frameinfo, meshi->patch_itime, n);
 #else
       patchvals  = patchval_iframe+blockstart[n];
 #endif
@@ -4255,7 +4255,7 @@ void UpdateBoundaryType(void){
 
 /* ------------------ BoundaryCompare ------------------------ */
 
-int BoundaryCompare( const void *arg1, const void *arg2 ){
+int BoundaryCompare(const void *arg1, const void *arg2){
   patchdata *patchi, *patchj;
 
   patchi = patchinfo + *(int *)arg1;

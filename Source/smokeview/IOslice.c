@@ -1510,7 +1510,7 @@ void UpdateAllSliceColors(int slicetype, int *errorcode){
 
 /* ------------------ SliceCompare ------------------------ */
 
-int SliceCompare( const void *arg1, const void *arg2 ){
+int SliceCompare(const void *arg1, const void *arg2){
   slicedata *slicei, *slicej;
 
   slicei = sliceinfo + *(int *)arg1;
@@ -3070,7 +3070,7 @@ void GetSliceDataBounds(slicedata *sd, float *pmin, float *pmax){
     }
     *pmin = pdata[0];
     *pmax = pdata[0];
-    for (i = 0; i < ndata; i++){
+    for(i = 0; i < ndata; i++){
       *pmin = MIN(*pmin, pdata[i]);
       *pmax = MAX(*pmax, pdata[i]);
     }
@@ -4181,7 +4181,7 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
       show_slice_average = 1;
 
 #ifdef pp_SLICEFRAME
-      qvalptrs = ( float **)sd->frameinfo->frameptrs;
+      qvalptrs = (float **)sd->frameinfo->frameptrs;
 #else
       int i;
       NewMemory((void **)&qvalptrs, sd->ntimes*sizeof(float *));
@@ -6801,7 +6801,7 @@ void ComputeOpacityCorrections(meshdata *meshi, float *xyz0, float *normal){
 
 /* ------------------ CompareLoadedSliceList ------------------------ */
 
-int CompareLoadedSliceList( const void *arg1, const void *arg2 ){
+int CompareLoadedSliceList(const void *arg1, const void *arg2){
   slicedata *slicei, *slicej;
   float position_i, position_j;
   int dir;
@@ -7598,7 +7598,7 @@ void DrawSliceFrame(){
       glBlendEquation(GL_FUNC_ADD);
     }
   }
-  for (ii = 0; ii < npatchinfo; ii++){
+  for(ii = 0; ii < npatchinfo; ii++){
     patchdata *patchi;
 
     patchi = patchinfo + ii;
@@ -9556,7 +9556,7 @@ void SortSlices(void){
     splitsliceinfoptr[i] = splitsliceinfo + i;
   }
   if(nsplitsliceinfo > 1){
-    qsort(( splitslicedata ** )splitsliceinfoptr, ( size_t )nsplitsliceinfo, sizeof(splitslicedata *), CompareSortSlices);
+    qsort((splitslicedata **)splitsliceinfoptr, ( size_t )nsplitsliceinfo, sizeof(splitslicedata *), CompareSortSlices);
   }
 }
 

@@ -19,7 +19,7 @@ typedef struct {
 
 //************************** headers ****************************************
 
-TREXTERN int CompareTrdata( const void *arg1, const void *arg2 );
+TREXTERN int CompareTrdata(const void *arg1, const void *arg2 );
 TREXTERN char *Translate(char *string);
 TREXTERN void InitTranslate(char *bindir, char *tr_name);
 TREXTERN int ParseLang(char *file, trdata **trinfoptr, int *ntrinfoptr);

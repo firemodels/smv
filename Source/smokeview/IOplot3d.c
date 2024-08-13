@@ -68,7 +68,7 @@ void MergePlot3DHistograms(void){
 
 /* ------------------ Plot3dCompare  ------------------------ */
 
-int Plot3dCompare( const void *arg1, const void *arg2 ){
+int Plot3dCompare(const void *arg1, const void *arg2){
   plot3ddata *plot3di, *plot3dj;
 
   plot3di = plot3dinfo + *(int *)arg1;
@@ -616,8 +616,7 @@ void DrawPlot3dTexture(meshdata *meshi){
   /* +++++++++++++++++++++++++++   draw yz contours +++++++++++++++++++++++++++++++++++++ */
 
   if(plotx>=0&&visx!=0){
-    if(visVector==0
-       ){
+    if(visVector==0){
       if(plotx<0){
         plotx=ibar;
         UpdatePlotSlice(XDIR);
@@ -733,8 +732,7 @@ void DrawPlot3dTexture(meshdata *meshi){
   /* +++++++++++++++++++++++++++++++++  draw xz contours  ++++++++++++++++++++++++++++++++++++++++ */
 
   if(ploty>=0&&visy!=0){
-    if(visVector==0
-       ){
+    if(visVector==0){
       glBegin(GL_TRIANGLES);
       for(i=0; i<ibar; i++){
         for(k=0; k<kbar; k++){
@@ -839,8 +837,7 @@ void DrawPlot3dTexture(meshdata *meshi){
   /* ++++++++++++++++++++++++++++ draw xy contours ++++++++++++++++++++++++++++++++ */
 
   if(plotz>=0&&visz!=0){
-    if(visVector==0
-       ){
+    if(visVector==0){
       if(plotz<0){
         plotz=kbar;
         UpdatePlotSlice(ZDIR);
@@ -950,8 +947,7 @@ void DrawPlot3dTexture(meshdata *meshi){
       glEnd();
     }
   }
-  if(visVector==0
-     ){
+  if(visVector==0){
     glDisable(GL_TEXTURE_1D);
   }
   if(use_transparency_data==1){
@@ -1665,7 +1661,7 @@ void UpdatePlot3dMenuLabels(void){
 
 /* ------------------ Plot3dListCompare  ------------------------ */
 
-int Plot3dListCompare( const void *arg1, const void *arg2 ){
+int Plot3dListCompare(const void *arg1, const void *arg2){
   float val1, val2;
 
   val1 = *(float *)arg1;

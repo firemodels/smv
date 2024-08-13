@@ -837,13 +837,13 @@ void CreatePartSizeFileFromPart(char *part5file_arg, char *part5sizefile_arg, LI
   FORTREAD_m(&nclasses_local, 4, 1, stream);
   NewMemory((void **)&numtypes_local, 2*nclasses_local* sizeof(int));
   NewMemory((void **)&numpoints_local, nclasses_local* sizeof(int));
-  for (i = 0; i < nclasses_local; i++){
+  for(i = 0; i < nclasses_local; i++){
     FORTREAD_m(numtypes_local+2*i, 4, 2, stream);
     numvals_local = numtypes_local[2 * i] + numtypes_local[2 * i + 1];
     skip_local = 2*numvals_local*(4 + 30 + 4);
     fseek_m(stream, skip_local, SEEK_CUR);
   }
-  while (!feof_m(stream)){
+  while(!feof_m(stream)){
     float time_local;
     LINT frame_size_local;
     char format[128];
@@ -853,7 +853,7 @@ void CreatePartSizeFileFromPart(char *part5file_arg, char *part5sizefile_arg, LI
     FORTREAD_m(&time_local, 4, 1, stream);
     frame_size_local += 12;
     if(count_read != 1)break;
-    for (i = 0; i < nclasses_local; i++){
+    for(i = 0; i < nclasses_local; i++){
       FORTREAD_m(numpoints_local+ i, 4, 1, stream);
       frame_size_local += 12;
       skip_local = 4+4*NXYZ_COMP_PART*numpoints_local[i]+4;
@@ -871,7 +871,7 @@ void CreatePartSizeFileFromPart(char *part5file_arg, char *part5sizefile_arg, LI
     fprintf(streamout_local, format, time_local, file_offset_arg);
     fprintf(streamout_local, "\n");
     file_offset_arg += frame_size_local;
-    for (i = 0; i < nclasses_local; i++){
+    for(i = 0; i < nclasses_local; i++){
       fprintf(streamout_local, " %i\n", numpoints_local[i]);
     }
   }

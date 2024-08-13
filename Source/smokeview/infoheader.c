@@ -39,7 +39,7 @@ int addTitleLine(titledata *titleinfo_ptr, const char *string){
 // walk through all the title lines and clear them
 int clearTitleLines(titledata *titleinfo_ptr){
   int i;
-  for (i = 0; i < titleinfo_ptr->nlines; i++){
+  for(i = 0; i < titleinfo_ptr->nlines; i++){
     FREEMEMORY(titleinfo_ptr->lines[i]);
     titleinfo_ptr->lines[i]=NULL;
   }
@@ -116,7 +116,7 @@ int renderInfoHeader(titledata *titleinfo_ptr){
   }
 
   int i;
-  for (i = 0; i < titleinfo_ptr->nlines; i++){
+  for(i = 0; i < titleinfo_ptr->nlines; i++){
     OutputText(left, pen_pos, titleinfo_ptr->lines[i]);
     pen_pos -= titleinfo_ptr->text_height;
     pen_pos -= titleinfo_ptr->line_space;

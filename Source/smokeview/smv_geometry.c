@@ -226,7 +226,7 @@ void DrawFilled2Tetra(float *v1, float *v2, float *v3, float *v4,
 
 /* ------------------ CompareFloats ------------------------ */
 
-int CompareFloats( const void *arg1, const void *arg2 ){
+int CompareFloats(const void *arg1, const void *arg2){
   float x, y;
   x=*(float *)arg1;
   y=*(float *)arg2;
@@ -246,7 +246,7 @@ void RemoveDupFloats(float **valsptr, int *nvals,int *ivals, float dval_min){
   if(*nvals==0)return;
   nv = *nvals;
   vals = *valsptr;
-  qsort( (float *)vals, (size_t)nv, sizeof( float ), CompareFloats );
+  qsort( (float *)vals, (size_t)nv, sizeof(float), CompareFloats );
   ii=1;
   for(i=1;i<nv;i++){
     if(ABS(vals[i]-vals[i-1])<=dval_min)continue;
@@ -794,9 +794,9 @@ int BoxInFrustum(float *xx, float *yy, float *zz, int n){
   float xyz[3];
   float dx, dy, dz;
 
-  dx = (xx[1] - xx[0]) / ( float )(n - 1);
-  dy = (yy[1] - yy[0]) / ( float )(n - 1);
-  dz = (zz[1] - zz[0]) / ( float )(n - 1);
+  dx = (xx[1] - xx[0]) / (float)(n - 1);
+  dy = (yy[1] - yy[0]) / (float)(n - 1);
+  dz = (zz[1] - zz[0]) / (float)(n - 1);
 
   for(i=0;i<n;i++){
     int j;
@@ -831,10 +831,10 @@ int MeshInFrustum(meshdata *meshi){
 
 /* ------------------ RectangleInFrustum ------------------------ */
 
-int RectangleInFrustum( float *x11, float *x12, float *x22, float *x21){
+int RectangleInFrustum(float *x11, float *x12, float *x22, float *x21){
    int p;
 
-   for( p = 0; p < 6; p++ ){
+   for(p = 0; p < 6; p++){
       if( frustum[p][0]*x11[0] + frustum[p][1]*x11[1] + frustum[p][2]*x11[2] + frustum[p][3] > 0 )continue;
       if( frustum[p][0]*x12[0] + frustum[p][1]*x12[1] + frustum[p][2]*x12[2] + frustum[p][3] > 0 )continue;
       if( frustum[p][0]*x22[0] + frustum[p][1]*x22[1] + frustum[p][2]*x22[2] + frustum[p][3] > 0 )continue;
@@ -914,7 +914,7 @@ void GetScreenMapping(float *xyz0, float *screen_perm){
 
 #define SETSCREEN(i1,i2,i3,dscreen)\
   if(i1==0)set=0;\
-  if(set==0&&ABS((dscreen)[i1])>MAX( ABS((dscreen)[i2]) , ABS((dscreen)[i3]) ) ){\
+  if(set==0&&ABS((dscreen)[i1])>MAX( ABS((dscreen)[i2]) , ABS((dscreen)[i3]) )){\
     (dscreen)[i1]=SIGN((dscreen)[i1]);\
     (dscreen)[i2]=0.0;\
     (dscreen)[i3]=0.0;\
