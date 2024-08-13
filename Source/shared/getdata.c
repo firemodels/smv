@@ -580,7 +580,7 @@ void getpartdataframe(FILE *file, int nclasses, int *nquantities, int *npoints,
     pstart += nvalues;
 
     // get tag data
-    int ntagvalues = tagstart + nparticles ;
+    int ntagvalues = tagstart + nparticles;
     *error = fortread(&tagdata[tagstart], sizeof(*tagdata), ntagvalues, file);
     if(*error != 0) return;
     tagstart += ntagvalues;

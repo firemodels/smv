@@ -35,7 +35,7 @@ void getzonedata(const char *zonefilename, int *nzonet, int *nrooms,
 void getpatchdata(FILE *file, int npatch, int *pi1, int *pi2, int *pj1,
                   int *pj2, int *pk1, int *pk2, float *patchtime, float *pqq,
                   int *npqq, int *file_size, int *error);
-void getdata1(FILE *file, int *ipart, int *error) ;
+void getdata1(FILE *file, int *ipart, int *error);
 void GetSliceFileDirection(int is1, int *is2ptr, int *iis1ptr, int *iis2ptr, int js1,
                            int *js2ptr, int ks1, int *ks2ptr, int *idirptr, int *joffptr,
                            int *koffptr, int *volsliceptr);

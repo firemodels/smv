@@ -17024,7 +17024,7 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %i\n", background_flip);
   fprintf(fileout, "FOREGROUNDCOLOR\n");
   fprintf(fileout, " %f %f %f\n", foregroundbasecolor[0], foregroundbasecolor[1], foregroundbasecolor[2]);
-  fprintf(fileout, "GEOMSELECTCOLOR\n") ;
+  fprintf(fileout, "GEOMSELECTCOLOR\n");
   fprintf(fileout, " %u %u %u\n",  geom_vertex1_rgb[0],  geom_vertex1_rgb[1],  geom_vertex1_rgb[2]);
   fprintf(fileout, " %u %u %u\n",  geom_vertex2_rgb[0],  geom_vertex2_rgb[1],  geom_vertex2_rgb[2]);
   fprintf(fileout, " %u %u %u\n", geom_triangle_rgb[0], geom_triangle_rgb[1], geom_triangle_rgb[2]);
@@ -17140,7 +17140,7 @@ void WriteIni(int flag,char *filename){
 
   fprintf(fileout, "\n   *** SIZES/OFFSETS ***\n\n");
 
-  fprintf(fileout, "GEOMSAXIS\n") ;
+  fprintf(fileout, "GEOMSAXIS\n");
   fprintf(fileout, " %f %f\n",  glui_surf_axis_length, glui_surf_axis_width);
   fprintf(fileout, "GRIDLINEWIDTH\n");
   fprintf(fileout, " %f\n", gridlinewidth);

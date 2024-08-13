@@ -4185,7 +4185,7 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
 #else
       int i;
       NewMemory(( void ** )&qvalptrs, sd->ntimes*sizeof(float *));
-      for(i=0; i< sd->ntimes ; i++){
+      for(i=0; i< sd->ntimes; i++){
         qvalptrs[i] = sd->qslicedata + i*data_per_timestep;
       }
 #endif

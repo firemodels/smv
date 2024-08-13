@@ -575,7 +575,7 @@ int ConvertBoundaryBNDF(patchdata *patchi, int *thread_index){
 #endif
     time_max=-1000000.0;
     while(feof(BOUNDARYFILE)==0){
-      int j ;
+      int j;
 
       FORTREAD(&time_local,1);
       sizebefore+=12;
