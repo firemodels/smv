@@ -818,7 +818,7 @@ int GetFileListSize(const char *path, char *filter, int mode){
   if(dp == NULL)return 0;
   d_type = DT_REG;
   if(mode==DIR_MODE)d_type = DT_DIR;
-  while( (entry = readdir(dp))!=NULL ){
+  while((entry = readdir(dp))!=NULL){
     if(((entry->d_type==d_type||entry->d_type==DT_UNKNOWN)&&MatchWild(entry->d_name,filter)==1)){
       if(strcmp(entry->d_name,".")==0||strcmp(entry->d_name,"..")==0)continue;
       maxfiles++;
@@ -947,7 +947,7 @@ int MakeFileList(const char *path, char *filter, int maxfiles, int sort_files, f
   NewMemory((void **)&flist,maxfiles*sizeof(filelistdata));
   d_type = DT_REG;
   if(mode==DIR_MODE)d_type = DT_DIR;
-  while( (entry = readdir(dp))!=NULL&&nfiles<maxfiles ){
+  while((entry = readdir(dp))!=NULL&&nfiles<maxfiles){
     if((entry->d_type==d_type||entry->d_type==DT_UNKNOWN)&&MatchWild(entry->d_name,filter)==1){
       char *file;
       filelistdata *flisti;

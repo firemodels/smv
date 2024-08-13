@@ -353,7 +353,7 @@ void OpenSMVFile(char *filebuffer,int filebufferlength,int *openfile){
   if(GetOpenFileName(&openfinfo)){
     STRCPY(smv_directory,"");
     strncat(smv_directory,filebuffer,openfinfo.nFileOffset);
-    if( _chdir( smv_directory )   ){
+    if( _chdir( smv_directory )  ){
       PRINTF( "Unable to locate the directory: %s\n", smv_directory );
     }
     else{
@@ -635,7 +635,7 @@ void ShowAllSlices(char *type1, char *type2){
       if(
         (type1 != NULL&&STRCMP(slicei->label.longlabel, type1) == 0) ||
         (type2 != NULL&&STRCMP(slicei->label.longlabel, type2) == 0)
-        ){
+       ){
         sliceinfo[i].display = 1;
         slicefile_labelindex = slicei->slicefile_labelindex;
       }
@@ -4123,7 +4123,7 @@ void LoadAllPartFiles(int partnum){
 #ifdef pp_PARTFRAME
       || partnum==RELOAD_LOADED_PART_FILES || partnum == LOAD_ALL_PART_FILES
 #endif
-      ){
+     ){
       if(partnum==LOAD_ALL_PART_FILES||(partnum==RELOAD_LOADED_PART_FILES&&parti->loaded==1)||partnum==i){
         parti->loadstatus = FILE_LOADING;
         THREADcontrol(partload_threads, THREAD_UNLOCK);
@@ -6146,7 +6146,7 @@ void LoadBoundaryMenu(int value){
         patchi->finalize = 0;
         if(patchi->loaded == 1
           && load_only_when_unloaded == 0
-          ){
+         ){
           ReadBoundary(i, UNLOAD, &errorcode);
         }
       }
@@ -8368,7 +8368,7 @@ void InitLoadMultiSliceMenu(int *loadmultislicemenuptr, int *loadsubmslicemenu, 
                             int *nsubpatchmenus_s, int sliceskipmenu, int sliceloadoptionmenu, int duplicateslicemenu,
                             int loadslicemenu, int nmultisliceloaded, int unloadmultislicemenu
                             , int *loadsubslicexmenuptr, int *loadsubsliceymenuptr, int *loadsubslicezmenuptr, int *loadsubslicexyzmenuptr
-                            ){
+                           ){
   int i, loadmultislicemenu;
   int nloadsubmslicemenu;
   int iloadsubpatchmenu_s;
@@ -8661,7 +8661,7 @@ void InitMultiVectorSubMenu(int **loadsubmvslicemenuptr){
 void InitMultiVectorLoadMenu(int *loadmultivslicemenuptr, int *loadsubmvslicemenu, int duplicatevectorslicemenu,
                              int vsliceloadmenu, int sliceloadoptionmenu, int unloadmultivslicemenu
                              , int *loadsubvectorslicexmenuptr, int *loadsubvectorsliceymenuptr, int *loadsubvectorslicezmenuptr, int *loadsubvectorslicexyzmenuptr
-                             ){
+                            ){
   int loadmultivslicemenu;
   int nloadsubmvslicemenu;
   int i;
@@ -9183,7 +9183,7 @@ static int menu_count=0;
           if(
             strncmp(patchi->label.shortlabel,"TEMP",4) == 0||
             strncmp(patchi->label.shortlabel,"temp",4) == 0
-            ){
+           ){
             local_do_threshold=1;
           }
         }
@@ -10567,7 +10567,7 @@ static int menu_count=0;
           if(partclassj->col_diameter>=0||partclassj->col_length>=0||partclassj->device_name!=NULL||
              (partclassj->prop!=NULL&&partclassj->prop->smokeview_id!=NULL)||
              (partclassj->col_u_vel>=0&&partclassj->col_v_vel>=0&&partclassj->col_w_vel>=0)
-            ){
+           ){
             if(propi->class_vis[j]==1){
               strcpy(menulabel,_("using:"));
             }
@@ -10601,7 +10601,7 @@ static int menu_count=0;
             if(
               (partclassj->smv_device!=NULL&&partclassj->device_name!=NULL)||
               (partclassj->prop!=NULL&&partclassj->prop->smokeview_id!=NULL)
-              ){
+             ){
               if(partclassj->device_name!=NULL){
                 strcpy(menulabel,"    ");
                 if(partclassj->vis_type==PART_SMV_DEVICE){

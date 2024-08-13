@@ -442,7 +442,7 @@ FILE_SIZE ReadCSVFile(csvfiledata *csvfi, int flag){
 
 /* ------------------ CompareCSV ------------------------ */
 
-int CompareCSV(const void *arg1, const void *arg2 ){
+int CompareCSV(const void *arg1, const void *arg2){
   csvfiledata *csvi, *csvj;
 
   csvi = (csvfiledata *)arg1;
@@ -3313,7 +3313,7 @@ int CompareLabel(const void *arg1, const void *arg2){
 
 /* ------------------ CompareSmoketypes ------------------------ */
 
-int CompareSmoketypes(const void *arg1, const void *arg2 ){
+int CompareSmoketypes(const void *arg1, const void *arg2){
   smoke3dtypedata *smoketypei, *smoketypej;
   smoke3ddata *smoke3di, *smoke3dj;
   char *labeli, *labelj;
@@ -11590,8 +11590,7 @@ typedef struct {
     ++++++++++++++++++++++ PART ++++++++++++++++++++++++++++++
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   */
-    if(MatchSMV(buffer,"PRT5")==1||MatchSMV(buffer,"EVA5")==1
-      ){
+    if(MatchSMV(buffer,"PRT5")==1||MatchSMV(buffer,"EVA5")==1){
       int return_val;
 
       START_TIMER(PRT5_timer);

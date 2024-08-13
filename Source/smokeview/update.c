@@ -17,7 +17,7 @@
 
 /* ------------------ CompareFloat ------------------------ */
 
-int CompareFloat(const void *arg1, const void *arg2 ){
+int CompareFloat(const void *arg1, const void *arg2){
   float x, y;
 
   x=*(float *)arg1;
