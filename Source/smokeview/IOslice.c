@@ -4181,7 +4181,7 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
       show_slice_average = 1;
 
 #ifdef pp_SLICEFRAME
-      qvalptrs = ( float **)sd->frameinfo->frameptrs;
+      qvalptrs = (float **)sd->frameinfo->frameptrs;
 #else
       int i;
       NewMemory((void **)&qvalptrs, sd->ntimes*sizeof(float *));

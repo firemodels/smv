@@ -831,7 +831,7 @@ int MeshInFrustum(meshdata *meshi){
 
 /* ------------------ RectangleInFrustum ------------------------ */
 
-int RectangleInFrustum( float *x11, float *x12, float *x22, float *x21){
+int RectangleInFrustum(float *x11, float *x12, float *x22, float *x21){
    int p;
 
    for( p = 0; p < 6; p++ ){

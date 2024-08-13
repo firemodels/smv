@@ -877,7 +877,7 @@ EXTERNCPP void SetCullVis(void);
 EXTERNCPP void ExtractFrustum(void);
 EXTERNCPP int BoxInFrustum(float *xx, float *yy, float *zz, int n);
 EXTERNCPP int MeshInFrustum(meshdata *meshi);
-EXTERNCPP int  RectangleInFrustum( float *x11, float *x12, float *x22, float *x21);
+EXTERNCPP int  RectangleInFrustum(float *x11, float *x12, float *x22, float *x21);
 EXTERNCPP int UpdateSmoke3D(smoke3ddata *smoke3di);
 EXTERNCPP void DrawSmokeFrame(void);
 EXTERNCPP void DrawVolSmokeFrame(void);
