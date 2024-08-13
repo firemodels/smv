@@ -566,7 +566,7 @@ int ReadSMV(char *smvfile){
         int lendir=0;
 
         if(GLOBsourcedir!=NULL)lendir=strlen(GLOBsourcedir);
-        NewMemory(( void ** )&patchi->boundfile, ( unsigned int )(strlen(buffer2) + lendir +strlen(".bnd") + 1));
+        NewMemory((void **)&patchi->boundfile, ( unsigned int )(strlen(buffer2) + lendir +strlen(".bnd") + 1));
         NewMemory((void **)&patchi->file,(unsigned int)(strlen(buffer2)+lendir+1));
         NewMemory((void **)&patchi->filebase,(unsigned int)(strlen(buffer2)+1));
         STRCPY(patchi->filebase,buffer2);

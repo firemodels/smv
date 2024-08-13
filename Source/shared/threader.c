@@ -43,7 +43,7 @@ threaderdata *THREADinit(int *nthreads_ptr, int *use_threads_ptr, void *(*run_ar
     //   return NULL;
     // }
 
-  NewMemory(( void ** )&thi, sizeof(threaderdata));
+  NewMemory((void **)&thi, sizeof(threaderdata));
 
   if(nthreads_ptr != NULL && *nthreads_ptr > 1)nthreads_local = *nthreads_ptr;
   if(nthreads_local > MAX_THREADS)nthreads_local = MAX_THREADS;
@@ -55,7 +55,7 @@ threaderdata *THREADinit(int *nthreads_ptr, int *use_threads_ptr, void *(*run_ar
   thi->use_threads     = use_threads_local;
   thi->run             = run_arg;
 #ifdef pp_THREAD
-  NewMemory(( void ** )&thi->thread_ids, MAX_THREADS * sizeof(pthread_t));
+  NewMemory((void **)&thi->thread_ids, MAX_THREADS * sizeof(pthread_t));
   pthread_mutex_init(&thi->mutex, NULL);
 #endif
   return thi;

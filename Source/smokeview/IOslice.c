@@ -1864,21 +1864,21 @@ void UpdateVectorSkip(int skip){
     if(slicei->imap == NULL){
       int *imap;
 
-      NewMemory(( void ** )&imap, (slicemesh->ibar + 1) * sizeof(int));
+      NewMemory((void **)&imap, (slicemesh->ibar + 1) * sizeof(int));
       slicei->imap = imap;
       slicei->n_imap = 0;
     }
     if(slicei->jmap == NULL){
       int *jmap;
 
-      NewMemory(( void ** )&jmap, (slicemesh->jbar + 1) * sizeof(int));
+      NewMemory((void **)&jmap, (slicemesh->jbar + 1) * sizeof(int));
       slicei->jmap = jmap;
       slicei->n_jmap = 0;
     }
     if(slicei->kmap == NULL){
       int *kmap;
 
-      NewMemory(( void ** )&kmap, (slicemesh->kbar + 1) * sizeof(int));
+      NewMemory((void **)&kmap, (slicemesh->kbar + 1) * sizeof(int));
       slicei->kmap = kmap;
       slicei->n_kmap = 0;
     }
@@ -4184,7 +4184,7 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
       qvalptrs = ( float **)sd->frameinfo->frameptrs;
 #else
       int i;
-      NewMemory(( void ** )&qvalptrs, sd->ntimes*sizeof(float *));
+      NewMemory((void **)&qvalptrs, sd->ntimes*sizeof(float *));
       for(i=0; i< sd->ntimes; i++){
         qvalptrs[i] = sd->qslicedata + i*data_per_timestep;
       }
