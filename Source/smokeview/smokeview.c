@@ -203,11 +203,12 @@ void InitVolrenderScript(char *prefix, char *tour_label, int startframe, int ski
 /* ------------------ DisplayVersionInfo ------------------------ */
 
 void DisplayVersionInfo(char *progname){
-  PRINTVERSION(progname,prog_fullpath);
+  PRINTVERSION(progname);
   if(fds_version!=NULL){
     PRINTF("FDS Build        : %s\n",fds_githash);
   }
-  PRINTF("Smokeview path   : %s\n",smokeview_progname);
+  char *smv_progname = GetBinPath();
+  PRINTF("Smokeview path   : %s\n",smv_progname);
 #ifdef pp_COMPRESS
   if(smokezippath!=NULL){
     if(verbose_output==1)PRINTF("Smokezip         : %s\n",smokezippath);
@@ -216,9 +217,12 @@ void DisplayVersionInfo(char *progname){
   if(texturedir!=NULL){
     if(verbose_output==1)PRINTF("Texture directory: %s\n",texturedir);
   }
-  if(smokeview_bindir != NULL){
-    PRINTF("Bin directory    : %s\n", smokeview_bindir);
+  char *smv_bindir = GetSmvRootDir();
+  if(smv_bindir){
+    PRINTF("Root directory   : %s\n", smv_bindir);
   }
+  FREEMEMORY(smv_progname);
+  FREEMEMORY(smv_bindir);
 }
 
 /* ------------------ IsFDSRunning ------------------------ */

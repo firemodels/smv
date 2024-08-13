@@ -216,17 +216,17 @@ CommandlineArgs ParseCommandlineNew(int argc, char **argv, char *message,
       i++;
       sscanf(argv[i],"%f",&args.max_mem_GB);
       if(args.max_mem_GB<0.0)args.max_mem_GB = 0.0;
-    } 
+    }
     else if(strcmp(argv[i], "-x0") == 0) {
       args.have_x0 = true;
       i++;
       sscanf(argv[i],"%i",&args.x0);
-    } 
+    }
     else if(strcmp(argv[i], "-y0") == 0) {
       args.have_y0 = true;
       i++;
       sscanf(argv[i],"%i",&args.y0);
-    } 
+    }
     else if(strcmp(argv[i], "-X0") == 0) {
       args.have_X0 = true;
       i++;

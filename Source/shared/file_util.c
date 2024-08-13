@@ -26,14 +26,18 @@
 #include <io.h>
 #include <direct.h>
 #include <dirent_win.h>
+#include <shlwapi.h>
+#pragma comment(lib, "shlwapi.lib")
 #else
 #include <dirent.h>
+#include <libgen.h>
 #endif
 #include "MALLOCC.h"
 #include "string_util.h"
 #include "file_util.h"
 #include "threader.h"
 #include "fopen.h"
+
 
 FILE *alt_stdout=NULL;
 
@@ -509,7 +513,7 @@ void *fread_mt(void *mtfileinfo){
   file_size      = mtf->file_size;
   file_offset    = mtf->file_offset;
   nchars         = mtf->nchars;
-  
+
   buffer_size = nchars/nthreads;
   buffer_beg  = i*buffer_size;
   file_beg    = file_offset + buffer_beg;
@@ -570,7 +574,7 @@ int MakeFile(char *file, int size){
   if(file == NULL || strlen(file) == 0)return 0;
   stream = fopen(file, "w");
   if(stream == NULL)return 0;
-  
+
   NewMemory(( void ** )&buffer, BUFFERSIZE);
   for(i = 0; i < BUFFERSIZE; i++){
     buffer[i] = i % 255;
@@ -616,7 +620,7 @@ FILE_SIZE fread_p(char *file, unsigned char *buffer, FILE_SIZE offset, FILE_SIZE
 #else
   else{
     int i;
-    
+
     chars_read = 0;
     for(i = 0;i < nthreads;i++){
       mtfiledata *mti;
@@ -1065,48 +1069,152 @@ char *GetFloatFileSizeLabel(float size, char *sizelabel){
   return sizelabel;
 }
 
-/* ------------------ GetProgDir ------------------------ */
-
-char *GetProgDir(char *progname, char **svpath){
-
-// returns the directory containing the file progname
-
-  char *progpath, *lastsep, *smokeviewpath2;
-
-  lastsep=strrchr(progname,dirseparator[0]);
-  if(lastsep==NULL){
-    char *dir;
-
-    dir = Which(progname, NULL);
-    if(dir==NULL){
-      NewMemory((void **)&progpath,(unsigned int)3);
-      strcpy(progpath,".");
-      strcat(progpath,dirseparator);
+#ifdef _WIN32
+char *GetBinPath() {
+  size_t MAX_BUFFER_SIZE = MAX_PATH * 20;
+  char *buffer;
+  size_t buffer_size = MAX_PATH * sizeof(char);
+  NEWMEMORY(buffer, buffer_size);
+  for (;;) {
+    GetModuleFileNameA(NULL, buffer, buffer_size);
+    DWORD dw = GetLastError();
+    if (dw == ERROR_SUCCESS) {
+      return buffer;
     }
-    else{
-      int lendir;
-
-      lendir=strlen(dir);
-      NewMemory((void **)&progpath,(unsigned int)(lendir+2));
-      strcpy(progpath,dir);
-      if(progpath[lendir-1]!=dirseparator[0])strcat(progpath,dirseparator);
+    else if (dw == ERROR_INSUFFICIENT_BUFFER && buffer_size < MAX_BUFFER_SIZE) {
+      // increase buffer size by a factor of 2
+      buffer_size *= 2;
+      RESIZEMEMORY(buffer, buffer_size);
     }
-    NewMemory((void **)&smokeviewpath2,(unsigned int)(strlen(progpath)+strlen(progname)+1));
-    strcpy(smokeviewpath2,progpath);
+    else {
+      FREEMEMORY(buffer);
+      return NULL;
+    }
   }
-  else{
-    int lendir;
+}
 
-    lendir=lastsep-progname+1;
-    NewMemory((void **)&progpath,(unsigned int)(lendir+1));
-    strncpy(progpath,progname,lendir);
-    progpath[lendir]=0;
-    NewMemory((void **)&smokeviewpath2,(unsigned int)(strlen(progname)+1));
-    strcpy(smokeviewpath2,"");
+char *GetBinDir() {
+  char *buffer = GetBinPath();
+  // NB: This uses on older function in order to support "char *".
+  // PathCchRemoveFileSpec would be better but requires switching to "wchar *".
+  PathRemoveFileSpecA(buffer);
+  return buffer;
+}
+#elif __linux__
+char *GetBinPath() {
+  size_t MAX_BUFFER_SIZE = 2048 * 20;
+  char *buffer;
+  size_t buffer_size = 256 * sizeof(char);
+  NEWMEMORY(buffer, buffer_size);
+  for (;;) {
+    int ret = readlink("/proc/self/exe", buffer, buffer_size);
+    if (ret < buffer_size) {
+      buffer[ret] = '\0';
+      return buffer;
+    }
+    else if (ret == buffer_size && buffer_size < MAX_BUFFER_SIZE) {
+      // increase buffer size by a factor of 2
+      buffer_size *= 2;
+      RESIZEMEMORY(buffer, buffer_size);
+    }
+    else {
+      FREEMEMORY(buffer);
+      return NULL;
+    }
   }
-  strcat(smokeviewpath2,progname);
-  *svpath=smokeviewpath2;
-  return progpath;
+}
+
+char *GetBinDir() {
+  char *buffer = GetBinPath();
+  dirname(buffer);
+  return buffer;
+}
+#else
+char *GetBinPath() {
+  uint32_t  MAX_BUFFER_SIZE = 2048 * 20;
+  char *buffer;
+  uint32_t buffer_size = 256 * sizeof(char);
+  NEWMEMORY(buffer, buffer_size);
+  for (;;) {
+    int ret = _NSGetExecutablePath(buffer, &buffer_size);
+    if (ret == 0) {
+      return buffer;
+    }
+    else if (ret == -1 && buffer_size < MAX_BUFFER_SIZE) {
+      // buffer_size has been set to the required buffer size by
+      // _NSGetExecutablePath
+      RESIZEMEMORY(buffer, buffer_size);
+    }
+    else {
+      FREEMEMORY(buffer);
+      return NULL;
+    }
+  }
+}
+
+char *GetBinDir() {
+  char *buffer = GetBinPath();
+  // The BSD and OSX version of dirname uses an internal buffer, therefore we
+  // need to copy the string out.
+  char *dir_buffer = dirname(buffer);
+  RESIZEMEMORY(buffer, (strlen(dir_buffer) + 1) * sizeof(char));
+  STRCPY(buffer, dir_buffer);
+  return buffer;
+}
+#endif
+
+/// @brief Stored the value of the -bindir commandline option. NULL if that
+/// options is not used. Only referenced by @ref SetSmvRootOverride and @ref
+/// GetSmvRootDir.
+char *smv_root_override = NULL;
+
+void SetSmvRootOverride(const char *path) {
+  FREEMEMORY(smv_root_override);
+  if (path == NULL) return;
+  size_t len = strlen(path);
+  NEWMEMORY(smv_root_override, (len + 2) * sizeof(char));
+  STRCPY(smv_root_override, path);
+  if(path[len - 1] != dirseparator[0]){
+    STRCAT(smv_root_override, dirseparator);
+  }
+}
+
+char *GetSmvRootDir() {
+  char *envar_path = getenv("SMV_ROOT_OVERRIDE");
+  if (smv_root_override != NULL) {
+    // Take the SMV_ROOT as defined on the command line
+    char *buffer;
+    int len = strlen(smv_root_override);
+    NEWMEMORY(buffer, (len + 1) * sizeof(char));
+    STRCPY(buffer, smv_root_override);
+    buffer[len] = '\0';
+    return buffer;
+  }
+  else if (envar_path != NULL) {
+    // Take the SMV_ROOT as defined by the SMV_ROOT_OVERRIDE environment
+    // variable
+    char *buffer;
+    int len = strlen(envar_path);
+    NEWMEMORY(buffer, (len + 1) * sizeof(char));
+    STRCPY(buffer, envar_path);
+    buffer[len] = '\0';
+    return buffer;
+  }
+  else {
+#ifdef SMV_ROOT_OVERRIDE
+    // Take the SMV_ROOT as defined by the SMV_ROOT_OVERRIDE macro
+    char *buffer;
+    int len = strlen(SMV_ROOT_OVERRIDE);
+    NEWMEMORY(buffer, (len + 1) * sizeof(char));
+    STRCPY(buffer, SMV_ROOT_OVERRIDE);
+    buffer[len] = '\0';
+    return buffer;
+#else
+    // Otherwise simply return the directory of the running executable (using
+    // the platform-dependent code).
+    return GetBinDir();
+#endif
+  }
 }
 
 /* ------------------ IsSootFile ------------------------ */
@@ -1118,24 +1226,6 @@ int IsSootFile(char *shortlabel, char *longlabel){
   if(strlen(longlabel)>=12&&strncmp(longlabel, "SOOT DENSITY",12)==0)return 1;
   return 0;
 }
-
-/* ------------------ getprogdirabs ------------------------ */
-
-#ifdef pp_LUA
-char *getprogdirabs(char *progname, char **svpath){
-
-// returns the absolute path of the directory containing the file progname
-  char *progpath;
-#ifdef WIN32
-  NewMemory((void **)&progpath,_MAX_PATH);
-  _fullpath(progpath,GetProgDir(progname,svpath),_MAX_PATH);
-#else
-  NewMemory((void **)&progpath,PATH_MAX);
-  realpath(GetProgDir(progname,svpath),progpath);
-#endif
-  return progpath;
-}
-#endif
 
 /* ------------------ LastName ------------------------ */
 
@@ -1208,38 +1298,6 @@ time_t FileModtime(char *filename){
   if(statfile!=0)return return_val;
   return_val = statbuffer.st_mtime;
   return return_val;
-}
-
-/* ------------------ GetProgFullPath ------------------------ */
-
-void GetProgFullPath(char *progexe, int maxlen_progexe){
-  char *end, savedir[1024], tempdir[1024], *tempexe;
-
-  strcpy(tempdir, progexe);
-  end = strrchr(tempdir, dirseparator[0]);
-  if(end == NULL){
-    char *progpath;
-
-    progpath = Which(progexe, NULL);
-    if(progpath != NULL){
-      char copy[1024];
-
-      strcpy(copy, progexe);
-      strcpy(progexe, progpath);
-      if(progexe[strlen(progexe) - 1] != dirseparator[0])strcat(progexe, dirseparator);
-      strcat(progexe, copy);
-    }
-  }
-  else{
-    end[0] = 0;
-    tempexe = end + 1;
-    GETCWD(savedir, 1024);
-    CHDIR(tempdir);
-    GETCWD(progexe, maxlen_progexe);
-    if(progexe[strlen(progexe) - 1] != dirseparator[0])strcat(progexe, dirseparator);
-    strcat(progexe, tempexe);
-    CHDIR(savedir);
-  }
 }
 
 /* ------------------ Which ------------------------ */

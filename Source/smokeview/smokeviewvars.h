@@ -587,7 +587,6 @@ SVEXTERN int SVDECL(clip_rotate, 0);
 SVEXTERN int curdir_writable;
 SVEXTERN char SVDECL(*file_smokesensors, NULL);
 SVEXTERN int SVDECL(light_faces, 1);
-SVEXTERN char SVDECL(*prog_fullpath, NULL);
 SVEXTERN int SVDECL(nwindrosez_checkboxes, 0);
 SVEXTERN float startup_time;
 #ifdef pp_FRAME
@@ -1929,9 +1928,6 @@ SVEXTERN char SVDECL(*part_globalbound_filename, NULL);
 SVEXTERN char SVDECL(*sliceinfo_filename,NULL);
 SVEXTERN char SVDECL(*deviceinfo_filename, NULL);
 SVEXTERN char SVDECL(*database_filename,NULL),SVDECL(*iso_filename,NULL);
-SVEXTERN char SVDECL(*smokeview_bindir,NULL);
-SVEXTERN char smokeview_progname[1024];
-SVEXTERN int SVDECL(have_bindir_arg, 0);
 SVEXTERN char SVDECL(*smokeview_casedir, NULL);
 SVEXTERN int SVDECL(update_vectorskip, 0);
 SVEXTERN int SVDECL(smoke_offaxis, 0), SVDECL(smoke_adjust, 1);
@@ -1945,7 +1941,6 @@ SVEXTERN int SVDECL(runhtmlscript, 0);
 #ifdef pp_LUA
 SVEXTERN int SVDECL(runluascript,0);
 SVEXTERN int SVDECL(exit_on_script_crash,0);
-SVEXTERN char SVDECL(*smokeview_bindir_abs,NULL);
 #endif
 #ifdef INMAIN
 SVEXTERN float slice_xyz[3]={0.0,0.0,0.0}, slice_dxyz[3] = {0.0, 0.0, 0.0};
