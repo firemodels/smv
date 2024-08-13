@@ -884,9 +884,9 @@ void CheckLab(void){
         unsigned char rgbval[3];
         float lab[3];
 
-        rgbval[0] = MIN(( unsigned char )k,255);
-        rgbval[1] = MIN(( unsigned char )j,255);
-        rgbval[2] = MIN(( unsigned char )i,255);
+        rgbval[0] = MIN((unsigned char )k,255);
+        rgbval[1] = MIN((unsigned char )j,255);
+        rgbval[2] = MIN((unsigned char )i,255);
         Rgb2Lab(rgbval, lab);
         memcpy(labxyz, lab, 3 * sizeof(float));
         memcpy(labrgb, rgbval, 3);
