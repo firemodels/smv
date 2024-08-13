@@ -5274,7 +5274,6 @@ int ParseBNDFCount(void){
 
 int ParseBNDFProcess(bufferstreamdata *stream, char *buffer, int *nn_patch_in, int *ioffset_in, patchdata **patchgeom_in, int *ipatch_in, char buffers[6][256]){
   patchdata *patchi;
-  int version;
   int blocknumber;
   size_t len;
   char *filetype_label;
@@ -5307,9 +5306,9 @@ int ParseBNDFProcess(bufferstreamdata *stream, char *buffer, int *nn_patch_in, i
   else{
     blocknumber = 0;
   }
-  version = 0;
   if(len>5){
     char *buffer3;
+    int version=0;
 
     buffer3 = buffer+4;
     sscanf(buffer3, "%i %i", &blocknumber, &version);
@@ -5332,7 +5331,6 @@ int ParseBNDFProcess(bufferstreamdata *stream, char *buffer, int *nn_patch_in, i
   patchi->valmin_patch      = 1.0;
   patchi->valmax_patch      = 0.0;
   patchi->skip              = 0;
-  patchi->version           = version;
   patchi->ntimes            = 0;
   patchi->ntimes_old        = 0;
   patchi->hist_update = 0;

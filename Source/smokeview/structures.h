@@ -1278,7 +1278,6 @@ typedef struct _patchdata {
   int skip,dir;
   float xyz_min[3], xyz_max[3];
   int ntimes, ntimes_old;
-  int version;
   int patch_filetype, structured;
   int shortlabel_index;
   int *cvals_offsets, *cvals_sizes;

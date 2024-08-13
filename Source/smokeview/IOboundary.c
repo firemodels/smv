@@ -191,109 +191,7 @@ void OutputBoundaryData(char *csvfile, char *patchfile, meshdata *meshi, int fir
 
 /* ------------------ GetBoundaryFaceDir ------------------------ */
 
-int GetBoundaryFaceDir(meshdata *meshi, int i1, int i2, int j1, int j2, int k1, int k2,
-  int *blockonpatch, meshdata **meshonpatch){
-  int i;
-
-  *meshonpatch = NULL;
-  if(i1 == i2){
-    for(i = 0; i < meshi->nbptrs; i++){
-      blockagedata *bc;
-
-      bc = meshi->blockageinfoptrs[i];
-      if(j1 == bc->ijk[JMIN] && j2 == bc->ijk[JMAX] &&
-        k1 == bc->ijk[KMIN] && k2 == bc->ijk[KMAX]){
-        if(i1 == bc->ijk[IMIN]){
-          bc->patchvis[0] = 0;
-          *blockonpatch = i;
-          *meshonpatch = meshi;
-        }
-        if(i1 == bc->ijk[IMAX]){
-          bc->patchvis[1] = 0;
-          *blockonpatch = i;
-          *meshonpatch = meshi;
-        }
-        if(i1 == bc->ijk[IMIN])return(-1);
-        if(i1 == bc->ijk[IMAX])return(1);
-      }
-    }
-  }
-  else if(j1 == j2){
-    for(i = 0; i < meshi->nbptrs; i++){
-      blockagedata *bc;
-
-      bc = meshi->blockageinfoptrs[i];
-      if(i1 == bc->ijk[IMIN] && i2 == bc->ijk[IMAX] &&
-        k1 == bc->ijk[KMIN] && k2 == bc->ijk[KMAX]){
-        if(j1 == bc->ijk[JMIN]){
-          bc->patchvis[2] = 0;
-          *blockonpatch = i;
-          *meshonpatch = meshi;
-        }
-        if(j1 == bc->ijk[JMAX]){
-          bc->patchvis[3] = 0;
-          *blockonpatch = i;
-          *meshonpatch = meshi;
-        }
-        if(j1 == bc->ijk[JMIN])return(2);
-        if(j1 == bc->ijk[JMAX])return(-2);
-      }
-    }
-  }
-  else if(k1 == k2){
-    for(i = 0; i < meshi->nbptrs; i++){
-      blockagedata *bc;
-
-      bc = meshi->blockageinfoptrs[i];
-      if(i1 == bc->ijk[IMIN] && i2 == bc->ijk[IMAX] &&
-        j1 == bc->ijk[JMIN] && j2 == bc->ijk[JMAX]){
-        if(k1 == bc->ijk[KMIN]){
-          bc->patchvis[4] = 0;
-          *blockonpatch = i;
-          *meshonpatch = meshi;
-        }
-        if(k1 == bc->ijk[KMAX]){
-          bc->patchvis[5] = 0;
-          *blockonpatch = i;
-          *meshonpatch = meshi;
-        }
-        if(k1 == bc->ijk[KMIN])return(-3);
-        if(k1 == bc->ijk[KMAX])return(3);
-      }
-    }
-  }
-  *blockonpatch = -1;
-  *meshonpatch = NULL;
-  if(i1 == i2){
-    if(i1 == 0 && j1 == 0 && j2 == meshi->jbar&&k1 == 0 && k2 == meshi->kbar){
-      return(1);
-    }
-    if(i1 == meshi->ibar&&j1 == 0 && j2 == meshi->jbar&&k1 == 0 && k2 == meshi->kbar){
-      return(-1);
-    }
-  }
-  else if(j1 == j2){
-    if(j1 == 0 && i1 == 0 && i2 == meshi->ibar&&k1 == 0 && k2 == meshi->kbar){
-      return(-1);
-    }
-    if(j1 == meshi->jbar&&i1 == 0 && i2 == meshi->ibar&&k1 == 0 && k2 == meshi->kbar){
-      return(1);
-    }
-  }
-  else if(k1 == k2){
-    if(k1 == 0 && j1 == 0 && j2 == meshi->jbar&&i1 == 0 && i2 == meshi->ibar){
-      return(1);
-    }
-    if(k1 == meshi->kbar&&j1 == 0 && j2 == meshi->jbar&&i1 == 0 && i2 == meshi->ibar){
-      return(-1);
-    }
-  }
-  return(0);
-}
-
-/* ------------------ GetBoundaryFace2Dir ------------------------ */
-
-int GetBoundaryFace2Dir(meshdata *meshi, int i1, int i2, int j1, int j2, int k1, int k2, int patchdir,
+int GetBoundaryFaceDir(meshdata *meshi, int i1, int i2, int j1, int j2, int k1, int k2, int patchdir,
   int *blockonpatch, meshdata **meshonpatch){
   int i;
   blockagedata *bc;
@@ -1161,7 +1059,6 @@ void GetBoundaryHeader(char *file, int *npatches, float *ppatchmin, float *ppatc
 /* ------------------ GetBoundaryHeader2 ------------------------ */
 
 void GetBoundaryHeader2(char *file,
-  int *version,
   int *pi1, int *pi2,
   int *pj1, int *pj2,
   int *pk1, int *pk2,
@@ -1188,17 +1085,13 @@ void GetBoundaryHeader2(char *file,
   if(stream==NULL)return;
 
   FSEEK(stream, 12, SEEK_CUR);
-  fread(version, 4, 1, stream);
+  int version;
+  fread(&version, 4, 1, stream);
   FSEEK(stream, 16, SEEK_CUR);
   fread(&npatches, 4, 1, stream);
   for(i = 0;i<npatches;i++){
     buffer[6] = 0;
-    if(*version==0){
-      fread(buffer, 4, 6, stream);
-    }
-    else{
-      fread(buffer, 4, 9, stream);
-    }
+    fread(buffer, 4, 9, stream);
     pi1[i] = buffer[0];
     pi2[i] = buffer[1];
     pj1[i] = buffer[2];
@@ -1441,7 +1334,7 @@ void GetPatchSizes1(FILE_m **stream, const char *patchfilename, unsigned char *b
 
 // !  ------------------ GetPatchSizes2 ------------------------
 
-void GetPatchSizes2(FILE_m *stream, int version, int npatch, int *npatchsize,
+void GetPatchSizes2(FILE_m *stream, int npatch, int *npatchsize,
                     int *pi1, int *pi2, int *pj1, int *pj2, int *pk1, int *pk2,
                     int *patchdir, int *headersize, int *framesize){
   int ijkp[9] = {0};
@@ -1450,13 +1343,8 @@ void GetPatchSizes2(FILE_m *stream, int version, int npatch, int *npatchsize,
 
   int n;
   for(n = 0; n < npatch; n++){
-    if(version == 0){
-      fseek_m(stream, 4, SEEK_CUR);fread_m(ijkp, sizeof(*ijkp), 6, stream);fseek_m(stream, 4, SEEK_CUR);
-    }
-    else{
-      fseek_m(stream, 4, SEEK_CUR); fread_m(ijkp, sizeof(*ijkp), 9, stream); fseek_m(stream, 4, SEEK_CUR);
-      patchdir[n] = ijkp[6];
-    }
+    fseek_m(stream, 4, SEEK_CUR); fread_m(ijkp, sizeof(*ijkp), 9, stream); fseek_m(stream, 4, SEEK_CUR);
+    patchdir[n] = ijkp[6];
     pi1[n] = ijkp[0];
     pi2[n] = ijkp[1];
     pj1[n] = ijkp[2];
@@ -1473,9 +1361,7 @@ void GetPatchSizes2(FILE_m *stream, int version, int npatch, int *npatchsize,
     *npatchsize += (i2 + 1 - i1) * (j2 + 1 - j1) * (k2 + 1 - k1);
   }
   *headersize += npatch * (4 + 6 * 4 + 4);
-  if(version == 1){
-    *headersize += npatch * 4;
-  }
+  *headersize += npatch * 4;
   *framesize = 8 + 4 + 8 * npatch + (*npatchsize) * 4;
 
   return;
@@ -1785,7 +1671,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
   }
 
   if(patchi->compression_type==UNCOMPRESSED){
-    GetPatchSizes2(stream,patchi->version,
+    GetPatchSizes2(stream,
       meshi->npatches,&meshi->npatchsize,
       meshi->pi1,meshi->pi2,meshi->pj1,meshi->pj2,meshi->pk1,meshi->pk2,meshi->patchdir,
       &headersize,&framesize);
@@ -1814,7 +1700,6 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
     int i;
 
     GetBoundaryHeader2(file,
-      &patchi->version,
       meshi->pi1,meshi->pi2,
       meshi->pj1,meshi->pj2,
       meshi->pk1,meshi->pk2,
@@ -1903,19 +1788,13 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
     j2=meshi->pj2[n];
     k1=meshi->pk1[n];
     k2=meshi->pk2[n];
-    if(patchi->version==0){
-      meshi->patchdir[n]= GetBoundaryFaceDir(meshi,i1,i2,j1,j2,k1,k2,
-        meshi->blockonpatch+n,meshi->meshonpatch+n);
-    }
-    else{
-      int patchdir;
+    int patchdir;
 
-      patchdir=meshi->patchdir[n];
-      GetBoundaryFace2Dir(meshi,i1,i2,j1,j2,k1,k2,patchdir,
-        meshi->blockonpatch+n,meshi->meshonpatch+n);
-      if(meshi->patchdir[n]==YDIR||meshi->patchdir[n]==YDIRNEG){
-        meshi->patchdir[n]=-meshi->patchdir[n];
-      }
+    patchdir=meshi->patchdir[n];
+    GetBoundaryFaceDir(meshi,i1,i2,j1,j2,k1,k2,patchdir,
+      meshi->blockonpatch+n,meshi->meshonpatch+n);
+    if(meshi->patchdir[n]==YDIR||meshi->patchdir[n]==YDIRNEG){
+      meshi->patchdir[n]=-meshi->patchdir[n];
     }
     meshi->patch_surfindex[n]=0;
     dxx = 0.0;
