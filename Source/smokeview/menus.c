@@ -4215,7 +4215,7 @@ void SetupPart(int value){
 void *MtLoadAllPartFiles(void *arg){
   int *valptr;
 
-  valptr = ( int * )(arg);
+  valptr = (int *)(arg);
   LoadAllPartFiles(*valptr);
 #ifdef pp_PARTFRAME
   return NULL;

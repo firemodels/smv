@@ -735,9 +735,9 @@ extern "C" void GLUIColorbarCB(int var){
     FilterCSVFilename(colorbar_filename);
     break;
   case COLORBAR_LAB2GEN:
-    cb_rgb[0] = CLAMP(( int )(cb_frgb2[0] + 0.5), 0, 255);
-    cb_rgb[1] = CLAMP(( int )(cb_frgb2[1] + 0.5), 0, 255);
-    cb_rgb[2] = CLAMP(( int )(cb_frgb2[2] + 0.5), 0, 255);
+    cb_rgb[0] = CLAMP((int)(cb_frgb2[0] + 0.5), 0, 255);
+    cb_rgb[1] = CLAMP((int)(cb_frgb2[1] + 0.5), 0, 255);
+    cb_rgb[2] = CLAMP((int)(cb_frgb2[2] + 0.5), 0, 255);
     SPINNER_cb_rgb[0]->set_int_val(cb_rgb[0]);
     SPINNER_cb_rgb[1]->set_int_val(cb_rgb[1]);
     SPINNER_cb_rgb[2]->set_int_val(cb_rgb[2]);

@@ -4302,7 +4302,7 @@ FILE_SIZE ReadSmoke3D(int time_frame,int ifile_arg,int load_flag, int first_time
   int *nxyzptr;
   int offset;
 
-  nxyzptr = ( int * )smoke3di->frameinfo->header;
+  nxyzptr = (int *)smoke3di->frameinfo->header;
   if(smoke3di->compression_type == COMPRESSED_ZLIB){
     offset = 12;
     smoke3di->is1 = nxyzptr[2];
