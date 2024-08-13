@@ -917,6 +917,10 @@ void FreeLabels(flowlabels *flowlabel){
 void InitMesh(meshdata *meshi){
   int i;
 
+#ifdef pp_BOUNDMEM
+  meshi->buffer1 = NULL;
+  meshi->buffer2 = NULL;
+#endif
   meshi->use = 1;
   meshi->isliceinfo    = 0;
   meshi->nsliceinfo    = 0;
@@ -5206,12 +5210,8 @@ int ParsePRT5Process(bufferstreamdata *stream, char *buffer, int *nn_part_in, in
 #ifndef pp_PARTFRAME
   parti->filepos = NULL;
 #endif
-  parti->tags = NULL;
   parti->sort_tags = NULL;
   parti->vis_part = NULL;
-  parti->sx = NULL;
-  parti->sy = NULL;
-  parti->sz = NULL;
   parti->irvals = NULL;
 
   parti->data5 = NULL;
@@ -5649,8 +5649,8 @@ int ParseSMOKE3DProcess(bufferstreamdata *stream, char *buffer, int *nn_smoke3d_
     smoke3di->smoke_boxmax = NULL;
     smoke3di->display = 0;
     smoke3di->loaded = 0;
-    smoke3di->finalize = 0;
     smoke3di->request_load = 0;
+    smoke3di->finalize = 0;
     smoke3di->primary_file = 0;
     smoke3di->is_smoke = 0;
     smoke3di->is_fire = 0;
