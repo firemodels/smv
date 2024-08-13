@@ -661,7 +661,7 @@ int ParseSLCFTokens(char *buffer, char **keywords, int *type, int nkeywords, int
     }
     if(val==NULL)return i;
     val = TrimFrontBack(val);
-    switch (type[keyword_index]){
+    switch(type[keyword_index]){
       case TOKEN_INT:
         sscanf(val, "%i", itokens+i);
         break;
@@ -1308,7 +1308,7 @@ int CompileScript(char *scriptfile){
           }
 
           for(i=0;i<ntokens;i++){
-            switch (tokens[i]){
+            switch(tokens[i]){
               char label[100];
 
               case KW_QUANTITY:
@@ -3748,7 +3748,7 @@ void ScriptViewXYZMINMAXOrtho(int command){
 /* ------------------ ScriptViewXYZMINMAXPersp ------------------------ */
 void ResetDefaultMenu(int var);
 void ScriptViewXYZMINMAXPersp(int command){
-  switch (command){
+  switch(command){
   case SCRIPT_VIEWXMIN:
     ResetDefaultMenu(VIEW_XMIN);
     break;

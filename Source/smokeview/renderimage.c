@@ -436,7 +436,7 @@ void OutputSliceData(void){
     fileout = fopen(datafile, "a");
     if(fileout == NULL)continue;
     if(global_times != NULL)fprintf(fileout, "%f\n", global_times[itimes]);
-    switch (sd->idir){
+    switch(sd->idir){
     case XDIR:
       fprintf(fileout, "%i,%i\n", sd->ks2 + 1 - sd->ks1, sd->js2 + 1 - sd->js1);
       for(row = sd->ks1; row <= sd->ks2; row++){
@@ -1080,7 +1080,7 @@ int MergeRenderScreenBuffers360(void){
 
   /* output the image */
 
-  switch (render_filetype){
+  switch(render_filetype){
   case PNG:
     gdImagePng(RENDERimage, RENDERfile);
     break;

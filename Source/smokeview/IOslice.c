@@ -4220,7 +4220,7 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
 
     sd->sliceoffset = 0.0;
 
-    switch (sd->idir){
+    switch(sd->idir){
     case XDIR:
       offset = sliceoffset_factor*(xplt_local[1] - xplt_local[0]);
       if(InBlockage(meshi, xslicemid - offset, yslicemid, zslicemid) == 1){
@@ -7409,7 +7409,7 @@ void DrawSliceFrame(){
       slice_normal[2] = 0.0;
       slicemesh = meshinfo+sd->blocknumber;
       if(slicemesh->smokedir<0)direction = -1;
-      switch (ABS(slicemesh->smokedir)){
+      switch(ABS(slicemesh->smokedir)){
       case 4:  // -45 slope slices
         visy_all = 1;
         nslicemax = nploty_list;
@@ -9012,7 +9012,7 @@ void InitSliceData(void){
       zplt[sd->ks1], zplt[sd->ks2]);
 
 
-    switch (sd->idir){
+    switch(sd->idir){
     case XDIR:
       fprintf(fileout, "%i\n", sd->ks2 + 1 - sd->ks1);
       for(k = sd->ks1; k <= sd->ks2; k++){

@@ -5135,7 +5135,7 @@ void LoadSliceMenu(int value){
     LoadSlicei(SET_SLICECOLOR,value, ALL_FRAMES, NULL);
   }
   else{
-    switch (value){
+    switch(value){
       int submenutype;
       slicedata *slicei;
 #ifndef pp_SLICEFRAME

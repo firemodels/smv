@@ -1068,7 +1068,7 @@ void SetPlot2DShowLabel(void){
 
 void GenPlotCB(int var){
   GLUTPOSTREDISPLAY;
-  switch (var){
+  switch(var){
     char label[256];
     int index;
     curvedata *curve;
@@ -1627,7 +1627,7 @@ extern "C" void GLUIDeviceCB(int var){
       int vis_device_plot_temp;
 
       vis_device_plot_temp = vis_device_plot;
-      switch (vis_device_plot_temp){
+      switch(vis_device_plot_temp){
         case DEVICE_PLOT_HIDDEN:
           vis_device_plot = DEVICE_PLOT_SHOW_ALL;
           ShowObjectsMenu(OBJECT_PLOT_SHOW_ALL);

@@ -1139,7 +1139,7 @@ extern "C" void GLUIGeometrySetup(int main_window){
 /* ------------------ TerrainCB ------------------------ */
 
 void TerrainCB(int var){
-  switch (var){
+  switch(var){
     case TERRAIN_TYPE:
       GeometryMenu(17+visTerrainType);
       break;

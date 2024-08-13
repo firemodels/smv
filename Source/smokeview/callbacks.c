@@ -557,7 +557,7 @@ void MouseSelectGeom(int x, int y){
     geomi = geominfoptrs[0];
     geomlisti = geomi->geomlistinfo-1;
 
-    switch (select_geom){
+    switch(select_geom){
     case GEOM_PROP_VERTEX1:
       selected_geom_vertex1 = val-1;
       break;
@@ -1659,7 +1659,7 @@ void Keyboard(unsigned char key, int flag){
       // 2   device yes hrr no
       // 3   device no  hrr yes
 // device plots
-      switch (plot_option){
+      switch(plot_option){
         case DEVNO_HRRNO: // device plots off
         case DEVNO_HRRYES:
           vis_device_plot = DEVICE_PLOT_SHOW_ALL;

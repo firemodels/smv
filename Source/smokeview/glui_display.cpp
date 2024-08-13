@@ -515,7 +515,7 @@ void TextLabelsCB(int var){
 void ColorCB(int var){
   int i;
 
-  switch (var){
+  switch(var){
   case LIGHT_POSITION:
     light_position0[0] = (xyzmaxdiff/2.0)*cos(DEG2RAD*glui_light_az0)*cos(DEG2RAD*glui_light_elev0);
     light_position0[1] = (xyzmaxdiff/2.0)*sin(DEG2RAD*glui_light_az0)*cos(DEG2RAD*glui_light_elev0);

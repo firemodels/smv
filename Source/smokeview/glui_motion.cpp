@@ -462,7 +462,7 @@ extern "C" void GLUISetColorControls(void){
 /* ------------------ MovieCB ------------------------ */
 
 void MovieCB(int val){
-  switch (val){
+  switch(val){
     case MOVIE_SLICE_INDEX:
       //sprintf(movie_basename, "%s_slice_%i", fdsprefix, movie_slice_index+1);
       snprintf(movie_basename, sizeof(movie_basename), "%s_slice_%i", fdsprefix, movie_slice_index+1);
@@ -2661,7 +2661,7 @@ void RenderCB(int var){
       }
       break;
     case MOVIE_FILETYPE:
-      switch (movie_filetype){
+      switch(movie_filetype){
       case AVI:
         strcpy(movie_ext, ".avi");
         SPINNER_movie_crf->disable();
@@ -2722,7 +2722,7 @@ void RenderCB(int var){
       }
       break;
     case RENDER_START_TOP:
-      switch (render_resolution){
+      switch(render_resolution){
       case RENDER_RESOLUTION_320x240:
         resolution_multiplier = 1;
         render_size_index=Render320;
