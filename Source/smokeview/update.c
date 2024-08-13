@@ -1537,6 +1537,7 @@ void UpdateTimes(void){
 
   // initialize individual time pointers
 
+  INIT_PRINT_TIMER(timer_setpointers);
   izone=0;
   ResetItimes0();
   for(i=0;i<ngeominfoptrs;i++){
@@ -1571,9 +1572,11 @@ void UpdateTimes(void){
     parti = partinfo + i;
     parti->itime=0;
   }
+  PRINT_TIMER(timer_setpointers, "UpdateTimes: set pointer");
 
   /* determine visibility of each blockage at each time step */
 
+  INIT_PRINT_TIMER(timer_visblocks);
   for(i=0;i<nmeshes;i++){
     int j;
     meshdata *meshi;
@@ -1599,9 +1602,11 @@ void UpdateTimes(void){
       }
     }
   }
+  PRINT_TIMER(timer_visblocks, "UpdateTimes: block vis");
 
   /* determine state of each device at each time step */
 
+  INIT_PRINT_TIMER(timer_device);
   for(i=0;i<ndeviceinfo;i++){
     devicedata *devicei;
 
@@ -1621,8 +1626,11 @@ void UpdateTimes(void){
       }
     }
   }
+  PRINT_TIMER(timer_device, "UpdateTimes: device state");
 
   /* determine visibility of each vent at each time step */
+  
+  INIT_PRINT_TIMER(timer_vent);
 
   for(i=0;i<nmeshes;i++){
     int j;
@@ -1679,18 +1687,23 @@ void UpdateTimes(void){
       }
     }
   }
+  PRINT_TIMER(timer_vent, "UpdateTimes: vent state");
 
   if(nglobal_times>0){
     INIT_PRINT_TIMER(timer_synch_times);
     SynchTimes();
-    PRINT_TIMER(timer_synch_times, "timer: SyncTimes");
+    PRINT_TIMER(timer_synch_times, "timer: SynchTimes");
   }
 #ifdef pp_UPDATE_FACES
   updatefaces=1;
 #endif
   if(nglobal_times>0){
+    INIT_PRINT_TIMER(timer_labels);
     UpdateTimeLabels();
+    PRINT_TIMER(timer_labels, "UpdateTimes: time labels");
+    INIT_PRINT_TIMER(timer_bounds);
     GLUIUpdateTimeBounds(global_times[0],global_times[nglobal_times-1]);
+    PRINT_TIMER(timer_bounds, "UpdateTimes: time bound");
   }
   CheckMemory;
 }
@@ -2275,7 +2288,7 @@ void OutputFrameSteps(void){
 }
 #endif
 #ifdef pp_SHOW_UPDATE
-#define SHOW_UPDATE(var) printf("updating: %s\n", #var);INIT_PRINT_TIMER(update_timer);
+#define SHOW_UPDATE(var) printf("updating: %s\n", #var);INIT_PRINT_TIMER(update_timer);updating=1
 #define END_SHOW_UPDATE(var) PRINT_TIMER(update_timer,#var)
 #else
 #define SHOW_UPDATE(var)
@@ -2603,6 +2616,7 @@ void UpdateShowScene(void){
     END_SHOW_UPDATE(updateUpdateFrameRateMenu);
   }
   if(updatefaces == 1){
+    updatefaces = 0;
     SHOW_UPDATE(updatefaces);
     INIT_PRINT_TIMER(timer_update_faces);
     UpdateFaces();

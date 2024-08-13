@@ -84,24 +84,24 @@ void GetPartVerts(int option, int option2, int *offset,
       if(parti->loaded==0||parti->display==0||part5show==0)continue;
       if(streak5show==0||(streak5show==1&&showstreakhead==1)){
         part5data *datacopy;
-        short *sx, *sy, *sz;
+        float *xpos, *ypos, *zpos;
         partclassdata *partclassi;
         int partclass_index, itype;
 
         datacopy = parti->data5+parti->nclasses*itime;
         frame_sizes[itime-ibeg] += datacopy->npoints_file;
-        sx = datacopy->sx;
-        sy = datacopy->sy;
-        sz = datacopy->sz;
+        xpos = datacopy->xpos;
+        ypos = datacopy->ypos;
+        zpos = datacopy->zpos;
 
         partclassi = parti->partclassptr[i];
         partclass_index = partclassi - partclassinfo;
         itype = current_property->class_types[partclass_index];
 
         for(j=0;j<datacopy->npoints_file;j++){
-          *verts++   = xplts[sx[j]];
-          *verts++   = yplts[sy[j]];
-          *verts++   = zplts[sz[j]];
+          *verts++   = xpos[j];
+          *verts++   = ypos[j];
+          *verts++   = zpos[j];
           if(itype==-1){
             *colors++   = 0.0;
             *colors++   = 0.0;

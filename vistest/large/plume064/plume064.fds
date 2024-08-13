@@ -7,9 +7,9 @@
 &MULT ID='mesh', DX=0.4, DY=0.4, DZ=0.4, I_UPPER=3, J_UPPER=3, K_UPPER=3 /
 
 
-&DUMP NFRAMES=400 DT_PL3D=8.0, DT_SL3D=0.1 /
+&DUMP NFRAMES=4000 DT_PL3D=8.0, DT_SL3D=0.1 /
 
-&TIME T_END=1. /  Total simulation time
+&TIME T_END=10. /  Total simulation time
 
 &MATL ID                    = 'FABRIC'
       FYI                   = 'Properties completely fabricated'
@@ -84,12 +84,5 @@
 
 &BNDF QUANTITY='WALL TEMPERATURE' /
 &BNDF QUANTITY='WALL TEMPERATURE' CELL_CENTERED=.TRUE. /
-
- isosurface
-
-&ISOF QUANTITY='TEMPERATURE',VALUE(1)=100.0 /  Show 3D contours of temperature at 100 C
-&ISOF QUANTITY='TEMPERATURE',VALUE(1)=200.0 /  Show 3D contours of temperature at 200 C
-&ISOF QUANTITY='TEMPERATURE',VALUE(1)=620.0 /  Show 3D contours of temperature at 620 C
-&ISOF QUANTITY='TEMPERATURE',VALUE(1:2)=200.0,400.0 /  Show 3D contours of temperature at 200 C
 
 &TAIL /
