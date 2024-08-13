@@ -4355,12 +4355,12 @@ FILE_SIZE ReadSmoke3D(int time_frame,int ifile_arg,int load_flag, int first_time
       SkipSmokeFrames(SMOKE3DFILE, smoke3di, smoke3di->ntimes_old);
       frame_start_local = smoke3di->ntimes_old;
     }
-    else {
+    else{
       frame_start_local = 0;
     }
     frame_end_local = smoke3di->ntimes_full;
   }
-  else {
+  else{
     SkipSmokeFrames(SMOKE3DFILE, smoke3di, time_frame);
     frame_start_local = time_frame;
     frame_end_local = time_frame+1;
@@ -4646,7 +4646,7 @@ void MergeSmoke3DColors(smoke3ddata *smoke3dset){
     if(co2_halfdepth <= 0.0){
       smoke3di->co2_alpha = 255;
     }
-    else {
+    else{
       smoke3di->co2_alpha = 255 * (1.0 - pow(0.5, mesh_smoke3d->dxyz_orig[0]/co2_halfdepth));
     }
 
@@ -4881,7 +4881,7 @@ void MergeSmoke3DBlack(smoke3ddata *smoke3dset){
     if(co2_halfdepth<=0.0){
       smoke3di->co2_alpha = 255;
     }
-    else {
+    else{
       smoke3di->co2_alpha = 255*(1.0-pow(0.5, meshi->dxyz_orig[0]/co2_halfdepth));
     }
     firecolor_data = NULL;

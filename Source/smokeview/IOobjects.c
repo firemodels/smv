@@ -179,7 +179,7 @@ int HaveSmokeSensor(void){
 /* ----------------------- GetPoint2BoxDist ----------------------------- */
 
 float GetPoint2BoxDist(float boxmin[3], float boxmax[3], float p1[3],
-                       float p2orig[3]) {
+                       float p2orig[3]){
   int i;
   float tt;
   int doit = 0;
@@ -191,38 +191,38 @@ float GetPoint2BoxDist(float boxmin[3], float boxmax[3], float p1[3],
 
   // if p1 is outside of box then return Dist(p1,p2)
 
-  for (i = 0; i < 3; i++) {
-    if (p1[i] < boxmin[i]) return Dist(p1, p2orig);
-    if (p1[i] > boxmax[i]) return Dist(p1, p2orig);
+  for (i = 0; i < 3; i++){
+    if(p1[i] < boxmin[i]) return Dist(p1, p2orig);
+    if(p1[i] > boxmax[i]) return Dist(p1, p2orig);
     p2[i] = p2orig[i];
   }
 
   // if p1 and p2 are both inside box then return Dist(p1,p2)
 
-  for (i = 0; i < 3; i++) {
-    if (p2[i] < boxmin[i]) {
+  for (i = 0; i < 3; i++){
+    if(p2[i] < boxmin[i]){
       doit = 1;
       break;
     }
-    if (p2[i] > boxmax[i]) {
+    if(p2[i] > boxmax[i]){
       doit = 1;
       break;
     }
   }
-  if (doit == 0) return Dist(p1, p2);
+  if(doit == 0) return Dist(p1, p2);
 
   dx = p2[0] - p1[0];
   dy = p2[1] - p1[1];
   dz = p2[2] - p1[2];
 
-  if (p1[0] >= boxmin[0] && boxmin[0] >= p2[0]) {
-    if (dx != 0.0) {
+  if(p1[0] >= boxmin[0] && boxmin[0] >= p2[0]){
+    if(dx != 0.0){
       tt = (boxmin[0] - p1[0]) / dx;
       xx = boxmin[0];
       yy = p1[1] + tt * dy;
       zz = p1[2] + tt * dz;
-      if (boxmin[1] <= yy && yy <= boxmax[1] && boxmin[2] <= zz &&
-          zz <= boxmax[2]) {
+      if(boxmin[1] <= yy && yy <= boxmax[1] && boxmin[2] <= zz &&
+          zz <= boxmax[2]){
         p2[0] = xx;
         p2[1] = yy;
         p2[2] = zz;
@@ -230,14 +230,14 @@ float GetPoint2BoxDist(float boxmin[3], float boxmax[3], float p1[3],
       }
     }
   }
-  if (p1[0] <= boxmax[0] && boxmax[0] <= p2[0]) {
-    if (dx != 0.0) {
+  if(p1[0] <= boxmax[0] && boxmax[0] <= p2[0]){
+    if(dx != 0.0){
       tt = (boxmax[0] - p1[0]) / dx;
       xx = boxmax[0];
       yy = p1[1] + tt * dy;
       zz = p1[2] + tt * dz;
-      if (boxmin[1] <= yy && yy <= boxmax[1] && boxmin[2] <= zz &&
-          zz <= boxmax[2]) {
+      if(boxmin[1] <= yy && yy <= boxmax[1] && boxmin[2] <= zz &&
+          zz <= boxmax[2]){
         p2[0] = xx;
         p2[1] = yy;
         p2[2] = zz;
@@ -245,14 +245,14 @@ float GetPoint2BoxDist(float boxmin[3], float boxmax[3], float p1[3],
       }
     }
   }
-  if (p1[1] >= boxmin[1] && boxmin[1] >= p2[1]) {
-    if (dy != 0.0) {
+  if(p1[1] >= boxmin[1] && boxmin[1] >= p2[1]){
+    if(dy != 0.0){
       tt = (boxmin[1] - p1[1]) / dy;
       xx = p1[0] + tt * dx;
       yy = boxmin[1];
       zz = p1[2] + tt * dz;
-      if (boxmin[0] <= xx && xx <= boxmax[0] && boxmin[2] <= zz &&
-          zz <= boxmax[2]) {
+      if(boxmin[0] <= xx && xx <= boxmax[0] && boxmin[2] <= zz &&
+          zz <= boxmax[2]){
         p2[0] = xx;
         p2[1] = yy;
         p2[2] = zz;
@@ -260,14 +260,14 @@ float GetPoint2BoxDist(float boxmin[3], float boxmax[3], float p1[3],
       }
     }
   }
-  if (p1[1] <= boxmax[1] && boxmax[1] <= p2[1]) {
-    if (dy != 0.0) {
+  if(p1[1] <= boxmax[1] && boxmax[1] <= p2[1]){
+    if(dy != 0.0){
       tt = (boxmax[1] - p1[1]) / dy;
       xx = p1[0] + tt * dx;
       yy = boxmax[1];
       zz = p1[2] + tt * dz;
-      if (boxmin[0] <= xx && xx <= boxmax[0] && boxmin[2] <= zz &&
-          zz <= boxmax[2]) {
+      if(boxmin[0] <= xx && xx <= boxmax[0] && boxmin[2] <= zz &&
+          zz <= boxmax[2]){
         p2[0] = xx;
         p2[1] = yy;
         p2[2] = zz;
@@ -275,14 +275,14 @@ float GetPoint2BoxDist(float boxmin[3], float boxmax[3], float p1[3],
       }
     }
   }
-  if (p1[2] >= boxmin[2] && boxmin[2] >= p2[2]) {
-    if (dz != 0.0) {
+  if(p1[2] >= boxmin[2] && boxmin[2] >= p2[2]){
+    if(dz != 0.0){
       tt = (boxmin[2] - p1[2]) / dz;
       xx = p1[0] + tt * dx;
       yy = p1[1] + tt * dy;
       zz = boxmin[2];
-      if (boxmin[0] <= xx && xx <= boxmax[0] && boxmin[1] <= yy &&
-          yy <= boxmax[1]) {
+      if(boxmin[0] <= xx && xx <= boxmax[0] && boxmin[1] <= yy &&
+          yy <= boxmax[1]){
         p2[0] = xx;
         p2[1] = yy;
         p2[2] = zz;
@@ -290,14 +290,14 @@ float GetPoint2BoxDist(float boxmin[3], float boxmax[3], float p1[3],
       }
     }
   }
-  if (p1[2] <= boxmax[2] && boxmax[2] <= p2[2]) {
-    if (dz != 0.0) {
+  if(p1[2] <= boxmax[2] && boxmax[2] <= p2[2]){
+    if(dz != 0.0){
       tt = (boxmax[2] - p1[2]) / dz;
       xx = p1[0] + tt * dx;
       yy = p1[1] + tt * dy;
       zz = boxmin[2];
-      if (boxmin[0] <= xx && xx <= boxmax[0] && boxmin[1] <= yy &&
-          yy <= boxmax[1]) {
+      if(boxmin[0] <= xx && xx <= boxmax[0] && boxmin[1] <= yy &&
+          yy <= boxmax[1]){
         p2[0] = xx;
         p2[1] = yy;
         p2[2] = zz;
@@ -5021,12 +5021,12 @@ void SetupZoneDevs(void){
 
 /* ----------------------- GetDeviceLabel ----------------------------- */
 
-char *GetDeviceLabel(char *buffer) {
+char *GetDeviceLabel(char *buffer){
   char *label_present;
 
   label_present = strstr(buffer, "#");
-  if (label_present == NULL) return NULL;
-  if (strlen(label_present) <= 1) {
+  if(label_present == NULL) return NULL;
+  if(strlen(label_present) <= 1){
     label_present[0] = 0;
     return NULL;
   }
@@ -5034,39 +5034,39 @@ char *GetDeviceLabel(char *buffer) {
   label_present++;
   label_present = TrimFront(label_present);
   TrimBack(label_present);
-  if (strlen(label_present) == 0) return NULL;
+  if(strlen(label_present) == 0) return NULL;
   return label_present;
 }
 
 
 /* ----------------------- GetNDevices ----------------------------- */
 #define BUFFER_LEN 255
-int GetNDevices(char *file) {
+int GetNDevices(char *file){
   FILE *stream;
   char buffer[BUFFER_LEN], *comma;
   int buffer_len = BUFFER_LEN, nd = 0;
 
-  if (file == NULL) return 0;
+  if(file == NULL) return 0;
   stream = fopen(file, "r");
-  if (stream == NULL) return 0;
+  if(stream == NULL) return 0;
   fgets(buffer, buffer_len, stream);
   comma = strchr(buffer, ',');
-  if (comma != NULL) *comma = 0;
+  if(comma != NULL) *comma = 0;
   TrimBack(buffer);
-  if (strcmp(buffer, "//HEADER") != 0) {
+  if(strcmp(buffer, "//HEADER") != 0){
     fclose(stream);
     return 0;
   }
 
-  while (!feof(stream)) {
+  while (!feof(stream)){
     fgets(buffer, buffer_len, stream);
     comma = strchr(buffer, ',');
-    if (comma != NULL) *comma = 0;
+    if(comma != NULL) *comma = 0;
     TrimBack(buffer);
-    if (strcmp(buffer, "//DATA") == 0) {
+    if(strcmp(buffer, "//DATA") == 0){
       break;
     }
-    if (strcmp(buffer, "DEVICE") == 0) {
+    if(strcmp(buffer, "DEVICE") == 0){
       nd++;
     }
   }
@@ -5074,30 +5074,30 @@ int GetNDevices(char *file) {
   return nd;
 }
 
-void RewindDeviceFile(FILE *stream) {
+void RewindDeviceFile(FILE *stream){
 #define BUFFER_LEN 255
   char buffer[BUFFER_LEN], *comma;
   int found_data = 0, buffer_len = BUFFER_LEN;
 
   fgets(buffer, buffer_len, stream);
   comma = strchr(buffer, ',');
-  if (comma != NULL) *comma = 0;
+  if(comma != NULL) *comma = 0;
   TrimBack(buffer);
-  if (strcmp(buffer, "//HEADER") != 0) {
+  if(strcmp(buffer, "//HEADER") != 0){
     rewind(stream);
     return;
   }
-  while (!feof(stream)) {
+  while (!feof(stream)){
     fgets(buffer, buffer_len, stream);
     comma = strchr(buffer, ',');
-    if (comma != NULL) *comma = 0;
+    if(comma != NULL) *comma = 0;
     TrimBack(buffer);
-    if (strcmp(buffer, "//DATA") == 0) {
+    if(strcmp(buffer, "//DATA") == 0){
       found_data = 1;
       break;
     }
   }
-  if (found_data == 0) {
+  if(found_data == 0){
     fprintf(stderr,
             "*** Warning //DATA keyword not found in spreadsheet file\n");
   }
@@ -5503,17 +5503,17 @@ void DeviceData2WindRose(int nr, int ntheta){
         windrosei->xyz = angledev->xyz;
         histogram = windrosei->histogram;
         InitHistogramPolar(histogram, nr, ntheta, NULL, NULL);
-        if(windrose_merge_type==WINDROSE_POINT) {
+        if(windrose_merge_type==WINDROSE_POINT){
           GetPolarBounds(veldev->vals, nvals, &rmin, &rmax);
           CopyPolar2Histogram(veldev->vals, angledev->vals, nvals, rmin, rmax, histogram);
         }
-        else {
+        else{
           float *xyzi;
           int first = 1;
 
           xyzi = veldev->xyz;
           // find min rmin and max rmax
-          for(j = 0; j<nvdeviceinfo; j++) {
+          for(j = 0; j<nvdeviceinfo; j++){
             vdevicedata *vdevicej;
             devicedata *angledevj, *veldevj;
             float *xyzj, rminj, rmaxj;
@@ -5542,7 +5542,7 @@ void DeviceData2WindRose(int nr, int ntheta){
             }
           }
           // update windrose
-          for(j = 0; j<nvdeviceinfo; j++) {
+          for(j = 0; j<nvdeviceinfo; j++){
             vdevicedata *vdevicej;
             devicedata *angledevj, *veldevj;
             float *xyzj;

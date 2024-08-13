@@ -7024,7 +7024,7 @@ static float pass5_time;
 /// @brief Initialise any global variables necessary to being parsing an SMV
 /// file. This should be called before @ref ReadSMV_Parse.
 /// @return zero on success, nonzero on failure.
-int ReadSMV_Init() {
+int ReadSMV_Init(){
   float timer_readsmv;
   float timer_setup;
 
@@ -7342,7 +7342,7 @@ int ReadSMV_Init() {
 /// after ReadSMV_Init to ensure that the appropriate variables are set.
 /// @param stream the smv file stream
 /// @return zero on success, non-zero on failure
-int ReadSMV_Parse(bufferstreamdata *stream) {
+int ReadSMV_Parse(bufferstreamdata *stream){
   int i;
   int have_zonevents,nzventsnew=0;
   devicedata *devicecopy;

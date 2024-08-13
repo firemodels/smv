@@ -222,14 +222,14 @@ extern "C" void GLUIUpdateFireColorbarList(void){
 
 /* ------------------ GLUIUpdateBackgroundFlip2 ------------------------ */
 
-extern "C" void GLUIUpdateBackgroundFlip2(int flip) {
+extern "C" void GLUIUpdateBackgroundFlip2(int flip){
   if(CHECKBOX_smoke_flip!=NULL)CHECKBOX_smoke_flip->set_int_val(flip);
 }
 
 /* ------------------ GLUIUpdateSmoke16 ------------------------ */
 
 #ifdef pp_SMOKE16
-extern "C" void GLUIUpdateSmoke16(void) {
+extern "C" void GLUIUpdateSmoke16(void){
   if(CHECKBOX_load_smoke16 != NULL)CHECKBOX_load_smoke16->set_int_val(load_smoke16);
   if(CHECKBOX_show_smoke16 != NULL)CHECKBOX_show_smoke16->set_int_val(show_3dsmoke_16bit);
   if(CHECKBOX_show_smoke8  != NULL)CHECKBOX_show_smoke8->set_int_val(show_3dsmoke_8bit);

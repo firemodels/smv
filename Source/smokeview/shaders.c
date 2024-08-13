@@ -16,14 +16,14 @@ GLuint p_smoke, p_3dslice, p_zonesmoke, p_volsmoke;
 
 /* ------------------ ShaderLinkStatus ------------------------ */
 
-int ShaderLinkStatus(GLuint program) {
+int ShaderLinkStatus(GLuint program){
   GLint isLinked;
 
   glGetProgramiv(program, GL_LINK_STATUS, &isLinked);
-  if (isLinked == GL_FALSE){
+  if(isLinked == GL_FALSE){
     GLint maxLength = 0;
     glGetProgramiv(program, GL_INFO_LOG_LENGTH, &maxLength);
-    if (maxLength > 0) {
+    if(maxLength > 0){
 #ifdef _DEBUG
       char *infoLog;
 
@@ -41,15 +41,15 @@ int ShaderLinkStatus(GLuint program) {
 
 /* ------------------ ShaderCompileStatus ------------------------ */
 
-int ShaderCompileStatus(GLuint obj,char *label) {
+int ShaderCompileStatus(GLuint obj,char *label){
   GLint isCompiled;
 
   glGetShaderiv(obj, GL_COMPILE_STATUS, &isCompiled);
-  if (isCompiled == GL_FALSE) {
+  if(isCompiled == GL_FALSE){
     GLint logLength = 0;
 
     glGetShaderiv(obj, GL_INFO_LOG_LENGTH, &logLength);
-    if (logLength > 0) {
+    if(logLength > 0){
 #ifdef _DEBUG
       char *infoLog;
 

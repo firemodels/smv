@@ -1453,7 +1453,7 @@ void GetPatchSizes2(FILE_m *stream, int version, int npatch, int *npatchsize,
     if(version == 0){
       fseek_m(stream, 4, SEEK_CUR);fread_m(ijkp, sizeof(*ijkp), 6, stream);fseek_m(stream, 4, SEEK_CUR);
     }
-    else {
+    else{
       fseek_m(stream, 4, SEEK_CUR); fread_m(ijkp, sizeof(*ijkp), 9, stream); fseek_m(stream, 4, SEEK_CUR);
       patchdir[n] = ijkp[6];
     }

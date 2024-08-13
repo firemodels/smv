@@ -23,12 +23,12 @@
 #define FORTREAD(var, size, count, STREAM)                                     \
   FSEEK(STREAM, HEADER_SIZE, SEEK_CUR);                                        \
   returncode = fread(var, size, count, STREAM);                                \
-  if (returncode != count) returncode = 0;                                     \
+  if(returncode != count) returncode = 0;                                     \
   FSEEK(STREAM, TRAILER_SIZE, SEEK_CUR)
 
 #define FORTREADBR(var, count, STREAM)                                         \
   FORTREAD(var, 4, (count), STREAM);                                           \
-  if (returncode == 0) break;
+  if(returncode == 0) break;
 
 /* --------------------------  vertdata ------------------------------------ */
 

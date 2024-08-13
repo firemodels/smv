@@ -169,7 +169,7 @@ void MakeMovie(void){
 
 /* ------------------ ResetRenderResolution ------------------------ */
 
-void ResetRenderResolution(int *width_low, int *height_low, int *width_high, int *height_high) {
+void ResetRenderResolution(int *width_low, int *height_low, int *width_high, int *height_high){
   *width_low = screenWidth;
   *height_low = screenHeight;
   *width_high = *width_low*MAX(2, resolution_multiplier);
@@ -178,12 +178,12 @@ void ResetRenderResolution(int *width_low, int *height_low, int *width_high, int
 
 /* ------------------ GetRenderResolution ------------------------ */
 
-void GetRenderResolution(int *width_low, int *height_low, int *width_high, int *height_high) {
-  if (render_status==RENDER_OFF||renderW == 0 || renderH == 0) {
+void GetRenderResolution(int *width_low, int *height_low, int *width_high, int *height_high){
+  if(render_status==RENDER_OFF||renderW == 0 || renderH == 0){
     *width_low = screenWidth;
     *height_low = screenHeight;
   }
-  else {
+  else{
     *width_low = renderW;
     *height_low = renderH;
   }

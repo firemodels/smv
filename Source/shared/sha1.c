@@ -51,7 +51,7 @@
 #if !defined(MBEDTLS_SHA1_ALT)
 
 /* Implementation that should never be optimized out by the compiler */
-static void mbedtls_zeroize( void *v, size_t n ) {
+static void mbedtls_zeroize( void *v, size_t n ){
     volatile unsigned char *p = (unsigned char*)v; while( n-- ) *p++ = 0;
 }
 

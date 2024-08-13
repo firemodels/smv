@@ -937,7 +937,7 @@ int MakeFileList(const char *path, char *filter, int maxfiles, int sort_files, f
   // DT_DIR - is a directory
   // DT_REG - is a regular file
 
-  if (maxfiles == 0||path==NULL||filter==NULL) {
+  if(maxfiles == 0||path==NULL||filter==NULL){
     *filelist = NULL;
     return 0;
   }
@@ -1070,30 +1070,30 @@ char *GetFloatFileSizeLabel(float size, char *sizelabel){
 }
 
 #ifdef _WIN32
-char *GetBinPath() {
+char *GetBinPath(){
   size_t MAX_BUFFER_SIZE = MAX_PATH * 20;
   char *buffer;
   size_t buffer_size = MAX_PATH * sizeof(char);
   NEWMEMORY(buffer, buffer_size);
-  for (;;) {
+  for (;;){
     GetModuleFileNameA(NULL, buffer, buffer_size);
     DWORD dw = GetLastError();
-    if (dw == ERROR_SUCCESS) {
+    if(dw == ERROR_SUCCESS){
       return buffer;
     }
-    else if (dw == ERROR_INSUFFICIENT_BUFFER && buffer_size < MAX_BUFFER_SIZE) {
+    else if(dw == ERROR_INSUFFICIENT_BUFFER && buffer_size < MAX_BUFFER_SIZE){
       // increase buffer size by a factor of 2
       buffer_size *= 2;
       RESIZEMEMORY(buffer, buffer_size);
     }
-    else {
+    else{
       FREEMEMORY(buffer);
       return NULL;
     }
   }
 }
 
-char *GetBinDir() {
+char *GetBinDir(){
   char *buffer = GetBinPath();
   // NB: This uses on older function in order to support "char *".
   // PathCchRemoveFileSpec would be better but requires switching to "wchar *".
@@ -1101,58 +1101,58 @@ char *GetBinDir() {
   return buffer;
 }
 #elif __linux__
-char *GetBinPath() {
+char *GetBinPath(){
   size_t MAX_BUFFER_SIZE = 2048 * 20;
   char *buffer;
   size_t buffer_size = 256 * sizeof(char);
   NEWMEMORY(buffer, buffer_size);
-  for (;;) {
+  for (;;){
     int ret = readlink("/proc/self/exe", buffer, buffer_size);
-    if (ret < buffer_size) {
+    if(ret < buffer_size){
       buffer[ret] = '\0';
       return buffer;
     }
-    else if (ret == buffer_size && buffer_size < MAX_BUFFER_SIZE) {
+    else if(ret == buffer_size && buffer_size < MAX_BUFFER_SIZE){
       // increase buffer size by a factor of 2
       buffer_size *= 2;
       RESIZEMEMORY(buffer, buffer_size);
     }
-    else {
+    else{
       FREEMEMORY(buffer);
       return NULL;
     }
   }
 }
 
-char *GetBinDir() {
+char *GetBinDir(){
   char *buffer = GetBinPath();
   dirname(buffer);
   return buffer;
 }
 #else
-char *GetBinPath() {
+char *GetBinPath(){
   uint32_t  MAX_BUFFER_SIZE = 2048 * 20;
   char *buffer;
   uint32_t buffer_size = 256 * sizeof(char);
   NEWMEMORY(buffer, buffer_size);
-  for (;;) {
+  for (;;){
     int ret = _NSGetExecutablePath(buffer, &buffer_size);
-    if (ret == 0) {
+    if(ret == 0){
       return buffer;
     }
-    else if (ret == -1 && buffer_size < MAX_BUFFER_SIZE) {
+    else if(ret == -1 && buffer_size < MAX_BUFFER_SIZE){
       // buffer_size has been set to the required buffer size by
       // _NSGetExecutablePath
       RESIZEMEMORY(buffer, buffer_size);
     }
-    else {
+    else{
       FREEMEMORY(buffer);
       return NULL;
     }
   }
 }
 
-char *GetBinDir() {
+char *GetBinDir(){
   char *buffer = GetBinPath();
   // The BSD and OSX version of dirname uses an internal buffer, therefore we
   // need to copy the string out.
@@ -1168,9 +1168,9 @@ char *GetBinDir() {
 /// GetSmvRootDir.
 char *smv_root_override = NULL;
 
-void SetSmvRootOverride(const char *path) {
+void SetSmvRootOverride(const char *path){
   FREEMEMORY(smv_root_override);
-  if (path == NULL) return;
+  if(path == NULL) return;
   size_t len = strlen(path);
   NEWMEMORY(smv_root_override, (len + 2) * sizeof(char));
   STRCPY(smv_root_override, path);
@@ -1179,9 +1179,9 @@ void SetSmvRootOverride(const char *path) {
   }
 }
 
-char *GetSmvRootDir() {
+char *GetSmvRootDir(){
   char *envar_path = getenv("SMV_ROOT_OVERRIDE");
-  if (smv_root_override != NULL) {
+  if(smv_root_override != NULL){
     // Take the SMV_ROOT as defined on the command line
     char *buffer;
     int len = strlen(smv_root_override);
@@ -1190,7 +1190,7 @@ char *GetSmvRootDir() {
     buffer[len] = '\0';
     return buffer;
   }
-  else if (envar_path != NULL) {
+  else if(envar_path != NULL){
     // Take the SMV_ROOT as defined by the SMV_ROOT_OVERRIDE environment
     // variable
     char *buffer;
@@ -1200,7 +1200,7 @@ char *GetSmvRootDir() {
     buffer[len] = '\0';
     return buffer;
   }
-  else {
+  else{
 #ifdef SMV_ROOT_OVERRIDE
     // Take the SMV_ROOT as defined by the SMV_ROOT_OVERRIDE macro
     char *buffer;

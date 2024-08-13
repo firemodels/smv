@@ -1939,25 +1939,25 @@ void ScriptLoadIso(scriptdata *scripti, int meshnum){
 
   update_readiso_geom_wrapup = UPDATE_ISO_START_ALL;
   CancelUpdateTriangles();
-  for (i = nisoinfo - 1; i >= 0; i--) {
+  for (i = nisoinfo - 1; i >= 0; i--){
     isodata* isoi;
 
     isoi = isoinfo + i;
     isoi->finalize = 0;
   }
-  for (i = nisoinfo-1; i >=0; i--) {
+  for (i = nisoinfo-1; i >=0; i--){
     isodata* isoi;
     char label2[100];
     int lencval, lenlabel;
 
     isoi = isoinfo + i;
-    if (meshnum != -1 && isoi->blocknumber + 1 != meshnum)continue;
+    if(meshnum != -1 && isoi->blocknumber + 1 != meshnum)continue;
     lencval = strlen(scripti->cval);
     lenlabel = strlen(isoi->surface_label.longlabel);
-    if (lencval <= lenlabel) {
+    if(lencval <= lenlabel){
       strncpy(label2, isoi->surface_label.longlabel, lencval);
       label2[lencval] = 0;
-      if (STRCMP(label2, scripti->cval) == 0) {
+      if(STRCMP(label2, scripti->cval) == 0){
         isoi->finalize = 1;
       }
     }

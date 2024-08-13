@@ -1317,7 +1317,7 @@ void ViewportTimebar(int quad, GLint screen_left, GLint screen_down){
       i_cutoff = (int)(global_hrrpuv_cutoff + 0.5);
       sprintf(cutoff_label, ">%i kW/m3", i_cutoff);
     }
-    else {
+    else{
       i_cutoff = (int)(global_temp_cutoff + 0.5);
       sprintf(cutoff_label, ">%i %s", i_cutoff,degC);
     }
