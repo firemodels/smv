@@ -348,7 +348,7 @@ void UpdateShowWindRoses(void){
   int icheckbox;
 
   icheckbox=0;
-  for (i = 0; i < nzwindtreeinfo; i++){
+  for(i = 0; i < nzwindtreeinfo; i++){
     treedevicedata *treei;
     int j;
     int idev;
@@ -356,7 +356,7 @@ void UpdateShowWindRoses(void){
     treei = zwindtreeinfo[i];
 
     idev = 0;
-    for (j = treei->first; j <= treei->last; j++){
+    for(j = treei->first; j <= treei->last; j++){
       vdevicesortdata *vdevsorti;
       vdevicedata *vd;
 

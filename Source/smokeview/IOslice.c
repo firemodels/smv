@@ -3070,7 +3070,7 @@ void GetSliceDataBounds(slicedata *sd, float *pmin, float *pmax){
     }
     *pmin = pdata[0];
     *pmax = pdata[0];
-    for (i = 0; i < ndata; i++){
+    for(i = 0; i < ndata; i++){
       *pmin = MIN(*pmin, pdata[i]);
       *pmax = MAX(*pmax, pdata[i]);
     }
@@ -7598,7 +7598,7 @@ void DrawSliceFrame(){
       glBlendEquation(GL_FUNC_ADD);
     }
   }
-  for (ii = 0; ii < npatchinfo; ii++){
+  for(ii = 0; ii < npatchinfo; ii++){
     patchdata *patchi;
 
     patchi = patchinfo + ii;

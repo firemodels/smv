@@ -191,7 +191,7 @@ float GetPoint2BoxDist(float boxmin[3], float boxmax[3], float p1[3],
 
   // if p1 is outside of box then return Dist(p1,p2)
 
-  for (i = 0; i < 3; i++){
+  for(i = 0; i < 3; i++){
     if(p1[i] < boxmin[i]) return Dist(p1, p2orig);
     if(p1[i] > boxmax[i]) return Dist(p1, p2orig);
     p2[i] = p2orig[i];
@@ -199,7 +199,7 @@ float GetPoint2BoxDist(float boxmin[3], float boxmax[3], float p1[3],
 
   // if p1 and p2 are both inside box then return Dist(p1,p2)
 
-  for (i = 0; i < 3; i++){
+  for(i = 0; i < 3; i++){
     if(p2[i] < boxmin[i]){
       doit = 1;
       break;

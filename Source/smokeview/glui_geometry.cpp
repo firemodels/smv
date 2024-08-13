@@ -569,7 +569,7 @@ void HvacCB(int var){
       break;
     case HVAC_SHOWALL_CONNECTIONS:
     case HVAC_HIDEALL_CONNECTIONS:
-      for (i = 0; i < nhvacconnectinfo; i++){
+      for(i = 0; i < nhvacconnectinfo; i++){
         hvacconnectdata *hi;
 
         hi = hvacconnectinfo + i;
@@ -631,7 +631,7 @@ extern "C" void GLUIGeometrySetup(int main_window){
       hvac_show_networks = 1;
       PANEL_hvac_network = glui_geometry->add_panel_to_panel(ROLLOUT_hvac, "networks");
     }
-    for (i = 0; i < nhvacinfo; i++){
+    for(i = 0; i < nhvacinfo; i++){
       hvacdata* hvaci;
 
       hvaci = hvacinfo + i;
@@ -647,7 +647,7 @@ extern "C" void GLUIGeometrySetup(int main_window){
       NewMemory((void **)&CHECKBOX_hvac_show_connections, nhvacconnectinfo*sizeof(GLUI_Checkbox *));
       glui_geometry->add_column_to_panel(PANEL_hvac_group1, false);
       PANEL_hvac_connections = glui_geometry->add_panel_to_panel(PANEL_hvac_group1, "connections");
-      for (i = 0; i < nhvacconnectinfo; i++){
+      for(i = 0; i < nhvacconnectinfo; i++){
         hvacconnectdata *hi;
         char label[100];
 

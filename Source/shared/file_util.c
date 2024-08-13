@@ -1078,7 +1078,7 @@ char *GetBinPath(){
   char *buffer;
   size_t buffer_size = MAX_PATH * sizeof(char);
   NEWMEMORY(buffer, buffer_size);
-  for (;;){
+  for(;;){
     GetModuleFileNameA(NULL, buffer, buffer_size);
     DWORD dw = GetLastError();
     if(dw == ERROR_SUCCESS){
@@ -1114,7 +1114,7 @@ char *GetBinPath(){
   char *buffer;
   size_t buffer_size = 256 * sizeof(char);
   NEWMEMORY(buffer, buffer_size);
-  for (;;){
+  for(;;){
     int ret = readlink("/proc/self/exe", buffer, buffer_size);
     if(ret < buffer_size){
       buffer[ret] = '\0';
@@ -1148,7 +1148,7 @@ char *GetBinPath(){
   char *buffer;
   uint32_t buffer_size = 256 * sizeof(char);
   NEWMEMORY(buffer, buffer_size);
-  for (;;){
+  for(;;){
     int ret = _NSGetExecutablePath(buffer, &buffer_size);
     if(ret == 0){
       return buffer;

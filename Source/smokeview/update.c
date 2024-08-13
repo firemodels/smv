@@ -152,7 +152,7 @@ void UpdateFrameNumber(int changetime){
           slice_time = sd->itime;
         }
       }
-      for (i = 0; i < npatchinfo; i++){
+      for(i = 0; i < npatchinfo; i++){
         patchdata *patchi;
 
         patchi = patchinfo + i;
@@ -548,7 +548,7 @@ void UpdateShow(void){
 
   patchflag=0;
   if(visTimeBoundary==1){
-    for (i = 0; i < ngeominfo; i++){
+    for(i = 0; i < ngeominfo; i++){
       geomdata *geomi;
 
       geomi = geominfo + i;

@@ -1397,7 +1397,7 @@ int GetPatchNTimes(char *file){
 
   int count = 0;
   char buffer[255];
-  for (;;){
+  for(;;){
 
     if(fgets(buffer, 255, stream) == NULL) break;
     count++;
@@ -1449,7 +1449,7 @@ void GetPatchSizes2(FILE_m *stream, int version, int npatch, int *npatchsize,
   *npatchsize = 0;
 
   int n;
-  for (n = 0; n < npatch; n++){
+  for(n = 0; n < npatch; n++){
     if(version == 0){
       fseek_m(stream, 4, SEEK_CUR);fread_m(ijkp, sizeof(*ijkp), 6, stream);fseek_m(stream, 4, SEEK_CUR);
     }

@@ -844,7 +844,7 @@ void GetBlockVals(  float *xmin, float *xmax,
 int HaveCircularVents(void){
   int i;
 
-  for (i = 0; i < nmeshes; i++){
+  for(i = 0; i < nmeshes; i++){
     meshdata* meshi;
 
     meshi = meshinfo + i;
