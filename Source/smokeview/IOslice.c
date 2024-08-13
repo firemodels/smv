@@ -1864,21 +1864,21 @@ void UpdateVectorSkip(int skip){
     if(slicei->imap == NULL){
       int *imap;
 
-      NewMemory(( void ** )&imap, (slicemesh->ibar + 1) * sizeof(int));
+      NewMemory((void **)&imap, (slicemesh->ibar + 1) * sizeof(int));
       slicei->imap = imap;
       slicei->n_imap = 0;
     }
     if(slicei->jmap == NULL){
       int *jmap;
 
-      NewMemory(( void ** )&jmap, (slicemesh->jbar + 1) * sizeof(int));
+      NewMemory((void **)&jmap, (slicemesh->jbar + 1) * sizeof(int));
       slicei->jmap = jmap;
       slicei->n_jmap = 0;
     }
     if(slicei->kmap == NULL){
       int *kmap;
 
-      NewMemory(( void ** )&kmap, (slicemesh->kbar + 1) * sizeof(int));
+      NewMemory((void **)&kmap, (slicemesh->kbar + 1) * sizeof(int));
       slicei->kmap = kmap;
       slicei->n_kmap = 0;
     }
@@ -4184,8 +4184,8 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
       qvalptrs = ( float **)sd->frameinfo->frameptrs;
 #else
       int i;
-      NewMemory(( void ** )&qvalptrs, sd->ntimes*sizeof(float *));
-      for(i=0; i< sd->ntimes ; i++){
+      NewMemory((void **)&qvalptrs, sd->ntimes*sizeof(float *));
+      for(i=0; i< sd->ntimes; i++){
         qvalptrs[i] = sd->qslicedata + i*data_per_timestep;
       }
 #endif
@@ -4220,7 +4220,7 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
 
     sd->sliceoffset = 0.0;
 
-    switch (sd->idir){
+    switch(sd->idir){
     case XDIR:
       offset = sliceoffset_factor*(xplt_local[1] - xplt_local[0]);
       if(InBlockage(meshi, xslicemid - offset, yslicemid, zslicemid) == 1){
@@ -7409,7 +7409,7 @@ void DrawSliceFrame(){
       slice_normal[2] = 0.0;
       slicemesh = meshinfo+sd->blocknumber;
       if(slicemesh->smokedir<0)direction = -1;
-      switch (ABS(slicemesh->smokedir)){
+      switch(ABS(slicemesh->smokedir)){
       case 4:  // -45 slope slices
         visy_all = 1;
         nslicemax = nploty_list;
@@ -9012,7 +9012,7 @@ void InitSliceData(void){
       zplt[sd->ks1], zplt[sd->ks2]);
 
 
-    switch (sd->idir){
+    switch(sd->idir){
     case XDIR:
       fprintf(fileout, "%i\n", sd->ks2 + 1 - sd->ks1);
       for(k = sd->ks1; k <= sd->ks2; k++){

@@ -2118,7 +2118,7 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
     ntimes_local = GetGeomDataSize(patchi->file, &nvals, time_frame, cvals_offsets, cvals_sizes, geom_offsets, &geom_offset_flag, &max_buffer_size, &error);
   }
   if(max_buffer_size > 0){
-    NewMemory(( void ** )&cbuffer, max_buffer_size);
+    NewMemory((void **)&cbuffer, max_buffer_size);
     patchi->cbuffer = cbuffer;
   }
   else{
@@ -2269,7 +2269,7 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
 #ifdef pp_SLICEFRAME
       qvalptrs = ( float ** )slicei->frameinfo->frameptrs;
 #else
-      NewMemory(( void ** )&qvalptrs, ntimes*sizeof(float *));
+      NewMemory((void **)&qvalptrs, ntimes*sizeof(float *));
       for(i = 0; i < ntimes; i++){
         qvalptrs[i] = slicei->patchgeom->geom_vals + i*data_per_timestep;
       }

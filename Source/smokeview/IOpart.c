@@ -1684,7 +1684,7 @@ int GetPartHeader(partdata *parti, int *nf_all, int option_arg, int print_option
 
   fseek_m(stream, 2 * (4 + 4 + 4), SEEK_SET);
   fseek_m(stream, 4, SEEK_CUR); fread_m(&n_part, sizeof(int), 1, stream); fseek_m(stream, 4, SEEK_CUR);
-  NewMemory(( void ** )&n_quants, n_part*sizeof(int));
+  NewMemory((void **)&n_quants, n_part*sizeof(int));
   for(i = 0; i < n_part; i++){
     int vals[2];
 
@@ -1731,9 +1731,9 @@ int GetPartHeader(partdata *parti, int *nf_all, int option_arg, int print_option
   // allocate memory for number of time steps * number of classes
 
   CheckMemory;
-  NewMemory(( void ** )&parti->data5, parti->nclasses * parti->ntimes * sizeof(part5data));
-  NewMemory(( void ** )&parti->times, parti->ntimes * sizeof(float));
-  NewMemory(( void ** )&parti->times_map, parti->ntimes);
+  NewMemory((void **)&parti->data5, parti->nclasses * parti->ntimes * sizeof(part5data));
+  NewMemory((void **)&parti->times, parti->ntimes * sizeof(float));
+  NewMemory((void **)&parti->times_map, parti->ntimes);
 
   // free memory for x, y, z frame data
 
@@ -1784,9 +1784,9 @@ int GetPartHeader(partdata *parti, int *nf_all, int option_arg, int print_option
       if(npoints_local > partclassj->maxpoints)partclassj->maxpoints = npoints_local;
       if(npoints_local > 0){
         if(partfast == NO){
-          NewMemory(( void ** )&datacopy_local->dsx, npoints_local * sizeof(float));
-          NewMemory(( void ** )&datacopy_local->dsy, npoints_local * sizeof(float));
-          NewMemory(( void ** )&datacopy_local->dsz, npoints_local * sizeof(float));
+          NewMemory((void **)&datacopy_local->dsx, npoints_local * sizeof(float));
+          NewMemory((void **)&datacopy_local->dsy, npoints_local * sizeof(float));
+          NewMemory((void **)&datacopy_local->dsz, npoints_local * sizeof(float));
         }
       }
       datacopy_local++;
@@ -1817,9 +1817,9 @@ int GetPartHeader(partdata *parti, int *nf_all, int option_arg, int print_option
   FREEMEMORY(parti->irvals);
   FREEMEMORY(n_quants);
 
-  NewMemory(( void ** )&parti->vis_part,    MAX(nall_points_local, 1));
-  NewMemory(( void ** )&parti->sort_tags, 2*MAX(nall_points_local, 1)*sizeof(int));
-  NewMemory(( void ** )&parti->irvals,      MAX(nall_points_types_local, 1));
+  NewMemory((void **)&parti->vis_part,    MAX(nall_points_local, 1));
+  NewMemory((void **)&parti->sort_tags, 2*MAX(nall_points_local, 1)*sizeof(int));
+  NewMemory((void **)&parti->irvals,      MAX(nall_points_types_local, 1));
 
   datacopy_local = parti->data5;
   nall_points_types_local = 0;

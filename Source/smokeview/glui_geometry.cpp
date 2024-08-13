@@ -608,7 +608,7 @@ extern "C" void GLUIGeometrySetup(int main_window){
   if(showedit_dialog==0)glui_geometry->hide();
 
   if(nhvacinfo > 0){
-    NewMemory(( void ** )&glui_hvac, sizeof(hvacdata));
+    NewMemory((void **)&glui_hvac, sizeof(hvacdata));
     memcpy(glui_hvac, hvacinfo, sizeof(hvacdata));
     ROLLOUT_hvac = glui_geometry->add_rollout("HVAC", false, HVAC_ROLLOUT, GeomRolloutCB);
     INSERT_ROLLOUT(ROLLOUT_hvac, glui_geometry);
@@ -1139,7 +1139,7 @@ extern "C" void GLUIGeometrySetup(int main_window){
 /* ------------------ TerrainCB ------------------------ */
 
 void TerrainCB(int var){
-  switch (var){
+  switch(var){
     case TERRAIN_TYPE:
       GeometryMenu(17+visTerrainType);
       break;

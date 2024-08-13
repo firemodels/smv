@@ -538,7 +538,7 @@ void MakeFireColors(float temp_min, float temp_max, int nfire_colors_arg){
 #endif
   dtemp = (temp_max - temp_min) / ( float )(nfire_colors_arg - 1);
   FREEMEMORY(fire_rgbs);
-  NewMemory(( void ** )&fire_rgbs, 3*nfire_colors_arg*sizeof(float));
+  NewMemory((void **)&fire_rgbs, 3*nfire_colors_arg*sizeof(float));
   for(i = 0; i < nfire_colors_arg; i++){
     float temp, fire_emission[3];
 

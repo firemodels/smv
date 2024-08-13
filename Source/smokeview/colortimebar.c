@@ -1312,7 +1312,7 @@ void InitDefaultColorbars(int nini){
   FREEMEMORY(colorbarinfo);
   ncolorbars=ndefaultcolorbars;
   NewMemory((void **)&colorbarinfo,(ncolorbars+nini)*sizeof(colorbardata));
-  NewMemory(( void ** )&colorbarcopyinfo, (ncolorbars + nini) * sizeof(colorbardata));
+  NewMemory((void **)&colorbarcopyinfo, (ncolorbars + nini) * sizeof(colorbardata));
   UpdateCurrentColorbar(colorbarinfo + colorbartype);
 
   for(i=0;i<ncolorbars;i++){

@@ -72,7 +72,7 @@ int GetGlobalPartBounds(int flag){
 
 
   if(part_bound_buffer == NULL && npartinfo > 0 && npart5prop>0){
-    NewMemory(( void ** )&part_bound_buffer, 2*npartinfo*npart5prop*sizeof(float));
+    NewMemory((void **)&part_bound_buffer, 2*npartinfo*npart5prop*sizeof(float));
     for(i = 0; i < npartinfo; i++){
       partdata *parti;
       int j;

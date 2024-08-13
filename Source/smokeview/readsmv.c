@@ -4650,7 +4650,7 @@ void InitCellMeshInfo(void){
     return;
   }
 
-  NewMemory(( void ** )&cellmeshinfo, sizeof(cellmeshdata));
+  NewMemory((void **)&cellmeshinfo, sizeof(cellmeshdata));
   xyzminmax = cellmeshinfo->xyzminmax;
   dxyz      = cellmeshinfo->dxyz;
   nxyz      = cellmeshinfo->nxyz;
@@ -4695,7 +4695,7 @@ void InitCellMeshInfo(void){
   nxyz[2] = MAX((int)( (xyzminmax[5] - xyzminmax[4])/dxyz[2] + 0.5), 1);
 
   ntotal = nxyz[0]*nxyz[1]*nxyz[2];
-  NewMemory(( void ** )&cellmeshinfo->cellmeshes, ntotal*sizeof(meshdata *));
+  NewMemory((void **)&cellmeshinfo->cellmeshes, ntotal*sizeof(meshdata *));
   cellmeshes = cellmeshinfo->cellmeshes;
   for(i=0;i<ntotal;i++){
     cellmeshinfo->cellmeshes[i] = NULL;
@@ -4838,8 +4838,8 @@ void SetupIsosurface(isodata *isoi){
     if(isoi->nlevels > 0){
       int i;
 
-      NewMemory(( void ** )&levels, isoi->nlevels * sizeof(float));
-      NewMemory(( void ** )&colorlevels, isoi->nlevels * sizeof(float *));
+      NewMemory((void **)&levels, isoi->nlevels * sizeof(float));
+      NewMemory((void **)&colorlevels, isoi->nlevels * sizeof(float *));
       for(i = 0; i < isoi->nlevels; i++){
         colorlevels[i] = NULL;
         levels[i] = geomi->float_vals[i];
@@ -6612,7 +6612,7 @@ char *ConvertFDSInputFile(char *filein, int *ijk_arg, float *xb_arg){
   fclose(streamout);
 
   char *outfile;
-  NewMemory(( void ** )&outfile, strlen(fileout)+1);
+  NewMemory((void **)&outfile, strlen(fileout)+1);
   strcpy(outfile, fileout);
   return outfile;
 }
@@ -6848,7 +6848,7 @@ void InitCSV(csvfiledata *csvi, char *file, char *type, int format){
   csvi->format       = format;
 
   if(file != NULL){
-    NewMemory(( void ** )&csvi->file, strlen(file) + 1);
+    NewMemory((void **)&csvi->file, strlen(file) + 1);
     strcpy(csvi->file, file);
   }
   else{
@@ -8151,13 +8151,13 @@ int ReadSMV_Parse(bufferstreamdata *stream){
   }
 
   if(npartinfo>0){
-    if(NewMemory(( void ** )&part_buffer, 4*npartinfo*MAXFILELEN) == 0)return 2;
+    if(NewMemory((void **)&part_buffer, 4*npartinfo*MAXFILELEN) == 0)return 2;
   }
   if(nsliceinfo>0){
-    if(NewMemory(( void ** )&slice_buffer, 7*nsliceinfo*MAXFILELEN) == 0)return 2;
+    if(NewMemory((void **)&slice_buffer, 7*nsliceinfo*MAXFILELEN) == 0)return 2;
   }
   if(nsmoke3dinfo>0){
-    if(NewMemory(( void ** )&smoke3d_buffer, 9*nsmoke3dinfo*MAXFILELEN) == 0)return 2;
+    if(NewMemory((void **)&smoke3d_buffer, 9*nsmoke3dinfo*MAXFILELEN) == 0)return 2;
   }
 
   PRINT_TIMER(timer_readsmv, "pass 1");
@@ -8203,7 +8203,7 @@ int ReadSMV_Parse(bufferstreamdata *stream){
   */
     if(MatchSMV(buffer, "HVACVALS") == 1){
       FREEMEMORY(hvacductvalsinfo);
-      NewMemory(( void ** )&hvacductvalsinfo, sizeof(hvacvalsdata));
+      NewMemory((void **)&hvacductvalsinfo, sizeof(hvacvalsdata));
       hvacductvalsinfo->times = NULL;
       hvacductvalsinfo->loaded = 0;
       hvacductvalsinfo->node_vars = NULL;
@@ -8244,7 +8244,7 @@ int ReadSMV_Parse(bufferstreamdata *stream){
         }
       }
       FREEMEMORY(hvacnodevalsinfo);
-      NewMemory(( void ** )&hvacnodevalsinfo, sizeof(hvacvalsdata));
+      NewMemory((void **)&hvacnodevalsinfo, sizeof(hvacvalsdata));
       memcpy(hvacnodevalsinfo, hvacductvalsinfo, sizeof(hvacvalsdata));
     }
     /*
@@ -8263,7 +8263,7 @@ int ReadSMV_Parse(bufferstreamdata *stream){
       if(nhvacnodeinfo == 0)continue;
 
       FREEMEMORY(hvacnodeinfo);
-      NewMemory(( void ** )&hvacnodeinfo, nhvacnodeinfo * sizeof(hvacnodedata));
+      NewMemory((void **)&hvacnodeinfo, nhvacnodeinfo * sizeof(hvacnodedata));
 
   // node_id duct_label network_label
   // x y z filter_flag vent_label
@@ -8398,7 +8398,7 @@ int ReadSMV_Parse(bufferstreamdata *stream){
 
         float *waypoints;
 
-        NewMemory(( void ** )&waypoints, 3*(n_waypoints+2) * sizeof(float));
+        NewMemory((void **)&waypoints, 3*(n_waypoints+2) * sizeof(float));
         ducti->xyz_reg   = waypoints;
         ducti->nxyz_reg  = n_waypoints + 2;
 
@@ -8422,7 +8422,7 @@ int ReadSMV_Parse(bufferstreamdata *stream){
       }
       char **hvac_network_labels = NULL;
 
-      NewMemory(( void ** )&hvac_network_labels, (nhvacnodeinfo + nhvacductinfo) * sizeof(char *));
+      NewMemory((void **)&hvac_network_labels, (nhvacnodeinfo + nhvacductinfo) * sizeof(char *));
       for(i = 0; i < nhvacnodeinfo; i++){
         hvac_network_labels[i] = hvacnodeinfo[i].network_name;
       }
@@ -8436,7 +8436,7 @@ int ReadSMV_Parse(bufferstreamdata *stream){
         hvac_network_labels[nhvacinfo] = hvac_network_labels[i];
         nhvacinfo++;
       }
-      NewMemory(( void ** )&hvacinfo, nhvacinfo * sizeof(hvacdata));
+      NewMemory((void **)&hvacinfo, nhvacinfo * sizeof(hvacdata));
       for(i = 0; i < nhvacinfo; i++){
         hvacdata *hvaci;
 
@@ -9504,9 +9504,9 @@ int ReadSMV_Parse(bufferstreamdata *stream){
          NewMemory((void **)&zp2,sizeof(float)*(kbartemp+1))==0
          )return 2;
       if(
-        NewMemory(( void ** )&imap, sizeof(int) * (ibartemp + 1)) == 0 ||
-        NewMemory(( void ** )&jmap, sizeof(int) * (jbartemp + 1)) == 0 ||
-        NewMemory(( void ** )&kmap, sizeof(int) * (kbartemp + 1)) == 0
+        NewMemory((void **)&imap, sizeof(int) * (ibartemp + 1)) == 0 ||
+        NewMemory((void **)&jmap, sizeof(int) * (jbartemp + 1)) == 0 ||
+        NewMemory((void **)&kmap, sizeof(int) * (kbartemp + 1)) == 0
         )return 2;
       if(meshinfo!=NULL){
         meshi->xplt=xp;
@@ -17024,7 +17024,7 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %i\n", background_flip);
   fprintf(fileout, "FOREGROUNDCOLOR\n");
   fprintf(fileout, " %f %f %f\n", foregroundbasecolor[0], foregroundbasecolor[1], foregroundbasecolor[2]);
-  fprintf(fileout, "GEOMSELECTCOLOR\n") ;
+  fprintf(fileout, "GEOMSELECTCOLOR\n");
   fprintf(fileout, " %u %u %u\n",  geom_vertex1_rgb[0],  geom_vertex1_rgb[1],  geom_vertex1_rgb[2]);
   fprintf(fileout, " %u %u %u\n",  geom_vertex2_rgb[0],  geom_vertex2_rgb[1],  geom_vertex2_rgb[2]);
   fprintf(fileout, " %u %u %u\n", geom_triangle_rgb[0], geom_triangle_rgb[1], geom_triangle_rgb[2]);
@@ -17140,7 +17140,7 @@ void WriteIni(int flag,char *filename){
 
   fprintf(fileout, "\n   *** SIZES/OFFSETS ***\n\n");
 
-  fprintf(fileout, "GEOMSAXIS\n") ;
+  fprintf(fileout, "GEOMSAXIS\n");
   fprintf(fileout, " %f %f\n",  glui_surf_axis_length, glui_surf_axis_width);
   fprintf(fileout, "GRIDLINEWIDTH\n");
   fprintf(fileout, " %f\n", gridlinewidth);

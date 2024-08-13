@@ -68,7 +68,7 @@ int ReadSMV(char *smvfile){
   if(nmeshinfo > 0){
     int i;
 
-    NewMemory(( void ** )&meshinfo, nmeshinfo * sizeof(meshdata));
+    NewMemory((void **)&meshinfo, nmeshinfo * sizeof(meshdata));
     for(i = 0; i < nmeshinfo; i++){
       meshdata *meshi;
 
@@ -107,9 +107,9 @@ int ReadSMV(char *smvfile){
       meshi->ibar = ibar;
       meshi->jbar = jbar;
       meshi->kbar = kbar;
-      if(meshi->ibar>0)NewMemory(( void ** )&meshi->xplt, (ibar+1)*sizeof(float));
-      if(meshi->jbar > 0)NewMemory(( void ** )&meshi->yplt, (jbar + 1) * sizeof(float));
-      if(meshi->kbar > 0)NewMemory(( void ** )&meshi->zplt, (kbar + 1) * sizeof(float));
+      if(meshi->ibar>0)NewMemory((void **)&meshi->xplt, (ibar+1)*sizeof(float));
+      if(meshi->jbar > 0)NewMemory((void **)&meshi->yplt, (jbar + 1) * sizeof(float));
+      if(meshi->kbar > 0)NewMemory((void **)&meshi->zplt, (kbar + 1) * sizeof(float));
       continue;
     }
     if(Match(buffer, "TRNX") == 1|| Match(buffer, "TRNY") == 1|| Match(buffer, "TRNZ") == 1){
@@ -531,8 +531,8 @@ void MakeFEDSlice(feddata *fedi){
     int i;
     float fedo20, hvco20, fedco0;
 
-    NewMemory(( void ** )&times, fedi->nframes * sizeof(float));
-    NewMemory(( void ** )&vals, fedi->nframes * fedi->memframesize * sizeof(float));
+    NewMemory((void **)&times, fedi->nframes * sizeof(float));
+    NewMemory((void **)&vals, fedi->nframes * fedi->memframesize * sizeof(float));
     fedi->times = times;
     fedi->vals = vals;
     for(i = 0; i < fedi->memframesize; i++){

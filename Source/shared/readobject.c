@@ -153,7 +153,7 @@ void ParseSmvObjectString(object_collection *objectscoll, char *string,
   last_in_token = 0;
   len = strlen(string);
   for (i = 0; i <= len; i++){
-    switch (*c){
+    switch(*c){
     case '"':
       in_quote = 1 - in_quote;
       in_token = 1;
@@ -559,7 +559,7 @@ char *ParseObjectFrame(object_collection *objectscoll, const char *buffer_in,
     tokendata *toki;
 
     toki = frame->command_list[i];
-    switch (toki->command){
+    switch(toki->command){
       int j, if_level;
 
     case SV_IF:

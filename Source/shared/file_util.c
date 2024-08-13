@@ -575,7 +575,7 @@ int MakeFile(char *file, int size){
   stream = fopen(file, "w");
   if(stream == NULL)return 0;
 
-  NewMemory(( void ** )&buffer, BUFFERSIZE);
+  NewMemory((void **)&buffer, BUFFERSIZE);
   for(i = 0; i < BUFFERSIZE; i++){
     buffer[i] = i % 255;
   }

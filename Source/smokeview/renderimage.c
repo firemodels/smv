@@ -436,7 +436,7 @@ void OutputSliceData(void){
     fileout = fopen(datafile, "a");
     if(fileout == NULL)continue;
     if(global_times != NULL)fprintf(fileout, "%f\n", global_times[itimes]);
-    switch (sd->idir){
+    switch(sd->idir){
     case XDIR:
       fprintf(fileout, "%i,%i\n", sd->ks2 + 1 - sd->ks1, sd->js2 + 1 - sd->js1);
       for(row = sd->ks1; row <= sd->ks2; row++){
@@ -792,7 +792,7 @@ void DrawScreenInfo(void){
       xyz[j+3] = view[j] + right[j]/2.0 - up[j]/2.0;
       xyz[j+6] = view[j] + right[j]/2.0 + up[j]/2.0;
       xyz[j+9] = view[j] - right[j]/2.0 + up[j]/2.0
-        ;
+       ;
     }
     glColor3f(0.0, 0.0, 0.0);
     glVertex3fv(xyz);
@@ -1080,7 +1080,7 @@ int MergeRenderScreenBuffers360(void){
 
   /* output the image */
 
-  switch (render_filetype){
+  switch(render_filetype){
   case PNG:
     gdImagePng(RENDERimage, RENDERfile);
     break;
@@ -1193,7 +1193,7 @@ int SmokeviewImage2File(char *directory, char *RENDERfilename, int rendertype, i
 
   RENDERimage = gdImageCreateTrueColor(width2,height2);
 
-  for(i = height2-1 ; i>=0; i--){
+  for(i = height2-1; i>=0; i--){
     for(j=0;j<width2;j++){
       unsigned int r, g, b;
       int rgb_local;
@@ -1270,7 +1270,7 @@ int SVimage2var(int rendertype,
 
   *RENDERimage = gdImageCreateTrueColor(width2,height2);
 
-  for(i = height2-1 ; i>=0; i--){
+  for(i = height2-1; i>=0; i--){
     for(j=0;j<width2;j++){
       r=*p++; g=*p++; b=*p++;
       rgb_local = (r<<16)|(g<<8)|b;

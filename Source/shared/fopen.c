@@ -65,7 +65,7 @@ void RemoveOpenFile(FILE *stream){
   }
   nopeninfo--;
   if(nopeninfo > 0){
-    ResizeMemory(( void ** )&openinfo, nopeninfo * sizeof(opendata));
+    ResizeMemory((void **)&openinfo, nopeninfo * sizeof(opendata));
   }
   else{
     nopeninfo=0;

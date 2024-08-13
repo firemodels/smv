@@ -318,7 +318,7 @@ int FRAMEGetNFrames(char *file, int type){
     return 0;
   }
   if(frameinfo != NULL){
-    NewMemory(( void ** )&frameinfo->bufferinfo, sizeof(bufferdata));
+    NewMemory((void **)&frameinfo->bufferinfo, sizeof(bufferdata));
     frameinfo->bufferinfo->file = file;
     frameinfo->bufferinfo->buffer = NULL;
     frameinfo->bufferinfo->nbuffer = 0;
@@ -489,7 +489,7 @@ void GetBoundaryFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **fram
 
 
   nsubframes = npatch;
-  NewMemory(( void ** )&subframeoffsets, nsubframes*sizeof(int));
+  NewMemory((void **)&subframeoffsets, nsubframes*sizeof(int));
   NewMemory((void **)&subframesizes,     nsubframes*sizeof(int));
   subframeoffsets[0] = 0;
   datasize = 0;

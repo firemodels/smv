@@ -3177,7 +3177,7 @@ void UpdateFaceLists(void){
       if(nhidden>0){
         n_normals_single=0;
         for(iface=0;iface<meshi->nface_normals_single;iface++){
-          facedata *facei  ;
+          facedata *facei;
 
           facei=meshi->face_normals_single[iface];
           if(facei->dup==0)meshi->face_normals_single[n_normals_single++]=facei;

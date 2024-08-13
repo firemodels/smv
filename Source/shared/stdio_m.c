@@ -101,12 +101,12 @@ FILE_m *fopen_b(char *file, unsigned char *buffer, size_t nbuffer, char *mode){
   if(file == NULL || strlen(file) == 0 || mode == NULL || strlen(mode) < 2)return NULL;
   if(strcmp(mode, "rb") !=0)return NULL;
 
-  if(NewMemory(( void ** )&m_file, strlen(file) + 1) == 0){ // memory allocation failed so abort
+  if(NewMemory((void **)&m_file, strlen(file) + 1) == 0){ // memory allocation failed so abort
     return NULL;
   }
   strcpy(m_file, file);
 
-  if(NewMemory(( void ** )&stream_m, sizeof(FILE_m)) == 0){
+  if(NewMemory((void **)&stream_m, sizeof(FILE_m)) == 0){
     FREEMEMORY(m_file);
     return NULL;
   }

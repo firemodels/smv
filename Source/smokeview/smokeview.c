@@ -241,7 +241,7 @@ int IsFDSRunning(FILE_SIZE *last_size){
 /* ------------------ BuildGbndFile ------------------------ */
 
 int BuildGbndFile(int file_type){
-  switch (file_type){
+  switch(file_type){
     case BOUND_SLICE:
       if(FileExistsOrig(slice_gbnd_filename)==0)return 1;
       if(IsFileNewer(stepcsv_filename, slice_gbnd_filename)==1)return 1;

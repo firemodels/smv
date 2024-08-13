@@ -91,7 +91,7 @@ GLUI_Button *BUTTON_plot_position = NULL;
 GLUI_Button *BUTTON_add_plot = NULL;
 GLUI_Button *BUTTON_rem_plot = NULL;
 GLUI_Button *BUTTON_rem_all_plots = NULL;
-GLUI_Button *BUTTON_open_down=NULL ;
+GLUI_Button *BUTTON_open_down=NULL;
 GLUI_Button *BUTTON_device_2=NULL;
 GLUI_Button *BUTTON_plot2d_2=NULL;
 GLUI_Button *BUTTON_update_windrose = NULL;
@@ -1068,7 +1068,7 @@ void SetPlot2DShowLabel(void){
 
 void GenPlotCB(int var){
   GLUTPOSTREDISPLAY;
-  switch (var){
+  switch(var){
     char label[256];
     int index;
     curvedata *curve;
@@ -1627,7 +1627,7 @@ extern "C" void GLUIDeviceCB(int var){
       int vis_device_plot_temp;
 
       vis_device_plot_temp = vis_device_plot;
-      switch (vis_device_plot_temp){
+      switch(vis_device_plot_temp){
         case DEVICE_PLOT_HIDDEN:
           vis_device_plot = DEVICE_PLOT_SHOW_ALL;
           ShowObjectsMenu(OBJECT_PLOT_SHOW_ALL);

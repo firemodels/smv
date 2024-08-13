@@ -273,9 +273,9 @@ int ConvertBoundaryGEOM(patchdata *patchi, int *thread_index){
         FREEMEMORY(vals);
         FREEMEMORY(cvals);
         FREEMEMORY(compressed_vals);
-        NewMemory(( void ** )&vals, MAXVALS * sizeof(float));
-        NewMemory(( void ** )&cvals, MAXVALS);
-        NewMemory(( void ** )&compressed_vals, MAXCOMPRESSEDVALS);
+        NewMemory((void **)&vals, MAXVALS * sizeof(float));
+        NewMemory((void **)&cvals, MAXVALS);
+        NewMemory((void **)&compressed_vals, MAXCOMPRESSEDVALS);
       }
       ncompressed_vals = 0;
       if(ntotal > 0){
@@ -575,7 +575,7 @@ int ConvertBoundaryBNDF(patchdata *patchi, int *thread_index){
 #endif
     time_max=-1000000.0;
     while(feof(BOUNDARYFILE)==0){
-      int j ;
+      int j;
 
       FORTREAD(&time_local,1);
       sizebefore+=12;
