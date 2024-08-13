@@ -42,10 +42,10 @@ int CheckSMVFileLua(char *file, char *subdir) {
   char casedir[256], *casedirptr, casename[256];
   FILE *stream;
 
-  if (file == NULL) return 1;
+  if(file == NULL) return 1;
 
   strcpy(casename, file);
-  if (subdir == NULL) {
+  if(subdir == NULL) {
     casedirptr = casedir;
     strcpy(casedir, casename);
   }
@@ -53,9 +53,9 @@ int CheckSMVFileLua(char *file, char *subdir) {
     casedirptr = subdir;
   }
   stream = fopen(casename, "r");
-  if (stream == NULL) {
+  if(stream == NULL) {
     stream = fopen_indir(casedirptr, casename, "r");
-    if (stream == NULL) {
+    if(stream == NULL) {
       printf("***error: unable to open %s\n", casename);
       return 0;
     }
@@ -72,11 +72,11 @@ int ProgramSetupLua(lua_State *L, int argc, char **argv) {
   smv_filename = ParseCommandline(argc, argv);
   printf("smv_filename: %s\n", smv_filename);
 
-  if (show_version == 1 || smv_filename == NULL) {
+  if(show_version == 1 || smv_filename == NULL) {
     DisplayVersionInfo("Smokeview ");
     SMV_EXIT(0);
   }
-  if (CheckSMVFileLua(smv_filename, smokeview_casedir) == 0) {
+  if(CheckSMVFileLua(smv_filename, smokeview_casedir) == 0) {
     SMV_EXIT(1);
   }
   InitTextureDir();
@@ -105,7 +105,7 @@ char **CopyArgv(const int argc, const char *const *argv_sv) {
   NewMemory((void **)&argv_sv_non_const, argc * sizeof(char *));
   // Allocate space for each smokeview argument
   int i;
-  for (i = 0; i < argc; i++) {
+  for(i = 0; i < argc; i++) {
     int length = strlen(argv_sv[i]);
     NewMemory((void **)&argv_sv_non_const[i], (length + 1) * sizeof(char));
     strcpy(argv_sv_non_const[i], argv_sv[i]);
@@ -117,7 +117,7 @@ char **CopyArgv(const int argc, const char *const *argv_sv) {
 void FreeArgv(const int argc, char **argv_sv_non_const) {
   // Free the memory allocated for each argument
   int i;
-  for (i = 0; i < argc; i++) {
+  for(i = 0; i < argc; i++) {
     FREEMEMORY(argv_sv_non_const[i]);
   }
   // Free the memory allocated for the array
@@ -141,8 +141,7 @@ int LuaSetupCase(lua_State *L) {
   char *filename_mut;
   // Allocate some new memory in case smv tries to modify it.
   int f_len = strlen(filename);
-  if (NewMemory((void **)&filename_mut, sizeof(char) * f_len + 1) == 0)
-    return 2;
+  if(NewMemory((void **)&filename_mut, sizeof(char) * f_len + 1) == 0) return 2;
   strncpy(filename_mut, filename, f_len);
   filename_mut[f_len] = '\0';
   int return_code = SetupCase(filename_mut);
@@ -174,7 +173,7 @@ int RunLuaBranch(lua_State *L, int argc, char **argv) {
   // Load information about smokeview into the lua interpreter.
   LuaInitsmvproginfo(L);
 
-  if (smv_filename == NULL) {
+  if(smv_filename == NULL) {
     return 0;
   }
   lua_pushstring(L, smv_filename);
@@ -183,23 +182,23 @@ int RunLuaBranch(lua_State *L, int argc, char **argv) {
   LuaSetupCase(L);
   return_code = lua_tonumber(L, -1);
 #ifdef pp_HIST
-  if (return_code == 0 && update_bounds == 1) {
+  if(return_code == 0 && update_bounds == 1) {
     INIT_PRINT_TIMER(timer_update_bounds);
     return_code = Update_Bounds();
     PRINT_TIMER(timer_update_bounds, "Update_Bounds");
   }
 #endif
-  if (return_code != 0) return 1;
-  if (convert_ini == 1) {
+  if(return_code != 0) return 1;
+  if(convert_ini == 1) {
     INIT_PRINT_TIMER(timer_read_ini);
     ReadIni(ini_from);
     PRINT_TIMER(timer_read_ini, "ReadIni");
   }
-  if (runhtmlscript == 1) {
+  if(runhtmlscript == 1) {
     DoScriptHtml();
   }
   STOP_TIMER(startup_time);
-  if (runhtmlscript == 1) {
+  if(runhtmlscript == 1) {
     return 0;
   }
 
@@ -215,17 +214,17 @@ int RunLuaBranch(lua_State *L, int argc, char **argv) {
 /// included to load the scripts early in the piece, before the display
 /// callback. Both runluascript and runscript are global.
 int LoadScript(const char *filename) {
-  if (runluascript == 1 && runscript == 1) {
+  if(runluascript == 1 && runscript == 1) {
     fprintf(stderr, "Both a Lua script and an SSF script cannot be run "
                     "simultaneously\n");
     exit(1);
   }
-  if (runluascript == 1) {
+  if(runluascript == 1) {
     // Load the Lua script in order for it to be run later.
-    if (LoadLuaScript(filename) != LUA_OK) {
+    if(LoadLuaScript(filename) != LUA_OK) {
       fprintf(stderr, "There was an error loading the script, and so it "
                       "will not run.\n");
-      if (exit_on_script_crash) {
+      if(exit_on_script_crash) {
         exit(1); // exit with an error code
       }
       runluascript = 0; // set this to false so that the smokeview no longer
@@ -237,13 +236,13 @@ int LoadScript(const char *filename) {
     }
   }
 #ifdef pp_LUA_SSF
-  if (runscript == 1) {
+  if(runscript == 1) {
     // Load the ssf script in order for it to be run later
     // This still uses the Lua interpreter
-    if (loadSSFScript(filename) != LUA_OK) {
+    if(loadSSFScript(filename) != LUA_OK) {
       fprintf(stderr, "There was an error loading the script, and so it "
                       "will not run.\n");
-      if (exit_on_script_crash) {
+      if(exit_on_script_crash) {
         exit(1); // exit with an error code
       }
       runluascript = 0; // set this to false so that the smokeview no longer
@@ -405,7 +404,7 @@ int LuaSetframe(lua_State *L) {
 
 /// @brief Get the time value of the currently loaded frame.
 int LuaGettime(lua_State *L) {
-  if (global_times != NULL && nglobal_times > 0) {
+  if(global_times != NULL && nglobal_times > 0) {
     float time = Gettime();
     lua_pushnumber(L, time);
     return 1;
@@ -473,7 +472,7 @@ int LuaLoadsliceindex(lua_State *L) {
   size_t index = lua_tonumber(L, 1);
   int error = 0;
   Loadsliceindex(index, &error);
-  if (error) {
+  if(error) {
     return luaL_error(L, "Could not load slice at index %zu", index);
   }
   return 0;
@@ -575,7 +574,7 @@ int LuaSetSceneclipZMax(lua_State *L) {
 int LuaGetGlobalTimes(lua_State *L) {
   lua_createtable(L, 0, nglobal_times);
   int i;
-  for (i = 0; i < nglobal_times; i++) {
+  for(i = 0; i < nglobal_times; i++) {
     lua_pushnumber(L, i);
     lua_pushnumber(L, global_times[i]);
     lua_settable(L, -3);
@@ -588,7 +587,7 @@ int LuaGetGlobalTimes(lua_State *L) {
 /// @return Number of stack items left on stack.
 int LuaGetGlobalTime(lua_State *L) {
   int frame_number = lua_tonumber(L, 1);
-  if (frame_number >= 0 && frame_number < nglobal_times) {
+  if(frame_number >= 0 && frame_number < nglobal_times) {
     lua_pushnumber(L, global_times[frame_number]);
   }
   else {
@@ -628,7 +627,7 @@ int LuaGetiblankcell(lua_State *L) {
   meshdata *mesh = &meshinfo[mesh_index];
   char iblank =
       mesh->c_iblank_cell[(i) + (j)*mesh->ibar + (k)*mesh->ibar * mesh->jbar];
-  if (iblank == GAS) {
+  if(iblank == GAS) {
     lua_pushboolean(L, 1);
   }
   else {
@@ -648,7 +647,7 @@ int LuaGetiblanknode(lua_State *L) {
   meshdata *mesh = &meshinfo[mesh_index];
   char iblank = mesh->c_iblank_node[(i) + (j) * (mesh->ibar + 1) +
                                     (k) * (mesh->ibar + 1) * (mesh->jbar + 1)];
-  if (iblank == GAS) {
+  if(iblank == GAS) {
     lua_pushboolean(L, 1);
   }
   else {
@@ -665,7 +664,7 @@ int LuaGetMeshes(lua_State *L) {
   meshdata *infotable = meshinfo;
   lua_createtable(L, 0, entries);
   int i;
-  for (i = 0; i < entries; i++) {
+  for(i = 0; i < entries; i++) {
     lua_pushnumber(L, i);
     lua_createtable(L, 0, 5);
 
@@ -707,7 +706,7 @@ int LuaGetMeshes(lua_State *L) {
     // loop for less than ibar
     int j;
     lua_createtable(L, 0, infotable[i].ibar);
-    for (j = 0; j < infotable[i].ibar; j++) {
+    for(j = 0; j < infotable[i].ibar; j++) {
       lua_pushnumber(L, j);
       lua_pushnumber(L, infotable[i].xplt[j]);
       lua_settable(L, -3);
@@ -715,7 +714,7 @@ int LuaGetMeshes(lua_State *L) {
     lua_setfield(L, -2, "xplt");
 
     lua_createtable(L, 0, infotable[i].jbar);
-    for (j = 0; j < infotable[i].jbar; j++) {
+    for(j = 0; j < infotable[i].jbar; j++) {
       lua_pushnumber(L, j);
       lua_pushnumber(L, infotable[i].yplt[j]);
       lua_settable(L, -3);
@@ -723,7 +722,7 @@ int LuaGetMeshes(lua_State *L) {
     lua_setfield(L, -2, "yplt");
 
     lua_createtable(L, 0, infotable[i].kbar);
-    for (j = 0; j < infotable[i].kbar; j++) {
+    for(j = 0; j < infotable[i].kbar; j++) {
       lua_pushnumber(L, j);
       lua_pushnumber(L, infotable[i].zplt[j]);
       lua_settable(L, -3);
@@ -731,7 +730,7 @@ int LuaGetMeshes(lua_State *L) {
     lua_setfield(L, -2, "zplt");
 
     lua_createtable(L, 0, infotable[i].ibar);
-    for (j = 0; j < infotable[i].ibar; j++) {
+    for(j = 0; j < infotable[i].ibar; j++) {
       lua_pushnumber(L, j);
       lua_pushnumber(L, infotable[i].xplt_orig[j]);
       lua_settable(L, -3);
@@ -739,7 +738,7 @@ int LuaGetMeshes(lua_State *L) {
     lua_setfield(L, -2, "xplt_orig");
 
     lua_createtable(L, 0, infotable[i].jbar);
-    for (j = 0; j < infotable[i].jbar; j++) {
+    for(j = 0; j < infotable[i].jbar; j++) {
       lua_pushnumber(L, j);
       lua_pushnumber(L, infotable[i].yplt_orig[j]);
       lua_settable(L, -3);
@@ -747,7 +746,7 @@ int LuaGetMeshes(lua_State *L) {
     lua_setfield(L, -2, "yplt_orig");
 
     lua_createtable(L, 0, infotable[i].kbar);
-    for (j = 0; j < infotable[i].kbar; j++) {
+    for(j = 0; j < infotable[i].kbar; j++) {
       lua_pushnumber(L, j);
       lua_pushnumber(L, infotable[i].zplt_orig[j]);
       lua_settable(L, -3);
@@ -772,7 +771,7 @@ int LuaGetDevices(lua_State *L) {
   devicedata *infotable = deviceinfo;
   lua_createtable(L, 0, entries);
   int i;
-  for (i = 0; i < entries; i++) {
+  for(i = 0; i < entries; i++) {
     lua_pushstring(L, infotable[i].deviceID);
     lua_createtable(L, 0, 2);
 
@@ -798,7 +797,7 @@ int LuaCreateVector(lua_State *L, csvdata *csv_x, csvdata *csv_y) {
   lua_pushstring(L, csv_x->label.unit);
   lua_setfield(L, -2, "units");
   lua_createtable(L, 0, csv_x->nvals);
-  for (i = 0; i < csv_x->nvals; ++i) {
+  for(i = 0; i < csv_x->nvals; ++i) {
     lua_pushnumber(L, i + 1);
     lua_pushnumber(L, csv_x->vals[i]);
     lua_settable(L, -3);
@@ -812,7 +811,7 @@ int LuaCreateVector(lua_State *L, csvdata *csv_x, csvdata *csv_y) {
   lua_pushstring(L, csv_y->label.unit);
   lua_setfield(L, -2, "units");
   lua_createtable(L, 0, csv_y->nvals);
-  for (i = 0; i < csv_y->nvals; ++i) {
+  for(i = 0; i < csv_y->nvals; ++i) {
     lua_pushnumber(L, i + 1);
     lua_pushnumber(L, csv_y->vals[i]);
     lua_settable(L, -3);
@@ -831,8 +830,8 @@ int LuaGetNcsvinfo(lua_State *L) {
 csvfiledata *GetCsvinfo(const char *key) {
   // Loop through csvinfo until we find the right entry
   size_t i;
-  for (i = 0; i < ncsvfileinfo; ++i) {
-    if (strcmp(csvfileinfo[i].c_type, key) == 0) {
+  for(i = 0; i < ncsvfileinfo; ++i) {
+    if(strcmp(csvfileinfo[i].c_type, key) == 0) {
       return &csvfileinfo[i];
     }
   }
@@ -842,8 +841,8 @@ csvfiledata *GetCsvinfo(const char *key) {
 int GetCsvindex(const char *key) {
   // Loop through csvinfo until we find the right entry
   size_t i;
-  for (i = 0; i < ncsvfileinfo; ++i) {
-    if (strcmp(csvfileinfo[i].c_type, key) == 0) {
+  for(i = 0; i < ncsvfileinfo; ++i) {
+    if(strcmp(csvfileinfo[i].c_type, key) == 0) {
       return i;
     }
   }
@@ -860,7 +859,7 @@ int LuaLoadCsv(lua_State *L) {
   lua_gettable(L, 1);
   const char *key = lua_tostring(L, -1);
   csvfiledata *csventry = GetCsvinfo(key);
-  if (csventry == NULL) return 0;
+  if(csventry == NULL) return 0;
   LoadCsv(csventry);
   return 0;
 }
@@ -871,23 +870,23 @@ int AccessCsventryProp(lua_State *L) {
   lua_gettable(L, 1);
   int index = lua_tonumber(L, -1);
   const char *field = lua_tostring(L, 2);
-  if (strcmp(field, "loaded") == 0) {
+  if(strcmp(field, "loaded") == 0) {
     lua_pushboolean(L, csvfileinfo[index].loaded);
     return 1;
   }
-  else if (strcmp(field, "display") == 0) {
+  else if(strcmp(field, "display") == 0) {
     lua_pushboolean(L, csvfileinfo[index].display);
     return 1;
   }
-  else if (strcmp(field, "vectors") == 0) {
+  else if(strcmp(field, "vectors") == 0) {
     csvfiledata *csventry = &csvfileinfo[index];
-    if (!csventry->loaded) {
+    if(!csventry->loaded) {
       LoadCsv(csventry);
     }
     // TODO: don't create every time
     lua_createtable(L, 0, csventry->ncsvinfo);
     size_t j;
-    for (j = 0; j < csventry->ncsvinfo; j++) {
+    for(j = 0; j < csventry->ncsvinfo; j++) {
       // Load vector data into lua.
       // TODO: change to access indirectly rater than copying via stack
       // printf("adding: %s\n", csventry->vectors[j].y->name);
@@ -917,7 +916,7 @@ int LuaGetCsvdata(lua_State *L) {
   // char *file = lua_tostring(L, 1);
   csvfiledata *csventry = GetCsvinfo(key);
   // Check if the chosen csv data is loaded
-  if (!csventry->loaded) {
+  if(!csventry->loaded) {
     // Load the data.
     LoadCsv(csventry);
   }
@@ -932,7 +931,7 @@ int AccessPl3dentryProp(lua_State *L) {
   lua_gettable(L, 1);
   int index = lua_tonumber(L, -1);
   const char *field = lua_tostring(L, 2);
-  if (strcmp(field, "loaded") == 0) {
+  if(strcmp(field, "loaded") == 0) {
     lua_pushboolean(L, plot3dinfo[index].loaded);
     return 1;
   }
@@ -1004,7 +1003,7 @@ int LuaGetPlot3dentry(lua_State *L) {
   lua_setfield(L, -2, "display");
 
   lua_createtable(L, 0, 6);
-  for (i = 0; i < 6; ++i) {
+  for(i = 0; i < 6; ++i) {
     lua_pushnumber(L, i + 1);
 
     lua_createtable(L, 0, 3);
@@ -1034,7 +1033,7 @@ int LuaGetPlot3dentry(lua_State *L) {
 int LuaGetPlot3dinfo(lua_State *L) {
   lua_createtable(L, 0, nplot3dinfo);
   int i;
-  for (i = 0; i < nplot3dinfo; i++) {
+  for(i = 0; i < nplot3dinfo; i++) {
     lua_pushnumber(L, i + 1);
     LuaGetPlot3dentry(L);
 
@@ -1055,11 +1054,11 @@ int LuaGetQdataSum(lua_State *L) {
   totals[2] = 0.0;
   totals[3] = 0.0;
   totals[4] = 0.0;
-  for (vari = 0; vari < 5; ++vari) {
+  for(vari = 0; vari < 5; ++vari) {
     int offset = vari * ntotal;
-    for (k = 0; k <= mesh.kbar; ++k) {
-      for (j = 0; j <= mesh.jbar; ++j) {
-        for (i = 0; i <= mesh.ibar; ++i) {
+    for(k = 0; k <= mesh.kbar; ++k) {
+      for(j = 0; j <= mesh.jbar; ++j) {
+        for(i = 0; i <= mesh.ibar; ++i) {
           int n = offset + k * (mesh.jbar + 1) * (mesh.ibar + 1) +
                   j * (mesh.ibar + 1) + i;
           totals[vari] += mesh.qdata[n];
@@ -1067,7 +1066,7 @@ int LuaGetQdataSum(lua_State *L) {
       }
     }
   }
-  for (vari = 0; vari < vars; ++vari) {
+  for(vari = 0; vari < vars; ++vari) {
     lua_pushnumber(L, totals[vari]);
   }
   lua_pushnumber(L, ntotal);
@@ -1095,11 +1094,11 @@ int LuaGetQdataSumBounded(lua_State *L) {
   totals[2] = 0.0;
   totals[3] = 0.0;
   totals[4] = 0.0;
-  for (vari = 0; vari < 5; ++vari) {
+  for(vari = 0; vari < 5; ++vari) {
     int offset = vari * ntotal;
-    for (k = k1; k <= k2; ++k) {
-      for (j = j1; j <= j2; ++j) {
-        for (i = i1; i <= i2; ++i) {
+    for(k = k1; k <= k2; ++k) {
+      for(j = j1; j <= j2; ++j) {
+        for(i = i1; i <= i2; ++i) {
           int n = offset + k * (mesh.jbar + 1) * (mesh.ibar + 1) +
                   j * (mesh.ibar + 1) + i;
           totals[vari] += mesh.qdata[n];
@@ -1108,7 +1107,7 @@ int LuaGetQdataSumBounded(lua_State *L) {
     }
   }
 
-  for (vari = 0; vari < vars; ++vari) {
+  for(vari = 0; vari < vars; ++vari) {
     lua_pushnumber(L, totals[vari]);
   }
   lua_pushnumber(L, bounded_total);
@@ -1136,14 +1135,14 @@ int LuaGetQdataMaxBounded(lua_State *L) {
   maxs[2] = -1 * FLT_MAX;
   maxs[3] = -1 * FLT_MAX;
   maxs[4] = -1 * FLT_MAX;
-  for (vari = 0; vari < 5; ++vari) {
+  for(vari = 0; vari < 5; ++vari) {
     int offset = vari * ntotal;
-    for (k = k1; k <= k2; ++k) {
-      for (j = j1; j <= j2; ++j) {
-        for (i = i1; i <= i2; ++i) {
+    for(k = k1; k <= k2; ++k) {
+      for(j = j1; j <= j2; ++j) {
+        for(i = i1; i <= i2; ++i) {
           int n = offset + k * (mesh.jbar + 1) * (mesh.ibar + 1) +
                   j * (mesh.ibar + 1) + i;
-          if (maxs[vari] < mesh.qdata[n]) {
+          if(maxs[vari] < mesh.qdata[n]) {
             maxs[vari] = mesh.qdata[n];
           }
         }
@@ -1151,7 +1150,7 @@ int LuaGetQdataMaxBounded(lua_State *L) {
     }
   }
 
-  for (vari = 0; vari < vars; ++vari) {
+  for(vari = 0; vari < vars; ++vari) {
     lua_pushnumber(L, maxs[vari]);
   }
   lua_pushnumber(L, bounded_total);
@@ -1170,11 +1169,11 @@ int LuaGetQdataMean(lua_State *L) {
   totals[2] = 0.0;
   totals[3] = 0.0;
   totals[4] = 0.0;
-  for (vari = 0; vari < 5; ++vari) {
+  for(vari = 0; vari < 5; ++vari) {
     int offset = vari * ntotal;
-    for (k = 0; k <= mesh.kbar; ++k) {
-      for (j = 0; j <= mesh.jbar; ++j) {
-        for (i = 0; i <= mesh.ibar; ++i) {
+    for(k = 0; k <= mesh.kbar; ++k) {
+      for(j = 0; j <= mesh.jbar; ++j) {
+        for(i = 0; i <= mesh.ibar; ++i) {
           int n = offset + k * (mesh.jbar + 1) * (mesh.ibar + 1) +
                   j * (mesh.ibar + 1) + i;
           totals[vari] += mesh.qdata[n];
@@ -1182,7 +1181,7 @@ int LuaGetQdataMean(lua_State *L) {
       }
     }
   }
-  for (vari = 0; vari < vars; ++vari) {
+  for(vari = 0; vari < vars; ++vari) {
     lua_pushnumber(L, totals[vari] / ntotal);
   }
   return vars;
@@ -1191,7 +1190,7 @@ int LuaGetQdataMean(lua_State *L) {
 int LuaGetGlobalTimeN(lua_State *L) {
   // argument 1 is the table, argument 2 is the index
   int index = lua_tonumber(L, 2);
-  if (index < 0 || index >= nglobal_times) {
+  if(index < 0 || index >= nglobal_times) {
     return luaL_error(L, "%d is not a valid global time index\n", index);
   }
   lua_pushnumber(L, global_times[index]);
@@ -1229,7 +1228,7 @@ int LuaCaseTitle(lua_State *L) {
 
 int LuaCaseIndex(lua_State *L) {
   const char *field = lua_tostring(L, 2);
-  if (strcmp(field, "chid") == 0) {
+  if(strcmp(field, "chid") == 0) {
     lua_pushstring(L, chidfilebase);
     return 1;
   }
@@ -1240,7 +1239,7 @@ int LuaCaseIndex(lua_State *L) {
 
 int LuaCaseNewindex(lua_State *L) {
   const char *field = lua_tostring(L, 2);
-  if (strcmp(field, "chid") == 0) {
+  if(strcmp(field, "chid") == 0) {
     luaL_error(L, "case.chid is read-only");
     // lua_pushstring(L, value);
     // lua_setrenderdir(L);
@@ -1449,7 +1448,7 @@ int LuaSliceGetTimes(lua_State *L) {
   // Push a lightuserdata (a pointer) onto the lua stack that points to the
   // qslicedata.
   lua_createtable(L, slice->ntimes, 0);
-  for (i = 0; i < slice->ntimes; i++) {
+  for(i = 0; i < slice->ntimes; i++) {
     lua_pushnumber(L, i + 1);
     lua_pushnumber(L, slice->times[i]);
     lua_settable(L, -3);
@@ -1476,7 +1475,7 @@ int LuaGetPart(lua_State *L) {
 int LuaGetPartNpoints(lua_State *L) {
   int index;
   partdata *parti = (partdata *)lua_touserdata(L, 1);
-  if (!parti->loaded) {
+  if(!parti->loaded) {
     return luaL_error(L, "particle file %s not loaded", parti->file);
   }
 
@@ -1503,7 +1502,7 @@ int LuaGetPartNpoints(lua_State *L) {
   lua_createtable(L, parti->ntimes, 0);
 
   // Create a table with an entry for each time
-  for (index = 0; index < parti->ntimes; index++) {
+  for(index = 0; index < parti->ntimes; index++) {
     part5data *part5 = parti->data5 + index * parti->nclasses;
     // sum += part5->npoints_file;
 
@@ -1531,7 +1530,7 @@ int LuaGetPartNpoints(lua_State *L) {
   lua_createtable(L, parti->ntimes, 0);
 
   // Create a table with an entry for each time
-  for (index = 0; index < parti->ntimes; index++) {
+  for(index = 0; index < parti->ntimes; index++) {
     part5data *part5 = parti->data5 + index * parti->nclasses;
     // sum += part5->npoints_file;
 
@@ -1553,7 +1552,7 @@ int LuaSliceDataMapFrames(lua_State *L) {
   // The first argument to this function is the slice pointer. This function
   // receives the values of the slice at a particular frame as an array.
   slicedata *slice = (slicedata *)lua_touserdata(L, 1);
-  if (!slice->loaded) {
+  if(!slice->loaded) {
     return luaL_error(L, "slice %s not loaded", slice->file);
   }
   int framepoints = slice->nslicex * slice->nslicey;
@@ -1563,7 +1562,7 @@ int LuaSliceDataMapFrames(lua_State *L) {
   lua_createtable(L, slice->ntimes, 0);
   // framenumber is the index of the frame (0-based).
   int framenumber;
-  for (framenumber = 0; framenumber < slice->ntimes; framenumber++) {
+  for(framenumber = 0; framenumber < slice->ntimes; framenumber++) {
     // duplicate the function so that we can use it and keep it
     lua_pushvalue(L, 2);
     // Push the first frame onto the stack by first putting them into a lua
@@ -1577,7 +1576,7 @@ int LuaSliceDataMapFrames(lua_State *L) {
     lua_createtable(L, framepoints, 0);
     // pointnumber is the index of the data point in the frame (0-based).
     int pointnumber;
-    for (pointnumber = 0; pointnumber < framepoints; pointnumber++) {
+    for(pointnumber = 0; pointnumber < framepoints; pointnumber++) {
       // adjust the index to start from 1
       lua_pushnumber(L, pointnumber + 1);
       lua_pushnumber(L, qslicedata[framenumber * framepoints + pointnumber]);
@@ -1598,7 +1597,7 @@ int LuaSliceDataMapFrames(lua_State *L) {
 
 int LuaSliceDataMapFramesCountLess(lua_State *L) {
   slicedata *slice = (slicedata *)lua_touserdata(L, 1);
-  if (!slice->loaded) {
+  if(!slice->loaded) {
     return luaL_error(L, "slice %s not loaded", slice->file);
   }
   float threshold = lua_tonumber(L, 2);
@@ -1607,11 +1606,11 @@ int LuaSliceDataMapFramesCountLess(lua_State *L) {
   float *qslicedata = slice->qslicedata;
   lua_createtable(L, slice->ntimes, 0);
   int framenumber;
-  for (framenumber = 0; framenumber < slice->ntimes; framenumber++) {
+  for(framenumber = 0; framenumber < slice->ntimes; framenumber++) {
     int count = 0;
     int pointnumber;
-    for (pointnumber = 0; pointnumber < framepoints; pointnumber++) {
-      if (*qslicedata < threshold) {
+    for(pointnumber = 0; pointnumber < framepoints; pointnumber++) {
+      if(*qslicedata < threshold) {
         count++;
       }
       qslicedata++;
@@ -1626,7 +1625,7 @@ int LuaSliceDataMapFramesCountLess(lua_State *L) {
 
 int LuaSliceDataMapFramesCountLessEq(lua_State *L) {
   slicedata *slice = (slicedata *)lua_touserdata(L, 1);
-  if (!slice->loaded) {
+  if(!slice->loaded) {
     return luaL_error(L, "slice %s not loaded", slice->file);
   }
   float threshold = lua_tonumber(L, 2);
@@ -1635,11 +1634,11 @@ int LuaSliceDataMapFramesCountLessEq(lua_State *L) {
   float *qslicedata = slice->qslicedata;
   lua_createtable(L, slice->ntimes, 0);
   int framenumber;
-  for (framenumber = 0; framenumber < slice->ntimes; framenumber++) {
+  for(framenumber = 0; framenumber < slice->ntimes; framenumber++) {
     int count = 0;
     int pointnumber;
-    for (pointnumber = 0; pointnumber < framepoints; pointnumber++) {
-      if (*qslicedata <= threshold) {
+    for(pointnumber = 0; pointnumber < framepoints; pointnumber++) {
+      if(*qslicedata <= threshold) {
         count++;
       }
       qslicedata++;
@@ -1654,7 +1653,7 @@ int LuaSliceDataMapFramesCountLessEq(lua_State *L) {
 
 int LuaSliceDataMapFramesCountGreater(lua_State *L) {
   slicedata *slice = (slicedata *)lua_touserdata(L, 1);
-  if (!slice->loaded) {
+  if(!slice->loaded) {
     return luaL_error(L, "slice %s not loaded", slice->file);
   }
   float threshold = lua_tonumber(L, 2);
@@ -1663,11 +1662,11 @@ int LuaSliceDataMapFramesCountGreater(lua_State *L) {
   float *qslicedata = slice->qslicedata;
   lua_createtable(L, slice->ntimes, 0);
   int framenumber;
-  for (framenumber = 0; framenumber < slice->ntimes; framenumber++) {
+  for(framenumber = 0; framenumber < slice->ntimes; framenumber++) {
     int count = 0;
     int pointnumber;
-    for (pointnumber = 0; pointnumber < framepoints; pointnumber++) {
-      if (*qslicedata > threshold) {
+    for(pointnumber = 0; pointnumber < framepoints; pointnumber++) {
+      if(*qslicedata > threshold) {
         count++;
       }
       qslicedata++;
@@ -1682,7 +1681,7 @@ int LuaSliceDataMapFramesCountGreater(lua_State *L) {
 
 int LuaSliceDataMapFramesCountGreaterEq(lua_State *L) {
   slicedata *slice = (slicedata *)lua_touserdata(L, 1);
-  if (!slice->loaded) {
+  if(!slice->loaded) {
     return luaL_error(L, "slice %s not loaded", slice->file);
   }
   float threshold = lua_tonumber(L, 2);
@@ -1691,11 +1690,11 @@ int LuaSliceDataMapFramesCountGreaterEq(lua_State *L) {
   float *qslicedata = slice->qslicedata;
   lua_createtable(L, slice->ntimes, 0);
   int framenumber;
-  for (framenumber = 0; framenumber < slice->ntimes; framenumber++) {
+  for(framenumber = 0; framenumber < slice->ntimes; framenumber++) {
     int count = 0;
     int pointnumber;
-    for (pointnumber = 0; pointnumber < framepoints; pointnumber++) {
-      if (*qslicedata >= threshold) {
+    for(pointnumber = 0; pointnumber < framepoints; pointnumber++) {
+      if(*qslicedata >= threshold) {
         count++;
       }
       qslicedata++;
@@ -1741,7 +1740,7 @@ int LuaGetslicedata(lua_State *L) {
   int dj = sliceinfo[slice_index].nslicej;
   int dk = sliceinfo[slice_index].nslicek;
   // Check that the offsets do not exceed the bounds of a single data frame
-  if (i > imax || j > jmax || k > kmax) {
+  if(i > imax || j > jmax || k > kmax) {
     fprintf(stderr, "ERROR: offsets exceed bounds");
     exit(1);
   }
@@ -1764,11 +1763,11 @@ int LuaGetslicedata(lua_State *L) {
 int LuaGetSliceinfo(lua_State *L) {
   lua_createtable(L, 0, nsliceinfo);
   int i;
-  for (i = 0; i < nsliceinfo; i++) {
+  for(i = 0; i < nsliceinfo; i++) {
     lua_pushnumber(L, i + 1);
     lua_createtable(L, 0, 21);
 
-    if (sliceinfo[i].slicelabel != NULL) {
+    if(sliceinfo[i].slicelabel != NULL) {
       lua_pushstring(L, sliceinfo[i].slicelabel);
       lua_setfield(L, -2, "label");
     }
@@ -1776,12 +1775,12 @@ int LuaGetSliceinfo(lua_State *L) {
     lua_pushnumber(L, i);
     lua_setfield(L, -2, "n");
 
-    if (sliceinfo[i].label.longlabel != NULL) {
+    if(sliceinfo[i].label.longlabel != NULL) {
       lua_pushstring(L, sliceinfo[i].label.longlabel);
       lua_setfield(L, -2, "longlabel");
     }
 
-    if (sliceinfo[i].label.shortlabel != NULL) {
+    if(sliceinfo[i].label.shortlabel != NULL) {
       lua_pushstring(L, sliceinfo[i].label.shortlabel);
       lua_setfield(L, -2, "shortlabel");
     }
@@ -1883,7 +1882,7 @@ int LuaGetCsventry(lua_State *L) {
 int LuaGetCsvinfo(lua_State *L) {
   lua_createtable(L, 0, ncsvfileinfo);
   int i;
-  for (i = 0; i < ncsvfileinfo; i++) {
+  for(i = 0; i < ncsvfileinfo; i++) {
     lua_pushstring(L, csvfileinfo[i].c_type);
     LuaGetCsventry(L);
     lua_settable(L, -3);
@@ -1932,7 +1931,7 @@ int LuaLoadvolsmokeframe(lua_State *L) {
 ///   "PNG"
 int LuaSetRendertype(lua_State *L) {
   const char *type = lua_tostring(L, 1);
-  if (SetRendertype(type)) {
+  if(SetRendertype(type)) {
     return luaL_error(L, "%s is not a valid render type", type);
   }
   return 0;
@@ -1940,7 +1939,7 @@ int LuaSetRendertype(lua_State *L) {
 
 int LuaGetRendertype(lua_State *L) {
   int render_type = GetRendertype();
-  switch (render_type) {
+  switch(render_type) {
   case JPEG:
     lua_pushstring(L, "JPG");
     break;
@@ -1967,7 +1966,7 @@ int LuaSetMovietype(lua_State *L) {
 
 int LuaGetMovietype(lua_State *L) {
   int movie_type = GetMovietype();
-  switch (movie_type) {
+  switch(movie_type) {
   case WMV:
     lua_pushstring(L, "WMV");
     break;
@@ -2157,7 +2156,7 @@ int LuaSetColorbar(lua_State *L) {
 int LuaSetNamedColorbar(lua_State *L) {
   const char *name = lua_tostring(L, 1);
   int err = SetNamedColorbar(name);
-  if (err == 1) {
+  if(err == 1) {
     luaL_error(L, "%s is not a valid colorbar name", name);
   }
   return 0;
@@ -2751,7 +2750,7 @@ int LuaSetSliceBoundMin(lua_State *L) {
 int LuaGetSliceBounds(lua_State *L) {
   const char *slice_type = lua_tostring(L, 1);
   simple_bounds bounds;
-  if (GetSliceBounds(slice_type, &bounds)) {
+  if(GetSliceBounds(slice_type, &bounds)) {
     luaL_error(L, "Could not get slice bounds for %s", slice_type);
   }
   lua_pushnumber(L, bounds.min);
@@ -2842,13 +2841,13 @@ int LuaSetBoundcolor(lua_State *L) {
 // }
 
 float Getcolorfield(lua_State *L, int stack_index, const char *key) {
-  if (!lua_istable(L, stack_index)) {
+  if(!lua_istable(L, stack_index)) {
     fprintf(stderr,
             "stack is not a table at index, cannot use getcolorfield\n");
     exit(1);
   }
   // if stack index is relative (negative) convert to absolute (positive)
-  if (stack_index < 0) {
+  if(stack_index < 0) {
     stack_index = lua_gettop(L) + stack_index + 1;
   }
   lua_pushstring(L, key);
@@ -2859,7 +2858,7 @@ float Getcolorfield(lua_State *L, int stack_index, const char *key) {
 }
 
 int GetColor(lua_State *L, int stack_index, float *color) {
-  if (!lua_istable(L, stack_index)) {
+  if(!lua_istable(L, stack_index)) {
     fprintf(stderr, "color table is not present\n");
     return 1;
   }
@@ -2873,19 +2872,19 @@ int GetColor(lua_State *L, int stack_index, float *color) {
 }
 int LuaSetColorbarColors(lua_State *L) {
   printf("running: lua_set_colorbar_colors\n");
-  if (!lua_istable(L, 1)) {
+  if(!lua_istable(L, 1)) {
     fprintf(stderr, "colorbar table is not present\n");
     return 1;
   }
   int ncolors = 0;
   lua_pushnil(L);
-  while (lua_next(L, 1) != 0) {
+  while(lua_next(L, 1) != 0) {
     ncolors++;
     lua_pop(L, 1);
   }
-  if (ncolors > 0) {
+  if(ncolors > 0) {
     float *colors = malloc(sizeof(float) * ncolors * 3);
-    for (int i = 1; i <= ncolors; i++) {
+    for(int i = 1; i <= ncolors; i++) {
       lua_pushnumber(L, i);
       lua_gettable(L, 1);
       GetColor(L, -1, &colors[i - 1]);
@@ -2905,7 +2904,7 @@ int LuaGetColorbarColors(lua_State *L) {
   int i;
   float *rgb_ini_copy_p = rgb_ini;
   lua_createtable(L, 0, nrgb_ini);
-  for (i = 0; i < nrgb_ini; i++) {
+  for(i = 0; i < nrgb_ini; i++) {
     lua_pushnumber(L, i + 1);
     lua_createtable(L, 0, 2);
 
@@ -2927,13 +2926,13 @@ int LuaGetColorbarColors(lua_State *L) {
 
 int LuaSetColor2barColors(lua_State *L) {
   int ncolors = lua_tonumber(L, 1);
-  if (!lua_istable(L, -1)) {
+  if(!lua_istable(L, -1)) {
     fprintf(stderr, "colorbar table is not present\n");
     return 1;
   }
-  if (ncolors > 0) {
+  if(ncolors > 0) {
     float *colors = malloc(sizeof(float) * ncolors * 3);
-    for (size_t i = 1; i <= ncolors; i++) {
+    for(size_t i = 1; i <= ncolors; i++) {
       lua_pushnumber(L, i);
       lua_gettable(L, -2);
       GetColor(L, -1, &colors[i - 1]);
@@ -2953,7 +2952,7 @@ int LuaGetColor2barColors(lua_State *L) {
   int i;
   float *rgb_ini_copy_p = rgb2_ini;
   lua_createtable(L, 0, nrgb2_ini);
-  for (i = 0; i < nrgb2_ini; i++) {
+  for(i = 0; i < nrgb2_ini; i++) {
     lua_pushnumber(L, i + 1);
     lua_createtable(L, 0, 2);
 
@@ -3055,14 +3054,14 @@ int LuaSetIsocolors(lua_State *L) {
   int n_colors = 0;
   // count the number of colours
   lua_pushnil(L); /* first key */
-  while (lua_next(L, 6) != 0) {
+  while(lua_next(L, 6) != 0) {
     lua_pop(L, 1); // remove value (leave key for next iteration)
     n_colors++;
   }
   int i;
   float colors[MAX_ISO_COLORS][4];
-  for (i = 1; i <= n_colors; i++) {
-    if (!lua_istable(L, 6)) {
+  for(i = 1; i <= n_colors; i++) {
+    if(!lua_istable(L, 6)) {
       fprintf(stderr, "isocolor table is not present\n");
       return 1;
     }
@@ -3082,18 +3081,18 @@ int LuaSetColortable(lua_State *L) {
   int i = 0;
   // count the number of colours
   lua_pushnil(L); /* first key */
-  while (lua_next(L, 1) != 0) {
+  while(lua_next(L, 1) != 0) {
     lua_pop(L, 1); // remove value (leave key for next iteration)
     ncolors++;
   }
-  if (ncolors > 0) {
+  if(ncolors > 0) {
     // initialise arrays using the above count info
     float *colors = malloc(sizeof(float) * ncolors * 3);
     // char *names = malloc(sizeof(char)*ncolors*255);
     // char **names = malloc(sizeof(char*));
     /* table is in the stack at index 't' */
     lua_pushnil(L); /* first key */
-    while (lua_next(L, 1) != 0) {
+    while(lua_next(L, 1) != 0) {
       /* uses 'key' (at index -2) and 'value' (at index -1) */
       // strncpy(names[i], lua_tostring(L, -2), 255);
       GetColor(L, -1, &colors[i]);
@@ -3597,16 +3596,16 @@ int LuaSetMeshvis(lua_State *L) {
   int i = 0;
   // count the number of values
   lua_pushnil(L);
-  while (lua_next(L, 1) != 0) {
+  while(lua_next(L, 1) != 0) {
     lua_pop(L, 1); // remove value (leave key for next iteration)
     n++;
   }
-  if (n > 0) {
+  if(n > 0) {
     // initialise arrays using the above count info
     int *vals = malloc(sizeof(int) * n);
     /* table is in the stack at index 't' */
     lua_pushnil(L); /* first key */
-    while (lua_next(L, 1) != 0) {
+    while(lua_next(L, 1) != 0) {
       vals[i] = lua_tonumber(L, -2);
       /* removes 'value'; keeps 'key' for next iteration */
       lua_pop(L, 1);
@@ -3683,7 +3682,7 @@ int LuaSetScaledfont(lua_State *L) {
 }
 
 int LuaGetFontsize(lua_State *L) {
-  switch (fontindex) {
+  switch(fontindex) {
   case SMALL_FONT:
     lua_pushstring(L, "small");
     return 1;
@@ -4246,7 +4245,7 @@ int LuaGetUnitDefs(lua_State *L, f_units unitclass) {
   lua_createtable(L, 0, 4);
   // Loop through all of the units
   int j;
-  for (j = 0; j < unitclass.nunits; j++) {
+  for(j = 0; j < unitclass.nunits; j++) {
     lua_pushstring(L, unitclass.units[j].unit);
     lua_createtable(L, 0, 4);
 
@@ -4276,9 +4275,9 @@ int LuaGetUnitDefs(lua_State *L, f_units unitclass) {
 int LuaGetUnitclass(lua_State *L) {
   const char *classname = lua_tostring(L, 1);
   int i;
-  for (i = 0; i < nunitclasses_default; i++) {
+  for(i = 0; i < nunitclasses_default; i++) {
     // if the classname matches, put a table on the stack
-    if (strcmp(classname, unitclasses_default[i].unitclass) == 0) {
+    if(strcmp(classname, unitclasses_default[i].unitclass) == 0) {
       lua_createtable(L, 0, 4);
       // Loop through all of the units
       LuaGetUnitDefs(L, unitclasses_default[i]);
@@ -4291,9 +4290,9 @@ int LuaGetUnitclass(lua_State *L) {
 int LuaGetUnits(lua_State *L) {
   const char *classname = lua_tostring(L, 1);
   int i;
-  for (i = 0; i < nunitclasses_default; i++) {
+  for(i = 0; i < nunitclasses_default; i++) {
     // if the classname matches, put a table on the stack
-    if (strcmp(classname, unitclasses_default[i].unitclass) == 0) {
+    if(strcmp(classname, unitclasses_default[i].unitclass) == 0) {
       // lua_createtable(L, 0, 4);
       // // Loop through all of the units
       // lua_get_units(L, unitclasses_default[i]);
@@ -4314,24 +4313,24 @@ int LuaSetUnits(lua_State *L) {
   bool unit_class_found = false;
   size_t unit_index;
   bool unit_index_found = false;
-  for (size_t i = 0; i < nunitclasses_default; i++) {
-    if (strcmp(unitclasses[i].unitclass, unitclassname) == 0) {
+  for(size_t i = 0; i < nunitclasses_default; i++) {
+    if(strcmp(unitclasses[i].unitclass, unitclassname) == 0) {
       unitclass_index = i;
       unit_class_found = true;
       break;
     }
   }
-  if (!unit_class_found) {
+  if(!unit_class_found) {
     return luaL_error(L, "unit class index not found");
   }
-  for (size_t i = 0; i < unitclasses[unitclass_index].nunits; i++) {
-    if (strcmp(unitclasses[unitclass_index].units[i].unit, unitname) == 0) {
+  for(size_t i = 0; i < unitclasses[unitclass_index].nunits; i++) {
+    if(strcmp(unitclasses[unitclass_index].units[i].unit, unitname) == 0) {
       unit_index = i;
       unit_index_found = true;
       break;
     }
   }
-  if (!unit_index_found) {
+  if(!unit_index_found) {
     return luaL_error(L, "unit index not found");
   }
   SetUnits(unitclass_index, unit_index);
@@ -4341,19 +4340,19 @@ int LuaSetUnits(lua_State *L) {
 int LuaSetUnitclasses(lua_State *L) {
   int i = 0;
   int n = 0;
-  if (!lua_istable(L, -1)) {
+  if(!lua_istable(L, -1)) {
     fprintf(stderr, "stack is not a table at index\n");
     exit(1);
   }
   lua_pushnil(L);
-  while (lua_next(L, -2) != 0) {
+  while(lua_next(L, -2) != 0) {
     lua_pop(L, 1);
     n++;
   }
-  if (n > 0) {
+  if(n > 0) {
     int *indices = malloc(sizeof(int) * n);
     lua_pushnil(L);
-    while (lua_next(L, -2) != 0) {
+    while(lua_next(L, -2) != 0) {
       indices[i] = lua_tonumber(L, -1);
       lua_pop(L, 1);
       i++;
@@ -4656,7 +4655,7 @@ int LuaSetGsliceparms(lua_State *L) {
   int vis_normal = lua_tonumber(L, 4);
   float xyz[3];
   // TODO: use named fields (e.g. xyz)
-  for (i = 0; i < 3; i++) {
+  for(i = 0; i < 3; i++) {
     lua_pushnumber(L, i);
     lua_gettable(L, 5);
     xyz[i] = lua_tonumber(L, -1);
@@ -4664,7 +4663,7 @@ int LuaSetGsliceparms(lua_State *L) {
     i++;
   }
   float azelev[2];
-  for (i = 0; i < 2; i++) {
+  for(i = 0; i < 2; i++) {
     lua_pushnumber(L, i);
     lua_gettable(L, 6);
     azelev[i] = lua_tonumber(L, -1);
@@ -4696,15 +4695,15 @@ int LuaSetMscale(lua_State *L) {
 int LuaSetSliceauto(lua_State *L) {
   lua_pushnil(L);
   int n = 0;
-  while (lua_next(L, -2) != 0) {
+  while(lua_next(L, -2) != 0) {
     lua_pop(L, 1);
     n++;
   }
-  if (n > 0) {
+  if(n > 0) {
     int i = 0;
     int *vals = malloc(sizeof(int) * n);
     lua_pushnil(L);
-    while (lua_next(L, -2) != 0) {
+    while(lua_next(L, -2) != 0) {
       vals[i] = lua_tonumber(L, -1);
       lua_pop(L, 1);
       i++;
@@ -4722,15 +4721,15 @@ int LuaSetSliceauto(lua_State *L) {
 int LuaSetMsliceauto(lua_State *L) {
   lua_pushnil(L);
   int n = 0;
-  while (lua_next(L, -2) != 0) {
+  while(lua_next(L, -2) != 0) {
     lua_pop(L, 1);
     n++;
   }
-  if (n > 0) {
+  if(n > 0) {
     int i = 0;
     int *vals = malloc(sizeof(int) * n);
     lua_pushnil(L);
-    while (lua_next(L, -2) != 0) {
+    while(lua_next(L, -2) != 0) {
       vals[i] = lua_tonumber(L, -1);
       lua_pop(L, 1);
       i++;
@@ -4755,15 +4754,15 @@ int LuaSetCompressauto(lua_State *L) {
 int LuaSetPropindex(lua_State *L) {
   lua_pushnil(L);
   int n = 0;
-  while (lua_next(L, -2) != 0) {
+  while(lua_next(L, -2) != 0) {
     lua_pop(L, 1);
     n++;
   }
-  if (n > 0) {
+  if(n > 0) {
     int i = 0;
     int *vals = malloc(sizeof(int) * n * PROPINDEX_STRIDE);
     lua_pushnil(L);
-    while (lua_next(L, -2) != 0) {
+    while(lua_next(L, -2) != 0) {
       lua_pushnumber(L, 1);
       lua_gettable(L, -2);
       *(vals + (i * PROPINDEX_STRIDE + 0)) = lua_tonumber(L, -1);
@@ -4789,15 +4788,15 @@ int LuaSetPropindex(lua_State *L) {
 int LuaSetShowdevices(lua_State *L) {
   lua_pushnil(L);
   int n = 0;
-  while (lua_next(L, -2) != 0) {
+  while(lua_next(L, -2) != 0) {
     lua_pop(L, 1);
     n++;
   }
-  if (n > 0) {
+  if(n > 0) {
     int i = 0;
     const char **names = malloc(sizeof(char *) * n);
     lua_pushnil(L);
-    while (lua_next(L, -2) != 0) {
+    while(lua_next(L, -2) != 0) {
       names[i] = lua_tostring(L, -1);
       lua_pop(L, 1);
       i++;
@@ -4846,7 +4845,7 @@ int LuaSetCParticles(lua_State *L) {
   int max_flag = lua_tonumber(L, 3);
   float max_value = lua_tonumber(L, 4);
   const char *label = NULL;
-  if (lua_gettop(L) == 5) {
+  if(lua_gettop(L) == 5) {
     label = lua_tostring(L, 5);
   }
   int return_code =
@@ -4861,7 +4860,7 @@ int LuaSetCSlice(lua_State *L) {
   int max_flag = lua_tonumber(L, 3);
   float max_value = lua_tonumber(L, 4);
   const char *label = NULL;
-  if (lua_gettop(L) == 5) {
+  if(lua_gettop(L) == 5) {
     label = lua_tostring(L, 5);
   }
   int return_code = SetCSlice(min_flag, min_value, max_flag, max_value, label);
@@ -5588,7 +5587,7 @@ static luaL_Reg const SMVLIB[] = {
 int SmvlibNewindex(lua_State *L) {
   const char *field = lua_tostring(L, 2);
   const char *value = lua_tostring(L, 3);
-  if (strcmp(field, "renderdir") == 0) {
+  if(strcmp(field, "renderdir") == 0) {
     lua_pushstring(L, value);
     LuaSetrenderdir(L);
     return 0;
@@ -5604,7 +5603,7 @@ int SmvlibIndex(lua_State *L) {
   // lua_gettable(L, 1);
   // int index = lua_tonumber(L, -1);
   const char *field = lua_tostring(L, 2);
-  if (strcmp(field, "renderdir") == 0) {
+  if(strcmp(field, "renderdir") == 0) {
     return LuaGetrenderdir(L);
   }
   else {
@@ -5660,7 +5659,7 @@ int LoadLuaScript(const char *filename) {
   lua_Debug info;
   int level = 0;
   int return_code = luaL_loadfile(L, filename);
-  switch (return_code) {
+  switch(return_code) {
   case LUA_OK:
     break;
   case LUA_ERRSYNTAX:
@@ -5668,7 +5667,7 @@ int LoadLuaScript(const char *filename) {
     err_msg = lua_tostring(L, -1);
     fprintf(stderr, "error:%s\n", err_msg);
     level = 0;
-    while (lua_getstack(L, level, &info)) {
+    while(lua_getstack(L, level, &info)) {
       lua_getinfo(L, "nSl", &info);
       fprintf(stderr, "  [%d] %s:%d -- %s [%s]\n", level, info.short_src,
               info.currentline, (info.name ? info.name : "<unknown>"),
@@ -5683,7 +5682,7 @@ int LoadLuaScript(const char *filename) {
     err_msg = lua_tostring(L, -1);
     fprintf(stderr, "error:%s\n", err_msg);
     level = 0;
-    while (lua_getstack(L, level, &info)) {
+    while(lua_getstack(L, level, &info)) {
       lua_getinfo(L, "nSl", &info);
       fprintf(stderr, "  [%d] %s:%d -- %s [%s]\n", level, info.short_src,
               info.currentline, (info.name ? info.name : "<unknown>"),
@@ -5715,11 +5714,11 @@ int LoadSsfScript(const char *filename) {
   snprintf(l_string, 1024, "require(\"ssfparser\")\nrunSSF(\"%s.ssf\")",
            fdsprefix);
   int ssfparser_loaded_err = luaL_dostring(L, "require \"ssfparser\"");
-  if (ssfparser_loaded_err) {
+  if(ssfparser_loaded_err) {
     fprintf(stderr, "Failed to load ssfparser\n");
   }
   int return_code = luaL_loadstring(L, l_string);
-  switch (return_code) {
+  switch(return_code) {
   case LUA_OK:
     break;
   case LUA_ERRSYNTAX:
@@ -5727,7 +5726,7 @@ int LoadSsfScript(const char *filename) {
     err_msg = lua_tostring(L, -1);
     fprintf(stderr, "error:%s\n", err_msg);
     level = 0;
-    while (lua_getstack(L, level, &info)) {
+    while(lua_getstack(L, level, &info)) {
       lua_getinfo(L, "nSl", &info);
       fprintf(stderr, "  [%d] %s:%d -- %s [%s]\n", level, info.short_src,
               info.currentline, (info.name ? info.name : "<unknown>"),
@@ -5742,7 +5741,7 @@ int LoadSsfScript(const char *filename) {
     err_msg = lua_tostring(L, -1);
     fprintf(stderr, "error:%s\n", err_msg);
     level = 0;
-    while (lua_getstack(L, level, &info)) {
+    while(lua_getstack(L, level, &info)) {
       lua_getinfo(L, "nSl", &info);
       fprintf(stderr, "  [%d] %s:%d -- %s [%s]\n", level, info.short_src,
               info.currentline, (info.name ? info.name : "<unknown>"),
@@ -5756,7 +5755,7 @@ int LoadSsfScript(const char *filename) {
 
 int yield_or_ok_ssf = LUA_YIELD;
 int RunSsfScript() {
-  if (yield_or_ok_ssf == LUA_YIELD) {
+  if(yield_or_ok_ssf == LUA_YIELD) {
     int nresults = 0;
 #if LUA_VERSION_NUM < 502
     yield_or_ok_ssf = lua_resume(L, 0);
@@ -5765,20 +5764,20 @@ int RunSsfScript() {
 #else
     yield_or_ok_ssf = lua_resume(L, NULL, 0, &nresults);
 #endif
-    if (yield_or_ok_ssf == LUA_YIELD) {
+    if(yield_or_ok_ssf == LUA_YIELD) {
       printf("  LUA_YIELD\n");
     }
-    else if (yield_or_ok_ssf == LUA_OK) {
+    else if(yield_or_ok_ssf == LUA_OK) {
       printf("  LUA_OK\n");
     }
-    else if (yield_or_ok_ssf == LUA_ERRRUN) {
+    else if(yield_or_ok_ssf == LUA_ERRRUN) {
       printf("  LUA_ERRRUN\n");
       const char *err_msg;
       err_msg = lua_tostring(L, -1);
       fprintf(stderr, "error:%s\n", err_msg);
       lua_Debug info;
       int level = 0;
-      while (lua_getstack(L, level, &info)) {
+      while(lua_getstack(L, level, &info)) {
         lua_getinfo(L, "nSl", &info);
         fprintf(stderr, "  [%d] %s:%d -- %s [%s]\n", level, info.short_src,
                 info.currentline, (info.name ? info.name : "<unknown>"),
@@ -5786,7 +5785,7 @@ int RunSsfScript() {
         ++level;
       };
     }
-    else if (yield_or_ok_ssf == LUA_ERRMEM) {
+    else if(yield_or_ok_ssf == LUA_ERRMEM) {
       printf("  LUA_ERRMEM\n");
     }
     else {
@@ -5802,7 +5801,7 @@ int RunSsfScript() {
 
 int yield_or_ok = LUA_YIELD;
 int RunLuaScript() {
-  if (yield_or_ok == LUA_YIELD) {
+  if(yield_or_ok == LUA_YIELD) {
     int nresults = 0;
 #if LUA_VERSION_NUM < 502
     yield_or_ok_ssf = lua_resume(L, 0);
@@ -5811,20 +5810,20 @@ int RunLuaScript() {
 #else
     yield_or_ok = lua_resume(L, NULL, 0, &nresults);
 #endif
-    if (yield_or_ok == LUA_YIELD) {
+    if(yield_or_ok == LUA_YIELD) {
       printf("  LUA_YIELD\n");
     }
-    else if (yield_or_ok == LUA_OK) {
+    else if(yield_or_ok == LUA_OK) {
       printf("  LUA_OK\n");
     }
-    else if (yield_or_ok == LUA_ERRRUN) {
+    else if(yield_or_ok == LUA_ERRRUN) {
       printf("  LUA_ERRRUN\n");
       const char *err_msg;
       err_msg = lua_tostring(L, -1);
       fprintf(stderr, "error:%s\n", err_msg);
       lua_Debug info;
       int level = 0;
-      while (lua_getstack(L, level, &info)) {
+      while(lua_getstack(L, level, &info)) {
         lua_getinfo(L, "nSl", &info);
         fprintf(stderr, "  [%d] %s:%d -- %s [%s]\n", level, info.short_src,
                 info.currentline, (info.name ? info.name : "<unknown>"),
@@ -5832,7 +5831,7 @@ int RunLuaScript() {
         ++level;
       };
     }
-    else if (yield_or_ok == LUA_ERRMEM) {
+    else if(yield_or_ok == LUA_ERRMEM) {
       printf("  LUA_ERRMEM\n");
     }
     else {
@@ -5854,21 +5853,21 @@ LUA_API lua_Number lua_version(lua_State *L) {
 
 LUALIB_API void luaL_checkversion_(lua_State *L, lua_Number ver, size_t sz) {
   lua_Number v = lua_version(L);
-  if (sz != LUAL_NUMSIZES) /* check numeric types */
+  if(sz != LUAL_NUMSIZES) /* check numeric types */
     luaL_error(L, "core and library have incompatible numeric types");
-  else if (v != ver)
+  else if(v != ver)
     luaL_error(L, "version mismatch: app. needs %f, Lua core provides %f",
                (LUAI_UACNUMBER)ver, (LUAI_UACNUMBER)v);
 }
 
 LUALIB_API void luaL_setfuncs(lua_State *L, const luaL_Reg *l, int nup) {
   luaL_checkstack(L, nup, "too many upvalues");
-  for (; l->name != NULL; l++) { /* fill the table with given functions */
-    if (l->func == NULL)         /* place holder? */
+  for(; l->name != NULL; l++) { /* fill the table with given functions */
+    if(l->func == NULL)         /* place holder? */
       lua_pushboolean(L, 0);
     else {
       int i;
-      for (i = 0; i < nup; i++) /* copy upvalues to the top */
+      for(i = 0; i < nup; i++) /* copy upvalues to the top */
         lua_pushvalue(L, -nup);
       lua_pushcclosure(L, l->func, nup); /* closure with those upvalues */
     }
