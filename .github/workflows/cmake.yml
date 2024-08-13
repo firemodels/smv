@@ -34,14 +34,14 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install build-essential freeglut3-dev libx11-dev libxmu-dev libxi-dev libglew-dev libgd-dev liblua5.4-dev libjson-c-dev
-      # If we are building on macos configure the environment to use gcc11 as
+      # If we are building on macos configure the environment to use gcc-14 as
       # the compiler
       - name: set macos gcc
         if: runner.os == 'macOS'
         shell: bash
         run: |
-          echo "CC=gcc-11" >> $GITHUB_ENV
-          echo "CXX=g++-11" >> $GITHUB_ENV
+          echo "CC=gcc-14" >> $GITHUB_ENV
+          echo "CXX=g++-14" >> $GITHUB_ENV
           brew install glew lua gd zlib json-c
       # If we are building on linux configure the environment to use gcc as the
       # compiler
