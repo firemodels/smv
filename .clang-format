@@ -2,3 +2,4 @@ AllowShortIfStatementsOnASingleLine: WithoutElse
 BreakBeforeBraces: Custom
 BraceWrapping:
   BeforeElse: true
+SpaceBeforeParens: Never
