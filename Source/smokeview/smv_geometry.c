@@ -246,7 +246,7 @@ void RemoveDupFloats(float **valsptr, int *nvals,int *ivals, float dval_min){
   if(*nvals==0)return;
   nv = *nvals;
   vals = *valsptr;
-  qsort( (float *)vals, (size_t)nv, sizeof( float ), CompareFloats );
+  qsort( (float *)vals, (size_t)nv, sizeof(float), CompareFloats );
   ii=1;
   for(i=1;i<nv;i++){
     if(ABS(vals[i]-vals[i-1])<=dval_min)continue;
@@ -794,9 +794,9 @@ int BoxInFrustum(float *xx, float *yy, float *zz, int n){
   float xyz[3];
   float dx, dy, dz;
 
-  dx = (xx[1] - xx[0]) / ( float )(n - 1);
-  dy = (yy[1] - yy[0]) / ( float )(n - 1);
-  dz = (zz[1] - zz[0]) / ( float )(n - 1);
+  dx = (xx[1] - xx[0]) / (float)(n - 1);
+  dy = (yy[1] - yy[0]) / (float)(n - 1);
+  dz = (zz[1] - zz[0]) / (float)(n - 1);
 
   for(i=0;i<n;i++){
     int j;

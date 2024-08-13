@@ -310,13 +310,13 @@ void PrintFileLoadTimes(int file_count, FILE_SIZE load_size, float load_time){
       }
     }
     if(load_size > 1000000000){
-      PRINTF("Loaded %.2f GB in %.2f s (%s)\n", ( float )load_size / 1000000000., load_time, crate);
+      PRINTF("Loaded %.2f GB in %.2f s (%s)\n", (float)load_size / 1000000000., load_time, crate);
     }
     else if(load_size > 1000000){
-      PRINTF("Loaded %.2f MB in %.2f s (%s)\n", ( float )load_size / 1000000., load_time, crate);
+      PRINTF("Loaded %.2f MB in %.2f s (%s)\n", (float)load_size / 1000000., load_time, crate);
     }
     else{
-      PRINTF("Loaded %.2f kB in %.2f s (%s)\n", ( float )load_size / 1000., load_time, crate);
+      PRINTF("Loaded %.2f kB in %.2f s (%s)\n", (float)load_size / 1000., load_time, crate);
     }
     printf("\n");
   }
