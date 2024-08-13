@@ -1102,8 +1102,10 @@ void GetBoundaryHeader2(char *file, patchfacedata *patchfaceinfo){
   for(i = 0;i<npatches;i++){
     buffer[6] = 0;
     fread(buffer, 4, 9, stream);
-    memcpy(patchfaceinfo->ib, buffer, 7 * sizeof(int));
+    memcpy(patchfaceinfo->ib, buffer, 6*sizeof(int));
     patchfaceinfo->dir = buffer[6];
+    patchfaceinfo->obst_index = buffer[7];
+    patchfaceinfo->mesh_index = buffer[8];
   }
   fclose(stream);
 }
@@ -1353,7 +1355,9 @@ void GetPatchSizes2(FILE_m *stream, int npatch, int *npatchsize,
     fseek_m(stream, 4, SEEK_CUR); fread_m(ijkp, sizeof(*ijkp), 9, stream); fseek_m(stream, 4, SEEK_CUR);
     pfi = patchfaceinfo + n;
     memcpy(pfi->ib, ijkp, 6 * sizeof(int));
-    pfi->dir = ijkp[6];
+    pfi->dir        = ijkp[6];
+    pfi->obst_index = ijkp[7];
+    pfi->mesh_index = ijkp[8];
 
     int i1 = ijkp[0];
     int i2 = ijkp[1];
