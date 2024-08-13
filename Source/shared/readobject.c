@@ -304,7 +304,7 @@ char *ParseObjectFrame(object_collection *objectscoll, const char *buffer_in,
   frame->error = 0;
   TrimBack(buffer);
   strcpy(object_buffer, buffer);
-  while (stream != NULL && !feof(stream)){
+  while(stream != NULL && !feof(stream)){
     if(fgets(buffer, 255, stream) == NULL){
       *eof = 1;
       break;
@@ -1201,7 +1201,7 @@ int ReadObjectDefs(object_collection *objectscoll, const char *file,
 
   firstdef = -1;
   buffer_ptr = NULL;
-  while (!feof(stream)){
+  while(!feof(stream)){
     CheckMemory;
     if(buffer_ptr == NULL){
       if(eof == 1 || fgets(buffer, 255, stream) == NULL) break;

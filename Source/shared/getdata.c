@@ -149,7 +149,7 @@ void getzonesize(const char *zonefilename, int *nzonet, int *nrooms,
     rewind(file);
     return;
   }
-  while (1){
+  while(1){
     exit_all = 0;
     *error = fortread(&dummy, sizeof(dummy), 1, file);
     if(*error != 0){

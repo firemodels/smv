@@ -843,7 +843,7 @@ void CreatePartSizeFileFromPart(char *part5file_arg, char *part5sizefile_arg, LI
     skip_local = 2*numvals_local*(4 + 30 + 4);
     fseek_m(stream, skip_local, SEEK_CUR);
   }
-  while (!feof_m(stream)){
+  while(!feof_m(stream)){
     float time_local;
     LINT frame_size_local;
     char format[128];

@@ -5058,7 +5058,7 @@ int GetNDevices(char *file){
     return 0;
   }
 
-  while (!feof(stream)){
+  while(!feof(stream)){
     fgets(buffer, buffer_len, stream);
     comma = strchr(buffer, ',');
     if(comma != NULL) *comma = 0;
@@ -5087,7 +5087,7 @@ void RewindDeviceFile(FILE *stream){
     rewind(stream);
     return;
   }
-  while (!feof(stream)){
+  while(!feof(stream)){
     fgets(buffer, buffer_len, stream);
     comma = strchr(buffer, ',');
     if(comma != NULL) *comma = 0;
