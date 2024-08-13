@@ -91,14 +91,14 @@ void Usage(char *prog,int option){
 
 char *ProcessCommandLine(CommandlineArgs *args);
 
-char *ParseCommandline(int argc, char **argv) {
+char *ParseCommandline(int argc, char **argv){
   enum CommandLineError error;
   char message[256];
 
   CommandlineArgs args = ParseCommandlineNew(argc, argv, message, &error);
-  if (error != CLE_OK) {
+  if(error != CLE_OK){
     const char *msg = CLE_Message(error, message);
-    if (msg != NULL) {
+    if(msg != NULL){
       fprintf(stderr, "%s\n", msg);
     }
     SMV_EXIT(0);
@@ -111,7 +111,7 @@ char *ParseCommandline(int argc, char **argv) {
 /// @param args The args which were previously parsed. All commandline arguments
 /// are parsed into @ref CommandlineArgs.
 /// @return The iput file name (the SMV file).
-char *ProcessCommandLine(CommandlineArgs *args) {
+char *ProcessCommandLine(CommandlineArgs *args){
   int len_casename;
   size_t len_memory;
   char *argi, *smv_ext;
@@ -157,13 +157,13 @@ char *ProcessCommandLine(CommandlineArgs *args) {
     dialogY0 = args->Y0;
     have_dialogY0 = 1;
   }
-  if (args->csv) {
+  if(args->csv){
     update_csv_load = 1;
   }
   if(args->max_mem){
     max_mem_GB = args->max_mem_GB;
   }
-  if (args->ini) {
+  if(args->ini){
     InitCameraList();
     InitOpenGL(NO_PRINT);
     UpdateRGBColors(colorbar_select_index);
@@ -171,7 +171,7 @@ char *ProcessCommandLine(CommandlineArgs *args) {
     WriteIni(GLOBAL_INI, NULL);
     SMV_EXIT(0);
   }
-  if (args->ng_ini) {
+  if(args->ng_ini){
     InitCameraList();
     use_graphics = 0;
     UpdateRGBColors(colorbar_select_index);
@@ -179,12 +179,12 @@ char *ProcessCommandLine(CommandlineArgs *args) {
     WriteIni(GLOBAL_INI, NULL);
     SMV_EXIT(0);
   }
-  if (args->print_version) {
+  if(args->print_version){
     show_version = 1;
   }
   strcpy(SMVFILENAME, "");
-  if (args->input_file != NULL) {
-    if (strlen(args->input_file) > MAX_SMV_FILENAME_BUFFER-1) {
+  if(args->input_file != NULL){
+    if(strlen(args->input_file) > MAX_SMV_FILENAME_BUFFER-1){
       fprintf(stderr, "*** Error: input filename exceeds maximum length of %d\n", MAX_SMV_FILENAME_BUFFER-1);
       SMV_EXIT(1);
     }
@@ -658,14 +658,14 @@ char *ProcessCommandLine(CommandlineArgs *args) {
       use_iso_threads=0;
         char scriptbuffer[MAX_SCRIPT_FILENAME_BUFFER];
         scriptfiledata *sfd;
-        if (args->script != NULL) {
-          if (strlen(args->script) > MAX_SCRIPT_FILENAME_BUFFER-1) {
+        if(args->script != NULL){
+          if(strlen(args->script) > MAX_SCRIPT_FILENAME_BUFFER-1){
             fprintf(stderr, "*** Error: script filename exceeds maximum length of %d\n", MAX_SCRIPT_FILENAME_BUFFER-1);
             SMV_EXIT(1);
           }
           strcpy(scriptbuffer, args->script);
-        } else {
-          if (strlen(args->htmlscript) > MAX_SCRIPT_FILENAME_BUFFER-1) {
+        } else{
+          if(strlen(args->htmlscript) > MAX_SCRIPT_FILENAME_BUFFER-1){
             fprintf(stderr, "*** Error: luascript filename exceeds maximum length of %d\n", MAX_SCRIPT_FILENAME_BUFFER-1);
             SMV_EXIT(1);
           }
@@ -681,7 +681,7 @@ char *ProcessCommandLine(CommandlineArgs *args) {
     if(args->luascript != NULL){
       from_commandline = 1;
       use_iso_threads=0;
-      if (strlen(args->luascript) > MAX_LUASCRIPT_FILENAME_BUFFER-1) {
+      if(strlen(args->luascript) > MAX_LUASCRIPT_FILENAME_BUFFER-1){
         fprintf(stderr, "*** Error: luascript filename exceeds maximum length of %d\n", MAX_SMV_FILENAME_BUFFER-1);
         SMV_EXIT(1);
       }

@@ -257,7 +257,7 @@ void GetIsoDataBounds(isodata *isod, float *pmin, float *pmax){
   if(ndata > 0 && pdata != NULL){
     *pmin = pdata[0];
     *pmax = pdata[0];
-    for(i = 1; i < ndata; i++) {
+    for(i = 1; i < ndata; i++){
       *pmin = MIN(*pmin, pdata[i]);
       *pmax = MAX(*pmax, pdata[i]);
     }

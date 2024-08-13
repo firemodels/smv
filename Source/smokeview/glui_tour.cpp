@@ -730,7 +730,7 @@ void TourCB(int var){
       TOURMENU(MENU_TOUR_CLEARALL);  // reset tour vis to ini values
       if(PANEL_node != NULL)PANEL_node->disable();
       if(PANEL_tournavigate!=NULL)PANEL_tournavigate->disable();
-      if (SPINNER_tour_time!= NULL)SPINNER_tour_time->disable();
+      if(SPINNER_tour_time!= NULL)SPINNER_tour_time->disable();
       break;
     case TOURINDEX_DEFAULT:
       TOURMENU(MENU_TOUR_DEFAULT);  // default tour
@@ -743,7 +743,7 @@ void TourCB(int var){
       GLUISetTourKeyframe();
       if(PANEL_node != NULL)PANEL_node->enable();
       if(PANEL_tournavigate!=NULL)PANEL_tournavigate->enable();
-      if (SPINNER_tour_time!= NULL)SPINNER_tour_time->disable();
+      if(SPINNER_tour_time!= NULL)SPINNER_tour_time->disable();
       break;
     }
     GLUIDeleteTourList();

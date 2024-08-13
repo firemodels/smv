@@ -2403,7 +2403,7 @@ void DrawZoneRoomData(void){
         glVertex3f(xroom0+dx, yroom,  zroom);
         glVertex3f(xroom0+dx, yroom0, zroom);
 
-        if (show_zonelower == 1 && zonecolortype != ZONEHAZARD_COLOR) {
+        if(show_zonelower == 1 && zonecolortype != ZONEHAZARD_COLOR){
           glColor4fv(colorvL);
           glVertex3f(xroom0+dx, yroom0, zroom0);
           glVertex3f(xroom0+dx, yroom,  zroom0);

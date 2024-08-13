@@ -37,7 +37,7 @@ unsigned int *random_ints, nrandom_ints;
 
 /* ----------------------- AppendString ----------------------------- */
 
-char *AppendString(char *S1, char *S2) {
+char *AppendString(char *S1, char *S2){
   strcpy(append_string, S1);
   strcat(append_string, S2);
   return append_string;

@@ -493,7 +493,7 @@ void GetGlobalPlot3DBounds(void){
           p3min_all[j] = valmin_fds[j];
           p3max_all[j] = valmax_fds[j];
         }
-        else {
+        else{
           p3min_all[j] = MIN(valmin_fds[j], p3min_all[j]);
           p3max_all[j] = MAX(valmax_fds[j], p3max_all[j]);
         }
@@ -547,7 +547,7 @@ void GetLoadedPlot3dBounds(int *compute_loaded, float *loaded_min, float *loaded
   int plot3d_loaded = 0;
 
 #define BOUNDS_LOADED 1
-  for(i = 0; i<nplot3dinfo; i++) {
+  for(i = 0; i<nplot3dinfo; i++){
     plot3ddata *plot3di;
 
     plot3di = plot3dinfo+i;
@@ -557,13 +557,13 @@ void GetLoadedPlot3dBounds(int *compute_loaded, float *loaded_min, float *loaded
   }
   if(plot3d_loaded==0){
     printf("***loaded plot3d bounds not available, using global bounds\n");
-    for(i = 0; i< MAXPLOT3DVARS; i++) {
+    for(i = 0; i< MAXPLOT3DVARS; i++){
       loaded_min[i] = p3min_global[i];
       loaded_max[i] = p3max_global[i];
     }
     return;
   }
-  for(i = 0; i< MAXPLOT3DVARS; i++) {
+  for(i = 0; i< MAXPLOT3DVARS; i++){
     if(compute_loaded!=NULL&&compute_loaded[i]!=BOUNDS_LOADED)continue;
     loaded_min[i] = 1.0;
     loaded_max[i] = 0.0;

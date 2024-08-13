@@ -2726,13 +2726,13 @@ void *UpdateVSlices(void *arg){
         slicedata *sdj;
 
         sdj = sliceinfoptrs[meshi->isliceinfo + j];
-        if (sdj->slice_filetype == SLICE_CELL_CENTER|| sdj->slice_filetype == SLICE_GEOM)continue;
-        if (sdi->blocknumber != sdj->blocknumber)continue;
-        if (sdi->is1 != sdj->is1 || sdi->is2 != sdj->is2 || sdi->js1 != sdj->js1)continue;
-        if (sdi->js2 != sdj->js2 || sdi->ks1 != sdj->ks1 || sdi->ks2 != sdj->ks2)continue;
-        if (sdj->vec_comp == 1)vd->iu = sdj-sliceinfo;
-        if (sdj->vec_comp == 2)vd->iv = sdj-sliceinfo;
-        if (sdj->vec_comp == 3)vd->iw = sdj-sliceinfo;
+        if(sdj->slice_filetype == SLICE_CELL_CENTER|| sdj->slice_filetype == SLICE_GEOM)continue;
+        if(sdi->blocknumber != sdj->blocknumber)continue;
+        if(sdi->is1 != sdj->is1 || sdi->is2 != sdj->is2 || sdi->js1 != sdj->js1)continue;
+        if(sdi->js2 != sdj->js2 || sdi->ks1 != sdj->ks1 || sdi->ks2 != sdj->ks2)continue;
+        if(sdj->vec_comp == 1)vd->iu = sdj-sliceinfo;
+        if(sdj->vec_comp == 2)vd->iv = sdj-sliceinfo;
+        if(sdj->vec_comp == 3)vd->iw = sdj-sliceinfo;
       }
     }
     if(vd->iu!=-1||vd->iv!=-1||vd->iw!=-1){
@@ -3070,7 +3070,7 @@ void GetSliceDataBounds(slicedata *sd, float *pmin, float *pmax){
     }
     *pmin = pdata[0];
     *pmax = pdata[0];
-    for (i = 0; i < ndata; i++) {
+    for (i = 0; i < ndata; i++){
       *pmin = MIN(*pmin, pdata[i]);
       *pmax = MAX(*pmax, pdata[i]);
     }
@@ -7598,7 +7598,7 @@ void DrawSliceFrame(){
       glBlendEquation(GL_FUNC_ADD);
     }
   }
-  for (ii = 0; ii < npatchinfo; ii++) {
+  for (ii = 0; ii < npatchinfo; ii++){
     patchdata *patchi;
 
     patchi = patchinfo + ii;

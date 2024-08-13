@@ -396,7 +396,7 @@ void ShowScene2(int mode){
 
   /* ++++++++++++++++++++++++ draw HVAC networks +++++++++++++++++++++++++ */
 
-  if (nhvacinfo > 0) {
+  if(nhvacinfo > 0){
     DrawHVACS();
   }
 

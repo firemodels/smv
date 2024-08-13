@@ -343,12 +343,12 @@ extern "C" void GLUIUpdateDeviceOrientation(void){
 
 /* ------------------ UpdateShowWindRoses ------------------------ */
 
-void UpdateShowWindRoses(void) {
+void UpdateShowWindRoses(void){
   int i;
   int icheckbox;
 
   icheckbox=0;
-  for (i = 0; i < nzwindtreeinfo; i++) {
+  for (i = 0; i < nzwindtreeinfo; i++){
     treedevicedata *treei;
     int j;
     int idev;
@@ -356,7 +356,7 @@ void UpdateShowWindRoses(void) {
     treei = zwindtreeinfo[i];
 
     idev = 0;
-    for (j = treei->first; j <= treei->last; j++) {
+    for (j = treei->first; j <= treei->last; j++){
       vdevicesortdata *vdevsorti;
       vdevicedata *vd;
 
@@ -365,7 +365,7 @@ void UpdateShowWindRoses(void) {
       if(vd->udev==NULL&&vd->vdev==NULL&&vd->wdev==NULL&&
          vd->angledev == NULL&&vd->veldev == NULL)continue;
 
-      if(vdevsorti->dir == ZDIR&&vd->unique != 0) {
+      if(vdevsorti->dir == ZDIR&&vd->unique != 0){
         int kk, idev_hat;
         //idev = istart + k*iskip
         kk = (idev-windrose_first)/windrose_next;
@@ -373,7 +373,7 @@ void UpdateShowWindRoses(void) {
         if(kk>=0&&idev==idev_hat){
           vd->display = 1;
         }
-        else {
+        else{
           vd->display = 0;
         }
         CHECKBOX_showz_windrose[icheckbox]->set_int_val(vd->display);

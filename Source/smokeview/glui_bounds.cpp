@@ -4012,7 +4012,7 @@ void BoundBoundCB(int var){
     break;
   case SETCHOPMINVAL:
     UpdateChopColors();
-    if (patchlabellist != NULL)GLUI2GlobalBoundaryBounds(patchlabellist[list_patch_index]);
+    if(patchlabellist != NULL)GLUI2GlobalBoundaryBounds(patchlabellist[list_patch_index]);
     switch(setpatchchopmin){
     case DISABLE:
       break;

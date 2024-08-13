@@ -841,15 +841,15 @@ void GetBlockVals(  float *xmin, float *xmax,
 
 /* ------------------ HaveCircularVents ------------------------ */
 
-int HaveCircularVents(void) {
+int HaveCircularVents(void){
   int i;
 
-  for (i = 0; i < nmeshes; i++) {
+  for (i = 0; i < nmeshes; i++){
     meshdata* meshi;
 
     meshi = meshinfo + i;
 
-    if (meshi->ncvents > 0)return 1;
+    if(meshi->ncvents > 0)return 1;
   }
   return 0;
 }
@@ -1196,7 +1196,7 @@ int CheckVentDup(ventdata* vi, meshdata* meshi){
   int nreal_vents;
 
   nreal_vents = meshi->nvents - meshi->ndummyvents;
-  if (nreal_vents == 0)return 0;
+  if(nreal_vents == 0)return 0;
 
   for(i = 0; i < nreal_vents; i++){
     ventdata *vi2;
