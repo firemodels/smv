@@ -541,7 +541,6 @@ void DrawOnlyThreshold(const meshdata *meshi){
   int *patchblankcopy;
   float *patch_times;
   float *xyzpatch;
-  int *boundary_row, *boundary_col;
   int *blockstart;
   int *patchblank;
   int iblock;
@@ -555,8 +554,6 @@ void DrawOnlyThreshold(const meshdata *meshi){
 
   patch_times = meshi->patch_times;
   xyzpatch = meshi->xyzpatch_threshold;
-  boundary_row = meshi->boundary_row;
-  boundary_col = meshi->boundary_col;
   blockstart = meshi->blockstart;
   patchblank = meshi->patchblank;
   patchi = patchinfo+meshi->patchfilenum;
@@ -591,13 +588,13 @@ void DrawOnlyThreshold(const meshdata *meshi){
     if(iblock!=-1&&meshblock!=NULL){
       bc = meshblock->blockageinfoptrs[iblock];
       if(bc->showtimelist!=NULL&&bc->showtimelist[itimes]==0){
-        nn += boundary_row[n]*boundary_col[n];
+        nn += pfi->nrow*pfi->ncol;
         continue;
       }
     }
     if(pfi->vis==1&&pfi->dir==0){
-      nrow = boundary_row[n];
-      ncol = boundary_col[n];
+      nrow = pfi->nrow;
+      ncol = pfi->ncol;
       xyzpatchcopy = xyzpatch+3*blockstart[n];
       patchblankcopy = patchblank+blockstart[n];
       for(irow = 0;irow<nrow-1;irow++){
@@ -659,7 +656,7 @@ void DrawOnlyThreshold(const meshdata *meshi){
         }
       }
     }
-    nn += boundary_row[n]*boundary_col[n];
+    nn += pfi->nrow*pfi->ncol;
   }
   glEnd();
   if(cullfaces==1)glEnable(GL_CULL_FACE);
@@ -678,13 +675,13 @@ void DrawOnlyThreshold(const meshdata *meshi){
     if(iblock!=-1){
       bc = meshblock->blockageinfoptrs[iblock];
       if(bc->showtimelist!=NULL&&bc->showtimelist[itimes]==0){
-        nn += boundary_row[n]*boundary_col[n];
+        nn += pfi->nrow*pfi->ncol;
         continue;
       }
     }
     if(pfi->vis==1&&pfi->dir>0){
-      nrow = boundary_row[n];
-      ncol = boundary_col[n];
+      nrow = pfi->nrow;
+      ncol = pfi->ncol;
       xyzpatchcopy = xyzpatch+3*blockstart[n];
       patchblankcopy = patchblank+blockstart[n];
       for(irow = 0;irow<nrow-1;irow++){
@@ -748,7 +745,7 @@ void DrawOnlyThreshold(const meshdata *meshi){
         }
       }
     }
-    nn += boundary_row[n]*boundary_col[n];
+    nn += pfi->nrow*pfi->ncol;
   }
 
   /* if a contour boundary DOES match a blockage face then draw "one sides" of boundary */
@@ -763,13 +760,13 @@ void DrawOnlyThreshold(const meshdata *meshi){
     if(iblock!=-1&&meshblock!=NULL){
       bc = meshblock->blockageinfoptrs[iblock];
       if(bc->showtimelist!=NULL&&bc->showtimelist[itimes]==0){
-        nn += boundary_row[n]*boundary_col[n];
+        nn += pfi->nrow*pfi->ncol;
         continue;
       }
     }
     if(pfi->vis==1&&pfi->dir<0){
-      nrow = boundary_row[n];
-      ncol = boundary_col[n];
+      nrow = pfi->nrow;
+      ncol = pfi->ncol;
       xyzpatchcopy = xyzpatch+3*blockstart[n];
       patchblankcopy = patchblank+blockstart[n];
       for(irow = 0;irow<nrow-1;irow++){
@@ -830,7 +827,7 @@ void DrawOnlyThreshold(const meshdata *meshi){
         }
       }
     }
-    nn += boundary_row[n]*boundary_col[n];
+    nn += pfi->nrow*pfi->ncol;
   }
   glEnd();
 }
@@ -1413,8 +1410,6 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
     FREEMEMORY(meshi->buffer2);
 #else
     FREEMEMORY(meshi->boundarytype);
-    FREEMEMORY(meshi->boundary_row);
-    FREEMEMORY(meshi->boundary_col);
     FREEMEMORY(meshi->blockstart);
 
     FREEMEMORY(meshi->xyzpatch);
@@ -1515,19 +1510,15 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
     int offsets[15];
 
     offsets[0] =              sizeof(int)*patchi->npatches;
-    offsets[1] = offsets[0] + sizeof(int)*patchi->npatches;
-    offsets[2] = offsets[1] + sizeof(int)*patchi->npatches;
-    offsets[3] = offsets[2] + sizeof(int)*(1+ patchi->npatches);
+    offsets[1] = offsets[0] + sizeof(int)*(1+ patchi->npatches);
 #endif
     int abort = 0;
 #ifdef pp_BOUNDMEM
-    if(NewResizeMemory(meshi->buffer1, offsets[3]) == 0)abort = 1;
+    if(NewResizeMemory(meshi->buffer1, offsets[1]) == 0)abort = 1;
     if(abort == 0 && NewResizeMemory(patchi->patchfaceinfo, sizeof(patchfacedata) * patchi->npatches) == 0)abort = 1;
 #else
     if(abort == 0 && NewResizeMemory(patchi->patchfaceinfo,  sizeof(patchfacedata)*patchi->npatches) == 0)abort=1;
     if(abort == 0 && NewResizeMemory(meshi->boundarytype,    sizeof(int)*patchi->npatches) == 0)abort = 1;
-    if(abort == 0 && NewResizeMemory(meshi->boundary_row,    sizeof(int)*patchi->npatches) == 0)abort = 1;
-    if(abort == 0 && NewResizeMemory(meshi->boundary_col,    sizeof(int)*patchi->npatches) == 0)abort = 1;
     if(abort == 0 && NewResizeMemory(meshi->blockstart,      sizeof(int)*(1+patchi->npatches)) == 0)abort = 1;
 #endif
     if(abort == 1){
@@ -1540,9 +1531,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
     }
 #ifdef pp_BOUNDMEM
     meshi->boundarytype    = (int *)meshi->buffer1;
-    meshi->boundary_row    = (int *)(meshi->buffer1 + offsets[0]);
-    meshi->boundary_col    = (int *)(meshi->buffer1 + offsets[1]);
-    meshi->blockstart      = (int *)(meshi->buffer1 + offsets[2]);
+    meshi->blockstart      = (int *)(meshi->buffer1 + offsets[0]);
 #endif
   }
 
@@ -1724,8 +1713,8 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
     if(i1==i2){
       int ext_wall, mesh_boundary;
 
-      meshi->boundary_col[n] = j2 + 1 - j1;
-      meshi->boundary_row[n] = k2 + 1 - k1;
+      pfi->ncol = j2 + 1 - j1;
+      pfi->nrow = k2 + 1 - k1;
 
       ext_wall=0;
       mesh_boundary = NO;
@@ -1838,8 +1827,8 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
     else if(j1==j2){
       int ext_wall, mesh_boundary;
 
-      meshi->boundary_col[n] = i2 + 1 - i1;
-      meshi->boundary_row[n] = k2 + 1 - k1;
+      pfi->ncol = i2 + 1 - i1;
+      pfi->nrow = k2 + 1 - k1;
 
       ext_wall=0;
       mesh_boundary = NO;
@@ -1950,8 +1939,8 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
     else if(k1==k2){
       int ext_wall, mesh_boundary;
 
-      meshi->boundary_col[n] = i2 + 1 - i1;
-      meshi->boundary_row[n] = j2 + 1 - j1;
+      pfi->ncol = i2 + 1 - i1;
+      pfi->nrow = j2 + 1 - j1;
 
       ext_wall=0;
       mesh_boundary = NO;
@@ -2065,7 +2054,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
         patchblankcopy += (j2+1-j1)*(i2+1-i1);
       }
     }
-    meshi->blockstart[n+1]=meshi->blockstart[n]+meshi->boundary_row[n]*meshi->boundary_col[n];
+    meshi->blockstart[n+1]=meshi->blockstart[n]+pfi->nrow*pfi->ncol;
     pfi->vis=vis_boundary_type[meshi->boundarytype[n]];
   }
 
@@ -2198,7 +2187,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
           pfi = patchi->patchfaceinfo + n;
           iblock=pfi->obst_index;
           meshblock = pfi->meshinfo;
-          nsize=meshi->boundary_row[n]*meshi->boundary_col[n];
+          nsize=pfi->nrow*pfi->ncol;
           assert((iblock!=-1&&meshblock!=NULL)||(iblock==-1&&meshblock==NULL));
           if(iblock!=-1&&meshblock!=NULL){
             switch(loadpatchbysteps){
@@ -2571,7 +2560,7 @@ void DrawBoundaryTexture(const meshdata *meshi){
   int *patchblankcopy;
   float *patch_times;
   float *xyzpatch;
-  int *boundary_row, *boundary_col, *boundarytype;
+  int *boundarytype;
   int *blockstart;
   int *patchblank;
   int iblock;
@@ -2596,8 +2585,6 @@ void DrawBoundaryTexture(const meshdata *meshi){
   patch_times=meshi->patch_times;
   xyzpatch=meshi->xyzpatch;
   boundarytype=meshi->boundarytype;
-  boundary_row=meshi->boundary_row;
-  boundary_col=meshi->boundary_col;
   blockstart=meshi->blockstart;
   patchblank=meshi->patchblank;
   patchi=patchinfo+meshi->patchfilenum;
@@ -2650,8 +2637,8 @@ void DrawBoundaryTexture(const meshdata *meshi){
     if(pfi->vis==1&&pfi->dir==0)drawit=1;
     if(boundarytype[n]!=INTERIORwall&&showpatch_both==1)drawit=1;
     if(drawit==1){
-      nrow=boundary_row[n];
-      ncol=boundary_col[n];
+      nrow=pfi->nrow;
+      ncol=pfi->ncol;
       xyzpatchcopy = xyzpatch + 3*blockstart[n];
       patchblankcopy = patchblank + blockstart[n];
 #ifdef pp_BOUNDFRAME
@@ -2748,8 +2735,8 @@ void DrawBoundaryTexture(const meshdata *meshi){
       }
     }
     if(drawit==1){
-      nrow=boundary_row[n];
-      ncol=boundary_col[n];
+      nrow=pfi->nrow;
+      ncol=pfi->ncol;
       xyzpatchcopy = xyzpatch + 3*blockstart[n];
       patchblankcopy = patchblank + blockstart[n];
 #ifdef pp_BOUNDFRAME
@@ -2863,8 +2850,8 @@ void DrawBoundaryTexture(const meshdata *meshi){
       }
     }
     if(drawit==1){
-      nrow=boundary_row[n];
-      ncol=boundary_col[n];
+      nrow=pfi->nrow;
+      ncol=pfi->ncol;
       xyzpatchcopy = xyzpatch + 3*blockstart[n];
       patchblankcopy = patchblank + blockstart[n];
 #ifdef pp_BOUNDFRAME
@@ -2974,7 +2961,6 @@ void DrawBoundaryTextureThreshold(const meshdata *meshi){
   int *patchblankcopy;
   float *patch_times;
   float *xyzpatch;
-  int *boundary_row, *boundary_col;
   int *blockstart;
   int *patchblank;
   int iblock;
@@ -2989,8 +2975,6 @@ void DrawBoundaryTextureThreshold(const meshdata *meshi){
 
   patch_times=meshi->patch_times;
   xyzpatch=meshi->xyzpatch;
-  boundary_row=meshi->boundary_row;
-  boundary_col=meshi->boundary_col;
   blockstart=meshi->blockstart;
   patchblank=meshi->patchblank;
   patchi=patchinfo+meshi->patchfilenum;
@@ -3037,13 +3021,13 @@ void DrawBoundaryTextureThreshold(const meshdata *meshi){
     if(iblock!=-1&&meshblock!=NULL){
       bc=meshblock->blockageinfoptrs[iblock];
       if(bc->showtimelist!=NULL&&bc->showtimelist[itimes]==0){
-        nn += boundary_row[n]*boundary_col[n];
+        nn += pfi->nrow*pfi->ncol;
         continue;
       }
     }
     if(pfi->vis==1&&pfi->dir==0){
-      nrow=boundary_row[n];
-      ncol=boundary_col[n];
+      nrow=pfi->nrow;
+      ncol=pfi->ncol;
       xyzpatchcopy = xyzpatch + 3*blockstart[n];
       patchblankcopy = patchblank + blockstart[n];
 
@@ -3113,7 +3097,7 @@ void DrawBoundaryTextureThreshold(const meshdata *meshi){
         }
       }
     }
-    nn += boundary_row[n]*boundary_col[n];
+    nn += pfi->nrow*pfi->ncol;
   }
   glEnd();
   if(cullfaces==1)glEnable(GL_CULL_FACE);
@@ -3131,13 +3115,13 @@ void DrawBoundaryTextureThreshold(const meshdata *meshi){
     if(iblock!=-1){
       bc=meshblock->blockageinfoptrs[iblock];
       if(bc->showtimelist!=NULL&&bc->showtimelist[itimes]==0){
-        nn += boundary_row[n]*boundary_col[n];
+        nn += pfi->nrow*pfi->ncol;
         continue;
       }
     }
     if(pfi->vis==1&&pfi->dir>0){
-      nrow=boundary_row[n];
-      ncol=boundary_col[n];
+      nrow=pfi->nrow;
+      ncol=pfi->ncol;
       xyzpatchcopy = xyzpatch + 3*blockstart[n];
       patchblankcopy = patchblank + blockstart[n];
 #ifdef pp_BOUNDFRAME
@@ -3206,7 +3190,7 @@ void DrawBoundaryTextureThreshold(const meshdata *meshi){
         }
       }
     }
-    nn += boundary_row[n]*boundary_col[n];
+    nn += pfi->nrow*pfi->ncol;
   }
 
   /* if a contour boundary DOES match a blockage face then draw "one sides" of boundary */
@@ -3221,13 +3205,13 @@ void DrawBoundaryTextureThreshold(const meshdata *meshi){
     if(iblock!=-1&&meshblock!=NULL){
       bc=meshblock->blockageinfoptrs[iblock];
       if(bc->showtimelist!=NULL&&bc->showtimelist[itimes]==0){
-        nn += boundary_row[n]*boundary_col[n];
+        nn += pfi->nrow*pfi->ncol;
         continue;
       }
     }
     if(pfi->vis==1&&pfi->dir<0){
-      nrow=boundary_row[n];
-      ncol=boundary_col[n];
+      nrow=pfi->nrow;
+      ncol=pfi->ncol;
       xyzpatchcopy = xyzpatch + 3*blockstart[n];
       patchblankcopy = patchblank + blockstart[n];
 #ifdef pp_BOUNDFRAME
@@ -3295,7 +3279,7 @@ void DrawBoundaryTextureThreshold(const meshdata *meshi){
         }
       }
     }
-    nn += boundary_row[n]*boundary_col[n];
+    nn += pfi->nrow*pfi->ncol;
   }
   glEnd();
   glDisable(GL_TEXTURE_1D);
@@ -3310,7 +3294,6 @@ void DrawBoundaryThresholdCellcenter(const meshdata *meshi){
   int *patchblankcopy;
   float *patch_times;
   float *xyzpatch;
-  int *boundary_row, *boundary_col;
   int *blockstart;
   int *patchblank;
   int iblock;
@@ -3325,8 +3308,6 @@ void DrawBoundaryThresholdCellcenter(const meshdata *meshi){
 
   patch_times=meshi->patch_times;
   xyzpatch=meshi->xyzpatch;
-  boundary_row=meshi->boundary_row;
-  boundary_col=meshi->boundary_col;
   blockstart=meshi->blockstart;
   patchblank=meshi->patchblank;
   patchi=patchinfo+meshi->patchfilenum;
@@ -3359,13 +3340,13 @@ void DrawBoundaryThresholdCellcenter(const meshdata *meshi){
     if(iblock!=-1&&meshblock!=NULL){
       bc=meshblock->blockageinfoptrs[iblock];
       if(bc->showtimelist!=NULL&&bc->showtimelist[itimes]==0){
-        nn += boundary_row[n]*boundary_col[n];
+        nn += pfi->nrow*pfi->ncol;
         continue;
       }
     }
     if(pfi->vis==1&&pfi->dir==0){
-      nrow=boundary_row[n];
-      ncol=boundary_col[n];
+      nrow=pfi->nrow;
+      ncol=pfi->ncol;
       xyzpatchcopy = xyzpatch + 3*blockstart[n];
       patchblankcopy = patchblank + blockstart[n];
 
@@ -3399,7 +3380,7 @@ void DrawBoundaryThresholdCellcenter(const meshdata *meshi){
         }
       }
     }
-    nn += boundary_row[n]*boundary_col[n];
+    nn += pfi->nrow*pfi->ncol;
   }
   glEnd();
   if(cullfaces==1)glEnable(GL_CULL_FACE);
@@ -3417,13 +3398,13 @@ void DrawBoundaryThresholdCellcenter(const meshdata *meshi){
     if(iblock!=-1){
       bc=meshblock->blockageinfoptrs[iblock];
       if(bc->showtimelist!=NULL&&bc->showtimelist[itimes]==0){
-        nn += boundary_row[n]*boundary_col[n];
+        nn += pfi->nrow*pfi->ncol;
         continue;
       }
     }
     if(pfi->vis==1&&pfi->dir>0){
-      nrow=boundary_row[n];
-      ncol=boundary_col[n];
+      nrow=pfi->nrow;
+      ncol=pfi->ncol;
       xyzpatchcopy = xyzpatch + 3*blockstart[n];
       patchblankcopy = patchblank + blockstart[n];
 
@@ -3458,7 +3439,7 @@ void DrawBoundaryThresholdCellcenter(const meshdata *meshi){
         }
       }
     }
-    nn += boundary_row[n]*boundary_col[n];
+    nn += pfi->nrow*pfi->ncol;
   }
 
   /* if a contour boundary DOES match a blockage face then draw "one sides" of boundary */
@@ -3473,13 +3454,13 @@ void DrawBoundaryThresholdCellcenter(const meshdata *meshi){
     if(iblock!=-1&&meshblock!=NULL){
       bc=meshblock->blockageinfoptrs[iblock];
       if(bc->showtimelist!=NULL&&bc->showtimelist[itimes]==0){
-        nn += boundary_row[n]*boundary_col[n];
+        nn += pfi->nrow*pfi->ncol;
         continue;
       }
     }
     if(pfi->vis==1&&pfi->dir<0){
-      nrow=boundary_row[n];
-      ncol=boundary_col[n];
+      nrow=pfi->nrow;
+      ncol=pfi->ncol;
       xyzpatchcopy = xyzpatch + 3*blockstart[n];
       patchblankcopy = patchblank + blockstart[n];
 
@@ -3512,7 +3493,7 @@ void DrawBoundaryThresholdCellcenter(const meshdata *meshi){
         }
       }
     }
-    nn += boundary_row[n]*boundary_col[n];
+    nn += pfi->nrow*pfi->ncol;
   }
   glEnd();
 }
@@ -3530,12 +3511,14 @@ void MakeBoundaryMask(patchdata *patchi){
   memset(meshi->boundary_mask, 0, meshi->npatchsize);
   for(n = 0;n < patchi->npatches; n++){
     int irow, ncol;
+    patchfacedata *pfi;
 
-    ncol = meshi->boundary_col[n];
-    for(irow = 1; irow < meshi->boundary_row[n]; irow++){
+    pfi = patchi->patchfaceinfo + n;
+    ncol = pfi->ncol;
+    for(irow = 1; irow < pfi->nrow; irow++){
       int icol;
 
-      for(icol = 1;icol < meshi->boundary_col[n];icol++){
+      for(icol = 1;icol < pfi->ncol;icol++){
         meshi->boundary_mask[meshi->blockstart[n]+IJKBF(irow, icol)] = 1;
       }
     }
@@ -3553,7 +3536,7 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
   float *patchval_iframe;
 #endif
   float *patch_times;
-  int *boundary_row, *boundary_col, *boundarytype;
+  int *boundarytype;
   int *blockstart;
   int iblock;
   blockagedata *bc;
@@ -3582,8 +3565,6 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
 
   patch_times = meshi->patch_times;
   boundarytype = meshi->boundarytype;
-  boundary_row = meshi->boundary_row;
-  boundary_col = meshi->boundary_col;
   blockstart = meshi->blockstart;
   patchventcolors = meshi->patchventcolors;
   patchi = patchinfo+meshi->patchfilenum;
@@ -3627,7 +3608,7 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
     if(iblock!=-1&&meshblock!=NULL){
       bc = meshblock->blockageinfoptrs[iblock];
       if(bc->showtimelist!=NULL&&bc->showtimelist[itimes]==0){
-        nn += boundary_row[n]*boundary_col[n];
+        nn += pfi->nrow*pfi->ncol;
         continue;
       }
     }
@@ -3635,8 +3616,8 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
     if(pfi->vis==1&&pfi->dir==0)drawit = 1;
     if(boundarytype[n]!=INTERIORwall&&showpatch_both==1)drawit = 1;
     if(drawit==1){
-      nrow = boundary_row[n];
-      ncol = boundary_col[n];
+      nrow = pfi->nrow;
+      ncol = pfi->ncol;
 #ifdef pp_BOUNDFRAME
       patchvals = (float *)FRAMEGetSubFramePtr(patchi->frameinfo, meshi->patch_itime, n);
 #else
@@ -3690,7 +3671,7 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
         }
       }
     }
-    nn += boundary_row[n]*boundary_col[n];
+    nn += pfi->nrow*pfi->ncol;
   }
   glEnd();
   if(cullfaces==1)glEnable(GL_CULL_FACE);
@@ -3711,7 +3692,7 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
     if(iblock!=-1){
       bc = meshblock->blockageinfoptrs[iblock];
       if(bc->showtimelist!=NULL&&bc->showtimelist[itimes]==0){
-        nn += boundary_row[n]*boundary_col[n];
+        nn += pfi->nrow*pfi->ncol;
         continue;
       }
     }
@@ -3722,8 +3703,8 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
       }
     }
     if(drawit==1){
-      nrow = boundary_row[n];
-      ncol = boundary_col[n];
+      nrow = pfi->nrow;
+      ncol = pfi->ncol;
 #ifdef pp_BOUNDFRAME
       patchvals = (float *)FRAMEGetSubFramePtr(patchi->frameinfo, meshi->patch_itime, n);
 #else
@@ -3800,7 +3781,7 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
         glPopMatrix();
       }
     }
-    nn += boundary_row[n]*boundary_col[n];
+    nn += pfi->nrow*pfi->ncol;
   }
 
   /* if a contour boundary DOES match a blockage face then draw "one sides" of boundary */
@@ -3816,7 +3797,7 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
     if(iblock!=-1&&meshblock!=NULL){
       bc = meshblock->blockageinfoptrs[iblock];
       if(bc->showtimelist!=NULL&&bc->showtimelist[itimes]==0){
-        nn += boundary_row[n]*boundary_col[n];
+        nn += pfi->nrow*pfi->ncol;
         continue;
       }
     }
@@ -3827,8 +3808,8 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
       }
     }
     if(drawit==1){
-      nrow = boundary_row[n];
-      ncol = boundary_col[n];
+      nrow = pfi->nrow;
+      ncol = pfi->ncol;
 #ifdef pp_BOUNDFRAME
       patchvals = (float *)FRAMEGetSubFramePtr(patchi->frameinfo, meshi->patch_itime, n);
 #else
@@ -3904,7 +3885,7 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
         glPopMatrix();
       }
     }
-    nn += boundary_row[n]*boundary_col[n];
+    nn += pfi->nrow*pfi->ncol;
   }
   if(hidepatchsurface==1){
     glEnd();

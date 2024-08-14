@@ -167,7 +167,7 @@ typedef struct _meshdata {
   unsigned char *buffer1;
 #endif
   int *boundarytype;
-  int *boundary_row, *boundary_col, *blockstart;
+  int *blockstart;
 
   struct _meshdata *nabors[6];
   struct _supermeshdata *super;

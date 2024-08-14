@@ -178,7 +178,7 @@ void GetBndfNodeVerts(int option, int option2, int *offset,
     for(j = 0;j<npatchinfo;j++){
       patchdata *patchi;
       meshdata *meshpatch;
-      int n, *boundarytype, *boundary_row, *boundary_col, *blockstart;
+      int n, *boundarytype, *blockstart;
       unsigned char *cpatch_time;
 
       patchi = patchinfo + j;
@@ -187,8 +187,6 @@ void GetBndfNodeVerts(int option, int option2, int *offset,
 
       meshpatch = meshinfo+patchi->blocknumber;
       boundarytype = meshpatch->boundarytype;
-      boundary_row = meshpatch->boundary_row;
-      boundary_col = meshpatch->boundary_col;
       blockstart = meshpatch->blockstart;
 
       cpatch_time = meshpatch->cpatchval+itime*meshpatch->npatchsize;
@@ -207,8 +205,8 @@ void GetBndfNodeVerts(int option, int option2, int *offset,
           if(drawit==1){
             int nrow, ncol;
 
-            nrow = boundary_row[n];
-            ncol = boundary_col[n];
+            nrow = pfi->nrow;
+            ncol = pfi->ncol;
             nv += nrow*ncol;
             nt += 2*(nrow-1)*(ncol-1);
           }
@@ -230,8 +228,8 @@ void GetBndfNodeVerts(int option, int option2, int *offset,
             }
           }
           if(drawit==0)continue;
-          nrow = boundary_row[n];
-          ncol = boundary_col[n];
+          nrow = pfi->nrow;
+          ncol = pfi->ncol;
           if(itime==ibeg){
             float *xyzpatchcopy;
 

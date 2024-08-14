@@ -1063,7 +1063,7 @@ void InitMesh(meshdata *meshi){
   meshi->offset[ZZZ] = 0.0;
   meshi->boundarytype = NULL;
   meshi->ptype = NULL;
-  meshi->boundary_row = NULL, meshi->boundary_col = NULL, meshi->blockstart = NULL;
+  meshi->blockstart = NULL;
   meshi->zipoffset = NULL, meshi->zipsize = NULL;
   meshi->xyzpatch = NULL;
   meshi->xyzpatch_threshold = NULL;
