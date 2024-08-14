@@ -62,6 +62,10 @@ if (LINUX)
     add_definitions(-Dpp_LINUX)
 endif()
 
+# GLUI has been modified for smokeview, so we have to vendor it and can't use a
+# native version.
+add_subdirectory(Source/glui_v2_1_beta)
+
 if (NOT MSVC)
     add_compile_options(-Wunused)
 else()
@@ -69,9 +73,9 @@ else()
 endif()
 # This is a set of warnings that are not enabled by default but it would be good
 # to satisfy these.
-if(STRICT_CHECKS)
-    set(CMAKE_CXX_CLANG_TIDY "clang-tidy;-checks=clang-diagnostic-*,clang-analyzer-*,-clang-analyzer-security.insecureAPI.*")
-    set(CMAKE_C_CLANG_TIDY "clang-tidy;-checks=clang-diagnostic-*,clang-analyzer-*,-clang-analyzer-security.insecureAPI.*")
+if(STRICT_CHECKS AND (NOT MSVC))
+    # set(CMAKE_CXX_CLANG_TIDY "clang-tidy;-checks=clang-diagnostic-*,clang-analyzer-*,-clang-analyzer-security.insecureAPI.*")
+    # set(CMAKE_C_CLANG_TIDY "clang-tidy;-checks=clang-diagnostic-*,clang-analyzer-*,-clang-analyzer-security.insecureAPI.*")
     set(CMAKE_COMPILE_WARNING_AS_ERROR ON)
     add_compile_options(-O2)
     add_compile_options(-flto=auto)
@@ -86,6 +90,18 @@ if(STRICT_CHECKS)
     add_compile_options(-fasynchronous-unwind-tables)
     add_compile_options(-fstack-clash-protection -fcf-protection)
     add_compile_options(-fcf-protection)
+
+    add_compile_options(-Wno-unknown-pragmas)
+    add_compile_options(-Wno-uninitialized)
+    add_compile_options(-Wno-unused-result)
+    add_compile_options(-Wno-format-overflow)
+    add_compile_options(-Wno-format-truncation)
+    add_compile_options(-Wno-stringop-truncation)
+    add_compile_options(-Wno-nonnull)
+    add_compile_options(-Wno-comment)
+elseif(STRICT_CHECKS AND (NOT MSVC))
+    add_compile_options(/Wall)
+    add_compile_options(/Werror)
 endif()
 
 find_package(OpenGL REQUIRED)
@@ -112,9 +128,6 @@ if (NOT ZLIB_FOUND)
     add_subdirectory(Source/zlib128)
 endif()
 
-# GLUI has been modified for smokeview, so we have to vendor it and can't use a
-# native version.
-add_subdirectory(Source/glui_v2_1_beta)
 
 # This fails on Windows so we disable it for now
 if (NOT(WIN32))

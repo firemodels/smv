@@ -1917,7 +1917,7 @@ int ISearch(float *list, int nlist, float key, int guess){
 /* ------------------ ResetItimes0 ------------------------ */
 
 void ResetItimes0(void){
-  if(current_script_command==NULL||current_script_command->command!=SCRIPT_VOLSMOKERENDERALL||current_script_command->command!=SCRIPT_ISORENDERALL){
+  if(current_script_command==NULL||(current_script_command->command!=SCRIPT_VOLSMOKERENDERALL&&current_script_command->command!=SCRIPT_ISORENDERALL)){
     itimes=first_frame_index;
   }
 }
