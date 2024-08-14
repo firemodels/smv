@@ -999,9 +999,11 @@ void GetBoundaryHeader2(char *file, patchfacedata *patchfaceinfo){
     patchfaceinfo->obst_index = buffer[7] - 1;
     if(patchfaceinfo->obst_index>=0){
       patchfaceinfo->meshinfo = meshinfo + buffer[8] - 1;
+      patchfaceinfo->obst     = patchfaceinfo->meshinfo->blockageinfoptrs[patchfaceinfo->obst_index];
     }
     else{
       patchfaceinfo->meshinfo = NULL;
+      patchfaceinfo->obst     = NULL;
     }
   }
   fclose(stream);
@@ -1256,9 +1258,11 @@ void GetPatchSizes2(FILE_m *stream, int npatch, int *npatchsize,
     pfi->obst_index = ijkp[7] - 1;
     if(pfi->obst_index >= 0){
       pfi->meshinfo = meshinfo + ijkp[8] - 1;
+      pfi->obst     = pfi->meshinfo->blockageinfoptrs[pfi->obst_index];
     }
     else{
       pfi->meshinfo = NULL;
+      pfi->obst     = NULL;
     }
 
     int i1 = ijkp[0];
