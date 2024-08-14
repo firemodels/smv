@@ -3560,7 +3560,7 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
     }
     drawit = 0;
     if(pfi->vis==1&&pfi->dir==0)drawit = 1;
-    if(pfi->type=INTERIORwall&&showpatch_both==1)drawit = 1;
+    if(pfi->type==INTERIORwall&&showpatch_both==1)drawit = 1;
     if(drawit==1){
       nrow = pfi->nrow;
       ncol = pfi->ncol;
