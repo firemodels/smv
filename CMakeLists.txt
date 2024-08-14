@@ -66,6 +66,59 @@ endif()
 # native version.
 add_subdirectory(Source/glui_v2_1_beta)
 
+find_package(OpenGL REQUIRED)
+if (NOT(WIN32))
+    find_package(GLUT)
+endif()
+if (NOT GLUT_FOUND)
+    add_subdirectory(Source/glut-3.7.6)
+endif()
+find_package(OpenGL REQUIRED)
+find_package(GLEW)
+# If GLEW is not found natively we compile it into smokeview directly later in
+# this file rather than adding a subdirectory
+find_package(JPEG)
+if (NOT JPEG_FOUND)
+    add_subdirectory(Source/jpeg-9b)
+endif()
+find_package(PNG)
+if (NOT PNG_FOUND)
+    add_subdirectory(Source/png-1.6.21)
+endif()
+find_package(ZLIB)
+if (NOT ZLIB_FOUND)
+    add_subdirectory(Source/zlib128)
+endif()
+
+# This fails on Windows so we disable it for now
+if (NOT(WIN32))
+    find_package(PkgConfig)
+    if (PKG_CONFIG_FOUND)
+        pkg_check_modules(LIBGD IMPORTED_TARGET gdlib)
+    endif()
+endif()
+
+if (NOT LIBGD_FOUND)
+    add_subdirectory(Source/gd-2.0.15)
+endif()
+
+if (WIN32)
+    find_package(PThreads4W)
+    if (NOT PThreads4W_FOUND)
+        add_subdirectory(Source/pthreads)
+    endif()
+endif()
+
+if (LUA)
+    if (VENDOR_LFS)
+        add_subdirectory(Source/lfs)
+    endif()
+    if (VENDOR_LPEG)
+        add_subdirectory(Source/lpeg)
+    endif()
+endif()
+
+
 if (NOT MSVC)
     add_compile_options(-Wunused)
 else()
@@ -110,49 +163,6 @@ if(STRICT_CHECKS AND (NOT MSVC))
 elseif(STRICT_CHECKS AND (NOT MSVC))
     add_compile_options(/Wall)
     add_compile_options(/Werror)
-endif()
-
-find_package(OpenGL REQUIRED)
-if (NOT(WIN32))
-    find_package(GLUT)
-endif()
-if (NOT GLUT_FOUND)
-    add_subdirectory(Source/glut-3.7.6)
-endif()
-find_package(OpenGL REQUIRED)
-find_package(GLEW)
-# If GLEW is not found natively we compile it into smokeview directly later in
-# this file rather than adding a subdirectory
-find_package(JPEG)
-if (NOT JPEG_FOUND)
-    add_subdirectory(Source/jpeg-9b)
-endif()
-find_package(PNG)
-if (NOT PNG_FOUND)
-    add_subdirectory(Source/png-1.6.21)
-endif()
-find_package(ZLIB)
-if (NOT ZLIB_FOUND)
-    add_subdirectory(Source/zlib128)
-endif()
-
-# This fails on Windows so we disable it for now
-if (NOT(WIN32))
-    find_package(PkgConfig)
-    if (PKG_CONFIG_FOUND)
-        pkg_check_modules(LIBGD IMPORTED_TARGET gdlib)
-    endif()
-endif()
-
-if (NOT LIBGD_FOUND)
-    add_subdirectory(Source/gd-2.0.15)
-endif()
-
-if (WIN32)
-    find_package(PThreads4W)
-    if (NOT PThreads4W_FOUND)
-        add_subdirectory(Source/pthreads)
-    endif()
 endif()
 
 add_executable(smokeview
@@ -300,8 +310,6 @@ else()
 endif()
 target_link_libraries(smokeview PRIVATE OpenGL::GL OpenGL::GLU)
 
-
-
 target_include_directories(smokeview PRIVATE
     Source/smokeview
     Source/shared
@@ -372,12 +380,6 @@ if (LUA)
         Source/smvluacore/camera.lua
         DESTINATION ${CMAKE_INSTALL_DATADIR}/smokeview/scripts
     )
-    if (VENDOR_LFS)
-        add_subdirectory(Source/lfs)
-    endif()
-    if (VENDOR_LPEG)
-        add_subdirectory(Source/lpeg)
-    endif()
 endif()
 
 if (MSVC)
