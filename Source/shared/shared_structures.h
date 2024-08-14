@@ -163,12 +163,6 @@ typedef struct _meshdata {
 
   struct _meshdata *skip_nabors[6];
 
-#ifdef pp_BOUNDMEM
-  unsigned char *buffer1;
-#endif
-  int *boundarytype;
-  int *blockstart;
-
   struct _meshdata *nabors[6];
   struct _supermeshdata *super;
   int *ptype;

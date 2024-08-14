@@ -6337,7 +6337,7 @@ void ShowBoundaryMenu(int value){
           patchfacedata *pfi;
 
           pfi = patchi->patchfaceinfo + n;
-          if(meshi->boundarytype[n] != INTERIORwall){
+          if(pfi->type != INTERIORwall){
             pfi->vis = val;
           }
         }
@@ -6365,7 +6365,7 @@ void ShowBoundaryMenu(int value){
           patchfacedata *pfi;
 
           pfi = patchi->patchfaceinfo + n;
-          if(meshi->boundarytype[n] == INTERIORwall){
+          if(pfi->type == INTERIORwall){
             pfi->vis = val;
           }
         }
@@ -6387,8 +6387,8 @@ void ShowBoundaryMenu(int value){
           patchfacedata *pfi;
 
           pfi = patchi->patchfaceinfo + n;
-          if(meshi->boundarytype[n] != INTERIORwall){
-            pfi->vis = vis_boundary_type[meshi->boundarytype[n]];
+          if(pfi->type != INTERIORwall){
+            pfi->vis = vis_boundary_type[pfi->type];
           }
         }
       }
@@ -6409,7 +6409,7 @@ void ShowBoundaryMenu(int value){
           patchfacedata *pfi;
 
           pfi = patchi->patchfaceinfo + n;
-          if(meshi->boundarytype[n] == value){
+          if(pfi->type == value){
             pfi->vis = 1 - pfi->vis;
             vis_boundary_type[value] = pfi->vis;
           }
@@ -7703,7 +7703,10 @@ int IsBoundaryType(int type){
     patchi = patchinfo + i;
     meshi = meshinfo + patchi->blocknumber;
     for(n = 0; n < patchi->npatches; n++){
-      if(meshi->boundarytype[n] == type)return 1;
+      patchfacedata *pfi;
+
+      pfi = patchi->patchfaceinfo + n;
+      if(pfi->type == type)return 1;
     }
   }
   return 0;

@@ -1057,13 +1057,10 @@ void InitMesh(meshdata *meshi){
   meshi->nvents = 0;
   meshi->ndummyvents = 0;
   meshi->ncvents = 0;
-  meshi->boundarytype = NULL;
   meshi->offset[XXX] = 0.0;
   meshi->offset[YYY] = 0.0;
   meshi->offset[ZZZ] = 0.0;
-  meshi->boundarytype = NULL;
   meshi->ptype = NULL;
-  meshi->blockstart = NULL;
   meshi->zipoffset = NULL, meshi->zipsize = NULL;
   meshi->xyzpatch = NULL;
   meshi->xyzpatch_threshold = NULL;

@@ -178,7 +178,7 @@ void GetBndfNodeVerts(int option, int option2, int *offset,
     for(j = 0;j<npatchinfo;j++){
       patchdata *patchi;
       meshdata *meshpatch;
-      int n, *boundarytype, *blockstart;
+      int n;
       unsigned char *cpatch_time;
 
       patchi = patchinfo + j;
@@ -186,8 +186,6 @@ void GetBndfNodeVerts(int option, int option2, int *offset,
       if(patchi->patch_filetype!=PATCH_STRUCTURED_NODE_CENTER)continue;
 
       meshpatch = meshinfo+patchi->blocknumber;
-      boundarytype = meshpatch->boundarytype;
-      blockstart = meshpatch->blockstart;
 
       cpatch_time = meshpatch->cpatchval+itime*meshpatch->npatchsize;
       if(itime==ibeg){
@@ -198,7 +196,7 @@ void GetBndfNodeVerts(int option, int option2, int *offset,
           pfi = patchi->patchfaceinfo + n;
           drawit = 0;
           if(pfi->vis==1&&pfi->dir>0){
-            if(boundarytype[n]==INTERIORwall||showpatch_both==0){
+            if(pfi->type ==INTERIORwall||showpatch_both==0){
               drawit = 1;
             }
           }
@@ -223,7 +221,7 @@ void GetBndfNodeVerts(int option, int option2, int *offset,
           pfi = patchi->patchfaceinfo + n;
           drawit = 0;
           if(pfi->vis==1&&pfi->dir>0){
-            if(boundarytype[n]==INTERIORwall||showpatch_both==0){
+            if(pfi->type ==INTERIORwall||showpatch_both==0){
               drawit = 1;
             }
           }
@@ -233,7 +231,7 @@ void GetBndfNodeVerts(int option, int option2, int *offset,
           if(itime==ibeg){
             float *xyzpatchcopy;
 
-            xyzpatchcopy = meshpatch->xyzpatch+3*blockstart[n];
+            xyzpatchcopy = meshpatch->xyzpatch+3*pfi->start;
             for(irow = 0;irow<nrow;irow++){
               int icol;
               float *xyz;
@@ -264,7 +262,7 @@ void GetBndfNodeVerts(int option, int option2, int *offset,
             int icol;
             unsigned char *cpatchval1;
 
-            cpatchval1 = cpatch_time + blockstart[n] + irow*ncol;
+            cpatchval1 = cpatch_time + pfi->start + irow*ncol;
             for(icol = 0;icol<ncol;icol++){
               *textures++ = *cpatchval1++;
             }
