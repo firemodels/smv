@@ -1268,7 +1268,7 @@ typedef struct _smoke3dtypedata {
 /* --------------------------  patchfacedata ------------------------------------ */
 
 typedef struct _patchfacedata{
-  int ib[7], dir, obst_index, vis, nrow, ncol, start, type;
+  int ib[7], dir, obst_index, vis, nrow, ncol, start, type, internal;
   struct _meshdata *meshinfo;
   struct _blockagedata *obst;
 } patchfacedata;
