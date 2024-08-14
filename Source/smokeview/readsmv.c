@@ -1065,7 +1065,6 @@ void InitMesh(meshdata *meshi){
   meshi->ptype = NULL;
   meshi->boundary_row = NULL, meshi->boundary_col = NULL, meshi->blockstart = NULL;
   meshi->zipoffset = NULL, meshi->zipsize = NULL;
-  meshi->vis_boundaries = NULL;
   meshi->xyzpatch = NULL;
   meshi->xyzpatch_threshold = NULL;
   meshi->patchventcolors = NULL;

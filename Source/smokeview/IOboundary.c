@@ -540,7 +540,6 @@ void DrawOnlyThreshold(const meshdata *meshi){
   float *xyzpatchcopy;
   int *patchblankcopy;
   float *patch_times;
-  int *vis_boundaries;
   float *xyzpatch;
   int *boundary_row, *boundary_col;
   int *blockstart;
@@ -555,7 +554,6 @@ void DrawOnlyThreshold(const meshdata *meshi){
   if(vis_threshold==0||vis_onlythreshold==0||do_threshold==0)return;
 
   patch_times = meshi->patch_times;
-  vis_boundaries = meshi->vis_boundaries;
   xyzpatch = meshi->xyzpatch_threshold;
   boundary_row = meshi->boundary_row;
   boundary_col = meshi->boundary_col;
@@ -597,7 +595,7 @@ void DrawOnlyThreshold(const meshdata *meshi){
         continue;
       }
     }
-    if(vis_boundaries[n]==1&&patchi->patchfaceinfo[n].dir==0){
+    if(pfi->vis==1&&pfi->dir==0){
       nrow = boundary_row[n];
       ncol = boundary_col[n];
       xyzpatchcopy = xyzpatch+3*blockstart[n];
@@ -684,7 +682,7 @@ void DrawOnlyThreshold(const meshdata *meshi){
         continue;
       }
     }
-    if(meshi->vis_boundaries[n]==1&&pfi->dir>0){
+    if(pfi->vis==1&&pfi->dir>0){
       nrow = boundary_row[n];
       ncol = boundary_col[n];
       xyzpatchcopy = xyzpatch+3*blockstart[n];
@@ -769,7 +767,7 @@ void DrawOnlyThreshold(const meshdata *meshi){
         continue;
       }
     }
-    if(vis_boundaries[n]==1&&pfi->dir<0){
+    if(pfi->vis==1&&pfi->dir<0){
       nrow = boundary_row[n];
       ncol = boundary_col[n];
       xyzpatchcopy = xyzpatch+3*blockstart[n];
@@ -1415,7 +1413,6 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
     FREEMEMORY(meshi->buffer2);
 #else
     FREEMEMORY(meshi->boundarytype);
-    FREEMEMORY(meshi->vis_boundaries);
     FREEMEMORY(meshi->boundary_row);
     FREEMEMORY(meshi->boundary_col);
     FREEMEMORY(meshi->blockstart);
@@ -1520,17 +1517,15 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
     offsets[0] =              sizeof(int)*patchi->npatches;
     offsets[1] = offsets[0] + sizeof(int)*patchi->npatches;
     offsets[2] = offsets[1] + sizeof(int)*patchi->npatches;
-    offsets[3] = offsets[2] + sizeof(int)*patchi->npatches;
-    offsets[4] = offsets[3] + sizeof(int)*(1+ patchi->npatches);
+    offsets[3] = offsets[2] + sizeof(int)*(1+ patchi->npatches);
 #endif
     int abort = 0;
 #ifdef pp_BOUNDMEM
-    if(NewResizeMemory(meshi->buffer1, offsets[4]) == 0)abort = 1;
+    if(NewResizeMemory(meshi->buffer1, offsets[3]) == 0)abort = 1;
     if(abort == 0 && NewResizeMemory(patchi->patchfaceinfo, sizeof(patchfacedata) * patchi->npatches) == 0)abort = 1;
 #else
     if(abort == 0 && NewResizeMemory(patchi->patchfaceinfo,  sizeof(patchfacedata)*patchi->npatches) == 0)abort=1;
     if(abort == 0 && NewResizeMemory(meshi->boundarytype,    sizeof(int)*patchi->npatches) == 0)abort = 1;
-    if(abort == 0 && NewResizeMemory(meshi->vis_boundaries,  sizeof(int)*patchi->npatches) == 0)abort = 1;
     if(abort == 0 && NewResizeMemory(meshi->boundary_row,    sizeof(int)*patchi->npatches) == 0)abort = 1;
     if(abort == 0 && NewResizeMemory(meshi->boundary_col,    sizeof(int)*patchi->npatches) == 0)abort = 1;
     if(abort == 0 && NewResizeMemory(meshi->blockstart,      sizeof(int)*(1+patchi->npatches)) == 0)abort = 1;
@@ -1545,10 +1540,9 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
     }
 #ifdef pp_BOUNDMEM
     meshi->boundarytype    = (int *)meshi->buffer1;
-    meshi->vis_boundaries  = (int *)(meshi->buffer1 + offsets[0]);
-    meshi->boundary_row    = (int *)(meshi->buffer1 + offsets[1]);
-    meshi->boundary_col    = (int *)(meshi->buffer1 + offsets[2]);
-    meshi->blockstart      = (int *)(meshi->buffer1 + offsets[3]);
+    meshi->boundary_row    = (int *)(meshi->buffer1 + offsets[0]);
+    meshi->boundary_col    = (int *)(meshi->buffer1 + offsets[1]);
+    meshi->blockstart      = (int *)(meshi->buffer1 + offsets[2]);
 #endif
   }
 
@@ -2072,7 +2066,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
       }
     }
     meshi->blockstart[n+1]=meshi->blockstart[n]+meshi->boundary_row[n]*meshi->boundary_col[n];
-    meshi->vis_boundaries[n]=vis_boundary_type[meshi->boundarytype[n]];
+    pfi->vis=vis_boundary_type[meshi->boundarytype[n]];
   }
 
   for(n=0;n<meshi->nbptrs;n++){
@@ -2429,7 +2423,10 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
     ShowBoundaryMenu(INI_EXTERIORwallmenu);
   }
   for(n = 0;n<patchi->npatches;n++){
-    meshi->vis_boundaries[n] = vis_boundary_type[meshi->boundarytype[n]];
+    patchfacedata *pfi;
+
+    pfi = patchi->patchfaceinfo + n;
+    pfi->vis = vis_boundary_type[meshi->boundarytype[n]];
   }
   plotstate=GetPlotState(DYNAMIC_PLOTS);
   MakeTimesMap(meshi->patch_times, &meshi->patch_times_map, meshi->npatch_times);
@@ -2573,7 +2570,6 @@ void DrawBoundaryTexture(const meshdata *meshi){
   float *xyzpatchcopy;
   int *patchblankcopy;
   float *patch_times;
-  int *vis_boundaries;
   float *xyzpatch;
   int *boundary_row, *boundary_col, *boundarytype;
   int *blockstart;
@@ -2598,7 +2594,6 @@ void DrawBoundaryTexture(const meshdata *meshi){
   }
 
   patch_times=meshi->patch_times;
-  vis_boundaries=meshi->vis_boundaries;
   xyzpatch=meshi->xyzpatch;
   boundarytype=meshi->boundarytype;
   boundary_row=meshi->boundary_row;
@@ -2652,7 +2647,7 @@ void DrawBoundaryTexture(const meshdata *meshi){
       }
     }
     drawit=0;
-    if(vis_boundaries[n]==1&&pfi->dir==0)drawit=1;
+    if(pfi->vis==1&&pfi->dir==0)drawit=1;
     if(boundarytype[n]!=INTERIORwall&&showpatch_both==1)drawit=1;
     if(drawit==1){
       nrow=boundary_row[n];
@@ -2747,7 +2742,7 @@ void DrawBoundaryTexture(const meshdata *meshi){
       }
     }
     drawit=0;
-    if(meshi->vis_boundaries[n]==1&&pfi->dir>0){
+    if(pfi->vis==1&&pfi->dir>0){
       if(boundarytype[n]==INTERIORwall||showpatch_both==0){
         drawit=1;
       }
@@ -2862,7 +2857,7 @@ void DrawBoundaryTexture(const meshdata *meshi){
       }
     }
     drawit=0;
-    if(vis_boundaries[n]==1&&pfi->dir<0){
+    if(pfi->vis==1&&pfi->dir<0){
       if(boundarytype[n]==INTERIORwall||showpatch_both==0){
         drawit=1;
       }
@@ -2978,7 +2973,6 @@ void DrawBoundaryTextureThreshold(const meshdata *meshi){
   float *xyzpatchcopy;
   int *patchblankcopy;
   float *patch_times;
-  int *vis_boundaries;
   float *xyzpatch;
   int *boundary_row, *boundary_col;
   int *blockstart;
@@ -2994,7 +2988,6 @@ void DrawBoundaryTextureThreshold(const meshdata *meshi){
   if(vis_threshold==1&&vis_onlythreshold==1&&do_threshold==1)return;
 
   patch_times=meshi->patch_times;
-  vis_boundaries=meshi->vis_boundaries;
   xyzpatch=meshi->xyzpatch;
   boundary_row=meshi->boundary_row;
   boundary_col=meshi->boundary_col;
@@ -3048,7 +3041,7 @@ void DrawBoundaryTextureThreshold(const meshdata *meshi){
         continue;
       }
     }
-    if(vis_boundaries[n]==1&&pfi->dir==0){
+    if(pfi->vis==1&&pfi->dir==0){
       nrow=boundary_row[n];
       ncol=boundary_col[n];
       xyzpatchcopy = xyzpatch + 3*blockstart[n];
@@ -3142,7 +3135,7 @@ void DrawBoundaryTextureThreshold(const meshdata *meshi){
         continue;
       }
     }
-    if(meshi->vis_boundaries[n]==1&&pfi->dir>0){
+    if(pfi->vis==1&&pfi->dir>0){
       nrow=boundary_row[n];
       ncol=boundary_col[n];
       xyzpatchcopy = xyzpatch + 3*blockstart[n];
@@ -3232,7 +3225,7 @@ void DrawBoundaryTextureThreshold(const meshdata *meshi){
         continue;
       }
     }
-    if(vis_boundaries[n]==1&&pfi->dir<0){
+    if(pfi->vis==1&&pfi->dir<0){
       nrow=boundary_row[n];
       ncol=boundary_col[n];
       xyzpatchcopy = xyzpatch + 3*blockstart[n];
@@ -3316,7 +3309,6 @@ void DrawBoundaryThresholdCellcenter(const meshdata *meshi){
   float *xyzpatchcopy;
   int *patchblankcopy;
   float *patch_times;
-  int *vis_boundaries;
   float *xyzpatch;
   int *boundary_row, *boundary_col;
   int *blockstart;
@@ -3332,7 +3324,6 @@ void DrawBoundaryThresholdCellcenter(const meshdata *meshi){
   if(vis_threshold==1&&vis_onlythreshold==1&&do_threshold==1)return;
 
   patch_times=meshi->patch_times;
-  vis_boundaries=meshi->vis_boundaries;
   xyzpatch=meshi->xyzpatch;
   boundary_row=meshi->boundary_row;
   boundary_col=meshi->boundary_col;
@@ -3372,7 +3363,7 @@ void DrawBoundaryThresholdCellcenter(const meshdata *meshi){
         continue;
       }
     }
-    if(vis_boundaries[n]==1&&pfi->dir==0){
+    if(pfi->vis==1&&pfi->dir==0){
       nrow=boundary_row[n];
       ncol=boundary_col[n];
       xyzpatchcopy = xyzpatch + 3*blockstart[n];
@@ -3430,7 +3421,7 @@ void DrawBoundaryThresholdCellcenter(const meshdata *meshi){
         continue;
       }
     }
-    if(meshi->vis_boundaries[n]==1&&pfi->dir>0){
+    if(pfi->vis==1&&pfi->dir>0){
       nrow=boundary_row[n];
       ncol=boundary_col[n];
       xyzpatchcopy = xyzpatch + 3*blockstart[n];
@@ -3486,7 +3477,7 @@ void DrawBoundaryThresholdCellcenter(const meshdata *meshi){
         continue;
       }
     }
-    if(vis_boundaries[n]==1&&pfi->dir<0){
+    if(pfi->vis==1&&pfi->dir<0){
       nrow=boundary_row[n];
       ncol=boundary_col[n];
       xyzpatchcopy = xyzpatch + 3*blockstart[n];
@@ -3562,7 +3553,6 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
   float *patchval_iframe;
 #endif
   float *patch_times;
-  int *vis_boundaries;
   int *boundary_row, *boundary_col, *boundarytype;
   int *blockstart;
   int iblock;
@@ -3591,7 +3581,6 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
   }
 
   patch_times = meshi->patch_times;
-  vis_boundaries = meshi->vis_boundaries;
   boundarytype = meshi->boundarytype;
   boundary_row = meshi->boundary_row;
   boundary_col = meshi->boundary_col;
@@ -3643,7 +3632,7 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
       }
     }
     drawit = 0;
-    if(vis_boundaries[n]==1&&pfi->dir==0)drawit = 1;
+    if(pfi->vis==1&&pfi->dir==0)drawit = 1;
     if(boundarytype[n]!=INTERIORwall&&showpatch_both==1)drawit = 1;
     if(drawit==1){
       nrow = boundary_row[n];
@@ -3727,7 +3716,7 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
       }
     }
     drawit = 0;
-    if(meshi->vis_boundaries[n]==1&&pfi->dir>0){
+    if(pfi->vis==1&&pfi->dir>0){
       if(boundarytype[n]==INTERIORwall||showpatch_both==0){
         drawit = 1;
       }
@@ -3832,7 +3821,7 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
       }
     }
     drawit = 0;
-    if(vis_boundaries[n]==1&&pfi->dir<0){
+    if(pfi->vis==1&&pfi->dir<0){
       if(boundarytype[n]==INTERIORwall||showpatch_both==0){
         drawit = 1;
       }
