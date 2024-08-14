@@ -3877,13 +3877,7 @@ void DrawBoundaryFrame(int flag){
     meshi = meshinfo + patchi->blocknumber;
     if(meshi->use == 0)continue;
     if(patchi->npatches>0){
-      int filenum;
-
-      filenum=meshi->patchfilenum;
-      if(filenum!=-1){
-        patchdata *patchi;
-
-        patchi = patchinfo + filenum;
+      {
         if(patchi->loaded==0||patchi->display==0||patchi->shortlabel_index!=iboundarytype)continue;
         if(vis_threshold==1&&do_threshold==1){
           if(patchi->patch_filetype==PATCH_STRUCTURED_CELL_CENTER){
