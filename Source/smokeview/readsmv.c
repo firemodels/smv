@@ -1062,7 +1062,6 @@ void InitMesh(meshdata *meshi){
   meshi->offset[YYY] = 0.0;
   meshi->offset[ZZZ] = 0.0;
   meshi->boundarytype = NULL;
-  meshi->patch_surfindex = NULL;
   meshi->ptype = NULL;
   meshi->boundary_row = NULL, meshi->boundary_col = NULL, meshi->blockstart = NULL;
   meshi->zipoffset = NULL, meshi->zipsize = NULL;

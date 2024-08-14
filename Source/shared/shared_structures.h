@@ -166,7 +166,6 @@ typedef struct _meshdata {
 #ifdef pp_BOUNDMEM
   unsigned char *buffer1;
 #endif
-  int *patch_surfindex;
   int *boundarytype;
   int *vis_boundaries;
   int *boundary_row, *boundary_col, *blockstart;

@@ -1414,7 +1414,6 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
     FREEMEMORY(meshi->buffer1);
     FREEMEMORY(meshi->buffer2);
 #else
-    FREEMEMORY(meshi->patch_surfindex);
     FREEMEMORY(meshi->boundarytype);
     FREEMEMORY(meshi->vis_boundaries);
     FREEMEMORY(meshi->boundary_row);
@@ -1522,16 +1521,14 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
     offsets[1] = offsets[0] + sizeof(int)*patchi->npatches;
     offsets[2] = offsets[1] + sizeof(int)*patchi->npatches;
     offsets[3] = offsets[2] + sizeof(int)*patchi->npatches;
-    offsets[4] = offsets[3] + sizeof(int)*patchi->npatches;
-    offsets[5] = offsets[4] + sizeof(int)*(1+ patchi->npatches);
+    offsets[4] = offsets[3] + sizeof(int)*(1+ patchi->npatches);
 #endif
     int abort = 0;
 #ifdef pp_BOUNDMEM
-    if(NewResizeMemory(meshi->buffer1, offsets[5]) == 0)abort = 1;
+    if(NewResizeMemory(meshi->buffer1, offsets[4]) == 0)abort = 1;
     if(abort == 0 && NewResizeMemory(patchi->patchfaceinfo, sizeof(patchfacedata) * patchi->npatches) == 0)abort = 1;
 #else
     if(abort == 0 && NewResizeMemory(patchi->patchfaceinfo,  sizeof(patchfacedata)*patchi->npatches) == 0)abort=1;
-    if(abort == 0 && NewResizeMemory(meshi->patch_surfindex, sizeof(int)*patchi->npatches) == 0)abort = 1;
     if(abort == 0 && NewResizeMemory(meshi->boundarytype,    sizeof(int)*patchi->npatches) == 0)abort = 1;
     if(abort == 0 && NewResizeMemory(meshi->vis_boundaries,  sizeof(int)*patchi->npatches) == 0)abort = 1;
     if(abort == 0 && NewResizeMemory(meshi->boundary_row,    sizeof(int)*patchi->npatches) == 0)abort = 1;
@@ -1547,12 +1544,11 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
       return 0;
     }
 #ifdef pp_BOUNDMEM
-    meshi->patch_surfindex = (int *)meshi->buffer1;
-    meshi->boundarytype    = (int *)(meshi->buffer1 + offsets[0]);
-    meshi->vis_boundaries  = (int *)(meshi->buffer1 + offsets[1]);
-    meshi->boundary_row    = (int *)(meshi->buffer1 + offsets[2]);
-    meshi->boundary_col    = (int *)(meshi->buffer1 + offsets[3]);
-    meshi->blockstart      = (int *)(meshi->buffer1 + offsets[4]);
+    meshi->boundarytype    = (int *)meshi->buffer1;
+    meshi->vis_boundaries  = (int *)(meshi->buffer1 + offsets[0]);
+    meshi->boundary_row    = (int *)(meshi->buffer1 + offsets[1]);
+    meshi->boundary_col    = (int *)(meshi->buffer1 + offsets[2]);
+    meshi->blockstart      = (int *)(meshi->buffer1 + offsets[3]);
 #endif
   }
 
@@ -1689,7 +1685,6 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
     k2 = pfi->ib[5];
 
     if(pfi->dir==YDIR||pfi->dir==YDIRNEG)pfi->dir=-pfi->dir;
-    meshi->patch_surfindex[n]=0;
     dxx = 0.0;
     dyy = 0.0;
     dzz = 0.0;
@@ -1703,32 +1698,26 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
 
     switch(pfi->dir){
     case XDIRNEG:
-      meshi->patch_surfindex[n]=0;
       dxx = -meshi->xplt[1]*ig_factor_x;
       dxx2 = -meshi->xplt[1]*block_factor_x;
       break;
     case XDIR:
-      meshi->patch_surfindex[n]=1;
       dxx = meshi->xplt[1]*ig_factor_x;
       dxx2 = meshi->xplt[1]*block_factor_x;
       break;
     case YDIRNEG:
-      meshi->patch_surfindex[n]=2;
       dyy = meshi->yplt[1]*ig_factor_y;
       dyy2 = meshi->yplt[1]*block_factor_y;
       break;
     case YDIR:
-      meshi->patch_surfindex[n]=3;
       dyy = -meshi->yplt[1]*ig_factor_y;
       dyy2 = -meshi->yplt[1]*block_factor_y;
       break;
     case ZDIRNEG:
-      meshi->patch_surfindex[n]=4;
       dzz = -meshi->zplt[1]*ig_factor_z;
       dzz2 = -meshi->zplt[1]*block_factor_z;
       break;
     case ZDIR:
-      meshi->patch_surfindex[n]=5;
       dzz = meshi->zplt[1]*ig_factor_z;
       dzz2 = meshi->zplt[1]*block_factor_z;
       break;
