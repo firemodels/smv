@@ -198,103 +198,6 @@ void OutputBoundaryData(char *csvfile, patchdata *patchi, int first_time, float 
 
 }
 
-/* ------------------ GetBoundaryFaceDir ------------------------ */
-
-int GetBoundaryFaceDir(meshdata *meshi, int i1, int i2, int j1, int j2, int k1, int k2, int patchdir,
-  int *blockonpatch, meshdata **meshonpatch){
-  int i;
-  blockagedata *bc;
-
-  *meshonpatch = NULL;
-  if(i1 == i2){
-    for(i = 0; i < meshi->nbptrs; i++){
-      bc = meshi->blockageinfoptrs[i];
-      if(j1 == bc->ijk[JMIN] && j2 == bc->ijk[JMAX] &&
-        k1 == bc->ijk[KMIN] && k2 == bc->ijk[KMAX]){
-        if(i1 == bc->ijk[IMIN] && patchdir == XDIRNEG){
-          bc->patchvis[0] = 0;
-          *blockonpatch = i;
-          *meshonpatch = meshi;
-          return(-1);
-        }
-        if(i1 == bc->ijk[IMAX] && patchdir == XDIR){
-          bc->patchvis[1] = 0;
-          *blockonpatch = i;
-          *meshonpatch = meshi;
-          return(1);
-        }
-      }
-    }
-  }
-  else if(j1 == j2){
-    for(i = 0; i < meshi->nbptrs; i++){
-      bc = meshi->blockageinfoptrs[i];
-      if(i1 == bc->ijk[IMIN] && i2 == bc->ijk[IMAX] &&
-        k1 == bc->ijk[KMIN] && k2 == bc->ijk[KMAX]){
-        if(j1 == bc->ijk[JMIN] && patchdir == YDIRNEG){
-          bc->patchvis[2] = 0;
-          *blockonpatch = i;
-          *meshonpatch = meshi;
-          return(2);
-        }
-        if(j1 == bc->ijk[JMAX] && patchdir == YDIR){
-          bc->patchvis[3] = 0;
-          *blockonpatch = i;
-          *meshonpatch = meshi;
-          return(-2);
-        }
-      }
-    }
-  }
-  else if(k1 == k2){
-    for(i = 0; i < meshi->nbptrs; i++){
-      bc = meshi->blockageinfoptrs[i];
-      if(i1 == bc->ijk[IMIN] && i2 == bc->ijk[IMAX] &&
-        j1 == bc->ijk[JMIN] && j2 == bc->ijk[JMAX]){
-        if(k1 == bc->ijk[KMIN] && patchdir == ZDIRNEG){
-          bc->patchvis[4] = 0;
-          *blockonpatch = i;
-          *meshonpatch = meshi;
-          return(-3);
-        }
-        if(k1 == bc->ijk[KMAX] && patchdir == ZDIR){
-          bc->patchvis[5] = 0;
-          *blockonpatch = i;
-          *meshonpatch = meshi;
-          return(3);
-        }
-      }
-    }
-  }
-  *blockonpatch = -1;
-  *meshonpatch = NULL;
-  if(i1 == i2){
-    if(i1 == 0 && j1 == 0 && j2 == meshi->jbar&&k1 == 0 && k2 == meshi->kbar){
-      return(1);
-    }
-    if(i1 == meshi->ibar&&j1 == 0 && j2 == meshi->jbar&&k1 == 0 && k2 == meshi->kbar){
-      return(-1);
-    }
-  }
-  else if(j1 == j2){
-    if(j1 == 0 && i1 == 0 && i2 == meshi->ibar&&k1 == 0 && k2 == meshi->kbar){
-      return(-1);
-    }
-    if(j1 == meshi->jbar&&i1 == 0 && i2 == meshi->ibar&&k1 == 0 && k2 == meshi->kbar){
-      return(1);
-    }
-  }
-  else if(k1 == k2){
-    if(k1 == 0 && j1 == 0 && j2 == meshi->jbar&&i1 == 0 && i2 == meshi->ibar){
-      return(1);
-    }
-    if(k1 == meshi->kbar&&j1 == 0 && j2 == meshi->jbar&&i1 == 0 && i2 == meshi->ibar){
-      return(-1);
-    }
-  }
-  return(0);
-}
-
 /* ------------------ GetBoundaryIndex ------------------------ */
 
 int GetBoundaryIndex(const patchdata *patchi){
@@ -605,17 +508,10 @@ void NodeInExternalVent(int ipatch, int *patchblank, const meshdata *meshi,
     for(k = k1; k <= k2; k++){
       for(i = i1; i <= i2; i++){
         int iii, imesh, iblockage;
-        meshdata *meshblock;
 
         iii = (k - k1)*(i2 + 1 - i1) + (i - i1);
         if(patchblank[iii] == GAS)continue;
         patchblank[iii] = NodeInBlockage(meshi, i, j1, k, &imesh, &iblockage);
-        if(imesh != -1){
-          meshblock = meshinfo + imesh;
-          assert(iblockage >= 0 && iblockage < meshblock->nbptrs);
-          meshi->blockonpatch[ipatch] = iblockage;
-          meshi->meshonpatch[ipatch] = meshblock;
-        }
       }
     }
     break;
@@ -688,8 +584,11 @@ void DrawOnlyThreshold(const meshdata *meshi){
   glBegin(GL_TRIANGLES);
   glColor4fv(color_black);
   for(n = 0;n<patchi->npatches;n++){
-    iblock = meshi->blockonpatch[n];
-    meshblock = meshi->meshonpatch[n];
+    patchfacedata *pfi;
+
+    pfi = patchi->patchfaceinfo + n;
+    iblock = pfi->obst_index;
+    meshblock = pfi->meshinfo;
     assert((iblock!=-1&&meshblock!=NULL)||(iblock==-1&&meshblock==NULL));
     if(iblock!=-1&&meshblock!=NULL){
       bc = meshblock->blockageinfoptrs[iblock];
@@ -776,8 +675,8 @@ void DrawOnlyThreshold(const meshdata *meshi){
     patchfacedata *pfi;
 
     pfi = patchi->patchfaceinfo + n;
-    iblock = meshi->blockonpatch[n];
-    meshblock = meshi->meshonpatch[n];
+    iblock = pfi->obst_index;
+    meshblock = pfi->meshinfo;
     if(iblock!=-1){
       bc = meshblock->blockageinfoptrs[iblock];
       if(bc->showtimelist!=NULL&&bc->showtimelist[itimes]==0){
@@ -860,8 +759,8 @@ void DrawOnlyThreshold(const meshdata *meshi){
     patchfacedata *pfi;
 
     pfi = patchi->patchfaceinfo + n;
-    iblock = meshi->blockonpatch[n];
-    meshblock = meshi->meshonpatch[n];
+    iblock = pfi->obst_index;
+    meshblock = pfi->meshinfo;
     assert((iblock!=-1&&meshblock!=NULL)||(iblock==-1&&meshblock==NULL));
     if(iblock!=-1&&meshblock!=NULL){
       bc = meshblock->blockageinfoptrs[iblock];
@@ -1104,8 +1003,13 @@ void GetBoundaryHeader2(char *file, patchfacedata *patchfaceinfo){
     fread(buffer, 4, 9, stream);
     memcpy(patchfaceinfo->ib, buffer, 6*sizeof(int));
     patchfaceinfo->dir = buffer[6];
-    patchfaceinfo->obst_index = buffer[7];
-    patchfaceinfo->mesh_index = buffer[8];
+    patchfaceinfo->obst_index = buffer[7] - 1;
+    if(patchfaceinfo->obst_index>=0){
+      patchfaceinfo->meshinfo = meshinfo + buffer[8] - 1;
+    }
+    else{
+      patchfaceinfo->meshinfo = NULL;
+    }
   }
   fclose(stream);
 }
@@ -1356,8 +1260,13 @@ void GetPatchSizes2(FILE_m *stream, int npatch, int *npatchsize,
     pfi = patchfaceinfo + n;
     memcpy(pfi->ib, ijkp, 6 * sizeof(int));
     pfi->dir        = ijkp[6];
-    pfi->obst_index = ijkp[7];
-    pfi->mesh_index = ijkp[8];
+    pfi->obst_index = ijkp[7] - 1;
+    if(pfi->obst_index >= 0){
+      pfi->meshinfo = meshinfo + ijkp[8] - 1;
+    }
+    else{
+      pfi->meshinfo = NULL;
+    }
 
     int i1 = ijkp[0];
     int i2 = ijkp[1];
@@ -1505,8 +1414,6 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
     FREEMEMORY(meshi->buffer1);
     FREEMEMORY(meshi->buffer2);
 #else
-    FREEMEMORY(meshi->meshonpatch);
-    FREEMEMORY(meshi->blockonpatch);
     FREEMEMORY(meshi->patch_surfindex);
     FREEMEMORY(meshi->boundarytype);
     FREEMEMORY(meshi->vis_boundaries);
@@ -1611,47 +1518,41 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
 #ifdef pp_BOUNDMEM
     int offsets[15];
 
-       offsets[0] =              sizeof(meshdata *)*patchi->npatches;
-       offsets[1] = offsets[0] + sizeof(int)*patchi->npatches;
-       offsets[2] = offsets[1] + sizeof(int)*patchi->npatches;
-       offsets[3] = offsets[2] + sizeof(int)*patchi->npatches;
-       offsets[4] = offsets[3] + sizeof(int)*patchi->npatches;
-       offsets[5] = offsets[4] + sizeof(int)*patchi->npatches;
-       offsets[6] = offsets[5] + sizeof(int)*patchi->npatches;
-       offsets[7] = offsets[6] + sizeof(int)*(1+ patchi->npatches);
+    offsets[0] =              sizeof(int)*patchi->npatches;
+    offsets[1] = offsets[0] + sizeof(int)*patchi->npatches;
+    offsets[2] = offsets[1] + sizeof(int)*patchi->npatches;
+    offsets[3] = offsets[2] + sizeof(int)*patchi->npatches;
+    offsets[4] = offsets[3] + sizeof(int)*patchi->npatches;
+    offsets[5] = offsets[4] + sizeof(int)*(1+ patchi->npatches);
 #endif
-       int abort = 0;
+    int abort = 0;
 #ifdef pp_BOUNDMEM
-       if(NewResizeMemory(meshi->buffer1, offsets[7]) == 0)abort = 1;
-       if(abort == 0 && NewResizeMemory(patchi->patchfaceinfo, sizeof(patchfacedata) * patchi->npatches) == 0)abort = 1;
+    if(NewResizeMemory(meshi->buffer1, offsets[5]) == 0)abort = 1;
+    if(abort == 0 && NewResizeMemory(patchi->patchfaceinfo, sizeof(patchfacedata) * patchi->npatches) == 0)abort = 1;
 #else
-       if(abort == 0 && NewResizeMemory(patchi->patchfaceinfo,  sizeof(patchfacedata)*patchi->npatches) == 0)abort=1;
-       if(abort == 0 && NewResizeMemory(meshi->meshonpatch,     sizeof(meshdata *)*patchi->npatches) == 0)abort = 1;
-       if(abort == 0 && NewResizeMemory(meshi->blockonpatch,    sizeof(int)*patchi->npatches) == 0)abort = 1;
-       if(abort == 0 && NewResizeMemory(meshi->patch_surfindex, sizeof(int)*patchi->npatches) == 0)abort = 1;
-       if(abort == 0 && NewResizeMemory(meshi->boundarytype,    sizeof(int)*patchi->npatches) == 0)abort = 1;
-       if(abort == 0 && NewResizeMemory(meshi->vis_boundaries,  sizeof(int)*patchi->npatches) == 0)abort = 1;
-       if(abort == 0 && NewResizeMemory(meshi->boundary_row,    sizeof(int)*patchi->npatches) == 0)abort = 1;
-       if(abort == 0 && NewResizeMemory(meshi->boundary_col,    sizeof(int)*patchi->npatches) == 0)abort = 1;
-       if(abort == 0 && NewResizeMemory(meshi->blockstart,      sizeof(int)*(1+patchi->npatches)) == 0)abort = 1;
+    if(abort == 0 && NewResizeMemory(patchi->patchfaceinfo,  sizeof(patchfacedata)*patchi->npatches) == 0)abort=1;
+    if(abort == 0 && NewResizeMemory(meshi->patch_surfindex, sizeof(int)*patchi->npatches) == 0)abort = 1;
+    if(abort == 0 && NewResizeMemory(meshi->boundarytype,    sizeof(int)*patchi->npatches) == 0)abort = 1;
+    if(abort == 0 && NewResizeMemory(meshi->vis_boundaries,  sizeof(int)*patchi->npatches) == 0)abort = 1;
+    if(abort == 0 && NewResizeMemory(meshi->boundary_row,    sizeof(int)*patchi->npatches) == 0)abort = 1;
+    if(abort == 0 && NewResizeMemory(meshi->boundary_col,    sizeof(int)*patchi->npatches) == 0)abort = 1;
+    if(abort == 0 && NewResizeMemory(meshi->blockstart,      sizeof(int)*(1+patchi->npatches)) == 0)abort = 1;
 #endif
-       if(abort == 1){
-         *errorcode = 1;
-         if(patchi->compression_type == UNCOMPRESSED){
-           fclose_m(stream);
-         }
-         ReadBoundary(ifile, UNLOAD, &error);
-           return 0;
-       }
+    if(abort == 1){
+      *errorcode = 1;
+      if(patchi->compression_type == UNCOMPRESSED){
+        fclose_m(stream);
+      }
+      ReadBoundary(ifile, UNLOAD, &error);
+      return 0;
+    }
 #ifdef pp_BOUNDMEM
-       meshi->meshonpatch     = (meshdata **)(meshi->buffer1);
-       meshi->blockonpatch    = (int *)(meshi->buffer1 + offsets[0]);
-       meshi->patch_surfindex = (int *)(meshi->buffer1 + offsets[1]);
-       meshi->boundarytype    = (int *)(meshi->buffer1 + offsets[2]);
-       meshi->vis_boundaries  = (int *)(meshi->buffer1 + offsets[3]);
-       meshi->boundary_row    = (int *)(meshi->buffer1 + offsets[4]);
-       meshi->boundary_col    = (int *)(meshi->buffer1 + offsets[5]);
-       meshi->blockstart      = (int *)(meshi->buffer1 + offsets[6]);
+    meshi->patch_surfindex = (int *)meshi->buffer1;
+    meshi->boundarytype    = (int *)(meshi->buffer1 + offsets[0]);
+    meshi->vis_boundaries  = (int *)(meshi->buffer1 + offsets[1]);
+    meshi->boundary_row    = (int *)(meshi->buffer1 + offsets[2]);
+    meshi->boundary_col    = (int *)(meshi->buffer1 + offsets[3]);
+    meshi->blockstart      = (int *)(meshi->buffer1 + offsets[4]);
 #endif
   }
 
@@ -1755,7 +1656,20 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
       bc->patchvis[j]=1;
     }
   }
+  for(n=0;n<patchi->npatches;n++){
+    patchfacedata *pfi;
+    blockagedata *bc;
 
+    pfi = patchi->patchfaceinfo + n;
+    if(pfi->obst_index<0)continue;
+    bc = meshi->blockageinfoptrs[pfi->obst_index];
+    if(pfi->dir==-1)bc->patchvis[0] = 0;
+    if(pfi->dir== 1)bc->patchvis[1] = 0;
+    if(pfi->dir==-2)bc->patchvis[2] = 0;
+    if(pfi->dir== 2)bc->patchvis[3] = 0;
+    if(pfi->dir==-3)bc->patchvis[4] = 0;
+    if(pfi->dir== 3)bc->patchvis[5] = 0;
+  }
   for(n=0;n<patchi->npatches;n++){
     float dxx, dyy, dzz;
     float dxx2, dyy2, dzz2;
@@ -1774,7 +1688,6 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
     k1 = pfi->ib[4];
     k2 = pfi->ib[5];
 
-    GetBoundaryFaceDir(meshi,i1,i2,j1,j2,k1,k2,pfi->dir,meshi->blockonpatch+n,meshi->meshonpatch+n);
     if(pfi->dir==YDIR||pfi->dir==YDIRNEG)pfi->dir=-pfi->dir;
     meshi->patch_surfindex[n]=0;
     dxx = 0.0;
@@ -2297,9 +2210,11 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
 #ifdef pp_BOUNDFRAME
               float *patchn;
 #endif
+          patchfacedata *pfi;
 
-          iblock=meshi->blockonpatch[n];
-          meshblock = meshi->meshonpatch[n];
+          pfi = patchi->patchfaceinfo + n;
+          iblock=pfi->obst_index;
+          meshblock = pfi->meshinfo;
           nsize=meshi->boundary_row[n]*meshi->boundary_col[n];
           assert((iblock!=-1&&meshblock!=NULL)||(iblock==-1&&meshblock==NULL));
           if(iblock!=-1&&meshblock!=NULL){
@@ -2738,8 +2653,8 @@ void DrawBoundaryTexture(const meshdata *meshi){
     patchfacedata *pfi;
 
     pfi = patchi->patchfaceinfo + n;
-    iblock = meshi->blockonpatch[n];
-    meshblock = meshi->meshonpatch[n];
+    iblock = pfi->obst_index;
+    meshblock = pfi->meshinfo;
     assert((iblock!=-1&&meshblock!=NULL)||(iblock==-1&&meshblock==NULL));
     if(iblock!=-1&&meshblock!=NULL){
       bc=meshblock->blockageinfoptrs[iblock];
@@ -2834,8 +2749,8 @@ void DrawBoundaryTexture(const meshdata *meshi){
     patchfacedata *pfi;
 
     pfi = patchi->patchfaceinfo + n;
-    iblock = meshi->blockonpatch[n];
-    meshblock=meshi->meshonpatch[n];
+    iblock = pfi->obst_index;
+    meshblock=pfi->meshinfo;
     if(iblock!=-1){
       bc=meshblock->blockageinfoptrs[iblock];
       if(bc->showtimelist!=NULL&&bc->showtimelist[itimes]==0){
@@ -2948,8 +2863,8 @@ void DrawBoundaryTexture(const meshdata *meshi){
     patchfacedata *pfi;
 
     pfi = patchi->patchfaceinfo + n;
-    iblock = meshi->blockonpatch[n];
-    meshblock = meshi->meshonpatch[n];
+    iblock = pfi->obst_index;
+    meshblock = pfi->meshinfo;
     assert((iblock!=-1&&meshblock!=NULL)||(iblock==-1&&meshblock==NULL));
     if(iblock!=-1&&meshblock!=NULL){
       bc=meshblock->blockageinfoptrs[iblock];
@@ -3134,8 +3049,8 @@ void DrawBoundaryTextureThreshold(const meshdata *meshi){
     patchfacedata *pfi;
 
     pfi = patchi->patchfaceinfo + n;
-    iblock = meshi->blockonpatch[n];
-    meshblock = meshi->meshonpatch[n];
+    iblock = pfi->obst_index;
+    meshblock = pfi->meshinfo;
     assert((iblock!=-1&&meshblock!=NULL)||(iblock==-1&&meshblock==NULL));
     if(iblock!=-1&&meshblock!=NULL){
       bc=meshblock->blockageinfoptrs[iblock];
@@ -3229,8 +3144,8 @@ void DrawBoundaryTextureThreshold(const meshdata *meshi){
     patchfacedata *pfi;
 
     pfi = patchi->patchfaceinfo + n;
-    iblock = meshi->blockonpatch[n];
-    meshblock=meshi->meshonpatch[n];
+    iblock = pfi->obst_index;
+    meshblock = pfi->meshinfo;
     if(iblock!=-1){
       bc=meshblock->blockageinfoptrs[iblock];
       if(bc->showtimelist!=NULL&&bc->showtimelist[itimes]==0){
@@ -3318,8 +3233,8 @@ void DrawBoundaryTextureThreshold(const meshdata *meshi){
     patchfacedata *pfi;
 
     pfi = patchi->patchfaceinfo;
-    iblock = meshi->blockonpatch[n];
-    meshblock = meshi->meshonpatch[n];
+    iblock = pfi->obst_index;
+    meshblock = pfi->meshinfo;
     assert((iblock!=-1&&meshblock!=NULL)||(iblock==-1&&meshblock==NULL));
     if(iblock!=-1&&meshblock!=NULL){
       bc=meshblock->blockageinfoptrs[iblock];
@@ -3458,8 +3373,8 @@ void DrawBoundaryThresholdCellcenter(const meshdata *meshi){
     patchfacedata *pfi;
 
     pfi = patchi->patchfaceinfo + n;
-    iblock = meshi->blockonpatch[n];
-    meshblock = meshi->meshonpatch[n];
+    iblock = pfi->obst_index;
+    meshblock = pfi->meshinfo;
     assert((iblock!=-1&&meshblock!=NULL)||(iblock==-1&&meshblock==NULL));
     if(iblock!=-1&&meshblock!=NULL){
       bc=meshblock->blockageinfoptrs[iblock];
@@ -3517,8 +3432,8 @@ void DrawBoundaryThresholdCellcenter(const meshdata *meshi){
     patchfacedata *pfi;
 
     pfi = patchi->patchfaceinfo + n;
-    iblock = meshi->blockonpatch[n];
-    meshblock=meshi->meshonpatch[n];
+    iblock = pfi->obst_index;
+    meshblock = pfi->meshinfo;
     if(iblock!=-1){
       bc=meshblock->blockageinfoptrs[iblock];
       if(bc->showtimelist!=NULL&&bc->showtimelist[itimes]==0){
@@ -3572,8 +3487,8 @@ void DrawBoundaryThresholdCellcenter(const meshdata *meshi){
     patchfacedata *pfi;
 
     pfi = patchi->patchfaceinfo + n;
-    iblock = meshi->blockonpatch[n];
-    meshblock = meshi->meshonpatch[n];
+    iblock = pfi->obst_index;
+    meshblock = pfi->meshinfo;
     assert((iblock!=-1&&meshblock!=NULL)||(iblock==-1&&meshblock==NULL));
     if(iblock!=-1&&meshblock!=NULL){
       bc=meshblock->blockageinfoptrs[iblock];
@@ -3728,8 +3643,8 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
     patchfacedata *pfi;
 
     pfi = patchi->patchfaceinfo + n;
-    iblock = meshi->blockonpatch[n];
-    meshblock = meshi->meshonpatch[n];
+    iblock = pfi->obst_index;
+    meshblock = pfi->meshinfo;
     assert((iblock!=-1&&meshblock!=NULL)||(iblock==-1&&meshblock==NULL));
     if(iblock!=-1&&meshblock!=NULL){
       bc = meshblock->blockageinfoptrs[iblock];
@@ -3813,8 +3728,8 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
     patchfacedata *pfi;
 
     pfi = patchi->patchfaceinfo + n;
-    iblock = meshi->blockonpatch[n];
-    meshblock = meshi->meshonpatch[n];
+    iblock = pfi->obst_index;
+    meshblock = pfi->meshinfo;
     if(iblock!=-1){
       bc = meshblock->blockageinfoptrs[iblock];
       if(bc->showtimelist!=NULL&&bc->showtimelist[itimes]==0){
@@ -3917,8 +3832,8 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
     patchfacedata *pfi;
 
     pfi = patchi->patchfaceinfo + n;
-    iblock = meshi->blockonpatch[n];
-    meshblock = meshi->meshonpatch[n];
+    iblock = pfi->obst_index;
+    meshblock = pfi->meshinfo;
     assert((iblock!=-1&&meshblock!=NULL)||(iblock==-1&&meshblock==NULL));
     if(iblock!=-1&&meshblock!=NULL){
       bc = meshblock->blockageinfoptrs[iblock];
