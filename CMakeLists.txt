@@ -99,6 +99,8 @@ if(STRICT_CHECKS AND (NOT MSVC))
     add_compile_options(-Wno-stringop-truncation)
     add_compile_options(-Wno-nonnull)
     add_compile_options(-Wno-comment)
+
+    add_compile_options(-Wshadow)
 elseif(STRICT_CHECKS AND (NOT MSVC))
     add_compile_options(/Wall)
     add_compile_options(/Werror)
@@ -127,7 +129,6 @@ find_package(ZLIB)
 if (NOT ZLIB_FOUND)
     add_subdirectory(Source/zlib128)
 endif()
-
 
 # This fails on Windows so we disable it for now
 if (NOT(WIN32))

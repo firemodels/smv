@@ -171,27 +171,27 @@ int Loadsmvall(const char *input_filename) {
 /// @param[out] fdsprefix
 /// @param[out] input_filename_ext
 /// @return
-int ParseSmvFilepath(const char *smv_filepath, char *fdsprefix,
-                     char *input_filename_ext) {
+int ParseSmvFilepath(const char *smv_filepath, char *fdsprefix_arg,
+                     char *input_filename_ext_arg) {
   int len_casename;
-  strcpy(input_filename_ext, "");
+  strcpy(input_filename_ext_arg, "");
   len_casename = (int)strlen(smv_filepath);
   if(len_casename > 4) {
     char *c_ext;
 
     c_ext = strrchr(smv_filepath, '.');
     if(c_ext != NULL) {
-      STRCPY(input_filename_ext, c_ext);
-      ToLower(input_filename_ext);
+      STRCPY(input_filename_ext_arg, c_ext);
+      ToLower(input_filename_ext_arg);
 
-      if(c_ext != NULL && (strcmp(input_filename_ext, ".smv") == 0 ||
-                           strcmp(input_filename_ext, ".svd") == 0 ||
-                           strcmp(input_filename_ext, ".smt") == 0)) {
+      if(c_ext != NULL && (strcmp(input_filename_ext_arg, ".smv") == 0 ||
+                           strcmp(input_filename_ext_arg, ".svd") == 0 ||
+                           strcmp(input_filename_ext_arg, ".smt") == 0)) {
         // c_ext[0]=0;
-        STRCPY(fdsprefix, smv_filepath);
-        fdsprefix[strlen(fdsprefix) - 4] = 0;
-        strcpy(movie_name, fdsprefix);
-        strcpy(render_file_base, fdsprefix);
+        STRCPY(fdsprefix_arg, smv_filepath);
+        fdsprefix_arg[strlen(fdsprefix_arg) - 4] = 0;
+        strcpy(movie_name, fdsprefix_arg);
+        strcpy(render_file_base, fdsprefix_arg);
         FREEMEMORY(trainer_filename);
         NewMemory((void **)&trainer_filename, (unsigned int)(len_casename + 7));
         STRCPY(trainer_filename, smv_filepath);
@@ -206,7 +206,7 @@ int ParseSmvFilepath(const char *smv_filepath, char *fdsprefix,
   return 0;
 }
 
-int Loadsmv(char *input_filename, char *input_filename_ext) {
+int Loadsmv(char *input_filename, char *input_filename_ext_arg) {
   int return_code;
   char *input_file;
 
@@ -221,13 +221,13 @@ int Loadsmv(char *input_filename, char *input_filename_ext) {
   // setup input files names
 
   input_file = smv_filename;
-  if(strcmp(input_filename_ext, ".svd") == 0 || demo_option == 1) {
+  if(strcmp(input_filename_ext_arg, ".svd") == 0 || demo_option == 1) {
     trainer_mode = 1;
     trainer_active = 1;
-    if(strcmp(input_filename_ext, ".svd") == 0) {
+    if(strcmp(input_filename_ext_arg, ".svd") == 0) {
       input_file = trainer_filename;
     }
-    else if(strcmp(input_filename_ext, ".smt") == 0) {
+    else if(strcmp(input_filename_ext_arg, ".smt") == 0) {
       input_file = test_filename;
     }
   }
@@ -1254,7 +1254,7 @@ void Loadvolsmokeframe(int meshnumber, int framenumber, int flag) {
   index = meshnumber;
   framenum = framenumber;
   if(index > nmeshes - 1) index = -1;
-  for(size_t i = 0; i < nmeshes; i++) {
+  for(i = 0; i < nmeshes; i++) {
     if(index == i || index < 0) {
       meshdata *meshi;
       volrenderdata *vr;
@@ -1366,10 +1366,10 @@ void SetMovietype(const char *type) {
 
 int GetMovietype() { return movie_filetype; }
 
-void Makemovie(const char *name, const char *base, float framerate) {
+void Makemovie(const char *name, const char *base, float framerate_arg) {
   strcpy(movie_name, name);
   strcpy(render_file_base, base);
-  movie_framerate = framerate;
+  movie_framerate = framerate_arg;
   RenderCB(MAKE_MOVIE);
 }
 

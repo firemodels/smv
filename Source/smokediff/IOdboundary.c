@@ -240,7 +240,7 @@ void DiffBoundarYes(FILE *stream_out){
       for(;;){
         int iq;
         float f1, f2, dt;
-        int file_size;
+        int file_size_local;
 
         if(error1!=0||error2!=0)break;
 
@@ -250,7 +250,7 @@ void DiffBoundarYes(FILE *stream_out){
           }
           patchtime2a=patchtime2b;
           getpatchdata(unit2, boundary2->npatches,
-            p2i1, p2i2, p2j1, p2j2, p2k1, p2k2, &patchtime2b, pqq2b, &npqq2b, &file_size, &error2);
+            p2i1, p2i2, p2j1, p2j2, p2k1, p2k2, &patchtime2b, pqq2b, &npqq2b, &file_size_local, &error2);
           if(error2!=0)break;
         }
         if(error2!=0)break;
@@ -294,7 +294,7 @@ void DiffBoundarYes(FILE *stream_out){
         }
 
         getpatchdata(unit1, boundary1->npatches,
-          p1i1, p1i2, p1j1, p1j2, p1k1, p1k2, &patchtime1, pqq1, &npqq1, &file_size, &error1);
+          p1i1, p1i2, p1j1, p1j2, p1k1, p1k2, &patchtime1, pqq1, &npqq1, &file_size_local, &error1);
       }
       PRINTF("\n");
       FFLUSH();
