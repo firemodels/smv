@@ -6328,11 +6328,9 @@ void ShowBoundaryMenu(int value){
         int n;
 
         patchdata *patchi;
-        meshdata *meshi;
 
         patchi = patchinfo + i;
         if(patchi->loaded == 0)continue;
-        meshi = meshinfo + patchi->blocknumber;
         for(n = 0;n < patchi->npatches;n++){
           patchfacedata *pfi;
 
@@ -6355,12 +6353,10 @@ void ShowBoundaryMenu(int value){
       vis_boundary_type[INTERIORwall]=val;
       for(i = 0;i < npatchinfo;i++){
         patchdata *patchi;
-        meshdata *meshi;
         int n;
 
         patchi = patchinfo + i;
         if(patchi->loaded == 0)continue;
-        meshi = meshinfo + patchi->blocknumber;
         for(n = 0;n < patchi->npatches;n++){
           patchfacedata *pfi;
 
@@ -6378,11 +6374,9 @@ void ShowBoundaryMenu(int value){
         int n;
 
         patchdata *patchi;
-        meshdata *meshi;
 
         patchi = patchinfo + i;
         if(patchi->loaded == 0)continue;
-        meshi = meshinfo + patchi->blocknumber;
         for(n = 0;n < patchi->npatches;n++){
           patchfacedata *pfi;
 
@@ -6399,12 +6393,10 @@ void ShowBoundaryMenu(int value){
       value = -(value + 2); /* map xxxwallmenu to xxxwall */
       for(i = 0;i < npatchinfo;i++){
         patchdata *patchi;
-        meshdata *meshi;
         int n;
 
         patchi = patchinfo + i;
         if(patchi->loaded == 0)continue;
-        meshi = meshinfo + patchi->blocknumber;
         for(n = 0;n < patchi->npatches;n++){
           patchfacedata *pfi;
 
@@ -7697,11 +7689,9 @@ int IsBoundaryType(int type){
 
   for(i = 0; i < npatchinfo; i++){
     patchdata *patchi;
-    meshdata *meshi;
     int n;
 
     patchi = patchinfo + i;
-    meshi = meshinfo + patchi->blocknumber;
     for(n = 0; n < patchi->npatches; n++){
       patchfacedata *pfi;
 
