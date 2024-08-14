@@ -917,10 +917,6 @@ void FreeLabels(flowlabels *flowlabel){
 void InitMesh(meshdata *meshi){
   int i;
 
-#ifdef pp_BOUNDMEM
-  meshi->buffer1 = NULL;
-  meshi->buffer2 = NULL;
-#endif
   meshi->use = 1;
   meshi->isliceinfo    = 0;
   meshi->nsliceinfo    = 0;

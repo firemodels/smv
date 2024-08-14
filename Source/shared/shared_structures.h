@@ -168,9 +168,6 @@ typedef struct _meshdata {
   int *ptype;
   unsigned int *zipoffset, *zipsize;
 
-#ifdef pp_BOUNDMEM
-  unsigned char *buffer2;
-#endif
   float *xyzpatch, *xyzpatch_threshold;
   float *thresholdtime;
   int *patchblank;
