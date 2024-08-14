@@ -2720,10 +2720,12 @@ int SetP3dsurfacesmooth(int v) {
 
 int SetScaledfont(int height2d, float height2dwidth, int thickness2d,
                   int height3d, float height3dwidth, int thickness3d) {
-  scaled_font2d_height = scaled_font2d_height;
-  scaled_font2d_height2width = scaled_font2d_height2width;
-  scaled_font3d_height = scaled_font3d_height;
-  scaled_font3d_height2width = scaled_font3d_height2width;
+  scaled_font2d_height = height2d;
+  scaled_font2d_height2width = height2dwidth;
+  scaled_font3d_height = height3d;
+  scaled_font3d_height2width = height3dwidth;
+  scaled_font2d_thickness = thickness2d;
+  scaled_font3d_thickness = thickness3d;
   return 0;
 } // SCALEDFONT
 
