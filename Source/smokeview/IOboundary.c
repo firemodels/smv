@@ -2694,7 +2694,7 @@ void DrawBoundaryTexture(const meshdata *meshi){
 
     pfi = patchi->patchfaceinfo + n;
     if(pfi->obst==NULL && pfi->internal==1)continue;
-    if(pfi->obst!=NULL&&pfi->obst->showtimelist!=NULL&& pfi->obst->showtimelist[itimes]==0)continue;
+    if(pfi->obst!=NULL && pfi->meshinfo != NULL && pfi->obst->showtimelist!=NULL&& pfi->obst->showtimelist[itimes]==0)continue;
 
     drawit=0;
     if(pfi->vis==1&&pfi->dir>0){
