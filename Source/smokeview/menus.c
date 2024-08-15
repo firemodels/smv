@@ -6739,7 +6739,7 @@ void BlockageMenu(int value){
    case BLOCKlocation_grid:
    case BLOCKlocation_exact:
    case BLOCKlocation_cad:
-     if(ncadgeom == 0){
+     if(NCADGeom(cadgeomcoll) == 0){
        if(value == BLOCKlocation_grid){
          blocklocation_menu = BLOCKlocation_exact;
        }
@@ -9345,7 +9345,7 @@ static int menu_count=0;
   else{
     glutAddMenuEntry(_("   Outline added"),visBLOCKAddOutline);
   }
-  if(ncadgeom>0){
+  if(NCADGeom(cadgeomcoll)>0){
     if(viscadopaque==1){
       glutAddMenuEntry(_("   *Cad surface drawn opaque"),visCADOpaque);
     }
@@ -10177,7 +10177,7 @@ static int menu_count=0;
   if(show_geom_boundingbox != SHOW_BOUNDING_BOX_ALWAYS)glutAddMenuEntry(_("bounding box(always)"), GEOM_BOUNDING_BOX_ALWAYS);
   if(show_geom_boundingbox == SHOW_BOUNDING_BOX_MOUSE_DOWN)glutAddMenuEntry(_("*bounding box(mouse down)"), GEOM_BOUNDING_BOX_MOUSE_DOWN);
   if(show_geom_boundingbox != SHOW_BOUNDING_BOX_MOUSE_DOWN)glutAddMenuEntry(_("bounding box(mouse down)"), GEOM_BOUNDING_BOX_MOUSE_DOWN);
-  if(ncadgeom == 0){
+  if(NCADGeom(cadgeomcoll) == 0){
     if(blocklocation == BLOCKlocation_grid){
       glutAddMenuEntry("Locations(*actual,requested)", BLOCKlocation_grid);
     }
@@ -10207,10 +10207,10 @@ static int menu_count=0;
       int showtexturemenu;
 
       showtexturemenu = 0;
-      for(i = 0; i < ncadgeom; i++){
+      for(i = 0; i < NCADGeom(cadgeomcoll); i++){
         int j;
 
-        cd = cadgeominfo + i;
+        cd = cadgeomcoll->cadgeominfo + i;
         for(j = 0; j < cd->ncadlookinfo; j++){
           cdi = cd->cadlookinfo + j;
           if(cdi->textureinfo.loaded == 1){

@@ -66,7 +66,6 @@ int CheckSMVFileLua(char *file, char *subdir) {
 }
 
 int ProgramSetupLua(lua_State *L, int argc, char **argv) {
-  char *progname;
   InitVars();
   ParseCommonOptions(argc, argv);
   smv_filename = ParseCommandline(argc, argv);

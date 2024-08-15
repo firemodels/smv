@@ -62,6 +62,11 @@ if (LINUX)
     add_definitions(-Dpp_LINUX)
 endif()
 
+if (NOT MSVC)
+    add_compile_options(-Wunused)
+else()
+    add_compile_options(/W3)
+endif()
 # This is a set of warnings that are not enabled by default but it would be good
 # to satisfy these.
 if(STRICT_CHECKS)
@@ -187,6 +192,7 @@ add_executable(smokeview
     Source/shared/getdata.c
     Source/shared/color2rgb.c
     Source/shared/readimage.c
+    Source/shared/readcad.c
     Source/shared/readgeom.c
     Source/shared/readobject.c
     Source/shared/readlabel.c
