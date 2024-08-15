@@ -164,17 +164,17 @@ int CreateModule(char *left_file, char* right_file, char *module_file){
           }
         }
         else{
-          char *prepend_string, *append_string;
+          char *prepend_string, *append_string_local;
 
           prepend_string = val_right;
-          append_string = match+strlen(val_left);
+          append_string_local = match+strlen(val_left);
           match[0] = 0;
 
           prepend_string = TrimFrontBack(prepend_string);
           OutputPath(stream_module, ENV2MOD_PREPEND, key_right, prepend_string);
 
-          append_string = TrimFrontBack(append_string);
-          OutputPath(stream_module, ENV2MOD_APPEND, key_right, append_string);
+          append_string_local = TrimFrontBack(append_string_local);
+          OutputPath(stream_module, ENV2MOD_APPEND, key_right, append_string_local);
         }
       }
       read_left = NextLine(buffer_left, LEN_BUFFER, stream_left);
@@ -323,17 +323,17 @@ int CreateScript(char *left_file, char* right_file, char *module_file){
           }
         }
         else{
-          char *prepend_string, *append_string;
+          char *prepend_string, *append_string_local;
 
           prepend_string = val_right;
-          append_string = match+strlen(val_left);
+          append_string_local = match+strlen(val_left);
           match[0] = 0;
 
           prepend_string = TrimFrontBack(prepend_string);
           OutputScriptPath(stream_module, ENV2MOD_PREPEND, key_right, prepend_string);
 
-          append_string = TrimFrontBack(append_string);
-          OutputScriptPath(stream_module, ENV2MOD_APPEND, key_right, append_string);
+          append_string_local = TrimFrontBack(append_string_local);
+          OutputScriptPath(stream_module, ENV2MOD_APPEND, key_right, append_string_local);
         }
       }
       read_left = NextLine(buffer_left, LEN_BUFFER, stream_left);
@@ -362,4 +362,3 @@ int CreateScript(char *left_file, char* right_file, char *module_file){
   fclose(stream_module);
   return 0;
 }
-
