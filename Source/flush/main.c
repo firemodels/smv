@@ -42,10 +42,10 @@ void Usage(char *prog, int option){
 
 /* ------------------ FlushCache ------------------------ */
 #define BUFFERSIZE 250000000
-void FlushCache(float flush_size){
+void FlushCache(float flush_size_arg){
   int i, nbuffers;
 
-  nbuffers = (int)(flush_size+0.5);
+  nbuffers = (int)(flush_size_arg+0.5);
   for(i = 0;i<nbuffers;i++){
     int *buffptr;
     int j;
