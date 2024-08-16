@@ -2603,7 +2603,9 @@ void DrawBoundaryTexture(const meshdata *meshi){
 
     pfi = patchi->patchfaceinfo + n;
     ASSERT_PATCH_BLOCK;
+#ifdef pp_BURN_AWAY
     if((pfi->obst == NULL || pfi->meshinfo == NULL) && pfi->internal == 1)continue;
+#endif
     if(pfi->obst != NULL && pfi->meshinfo!=NULL && pfi->obst->showtimelist!=NULL&&pfi->obst->showtimelist[itimes]==0)continue;
 
     drawit=0;
@@ -2693,7 +2695,9 @@ void DrawBoundaryTexture(const meshdata *meshi){
     patchfacedata *pfi;
 
     pfi = patchi->patchfaceinfo + n;
+#ifdef pp_BURN_AWAY
     if((pfi->obst == NULL || pfi->meshinfo == NULL) && pfi->internal == 1)continue;
+#endif
     if(pfi->obst!=NULL && pfi->meshinfo != NULL && pfi->obst->showtimelist!=NULL&& pfi->obst->showtimelist[itimes]==0)continue;
 
     drawit=0;
@@ -2803,7 +2807,9 @@ void DrawBoundaryTexture(const meshdata *meshi){
 
     pfi = patchi->patchfaceinfo + n;
     ASSERT_PATCH_BLOCK;
+#ifdef pp_BURN_AWAY
     if((pfi->obst == NULL || pfi->meshinfo == NULL) && pfi->internal == 1)continue;
+#endif
     if(pfi->obst!=NULL && pfi->meshinfo!=NULL && pfi->obst->showtimelist!=NULL && pfi->obst->showtimelist[itimes]==0)continue;
 
     drawit=0;
