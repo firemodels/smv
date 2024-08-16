@@ -2596,12 +2596,14 @@ void DrawBoundaryTexture(const meshdata *meshi){
   glEnable(GL_TEXTURE_1D);
   glBindTexture(GL_TEXTURE_1D,texture_patch_colorbar_id);
 
+  CheckMemory;
   glBegin(GL_TRIANGLES);
   for(n=0;n<patchi->npatches;n++){
     int drawit;
     patchfacedata *pfi;
 
     pfi = patchi->patchfaceinfo + n;
+    CheckMemory;
     ASSERT_PATCH_BLOCK;
 #ifdef pp_BURN_AWAY
     if((pfi->obst == NULL || pfi->meshinfo == NULL) && pfi->internal == 1)continue;
@@ -2695,6 +2697,7 @@ void DrawBoundaryTexture(const meshdata *meshi){
     patchfacedata *pfi;
 
     pfi = patchi->patchfaceinfo + n;
+    CheckMemory;
 #ifdef pp_BURN_AWAY
     if((pfi->obst == NULL || pfi->meshinfo == NULL) && pfi->internal == 1)continue;
 #endif
@@ -2806,6 +2809,7 @@ void DrawBoundaryTexture(const meshdata *meshi){
     patchfacedata *pfi;
 
     pfi = patchi->patchfaceinfo + n;
+    CheckMemory;
     ASSERT_PATCH_BLOCK;
 #ifdef pp_BURN_AWAY
     if((pfi->obst == NULL || pfi->meshinfo == NULL) && pfi->internal == 1)continue;
@@ -3579,12 +3583,14 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
         continue;
       }
     }
+#ifdef pp_BURN_AWAY
     else{
       if(pfi->internal==1){
         nn += pfi->nrow*pfi->ncol;
         continue;
       }
     }
+#endif
     drawit = 0;
     if(pfi->vis==1&&pfi->dir==0)drawit = 1;
     if(pfi->type==INTERIORwall&&showpatch_both==1)drawit = 1;
@@ -3667,12 +3673,14 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
         continue;
       }
     }
+#ifdef pp_BURN_AWAY
     else{
       if(pfi->internal==1){
         nn += pfi->nrow*pfi->ncol;
         continue;
       }
     }
+#endif
     drawit = 0;
     if(pfi->vis==1&&pfi->dir>0){
       if(pfi->type==INTERIORwall||showpatch_both==0){
@@ -3776,12 +3784,14 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
         continue;
       }
     }
+#ifdef pp_BURN_AWAY
     else{
       if(pfi->internal==1){
         nn += pfi->nrow*pfi->ncol;
         continue;
       }
     }
+#endif
     drawit = 0;
     if(pfi->vis==1&&pfi->dir<0){
       if(pfi->type==INTERIORwall||showpatch_both==0){
