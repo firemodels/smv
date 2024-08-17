@@ -13,6 +13,7 @@
 #include "IOframe.h"
 #endif
 
+#include "readcad.h"
 #include "readgeom.h"
 #include "readobject.h"
 
@@ -259,7 +260,6 @@ typedef struct _labeldata {
   int useforegroundcolor,show_always;
 } labeldata;
 
-
 /* --------------------------  terraindata ------------------------------------ */
 
 typedef struct _terraindata {
@@ -388,41 +388,6 @@ typedef struct _blockagedata {
   struct _facedata *faceinfo[6];
   float texture_origin[3];
 } blockagedata;
-
-/* --------------------------  cadlookdata ------------------------------------ */
-
-typedef struct _cadlookdata {
-  int index;
-  float texture_width, texture_height, texture_origin[3];
-  float rgb[4], shininess;
-  texturedata textureinfo;
-  int onesided;
-} cadlookdata;
-
-/* --------------------------  cadquad ------------------------------------ */
-
-typedef struct _cadquad {
-  float xyzpoints[12];
-  float txypoints[8];
-  float normals[3];
-  int colorindex;
-  float colors[4];
-  float time_show;
-  cadlookdata *cadlookq;
-} cadquad;
-
-
-/* --------------------------  cadgeomdata ------------------------------------ */
-
-typedef struct _cadgeomdata{
-  char *file;
-  int *order;
-  int version;
-  int ncadlookinfo;
-  cadlookdata *cadlookinfo;
-  int nquads;
-  cadquad *quad;
-} cadgeomdata;
 
 /* --------------------------  cventdata ------------------------------------ */
 
@@ -1265,6 +1230,14 @@ typedef struct _smoke3dtypedata {
   float extinction, valmin, valmax;
 } smoke3dtypedata;
 
+/* --------------------------  patchfacedata ------------------------------------ */
+
+typedef struct _patchfacedata{
+  int ib[6], dir, vis, nrow, ncol, start, type, internal;
+  struct _meshdata *meshinfo;
+  struct _blockagedata *obst;
+} patchfacedata;
+
 /* --------------------------  patchdata ------------------------------------ */
 
 typedef struct _patchdata {
@@ -1278,7 +1251,6 @@ typedef struct _patchdata {
   int skip,dir;
   float xyz_min[3], xyz_max[3];
   int ntimes, ntimes_old;
-  int version;
   int patch_filetype, structured;
   int shortlabel_index;
   int *cvals_offsets, *cvals_sizes;
@@ -1316,6 +1288,8 @@ typedef struct _patchdata {
   int hist_update;
   bounddata bounds;
   boundsdata *bounds2;
+  int npatches;
+  patchfacedata *patchfaceinfo;
 #ifdef pp_BOUNDFRAME
   framedata *frameinfo;
 #endif

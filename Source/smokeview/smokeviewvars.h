@@ -14,6 +14,7 @@
 #include "histogram.h"
 #include "structures.h"
 #include "readobject.h"
+#include "readlabel.h"
 #ifndef CPP
 #include <zlib.h>
 #endif
@@ -1617,7 +1618,6 @@ SVEXTERN int SVDECL(solid_state,-1),SVDECL(outline_state,-1);
 SVEXTERN int SVDECL(visTransparentBlockage,0);
 SVEXTERN int SVDECL(blocklocation,BLOCKlocation_grid);
 SVEXTERN int SVDECL(blocklocation_menu, BLOCKlocation_grid);
-SVEXTERN int SVDECL(ncadgeom,0);
 SVEXTERN int SVDECL(visFloor,0), SVDECL(visFrame,1);
 SVEXTERN int SVDECL(visNormalEditColors,1);
 SVEXTERN int SVDECL(visWalls,0), SVDECL(visGrid,0), SVDECL(visCeiling,0);
@@ -1711,7 +1711,7 @@ SVEXTERN float glui_tour_view[3];
 SVEXTERN float glui_tour_xyz[3];
 SVEXTERN float gslice_xyz[3];
 SVEXTERN float gslice_normal_xyz[3];
-SVEXTERN float gslice_normal_azelev[3];
+SVEXTERN float gslice_normal_azelev[2];
 #endif
 SVEXTERN float SVDECL(glui_tour_time, 0.0);
 SVEXTERN float SVDECL(glui_tour_pause_time, 0.0);
@@ -2252,7 +2252,7 @@ SVEXTERN int SVDECL(visMAINmenus,0);
 SVEXTERN int SVDECL(ijkbarmax,5);
 SVEXTERN int SVDECL(blockage_as_input,0), SVDECL(blockage_snapped,1);
 SVEXTERN int SVDECL(show_cad_and_grid,0);
-SVEXTERN labeldata label_first, label_last, *label_first_ptr, *label_last_ptr;
+SVEXTERN labels_collection SVDECL(labelscoll, {0});
 SVEXTERN int SVDECL(*isotypes,NULL), SVDECL(*boundarytypes,NULL);
 SVEXTERN plot3ddata SVDECL(*plot3dinfo,NULL);
 SVEXTERN int SVDECL(iplot3dtimelist, -1), SVDECL(nplot3dtimelist, 0);
@@ -2261,7 +2261,7 @@ SVEXTERN patchdata SVDECL(*patchinfo,NULL);
 SVEXTERN isodata SVDECL(*isoinfo,NULL);
 
 SVEXTERN blockagedata SVDECL(*bchighlight,NULL),SVDECL(*bchighlight_old,NULL);
-SVEXTERN cadgeomdata SVDECL(*cadgeominfo,NULL);
+SVEXTERN cadgeom_collection SVDECL(*cadgeomcoll,NULL);
 
 SVEXTERN int SVDECL(smokediff,0);
 SVEXTERN int SVDECL(buffertype,DOUBLE_BUFFER);

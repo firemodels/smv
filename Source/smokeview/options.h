@@ -4,7 +4,6 @@
 #include "options_common.h"
 
 //#define pp_FRAME           // turn on frame code
-#define pp_BOUNDMEM        // reduce memory allocations for boundary files
 //#define pp_SHOW_UPDATE      // show what is being update in UpdateShowScene routine
 //#define pp_UPDATE_FACES     // update faces in UpdateTimes routine (probably not necessary)
 //#define pp_PARTBOUND_MULTI // compute particle bounds in the background
@@ -23,6 +22,7 @@
 #define pp_GPUTHROTTLE      // pp_GPU directive must also be set
 #endif
 //#define pp_FDS            // create a 1 mesh input file
+//#define pp_BURN_AWAY      // burn away fix
 
 #ifdef pp_FRAME          // turn on each frame type if pp_FRAME is set
 #define pp_BOUNDFRAME    // turn on frame code for boundary files
