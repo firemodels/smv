@@ -1425,16 +1425,16 @@ void InitVars(void){
   strcpy((char *)degC,"C");
   strcpy((char *)degF,"F");
 
-  labelscoll.label_first_ptr = &labelscoll.label_first;
-  labelscoll.label_last_ptr = &labelscoll.label_last;
+  label_first_ptr = &label_first;
+  label_last_ptr = &label_last;
 
-  labelscoll.label_first_ptr->prev = NULL;
-  labelscoll.label_first_ptr->next = labelscoll.label_last_ptr;
-  strcpy(labelscoll.label_first_ptr->name,"first");
+  label_first_ptr->prev = NULL;
+  label_first_ptr->next = label_last_ptr;
+  strcpy(label_first_ptr->name,"first");
 
-  labelscoll.label_last_ptr->prev = labelscoll.label_first_ptr;
-  labelscoll.label_last_ptr->next = NULL;
-  strcpy(labelscoll.label_last_ptr->name,"last");
+  label_last_ptr->prev = label_first_ptr;
+  label_last_ptr->next = NULL;
+  strcpy(label_last_ptr->name,"last");
 
   {
     labeldata *gl;

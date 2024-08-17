@@ -1629,7 +1629,7 @@ void UpdateTimes(void){
   PRINT_TIMER(timer_device, "UpdateTimes: device state");
 
   /* determine visibility of each vent at each time step */
-
+  
   INIT_PRINT_TIMER(timer_vent);
 
   for(i=0;i<nmeshes;i++){
@@ -1917,7 +1917,7 @@ int ISearch(float *list, int nlist, float key, int guess){
 /* ------------------ ResetItimes0 ------------------------ */
 
 void ResetItimes0(void){
-  if(current_script_command==NULL||(current_script_command->command!=SCRIPT_VOLSMOKERENDERALL&&current_script_command->command!=SCRIPT_ISORENDERALL)){
+  if(current_script_command==NULL||current_script_command->command!=SCRIPT_VOLSMOKERENDERALL||current_script_command->command!=SCRIPT_ISORENDERALL){
     itimes=first_frame_index;
   }
 }
@@ -2314,7 +2314,7 @@ void UpdateShowScene(void){
     END_SHOW_UPDATE(update_frame);
   }
 #endif
-#ifdef pp_SMOKE_SPEEDUP
+#ifdef pp_SMOKE_SPEEDUP  
   if(update_smoke3dmenulabels == 1){
     SHOW_UPDATE(update_smoke3dmenulabels);
     update_smoke3dmenulabels = 0;

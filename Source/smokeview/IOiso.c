@@ -690,6 +690,12 @@ void ReadIsoOrig(const char *file, int ifile, int flag, int *errorcode){
   UpdateTimes();
   *errorcode = 0;
 
+#ifdef _DEBUG
+  if(flag==UNLOAD){
+    PRINTF("After iso unload: \n");
+    PrintAllMemoryInfo;
+  }
+#endif
   UpdateIsoType();
   if(flag==UNLOAD){
     updatemenu=1;

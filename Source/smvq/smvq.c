@@ -44,79 +44,79 @@ char *GetBaseName(const char *input_file) {
   return result;
 }
 
-int SetGlobalFilenames(const char *fdsprefix_arg) {
-  int len_casename = strlen(fdsprefix_arg);
-  strcpy(movie_name, fdsprefix_arg);
-  strcpy(render_file_base, fdsprefix_arg);
-  strcpy(html_file_base, fdsprefix_arg);
+int SetGlobalFilenames(const char *fdsprefix) {
+  int len_casename = strlen(fdsprefix);
+  strcpy(movie_name, fdsprefix);
+  strcpy(render_file_base, fdsprefix);
+  strcpy(html_file_base, fdsprefix);
 
   FREEMEMORY(log_filename);
   NewMemory((void **)&log_filename, len_casename + strlen(".smvlog") + 1);
-  STRCPY(log_filename, fdsprefix_arg);
+  STRCPY(log_filename, fdsprefix);
   STRCAT(log_filename, ".smvlog");
 
   FREEMEMORY(caseini_filename);
   NewMemory((void **)&caseini_filename, len_casename + strlen(".ini") + 1);
-  STRCPY(caseini_filename, fdsprefix_arg);
+  STRCPY(caseini_filename, fdsprefix);
   STRCAT(caseini_filename, ".ini");
 
   FREEMEMORY(expcsv_filename);
   NewMemory((void **)&expcsv_filename, len_casename + strlen("_exp.csv") + 1);
-  STRCPY(expcsv_filename, fdsprefix_arg);
+  STRCPY(expcsv_filename, fdsprefix);
   STRCAT(expcsv_filename, "_exp.csv");
 
   FREEMEMORY(dEcsv_filename);
   NewMemory((void **)&dEcsv_filename, len_casename + strlen("_dE.csv") + 1);
-  STRCPY(dEcsv_filename, fdsprefix_arg);
+  STRCPY(dEcsv_filename, fdsprefix);
   STRCAT(dEcsv_filename, "_dE.csv");
 
   FREEMEMORY(html_filename);
   NewMemory((void **)&html_filename, len_casename + strlen(".html") + 1);
-  STRCPY(html_filename, fdsprefix_arg);
+  STRCPY(html_filename, fdsprefix);
   STRCAT(html_filename, ".html");
 
   FREEMEMORY(smv_orig_filename);
   NewMemory((void **)&smv_orig_filename, len_casename + strlen(".smo") + 1);
-  STRCPY(smv_orig_filename, fdsprefix_arg);
+  STRCPY(smv_orig_filename, fdsprefix);
   STRCAT(smv_orig_filename, ".smo");
 
   FREEMEMORY(hrr_filename);
   NewMemory((void **)&hrr_filename, len_casename + strlen("_hrr.csv") + 1);
-  STRCPY(hrr_filename, fdsprefix_arg);
+  STRCPY(hrr_filename, fdsprefix);
   STRCAT(hrr_filename, "_hrr.csv");
 
   FREEMEMORY(htmlvr_filename);
   NewMemory((void **)&htmlvr_filename, len_casename + strlen("_vr.html") + 1);
-  STRCPY(htmlvr_filename, fdsprefix_arg);
+  STRCPY(htmlvr_filename, fdsprefix);
   STRCAT(htmlvr_filename, "_vr.html");
 
   FREEMEMORY(htmlobst_filename);
   NewMemory((void **)&htmlobst_filename,
             len_casename + strlen("_obst.json") + 1);
-  STRCPY(htmlobst_filename, fdsprefix_arg);
+  STRCPY(htmlobst_filename, fdsprefix);
   STRCAT(htmlobst_filename, "_obst.json");
 
   FREEMEMORY(htmlslicenode_filename);
   NewMemory((void **)&htmlslicenode_filename,
             len_casename + strlen("_slicenode.json") + 1);
-  STRCPY(htmlslicenode_filename, fdsprefix_arg);
+  STRCPY(htmlslicenode_filename, fdsprefix);
   STRCAT(htmlslicenode_filename, "_slicenode.json");
 
   FREEMEMORY(htmlslicecell_filename);
   NewMemory((void **)&htmlslicecell_filename,
             len_casename + strlen("_slicecell.json") + 1);
-  STRCPY(htmlslicecell_filename, fdsprefix_arg);
+  STRCPY(htmlslicecell_filename, fdsprefix);
   STRCAT(htmlslicecell_filename, "_slicecell.json");
 
   FREEMEMORY(event_filename);
   NewMemory((void **)&event_filename, len_casename + strlen("_events.csv") + 1);
-  STRCPY(event_filename, fdsprefix_arg);
+  STRCPY(event_filename, fdsprefix);
   STRCAT(event_filename, "_events.csv");
 
   if (ffmpeg_command_filename == NULL) {
     NewMemory((void **)&ffmpeg_command_filename,
               (unsigned int)(len_casename + 12));
-    STRCPY(ffmpeg_command_filename, fdsprefix_arg);
+    STRCPY(ffmpeg_command_filename, fdsprefix);
     STRCAT(ffmpeg_command_filename, "_ffmpeg");
 #ifdef WIN32
     STRCAT(ffmpeg_command_filename, ".bat");
@@ -135,25 +135,25 @@ int SetGlobalFilenames(const char *fdsprefix_arg) {
   if (stop_filename == NULL) {
     NewMemory((void **)&stop_filename,
               (unsigned int)(len_casename + strlen(".stop") + 1));
-    STRCPY(stop_filename, fdsprefix_arg);
+    STRCPY(stop_filename, fdsprefix);
     STRCAT(stop_filename, ".stop");
   }
   if (smvzip_filename == NULL) {
     NewMemory((void **)&smvzip_filename,
               (unsigned int)(len_casename + strlen(".smvzip") + 1));
-    STRCPY(smvzip_filename, fdsprefix_arg);
+    STRCPY(smvzip_filename, fdsprefix);
     STRCAT(smvzip_filename, ".smvzip");
   }
   if (sliceinfo_filename == NULL) {
     NewMemory((void **)&sliceinfo_filename,
-              strlen(fdsprefix_arg) + strlen(".sinfo") + 1);
-    STRCPY(sliceinfo_filename, fdsprefix_arg);
+              strlen(fdsprefix) + strlen(".sinfo") + 1);
+    STRCPY(sliceinfo_filename, fdsprefix);
     STRCAT(sliceinfo_filename, ".sinfo");
   }
   if (deviceinfo_filename == NULL) {
     NewMemory((void **)&deviceinfo_filename,
-              strlen(fdsprefix_arg) + strlen("_device.info") + 1);
-    STRCPY(deviceinfo_filename, fdsprefix_arg);
+              strlen(fdsprefix) + strlen("_device.info") + 1);
+    STRCPY(deviceinfo_filename, fdsprefix);
     STRCAT(deviceinfo_filename, "_device.info");
   }
 
@@ -165,7 +165,7 @@ int SetGlobalFilenames(const char *fdsprefix_arg) {
     FILE *stream_iso = NULL;
 
     NewMemory((void **)&iso_filename, len_casename + strlen(".isosmv") + 1);
-    STRCPY(iso_filename, fdsprefix_arg);
+    STRCPY(iso_filename, fdsprefix);
     STRCAT(iso_filename, ".isosmv");
     stream_iso = fopen(iso_filename, "r");
     if (stream_iso != NULL) {
@@ -178,12 +178,12 @@ int SetGlobalFilenames(const char *fdsprefix_arg) {
 
   if (trainer_filename == NULL) {
     NewMemory((void **)&trainer_filename, (unsigned int)(len_casename + 6));
-    STRCPY(trainer_filename, fdsprefix_arg);
+    STRCPY(trainer_filename, fdsprefix);
     STRCAT(trainer_filename, ".svd");
   }
   if (test_filename == NULL) {
     NewMemory((void **)&test_filename, (unsigned int)(len_casename + 6));
-    STRCPY(test_filename, fdsprefix_arg);
+    STRCPY(test_filename, fdsprefix);
     STRCAT(test_filename, ".svd");
   }
   return 0;

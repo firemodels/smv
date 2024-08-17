@@ -2299,7 +2299,7 @@ void Keyboard(unsigned char key, int flag){
       else{
         blocklocation++;
       }
-      if((NCADGeom(cadgeomcoll)==0&&blocklocation>BLOCKlocation_exact)||blocklocation>BLOCKlocation_cad){
+      if((ncadgeom==0&&blocklocation>BLOCKlocation_exact)||blocklocation>BLOCKlocation_cad){
         blocklocation=BLOCKlocation_grid;
       }
       if(ncgeominfo>0){

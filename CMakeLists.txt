@@ -62,9 +62,26 @@ if (LINUX)
     add_definitions(-Dpp_LINUX)
 endif()
 
-# GLUI has been modified for smokeview, so we have to vendor it and can't use a
-# native version.
-add_subdirectory(Source/glui_v2_1_beta)
+# This is a set of warnings that are not enabled by default but it would be good
+# to satisfy these.
+if(STRICT_CHECKS)
+    set(CMAKE_CXX_CLANG_TIDY "clang-tidy;-checks=clang-diagnostic-*,clang-analyzer-*,-clang-analyzer-security.insecureAPI.*")
+    set(CMAKE_C_CLANG_TIDY "clang-tidy;-checks=clang-diagnostic-*,clang-analyzer-*,-clang-analyzer-security.insecureAPI.*")
+    set(CMAKE_COMPILE_WARNING_AS_ERROR ON)
+    add_compile_options(-O2)
+    add_compile_options(-flto=auto)
+    add_compile_options(-ffat-lto-objects)
+    add_compile_options(-fexceptions)
+    add_compile_options(-grecord-gcc-switches)
+    add_compile_options(-Wall)
+    add_compile_options(-Werror=format-security)
+    add_compile_options(-Wp,-D_FORTIFY_SOURCE=2)
+    add_compile_options(-Wp,-D_GLIBCXX_ASSERTIONS )
+    add_compile_options(-fstack-protector-strong)
+    add_compile_options(-fasynchronous-unwind-tables)
+    add_compile_options(-fstack-clash-protection -fcf-protection)
+    add_compile_options(-fcf-protection)
+endif()
 
 find_package(OpenGL REQUIRED)
 if (NOT(WIN32))
@@ -90,6 +107,10 @@ if (NOT ZLIB_FOUND)
     add_subdirectory(Source/zlib128)
 endif()
 
+# GLUI has been modified for smokeview, so we have to vendor it and can't use a
+# native version.
+add_subdirectory(Source/glui_v2_1_beta)
+
 # This fails on Windows so we disable it for now
 if (NOT(WIN32))
     find_package(PkgConfig)
@@ -107,62 +128,6 @@ if (WIN32)
     if (NOT PThreads4W_FOUND)
         add_subdirectory(Source/pthreads)
     endif()
-endif()
-
-if (LUA)
-    if (VENDOR_LFS)
-        add_subdirectory(Source/lfs)
-    endif()
-    if (VENDOR_LPEG)
-        add_subdirectory(Source/lpeg)
-    endif()
-endif()
-
-
-if (NOT MSVC)
-    add_compile_options(-Wunused)
-else()
-    add_compile_options(/W3)
-endif()
-# This is a set of warnings that are not enabled by default but it would be good
-# to satisfy these.
-if(STRICT_CHECKS AND (NOT MSVC))
-    # set(CMAKE_CXX_CLANG_TIDY "clang-tidy;-checks=clang-diagnostic-*,clang-analyzer-*,-clang-analyzer-security.insecureAPI.*")
-    # set(CMAKE_C_CLANG_TIDY "clang-tidy;-checks=clang-diagnostic-*,clang-analyzer-*,-clang-analyzer-security.insecureAPI.*")
-    set(CMAKE_COMPILE_WARNING_AS_ERROR ON)
-    add_compile_options(-O2)
-    add_compile_options(-fexceptions)
-    add_compile_options(-grecord-gcc-switches)
-    add_compile_options(-Wall)
-    add_compile_options(-Werror=format-security)
-    add_compile_options(-Wp,-D_FORTIFY_SOURCE=2)
-    add_compile_options(-Wp,-D_GLIBCXX_ASSERTIONS )
-    add_compile_options(-fstack-protector-strong)
-    add_compile_options(-fasynchronous-unwind-tables)
-    add_compile_options(-fstack-clash-protection)
-    add_compile_options(-fcf-protection)
-
-    add_compile_options(-Wno-unknown-pragmas)
-    add_compile_options(-Wno-uninitialized)
-    add_compile_options(-Wno-unused-result)
-    add_compile_options(-Wno-format-overflow)
-    add_compile_options(-Wno-format-truncation)
-    add_compile_options(-Wno-nonnull)
-    add_compile_options(-Wno-comment)
-    if (NOT (CMAKE_C_COMPILER_ID STREQUAL IntelLLVM))
-        add_compile_options(-Wno-stringop-truncation)
-        add_compile_options(-ffat-lto-objects)
-        add_compile_options(-flto=auto)
-    else()
-        # IntelLLVM-specific options
-        add_compile_options(-Wno-tautological-constant-compare)
-        add_compile_options(-Wno-for-loop-analysis)
-    endif()
-
-    add_compile_options(-Wshadow)
-elseif(STRICT_CHECKS AND (NOT MSVC))
-    add_compile_options(/Wall)
-    add_compile_options(/Werror)
 endif()
 
 add_executable(smokeview
@@ -222,10 +187,8 @@ add_executable(smokeview
     Source/shared/getdata.c
     Source/shared/color2rgb.c
     Source/shared/readimage.c
-    Source/shared/readcad.c
     Source/shared/readgeom.c
     Source/shared/readobject.c
-    Source/shared/readlabel.c
     Source/smokeview/colortable.c
     Source/smokeview/command_args.c
 )
@@ -311,6 +274,8 @@ else()
 endif()
 target_link_libraries(smokeview PRIVATE OpenGL::GL OpenGL::GLU)
 
+
+
 target_include_directories(smokeview PRIVATE
     Source/smokeview
     Source/shared
@@ -381,6 +346,12 @@ if (LUA)
         Source/smvluacore/camera.lua
         DESTINATION ${CMAKE_INSTALL_DATADIR}/smokeview/scripts
     )
+    if (VENDOR_LFS)
+        add_subdirectory(Source/lfs)
+    endif()
+    if (VENDOR_LPEG)
+        add_subdirectory(Source/lpeg)
+    endif()
 endif()
 
 if (MSVC)

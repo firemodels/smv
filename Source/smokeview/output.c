@@ -387,7 +387,7 @@ void OutputBarText(float x, float y, const GLfloat *color, char *string){
 
 /* ------------------ WriteLabels ------------------------ */
 
-void WriteLabels(labels_collection *labelscoll_arg){
+void WriteLabels(void){
   labeldata *first_label, *thislabel;
   FILE *stream = NULL;
   char quote[2];
@@ -396,7 +396,7 @@ void WriteLabels(labels_collection *labelscoll_arg){
   stream = fopen(event_filename, "w");
   if(stream==NULL)return;
 
-  first_label = labelscoll_arg->label_first_ptr;
+  first_label = label_first_ptr;
   strcpy(quote,"\"");
 
   for(thislabel = first_label->next; thislabel->next!=NULL; thislabel = thislabel->next){
@@ -418,10 +418,10 @@ void WriteLabels(labels_collection *labelscoll_arg){
 
 /* ------------------ DrawLabels ------------------------ */
 
-void DrawLabels(labels_collection *labelscoll_arg){
+void DrawLabels(void){
   labeldata *first_label, *thislabel;
 
-  first_label = labelscoll_arg->label_first_ptr;
+  first_label = label_first_ptr;
 
   glPushMatrix();
   glScalef(SCALE2SMV(1.0),SCALE2SMV(1.0),SCALE2SMV(1.0));
@@ -468,6 +468,194 @@ void DrawLabels(labels_collection *labelscoll_arg){
     }
   }
   glPopMatrix();
+}
+
+/* ------------------ LabelNext ------------------------ */
+
+labeldata *LabelNext(labeldata *label){
+  labeldata *thislabel;
+
+  if(label==NULL)return NULL;
+  if(label_first_ptr->next->next==NULL)return NULL;
+  for(thislabel=label->next;thislabel!=label;thislabel=thislabel->next){
+    if(thislabel->next==NULL)thislabel=label_first_ptr->next;
+    if(thislabel->labeltype==TYPE_SMV)continue;
+    return thislabel;
+  }
+  return NULL;
+}
+
+/* ------------------ LabelPrevious ------------------------ */
+
+labeldata *LabelPrevious(labeldata *label){
+  labeldata *thislabel;
+
+  if(label==NULL)return NULL;
+  if(label_last_ptr->prev->prev==NULL)return NULL;
+  for(thislabel=label->prev;thislabel!=label;thislabel=thislabel->prev){
+    if(thislabel->prev==NULL)thislabel=label_last_ptr->prev;
+    if(thislabel->labeltype==TYPE_SMV)continue;
+    return thislabel;
+  }
+  return NULL;
+}
+
+/* ------------------ LabelInit ------------------------ */
+
+int LabelInit(labeldata *gl){
+  labeldata *thislabel;
+
+  for(thislabel=label_first_ptr->next;thislabel->next!=NULL;thislabel=thislabel->next){
+    if(thislabel->labeltype==TYPE_SMV)continue;
+    LabelCopy(gl,thislabel);
+    return 1;
+  }
+  return 0;
+}
+
+/* ------------------ LabelGetNUserLabels ------------------------ */
+
+int LabelGetNUserLabels(void){
+  int count=0;
+  labeldata *thislabel;
+
+  for(thislabel=label_first_ptr->next;thislabel->next!=NULL;thislabel=thislabel->next){
+    if(thislabel->labeltype==TYPE_INI)count++;
+  }
+  return count;
+}
+
+/* ------------------ LabelGet ------------------------ */
+
+labeldata *LabelGet(char *name){
+  labeldata *thislabel;
+
+  if(name==NULL)return NULL;
+  for(thislabel=label_first_ptr->next;thislabel->next!=NULL;thislabel=thislabel->next){
+    if(strcmp(thislabel->name,name)==0)return thislabel;
+  }
+  return NULL;
+}
+
+/* ------------------ LabelInsertBefore ------------------------ */
+
+void LabelInsertBefore(labeldata *listlabel, labeldata *label){
+  labeldata *prev, *next;
+
+  prev        = listlabel->prev;
+  next        = listlabel;
+  prev->next  = label;
+  next->prev  = label;
+  label->prev = prev;
+  label->next = next;
+}
+
+/* ------------------ LabelDelete ------------------------ */
+
+void LabelDelete(labeldata *label){
+  labeldata *prev, *next;
+
+  prev = label->prev;
+  next =label->next;
+  CheckMemory;
+  FREEMEMORY(label);
+  prev->next=next;
+  next->prev=prev;
+}
+
+/* ------------------ LabelCopy ------------------------ */
+
+void LabelCopy(labeldata *label_to, labeldata *label_from){
+  labeldata *prev, *next;
+
+  prev=label_to->prev;
+  next=label_to->next;
+  memcpy(label_to,label_from,sizeof(labeldata));
+  label_to->prev=prev;
+  label_to->next=next;
+
+}
+
+/* ------------------ LabelResort ------------------------ */
+
+void LabelResort(labeldata *label){
+  labeldata labelcopy;
+
+  CheckMemory;
+  memcpy(&labelcopy,label,sizeof(labeldata));
+  CheckMemory;
+  LabelDelete(label);
+  LabelInsert(&labelcopy);
+}
+
+/* ------------------ LabelInsertAfter ------------------------ */
+
+void LabelInsertAfter(labeldata *listlabel, labeldata *label){
+  labeldata *prev, *next;
+
+  prev        = listlabel;
+  next        = listlabel->next;
+  prev->next  = label;
+  next->prev  = label;
+  label->prev = prev;
+  label->next = next;
+}
+
+/* ------------------ LabelPrint ------------------------ */
+
+void LabelPrint(void){
+  labeldata *thislabel;
+  float *xyz;
+
+  for(thislabel=label_first_ptr->next;thislabel->next!=NULL;thislabel=thislabel->next){
+    xyz = thislabel->xyz;
+    PRINTF("label: %s position: %f %f %f\n",thislabel->name,xyz[0],xyz[1],xyz[2]);
+  }
+}
+
+/* ------------------ LabelInsert ------------------------ */
+
+labeldata *LabelInsert(labeldata *labeltemp){
+  labeldata *newlabel, *thislabel;
+  labeldata *firstuserptr, *lastuserptr;
+
+  NewMemory((void **)&newlabel,sizeof(labeldata));
+  memcpy(newlabel,labeltemp,sizeof(labeldata));
+
+  thislabel = LabelGet(newlabel->name);
+  if(thislabel!=NULL){
+    LabelInsertAfter(thislabel->prev,newlabel);
+    return newlabel;
+  }
+
+  firstuserptr=label_first_ptr->next;
+  if(firstuserptr==label_last_ptr)firstuserptr=NULL;
+
+  lastuserptr=label_last_ptr->prev;
+  if(lastuserptr==label_first_ptr)lastuserptr=NULL;
+
+  if(firstuserptr!=NULL&&strcmp(newlabel->name,firstuserptr->name)<0){
+    LabelInsertBefore(firstuserptr,newlabel);
+    return newlabel;
+  }
+  if(lastuserptr!=NULL&&strcmp(newlabel->name,lastuserptr->name)>0){
+    LabelInsertAfter(lastuserptr,newlabel);
+    return newlabel;
+  }
+  if(firstuserptr==NULL&&lastuserptr==NULL){
+    LabelInsertAfter(label_first_ptr,newlabel);
+    return newlabel;
+  }
+  for(thislabel=label_first_ptr->next;thislabel->next!=NULL;thislabel=thislabel->next){
+    labeldata *nextlabel;
+
+    nextlabel=thislabel->next;
+    if(strcmp(thislabel->name,newlabel->name)<0&&strcmp(newlabel->name,nextlabel->name)<0){
+      LabelInsertAfter(thislabel,newlabel);
+      return newlabel;
+    }
+  }
+  return NULL;
 }
 
 /* ----------------------- ScaleFont2D ----------------------------- */
