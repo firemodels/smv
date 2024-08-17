@@ -27,7 +27,7 @@
 #endif
 
 // NOLINTNEXTLINE
-lua_State *lua_instance;
+lua_State *L;
 int LuaDisplayCb(lua_State *L);
 
 #ifdef WIN32
@@ -66,6 +66,7 @@ int CheckSMVFileLua(char *file, char *subdir) {
 }
 
 int ProgramSetupLua(lua_State *L, int argc, char **argv) {
+  char *progname;
   InitVars();
   ParseCommonOptions(argc, argv);
   smv_filename = ParseCommandline(argc, argv);
@@ -1985,8 +1986,8 @@ int LuaGetMovietype(lua_State *L) {
 int LuaMakemovie(lua_State *L) {
   const char *name = lua_tostring(L, 1);
   const char *base = lua_tostring(L, 2);
-  float framerate_local = lua_tonumber(L, 3);
-  Makemovie(name, base, framerate_local);
+  float framerate = lua_tonumber(L, 3);
+  Makemovie(name, base, framerate);
   return 0;
 }
 
@@ -2642,20 +2643,20 @@ int LuaCameraGetElev(lua_State *L) {
   return 1;
 }
 int LuaCameraGetProjectionType(lua_State *L) {
-  float projection_type_local = CameraGetProjectionType();
-  lua_pushnumber(L, projection_type_local);
+  float projection_type = CameraGetProjectionType();
+  lua_pushnumber(L, projection_type);
   return 1;
 }
 int LuaCameraSetProjectionType(lua_State *L) {
-  float projection_type_local = lua_tonumber(L, 1);
-  int return_value = CameraSetProjectionType(projection_type_local);
+  float projection_type = lua_tonumber(L, 1);
+  int return_value = CameraSetProjectionType(projection_type);
   lua_pushnumber(L, return_value);
   return 1;
 }
 
 int LuaCameraGetRotationType(lua_State *L) {
-  float rotation_type_local = CameraGetRotationType();
-  lua_pushnumber(L, rotation_type_local);
+  float rotation_type = CameraGetRotationType();
+  lua_pushnumber(L, rotation_type);
   return 1;
 }
 
@@ -2666,8 +2667,8 @@ int LuaCameraGetRotationIndex(lua_State *L) {
 }
 
 int LuaCameraSetRotationType(lua_State *L) {
-  int rotation_type_local = lua_tonumber(L, 1);
-  CameraSetRotationType(rotation_type_local);
+  int rotation_type = lua_tonumber(L, 1);
+  CameraSetRotationType(rotation_type);
   return 0;
 }
 
@@ -3310,9 +3311,9 @@ int LuaSetUsenewdrawface(lua_State *L) {
 
 int LuaSetVeclength(lua_State *L) {
   float vf = lua_tonumber(L, 1);
-  int vec_uniform_length_local = lua_tonumber(L, 2);
-  int vec_uniform_spacing_local = lua_tonumber(L, 3);
-  int return_code = SetVeclength(vf, vec_uniform_length_local, vec_uniform_spacing_local);
+  int vec_uniform_length = lua_tonumber(L, 2);
+  int vec_uniform_spacing = lua_tonumber(L, 3);
+  int return_code = SetVeclength(vf, vec_uniform_length, vec_uniform_spacing);
   lua_pushnumber(L, return_code);
   return 1;
 }
@@ -5611,42 +5612,42 @@ int SmvlibIndex(lua_State *L) {
 }
 
 lua_State *InitLua() {
-  lua_instance = luaL_newstate();
+  L = luaL_newstate();
 
-  luaL_openlibs(lua_instance);
+  luaL_openlibs(L);
 
-  luaL_newlib(lua_instance, SMVLIB);
+  luaL_newlib(L, SMVLIB);
 
-  lua_pushcfunction(lua_instance, &LuaCreateCase);
-  lua_setfield(lua_instance, -2, "load_default");
+  lua_pushcfunction(L, &LuaCreateCase);
+  lua_setfield(L, -2, "load_default");
 
-  lua_createtable(lua_instance, 0, 1);
-  lua_pushcfunction(lua_instance, &SmvlibNewindex);
-  lua_setfield(lua_instance, -2, "__newindex");
-  lua_pushcfunction(lua_instance, &SmvlibIndex);
-  lua_setfield(lua_instance, -2, "__index");
+  lua_createtable(L, 0, 1);
+  lua_pushcfunction(L, &SmvlibNewindex);
+  lua_setfield(L, -2, "__newindex");
+  lua_pushcfunction(L, &SmvlibIndex);
+  lua_setfield(L, -2, "__index");
   // then set the metatable
-  lua_setmetatable(lua_instance, -2);
+  lua_setmetatable(L, -2);
 
-  lua_setglobal(lua_instance, "smvlib");
+  lua_setglobal(L, "smvlib");
 
-  lua_pushstring(lua_instance, script_dir_path);
-  lua_setglobal(lua_instance, "current_script_dir");
+  lua_pushstring(L, script_dir_path);
+  lua_setglobal(L, "current_script_dir");
 
   // a boolean value that determines if lua is running in smokeview
-  lua_pushboolean(lua_instance, 1);
-  lua_setglobal(lua_instance, "smokeviewEmbedded");
+  lua_pushboolean(L, 1);
+  lua_setglobal(L, "smokeviewEmbedded");
 
-  return lua_instance;
+  return L;
 }
 
-int RunScriptString(const char *string) { return luaL_dostring(lua_instance, string); }
+int RunScriptString(const char *string) { return luaL_dostring(L, string); }
 
 int LoadLuaScript(const char *filename) {
   // The display callback needs to be run once initially.
   // PROBLEM: the display CB does not work without a loaded case.
   runluascript = 0;
-  LuaDisplayCb(lua_instance);
+  LuaDisplayCb(L);
   runluascript = 1;
   char cwd[1000];
 #if defined(_WIN32)
@@ -5657,17 +5658,17 @@ int LoadLuaScript(const char *filename) {
   const char *err_msg;
   lua_Debug info;
   int level = 0;
-  int return_code = luaL_loadfile(lua_instance, filename);
+  int return_code = luaL_loadfile(L, filename);
   switch(return_code) {
   case LUA_OK:
     break;
   case LUA_ERRSYNTAX:
     fprintf(stderr, "Syntax error loading %s\n", filename);
-    err_msg = lua_tostring(lua_instance, -1);
+    err_msg = lua_tostring(L, -1);
     fprintf(stderr, "error:%s\n", err_msg);
     level = 0;
-    while(lua_getstack(lua_instance, level, &info)) {
-      lua_getinfo(lua_instance, "nSl", &info);
+    while(lua_getstack(L, level, &info)) {
+      lua_getinfo(L, "nSl", &info);
       fprintf(stderr, "  [%d] %s:%d -- %s [%s]\n", level, info.short_src,
               info.currentline, (info.name ? info.name : "<unknown>"),
               info.what);
@@ -5678,11 +5679,11 @@ int LoadLuaScript(const char *filename) {
     break;
   case LUA_ERRFILE:
     fprintf(stderr, "Could not load file %s\n", filename);
-    err_msg = lua_tostring(lua_instance, -1);
+    err_msg = lua_tostring(L, -1);
     fprintf(stderr, "error:%s\n", err_msg);
     level = 0;
-    while(lua_getstack(lua_instance, level, &info)) {
-      lua_getinfo(lua_instance, "nSl", &info);
+    while(lua_getstack(L, level, &info)) {
+      lua_getinfo(L, "nSl", &info);
       fprintf(stderr, "  [%d] %s:%d -- %s [%s]\n", level, info.short_src,
               info.currentline, (info.name ? info.name : "<unknown>"),
               info.what);
@@ -5704,7 +5705,7 @@ int LoadSsfScript(const char *filename) {
   // The display callback needs to be run once initially.
   // PROBLEM: the display CB does not work without a loaded case.
   runscript = 0;
-  LuaDisplayCb(lua_instance);
+  LuaDisplayCb(L);
   runscript = 1;
   const char *err_msg;
   lua_Debug info;
@@ -5712,21 +5713,21 @@ int LoadSsfScript(const char *filename) {
   char l_string[1024];
   snprintf(l_string, 1024, "require(\"ssfparser\")\nrunSSF(\"%s.ssf\")",
            fdsprefix);
-  int ssfparser_loaded_err = luaL_dostring(lua_instance, "require \"ssfparser\"");
+  int ssfparser_loaded_err = luaL_dostring(L, "require \"ssfparser\"");
   if(ssfparser_loaded_err) {
     fprintf(stderr, "Failed to load ssfparser\n");
   }
-  int return_code = luaL_loadstring(lua_instance, l_string);
+  int return_code = luaL_loadstring(L, l_string);
   switch(return_code) {
   case LUA_OK:
     break;
   case LUA_ERRSYNTAX:
     fprintf(stderr, "Syntax error loading %s\n", filename);
-    err_msg = lua_tostring(lua_instance, -1);
+    err_msg = lua_tostring(L, -1);
     fprintf(stderr, "error:%s\n", err_msg);
     level = 0;
-    while(lua_getstack(lua_instance, level, &info)) {
-      lua_getinfo(lua_instance, "nSl", &info);
+    while(lua_getstack(L, level, &info)) {
+      lua_getinfo(L, "nSl", &info);
       fprintf(stderr, "  [%d] %s:%d -- %s [%s]\n", level, info.short_src,
               info.currentline, (info.name ? info.name : "<unknown>"),
               info.what);
@@ -5737,11 +5738,11 @@ int LoadSsfScript(const char *filename) {
     break;
   case LUA_ERRFILE:
     fprintf(stderr, "Could not load file %s\n", filename);
-    err_msg = lua_tostring(lua_instance, -1);
+    err_msg = lua_tostring(L, -1);
     fprintf(stderr, "error:%s\n", err_msg);
     level = 0;
-    while(lua_getstack(lua_instance, level, &info)) {
-      lua_getinfo(lua_instance, "nSl", &info);
+    while(lua_getstack(L, level, &info)) {
+      lua_getinfo(L, "nSl", &info);
       fprintf(stderr, "  [%d] %s:%d -- %s [%s]\n", level, info.short_src,
               info.currentline, (info.name ? info.name : "<unknown>"),
               info.what);
@@ -5761,7 +5762,7 @@ int RunSsfScript() {
 #elif LUA_VERSION_NUM < 504
     yield_or_ok_ssf = lua_resume(L, NULL, 0);
 #else
-    yield_or_ok_ssf = lua_resume(lua_instance, NULL, 0, &nresults);
+    yield_or_ok_ssf = lua_resume(L, NULL, 0, &nresults);
 #endif
     if(yield_or_ok_ssf == LUA_YIELD) {
       printf("  LUA_YIELD\n");
@@ -5772,12 +5773,12 @@ int RunSsfScript() {
     else if(yield_or_ok_ssf == LUA_ERRRUN) {
       printf("  LUA_ERRRUN\n");
       const char *err_msg;
-      err_msg = lua_tostring(lua_instance, -1);
+      err_msg = lua_tostring(L, -1);
       fprintf(stderr, "error:%s\n", err_msg);
       lua_Debug info;
       int level = 0;
-      while(lua_getstack(lua_instance, level, &info)) {
-        lua_getinfo(lua_instance, "nSl", &info);
+      while(lua_getstack(L, level, &info)) {
+        lua_getinfo(L, "nSl", &info);
         fprintf(stderr, "  [%d] %s:%d -- %s [%s]\n", level, info.short_src,
                 info.currentline, (info.name ? info.name : "<unknown>"),
                 info.what);
@@ -5792,7 +5793,7 @@ int RunSsfScript() {
     }
   }
   else {
-    lua_close(lua_instance);
+    lua_close(L);
     glutIdleFunc(NULL);
   }
   return yield_or_ok_ssf;
@@ -5807,7 +5808,7 @@ int RunLuaScript() {
 #elif LUA_VERSION_NUM < 504
     yield_or_ok_ssf = lua_resume(L, NULL, 0);
 #else
-    yield_or_ok = lua_resume(lua_instance, NULL, 0, &nresults);
+    yield_or_ok = lua_resume(L, NULL, 0, &nresults);
 #endif
     if(yield_or_ok == LUA_YIELD) {
       printf("  LUA_YIELD\n");
@@ -5818,12 +5819,12 @@ int RunLuaScript() {
     else if(yield_or_ok == LUA_ERRRUN) {
       printf("  LUA_ERRRUN\n");
       const char *err_msg;
-      err_msg = lua_tostring(lua_instance, -1);
+      err_msg = lua_tostring(L, -1);
       fprintf(stderr, "error:%s\n", err_msg);
       lua_Debug info;
       int level = 0;
-      while(lua_getstack(lua_instance, level, &info)) {
-        lua_getinfo(lua_instance, "nSl", &info);
+      while(lua_getstack(L, level, &info)) {
+        lua_getinfo(L, "nSl", &info);
         fprintf(stderr, "  [%d] %s:%d -- %s [%s]\n", level, info.short_src,
                 info.currentline, (info.name ? info.name : "<unknown>"),
                 info.what);
@@ -5838,7 +5839,7 @@ int RunLuaScript() {
     }
   }
   else {
-    lua_close(lua_instance);
+    lua_close(L);
     glutIdleFunc(NULL);
   }
   GLUTPOSTREDISPLAY;

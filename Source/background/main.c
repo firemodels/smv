@@ -579,7 +579,7 @@ int get_ncores(void){
 
 /* ------------------ get_host_ncores ------------------------ */
 
-int get_host_ncores(char *hosta){
+int get_host_ncores(char *host){
   FILE *stream;
   char buffer[1024];
   char command[1024];
@@ -587,12 +587,12 @@ int get_host_ncores(char *hosta){
   int ncores=0;
 
   strcpy(localfile,"/tmp/cpuinfo.");
-  strcat(localfile,hosta);
+  strcat(localfile,host);
   strcat(localfile,".");
   strcat(localfile,pid);
 
   strcpy(command,"ssh ");
-  strcat(command,hosta);
+  strcat(command,host);
   strcat(command," cat /proc/cpuinfo >");
   strcat(command,localfile);
 
@@ -620,7 +620,7 @@ int get_host_ncores(char *hosta){
 
 /* ------------------ get_host_load ------------------------ */
 
-float get_host_load(char *host_arg){
+float get_host_load(char *host){
   FILE *stream;
   char buffer[1024];
   char command[1024];
@@ -628,12 +628,12 @@ float get_host_load(char *host_arg){
   float load1;
 
   strcpy(localfile,"/tmp/loadavg.");
-  strcat(localfile,host_arg);
+  strcat(localfile,host);
   strcat(localfile,".");
   strcat(localfile,pid);
 
   strcpy(command,"ssh ");
-  strcat(command,host_arg);
+  strcat(command,host);
   strcat(command," cat /proc/loadavg >");
   strcat(command,localfile);
 
@@ -674,11 +674,11 @@ float get_load(void){
 
 /* ------------------ cpuusage_host ------------------------ */
 
-unsigned char cpuusage_host(char *hostb, int ncores){
+unsigned char cpuusage_host(char *host, int ncores){
   float load;
   unsigned char usage;
 
-  load = get_host_load(hostb);
+  load = get_host_load(host);
   if(load>ncores)load=ncores;
   usage = 100*(load/(float)ncores);
   return usage;
