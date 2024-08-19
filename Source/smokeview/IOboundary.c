@@ -1276,6 +1276,11 @@ void GetPatchSizes2(FILE_m *stream, int npatch, int nmeshes_arg, int nobsts_arg,
       pfi->meshinfo = NULL;
       pfi->obst     = NULL;
     }
+ // debug patch pring
+ //   if(n == 0)printf("\n");
+ //   if(ijkp[0]==4&&ijkp[4]==4)
+ //   printf("%i: (%i,%i,%i) (%i,%i,%i) dir: %i obst: %i mesh: %i\n",
+ //     n, ijkp[0], ijkp[2], ijkp[4], ijkp[1], ijkp[3], ijkp[5], ijkp[6], ijkp[7], ijkp[8]);
 
     int i1 = ijkp[0];
     int i2 = ijkp[1];
