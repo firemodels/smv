@@ -2624,9 +2624,6 @@ void DrawBoundaryTexture(const meshdata *meshi){
     pfi = patchi->patchfaceinfo + n;
     CheckMemory;
     ASSERT_PATCH_BLOCK;
-#ifdef pp_BURN_AWAY
-    if((pfi->obst == NULL || pfi->meshinfo == NULL) && pfi->internal == 1)continue;
-#endif
     if(pfi->obst != NULL && pfi->meshinfo!=NULL && pfi->obst->showtimelist!=NULL&&pfi->obst->showtimelist[itimes]==0)continue;
     if(pfi->hide == 1)continue;
 
@@ -2718,9 +2715,6 @@ void DrawBoundaryTexture(const meshdata *meshi){
 
     pfi = patchi->patchfaceinfo + n;
     CheckMemory;
-#ifdef pp_BURN_AWAY
-    if((pfi->obst == NULL || pfi->meshinfo == NULL) && pfi->internal == 1)continue;
-#endif
     if(pfi->hide == 1)continue;
     if(pfi->obst!=NULL && pfi->meshinfo != NULL && pfi->obst->showtimelist!=NULL&& pfi->obst->showtimelist[itimes]==0)continue;
 
@@ -2832,9 +2826,6 @@ void DrawBoundaryTexture(const meshdata *meshi){
     pfi = patchi->patchfaceinfo + n;
     CheckMemory;
     ASSERT_PATCH_BLOCK;
-#ifdef pp_BURN_AWAY
-    if((pfi->obst == NULL || pfi->meshinfo == NULL) && pfi->internal == 1)continue;
-#endif
     if(pfi->hide==1)continue;
     if(pfi->obst!=NULL && pfi->meshinfo!=NULL && pfi->obst->showtimelist!=NULL && pfi->obst->showtimelist[itimes]==0)continue;
 
@@ -3609,12 +3600,6 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
       nn += pfi->nrow*pfi->ncol;
       continue;
     }
-#ifdef pp_BURN_AWAY
-    else if(pfi->internal==1){
-      nn += pfi->nrow*pfi->ncol;
-      continue;
-    }
-#endif
     drawit = 0;
     if(pfi->vis==1&&pfi->dir==0)drawit = 1;
     if(pfi->type==INTERIORwall&&showpatch_both==1)drawit = 1;
@@ -3701,12 +3686,6 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
       nn += pfi->nrow*pfi->ncol;
       continue;
     }
-#ifdef pp_BURN_AWAY
-    else if(pfi->internal==1){
-      nn += pfi->nrow*pfi->ncol;
-      continue;
-    }
-#endif
     drawit = 0;
     if(pfi->vis==1&&pfi->dir>0){
       if(pfi->type==INTERIORwall||showpatch_both==0){
@@ -3810,14 +3789,6 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
         continue;
       }
     }
-#ifdef pp_BURN_AWAY
-    else{
-      if(pfi->internal==1||pfi->hide==1){
-        nn += pfi->nrow*pfi->ncol;
-        continue;
-      }
-    }
-#endif
     drawit = 0;
     if(pfi->vis==1&&pfi->dir<0){
       if(pfi->type==INTERIORwall||showpatch_both==0){
