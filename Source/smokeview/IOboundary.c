@@ -587,7 +587,7 @@ void DrawOnlyThreshold(const meshdata *meshi){
       }
     }
     else{
-      if(pfi->internal==1){
+      if(pfi->internal==1||pfi->hide==1){
         nn += pfi->nrow*pfi->ncol;
         continue;
       }
@@ -677,7 +677,7 @@ void DrawOnlyThreshold(const meshdata *meshi){
       }
     }
     else{
-      if(pfi->internal==1){
+      if(pfi->internal==1||pfi->hide==1){
         nn += pfi->nrow*pfi->ncol;
         continue;
       }
@@ -765,7 +765,7 @@ void DrawOnlyThreshold(const meshdata *meshi){
       }
     }
     else{
-      if(pfi->internal==1){
+      if(pfi->internal==1||pfi->hide==1){
         nn += pfi->nrow*pfi->ncol;
         continue;
       }
@@ -1276,9 +1276,8 @@ void GetPatchSizes2(FILE_m *stream, int npatch, int nmeshes_arg, int nobsts_arg,
       pfi->meshinfo = NULL;
       pfi->obst     = NULL;
     }
- // debug patch pring
+ // debug patch print
  //   if(n == 0)printf("\n");
- //   if(ijkp[0]==4&&ijkp[4]==4)
  //   printf("%i: (%i,%i,%i) (%i,%i,%i) dir: %i obst: %i mesh: %i\n",
  //     n, ijkp[0], ijkp[2], ijkp[4], ijkp[1], ijkp[3], ijkp[5], ijkp[6], ijkp[7], ijkp[8]);
 
@@ -1658,6 +1657,21 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
       val = meshi->zplt_orig[k1];
       if(val > zbar0FDS && val < zbarFDS)pfi->internal = 1;
       assert(k1 == k2);
+    }
+
+    // determine if patch is an internal mesh face
+
+    pfi->hide = 0;
+    if(pfi->internal == 1){
+      if(i1 == i2){
+        if(j1 == 0 && j2 == meshi->jbar && k1 == 0 && k2 == meshi->kbar)pfi->hide = 1;
+      }
+      else if(j1 == j2){
+        if(i1 == 0 && i2 == meshi->ibar && k1 == 0 && k2 == meshi->kbar)pfi->hide = 1;
+      }
+      else{
+        if(i1 == 0 && i2 == meshi->ibar && j1 == 0 && j2 == meshi->jbar)pfi->hide = 1;
+      }
     }
 
     if(pfi->dir==YDIR||pfi->dir==YDIRNEG)pfi->dir=-pfi->dir;
@@ -2614,6 +2628,7 @@ void DrawBoundaryTexture(const meshdata *meshi){
     if((pfi->obst == NULL || pfi->meshinfo == NULL) && pfi->internal == 1)continue;
 #endif
     if(pfi->obst != NULL && pfi->meshinfo!=NULL && pfi->obst->showtimelist!=NULL&&pfi->obst->showtimelist[itimes]==0)continue;
+    if(pfi->hide == 1)continue;
 
     drawit=0;
     if(pfi->vis==1&&pfi->dir==0)drawit=1;
@@ -2706,6 +2721,7 @@ void DrawBoundaryTexture(const meshdata *meshi){
 #ifdef pp_BURN_AWAY
     if((pfi->obst == NULL || pfi->meshinfo == NULL) && pfi->internal == 1)continue;
 #endif
+    if(pfi->hide == 1)continue;
     if(pfi->obst!=NULL && pfi->meshinfo != NULL && pfi->obst->showtimelist!=NULL&& pfi->obst->showtimelist[itimes]==0)continue;
 
     drawit=0;
@@ -2819,6 +2835,7 @@ void DrawBoundaryTexture(const meshdata *meshi){
 #ifdef pp_BURN_AWAY
     if((pfi->obst == NULL || pfi->meshinfo == NULL) && pfi->internal == 1)continue;
 #endif
+    if(pfi->hide==1)continue;
     if(pfi->obst!=NULL && pfi->meshinfo!=NULL && pfi->obst->showtimelist!=NULL && pfi->obst->showtimelist[itimes]==0)continue;
 
     drawit=0;
@@ -2996,7 +3013,7 @@ void DrawBoundaryTextureThreshold(const meshdata *meshi){
       }
     }
     else{
-      if(pfi->internal == 1){
+      if(pfi->internal == 1||pfi->hide==1){
         nn += pfi->nrow*pfi->ncol;
         continue;
       }
@@ -3093,7 +3110,7 @@ void DrawBoundaryTextureThreshold(const meshdata *meshi){
       }
     }
     else{
-      if(pfi->internal==1){
+      if(pfi->internal==1||pfi->hide==1){
         nn += pfi->nrow*pfi->ncol;
         continue;
       }
@@ -3186,7 +3203,7 @@ void DrawBoundaryTextureThreshold(const meshdata *meshi){
       }
     }
     else{
-      if(pfi->internal==1){
+      if(pfi->internal==1||pfi->hide==1){
         nn += pfi->nrow*pfi->ncol;
         continue;
       }
@@ -3319,7 +3336,7 @@ void DrawBoundaryThresholdCellcenter(const meshdata *meshi){
       }
     }
     else{
-      if(pfi->internal==1){
+      if(pfi->internal==1||pfi->hide==1){
         nn += pfi->nrow*pfi->ncol;
         continue;
       }
@@ -3380,7 +3397,7 @@ void DrawBoundaryThresholdCellcenter(const meshdata *meshi){
       }
     }
     else{
-      if(pfi->internal==1){
+      if(pfi->internal==1||pfi->hide==1){
         nn += pfi->nrow*pfi->ncol;
         continue;
       }
@@ -3439,7 +3456,7 @@ void DrawBoundaryThresholdCellcenter(const meshdata *meshi){
       }
     }
     else{
-      if(pfi->internal==1){
+      if(pfi->internal==1||pfi->hide==1){
         nn += pfi->nrow*pfi->ncol;
         continue;
       }
@@ -3588,18 +3605,20 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
         continue;
       }
     }
+    else if(pfi->hide==1){
+      nn += pfi->nrow*pfi->ncol;
+      continue;
+    }
 #ifdef pp_BURN_AWAY
-    else{
-      if(pfi->internal==1){
-        nn += pfi->nrow*pfi->ncol;
-        continue;
-      }
+    else if(pfi->internal==1){
+      nn += pfi->nrow*pfi->ncol;
+      continue;
     }
 #endif
     drawit = 0;
     if(pfi->vis==1&&pfi->dir==0)drawit = 1;
     if(pfi->type==INTERIORwall&&showpatch_both==1)drawit = 1;
-    if((pfi->obst == NULL || pfi->meshinfo == NULL) && pfi->internal == 1)drawit = 0;
+    if((pfi->obst == NULL || pfi->meshinfo == NULL) && (pfi->internal == 1||pfi->hide==1))drawit = 0;
     if(drawit==1){
       nrow = pfi->nrow;
       ncol = pfi->ncol;
@@ -3678,12 +3697,14 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
         continue;
       }
     }
+    else if(pfi->hide==1){
+      nn += pfi->nrow*pfi->ncol;
+      continue;
+    }
 #ifdef pp_BURN_AWAY
-    else{
-      if(pfi->internal==1){
-        nn += pfi->nrow*pfi->ncol;
-        continue;
-      }
+    else if(pfi->internal==1){
+      nn += pfi->nrow*pfi->ncol;
+      continue;
     }
 #endif
     drawit = 0;
@@ -3692,7 +3713,7 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
         drawit = 1;
       }
     }
-    if((pfi->obst == NULL || pfi->meshinfo == NULL) && pfi->internal == 1)drawit = 0;
+    if((pfi->obst == NULL || pfi->meshinfo == NULL) && (pfi->internal == 1||pfi->hide==1))drawit = 0;
     if(drawit==1){
       nrow = pfi->nrow;
       ncol = pfi->ncol;
@@ -3791,7 +3812,7 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
     }
 #ifdef pp_BURN_AWAY
     else{
-      if(pfi->internal==1){
+      if(pfi->internal==1||pfi->hide==1){
         nn += pfi->nrow*pfi->ncol;
         continue;
       }
@@ -3803,7 +3824,7 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
         drawit = 1;
       }
     }
-    if((pfi->obst == NULL || pfi->meshinfo == NULL) && pfi->internal == 1)drawit = 0;
+    if((pfi->obst == NULL || pfi->meshinfo == NULL) && (pfi->internal == 1||pfi->hide==1))drawit = 0;
     if(drawit==1){
       nrow = pfi->nrow;
       ncol = pfi->ncol;
