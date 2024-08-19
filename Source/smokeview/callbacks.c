@@ -740,7 +740,9 @@ int GlutGetModifiersNew(void){
     break;
   }
 #ifdef _DEBUG
-  printf("modifier=%i\n", modifier);
+  if(modifier != 0){
+    printf("modifier=%i\n", modifier);
+  }
 #endif
   return modifier;
 }
