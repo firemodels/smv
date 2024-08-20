@@ -1359,6 +1359,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
   int wallcenter=0;
   FILE_SIZE return_filesize = 0;
 
+  CheckMemory;
   patchi = patchinfo + ifile;
   if(patchi->loaded==0&&load_flag==UNLOAD)return 0;
   if(strcmp(patchi->label.shortlabel,"wc")==0)wallcenter=1;
@@ -2255,6 +2256,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
     }
   }
   STOP_TIMER(read_time);
+  CheckMemory;
 
   /* convert patch values into integers pointing to an rgb color table */
 
@@ -2340,6 +2342,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
   int recompute = 0;
 #endif
   if(patchi->finalize==1){
+    CheckMemory;
     GLUIUpdateBoundaryListIndex(patchfilenum);
     cpp_boundsdata *bounds;
 
@@ -2441,6 +2444,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
     patchi->frameinfo->total_time = total_time;
   }
 #endif
+  CheckMemory;
   return return_filesize;
 }
 
@@ -2552,6 +2556,7 @@ void DrawBoundaryTexture(const meshdata *meshi){
   float dboundx,dboundy,dboundz;
   float *xplt, *yplt, *zplt;
 
+  CheckMemory;
   if(vis_threshold==1&&vis_onlythreshold==1&&do_threshold==1)return;
 
   if(hidepatchsurface==0){
