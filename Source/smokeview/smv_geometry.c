@@ -1011,29 +1011,6 @@ int GetTimeInterval(float val, float *array, int n){
   return GetInterval(val, array, n);
 }
 
-/* ------------------ GetInterval ------------------------ */
-
-int GetInterval(float val, float *array, int n){
-  int low, mid, high;
-
-  if(val<array[0])return -1;
-  if(val>array[n-1])return -1;
-
-  low=0;
-  high=n-1;
-  while(high-low>1){
-    mid=(low+high)/2;
-    if(val>=array[mid]){
-      low=mid;
-    }
-    else{
-      high=mid;
-    }
-  }
-  assert(low<n);
-  return low;
-}
-
 /* ------------------ GetNewPos ------------------------ */
 
 void GetNewPos(float *oldpos, float dx, float dy, float dz,float local_speed_factor){

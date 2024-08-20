@@ -311,7 +311,7 @@ void DisplayRolloutCB(int var){
 /* ------------------ UpdateGluiLabelText ------------------------ */
 
 void UpdateGluiLabelText(void){
-  if(LabelGetNUserLabels()>0){
+  if(LabelGetNUserLabels(&labelscoll)>0){
     labeldata *gl;
 
     gl=&LABEL_local;
@@ -418,8 +418,8 @@ void TextLabelsCB(int var){
     memcpy(&LABEL_global_ptr->useforegroundcolor, &gl->useforegroundcolor, sizeof(int));
     break;
   case LB_PREVIOUS:
-    new_label = LabelGet(LIST_LB_labels->curr_text);
-    new_label = LabelPrevious(new_label);
+    new_label = LabelGet(&labelscoll, LIST_LB_labels->curr_text);
+    new_label = LabelPrevious(&labelscoll, new_label);
     if(new_label == NULL)break;
     LABEL_global_ptr = new_label;
     if(new_label != NULL){
@@ -428,8 +428,8 @@ void TextLabelsCB(int var){
     }
     break;
   case LB_NEXT:
-    new_label = LabelGet(LIST_LB_labels->curr_text);
-    new_label = LabelNext(new_label);
+    new_label = LabelGet(&labelscoll, LIST_LB_labels->curr_text);
+    new_label = LabelNext(&labelscoll, new_label);
     if(new_label == NULL)break;
     LABEL_global_ptr = new_label;
     if(new_label != NULL){
@@ -438,7 +438,7 @@ void TextLabelsCB(int var){
     }
     break;
   case LB_LIST:
-    new_label = LabelGet(LIST_LB_labels->curr_text);
+    new_label = LabelGet(&labelscoll, LIST_LB_labels->curr_text);
     LABEL_global_ptr = new_label;
     if(new_label != NULL){
       LabelCopy(gl, new_label);
@@ -447,7 +447,7 @@ void TextLabelsCB(int var){
     break;
   case LB_ADD:
     updatemenu = 1;
-    if(LabelGetNUserLabels() > 0){
+    if(LabelGetNUserLabels(&labelscoll) > 0){
       strcpy(name, "copy of ");
       strcat(name, gl->name);
       strcpy(gl->name, name);
@@ -460,7 +460,7 @@ void TextLabelsCB(int var){
       if(thislabel->glui_id < 0)continue;
       LIST_LB_labels->delete_item(thislabel->glui_id);
     }
-    LabelInsert(gl);
+    LabelInsert(&labelscoll, gl);
     count = 0;
     for(thislabel = label_first_ptr->next;thislabel->next != NULL;thislabel = thislabel->next){
       if(thislabel->labeltype == TYPE_SMV)continue;
@@ -475,7 +475,7 @@ void TextLabelsCB(int var){
       if(thislabel->glui_id < 0)continue;
       LIST_LB_labels->delete_item(thislabel->glui_id);
     }
-    thislabel = LabelGet(name);
+    thislabel = LabelGet(&labelscoll, name);
     if(thislabel != NULL){
       LabelDelete(thislabel);
     }
