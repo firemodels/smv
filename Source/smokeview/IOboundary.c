@@ -998,6 +998,8 @@ void GetBoundaryHeader2(char *file, patchfacedata *patchfaceinfo, int nmeshes_ar
     patchfaceinfo->dir = buffer[6];
     obst_index = buffer[7] - 1;
     mesh_index = buffer[8] - 1;
+    patchfaceinfo->obst_index = obst_index;
+    patchfaceinfo->mesh_index = mesh_index;
     patchfaceinfo->meshinfo = NULL;
     patchfaceinfo->obst     = NULL;
     if(mesh_index >= 0 && mesh_index < nmeshes_arg)patchfaceinfo->meshinfo = meshinfo + mesh_index;
@@ -1258,11 +1260,8 @@ void GetPatchSizes2(FILE_m *stream, int npatch, int nmeshes_arg, int nobsts_arg,
     pfi->obst     = NULL;
     if(mesh_index >= 0 && mesh_index < nmeshes_arg)pfi->meshinfo = meshinfo + ijkp[8] - 1;
     if(pfi->meshinfo != NULL && obst_index >= 0 && obst_index < nobsts_arg)pfi->obst = pfi->meshinfo->blockageinfoptrs[obst_index];
- // debug patch print
- //   if(n == 0)printf("\n");
- //   printf("%i: (%i,%i,%i) (%i,%i,%i) dir: %i obst: %i mesh: %i\n",
- //     n, ijkp[0], ijkp[2], ijkp[4], ijkp[1], ijkp[3], ijkp[5], ijkp[6], ijkp[7], ijkp[8]);
-
+    pfi->obst_index = obst_index;
+    pfi->mesh_index = mesh_index;
     int i1 = ijkp[0];
     int i2 = ijkp[1];
     int j1 = ijkp[2];
@@ -2437,6 +2436,19 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
   }
 #endif
   CheckMemory;
+#ifdef pp_PATCH_DEBUG
+ // debug patch print
+
+  for(n = 0; n < patchi->npatches; n++){
+    patchfacedata *pfi;
+
+    pfi = patchi->patchfaceinfo + n;
+    if(n == 0)printf("\n");
+    printf("%i: (%i,%i,%i) (%i,%i,%i) dir: %i obst: %i mesh: %i internal mesh: %i\n",
+      n, pfi->ib[0], pfi->ib[2], pfi->ib[4], pfi->ib[1], pfi->ib[3], pfi->ib[5],
+      pfi->dir, pfi->obst_index, pfi->mesh_index, pfi->internal_mesh_face);
+  }
+#endif
   return return_filesize;
 }
 
