@@ -394,7 +394,7 @@ void TextLabelsCB(int var){
     updatemenu = 1;
     break;
   case LB_UPDATE:
-    for(thislabel = label_first_ptr->next;thislabel->next != NULL;thislabel = thislabel->next){
+    for(thislabel = labelscoll.label_first_ptr->next;thislabel->next != NULL;thislabel = thislabel->next){
       if(thislabel->glui_id < 0)continue;
       LIST_LB_labels->delete_item(thislabel->glui_id);
     }
@@ -402,7 +402,7 @@ void TextLabelsCB(int var){
     //LabelResort(LABEL_global_ptr);
 
     count = 0;
-    for(thislabel = label_first_ptr->next;thislabel->next != NULL;thislabel = thislabel->next){
+    for(thislabel = labelscoll.label_first_ptr->next;thislabel->next != NULL;thislabel = thislabel->next){
       if(thislabel->labeltype == TYPE_SMV)continue;
       thislabel->glui_id = count;
       LIST_LB_labels->add_item(count++, thislabel->name);
@@ -456,13 +456,13 @@ void TextLabelsCB(int var){
       gl = &LABEL_default;
     }
     gl->labeltype = TYPE_INI;
-    for(thislabel = label_first_ptr->next;thislabel->next != NULL;thislabel = thislabel->next){
+    for(thislabel = labelscoll.label_first_ptr->next;thislabel->next != NULL;thislabel = thislabel->next){
       if(thislabel->glui_id < 0)continue;
       LIST_LB_labels->delete_item(thislabel->glui_id);
     }
     LabelInsert(&labelscoll, gl);
     count = 0;
-    for(thislabel = label_first_ptr->next;thislabel->next != NULL;thislabel = thislabel->next){
+    for(thislabel = labelscoll.label_first_ptr->next;thislabel->next != NULL;thislabel = thislabel->next){
       if(thislabel->labeltype == TYPE_SMV)continue;
       thislabel->glui_id = count;
       LIST_LB_labels->add_item(count++, thislabel->name);
@@ -471,7 +471,7 @@ void TextLabelsCB(int var){
     break;
   case LB_DELETE:
     strcpy(name, LIST_LB_labels->curr_text);
-    for(thislabel = label_first_ptr->next;thislabel->next != NULL;thislabel = thislabel->next){
+    for(thislabel = labelscoll.label_first_ptr->next;thislabel->next != NULL;thislabel = thislabel->next){
       if(thislabel->glui_id < 0)continue;
       LIST_LB_labels->delete_item(thislabel->glui_id);
     }
@@ -480,7 +480,7 @@ void TextLabelsCB(int var){
       LabelDelete(thislabel);
     }
     count = 0;
-    for(thislabel = label_first_ptr->next;thislabel->next != NULL;thislabel = thislabel->next){
+    for(thislabel = labelscoll.label_first_ptr->next;thislabel->next != NULL;thislabel = thislabel->next){
       if(thislabel->labeltype == TYPE_SMV)continue;
       thislabel->glui_id = count;
       LIST_LB_labels->add_item(count++, thislabel->name);
@@ -1069,7 +1069,7 @@ extern "C" void GLUIDisplaySetup(int main_window){
     labeldata *thislabel;
     int count=0;
 
-    for(thislabel=label_first_ptr->next;thislabel->next!=NULL;thislabel=thislabel->next){
+    for(thislabel=labelscoll.label_first_ptr->next;thislabel->next!=NULL;thislabel=thislabel->next){
       if(thislabel->labeltype==TYPE_SMV){
         thislabel->glui_id=-1;
         continue;

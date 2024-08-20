@@ -396,7 +396,7 @@ void WriteLabels(void){
   stream = fopen(event_filename, "w");
   if(stream==NULL)return;
 
-  first_label = label_first_ptr;
+  first_label = labelscoll.label_first_ptr;
   strcpy(quote,"\"");
 
   for(thislabel = first_label->next; thislabel->next!=NULL; thislabel = thislabel->next){
@@ -421,7 +421,7 @@ void WriteLabels(void){
 void DrawLabels(void){
   labeldata *first_label, *thislabel;
 
-  first_label = label_first_ptr;
+  first_label = labelscoll.label_first_ptr;
 
   glPushMatrix();
   glScalef(SCALE2SMV(1.0),SCALE2SMV(1.0),SCALE2SMV(1.0));
