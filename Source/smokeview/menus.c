@@ -7804,20 +7804,6 @@ void PartLoadState(int  *load_state){
     }
   }
 }
-#ifdef pp_DEBUG_SUBMENU
-
-#define CREATEMENU(menu,Menu) menu=glutCreateMenu(Menu);\
-  assert(nmenus<MAXMENUS);\
-  if(nmenus<MAXMENUS){\
-    strcpy(menuinfo[nmenus].label,#Menu);\
-    menuinfo[nmenus].menuvar_ptr=&menu;\
-    menuinfo[nmenus].menuvar = menu;\
-    menuinfo[nmenus++].status = 1;\
-  }
-
-#define GLUTADDSUBMENU(menu_label,menu_value){assert(menu_value!=0);glutAddSubMenu(menu_label,menu_value);}
-
-#else
 
 #define CREATEMENU(menu,Menu) menu=glutCreateMenu(Menu);\
   assert(nmenus<MAXMENUS);\
@@ -7827,8 +7813,6 @@ void PartLoadState(int  *load_state){
   }
 
 #define GLUTADDSUBMENU(menu_label,menu_value) glutAddSubMenu(menu_label,menu_value)
-
-#endif
 
 /* ------------------ InitShowSliceMenu ------------------------ */
 
@@ -8986,9 +8970,6 @@ static int menu_count=0;
     if(menui->menuvar > 0 && menui->status == 1){
       glutDestroyMenu(menui->menuvar);
       menui->status = 0;
-#ifdef pp_DEBUG_SUBMENU
-      *(menui->menuvar_ptr) = 0;
-#endif
     }
   }
   nmenus = 0;

@@ -932,10 +932,6 @@ typedef struct _hvacvalsdata {
 typedef struct _menudata {
   int menuvar;
   int status;
-#ifdef pp_DEBUG_SUBMENU
-  int *menuvar_ptr;
-  char label[256];
-#endif
 } menudata;
 
 /* --------------------------  filebounddata ------------------------------------ */
