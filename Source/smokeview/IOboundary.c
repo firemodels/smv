@@ -2046,7 +2046,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
         patchblankcopy += (j2+1-j1)*(i2+1-i1);
       }
     }
-    (pfi+1)->start=pfi->start+pfi->nrow*pfi->ncol;
+    if(n!=patchi->npatches-1)(pfi+1)->start=pfi->start+pfi->nrow*pfi->ncol;
     pfi->vis=vis_boundary_type[pfi->type];
   }
 
