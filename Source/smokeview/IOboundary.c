@@ -2057,10 +2057,10 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
     bc=meshi->blockageinfoptrs[n];
     bc->patchvis[6]=0;
     for(j=0;j<6;j++){
-      bc->patchvis[6]+=bc->patchvis[j];
-    }
-    if(bc->patchvis[6]!=0){
-      bc->patchvis[6]=1;
+      if(bc->patchvis[j]!=0){
+        bc->patchvis[6] = 1;
+        break;
+      }
     }
   }
 
