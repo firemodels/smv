@@ -120,6 +120,8 @@ typedef struct _meshdata {
   unsigned char *iblank_smoke3d;
   int iblank_smoke3d_defined;
   struct _blockagedata **blockageinfoptrs;
+  struct _blockagedata **bc_faces[6];
+  int  n_bc_faces[6];
   int *obst_bysize;
   struct _ventdata *ventinfo;
   struct _cventdata *cventinfo;

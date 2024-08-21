@@ -933,7 +933,10 @@ void InitMesh(meshdata *meshi){
   NewMemory((void **)&meshi->box_clipinfo,   sizeof(clipdata));
   NewMemory((void **)&meshi->gsliceinfo,     sizeof(meshplanedata));
   NewMemory((void **)&meshi->volrenderinfo,  sizeof(volrenderdata));
-
+  for(i=0; i<6; i++){
+    meshi->bc_faces[i]   = NULL;
+    meshi->n_bc_faces[i] = 0;
+  }
   meshi->terrain = NULL;
   meshi->boundary_mask = NULL;
   meshi->in_frustum = 1;
@@ -6973,6 +6976,80 @@ void *CheckFiles(void *arg){
   THREAD_EXIT(checkfiles_threads);
 }
 
+/* ------------------ InitMeshBlockages ------------------------ */
+
+void InitMeshBlockages(void){
+  int i;
+
+  for(i = 0;i < nmeshes;i++){
+    meshdata *meshi;
+    int j;
+    int counts[6];
+    int *is_extface;
+
+    meshi = meshinfo + i;
+    if(meshi->nbptrs == 0)continue;
+    is_extface = meshi->is_extface;
+    for(j=0; j< 6; j++){
+      counts[j]            = 0;
+      meshi->bc_faces[j]   = NULL;
+      meshi->n_bc_faces[j] = 0;
+    }
+    for(j=0; j<meshi->nbptrs; j++){
+      blockagedata *bc;
+      blockagedata **bclist;
+
+      bc = meshi->blockageinfoptrs[i];
+
+      bclist = meshi->bc_faces[0];
+      if(bc->ijk[0] == 0 && is_extface[0] == MESH_INT)counts[0]++;
+      
+      bclist = meshi->bc_faces[1];
+      if(bc->ijk[1] == meshi->ibar &&  is_extface[1] == MESH_INT)counts[1]++;
+
+      bclist = meshi->bc_faces[2];
+      if(bc->ijk[2] == 0 && is_extface[2] == MESH_INT)counts[2]++;
+
+      bclist = meshi->bc_faces[3];
+      if(bc->ijk[3] == meshi->jbar && is_extface[3] == MESH_INT)counts[3]++;
+
+      bclist = meshi->bc_faces[4];
+      if(bc->ijk[4] == 0 && is_extface[4] == MESH_INT)counts[4]++;
+
+      bclist = meshi->bc_faces[5];
+      if(bc->ijk[5] == meshi->kbar && is_extface[5] == MESH_INT)counts[5]++;
+    }
+    for(j=0; j<6; j++){
+      if(counts[j]>0)NewMemory((void **)&meshi->bc_faces[j],  meshi->nbptrs*sizeof(blockagedata *));
+      meshi->n_bc_faces[j] = counts[j];
+      counts[0] = 0;
+    }
+    for(j=0; j<meshi->nbptrs; j++){
+      blockagedata *bc;
+      blockagedata **bclist;
+
+      bc = meshi->blockageinfoptrs[i];
+
+      bclist = meshi->bc_faces[0];
+      if(bc->ijk[0] == 0 && is_extface[0] == MESH_INT)          bclist[counts[0]++] = bc;
+
+      bclist = meshi->bc_faces[1];
+      if(bc->ijk[1] == meshi->ibar && is_extface[1] == MESH_INT)bclist[counts[1]++] = bc;
+
+      bclist = meshi->bc_faces[2];
+      if(bc->ijk[2] == 0 && is_extface[2] == MESH_INT)          bclist[counts[2]++] = bc;
+
+      bclist = meshi->bc_faces[3];
+      if(bc->ijk[3] == meshi->jbar && is_extface[3] == MESH_INT)bclist[counts[3]++] = bc;
+
+      bclist = meshi->bc_faces[4];
+      if(bc->ijk[4] == 0 && is_extface[4] == MESH_INT)          bclist[counts[4]++] = bc;
+
+      bclist = meshi->bc_faces[5];
+      if(bc->ijk[5] == meshi->kbar && is_extface[5] == MESH_INT)bclist[counts[5]++] = bc;
+    }
+  }
+}
 
 /* ------------------ GetSliceParmInfo ------------------------ */
 
@@ -12254,6 +12331,8 @@ int ReadSMV_Configure(){
 
   SetInteriorBlockages(1);
   PRINT_TIMER(timer_readsmv, "SetInteriorBlockages");
+
+  InitMeshBlockages();
 
   PRINTF("%s", _("complete"));
   PRINTF("\n\n");
