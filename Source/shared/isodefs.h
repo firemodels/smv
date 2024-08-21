@@ -8,6 +8,8 @@
 #define SV_EXTERN extern
 #endif
 
+#include <stdio.h>
+
 /* iso-surface definitions */
 
 typedef struct _isovert {

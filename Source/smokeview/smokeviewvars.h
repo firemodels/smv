@@ -14,6 +14,7 @@
 #include "histogram.h"
 #include "structures.h"
 #include "readobject.h"
+#include "readtour.h"
 #include "readlabel.h"
 #ifndef CPP
 #include <zlib.h>
@@ -1854,7 +1855,6 @@ SVEXTERN float trunccolor[4];
 #endif
 SVEXTERN unsigned char treecolor_uc[4], treecharcolor_uc[4], trunccolor_uc[4];
 SVEXTERN float rgb_terrain[10][4];
-SVEXTERN tourdata SVDECL(*tourinfo,NULL);
 SVEXTERN keyframe SVDECL(**tourknotskeylist,NULL);
 SVEXTERN tourdata SVDECL(**tourknotstourlist,NULL);
 SVEXTERN keyframe SVDECL(*selected_frame,NULL);
@@ -2096,11 +2096,23 @@ SVEXTERN float SVDECL(global_hrrpuv_cutoff, 200.0), SVDECL(global_hrrpuv_cutoff_
 SVEXTERN int SVDECL(volbw,0);
 SVEXTERN float SVDECL(tourrad_avatar,0.1);
 SVEXTERN int SVDECL(dirtycircletour,0);
-SVEXTERN float SVDECL(*tour_t,NULL), SVDECL(*tour_t2,NULL), SVDECL(*tour_dist,NULL), SVDECL(*tour_dist2,NULL), SVDECL(*tour_dist3,NULL);
-SVEXTERN float SVDECL(tour_tstart, 0.0), SVDECL(tour_tstop, 100.0);
-SVEXTERN int SVDECL(tour_ntimes,1000);
 
-SVEXTERN int SVDECL(ntourinfo, 0);
+#ifdef INMAIN
+SVEXTERN tour_collection tourcoll = {.ntourinfo = 0,
+                                     .tourinfo = NULL,
+                                     .tour_ntimes = 1000,
+                                     .tour_t = NULL,
+                                     .tour_t2 = NULL,
+                                     .tour_dist = NULL,
+                                     .tour_dist2 = NULL,
+                                     .tour_dist3 = NULL,
+                                     .tour_tstart = 0.0,
+                                     .tour_tstop = 100.0
+                                     };
+#else
+SVEXTERN tour_collection tourcoll;
+#endif
+
 SVEXTERN int SVDECL(selectedtour_index, TOURINDEX_MANUAL), SVDECL(selectedtour_index_old, TOURINDEX_MANUAL), SVDECL(selectedtour_index_ini, TOURINDEX_MANUAL);
 SVEXTERN int SVDECL(update_selectedtour_index,0);
 SVEXTERN int SVDECL(viewtourfrompath,0),SVDECL(viewalltours,0),SVDECL(viewanytours,0),SVDECL(edittour,0);

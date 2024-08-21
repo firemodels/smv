@@ -15,6 +15,7 @@
 
 #include "readgeom.h"
 #include "readobject.h"
+#include "shared_structures.h"
 
 /* --------------------------  circdata ------------------------------------ */
 
@@ -584,37 +585,6 @@ typedef struct _culldata {
   meshdata *cull_mesh;
   int npixels,npixels_old;
 } culldata;
-
-/* --------------------------  keyframe ------------------------------------ */
-
-typedef struct _keyframe {
-  int selected, npoints;
-  float time;
-  float pause_time, cum_pause_time;
-  float view_smv[3], view2_smv[3];
-  float xyz_fds[3], xyz_smv[3];
-  float arc_dist, line_dist, xyz_diff[3], view_diff[3];
-  float  xyz_tangent_left[3],  view_tangent_left[3];
-  float xyz_tangent_right[3], view_tangent_right[3];
-  struct _keyframe *next,*prev;
-} keyframe;
-
-/* --------------------------  tourdata ------------------------------------ */
-
-typedef struct _tourdata {
-  char label[300],menulabel[128];
-  keyframe first_frame,last_frame, **keyframe_list;
-  int glui_avatar_index, display2;
-  float *path_times,*keyframe_times;
-  float xyz_smv[3], view_smv[3];
-  float global_dist;
-  int *timeslist;
-  int ntimes, nkeyframes;
-  int display, periodic;
-  int startup;
-  int isDefault;
-} tourdata;
-
 
 /* --------------------------  hrrdata ------------------------------------ */
 
