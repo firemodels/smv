@@ -62,6 +62,27 @@ if (LINUX)
     add_definitions(-Dpp_LINUX)
 endif()
 
+# This is a set of warnings that are not enabled by default but it would be good
+# to satisfy these.
+if(STRICT_CHECKS)
+    set(CMAKE_CXX_CLANG_TIDY "clang-tidy;-checks=clang-diagnostic-*,clang-analyzer-*,-clang-analyzer-security.insecureAPI.*")
+    set(CMAKE_C_CLANG_TIDY "clang-tidy;-checks=clang-diagnostic-*,clang-analyzer-*,-clang-analyzer-security.insecureAPI.*")
+    set(CMAKE_COMPILE_WARNING_AS_ERROR ON)
+    add_compile_options(-O2)
+    add_compile_options(-flto=auto)
+    add_compile_options(-ffat-lto-objects)
+    add_compile_options(-fexceptions)
+    add_compile_options(-grecord-gcc-switches)
+    add_compile_options(-Wall)
+    add_compile_options(-Werror=format-security)
+    add_compile_options(-Wp,-D_FORTIFY_SOURCE=2)
+    add_compile_options(-Wp,-D_GLIBCXX_ASSERTIONS )
+    add_compile_options(-fstack-protector-strong)
+    add_compile_options(-fasynchronous-unwind-tables)
+    add_compile_options(-fstack-clash-protection -fcf-protection)
+    add_compile_options(-fcf-protection)
+endif()
+
 # GLUI has been modified for smokeview, so we have to vendor it and can't use a
 # native version.
 add_subdirectory(Source/glui_v2_1_beta)
@@ -225,6 +246,7 @@ add_executable(smokeview
     Source/shared/readcad.c
     Source/shared/readgeom.c
     Source/shared/readobject.c
+    Source/shared/readtour.c
     Source/shared/readlabel.c
     Source/smokeview/colortable.c
     Source/smokeview/command_args.c

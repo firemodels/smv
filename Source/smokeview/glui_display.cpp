@@ -419,8 +419,8 @@ void TextLabelsCB(int var){
     memcpy(&LABEL_global_ptr->useforegroundcolor, &gl->useforegroundcolor, sizeof(int));
     break;
   case LB_PREVIOUS:
-    new_label = LabelGet(&labelscoll,LIST_LB_labels->curr_text);
-    new_label = LabelPrevious(&labelscoll,new_label);
+    new_label = LabelGet(&labelscoll, LIST_LB_labels->curr_text);
+    new_label = LabelPrevious(&labelscoll, new_label);
     if(new_label == NULL)break;
     LABEL_global_ptr = new_label;
     if(new_label != NULL){
@@ -429,8 +429,8 @@ void TextLabelsCB(int var){
     }
     break;
   case LB_NEXT:
-    new_label = LabelGet(&labelscoll,LIST_LB_labels->curr_text);
-    new_label = LabelNext(&labelscoll,new_label);
+    new_label = LabelGet(&labelscoll, LIST_LB_labels->curr_text);
+    new_label = LabelNext(&labelscoll, new_label);
     if(new_label == NULL)break;
     LABEL_global_ptr = new_label;
     if(new_label != NULL){
@@ -439,7 +439,7 @@ void TextLabelsCB(int var){
     }
     break;
   case LB_LIST:
-    new_label = LabelGet(&labelscoll,LIST_LB_labels->curr_text);
+    new_label = LabelGet(&labelscoll, LIST_LB_labels->curr_text);
     LABEL_global_ptr = new_label;
     if(new_label != NULL){
       LabelCopy(gl, new_label);
@@ -476,7 +476,7 @@ void TextLabelsCB(int var){
       if(thislabel->glui_id < 0)continue;
       LIST_LB_labels->delete_item(thislabel->glui_id);
     }
-    thislabel = LabelGet(&labelscoll,name);
+    thislabel = LabelGet(&labelscoll, name);
     if(thislabel != NULL){
       LabelDelete(thislabel);
     }
