@@ -160,4 +160,5 @@ void InitBoxClipInfo(clipdata *ci, float xmin, float xmax, float ymin,
                      float ymax, float zmin, float zmax);
 void InitCircle(unsigned int npoints, circdata *circinfo);
 float Dist(float v1[3], float v2[3]);
+int GetInterval(float val, float *array, int n);
 #endif

@@ -8,65 +8,7 @@
 
 #include "smokeviewvars.h"
 #include "IOobjects.h"
-
-/* ------------------ FreeTours ------------------------ */
-
-void FreeTours(void){
-  int i;
-
-  if(ntourinfo>0){
-    for(i=0;i<ntourinfo;i++){
-      tourdata *touri;
-
-      touri = tourinfo + i;
-      FreeTour(touri);
-    }
-    FREEMEMORY(tourinfo);
-  }
-  ntourinfo=0;
-}
-
-  /* ------------------ FreeTour ------------------------ */
-
-void FreeTour(tourdata *touri){
-  int i;
-  keyframe *framei;
-
-  for(i=0;i<touri->nkeyframes;i++){
-    framei = touri->keyframe_list[i];
-    FREEMEMORY(framei);
-  }
-  FREEMEMORY(touri->keyframe_list);
-  FREEMEMORY(touri->keyframe_times);
-  FREEMEMORY(touri->timeslist);
-  FREEMEMORY(touri->path_times);
-}
-
-/* ------------------ InitTour ------------------------ */
-
-void InitTour(tourdata *touri){
-  touri->glui_avatar_index=0;
-  touri->display2=0;
-  touri->display=0;
-  touri->periodic=0;
-  touri->first_frame.prev=NULL;
-  touri->first_frame.next=&touri->last_frame;
-  touri->first_frame.time = -1000000000.0;
-
-  touri->last_frame.prev=&touri->first_frame;
-  touri->last_frame.next=NULL;
-  touri->last_frame.time = 1000000000.0;
-
-  touri->nkeyframes=0;
-  touri->ntimes=tour_ntimes;
-  touri->keyframe_times=NULL;
-  touri->keyframe_list=NULL;
-  touri->timeslist=NULL;
-  touri->path_times=NULL;
-  touri->global_dist=0.0;
-  touri->startup=0;
-  touri->isDefault=0;
-}
+#include "readtour.h"
 
 /* ------------------ UpdateViewTour ------------------------ */
 
@@ -76,8 +18,8 @@ void UpdateViewTour(void){
 
   viewalltours=1;
   viewanytours=0;
-  for(i=0;i<ntourinfo;i++){
-    touri = tourinfo + i;
+  for(i=0;i<tourcoll.ntourinfo;i++){
+    touri = tourcoll.tourinfo + i;
     if(touri->display==0){
       viewalltours=0;
     }
@@ -93,9 +35,9 @@ void UpdateTourMenuLabels(void){
   int i;
   tourdata *touri;
 
-  if(ntourinfo>0){
-    for(i=0;i<ntourinfo;i++){
-      touri = tourinfo + i;
+  if(tourcoll.ntourinfo>0){
+    for(i=0;i<tourcoll.ntourinfo;i++){
+      touri = tourcoll.tourinfo + i;
       STRCPY(touri->menulabel,touri->label);
     }
   }
@@ -149,7 +91,7 @@ void DrawTours(void){
   tmp_tourcol_pathknots=tourcol_pathknots;
   if(tourcol_pathknots[0]<0.0)tmp_tourcol_pathknots=foregroundcolor;
 
-  if(selected_frame!=NULL)selectedtour_index = selected_tour-tourinfo;
+  if(selected_frame!=NULL)selectedtour_index = selected_tour-tourcoll.tourinfo;
 
   if(edittour==1){
     tourdata *tour_sel;
@@ -160,14 +102,14 @@ void DrawTours(void){
       AntiAliasLine(ON);
       glColor3fv(tmp_tourcol_pathline);
       glBegin(GL_LINES);
-      for(i=0;i<ntourinfo;i++){
+      for(i=0;i<tourcoll.ntourinfo;i++){
         tourdata *touri;
         int j;
 
-        touri = tourinfo + i;
+        touri =tourcoll.tourinfo + i;
         if(touri->display==0||touri->nkeyframes<=1||selectedtour_index==i)continue;
 
-        for(j=0;j<tour_ntimes-1;j++){
+        for(j=0;j<tourcoll.tour_ntimes-1;j++){
           float xyz[3], xyz2[3], *times;
 
           times = touri->path_times;
@@ -183,16 +125,16 @@ void DrawTours(void){
 
     /* path line (selected)*/
 
-    tour_sel = tourinfo + selectedtour_index;
+    tour_sel = tourcoll.tourinfo + selectedtour_index;
     if(selectedtour_index!=TOURINDEX_MANUAL&&tour_sel->display==1&&tour_sel->nkeyframes>1){
       int j;
       tourdata *touri;
 
       glColor3fv(tourcol_selectedpathline);
       glBegin(GL_LINES);
-      touri = tourinfo + selectedtour_index;
+      touri = tourcoll.tourinfo + selectedtour_index;
 
-      for(j=0;j<tour_ntimes-1;j++){
+      for(j=0;j<tourcoll.tour_ntimes-1;j++){
         float xyz[3], xyz2[3], *times;
 
         times = touri->path_times;
@@ -210,14 +152,14 @@ void DrawTours(void){
       glColor3f(0.0f,0.0f,1.0f);
       glPointSize(5.0f);
       glBegin(GL_POINTS);
-      for(i=0;i<ntourinfo;i++){
+      for(i=0;i<tourcoll.ntourinfo;i++){
         int j;
         tourdata *touri;
 
-        touri = tourinfo + i;
+        touri = tourcoll.tourinfo + i;
         if(touri->display==0||selectedtour_index!=i)continue;
 
-        for(j=0;j<tour_ntimes-1;j++){
+        for(j=0;j<tourcoll.tour_ntimes-1;j++){
         float xyz[3], *times;
 
         times = touri->path_times;
@@ -254,11 +196,11 @@ void DrawTours(void){
       glColor3fv(tmp_tourcol_pathknots);
       glPointSize(10.0f);
       glBegin(GL_POINTS);
-      for(i=0;i<ntourinfo;i++){
+      for(i=0;i<tourcoll.ntourinfo;i++){
         int j;
         tourdata *touri;
 
-        touri = tourinfo + i;
+        touri = tourcoll.tourinfo + i;
         if(touri->display==0||i==selectedtour_index)continue;
 
         for(j=0;j<touri->nkeyframes;j++){
@@ -294,11 +236,11 @@ void DrawTours(void){
     CheckMemory;
 
     if(fontindex==SCALED_FONT)ScaleFont3D();
-    for(i=0;i<ntourinfo;i++){
+    for(i=0;i<tourcoll.ntourinfo;i++){
       int j;
       tourdata *touri;
 
-      touri = tourinfo + i;
+      touri = tourcoll.tourinfo + i;
       if(touri->display==0)continue;
       if(showtours_whenediting==0&&selectedtour_index!=i)continue;
 
@@ -332,9 +274,9 @@ void DrawTours(void){
         AntiAliasLine(ON);
         glBegin(GL_LINES);
         glColor3fv(tourcol_avatar);
-        for(i=0;i<ntourinfo;i++){
+        for(i=0;i<tourcoll.ntourinfo;i++){
           tourdata *touri;
-          touri = tourinfo + i;
+          touri = tourcoll.tourinfo + i;
           if(touri->display==0||touri->nkeyframes<=1)continue;
           if(touri->timeslist==NULL)continue;
 
@@ -353,10 +295,10 @@ void DrawTours(void){
         AntiAliasLine(OFF);
         break;
       case 1:
-        for(i=0;i<ntourinfo;i++){
+        for(i=0;i<tourcoll.ntourinfo;i++){
           tourdata *touri;
 
-          touri = tourinfo + i;
+          touri = tourcoll.tourinfo + i;
           if(touri->display==0||touri->nkeyframes<=1)continue;
           if(touri->timeslist==NULL)continue;
 
@@ -368,11 +310,11 @@ void DrawTours(void){
         }
         break;
       case 2:
-        for(i=0;i<ntourinfo;i++){
+        for(i=0;i<tourcoll.ntourinfo;i++){
           tourdata *touri;
           float az_angle, dxy[2];
 
-          touri = tourinfo + i;
+          touri = tourcoll.tourinfo + i;
           if(touri->display==0||touri->nkeyframes<=1)continue;
           if(touri->timeslist==NULL)continue;
 
@@ -418,8 +360,8 @@ void DrawSelectTours(void){
 
   glPointSize(20.0f);
   glBegin(GL_POINTS);
-  for(i=0;i<ntourinfo;i++){
-    touri = tourinfo + i;
+  for(i=0;i<tourcoll.ntourinfo;i++){
+    touri = tourcoll.tourinfo + i;
     for(j=0;j<touri->nkeyframes;j++){
 
       if(showtours_whenediting==1||selectedtour_index==i){
@@ -440,9 +382,6 @@ void DrawSelectTours(void){
   }
   glEnd();
 }
-
-#define HERMVAL(p0,p1,m0,m1)   ((2.0*t3-3.0*t2+1.0)*(p0) +      (t3-2.0*t2+t)*(m0) +        (t3-t2)*(m1) + (-2.0*t3+3.0*t2)*(p1))
-#define HERMDERIV(p0,p1,m0,m1)      ((6.0*t2-6.0*t)*(p0) + (3.0*t2-4.0*t+1.0)*(m0) + (3.0*t2-2.0*t)*(m1) +  (-6.0*t2+6.0*t)*(p1))
 
 /* ------------------ GetTourVal ------------------------ */
 
@@ -496,50 +435,12 @@ void HermiteXYZ(float t, keyframe *kf1, keyframe *kf2, float *xyz, float *slope)
   }
 }
 
-/* ------------------ HermiteView ------------------------ */
-
-void HermiteView(float t, keyframe *kf1, keyframe *kf2, float *view){
-  float *p0, *p1, *m0, *m1;
-  float t3, t2;
-
-  t2 = t*t;
-  t3 = t2*t;
-  p0 = kf1->view_smv;
-  p1 = kf2->view_smv;
-  m0 = kf1->view_tangent_right;
-  m1 = kf2->view_tangent_left;
-  view[0] = HERMVAL(p0[0],p1[0],m0[0],m1[0]);
-  view[1] = HERMVAL(p0[1],p1[1],m0[1],m1[1]);
-  view[2] = HERMVAL(p0[2],p1[2],m0[2],m1[2]);
-}
-
-/* ------------------ GetKeyFrame ------------------------ */
-
-keyframe *GetKeyFrame(tourdata *touri, float time){
-  keyframe *first_key, *last_key, *this_key;
-
-  first_key = touri->first_frame.next;
-  if(time<first_key->time)return first_key;
-
-  last_key = touri->last_frame.prev;
-  if(time>=last_key->time)return last_key->prev;
-
-  for(this_key = first_key; this_key!=last_key; this_key = this_key->next){
-    keyframe *next_key;
-
-    next_key = this_key->next;
-    if(this_key->time<=time&&time<=next_key->time)return this_key;
-  }
-  return last_key->prev;
-}
-
 void GetTourXYZ(float t, tourdata *this_tour, float *xyz){
   keyframe *this_key;
 
   this_key = GetKeyFrame(this_tour, t);
   GetKeyXYZ(t, this_key, xyz);
 }
-
 
 /* ------------------ GetKeyXYZ ------------------------ */
 
@@ -557,53 +458,6 @@ void GetKeyXYZ(float t, keyframe *this_key, float *xyz){
     if(dt > 0.0)t_scaled = CLAMP((t - this_key->time-this_key->pause_time) / dt, 0.0, 1.0);
     HermiteXYZ(t_scaled, this_key, next_key, xyz, NULL);
   }
-}
-
-/* ------------------ GetTourView ------------------------ */
-
-void GetTourView(float t, tourdata *this_tour, float *view){
-  keyframe *this_key;
-
-  this_key = GetKeyFrame(this_tour, t);
-  GetKeyView(t, this_key, view);
-}
-
-/* ------------------ GetKeyView ------------------------ */
-
-void GetKeyView(float t, keyframe *this_key, float *view){
-  keyframe *next_key;
-  float dt, t_scaled;
-
-  t_scaled = 0.0;
-  next_key = this_key->next;
-  dt = next_key->time - this_key->time;
-  if(dt > 0.0)t_scaled = CLAMP((t - this_key->time)/dt, 0.0, 1.0);
-  HermiteView(t_scaled, this_key, next_key, view);
-}
-
-/* ------------------ GetTourVal ------------------------ */
-
-void GetTourXYZView(float time,  float *times,  float *vals, int n,  float *val3){
-  int left;
-  float *v1, *v2, factor;
-
-  if(time<=times[0]){
-    memcpy(val3, vals, 3*sizeof(float));
-    return;
-  }
-  if(time>=times[n-1]){
-    memcpy(val3, vals+3*(n-1), 3*sizeof(float));
-    return;
-  }
-
-  left = GetInterval(time, times, n);
-  if(left==n-1)left=n-2;
-  v1 = vals + 3*left;
-  v2 = vals + 3*(left+1);
-  factor = (time-times[left])/(times[left+1]-times[left]);
-  val3[0] = (1.0-factor)*v1[0] + factor*v2[0];
-  val3[1] = (1.0-factor)*v1[1] + factor*v2[1];
-  val3[2] = (1.0-factor)*v1[2] + factor*v2[2];
 }
 
 /* ------------------ GetTourProperties ------------------------ */
@@ -647,7 +501,7 @@ void GetTourProperties(tourdata *touri){
     touri->global_dist += dist;
   }
   thiskey = (touri->first_frame).next;
-  thiskey->time = tour_tstart;
+  thiskey->time = tourcoll.tour_tstart;
   float cum_dist = 0.0;
   int cum_npoints = 0;
   float *tour_times, *xyzs, *views, total_distance;
@@ -671,18 +525,18 @@ void GetTourProperties(tourdata *touri){
       break;
     }
 
-    npoints_i = tour_ntimes*(thiskey->arc_dist/touri->global_dist);
+    npoints_i = tourcoll.tour_ntimes*(thiskey->arc_dist/touri->global_dist);
     cum_npoints += npoints_i;
     if(nextkey->next==NULL){
-      npoints_i   += (tour_ntimes-cum_npoints);
-      cum_npoints += (tour_ntimes-cum_npoints);
+      npoints_i   += (tourcoll.tour_ntimes-cum_npoints);
+      cum_npoints += (tourcoll.tour_ntimes-cum_npoints);
     }
     thiskey->npoints = npoints_i;
     cum_dist       += thiskey->arc_dist;
-    nextkey->time   = tour_tstart + thiskey->cum_pause_time + (tour_tstop-total_pause_time-tour_tstart)*(cum_dist/touri->global_dist);
+    nextkey->time   = tourcoll.tour_tstart + thiskey->cum_pause_time + (tourcoll.tour_tstop-total_pause_time-tourcoll.tour_tstart)*(cum_dist/touri->global_dist);
   }
 
-  (touri->last_frame).prev->time = tour_tstop;
+  (touri->last_frame).prev->time = tourcoll.tour_tstop;
 
   for(thiskey = (touri->first_frame).next, j = 0; thiskey->next!=NULL; thiskey = thiskey->next, j++){
     touri->keyframe_list[j]  = thiskey;
@@ -692,16 +546,16 @@ void GetTourProperties(tourdata *touri){
   touri->nkeyframes = j;
 
 
-  NewMemory((void **)&(tour_times), tour_ntimes*sizeof(float));
-  NewMemory((void **)&(xyzs),       3*tour_ntimes*sizeof(float));
-  NewMemory((void **)&(views),      3*tour_ntimes*sizeof(float));
+  NewMemory((void **)&(tour_times), tourcoll.tour_ntimes*sizeof(float));
+  NewMemory((void **)&(xyzs),       3*tourcoll.tour_ntimes*sizeof(float));
+  NewMemory((void **)&(views),      3*tourcoll.tour_ntimes*sizeof(float));
 
-  for(j=0;j<tour_ntimes;j++){
+  for(j=0;j<tourcoll.tour_ntimes;j++){
     float f1, vtime;
 
     f1 = 0.0;
-    if(tour_ntimes>1)f1 = (float)j/(float)(tour_ntimes - 1);
-    vtime                = tour_tstart*(1.0-f1) + tour_tstop*f1;
+    if(tourcoll.tour_ntimes>1)f1 = (float)j/(float)(tourcoll.tour_ntimes - 1);
+    vtime                = tourcoll.tour_tstart*(1.0-f1) + tourcoll.tour_tstop*f1;
     tour_times[j]        = vtime;
     touri->path_times[j] = vtime;
     {
@@ -719,37 +573,14 @@ void GetTourProperties(tourdata *touri){
       }
     }
   }
-  total_distance = tour_times[tour_ntimes-1];
-  for(j=0;j<tour_ntimes;j++){
-    tour_times[j] = tour_tstart + tour_times[j]*(tour_tstop - tour_tstart)/total_distance;
+  total_distance = tour_times[tourcoll.tour_ntimes-1];
+  for(j=0;j<tourcoll.tour_ntimes;j++){
+    tour_times[j] = tourcoll.tour_tstart + tour_times[j]*(tourcoll.tour_tstop - tourcoll.tour_tstart)/total_distance;
   }
   FREEMEMORY(tour_times);
   FREEMEMORY(xyzs);
   FREEMEMORY(views);
 }
-
-/* ------------------ SetTourXYZView ------------------------ */
-
-void SetTourXYZView(float t, tourdata *touri){
-  keyframe *this_key, *first_key, *last_key;
-
-  first_key = touri->first_frame.next;
-  last_key  = touri->last_frame.prev;
-  if(t<first_key->time){
-    memcpy(touri->xyz_smv,   first_key->xyz_smv,  3*sizeof(float));
-    memcpy(touri->view_smv,  first_key->view_smv, 3*sizeof(float));
-    return;
-  }
-  if(t>=last_key->time){
-    memcpy(touri->xyz_smv,  last_key->xyz_smv,  3*sizeof(float));
-    memcpy(touri->view_smv, last_key->view_smv, 3*sizeof(float));
-    return;
-  }
-  this_key = GetKeyFrame(touri, t);
-  GetKeyXYZ(t, this_key, touri->xyz_smv);
-  GetKeyView(t, this_key, touri->view_smv);
-}
-
 /* ------------------ CreateTourPaths ------------------------ */
 
 void CreateTourPaths(void){
@@ -763,14 +594,14 @@ void CreateTourPaths(void){
   printf("updating tour path\n");
 #endif
   ntourknots=0;
-  if(ntourinfo==0)return;
+  if(tourcoll.ntourinfo==0)return;
 
-  for(i=0;i<ntourinfo;i++){
+  for(i=0;i<tourcoll.ntourinfo;i++){
     tourdata *touri;
     keyframe *keyj;
     int nframes;
 
-    touri = tourinfo + i;
+    touri = tourcoll.tourinfo + i;
     nframes=0;
     for(keyj=(touri->first_frame).next;keyj->next!=NULL;keyj=keyj->next){
       ntourknots++;
@@ -815,12 +646,12 @@ void CreateTourPaths(void){
 
   tourknotskeylist_copy=tourknotskeylist;
   tourknotstourlist_copy=tourknotstourlist;
-  for(i = 0; i<ntourinfo; i++){
+  for(i = 0; i<tourcoll.ntourinfo; i++){
     tourdata *touri;
     keyframe *keyj;
     int j;
 
-    touri = tourinfo+i;
+    touri = tourcoll.tourinfo+i;
     for(keyj = (touri->first_frame).next, j = 0; keyj->next!=NULL; keyj = keyj->next, j++){
       FDS2SMV_XYZ(keyj->xyz_smv, keyj->xyz_fds);
     }
@@ -890,18 +721,18 @@ void CreateTourPaths(void){
   }
 
   // get tour properties
-  for(i = 0; i<ntourinfo; i++){
+  for(i = 0; i<tourcoll.ntourinfo; i++){
     tourdata *touri;
 
-    touri = tourinfo+i;
+    touri = tourcoll.tourinfo+i;
     GetTourProperties(touri);
   }
 
-  for(i = 0; i<ntourinfo; i++){
+  for(i = 0; i<tourcoll.ntourinfo; i++){
     tourdata *touri;
     keyframe *keyj;
 
-    touri = tourinfo+i;
+    touri = tourcoll.tourinfo+i;
 
     for(keyj = (touri->first_frame).next; keyj->next!=NULL; keyj = keyj->next){
       float denom, view_smv[3];
@@ -943,17 +774,6 @@ void DefaultTour(void){
 
 }
 
-/* ------------------ CopyFrame ------------------------ */
-
-keyframe *CopyFrame(keyframe *framei){
-  keyframe *frame;
-
-  NewMemory((void **)&frame, sizeof(keyframe));
-  memcpy(frame, framei, sizeof(keyframe));
-
-  CheckMemory;
-  return frame;
-}
 
 /* ------------------ AddFrame ------------------------ */
 
@@ -993,22 +813,6 @@ keyframe *AddFrame(keyframe *last_frame, float time_local, float pause_time_loca
   return this_frame;
 }
 
-/* ------------------ DeleteTourFrames ------------------------ */
-
-void DeleteTourFrames(tourdata *thistour){
-  keyframe *frame;
-
-  for(frame = thistour->first_frame.next;frame->next != NULL;){
-    keyframe *next;
-
-    next = frame->next;
-    FREEMEMORY(frame);
-    frame = next;
-  }
-  thistour->first_frame.next = &(thistour->last_frame);
-  thistour->last_frame.prev = &(thistour->first_frame);
-}
-
 /* ------------------ DeleteFrame ------------------------ */
 
 keyframe *DeleteFrame(keyframe *frame){
@@ -1030,7 +834,6 @@ keyframe *DeleteFrame(keyframe *frame){
   }
   return NULL;
 }
-
 /* ------------------ NewSelect ------------------------ */
 
 void NewSelect(keyframe *newselect){
@@ -1080,14 +883,14 @@ void InitCircularTour(tourdata *touri, int nkeyframes, int option){
     FREEMEMORY(touri->keyframe_times);
     FREEMEMORY(touri->path_times);
   }
-  InitTour(touri);
+  InitTour(&tourcoll, touri);
   touri->isDefault=1;
   touri->startup=1;
   touri->periodic=1;
-  tour_circular_index = touri - tourinfo;
+  tour_circular_index = touri - tourcoll.tourinfo;
   strcpy(touri->label,"Circular");
   NewMemory((void **)&touri->keyframe_times, nkeyframes*sizeof(float));
-  NewMemory((void **)&touri->path_times,tour_ntimes*sizeof(float));
+  NewMemory((void **)&touri->path_times,tourcoll.tour_ntimes*sizeof(float));
   key_view[0]=tour_circular_view[0];
   key_view[1]=tour_circular_view[1];
   key_view[2]=tour_circular_view[2];
@@ -1118,7 +921,7 @@ void InitCircularTour(tourdata *touri, int nkeyframes, int option){
     else{
       f1 = (float)j / (float)(nkeyframes - 1);
     }
-    key_time = tour_tstart*(1.0-f1) + tour_tstop*f1;
+    key_time = tourcoll.tour_tstart*(1.0-f1) + tourcoll.tour_tstop*f1;
 
     addedframe = AddFrame(thisframe, key_time, 0.0, key_xyz, key_view);
     thisframe=addedframe;
@@ -1140,12 +943,12 @@ void ReverseTour(char *label){
   int i;
 
   if(label==NULL)return;
-  for(i = 0;i<ntourinfo;i++){
+  for(i = 0;i<tourcoll.ntourinfo;i++){
     tourdata *tourj;
 
-    tourj = tourinfo+i;
+    tourj = tourcoll.tourinfo+i;
     if(strcmp(tourj->label, label)==0){
-      tourreverse = tourinfo+i;
+      tourreverse = tourcoll.tourinfo+i;
       break;
     }
   }
@@ -1195,19 +998,19 @@ tourdata *AddTour(char *label){
   int itour=-1;
 
   GLUIDeleteTourList();
-  ntourinfo++;
-  NewMemory( (void **)&tourtemp, ntourinfo*sizeof(tourdata));
-  if(ntourinfo>1)memcpy(tourtemp,tourinfo,(ntourinfo-1)*sizeof(tourdata));
-  FREEMEMORY(tourinfo);
-  tourinfo=tourtemp;
-  touri = tourinfo + ntourinfo - 1;
+  tourcoll.ntourinfo++;
+  NewMemory( (void **)&tourtemp, tourcoll.ntourinfo*sizeof(tourdata));
+  if(tourcoll.ntourinfo>1)memcpy(tourtemp,tourcoll.tourinfo,(tourcoll.ntourinfo-1)*sizeof(tourdata));
+  FREEMEMORY(tourcoll.tourinfo);
+  tourcoll.tourinfo=tourtemp;
+  touri = tourcoll.tourinfo + tourcoll.ntourinfo - 1;
 
-  InitTour(touri);
+  InitTour(&tourcoll, touri);
   if(label!=NULL){
-    for(i = 0;i<ntourinfo-1;i++){
+    for(i = 0;i<tourcoll.ntourinfo-1;i++){
       tourdata *tourj;
 
-      tourj = tourinfo+i;
+      tourj = tourcoll.tourinfo+i;
       if(strcmp(tourj->label, label)==0){
         itour = i;
         sprintf(touri->label, "Copy of %s", TrimFront(label));
@@ -1218,12 +1021,12 @@ tourdata *AddTour(char *label){
     if(itour==-1)label=NULL;
   }
   if(label==NULL){
-    sprintf(touri->label,"Tour %i",ntourinfo);
+    sprintf(touri->label,"Tour %i",tourcoll.ntourinfo);
     nkeyframes=2;
   }
 
   NewMemory((void **)&touri->keyframe_times, nkeyframes*sizeof(float));
-  NewMemory((void **)&touri->path_times,tour_ntimes*sizeof(float));
+  NewMemory((void **)&touri->path_times,tourcoll.tour_ntimes*sizeof(float));
 
   if(itour==-1){
     VEC3EQCONS(key_view,0.0);
@@ -1231,7 +1034,7 @@ tourdata *AddTour(char *label){
     key_xyz[0] = xbar0 - 1.0;
     key_xyz[1] = ybar0 - 1.0;
     key_xyz[2] = (zbar0 + zbarORIG)/2.0;
-    key_time = tour_tstart;
+    key_time = tourcoll.tour_tstart;
     thisframe=&touri->first_frame;
     addedframe = AddFrame(thisframe, key_time, 0.0, key_xyz, key_view);
     touri->keyframe_times[0]=key_time;
@@ -1239,7 +1042,7 @@ tourdata *AddTour(char *label){
     key_xyz[0] = xbarORIG + 1.0;
     key_xyz[1] = ybarORIG + 1.0;
     key_xyz[2] = (zbar0 + zbarORIG)/2.0;
-    key_time = tour_tstop;
+    key_time = tourcoll.tour_tstop;
     thisframe=addedframe;
     addedframe = AddFrame(thisframe, key_time, 0.0, key_xyz, key_view);
     touri->keyframe_times[1]=key_time;
@@ -1249,7 +1052,7 @@ tourdata *AddTour(char *label){
     tourdata *tourfrom;
     int first=1;
 
-    tourfrom = tourinfo+itour;
+    tourfrom = tourcoll.tourinfo+itour;
 
     keylast=NULL;
     keyfrom = &(tourfrom->first_frame);
@@ -1274,14 +1077,14 @@ tourdata *AddTour(char *label){
   }
   touri->display=1;
 
-  for(i=0;i<ntourinfo;i++){
-    touri=tourinfo+i;
+  for(i=0;i<tourcoll.ntourinfo;i++){
+    touri=tourcoll.tourinfo+i;
     touri->first_frame.next->prev=&touri->first_frame;
     touri->last_frame.prev->next=&touri->last_frame;
   }
   viewalltours=1;
-  for(i=0;i<ntourinfo;i++){
-    touri = tourinfo + i;
+  for(i=0;i<tourcoll.ntourinfo;i++){
+    touri = tourcoll.tourinfo + i;
     if(touri->display==0)viewalltours=0;
   }
   updatemenu=1;
@@ -1290,7 +1093,7 @@ tourdata *AddTour(char *label){
   CreateTourPaths();
   UpdateTimes();
   GLUICreateTourList();
-  return tourinfo + ntourinfo-1;
+  return tourcoll.tourinfo + tourcoll.ntourinfo-1;
 }
 
 /* ------------------ DeleteTour  ------------------------ */
@@ -1300,36 +1103,36 @@ void DeleteTour(int tour_index){
   int i;
 
   GLUIDeleteTourList();
-  touri = tourinfo + tour_index;
+  touri = tourcoll.tourinfo + tour_index;
   FreeTour(touri);
-  ntourinfo--;
-  if(ntourinfo>0){
-    NewMemory( (void **)&tourtemp, ntourinfo*sizeof(tourdata));
-    if(tour_index>0)memcpy(tourtemp,tourinfo,tour_index*sizeof(tourdata));
-    if(tour_index<ntourinfo)memcpy(tourtemp+tour_index,tourinfo+tour_index+1,(ntourinfo-tour_index)*sizeof(tourdata));
-    FREEMEMORY(tourinfo);
-    tourinfo=tourtemp;
-    for(i=0;i<ntourinfo;i++){
-      touri=tourinfo+i;
+  tourcoll.ntourinfo--;
+  if(tourcoll.ntourinfo>0){
+    NewMemory( (void **)&tourtemp, tourcoll.ntourinfo*sizeof(tourdata));
+    if(tour_index>0)memcpy(tourtemp,tourcoll.tourinfo,tour_index*sizeof(tourdata));
+    if(tour_index<tourcoll.ntourinfo)memcpy(tourtemp+tour_index,tourcoll.tourinfo+tour_index+1,(tourcoll.ntourinfo-tour_index)*sizeof(tourdata));
+    FREEMEMORY(tourcoll.tourinfo);
+    tourcoll.tourinfo=tourtemp;
+    for(i=0;i<tourcoll.ntourinfo;i++){
+      touri=tourcoll.tourinfo+i;
       touri->first_frame.next->prev=&touri->first_frame;
       touri->last_frame.prev->next=&touri->last_frame;
     }
   }
   viewalltours=1;
-  for(i=0;i<ntourinfo;i++){
-    touri = tourinfo + i;
+  for(i=0;i<tourcoll.ntourinfo;i++){
+    touri = tourcoll.tourinfo + i;
     if(touri->display==0)viewalltours=0;
   }
-  if(ntourinfo==0){
+  if(tourcoll.ntourinfo==0){
     viewalltours=0;
   }
   updatemenu=1;
   CreateTourPaths();
   selectedtour_index=tour_index-1;
   selectedtour_index_old=selectedtour_index;
-  if(ntourinfo>0){
+  if(tourcoll.ntourinfo>0){
     if(selectedtour_index<0)selectedtour_index=0;
-    selected_tour=tourinfo+selectedtour_index;
+    selected_tour=tourcoll.tourinfo+selectedtour_index;
     selected_frame=selected_tour->first_frame.next;
   }
   else{
@@ -1343,42 +1146,15 @@ void DeleteTour(int tour_index){
 
 }
 
-/* ------------------ ReallocTourMemory  ------------------------ */
-
-
-void ReallocTourMemory(void){
-  int i;
-  tourdata *touri;
-
-  if(tour_ntimes>0){
-    for(i=0;i<ntourinfo;i++){
-      touri = tourinfo + i;
-      FREEMEMORY(touri->path_times);
-      NewMemory((void **)&touri->path_times,tour_ntimes*sizeof(float));
-      touri->ntimes=tour_ntimes;
-    }
-    FREEMEMORY(tour_t);
-    FREEMEMORY(tour_t2);
-    FREEMEMORY(tour_dist);
-    FREEMEMORY(tour_dist2);
-    FREEMEMORY(tour_dist3);
-    NewMemory((void **)&tour_t,tour_ntimes*sizeof(float));
-    NewMemory((void **)&tour_t2,tour_ntimes*sizeof(float));
-    NewMemory((void **)&tour_dist,tour_ntimes*sizeof(float));
-    NewMemory((void **)&tour_dist2,tour_ntimes*sizeof(float));
-    NewMemory((void **)&tour_dist3,(tour_ntimes+10)*sizeof(float));
-  }
-}
-
 /* ------------------ SetupTour  ------------------------ */
 
 void SetupTour(void){
 
-  if(ntourinfo==0){
-    ReallocTourMemory();
-    ntourinfo=1;
-    NewMemory( (void **)&tourinfo, ntourinfo*sizeof(tourdata));
-    InitCircularTour(tourinfo,ncircletournodes,INIT);
+  if(tourcoll.ntourinfo==0){
+    ReallocTourMemory(&tourcoll);
+    tourcoll.ntourinfo=1;
+    NewMemory( (void **)&tourcoll.tourinfo, tourcoll.ntourinfo*sizeof(tourdata));
+    InitCircularTour(tourcoll.tourinfo,ncircletournodes,INIT);
     UpdateTourMenuLabels();
     CreateTourPaths();
     UpdateTimes();
