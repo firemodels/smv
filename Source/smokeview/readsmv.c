@@ -6976,6 +6976,7 @@ void *CheckFiles(void *arg){
   THREAD_EXIT(checkfiles_threads);
 }
 
+#ifdef pp_INIT_PATCHES
 /* ------------------ InitMeshBlockages ------------------------ */
 
 void InitMeshBlockages(void){
@@ -6998,7 +6999,7 @@ void InitMeshBlockages(void){
     for(j=0; j<meshi->nbptrs; j++){
       blockagedata *bc;
 
-      bc = meshi->blockageinfoptrs[i];
+      bc = meshi->blockageinfoptrs[j];
 
       if(bc->ijk[0] == 0 && is_extface[0] == MESH_INT)counts[0]++;
       if(bc->ijk[1] == meshi->ibar &&  is_extface[1] == MESH_INT)counts[1]++;
@@ -7038,6 +7039,7 @@ void InitMeshBlockages(void){
     }
   }
 }
+#endif
 
 /* ------------------ GetSliceParmInfo ------------------------ */
 
@@ -12320,7 +12322,9 @@ int ReadSMV_Configure(){
   SetInteriorBlockages(1);
   PRINT_TIMER(timer_readsmv, "SetInteriorBlockages");
 
+#ifdef pp_INIT_PATCHES
   InitMeshBlockages();
+#endif
 
   PRINTF("%s", _("complete"));
   PRINTF("\n\n");
