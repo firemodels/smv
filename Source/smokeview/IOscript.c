@@ -2795,10 +2795,10 @@ void ScriptLoadTour(scriptdata *scripti){
 
   PRINTF("script: loading tour %s\n\n",scripti->cval);
 
-  for(i=0;i<tourcoll.ntourinfo;i++){
+  for(i=0;i<ntourinfo;i++){
     tourdata *touri;
 
-    touri = tourcoll.tourinfo + i;
+    touri = tourinfo + i;
     if(strcmp(touri->label,scripti->cval)==0){
       TourMenu(i);
       viewtourfrompath=0;

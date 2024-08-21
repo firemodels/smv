@@ -11,7 +11,7 @@
 #include "isodefs.h"
 #include "smokeviewdefs.h"
 #include "string_util.h"
-#include "shared_structures.h"
+#include "structures.h"
 
 #include "readobject.h"
 

@@ -11,30 +11,6 @@
 #include "datadefs.h"
 #include "readgeom.h"
 #include "stdio_m.h"
-#include <assert.h>
-
-/* ------------------ GetInterval ------------------------ */
-
-int GetInterval(float val, float *array, int n) {
-  int low, mid, high;
-
-  if(val < array[0]) return -1;
-  if(val > array[n - 1]) return -1;
-
-  low = 0;
-  high = n - 1;
-  while(high - low > 1) {
-    mid = (low + high) / 2;
-    if(val >= array[mid]) {
-      low = mid;
-    }
-    else {
-      high = mid;
-    }
-  }
-  assert(low < n);
-  return low;
-}
 
 // !  ------------------ Dist ------------------------
 

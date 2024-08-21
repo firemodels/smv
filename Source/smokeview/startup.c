@@ -314,7 +314,7 @@ int SetupCase(char *filename){
   FREEMEMORY(smv_bindir);
   PRINT_TIMER(timer_start, "InitTranslate");
 
-  if(tourcoll.ntourinfo==0)SetupTour();
+  if(ntourinfo==0)SetupTour();
   InitRolloutList();
   GLUIColorbarSetup(mainwindow_id);
   GLUIMotionSetup(mainwindow_id);

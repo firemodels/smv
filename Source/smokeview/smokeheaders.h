@@ -515,7 +515,10 @@ EXTERNCPP void LoadAllPartFilesMT(int val);
 EXTERNCPP void LoadAllPartFiles(int partnum);
 EXTERNCPP void CreatePartBoundFile(partdata *parti);
 EXTERNCPP void InitRolloutList(void);
+EXTERNCPP void GetKeyXYZ(float t, keyframe *this_key, float *xyz);
 EXTERNCPP void GetTourXYZ(float t, tourdata *this_tour, float *xyz);
+EXTERNCPP void GetKeyView(float t, keyframe *this_key, float *view);
+EXTERNCPP void GetTourView(float t, tourdata *this_tour, float *view);
 EXTERNCPP int GetTourFrame(tourdata *touri, int itime);
 EXTERNCPP int MeshConnect(meshdata *mesh_from, int val, meshdata *mesh_to);
 EXTERNCPP int IsBottomMesh(meshdata *mesh_from);
@@ -649,9 +652,6 @@ EXTERNCPP void GetViewportInfo(void);
 
 EXTERNCPP void ScaleFont2D(void);
 EXTERNCPP void ScaleFont3D(void);
-EXTERNCPP int  LabelInit(labeldata *gl);
-EXTERNCPP void LabelResort(labeldata *label);
-EXTERNCPP void LabelPrint(void);
 
 EXTERNCPP void SetScreenSize(int *width, int *height);
 EXTERNCPP void KeyboardCB(unsigned char key, int x, int y);
@@ -904,6 +904,7 @@ EXTERNCPP void BlockageMenu(int value);
 EXTERNCPP char *STRSTR(char *c, const char *key);
 EXTERNCPP void HandlePLOT3DKeys(int  key);
 EXTERNCPP void HandleMoveKeys(int  key);
+EXTERNCPP int GetInterval(float val, float *array, int n);
 EXTERNCPP int GetTimeInterval(float val, float *array, int n);
 
 EXTERNCPP void SetUnitVis(void);
@@ -944,12 +945,16 @@ EXTERNCPP void InitTextureDir(void);
 EXTERNCPP void GetRGB(unsigned int val, unsigned char *rr, unsigned char *gg, unsigned char *bb);
 EXTERNCPP void UpdateColorbarDialogs(void);
 
+EXTERNCPP void SetTourXYZView(float t, tourdata *touri);
 EXTERNCPP void UpdateViewTour(void);
 EXTERNCPP void SetupTour(void);
 EXTERNCPP void CreateTourPaths(void);
 EXTERNCPP void DrawTours(void);
 EXTERNCPP void DrawSelectTours(void);
 EXTERNCPP void DrawSelectColorbar(void);
+EXTERNCPP void FreeTour(tourdata *touri);
+EXTERNCPP void FreeTours(void);
+EXTERNCPP void InitTour(tourdata *touri);
 EXTERNCPP void UpdateTourMenuLabels(void);
 EXTERNCPP void DefaultTour(void);
 EXTERNCPP void NewSelect(keyframe *newselect);
@@ -958,7 +963,9 @@ EXTERNCPP tourdata *AddTour(char *label);
 EXTERNCPP void ReverseTour(char *label);
 EXTERNCPP void SetupCircularTourNodes(void);
 EXTERNCPP void InitCircularTour(tourdata *touri, int nkeyframes, int option);
+EXTERNCPP void DeleteTourFrames(tourdata *thistour);
 EXTERNCPP keyframe *DeleteFrame(keyframe *step);
+EXTERNCPP void ReallocTourMemory(void);
 EXTERNCPP keyframe *AddFrame(keyframe *framei, float time, float pause_time, float *xyz, float view[3]);
 
 EXTERNCPP void GetBlockVals(float *xmin, float *xmax,
