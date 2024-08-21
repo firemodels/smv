@@ -6997,26 +6997,14 @@ void InitMeshBlockages(void){
     }
     for(j=0; j<meshi->nbptrs; j++){
       blockagedata *bc;
-      blockagedata **bclist;
 
       bc = meshi->blockageinfoptrs[i];
 
-      bclist = meshi->bc_faces[0];
       if(bc->ijk[0] == 0 && is_extface[0] == MESH_INT)counts[0]++;
-      
-      bclist = meshi->bc_faces[1];
       if(bc->ijk[1] == meshi->ibar &&  is_extface[1] == MESH_INT)counts[1]++;
-
-      bclist = meshi->bc_faces[2];
       if(bc->ijk[2] == 0 && is_extface[2] == MESH_INT)counts[2]++;
-
-      bclist = meshi->bc_faces[3];
       if(bc->ijk[3] == meshi->jbar && is_extface[3] == MESH_INT)counts[3]++;
-
-      bclist = meshi->bc_faces[4];
       if(bc->ijk[4] == 0 && is_extface[4] == MESH_INT)counts[4]++;
-
-      bclist = meshi->bc_faces[5];
       if(bc->ijk[5] == meshi->kbar && is_extface[5] == MESH_INT)counts[5]++;
     }
     for(j=0; j<6; j++){
