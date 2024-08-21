@@ -7011,7 +7011,7 @@ void InitMeshBlockages(void){
     for(j=0; j<6; j++){
       if(counts[j]>0)NewMemory((void **)&meshi->bc_faces[j],  meshi->nbptrs*sizeof(blockagedata *));
       meshi->n_bc_faces[j] = counts[j];
-      counts[0] = 0;
+      counts[j] = 0;
     }
     for(j=0; j<meshi->nbptrs; j++){
       blockagedata *bc;
