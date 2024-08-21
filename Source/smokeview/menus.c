@@ -10286,7 +10286,7 @@ static int menu_count=0;
   if(visMeshlabel == 0)glutAddMenuEntry(_("Mesh"), MENU_LABEL_meshlabel);
   if(vis_slice_average == 1)glutAddMenuEntry(_("*Slice average"), MENU_LABEL_sliceaverage);
   if(vis_slice_average == 0)glutAddMenuEntry(_("Slice average"), MENU_LABEL_sliceaverage);
-  if(LabelGetNUserLabels() > 0){
+  if(LabelGetNUserLabels(&labelscoll) > 0){
     if(visLabels == 1)glutAddMenuEntry(_("*Text labels"), MENU_LABEL_textlabels);
     if(visLabels == 0)glutAddMenuEntry(_("Text labels"), MENU_LABEL_textlabels);
   }

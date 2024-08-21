@@ -99,6 +99,32 @@ if ((NOT MACOSX) AND UNIX)
     target_link_libraries(test_objects m)
 endif()
 
+
+# test_labels
+add_executable(test_labels test_labels.c
+    ../Source/shared/dmalloc.c
+    ../Source/shared/readlabel.c
+    ../Source/shared/string_util.c
+    ../Source/shared/file_util.c
+    ../Source/shared/stdio_buffer.c
+    ../Source/shared/sha256.c
+    ../Source/shared/sha1.c
+    ../Source/shared/md5.c
+)
+
+target_include_directories(test_labels PRIVATE
+    ../Tests
+    ../Source/shared
+    ../Source/glew
+)
+if (WIN32)
+    target_include_directories(test_labels PRIVATE ../Source/pthreads)
+endif()
+if ((NOT MACOSX) AND UNIX)
+    target_link_libraries(test_labels m)
+endif()
+
+
 # mem_test
 add_executable(mem_test mem_test.c
     ../Source/shared/dmalloc.c
@@ -136,6 +162,9 @@ COMMAND parse_simple_pl3d ${CMAKE_SOURCE_DIR}/Tests/fig/smv/Tests/simple_pl3d.q)
 
 add_test(NAME "Test Object API"
 COMMAND test_objects ${CMAKE_SOURCE_DIR}/Tests/bad_objects.svo)
+
+add_test(NAME "Test Labels API"
+    COMMAND test_labels)
 
 add_test(NAME "Mem Test"
     COMMAND mem_test)

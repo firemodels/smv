@@ -19,6 +19,7 @@
 #include "stdio_buffer.h"
 
 #include "readobject.h"
+#include "readlabel.h"
 
 /* ------------------ InitDefaultCameras ------------------------ */
 
@@ -1425,16 +1426,7 @@ void InitVars(void){
   strcpy((char *)degC,"C");
   strcpy((char *)degF,"F");
 
-  label_first_ptr = &label_first;
-  label_last_ptr = &label_last;
-
-  label_first_ptr->prev = NULL;
-  label_first_ptr->next = label_last_ptr;
-  strcpy(label_first_ptr->name,"first");
-
-  label_last_ptr->prev = label_first_ptr;
-  label_last_ptr->next = NULL;
-  strcpy(label_last_ptr->name,"last");
+  InitLabelsCollection(&labelscoll);
 
   {
     labeldata *gl;

@@ -317,4 +317,29 @@ typedef struct _circdata {
   float *xcirc, *ycirc;
   int ncirc;
 } circdata;
+
+/* --------------------------  labeldata ------------------------------------ */
+
+typedef struct _labeldata {
+  struct _labeldata *prev, *next;
+  char name[300];
+  float xyz[3],frgb[4],tstart_stop[2];
+  float tick_begin[3], tick_direction[3];
+  int show_tick;
+  int rgb[4], glui_id, labeltype; // smv or ini
+  int useforegroundcolor,show_always;
+} labeldata;
+
+/**
+ * @brief A collection of labels. At it's core this collection
+ * contains a linked list, but also an array of pointers into that linked list.
+ *
+ */
+typedef struct {
+  labeldata label_first;
+  labeldata label_last;
+  labeldata *label_first_ptr;
+  labeldata *label_last_ptr;
+} labels_collection;
+
 #endif

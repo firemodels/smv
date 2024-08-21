@@ -247,19 +247,6 @@ typedef struct _outlinedata {
   float *x2, *y2, *z2;
 } outlinedata;
 
-/* --------------------------  labeldata ------------------------------------ */
-
-typedef struct _labeldata {
-  struct _labeldata *prev, *next;
-  char name[300];
-  float xyz[3],frgb[4],tstart_stop[2];
-  float tick_begin[3], tick_direction[3];
-  int show_tick;
-  int rgb[4], glui_id, labeltype; // smv or ini
-  int useforegroundcolor,show_always;
-} labeldata;
-
-
 /* --------------------------  terraindata ------------------------------------ */
 
 typedef struct _terraindata {

@@ -652,16 +652,8 @@ EXTERNCPP void GetViewportInfo(void);
 
 EXTERNCPP void ScaleFont2D(void);
 EXTERNCPP void ScaleFont3D(void);
-EXTERNCPP int  LabelGetNUserLabels(void);
-EXTERNCPP labeldata *LabelNext(labeldata *gl);
-EXTERNCPP labeldata *LabelPrevious(labeldata *gl);
 EXTERNCPP int  LabelInit(labeldata *gl);
 EXTERNCPP void LabelResort(labeldata *label);
-EXTERNCPP void LabelCopy(labeldata *label_to, labeldata *label_from);
-EXTERNCPP labeldata *LabelGet(char *name);
-EXTERNCPP void LabelDelete(labeldata *label);
-EXTERNCPP void LabelPrint(void);
-EXTERNCPP labeldata *LabelInsert(labeldata *labeltemp);
 
 EXTERNCPP void SetScreenSize(int *width, int *height);
 EXTERNCPP void KeyboardCB(unsigned char key, int x, int y);
