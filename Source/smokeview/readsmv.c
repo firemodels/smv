@@ -6977,6 +6977,162 @@ void *CheckFiles(void *arg){
 }
 
 #ifdef pp_INIT_PATCHES
+
+/* ------------------ DrawMeshBlockFaces ------------------------ */
+
+void DrawMeshBlockFaces(void){
+  int i;
+  float block_color[3] = {1.0, 0.5, .25};
+
+  glBegin(GL_TRIANGLES);
+  glColor3fv(block_color);
+  for(i = 0;i < nmeshes;i++){
+    meshdata *meshi;
+    int j;
+    blockagedata **bclist;
+
+    meshi = meshinfo + i;
+    bclist = meshi->bc_faces[0];
+    for(j = 0; j < meshi->n_bc_faces[0]; j++){
+      blockagedata *bc;
+
+      bc = bclist[j];
+      if(bc->showtimelist != NULL && bc->showtimelist[itimes] == 0)continue;
+      glVertex3f(bc->xmin, bc->ymin, bc->zmin);
+      glVertex3f(bc->xmin, bc->ymax, bc->zmin);
+      glVertex3f(bc->xmin, bc->ymax, bc->zmax);
+
+      glVertex3f(bc->xmin, bc->ymin, bc->zmin);
+      glVertex3f(bc->xmin, bc->ymax, bc->zmax);
+      glVertex3f(bc->xmin, bc->ymax, bc->zmin);
+
+      glVertex3f(bc->xmin, bc->ymin, bc->zmin);
+      glVertex3f(bc->xmin, bc->ymax, bc->zmax);
+      glVertex3f(bc->xmin, bc->ymin, bc->zmax);
+
+      glVertex3f(bc->xmin, bc->ymin, bc->zmin);
+      glVertex3f(bc->xmin, bc->ymin, bc->zmax);
+      glVertex3f(bc->xmin, bc->ymax, bc->zmax);
+    }
+
+    bclist = meshi->bc_faces[1];
+    for(j = 0; j < meshi->n_bc_faces[1]; j++){
+      blockagedata *bc;
+
+      bc = bclist[j];
+      if(bc->showtimelist != NULL && bc->showtimelist[itimes] == 0)continue;
+      glVertex3f(bc->xmax, bc->ymin, bc->zmin);
+      glVertex3f(bc->xmax, bc->ymax, bc->zmin);
+      glVertex3f(bc->xmax, bc->ymax, bc->zmax);
+
+      glVertex3f(bc->xmax, bc->ymin, bc->zmin);
+      glVertex3f(bc->xmax, bc->ymax, bc->zmax);
+      glVertex3f(bc->xmax, bc->ymax, bc->zmin);
+
+      glVertex3f(bc->xmax, bc->ymin, bc->zmin);
+      glVertex3f(bc->xmax, bc->ymax, bc->zmax);
+      glVertex3f(bc->xmax, bc->ymin, bc->zmax);
+
+      glVertex3f(bc->xmax, bc->ymin, bc->zmin);
+      glVertex3f(bc->xmax, bc->ymin, bc->zmax);
+      glVertex3f(bc->xmax, bc->ymax, bc->zmax);
+    }
+
+    bclist = meshi->bc_faces[2];
+    for(j = 0; j < meshi->n_bc_faces[2]; j++){
+      blockagedata *bc;
+
+      bc = bclist[j];
+      if(bc->showtimelist != NULL && bc->showtimelist[itimes] == 0)continue;
+      glVertex3f(bc->xmin, bc->ymin, bc->zmin);
+      glVertex3f(bc->xmax, bc->ymin, bc->zmin);
+      glVertex3f(bc->xmax, bc->ymin, bc->zmax);
+
+      glVertex3f(bc->xmin, bc->ymin, bc->zmin);
+      glVertex3f(bc->xmax, bc->ymin, bc->zmax);
+      glVertex3f(bc->xmax, bc->ymin, bc->zmin);
+
+      glVertex3f(bc->xmin, bc->ymin, bc->zmin);
+      glVertex3f(bc->xmax, bc->ymin, bc->zmax);
+      glVertex3f(bc->xmin, bc->ymin, bc->zmax);
+
+      glVertex3f(bc->xmin, bc->ymin, bc->zmin);
+      glVertex3f(bc->xmin, bc->ymin, bc->zmax);
+      glVertex3f(bc->xmax, bc->ymin, bc->zmax);
+    }
+
+    bclist = meshi->bc_faces[3];
+    for(j = 0; j < meshi->n_bc_faces[3]; j++){
+      blockagedata *bc;
+
+      bc = bclist[j];
+      if(bc->showtimelist != NULL && bc->showtimelist[itimes] == 0)continue;
+      glVertex3f(bc->xmin, bc->ymax, bc->zmin);
+      glVertex3f(bc->xmax, bc->ymax, bc->zmin);
+      glVertex3f(bc->xmax, bc->ymax, bc->zmax);
+
+      glVertex3f(bc->xmin, bc->ymax, bc->zmin);
+      glVertex3f(bc->xmax, bc->ymax, bc->zmax);
+      glVertex3f(bc->xmax, bc->ymax, bc->zmin);
+
+      glVertex3f(bc->xmin, bc->ymax, bc->zmin);
+      glVertex3f(bc->xmax, bc->ymax, bc->zmax);
+      glVertex3f(bc->xmin, bc->ymax, bc->zmax);
+
+      glVertex3f(bc->xmin, bc->ymax, bc->zmin);
+      glVertex3f(bc->xmin, bc->ymax, bc->zmax);
+      glVertex3f(bc->xmax, bc->ymax, bc->zmax);
+    }
+
+    bclist = meshi->bc_faces[4];
+    for(j = 0; j < meshi->n_bc_faces[4]; j++){
+      blockagedata *bc;
+
+      bc = bclist[j];
+      if(bc->showtimelist != NULL && bc->showtimelist[itimes] == 0)continue;
+      glVertex3f(bc->xmin, bc->ymin, bc->zmin);
+      glVertex3f(bc->xmax, bc->ymin, bc->zmin);
+      glVertex3f(bc->xmax, bc->ymax, bc->zmin);
+
+      glVertex3f(bc->xmin, bc->ymin, bc->zmin);
+      glVertex3f(bc->xmax, bc->ymax, bc->zmin);
+      glVertex3f(bc->xmax, bc->ymin, bc->zmin);
+
+      glVertex3f(bc->xmin, bc->ymin, bc->zmin);
+      glVertex3f(bc->xmax, bc->ymax, bc->zmin);
+      glVertex3f(bc->xmin, bc->ymax, bc->zmin);
+
+      glVertex3f(bc->xmin, bc->ymin, bc->zmin);
+      glVertex3f(bc->xmin, bc->ymax, bc->zmin);
+      glVertex3f(bc->xmax, bc->ymax, bc->zmin);
+    }
+
+    bclist = meshi->bc_faces[5];
+    for(j = 0; j < meshi->n_bc_faces[5]; j++){
+      blockagedata *bc;
+
+      bc = bclist[j];
+      if(bc->showtimelist != NULL && bc->showtimelist[itimes] == 0)continue;
+      glVertex3f(bc->xmin, bc->ymin, bc->zmax);
+      glVertex3f(bc->xmax, bc->ymin, bc->zmax);
+      glVertex3f(bc->xmax, bc->ymax, bc->zmax);
+
+      glVertex3f(bc->xmin, bc->ymin, bc->zmax);
+      glVertex3f(bc->xmax, bc->ymax, bc->zmax);
+      glVertex3f(bc->xmax, bc->ymin, bc->zmax);
+
+      glVertex3f(bc->xmin, bc->ymin, bc->zmax);
+      glVertex3f(bc->xmax, bc->ymax, bc->zmax);
+      glVertex3f(bc->xmin, bc->ymax, bc->zmax);
+
+      glVertex3f(bc->xmin, bc->ymin, bc->zmax);
+      glVertex3f(bc->xmin, bc->ymax, bc->zmax);
+      glVertex3f(bc->xmax, bc->ymax, bc->zmax);
+    }
+  }
+  glEnd();
+}
+
 /* ------------------ InitMeshBlockages ------------------------ */
 
 void InitMeshBlockages(void){
@@ -7017,7 +7173,7 @@ void InitMeshBlockages(void){
       blockagedata *bc;
       blockagedata **bclist;
 
-      bc = meshi->blockageinfoptrs[i];
+      bc = meshi->blockageinfoptrs[j];
 
       bclist = meshi->bc_faces[0];
       if(bc->ijk[0] == 0 && is_extface[0] == MESH_INT)          bclist[counts[0]++] = bc;

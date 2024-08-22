@@ -116,6 +116,11 @@ void ShowScene2(int mode){
       SNIFF_ERRORS("after outputAxisLables");
     }
 
+    /* ++++++++++++++++++++++++ draw sensors/sprinklers/heat detectors +++++++++++++++++++++++++ */
+
+#ifdef pp_INIT_PATCHES
+    DrawMeshBlockFaces();
+#endif
 
     /* ++++++++++++++++++++++++ draw user ticks +++++++++++++++++++++++++ */
 

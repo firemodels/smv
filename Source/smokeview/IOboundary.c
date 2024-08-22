@@ -2540,6 +2540,72 @@ void Global2GLUIBoundaryBounds(const char *key){
   }
 }
 
+
+#ifdef pp_INIT_PATCHES
+/* ------------------ DrawMeshBlockFaces ------------------------ */
+
+void DrawMeshBoundaryFaces(patchdata *patchi){
+  meshdata *meshi;
+  float *x, *y, *z;
+
+  meshi = meshinfo + patchi->blocknumber;
+
+  glBegin(GL_TRIANGLES);
+
+  int j;
+  blockagedata **bclist;
+
+  bclist = meshi->bc_faces[0];
+  for(j = 0; j < meshi->n_bc_faces[0]; j++){
+    blockagedata *bc;
+
+    bc = bclist[j];
+    if(bc->showtimelist != NULL && bc->showtimelist[itimes] == 0)continue;
+  }
+
+  bclist = meshi->bc_faces[1];
+  for(j = 0; j < meshi->n_bc_faces[1]; j++){
+    blockagedata *bc;
+
+    bc = bclist[j];
+    if(bc->showtimelist != NULL && bc->showtimelist[itimes] == 0)continue;
+  }
+
+  bclist = meshi->bc_faces[2];
+  for(j = 0; j < meshi->n_bc_faces[2]; j++){
+    blockagedata *bc;
+
+    bc = bclist[j];
+    if(bc->showtimelist != NULL && bc->showtimelist[itimes] == 0)continue;
+  }
+
+  bclist = meshi->bc_faces[3];
+  for(j = 0; j < meshi->n_bc_faces[3]; j++){
+    blockagedata *bc;
+
+    bc = bclist[j];
+    if(bc->showtimelist != NULL && bc->showtimelist[itimes] == 0)continue;
+  }
+
+  bclist = meshi->bc_faces[4];
+  for(j = 0; j < meshi->n_bc_faces[4]; j++){
+    blockagedata *bc;
+
+    bc = bclist[j];
+    if(bc->showtimelist != NULL && bc->showtimelist[itimes] == 0)continue;
+  }
+
+  bclist = meshi->bc_faces[5];
+  for(j = 0; j < meshi->n_bc_faces[5]; j++){
+    blockagedata *bc;
+
+    bc = bclist[j];
+    if(bc->showtimelist != NULL && bc->showtimelist[itimes] == 0)continue;
+  }
+  glEnd();
+}
+#endif
+
 /* ------------------ DrawBoundaryTexture ------------------------ */
 
 void DrawBoundaryTexture(const meshdata *meshi){
