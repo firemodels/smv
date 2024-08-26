@@ -2849,6 +2849,9 @@ GLUI_Panel *PANEL_slice_plot2df = NULL;
 GLUI_Panel *PANEL_loadbounds = NULL;
 GLUI_Panel *PANEL_intersection_box = NULL;
 GLUI_Panel *PANEL_read_test = NULL;
+#ifdef pp_PATCH_DEBUG
+GLUI_Panel *PANEL_boundary_debug=NULL;
+#endif
 
 GLUI_Spinner *SPINNER_partdrawskip = NULL;
 GLUI_Spinner *SPINNER_sliceval_ndigits = NULL;
@@ -2866,6 +2869,9 @@ GLUI_Spinner *SPINNER_line_contour_width=NULL;
 GLUI_Spinner *SPINNER_line_contour_min=NULL;
 GLUI_Spinner *SPINNER_line_contour_max=NULL;
 GLUI_Spinner *SPINNER_timebounds=NULL;
+#ifdef pp_PATCH_DEBUG
+GLUI_Spinner *SPINNER_boundary_debug_mesh=NULL;
+#endif
 #ifdef pp_FRAME
 GLUI_Spinner *SPINNER_nframe_threads = NULL;
 #endif
@@ -5001,6 +5007,22 @@ extern "C" void GLUIBoundsSetup(int main_window){
     }
     CHECKBOX_showpatch_both = glui_bounds->add_checkbox_to_panel(ROLLOUT_boundary_settings, _("Display exterior data"), &showpatch_both, SHOWPATCH_BOTH, BoundBoundCB);
 
+#ifdef pp_PATCH_DEBUG
+    PANEL_boundary_debug = glui_bounds->add_panel_to_panel(ROLLOUT_boundary_settings, _("Debug - show interior mesh patches"));
+
+    glui_bounds->add_checkbox_to_panel(PANEL_boundary_debug, _("xmin"), boundary_debug_plane);
+    glui_bounds->add_checkbox_to_panel(PANEL_boundary_debug, _("ymin"), boundary_debug_plane+2);
+    glui_bounds->add_checkbox_to_panel(PANEL_boundary_debug, _("zmin"), boundary_debug_plane+4);
+    SPINNER_boundary_debug_mesh = glui_bounds->add_spinner_to_panel(PANEL_boundary_debug, "mesh", GLUI_SPINNER_INT, &boundary_debug_mesh);
+    SPINNER_boundary_debug_mesh->set_int_limits(1, nmeshes);
+    glui_bounds->add_checkbox_to_panel(PANEL_boundary_debug, _("debug obsts"), &boundary_debug_obst);
+
+    glui_bounds->add_column_to_panel(PANEL_boundary_debug, false);
+
+    glui_bounds->add_checkbox_to_panel(PANEL_boundary_debug, _("xmax"), boundary_debug_plane+1);
+    glui_bounds->add_checkbox_to_panel(PANEL_boundary_debug, _("ymax"), boundary_debug_plane+3);
+    glui_bounds->add_checkbox_to_panel(PANEL_boundary_debug, _("zmax"), boundary_debug_plane+5);
+#endif
     if(nboundaryslicedups > 0){
       ROLLOUT_boundary_duplicates = glui_bounds->add_rollout_to_panel(ROLLOUT_bound, "Duplicates", false,BOUNDARY_DUPLICATE_ROLLOUT,SubBoundRolloutCB);
       INSERT_ROLLOUT(ROLLOUT_boundary_duplicates, glui_bounds);

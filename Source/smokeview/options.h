@@ -3,7 +3,8 @@
 
 #include "options_common.h"
 
-//#define pp_INIT_PATCHES    // define data structures for patches on mesh boundaries
+//#define pp_PATCH_DEBUG   // add option to output and draw debug info for patch faces
+#define pp_INIT_PATCHES    // define data structures for patches on mesh boundaries
 //#define pp_PATCH_DEBUG     // output debug patch info
 //#define pp_FRAME           // turn on frame code
 //#define pp_SHOW_UPDATE      // show what is being update in UpdateShowScene routine
