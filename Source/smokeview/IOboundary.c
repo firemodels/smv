@@ -1301,9 +1301,6 @@ void DrawFace(float *v11, float *v22, int dir){
     v12[0] = v22[0];
     v21[1] = v22[1];
     break;
-  default:
-    assert(0);
-    break;
   }
   glVertex3fv(v11); glVertex3fv(v12); glVertex3fv(v22);
   glVertex3fv(v11); glVertex3fv(v22); glVertex3fv(v21);
@@ -1387,7 +1384,9 @@ void GetPatchData(int imesh, FILE_m *stream, int npatch, patchfacedata *patchfac
   int size, ibeg;
   int file_size;
   int count;
+  meshdata *meshi;
 
+  meshi = meshinfo + imesh;
   file_size = 0;
   *error = 0;
   fseek_m(stream, 4, SEEK_CUR); count = fread_m(patchtime, sizeof(*patchtime), 1, stream); fseek_m(stream, 4, SEEK_CUR);
@@ -1543,9 +1542,6 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
   }
 
   if(load_flag==UNLOAD){
-//*** restore blockage vis state
-    outline_state = outline_state_save;
-    BlockageMenu(visBlocksSave);
     UpdateBoundaryType();
     UpdateUnitDefs();
     update_times = 1;
@@ -2475,11 +2471,6 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
   int recompute = 0;
 #endif
   if(patchi->finalize==1){
-//*** set blockage vis state 
-    visBlocksSave = visBlockstate;
-    outline_state_save = outline_state;
-    BlockageMenu(visBLOCKOnlyOutline);
-
     CheckMemory;
     GLUIUpdateBoundaryListIndex(patchfilenum);
     cpp_boundsdata *bounds;
@@ -2586,16 +2577,14 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
 #ifdef pp_PATCH_DEBUG
  // debug patch print
 
-  if(boundary_debug_obst == 1){
-    for(n = 0; n < patchi->npatches; n++){
-      patchfacedata *pfi;
+  for(n = 0; n < patchi->npatches; n++){
+    patchfacedata *pfi;
 
-      pfi = patchi->patchfaceinfo + n;
-      if(n == 0)printf("\n");
-      printf("%i: (%i,%i,%i) (%i,%i,%i) dir: %i obst: %i mesh: %i internal mesh: %i\n",
-        n, pfi->ib[0], pfi->ib[2], pfi->ib[4], pfi->ib[1], pfi->ib[3], pfi->ib[5],
-        pfi->dir, pfi->obst_index, pfi->mesh_index, pfi->internal_mesh_face);
-    }
+    pfi = patchi->patchfaceinfo + n;
+    if(n == 0)printf("\n");
+    printf("%i: (%i,%i,%i) (%i,%i,%i) dir: %i obst: %i mesh: %i internal mesh: %i\n",
+      n, pfi->ib[0], pfi->ib[2], pfi->ib[4], pfi->ib[1], pfi->ib[3], pfi->ib[5],
+      pfi->dir, pfi->obst_index, pfi->mesh_index, pfi->internal_mesh_face);
   }
 #endif
   return return_filesize;
@@ -2711,12 +2700,16 @@ void DrawMeshBoundaryFaces(patchdata *patchi, float valmin, float valmax){
     int j;
 
     blockagedata **bclist;
+    int ipatch;
     patchfacedata *pfi;
-    int ncol;
+    int nrow, ncol;;
 
     if(patchi->meshfaceinfo[iface] == NULL)continue;
     pfi = patchi->meshfaceinfo[iface];
+    nrow = pfi->nrow;
     ncol = pfi->ncol;
+
+    ipatch = ( int )(pfi - patchi->patchfaceinfo);
 
 #ifdef pp_BOUNDFRAME
     patchvals = ( float * )FRAMEGetSubFramePtr(patchi->frameinfo, meshi->patch_itime, n);
@@ -2733,8 +2726,8 @@ void DrawMeshBoundaryFaces(patchdata *patchi, float valmin, float valmax){
 
       bc = bclist[j];
       if(bc->showtimelist != NULL && bc->showtimelist[itimes] == 0)continue;
-#ifdef pp_PATCH_DEBUG
       int draw_plane = 0;
+#ifdef pp_PATCH_DEBUG
       if(boundary_debug_mesh-1 == (int)(meshi-meshinfo) && boundary_debug_plane[iface] ==1 )draw_plane = 1;
       switch(iface){
       case 0:
@@ -2782,9 +2775,6 @@ void DrawMeshBoundaryFaces(patchdata *patchi, float valmin, float valmax){
           colend = bc->ijk[1];
         }
         break;
-      default:
-	assert(0);
-	break;
       }
 #else
       switch(iface){
@@ -2809,9 +2799,6 @@ void DrawMeshBoundaryFaces(patchdata *patchi, float valmin, float valmax){
         colbeg = bc->ijk[0];
         colend = bc->ijk[1];
         break;
-      default:
-	assert(0);
-	break;
       }
 #endif
       for(irow = rowbeg; irow<rowend; irow++){
