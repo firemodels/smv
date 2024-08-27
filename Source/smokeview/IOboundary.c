@@ -1542,6 +1542,9 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
   }
 
   if(load_flag==UNLOAD){
+//*** restore blockage vis state
+    outline_state = outline_state_save;
+    BlockageMenu(visBlocksSave);
     UpdateBoundaryType();
     UpdateUnitDefs();
     update_times = 1;
@@ -2471,6 +2474,11 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
   int recompute = 0;
 #endif
   if(patchi->finalize==1){
+//*** set blockage vis state 
+    visBlocksSave = visBlockstate;
+    outline_state_save = outline_state;
+    BlockageMenu(visBLOCKOnlyOutline);
+
     CheckMemory;
     GLUIUpdateBoundaryListIndex(patchfilenum);
     cpp_boundsdata *bounds;
@@ -2577,14 +2585,16 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
 #ifdef pp_PATCH_DEBUG
  // debug patch print
 
-  for(n = 0; n < patchi->npatches; n++){
-    patchfacedata *pfi;
+  if(boundary_debug_obst == 1){
+    for(n = 0; n < patchi->npatches; n++){
+      patchfacedata *pfi;
 
-    pfi = patchi->patchfaceinfo + n;
-    if(n == 0)printf("\n");
-    printf("%i: (%i,%i,%i) (%i,%i,%i) dir: %i obst: %i mesh: %i internal mesh: %i\n",
-      n, pfi->ib[0], pfi->ib[2], pfi->ib[4], pfi->ib[1], pfi->ib[3], pfi->ib[5],
-      pfi->dir, pfi->obst_index, pfi->mesh_index, pfi->internal_mesh_face);
+      pfi = patchi->patchfaceinfo + n;
+      if(n == 0)printf("\n");
+      printf("%i: (%i,%i,%i) (%i,%i,%i) dir: %i obst: %i mesh: %i internal mesh: %i\n",
+        n, pfi->ib[0], pfi->ib[2], pfi->ib[4], pfi->ib[1], pfi->ib[3], pfi->ib[5],
+        pfi->dir, pfi->obst_index, pfi->mesh_index, pfi->internal_mesh_face);
+    }
   }
 #endif
   return return_filesize;

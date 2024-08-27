@@ -9296,32 +9296,39 @@ static int menu_count=0;
   }
   if(visBlocks==visBLOCKAsInput||visBlocks==visBLOCKAsInputOutline){
     glutAddMenuEntry(_("   *Defined in input file"),visBLOCKAsInput);
+    visBlockstate = visBLOCKAsInput;
   }
    else{
     glutAddMenuEntry(_("   Defined in input file"),visBLOCKAsInput);
   }
   if(visBlocks==visBLOCKNormal||visBlocks==visBLOCKSolidOutline){
     glutAddMenuEntry(_("   *Solid"),visBLOCKNormal);
+    visBlockstate = visBLOCKNormal;
     if(ntransparentblocks>0){
       if(visTransparentBlockage==1){
          glutAddMenuEntry(_("      *Transparent"),visBLOCKTransparent);
+         visBlockstate = visBLOCKTransparent;
       }
       else{
          glutAddMenuEntry(_("      Transparent"),visBLOCKTransparent);
+         visBlockstate = visBLOCKTransparent;
       }
     }
   }
   else{
     glutAddMenuEntry(_("   Solid"),visBLOCKNormal);
+    visBlockstate = visBLOCKNormal;
   }
   if(outline_state==OUTLINE_ONLY){
     glutAddMenuEntry(_("   *Outline only"),visBLOCKOnlyOutline);
+    visBlockstate = visBLOCKOnlyOutline;
   }
   else{
     glutAddMenuEntry(_("   Outline only"),visBLOCKOnlyOutline);
   }
   if(outline_state==OUTLINE_ADDED){
     glutAddMenuEntry(_("   *Outline added"),visBLOCKAddOutline);
+    visBlockstate = visBLOCKAddOutline;
   }
   else{
     glutAddMenuEntry(_("   Outline added"),visBLOCKAddOutline);
@@ -9336,6 +9343,7 @@ static int menu_count=0;
   }
   if(visBlocks==visBLOCKHide){
     glutAddMenuEntry(_("   *Hidden"),visBLOCKHide);
+    visBlockstate = visBLOCKHide;
   }
   else{
     glutAddMenuEntry(_("   Hidden"),visBLOCKHide);

@@ -120,7 +120,7 @@ void ShowScene2(int mode){
 
 #ifdef pp_PATCH_DEBUG
     if(boundary_debug_obst==1){
-      DrawMeshBlockFaces();
+     // DrawMeshBlockFaces();
     }
 #endif
 
