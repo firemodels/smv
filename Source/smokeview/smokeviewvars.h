@@ -1622,7 +1622,7 @@ SVEXTERN int SVDECL(visOpenVentsAsOutline,0);
 SVEXTERN int SVDECL(visParticles,1), SVDECL(visZone,0);
 SVEXTERN int visBlocks;
 SVEXTERN int SVDECL(outline_color_flag,0);
-SVEXTERN int SVDECL(solid_state,-1),SVDECL(outline_state,-1)
+SVEXTERN int SVDECL(solid_state, -1), SVDECL(outline_state, -1);
 //*** blockage vis states
 SVEXTERN int SVDECL(outline_state_save, -1), SVDECL(visBlocksSave,visBLOCKAsInput), SVDECL(visBlockstate,visBLOCKAsInput);
 
