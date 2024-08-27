@@ -1542,6 +1542,9 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
   }
 
   if(load_flag==UNLOAD){
+    if(have_removable_obsts == 1 && nmeshes>1){
+      BlockageMenu(visBLOCKAsInput);
+    }
     UpdateBoundaryType();
     UpdateUnitDefs();
     update_times = 1;
@@ -2471,6 +2474,9 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
   int recompute = 0;
 #endif
   if(patchi->finalize==1){
+    if(have_removable_obsts == 1 && nmeshes>1){
+      BlockageMenu(visBLOCKHide);
+    }
     CheckMemory;
     GLUIUpdateBoundaryListIndex(patchfilenum);
     cpp_boundsdata *bounds;
