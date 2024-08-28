@@ -1301,6 +1301,9 @@ void DrawFace(float *v11, float *v22, int dir){
     v12[0] = v22[0];
     v21[1] = v22[1];
     break;
+  default:
+    assert(0);
+    break;
   }
   glVertex3fv(v11); glVertex3fv(v12); glVertex3fv(v22);
   glVertex3fv(v11); glVertex3fv(v22); glVertex3fv(v21);
@@ -1384,9 +1387,7 @@ void GetPatchData(int imesh, FILE_m *stream, int npatch, patchfacedata *patchfac
   int size, ibeg;
   int file_size;
   int count;
-  meshdata *meshi;
 
-  meshi = meshinfo + imesh;
   file_size = 0;
   *error = 0;
   fseek_m(stream, 4, SEEK_CUR); count = fread_m(patchtime, sizeof(*patchtime), 1, stream); fseek_m(stream, 4, SEEK_CUR);
@@ -2725,16 +2726,12 @@ void DrawMeshBoundaryFaces(patchdata *patchi, float valmin, float valmax){
     int j;
 
     blockagedata **bclist;
-    int ipatch;
     patchfacedata *pfi;
-    int nrow, ncol;;
+    int ncol;
 
     if(patchi->meshfaceinfo[iface] == NULL)continue;
     pfi = patchi->meshfaceinfo[iface];
-    nrow = pfi->nrow;
     ncol = pfi->ncol;
-
-    ipatch = ( int )(pfi - patchi->patchfaceinfo);
 
 #ifdef pp_BOUNDFRAME
     patchvals = ( float * )FRAMEGetSubFramePtr(patchi->frameinfo, meshi->patch_itime, n);
@@ -2799,6 +2796,9 @@ void DrawMeshBoundaryFaces(patchdata *patchi, float valmin, float valmax){
           colend = bc->ijk[1];
         }
         break;
+      default:
+	assert(0);
+	break;
       }
 #else
       switch(iface){
