@@ -2686,7 +2686,7 @@ void Global2GLUIBoundaryBounds(const char *key){
 
 
 #ifdef pp_INIT_PATCHES
-/* ------------------ DrawMeshBlockFaces ------------------------ */
+/* ------------------ DrawMeshBoundaryFaces ------------------------ */
 
 void DrawMeshBoundaryFaces(patchdata *patchi, float valmin, float valmax){
   meshdata *meshi;
@@ -2731,7 +2731,6 @@ void DrawMeshBoundaryFaces(patchdata *patchi, float valmin, float valmax){
       int rowbeg, rowend, colbeg, colend;
 
       bc = bclist[j];
-      if(bc->showtimelist != NULL && bc->showtimelist[itimes] == 0)continue;
       int draw_plane = 0;
 #ifdef pp_PATCH_DEBUG
       if(boundary_debug_mesh-1 == (int)(meshi-meshinfo) && boundary_debug_plane[iface] ==1 )draw_plane = 1;
@@ -2807,6 +2806,7 @@ void DrawMeshBoundaryFaces(patchdata *patchi, float valmin, float valmax){
         break;
       }
 #endif
+      if(draw_plane==0&&bc->showtimelist != NULL && bc->showtimelist[itimes] == 0)continue;
       for(irow = rowbeg; irow<rowend; irow++){
         int icol;
 
