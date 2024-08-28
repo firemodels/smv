@@ -1542,7 +1542,8 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
   }
 
   if(load_flag==UNLOAD){
-    if(have_removable_obsts == 1 && nmeshes>1){
+    boundary_loaded = 0;
+    if(boundary_interface_unhide == 1 && have_removable_obsts == 1 && nmeshes>1){
       BlockageMenu(visBLOCKAsInput);
     }
     UpdateBoundaryType();
@@ -2474,7 +2475,9 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
   int recompute = 0;
 #endif
   if(patchi->finalize==1){
-    if(have_removable_obsts == 1 && nmeshes>1){
+    boundary_loaded = 1;
+    if(boundary_interface_faces==1 && have_removable_obsts == 1 && nmeshes>1){
+      boundary_interface_unhide = 1;
       BlockageMenu(visBLOCKHide);
     }
     CheckMemory;
@@ -2929,9 +2932,8 @@ void DrawBoundaryTexture(const meshdata *meshi){
   if(patch_times[0]>global_times[itimes]||patchi->display==0)return;
   if(cullfaces==1)glDisable(GL_CULL_FACE);
 
-
 #ifdef pp_INIT_PATCHES
-  DrawMeshBoundaryFaces(patchi, ttmin, ttmax);
+   if(boundary_interface_faces==1)DrawMeshBoundaryFaces(patchi, ttmin, ttmax);
 #endif
 
   /* if a contour boundary does not match a blockage face then draw "both sides" of boundary */

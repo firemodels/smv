@@ -3950,6 +3950,19 @@ extern "C" void GLUIImmersedBoundCB(int var){
   }
 }
 
+/* ------------------ BoundMeshCB ------------------------ */
+
+void BoundMeshCB(int var){
+  if(have_removable_obsts == 1 && nmeshes>1 && boundary_loaded == 1 && var == USE_MESH_INTERFACE_PATCHES){
+    if(boundary_interface_faces == 1){
+      BlockageMenu(visBLOCKHide);
+    }
+    else{
+      BlockageMenu(visBLOCKAsInput);
+    }
+  }
+}
+
 /* ------------------ BoundBoundCB ------------------------ */
 
 void BoundBoundCB(int var){
@@ -5017,7 +5030,7 @@ extern "C" void GLUIBoundsSetup(int main_window){
     SPINNER_boundary_debug_mesh->set_int_limits(1, nmeshes);
     glui_bounds->add_checkbox_to_panel(PANEL_boundary_debug, _("debug obsts"), &boundary_debug_obst);
     glui_bounds->add_checkbox_to_panel(PANEL_boundary_debug, _("output patch face info"), &outout_patch_faces);
-
+    glui_bounds->add_checkbox_to_panel(PANEL_boundary_debug, _("use mesh interface patches"), &boundary_interface_faces, USE_MESH_INTERFACE_PATCHES, BoundMeshCB);
     glui_bounds->add_column_to_panel(PANEL_boundary_debug, false);
 
     glui_bounds->add_checkbox_to_panel(PANEL_boundary_debug, _("xmax"), boundary_debug_plane+1);
