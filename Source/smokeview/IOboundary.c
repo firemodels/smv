@@ -2582,15 +2582,31 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
   CheckMemory;
 #ifdef pp_PATCH_DEBUG
  // debug patch print
+  if(outout_patch_faces == 1){
+    printf("\n");
+    printf("************************************\n");
+    printf("loading boundary file for mesh: %i\n", patchi->blocknumber+1);
+    printf("************************************\n");
+    for(n = 0; n < patchi->npatches; n++){
+      patchfacedata *pfi;
 
-  for(n = 0; n < patchi->npatches; n++){
-    patchfacedata *pfi;
-
-    pfi = patchi->patchfaceinfo + n;
-    if(n == 0)printf("\n");
-    printf("%i: (%i,%i,%i) (%i,%i,%i) dir: %i obst: %i mesh: %i internal mesh: %i\n",
-      n, pfi->ib[0], pfi->ib[2], pfi->ib[4], pfi->ib[1], pfi->ib[3], pfi->ib[5],
-      pfi->dir, pfi->obst_index, pfi->mesh_index, pfi->internal_mesh_face);
+      pfi = patchi->patchfaceinfo + n;
+      if(n == 0)printf("\n");
+      printf("%i: (%i,%i,%i) (%i,%i,%i) direction: %i, obst index: %i, mesh index: %i,",
+        n+1, pfi->ib[0], pfi->ib[2], pfi->ib[4], pfi->ib[1], pfi->ib[3], pfi->ib[5],
+        pfi->dir, pfi->obst_index+1, pfi->mesh_index+1);
+      if(pfi->internal_mesh_face == 1){
+        printf(" internal mesh interface patch\n");
+      }
+      else{
+        if(pfi->obst_index < 0){
+          printf(" vent patch\n");
+        }
+        else{
+          printf(" obst patch\n");
+        }
+      }
+    }
   }
 #endif
   return return_filesize;

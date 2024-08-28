@@ -5016,6 +5016,7 @@ extern "C" void GLUIBoundsSetup(int main_window){
     SPINNER_boundary_debug_mesh = glui_bounds->add_spinner_to_panel(PANEL_boundary_debug, "mesh", GLUI_SPINNER_INT, &boundary_debug_mesh);
     SPINNER_boundary_debug_mesh->set_int_limits(1, nmeshes);
     glui_bounds->add_checkbox_to_panel(PANEL_boundary_debug, _("debug obsts"), &boundary_debug_obst);
+    glui_bounds->add_checkbox_to_panel(PANEL_boundary_debug, _("output patch face info"), &outout_patch_faces);
 
     glui_bounds->add_column_to_panel(PANEL_boundary_debug, false);
 
