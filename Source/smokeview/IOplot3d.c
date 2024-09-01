@@ -198,13 +198,16 @@ void ComputeLoadedPlot3DBounds(float *valmin_loaded, float *valmax_loaded){
 
   for(first = 1, i = 0; i < nplot3dinfo; i++){
     plot3ddata *plot3di;
+    meshdata *meshi;
 
     plot3di = plot3dinfo + i;
     if(plot3di->loaded == 0)continue;
+    meshi = meshinfo + plot3di->blocknumber;
     if(first == 1){
       first = 0;
       memcpy(valmin_loaded, plot3di->valmin_plot3d, plot3di->nplot3dvars * sizeof(float));
       memcpy(valmax_loaded, plot3di->valmax_plot3d, plot3di->nplot3dvars * sizeof(float));
+      valmax_loaded[plot3di->nplot3dvars - 1] = meshi->plot3d_speedmax;
     }
     else{
       int j;
@@ -213,6 +216,7 @@ void ComputeLoadedPlot3DBounds(float *valmin_loaded, float *valmax_loaded){
         valmin_loaded[j] = MIN(valmin_loaded[j], plot3di->valmin_plot3d[j]);
         valmax_loaded[j] = MAX(valmax_loaded[j], plot3di->valmax_plot3d[j]);
       }
+      valmax_loaded[plot3di->nplot3dvars - 1] = MAX(valmax_loaded[plot3di->nplot3dvars - 1], meshi->plot3d_speedmax);
     }
   }
 }
@@ -237,10 +241,9 @@ void UpdatePlot3DFileLoad(void){
 FILE_SIZE ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
   int ntotal, i;
   float *udata, *vdata, *wdata, *sdata;
-  float sum;
   int error;
   int ibar,jbar,kbar;
-  meshdata *meshi,*gbb,*gbi;
+  meshdata *meshi,*gbb;
   plot3ddata *p;
   int nloaded=0;
   int nx, ny, nz;
@@ -387,12 +390,22 @@ FILE_SIZE ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
     if(vindex!=-1)vdata = meshi->qdata + ntotal*vindex;
     if(windex!=-1)wdata = meshi->qdata + ntotal*windex;
     sdata = meshi->qdata + ntotal*5;
+    meshi->plot3d_speedmax = 0.0;
     for(i=0;i<ntotal;i++){
-      sum=0.0f;
-      if(uindex!=-1)sum += udata[i]*udata[i];
-      if(vindex!=-1)sum += vdata[i]*vdata[i];
-      if(windex!=-1)sum += wdata[i]*wdata[i];
-      sdata[i] = sqrt((double)sum);
+      float uval=0.0, vval=0.0, wval=0.0;
+      float uvwmax1, uvwmax2, uvwmax;
+      
+      if(uindex!=-1)uval = udata[i];
+      if(vindex!=-1)vval = vdata[i];
+      if(windex!=-1)wval = wdata[i];
+      uvwmax1 = MAX(ABS(uval), ABS(vval));
+      uvwmax2 = MAX(ABS(wval), 1.0);
+      uvwmax = MAX(uvwmax1, uvwmax2);
+      uval /= uvwmax;
+      vval /= uvwmax;
+      wval /= uvwmax;
+      sdata[i] = uvwmax*sqrt(uval*uval + vval*vval + wval*wval);
+      meshi->plot3d_speedmax = MAX(meshi->plot3d_speedmax, sdata[i]);
     }
     if(uindex!=-1)meshi->udata=meshi->qdata + ntotal*uindex;
     if(vindex!=-1)meshi->vdata=meshi->qdata + ntotal*vindex;
@@ -466,13 +479,13 @@ FILE_SIZE ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
   if(meshi->plotx==-1)meshi->plotx=ibar/2;
   if(meshi->ploty==-1)meshi->ploty=jbar/2;
   if(meshi->plotz==-1)meshi->plotz=kbar/2;
-  meshi->plot3d_speedmax=0.0f;
-  if(uindex!=-1||vindex!=-1||windex!=-1||numplot3dvars>5)meshi->plot3d_speedmax=p3max_all[5];
-  speedmax=-1000000.;
+  speedmax=1.0;
   for(i=0;i<nmeshes;i++){
+    meshdata *gbi;
+
     gbi=meshinfo+i;
     if(gbi->plot3dfilenum==-1)continue;
-    if(speedmax<gbi->plot3d_speedmax)speedmax=gbi->plot3d_speedmax;
+    speedmax = MAX(speedmax, gbi->plot3d_speedmax);
   }
   UpdatePlotSlice(XDIR);
   UpdatePlotSlice(YDIR);
