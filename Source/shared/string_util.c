@@ -550,7 +550,7 @@ void RoundDecimal(float val, char *cval, int ndigits){
     strcpy(cval, "0.0");
   }
   else{
-    char label[30];
+    char label[256];
     int signval;
 
     signval = SIGN(val);
