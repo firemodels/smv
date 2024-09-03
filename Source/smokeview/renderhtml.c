@@ -178,37 +178,33 @@ void GetBndfNodeVerts(int option, int option2, int *offset,
     for(j = 0;j<npatchinfo;j++){
       patchdata *patchi;
       meshdata *meshpatch;
-      int n, *vis_boundaries, *patchdir, *boundarytype, *boundary_row, *boundary_col, *blockstart;
+      int n;
       unsigned char *cpatch_time;
 
-      patchi = patchinfo+j;
+      patchi = patchinfo + j;
       if(patchi->loaded==0||patchi->display==0||patchi->structured==NO)continue;
       if(patchi->patch_filetype!=PATCH_STRUCTURED_NODE_CENTER)continue;
 
       meshpatch = meshinfo+patchi->blocknumber;
-      patchdir = meshpatch->patchdir;
-      vis_boundaries = meshpatch->vis_boundaries;
-      boundarytype = meshpatch->boundarytype;
-      boundary_row = meshpatch->boundary_row;
-      boundary_col = meshpatch->boundary_col;
-      blockstart = meshpatch->blockstart;
 
       cpatch_time = meshpatch->cpatchval+itime*meshpatch->npatchsize;
       if(itime==ibeg){
-        for(n = 0;n<meshpatch->npatches;n++){
+        for(n = 0;n<patchi->npatches;n++){
           int drawit;
+          patchfacedata *pfi;
 
+          pfi = patchi->patchfaceinfo + n;
           drawit = 0;
-          if(vis_boundaries[n]==1&&patchdir[n]>0){
-            if(boundarytype[n]==INTERIORwall||showpatch_both==0){
+          if(pfi->vis==1&&pfi->dir>0){
+            if(pfi->type ==INTERIORwall||showpatch_both==0){
               drawit = 1;
             }
           }
           if(drawit==1){
             int nrow, ncol;
 
-            nrow = boundary_row[n];
-            ncol = boundary_col[n];
+            nrow = pfi->nrow;
+            ncol = pfi->ncol;
             nv += nrow*ncol;
             nt += 2*(nrow-1)*(ncol-1);
           }
@@ -218,22 +214,24 @@ void GetBndfNodeVerts(int option, int option2, int *offset,
         *frame_size += nv;
       }
       if(option==1){
-        for(n = 0;n<meshpatch->npatches;n++){
+        for(n = 0;n<patchi->npatches;n++){
           int drawit, irow, nrow, ncol;
+          patchfacedata *pfi;
 
+          pfi = patchi->patchfaceinfo + n;
           drawit = 0;
-          if(vis_boundaries[n]==1&&patchdir[n]>0){
-            if(boundarytype[n]==INTERIORwall||showpatch_both==0){
+          if(pfi->vis==1&&pfi->dir>0){
+            if(pfi->type ==INTERIORwall||showpatch_both==0){
               drawit = 1;
             }
           }
           if(drawit==0)continue;
-          nrow = boundary_row[n];
-          ncol = boundary_col[n];
+          nrow = pfi->nrow;
+          ncol = pfi->ncol;
           if(itime==ibeg){
             float *xyzpatchcopy;
 
-            xyzpatchcopy = meshpatch->xyzpatch+3*blockstart[n];
+            xyzpatchcopy = meshpatch->xyzpatch+3*pfi->start;
             for(irow = 0;irow<nrow;irow++){
               int icol;
               float *xyz;
@@ -264,7 +262,7 @@ void GetBndfNodeVerts(int option, int option2, int *offset,
             int icol;
             unsigned char *cpatchval1;
 
-            cpatchval1 = cpatch_time + blockstart[n] + irow*ncol;
+            cpatchval1 = cpatch_time + pfi->start + irow*ncol;
             for(icol = 0;icol<ncol;icol++){
               *textures++ = *cpatchval1++;
             }

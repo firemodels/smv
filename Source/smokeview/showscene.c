@@ -116,6 +116,13 @@ void ShowScene2(int mode){
       SNIFF_ERRORS("after outputAxisLables");
     }
 
+    /* ++++++++++++++++++++++++ draw sensors/sprinklers/heat detectors +++++++++++++++++++++++++ */
+
+#ifdef pp_PATCH_DEBUG
+    if(boundary_debug_obst==1){
+      DrawMeshBlockFaces();
+    }
+#endif
 
     /* ++++++++++++++++++++++++ draw user ticks +++++++++++++++++++++++++ */
 
@@ -424,7 +431,7 @@ void ShowScene2(int mode){
 
   if(visLabels == 1){
     CLIP_GEOMETRY;
-    DrawLabels();
+    DrawLabels(&labelscoll);
   }
 
   /* ++++++++++++++++++++++++ draw animated isosurfaces +++++++++++++++++++++++++ */

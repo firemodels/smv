@@ -1308,15 +1308,15 @@ void UpdatePlotSliceMesh(meshdata *mesh_in, int slicedir){
         *dz_yzcopy = 0.0;
         if(uindex != -1){
           GET_QVAL(plotx, j, k, uindex)
-            *dx_yzcopy++ = vecfactor*veclength*qval/plot3d_uvw_max;
+            *dx_yzcopy++ = vecfactor*VECLENGTH*qval/plot3d_uvw_max;
         }
         if(vindex != -1){
           GET_QVAL(plotx, j, k, vindex)
-            *dy_yzcopy++ = vecfactor*veclength*qval/plot3d_uvw_max;
+            *dy_yzcopy++ = vecfactor*VECLENGTH*qval/plot3d_uvw_max;
         }
         if(windex != -1){
           GET_QVAL(plotx, j, k, windex)
-            *dz_yzcopy++ = vecfactor*veclength*qval/plot3d_uvw_max;
+            *dz_yzcopy++ = vecfactor*VECLENGTH*qval/plot3d_uvw_max;
         }
       }
     }
@@ -1357,15 +1357,15 @@ void UpdatePlotSliceMesh(meshdata *mesh_in, int slicedir){
         *dz_xzcopy = 0.0;
         if(uindex != -1){
           GET_QVAL(i, ploty, k, uindex)
-            *dx_xzcopy++ = vecfactor*veclength*qval/plot3d_uvw_max;
+            *dx_xzcopy++ = vecfactor*VECLENGTH*qval/plot3d_uvw_max;
         }
         if(vindex != -1){
           GET_QVAL(i, ploty, k, vindex)
-            *dy_xzcopy++ = vecfactor*veclength*qval/plot3d_uvw_max;
+            *dy_xzcopy++ = vecfactor*VECLENGTH*qval/plot3d_uvw_max;
         }
         if(windex != -1){
           GET_QVAL(i, ploty, k, windex)
-            *dz_xzcopy++ = vecfactor*veclength*qval/plot3d_uvw_max;
+            *dz_xzcopy++ = vecfactor*VECLENGTH*qval/plot3d_uvw_max;
         }
       }
     }
@@ -1406,15 +1406,15 @@ void UpdatePlotSliceMesh(meshdata *mesh_in, int slicedir){
         *dz_xycopy = 0.0;
         if(uindex != -1){
           GET_QVAL(i, j, plotz, uindex)
-            *dx_xycopy++ = vecfactor*veclength*qval/plot3d_uvw_max;
+            *dx_xycopy++ = vecfactor*VECLENGTH*qval/plot3d_uvw_max;
         }
         if(vindex != -1){
           GET_QVAL(i, j, plotz, vindex)
-            *dy_xycopy++ = vecfactor*veclength*qval/plot3d_uvw_max;
+            *dy_xycopy++ = vecfactor*VECLENGTH*qval/plot3d_uvw_max;
         }
         if(windex != -1){
           GET_QVAL(i, j, plotz, windex)
-            *dz_xycopy++ = vecfactor*veclength*qval/plot3d_uvw_max;
+            *dz_xycopy++ = vecfactor*VECLENGTH*qval/plot3d_uvw_max;
         }
       }
     }

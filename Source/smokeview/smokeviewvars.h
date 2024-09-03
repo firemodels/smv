@@ -14,6 +14,7 @@
 #include "histogram.h"
 #include "structures.h"
 #include "readobject.h"
+#include "readlabel.h"
 #ifndef CPP
 #include <zlib.h>
 #endif
@@ -1089,6 +1090,15 @@ SVEXTERN float partfacedir[3]={0.0,0.0,1.0};
 SVEXTERN float partfacedir[3];
 #endif
 SVEXTERN int SVDECL(demo_option,0);
+#ifdef pp_PATCH_DEBUG
+#ifdef INMAIN
+SVEXTERN int boundary_debug_plane[6] = {0, 0, 0, 0, 0, 0};
+#else
+SVEXTERN int boundary_debug_plane[6];
+#endif
+SVEXTERN int SVDECL(boundary_debug_mesh, 1), SVDECL(boundary_debug_obst, 0), SVDECL(outout_patch_faces, 0);
+SVEXTERN int SVDECL(boundary_interface_unhide, 0), SVDECL(boundary_interface_faces, 0), SVDECL(boundary_loaded, 0);
+#endif
 
 SVEXTERN int colorbar_font_height, font_height;
 SVEXTERN void SVDECL(*colorbar_font_ptr, NULL), SVDECL(*font_ptr,NULL);
@@ -1373,7 +1383,7 @@ SVEXTERN int SVDECL(showhide_option,SHOWALL_FILES);
 SVEXTERN int SVDECL(xyz_dir,0);
 SVEXTERN int SVDECL(which_face,2);
 
-SVEXTERN float SVDECL(vecfactor,1.0),SVDECL(veclength,0.0);
+SVEXTERN float SVDECL(vecfactor,1.0);
 
 SVEXTERN int SVDECL(glui_active,0);
 
@@ -1617,7 +1627,6 @@ SVEXTERN int SVDECL(solid_state,-1),SVDECL(outline_state,-1);
 SVEXTERN int SVDECL(visTransparentBlockage,0);
 SVEXTERN int SVDECL(blocklocation,BLOCKlocation_grid);
 SVEXTERN int SVDECL(blocklocation_menu, BLOCKlocation_grid);
-SVEXTERN int SVDECL(ncadgeom,0);
 SVEXTERN int SVDECL(visFloor,0), SVDECL(visFrame,1);
 SVEXTERN int SVDECL(visNormalEditColors,1);
 SVEXTERN int SVDECL(visWalls,0), SVDECL(visGrid,0), SVDECL(visCeiling,0);
@@ -1711,7 +1720,7 @@ SVEXTERN float glui_tour_view[3];
 SVEXTERN float glui_tour_xyz[3];
 SVEXTERN float gslice_xyz[3];
 SVEXTERN float gslice_normal_xyz[3];
-SVEXTERN float gslice_normal_azelev[3];
+SVEXTERN float gslice_normal_azelev[2];
 #endif
 SVEXTERN float SVDECL(glui_tour_time, 0.0);
 SVEXTERN float SVDECL(glui_tour_pause_time, 0.0);
@@ -2252,7 +2261,7 @@ SVEXTERN int SVDECL(visMAINmenus,0);
 SVEXTERN int SVDECL(ijkbarmax,5);
 SVEXTERN int SVDECL(blockage_as_input,0), SVDECL(blockage_snapped,1);
 SVEXTERN int SVDECL(show_cad_and_grid,0);
-SVEXTERN labeldata label_first, label_last, *label_first_ptr, *label_last_ptr;
+SVEXTERN labels_collection SVDECL(labelscoll, {0});
 SVEXTERN int SVDECL(*isotypes,NULL), SVDECL(*boundarytypes,NULL);
 SVEXTERN plot3ddata SVDECL(*plot3dinfo,NULL);
 SVEXTERN int SVDECL(iplot3dtimelist, -1), SVDECL(nplot3dtimelist, 0);
@@ -2261,7 +2270,7 @@ SVEXTERN patchdata SVDECL(*patchinfo,NULL);
 SVEXTERN isodata SVDECL(*isoinfo,NULL);
 
 SVEXTERN blockagedata SVDECL(*bchighlight,NULL),SVDECL(*bchighlight_old,NULL);
-SVEXTERN cadgeomdata SVDECL(*cadgeominfo,NULL);
+SVEXTERN cadgeom_collection SVDECL(*cadgeomcoll,NULL);
 
 SVEXTERN int SVDECL(smokediff,0);
 SVEXTERN int SVDECL(buffertype,DOUBLE_BUFFER);

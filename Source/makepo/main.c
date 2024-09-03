@@ -114,7 +114,7 @@ int main(int argc, char **argv){
       }
       end=strstr(beg+1,"\"");
       if(end!=NULL){
-        int i,len;
+        int len;
 
         end[0]=0;
         TrimBack(beg2);

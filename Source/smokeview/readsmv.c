@@ -19,6 +19,7 @@
 #include "readimage.h"
 #include "readgeom.h"
 #include "readobject.h"
+#include "readcad.h"
 
 #define BREAK break
 #define BREAK2 \
@@ -917,10 +918,6 @@ void FreeLabels(flowlabels *flowlabel){
 void InitMesh(meshdata *meshi){
   int i;
 
-#ifdef pp_BOUNDMEM
-  meshi->buffer1 = NULL;
-  meshi->buffer2 = NULL;
-#endif
   meshi->use = 1;
   meshi->isliceinfo    = 0;
   meshi->nsliceinfo    = 0;
@@ -936,7 +933,10 @@ void InitMesh(meshdata *meshi){
   NewMemory((void **)&meshi->box_clipinfo,   sizeof(clipdata));
   NewMemory((void **)&meshi->gsliceinfo,     sizeof(meshplanedata));
   NewMemory((void **)&meshi->volrenderinfo,  sizeof(volrenderdata));
-
+  for(i=0; i<6; i++){
+    meshi->bc_faces[i]   = NULL;
+    meshi->n_bc_faces[i] = 0;
+  }
   meshi->terrain = NULL;
   meshi->boundary_mask = NULL;
   meshi->in_frustum = 1;
@@ -1057,26 +1057,11 @@ void InitMesh(meshdata *meshi){
   meshi->nvents = 0;
   meshi->ndummyvents = 0;
   meshi->ncvents = 0;
-  meshi->npatches = 0;
-  meshi->boundarytype = NULL;
   meshi->offset[XXX] = 0.0;
   meshi->offset[YYY] = 0.0;
   meshi->offset[ZZZ] = 0.0;
-  meshi->boundarytype = NULL;
-  meshi->patchdir = NULL;
-  meshi->patch_surfindex = NULL;
-  meshi->pi1 = NULL;
-  meshi->pi2 = NULL;
-  meshi->pj1 = NULL;
-  meshi->pj2 = NULL;
-  meshi->pk1 = NULL;
-  meshi->pk2 = NULL;
-  meshi->meshonpatch = NULL;
-  meshi->blockonpatch = NULL;
   meshi->ptype = NULL;
-  meshi->boundary_row = NULL, meshi->boundary_col = NULL, meshi->blockstart = NULL;
   meshi->zipoffset = NULL, meshi->zipsize = NULL;
-  meshi->vis_boundaries = NULL;
   meshi->xyzpatch = NULL;
   meshi->xyzpatch_threshold = NULL;
   meshi->patchventcolors = NULL;
@@ -3745,11 +3730,6 @@ void UpdateMeshCoords(void){
     }
   }
 
-  {
-    meshdata *meshi;
-    meshi=meshinfo;
-    veclength = meshi->xplt[1]-meshi->xplt[0];
-  }
   min_gridcell_size=meshinfo->xplt[1]-meshinfo->xplt[0];
   for(i=0;i<nmeshes;i++){
     float dx, dy, dz;
@@ -3763,16 +3743,6 @@ void UpdateMeshCoords(void){
     min_gridcell_size=MIN(dy,min_gridcell_size);
     min_gridcell_size=MIN(dz,min_gridcell_size);
   }
-  for(i=0;i<nmeshes;i++){
-    meshdata *meshi;
-
-    meshi=meshinfo+i;
-    if(veclength>meshi->xplt[1]-meshi->xplt[0])veclength=meshi->xplt[1]-meshi->xplt[0];
-    if(veclength>meshi->yplt[1]-meshi->yplt[0])veclength=meshi->yplt[1]-meshi->yplt[0];
-    if(veclength>meshi->zplt[1]-meshi->zplt[0])veclength=meshi->zplt[1]-meshi->zplt[0];
-  }
-  veclength = SCALE2SMV(veclength);
-  veclength = 0.01;
 
   for(igrid=0;igrid<nmeshes;igrid++){
     meshdata *meshi;
@@ -3915,11 +3885,11 @@ void UpdateMeshCoords(void){
       vi->zmax = FDS2SMV_Z(vi->zmax);
     }
   }
-  for(i=0;i<ncadgeom;i++){
+  for(i=0;i<NCADGeom(cadgeomcoll);i++){
     cadgeomdata *cd;
     int j;
 
-    cd=cadgeominfo+i;
+    cd=cadgeomcoll->cadgeominfo+i;
     for(j=0;j<cd->nquads;j++){
       int k;
       cadquad *quadi;
@@ -5274,7 +5244,6 @@ int ParseBNDFCount(void){
 
 int ParseBNDFProcess(bufferstreamdata *stream, char *buffer, int *nn_patch_in, int *ioffset_in, patchdata **patchgeom_in, int *ipatch_in, char buffers[6][256]){
   patchdata *patchi;
-  int version;
   int blocknumber;
   size_t len;
   char *filetype_label;
@@ -5307,9 +5276,9 @@ int ParseBNDFProcess(bufferstreamdata *stream, char *buffer, int *nn_patch_in, i
   else{
     blocknumber = 0;
   }
-  version = 0;
   if(len>5){
     char *buffer3;
+    int version=0;
 
     buffer3 = buffer+4;
     sscanf(buffer3, "%i %i", &blocknumber, &version);
@@ -5332,11 +5301,11 @@ int ParseBNDFProcess(bufferstreamdata *stream, char *buffer, int *nn_patch_in, i
   patchi->valmin_patch      = 1.0;
   patchi->valmax_patch      = 0.0;
   patchi->skip              = 0;
-  patchi->version           = version;
   patchi->ntimes            = 0;
   patchi->ntimes_old        = 0;
   patchi->hist_update = 0;
   patchi->filetype_label    = NULL;
+  patchi->patchfaceinfo = NULL;
   patchi->patch_filetype    = PATCH_STRUCTURED_NODE_CENTER;
   patchi->structured        = YES;
   patchi->boundary          = 1;
@@ -6460,7 +6429,7 @@ void UpdateEvents(void){
 
       label.useforegroundcolor = 0;
       label.show_always = 0;
-      LabelInsert(&label);
+      LabelInsert(&labelscoll, &label);
       event_file_exists = 1;
     }
   }
@@ -6993,6 +6962,71 @@ void *CheckFiles(void *arg){
 }
 
 
+#ifdef pp_INIT_PATCHES
+/* ------------------ InitMeshBlockages ------------------------ */
+
+void InitMeshBlockages(void){
+  int i;
+
+  for(i = 0;i < nmeshes;i++){
+    meshdata *meshi;
+    int j;
+    int counts[6];
+    int *is_extface;
+
+    meshi = meshinfo + i;
+    if(meshi->nbptrs == 0)continue;
+    is_extface = meshi->is_extface;
+    for(j=0; j< 6; j++){
+      counts[j]            = 0;
+      meshi->bc_faces[j]   = NULL;
+      meshi->n_bc_faces[j] = 0;
+    }
+    for(j=0; j<meshi->nbptrs; j++){
+      blockagedata *bc;
+
+      bc = meshi->blockageinfoptrs[j];
+
+      if(bc->ijk[0] == 0 && is_extface[0] == MESH_INT)counts[0]++;
+      if(bc->ijk[1] == meshi->ibar &&  is_extface[1] == MESH_INT)counts[1]++;
+      if(bc->ijk[2] == 0 && is_extface[2] == MESH_INT)counts[2]++;
+      if(bc->ijk[3] == meshi->jbar && is_extface[3] == MESH_INT)counts[3]++;
+      if(bc->ijk[4] == 0 && is_extface[4] == MESH_INT)counts[4]++;
+      if(bc->ijk[5] == meshi->kbar && is_extface[5] == MESH_INT)counts[5]++;
+    }
+    for(j=0; j<6; j++){
+      if(counts[j]>0)NewMemory((void **)&meshi->bc_faces[j],  meshi->nbptrs*sizeof(blockagedata *));
+      meshi->n_bc_faces[j] = counts[j];
+      counts[j] = 0;
+    }
+    for(j=0; j<meshi->nbptrs; j++){
+      blockagedata *bc;
+      blockagedata **bclist;
+
+      bc = meshi->blockageinfoptrs[j];
+
+      bclist = meshi->bc_faces[0];
+      if(bc->ijk[0] == 0 && is_extface[0] == MESH_INT)          bclist[counts[0]++] = bc;
+
+      bclist = meshi->bc_faces[1];
+      if(bc->ijk[1] == meshi->ibar && is_extface[1] == MESH_INT)bclist[counts[1]++] = bc;
+
+      bclist = meshi->bc_faces[2];
+      if(bc->ijk[2] == 0 && is_extface[2] == MESH_INT)          bclist[counts[2]++] = bc;
+
+      bclist = meshi->bc_faces[3];
+      if(bc->ijk[3] == meshi->jbar && is_extface[3] == MESH_INT)bclist[counts[3]++] = bc;
+
+      bclist = meshi->bc_faces[4];
+      if(bc->ijk[4] == 0 && is_extface[4] == MESH_INT)          bclist[counts[4]++] = bc;
+
+      bclist = meshi->bc_faces[5];
+      if(bc->ijk[5] == meshi->kbar && is_extface[5] == MESH_INT)bclist[counts[5]++] = bc;
+    }
+  }
+}
+#endif
+
 /* ------------------ GetSliceParmInfo ------------------------ */
 
 void GetSliceParmInfo(sliceparmdata *sp){
@@ -7294,8 +7328,6 @@ int ReadSMV_Init(){
   }
   nisoinfo=0;
 
-  FreeCADInfo();
-
   updateindexcolors=0;
   ntrnx=0;
   ntrny=0;
@@ -7330,8 +7362,6 @@ int ReadSMV_Init(){
   FREEMEMORY(surfinfo);
   FREEMEMORY(terrain_textures);
 
-  if(cadgeominfo!=NULL)FreeCADInfo();
-
   STOP_TIMER(pass0_time );
   PRINT_TIMER(timer_readsmv, "readsmv setup");
   return 0;
@@ -7362,6 +7392,8 @@ int ReadSMV_Parse(bufferstreamdata *stream){
 
   int setGRID=0;
   int have_auto_terrain_image=0;
+
+  int n_cadgeom_keywords = 0;
 
   char buffer[256], buffers[6][256];
   patchdata *patchgeom;
@@ -7769,7 +7801,7 @@ int ReadSMV_Parse(bufferstreamdata *stream){
       continue;
     }
     if(MatchSMV(buffer,"CADGEOM") == 1){
-      ncadgeom++;
+      n_cadgeom_keywords++;
       continue;
     }
     if(MatchSMV(buffer,"CVENT") == 1){
@@ -8119,9 +8151,12 @@ int ReadSMV_Parse(bufferstreamdata *stream){
   FREEMEMORY(surfinfo);
   if(NewMemory((void **)&surfinfo,(nsurfinfo+MAX_ISO_COLORS+1)*sizeof(surfdata))==0)return 2;
 
-  if(cadgeominfo!=NULL)FreeCADInfo();
-  if(ncadgeom>0){
-    if(NewMemory((void **)&cadgeominfo,ncadgeom*sizeof(cadgeomdata))==0)return 2;
+  if (cadgeomcoll != NULL) FreeCADGeomCollection(cadgeomcoll);
+  if (n_cadgeom_keywords > 0) {
+    // Allocate a fixed-size collection large enough to hold each of the CADGEOM
+    // definitions.
+    cadgeomcoll = CreateCADGeomCollection(n_cadgeom_keywords);
+    if (cadgeomcoll == NULL) return 2;
   }
 
   if(noutlineinfo>0){
@@ -8171,7 +8206,6 @@ int ReadSMV_Parse(bufferstreamdata *stream){
   startpass=1;
   ioffset=0;
   iobst=0;
-  ncadgeom=0;
   nsurfinfo=0;
   noutlineinfo=0;
   if(noffset==0)ioffset=1;
@@ -9132,7 +9166,7 @@ int ReadSMV_Parse(bufferstreamdata *stream){
         rgbtemp[0]=frgbtemp[0]*255;
         rgbtemp[1]=frgbtemp[1]*255;
         rgbtemp[2]=frgbtemp[2]*255;
-        LabelInsert(labeli);
+        LabelInsert(&labelscoll, labeli);
       }
       continue;
     }
@@ -9274,25 +9308,18 @@ int ReadSMV_Parse(bufferstreamdata *stream){
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   */
     if(MatchSMV(buffer,"CADGEOM") == 1){
-      size_t len;
       char *bufferptr;
 
       if(FGETS(buffer,255,stream)==NULL){
         BREAK;
       }
       bufferptr=TrimFrontBack(buffer);
-      len=strlen(bufferptr);
-      cadgeominfo[ncadgeom].order=NULL;
-      cadgeominfo[ncadgeom].quad=NULL;
-      cadgeominfo[ncadgeom].file=NULL;
-      if(FILE_EXISTS_CASEDIR(bufferptr)==YES){
-        if(NewMemory((void **)&cadgeominfo[ncadgeom].file,(unsigned int)(len+1))==0)return 2;
-        STRCPY(cadgeominfo[ncadgeom].file,bufferptr);
-        ReadCADGeom(cadgeominfo+ncadgeom);
-        ncadgeom++;
+      if (FILE_EXISTS_CASEDIR(bufferptr) == YES) {
+        ReadCADGeomToCollection(cadgeomcoll, bufferptr, block_shininess);
       }
-      else{
-        PRINTF(_("***Error: CAD geometry file: %s could not be opened"),bufferptr);
+      else {
+        PRINTF(_("***Error: CAD geometry file: %s could not be opened"),
+               bufferptr);
         PRINTF("\n");
       }
       continue;
@@ -12280,6 +12307,10 @@ int ReadSMV_Configure(){
 
   SetInteriorBlockages(1);
   PRINT_TIMER(timer_readsmv, "SetInteriorBlockages");
+
+#ifdef pp_INIT_PATCHES
+  InitMeshBlockages();
+#endif
 
   PRINTF("%s", _("complete"));
   PRINTF("\n\n");
@@ -15734,7 +15765,7 @@ int ReadIni2(char *inifile, int localfile){
         TrimBack(buffer);
         bufferptr = TrimFront(buffer);
         strcpy(labeli->name, bufferptr);
-        LabelInsert(labeli);
+        LabelInsert(&labelscoll, labeli);
         continue;
       }
       if(MatchINI(buffer, "VIEWTIMES") == 1){
@@ -16450,7 +16481,7 @@ void WriteIniLocal(FILE *fileout){
   fprintf(fileout, " %i %i %i %i\n", vis_gslice_data, show_gslice_triangles, show_gslice_triangulation, show_gslice_normal);
   fprintf(fileout, " %f %f %f\n", gslice_xyz[0], gslice_xyz[1], gslice_xyz[2]);
   fprintf(fileout, " %f %f\n", gslice_normal_azelev[0], gslice_normal_azelev[1]);
-  for(thislabel = label_first_ptr->next; thislabel->next != NULL; thislabel = thislabel->next){
+  for(thislabel = labelscoll.label_first_ptr->next; thislabel->next != NULL; thislabel = thislabel->next){
     labeldata *labeli;
     float *xyz, *rgbtemp, *tstart_stop;
     int *useforegroundcolor, *show_always;
@@ -16924,7 +16955,7 @@ void WriteIniLocal(FILE *fileout){
   }
 
   // write out labels to casename.evt if this file exsits
-  //WriteLabels();
+  //WriteLabels(&labelscoll);
 }
 
   /* ------------------ WriteIni ------------------------ */

@@ -74,6 +74,36 @@ if ((NOT MACOSX) AND UNIX)
     target_link_libraries(parse_simple_pl3d m)
 endif()
 
+# parse_cad
+add_executable(parse_cad parse_cad.c
+    ../Source/shared/readcad.c
+    ../Source/shared/dmalloc.c
+    ../Source/shared/string_util.c
+    ../Source/shared/file_util.c
+    ../Source/shared/stdio_buffer.c
+    ../Source/shared/isobox.c
+    ../Source/shared/readimage.c
+    ../Source/shared/sha256.c
+    ../Source/shared/sha1.c
+    ../Source/shared/md5.c
+)
+
+target_include_directories(parse_cad PRIVATE
+    ../Tests
+    ../Source/shared
+)
+if (LIBGD_FOUND)
+    target_link_libraries(parse_cad PRIVATE PkgConfig::LIBGD)
+else()
+    target_link_libraries(parse_cad PRIVATE gd_static)
+endif()
+target_link_libraries(parse_cad PRIVATE OpenGL::GL OpenGL::GLU)
+if (WIN32)
+    target_include_directories(parse_cad PRIVATE ../Source/pthreads)
+endif()
+if ((NOT MACOSX) AND UNIX)
+    target_link_libraries(parse_cad PRIVATE m)
+endif()
 
 # test_objects
 add_executable(test_objects test_objects.c
@@ -133,6 +163,9 @@ COMMAND parse_simple_part ${CMAKE_SOURCE_DIR}/Tests/fig/smv/Tests/simple_part.pr
 # Simple slice is a finished slice file with 3 frames
 add_test(NAME "Simple PL3d - Complete"
 COMMAND parse_simple_pl3d ${CMAKE_SOURCE_DIR}/Tests/fig/smv/Tests/simple_pl3d.q)
+
+add_test(NAME "Parse CAD"
+    COMMAND parse_cad)
 
 add_test(NAME "Test Object API"
 COMMAND test_objects ${CMAKE_SOURCE_DIR}/Tests/bad_objects.svo)
