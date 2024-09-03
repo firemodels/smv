@@ -5192,7 +5192,7 @@ extern "C" void GLUIBoundsSetup(int main_window){
     SPINNER_plot3d_vectorpointsize->set_float_limits(1.0,10.0);
     SPINNER_plot3d_vectorlinewidth=glui_bounds->add_spinner_to_panel(ROLLOUT_vector,_("vector width"),GLUI_SPINNER_FLOAT,&vectorlinewidth,UPDATE_VECTOR,GLUIPlot3DBoundCB);
     SPINNER_plot3d_vectorlinewidth->set_float_limits(1.0,10.0);
-    SPINNER_plot3d_vectorlinelength=glui_bounds->add_spinner_to_panel(ROLLOUT_vector,_("vector length"),GLUI_SPINNER_FLOAT,&vecfactor,UPDATE_VECTOR,GLUIPlot3DBoundCB);
+    SPINNER_plot3d_vectorlinelength=glui_bounds->add_spinner_to_panel(ROLLOUT_vector,_("vector length multiplier"),GLUI_SPINNER_FLOAT,&vecfactor,UPDATE_VECTOR,GLUIPlot3DBoundCB);
     SPINNER_plot3dvectorskip=glui_bounds->add_spinner_to_panel(ROLLOUT_vector,_("Vector skip"),GLUI_SPINNER_INT,&vectorskip,PLOT3D_VECTORSKIP,GLUIPlot3DBoundCB);
 
     glui_bounds->add_column_to_panel(PANEL_plot3d, false);

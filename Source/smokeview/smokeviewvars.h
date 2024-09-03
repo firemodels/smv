@@ -1373,7 +1373,7 @@ SVEXTERN int SVDECL(showhide_option,SHOWALL_FILES);
 SVEXTERN int SVDECL(xyz_dir,0);
 SVEXTERN int SVDECL(which_face,2);
 
-SVEXTERN float SVDECL(vecfactor,1.0),SVDECL(veclength,0.0);
+SVEXTERN float SVDECL(vecfactor,1.0);
 
 SVEXTERN int SVDECL(glui_active,0);
 

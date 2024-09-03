@@ -3745,11 +3745,6 @@ void UpdateMeshCoords(void){
     }
   }
 
-  {
-    meshdata *meshi;
-    meshi=meshinfo;
-    veclength = meshi->xplt[1]-meshi->xplt[0];
-  }
   min_gridcell_size=meshinfo->xplt[1]-meshinfo->xplt[0];
   for(i=0;i<nmeshes;i++){
     float dx, dy, dz;
@@ -3763,16 +3758,6 @@ void UpdateMeshCoords(void){
     min_gridcell_size=MIN(dy,min_gridcell_size);
     min_gridcell_size=MIN(dz,min_gridcell_size);
   }
-  for(i=0;i<nmeshes;i++){
-    meshdata *meshi;
-
-    meshi=meshinfo+i;
-    if(veclength>meshi->xplt[1]-meshi->xplt[0])veclength=meshi->xplt[1]-meshi->xplt[0];
-    if(veclength>meshi->yplt[1]-meshi->yplt[0])veclength=meshi->yplt[1]-meshi->yplt[0];
-    if(veclength>meshi->zplt[1]-meshi->zplt[0])veclength=meshi->zplt[1]-meshi->zplt[0];
-  }
-  veclength = SCALE2SMV(veclength);
-  veclength = 0.01;
 
   for(igrid=0;igrid<nmeshes;igrid++){
     meshdata *meshi;

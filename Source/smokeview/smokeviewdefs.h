@@ -11,6 +11,8 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 #define SLICE_LOADALL_XorYorZ   1
 #define SLICE_LOADALL_XandYandZ 2
 
+#define VECLENGTH 0.1
+
 #define BOUND_UPDATE_COLORS       110
 #define BOUND_DONTUPDATE_COLORS   128
 #define BOUND_COMPUTE_PERCENTILES 116
