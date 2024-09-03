@@ -196,6 +196,7 @@ int GetPlot3DBounds(plot3ddata *plot3di){
 void ComputeLoadedPlot3DBounds(float *valmin_loaded, float *valmax_loaded){
   int i, first;
 
+  plot3d_uvw_max = 1.0;
   for(first = 1, i = 0; i < nplot3dinfo; i++){
     plot3ddata *plot3di;
     meshdata *meshi;
@@ -203,6 +204,7 @@ void ComputeLoadedPlot3DBounds(float *valmin_loaded, float *valmax_loaded){
     plot3di = plot3dinfo + i;
     if(plot3di->loaded == 0)continue;
     meshi = meshinfo + plot3di->blocknumber;
+    plot3d_uvw_max = MAX(plot3d_uvw_max, meshi->plot3d_uvw_max);
     if(first == 1){
       first = 0;
       memcpy(valmin_loaded, plot3di->valmin_plot3d, plot3di->nplot3dvars * sizeof(float));
@@ -379,7 +381,6 @@ FILE_SIZE ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
   p->display=1;
   p->hist_update = 1;
   if(nplot3dloaded==0)UpdatePlot3DFileLoad();
-  speedmax = -1.;
   meshi->udata=NULL;
   meshi->vdata=NULL;
   meshi->wdata=NULL;
@@ -391,6 +392,7 @@ FILE_SIZE ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
     if(windex!=-1)wdata = meshi->qdata + ntotal*windex;
     sdata = meshi->qdata + ntotal*5;
     meshi->plot3d_speedmax = 0.0;
+    meshi->plot3d_uvw_max = 0.0;
     for(i=0;i<ntotal;i++){
       float uval=0.0, vval=0.0, wval=0.0;
       float uvwmax1, uvwmax2, uvwmax;
@@ -406,6 +408,7 @@ FILE_SIZE ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
       wval /= uvwmax;
       sdata[i] = uvwmax*sqrt(uval*uval + vval*vval + wval*wval);
       meshi->plot3d_speedmax = MAX(meshi->plot3d_speedmax, sdata[i]);
+      meshi->plot3d_uvw_max  = MAX(meshi->plot3d_uvw_max, uvwmax);
     }
     if(uindex!=-1)meshi->udata=meshi->qdata + ntotal*uindex;
     if(vindex!=-1)meshi->vdata=meshi->qdata + ntotal*vindex;
@@ -470,6 +473,9 @@ FILE_SIZE ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
         GLUISetLoadedMinMaxAll(BOUND_PLOT3D, valmin_loaded, valmax_loaded, plot3dinfo->nplot3dvars);
       }
       UpdateAllPlot3DColors(0);
+      UpdatePlotSlice(XDIR);
+      UpdatePlotSlice(YDIR);
+      UpdatePlotSlice(ZDIR);
     }
   }
   else{
@@ -479,17 +485,6 @@ FILE_SIZE ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
   if(meshi->plotx==-1)meshi->plotx=ibar/2;
   if(meshi->ploty==-1)meshi->ploty=jbar/2;
   if(meshi->plotz==-1)meshi->plotz=kbar/2;
-  speedmax=1.0;
-  for(i=0;i<nmeshes;i++){
-    meshdata *gbi;
-
-    gbi=meshinfo+i;
-    if(gbi->plot3dfilenum==-1)continue;
-    speedmax = MAX(speedmax, gbi->plot3d_speedmax);
-  }
-  UpdatePlotSlice(XDIR);
-  UpdatePlotSlice(YDIR);
-  UpdatePlotSlice(ZDIR);
   visGrid=0;
   meshi->visInteriorBoundaries=0;
   if(visx_all==1){
@@ -1313,15 +1308,15 @@ void UpdatePlotSliceMesh(meshdata *mesh_in, int slicedir){
         *dz_yzcopy = 0.0;
         if(uindex != -1){
           GET_QVAL(plotx, j, k, uindex)
-            *dx_yzcopy++ = vecfactor*veclength*qval / speedmax;
+            *dx_yzcopy++ = vecfactor*veclength*qval/plot3d_uvw_max;
         }
         if(vindex != -1){
           GET_QVAL(plotx, j, k, vindex)
-            *dy_yzcopy++ = vecfactor*veclength*qval / speedmax;
+            *dy_yzcopy++ = vecfactor*veclength*qval/plot3d_uvw_max;
         }
         if(windex != -1){
           GET_QVAL(plotx, j, k, windex)
-            *dz_yzcopy++ = vecfactor*veclength*qval / speedmax;
+            *dz_yzcopy++ = vecfactor*veclength*qval/plot3d_uvw_max;
         }
       }
     }
@@ -1362,15 +1357,15 @@ void UpdatePlotSliceMesh(meshdata *mesh_in, int slicedir){
         *dz_xzcopy = 0.0;
         if(uindex != -1){
           GET_QVAL(i, ploty, k, uindex)
-            *dx_xzcopy++ = vecfactor*veclength*qval / speedmax;
+            *dx_xzcopy++ = vecfactor*veclength*qval/plot3d_uvw_max;
         }
         if(vindex != -1){
           GET_QVAL(i, ploty, k, vindex)
-            *dy_xzcopy++ = vecfactor*veclength*qval / speedmax;
+            *dy_xzcopy++ = vecfactor*veclength*qval/plot3d_uvw_max;
         }
         if(windex != -1){
           GET_QVAL(i, ploty, k, windex)
-            *dz_xzcopy++ = vecfactor*veclength*qval / speedmax;
+            *dz_xzcopy++ = vecfactor*veclength*qval/plot3d_uvw_max;
         }
       }
     }
@@ -1411,15 +1406,15 @@ void UpdatePlotSliceMesh(meshdata *mesh_in, int slicedir){
         *dz_xycopy = 0.0;
         if(uindex != -1){
           GET_QVAL(i, j, plotz, uindex)
-            *dx_xycopy++ = vecfactor*veclength*qval / speedmax;
+            *dx_xycopy++ = vecfactor*veclength*qval/plot3d_uvw_max;
         }
         if(vindex != -1){
           GET_QVAL(i, j, plotz, vindex)
-            *dy_xycopy++ = vecfactor*veclength*qval / speedmax;
+            *dy_xycopy++ = vecfactor*veclength*qval/plot3d_uvw_max;
         }
         if(windex != -1){
           GET_QVAL(i, j, plotz, windex)
-            *dz_xycopy++ = vecfactor*veclength*qval / speedmax;
+            *dz_xycopy++ = vecfactor*veclength*qval/plot3d_uvw_max;
         }
       }
     }

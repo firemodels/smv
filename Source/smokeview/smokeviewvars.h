@@ -1475,7 +1475,7 @@ SVEXTERN float SVDECL(glui_partmin,1.0), SVDECL(glui_partmax,0.0);
 SVEXTERN float SVDECL(glui_slicemin,1.0),       SVDECL(glui_slicemax,0.0);
 
 SVEXTERN float SVDECL(zonemin,1.0), SVDECL(zonemax,0.0);
-SVEXTERN float SVDECL(speedmax,0.0);
+SVEXTERN float SVDECL(plot3d_uvw_max,1.0);
 SVEXTERN float SVDECL(hrrpuv_max_smv,1200.0);
 SVEXTERN int SVDECL(FlowDir,1),SVDECL(ClipDir,1);
 SVEXTERN int SVDECL(plotn,1);

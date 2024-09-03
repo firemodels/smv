@@ -133,7 +133,7 @@ typedef struct _meshdata {
   float *dx_xz, *dy_xz, *dz_xz;
   float *dx_yz, *dy_yz, *dz_yz;
   char *c_iblank_xy, *c_iblank_xz, *c_iblank_yz;
-  float plot3d_speedmax;
+  float plot3d_speedmax, plot3d_uvw_max;
   struct _contour *plot3dcontour1, *plot3dcontour2, *plot3dcontour3;
   struct _isosurface *currentsurf, *currentsurf2;
   struct _isosurface *blockagesurface;
