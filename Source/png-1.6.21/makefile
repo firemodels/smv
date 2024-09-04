@@ -29,7 +29,7 @@ WARNMORE=-Wwrite-strings -Wpointer-arith -Wshadow \
 	-Wmissing-declarations -Wtraditional -Wcast-align \
 	-Wstrict-prototypes -Wmissing-prototypes #-Wconversion
 
-CFLAGS=-I$(ZLIBINC) -Wall -O3 -funroll-loops \
+CFLAGS=-I$(ZLIBINC) -Wall -O3 -funroll-loops -DPNG_ARM_NEON_OPT=0 \
 	$(ALIGN) # $(WARNMORE) -g -DPNG_DEBUG=5
 
 .SUFFIXES:      .c .o .obj
