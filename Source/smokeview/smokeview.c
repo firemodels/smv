@@ -221,6 +221,34 @@ void DisplayVersionInfo(char *progname){
   if(smv_bindir){
     PRINTF("Root directory   : %s\n", smv_bindir);
   }
+  if(smokeviewini != NULL && FileExistsOrig(smokeviewini) == 1){
+    PRINTF("Global ini       : %s\n", smokeviewini);
+  }
+  else{
+    PRINTF("Global ini       : not found\n");
+  }
+  char fullini_filename[256];
+  strcpy(fullini_filename, "");
+  if(caseini_filename != NULL){
+    if(FileExistsOrig(caseini_filename) == 1){
+      char cwdpath[1000];
+      GETCWD(cwdpath, 1000);
+      strcpy(fullini_filename, cwdpath);
+      strcat(fullini_filename, dirseparator);
+      strcat(fullini_filename, caseini_filename);
+    }
+    else if(smokeview_scratchdir!=NULL){
+      strcpy(fullini_filename, smokeview_scratchdir);
+      strcat(fullini_filename, caseini_filename);
+      if(FileExistsOrig(fullini_filename)==0)strcpy(fullini_filename, "");
+    }
+  }
+  if(strlen(fullini_filename)>0){
+    PRINTF("Casename ini     : %s\n", fullini_filename);
+  }
+  else{
+    PRINTF("Casename ini     : not found\n");
+  }
   FREEMEMORY(smv_progname);
   FREEMEMORY(smv_bindir);
 }
