@@ -838,8 +838,8 @@ int main(int argc, char **argv){
   char *smv_bindir = GetSmvRootDir();
   smokezippath= GetSmokeZipPath(smv_bindir);
   FREEMEMORY(smv_bindir);
-  DisplayVersionInfo("Smokeview ");
   InitStartupDirs();
+  DisplayVersionInfo("Smokeview ");
   SetupGlut(argc,argv);
   START_TIMER(startup_time);
 
