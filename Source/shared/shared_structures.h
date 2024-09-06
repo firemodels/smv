@@ -150,6 +150,8 @@ typedef struct _meshdata {
   unsigned char *iblank_smoke3d;
   int iblank_smoke3d_defined;
   struct _blockagedata **blockageinfoptrs;
+  struct _blockagedata **bc_faces[6];
+  int  n_bc_faces[6];
   int *obst_bysize;
   struct _ventdata *ventinfo;
   struct _cventdata *cventinfo;
@@ -163,7 +165,7 @@ typedef struct _meshdata {
   float *dx_xz, *dy_xz, *dz_xz;
   float *dx_yz, *dy_yz, *dz_yz;
   char *c_iblank_xy, *c_iblank_xz, *c_iblank_yz;
-  float plot3d_speedmax;
+  float plot3d_speedmax, plot3d_uvw_max;
   struct _contour *plot3dcontour1, *plot3dcontour2, *plot3dcontour3;
   struct _isosurface *currentsurf, *currentsurf2;
   struct _isosurface *blockagesurface;
@@ -193,25 +195,11 @@ typedef struct _meshdata {
 
   struct _meshdata *skip_nabors[6];
 
-#ifdef pp_BOUNDMEM
-  unsigned char *buffer1;
-#endif
-  struct _meshdata **meshonpatch;
-  int *blockonpatch;
-  int *patchdir,*patch_surfindex;
-  int *pi1, *pi2, *pj1, *pj2, *pk1, *pk2;
-  int *boundarytype;
-  int *vis_boundaries;
-  int *boundary_row, *boundary_col, *blockstart;
-
   struct _meshdata *nabors[6];
   struct _supermeshdata *super;
   int *ptype;
   unsigned int *zipoffset, *zipsize;
 
-#ifdef pp_BOUNDMEM
-  unsigned char *buffer2;
-#endif
   float *xyzpatch, *xyzpatch_threshold;
   float *thresholdtime;
   int *patchblank;
@@ -224,7 +212,7 @@ typedef struct _meshdata {
 #endif
   unsigned char *patch_times_map;
   float **patchventcolors;
-  int npatch_times,npatches;
+  int npatch_times;
   int patch_itime;
   int *patch_timeslist;
   int npatchsize;

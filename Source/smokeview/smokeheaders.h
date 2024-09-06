@@ -845,8 +845,8 @@ EXTERNCPP float Zoom2Aperture(float zoom0);
 EXTERNCPP float Aperture2Zoom(float ap);
 EXTERNCPP int  GetZoneColor(float t, float tmin, float tmax, int nlevel);
 EXTERNCPP void DrawBlockages(int mode, int flag);
-EXTERNCPP void WriteLabels(void);
-EXTERNCPP void DrawLabels(void);
+EXTERNCPP void WriteLabels(labels_collection *labelscoll);
+EXTERNCPP void DrawLabels(labels_collection *labelscoll);
 EXTERNCPP void GetNewPos(float *oldpos, float dx, float dy, float dz, float speed_factor);
 EXTERNCPP void FreeSkybox(void);
 EXTERNCPP void DrawSkybox(void);
@@ -1071,14 +1071,11 @@ EXTERNCPP void Num2String(char *string, float tval);
 EXTERNCPP int  SetupCase(char *file);
 EXTERNCPP int  GetMinPartFrames(int flag);
 
-EXTERNCPP void FreeCADInfo(void);
 
 EXTERNCPP void InitUnitDefs(void);
 EXTERNCPP void InitUnits(void);
 EXTERNCPP f_units *GetUnitClass(char *unit);
 
-EXTERNCPP void ReadCAD2Geom(cadgeomdata *cd);
-EXTERNCPP void ReadCADGeom(cadgeomdata *cd);
 EXTERNCPP void DrawCADGeom(const cadgeomdata *cd);
 
 EXTERNCPP FILE_SIZE ReadPlot3D(char *file, int ifile, int flag,int *errorcode);
@@ -1100,6 +1097,10 @@ EXTERNCPP FILE_SIZE ReadIso(const char *file, int ifile, int flag, int *geom_fra
 EXTERNCPP void GetGlobalDeviceBounds(int type);
 EXTERNCPP float GetDeviceVal(float time_local, devicedata *devicei, int *valid);
 EXTERNCPP void InitMenus(void);
+
+#ifdef pp_PATCH_DEBUG
+EXTERNCPP void DrawMeshBlockFaces(void);
+#endif
 
 EXTERNCPP int ReadSMV(bufferstreamdata *stream);
 EXTERNCPP void ReadSMVOrig(void);

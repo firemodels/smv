@@ -7,6 +7,7 @@
 #include <math.h>
 
 #include "smokeviewvars.h"
+#include "readlabel.h"
 
 GLUI *glui_labels=NULL;
 
