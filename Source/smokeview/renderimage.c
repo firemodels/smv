@@ -12,6 +12,7 @@
 #include GLUT_H
 #include "gd.h"
 #include "IOscript.h"
+#include "paths.h"
 
 /* ------------------ PlayMovie ------------------------ */
 
@@ -141,10 +142,11 @@ void MakeMovie(void){
 
 // make movie
     if(output_ffmpeg_command==1){
-      if(global_scase.paths.ffmpeg_command_filename!=NULL){
         FILE *stream_ffmpeg=NULL;
 
-        stream_ffmpeg = fopen(global_scase.paths.ffmpeg_command_filename,"w");
+        char *ffmpeg_command_filename = CasePathFfmpegCommand(&global_scase);
+        stream_ffmpeg = fopen(ffmpeg_command_filename,"w");
+        FREEMEMORY(ffmpeg_command_filename);
         if(stream_ffmpeg!=NULL){
 #ifdef WIN32
           fprintf(stream_ffmpeg,"@echo off\n");
@@ -154,7 +156,6 @@ void MakeMovie(void){
           fprintf(stream_ffmpeg,"%s\n",command_line);
           fclose(stream_ffmpeg);
         }
-      }
       printf("%s\n", command_line);
       output_ffmpeg_command=0;
     }

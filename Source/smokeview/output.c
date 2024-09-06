@@ -13,6 +13,7 @@
 
 #include "smokeviewvars.h"
 #include "glutbitmap.h"
+#include "paths.h"
 
 
 #define DENORMAL(x,i, n, min,max) ((min) + (i)*((max)-(min))/(n))
@@ -360,7 +361,9 @@ void WriteLabels(labels_collection *labelscoll_arg){
   char quote[2];
 
   if(event_file_exists==0)return;
-  stream = fopen(global_scase.paths.event_filename, "w");
+  char *event_filename = CasePathEvent(&global_scase);
+  stream = fopen(event_filename, "w");
+  FREEMEMORY(event_filename);
   if(stream==NULL)return;
 
   first_label = labelscoll_arg->label_first_ptr;

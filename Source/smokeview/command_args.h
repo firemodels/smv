@@ -1,6 +1,6 @@
 /// @file command_args.h
-#ifndef PATHS_H_DEFINED
-#define PATHS_H_DEFINED
+#ifndef COMMAND_ARGS_H_DEFINED
+#define COMMAND_ARGS_H_DEFINED
 
 #include <stdbool.h>
 #include "options.h"

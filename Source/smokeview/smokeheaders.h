@@ -840,7 +840,6 @@ EXTERNCPP int  OnMeshBoundary(float *xyz);
 //*** startup.c headers
 
 EXTERNCPP void FreeVars(void);
-EXTERNCPP char *GetHomeDir(void);
 EXTERNCPP void GetStartupVSlice(int seq_id);
 EXTERNCPP void GetStartupSlice(int seq_id);
 EXTERNCPP void GetStartupPart(int seq_id);
@@ -850,7 +849,6 @@ EXTERNCPP void GetStartupISO(int seq_id);
 EXTERNCPP void GetStartupBoundary(int seq_id);
 EXTERNCPP int GLUTGetScreenWidth(void);
 EXTERNCPP int GLUTGetScreenHeight(void);
-EXTERNCPP void InitColorbarsDir(void);
 EXTERNCPP void InitOpenGL(int option);
 EXTERNCPP void InitScriptErrorFiles(void);
 EXTERNCPP void InitStartupDirs(void);
