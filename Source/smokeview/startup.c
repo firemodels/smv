@@ -401,10 +401,11 @@ void InitStartupDirs(void){
   }
 
   // Create the colorbar directory if it doesn't already exist.
-  colorbars_user_dir = GetUserConfigSubPath("colorbars");
+  char *colorbars_user_dir = GetUserColorbarDirPath();
   if(FileExistsOrig(colorbars_user_dir)==NO){
     MKDIR(colorbars_user_dir);
   }
+  FREEMEMORY(colorbars_user_dir);
 
   if(verbose_output==1)PRINTF("Scratch directory: %s\n", smokeview_scratchdir);
   char *smokeviewini_filename = GetSystemIniPath();
@@ -1206,32 +1207,6 @@ void InitOpenGL(int option){
     TrainerViewMenu(trainerview);
   }
 
-  /* ------------------ InitColorbarsSubDir ------------------------ */
-
-  char *InitColorbarsSubDir(char *subdir){
-    char *return_path = NULL;
-    char *smv_bindir = GetSmvRootDir();
-    if(subdir==NULL)return return_path;
-
-    NewMemory((void **)&return_path,
-              strlen(smv_bindir) + strlen("colorbars") + strlen(dirseparator) + strlen(subdir) + 2);
-    strcpy(return_path, smv_bindir);
-    strcat(return_path, "colorbars");
-    strcat(return_path, dirseparator);
-    if(strlen(subdir)>0)strcat(return_path, subdir);
-    FREEMEMORY(smv_bindir);
-    return return_path;
-  }
-
-  /* ------------------ InitColorbarsDir ------------------------ */
-
-  void InitColorbarsDir(void){
-    colorbars_dir           = InitColorbarsSubDir("");
-    colorbars_linear_dir    = InitColorbarsSubDir("linear");
-    colorbars_divergent_dir = InitColorbarsSubDir("divergent");
-    colorbars_rainbow_dir   = InitColorbarsSubDir("rainbow");
-    colorbars_circular_dir  = InitColorbarsSubDir("circular");
-  }
   /* ------------------ InitTextureDir ------------------------ */
 
 void InitTextureDir(void){
@@ -1527,7 +1502,7 @@ void InitVars(void){
   strcpy(script_renderfile,"");
   setpartmin_old=setpartmin;
   setpartmax_old=setpartmax;
-  UpdateCurrentColorbar(colorbarinfo);
+  UpdateCurrentColorbar(colorbars.colorbarinfo);
   visBlocks=visBLOCKAsInput;
   blocklocation=BLOCKlocation_grid;
   render_window_size=RenderWindow;
