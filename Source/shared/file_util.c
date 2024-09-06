@@ -1103,6 +1103,7 @@ char *GetBinDir(){
   // NB: This uses on older function in order to support "char *".
   // PathCchRemoveFileSpec would be better but requires switching to "wchar *".
   PathRemoveFileSpecA(buffer);
+  PathAddBackslashA(buffer);
   return buffer;
 }
 #elif __linux__
@@ -1137,6 +1138,10 @@ char *GetBinPath(){
 char *GetBinDir(){
   char *buffer = GetBinPath();
   dirname(buffer);
+  int pathlen = strlen(buffer);
+  RESIZEMEMORY(buffer, pathlen + 2);
+  buffer[pathlen] = '/';
+  buffer[pathlen + 1] = '\0';
   return buffer;
 }
 #else
@@ -1172,8 +1177,11 @@ char *GetBinDir(){
   // The BSD and OSX version of dirname uses an internal buffer, therefore we
   // need to copy the string out.
   char *dir_buffer = dirname(buffer);
-  RESIZEMEMORY(buffer, (strlen(dir_buffer) + 1) * sizeof(char));
+  int pathlen = strlen(buffer);
+  RESIZEMEMORY(buffer, (pathlen + 2) * sizeof(char));
   STRCPY(buffer, dir_buffer);
+  buffer[pathlen] = '/';
+  buffer[pathlen + 1] = '\0';
   return buffer;
 }
 #endif
