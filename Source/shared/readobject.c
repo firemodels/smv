@@ -1367,6 +1367,7 @@ int ReadObjectDefs(object_collection *objectscoll, const char *file,
   //   PRINTF("- complete");
   //   PRINTF("\n\n");
   // }
+  PRINTF("%d object definitions read from %s\n", ndevices, file);
   return ndevices;
 }
 
