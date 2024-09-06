@@ -1477,11 +1477,9 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
     sprintf(patchcsvfile,"%s_bndf_%04i.csv",fdsprefix,ifile);
   }
 
-#ifdef pp_INIT_PATCHES
   for(n = 0; n < 6; n++){
     patchi->meshfaceinfo[n] = NULL;
   }
-#endif
 
   START_TIMER(total_time);
   local_first=1;
@@ -1750,12 +1748,10 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
       if(val > xbar0FDS && val < xbarFDS){
         if(j1 == 0 && j2 == meshi->jbar && k1 == 0 && k2 == meshi->kbar)pfi->internal_mesh_face = 1;
       }
-#ifdef pp_INIT_PATCHES
       if(j1 == 0 && j2 == meshi->jbar && k1 == 0 && k2 == meshi->kbar){
         if(i1 == 0)patchi->meshfaceinfo[0]           = pfi;
         if(i1 == meshi->ibar)patchi->meshfaceinfo[1] = pfi;
       }
-#endif
     }
     else if(j1 == j2){
       float val;
@@ -1764,12 +1760,10 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
       if(val > ybar0FDS && val < ybarFDS){
         if(i1 == 0 && i2 == meshi->ibar && k1 == 0 && k2 == meshi->kbar)pfi->internal_mesh_face = 1;
       }
-#ifdef pp_INIT_PATCHES
       if(i1 == 0 && i2 == meshi->ibar && k1 == 0 && k2 == meshi->kbar){
         if(j1 == 0)patchi->meshfaceinfo[2]           = pfi;
         if(j1 == meshi->jbar)patchi->meshfaceinfo[3] = pfi;
       }
-#endif
     }
     else{
       float val;
@@ -1778,12 +1772,10 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
       if(val > zbar0FDS && val < zbarFDS){
         if(i1 == 0 && i2 == meshi->ibar && j1 == 0 && j2 == meshi->jbar)pfi->internal_mesh_face = 1;
       }
-#ifdef pp_INIT_PATCHES
       if(i1 == 0 && i2 == meshi->ibar && j1 == 0 && j2 == meshi->jbar){
         if(k1 == 0)patchi->meshfaceinfo[4]           = pfi;
         if(k1 == meshi->kbar)patchi->meshfaceinfo[5] = pfi;
       }
-#endif
       assert(k1 == k2);
     }
 
@@ -2705,7 +2697,6 @@ void Global2GLUIBoundaryBounds(const char *key){
 }
 
 
-#ifdef pp_INIT_PATCHES
 /* ------------------ DrawMeshBoundaryFaces ------------------------ */
 
 void DrawMeshBoundaryFaces(patchdata *patchi, float valmin, float valmax){
@@ -2884,7 +2875,6 @@ void DrawMeshBoundaryFaces(patchdata *patchi, float valmin, float valmax){
   glEnd();
   glDisable(GL_TEXTURE_1D);
 }
-#endif
 
 /* ------------------ DrawBoundaryTexture ------------------------ */
 
@@ -2932,9 +2922,7 @@ void DrawBoundaryTexture(const meshdata *meshi){
   if(patch_times[0]>global_times[itimes]||patchi->display==0)return;
   if(cullfaces==1)glDisable(GL_CULL_FACE);
 
-#ifdef pp_INIT_PATCHES
    if(boundary_interface_faces==1)DrawMeshBoundaryFaces(patchi, ttmin, ttmax);
-#endif
 
   /* if a contour boundary does not match a blockage face then draw "both sides" of boundary */
 
