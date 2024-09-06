@@ -6,6 +6,7 @@
 #endif
 
 #include "readgeom.h"
+#include "readsmoke.h"
 
 //*** threader headers
 EXTERNCPP void *CheckFiles(void *arg);
@@ -1075,7 +1076,6 @@ EXTERNCPP FILE_SIZE ReadPart(char *file, int ifile, int loadflag, int *errorcode
 EXTERNCPP void ReadZone(int ifile, int flag, int *errorcode);
 EXTERNCPP FILE_SIZE ReadVSlice(int ivslice, int time_frame, float *time_value, int flag, int set_slice_color, int *errorcode);
 
-EXTERNCPP void FreeSmoke3D(smoke3ddata *smoke3di);
 EXTERNCPP void GetSmoke3DTimeSteps(int fortran_skip, char *smokefile, int version, int *ntimes_found, int *ntimes_full);
 EXTERNCPP void ReadSmoke3DAllMeshes(int iframe, int smoketype, int *errorcode);
 EXTERNCPP FILE_SIZE ReadSmoke3D(int iframe, int ifile, int flag, int first_time, int *errorcode);
