@@ -45,6 +45,18 @@ QSMV_PATH=$(dirname `which $0`)
 cd $QSMV_PATH/../../..
 REPOROOT=`pwd`
 
+if [ ! -e $HOME/.smokebot ]; then
+  mkdir $HOME/.smokebot
+fi
+
+ID_FILE=$HOME/.smokebot/xvfb_ids
+if [ ! -e $ID_FILE ]; then
+  echo 1000 > $ID_FILE 
+fi
+DISPLAY_PORT=`head -1 $ID_FILE`
+DISPLAY_PORT=$((DISPLAY_PORT+1))
+echo $DISPLAY_PORT  > $ID_FILE
+
 cd $CURDIR
 
 #*** define xstart and xstop scripts used to start and stop X11 environment
@@ -125,7 +137,7 @@ commandline=`echo $* | sed 's/-V//' | sed 's/-v//'`
 
 #*** read in parameters from command line
 
-while getopts 'Ab:Bc:C:d:e:fFhHij:n:N:Op:P:q:rs:S:tv' OPTION
+while getopts 'Ab:Bc:C:d:D:e:fFhHij:n:N:Op:P:q:rs:S:tv' OPTION
 do
 case $OPTION  in
   A)
@@ -452,9 +464,10 @@ echo "      Run command: $exe $script_file $smv_script $NOBOUNDS $FED $redirect 
 echo "            Queue: $queue"
 echo ""
 
-source $XSTART
+IDFILE=$HOME/SMVID.$infile.\$\$
+source $XSTART \$IDFILE \$DISPLAY_PORT
 $exe $script_file $smv_script $NOBOUNDS $FED $redirect $render_opts $SMVBINDIR $infile
-source $XSTOP
+source $XSTOP \$IDFILE
 
 EOF
 else

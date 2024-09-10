@@ -1,3 +1,4 @@
 #!/bin/bash
-$QFDS -d Visualization plume5c.fds
-$QFDS -d Visualization thouse5.fds
+QUEUE=$1
+$QFDS -q $QUEUE -d Visualization plume5c.fds
+$QFDS -q $QUEUE -d Visualization thouse5.fds
