@@ -17,6 +17,7 @@ use_installed=
 RUN_SMV=1
 RUN_WUI=1
 QUEUE=batch
+JOBPREFIX=SMV_
 
 export SMV=$GITROOT/smv/Build/smokeview/${COMPILER}_$VERSION2/smokeview_$VERSION
 export SMVBINDIR=$GITROOT/bot/Bundlebot/smv/for_bundle
