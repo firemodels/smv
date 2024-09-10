@@ -295,7 +295,7 @@ char *ProcessCommandLine(CommandlineArgs *args){
   STRCPY(caseini_filename, fdsprefix);
   STRCAT(caseini_filename, ".ini");
 
-#ifdef p_FRAME
+#ifdef pp_FRAME
   FREEMEMORY(frametest_filename);
   NewMemory((void **)&frametest_filename, len_casename + strlen(".tst") + 1);
   STRCPY(caseini_filename, fdsprefix);
