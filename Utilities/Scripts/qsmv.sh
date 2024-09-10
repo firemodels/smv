@@ -44,7 +44,6 @@ QSMV=$0
 QSMV_PATH=$(dirname `which $0`)
 cd $QSMV_PATH/../../..
 REPOROOT=`pwd`
-SHARE="--exclusive"
 
 cd $CURDIR
 
@@ -126,7 +125,7 @@ commandline=`echo $* | sed 's/-V//' | sed 's/-v//'`
 
 #*** read in parameters from command line
 
-while getopts 'Ab:Bc:C:d:e:fFhHij:n:N:Op:P:q:rs:S:tTv' OPTION
+while getopts 'Ab:Bc:C:d:e:fFhHij:n:N:Op:P:q:rs:S:tv' OPTION
 do
 case $OPTION  in
   A)
@@ -212,10 +211,6 @@ case $OPTION  in
    ;;
   t)
    dummy=1
-   ;;
-  T)
-   SHARE=
-   T_arg="-T"
    ;;
   v)
    showinput=1
@@ -380,7 +375,7 @@ QSUB="qsub -q $queue"
 #*** setup for SLURM (alternative to torque)
 
 if [ "$RESOURCE_MANAGER" == "SLURM" ]; then
-  QSUB="sbatch -p $queue --ignore-pbs $SHARE"
+  QSUB="sbatch -p $queue --ignore-pbs "
 fi
 
 if [ "$queue" == "terminal" ]; then
