@@ -1287,9 +1287,7 @@ typedef struct _patchdata {
   boundsdata *bounds2;
   int npatches;
   patchfacedata *patchfaceinfo;
-#ifdef pp_INIT_PATCHES
   patchfacedata *meshfaceinfo[6];
-#endif
 #ifdef pp_BOUNDFRAME
   framedata *frameinfo;
 #endif
