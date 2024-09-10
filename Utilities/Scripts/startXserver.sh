@@ -1,5 +1,6 @@
 #!/bin/bash
-lockfile=/tmp/startXlock
+display_port=`id -u`
+lockfile=/tmp/startXlock$display_port
 PAUSE=1
 XVFB=Xvfb
 GETNEWPORT () 
@@ -10,7 +11,6 @@ GETNEWPORT ()
   done
   touch $lockfile
   chmod 777 $lockfile
-  display_port=`id -u`
   nmatches=`ps a -e | grep $XVFB | grep $display_port | grep -v grep | wc | awk '{print $1}'`
   while [ $nmatches -ne 0 ] ; do
     display_port=`expr $display_port + 1`
@@ -24,6 +24,5 @@ if [ "`uname`" != "Darwin" ]; then
   $XVFB :$display_port -fp /usr/share/X11/fonts/misc -screen 0 1280x1024x24 &
   export SMV_ID=$!
   export DISPLAY=:$display_port
-  rm -f $lockfile
   sleep $PAUSE
 fi
