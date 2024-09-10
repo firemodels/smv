@@ -10,7 +10,6 @@ FDS_DEBUG=0
 nthreads=1
 RUN_SMV=1
 RUN_WUI=1
-RUN_BENCH=1
 STOPFDS=
 COMPILER="intel"
 WAIT=0
@@ -98,12 +97,9 @@ GITROOT=`pwd`
 cd $CURDIR/..
 
 use_installed="0"
-while getopts 'bc:Cdhj:Jm:o:q:rsS:uWwY' OPTION
+while getopts 'c:Cdhj:Jm:o:q:rsS:uWwY' OPTION
 do
 case $OPTION in
-  b)
-   RUN_BENCH=
-   ;;
   c)
    CFASTREPO="$OPTARG"
    ;;
@@ -240,10 +236,6 @@ if [[ ! $stop_cases ]] ; then
   fi
 fi
 
-if [ "$RUN_BENCH" == "1" ] ; then
-  cd $VDIR
-  scripts/BENCH_Cases.sh
-fi
 if [ "$RUN_SMV" == "1" ] ; then
   cd $VDIR
   scripts/RESTART1_Cases.sh
