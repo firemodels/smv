@@ -105,12 +105,13 @@ LOADINIFILE
  thouse5_gslice.ini
 //GPUOFF
 LOADFILE
- thouse5_2_19.sf
+ thouse5_4_15.sf
 LOADFILE
- thouse5_1_23.sf
-//LOADSLICE
-// TEMPERATURE
-// 0 0.000000
+ thouse5_3_19.sf
+LOADFILE
+ thouse5_2_15.sf
+LOADFILE
+ thouse5_1_19.sf
 
 SETTIMEVAL
  60.000000
