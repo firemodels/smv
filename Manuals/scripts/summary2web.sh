@@ -1,9 +1,14 @@
 #!/bin/bash
+URLBASE=/opt/www/html
 CURDIR=`pwd`
 cd ../../../
 ROOTDIR=`pwd`
 BASE=`basename $ROOTDIR`
-BASE=/opt/www/html/`whoami`/$BASE
+EXT="${BASE##*_}"
+if [ "$EXT" != "" ]; then
+  BASE=$EXT
+fi
+BASE=$URLBASE/`whoami`/$BASE
 if [ ! -d $BASE ]; then
   mkdir $BASE
 fi
