@@ -111,6 +111,13 @@ else
   PLATFORM=linux
 fi
 
+if [ ! -d $HOME/.smokebot ]; then
+  mkdir $HOME/.smokebot
+fi
+if [ ! -e $HOME/.smokebot/xvfb_ids ]; then
+  echo 1000 > $HOME/.smokebot/xvfb_ids
+fi
+
 COMPILER=intel
 DEBUG=
 TEST=
