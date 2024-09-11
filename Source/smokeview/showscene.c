@@ -280,7 +280,7 @@ void ShowScene2(int mode){
   /* ++++++++++++++++++++++++ DrawSelectTours +++++++++++++++++++++++++ */
 
   if(mode == SELECTOBJECT){
-    if(edittour == 1 && ntourinfo>0){
+    if(edittour == 1 && tourcoll.ntourinfo>0){
       CLIP_GEOMETRY;
       DrawSelectTours();
       SNIFF_ERRORS("after DrawSelectTours");

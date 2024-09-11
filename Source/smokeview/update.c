@@ -385,9 +385,9 @@ void UpdateShow(void){
   {
     tourdata *touri;
 
-    if(ntourinfo>0){
-      for(i=0;i<ntourinfo;i++){
-        touri = tourinfo + i;
+    if(tourcoll.ntourinfo>0){
+      for(i=0;i<tourcoll.ntourinfo;i++){
+        touri = tourcoll.tourinfo + i;
         if(touri->display==1){
           showtours=1;
           break;
@@ -765,10 +765,10 @@ void SynchTimes(void){
 
   /* synchronize tour times */
 
-    for(j=0;j<ntourinfo;j++){
+    for(j=0;j<tourcoll.ntourinfo;j++){
       tourdata *tourj;
 
-      tourj = tourinfo + j;
+      tourj = tourcoll.tourinfo + j;
       if(tourj->display==0)continue;
       tourj->timeslist[n] = GetDataTimeFrame(global_times[n], NULL, tourj->path_times,tourj->ntimes);
     }
@@ -1412,10 +1412,10 @@ void UpdateTimes(void){
     MergeGlobalTimes(parti->times, parti->ntimes);
   }
 
-  for(i=0;i<ntourinfo;i++){
+  for(i=0;i<tourcoll.ntourinfo;i++){
     tourdata *touri;
 
-    touri = tourinfo + i;
+    touri = tourcoll.tourinfo + i;
     if(touri->display==0)continue;
     MergeGlobalTimes(touri->path_times, touri->ntimes);
   }
@@ -1444,10 +1444,10 @@ void UpdateTimes(void){
     FREEMEMORY(parti->timeslist);
     if(nglobal_times>0)NewMemory((void **)&parti->timeslist,nglobal_times*sizeof(int));
   }
-  for(i=0;i<ntourinfo;i++){
+  for(i=0;i<tourcoll.ntourinfo;i++){
     tourdata *touri;
 
-    touri=tourinfo + i;
+    touri=tourcoll.tourinfo + i;
     if(touri->display==0)continue;
     FREEMEMORY(touri->timeslist);
     if(nglobal_times>0)NewMemory((void **)&touri->timeslist,nglobal_times*sizeof(int));
@@ -1807,10 +1807,10 @@ int GetPlotStateSub(int choice){
         if(zonei->loaded==0||zonei->display==0)continue;
         return DYNAMIC_PLOTS;
       }
-      for(i=0;i<ntourinfo;i++){
+      for(i=0;i<tourcoll.ntourinfo;i++){
         tourdata *touri;
 
-        touri = tourinfo + i;
+        touri = tourcoll.tourinfo + i;
         if(touri->display==0)continue;
         return DYNAMIC_PLOTS;
       }
@@ -2314,7 +2314,7 @@ void UpdateShowScene(void){
     END_SHOW_UPDATE(update_frame);
   }
 #endif
-#ifdef pp_SMOKE_SPEEDUP
+#ifdef pp_SMOKE_SPEEDUP  
   if(update_smoke3dmenulabels == 1){
     SHOW_UPDATE(update_smoke3dmenulabels);
     update_smoke3dmenulabels = 0;

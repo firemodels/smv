@@ -62,9 +62,6 @@ if (LINUX)
     add_definitions(-Dpp_LINUX)
 endif()
 
-# GLUI has been modified for smokeview, so we have to vendor it and can't use a
-# native version.
-add_subdirectory(Source/glui_v2_1_beta)
 
 find_package(OpenGL REQUIRED)
 if (NOT(WIN32))
@@ -89,6 +86,10 @@ find_package(ZLIB)
 if (NOT ZLIB_FOUND)
     add_subdirectory(Source/zlib128)
 endif()
+
+# GLUI has been modified for smokeview, so we have to vendor it and can't use a
+# native version.
+add_subdirectory(Source/glui_v2_1_beta)
 
 # This fails on Windows so we disable it for now
 if (NOT(WIN32))
@@ -225,6 +226,7 @@ add_executable(smokeview
     Source/shared/readcad.c
     Source/shared/readgeom.c
     Source/shared/readobject.c
+    Source/shared/readtour.c
     Source/shared/readlabel.c
     Source/smokeview/colortable.c
     Source/smokeview/command_args.c
@@ -310,6 +312,8 @@ else()
     target_link_libraries(smokeview PRIVATE gd_static)
 endif()
 target_link_libraries(smokeview PRIVATE OpenGL::GL OpenGL::GLU)
+
+
 
 target_include_directories(smokeview PRIVATE
     Source/smokeview

@@ -6,16 +6,11 @@
 #include <string.h>
 
 #include "MALLOCC.h"
-#include "contourdefs.h"
 #include "histogram.h"
 #include "isodefs.h"
-#include "smokeviewdefs.h"
-#include "string_util.h"
-#include "structures.h"
-
-#include "readobject.h"
-
 #include "readlabel.h"
+#include "shared_structures.h"
+#include "string_util.h"
 
 /* ------------------ LabelGet ------------------------ */
 
@@ -136,11 +131,11 @@ void LabelResort(labels_collection *labelscoll, labeldata *label) {
 
 /* ------------------ LabelPrint ------------------------ */
 
-void LabelPrint(labeldata *label_first_ptr) {
+void LabelPrint(labels_collection *labelscoll) {
   labeldata *thislabel;
   float *xyz;
 
-  for(thislabel = label_first_ptr->next; thislabel->next != NULL;
+  for(thislabel = labelscoll->label_first_ptr->next; thislabel->next != NULL;
       thislabel = thislabel->next) {
     xyz = thislabel->xyz;
     PRINTF("label: %s position: %f %f %f\n", thislabel->name, xyz[0], xyz[1],
@@ -205,4 +200,33 @@ int LabelGetNUserLabels(labels_collection *labelscoll) {
     if(thislabel->labeltype == TYPE_INI) count++;
   }
   return count;
+}
+
+void InitLabelsCollection(labels_collection *labelscoll) {
+  labelscoll->label_first_ptr = &labelscoll->label_first;
+  labelscoll->label_last_ptr = &labelscoll->label_last;
+
+  labelscoll->label_first_ptr->prev = NULL;
+  labelscoll->label_first_ptr->next = labelscoll->label_last_ptr;
+  strcpy(labelscoll->label_first_ptr->name, "first");
+
+  labelscoll->label_last_ptr->prev = labelscoll->label_first_ptr;
+  labelscoll->label_last_ptr->next = NULL;
+  strcpy(labelscoll->label_last_ptr->name, "last");
+}
+
+labels_collection *CreateLabelsCollection() {
+  labels_collection *labelscoll;
+  NEWMEMORY(labelscoll, sizeof(labels_collection));
+  InitLabelsCollection(labelscoll);
+  return labelscoll;
+}
+
+void FreeLabelsCollection(labels_collection *labelscoll) {
+  labeldata *thislabel = labelscoll->label_first_ptr->next;
+  while(thislabel->next != NULL) {
+    labeldata *nextlabel = thislabel->next;
+    LabelDelete(thislabel);
+    thislabel = nextlabel;
+  }
 }

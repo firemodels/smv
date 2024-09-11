@@ -19,6 +19,7 @@
 #include "stdio_buffer.h"
 
 #include "readobject.h"
+#include "readlabel.h"
 
 /* ------------------ InitDefaultCameras ------------------------ */
 
@@ -314,7 +315,7 @@ int SetupCase(char *filename){
   FREEMEMORY(smv_bindir);
   PRINT_TIMER(timer_start, "InitTranslate");
 
-  if(ntourinfo==0)SetupTour();
+  if(tourcoll.ntourinfo==0)SetupTour();
   InitRolloutList();
   GLUIColorbarSetup(mainwindow_id);
   GLUIMotionSetup(mainwindow_id);
@@ -1425,16 +1426,7 @@ void InitVars(void){
   strcpy((char *)degC,"C");
   strcpy((char *)degF,"F");
 
-  labelscoll.label_first_ptr = &labelscoll.label_first;
-  labelscoll.label_last_ptr = &labelscoll.label_last;
-
-  labelscoll.label_first_ptr->prev = NULL;
-  labelscoll.label_first_ptr->next = labelscoll.label_last_ptr;
-  strcpy(labelscoll.label_first_ptr->name,"first");
-
-  labelscoll.label_last_ptr->prev = labelscoll.label_first_ptr;
-  labelscoll.label_last_ptr->next = NULL;
-  strcpy(labelscoll.label_last_ptr->name,"last");
+  InitLabelsCollection(&labelscoll);
 
   {
     labeldata *gl;

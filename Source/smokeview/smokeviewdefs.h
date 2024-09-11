@@ -409,13 +409,6 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 #define RENDER_LABEL_FRAMENUM 0
 #define RENDER_LABEL_TIME     1
 
-#ifndef TYPE_SMV
-#define TYPE_SMV 0
-#endif
-#ifndef TYPE_INI
-#define TYPE_INI 1
-#endif
-
 #define CLIP_UNDEFINED      -1
 #define CLIP_OFF            0
 #define CLIP_BLOCKAGES_DATA 1
