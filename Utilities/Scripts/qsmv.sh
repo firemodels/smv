@@ -465,7 +465,7 @@ echo "            Queue: $queue"
 echo ""
 
 IDFILE=$HOME/SMVID.$infile.\$\$
-source $XSTART \$IDFILE \$DISPLAY_PORT
+source $XSTART \$IDFILE $DISPLAY_PORT
 $exe $script_file $smv_script $NOBOUNDS $FED $redirect $render_opts $SMVBINDIR $infile
 source $XSTOP \$IDFILE
 
