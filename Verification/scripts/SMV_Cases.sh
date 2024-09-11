@@ -39,8 +39,8 @@ $QFDS -d Visualization sprinkler_many.fds
 $QFDS -d Visualization -p 6 sphere_propaneu.fds
 $QFDS -d Visualization -p 6 sphere_propanec.fds
 $QFDS -d Visualization testsort.fds
-$QFDS -d Visualization -p 2 thouse5.fds
-$QFDS -d Visualization -p 2 thouse5delta.fds
+$QFDS -d Visualization -p 4 thouse5.fds
+$QFDS -d Visualization -p 4 thouse5delta.fds
 $QFDS -d Visualization tour.fds
 $QFDS -d Visualization transparency.fds
 $QFDS -d Visualization vcirctest.fds
