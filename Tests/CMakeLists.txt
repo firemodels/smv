@@ -4,6 +4,17 @@ add_test(NAME "Execute smokediff" COMMAND smokediff)
 add_test(NAME "Execute smokeview" COMMAND smokeview -v)
 add_test(NAME "Execute smokezip" COMMAND smokezip)
 
+
+set(FIG_COMMIT "513dc046131f5dfdda47ff485efc2db7243f06b1")
+
+FetchContent_Declare(
+    test_data
+    GIT_REPOSITORY https://github.com/firemodels/fig.git
+    GIT_TAG        ${FIG_COMMIT}
+)
+FetchContent_MakeAvailable(test_data)
+set(FIG_DIR ${test_data_SOURCE_DIR})
+
 # parse_simple_slice
 add_executable(parse_simple_slice parse_simple_slice.c
     ../Source/shared/getdata.c
@@ -129,6 +140,29 @@ if ((NOT MACOSX) AND UNIX)
     target_link_libraries(test_objects m)
 endif()
 
+# parse_hvac_vals
+add_executable(parse_hvac_vals parse_hvac_vals.c
+    ../Source/shared/readhvac.c
+    ../Source/shared/file_util.c
+    ../Source/shared/string_util.c
+    ../Source/shared/stdio_buffer.c
+    ../Source/shared/getdata.c
+    ../Source/shared/dmalloc.c
+    ../Source/shared/sha256.c
+    ../Source/shared/sha1.c
+    ../Source/shared/md5.c
+)
+
+target_include_directories(parse_hvac_vals PRIVATE
+    ../Tests
+    ../Source/shared
+)
+if (WIN32)
+    target_include_directories(parse_hvac_vals PRIVATE ../Source/pthreads)
+endif()
+if ((NOT MACOSX) AND UNIX)
+    target_link_libraries(parse_hvac_vals m)
+endif()
 
 # test_labels
 add_executable(test_labels test_labels.c
@@ -191,33 +225,36 @@ endif()
 # Arguments to this tests are <slice path> <number of frames in slice>
 # Simple slice is a finished slice file with 3 frames
 add_test(NAME "Simple Slice - Complete"
-    COMMAND parse_simple_slice ${CMAKE_SOURCE_DIR}/Tests/fig/smv/Tests/simple_slice.sf 3)
+    COMMAND parse_simple_slice ${FIG_DIR}/smv/Tests/simple_slice.sf 3)
 # Simple slice is a finished slice file with the last of the three frames cut in
 # half (to simulate a partially written slice file)
 add_test(NAME "Simple Slice - Last Frame Half Truncated"
-    COMMAND parse_simple_slice ${CMAKE_SOURCE_DIR}/Tests/fig/smv/Tests/truncated_slice.sf 2)
+    COMMAND parse_simple_slice ${FIG_DIR}/smv/Tests/truncated_slice.sf 2)
 
 # Arguments to this tests are <bndf path> <number of frames in bndf>
 # Simple slice is a finished slice file with 2 frames, why 2 frames for boundary
 # files?
 add_test(NAME "Simple BNDF - Complete"
-    COMMAND parse_simple_bndf ${CMAKE_SOURCE_DIR}/Tests/fig/smv/Tests/simple_bndf.bf 2)
+    COMMAND parse_simple_bndf ${FIG_DIR}/smv/Tests/simple_bndf.bf 2)
 
 # Arguments to this tests are <bndf path> <number of frames in bndf>
 # Simple slice is a finished slice file with 3 frames
 add_test(NAME "Simple PRT5 - Complete"
-COMMAND parse_simple_part ${CMAKE_SOURCE_DIR}/Tests/fig/smv/Tests/simple_part.prt5 3)
+    COMMAND parse_simple_part ${FIG_DIR}/smv/Tests/simple_part.prt5 3)
 
 # Arguments to this tests are <bndf path> <number of frames in bndf>
 # Simple slice is a finished slice file with 3 frames
 add_test(NAME "Simple PL3d - Complete"
-COMMAND parse_simple_pl3d ${CMAKE_SOURCE_DIR}/Tests/fig/smv/Tests/simple_pl3d.q)
+    COMMAND parse_simple_pl3d ${FIG_DIR}/smv/Tests/simple_pl3d.q)
 
 add_test(NAME "Parse CAD"
     COMMAND parse_cad)
 
 add_test(NAME "Test Object API"
-COMMAND test_objects ${CMAKE_SOURCE_DIR}/Tests/bad_objects.svo)
+    COMMAND test_objects ${CMAKE_SOURCE_DIR}/Tests/bad_objects.svo)
+
+add_test(NAME "Simple HVAC Vals - Complete"
+    COMMAND parse_hvac_vals ${FIG_DIR}/smv/Tests/simple_hvac.hvac)
 
 add_test(NAME "Test Labels API"
     COMMAND test_labels)
