@@ -110,9 +110,11 @@ FILE_m *fopen_b(char *file, unsigned char *buffer, size_t nbuffer, char *mode){
     FREEMEMORY(m_file);
     return NULL;
   }
+  assert((buffer == NULL && nbuffer == 0) || (buffer != NULL && nbuffer >= 0));
   stream_m->buffer     = buffer;
   stream_m->buffer_beg = buffer;
-  stream_m->buffer_end = buffer + nbuffer;
+  stream_m->buffer_end = buffer;
+  if(buffer != NULL)stream_m->buffer_end = buffer + nbuffer;
   stream_m->file       = m_file;
   if(buffer == NULL){
     stream_m->stream = fopen(file, mode);
