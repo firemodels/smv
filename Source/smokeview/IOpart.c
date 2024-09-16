@@ -617,6 +617,7 @@ void FreeAllPart5Data(partdata * parti){
     FreePart5Data(datacopy_local);
     datacopy_local++;
   }
+  FREEMEMORY(parti->partclassptr);
   FREEMEMORY(parti->data5);
   FREEMEMORY(parti->vis_part);
   FREEMEMORY(parti->sort_tags);

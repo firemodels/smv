@@ -5190,9 +5190,7 @@ int ParsePRT5Process(bufferstreamdata *stream, char *buffer, int *nn_part_in, in
   FGETS(buffer, 255, stream);
   sscanf(buffer, "%i", &parti->nclasses);
   if(parti->nclasses>0){
-    if(parti->file != NULL){
-      parti->partclassptr = (partclassdata **)PARTBUFFER(parti->nclasses*sizeof(partclassdata *));
-    }
+    NewMemory((void **)&parti->partclassptr, parti->nclasses*sizeof(partclassdata *));
     for(i = 0; i<parti->nclasses; i++){
       int iclass;
       int ic, iii;
