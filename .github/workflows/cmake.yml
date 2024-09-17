@@ -51,14 +51,6 @@ jobs:
         run: |
           echo "CC=gcc" >> $GITHUB_ENV
           echo "CXX=g++" >> $GITHUB_ENV
-      # Download a snaphot of the fig repo and use that as test data.
-      - name: Download test data
-        working-directory: ${{github.workspace}}/Tests
-        run: ./get_test_data.sh
-      # Remove Visualization data on macos as we can't render currently.
-      - name: Download test data
-        if: runner.os == 'macOS'
-        run: rm -rf Verification/Visualization/*.smv
       # Run cmake to build smokeview
       - name: Build
         shell: bash
@@ -119,9 +111,6 @@ jobs:
   #        cmake3 -B ${{github.workspace}}/cbuild -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DLUA=${{ matrix.lua }}
   #        cmake3 --build ${{github.workspace}}/cbuild -j4
   #        cp ${{github.workspace}}/cbuild/smokeview smokeview
-  #    # - name: Download test data
-  #    #   working-directory: ${{github.workspace}}/Tests
-  #    #   run: ./get_test_data.sh
   #    # - name: Test
   #    #   shell: bash
   #    #   working-directory: ${{github.workspace}}/cbuild
@@ -164,10 +153,6 @@ jobs:
           cmake -B ${{github.workspace}}\cbuild -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DLUA_UTIL_LIBS=ON -DLUA=${{ matrix.lua }} -DLUA_BUILD_BINARY=${{ matrix.lua }} -DVCPKG_TARGET_TRIPLET=x64-windows-static -DCMAKE_TOOLCHAIN_FILE=%VCPKG_INSTALLATION_ROOT%/scripts/buildsystems/vcpkg.cmake -DLUA_BUILD_BINARY=ON
           cmake --build ${{github.workspace}}\cbuild -j4 --config ${{env.BUILD_TYPE}}
           copy ${{github.workspace}}\cbuild\Release\smokeview.exe smokeview.exe
-      - name: Download test data
-        working-directory: ${{github.workspace}}/Tests
-        shell: pwsh
-        run: .\get_test_data.ps1
       - name: Test
         shell: bash
         working-directory: ${{github.workspace}}/cbuild
