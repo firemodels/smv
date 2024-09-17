@@ -98,9 +98,6 @@ SVEXTERN threaderdata SVDECL(*slicebound_threads, NULL);
 SVEXTERN int SVDECL(n_partbound_threads, 1), SVDECL(use_partbound_threads, 1);
 SVEXTERN threaderdata SVDECL(*partbound_threads, NULL);
 
-//*** smoke
-SVEXTERN int SVDECL(n_smokeload_threads, 1), SVDECL(use_smokeload_threads, 0);
-
 //***triangles
 SVEXTERN int SVDECL(n_triangles_threads, 1), SVDECL(use_triangles_threads, 1);
 SVEXTERN threaderdata SVDECL(*triangles_threads, NULL);

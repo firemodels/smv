@@ -18,7 +18,6 @@
 typedef FILE MFILE;
 #define MFILE                   FILE
 #define SKIP_SMOKE              FSEEK( SMOKE3DFILE, fortran_skip, SEEK_CUR)
-#define FOPEN_SMOKE(file,mode,nthreads,use_threads) fopen(file,mode)
 #define FREAD_SMOKE(a,b,c,d)    fread(a,b,c,d)
 #define FREADPTR_SMOKE(a,b,c,d) fread(a,b,c,d)
 #define FEOF_SMOKE(a)           feof(a)
@@ -3429,7 +3428,7 @@ FILE *GetSmokeFileSize(char *smokefile, int fortran_skip, int version){
     printf("          and was not able to create a new size file: %s\n", smoke_sizefilename);
     return NULL;  // can't write size file in temp directory so give up
   }
-  SMOKE3DFILE = FOPEN_SMOKE(smokefile, "rb", n_smokeload_threads, use_smokeload_threads);
+  SMOKE3DFILE = fopen(smokefile, "rb");
   if(SMOKE3DFILE == NULL){
     fclose(SMOKE_SIZE);
     return NULL;
@@ -4329,7 +4328,7 @@ FILE_SIZE ReadSmoke3D(int time_frame,int ifile_arg,int load_flag, int first_time
     }
   }
 #else
-  SMOKE3DFILE=FOPEN_SMOKE(smoke3di->file,"rb", n_smokeload_threads, use_smokeload_threads);
+  SMOKE3DFILE=fopen(smoke3di->file,"rb");
   if(SMOKE3DFILE==NULL){
     SetupSmoke3D(smoke3di,UNLOAD, time_frame, &error_local);
     *errorcode_arg =1;
