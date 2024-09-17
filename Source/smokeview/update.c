@@ -2314,7 +2314,6 @@ void UpdateShowScene(void){
     END_SHOW_UPDATE(update_frame);
   }
 #endif
-#ifdef pp_SMOKE_SPEEDUP  
   if(update_smoke3dmenulabels == 1){
     SHOW_UPDATE(update_smoke3dmenulabels);
     update_smoke3dmenulabels = 0;
@@ -2327,7 +2326,6 @@ void UpdateShowScene(void){
     GLUISmoke3dCB(MERGE_SMOKE);
     END_SHOW_UPDATE(update_glui_merge_smoke);
   }
-#endif
   if(glui_meshclip_defined==1&&update_meshclip == 1){
     SHOW_UPDATE(update_meshclip);
     update_meshclip = 0;
