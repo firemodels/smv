@@ -5575,8 +5575,7 @@ int ParseSMOKE3DProcess(bufferstreamdata *stream, char *buffer, int *nn_smoke3d_
     smoke3di->reg_file = SMOKE3DBUFFER(len + 1);
     STRCPY(smoke3di->reg_file, bufferptr);
     for(i=0; i<6; i++){
-      smoke3di->alphas_dir[i] = (unsigned char *)smoke3d_buffer;
-      smoke3d_buffer += 256;
+      smoke3di->alphas_dir[i] = (unsigned char *)SMOKE3DBUFFER(256);
     }
     smoke3di->ntimes = 0;
     smoke3di->ntimes_old = 0;
@@ -8180,15 +8179,9 @@ int ReadSMV_Parse(bufferstreamdata *stream){
     npropinfo=1;
   }
 
-  if(npartinfo>0){
-    if(NewMemory((void **)&part_buffer, 4*npartinfo*MAXFILELEN) == 0)return 2;
-  }
-  if(nsliceinfo>0){
-    if(NewMemory((void **)&slice_buffer, 7*nsliceinfo*MAXFILELEN) == 0)return 2;
-  }
-  if(nsmoke3dinfo>0){
-    if(NewMemory((void **)&smoke3d_buffer, 9*nsmoke3dinfo*MAXFILELEN) == 0)return 2;
-  }
+  if(npartinfo>0 && NewMemory((void **)&part_buffer,       3*npartinfo*MAXFILELEN)    == 0)return 2;
+  if(nsliceinfo>0 && NewMemory((void **)&slice_buffer,     7*nsliceinfo*MAXFILELEN)   == 0)return 2;
+  if(nsmoke3dinfo>0 && NewMemory((void **)&smoke3d_buffer, 9*nsmoke3dinfo*MAXFILELEN) == 0)return 2;
 
   PRINT_TIMER(timer_readsmv, "pass 1");
 
