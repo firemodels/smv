@@ -1081,7 +1081,6 @@ SVEXTERN float partfacedir[3]={0.0,0.0,1.0};
 SVEXTERN float partfacedir[3];
 #endif
 SVEXTERN int SVDECL(demo_option,0);
-#ifdef pp_PATCH_DEBUG
 #ifdef INMAIN
 SVEXTERN int boundary_debug_plane[6] = {0, 0, 0, 0, 0, 0};
 #else
@@ -1089,7 +1088,6 @@ SVEXTERN int boundary_debug_plane[6];
 #endif
 SVEXTERN int SVDECL(boundary_debug_mesh, 1), SVDECL(boundary_debug_obst, 0), SVDECL(outout_patch_faces, 0);
 SVEXTERN int SVDECL(boundary_interface_unhide, 0), SVDECL(boundary_interface_faces, 0), SVDECL(boundary_loaded, 0);
-#endif
 
 SVEXTERN int colorbar_font_height, font_height;
 SVEXTERN void SVDECL(*colorbar_font_ptr, NULL), SVDECL(*font_ptr,NULL);

@@ -3,7 +3,6 @@
 
 #include "options_common.h"
 
-#define pp_PATCH_DEBUG   // add option to output and draw debug info for patch faces
 //#define pp_FRAME           // turn on frame code
 //#define pp_SHOW_UPDATE      // show what is being update in UpdateShowScene routine
 //#define pp_UPDATE_FACES     // update faces in UpdateTimes routine (probably not necessary)
