@@ -219,43 +219,6 @@ int ConstrainRgb(float *rgb_arg){
        http://www.poynton.com/GammaFAQ.html
 */
 
-#ifdef pp_GAMMA
-/* ----------------------- GammaCorrect ----------------------------- */
-
-void GammaCorrect(const struct colourSystem *cs, float *c){
-  float gamma;
-
-  gamma = cs->gamma;
-
-  if(gamma == GAMMA_REC709){
-    /* Rec. 709 gamma correction. */
-    float cc = 0.018;
-
-    if(*c < cc){
-      float factor;
-
-      factor = ((1.099*pow(cc, 0.45)) - 0.099) / cc;
-      *c *= factor;
-    }
-    else{
-      *c = (1.099*pow(*c, 0.45)) - 0.099;
-    }
-  }
-  else{
-    /* Nonlinear colour = (Linear colour)^(1/gamma) */
-    *c = pow(*c, 1.0 / gamma);
-  }
-}
-
-/* ----------------------- GammaCorrectRgb ----------------------------- */
-
-void GammaCorrectRgb(const struct colourSystem *cs, float *rgb_arg){
-  GammaCorrect(cs, rgb_arg);
-  GammaCorrect(cs, rgb_arg + 1);
-  GammaCorrect(cs, rgb_arg + 2);
-}
-#endif
-
 /*                            BB_SPECTRUM
 
     Calculate, by Planck's radiation law, the emittance of a black body
@@ -499,10 +462,6 @@ void MakeFireColorsNew(float temp_min, float temp_max, int nfire_colors_arg){
   int i;
   float dtemp;
 
-#ifdef pp_BLACKBODY_OUT
-  FILE *stream;
-  stream = fopen("testfire.csv", "w");
-#endif
   dtemp = (temp_max - temp_min)/(float)(nfire_colors_arg -1);
   FREEMEMORY(fire_rgbs);
   NewMemory((void **)&fire_rgbs,3*nfire_colors_arg*sizeof(float));
@@ -517,13 +476,7 @@ void MakeFireColorsNew(float temp_min, float temp_max, int nfire_colors_arg){
 // NTSCsystem
     ConstrainRgb(fire_rgb);
     memcpy(fire_rgbs + 3*i, fire_rgb, 3*sizeof(float));
-#ifdef pp_BLACKBODY_OUT
-    fprintf(stream, "%f,%f,%f,%f\n", temp, fire_rgb[0], fire_rgb[1], fire_rgb[2]);
-#endif
   }
-#ifdef pp_BLACKBODY_OUT
-  fclose(stream);
-#endif
 }
 
 /* ----------------------- MakeFireColors ----------------------------- */
@@ -532,10 +485,6 @@ void MakeFireColors(float temp_min, float temp_max, int nfire_colors_arg){
   int i;
   float dtemp;
 
-#ifdef pp_BLACKBODY_OUT
-  FILE *stream;
-  stream = fopen("testfire.csv", "w");
-#endif
   dtemp = (temp_max - temp_min) / (float)(nfire_colors_arg - 1);
   FREEMEMORY(fire_rgbs);
   NewMemory((void **)&fire_rgbs, 3*nfire_colors_arg*sizeof(float));
@@ -548,18 +497,7 @@ void MakeFireColors(float temp_min, float temp_max, int nfire_colors_arg){
     //Xyz2Rgb(&HDTVsystem, xyz, fire_rgb);
     //ConstrainRgb(fire_rgb);
     memcpy(fire_rgbs + 3*i, fire_emission, 3*sizeof(float));
-#ifdef pp_BLACKBODY_OUT
-    if(stream != NULL){
-      float norm;
-
-      norm = sqrt(fire_emission[0]*fire_emission[0] + fire_emission[0]*fire_emission[0] + fire_emission[0]*fire_emission[0]);
-      fprintf(stream, "%f,%f,%f,%f,%f\n", temp, fire_emission[0], fire_emission[1], fire_emission[2], norm);
-    }
-#endif
   }
-#ifdef pp_BLACKBODY_OUT
-  if(stream!=NULL)fclose(stream);
-#endif
 }
 
 /* ----------------------- Temperature2Emission ----------------------------- */
@@ -1685,9 +1623,7 @@ void IntegrateFireColors(float *integrated_firecolor, float *xyzvert, float dlen
  //   memcpy(fire_rgb_from, integrated_firecolor, 3*sizeof(float));
  //   Xyz2Rgb(&HDTVsystem, fire_rgb_from, fire_rgb_to);
  //   ConstrainRgb(fire_rgb_to);
-#ifdef pp_GAMMA
-    if(gamma_correction==1)GammaCorrectRgb(&HDTVsystem, integrated_firecolor);
-#endif
+
  //    memcpy(integrated_firecolor, fire_rgb_to, 3*sizeof(float));
     integrated_firecolor[3] = alphan;
     if(volbw==1){

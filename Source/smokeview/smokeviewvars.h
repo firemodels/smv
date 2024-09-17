@@ -530,9 +530,6 @@ SVEXTERN float SVDECL(fire_temp_min, 100.0), SVDECL(fire_temp_max, 5500.0);
 SVEXTERN float SVDECL(fire_temp_data_min, 1.0), SVDECL(fire_temp_data_max, 0.0);
 SVEXTERN int SVDECL(show_blackbody_colormap, 0);
 SVEXTERN int SVDECL(use_blackbody_colors, 0);
-#ifdef pp_GAMMA
-SVEXTERN int SVDECL(gamma_correction, 0);
-#endif
 SVEXTERN int SVDECL(have_geom_slice_menus, 0), SVDECL(geom_slice_loaded,0);
 SVEXTERN FILE SVDECL(*stderr2,NULL);
 SVEXTERN char SVDECL(*script_error1_filename,NULL);
@@ -1081,7 +1078,6 @@ SVEXTERN float partfacedir[3]={0.0,0.0,1.0};
 SVEXTERN float partfacedir[3];
 #endif
 SVEXTERN int SVDECL(demo_option,0);
-#ifdef pp_PATCH_DEBUG
 #ifdef INMAIN
 SVEXTERN int boundary_debug_plane[6] = {0, 0, 0, 0, 0, 0};
 #else
@@ -1089,7 +1085,6 @@ SVEXTERN int boundary_debug_plane[6];
 #endif
 SVEXTERN int SVDECL(boundary_debug_mesh, 1), SVDECL(boundary_debug_obst, 0), SVDECL(outout_patch_faces, 0);
 SVEXTERN int SVDECL(boundary_interface_unhide, 0), SVDECL(boundary_interface_faces, 0), SVDECL(boundary_loaded, 0);
-#endif
 
 SVEXTERN int colorbar_font_height, font_height;
 SVEXTERN void SVDECL(*colorbar_font_ptr, NULL), SVDECL(*font_ptr,NULL);

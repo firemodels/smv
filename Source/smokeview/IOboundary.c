@@ -1276,8 +1276,6 @@ void GetPatchSizes2(FILE_m *stream, int npatch, int nmeshes_arg, int nobsts_arg,
 
   return;
 }
-#ifdef pp_PATCH_DEBUG
-
 /* ------------------ DrawFace ------------------------ */
 
 void DrawFace(float *v11, float *v22, int dir){
@@ -1377,7 +1375,6 @@ int IsBoundPlane(int imesh, patchfacedata *pfi){
   if(boundary_debug_plane[5] == 1 && i1 == 0 && i2 == meshi->ibar && j1 == 0 && j2 == meshi->jbar && k1 == k2 && k1 == meshi->kbar)is_plane = 1;
   return is_plane;
 }
-#endif
 
 /* ------------------ GetPatchData ------------------------ */
 
@@ -1406,7 +1403,6 @@ void GetPatchData(int imesh, FILE_m *stream, int npatch, patchfacedata *patchfac
     *npqq += size;
     fseek_m(stream, 4, SEEK_CUR); count = fread_m(&pqq[ibeg], sizeof(*pqq), size, stream); fseek_m(stream, 4, SEEK_CUR);
 
-#ifdef pp_PATCH_DEBUG
     int is_plane;
 
     is_plane = IsBoundPlane(imesh, pfi);
@@ -1419,7 +1415,6 @@ void GetPatchData(int imesh, FILE_m *stream, int npatch, patchfacedata *patchfac
       }
       printf("\n");
     }
-#endif
     if(count != size)*error = 1;
     // TODO: hardcodes float size.
     file_size += 4 * size;
@@ -2576,7 +2571,6 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
   }
 #endif
   CheckMemory;
-#ifdef pp_PATCH_DEBUG
  // debug patch print
   if(outout_patch_faces == 1){
     printf("\n");
@@ -2604,7 +2598,6 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
       }
     }
   }
-#endif
   return return_filesize;
 }
 
@@ -2739,7 +2732,6 @@ void DrawMeshBoundaryFaces(patchdata *patchi, float valmin, float valmax){
 
       bc = bclist[j];
       int draw_plane = 0;
-#ifdef pp_PATCH_DEBUG
       if(boundary_debug_mesh-1 == (int)(meshi-meshinfo) && boundary_debug_plane[iface] ==1 )draw_plane = 1;
       switch(iface){
       case 0:
@@ -2791,31 +2783,6 @@ void DrawMeshBoundaryFaces(patchdata *patchi, float valmin, float valmax){
 	assert(0);
 	break;
       }
-#else
-      switch(iface){
-      case 0:
-      case 1:
-        rowbeg = bc->ijk[4];
-        rowend = bc->ijk[5];
-        colbeg = bc->ijk[2];
-        colend = bc->ijk[3];
-        break;
-      case 2:
-      case 3:
-        rowbeg = bc->ijk[4];
-        rowend = bc->ijk[5];
-        colbeg = bc->ijk[0];
-        colend = bc->ijk[1];
-        break;
-      case 4:
-      case 5:
-        rowbeg = bc->ijk[2];
-        rowend = bc->ijk[3];
-        colbeg = bc->ijk[0];
-        colend = bc->ijk[1];
-        break;
-      }
-#endif
       if(draw_plane==0&&bc->showtimelist != NULL && bc->showtimelist[itimes] == 0)continue;
       for(irow = rowbeg; irow<rowend; irow++){
         int icol;
