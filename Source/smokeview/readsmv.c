@@ -5727,7 +5727,7 @@ int ParseSLCFCount(int option, bufferstreamdata *stream, char *buffer, int *nsli
 /* ------------------ ParseSLCFProcess ------------------------ */
 
 int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn_slice_in, int ioffset_in,
-  int *nslicefiles_in, slicedata **sliceinfo_copy_in, patchdata **patchgeom_in,
+  int *nslicefiles_in, slicedata **sliceinfo_copy_in,
   char buffers[6][256]){
   char *slicelabelptr, slicelabel[256], *sliceparms;
   float above_ground_level = 0.0;
@@ -5879,12 +5879,9 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
   sd->slice_filetype = SLICE_NODE_CENTER;
   sd->patchgeom = NULL;
   if(slicegeom==1){
-    patchdata *patchgeom_local;
-
     if(cell_center_flag==1)sd->cell_center = 1;
     sd->slice_filetype = SLICE_GEOM;
-    patchgeom_local = (patchdata *)SLICEBUFFER(sizeof(patchdata));
-    sd->patchgeom = patchgeom_local;
+    sd->patchgeom = ( patchdata * )SLICEBUFFER(sizeof(patchdata));
   }
   if(terrain==1){
     sd->slice_filetype = SLICE_TERRAIN;
@@ -6113,7 +6110,6 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
 
   if(slicegeom==1){
     strcpy(buffer, buffers[0]);
-    *patchgeom_in = sd->patchgeom;
   }
   else{
     return RETURN_CONTINUE;
@@ -11376,10 +11372,9 @@ typedef struct {
         (MatchSMV(buffer, "BNDS") == 1)
       ){
       int return_val;
-      patchdata *patchgeom = NULL;
 
       START_TIMER(SLCF_timer);
-      return_val = ParseSLCFProcess(NO_SCAN, stream, buffer, &nn_slice, ioffset, &nslicefiles, &sliceinfo_copy, &patchgeom, buffers);
+      return_val = ParseSLCFProcess(NO_SCAN, stream, buffer, &nn_slice, ioffset, &nslicefiles, &sliceinfo_copy, buffers);
       CUM_TIMER(SLCF_timer, cum_SLCF_timer);
       if(return_val==RETURN_BREAK){
         BREAK;
