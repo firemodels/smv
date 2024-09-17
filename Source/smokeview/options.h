@@ -9,7 +9,6 @@
 //#define pp_PARTBOUND_MULTI // compute particle bounds in the background
 //#define pp_LUA            // turn on LUA option
 //#define pp_SMOKE16        // load 16 bit smoke files
-// #define pp_BLACKBODY_OUT // output generated blackbody color data 
 #define pp_FAST             // set fast startup by default
 #define pp_GPU              // support the GPU
 #define pp_THREAD           // turn on multi-threading

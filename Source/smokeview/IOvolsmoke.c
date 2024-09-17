@@ -462,10 +462,6 @@ void MakeFireColorsNew(float temp_min, float temp_max, int nfire_colors_arg){
   int i;
   float dtemp;
 
-#ifdef pp_BLACKBODY_OUT
-  FILE *stream;
-  stream = fopen("testfire.csv", "w");
-#endif
   dtemp = (temp_max - temp_min)/(float)(nfire_colors_arg -1);
   FREEMEMORY(fire_rgbs);
   NewMemory((void **)&fire_rgbs,3*nfire_colors_arg*sizeof(float));
@@ -480,13 +476,7 @@ void MakeFireColorsNew(float temp_min, float temp_max, int nfire_colors_arg){
 // NTSCsystem
     ConstrainRgb(fire_rgb);
     memcpy(fire_rgbs + 3*i, fire_rgb, 3*sizeof(float));
-#ifdef pp_BLACKBODY_OUT
-    fprintf(stream, "%f,%f,%f,%f\n", temp, fire_rgb[0], fire_rgb[1], fire_rgb[2]);
-#endif
   }
-#ifdef pp_BLACKBODY_OUT
-  fclose(stream);
-#endif
 }
 
 /* ----------------------- MakeFireColors ----------------------------- */
@@ -495,10 +485,6 @@ void MakeFireColors(float temp_min, float temp_max, int nfire_colors_arg){
   int i;
   float dtemp;
 
-#ifdef pp_BLACKBODY_OUT
-  FILE *stream;
-  stream = fopen("testfire.csv", "w");
-#endif
   dtemp = (temp_max - temp_min) / (float)(nfire_colors_arg - 1);
   FREEMEMORY(fire_rgbs);
   NewMemory((void **)&fire_rgbs, 3*nfire_colors_arg*sizeof(float));
@@ -511,18 +497,7 @@ void MakeFireColors(float temp_min, float temp_max, int nfire_colors_arg){
     //Xyz2Rgb(&HDTVsystem, xyz, fire_rgb);
     //ConstrainRgb(fire_rgb);
     memcpy(fire_rgbs + 3*i, fire_emission, 3*sizeof(float));
-#ifdef pp_BLACKBODY_OUT
-    if(stream != NULL){
-      float norm;
-
-      norm = sqrt(fire_emission[0]*fire_emission[0] + fire_emission[0]*fire_emission[0] + fire_emission[0]*fire_emission[0]);
-      fprintf(stream, "%f,%f,%f,%f,%f\n", temp, fire_emission[0], fire_emission[1], fire_emission[2], norm);
-    }
-#endif
   }
-#ifdef pp_BLACKBODY_OUT
-  if(stream!=NULL)fclose(stream);
-#endif
 }
 
 /* ----------------------- Temperature2Emission ----------------------------- */
