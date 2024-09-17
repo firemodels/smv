@@ -2173,13 +2173,6 @@ FILE_SIZE ReadPart(char *file_arg, int ifile_arg, int load_flag, int *errorcode_
   parti->loaded = 0;
   parti->display=0;
 
-#ifndef pp_PART_SPEEDUP
-  THREADcontrol(partload_threads, THREAD_LOCK);
-  plotstate=GetPlotState(DYNAMIC_PLOTS);
-  updatemenu=1;
-  THREADcontrol(partload_threads, THREAD_UNLOCK);
-#endif
-
   FREEMEMORY(parti->times);
   FREEMEMORY(parti->times_map);
 #ifndef pp_PARTFRAME
@@ -2193,11 +2186,9 @@ FILE_SIZE ReadPart(char *file_arg, int ifile_arg, int load_flag, int *errorcode_
       updatemenu = 1;
       UpdatePart5Extremes();
       PrintMemoryInfo;
-#ifdef pp_PART_SPEEDUP
       THREADcontrol(partload_threads, THREAD_LOCK);
       plotstate = GetPlotState(DYNAMIC_PLOTS);
       THREADcontrol(partload_threads, THREAD_UNLOCK);
-#endif
     }
     return 0.0;
   }
