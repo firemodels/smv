@@ -5230,7 +5230,7 @@ int ParseBNDFCount(void){
 
 /* ------------------ ParseBNDFProcess ------------------------ */
 
-int ParseBNDFProcess(bufferstreamdata *stream, char *buffer, int *nn_patch_in, int *ioffset_in, patchdata **patchgeom_in, int *ipatch_in, char buffers[6][256]){
+int ParseBNDFProcess(bufferstreamdata *stream, char *buffer, int *nn_patch_in, int *ioffset_in, int *ipatch_in, char buffers[6][256]){
   patchdata *patchi;
   int blocknumber;
   size_t len;
@@ -5239,7 +5239,6 @@ int ParseBNDFProcess(bufferstreamdata *stream, char *buffer, int *nn_patch_in, i
 
   int i;
   int nn_patch, ioffset, ipatch;
-  patchdata *patchgeom;
   char *bufferptr;
 
   if(setup_only==1||smoke3d_only==1)return RETURN_CONTINUE;
@@ -5247,7 +5246,6 @@ int ParseBNDFProcess(bufferstreamdata *stream, char *buffer, int *nn_patch_in, i
   nn_patch = *nn_patch_in;
   ioffset = *ioffset_in;
   ipatch = *ipatch_in;
-  patchgeom = *patchgeom_in;
 
   if(Match(buffer, "BNDS")==1){
     slicegeom = 1;
@@ -5272,12 +5270,7 @@ int ParseBNDFProcess(bufferstreamdata *stream, char *buffer, int *nn_patch_in, i
     sscanf(buffer3, "%i %i", &blocknumber, &version);
     blocknumber--;
   }
-  if(slicegeom==1){
-    patchi = patchgeom;
-  }
-  else{
-    patchi = patchinfo+ipatch;
-  }
+  patchi = patchinfo+ipatch;
 
   for(i = 0; i<6; i++){
     patchi->ijk[i] = -1;
@@ -5729,7 +5722,7 @@ int ParseSLCFCount(int option, bufferstreamdata *stream, char *buffer, int *nsli
 /* ------------------ ParseSLCFProcess ------------------------ */
 
 int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn_slice_in, int ioffset_in,
-  int *nslicefiles_in, slicedata **sliceinfo_copy_in, patchdata **patchgeom_in,
+  int *nslicefiles_in, slicedata **sliceinfo_copy_in,
   char buffers[6][256]){
   char *slicelabelptr, slicelabel[256], *sliceparms;
   float above_ground_level = 0.0;
@@ -5881,12 +5874,9 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
   sd->slice_filetype = SLICE_NODE_CENTER;
   sd->patchgeom = NULL;
   if(slicegeom==1){
-    patchdata *patchgeom_local;
-
     if(cell_center_flag==1)sd->cell_center = 1;
     sd->slice_filetype = SLICE_GEOM;
-    patchgeom_local = (patchdata *)SLICEBUFFER(sizeof(patchdata));
-    sd->patchgeom = patchgeom_local;
+    sd->patchgeom = ( patchdata * )SLICEBUFFER(sizeof(patchdata));
   }
   if(terrain==1){
     sd->slice_filetype = SLICE_TERRAIN;
@@ -6115,7 +6105,6 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
 
   if(slicegeom==1){
     strcpy(buffer, buffers[0]);
-    *patchgeom_in = sd->patchgeom;
   }
   else{
     return RETURN_CONTINUE;
@@ -7364,7 +7353,6 @@ int ReadSMV_Parse(bufferstreamdata *stream){
   int n_cadgeom_keywords = 0;
 
   char buffer[256], buffers[6][256];
-  patchdata *patchgeom;
 
  {
     int return_code;
@@ -8154,7 +8142,7 @@ int ReadSMV_Parse(bufferstreamdata *stream){
   }
 
   if(npartinfo>0 && NewMemory((void **)&part_buffer,       3*npartinfo*MAXFILELEN)    == 0)return 2;
-  if(nsliceinfo>0 && NewMemory((void **)&slice_buffer,     7*nsliceinfo*MAXFILELEN)   == 0)return 2;
+  if(nsliceinfo>0 && NewMemory((void **)&slice_buffer,     7*nsliceinfo*MAX(sizeof(patchdata),MAXFILELEN))   == 0)return 2;
   if(nsmoke3dinfo>0 && NewMemory((void **)&smoke3d_buffer, 9*nsmoke3dinfo*MAXFILELEN) == 0)return 2;
 
   PRINT_TIMER(timer_readsmv, "pass 1");
@@ -11381,7 +11369,7 @@ typedef struct {
       int return_val;
 
       START_TIMER(SLCF_timer);
-      return_val = ParseSLCFProcess(NO_SCAN, stream, buffer, &nn_slice, ioffset, &nslicefiles, &sliceinfo_copy, &patchgeom, buffers);
+      return_val = ParseSLCFProcess(NO_SCAN, stream, buffer, &nn_slice, ioffset, &nslicefiles, &sliceinfo_copy, buffers);
       CUM_TIMER(SLCF_timer, cum_SLCF_timer);
       if(return_val==RETURN_BREAK){
         BREAK;
@@ -11411,7 +11399,7 @@ typedef struct {
       int return_val;
 
       START_TIMER(BNDF_timer);
-      return_val = ParseBNDFProcess(stream, buffer, &nn_patch, &ioffset, &patchgeom, &ipatch, buffers);
+      return_val = ParseBNDFProcess(stream, buffer, &nn_patch, &ioffset, &ipatch, buffers);
       CUM_TIMER(BNDF_timer, cum_BNDF_timer);
       if(return_val==RETURN_BREAK){
         BREAK;
