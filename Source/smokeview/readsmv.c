@@ -5230,7 +5230,7 @@ int ParseBNDFCount(void){
 
 /* ------------------ ParseBNDFProcess ------------------------ */
 
-int ParseBNDFProcess(bufferstreamdata *stream, char *buffer, int *nn_patch_in, int *ioffset_in, patchdata **patchgeom_in, int *ipatch_in, char buffers[6][256]){
+int ParseBNDFProcess(bufferstreamdata *stream, char *buffer, int *nn_patch_in, int *ioffset_in, int *ipatch_in, char buffers[6][256]){
   patchdata *patchi;
   int blocknumber;
   size_t len;
@@ -5270,12 +5270,7 @@ int ParseBNDFProcess(bufferstreamdata *stream, char *buffer, int *nn_patch_in, i
     sscanf(buffer3, "%i %i", &blocknumber, &version);
     blocknumber--;
   }
-  if(slicegeom==1&& patchgeom_in !=NULL){
-    patchi = *patchgeom_in;
-  }
-  else{
-    patchi = patchinfo+ipatch;
-  }
+  patchi = patchinfo+ipatch;
 
   for(i = 0; i<6; i++){
     patchi->ijk[i] = -1;
@@ -11404,7 +11399,7 @@ typedef struct {
       int return_val;
 
       START_TIMER(BNDF_timer);
-      return_val = ParseBNDFProcess(stream, buffer, &nn_patch, &ioffset, NULL, &ipatch, buffers);
+      return_val = ParseBNDFProcess(stream, buffer, &nn_patch, &ioffset, &ipatch, buffers);
       CUM_TIMER(BNDF_timer, cum_BNDF_timer);
       if(return_val==RETURN_BREAK){
         BREAK;
