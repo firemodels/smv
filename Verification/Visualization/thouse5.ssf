@@ -155,14 +155,14 @@ LABEL
 UNLOADALL
 LOADINIFILE
  thouse5_gslice.ini
-//GPUOFF
 LOADVFILE
- thouse5_2_19.sf
+ thouse5_4_15.sf
 LOADVFILE
- thouse5_1_23.sf
-//LOADVSLICE
-// TEMPERATURE
-// 0 0.000000
+ thouse5_3_19.sf
+LOADVFILE
+ thouse5_2_15.sf
+LOADVFILE
+ thouse5_1_19.sf
 
 SETTIMEVAL
  60.000000
