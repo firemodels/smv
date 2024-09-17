@@ -652,9 +652,6 @@ extern "C" void GLUI3dSmokeSetup(int main_window){
     SPINNER_nfire_colors  = glui_3dsmoke->add_spinner_to_panel(PANEL_blackbody, "n temperatures",  GLUI_SPINNER_INT,   &nfire_colors,  BLACKBODY_TEMPS, GLUISmoke3dCB);
     glui_3dsmoke->add_checkbox_to_panel(PANEL_blackbody, "show blackbody colormap", &show_blackbody_colormap);
     glui_3dsmoke->add_checkbox_to_panel(PANEL_blackbody, "use blackbody colors", &use_blackbody_colors);
-#ifdef pp_GAMMA
-    glui_3dsmoke->add_checkbox_to_panel(PANEL_blackbody, "gamma correction", &gamma_correction, BLACKBODY_TEMPS, GLUISmoke3dCB);
-#endif
     ROLLOUT_voltest = glui_3dsmoke->add_rollout_to_panel(ROLLOUT_voldisplay, "volrender test data");
     ROLLOUT_voltest->close();
     glui_3dsmoke->add_spinner_to_panel(ROLLOUT_voltest, "temp 1",  GLUI_SPINNER_FLOAT, &voltest_temp1);

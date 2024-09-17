@@ -219,43 +219,6 @@ int ConstrainRgb(float *rgb_arg){
        http://www.poynton.com/GammaFAQ.html
 */
 
-#ifdef pp_GAMMA
-/* ----------------------- GammaCorrect ----------------------------- */
-
-void GammaCorrect(const struct colourSystem *cs, float *c){
-  float gamma;
-
-  gamma = cs->gamma;
-
-  if(gamma == GAMMA_REC709){
-    /* Rec. 709 gamma correction. */
-    float cc = 0.018;
-
-    if(*c < cc){
-      float factor;
-
-      factor = ((1.099*pow(cc, 0.45)) - 0.099) / cc;
-      *c *= factor;
-    }
-    else{
-      *c = (1.099*pow(*c, 0.45)) - 0.099;
-    }
-  }
-  else{
-    /* Nonlinear colour = (Linear colour)^(1/gamma) */
-    *c = pow(*c, 1.0 / gamma);
-  }
-}
-
-/* ----------------------- GammaCorrectRgb ----------------------------- */
-
-void GammaCorrectRgb(const struct colourSystem *cs, float *rgb_arg){
-  GammaCorrect(cs, rgb_arg);
-  GammaCorrect(cs, rgb_arg + 1);
-  GammaCorrect(cs, rgb_arg + 2);
-}
-#endif
-
 /*                            BB_SPECTRUM
 
     Calculate, by Planck's radiation law, the emittance of a black body
@@ -1685,9 +1648,7 @@ void IntegrateFireColors(float *integrated_firecolor, float *xyzvert, float dlen
  //   memcpy(fire_rgb_from, integrated_firecolor, 3*sizeof(float));
  //   Xyz2Rgb(&HDTVsystem, fire_rgb_from, fire_rgb_to);
  //   ConstrainRgb(fire_rgb_to);
-#ifdef pp_GAMMA
-    if(gamma_correction==1)GammaCorrectRgb(&HDTVsystem, integrated_firecolor);
-#endif
+
  //    memcpy(integrated_firecolor, fire_rgb_to, 3*sizeof(float));
     integrated_firecolor[3] = alphan;
     if(volbw==1){
