@@ -18,7 +18,6 @@
 typedef FILE MFILE;
 #define MFILE                   FILE
 #define SKIP_SMOKE              FSEEK( SMOKE3DFILE, fortran_skip, SEEK_CUR)
-#define FOPEN_SMOKE(file,mode,nthreads,use_threads) fopen(file,mode)
 #define FREAD_SMOKE(a,b,c,d)    fread(a,b,c,d)
 #define FREADPTR_SMOKE(a,b,c,d) fread(a,b,c,d)
 #define FEOF_SMOKE(a)           feof(a)
@@ -3429,7 +3428,7 @@ FILE *GetSmokeFileSize(char *smokefile, int fortran_skip, int version){
     printf("          and was not able to create a new size file: %s\n", smoke_sizefilename);
     return NULL;  // can't write size file in temp directory so give up
   }
-  SMOKE3DFILE = FOPEN_SMOKE(smokefile, "rb", n_smokeload_threads, use_smokeload_threads);
+  SMOKE3DFILE = fopen(smokefile, "rb");
   if(SMOKE3DFILE == NULL){
     fclose(SMOKE_SIZE);
     return NULL;
@@ -3792,11 +3791,7 @@ void FreeSmoke3D(smoke3ddata *smoke3di){
 
 /* ------------------ GetSmoke3DVersion ------------------------ */
 
-#ifdef pp_SMOKE_SPEEDUP
 int GetSmoke3DVersion2(smoke3ddata *smoke3di){
-#else
-int GetSmoke3DVersion(smoke3ddata *smoke3di){
-#endif
   FILE *SMOKE3DFILE = NULL, *SMOKE3D_REGFILE = NULL, *SMOKE3D_COMPFILE = NULL;
   int nxyz[8];
   char *file;
@@ -3831,7 +3826,6 @@ int GetSmoke3DVersion(smoke3ddata *smoke3di){
   return nxyz[1];
 }
 
-#ifdef pp_SMOKE_SPEEDUP
 /* ------------------ GetSmoke3DVersion ------------------------ */
 
 int GetSmoke3DVersion(smoke3ddata *smoke3di){
@@ -3847,7 +3841,7 @@ int GetSmoke3DVersion(smoke3ddata *smoke3di){
   }
   return smoke3d_compression_type;
 }
-#endif
+
 /* ------------------ SetSmokeColorFlags ------------------------ */
 
 void SetSmokeColorFlags(void){
@@ -4134,11 +4128,7 @@ int SetupSmoke3D(smoke3ddata *smoke3di, int load_flag, int iframe_arg, int *erro
 
   if(smoke3di->compression_type==COMPRESSED_UNKNOWN){
     smoke3di->compression_type = GetSmoke3DVersion(smoke3di);
-#ifdef pp_SMOKE_SPEEDUP
     update_smoke3dmenulabels = 1;
-#else
-    UpdateSmoke3dMenuLabels();
-#endif
   }
 #ifdef pp_SMOKEFRAME
   if(iframe_arg == ALL_SMOKE_FRAMES)PRINTF("Loading %s(%s)", smoke3di->file, smoke3di->label.shortlabel);
@@ -4255,10 +4245,8 @@ FILE_SIZE ReadSmoke3D(int time_frame,int ifile_arg,int load_flag, int first_time
   int fortran_skip=0;
 #endif
 
-#ifdef pp_SMOKE_SPEEDUP  
   update_glui_merge_smoke = 1;
   GLUTPOSTREDISPLAY;
-#endif
   SetTimeState();
   update_smokefire_colors = 1;
 #ifndef pp_SMOKEFRAME
@@ -4329,7 +4317,7 @@ FILE_SIZE ReadSmoke3D(int time_frame,int ifile_arg,int load_flag, int first_time
     }
   }
 #else
-  SMOKE3DFILE=FOPEN_SMOKE(smoke3di->file,"rb", n_smokeload_threads, use_smokeload_threads);
+  SMOKE3DFILE=fopen(smoke3di->file,"rb");
   if(SMOKE3DFILE==NULL){
     SetupSmoke3D(smoke3di,UNLOAD, time_frame, &error_local);
     *errorcode_arg =1;
@@ -4926,8 +4914,6 @@ void MergeSmoke3D(smoke3ddata *smoke3dset){
   PRINT_TIMER(merge_smoke_time, "MergeSmoke3D");
 }
 
-#ifdef pp_SMOKEDRAW_SPEEDUP
-
 /* ------------------ UpdateGluiMergeSmoke ------------------------ */
 
 void UpdateGluiMergeSmoke(void){
@@ -4969,7 +4955,6 @@ void *MtMergeSmoke3D(void *arg){
   }
   THREAD_EXIT(mergesmoke_threads);
 }
-#endif
 
 /* ------------------ UpdateSmoke3dMenuLabels ------------------------ */
 

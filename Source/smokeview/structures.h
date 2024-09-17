@@ -29,11 +29,10 @@ typedef struct _sliceparmdata {
 
 
 /* --------------------------  langlistdata ------------------------------------ */
-#ifdef pp_SMOKEDRAW_SPEEDUP
+
 typedef struct _smokethreaddata{
   int ithread, nthreads;
 } smokethreaddata;
-#endif
 
 /* --------------------------  langlistdata ------------------------------------ */
 

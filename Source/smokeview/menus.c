@@ -3374,9 +3374,7 @@ void UnloadSmoke3D(smoke3ddata *smoke3di){
 void UnloadAllSmoke3D(int type){
   int i;
 
-#ifdef pp_SMOKE_SPEEDUP
   update_glui_merge_smoke = 1;
-#endif
   if(nsmoke3dinfo > 0){
     for(i = 0; i < nsmoke3dinfo; i++){
       smoke3ddata *smoke3di;
@@ -4863,9 +4861,7 @@ FILE_SIZE LoadSmoke3D(int type, int frame, int *count, float *time_value){
     break;
     }
   }
-#ifdef pp_SMOKE_SPEEDUP
   smoke3d_compression_type = COMPRESSED_UNKNOWN;
-#endif
   for(i=0;i<nsmoke3dinfo;i++){
     smoke3ddata *smoke3di;
 

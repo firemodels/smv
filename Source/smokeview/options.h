@@ -9,14 +9,10 @@
 //#define pp_UPDATE_FACES     // update faces in UpdateTimes routine (probably not necessary)
 //#define pp_PARTBOUND_MULTI // compute particle bounds in the background
 //#define pp_LUA            // turn on LUA option
-//#define pp_SMOKE_MULTI      // load 3d smoke in parallel
 //#define pp_SMOKE16        // load 16 bit smoke files
 //#define pp_GAMMA          // show gamma correction checkbox
 // #define pp_BLACKBODY_OUT // output generated blackbody color data 
 #define pp_FAST             // set fast startup by default
-#define pp_PART_SPEEDUP     // improve efficiency of loading particles
-#define pp_SMOKE_SPEEDUP    // improve efficiency of loading 3d smoke
-#define pp_SMOKEDRAW_SPEEDUP    // improve efficiency of drawing 3d smoke
 #define pp_GPU              // support the GPU
 #define pp_THREAD           // turn on multi-threading
 #ifdef pp_GPU

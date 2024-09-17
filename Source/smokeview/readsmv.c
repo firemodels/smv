@@ -7035,9 +7035,7 @@ int ReadSMV_Init(){
 #ifdef pp_FDS
     use_readsmvorig_threads = 0;
 #endif
-#ifdef pp_SMOKEDRAW_SPEEDUP
     use_mergesmoke_threads  = 0;
-#endif
   }
 
   START_TIMER(getfilelist_time);
@@ -11855,7 +11853,6 @@ int ReadSMV_Configure(){
   MakeIBlankCarve();
   PRINT_TIMER(timer_readsmv, "MakeIBlankCarve");
 
-#ifdef pp_SMOKEDRAW_SPEEDUP
   if(mergesmoke_threads == NULL){
     mergesmoke_threads = THREADinit(&n_mergesmoke_threads, &use_mergesmoke_threads, MtMergeSmoke3D);
     for(i = 0; i < n_mergesmoke_threads; i++){
@@ -11863,7 +11860,6 @@ int ReadSMV_Configure(){
       smokethreadinfo[i].nthreads = n_mergesmoke_threads;
     }
   }
-#endif
 
   if(ffmpeg_threads == NULL){
     ffmpeg_threads = THREADinit(&n_ffmpeg_threads, &use_ffmpeg_threads, SetupFF);
@@ -13902,15 +13898,6 @@ int ReadIni2(char *inifile, int localfile){
       sscanf(buffer, "%i", &tload_zipstep);
       tload_zipstep = MAX(tload_zipstep, 1);
       tload_zipskip = tload_zipstep - 1;
-      continue;
-    }
-    if(MatchINI(buffer, "SMOKELOAD")==1){
-      fgets(buffer, 255, stream);
-#ifdef pp_SMOKE16
-      sscanf(buffer, "%i %i %i", &use_smokeload_threads, &n_smokeload_threads, &load_smoke16);
-#else
-      sscanf(buffer, "%i %i", &use_smokeload_threads, &n_smokeload_threads);
-#endif
       continue;
     }
     if(MatchINI(buffer, "LOADINC") == 1){
@@ -16985,12 +16972,6 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %i %i %f %i %i %i %i %i\n", research_mode, 1, colorbar_shift, ncolorlabel_digits, force_fixedpoint, ngridloc_digits, sliceval_ndigits, force_exponential);
   fprintf(fileout, "SLICEAVERAGE\n");
   fprintf(fileout, " %i %f %i\n", slice_average_flag, slice_average_interval, vis_slice_average);
-  fprintf(fileout, "SMOKELOAD\n");
-#ifdef pp_SMOKE16
-  fprintf(fileout, " %i %i %i\n", use_smokeload_threads, n_smokeload_threads, load_smoke16);
-#else
-  fprintf(fileout, " %i %i\n", use_smokeload_threads, n_smokeload_threads);
-#endif
   fprintf(fileout, "SLICEDATAOUT\n");
   fprintf(fileout, " %i \n", output_slicedata);
   fprintf(fileout, "USER_ROTATE\n");
