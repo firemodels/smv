@@ -4914,8 +4914,6 @@ void MergeSmoke3D(smoke3ddata *smoke3dset){
   PRINT_TIMER(merge_smoke_time, "MergeSmoke3D");
 }
 
-#ifdef pp_SMOKEDRAW_SPEEDUP
-
 /* ------------------ UpdateGluiMergeSmoke ------------------------ */
 
 void UpdateGluiMergeSmoke(void){
@@ -4957,7 +4955,6 @@ void *MtMergeSmoke3D(void *arg){
   }
   THREAD_EXIT(mergesmoke_threads);
 }
-#endif
 
 /* ------------------ UpdateSmoke3dMenuLabels ------------------------ */
 

@@ -168,26 +168,10 @@ void UpdateFrameNumber(int changetime){
     }
     if(show3dsmoke==1 && nsmoke3dinfo > 0){
       INIT_PRINT_TIMER(merge_smoke_time);
-#ifdef pp_SMOKEDRAW_SPEEDUP
       THREADcontrol(mergesmoke_threads, THREAD_LOCK);
       THREADruni(mergesmoke_threads, (unsigned char *)smokethreadinfo, sizeof(smokethreaddata));
       THREADcontrol(mergesmoke_threads, THREAD_JOIN);
       THREADcontrol(mergesmoke_threads, THREAD_UNLOCK);
-#else
-      for(i = 0;i < nsmoke3dinfo;i++){
-        smoke3ddata *smoke3di;
-
-        smoke3di = smoke3dinfo + i;
-        if(smoke3di->loaded == 0 || smoke3di->display == 0)continue;
-        smoke3di->ismoke3d_time = smoke3di->timeslist[itimes];
-        if(IsSmokeComponentPresent(smoke3di) == 0)continue;
-        if(smoke3di->ismoke3d_time != smoke3di->lastiframe){
-          smoke3di->lastiframe = smoke3di->ismoke3d_time;
-          UpdateSmoke3D(smoke3di);
-        }
-      }
-      MergeSmoke3D(NULL);
-#endif
       PrintMemoryInfo;
       PRINT_TIMER(merge_smoke_time, "UpdateSmoke3D + MergeSmoke3D");
     }

@@ -45,9 +45,7 @@ GLUI_Spinner *SPINNER_skipframe=NULL;
 GLUI_Spinner *SPINNER_hrrpuv_cutoff=NULL;
 GLUI_Spinner *SPINNER_nongpu_vol_factor=NULL;
 GLUI_Spinner *SPINNER_gpu_vol_factor=NULL;
-#ifdef pp_SMOKEDRAW_SPEEDUP
 GLUI_Spinner *SPINNER_smoke3d_draw_threads = NULL;
-#endif
 GLUI_Spinner *SPINNER_smoke3d_load_start=NULL;
 GLUI_Spinner *SPINNER_smoke3d_load_skip=NULL;
 
@@ -120,9 +118,7 @@ GLUI_Checkbox **CHECKBOX_meshvisptr = NULL;
 GLUI_Checkbox *CHECKBOX_meshvis = NULL;
 GLUI_Checkbox *CHECKBOX_edit_colormap=NULL;
 GLUI_Checkbox *CHECKBOX_plane_normal=NULL;
-#ifdef pp_SMOKEDRAW_SPEEDUP
 GLUI_Checkbox *CHECKBOX_view_parallel = NULL;
-#endif
 
 GLUI_Panel *PANEL_colormap3 = NULL;
 GLUI_Panel *PANEL_fire_opacity = NULL;
@@ -405,12 +401,10 @@ extern "C" void GLUI3dSmokeSetup(int main_window){
   glui_3dsmoke->add_checkbox_to_panel(PANEL_settings1, _("triangle display rate"), &show_trirates);
 
   PANEL_smoke_parallel = glui_3dsmoke->add_panel_to_panel(PANEL_settings1,"parallel");
-#ifdef pp_SMOKEDRAW_SPEEDUP
   CHECKBOX_view_parallel = glui_3dsmoke->add_checkbox_to_panel(PANEL_smoke_parallel, _("drawing setup"),  &use_mergesmoke_glui_threads, MERGE_SMOKE, GLUISmoke3dCB);
   SPINNER_smoke3d_draw_threads = glui_3dsmoke->add_spinner_to_panel(PANEL_smoke_parallel, _("threads"), GLUI_SPINNER_INT, &n_mergesmoke_glui_threads,   MERGE_SMOKE, GLUISmoke3dCB);
   SPINNER_smoke3d_draw_threads->set_int_limits(1, MAX_THREADS);
   GLUISmoke3dCB(MERGE_SMOKE);
-#endif
 
   //---------------------------------------------Slice render settings--------------------------------------------------------------
 
@@ -916,11 +910,9 @@ extern "C" void GLUISmoke3dCB(int var){
     updatemenu = 1;
     break;
 #endif
-#ifdef pp_SMOKEDRAW_SPEEDUP
   case MERGE_SMOKE:
     UpdateGluiMergeSmoke();
     break;
-#endif
   case SMOKE_BLACK:
     break;
   case SMOKE_SKIP_XYZ:

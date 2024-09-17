@@ -13,7 +13,6 @@
 //#define pp_GAMMA          // show gamma correction checkbox
 // #define pp_BLACKBODY_OUT // output generated blackbody color data 
 #define pp_FAST             // set fast startup by default
-#define pp_SMOKEDRAW_SPEEDUP    // improve efficiency of drawing 3d smoke
 #define pp_GPU              // support the GPU
 #define pp_THREAD           // turn on multi-threading
 #ifdef pp_GPU
