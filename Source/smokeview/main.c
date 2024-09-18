@@ -298,8 +298,8 @@ char *ProcessCommandLine(CommandlineArgs *args){
 #ifdef pp_FRAME
   FREEMEMORY(frametest_filename);
   NewMemory((void **)&frametest_filename, len_casename + strlen(".tst") + 1);
-  STRCPY(caseini_filename, fdsprefix);
-  STRCAT(caseini_filename, ".tst");
+  STRCPY(frametest_filename, fdsprefix);
+  STRCAT(frametest_filename, ".tst");
 #endif
 
   FREEMEMORY(fedsmv_filename);
