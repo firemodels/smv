@@ -1689,7 +1689,6 @@ int GetGeomDataSizeFixed(patchdata *patchi, int *nvars, int time_frame, int *geo
   file_size = GetFileSizeSMV(patchi->reg_file);
   if(max_buffer_size!=NULL)*max_buffer_size = 0;
   if(file_size == 0)return 0;
-  if(patchi->geominfo == NULL)return 0;
 
   header_size = 2*(4 + 4 + 4);
   frame_size  = 12; // time
@@ -2175,7 +2174,7 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
   MakeTimesMap(patchi->geom_times, &patchi->geom_times_map, ntimes_local);
 
   return_filesize += filesize;
-  if(error == 1||ntimes_local==0){
+  if(error == 1){
     patchi->loaded = 0;
     patchi->display = 0;
     return return_filesize;
