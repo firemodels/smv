@@ -1661,3 +1661,26 @@ void UpdateDeviceTextures(object_collection *objectscoll, int ndeviceinfo,
   *device_texture_listptr       = device_texture_list;
   *device_texture_list_indexptr = device_texture_list_index;
 }
+
+/* ----------------------- UpdatePartClassDepend ----------------------------- */
+
+void UpdatePartClassDepend(partclassdata *partclassi){
+  int i;
+
+  if(partclassi->prop!=NULL){
+    sv_object_frame *obj_frame;
+    int nvar;
+
+    obj_frame=partclassi->prop->smv_object->obj_frames[0];
+    for(i=0;i<partclassi->nvars_dep-3;i++){
+      char *var;
+
+      var=partclassi->vars_dep[i];
+      partclassi->vars_dep_index[i]= GetObjectFrameTokenLoc(var,obj_frame);
+    }
+    nvar = partclassi->nvars_dep;
+    partclassi->vars_dep_index[nvar-3]= GetObjectFrameTokenLoc("R",obj_frame);
+    partclassi->vars_dep_index[nvar-2]= GetObjectFrameTokenLoc("G",obj_frame);
+    partclassi->vars_dep_index[nvar-1]= GetObjectFrameTokenLoc("B",obj_frame);
+  }
+}
