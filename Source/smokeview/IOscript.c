@@ -3189,21 +3189,26 @@ void ScriptHilightMinMaxVals(scriptdata *scripti, int flag){
   switch(flag){
   case 0:
     show_extreme_mindata = scripti->ival;
-    glui_down_rgb[0] = scripti->ival2;
-    glui_down_rgb[1] = scripti->ival3;
-    glui_down_rgb[2] = scripti->ival4;
+    if(show_extreme_mindata == 1){
+      glui_down_rgb[0] = scripti->ival2;
+      glui_down_rgb[1] = scripti->ival3;
+      glui_down_rgb[2] = scripti->ival4;
+      GLUIUpdateExtremeVals();
+    }
     break;
   case 1:
     show_extreme_maxdata = scripti->ival;
-    glui_down_rgb[0] = scripti->ival2;
-    glui_down_rgb[1] = scripti->ival3;
-    glui_down_rgb[2] = scripti->ival4;
+    if(show_extreme_maxdata == 1){
+      glui_up_rgb[0] = scripti->ival2;
+      glui_up_rgb[1] = scripti->ival3;
+      glui_up_rgb[2] = scripti->ival4;
+      GLUIUpdateExtremeVals();
+    }
     break;
   default:
     assert(0);
     break;
   }
-  GLUIUpdateExtremeVals();
   GLUIUpdateExtreme();
 }
 
