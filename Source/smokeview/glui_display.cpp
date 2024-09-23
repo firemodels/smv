@@ -193,8 +193,6 @@ GLUI_Button *BUTTON_label_4=NULL;
 #define TEXTURE_SHOWALL 0
 #define TEXTURE_HIDEALL 1
 
-#define COLORBAR_EXTREME_RGB 15
-#define COLORBAR_EXTREME     16
 #define FLIP                 19
 #define APPLY_VENTOFFSET     20
 

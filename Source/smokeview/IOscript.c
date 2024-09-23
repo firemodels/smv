@@ -324,6 +324,8 @@ void InitKeywords(void){
   InitKeyword("SETCBAR",             SCRIPT_SETCBAR, 1);             // documented
   InitKeyword("SETCBARLAB",          SCRIPT_SETCBARLAB, 0);
   InitKeyword("SETCBARRGB",          SCRIPT_SETCBARRGB, 0);
+  InitKeyword("HILIGHTMINVALS",      SCRIPT_HILIGHTMINVALS, 4);      // documented
+  InitKeyword("HILIGHTMAXVALS",      SCRIPT_HILIGHTMAXVALS, 4);      // documented
 
 // tour
   InitKeyword("LOADTOUR",            SCRIPT_LOADTOUR, 1);            // documented
@@ -854,7 +856,21 @@ int CompileScript(char *scriptfile){
         sscanf(param_buffer, "%i %i", &scripti->ival, &scripti->ival2);
         break;
 
-// RENDERTYPE
+// HILIGHTMINVALS
+//  show/hide r g b (int)
+// HILIGHTMAXVALS
+//  show/hide r g b (int)
+      case SCRIPT_HILIGHTMAXVALS:
+      case SCRIPT_HILIGHTMINVALS:
+        SETbuffer;
+        sscanf(param_buffer, "%i %i %i %i", &scripti->ival, &scripti->ival2, &scripti->ival3, &scripti->ival4);
+        scripti->ival  = CLAMP(scripti->ival,  0, 1);
+        scripti->ival2 = CLAMP(scripti->ival2, 0, 255);
+        scripti->ival3 = CLAMP(scripti->ival3, 0, 255);
+        scripti->ival4 = CLAMP(scripti->ival4, 0, 255);
+        break;
+        
+        // RENDERTYPE
 //  jpg or png  (char)
       case SCRIPT_RENDERTYPE:
         SETcval;
@@ -3167,6 +3183,35 @@ void ScriptPartClassType(scriptdata *scripti){
   }
 }
 
+/* ------------------ ScriptHilightMinMaxVals ------------------------ */
+
+void ScriptHilightMinMaxVals(scriptdata *scripti, int flag){
+  switch(flag){
+  case 0:
+    show_extreme_mindata = scripti->ival;
+    if(show_extreme_mindata == 1){
+      glui_down_rgb[0] = scripti->ival2;
+      glui_down_rgb[1] = scripti->ival3;
+      glui_down_rgb[2] = scripti->ival4;
+      GLUIUpdateExtremeVals();
+    }
+    break;
+  case 1:
+    show_extreme_maxdata = scripti->ival;
+    if(show_extreme_maxdata == 1){
+      glui_up_rgb[0] = scripti->ival2;
+      glui_up_rgb[1] = scripti->ival3;
+      glui_up_rgb[2] = scripti->ival4;
+      GLUIUpdateExtremeVals();
+    }
+    break;
+  default:
+    assert(0);
+    break;
+  }
+  GLUIUpdateExtreme();
+}
+
 /* ------------------ ScriptLoadIniFile ------------------------ */
 
 void ScriptLoadIniFile(scriptdata *scripti){
@@ -3878,6 +3923,12 @@ int RunScriptCommand(scriptdata *script_command){
       else{
         UpdateRenderType(PNG);
       }
+      break;
+    case SCRIPT_HILIGHTMINVALS:
+      ScriptHilightMinMaxVals(scripti, 0);
+      break;
+    case SCRIPT_HILIGHTMAXVALS:
+      ScriptHilightMinMaxVals(scripti, 1);
       break;
     case SCRIPT_MOVIETYPE:
       if(STRCMP(scripti->cval, "WMV") == 0){
