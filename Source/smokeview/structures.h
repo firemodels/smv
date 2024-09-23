@@ -693,27 +693,6 @@ typedef struct _cameradata {
   char name[301];
 } cameradata;
 
-/* --------------------------  partclassdata ------------------------------------ */
-
-typedef struct _partclassdata {
-  char *name;
-  int col_diameter, col_length, col_azimuth, col_elevation;
-  int col_u_vel, col_v_vel, col_w_vel;
-  float dx, dy, dz;
-  float diameter, length, azimuth, elevation;
-  char *device_name;
-  propdata *prop;
-  sv_object *sphere, *smv_device;
-  int vis_type;
-  int maxpoints, ntypes;
-  float *xyz, *rgb;
-  int nvars_dep;
-  int vars_dep_index[PROPVARMAX];
-  float fvars_dep[PROPVARMAX];
-  char *vars_dep[PROPVARMAX];
-  flowlabels *labels;
-} partclassdata;
-
 /* --------------------------  partpropdata ------------------------------------ */
 
 typedef struct _partpropdata {
