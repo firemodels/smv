@@ -2710,8 +2710,6 @@ extern GLUI *glui_clip, *glui_colorbar, *glui_labels, *glui_geometry, *glui_moti
 extern GLUI *glui_shooter, *glui_tour, *glui_stereo, *glui_trainer;
 #endif
 
-int cb_up_rgb[3], cb_down_rgb[3];
-
 GLUI_Listbox *LISTBOX_cb_bound = NULL;
 
 GLUI_Rollout *ROLLOUT_zone_bound=NULL;
@@ -3020,7 +3018,6 @@ GLUI_RadioButton *RADIOBUTTON_zone_permax=NULL;
 
 #define FLIP                  19
 #define CB_USE_LIGHTING      120
-#define COLORBAR_EXTREME_RGB  15
 #define COLORBAR_EXTREME      16
 // #define SPLIT_COLORBAR         1 now defined in smokeviewdefs.h
 #define COLORBAR_SHOWSPLIT    17
@@ -3247,15 +3244,19 @@ extern "C" void GLUISplitCB(int var){
 
 extern "C" void GLUIExtremeCB(int var){
   colorbardata *cbi;
-  unsigned char *rgb_nodes;
   int i;
 
   switch(var){
   case COLORBAR_EXTREME:
+    if(colorbartype<0||colorbartype>=ncolorbars)return;
+    cbi = colorbarinfo + colorbartype;
     if(show_extreme_mindata==1){
       if(SPINNER_down_red!=NULL)SPINNER_down_red->enable();
       if(SPINNER_down_green!=NULL)SPINNER_down_green->enable();
       if(SPINNER_down_blue!=NULL)SPINNER_down_blue->enable();
+      for(i = 0; i<3; i++){
+        rgb_below_min[i] = glui_down_rgb[i];
+      }
     }
     else{
       if(SPINNER_down_red!=NULL)SPINNER_down_red->disable();
@@ -3266,34 +3267,21 @@ extern "C" void GLUIExtremeCB(int var){
       if(SPINNER_up_red!=NULL)SPINNER_up_red->enable();
       if(SPINNER_up_green!=NULL)SPINNER_up_green->enable();
       if(SPINNER_up_blue!=NULL)SPINNER_up_blue->enable();
+      for(i = 0; i<3; i++){
+        rgb_above_max[i] = glui_up_rgb[i];
+      }
     }
     else{
       if(SPINNER_up_red!=NULL)SPINNER_up_red->disable();
       if(SPINNER_up_green!=NULL)SPINNER_up_green->disable();
       if(SPINNER_up_blue!=NULL)SPINNER_up_blue->disable();
     }
-    if(colorbartype<0||colorbartype>=ncolorbars)return;
-    cbi = colorbarinfo+colorbartype;
     RemapColorbar(cbi);
     UpdateRGBColors(colorbar_select_index);
     updatemenu = 1;
     break;
-  case COLORBAR_EXTREME_RGB:
-    if(colorbartype<0||colorbartype>=ncolorbars)return;
-    cbi = colorbarinfo+colorbartype;
-
-    rgb_nodes = rgb_above_max;
-    for(i = 0; i<3; i++){
-      rgb_nodes[i] = cb_up_rgb[i];
-    }
-    rgb_nodes = rgb_below_min;
-    for(i = 0; i<3; i++){
-      rgb_nodes[i] = cb_down_rgb[i];
-    }
-    RemapColorbar(cbi);
-    UpdateRGBColors(colorbar_select_index);
-    break;
   default:
+    assert(0);
     break;
   }
 }
@@ -5721,9 +5709,9 @@ hvacductboundsCPP.setup("hvac", ROLLOUT_hvacduct, hvacductbounds_cpp, nhvacductb
   CHECKBOX_show_extreme_mindata = glui_bounds->add_checkbox_to_panel(PANEL_extreme_min, _("Color below min"), &show_extreme_mindata, COLORBAR_EXTREME,
   GLUIExtremeCB);
 
-  SPINNER_down_red = glui_bounds->add_spinner_to_panel(PANEL_extreme_min, _("red"), GLUI_SPINNER_INT, cb_down_rgb, COLORBAR_EXTREME_RGB, GLUIExtremeCB);
-  SPINNER_down_green = glui_bounds->add_spinner_to_panel(PANEL_extreme_min, _("green"), GLUI_SPINNER_INT, cb_down_rgb+1, COLORBAR_EXTREME_RGB, GLUIExtremeCB);
-  SPINNER_down_blue = glui_bounds->add_spinner_to_panel(PANEL_extreme_min, _("blue"), GLUI_SPINNER_INT, cb_down_rgb+2, COLORBAR_EXTREME_RGB, GLUIExtremeCB);
+  SPINNER_down_red   = glui_bounds->add_spinner_to_panel(PANEL_extreme_min, _("red"),   GLUI_SPINNER_INT, glui_down_rgb,   COLORBAR_EXTREME, GLUIExtremeCB);
+  SPINNER_down_green = glui_bounds->add_spinner_to_panel(PANEL_extreme_min, _("green"), GLUI_SPINNER_INT, glui_down_rgb+1, COLORBAR_EXTREME, GLUIExtremeCB);
+  SPINNER_down_blue  = glui_bounds->add_spinner_to_panel(PANEL_extreme_min, _("blue"),  GLUI_SPINNER_INT, glui_down_rgb+2, COLORBAR_EXTREME, GLUIExtremeCB);
   SPINNER_down_red->set_int_limits(0, 255);
   SPINNER_down_green->set_int_limits(0, 255);
   SPINNER_down_blue->set_int_limits(0, 255);
@@ -5734,9 +5722,9 @@ hvacductboundsCPP.setup("hvac", ROLLOUT_hvacduct, hvacductbounds_cpp, nhvacductb
 
   CHECKBOX_show_extreme_maxdata = glui_bounds->add_checkbox_to_panel(PANEL_extreme_max, _("Color above max"), &show_extreme_maxdata, COLORBAR_EXTREME, GLUIExtremeCB);
 
-  SPINNER_up_red = glui_bounds->add_spinner_to_panel(PANEL_extreme_max, _("red"), GLUI_SPINNER_INT, cb_up_rgb, COLORBAR_EXTREME_RGB, GLUIExtremeCB);
-  SPINNER_up_green = glui_bounds->add_spinner_to_panel(PANEL_extreme_max, _("green"), GLUI_SPINNER_INT, cb_up_rgb+1, COLORBAR_EXTREME_RGB, GLUIExtremeCB);
-  SPINNER_up_blue = glui_bounds->add_spinner_to_panel(PANEL_extreme_max, _("blue"), GLUI_SPINNER_INT, cb_up_rgb+2, COLORBAR_EXTREME_RGB, GLUIExtremeCB);
+  SPINNER_up_red   = glui_bounds->add_spinner_to_panel(PANEL_extreme_max, _("red"),   GLUI_SPINNER_INT, glui_up_rgb,   COLORBAR_EXTREME, GLUIExtremeCB);
+  SPINNER_up_green = glui_bounds->add_spinner_to_panel(PANEL_extreme_max, _("green"), GLUI_SPINNER_INT, glui_up_rgb+1, COLORBAR_EXTREME, GLUIExtremeCB);
+  SPINNER_up_blue  = glui_bounds->add_spinner_to_panel(PANEL_extreme_max, _("blue"),  GLUI_SPINNER_INT, glui_up_rgb+2, COLORBAR_EXTREME, GLUIExtremeCB);
   SPINNER_up_red->set_int_limits(0, 255);
   SPINNER_up_green->set_int_limits(0, 255);
   SPINNER_up_blue->set_int_limits(0, 255);
@@ -5744,7 +5732,7 @@ hvacductboundsCPP.setup("hvac", ROLLOUT_hvacduct, hvacductbounds_cpp, nhvacductb
   if(use_data_extremes==0){
     CHECKBOX_show_extreme_maxdata->set_int_val(0);
     CHECKBOX_show_extreme_mindata->set_int_val(0);
-    GLUIExtremeCB(COLORBAR_EXTREME_RGB);
+    GLUIExtremeCB(COLORBAR_EXTREME);
   }
   GLUIColorbarGlobal2Local();
 

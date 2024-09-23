@@ -815,6 +815,8 @@ SVEXTERN int SVDECL(vcolorbar_delta,35);
 SVEXTERN int SVDECL(hcolorbar_delta, 25);
 SVEXTERN int colorbar_label_width;
 
+SVEXTERN int glui_up_rgb[3], glui_down_rgb[3];
+
 SVEXTERN int timebar_left_width, timebar_right_width;
 SVEXTERN int SVDECL(h_space,2), SVDECL(v_space,2);
 SVEXTERN portdata VP_fullscreen, VP_title, VP_timebar, VP_vcolorbar, VP_scene, VP_info;
