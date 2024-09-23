@@ -324,8 +324,8 @@ void InitKeywords(void){
   InitKeyword("SETCBAR",             SCRIPT_SETCBAR, 1);             // documented
   InitKeyword("SETCBARLAB",          SCRIPT_SETCBARLAB, 0);
   InitKeyword("SETCBARRGB",          SCRIPT_SETCBARRGB, 0);
-  InitKeyword("HILIGHTMINVALS",      SCRIPT_HILIGHTMINVALS, 4);
-  InitKeyword("HILIGHTMAXVALS",      SCRIPT_HILIGHTMAXVALS, 4);
+  InitKeyword("HILIGHTMINVALS",      SCRIPT_HILIGHTMINVALS, 4);      // documented
+  InitKeyword("HILIGHTMAXVALS",      SCRIPT_HILIGHTMAXVALS, 4);      // documented
 
 // tour
   InitKeyword("LOADTOUR",            SCRIPT_LOADTOUR, 1);            // documented
