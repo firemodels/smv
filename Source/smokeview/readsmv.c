@@ -20,6 +20,7 @@
 #include "readimage.h"
 #include "readhvac.h"
 #include "readgeom.h"
+#include "readslice.h"
 #include "readobject.h"
 #include "readlabel.h"
 #include "readsmoke.h"
@@ -2855,15 +2856,15 @@ void UpdateBoundInfo(void){
   }
   PRINT_TIMER(bound_timer, "isobounds");
 
-  if(nsliceinfo > 0){
+  if(slicecoll.nsliceinfo > 0){
     FREEMEMORY(slicebounds);
-    NewMemory((void*)&slicebounds,nsliceinfo*sizeof(boundsdata));
+    NewMemory((void*)&slicebounds,slicecoll.nsliceinfo*sizeof(boundsdata));
     nslicebounds=0;
-    for(i=0;i<nsliceinfo;i++){
+    for(i=0;i<slicecoll.nsliceinfo;i++){
       slicedata *slicei;
       boundsdata *sbi;
 
-      slicei = sliceinfo + i;
+      slicei = slicecoll.sliceinfo + i;
       slicei->valmin_slice =1.0;
       slicei->valmax_slice =0.0;
       slicei->setvalmin=0;
@@ -2888,7 +2889,7 @@ void UpdateBoundInfo(void){
       for(n=0;n<i;n++){
         slicedata *slicen;
 
-        slicen = sliceinfo + n;
+        slicen = slicecoll.sliceinfo + n;
         if(strcmp(slicei->label.shortlabel,slicen->label.shortlabel)==0){
           nslicebounds--;
           break;
@@ -4022,7 +4023,7 @@ int IsSliceDup(slicedata *sd, int nslice){
   for(i=0;i<nslice-1;i++){
     slicedata *slicei;
 
-    slicei = sliceinfo + i;
+    slicei = slicecoll.sliceinfo + i;
     if(slicei->ijk_min[0]!=sd->ijk_min[0]||slicei->ijk_max[0]!=sd->ijk_max[0])continue;
     if(slicei->ijk_min[1]!=sd->ijk_min[1]||slicei->ijk_max[1]!=sd->ijk_max[1])continue;
     if(slicei->ijk_min[2]!=sd->ijk_min[2]||slicei->ijk_max[2]!=sd->ijk_max[2])continue;
@@ -5706,8 +5707,8 @@ int ParseSLCFCount(int option, bufferstreamdata *stream, char *buffer, int *nsli
       return RETURN_BREAK;
     }
   }
-  nsliceinfo++;
-  *nslicefiles_in = nsliceinfo;
+  slicecoll.nsliceinfo++;
+  *nslicefiles_in = slicecoll.nsliceinfo;
   if(Match(buffer, "BNDS")==1){
     if(FGETS(buffer, 255, stream)==NULL){
       return RETURN_BREAK;
@@ -5833,7 +5834,7 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
   // read in slice file name
 
   if(FGETS(buffer, 255, stream)==NULL){
-    nsliceinfo--;
+    slicecoll.nsliceinfo--;
     return RETURN_BREAK;
   }
   if(slicegeom==1){
@@ -5843,7 +5844,7 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
   bufferptr = TrimFrontBack(buffer);
   len = strlen(bufferptr);
 
-  sd = sliceinfo+nn_slice-1;
+  sd = slicecoll.sliceinfo+nn_slice-1;
 
 #ifdef pp_SLICEFRAME
   sd->frameinfo        = NULL;
@@ -5910,7 +5911,7 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
   }
   if(compression_type==UNCOMPRESSED&&(fast_startup==1||FILE_EXISTS_CASEDIR(bufferptr)==YES))has_reg = YES;
   if(has_reg==NO&&compression_type==UNCOMPRESSED){
-    nsliceinfo--;
+    slicecoll.nsliceinfo--;
 
     nslicefiles--;
     *nslicefiles_in = nslicefiles;
@@ -5964,7 +5965,7 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
     char buffer2[256];
 
     if(FGETS(buffer2, 255, stream)==NULL){
-      nsliceinfo--;
+      slicecoll.nsliceinfo--;
       return RETURN_BREAK;
     }
     strcpy(buffers[2], buffer2);
@@ -6131,41 +6132,41 @@ void FreeSliceData(void){
   int i;
 
   FREEMEMORY(surfinfo);
-  if(nsliceinfo>0){
-    for(i = 0; i<nsliceinfo; i++){
+  if(slicecoll.nsliceinfo>0){
+    for(i = 0; i<slicecoll.nsliceinfo; i++){
       slicedata *sd;
-      sd = sliceinfo+i;
-      FreeLabels(&sliceinfo[i].label);
+      sd = slicecoll.sliceinfo+i;
+      FreeLabels(&slicecoll.sliceinfo[i].label);
       FREEMEMORY(sd->reg_file);
       FREEMEMORY(sd->comp_file);
       FREEMEMORY(sd->size_file);
     }
     FREEMEMORY(sliceorderindex);
-    for(i = 0; i<nmultisliceinfo; i++){
+    for(i = 0; i<slicecoll.nmultisliceinfo; i++){
       multislicedata *mslicei;
 
-      mslicei = multisliceinfo+i;
+      mslicei = slicecoll.multisliceinfo+i;
       mslicei->loadable = 1;
       FREEMEMORY(mslicei->islices);
     }
-    FREEMEMORY(multisliceinfo);
-    nmultisliceinfo = 0;
-    FREEMEMORY(sliceinfo);
+    FREEMEMORY(slicecoll.multisliceinfo);
+    slicecoll.nmultisliceinfo = 0;
+    FREEMEMORY(slicecoll.sliceinfo);
   }
-  nsliceinfo = 0;
+  slicecoll.nsliceinfo = 0;
 
   //*** free multi-vector slice data
 
-  if(nvsliceinfo>0){
+  if(slicecoll.nvsliceinfo>0){
     FREEMEMORY(vsliceorderindex);
-    for(i = 0; i<nmultivsliceinfo; i++){
+    for(i = 0; i<slicecoll.nmultivsliceinfo; i++){
       multivslicedata *mvslicei;
 
-      mvslicei = multivsliceinfo+i;
+      mvslicei = slicecoll.multivsliceinfo+i;
       FREEMEMORY(mvslicei->ivslices);
     }
-    FREEMEMORY(multivsliceinfo);
-    nmultivsliceinfo = 0;
+    FREEMEMORY(slicecoll.multivsliceinfo);
+    slicecoll.nmultivsliceinfo = 0;
   }
 }
 
@@ -7000,19 +7001,19 @@ void InitMeshBlockages(void){
 /* ------------------ GetSliceParmInfo ------------------------ */
 
 void GetSliceParmInfo(sliceparmdata *sp){
-  nsliceinfo = sp->nsliceinfo;
-  nmultisliceinfo=sp->nmultisliceinfo;
-  nvsliceinfo = sp->nvsliceinfo;
-  nmultivsliceinfo =sp->nmultivsliceinfo;
+  slicecoll.nsliceinfo = sp->nsliceinfo;
+  slicecoll.nmultisliceinfo=sp->nmultisliceinfo;
+  slicecoll.nvsliceinfo = sp->nvsliceinfo;
+  slicecoll.nmultivsliceinfo =sp->nmultivsliceinfo;
 }
 
 /* ------------------ SetSliceParmInfo ------------------------ */
 
 void SetSliceParmInfo(sliceparmdata *sp){
-  sp->nsliceinfo       = nsliceinfo;
-  sp->nmultisliceinfo  = nmultisliceinfo;
-  sp->nvsliceinfo      = nvsliceinfo;
-  sp->nmultivsliceinfo = nmultivsliceinfo;
+  sp->nsliceinfo       = slicecoll.nsliceinfo;
+  sp->nmultisliceinfo  = slicecoll.nmultisliceinfo;
+  sp->nvsliceinfo      = slicecoll.nvsliceinfo;
+  sp->nmultivsliceinfo = slicecoll.nmultivsliceinfo;
 }
 
 /* ------------------ ReadSMV ------------------------ */
@@ -7314,8 +7315,8 @@ int ReadSMV_Init(){
 
   FREEMEMORY(database_filename);
 
-  FREEMEMORY(vsliceinfo);
-  FREEMEMORY(sliceinfo);
+  FREEMEMORY(slicecoll.vsliceinfo);
+  FREEMEMORY(slicecoll.sliceinfo);
 
   FREEMEMORY(plot3dinfo);
   FREEMEMORY(patchinfo);
@@ -8054,19 +8055,19 @@ int ReadSMV_Parse(bufferstreamdata *stream){
     if(NewMemory((void **)&partinfo,npartinfo*sizeof(partdata))==0)return 2;
   }
 
-  FREEMEMORY(vsliceinfo);
-  FREEMEMORY(sliceinfo);
-  if(nsliceinfo>0){
-    if(NewMemory((void **)&vsliceinfo,         3*nsliceinfo*sizeof(vslicedata))==0    ||
-       NewMemory((void **)&sliceinfo,            nsliceinfo*sizeof(slicedata))==0     ||
-       NewMemory((void **)&sliceinfoptrs,        nsliceinfo*sizeof(slicedata *)) == 0 ||
-       NewMemory((void **)&subslice_menuindex,   nsliceinfo*sizeof(int))==0           ||
-       NewMemory((void **)&msubslice_menuindex,  nsliceinfo*sizeof(int))==0           ||
-       NewMemory((void **)&subvslice_menuindex,  nsliceinfo*sizeof(int))==0           ||
-       NewMemory((void **)&msubvslice_menuindex, nsliceinfo*sizeof(int))==0){
+  FREEMEMORY(slicecoll.vsliceinfo);
+  FREEMEMORY(slicecoll.sliceinfo);
+  if(slicecoll.nsliceinfo>0){
+    if(NewMemory((void **)&slicecoll.vsliceinfo,         3*slicecoll.nsliceinfo*sizeof(vslicedata))==0    ||
+       NewMemory((void **)&slicecoll.sliceinfo,            slicecoll.nsliceinfo*sizeof(slicedata))==0     ||
+       NewMemory((void **)&sliceinfoptrs,        slicecoll.nsliceinfo*sizeof(slicedata *)) == 0 ||
+       NewMemory((void **)&subslice_menuindex,   slicecoll.nsliceinfo*sizeof(int))==0           ||
+       NewMemory((void **)&msubslice_menuindex,  slicecoll.nsliceinfo*sizeof(int))==0           ||
+       NewMemory((void **)&subvslice_menuindex,  slicecoll.nsliceinfo*sizeof(int))==0           ||
+       NewMemory((void **)&msubvslice_menuindex, slicecoll.nsliceinfo*sizeof(int))==0){
        return 2;
     }
-    sliceinfo_copy=sliceinfo;
+    sliceinfo_copy=slicecoll.sliceinfo;
   }
   if(smoke3dcoll.nsmoke3dinfo>0){
     if(NewMemory( (void **)&smoke3dcoll.smoke3dinfo, smoke3dcoll.nsmoke3dinfo*sizeof(smoke3ddata))==0)return 2;
@@ -8154,7 +8155,7 @@ int ReadSMV_Parse(bufferstreamdata *stream){
   }
 
   if(npartinfo>0 && NewMemory((void **)&part_buffer,       3*npartinfo*MAXFILELEN)    == 0)return 2;
-  if(nsliceinfo>0 && NewMemory((void **)&slice_buffer,     7*nsliceinfo*MAXFILELEN)   == 0)return 2;
+  if(slicecoll.nsliceinfo>0 && NewMemory((void **)&slice_buffer,     7*slicecoll.nsliceinfo*MAXFILELEN)   == 0)return 2;
   if(smoke3dcoll.nsmoke3dinfo>0 && NewMemory((void **)&smoke3d_buffer, 9*smoke3dcoll.nsmoke3dinfo*MAXFILELEN) == 0)return 2;
 
   PRINT_TIMER(timer_readsmv, "pass 1");
@@ -11555,10 +11556,10 @@ typedef struct {
       FGETS(buffer,255,stream);
       sscanf(buffer,"%f %f %f %f",&valmin,&valmax,&percentile_min,&percentile_max);
 
-      for(i=0;i<nsliceinfo;i++){
+      for(i=0;i<slicecoll.nsliceinfo;i++){
         slicedata *slicei;
 
-        slicei = sliceinfo + i;
+        slicei = slicecoll.sliceinfo + i;
         if(strcmp(file_ptr,slicei->file)==0){
           slicei->diff_valmin=percentile_min;
           slicei->diff_valmax=percentile_max;
@@ -11723,12 +11724,12 @@ int ReadSMV_Configure(){
   // update loaded lists
 
   FREEMEMORY(slice_loaded_list);
-  if(nsliceinfo>0){
-    NewMemory((void **)&slice_loaded_list,nsliceinfo*sizeof(int));
+  if(slicecoll.nsliceinfo>0){
+    NewMemory((void **)&slice_loaded_list,slicecoll.nsliceinfo*sizeof(int));
   }
   FREEMEMORY(slice_sorted_loaded_list);
-  if(nsliceinfo>0){
-    NewMemory((void **)&slice_sorted_loaded_list, nsliceinfo*sizeof(int));
+  if(slicecoll.nsliceinfo>0){
+    NewMemory((void **)&slice_sorted_loaded_list, slicecoll.nsliceinfo*sizeof(int));
   }
 
   UpdateLoadedLists();
@@ -11817,10 +11818,10 @@ int ReadSMV_Configure(){
   START_TIMER(timer_readsmv);
   SetSliceParmInfo(&sliceparminfo);
   PRINT_TIMER(timer_readsmv, "SetSliceParmInfo");
-  nsliceinfo            = 0;
-  nmultisliceinfo       = 0;
-  nmultivsliceinfo      = 0;
-  nvsliceinfo           = 0;
+  slicecoll.nsliceinfo            = 0;
+  slicecoll.nmultisliceinfo       = 0;
+  slicecoll.nmultivsliceinfo      = 0;
+  slicecoll.nvsliceinfo           = 0;
   if(sliceparms_threads == NULL){
     sliceparms_threads = THREADinit(&n_sliceparms_threads, &use_sliceparms_threads, UpdateVSlices);
   }
@@ -13357,10 +13358,10 @@ int ReadIni2(char *inifile, int localfile){
         fgets(buffer, 255, stream);
         sscanf(buffer, "%i", &seq_id);
 
-        if(seq_id >= 0 && seq_id<nmultisliceinfo){
+        if(seq_id >= 0 && seq_id<slicecoll.nmultisliceinfo){
           multislicedata *mslicei;
 
-          mslicei = multisliceinfo + seq_id;
+          mslicei = slicecoll.multisliceinfo + seq_id;
           mslicei->autoload = 1;
           mslicei->loadable = 1;
         }
@@ -17561,8 +17562,8 @@ void UpdateLoadedLists(void){
   patchdata *patchi;
 
   nslice_loaded=0;
-  for(i=0;i<nsliceinfo;i++){
-    slicei = sliceinfo + i;
+  for(i=0;i<slicecoll.nsliceinfo;i++){
+    slicei = slicecoll.sliceinfo + i;
     if(slicei->loaded==1){
       slice_loaded_list[nslice_loaded]=i;
       nslice_loaded++;

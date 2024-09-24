@@ -835,13 +835,13 @@ void GetZoneGlobalBounds(const float *pdata, int ndata, float *pglobalmin, float
 void GetSliceTempBounds(void){
   int i;
 
-  for(i=0; i<nsliceinfo; i++){
+  for(i=0; i<slicecoll.nsliceinfo; i++){
     slicedata *slicei;
     int framesize, headersize, return_val, error;
     int ntimes_slice_old=0;
     float qmin, qmax;
 
-    slicei = sliceinfo + i;
+    slicei = slicecoll.sliceinfo + i;
     if(strcmp(slicei->label.shortlabel, "TEMP")!=0)continue;
     GetSliceSizes(slicei->file, ALL_FRAMES, &slicei->nslicei, &slicei->nslicej, &slicei->nslicek, &slicei->ntimes, tload_step, &error,
                   use_tload_begin, use_tload_end, tload_begin, tload_end, &headersize, &framesize);
@@ -1174,10 +1174,10 @@ void ReadZone(int ifile, int flag, int *errorcode){
     GetSliceTempBounds();
   }
   if(flag==BOUNDS_ONLY)return;
-  for(i = 0; i<nsliceinfo; i++){
+  for(i = 0; i<slicecoll.nsliceinfo; i++){
     slicedata *slicei;
 
-    slicei = sliceinfo+i;
+    slicei = slicecoll.sliceinfo+i;
     if(strcmp(slicei->label.shortlabel, "TEMP")==0){
       zoneglobalmin = MIN(slicei->valmin_slice, zoneglobalmin);
       zoneglobalmax = MAX(slicei->valmax_slice, zoneglobalmax);

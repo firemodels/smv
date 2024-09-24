@@ -52,10 +52,10 @@ void SetUnitVis(void){
     uci = unitclasses + i;
     uci->visible=0;
 
-    for(j=0;j<nsliceinfo;j++){
+    for(j=0;j<slicecoll.nsliceinfo;j++){
       slicedata *slicej;
 
-      slicej = sliceinfo + j;
+      slicej = slicecoll.sliceinfo + j;
       if(IsUnitPresent(slicej->label.unit,uci->units->unit)==1){
         uci->visible=1;
         break;
@@ -133,10 +133,10 @@ void UpdateUnitDefs(void){
     }
 
     firstslice=1;
-    for(j=0;j<nsliceinfo;j++){
+    for(j=0;j<slicecoll.nsliceinfo;j++){
       slicedata *slicej;
 
-      slicej = sliceinfo + j;
+      slicej = slicecoll.sliceinfo + j;
       if(slicej->loaded==0||slicej->display==0)continue;
       if(UnitTypeMatch(slicej->label.unit,unitclasses+i)!=0)continue;
       if(firstslice==1){
