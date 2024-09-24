@@ -2035,25 +2035,25 @@ void ScriptLoad3dSmoke(scriptdata *scripti){
   int count=0;
 
   PRINTF("script: loading smoke3d files of type: %s\n\n",scripti->cval);
-  for(i = 0; i < nsmoke3dinfo; i++){
+  for(i = 0; i < smoke3dcoll.nsmoke3dinfo; i++){
     smoke3ddata *smoke3di;
 
-    smoke3di = smoke3dinfo + i;
+    smoke3di = smoke3dcoll.smoke3dinfo + i;
     smoke3di->finalize = 0;
   }
-  for(i = nsmoke3dinfo - 1; i >= 0; i--){
+  for(i = smoke3dcoll.nsmoke3dinfo - 1; i >= 0; i--){
     smoke3ddata *smoke3di;
 
-    smoke3di = smoke3dinfo + i;
+    smoke3di = smoke3dcoll.smoke3dinfo + i;
     if(MatchUpper(smoke3di->label.longlabel, scripti->cval) == MATCH){
       smoke3di->finalize = 1;
       break;
     }
   }
-  for(i=0;i<nsmoke3dinfo;i++){
+  for(i=0;i<smoke3dcoll.nsmoke3dinfo;i++){
     smoke3ddata *smoke3di;
 
-    smoke3di = smoke3dinfo + i;
+    smoke3di = smoke3dcoll.smoke3dinfo + i;
     if(MatchUpper(smoke3di->label.longlabel,scripti->cval) == MATCH){
       ReadSmoke3D(ALL_SMOKE_FRAMES, i, LOAD, FIRST_TIME, &errorcode);
       count++;
@@ -3274,10 +3274,10 @@ void ScriptLoadFile(scriptdata *scripti){
       return;
     }
   }
-  for(i=0;i<nsmoke3dinfo;i++){
+  for(i=0;i<smoke3dcoll.nsmoke3dinfo;i++){
     smoke3ddata *smoke3di;
 
-    smoke3di = smoke3dinfo + i;
+    smoke3di = smoke3dcoll.smoke3dinfo + i;
     if(strcmp(smoke3di->file,scripti->cval)==0){
       smoke3di->finalize = 1;
       smoke3di->finalize = 1;

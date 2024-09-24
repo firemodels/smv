@@ -400,15 +400,15 @@ void GetFileSizes(void){
   int i;
 
   printf("\n");
-  if(nsmoke3dinfo>0){
+  if(smoke3dcoll.nsmoke3dinfo>0){
     float hrrpuv = 0.0, soot = 0.0, temp = 0.0, co2 = 0.0;
     float hrrpuv2 = 0.0, soot2 = 0.0, temp2 = 0.0, co22 = 0.0;
 
-    for(i = 0; i<nsmoke3dinfo; i++){
+    for(i = 0; i<smoke3dcoll.nsmoke3dinfo; i++){
       smoke3ddata *smoke3di;
       FILE_SIZE file_size, compressed_file_size;
 
-      smoke3di = smoke3dinfo+i;
+      smoke3di = smoke3dcoll.smoke3dinfo+i;
 
       file_size = GetFileSizeSMV(smoke3di->reg_file);
       compressed_file_size = GetFileSizeSMV(smoke3di->comp_file);
@@ -502,10 +502,10 @@ void GetFileSizes(void){
 
 void HideAllSmoke(void){
   int i;
-  for(i = 0; i < nsmoke3dinfo; i++){
+  for(i = 0; i < smoke3dcoll.nsmoke3dinfo; i++){
     smoke3ddata *smoke3di;
 
-    smoke3di = smoke3dinfo + i;
+    smoke3di = smoke3dcoll.smoke3dinfo + i;
     if(smoke3di->loaded == 1)smoke3di->display = 0;
   }
   for(i = 0; i < nisoinfo; i++){
@@ -534,10 +534,10 @@ void HideAllSlices(void){
 
 void ShowAllSmoke(void){
   int i;
-  for(i = 0; i < nsmoke3dinfo; i++){
+  for(i = 0; i < smoke3dcoll.nsmoke3dinfo; i++){
     smoke3ddata *smoke3di;
 
-    smoke3di = smoke3dinfo + i;
+    smoke3di = smoke3dcoll.smoke3dinfo + i;
     if(smoke3di->loaded == 1)smoke3di->display = 1;
   }
   for(i = 0; i < nisoinfo; i++){
@@ -1140,8 +1140,8 @@ void Smoke3DShowMenu(int value){
       break;
 #endif
     case SET_SMOKE3D:
-      for(i=0;i<nsmoke3dinfo;i++){
-        smoke3di = smoke3dinfo + i;
+      for(i=0;i<smoke3dcoll.nsmoke3dinfo;i++){
+        smoke3di = smoke3dcoll.smoke3dinfo + i;
         if(smoke3di->loaded==1)smoke3di->display=show_3dsmoke;
       }
     break;
@@ -1150,7 +1150,7 @@ void Smoke3DShowMenu(int value){
     }
   }
   else{
-    smoke3di = smoke3dinfo + value;
+    smoke3di = smoke3dcoll.smoke3dinfo + value;
     if(plotstate!=DYNAMIC_PLOTS){
       plotstate=DYNAMIC_PLOTS;
       smoke3di->display=1;
@@ -3375,11 +3375,11 @@ void UnloadAllSmoke3D(int type){
   int i;
 
   update_glui_merge_smoke = 1;
-  if(nsmoke3dinfo > 0){
-    for(i = 0; i < nsmoke3dinfo; i++){
+  if(smoke3dcoll.nsmoke3dinfo > 0){
+    for(i = 0; i < smoke3dcoll.nsmoke3dinfo; i++){
       smoke3ddata *smoke3di;
 
-      smoke3di = smoke3dinfo + i;
+      smoke3di = smoke3dcoll.smoke3dinfo + i;
       if(type == -1 || smoke3di->type == type)smoke3di->request_load = 0;
       if(smoke3di->loaded == 0)continue;
       if(type == -1 || smoke3di->type == type){
@@ -3477,7 +3477,7 @@ void LoadUnloadMenu(int value){
     for(i=0;i<nzoneinfo;i++){
       ReadZone(i,UNLOAD,&errorcode);
     }
-    if(nsmoke3dinfo > 0){
+    if(smoke3dcoll.nsmoke3dinfo > 0){
       UnloadAllSmoke3D(-1);
     }
     if(nvolrenderinfo>0){
@@ -3577,10 +3577,10 @@ void LoadUnloadMenu(int value){
 
     //*** reload 3d smoke files
 
-    for(i=0;i<nsmoke3dinfo;i++){
+    for(i=0;i<smoke3dcoll.nsmoke3dinfo;i++){
       smoke3ddata *smoke3di;
 
-      smoke3di = smoke3dinfo + i;
+      smoke3di = smoke3dcoll.smoke3dinfo + i;
       if(smoke3di->request_load==1){
 #ifdef pp_SMOKEFRAME
         ReadSmoke3D(ALL_SMOKE_FRAMES, i, load_flag, FIRST_TIME, &errorcode);
@@ -4820,7 +4820,7 @@ void UnLoadSmoke3DMenu(int value){
     UnloadAllSmoke3D(value);
   }
   else{
-    UnloadSmoke3D(smoke3dinfo + value);
+    UnloadSmoke3D(smoke3dcoll.smoke3dinfo + value);
     SmokeWrapup();
   }
 }
@@ -4842,19 +4842,19 @@ FILE_SIZE LoadSmoke3D(int type, int frame, int *count, float *time_value){
   FILE_SIZE load_size=0;
 
   if(load_only_when_unloaded == 0){
-    for(i = nsmoke3dinfo - 1; i >= 0; i--){
+    for(i = smoke3dcoll.nsmoke3dinfo - 1; i >= 0; i--){
       smoke3ddata *smoke3di;
 
-      smoke3di = smoke3dinfo + i;
+      smoke3di = smoke3dcoll.smoke3dinfo + i;
       if(smoke3di->loaded==1&&IsSmokeType(smoke3di, type) == 1){
         ReadSmoke3D(ALL_SMOKE_FRAMES, i, UNLOAD, FIRST_TIME, &errorcode);
       }
     }
   }
-  for(i = nsmoke3dinfo-1; i>=0; i--){
+  for(i = smoke3dcoll.nsmoke3dinfo-1; i>=0; i--){
     smoke3ddata *smoke3di;
 
-    smoke3di = smoke3dinfo+i;
+    smoke3di = smoke3dcoll.smoke3dinfo+i;
     IF_NOT_USEMESH_CONTINUE(smoke3di->loaded,smoke3di->blocknumber);
     if(IsSmokeType(smoke3di, type) == 1){
     last_smoke = i;
@@ -4862,10 +4862,10 @@ FILE_SIZE LoadSmoke3D(int type, int frame, int *count, float *time_value){
     }
   }
   smoke3d_compression_type = COMPRESSED_UNKNOWN;
-  for(i=0;i<nsmoke3dinfo;i++){
+  for(i=0;i<smoke3dcoll.nsmoke3dinfo;i++){
     smoke3ddata *smoke3di;
 
-    smoke3di = smoke3dinfo + i;
+    smoke3di = smoke3dcoll.smoke3dinfo + i;
     IF_NOT_USEMESH_CONTINUE(smoke3di->loaded,smoke3di->blocknumber);
     if(IsSmokeType(smoke3di, type) == 1){
       file_count++;
@@ -4907,22 +4907,22 @@ void LoadSmoke3DMenu(int value){
     if(scriptoutstream!=NULL){
       char *file;
 
-      file = smoke3dinfo[value].file;
+      file = smoke3dcoll.smoke3dinfo[value].file;
       fprintf(scriptoutstream,"LOADFILE\n");
       fprintf(scriptoutstream," %s\n",file);
     }
     if(scriptoutstream==NULL||script_defer_loading==0){
       smoke3ddata *smoke3di;
 
-      smoke3di = smoke3dinfo + value;
+      smoke3di = smoke3dcoll.smoke3dinfo + value;
       smoke3di->finalize = 1;
       if(smoke3di->extinct>0.0){ // only load one smoke type at a time
         int j, add_blank=0;
 
-        for(j = 0; j<nsmoke3dinfo; j++){
+        for(j = 0; j<smoke3dcoll.nsmoke3dinfo; j++){
           smoke3ddata *smoke3dj;
 
-          smoke3dj = smoke3dinfo+j;
+          smoke3dj = smoke3dcoll.smoke3dinfo+j;
           if(smoke3dj->loaded==1&&smoke3dj->extinct>0.0&&smoke3di->type!=smoke3dj->type){
             PRINTF("Unloading %s(%s)\n", smoke3dj->file, smoke3dj->label.shortlabel);
             ReadSmoke3D(ALL_SMOKE_FRAMES, j, UNLOAD, FIRST_TIME, &errorcode);
@@ -4941,7 +4941,7 @@ void LoadSmoke3DMenu(int value){
     }
   }
   else if(value==UNLOAD_ALL){
-    for(i=0;i<nsmoke3dinfo;i++){
+    for(i=0;i<smoke3dcoll.nsmoke3dinfo;i++){
       ReadSmoke3D(ALL_SMOKE_FRAMES, i, UNLOAD, FIRST_TIME, &errorcode);
     }
   }
@@ -4959,10 +4959,10 @@ void LoadSmoke3DMenu(int value){
 
         total_size=0;
         smoke_type = NULL;
-        for(i = 0; i < nsmoke3dinfo; i++){
+        for(i = 0; i < smoke3dcoll.nsmoke3dinfo; i++){
           smoke3ddata *smoke3di;
 
-          smoke3di = smoke3dinfo + i;
+          smoke3di = smoke3dcoll.smoke3dinfo + i;
           if(smoke3di->type == ii){
             total_size += GetFileSizeSMV(smoke3di->reg_file);
             smoke_type = smoke3di->label.longlabel;
@@ -5003,10 +5003,10 @@ void LoadSmoke3DMenu(int value){
       if(smoke3di->extinct>0.0){ // only load one smoke type at a time
         int j, add_blank=0;
 
-        for(j = 0; j<nsmoke3dinfo; j++){
+        for(j = 0; j<smoke3dcoll.nsmoke3dinfo; j++){
           smoke3ddata *smoke3dj;
 
-          smoke3dj = smoke3dinfo+j;
+          smoke3dj = smoke3dcoll.smoke3dinfo+j;
           if(smoke3dj->loaded==1&&smoke3dj->extinct>0.0&&smoke3di->type!=smoke3dj->type){
             PRINTF("Unloading %s(%s)\n", smoke3dj->file, smoke3dj->label.shortlabel);
             ReadSmoke3D(ALL_SMOKE_FRAMES, j, UNLOAD, FIRST_TIME, &errorcode);
@@ -5040,7 +5040,7 @@ void LoadSmoke3DMenu(int value){
 
 int AnySmoke(void){
 
-  if(nsmoke3dinfo>0)return 1;
+  if(smoke3dcoll.nsmoke3dinfo>0)return 1;
   return 0;
 }
 
@@ -11558,7 +11558,7 @@ static int menu_count=0;
   CREATEMENU(filesdialogmenu, DialogMenu);
   glutAddMenuEntry(_("Auto load data files..."), DIALOG_AUTOLOAD);
 #ifdef pp_COMPRESS
-  if(smokezippath!=NULL&&(npatchinfo>0||nsmoke3dinfo>0||nsliceinfo>0)){
+  if(smokezippath!=NULL&&(npatchinfo>0||smoke3dcoll.nsmoke3dinfo>0||nsliceinfo>0)){
 #ifdef pp_DIALOG_SHORTCUTS
     glutAddMenuEntry(_("Compress data files...  ALT z"), DIALOG_SMOKEZIP);
 #else
@@ -12170,9 +12170,9 @@ static int menu_count=0;
 
           doit = 0;
           is_zlib = 0;
-          for(j = 0; j<nsmoke3dinfo; j++){
-            if(smoke3dinfo[j].loaded==1&&smoke3dinfo[j].type==i){
-              if(smoke3dinfo[j].compression_type == COMPRESSED_ZLIB){
+          for(j = 0; j<smoke3dcoll.nsmoke3dinfo; j++){
+            if(smoke3dcoll.smoke3dinfo[j].loaded==1&&smoke3dcoll.smoke3dinfo[j].type==i){
+              if(smoke3dcoll.smoke3dinfo[j].compression_type == COMPRESSED_ZLIB){
                 is_zlib = 1;
               }
               doit = 1;
@@ -12191,7 +12191,7 @@ static int menu_count=0;
         }
       }
     {
-      if(nsmoke3dinfo>0){
+      if(smoke3dcoll.nsmoke3dinfo>0){
         if(nmeshes==1){
           CREATEMENU(loadsmoke3dmenu,LoadSmoke3DMenu);
         }
@@ -12201,11 +12201,11 @@ static int menu_count=0;
           if(nmeshes>1){
             CREATEMENU(smoke3dtypes[ii].menu_id, LoadSmoke3DMenu);
           }
-          for(i = 0; i<nsmoke3dinfo; i++){
+          for(i = 0; i<smoke3dcoll.nsmoke3dinfo; i++){
             char menulabel[256];
             smoke3ddata *smoke3di;
 
-            smoke3di = smoke3dinfo+i;
+            smoke3di = smoke3dcoll.smoke3dinfo+i;
             if(smoke3di->type!=ii)continue;
             strcpy(menulabel, "");
             if(smoke3di->loaded==1){
@@ -12227,10 +12227,10 @@ static int menu_count=0;
             ntotal=0;
             nloaded=0;
             is_zlib = 0;
-            for(jj=0;jj<nsmoke3dinfo;jj++){
-              if(smoke3dinfo[jj].type==ii){
-                if(smoke3dinfo[jj].loaded==1)nloaded++;
-                if(smoke3dinfo[jj].compression_type == COMPRESSED_ZLIB){
+            for(jj=0;jj<smoke3dcoll.nsmoke3dinfo;jj++){
+              if(smoke3dcoll.smoke3dinfo[jj].type==ii){
+                if(smoke3dcoll.smoke3dinfo[jj].loaded==1)nloaded++;
+                if(smoke3dcoll.smoke3dinfo[jj].compression_type == COMPRESSED_ZLIB){
                   is_zlib = 1;
                 }
                 ntotal++;
@@ -12748,7 +12748,7 @@ static int menu_count=0;
 /* -------------------------------- compress menu -------------------------- */
 
 #ifdef pp_COMPRESS
-    if(smokezippath != NULL && (npatchinfo > 0 || nsmoke3dinfo > 0 || nsliceinfo > 0)){
+    if(smokezippath != NULL && (npatchinfo > 0 || smoke3dcoll.nsmoke3dinfo > 0 || nsliceinfo > 0)){
     CREATEMENU(compressmenu,CompressMenu);
     glutAddMenuEntry(_("Compression options"),MENU_DUMMY);  // -c
     if(overwrite_all==1){
@@ -12946,7 +12946,7 @@ static int menu_count=0;
 
       // 3d smoke
 
-      if(nsmoke3dinfo>0){
+      if(smoke3dcoll.nsmoke3dinfo>0){
         strcpy(loadmenulabel,_("3D smoke"));
         if(tload_step > 1){
           sprintf(steplabel,"/Skip %i",tload_skip);
@@ -13061,7 +13061,7 @@ static int menu_count=0;
       GLUTADDSUBMENU(_("Configuration files"),smokeviewinimenu);
       GLUTADDSUBMENU(_("Scripts"),scriptmenu);
 #ifdef pp_COMPRESS
-      if(smokezippath!=NULL&&(npatchinfo>0||nsmoke3dinfo>0||nsliceinfo>0)){
+      if(smokezippath!=NULL&&(npatchinfo>0||smoke3dcoll.nsmoke3dinfo>0||nsliceinfo>0)){
         GLUTADDSUBMENU(_("Compression"),compressmenu);
       }
 #endif

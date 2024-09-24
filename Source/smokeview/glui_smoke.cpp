@@ -360,7 +360,7 @@ extern "C" void GLUI3dSmokeSetup(int main_window){
   int i;
 
 
-  if(nsmoke3dinfo<=0&&nvolrenderinfo<=0)return;
+  if(smoke3dcoll.nsmoke3dinfo<=0&&nvolrenderinfo<=0)return;
   if(CHECKBOX_meshvisptr!=NULL)FREEMEMORY(CHECKBOX_meshvisptr);
   NewMemory((void **)&CHECKBOX_meshvisptr,nmeshes*sizeof(GLUI_Checkbox *));
 
@@ -408,7 +408,7 @@ extern "C" void GLUI3dSmokeSetup(int main_window){
 
   //---------------------------------------------Slice render settings--------------------------------------------------------------
 
-  if(nsmoke3dinfo>0){
+  if(smoke3dcoll.nsmoke3dinfo>0){
     if(nvolrenderinfo > 0){
       ROLLOUT_slices = glui_3dsmoke->add_rollout_to_panel(ROLLOUT_smoke3d, _("Slice render settings"), false, SLICERENDER_ROLLOUT, SmokeRolloutCB);
       INSERT_ROLLOUT(ROLLOUT_slices, glui_3dsmoke);
@@ -599,9 +599,9 @@ extern "C" void GLUI3dSmokeSetup(int main_window){
   GLUISmoke3dCB(UPDATE_SMOKEFIRE_COLORS2);
   GLUISmoke3dCB(USE_SMOKE_RGB);
 
-  if(nsmoke3dinfo<=0||nvolrenderinfo<=0){
+  if(smoke3dcoll.nsmoke3dinfo<=0||nvolrenderinfo<=0){
     smoke_render_option=RENDER_SLICE;
-    if(nsmoke3dinfo>0)smoke_render_option=RENDER_SLICE;
+    if(smoke3dcoll.nsmoke3dinfo>0)smoke_render_option=RENDER_SLICE;
     if(nvolrenderinfo>0)smoke_render_option=RENDER_VOLUME;
   }
 
