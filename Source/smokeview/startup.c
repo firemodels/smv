@@ -771,10 +771,10 @@ void InitOpenGL(int option){
         plot3di->autoload=0;
       }
     }
-    for(i=0;i<nsmoke3dinfo;i++){
+    for(i=0;i<smoke3dcoll.nsmoke3dinfo;i++){
       smoke3ddata *smoke3di;
 
-      smoke3di = smoke3dinfo + i;
+      smoke3di = smoke3dcoll.smoke3dinfo + i;
 
       if(smoke3di->loaded==1){
         smoke3di->autoload=1;
@@ -965,20 +965,20 @@ void InitOpenGL(int option){
    // startup smoke
 
    nstartup=0;
-   for(i=0;i<nsmoke3dinfo;i++){
+   for(i=0;i<smoke3dcoll.nsmoke3dinfo;i++){
       smoke3ddata *smoke3di;
 
-      smoke3di = smoke3dinfo + i;
+      smoke3di = smoke3dcoll.smoke3dinfo + i;
 
       if(smoke3di->loaded==1)nstartup++;
    }
    if(nstartup!=0){
      fprintf(fileout,"S3DAUTO\n");
      fprintf(fileout," %i \n",nstartup);
-     for(i=0;i<nsmoke3dinfo;i++){
+     for(i=0;i<smoke3dcoll.nsmoke3dinfo;i++){
         smoke3ddata *smoke3di;
 
-        smoke3di = smoke3dinfo + i;
+        smoke3di = smoke3dcoll.smoke3dinfo + i;
 
         if(smoke3di->loaded==1)fprintf(fileout," %i\n",smoke3di->seq_id);
      }
@@ -1058,10 +1058,10 @@ void InitOpenGL(int option){
 
   void GetStartupSmoke(int seq_id){
     int i;
-    for(i=0;i<nsmoke3dinfo;i++){
+    for(i=0;i<smoke3dcoll.nsmoke3dinfo;i++){
       smoke3ddata *smoke3di;
 
-      smoke3di = smoke3dinfo + i;
+      smoke3di = smoke3dcoll.smoke3dinfo + i;
 
       if(smoke3di->seq_id==seq_id){
         smoke3di->autoload=1;
@@ -1233,10 +1233,10 @@ void InitOpenGL(int option){
         }
       }
     }
-    for(i=0;i<nsmoke3dinfo;i++){
+    for(i=0;i<smoke3dcoll.nsmoke3dinfo;i++){
       smoke3ddata *smoke3di;
 
-      smoke3di = smoke3dinfo + i;
+      smoke3di = smoke3dcoll.smoke3dinfo + i;
       if(smoke3di->autoload==0&&smoke3di->loaded==1)ReadSmoke3D(ALL_SMOKE_FRAMES, i, UNLOAD, FIRST_TIME, &errorcode);
       if(smoke3di->autoload==1)ReadSmoke3D(ALL_SMOKE_FRAMES, i, LOAD, FIRST_TIME, &errorcode);
     }

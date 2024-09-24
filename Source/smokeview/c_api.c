@@ -31,6 +31,9 @@
 #include <windows.h>
 #endif
 
+#include "readsmoke.h"
+#include "shared_structures.h"
+
 // function prototypes for functions drawn from other areas of smokeview
 // from startup.c
 void ReadBoundINI(void);
@@ -364,10 +367,10 @@ int Loadfile(const char *filename) {
       return errorcode;
     }
   }
-  for(size_t i = 0; i < nsmoke3dinfo; i++) {
+  for(size_t i = 0; i < smoke3dcoll.nsmoke3dinfo; i++) {
     smoke3ddata *smoke3di;
 
-    smoke3di = smoke3dinfo + i;
+    smoke3di = smoke3dcoll.smoke3dinfo + i;
     if(strcmp(smoke3di->file, filename) == 0) {
       smoke3di->finalize = 1;
       ReadSmoke3D(ALL_SMOKE_FRAMES, i, LOAD, FIRST_TIME, &errorcode);
@@ -1293,30 +1296,30 @@ void Load3dsmoke(const char *smoke_type) {
   int count = 0;
   int lastsmoke;
 
-  for(size_t i = nsmoke3dinfo - 1; i >= 0; i--) {
+  for(size_t i = smoke3dcoll.nsmoke3dinfo - 1; i >= 0; i--) {
     smoke3ddata *smoke3di;
 
-    smoke3di = smoke3dinfo + i;
+    smoke3di = smoke3dcoll.smoke3dinfo + i;
     if(MatchUpper(smoke3di->label.longlabel, smoke_type) == MATCH) {
       lastsmoke = i;
       break;
     }
   }
 
-  for(size_t i = nsmoke3dinfo - 1; i >= 0; i--) {
+  for(size_t i = smoke3dcoll.nsmoke3dinfo - 1; i >= 0; i--) {
     smoke3ddata *smoke3di;
 
-    smoke3di = smoke3dinfo + i;
+    smoke3di = smoke3dcoll.smoke3dinfo + i;
     if(MatchUpper(smoke3di->label.longlabel, smoke_type) == MATCH) {
       lastsmoke = i;
       break;
     }
   }
 
-  for(size_t i = 0; i < nsmoke3dinfo; i++) {
+  for(size_t i = 0; i < smoke3dcoll.nsmoke3dinfo; i++) {
     smoke3ddata *smoke3di;
 
-    smoke3di = smoke3dinfo + i;
+    smoke3di = smoke3dcoll.smoke3dinfo + i;
     if(MatchUpper(smoke3di->label.longlabel, smoke_type) == MATCH) {
       smoke3di->finalize = 0;
       if(lastsmoke == i) smoke3di->finalize = 1;
@@ -1770,7 +1773,7 @@ int Unloadall() {
   for(size_t i = 0; i < nzoneinfo; i++) {
     ReadZone(i, UNLOAD, &errorcode);
   }
-  for(size_t i = 0; i < nsmoke3dinfo; i++) {
+  for(size_t i = 0; i < smoke3dcoll.nsmoke3dinfo; i++) {
     ReadSmoke3D(ALL_SMOKE_FRAMES, i, UNLOAD, FIRST_TIME, &errorcode);
   }
   if(nvolrenderinfo > 0) {
@@ -4000,8 +4003,8 @@ int ShowSmoke3dShowall() {
   updatemenu = 1;
   GLUTPOSTREDISPLAY;
   plotstate = DYNAMIC_PLOTS;
-  for(size_t i = 0; i < nsmoke3dinfo; i++) {
-    smoke3di = smoke3dinfo + i;
+  for(size_t i = 0; i < smoke3dcoll.nsmoke3dinfo; i++) {
+    smoke3di = smoke3dcoll.smoke3dinfo + i;
     if(smoke3di->loaded == 1) smoke3di->display = 1;
   }
   GLUTPOSTREDISPLAY;
@@ -4014,8 +4017,8 @@ int ShowSmoke3dHideall() {
 
   updatemenu = 1;
   GLUTPOSTREDISPLAY;
-  for(size_t i = 0; i < nsmoke3dinfo; i++) {
-    smoke3di = smoke3dinfo + i;
+  for(size_t i = 0; i < smoke3dcoll.nsmoke3dinfo; i++) {
+    smoke3di = smoke3dcoll.smoke3dinfo + i;
     if(smoke3di->loaded == 1) smoke3di->display = 0;
   }
   UpdateShow();

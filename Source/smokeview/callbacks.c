@@ -1910,7 +1910,7 @@ void Keyboard(unsigned char key, int flag){
       else{
         usegpu=0;
       }
-      if(nsmoke3dinfo>0){
+      if(smoke3dcoll.nsmoke3dinfo>0){
         GLUIUpdateSmoke3dFlags();
       }
       PrintGPUState();
