@@ -147,10 +147,8 @@ int FileExistsOrig(char *filename);
 EXTERNCPP int MakeFile(char *file, int size);
 EXTERNCPP void FreeBufferInfo(bufferdata *bufferinfoptr);
 EXTERNCPP bufferdata *InitBufferData(char *file);
-EXTERNCPP bufferdata *File2Buffer(char *file, bufferdata *bufferinfo,
-                                  int *nreadptr);
-EXTERNCPP FILE_SIZE fread_p(char *file, unsigned char *buffer, FILE_SIZE offset,
-                            FILE_SIZE nchars, int nthreads);
+EXTERNCPP bufferdata *File2Buffer(char *file, bufferdata *bufferinfo, FILE_SIZE *nreadptr);
+EXTERNCPP FILE_SIZE fread_p(char *file, unsigned char *buffer, FILE_SIZE offset, FILE_SIZE nchars, int nthreads);
 EXTERNCPP void FileErase(char *file);
 EXTERNCPP FILE *FOPEN(const char *file, const char *mode);
 EXTERNCPP FILE *fopen_indir(char *dir, char *file, char *mode);

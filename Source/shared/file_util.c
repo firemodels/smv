@@ -683,7 +683,7 @@ void FreeBufferInfo(bufferdata *bufferinfo){
 
 /* ------------------ File2Buffer ------------------------ */
 
-bufferdata *File2Buffer(char *file, bufferdata *bufferinfo,  int *nreadptr){
+bufferdata *File2Buffer(char *file, bufferdata *bufferinfo,  FILE_SIZE *nreadptr){
   FILE_SIZE nfile, offset_buffer = 0, offset_file = 0, nread_actual, nread_try;
 
   *nreadptr = 0;

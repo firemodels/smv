@@ -196,7 +196,7 @@ void FRAMESetTimes(framedata *fi, int iframe, int nframes){
   if(last_frame>fi->nframes - 1)last_frame = fi->nframes-1;
   nframes = last_frame + 1 - first_frame;
   for(i = first_frame;i <= last_frame;i++){
-    int offset;
+    FILE_SIZE offset;
 
     offset = fi->offsets[i];
     if(fi->file_type == FORTRAN_FILE)offset += 4;
@@ -259,7 +259,8 @@ framedata *FRAMELoadData(framedata *frameinfo, char *file, int load_flag, int ti
                   void GetFrameInfo(bufferdata *bufferinfo, int *headersize, int **sizes, int *nsizes,
                                     int **subframeptrs, int **subframesizesptr, int *nsubframes,
                                     int *compression_type, FILE_SIZE *filesizeptr)){
-  int nframes_before, nframes_after, nread;
+  int nframes_before, nframes_after;
+  FILE_SIZE nread;
   float load_time;
 
   if(file_type != C_FILE)file_type = FORTRAN_FILE;

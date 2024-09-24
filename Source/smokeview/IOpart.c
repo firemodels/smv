@@ -1713,7 +1713,7 @@ int GetPartHeader(partdata *parti, int *nf_all, int option_arg, int print_option
     float time_local;
 
     if(nframes_all_local >= frameinfo->nframes)break;
-    fseek_m(stream, 4+frameinfo->offsets[nframes_all_local], SEEK_SET);
+    fseek_m_long(stream, (long long)(4+frameinfo->offsets[nframes_all_local]), SEEK_SET);
     count = fread_m(&time_local, 4, 1, stream);
     if(count != 1||nframes_all_local == npart_frames_max)break;
     nframes_all_local++;
@@ -1757,7 +1757,7 @@ int GetPartHeader(partdata *parti, int *nf_all, int option_arg, int print_option
     int j, count;
     float time_local;
 
-    fseek_m(stream, 4 + frameinfo->offsets[i], SEEK_SET);
+    fseek_m_long(stream, (long long)(4 + frameinfo->offsets[i]), SEEK_SET);
     count = fread_m(&time_local, 4, 1, stream);
     fseek_m(stream, 4, SEEK_CUR);
     if(count != 1)break;

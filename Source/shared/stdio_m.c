@@ -231,6 +231,34 @@ int fseek_m(FILE_m *stream_m, long int offset, int whence){
   return return_val;
 }
 
+/* ------------------ fseek_m_long ------------------------ */
+
+int fseek_m_long(FILE_m *stream_m, long long offset, int whence){
+  int return_val = PASS_m;
+
+  if(stream_m->stream == NULL){
+    switch(whence){
+    case SEEK_SET:
+      stream_m->buffer = stream_m->buffer_beg + offset;
+      break;
+    case SEEK_CUR:
+      stream_m->buffer += offset;
+      break;
+    case SEEK_END:
+      stream_m->buffer = stream_m->buffer_end + offset;
+      break;
+    default:
+      assert(FFALSE);
+      break;
+    }
+    if(stream_m->buffer - stream_m->buffer_beg < 0 || stream_m->buffer - stream_m->buffer_end >= 0)return_val = FAIL_m;
+  }
+  else{
+    return_val = fseek(stream_m->stream, offset, whence);
+  }
+  return return_val;
+}
+
 /* ------------------ ftell_m ------------------------ */
 
 long int ftell_m(FILE_m *stream_m){
