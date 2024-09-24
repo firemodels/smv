@@ -243,11 +243,13 @@ void DisplayVersionInfo(char *progname){
       if(FileExistsOrig(fullini_filename)==0)strcpy(fullini_filename, "");
     }
   }
-  if(strlen(fullini_filename)>0){
-    PRINTF("Casename ini     : %s\n", fullini_filename);
-  }
-  else{
-    PRINTF("Casename ini     : not found\n");
+  if(smv_filename != NULL || show_version == 0){
+    if(strlen(fullini_filename) > 0){
+      PRINTF("Casename ini     : %s\n", fullini_filename);
+    }
+    else{
+      PRINTF("Casename ini     : not found\n");
+    }
   }
   FREEMEMORY(smv_progname);
   FREEMEMORY(smv_bindir);

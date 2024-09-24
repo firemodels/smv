@@ -820,13 +820,10 @@ int main(int argc, char **argv){
   Which("fds", &fdsprog);
 #endif
 
-  if(smv_filename == NULL){
+  if(smv_filename == NULL && show_version == 1){
+    InitStartupDirs();
     DisplayVersionInfo("Smokeview ");
     SMV_EXIT(0);
-  }
-  if(show_version==1 || smv_filename==NULL){
-    PRINTVERSION("smokeview");
-    return 1;
   }
   if(CheckSMVFile(smv_filename, smokeview_casedir)==0){
     SMV_EXIT(1);
