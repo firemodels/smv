@@ -27,6 +27,7 @@
 #endif
 
 #include GLUT_H
+#include "readsmoke.h"
 
 //*** threader variables
 
@@ -838,7 +839,6 @@ SVEXTERN int SVDECL(use_glui_rotate,0);
 SVEXTERN int SVDECL(colorbar_coord_type, 0);
 
 SVEXTERN int SVDECL(*meshvisptr,NULL);
-SVEXTERN smoke3ddata SVDECL(**smoke3dinfo_sorted,NULL);
 SVEXTERN int SVDECL(from_commandline,0);
 SVEXTERN filelistdata SVDECL(*ini_filelist,NULL), SVDECL(*filelist_casename, NULL), SVDECL(*filelist_casedir, NULL);
 SVEXTERN int          SVDECL(nini_filelist,0),    SVDECL(nfilelist_casename, 0),    SVDECL(nfilelist_casedir, 0);
@@ -1547,7 +1547,6 @@ SVEXTERN int SVDECL(nmultisliceinfo,0),      SVDECL(nmultivsliceinfo,0);
 SVEXTERN sliceparmdata sliceparminfo;
 
 SVEXTERN int SVDECL(nslicebounds, 0), SVDECL(npatchbounds,0), SVDECL(npatch2,0);
-SVEXTERN int SVDECL(nsmoke3dinfo,0);
 SVEXTERN int SVDECL(nisoinfo,0), SVDECL(niso_bounds,0);
 SVEXTERN int SVDECL(ntrnx,0), SVDECL(ntrny,0), SVDECL(ntrnz,0),SVDECL(npdim,0),SVDECL(nmeshes,0),SVDECL(clip_mesh,0);
 SVEXTERN int SVDECL(nOBST,0),SVDECL(nVENT,0),SVDECL(nCVENT,0),SVDECL(ncvents,0),SVDECL(noffset,0);
@@ -2219,7 +2218,7 @@ SVEXTERN int setp3chopmin_temp, setp3chopmax_temp;
 SVEXTERN float p3chopmin_temp, p3chopmax_temp;
 SVEXTERN float glui_p3min, glui_p3max;
 
-SVEXTERN smoke3ddata SVDECL(*smoke3dinfo,NULL);
+SVEXTERN smoke3d_collection SVDECL(smoke3dcoll,{0});
 
 SVEXTERN int SVDECL(bound_slice_init, 1);
 SVEXTERN int SVDECL(bound_part_init, 1);
