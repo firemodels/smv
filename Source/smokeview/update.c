@@ -2118,10 +2118,10 @@ void OutputFrameSteps(void){
   frames_read       = 0;
   total_time        = 0.0;
   total_wrapup_time = 0.0;
-  for(i = 0;i < nsmoke3dinfo;i++){
+  for(i = 0;i < smoke3dcoll.nsmoke3dinfo;i++){
     smoke3ddata *smoke3di;
 
-    smoke3di = smoke3dinfo + i;
+    smoke3di = smoke3dcoll.smoke3dinfo + i;
     if(smoke3di->loaded == 0 || smoke3di->frameinfo == NULL || smoke3di->frameinfo->update == 0)continue;
     smoke3di->frameinfo->update = 0;
     count++;
