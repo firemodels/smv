@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "stdio_m.h"
+#include "file_util.h"
 #include "MALLOCC.h"
 
 /* ------------------ GetFileBuffer ------------------------ */
@@ -25,7 +26,7 @@ FILE_m *fopen_mo(char *file, FILE_SIZE offset, FILE_SIZE size, char *mode){
   FILE *stream;
   unsigned char *buffer;
   char  *m_file;
-  size_t nbuffer;
+  FILE_SIZE nbuffer;
 
   if(file==NULL||strlen(file)==0||mode==NULL||strlen(mode)<2)return NULL;
   if(strcmp(mode, "rb")!=0&&strcmp(mode, "rbm")!=0)return NULL;
@@ -58,7 +59,7 @@ FILE_m *fopen_mo(char *file, FILE_SIZE offset, FILE_SIZE size, char *mode){
     stream = fopen(file, "rb");
     if(stream==NULL)return NULL;
     fseek(stream, 0L, SEEK_END);
-    nbuffer = ftell(stream);
+    nbuffer = FTELL(stream);
     offset = 0;
     fclose(stream);
   }
@@ -240,7 +241,7 @@ long int ftell_m(FILE_m *stream_m){
     if(return_val<0||return_val>stream_m->buffer_end-stream_m->buffer_beg)return_val = -1L;
   }
   else{
-    return_val = ftell(stream_m->stream);
+    return_val = FTELL(stream_m->stream);
   }
   return return_val;
 }
