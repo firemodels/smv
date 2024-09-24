@@ -1922,14 +1922,14 @@ void UpdateTerrain(int allocate_memory){
         meshi->znodes_complete[ii] = GetTerrainElev(meshi, ii);
       }
     }
-    for(i=0; i<nsliceinfo; i++){
+    for(i=0; i<slicecoll.nsliceinfo; i++){
       slicedata *slicei;
       meshdata *meshi;
       float zmin, zmax;
       float agl;
       int ii;
 
-      slicei = sliceinfo + i;
+      slicei = slicecoll.sliceinfo + i;
       if(slicei->slice_filetype!=SLICE_TERRAIN)continue;
       meshi = meshinfo + slicei->blocknumber;
       zmin = meshi->zplt_orig[0];
@@ -2002,10 +2002,10 @@ void UpdateTerrain(int allocate_memory){
 int HaveTerrainSlice(void){
   int i;
 
-  for(i=0;i<nsliceinfo;i++){
+  for(i=0;i<slicecoll.nsliceinfo;i++){
     slicedata *slicei;
 
-    slicei = sliceinfo + i;
+    slicei = slicecoll.sliceinfo + i;
 
     if(slicei->loaded==1&&slicei->slice_filetype==SLICE_TERRAIN)return 1;
 

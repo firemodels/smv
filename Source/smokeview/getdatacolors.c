@@ -768,7 +768,7 @@ void UpdateSliceColors(int last_slice){
     slicedata *sd;
 
     i = slice_loaded_list[ii];
-    sd = sliceinfo+i;
+    sd = slicecoll.sliceinfo+i;
     if(sd->vloaded==0&&sd->display==0)continue;
     if(sd->slicefile_labelindex==slicefile_labelindex){
       int set_slicecolor;
@@ -795,7 +795,7 @@ void UpdateSliceBounds2(void){
     float qmin, qmax;
 
     i = slice_loaded_list[ii];
-    sd = sliceinfo+i;
+    sd = slicecoll.sliceinfo+i;
     if(sd->display==0)continue;
     GLUIGetMinMax(BOUND_SLICE, sd->label.shortlabel, &set_valmin, &qmin, &set_valmax, &qmax);
     sd->valmin_slice      = qmin;
@@ -804,15 +804,15 @@ void UpdateSliceBounds2(void){
     sd->globalmax_slice   = qmax;
     SetSliceColors(qmin, qmax, sd, 0, &error);
   }
-  for(ii = 0; ii<nvsliceinfo; ii++){
+  for(ii = 0; ii<slicecoll.nvsliceinfo; ii++){
     vslicedata *vd;
     slicedata *sd;
     int set_valmin, set_valmax;
     float qmin, qmax;
 
-    vd = vsliceinfo+ii;
+    vd = slicecoll.vsliceinfo+ii;
     if(vd->loaded==0||vd->display==0||vd->ival==-1)continue;
-    sd = sliceinfo+vd->ival;
+    sd = slicecoll.sliceinfo+vd->ival;
     GLUIGetMinMax(BOUND_SLICE, sd->label.shortlabel, &set_valmin, &qmin, &set_valmax, &qmax);
     sd->valmin_slice    = qmin;
     sd->valmax_slice    = qmax;
@@ -1555,10 +1555,10 @@ void UpdateChopColors(void){
   if(showall_3dslices==1){
     int slice3d_loaded = 0;
 
-    for(i=0;i<nsliceinfo;i++){
+    for(i=0;i<slicecoll.nsliceinfo;i++){
       slicedata *slicei;
 
-      slicei = sliceinfo + i;
+      slicei = slicecoll.sliceinfo + i;
       if(slicei->volslice==1&&slicei->loaded==1&&slicei->display==1){
         slice3d_loaded = 1;
         break;

@@ -280,10 +280,10 @@ void GetSliceCellVerts(int option, int option2, int *offset, float *verts, unsig
   int ibeg, iend, itime, first=1, minsteps;
   slicedata *slicetime=NULL;
 
-  for(islice = 0; islice<nsliceinfo; islice++){
+  for(islice = 0; islice<slicecoll.nsliceinfo; islice++){
     slicedata *slicei;
 
-    slicei = sliceinfo+islice;
+    slicei = slicecoll.sliceinfo+islice;
     if(slicei->loaded==0||slicei->display==0||slicei->slice_filetype!=SLICE_CELL_CENTER||slicei->volslice==1)continue;
     if(slicei->idir!=XDIR&&slicei->idir!=YDIR&&slicei->idir!=ZDIR)continue;
     slicetime = slicei;
@@ -316,12 +316,12 @@ void GetSliceCellVerts(int option, int option2, int *offset, float *verts, unsig
   *frame_size = 0;
   for(itime = ibeg; itime<iend; itime++){
 
-    for(islice = 0; islice<nsliceinfo; islice++){
+    for(islice = 0; islice<slicecoll.nsliceinfo; islice++){
       slicedata *slicei;
       int nrows=1, ncols=1;
       unsigned char *iq;
 
-      slicei = sliceinfo+islice;
+      slicei = slicecoll.sliceinfo+islice;
 
       if(slicei->loaded==0||slicei->display==0||slicei->slice_filetype!=SLICE_CELL_CENTER||slicei->volslice==1)continue;
       if(slicei->idir!=XDIR&&slicei->idir!=YDIR&&slicei->idir!=ZDIR)continue;
@@ -516,10 +516,10 @@ void GetSliceGeomVerts(int option, int option2, int *offset, float *verts, unsig
   int ibeg, iend, itime, first = 1, minsteps;
   slicedata *slicetime = NULL;
 
-  for(islice = 0; islice<nsliceinfo; islice++){
+  for(islice = 0; islice<slicecoll.nsliceinfo; islice++){
     slicedata *slicei;
 
-    slicei = sliceinfo+islice;
+    slicei = slicecoll.sliceinfo+islice;
     if(slicei->loaded==0||slicei->display==0||slicei->slice_filetype!=SLICE_GEOM||slicei->volslice==1)continue;
     if(slicei->idir!=XDIR&&slicei->idir!=YDIR&&slicei->idir!=ZDIR)continue;
     slicetime = slicei;
@@ -552,14 +552,14 @@ void GetSliceGeomVerts(int option, int option2, int *offset, float *verts, unsig
   *frame_size = 0;
   for(itime = ibeg; itime<iend; itime++){
 
-    for(islice = 0; islice<nsliceinfo; islice++){
+    for(islice = 0; islice<slicecoll.nsliceinfo; islice++){
       slicedata *slicei;
       geomdata *geomi;
       geomlistdata *geomlisti;
       patchdata *patchi;
       unsigned char *ivals;
 
-      slicei = sliceinfo+islice;
+      slicei = slicecoll.sliceinfo+islice;
 
       if(slicei->loaded==0||slicei->display==0||slicei->slice_filetype!=SLICE_GEOM||slicei->volslice==1)continue;
       if(slicei->idir!=XDIR&&slicei->idir!=YDIR&&slicei->idir!=ZDIR)continue;
@@ -631,10 +631,10 @@ void GetSliceNodeVerts(int option, int option2,
   int ibeg, iend, itime, first=1, minsteps;
   slicedata *slicetime=NULL;
 
-  for(islice = 0; islice<nsliceinfo; islice++){
+  for(islice = 0; islice<slicecoll.nsliceinfo; islice++){
     slicedata *slicei;
 
-    slicei = sliceinfo+islice;
+    slicei = slicecoll.sliceinfo+islice;
     if(slicei->loaded==0||slicei->display==0||(slicei->slice_filetype!=SLICE_NODE_CENTER&&slicei->slice_filetype!=SLICE_TERRAIN)||slicei->volslice==1)continue;
     if(slicei->idir!=XDIR&&slicei->idir!=YDIR&&slicei->idir!=ZDIR)continue;
     slicetime = slicei;
@@ -667,12 +667,12 @@ void GetSliceNodeVerts(int option, int option2,
   *frame_size = 0;
   for(itime = ibeg; itime<iend; itime++){
 
-    for(islice = 0; islice<nsliceinfo; islice++){
+    for(islice = 0; islice<slicecoll.nsliceinfo; islice++){
       slicedata *slicei;
       int nrows=1, ncols=1;
       unsigned char *iq;
 
-      slicei = sliceinfo+islice;
+      slicei = slicecoll.sliceinfo+islice;
 
       if(slicei->loaded==0||slicei->display==0||(slicei->slice_filetype!=SLICE_NODE_CENTER&&slicei->slice_filetype!=SLICE_TERRAIN)||slicei->volslice==1)continue;
       if(slicei->idir!=XDIR&&slicei->idir!=YDIR&&slicei->idir!=ZDIR)continue;
@@ -1314,7 +1314,7 @@ int SliceCellTriangles2Geom(webgeomdata *slice_cell_web, int option){
   unsigned char *textures, *textures_save;
   int *indices, *indices_save;
 
-  if(nsliceinfo>0){
+  if(slicecoll.nsliceinfo>0){
     int nslice_verts, nslice_tris;
 
     GetSliceCellVerts(0, option, NULL, NULL, NULL, &nslice_verts, NULL, &nslice_tris, &(slice_cell_web->framesize), &(slice_cell_web->nframes));
@@ -1341,7 +1341,7 @@ int SliceCellTriangles2Geom(webgeomdata *slice_cell_web, int option){
 
   // load slice file data into data structures
 
-  if(nsliceinfo>0){
+  if(slicecoll.nsliceinfo>0){
     int nslice_verts, nslice_tris;
 
     GetSliceCellVerts(1, option, &offset,
@@ -1369,7 +1369,7 @@ int SliceNodeTriangles2Geom(webgeomdata *slice_node_web, int option){
   int *indices, *indices_save;
   int *blank, *blank_save;
 
-  if(nsliceinfo>0){
+  if(slicecoll.nsliceinfo>0){
     int nslice_verts, nslice_tris;
 
     GetSliceNodeVerts(0, option, NULL, NULL, NULL, &nslice_verts, NULL, NULL, &nslice_tris, &(slice_node_web->framesize), &(slice_node_web->nframes));
@@ -1401,7 +1401,7 @@ int SliceNodeTriangles2Geom(webgeomdata *slice_node_web, int option){
 
   // load slice file data into data structures
 
-  if(nsliceinfo>0){
+  if(slicecoll.nsliceinfo>0){
     int nslice_verts, nslice_tris;
 
     GetSliceNodeVerts(1, option, &offset, verts, textures, &nslice_verts, indices, blank, &nslice_tris, &(slice_node_web->framesize), &(slice_node_web->nframes));
@@ -1428,7 +1428,7 @@ void SliceGeomTriangles2Geom(webgeomdata *slice_geom_web, int option){
   unsigned char *textures, *textures_save;
   int *indices, *indices_save;
 
-  if(nsliceinfo>0){
+  if(slicecoll.nsliceinfo>0){
     int nslice_verts, nslice_tris;
 
     GetSliceGeomVerts(0, option, NULL, NULL, NULL, &nslice_verts, NULL, &nslice_tris, &(slice_geom_web->framesize), &(slice_geom_web->nframes));
@@ -1455,7 +1455,7 @@ void SliceGeomTriangles2Geom(webgeomdata *slice_geom_web, int option){
 
   // load slice file data into data structures
 
-  if(nsliceinfo>0){
+  if(slicecoll.nsliceinfo>0){
     int nslice_verts, nslice_tris;
 
     GetSliceGeomVerts(1, option, &offset, verts, textures, &nslice_verts, indices, &nslice_tris, &(slice_geom_web->framesize), &(slice_geom_web->nframes));
