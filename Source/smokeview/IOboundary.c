@@ -2718,7 +2718,7 @@ void DrawMeshBoundaryFaces(patchdata *patchi, float valmin, float valmax){
     ncol = pfi->ncol;
 
 #ifdef pp_BOUNDFRAME
-    patchvals = ( float * )FRAMEGetSubFramePtr(patchi->frameinfo, meshi->patch_itime, n);
+    patchvals = ( float * )FRAMEGetSubFramePtr(patchi->frameinfo, meshi->patch_itime, pfi->start);
 #else
     patchvals = meshi->patchval_iframe + pfi->start;
 #endif

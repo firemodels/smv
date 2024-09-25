@@ -3954,7 +3954,7 @@ void BoundBoundCB(int var){
 #ifdef pp_FRAME
   char ctime[1024];
   bufferdata *bufferinfo=NULL;
-  int nread;
+  FILE_SIZE nread;
   float read_time;
 #endif
 
