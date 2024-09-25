@@ -1,4 +1,4 @@
-&HEAD CHID='hot_embers' /
+&HEAD CHID='part' /
 
 &MESH IJK=10,10,4, XB=0.0,1.0,0.0,1.0,0.0,0.4 /
 
