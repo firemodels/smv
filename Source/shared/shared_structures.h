@@ -422,7 +422,7 @@ typedef struct _slicedata {
   unsigned char *slice_mask;
   int compression_type;
   int colorbar_autoflip;
-  int ncompressed;
+  FILE_SIZE ncompressed;
   int slice_filetype;
   struct _multislicedata *mslice;
   int menu_show;
