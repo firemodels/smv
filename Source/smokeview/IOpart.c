@@ -2229,7 +2229,9 @@ FILE_SIZE ReadPart(char *file_arg, int ifile_arg, int load_flag, int *errorcode_
     return 0.0;
   }
   CheckMemory;
+  INIT_PRINT_TIMER(timer_getpartdata);
   GetPartData(parti, nf_all_local, &file_size_local);
+  PRINT_TIMER(timer_getpartdata, "GetPartData");
   CheckMemory;
   THREADcontrol(partload_threads, THREAD_LOCK);
   parti->loaded = 1;
@@ -2258,7 +2260,7 @@ FILE_SIZE ReadPart(char *file_arg, int ifile_arg, int load_flag, int *errorcode_
     if(parti->finalize == 1){
       INIT_PRINT_TIMER(finalize_part);
       FinalizePartLoad(parti);
-      PRINT_TIMER(finalize_part, "finalize particle time");
+      PRINT_TIMER(finalize_part, "FinalizePartLoad");
     }
     STOP_TIMER(load_time_local);
 #ifndef pp_PARTFRAME
