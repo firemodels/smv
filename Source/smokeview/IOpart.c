@@ -1179,6 +1179,7 @@ void GeneratePartHistograms(void){
 
 #ifdef pp_SORT_TAGS
 /* ------------------ SortPartTags ------------------------ */
+//sorttags_threads = THREADinit(&n_sorttags_threads, &use_sorttags_threads, SortParttags);
 
 void SortPartTags(partdata *parti){
   int i;
