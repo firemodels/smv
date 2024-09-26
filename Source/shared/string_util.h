@@ -154,6 +154,7 @@ EXTERNCPP float          GetMantissaExponent(float x, int *exp10);
 EXTERNCPP void           GetGitInfo(char *githash, char *gitdate);
 EXTERNCPP char          *GetString(char *buffer);
 EXTERNCPP char          *Time2TimeLabel(float time, float dt, char *timelabel, int fixed_point);
+EXTERNCPP char          *Time2RenderLabel(float time, float dt, float maxtime, char *timelabel);
 EXTERNCPP char          *RandStr(char* str, int length);
 EXTERNCPP void           GetBaseTitle(char *progname, char *title_base);
 EXTERNCPP void           GetTitle(char *progname, char *fulltitle);
