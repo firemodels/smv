@@ -341,9 +341,10 @@ int GetRenderFileName(int view_mode, char *renderfile_dir, char *renderfile_full
       }
       code = GetPlot3dTime(&time_local);
       if(code == 1 && render_label_type == RENDER_LABEL_TIME){
-        char timelabel_local[20], *timelabelptr, dt = 1.0;
+        char timelabel_local[20], *timelabelptr;
+        float dt = 1.0, maxtime=100000.0;
 
-        timelabelptr = Time2TimeLabel(time_local, dt, timelabel_local, force_fixedpoint);
+        timelabelptr = Time2RenderLabel(time_local, dt, maxtime, timelabel_local);
         strcat(suffix, "_");
         strcat(suffix, timelabelptr);
         strcat(suffix, "s");
@@ -352,12 +353,12 @@ int GetRenderFileName(int view_mode, char *renderfile_dir, char *renderfile_full
     else{
       float time_local;
       char timelabel_local[20], *timelabelptr;
-      float dt;
+      float dt, maxtime;
 
       time_local = global_times[itimes];
-      dt = global_times[1] - global_times[0];
-      if(dt < 0.0)dt = -dt;
-      timelabelptr = Time2TimeLabel(time_local, dt, timelabel_local, force_fixedpoint);
+      dt = ABS(global_times[1] - global_times[0]);
+      maxtime = global_times[nglobal_times-1];
+      timelabelptr = Time2RenderLabel(time_local, dt, maxtime, timelabel_local);
       strcpy(suffix, timelabelptr);
       strcat(suffix, "s");
     }
