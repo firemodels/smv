@@ -1090,6 +1090,23 @@ char *GetString(char *buffer){
   return NULL;
 }
 
+  /* ------------------ Time2RenderLabel ------------------------ */
+
+char *Time2RenderLabel(float sv_time, float dt, float maxtime, char *timelabel){
+  char *timelabelptr, format[32], percen[2], period[2];
+  int ndigits_right, ndigits_left, total_digits;
+
+  strcpy(percen, "%");
+  strcpy(period, ".");
+  ndigits_right = MAX(-log10(dt), 0) + 2;
+  ndigits_left = MAX(1, log10(maxtime)+1);
+  total_digits = 1 + ndigits_left + ndigits_right;
+  sprintf(format, "%s0%i%s%if", percen, total_digits, period, ndigits_right);
+  sprintf(timelabel, format, sv_time);
+  timelabelptr=TrimFront(timelabel);
+  return timelabelptr;
+}
+
   /* ------------------ Time2TimeLabel ------------------------ */
 
 char *Time2TimeLabel(float sv_time, float dt, char *timelabel, int fixed_point){

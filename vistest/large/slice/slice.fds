@@ -1,4 +1,4 @@
-&HEAD CHID='plume001',TITLE='Plume whirl case' /
+&HEAD CHID='slice',TITLE='Plume whirl case' /
 
 &MESH IJK=64,64,64, XB=0.0,1.6,0.0,1.6,0.0,1.6/
 
