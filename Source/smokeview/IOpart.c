@@ -1470,6 +1470,12 @@ partpropdata *GetPartProp(char *label){
   return NULL;
 }
 
+/* ------------------ SetStreakShow ------------------------ */
+
+void SetStreakShow(int show){
+  streak5show = show;
+}
+
 /* ------------------ InitPartProp ------------------------ */
 
 void InitPartProp(void){

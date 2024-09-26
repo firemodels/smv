@@ -6363,10 +6363,10 @@ void PartBoundCB(int var){
   case STREAKLENGTH:
     UpdateStreakValue(float_streak5value-0.001);
     if(float_streak5value==0.0){
-      streak5show=0;
+      SetStreakShow(0);
     }
     else{
-      streak5show=1;
+      SetStreakShow(1);
     }
     updatemenu=1;
     break;
