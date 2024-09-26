@@ -1177,6 +1177,25 @@ void GeneratePartHistograms(void){
   }
 }
 
+#ifdef pp_SORT_TAGS
+/* ------------------ SortPartTags ------------------------ */
+
+void SortPartTags(partdata *parti){
+  int i;
+  part5data *datacopy_local;
+
+  datacopy_local = parti->data5;
+  for(i = 0; i < parti->ntimes; i++){
+    int class_index;
+    
+    for(class_index = 0; class_index < parti->nclasses; class_index++){
+      qsort(datacopy_local->sort_tags, ( size_t )datacopy_local->npoints_file, 2*sizeof(int), CompareTags);
+      datacopy_local++;
+    }
+  }
+}
+#endif
+
 /* ------------------ GetPartData ------------------------ */
 
 void GetPartData(partdata *parti, int nf_all_arg, FILE_SIZE *file_size_arg){
@@ -1306,7 +1325,9 @@ void GetPartData(partdata *parti, int nf_all_arg, FILE_SIZE *file_size_arg){
             sort_tags_local[2*j]=datacopy_local->tags[j];
             sort_tags_local[2*j+1]=j;
           }
+#ifndef pp_SORT_TAGS
           qsort( sort_tags_local, (size_t)nparts_local, 2*sizeof(int), CompareTags);
+#endif
         }
       }
       else{
@@ -2232,6 +2253,11 @@ FILE_SIZE ReadPart(char *file_arg, int ifile_arg, int load_flag, int *errorcode_
   INIT_PRINT_TIMER(timer_getpartdata);
   GetPartData(parti, nf_all_local, &file_size_local);
   PRINT_TIMER(timer_getpartdata, "GetPartData");
+#ifdef pp_SORT_TAGS
+  INIT_PRINT_TIMER(timer_sortparttags);
+  SortPartTags(parti);
+  PRINT_TIMER(timer_sortparttags, "SortPartTags");
+#endif
   CheckMemory;
   THREADcontrol(partload_threads, THREAD_LOCK);
   parti->loaded = 1;
