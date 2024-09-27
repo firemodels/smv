@@ -357,7 +357,11 @@ int GetRenderFileName(int view_mode, char *renderfile_dir, char *renderfile_full
 
       time_local = global_times[itimes];
       dt = ABS(global_times[1] - global_times[0]);
-      maxtime = global_times[nglobal_times-1];
+      maxtime = MAX(ABS(global_times[nglobal_times-1]), ABS(global_tend));
+      maxtime = MAX(maxtime, ABS(global_tbegin));
+      maxtime = MAX(maxtime, 10.0);
+      //allow space for minus sign
+      if(global_tend<0.0 || global_tbegin<0.0 || global_times[nglobal_times-1] < 0.0)maxtime *= 10.0;
       timelabelptr = Time2RenderLabel(time_local, dt, maxtime, timelabel_local);
       strcpy(suffix, timelabelptr);
       strcat(suffix, "s");
