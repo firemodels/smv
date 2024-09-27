@@ -24,6 +24,9 @@ EXTERNCPP void *ReadVolsmokeAllFramesAllMeshes2(void *arg);
 EXTERNCPP void *SetupAllIsosurfaces(void *arg);
 EXTERNCPP void *MtMergeSmoke3D(void *arg);
 EXTERNCPP void UpdateGluiMergeSmoke(void);
+#ifdef pp_SORT_TAGS
+EXTERNCPP void *SortAllPartTags(void *arg);
+#endif
 
 //*** glui_bounds.cpp headers
 EXTERNCPP int  GLUIGetChopHide(char *label);
