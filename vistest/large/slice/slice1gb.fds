@@ -1,4 +1,4 @@
-&HEAD CHID='slice',TITLE='Plume whirl case' /
+&HEAD CHID='slice1gb',TITLE='Plume whirl case' /
 
 &MESH IJK=64,64,64, XB=0.0,1.6,0.0,1.6,0.0,1.6/
 
@@ -6,7 +6,7 @@
 
 &INIT XB=0.2,1.4,0.2,1.4,0.2,1.4  TEMPERATURE=600.0 /
 
-&TIME T_END=50. /  Total simulation time
+&TIME T_END=10. /  Total simulation time
 
 &REAC SOOT_YIELD=0.01,FUEL='PROPANE'/
 

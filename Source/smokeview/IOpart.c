@@ -1177,6 +1177,44 @@ void GeneratePartHistograms(void){
   }
 }
 
+#ifdef pp_SORT_TAGS
+/* ------------------ SortPartTags ------------------------ */
+
+void SortPartTags(partdata *parti){
+  int i;
+  part5data *datacopy_local;
+
+  datacopy_local = parti->data5;
+  for(i = 0; i < parti->ntimes; i++){
+    int class_index;
+    
+    for(class_index = 0; class_index < parti->nclasses; class_index++){
+      qsort(datacopy_local->sort_tags, ( size_t )datacopy_local->npoints_file, 2*sizeof(int), CompareTags);
+      datacopy_local++;
+    }
+  }
+}
+
+/* ------------------ SortAllPartTags ------------------------ */
+
+void *SortAllPartTags(void *arg){
+  int i;
+
+  INIT_PRINT_TIMER(timer_sortparttags);
+  for(i = 0; i < npartinfo; i++){
+    partdata *parti;
+
+    parti = partinfo + i;
+    if(parti->loaded == 0)continue;
+    SortPartTags(parti);
+  }
+  PRINT_TIMER(timer_sortparttags, "SortPartTags");
+#ifdef pp_SORT_TAGS_BG
+  THREAD_EXIT(sorttags_threads);
+#endif
+}
+#endif
+
 /* ------------------ GetPartData ------------------------ */
 
 void GetPartData(partdata *parti, int nf_all_arg, FILE_SIZE *file_size_arg){
@@ -1306,7 +1344,9 @@ void GetPartData(partdata *parti, int nf_all_arg, FILE_SIZE *file_size_arg){
             sort_tags_local[2*j]=datacopy_local->tags[j];
             sort_tags_local[2*j+1]=j;
           }
+#ifndef pp_SORT_TAGS
           qsort( sort_tags_local, (size_t)nparts_local, 2*sizeof(int), CompareTags);
+#endif
         }
       }
       else{
@@ -1447,6 +1487,17 @@ partpropdata *GetPartProp(char *label){
     if(strcmp(propi->label->longlabel,label)==0)return propi;
   }
   return NULL;
+}
+
+/* ------------------ SetStreakShow ------------------------ */
+
+void SetStreakShow(int show){
+#ifdef pp_SORT_TAGS_BG
+  if(show == 1){
+    THREADcontrol(sorttags_threads, THREAD_JOIN);
+  }
+#endif
+  streak5show = show;
 }
 
 /* ------------------ InitPartProp ------------------------ */
@@ -2108,6 +2159,16 @@ void FinalizePartLoad(partdata *parti){
     }
   }
   visParticles = 1;
+#ifdef pp_SORT_TAGS
+#ifdef pp_SORT_TAGS_BG
+  THREADrun(sorttags_threads);
+  if(runscript == 1 || streak5show == 1){
+    THREADcontrol(sorttags_threads, THREAD_JOIN);
+  }
+#else
+  SortAllPartTags(NULL);
+#endif
+#endif
 
   // generate histograms now rather than in the background if a script is running
 
