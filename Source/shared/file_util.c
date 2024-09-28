@@ -661,7 +661,7 @@ void PrintTime(const char *filepath, int line, float *timer, const char *label, 
 bufferdata *InitBufferData(char *file){
   bufferdata *buffinfo = NULL;
   unsigned char *buffer = NULL;
-  int nbuffer = 0;
+  FILE_SIZE nbuffer = 0;
 
   NewMemory((void **)&buffinfo, sizeof(bufferdata));
   buffinfo->file = file;

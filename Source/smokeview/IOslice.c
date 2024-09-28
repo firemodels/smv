@@ -4112,7 +4112,7 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
       }
       if(sd->ntimes > ntimes_slice_old){
 #ifdef pp_SLICEFRAME
-        filesize = sd->frameinfo->filesize;
+        file_size = sd->frameinfo->filesize;
         qmin = frame_valmin;
         qmax = frame_valmax;
 #else

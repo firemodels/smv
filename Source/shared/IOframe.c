@@ -624,7 +624,7 @@ void GetSliceFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **framesp
   subframesizes[0] = nxsp * nysp * nzsp;
   
   filesize = bufferinfo->nbuffer;
-  nframes = (int)(filesize - headersize)/framesize; // time frames
+  nframes = (FILE_SIZE)(filesize - headersize)/framesize; // time frames
   NewMemory((void **)&frames, nframes *sizeof(int));
   int i;
   for(i=0;i< nframes;i++){
