@@ -6,7 +6,7 @@
 
 &INIT XB=0.2,1.4,0.2,1.4,0.2,1.4  TEMPERATURE=600.0 /
 
-&TIME T_END=50. /  Total simulation time
+&TIME T_END=40. /  Total simulation time
 
 &REAC SOOT_YIELD=0.01,FUEL='PROPANE'/
 
