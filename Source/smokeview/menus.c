@@ -3901,14 +3901,14 @@ void ParticleStreakShowMenu(int value){
 
   if(value==-1)return;
   if(value==MENU_STREAK_HIDE){
-    streak5show=0;
+    SetStreakShow(0);
     streak5step=0;
   }
   else if(value==MENU_STREAK_HEAD){
     showstreakhead=1-showstreakhead;
   }
   else{
-    streak5show=1;
+    SetStreakShow(1);
     streak5step=0;
     rvalue=streak_rvalue[value];
     UpdateStreakValue(rvalue-0.001);

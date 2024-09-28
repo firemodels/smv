@@ -24,6 +24,9 @@ EXTERNCPP void *ReadVolsmokeAllFramesAllMeshes2(void *arg);
 EXTERNCPP void *SetupAllIsosurfaces(void *arg);
 EXTERNCPP void *MtMergeSmoke3D(void *arg);
 EXTERNCPP void UpdateGluiMergeSmoke(void);
+#ifdef pp_SORT_TAGS
+EXTERNCPP void *SortAllPartTags(void *arg);
+#endif
 
 //*** glui_bounds.cpp headers
 EXTERNCPP int  GLUIGetChopHide(char *label);
@@ -1115,6 +1118,7 @@ EXTERNCPP void SetSliceMax(int set_valmax, float valmax, char *buffer2);
 EXTERNCPP void SetSliceBounds(int set_valmin, float valmin, int set_valmax, float valmax, char *buffer2);
 EXTERNCPP void SetBoundBounds(int set_valmin, float valmin, int set_valmax, float valmax, char *buffer2);
 
+EXTERNCPP void SetStreakShow(int show);
 EXTERNCPP void GetPartColors(partdata *parti, int nlevels, int flag);
 EXTERNCPP void GetBoundaryColors(float *t, int nt, unsigned char *it,
               int settmin, float *tmin, int settmax, float *tmax,

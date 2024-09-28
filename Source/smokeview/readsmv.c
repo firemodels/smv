@@ -11882,6 +11882,12 @@ int ReadSMV_Configure(){
   THREADrun(ffmpeg_threads);
   PRINT_TIMER(timer_readsmv, "SetupFFMT");
 
+#ifdef pp_SORT_TAGS_BG
+  if(sorttags_threads == NULL){
+    sorttags_threads = THREADinit(&n_sorttags_threads, &use_sorttags_threads, SortAllPartTags);
+  }
+#endif
+
   if(isosurface_threads == NULL){
     isosurface_threads = THREADinit(&n_isosurface_threads, &use_isosurface_threads, SetupAllIsosurfaces);
   }
