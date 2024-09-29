@@ -1,12 +1,12 @@
-&HEAD CHID='boundary4gb',TITLE='Plume whirl case' /
+&HEAD CHID='boundary4gb',TITLE='4GB boundary file test case' /
 
 &MESH IJK=128,128,4, XB=0.0,12.8,0.0,12.8,0.0,0.4/
 
-&DUMP NFRAMES=50000 DT_BNDF=0.01 /
+&DUMP NFRAMES=20000 DT_BNDF=0.01 /
 
 &INIT XB=0.2,12.6,0.2,12.6,0.1,0.3  TEMPERATURE=600.0 /
 
-&TIME T_END=1000. /  Total simulation time
+&TIME T_END=400. /  Total simulation time
 
 &REAC SOOT_YIELD=0.01,FUEL='PROPANE'/
 

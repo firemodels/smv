@@ -1,4 +1,4 @@
-&HEAD CHID='part4gb' /
+&HEAD CHID='part4gb', TITLE='4GB particle file test case' /
 
 &MESH IJK=10,10,4, XB=0.0,1.0,0.0,1.0,0.0,0.4 /
 &DUMP NFRAMES=2500 /
