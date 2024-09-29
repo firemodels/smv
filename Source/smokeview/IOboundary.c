@@ -1554,6 +1554,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
 #ifdef pp_BOUNDFRAME
   patchi->frameinfo = FRAMELoadData(patchi->frameinfo, patchi->file, load_flag, time_frame, FORTRAN_FILE, GetBoundaryFrameInfo);
   patchi->ntimes = patchi->frameinfo->nframes;
+  maxtimes_boundary = patchi->ntimes;
   NewMemory((void **)&meshi->patch_times, patchi->ntimes*sizeof(float));
   memcpy(meshi->patch_times, patchi->frameinfo->times, patchi->ntimes*sizeof(float));
   FRAMEGetMinMax(patchi->frameinfo);
@@ -1635,7 +1636,9 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
 
     loadpatchbysteps=UNCOMPRESSED_ALLFRAMES;
     if(load_flag==LOAD||load_flag==RELOAD){
+#ifndef pp_BOUNDFRAME
       maxtimes_boundary = MAXFRAMES+51;
+#endif
       statfile=STAT(file,&statbuffer);
       if(statfile==0&&framesize!=0){
         int file_frames;
@@ -2186,7 +2189,9 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
   switch(loadpatchbysteps){
   case UNCOMPRESSED_ALLFRAMES:
     while(meshi->patchval==NULL&&maxtimes_boundary>100){
+#ifndef pp_BOUNDFRAME
       maxtimes_boundary-=50;
+#endif
       meshi->maxtimes_boundary=maxtimes_boundary;
       NewResizeMemory(meshi->patchval,sizeof(float)*maxtimes_boundary*meshi->npatchsize);
     }
@@ -2535,6 +2540,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
   }
   plotstate=GetPlotState(DYNAMIC_PLOTS);
   MakeTimesMap(meshi->patch_times, &meshi->patch_times_map, meshi->npatch_times);
+  CheckMemory;
   if(patchi->finalize==1){
     UpdateTimes();
     ForceIdle();
