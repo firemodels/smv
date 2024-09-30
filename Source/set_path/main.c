@@ -186,7 +186,7 @@ int main(int argc, char **argv){
         test_mode=1;
         break;
       default:
-        Usage("set_path",HELP_ALL);
+        Usage(HELP_ALL);
         return 1;
     }
   }
@@ -216,7 +216,7 @@ int main(int argc, char **argv){
     }
   }
   else{
-    Usage("set_path",HELP_ALL);
+    Usage(HELP_ALL);
     return 0;
   }
   if(add_path==1&&newentry!=NULL){
