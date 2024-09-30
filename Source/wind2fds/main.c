@@ -12,7 +12,7 @@
 
 /* ------------------ Usage ------------------------ */
 
-void Usage(char *prog, int option){
+void Usage(int option){
   char githash[100];
   char gitdate[100];
   char buffer[1024];
@@ -98,7 +98,7 @@ int main(int argc, char **argv){
 
   ParseCommonOptions(argc, argv);
   if(show_help!=0){
-    Usage("wind2fds",show_help);
+    Usage(show_help);
     return 1;
   }
   if(show_version==1){

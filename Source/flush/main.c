@@ -24,7 +24,7 @@ int write_buffer=0;
 
 /* ------------------ Usage ------------------------ */
 
-void Usage(char *prog, int option){
+void Usage(int option){
  char githash[LEN_BUFFER];
  char gitdate[LEN_BUFFER];
 
@@ -78,7 +78,7 @@ int main(int argc, char **argv){
 
   ParseCommonOptions(argc, argv);
   if(show_help!=0){
-    Usage("flushcache",show_help);
+    Usage(show_help);
     return 1;
   }
   if(show_version==1){

@@ -48,7 +48,7 @@ void Sleep(int ticks){
 
 /* ------------------ Usage ------------------------ */
 
-void Usage(char *prog, int option){
+void Usage(int option){
   char githash[100];
   char gitdate[100];
   char pp[] = "%";
@@ -129,7 +129,7 @@ int main(int argc, char **argv){
 
   ParseCommonOptions(argc, argv);
   if(show_help!=0){
-    Usage("background",show_help);
+    Usage(show_help);
     return 1;
   }
   if(show_version==1){
@@ -209,7 +209,7 @@ int main(int argc, char **argv){
             break;
           default:
             printf("Unknown option: %s\n",arg);
-            Usage(argv[0],HELP_ALL);
+            Usage(HELP_ALL);
             return 1;
         }
       }

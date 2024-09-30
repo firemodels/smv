@@ -11,7 +11,7 @@
 
 /* ------------------ Usage ------------------------ */
 
-void Usage(char *prog,int option){
+void Usage(int option){
  char githash[100];
  char gitdate[100];
 
@@ -32,7 +32,7 @@ int main(int argc, char **argv){
   unsigned char *hash = NULL;
 
   if(argc == 1){
-    Usage("hashfile",HELP_ALL);
+    Usage(HELP_ALL);
     return 0;
   }
 
@@ -41,7 +41,7 @@ int main(int argc, char **argv){
 
   ParseCommonOptions(argc, argv);
   if(show_help!=0){
-    Usage("hashfile",show_help);
+    Usage(show_help);
     return 1;
   }
   if(show_version==1){

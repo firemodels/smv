@@ -11,7 +11,7 @@
 
 /* ------------------ Usage ------------------------ */
 
-void Usage(char *prog, int option){
+void Usage(int option){
  char githash[256];
  char gitdate[256];
 
@@ -39,7 +39,7 @@ int main(int argc, char **argv){
 
   ParseCommonOptions(argc, argv);
   if(show_help!=0){
-    Usage("sh2bat",show_help);
+    Usage(show_help);
     return 1;
   }
   if(show_version==1){
@@ -56,7 +56,7 @@ int main(int argc, char **argv){
     if(arg[0]=='-'&&lenarg>1){
       switch(arg[1]){
       default:
-        Usage(prog,HELP_ALL);
+        Usage(HELP_ALL);
         exit(1);
         break;
       }
