@@ -27,10 +27,15 @@
 /* ------------------ Usage ------------------------ */
 
 void Usage(char *prog,int option){
-  PRINTF("%s\n", release_title);
+  char githash[100];
+  char gitdate[100];
+
+  GetGitInfo(githash, gitdate);    // get githash
+
+  PRINTF("smokeview [options] casename\n");
+  PRINTF("%s - %s\n\n", githash, __DATE__);
   PRINTF("%s\n\n", _("Visualize fire/smoke flow simulations."));
-  PRINTF("Usage: %s [options] casename", prog);
-  PRINTF("\n\n");
+  PRINTF("Options:\n");
   PRINTF("%s\n", _(" casename       - project id (file names without the extension)"));
   PRINTF("%s\n", _(" -bindir dir    - specify location of smokeview bin directory"));
   PRINTF("%s\n", _(" -ini           - output smokeview parameter values to smokeview.ini"));

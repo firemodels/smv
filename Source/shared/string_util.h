@@ -112,7 +112,6 @@ EXTERNCPP unsigned char *GetHashMD5(char *file);
 EXTERNCPP unsigned char *GetHashSHA256(char *file);
 EXTERNCPP unsigned char *GetHashSHA1(char *file);
 #endif
-EXTERNCPP void           GetProgVersion(char *PROGversion);
 EXTERNCPP int            MatchWild(char *pTameText, char *pWildText);
 EXTERNCPP int            Match(char *buffer, const char *key);
 EXTERNCPP int            MatchINI(char *buffer, const char *key);

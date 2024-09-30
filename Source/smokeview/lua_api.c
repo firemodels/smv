@@ -1361,10 +1361,9 @@ int LuaCreateCase(lua_State *L) {
 /// @brief As with lua_initsmvdata(), but for information relating to Smokeview
 /// itself.
 int LuaInitsmvproginfo(lua_State *L) {
-  char version[256];
   // char githash[256];
 
-  GetProgVersion(version);
+  strcpy(version, "");
   AddLuaPaths(L);
   // getGitHash(githash);
 

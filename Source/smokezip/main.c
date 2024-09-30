@@ -15,18 +15,16 @@
 /* ------------------ Usage ------------------------ */
 
 void Usage(char *prog, int option){
-  char smv_version[100];
   char buffer[1000];
   char githash[256];
   char gitdate[256];
 
-  GetProgVersion(smv_version);  // get Smokeview version (ie 5.x.z)
   GetGitInfo(githash, gitdate);    // get githash
 
   PRINTF("\n");
-  PRINTF("  smokezip %s(%s) - %s\n\n", smv_version, githash, __DATE__);
+  PRINTF("  smokezip [options] casename\n");
+  PRINTF("  %s - %s\n\n", githash, __DATE__);
   PRINTF("  Compress FDS data files\n\n");
-  PRINTF("  %s [options] casename\n\n", GetBaseFileName(buffer, prog));
   PRINTF("  casename - Smokeview .smv file for case to be compressed\n\n");
   PRINTF("options:\n");
   PRINTF("  -c  - cleans or removes all compressed files\n");

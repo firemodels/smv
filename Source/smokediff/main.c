@@ -12,16 +12,14 @@
 /* ------------------ usage ------------------------ */
 
 void Usage(char *prog, int option){
-  char smv_version[100];
   char githash[100];
   char gitdate[100];
 
-  GetProgVersion(smv_version);  // get Smokeview version (ie 5.x.z)
   GetGitInfo(githash, gitdate);    // get githash
 
   PRINTF("\n");
   PRINTF("  %s [options] smv_case1 smv_case2\n", prog);
-  PRINTF("    version: %s (githash %s) - %s\n\n", smv_version, githash, __DATE__);
+  PRINTF("  %s - %s\n\n", githash, __DATE__);
 
   PRINTF("  smokediff compares two FDS cases by subtracting data referenced in smv_case2 from\n");
   PRINTF("  corresponding data referenced in smv_case1 (smv_case1 - smv_case2).  Slice, PLOT3d\n");
@@ -33,6 +31,7 @@ void Usage(char *prog, int option){
   PRINTF("  resolutions in smv_case2 must be integer multiples of the corresponding x, y, z mesh\n");
   PRINTF("  resolutions in smv_case1 when differencing slice files.\n\n");
 
+  printf("options:\n");
   UsageCommon(HELP_SUMMARY);
 
   if(option == HELP_ALL){
