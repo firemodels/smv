@@ -2488,25 +2488,25 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
     }
     int mintimes = -1;
     for(i = 0;i < npatchinfo;i++){
-      patchdata *patchi;
+      patchdata *pi;
 
-      patchi = patchinfo + i;
-      if(patchi->loaded == 0)continue;
+      pi = patchinfo + i;
+      if(pi->loaded == 0)continue;
       if(mintimes < 0){
-        mintimes = patchi->ntimes;
+        mintimes = pi->ntimes;
       }
       else{
-        mintimes = MIN(mintimes, patchi->ntimes);
+        mintimes = MIN(mintimes, pi->ntimes);
       }
     }
     for(i = 0;i < npatchinfo;i++){
-      patchdata *patchi;
-      meshdata *meshi;
+      patchdata *pi;
+      meshdata *mi;
 
-      patchi = patchinfo + i;
-      if(patchi->loaded == 0)continue;
-      meshi = meshinfo + patchi->blocknumber;
-      meshi->maxtimes_boundary = mintimes;
+      pi = patchinfo + i;
+      if(pi->loaded == 0)continue;
+      mi = meshinfo + pi->blocknumber;
+      mi->maxtimes_boundary = mintimes;
     }
   }
   if(cache_boundary_data==0){
