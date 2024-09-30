@@ -1642,6 +1642,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
 
         patchi->ntimes_old = patchi->ntimes;
         patchi->ntimes = (statbuffer.st_size-headersize)/framesize;
+        maxtimes_boundary = patchi->ntimes + 50;
         file_frames=patchi->ntimes+51;
         if(file_frames<maxtimes_boundary)maxtimes_boundary=file_frames;
       }
