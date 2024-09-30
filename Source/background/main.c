@@ -57,8 +57,8 @@ void Usage(char *prog, int option){
 
   printf("\n");
   printf("background [-d delay time (s) -h -u max_usage -v] prog [arguments]\n");
-  printf("%s %s\n", githash, __DATE__);
-  printf("  Runs a program in the background when resources are available\n\n");
+  printf("%s %s\n\n", githash, __DATE__);
+  printf("Runs a program in the background when resources are available\n\n");
   printf("options:\n");
   printf("  -d dtime  - wait dtime seconds before running prog in the background\n");
   printf("  -m max    - wait to run prog until memory usage is less than max (25-100%s)\n", pp);

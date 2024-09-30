@@ -15,10 +15,10 @@ void Usage(char *prog, int option){
   GetGitInfo(githash, gitdate);    // get githash
 
   PRINTF("\n");
-  PRINTF("  fds2fed [options] smv_case1\n");
-  PRINTF("  %s - %s\n\n", githash, __DATE__);
+  PRINTF("fds2fed [options] smv_case1\n");
+  PRINTF("%s - %s\n\n", githash, __DATE__);
 
-  PRINTF("  fds2fed computes fed slices\n\n");
+  PRINTF("fds2fed computes fed slices\n\n");
   PRINTF("options:\n");
 
   UsageCommon(HELP_SUMMARY);

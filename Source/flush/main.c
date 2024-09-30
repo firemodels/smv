@@ -32,8 +32,9 @@ void Usage(char *prog, int option){
 
   
   fprintf(stdout, "\nflush [options]\n");
-  fprintf(stdout, "%s %s\n", githash, __DATE__);
-  fprintf(stdout, "flush the cache\n");
+  fprintf(stdout, "%s %s\n\n", githash, __DATE__);
+  fprintf(stdout, "flush the cache\n\n");
+  PRINTF("options:\n");
   PRINTF("%s\n", " -g size - allocate a memory buffer of 'size' GB");
   PRINTF("%s\n", " -w      - initialize buffer");
   UsageCommon(HELP_SUMMARY);

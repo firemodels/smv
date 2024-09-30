@@ -22,10 +22,10 @@ void Usage(char *prog, int option){
   GetGitInfo(githash, gitdate);    // get githash
 
   PRINTF("\n");
-  PRINTF("  smokezip [options] casename\n");
-  PRINTF("  %s - %s\n\n", githash, __DATE__);
-  PRINTF("  Compress FDS data files\n\n");
-  PRINTF("  casename - Smokeview .smv file for case to be compressed\n\n");
+  PRINTF("smokezip [options] casename\n");
+  PRINTF("%s - %s\n\n", githash, __DATE__);
+  PRINTF("Compress FDS data files\n\n");
+  PRINTF("casename - Smokeview .smv file for case to be compressed\n\n");
   PRINTF("options:\n");
   PRINTF("  -c  - cleans or removes all compressed files\n");
 #ifdef pp_THREAD
