@@ -30,7 +30,9 @@ void Usage(char *prog, int option){
 
   GetGitInfo(githash,gitdate);    // get githash
 
-  fprintf(stdout, "\n%s (%s) %s\n", prog, githash, __DATE__);
+  
+  fprintf(stdout, "\nflush [options]\n");
+  fprintf(stdout, "%s %s\n", githash, __DATE__);
   fprintf(stdout, "flush the cache\n");
   PRINTF("%s\n", " -g size - allocate a memory buffer of 'size' GB");
   PRINTF("%s\n", " -w      - initialize buffer");

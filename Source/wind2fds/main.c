@@ -22,7 +22,7 @@ void Usage(char *prog, int option){
   printf("\n");
   printf("wind2fds [-prefix label] [-offset x y z] input_file [output_file]\n");
   printf("%s - %s\n\n", githash, __DATE__);
-  printf("  Convert spreadsheets containing wind data to files compatible with Smokeview:\n\n");
+  printf("Convert spreadsheets containing wind data to files compatible with Smokeview:\n\n");
 
   printf("options:\n");
   printf("  -prefix label  - prefix column headers with label\n");

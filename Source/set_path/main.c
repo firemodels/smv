@@ -82,11 +82,10 @@ void Usage(char *prog, int option){
 
   GetGitInfo(githash, gitdate);
 
-  printf("%s Build:%s\n", prog, githash);
-  printf("  Modify or display the User or System path environmental variables.\n\n");
-  printf("Usage:\n\n");
-  printf("  set_path [-s][-u] [-a path_entry] [-r path_entry] [-d][-p][-v]\n\n");
-  printf("where\n\n");
+  printf("\nset_path [-s][-u] [-a path_entry] [-r path_entry] [-d][-p][-v]\n");
+  printf("%s %s\n\n", githash, gitdate);
+  printf("Modify or display the User or System path environmental variables.\n\n");
+  printf("options:\n");
   printf("  -a entry - append entry to the path variable being modified\n");
   printf("  -f entry - prepend entry to the path variable being modified\n");
   printf("  -r label - remove any entry containing label from the path\n");
@@ -131,7 +130,7 @@ int main(int argc, char **argv){
     return 1;
   }
   if(show_version==1){
-    PRINTVERSION("set_file");
+    PRINTVERSION("set_path");
     return 1;
   }
 

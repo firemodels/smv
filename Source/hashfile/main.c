@@ -17,10 +17,10 @@ void Usage(char *prog,int option){
 
   GetGitInfo(githash,gitdate);    // get githash
 
-  fprintf(stdout, "\n%s (%s) %s\n", prog, githash, __DATE__);
+  fprintf(stdout, "\nhashfile [options] file\n");
+  fprintf(stdout, "%s %s\n", githash, __DATE__);
   fprintf(stdout, "Compute the md5, sha1 or sha256 hash of a specified file\n");
-  fprintf(stdout, "Usage:\n");
-  fprintf(stdout, "  hashfile [option] file\n");
+  fprintf(stdout, "\n options:\n");
   UsageCommon(HELP_SUMMARY);
   if(option==HELP_ALL)UsageCommon(HELP_ALL);
 }
