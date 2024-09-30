@@ -26,7 +26,7 @@
 
 /* ------------------ Usage ------------------------ */
 
-void Usage(char *prog,int option){
+void Usage(int option){
   char githash[100];
   char gitdate[100];
 
@@ -558,11 +558,11 @@ char *ProcessCommandLine(CommandlineArgs *args){
     handle_slice_files = 0;
     }
     if(args->show_help_summary){
-      Usage(args->prog,HELP_SUMMARY);
+      Usage(HELP_SUMMARY);
       SMV_EXIT(0);
     }
     if(args->show_help_all){
-      Usage(args->prog,HELP_ALL);
+      Usage(HELP_ALL);
       SMV_EXIT(0);
     }
     if(args->noblank){
@@ -809,11 +809,11 @@ int main(int argc, char **argv){
 
   ParseCommonOptions(argc, argv);
   if(show_help==1){
-    Usage("smokeview", HELP_SUMMARY);
+    Usage(HELP_SUMMARY);
     return 1;
   }
   if(show_help==2){
-    Usage("smokeview", HELP_ALL);
+    Usage(HELP_ALL);
     return 1;
   }
 

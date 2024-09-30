@@ -11,14 +11,14 @@
 
 /* ------------------ usage ------------------------ */
 
-void Usage(char *prog, int option){
+void Usage(int option){
   char githash[100];
   char gitdate[100];
 
   GetGitInfo(githash, gitdate);    // get githash
 
   PRINTF("\n");
-  PRINTF("%s [options] smv_case1 smv_case2\n", prog);
+  PRINTF("smokediff [options] smv_case1 smv_case2\n");
   PRINTF("%s - %s\n\n", githash, __DATE__);
 
   PRINTF("smokediff compares two FDS cases by subtracting data referenced in smv_case2 from\n");
@@ -79,7 +79,7 @@ int main(int argc, char **argv){
 
   ParseCommonOptions(argc, argv);
   if(show_help!=0){
-    Usage("smokediff",show_help);
+    Usage(show_help);
     return 0;
   }
   if(show_version==1){
@@ -138,7 +138,7 @@ int main(int argc, char **argv){
           no_boundary=1;
         }
         else{
-          Usage("smokediff",HELP_ALL);
+          Usage(HELP_ALL);
           return 1;
         }
         break;
@@ -172,7 +172,7 @@ int main(int argc, char **argv){
         display_warnings=0;
         break;
       default:
-        Usage("smokediff",HELP_ALL);
+        Usage(HELP_ALL);
         return 1;
       }
     }
