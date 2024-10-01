@@ -1553,7 +1553,6 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
 #ifdef pp_BOUNDFRAME
   patchi->frameinfo = FRAMELoadData(patchi->frameinfo, patchi->file, load_flag, time_frame, FORTRAN_FILE, GetBoundaryFrameInfo);
   patchi->ntimes = patchi->frameinfo->nframes;
-  maxtimes_boundary = patchi->ntimes;
   NewMemory((void **)&meshi->patch_times, patchi->ntimes*sizeof(float));
   memcpy(meshi->patch_times, patchi->frameinfo->times, patchi->ntimes*sizeof(float));
   FRAMEGetMinMax(patchi->frameinfo);
@@ -2246,7 +2245,6 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
       }
 #ifdef pp_BOUNDFRAME
       return_filesize = patchi->frameinfo->filesize;
-      meshi->npatch_times = patchi->frameinfo->nframes;
 #else
       for(n=0;n<tload_step;n++){
         if(error==0){
