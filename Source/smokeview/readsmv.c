@@ -17487,18 +17487,13 @@ void WriteIni(int flag,char *filename){
     flag == LOCAL_INI))OutputViewpoints(fileout);
 
   {
-    char version[256];
     char githash[256];
     char gitdate[256];
 
-    GetProgVersion(version);
     GetGitInfo(githash,gitdate);    // get githash
     fprintf(fileout,"\n\n");
     fprintf(fileout,"# FDS/Smokeview Environment\n");
     fprintf(fileout,"# -------------------------\n\n");
-    if(strcmp(version,"")!=0){
-      fprintf(fileout,"# Smokeview Version: %s\n",version);
-    }
     fprintf(fileout,"# Smokeview Build: %s\n",githash);
     fprintf(fileout,"# Smokeview Build Date: %s\n",__DATE__);
     if(fds_version!=NULL){

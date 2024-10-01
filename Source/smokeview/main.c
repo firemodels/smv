@@ -26,11 +26,16 @@
 
 /* ------------------ Usage ------------------------ */
 
-void Usage(char *prog,int option){
-  PRINTF("%s\n", release_title);
+void Usage(int option){
+  char githash[100];
+  char gitdate[100];
+
+  GetGitInfo(githash, gitdate);    // get githash
+
+  PRINTF("\nsmokeview [options] casename\n");
+  PRINTF("%s - %s\n\n", githash, __DATE__);
   PRINTF("%s\n\n", _("Visualize fire/smoke flow simulations."));
-  PRINTF("Usage: %s [options] casename", prog);
-  PRINTF("\n\n");
+  PRINTF("options:\n");
   PRINTF("%s\n", _(" casename       - project id (file names without the extension)"));
   PRINTF("%s\n", _(" -bindir dir    - specify location of smokeview bin directory"));
   PRINTF("%s\n", _(" -ini           - output smokeview parameter values to smokeview.ini"));
@@ -553,11 +558,11 @@ char *ProcessCommandLine(CommandlineArgs *args){
     handle_slice_files = 0;
     }
     if(args->show_help_summary){
-      Usage(args->prog,HELP_SUMMARY);
+      Usage(HELP_SUMMARY);
       SMV_EXIT(0);
     }
     if(args->show_help_all){
-      Usage(args->prog,HELP_ALL);
+      Usage(HELP_ALL);
       SMV_EXIT(0);
     }
     if(args->noblank){
@@ -804,11 +809,11 @@ int main(int argc, char **argv){
 
   ParseCommonOptions(argc, argv);
   if(show_help==1){
-    Usage("smokeview", HELP_SUMMARY);
+    Usage(HELP_SUMMARY);
     return 1;
   }
   if(show_help==2){
-    Usage("smokeview", HELP_ALL);
+    Usage(HELP_ALL);
     return 1;
   }
 

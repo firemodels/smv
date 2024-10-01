@@ -24,14 +24,17 @@ int write_buffer=0;
 
 /* ------------------ Usage ------------------------ */
 
-void Usage(char *prog, int option){
+void Usage(int option){
  char githash[LEN_BUFFER];
  char gitdate[LEN_BUFFER];
 
   GetGitInfo(githash,gitdate);    // get githash
 
-  fprintf(stdout, "\n%s (%s) %s\n", prog, githash, __DATE__);
-  fprintf(stdout, "flush the cache\n");
+  
+  fprintf(stdout, "\nflush [options]\n");
+  fprintf(stdout, "%s %s\n\n", githash, __DATE__);
+  fprintf(stdout, "flush the cache\n\n");
+  PRINTF("options:\n");
   PRINTF("%s\n", " -g size - allocate a memory buffer of 'size' GB");
   PRINTF("%s\n", " -w      - initialize buffer");
   UsageCommon(HELP_SUMMARY);
@@ -75,7 +78,7 @@ int main(int argc, char **argv){
 
   ParseCommonOptions(argc, argv);
   if(show_help!=0){
-    Usage("flushcache",show_help);
+    Usage(show_help);
     return 1;
   }
   if(show_version==1){

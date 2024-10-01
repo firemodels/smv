@@ -48,24 +48,18 @@ void Sleep(int ticks){
 
 /* ------------------ Usage ------------------------ */
 
-void Usage(char *prog, int option){
-  char prog_version[100];
+void Usage(int option){
   char githash[100];
   char gitdate[100];
   char pp[] = "%";
 
-  GetProgVersion(prog_version);  // get version (ie 5.x.z)
   GetGitInfo(githash, gitdate);    // get githash
 
   printf("\n");
-  printf("background %s(%s) - %s\n", prog_version, githash, __DATE__);
-  printf("  Runs a program in the background when resources are available\n\nUsage:\n\n");
-  printf("  %s", prog);
-
-  printf(" [-d delay time (s) -h -u max_usage -v] prog [arguments]\n\n");
-
-  printf("where\n\n");
-
+  printf("background [-d delay time (s) -h -u max_usage -v] prog [arguments]\n");
+  printf("%s %s\n\n", githash, __DATE__);
+  printf("Runs a program in the background when resources are available\n\n");
+  printf("options:\n");
   printf("  -d dtime  - wait dtime seconds before running prog in the background\n");
   printf("  -m max    - wait to run prog until memory usage is less than max (25-100%s)\n", pp);
   printf("  -u max    - wait to run prog until cpu usage is less than max (25-100%s)\n", pp);
@@ -135,7 +129,7 @@ int main(int argc, char **argv){
 
   ParseCommonOptions(argc, argv);
   if(show_help!=0){
-    Usage("background",show_help);
+    Usage(show_help);
     return 1;
   }
   if(show_version==1){
@@ -215,7 +209,7 @@ int main(int argc, char **argv){
             break;
           default:
             printf("Unknown option: %s\n",arg);
-            Usage(argv[0],HELP_ALL);
+            Usage(HELP_ALL);
             return 1;
         }
       }
