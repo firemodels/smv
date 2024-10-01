@@ -1362,6 +1362,7 @@ int LuaCreateCase(lua_State *L) {
 /// itself.
 int LuaInitsmvproginfo(lua_State *L) {
   // char githash[256];
+  int version;
 
   strcpy(version, "");
   AddLuaPaths(L);
