@@ -1,4 +1,4 @@
-&HEAD CHID='boundary4gb',TITLE='1GB boundary file test case' /
+&HEAD CHID='boundary4gb',TITLE='4GB boundary file test case' /
 
 &MESH IJK=128,128,4, XB=0.0,12.8,0.0,12.8,0.0,0.4/
 
