@@ -73,7 +73,7 @@ int main(int argc, char **argv){
     }
   }
   if(filein==NULL||fileout==NULL){
-    Usage(prog,HELP_ALL);
+    Usage(HELP_ALL);
     exit(1);
   }
   streamin=fopen(filein,"r");
