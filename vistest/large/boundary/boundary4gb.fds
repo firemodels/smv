@@ -1,4 +1,4 @@
-&HEAD CHID='boundary4gb',TITLE='4GB boundary file test case' /
+&HEAD CHID='boundary4gb',TITLE='1GB boundary file test case' /
 
 &MESH IJK=128,128,4, XB=0.0,12.8,0.0,12.8,0.0,0.4/
 
@@ -6,16 +6,49 @@
 
 &INIT XB=0.2,12.6,0.2,12.6,0.1,0.3  TEMPERATURE=600.0 /
 
-&TIME T_END=400. /  Total simulation time
+&TIME T_END=400.0 /  Total simulation time
 
 &REAC SOOT_YIELD=0.01,FUEL='PROPANE'/
 
 &VENT MB='XMAX', SURF_ID='OPEN' /
 
+&MATL ID                    = 'FABRIC'
+      FYI                   = 'Properties completely fabricated'
+      SPECIFIC_HEAT         = 1.0
+      CONDUCTIVITY          = 0.1
+      DENSITY               = 100.0
+      N_REACTIONS           = 1
+      NU_SPEC               = 1.
+      SPEC_ID               = 'PROPANE'
+      REFERENCE_TEMPERATURE = 350.
+      HEAT_OF_REACTION      = 3000.
+      HEAT_OF_COMBUSTION    = 15000. /
+
+&MATL ID                    = 'FOAM'
+      FYI                   = 'Properties completely fabricated'
+      SPECIFIC_HEAT         = 1.0
+      CONDUCTIVITY          = 0.05
+      DENSITY               = 40.0
+      N_REACTIONS           = 1
+      NU_SPEC               = 1.
+      SPEC_ID               = 'PROPANE'
+      REFERENCE_TEMPERATURE = 350.
+      HEAT_OF_REACTION      = 1500.
+      HEAT_OF_COMBUSTION    = 30000. /
+
+&SURF ID             = 'UPHOLSTERY'
+      FYI            = 'Properties completely fabricated'
+      RGB            = 151,96,88
+      BURN_AWAY      = .FALSE.
+      MATL_ID(1:2,1) = 'FABRIC','FOAM'
+      THICKNESS(1:2) = 0.002,0.1
+/
+
+
 &SURF ID='BURNER',HRRPUA=600.0 /  Ignition source
 &VENT XB=6.0,8.0,6.0,8.0,0.2,0.2,SURF_ID='BURNER' /  
 &VENT XB=6.0,8.0,6.0,8.0,0.3,0.3,SURF_ID='BURNER' /  
-&OBST XB=6.0,8.0,6.0,8.0,0.2,0.3 /
+&OBST XB=6.0,8.0,6.0,8.0,0.2,0.3, SURF_ID='UPHOLSTERY' /
 
 &BNDF QUANTITY='WALL_TEMPERATURE' /
 
