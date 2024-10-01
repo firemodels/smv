@@ -267,7 +267,7 @@ void UpdateAllBoundaryColors(int flag){
               int npatchvals;
 
               meshi = meshinfo+patchi->blocknumber;
-              npatchvals = meshi->npatch_times*meshi->npatchsize;
+              npatchvals = patchi->ntimes*meshi->npatchsize;
               GetBoundaryColors3(patchi, meshi->patchval, 0, npatchvals, meshi->cpatchval,
                                  &glui_patchmin, &glui_patchmax,
                                  nrgb, colorlabelpatch, colorvaluespatch, boundarylevels256,

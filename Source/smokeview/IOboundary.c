@@ -1167,7 +1167,7 @@ void ComputeLoadedPatchHist(char *label, histogramdata **histptr, float *global_
           meshdata *meshi;
 
           meshi = meshinfo+patchi->blocknumber;
-          npatchvals = meshi->npatch_times*meshi->npatchsize;
+          npatchvals = patchi->ntimes*meshi->npatchsize;
           MergeVals2Histogram(meshi->patchval, NULL, NULL, npatchvals, hist);
         }
         break;
@@ -2208,7 +2208,6 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
   if(loadpatchbysteps==COMPRESSED_ALLFRAMES){
     GetBoundaryDataZlib(patchi,meshi->cpatchval_zlib,ncompressed_buffer, 
       meshi->patch_times,meshi->zipoffset,meshi->zipsize,patchi->ntimes);
-    meshi->npatch_times=patchi->ntimes;
     framestart = 0;
     return_filesize += ncompressed_buffer;
   }
@@ -2223,7 +2222,6 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
       framestart = patchi->ntimes_old;
     }
     else{
-      meshi->npatch_times = 0;
       framestart = 0;
     }
   }
@@ -2523,8 +2521,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
     pfi->vis = vis_boundary_type[pfi->type];
   }
   plotstate=GetPlotState(DYNAMIC_PLOTS);
-  meshi->npatch_times = patchi->ntimes;
-  MakeTimesMap(meshi->patch_times, &meshi->patch_times_map, meshi->npatch_times);
+  MakeTimesMap(meshi->patch_times, &meshi->patch_times_map, patchi->ntimes);
   if(patchi->finalize==1){
     UpdateTimes();
     ForceIdle();
