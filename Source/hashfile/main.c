@@ -11,16 +11,16 @@
 
 /* ------------------ Usage ------------------------ */
 
-void Usage(char *prog,int option){
+void Usage(int option){
  char githash[100];
  char gitdate[100];
 
   GetGitInfo(githash,gitdate);    // get githash
 
-  fprintf(stdout, "\n%s (%s) %s\n", prog, githash, __DATE__);
-  fprintf(stdout, "Compute the md5, sha1 or sha256 hash of a specified file\n");
-  fprintf(stdout, "Usage:\n");
-  fprintf(stdout, "  hashfile [option] file\n");
+  fprintf(stdout, "\nhashfile [options] file\n");
+  fprintf(stdout, "%s %s\n\n", githash, __DATE__);
+  fprintf(stdout, "Compute the md5, sha1 or sha256 hash of a specified file\n\n");
+  fprintf(stdout, "options:\n");
   UsageCommon(HELP_SUMMARY);
   if(option==HELP_ALL)UsageCommon(HELP_ALL);
 }
@@ -32,7 +32,7 @@ int main(int argc, char **argv){
   unsigned char *hash = NULL;
 
   if(argc == 1){
-    Usage("hashfile",HELP_ALL);
+    Usage(HELP_ALL);
     return 0;
   }
 
@@ -41,7 +41,7 @@ int main(int argc, char **argv){
 
   ParseCommonOptions(argc, argv);
   if(show_help!=0){
-    Usage("hashfile",show_help);
+    Usage(show_help);
     return 1;
   }
   if(show_version==1){

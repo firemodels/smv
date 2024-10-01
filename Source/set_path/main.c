@@ -76,17 +76,16 @@ int prompt_user(char *path_type_local, char *pathbuffer){
 
 /* ------------------ Usage ------------------------ */
 
-void Usage(char *prog, int option){
+void Usage(int option){
   char githash[100];
   char gitdate[100];
 
   GetGitInfo(githash, gitdate);
 
-  printf("%s Build:%s\n", prog, githash);
-  printf("  Modify or display the User or System path environmental variables.\n\n");
-  printf("Usage:\n\n");
-  printf("  set_path [-s][-u] [-a path_entry] [-r path_entry] [-d][-p][-v]\n\n");
-  printf("where\n\n");
+  printf("\nset_path [-s][-u] [-a path_entry] [-r path_entry] [-d][-p][-v]\n");
+  printf("%s %s\n\n", githash, gitdate);
+  printf("Modify or display the User or System path environmental variables.\n\n");
+  printf("options:\n");
   printf("  -a entry - append entry to the path variable being modified\n");
   printf("  -f entry - prepend entry to the path variable being modified\n");
   printf("  -r label - remove any entry containing label from the path\n");
@@ -121,17 +120,17 @@ int main(int argc, char **argv){
   strcpy(path_type,"User");
 
   if(argc==1){
-    Usage("set_path",HELP_ALL);
+    Usage(HELP_ALL);
     return 1;
   }
 
   ParseCommonOptions(argc, argv);
   if(show_help!=0){
-    Usage("set_path",show_help);
+    Usage(show_help);
     return 1;
   }
   if(show_version==1){
-    PRINTVERSION("set_file");
+    PRINTVERSION("set_path");
     return 1;
   }
 
@@ -187,7 +186,7 @@ int main(int argc, char **argv){
         test_mode=1;
         break;
       default:
-        Usage("set_path",HELP_ALL);
+        Usage(HELP_ALL);
         return 1;
     }
   }
@@ -217,7 +216,7 @@ int main(int argc, char **argv){
     }
   }
   else{
-    Usage("set_path",HELP_ALL);
+    Usage(HELP_ALL);
     return 0;
   }
   if(add_path==1&&newentry!=NULL){

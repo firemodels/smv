@@ -11,28 +11,27 @@
 
 /* ------------------ usage ------------------------ */
 
-void Usage(char *prog, int option){
-  char smv_version[100];
+void Usage(int option){
   char githash[100];
   char gitdate[100];
 
-  GetProgVersion(smv_version);  // get Smokeview version (ie 5.x.z)
   GetGitInfo(githash, gitdate);    // get githash
 
   PRINTF("\n");
-  PRINTF("  %s [options] smv_case1 smv_case2\n", prog);
-  PRINTF("    version: %s (githash %s) - %s\n\n", smv_version, githash, __DATE__);
+  PRINTF("smokediff [options] smv_case1 smv_case2\n");
+  PRINTF("%s - %s\n\n", githash, __DATE__);
 
-  PRINTF("  smokediff compares two FDS cases by subtracting data referenced in smv_case2 from\n");
-  PRINTF("  corresponding data referenced in smv_case1 (smv_case1 - smv_case2).  Slice, PLOT3d\n");
-  PRINTF("  and boundary files are supported.  Differenced results may be viewed by opening\n");
-  PRINTF("  smv_case1_diff.smv in Smokeview or by using the -smv option when running smokediff.\n\n");
+  PRINTF("smokediff compares two FDS cases by subtracting data referenced in smv_case2 from\n");
+  PRINTF("corresponding data referenced in smv_case1 (smv_case1 - smv_case2).  Slice, PLOT3d\n");
+  PRINTF("and boundary files are supported.  Differenced results may be viewed by opening\n");
+  PRINTF("smv_case1_diff.smv in Smokeview or by using the -smv option when running smokediff.\n\n");
 
-  PRINTF("  Mesh bounds must be identical for corresponding meshes.  Mesh resolutions must be\n");
-  PRINTF("  identical when differencing boundary and PLOT3D files.  The x, y, and z mesh\n");
-  PRINTF("  resolutions in smv_case2 must be integer multiples of the corresponding x, y, z mesh\n");
-  PRINTF("  resolutions in smv_case1 when differencing slice files.\n\n");
+  PRINTF("Mesh bounds must be identical for corresponding meshes.  Mesh resolutions must be\n");
+  PRINTF("identical when differencing boundary and PLOT3D files.  The x, y, and z mesh\n");
+  PRINTF("resolutions in smv_case2 must be integer multiples of the corresponding x, y, z mesh\n");
+  PRINTF("resolutions in smv_case1 when differencing slice files.\n\n");
 
+  printf("options:\n");
   UsageCommon(HELP_SUMMARY);
 
   if(option == HELP_ALL){
@@ -80,7 +79,7 @@ int main(int argc, char **argv){
 
   ParseCommonOptions(argc, argv);
   if(show_help!=0){
-    Usage("smokediff",show_help);
+    Usage(show_help);
     return 0;
   }
   if(show_version==1){
@@ -139,7 +138,7 @@ int main(int argc, char **argv){
           no_boundary=1;
         }
         else{
-          Usage("smokediff",HELP_ALL);
+          Usage(HELP_ALL);
           return 1;
         }
         break;
@@ -173,7 +172,7 @@ int main(int argc, char **argv){
         display_warnings=0;
         break;
       default:
-        Usage("smokediff",HELP_ALL);
+        Usage(HELP_ALL);
         return 1;
       }
     }

@@ -13,13 +13,14 @@
 
 /* ------------------ Usage ------------------------ */
 
-void Usage(char *prog, int option){
+void Usage(int option){
  char githash[LEN_BUFFER];
  char gitdate[LEN_BUFFER];
 
   GetGitInfo(githash,gitdate);    // get githash
 
-  fprintf(stdout, "\n%s (%s) %s\n", prog, githash, __DATE__);
+  fprintf(stdout, "\nenv2mod [options] file1 file2\n");
+  fprintf(stdout, "%s %s\n", githash, __DATE__);
   fprintf(stdout, "This program converts a bash script into a module file by comparing\n");
   fprintf(stdout, "the bash environment before and after the bash script is run. This\n");
   fprintf(stdout, "is done by running commands such as:\n");
@@ -31,8 +32,7 @@ void Usage(char *prog, int option){
   fprintf(stdout, "or by specifying the script file with the -s option\n");
 #endif
   fprintf(stdout, "\n");
-  fprintf(stdout, "Usage:\n");
-  fprintf(stdout, "  env2mod -f file1 file2");
+  fprintf(stdout, "options:\n");
 #ifndef WIN32
   fprintf(stdout, " -s script.sh");
 #endif
@@ -90,7 +90,7 @@ int main(int argc, char **argv){
   strcpy(modulefile, "modulefile");
 
   if(argc == 1){
-    Usage("env2mod", HELP_ALL);
+    Usage(HELP_ALL);
     return 0;
   }
 
@@ -99,7 +99,7 @@ int main(int argc, char **argv){
 
   ParseCommonOptions(argc, argv);
   if(show_help != 0){
-    Usage("env2mod", show_help);
+    Usage(show_help);
     return 1;
   }
   if(show_version == 1){

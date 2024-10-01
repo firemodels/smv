@@ -8,26 +8,24 @@
 
 /* ------------------ usage ------------------------ */
 
-void Usage(char *prog, int option){
-  char smv_version[100];
+void Usage(int option){
   char githash[100];
   char gitdate[100];
 
-  GetProgVersion(smv_version);  // get Smokeview version (ie 5.x.z)
   GetGitInfo(githash, gitdate);    // get githash
 
   PRINTF("\n");
-  PRINTF("  %s [options] smv_case1 \n", prog);
-  PRINTF("    version: %s (githash %s) - %s\n\n", smv_version, githash, __DATE__);
+  PRINTF("fds2fed [options] smv_case1\n");
+  PRINTF("%s - %s\n\n", githash, __DATE__);
 
-  PRINTF("  fds2fed computes fed slices\n");
+  PRINTF("fds2fed computes fed slices\n\n");
+  PRINTF("options:\n");
 
   UsageCommon(HELP_SUMMARY);
 
   if(option == HELP_ALL){
     UsageCommon(HELP_ALL);
   }
-  PRINTF("\n  smv_case1,smv_case2 - Two smokeview cases to compare.\n");
 }
 
 /* ------------------ main ------------------------ */
@@ -44,7 +42,7 @@ int main(int argc, char **argv){
 
   ParseCommonOptions(argc, argv);
   if(show_help!=0){
-    Usage("fds2fed",show_help);
+    Usage(show_help);
     return 0;
   }
   if(show_version==1){
@@ -62,7 +60,7 @@ int main(int argc, char **argv){
       case 't':
         break;
       default:
-        Usage("fds2fed",HELP_ALL);
+        Usage(HELP_ALL);
         return 1;
       }
     }

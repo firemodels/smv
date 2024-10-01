@@ -1278,12 +1278,6 @@ char *RemoveComment(char *buffer){
   return TrimFront(buffer);
 }
 
-/* ------------------ GetProgVersion ------------------------ */
-
-void GetProgVersion(char *PROGversion){
-  strcpy(PROGversion,PROGVERSION);
-}
-
 /* ------------------ SetLabelsIso ------------------------ */
 
 int SetLabelsIso(flowlabels *flowlabel, char *longlabel, char *shortlabel, char *unit, float *levels, int nlevels){
@@ -1687,7 +1681,6 @@ unsigned int DiffDate(char *token, char *tokenbase){
 /* ------------------ GetBaseTitle ------------------------ */
 
 void GetBaseTitle(char *progname, char *title_base){
-  char version[100];
   char git_version[100];
   char git_date[100];
 
@@ -1696,13 +1689,7 @@ void GetBaseTitle(char *progname, char *title_base){
   // construct string of the form:
   //   5.x.y_#
 
-  GetProgVersion(version);
-
   strcpy(title_base, progname);
-
-  strcat(title_base, " ");
-  strcat(title_base, version);
-
   strcat(title_base, " - ");
 }
 
@@ -1975,20 +1962,15 @@ void PRINTversion(char *progname, int option){
 void PRINTversion(char *progname){
 #endif
   char *progfullpath = GetBinPath();
-  char version[256];
   char githash[256];
   char gitdate[256];
   char releasetitle[1024];
 
-  GetProgVersion(version);
   GetGitInfo(githash, gitdate);    // get githash
   GetTitle(progname, releasetitle);
 
   PRINTF("\n");
   PRINTF("%s\n\n", releasetitle);
-  if(strcmp(version, "") != 0){
-    PRINTF("Version          : %s\n", version);
-  }
   PRINTF("Revision         : %s\n", githash);
   PRINTF("Revision Date    : %s\n", gitdate);
   PRINTF("Compilation Date : %s %s\n", __DATE__, __TIME__);
