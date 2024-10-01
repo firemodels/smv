@@ -843,7 +843,7 @@ void SynchTimes(void){
       if(meshi->patchfilenum<0||meshi->patch_times==NULL)continue;
       patchi=patchinfo+meshi->patchfilenum;
       if(patchi->structured == NO||patchi->loaded==0)continue;
-      meshi->patch_timeslist[n] = GetDataTimeFrame(global_times[n], meshi->patch_times_map, meshi->patch_times,meshi->npatch_times);
+      meshi->patch_timeslist[n] = GetDataTimeFrame(global_times[n], meshi->patch_times_map, meshi->patch_times,patchi->ntimes);
     }
 
   /* synchronize isosurface times */
@@ -1342,7 +1342,7 @@ void UpdateTimes(void){
     if(filenum!=-1){
       patchi=patchinfo+filenum;
       if(patchi->loaded==1&&patchi->structured == YES){
-        MergeGlobalTimes(meshi->patch_times, meshi->npatch_times);
+        MergeGlobalTimes(meshi->patch_times, patchi->ntimes);
       }
     }
   }

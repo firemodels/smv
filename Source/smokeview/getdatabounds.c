@@ -1169,7 +1169,7 @@ void BoundsUpdateDoit(int file_type){
           valmin = 10000000000.0;
           valmax = -valmin;
           if(meshi->boundary_mask != NULL && patchi->patch_filetype == PATCH_STRUCTURED_CELL_CENTER){
-            for(j = 0;j < meshi->npatch_times * meshi->npatchsize;j++){
+            for(j = 0;j < patchi->ntimes * meshi->npatchsize;j++){
               if(meshi->boundary_mask[j % meshi->npatchsize] == 1){
                 valmin = MIN(vals[j], valmin);
                 valmax = MAX(vals[j], valmax);
@@ -1177,7 +1177,7 @@ void BoundsUpdateDoit(int file_type){
             }
           }
           else{
-            for(j = 0;j < meshi->npatch_times * meshi->npatchsize;j++){
+            for(j = 0;j < patchi->ntimes * meshi->npatchsize;j++){
               valmin = MIN(vals[j], valmin);
               valmax = MAX(vals[j], valmax);
             }

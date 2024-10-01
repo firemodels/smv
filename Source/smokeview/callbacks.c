@@ -672,11 +672,14 @@ void CheckTimeBound(void){
       sd->itime=sd->ntimes-1;
       if(sd->volslice==1)sd->itime--;
     }
-    for(i=0;i<nmeshes;i++){
+    for(i=0;i<npatchinfo;i++){
+      patchdata *patchi;
       meshdata *meshi;
 
-      meshi=meshinfo+i;
-      meshi->patch_itime=meshi->npatch_times-1;
+      patchi=patchinfo+i;
+      if(patchi->loaded == 0)continue;
+      meshi = meshinfo + patchi->blocknumber;
+      meshi->patch_itime=patchi->ntimes-1;
     }
     for(i=0;i<nmeshes;i++){
       meshdata *meshi;
