@@ -298,7 +298,6 @@ typedef struct _meshdata {
 #endif
   unsigned char *patch_times_map;
   float **patchventcolors;
-  int npatch_times;
   int patch_itime;
   int *patch_timeslist;
   int npatchsize;
