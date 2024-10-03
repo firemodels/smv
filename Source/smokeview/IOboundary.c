@@ -276,18 +276,10 @@ void InitVentColors(void){
 int NodeInBlockage(const meshdata *meshnode, int i, int j, int k, int *imesh, int *iblockage){
   int ii;
   float xn, yn, zn;
-  float *xplt, *yplt, *zplt;
-  float obst_eps;
 
-  xplt = meshnode->xplt;
-  yplt = meshnode->yplt;
-  zplt = meshnode->zplt;
-  xn   = xplt[i];
-  yn   = yplt[j];
-  zn   = zplt[k];
-  obst_eps =               (xplt[1]-xplt[0])/10.0;
-  obst_eps = MAX(obst_eps, (yplt[1]-yplt[0])/10.0);
-  obst_eps = MAX(obst_eps, (zplt[1]-zplt[0])/10.0);
+  xn   = meshnode->xplt[i];
+  yn   = meshnode->yplt[j];
+  zn   = meshnode->zplt[k];
 
   *imesh = -1;
 
@@ -310,6 +302,11 @@ int NodeInBlockage(const meshdata *meshnode, int i, int j, int k, int *imesh, in
     yplt = meshii->yplt;
     zplt = meshii->zplt;
 
+    float obst_eps;
+    obst_eps = (xplt[1] - xplt[0])/2.0;
+    obst_eps = MAX(obst_eps, (yplt[1] - yplt[0])/2.0);
+    obst_eps = MAX(obst_eps, (zplt[1] - zplt[0])/2.0);
+
     xm_min = xplt[0];
     xm_max = meshii->xyz_bar[XXX];
     ym_min = yplt[0];
@@ -320,7 +317,6 @@ int NodeInBlockage(const meshdata *meshnode, int i, int j, int k, int *imesh, in
     if(yn<ym_min - obst_eps || yn>ym_max + obst_eps)continue;
     if(zn<zm_min - obst_eps || zn>zm_max + obst_eps)continue;
 
-
     for(jj = 0; jj < meshii->nbptrs; jj++){
       bc = meshii->blockageinfoptrs[jj];
       if(bc->hole == 1)continue;
@@ -330,9 +326,9 @@ int NodeInBlockage(const meshdata *meshnode, int i, int j, int k, int *imesh, in
       yb_max = yplt[bc->ijk[3]];
       zb_min = zplt[bc->ijk[4]];
       zb_max = zplt[bc->ijk[5]];
-      if(xb_min <= xn&&xn <= xb_max&&
-        yb_min <= yn&&yn <= yb_max&&
-        zb_min <= zn&&zn <= zb_max){
+      if(xb_min <= xn && xn <= xb_max &&
+         yb_min <= yn && yn <= yb_max &&
+         zb_min <= zn && zn <= zb_max){
         *imesh = ii;
         *iblockage = jj;
         return 1;
