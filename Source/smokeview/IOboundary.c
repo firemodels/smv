@@ -3831,8 +3831,6 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
   if(patch_times[0]>global_times[itimes]||patchi->display==0)return;
   if(cullfaces==1)glDisable(GL_CULL_FACE);
 
-  /* if a contour boundary does not match a blockage face then draw "both sides" of boundary */
-
   nn = 0;
   glBegin(GL_TRIANGLES);
   for(n = 0;n<patchi->npatches;n++){
@@ -3852,7 +3850,11 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
     }
     drawit = 0;
     if(pfi->vis==1&&pfi->dir==0)drawit = 1;
+#ifdef pp_PATCHFIX
+    if(pfi->type==INTERIORwall)drawit = 1;
+#else
     if(pfi->type==INTERIORwall&&showpatch_both==1)drawit = 1;
+#endif
     if(pfi->obst == NULL && pfi->internal_mesh_face==1)drawit = 0;
     if(drawit==1){
       nrow = pfi->nrow;
@@ -3884,7 +3886,11 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
             xyzp2 += 3;
             continue;
           }
+#ifdef pp_PATCHFIX
+          {
+#else
           if(*patchblank1==GAS&&*patchblank2==GAS&&*(patchblank1+1)==GAS&&*(patchblank2+1)==GAS){
+#endif
             if(patchventcolors==NULL){
               color11 = rgb_patch+4*cval;
               if(vis_threshold==1&&vis_onlythreshold==0&&do_threshold==1){
@@ -3914,6 +3920,7 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
   }
   glEnd();
   if(cullfaces==1)glEnable(GL_CULL_FACE);
+#ifndef pp_PATCHFIX
 
   /* if a contour boundary DOES match a blockage face then draw "one sides" of boundary */
 
@@ -4128,6 +4135,7 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
   if(hidepatchsurface==1){
     glEnd();
   }
+#endif
 }
 
 /* ------------------ DrawBoundaryFrame ------------------------ */
