@@ -285,9 +285,9 @@ int NodeInBlockage(const meshdata *meshnode, int i, int j, int k, int *imesh, in
   xn   = xplt[i];
   yn   = yplt[j];
   zn   = zplt[k];
-  obst_eps = (xplt[1]-xplt[0])/10.0;
-  obst_eps = MIN(obst_eps, (yplt[1]-yplt[0])/10.0);
-  obst_eps = MIN(obst_eps, (zplt[1]-zplt[0])/10.0);
+  obst_eps =               (xplt[1]-xplt[0])/10.0;
+  obst_eps = MAX(obst_eps, (yplt[1]-yplt[0])/10.0);
+  obst_eps = MAX(obst_eps, (zplt[1]-zplt[0])/10.0);
 
   *imesh = -1;
 
@@ -3792,19 +3792,12 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
   patchdata *patchi;
   float *color11;
 
-  float *xplt, *yplt, *zplt;
   float **patchventcolors;
   int set_valmin, set_valmax;
   char *label;
   float ttmin, ttmax;
 
   if(vis_threshold==1&&vis_onlythreshold==1&&do_threshold==1)return;
-
-  if(hidepatchsurface==0){
-    xplt = meshi->xplt;
-    yplt = meshi->yplt;
-    zplt = meshi->zplt;
-  }
 
   patch_times = meshi->patch_times;
   patchventcolors = meshi->patchventcolors;
@@ -3921,8 +3914,14 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
   if(cullfaces==1)glEnable(GL_CULL_FACE);
 #ifndef pp_PATCHFIX
 
+  float *xplt, *yplt, *zplt;
   float dboundx, dboundy, dboundz;
 
+  if(hidepatchsurface == 0){
+    xplt = meshi->xplt;
+    yplt = meshi->yplt;
+    zplt = meshi->zplt;
+  }
   dboundx = (xplt[1]-xplt[0])/10.0;
   dboundy = (yplt[1]-yplt[0])/10.0;
   dboundz = (zplt[1]-zplt[0])/10.0;
