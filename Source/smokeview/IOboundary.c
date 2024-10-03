@@ -276,10 +276,18 @@ void InitVentColors(void){
 int NodeInBlockage(const meshdata *meshnode, int i, int j, int k, int *imesh, int *iblockage){
   int ii;
   float xn, yn, zn;
+  float *xplt, *yplt, *zplt;
+  float obst_eps;
 
-  xn = meshnode->xplt[i];
-  yn = meshnode->yplt[j];
-  zn = meshnode->zplt[k];
+  xplt = meshnode->xplt;
+  yplt = meshnode->yplt;
+  zplt = meshnode->zplt;
+  xn   = xplt[i];
+  yn   = yplt[j];
+  zn   = zplt[k];
+  obst_eps = (xplt[1]-xplt[0])/10.0;
+  obst_eps = MIN(obst_eps, (yplt[1]-yplt[0])/10.0);
+  obst_eps = MIN(obst_eps, (zplt[1]-zplt[0])/10.0);
 
   *imesh = -1;
 
@@ -308,9 +316,9 @@ int NodeInBlockage(const meshdata *meshnode, int i, int j, int k, int *imesh, in
     ym_max = meshii->xyz_bar[YYY];
     zm_min = zplt[0];
     zm_max = meshii->xyz_bar[ZZZ];
-    if(xn<xm_min || xn>xm_max)continue;
-    if(yn<ym_min || yn>ym_max)continue;
-    if(zn<zm_min || zn>zm_max)continue;
+    if(xn<xm_min - obst_eps || xn>xm_max + obst_eps)continue;
+    if(yn<ym_min - obst_eps || yn>ym_max + obst_eps)continue;
+    if(zn<zm_min - obst_eps || zn>zm_max + obst_eps)continue;
 
 
     for(jj = 0; jj < meshii->nbptrs; jj++){
@@ -3784,7 +3792,6 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
   patchdata *patchi;
   float *color11;
 
-  float dboundx, dboundy, dboundz;
   float *xplt, *yplt, *zplt;
   float **patchventcolors;
   int set_valmin, set_valmax;
@@ -3797,10 +3804,6 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
     xplt = meshi->xplt;
     yplt = meshi->yplt;
     zplt = meshi->zplt;
-
-    dboundx = (xplt[1]-xplt[0])/10.0;
-    dboundy = (yplt[1]-yplt[0])/10.0;
-    dboundz = (zplt[1]-zplt[0])/10.0;
   }
 
   patch_times = meshi->patch_times;
@@ -3886,11 +3889,7 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
             xyzp2 += 3;
             continue;
           }
-#ifdef pp_PATCHFIX
-          {
-#else
-          if(*patchblank1==GAS&&*patchblank2==GAS&&*(patchblank1+1)==GAS&&*(patchblank2+1)==GAS){
-#endif
+          if(patchblank1[0] == GAS && patchblank2[0] == GAS && patchblank1[1] == GAS && patchblank2[1] == GAS){
             if(patchventcolors==NULL){
               color11 = rgb_patch+4*cval;
               if(vis_threshold==1&&vis_onlythreshold==0&&do_threshold==1){
@@ -3921,6 +3920,12 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
   glEnd();
   if(cullfaces==1)glEnable(GL_CULL_FACE);
 #ifndef pp_PATCHFIX
+
+  float dboundx, dboundy, dboundz;
+
+  dboundx = (xplt[1]-xplt[0])/10.0;
+  dboundy = (yplt[1]-yplt[0])/10.0;
+  dboundz = (zplt[1]-zplt[0])/10.0;
 
   /* if a contour boundary DOES match a blockage face then draw "one sides" of boundary */
 
