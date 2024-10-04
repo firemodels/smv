@@ -3907,11 +3907,10 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
   float *xplt, *yplt, *zplt;
   float dboundx, dboundy, dboundz;
 
-  if(hidepatchsurface == 0){
-    xplt = meshi->xplt;
-    yplt = meshi->yplt;
-    zplt = meshi->zplt;
-  }
+  xplt = meshi->xplt;
+  yplt = meshi->yplt;
+  zplt = meshi->zplt;
+
   dboundx = (xplt[1]-xplt[0])/10.0;
   dboundy = (yplt[1]-yplt[0])/10.0;
   dboundz = (zplt[1]-zplt[0])/10.0;
