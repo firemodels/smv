@@ -2110,12 +2110,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
             *xyzpatch_ignitecopy++ = xplttemp[i]+dx_factor;
             *xyzpatch_ignitecopy++ = yplttemp[j]+dy_factor;
             *xyzpatch_ignitecopy++ = zplttemp[k1]+dzz;
-            if(mesh_boundary == 1){
-              *patchblankcopy++ = SOLID;
-            }
-            else{
-              *patchblankcopy++ = NodeInInternalVent(meshi, i, j, k1, 3, mesh_boundary, wallcenter);
-            }
+            *patchblankcopy++ = NodeInInternalVent(meshi, i, j, k1, 3, mesh_boundary, wallcenter);
           }
         }
       }
