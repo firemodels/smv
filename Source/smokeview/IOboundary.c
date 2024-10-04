@@ -3903,7 +3903,6 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
   }
   glEnd();
   if(cullfaces==1)glEnable(GL_CULL_FACE);
-#ifndef pp_PATCHFIX
 
   float *xplt, *yplt, *zplt;
   float dboundx, dboundy, dboundz;
@@ -4130,7 +4129,6 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
   if(hidepatchsurface==1){
     glEnd();
   }
-#endif
 }
 
 /* ------------------ DrawBoundaryFrame ------------------------ */
