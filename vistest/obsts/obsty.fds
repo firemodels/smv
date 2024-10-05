@@ -19,10 +19,10 @@
       THICKNESS     = 0.003
       COLOR         = 'BLACK' /
 
-&VENT XB =  0.06,  0.16, -0.09,  0.09,  1.24,   1.24, SURF_ID = 'BURNER' /
-&OBST XB =  0.06,  0.16, -0.09,  0.09,  1.22,   1.24  /
+&VENT XB =  0.08,  0.14, -0.09,  0.09,  1.24,   1.24, SURF_ID = 'BURNER' /
+&OBST XB =  0.08,  0.14, -0.09,  0.09,  1.22,   1.24  /
 &OBST XB =  0.06,  0.16,  0.15,  0.17,  1.26, 1.40, SURF_ID = 'STEEL'  /
-&OBST XB =  0.08,  0.18, -0.17, -0.15,  1.26, 1.40, SURF_ID = 'STEEL' /
+&OBST XB =  0.10,  0.18, -0.17, -0.15,  1.26, 1.40, SURF_ID = 'STEEL' /
 
 &VENT MB='ZMAX', SURF_ID='OPEN' /
 
