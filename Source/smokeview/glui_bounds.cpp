@@ -2972,6 +2972,7 @@ GLUI_Checkbox *CHECKBOX_use_tload_skip=NULL;
 GLUI_Checkbox *CHECKBOX_colorbar_flip = NULL;
 GLUI_Checkbox *CHECKBOX_fixedpoint=NULL;
 GLUI_Checkbox *CHECKBOX_exponential=NULL;
+GLUI_Checkbox *CHECKBOX_force_decimal=NULL;
 GLUI_Checkbox *CHECKBOX_colorbar_autoflip = NULL;
 GLUI_Checkbox *CHECKBOX_labels_shadedata = NULL;
 GLUI_Checkbox *CHECKBOX_labels_shade = NULL;
@@ -3334,6 +3335,7 @@ extern "C" void GLUISetColorbarDigits(void){
   SPINNER_ncolorlabel_digits->set_int_val(ncolorlabel_digits);
   CHECKBOX_fixedpoint->set_int_val(force_fixedpoint);
   CHECKBOX_exponential->set_int_val(force_exponential);
+  CHECKBOX_force_decimal->set_int_val(force_decimal);
 }
 
 /* ------------------ GLUIUpdateColorbarFlip ------------------------ */
@@ -5674,8 +5676,9 @@ hvacductboundsCPP.setup("hvac", ROLLOUT_hvacduct, hvacductbounds_cpp, nhvacductb
   SPINNER_ncolorlabel_digits->set_int_limits(COLORBAR_NDECIMALS_MIN, COLORBAR_NDECIMALS_MAX, GLUI_LIMIT_CLAMP);
   SPINNER_ncolorlabel_padding = glui_bounds->add_spinner_to_panel(PANEL_colorbar_properties, _("padding:"), GLUI_SPINNER_INT, &ncolorlabel_padding, COLORLABEL_DIGITS, GLUISliceBoundCB);
   SPINNER_ncolorlabel_padding->set_int_limits(0, 8, GLUI_LIMIT_CLAMP);
-  CHECKBOX_fixedpoint  = glui_bounds->add_checkbox_to_panel(PANEL_colorbar_properties, _("force fixed point labels"), &force_fixedpoint,  COLORLABEL_DIGITS, GLUISliceBoundCB);
-  CHECKBOX_exponential = glui_bounds->add_checkbox_to_panel(PANEL_colorbar_properties, _("force exponential labels"), &force_exponential, FORCE_EXPONENTIAL, GLUISliceBoundCB);
+  CHECKBOX_fixedpoint    = glui_bounds->add_checkbox_to_panel(PANEL_colorbar_properties, _("force fixed point labels"), &force_fixedpoint,  COLORLABEL_DIGITS, GLUISliceBoundCB);
+  CHECKBOX_exponential   = glui_bounds->add_checkbox_to_panel(PANEL_colorbar_properties, _("force exponential labels"), &force_exponential, FORCE_EXPONENTIAL, GLUISliceBoundCB);
+  CHECKBOX_force_decimal = glui_bounds->add_checkbox_to_panel(PANEL_colorbar_properties, _("force decimal in labels"),  &force_decimal,     COLORLABEL_DIGITS, GLUISliceBoundCB);
 
   glui_bounds->add_column_to_panel(PANEL_cb11, false);
 
