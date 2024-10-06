@@ -3836,11 +3836,7 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
     }
     drawit = 0;
     if(pfi->vis==1&&pfi->dir==0)drawit = 1;
-#ifdef pp_PATCHFIX
     if(pfi->type==INTERIORwall)drawit = 1;
-#else
-    if(pfi->type==INTERIORwall&&showpatch_both==1)drawit = 1;
-#endif
     if(pfi->obst == NULL && pfi->internal_mesh_face==1)drawit = 0;
     if(drawit==1){
       nrow = pfi->nrow;
