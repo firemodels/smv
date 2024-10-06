@@ -228,6 +228,7 @@ SVEXTERN float SVDECL(colorbar_slice_min, 0.0), SVDECL(colorbar_slice_max, 1.0);
 SVEXTERN int SVDECL(have_geom_triangles, 0);
 SVEXTERN int SVDECL(force_fixedpoint, FORCE_FIXEDPOINT_NO);
 SVEXTERN int SVDECL(force_exponential, 0);
+SVEXTERN int SVDECL(force_decimal, 0);
 SVEXTERN int SVDECL(geom_cface_type, 1);
 SVEXTERN int SVDECL(glui_use_cfaces, 1);
 SVEXTERN int SVDECL(use_cfaces, 0);

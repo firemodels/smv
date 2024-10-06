@@ -906,6 +906,7 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 #define MENU_COLORBAR_SETTINGS   -22
 #define USE_LIGHTING             -25
 #define TOGGLE_LIGHTING          -26
+#define COLORBAR_DECIMAL         -27
 
 #define LOAD        0
 #define UNLOAD      1
