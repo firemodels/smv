@@ -712,9 +712,21 @@ void ShiftDecimal(char *cval, int nshift){
   strcpy(cval, trim);
 }
 
+/* ------------------ OnlyZeros ------------------------ */
+
+int OnlyZeros(char *label){
+  int i;
+
+  if(label == NULL)return 1;
+  for(i = 1;i < strlen(label);i++){
+    if(label[i] != '0')return 0;
+  }
+  return 1;
+}
+
 /* ------------------ Floats2Strings ------------------------ */
 
-void Floats2Strings(char **c_vals, float *vals, int nvals, int ndigits, int fixedpoint_labels, int exponential_labels, char *exp_offset_label){
+void Floats2Strings(char **c_vals, float *vals, int nvals, int ndigits, int fixedpoint_labels, int exponential_labels, int force_decimal_label, char *exp_offset_label){
   int exponent, exponent_min, exponent_max, exponent_val;
   int i;
   float valmax;
@@ -791,6 +803,28 @@ void Floats2Strings(char **c_vals, float *vals, int nvals, int ndigits, int fixe
       }
       else{
         sprintf(c_vals[i], "%sE%i ", c_mantissa, exponent);
+      }
+    }
+  }
+  if(force_decimal_label == 0){
+    int only_zero = 1;
+
+    for(i = 0;i < nvals;i++){
+      char *decimal, *Epos;
+
+      decimal = strchr(c_vals[i], '.');
+      Epos    = strchr(c_vals[i], 'E');
+      if(Epos != NULL || OnlyZeros(decimal) == 0){
+        only_zero = 0;
+        break;
+      }
+    }
+    if(only_zero == 1){
+      for(i = 0;i < nvals;i++){
+        char *decimal;
+
+        decimal = strchr(c_vals[i], '.');
+        if(decimal != NULL)decimal[0] = 0;
       }
     }
   }

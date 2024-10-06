@@ -1033,6 +1033,10 @@ void ColorbarMenu(int value){
      GLUISetLabelControls();
      GLUIUpdateTransparency();
      break;
+   case COLORBAR_DECIMAL:
+     force_decimal = 1 - force_decimal;
+     update_colorbar_digits = 1;
+     break;
    case COLORBAR_CONTINUOUS:
      contour_type=SHADED_CONTOURS;
      UpdateRGBColors(colorbar_select_index);
@@ -10948,6 +10952,12 @@ static int menu_count=0;
   GLUTADDSUBMENU(_("Colorbar"),colorbarsmenu);
   GLUTADDSUBMENU(_("Colorbar type"), colorbarshademenu);
   GLUTADDSUBMENU(_("Colorbar digits"), colorbardigitmenu);
+  if(force_decimal == 1){
+    glutAddMenuEntry(_("  *Force decimal in colorbar labels"), COLORBAR_DECIMAL);
+  }
+  else{
+    glutAddMenuEntry(_("  Force decimal in colorbar labels"), COLORBAR_DECIMAL);
+  }
   if(use_transparency_data==1){
     glutAddMenuEntry(_("  *Transparent (data)"),COLORBAR_TRANSPARENT);
   }
