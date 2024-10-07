@@ -311,7 +311,7 @@ typedef struct _facedata {
   int meshindex, blockageindex;
   int imin, imax, jmin, jmax, kmin, kmax;
   float xmin, xmax, ymin, ymax, zmin, zmax;
-  int dir,hidden,dup,interior;
+  int dir,hidden,dup,interior, inside_domain;
   int del;
   int transparent;
   int patchpresent;
@@ -359,7 +359,7 @@ typedef struct _blockagedata {
   int is_wuiblock;
   int hole;
   int nnodes;
-  int hidden, invisible, interior[6];
+  int hidden, invisible, interior[6], inside_domain[6];
   int transparent;
   int meshindex;
   int del;

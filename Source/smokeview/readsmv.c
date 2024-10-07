@@ -12040,7 +12040,7 @@ int ReadSMV_Configure(){
   InitPlot2D(glui_plot2dinfo, 0);
   PRINT_TIMER(timer_readsmv, "InitPlot2D");
 
-  SetInteriorBlockages(1);
+  SetInteriorBlockages();
   PRINT_TIMER(timer_readsmv, "SetInteriorBlockages");
 
   InitMeshBlockages();

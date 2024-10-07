@@ -1466,7 +1466,7 @@ int InAnyBlockage(float *xyz){
 
 /* ------------------ SetInteriorBlockages ------------------------ */
 
-void SetInteriorBlockages(int flag){
+void SetInteriorBlockages(void){
   int i;
 
   for(i=0; i<nmeshes; i++){
@@ -1515,7 +1515,6 @@ void SetInteriorBlockages(int flag){
       xyzDELTA[2] = bc->zmax+meshi->boxeps[2];
     }
   }
-  if(flag==0)return;
   for(i = 0; i<nmeshes; i++){
     int j;
     meshdata *meshi;

@@ -1093,7 +1093,7 @@ EXTERNCPP int ReadSMV(bufferstreamdata *stream);
 EXTERNCPP void ReadSMVOrig(void);
 EXTERNCPP void UpdateSMVDynamic(char *file);
 EXTERNCPP void ReadSMVDynamic(char *file);
-EXTERNCPP void SetInteriorBlockages(int flag);
+EXTERNCPP void SetInteriorBlockages(void);
 
 EXTERNCPP int  STRCMP(const char *s1, const char *s2);
 EXTERNCPP void OutputAxisLabels(void);
