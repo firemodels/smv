@@ -2973,6 +2973,7 @@ GLUI_Checkbox *CHECKBOX_colorbar_flip = NULL;
 GLUI_Checkbox *CHECKBOX_fixedpoint=NULL;
 GLUI_Checkbox *CHECKBOX_exponential=NULL;
 GLUI_Checkbox *CHECKBOX_force_decimal=NULL;
+GLUI_Checkbox *CHECKBOX_force_zero_pad = NULL;
 GLUI_Checkbox *CHECKBOX_colorbar_autoflip = NULL;
 GLUI_Checkbox *CHECKBOX_labels_shadedata = NULL;
 GLUI_Checkbox *CHECKBOX_labels_shade = NULL;
@@ -3336,6 +3337,7 @@ extern "C" void GLUISetColorbarDigits(void){
   CHECKBOX_fixedpoint->set_int_val(force_fixedpoint);
   CHECKBOX_exponential->set_int_val(force_exponential);
   CHECKBOX_force_decimal->set_int_val(force_decimal);
+  CHECKBOX_force_zero_pad->set_int_val(force_zero_pad);
 }
 
 /* ------------------ GLUIUpdateColorbarFlip ------------------------ */
@@ -5676,9 +5678,10 @@ hvacductboundsCPP.setup("hvac", ROLLOUT_hvacduct, hvacductbounds_cpp, nhvacductb
   SPINNER_ncolorlabel_digits->set_int_limits(COLORBAR_NDECIMALS_MIN, COLORBAR_NDECIMALS_MAX, GLUI_LIMIT_CLAMP);
   SPINNER_ncolorlabel_padding = glui_bounds->add_spinner_to_panel(PANEL_colorbar_properties, _("padding:"), GLUI_SPINNER_INT, &ncolorlabel_padding, COLORLABEL_DIGITS, GLUISliceBoundCB);
   SPINNER_ncolorlabel_padding->set_int_limits(0, 8, GLUI_LIMIT_CLAMP);
-  CHECKBOX_fixedpoint    = glui_bounds->add_checkbox_to_panel(PANEL_colorbar_properties, _("force fixed point labels"), &force_fixedpoint,  COLORLABEL_DIGITS, GLUISliceBoundCB);
-  CHECKBOX_exponential   = glui_bounds->add_checkbox_to_panel(PANEL_colorbar_properties, _("force exponential labels"), &force_exponential, FORCE_EXPONENTIAL, GLUISliceBoundCB);
-  CHECKBOX_force_decimal = glui_bounds->add_checkbox_to_panel(PANEL_colorbar_properties, _("force decimal in labels"),  &force_decimal,     COLORLABEL_DIGITS, GLUISliceBoundCB);
+  CHECKBOX_fixedpoint     = glui_bounds->add_checkbox_to_panel(PANEL_colorbar_properties, _("force fixed point labels"), &force_fixedpoint,  COLORLABEL_DIGITS,   GLUISliceBoundCB);
+  CHECKBOX_exponential    = glui_bounds->add_checkbox_to_panel(PANEL_colorbar_properties, _("force exponential labels"), &force_exponential, FORCE_EXPONENTIAL,   GLUISliceBoundCB);
+  CHECKBOX_force_decimal  = glui_bounds->add_checkbox_to_panel(PANEL_colorbar_properties, _("force decimal in labels"),  &force_decimal,     COLORLABEL_DIGITS,   GLUISliceBoundCB);
+  CHECKBOX_force_zero_pad = glui_bounds->add_checkbox_to_panel(PANEL_colorbar_properties, _("force zero padding"), &force_zero_pad,          COLORLABEL_ZERO_PAD, GLUISliceBoundCB);
 
   glui_bounds->add_column_to_panel(PANEL_cb11, false);
 
@@ -6686,8 +6689,25 @@ extern "C" void GLUISliceBoundCB(int var){
       break;
     case COLORLABEL_DIGITS:
       if(force_exponential==1&&force_fixedpoint==1)force_exponential=0;
+      if(force_decimal==0){
+        force_zero_pad = 0;
+        CHECKBOX_force_zero_pad->set_int_val(force_zero_pad);
+      }
+      if(force_exponential == 1){
+        force_zero_pad = 0;
+        force_decimal = 1;
+        CHECKBOX_force_zero_pad->set_int_val(force_zero_pad);
+        CHECKBOX_force_decimal->set_int_val(force_decimal);
+      }
       updatemenu = 1;
       update_colorbar_digits = 1;
+      break;
+    case COLORLABEL_ZERO_PAD:
+      if(force_zero_pad == 1){
+        force_decimal = 1;
+        CHECKBOX_force_decimal->set_int_val(force_decimal);
+      }
+      GLUISliceBoundCB(COLORLABEL_DIGITS);
       break;
     case SLICE_OPTION:
       updatemenu = 1;
