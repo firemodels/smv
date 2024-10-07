@@ -726,24 +726,29 @@ int OnlyZeros(char *label){
 
 /* ------------------ Floats2Strings ------------------------ */
 
-void Floats2Strings(char **c_vals, float *vals, int nvals, int ndigits, int fixedpoint_labels, int exponential_labels, int force_decimal_label, char *exp_offset_label){
+void Floats2Strings(char **c_vals, float *vals, int nvals, int ndigits, int fixedpoint_labels, int exponential_labels, int force_decimal_label, int zero_pad, char *exp_offset_label){
   int exponent, exponent_min, exponent_max, exponent_val;
   int i;
   float valmax;
   int exp_offset;
   int doit;
+  int ndecimals;
+  int max_index;
+
+  max_index = 0;
+  if(ABS(vals[nvals - 1]) > ABS(vals[0]))max_index = nvals - 1;
 
   valmax = MAX(ABS(vals[0]), ABS(vals[nvals-1]));
 
   GetMantissaExponent(valmax, &exponent_max);
+  ndecimals = ndigits-1-exponent_max;
+  if(ndecimals<=0)ndecimals--;
+
   for(i=0; i<nvals; i++){
     float val;
-    int ndecimals;
 
     val = vals[i];
     GetMantissaExponent(val, &exponent_val);
-    ndecimals = ndigits-1-exponent_max;
-    if(ndecimals<=0)ndecimals--;
     RoundDecimal(val, c_vals[i], ndecimals);
   }
 
@@ -825,6 +830,29 @@ void Floats2Strings(char **c_vals, float *vals, int nvals, int ndigits, int fixe
 
         decimal = strchr(c_vals[i], '.');
         if(decimal != NULL)decimal[0] = 0;
+      }
+    }
+  }
+//  if(zero_pad == 1 && strlen(exp_offset_label)==0){
+  if(zero_pad == 1){
+    char *decimal, cmaxlabel[256];
+
+    strcpy(cmaxlabel, c_vals[max_index]);
+    decimal = strchr(cmaxlabel, '.');
+    if(decimal!=NULL)decimal[0] = 0;
+    ndecimals = ndigits - strlen(cmaxlabel);
+    if(decimal != NULL && ndecimals>=0){
+      for(i = 0;i < nvals;i++){
+        char *decimal, *Epos;
+        int npad, len_decimal;
+
+        Epos = strchr(c_vals[i], 'E');
+        decimal = strchr(c_vals[i], '.');
+        if(Epos != NULL || decimal == NULL)continue;
+        strcat(c_vals[i], "00000000");
+        len_decimal = strlen(decimal);
+        npad = MIN(ndecimals + 1, len_decimal);
+        decimal[npad] = 0;
       }
     }
   }

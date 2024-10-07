@@ -141,7 +141,7 @@ EXTERNCPP void           ScaleString(const char *stringfrom, char *stringto, con
 EXTERNCPP void           ScaleFloat2String(float floatfrom, char *stringto, const float *scale);
 EXTERNCPP void           Num2String(char *string, float tval);
 EXTERNCPP void           Float2String(char *string, float tval, int ndecimals, int fixed_point);
-EXTERNCPP void           Floats2Strings(char **c_vals, float *vals, int nvals, int ndigits, int fixedpoint_labels, int exponential_labels, int decimal_labels, char *exp_offset_label);
+EXTERNCPP void           Floats2Strings(char **c_vals, float *vals, int nvals, int ndigits, int fixedpoint_labels, int exponential_labels, int decimal_labels, int zero_pad, char *exp_offset_label);
 EXTERNCPP char          *TrimFrontBack(char *buffer);
 EXTERNCPP int            STRCMP(const char *s1, const char *s2);
 EXTERNCPP char          *GetChid(char *file, char *buffer);

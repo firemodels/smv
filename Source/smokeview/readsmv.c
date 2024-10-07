@@ -12385,7 +12385,7 @@ int ReadIni2(char *inifile, int localfile){
       int dummy;
 
       fgets(buffer, 255, stream);
-      sscanf(buffer, " %i %i %f %i %i %i %i %i %i", &research_mode, &dummy, &colorbar_shift, &ncolorlabel_digits, &force_fixedpoint, &ngridloc_digits, &sliceval_ndigits, &force_exponential, &force_decimal);
+      sscanf(buffer, " %i %i %f %i %i %i %i %i %i %i", &research_mode, &dummy, &colorbar_shift, &ncolorlabel_digits, &force_fixedpoint, &ngridloc_digits, &sliceval_ndigits, &force_exponential, &force_decimal, &force_zero_pad);
       colorbar_shift = CLAMP(colorbar_shift, COLORBAR_SHIFT_MIN, COLORBAR_SHIFT_MAX);
       if(research_mode==1&&research_mode_override==0)research_mode=0;
       ncolorlabel_digits = CLAMP(ncolorlabel_digits, COLORBAR_NDECIMALS_MIN, COLORBAR_NDECIMALS_MAX);
@@ -12395,7 +12395,8 @@ int ReadIni2(char *inifile, int localfile){
       ONEORZERO(force_fixedpoint);
       ONEORZERO(force_exponential);
       ONEORZERO(force_decimal);
-      if(force_fixedpoint==1&&force_exponential==1)force_exponential = 0;
+      ONEORZERO(force_zero_pad);
+      if(force_fixedpoint == 1 && force_exponential == 1)force_exponential = 0;
       update_research_mode=1;
       continue;
     }
@@ -16991,7 +16992,7 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, "PARTFAST\n");
   fprintf(fileout, " %i %i %i\n", partfast, use_partload_threads, n_partload_threads);
   fprintf(fileout, "RESEARCHMODE\n");
-  fprintf(fileout, " %i %i %f %i %i %i %i %i %i\n", research_mode, 1, colorbar_shift, ncolorlabel_digits, force_fixedpoint, ngridloc_digits, sliceval_ndigits, force_exponential, force_decimal);
+  fprintf(fileout, " %i %i %f %i %i %i %i %i %i %i\n", research_mode, 1, colorbar_shift, ncolorlabel_digits, force_fixedpoint, ngridloc_digits, sliceval_ndigits, force_exponential, force_decimal, force_zero_pad);
   fprintf(fileout, "SLICEAVERAGE\n");
   fprintf(fileout, " %i %f %i\n", slice_average_flag, slice_average_interval, vis_slice_average);
   fprintf(fileout, "SLICEDATAOUT\n");
