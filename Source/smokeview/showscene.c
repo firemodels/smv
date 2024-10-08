@@ -148,6 +148,14 @@ void ShowScene2(int mode){
       SNIFF_ERRORS("after drawaxis");
     }
 
+    /* ++++++++++++++++++++++++ draw outlnes when boundary files are displayed +++++++++++++++++++++++++ */
+
+    if(hide_internal_blockages == 1){
+      if(outline_state == OUTLINE_ONLY || outline_state == OUTLINE_ADDED){
+        DrawObstOutlines();
+      }
+    }
+
     /* ++++++++++++++++++++++++ draw fds specified blockage outlines +++++++++++++++++++++++++ */
 
     if(nobstinfo>0&&blocklocation!=BLOCKlocation_grid){

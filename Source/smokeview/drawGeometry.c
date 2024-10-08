@@ -638,6 +638,78 @@ void UpdateIndexColors(void){
   updatefaces=1;
 }
 
+
+/* ------------------ DrawObstOutlines ------------------------ */
+
+void DrawObstOutlines(void){
+  int n;
+
+  glPushMatrix();
+  glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
+  glTranslatef(-xbar0, -ybar0, -zbar0);
+  AntiAliasLine(ON);
+  glLineWidth(linewidth);
+  glBegin(GL_LINES);
+  for(n = 0; n < nmeshes; n++){
+    int i;
+    float xmin, xmax, ymin, ymax, zmin, zmax;
+    meshdata *meshi;
+    float *color, *oldcolor=NULL;
+    float *xplt, *yplt, *zplt;
+
+    meshi = meshinfo + n;
+    xplt = meshi->xplt_orig;
+    yplt = meshi->yplt_orig;
+    zplt = meshi->zplt_orig;
+    for(i = 0;i < meshi->nbptrs;i++){
+      blockagedata *bc;
+
+      bc = meshi->blockageinfoptrs[i];
+      if(bc != NULL && bc->showtimelist != NULL && bc->showtimelist[itimes] == 0)continue;
+      color = bc->color;
+      if(color != oldcolor){
+        glColor3fv(color);
+        oldcolor = color;
+      }
+      xmin = xplt[bc->ijk[0]];
+      xmax = xplt[bc->ijk[1]];
+      ymin = yplt[bc->ijk[2]];
+      ymax = yplt[bc->ijk[3]];
+      zmin = zplt[bc->ijk[4]];
+      zmax = zplt[bc->ijk[5]];
+      glVertex3f(xmin, ymin, zmin);
+      glVertex3f(xmin, ymin, zmax);
+      glVertex3f(xmax, ymin, zmin);
+      glVertex3f(xmax, ymin, zmax);
+      glVertex3f(xmin, ymax, zmin);
+      glVertex3f(xmin, ymax, zmax);
+      glVertex3f(xmax, ymax, zmin);
+      glVertex3f(xmax, ymax, zmax);
+
+      glVertex3f(xmin, ymin, zmin);
+      glVertex3f(xmin, ymax, zmin);
+      glVertex3f(xmax, ymin, zmin);
+      glVertex3f(xmax, ymax, zmin);
+      glVertex3f(xmin, ymin, zmax);
+      glVertex3f(xmin, ymax, zmax);
+      glVertex3f(xmax, ymin, zmax);
+      glVertex3f(xmax, ymax, zmax);
+
+      glVertex3f(xmin, ymin, zmin);
+      glVertex3f(xmax, ymin, zmin);
+      glVertex3f(xmin, ymax, zmin);
+      glVertex3f(xmax, ymax, zmin);
+      glVertex3f(xmin, ymin, zmax);
+      glVertex3f(xmax, ymin, zmax);
+      glVertex3f(xmin, ymax, zmax);
+      glVertex3f(xmax, ymax, zmax);
+    }
+  }
+  glEnd();
+  AntiAliasLine(OFF);
+  glPopMatrix();
+}
+
 /* ------------------ DrawOrigObstOutlines ------------------------ */
 
 void DrawOrigObstOutlines(void){

@@ -1025,6 +1025,7 @@ EXTERNCPP void DrawDemo(int nlat, int nlong);
 EXTERNCPP void DrawDemo2(void);
 EXTERNCPP void InitDemo(float rad, int nlat, int nlong);
 EXTERNCPP void DrawOrigObstOutlines(void);
+EXTERNCPP void DrawObstOutlines(void);
 EXTERNCPP void DrawOutlines(void);
 EXTERNCPP void DrawCBox(float x, float y, float z, float size);
 EXTERNCPP void HandleIso(void);
