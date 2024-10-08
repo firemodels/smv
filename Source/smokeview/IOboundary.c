@@ -4142,6 +4142,143 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
   }
 }
 
+
+/* ------------------ DrawBoundaryCellCenter ------------------------ */
+
+void DrawBoundaryCellCenterMeshInterface(const meshdata *meshi){
+  int n;
+  int irow, icol;
+  float *patchvals;
+  unsigned char *cpatchvals;
+#ifndef pp_BOUNDFRAME
+  float *patchval_iframe;
+#endif
+  float *patch_times;
+  patchdata *patchi;
+  float *color11;
+
+  float **patchventcolors;
+  int set_valmin, set_valmax;
+  char *label;
+  float ttmin, ttmax;
+
+  if(vis_threshold == 1 && vis_onlythreshold == 1 && do_threshold == 1)return;
+  if(meshi == meshinfo+1)return;
+
+  patch_times = meshi->patch_times;
+  patchventcolors = meshi->patchventcolors;
+  patchi = patchinfo + meshi->patchfilenum;
+
+  label = patchi->label.shortlabel;
+  GLUIGetOnlyMinMax(BOUND_PATCH, label, &set_valmin, &ttmin, &set_valmax, &ttmax);
+  if(ttmin >= ttmax){
+    ttmin = 0.0;
+    ttmax = 1.0;
+  }
+
+  switch(patchi->compression_type){
+  case UNCOMPRESSED:
+#ifndef pp_BOUNDFRAME
+    patchval_iframe = meshi->patchval_iframe;
+    if(patchval_iframe == NULL)return;
+#endif
+    break;
+  case COMPRESSED_ZLIB:
+    break;
+  default:
+    assert(FFALSE);
+  }
+  patchi = patchinfo + meshi->patchfilenum;
+
+  if(patch_times[0] > global_times[itimes] || patchi->display == 0)return;
+  if(cullfaces == 1)glDisable(GL_CULL_FACE);
+
+  glBegin(GL_TRIANGLES);
+  for(n = 0;n < patchi->npatches;n++){
+    patchfacedata *pfi;
+    int ncol, nrow;
+
+    pfi = patchi->patchfaceinfo + n;
+    nrow = pfi->nrow;
+    ncol = pfi->ncol;
+    if(pfi->internal_mesh_face != 1){
+      continue;
+    }
+    int ib;
+
+    for(ib = 0;ib < meshi->nbptrs;ib++){
+      blockagedata *bc;
+      int irow_start, irow_end;
+      int icol_start, icol_end;
+
+      bc = meshi->blockageinfoptrs[ib];
+      if(bc->showtimelist != NULL && bc->showtimelist[itimes] == 0)continue;
+      if(pfi->ib[0] == pfi->ib[1]){
+        if(pfi->ib[0] == 0           && bc->ijk[0] != 0)continue;
+        if(pfi->ib[0] == meshi->ibar && bc->ijk[1] != meshi->ibar)continue;
+        irow_start = bc->ijk[2];
+        irow_end = bc->ijk[3];
+        icol_start = bc->ijk[4];
+        icol_end = bc->ijk[5];
+      }
+      else if(pfi->ib[2] == pfi->ib[3]){
+        if(pfi->ib[2] == 0           && bc->ijk[2] != 0)continue;
+        if(pfi->ib[2] == meshi->jbar && bc->ijk[3] != meshi->jbar)continue;
+        irow_start = bc->ijk[0];
+        irow_end = bc->ijk[1];
+        icol_start = bc->ijk[4];
+        icol_end = bc->ijk[5];
+      }
+      else if(pfi->ib[4] == pfi->ib[5]){
+        if(pfi->ib[4] == 0           && bc->ijk[4] != 0)continue;
+        if(pfi->ib[5] == meshi->kbar && bc->ijk[5] != meshi->kbar)continue;
+        irow_start = bc->ijk[0];
+        irow_end = bc->ijk[1];
+        icol_start = bc->ijk[2];
+        icol_end = bc->ijk[3];
+      }
+      else{
+        assert(0);
+      }
+
+#ifdef pp_BOUNDFRAME
+      patchvals = (float *)FRAMEGetSubFramePtr(patchi->frameinfo, meshi->patch_itime, n);
+#else
+      patchvals = patchval_iframe + pfi->start;
+#endif
+      if(patchi->compression_type == COMPRESSED_ZLIB)cpatchvals = meshi->cpatchval_iframe_zlib + pfi->start;
+      for(irow = irow_start;irow < irow_end;irow++){
+        float *xyzp1, *xyzp2;
+
+        xyzp1 = meshi->xyzpatch + 3 * pfi->start + 3 * (irow * ncol+icol_start);
+        xyzp2 = xyzp1 + 3 * ncol;
+        for(icol = icol_start;icol < icol_end;icol++){
+          unsigned char cval;
+
+          cval = CLAMP(255 * BOUNDCONVERT(IJKBF(irow, icol), ttmin, ttmax), 0, 255);
+          if(rgb_patch[4 * cval + 3] == 0.0){
+            xyzp1 += 3;
+            xyzp2 += 3;
+            continue;
+          }
+          color11 = rgb_patch + 4 * cval;
+          glColor4fv(color11);
+          glVertex3fv(xyzp1);
+          glVertex3fv(xyzp1 + 3);
+          glVertex3fv(xyzp2 + 3);
+
+          glVertex3fv(xyzp1);
+          glVertex3fv(xyzp2 + 3);
+          glVertex3fv(xyzp2);
+          xyzp1 += 3;
+          xyzp2 += 3;
+        }
+      }
+    }
+  }
+  glEnd();
+}
+
 /* ------------------ DrawBoundaryFrame ------------------------ */
 
 void DrawBoundaryFrame(int flag){
@@ -4194,6 +4331,9 @@ void DrawBoundaryFrame(int flag){
     else{
       if(patchi->patch_filetype==PATCH_STRUCTURED_CELL_CENTER){
         DrawBoundaryCellCenter(meshi);
+        if(have_removable_obsts == 1 && nmeshes>1){
+          DrawBoundaryCellCenterMeshInterface(meshi);
+        }
       }
       else if(patchi->patch_filetype==PATCH_STRUCTURED_NODE_CENTER){
         DrawBoundaryTexture(meshi);
