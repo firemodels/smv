@@ -1481,6 +1481,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
 
   START_TIMER(total_time);
   local_first=1;
+  hide_internal_blockages = 0;
   CheckMemory;
   patchfilenum=ifile;
   file = patchi->file;
@@ -2428,6 +2429,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
 #endif
   if(patchi->finalize==1){
     boundary_loaded = 1;
+    hide_internal_blockages = 1;
     if(boundary_interface_faces==1 && have_removable_obsts == 1 && nmeshes>1){
       boundary_interface_unhide = 1;
       BlockageMenu(visBLOCKHide);
