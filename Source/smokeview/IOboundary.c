@@ -1314,6 +1314,7 @@ void DrawFace(float *v11, float *v22, int dir){
   glVertex3fv(v11); glVertex3fv(v21); glVertex3fv(v22);
 }
 
+#ifdef pp_PATCH_DEBUG
 /* ------------------ DrawMeshBlockFaces ------------------------ */
 
 void DrawMeshBlockFaces(void){
@@ -1354,10 +1355,12 @@ void DrawMeshBlockFaces(void){
   }
   glEnd();
 }
+#endif
 
 /* ------------------ IsBoundPlane ------------------------ */
 
 int IsBoundPlane(int imesh, patchfacedata *pfi){
+#ifdef pp_PATCH_DEBUG
   int is_plane = 0;
   meshdata *meshi;
   int i1, i2, j1, j2, k1, k2;
@@ -1378,6 +1381,9 @@ int IsBoundPlane(int imesh, patchfacedata *pfi){
   if(boundary_debug_plane[4] == 1 && i1 == 0 && i2 == meshi->ibar && j1 == 0 && j2 == meshi->jbar && k1 == k2 && k1 == 0)is_plane = 1;
   if(boundary_debug_plane[5] == 1 && i1 == 0 && i2 == meshi->ibar && j1 == 0 && j2 == meshi->jbar && k1 == k2 && k1 == meshi->kbar)is_plane = 1;
   return is_plane;
+#else
+  return 0;
+#endif
 }
 
 /* ------------------ GetPatchData ------------------------ */
@@ -2720,7 +2726,9 @@ void DrawMeshBoundaryFaces(patchdata *patchi, float valmin, float valmax){
 
       bc = bclist[j];
       int draw_plane = 0;
+#ifdef pp_PATCH_DEBUG
       if(boundary_debug_mesh-1 == (int)(meshi-meshinfo) && boundary_debug_plane[iface] ==1 )draw_plane = 1;
+#endif
       switch(iface){
       case 0:
       case 1:
