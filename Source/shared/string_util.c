@@ -843,16 +843,16 @@ void Floats2Strings(char **c_vals, float *vals, int nvals, int ndigits, int fixe
     ndecimals = ndigits - strlen(cmaxlabel);
     if(decimal != NULL && ndecimals>=0){
       for(i = 0;i < nvals;i++){
-        char *decimal, *Epos;
-        int npad, len_decimal;
+        char *dec, *Epos;
+        int npad, len_dec;
 
         Epos = strchr(c_vals[i], 'E');
-        decimal = strchr(c_vals[i], '.');
-        if(Epos != NULL || decimal == NULL)continue;
+        dec = strchr(c_vals[i], '.');
+        if(Epos != NULL || dec == NULL)continue;
         strcat(c_vals[i], "00000000");
-        len_decimal = strlen(decimal);
-        npad = MIN(ndecimals + 1, len_decimal);
-        decimal[npad] = 0;
+        len_dec = strlen(dec);
+        npad = MIN(ndecimals + 1, len_dec);
+        dec[npad] = 0;
       }
     }
   }

@@ -1606,35 +1606,16 @@ void SetInteriorBlockages(void){
   for(i = 0; i < nmeshes; i++){
     int j;
     meshdata *meshi;
-    float *xp, *yp, *zp;
-    float dx, dy, dz;
     int *is_extface;
 
     meshi = meshinfo + i;
     is_extface = meshi->is_extface;
-    xp = meshi->xplt_orig;
-    yp = meshi->yplt_orig;
-    zp = meshi->zplt_orig;
-    dx = (xp[1] - xp[0])/2.0;
-    dy = (yp[1] - yp[0])/2.0;
-    dz = (zp[1] - zp[0])/2.0;
     for(j = 0; j < meshi->nbptrs; j++){
       blockagedata *bc;
       int *ijk, k;
-      float xmid, ymid, zmid;
-      float xmin, xmax, ymin, ymax, zmin, zmax;
 
       bc = meshi->blockageinfoptrs[j];
       ijk = bc->ijk;
-      xmin = xp[ijk[0]];
-      xmax = xp[ijk[1]];
-      ymin = yp[ijk[2]];
-      ymax = yp[ijk[3]];
-      zmin = zp[ijk[4]];
-      zmax = zp[ijk[5]];
-      xmid = (xmin + xmax)/2.0;
-      ymid = (ymin + ymax)/2.0;
-      zmid = (zmin + zmax)/2.0;
       for(k = 0; k < 6; k++){
         bc->inside_domain[k] = 1;
       }
