@@ -3941,6 +3941,7 @@ extern "C" void GLUIImmersedBoundCB(int var){
   }
 }
 
+#ifdef pp_PATCH_DEBUG
 /* ------------------ BoundMeshCB ------------------------ */
 
 void BoundMeshCB(int var){
@@ -3953,6 +3954,7 @@ void BoundMeshCB(int var){
     }
   }
 }
+#endif
 
 /* ------------------ BoundBoundCB ------------------------ */
 
@@ -5010,11 +5012,11 @@ extern "C" void GLUIBoundsSetup(int main_window){
       BoundBoundCB(SHOWCHAR);
     }
     glui_bounds->add_checkbox_to_panel(ROLLOUT_boundary_settings, _("Hide exterior data"),         &showpatch_both,           SHOWPATCH_BOTH,             BoundBoundCB);
-    glui_bounds->add_checkbox_to_panel(ROLLOUT_boundary_settings, _("use mesh interface patches"), &boundary_interface_faces, USE_MESH_INTERFACE_PATCHES, BoundMeshCB);
     glui_bounds->add_checkbox_to_panel(ROLLOUT_boundary_settings, _("output patch face info"),     &outout_patch_faces);
 
 #ifdef pp_PATCH_DEBUG
     PANEL_boundary_debug = glui_bounds->add_panel_to_panel(ROLLOUT_boundary_settings, _("Debug - show interior mesh patches"));
+    glui_bounds->add_checkbox_to_panel(PANEL_boundary_debug, _("use mesh interface patches"), &boundary_interface_faces, USE_MESH_INTERFACE_PATCHES, BoundMeshCB);
 
     glui_bounds->add_checkbox_to_panel(PANEL_boundary_debug, _("xmin"), boundary_debug_plane);
     glui_bounds->add_checkbox_to_panel(PANEL_boundary_debug, _("ymin"), boundary_debug_plane+2);

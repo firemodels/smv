@@ -2436,10 +2436,12 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
   if(patchi->finalize==1){
     boundary_loaded = 1;
     hide_internal_blockages = 1;
+#ifdef pp_PATCH_DEBUG
     if(boundary_interface_faces==1 && have_removable_obsts == 1 && nmeshes>1){
       boundary_interface_unhide = 1;
       BlockageMenu(visBLOCKHide);
     }
+#endif
     CheckMemory;
     GLUIUpdateBoundaryListIndex(patchfilenum);
     cpp_boundsdata *bounds;
@@ -2684,6 +2686,7 @@ void Global2GLUIBoundaryBounds(const char *key){
 }
 
 
+#ifdef pp_PATCH_DEBUG
 /* ------------------ DrawMeshBoundaryFaces ------------------------ */
 
 void DrawMeshBoundaryFaces(patchdata *patchi, float valmin, float valmax){
@@ -2838,6 +2841,7 @@ void DrawMeshBoundaryFaces(patchdata *patchi, float valmin, float valmax){
   glEnd();
   glDisable(GL_TEXTURE_1D);
 }
+#endif
 
 /* ------------------ DrawBoundaryTexture ------------------------ */
 
@@ -2885,7 +2889,9 @@ void DrawBoundaryTexture(const meshdata *meshi){
   if(patch_times[0]>global_times[itimes]||patchi->display==0)return;
   if(cullfaces==1)glDisable(GL_CULL_FACE);
 
+#ifdef pp_PATCH_DEBUG
    if(boundary_interface_faces==1)DrawMeshBoundaryFaces(patchi, ttmin, ttmax);
+#endif
 
   /* if a contour boundary does not match a blockage face then draw "both sides" of boundary */
 
