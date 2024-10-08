@@ -4157,7 +4157,6 @@ void DrawBoundaryCellCenterMeshInterface(const meshdata *meshi){
   patchdata *patchi;
   float *color11;
 
-  float **patchventcolors;
   int set_valmin, set_valmax;
   char *label;
   float ttmin, ttmax;
@@ -4166,7 +4165,6 @@ void DrawBoundaryCellCenterMeshInterface(const meshdata *meshi){
   if(meshi == meshinfo+1)return;
 
   patch_times = meshi->patch_times;
-  patchventcolors = meshi->patchventcolors;
   patchi = patchinfo + meshi->patchfilenum;
 
   label = patchi->label.shortlabel;
@@ -4196,10 +4194,9 @@ void DrawBoundaryCellCenterMeshInterface(const meshdata *meshi){
   glBegin(GL_TRIANGLES);
   for(n = 0;n < patchi->npatches;n++){
     patchfacedata *pfi;
-    int ncol, nrow;
+    int ncol;
 
     pfi = patchi->patchfaceinfo + n;
-    nrow = pfi->nrow;
     ncol = pfi->ncol;
     if(pfi->internal_mesh_face != 1){
       continue;
