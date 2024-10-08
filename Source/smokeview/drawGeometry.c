@@ -2755,7 +2755,7 @@ void UpdateFaceLists(void){
         }
       }
     }
-    if(hide_internal_blockages==1)UpdateHiddenExternalFaces();
+    if(hide_internal_blockages==1 && update_bound_chop_data==0)UpdateHiddenExternalFaces();
 
     n_normals_single=0;
     n_normals_double=0;

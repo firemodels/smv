@@ -2279,6 +2279,7 @@ extern "C" void GLUIPatchBoundsCPP_CB(int var){
   int i;
   cpp_boundsdata *bounds;
 
+  bounds = patchboundsCPP.get_bounds_data();
   patchboundsCPP.CB(var);
   switch(var){
     case BOUND_VALMIN:
@@ -2287,13 +2288,23 @@ extern "C" void GLUIPatchBoundsCPP_CB(int var){
     case BOUND_SETVALMAX:
       UpdateAllBoundaryColors(0);
       break;
-    case BOUND_VAL_TYPE:
-    case BOUND_CHOPMIN:
-    case BOUND_CHOPMAX:
     case BOUND_SETCHOPMIN:
     case BOUND_SETCHOPMAX:
-    case BOUND_COLORBAR_DIGITS:
+    case BOUND_CHOPMIN:
+    case BOUND_CHOPMAX:
     case BOUND_CHOP_HIDE:
+      updatefacelists = 1;
+      updatefaces = 1;
+      if(bounds->set_chopmax == 1 || bounds->set_chopmin == 1){
+        update_bound_chop_data = 1;
+        hide_internal_blockages = 0;
+      }
+      else{
+        update_bound_chop_data = 0;
+      }
+      break;
+    case BOUND_VAL_TYPE:
+    case BOUND_COLORBAR_DIGITS:
       break;
     case BOUND_PERCENTILE_MINVAL:
     case BOUND_PERCENTILE_MAXVAL:
