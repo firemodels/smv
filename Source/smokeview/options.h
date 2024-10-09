@@ -16,6 +16,8 @@
 #define pp_GPUTHROTTLE      // pp_GPU directive must also be set
 #endif
 //#define pp_FDS            // create a 1 mesh input file
+//#define pp_PATCH_DEBUG    // add boundary file debugging widgets
+#define pp_PATCH_FACTOR   // set boundary file patch offsets to zero
 
 #ifdef pp_FRAME          // turn on each frame type if pp_FRAME is set
 #define pp_BOUNDFRAME    // turn on frame code for boundary files

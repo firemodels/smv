@@ -13,6 +13,9 @@
 
 #define FIRST_TIME 1
 
+#define BOUNDARY_CELL_CENTERED 0
+#define BOUNDARY_NODE_CENTERED 1
+
 #define IJKBF(i,j) ((i)*ncol+(j))
 #define BOUNDCONVERT(index, valmin, valmax) (patchi->compression_type==UNCOMPRESSED ? \
                ( valmin == valmax ? 0.0 : (patchvals[index]-valmin)/(valmax-valmin) ) : \
@@ -1314,6 +1317,7 @@ void DrawFace(float *v11, float *v22, int dir){
   glVertex3fv(v11); glVertex3fv(v21); glVertex3fv(v22);
 }
 
+#ifdef pp_PATCH_DEBUG
 /* ------------------ DrawMeshBlockFaces ------------------------ */
 
 void DrawMeshBlockFaces(void){
@@ -1354,10 +1358,12 @@ void DrawMeshBlockFaces(void){
   }
   glEnd();
 }
+#endif
 
 /* ------------------ IsBoundPlane ------------------------ */
 
 int IsBoundPlane(int imesh, patchfacedata *pfi){
+#ifdef pp_PATCH_DEBUG
   int is_plane = 0;
   meshdata *meshi;
   int i1, i2, j1, j2, k1, k2;
@@ -1378,6 +1384,9 @@ int IsBoundPlane(int imesh, patchfacedata *pfi){
   if(boundary_debug_plane[4] == 1 && i1 == 0 && i2 == meshi->ibar && j1 == 0 && j2 == meshi->jbar && k1 == k2 && k1 == 0)is_plane = 1;
   if(boundary_debug_plane[5] == 1 && i1 == 0 && i2 == meshi->ibar && j1 == 0 && j2 == meshi->jbar && k1 == k2 && k1 == meshi->kbar)is_plane = 1;
   return is_plane;
+#else
+  return 0;
+#endif
 }
 
 /* ------------------ GetPatchData ------------------------ */
@@ -1481,6 +1490,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
 
   START_TIMER(total_time);
   local_first=1;
+  hide_internal_blockages = 0;
   CheckMemory;
   patchfilenum=ifile;
   file = patchi->file;
@@ -1779,9 +1789,15 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
     dyy = 0.0;
     dzz = 0.0;
 
+#ifdef pp_PATCH_FACTOR
+    ig_factor_x = 0.0;
+    ig_factor_y = 0.0;
+    ig_factor_z = 0.0;
+#else
     ig_factor_x = ABS(meshi->xplt[1] - meshi->xplt[0]) / 10.0;
     ig_factor_y = ABS(meshi->yplt[1] - meshi->yplt[0]) / 10.0;
     ig_factor_z = ABS(meshi->zplt[1] - meshi->zplt[0]) / 10.0;
+#endif
     block_factor_x = ig_factor_x;
     block_factor_y = ig_factor_y;
     block_factor_z = ig_factor_z;
@@ -2427,14 +2443,29 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
   int recompute = 0;
 #endif
   if(patchi->finalize==1){
+    cpp_boundsdata *bounds;
+
     boundary_loaded = 1;
+    hide_internal_blockages = 1;
+
+    bounds = GLUIGetBoundsData(BOUND_PATCH);
+    if(bounds->set_chopmax == 1 || bounds->set_chopmin == 1){
+      update_bound_chop_data = 1;
+      hide_internal_blockages = 0;
+    }
+    else{
+      update_bound_chop_data = 0;
+    }
+
+
+#ifdef pp_PATCH_DEBUG
     if(boundary_interface_faces==1 && have_removable_obsts == 1 && nmeshes>1){
       boundary_interface_unhide = 1;
       BlockageMenu(visBLOCKHide);
     }
+#endif
     CheckMemory;
     GLUIUpdateBoundaryListIndex(patchfilenum);
-    cpp_boundsdata *bounds;
 
     if(runscript == 0){
       THREADcontrol(patchbound_threads, THREAD_JOIN);
@@ -2451,7 +2482,6 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
 #endif
     }
     else{
-      bounds = GLUIGetBoundsData(BOUND_PATCH);
       if(bounds->set_valmin==BOUND_PERCENTILE_MIN||bounds->set_valmax==BOUND_PERCENTILE_MAX){
         float global_min=0.0, global_max=1.0;
         GLUIGetGlobalBoundsMinMax(BOUND_PATCH, bounds->label, &global_min, &global_max);
@@ -2676,6 +2706,7 @@ void Global2GLUIBoundaryBounds(const char *key){
 }
 
 
+#ifdef pp_PATCH_DEBUG
 /* ------------------ DrawMeshBoundaryFaces ------------------------ */
 
 void DrawMeshBoundaryFaces(patchdata *patchi, float valmin, float valmax){
@@ -2718,7 +2749,9 @@ void DrawMeshBoundaryFaces(patchdata *patchi, float valmin, float valmax){
 
       bc = bclist[j];
       int draw_plane = 0;
+#ifdef pp_PATCH_DEBUG
       if(boundary_debug_mesh-1 == (int)(meshi-meshinfo) && boundary_debug_plane[iface] ==1 )draw_plane = 1;
+#endif
       switch(iface){
       case 0:
       case 1:
@@ -2828,6 +2861,7 @@ void DrawMeshBoundaryFaces(patchdata *patchi, float valmin, float valmax){
   glEnd();
   glDisable(GL_TEXTURE_1D);
 }
+#endif
 
 /* ------------------ DrawBoundaryTexture ------------------------ */
 
@@ -2875,7 +2909,9 @@ void DrawBoundaryTexture(const meshdata *meshi){
   if(patch_times[0]>global_times[itimes]||patchi->display==0)return;
   if(cullfaces==1)glDisable(GL_CULL_FACE);
 
+#ifdef pp_PATCH_DEBUG
    if(boundary_interface_faces==1)DrawMeshBoundaryFaces(patchi, ttmin, ttmax);
+#endif
 
   /* if a contour boundary does not match a blockage face then draw "both sides" of boundary */
 
@@ -4126,6 +4162,186 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
   }
 }
 
+/* ------------------ GetPatchMeshNabor ------------------------ */
+
+meshdata *GetPatchMeshNabor(meshdata *meshi, int *ib){
+  meshdata *return_mesh;
+
+  return_mesh = NULL;
+  if(ib[0] == ib[1]){
+    if(ib[0] == 0){
+      return_mesh = meshi->nabors[MLEFT];
+    }
+    else if(ib[0] == meshi->ibar){
+      return_mesh = meshi->nabors[MRIGHT];
+    }
+    if(meshi->jbar != return_mesh->jbar || meshi->kbar != return_mesh->kbar)return_mesh = NULL;
+  }
+  else if(ib[2] == ib[3]){
+    if(ib[2] == 0){
+      return_mesh = meshi->nabors[MFRONT];
+    }
+    else if(ib[2] == meshi->jbar){
+      return_mesh = meshi->nabors[MBACK];
+    }
+    if(meshi->ibar != return_mesh->ibar || meshi->kbar != return_mesh->kbar)return_mesh = NULL;
+  }
+  else if(ib[4]==ib[5]){
+    if(ib[4]==0){
+      return_mesh = meshi->nabors[MDOWN];
+    }
+    else if(ib[4] == meshi->kbar){
+      return_mesh = meshi->nabors[MUP];
+    }
+    if(meshi->ibar != return_mesh->ibar || meshi->jbar != return_mesh->jbar)return_mesh = NULL;
+  }
+  return return_mesh;
+}
+
+/* ------------------ DrawBoundaryMeshInterface ------------------------ */
+
+void DrawBoundaryMeshInterface(meshdata *meshi, int mode){
+  int n;
+  int irow, icol;
+  float *patchvals;
+  unsigned char *cpatchvals;
+#ifndef pp_BOUNDFRAME
+  float *patchval_iframe;
+#endif
+  float *patch_times;
+  patchdata *patchi;
+
+  int set_valmin, set_valmax;
+  char *label;
+  float ttmin, ttmax;
+
+  if(vis_threshold == 1 && vis_onlythreshold == 1 && do_threshold == 1)return;
+
+  patch_times = meshi->patch_times;
+  patchi = patchinfo + meshi->patchfilenum;
+
+  label = patchi->label.shortlabel;
+  GLUIGetOnlyMinMax(BOUND_PATCH, label, &set_valmin, &ttmin, &set_valmax, &ttmax);
+  if(ttmin >= ttmax){
+    ttmin = 0.0;
+    ttmax = 1.0;
+  }
+
+  patchi = patchinfo + meshi->patchfilenum;
+
+  if(patch_times[0] > global_times[itimes] || patchi->display == 0)return;
+  if(cullfaces == 1)glDisable(GL_CULL_FACE);
+
+  THREADcontrol(meshnabors_threads, THREAD_JOIN);
+
+  glBegin(GL_TRIANGLES);
+  for(n = 0;n < patchi->npatches;n++){
+    patchfacedata *pfi;
+    meshdata *patch_mesh;
+    int ncol, ib;
+
+    patch_mesh = NULL;
+    pfi = patchi->patchfaceinfo + n;
+    ncol = pfi->ncol;
+    if(pfi->internal_mesh_face != 1)continue;
+    patch_mesh = GetPatchMeshNabor(meshi, pfi->ib);
+    if(patch_mesh == NULL)continue;
+
+    for(ib = 0;ib < patch_mesh->nbptrs;ib++){
+      blockagedata *bc;
+      int irow_start, irow_end;
+      int icol_start, icol_end;
+
+      bc = patch_mesh->blockageinfoptrs[ib];
+      if(bc->showtimelist != NULL && bc->showtimelist[itimes] == 0)continue;
+      if(pfi->ib[0] == pfi->ib[1]){
+        icol_start = bc->ijk[2];
+        icol_end   = bc->ijk[3];
+        irow_start = bc->ijk[4];
+        irow_end   = bc->ijk[5];
+      }
+      else if(pfi->ib[2] == pfi->ib[3]){
+        icol_start = bc->ijk[0];
+        icol_end   = bc->ijk[1];
+        irow_start = bc->ijk[4];
+        irow_end   = bc->ijk[5];
+      }
+      else if(pfi->ib[4] == pfi->ib[5]){
+        icol_start = bc->ijk[0];
+        icol_end   = bc->ijk[1];
+        irow_start = bc->ijk[2];
+        irow_end   = bc->ijk[3];
+      }
+      else{
+        assert(0);
+      }
+
+      switch(patchi->compression_type){
+      case UNCOMPRESSED:
+#ifndef pp_BOUNDFRAME
+        patchval_iframe = meshi->patchval_iframe;
+        if(patchval_iframe == NULL)continue;
+#endif
+        break;
+  case COMPRESSED_ZLIB:
+        break;
+      default:
+        assert(FFALSE);
+      }
+
+#ifdef pp_BOUNDFRAME
+      patchvals = (float *)FRAMEGetSubFramePtr(patchi->frameinfo, meshi->patch_itime, n);
+#else
+      patchvals = patchval_iframe + pfi->start;
+#endif
+      if(patchi->compression_type == COMPRESSED_ZLIB)cpatchvals = meshi->cpatchval_iframe_zlib + pfi->start;
+      for(irow = irow_start;irow < irow_end;irow++){
+        float *xyzp1, *xyzp2;
+
+        xyzp1 = meshi->xyzpatch + 3 * pfi->start + 3 * (irow * ncol+icol_start);
+        xyzp2 = xyzp1 + 3 * ncol;
+        for(icol = icol_start;icol < icol_end;icol++){
+          unsigned char cval11, cval12, cval21, cval22;
+          float *color11, *color12, *color21, *color22;
+
+          cval11 = CLAMP(255 * BOUNDCONVERT(IJKBF(irow, icol), ttmin, ttmax), 0, 255);
+          color11 = rgb_patch + 4 * cval11;
+          if(mode == BOUNDARY_NODE_CENTERED){
+            cval12 = CLAMP(255 * BOUNDCONVERT(IJKBF(irow,   icol+1), ttmin, ttmax), 0, 255);
+            cval21 = CLAMP(255 * BOUNDCONVERT(IJKBF(irow+1, icol),   ttmin, ttmax), 0, 255);
+            cval22 = CLAMP(255 * BOUNDCONVERT(IJKBF(irow+1, icol+1), ttmin, ttmax), 0, 255);
+            color21 = rgb_patch + 4 * cval21;
+            color12 = rgb_patch + 4 * cval12;
+            color22 = rgb_patch + 4 * cval22;
+          }
+          if(rgb_patch[4 * cval11 + 3] == 0.0){
+            xyzp1 += 3;
+            xyzp2 += 3;
+            continue;
+          }
+          if(mode == BOUNDARY_CELL_CENTERED){
+            glColor4fv(color11); 
+            glVertex3fv(xyzp1); glVertex3fv(xyzp1 + 3); glVertex3fv(xyzp2 + 3);
+            glVertex3fv(xyzp1); glVertex3fv(xyzp2 + 3); glVertex3fv(xyzp2);
+          }
+          else{
+            glColor4fv(color11); glVertex3fv(xyzp1);
+            glColor4fv(color12); glVertex3fv(xyzp1 + 3);
+            glColor4fv(color22); glVertex3fv(xyzp2 + 3);
+
+            glColor4fv(color11); glVertex3fv(xyzp1);
+            glColor4fv(color22); glVertex3fv(xyzp2 + 3);
+            glColor4fv(color21); glVertex3fv(xyzp2);
+          }
+          xyzp1 += 3;
+          xyzp2 += 3;
+        }
+      }
+    }
+  }
+  glEnd();
+}
+
 /* ------------------ DrawBoundaryFrame ------------------------ */
 
 void DrawBoundaryFrame(int flag){
@@ -4178,9 +4394,15 @@ void DrawBoundaryFrame(int flag){
     else{
       if(patchi->patch_filetype==PATCH_STRUCTURED_CELL_CENTER){
         DrawBoundaryCellCenter(meshi);
+        if(have_removable_obsts == 1 && nmeshes>1){
+          DrawBoundaryMeshInterface(meshi, BOUNDARY_CELL_CENTERED);
+        }
       }
       else if(patchi->patch_filetype==PATCH_STRUCTURED_NODE_CENTER){
         DrawBoundaryTexture(meshi);
+        if(have_removable_obsts == 1 && nmeshes > 1){
+          DrawBoundaryMeshInterface(meshi, BOUNDARY_NODE_CENTERED);
+        }
       }
     }
     if(vis_threshold==1&&vis_onlythreshold==1&&do_threshold==1)DrawOnlyThreshold(meshi);

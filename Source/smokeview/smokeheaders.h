@@ -515,7 +515,7 @@ EXTERNCPP void GetTourXYZ(float t, tourdata *this_tour, float *xyz);
 EXTERNCPP int GetTourFrame(tourdata *touri, int itime);
 EXTERNCPP int MeshConnect(meshdata *mesh_from, int val, meshdata *mesh_to);
 EXTERNCPP int IsBottomMesh(meshdata *mesh_from);
-EXTERNCPP void InitNabors(void);
+EXTERNCPP void *InitNabors(void *arg);
 EXTERNCPP int Smv2Html(char *html_out, int option, int from_where);
 EXTERNCPP int Smv2Geom(char *html_file);
 EXTERNCPP int Obst2Data(char *html_file);
@@ -1025,6 +1025,7 @@ EXTERNCPP void DrawDemo(int nlat, int nlong);
 EXTERNCPP void DrawDemo2(void);
 EXTERNCPP void InitDemo(float rad, int nlat, int nlong);
 EXTERNCPP void DrawOrigObstOutlines(void);
+EXTERNCPP void DrawObstOutlines(void);
 EXTERNCPP void DrawOutlines(void);
 EXTERNCPP void DrawCBox(float x, float y, float z, float size);
 EXTERNCPP void HandleIso(void);
@@ -1087,13 +1088,15 @@ EXTERNCPP void GetGlobalDeviceBounds(int type);
 EXTERNCPP float GetDeviceVal(float time_local, devicedata *devicei, int *valid);
 EXTERNCPP void InitMenus(void);
 
+#ifdef pp_PATCH_DEBUG
 EXTERNCPP void DrawMeshBlockFaces(void);
+#endif
 
 EXTERNCPP int ReadSMV(bufferstreamdata *stream);
 EXTERNCPP void ReadSMVOrig(void);
 EXTERNCPP void UpdateSMVDynamic(char *file);
 EXTERNCPP void ReadSMVDynamic(char *file);
-EXTERNCPP void SetInteriorBlockages(int flag);
+EXTERNCPP void SetInteriorBlockages(void);
 
 EXTERNCPP int  STRCMP(const char *s1, const char *s2);
 EXTERNCPP void OutputAxisLabels(void);

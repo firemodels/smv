@@ -2279,6 +2279,7 @@ extern "C" void GLUIPatchBoundsCPP_CB(int var){
   int i;
   cpp_boundsdata *bounds;
 
+  bounds = patchboundsCPP.get_bounds_data();
   patchboundsCPP.CB(var);
   switch(var){
     case BOUND_VALMIN:
@@ -2287,13 +2288,23 @@ extern "C" void GLUIPatchBoundsCPP_CB(int var){
     case BOUND_SETVALMAX:
       UpdateAllBoundaryColors(0);
       break;
-    case BOUND_VAL_TYPE:
-    case BOUND_CHOPMIN:
-    case BOUND_CHOPMAX:
     case BOUND_SETCHOPMIN:
     case BOUND_SETCHOPMAX:
-    case BOUND_COLORBAR_DIGITS:
+    case BOUND_CHOPMIN:
+    case BOUND_CHOPMAX:
     case BOUND_CHOP_HIDE:
+      updatefacelists = 1;
+      updatefaces = 1;
+      if(bounds->set_chopmax == 1 || bounds->set_chopmin == 1){
+        update_bound_chop_data = 1;
+        hide_internal_blockages = 0;
+      }
+      else{
+        update_bound_chop_data = 0;
+      }
+      break;
+    case BOUND_VAL_TYPE:
+    case BOUND_COLORBAR_DIGITS:
       break;
     case BOUND_PERCENTILE_MINVAL:
     case BOUND_PERCENTILE_MAXVAL:
@@ -2847,7 +2858,9 @@ GLUI_Panel *PANEL_slice_plot2df = NULL;
 GLUI_Panel *PANEL_loadbounds = NULL;
 GLUI_Panel *PANEL_intersection_box = NULL;
 GLUI_Panel *PANEL_read_test = NULL;
+#ifdef pp_PATCH_DEBUG
 GLUI_Panel *PANEL_boundary_debug=NULL;
+#endif
 
 GLUI_Spinner *SPINNER_partdrawskip = NULL;
 GLUI_Spinner *SPINNER_sliceval_ndigits = NULL;
@@ -2865,7 +2878,9 @@ GLUI_Spinner *SPINNER_line_contour_width=NULL;
 GLUI_Spinner *SPINNER_line_contour_min=NULL;
 GLUI_Spinner *SPINNER_line_contour_max=NULL;
 GLUI_Spinner *SPINNER_timebounds=NULL;
+#ifdef pp_PATCH_DEBUG
 GLUI_Spinner *SPINNER_boundary_debug_mesh=NULL;
+#endif
 #ifdef pp_FRAME
 GLUI_Spinner *SPINNER_nframe_threads = NULL;
 #endif
@@ -2950,7 +2965,6 @@ GLUI_Checkbox *CHECKBOX_slice_load_incremental=NULL;
 GLUI_Checkbox *CHECKBOX_color_vector_black = NULL;
 GLUI_Checkbox *CHECKBOX_show_node_slices_and_vectors=NULL;
 GLUI_Checkbox *CHECKBOX_show_cell_slices_and_vectors=NULL;
-GLUI_Checkbox *CHECKBOX_showpatch_both=NULL;
 GLUI_Checkbox *CHECKBOX_showchar=NULL, *CHECKBOX_showonlychar;
 GLUI_Checkbox *CHECKBOX_script_step=NULL;
 GLUI_Checkbox *CHECKBOX_constant_coloring=NULL;
@@ -3938,6 +3952,7 @@ extern "C" void GLUIImmersedBoundCB(int var){
   }
 }
 
+#ifdef pp_PATCH_DEBUG
 /* ------------------ BoundMeshCB ------------------------ */
 
 void BoundMeshCB(int var){
@@ -3950,6 +3965,7 @@ void BoundMeshCB(int var){
     }
   }
 }
+#endif
 
 /* ------------------ BoundBoundCB ------------------------ */
 
@@ -5006,9 +5022,12 @@ extern "C" void GLUIBoundsSetup(int main_window){
       }
       BoundBoundCB(SHOWCHAR);
     }
-    CHECKBOX_showpatch_both = glui_bounds->add_checkbox_to_panel(ROLLOUT_boundary_settings, _("Display exterior data"), &showpatch_both, SHOWPATCH_BOTH, BoundBoundCB);
+    glui_bounds->add_checkbox_to_panel(ROLLOUT_boundary_settings, _("Hide exterior data"),         &showpatch_both,           SHOWPATCH_BOTH,             BoundBoundCB);
+    glui_bounds->add_checkbox_to_panel(ROLLOUT_boundary_settings, _("output patch face info"),     &outout_patch_faces);
 
+#ifdef pp_PATCH_DEBUG
     PANEL_boundary_debug = glui_bounds->add_panel_to_panel(ROLLOUT_boundary_settings, _("Debug - show interior mesh patches"));
+    glui_bounds->add_checkbox_to_panel(PANEL_boundary_debug, _("use mesh interface patches"), &boundary_interface_faces, USE_MESH_INTERFACE_PATCHES, BoundMeshCB);
 
     glui_bounds->add_checkbox_to_panel(PANEL_boundary_debug, _("xmin"), boundary_debug_plane);
     glui_bounds->add_checkbox_to_panel(PANEL_boundary_debug, _("ymin"), boundary_debug_plane+2);
@@ -5016,13 +5035,13 @@ extern "C" void GLUIBoundsSetup(int main_window){
     SPINNER_boundary_debug_mesh = glui_bounds->add_spinner_to_panel(PANEL_boundary_debug, "mesh", GLUI_SPINNER_INT, &boundary_debug_mesh);
     SPINNER_boundary_debug_mesh->set_int_limits(1, nmeshes);
     glui_bounds->add_checkbox_to_panel(PANEL_boundary_debug, _("debug obsts"), &boundary_debug_obst);
-    glui_bounds->add_checkbox_to_panel(PANEL_boundary_debug, _("output patch face info"), &outout_patch_faces);
-    glui_bounds->add_checkbox_to_panel(PANEL_boundary_debug, _("use mesh interface patches"), &boundary_interface_faces, USE_MESH_INTERFACE_PATCHES, BoundMeshCB);
     glui_bounds->add_column_to_panel(PANEL_boundary_debug, false);
 
     glui_bounds->add_checkbox_to_panel(PANEL_boundary_debug, _("xmax"), boundary_debug_plane+1);
     glui_bounds->add_checkbox_to_panel(PANEL_boundary_debug, _("ymax"), boundary_debug_plane+3);
     glui_bounds->add_checkbox_to_panel(PANEL_boundary_debug, _("zmax"), boundary_debug_plane+5);
+#endif
+
     if(nboundaryslicedups > 0){
       ROLLOUT_boundary_duplicates = glui_bounds->add_rollout_to_panel(ROLLOUT_bound, "Duplicates", false,BOUNDARY_DUPLICATE_ROLLOUT,SubBoundRolloutCB);
       INSERT_ROLLOUT(ROLLOUT_boundary_duplicates, glui_bounds);

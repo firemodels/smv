@@ -7050,6 +7050,7 @@ int ReadSMV_Init(){
     use_readsmvorig_threads = 0;
 #endif
     use_mergesmoke_threads  = 0;
+    use_meshnabors_threads  = 0;
   }
 
   START_TIMER(getfilelist_time);
@@ -10702,7 +10703,7 @@ typedef struct {
           if(exclaim != NULL){
             exclaim[0] = 0;
             exclaim = TrimFront(exclaim + 1);
-            if(exclaim[0] == 'F' || exclaim[0] == 'f')have_removable_obsts = 1;
+            if(exclaim[0] == 'T' || exclaim[0] == 't')have_removable_obsts = 1;
           }
         }
         ijk = bc->ijk;
@@ -11941,10 +11942,10 @@ int ReadSMV_Configure(){
   UpdateBoundaryTypes();
   PRINT_TIMER(timer_readsmv, "UpdateBoundaryTypes");
 
-  if(nmeshes < 100 || fast_startup == 0){
-    InitNabors();
-    PRINT_TIMER(timer_readsmv, "update nabors");
+  if(meshnabors_threads == NULL){
+    meshnabors_threads = THREADinit(&n_meshnabors_threads, &use_meshnabors_threads, InitNabors);
   }
+  THREADrun(meshnabors_threads);
 
   UpdateTerrain(1); // xxslow
   UpdateTerrainColors();
@@ -12040,7 +12041,7 @@ int ReadSMV_Configure(){
   InitPlot2D(glui_plot2dinfo, 0);
   PRINT_TIMER(timer_readsmv, "InitPlot2D");
 
-  SetInteriorBlockages(1);
+  SetInteriorBlockages();
   PRINT_TIMER(timer_readsmv, "SetInteriorBlockages");
 
   InitMeshBlockages();

@@ -1046,9 +1046,10 @@ void SetSuperIndex(meshdata *meshi, int dir){
 
 /* ------------------ InitNabors ------------------------ */
 
-void InitNabors(void){
+void *InitNabors(void *arg){
   int i;
 
+  INIT_PRINT_TIMER(timer_init_nabors);
   for(i = 0;i<nmeshes;i++){
     meshdata *meshi;
     int j;
@@ -1119,6 +1120,8 @@ void InitNabors(void){
     xyz[2] = meshi->boxmax[2] + meshi->boxeps_fds[2];
     meshi->skip_nabors[MUP] = GetMesh(xyz);
   }
+  PRINT_TIMER(timer_init_nabors, "InitNabors");
+  THREAD_EXIT(meshnabors_threads);
 }
 
 /* ------------------ InitSuperMesh ------------------------ */
@@ -1130,7 +1133,7 @@ void InitSuperMesh(void){
 
   // determine mesh connectivity
 
-  InitNabors();
+  THREADcontrol(meshnabors_threads, THREAD_JOIN);
 
   // merge connected meshes to form supermeshes
 
