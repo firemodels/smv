@@ -118,9 +118,11 @@ void ShowScene2(int mode){
 
     /* ++++++++++++++++++++++++ draw sensors/sprinklers/heat detectors +++++++++++++++++++++++++ */
 
+#ifdef pp_PATCH_DEBUG
     if(boundary_debug_obst==1){
       DrawMeshBlockFaces();
     }
+#endif
 
     /* ++++++++++++++++++++++++ draw user ticks +++++++++++++++++++++++++ */
 
@@ -146,6 +148,14 @@ void ShowScene2(int mode){
       UNCLIP;
       DrawGravityAxis();
       SNIFF_ERRORS("after drawaxis");
+    }
+
+    /* ++++++++++++++++++++++++ draw outlnes when boundary files are displayed +++++++++++++++++++++++++ */
+
+    if(hide_internal_blockages == 1){
+      if(outline_state == OUTLINE_ONLY || outline_state == OUTLINE_ADDED){
+        DrawObstOutlines();
+      }
     }
 
     /* ++++++++++++++++++++++++ draw fds specified blockage outlines +++++++++++++++++++++++++ */

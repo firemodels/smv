@@ -638,6 +638,78 @@ void UpdateIndexColors(void){
   updatefaces=1;
 }
 
+
+/* ------------------ DrawObstOutlines ------------------------ */
+
+void DrawObstOutlines(void){
+  int n;
+
+  glPushMatrix();
+  glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
+  glTranslatef(-xbar0, -ybar0, -zbar0);
+  AntiAliasLine(ON);
+  glLineWidth(linewidth);
+  glBegin(GL_LINES);
+  for(n = 0; n < nmeshes; n++){
+    int i;
+    float xmin, xmax, ymin, ymax, zmin, zmax;
+    meshdata *meshi;
+    float *color, *oldcolor=NULL;
+    float *xplt, *yplt, *zplt;
+
+    meshi = meshinfo + n;
+    xplt = meshi->xplt_orig;
+    yplt = meshi->yplt_orig;
+    zplt = meshi->zplt_orig;
+    for(i = 0;i < meshi->nbptrs;i++){
+      blockagedata *bc;
+
+      bc = meshi->blockageinfoptrs[i];
+      if(bc != NULL && bc->showtimelist != NULL && bc->showtimelist[itimes] == 0)continue;
+      color = bc->color;
+      if(color != oldcolor){
+        glColor3fv(color);
+        oldcolor = color;
+      }
+      xmin = xplt[bc->ijk[0]];
+      xmax = xplt[bc->ijk[1]];
+      ymin = yplt[bc->ijk[2]];
+      ymax = yplt[bc->ijk[3]];
+      zmin = zplt[bc->ijk[4]];
+      zmax = zplt[bc->ijk[5]];
+      glVertex3f(xmin, ymin, zmin);
+      glVertex3f(xmin, ymin, zmax);
+      glVertex3f(xmax, ymin, zmin);
+      glVertex3f(xmax, ymin, zmax);
+      glVertex3f(xmin, ymax, zmin);
+      glVertex3f(xmin, ymax, zmax);
+      glVertex3f(xmax, ymax, zmin);
+      glVertex3f(xmax, ymax, zmax);
+
+      glVertex3f(xmin, ymin, zmin);
+      glVertex3f(xmin, ymax, zmin);
+      glVertex3f(xmax, ymin, zmin);
+      glVertex3f(xmax, ymax, zmin);
+      glVertex3f(xmin, ymin, zmax);
+      glVertex3f(xmin, ymax, zmax);
+      glVertex3f(xmax, ymin, zmax);
+      glVertex3f(xmax, ymax, zmax);
+
+      glVertex3f(xmin, ymin, zmin);
+      glVertex3f(xmax, ymin, zmin);
+      glVertex3f(xmin, ymax, zmin);
+      glVertex3f(xmax, ymax, zmin);
+      glVertex3f(xmin, ymin, zmax);
+      glVertex3f(xmax, ymin, zmax);
+      glVertex3f(xmin, ymax, zmax);
+      glVertex3f(xmax, ymax, zmax);
+    }
+  }
+  glEnd();
+  AntiAliasLine(OFF);
+  glPopMatrix();
+}
+
 /* ------------------ DrawOrigObstOutlines ------------------------ */
 
 void DrawOrigObstOutlines(void){
@@ -1466,7 +1538,7 @@ int InAnyBlockage(float *xyz){
 
 /* ------------------ SetInteriorBlockages ------------------------ */
 
-void SetInteriorBlockages(int flag){
+void SetInteriorBlockages(void){
   int i;
 
   for(i=0; i<nmeshes; i++){
@@ -1515,7 +1587,6 @@ void SetInteriorBlockages(int flag){
       xyzDELTA[2] = bc->zmax+meshi->boxeps[2];
     }
   }
-  if(flag==0)return;
   for(i = 0; i<nmeshes; i++){
     int j;
     meshdata *meshi;
@@ -1530,6 +1601,30 @@ void SetInteriorBlockages(int flag){
       for(k=0;k<6;k++){
         bc->interior[k] = InAnyBlockage(bc->xyzDELTA+3*k);
       }
+    }
+  }
+  for(i = 0; i < nmeshes; i++){
+    int j;
+    meshdata *meshi;
+    int *is_extface;
+
+    meshi = meshinfo + i;
+    is_extface = meshi->is_extface;
+    for(j = 0; j < meshi->nbptrs; j++){
+      blockagedata *bc;
+      int *ijk, k;
+
+      bc = meshi->blockageinfoptrs[j];
+      ijk = bc->ijk;
+      for(k = 0; k < 6; k++){
+        bc->inside_domain[k] = 1;
+      }
+      if(ijk[0] == 0                                )bc->inside_domain[0] = 0;
+      if(ijk[1] == meshi->ibar                      )bc->inside_domain[1] = 0;
+      if(ijk[2] == 0           && is_extface[2] == 1)bc->inside_domain[2] = 1;
+      if(ijk[3] == meshi->jbar && is_extface[3] == 1)bc->inside_domain[3] = 1;
+      if(ijk[4] == 0           && is_extface[4] == 1)bc->inside_domain[4] = 1;
+      if(ijk[5] == meshi->kbar && is_extface[5] == 1)bc->inside_domain[5] = 1;
     }
   }
 }
@@ -2515,6 +2610,70 @@ int CompareColorFaces(const void *arg1, const void *arg2){
   return 0;
 }
 
+/* ------------------ UpdateHiddenExternalFaces ------------------------ */
+
+void UpdateHiddenExternalFaces(void){
+  int i;
+
+  for(i = 0;i < nmeshes;i++){
+    int j;
+    meshdata *meshi;
+
+    meshi = meshinfo + i;
+    for(j = 0;j < meshi->nbptrs;j++){
+      facedata *facej;
+      blockagedata *bc;
+
+      bc = meshi->blockageinfoptrs[j];
+      facej = meshi->faceinfo + 6 * j;
+
+/* down y  2
+     up x  1
+     up y  3
+   down x 0
+   down z 4
+     up z 5
+     */
+#define EPS 0.01
+//down y
+      facej->hidden = 0;
+//    if(bc->inside_domain[2]==1)facej->hidden = 1;
+      if(bc->xyzEXACT[2] > ybar0FDS + EPS)facej->hidden = 1;
+      facej++;
+
+// up x
+      facej->hidden = 0;
+//      if(bc->inside_domain[1] == 1)facej->hidden = 1;
+      if(bc->xyzEXACT[1] < xbarFDS - EPS)facej->hidden = 1;
+      facej++;
+
+//up y
+      facej->hidden = 0;
+ //     if(bc->inside_domain[3] == 1)facej->hidden = 1;
+      if(bc->xyzEXACT[3] < ybarFDS - EPS)facej->hidden = 1;
+      facej++;
+
+// down x
+      facej->hidden = 0;
+//      if(bc->inside_domain[0] == 1)facej->hidden = 1;
+      if(bc->xyzEXACT[0] > xbar0FDS + EPS)facej->hidden = 1;
+      facej++;
+
+// down z
+      facej->hidden = 0;
+//      if(bc->inside_domain[4] == 1)facej->hidden = 1;
+      if(bc->xyzEXACT[4] > zbar0FDS + EPS)facej->hidden = 1;
+      facej++;
+
+// up z
+      facej->hidden = 0;
+//      if(bc->inside_domain[5] == 1)facej->hidden = 1;
+      if(bc->xyzEXACT[5] < zbarFDS - EPS)facej->hidden = 1;
+      facej++;
+    }
+  }
+}
+
 /* ------------------ UpdateFaceLists ------------------------ */
 
 void UpdateFaceLists(void){
@@ -2591,10 +2750,12 @@ void UpdateFaceLists(void){
 
           facej->patchpresent=1-bc->patchvis[patch_dir[k]];
           if(facej->is_interior==0&&showpatch_both==1)facej->hidden=1;
+        //  if(bc->inside_domain[patch_dir[k]] == 1)facej->hidden = 1;
           facej++;
         }
       }
     }
+    if(hide_internal_blockages==1 && update_bound_chop_data==0)UpdateHiddenExternalFaces();
 
     n_normals_single=0;
     n_normals_double=0;
@@ -3500,7 +3661,7 @@ facedata *GetFaceNabor(meshdata *meshi, facedata *facei, int dir){
 
 /* ------------------ UpdateHiddenFaces ------------------------ */
 
-void UpdateHiddenFaces(){
+void UpdateHiddenFaces(void){
   int i;
 
   updatehiddenfaces=0;
