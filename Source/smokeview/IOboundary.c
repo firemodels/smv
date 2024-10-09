@@ -4210,7 +4210,6 @@ void DrawBoundaryMeshInterface(meshdata *meshi, int mode){
 #endif
   float *patch_times;
   patchdata *patchi;
-  float *color11;
 
   int set_valmin, set_valmax;
   char *label;
@@ -4302,23 +4301,38 @@ void DrawBoundaryMeshInterface(meshdata *meshi, int mode){
         xyzp1 = meshi->xyzpatch + 3 * pfi->start + 3 * (irow * ncol+icol_start);
         xyzp2 = xyzp1 + 3 * ncol;
         for(icol = icol_start;icol < icol_end;icol++){
-          unsigned char cval;
+          unsigned char cval11, cval12, cval21, cval22;
+          float *color11, *color12, *color21, *color22;
 
-          cval = CLAMP(255 * BOUNDCONVERT(IJKBF(irow, icol), ttmin, ttmax), 0, 255);
-          if(rgb_patch[4 * cval + 3] == 0.0){
+          cval11 = CLAMP(255 * BOUNDCONVERT(IJKBF(irow, icol), ttmin, ttmax), 0, 255);
+          color11 = rgb_patch + 4 * cval11;
+          if(mode == BOUNDARY_NODE_CENTERED){
+            cval12 = CLAMP(255 * BOUNDCONVERT(IJKBF(irow,   icol+1), ttmin, ttmax), 0, 255);
+            cval21 = CLAMP(255 * BOUNDCONVERT(IJKBF(irow+1, icol),   ttmin, ttmax), 0, 255);
+            cval22 = CLAMP(255 * BOUNDCONVERT(IJKBF(irow+1, icol+1), ttmin, ttmax), 0, 255);
+            color21 = rgb_patch + 4 * cval21;
+            color12 = rgb_patch + 4 * cval12;
+            color22 = rgb_patch + 4 * cval22;
+          }
+          if(rgb_patch[4 * cval11 + 3] == 0.0){
             xyzp1 += 3;
             xyzp2 += 3;
             continue;
           }
-          color11 = rgb_patch + 4 * cval;
-          glColor4fv(color11);
-          glVertex3fv(xyzp1);
-          glVertex3fv(xyzp1 + 3);
-          glVertex3fv(xyzp2 + 3);
+          if(mode == BOUNDARY_CELL_CENTERED){
+            glColor4fv(color11); 
+            glVertex3fv(xyzp1); glVertex3fv(xyzp1 + 3); glVertex3fv(xyzp2 + 3);
+            glVertex3fv(xyzp1); glVertex3fv(xyzp2 + 3); glVertex3fv(xyzp2);
+          }
+          else{
+            glColor4fv(color11); glVertex3fv(xyzp1);
+            glColor4fv(color12); glVertex3fv(xyzp1 + 3);
+            glColor4fv(color22); glVertex3fv(xyzp2 + 3);
 
-          glVertex3fv(xyzp1);
-          glVertex3fv(xyzp2 + 3);
-          glVertex3fv(xyzp2);
+            glColor4fv(color11); glVertex3fv(xyzp1);
+            glColor4fv(color22); glVertex3fv(xyzp2 + 3);
+            glColor4fv(color21); glVertex3fv(xyzp2);
+          }
           xyzp1 += 3;
           xyzp2 += 3;
         }
