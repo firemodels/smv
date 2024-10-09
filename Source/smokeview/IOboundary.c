@@ -1786,9 +1786,15 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
     dyy = 0.0;
     dzz = 0.0;
 
+#ifdef pp_PATCH_FACTOR
+    ig_factor_x = 0.0;
+    ig_factor_y = 0.0;
+    ig_factor_z = 0.0;
+#else
     ig_factor_x = ABS(meshi->xplt[1] - meshi->xplt[0]) / 10.0;
     ig_factor_y = ABS(meshi->yplt[1] - meshi->yplt[0]) / 10.0;
     ig_factor_z = ABS(meshi->zplt[1] - meshi->zplt[0]) / 10.0;
+#endif
     block_factor_x = ig_factor_x;
     block_factor_y = ig_factor_y;
     block_factor_z = ig_factor_z;
