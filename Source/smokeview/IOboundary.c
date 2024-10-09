@@ -4153,10 +4153,34 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
   }
 }
 
+/* ------------------ GetPatchMeshNabor ------------------------ */
+
+meshdata *GetPatchMeshNabor(meshdata *meshi, int dir){
+  meshdata *return_mesh;
+
+  return_mesh = meshi->nabors[dir];
+  if(return_mesh != NULL){
+    switch(dir){
+    case MLEFT:
+    case MRIGHT:
+      if(meshi->jbar != return_mesh->jbar || meshi->kbar != return_mesh->kbar)return NULL;
+      break;
+    case MFRONT:
+    case MBACK:
+      if(meshi->ibar != return_mesh->ibar || meshi->kbar != return_mesh->kbar)return NULL;
+      break;
+    case MDOWN:
+    case MUP:
+      if(meshi->ibar != return_mesh->ibar || meshi->jbar != return_mesh->jbar)return NULL;
+      break;
+    }
+  }
+  return return_mesh;
+}
 
 /* ------------------ DrawBoundaryCellCenter ------------------------ */
 
-void DrawBoundaryCellCenterMeshInterface(const meshdata *meshi){
+void DrawBoundaryCellCenterMeshInterface(meshdata *meshi){
   int n;
   int irow, icol;
   float *patchvals;
@@ -4173,7 +4197,6 @@ void DrawBoundaryCellCenterMeshInterface(const meshdata *meshi){
   float ttmin, ttmax;
 
   if(vis_threshold == 1 && vis_onlythreshold == 1 && do_threshold == 1)return;
-  if(meshi == meshinfo+1)return;
 
   patch_times = meshi->patch_times;
   patchi = patchinfo + meshi->patchfilenum;
@@ -4185,22 +4208,12 @@ void DrawBoundaryCellCenterMeshInterface(const meshdata *meshi){
     ttmax = 1.0;
   }
 
-  switch(patchi->compression_type){
-  case UNCOMPRESSED:
-#ifndef pp_BOUNDFRAME
-    patchval_iframe = meshi->patchval_iframe;
-    if(patchval_iframe == NULL)return;
-#endif
-    break;
-  case COMPRESSED_ZLIB:
-    break;
-  default:
-    assert(FFALSE);
-  }
   patchi = patchinfo + meshi->patchfilenum;
 
   if(patch_times[0] > global_times[itimes] || patchi->display == 0)return;
   if(cullfaces == 1)glDisable(GL_CULL_FACE);
+
+  THREADcontrol(meshnabors_threads, THREAD_JOIN);
 
   glBegin(GL_TRIANGLES);
   for(n = 0;n < patchi->npatches;n++){
@@ -4218,43 +4231,80 @@ void DrawBoundaryCellCenterMeshInterface(const meshdata *meshi){
       blockagedata *bc;
       int irow_start, irow_end;
       int icol_start, icol_end;
+      meshdata *patch_mesh;
 
+      patch_mesh = NULL;
       bc = meshi->blockageinfoptrs[ib];
       if(bc->showtimelist != NULL && bc->showtimelist[itimes] == 0)continue;
       if(pfi->ib[0] == pfi->ib[1]){
-        if(pfi->ib[0] == 0           && bc->ijk[0] != 0)continue;
-        if(pfi->ib[0] == meshi->ibar && bc->ijk[1] != meshi->ibar)continue;
+        if(pfi->ib[0] == 0 && bc->ijk[0] == 0){
+          patch_mesh = GetPatchMeshNabor(meshi, MLEFT);
+        }
+        else if(pfi->ib[0] == meshi->jbar && bc->ijk[1] == meshi->ibar){
+          patch_mesh = GetPatchMeshNabor(meshi, MRIGHT);
+        }
+        else{
+          continue;
+        }
         icol_start = bc->ijk[2];
-        icol_end = bc->ijk[3];
+        icol_end   = bc->ijk[3];
         irow_start = bc->ijk[4];
-        irow_end = bc->ijk[5];
+        irow_end   = bc->ijk[5];
       }
       else if(pfi->ib[2] == pfi->ib[3]){
-        if(pfi->ib[2] == 0           && bc->ijk[2] != 0)continue;
-        if(pfi->ib[2] == meshi->jbar && bc->ijk[3] != meshi->jbar)continue;
+        if(pfi->ib[2] == 0 && bc->ijk[2] == 0){
+          patch_mesh = GetPatchMeshNabor(meshi, MFRONT);
+        }
+        else if(pfi->ib[2] == meshi->jbar && bc->ijk[3] == meshi->jbar){
+          patch_mesh = GetPatchMeshNabor(meshi, MBACK);
+        }
+        else{
+          continue;
+        }
         icol_start = bc->ijk[0];
-        icol_end = bc->ijk[1];
+        icol_end   = bc->ijk[1];
         irow_start = bc->ijk[4];
-        irow_end = bc->ijk[5];
+        irow_end   = bc->ijk[5];
       }
       else if(pfi->ib[4] == pfi->ib[5]){
-        if(pfi->ib[4] == 0           && bc->ijk[4] != 0)continue;
-        if(pfi->ib[5] == meshi->kbar && bc->ijk[5] != meshi->kbar)continue;
+        if(pfi->ib[4] == 0 && bc->ijk[4] == 0){
+          patch_mesh = GetPatchMeshNabor(meshi, MDOWN);
+        }
+        else if(pfi->ib[4] == meshi->kbar && bc->ijk[5] == meshi->kbar){
+          patch_mesh = GetPatchMeshNabor(meshi, MUP);
+        }
+        else{
+          continue;
+        }
         icol_start = bc->ijk[0];
-        icol_end = bc->ijk[1];
+        icol_end   = bc->ijk[1];
         irow_start = bc->ijk[2];
-        irow_end = bc->ijk[3];
+        irow_end   = bc->ijk[3];
       }
       else{
         assert(0);
       }
+      if(patch_mesh==NULL)continue;
+
+      switch(patchi->compression_type){
+      case UNCOMPRESSED:
+#ifndef pp_BOUNDFRAME
+        patchval_iframe = patch_mesh->patchval_iframe;
+        if(patchval_iframe == NULL)continue;
+#endif
+        break;
+  case COMPRESSED_ZLIB:
+        break;
+      default:
+        assert(FFALSE);
+      }
 
 #ifdef pp_BOUNDFRAME
-      patchvals = (float *)FRAMEGetSubFramePtr(patchi->frameinfo, meshi->patch_itime, n);
+      patchvals = (float *)FRAMEGetSubFramePtr(patchi->frameinfo, patch_mesh->patch_itime, n);
 #else
       patchvals = patchval_iframe + pfi->start;
 #endif
-      if(patchi->compression_type == COMPRESSED_ZLIB)cpatchvals = meshi->cpatchval_iframe_zlib + pfi->start;
+      if(patchi->compression_type == COMPRESSED_ZLIB)cpatchvals = patch_mesh->cpatchval_iframe_zlib + pfi->start;
       for(irow = irow_start;irow < irow_end;irow++){
         float *xyzp1, *xyzp2;
 

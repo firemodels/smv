@@ -52,6 +52,10 @@ SVEXTERN threaderdata SVDECL(*isosurface_threads, NULL);
 SVEXTERN int SVDECL(n_sliceparms_threads, 1), SVDECL(use_sliceparms_threads, 1);
 SVEXTERN threaderdata SVDECL(*sliceparms_threads, NULL);
 
+//***meshnabors
+SVEXTERN int SVDECL(n_meshnabors_threads, 1), SVDECL(use_meshnabors_threads, 1);
+SVEXTERN threaderdata SVDECL(*meshnabors_threads, NULL);
+
 //***checkfiles
 SVEXTERN int SVDECL(n_checkfiles_threads, 1), SVDECL(use_checkfiles_threads, 1);
 SVEXTERN threaderdata SVDECL(*checkfiles_threads,       NULL);
