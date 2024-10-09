@@ -118,7 +118,7 @@ void ShowScene2(int mode){
 
     /* ++++++++++++++++++++++++ draw sensors/sprinklers/heat detectors +++++++++++++++++++++++++ */
 
-#ifdef pp_PATCH_DBUG
+#ifdef pp_PATCH_DEBUG
     if(boundary_debug_obst==1){
       DrawMeshBlockFaces();
     }
