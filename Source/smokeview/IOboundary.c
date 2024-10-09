@@ -4224,26 +4224,26 @@ void DrawBoundaryCellCenterMeshInterface(const meshdata *meshi){
       if(pfi->ib[0] == pfi->ib[1]){
         if(pfi->ib[0] == 0           && bc->ijk[0] != 0)continue;
         if(pfi->ib[0] == meshi->ibar && bc->ijk[1] != meshi->ibar)continue;
-        irow_start = bc->ijk[2];
-        irow_end = bc->ijk[3];
-        icol_start = bc->ijk[4];
-        icol_end = bc->ijk[5];
+        icol_start = bc->ijk[2];
+        icol_end = bc->ijk[3];
+        irow_start = bc->ijk[4];
+        irow_end = bc->ijk[5];
       }
       else if(pfi->ib[2] == pfi->ib[3]){
         if(pfi->ib[2] == 0           && bc->ijk[2] != 0)continue;
         if(pfi->ib[2] == meshi->jbar && bc->ijk[3] != meshi->jbar)continue;
-        irow_start = bc->ijk[0];
-        irow_end = bc->ijk[1];
-        icol_start = bc->ijk[4];
-        icol_end = bc->ijk[5];
+        icol_start = bc->ijk[0];
+        icol_end = bc->ijk[1];
+        irow_start = bc->ijk[4];
+        irow_end = bc->ijk[5];
       }
       else if(pfi->ib[4] == pfi->ib[5]){
         if(pfi->ib[4] == 0           && bc->ijk[4] != 0)continue;
         if(pfi->ib[5] == meshi->kbar && bc->ijk[5] != meshi->kbar)continue;
-        irow_start = bc->ijk[0];
-        irow_end = bc->ijk[1];
-        icol_start = bc->ijk[2];
-        icol_end = bc->ijk[3];
+        icol_start = bc->ijk[0];
+        icol_end = bc->ijk[1];
+        irow_start = bc->ijk[2];
+        irow_end = bc->ijk[3];
       }
       else{
         assert(0);
