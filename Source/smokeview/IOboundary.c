@@ -4221,64 +4221,71 @@ void DrawBoundaryCellCenterMeshInterface(meshdata *meshi){
   glBegin(GL_TRIANGLES);
   for(n = 0;n < patchi->npatches;n++){
     patchfacedata *pfi;
-    int ncol;
+    meshdata *patch_mesh;
+    int ncol, ib;
 
+    patch_mesh = NULL;
     pfi = patchi->patchfaceinfo + n;
     ncol = pfi->ncol;
-    if(pfi->internal_mesh_face != 1){
+    if(pfi->internal_mesh_face != 1)continue;
+    if(pfi->ib[0] == pfi->ib[1]){
+      if(pfi->ib[0] == 0){
+        patch_mesh = GetPatchMeshNabor(meshi, MLEFT);
+      }
+      else if(pfi->ib[0] == meshi->ibar){
+        patch_mesh = GetPatchMeshNabor(meshi, MRIGHT);
+      }
+      else{
+        continue;
+      }
+    }
+    else if(pfi->ib[2] == pfi->ib[3]){
+      if(pfi->ib[2] == 0){
+        patch_mesh = GetPatchMeshNabor(meshi, MFRONT);
+      }
+      else if(pfi->ib[2] == meshi->jbar){
+        patch_mesh = GetPatchMeshNabor(meshi, MBACK);
+      }
+      else{
+        continue;
+      }
+    }
+    else if(pfi->ib[4] == pfi->ib[5]){
+      if(pfi->ib[4] == 0){
+        patch_mesh = GetPatchMeshNabor(meshi, MDOWN);
+      }
+      else if(pfi->ib[4] == meshi->kbar){
+        patch_mesh = GetPatchMeshNabor(meshi, MUP);
+      }
+      else{
+        continue;
+      }
+    }
+    else{
       continue;
     }
-    int ib;
+    if(patch_mesh == NULL)continue;
 
-    for(ib = 0;ib < meshi->nbptrs;ib++){
+    for(ib = 0;ib < patch_mesh->nbptrs;ib++){
       blockagedata *bc;
       int irow_start, irow_end;
       int icol_start, icol_end;
-      meshdata *patch_mesh;
 
-      patch_mesh = NULL;
-      bc = meshi->blockageinfoptrs[ib];
+      bc = patch_mesh->blockageinfoptrs[ib];
       if(bc->showtimelist != NULL && bc->showtimelist[itimes] == 0)continue;
       if(pfi->ib[0] == pfi->ib[1]){
-        if(pfi->ib[0] == 0 && bc->ijk[0] == 0){
-          patch_mesh = GetPatchMeshNabor(meshi, MLEFT);
-        }
-        else if(pfi->ib[0] == meshi->jbar && bc->ijk[1] == meshi->ibar){
-          patch_mesh = GetPatchMeshNabor(meshi, MRIGHT);
-        }
-        else{
-          continue;
-        }
         icol_start = bc->ijk[2];
         icol_end   = bc->ijk[3];
         irow_start = bc->ijk[4];
         irow_end   = bc->ijk[5];
       }
       else if(pfi->ib[2] == pfi->ib[3]){
-        if(pfi->ib[2] == 0 && bc->ijk[2] == 0){
-          patch_mesh = GetPatchMeshNabor(meshi, MFRONT);
-        }
-        else if(pfi->ib[2] == meshi->jbar && bc->ijk[3] == meshi->jbar){
-          patch_mesh = GetPatchMeshNabor(meshi, MBACK);
-        }
-        else{
-          continue;
-        }
         icol_start = bc->ijk[0];
         icol_end   = bc->ijk[1];
         irow_start = bc->ijk[4];
         irow_end   = bc->ijk[5];
       }
       else if(pfi->ib[4] == pfi->ib[5]){
-        if(pfi->ib[4] == 0 && bc->ijk[4] == 0){
-          patch_mesh = GetPatchMeshNabor(meshi, MDOWN);
-        }
-        else if(pfi->ib[4] == meshi->kbar && bc->ijk[5] == meshi->kbar){
-          patch_mesh = GetPatchMeshNabor(meshi, MUP);
-        }
-        else{
-          continue;
-        }
         icol_start = bc->ijk[0];
         icol_end   = bc->ijk[1];
         irow_start = bc->ijk[2];
@@ -4287,12 +4294,11 @@ void DrawBoundaryCellCenterMeshInterface(meshdata *meshi){
       else{
         assert(0);
       }
-      if(patch_mesh==NULL)continue;
 
       switch(patchi->compression_type){
       case UNCOMPRESSED:
 #ifndef pp_BOUNDFRAME
-        patchval_iframe = patch_mesh->patchval_iframe;
+        patchval_iframe = meshi->patchval_iframe;
         if(patchval_iframe == NULL)continue;
 #endif
         break;
@@ -4303,11 +4309,11 @@ void DrawBoundaryCellCenterMeshInterface(meshdata *meshi){
       }
 
 #ifdef pp_BOUNDFRAME
-      patchvals = (float *)FRAMEGetSubFramePtr(patchi->frameinfo, patch_mesh->patch_itime, n);
+      patchvals = (float *)FRAMEGetSubFramePtr(patchi->frameinfo, meshi->patch_itime, n);
 #else
       patchvals = patchval_iframe + pfi->start;
 #endif
-      if(patchi->compression_type == COMPRESSED_ZLIB)cpatchvals = patch_mesh->cpatchval_iframe_zlib + pfi->start;
+      if(patchi->compression_type == COMPRESSED_ZLIB)cpatchvals = meshi->cpatchval_iframe_zlib + pfi->start;
       for(irow = irow_start;irow < irow_end;irow++){
         float *xyzp1, *xyzp2;
 
