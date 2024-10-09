@@ -10702,7 +10702,7 @@ typedef struct {
           if(exclaim != NULL){
             exclaim[0] = 0;
             exclaim = TrimFront(exclaim + 1);
-            if(exclaim[0] == 'F' || exclaim[0] == 'f')have_removable_obsts = 1;
+            if(exclaim[0] == 'T' || exclaim[0] == 't')have_removable_obsts = 1;
           }
         }
         ijk = bc->ijk;
