@@ -4173,6 +4173,9 @@ meshdata *GetPatchMeshNabor(meshdata *meshi, int dir){
     case MUP:
       if(meshi->ibar != return_mesh->ibar || meshi->jbar != return_mesh->jbar)return NULL;
       break;
+    default:
+      assert(0);
+      break;
     }
   }
   return return_mesh;
