@@ -4155,28 +4155,36 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
 
 /* ------------------ GetPatchMeshNabor ------------------------ */
 
-meshdata *GetPatchMeshNabor(meshdata *meshi, int dir){
+meshdata *GetPatchMeshNabor(meshdata *meshi, int *ib){
   meshdata *return_mesh;
 
-  return_mesh = meshi->nabors[dir];
-  if(return_mesh != NULL){
-    switch(dir){
-    case MLEFT:
-    case MRIGHT:
-      if(meshi->jbar != return_mesh->jbar || meshi->kbar != return_mesh->kbar)return NULL;
-      break;
-    case MFRONT:
-    case MBACK:
-      if(meshi->ibar != return_mesh->ibar || meshi->kbar != return_mesh->kbar)return NULL;
-      break;
-    case MDOWN:
-    case MUP:
-      if(meshi->ibar != return_mesh->ibar || meshi->jbar != return_mesh->jbar)return NULL;
-      break;
-    default:
-      assert(0);
-      break;
+  return_mesh = NULL;
+  if(ib[0] == ib[1]){
+    if(ib[0] == 0){
+      return_mesh = meshi->nabors[MLEFT];
     }
+    else if(ib[0] == meshi->ibar){
+      return_mesh = meshi->nabors[MRIGHT];
+    }
+    if(meshi->jbar != return_mesh->jbar || meshi->kbar != return_mesh->kbar)return_mesh = NULL;
+  }
+  else if(ib[2] == ib[3]){
+    if(ib[2] == 0){
+      return_mesh = meshi->nabors[MFRONT];
+    }
+    else if(ib[2] == meshi->jbar){
+      return_mesh = meshi->nabors[MBACK];
+    }
+    if(meshi->ibar != return_mesh->ibar || meshi->kbar != return_mesh->kbar)return_mesh = NULL;
+  }
+  else if(ib[4]==ib[5]){
+    if(ib[4]==0){
+      return_mesh = meshi->nabors[MDOWN];
+    }
+    else if(ib[4] == meshi->kbar){
+      return_mesh = meshi->nabors[MUP];
+    }
+    if(meshi->ibar != return_mesh->ibar || meshi->jbar != return_mesh->jbar)return_mesh = NULL;
   }
   return return_mesh;
 }
@@ -4228,42 +4236,7 @@ void DrawBoundaryCellCenterMeshInterface(meshdata *meshi){
     pfi = patchi->patchfaceinfo + n;
     ncol = pfi->ncol;
     if(pfi->internal_mesh_face != 1)continue;
-    if(pfi->ib[0] == pfi->ib[1]){
-      if(pfi->ib[0] == 0){
-        patch_mesh = GetPatchMeshNabor(meshi, MLEFT);
-      }
-      else if(pfi->ib[0] == meshi->ibar){
-        patch_mesh = GetPatchMeshNabor(meshi, MRIGHT);
-      }
-      else{
-        continue;
-      }
-    }
-    else if(pfi->ib[2] == pfi->ib[3]){
-      if(pfi->ib[2] == 0){
-        patch_mesh = GetPatchMeshNabor(meshi, MFRONT);
-      }
-      else if(pfi->ib[2] == meshi->jbar){
-        patch_mesh = GetPatchMeshNabor(meshi, MBACK);
-      }
-      else{
-        continue;
-      }
-    }
-    else if(pfi->ib[4] == pfi->ib[5]){
-      if(pfi->ib[4] == 0){
-        patch_mesh = GetPatchMeshNabor(meshi, MDOWN);
-      }
-      else if(pfi->ib[4] == meshi->kbar){
-        patch_mesh = GetPatchMeshNabor(meshi, MUP);
-      }
-      else{
-        continue;
-      }
-    }
-    else{
-      continue;
-    }
+    patch_mesh = GetPatchMeshNabor(meshi, pfi->ib);
     if(patch_mesh == NULL)continue;
 
     for(ib = 0;ib < patch_mesh->nbptrs;ib++){
