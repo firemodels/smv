@@ -13,6 +13,9 @@
 
 #define FIRST_TIME 1
 
+#define BOUNDARY_CELL_CENTERED 0
+#define BOUNDARY_NODE_CENTERED 1
+
 #define IJKBF(i,j) ((i)*ncol+(j))
 #define BOUNDCONVERT(index, valmin, valmax) (patchi->compression_type==UNCOMPRESSED ? \
                ( valmin == valmax ? 0.0 : (patchvals[index]-valmin)/(valmax-valmin) ) : \
@@ -4195,9 +4198,9 @@ meshdata *GetPatchMeshNabor(meshdata *meshi, int *ib){
   return return_mesh;
 }
 
-/* ------------------ DrawBoundaryCellCenter ------------------------ */
+/* ------------------ DrawBoundaryMeshInterface ------------------------ */
 
-void DrawBoundaryCellCenterMeshInterface(meshdata *meshi){
+void DrawBoundaryMeshInterface(meshdata *meshi, int mode){
   int n;
   int irow, icol;
   float *patchvals;
@@ -4378,11 +4381,14 @@ void DrawBoundaryFrame(int flag){
       if(patchi->patch_filetype==PATCH_STRUCTURED_CELL_CENTER){
         DrawBoundaryCellCenter(meshi);
         if(have_removable_obsts == 1 && nmeshes>1){
-          DrawBoundaryCellCenterMeshInterface(meshi);
+          DrawBoundaryMeshInterface(meshi, BOUNDARY_CELL_CENTERED);
         }
       }
       else if(patchi->patch_filetype==PATCH_STRUCTURED_NODE_CENTER){
         DrawBoundaryTexture(meshi);
+        if(have_removable_obsts == 1 && nmeshes > 1){
+          DrawBoundaryMeshInterface(meshi, BOUNDARY_NODE_CENTERED);
+        }
       }
     }
     if(vis_threshold==1&&vis_onlythreshold==1&&do_threshold==1)DrawOnlyThreshold(meshi);
