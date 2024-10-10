@@ -808,6 +808,7 @@ EXTERNCPP void FreeVars(void);
 EXTERNCPP void RenderState(int onoff);
 EXTERNCPP void ResizeWindow(int width, int height);
 EXTERNCPP meshdata *GetMesh(float *xyz);
+EXTERNCPP float *GetPatchXYZ(const meshdata *meshi);
 EXTERNCPP meshdata *GetMeshNoFail(float *xyz);
 EXTERNCPP void InitCellMeshInfo(void);
 EXTERNCPP int InExterior(float *xyz);
