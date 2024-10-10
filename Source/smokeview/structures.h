@@ -314,7 +314,6 @@ typedef struct _facedata {
   int dir,hidden,dup,interior, inside_domain;
   int del;
   int transparent;
-  int patchpresent;
   struct _culldata *cullport;
   int **showtimelist_handle;
   int show_bothsides, is_interior;
@@ -353,7 +352,6 @@ typedef struct _blockagedata {
   struct _propdata *prop;
   int walltype,walltypeORIG;
   int surf_index[6];
-  int patchvis[7];
   int usecolorindex;
   int blockage_id,dup;
   int is_wuiblock;

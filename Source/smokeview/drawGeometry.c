@@ -2019,7 +2019,6 @@ void ObstOrVent2Faces(const meshdata *meshi,blockagedata *bc,
     if(bc!=NULL){
       faceptr->bc=bc;
       faceptr->hidden=0;
-      faceptr->patchpresent=0;
       faceptr->blockageindex=-2;
       if(visBlocks==visBLOCKSolidOutline){
         faceptr->linewidth=&solidlinewidth;
@@ -2036,7 +2035,6 @@ void ObstOrVent2Faces(const meshdata *meshi,blockagedata *bc,
     if(vi!=NULL){
       faceptr->blockageindex=-2;
       faceptr->hidden=0;
-      faceptr->patchpresent=0;
       faceptr->del=0;
       faceptr->texture_origin=vi->texture_origin;
       faceptr->transparent=vi->transparent;
@@ -2714,7 +2712,6 @@ void UpdateFaceLists(void){
       facedata *facej;
 
       facej = meshi->faceinfo + j;
-      facej->patchpresent=0;
       facej->cullport=NULL;
     }
 
@@ -2748,9 +2745,7 @@ void UpdateFaceLists(void){
         for(k=0;k<6;k++){
           int patch_dir[6]={2,1,3,0,4,5};
 
-          facej->patchpresent=1-bc->patchvis[patch_dir[k]];
           if(facej->is_interior==0&&showpatch_both==1)facej->hidden=1;
-        //  if(bc->inside_domain[patch_dir[k]] == 1)facej->hidden = 1;
           facej++;
         }
       }
@@ -2838,7 +2833,6 @@ void UpdateFaceLists(void){
       }
       if((
          (visBlocks==visBLOCKAsInputOutline||visBlocks==visBLOCKOutline||visBlocks==visBLOCKSolidOutline)&&j<vent_offset)||
-         (facej->patchpresent==1&&(vis_threshold==0||vis_onlythreshold==0||do_threshold==0))||
          (facej->type==BLOCK_outline&&visBlocks==visBLOCKAsInput)||
          ((j>=vent_offset&&j<vent_offset+meshi->nvents)&&vi->isOpenvent==1&&visOpenVentsAsOutline==1)
         ){

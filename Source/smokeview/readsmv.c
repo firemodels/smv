@@ -4149,9 +4149,6 @@ void InitObst(blockagedata *bc, surfdata *surf, int index, int meshindex){
     bc->surf[i] = surf;
     bc->faceinfo[i] = NULL;
   }
-  for(i = 0; i<7; i++){
-    bc->patchvis[i] = 1;
-  }
   sprintf(blocklabel, "**blockage %i", index);
   len = strlen(blocklabel);
   NewMemory((void **)&bc->label, ((unsigned int)(len + 1))*sizeof(char));

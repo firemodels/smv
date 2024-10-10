@@ -1715,27 +1715,6 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
   xyzpatch_ignitecopy = meshi->xyzpatch_threshold;
   patchblankcopy = meshi->patchblank;
   patchi->patchfaceinfo[0].start = 0;
-  for(n=0;n<meshi->nbptrs;n++){
-    blockagedata *bc;
-    int j;
-
-    bc=meshi->blockageinfoptrs[n];
-    for(j=0;j<6;j++){
-      bc->patchvis[j]=1;
-    }
-  }
-  for(n=0;n<patchi->npatches;n++){
-    patchfacedata *pfi;
-
-    pfi = patchi->patchfaceinfo + n;
-    if(pfi->obst==NULL)continue;
-    if(pfi->dir==-1)pfi->obst->patchvis[0] = 0;
-    if(pfi->dir== 1)pfi->obst->patchvis[1] = 0;
-    if(pfi->dir==-2)pfi->obst->patchvis[2] = 0;
-    if(pfi->dir== 2)pfi->obst->patchvis[3] = 0;
-    if(pfi->dir==-3)pfi->obst->patchvis[4] = 0;
-    if(pfi->dir== 3)pfi->obst->patchvis[5] = 0;
-  }
   for(n=0;n<patchi->npatches;n++){
     float dxx, dyy, dzz;
     float dxx2, dyy2, dzz2;
@@ -1794,7 +1773,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
       assert(k1 == k2);
     }
 
-    // determine if patch is an internal mesh face
+    // determine if patch is on an internal mesh face
 
 
     if(pfi->dir==YDIR||pfi->dir==YDIRNEG)pfi->dir=-pfi->dir;
@@ -2199,20 +2178,6 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
     }
     if(n!=patchi->npatches-1)(pfi+1)->start=pfi->start+pfi->nrow*pfi->ncol;
     pfi->vis=vis_boundary_type[pfi->type];
-  }
-
-  for(n=0;n<meshi->nbptrs;n++){
-    blockagedata *bc;
-    int j;
-
-    bc=meshi->blockageinfoptrs[n];
-    bc->patchvis[6]=0;
-    for(j=0;j<6;j++){
-      if(bc->patchvis[j]!=0){
-        bc->patchvis[6] = 1;
-        break;
-      }
-    }
   }
 
   meshi->patchval = NULL;
