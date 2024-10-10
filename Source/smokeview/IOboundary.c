@@ -4254,6 +4254,11 @@ void DrawBoundaryMeshInterface(meshdata *meshi, int mode){
 
       bc = patch_mesh->blockageinfoptrs[ib];
       if(bc->showtimelist != NULL && bc->showtimelist[itimes] == 0)continue;
+#ifdef pp_PATCH_FACTOR
+      int *ijk;
+      ijk = bc->ijk;
+      if(ijk[0] == ijk[1] || ijk[2] == ijk[3] || ijk[4] == ijk[5])continue;
+#endif
       if(pfi->ib[0] == pfi->ib[1]){
         icol_start = bc->ijk[2];
         icol_end   = bc->ijk[3];
