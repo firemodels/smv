@@ -2011,7 +2011,9 @@ void ObstOrVent2Faces(const meshdata *meshi,blockagedata *bc,
   for(j=0;j<jend;j++){
     faceptr->meshindex=meshi-meshinfo;
     faceptr->type2=facetype;
+#ifdef pp_FACE_INTERIOR
     faceptr->is_interior=0;
+#endif
     faceptr->show_bothsides=0;
     faceptr->bc=NULL;
     faceptr->interior = 0;
@@ -2150,6 +2152,7 @@ void ObstOrVent2Faces(const meshdata *meshi,blockagedata *bc,
       faceptr->jmax=bc->ijk[JMAX];
       faceptr->kmin=bc->ijk[KMIN];
       faceptr->kmax=bc->ijk[KMAX];
+#ifdef pp_FACE_INTERIOR
       if(faceptr->imin==faceptr->imax){
         if(faceptr->imin>0&&faceptr->imin<meshi->ibar)faceptr->is_interior=1;
       }
@@ -2159,6 +2162,7 @@ void ObstOrVent2Faces(const meshdata *meshi,blockagedata *bc,
       if(faceptr->kmin==faceptr->kmax){
         if(faceptr->kmin>0&&faceptr->kmin<meshi->kbar)faceptr->is_interior=1;
       }
+#endif
       faceptr->show_bothsides = show_bothsides_blockages;
     }
     if(vi!=NULL){
@@ -2168,6 +2172,7 @@ void ObstOrVent2Faces(const meshdata *meshi,blockagedata *bc,
       faceptr->jmax=vi->jmax;
       faceptr->kmin=vi->kmin;
       faceptr->kmax=vi->kmax;
+#ifdef pp_FACE_INTERIOR
       if(faceptr->imin==faceptr->imax){
         if(faceptr->imin>0&&faceptr->imin<meshi->ibar)faceptr->is_interior=1;
       }
@@ -2180,6 +2185,7 @@ void ObstOrVent2Faces(const meshdata *meshi,blockagedata *bc,
       if(faceptr->is_interior==1)have_vents_int=1;
       if(faceptr->is_interior==1&&show_bothsides_int==1)faceptr->show_bothsides=1;
       if(faceptr->is_interior==0&&show_bothsides_ext==1)faceptr->show_bothsides=1;
+#endif
     }
     offset[XXX]=(float)0.0;
     offset[YYY]=(float)0.0;
@@ -2730,7 +2736,7 @@ void UpdateFaceLists(void){
         loadpatch=0;
       }
     }
-
+#ifdef pp_FACE_INTERIOR
     if(local_showpatch==1&&loadpatch==1&&check_blockhide==1){
       int jj;
 
@@ -2748,6 +2754,7 @@ void UpdateFaceLists(void){
         }
       }
     }
+#endif
     if((boundary_loaded ==1 || hide_internal_blockages==1) && update_bound_chop_data==0){
       UpdateHiddenExternalFaces();
     }
