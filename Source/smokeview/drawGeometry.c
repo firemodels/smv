@@ -2743,8 +2743,6 @@ void UpdateFaceLists(void){
         if(bc->prop!=NULL&&bc->prop->blockvis==0)continue;
         facej = meshi->faceinfo + 6*jj;
         for(k=0;k<6;k++){
-          int patch_dir[6]={2,1,3,0,4,5};
-
           if(facej->is_interior==0&&showpatch_both==1)facej->hidden=1;
           facej++;
         }
