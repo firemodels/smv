@@ -9085,17 +9085,24 @@ static int menu_count=0;
       next_total+=vis_boundary_type[i];
     }
     if(next_total == 6){
+      show_all_exterior_patch_data = 1;
+      hide_all_exterior_patch_data = 0;
       glutAddMenuEntry(_("*Show all"),  ShowEXTERIORwallmenu);
       glutAddMenuEntry(_("Hide all"),   HideEXTERIORwallmenu);
     }
     else if(next_total == 0){
+      show_all_exterior_patch_data = 0;
+      hide_all_exterior_patch_data = 1;
       glutAddMenuEntry(_("Show all"),  ShowEXTERIORwallmenu);
       glutAddMenuEntry(_("*Hide all"), HideEXTERIORwallmenu);
     }
     else{
+      show_all_exterior_patch_data = 0;
+      hide_all_exterior_patch_data = 0;
       glutAddMenuEntry(_("#Show all"),  ShowEXTERIORwallmenu);
       glutAddMenuEntry(_("#Hide all"),  HideEXTERIORwallmenu);
     }
+    UpdateShowPatch(show_all_exterior_patch_data, hide_all_exterior_patch_data);
     if(IsBoundaryType(FRONTwall) == 1 && vis_boundary_type[FRONTwall] == 1)glutAddMenuEntry(_("*Front"), FRONTwallmenu);
     if(IsBoundaryType(FRONTwall) == 1 && vis_boundary_type[FRONTwall] == 0)glutAddMenuEntry(_("Front"), FRONTwallmenu);
     if(IsBoundaryType(BACKwall) == 1 && vis_boundary_type[BACKwall] == 1)glutAddMenuEntry(_("*Back"), BACKwallmenu);
