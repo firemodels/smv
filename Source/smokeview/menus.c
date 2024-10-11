@@ -6314,9 +6314,6 @@ void ShowBoundaryMenu(int value){
       if(patchi->loaded == 0)continue;
       if(patchi->structured == YES)patchi->display=show_boundaryfiles;
     }
-    cpp_boundsdata *bounds;
-
-    bounds = GLUIGetBoundsData(BOUND_PATCH);
     updatefacelists = 1;
     updatefaces = 1;
     if(value == GLUI_SHOWALL_BOUNDARY){
