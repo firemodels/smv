@@ -6314,6 +6314,19 @@ void ShowBoundaryMenu(int value){
       if(patchi->loaded == 0)continue;
       if(patchi->structured == YES)patchi->display=show_boundaryfiles;
     }
+    cpp_boundsdata *bounds;
+
+    bounds = GLUIGetBoundsData(BOUND_PATCH);
+    updatefacelists = 1;
+    updatefaces = 1;
+    if(value == GLUI_SHOWALL_BOUNDARY){
+      hide_internal_blockages = 1;
+      update_bound_chop_data = 0;
+    }
+    if(value == GLUI_HIDEALL_BOUNDARY){
+      hide_internal_blockages = 0;
+      update_bound_chop_data = 1;
+    }
   }
   if(value<0){
     if(value==ShowEXTERIORwallmenu||value==HideEXTERIORwallmenu){
@@ -9148,11 +9161,11 @@ static int menu_count=0;
         else{
           if(show_boundaryfiles==1){
             glutAddMenuEntry("*Show all", GLUI_SHOWALL_BOUNDARY);
-            glutAddMenuEntry("Hide all",  GLUI_SHOWALL_BOUNDARY);
+            glutAddMenuEntry("Hide all",  GLUI_HIDEALL_BOUNDARY);
           }
           else{
             glutAddMenuEntry("Show all",  GLUI_SHOWALL_BOUNDARY);
-            glutAddMenuEntry("*Hide all", GLUI_SHOWALL_BOUNDARY);
+            glutAddMenuEntry("*Hide all", GLUI_HIDEALL_BOUNDARY);
           }
         }
       }
