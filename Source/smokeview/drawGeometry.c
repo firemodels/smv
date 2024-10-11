@@ -2685,7 +2685,9 @@ void UpdateFaceLists(void){
   int n_normals_single, n_normals_double, n_transparent_double;
   int i;
   int drawing_transparent, drawing_blockage_transparent, drawing_vent_transparent;
+#ifdef pp_FACE_INTERIOR
   int check_blockhide=1;
+#endif
 
   GetDrawingParms(&drawing_transparent, &drawing_blockage_transparent, &drawing_vent_transparent);
 
@@ -2701,16 +2703,20 @@ void UpdateFaceLists(void){
     glutPostRedisplay();
   }
   // if we are not showing boundary files then don't try to hide blockages
+#ifdef pp_FACE_INTERIOR
   if(showplot3d == 0){
     if(use_tload_begin == 1 && global_times != NULL && global_times[itimes] < tload_begin)check_blockhide = 0;
     if(use_tload_end == 1 && global_times != NULL && global_times[itimes] > tload_end)check_blockhide = 0;
   }
+#endif
   for(i=0;i<nmeshes;i++){
     meshdata *meshi;
     int patchfilenum;
     int j;
     patchdata *patchi;
+#ifdef pp_FACE_INTERIOR
     int loadpatch, local_showpatch;
+#endif
     int vent_offset, outline_offset, exteriorsurface_offset;
 
     meshi = meshinfo + i;
@@ -2721,10 +2727,11 @@ void UpdateFaceLists(void){
       facej->cullport=NULL;
     }
 
+    patchfilenum=meshi->patchfilenum;
+    patchi = NULL;
+#ifdef pp_FACE_INTERIOR
     local_showpatch=0;
     loadpatch=0;
-    patchfilenum=meshi->patchfilenum;
-    patchi=NULL;
     if(showplot3d == 0){
       if(hidepatchsurface==1&&patchfilenum>=0&&patchfilenum<npatchinfo){
         patchi = patchinfo + patchfilenum;
@@ -2736,7 +2743,6 @@ void UpdateFaceLists(void){
         loadpatch=0;
       }
     }
-#ifdef pp_FACE_INTERIOR
     if(local_showpatch==1&&loadpatch==1&&check_blockhide==1){
       int jj;
 
