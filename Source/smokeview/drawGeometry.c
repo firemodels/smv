@@ -2711,10 +2711,10 @@ void UpdateFaceLists(void){
 #endif
   for(i=0;i<nmeshes;i++){
     meshdata *meshi;
+    int patchfilenum;
     int j;
     patchdata *patchi;
 #ifdef pp_FACE_INTERIOR
-    int patchfilenum;
     int loadpatch, local_showpatch;
 #endif
     int vent_offset, outline_offset, exteriorsurface_offset;
@@ -2727,22 +2727,28 @@ void UpdateFaceLists(void){
       facej->cullport=NULL;
     }
 
-    patchi = NULL;
 #ifdef pp_FACE_INTERIOR
-    patchfilenum = meshi->patchfilenum;
     local_showpatch=0;
     loadpatch=0;
+#endif
+    patchfilenum=meshi->patchfilenum;
+    patchi=NULL;
     if(showplot3d == 0){
       if(hidepatchsurface==1&&patchfilenum>=0&&patchfilenum<npatchinfo){
         patchi = patchinfo + patchfilenum;
+#ifdef pp_FACE_INTERIOR
         if(patchi->loaded==1)loadpatch=1;
         if(patchi->display==1)local_showpatch=1;
+#endif
       }
+#ifdef pp_FACE_INTERIOR
       if(chop_patch == 1){
         local_showpatch=0;
         loadpatch=0;
       }
+#endif
     }
+#ifdef pp_FACE_INTERIOR
     if(local_showpatch==1&&loadpatch==1&&check_blockhide==1){
       int jj;
 
