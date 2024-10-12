@@ -2767,7 +2767,13 @@ void UpdateFaceLists(void){
       }
     }
 #endif
+    int call_UpdateHiddenExternalFaces;
+
+    call_UpdateHiddenExternalFaces = force_hide_internal_blockages;
     if((boundary_loaded ==1 || hide_internal_blockages==1) && update_bound_chop_data==0){
+      call_UpdateHiddenExternalFaces = 1;
+    }
+    if(call_UpdateHiddenExternalFaces==1){
       UpdateHiddenExternalFaces();
     }
 

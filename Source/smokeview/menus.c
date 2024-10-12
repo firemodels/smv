@@ -6692,6 +6692,7 @@ void BlockageMenu(int value){
       solid_state=visBLOCKHide;
       change_state=1;
       break;
+    case visBLOCKHideInternal:
     case BLOCKlocation_grid:
     case BLOCKlocation_exact:
     case BLOCKlocation_cad:
@@ -6738,6 +6739,23 @@ void BlockageMenu(int value){
    case visBLOCKAsInput:
      visBlocks=value;
      GLUIUpdateTrainerOutline();
+     break;
+   case visBLOCKHideInternal:
+     force_hide_internal_blockages = 1 - force_hide_internal_blockages;
+     if(force_hide_internal_blockages == 1){
+        outline_state=OUTLINE_NONE;
+        solid_state=visBLOCKHide;
+     }
+     else{
+      visBlocks=visBLOCKNormal;
+      solid_state=visBLOCKNormal;
+      outline_state=OUTLINE_NONE;
+      GeometryMenu(17 + TERRAIN_HIDDEN);
+     }
+     change_state=1;
+     updatemenu = 1;
+     updatefaces = 1;
+     updatefacelists = 1;
      break;
    case visBLOCKNormal:
    case visBLOCKOutline:
@@ -9351,6 +9369,12 @@ static int menu_count=0;
     else{
       glutAddMenuEntry(_("   Cad surface drawn opaque"),visCADOpaque);
     }
+  }
+  if(force_hide_internal_blockages == 1){
+    glutAddMenuEntry(_("   *Hide internal blockages"), visBLOCKHideInternal);
+  }
+  else{
+    glutAddMenuEntry(_("   Hide internal blockages"), visBLOCKHideInternal);
   }
   if(visBlocks==visBLOCKHide){
     glutAddMenuEntry(_("   *Hidden"),visBLOCKHide);
