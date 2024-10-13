@@ -1503,7 +1503,6 @@ SVEXTERN int SVDECL(p3dsurfacesmooth,1);
 SVEXTERN int SVDECL(p3dsurfacetype,SURFACE_SOLID);
 
 SVEXTERN int SVDECL(parttype,0);
-SVEXTERN int SVDECL(allinterior,1);
 SVEXTERN int SVDECL(showedit_dialog,0);
 SVEXTERN int SVDECL(showterrain_dialog, 0);
 SVEXTERN int SVDECL(showhvac_dialog, 0);
@@ -1623,8 +1622,13 @@ SVEXTERN int SVDECL(visOpenVents,1),SVDECL(visDummyVents,1),SVDECL(visOtherVents
 SVEXTERN int SVDECL(visOpenVentsAsOutline,0);
 SVEXTERN int SVDECL(visParticles,1), SVDECL(visZone,0);
 SVEXTERN int visBlocks;
+
+// need to clean up these variables
+SVEXTERN int SVDECL(show_allinterior,0); // shouldn't need this variable
 SVEXTERN int SVDECL(force_hide_internal_blockages, 0);
+SVEXTERN int SVDECL(updateinternalfaces, 0), SVDECL(internalfaces_show, 1);
 SVEXTERN int SVDECL(hide_internal_blockages, 0);
+
 SVEXTERN int SVDECL(outline_color_flag,0);
 SVEXTERN int SVDECL(solid_state,-1),SVDECL(outline_state,-1);
 SVEXTERN int SVDECL(visTransparentBlockage,0);

@@ -6273,6 +6273,30 @@ void LoadBoundaryMenu(int value){
   GLUTSETCURSOR(GLUT_CURSOR_LEFT_ARROW);
 }
 
+
+/* ------------------ ShowInternalBlockages ------------------------ */
+
+void ShowInternalBlockages(int show){
+  updateinternalfaces = 1;
+  internalfaces_show = show;
+  hide_internal_blockages = 1 - show;
+  if(show == 0){
+    outline_state=OUTLINE_NONE;
+    solid_state=visBLOCKHide;
+  }
+  else{
+    visBlocks=visBLOCKNormal;
+    solid_state=visBLOCKNormal;
+    outline_state=OUTLINE_NONE;
+    GeometryMenu(17 + TERRAIN_HIDDEN);
+  }
+  updatemenu = 1;
+  updatefaces = 1;
+  updatefacelists = 1;
+  updatehiddenfaces=1;
+  updateinternalfaces = 1;
+}
+
 /* ------------------ ShowBoundaryMenu ------------------------ */
 
 void ShowBoundaryMenu(int value){
@@ -6324,6 +6348,7 @@ void ShowBoundaryMenu(int value){
       hide_internal_blockages = 0;
       update_bound_chop_data = 1;
     }
+    ShowInternalBlockages(1-show_boundaryfiles);
   }
   if(value<0){
     if(value==ShowEXTERIORwallmenu||value==HideEXTERIORwallmenu){
@@ -6359,8 +6384,8 @@ void ShowBoundaryMenu(int value){
       int val;
       int i;
 
-      allinterior = 1 - allinterior;
-      val = allinterior;
+      show_allinterior = 1 - show_allinterior;
+      val = show_allinterior;
       vis_boundary_type[INTERIORwall]=val;
       for(i = 0;i < npatchinfo;i++){
         patchdata *patchi;
@@ -6377,6 +6402,7 @@ void ShowBoundaryMenu(int value){
           }
         }
       }
+      ShowInternalBlockages(val);
     }
     if(value==INI_EXTERIORwallmenu){
       int i;
@@ -6603,6 +6629,7 @@ void ImmersedMenu(int value){
 }
 
 /* ------------------ BlockageMenu ------------------------ */
+
 void GeometryMenu(int val);
 void BlockageMenu(int value){
   int change_state=0;
@@ -6742,20 +6769,7 @@ void BlockageMenu(int value){
      break;
    case visBLOCKHideInternal:
      force_hide_internal_blockages = 1 - force_hide_internal_blockages;
-     if(force_hide_internal_blockages == 1){
-        outline_state=OUTLINE_NONE;
-        solid_state=visBLOCKHide;
-     }
-     else{
-      visBlocks=visBLOCKNormal;
-      solid_state=visBLOCKNormal;
-      outline_state=OUTLINE_NONE;
-      GeometryMenu(17 + TERRAIN_HIDDEN);
-     }
-     change_state=1;
-     updatemenu = 1;
-     updatefaces = 1;
-     updatefacelists = 1;
+     ShowInternalBlockages(1 - force_hide_internal_blockages);
      break;
    case visBLOCKNormal:
    case visBLOCKOutline:

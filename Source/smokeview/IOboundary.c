@@ -2436,7 +2436,6 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
     cpp_boundsdata *bounds;
 
     boundary_loaded = 1;
-    hide_internal_blockages = 1;
 
     bounds = GLUIGetBoundsData(BOUND_PATCH);
     if(bounds->set_chopmax == 1 || bounds->set_chopmin == 1){
@@ -2445,8 +2444,10 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
     }
     else{
       update_bound_chop_data = 0;
+      hide_internal_blockages = 1;
     }
-
+void ShowInternalBlockages(int show);
+    ShowInternalBlockages(1-hide_internal_blockages);
 
 #ifdef pp_PATCH_DEBUG
     if(boundary_interface_faces==1 && have_removable_obsts == 1 && nmeshes>1){

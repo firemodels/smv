@@ -2614,9 +2614,9 @@ int CompareColorFaces(const void *arg1, const void *arg2){
   return 0;
 }
 
-/* ------------------ UpdateHiddenExternalFaces ------------------------ */
+/* ------------------ ShowHideInternalFaces ------------------------ */
 
-void UpdateHiddenExternalFaces(void){
+void ShowHideInternalFaces(int show){
   int i;
 
   for(i = 0;i < nmeshes;i++){
@@ -2642,37 +2642,37 @@ void UpdateHiddenExternalFaces(void){
 //down y
       facej->hidden = 0;
 //    if(bc->inside_domain[2]==1)facej->hidden = 1;
-      if(bc->xyzEXACT[2] > ybar0FDS + EPS)facej->hidden = 1;
+      if(show==0 && bc->xyzEXACT[2] > ybar0FDS + EPS)facej->hidden = 1;
       facej++;
 
 // up x
       facej->hidden = 0;
 //      if(bc->inside_domain[1] == 1)facej->hidden = 1;
-      if(bc->xyzEXACT[1] < xbarFDS - EPS)facej->hidden = 1;
+      if(show == 0 && bc->xyzEXACT[1] < xbarFDS - EPS)facej->hidden = 1;
       facej++;
 
 //up y
       facej->hidden = 0;
  //     if(bc->inside_domain[3] == 1)facej->hidden = 1;
-      if(bc->xyzEXACT[3] < ybarFDS - EPS)facej->hidden = 1;
+      if(show == 0 && bc->xyzEXACT[3] < ybarFDS - EPS)facej->hidden = 1;
       facej++;
 
 // down x
       facej->hidden = 0;
 //      if(bc->inside_domain[0] == 1)facej->hidden = 1;
-      if(bc->xyzEXACT[0] > xbar0FDS + EPS)facej->hidden = 1;
+      if(show == 0 && bc->xyzEXACT[0] > xbar0FDS + EPS)facej->hidden = 1;
       facej++;
 
 // down z
       facej->hidden = 0;
 //      if(bc->inside_domain[4] == 1)facej->hidden = 1;
-      if(bc->xyzEXACT[4] > zbar0FDS + EPS)facej->hidden = 1;
+      if(show == 0 && bc->xyzEXACT[4] > zbar0FDS + EPS)facej->hidden = 1;
       facej++;
 
 // up z
       facej->hidden = 0;
 //      if(bc->inside_domain[5] == 1)facej->hidden = 1;
-      if(bc->xyzEXACT[5] < zbarFDS - EPS)facej->hidden = 1;
+      if(show == 0 && bc->xyzEXACT[5] < zbarFDS - EPS)facej->hidden = 1;
       facej++;
     }
   }
@@ -2767,14 +2767,10 @@ void UpdateFaceLists(void){
       }
     }
 #endif
-    int call_UpdateHiddenExternalFaces;
+    if(updateinternalfaces == 1){
+      updateinternalfaces = 0;
 
-    call_UpdateHiddenExternalFaces = force_hide_internal_blockages;
-    if((boundary_loaded ==1 || hide_internal_blockages==1) && update_bound_chop_data==0){
-      call_UpdateHiddenExternalFaces = 1;
-    }
-    if(call_UpdateHiddenExternalFaces==1){
-      UpdateHiddenExternalFaces();
+      ShowHideInternalFaces(internalfaces_show);
     }
 
     n_normals_single=0;
