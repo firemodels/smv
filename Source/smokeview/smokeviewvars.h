@@ -774,6 +774,8 @@ SVEXTERN float SVDECL(patchout_zmin,1.0), SVDECL(patchout_zmax,-1.0);
 SVEXTERN int SVDECL(showpatch_both,0);
 SVEXTERN int SVDECL(show_all_exterior_patch_data, 0);
 SVEXTERN int SVDECL(hide_all_exterior_patch_data, 0);
+SVEXTERN int SVDECL(show_all_interior_patch_data, 0);
+SVEXTERN int SVDECL(hide_all_interior_patch_data, 0);
 SVEXTERN int SVDECL(show_triangle_count,0);
 SVEXTERN int SVDECL(triangle_count ,0);
 SVEXTERN int SVDECL(n_geom_triangles,0);

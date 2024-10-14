@@ -6341,10 +6341,16 @@ void ShowBoundaryMenu(int value){
     updatefacelists = 1;
     updatefaces = 1;
     if(value == GLUI_SHOWALL_BOUNDARY){
+      for(i=0;i<7;i++){
+        vis_boundary_type[i] = 1;
+      }
       hide_internal_blockages = 1;
       update_bound_chop_data = 0;
     }
     if(value == GLUI_HIDEALL_BOUNDARY){
+      for(i=0;i<7;i++){
+        vis_boundary_type[i] = 0;
+      }
       hide_internal_blockages = 0;
       update_bound_chop_data = 1;
     }
