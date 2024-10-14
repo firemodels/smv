@@ -2802,6 +2802,8 @@ GLUI_Panel *PANEL_mesh2 = NULL;
 GLUI_Panel *PANEL_addmesh = NULL;
 GLUI_Panel *PANEL_addremovemesh = NULL;
 GLUI_Panel *PANEL_boundary_temp_threshold=NULL;
+GLUI_Panel *PANEL_boundary_exterior_data = NULL;
+GLUI_Panel *PANEL_boundary_interior_data = NULL;
 GLUI_Panel *PANEL_slice_buttonsA = NULL;
 GLUI_Panel *PANEL_slice_buttonsB = NULL;
 GLUI_Panel *PANEL_boundary_outline_type = NULL;
@@ -2937,6 +2939,8 @@ GLUI_Checkbox *CHECKBOX_show_all_exterior_patch_data = NULL;
 GLUI_Checkbox *CHECKBOX_hide_all_exterior_patch_data = NULL;
 GLUI_Checkbox *CHECKBOX_show_all_interior_patch_data = NULL;
 GLUI_Checkbox *CHECKBOX_hide_all_interior_patch_data = NULL;
+GLUI_Checkbox *CHECKBOX_show_exterior_walls[7];
+
 #ifndef pp_PARTFRAME
 GLUI_Checkbox *CHECKBOX_use_partload_threads = NULL;
 #endif
@@ -3980,7 +3984,7 @@ void BoundMeshCB(int var){
 
 /* ------------------ BoundBoundCB ------------------------ */
 
-void BoundBoundCB(int var){
+extern "C" void BoundBoundCB(int var){
   int i;
 #ifdef pp_FRAME
   char ctime[1024];
@@ -4049,6 +4053,9 @@ void BoundBoundCB(int var){
   case SHOW_ALL_EXTERIOR_PATCH_DATA:
     if(show_all_exterior_patch_data==1){
       ShowBoundaryMenu(ShowEXTERIORwallmenu);
+      for(i=1; i<7; i++){
+        CHECKBOX_show_exterior_walls[i]->set_int_val(vis_boundary_type[i]);
+      }
       if(hide_all_exterior_patch_data == 1){
         hide_all_exterior_patch_data = 0;
         CHECKBOX_hide_all_exterior_patch_data->set_int_val(0);
@@ -4059,11 +4066,57 @@ void BoundBoundCB(int var){
   case HIDE_ALL_EXTERIOR_PATCH_DATA:
     if(hide_all_exterior_patch_data==1){
       ShowBoundaryMenu(HideEXTERIORwallmenu);
+      for(i=1; i<7; i++){
+        CHECKBOX_show_exterior_walls[i]->set_int_val(vis_boundary_type[i]);
+      }
       if(show_all_exterior_patch_data == 1){
         show_all_exterior_patch_data = 0;
         CHECKBOX_show_all_exterior_patch_data->set_int_val(0);
       }
     }
+    break;
+  case SHOW_EXTERIOR_PATCH_DATA:
+    {
+      int show_all_ext = 1;
+      int hide_all_ext = 1;
+      for(i=1; i<7; i++){
+        if(vis_boundary_type[i] == 1)hide_all_ext = 0;
+        if(vis_boundary_type[i] == 0)show_all_ext = 0;
+        CHECKBOX_show_exterior_walls[i]->set_int_val(vis_boundary_type[i]);
+      }
+      if(show_all_ext == 1){
+        show_all_exterior_patch_data = 1;
+        CHECKBOX_show_all_exterior_patch_data->set_int_val(1);
+        CHECKBOX_hide_all_exterior_patch_data->set_int_val(0);
+        BoundBoundCB(SHOW_ALL_EXTERIOR_PATCH_DATA);
+      }
+      else if(hide_all_ext == 1){
+        hide_all_exterior_patch_data = 1;
+        CHECKBOX_show_all_exterior_patch_data->set_int_val(0);
+        CHECKBOX_hide_all_exterior_patch_data->set_int_val(1);
+        BoundBoundCB(HIDE_ALL_EXTERIOR_PATCH_DATA);
+      }
+      else{
+        for(i = 0;i < npatchinfo;i++){
+          patchdata *patchi;
+          int n;
+
+          patchi = patchinfo + i;
+          if(patchi->loaded == 0)continue;
+          for(n = 0;n < patchi->npatches;n++){
+            patchfacedata *pfi;
+            int wall_index;
+
+            pfi = patchi->patchfaceinfo + n;
+            wall_index = pfi->type;
+            if(wall_index>=1 && wall_index<=6){
+              pfi->vis = vis_boundary_type[wall_index];
+            }
+          }
+        }
+      }
+    }
+    updatemenu = 1;
     break;
   case CACHE_DATA:
     if(PANEL_keep_bound_data !=NULL){
@@ -5074,10 +5127,24 @@ extern "C" void GLUIBoundsSetup(int main_window){
       }
       BoundBoundCB(SHOWCHAR);
     }
-    CHECKBOX_show_all_exterior_patch_data = glui_bounds->add_checkbox_to_panel(ROLLOUT_boundary_settings, _("Show all exterior data"), &show_all_exterior_patch_data, SHOW_ALL_EXTERIOR_PATCH_DATA, BoundBoundCB);
-    CHECKBOX_hide_all_exterior_patch_data = glui_bounds->add_checkbox_to_panel(ROLLOUT_boundary_settings, _("Hide all exterior data"), &hide_all_exterior_patch_data, HIDE_ALL_EXTERIOR_PATCH_DATA, BoundBoundCB);
-    CHECKBOX_show_all_interior_patch_data = glui_bounds->add_checkbox_to_panel(ROLLOUT_boundary_settings, _("Show all interior data"), &show_all_interior_patch_data, SHOW_ALL_INTERIOR_PATCH_DATA, BoundBoundCB);
-    CHECKBOX_hide_all_interior_patch_data = glui_bounds->add_checkbox_to_panel(ROLLOUT_boundary_settings, _("Hide all interior data"), &hide_all_interior_patch_data, HIDE_ALL_INTERIOR_PATCH_DATA, BoundBoundCB);
+
+    PANEL_boundary_exterior_data = glui_bounds->add_panel_to_panel(ROLLOUT_boundary_settings,"exterior data");
+    CHECKBOX_show_all_exterior_patch_data   = glui_bounds->add_checkbox_to_panel(PANEL_boundary_exterior_data, _("Show all"),  &show_all_exterior_patch_data, SHOW_ALL_EXTERIOR_PATCH_DATA, BoundBoundCB);
+    CHECKBOX_show_exterior_walls[FRONTwall]  = glui_bounds->add_checkbox_to_panel(PANEL_boundary_exterior_data, _("front wall"), vis_boundary_type + FRONTwall, SHOW_EXTERIOR_PATCH_DATA, BoundBoundCB);
+    CHECKBOX_show_exterior_walls[LEFTwall]  = glui_bounds->add_checkbox_to_panel(PANEL_boundary_exterior_data, _("left wall"),  vis_boundary_type + LEFTwall,  SHOW_EXTERIOR_PATCH_DATA, BoundBoundCB);
+    CHECKBOX_show_exterior_walls[DOWNwall]  = glui_bounds->add_checkbox_to_panel(PANEL_boundary_exterior_data, _("lower wall"), vis_boundary_type + DOWNwall,  SHOW_EXTERIOR_PATCH_DATA, BoundBoundCB);
+    glui_bounds->add_column_to_panel(PANEL_boundary_exterior_data, false);
+
+    CHECKBOX_hide_all_exterior_patch_data   = glui_bounds->add_checkbox_to_panel(PANEL_boundary_exterior_data, _("Hide all"),  &hide_all_exterior_patch_data, HIDE_ALL_EXTERIOR_PATCH_DATA, BoundBoundCB);
+    CHECKBOX_show_exterior_walls[RIGHTwall] = glui_bounds->add_checkbox_to_panel(PANEL_boundary_exterior_data, _("right wall"), vis_boundary_type + RIGHTwall, SHOW_EXTERIOR_PATCH_DATA, BoundBoundCB);
+    CHECKBOX_show_exterior_walls[BACKwall]  = glui_bounds->add_checkbox_to_panel(PANEL_boundary_exterior_data, _("back wall"),  vis_boundary_type + BACKwall,  SHOW_EXTERIOR_PATCH_DATA, BoundBoundCB);
+    CHECKBOX_show_exterior_walls[UPwall]    = glui_bounds->add_checkbox_to_panel(PANEL_boundary_exterior_data, _("upper wall"), vis_boundary_type + UPwall,    SHOW_EXTERIOR_PATCH_DATA, BoundBoundCB);
+
+    PANEL_boundary_interior_data = glui_bounds->add_panel_to_panel(ROLLOUT_boundary_settings,"interior data");
+    CHECKBOX_show_all_interior_patch_data = glui_bounds->add_checkbox_to_panel(PANEL_boundary_interior_data, _("Show all"), &show_all_interior_patch_data, SHOW_ALL_INTERIOR_PATCH_DATA, BoundBoundCB);
+    glui_bounds->add_column_to_panel(PANEL_boundary_interior_data, false);
+    CHECKBOX_hide_all_interior_patch_data = glui_bounds->add_checkbox_to_panel(PANEL_boundary_interior_data, _("Hide all"), &hide_all_interior_patch_data, HIDE_ALL_INTERIOR_PATCH_DATA, BoundBoundCB);
+
     glui_bounds->add_checkbox_to_panel(ROLLOUT_boundary_settings, _("output patch face info"),     &outout_patch_faces);
 
 #ifdef pp_PATCH_DEBUG

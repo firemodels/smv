@@ -2298,6 +2298,12 @@ void UpdateShowScene(void){
     END_SHOW_UPDATE(update_frame);
   }
 #endif
+#define SHOW_EXTERIOR_PATCH_DATA     32
+void BoundBoundCB(int var);
+  if(update_patch_vis == 1){
+    BoundBoundCB(SHOW_EXTERIOR_PATCH_DATA);
+    update_patch_vis = 0;
+  }
   if(update_smoke3dmenulabels == 1){
     SHOW_UPDATE(update_smoke3dmenulabels);
     update_smoke3dmenulabels = 0;

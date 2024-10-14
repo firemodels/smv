@@ -790,6 +790,7 @@ SVEXTERN int SVDECL(update_volbox_controls,0);
 SVEXTERN float SVDECL(face_factor,0.01);
 SVEXTERN int SVDECL(show_node_slices_and_vectors,0);
 SVEXTERN int SVDECL(show_cell_slices_and_vectors,1);
+SVEXTERN int SVDECL(update_patch_vis, 0);
 
 SVEXTERN int SVDECL(convert_ini,0), SVDECL(convert_ssf,0);
 SVEXTERN int SVDECL(update_ssf,0);

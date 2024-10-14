@@ -6355,6 +6355,7 @@ void ShowBoundaryMenu(int value){
       update_bound_chop_data = 1;
     }
     ShowInternalBlockages(1-show_boundaryfiles);
+    update_patch_vis = 1;
   }
   if(value<0){
     if(value==ShowEXTERIORwallmenu||value==HideEXTERIORwallmenu){
@@ -6385,6 +6386,7 @@ void ShowBoundaryMenu(int value){
       for(i=1;i<7;i++){
         vis_boundary_type[i]=val;
       }
+      update_patch_vis = 1;
     }
     else if(value==INTERIORwallmenu){
       int val;
@@ -6451,6 +6453,7 @@ void ShowBoundaryMenu(int value){
         }
       }
     }
+    update_patch_vis = 1;
   }
   plotstate=GetPlotState(DYNAMIC_PLOTS);
 }
