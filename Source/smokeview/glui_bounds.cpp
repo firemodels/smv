@@ -4151,6 +4151,7 @@ extern "C" void BoundBoundCB(int var){
       break;
     }
     UpdateHideBoundarySurface();
+    updatefacelists = 1;
     break;
   case SETCHOPMAXVAL:
     UpdateChopColors();
@@ -4165,6 +4166,7 @@ extern "C" void BoundBoundCB(int var){
       break;
     }
     UpdateHideBoundarySurface();
+    updatefacelists = 1;
     break;
   case CHOPVALMIN:
     GLUI2GlobalBoundaryBounds(patchlabellist[list_patch_index]);

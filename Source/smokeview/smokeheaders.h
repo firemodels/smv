@@ -1112,6 +1112,8 @@ EXTERNCPP float GetStringLength(char *string);
 EXTERNCPP void UpdateGslicePlanes(void);
 EXTERNCPP void UpdateShowPatch(int show_option, int hide_option);
 
+EXTERNCPP void ShowInternalBlockages(void);
+EXTERNCPP   int GetInternalFaceShow(void);
 EXTERNCPP void UpdateAllGeomTriangles(void);
 EXTERNCPP void MakeBoundaryMask(patchdata *patchi);
 EXTERNCPP void SetPatchMin(int set_valmin, float valmin, char *buffer2);

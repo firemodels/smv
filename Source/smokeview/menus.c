@@ -6273,12 +6273,38 @@ void LoadBoundaryMenu(int value){
   GLUTSETCURSOR(GLUT_CURSOR_LEFT_ARROW);
 }
 
+/* ------------------ GetInternalFaceShow ------------------------ */
+
+int GetInternalFaceShow(void){
+  int show = 1;
+
+  if(boundary_loaded == 1){
+    cpp_boundsdata *bounds;
+    bounds = GLUIGetBoundsData(BOUND_PATCH);
+    if(bounds->set_chopmax == 1 || bounds->set_chopmin == 1){
+      update_bound_chop_data = 1;
+      show = 1;
+    }
+    else{
+      update_bound_chop_data = 0;
+      show = 0;
+    }
+  }
+  else{
+    show = 1;
+#ifdef pp_FACE_HIDE
+    if(menu_hide_internal_blockages == 1)show = 0;
+#endif
+  }
+  return show;
+}
 
 /* ------------------ ShowInternalBlockages ------------------------ */
 
-void ShowInternalBlockages(int show){
-  updateinternalfaces = 1;
-  internalfaces_show = show;
+void ShowInternalBlockages(void){
+  int show;
+
+  show = GetInternalFaceShow();
   hide_internal_blockages = 1 - show;
   if(show == 0){
     outline_state=OUTLINE_NONE;
@@ -6294,7 +6320,6 @@ void ShowInternalBlockages(int show){
   updatefaces = 1;
   updatefacelists = 1;
   updatehiddenfaces=1;
-  updateinternalfaces = 1;
 }
 
 /* ------------------ ShowBoundaryMenu ------------------------ */
@@ -6354,7 +6379,7 @@ void ShowBoundaryMenu(int value){
       hide_internal_blockages = 0;
       update_bound_chop_data = 1;
     }
-    ShowInternalBlockages(1-show_boundaryfiles);
+    ShowInternalBlockages();
     update_patch_vis = 1;
   }
   if(value<0){
@@ -6410,7 +6435,7 @@ void ShowBoundaryMenu(int value){
           }
         }
       }
-      ShowInternalBlockages(val);
+      ShowInternalBlockages();
     }
     if(value==INI_EXTERIORwallmenu){
       int i;
@@ -6728,7 +6753,9 @@ void BlockageMenu(int value){
       solid_state=visBLOCKHide;
       change_state=1;
       break;
+#ifdef pp_FACE_HIDE
     case visBLOCKHideInternal:
+#endif
     case BLOCKlocation_grid:
     case BLOCKlocation_exact:
     case BLOCKlocation_cad:
@@ -6776,10 +6803,12 @@ void BlockageMenu(int value){
      visBlocks=value;
      GLUIUpdateTrainerOutline();
      break;
+#ifdef pp_FACE_HIDE
    case visBLOCKHideInternal:
-     force_hide_internal_blockages = 1 - force_hide_internal_blockages;
-     ShowInternalBlockages(1 - force_hide_internal_blockages);
+     menu_hide_internal_blockages = 1 - menu_hide_internal_blockages;
+     ShowInternalBlockages();
      break;
+#endif
    case visBLOCKNormal:
    case visBLOCKOutline:
    case visBLOCKHide:
@@ -9393,12 +9422,14 @@ static int menu_count=0;
       glutAddMenuEntry(_("   Cad surface drawn opaque"),visCADOpaque);
     }
   }
-  if(force_hide_internal_blockages == 1){
-    glutAddMenuEntry(_("   *Hide internal blockages"), visBLOCKHideInternal);
+#ifdef pp_FACE_HIDE
+  if(menu_hide_internal_blockages == 1){
+    glutAddMenuEntry(_("   *Hide internal blockages (when boundary files are not loaded)"), visBLOCKHideInternal);
   }
   else{
-    glutAddMenuEntry(_("   Hide internal blockages"), visBLOCKHideInternal);
+    glutAddMenuEntry(_("   Hide internal blockages (when boundary files are not loaded)"), visBLOCKHideInternal);
   }
+#endif
   if(visBlocks==visBLOCKHide){
     glutAddMenuEntry(_("   *Hidden"),visBLOCKHide);
   }

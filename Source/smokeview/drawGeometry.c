@@ -2616,9 +2616,11 @@ int CompareColorFaces(const void *arg1, const void *arg2){
 
 /* ------------------ ShowHideInternalFaces ------------------------ */
 
-void ShowHideInternalFaces(int show){
+void ShowHideInternalFaces(){
   int i;
+  int show;
 
+  show = GetInternalFaceShow();
   for(i = 0;i < nmeshes;i++){
     int j;
     meshdata *meshi;
@@ -2767,11 +2769,8 @@ void UpdateFaceLists(void){
       }
     }
 #endif
-    if(updateinternalfaces == 1){
-      updateinternalfaces = 0;
 
-      ShowHideInternalFaces(internalfaces_show);
-    }
+    ShowHideInternalFaces();
 
     n_normals_single=0;
     n_normals_double=0;
