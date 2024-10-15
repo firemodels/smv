@@ -312,7 +312,6 @@ typedef struct _facedata {
   int imin, imax, jmin, jmax, kmin, kmax;
   float xmin, xmax, ymin, ymax, zmin, zmax;
   int dir,hidden,dup,interior, inside_domain;
-  int del;
   int transparent;
   struct _culldata *cullport;
   int **showtimelist_handle;

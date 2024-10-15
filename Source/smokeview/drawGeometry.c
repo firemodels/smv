@@ -2029,7 +2029,6 @@ void ObstOrVent2Faces(const meshdata *meshi,blockagedata *bc,
         faceptr->linewidth=&linewidth;
       }
       faceptr->showtimelist_handle=&bc->showtimelist;
-      faceptr->del=bc->del;
       faceptr->surfinfo=bc->surf[j];
       faceptr->texture_origin=bc->texture_origin;
       faceptr->transparent=bc->transparent;
@@ -2037,7 +2036,6 @@ void ObstOrVent2Faces(const meshdata *meshi,blockagedata *bc,
     if(vi!=NULL){
       faceptr->blockageindex=-2;
       faceptr->hidden=0;
-      faceptr->del=0;
       faceptr->texture_origin=vi->texture_origin;
       faceptr->transparent=vi->transparent;
       if(faceptr->type2==OUTLINE_FRAME_face){
