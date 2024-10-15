@@ -675,7 +675,9 @@ EXTERNCPP void RemoveDupBlockages(void);
 EXTERNCPP void SortIsoTriangles(float *mm);
 EXTERNCPP void UpdateIsoTriangles(int flag);
 EXTERNCPP void UpdateSliceMenuShow(sliceparmdata *sp);
+#ifdef pp_PATCH_HIDE
 EXTERNCPP void UpdateHideBoundarySurface(void);
+#endif
 EXTERNCPP void UpdateDefer(void);
 EXTERNCPP void SetTimeVal(float timeval);
 

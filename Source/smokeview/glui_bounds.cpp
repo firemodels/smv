@@ -4150,7 +4150,9 @@ extern "C" void BoundBoundCB(int var){
       assert(FFALSE);
       break;
     }
+#ifdef pp_PATCH_HIDE
     UpdateHideBoundarySurface();
+#endif
     updatefacelists = 1;
     break;
   case SETCHOPMAXVAL:
@@ -4165,7 +4167,9 @@ extern "C" void BoundBoundCB(int var){
       assert(FFALSE);
       break;
     }
+#ifdef pp_PATCH_HIDE
     UpdateHideBoundarySurface();
+#endif
     updatefacelists = 1;
     break;
   case CHOPVALMIN:
@@ -4196,7 +4200,10 @@ extern "C" void BoundBoundCB(int var){
     BoundBoundCB(SETVALMAX);
 
     list_patch_index_old = list_patch_index;
+#ifdef pp_PATCH_HIDE
     UpdateHideBoundarySurface();
+#endif
+    updatefacelists = 1;
     break;
   case SETVALMIN:
     BoundBoundCB(FILE_UPDATE);

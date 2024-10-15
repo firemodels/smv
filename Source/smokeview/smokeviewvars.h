@@ -2314,7 +2314,9 @@ SVEXTERN int SVDECL(show_bothsides_int,1), SVDECL(show_bothsides_ext,0);
 SVEXTERN float SVDECL(transparency_geom,0.2);
 SVEXTERN int SVDECL(use_transparency_geom,0);
 SVEXTERN facedata SVDECL(**face_transparent,NULL);
+#ifdef pp_PATCH_HIDE
 SVEXTERN int SVDECL(hidepatchsurface,0);
+#endif
 
 #ifdef INMAIN
 SVEXTERN float meshclip[6] = {0.0, 1.0, 0.0, 1.0, 0.0, 1.0};

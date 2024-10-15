@@ -2680,7 +2680,10 @@ void Global2GLUIBoundaryBounds(const char *key){
       patchmin_unit = (unsigned char *)patchi->label.unit;
       patchmax_unit = patchmin_unit;
 
+#ifdef pp_PATCH_HIDE
       UpdateHideBoundarySurface();
+#endif
+      updatefacelists = 1;
 
       GLUI2GlobalBoundaryBounds(key);
       return;
@@ -2862,12 +2865,15 @@ void DrawBoundaryTexture(const meshdata *meshi){
   float *xyzpatch;
   int *patchblank;
   patchdata *patchi;
+#ifdef pp_PATCH_HIDE
   float dboundx,dboundy,dboundz;
   float *xplt, *yplt, *zplt;
+#endif
 
   CheckMemory;
   if(vis_threshold==1&&vis_onlythreshold==1&&do_threshold==1)return;
 
+#ifdef pp_PATCH_HIDE
   if(hidepatchsurface==0){
     xplt=meshi->xplt;
     yplt=meshi->yplt;
@@ -2877,6 +2883,7 @@ void DrawBoundaryTexture(const meshdata *meshi){
     dboundy = (yplt[1]-yplt[0])/10.0;
     dboundz = (zplt[1]-zplt[0])/10.0;
   }
+#endif
 
   patch_times=meshi->patch_times;
   xyzpatch = GetPatchXYZ(meshi);
@@ -2994,9 +3001,14 @@ void DrawBoundaryTexture(const meshdata *meshi){
 
   /* if a contour boundary DOES match a blockage face then draw "one sides" of boundary */
 
+#ifdef pp_PATCH_HIDE
   if(hidepatchsurface==1){
     glBegin(GL_TRIANGLES);
   }
+#else
+  glBegin(GL_TRIANGLES);
+#endif
+
   for(n=0;n<patchi->npatches;n++){
     int drawit;
     patchfacedata *pfi;
@@ -3024,6 +3036,7 @@ void DrawBoundaryTexture(const meshdata *meshi){
       if(patchi->compression_type != COMPRESSED_ZLIB)patchvals  = meshi->patchval_iframe + pfi->start;
 #endif
       if(patchi->compression_type == COMPRESSED_ZLIB)cpatchvals = meshi->cpatchval_iframe_zlib + pfi->start;
+#ifdef pp_PATCH_HIDE
       if(hidepatchsurface==0){
         glPushMatrix();
         switch(pfi->dir){
@@ -3042,6 +3055,7 @@ void DrawBoundaryTexture(const meshdata *meshi){
         }
         glBegin(GL_TRIANGLES);
       }
+#endif
       for(irow=0;irow<nrow-1;irow++){
         int *patchblank1, *patchblank2;
         float *xyzp1, *xyzp2;
@@ -3099,10 +3113,12 @@ void DrawBoundaryTexture(const meshdata *meshi){
           xyzp2+=3;
         }
       }
+#ifdef pp_PATCH_HIDE
       if(hidepatchsurface==0){
         glEnd();
         glPopMatrix();
       }
+#endif
     }
   }
 
@@ -3133,6 +3149,7 @@ void DrawBoundaryTexture(const meshdata *meshi){
       if(patchi->compression_type != COMPRESSED_ZLIB)patchvals  = meshi->patchval_iframe + pfi->start;
 #endif
       if(patchi->compression_type == COMPRESSED_ZLIB)cpatchvals = meshi->cpatchval_iframe_zlib + pfi->start;
+#ifdef pp_PATCH_HIDE
       if(hidepatchsurface==0){
         glPushMatrix();
         switch(pfi->dir){
@@ -3151,6 +3168,7 @@ void DrawBoundaryTexture(const meshdata *meshi){
         }
         glBegin(GL_TRIANGLES);
       }
+#endif
       for(irow=0;irow<nrow-1;irow++){
         int *patchblank1, *patchblank2;
         float *xyzp1, *xyzp2;
@@ -3207,15 +3225,21 @@ void DrawBoundaryTexture(const meshdata *meshi){
           xyzp2+=3;
         }
       }
+#ifdef pp_PATCH_HIDE
       if(hidepatchsurface==0){
         glEnd();
         glPopMatrix();
       }
+#endif
     }
   }
+#ifdef pp_PATCH_HIDE
   if(hidepatchsurface==1){
     glEnd();
   }
+#else
+  glEnd();
+#endif
   glDisable(GL_TEXTURE_1D);
 }
 
@@ -3937,9 +3961,13 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
   /* if a contour boundary DOES match a blockage face then draw "one sides" of boundary */
 
   nn = 0;
+#ifdef pp_PATCH_HIDE
   if(hidepatchsurface==1){
     glBegin(GL_TRIANGLES);
   }
+#else
+  glBegin(GL_TRIANGLES);
+#endif
   for(n = 0;n<patchi->npatches;n++){
     int drawit;
     patchfacedata *pfi;
@@ -3971,6 +3999,7 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
       patchvals = patchval_iframe+ pfi->start;
 #endif
       if(patchi->compression_type == COMPRESSED_ZLIB)cpatchvals = meshi->cpatchval_iframe_zlib + pfi->start;
+#ifdef pp_PATCH_HIDE
       if(hidepatchsurface==0){
         glPushMatrix();
         switch(pfi->dir){
@@ -3989,6 +4018,7 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
         }
         glBegin(GL_TRIANGLES);
       }
+#endif
       for(irow = 0;irow<nrow-1;irow++){
         int *patchblank1, *patchblank2;
         float *xyzp1, *xyzp2;
@@ -4036,10 +4066,12 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
           xyzp2 += 3;
         }
       }
+#ifdef pp_PATCH_HIDE
       if(hidepatchsurface==0){
         glEnd();
         glPopMatrix();
       }
+#endif
     }
     nn += pfi->nrow*pfi->ncol;
   }
@@ -4073,6 +4105,7 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
       patchvals  = patchval_iframe+ pfi->start;
 #endif
       if(patchi->compression_type == COMPRESSED_ZLIB)cpatchvals = meshi->cpatchval_iframe_zlib + pfi->start;
+#ifdef pp_PATCH_HIDE
       if(hidepatchsurface==0){
         glPushMatrix();
         switch(pfi->dir){
@@ -4091,6 +4124,7 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
         }
         glBegin(GL_TRIANGLES);
       }
+#endif
       for(irow = 0;irow<nrow-1;irow++){
         int *patchblank1, *patchblank2;
         float *xyzp1, *xyzp2;
@@ -4137,16 +4171,22 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
           xyzp2 += 3;
         }
       }
+#ifdef pp_PATCH_HIDE
       if(hidepatchsurface==0){
         glEnd();
         glPopMatrix();
       }
+#endif
     }
     nn += pfi->nrow*pfi->ncol;
   }
+#ifdef pp_PATCH_HIDE
   if(hidepatchsurface==1){
     glEnd();
   }
+#else
+  glEnd();
+#endif
 }
 
 /* ------------------ GetPatchMeshNabor ------------------------ */
@@ -4725,6 +4765,7 @@ void UncompressBoundaryDataBNDF(meshdata *meshi,int local_iframe){
 
 /* ------------------ UpdateHideBoundarySurface ------------------------ */
 
+#ifdef pp_PATCH_HIDE
 void UpdateHideBoundarySurface(void){
   int hidepatchsurface_old;
 
@@ -4737,3 +4778,4 @@ void UpdateHideBoundarySurface(void){
   }
   if(hidepatchsurface_old!=hidepatchsurface)updatefacelists=1;
 }
+#endif

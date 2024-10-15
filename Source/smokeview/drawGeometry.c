@@ -2736,7 +2736,11 @@ void UpdateFaceLists(void){
     patchfilenum=meshi->patchfilenum;
     patchi=NULL;
     if(showplot3d == 0){
-      if(hidepatchsurface==1&&patchfilenum>=0&&patchfilenum<npatchinfo){
+#ifdef pp_PATCH_HIDE
+      if(hidepatchsurface == 1 && patchfilenum >= 0 && patchfilenum < npatchinfo){
+#else
+      if(patchfilenum>=0&&patchfilenum<npatchinfo){
+#endif
         patchi = patchinfo + patchfilenum;
 #ifdef pp_FACE_INTERIOR
         if(patchi->loaded==1)loadpatch=1;
