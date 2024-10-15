@@ -1678,9 +1678,6 @@ void UpdateTimes(void){
     SynchTimes();
     PRINT_TIMER(timer_synch_times, "timer: SynchTimes");
   }
-#ifdef pp_UPDATE_FACES
-  updatefaces=1;
-#endif
   if(nglobal_times>0){
     INIT_PRINT_TIMER(timer_labels);
     UpdateTimeLabels();
