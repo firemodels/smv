@@ -4024,19 +4024,19 @@ extern "C" void BoundBoundCB(int var){
     if(show_all_exterior_patch_data==1){
       ShowBoundaryMenu(ShowEXTERIORwallmenu);
       for(i=1; i<7; i++){
-        CHECKBOX_show_exterior_walls[i]->set_int_val(vis_boundary_type[i]);
+        if(CHECKBOX_show_exterior_walls[i]!=NULL)CHECKBOX_show_exterior_walls[i]->set_int_val(vis_boundary_type[i]);
       }
       if(hide_all_exterior_patch_data == 1){
         hide_all_exterior_patch_data = 0;
-        CHECKBOX_hide_all_exterior_patch_data->set_int_val(0);
+        if(CHECKBOX_hide_all_exterior_patch_data!=NULL)CHECKBOX_hide_all_exterior_patch_data->set_int_val(0);
       }
     }
     else{
       ShowBoundaryMenu(HideEXTERIORwallmenu);
       for(i = 1; i < 7; i++){
-        CHECKBOX_show_exterior_walls[i]->set_int_val(vis_boundary_type[i]);
+        if(CHECKBOX_show_exterior_walls[i]!=NULL)CHECKBOX_show_exterior_walls[i]->set_int_val(vis_boundary_type[i]);
       }
-      CHECKBOX_hide_all_exterior_patch_data->set_int_val(1);
+      if(CHECKBOX_hide_all_exterior_patch_data!=NULL)CHECKBOX_hide_all_exterior_patch_data->set_int_val(1);
     }
     updatemenu = 1;
     break;
@@ -4044,19 +4044,19 @@ extern "C" void BoundBoundCB(int var){
     if(hide_all_exterior_patch_data==1){
       ShowBoundaryMenu(HideEXTERIORwallmenu);
       for(i=1; i<7; i++){
-        CHECKBOX_show_exterior_walls[i]->set_int_val(vis_boundary_type[i]);
+        if(CHECKBOX_show_exterior_walls[i]!=NULL)CHECKBOX_show_exterior_walls[i]->set_int_val(vis_boundary_type[i]);
       }
       if(show_all_exterior_patch_data == 1){
         show_all_exterior_patch_data = 0;
-        CHECKBOX_show_all_exterior_patch_data->set_int_val(0);
+        if(CHECKBOX_show_all_exterior_patch_data!=NULL)CHECKBOX_show_all_exterior_patch_data->set_int_val(0);
       }
     }
     else{
       ShowBoundaryMenu(ShowEXTERIORwallmenu);
       for(i = 1; i < 7; i++){
-        CHECKBOX_show_exterior_walls[i]->set_int_val(vis_boundary_type[i]);
+        if(CHECKBOX_show_exterior_walls[i]!=NULL)CHECKBOX_show_exterior_walls[i]->set_int_val(vis_boundary_type[i]);
       }
-      CHECKBOX_show_all_exterior_patch_data->set_int_val(1);
+      if(CHECKBOX_show_all_exterior_patch_data!=NULL)CHECKBOX_show_all_exterior_patch_data->set_int_val(1);
     }
     break;
   case SHOW_EXTERIOR_PATCH_DATA:
@@ -4066,18 +4066,18 @@ extern "C" void BoundBoundCB(int var){
       for(i=1; i<7; i++){
         if(vis_boundary_type[i] == 1)hide_all_ext = 0;
         if(vis_boundary_type[i] == 0)show_all_ext = 0;
-        CHECKBOX_show_exterior_walls[i]->set_int_val(vis_boundary_type[i]);
+        if(CHECKBOX_show_exterior_walls[i]!=NULL)CHECKBOX_show_exterior_walls[i]->set_int_val(vis_boundary_type[i]);
       }
       if(show_all_ext == 1){
         show_all_exterior_patch_data = 1;
-        CHECKBOX_show_all_exterior_patch_data->set_int_val(1);
-        CHECKBOX_hide_all_exterior_patch_data->set_int_val(0);
+        if(CHECKBOX_show_all_exterior_patch_data!=NULL)CHECKBOX_show_all_exterior_patch_data->set_int_val(1);
+        if(CHECKBOX_hide_all_exterior_patch_data!=NULL)CHECKBOX_hide_all_exterior_patch_data->set_int_val(0);
         BoundBoundCB(SHOW_ALL_EXTERIOR_PATCH_DATA);
       }
       else if(hide_all_ext == 1){
         hide_all_exterior_patch_data = 1;
-        CHECKBOX_show_all_exterior_patch_data->set_int_val(0);
-        CHECKBOX_hide_all_exterior_patch_data->set_int_val(1);
+        if(CHECKBOX_show_all_exterior_patch_data!=NULL)CHECKBOX_show_all_exterior_patch_data->set_int_val(0);
+        if(CHECKBOX_hide_all_exterior_patch_data!=NULL)CHECKBOX_hide_all_exterior_patch_data->set_int_val(1);
         BoundBoundCB(HIDE_ALL_EXTERIOR_PATCH_DATA);
       }
       else{
