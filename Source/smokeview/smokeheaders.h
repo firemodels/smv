@@ -1108,7 +1108,8 @@ EXTERNCPP void Output3Val(float x, float y, float z, float val);
 EXTERNCPP void OutputBarText(float x, float y, const GLfloat *color, char *string);
 EXTERNCPP float GetStringLength(char *string);
 EXTERNCPP void UpdateGslicePlanes(void);
-EXTERNCPP void UpdateShowPatch(int show_option, int hide_option);
+EXTERNCPP void UpdateShowExtPatch(int show_option, int hide_option);
+EXTERNCPP void UpdateShowIntPatch(int show_option, int hide_option);
 
 EXTERNCPP void ShowInternalBlockages(void);
 EXTERNCPP   int GetInternalFaceShow(void);

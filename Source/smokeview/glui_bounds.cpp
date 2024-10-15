@@ -3134,11 +3134,18 @@ int      nparticleprocinfo=0;
 procdata  subboundprocinfo[5];
 int       nsubboundprocinfo=0;
 
-/* ------------------ UpdateShowPatch ------------------------ */
+/* ------------------ UpdateShowExtPatch ------------------------ */
 
-extern "C" void UpdateShowPatch(int show_option, int hide_option){
+extern "C" void UpdateShowExtPatch(int show_option, int hide_option){
   if(CHECKBOX_show_all_exterior_patch_data != NULL)CHECKBOX_show_all_exterior_patch_data->set_int_val(show_option);
   if(CHECKBOX_hide_all_exterior_patch_data != NULL)CHECKBOX_hide_all_exterior_patch_data->set_int_val(hide_option);
+}
+
+/* ------------------ UpdateShowIntPatch ------------------------ */
+
+extern "C" void UpdateShowIntPatch(int show_option, int hide_option){
+  if(CHECKBOX_show_all_interior_patch_data != NULL)CHECKBOX_show_all_interior_patch_data->set_int_val(show_option);
+  if(CHECKBOX_hide_all_interior_patch_data != NULL)CHECKBOX_hide_all_interior_patch_data->set_int_val(hide_option);
 }
 
 /* ------------------ UpdateColorbarSelectionIndex ------------------------ */
@@ -4004,30 +4011,14 @@ extern "C" void BoundBoundCB(int var){
     updatemenu = 1;
     break;
   case SHOW_ALL_INTERIOR_PATCH_DATA:
-    if(show_all_interior_patch_data == 1){
-      show_allinterior = 1;
-      ShowBoundaryMenu(INTERIORwallmenu);
-      hide_all_interior_patch_data = 0;
-      CHECKBOX_hide_all_interior_patch_data->set_int_val(0);
-    }
-    else{
-      hide_all_interior_patch_data = 1;
-      CHECKBOX_hide_all_interior_patch_data->set_int_val(1);
-      BoundBoundCB(HIDE_ALL_INTERIOR_PATCH_DATA);
-    }
+    hide_all_interior_patch_data = 1 - hide_all_interior_patch_data;
+    show_all_interior_patch_data = 1 - hide_all_interior_patch_data;
+    ShowBoundaryMenu(INTERIORwallmenu);
     break;
   case HIDE_ALL_INTERIOR_PATCH_DATA:
-    if(hide_all_interior_patch_data == 1){
-      show_allinterior = 0;
-      ShowBoundaryMenu(INTERIORwallmenu);
-      show_all_interior_patch_data = 0;
-      CHECKBOX_show_all_interior_patch_data->set_int_val(0);
-    }
-    else{
-      show_all_interior_patch_data = 1;
-      CHECKBOX_show_all_interior_patch_data->set_int_val(1);
-      BoundBoundCB(SHOW_ALL_INTERIOR_PATCH_DATA);
-    }
+    show_all_interior_patch_data = 1 - show_all_interior_patch_data;
+    hide_all_interior_patch_data = 1 - show_all_interior_patch_data;
+    ShowBoundaryMenu(INTERIORwallmenu);
     break;
   case SHOW_ALL_EXTERIOR_PATCH_DATA:
     if(show_all_exterior_patch_data==1){
@@ -5129,9 +5120,9 @@ extern "C" void GLUIBoundsSetup(int main_window){
     CHECKBOX_show_exterior_walls[UPwall]    = glui_bounds->add_checkbox_to_panel(PANEL_boundary_exterior_data, _("upper wall"), vis_boundary_type + UPwall,    SHOW_EXTERIOR_PATCH_DATA, BoundBoundCB);
 
     PANEL_boundary_interior_data = glui_bounds->add_panel_to_panel(ROLLOUT_boundary_settings,"interior data");
-    CHECKBOX_show_all_interior_patch_data = glui_bounds->add_checkbox_to_panel(PANEL_boundary_interior_data, _("Show all"), &show_all_interior_patch_data, SHOW_ALL_INTERIOR_PATCH_DATA, BoundBoundCB);
+    CHECKBOX_show_all_interior_patch_data = glui_bounds->add_checkbox_to_panel(PANEL_boundary_interior_data, _("Show all"), &hide_all_interior_patch_data, SHOW_ALL_INTERIOR_PATCH_DATA, BoundBoundCB);
     glui_bounds->add_column_to_panel(PANEL_boundary_interior_data, false);
-    CHECKBOX_hide_all_interior_patch_data = glui_bounds->add_checkbox_to_panel(PANEL_boundary_interior_data, _("Hide all"), &hide_all_interior_patch_data, HIDE_ALL_INTERIOR_PATCH_DATA, BoundBoundCB);
+    CHECKBOX_hide_all_interior_patch_data = glui_bounds->add_checkbox_to_panel(PANEL_boundary_interior_data, _("Hide all"), &show_all_interior_patch_data, HIDE_ALL_INTERIOR_PATCH_DATA, BoundBoundCB);
 
     glui_bounds->add_checkbox_to_panel(ROLLOUT_boundary_settings, _("output patch face info"),     &outout_patch_faces);
 

@@ -6287,7 +6287,12 @@ int GetInternalFaceShow(void){
     }
     else{
       update_bound_chop_data = 0;
-      show = 0;
+      if(show_all_interior_patch_data == 0){
+        show = 0;
+      }
+      else{
+        show = 1;
+      }
     }
   }
   else{
@@ -6414,12 +6419,11 @@ void ShowBoundaryMenu(int value){
       update_patch_vis = 1;
     }
     else if(value==INTERIORwallmenu){
-      int val;
       int i;
 
-      show_allinterior = 1 - show_allinterior;
-      val = show_allinterior;
-      vis_boundary_type[INTERIORwall]=val;
+      hide_all_interior_patch_data    = show_all_interior_patch_data;
+      show_all_interior_patch_data    = 1 - show_all_interior_patch_data;
+      vis_boundary_type[INTERIORwall] = show_all_interior_patch_data;
       for(i = 0;i < npatchinfo;i++){
         patchdata *patchi;
         int n;
@@ -6431,11 +6435,12 @@ void ShowBoundaryMenu(int value){
 
           pfi = patchi->patchfaceinfo + n;
           if(pfi->type == INTERIORwall){
-            pfi->vis = val;
+            pfi->vis = show_all_interior_patch_data;
           }
         }
       }
       ShowInternalBlockages();
+      UpdateShowIntPatch(hide_all_interior_patch_data, show_all_interior_patch_data);
     }
     if(value==INI_EXTERIORwallmenu){
       int i;
@@ -9182,7 +9187,7 @@ static int menu_count=0;
       glutAddMenuEntry(_("#Show all"),  ShowEXTERIORwallmenu);
       glutAddMenuEntry(_("#Hide all"),  HideEXTERIORwallmenu);
     }
-    UpdateShowPatch(show_all_exterior_patch_data, hide_all_exterior_patch_data);
+    UpdateShowExtPatch(show_all_exterior_patch_data, hide_all_exterior_patch_data);
     if(IsBoundaryType(FRONTwall) == 1 && vis_boundary_type[FRONTwall] == 1)glutAddMenuEntry(_("*Front"), FRONTwallmenu);
     if(IsBoundaryType(FRONTwall) == 1 && vis_boundary_type[FRONTwall] == 0)glutAddMenuEntry(_("Front"), FRONTwallmenu);
     if(IsBoundaryType(BACKwall) == 1 && vis_boundary_type[BACKwall] == 1)glutAddMenuEntry(_("*Back"), BACKwallmenu);

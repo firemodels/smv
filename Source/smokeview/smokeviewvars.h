@@ -775,7 +775,8 @@ SVEXTERN int SVDECL(showpatch_both,0);
 SVEXTERN int SVDECL(show_all_exterior_patch_data, 0);
 SVEXTERN int SVDECL(hide_all_exterior_patch_data, 0);
 SVEXTERN int SVDECL(show_all_interior_patch_data, 0);
-SVEXTERN int SVDECL(hide_all_interior_patch_data, 0);
+SVEXTERN int SVDECL(hide_all_interior_patch_data, 1);
+SVEXTERN int SVDECL(update_boundary_loaded, 0);
 SVEXTERN int SVDECL(show_triangle_count,0);
 SVEXTERN int SVDECL(triangle_count ,0);
 SVEXTERN int SVDECL(n_geom_triangles,0);
@@ -1619,7 +1620,6 @@ SVEXTERN int SVDECL(visParticles,1), SVDECL(visZone,0);
 SVEXTERN int visBlocks;
 
 // need to clean up these variables
-SVEXTERN int SVDECL(show_allinterior,0); // shouldn't need this variable
 #ifdef pp_PATCH_HIDE
 SVEXTERN int SVDECL(menu_hide_internal_blockages, 0);
 #endif

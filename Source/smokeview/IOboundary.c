@@ -2353,6 +2353,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
     boundary_loaded = 1;
 
     ShowInternalBlockages();
+    update_boundary_loaded = 1;
 
     CheckMemory;
     GLUIUpdateBoundaryListIndex(patchfilenum);
