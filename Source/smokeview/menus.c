@@ -6292,7 +6292,7 @@ int GetInternalFaceShow(void){
   }
   else{
     show = 1;
-#ifdef pp_FACE_HIDE
+#ifdef pp_PATCH_HIDE
     if(menu_hide_internal_blockages == 1)show = 0;
 #endif
   }
@@ -6753,7 +6753,7 @@ void BlockageMenu(int value){
       solid_state=visBLOCKHide;
       change_state=1;
       break;
-#ifdef pp_FACE_HIDE
+#ifdef pp_PATCH_HIDE
     case visBLOCKHideInternal:
 #endif
     case BLOCKlocation_grid:
@@ -6803,7 +6803,7 @@ void BlockageMenu(int value){
      visBlocks=value;
      GLUIUpdateTrainerOutline();
      break;
-#ifdef pp_FACE_HIDE
+#ifdef pp_PATCH_HIDE
    case visBLOCKHideInternal:
      menu_hide_internal_blockages = 1 - menu_hide_internal_blockages;
      ShowInternalBlockages();
@@ -9422,7 +9422,7 @@ static int menu_count=0;
       glutAddMenuEntry(_("   Cad surface drawn opaque"),visCADOpaque);
     }
   }
-#ifdef pp_FACE_HIDE
+#ifdef pp_PATCH_HIDE
   if(menu_hide_internal_blockages == 1){
     glutAddMenuEntry(_("   *Hide internal blockages (when boundary files are not loaded)"), visBLOCKHideInternal);
   }

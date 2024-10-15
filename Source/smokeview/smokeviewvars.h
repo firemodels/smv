@@ -1628,7 +1628,7 @@ SVEXTERN int visBlocks;
 
 // need to clean up these variables
 SVEXTERN int SVDECL(show_allinterior,0); // shouldn't need this variable
-#ifdef pp_FACE_HIDE
+#ifdef pp_PATCH_HIDE
 SVEXTERN int SVDECL(menu_hide_internal_blockages, 0);
 #endif
 SVEXTERN int SVDECL(hide_internal_blockages, 0);

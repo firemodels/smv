@@ -3947,6 +3947,7 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
   glEnd();
   if(cullfaces==1)glEnable(GL_CULL_FACE);
 
+#ifdef pp_PATCH_HIDE
   float *xplt, *yplt, *zplt;
   float dboundx, dboundy, dboundz;
 
@@ -3957,6 +3958,7 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
   dboundx = (xplt[1]-xplt[0])/10.0;
   dboundy = (yplt[1]-yplt[0])/10.0;
   dboundz = (zplt[1]-zplt[0])/10.0;
+#endif
 
   /* if a contour boundary DOES match a blockage face then draw "one sides" of boundary */
 
