@@ -1091,10 +1091,6 @@ EXTERNCPP void GetGlobalDeviceBounds(int type);
 EXTERNCPP float GetDeviceVal(float time_local, devicedata *devicei, int *valid);
 EXTERNCPP void InitMenus(void);
 
-#ifdef pp_PATCH_DEBUG
-EXTERNCPP void DrawMeshBlockFaces(void);
-#endif
-
 EXTERNCPP int ReadSMV(bufferstreamdata *stream);
 EXTERNCPP void ReadSMVOrig(void);
 EXTERNCPP void UpdateSMVDynamic(char *file);

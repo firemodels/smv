@@ -16,7 +16,6 @@
 #define pp_GPUTHROTTLE      // pp_GPU directive must also be set
 #endif
 //#define pp_FDS            // create a 1 mesh input file
-//#define pp_PATCH_DEBUG    // add boundary file debugging widgets
 //#define pp_FACE_INTERIOR  // use face interior data strucutre
 //#define pp_PATCH_HIDE      // add menu item for hiding interior blockage faces (when boundary files are not loaded)
 

@@ -1317,78 +1317,6 @@ void DrawFace(float *v11, float *v22, int dir){
   glVertex3fv(v11); glVertex3fv(v21); glVertex3fv(v22);
 }
 
-#ifdef pp_PATCH_DEBUG
-/* ------------------ DrawMeshBlockFaces ------------------------ */
-
-void DrawMeshBlockFaces(void){
-  int i;
-  float block_color[3] = {1.0, 0.5, .25};
-
-  glBegin(GL_TRIANGLES);
-  glColor3fv(block_color);
-  for(i = 0;i < nmeshes;i++){
-    meshdata *meshi;
-    int j, iface;
-    blockagedata **bclist;
-
-    meshi = meshinfo + i;
-    for(iface = 0; iface < 6; iface++){
-      bclist = meshi->bc_faces[iface];
-      for(j = 0; j < meshi->n_bc_faces[iface]; j++){
-        blockagedata *bc;
-        float v11[3], v22[3];
-
-        bc = bclist[j];
-        if(bc->showtimelist != NULL && bc->showtimelist[itimes] == 0)continue;
-        v11[0] = bc->xmin;
-        v11[1] = bc->ymin;
-        v11[2] = bc->zmin;
-        v22[0] = bc->xmax;
-        v22[1] = bc->ymax;
-        v22[2] = bc->zmax;
-        if(iface == 0)v22[0] = v11[0];
-        if(iface == 1)v11[0] = v22[0];
-        if(iface == 2)v22[1] = v11[1];
-        if(iface == 3)v11[1] = v22[1];
-        if(iface == 4)v22[2] = v11[2];
-        if(iface == 5)v11[2] = v22[2];
-        DrawFace(v11, v22, iface);
-      }
-    }
-  }
-  glEnd();
-}
-#endif
-
-/* ------------------ IsBoundPlane ------------------------ */
-
-int IsBoundPlane(int imesh, patchfacedata *pfi){
-#ifdef pp_PATCH_DEBUG
-  int is_plane = 0;
-  meshdata *meshi;
-  int i1, i2, j1, j2, k1, k2;
-
-  if(imesh != boundary_debug_mesh - 1)return 0;
-
-  meshi = meshinfo + imesh;
-  i1 = pfi->ib[0];
-  i2 = pfi->ib[1];
-  j1 = pfi->ib[2];
-  j2 = pfi->ib[3];
-  k1 = pfi->ib[4];
-  k2 = pfi->ib[5];
-  if(boundary_debug_plane[0] == 1 && j1 == 0 && j2 == meshi->jbar && k1 == 0 && k2 == meshi->kbar && i1 == i2 && i1 == 0)is_plane = 1;
-  if(boundary_debug_plane[1] == 1 && j1 == 0 && j2 == meshi->jbar && k1 == 0 && k2 == meshi->kbar && i1 == i2 && i1 == meshi->ibar)is_plane = 1;
-  if(boundary_debug_plane[2] == 1 && i1 == 0 && i2 == meshi->ibar && k1 == 0 && k2 == meshi->kbar && j1 == j2 && j1 == 0)is_plane = 1;
-  if(boundary_debug_plane[3] == 1 && i1 == 0 && i2 == meshi->ibar && k1 == 0 && k2 == meshi->kbar && j1 == j2 && j1 == meshi->jbar)is_plane = 1;
-  if(boundary_debug_plane[4] == 1 && i1 == 0 && i2 == meshi->ibar && j1 == 0 && j2 == meshi->jbar && k1 == k2 && k1 == 0)is_plane = 1;
-  if(boundary_debug_plane[5] == 1 && i1 == 0 && i2 == meshi->ibar && j1 == 0 && j2 == meshi->jbar && k1 == k2 && k1 == meshi->kbar)is_plane = 1;
-  return is_plane;
-#else
-  return 0;
-#endif
-}
-
 /* ------------------ GetPatchData ------------------------ */
 
 void GetPatchData(int imesh, FILE_m *stream, int npatch, patchfacedata *patchfaceinfo,
@@ -1416,18 +1344,6 @@ void GetPatchData(int imesh, FILE_m *stream, int npatch, patchfacedata *patchfac
     *npqq += size;
     fseek_m(stream, 4, SEEK_CUR); count = fread_m(&pqq[ibeg], sizeof(*pqq), size, stream); fseek_m(stream, 4, SEEK_CUR);
 
-    int is_plane;
-
-    is_plane = IsBoundPlane(imesh, pfi);
-    if(is_plane==1){
-      int j;
-
-      for(j = 0;j < size;j++){
-        printf("%f ", pqq[ibeg + j]);
-        if(j % pfi->ncol == pfi->ncol-1)printf("\n");
-      }
-      printf("\n");
-    }
     if(count != size)*error = 1;
     // TODO: hardcodes float size.
     file_size += 4 * size;
@@ -2438,12 +2354,6 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
 
     ShowInternalBlockages();
 
-#ifdef pp_PATCH_DEBUG
-    if(boundary_interface_faces==1 && have_removable_obsts == 1 && nmeshes>1){
-      boundary_interface_unhide = 1;
-      BlockageMenu(visBLOCKHide);
-    }
-#endif
     CheckMemory;
     GLUIUpdateBoundaryListIndex(patchfilenum);
 
@@ -2692,165 +2602,6 @@ void Global2GLUIBoundaryBounds(const char *key){
 }
 
 
-#ifdef pp_PATCH_DEBUG
-/* ------------------ DrawMeshBoundaryFaces ------------------------ */
-
-void DrawMeshBoundaryFaces(patchdata *patchi, float valmin, float valmax){
-  meshdata *meshi;
-  float *patchvals;
-  unsigned char *cpatchvals;
-  float *xyzpatch;
- 
-  meshi = meshinfo + patchi->blocknumber;
-  xyzpatch = GetPatchXYZ(meshi);
-
-  glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-  glEnable(GL_TEXTURE_1D);
-  glBindTexture(GL_TEXTURE_1D, texture_patch_colorbar_id);
-
-  glBegin(GL_TRIANGLES);
-
-  int iface;
-  for(iface = 0; iface < 6; iface++){
-    int j;
-
-    blockagedata **bclist;
-    patchfacedata *pfi;
-    int ncol;
-
-    if(patchi->meshfaceinfo[iface] == NULL)continue;
-    pfi = patchi->meshfaceinfo[iface];
-    ncol = pfi->ncol;
-
-#ifdef pp_BOUNDFRAME
-    patchvals = ( float * )FRAMEGetSubFramePtr(patchi->frameinfo, meshi->patch_itime, pfi->start);
-#else
-    patchvals = meshi->patchval_iframe + pfi->start;
-#endif
-    if(patchi->compression_type == COMPRESSED_ZLIB)cpatchvals = meshi->cpatchval_iframe_zlib + pfi->start;
-
-    bclist = meshi->bc_faces[iface];
-    for(j = 0; j < meshi->n_bc_faces[iface]; j++){
-      blockagedata *bc;
-      int irow;
-      int rowbeg, rowend, colbeg, colend;
-
-      bc = bclist[j];
-      int draw_plane = 0;
-#ifdef pp_PATCH_DEBUG
-      if(boundary_debug_mesh-1 == (int)(meshi-meshinfo) && boundary_debug_plane[iface] ==1 )draw_plane = 1;
-#endif
-      switch(iface){
-      case 0:
-      case 1:
-        if(draw_plane==1){
-          rowbeg = 0;
-          rowend = meshi->jbar;
-          colbeg = 0;
-          colend = meshi->kbar;
-        }
-        else{
-          rowbeg = bc->ijk[4];
-          rowend = bc->ijk[5];
-          colbeg = bc->ijk[2];
-          colend = bc->ijk[3];
-        }
-        break;
-      case 2:
-      case 3:
-        if(draw_plane==1){
-          rowbeg = 0;
-          rowend = meshi->ibar;
-          colbeg = 0;
-          colend = meshi->ibar;
-        }
-        else{
-          rowbeg = bc->ijk[4];
-          rowend = bc->ijk[5];
-          colbeg = bc->ijk[0];
-          colend = bc->ijk[1];
-        }
-        break;
-      case 4:
-      case 5:
-        if(draw_plane==1){
-          rowbeg = 0;
-          rowend = meshi->ibar;
-          colbeg = 0;
-          colend = meshi->jbar;
-        }
-        else{
-          rowbeg = bc->ijk[2];
-          rowend = bc->ijk[3];
-          colbeg = bc->ijk[0];
-          colend = bc->ijk[1];
-        }
-        break;
-      default:
-	assert(0);
-	break;
-      }
-      if(draw_plane==0&&bc->showtimelist != NULL && bc->showtimelist[itimes] == 0)continue;
-      for(irow = rowbeg; irow<rowend; irow++){
-        int icol;
-
-        for(icol=colbeg; icol<colend; icol++){
-          float r11, r12, r21, r22;
-          float *xyzp1, *xyzp2;
-          int i11, i12, i21, i22;
-
-          i11 = IJKBF(irow, icol);
-          i12 = IJKBF(irow, icol + 1);
-          i21 = IJKBF(irow + 1, icol);
-          i22 = IJKBF(irow + 1, icol + 1);
-
-          r11 = CLAMP(BOUNDCONVERT(i11, valmin, valmax), 0.0, 1.0);
-          r12 = CLAMP(BOUNDCONVERT(i12, valmin, valmax), 0.0, 1.0);
-          r21 = CLAMP(BOUNDCONVERT(i21, valmin, valmax), 0.0, 1.0);
-          r22 = CLAMP(BOUNDCONVERT(i22, valmin, valmax), 0.0, 1.0);
-
-          xyzp1 = xyzpatch + 3*pfi->start + 3*i11;
-          xyzp2 = xyzpatch + 3*pfi->start + 3*i21;
-          if(ABS(r11-r22)<ABS(r12-r21)){
-            glTexCoord1f(r11); glVertex3fv(xyzp1);
-            glTexCoord1f(r12); glVertex3fv(xyzp1 + 3);
-            glTexCoord1f(r22); glVertex3fv(xyzp2 + 3);
-            glTexCoord1f(r11); glVertex3fv(xyzp1);
-            glTexCoord1f(r22); glVertex3fv(xyzp2 + 3);
-            glTexCoord1f(r12); glVertex3fv(xyzp1 + 3);
-
-            glTexCoord1f(r11); glVertex3fv(xyzp1);
-            glTexCoord1f(r22); glVertex3fv(xyzp2 + 3);
-            glTexCoord1f(r21); glVertex3fv(xyzp2);
-            glTexCoord1f(r11); glVertex3fv(xyzp1);
-            glTexCoord1f(r21); glVertex3fv(xyzp2);
-            glTexCoord1f(r22); glVertex3fv(xyzp2 + 3);
-          }
-          else{
-            glTexCoord1f(r11); glVertex3fv(xyzp1);
-            glTexCoord1f(r12); glVertex3fv(xyzp1 + 3);
-            glTexCoord1f(r21); glVertex3fv(xyzp2);
-            glTexCoord1f(r12); glVertex3fv(xyzp1 + 3);
-            glTexCoord1f(r22); glVertex3fv(xyzp2 + 3);
-            glTexCoord1f(r21); glVertex3fv(xyzp2);
-
-            glTexCoord1f(r11); glVertex3fv(xyzp1);
-            glTexCoord1f(r21); glVertex3fv(xyzp2);
-            glTexCoord1f(r12); glVertex3fv(xyzp1 + 3);
-            glTexCoord1f(r12); glVertex3fv(xyzp1 + 3);
-            glTexCoord1f(r21); glVertex3fv(xyzp2);
-            glTexCoord1f(r22); glVertex3fv(xyzp2 + 3);
-          }
-        }
-      }
-    }
-  }
-
-  glEnd();
-  glDisable(GL_TEXTURE_1D);
-}
-#endif
-
 /* ------------------ DrawBoundaryTexture ------------------------ */
 
 void DrawBoundaryTexture(const meshdata *meshi){
@@ -2900,10 +2651,6 @@ void DrawBoundaryTexture(const meshdata *meshi){
 
   if(patch_times[0]>global_times[itimes]||patchi->display==0)return;
   if(cullfaces==1)glDisable(GL_CULL_FACE);
-
-#ifdef pp_PATCH_DEBUG
-   if(boundary_interface_faces==1)DrawMeshBoundaryFaces(patchi, ttmin, ttmax);
-#endif
 
   /* if a contour boundary does not match a blockage face then draw "both sides" of boundary */
 
