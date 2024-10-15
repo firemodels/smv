@@ -4031,6 +4031,13 @@ extern "C" void BoundBoundCB(int var){
         CHECKBOX_hide_all_exterior_patch_data->set_int_val(0);
       }
     }
+    else{
+      ShowBoundaryMenu(HideEXTERIORwallmenu);
+      for(i = 1; i < 7; i++){
+        CHECKBOX_show_exterior_walls[i]->set_int_val(vis_boundary_type[i]);
+      }
+      CHECKBOX_hide_all_exterior_patch_data->set_int_val(1);
+    }
     updatemenu = 1;
     break;
   case HIDE_ALL_EXTERIOR_PATCH_DATA:
@@ -4043,6 +4050,13 @@ extern "C" void BoundBoundCB(int var){
         show_all_exterior_patch_data = 0;
         CHECKBOX_show_all_exterior_patch_data->set_int_val(0);
       }
+    }
+    else{
+      ShowBoundaryMenu(ShowEXTERIORwallmenu);
+      for(i = 1; i < 7; i++){
+        CHECKBOX_show_exterior_walls[i]->set_int_val(vis_boundary_type[i]);
+      }
+      CHECKBOX_show_all_exterior_patch_data->set_int_val(1);
     }
     break;
   case SHOW_EXTERIOR_PATCH_DATA:
@@ -5108,16 +5122,16 @@ extern "C" void GLUIBoundsSetup(int main_window){
     }
 
     PANEL_boundary_exterior_data = glui_bounds->add_panel_to_panel(ROLLOUT_boundary_settings,"exterior data");
-    CHECKBOX_show_all_exterior_patch_data   = glui_bounds->add_checkbox_to_panel(PANEL_boundary_exterior_data, _("Show all"),  &show_all_exterior_patch_data, SHOW_ALL_EXTERIOR_PATCH_DATA, BoundBoundCB);
-    CHECKBOX_show_exterior_walls[FRONTwall]  = glui_bounds->add_checkbox_to_panel(PANEL_boundary_exterior_data, _("front wall"), vis_boundary_type + FRONTwall, SHOW_EXTERIOR_PATCH_DATA, BoundBoundCB);
-    CHECKBOX_show_exterior_walls[LEFTwall]  = glui_bounds->add_checkbox_to_panel(PANEL_boundary_exterior_data, _("left wall"),  vis_boundary_type + LEFTwall,  SHOW_EXTERIOR_PATCH_DATA, BoundBoundCB);
-    CHECKBOX_show_exterior_walls[DOWNwall]  = glui_bounds->add_checkbox_to_panel(PANEL_boundary_exterior_data, _("lower wall"), vis_boundary_type + DOWNwall,  SHOW_EXTERIOR_PATCH_DATA, BoundBoundCB);
+    CHECKBOX_show_all_exterior_patch_data   = glui_bounds->add_checkbox_to_panel(PANEL_boundary_exterior_data, _("Show all"),  &show_all_exterior_patch_data,  SHOW_ALL_EXTERIOR_PATCH_DATA, BoundBoundCB);
+    CHECKBOX_show_exterior_walls[FRONTwall] = glui_bounds->add_checkbox_to_panel(PANEL_boundary_exterior_data, _("front wall"), vis_boundary_type + FRONTwall, SHOW_EXTERIOR_PATCH_DATA,     BoundBoundCB);
+    CHECKBOX_show_exterior_walls[LEFTwall]  = glui_bounds->add_checkbox_to_panel(PANEL_boundary_exterior_data, _("left wall"),  vis_boundary_type + LEFTwall,  SHOW_EXTERIOR_PATCH_DATA,     BoundBoundCB);
+    CHECKBOX_show_exterior_walls[DOWNwall]  = glui_bounds->add_checkbox_to_panel(PANEL_boundary_exterior_data, _("lower wall"), vis_boundary_type + DOWNwall,  SHOW_EXTERIOR_PATCH_DATA,     BoundBoundCB);
     glui_bounds->add_column_to_panel(PANEL_boundary_exterior_data, false);
 
-    CHECKBOX_hide_all_exterior_patch_data   = glui_bounds->add_checkbox_to_panel(PANEL_boundary_exterior_data, _("Hide all"),  &hide_all_exterior_patch_data, HIDE_ALL_EXTERIOR_PATCH_DATA, BoundBoundCB);
-    CHECKBOX_show_exterior_walls[RIGHTwall] = glui_bounds->add_checkbox_to_panel(PANEL_boundary_exterior_data, _("right wall"), vis_boundary_type + RIGHTwall, SHOW_EXTERIOR_PATCH_DATA, BoundBoundCB);
-    CHECKBOX_show_exterior_walls[BACKwall]  = glui_bounds->add_checkbox_to_panel(PANEL_boundary_exterior_data, _("back wall"),  vis_boundary_type + BACKwall,  SHOW_EXTERIOR_PATCH_DATA, BoundBoundCB);
-    CHECKBOX_show_exterior_walls[UPwall]    = glui_bounds->add_checkbox_to_panel(PANEL_boundary_exterior_data, _("upper wall"), vis_boundary_type + UPwall,    SHOW_EXTERIOR_PATCH_DATA, BoundBoundCB);
+    CHECKBOX_hide_all_exterior_patch_data   = glui_bounds->add_checkbox_to_panel(PANEL_boundary_exterior_data, _("Hide all"),  &hide_all_exterior_patch_data,  HIDE_ALL_EXTERIOR_PATCH_DATA, BoundBoundCB);
+    CHECKBOX_show_exterior_walls[RIGHTwall] = glui_bounds->add_checkbox_to_panel(PANEL_boundary_exterior_data, _("right wall"), vis_boundary_type + RIGHTwall, SHOW_EXTERIOR_PATCH_DATA,     BoundBoundCB);
+    CHECKBOX_show_exterior_walls[BACKwall]  = glui_bounds->add_checkbox_to_panel(PANEL_boundary_exterior_data, _("back wall"),  vis_boundary_type + BACKwall,  SHOW_EXTERIOR_PATCH_DATA,     BoundBoundCB);
+    CHECKBOX_show_exterior_walls[UPwall]    = glui_bounds->add_checkbox_to_panel(PANEL_boundary_exterior_data, _("upper wall"), vis_boundary_type + UPwall,    SHOW_EXTERIOR_PATCH_DATA,     BoundBoundCB);
 
     PANEL_boundary_interior_data = glui_bounds->add_panel_to_panel(ROLLOUT_boundary_settings,"interior data");
     CHECKBOX_show_all_interior_patch_data = glui_bounds->add_checkbox_to_panel(PANEL_boundary_interior_data, _("Show all"), &hide_all_interior_patch_data, SHOW_ALL_INTERIOR_PATCH_DATA, BoundBoundCB);
