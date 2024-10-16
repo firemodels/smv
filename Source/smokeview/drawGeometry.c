@@ -2678,8 +2678,6 @@ void ShowHideInternalFaces(void){
   }
 }
 
-#ifdef pp_VENT_HIDE
-
 /* ------------------ IsVentVisible ------------------------ */
 
 int IsVentVisible(ventdata *vi){
@@ -2694,7 +2692,6 @@ int IsVentVisible(ventdata *vi){
   }
   return 1;
 }
-#endif
 
 /* ------------------ UpdateFaceLists ------------------------ */
 
@@ -2833,9 +2830,7 @@ void UpdateFaceLists(void){
            patchi!=NULL
            &&patchi->loaded==1
            &&patchi->display==1
-#ifdef pp_VENT_HIDE
            &&IsVentVisible(vi)==0
-#endif
            &&(vis_threshold==0||vis_onlythreshold==0||do_threshold==0)
            &&(vi->dummy==1||vi->hideboundary==0)
            ){
