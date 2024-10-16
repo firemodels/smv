@@ -2011,7 +2011,9 @@ void ObstOrVent2Faces(const meshdata *meshi,blockagedata *bc,
   for(j=0;j<jend;j++){
     faceptr->meshindex=meshi-meshinfo;
     faceptr->type2=facetype;
+#ifdef pp_FACE_INTERIOR
     faceptr->is_interior=0;
+#endif
     faceptr->show_bothsides=0;
     faceptr->bc=NULL;
     faceptr->interior = 0;
@@ -2019,7 +2021,6 @@ void ObstOrVent2Faces(const meshdata *meshi,blockagedata *bc,
     if(bc!=NULL){
       faceptr->bc=bc;
       faceptr->hidden=0;
-      faceptr->patchpresent=0;
       faceptr->blockageindex=-2;
       if(visBlocks==visBLOCKSolidOutline){
         faceptr->linewidth=&solidlinewidth;
@@ -2028,7 +2029,6 @@ void ObstOrVent2Faces(const meshdata *meshi,blockagedata *bc,
         faceptr->linewidth=&linewidth;
       }
       faceptr->showtimelist_handle=&bc->showtimelist;
-      faceptr->del=bc->del;
       faceptr->surfinfo=bc->surf[j];
       faceptr->texture_origin=bc->texture_origin;
       faceptr->transparent=bc->transparent;
@@ -2036,8 +2036,6 @@ void ObstOrVent2Faces(const meshdata *meshi,blockagedata *bc,
     if(vi!=NULL){
       faceptr->blockageindex=-2;
       faceptr->hidden=0;
-      faceptr->patchpresent=0;
-      faceptr->del=0;
       faceptr->texture_origin=vi->texture_origin;
       faceptr->transparent=vi->transparent;
       if(faceptr->type2==OUTLINE_FRAME_face){
@@ -2152,6 +2150,7 @@ void ObstOrVent2Faces(const meshdata *meshi,blockagedata *bc,
       faceptr->jmax=bc->ijk[JMAX];
       faceptr->kmin=bc->ijk[KMIN];
       faceptr->kmax=bc->ijk[KMAX];
+#ifdef pp_FACE_INTERIOR
       if(faceptr->imin==faceptr->imax){
         if(faceptr->imin>0&&faceptr->imin<meshi->ibar)faceptr->is_interior=1;
       }
@@ -2161,6 +2160,7 @@ void ObstOrVent2Faces(const meshdata *meshi,blockagedata *bc,
       if(faceptr->kmin==faceptr->kmax){
         if(faceptr->kmin>0&&faceptr->kmin<meshi->kbar)faceptr->is_interior=1;
       }
+#endif
       faceptr->show_bothsides = show_bothsides_blockages;
     }
     if(vi!=NULL){
@@ -2170,6 +2170,7 @@ void ObstOrVent2Faces(const meshdata *meshi,blockagedata *bc,
       faceptr->jmax=vi->jmax;
       faceptr->kmin=vi->kmin;
       faceptr->kmax=vi->kmax;
+#ifdef pp_FACE_INTERIOR
       if(faceptr->imin==faceptr->imax){
         if(faceptr->imin>0&&faceptr->imin<meshi->ibar)faceptr->is_interior=1;
       }
@@ -2182,6 +2183,7 @@ void ObstOrVent2Faces(const meshdata *meshi,blockagedata *bc,
       if(faceptr->is_interior==1)have_vents_int=1;
       if(faceptr->is_interior==1&&show_bothsides_int==1)faceptr->show_bothsides=1;
       if(faceptr->is_interior==0&&show_bothsides_ext==1)faceptr->show_bothsides=1;
+#endif
     }
     offset[XXX]=(float)0.0;
     offset[YYY]=(float)0.0;
@@ -2610,11 +2612,13 @@ int CompareColorFaces(const void *arg1, const void *arg2){
   return 0;
 }
 
-/* ------------------ UpdateHiddenExternalFaces ------------------------ */
+/* ------------------ ShowHideInternalFaces ------------------------ */
 
-void UpdateHiddenExternalFaces(void){
+void ShowHideInternalFaces(void){
   int i;
+  int show;
 
+  show = GetInternalFaceShow();
   for(i = 0;i < nmeshes;i++){
     int j;
     meshdata *meshi;
@@ -2638,41 +2642,59 @@ void UpdateHiddenExternalFaces(void){
 //down y
       facej->hidden = 0;
 //    if(bc->inside_domain[2]==1)facej->hidden = 1;
-      if(bc->xyzEXACT[2] > ybar0FDS + EPS)facej->hidden = 1;
+      if(show==0 && bc->xyzEXACT[2] > ybar0FDS + EPS)facej->hidden = 1;
       facej++;
 
 // up x
       facej->hidden = 0;
 //      if(bc->inside_domain[1] == 1)facej->hidden = 1;
-      if(bc->xyzEXACT[1] < xbarFDS - EPS)facej->hidden = 1;
+      if(show == 0 && bc->xyzEXACT[1] < xbarFDS - EPS)facej->hidden = 1;
       facej++;
 
 //up y
       facej->hidden = 0;
  //     if(bc->inside_domain[3] == 1)facej->hidden = 1;
-      if(bc->xyzEXACT[3] < ybarFDS - EPS)facej->hidden = 1;
+      if(show == 0 && bc->xyzEXACT[3] < ybarFDS - EPS)facej->hidden = 1;
       facej++;
 
 // down x
       facej->hidden = 0;
 //      if(bc->inside_domain[0] == 1)facej->hidden = 1;
-      if(bc->xyzEXACT[0] > xbar0FDS + EPS)facej->hidden = 1;
+      if(show == 0 && bc->xyzEXACT[0] > xbar0FDS + EPS)facej->hidden = 1;
       facej++;
 
 // down z
       facej->hidden = 0;
 //      if(bc->inside_domain[4] == 1)facej->hidden = 1;
-      if(bc->xyzEXACT[4] > zbar0FDS + EPS)facej->hidden = 1;
+      if(show == 0 && bc->xyzEXACT[4] > zbar0FDS + EPS)facej->hidden = 1;
       facej++;
 
 // up z
       facej->hidden = 0;
 //      if(bc->inside_domain[5] == 1)facej->hidden = 1;
-      if(bc->xyzEXACT[5] < zbarFDS - EPS)facej->hidden = 1;
+      if(show == 0 && bc->xyzEXACT[5] < zbarFDS - EPS)facej->hidden = 1;
       facej++;
     }
   }
 }
+
+#ifdef pp_VENT_HIDE
+
+/* ------------------ IsVentVisible ------------------------ */
+
+int IsVentVisible(ventdata *vi){
+  if(boundary_loaded == 1){
+    if(vi->isExterior == DOWN_X && vis_boundary_type[LEFTwall]  == 0)return 1;
+    if(vi->isExterior == UP_X   && vis_boundary_type[RIGHTwall] == 0)return 1;
+    if(vi->isExterior == DOWN_Y && vis_boundary_type[FRONTwall] == 0)return 1;
+    if(vi->isExterior == UP_Y   && vis_boundary_type[BACKwall]  == 0)return 1;
+    if(vi->isExterior == DOWN_Z && vis_boundary_type[DOWNwall]  == 0)return 1;
+    if(vi->isExterior == UP_Z   && vis_boundary_type[UPwall]    == 0)return 1;
+    return 0;
+  }
+  return 1;
+}
+#endif
 
 /* ------------------ UpdateFaceLists ------------------------ */
 
@@ -2681,7 +2703,9 @@ void UpdateFaceLists(void){
   int n_normals_single, n_normals_double, n_transparent_double;
   int i;
   int drawing_transparent, drawing_blockage_transparent, drawing_vent_transparent;
+#ifdef pp_FACE_INTERIOR
   int check_blockhide=1;
+#endif
 
   GetDrawingParms(&drawing_transparent, &drawing_blockage_transparent, &drawing_vent_transparent);
 
@@ -2697,16 +2721,20 @@ void UpdateFaceLists(void){
     glutPostRedisplay();
   }
   // if we are not showing boundary files then don't try to hide blockages
+#ifdef pp_FACE_INTERIOR
   if(showplot3d == 0){
     if(use_tload_begin == 1 && global_times != NULL && global_times[itimes] < tload_begin)check_blockhide = 0;
     if(use_tload_end == 1 && global_times != NULL && global_times[itimes] > tload_end)check_blockhide = 0;
   }
+#endif
   for(i=0;i<nmeshes;i++){
     meshdata *meshi;
     int patchfilenum;
     int j;
     patchdata *patchi;
+#ifdef pp_FACE_INTERIOR
     int loadpatch, local_showpatch;
+#endif
     int vent_offset, outline_offset, exteriorsurface_offset;
 
     meshi = meshinfo + i;
@@ -2714,26 +2742,35 @@ void UpdateFaceLists(void){
       facedata *facej;
 
       facej = meshi->faceinfo + j;
-      facej->patchpresent=0;
       facej->cullport=NULL;
     }
 
+#ifdef pp_FACE_INTERIOR
     local_showpatch=0;
     loadpatch=0;
+#endif
     patchfilenum=meshi->patchfilenum;
     patchi=NULL;
     if(showplot3d == 0){
-      if(hidepatchsurface==1&&patchfilenum>=0&&patchfilenum<npatchinfo){
+#ifdef pp_PATCH_HIDE
+      if(hidepatchsurface == 1 && patchfilenum >= 0 && patchfilenum < npatchinfo){
+#else
+      if(patchfilenum>=0&&patchfilenum<npatchinfo){
+#endif
         patchi = patchinfo + patchfilenum;
+#ifdef pp_FACE_INTERIOR
         if(patchi->loaded==1)loadpatch=1;
         if(patchi->display==1)local_showpatch=1;
+#endif
       }
+#ifdef pp_FACE_INTERIOR
       if(chop_patch == 1){
         local_showpatch=0;
         loadpatch=0;
       }
+#endif
     }
-
+#ifdef pp_FACE_INTERIOR
     if(local_showpatch==1&&loadpatch==1&&check_blockhide==1){
       int jj;
 
@@ -2746,16 +2783,14 @@ void UpdateFaceLists(void){
         if(bc->prop!=NULL&&bc->prop->blockvis==0)continue;
         facej = meshi->faceinfo + 6*jj;
         for(k=0;k<6;k++){
-          int patch_dir[6]={2,1,3,0,4,5};
-
-          facej->patchpresent=1-bc->patchvis[patch_dir[k]];
           if(facej->is_interior==0&&showpatch_both==1)facej->hidden=1;
-        //  if(bc->inside_domain[patch_dir[k]] == 1)facej->hidden = 1;
           facej++;
         }
       }
     }
-    if((hide_internal_blockages==1 && update_bound_chop_data==0)||force_hide_internal_blockages==1)UpdateHiddenExternalFaces();
+#endif
+
+    ShowHideInternalFaces();
 
     n_normals_single=0;
     n_normals_double=0;
@@ -2794,9 +2829,16 @@ void UpdateFaceLists(void){
         if(visOpenVents==0&&vi->isOpenvent==1)continue;
         if(visDummyVents==0&&vi->dummy==1)continue;
         if(visOtherVents==0&&vi->isOpenvent==0&&vi->dummy==0)continue;
-        if(patchi!=NULL&&patchi->loaded==1&&patchi->display==1&&
-          (vis_threshold==0||vis_onlythreshold==0||do_threshold==0)&&
-          (vi->dummy==1||vi->hideboundary==0)){
+        if(
+           patchi!=NULL
+           &&patchi->loaded==1
+           &&patchi->display==1
+#ifdef pp_VENT_HIDE
+           &&IsVentVisible(vi)==0
+#endif
+           &&(vis_threshold==0||vis_onlythreshold==0||do_threshold==0)
+           &&(vi->dummy==1||vi->hideboundary==0)
+           ){
           continue;
         }
         if(facej->transparent==1&&drawing_vent_transparent==1){
@@ -2836,7 +2878,6 @@ void UpdateFaceLists(void){
       }
       if((
          (visBlocks==visBLOCKAsInputOutline||visBlocks==visBLOCKOutline||visBlocks==visBLOCKSolidOutline)&&j<vent_offset)||
-         (facej->patchpresent==1&&(vis_threshold==0||vis_onlythreshold==0||do_threshold==0))||
          (facej->type==BLOCK_outline&&visBlocks==visBLOCKAsInput)||
          ((j>=vent_offset&&j<vent_offset+meshi->nvents)&&vi->isOpenvent==1&&visOpenVentsAsOutline==1)
         ){

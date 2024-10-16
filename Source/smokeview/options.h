@@ -5,7 +5,6 @@
 
 //#define pp_FRAME           // turn on frame code
 //#define pp_SHOW_UPDATE      // show what is being update in UpdateShowScene routine
-//#define pp_UPDATE_FACES     // update faces in UpdateTimes routine (probably not necessary)
 //#define pp_PARTBOUND_MULTI // compute particle bounds in the background
 //#define pp_LUA            // turn on LUA option
 //#define pp_SMOKE16        // load 16 bit smoke files
@@ -16,8 +15,9 @@
 #define pp_GPUTHROTTLE      // pp_GPU directive must also be set
 #endif
 //#define pp_FDS            // create a 1 mesh input file
-//#define pp_PATCH_DEBUG    // add boundary file debugging widgets
-//#define pp_PATCH_FACTOR     // set boundary file patch offsets to zero
+//#define pp_FACE_INTERIOR  // use face interior data structure
+//#define pp_PATCH_HIDE      // add menu item for hiding interior blockage faces (when boundary files are not loaded)
+#define pp_VENT_HIDE      // hide vents on external faces
 
 #ifdef pp_FRAME          // turn on each frame type if pp_FRAME is set
 #define pp_BOUNDFRAME    // turn on frame code for boundary files

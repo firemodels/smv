@@ -772,6 +772,11 @@ SVEXTERN float SVDECL(patchout_xmin,1.0), SVDECL(patchout_xmax,-1.0);
 SVEXTERN float SVDECL(patchout_ymin,1.0), SVDECL(patchout_ymax,-1.0);
 SVEXTERN float SVDECL(patchout_zmin,1.0), SVDECL(patchout_zmax,-1.0);
 SVEXTERN int SVDECL(showpatch_both,0);
+SVEXTERN int SVDECL(show_all_exterior_patch_data, 0);
+SVEXTERN int SVDECL(hide_all_exterior_patch_data, 0);
+SVEXTERN int SVDECL(show_all_interior_patch_data, 0);
+SVEXTERN int SVDECL(hide_all_interior_patch_data, 1);
+SVEXTERN int SVDECL(update_boundary_loaded, 0);
 SVEXTERN int SVDECL(show_triangle_count,0);
 SVEXTERN int SVDECL(triangle_count ,0);
 SVEXTERN int SVDECL(n_geom_triangles,0);
@@ -786,6 +791,7 @@ SVEXTERN int SVDECL(update_volbox_controls,0);
 SVEXTERN float SVDECL(face_factor,0.01);
 SVEXTERN int SVDECL(show_node_slices_and_vectors,0);
 SVEXTERN int SVDECL(show_cell_slices_and_vectors,1);
+SVEXTERN int SVDECL(update_patch_vis, 0);
 
 SVEXTERN int SVDECL(convert_ini,0), SVDECL(convert_ssf,0);
 SVEXTERN int SVDECL(update_ssf,0);
@@ -1090,14 +1096,6 @@ SVEXTERN float partfacedir[3]={0.0,0.0,1.0};
 SVEXTERN float partfacedir[3];
 #endif
 SVEXTERN int SVDECL(demo_option,0);
-#ifdef pp_PATCH_DEBUG
-#ifdef INMAIN
-SVEXTERN int boundary_debug_plane[6] = {0, 0, 0, 0, 0, 0};
-#else
-SVEXTERN int boundary_debug_plane[6];
-#endif
-SVEXTERN int SVDECL(boundary_debug_obst, 0), SVDECL(boundary_debug_mesh, 1), SVDECL(boundary_interface_faces, 0);
-#endif
 SVEXTERN int SVDECL(outout_patch_faces, 0);
 SVEXTERN int SVDECL(boundary_interface_unhide, 0), SVDECL(boundary_loaded, 0);
 
@@ -1501,7 +1499,6 @@ SVEXTERN int SVDECL(p3dsurfacesmooth,1);
 SVEXTERN int SVDECL(p3dsurfacetype,SURFACE_SOLID);
 
 SVEXTERN int SVDECL(parttype,0);
-SVEXTERN int SVDECL(allinterior,1);
 SVEXTERN int SVDECL(showedit_dialog,0);
 SVEXTERN int SVDECL(showterrain_dialog, 0);
 SVEXTERN int SVDECL(showhvac_dialog, 0);
@@ -1621,8 +1618,13 @@ SVEXTERN int SVDECL(visOpenVents,1),SVDECL(visDummyVents,1),SVDECL(visOtherVents
 SVEXTERN int SVDECL(visOpenVentsAsOutline,0);
 SVEXTERN int SVDECL(visParticles,1), SVDECL(visZone,0);
 SVEXTERN int visBlocks;
-SVEXTERN int SVDECL(force_hide_internal_blockages, 0);
+
+// need to clean up these variables
+#ifdef pp_PATCH_HIDE
+SVEXTERN int SVDECL(menu_hide_internal_blockages, 0);
+#endif
 SVEXTERN int SVDECL(hide_internal_blockages, 0);
+
 SVEXTERN int SVDECL(outline_color_flag,0);
 SVEXTERN int SVDECL(solid_state,-1),SVDECL(outline_state,-1);
 SVEXTERN int SVDECL(visTransparentBlockage,0);
@@ -2304,7 +2306,9 @@ SVEXTERN int SVDECL(show_bothsides_int,1), SVDECL(show_bothsides_ext,0);
 SVEXTERN float SVDECL(transparency_geom,0.2);
 SVEXTERN int SVDECL(use_transparency_geom,0);
 SVEXTERN facedata SVDECL(**face_transparent,NULL);
+#ifdef pp_PATCH_HIDE
 SVEXTERN int SVDECL(hidepatchsurface,0);
+#endif
 
 #ifdef INMAIN
 SVEXTERN float meshclip[6] = {0.0, 1.0, 0.0, 1.0, 0.0, 1.0};

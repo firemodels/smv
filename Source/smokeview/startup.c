@@ -1733,7 +1733,6 @@ void InitVars(void){
     for(iii=0;iii<7;iii++){
       vis_boundary_type[iii]=1;
     }
-    vis_boundary_type[0]=1;
     for(iii=0;iii<MAXPLOT3DVARS;iii++){
       p3min_all[iii]    = 1.0f;
       p3chopmin[iii]    = 1.0f;
