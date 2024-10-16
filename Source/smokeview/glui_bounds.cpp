@@ -4013,16 +4013,16 @@ extern "C" void BoundBoundCB(int var){
   case SHOW_ALL_INTERIOR_PATCH_DATA:
     hide_all_interior_patch_data = 1 - hide_all_interior_patch_data;
     show_all_interior_patch_data = 1 - hide_all_interior_patch_data;
-    ShowBoundaryMenu(INTERIORwallmenu);
+    ShowBoundaryMenu(INTERIOR_WALL_MENU);
     break;
   case HIDE_ALL_INTERIOR_PATCH_DATA:
     show_all_interior_patch_data = 1 - show_all_interior_patch_data;
     hide_all_interior_patch_data = 1 - show_all_interior_patch_data;
-    ShowBoundaryMenu(INTERIORwallmenu);
+    ShowBoundaryMenu(INTERIOR_WALL_MENU);
     break;
   case SHOW_ALL_EXTERIOR_PATCH_DATA:
     if(show_all_exterior_patch_data==1){
-      ShowBoundaryMenu(ShowEXTERIORwallmenu);
+      ShowBoundaryMenu(SHOW_EXTERIOR_WALL_MENU);
       for(i=1; i<7; i++){
         if(CHECKBOX_show_exterior_walls[i]!=NULL)CHECKBOX_show_exterior_walls[i]->set_int_val(vis_boundary_type[i]);
       }
@@ -4032,7 +4032,7 @@ extern "C" void BoundBoundCB(int var){
       }
     }
     else{
-      ShowBoundaryMenu(HideEXTERIORwallmenu);
+      ShowBoundaryMenu(HIDE_EXTERIOR_WALL_MENU);
       for(i = 1; i < 7; i++){
         if(CHECKBOX_show_exterior_walls[i]!=NULL)CHECKBOX_show_exterior_walls[i]->set_int_val(vis_boundary_type[i]);
       }
@@ -4042,7 +4042,7 @@ extern "C" void BoundBoundCB(int var){
     break;
   case HIDE_ALL_EXTERIOR_PATCH_DATA:
     if(hide_all_exterior_patch_data==1){
-      ShowBoundaryMenu(HideEXTERIORwallmenu);
+      ShowBoundaryMenu(HIDE_EXTERIOR_WALL_MENU);
       for(i=1; i<7; i++){
         if(CHECKBOX_show_exterior_walls[i]!=NULL)CHECKBOX_show_exterior_walls[i]->set_int_val(vis_boundary_type[i]);
       }
@@ -4052,7 +4052,7 @@ extern "C" void BoundBoundCB(int var){
       }
     }
     else{
-      ShowBoundaryMenu(ShowEXTERIORwallmenu);
+      ShowBoundaryMenu(SHOW_EXTERIOR_WALL_MENU);
       for(i = 1; i < 7; i++){
         if(CHECKBOX_show_exterior_walls[i]!=NULL)CHECKBOX_show_exterior_walls[i]->set_int_val(vis_boundary_type[i]);
       }
@@ -4101,6 +4101,7 @@ extern "C" void BoundBoundCB(int var){
       }
     }
     updatemenu = 1;
+    updatefacelists = 1;
     break;
   case CACHE_DATA:
     if(PANEL_keep_bound_data !=NULL){

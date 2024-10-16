@@ -2968,13 +2968,13 @@ void UpdateDisplay(void){
   }
   if(update_ini_boundary_type==1){
     update_ini_boundary_type = 0;
-    ShowBoundaryMenu(INTERIORwallmenu);
+    ShowBoundaryMenu(INTERIOR_WALL_MENU);
     ShowBoundaryMenu(INI_EXTERIORwallmenu);
   }
   if(update_boundary_loaded == 1){ // a hack, shouldn't be necessary
     update_boundary_loaded = 0;
-    ShowBoundaryMenu(INTERIORwallmenu);
-    ShowBoundaryMenu(INTERIORwallmenu);
+    ShowBoundaryMenu(INTERIOR_WALL_MENU);
+    ShowBoundaryMenu(INTERIOR_WALL_MENU);
   }
   if(update_fire_alpha==1){
     update_fire_alpha=0;

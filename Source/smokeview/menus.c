@@ -6353,45 +6353,26 @@ void ShowBoundaryMenu(int value){
     GLUIUpdateChar();
   }
   if(value==GLUI_SHOWALL_BOUNDARY||value==GLUI_HIDEALL_BOUNDARY){
-    int i;
-
     if(value == GLUI_SHOWALL_BOUNDARY){
       show_boundaryfiles = 1;
+      ShowBoundaryMenu(SHOW_INTERIOR_WALL_MENU);
+      ShowBoundaryMenu(SHOW_EXTERIOR_WALL_MENU);
     }
     if(value == GLUI_HIDEALL_BOUNDARY){
       show_boundaryfiles = 0;
-    }
-    for(i=0;i<npatchinfo;i++){
-      patchdata *patchi;
-
-      patchi = patchinfo + i;
-      if(patchi->loaded == 0)continue;
-      if(patchi->structured == YES)patchi->display=show_boundaryfiles;
+      ShowBoundaryMenu(HIDE_INTERIOR_WALL_MENU);
+      ShowBoundaryMenu(HIDE_EXTERIOR_WALL_MENU);
     }
     updatefacelists = 1;
     updatefaces = 1;
-    if(value == GLUI_SHOWALL_BOUNDARY){
-      for(i=0;i<7;i++){
-        vis_boundary_type[i] = 1;
-      }
-      hide_internal_blockages = 1;
-      update_bound_chop_data = 0;
-    }
-    if(value == GLUI_HIDEALL_BOUNDARY){
-      for(i=0;i<7;i++){
-        vis_boundary_type[i] = 0;
-      }
-      hide_internal_blockages = 0;
-      update_bound_chop_data = 1;
-    }
     ShowInternalBlockages();
     update_patch_vis = 1;
   }
   if(value<0){
-    if(value==ShowEXTERIORwallmenu||value==HideEXTERIORwallmenu){
+    if(value==SHOW_EXTERIOR_WALL_MENU||value==HIDE_EXTERIOR_WALL_MENU){
       int i,val;
 
-      if(value==ShowEXTERIORwallmenu){
+      if(value==SHOW_EXTERIOR_WALL_MENU){
         val = 1;
       }
       else{
@@ -6418,7 +6399,7 @@ void ShowBoundaryMenu(int value){
       }
       update_patch_vis = 1;
     }
-    else if(value==INTERIORwallmenu){
+    else if(value==INTERIOR_WALL_MENU){
       int i;
 
       hide_all_interior_patch_data    = show_all_interior_patch_data;
@@ -6441,6 +6422,11 @@ void ShowBoundaryMenu(int value){
       }
       ShowInternalBlockages();
       UpdateShowIntPatch(hide_all_interior_patch_data, show_all_interior_patch_data);
+    }
+    else if(value == SHOW_INTERIOR_WALL_MENU || value == HIDE_INTERIOR_WALL_MENU){
+      if(value == SHOW_INTERIOR_WALL_MENU)show_all_interior_patch_data = 1;
+      if(value == HIDE_INTERIOR_WALL_MENU)show_all_interior_patch_data = 0;
+      ShowBoundaryMenu(INTERIOR_WALL_MENU);
     }
     if(value==INI_EXTERIORwallmenu){
       int i;
@@ -9172,20 +9158,20 @@ static int menu_count=0;
     if(next_total == 6){
       show_all_exterior_patch_data = 1;
       hide_all_exterior_patch_data = 0;
-      glutAddMenuEntry(_("*Show all"),  ShowEXTERIORwallmenu);
-      glutAddMenuEntry(_("Hide all"),   HideEXTERIORwallmenu);
+      glutAddMenuEntry(_("*Show all"),  SHOW_EXTERIOR_WALL_MENU);
+      glutAddMenuEntry(_("Hide all"),   HIDE_EXTERIOR_WALL_MENU);
     }
     else if(next_total == 0){
       show_all_exterior_patch_data = 0;
       hide_all_exterior_patch_data = 1;
-      glutAddMenuEntry(_("Show all"),  ShowEXTERIORwallmenu);
-      glutAddMenuEntry(_("*Hide all"), HideEXTERIORwallmenu);
+      glutAddMenuEntry(_("Show all"),  SHOW_EXTERIOR_WALL_MENU);
+      glutAddMenuEntry(_("*Hide all"), HIDE_EXTERIOR_WALL_MENU);
     }
     else{
       show_all_exterior_patch_data = 0;
       hide_all_exterior_patch_data = 0;
-      glutAddMenuEntry(_("#Show all"),  ShowEXTERIORwallmenu);
-      glutAddMenuEntry(_("#Hide all"),  HideEXTERIORwallmenu);
+      glutAddMenuEntry(_("#Show all"),  SHOW_EXTERIOR_WALL_MENU);
+      glutAddMenuEntry(_("#Hide all"),  HIDE_EXTERIOR_WALL_MENU);
     }
     UpdateShowExtPatch(show_all_exterior_patch_data, hide_all_exterior_patch_data);
     if(IsBoundaryType(FRONTwall) == 1 && vis_boundary_type[FRONTwall] == 1)glutAddMenuEntry(_("*Front"), FRONTwallmenu);
@@ -9276,8 +9262,8 @@ static int menu_count=0;
       }
     }
     GLUTADDSUBMENU(_("Exterior"), showpatchextmenu);
-    if(vis_boundary_type[INTERIORwall]==1)glutAddMenuEntry(_("*Interior"),INTERIORwallmenu);
-    if(vis_boundary_type[INTERIORwall]==0)glutAddMenuEntry(_("Interior"),INTERIORwallmenu);
+    if(vis_boundary_type[INTERIORwall]==1)glutAddMenuEntry(_("*Interior"), INTERIOR_WALL_MENU);
+    if(vis_boundary_type[INTERIORwall]==0)glutAddMenuEntry(_("Interior"),  INTERIOR_WALL_MENU);
   }
 
   /* --------------------------------terrain menu -------------------------- */
