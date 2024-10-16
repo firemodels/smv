@@ -6273,27 +6273,6 @@ void LoadBoundaryMenu(int value){
   GLUTSETCURSOR(GLUT_CURSOR_LEFT_ARROW);
 }
 
-#ifdef pp_VENT_HIDE
-/* ------------------ GetExternalVentShow ------------------------ */
-
-void GetExternalVentShow(int *vent_show){
-  if(boundary_loaded == 1){
-    int i;
-
-    for(i=0;i<6;i++){
-      vent_show[i] = 0;
-    }
-  }
-  else{
-    int i;
-
-    for(i=0;i<6;i++){
-      vent_show[i] = 1;
-    }
-  }
-}
-#endif
-
 /* ------------------ GetInternalFaceShow ------------------------ */
 
 int GetInternalFaceShow(void){

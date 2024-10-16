@@ -2678,6 +2678,24 @@ void ShowHideInternalFaces(void){
   }
 }
 
+#ifdef pp_VENT_HIDE
+
+/* ------------------ IsVentVisible ------------------------ */
+
+int IsVentVisible(ventdata *vi){
+  if(boundary_loaded == 1){
+    if(vi->isExterior == DOWN_X && vis_boundary_type[LEFTwall]  == 0)return 1;
+    if(vi->isExterior == UP_X   && vis_boundary_type[RIGHTwall] == 0)return 1;
+    if(vi->isExterior == DOWN_Y && vis_boundary_type[FRONTwall] == 0)return 1;
+    if(vi->isExterior == UP_Y   && vis_boundary_type[BACKwall]  == 0)return 1;
+    if(vi->isExterior == DOWN_Z && vis_boundary_type[DOWNwall]  == 0)return 1;
+    if(vi->isExterior == UP_Z   && vis_boundary_type[UPwall]    == 0)return 1;
+    return 0;
+  }
+  return 1;
+}
+#endif
+
 /* ------------------ UpdateFaceLists ------------------------ */
 
 void UpdateFaceLists(void){
@@ -2808,15 +2826,19 @@ void UpdateFaceLists(void){
         continue;
       }
       if(j>=vent_offset&&j<vent_offset+meshi->nvents){
-#ifdef pp_VENT_HIDE
-        if(vi->isExterior == UP_Y)continue;
-#endif
         if(visOpenVents==0&&vi->isOpenvent==1)continue;
         if(visDummyVents==0&&vi->dummy==1)continue;
         if(visOtherVents==0&&vi->isOpenvent==0&&vi->dummy==0)continue;
-        if(patchi!=NULL&&patchi->loaded==1&&patchi->display==1&&
-          (vis_threshold==0||vis_onlythreshold==0||do_threshold==0)&&
-          (vi->dummy==1||vi->hideboundary==0)){
+        if(
+           patchi!=NULL
+           &&patchi->loaded==1
+           &&patchi->display==1
+#ifdef pp_VENT_HIDE
+           &&IsVentVisible(vi)==0
+#endif
+           &&(vis_threshold==0||vis_onlythreshold==0||do_threshold==0)
+           &&(vi->dummy==1||vi->hideboundary==0)
+           ){
           continue;
         }
         if(facej->transparent==1&&drawing_vent_transparent==1){
