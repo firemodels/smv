@@ -1,7 +1,8 @@
-&HEAD CHID='plume2',TITLE='Plume in L shaped space' /
+&HEAD CHID='mplume3',TITLE='Plume in L shaped space' /
 
-&MESH IJK=16,16,32, XB=0.0,1.6,0.0,1.6,0.0,3.2 /
-&MESH IJK=16,16,32, XB=1.6,3.2,0.0,1.6,1.6,3.2 /
+&MESH IJK=16,16,16, XB=0.0,1.6,0.0,1.6,0.0,1.6 /
+&MESH IJK=16,16,16, XB=0.0,1.6,0.0,1.6,1.6,3.2 /
+&MESH IJK=16,16,16, XB=1.6,3.2,0.0,1.6,1.6,3.2 /
 
 &MISC IBLANK_SMV=.TRUE. /
 
