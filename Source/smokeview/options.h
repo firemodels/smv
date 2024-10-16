@@ -15,9 +15,6 @@
 #define pp_GPUTHROTTLE      // pp_GPU directive must also be set
 #endif
 //#define pp_FDS            // create a 1 mesh input file
-//#define pp_FACE_INTERIOR  // use face interior data structure
-//#define pp_PATCH_HIDE      // add menu item for hiding interior blockage faces (when boundary files are not loaded)
-#define pp_VENT_HIDE      // hide vents on external faces
 
 #ifdef pp_FRAME          // turn on each frame type if pp_FRAME is set
 #define pp_BOUNDFRAME    // turn on frame code for boundary files

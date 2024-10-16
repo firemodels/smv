@@ -7335,7 +7335,6 @@ int ReadSMV_Init(){
   return 0;
 }
 
-#ifdef pp_VENT_HIDE
 /* ------------------ SetExternalVents ------------------------ */
 #define VENT_EPS 0.02
 void SetExternalVents(void){
@@ -7388,7 +7387,6 @@ void SetExternalVents(void){
     }
   }
 }
-#endif
 
 /* ------------------ ReadSMV_Parse ------------------------ */
 /// @brief Parse an SMV file into global variables. This should only be called
@@ -11085,9 +11083,7 @@ typedef struct {
         vi->usecolorindex=0;
         vi->nshowtime=0;
         vi->isOpenvent=0;
-#ifdef pp_VENT_HIDE
         vi->isExterior = -1;
-#endif
         vi->isMirrorvent = 0;
         vi->hideboundary=0;
         vi->surf[0]=vent_surfacedefault;
@@ -12101,9 +12097,7 @@ int ReadSMV_Configure(){
   PRINT_TIMER(timer_readsmv, "SetInteriorBlockages");
 
   InitMeshBlockages();
-#ifdef pp_VENT_HIDE
   SetExternalVents();
-#endif
   
   PRINTF("%s", _("complete"));
   PRINTF("\n\n");
