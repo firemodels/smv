@@ -316,9 +316,6 @@ typedef struct _facedata {
   struct _culldata *cullport;
   int **showtimelist_handle;
   int show_bothsides;
-#ifdef pp_FACE_INTERIOR
-  int is_interior;
-#endif
   struct _blockagedata *bc;
   surfdata *surfinfo;
   texturedata *textureinfo;
