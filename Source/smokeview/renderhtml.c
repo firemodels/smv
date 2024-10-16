@@ -231,7 +231,7 @@ void GetBndfNodeVerts(int option, int option2, int *offset,
           if(itime==ibeg){
             float *xyzpatchcopy;
 
-            xyzpatchcopy = meshpatch->xyzpatch+3*pfi->start;
+            xyzpatchcopy = GetPatchXYZ(meshpatch)+3*pfi->start;
             for(irow = 0;irow<nrow;irow++){
               int icol;
               float *xyz;

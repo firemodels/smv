@@ -286,7 +286,7 @@ typedef struct _meshdata {
   int *ptype;
   unsigned int *zipoffset, *zipsize;
 
-  float *xyzpatch, *xyzpatch_threshold;
+  float *xyzpatch_offset, *xyzpatch_no_offset, *xyzpatch_threshold;
   float *thresholdtime;
   int *patchblank;
 

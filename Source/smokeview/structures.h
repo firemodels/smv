@@ -312,12 +312,13 @@ typedef struct _facedata {
   int imin, imax, jmin, jmax, kmin, kmax;
   float xmin, xmax, ymin, ymax, zmin, zmax;
   int dir,hidden,dup,interior, inside_domain;
-  int del;
   int transparent;
-  int patchpresent;
   struct _culldata *cullport;
   int **showtimelist_handle;
-  int show_bothsides, is_interior;
+  int show_bothsides;
+#ifdef pp_FACE_INTERIOR
+  int is_interior;
+#endif
   struct _blockagedata *bc;
   surfdata *surfinfo;
   texturedata *textureinfo;
@@ -353,7 +354,6 @@ typedef struct _blockagedata {
   struct _propdata *prop;
   int walltype,walltypeORIG;
   int surf_index[6];
-  int patchvis[7];
   int usecolorindex;
   int blockage_id,dup;
   int is_wuiblock;
@@ -404,6 +404,9 @@ typedef struct _ventdata {
   int dir,dir2,vent_id;
   int useventcolor;
   int isOpenvent, isMirrorvent;
+#ifdef pp_VENT_HIDE
+  int isExterior;
+#endif
   float xvent1_orig, xvent2_orig;
   float yvent1_orig, yvent2_orig;
   float zvent1_orig, zvent2_orig;
