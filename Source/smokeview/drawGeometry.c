@@ -2011,9 +2011,6 @@ void ObstOrVent2Faces(const meshdata *meshi,blockagedata *bc,
   for(j=0;j<jend;j++){
     faceptr->meshindex=meshi-meshinfo;
     faceptr->type2=facetype;
-#ifdef pp_FACE_INTERIOR
-    faceptr->is_interior=0;
-#endif
     faceptr->show_bothsides=0;
     faceptr->bc=NULL;
     faceptr->interior = 0;
@@ -2150,17 +2147,6 @@ void ObstOrVent2Faces(const meshdata *meshi,blockagedata *bc,
       faceptr->jmax=bc->ijk[JMAX];
       faceptr->kmin=bc->ijk[KMIN];
       faceptr->kmax=bc->ijk[KMAX];
-#ifdef pp_FACE_INTERIOR
-      if(faceptr->imin==faceptr->imax){
-        if(faceptr->imin>0&&faceptr->imin<meshi->ibar)faceptr->is_interior=1;
-      }
-      if(faceptr->jmin==faceptr->jmax){
-        if(faceptr->jmin>0&&faceptr->jmin<meshi->jbar)faceptr->is_interior=1;
-      }
-      if(faceptr->kmin==faceptr->kmax){
-        if(faceptr->kmin>0&&faceptr->kmin<meshi->kbar)faceptr->is_interior=1;
-      }
-#endif
       faceptr->show_bothsides = show_bothsides_blockages;
     }
     if(vi!=NULL){
@@ -2170,20 +2156,6 @@ void ObstOrVent2Faces(const meshdata *meshi,blockagedata *bc,
       faceptr->jmax=vi->jmax;
       faceptr->kmin=vi->kmin;
       faceptr->kmax=vi->kmax;
-#ifdef pp_FACE_INTERIOR
-      if(faceptr->imin==faceptr->imax){
-        if(faceptr->imin>0&&faceptr->imin<meshi->ibar)faceptr->is_interior=1;
-      }
-      if(faceptr->jmin==faceptr->jmax){
-        if(faceptr->jmin>0&&faceptr->jmin<meshi->jbar)faceptr->is_interior=1;
-      }
-      if(faceptr->kmin==faceptr->kmax){
-        if(faceptr->kmin>0&&faceptr->kmin<meshi->kbar)faceptr->is_interior=1;
-      }
-      if(faceptr->is_interior==1)have_vents_int=1;
-      if(faceptr->is_interior==1&&show_bothsides_int==1)faceptr->show_bothsides=1;
-      if(faceptr->is_interior==0&&show_bothsides_ext==1)faceptr->show_bothsides=1;
-#endif
     }
     offset[XXX]=(float)0.0;
     offset[YYY]=(float)0.0;
@@ -2678,8 +2650,6 @@ void ShowHideInternalFaces(void){
   }
 }
 
-#ifdef pp_VENT_HIDE
-
 /* ------------------ IsVentVisible ------------------------ */
 
 int IsVentVisible(ventdata *vi){
@@ -2694,7 +2664,6 @@ int IsVentVisible(ventdata *vi){
   }
   return 1;
 }
-#endif
 
 /* ------------------ UpdateFaceLists ------------------------ */
 
@@ -2703,9 +2672,6 @@ void UpdateFaceLists(void){
   int n_normals_single, n_normals_double, n_transparent_double;
   int i;
   int drawing_transparent, drawing_blockage_transparent, drawing_vent_transparent;
-#ifdef pp_FACE_INTERIOR
-  int check_blockhide=1;
-#endif
 
   GetDrawingParms(&drawing_transparent, &drawing_blockage_transparent, &drawing_vent_transparent);
 
@@ -2721,20 +2687,11 @@ void UpdateFaceLists(void){
     glutPostRedisplay();
   }
   // if we are not showing boundary files then don't try to hide blockages
-#ifdef pp_FACE_INTERIOR
-  if(showplot3d == 0){
-    if(use_tload_begin == 1 && global_times != NULL && global_times[itimes] < tload_begin)check_blockhide = 0;
-    if(use_tload_end == 1 && global_times != NULL && global_times[itimes] > tload_end)check_blockhide = 0;
-  }
-#endif
   for(i=0;i<nmeshes;i++){
     meshdata *meshi;
     int patchfilenum;
     int j;
     patchdata *patchi;
-#ifdef pp_FACE_INTERIOR
-    int loadpatch, local_showpatch;
-#endif
     int vent_offset, outline_offset, exteriorsurface_offset;
 
     meshi = meshinfo + i;
@@ -2745,51 +2702,9 @@ void UpdateFaceLists(void){
       facej->cullport=NULL;
     }
 
-#ifdef pp_FACE_INTERIOR
-    local_showpatch=0;
-    loadpatch=0;
-#endif
     patchfilenum=meshi->patchfilenum;
     patchi=NULL;
-    if(showplot3d == 0){
-#ifdef pp_PATCH_HIDE
-      if(hidepatchsurface == 1 && patchfilenum >= 0 && patchfilenum < npatchinfo){
-#else
-      if(patchfilenum>=0&&patchfilenum<npatchinfo){
-#endif
-        patchi = patchinfo + patchfilenum;
-#ifdef pp_FACE_INTERIOR
-        if(patchi->loaded==1)loadpatch=1;
-        if(patchi->display==1)local_showpatch=1;
-#endif
-      }
-#ifdef pp_FACE_INTERIOR
-      if(chop_patch == 1){
-        local_showpatch=0;
-        loadpatch=0;
-      }
-#endif
-    }
-#ifdef pp_FACE_INTERIOR
-    if(local_showpatch==1&&loadpatch==1&&check_blockhide==1){
-      int jj;
-
-      for(jj=0;jj<meshi->nbptrs;jj++){
-        blockagedata *bc;
-        facedata *facej;
-        int k;
-
-        bc=meshi->blockageinfoptrs[jj];
-        if(bc->prop!=NULL&&bc->prop->blockvis==0)continue;
-        facej = meshi->faceinfo + 6*jj;
-        for(k=0;k<6;k++){
-          if(facej->is_interior==0&&showpatch_both==1)facej->hidden=1;
-          facej++;
-        }
-      }
-    }
-#endif
-
+    if(showplot3d == 0 && patchfilenum>=0 && patchfilenum<npatchinfo)patchi = patchinfo + patchfilenum;
     ShowHideInternalFaces();
 
     n_normals_single=0;
@@ -2833,9 +2748,7 @@ void UpdateFaceLists(void){
            patchi!=NULL
            &&patchi->loaded==1
            &&patchi->display==1
-#ifdef pp_VENT_HIDE
            &&IsVentVisible(vi)==0
-#endif
            &&(vis_threshold==0||vis_onlythreshold==0||do_threshold==0)
            &&(vi->dummy==1||vi->hideboundary==0)
            ){

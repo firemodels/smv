@@ -316,9 +316,6 @@ typedef struct _facedata {
   struct _culldata *cullport;
   int **showtimelist_handle;
   int show_bothsides;
-#ifdef pp_FACE_INTERIOR
-  int is_interior;
-#endif
   struct _blockagedata *bc;
   surfdata *surfinfo;
   texturedata *textureinfo;
@@ -404,9 +401,7 @@ typedef struct _ventdata {
   int dir,dir2,vent_id;
   int useventcolor;
   int isOpenvent, isMirrorvent;
-#ifdef pp_VENT_HIDE
   int isExterior;
-#endif
   float xvent1_orig, xvent2_orig;
   float yvent1_orig, yvent2_orig;
   float zvent1_orig, zvent2_orig;
