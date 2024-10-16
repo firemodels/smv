@@ -2614,7 +2614,7 @@ int CompareColorFaces(const void *arg1, const void *arg2){
 
 /* ------------------ ShowHideInternalFaces ------------------------ */
 
-void ShowHideInternalFaces(){
+void ShowHideInternalFaces(void){
   int i;
   int show;
 
@@ -2808,6 +2808,9 @@ void UpdateFaceLists(void){
         continue;
       }
       if(j>=vent_offset&&j<vent_offset+meshi->nvents){
+#ifdef pp_VENT_HIDE
+        if(vi->isExterior == UP_Y)continue;
+#endif
         if(visOpenVents==0&&vi->isOpenvent==1)continue;
         if(visDummyVents==0&&vi->dummy==1)continue;
         if(visOtherVents==0&&vi->isOpenvent==0&&vi->dummy==0)continue;

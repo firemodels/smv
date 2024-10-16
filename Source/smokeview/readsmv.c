@@ -7335,6 +7335,61 @@ int ReadSMV_Init(){
   return 0;
 }
 
+#ifdef pp_VENT_HIDE
+/* ------------------ SetExternalVents ------------------------ */
+#define VENT_EPS 0.02
+void SetExternalVents(void){
+  int i;
+
+  for(i = 0;i < nmeshes;i++){
+    int j;
+    meshdata *meshi;
+
+    meshi = meshinfo + i;
+    for(j = 0;j < meshi->nvents;j++){
+      ventdata *vj;
+
+      vj = meshi->ventinfo + j;
+      vj->isExterior = -1;
+      switch(vj->dir){
+      case UP_X:
+        if(vj->xvent1_orig < xbar0FDS + VENT_EPS){
+          vj->isExterior = DOWN_X;
+        }
+        break;
+      case DOWN_X:
+        if(vj->xvent2_orig > xbarFDS - VENT_EPS){
+          vj->isExterior = UP_X;
+        }
+        break;
+      case UP_Y:
+        if(vj->yvent1_orig < ybar0FDS + VENT_EPS){
+          vj->isExterior = DOWN_Y;
+        }
+        break;
+      case DOWN_Y:
+        if(vj->yvent2_orig > ybarFDS - VENT_EPS){
+          vj->isExterior = UP_Y;
+        }
+        break;
+      case UP_Z:
+        if(vj->zvent1_orig < zbar0FDS + VENT_EPS){
+          vj->isExterior = DOWN_Z;
+        }
+        break;
+      case DOWN_Z:
+        if(vj->zvent2_orig > zbarFDS - VENT_EPS){
+          vj->isExterior = UP_Z;
+        }
+        break;
+      default:
+        vj->isExterior = -1;
+      }
+    }
+  }
+}
+#endif
+
 /* ------------------ ReadSMV_Parse ------------------------ */
 /// @brief Parse an SMV file into global variables. This should only be called
 /// after ReadSMV_Init to ensure that the appropriate variables are set.
@@ -11030,6 +11085,9 @@ typedef struct {
         vi->usecolorindex=0;
         vi->nshowtime=0;
         vi->isOpenvent=0;
+#ifdef pp_VENT_HIDE
+        vi->isExterior = -1;
+#endif
         vi->isMirrorvent = 0;
         vi->hideboundary=0;
         vi->surf[0]=vent_surfacedefault;
@@ -12043,7 +12101,10 @@ int ReadSMV_Configure(){
   PRINT_TIMER(timer_readsmv, "SetInteriorBlockages");
 
   InitMeshBlockages();
-
+#ifdef pp_VENT_HIDE
+  SetExternalVents();
+#endif
+  
   PRINTF("%s", _("complete"));
   PRINTF("\n\n");
   PrintMemoryInfo;
