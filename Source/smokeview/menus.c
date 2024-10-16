@@ -6273,6 +6273,60 @@ void LoadBoundaryMenu(int value){
   GLUTSETCURSOR(GLUT_CURSOR_LEFT_ARROW);
 }
 
+/* ------------------ GetInternalFaceShow ------------------------ */
+
+int GetInternalFaceShow(void){
+  int show = 1;
+
+  if(boundary_loaded == 1){
+    cpp_boundsdata *bounds;
+    bounds = GLUIGetBoundsData(BOUND_PATCH);
+    if(bounds->set_chopmax == 1 || bounds->set_chopmin == 1){
+      update_bound_chop_data = 1;
+      show = 1;
+    }
+    else{
+      update_bound_chop_data = 0;
+      if(show_all_interior_patch_data == 0){
+        show = 0;
+      }
+      else{
+        show = 1;
+      }
+    }
+  }
+  else{
+    show = 1;
+#ifdef pp_PATCH_HIDE
+    if(menu_hide_internal_blockages == 1)show = 0;
+#endif
+  }
+  return show;
+}
+
+/* ------------------ ShowInternalBlockages ------------------------ */
+
+void ShowInternalBlockages(void){
+  int show;
+
+  show = GetInternalFaceShow();
+  hide_internal_blockages = 1 - show;
+  if(show == 0){
+    outline_state=OUTLINE_NONE;
+    solid_state=visBLOCKHide;
+  }
+  else{
+    visBlocks=visBLOCKNormal;
+    solid_state=visBLOCKNormal;
+    outline_state=OUTLINE_NONE;
+    GeometryMenu(17 + TERRAIN_HIDDEN);
+  }
+  updatemenu = 1;
+  updatefaces = 1;
+  updatefacelists = 1;
+  updatehiddenfaces=1;
+}
+
 /* ------------------ ShowBoundaryMenu ------------------------ */
 
 void ShowBoundaryMenu(int value){
@@ -6299,27 +6353,26 @@ void ShowBoundaryMenu(int value){
     GLUIUpdateChar();
   }
   if(value==GLUI_SHOWALL_BOUNDARY||value==GLUI_HIDEALL_BOUNDARY){
-    int i;
-
     if(value == GLUI_SHOWALL_BOUNDARY){
       show_boundaryfiles = 1;
+      ShowBoundaryMenu(SHOW_INTERIOR_WALL_MENU);
+      ShowBoundaryMenu(SHOW_EXTERIOR_WALL_MENU);
     }
     if(value == GLUI_HIDEALL_BOUNDARY){
       show_boundaryfiles = 0;
+      ShowBoundaryMenu(HIDE_INTERIOR_WALL_MENU);
+      ShowBoundaryMenu(HIDE_EXTERIOR_WALL_MENU);
     }
-    for(i=0;i<npatchinfo;i++){
-      patchdata *patchi;
-
-      patchi = patchinfo + i;
-      if(patchi->loaded == 0)continue;
-      if(patchi->structured == YES)patchi->display=show_boundaryfiles;
-    }
+    updatefacelists = 1;
+    updatefaces = 1;
+    ShowInternalBlockages();
+    update_patch_vis = 1;
   }
   if(value<0){
-    if(value==ShowEXTERIORwallmenu||value==HideEXTERIORwallmenu){
+    if(value==SHOW_EXTERIOR_WALL_MENU||value==HIDE_EXTERIOR_WALL_MENU){
       int i,val;
 
-      if(value==ShowEXTERIORwallmenu){
+      if(value==SHOW_EXTERIOR_WALL_MENU){
         val = 1;
       }
       else{
@@ -6344,14 +6397,14 @@ void ShowBoundaryMenu(int value){
       for(i=1;i<7;i++){
         vis_boundary_type[i]=val;
       }
+      update_patch_vis = 1;
     }
-    else if(value==INTERIORwallmenu){
-      int val;
+    else if(value==INTERIOR_WALL_MENU){
       int i;
 
-      allinterior = 1 - allinterior;
-      val = allinterior;
-      vis_boundary_type[INTERIORwall]=val;
+      hide_all_interior_patch_data    = show_all_interior_patch_data;
+      show_all_interior_patch_data    = 1 - show_all_interior_patch_data;
+      vis_boundary_type[INTERIORwall] = show_all_interior_patch_data;
       for(i = 0;i < npatchinfo;i++){
         patchdata *patchi;
         int n;
@@ -6363,10 +6416,17 @@ void ShowBoundaryMenu(int value){
 
           pfi = patchi->patchfaceinfo + n;
           if(pfi->type == INTERIORwall){
-            pfi->vis = val;
+            pfi->vis = show_all_interior_patch_data;
           }
         }
       }
+      ShowInternalBlockages();
+      UpdateShowIntPatch(hide_all_interior_patch_data, show_all_interior_patch_data);
+    }
+    else if(value == SHOW_INTERIOR_WALL_MENU || value == HIDE_INTERIOR_WALL_MENU){
+      if(value == SHOW_INTERIOR_WALL_MENU)show_all_interior_patch_data = 1;
+      if(value == HIDE_INTERIOR_WALL_MENU)show_all_interior_patch_data = 0;
+      ShowBoundaryMenu(INTERIOR_WALL_MENU);
     }
     if(value==INI_EXTERIORwallmenu){
       int i;
@@ -6409,6 +6469,7 @@ void ShowBoundaryMenu(int value){
         }
       }
     }
+    update_patch_vis = 1;
   }
   plotstate=GetPlotState(DYNAMIC_PLOTS);
 }
@@ -6593,6 +6654,7 @@ void ImmersedMenu(int value){
 }
 
 /* ------------------ BlockageMenu ------------------------ */
+
 void GeometryMenu(int val);
 void BlockageMenu(int value){
   int change_state=0;
@@ -6682,6 +6744,9 @@ void BlockageMenu(int value){
       solid_state=visBLOCKHide;
       change_state=1;
       break;
+#ifdef pp_PATCH_HIDE
+    case visBLOCKHideInternal:
+#endif
     case BLOCKlocation_grid:
     case BLOCKlocation_exact:
     case BLOCKlocation_cad:
@@ -6729,6 +6794,12 @@ void BlockageMenu(int value){
      visBlocks=value;
      GLUIUpdateTrainerOutline();
      break;
+#ifdef pp_PATCH_HIDE
+   case visBLOCKHideInternal:
+     menu_hide_internal_blockages = 1 - menu_hide_internal_blockages;
+     ShowInternalBlockages();
+     break;
+#endif
    case visBLOCKNormal:
    case visBLOCKOutline:
    case visBLOCKHide:
@@ -9085,17 +9156,24 @@ static int menu_count=0;
       next_total+=vis_boundary_type[i];
     }
     if(next_total == 6){
-      glutAddMenuEntry(_("*Show all"),  ShowEXTERIORwallmenu);
-      glutAddMenuEntry(_("Hide all"),   HideEXTERIORwallmenu);
+      show_all_exterior_patch_data = 1;
+      hide_all_exterior_patch_data = 0;
+      glutAddMenuEntry(_("*Show all"),  SHOW_EXTERIOR_WALL_MENU);
+      glutAddMenuEntry(_("Hide all"),   HIDE_EXTERIOR_WALL_MENU);
     }
     else if(next_total == 0){
-      glutAddMenuEntry(_("Show all"),  ShowEXTERIORwallmenu);
-      glutAddMenuEntry(_("*Hide all"), HideEXTERIORwallmenu);
+      show_all_exterior_patch_data = 0;
+      hide_all_exterior_patch_data = 1;
+      glutAddMenuEntry(_("Show all"),  SHOW_EXTERIOR_WALL_MENU);
+      glutAddMenuEntry(_("*Hide all"), HIDE_EXTERIOR_WALL_MENU);
     }
     else{
-      glutAddMenuEntry(_("#Show all"),  ShowEXTERIORwallmenu);
-      glutAddMenuEntry(_("#Hide all"),  HideEXTERIORwallmenu);
+      show_all_exterior_patch_data = 0;
+      hide_all_exterior_patch_data = 0;
+      glutAddMenuEntry(_("#Show all"),  SHOW_EXTERIOR_WALL_MENU);
+      glutAddMenuEntry(_("#Hide all"),  HIDE_EXTERIOR_WALL_MENU);
     }
+    UpdateShowExtPatch(show_all_exterior_patch_data, hide_all_exterior_patch_data);
     if(IsBoundaryType(FRONTwall) == 1 && vis_boundary_type[FRONTwall] == 1)glutAddMenuEntry(_("*Front"), FRONTwallmenu);
     if(IsBoundaryType(FRONTwall) == 1 && vis_boundary_type[FRONTwall] == 0)glutAddMenuEntry(_("Front"), FRONTwallmenu);
     if(IsBoundaryType(BACKwall) == 1 && vis_boundary_type[BACKwall] == 1)glutAddMenuEntry(_("*Back"), BACKwallmenu);
@@ -9141,11 +9219,11 @@ static int menu_count=0;
         else{
           if(show_boundaryfiles==1){
             glutAddMenuEntry("*Show all", GLUI_SHOWALL_BOUNDARY);
-            glutAddMenuEntry("Hide all",  GLUI_SHOWALL_BOUNDARY);
+            glutAddMenuEntry("Hide all",  GLUI_HIDEALL_BOUNDARY);
           }
           else{
             glutAddMenuEntry("Show all",  GLUI_SHOWALL_BOUNDARY);
-            glutAddMenuEntry("*Hide all", GLUI_SHOWALL_BOUNDARY);
+            glutAddMenuEntry("*Hide all", GLUI_HIDEALL_BOUNDARY);
           }
         }
       }
@@ -9184,8 +9262,8 @@ static int menu_count=0;
       }
     }
     GLUTADDSUBMENU(_("Exterior"), showpatchextmenu);
-    if(vis_boundary_type[INTERIORwall]==1)glutAddMenuEntry(_("*Interior"),INTERIORwallmenu);
-    if(vis_boundary_type[INTERIORwall]==0)glutAddMenuEntry(_("Interior"),INTERIORwallmenu);
+    if(vis_boundary_type[INTERIORwall]==1)glutAddMenuEntry(_("*Interior"), INTERIOR_WALL_MENU);
+    if(vis_boundary_type[INTERIORwall]==0)glutAddMenuEntry(_("Interior"),  INTERIOR_WALL_MENU);
   }
 
   /* --------------------------------terrain menu -------------------------- */
@@ -9335,6 +9413,14 @@ static int menu_count=0;
       glutAddMenuEntry(_("   Cad surface drawn opaque"),visCADOpaque);
     }
   }
+#ifdef pp_PATCH_HIDE
+  if(menu_hide_internal_blockages == 1){
+    glutAddMenuEntry(_("   *Hide internal blockages (when boundary files are not loaded)"), visBLOCKHideInternal);
+  }
+  else{
+    glutAddMenuEntry(_("   Hide internal blockages (when boundary files are not loaded)"), visBLOCKHideInternal);
+  }
+#endif
   if(visBlocks==visBLOCKHide){
     glutAddMenuEntry(_("   *Hidden"),visBLOCKHide);
   }

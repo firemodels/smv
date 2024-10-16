@@ -1678,9 +1678,6 @@ void UpdateTimes(void){
     SynchTimes();
     PRINT_TIMER(timer_synch_times, "timer: SynchTimes");
   }
-#ifdef pp_UPDATE_FACES
-  updatefaces=1;
-#endif
   if(nglobal_times>0){
     INIT_PRINT_TIMER(timer_labels);
     UpdateTimeLabels();
@@ -2298,6 +2295,12 @@ void UpdateShowScene(void){
     END_SHOW_UPDATE(update_frame);
   }
 #endif
+#define SHOW_EXTERIOR_PATCH_DATA     32
+void BoundBoundCB(int var);
+  if(update_patch_vis == 1){
+    BoundBoundCB(SHOW_EXTERIOR_PATCH_DATA);
+    update_patch_vis = 0;
+  }
   if(update_smoke3dmenulabels == 1){
     SHOW_UPDATE(update_smoke3dmenulabels);
     update_smoke3dmenulabels = 0;
@@ -2965,7 +2968,13 @@ void UpdateDisplay(void){
   }
   if(update_ini_boundary_type==1){
     update_ini_boundary_type = 0;
+    ShowBoundaryMenu(INTERIOR_WALL_MENU);
     ShowBoundaryMenu(INI_EXTERIORwallmenu);
+  }
+  if(update_boundary_loaded == 1){ // a hack, shouldn't be necessary
+    update_boundary_loaded = 0;
+    ShowBoundaryMenu(INTERIOR_WALL_MENU);
+    ShowBoundaryMenu(INTERIOR_WALL_MENU);
   }
   if(update_fire_alpha==1){
     update_fire_alpha=0;

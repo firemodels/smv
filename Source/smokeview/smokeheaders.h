@@ -675,7 +675,9 @@ EXTERNCPP void RemoveDupBlockages(void);
 EXTERNCPP void SortIsoTriangles(float *mm);
 EXTERNCPP void UpdateIsoTriangles(int flag);
 EXTERNCPP void UpdateSliceMenuShow(sliceparmdata *sp);
+#ifdef pp_PATCH_HIDE
 EXTERNCPP void UpdateHideBoundarySurface(void);
+#endif
 EXTERNCPP void UpdateDefer(void);
 EXTERNCPP void SetTimeVal(float timeval);
 
@@ -808,6 +810,7 @@ EXTERNCPP void FreeVars(void);
 EXTERNCPP void RenderState(int onoff);
 EXTERNCPP void ResizeWindow(int width, int height);
 EXTERNCPP meshdata *GetMesh(float *xyz);
+EXTERNCPP float *GetPatchXYZ(const meshdata *meshi);
 EXTERNCPP meshdata *GetMeshNoFail(float *xyz);
 EXTERNCPP void InitCellMeshInfo(void);
 EXTERNCPP int InExterior(float *xyz);
@@ -1088,10 +1091,6 @@ EXTERNCPP void GetGlobalDeviceBounds(int type);
 EXTERNCPP float GetDeviceVal(float time_local, devicedata *devicei, int *valid);
 EXTERNCPP void InitMenus(void);
 
-#ifdef pp_PATCH_DEBUG
-EXTERNCPP void DrawMeshBlockFaces(void);
-#endif
-
 EXTERNCPP int ReadSMV(bufferstreamdata *stream);
 EXTERNCPP void ReadSMVOrig(void);
 EXTERNCPP void UpdateSMVDynamic(char *file);
@@ -1109,7 +1108,11 @@ EXTERNCPP void Output3Val(float x, float y, float z, float val);
 EXTERNCPP void OutputBarText(float x, float y, const GLfloat *color, char *string);
 EXTERNCPP float GetStringLength(char *string);
 EXTERNCPP void UpdateGslicePlanes(void);
+EXTERNCPP void UpdateShowExtPatch(int show_option, int hide_option);
+EXTERNCPP void UpdateShowIntPatch(int show_option, int hide_option);
 
+EXTERNCPP void ShowInternalBlockages(void);
+EXTERNCPP   int GetInternalFaceShow(void);
 EXTERNCPP void UpdateAllGeomTriangles(void);
 EXTERNCPP void MakeBoundaryMask(patchdata *patchi);
 EXTERNCPP void SetPatchMin(int set_valmin, float valmin, char *buffer2);
