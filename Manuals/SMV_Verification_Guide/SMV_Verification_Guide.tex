@@ -1420,9 +1420,10 @@ grid planes: $40\times 40\times 40$
 \chapter{Other Tests}
 
 \section{Obstacles}
-Figures \ref{figobsttest} and \ref{figtransparency} test different methods for
+Figures \ref{figobsttest}, \ref{figobstremove} and \ref{figtransparency} test different methods for
 displaying obstacles. Figure \ref{figobsttest} shows obstacles drawn as solids,
-as outlines or hidden. Figure \ref{figtransparency} shows obstacles drawn
+as outlines or hidden. Figure \ref{figobstremove} shows a boundary file for a case with 
+removable blockages. Figure \ref{figtransparency} shows obstacles drawn
 transparently. The left view shows the opaque obstacle drawn in front (and blocking)
 a portion of the transparent obstacle behind.  The center view shows both obstacles
 unobscured.  The right view shows the transparent blockage drawn in front with the
@@ -1443,6 +1444,22 @@ by running the Smokeview script, {\tt plume5c.ssf}\ (see Appendix \ref{SSFplume5
 \end{center}
  \caption{A test showing 3 drawing modes for representing blockages: solid, outline and hidden}
 \label{figobsttest}%
+\end{figure}
+
+\begin{figure}[bph]
+\begin{center}
+\begin{tabular}{ccc}
+ \includegraphics[width=2.25in]{SCRIPT_FIGURES/obst_remove_005}&
+ \includegraphics[width=2.25in]{SCRIPT_FIGURES/obst_remove_015}&
+ \includegraphics[width=2.25in]{SCRIPT_FIGURES/obst_remove_025}\\
+ 5 s&
+ 15 s&
+ 25 s\\
+
+ \end{tabular}
+\end{center}
+ \caption{A test showing that blockages are removed and drawn properly when drawing a boundary file}
+\label{figobstremove}%
 \end{figure}
 
 \begin{figure}[bph]
