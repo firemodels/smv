@@ -1631,6 +1631,11 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
   xyzpatch_ignitecopy = meshi->xyzpatch_threshold;
   patchblankcopy = meshi->patchblank;
   patchi->patchfaceinfo[0].start = 0;
+  float *xplt, *yplt, *zplt;
+  
+  xplt = meshi->xplt_orig;
+  yplt = meshi->yplt_orig;
+  zplt = meshi->zplt_orig;
   for(n=0;n<patchi->npatches;n++){
     float dxx, dyy, dzz;
     float dxx2, dyy2, dzz2;
@@ -1652,11 +1657,19 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
 
     // determine if a patch is on an external wall 
     if(i1 == i2){
-      float val;
-
-      val = meshi->xplt_orig[i1];
-      if(val > xbar0FDS && val < xbarFDS){
-        if(j1 == 0 && j2 == meshi->jbar && k1 == 0 && k2 == meshi->kbar)pfi->internal_mesh_face = 1;
+      float xyz[3];
+        
+      if(i1==0){
+        xyz[0] = xplt[0] - 0.01;
+        xyz[1] = (yplt[pfi->ib[2]] + yplt[pfi->ib[3]])/2.0;
+        xyz[2] = (zplt[pfi->ib[4]] + zplt[pfi->ib[5]])/2.0;
+        if(InExterior(xyz) == 0)pfi->internal_mesh_face = 1;
+      }
+      else if(i1 == meshi->ibar){
+        xyz[0] = xplt[meshi->ibar-1] + 0.01;
+        xyz[1] = (yplt[pfi->ib[2]] + yplt[pfi->ib[3]])/2.0;
+        xyz[2] = (zplt[pfi->ib[4]] + zplt[pfi->ib[5]])/2.0;
+        if(InExterior(xyz) == 0)pfi->internal_mesh_face = 1;
       }
       if(j1 == 0 && j2 == meshi->jbar && k1 == 0 && k2 == meshi->kbar){
         if(i1 == 0)patchi->meshfaceinfo[0]           = pfi;
@@ -1664,11 +1677,19 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
       }
     }
     else if(j1 == j2){
-      float val;
-
-      val = meshi->yplt_orig[j1];
-      if(val > ybar0FDS && val < ybarFDS){
-        if(i1 == 0 && i2 == meshi->ibar && k1 == 0 && k2 == meshi->kbar)pfi->internal_mesh_face = 1;
+      float xyz[3];
+        
+      if(j1==0){
+        xyz[0] = (xplt[pfi->ib[0]] + xplt[pfi->ib[1]])/2.0;
+        xyz[1] = yplt[0] - 0.01;
+        xyz[2] = (zplt[pfi->ib[4]] + zplt[pfi->ib[5]])/2.0;
+        if(InExterior(xyz) == 0)pfi->internal_mesh_face = 1;
+      }
+      else if(j1 == meshi->jbar){
+        xyz[0] = (xplt[pfi->ib[0]] + xplt[pfi->ib[1]])/2.0;
+        xyz[1] = yplt[meshi->jbar-1] + 0.01;
+        xyz[2] = (zplt[pfi->ib[4]] + zplt[pfi->ib[5]])/2.0;
+        if(InExterior(xyz) == 0)pfi->internal_mesh_face = 1;
       }
       if(i1 == 0 && i2 == meshi->ibar && k1 == 0 && k2 == meshi->kbar){
         if(j1 == 0)patchi->meshfaceinfo[2]           = pfi;
@@ -1676,11 +1697,19 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
       }
     }
     else{
-      float val;
-
-      val = meshi->zplt_orig[k1];
-      if(val > zbar0FDS && val < zbarFDS){
-        if(i1 == 0 && i2 == meshi->ibar && j1 == 0 && j2 == meshi->jbar)pfi->internal_mesh_face = 1;
+      float xyz[3];
+        
+      if(k1==0){
+        xyz[0] = (xplt[pfi->ib[0]] + xplt[pfi->ib[1]])/2.0;
+        xyz[1] = (yplt[pfi->ib[2]] + yplt[pfi->ib[3]]) / 2.0;
+        xyz[2] = zplt[0] - 0.01;
+        if(InExterior(xyz) == 0)pfi->internal_mesh_face = 1;
+      }
+      else if(k1 == meshi->kbar){
+        xyz[0] = (xplt[pfi->ib[0]] + xplt[pfi->ib[1]]) / 2.0;
+        xyz[1] = (yplt[pfi->ib[2]] + yplt[pfi->ib[3]]) / 2.0;
+        xyz[2] = zplt[meshi->kbar-1] + 0.01;
+        if(InExterior(xyz) == 0)pfi->internal_mesh_face = 1;
       }
       if(i1 == 0 && i2 == meshi->ibar && j1 == 0 && j2 == meshi->jbar){
         if(k1 == 0)patchi->meshfaceinfo[4]           = pfi;

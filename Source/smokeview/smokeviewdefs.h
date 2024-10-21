@@ -139,7 +139,9 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 #define MESH_EXT  1
 #define MESH_BOTH 2
 
+//*** need to consolidate these two parameters
 #define MESHEPS 0.001
+#define MESH_EPS 0.0001
 
 #define PART_BOUND_UNDEFINED 0
 #define PART_BOUND_COMPUTING 1
