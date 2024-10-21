@@ -1,9 +1,9 @@
-&HEAD CHID='obst3',TITLE='obst test case' /
+&HEAD CHID='obst_remove',TITLE='obst test case' /
 
 &MESH IJK=10, 5,10,  XB=0.0,1.0, 0.0,0.5, 0.0,1.0 /
 &MESH IJK=10,15,10, XB=0.0,1.0, 0.5,2.0, 0.0,1.0 /
 
-&TIME T_END=50. DT = 0.01/
+&TIME T_END=30. DT = 0.01/
 
 &SPEC ID='METHANE' /
 

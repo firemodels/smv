@@ -469,18 +469,32 @@ void UpdatePlotxyzAll(void){
 /* ------------------ InExterior ------------------------ */
 
 int InExterior(float *xyz){
-  if(cellmeshinfo == NULL)InitCellMeshInfo();
-  if(is_convex == 1){
-    float *xyzminmax;
+  int i;
+  float x, y, z;
 
-    xyzminmax = cellmeshinfo->xyzminmax;
-    if(xyz[0]<xyzminmax[0] || xyz[0]>xyzminmax[1])return 1;
-    if(xyz[1]<xyzminmax[2] || xyz[1]>xyzminmax[3])return 1;
-    if(xyz[2]<xyzminmax[4] || xyz[2]>xyzminmax[5])return 1;
-    return 0;
+  x = xyz[0];
+  y = xyz[1];
+  z = xyz[2];
+  if(x < xbar0FDS - MESH_EPS)return 1;
+  if(x > xbarFDS  + MESH_EPS)return 1;
+  if(y < ybar0FDS - MESH_EPS)return 1;
+  if(y > ybarFDS  + MESH_EPS)return 1;
+  if(z < zbar0FDS - MESH_EPS)return 1;
+  if(z > zbarFDS  + MESH_EPS)return 1;
+  for(i = 0;i < nmeshes;i++){
+    meshdata *meshi;
+
+    meshi = meshinfo + i;
+    if(x >= meshi->xplt_orig[0]               - MESH_EPS &&
+       x <= meshi->xplt_orig[meshi->ibar - 1] + MESH_EPS &&
+       y >= meshi->yplt_orig[0]               - MESH_EPS &&
+       y <= meshi->yplt_orig[meshi->jbar - 1] + MESH_EPS &&
+       z >= meshi->zplt_orig[0]               - MESH_EPS &&
+       z <= meshi->zplt_orig[meshi->kbar - 1] + MESH_EPS){
+       return 0;
+     }
   }
-  if(GetMesh(xyz) == NULL)return 1;
-  return 0;
+  return 1;
 }
 
 /* ------------------ GetMesh ------------------------ */

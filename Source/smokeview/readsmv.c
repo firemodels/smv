@@ -7335,8 +7335,10 @@ int ReadSMV_Init(){
   return 0;
 }
 
-/* ------------------ SetExternalVents ------------------------ */
 #define VENT_EPS 0.02
+
+/* ------------------ SetExternalVents ------------------------ */
+
 void SetExternalVents(void){
   int i;
 
@@ -7347,39 +7349,46 @@ void SetExternalVents(void){
     meshi = meshinfo + i;
     for(j = 0;j < meshi->nvents;j++){
       ventdata *vj;
+      float xyz[3];
 
       vj = meshi->ventinfo + j;
       vj->isExterior = -1;
       switch(vj->dir){
       case UP_X:
-        if(vj->xvent1_orig < xbar0FDS + VENT_EPS){
-          vj->isExterior = DOWN_X;
-        }
+        xyz[0] = vj->xvent1_orig + VENT_EPS;
+        xyz[1] = (vj->yvent1_orig + vj->yvent2_orig) / 2.0;
+        xyz[2] = (vj->zvent1_orig + vj->zvent2_orig) / 2.0;
+        if(InExterior(xyz)==1)vj->isExterior = UP_X;
         break;
       case DOWN_X:
-        if(vj->xvent2_orig > xbarFDS - VENT_EPS){
-          vj->isExterior = UP_X;
-        }
+        xyz[0] = vj->xvent1_orig  - VENT_EPS;
+        xyz[1] = (vj->yvent1_orig + vj->yvent2_orig) / 2.0;
+        xyz[2] = (vj->zvent1_orig + vj->zvent2_orig) / 2.0;
+        if(InExterior(xyz) == 1)vj->isExterior = DOWN_X;
         break;
       case UP_Y:
-        if(vj->yvent1_orig < ybar0FDS + VENT_EPS){
-          vj->isExterior = DOWN_Y;
-        }
+        xyz[0] = (vj->xvent1_orig - vj->xvent2_orig) / 2.0;
+        xyz[1] = vj->yvent1_orig - VENT_EPS;
+        xyz[2] = (vj->zvent1_orig + vj->zvent2_orig) / 2.0;
+        if(InExterior(xyz)==1)vj->isExterior = UP_Y;
         break;
       case DOWN_Y:
-        if(vj->yvent2_orig > ybarFDS - VENT_EPS){
-          vj->isExterior = UP_Y;
-        }
+        xyz[0] = (vj->xvent1_orig - vj->xvent2_orig) / 2.0;
+        xyz[1] = vj->yvent1_orig + VENT_EPS;
+        xyz[2] = (vj->zvent1_orig + vj->zvent2_orig) / 2.0;
+        if(InExterior(xyz)==1)vj->isExterior = DOWN_Y;
         break;
       case UP_Z:
-        if(vj->zvent1_orig < zbar0FDS + VENT_EPS){
-          vj->isExterior = DOWN_Z;
-        }
+        xyz[0] = (vj->xvent1_orig + vj->xvent2_orig) / 2.0;
+        xyz[1] = (vj->yvent1_orig + vj->yvent2_orig) / 2.0;
+        xyz[2] = vj->zvent1_orig + VENT_EPS;
+        if(InExterior(xyz)==1)vj->isExterior = UP_Z;
         break;
       case DOWN_Z:
-        if(vj->zvent2_orig > zbarFDS - VENT_EPS){
-          vj->isExterior = UP_Z;
-        }
+        xyz[0] = (vj->xvent1_orig - vj->xvent2_orig) / 2.0;
+        xyz[1] = (vj->yvent1_orig + vj->yvent2_orig) / 2.0;
+        xyz[2] = vj->zvent1_orig + VENT_EPS;
+        if(InExterior(xyz)==1)vj->isExterior = DOWN_Z;
         break;
       default:
         vj->isExterior = -1;
