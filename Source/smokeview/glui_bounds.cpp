@@ -20,8 +20,6 @@ int GetValType(int type);
 void SliceInObstDialog2Menu(void);
 void GLUIPlot3DBoundCB(int var);
 
-#define MESH_EPS 0.0001
-
 GLUI *glui_bounds=NULL;
 
 #define BOUND_VAL_TYPE                 101
