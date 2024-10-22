@@ -2807,7 +2807,9 @@ GLUI_Panel *PANEL_slice_buttonsB = NULL;
 GLUI_Panel *PANEL_boundary_outline_type = NULL;
 GLUI_Panel *PANEL_iso1 = NULL;
 GLUI_Panel *PANEL_iso2 = NULL;
+#ifdef pp_GEOM_EXP
 GLUI_Panel *PANEL_geomexp = NULL;
+#endif
 GLUI_Panel *PANEL_slice_smoke = NULL;
 GLUI_Panel *PANEL_immersed = NULL;
 GLUI_Panel *PANEL_immersed_region = NULL;
@@ -5088,9 +5090,11 @@ extern "C" void GLUIBoundsSetup(int main_window){
       BoundBoundCB(BOUNDARY_EDGETYPE);
       BoundBoundCB(SHOW_BOUNDARY_OUTLINE);
 
+#ifdef pp_GEOM_EXP
       PANEL_geomexp = glui_bounds->add_panel_to_panel(ROLLOUT_boundary_settings,"experimental");
       glui_bounds->add_checkbox_to_panel(PANEL_geomexp, _("smooth normals"), &geomdata_smoothnormals);
       glui_bounds->add_checkbox_to_panel(PANEL_geomexp, _("lighting"), &geomdata_lighting);
+#endif
 
       glui_bounds->add_spinner_to_panel(ROLLOUT_boundary_settings, "line width", GLUI_SPINNER_FLOAT, &geomboundary_linewidth);
       glui_bounds->add_spinner_to_panel(ROLLOUT_boundary_settings, "point size", GLUI_SPINNER_FLOAT, &geomboundary_pointsize);
