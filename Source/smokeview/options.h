@@ -16,7 +16,7 @@
 #endif
 //#define pp_FDS            // create a 1 mesh input file
 
-//#ifdef pp_FRAME          // turn on each frame type if pp_FRAME is set
+#ifdef pp_FRAME          // turn on each frame type if pp_FRAME is set
 #define pp_BOUNDFRAME    // turn on frame code for boundary files
 #define pp_SMOKEFRAME    // turn on frame code for 3d smoke
 #define pp_ISOFRAME      // turn on frame code for isosurfaces
