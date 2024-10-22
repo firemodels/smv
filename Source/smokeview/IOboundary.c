@@ -2195,7 +2195,6 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
       }
 #ifdef pp_BOUNDFRAME
       return_filesize = patchi->frameinfo->filesize;
-      meshi->npatch_times = patchi->frameinfo->nframes;
 #else
       for(n=0;n<tload_step;n++){
         if(error==0){
