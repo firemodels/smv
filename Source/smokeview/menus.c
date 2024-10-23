@@ -9171,8 +9171,8 @@ static int menu_count=0;
       if(vis_boundary_type[BACKwall] == 0)glutAddMenuEntry(_("Back"), BACKwallmenu);
     }
     if(IsBoundaryType(LEFTwall) == 1){
-      if(vis_boundary_type[LEFTwall] == 1)glutAddMenuEntry(_("*Leftxx"), LEFTwallmenu);
-      if(vis_boundary_type[LEFTwall] == 0)glutAddMenuEntry(_("Leftxx"), LEFTwallmenu);
+      if(vis_boundary_type[LEFTwall] == 1)glutAddMenuEntry(_("*Left"), LEFTwallmenu);
+      if(vis_boundary_type[LEFTwall] == 0)glutAddMenuEntry(_("Left"), LEFTwallmenu);
     }
     if(IsBoundaryType(RIGHTwall) == 1){
       if(vis_boundary_type[RIGHTwall] == 1)glutAddMenuEntry(_("*Right"), RIGHTwallmenu);
