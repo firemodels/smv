@@ -16,6 +16,7 @@
 #endif
 //#define pp_FDS            // create a 1 mesh input file
 //#define pp_GEOM_EXP       // experimental geometry settings (smooth normals, lighting)
+//#define pp_PATCH_FULL       // only patches covering an entire mesh side are considered external (original behavior)
 
 #ifdef pp_FRAME          // turn on each frame type if pp_FRAME is set
 #define pp_BOUNDFRAME    // turn on frame code for boundary files

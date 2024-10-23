@@ -1770,7 +1770,11 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
 
       ext_wall=0;
       mesh_boundary = NO;
+#ifdef pp_PATCH_FULL
       if(j1==0&&j2==jbartemp&&k1==0&&k2==kbartemp){
+#else
+      {
+#endif
         int doit;
 
         doit = 0;
@@ -1890,7 +1894,11 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
 
       ext_wall=0;
       mesh_boundary = NO;
+#ifdef pp_PATCH_FULL
       if(i1==0&&i2==ibartemp&&k1==0&&k2==kbartemp){
+#else
+      {
+#endif
         int doit;
 
         doit = 0;
@@ -2008,7 +2016,11 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
 
       ext_wall=0;
       mesh_boundary = NO;
+#ifdef pp_PATCH_FULL
       if(i1==0&&i2==ibartemp&&j1==0&&j2==jbartemp){
+#else
+      {
+#endif
         int doit;
 
         doit = 0;
