@@ -5117,8 +5117,8 @@ extern "C" void GLUIBoundsSetup(int main_window){
 
     PANEL_boundary_exterior_data = glui_bounds->add_panel_to_panel(ROLLOUT_boundary_settings,"exterior data");
     CHECKBOX_show_all_exterior_patch_data   = glui_bounds->add_checkbox_to_panel(PANEL_boundary_exterior_data, _("Show all"),  &show_all_exterior_patch_data,  SHOW_ALL_EXTERIOR_PATCH_DATA, BoundBoundCB);
-    CHECKBOX_show_exterior_walls[FRONTwall] = glui_bounds->add_checkbox_to_panel(PANEL_boundary_exterior_data, _("front wall"), vis_boundary_type + FRONTwall, SHOW_EXTERIOR_PATCH_DATA,     BoundBoundCB);
     CHECKBOX_show_exterior_walls[LEFTwall]  = glui_bounds->add_checkbox_to_panel(PANEL_boundary_exterior_data, _("left wall"),  vis_boundary_type + LEFTwall,  SHOW_EXTERIOR_PATCH_DATA,     BoundBoundCB);
+    CHECKBOX_show_exterior_walls[FRONTwall] = glui_bounds->add_checkbox_to_panel(PANEL_boundary_exterior_data, _("front wall"), vis_boundary_type + FRONTwall, SHOW_EXTERIOR_PATCH_DATA,     BoundBoundCB);
     CHECKBOX_show_exterior_walls[DOWNwall]  = glui_bounds->add_checkbox_to_panel(PANEL_boundary_exterior_data, _("lower wall"), vis_boundary_type + DOWNwall,  SHOW_EXTERIOR_PATCH_DATA,     BoundBoundCB);
     glui_bounds->add_column_to_panel(PANEL_boundary_exterior_data, false);
 

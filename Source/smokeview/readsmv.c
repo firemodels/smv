@@ -7352,46 +7352,46 @@ void SetExternalVents(void){
       float xyz[3];
 
       vj = meshi->ventinfo + j;
-      vj->isExterior = -1;
+      vj->wall_type = INTERIORwall;
       switch(vj->dir){
       case UP_X:
-        xyz[0] = vj->xvent1_orig + VENT_EPS;
+        xyz[0] =  vj->xvent1_orig - VENT_EPS;
         xyz[1] = (vj->yvent1_orig + vj->yvent2_orig) / 2.0;
         xyz[2] = (vj->zvent1_orig + vj->zvent2_orig) / 2.0;
-        if(InExterior(xyz)==1)vj->isExterior = UP_X;
+        if(InExterior(xyz)==1)vj->wall_type = LEFTwall;
         break;
       case DOWN_X:
-        xyz[0] = vj->xvent1_orig  - VENT_EPS;
+        xyz[0] =  vj->xvent1_orig + VENT_EPS;
         xyz[1] = (vj->yvent1_orig + vj->yvent2_orig) / 2.0;
         xyz[2] = (vj->zvent1_orig + vj->zvent2_orig) / 2.0;
-        if(InExterior(xyz) == 1)vj->isExterior = DOWN_X;
+        if(InExterior(xyz) == 1)vj->wall_type = RIGHTwall;
         break;
       case UP_Y:
-        xyz[0] = (vj->xvent1_orig - vj->xvent2_orig) / 2.0;
-        xyz[1] = vj->yvent1_orig - VENT_EPS;
+        xyz[0] = (vj->xvent1_orig + vj->xvent2_orig) / 2.0;
+        xyz[1] =  vj->yvent1_orig - VENT_EPS;
         xyz[2] = (vj->zvent1_orig + vj->zvent2_orig) / 2.0;
-        if(InExterior(xyz)==1)vj->isExterior = UP_Y;
+        if(InExterior(xyz)==1)vj->wall_type = FRONTwall;
         break;
       case DOWN_Y:
-        xyz[0] = (vj->xvent1_orig - vj->xvent2_orig) / 2.0;
-        xyz[1] = vj->yvent1_orig + VENT_EPS;
+        xyz[0] = (vj->xvent1_orig + vj->xvent2_orig) / 2.0;
+        xyz[1] = vj->yvent1_orig  + VENT_EPS;
         xyz[2] = (vj->zvent1_orig + vj->zvent2_orig) / 2.0;
-        if(InExterior(xyz)==1)vj->isExterior = DOWN_Y;
+        if(InExterior(xyz)==1)vj->wall_type = BACKwall;
         break;
       case UP_Z:
         xyz[0] = (vj->xvent1_orig + vj->xvent2_orig) / 2.0;
         xyz[1] = (vj->yvent1_orig + vj->yvent2_orig) / 2.0;
-        xyz[2] = vj->zvent1_orig + VENT_EPS;
-        if(InExterior(xyz)==1)vj->isExterior = UP_Z;
+        xyz[2] = vj->zvent1_orig  - VENT_EPS;
+        if(InExterior(xyz)==1)vj->wall_type = DOWNwall;
         break;
       case DOWN_Z:
-        xyz[0] = (vj->xvent1_orig - vj->xvent2_orig) / 2.0;
+        xyz[0] = (vj->xvent1_orig + vj->xvent2_orig) / 2.0;
         xyz[1] = (vj->yvent1_orig + vj->yvent2_orig) / 2.0;
-        xyz[2] = vj->zvent1_orig + VENT_EPS;
-        if(InExterior(xyz)==1)vj->isExterior = DOWN_Z;
+        xyz[2] = vj->zvent1_orig  + VENT_EPS;
+        if(InExterior(xyz)==1)vj->wall_type = UPwall;
         break;
       default:
-        vj->isExterior = -1;
+        vj->wall_type = INTERIORwall;
       }
     }
   }
@@ -11092,7 +11092,7 @@ typedef struct {
         vi->usecolorindex=0;
         vi->nshowtime=0;
         vi->isOpenvent=0;
-        vi->isExterior = -1;
+        vi->wall_type = INTERIORwall;
         vi->isMirrorvent = 0;
         vi->hideboundary=0;
         vi->surf[0]=vent_surfacedefault;

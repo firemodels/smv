@@ -475,12 +475,9 @@ int InExterior(float *xyz){
   x = xyz[0];
   y = xyz[1];
   z = xyz[2];
-  if(x < xbar0FDS - MESH_EPS)return 1;
-  if(x > xbarFDS  + MESH_EPS)return 1;
-  if(y < ybar0FDS - MESH_EPS)return 1;
-  if(y > ybarFDS  + MESH_EPS)return 1;
-  if(z < zbar0FDS - MESH_EPS)return 1;
-  if(z > zbarFDS  + MESH_EPS)return 1;
+  if(x < xbar0FDS - MESH_EPS || x > xbarFDS  + MESH_EPS)return 1;
+  if(y < ybar0FDS - MESH_EPS || y > ybarFDS  + MESH_EPS)return 1;
+  if(z < zbar0FDS - MESH_EPS || z > zbarFDS  + MESH_EPS)return 1;
   for(i = 0;i < nmeshes;i++){
     meshdata *meshi;
 

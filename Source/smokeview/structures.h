@@ -401,7 +401,7 @@ typedef struct _ventdata {
   int dir,dir2,vent_id;
   int useventcolor;
   int isOpenvent, isMirrorvent;
-  int isExterior;
+  int wall_type;
   float xvent1_orig, xvent2_orig;
   float yvent1_orig, yvent2_orig;
   float zvent1_orig, zvent2_orig;
