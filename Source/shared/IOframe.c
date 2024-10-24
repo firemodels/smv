@@ -172,7 +172,7 @@ bufferdata *FRAMEReadFrame(framedata *fi, int iframe, int nframes, int *nreadptr
   bufferinfo->nbuffer = total_size;
   fi->frames_read     = nframes;
   fi->update          = 1;
-  
+
   fread(buffer, 1, fi->headersize, stream);
   fseek(stream, fi->offsets[iframe], SEEK_SET);
   nread = fread(buffer+fi->headersize, 1, total_size, stream);
@@ -423,7 +423,7 @@ void GetSmoke3DFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **frame
   *nframesptr = nframes;
   *filesizeptr = filesize;
 }
-  
+
 /* ------------------ GetBoundaryFrameInfo ------------------------ */
 
 void GetBoundaryFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **framesptr, int *nframesptr, 
@@ -584,7 +584,7 @@ void GetSliceFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **framesp
   int returncode;
   int *subframeoffsets = NULL, *subframesizes = NULL;
   int nsubframes;
-  
+
   nsubframes = 1;
   NewMemory((void **)&subframeoffsets, nsubframes * sizeof(int));
   NewMemory((void **)&subframesizes,   nsubframes * sizeof(int));
@@ -622,7 +622,7 @@ void GetSliceFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **framesp
   framesize  = 4 + 4 + 4;                  // time
   framesize += 4 + 4*(nxsp*nysp*nzsp) + 4; // data
   subframesizes[0] = nxsp * nysp * nzsp;
-  
+
   filesize = bufferinfo->nbuffer;
   nframes = (FILE_SIZE)(filesize - headersize)/framesize; // time frames
   NewMemory((void **)&frames, nframes *sizeof(int));
@@ -853,7 +853,7 @@ void GetPartFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **framespt
   headersize += 4 + 4 + 4; // n_part
 
   NewMemory((void **)&nquants, 2*n_part*sizeof(int));
-  
+
   int i;
   for(i=0; i<n_part; i++){
     int labelsize;

@@ -2675,7 +2675,7 @@ void UpdateFaceLists(void){
 
   int show;
   show = GetInternalFaceShow();
-  
+
   // if we are not showing boundary files then don't try to hide blockages
   for(i=0;i<nmeshes;i++){
     meshdata *meshi;
