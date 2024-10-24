@@ -9011,7 +9011,7 @@ static int particlestreakshowmenu=0;
 static int tourmenu=0,tourcopymenu=0;
 static int trainerviewmenu=0,mainmenu=0,zoneshowmenu=0,particleshowmenu=0;
 static int showobjectsmenu=0,showdevicesmenu=0,showobjectsplotmenu=0,devicetypemenu=0,spheresegmentmenu=0,propmenu=0;
-static int unloadplot3dmenu=0, unloadpatchmenu=0;
+static int unloadplot3dmenu=0;
 static int showmultislicemenu=0;
 static int textureshowmenu=0;
 #ifdef _DEBUG
@@ -12512,7 +12512,6 @@ static int menu_count=0;
 
     if(npatchinfo>0){
       int ii;
-      int npatchloaded2=0;
 
       if(nmeshes>1||n_mirrorvents>0||n_openvents>0){
         CREATEMENU(includepatchmenu, LoadBoundaryMenu);
@@ -12531,23 +12530,6 @@ static int menu_count=0;
       }
 
       nloadpatchsubmenus=0;
-
-      CREATEMENU(unloadpatchmenu,UnloadBoundaryMenu);
-      for(ii=0;ii<npatchinfo;ii++){
-        patchdata *patchi;
-        char menulabel[1024];
-
-        i = patchorderindex[ii];
-        patchi = patchinfo + i;
-        if(patchi->loaded==1){
-          if(patchi->filetype_label==NULL||strcmp(patchi->filetype_label, "INCLUDE_GEOM")!=0){
-            STRCPY(menulabel, patchi->menulabel);
-            glutAddMenuEntry(menulabel, i);
-            npatchloaded2++;
-          }
-        }
-      }
-      glutAddMenuEntry(_("Unload all"),UNLOAD_ALL);
 
       if(nmeshes>1&&loadpatchsubmenus==NULL){
         NewMemory((void **)&loadpatchsubmenus,npatchinfo*sizeof(int));
@@ -12589,12 +12571,7 @@ static int menu_count=0;
         GLUTADDSUBMENU(_("Duplicate boundary slices"),duplicateboundaryslicemenu);
       }
       glutAddMenuEntry(_("Settings..."), MENU_BOUNDARY_SETTINGS);
-      if(npatchloaded2>1){
-        GLUTADDSUBMENU(_("Unload"),unloadpatchmenu);
-      }
-      else{
-       glutAddMenuEntry(_("Unload"),UNLOAD_ALL);
-      }
+      glutAddMenuEntry(_("Unload"),UNLOAD_ALL);
 
       if(nboundaryslicedups>0){
         CREATEMENU(duplicateboundaryslicemenu,LoadBoundaryMenu);
@@ -12723,12 +12700,7 @@ static int menu_count=0;
         GLUTADDSUBMENU(_("Duplicate boundary slices"),duplicateboundaryslicemenu);
       }
       glutAddMenuEntry(_("Settings..."), MENU_BOUNDARY_SETTINGS);
-      if(npatchloaded2>1){
-        GLUTADDSUBMENU(_("Unload"),unloadpatchmenu);
-      }
-      else{
-       glutAddMenuEntry(_("Unload"),UNLOAD_ALL);
-      }
+      glutAddMenuEntry(_("Unload"),UNLOAD_ALL);
     }
 
 /* --------------------------------load iso menu -------------------------- */
