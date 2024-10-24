@@ -869,7 +869,7 @@ int CompileScript(char *scriptfile){
         scripti->ival3 = CLAMP(scripti->ival3, 0, 255);
         scripti->ival4 = CLAMP(scripti->ival4, 0, 255);
         break;
-        
+
         // RENDERTYPE
 //  jpg or png  (char)
       case SCRIPT_RENDERTYPE:

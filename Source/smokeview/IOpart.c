@@ -950,7 +950,6 @@ void CreatePartBoundFile(partdata *parti){
   int nparts_local, *numtypes_local = NULL, numtypes_temp_local[2];
   FILE *stream_out_local=NULL;
 
-  
   if(parti->reg_file == NULL)return;
   stream = fopen_b(parti->reg_file, NULL, 0, "rb");
   if(stream==NULL)return;
@@ -1186,7 +1185,7 @@ void SortPartTags(partdata *parti){
   datacopy_local = parti->data5;
   for(i = 0; i < parti->ntimes; i++){
     int class_index;
-    
+
     for(class_index = 0; class_index < parti->nclasses; class_index++){
       qsort(datacopy_local->sort_tags, ( size_t )datacopy_local->npoints_file, 2*sizeof(int), CompareTags);
       datacopy_local++;

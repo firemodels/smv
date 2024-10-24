@@ -3421,7 +3421,7 @@ char *FileSize2Label(char *label, FILE_SIZE bytes){
 
 void Plot3DSummary(char *label, int count, FILE_SIZE file_size, float timer){
   char size_label[256], time_label[256], time_label2[256];
-  
+
   sprintf(label, "PLOT3D: loaded %i files, %s", count, FileSize2Label(size_label, file_size));
   Float2String(time_label2, timer, ncolorlabel_digits, force_fixedpoint);
   sprintf(time_label, " in %ss", time_label2);
@@ -3555,7 +3555,7 @@ void LoadUnloadMenu(int value){
     STOP_TIMER(plot3d_timer);
     if(file_count>0){
       char label[256];
-      
+
       Plot3DSummary(label, file_count, total_plot3d_filesize, plot3d_timer);
       printf("%s\n",label);
     }
@@ -5722,7 +5722,7 @@ void Plot3DListMenu(int value){
   STOP_TIMER(plot3d_timer);
   if(file_count>0){
     char label[256];
-      
+
     Plot3DSummary(label, file_count, total_plot3d_filesize, plot3d_timer);
     printf("%s\n",label);
   }
@@ -5780,7 +5780,7 @@ int LoadAllPlot3D(float time){
   STOP_TIMER(plot3d_timer);
   if(file_count>0){
     char label[256];
-      
+
     Plot3DSummary(label, file_count, total_plot3d_filesize, plot3d_timer);
     printf("%s\n",label);
   }
@@ -5838,7 +5838,7 @@ void LoadPlot3dMenu(int value){
       STOP_TIMER(plot3d_timer);
       if(file_count>0){
         char label[256];
-      
+
         Plot3DSummary(label, file_count, total_plot3d_filesize, plot3d_timer);
         printf("%s\n",label);
       }
@@ -5889,7 +5889,7 @@ void LoadPlot3dMenu(int value){
     STOP_TIMER(plot3d_timer);
     if(file_count>0){
       char label[256];
-      
+
       Plot3DSummary(label, file_count, total_plot3d_filesize, plot3d_timer);
       printf("%s\n",label);
     }

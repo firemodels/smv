@@ -396,7 +396,7 @@ FILE_SIZE ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
     for(i=0;i<ntotal;i++){
       float uval=0.0, vval=0.0, wval=0.0;
       float uvwmax1, uvwmax2, uvwmax;
-      
+
       if(uindex!=-1)uval = udata[i];
       if(vindex!=-1)vval = vdata[i];
       if(windex!=-1)wval = wdata[i];

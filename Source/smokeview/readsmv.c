@@ -12107,7 +12107,7 @@ int ReadSMV_Configure(){
 
   InitMeshBlockages();
   SetExternalVents();
-  
+
   PRINTF("%s", _("complete"));
   PRINTF("\n\n");
   PrintMemoryInfo;
