@@ -1630,7 +1630,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
   patchblankcopy = meshi->patchblank;
   patchi->patchfaceinfo[0].start = 0;
   float *xplt, *yplt, *zplt;
-  
+
   xplt = meshi->xplt_orig;
   yplt = meshi->yplt_orig;
   zplt = meshi->zplt_orig;
@@ -1656,7 +1656,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
     // determine if a patch is on an external wall 
     if(i1 == i2){
       float xyz[3];
-        
+
       if(i1==0){
         xyz[0] = xplt[0] - 0.01;
         xyz[1] = (yplt[pfi->ib[2]] + yplt[pfi->ib[3]])/2.0;
@@ -1676,7 +1676,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
     }
     else if(j1 == j2){
       float xyz[3];
-        
+
       if(j1==0){
         xyz[0] = (xplt[pfi->ib[0]] + xplt[pfi->ib[1]])/2.0;
         xyz[1] = yplt[0] - 0.01;
@@ -1696,7 +1696,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
     }
     else{
       float xyz[3];
-        
+
       if(k1==0){
         xyz[0] = (xplt[pfi->ib[0]] + xplt[pfi->ib[1]])/2.0;
         xyz[1] = (yplt[pfi->ib[2]] + yplt[pfi->ib[3]]) / 2.0;
