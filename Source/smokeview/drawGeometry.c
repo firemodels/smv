@@ -2592,9 +2592,7 @@ void ShowHideInternalFaces(meshdata *meshi, int show){
 
   for(j = 0;j < meshi->nbptrs;j++){
     facedata *facej;
-    blockagedata *bc;
 
-    bc = meshi->blockageinfoptrs[j];
     facej = meshi->faceinfo + 6 * j;
     facej->hidden = 0; facej++;
     facej->hidden = 0; facej++;
