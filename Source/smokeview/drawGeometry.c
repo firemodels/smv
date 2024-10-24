@@ -2586,67 +2586,55 @@ int CompareColorFaces(const void *arg1, const void *arg2){
 
 /* ------------------ ShowHideInternalFaces ------------------------ */
 
-void ShowHideInternalFaces(void){
-  int i;
-  int show;
+//***need to update
+void ShowHideInternalFaces(meshdata *meshi, int show){
+  int j;
 
-  show = GetInternalFaceShow();
-  for(i = 0;i < nmeshes;i++){
-    int j;
-    meshdata *meshi;
+  for(j = 0;j < meshi->nbptrs;j++){
+    facedata *facej;
+    blockagedata *bc;
 
-    meshi = meshinfo + i;
-    for(j = 0;j < meshi->nbptrs;j++){
-      facedata *facej;
-      blockagedata *bc;
+    bc = meshi->blockageinfoptrs[j];
+    facej = meshi->faceinfo + 6 * j;
+    facej->hidden = 0; facej++;
+    facej->hidden = 0; facej++;
+    facej->hidden = 0; facej++;
+    facej->hidden = 0; facej++;
+    facej->hidden = 0; facej++;
+    facej->hidden = 0; facej++;
+  }
+  if(show == 1)return;
+  for(j = 0;j < meshi->nbptrs;j++){
+    facedata *facej;
+    blockagedata *bc;
 
-      bc = meshi->blockageinfoptrs[j];
-      facej = meshi->faceinfo + 6 * j;
+    bc = meshi->blockageinfoptrs[j];
+    facej = meshi->faceinfo + 6 * j;
 
-/* down y  2
-     up x  1
-     up y  3
-   down x 0
-   down z 4
-     up z 5
-     */
 #define EPS 0.01
 //down y
-      facej->hidden = 0;
-//    if(bc->inside_domain[2]==1)facej->hidden = 1;
-      if(show==0 && bc->xyzEXACT[2] > ybar0FDS + EPS)facej->hidden = 1;
-      facej++;
+    if(bc->xyzEXACT[2] > ybar0FDS + EPS)facej->hidden = 1;
+    facej++;
 
 // up x
-      facej->hidden = 0;
-//      if(bc->inside_domain[1] == 1)facej->hidden = 1;
-      if(show == 0 && bc->xyzEXACT[1] < xbarFDS - EPS)facej->hidden = 1;
-      facej++;
+    if(bc->xyzEXACT[1] < xbarFDS - EPS)facej->hidden = 1;
+    facej++;
 
 //up y
-      facej->hidden = 0;
- //     if(bc->inside_domain[3] == 1)facej->hidden = 1;
-      if(show == 0 && bc->xyzEXACT[3] < ybarFDS - EPS)facej->hidden = 1;
-      facej++;
+    if(bc->xyzEXACT[3] < ybarFDS - EPS)facej->hidden = 1;
+    facej++;
 
 // down x
-      facej->hidden = 0;
-//      if(bc->inside_domain[0] == 1)facej->hidden = 1;
-      if(show == 0 && bc->xyzEXACT[0] > xbar0FDS + EPS)facej->hidden = 1;
-      facej++;
+    if(bc->xyzEXACT[0] > xbar0FDS + EPS)facej->hidden = 1;
+    facej++;
 
 // down z
-      facej->hidden = 0;
-//      if(bc->inside_domain[4] == 1)facej->hidden = 1;
-      if(show == 0 && bc->xyzEXACT[4] > zbar0FDS + EPS)facej->hidden = 1;
-      facej++;
+    if(bc->xyzEXACT[4] > zbar0FDS + EPS)facej->hidden = 1;
+    facej++;
 
 // up z
-      facej->hidden = 0;
-//      if(bc->inside_domain[5] == 1)facej->hidden = 1;
-      if(show == 0 && bc->xyzEXACT[5] < zbarFDS - EPS)facej->hidden = 1;
-      facej++;
-    }
+    if(bc->xyzEXACT[5] < zbarFDS - EPS)facej->hidden = 1;
+    facej++;
   }
 }
 
@@ -2654,12 +2642,12 @@ void ShowHideInternalFaces(void){
 
 int IsVentVisible(ventdata *vi){
   if(boundary_loaded == 1){
-    if(vi->isExterior == DOWN_X && vis_boundary_type[LEFTwall]  == 0)return 1;
-    if(vi->isExterior == UP_X   && vis_boundary_type[RIGHTwall] == 0)return 1;
-    if(vi->isExterior == DOWN_Y && vis_boundary_type[FRONTwall] == 0)return 1;
-    if(vi->isExterior == UP_Y   && vis_boundary_type[BACKwall]  == 0)return 1;
-    if(vi->isExterior == DOWN_Z && vis_boundary_type[DOWNwall]  == 0)return 1;
-    if(vi->isExterior == UP_Z   && vis_boundary_type[UPwall]    == 0)return 1;
+    if(vi->wall_type == LEFTwall  && vis_boundary_type[LEFTwall]  == 0)return 1;
+    if(vi->wall_type == RIGHTwall && vis_boundary_type[RIGHTwall] == 0)return 1;
+    if(vi->wall_type == FRONTwall && vis_boundary_type[FRONTwall] == 0)return 1;
+    if(vi->wall_type == BACKwall  && vis_boundary_type[BACKwall]  == 0)return 1;
+    if(vi->wall_type == DOWNwall  && vis_boundary_type[DOWNwall]  == 0)return 1;
+    if(vi->wall_type == UPwall    && vis_boundary_type[UPwall]    == 0)return 1;
     return 0;
   }
   return 1;
@@ -2686,6 +2674,10 @@ void UpdateFaceLists(void){
   if(opengldefined==1){
     glutPostRedisplay();
   }
+
+  int show;
+  show = GetInternalFaceShow();
+  
   // if we are not showing boundary files then don't try to hide blockages
   for(i=0;i<nmeshes;i++){
     meshdata *meshi;
@@ -2705,7 +2697,7 @@ void UpdateFaceLists(void){
     patchfilenum=meshi->patchfilenum;
     patchi=NULL;
     if(showplot3d == 0 && patchfilenum>=0 && patchfilenum<npatchinfo)patchi = patchinfo + patchfilenum;
-    ShowHideInternalFaces();
+    ShowHideInternalFaces(meshi, show);
 
     n_normals_single=0;
     n_normals_double=0;
