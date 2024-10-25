@@ -9011,7 +9011,6 @@ static int particlestreakshowmenu=0;
 static int tourmenu=0,tourcopymenu=0;
 static int trainerviewmenu=0,mainmenu=0,zoneshowmenu=0,particleshowmenu=0;
 static int showobjectsmenu=0,showdevicesmenu=0,showobjectsplotmenu=0,devicetypemenu=0,spheresegmentmenu=0,propmenu=0;
-static int unloadplot3dmenu=0;
 static int showmultislicemenu=0;
 static int textureshowmenu=0;
 #ifdef _DEBUG
@@ -12365,23 +12364,6 @@ static int menu_count=0;
       char menulabel[1024];
       int ii;
 
-      CREATEMENU(unloadplot3dmenu,UnloadPlot3dMenu);
-      for(ii=0;ii<nplot3dinfo;ii++){
-        i=plot3dorderindex[ii];
-        plot3di = plot3dinfo + i;
-        if(ii==0){
-          strcpy(menulabel,plot3di->longlabel);
-          glutAddMenuEntry(menulabel,MENU_PLOT3D_DUMMY);
-        }
-        if(ii!=0&&strcmp(plot3di->longlabel,plot3dinfo[plot3dorderindex[ii-1]].longlabel)!=0){
-          glutAddMenuEntry(plot3di->longlabel,MENU_PLOT3D_DUMMY);
-        }
-        if(plot3di->loaded==0)continue;
-        STRCPY(menulabel,plot3dinfo[i].menulabel);
-        glutAddMenuEntry(menulabel,i);
-      }
-      glutAddMenuEntry(_("Unload all"),UNLOAD_ALL);
-
       nloadsubplot3dmenu=1;
       for(ii=1;ii<nplot3dinfo;ii++){
         int im1;
@@ -12498,12 +12480,7 @@ static int menu_count=0;
         if(ii==nplot3dinfo-1){
           glutAddMenuEntry("-", MENU_PLOT3D_DUMMY);
           glutAddMenuEntry(_("Settings..."), MENU_PLOT3D_SETTINGS);
-          if(nplot3dloaded>1){
-            GLUTADDSUBMENU(_("Unload"), unloadplot3dmenu);
-          }
-          else{
-            glutAddMenuEntry(_("Unload"), UNLOAD_ALL);
-          }
+          glutAddMenuEntry(_("Unload"), UNLOAD_ALL);
         }
       }
     }
