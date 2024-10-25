@@ -5132,7 +5132,7 @@ extern "C" void GLUIBoundsSetup(int main_window){
     glui_bounds->add_column_to_panel(PANEL_boundary_interior_data, false);
     CHECKBOX_hide_all_interior_patch_data = glui_bounds->add_checkbox_to_panel(PANEL_boundary_interior_data, _("Hide all"), &show_all_interior_patch_data, HIDE_ALL_INTERIOR_PATCH_DATA, BoundBoundCB);
 
-    glui_bounds->add_checkbox_to_panel(ROLLOUT_boundary_settings, _("output patch face info"),     &outout_patch_faces);
+    glui_bounds->add_checkbox_to_panel(ROLLOUT_boundary_settings, _("output patch info when loading"),     &outout_patch_faces);
 
     if(nboundaryslicedups > 0){
       ROLLOUT_boundary_duplicates = glui_bounds->add_rollout_to_panel(ROLLOUT_bound, "Duplicates", false,BOUNDARY_DUPLICATE_ROLLOUT,SubBoundRolloutCB);

@@ -11,8 +11,6 @@
 #include "IOscript.h"
 #include "getdata.h"
 
-#define FIRST_TIME 1
-
 #define BOUNDARY_CELL_CENTERED 0
 #define BOUNDARY_NODE_CENTERED 1
 
@@ -24,54 +22,36 @@
 
 /* ------------------ OutputBoundaryData ------------------------ */
 
-void OutputBoundaryData(char *csvfile, patchdata *patchi, int first_time, float *csvtime){
+void OutputBoundaryData(patchdata *patchi){
   int iframe;
   float *vals;
   float *xplt, *yplt, *zplt;
   FILE *csvstream=NULL;
-  int max_frame;
-  char *patchfile;
+  char *patchfile, csvfile[1024];
   meshdata *meshi;
 
   patchfile = patchi->file;
   meshi = meshinfo + patchi->blocknumber;
 
   if(patchout_tmin > patchout_tmax)return;
-  if(first_time== FIRST_TIME){
-    csvstream = FOPEN_2DIR(csvfile, "w");
-  }
-  else{
-    csvstream = FOPEN_2DIR(csvfile, "a");
-  }
+  strcpy(csvfile, patchi->file);
+  strcat(csvfile, ".csv");
+  csvstream = FOPEN_2DIR(csvfile, "w");
   if(csvstream==NULL)return;
-  if(first_time==FIRST_TIME){
-    fprintf(csvstream,"%s\n",patchfile);
-    fprintf(csvstream,"time interval:,%f,%f\n",patchout_tmin,patchout_tmax);
-    fprintf(csvstream,"region:,%f,%f,%f,%f,%f,%f\n\n",patchout_xmin,patchout_xmax,patchout_ymin,patchout_ymax,patchout_zmin,patchout_zmax);
-  }
+  fprintf(csvstream,"%s\n",patchfile);
+  fprintf(csvstream,"time interval:,%f,%f\n",patchout_tmin,patchout_tmax);
+  fprintf(csvstream,"region:,%f,%f,%f,%f,%f,%f\n\n",patchout_xmin,patchout_xmax,patchout_ymin,patchout_ymax,patchout_zmin,patchout_zmax);
 
   vals = meshi->patchval;
   xplt = meshi->xplt_orig;
   yplt = meshi->yplt_orig;
   zplt = meshi->zplt_orig;
 
-  if(csvtime == NULL){
-    max_frame = meshi->maxtimes_boundary;
-  }
-  else{
-    max_frame = 1;
-  }
-
-  for(iframe=0;iframe<max_frame;iframe++){
+  for(iframe=0;iframe<patchi->ntimes;iframe++){
     int ipatch;
     float pt;
 
-    if(csvtime == NULL){
-      pt = meshi->patch_times[iframe];
-    }
-    else{
-      pt = *csvtime;
-    }
+    pt = meshi->patch_times[iframe];
     if(pt<patchout_tmin||pt>patchout_tmax){
       vals+=meshi->npatchsize;
       continue;
@@ -101,20 +81,20 @@ void OutputBoundaryData(char *csvfile, patchdata *patchi, int first_time, float 
       jmax=j2;
       kmin=k1;
       kmax=k2;
-      for(i=0;i<meshi->ibar;i++){
+      for(i=i1;i<i2;i++){
         if(xplt[i]<=patchout_xmin&&patchout_xmin<=xplt[i+1])imin=i;
         if(xplt[i]<=patchout_xmax&&patchout_xmax<=xplt[i+1])imax=i;
       }
-      for(j=0;j<meshi->jbar;j++){
+      for(j=j1;j<j2;j++){
         if(yplt[j]<=patchout_ymin&&patchout_ymin<=yplt[j+1])jmin=j;
         if(yplt[j]<=patchout_ymax&&patchout_ymax<=yplt[j+1])jmax=j;
       }
-      for(k=0;k<meshi->kbar;k++){
+      for(k=k1;k<k2;k++){
         if(zplt[k]<=patchout_zmin&&patchout_zmin<=zplt[k+1])kmin=k;
         if(zplt[k]<=patchout_zmax&&patchout_zmax<=zplt[k+1])kmax=k;
       }
 
-      fprintf(csvstream,"time:,%f,patch %i, of, %i\n",pt,ipatch+1,patchi->npatches);
+      fprintf(csvstream,"\ntime:,%f,patch %i, of, %i\n",pt,ipatch+1,patchi->npatches);
       fprintf(csvstream,"region:,%i,%i,%i,%i,%i,%i\n",i1,i2,j1,j2,k1,k2);
       fprintf(csvstream,",%f,%f,%f,%f,%f,%f\n\n",xplt[i1],xplt[i2],yplt[j1],yplt[j2],zplt[k1],zplt[k2]);
       if(i1==i2){
@@ -198,7 +178,6 @@ void OutputBoundaryData(char *csvfile, patchdata *patchi, int first_time, float 
     }
   }
   fclose(csvstream);
-
 }
 
 /* ------------------ GetBoundaryIndex ------------------------ */
@@ -1385,7 +1364,6 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
   float patchmin_global, patchmax_global;
   int local_first,nsize;
   int npatchvals;
-  char patchcsvfile[1024];
   int framestart;
 #ifdef pp_BOUNDFRAME
   int time_frame = ALL_FRAMES;
@@ -1404,10 +1382,6 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
   patchi = patchinfo + ifile;
   if(patchi->loaded==0&&load_flag==UNLOAD)return 0;
   if(strcmp(patchi->label.shortlabel,"wc")==0)wallcenter=1;
-
-  if(output_patchdata==1){
-    sprintf(patchcsvfile,"%s_bndf_%04i.csv",fdsprefix,ifile);
-  }
 
   for(n = 0; n < 6; n++){
     patchi->meshfaceinfo[n] = NULL;
@@ -2303,12 +2277,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
   STOP_TIMER(read_time);
   CheckMemory;
 
-  /* convert patch values into integers pointing to an rgb color table */
-
   if(loadpatchbysteps==UNCOMPRESSED_ALLFRAMES){
-    if(output_patchdata==1){
-      OutputBoundaryData(patchcsvfile,patchi,FIRST_TIME,NULL);
-    }
     npatchvals = patchi->ntimes*meshi->npatchsize;
     if(npatchvals==0||NewResizeMemory(meshi->cpatchval,sizeof(unsigned char)*npatchvals)==0){
       *errorcode=1;
@@ -2392,6 +2361,19 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
 
     ShowInternalBlockages();
     update_boundary_loaded = 1;
+
+    if(loadpatchbysteps==UNCOMPRESSED_ALLFRAMES && output_patchdata==1){
+      int j;
+
+      for(j=0; j<npatchinfo; j++){
+        patchdata *patchj;
+
+        patchj = patchinfo + j;
+        if(patchj->loaded == 0)continue;
+        OutputBoundaryData(patchj);
+      }
+    }
+
 
     CheckMemory;
     GLUIUpdateBoundaryListIndex(patchfilenum);
