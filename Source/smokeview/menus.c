@@ -8550,6 +8550,7 @@ void InitLoadMultiSliceMenu(int *loadmultislicemenuptr, int *loadsubmslicemenu, 
   else{
     glutAddMenuEntry(_("Show slice file sizes"), MENU_SLICE_FILE_SIZES);
   }
+  glutAddMenuEntry("-", MENU_DUMMY);
   glutAddMenuEntry(_("Settings..."), MENU_SLICE_SETTINGS);
   if(nmultisliceloaded+geom_slice_loaded>1){
     GLUTADDSUBMENU(_("Unload"), unloadmultislicemenu);
@@ -8791,11 +8792,11 @@ void InitMultiVectorLoadMenu(int *loadmultivslicemenuptr, int *loadsubmvslicemen
     if(nsubvectorslicez>0)GLUTADDSUBMENU("Load all z vector slices",       loadsubvectorslicezmenu);
     if(nsubvectorslicexyz>0)GLUTADDSUBMENU("Load all x,y,z vector slices", loadsubvectorslicexyzmenu);
   }
-  if(slicecoll.nmultivsliceinfo>0)glutAddMenuEntry("-", MENU_DUMMY);
 
   if(nslicedups > 0){
     GLUTADDSUBMENU(_("Duplicate vector slices"), duplicatevectorslicemenu);
   }
+  glutAddMenuEntry("-", MENU_DUMMY);
   glutAddMenuEntry(_("Settings..."), MENU_LOADVSLICE_SETTINGS);
   if(nvsliceloaded>1){
     GLUTADDSUBMENU(_("Unload"),unloadmultivslicemenu);
@@ -12159,8 +12160,8 @@ static int menu_count=0;
       if(nmeshes>1){
       }
     }
-    glutAddMenuEntry("-",MENU_DUMMY);
     glutAddMenuEntry("Particle number/file size", MENU_PART_NUM_FILE_SIZE);
+    glutAddMenuEntry("-",MENU_DUMMY);
     glutAddMenuEntry(_("Settings..."),     MENU_PART_SETTINGS);
     glutAddMenuEntry(_("Unload"), MENU_PARTICLE_UNLOAD_ALL);
   }
@@ -12351,9 +12352,14 @@ static int menu_count=0;
         }
 #endif
         glutAddMenuEntry(_("3D smoke file sizes"), MENU_SMOKE_FILE_SIZES);
+        glutAddMenuEntry("-", MENU_DUMMY3);
         glutAddMenuEntry(_("Settings..."), MENU_SMOKE_SETTINGS);
-        if(nsmoke3dloaded==1)glutAddMenuEntry(_("Unload"),UNLOAD_ALL);
-        if(nsmoke3dloaded>1)GLUTADDSUBMENU(_("Unload"),unloadsmoke3dmenu);
+        if(nsmoke3dloaded > 1){
+          GLUTADDSUBMENU(_("Unload"), unloadsmoke3dmenu);
+        }
+        else{
+          glutAddMenuEntry(_("Unload"), UNLOAD_ALL);
+        }
       }
     }
 
@@ -12540,13 +12546,10 @@ static int menu_count=0;
           glutAddMenuEntry(menulabel,i);
         }
       }
-
-//*** these same lines also appear below
-      glutAddMenuEntry("-",MENU_DUMMY3);
-
       if(nboundaryslicedups>0){
         GLUTADDSUBMENU(_("Duplicate boundary slices"),duplicateboundaryslicemenu);
       }
+      glutAddMenuEntry("-",MENU_DUMMY3);
       glutAddMenuEntry(_("Settings..."), MENU_BOUNDARY_SETTINGS);
       glutAddMenuEntry(_("Unload"),UNLOAD_ALL);
 
