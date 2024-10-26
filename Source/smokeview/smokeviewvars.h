@@ -376,7 +376,6 @@ SVEXTERN int SVDECL(compute_slice_file_sizes, 0);
 
 SVEXTERN int SVDECL(update_colorbar_digits, 0);
 
-SVEXTERN int SVDECL(show_bndf_mesh_interface, 0);
 SVEXTERN int SVDECL(ncolorlabel_digits, 4), SVDECL(ncolorlabel_padding, 0);
 SVEXTERN int SVDECL(ngridloc_digits, 4);
 SVEXTERN int SVDECL(ntick_decimals, 1);

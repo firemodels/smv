@@ -1752,17 +1752,8 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
         int doit;
 
         doit = 0;
-        if(show_bndf_mesh_interface==1){
-          if( (i1==0&&meshi->nabors[MLEFT]==NULL)||
-              (i2==ibartemp&&meshi->nabors[MRIGHT]==NULL)
-             ){
-            doit=1;
-          }
-        }
-        else{
-          if(i1==0||i2==ibartemp){
-            doit=1;
-          }
+        if(i1==0||i2==ibartemp){
+          doit=1;
         }
         if(doit==1){
           mesh_boundary = YES;
@@ -1876,17 +1867,8 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
         int doit;
 
         doit = 0;
-        if(show_bndf_mesh_interface==1){
-          if((j1==0&&meshi->nabors[MFRONT]==NULL)||
-             (j2==jbartemp&&meshi->nabors[MBACK]==NULL)
-            ){
-            doit = 1;
-          }
-        }
-        else{
-          if(j1==0||j2==jbartemp){
-            doit = 1;
-          }
+        if(j1==0||j2==jbartemp){
+          doit = 1;
         }
         if(doit==1){
           mesh_boundary = YES;
@@ -1998,17 +1980,8 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
         int doit;
 
         doit = 0;
-        if(show_bndf_mesh_interface==1){
-          if((k1==0&&meshi->nabors[MDOWN]==NULL)||
-             (k2==kbartemp&&meshi->nabors[MUP]==NULL)
-            ){
-            doit = 1;
-          }
-        }
-        else{
-          if(k1==0||k2==kbartemp){
-            doit = 1;
-          }
+        if(k1==0||k2==kbartemp){
+          doit = 1;
         }
         if(doit==1){
           mesh_boundary = YES;

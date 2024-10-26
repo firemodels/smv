@@ -12940,11 +12940,6 @@ int ReadIni2(char *inifile, int localfile){
       sscanf(buffer, "%i", &showpatch_both);
       ONEORZERO(showpatch_both);
     }
-    if(MatchINI(buffer, "BOUNDARYMESH") == 1){
-      fgets(buffer, 255, stream);
-      sscanf(buffer, "%i", &show_bndf_mesh_interface);
-      ONEORZERO(show_bndf_mesh_interface);
-    }
     if(MatchINI(buffer, "MESHOFFSET") == 1){
       int meshnum;
 
@@ -17078,8 +17073,6 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %i %f %i %i %i %i\n", showbeam_as_line,beam_line_width,use_beamcolor,beam_color[0], beam_color[1], beam_color[2]);
   fprintf(fileout, "BLENDMODE\n");
   fprintf(fileout, " %i %i %i\n", slices3d_max_blending, hrrpuv_max_blending,showall_3dslices);
-  fprintf(fileout, "BOUNDARYMESH\n");
-  fprintf(fileout, " %i\n", show_bndf_mesh_interface);
   fprintf(fileout, "BOUNDARYTWOSIDE\n");
   fprintf(fileout, " %i\n", showpatch_both);
   fprintf(fileout, "CLIP\n");

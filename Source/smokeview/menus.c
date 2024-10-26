@@ -61,7 +61,6 @@ float     part_load_time;
 
 #define MENU_OPTION_TRAINERMENU 2
 
-#define MENU_BNDF_SHOW_MESH_INTERFACE -8
 #define MENU_BNDF_MIRROR              -5
 #define MENU_BNDF_OPEN                -9
 
@@ -6220,10 +6219,6 @@ void LoadBoundaryMenu(int value){
       show_open_boundary = 1 - show_open_boundary;
       updatemenu = 1;
       break;
-    case MENU_BNDF_SHOW_MESH_INTERFACE:
-      show_bndf_mesh_interface = 1-show_bndf_mesh_interface;
-      updatemenu = 1;
-      break;
     case MENU_BOUNDARY_SETTINGS:
       GLUIShowBoundsDialog(DLG_BOUNDARY);
       break;
@@ -8984,7 +8979,6 @@ static int sliceloadoptionmenu = 0, vectorsliceloadoptionmenu = 0;
 static int isosurfacemenu=0, isovariablemenu=0, levelmenu=0;
 static int fontmenu=0, aperturemenu=0,dialogmenu=0,zoommenu=0;
 static int gridslicemenu=0, griddigitsmenu=0, blockagemenu=0, immersedmenu=0, loadpatchmenu=0, ventmenu=0, circularventmenu=0;
-static int includepatchmenu=0;
 static int loadisomenu=0, isosurfacetypemenu=0,showpatchextmenu=0;
 static int geometrymenu=0, loadunloadmenu=0, reloadmenu=0, fileinfomenu=0, aboutmenu=0, disclaimermenu=0, terrain_obst_showmenu=0;
 static int scriptmenu=0;
@@ -12495,22 +12489,6 @@ static int menu_count=0;
 
     if(npatchinfo>0){
       int ii;
-
-      if(nmeshes>1||n_mirrorvents>0||n_openvents>0){
-        CREATEMENU(includepatchmenu, LoadBoundaryMenu);
-        if(nmeshes>1){
-          if(show_bndf_mesh_interface==1)glutAddMenuEntry("*Mesh interface", MENU_BNDF_SHOW_MESH_INTERFACE);
-          if(show_bndf_mesh_interface==0)glutAddMenuEntry("Mesh interface", MENU_BNDF_SHOW_MESH_INTERFACE);
-        }
-        if(n_mirrorvents>0){
-          if(show_mirror_boundary==1)glutAddMenuEntry("*Mirror surface", MENU_BNDF_MIRROR);
-          if(show_mirror_boundary==0)glutAddMenuEntry("Mirror surface", MENU_BNDF_MIRROR);
-        }
-        if(n_openvents>0){
-          if(show_open_boundary==1)glutAddMenuEntry("*Open vent", MENU_BNDF_OPEN);
-          if(show_open_boundary==0)glutAddMenuEntry("Open vent", MENU_BNDF_OPEN);
-        }
-      }
 
       nloadpatchsubmenus=0;
 
