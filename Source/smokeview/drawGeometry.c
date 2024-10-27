@@ -2357,14 +2357,18 @@ void ObstOrVent2Faces(const meshdata *meshi,blockagedata *bc,
   }
 }
 
-/* ------------------ UpdateFaces ------------------------ */
+/* ------------------ UpdateFacesWorker ------------------------ */
 
-void UpdateFaces(void){
+void UpdateFacesWorker(void){
   int i;
 
+  INIT_PRINT_TIMER(timer_allocate_faces);
   AllocateFaces();
+  PRINT_TIMER(timer_allocate_faces, AllocateFaces);
   updatefaces=0;
   have_vents_int=0;
+
+  INIT_PRINT_TIMER(timer_update_faces_1);
   for(i=0;i<nmeshes;i++){
     meshdata *meshi;
     facedata *faceptr;
@@ -2405,10 +2409,31 @@ void UpdateFaces(void){
     }
     meshi->nfaces=faceptr-meshi->faceinfo;
   }
+  PRINT_TIMER(timer_update_faces_1,"UpdateFaces(loop over meshes)");
+
+  INIT_PRINT_TIMER(timer_update_hidden_faces);
   UpdateHiddenFaces();
+  PRINT_TIMER(timer_update_hidden_faces, "UpdateHiddenFaces");
+
+  INIT_PRINT_TIMER(timer_update_face_lists);
   UpdateFaceLists();
+  PRINT_TIMER(timer_update_face_lists,"UpdateFaceLists(in UpdateFaces)");
+
+  INIT_PRINT_TIMER(timer_update_select_faces);
   UpdateSelectFaces();
+  PRINT_TIMER(timer_update_select_faces, "UpdateSelectFaces");
+
+  INIT_PRINT_TIMER(timer_update_select_blocks);
   UpdateSelectBlocks();
+  PRINT_TIMER(timer_update_select_blocks, "UpdateSelectBlocks");
+}
+
+/* ------------------ UpdateFaces ------------------------ */
+
+void UpdateFaces(void){
+  INIT_PRINT_TIMER(timer_update_faces);
+  UpdateFacesWorker();
+  PRINT_TIMER(timer_update_faces, "UpdateFaces");
 }
 
 /* ------------------ ClipFace ------------------------ */
@@ -2653,7 +2678,7 @@ int IsVentVisible(ventdata *vi){
 
 /* ------------------ UpdateFaceLists ------------------------ */
 
-void UpdateFaceLists(void){
+void UpdateFaceListsWorker(void){
   int n_textures, n_outlines;
   int n_normals_single, n_normals_double, n_transparent_double;
   int i;
@@ -2975,6 +3000,14 @@ void UpdateFaceLists(void){
     meshi = meshinfo  + i;
     n_geom_triangles += meshi->nface_textures+meshi->nface_normals_single+meshi->nface_normals_double;
   }
+}
+
+/* ------------------ UpdateFaceLists ------------------------ */
+
+void UpdateFaceLists(void){
+  INIT_PRINT_TIMER(timer_update_face_lists);
+  UpdateFaceListsWorker();
+  PRINT_TIMER(timer_update_face_lists, "UpdateFacesLists");
 }
 
 /* ------------------ DrawSelectFaces ------------------------ */
