@@ -1865,8 +1865,10 @@ void Keyboard(unsigned char key, int flag){
       break;
     case 'F':
       hide_overlaps=1-hide_overlaps;
+#ifdef pp_HIDDEN_FACES
       updatehiddenfaces=1;
       UpdateHiddenFaces();
+#endif
       GLUIUpdateShowHideButtons();
       glutPostRedisplay();
       break;

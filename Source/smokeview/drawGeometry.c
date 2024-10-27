@@ -2364,7 +2364,7 @@ void UpdateFacesWorker(void){
 
   INIT_PRINT_TIMER(timer_allocate_faces);
   AllocateFaces();
-  PRINT_TIMER(timer_allocate_faces, AllocateFaces);
+  PRINT_TIMER(timer_allocate_faces, "AllocateFaces");
   updatefaces=0;
   have_vents_int=0;
 
@@ -2411,9 +2411,11 @@ void UpdateFacesWorker(void){
   }
   PRINT_TIMER(timer_update_faces_1,"UpdateFaces(loop over meshes)");
 
+#ifdef pp_HIDDEN_FACES
   INIT_PRINT_TIMER(timer_update_hidden_faces);
   UpdateHiddenFaces();
   PRINT_TIMER(timer_update_hidden_faces, "UpdateHiddenFaces");
+#endif
 
   INIT_PRINT_TIMER(timer_update_face_lists);
   UpdateFaceLists();
@@ -2686,7 +2688,9 @@ void UpdateFaceListsWorker(void){
 
   GetDrawingParms(&drawing_transparent, &drawing_blockage_transparent, &drawing_vent_transparent);
 
+#ifdef pp_HIDDEN_FACES
   if(updatehiddenfaces==1)UpdateHiddenFaces();
+#endif
   updatefacelists=0;
   nface_normals_single=0;
   nface_normals_double=0;
@@ -3636,6 +3640,7 @@ facedata *GetFaceNabor(meshdata *meshi, facedata *facei, int dir){
   return NULL;
 }
 
+#ifdef pp_HIDDEN_FACES
 /* ------------------ UpdateHiddenFaces ------------------------ */
 
 void UpdateHiddenFaces(void){
@@ -3769,6 +3774,7 @@ void UpdateHiddenFaces(void){
   }
   if(hide_overlaps!=0)PRINTF(" complete\n");
 }
+#endif
 
 /* ------------------ AllocateFaces ------------------------ */
 
