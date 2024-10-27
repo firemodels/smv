@@ -1603,30 +1603,6 @@ void SetInteriorBlockages(void){
       }
     }
   }
-  for(i = 0; i < nmeshes; i++){
-    int j;
-    meshdata *meshi;
-    int *is_extface;
-
-    meshi = meshinfo + i;
-    is_extface = meshi->is_extface;
-    for(j = 0; j < meshi->nbptrs; j++){
-      blockagedata *bc;
-      int *ijk, k;
-
-      bc = meshi->blockageinfoptrs[j];
-      ijk = bc->ijk;
-      for(k = 0; k < 6; k++){
-        bc->inside_domain[k] = 1;
-      }
-      if(ijk[0] == 0                                )bc->inside_domain[0] = 0;
-      if(ijk[1] == meshi->ibar                      )bc->inside_domain[1] = 0;
-      if(ijk[2] == 0           && is_extface[2] == 1)bc->inside_domain[2] = 1;
-      if(ijk[3] == meshi->jbar && is_extface[3] == 1)bc->inside_domain[3] = 1;
-      if(ijk[4] == 0           && is_extface[4] == 1)bc->inside_domain[4] = 1;
-      if(ijk[5] == meshi->kbar && is_extface[5] == 1)bc->inside_domain[5] = 1;
-    }
-  }
 }
 
 /* ------------------ UpdateCADTextCoords ------------------------ */
