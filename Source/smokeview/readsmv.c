@@ -4712,11 +4712,6 @@ void SetupMeshWalls(void){
     float xyz[3], *bmin, *bmax, bmid[3];
     int *is_extface;
 
-    if(i == 3){
-      int xxx;
-
-      xxx = 1;
-    }
     meshi = meshinfo + i;
     bmin = meshi->boxmin;
     bmax = meshi->boxmax;
