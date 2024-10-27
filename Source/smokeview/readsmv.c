@@ -963,7 +963,7 @@ void InitMesh(meshdata *meshi){
   meshi->nsmokeplaneinfo = 0;
   meshi->opacity_adjustments = NULL;
   for(i = 0; i<6; i++){
-    meshi->is_extface[i] = MESH_EXT;
+    meshi->is_extface[i] = 1;
   }
   meshi->ncutcells = 0;
   meshi->cutcells = NULL;
@@ -4712,6 +4712,11 @@ void SetupMeshWalls(void){
     float xyz[3], *bmin, *bmax, bmid[3];
     int *is_extface;
 
+    if(i == 3){
+      int xxx;
+
+      xxx = 1;
+    }
     meshi = meshinfo + i;
     bmin = meshi->boxmin;
     bmax = meshi->boxmax;
@@ -4725,32 +4730,32 @@ void SetupMeshWalls(void){
     xyz[0] = bmin[0] - EPSMESH;
     xyz[1] = bmid[1];
     xyz[2] = bmid[2];
-    if(InExterior(xyz) == 0)is_extface[0] = MESH_INT;
+    if(InExterior(xyz) == 0)is_extface[0] = 0;
 
     xyz[0] = bmax[0] + EPSMESH;
     xyz[1] = bmid[1];
     xyz[2] = bmid[2];
-    if(InExterior(xyz) == 0)is_extface[1] = MESH_INT;
+    if(InExterior(xyz) == 0)is_extface[1] = 0;
 
     xyz[0] = bmid[0];
     xyz[1] = bmin[1] - EPSMESH;
     xyz[2] = bmid[2];
-    if(InExterior(xyz) == 0)is_extface[2] = MESH_INT;
+    if(InExterior(xyz) == 0)is_extface[2] = 0;
 
     xyz[0] = bmid[0];
     xyz[1] = bmax[1] + EPSMESH;
     xyz[2] = bmid[2];
-    if(InExterior(xyz) == 0)is_extface[3] = MESH_INT;
+    if(InExterior(xyz) == 0)is_extface[3] = 0;
 
     xyz[0] = bmid[0];
     xyz[1] = bmid[1];
     xyz[2] = bmin[2] - EPSMESH;
-    if(InExterior(xyz) == 0)is_extface[4] = MESH_INT;
+    if(InExterior(xyz) == 0)is_extface[4] = 0;
 
     xyz[0] = bmid[0];
     xyz[1] = bmid[1];
     xyz[2] = bmax[2] + EPSMESH;
-    if(InExterior(xyz) == 0)is_extface[5] = MESH_INT;
+    if(InExterior(xyz) == 0)is_extface[5] = 0;
   }
 }
 
@@ -6957,12 +6962,12 @@ void InitMeshBlockages(void){
 
       bc = meshi->blockageinfoptrs[j];
 
-      if(bc->ijk[0] == 0 && is_extface[0] == MESH_INT)counts[0]++;
-      if(bc->ijk[1] == meshi->ibar &&  is_extface[1] == MESH_INT)counts[1]++;
-      if(bc->ijk[2] == 0 && is_extface[2] == MESH_INT)counts[2]++;
-      if(bc->ijk[3] == meshi->jbar && is_extface[3] == MESH_INT)counts[3]++;
-      if(bc->ijk[4] == 0 && is_extface[4] == MESH_INT)counts[4]++;
-      if(bc->ijk[5] == meshi->kbar && is_extface[5] == MESH_INT)counts[5]++;
+      if(bc->ijk[0] == 0           && is_extface[0] == 0)counts[0]++;
+      if(bc->ijk[1] == meshi->ibar && is_extface[1] == 0)counts[1]++;
+      if(bc->ijk[2] == 0           && is_extface[2] == 0)counts[2]++;
+      if(bc->ijk[3] == meshi->jbar && is_extface[3] == 0)counts[3]++;
+      if(bc->ijk[4] == 0           && is_extface[4] == 0)counts[4]++;
+      if(bc->ijk[5] == meshi->kbar && is_extface[5] == 0)counts[5]++;
     }
     for(j=0; j<6; j++){
       if(counts[j]>0)NewMemory((void **)&meshi->bc_faces[j],  meshi->nbptrs*sizeof(blockagedata *));
@@ -6975,23 +6980,12 @@ void InitMeshBlockages(void){
 
       bc = meshi->blockageinfoptrs[j];
 
-      bclist = meshi->bc_faces[0];
-      if(bc->ijk[0] == 0 && is_extface[0] == MESH_INT)          bclist[counts[0]++] = bc;
-
-      bclist = meshi->bc_faces[1];
-      if(bc->ijk[1] == meshi->ibar && is_extface[1] == MESH_INT)bclist[counts[1]++] = bc;
-
-      bclist = meshi->bc_faces[2];
-      if(bc->ijk[2] == 0 && is_extface[2] == MESH_INT)          bclist[counts[2]++] = bc;
-
-      bclist = meshi->bc_faces[3];
-      if(bc->ijk[3] == meshi->jbar && is_extface[3] == MESH_INT)bclist[counts[3]++] = bc;
-
-      bclist = meshi->bc_faces[4];
-      if(bc->ijk[4] == 0 && is_extface[4] == MESH_INT)          bclist[counts[4]++] = bc;
-
-      bclist = meshi->bc_faces[5];
-      if(bc->ijk[5] == meshi->kbar && is_extface[5] == MESH_INT)bclist[counts[5]++] = bc;
+      bclist = meshi->bc_faces[0]; if(bc->ijk[0] == 0           && is_extface[0] == 0)bclist[counts[0]++] = bc;
+      bclist = meshi->bc_faces[1]; if(bc->ijk[1] == meshi->ibar && is_extface[1] == 0)bclist[counts[1]++] = bc;
+      bclist = meshi->bc_faces[2]; if(bc->ijk[2] == 0           && is_extface[2] == 0)bclist[counts[2]++] = bc;
+      bclist = meshi->bc_faces[3]; if(bc->ijk[3] == meshi->jbar && is_extface[3] == 0)bclist[counts[3]++] = bc;
+      bclist = meshi->bc_faces[4]; if(bc->ijk[4] == 0           && is_extface[4] == 0)bclist[counts[4]++] = bc;
+      bclist = meshi->bc_faces[5]; if(bc->ijk[5] == meshi->kbar && is_extface[5] == 0)bclist[counts[5]++] = bc;
     }
   }
 }

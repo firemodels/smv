@@ -134,11 +134,6 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 #define COLORBAR_LISTA               30
 #define COLORBAR_LISTB               31
 
-
-#define MESH_INT  0
-#define MESH_EXT  1
-#define MESH_BOTH 2
-
 //*** need to consolidate these two parameters
 #define MESHEPS 0.001
 #define MESH_EPS 0.0001

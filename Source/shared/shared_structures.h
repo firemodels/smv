@@ -191,9 +191,7 @@ typedef struct _meshdata {
   float x0, x1, y0, y1, z0, z1;
   int drawsides[7];
   int extsides[7];   // 1 if on exterior side of a supermesh, 0 otherwise
-  int is_extface[6]; //  MESH_EXT if face i is completely adjacent to exterior,
-                     //  MESH_INT if face i is completely adjacent to another mesh,
-                     // MESH_BOTH if face i is neither
+  int is_extface[6];
   int inside;
   int in_frustum;    // 1 if part or all of mesh is in the view frustum
   float boxmin[3], boxmiddle[3], boxmax[3], dbox[3], boxeps[3], dcell, dcell3[3], verts[24], eyedist;
