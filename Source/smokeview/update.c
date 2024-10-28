@@ -3021,6 +3021,23 @@ void UpdateDisplay(void){
       meshi->c_iblank_y0        = meshi->c_iblank_y0_temp;
       meshi->c_iblank_z0        = meshi->c_iblank_z0_temp;
     }
+#ifdef pp_HIDDEN_BLOCKAGES
+    INIT_PRINT_TIMER(timer_hidden_blockages);
+    int nhidden_blockages = 0;
+    for(ig = 0; ig < nmeshes; ig++){
+      meshdata *meshi;
+      int j;
+
+      meshi = meshinfo + ig;
+      void SetHiddenBlockages(meshdata *meshi);
+      SetHiddenBlockages(meshi);
+      for(j = 0; j < meshi->nbptrs; j++){
+        if(meshi->blockageinfoptrs[j]->hidden == 1)nhidden_blockages++;
+      }
+    }
+    if(nhidden_blockages>0)printf("%i blockages out of %i hidden\n", nhidden_blockages, ntotal_blockages);
+    PRINT_TIMER(timer_hidden_blockages, "SetHiddenBlockages");
+#endif
     update_make_iblank = 0;
     update_setvents    = 1;
     update_setcvents   = 1;
