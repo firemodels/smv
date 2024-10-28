@@ -3669,6 +3669,7 @@ void SetScreenSize(int *width, int *height){
   }
 }
 
+
 /* ------------------ ReshapeCB ------------------------ */
 
 void ReshapeCB(int width, int height){
@@ -3688,6 +3689,7 @@ void ReshapeCB(int width, int height){
   GLUIGetPixelsPerTriangle();
   windowresized=1;
   CopyCamera(camera_current,camera_save);
+  updatefaces = 0;
   windowsize_pointer_old = -1;
   GLUIUpdateWindowSizeList();
   update_reshape = 2;
@@ -4206,6 +4208,7 @@ void SetMainWindow(void){
 }
 
 /* ------------------ ResizeWindow ------------------------ */
+
 
 void ResizeWindow(int width, int height){
   float wscaled, hscaled;
