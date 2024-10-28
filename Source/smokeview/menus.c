@@ -8949,9 +8949,9 @@ void MakeColorbarMenu(int *menuptr,
   *menuptr     = menu;
 }
 
-/* ------------------ InitMenus ------------------------ */
+/* ------------------ InitMenusWorkder ------------------------ */
 
-void InitMenus(void){
+void InitMenusWorker(void){
   int i;
   int nmultisliceloaded;
   int showhide_data = 0;
@@ -13149,6 +13149,14 @@ static int menu_count=0;
     if(updatemenu==1)PRINTF("menu updated again\n");
 #endif
 
+}
+
+/* ------------------ InitMenus ------------------------ */
+
+void InitMenus(void){
+  INIT_PRINT_TIMER(timer_initmenus);
+  InitMenusWorker();
+  PRINT_TIMER(timer_initmenus, "InitMenus");
 }
 
 /* ------------------ MenuStatusCB ------------------------ */
