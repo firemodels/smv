@@ -3690,8 +3690,10 @@ void ReshapeCB(int width, int height){
 
   windowresized=1;
   CopyCamera(camera_current,camera_save);
+#ifdef pp_RESHAPE
   updatefaces = 0;
   updatefacelists = 0;
+#endif
   windowsize_pointer_old = -1;
   GLUIUpdateWindowSizeList();
   update_reshape = 2;
