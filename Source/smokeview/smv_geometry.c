@@ -1217,6 +1217,112 @@ int MakeIBlankCarve(void){
   return 0;
 }
 
+#ifdef pp_HIDDEN_BLOCKAGES
+/* ------------------ SetHiddenBlockages ------------------------ */
+
+void SetHiddenBlockages(meshdata *meshi){
+  int i;
+  int ibar, jbar, kbar;
+  char *iblank;
+
+  iblank = meshi->c_iblank_cell;
+  ibar = meshi->ibar;
+  jbar = meshi->jbar;
+  kbar = meshi->kbar;
+
+  for(i = 0; i < meshi->nbptrs; i++){
+    blockagedata *bc;
+    int ii, jj, kk, ijk;
+    int skip;
+
+    bc = meshi->blockageinfoptrs[i];
+    bc->hidden = 0;
+    if(bc->ijk[0] == 0 || bc->ijk[1] == meshi->ibar)continue;
+    if(bc->ijk[2] == 0 || bc->ijk[3] == meshi->jbar)continue;
+    if(bc->ijk[4] == 0 || bc->ijk[5] == meshi->kbar)continue;
+
+
+    bc->hidden = 1;
+
+    // check bottom and top planes
+
+    skip = 0;
+    for(ii = bc->ijk[0]; ii <= bc->ijk[1]; ii++){
+      for(jj = bc->ijk[2]; jj <= bc->ijk[3]; jj++){
+        kk = bc->ijk[4];
+        ijk = IJKCELL(ii, jj, kk);
+        if(iblank[ijk] == GAS){
+          skip = 1;
+          bc->hidden = 0;
+          break;
+        }
+
+        kk = bc->ijk[5];
+        ijk = IJKCELL(ii, jj, kk);
+        if(iblank[ijk] == GAS){
+          skip = 1;
+          bc->hidden = 0;
+          break;
+        }
+      }
+      if(skip == 1)break;
+    }
+
+    // check left and right planes
+
+    if(bc->hidden == 1){
+      skip = 0;
+      for(jj = bc->ijk[2]; jj <= bc->ijk[3]; jj++){
+        for(kk = bc->ijk[4]; kk <= bc->ijk[5]; kk++){
+          ii = bc->ijk[0];
+          ijk = IJKCELL(ii, jj, kk);
+          if(iblank[ijk] == GAS){
+            skip = 1;
+            bc->hidden = 0;
+            break;
+          }
+
+          ii = bc->ijk[1];
+          ijk = IJKCELL(ii, jj, kk);
+          if(iblank[ijk] == GAS){
+            skip = 1;
+            bc->hidden = 0;
+            break;
+          }
+        }
+        if(skip == 1)break;
+      }
+    }
+
+  // check front and back planes
+
+    if(bc->hidden == 1){
+      skip = 0;
+      for(ii = bc->ijk[0]; ii <= bc->ijk[1]; ii++){
+        for(kk = bc->ijk[4]; kk <= bc->ijk[5]; kk++){
+          jj = bc->ijk[2];
+          ijk = IJKCELL(ii, jj, kk);
+          if(iblank[ijk] == GAS){
+            skip = 1;
+            bc->hidden = 0;
+            break;
+          }
+
+          jj = bc->ijk[3];
+          ijk = IJKCELL(ii, jj, kk);
+          if(iblank[ijk] == GAS){
+            skip = 1;
+            bc->hidden = 0;
+            break;
+          }
+        }
+        if(skip == 1)break;
+      }
+    }
+  }
+}
+#endif
+
 /* ------------------ MakeIBlank ------------------------ */
 
 int MakeIBlank(void){
@@ -1240,12 +1346,12 @@ int MakeIBlank(void){
     ijksize=(ibar+1)*(jbar+1)*(kbar+1);
 
     if(NewMemory((void **)&c_iblank_node_html, ijksize*sizeof(char))==0)return 1;
-    if(NewMemory((void **)&iblank_node,ijksize*sizeof(char))==0)return 1;
-    if(NewMemory((void **)&iblank_cell,ibar*jbar*kbar*sizeof(char))==0)return 1;
-    if(NewMemory((void **)&fblank_cell,ibar*jbar*kbar*sizeof(float))==0)return 1;
-    if(NewMemory((void **)&c_iblank_x,ijksize*sizeof(char))==0)return 1;
-    if(NewMemory((void **)&c_iblank_y,ijksize*sizeof(char))==0)return 1;
-    if(NewMemory((void **)&c_iblank_z,ijksize*sizeof(char))==0)return 1;
+    if(NewMemory((void **)&iblank_node,        ijksize*sizeof(char))==0)return 1;
+    if(NewMemory((void **)&iblank_cell,        ibar*jbar*kbar*sizeof(char))==0)return 1;
+    if(NewMemory((void **)&fblank_cell,        ibar*jbar*kbar*sizeof(float))==0)return 1;
+    if(NewMemory((void **)&c_iblank_x,         ijksize*sizeof(char))==0)return 1;
+    if(NewMemory((void **)&c_iblank_y,         ijksize*sizeof(char))==0)return 1;
+    if(NewMemory((void **)&c_iblank_z,         ijksize*sizeof(char))==0)return 1;
 
     meshi->c_iblank_node_html_temp = c_iblank_node_html;
     meshi->c_iblank_node0_temp     = iblank_node;
