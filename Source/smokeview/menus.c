@@ -61,7 +61,6 @@ float     part_load_time;
 
 #define MENU_OPTION_TRAINERMENU 2
 
-#define MENU_BNDF_SHOW_MESH_INTERFACE -8
 #define MENU_BNDF_MIRROR              -5
 #define MENU_BNDF_OPEN                -9
 
@@ -3421,7 +3420,7 @@ char *FileSize2Label(char *label, FILE_SIZE bytes){
 
 void Plot3DSummary(char *label, int count, FILE_SIZE file_size, float timer){
   char size_label[256], time_label[256], time_label2[256];
-  
+
   sprintf(label, "PLOT3D: loaded %i files, %s", count, FileSize2Label(size_label, file_size));
   Float2String(time_label2, timer, ncolorlabel_digits, force_fixedpoint);
   sprintf(time_label, " in %ss", time_label2);
@@ -3555,7 +3554,7 @@ void LoadUnloadMenu(int value){
     STOP_TIMER(plot3d_timer);
     if(file_count>0){
       char label[256];
-      
+
       Plot3DSummary(label, file_count, total_plot3d_filesize, plot3d_timer);
       printf("%s\n",label);
     }
@@ -5722,7 +5721,7 @@ void Plot3DListMenu(int value){
   STOP_TIMER(plot3d_timer);
   if(file_count>0){
     char label[256];
-      
+
     Plot3DSummary(label, file_count, total_plot3d_filesize, plot3d_timer);
     printf("%s\n",label);
   }
@@ -5780,7 +5779,7 @@ int LoadAllPlot3D(float time){
   STOP_TIMER(plot3d_timer);
   if(file_count>0){
     char label[256];
-      
+
     Plot3DSummary(label, file_count, total_plot3d_filesize, plot3d_timer);
     printf("%s\n",label);
   }
@@ -5838,7 +5837,7 @@ void LoadPlot3dMenu(int value){
       STOP_TIMER(plot3d_timer);
       if(file_count>0){
         char label[256];
-      
+
         Plot3DSummary(label, file_count, total_plot3d_filesize, plot3d_timer);
         printf("%s\n",label);
       }
@@ -5889,7 +5888,7 @@ void LoadPlot3dMenu(int value){
     STOP_TIMER(plot3d_timer);
     if(file_count>0){
       char label[256];
-      
+
       Plot3DSummary(label, file_count, total_plot3d_filesize, plot3d_timer);
       printf("%s\n",label);
     }
@@ -6220,10 +6219,6 @@ void LoadBoundaryMenu(int value){
       show_open_boundary = 1 - show_open_boundary;
       updatemenu = 1;
       break;
-    case MENU_BNDF_SHOW_MESH_INTERFACE:
-      show_bndf_mesh_interface = 1-show_bndf_mesh_interface;
-      updatemenu = 1;
-      break;
     case MENU_BOUNDARY_SETTINGS:
       GLUIShowBoundsDialog(DLG_BOUNDARY);
       break;
@@ -6321,7 +6316,9 @@ void ShowInternalBlockages(void){
   updatemenu = 1;
   updatefaces = 1;
   updatefacelists = 1;
+#ifdef pp_HIDDEN_FACES
   updatehiddenfaces=1;
+#endif
 }
 
 /* ------------------ ShowBoundaryMenu ------------------------ */
@@ -6836,7 +6833,9 @@ void BlockageMenu(int value){
   visBLOCKold=value;
   updatemenu=1;
   updatefacelists=1;
+#ifdef pp_HIDDEN_FACES
   updatehiddenfaces=1;
+#endif
   GLUTPOSTREDISPLAY;
 }
 
@@ -8550,6 +8549,7 @@ void InitLoadMultiSliceMenu(int *loadmultislicemenuptr, int *loadsubmslicemenu, 
   else{
     glutAddMenuEntry(_("Show slice file sizes"), MENU_SLICE_FILE_SIZES);
   }
+  glutAddMenuEntry("-", MENU_DUMMY);
   glutAddMenuEntry(_("Settings..."), MENU_SLICE_SETTINGS);
   if(nmultisliceloaded+geom_slice_loaded>1){
     GLUTADDSUBMENU(_("Unload"), unloadmultislicemenu);
@@ -8791,11 +8791,11 @@ void InitMultiVectorLoadMenu(int *loadmultivslicemenuptr, int *loadsubmvslicemen
     if(nsubvectorslicez>0)GLUTADDSUBMENU("Load all z vector slices",       loadsubvectorslicezmenu);
     if(nsubvectorslicexyz>0)GLUTADDSUBMENU("Load all x,y,z vector slices", loadsubvectorslicexyzmenu);
   }
-  if(slicecoll.nmultivsliceinfo>0)glutAddMenuEntry("-", MENU_DUMMY);
 
   if(nslicedups > 0){
     GLUTADDSUBMENU(_("Duplicate vector slices"), duplicatevectorslicemenu);
   }
+  glutAddMenuEntry("-", MENU_DUMMY);
   glutAddMenuEntry(_("Settings..."), MENU_LOADVSLICE_SETTINGS);
   if(nvsliceloaded>1){
     GLUTADDSUBMENU(_("Unload"),unloadmultivslicemenu);
@@ -8983,7 +8983,6 @@ static int sliceloadoptionmenu = 0, vectorsliceloadoptionmenu = 0;
 static int isosurfacemenu=0, isovariablemenu=0, levelmenu=0;
 static int fontmenu=0, aperturemenu=0,dialogmenu=0,zoommenu=0;
 static int gridslicemenu=0, griddigitsmenu=0, blockagemenu=0, immersedmenu=0, loadpatchmenu=0, ventmenu=0, circularventmenu=0;
-static int includepatchmenu=0;
 static int loadisomenu=0, isosurfacetypemenu=0,showpatchextmenu=0;
 static int geometrymenu=0, loadunloadmenu=0, reloadmenu=0, fileinfomenu=0, aboutmenu=0, disclaimermenu=0, terrain_obst_showmenu=0;
 static int scriptmenu=0;
@@ -9011,7 +9010,6 @@ static int particlestreakshowmenu=0;
 static int tourmenu=0,tourcopymenu=0;
 static int trainerviewmenu=0,mainmenu=0,zoneshowmenu=0,particleshowmenu=0;
 static int showobjectsmenu=0,showdevicesmenu=0,showobjectsplotmenu=0,devicetypemenu=0,spheresegmentmenu=0,propmenu=0;
-static int unloadplot3dmenu=0, unloadpatchmenu=0;
 static int showmultislicemenu=0;
 static int textureshowmenu=0;
 #ifdef _DEBUG
@@ -12160,8 +12158,8 @@ static int menu_count=0;
       if(nmeshes>1){
       }
     }
-    glutAddMenuEntry("-",MENU_DUMMY);
     glutAddMenuEntry("Particle number/file size", MENU_PART_NUM_FILE_SIZE);
+    glutAddMenuEntry("-",MENU_DUMMY);
     glutAddMenuEntry(_("Settings..."),     MENU_PART_SETTINGS);
     glutAddMenuEntry(_("Unload"), MENU_PARTICLE_UNLOAD_ALL);
   }
@@ -12352,9 +12350,14 @@ static int menu_count=0;
         }
 #endif
         glutAddMenuEntry(_("3D smoke file sizes"), MENU_SMOKE_FILE_SIZES);
+        glutAddMenuEntry("-", MENU_DUMMY3);
         glutAddMenuEntry(_("Settings..."), MENU_SMOKE_SETTINGS);
-        if(nsmoke3dloaded==1)glutAddMenuEntry(_("Unload"),UNLOAD_ALL);
-        if(nsmoke3dloaded>1)GLUTADDSUBMENU(_("Unload"),unloadsmoke3dmenu);
+        if(nsmoke3dloaded > 1){
+          GLUTADDSUBMENU(_("Unload"), unloadsmoke3dmenu);
+        }
+        else{
+          glutAddMenuEntry(_("Unload"), UNLOAD_ALL);
+        }
       }
     }
 
@@ -12364,23 +12367,6 @@ static int menu_count=0;
       plot3ddata *plot3dim1, *plot3di;
       char menulabel[1024];
       int ii;
-
-      CREATEMENU(unloadplot3dmenu,UnloadPlot3dMenu);
-      for(ii=0;ii<nplot3dinfo;ii++){
-        i=plot3dorderindex[ii];
-        plot3di = plot3dinfo + i;
-        if(ii==0){
-          strcpy(menulabel,plot3di->longlabel);
-          glutAddMenuEntry(menulabel,MENU_PLOT3D_DUMMY);
-        }
-        if(ii!=0&&strcmp(plot3di->longlabel,plot3dinfo[plot3dorderindex[ii-1]].longlabel)!=0){
-          glutAddMenuEntry(plot3di->longlabel,MENU_PLOT3D_DUMMY);
-        }
-        if(plot3di->loaded==0)continue;
-        STRCPY(menulabel,plot3dinfo[i].menulabel);
-        glutAddMenuEntry(menulabel,i);
-      }
-      glutAddMenuEntry(_("Unload all"),UNLOAD_ALL);
 
       nloadsubplot3dmenu=1;
       for(ii=1;ii<nplot3dinfo;ii++){
@@ -12498,12 +12484,7 @@ static int menu_count=0;
         if(ii==nplot3dinfo-1){
           glutAddMenuEntry("-", MENU_PLOT3D_DUMMY);
           glutAddMenuEntry(_("Settings..."), MENU_PLOT3D_SETTINGS);
-          if(nplot3dloaded>1){
-            GLUTADDSUBMENU(_("Unload"), unloadplot3dmenu);
-          }
-          else{
-            glutAddMenuEntry(_("Unload"), UNLOAD_ALL);
-          }
+          glutAddMenuEntry(_("Unload"), UNLOAD_ALL);
         }
       }
     }
@@ -12512,42 +12493,8 @@ static int menu_count=0;
 
     if(npatchinfo>0){
       int ii;
-      int npatchloaded2=0;
-
-      if(nmeshes>1||n_mirrorvents>0||n_openvents>0){
-        CREATEMENU(includepatchmenu, LoadBoundaryMenu);
-        if(nmeshes>1){
-          if(show_bndf_mesh_interface==1)glutAddMenuEntry("*Mesh interface", MENU_BNDF_SHOW_MESH_INTERFACE);
-          if(show_bndf_mesh_interface==0)glutAddMenuEntry("Mesh interface", MENU_BNDF_SHOW_MESH_INTERFACE);
-        }
-        if(n_mirrorvents>0){
-          if(show_mirror_boundary==1)glutAddMenuEntry("*Mirror surface", MENU_BNDF_MIRROR);
-          if(show_mirror_boundary==0)glutAddMenuEntry("Mirror surface", MENU_BNDF_MIRROR);
-        }
-        if(n_openvents>0){
-          if(show_open_boundary==1)glutAddMenuEntry("*Open vent", MENU_BNDF_OPEN);
-          if(show_open_boundary==0)glutAddMenuEntry("Open vent", MENU_BNDF_OPEN);
-        }
-      }
 
       nloadpatchsubmenus=0;
-
-      CREATEMENU(unloadpatchmenu,UnloadBoundaryMenu);
-      for(ii=0;ii<npatchinfo;ii++){
-        patchdata *patchi;
-        char menulabel[1024];
-
-        i = patchorderindex[ii];
-        patchi = patchinfo + i;
-        if(patchi->loaded==1){
-          if(patchi->filetype_label==NULL||strcmp(patchi->filetype_label, "INCLUDE_GEOM")!=0){
-            STRCPY(menulabel, patchi->menulabel);
-            glutAddMenuEntry(menulabel, i);
-            npatchloaded2++;
-          }
-        }
-      }
-      glutAddMenuEntry(_("Unload all"),UNLOAD_ALL);
 
       if(nmeshes>1&&loadpatchsubmenus==NULL){
         NewMemory((void **)&loadpatchsubmenus,npatchinfo*sizeof(int));
@@ -12581,20 +12528,12 @@ static int menu_count=0;
           glutAddMenuEntry(menulabel,i);
         }
       }
-
-//*** these same lines also appear below
-      glutAddMenuEntry("-",MENU_DUMMY3);
-
       if(nboundaryslicedups>0){
         GLUTADDSUBMENU(_("Duplicate boundary slices"),duplicateboundaryslicemenu);
       }
+      glutAddMenuEntry("-",MENU_DUMMY3);
       glutAddMenuEntry(_("Settings..."), MENU_BOUNDARY_SETTINGS);
-      if(npatchloaded2>1){
-        GLUTADDSUBMENU(_("Unload"),unloadpatchmenu);
-      }
-      else{
-       glutAddMenuEntry(_("Unload"),UNLOAD_ALL);
-      }
+      glutAddMenuEntry(_("Unload"),UNLOAD_ALL);
 
       if(nboundaryslicedups>0){
         CREATEMENU(duplicateboundaryslicemenu,LoadBoundaryMenu);
@@ -12723,12 +12662,7 @@ static int menu_count=0;
         GLUTADDSUBMENU(_("Duplicate boundary slices"),duplicateboundaryslicemenu);
       }
       glutAddMenuEntry(_("Settings..."), MENU_BOUNDARY_SETTINGS);
-      if(npatchloaded2>1){
-        GLUTADDSUBMENU(_("Unload"),unloadpatchmenu);
-      }
-      else{
-       glutAddMenuEntry(_("Unload"),UNLOAD_ALL);
-      }
+      glutAddMenuEntry(_("Unload"),UNLOAD_ALL);
     }
 
 /* --------------------------------load iso menu -------------------------- */

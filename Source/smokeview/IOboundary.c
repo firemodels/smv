@@ -11,8 +11,6 @@
 #include "IOscript.h"
 #include "getdata.h"
 
-#define FIRST_TIME 1
-
 #define BOUNDARY_CELL_CENTERED 0
 #define BOUNDARY_NODE_CENTERED 1
 
@@ -24,54 +22,36 @@
 
 /* ------------------ OutputBoundaryData ------------------------ */
 
-void OutputBoundaryData(char *csvfile, patchdata *patchi, int first_time, float *csvtime){
+void OutputBoundaryData(patchdata *patchi){
   int iframe;
   float *vals;
   float *xplt, *yplt, *zplt;
   FILE *csvstream=NULL;
-  int max_frame;
-  char *patchfile;
+  char *patchfile, csvfile[1024];
   meshdata *meshi;
 
   patchfile = patchi->file;
   meshi = meshinfo + patchi->blocknumber;
 
   if(patchout_tmin > patchout_tmax)return;
-  if(first_time== FIRST_TIME){
-    csvstream = FOPEN_2DIR(csvfile, "w");
-  }
-  else{
-    csvstream = FOPEN_2DIR(csvfile, "a");
-  }
+  strcpy(csvfile, patchi->file);
+  strcat(csvfile, ".csv");
+  csvstream = FOPEN_2DIR(csvfile, "w");
   if(csvstream==NULL)return;
-  if(first_time==FIRST_TIME){
-    fprintf(csvstream,"%s\n",patchfile);
-    fprintf(csvstream,"time interval:,%f,%f\n",patchout_tmin,patchout_tmax);
-    fprintf(csvstream,"region:,%f,%f,%f,%f,%f,%f\n\n",patchout_xmin,patchout_xmax,patchout_ymin,patchout_ymax,patchout_zmin,patchout_zmax);
-  }
+  fprintf(csvstream,"%s\n",patchfile);
+  fprintf(csvstream,"time interval:,%f,%f\n",patchout_tmin,patchout_tmax);
+  fprintf(csvstream,"region:,%f,%f,%f,%f,%f,%f\n\n",patchout_xmin,patchout_xmax,patchout_ymin,patchout_ymax,patchout_zmin,patchout_zmax);
 
   vals = meshi->patchval;
   xplt = meshi->xplt_orig;
   yplt = meshi->yplt_orig;
   zplt = meshi->zplt_orig;
 
-  if(csvtime == NULL){
-    max_frame = meshi->maxtimes_boundary;
-  }
-  else{
-    max_frame = 1;
-  }
-
-  for(iframe=0;iframe<max_frame;iframe++){
+  for(iframe=0;iframe<patchi->ntimes;iframe++){
     int ipatch;
     float pt;
 
-    if(csvtime == NULL){
-      pt = meshi->patch_times[iframe];
-    }
-    else{
-      pt = *csvtime;
-    }
+    pt = meshi->patch_times[iframe];
     if(pt<patchout_tmin||pt>patchout_tmax){
       vals+=meshi->npatchsize;
       continue;
@@ -101,20 +81,20 @@ void OutputBoundaryData(char *csvfile, patchdata *patchi, int first_time, float 
       jmax=j2;
       kmin=k1;
       kmax=k2;
-      for(i=0;i<meshi->ibar;i++){
+      for(i=i1;i<i2;i++){
         if(xplt[i]<=patchout_xmin&&patchout_xmin<=xplt[i+1])imin=i;
         if(xplt[i]<=patchout_xmax&&patchout_xmax<=xplt[i+1])imax=i;
       }
-      for(j=0;j<meshi->jbar;j++){
+      for(j=j1;j<j2;j++){
         if(yplt[j]<=patchout_ymin&&patchout_ymin<=yplt[j+1])jmin=j;
         if(yplt[j]<=patchout_ymax&&patchout_ymax<=yplt[j+1])jmax=j;
       }
-      for(k=0;k<meshi->kbar;k++){
+      for(k=k1;k<k2;k++){
         if(zplt[k]<=patchout_zmin&&patchout_zmin<=zplt[k+1])kmin=k;
         if(zplt[k]<=patchout_zmax&&patchout_zmax<=zplt[k+1])kmax=k;
       }
 
-      fprintf(csvstream,"time:,%f,patch %i, of, %i\n",pt,ipatch+1,patchi->npatches);
+      fprintf(csvstream,"\ntime:,%f,patch %i, of, %i\n",pt,ipatch+1,patchi->npatches);
       fprintf(csvstream,"region:,%i,%i,%i,%i,%i,%i\n",i1,i2,j1,j2,k1,k2);
       fprintf(csvstream,",%f,%f,%f,%f,%f,%f\n\n",xplt[i1],xplt[i2],yplt[j1],yplt[j2],zplt[k1],zplt[k2]);
       if(i1==i2){
@@ -198,7 +178,6 @@ void OutputBoundaryData(char *csvfile, patchdata *patchi, int first_time, float 
     }
   }
   fclose(csvstream);
-
 }
 
 /* ------------------ GetBoundaryIndex ------------------------ */
@@ -359,7 +338,7 @@ int NodeInInternalVent(const meshdata *meshi, int i, int j, int k, int dir, int 
         if(vi->imin == i&&i == vi->imax&&
           vi->jmin < j&&j < vi->jmax&&
           vi->kmin < k&&k < vi->kmax){
-          if((i == 0 && meshi->is_extface[0] == MESH_INT) || (i == meshi->ibar&&meshi->is_extface[1] == MESH_INT)){
+          if((i == 0 && meshi->is_extface[0] == 0) || (i == meshi->ibar && meshi->is_extface[1] == 0)){
             if(NodeInBlockage(meshi, i, j, k, &imesh, &iblockage) == 1)return YES;
           }
           return NO;
@@ -369,7 +348,7 @@ int NodeInInternalVent(const meshdata *meshi, int i, int j, int k, int dir, int 
         if(vi->jmin == j&&j == vi->jmax&&
           vi->imin < i&&i < vi->imax&&
           vi->kmin < k&&k < vi->kmax){
-          if((j == 0 && meshi->is_extface[2] == MESH_INT) || (j == meshi->jbar&&meshi->is_extface[3] == MESH_INT)){
+          if((j == 0 && meshi->is_extface[2] == 0) || (j == meshi->jbar && meshi->is_extface[3] == 0)){
             if(NodeInBlockage(meshi, i, j, k, &imesh, &iblockage) == 1)return YES;
           }
           return NO;
@@ -379,7 +358,7 @@ int NodeInInternalVent(const meshdata *meshi, int i, int j, int k, int dir, int 
         if(vi->kmin == k&&k == vi->kmax&&
           vi->imin < i&&i < vi->imax&&
           vi->jmin < j&&j < vi->jmax){
-          if((k == 0 && meshi->is_extface[4] == MESH_INT) || (k == meshi->kbar&&meshi->is_extface[5] == MESH_INT)){
+          if((k == 0 && meshi->is_extface[4] == 0) || (k == meshi->kbar && meshi->is_extface[5] == 0)){
             if(NodeInBlockage(meshi, i, j, k, &imesh, &iblockage) == 1)return YES;
           }
           return NO;
@@ -1377,7 +1356,6 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
   int statfile;
   STRUCTSTAT statbuffer;
   int nbb;
-  int ibartemp,jbartemp,kbartemp;
   float *xplttemp,*yplttemp,*zplttemp;
   int blocknumber;
   patchdata *patchi;
@@ -1385,7 +1363,6 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
   float patchmin_global, patchmax_global;
   int local_first,nsize;
   int npatchvals;
-  char patchcsvfile[1024];
   int framestart;
 #ifdef pp_BOUNDFRAME
   int time_frame = ALL_FRAMES;
@@ -1404,10 +1381,6 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
   patchi = patchinfo + ifile;
   if(patchi->loaded==0&&load_flag==UNLOAD)return 0;
   if(strcmp(patchi->label.shortlabel,"wc")==0)wallcenter=1;
-
-  if(output_patchdata==1){
-    sprintf(patchcsvfile,"%s_bndf_%04i.csv",fdsprefix,ifile);
-  }
 
   for(n = 0; n < 6; n++){
     patchi->meshfaceinfo[n] = NULL;
@@ -1511,9 +1484,6 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
   }
   patchi->extreme_max=0;
   patchi->extreme_min=0;
-  ibartemp=meshi->ibar;
-  jbartemp=meshi->jbar;
-  kbartemp=meshi->kbar;
   xplttemp=meshi->xplt;
   yplttemp=meshi->yplt;
   zplttemp=meshi->zplt;
@@ -1629,17 +1599,12 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
   xyzpatch_ignitecopy = meshi->xyzpatch_threshold;
   patchblankcopy = meshi->patchblank;
   patchi->patchfaceinfo[0].start = 0;
-  float *xplt, *yplt, *zplt;
-  
-  xplt = meshi->xplt_orig;
-  yplt = meshi->yplt_orig;
-  zplt = meshi->zplt_orig;
+
   for(n=0;n<patchi->npatches;n++){
     float dxx, dyy, dzz;
     float dxx2, dyy2, dzz2;
     float dx_factor, dy_factor, dz_factor;
     int i1, i2, j1, j2, k1, k2;
-    int *is_extface;
     float ig_factor_x, ig_factor_y, ig_factor_z;
     float block_factor_x, block_factor_y, block_factor_z;
     patchfacedata *pfi;
@@ -1655,8 +1620,9 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
 
     // determine if a patch is on an external wall 
     if(i1 == i2){
+#ifdef pp_INTERNAL_MESH
       float xyz[3];
-        
+
       if(i1==0){
         xyz[0] = xplt[0] - 0.01;
         xyz[1] = (yplt[pfi->ib[2]] + yplt[pfi->ib[3]])/2.0;
@@ -1669,14 +1635,16 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
         xyz[2] = (zplt[pfi->ib[4]] + zplt[pfi->ib[5]])/2.0;
         if(InExterior(xyz) == 0)pfi->internal_mesh_face = 1;
       }
+#endif
       if(j1 == 0 && j2 == meshi->jbar && k1 == 0 && k2 == meshi->kbar){
         if(i1 == 0)patchi->meshfaceinfo[0]           = pfi;
         if(i1 == meshi->ibar)patchi->meshfaceinfo[1] = pfi;
       }
     }
     else if(j1 == j2){
+#ifdef pp_INTERNAL_MESH
       float xyz[3];
-        
+
       if(j1==0){
         xyz[0] = (xplt[pfi->ib[0]] + xplt[pfi->ib[1]])/2.0;
         xyz[1] = yplt[0] - 0.01;
@@ -1689,14 +1657,16 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
         xyz[2] = (zplt[pfi->ib[4]] + zplt[pfi->ib[5]])/2.0;
         if(InExterior(xyz) == 0)pfi->internal_mesh_face = 1;
       }
+#endif
       if(i1 == 0 && i2 == meshi->ibar && k1 == 0 && k2 == meshi->kbar){
         if(j1 == 0)patchi->meshfaceinfo[2]           = pfi;
         if(j1 == meshi->jbar)patchi->meshfaceinfo[3] = pfi;
       }
     }
     else{
+#ifdef pp_INTERNAL_MESH
       float xyz[3];
-        
+
       if(k1==0){
         xyz[0] = (xplt[pfi->ib[0]] + xplt[pfi->ib[1]])/2.0;
         xyz[1] = (yplt[pfi->ib[2]] + yplt[pfi->ib[3]]) / 2.0;
@@ -1709,6 +1679,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
         xyz[2] = zplt[meshi->kbar-1] + 0.01;
         if(InExterior(xyz) == 0)pfi->internal_mesh_face = 1;
       }
+#endif
       if(i1 == 0 && i2 == meshi->ibar && j1 == 0 && j2 == meshi->jbar){
         if(k1 == 0)patchi->meshfaceinfo[4]           = pfi;
         if(k1 == meshi->kbar)patchi->meshfaceinfo[5] = pfi;
@@ -1761,7 +1732,6 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
     }
 
     pfi->type=INTERIORwall;
-    is_extface = meshi->is_extface;
     if(i1==i2){
       int ext_wall, mesh_boundary;
 
@@ -1770,36 +1740,15 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
 
       ext_wall=0;
       mesh_boundary = NO;
-#ifdef pp_PATCH_FULL
-      if(j1==0&&j2==jbartemp&&k1==0&&k2==kbartemp){
-#else
-      {
-#endif
-        int doit;
-
-        doit = 0;
-        if(show_bndf_mesh_interface==1){
-          if( (i1==0&&meshi->nabors[MLEFT]==NULL)||
-              (i2==ibartemp&&meshi->nabors[MRIGHT]==NULL)
-             ){
-            doit=1;
-          }
+      if(i1==0 || i2==meshi->ibar){
+        mesh_boundary = YES;
+        if(meshi->is_extface[0]==1 && i1 == 0){
+          ext_wall = 1;
+          pfi->type = LEFTwall;
         }
-        else{
-          if(i1==0||i2==ibartemp){
-            doit=1;
-          }
-        }
-        if(doit==1){
-          mesh_boundary = YES;
-          if(is_extface[0]==MESH_EXT&&i1 == 0){
-            ext_wall = 1;
-            pfi->type = LEFTwall;
-          }
-          if(is_extface[1]==MESH_EXT&&i2 == ibartemp){
-            ext_wall = 1;
-            pfi->type = RIGHTwall;
-          }
+        if(meshi->is_extface[1]==1 && i2 == meshi->ibar){
+          ext_wall = 1;
+          pfi->type = RIGHTwall;
         }
       }
       if(ext_wall==0){
@@ -1894,36 +1843,15 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
 
       ext_wall=0;
       mesh_boundary = NO;
-#ifdef pp_PATCH_FULL
-      if(i1==0&&i2==ibartemp&&k1==0&&k2==kbartemp){
-#else
-      {
-#endif
-        int doit;
-
-        doit = 0;
-        if(show_bndf_mesh_interface==1){
-          if((j1==0&&meshi->nabors[MFRONT]==NULL)||
-             (j2==jbartemp&&meshi->nabors[MBACK]==NULL)
-            ){
-            doit = 1;
-          }
+      if(j1==0 || j2==meshi->jbar){
+        mesh_boundary = YES;
+        if(meshi->is_extface[2]==1 && j1 == 0){
+          ext_wall = 1;
+          pfi->type = FRONTwall;
         }
-        else{
-          if(j1==0||j2==jbartemp){
-            doit = 1;
-          }
-        }
-        if(doit==1){
-          mesh_boundary = YES;
-          if(is_extface[2]==MESH_EXT&&j1 == 0){
-            ext_wall = 1;
-            pfi->type = FRONTwall;
-          }
-          if(is_extface[3]==MESH_EXT&&j2 == jbartemp){
-            ext_wall = 1;
-            pfi->type = BACKwall;
-          }
+        if(meshi->is_extface[3]==1 && j2 == meshi->jbar){
+          ext_wall = 1;
+          pfi->type = BACKwall;
         }
       }
       if(ext_wall==0){
@@ -2016,36 +1944,15 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
 
       ext_wall=0;
       mesh_boundary = NO;
-#ifdef pp_PATCH_FULL
-      if(i1==0&&i2==ibartemp&&j1==0&&j2==jbartemp){
-#else
-      {
-#endif
-        int doit;
-
-        doit = 0;
-        if(show_bndf_mesh_interface==1){
-          if((k1==0&&meshi->nabors[MDOWN]==NULL)||
-             (k2==kbartemp&&meshi->nabors[MUP]==NULL)
-            ){
-            doit = 1;
-          }
+      if(k1==0 || k2==meshi->kbar){
+        mesh_boundary = YES;
+        if(meshi->is_extface[4]==1 && k1 == 0){
+          ext_wall = 1;
+          pfi->type = DOWNwall;
         }
-        else{
-          if(k1==0||k2==kbartemp){
-            doit = 1;
-          }
-        }
-        if(doit==1){
-          mesh_boundary = YES;
-          if(is_extface[4]==MESH_EXT&&k1 == 0){
-            ext_wall = 1;
-            pfi->type = DOWNwall;
-          }
-          if(is_extface[5]==MESH_EXT&&k2 == kbartemp){
-            ext_wall = 1;
-            pfi->type = UPwall;
-          }
+        if(meshi->is_extface[5]==1 && k2 == meshi->kbar){
+          ext_wall = 1;
+          pfi->type = UPwall;
         }
       }
       if(ext_wall==0){
@@ -2303,12 +2210,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
   STOP_TIMER(read_time);
   CheckMemory;
 
-  /* convert patch values into integers pointing to an rgb color table */
-
   if(loadpatchbysteps==UNCOMPRESSED_ALLFRAMES){
-    if(output_patchdata==1){
-      OutputBoundaryData(patchcsvfile,patchi,FIRST_TIME,NULL);
-    }
     npatchvals = patchi->ntimes*meshi->npatchsize;
     if(npatchvals==0||NewResizeMemory(meshi->cpatchval,sizeof(unsigned char)*npatchvals)==0){
       *errorcode=1;
@@ -2392,6 +2294,19 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
 
     ShowInternalBlockages();
     update_boundary_loaded = 1;
+
+    if(loadpatchbysteps==UNCOMPRESSED_ALLFRAMES && output_patchdata==1){
+      int j;
+
+      for(j=0; j<npatchinfo; j++){
+        patchdata *patchj;
+
+        patchj = patchinfo + j;
+        if(patchj->loaded == 0)continue;
+        OutputBoundaryData(patchj);
+      }
+    }
+
 
     CheckMemory;
     GLUIUpdateBoundaryListIndex(patchfilenum);
@@ -2527,6 +2442,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
     printf("************************************\n");
     for(n = 0; n < patchi->npatches; n++){
       patchfacedata *pfi;
+      char *wall_type[7] = {"interior", "front exterior", "back exterior", "left exterior", "right exterior", "upper exterior", "lower exterior"};
 
       pfi = patchi->patchfaceinfo + n;
       if(n == 0)printf("\n");
@@ -2534,14 +2450,14 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
         n+1, pfi->ib[0], pfi->ib[2], pfi->ib[4], pfi->ib[1], pfi->ib[3], pfi->ib[5],
         pfi->dir, pfi->obst_index+1, pfi->mesh_index+1);
       if(pfi->internal_mesh_face == 1){
-        printf(" internal mesh interface patch\n");
+        printf(" %s internal mesh interface patch\n", wall_type[pfi->type]);
       }
       else{
         if(pfi->obst_index < 0){
-          printf(" vent patch\n");
+          printf(" %s vent patch\n", wall_type[pfi->type]);
         }
         else{
-          printf(" obst patch\n");
+          printf(" %s obst patch\n", wall_type[pfi->type]);
         }
       }
     }

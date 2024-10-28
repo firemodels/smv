@@ -3133,6 +3133,7 @@ void UpdateDisplay(void){
     ResizeWindow(screenWidthINI, screenHeightINI);
   }
   if(updatemenu == 1 && usemenu == 1 && menustatus == GLUT_MENU_NOT_IN_USE){
+    INIT_PRINT_TIMER(timer_update_menus);
     glutDetachMenu(GLUT_RIGHT_BUTTON);
     attachmenu_status = 0;
     THREADcontrol(checkfiles_threads, THREAD_LOCK);
@@ -3141,6 +3142,7 @@ void UpdateDisplay(void){
     glutAttachMenu(GLUT_RIGHT_BUTTON);
     attachmenu_status = 1;
     updatemenu = 0;
+    PRINT_TIMER(timer_update_menus, "update menus");
   }
   if(attachmenu_print == 1){
     if(attachmenu_status == 1)printf("menus attached(%i)\n",attachmenu_counter++);

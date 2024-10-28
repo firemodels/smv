@@ -1865,8 +1865,10 @@ void Keyboard(unsigned char key, int flag){
       break;
     case 'F':
       hide_overlaps=1-hide_overlaps;
+#ifdef pp_HIDDEN_FACES
       updatehiddenfaces=1;
       UpdateHiddenFaces();
+#endif
       GLUIUpdateShowHideButtons();
       glutPostRedisplay();
       break;
@@ -3667,6 +3669,7 @@ void SetScreenSize(int *width, int *height){
   }
 }
 
+
 /* ------------------ ReshapeCB ------------------------ */
 
 void ReshapeCB(int width, int height){
@@ -3684,8 +3687,13 @@ void ReshapeCB(int width, int height){
     SetScreenSize(&width,&height);
   }
   GLUIGetPixelsPerTriangle();
+
   windowresized=1;
   CopyCamera(camera_current,camera_save);
+#ifdef pp_RESHAPE
+  updatefaces = 0;
+  updatefacelists = 0;
+#endif
   windowsize_pointer_old = -1;
   GLUIUpdateWindowSizeList();
   update_reshape = 2;
@@ -4204,6 +4212,7 @@ void SetMainWindow(void){
 }
 
 /* ------------------ ResizeWindow ------------------------ */
+
 
 void ResizeWindow(int width, int height){
   float wscaled, hscaled;

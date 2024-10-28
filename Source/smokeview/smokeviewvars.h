@@ -376,7 +376,6 @@ SVEXTERN int SVDECL(compute_slice_file_sizes, 0);
 
 SVEXTERN int SVDECL(update_colorbar_digits, 0);
 
-SVEXTERN int SVDECL(show_bndf_mesh_interface, 0);
 SVEXTERN int SVDECL(ncolorlabel_digits, 4), SVDECL(ncolorlabel_padding, 0);
 SVEXTERN int SVDECL(ngridloc_digits, 4);
 SVEXTERN int SVDECL(ntick_decimals, 1);
@@ -1997,7 +1996,11 @@ SVEXTERN float xyzmaxdiff;
 SVEXTERN char ext_png[5];
 SVEXTERN char ext_jpg[5];
 
+#ifdef pp_HIDDEN_FACES
 SVEXTERN int SVDECL(updatehiddenfaces,1),SVDECL(hide_overlaps,0);
+#else
+SVEXTERN int SVDECL(hide_overlaps, 0);
+#endif
 SVEXTERN int SVDECL(nsurfids,0);
 SVEXTERN surfid SVDECL(*surfids,NULL);
 SVEXTERN int key_state;

@@ -1533,7 +1533,7 @@ void DrawTerrainOBSTSides(meshdata *meshi){
   x      = meshi->xplt_orig;
   y      = meshi->yplt_orig;
 
-  if(meshi->is_extface[0]==MESH_EXT&&znode!=NULL){
+  if(meshi->is_extface[0]==1 && znode!=NULL){
     float zij, zijp1;
 
     i = 0;
@@ -1554,7 +1554,7 @@ void DrawTerrainOBSTSides(meshdata *meshi){
       glVertex3f(x[i], y[j+1], zijp1);
     }
   }
-  if(meshi->is_extface[1]==MESH_EXT&&znode!=NULL){
+  if(meshi->is_extface[1]==1 && znode!=NULL){
     float zij, zijp1;
 
     i = ibar;
@@ -1576,7 +1576,7 @@ void DrawTerrainOBSTSides(meshdata *meshi){
       glVertex3f(x[i], y[j],   zij);
     }
   }
-  if(meshi->is_extface[2]==MESH_EXT&&znode!=NULL){
+  if(meshi->is_extface[2]==1 && znode!=NULL){
     float zij, zip1j;
 
     j = 0;
@@ -1597,7 +1597,7 @@ void DrawTerrainOBSTSides(meshdata *meshi){
       glVertex3f(x[i],   y[j], zij);
     }
   }
-  if(meshi->is_extface[3]==MESH_EXT&&znode!=NULL){
+  if(meshi->is_extface[3]==1 && znode!=NULL){
     float zij, zip1j;
 
     j = jbar;
@@ -1618,7 +1618,7 @@ void DrawTerrainOBSTSides(meshdata *meshi){
       glVertex3f(x[i+1], y[j], zip1j);
     }
   }
-  if(meshi->is_extface[4]==MESH_EXT){
+  if(meshi->is_extface[4]==1){
     for(i = 0; i<ibar; i++){
       glVertex3f(x[0],    y[0],    meshi->zplt_orig[0]);
       glVertex3f(x[ibar], y[jbar], meshi->zplt_orig[0]);

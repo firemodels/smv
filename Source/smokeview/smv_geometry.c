@@ -475,19 +475,16 @@ int InExterior(float *xyz){
   x = xyz[0];
   y = xyz[1];
   z = xyz[2];
-  if(x < xbar0FDS - MESH_EPS || x > xbarFDS  + MESH_EPS)return 1;
-  if(y < ybar0FDS - MESH_EPS || y > ybarFDS  + MESH_EPS)return 1;
-  if(z < zbar0FDS - MESH_EPS || z > zbarFDS  + MESH_EPS)return 1;
+  if(x < xbar0FDS || x > xbarFDS)return 1;
+  if(y < ybar0FDS || y > ybarFDS)return 1;
+  if(z < zbar0FDS || z > zbarFDS)return 1;
   for(i = 0;i < nmeshes;i++){
     meshdata *meshi;
 
     meshi = meshinfo + i;
-    if(x >= meshi->xplt_orig[0]               - MESH_EPS &&
-       x <= meshi->xplt_orig[meshi->ibar - 1] + MESH_EPS &&
-       y >= meshi->yplt_orig[0]               - MESH_EPS &&
-       y <= meshi->yplt_orig[meshi->jbar - 1] + MESH_EPS &&
-       z >= meshi->zplt_orig[0]               - MESH_EPS &&
-       z <= meshi->zplt_orig[meshi->kbar - 1] + MESH_EPS){
+    if(x >= meshi->xplt_orig[0] && x <= meshi->xplt_orig[meshi->ibar] &&
+       y >= meshi->yplt_orig[0] && y <= meshi->yplt_orig[meshi->jbar] &&
+       z >= meshi->zplt_orig[0] && z <= meshi->zplt_orig[meshi->kbar]){
        return 0;
      }
   }
