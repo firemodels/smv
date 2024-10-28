@@ -1599,11 +1599,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
   xyzpatch_ignitecopy = meshi->xyzpatch_threshold;
   patchblankcopy = meshi->patchblank;
   patchi->patchfaceinfo[0].start = 0;
-  float *xplt, *yplt, *zplt;
 
-  xplt = meshi->xplt_orig;
-  yplt = meshi->yplt_orig;
-  zplt = meshi->zplt_orig;
   for(n=0;n<patchi->npatches;n++){
     float dxx, dyy, dzz;
     float dxx2, dyy2, dzz2;
