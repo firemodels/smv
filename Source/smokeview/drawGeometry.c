@@ -1993,7 +1993,11 @@ void ObstOrVent2Faces(const meshdata *meshi,blockagedata *bc,
 
     if(bc!=NULL){
       faceptr->bc=bc;
+#ifdef pp_HIDDEN_BLOCKAGES
+      faceptr->hidden = bc->hidden;
+#else
       faceptr->hidden=0;
+#endif
       faceptr->blockageindex=-2;
       if(visBlocks==visBLOCKSolidOutline){
         faceptr->linewidth=&solidlinewidth;
@@ -2357,9 +2361,6 @@ void UpdateFacesWorker(void){
 
       bc = meshi->blockageinfoptrs[j];
       if(visTerrainType!=TERRAIN_HIDDEN&&bc->is_wuiblock==1)continue;
-#ifdef pp_HIDDEN_BLOCKAGES
-      if(bc->hidden == 1)continue;
-#endif
       ObstOrVent2Faces(meshi,bc,NULL,faceptr,BLOCK_face);
       faceptr += 6;
     }

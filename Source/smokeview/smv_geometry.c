@@ -1233,7 +1233,6 @@ void SetHiddenBlockages(meshdata *meshi){
   for(i = 0; i < meshi->nbptrs; i++){
     blockagedata *bc;
     int ii, jj, kk, ijk;
-    int skip;
 
     bc = meshi->blockageinfoptrs[i];
     bc->hidden = 0;
@@ -1246,77 +1245,89 @@ void SetHiddenBlockages(meshdata *meshi){
 
     // check bottom and top planes
 
-    skip = 0;
     for(ii = bc->ijk[0]; ii <= bc->ijk[1]; ii++){
       for(jj = bc->ijk[2]; jj <= bc->ijk[3]; jj++){
         kk = bc->ijk[4];
         ijk = IJKCELL(ii, jj, kk);
         if(iblank[ijk] == GAS){
-          skip = 1;
-          bc->hidden = 0;
-          break;
-        }
-
-        kk = bc->ijk[5];
-        ijk = IJKCELL(ii, jj, kk);
-        if(iblank[ijk] == GAS){
-          skip = 1;
           bc->hidden = 0;
           break;
         }
       }
-      if(skip == 1)break;
+      if(bc->hidden == 0)break;
+    }
+
+    if(bc->hidden == 1){
+      for(ii = bc->ijk[0]; ii <= bc->ijk[1]; ii++){
+        for(jj = bc->ijk[2]; jj <= bc->ijk[3]; jj++){
+          kk = bc->ijk[5];
+          ijk = IJKCELL(ii, jj, kk);
+          if(iblank[ijk] == GAS){
+            bc->hidden = 0;
+            break;
+          }
+        }
+        if(bc->hidden == 0)break;
+      }
     }
 
     // check left and right planes
 
     if(bc->hidden == 1){
-      skip = 0;
       for(jj = bc->ijk[2]; jj <= bc->ijk[3]; jj++){
         for(kk = bc->ijk[4]; kk <= bc->ijk[5]; kk++){
           ii = bc->ijk[0];
           ijk = IJKCELL(ii, jj, kk);
           if(iblank[ijk] == GAS){
-            skip = 1;
-            bc->hidden = 0;
-            break;
-          }
-
-          ii = bc->ijk[1];
-          ijk = IJKCELL(ii, jj, kk);
-          if(iblank[ijk] == GAS){
-            skip = 1;
             bc->hidden = 0;
             break;
           }
         }
-        if(skip == 1)break;
+        if(bc->hidden == 0)break;
+      }
+    }
+
+    if(bc->hidden == 1){
+      for(jj = bc->ijk[2]; jj <= bc->ijk[3]; jj++){
+        for(kk = bc->ijk[4]; kk <= bc->ijk[5]; kk++){
+          ii = bc->ijk[1];
+          ijk = IJKCELL(ii, jj, kk);
+          if(iblank[ijk] == GAS){
+            bc->hidden = 0;
+            break;
+          }
+        }
+        if(bc->hidden==0)break;
       }
     }
 
   // check front and back planes
 
     if(bc->hidden == 1){
-      skip = 0;
       for(ii = bc->ijk[0]; ii <= bc->ijk[1]; ii++){
         for(kk = bc->ijk[4]; kk <= bc->ijk[5]; kk++){
           jj = bc->ijk[2];
           ijk = IJKCELL(ii, jj, kk);
           if(iblank[ijk] == GAS){
-            skip = 1;
-            bc->hidden = 0;
-            break;
-          }
-
-          jj = bc->ijk[3];
-          ijk = IJKCELL(ii, jj, kk);
-          if(iblank[ijk] == GAS){
-            skip = 1;
             bc->hidden = 0;
             break;
           }
         }
-        if(skip == 1)break;
+        if(bc->hidden == 0)break;
+      }
+    }
+
+    if(bc->hidden==1){
+      for(ii = bc->ijk[0]; ii <= bc->ijk[1]; ii++){
+        for(kk = bc->ijk[4]; kk <= bc->ijk[5]; kk++){
+          jj = bc->ijk[3];
+          ijk = IJKCELL(ii, jj, kk);
+          if(iblank[ijk] == GAS){
+            bc->hidden = 0;
+            break;
+          }
+        }
+        if(bc->hidden==0)break;
       }
     }
   }

@@ -3023,13 +3023,20 @@ void UpdateDisplay(void){
     }
 #ifdef pp_HIDDEN_BLOCKAGES
     INIT_PRINT_TIMER(timer_hidden_blockages);
+    int nhidden_blockages = 0, ntotal_blockages=0;
     for(ig = 0; ig < nmeshes; ig++){
       meshdata *meshi;
+      int j;
 
       meshi = meshinfo + ig;
       void SetHiddenBlockages(meshdata *meshi);
       SetHiddenBlockages(meshi);
+      ntotal_blockages += meshi->nbptrs;
+      for(j = 0; j < meshi->nbptrs; j++){
+        if(meshi->blockageinfoptrs[j]->hidden == 1)nhidden_blockages++;
+      }
     }
+    if(nhidden_blockages>0)printf("%i blockages out of %i hidden\n", nhidden_blockages, ntotal_blockages);
     PRINT_TIMER(timer_hidden_blockages, "SetHiddenBlockages");
 #endif
     update_make_iblank = 0;
