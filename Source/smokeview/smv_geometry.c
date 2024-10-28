@@ -1222,13 +1222,12 @@ int MakeIBlankCarve(void){
 
 void SetHiddenBlockages(meshdata *meshi){
   int i;
-  int ibar, jbar, kbar;
+  int ibar, jbar;
   char *iblank;
 
   iblank = meshi->c_iblank_cell;
   ibar = meshi->ibar;
   jbar = meshi->jbar;
-  kbar = meshi->kbar;
 
   for(i = 0; i < meshi->nbptrs; i++){
     blockagedata *bc;
