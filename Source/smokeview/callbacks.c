@@ -3687,9 +3687,11 @@ void ReshapeCB(int width, int height){
     SetScreenSize(&width,&height);
   }
   GLUIGetPixelsPerTriangle();
+
   windowresized=1;
   CopyCamera(camera_current,camera_save);
   updatefaces = 0;
+  updatefacelists = 0;
   windowsize_pointer_old = -1;
   GLUIUpdateWindowSizeList();
   update_reshape = 2;
