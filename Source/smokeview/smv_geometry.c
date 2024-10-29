@@ -1235,98 +1235,112 @@ void SetHiddenBlockages(meshdata *meshi){
 
     bc = meshi->blockageinfoptrs[i];
     bc->hidden = 0;
-    if(bc->ijk[0] == 0 || bc->ijk[1] == meshi->ibar)continue;
-    if(bc->ijk[2] == 0 || bc->ijk[3] == meshi->jbar)continue;
-    if(bc->ijk[4] == 0 || bc->ijk[5] == meshi->kbar)continue;
+    bc->hidden6[0] = 1;
+    bc->hidden6[1] = 1;
+    bc->hidden6[2] = 1;
+    bc->hidden6[3] = 1;
+    bc->hidden6[4] = 1;
+    bc->hidden6[5] = 1;
+    if(bc->ijk[0] == 0          )bc->hidden6[0] = 0;
+    if(bc->ijk[1] == meshi->ibar)bc->hidden6[1] = 0;
+    if(bc->ijk[2] == 0          )bc->hidden6[2] = 0;
+    if(bc->ijk[3] == meshi->jbar)bc->hidden6[3] = 0;
+    if(bc->ijk[4] == 0          )bc->hidden6[4] = 0;
+    if(bc->ijk[5] == meshi->kbar)bc->hidden6[5] = 0;
 
+// check bottom plane
 
-    bc->hidden = 1;
-
-    // check bottom and top planes
-
-    for(ii = bc->ijk[0]; ii <= bc->ijk[1]; ii++){
-      for(jj = bc->ijk[2]; jj <= bc->ijk[3]; jj++){
-        kk = bc->ijk[4];
-        ijk = IJKCELL(ii, jj, kk);
-        if(iblank[ijk] == GAS){
-          bc->hidden = 0;
-          break;
+    if(bc->hidden6[DOWN_Z] == 1){
+      for(ii = bc->ijk[0]; ii <= bc->ijk[1]; ii++){
+        for(jj = bc->ijk[2]; jj <= bc->ijk[3]; jj++){
+          kk = bc->ijk[DOWN_Z];
+          ijk = IJKCELL(ii, jj, kk);
+          if(iblank[ijk] == GAS){
+            bc->hidden6[DOWN_Z] = 0;
+            break;
+          }
         }
+        if(bc->hidden6[DOWN_Z] == 0)break;
       }
-      if(bc->hidden == 0)break;
     }
 
-    if(bc->hidden == 1){
+// check top plane
+
+    if(bc->hidden6[UP_Z] == 1){
       for(ii = bc->ijk[0]; ii <= bc->ijk[1]; ii++){
         for(jj = bc->ijk[2]; jj <= bc->ijk[3]; jj++){
           kk = bc->ijk[5];
           ijk = IJKCELL(ii, jj, kk);
           if(iblank[ijk] == GAS){
-            bc->hidden = 0;
+            bc->hidden6[UP_Z] = 0;
             break;
           }
         }
-        if(bc->hidden == 0)break;
+        if(bc->hidden6[UP_Z] == 0)break;
       }
     }
 
-    // check left and right planes
+    // check left plane
 
-    if(bc->hidden == 1){
+    if(bc->hidden6[DOWN_X] == 1){
       for(jj = bc->ijk[2]; jj <= bc->ijk[3]; jj++){
         for(kk = bc->ijk[4]; kk <= bc->ijk[5]; kk++){
           ii = bc->ijk[0];
           ijk = IJKCELL(ii, jj, kk);
           if(iblank[ijk] == GAS){
-            bc->hidden = 0;
+            bc->hidden6[DOWN_X] = 0;
             break;
           }
         }
-        if(bc->hidden == 0)break;
+        if(bc->hidden6[DOWN_X] == 0)break;
       }
     }
 
-    if(bc->hidden == 1){
+    // check right plane
+
+    if(bc->hidden6[UP_X] == 1){
       for(jj = bc->ijk[2]; jj <= bc->ijk[3]; jj++){
         for(kk = bc->ijk[4]; kk <= bc->ijk[5]; kk++){
           ii = bc->ijk[1];
           ijk = IJKCELL(ii, jj, kk);
           if(iblank[ijk] == GAS){
-            bc->hidden = 0;
+            bc->hidden6[UP_X] = 0;
             break;
           }
         }
-        if(bc->hidden==0)break;
+        if(bc->hidden6[UP_X] == 0)break;
       }
     }
 
-  // check front and back planes
+    // check front plane
 
-    if(bc->hidden == 1){
+    if(bc->hidden6[DOWN_Y] == 1){
       for(ii = bc->ijk[0]; ii <= bc->ijk[1]; ii++){
         for(kk = bc->ijk[4]; kk <= bc->ijk[5]; kk++){
           jj = bc->ijk[2];
           ijk = IJKCELL(ii, jj, kk);
           if(iblank[ijk] == GAS){
-            bc->hidden = 0;
+            bc->hidden6[DOWN_Y] = 0;
             break;
           }
         }
-        if(bc->hidden == 0)break;
+        if(bc->hidden6[DOWN_Y] == 0)break;
       }
     }
 
-    if(bc->hidden==1){
+    // check back plane
+
+    if(bc->hidden6[UP_Y] == 1){
       for(ii = bc->ijk[0]; ii <= bc->ijk[1]; ii++){
         for(kk = bc->ijk[4]; kk <= bc->ijk[5]; kk++){
           jj = bc->ijk[3];
           ijk = IJKCELL(ii, jj, kk);
           if(iblank[ijk] == GAS){
-            bc->hidden = 0;
+            bc->hidden6[UP_Y] = 0;
             break;
           }
         }
-        if(bc->hidden==0)break;
+        if(bc->hidden6[UP_Y] == 0)break;
       }
     }
   }

@@ -1994,7 +1994,7 @@ void ObstOrVent2Faces(const meshdata *meshi,blockagedata *bc,
     if(bc!=NULL){
       faceptr->bc=bc;
 #ifdef pp_HIDDEN_BLOCKAGES
-      faceptr->hidden = bc->hidden;
+      faceptr->hidden = bc->hidden6[j];
 #else
       faceptr->hidden=0;
 #endif
