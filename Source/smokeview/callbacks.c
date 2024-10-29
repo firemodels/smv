@@ -984,11 +984,11 @@ void UpdateMouseInfo(int flag, int xm, int ym){
   camera_current->quat_defined=1;
 }
 
-/* ------------------ MouseCB ------------------------ */
+/* ------------------ MouseCBWorker ------------------------ */
 
 #define DELTA_TIME 0.25
 
-void MouseCB(int button, int state, int xm, int ym){
+void MouseCBWorker(int button, int state, int xm, int ym){
   float *eye_xyz;
 
 #ifdef pp_OSX_HIGHRES
@@ -1137,6 +1137,14 @@ void MouseCB(int button, int state, int xm, int ym){
     GLUIGetGeomDialogState();
     if(structured_isopen == 1 && unstructured_isopen == 0)DisplayCB();
   }
+}
+
+/* ------------------ MouseCB ------------------------ */
+
+void MouseCB(int button, int state, int xm, int ym){
+  INIT_PRINT_TIMER(timer_mouse_down);
+  MouseCBWorker(button, state, xm, ym);
+  PRINT_TIMER(timer_mouse_down, "MouseCB");
 }
 
 /* ------------------ ColorbarDrag ------------------------ */
