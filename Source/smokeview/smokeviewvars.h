@@ -1810,7 +1810,7 @@ SVEXTERN float texture_origin[3];
 #endif
 
 SVEXTERN int vslicecolorbarflag;
-SVEXTERN int SVDECL(use_new_drawface, 1);
+SVEXTERN int SVDECL(use_new_drawface, 0);
 #ifdef INMAIN
   SVEXTERN unsigned char rgb_below_min[3]={255-64,255-64,255-64}, rgb_above_max[3]={0,0,0};
 #else
