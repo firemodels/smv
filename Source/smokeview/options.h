@@ -19,7 +19,6 @@
 //#define pp_HIDDEN_FACES   // use UpdateHiddenFaces routine
 //#define pp_INTERNAL_MESH  // use internal_mesh_face variable (with boundary files)
 #define pp_RESHAPE        // turn off updatefaces and updatefacelists when resizing a window
-#define pp_HIDDEN_BLOCKAGES // don't handle blockages that are hidden by other blockages
 
 #ifdef pp_FRAME          // turn on each frame type if pp_FRAME is set
 #define pp_BOUNDFRAME    // turn on frame code for boundary files

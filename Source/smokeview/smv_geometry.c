@@ -1217,7 +1217,6 @@ int MakeIBlankCarve(void){
   return 0;
 }
 
-#ifdef pp_HIDDEN_BLOCKAGES
 /* ------------------ SetHiddenBlockages ------------------------ */
 
 void SetHiddenBlockages(meshdata *meshi){
@@ -1345,7 +1344,6 @@ void SetHiddenBlockages(meshdata *meshi){
     }
   }
 }
-#endif
 
 /* ------------------ MakeIBlank ------------------------ */
 
