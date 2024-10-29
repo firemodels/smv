@@ -1027,7 +1027,6 @@ void MouseCBWorker(int button, int state, int xm, int ym){
   }
   glui_move_mode=-1;
   move_gslice=0;
-  glutPostRedisplay();
 
   if(state==GLUT_UP){
     tour_drag=0;
@@ -1043,6 +1042,7 @@ void MouseCBWorker(int button, int state, int xm, int ym){
     GLUTSETCURSOR(GLUT_CURSOR_LEFT_ARROW);
     GLUIUpdateTrainerMoves();
     geom_bounding_box_mousedown = 0;
+    glutPostRedisplay();
     return;
   }
 
@@ -1078,9 +1078,11 @@ void MouseCBWorker(int button, int state, int xm, int ym){
       if(select_geom!=GEOM_PROP_NONE)MouseSelectGeom(xm, ym);
       if(select_part == 1 && npartloaded>0)MouseSelectPart(xm, ym);
     }
-    glutPostRedisplay();
     if( showtime==1 || showplot3d==1){
-      if(ColorbarClick(xm,ym)==1)return;
+      if(ColorbarClick(xm, ym) == 1){
+        glutPostRedisplay();
+        return;
+      }
     }
     if(visTimebar==1&&showtime==1){
       if(TimebarClick(xm,ym)==1)return;
@@ -1477,32 +1479,36 @@ void MouseDragCB(int xm, int ym){
   }
 #endif
 
-  glutPostRedisplay();
-
   if( colorbar_drag==1&&(showtime==1 || showplot3d==1)){
     ColorbarDrag(xm,ym);
+    glutPostRedisplay();
     return;
   }
   if(timebar_drag==1){
     TimebarDrag(xm);
+    glutPostRedisplay();
     return;
   }
   if(move_gslice==1){
     MoveGenSlice(xm,ym);
+    glutPostRedisplay();
     return;
   }
   if(tour_drag==1){
     DragTourNode(xm,ym);
+    glutPostRedisplay();
     return;
   }
   if(colorbaredit_drag==1){
     DragColorbarEditNode(xm, ym);
+    glutPostRedisplay();
     return;
   }
   if(rotation_type==ROTATION_3AXIS&&(key_state == KEY_NONE||key_state == KEY_SHIFT)){
     UpdateMouseInfo(MOUSE_MOTION,xm,ym);
   }
   MoveScene(xm,ym);
+  glutPostRedisplay();
 }
 
 /* ------------------ KeyboardUpCB ------------------------ */
