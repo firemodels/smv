@@ -640,9 +640,6 @@ void SurfaceCB(int var){
       surfi->color = GetColorPtr(s_color);
       updatefacelists = 1;
       updatefaces = 1;
-#ifdef pp_HIDDEN_FACES
-      updatehiddenfaces = 1;
-#endif
     }
     break;
   case SURFACE_SELECT:
@@ -1258,10 +1255,6 @@ extern "C" void GLUILabelsCB(int var){
       break;
   case LABELS_hide_overlaps:
     updatefacelists=1;
-#ifdef pp_HIDDEN_FACES
-    updatehiddenfaces=1;
-    UpdateHiddenFaces();
-#endif
     glutPostRedisplay();
     break;
   case LABELS_drawface:

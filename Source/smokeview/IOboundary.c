@@ -1620,66 +1620,18 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
 
     // determine if a patch is on an external wall 
     if(i1 == i2){
-#ifdef pp_INTERNAL_MESH
-      float xyz[3];
-
-      if(i1==0){
-        xyz[0] = xplt[0] - 0.01;
-        xyz[1] = (yplt[pfi->ib[2]] + yplt[pfi->ib[3]])/2.0;
-        xyz[2] = (zplt[pfi->ib[4]] + zplt[pfi->ib[5]])/2.0;
-        if(InExterior(xyz) == 0)pfi->internal_mesh_face = 1;
-      }
-      else if(i1 == meshi->ibar){
-        xyz[0] = xplt[meshi->ibar-1] + 0.01;
-        xyz[1] = (yplt[pfi->ib[2]] + yplt[pfi->ib[3]])/2.0;
-        xyz[2] = (zplt[pfi->ib[4]] + zplt[pfi->ib[5]])/2.0;
-        if(InExterior(xyz) == 0)pfi->internal_mesh_face = 1;
-      }
-#endif
       if(j1 == 0 && j2 == meshi->jbar && k1 == 0 && k2 == meshi->kbar){
         if(i1 == 0)patchi->meshfaceinfo[0]           = pfi;
         if(i1 == meshi->ibar)patchi->meshfaceinfo[1] = pfi;
       }
     }
     else if(j1 == j2){
-#ifdef pp_INTERNAL_MESH
-      float xyz[3];
-
-      if(j1==0){
-        xyz[0] = (xplt[pfi->ib[0]] + xplt[pfi->ib[1]])/2.0;
-        xyz[1] = yplt[0] - 0.01;
-        xyz[2] = (zplt[pfi->ib[4]] + zplt[pfi->ib[5]])/2.0;
-        if(InExterior(xyz) == 0)pfi->internal_mesh_face = 1;
-      }
-      else if(j1 == meshi->jbar){
-        xyz[0] = (xplt[pfi->ib[0]] + xplt[pfi->ib[1]])/2.0;
-        xyz[1] = yplt[meshi->jbar-1] + 0.01;
-        xyz[2] = (zplt[pfi->ib[4]] + zplt[pfi->ib[5]])/2.0;
-        if(InExterior(xyz) == 0)pfi->internal_mesh_face = 1;
-      }
-#endif
       if(i1 == 0 && i2 == meshi->ibar && k1 == 0 && k2 == meshi->kbar){
         if(j1 == 0)patchi->meshfaceinfo[2]           = pfi;
         if(j1 == meshi->jbar)patchi->meshfaceinfo[3] = pfi;
       }
     }
     else{
-#ifdef pp_INTERNAL_MESH
-      float xyz[3];
-
-      if(k1==0){
-        xyz[0] = (xplt[pfi->ib[0]] + xplt[pfi->ib[1]])/2.0;
-        xyz[1] = (yplt[pfi->ib[2]] + yplt[pfi->ib[3]]) / 2.0;
-        xyz[2] = zplt[0] - 0.01;
-        if(InExterior(xyz) == 0)pfi->internal_mesh_face = 1;
-      }
-      else if(k1 == meshi->kbar){
-        xyz[0] = (xplt[pfi->ib[0]] + xplt[pfi->ib[1]]) / 2.0;
-        xyz[1] = (yplt[pfi->ib[2]] + yplt[pfi->ib[3]]) / 2.0;
-        xyz[2] = zplt[meshi->kbar-1] + 0.01;
-        if(InExterior(xyz) == 0)pfi->internal_mesh_face = 1;
-      }
-#endif
       if(i1 == 0 && i2 == meshi->ibar && j1 == 0 && j2 == meshi->jbar){
         if(k1 == 0)patchi->meshfaceinfo[4]           = pfi;
         if(k1 == meshi->kbar)patchi->meshfaceinfo[5] = pfi;

@@ -3880,7 +3880,7 @@ void DrawGeomData(int flag, slicedata *sd, patchdata *patchi, int geom_type){
       else{
         geomlisti = geomi->geomlistinfo + geomi->itime;
       }
-      if(patchi->patch_filetype==PATCH_GEOMETRY_BOUNDARY&&geomdata_lighting==1){
+      if(patchi->patch_filetype==PATCH_GEOMETRY_BOUNDARY){
         enable_lighting = 1;
       }
       else{
@@ -3919,8 +3919,7 @@ void DrawGeomData(int flag, slicedata *sd, patchdata *patchi, int geom_type){
       if(auto_terrain==1)glTranslatef(0.0, 0.0, slice_dz);
       glBegin(GL_TRIANGLES);
       if((patchi->patch_filetype!=PATCH_GEOMETRY_BOUNDARY&&smooth_iso_normal == 0)
-       ||(patchi->patch_filetype==PATCH_GEOMETRY_BOUNDARY&&geomdata_smoothnormals==0)
-        ){
+       ||patchi->patch_filetype==PATCH_GEOMETRY_BOUNDARY){
         for(j = 0; j < ntris; j++){
           float *xyzptr[3];
           tridata *trianglei;
@@ -4449,11 +4448,9 @@ void DrawCGeom(int flag, geomdata *cgeom){
   if(show_faces_shaded==1&&(geomi!=NULL&&geomi->display==1&&geomi->loaded==1)){
     for(i=0;i<1;i++){
       geomlistdata *geomlisti;
-      int ntris, j, enable_lighting;
+      int ntris, j;
 
       geomlisti = geomi->geomlistinfo-1;
-      enable_lighting = geomdata_lighting;
-
       ntris = geomlisti->ntriangles;
       if(ntris==0)continue;
       if(geom_force_transparent==1&&flag!=DRAW_TRANSPARENT)continue;
@@ -4462,12 +4459,7 @@ void DrawCGeom(int flag, geomdata *cgeom){
 
       glEnable(GL_NORMALIZE);
       glShadeModel(GL_SMOOTH);
-      if(enable_lighting==1){
-        ENABLE_LIGHTING;
-      }
-      else{
-        DISABLE_LIGHTING;
-      }
+      ENABLE_LIGHTING;
       glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, iso_specular);
       glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, iso_shininess);
       glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, block_ambient2);
@@ -4526,9 +4518,7 @@ void DrawCGeom(int flag, geomdata *cgeom){
       glEnd();
       glPopMatrix();
       glDisable(GL_COLOR_MATERIAL);
-      if(enable_lighting==1){
-        DISABLE_LIGHTING;
-      }
+      DISABLE_LIGHTING;
       if(flag==DRAW_TRANSPARENT&&use_transparency_data==1)TransparentOff();
     }
   }

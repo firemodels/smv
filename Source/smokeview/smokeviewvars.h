@@ -449,7 +449,6 @@ SVEXTERN int SVDECL(is_convex, 0);
 SVEXTERN int SVDECL(cancel_update_triangles, 0);
 SVEXTERN int SVDECL(updating_triangles, 0);
 SVEXTERN int SVDECL(lighting_on,0);
-SVEXTERN int SVDECL(geomdata_smoothnormals, 0), SVDECL(geomdata_lighting, 1);
 SVEXTERN int SVDECL(update_texturebar, 0);
 SVEXTERN float SVDECL(iso_valmin, 20.0), SVDECL(iso_valmax, 1020.0);
 SVEXTERN float SVDECL(glui_iso_valmin, 20.0), SVDECL(glui_iso_valmax, 1020.0);
@@ -873,7 +872,7 @@ SVEXTERN int SVDECL(ngeominfoptrs,0);
 
 SVEXTERN char startup_lang_code[3];
 
-#ifdef pp_GPUTHROTTLE
+#ifdef pp_GPU
   SVEXTERN float SVDECL(thisGPUtime,0.0), SVDECL(lastGPUtime,0.0);
   SVEXTERN float SVDECL(thisMOTIONtime,0.0), SVDECL(lastMOTIONtime,0.0);
   SVEXTERN int SVDECL(GPUnframes,0),SVDECL(MOTIONnframes,0);
@@ -1811,7 +1810,7 @@ SVEXTERN float texture_origin[3];
 #endif
 
 SVEXTERN int vslicecolorbarflag;
-SVEXTERN int SVDECL(use_new_drawface,0);
+SVEXTERN int SVDECL(use_new_drawface, 1);
 #ifdef INMAIN
   SVEXTERN unsigned char rgb_below_min[3]={255-64,255-64,255-64}, rgb_above_max[3]={0,0,0};
 #else
@@ -1996,11 +1995,7 @@ SVEXTERN float xyzmaxdiff;
 SVEXTERN char ext_png[5];
 SVEXTERN char ext_jpg[5];
 
-#ifdef pp_HIDDEN_FACES
-SVEXTERN int SVDECL(updatehiddenfaces,1),SVDECL(hide_overlaps,0);
-#else
 SVEXTERN int SVDECL(hide_overlaps, 0);
-#endif
 SVEXTERN int SVDECL(nsurfids,0);
 SVEXTERN surfid SVDECL(*surfids,NULL);
 SVEXTERN int key_state;

@@ -6316,9 +6316,6 @@ void ShowInternalBlockages(void){
   updatemenu = 1;
   updatefaces = 1;
   updatefacelists = 1;
-#ifdef pp_HIDDEN_FACES
-  updatehiddenfaces=1;
-#endif
 }
 
 /* ------------------ ShowBoundaryMenu ------------------------ */
@@ -6833,9 +6830,6 @@ void BlockageMenu(int value){
   visBLOCKold=value;
   updatemenu=1;
   updatefacelists=1;
-#ifdef pp_HIDDEN_FACES
-  updatehiddenfaces=1;
-#endif
   GLUTPOSTREDISPLAY;
 }
 
@@ -12863,7 +12857,7 @@ static int menu_count=0;
     glutAddMenuEntry(_("smv"), RELOAD_SMV_FILE);
     glutAddMenuEntry("-", MENU_DUMMY);
     glutAddMenuEntry(_("When:"), MENU_DUMMY);
-    glutAddMenuEntry(_("  now (all meshes)"),RELOAD_SWITCH);
+    glutAddMenuEntry(_("  now"),RELOAD_SWITCH);
     if(periodic_reload_value==1)glutAddMenuEntry(_("   *every minute"),1);
     if(periodic_reload_value!=1)glutAddMenuEntry(_("   every minute"),1);
     if(periodic_reload_value==5)glutAddMenuEntry(_("   *every 5 minutes"),5);

@@ -357,6 +357,7 @@ typedef struct _blockagedata {
   int hole;
   int nnodes;
   int hidden, invisible, interior[6];
+  int hidden6[6];
   int transparent;
   int meshindex;
   int del;
