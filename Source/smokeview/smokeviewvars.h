@@ -872,7 +872,7 @@ SVEXTERN int SVDECL(ngeominfoptrs,0);
 
 SVEXTERN char startup_lang_code[3];
 
-#ifdef pp_GPUTHROTTLE
+#ifdef pp_GPU
   SVEXTERN float SVDECL(thisGPUtime,0.0), SVDECL(lastGPUtime,0.0);
   SVEXTERN float SVDECL(thisMOTIONtime,0.0), SVDECL(lastMOTIONtime,0.0);
   SVEXTERN int SVDECL(GPUnframes,0),SVDECL(MOTIONnframes,0);

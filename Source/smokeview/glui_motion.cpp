@@ -2011,7 +2011,7 @@ extern "C" void GLUISceneMotionCB(int var){
     return;
   }
 
-#ifdef pp_GPUTHROTTLE
+#ifdef pp_GPU
   if(usegpu==1&&showvolrender==1&&show_volsmoke_moving==1&&
      (var==EYE_ROTATE||var==EYE_ROTATE_90||var==ROTATE_2AXIS||var==TRANSLATE_XY||var==GLUI_Z)
     ){

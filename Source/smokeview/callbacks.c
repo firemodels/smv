@@ -1463,7 +1463,7 @@ void MouseDragCB(int xm, int ym){
 #endif
 
   in_external=0;
-#ifdef pp_GPUTHROTTLE
+#ifdef pp_GPU
   if(usegpu==1&&showvolrender==1&&show_volsmoke_moving==1){
     if(ThrottleGpu()==1)return;
   }
