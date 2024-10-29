@@ -3043,7 +3043,7 @@ void UpdateDisplay(void){
         if(bc->hidden6[5] == 1)nhidden_faces++;
       }
     }
-    if(nhidden_faces > 0)printf("%i blockages faces out of %i hidden\n", nhidden_faces, 6*ntotal_blockages);
+    if(nhidden_faces > 0)printf("%i blockage faces out of %i hidden\n", nhidden_faces, 6*ntotal_blockages);
     PRINT_TIMER(timer_hidden_blockages, "SetHiddenBlockages");
 #endif
     update_make_iblank = 0;
