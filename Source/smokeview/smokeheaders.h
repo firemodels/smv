@@ -1034,9 +1034,6 @@ EXTERNCPP void WindowStatus(int state);
 EXTERNCPP void SetVentDirs(void);
 EXTERNCPP void SetCVentDirs(void);
 EXTERNCPP int HaveCircularVents(void);
-#ifdef pp_HIDDEN_FACES
-EXTERNCPP void UpdateHiddenFaces(void);
-#endif
 EXTERNCPP void UpdateSelectFaces(void);
 EXTERNCPP void UpdateSelectBlocks(void);
 EXTERNCPP void DrawFaces(void);

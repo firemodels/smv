@@ -1995,11 +1995,7 @@ SVEXTERN float xyzmaxdiff;
 SVEXTERN char ext_png[5];
 SVEXTERN char ext_jpg[5];
 
-#ifdef pp_HIDDEN_FACES
-SVEXTERN int SVDECL(updatehiddenfaces,1),SVDECL(hide_overlaps,0);
-#else
 SVEXTERN int SVDECL(hide_overlaps, 0);
-#endif
 SVEXTERN int SVDECL(nsurfids,0);
 SVEXTERN surfid SVDECL(*surfids,NULL);
 SVEXTERN int key_state;

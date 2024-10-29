@@ -2387,12 +2387,6 @@ void UpdateFacesWorker(void){
   }
   PRINT_TIMER(timer_update_faces_1,"UpdateFaces(loop over meshes)");
 
-#ifdef pp_HIDDEN_FACES
-  INIT_PRINT_TIMER(timer_update_hidden_faces);
-  UpdateHiddenFaces();
-  PRINT_TIMER(timer_update_hidden_faces, "UpdateHiddenFaces");
-#endif
-
   INIT_PRINT_TIMER(timer_update_face_lists);
   UpdateFaceLists();
   PRINT_TIMER(timer_update_face_lists,"UpdateFaceLists(in UpdateFaces)");
@@ -2664,9 +2658,6 @@ void UpdateFaceListsWorker(void){
 
   GetDrawingParms(&drawing_transparent, &drawing_blockage_transparent, &drawing_vent_transparent);
 
-#ifdef pp_HIDDEN_FACES
-  if(updatehiddenfaces==1)UpdateHiddenFaces();
-#endif
   updatefacelists=0;
   nface_normals_single=0;
   nface_normals_double=0;
@@ -3615,142 +3606,6 @@ facedata *GetFaceNabor(meshdata *meshi, facedata *facei, int dir){
   }
   return NULL;
 }
-
-#ifdef pp_HIDDEN_FACES
-/* ------------------ UpdateHiddenFaces ------------------------ */
-
-void UpdateHiddenFaces(void){
-  int i;
-
-  updatehiddenfaces=0;
-  if(hide_overlaps!=0)PRINTF("  identifying hidden faces -");
-  for(i=0;i<nmeshes;i++){
-    int j;
-    meshdata *meshi;
-
-    meshi=meshinfo + i;
-
-    for(j=0;j<6*meshi->nbptrs;j++){
-      facedata *facej;
-
-      facej = meshi->faceinfo+j;
-      facej->hidden=0;
-
-    }
-  }
-  if(have_removable_obsts == 1){
-    if(hide_overlaps!=0)PRINTF(" complete\n");
-    return;
-  }
-  for(i=0;i<nmeshes;i++){
-    int j;
-    meshdata *meshi;
-
-    meshi=meshinfo + i;
-    if(hide_overlaps==0)continue;
-    for(j=0;j<6*meshi->nbptrs;j++){
-      int k;
-      facedata *facej;
-
-      facej = meshi->faceinfo+j;
-      for(k=0;k<6*meshi->nbptrs;k++){
-        facedata *facek;
-
-        if(j==k)continue;
-        facek = meshi->faceinfo+k;
-        if(facek->hidden==1)continue;
-        if(facej->xmin<facek->xmin||facej->xmax>facek->xmax)continue;
-        if(facej->ymin<facek->ymin||facej->ymax>facek->ymax)continue;
-        if(facej->zmin<facek->zmin||facej->zmax>facek->zmax)continue;
-        facej->hidden=1;
-        break;
-      }
-    }
-  }
-  for(i = 0; i < nmeshes; i++){
-    int j;
-    meshdata *meshi;
-
-    meshi = meshinfo + i;
-    // x plane faces
-    for(j = 3; j < 6 * meshi->nbptrs; j += 6){
-      facedata *facej;
-
-      facej = meshi->faceinfo + j;
-      if(facej->hidden == 0){
-        facedata *facej2;
-
-        facej2 = GetFaceNabor(meshi, facej, MLEFT);
-        if(facej2 != NULL){
-          facej->hidden = 1;
-          facej2->hidden = 1;
-        }
-      }
-
-      if(facej->hidden == 0){
-        facedata *facej2;
-
-        facej2 = GetFaceNabor(meshi, facej, MRIGHT);
-        if(facej2 != NULL){
-          facej->hidden = 1;
-          facej2->hidden = 1;
-        }
-      }
-    }
-    // y plane faces
-    for(j = 0; j < 6 * meshi->nbptrs; j += 6){
-      facedata *facej;
-
-      facej = meshi->faceinfo + j;
-      if(facej->hidden == 0){
-        facedata *facej2;
-
-        facej2 = GetFaceNabor(meshi, facej, MFRONT);
-        if(facej2 != NULL){
-          facej->hidden = 1;
-          facej2->hidden = 1;
-        }
-      }
-
-      if(facej->hidden == 0){
-        facedata *facej2;
-
-        facej2 = GetFaceNabor(meshi, facej, MBACK);
-        if(facej2 != NULL){
-          facej->hidden = 1;
-          facej2->hidden = 1;
-        }
-      }
-    }
-    // z plane faces
-    for(j = 4; j < 6 * meshi->nbptrs; j += 6){
-      facedata *facej;
-
-      facej = meshi->faceinfo + j;
-      if(facej->hidden == 0){
-        facedata *facej2;
-
-        facej2 = GetFaceNabor(meshi, facej, MDOWN);
-        if(facej2 != NULL){
-          facej->hidden = 1;
-          facej2->hidden = 1;
-        }
-      }
-
-      if(facej->hidden == 0){
-        facedata *facej2;
-
-        facej2 = GetFaceNabor(meshi, facej, MUP);
-        if(facej2 != NULL){
-          facej->hidden = 1;
-          facej2->hidden = 1;
-        }
-      }
-    }
-  }
-  if(hide_overlaps!=0)PRINTF(" complete\n");
-}
-#endif
 
 /* ------------------ AllocateFaces ------------------------ */
 

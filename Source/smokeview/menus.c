@@ -6316,9 +6316,6 @@ void ShowInternalBlockages(void){
   updatemenu = 1;
   updatefaces = 1;
   updatefacelists = 1;
-#ifdef pp_HIDDEN_FACES
-  updatehiddenfaces=1;
-#endif
 }
 
 /* ------------------ ShowBoundaryMenu ------------------------ */
@@ -6833,9 +6830,6 @@ void BlockageMenu(int value){
   visBLOCKold=value;
   updatemenu=1;
   updatefacelists=1;
-#ifdef pp_HIDDEN_FACES
-  updatehiddenfaces=1;
-#endif
   GLUTPOSTREDISPLAY;
 }
 
