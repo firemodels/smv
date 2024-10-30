@@ -12861,6 +12861,7 @@ int ReadIni2(char *inifile, int localfile){
     if(MatchINI(buffer, "USENEWDRAWFACE") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%i", &use_new_drawface);
+      updatefacelists = 1;
       ONEORZERO(use_new_drawface);
       continue;
     }
