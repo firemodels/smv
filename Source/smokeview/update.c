@@ -2609,7 +2609,9 @@ void BoundBoundCB(int var);
     SMV_EXIT(0);
     END_SHOW_UPDATE(update_ssf);
   }
+  INIT_PRINT_TIMER(timer_updateshow);
   UpdateShow();
+  PRINT_TIMER(timer_updateshow, "UpdateShow");
   if(global_times!=NULL&&updateUpdateFrameRateMenu==1){
     SHOW_UPDATE(updateUpdateFrameRateMenu);
     FrameRateMenu(frameratevalue);
