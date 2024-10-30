@@ -301,6 +301,13 @@ extern "C" void GLUIUpdateTimebarOverlap(void){
   RADIO_timebar_overlap->set_int_val(timebar_overlap);
 }
 
+
+/* ------------------ GLUIUpdateTimebarOverlap ------------------------ */
+
+extern "C" void GLUIUpdateFastBlockageDraw(void){
+  if(CHECKBOX_label_1 != NULL)CHECKBOX_label_1->set_int_val(use_new_drawface);
+}
+
 /* ------------------ DisplayRolloutCB ------------------------ */
 
 void DisplayRolloutCB(int var){

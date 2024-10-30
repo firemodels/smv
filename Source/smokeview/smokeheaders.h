@@ -154,6 +154,7 @@ EXTERNCPP void GLUIUpdateColorbarEdit(void);
 EXTERNCPP void GLUIUpdateColorbarType(void);
 
 //*** glui_display.cpp headers
+EXTERNCPP void GLUIUpdateFastBlockageDraw(void);
 EXTERNCPP void GLUIDisplaySetup(int main_window);
 EXTERNCPP void GLUIUpdateGridLocation(void);
 EXTERNCPP void GLUIUpdateFrameTimelabel(void);

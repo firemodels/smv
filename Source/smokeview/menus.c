@@ -12019,12 +12019,13 @@ static int menu_count=0;
     glutAddMenuEntry(render_label, MENU_DUMMY);
   }
   glutAddMenuEntry("  ALT r: toggle research mode (global min/max for coloring data, turn off axis label smoothing)", MENU_DUMMY);
-  glutAddMenuEntry(_("  W: toggle clipping modes - use ALT c to specify clipping planes"), MENU_DUMMY);
-  glutAddMenuEntry(_("  -/space bar: decrement/increment time step, 2D contour planes, 3D contour levels"), MENU_DUMMY);
-  glutAddMenuEntry("", MENU_DUMMY);
   if(n_embedded_meshes > 0){
     glutAddMenuEntry(_("  ALT u: toggle coarse slice display in embedded mesh"), MENU_DUMMY);
   }
+  glutAddMenuEntry("      U: toggle toggle between original and fast blockage drawing", MENU_DUMMY);
+  glutAddMenuEntry(_("  W: toggle clipping modes - use ALT c to specify clipping planes"), MENU_DUMMY);
+  glutAddMenuEntry(_("  -/space bar: decrement/increment time step, 2D contour planes, 3D contour levels"), MENU_DUMMY);
+  glutAddMenuEntry("", MENU_DUMMY);
   glutAddMenuEntry(_("  ALT v: toggle projection mode (perspective and size preserving)"), MENU_DUMMY);
   if(clip_commandline==1){
     glutAddMenuEntry(_("  x/y/z: toggle lower x/y/z clip planes"), MENU_DUMMY);

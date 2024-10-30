@@ -2081,22 +2081,6 @@ void Keyboard(unsigned char key, int flag){
         if(visTimebar==1)PRINTF("Time bar visible\n");
       }
       break;
-    case 'm':
-      switch(keystate){
-      case GLUT_ACTIVE_ALT:
-#ifdef pp_DIALOG_SHORTCUTS
-        DialogMenu(DIALOG_MOTION); // motion dialog
-        break;
-#endif
-      case GLUT_ACTIVE_CTRL:
-      default:
-        if(nmeshes>1){
-          highlight_mesh++;
-          if(highlight_mesh>nmeshes-1)highlight_mesh=0;
-          UpdateCurrentMesh(meshinfo+highlight_mesh);
-        }
-      }
-      break;
     case 'l':
     case 'L':
 #ifdef pp_MEMDEBUG
@@ -2116,6 +2100,22 @@ void Keyboard(unsigned char key, int flag){
       }
       printf("nopeninfo: %i\n", nopeninfo);
 #endif
+      break;
+    case 'm':
+      switch(keystate){
+      case GLUT_ACTIVE_ALT:
+#ifdef pp_DIALOG_SHORTCUTS
+        DialogMenu(DIALOG_MOTION); // motion dialog
+        break;
+#endif
+      case GLUT_ACTIVE_CTRL:
+      default:
+        if(nmeshes>1){
+          highlight_mesh++;
+          if(highlight_mesh>nmeshes-1)highlight_mesh=0;
+          UpdateCurrentMesh(meshinfo+highlight_mesh);
+        }
+      }
       break;
     case 'M':
       clip_commandline = 1-clip_commandline;
@@ -2569,7 +2569,6 @@ void Keyboard(unsigned char key, int flag){
       GLUISetLabelControls();
       break;
     case 'u':
-    case 'U':
       switch(keystate){
         case GLUT_ACTIVE_ALT:
           skip_slice_in_embedded_mesh = 1 - skip_slice_in_embedded_mesh;
@@ -2583,6 +2582,13 @@ void Keyboard(unsigned char key, int flag){
           }
           break;
       }
+      break;
+    case 'U':
+      use_new_drawface = 1 - use_new_drawface;
+      updatefacelists = 1;
+      GLUIUpdateFastBlockageDraw();
+      if(use_new_drawface == 1)printf("fast blockage drawing\n");
+      if(use_new_drawface == 0)printf("original blockage drawing\n");
       break;
     case '|':
       projection_type = 1-projection_type;
