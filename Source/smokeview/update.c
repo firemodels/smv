@@ -3033,6 +3033,7 @@ void UpdateDisplay(void){
       void SetHiddenBlockages(meshdata *meshi);
 #ifdef pp_HIDDEN6
       if(have_hidden6 == 0){
+        if(ig == 0)printf("setting hidden blockages\n");
         SetHiddenBlockages(meshi);
       }
 #else
