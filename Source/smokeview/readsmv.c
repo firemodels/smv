@@ -1101,6 +1101,7 @@ void InitMesh(meshdata *meshi){
   meshi->zheat = NULL;
   meshi->theat = NULL;
   meshi->blockageinfoptrs = NULL;
+  meshi->blockageinfo     = NULL;
 
   meshi->faceinfo = NULL;
   meshi->face_normals_single = NULL;
@@ -10585,6 +10586,7 @@ typedef struct {
       meshi->blockageinfoptrs=NULL;
       if(n_blocks_normal>0){
         NewMemory((void **)&meshi->blockageinfoptrs,sizeof(blockagedata *)*n_blocks_normal);
+        NewMemory(( void ** )&meshi->blockageinfo,  sizeof(blockagedata)  *n_blocks_normal);
       }
 
       ntotal_blockages+=n_blocks_normal;
@@ -10598,8 +10600,7 @@ typedef struct {
           continue;
         }
         nn++;
-        meshi->blockageinfoptrs[nn]=NULL;
-        NewMemory((void **)&meshi->blockageinfoptrs[nn],sizeof(blockagedata));
+        meshi->blockageinfoptrs[nn] = meshi->blockageinfo + nn;
         bc=meshi->blockageinfoptrs[nn];
         InitObst(bc,surfacedefault,nn+1,iobst-1);
         FGETS(buffer,255,stream);

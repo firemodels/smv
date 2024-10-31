@@ -233,8 +233,7 @@ typedef struct _meshdata {
   int zdist_flag;
   unsigned char *iblank_smoke3d;
   int iblank_smoke3d_defined;
-  struct _blockagedata **blockageinfoptrs;
-  struct _blockagedata **bc_faces[6];
+  struct _blockagedata **blockageinfoptrs, *blockageinfo, **bc_faces[6];
   int  n_bc_faces[6];
   int *obst_bysize;
   struct _ventdata *ventinfo;
