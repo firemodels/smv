@@ -3024,7 +3024,7 @@ void UpdateDisplay(void){
       meshi->c_iblank_z0        = meshi->c_iblank_z0_temp;
     }
     INIT_PRINT_TIMER(timer_hidden_blockages);
-    int nhidden_faces = 0;
+    int nhidden_faces = 0, ntotal_obsts = 0;
     for(ig = 0; ig < nmeshes; ig++){
       meshdata *meshi;
       int j;
@@ -3049,8 +3049,9 @@ void UpdateDisplay(void){
         if(bc->hidden6[4] == 1)nhidden_faces++;
         if(bc->hidden6[5] == 1)nhidden_faces++;
       }
+      ntotal_obsts += meshi->nbptrs;
     }
-    if(nhidden_faces > 0)printf("%i blockage faces out of %i hidden\n", nhidden_faces, 6*ntotal_blockages);
+    if(nhidden_faces > 0)printf("%i blockage faces out of %i hidden\n", nhidden_faces, 6*ntotal_obsts);
     PRINT_TIMER(timer_hidden_blockages, "SetHiddenBlockages");
     update_make_iblank = 0;
     update_setvents    = 1;
