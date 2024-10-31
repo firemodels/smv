@@ -10845,6 +10845,27 @@ typedef struct {
           }
         }
       }
+#ifdef pp_OBST_REDUCE
+      int ito = 0;
+      int ifrom;
+      for(ifrom = 0; ifrom < meshi->nbptrs; ifrom++){
+        int *hidden6;
+        blockagedata *bc;
+
+        bc = meshi->blockageinfoptrs[ifrom];
+        hidden6 = bc->hidden6;
+        if(hidden6[0] == 0 || hidden6[1] == 0 || hidden6[2] == 0 || hidden6[3] == 0 || hidden6[4] == 5 || hidden6[6] == 0){
+          if(ito != ifrom){
+            memcpy(meshi->blockageinfo + ito, meshi->blockageinfo + ifrom, sizeof(blockagedata));
+          }
+          ito++;
+        }
+        else{
+          printf("hidden blockage\n");
+        }
+      }
+      meshi->nbptrs = ito;
+#endif
       CheckMemoryOn;
       continue;
     }
