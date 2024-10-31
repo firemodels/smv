@@ -10739,12 +10739,21 @@ typedef struct {
         FGETS(buffer,255,stream);
         {
           char *exclaim;
+          int hidden6[6] = {-1,-1,-1,-1,-1,-1};
 
+          memcpy(bc->hidden6, hidden6, 6*sizeof(int));
           exclaim = strchr(buffer, '!');
           if(exclaim != NULL){
             exclaim[0] = 0;
             exclaim = TrimFront(exclaim + 1);
             if(exclaim[0] == 'T' || exclaim[0] == 't')have_removable_obsts = 1;
+            exclaim++;
+            if(strlen(exclaim) > 0){
+              sscanf(exclaim, "%i %i %i %i %i %i",
+                hidden6, hidden6 + 1, hidden6 + 2, hidden6 + 3, hidden6 + 4, hidden6 + 5);
+              memcpy(bc->hidden6, hidden6, 6*sizeof(int));
+              if(hidden6[0] >= 0)have_hidden6 = 1;
+            }
           }
         }
         ijk = bc->ijk;
