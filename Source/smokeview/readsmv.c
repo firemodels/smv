@@ -9251,14 +9251,6 @@ int ReadSMV_Parse(bufferstreamdata *stream){
       float *xplt_cen, *yplt_cen,*zplt_cen;
       int *imap, *jmap, *kmap;
 
-//      int lenbuffer;
-
-//      TrimBack(buffer);
-//      lenbuffer=strlen(buffer);
-//      if(lenbuffer>4){
-//        if(buffer[5]!=' ')continue;
-//      }
-
       igrid++;
       if(meshinfo!=NULL){
         size_t len_meshlabel;
