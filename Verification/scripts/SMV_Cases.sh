@@ -45,7 +45,6 @@ $QFDS -d Visualization -p 4 thouse5delta.fds
 $QFDS -d Visualization tour.fds
 $QFDS -d Visualization transparency.fds
 $QFDS -d Visualization vcirctest.fds
-$QFDS -d Visualization vcirctest2.fds
 $QFDS -d Visualization -p 3 vectorskipx.fds
 $QFDS -d Visualization -p 3 vectorskipy.fds
 $QFDS -d Visualization -p 3 vectorskipz.fds
