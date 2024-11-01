@@ -233,8 +233,7 @@ typedef struct _meshdata {
   int zdist_flag;
   unsigned char *iblank_smoke3d;
   int iblank_smoke3d_defined;
-  struct _blockagedata **blockageinfoptrs;
-  struct _blockagedata **bc_faces[6];
+  struct _blockagedata **blockageinfoptrs, *blockageinfo, **bc_faces[6];
   int  n_bc_faces[6];
   int *obst_bysize;
   struct _ventdata *ventinfo;
@@ -277,10 +276,9 @@ typedef struct _meshdata {
   float norm[3];
   float dplane_min[4], dplane_max[4];
 
-  struct _meshdata *skip_nabors[6];
-
-  struct _meshdata *nabors[6];
+  struct _meshdata *skip_nabors[6], *nabors[6];
   struct _supermeshdata *super;
+
   int *ptype;
   unsigned int *zipoffset, *zipsize;
 

@@ -1101,6 +1101,7 @@ void InitMesh(meshdata *meshi){
   meshi->zheat = NULL;
   meshi->theat = NULL;
   meshi->blockageinfoptrs = NULL;
+  meshi->blockageinfo     = NULL;
 
   meshi->faceinfo = NULL;
   meshi->face_normals_single = NULL;
@@ -9251,14 +9252,6 @@ int ReadSMV_Parse(bufferstreamdata *stream){
       float *xplt_cen, *yplt_cen,*zplt_cen;
       int *imap, *jmap, *kmap;
 
-//      int lenbuffer;
-
-//      TrimBack(buffer);
-//      lenbuffer=strlen(buffer);
-//      if(lenbuffer>4){
-//        if(buffer[5]!=' ')continue;
-//      }
-
       igrid++;
       if(meshinfo!=NULL){
         size_t len_meshlabel;
@@ -10593,6 +10586,7 @@ typedef struct {
       meshi->blockageinfoptrs=NULL;
       if(n_blocks_normal>0){
         NewMemory((void **)&meshi->blockageinfoptrs,sizeof(blockagedata *)*n_blocks_normal);
+        NewMemory(( void ** )&meshi->blockageinfo,  sizeof(blockagedata)  *n_blocks_normal);
       }
 
       ntotal_blockages+=n_blocks_normal;
@@ -10606,8 +10600,7 @@ typedef struct {
           continue;
         }
         nn++;
-        meshi->blockageinfoptrs[nn]=NULL;
-        NewMemory((void **)&meshi->blockageinfoptrs[nn],sizeof(blockagedata));
+        meshi->blockageinfoptrs[nn] = meshi->blockageinfo + nn;
         bc=meshi->blockageinfoptrs[nn];
         InitObst(bc,surfacedefault,nn+1,iobst-1);
         FGETS(buffer,255,stream);
@@ -10747,12 +10740,25 @@ typedef struct {
         FGETS(buffer,255,stream);
         {
           char *exclaim;
+          int hidden6[6] = {-1,-1,-1,-1,-1,-1};
 
+          memcpy(bc->hidden6, hidden6, 6*sizeof(int));
           exclaim = strchr(buffer, '!');
           if(exclaim != NULL){
             exclaim[0] = 0;
             exclaim = TrimFront(exclaim + 1);
             if(exclaim[0] == 'T' || exclaim[0] == 't')have_removable_obsts = 1;
+            exclaim++;
+            if(strlen(exclaim) > 0){
+              sscanf(exclaim, "%i %i %i %i %i %i",
+                hidden6, hidden6 + 1, hidden6 + 2, hidden6 + 3, hidden6 + 4, hidden6 + 5);
+              int ii;
+              for(ii = 0; ii < 6; ii++){
+                if(hidden6[i] >= 0)hidden6[ii] = 1 - hidden6[ii];
+              }
+              memcpy(bc->hidden6, hidden6, 6*sizeof(int));
+              if(hidden6[0] >= 0)have_hidden6 = 1;
+            }
           }
         }
         ijk = bc->ijk;

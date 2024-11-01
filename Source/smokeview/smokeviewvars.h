@@ -1569,6 +1569,7 @@ SVEXTERN int SVDECL(cullfaces,1);
 SVEXTERN int SVDECL(showonly_hiddenfaces,0);
 SVEXTERN int SVDECL(have_removable_obsts, 0);
 SVEXTERN int SVDECL(update_bound_chop_data, 0);
+SVEXTERN int SVDECL(have_hidden6, 0);
 
 SVEXTERN int SVDECL(windowresized,0);
 
