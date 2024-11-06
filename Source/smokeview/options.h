@@ -14,6 +14,8 @@
 //#define pp_FDS            // create a 1 mesh input file
 #define pp_HIDDEN6            // handle hidden6 info on obst line
 #define pp_PART_SHOW        // add option to show selected particle values as well as tags
+#define pp_SORT_TAGS        // sort particle tags after after particles are read in
+#define pp_SORT_TAGS_BG     // sort particle tags in background
 
 #ifdef pp_FRAME          // turn on each frame type if pp_FRAME is set
 #define pp_BOUNDFRAME    // turn on frame code for boundary files
