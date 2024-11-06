@@ -1191,7 +1191,6 @@ void GeneratePartHistograms(void){
   }
 }
 
-#ifdef pp_SORT_TAGS
 /* ------------------ SortPartTags ------------------------ */
 
 void SortPartTags(partdata *parti){
@@ -1223,11 +1222,8 @@ void *SortAllPartTags(void *arg){
     SortPartTags(parti);
   }
   PRINT_TIMER(timer_sortparttags, "SortPartTags");
-#ifdef pp_SORT_TAGS_BG
   THREAD_EXIT(sorttags_threads);
-#endif
 }
-#endif
 
 /* ------------------ GetPartData ------------------------ */
 
@@ -1358,9 +1354,6 @@ void GetPartData(partdata *parti, int nf_all_arg, FILE_SIZE *file_size_arg){
             sort_tags_local[2*j]=datacopy_local->tags[j];
             sort_tags_local[2*j+1]=j;
           }
-#ifndef pp_SORT_TAGS
-          qsort( sort_tags_local, (size_t)nparts_local, 2*sizeof(int), CompareTags);
-#endif
         }
       }
       else{
@@ -1506,11 +1499,9 @@ partpropdata *GetPartProp(char *label){
 /* ------------------ SetStreakShow ------------------------ */
 
 void SetStreakShow(int show){
-#ifdef pp_SORT_TAGS_BG
   if(show == 1){
     THREADcontrol(sorttags_threads, THREAD_JOIN);
   }
-#endif
   streak5show = show;
 }
 
@@ -2173,16 +2164,10 @@ void FinalizePartLoad(partdata *parti){
     }
   }
   visParticles = 1;
-#ifdef pp_SORT_TAGS
-#ifdef pp_SORT_TAGS_BG
   THREADrun(sorttags_threads);
   if(runscript == 1 || streak5show == 1){
     THREADcontrol(sorttags_threads, THREAD_JOIN);
   }
-#else
-  SortAllPartTags(NULL);
-#endif
-#endif
 
   // generate histograms now rather than in the background if a script is running
 
