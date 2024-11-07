@@ -2853,7 +2853,7 @@ void UpdateFaceListsWorker(void){
     nface_transparent_double += n_transparent_double;
     nface_outlines += n_outlines;
 
-    if(use_new_drawface==0)continue;
+    if(use_new_drawface!=1)continue;
 
     meshi->nface_normals_single_DOWN_X=0;
     meshi->nface_normals_single_UP_X=0;
@@ -3059,6 +3059,25 @@ void DrawSelectFaces(){
         glVertex3fv(vertices);\
         glVertex3fv(vertices+6);\
         glVertex3fv(vertices+9);
+
+
+/* ------------------ DrawBlockagesDebug ------------------------ */
+
+void DrawBlockagesDebug(void){
+  int i;
+
+  for(i = 0; i < nmeshes; i++){
+    meshdata *meshi;
+    int j;
+
+    meshi = meshinfo + i;
+    for(j = 0; j<meshi->nbptrs; j++){
+      blockagedata *bc;
+
+      bc = meshi->blockageinfoptrs[j];
+    }
+  }
+}
 
 /* ------------------ DrawFacesOLD ------------------------ */
 // add option to turn off lighting when verifying smoke
@@ -4973,11 +4992,20 @@ void DrawBlockages(int mode, int trans_flag){
       }
     }
     else{
-      if(use_new_drawface==1){
-        DrawFaces();
-      }
-      else{
+      switch(use_new_drawface){
+      case 0:
         DrawFacesOLD();
+        break;
+      case 1:
+        DrawFaces();
+        break;
+      case 2:
+        void DrawBlockagesDebug(void);
+        DrawBlockagesDebug();
+        break;
+      default:
+        assert(0);
+        break;
       }
     }
   }

@@ -12870,7 +12870,7 @@ int ReadIni2(char *inifile, int localfile){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%i", &use_new_drawface);
       updatefacelists = 1;
-      ONEORZERO(use_new_drawface);
+      use_new_drawface = CLAMP(use_new_drawface, 0, 2);
       continue;
     }
     if(MatchINI(buffer, "TLOAD") == 1){

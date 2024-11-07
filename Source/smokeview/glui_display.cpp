@@ -121,7 +121,6 @@ GLUI_Checkbox *CHECKBOX_user_ticks_show_x=NULL;
 GLUI_Checkbox *CHECKBOX_user_ticks_show_y=NULL;
 GLUI_Checkbox *CHECKBOX_user_ticks_show_z=NULL;
 GLUI_Checkbox *CHECKBOX_tick_auto=NULL;
-GLUI_Checkbox *CHECKBOX_label_1=NULL;
 GLUI_Checkbox *CHECKBOX_label_2=NULL;
 GLUI_Checkbox *CHECKBOX_label_3=NULL;
 GLUI_Checkbox *CHECKBOX_labels_flip=NULL;
@@ -141,6 +140,7 @@ GLUI_Rollout *ROLLOUT_general=NULL;
 GLUI_Rollout *ROLLOUT_north = NULL;
 GLUI_Rollout *ROLLOUT_light2 = NULL;
 
+GLUI_Panel *PANEL_blockage_drawing = NULL;
 GLUI_Panel *PANEL_boundingbox = NULL;
 GLUI_Panel *PANEL_titles=NULL;
 GLUI_Panel *PANEL_screen = NULL;
@@ -175,6 +175,7 @@ GLUI_Panel *PANEL_texture_display = NULL;
 GLUI_RadioGroup *RADIO_show_geom_boundingbox = NULL;
 GLUI_RadioGroup *RADIO_timebar_overlap = NULL;
 GLUI_RadioGroup *RADIO_fontsize = NULL;
+GLUI_RadioGroup *RADIOBUTTON_label_1 = NULL;
 GLUI_RadioButton *RADIOBUTTON_label_1a=NULL;
 GLUI_RadioButton *RADIOBUTTON_label_1b=NULL;
 GLUI_RadioButton *RADIOBUTTON_label_1c=NULL;
@@ -305,7 +306,7 @@ extern "C" void GLUIUpdateTimebarOverlap(void){
 /* ------------------ GLUIUpdateTimebarOverlap ------------------------ */
 
 extern "C" void GLUIUpdateFastBlockageDraw(void){
-  if(CHECKBOX_label_1 != NULL)CHECKBOX_label_1->set_int_val(use_new_drawface);
+  if(RADIOBUTTON_label_1 != NULL)RADIOBUTTON_label_1->set_int_val(use_new_drawface);
 }
 
 /* ------------------ DisplayRolloutCB ------------------------ */
@@ -880,7 +881,11 @@ extern "C" void GLUIDisplaySetup(int main_window){
   glui_labels->add_radiobutton_to_group(RADIO_timebar_overlap,_("Never"));
   glui_labels->add_radiobutton_to_group(RADIO_timebar_overlap,_("Only if timebar hidden"));
 
-  CHECKBOX_label_1=glui_labels->add_checkbox_to_panel(PANEL_gen3,_("Fast blockage drawing"),&use_new_drawface,LABELS_drawface,GLUILabelsCB);
+  PANEL_blockage_drawing = glui_labels->add_panel_to_panel(PANEL_gen3,_("Blockage drawing"));
+  RADIOBUTTON_label_1 = glui_labels->add_radiogroup_to_panel(PANEL_blockage_drawing, &use_new_drawface, LABELS_drawface, GLUILabelsCB);
+  glui_labels->add_radiobutton_to_group(RADIOBUTTON_label_1, _("original"));
+  glui_labels->add_radiobutton_to_group(RADIOBUTTON_label_1, _("new"));
+  glui_labels->add_radiobutton_to_group(RADIOBUTTON_label_1, _("debug"));
   CHECKBOX_label_2=glui_labels->add_checkbox_to_panel(PANEL_gen3,_("Sort transparent faces"),&sort_transparent_faces,LABELS_drawface,GLUILabelsCB);
   CHECKBOX_label_3=glui_labels->add_checkbox_to_panel(PANEL_gen3,_("Hide overlaps"),&hide_overlaps,LABELS_hide_overlaps,GLUILabelsCB);
 

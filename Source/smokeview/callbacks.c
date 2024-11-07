@@ -2584,7 +2584,8 @@ void Keyboard(unsigned char key, int flag){
       }
       break;
     case 'U':
-      use_new_drawface = 1 - use_new_drawface;
+      use_new_drawface++;
+      if(use_new_drawface > 2)use_new_drawface = 0;
       updatefacelists = 1;
       GLUIUpdateFastBlockageDraw();
       if(use_new_drawface == 1)printf("fast blockage drawing\n");
