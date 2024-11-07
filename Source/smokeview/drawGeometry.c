@@ -3060,6 +3060,308 @@ void DrawSelectFaces(){
         glVertex3fv(vertices+6);\
         glVertex3fv(vertices+9);
 
+/* ------------------ DrawFacesOLD ------------------------ */
+// add option to turn off lighting when verifying smoke
+void DrawFacesOLD(){
+  float *new_color, *old_color = NULL;
+  int **showtimelist_handle, *showtimelist;
+  float up_color[4] = {0.9,0.9,0.9,1.0};
+  float down_color[4] = {0.1,0.1,0.1,1.0};
+  float highlight_color[4] = {1.0,0.0,0.0,1.0};
+
+  if(nface_normals_single > 0){
+    int j;
+
+    glEnable(GL_CULL_FACE);
+    if(light_faces == 1){
+      ENABLE_LIGHTING;
+      glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, &block_shininess);
+      glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, block_ambient2);
+      glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, block_specular2);
+      glEnable(GL_COLOR_MATERIAL);
+    }
+    glBegin(GL_TRIANGLES);
+    for(j = 0; j < nmeshes; j++){
+      meshdata *meshi;
+      int i;
+
+      meshi = meshinfo + j;
+      if(meshi->blockvis == 0)continue;
+      for(i = 0; i < meshi->nface_normals_single; i++){
+        facedata *facei;
+        float *vertices;
+
+        facei = meshi->face_normals_single[i];
+        if(facei->hidden == 1)continue;
+        if(blocklocation == BLOCKlocation_grid){
+          vertices = facei->approx_vertex_coords;
+        }
+        else{
+          vertices = facei->exact_vertex_coords;
+        }
+        showtimelist_handle = facei->showtimelist_handle;
+        showtimelist = *showtimelist_handle;
+        if(showtimelist != NULL && showtimelist[itimes] == 0)continue;
+        if(showedit_dialog == 0){
+          new_color = facei->color;
+        }
+        else{
+          if(visNormalEditColors == 0)new_color = block_ambient2;
+          if(visNormalEditColors == 1)new_color = facei->color;
+          if(highlight_block == facei->blockageindex && highlight_mesh == facei->meshindex){
+            new_color = highlight_color;
+            switch(xyz_dir){
+            case XDIR:
+              if(facei->dir == UP_X)new_color = up_color;
+              if(facei->dir == DOWN_X)new_color = down_color;
+              break;
+            case YDIR:
+              if(facei->dir == UP_Y)new_color = up_color;
+              if(facei->dir == DOWN_Y)new_color = down_color;
+              break;
+            case ZDIR:
+              if(facei->dir == UP_Z)new_color = up_color;
+              if(facei->dir == DOWN_Z)new_color = down_color;
+              break;
+            default:
+              assert(FFALSE);
+              break;
+            }
+          }
+        }
+        if(new_color != old_color){
+          old_color = new_color;
+          glColor4fv(old_color);
+        }
+        glNormal3fv(facei->normal);
+        glVertex3fv(vertices);
+        glVertex3fv(vertices + 3);
+        glVertex3fv(vertices + 6);
+        glVertex3fv(vertices);
+        glVertex3fv(vertices + 6);
+        glVertex3fv(vertices + 9);
+      }
+    }
+    glEnd();
+    if(light_faces == 1){
+      glDisable(GL_COLOR_MATERIAL);
+      DISABLE_LIGHTING;
+    }
+  }
+  if(nface_normals_double > 0){
+    int j;
+
+    if(light_faces == 1){
+      ENABLE_LIGHTING;
+      glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, &block_shininess);
+      glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, block_ambient2);
+      glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, block_specular2);
+      glEnable(GL_COLOR_MATERIAL);
+    }
+    if(cullfaces == 1)glDisable(GL_CULL_FACE);
+    AntiAliasLine(ON);
+    glBegin(GL_QUADS);
+    for(j = 0; j < nmeshes; j++){
+      meshdata *meshi;
+      int i;
+
+      meshi = meshinfo + j;
+      for(i = 0; i < meshi->nface_normals_double; i++){
+        facedata *facei;
+        float *vertices;
+
+        facei = meshi->face_normals_double[i];
+        if(facei->hidden == 1)continue;
+        if(blocklocation == BLOCKlocation_grid){
+          vertices = facei->approx_vertex_coords;
+        }
+        else{
+          vertices = facei->exact_vertex_coords;
+        }
+        showtimelist_handle = facei->showtimelist_handle;
+        showtimelist = *showtimelist_handle;
+        if(showtimelist != NULL && showtimelist[itimes] == 0)continue;
+        if(showedit_dialog == 0){
+          new_color = facei->color;
+        }
+        else{
+          if(visNormalEditColors == 0)new_color = block_ambient2;
+          if(visNormalEditColors == 1)new_color = facei->color;
+          if(highlight_block == facei->blockageindex && highlight_mesh == facei->meshindex){
+            new_color = highlight_color;
+            switch(xyz_dir){
+            case XDIR:
+              if(facei->dir == UP_X)new_color = up_color;
+              if(facei->dir == DOWN_X)new_color = down_color;
+              break;
+            case YDIR:
+              if(facei->dir == UP_Y)new_color = up_color;
+              if(facei->dir == DOWN_Y)new_color = down_color;
+              break;
+            case ZDIR:
+              if(facei->dir == UP_Z)new_color = up_color;
+              if(facei->dir == DOWN_Z)new_color = down_color;
+              break;
+            default:
+              assert(FFALSE);
+              break;
+            }
+          }
+        }
+        if(new_color != old_color){
+          old_color = new_color;
+          glColor4fv(old_color);
+        }
+        glNormal3fv(facei->normal);
+        glVertex3fv(vertices);
+        glVertex3fv(vertices + 3);
+        glVertex3fv(vertices + 6);
+        glVertex3fv(vertices + 9);
+      }
+    }
+    glEnd();
+    AntiAliasLine(OFF);
+    if(cullfaces == 1)glEnable(GL_CULL_FACE);
+    if(light_faces == 1){
+      glDisable(GL_COLOR_MATERIAL);
+      DISABLE_LIGHTING;
+    }
+  }
+  if(nface_outlines > 0){
+    int j;
+
+    DISABLE_LIGHTING;
+    AntiAliasLine(ON);
+    glLineWidth(linewidth);
+    glBegin(GL_LINES);
+    for(j = 0; j < nmeshes; j++){
+      meshdata *meshi;
+      int i;
+
+      meshi = meshinfo + j;
+      if(meshi->blockvis == 0)continue;
+      for(i = 0; i < meshi->nface_outlines; i++){
+        facedata *facei;
+        float *vertices;
+
+        facei = meshi->face_outlines[i];
+        if(facei->hidden == 1)continue;
+        showtimelist_handle = facei->showtimelist_handle;
+        showtimelist = *showtimelist_handle;
+        if(showtimelist != NULL && showtimelist[itimes] == 0 && facei->type2 == BLOCK_face)continue;
+        if(blocklocation == BLOCKlocation_grid){
+          vertices = facei->approx_vertex_coords;
+        }
+        else{
+          vertices = facei->exact_vertex_coords;
+        }
+        if(facei->type2 != OUTLINE_FRAME_face || highlight_flag == 1){
+          glEnd();
+          if(nmeshes > 1 && facei->type2 == OUTLINE_FRAME_face &&
+            highlight_mesh == facei->meshindex && highlight_flag == 1){
+            glLineWidth(highlight_linewidth);
+          }
+          else{
+            glLineWidth(*facei->linewidth);
+          }
+          glBegin(GL_LINES);
+          //xxx facei->linecolor not defined properly when reading a geometry file
+          glColor3fv(facei->linecolor);
+          glVertex3fv(vertices);
+          glVertex3fv(vertices + 3);
+          glVertex3fv(vertices + 3);
+          glVertex3fv(vertices + 6);
+          glVertex3fv(vertices + 6);
+          glVertex3fv(vertices + 9);
+          glVertex3fv(vertices + 9);
+          glVertex3fv(vertices);
+          if(showtimelist != NULL && showtimelist[itimes] == 0){
+            glVertex3fv(vertices);
+            glVertex3fv(vertices + 6);
+            glVertex3fv(vertices + 3);
+            glVertex3fv(vertices + 9);
+          }
+        }
+      }
+    }
+    glEnd();
+    AntiAliasLine(OFF);
+  }
+  if(nface_textures > 0){
+    int j;
+
+    if(light_faces == 1){
+      ENABLE_LIGHTING;
+      glEnable(GL_COLOR_MATERIAL);
+    }
+    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, enable_texture_lighting?GL_MODULATE:GL_REPLACE);
+    if(light_faces == 1){
+      glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
+      glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, &block_shininess);
+      glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, block_specular2);
+    }
+    glEnable(GL_TEXTURE_2D);
+    glColor4ub(255, 255, 255, 255);
+    for(j = 0; j < nmeshes; j++){
+      meshdata *meshi;
+      int i;
+
+      meshi = meshinfo + j;
+      if(meshi->blockvis == 0)continue;
+      for(i = 0; i < meshi->nface_textures; i++){
+        facedata *facei;
+        float *tvertices;
+        float *vertices;
+        texturedata *texti;
+
+        facei = meshi->face_textures[i];
+        if(facei->hidden == 1)continue;
+        showtimelist_handle = facei->showtimelist_handle;
+        showtimelist = *showtimelist_handle;
+        if(showtimelist != NULL && showtimelist[itimes] == 0)continue;
+        texti = facei->textureinfo;
+        if(blocklocation == BLOCKlocation_grid){
+          vertices = facei->approx_vertex_coords;
+          tvertices = facei->approx_texture_coords;
+        }
+        else{
+          vertices = facei->exact_vertex_coords;
+          tvertices = facei->exact_texture_coords;
+        }
+
+        if(facei->type2 == BLOCK_face && cullfaces == 0)glDisable(GL_CULL_FACE);
+
+
+        glBindTexture(GL_TEXTURE_2D, texti->name);
+        glBegin(GL_QUADS);
+
+        glNormal3fv(facei->normal);
+        glTexCoord2fv(tvertices);
+        glVertex3fv(vertices);
+
+        glTexCoord2fv(tvertices + 2);
+        glVertex3fv(vertices + 3);
+
+        glTexCoord2fv(tvertices + 4);
+        glVertex3fv(vertices + 6);
+
+        glTexCoord2fv(tvertices + 6);
+        glVertex3fv(vertices + 9);
+        glEnd();
+      }
+      if(cullfaces == 1)glEnable(GL_CULL_FACE);
+
+
+    }
+    glDisable(GL_TEXTURE_2D);
+    if(light_faces == 1){
+      DISABLE_LIGHTING;
+      glDisable(GL_COLOR_MATERIAL);
+    }
+  }
+  if(show_triangle_count == 1)printf("obst/vent triangles: %i\n", n_geom_triangles);
+}
+
 /* ------------------ DrawFaces ------------------------ */
 
 void DrawFaces(){
@@ -4800,308 +5102,6 @@ void GetDrawingParms(int *drawing_transparent, int *drawing_blockage_transparent
     *drawing_transparent=1;
     *drawing_vent_transparent=1;
   }
-}
-
-/* ------------------ DrawFacesOLD ------------------------ */
-// add option to turn off lighting when verifying smoke
-void DrawFacesOLD(){
-  float *new_color,*old_color=NULL;
-  int **showtimelist_handle, *showtimelist;
-  float up_color[4]={0.9,0.9,0.9,1.0};
-  float down_color[4]={0.1,0.1,0.1,1.0};
-  float highlight_color[4]={1.0,0.0,0.0,1.0};
-
-  if(nface_normals_single>0){
-    int j;
-
-    glEnable(GL_CULL_FACE);
-    if(light_faces==1){
-      ENABLE_LIGHTING;
-      glMaterialfv(GL_FRONT_AND_BACK,GL_SHININESS,&block_shininess);
-      glMaterialfv(GL_FRONT_AND_BACK,GL_AMBIENT_AND_DIFFUSE,block_ambient2);
-      glMaterialfv(GL_FRONT_AND_BACK,GL_SPECULAR,block_specular2);
-      glEnable(GL_COLOR_MATERIAL);
-    }
-    glBegin(GL_TRIANGLES);
-    for(j=0;j<nmeshes;j++){
-      meshdata *meshi;
-      int i;
-
-      meshi=meshinfo + j;
-      if(meshi->blockvis==0)continue;
-      for(i=0;i<meshi->nface_normals_single;i++){
-        facedata *facei;
-        float *vertices;
-
-        facei = meshi->face_normals_single[i];
-        if(facei->hidden == 1)continue;
-        if(blocklocation==BLOCKlocation_grid){
-          vertices = facei->approx_vertex_coords;
-        }
-        else{
-          vertices = facei->exact_vertex_coords;
-        }
-        showtimelist_handle = facei->showtimelist_handle;
-        showtimelist = *showtimelist_handle;
-        if(showtimelist!=NULL&&showtimelist[itimes]==0)continue;
-        if(showedit_dialog == 0){
-          new_color=facei->color;
-        }
-        else{
-          if(visNormalEditColors==0)new_color=block_ambient2;
-          if(visNormalEditColors==1)new_color=facei->color;
-          if(highlight_block==facei->blockageindex&&highlight_mesh==facei->meshindex){
-            new_color=highlight_color;
-            switch(xyz_dir){
-             case XDIR:
-              if(facei->dir==UP_X)new_color=up_color;
-              if(facei->dir==DOWN_X)new_color=down_color;
-              break;
-             case YDIR:
-              if(facei->dir==UP_Y)new_color=up_color;
-              if(facei->dir==DOWN_Y)new_color=down_color;
-              break;
-             case ZDIR:
-              if(facei->dir==UP_Z)new_color=up_color;
-              if(facei->dir==DOWN_Z)new_color=down_color;
-              break;
-             default:
-              assert(FFALSE);
-              break;
-            }
-          }
-        }
-        if(new_color!=old_color){
-          old_color=new_color;
-          glColor4fv(old_color);
-        }
-        glNormal3fv(facei->normal);
-        glVertex3fv(vertices);
-        glVertex3fv(vertices+3);
-        glVertex3fv(vertices+6);
-        glVertex3fv(vertices);
-        glVertex3fv(vertices+6);
-        glVertex3fv(vertices+9);
-      }
-    }
-    glEnd();
-    if(light_faces==1){
-      glDisable(GL_COLOR_MATERIAL);
-      DISABLE_LIGHTING;
-   }
-  }
-  if(nface_normals_double>0){
-    int j;
-
-    if(light_faces==1){
-      ENABLE_LIGHTING;
-      glMaterialfv(GL_FRONT_AND_BACK,GL_SHININESS,&block_shininess);
-      glMaterialfv(GL_FRONT_AND_BACK,GL_AMBIENT_AND_DIFFUSE,block_ambient2);
-      glMaterialfv(GL_FRONT_AND_BACK,GL_SPECULAR,block_specular2);
-      glEnable(GL_COLOR_MATERIAL);
-    }
-    if(cullfaces==1)glDisable(GL_CULL_FACE);
-    AntiAliasLine(ON);
-    glBegin(GL_QUADS);
-    for(j=0;j<nmeshes;j++){
-      meshdata *meshi;
-      int i;
-
-      meshi=meshinfo + j;
-      for(i=0;i<meshi->nface_normals_double;i++){
-        facedata *facei;
-        float *vertices;
-
-        facei = meshi->face_normals_double[i];
-        if(facei->hidden == 1)continue;
-        if(blocklocation==BLOCKlocation_grid){
-          vertices = facei->approx_vertex_coords;
-        }
-        else{
-          vertices = facei->exact_vertex_coords;
-        }
-        showtimelist_handle = facei->showtimelist_handle;
-        showtimelist = *showtimelist_handle;
-        if(showtimelist!=NULL&&showtimelist[itimes]==0)continue;
-        if(showedit_dialog == 0){
-          new_color=facei->color;
-        }
-        else{
-          if(visNormalEditColors==0)new_color=block_ambient2;
-          if(visNormalEditColors==1)new_color=facei->color;
-          if(highlight_block==facei->blockageindex&&highlight_mesh==facei->meshindex){
-            new_color=highlight_color;
-            switch(xyz_dir){
-             case XDIR:
-              if(facei->dir==UP_X)new_color=up_color;
-              if(facei->dir==DOWN_X)new_color=down_color;
-              break;
-             case YDIR:
-              if(facei->dir==UP_Y)new_color=up_color;
-              if(facei->dir==DOWN_Y)new_color=down_color;
-              break;
-             case ZDIR:
-              if(facei->dir==UP_Z)new_color=up_color;
-              if(facei->dir==DOWN_Z)new_color=down_color;
-              break;
-             default:
-              assert(FFALSE);
-              break;
-            }
-          }
-        }
-        if(new_color!=old_color){
-          old_color=new_color;
-          glColor4fv(old_color);
-        }
-        glNormal3fv(facei->normal);
-        glVertex3fv(vertices);
-        glVertex3fv(vertices+3);
-        glVertex3fv(vertices+6);
-        glVertex3fv(vertices+9);
-      }
-    }
-    glEnd();
-    AntiAliasLine(OFF);
-    if(cullfaces==1)glEnable(GL_CULL_FACE);
-    if(light_faces==1){
-      glDisable(GL_COLOR_MATERIAL);
-      DISABLE_LIGHTING;
-    }
-  }
-  if(nface_outlines>0){
-    int j;
-
-    DISABLE_LIGHTING;
-    AntiAliasLine(ON);
-    glLineWidth(linewidth);
-    glBegin(GL_LINES);
-    for(j=0;j<nmeshes;j++){
-      meshdata *meshi;
-      int i;
-
-      meshi = meshinfo + j;
-      if(meshi->blockvis==0)continue;
-      for(i=0;i<meshi->nface_outlines;i++){
-        facedata *facei;
-        float *vertices;
-
-        facei = meshi->face_outlines[i];
-        if(facei->hidden == 1)continue;
-        showtimelist_handle = facei->showtimelist_handle;
-        showtimelist = *showtimelist_handle;
-        if(showtimelist!=NULL&&showtimelist[itimes]==0&&facei->type2==BLOCK_face)continue;
-        if(blocklocation==BLOCKlocation_grid){
-          vertices = facei->approx_vertex_coords;
-        }
-        else{
-          vertices = facei->exact_vertex_coords;
-        }
-        if(facei->type2!=OUTLINE_FRAME_face||highlight_flag==1){
-          glEnd();
-          if(nmeshes>1&&facei->type2==OUTLINE_FRAME_face&&
-            highlight_mesh==facei->meshindex&&highlight_flag==1){
-            glLineWidth(highlight_linewidth);
-          }
-          else{
-            glLineWidth(*facei->linewidth);
-          }
-          glBegin(GL_LINES);
-          //xxx facei->linecolor not defined properly when reading a geometry file
-          glColor3fv(facei->linecolor);
-          glVertex3fv(vertices);
-          glVertex3fv(vertices+3);
-          glVertex3fv(vertices+3);
-          glVertex3fv(vertices+6);
-          glVertex3fv(vertices+6);
-          glVertex3fv(vertices+9);
-          glVertex3fv(vertices+9);
-          glVertex3fv(vertices);
-          if(showtimelist!=NULL&&showtimelist[itimes]==0){
-            glVertex3fv(vertices);
-            glVertex3fv(vertices+6);
-            glVertex3fv(vertices+3);
-            glVertex3fv(vertices+9);
-          }
-        }
-      }
-    }
-    glEnd();
-    AntiAliasLine(OFF);
-  }
-  if(nface_textures>0){
-    int j;
-
-    if(light_faces==1){
-      ENABLE_LIGHTING;
-      glEnable(GL_COLOR_MATERIAL);
-    }
-    glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,enable_texture_lighting? GL_MODULATE : GL_REPLACE);
-    if(light_faces==1){
-      glColorMaterial(GL_FRONT_AND_BACK,GL_AMBIENT_AND_DIFFUSE);
-      glMaterialfv(GL_FRONT_AND_BACK,GL_SHININESS,&block_shininess);
-      glMaterialfv(GL_FRONT_AND_BACK,GL_SPECULAR,block_specular2);
-    }
-    glEnable(GL_TEXTURE_2D);
-    glColor4ub(255, 255, 255, 255);
-    for(j=0;j<nmeshes;j++){
-      meshdata *meshi;
-      int i;
-
-      meshi = meshinfo + j;
-      if(meshi->blockvis==0)continue;
-      for(i=0;i<meshi->nface_textures;i++){
-        facedata *facei;
-        float *tvertices;
-        float *vertices;
-        texturedata *texti;
-
-        facei=meshi->face_textures[i];
-        if(facei->hidden == 1)continue;
-        showtimelist_handle = facei->showtimelist_handle;
-        showtimelist = *showtimelist_handle;
-        if(showtimelist!=NULL&&showtimelist[itimes]==0)continue;
-        texti=facei->textureinfo;
-        if(blocklocation==BLOCKlocation_grid){
-           vertices = facei->approx_vertex_coords;
-          tvertices = facei->approx_texture_coords;
-        }
-        else{
-           vertices = facei->exact_vertex_coords;
-          tvertices = facei->exact_texture_coords;
-        }
-
-        if(facei->type2==BLOCK_face&&cullfaces==0)glDisable(GL_CULL_FACE);
-
-
-        glBindTexture(GL_TEXTURE_2D,texti->name);
-        glBegin(GL_QUADS);
-
-        glNormal3fv(facei->normal);
-        glTexCoord2fv(tvertices);
-        glVertex3fv(vertices);
-
-        glTexCoord2fv(tvertices+2);
-        glVertex3fv(vertices+3);
-
-        glTexCoord2fv(tvertices+4);
-        glVertex3fv(vertices+6);
-
-        glTexCoord2fv(tvertices+6);
-        glVertex3fv(vertices+9);
-        glEnd();
-      }
-      if(cullfaces==1)glEnable(GL_CULL_FACE);
-
-
-    }
-    glDisable(GL_TEXTURE_2D);
-    if(light_faces==1){
-      DISABLE_LIGHTING;
-      glDisable(GL_COLOR_MATERIAL);
-    }
-  }
-  if(show_triangle_count==1)printf("obst/vent triangles: %i\n",n_geom_triangles);
 }
 
 /* ------------------ InitCullGeom ------------------------ */
