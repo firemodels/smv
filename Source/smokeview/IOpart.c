@@ -261,26 +261,20 @@ void DrawPart(const partdata *parti, int mode){
 
             if(datacopy->partclassbase->vis_type == PART_POINTS){
               if(select_part == 1 && selected_part_index > 0 && mode == DRAWSCENE){
-#ifdef pp_PART_SHOW
                 float *rvals=NULL;
 
                 if(itype>=0)rvals = datacopy->rvals + itype*datacopy->npoints_file;
-#endif
                 for(j = 0; j < datacopy->npoints_file; j += partdrawskip){
                   if(vis[j] == 1 && datacopy->tags[j]==selected_part_index){
                     char taglabel[64];
 
 
-#ifdef pp_PART_SHOW
                     if(itype >= 0){
                       sprintf(taglabel, "%i: %f", selected_part_index, rvals[j]);
                     }
                     else{
                       sprintf(taglabel, "%i", selected_part_index);
                     }
-#else
-                    sprintf(taglabel, "%i", selected_part_index);
-#endif
                     Output3Text(foregroundcolor, xpos[j], ypos[j], zpos[j], taglabel);
                   }
                 }
