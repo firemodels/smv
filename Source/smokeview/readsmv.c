@@ -12862,7 +12862,11 @@ int ReadIni2(char *inifile, int localfile){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%i %f %i", &scaled_font3d_height, &scaled_font3d_height2width, &scaled_font3d_thickness);
     }
+#ifdef pp_NEWFACE
+    if(MatchINI(buffer, "NEWDRAWFACE") == 1){
+#else
     if(MatchINI(buffer, "USENEWDRAWFACE") == 1){
+#endif
       fgets(buffer, 255, stream);
       sscanf(buffer, "%i", &use_new_drawface);
       updatefacelists = 1;
@@ -16984,7 +16988,11 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %f\n", streaklinewidth);
   fprintf(fileout, "TICKLINEWIDTH\n");
   fprintf(fileout, " %f\n", ticklinewidth);
+#ifdef pp_NEWFACE
+  fprintf(fileout, "NEWDRAWFACE\n");
+#else
   fprintf(fileout, "USENEWDRAWFACE\n");
+#endif
   fprintf(fileout, " %i\n", use_new_drawface);
   fprintf(fileout, "VECCONTOURS\n");
   fprintf(fileout, " %i %i\n", show_node_slices_and_vectors,show_cell_slices_and_vectors);
