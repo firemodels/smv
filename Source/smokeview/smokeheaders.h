@@ -1035,8 +1035,6 @@ EXTERNCPP void SetCVentDirs(void);
 EXTERNCPP int HaveCircularVents(void);
 EXTERNCPP void UpdateSelectFaces(void);
 EXTERNCPP void UpdateSelectBlocks(void);
-EXTERNCPP void DrawFaces(void);
-EXTERNCPP void DrawFacesOLD(void);
 EXTERNCPP void DrawSelectFaces(void);
 EXTERNCPP void AllocateFaces(void);
 EXTERNCPP void UpdateFaceLists(void);
