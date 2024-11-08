@@ -3079,9 +3079,23 @@ void DrawObstsDebug(void){
   for(i = 0; i < nmeshes; i++){
     meshdata *meshi;
     int j;
+    int jmin, jmax;
 
     meshi = meshinfo + i;
-    for(j = 0; j<meshi->nbptrs; j++){
+    jmin = 0;
+    jmax = meshi->nbptrs-1;
+    if(mesh_index_debug >= 0 && mesh_index_debug < nmeshes){
+      if(mesh_index_debug!=i)continue;
+      if(min_blockage_index_debug >= 0 && min_blockage_index_debug < meshi->nbptrs){
+        if(max_blockage_index_debug >= 0 && max_blockage_index_debug < meshi->nbptrs){
+          if(min_blockage_index_debug <= max_blockage_index_debug){
+            jmin = min_blockage_index_debug;
+            jmax = max_blockage_index_debug;
+          }
+        }
+      }
+    }
+    for(j = jmin; j<=jmax; j++){
       blockagedata *bc;
 
       bc = meshi->blockageinfoptrs[j];

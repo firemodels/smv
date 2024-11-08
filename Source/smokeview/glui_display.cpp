@@ -886,6 +886,10 @@ extern "C" void GLUIDisplaySetup(int main_window){
   glui_labels->add_radiobutton_to_group(RADIOBUTTON_label_1, _("original"));
   glui_labels->add_radiobutton_to_group(RADIOBUTTON_label_1, _("new"));
   glui_labels->add_radiobutton_to_group(RADIOBUTTON_label_1, _("debug"));
+  glui_labels->add_spinner_to_panel(PANEL_blockage_drawing, "mesh:", GLUI_SPINNER_INT, &mesh_index_debug);
+  glui_labels->add_spinner_to_panel(PANEL_blockage_drawing, "min blockage index:", GLUI_SPINNER_INT, &min_blockage_index_debug);
+  glui_labels->add_spinner_to_panel(PANEL_blockage_drawing, "max blockage index:", GLUI_SPINNER_INT, &max_blockage_index_debug);
+
   CHECKBOX_label_2=glui_labels->add_checkbox_to_panel(PANEL_gen3,_("Sort transparent faces"),&sort_transparent_faces,LABELS_drawface,GLUILabelsCB);
   CHECKBOX_label_3=glui_labels->add_checkbox_to_panel(PANEL_gen3,_("Hide overlaps"),&hide_overlaps,LABELS_hide_overlaps,GLUILabelsCB);
 
