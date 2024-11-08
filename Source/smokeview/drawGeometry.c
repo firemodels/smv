@@ -3086,7 +3086,9 @@ void DrawObstsDebug(void){
     jmin = 0;
     jmax = meshi->nbptrs-1;
     if(mesh_index_debug >= 0 && mesh_index_debug < nmeshes){
+      int max_blockage_index_debug;
       if(mesh_index_debug!=i)continue;
+      max_blockage_index_debug = min_blockage_index_debug + n_blockages_debug - 1;
       if(min_blockage_index_debug >= 0 && min_blockage_index_debug < meshi->nbptrs){
         if(max_blockage_index_debug >= 0 && max_blockage_index_debug < meshi->nbptrs){
           if(min_blockage_index_debug <= max_blockage_index_debug){

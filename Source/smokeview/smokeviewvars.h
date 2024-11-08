@@ -1818,7 +1818,7 @@ SVEXTERN int SVDECL(blockage_draw_option, 0);
 #endif
 SVEXTERN int SVDECL(mesh_index_debug, -1);
 SVEXTERN int SVDECL(min_blockage_index_debug, -1);
-SVEXTERN int SVDECL(max_blockage_index_debug, -1);
+SVEXTERN int SVDECL(n_blockages_debug, 0);
 #ifdef INMAIN
   SVEXTERN unsigned char rgb_below_min[3]={255-64,255-64,255-64}, rgb_above_max[3]={0,0,0};
 #else
