@@ -327,7 +327,7 @@ int HaveNonTextures(tridata **tris, int ntris){
 
 /* ------------------ DrawBoxShaded ------------------------ */
 
-void DrawBoxShaded(float *bb, float *box_color){
+void DrawBoxShaded(float *bb, int flag, int *hidden6, float *box_color){
   float x0, x1, y0, y1, z0, z1;
 
   x0 = bb[0];
@@ -339,53 +339,65 @@ void DrawBoxShaded(float *bb, float *box_color){
   glColor3fv(box_color);
   glBegin(GL_TRIANGLES);
 
-  glNormal3f(-1.0, 0.0, 0.0);
-  glVertex3f(x0, y0, z0);
-  glVertex3f(x0, y1, z1);
-  glVertex3f(x0, y1, z0);
-  glVertex3f(x0, y0, z0);
-  glVertex3f(x0, y0, z1);
-  glVertex3f(x0, y1, z1);
+  if(flag==2||(flag==3&&hidden6[0]==0)){
+    glNormal3f(-1.0, 0.0, 0.0);
+    glVertex3f(x0, y0, z0);
+    glVertex3f(x0, y1, z1);
+    glVertex3f(x0, y1, z0);
+    glVertex3f(x0, y0, z0);
+    glVertex3f(x0, y0, z1);
+    glVertex3f(x0, y1, z1);
+  }
 
-  glNormal3f(1.0, 0.0, 0.0);
-  glVertex3f(x1, y0, z0);
-  glVertex3f(x1, y1, z0);
-  glVertex3f(x1, y1, z1);
-  glVertex3f(x1, y0, z0);
-  glVertex3f(x1, y1, z1);
-  glVertex3f(x1, y0, z1);
+  if(flag==2||(flag==3&&hidden6[1]==0)){
+    glNormal3f(1.0, 0.0, 0.0);
+    glVertex3f(x1, y0, z0);
+    glVertex3f(x1, y1, z0);
+    glVertex3f(x1, y1, z1);
+    glVertex3f(x1, y0, z0);
+    glVertex3f(x1, y1, z1);
+    glVertex3f(x1, y0, z1);
+  }
 
-  glNormal3f(0.0, -1.0, 0.0);
-  glVertex3f(x0, y0, z0);
-  glVertex3f(x1, y0, z0);
-  glVertex3f(x1, y0, z1);
-  glVertex3f(x0, y0, z0);
-  glVertex3f(x1, y0, z1);
-  glVertex3f(x0, y0, z1);
+  if(flag==2||(flag==3&&hidden6[2]==0)){
+    glNormal3f(0.0, -1.0, 0.0);
+    glVertex3f(x0, y0, z0);
+    glVertex3f(x1, y0, z0);
+    glVertex3f(x1, y0, z1);
+    glVertex3f(x0, y0, z0);
+    glVertex3f(x1, y0, z1);
+    glVertex3f(x0, y0, z1);
+  }
 
-  glNormal3f(0.0, 1.0, 0.0);
-  glVertex3f(x0, y1, z0);
-  glVertex3f(x1, y1, z1);
-  glVertex3f(x1, y1, z0);
-  glVertex3f(x0, y1, z0);
-  glVertex3f(x0, y1, z1);
-  glVertex3f(x1, y1, z1);
+  if(flag==2||(flag==3&&hidden6[3]==0)){
+    glNormal3f(0.0, 1.0, 0.0);
+    glVertex3f(x0, y1, z0);
+    glVertex3f(x1, y1, z1);
+    glVertex3f(x1, y1, z0);
+    glVertex3f(x0, y1, z0);
+    glVertex3f(x0, y1, z1);
+    glVertex3f(x1, y1, z1);
+  }
 
-  glNormal3f(0.0, 0.0, -1.0);
-  glVertex3f(x1, y0, z0);
-  glVertex3f(x0, y0, z0);
-  glVertex3f(x1, y1, z0);
-  glVertex3f(x0, y0, z0);
-  glVertex3f(x0, y1, z0);
-  glVertex3f(x1, y1, z0);
+  if(flag==2||(flag==3&&hidden6[4]==0)){
+    glNormal3f(0.0, 0.0, -1.0);
+    glVertex3f(x1, y0, z0);
+    glVertex3f(x0, y0, z0);
+    glVertex3f(x1, y1, z0);
+    glVertex3f(x0, y0, z0);
+    glVertex3f(x0, y1, z0);
+    glVertex3f(x1, y1, z0);
+  }
 
-  glNormal3f(0.0, 0.0, 1.0);
-  glVertex3f(x0, y0, z1);
-  glVertex3f(x1, y0, z1);
-  glVertex3f(x1, y1, z1);
-  glVertex3f(x0, y0, z1);
-  glVertex3f(x1, y1, z1);
-  glVertex3f(x0, y1, z1);
+  if(flag==2||(flag==3&&hidden6[5]==0)){
+    glNormal3f(0.0, 0.0, 1.0);
+    glVertex3f(x0, y0, z1);
+    glVertex3f(x1, y0, z1);
+    glVertex3f(x1, y1, z1);
+    glVertex3f(x0, y0, z1);
+    glVertex3f(x1, y1, z1);
+    glVertex3f(x0, y1, z1);
+  }
   glEnd();
 }
 

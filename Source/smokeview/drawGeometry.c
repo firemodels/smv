@@ -2853,7 +2853,7 @@ void UpdateFaceListsWorker(void){
     nface_transparent_double += n_transparent_double;
     nface_outlines += n_outlines;
 
-    if(use_new_drawface!=1)continue;
+    if(blockage_draw_option!=1)continue;
 
     meshi->nface_normals_single_DOWN_X=0;
     meshi->nface_normals_single_UP_X=0;
@@ -3061,6 +3061,7 @@ void DrawSelectFaces(){
         glVertex3fv(vertices+9);
 
 
+#ifdef pp_OBST_DEBUG
 /* ------------------ DrawObstsDebug ------------------------ */
 
 void DrawObstsDebug(void){
@@ -3099,8 +3100,8 @@ void DrawObstsDebug(void){
       blockagedata *bc;
 
       bc = meshi->blockageinfoptrs[j];
-      void DrawBoxShaded(float *bb, float *box_color);
-      DrawBoxShaded(bc->xyz, bc->color);
+      void DrawBoxShaded(float *bb, int flag, int *hidden6, float *box_color);
+      DrawBoxShaded(bc->xyz, blockage_draw_option, bc->hidden6, bc->color);
     }
   }
   if(light_faces == 1){
@@ -3109,6 +3110,7 @@ void DrawObstsDebug(void){
   }
   glPopMatrix();
 }
+#endif
 
 /* ------------------ DrawFacesOLD ------------------------ */
 // add option to turn off lighting when verifying smoke
@@ -5023,17 +5025,20 @@ void DrawBlockages(int mode, int trans_flag){
       }
     }
     else{
-      switch(use_new_drawface){
+      switch(blockage_draw_option){
       case 0:
         DrawFacesOLD();
         break;
       case 1:
         DrawFaces();
         break;
+#ifdef pp_OBST_DEBUG
       case 2:
+      case 3:
         void DrawObstsDebug(void);
         DrawObstsDebug();
         break;
+#endif
       default:
         assert(0);
         break;

@@ -40,7 +40,7 @@ EXTERNCPP void GLUIUpdateLoadAllSlices(void);
 EXTERNCPP void GLUIUpdateMeshBounds(void);
 EXTERNCPP void DrawBoxMinMax(float *bbmin, float *bbmax, float *box_color);
 EXTERNCPP void DrawBoxOutline(float *bb, float *box_color);
-EXTERNCPP void DrawBoxShaded(float *bb, float *box_color);
+EXTERNCPP void DrawBoxShaded(float *bb, int flag, int *hidden6, float *box_color);
 EXTERNCPP void GLUIUpdateLoadWhenLoaded(void);
 EXTERNCPP void GLUIBoundsSetup(int main_window);
 EXTERNCPP void GLUIUpdatePartPointSize(void);

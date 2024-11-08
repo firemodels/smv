@@ -306,7 +306,7 @@ extern "C" void GLUIUpdateTimebarOverlap(void){
 /* ------------------ GLUIUpdateTimebarOverlap ------------------------ */
 
 extern "C" void GLUIUpdateFastBlockageDraw(void){
-  if(RADIOBUTTON_label_1 != NULL)RADIOBUTTON_label_1->set_int_val(use_new_drawface);
+  if(RADIOBUTTON_label_1 != NULL)RADIOBUTTON_label_1->set_int_val(blockage_draw_option);
 }
 
 /* ------------------ DisplayRolloutCB ------------------------ */
@@ -882,13 +882,16 @@ extern "C" void GLUIDisplaySetup(int main_window){
   glui_labels->add_radiobutton_to_group(RADIO_timebar_overlap,_("Only if timebar hidden"));
 
   PANEL_blockage_drawing = glui_labels->add_panel_to_panel(PANEL_gen3,_("Blockage drawing"));
-  RADIOBUTTON_label_1 = glui_labels->add_radiogroup_to_panel(PANEL_blockage_drawing, &use_new_drawface, LABELS_drawface, GLUILabelsCB);
+  RADIOBUTTON_label_1 = glui_labels->add_radiogroup_to_panel(PANEL_blockage_drawing, &blockage_draw_option, LABELS_drawface, GLUILabelsCB);
   glui_labels->add_radiobutton_to_group(RADIOBUTTON_label_1, _("original"));
   glui_labels->add_radiobutton_to_group(RADIOBUTTON_label_1, _("new"));
+#ifdef pp_OBST_DEBUG
   glui_labels->add_radiobutton_to_group(RADIOBUTTON_label_1, _("debug"));
+  glui_labels->add_radiobutton_to_group(RADIOBUTTON_label_1, _("debug - draw only hidden faces"));
   glui_labels->add_spinner_to_panel(PANEL_blockage_drawing, "mesh:", GLUI_SPINNER_INT, &mesh_index_debug);
   glui_labels->add_spinner_to_panel(PANEL_blockage_drawing, "min blockage index:", GLUI_SPINNER_INT, &min_blockage_index_debug);
   glui_labels->add_spinner_to_panel(PANEL_blockage_drawing, "max blockage index:", GLUI_SPINNER_INT, &max_blockage_index_debug);
+#endif
 
   CHECKBOX_label_2=glui_labels->add_checkbox_to_panel(PANEL_gen3,_("Sort transparent faces"),&sort_transparent_faces,LABELS_drawface,GLUILabelsCB);
   CHECKBOX_label_3=glui_labels->add_checkbox_to_panel(PANEL_gen3,_("Hide overlaps"),&hide_overlaps,LABELS_hide_overlaps,GLUILabelsCB);

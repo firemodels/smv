@@ -2468,7 +2468,7 @@ int SetTicklinewidth(float v) {
 } // TICKLINEWIDTH
 
 int SetUsenewdrawface(int v) {
-  use_new_drawface = v;
+  blockage_draw_option = v;
   return 0;
 } // USENEWDRAWFACE
 
