@@ -12,7 +12,7 @@
 #define pp_GPU              // support the GPU
 #define pp_THREAD           // turn on multi-threading
 //#define pp_FDS            // create a 1 mesh input file
-#define pp_OBST_DEBUG          // use new DrawFace routine by default
+#define pp_OBST_DEBUG          // use new DrawFace routine by default, add option to use debug obst drawing routines
 
 #ifdef pp_FRAME          // turn on each frame type if pp_FRAME is set
 #define pp_BOUNDFRAME    // turn on frame code for boundary files
