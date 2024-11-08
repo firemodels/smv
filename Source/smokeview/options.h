@@ -12,7 +12,6 @@
 #define pp_GPU              // support the GPU
 #define pp_THREAD           // turn on multi-threading
 //#define pp_FDS            // create a 1 mesh input file
-#define pp_PART_SHOW        // add option to show selected particle values as well as tags
 #define pp_OBST_DEBUG          // use new DrawFace routine by default
 
 #ifdef pp_FRAME          // turn on each frame type if pp_FRAME is set
