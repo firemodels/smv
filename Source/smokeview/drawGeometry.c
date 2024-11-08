@@ -3061,11 +3061,21 @@ void DrawSelectFaces(){
         glVertex3fv(vertices+9);
 
 
-/* ------------------ DrawBlockagesDebug ------------------------ */
+/* ------------------ DrawObstsDebug ------------------------ */
 
-void DrawBlockagesDebug(void){
+void DrawObstsDebug(void){
   int i;
 
+  glPushMatrix();
+  glScalef(SCALE2SMV(1.0),SCALE2SMV(1.0),SCALE2SMV(1.0));
+  glTranslatef(-xbar0,-ybar0,-zbar0);
+  if(light_faces == 1){
+    ENABLE_LIGHTING;
+    glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, &block_shininess);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, block_ambient2);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, block_specular2);
+    glEnable(GL_COLOR_MATERIAL);
+  }
   for(i = 0; i < nmeshes; i++){
     meshdata *meshi;
     int j;
@@ -3075,8 +3085,15 @@ void DrawBlockagesDebug(void){
       blockagedata *bc;
 
       bc = meshi->blockageinfoptrs[j];
+      void DrawBoxShaded(float *bb, float *box_color);
+      DrawBoxShaded(bc->xyz, bc->color);
     }
   }
+  if(light_faces == 1){
+    glDisable(GL_COLOR_MATERIAL);
+    DISABLE_LIGHTING;
+  }
+  glPopMatrix();
 }
 
 /* ------------------ DrawFacesOLD ------------------------ */
@@ -5000,8 +5017,8 @@ void DrawBlockages(int mode, int trans_flag){
         DrawFaces();
         break;
       case 2:
-        void DrawBlockagesDebug(void);
-        DrawBlockagesDebug();
+        void DrawObstsDebug(void);
+        DrawObstsDebug();
         break;
       default:
         assert(0);

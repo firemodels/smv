@@ -6944,9 +6944,13 @@ void InitMeshBlockages(void){
     int j;
     int counts[6];
     int *is_extface;
+    float *xplt, *yplt, *zplt;
 
     meshi = meshinfo + i;
     if(meshi->nbptrs == 0)continue;
+    xplt = meshi->xplt_orig;
+    yplt = meshi->yplt_orig;
+    zplt = meshi->zplt_orig;
     is_extface = meshi->is_extface;
     for(j=0; j< 6; j++){
       counts[j]            = 0;
@@ -6982,6 +6986,21 @@ void InitMeshBlockages(void){
       bclist = meshi->bc_faces[3]; if(bc->ijk[3] == meshi->jbar && is_extface[3] == 0)bclist[counts[3]++] = bc;
       bclist = meshi->bc_faces[4]; if(bc->ijk[4] == 0           && is_extface[4] == 0)bclist[counts[4]++] = bc;
       bclist = meshi->bc_faces[5]; if(bc->ijk[5] == meshi->kbar && is_extface[5] == 0)bclist[counts[5]++] = bc;
+    }
+    for(j = 0;j < meshi->nbptrs;j++){
+      blockagedata *bc;
+      float *xyz;
+      int *ijk;
+
+      bc = meshi->blockageinfoptrs[j];
+      xyz = bc->xyz;
+      ijk = bc->ijk;
+      xyz[0] = xplt[ijk[0]];
+      xyz[1] = xplt[ijk[1]];
+      xyz[2] = yplt[ijk[2]];
+      xyz[3] = yplt[ijk[3]];
+      xyz[4] = zplt[ijk[4]];
+      xyz[5] = zplt[ijk[5]];
     }
   }
 }

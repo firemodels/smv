@@ -209,7 +209,7 @@ void ShowScene2(int mode){
       glPushMatrix();
       glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
       glTranslatef(-xbar0, -ybar0, -zbar0);
-      DrawBox(meshclip, box_red);
+      DrawBoxOutline(meshclip, box_red);
       glPopMatrix();
     }
 
