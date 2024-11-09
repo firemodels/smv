@@ -2879,12 +2879,17 @@ void UpdateFaceListsWorker(void){
         facei->dup=0;
         faceim1 = meshi->face_normals_single[iface-1];
         if(
-          facei->imax-facei->imin<=1&&facei->jmax-facei->jmin<=1&&facei->kmax-facei->kmin<=1&& // only hide duplicate one cell faces
-          faceim1->imin==facei->imin&&faceim1->imax==facei->imax&&
-          faceim1->jmin==facei->jmin&&faceim1->jmax==facei->jmax&&
-          faceim1->kmin==facei->kmin&&faceim1->kmax==facei->kmax&&faceim1->dir!=facei->dir
+          facei->imax-facei->imin<=1&&
+          facei->jmax-facei->jmin<=1&&
+          facei->kmax-facei->kmin<=1&& // only hide duplicate one cell faces
+          faceim1->imin==facei->imin&&
+          faceim1->imax==facei->imax&&
+          faceim1->jmin==facei->jmin&&
+          faceim1->jmax==facei->jmax&&
+          faceim1->kmin==facei->kmin&&
+          faceim1->kmax==facei->kmax&&
+          faceim1->dir!=facei->dir
           ){
-          if(*(faceim1->showtimelist_handle)==NULL)faceim1->dup=1;
           if(*(facei->showtimelist_handle)==NULL){
             facei->dup=1;
             nhidden++;
