@@ -2853,7 +2853,7 @@ void UpdateFaceListsWorker(void){
     nface_transparent_double += n_transparent_double;
     nface_outlines += n_outlines;
 
-    if(use_new_drawface==0)continue;
+    if(blockage_draw_option!=1)continue;
 
     meshi->nface_normals_single_DOWN_X=0;
     meshi->nface_normals_single_UP_X=0;
@@ -2879,12 +2879,17 @@ void UpdateFaceListsWorker(void){
         facei->dup=0;
         faceim1 = meshi->face_normals_single[iface-1];
         if(
-          facei->imax-facei->imin<=1&&facei->jmax-facei->jmin<=1&&facei->kmax-facei->kmin<=1&& // only hide duplicate one cell faces
-          faceim1->imin==facei->imin&&faceim1->imax==facei->imax&&
-          faceim1->jmin==facei->jmin&&faceim1->jmax==facei->jmax&&
-          faceim1->kmin==facei->kmin&&faceim1->kmax==facei->kmax&&faceim1->dir!=facei->dir
+          facei->imax-facei->imin<=1&&
+          facei->jmax-facei->jmin<=1&&
+          facei->kmax-facei->kmin<=1&& // only hide duplicate one cell faces
+          faceim1->imin==facei->imin&&
+          faceim1->imax==facei->imax&&
+          faceim1->jmin==facei->jmin&&
+          faceim1->jmax==facei->jmax&&
+          faceim1->kmin==facei->kmin&&
+          faceim1->kmax==facei->kmax&&
+          faceim1->dir!=facei->dir
           ){
-          if(*(faceim1->showtimelist_handle)==NULL)faceim1->dup=1;
           if(*(facei->showtimelist_handle)==NULL){
             facei->dup=1;
             nhidden++;
@@ -3059,6 +3064,60 @@ void DrawSelectFaces(){
         glVertex3fv(vertices);\
         glVertex3fv(vertices+6);\
         glVertex3fv(vertices+9);
+
+
+#ifdef pp_OBST_DEBUG
+/* ------------------ DrawObstsDebug ------------------------ */
+
+void DrawObstsDebug(void){
+  int i;
+
+  glPushMatrix();
+  glScalef(SCALE2SMV(1.0),SCALE2SMV(1.0),SCALE2SMV(1.0));
+  glTranslatef(-xbar0,-ybar0,-zbar0);
+  if(light_faces == 1){
+    ENABLE_LIGHTING;
+    glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, &block_shininess);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, block_ambient2);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, block_specular2);
+    glEnable(GL_COLOR_MATERIAL);
+  }
+  for(i = 0; i < nmeshes; i++){
+    meshdata *meshi;
+    int j;
+    int jmin, jmax;
+
+    meshi = meshinfo + i;
+    jmin = 0;
+    jmax = meshi->nbptrs-1;
+    if(mesh_index_debug >= 0 && mesh_index_debug < nmeshes){
+      int max_blockage_index_debug;
+      if(mesh_index_debug!=i)continue;
+      max_blockage_index_debug = min_blockage_index_debug + n_blockages_debug - 1;
+      if(min_blockage_index_debug >= 0 && min_blockage_index_debug < meshi->nbptrs){
+        if(max_blockage_index_debug >= 0 && max_blockage_index_debug < meshi->nbptrs){
+          if(min_blockage_index_debug <= max_blockage_index_debug){
+            jmin = min_blockage_index_debug;
+            jmax = max_blockage_index_debug;
+          }
+        }
+      }
+    }
+    for(j = jmin; j<=jmax; j++){
+      blockagedata *bc;
+
+      bc = meshi->blockageinfoptrs[j];
+      void DrawBoxShaded(float *bb, int flag, int *hidden6, float *box_color);
+      DrawBoxShaded(bc->xyz, blockage_draw_option, bc->hidden6, bc->color);
+    }
+  }
+  if(light_faces == 1){
+    glDisable(GL_COLOR_MATERIAL);
+    DISABLE_LIGHTING;
+  }
+  glPopMatrix();
+}
+#endif
 
 /* ------------------ DrawFacesOLD ------------------------ */
 // add option to turn off lighting when verifying smoke
@@ -4973,11 +5032,22 @@ void DrawBlockages(int mode, int trans_flag){
       }
     }
     else{
-      if(use_new_drawface==1){
-        DrawFaces();
-      }
-      else{
+      switch(blockage_draw_option){
+      case 0:
         DrawFacesOLD();
+        break;
+      case 1:
+        DrawFaces();
+        break;
+#ifdef pp_OBST_DEBUG
+      case 2:
+      case 3:
+        DrawObstsDebug();
+        break;
+#endif
+      default:
+        assert(0);
+        break;
       }
     }
   }

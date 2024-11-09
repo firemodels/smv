@@ -3031,14 +3031,10 @@ void UpdateDisplay(void){
 
       meshi = meshinfo + ig;
       void SetHiddenBlockages(meshdata *meshi);
-#ifdef pp_HIDDEN6
       if(have_hidden6 == 0){
         if(ig == 0)printf("setting hidden blockages\n");
         SetHiddenBlockages(meshi);
       }
-#else
-      SetHiddenBlockages(meshi);
-#endif
       for(j = 0; j < meshi->nbptrs; j++){
         blockagedata *bc;
 

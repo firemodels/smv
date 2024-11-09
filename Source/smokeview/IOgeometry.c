@@ -325,9 +325,145 @@ int HaveNonTextures(tridata **tris, int ntris){
   return 0;
 }
 
-/* ------------------ DrawBox ------------------------ */
+/* ------------------ DrawBoxShaded ------------------------ */
 
-void DrawBox(float *bb, float *box_color){
+void DrawBoxShaded(float *bb, int flag, int *hidden6, float *box_color){
+  float x0, x1, y0, y1, z0, z1;
+
+  x0 = bb[0];
+  x1 = bb[1];
+  y0 = bb[2];
+  y1 = bb[3];
+  z0 = bb[4];
+  z1 = bb[5];
+  glColor3fv(box_color);
+  glBegin(GL_TRIANGLES);
+
+  if(flag==2||(flag==3&&hidden6[0]==0)){
+    glNormal3f(-1.0, 0.0, 0.0);
+    glVertex3f(x0, y0, z0);
+    glVertex3f(x0, y1, z1);
+    glVertex3f(x0, y1, z0);
+    glVertex3f(x0, y0, z0);
+    glVertex3f(x0, y0, z1);
+    glVertex3f(x0, y1, z1);
+
+    if(flag == 3 && hidden6[0] == 0){
+      glNormal3f(1.0, 0.0, 0.0);
+      glVertex3f(x0, y0, z0);
+      glVertex3f(x0, y1, z0);
+      glVertex3f(x0, y1, z1);
+      glVertex3f(x0, y0, z0);
+      glVertex3f(x0, y1, z1);
+      glVertex3f(x0, y0, z1);
+    }
+  }
+
+  if(flag==2||(flag==3&&hidden6[1]==0)){
+    glNormal3f(1.0, 0.0, 0.0);
+    glVertex3f(x1, y0, z0);
+    glVertex3f(x1, y1, z0);
+    glVertex3f(x1, y1, z1);
+    glVertex3f(x1, y0, z0);
+    glVertex3f(x1, y1, z1);
+    glVertex3f(x1, y0, z1);
+
+    if(flag == 3 && hidden6[1] == 0){
+      glNormal3f(-1.0, 0.0, 0.0);
+      glVertex3f(x1, y0, z0);
+      glVertex3f(x1, y1, z1);
+      glVertex3f(x1, y1, z0);
+      glVertex3f(x1, y0, z0);
+      glVertex3f(x1, y0, z1);
+      glVertex3f(x1, y1, z1);
+    }
+  }
+
+  if(flag==2||(flag==3&&hidden6[2]==0)){
+    glNormal3f(0.0, -1.0, 0.0);
+    glVertex3f(x0, y0, z0);
+    glVertex3f(x1, y0, z0);
+    glVertex3f(x1, y0, z1);
+    glVertex3f(x0, y0, z0);
+    glVertex3f(x1, y0, z1);
+    glVertex3f(x0, y0, z1);
+
+    if(flag == 3 && hidden6[2] == 0){
+      glNormal3f(0.0, 1.0, 0.0);
+      glVertex3f(x0, y0, z0);
+      glVertex3f(x1, y0, z1);
+      glVertex3f(x1, y0, z0);
+      glVertex3f(x0, y0, z0);
+      glVertex3f(x0, y0, z1);
+      glVertex3f(x1, y0, z1);
+    }
+  }
+
+  if(flag==2||(flag==3&&hidden6[3]==0)){
+    glNormal3f(0.0, 1.0, 0.0);
+    glVertex3f(x0, y1, z0);
+    glVertex3f(x1, y1, z1);
+    glVertex3f(x1, y1, z0);
+    glVertex3f(x0, y1, z0);
+    glVertex3f(x0, y1, z1);
+    glVertex3f(x1, y1, z1);
+
+    if(flag == 3 && hidden6[3] == 0){
+      glNormal3f(0.0, -1.0, 0.0);
+      glVertex3f(x0, y1, z0);
+      glVertex3f(x1, y1, z0);
+      glVertex3f(x1, y1, z1);
+      glVertex3f(x0, y1, z0);
+      glVertex3f(x1, y1, z1);
+      glVertex3f(x0, y1, z1);
+    }
+  }
+
+  if(flag==2||(flag==3&&hidden6[4]==0)){
+    glNormal3f(0.0, 0.0, -1.0);
+    glVertex3f(x1, y0, z0);
+    glVertex3f(x0, y0, z0);
+    glVertex3f(x1, y1, z0);
+    glVertex3f(x0, y0, z0);
+    glVertex3f(x0, y1, z0);
+    glVertex3f(x1, y1, z0);
+
+    if(flag == 3 && hidden6[4] == 0){
+      glNormal3f(0.0, 0.0, 1.0);
+      glVertex3f(x1, y0, z0);
+      glVertex3f(x1, y1, z0);
+      glVertex3f(x0, y0, z0);
+      glVertex3f(x0, y0, z0);
+      glVertex3f(x1, y1, z0);
+      glVertex3f(x0, y1, z0);
+    }
+  }
+
+  if(flag==2||(flag==3&&hidden6[5]==0)){
+    glNormal3f(0.0, 0.0, 1.0);
+    glVertex3f(x0, y0, z1);
+    glVertex3f(x1, y0, z1);
+    glVertex3f(x1, y1, z1);
+    glVertex3f(x0, y0, z1);
+    glVertex3f(x1, y1, z1);
+    glVertex3f(x0, y1, z1);
+
+    if(flag == 3 && hidden6[5] == 0){
+      glNormal3f(0.0, 0.0, -1.0);
+      glVertex3f(x0, y0, z1);
+      glVertex3f(x1, y1, z1);
+      glVertex3f(x1, y0, z1);
+      glVertex3f(x0, y0, z1);
+      glVertex3f(x0, y1, z1);
+      glVertex3f(x1, y1, z1);
+    }
+  }
+  glEnd();
+}
+
+/* ------------------ DrawBoxOutline ------------------------ */
+
+void DrawBoxOutline(float *bb, float *box_color){
   glColor3fv(box_color);
   glLineWidth(geom_linewidth);
   glBegin(GL_LINES);
@@ -377,7 +513,7 @@ void DrawBox(float *bb, float *box_color){
   glEnd();
 }
 
-/* ------------------ DrawBox ------------------------ */
+/* ------------------ DrawBoxMinMax ------------------------ */
 
 void DrawBoxMinMax(float *bbmin, float *bbmax, float *box_color){
   float bb[6];
@@ -388,7 +524,7 @@ void DrawBoxMinMax(float *bbmin, float *bbmax, float *box_color){
   bb[1] = bbmax[0];
   bb[3] = bbmax[1];
   bb[5] = bbmax[2];
-  DrawBox(bb, box_color);
+  DrawBoxOutline(bb, box_color);
 }
 
 /* ------------------ DrawObstBoundingBox ------------------------ */
@@ -400,7 +536,7 @@ void DrawObstBoundingBox(void){
   glPushMatrix();
   glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
   glTranslatef(-xbar0, -ybar0, -zbar0);
-  DrawBox(obst_bounding_box, foregroundcolor);
+  DrawBoxOutline(obst_bounding_box, foregroundcolor);
   glPopMatrix();
 }
 
@@ -429,12 +565,12 @@ void DrawGeomBoundingBox(float *boundingbox_color){
         box_color = foregroundcolor;
         if(geomobjj->color!=NULL)box_color = geomobjj->color;
         if(boundingbox_color!=NULL)box_color = boundingbox_color;
-        DrawBox(geomobjj->bounding_box, box_color);
+        DrawBoxOutline(geomobjj->bounding_box, box_color);
         have_box = 1;
       }
     }
     if(have_box==0){
-      DrawBox(geomi->bounding_box, foregroundcolor);
+      DrawBoxOutline(geomi->bounding_box, foregroundcolor);
     }
   }
   glPopMatrix();

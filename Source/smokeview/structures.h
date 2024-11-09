@@ -346,7 +346,7 @@ typedef struct _xbdata {
 typedef struct _blockagedata {
   int ijk[6];
   float xmin, xmax, ymin, ymax, zmin, zmax;
-  float xyzEXACT[6], xyzDELTA[18];
+  float xyz[6], xyzEXACT[6], xyzDELTA[18];
   struct _surfdata *surf[6];
   struct _propdata *prop;
   int walltype,walltypeORIG;

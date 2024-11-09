@@ -6944,9 +6944,13 @@ void InitMeshBlockages(void){
     int j;
     int counts[6];
     int *is_extface;
+    float *xplt, *yplt, *zplt;
 
     meshi = meshinfo + i;
     if(meshi->nbptrs == 0)continue;
+    xplt = meshi->xplt_orig;
+    yplt = meshi->yplt_orig;
+    zplt = meshi->zplt_orig;
     is_extface = meshi->is_extface;
     for(j=0; j< 6; j++){
       counts[j]            = 0;
@@ -6982,6 +6986,21 @@ void InitMeshBlockages(void){
       bclist = meshi->bc_faces[3]; if(bc->ijk[3] == meshi->jbar && is_extface[3] == 0)bclist[counts[3]++] = bc;
       bclist = meshi->bc_faces[4]; if(bc->ijk[4] == 0           && is_extface[4] == 0)bclist[counts[4]++] = bc;
       bclist = meshi->bc_faces[5]; if(bc->ijk[5] == meshi->kbar && is_extface[5] == 0)bclist[counts[5]++] = bc;
+    }
+    for(j = 0;j < meshi->nbptrs;j++){
+      blockagedata *bc;
+      float *xyz;
+      int *ijk;
+
+      bc = meshi->blockageinfoptrs[j];
+      xyz = bc->xyz;
+      ijk = bc->ijk;
+      xyz[0] = xplt[ijk[0]];
+      xyz[1] = xplt[ijk[1]];
+      xyz[2] = yplt[ijk[2]];
+      xyz[3] = yplt[ijk[3]];
+      xyz[4] = zplt[ijk[4]];
+      xyz[5] = zplt[ijk[5]];
     }
   }
 }
@@ -12862,17 +12881,23 @@ int ReadIni2(char *inifile, int localfile){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%i %f %i", &scaled_font3d_height, &scaled_font3d_height2width, &scaled_font3d_thickness);
     }
-#ifdef pp_NEWFACE
+#ifdef pp_OBST_DEBUG
     if(MatchINI(buffer, "NEWDRAWFACE") == 1){
+      fgets(buffer, 255, stream);
+      sscanf(buffer, "%i", &blockage_draw_option);
+      updatefacelists = 1;
+      blockage_draw_option = CLAMP(blockage_draw_option, 0, 3);
+      continue;
+    }
 #else
     if(MatchINI(buffer, "USENEWDRAWFACE") == 1){
-#endif
       fgets(buffer, 255, stream);
       sscanf(buffer, "%i", &use_new_drawface);
       updatefacelists = 1;
-      ONEORZERO(use_new_drawface);
+      use_new_drawface = CLAMP(use_new_drawface, 0, 1);
       continue;
     }
+#endif
     if(MatchINI(buffer, "TLOAD") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%i %f %i %f %i %i", &use_tload_begin, &tload_begin, &use_tload_end, &tload_end, &use_tload_skip, &tload_skip);
@@ -16988,12 +17013,13 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %f\n", streaklinewidth);
   fprintf(fileout, "TICKLINEWIDTH\n");
   fprintf(fileout, " %f\n", ticklinewidth);
-#ifdef pp_NEWFACE
+#ifdef pp_OBST_DEBUG
   fprintf(fileout, "NEWDRAWFACE\n");
+  fprintf(fileout, " %i\n", blockage_draw_option);
 #else
   fprintf(fileout, "USENEWDRAWFACE\n");
+  fprintf(fileout, " %i\n", blockage_draw_option);
 #endif
-  fprintf(fileout, " %i\n", use_new_drawface);
   fprintf(fileout, "VECCONTOURS\n");
   fprintf(fileout, " %i %i\n", show_node_slices_and_vectors,show_cell_slices_and_vectors);
   fprintf(fileout, "VECLENGTH\n");
