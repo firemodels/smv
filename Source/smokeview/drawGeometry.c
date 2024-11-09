@@ -5042,7 +5042,6 @@ void DrawBlockages(int mode, int trans_flag){
 #ifdef pp_OBST_DEBUG
       case 2:
       case 3:
-        void DrawObstsDebug(void);
         DrawObstsDebug();
         break;
 #endif

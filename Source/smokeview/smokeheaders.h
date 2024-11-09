@@ -361,6 +361,7 @@ EXTERNCPP void GeneratePartHistograms(void);
 FILE_SIZE LoadAllMSlicesMT(int last_slice, multislicedata *mslicei, int *fcount);
 
 EXTERNCPP void DrawObstBoundingBox(void);
+EXTERNCPP void DrawObstDebug(void);
 EXTERNCPP void DrawGeomBoundingBox(float *boundingbox_color);
 EXTERNCPP void ClassifyGeom(geomdata *geomi, int *geom_frame_index);
 
