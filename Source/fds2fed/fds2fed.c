@@ -167,11 +167,10 @@ int ReadSMV(char *smvfile){
       blocknumber--;
 
       slicei = sliceinfo + islice;
-      strcpy(slicei->kwlabel, buffer);
-      char *exclame;
-      exclame = strchr(slicei->kwlabel, '!');
-      if(exclame != NULL)exclame[0] = 0;
-      TrimBack(slicei->kwlabel);
+
+      strcpy(slicei->keyword_label, buffer);
+      TrimBack(slicei->keyword_label);
+
       slicei->slicetype = slicetype;
       slicei->blocknumber=blocknumber;
       sliceparms = strchr(buffer, '&');
@@ -272,7 +271,7 @@ void AddSlice(slicedata *slicei){
     if(fedi->co != NULL && slicei != fedi->co && MatchFED(slicei, fedi->co)==1){
       if(slicei->quant == O2)fedi->o2 = slicei;;
       if(slicei->quant == CO2)fedi->co2 = slicei;
-      fedi->kwlabel = slicei->kwlabel;
+      fedi->keyword_label = slicei->keyword_label;
       MakeFEDFileNames(fedi->sf_file, fedi->iso_file, fedi->bndfile, slicei->file);
       slicei->in_fed = 1;
       return;
@@ -280,7 +279,7 @@ void AddSlice(slicedata *slicei){
     if(fedi->co2 != NULL && slicei != fedi->co2 && MatchFED(slicei, fedi->co2)==1){
       if(slicei->quant == O2)fedi->o2 = slicei;;
       if(slicei->quant == CO)fedi->co = slicei;
-      fedi->kwlabel = slicei->kwlabel;
+      fedi->keyword_label = slicei->keyword_label;
       MakeFEDFileNames(fedi->sf_file, fedi->iso_file, fedi->bndfile, slicei->file);
       slicei->in_fed = 1;
       return;
@@ -288,7 +287,7 @@ void AddSlice(slicedata *slicei){
     if(fedi->o2 != NULL && slicei != fedi->o2 && MatchFED(slicei, fedi->o2)==1){
       if(slicei->quant == CO2)fedi->co2 = slicei;;
       if(slicei->quant == CO)fedi->co = slicei;
-      fedi->kwlabel = slicei->kwlabel;
+      fedi->keyword_label = slicei->keyword_label;
       MakeFEDFileNames(fedi->sf_file, fedi->iso_file, fedi->bndfile, slicei->file);
       slicei->in_fed = 1;
       return;
@@ -299,7 +298,7 @@ void AddSlice(slicedata *slicei){
   if(slicei->quant == CO)fedi->co = slicei;
   if(slicei->quant == O2)fedi->o2 = slicei;
   MakeFEDFileNames(fedi->sf_file, fedi->iso_file, fedi->bndfile, slicei->file);
-  fedi->kwlabel = slicei->kwlabel;
+  fedi->keyword_label = slicei->keyword_label;
   slicei->in_fed = 1;
 }
 
@@ -319,7 +318,7 @@ void MakeFEDSmv(char *file){
     slicedata *fed;
 
     fedi = fedinfo + i;
-    fprintf(stream, "%s\n", fedi->kwlabel);
+    fprintf(stream, "%s\n", fedi->keyword_label);
     fprintf(stream, " %s\n", fedi->sf_file);
     fprintf(stream, " Fractional effective dose\n");
     fprintf(stream, " FED\n");
@@ -536,7 +535,7 @@ void MakeFEDSlice(feddata *fedi){
     fedi->times = times;
     fedi->vals = vals;
     for(i = 0; i < fedi->memframesize; i++){
-      vals[0] = 0.0;
+      vals[i] = 0.0;
     }
     valmin  = 0.0;
     valmax  = 0.0;
