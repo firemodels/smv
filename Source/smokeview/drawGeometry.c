@@ -3065,8 +3065,6 @@ void DrawSelectFaces(){
         glVertex3fv(vertices+6);\
         glVertex3fv(vertices+9);
 
-
-#ifdef pp_OBST_DEBUG
 /* ------------------ DrawObstsDebug ------------------------ */
 
 void DrawObstsDebug(void){
@@ -3117,7 +3115,6 @@ void DrawObstsDebug(void){
   }
   glPopMatrix();
 }
-#endif
 
 /* ------------------ DrawFacesOLD ------------------------ */
 // add option to turn off lighting when verifying smoke
@@ -5039,12 +5036,10 @@ void DrawBlockages(int mode, int trans_flag){
       case 1:
         DrawFaces();
         break;
-#ifdef pp_OBST_DEBUG
       case 2:
       case 3:
         DrawObstsDebug();
         break;
-#endif
       default:
         assert(0);
         break;

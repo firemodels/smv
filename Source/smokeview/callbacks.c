@@ -2585,19 +2585,13 @@ void Keyboard(unsigned char key, int flag){
       break;
     case 'U':
       blockage_draw_option++;
-#ifdef pp_OBST_DEBUG
       if(blockage_draw_option > 3)blockage_draw_option = 0;
-#else
-      if(blockage_draw_option > 1)blockage_draw_option = 0;
-#endif
       updatefacelists = 1;
       GLUIUpdateFastBlockageDraw();
       if(blockage_draw_option == 0)printf("original blockage drawing\n");
       if(blockage_draw_option == 1)printf("fast blockage drawing\n");
-#ifdef pp_OBST_DEBUG
       if(blockage_draw_option == 2)printf("debug blockage drawing\n");
       if(blockage_draw_option == 3)printf("debug blockage drawing, draw only hidden faces\n");
-#endif
       break;
     case '|':
       projection_type = 1-projection_type;

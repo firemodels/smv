@@ -1811,11 +1811,7 @@ SVEXTERN float texture_origin[3];
 #endif
 
 SVEXTERN int vslicecolorbarflag;
-#ifdef pp_OBST_DEBUG
 SVEXTERN int SVDECL(blockage_draw_option, 1);
-#else
-SVEXTERN int SVDECL(blockage_draw_option, 0);
-#endif
 SVEXTERN int SVDECL(mesh_index_debug, -1);
 SVEXTERN int SVDECL(min_blockage_index_debug, -1);
 SVEXTERN int SVDECL(n_blockages_debug, 0);
