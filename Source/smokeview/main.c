@@ -820,7 +820,13 @@ int main(int argc, char **argv){
   smv_filename = ParseCommandline(argc, argv);
 
 #ifdef WIN32
+  char fdsdefault[256];
+  strcpy(fdsdefault, "C:\\Program Files\\firemodels\\FDS6\\bin\\fds_local.bat");
   if(Which("fds_local.bat", &fdsprog) != NULL)strcpy(fdsprog, "fds_local.bat");
+  if(fdsprog==NULL&&FileExistsOrig(fdsdefault) == 1){
+    strcpy(fdsprog, fdsdefault);
+  }
+
 #else
   Which("fds", &fdsprog);
 #endif
