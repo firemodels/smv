@@ -820,15 +820,15 @@ int main(int argc, char **argv){
   smv_filename = ParseCommandline(argc, argv);
 
 #ifdef WIN32
-  char fdsdefault[256];
-  strcpy(fdsdefault, "C:\\Program Files\\firemodels\\FDS6\\bin\\fds_local.bat");
   if(Which("fds_local.bat", &fdsprog) != NULL)strcpy(fdsprog, "fds_local.bat");
-  if(fdsprog==NULL&&FileExistsOrig(fdsdefault) == 1){
-    strcpy(fdsprog, fdsdefault);
-  }
-
 #else
+  //char fdsdefault[256];
+  //  strcpy(fdsdefault, "\$HOME/FDS/FDS6/bin/fds");
   Which("fds", &fdsprog);
+  // if(fdsprog == NULL && FileExistsOrig(fdsdefault) == 1){
+  //   NewMemory(( void ** )&fdsprog, ( unsigned int )(strlen(fdsdefault) + 1));
+  //   strcpy(fdsprog, fdsdefault);
+  // }
 #endif
 
   if(smv_filename == NULL && show_version == 1){
