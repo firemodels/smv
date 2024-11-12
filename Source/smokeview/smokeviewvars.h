@@ -42,6 +42,9 @@ SVEXTERN int SVDECL(update_glui_merge_smoke, 1);
 #ifdef pp_FDS
 SVEXTERN int SVDECL(n_readsmvorig_threads, 1), SVDECL(use_readsmvorig_threads, 1);
 SVEXTERN threaderdata SVDECL(*readsmvorig_threads, NULL);
+#ifndef MAX_MESHES
+#define MAX_MESHES 100
+#endif
 #endif
 
 //***isosurface

@@ -6613,7 +6613,7 @@ int GenerateSmvOrigFile(void){
   char *fdsonemesh, command_line[1024], smvonemesh[1024], gitonemesh[1024], *ext;
 
   fdsonemesh = ConvertFDSInputFile(fds_filein, ijk, xb);
-  if(FileExistsOrig(fdsonemesh) == 0 || fdsprog == NULL)return 0;
+  if(FileExistsOrig(fdsonemesh) == 0 || fdsprog == NULL || nmeshes > MAX_MESHES)return 0;
 
 // setup and run fds case
   strcpy(command_line, fdsprog);
