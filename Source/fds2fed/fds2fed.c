@@ -535,7 +535,7 @@ void MakeFEDSlice(feddata *fedi){
     fedi->times = times;
     fedi->vals = vals;
     for(i = 0; i < fedi->memframesize; i++){
-      vals[0] = 0.0;
+      vals[i] = 0.0;
     }
     valmin  = 0.0;
     valmax  = 0.0;
