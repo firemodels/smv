@@ -38,15 +38,6 @@ SVEXTERN smokethreaddata smokethreadinfo[MAX_THREADS];
 SVEXTERN int SVDECL(n_mergesmoke_glui_threads, 4), SVDECL(use_mergesmoke_glui_threads, 1);
 SVEXTERN int SVDECL(update_glui_merge_smoke, 1);
 
-//***readsmvorig
-#ifdef pp_FDS
-SVEXTERN int SVDECL(n_readsmvorig_threads, 1), SVDECL(use_readsmvorig_threads, 1);
-SVEXTERN threaderdata SVDECL(*readsmvorig_threads, NULL);
-#ifndef MAX_MESHES
-#define MAX_MESHES 100
-#endif
-#endif
-
 //***isosurface
 SVEXTERN int SVDECL(n_isosurface_threads, 1), SVDECL(use_isosurface_threads, 1);
 SVEXTERN threaderdata SVDECL(*isosurface_threads, NULL);
