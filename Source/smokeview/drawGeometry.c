@@ -3080,23 +3080,23 @@ void DrawObstsDebug(void){
     glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, block_specular2);
     glEnable(GL_COLOR_MATERIAL);
   }
-  for(i = 0; i < nmeshes; i++){
+  for(i = 1; i <= nmeshes; i++){
     meshdata *meshi;
     int j;
     int jmin, jmax;
 
-    meshi = meshinfo + i;
+    meshi = meshinfo + i - 1;
     jmin = 0;
     jmax = meshi->nbptrs-1;
-    if(mesh_index_debug >= 0 && mesh_index_debug < nmeshes){
+    if(mesh_index_debug >= 1 && mesh_index_debug <= nmeshes){
       int max_blockage_index_debug;
       if(mesh_index_debug!=i)continue;
       max_blockage_index_debug = min_blockage_index_debug + n_blockages_debug - 1;
-      if(min_blockage_index_debug >= 0 && min_blockage_index_debug < meshi->nbptrs){
-        if(max_blockage_index_debug >= 0 && max_blockage_index_debug < meshi->nbptrs){
+      if(min_blockage_index_debug >= 1 && min_blockage_index_debug <= meshi->nbptrs){
+        if(max_blockage_index_debug >= 1 && max_blockage_index_debug <= meshi->nbptrs){
           if(min_blockage_index_debug <= max_blockage_index_debug){
-            jmin = min_blockage_index_debug;
-            jmax = max_blockage_index_debug;
+            jmin = min_blockage_index_debug-1;
+            jmax = max_blockage_index_debug-1;
           }
         }
       }
