@@ -38,12 +38,6 @@ SVEXTERN smokethreaddata smokethreadinfo[MAX_THREADS];
 SVEXTERN int SVDECL(n_mergesmoke_glui_threads, 4), SVDECL(use_mergesmoke_glui_threads, 1);
 SVEXTERN int SVDECL(update_glui_merge_smoke, 1);
 
-//***readsmvorig
-#ifdef pp_FDS
-SVEXTERN int SVDECL(n_readsmvorig_threads, 1), SVDECL(use_readsmvorig_threads, 1);
-SVEXTERN threaderdata SVDECL(*readsmvorig_threads, NULL);
-#endif
-
 //***isosurface
 SVEXTERN int SVDECL(n_isosurface_threads, 1), SVDECL(use_isosurface_threads, 1);
 SVEXTERN threaderdata SVDECL(*isosurface_threads, NULL);
@@ -1812,8 +1806,8 @@ SVEXTERN float texture_origin[3];
 
 SVEXTERN int vslicecolorbarflag;
 SVEXTERN int SVDECL(blockage_draw_option, 1);
-SVEXTERN int SVDECL(mesh_index_debug, -1);
-SVEXTERN int SVDECL(min_blockage_index_debug, -1);
+SVEXTERN int SVDECL(mesh_index_debug, 0);
+SVEXTERN int SVDECL(min_blockage_index_debug, 0);
 SVEXTERN int SVDECL(n_blockages_debug, 0);
 #ifdef INMAIN
   SVEXTERN unsigned char rgb_below_min[3]={255-64,255-64,255-64}, rgb_above_max[3]={0,0,0};
@@ -1968,7 +1962,7 @@ SVEXTERN FILE SVDECL(*LOG_FILENAME,NULL);
 SVEXTERN char SVDECL(*flushfile,NULL), SVDECL(*chidfilebase,NULL);
 SVEXTERN int SVDECL(csv_loaded, 0), SVDECL(devices_setup,0),SVDECL(update_csv_load,0);
 SVEXTERN char SVDECL(*hrr_csv_filename,NULL),SVDECL(*devc_csv_filename,NULL),SVDECL(*exp_csv_filename,NULL);
-SVEXTERN char SVDECL(*smokezippath,NULL), SVDECL(*smokeviewpath,NULL), SVDECL(*fdsprog, NULL);
+SVEXTERN char SVDECL(*smokezippath,NULL), SVDECL(*smokeviewpath,NULL);
 SVEXTERN char SVDECL(*INI_fds_filein,NULL), SVDECL(*fds_filein,NULL);
 SVEXTERN char SVDECL(*caseini_filename,NULL);
 #ifdef pp_FRAME

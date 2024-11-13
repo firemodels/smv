@@ -88,6 +88,9 @@ GLUI_Spinner *SPINNER_spec_blue = NULL;
 GLUI_Spinner *SPINNER_spec_grey = NULL;
 GLUI_Spinner *SPINNER_shininess = NULL;
 GLUI_Spinner *SPINNER_ngridloc_digits = NULL;
+GLUI_Spinner *SPINNER_mesh_debug = NULL;
+GLUI_Spinner *SPINNER_blockage_min_debug = NULL;
+GLUI_Spinner *SPINNER_blockage_n_debug = NULL;
 
 GLUI_Checkbox *CHECKBOX_visaxislabels = NULL;
 GLUI_Checkbox *CHECKBOX_labels_showtick = NULL;
@@ -884,12 +887,13 @@ extern "C" void GLUIDisplaySetup(int main_window){
   PANEL_blockage_drawing = glui_labels->add_panel_to_panel(PANEL_gen3,_("Blockage drawing"));
   RADIOBUTTON_label_1 = glui_labels->add_radiogroup_to_panel(PANEL_blockage_drawing, &blockage_draw_option, LABELS_drawface, GLUILabelsCB);
   glui_labels->add_radiobutton_to_group(RADIOBUTTON_label_1, _("original"));
-  glui_labels->add_radiobutton_to_group(RADIOBUTTON_label_1, _("new"));
+  glui_labels->add_radiobutton_to_group(RADIOBUTTON_label_1, _("default"));
   glui_labels->add_radiobutton_to_group(RADIOBUTTON_label_1, _("debug"));
   glui_labels->add_radiobutton_to_group(RADIOBUTTON_label_1, _("debug - draw only hidden faces"));
-  glui_labels->add_spinner_to_panel(PANEL_blockage_drawing, "mesh:", GLUI_SPINNER_INT, &mesh_index_debug);
-  glui_labels->add_spinner_to_panel(PANEL_blockage_drawing, "min blockage index:", GLUI_SPINNER_INT, &min_blockage_index_debug);
-  glui_labels->add_spinner_to_panel(PANEL_blockage_drawing, "number of blockages:", GLUI_SPINNER_INT, &n_blockages_debug);
+  SPINNER_mesh_debug = glui_labels->add_spinner_to_panel(PANEL_blockage_drawing, "mesh:", GLUI_SPINNER_INT, &mesh_index_debug);
+  SPINNER_blockage_min_debug = glui_labels->add_spinner_to_panel(PANEL_blockage_drawing, "min blockage index:", GLUI_SPINNER_INT, &min_blockage_index_debug);
+  SPINNER_blockage_n_debug = glui_labels->add_spinner_to_panel(PANEL_blockage_drawing, "number of blockages:", GLUI_SPINNER_INT, &n_blockages_debug);
+  GLUILabelsCB(LABELS_drawface);
 
   CHECKBOX_label_2=glui_labels->add_checkbox_to_panel(PANEL_gen3,_("Sort transparent faces"),&sort_transparent_faces,LABELS_drawface,GLUILabelsCB);
   CHECKBOX_label_3=glui_labels->add_checkbox_to_panel(PANEL_gen3,_("Hide overlaps"),&hide_overlaps,LABELS_hide_overlaps,GLUILabelsCB);
@@ -1276,6 +1280,22 @@ extern "C" void GLUILabelsCB(int var){
     break;
   case LABELS_drawface:
     updatefacelists=1;
+    if(
+        SPINNER_mesh_debug != NULL &&
+        SPINNER_blockage_min_debug != NULL &&
+        SPINNER_blockage_n_debug != NULL
+      ){
+      if(blockage_draw_option == 0 || blockage_draw_option == 1){
+        SPINNER_mesh_debug->disable();
+        SPINNER_blockage_min_debug->disable();
+        SPINNER_blockage_n_debug->disable();
+      }
+      else{
+        SPINNER_mesh_debug->enable();
+        SPINNER_blockage_min_debug->enable();
+        SPINNER_blockage_n_debug->enable();
+      }
+    }
     break;
   case CB_USE_LIGHTING:
   case LABELS_shownorth:

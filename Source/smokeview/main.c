@@ -819,12 +819,6 @@ int main(int argc, char **argv){
 
   smv_filename = ParseCommandline(argc, argv);
 
-#ifdef WIN32
-  if(Which("fds_local.bat", &fdsprog) != NULL)strcpy(fdsprog, "fds_local.bat");
-#else
-  Which("fds", &fdsprog);
-#endif
-
   if(smv_filename == NULL && show_version == 1){
     InitStartupDirs();
     DisplayVersionInfo("Smokeview ");
