@@ -819,24 +819,6 @@ int main(int argc, char **argv){
 
   smv_filename = ParseCommandline(argc, argv);
 
-#ifdef WIN32
-  if(Which("fds_local.bat", &fdsprog) != NULL)strcpy(fdsprog, "fds_local.bat");
-#else
-  Which("fds", &fdsprog);
-  if(fdsprog == NULL){
-    char fdsdefault[256], *homedir;
-  
-    homedir = getenv("HOME");
-    strcpy(fdsdefault, "");
-    if(homedir != NULL)strcat(fdsdefault, homedir);
-    strcat(fdsdefault, "/FDS/FDS6/bin/fds");
-    if(FileExistsOrig(fdsdefault) == 1){
-      NewMemory(( void ** )&fdsprog, ( unsigned int )(strlen(fdsdefault) + 1));
-      strcpy(fdsprog, fdsdefault);
-    }
-  }
-#endif
-
   if(smv_filename == NULL && show_version == 1){
     InitStartupDirs();
     DisplayVersionInfo("Smokeview ");
