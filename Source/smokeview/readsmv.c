@@ -13107,8 +13107,11 @@ int ReadIni2(char *inifile, int localfile){
       skyi = skyboxinfo;
 
       for(i = 0; i<6; i++){
+        char *sky_texture;
+
         fgets(buffer, 255, stream);
-        LoadSkyTexture(buffer, skyi->face + i);
+        sky_texture = TrimFrontBack(buffer);
+        LoadSkyTexture(sky_texture, skyi->face + i);
       }
     }
     if(MatchINI(buffer, "C_PLOT3D")==1){
