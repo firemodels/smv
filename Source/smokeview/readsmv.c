@@ -6310,7 +6310,7 @@ void GenerateViewpointMenu(void){
   fprintf(stream, format, "index", "viewpoint");
   fprintf(stream, format, "d", "delete");
   for(i = 0; i<nviewpoints; i++){
-    char index[10];
+    char index[20];
 
     sprintf(index, "%i", count++);
     fprintf(stream, format, index, all_viewpoints[i]);

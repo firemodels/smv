@@ -3419,7 +3419,7 @@ char *FileSize2Label(char *label, FILE_SIZE bytes){
 /* ------------------ Plot3DSummary ------------------------ */
 
 void Plot3DSummary(char *label, int count, FILE_SIZE file_size, float timer){
-  char size_label[256], time_label[256], time_label2[256];
+  char size_label[256], time_label[512], time_label2[256];
 
   sprintf(label, "PLOT3D: loaded %i files, %s", count, FileSize2Label(size_label, file_size));
   Float2String(time_label2, timer, ncolorlabel_digits, force_fixedpoint);
@@ -9473,7 +9473,7 @@ static int menu_count=0;
         glutAddMenuEntry(levellabel2,nrgb-2-i);
       }
       else{
-        char chari[4];
+        char chari[20];
 
         if(plotiso[plotn-1]==i&&visiso==1){
           sprintf(chari,"*%i",i+1);
