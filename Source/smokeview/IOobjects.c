@@ -1555,6 +1555,72 @@ void DrawHSphere(float diameter, unsigned char *rgbcolor){
   glPopMatrix();
 }
 
+#ifdef pp_SKY
+/* ----------------------- DrawHalfSphere ----------------------------- */
+
+void DrawHalfSphere(unsigned char *rgbcolor){
+  int i, j;
+  float dx, dy;
+  float origin[3], diameter;
+
+  origin[0] = (xbar0FDS + xbarFDS) / 2.0;
+  origin[1] = (ybar0FDS + ybarFDS) / 2.0;
+  origin[2] = zbar0FDS;
+  dx = xbarFDS - xbar0FDS;
+  dy = ybarFDS - ybar0FDS;
+  diameter = 2.0*sqrt(dx * dx + dy * dy);
+
+  if(cos_lat == NULL)InitSphere(NLAT, NLONG);
+
+  glPushMatrix();
+  glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
+  glScalef(diameter / 2.0, diameter / 2.0, diameter / 2.0);
+  glTranslatef(-xbar0, -ybar0, -zbar0);
+  glTranslatef(dx/2.0, dy/2.0, 0.0);
+
+  glBegin(GL_QUADS);
+  if(rgbcolor != NULL){
+    glColor3ubv(rgbcolor);
+  }
+  else{
+    glColor3f(0.0, 0.0, 1.0);
+  }
+  for(j = NLAT / 2; j < NLAT; j++){
+    for(i = 0; i < NLONG; i++){
+      float x, y, z;
+
+      x = cos_long[i]*cos_lat[j];
+      y = sin_long[i]*cos_lat[j];
+      z = sin_lat[j];
+
+      glNormal3f(x, y, z);
+      glVertex3f(x, y, z);
+
+      x = cos_long[i + 1] * cos_lat[j];
+      y = sin_long[i + 1] * cos_lat[j];
+      z = sin_lat[j];
+      glNormal3f(x, y, z);
+      glVertex3f(x, y, z);
+
+      x = cos_long[i + 1] * cos_lat[j + 1];
+      y = sin_long[i + 1] * cos_lat[j + 1];
+      z = sin_lat[j + 1];
+      glNormal3f(x, y, z);
+      glVertex3f(x, y, z);
+
+      x = cos_long[i] * cos_lat[j + 1];
+      y = sin_long[i] * cos_lat[j + 1];
+      z = sin_lat[j + 1];
+
+      glNormal3f(x, y, z);
+      glVertex3f(x, y, z);
+    }
+  }
+  glEnd();
+  glPopMatrix();
+}
+#endif
+
 /* ----------------------- DrawPoint ----------------------------- */
 
 void DrawPoint(unsigned char *rgbcolor){
