@@ -2789,17 +2789,67 @@ void InitTextures0(void){
     }
   }
   PRINT_TIMER(texture_timer, "terrain texture setup");
+
+#ifdef pp_SKY
+  // define sky texture
+
+  if(nsky_texture > 0){
+    texturedata *tt;
+    unsigned char *floortex;
+    int texwid, texht;
+
+    int is_transparent;
+
+    tt = sky_texture + i;
+    tt->loaded = 0;
+    tt->used = 0;
+    tt->display = 0;
+    tt->is_transparent = 0;
+
+    glGenTextures(1, &tt->name);
+    glBindTexture(GL_TEXTURE_2D, tt->name);
+    floortex = NULL;
+    if(tt->file != NULL){
+#ifdef _DEBUG
+      PRINTF("sky texture file: %s\n", tt->file);
+#endif
+      floortex = ReadPicture(texturedir, tt->file, &texwid, &texht, &is_transparent, 0);
+      tt->is_transparent = is_transparent;
+      if(floortex == NULL)PRINTF("***Error: Texture file %s failed to load\n", tt->file);
+    }
+    if(floortex != NULL){
+      glTexImage2D(GL_TEXTURE_2D, 0, 4, texwid, texht, 0, GL_RGBA, GL_UNSIGNED_BYTE, floortex);
+      glGenerateMipmap(GL_TEXTURE_2D);
+      SNIFF_ERRORS("after glTexImage2D for terrain texture");
+
+      FREEMEMORY(floortex);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+      tt->loaded = 1;
+      tt->display = 1;
+    }
+  }
+  PRINT_TIMER(texture_timer, "sky texture setup");
+#endif
 }
 
   /* ------------------ InitTextures ------------------------ */
 
 void InitTextures(int use_graphics_arg){
+  int max_textures;
+
+  max_textures = nsurfinfo + ndevice_texture_list + nterrain_textures;
+#ifdef pp_SKY
+  max_textures = nsky_texture;
+#endif
   INIT_PRINT_TIMER(total_texture_time);
   UpdateDeviceTextures(objectscoll, ndeviceinfo, deviceinfo,
                        npropinfo, propinfo, &ndevice_texture_list,
                        &device_texture_list_index, &device_texture_list);
-  if(nsurfinfo>0||ndevice_texture_list>0){
-    if(NewMemory((void **)&textureinfo, (nsurfinfo+ndevice_texture_list+nterrain_textures)*sizeof(texturedata))==0)return;
+  if(max_textures>0){
+    if(NewMemory((void **)&textureinfo, max_textures*sizeof(texturedata))==0)return;
   }
   if(use_graphics_arg==1){
     InitTextures0();
@@ -7550,8 +7600,6 @@ int ReadSMV_Parse(bufferstreamdata *stream){
         sscanf(blank+1,"%i",&nvals);
         if(nvals!=0)nterrain_textures = MAX(nvals,0);
       }
-
-
       if(nterrain_textures>0){
         NewMemory((void **)&terrain_textures, nterrain_textures*sizeof(texturedata));
 
@@ -7567,6 +7615,28 @@ int ReadSMV_Parse(bufferstreamdata *stream){
       }
       continue;
     }
+#ifdef pp_SKY
+    if(MatchSMV(buffer, "SKYIMAGE") == 1){
+      char *buff2;
+      int len_buffer;
+
+      if(sky_texture != NULL){
+        FREEMEMORY(sky_texture->file);
+        FREEMEMORY(sky_texture);
+      }
+      nsky_texture = 1;
+      NewMemory((void **)&sky_texture, nsky_texture * sizeof(texturedata));
+      FGETS(buffer, 255, stream);
+      buff2 = TrimFrontBack(buffer);
+      len_buffer = strlen(buff2);
+      sky_texture->file = NULL;
+      if(len_buffer > 0 && strcmp(buff2, "null") != 0){
+         NewMemory((void **)&sky_texture->file, (len_buffer + 1) * sizeof(char));
+         strcpy(terrain_textures[i].file, buff2);
+      }
+      continue;
+    }
+#endif
     if(
       (MatchSMV(buffer,"DEVICE") == 1)&&
       (MatchSMV(buffer,"DEVICE_ACT") != 1)
