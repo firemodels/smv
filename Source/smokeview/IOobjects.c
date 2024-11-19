@@ -1560,15 +1560,8 @@ void DrawHSphere(float diameter, unsigned char *rgbcolor){
 
 void DrawHalfSphere(unsigned char *rgbcolor){
   int i, j;
-  float dx, dy;
-  float dxFDS, dyFDS;
-  float origin[3], diameter;
+  float dxFDS, dyFDS, diameter;
 
-  origin[0] = (xbar0FDS + xbarFDS) / 2.0;
-  origin[1] = (ybar0FDS + ybarFDS) / 2.0;
-  origin[2] = zbar0FDS;
-  dx = xbar - xbar0;
-  dy = ybar - ybar0;
   dxFDS = xbarFDS - xbar0FDS;
   dyFDS = ybarFDS - ybar0FDS;
   diameter = 4.0*sqrt(dxFDS*dxFDS + dyFDS*dyFDS);
