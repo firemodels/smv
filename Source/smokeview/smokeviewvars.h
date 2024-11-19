@@ -2162,6 +2162,7 @@ SVEXTERN texturedata SVDECL(*textureinfo,NULL), SVDECL(*terrain_textures,NULL);
 #ifdef pp_SKY
 SVEXTERN texturedata SVDECL(*sky_texture, NULL);
 SVEXTERN int SVDECL(nsky_texture, 0);
+SVEXTERN float SVDECL(sky_diam, 4.0);
 #endif
 SVEXTERN GLuint texture_colorbar_id, texture_slice_colorbar_id, texture_patch_colorbar_id, texture_plot3d_colorbar_id, texture_iso_colorbar_id, terrain_colorbar_id;
 SVEXTERN GLuint volsmoke_colormap_id,slice3d_colormap_id,slicesmoke_colormap_id;

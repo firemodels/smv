@@ -3270,17 +3270,17 @@ void GetBoxGeomCorners(void){
 #ifdef pp_SKY
   float dxFDS, dyFDS, dzFDS, radius;
 
-  dxFDS = (xbarFDS - xbar0FDS) / 2.0;
-  dyFDS = (ybarFDS - ybar0FDS) / 2.0;
-  dzFDS = (zbarFDS - zbar0FDS) / 2.0;
-  radius = sqrt(dxFDS*dxFDS + dyFDS * dyFDS + dzFDS * dzFDS)/2.0;
+  dxFDS = (xbarFDS - xbar0FDS);
+  dyFDS = (ybarFDS - ybar0FDS);
+  dzFDS = (zbarFDS - zbar0FDS);
+  radius = sqrt(dxFDS*dxFDS + dyFDS*dyFDS + dzFDS*dzFDS)/2.0;
 
-  xmin = (xbar0FDS + xbarFDS) / 2.0 - 4.0*radius;
-  xmax = (xbar0FDS + xbarFDS) / 2.0 + 4.0* radius;
-  ymin = (ybar0FDS + ybarFDS) / 2.0 - 4.0* radius;
-  ymax = (ybar0FDS + ybarFDS) / 2.0 + 4.0* radius;
+  xmin = (xbar0FDS + xbarFDS)/2.0 - sky_diam*radius;
+  xmax = (xbar0FDS + xbarFDS)/2.0 + sky_diam*radius;
+  ymin = (ybar0FDS + ybarFDS)/2.0 - sky_diam*radius;
+  ymax = (ybar0FDS + ybarFDS)/2.0 + sky_diam*radius;
   zmin = 0.0;
-  ymax = 4.0* radius;
+  zmax = sky_diam*radius;
 
   xmin = FDS2SMV_X(xmin);
   xmax = FDS2SMV_X(xmax);

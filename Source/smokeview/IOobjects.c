@@ -1560,11 +1560,12 @@ void DrawHSphere(float diameter, unsigned char *rgbcolor){
 
 void DrawHalfSphere(unsigned char *rgbcolor){
   int i, j;
-  float dxFDS, dyFDS, diameter;
+  float dxFDS, dyFDS, dzFDS, diameter;
 
   dxFDS = xbarFDS - xbar0FDS;
   dyFDS = ybarFDS - ybar0FDS;
-  diameter = 4.0*sqrt(dxFDS*dxFDS + dyFDS*dyFDS);
+  dzFDS = zbarFDS - zbar0FDS;
+  diameter = sky_diam*sqrt(dxFDS*dxFDS + dyFDS*dyFDS + dzFDS*dzFDS);
 
   if(cos_lat == NULL)InitSphere(NLAT, NLONG);
 
@@ -1615,17 +1616,17 @@ void DrawHalfSphere(unsigned char *rgbcolor){
       z[3] = sin_lat[j + 1];
 
       if(use_sky == 1){
-        tx[0] = ( float )i / ( float )NLONG;
-        ty[0] = ( float )j / ( float )NLAT;
+        tx[0] = ( float )i / ( float )(NLONG-1);
+        ty[0] = ( float )j / ( float )(NLAT-1);
 
-        tx[1] = ( float )(i + 1) / ( float )NLONG;
-        ty[1] = ( float )j / ( float )NLAT;
+        tx[1] = ( float )(i + 1) / ( float )(NLONG-1);
+        ty[1] = ( float )j / ( float )(NLAT-1);
 
-        tx[2] = ( float )(i + 1) / ( float )NLONG;
-        ty[2] = ( float )(j + 1) / ( float )NLAT;
+        tx[2] = ( float )(i + 1) / ( float )(NLONG-1);
+        ty[2] = ( float )(j + 1) / ( float )(NLAT-1);
 
-        tx[3] = ( float )i / ( float )NLONG;
-        ty[3] = ( float )(j + 1) / ( float )NLAT;
+        tx[3] = ( float )i / ( float )(NLONG-1);
+        ty[3] = ( float )(j + 1) / ( float )(NLAT-1);
       }
 
       glNormal3f(x[0], y[0], z[0]);
