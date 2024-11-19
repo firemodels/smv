@@ -2795,15 +2795,15 @@ void InitTextures0(void){
 
   if(nsky_texture > 0){
     texturedata *tt;
-    unsigned char *floortex;
+    unsigned char *floortex=NULL;
     int texwid, texht;
 
     int is_transparent;
 
-    tt = sky_texture + i;
-    tt->loaded = 0;
-    tt->used = 0;
-    tt->display = 0;
+    tt                 = sky_texture;
+    tt->loaded         = 0;
+    tt->used           = 0;
+    tt->display        = 0;
     tt->is_transparent = 0;
 
     glGenTextures(1, &tt->name);
@@ -7632,7 +7632,7 @@ int ReadSMV_Parse(bufferstreamdata *stream){
       sky_texture->file = NULL;
       if(len_buffer > 0 && strcmp(buff2, "null") != 0){
          NewMemory((void **)&sky_texture->file, (len_buffer + 1) * sizeof(char));
-         strcpy(terrain_textures[i].file, buff2);
+         strcpy(sky_texture->file, buff2);
       }
       continue;
     }

@@ -1574,56 +1574,97 @@ void DrawHalfSphere(unsigned char *rgbcolor){
   glTranslatef(dxFDS/2.0,dyFDS/2.0,0.0);
   glScalef(diameter / 2.0, diameter / 2.0, diameter / 2.0);
 
-  glBegin(GL_QUADS);
-  if(rgbcolor != NULL){
-    glColor3ubv(rgbcolor);
+  int use_sky;
+
+  use_sky = 0;
+  if(nsky_texture > 0 && sky_texture != NULL && sky_texture->loaded == 1 && sky_texture->display == 1)use_sky = 1;
+  if(use_sky == 1){
+    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, sky_texture->name);
   }
-  else{
-    glColor3f(0.0, 0.0, 1.0);
+
+  glBegin(GL_QUADS);
+  if(use_sky == 0){
+    if(rgbcolor != NULL){
+      glColor3ubv(rgbcolor);
+    }
+    else{
+      glColor3f(0.0, 0.0, 1.0);
+    }
   }
   for(j = NLAT / 2; j < NLAT; j++){
     for(i = 0; i < NLONG; i++){
       float x[4], y[4], z[4];
+      float tx[4], ty[4];
 
       x[0] = cos_long[i]*cos_lat[j];
       y[0] = sin_long[i]*cos_lat[j];
       z[0] = sin_lat[j];
-      x[1] = cos_long[i + 1]*cos_lat[j];
-      y[1] = sin_long[i + 1]*cos_lat[j];
+
+      x[1] = cos_long[i + 1] * cos_lat[j];
+      y[1] = sin_long[i + 1] * cos_lat[j];
       z[1] = sin_lat[j];
-      x[2] = cos_long[i + 1]*cos_lat[j + 1];
-      y[2] = sin_long[i + 1]*cos_lat[j + 1];
+
+      x[2] = cos_long[i + 1] * cos_lat[j + 1];
+      y[2] = sin_long[i + 1] * cos_lat[j + 1];
       z[2] = sin_lat[j + 1];
-      x[3] = cos_long[i]*cos_lat[j + 1];
-      y[3] = sin_long[i]*cos_lat[j + 1];
+
+      x[3] = cos_long[i] * cos_lat[j + 1];
+      y[3] = sin_long[i] * cos_lat[j + 1];
       z[3] = sin_lat[j + 1];
 
+      if(use_sky == 1){
+        tx[0] = ( float )i / ( float )NLONG;
+        ty[0] = ( float )j / ( float )NLAT;
+
+        tx[1] = ( float )(i + 1) / ( float )NLONG;
+        ty[1] = ( float )j / ( float )NLAT;
+
+        tx[2] = ( float )(i + 1) / ( float )NLONG;
+        ty[2] = ( float )(j + 1) / ( float )NLAT;
+
+        tx[3] = ( float )i / ( float )NLONG;
+        ty[3] = ( float )(j + 1) / ( float )NLAT;
+      }
+
       glNormal3f(x[0], y[0], z[0]);
+      if(use_sky==1)glTexCoord2f(tx[0],ty[0]);
       glVertex3f(x[0], y[0], z[0]);
 
       glNormal3f(x[1], y[1], z[1]);
+      if(use_sky == 1)glTexCoord2f(tx[1], ty[1]);
       glVertex3f(x[1], y[1], z[1]);
 
       glNormal3f(x[2], y[2], z[2]);
+      if(use_sky == 1)glTexCoord2f(tx[2], ty[2]);
       glVertex3f(x[2], y[2], z[2]);
 
       glNormal3f(x[3], y[3], z[3]);
+      if(use_sky == 1)glTexCoord2f(tx[3], ty[3]);
       glVertex3f(x[3], y[3], z[3]);
 
       glNormal3f(-x[0], -y[0], -z[0]);
+      if(use_sky == 1)glTexCoord2f(tx[0], ty[0]);
       glVertex3f(x[0], y[0], z[0]);
 
       glNormal3f(-x[3], -y[3], -z[3]);
+      if(use_sky == 1)glTexCoord2f(tx[3], ty[3]);
       glVertex3f(x[3], y[3], z[3]);
 
       glNormal3f(-x[2], -y[2], -z[2]);
+      if(use_sky == 1)glTexCoord2f(tx[2], ty[2]);
       glVertex3f(x[2], y[2], z[2]);
 
       glNormal3f(-x[1], -y[1], -z[1]);
+      if(use_sky == 1)glTexCoord2f(tx[1], ty[1]);
       glVertex3f(x[1], y[1], z[1]);
     }
   }
   glEnd();
+  if(use_sky == 1){
+    glDisable(GL_TEXTURE_2D);
+  }
   glPopMatrix();
 }
 #endif
