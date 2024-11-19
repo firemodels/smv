@@ -320,7 +320,9 @@ void ShowScene2(int mode){
   }
 #ifdef pp_SKY
   void DrawHalfSphere(unsigned char *rgbcolor);
-  DrawHalfSphere(NULL);
+  if(visSky == 1){
+    DrawHalfSphere(NULL);
+  }
 #endif
 
   /* ++++++++++++++++++++++++ draw opaque cfaces +++++++++++++++++++++++++ */

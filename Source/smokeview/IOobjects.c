@@ -1561,22 +1561,25 @@ void DrawHSphere(float diameter, unsigned char *rgbcolor){
 void DrawHalfSphere(unsigned char *rgbcolor){
   int i, j;
   float dx, dy;
+  float dxFDS, dyFDS;
   float origin[3], diameter;
 
   origin[0] = (xbar0FDS + xbarFDS) / 2.0;
   origin[1] = (ybar0FDS + ybarFDS) / 2.0;
   origin[2] = zbar0FDS;
-  dx = xbarFDS - xbar0FDS;
-  dy = ybarFDS - ybar0FDS;
-  diameter = 2.0*sqrt(dx * dx + dy * dy);
+  dx = xbar - xbar0;
+  dy = ybar - ybar0;
+  dxFDS = xbarFDS - xbar0FDS;
+  dyFDS = ybarFDS - ybar0FDS;
+  diameter = 4.0*sqrt(dxFDS*dxFDS + dyFDS*dyFDS);
 
   if(cos_lat == NULL)InitSphere(NLAT, NLONG);
 
   glPushMatrix();
   glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
-  glScalef(diameter / 2.0, diameter / 2.0, diameter / 2.0);
   glTranslatef(-xbar0, -ybar0, -zbar0);
-  glTranslatef(dx/2.0, dy/2.0, 0.0);
+  glTranslatef(dxFDS/2.0,dyFDS/2.0,0.0);
+  glScalef(diameter / 2.0, diameter / 2.0, diameter / 2.0);
 
   glBegin(GL_QUADS);
   if(rgbcolor != NULL){
@@ -1587,33 +1590,44 @@ void DrawHalfSphere(unsigned char *rgbcolor){
   }
   for(j = NLAT / 2; j < NLAT; j++){
     for(i = 0; i < NLONG; i++){
-      float x, y, z;
+      float x[4], y[4], z[4];
 
-      x = cos_long[i]*cos_lat[j];
-      y = sin_long[i]*cos_lat[j];
-      z = sin_lat[j];
+      x[0] = cos_long[i]*cos_lat[j];
+      y[0] = sin_long[i]*cos_lat[j];
+      z[0] = sin_lat[j];
+      x[1] = cos_long[i + 1]*cos_lat[j];
+      y[1] = sin_long[i + 1]*cos_lat[j];
+      z[1] = sin_lat[j];
+      x[2] = cos_long[i + 1]*cos_lat[j + 1];
+      y[2] = sin_long[i + 1]*cos_lat[j + 1];
+      z[2] = sin_lat[j + 1];
+      x[3] = cos_long[i]*cos_lat[j + 1];
+      y[3] = sin_long[i]*cos_lat[j + 1];
+      z[3] = sin_lat[j + 1];
 
-      glNormal3f(x, y, z);
-      glVertex3f(x, y, z);
+      glNormal3f(x[0], y[0], z[0]);
+      glVertex3f(x[0], y[0], z[0]);
 
-      x = cos_long[i + 1] * cos_lat[j];
-      y = sin_long[i + 1] * cos_lat[j];
-      z = sin_lat[j];
-      glNormal3f(x, y, z);
-      glVertex3f(x, y, z);
+      glNormal3f(x[1], y[1], z[1]);
+      glVertex3f(x[1], y[1], z[1]);
 
-      x = cos_long[i + 1] * cos_lat[j + 1];
-      y = sin_long[i + 1] * cos_lat[j + 1];
-      z = sin_lat[j + 1];
-      glNormal3f(x, y, z);
-      glVertex3f(x, y, z);
+      glNormal3f(x[2], y[2], z[2]);
+      glVertex3f(x[2], y[2], z[2]);
 
-      x = cos_long[i] * cos_lat[j + 1];
-      y = sin_long[i] * cos_lat[j + 1];
-      z = sin_lat[j + 1];
+      glNormal3f(x[3], y[3], z[3]);
+      glVertex3f(x[3], y[3], z[3]);
 
-      glNormal3f(x, y, z);
-      glVertex3f(x, y, z);
+      glNormal3f(-x[0], -y[0], -z[0]);
+      glVertex3f(x[0], y[0], z[0]);
+
+      glNormal3f(-x[3], -y[3], -z[3]);
+      glVertex3f(x[3], y[3], z[3]);
+
+      glNormal3f(-x[2], -y[2], -z[2]);
+      glVertex3f(x[2], y[2], z[2]);
+
+      glNormal3f(-x[1], -y[1], -z[1]);
+      glVertex3f(x[1], y[1], z[1]);
     }
   }
   glEnd();

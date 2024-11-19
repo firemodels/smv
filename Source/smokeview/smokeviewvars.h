@@ -606,6 +606,9 @@ SVEXTERN float smoke_test_target_color[4];
 SVEXTERN float SVDECL(smoke_test_range,1.0), SVDECL(smoke_test_opacity,0.5);
 SVEXTERN int SVDECL(smoke_test_nslices,3);
 
+#ifdef pp_SKY
+SVEXTERN float box_sky_corners[8][3];
+#endif
 SVEXTERN float box_corners[8][3], box_geom_corners[8][3];
 SVEXTERN int SVDECL(have_box_geom_corners, 0);
 SVEXTERN float boxmin_global[3], boxmax_global[3], max_cell_length;
@@ -1851,6 +1854,9 @@ SVEXTERN int ndevice_texture_list, SVDECL(*device_texture_list_index,NULL);
 SVEXTERN treedata SVDECL(*treeinfo,NULL);
 SVEXTERN terraindata SVDECL(*terraininfo,NULL);
 SVEXTERN int SVDECL(ntreeinfo,0), SVDECL(nterraininfo,0), SVDECL(visTerrainType,0);
+#ifdef pp_SKY
+SVEXTERN int SVDECL(visSky, 0);
+#endif
 SVEXTERN float treecolor[4];
 #ifdef INMAIN
 SVEXTERN float treecharcolor[4]={0.3,0.3,0.3,1.0};

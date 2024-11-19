@@ -3217,6 +3217,60 @@ void GetBoxGeomCorners(void){
   box_geom_corners[7][1] = ymax;
   box_geom_corners[7][2] = zmax;
 
+#ifdef pp_SKY
+  float dxFDS, dyFDS, dzFDS, radius;
+
+  dxFDS = (xbarFDS - xbar0FDS) / 2.0;
+  dyFDS = (ybarFDS - ybar0FDS) / 2.0;
+  dzFDS = (zbarFDS - zbar0FDS) / 2.0;
+  radius = sqrt(dxFDS*dxFDS + dyFDS * dyFDS + dzFDS * dzFDS)/2.0;
+
+  xmin = (xbar0FDS + xbarFDS) / 2.0 - 4.0*radius;
+  xmax = (xbar0FDS + xbarFDS) / 2.0 + 4.0* radius;
+  ymin = (ybar0FDS + ybarFDS) / 2.0 - 4.0* radius;
+  ymax = (ybar0FDS + ybarFDS) / 2.0 + 4.0* radius;
+  zmin = 0.0;
+  ymax = 4.0* radius;
+
+  xmin = FDS2SMV_X(xmin);
+  xmax = FDS2SMV_X(xmax);
+  ymin = FDS2SMV_Y(ymin);
+  ymax = FDS2SMV_Y(ymax);
+  zmin = FDS2SMV_Z(zmin);
+  zmax = FDS2SMV_Z(zmax);
+
+  box_sky_corners[0][0] = xmin;
+  box_sky_corners[0][1] = ymin;
+  box_sky_corners[0][2] = zmin;
+
+  box_sky_corners[1][0] = xmax;
+  box_sky_corners[1][1] = ymin;
+  box_sky_corners[1][2] = zmin;
+
+  box_sky_corners[2][0] = xmin;
+  box_sky_corners[2][1] = ymax;
+  box_sky_corners[2][2] = zmin;
+
+  box_sky_corners[3][0] = xmax;
+  box_sky_corners[3][1] = ymax;
+  box_sky_corners[3][2] = zmin;
+
+  box_sky_corners[4][0] = xmin;
+  box_sky_corners[4][1] = ymin;
+  box_sky_corners[4][2] = zmax;
+
+  box_sky_corners[5][0] = xmax;
+  box_sky_corners[5][1] = ymin;
+  box_sky_corners[5][2] = zmax;
+
+  box_sky_corners[6][0] = xmin;
+  box_sky_corners[6][1] = ymax;
+  box_sky_corners[6][2] = zmax;
+
+  box_sky_corners[7][0] = xmax;
+  box_sky_corners[7][1] = ymax;
+  box_sky_corners[7][2] = zmax;
+#endif
 }
 
   /* ------------------ GetBoxCorners ------------------------ */
@@ -14619,6 +14673,14 @@ int ReadIni2(char *inifile, int localfile){
       zonecolortype = CLAMP(zonecolortype, 0, 2);
       continue;
     }
+#ifdef pp_SKY
+    if(MatchINI(buffer, "SHOWSKY") == 1){
+      fgets(buffer, 255, stream);
+      sscanf(buffer, "%i", &visSky);
+      ONEORZERO(visSky);
+      continue;
+    }
+#endif
     if(MatchINI(buffer, "SHOWSMOKEPART") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%i", &visSmokePart);
@@ -17067,6 +17129,10 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %i\n", show_slice_in_obst);
   fprintf(fileout, "SHOWSMOKEPART\n");
   fprintf(fileout, " %i\n", visSmokePart);
+#ifdef pp_SKY
+  fprintf(fileout, "SHOWSKY\n");
+  fprintf(fileout, " %i\n", visSky);
+#endif
   fprintf(fileout, "SHOWSPRINKPART\n");
   fprintf(fileout, " %i\n", visSprinkPart);
   fprintf(fileout, "SHOWSTREAK\n");

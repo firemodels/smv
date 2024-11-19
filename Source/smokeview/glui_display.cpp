@@ -758,6 +758,12 @@ extern "C" void GLUIDisplaySetup(int main_window){
 #ifdef pp_memstatus
   CHECKBOX_labels_availmemory = glui_labels->add_checkbox_to_panel(PANEL_gen1, _("Memory load"), &visAvailmemory, LABELS_label, GLUILabelsCB);
 #endif
+#ifdef pp_SKY
+  if(nterraininfo > 0){
+    glui_labels->add_checkbox_to_panel(PANEL_gen1, _("show sky"), &visSky);
+  }
+#endif
+
 
   glui_labels->add_column_to_panel(PANEL_gen1, false);
 
