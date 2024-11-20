@@ -2789,17 +2789,67 @@ void InitTextures0(void){
     }
   }
   PRINT_TIMER(texture_timer, "terrain texture setup");
+
+#ifdef pp_SKY
+  // define sky texture
+
+  if(nsky_texture > 0){
+    texturedata *tt;
+    unsigned char *floortex=NULL;
+    int texwid, texht;
+
+    int is_transparent;
+
+    tt                 = sky_texture;
+    tt->loaded         = 0;
+    tt->used           = 0;
+    tt->display        = 0;
+    tt->is_transparent = 0;
+
+    glGenTextures(1, &tt->name);
+    glBindTexture(GL_TEXTURE_2D, tt->name);
+    floortex = NULL;
+    if(tt->file != NULL){
+#ifdef _DEBUG
+      PRINTF("sky texture file: %s\n", tt->file);
+#endif
+      floortex = ReadPicture(texturedir, tt->file, &texwid, &texht, &is_transparent, 0);
+      tt->is_transparent = is_transparent;
+      if(floortex == NULL)PRINTF("***Error: Texture file %s failed to load\n", tt->file);
+    }
+    if(floortex != NULL){
+      glTexImage2D(GL_TEXTURE_2D, 0, 4, texwid, texht, 0, GL_RGBA, GL_UNSIGNED_BYTE, floortex);
+      glGenerateMipmap(GL_TEXTURE_2D);
+      SNIFF_ERRORS("after glTexImage2D for terrain texture");
+
+      FREEMEMORY(floortex);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+      tt->loaded = 1;
+      tt->display = 1;
+    }
+  }
+  PRINT_TIMER(texture_timer, "sky texture setup");
+#endif
 }
 
   /* ------------------ InitTextures ------------------------ */
 
 void InitTextures(int use_graphics_arg){
+  int max_textures;
+
+  max_textures = nsurfinfo + ndevice_texture_list + nterrain_textures;
+#ifdef pp_SKY
+  max_textures = nsky_texture;
+#endif
   INIT_PRINT_TIMER(total_texture_time);
   UpdateDeviceTextures(objectscoll, ndeviceinfo, deviceinfo,
                        npropinfo, propinfo, &ndevice_texture_list,
                        &device_texture_list_index, &device_texture_list);
-  if(nsurfinfo>0||ndevice_texture_list>0){
-    if(NewMemory((void **)&textureinfo, (nsurfinfo+ndevice_texture_list+nterrain_textures)*sizeof(texturedata))==0)return;
+  if(max_textures>0){
+    if(NewMemory((void **)&textureinfo, max_textures*sizeof(texturedata))==0)return;
   }
   if(use_graphics_arg==1){
     InitTextures0();
@@ -3217,6 +3267,60 @@ void GetBoxGeomCorners(void){
   box_geom_corners[7][1] = ymax;
   box_geom_corners[7][2] = zmax;
 
+#ifdef pp_SKY
+  float dxFDS, dyFDS, dzFDS, radius;
+
+  dxFDS = (xbarFDS - xbar0FDS);
+  dyFDS = (ybarFDS - ybar0FDS);
+  dzFDS = (zbarFDS - zbar0FDS);
+  radius = sqrt(dxFDS*dxFDS + dyFDS*dyFDS + dzFDS*dzFDS)/2.0;
+
+  xmin = (xbar0FDS + xbarFDS)/2.0 - sky_diam*radius;
+  xmax = (xbar0FDS + xbarFDS)/2.0 + sky_diam*radius;
+  ymin = (ybar0FDS + ybarFDS)/2.0 - sky_diam*radius;
+  ymax = (ybar0FDS + ybarFDS)/2.0 + sky_diam*radius;
+  zmin = 0.0;
+  zmax = sky_diam*radius;
+
+  xmin = FDS2SMV_X(xmin);
+  xmax = FDS2SMV_X(xmax);
+  ymin = FDS2SMV_Y(ymin);
+  ymax = FDS2SMV_Y(ymax);
+  zmin = FDS2SMV_Z(zmin);
+  zmax = FDS2SMV_Z(zmax);
+
+  box_sky_corners[0][0] = xmin;
+  box_sky_corners[0][1] = ymin;
+  box_sky_corners[0][2] = zmin;
+
+  box_sky_corners[1][0] = xmax;
+  box_sky_corners[1][1] = ymin;
+  box_sky_corners[1][2] = zmin;
+
+  box_sky_corners[2][0] = xmin;
+  box_sky_corners[2][1] = ymax;
+  box_sky_corners[2][2] = zmin;
+
+  box_sky_corners[3][0] = xmax;
+  box_sky_corners[3][1] = ymax;
+  box_sky_corners[3][2] = zmin;
+
+  box_sky_corners[4][0] = xmin;
+  box_sky_corners[4][1] = ymin;
+  box_sky_corners[4][2] = zmax;
+
+  box_sky_corners[5][0] = xmax;
+  box_sky_corners[5][1] = ymin;
+  box_sky_corners[5][2] = zmax;
+
+  box_sky_corners[6][0] = xmin;
+  box_sky_corners[6][1] = ymax;
+  box_sky_corners[6][2] = zmax;
+
+  box_sky_corners[7][0] = xmax;
+  box_sky_corners[7][1] = ymax;
+  box_sky_corners[7][2] = zmax;
+#endif
 }
 
   /* ------------------ GetBoxCorners ------------------------ */
@@ -6310,7 +6414,7 @@ void GenerateViewpointMenu(void){
   fprintf(stream, format, "index", "viewpoint");
   fprintf(stream, format, "d", "delete");
   for(i = 0; i<nviewpoints; i++){
-    char index[10];
+    char index[20];
 
     sprintf(index, "%i", count++);
     fprintf(stream, format, index, all_viewpoints[i]);
@@ -7496,8 +7600,6 @@ int ReadSMV_Parse(bufferstreamdata *stream){
         sscanf(blank+1,"%i",&nvals);
         if(nvals!=0)nterrain_textures = MAX(nvals,0);
       }
-
-
       if(nterrain_textures>0){
         NewMemory((void **)&terrain_textures, nterrain_textures*sizeof(texturedata));
 
@@ -7513,6 +7615,28 @@ int ReadSMV_Parse(bufferstreamdata *stream){
       }
       continue;
     }
+#ifdef pp_SKY
+    if(MatchSMV(buffer, "SKYIMAGE") == 1){
+      char *buff2;
+      int len_buffer;
+
+      if(sky_texture != NULL){
+        FREEMEMORY(sky_texture->file);
+        FREEMEMORY(sky_texture);
+      }
+      nsky_texture = 1;
+      NewMemory((void **)&sky_texture, nsky_texture * sizeof(texturedata));
+      FGETS(buffer, 255, stream);
+      buff2 = TrimFrontBack(buffer);
+      len_buffer = strlen(buff2);
+      sky_texture->file = NULL;
+      if(len_buffer > 0 && strcmp(buff2, "null") != 0){
+         NewMemory((void **)&sky_texture->file, (len_buffer + 1) * sizeof(char));
+         strcpy(sky_texture->file, buff2);
+      }
+      continue;
+    }
+#endif
     if(
       (MatchSMV(buffer,"DEVICE") == 1)&&
       (MatchSMV(buffer,"DEVICE_ACT") != 1)
@@ -13107,11 +13231,11 @@ int ReadIni2(char *inifile, int localfile){
       skyi = skyboxinfo;
 
       for(i = 0; i<6; i++){
-        char *sky_texture;
+        char *skybox_texture;
 
         fgets(buffer, 255, stream);
-        sky_texture = TrimFrontBack(buffer);
-        LoadSkyTexture(sky_texture, skyi->face + i);
+        skybox_texture = TrimFrontBack(buffer);
+        LoadSkyTexture(skybox_texture, skyi->face + i);
       }
     }
     if(MatchINI(buffer, "C_PLOT3D")==1){
@@ -14619,6 +14743,14 @@ int ReadIni2(char *inifile, int localfile){
       zonecolortype = CLAMP(zonecolortype, 0, 2);
       continue;
     }
+#ifdef pp_SKY
+    if(MatchINI(buffer, "SHOWSKY") == 1){
+      fgets(buffer, 255, stream);
+      sscanf(buffer, "%i", &visSky);
+      ONEORZERO(visSky);
+      continue;
+    }
+#endif
     if(MatchINI(buffer, "SHOWSMOKEPART") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%i", &visSmokePart);
@@ -17067,6 +17199,10 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %i\n", show_slice_in_obst);
   fprintf(fileout, "SHOWSMOKEPART\n");
   fprintf(fileout, " %i\n", visSmokePart);
+#ifdef pp_SKY
+  fprintf(fileout, "SHOWSKY\n");
+  fprintf(fileout, " %i\n", visSky);
+#endif
   fprintf(fileout, "SHOWSPRINKPART\n");
   fprintf(fileout, " %i\n", visSprinkPart);
   fprintf(fileout, "SHOWSTREAK\n");

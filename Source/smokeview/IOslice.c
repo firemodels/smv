@@ -9223,13 +9223,13 @@ void GenerateSliceMenu(int option){
     max2 = MAX(5, max2) + 1;
     max3 = 4;
     max4 = MAX(8, max4) + 1;
-    char cform1[20], cform2[20], cform3[20], cform4[20];
+    char cform1[200], cform2[200], cform3[200], cform4[200];
     sprintf(cform1, "%s%i.%is", "%",max1,max1);/* %20.20s*/
     sprintf(cform2, "%s-%i.%is", "%", max2,max2);
     sprintf(cform3, "%s%i.%is", "%", max3,max3);
     sprintf(cform4, "%s%i.%is", "%", max4,max4);
 
-    char format[256];
+    char format[1024];
     sprintf(format, "%s, %s, %s, %s\n",cform1, cform2, cform3, cform4);
 
     fprintf(stream, "\n");
@@ -9243,7 +9243,7 @@ void GenerateSliceMenu(int option){
       slicemenudata *slicemi;
       char *quantity, cposition[25];
       float position;
-      char index[10], cdir[10];
+      char index[100], cdir[100];
 
       slicemi = slicemenu_sorted[i];
       slicei = slicemi->sliceinfo;
