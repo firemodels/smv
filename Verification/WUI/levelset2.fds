@@ -4,7 +4,7 @@
 #&MULT ID='mesh', DX=100, DY=100, DZ=38, I_UPPER=2, J_UPPER=2, K_UPPER=1 /
 
 ! Do not split in Z until we address cut-face linking issue.
-&MESH IJK=25,25,76, XB= 0,100,-150,-50,0,76, MULT_ID='mesh' /
+&MESH IJK=25,25,54, XB= 0,100,-150,-50,0,76, MULT_ID='mesh' /
 &MULT ID='mesh', DX=100, DY=100, DZ=76, I_UPPER=2, J_UPPER=2, K_UPPER=0 / 
 
 &TIME T_END=60 /

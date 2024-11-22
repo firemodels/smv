@@ -76,6 +76,7 @@ void FreeSkybox(void){
   nskyboxinfo=0;
 }
 
+#ifdef pp_SKYBOX_FLOOR
 /* ------------------ DrawFloor ------------------------ */
 
 void DrawFloor(void){
@@ -168,6 +169,7 @@ void DrawFloor(void){
   glDisable(GL_TEXTURE_2D);
   glEnable(GL_BLEND);
 }
+#endif
 
 /* ------------------ DrawSkybox ------------------------ */
 
@@ -199,12 +201,12 @@ void DrawSkybox(void){
     1.0, 0.0, 1.0
   };
   float normals[] = {
-    0.0, -1.0, 0.0,
-    -1.0, 0.0, 0.0,
-    0.0, 1.0, 0.0,
-    1.0, 0.0, 0.0,
-    0.0, 0.0, 1.0,
-    0.0, 0.0, -1.0
+    0.0, -1.0, 0.0,  // ymax
+    -1.0, 0.0, 0.0,  // xmax
+    0.0, 1.0, 0.0,   // ymin
+    1.0, 0.0, 0.0,   // xmin
+    0.0, 0.0, 1.0,   // zmin
+    0.0, 0.0, -1.0   // zmax
   };
   int faces[] = {
     1, 2, 6, 5,
@@ -234,7 +236,6 @@ void DrawSkybox(void){
   glEnable(GL_TEXTURE_2D);
 
   for(i = 0; i<6; i++){
-
     if(skyboxinfo->face[i].file==NULL)continue;
 
     glBindTexture(GL_TEXTURE_2D, skyboxinfo->face[i].name);
@@ -266,5 +267,7 @@ void DrawSkybox(void){
   glEnable(GL_DEPTH_TEST);
   glDepthMask(GL_TRUE);
   glEnable(GL_BLEND);
+#ifdef pp_SKYBOX_FLOOR
   DrawFloor();
+#endif
 }
