@@ -19,6 +19,9 @@
 #include "readgeom.h"
 
 static float *cos_long = NULL, *sin_long = NULL, *cos_lat = NULL, *sin_lat = NULL;
+#ifdef pp_SKY
+static float *sphere_coords = NULL;
+#endif
 static float specular[4] = {0.4,0.4,0.4,1.0};
 unsigned char *rgbimage = NULL;
 int rgbsize = 0;
@@ -1561,13 +1564,18 @@ void DrawHSphere(float diameter, unsigned char *rgbcolor){
 void DrawHalfSphere(unsigned char *rgbcolor){
   int i, j;
   float dxFDS, dyFDS, dzFDS, diameter;
+  float *c_lat, *s_lat, *c_long, *s_long;
 
   dxFDS = xbarFDS - xbar0FDS;
   dyFDS = ybarFDS - ybar0FDS;
   dzFDS = zbarFDS - zbar0FDS;
   diameter = sky_diam*sqrt(dxFDS*dxFDS + dyFDS*dyFDS + dzFDS*dzFDS);
 
-  if(cos_lat == NULL)InitSphere(NLAT, NLONG);
+  if(sphere_coords == NULL)sphere_coords = InitSphere2(nlat_hsphere, nlong_hsphere);
+  c_lat  = sphere_coords;
+  s_lat  = c_lat  + nlat_hsphere  + 1;
+  c_long = s_lat  + nlat_hsphere  + 1;
+  s_long = c_long + nlong_hsphere + 1;
 
   glPushMatrix();
   glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
@@ -1594,72 +1602,102 @@ void DrawHalfSphere(unsigned char *rgbcolor){
       glColor3f(0.0, 0.0, 1.0);
     }
   }
-  for(j = NLAT / 2; j < NLAT; j++){
-    for(i = 0; i < NLONG; i++){
+  
+  for(j = nlat_hsphere / 2; j < nlat_hsphere; j++){
+    for(i = 0; i < nlong_hsphere; i++){
       float x[4], y[4], z[4];
-      float tx[4], ty[4];
+      int ip1;
+      
+      ip1 = i + 1;
 
-      x[0] = cos_long[i]*cos_lat[j];
-      y[0] = sin_long[i]*cos_lat[j];
-      z[0] = sin_lat[j];
+      x[0] = c_long[i]*c_lat[j];
+      y[0] = s_long[i]*c_lat[j];
+      z[0] = s_lat[j];
 
-      x[1] = cos_long[i + 1] * cos_lat[j];
-      y[1] = sin_long[i + 1] * cos_lat[j];
-      z[1] = sin_lat[j];
+      x[1] = c_long[ip1]*c_lat[j];
+      y[1] = s_long[ip1]*c_lat[j];
+      z[1] = s_lat[j];
 
-      x[2] = cos_long[i + 1] * cos_lat[j + 1];
-      y[2] = sin_long[i + 1] * cos_lat[j + 1];
-      z[2] = sin_lat[j + 1];
+      x[2] = c_long[ip1]*c_lat[j + 1];
+      y[2] = s_long[ip1]*c_lat[j + 1];
+      z[2] = s_lat[j + 1];
 
-      x[3] = cos_long[i] * cos_lat[j + 1];
-      y[3] = sin_long[i] * cos_lat[j + 1];
-      z[3] = sin_lat[j + 1];
+      x[3] = c_long[i]*c_lat[j + 1];
+      y[3] = s_long[i]*c_lat[j + 1];
+      z[3] = s_lat[j + 1];
 
       if(use_sky == 1){
-        tx[0] = ( float )i / ( float )(NLONG-1);
-        ty[0] = ( float )j / ( float )(NLAT-1);
+        float tx[4], ty[4];
 
-        tx[1] = ( float )(i + 1) / ( float )(NLONG-1);
-        ty[1] = ( float )j / ( float )(NLAT-1);
+        tx[0] = (float)i/(float)nlong_hsphere;
+        ty[0] = (float)j/(float)nlat_hsphere;
 
-        tx[2] = ( float )(i + 1) / ( float )(NLONG-1);
-        ty[2] = ( float )(j + 1) / ( float )(NLAT-1);
+        tx[1] = (float)(ip1)/(float)nlong_hsphere;
+        ty[1] = (float)j/(float)nlat_hsphere;
 
-        tx[3] = ( float )i / ( float )(NLONG-1);
-        ty[3] = ( float )(j + 1) / ( float )(NLAT-1);
+        tx[2] = (float)(ip1)/(float)nlong_hsphere;
+        ty[2] = (float)(j + 1)/(float)nlat_hsphere;
+
+        tx[3] = (float)i/(float)nlong_hsphere;
+        ty[3] = (float)(j + 1)/(float)nlat_hsphere;
+
+        glNormal3f(x[0], y[0], z[0]);
+        glTexCoord2f(tx[0],ty[0]);
+        glVertex3f(x[0], y[0], z[0]);
+
+        glNormal3f(x[1], y[1], z[1]);
+        glTexCoord2f(tx[1], ty[1]);
+        glVertex3f(x[1], y[1], z[1]);
+
+        glNormal3f(x[2], y[2], z[2]);
+        glTexCoord2f(tx[2], ty[2]);
+        glVertex3f(x[2], y[2], z[2]);
+
+        glNormal3f(x[3], y[3], z[3]);
+        glTexCoord2f(tx[3], ty[3]);
+        glVertex3f(x[3], y[3], z[3]);
+
+        glNormal3f(-x[0], -y[0], -z[0]);
+        glTexCoord2f(tx[0], ty[0]);
+        glVertex3f(x[0], y[0], z[0]);
+
+        glNormal3f(-x[3], -y[3], -z[3]);
+        glTexCoord2f(tx[3], ty[3]);
+        glVertex3f(x[3], y[3], z[3]);
+
+        glNormal3f(-x[2], -y[2], -z[2]);
+        glTexCoord2f(tx[2], ty[2]);
+        glVertex3f(x[2], y[2], z[2]);
+
+        glNormal3f(-x[1], -y[1], -z[1]);
+        glTexCoord2f(tx[1], ty[1]);
+        glVertex3f(x[1], y[1], z[1]);
       }
+      else{
+        glNormal3f(x[0], y[0], z[0]);
+        glVertex3f(x[0], y[0], z[0]);
 
-      glNormal3f(x[0], y[0], z[0]);
-      if(use_sky==1)glTexCoord2f(tx[0],ty[0]);
-      glVertex3f(x[0], y[0], z[0]);
+        glNormal3f(x[1], y[1], z[1]);
+        glVertex3f(x[1], y[1], z[1]);
 
-      glNormal3f(x[1], y[1], z[1]);
-      if(use_sky == 1)glTexCoord2f(tx[1], ty[1]);
-      glVertex3f(x[1], y[1], z[1]);
+        glNormal3f(x[2], y[2], z[2]);
+        glVertex3f(x[2], y[2], z[2]);
 
-      glNormal3f(x[2], y[2], z[2]);
-      if(use_sky == 1)glTexCoord2f(tx[2], ty[2]);
-      glVertex3f(x[2], y[2], z[2]);
+        glNormal3f(x[3], y[3], z[3]);
+        glVertex3f(x[3], y[3], z[3]);
 
-      glNormal3f(x[3], y[3], z[3]);
-      if(use_sky == 1)glTexCoord2f(tx[3], ty[3]);
-      glVertex3f(x[3], y[3], z[3]);
+        glNormal3f(-x[0], -y[0], -z[0]);
+        glVertex3f(x[0], y[0], z[0]);
 
-      glNormal3f(-x[0], -y[0], -z[0]);
-      if(use_sky == 1)glTexCoord2f(tx[0], ty[0]);
-      glVertex3f(x[0], y[0], z[0]);
+        glNormal3f(-x[3], -y[3], -z[3]);
+        glVertex3f(x[3], y[3], z[3]);
 
-      glNormal3f(-x[3], -y[3], -z[3]);
-      if(use_sky == 1)glTexCoord2f(tx[3], ty[3]);
-      glVertex3f(x[3], y[3], z[3]);
+        glNormal3f(-x[2], -y[2], -z[2]);
+        glVertex3f(x[2], y[2], z[2]);
 
-      glNormal3f(-x[2], -y[2], -z[2]);
-      if(use_sky == 1)glTexCoord2f(tx[2], ty[2]);
-      glVertex3f(x[2], y[2], z[2]);
-
-      glNormal3f(-x[1], -y[1], -z[1]);
-      if(use_sky == 1)glTexCoord2f(tx[1], ty[1]);
-      glVertex3f(x[1], y[1], z[1]);
+        glNormal3f(-x[1], -y[1], -z[1]);
+        glVertex3f(x[1], y[1], z[1]);
+      }
     }
   }
   glEnd();
@@ -3295,6 +3333,50 @@ void InitSphere(int nlat, int nlong){
   cos_long[nlong]=cos_long[0];
   sin_long[nlong]=sin_long[0];
 }
+
+#ifdef pp_SKY
+/* ----------------------- InitSphere2 ----------------------------- */
+
+float *InitSphere2(int nlat, int nlong){
+  int i;
+  int ntotal;
+  float *sphere_coords;
+  float *c_lat, *s_lat, *c_long, *s_long;
+
+  ntotal = 2*(nlat + 1) + 2*(nlong + 1);
+  NewMemory( (void **)&sphere_coords, ntotal*sizeof(float));
+  c_lat  = sphere_coords;
+  s_lat  = c_lat  + nlat + 1;
+  c_long = s_lat  + nlat + 1;
+  s_long = c_long + nlong + 1;
+
+  c_lat[0] =  0.0;
+  s_lat[0] = -1.0;
+  for(i=1;i<nlat;i++){
+    float angle;
+
+    angle = -PI/2.0 + (float)i*PI/(float)nlat;
+    c_lat[i] = cos(angle);
+    s_lat[i] = sin(angle);
+  }
+  c_lat[nlat] = 0.0;
+  s_lat[nlat] = 1.0;
+
+  c_long[0] = 1.0;
+  s_long[0] = 0.0;
+  for(i=1;i<nlong;i++){
+    float angle;
+
+    angle = (float)i*2.0*PI/(float)nlong;
+    c_long[i] = cos(angle);
+    s_long[i] = sin(angle);
+  }
+  c_long[nlong] = 1.0;
+  s_long[nlong] = 0.0;
+  
+  return sphere_coords;
+}
+#endif
 
 /* ----------------------- GetGlobalDeviceBounds ----------------------------- */
 

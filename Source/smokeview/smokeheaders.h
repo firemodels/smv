@@ -720,6 +720,9 @@ EXTERNCPP void NextXIndex(int inc,int flag);
 EXTERNCPP void NextYIndex(int inc,int flag);
 EXTERNCPP void NextZIndex(int inc,int flag);
 EXTERNCPP void InitSphere(int nlat, int nlong);
+#ifdef pp_SKY
+EXTERNCPP float *InitSphere2(int nlat, int nlong);
+#endif
 EXTERNCPP int  HaveTerrainSlice(void);
 EXTERNCPP int HaveSmokeSensor(void);
 EXTERNCPP int GetSmoke3DType(char *label);
