@@ -3340,12 +3340,12 @@ void InitSphere(int nlat, int nlong){
 float *InitSphere2(int nlat, int nlong){
   int i;
   int ntotal;
-  float *sphere_coords;
+  float *sphere_xyz;
   float *c_lat, *s_lat, *c_long, *s_long;
 
   ntotal = 2*(nlat + 1) + 2*(nlong + 1);
-  NewMemory( (void **)&sphere_coords, ntotal*sizeof(float));
-  c_lat  = sphere_coords;
+  NewMemory( (void **)&sphere_xyz, ntotal*sizeof(float));
+  c_lat  = sphere_xyz;
   s_lat  = c_lat  + nlat + 1;
   c_long = s_lat  + nlat + 1;
   s_long = c_long + nlong + 1;
@@ -3374,7 +3374,7 @@ float *InitSphere2(int nlat, int nlong){
   c_long[nlong] = 1.0;
   s_long[nlong] = 0.0;
   
-  return sphere_coords;
+  return sphere_xyz;
 }
 #endif
 
