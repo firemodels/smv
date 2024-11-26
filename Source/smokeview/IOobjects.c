@@ -1561,7 +1561,7 @@ void DrawHSphere(float diameter, unsigned char *rgbcolor){
 #ifdef pp_SKY
 /* ----------------------- DrawHalfSphere ----------------------------- */
 
-void DrawHalfSphere(unsigned char *rgbcolor){
+void DrawHalfSphere(void){
   int i, j;
   float dxFDS, dyFDS, dzFDS, diameter;
   float *c_lat, *s_lat, *c_long, *s_long;
@@ -1581,7 +1581,7 @@ void DrawHalfSphere(unsigned char *rgbcolor){
   glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
   glTranslatef(-xbar0, -ybar0, -zbar0);
   glTranslatef(dxFDS/2.0,dyFDS/2.0,0.0);
-  glScalef(diameter / 2.0, diameter / 2.0, diameter / 2.0);
+  glScalef(diameter/2.0, diameter/2.0, diameter/2.0);
 
   int use_sky;
 
@@ -1594,16 +1594,8 @@ void DrawHalfSphere(unsigned char *rgbcolor){
   }
 
   glBegin(GL_QUADS);
-  if(use_sky == 0){
-    if(rgbcolor != NULL){
-      glColor3ubv(rgbcolor);
-    }
-    else{
-      glColor3f(0.0, 0.0, 1.0);
-    }
-  }
-  
-  for(j = nlat_hsphere / 2; j < nlat_hsphere; j++){
+  if(use_sky == 0)glColor3f(0.0, 0.0, 1.0);
+  for(j = nlat_hsphere/2; j < nlat_hsphere; j++){
     for(i = 0; i < nlong_hsphere; i++){
       float x[4], y[4], z[4];
       int ip1;

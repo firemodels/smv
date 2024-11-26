@@ -723,6 +723,7 @@ EXTERNCPP void InitSphere(int nlat, int nlong);
 #ifdef pp_SKY
 EXTERNCPP float *InitSphere2(int nlat, int nlong);
 EXTERNCPP void GetBoxSkyCorners(void);
+EXTERNCPP void DrawHalfSphere(void);
 #endif
 EXTERNCPP int  HaveTerrainSlice(void);
 EXTERNCPP int HaveSmokeSensor(void);
