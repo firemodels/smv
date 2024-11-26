@@ -1118,7 +1118,7 @@ SVEXTERN int SVDECL(slice_bounds_dialog,1);
 
 SVEXTERN float xtemp;
 
-SVEXTERN float set_view_xyz[3],user_zaxis[3];
+SVEXTERN float glui_xyz_fds[3],user_zaxis[3];
 #ifdef INMAIN
   SVEXTERN float zaxis_angles[3]={0.000000, 90.000000, 0.000000};
   SVEXTERN float zaxis_angles_orig[3] = {0.000000, 90.000000, 0.000000};

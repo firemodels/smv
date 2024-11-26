@@ -1932,6 +1932,15 @@ void ResetMenu(int value){
 /* ------------------ ResetDefaultMenu ------------------------ */
 
 void ResetDefaultMenu(int var){
+  if(var == XYZ_CENTER){
+    float xyz_center[3];
+
+    xyz_center[0] = (xbarFDS + xbar0FDS)/2.0;
+    xyz_center[1] = (ybarFDS + ybar0FDS)/2.0;
+    xyz_center[2] = zbar0FDS;
+    GLUISetPosXYZFDS(xyz_center);
+    return;
+  }
   if(var==2){
     int i;
 
@@ -11228,6 +11237,7 @@ static int menu_count=0;
     }
     glutAddMenuEntry(line, ca->view_id);
   }
+  glutAddMenuEntry("center", XYZ_CENTER);
 
   /* --------------------------------reset menu -------------------------- */
 
