@@ -3188,6 +3188,68 @@ void UpdateBlockType(void){
   }
 }
 
+#ifdef pp_SKY
+
+/* ------------------ GetBoxSkyCorners ------------------------ */
+
+void GetBoxSkyCorners(void){
+  float dxFDS, dyFDS, dzFDS, radius;
+  float xmin, ymin, zmin;
+  float xmax, ymax, zmax;
+
+  dxFDS = (xbarFDS - xbar0FDS);
+  dyFDS = (ybarFDS - ybar0FDS);
+  dzFDS = (zbarFDS - zbar0FDS);
+  radius = sqrt(dxFDS * dxFDS + dyFDS * dyFDS + dzFDS * dzFDS) / 2.0;
+
+  xmin = (xbar0FDS + xbarFDS) / 2.0 - sky_diam * radius;
+  xmax = (xbar0FDS + xbarFDS) / 2.0 + sky_diam * radius;
+  ymin = (ybar0FDS + ybarFDS) / 2.0 - sky_diam * radius;
+  ymax = (ybar0FDS + ybarFDS) / 2.0 + sky_diam * radius;
+  zmin = 0.0;
+  zmax = sky_diam * radius;
+
+  xmin = FDS2SMV_X(xmin);
+  xmax = FDS2SMV_X(xmax);
+  ymin = FDS2SMV_Y(ymin);
+  ymax = FDS2SMV_Y(ymax);
+  zmin = FDS2SMV_Z(zmin);
+  zmax = FDS2SMV_Z(zmax);
+
+  box_sky_corners[0][0] = xmin;
+  box_sky_corners[0][1] = ymin;
+  box_sky_corners[0][2] = zmin;
+
+  box_sky_corners[1][0] = xmax;
+  box_sky_corners[1][1] = ymin;
+  box_sky_corners[1][2] = zmin;
+
+  box_sky_corners[2][0] = xmin;
+  box_sky_corners[2][1] = ymax;
+  box_sky_corners[2][2] = zmin;
+
+  box_sky_corners[3][0] = xmax;
+  box_sky_corners[3][1] = ymax;
+  box_sky_corners[3][2] = zmin;
+
+  box_sky_corners[4][0] = xmin;
+  box_sky_corners[4][1] = ymin;
+  box_sky_corners[4][2] = zmax;
+
+  box_sky_corners[5][0] = xmax;
+  box_sky_corners[5][1] = ymin;
+  box_sky_corners[5][2] = zmax;
+
+  box_sky_corners[6][0] = xmin;
+  box_sky_corners[6][1] = ymax;
+  box_sky_corners[6][2] = zmax;
+
+  box_sky_corners[7][0] = xmax;
+  box_sky_corners[7][1] = ymax;
+  box_sky_corners[7][2] = zmax;
+}
+#endif
+
 /* ------------------ GetBoxGeomCorners ------------------------ */
 
 void GetBoxGeomCorners(void){
@@ -3266,61 +3328,6 @@ void GetBoxGeomCorners(void){
   box_geom_corners[7][0] = xmax;
   box_geom_corners[7][1] = ymax;
   box_geom_corners[7][2] = zmax;
-
-#ifdef pp_SKY
-  float dxFDS, dyFDS, dzFDS, radius;
-
-  dxFDS = (xbarFDS - xbar0FDS);
-  dyFDS = (ybarFDS - ybar0FDS);
-  dzFDS = (zbarFDS - zbar0FDS);
-  radius = sqrt(dxFDS*dxFDS + dyFDS*dyFDS + dzFDS*dzFDS)/2.0;
-
-  xmin = (xbar0FDS + xbarFDS)/2.0 - sky_diam*radius;
-  xmax = (xbar0FDS + xbarFDS)/2.0 + sky_diam*radius;
-  ymin = (ybar0FDS + ybarFDS)/2.0 - sky_diam*radius;
-  ymax = (ybar0FDS + ybarFDS)/2.0 + sky_diam*radius;
-  zmin = 0.0;
-  zmax = sky_diam*radius;
-
-  xmin = FDS2SMV_X(xmin);
-  xmax = FDS2SMV_X(xmax);
-  ymin = FDS2SMV_Y(ymin);
-  ymax = FDS2SMV_Y(ymax);
-  zmin = FDS2SMV_Z(zmin);
-  zmax = FDS2SMV_Z(zmax);
-
-  box_sky_corners[0][0] = xmin;
-  box_sky_corners[0][1] = ymin;
-  box_sky_corners[0][2] = zmin;
-
-  box_sky_corners[1][0] = xmax;
-  box_sky_corners[1][1] = ymin;
-  box_sky_corners[1][2] = zmin;
-
-  box_sky_corners[2][0] = xmin;
-  box_sky_corners[2][1] = ymax;
-  box_sky_corners[2][2] = zmin;
-
-  box_sky_corners[3][0] = xmax;
-  box_sky_corners[3][1] = ymax;
-  box_sky_corners[3][2] = zmin;
-
-  box_sky_corners[4][0] = xmin;
-  box_sky_corners[4][1] = ymin;
-  box_sky_corners[4][2] = zmax;
-
-  box_sky_corners[5][0] = xmax;
-  box_sky_corners[5][1] = ymin;
-  box_sky_corners[5][2] = zmax;
-
-  box_sky_corners[6][0] = xmin;
-  box_sky_corners[6][1] = ymax;
-  box_sky_corners[6][2] = zmax;
-
-  box_sky_corners[7][0] = xmax;
-  box_sky_corners[7][1] = ymax;
-  box_sky_corners[7][2] = zmax;
-#endif
 }
 
   /* ------------------ GetBoxCorners ------------------------ */
@@ -12021,6 +12028,9 @@ int ReadSMV_Configure(){
   UpdateTriangles(GEOM_STATIC,GEOM_UPDATE_ALL);
   GetFaceInfo();
   GetBoxGeomCorners();
+#ifdef pp_SKY
+  GetBoxSkyCorners();
+#endif
   PRINT_TIMER(timer_readsmv, "update trianglesfaces");
 
   if(ngeominfo>0&&auto_terrain==1){
