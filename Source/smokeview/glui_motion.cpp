@@ -105,6 +105,7 @@ GLUI_Spinner *SPINNER_gslice_center_z=NULL;
 GLUI_Spinner *SPINNER_gslice_normal_az=NULL;
 GLUI_Spinner *SPINNER_gslice_normal_elev=NULL;
 GLUI_Spinner *SPINNER_glui_xyz_fds[3];
+GLUI_Spinner **SPINNER_glui_xyz_fds_check=NULL;
 GLUI_Spinner *SPINNER_zaxis_angles[3];
 GLUI_Spinner *SPINNER_zoom=NULL,*SPINNER_aperture=NULL;
 GLUI_Spinner *SPINNER_window_width=NULL, *SPINNER_window_height=NULL;
@@ -634,7 +635,7 @@ extern "C" void GLUIUpdateRotationType(int val){
 
 extern "C" void GLUISetPosXYZSMV(float *xyz){
   if(xyz==NULL)return;
-  if(SPINNER_glui_xyz_fds==NULL)return;
+  if(SPINNER_glui_xyz_fds_check == NULL)return;
 
   SMV2FDS_XYZ(glui_xyz_fds,xyz);
 
@@ -646,7 +647,7 @@ extern "C" void GLUISetPosXYZSMV(float *xyz){
 /* ------------------ GLUISetPosXYZFDS ------------------------ */
 
 extern "C" void GLUISetPosXYZFDS(float *xyz){
-  if(SPINNER_glui_xyz_fds==NULL)return;
+  if(SPINNER_glui_xyz_fds_check == NULL)return;
   SPINNER_glui_xyz_fds[0]->set_float_val(xyz[0]);
   SPINNER_glui_xyz_fds[1]->set_float_val(xyz[1]);
   SPINNER_glui_xyz_fds[2]->set_float_val(xyz[2]);
@@ -1198,6 +1199,7 @@ extern "C" void GLUIMotionSetup(int main_window){
   SPINNER_glui_xyz_fds[0] = glui_motion->add_spinner_to_panel(PANEL_specify, "x:", GLUI_SPINNER_FLOAT, glui_xyz_fds,   SET_VIEW_XYZ, GLUISceneMotionCB);
   SPINNER_glui_xyz_fds[1] = glui_motion->add_spinner_to_panel(PANEL_specify, "y:", GLUI_SPINNER_FLOAT, glui_xyz_fds+1, SET_VIEW_XYZ, GLUISceneMotionCB);
   SPINNER_glui_xyz_fds[2] = glui_motion->add_spinner_to_panel(PANEL_specify, "z:", GLUI_SPINNER_FLOAT, glui_xyz_fds+2, SET_VIEW_XYZ, GLUISceneMotionCB);
+  SPINNER_glui_xyz_fds_check = SPINNER_glui_xyz_fds;
 
   PANEL_custom_view = glui_motion->add_panel_to_panel(ROLLOUT_view, _("View"));
 
