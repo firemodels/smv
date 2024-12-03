@@ -1889,7 +1889,7 @@ void DrawCAD2Geom(const cadgeomdata *cd, int trans_flag){
 
 /* ------------------ ObstOrVent2Faces ------------------------ */
 
-void ObstOrVent2Faces(const meshdata *meshi,blockagedata *bc,
+void ObstOrVent2Faces(const meshdata *meshi, blockagedata *bc,
                         ventdata *vi, facedata *faceptr, int facetype){
   /*
 
@@ -1969,6 +1969,9 @@ void ObstOrVent2Faces(const meshdata *meshi,blockagedata *bc,
     yminmax2[1] = vi->ymax;
     zminmax2[0] = vi->zmin;
     zminmax2[1] = vi->zmax;
+#ifdef pp_FACE_DEBUG
+    if(meshi-meshinfo==4)printf("%i %f %f %f %f %f %f\n", (int)(vi - meshi->ventinfo), vi->xmin, vi->xmax, vi->ymin, vi->ymax, vi->zmin, vi->zmax);
+#endif
   }
 
 
@@ -2210,6 +2213,12 @@ void ObstOrVent2Faces(const meshdata *meshi,blockagedata *bc,
        assert(FFALSE);
        break;
     }
+#ifdef pp_FACE_DEBUG
+// remove this code when pp_FACE_DEBUG is removed
+    offset[XXX]=(float)0.0;
+    offset[YYY]=(float)0.0;
+    offset[ZZZ]=(float)0.0;
+#endif
     if(facetype==SHADED_FRAME_face){
       faceptr->normal[0]*=-1;
       faceptr->normal[1]*=-1;
@@ -2678,11 +2687,26 @@ void UpdateFaceListsWorker(void){
     int vent_offset, outline_offset, exteriorsurface_offset;
 
     meshi = meshinfo + i;
+#ifdef pp_FACE_DEBUG
+    if(i == 4){
+      int x;
+
+      x = 1;
+    }
+#endif
     for(j=0;j<meshi->nfaces;j++){
       facedata *facej;
 
       facej = meshi->faceinfo + j;
       facej->cullport=NULL;
+#ifdef pp_FACE_DEBUG
+      if(i == 4){
+        float *xyz;
+
+        xyz = facej->exact_vertex_coords;
+        printf("xx %f %f %f %f %f %f\n", xyz[0], xyz[1], xyz[2], xyz[3], xyz[4], xyz[5]);
+      }
+#endif
     }
 
     patchfilenum=meshi->patchfilenum;
@@ -2850,7 +2874,7 @@ void UpdateFaceListsWorker(void){
     nface_transparent_double += n_transparent_double;
     nface_outlines += n_outlines;
 
-    if(blockage_draw_option!=1)continue;
+    if(blockage_draw_option != 1)continue;
 
     meshi->nface_normals_single_DOWN_X=0;
     meshi->nface_normals_single_UP_X=0;
