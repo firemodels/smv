@@ -608,6 +608,7 @@ extern "C" void GLUIGeometrySetup(int main_window){
   if(showedit_dialog==0)glui_geometry->hide();
 
   if(hvaccoll.nhvacinfo > 0){
+    have_geometry_dialog = 1;
     NewMemory(( void ** )&glui_hvac, sizeof(hvacdata));
     memcpy(glui_hvac, hvaccoll.hvacinfo, sizeof(hvacdata));
     ROLLOUT_hvac = glui_geometry->add_rollout("HVAC", false, HVAC_ROLLOUT, GeomRolloutCB);
@@ -735,6 +736,7 @@ extern "C" void GLUIGeometrySetup(int main_window){
   }
 
   if(have_obsts == 1){
+    have_geometry_dialog = 1;
     ROLLOUT_structured = glui_geometry->add_rollout("Structured", false, STRUCTURED_ROLLOUT, GeomRolloutCB);
     INSERT_ROLLOUT(ROLLOUT_structured, glui_geometry);
     ADDPROCINFO(geomprocinfo, ngeomprocinfo, ROLLOUT_structured, STRUCTURED_ROLLOUT, glui_geometry);
@@ -881,6 +883,7 @@ extern "C" void GLUIGeometrySetup(int main_window){
   }
 
   if(ngeominfo>0){
+    have_geometry_dialog = 1;
     ROLLOUT_unstructured = glui_geometry->add_rollout("Immersed", false, UNSTRUCTURED_ROLLOUT, GeomRolloutCB);
     INSERT_ROLLOUT(ROLLOUT_unstructured, glui_geometry);
     ADDPROCINFO(geomprocinfo, ngeomprocinfo, ROLLOUT_unstructured, UNSTRUCTURED_ROLLOUT, glui_geometry);
@@ -1105,6 +1108,7 @@ extern "C" void GLUIGeometrySetup(int main_window){
   }
 
   if(nterraininfo>0&&ngeominfo==0){
+    have_geometry_dialog = 1;
     ROLLOUT_terrain = glui_geometry->add_rollout("Terrain", false, TERRAIN_ROLLOUT, GeomRolloutCB);
     INSERT_ROLLOUT(ROLLOUT_terrain, glui_geometry);
     ADDPROCINFO(geomprocinfo, ngeomprocinfo, ROLLOUT_terrain, TERRAIN_ROLLOUT, glui_geometry);
