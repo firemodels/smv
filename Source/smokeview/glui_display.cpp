@@ -920,7 +920,7 @@ extern "C" void GLUIDisplaySetup(int main_window){
   glui_labels->add_radiobutton_to_group(RADIO_timebar_overlap,_("Never"));
   glui_labels->add_radiobutton_to_group(RADIO_timebar_overlap,_("Only if timebar hidden"));
 
-  PANEL_blockage_drawing = glui_labels->add_panel_to_panel(PANEL_gen3,_("Blockage drawing"));
+  PANEL_blockage_drawing = glui_labels->add_panel_to_panel(PANEL_gen3,_("Surface/blockage drawing"));
   RADIOBUTTON_label_1 = glui_labels->add_radiogroup_to_panel(PANEL_blockage_drawing, &blockage_draw_option, LABELS_drawface, GLUILabelsCB);
   glui_labels->add_radiobutton_to_group(RADIOBUTTON_label_1, _("original"));
   glui_labels->add_radiobutton_to_group(RADIOBUTTON_label_1, _("default"));
