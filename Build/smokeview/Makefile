@@ -167,7 +167,7 @@ WIN32_LIBS = user32.lib gdi32.lib comdlg32.lib shell32.lib
 
 intel_win_64_db : DYNLIB_EXT = .dll
 intel_win_64_db : INC += $(WININC) -I $(SOURCE_DIR)/shared -I $(SOURCE_DIR)/smokeview
-intel_win_64_db : CFLAGS    = /Od /W4 /Wno-unused-function /Wno-unused-parameter /debug:full /Zi -D pp_INTEL -D _DEBUG -D WIN32 -D _CONSOLE -D X64 -D GLEW_STATIC -D PTW32_STATIC_LIB $(SMV_TESTFLAG) $(GITINFO) $(INTEL_COMPINFO)
+intel_win_64_db : CFLAGS    = /Od /W4 /Wno-cast-function-type-mismatch /Wno-unused-function /Wno-unused-parameter /debug:full /Zi  -D pp_INTEL -D _DEBUG -D WIN32 -D _CONSOLE -D X64 -D GLEW_STATIC -D PTW32_STATIC_LIB $(SMV_TESTFLAG) $(GITINFO) $(INTEL_COMPINFO)
 ifeq ($(SANITIZE),1)
 intel_win_64_db : CFLAGS   += $(SANITIZE_OPTIONS)
 endif
