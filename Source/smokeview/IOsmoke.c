@@ -1516,12 +1516,12 @@ void InitAlphas(unsigned char *alphanew,
   }
   alphanew[0] = 0;
   if(force_alpha_opaque==1){
-    for(i = 1; i<254; i++){
+    for(i = 1; i<255; i++){
       alphanew[i] = (unsigned char)254;
     }
   }
   else{
-    for(i = 1; i<254; i++){
+    for(i = 1; i<255; i++){
       float val;
       int ival;
 
