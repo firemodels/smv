@@ -232,7 +232,8 @@ EXTERNCPP void GLUISetColorControls(void);
 EXTERNCPP void GLUIShowMotion(int menu_id);
 EXTERNCPP void GLUIHideMotion(void);
 EXTERNCPP void GLUIUpdateZoom(void);
-EXTERNCPP void GLUIUpdateSetViewXYZ(float *xyz);
+EXTERNCPP void GLUISetPosXYZSMV(float *xyz);
+EXTERNCPP void GLUISetPosXYZFDS(float *xyz);
 EXTERNCPP void GLUIUpdateFileLabel(int var);
 EXTERNCPP void GLUIRotationTypeCB(int var);
 EXTERNCPP void GLUIUpdateRotationType(int val);
@@ -720,6 +721,11 @@ EXTERNCPP void NextXIndex(int inc,int flag);
 EXTERNCPP void NextYIndex(int inc,int flag);
 EXTERNCPP void NextZIndex(int inc,int flag);
 EXTERNCPP void InitSphere(int nlat, int nlong);
+#ifdef pp_SKY
+EXTERNCPP float *InitSphere2(int nlat, int nlong);
+EXTERNCPP void GetBoxSkyCorners(void);
+EXTERNCPP void DrawHalfSphere(void);
+#endif
 EXTERNCPP int  HaveTerrainSlice(void);
 EXTERNCPP int HaveSmokeSensor(void);
 EXTERNCPP int GetSmoke3DType(char *label);

@@ -1932,6 +1932,15 @@ void ResetMenu(int value){
 /* ------------------ ResetDefaultMenu ------------------------ */
 
 void ResetDefaultMenu(int var){
+  if(var == XYZ_CENTER){
+    float xyz_center[3];
+
+    xyz_center[0] = (xbarFDS + xbar0FDS)/2.0;
+    xyz_center[1] = (ybarFDS + ybar0FDS)/2.0;
+    xyz_center[2] = zbar0FDS;
+    GLUISetPosXYZFDS(xyz_center);
+    return;
+  }
   if(var==2){
     int i;
 
@@ -11228,6 +11237,7 @@ static int menu_count=0;
     }
     glutAddMenuEntry(line, ca->view_id);
   }
+  glutAddMenuEntry("center", XYZ_CENTER);
 
   /* --------------------------------reset menu -------------------------- */
 
@@ -11667,7 +11677,7 @@ static int menu_count=0;
   if(showtour_dialog==1)glutAddMenuEntry(_("*Create/modify tours...  ALT t"), DIALOG_TOUR_HIDE);
   if(showtour_dialog==0)glutAddMenuEntry(_("Create/modify tours...  ALT t"), DIALOG_TOUR_SHOW);
   glutAddMenuEntry(_("Edit colorbar...  ALT C"), DIALOG_COLORBAR);
-  if(isZoneFireModel==0){
+  if(isZoneFireModel==0 && have_geometry_dialog==1){
     glutAddMenuEntry(_("Examine geometry...  ALT e"), DIALOG_GEOMETRY);
   }
 #else
@@ -11675,7 +11685,7 @@ static int menu_count=0;
   if(showtour_dialog==1)glutAddMenuEntry(_("*Create/edit tours..."), DIALOG_TOUR_HIDE);
   if(showtour_dialog==0)glutAddMenuEntry(_("Create/edit tours..."), DIALOG_TOUR_SHOW);
   glutAddMenuEntry(_("Edit colorbar...  "), DIALOG_COLORBAR);
-  if(isZoneFireModel==0){
+  if(isZoneFireModel == 0 && have_geometry_dialog == 1){
     glutAddMenuEntry(_("Examine geometry...  "), DIALOG_GEOMETRY);
   }
 #endif

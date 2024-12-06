@@ -386,7 +386,7 @@ void UpdateCamera(cameradata *ca){
     ca->ymax=clipinfo.ymax;
     ca->zmax=clipinfo.zmax;
   }
-  GLUIUpdateSetViewXYZ(ca->eye);
+  GLUISetPosXYZSMV(ca->eye);
   ca->dirty=0;
 }
 

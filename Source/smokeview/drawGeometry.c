@@ -1889,7 +1889,7 @@ void DrawCAD2Geom(const cadgeomdata *cd, int trans_flag){
 
 /* ------------------ ObstOrVent2Faces ------------------------ */
 
-void ObstOrVent2Faces(const meshdata *meshi,blockagedata *bc,
+void ObstOrVent2Faces(const meshdata *meshi, blockagedata *bc,
                         ventdata *vi, facedata *faceptr, int facetype){
   /*
 
@@ -2243,11 +2243,11 @@ void ObstOrVent2Faces(const meshdata *meshi,blockagedata *bc,
       faceptr->approx_center_coord[2]+=zvert;
 
 
-      faceptr->exact_vertex_coords[3*k]=xx2[jjj]+offset[XXX];
+      faceptr->exact_vertex_coords[3*k]  =xx2[jjj]+offset[XXX];
       faceptr->exact_vertex_coords[3*k+1]=yy2[jjj]+offset[YYY];
       faceptr->exact_vertex_coords[3*k+2]=zz2[jjj]+offset[ZZZ];
-      if(faceptr->exact_vertex_coords[3*k]<faceptr->xmin)faceptr->xmin=faceptr->exact_vertex_coords[3*k];
-      if(faceptr->exact_vertex_coords[3*k]>faceptr->xmax)faceptr->xmax=faceptr->exact_vertex_coords[3*k];
+      if(faceptr->exact_vertex_coords[3*k]  <faceptr->xmin)faceptr->xmin=faceptr->exact_vertex_coords[3*k];
+      if(faceptr->exact_vertex_coords[3*k]  >faceptr->xmax)faceptr->xmax=faceptr->exact_vertex_coords[3*k];
       if(faceptr->exact_vertex_coords[3*k+1]<faceptr->ymin)faceptr->ymin=faceptr->exact_vertex_coords[3*k+1];
       if(faceptr->exact_vertex_coords[3*k+1]>faceptr->ymax)faceptr->ymax=faceptr->exact_vertex_coords[3*k+1];
       if(faceptr->exact_vertex_coords[3*k+2]<faceptr->zmin)faceptr->zmin=faceptr->exact_vertex_coords[3*k+2];
@@ -2850,7 +2850,7 @@ void UpdateFaceListsWorker(void){
     nface_transparent_double += n_transparent_double;
     nface_outlines += n_outlines;
 
-    if(blockage_draw_option!=1)continue;
+    if(blockage_draw_option != 1)continue;
 
     meshi->nface_normals_single_DOWN_X=0;
     meshi->nface_normals_single_UP_X=0;
@@ -2858,7 +2858,7 @@ void UpdateFaceListsWorker(void){
     meshi->nface_normals_single_UP_Y=0;
     meshi->nface_normals_single_DOWN_Z=0;
     meshi->nface_normals_single_UP_Z=0;
-    if(n_normals_single>1){
+    if(n_normals_single>0){
       int iface;
       int istartD=-1,istartU=-1;
       int jstartD=-1,jstartU=-1;

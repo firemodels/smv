@@ -3088,9 +3088,9 @@ void ScriptXYZView(float x, float y, float z, float az, float elev){
   use_customview = 0;
   GLUISceneMotionCB(CUSTOM_VIEW);
   GLUIViewpointCB(RESTORE_VIEW);
-  set_view_xyz[0]      = x;
-  set_view_xyz[1]      = y;
-  set_view_xyz[2]      = z;
+  glui_xyz_fds[0]      = x;
+  glui_xyz_fds[1]      = y;
+  glui_xyz_fds[2]      = z;
   customview_azimuth   = az;
   customview_elevation = elev;
   use_customview       = 1;
@@ -3856,9 +3856,9 @@ void SetViewZMAXPersp(void){
   use_customview = 0;
   GLUISceneMotionCB(CUSTOM_VIEW);
   GLUIViewpointCB(RESTORE_VIEW);
-  set_view_xyz[0]      = xcen;
-  set_view_xyz[1]      = ycen;
-  set_view_xyz[2]      = zcen;
+  glui_xyz_fds[0]      = xcen;
+  glui_xyz_fds[1]      = ycen;
+  glui_xyz_fds[2]      = zcen;
   customview_azimuth   = azimuth;
   customview_elevation = elevation;
   use_customview       = 1;

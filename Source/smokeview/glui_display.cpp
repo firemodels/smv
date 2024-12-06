@@ -225,6 +225,7 @@ GLUI_Button *BUTTON_label_4=NULL;
 
 #ifdef pp_SKY
 #define SKY_DIAM 0
+#define SKY_VIS  1
 #endif
 
 #define LABELS_label           0
@@ -741,6 +742,10 @@ void GLUISkyCB(int var){
         sky_diam = 1.0;
         if(SPINNER_sky_diam!=NULL)SPINNER_sky_diam->set_float_val(sky_diam);
       }
+      GetBoxSkyCorners();
+      break;
+    case SKY_VIS:
+      GetBoxSkyCorners();
       break;
     default:
       assert(0);
@@ -785,7 +790,7 @@ extern "C" void GLUIDisplaySetup(int main_window){
   CHECKBOX_labels_availmemory = glui_labels->add_checkbox_to_panel(PANEL_gen1, _("Memory load"), &visAvailmemory, LABELS_label, GLUILabelsCB);
 #endif
 #ifdef pp_SKY
-  glui_labels->add_checkbox_to_panel(PANEL_gen1, _("show sky"), &visSky);
+  glui_labels->add_checkbox_to_panel(PANEL_gen1, _("show sky"), &visSky, SKY_VIS, GLUISkyCB);
   SPINNER_sky_diam = glui_labels->add_spinner_to_panel(PANEL_gen1, _("sky diameter"), GLUI_SPINNER_FLOAT, &sky_diam, SKY_DIAM, GLUISkyCB);
 #endif
 
@@ -915,7 +920,7 @@ extern "C" void GLUIDisplaySetup(int main_window){
   glui_labels->add_radiobutton_to_group(RADIO_timebar_overlap,_("Never"));
   glui_labels->add_radiobutton_to_group(RADIO_timebar_overlap,_("Only if timebar hidden"));
 
-  PANEL_blockage_drawing = glui_labels->add_panel_to_panel(PANEL_gen3,_("Blockage drawing"));
+  PANEL_blockage_drawing = glui_labels->add_panel_to_panel(PANEL_gen3,_("Surface/blockage drawing"));
   RADIOBUTTON_label_1 = glui_labels->add_radiogroup_to_panel(PANEL_blockage_drawing, &blockage_draw_option, LABELS_drawface, GLUILabelsCB);
   glui_labels->add_radiobutton_to_group(RADIOBUTTON_label_1, _("original"));
   glui_labels->add_radiobutton_to_group(RADIOBUTTON_label_1, _("default"));

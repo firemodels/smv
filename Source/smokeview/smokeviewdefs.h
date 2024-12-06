@@ -70,6 +70,7 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 #define VIEW_YMAX                   -3
 #define VIEW_ZMIN                   -4
 #define VIEW_ZMAX                   -5
+#define XYZ_CENTER                 -6
 
 #define DEVICE_devicetypes     28
 

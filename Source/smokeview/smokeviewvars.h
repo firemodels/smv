@@ -221,6 +221,7 @@ SVEXTERN int SVDECL(rotate_center, 0);
 SVEXTERN int SVDECL(have_geom_bb, 0);
 SVEXTERN int SVDECL(show_geom_boundingbox, SHOW_BOUNDING_BOX_NEVER);
 SVEXTERN int SVDECL(have_obsts, 0);
+SVEXTERN int SVDECL(have_geometry_dialog, 0);
 SVEXTERN int SVDECL(chop_patch, 0);
 SVEXTERN float SVDECL(colorbar_slice_min, 0.0), SVDECL(colorbar_slice_max, 1.0);
 SVEXTERN int SVDECL(have_geom_triangles, 0);
@@ -1118,7 +1119,7 @@ SVEXTERN int SVDECL(slice_bounds_dialog,1);
 
 SVEXTERN float xtemp;
 
-SVEXTERN float set_view_xyz[3],user_zaxis[3];
+SVEXTERN float glui_xyz_fds[3],user_zaxis[3];
 #ifdef INMAIN
   SVEXTERN float zaxis_angles[3]={0.000000, 90.000000, 0.000000};
   SVEXTERN float zaxis_angles_orig[3] = {0.000000, 90.000000, 0.000000};
@@ -2096,6 +2097,9 @@ SVEXTERN int SVDECL(show_avatar,1);
 SVEXTERN int SVDECL(tourlocus_type,0);
 SVEXTERN int SVDECL(glui_avatar_index,0);
 SVEXTERN int SVDECL(device_sphere_segments,6);
+#ifdef pp_SKY
+SVEXTERN int SVDECL(nlat_hsphere, 20), SVDECL(nlong_hsphere, 40);
+#endif
 SVEXTERN int ntexturestack;
 
 SVEXTERN float SVDECL(fire_opacity_factor,3.0),SVDECL(mass_extinct,8700.0);
