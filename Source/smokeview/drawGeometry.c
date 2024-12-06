@@ -1969,9 +1969,6 @@ void ObstOrVent2Faces(const meshdata *meshi, blockagedata *bc,
     yminmax2[1] = vi->ymax;
     zminmax2[0] = vi->zmin;
     zminmax2[1] = vi->zmax;
-#ifdef pp_FACE_DEBUG
-    if(meshi-meshinfo==4)printf("%i %f %f %f %f %f %f\n", (int)(vi - meshi->ventinfo), vi->xmin, vi->xmax, vi->ymin, vi->ymax, vi->zmin, vi->zmax);
-#endif
   }
 
 
@@ -2213,12 +2210,6 @@ void ObstOrVent2Faces(const meshdata *meshi, blockagedata *bc,
        assert(FFALSE);
        break;
     }
-#ifdef pp_FACE_DEBUG
-// remove this code when pp_FACE_DEBUG is removed
-    offset[XXX]=(float)0.0;
-    offset[YYY]=(float)0.0;
-    offset[ZZZ]=(float)0.0;
-#endif
     if(facetype==SHADED_FRAME_face){
       faceptr->normal[0]*=-1;
       faceptr->normal[1]*=-1;
@@ -2252,11 +2243,11 @@ void ObstOrVent2Faces(const meshdata *meshi, blockagedata *bc,
       faceptr->approx_center_coord[2]+=zvert;
 
 
-      faceptr->exact_vertex_coords[3*k]=xx2[jjj]+offset[XXX];
+      faceptr->exact_vertex_coords[3*k]  =xx2[jjj]+offset[XXX];
       faceptr->exact_vertex_coords[3*k+1]=yy2[jjj]+offset[YYY];
       faceptr->exact_vertex_coords[3*k+2]=zz2[jjj]+offset[ZZZ];
-      if(faceptr->exact_vertex_coords[3*k]<faceptr->xmin)faceptr->xmin=faceptr->exact_vertex_coords[3*k];
-      if(faceptr->exact_vertex_coords[3*k]>faceptr->xmax)faceptr->xmax=faceptr->exact_vertex_coords[3*k];
+      if(faceptr->exact_vertex_coords[3*k]  <faceptr->xmin)faceptr->xmin=faceptr->exact_vertex_coords[3*k];
+      if(faceptr->exact_vertex_coords[3*k]  >faceptr->xmax)faceptr->xmax=faceptr->exact_vertex_coords[3*k];
       if(faceptr->exact_vertex_coords[3*k+1]<faceptr->ymin)faceptr->ymin=faceptr->exact_vertex_coords[3*k+1];
       if(faceptr->exact_vertex_coords[3*k+1]>faceptr->ymax)faceptr->ymax=faceptr->exact_vertex_coords[3*k+1];
       if(faceptr->exact_vertex_coords[3*k+2]<faceptr->zmin)faceptr->zmin=faceptr->exact_vertex_coords[3*k+2];
@@ -2687,26 +2678,11 @@ void UpdateFaceListsWorker(void){
     int vent_offset, outline_offset, exteriorsurface_offset;
 
     meshi = meshinfo + i;
-#ifdef pp_FACE_DEBUG
-    if(i == 4){
-      int x;
-
-      x = 1;
-    }
-#endif
     for(j=0;j<meshi->nfaces;j++){
       facedata *facej;
 
       facej = meshi->faceinfo + j;
       facej->cullport=NULL;
-#ifdef pp_FACE_DEBUG
-      if(i == 4){
-        float *xyz;
-
-        xyz = facej->exact_vertex_coords;
-        printf("xx %f %f %f %f %f %f\n", xyz[0], xyz[1], xyz[2], xyz[3], xyz[4], xyz[5]);
-      }
-#endif
     }
 
     patchfilenum=meshi->patchfilenum;
@@ -2882,7 +2858,7 @@ void UpdateFaceListsWorker(void){
     meshi->nface_normals_single_UP_Y=0;
     meshi->nface_normals_single_DOWN_Z=0;
     meshi->nface_normals_single_UP_Z=0;
-    if(n_normals_single>1){
+    if(n_normals_single>0){
       int iface;
       int istartD=-1,istartU=-1;
       int jstartD=-1,jstartU=-1;
