@@ -386,6 +386,28 @@ EXTERNCPP void UpdateCurrentMesh(meshdata *meshi);
 EXTERNCPP void UpdatePlot3dTitle(void);
 EXTERNCPP void WindowStatus(int state);
 
+//*** camera.c headers
+
+EXTERNCPP void  AddDefaultViewpoints(void);
+EXTERNCPP float Aperture2Zoom(float ap);
+EXTERNCPP void  Cam2Clip(cameradata *cam);
+EXTERNCPP void  Clip2Cam(cameradata *cam);
+EXTERNCPP void  CopyCamera(cameradata *to, cameradata *from);
+EXTERNCPP void  CopyViewCamera(cameradata *to, cameradata *from);
+EXTERNCPP void  DeleteCamera(cameradata *cam1);
+EXTERNCPP cameradata *GetCamera(char *name);
+EXTERNCPP char  *GetCameraLabel(int index);
+EXTERNCPP void  InitCamera(cameradata *camera_data,char *name);
+EXTERNCPP void  InitCameraList(void);
+EXTERNCPP cameradata *InsertCamera(cameradata *cb,cameradata *source, char *name);
+EXTERNCPP void  SetCameraView(cameradata *ca, int option);
+EXTERNCPP void  SetCameraViewPersp(cameradata *ca, int option);
+EXTERNCPP void  SortCameras(void);
+EXTERNCPP void  SortCamerasID(void);
+EXTERNCPP void  UpdateCamera(cameradata *ca);
+EXTERNCPP void  UpdateCameraYpos(cameradata *camera_data, int option);
+EXTERNCPP float Zoom2Aperture(float zoom0);
+
 // gen plot routines
 
 EXTERNCPP void PrintFileLoadTimes(int file_count, FILE_SIZE load_size, float load_time);
@@ -445,8 +467,6 @@ EXTERNCPP void ShowObjectsMenu(int var);
 EXTERNCPP void UpdateShowHRRPUVPlot(int val);
 
 EXTERNCPP void ScriptViewXYZMINMAXOrtho(int option);
-EXTERNCPP void SetCameraView(cameradata *ca, int option);
-EXTERNCPP void SetCameraViewPersp(cameradata *ca, int option);
 
 EXTERNCPP void InitStartupDirs(void);
 
@@ -765,13 +785,6 @@ EXTERNCPP void DrawHalfSphere(void);
 EXTERNCPP int  HaveTerrainSlice(void);
 EXTERNCPP int HaveSmokeSensor(void);
 EXTERNCPP float GetZCellValOffset(meshdata *meshi,float xval, float yval, int *loc);
-EXTERNCPP void UpdateCameraYpos(cameradata *camera_data, int option);
-EXTERNCPP cameradata *GetCamera(char *name);
-EXTERNCPP void SortCameras(void);
-EXTERNCPP void SortCamerasID(void);
-EXTERNCPP char *GetCameraLabel(int index);
-EXTERNCPP void Clip2Cam(cameradata *cam);
-EXTERNCPP void Cam2Clip(cameradata *cam);
 EXTERNCPP char *GetDeviceLabel(char *buffer);
 EXTERNCPP void DrawDevices(int mode);
 
@@ -810,7 +823,6 @@ EXTERNCPP int AnySmoke(void);
 EXTERNCPP int AnySlices(const char *type);
 EXTERNCPP void TrainerViewMenu(int var);
 
-EXTERNCPP void DeleteCamera(cameradata *cam1);
 EXTERNCPP void UnloadSliceMenu(int value);
 EXTERNCPP void ViewpointMenu(int value);
 EXTERNCPP void FrameRateMenu(int var);
@@ -870,8 +882,6 @@ EXTERNCPP void GetStartupBoundary(int seq_id);
 EXTERNCPP void Set3DSmokeStartup(void);
 EXTERNCPP void PutStartupSmoke3D(FILE *fileout);
 EXTERNCPP void DrawTransparentFaces(void);
-EXTERNCPP float Zoom2Aperture(float zoom0);
-EXTERNCPP float Aperture2Zoom(float ap);
 EXTERNCPP int  GetZoneColor(float t, float tmin, float tmax, int nlevel);
 EXTERNCPP void DrawBlockages(int mode, int flag);
 EXTERNCPP void WriteLabels(labels_collection *labelscoll);
@@ -918,13 +928,6 @@ EXTERNCPP void DrawSmoke3DVol(void);
 EXTERNCPP void GetDrawingParms(int *drawing_transparent, int *drawing_blockage_transparent, int *drawing_vent_transparent);
 EXTERNCPP void UpdateSmoke3dMenuLabels(void);
 EXTERNCPP void InitSliceData(void);
-EXTERNCPP void InitCameraList(void);
-EXTERNCPP cameradata *InsertCamera(cameradata *cb,cameradata *source, char *name);
-EXTERNCPP void AddDefaultViewpoints(void);
-EXTERNCPP void InitCamera(cameradata *camera_data,char *name);
-EXTERNCPP void CopyCamera(cameradata *to, cameradata *from);
-EXTERNCPP void CopyViewCamera(cameradata *to, cameradata *from);
-EXTERNCPP void UpdateCamera(cameradata *ca);
 EXTERNCPP void GetInverse(float *m, float *mi);
 EXTERNCPP void MatMultMat(float *m1, float *m2, float *m3);
 EXTERNCPP void BlockageMenu(int value);
