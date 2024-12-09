@@ -1402,6 +1402,20 @@ char *GetGbndFilename(int file_type){
   return filename;
 }
 
+/* ------------------ GetSliceBoundsInfo ------------------------ */
+
+boundsdata *GetSliceBoundsInfo(char *shortlabel){
+  int i;
+
+  for(i = 0; i < nslicebounds; i++){
+    boundsdata *boundi;
+
+    boundi = slicebounds + i;
+    if(strcmp(boundi->shortlabel, shortlabel) == 0)return boundi;
+  }
+  return NULL;
+}
+
 /* ------------------ GetGlobalSliceBounds ------------------------ */
 
 void GetGlobalSliceBounds(int flag, int set_flag){
@@ -1693,20 +1707,6 @@ void GetGlobalHVACNodeBounds(int flag){
     }
   }
   bound_hvacnode_init = 0;
-}
-
-/* ------------------ GetSliceBoundsInfo ------------------------ */
-
-boundsdata *GetSliceBoundsInfo(char *shortlabel){
-  int i;
-
-  for(i = 0; i<nslicebounds; i++){
-    boundsdata *boundi;
-
-    boundi = slicebounds+i;
-    if(strcmp(boundi->shortlabel, shortlabel)==0)return boundi;
-  }
-  return NULL;
 }
 
 /* ------------------ AdjustPart5Chops ------------------------ */

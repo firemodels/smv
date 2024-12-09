@@ -505,7 +505,7 @@ EXTERNCPP void AdjustPart5Chops(void);
 EXTERNCPP void GetAllPartBounds(void);
 EXTERNCPP void GetGlobalHVACDuctBounds(int flag);
 EXTERNCPP void GetGlobalHVACNodeBounds(int flag);
-EXTERNCPP int GetGlobalPartBounds(int flag);
+EXTERNCPP int  GetGlobalPartBounds(int flag);
 EXTERNCPP void *GetGlobalPartBoundsReduced(void *arg);
 EXTERNCPP void GetGlobalPatchBounds(int flag, int set_flag);
 EXTERNCPP void *GetGlobalPatchBoundsFull(void *arg);
@@ -515,11 +515,9 @@ EXTERNCPP void GetGlobalSliceBounds(int flag, int set_flag);
 EXTERNCPP void *GetGlobalSliceBoundsFull(void *arg);
 EXTERNCPP void GetGlobalSliceBoundsReduced(void);
 EXTERNCPP void GetLoadedPlot3dBounds(int *compute_loaded, float *loaded_min, float *loaded_max);
-boundsdata *GetPatchBoundsInfo(char *shortlabel);
-boundsdata *GetSliceBoundsInfo(char *shortlabel);
 EXTERNCPP void MergeAllPartBounds(void);
 EXTERNCPP void PrintPartLoadSummary(int option, int type);
-EXTERNCPP int WriteFileBounds(char *file, float valmin, float valmax);
+EXTERNCPP int  WriteFileBounds(char *file, float valmin, float valmax);
 
 // gen plot routines
 
