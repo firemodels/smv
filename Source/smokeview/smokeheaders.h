@@ -413,6 +413,37 @@ EXTERNCPP float Zoom2Aperture(float zoom0);
 EXTERNCPP colortabledata *GetColorTable(char *label);
 EXTERNCPP int GetColorTableIndex(int *color);
 
+//*** colortimegbar.c headers
+
+EXTERNCPP int  AddColorbar(int icolorbar);
+EXTERNCPP void AdjustColorBar(colorbardata *cbi);
+EXTERNCPP void AdjustColorBarLab(colorbardata *cbi);
+EXTERNCPP void CheckLab(void);
+EXTERNCPP int  CountColorbars(void);
+EXTERNCPP void DrawColorbarPathCIELab(void);
+EXTERNCPP void DrawColorbarPathRGB(void);
+EXTERNCPP void DrawHorizontalColorbars(void);
+EXTERNCPP void DrawHorizontalColorbarRegLabels(void);
+EXTERNCPP void DrawVerticalColorbars(void);
+EXTERNCPP void DrawVerticalColorbarRegLabels(void);
+EXTERNCPP void DrawSelectColorbar(void);
+EXTERNCPP void DrawTimebar(float xleft, float xright, float ybot, float ytop);
+EXTERNCPP void FRgb2Lab(float *rgb_arg, float *lab);
+EXTERNCPP colorbardata *GetColorbar(char *label);
+EXTERNCPP void InitDefaultColorbars(int nini);
+EXTERNCPP int  IsColorbarSplit(colorbardata *cbi);
+EXTERNCPP void Lab2Rgb(unsigned char *rgb255, float *frgb, float *lab);
+EXTERNCPP void RemapColorbar(colorbardata *cbi);
+EXTERNCPP void RevertColorBar(colorbardata *cbi);
+EXTERNCPP void Rgb2Lab(unsigned char *rgb, float *lab);
+EXTERNCPP void SortColorBars(void);
+EXTERNCPP void UpdateColorbarDialogs(void);
+EXTERNCPP void UpdateColorbarOrig(void);
+EXTERNCPP void UpdateCurrentColorbar(colorbardata *cb);
+EXTERNCPP void UpdateShowColorbar(int *showcfast_arg, int *show_slice_colorbar_arg,
+  int *show_hvacduct_colorbar_arg, int *show_hvacnode_colorbar_arg);
+EXTERNCPP void UpdateTimeLabels(void);
+
 // gen plot routines
 
 EXTERNCPP void PrintFileLoadTimes(int file_count, FILE_SIZE load_size, float load_time);
@@ -438,7 +469,6 @@ EXTERNCPP hvacnodedata *GetHVACNode(hvacdata *hvaci, int node_id);
 EXTERNCPP void ReadHVACData(int flag);
 EXTERNCPP void UpdateHVACDuctColorLabels(int index);
 EXTERNCPP void UpdateNodeLabel(colorbardata *cbi);
-EXTERNCPP int IsColorbarSplit(colorbardata *cbi);
 
 EXTERNCPP void UpdateHVACNodeColorLabels(int index);
 EXTERNCPP void UpdateAllHVACColorLabels(void);
@@ -479,9 +509,6 @@ EXTERNCPP int GetFontHeight(void);
 
 EXTERNCPP void LoadAllMultiSliceMenu(void);
 EXTERNCPP void LoadAllMultiVSliceMenu(void);
-
-EXTERNCPP void UpdateShowColorbar(int *showcfast_arg, int *show_slice_colorbar_arg,
-  int *show_hvacduct_colorbar_arg, int *show_hvacnode_colorbar_arg);
 
 EXTERNCPP void DrawPlot2D(int option, float *x, float *z, float *z2, int n,
   float highlight_x, float highlight_y, float highlight_y2, int valid, int position,
@@ -659,7 +686,6 @@ EXTERNCPP void DrawNorth(void);
 EXTERNCPP void DrawGeomValues(slicedata *sd, patchdata *patchi, int geom_type);
 EXTERNCPP void DrawGeomData(int flag, slicedata *sd, patchdata *patchi, int geom_type);
 EXTERNCPP void DrawGeomVData(vslicedata *vd);
-EXTERNCPP void UpdateCurrentColorbar(colorbardata *cb);
 EXTERNCPP void UpdateObjectUsed(void);
 EXTERNCPP void UpdateColorTable(colortabledata *ctableinfo, int nctableinfo);
 EXTERNCPP void ReadIsoGeomWrapup(int flag);
@@ -791,26 +817,11 @@ EXTERNCPP float GetZCellValOffset(meshdata *meshi,float xval, float yval, int *l
 EXTERNCPP char *GetDeviceLabel(char *buffer);
 EXTERNCPP void DrawDevices(int mode);
 
-EXTERNCPP void CheckLab(void);
-
-EXTERNCPP void AdjustColorBar(colorbardata *cbi);
-EXTERNCPP void AdjustColorBarLab(colorbardata *cbi);
-EXTERNCPP void RevertColorBar(colorbardata *cbi);
-EXTERNCPP void Rgb2Lab(unsigned char *rgb, float *lab);
 EXTERNCPP void Rgb2Labs(unsigned char *rgbs255, float *labs);
-EXTERNCPP void UpdateColorbarOrig(void);
-EXTERNCPP void Lab2Rgb(unsigned char *rgb255, float *frgb, float *lab);
-EXTERNCPP void FRgb2Lab(float *rgb_arg, float *lab);
 
 EXTERNCPP char *GetChid(char *file, char *buffer);
-EXTERNCPP int AddColorbar(int icolorbar);
 EXTERNCPP void ReloadMenu(int value);
 EXTERNCPP void ColorbarMenu(int val);
-EXTERNCPP void InitDefaultColorbars(int nini);
-EXTERNCPP void DrawColorbarPathRGB(void);
-EXTERNCPP void RemapColorbar(colorbardata *cbi);
-EXTERNCPP void SortColorBars(void);
-EXTERNCPP colorbardata *GetColorbar(char *label);
 EXTERNCPP void InitOpenGL(int option);
 EXTERNCPP void TextureShowMenu(int value);
 
@@ -972,14 +983,12 @@ EXTERNCPP void Hsl2Rgb(float *hslvals, unsigned char *rgbvals);
 EXTERNCPP void InitColorbarsDir(void);
 EXTERNCPP void InitTextureDir(void);
 EXTERNCPP void GetRGB(unsigned int val, unsigned char *rr, unsigned char *gg, unsigned char *bb);
-EXTERNCPP void UpdateColorbarDialogs(void);
 
 EXTERNCPP void UpdateViewTour(void);
 EXTERNCPP void SetupTour(void);
 EXTERNCPP void CreateTourPaths(void);
 EXTERNCPP void DrawTours(void);
 EXTERNCPP void DrawSelectTours(void);
-EXTERNCPP void DrawSelectColorbar(void);
 EXTERNCPP void UpdateTourMenuLabels(void);
 EXTERNCPP void DefaultTour(void);
 EXTERNCPP void NewSelect(keyframe *newselect);
@@ -1036,12 +1045,6 @@ EXTERNCPP void DialogMenu(int value);
 EXTERNCPP void ApertureMenu(int value);
 EXTERNCPP void ZoomMenu(int value);
 EXTERNCPP int  NewMultiSlice(slicedata *sdold,slicedata *sd);
-EXTERNCPP void DrawTimebar(float xleft, float xright, float ybot, float ytop);
-EXTERNCPP int CountColorbars(void);
-EXTERNCPP void DrawHorizontalColorbars(void);
-EXTERNCPP void DrawVerticalColorbars(void);
-EXTERNCPP void DrawHorizontalColorbarRegLabels(void);
-EXTERNCPP void DrawVerticalColorbarRegLabels(void);
 EXTERNCPP void DrawGrid(const meshdata *gb);
 EXTERNCPP void DrawZoneRoomGeom(void);
 EXTERNCPP void DrawZoneFireData(void);
@@ -1051,7 +1054,6 @@ EXTERNCPP void DrawZoneWallData(void);
 EXTERNCPP void DrawZoneFirePlume(float radius, float height, float maxheight);
 EXTERNCPP void DrawZoneVentDataProfile(void);
 EXTERNCPP void SetViewPoint(int option);
-EXTERNCPP void UpdateTimeLabels(void);
 EXTERNCPP void RenderFrame(int view_mode);
 EXTERNCPP void UpdateTerrain(int allocate_memory);
 EXTERNCPP void RenderMenu(int value);
