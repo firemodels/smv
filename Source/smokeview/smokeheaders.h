@@ -13,7 +13,6 @@
 EXTERNCPP void *SetupFF(void *arg);
 EXTERNCPP void *MtLoadAllPartFiles(void *arg);
 EXTERNCPP void *PlayMovie(void *arg);
-EXTERNCPP void *UpdateTrianglesAll(void *arg);
 EXTERNCPP void *ReadVolsmokeAllFramesAllMeshes2(void *arg);
 EXTERNCPP void *MtMergeSmoke3D(void *arg);
 EXTERNCPP void UpdateGluiMergeSmoke(void);
@@ -613,7 +612,6 @@ EXTERNCPP void UpdateGeomAreas(void);
 EXTERNCPP void UpdateGeomNormals();
 EXTERNCPP void UpdateTriangles(int time_flag, int update);
 
-
 //*** IOhvac.c headers
 
 EXTERNCPP void DrawHVACS(void);
@@ -621,6 +619,30 @@ EXTERNCPP void ReadHVACData(int flag);
 EXTERNCPP void UpdateAllHVACColorLabels(void);
 EXTERNCPP void UpdateHVACDuctColorLabels(int index);
 EXTERNCPP void UpdateHVACNodeColorLabels(int index);
+
+//*** IOiso.c headers
+
+EXTERNCPP void DrawIso(int tranflag);
+EXTERNCPP void DrawStaticIso(const isosurface *asurface,int surfacetype,
+                             int smoothnorms, int trans_flag, int data_type,
+                             float line_width);
+EXTERNCPP void GetIsoLevels(const char *isofile, int dataflag, float **levelsptr, float ***colorlevelsptr, int *nisolevels);
+EXTERNCPP meshdata *GetLoadedIsoMesh(void);
+EXTERNCPP void OutputAllIsoBounds(void);
+EXTERNCPP void UnloadIso(meshdata *meshi);
+EXTERNCPP FILE_SIZE ReadIso(const char *file, int ifile, int flag, int *geom_frame_index, int *errorcode);
+EXTERNCPP void ReadIsoGeomWrapup(int flag);
+EXTERNCPP void ReadIsoOrig(const char *file, int ifile, int flag, int *errorcode);
+EXTERNCPP void SetIsoLabels(float smin, float smax,
+                    isodata *sd, int *errorcode);
+EXTERNCPP void SortIsoTriangles(float *mm);
+EXTERNCPP void UpdateIsoColors(void);
+EXTERNCPP void UpdateIsoMenuLabels(void);
+EXTERNCPP void UpdateIsoTriangles(int flag);
+EXTERNCPP void UpdateIsoType(void);
+EXTERNCPP void UpdateIsoTypes(void);
+EXTERNCPP void UpdateIsoShowLevels(void);
+EXTERNCPP void *UpdateTrianglesAll(void *arg);
 
 // gen plot routines
 
@@ -819,7 +841,6 @@ EXTERNCPP void GetGeomZBounds(float *zmin, float *zmax);
 EXTERNCPP void DrawNorth(void);
 EXTERNCPP void UpdateObjectUsed(void);
 EXTERNCPP void UpdateColorTable(colortabledata *ctableinfo, int nctableinfo);
-EXTERNCPP void ReadIsoGeomWrapup(int flag);
 EXTERNCPP char *GetMovieFilePath(char *moviefile_path);
 EXTERNCPP int GetNumActiveDevices(void);
 EXTERNCPP void EnableDisableMakeMovie(int onoff);
@@ -875,10 +896,7 @@ EXTERNCPP void LabelResort(labeldata *label);
 EXTERNCPP void KeyboardCB(unsigned char key, int x, int y);
 EXTERNCPP void MenuStatusCB(int status, int x, int y);
 
-EXTERNCPP void ReadIsoOrig(const char *file, int ifile, int flag, int *errorcode);
-EXTERNCPP void UnloadIso(meshdata *meshi);
 EXTERNCPP void UpdatePlotxyzAll(void);
-EXTERNCPP void UpdateIsoColors(void);
 EXTERNCPP devicedata *GetDeviceFromLabel(char *label, int index);
 EXTERNCPP devicedata *GetCSVDeviceFromLabel(char *label, int index);
 EXTERNCPP void SetupGlut(int argc, char **argv);
@@ -886,8 +904,6 @@ EXTERNCPP int GetNDevices(char *file);
 EXTERNCPP FILE_SIZE ReadDeviceData(char *file, int filetype, int flag);
 EXTERNCPP void SetupZoneDevs(void);
 
-EXTERNCPP void SortIsoTriangles(float *mm);
-EXTERNCPP void UpdateIsoTriangles(int flag);
 EXTERNCPP void UpdateSliceMenuShow(sliceparmdata *sp);
 EXTERNCPP void UpdateDefer(void);
 EXTERNCPP void SetTimeVal(float timeval);
@@ -1058,20 +1074,14 @@ EXTERNCPP float GetUnitVal(const char *unitlabel, float oldval, int ndecimals);
 
 EXTERNCPP void UpdateUnitDefs(void);
 
-EXTERNCPP void OutputAllIsoBounds(void);
 EXTERNCPP void SmoothIsoSurface(isosurface *surfacedata);
 EXTERNCPP void UpdateSliceFilenum(void);
-EXTERNCPP void DrawStaticIso(const isosurface *asurface,int surfacetype,
-                             int smoothnorms, int trans_flag, int data_type,
-                             float line_width);
 EXTERNCPP int  GetPlot3dTime(float *time);
 EXTERNCPP void Array2String(float *array, int narray, char *string);
-EXTERNCPP void GetIsoLevels(const char *isofile, int dataflag, float **levelsptr, float ***colorlevelsptr, int *nisolevels);
 
 EXTERNCPP void *UpdateVSlices(void *arg);
 EXTERNCPP void GetGSliceParams(void);
 EXTERNCPP void UpdatePartMenuLabels(void);
-EXTERNCPP void UpdateIsoMenuLabels(void);
 EXTERNCPP void UpdateSliceMenuLabels(sliceparmdata *sp);
 EXTERNCPP void UpdateVsliceMenuLabels(sliceparmdata *sp);
 EXTERNCPP void UpdatePlot3dMenuLabels(void);
@@ -1108,7 +1118,6 @@ EXTERNCPP void SetupScreeninfo(void);
 EXTERNCPP int  MergeRenderScreenBuffers360(void);
 EXTERNCPP GLubyte *GetScreenBuffer(void);
 EXTERNCPP void ShowScene(int mode, int view_mode, int quad, GLint s_left, GLint s_down, screendata *screen);
-EXTERNCPP void DrawIso(int tranflag);
 EXTERNCPP void DrawPlot3dTexture(meshdata *gb);
 EXTERNCPP void UpdateShowStep(int val, int slicedir);
 EXTERNCPP void UpdatePlotSlice(int slicedir);
@@ -1119,15 +1128,12 @@ EXTERNCPP int  GetSliceBoundsIndex(const slicedata *sd);
 EXTERNCPP int  GetSliceBoundsIndexFromLabel(char *label);
 EXTERNCPP void UpdateSliceBoundIndexes(void);
 EXTERNCPP void UpdateSliceBoundLabels(void);
-EXTERNCPP void UpdateIsoType(void);
-EXTERNCPP void UpdateIsoTypes(void);
 EXTERNCPP void UpdateBoundaryType(void);
 
 EXTERNCPP void SetViewZMAXPersp(void);
 EXTERNCPP void UpdateTerrainOptions(void);
 EXTERNCPP void LoadPlot3dMenu(int value);
 EXTERNCPP void InitPlot3dTimeList(void);
-EXTERNCPP void UpdateIsoShowLevels(void);
 EXTERNCPP void DialogMenu(int value);
 EXTERNCPP void ApertureMenu(int value);
 EXTERNCPP void ZoomMenu(int value);
@@ -1169,7 +1175,6 @@ EXTERNCPP void GetSmoke3DTimeSteps(int fortran_skip, char *smokefile, int versio
 EXTERNCPP void ReadSmoke3DAllMeshes(int iframe, int smoketype, int *errorcode);
 EXTERNCPP FILE_SIZE ReadSmoke3D(int iframe, int ifile, int flag, int first_time, int *errorcode);
 EXTERNCPP FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_value, int flag, int set_slicecolor, int *errorcode);
-EXTERNCPP FILE_SIZE ReadIso(const char *file, int ifile, int flag, int *geom_frame_index, int *errorcode);
 
 EXTERNCPP void GetGlobalDeviceBounds(int type);
 EXTERNCPP float GetDeviceVal(float time_local, devicedata *devicei, int *valid);
@@ -1202,9 +1207,6 @@ EXTERNCPP int LoadAllPlot3D(float time);
 EXTERNCPP void UpdatePlot3DColors(plot3ddata *plot3di, int flag, int *errorcode);
 EXTERNCPP void SetSliceColors(float smin, float smax, slicedata *sd, int flag, int *errorcode);
 EXTERNCPP void MakeTimesMap(float *times, unsigned char **times_map_ptr, int n);
-EXTERNCPP meshdata *GetLoadedIsoMesh(void);
-EXTERNCPP void SetIsoLabels(float smin, float smax,
-                    isodata *sd, int *errorcode);
 EXTERNCPP int  SmokeviewImage2File(char *directory, char *GIFfilename, int rendertype, int woffset, int width, int hoffset, int height);
 #ifdef pp_LUA
 EXTERNCPP int SVimage2var(int rendertype, int woffset, int width, int hoffset, int height, gdImagePtr *RENDERimage);
