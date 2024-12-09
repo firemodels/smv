@@ -258,8 +258,10 @@ EXTERNCPP void GLUIUpdateDeviceTypes(int val);
 EXTERNCPP void GLUIUpdateDeviceShow(void);
 EXTERNCPP void GLUIUpdateWindRoseDevices(int option);
 EXTERNCPP void GLUIUpdateShowbeamAsLine(void);
-SVEXTERN void GLUIUpdatePlot2DSize(void);
+EXTERNCPP void GLUIUpdatePlot2DSize(void);
 EXTERNCPP void GLUIUpdateDeviceAdd(void);
+EXTERNCPP void GenPlotCB(int var);
+
 
 //*** glui_smoke.cpp headers
 
@@ -671,7 +673,6 @@ EXTERNCPP void SetupZoneDevs(void);
 EXTERNCPP void UpdateColorDevices(void);
 EXTERNCPP void UpdateObjectUsed(void);
 
-
 //*** IOpart.c headers
 
 EXTERNCPP void ClosePartFiles(void);
@@ -694,25 +695,32 @@ EXTERNCPP void *SortAllPartTags(void *arg);
 EXTERNCPP void UpdatePartColors(partdata *parti, int flag);
 EXTERNCPP void UpdatePartMenuLabels(void);
 
+//*** IOplot2d.c headers
+
+EXTERNCPP void DrawDevicePlots(void);
+EXTERNCPP void DrawGenPlots(void);
+EXTERNCPP void DrawPlot2D(int option, float *x, float *z, float *z2, int n,
+  float highlight_x, float highlight_y, float highlight_y2, int valid, int position,
+  float global_valmin, float global_valmax, char *quantity, char *quantity2, char *unit,
+  float left, float right, float down, float top);
+EXTERNCPP void DrawTreeDevicePlots(void);
+
+EXTERNCPP csvdata *GetCsvCurve(int i, csvfiledata **csvf_ptr);
+EXTERNCPP csvdata *GetCsvData(int file_index, int col_index, csvfiledata **csvf_ptr);
+EXTERNCPP char *GetPlotShortLabel(plot2ddata *plot2di, int curv_index);
+EXTERNCPP char *GetPlotShortLabel2(plot2ddata *plot2di, curvedata *curv);
+EXTERNCPP char *GetPlotUnit(plot2ddata * plot2di, int curv_index);
+EXTERNCPP char *GetPlotUnit2(plot2ddata *plot2di, curvedata *curve);
+EXTERNCPP void GetPlot2DBounds(plot2ddata*plot2di, float *valmin, float *valmax);
+EXTERNCPP int HavePlot2D(float **times, int *ntimes);
+EXTERNCPP void InitPlot2D(plot2ddata *plot2di, int plot_index);
+EXTERNCPP void SetupPlot2DUnitData(void);
+EXTERNCPP void TimeAveragePlot2DData(float *times, float *vals, float *vals_avg, int nvals, float time_interval);
+
 // gen plot routines
 
 EXTERNCPP void PrintFileLoadTimes(int file_count, FILE_SIZE load_size, float load_time);
-
-EXTERNCPP int HavePlot2D(float **times, int *ntimes);
-EXTERNCPP char *GetPlotUnit2(plot2ddata *plot2di, curvedata *curve);
-EXTERNCPP char *GetPlotShortLabel2(plot2ddata *plot2di, curvedata *curv);
-EXTERNCPP void GetPlot2DBounds(plot2ddata*plot2di, float *valmin, float *valmax);
-EXTERNCPP char *GetPlotUnit(plot2ddata * plot2di, int curv_index);
-EXTERNCPP void GenPlotCB(int var);
 EXTERNCPP void UpdateCurveControls(char *unit);
-EXTERNCPP void InitPlot2D(plot2ddata *plot2di, int plot_index);
-EXTERNCPP void DrawGenPlots(void);
-EXTERNCPP char *GetPlotShortLabel(plot2ddata *plot2di, int curv_index);
-EXTERNCPP csvdata *GetCsvData(int file_index, int col_index, csvfiledata **csvf_ptr);
-EXTERNCPP csvdata *GetCsvCurve(int i, csvfiledata **csvf_ptr);
-EXTERNCPP void SetupPlot2DUnitData(void);
-
-EXTERNCPP void TimeAveragePlot2DData(float *times, float *vals, float *vals_avg, int nvals, float time_interval);
 
 #ifdef pp_REFRESH
 EXTERNCPP void PeriodicRefresh(int var);
@@ -738,18 +746,11 @@ EXTERNCPP int GetFontHeight(void);
 EXTERNCPP void LoadAllMultiSliceMenu(void);
 EXTERNCPP void LoadAllMultiVSliceMenu(void);
 
-EXTERNCPP void DrawPlot2D(int option, float *x, float *z, float *z2, int n,
-  float highlight_x, float highlight_y, float highlight_y2, int valid, int position,
-  float global_valmin, float global_valmax, char *quantity, char *quantity2, char *unit,
-  float left, float right, float down, float top);
-
 EXTERNCPP void MergePlot3DHistograms(void);
 EXTERNCPP void GetPlot3DHists(plot3ddata *p);
 
 
 EXTERNCPP int GetStringWidth(char *string);
-EXTERNCPP void DrawDevicePlots(void);
-EXTERNCPP void DrawTreeDevicePlots(void);
 EXTERNCPP int GetPlotState(int choice);
 
 #ifndef TERRAIN_FIRE_LINE_UPDATE
