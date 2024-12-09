@@ -717,10 +717,9 @@ EXTERNCPP void InitPlot2D(plot2ddata *plot2di, int plot_index);
 EXTERNCPP void SetupPlot2DUnitData(void);
 EXTERNCPP void TimeAveragePlot2DData(float *times, float *vals, float *vals_avg, int nvals, float time_interval);
 
-// gen plot routines
+//*** menu.c headers
 
 EXTERNCPP void PrintFileLoadTimes(int file_count, FILE_SIZE load_size, float load_time);
-EXTERNCPP void UpdateCurveControls(char *unit);
 
 #ifdef pp_REFRESH
 EXTERNCPP void PeriodicRefresh(int var);

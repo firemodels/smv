@@ -432,6 +432,19 @@ int InCSVPlot(plot2ddata *plot2di, char *c_type, int index){
   return 0;
 }
 
+/* ------------------ UpdateCurveControls ------------------------ */
+
+void UpdateCurveControls(char *unit){
+  SPINNER_genplot_red->set_int_val(glui_curve.color[0]);
+  SPINNER_genplot_green->set_int_val(glui_curve.color[1]);
+  SPINNER_genplot_blue->set_int_val(glui_curve.color[2]);
+  SPINNER_genplot_linewidth->set_float_val(glui_curve.linewidth);
+  SPINNER_curve_factor->set_float_val(glui_curve.curve_factor);
+  CHECKBOX_curve_apply_factor->set_int_val(glui_curve.apply_curve_factor);
+  EDIT_scaled_label->set_text(glui_curve.scaled_label);
+  EDIT_scaled_unit->set_text(glui_curve.scaled_unit);
+}
+
 /* ------------------ AddCSVCurve ------------------------ */
 
 void AddCSVCurve(plot2ddata *plot2di, int index, int option){
@@ -658,20 +671,6 @@ void UpdatePlotList(void){
     LIST_plots->delete_item(i);
     LIST_plots->add_item(i, plot2di->plot_label);
   }
-}
-
-/* ------------------ UpdateCurveControls ------------------------ */
-
-
-void UpdateCurveControls(char *unit){
-  SPINNER_genplot_red->set_int_val(glui_curve.color[0]);
-  SPINNER_genplot_green->set_int_val(glui_curve.color[1]);
-  SPINNER_genplot_blue->set_int_val(glui_curve.color[2]);
-  SPINNER_genplot_linewidth->set_float_val(glui_curve.linewidth);
-  SPINNER_curve_factor->set_float_val(glui_curve.curve_factor);
-  CHECKBOX_curve_apply_factor->set_int_val(glui_curve.apply_curve_factor);
-  EDIT_scaled_label->set_text(glui_curve.scaled_label);
-  EDIT_scaled_unit->set_text(glui_curve.scaled_unit);
 }
 
 /* ------------------ EnableDisablePlot2D ------------------------ */
