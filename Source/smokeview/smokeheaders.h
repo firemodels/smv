@@ -144,6 +144,7 @@ EXTERNCPP void GLUISetColorbarListEdit(int val);
 EXTERNCPP void GLUIUpdateColorbarListEdit(int flag,int del);
 EXTERNCPP void GLUIUpdateColorbarEdit(void);
 EXTERNCPP void GLUIUpdateColorbarType(void);
+EXTERNCPP void GLUIUpdateNodeLabel(colorbardata *cbi);
 
 //*** glui_display.cpp headers
 
@@ -612,6 +613,15 @@ EXTERNCPP void UpdateGeomAreas(void);
 EXTERNCPP void UpdateGeomNormals();
 EXTERNCPP void UpdateTriangles(int time_flag, int update);
 
+
+//*** IOhvac.c headers
+
+EXTERNCPP void DrawHVACS(void);
+EXTERNCPP void ReadHVACData(int flag);
+EXTERNCPP void UpdateAllHVACColorLabels(void);
+EXTERNCPP void UpdateHVACDuctColorLabels(int index);
+EXTERNCPP void UpdateHVACNodeColorLabels(int index);
+
 // gen plot routines
 
 EXTERNCPP void PrintFileLoadTimes(int file_count, FILE_SIZE load_size, float load_time);
@@ -631,15 +641,6 @@ EXTERNCPP csvdata *GetCsvCurve(int i, csvfiledata **csvf_ptr);
 EXTERNCPP void SetupPlot2DUnitData(void);
 
 EXTERNCPP void TimeAveragePlot2DData(float *times, float *vals, float *vals_avg, int nvals, float time_interval);
-
-EXTERNCPP void DrawHVACS(void);
-EXTERNCPP hvacnodedata *GetHVACNode(hvacdata *hvaci, int node_id);
-EXTERNCPP void ReadHVACData(int flag);
-EXTERNCPP void UpdateHVACDuctColorLabels(int index);
-EXTERNCPP void UpdateNodeLabel(colorbardata *cbi);
-
-EXTERNCPP void UpdateHVACNodeColorLabels(int index);
-EXTERNCPP void UpdateAllHVACColorLabels(void);
 
 #ifdef pp_REFRESH
 EXTERNCPP void PeriodicRefresh(int var);
