@@ -63,7 +63,7 @@ int GetHrrCsvCol(char *label){
   return -1;
 }
 
-/* ----------------------- GetTokens ----------------------------- */
+/* ----------------------- GetTokensBlank ----------------------------- */
 
 int GetTokensBlank(char *buffer, char **tokens){
 
@@ -1190,6 +1190,8 @@ ventdata *GetCloseVent(meshdata *ventmesh, int ivent){
   }
   return close_vent;
 }
+
+/* ------------------ UpdateSMVDynamic ------------------------ */
 
 /// @brief Re-read an *.smv file to read any updates.
 /// @param file The path to the *.smv file.
@@ -4404,7 +4406,7 @@ int SurfIdCompare(const void *arg1, const void *arg2){
   return(strcmp(surfi->surfacelabel, surfj->surfacelabel));
 }
 
-/* ------------------ updated_sorted_surfidlist ------------------------ */
+/* ------------------ UpdateSortedSurfIdList ------------------------ */
 
 void UpdateSortedSurfIdList(void){
   int i;
@@ -6429,7 +6431,7 @@ void GenerateViewpointMenu(void){
   fclose(stream);
 }
 
-/* ------------------ UpdateVents ------------------------ */
+/* ------------------ UpdateEvents ------------------------ */
 
 void UpdateEvents(void){
   FILE *stream = NULL;
@@ -6952,7 +6954,6 @@ void SetSliceParmInfo(sliceparmdata *sp){
   sp->nmultivsliceinfo = slicecoll.nmultivsliceinfo;
 }
 
-/* ------------------ ReadSMV ------------------------ */
 static float processing_time;
 static float getfilelist_time;
 static float pass0_time;
@@ -6961,6 +6962,9 @@ static float pass2_time;
 static float pass3_time;
 static float pass4_time;
 static float pass5_time;
+
+
+/* ------------------ ReadSMV_Init ------------------------ */
 
 /// @brief Initialise any global variables necessary to being parsing an SMV
 /// file. This should be called before @ref ReadSMV_Parse.
@@ -12087,7 +12091,8 @@ int ReadSMV_Configure(){
   return 0;
 }
 
-/* ------------------ ReadSMV_Init ------------------------ */
+/* ------------------ ReadSMV ------------------------ */
+
 /// @brief Parse an SMV file.
 /// @param stream the file stream to parse.
 /// @return zero on sucess, non-zero on error
@@ -12097,6 +12102,8 @@ int ReadSMV(bufferstreamdata *stream){
   ReadSMV_Configure();
   return 0;
 }
+
+/* ------------------ UpdateUseTextures ------------------------ */
 
 void UpdateUseTextures(void){
   int i;
