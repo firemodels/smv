@@ -408,6 +408,11 @@ EXTERNCPP void  UpdateCamera(cameradata *ca);
 EXTERNCPP void  UpdateCameraYpos(cameradata *camera_data, int option);
 EXTERNCPP float Zoom2Aperture(float zoom0);
 
+//*** colortable.c headers
+
+EXTERNCPP colortabledata *GetColorTable(char *label);
+EXTERNCPP int GetColorTableIndex(int *color);
+
 // gen plot routines
 
 EXTERNCPP void PrintFileLoadTimes(int file_count, FILE_SIZE load_size, float load_time);
@@ -657,8 +662,6 @@ EXTERNCPP void DrawGeomVData(vslicedata *vd);
 EXTERNCPP void UpdateCurrentColorbar(colorbardata *cb);
 EXTERNCPP void UpdateObjectUsed(void);
 EXTERNCPP void UpdateColorTable(colortabledata *ctableinfo, int nctableinfo);
-EXTERNCPP colortabledata *GetColorTable(char *label);
-EXTERNCPP int GetColorTableIndex(int *color);
 EXTERNCPP void ReadIsoGeomWrapup(int flag);
 EXTERNCPP char *GetMovieFilePath(char *moviefile_path);
 EXTERNCPP int GetNumActiveDevices(void);
