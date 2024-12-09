@@ -644,6 +644,34 @@ EXTERNCPP void UpdateIsoTypes(void);
 EXTERNCPP void UpdateIsoShowLevels(void);
 EXTERNCPP void *UpdateTrianglesAll(void *arg);
 
+//*** IOobject.c headers
+
+EXTERNCPP void DeviceData2WindRose(int nr, int ntheta);
+EXTERNCPP void DrawDevices(int mode);
+EXTERNCPP void DrawDevicesVal(void);
+EXTERNCPP void DrawCircle(float diameter, unsigned char *rgbcolor, circdata *circinfo);
+EXTERNCPP void DrawFilledCircle(float diameter, unsigned char *rgbcolor, circdata *circinfo);
+EXTERNCPP void DrawFilledRectangle(float width, float height, unsigned char *rgbcolor);
+EXTERNCPP void DrawRectangle(float width, float height, unsigned char *rgbcolor);
+EXTERNCPP void DrawWindRosesDevices(void);
+EXTERNCPP devicedata *GetCSVDeviceFromLabel(char *label, int index);
+EXTERNCPP devicedata *GetDeviceFromLabel(char *label, int index);
+EXTERNCPP int GetDeviceIndexFromLabel(char *label);
+EXTERNCPP char *GetDeviceLabel(char *buffer);
+EXTERNCPP float GetDeviceVal(float time_local, devicedata *devicei, int *valid);
+EXTERNCPP void GetGlobalDeviceBounds(int type);
+EXTERNCPP int GetNDevices(char *file);
+EXTERNCPP void GetSmokeSensors(void);
+EXTERNCPP int HaveSmokeSensor(void);
+EXTERNCPP void InitDevicePlane(devicedata *devicei);
+EXTERNCPP void InitializeDeviceCsvData(int flag);
+EXTERNCPP void InitSphere(int nlat, int nlong);
+EXTERNCPP FILE_SIZE ReadDeviceData(char *file, int filetype, int flag);
+EXTERNCPP void RGBTest(void);
+EXTERNCPP void SetupZoneDevs(void);
+EXTERNCPP void UpdateColorDevices(void);
+EXTERNCPP void UpdateObjectUsed(void);
+
 // gen plot routines
 
 EXTERNCPP void PrintFileLoadTimes(int file_count, FILE_SIZE load_size, float load_time);
@@ -776,7 +804,6 @@ EXTERNCPP void CreatePartSizeFile(partdata *parti);
 EXTERNCPP void InsertRollout(GLUI_Rollout *rollout, GLUI *dialog);
 #endif
 
-EXTERNCPP void InitializeDeviceCsvData(int flag);
 EXTERNCPP void UpdateCSVFileTypes(void);
 EXTERNCPP int HaveFireLoaded(void);
 EXTERNCPP int HaveSootLoaded(void);
@@ -829,7 +856,6 @@ EXTERNCPP void InitAlphas(unsigned char *alphanew,
                           float base_extinct, float new_extinct,
                           float base_dx, float new_dx);
 EXTERNCPP void ShowDevicesMenu(int value);
-EXTERNCPP int GetDeviceIndexFromLabel(char *label);
 EXTERNCPP void UpdateBoundarySliceDups(void);
 EXTERNCPP void UnLoadVolsmoke3DMenu(int value);
 EXTERNCPP void UpdateMenu(void);
@@ -839,7 +865,6 @@ EXTERNCPP void DrawScreenInfo(void);
 #endif
 EXTERNCPP void GetGeomZBounds(float *zmin, float *zmax);
 EXTERNCPP void DrawNorth(void);
-EXTERNCPP void UpdateObjectUsed(void);
 EXTERNCPP void UpdateColorTable(colortabledata *ctableinfo, int nctableinfo);
 EXTERNCPP char *GetMovieFilePath(char *moviefile_path);
 EXTERNCPP int GetNumActiveDevices(void);
@@ -852,7 +877,6 @@ EXTERNCPP void UpdateRenderType(int type);
 EXTERNCPP void UpdateMovieType(int type);
 EXTERNCPP void UpdateDisplay(void);
 EXTERNCPP void UpdateShowScene(void);
-EXTERNCPP void UpdateColorDevices(void);
 EXTERNCPP void InitVolrenderScript(char *prefix, char *tour_label, int startframe, int skipframe);
 
 EXTERNCPP void UpdateGluiBoundaryUnits(void);
@@ -865,8 +889,6 @@ EXTERNCPP void HVACNodeValueMenu(int value);
 EXTERNCPP void GetBoundaryParams(void);
 EXTERNCPP void GetSliceParams2(void);
 
-EXTERNCPP void DrawWindRosesDevices(void);
-EXTERNCPP void DeviceData2WindRose(int nr, int ntheta);
 EXTERNCPP void AddDeleteKeyframe(int flag);
 EXTERNCPP void Slerp(float *p0, float *p1, float t, float *pout);
 EXTERNCPP void VentMenu(int value);
@@ -881,10 +903,6 @@ EXTERNCPP void DrawFilledTetra(float *v1, float *v2, float *v3, float *v4, unsig
 EXTERNCPP void DrawFilled2Tetra(float *v1, float *v2, float *v3, float *v4,
    unsigned char *rgb0color,unsigned char *rgb1color,unsigned char *rgb2color,unsigned char *rgb3color,int *vis_state);
 EXTERNCPP void DrawTetraOutline(float *v1, float *v2, float *v3, float *v4, unsigned char *rgbcolor);
-EXTERNCPP void DrawFilledCircle(float diameter, unsigned char *rgbcolor, circdata *circinfo);
-EXTERNCPP void DrawCircle(float diameter, unsigned char *rgbcolor, circdata *circinfo);
-EXTERNCPP void DrawFilledRectangle(float width, float height, unsigned char *rgbcolor);
-EXTERNCPP void DrawRectangle(float width, float height, unsigned char *rgbcolor);
 EXTERNCPP void DefineVolsmokeTextures(void);
 EXTERNCPP void GetViewportInfo(void);
 
@@ -897,12 +915,7 @@ EXTERNCPP void KeyboardCB(unsigned char key, int x, int y);
 EXTERNCPP void MenuStatusCB(int status, int x, int y);
 
 EXTERNCPP void UpdatePlotxyzAll(void);
-EXTERNCPP devicedata *GetDeviceFromLabel(char *label, int index);
-EXTERNCPP devicedata *GetCSVDeviceFromLabel(char *label, int index);
 EXTERNCPP void SetupGlut(int argc, char **argv);
-EXTERNCPP int GetNDevices(char *file);
-EXTERNCPP FILE_SIZE ReadDeviceData(char *file, int filetype, int flag);
-EXTERNCPP void SetupZoneDevs(void);
 
 EXTERNCPP void UpdateSliceMenuShow(sliceparmdata *sp);
 EXTERNCPP void UpdateDefer(void);
@@ -912,9 +925,6 @@ EXTERNCPP void LoadSmokeFrame(int meshnum, int framenum);
 EXTERNCPP void LoadTimeFrame(int meshnum, float timeval);
 EXTERNCPP void ScriptLoadVolSmokeFrame2(void);
 EXTERNCPP void ScriptLoadIsoFrame2(scriptdata *scripti);
-EXTERNCPP void InitDevicePlane(devicedata *devicei);
-EXTERNCPP void DrawDevicesVal(void);
-EXTERNCPP void GetSmokeSensors(void);
 EXTERNCPP void StartScript(void);
 EXTERNCPP int RunScriptCommand(scriptdata *script_command);
 EXTERNCPP int  CompileScript(char *scriptfile);
@@ -940,16 +950,12 @@ EXTERNCPP void LoadZoneSmokeShaders(void);
 EXTERNCPP void LoadVolsmokeShaders(void);
 EXTERNCPP void UnLoadShaders(void);
 #endif
-EXTERNCPP void InitSphere(int nlat, int nlong);
 #ifdef pp_SKY
 EXTERNCPP float *InitSphere2(int nlat, int nlong);
 EXTERNCPP void DrawHalfSphere(void);
 #endif
 EXTERNCPP int  HaveTerrainSlice(void);
-EXTERNCPP int HaveSmokeSensor(void);
 EXTERNCPP float GetZCellValOffset(meshdata *meshi,float xval, float yval, int *loc);
-EXTERNCPP char *GetDeviceLabel(char *buffer);
-EXTERNCPP void DrawDevices(int mode);
 
 EXTERNCPP void Rgb2Labs(unsigned char *rgbs255, float *labs);
 
@@ -1030,7 +1036,6 @@ EXTERNCPP void GetNewPos(float *oldpos, float dx, float dy, float dz, float spee
 EXTERNCPP void FreeSkybox(void);
 EXTERNCPP void DrawSkybox(void);
 EXTERNCPP void LoadSkyTexture(char *filebase, texturedata *texti);
-EXTERNCPP void RGBTest(void);
 EXTERNCPP void SetTour(tourdata *thetour);
 EXTERNCPP void MergeSmoke3D(smoke3ddata *smoke3dset);
 EXTERNCPP void GetScreenMapping(float *xyz0, float *screen_perm);
@@ -1176,8 +1181,6 @@ EXTERNCPP void ReadSmoke3DAllMeshes(int iframe, int smoketype, int *errorcode);
 EXTERNCPP FILE_SIZE ReadSmoke3D(int iframe, int ifile, int flag, int first_time, int *errorcode);
 EXTERNCPP FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_value, int flag, int set_slicecolor, int *errorcode);
 
-EXTERNCPP void GetGlobalDeviceBounds(int type);
-EXTERNCPP float GetDeviceVal(float time_local, devicedata *devicei, int *valid);
 EXTERNCPP void InitMenus(void);
 
 EXTERNCPP int  STRCMP(const char *s1, const char *s2);
