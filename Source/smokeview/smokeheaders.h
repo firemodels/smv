@@ -16,7 +16,6 @@ EXTERNCPP void *PlayMovie(void *arg);
 EXTERNCPP void *ReadVolsmokeAllFramesAllMeshes2(void *arg);
 EXTERNCPP void *MtMergeSmoke3D(void *arg);
 EXTERNCPP void UpdateGluiMergeSmoke(void);
-EXTERNCPP void *SortAllPartTags(void *arg);
 
 //*** glui_bounds.cpp headers
 
@@ -672,6 +671,29 @@ EXTERNCPP void SetupZoneDevs(void);
 EXTERNCPP void UpdateColorDevices(void);
 EXTERNCPP void UpdateObjectUsed(void);
 
+
+//*** IOpart.c headers
+
+EXTERNCPP void ClosePartFiles(void);
+EXTERNCPP void CreatePartBoundFile(partdata *parti);
+EXTERNCPP void CreatePartSizeFile(partdata *parti);
+EXTERNCPP void DrawPartFrame(int mode);
+EXTERNCPP void FinalizePartLoad(partdata *parti);
+EXTERNCPP void GeneratePartHistograms(void);
+EXTERNCPP int  GetMinPartFrames(int flag);
+EXTERNCPP partpropdata *GetPartProp(char *label);
+EXTERNCPP int  GetPartPropIndex(int class_i, int class_i_j);
+EXTERNCPP int  GetPartPropIndexS(char *shortlabel);
+EXTERNCPP void InitPartProp(void);
+#ifdef _DEBUG
+EXTERNCPP void PrintPartProp(void);
+#endif
+EXTERNCPP FILE_SIZE ReadPart(char *file, int ifile, int loadflag, int *errorcode);
+EXTERNCPP void SetStreakShow(int show);
+EXTERNCPP void *SortAllPartTags(void *arg);
+EXTERNCPP void UpdatePartColors(partdata *parti, int flag);
+EXTERNCPP void UpdatePartMenuLabels(void);
+
 // gen plot routines
 
 EXTERNCPP void PrintFileLoadTimes(int file_count, FILE_SIZE load_size, float load_time);
@@ -698,7 +720,6 @@ EXTERNCPP void PeriodicRefresh(int var);
 
 EXTERNCPP void GLUIUpdateShowOnlyTop(void);
 
-EXTERNCPP void GeneratePartHistograms(void);
 FILE_SIZE LoadAllMSlicesMT(int last_slice, multislicedata *mslicei, int *fcount);
 
 EXTERNCPP void DrawObstDebug(void);
@@ -779,8 +800,6 @@ EXTERNCPP char *GetHomeDir(void);
 EXTERNCPP void SetPercentileDrawOff(void);
 EXTERNCPP void SetPercentilePartBounds(void);
 EXTERNCPP void SetPercentilePlot3DBounds(void);
-EXTERNCPP void ClosePartFiles(void);
-EXTERNCPP void UpdatePartColors(partdata *parti, int flag);
 EXTERNCPP void MergeLoadedSliceHist(char *label, histogramdata **histptr);
 EXTERNCPP void GetHistogramValProc(histogramdata *histogram, float cdf, float *val);
 EXTERNCPP void ComputeLoadedSliceHist(char *label, float valmin, float valmax);
@@ -799,7 +818,6 @@ EXTERNCPP FILE_SIZE GetSliceData(slicedata *sd, const char *slicefilename, int t
 );
 EXTERNCPP void GetSliceSizes(const char *slicefilenameptr, int time_frame, int *nsliceiptr, int *nslicejptr, int *nslicekptr, int *ntimesptr, int tload_step_arg,
   int *errorptr, int tload_beg_arg, int settmax_s_arg, float tmin_s_arg, float tmax_s_arg, int *headersizeptr, int *framesizeptr);
-EXTERNCPP void CreatePartSizeFile(partdata *parti);
 #ifdef CPP
 EXTERNCPP void InsertRollout(GLUI_Rollout *rollout, GLUI *dialog);
 #endif
@@ -807,10 +825,8 @@ EXTERNCPP void InsertRollout(GLUI_Rollout *rollout, GLUI *dialog);
 EXTERNCPP void UpdateCSVFileTypes(void);
 EXTERNCPP int HaveFireLoaded(void);
 EXTERNCPP int HaveSootLoaded(void);
-EXTERNCPP void FinalizePartLoad(partdata *parti);
 EXTERNCPP void LoadAllPartFilesMT(int val);
 EXTERNCPP void LoadAllPartFiles(int partnum);
-EXTERNCPP void CreatePartBoundFile(partdata *parti);
 EXTERNCPP void InitRolloutList(void);
 EXTERNCPP void GetTourXYZ(float t, tourdata *this_tour, float *xyz);
 EXTERNCPP int GetTourFrame(tourdata *touri, int itime);
@@ -990,14 +1006,6 @@ EXTERNCPP void IsoShowMenu(int value);
 EXTERNCPP void ShowBoundaryMenu(int value);
 EXTERNCPP void Smoke3DShowMenu(int value);
 EXTERNCPP void ShowVSliceMenu(int value);
-EXTERNCPP int  GetPartPropIndexS(char *shortlabel);
-EXTERNCPP int GetPartPropIndex(int class_i, int class_i_j);
-
-#ifdef _DEBUG
-EXTERNCPP void PrintPartProp(void);
-#endif
-EXTERNCPP partpropdata *GetPartProp(char *label);
-EXTERNCPP void InitPartProp(void);
 EXTERNCPP void UpdateStreakValue(float value);
 EXTERNCPP void LoadParticleMenu(int value);
 EXTERNCPP void LoadBoundaryMenu(int value);
@@ -1046,7 +1054,6 @@ EXTERNCPP int  RectangleInFrustum(float *x11, float *x12, float *x22, float *x21
 EXTERNCPP int UpdateSmoke3D(smoke3ddata *smoke3di);
 EXTERNCPP void DrawSmokeFrame(void);
 EXTERNCPP void DrawVolSmokeFrame(void);
-EXTERNCPP void DrawPartFrame(int mode);
 EXTERNCPP void DrawPlot3dFrame(void);
 EXTERNCPP void DrawVSliceFrame(void);
 EXTERNCPP void DrawSliceFrame(void);
@@ -1086,7 +1093,6 @@ EXTERNCPP void Array2String(float *array, int narray, char *string);
 
 EXTERNCPP void *UpdateVSlices(void *arg);
 EXTERNCPP void GetGSliceParams(void);
-EXTERNCPP void UpdatePartMenuLabels(void);
 EXTERNCPP void UpdateSliceMenuLabels(sliceparmdata *sp);
 EXTERNCPP void UpdateVsliceMenuLabels(sliceparmdata *sp);
 EXTERNCPP void UpdatePlot3dMenuLabels(void);
@@ -1163,7 +1169,6 @@ EXTERNCPP float ScaleFloat2Float(float floatfrom, const float *scale);
 EXTERNCPP void ScaleString(const char *stringfrom, char *stringto, const float *scale);
 EXTERNCPP void Num2String(char *string, float tval);
 EXTERNCPP int  SetupCase(char *file);
-EXTERNCPP int  GetMinPartFrames(int flag);
 
 
 EXTERNCPP void InitUnitDefs(void);
@@ -1171,7 +1176,6 @@ EXTERNCPP void InitUnits(void);
 EXTERNCPP f_units *GetUnitClass(char *unit);
 
 EXTERNCPP FILE_SIZE ReadPlot3D(char *file, int ifile, int flag,int *errorcode);
-EXTERNCPP FILE_SIZE ReadPart(char *file, int ifile, int loadflag, int *errorcode);
 
 EXTERNCPP void ReadZone(int ifile, int flag, int *errorcode);
 EXTERNCPP FILE_SIZE ReadVSlice(int ivslice, int time_frame, float *time_value, int flag, int set_slice_color, int *errorcode);
@@ -1200,7 +1204,6 @@ EXTERNCPP void UpdateShowIntPatch(int show_option, int hide_option);
 EXTERNCPP void ShowInternalBlockages(void);
 EXTERNCPP   int GetInternalFaceShow(void);
 
-EXTERNCPP void SetStreakShow(int show);
 EXTERNCPP void GetZoneColors(const float *t, int nt, unsigned char *it,
                float tmin, float tmax, int nlevel, int nlevel_full,
                char **zonelabels, float zonevalues[12], float *tvals256
