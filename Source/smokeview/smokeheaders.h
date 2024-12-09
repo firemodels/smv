@@ -260,7 +260,7 @@ EXTERNCPP void GLUIUpdateWindRoseDevices(int option);
 EXTERNCPP void GLUIUpdateShowbeamAsLine(void);
 EXTERNCPP void GLUIUpdatePlot2DSize(void);
 EXTERNCPP void GLUIUpdateDeviceAdd(void);
-EXTERNCPP void GenPlotCB(int var);
+EXTERNCPP void GLUIGenPlotCB(int var);
 
 
 //*** glui_smoke.cpp headers
