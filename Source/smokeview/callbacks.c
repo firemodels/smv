@@ -117,7 +117,7 @@ void NextXIndex(int inc,int flag){
   }
 }
 
-/* ------------------ next_yindex ------------------------ */
+/* ------------------ NextYIndex ------------------------ */
 
 void NextYIndex(int inc,int flag){
   int i,j,first;
@@ -179,7 +179,7 @@ void NextYIndex(int inc,int flag){
   }
 }
 
-/* ------------------ next_zindex ------------------------ */
+/* ------------------ NextZIndex ------------------------ */
 
 void NextZIndex(int inc,int flag){
   int i,j,first;
@@ -1569,7 +1569,7 @@ int IsPlot3DLoaded(void){
   return 0;
 }
 
-/* ------------------ Plot3DListMenu ------------------------ */
+/* ------------------ GetPlot3DTimeList ------------------------ */
 
 int GetPlot3DTimeList(int inc){
   float time;

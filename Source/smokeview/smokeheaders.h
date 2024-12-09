@@ -354,6 +354,38 @@ EXTERNCPP void UpdateUseTextures(void);
 EXTERNCPP void UpdateVentOffset(void);
 EXTERNCPP void WriteIni(int flag,char *file);
 
+//*** callback.c headers
+
+EXTERNCPP void ClearBuffers(int mode);
+EXTERNCPP void DisplayCB(void);
+EXTERNCPP void DoScriptHtml(void);
+EXTERNCPP void ForceIdle(void);
+EXTERNCPP int  GetGridIndex(float x, int dir, float *plotxyz, int nplotxyz);
+EXTERNCPP int  HandleColorbarIndex(int colorbar_index);
+EXTERNCPP void HandleIso(void);
+EXTERNCPP void HandleMoveKeys(int  key);
+EXTERNCPP void HandlePLOT3DKeys(int  key);
+EXTERNCPP void HandleRotationType(int flag);
+EXTERNCPP void IdleCB(void);
+EXTERNCPP void Keyboard(unsigned char key, int flag);
+EXTERNCPP void KeyboardUpCB(unsigned char key, int x, int y);
+EXTERNCPP void MouseCB(int button, int state, int x, int y);
+EXTERNCPP void MouseDragCB(int xm, int ym);
+EXTERNCPP void NextXIndex(int inc,int flag);
+EXTERNCPP void NextYIndex(int inc,int flag);
+EXTERNCPP void NextZIndex(int inc,int flag);
+EXTERNCPP void ResetGLTime(void);
+EXTERNCPP void ReshapeCB(int width, int height);
+EXTERNCPP void ResizeWindow(int width, int height);
+EXTERNCPP void SetMainWindow(void);
+EXTERNCPP void SetScreenSize(int *width, int *height);
+EXTERNCPP void SpecialKeyboardCB(int key, int x, int y);
+EXTERNCPP void SpecialKeyboardUpCB(int key, int x, int y);
+EXTERNCPP void UpdateClipPlanes(void);
+EXTERNCPP void UpdateCurrentMesh(meshdata *meshi);
+EXTERNCPP void UpdatePlot3dTitle(void);
+EXTERNCPP void WindowStatus(int state);
+
 // gen plot routines
 
 EXTERNCPP void PrintFileLoadTimes(int file_count, FILE_SIZE load_size, float load_time);
@@ -473,7 +505,6 @@ EXTERNCPP void GenerateSliceMenu(int from_commandline);
 void DrawTerrainGeom(int option);
 void GenerateTerrainGeom(float **vertices_arg, unsigned int **indices_arg, int *nindices_arg);
 
-EXTERNCPP void SetMainWindow(void);
 EXTERNCPP void GetSliceFileHeader(char *file, int *ip1, int *ip2, int *jp1, int *jp2, int *kp1, int *kp2, int *error);
 EXTERNCPP int TimeAverageData(float **data_out, float **data_in, int ndata, int data_per_timestep, float *times_local, int ntimes_local, float average_time);
 bufferstreamdata *GetSMVBuffer(char *file);
@@ -564,7 +595,6 @@ EXTERNCPP void UpdateSmoke3dFileParms(void);
 EXTERNCPP void SkipMenu(int value);
 EXTERNCPP void InitScriptErrorFiles(void);
 EXTERNCPP void UpdateRenderListSkip(void);
-EXTERNCPP void ForceIdle(void);
 EXTERNCPP void UpdateFrameNumber(int changetime);
 EXTERNCPP void UpdateOpacityMap(void);
 EXTERNCPP int  GetVolFrameMax(int meshnum);
@@ -584,7 +614,6 @@ EXTERNCPP void ShowHideMenu(int val);
 EXTERNCPP void UpdateVSliceDups(void);
 EXTERNCPP void UnloadVSliceMenu(int value);
 EXTERNCPP void UpdateSliceDups(sliceparmdata *sp);
-EXTERNCPP int HandleColorbarIndex(int colorbar_index);
 EXTERNCPP void UpdateColorbarSelectionIndex(int val);
 
 EXTERNCPP void UpdateSmokeAlphas(void);
@@ -630,7 +659,6 @@ EXTERNCPP void UpdateGluiBoundaryUnits(void);
 EXTERNCPP void UpdateGluiSliceUnits(void);
 EXTERNCPP void HVACMenu(int value);
 EXTERNCPP void ToggleMetroMode(void);
-EXTERNCPP void UpdateClipPlanes(void);
 EXTERNCPP void HVACDuctValueMenu(int value);
 EXTERNCPP void HVACNodeValueMenu(int value);
 
@@ -670,17 +698,8 @@ EXTERNCPP void ScaleFont3D(void);
 EXTERNCPP int  LabelInit(labeldata *gl);
 EXTERNCPP void LabelResort(labeldata *label);
 
-EXTERNCPP void SetScreenSize(int *width, int *height);
 EXTERNCPP void KeyboardCB(unsigned char key, int x, int y);
-EXTERNCPP void KeyboardUpCB(unsigned char key, int x, int y);
-EXTERNCPP void ReshapeCB(int width, int height);
-EXTERNCPP void DisplayCB(void);
-EXTERNCPP void SpecialKeyboardCB(int key, int x, int y);
-EXTERNCPP void SpecialKeyboardUpCB(int key, int x, int y);
-EXTERNCPP void MouseCB(int button, int state, int x, int y);
-EXTERNCPP void MouseDragCB(int xm, int ym);
 EXTERNCPP void MenuStatusCB(int status, int x, int y);
-EXTERNCPP void IdleCB(void);
 
 EXTERNCPP void ReadIsoOrig(const char *file, int ifile, int flag, int *errorcode);
 EXTERNCPP void UnloadIso(meshdata *meshi);
@@ -713,16 +732,13 @@ EXTERNCPP void DrawDevicesVal(void);
 EXTERNCPP void GetSmokeSensors(void);
 EXTERNCPP void StartScript(void);
 EXTERNCPP int RunScriptCommand(scriptdata *script_command);
-EXTERNCPP void DoScriptHtml(void);
 EXTERNCPP int  CompileScript(char *scriptfile);
 EXTERNCPP scriptfiledata *InsertScriptFile(char *file);
 EXTERNCPP char *GetIniFileName(int id);
 EXTERNCPP char *GetScriptFileName(int id);
 EXTERNCPP inifiledata *InsertIniFile(char *file);
-EXTERNCPP void Keyboard(unsigned char key, int flag);
 EXTERNCPP void GetNewScriptFileName(char *newscriptfilename);
 EXTERNCPP void ParticlePropShowMenu(int value);
-EXTERNCPP int  GetGridIndex(float x, int dir, float *plotxyz, int nplotxyz);
 EXTERNCPP void UpdateSliceContours(int slice_type_index, float line_min, float line_max, int nline_values);
 EXTERNCPP void ScriptMenu(int var);
 EXTERNCPP void SmokeColorbarMenu(int var);
@@ -741,9 +757,6 @@ EXTERNCPP void LoadZoneSmokeShaders(void);
 EXTERNCPP void LoadVolsmokeShaders(void);
 EXTERNCPP void UnLoadShaders(void);
 #endif
-EXTERNCPP void NextXIndex(int inc,int flag);
-EXTERNCPP void NextYIndex(int inc,int flag);
-EXTERNCPP void NextZIndex(int inc,int flag);
 EXTERNCPP void InitSphere(int nlat, int nlong);
 #ifdef pp_SKY
 EXTERNCPP float *InitSphere2(int nlat, int nlong);
@@ -833,7 +846,6 @@ EXTERNCPP void InitVars(void);
  */
 EXTERNCPP void FreeVars(void);
 EXTERNCPP void RenderState(int onoff);
-EXTERNCPP void ResizeWindow(int width, int height);
 EXTERNCPP meshdata *GetMesh(float *xyz);
 EXTERNCPP float *GetPatchXYZ(const meshdata *meshi);
 EXTERNCPP meshdata *GetMeshNoFail(float *xyz);
@@ -909,7 +921,6 @@ EXTERNCPP void InitSliceData(void);
 EXTERNCPP void InitCameraList(void);
 EXTERNCPP cameradata *InsertCamera(cameradata *cb,cameradata *source, char *name);
 EXTERNCPP void AddDefaultViewpoints(void);
-EXTERNCPP void ResetGLTime(void);
 EXTERNCPP void InitCamera(cameradata *camera_data,char *name);
 EXTERNCPP void CopyCamera(cameradata *to, cameradata *from);
 EXTERNCPP void CopyViewCamera(cameradata *to, cameradata *from);
@@ -918,8 +929,6 @@ EXTERNCPP void GetInverse(float *m, float *mi);
 EXTERNCPP void MatMultMat(float *m1, float *m2, float *m3);
 EXTERNCPP void BlockageMenu(int value);
 EXTERNCPP char *STRSTR(char *c, const char *key);
-EXTERNCPP void HandlePLOT3DKeys(int  key);
-EXTERNCPP void HandleMoveKeys(int  key);
 EXTERNCPP int GetTimeInterval(float val, float *array, int n);
 
 EXTERNCPP void SetUnitVis(void);
@@ -950,7 +959,6 @@ EXTERNCPP void UpdateBoundaryMenuLabels(void);
 EXTERNCPP void UpdateSliceMenuLabels(sliceparmdata *sp);
 EXTERNCPP void UpdateVsliceMenuLabels(sliceparmdata *sp);
 EXTERNCPP void UpdatePlot3dMenuLabels(void);
-EXTERNCPP void HandleRotationType(int flag);
 
 EXTERNCPP void Rgb2Hsl(unsigned char *rgbvals, float *hslvals);
 EXTERNCPP void Hsl2Rgb(float *hslvals, unsigned char *rgbvals);
@@ -998,7 +1006,6 @@ EXTERNCPP int  InBlockage(const meshdata *gb,float x, float y, float z);
 EXTERNCPP void DrawIso(int tranflag);
 EXTERNCPP void DrawPlot3dTexture(meshdata *gb);
 EXTERNCPP void UpdateShowStep(int val, int slicedir);
-EXTERNCPP void ClearBuffers(int mode);
 EXTERNCPP void UpdatePlotSlice(int slicedir);
 
 EXTERNCPP void Render(int view_mode);
@@ -1016,11 +1023,9 @@ EXTERNCPP void UpdateBoundaryTypes(void);
 EXTERNCPP int WriteFileBounds(char *file, float valmin, float valmax);
 EXTERNCPP void SetViewZMAXPersp(void);
 EXTERNCPP void UpdateTerrainOptions(void);
-EXTERNCPP void UpdatePlot3dTitle(void);
 EXTERNCPP void LoadPlot3dMenu(int value);
 EXTERNCPP void InitPlot3dTimeList(void);
 EXTERNCPP void UpdateIsoShowLevels(void);
-EXTERNCPP void UpdateCurrentMesh(meshdata *meshi);
 EXTERNCPP void DialogMenu(int value);
 EXTERNCPP void ApertureMenu(int value);
 EXTERNCPP void ZoomMenu(int value);
@@ -1053,9 +1058,7 @@ EXTERNCPP void DrawOrigObstOutlines(void);
 EXTERNCPP void DrawObstOutlines(void);
 EXTERNCPP void DrawOutlines(void);
 EXTERNCPP void DrawCBox(float x, float y, float z, float size);
-EXTERNCPP void HandleIso(void);
 EXTERNCPP void UpdateSurface(void);
-EXTERNCPP void WindowStatus(int state);
 EXTERNCPP void SetVentDirs(void);
 EXTERNCPP void SetCVentDirs(void);
 EXTERNCPP int HaveCircularVents(void);
