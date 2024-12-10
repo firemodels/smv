@@ -736,6 +736,28 @@ EXTERNCPP void UpdatePlotxyzAll(void);
 EXTERNCPP void UpdateShowStep(int val, int slicedir);
 EXTERNCPP void UpdateSurface(void);
 
+//*** IOscript.c headers
+
+EXTERNCPP int  CompileScript(char *scriptfile);
+EXTERNCPP char *GetIniFileName(int id);
+EXTERNCPP void GetNewScriptFileName(char *newscriptfilename);
+EXTERNCPP char *GetScriptFileName(int id);
+EXTERNCPP int  GetVolFrameMax(int meshnum);
+EXTERNCPP inifiledata *InsertIniFile(char *file);
+EXTERNCPP scriptfiledata *InsertScriptFile(char *file);
+EXTERNCPP void LoadSmokeFrame(int meshnum, int framenum);
+EXTERNCPP void LoadTimeFrame(int meshnum, float timeval);
+EXTERNCPP int  RunScriptCommand(scriptdata *script_command);
+EXTERNCPP void ScriptLoadIsoFrame2(scriptdata *scripti);
+EXTERNCPP void ScriptLoadSliceRender(scriptdata*scripti);
+EXTERNCPP void ScriptLoadSmokeRender(scriptdata *scripti);
+EXTERNCPP void ScriptLoadVolSmokeFrame2(void);
+EXTERNCPP void ScriptViewXYZMINMAXOrtho(int option);
+EXTERNCPP void SetTimeVal(float timeval);
+EXTERNCPP void SetViewZMAXPersp(void);
+EXTERNCPP void StartScript(void);
+
+
 //*** menu.c headers
 
 EXTERNCPP void PrintFileLoadTimes(int file_count, FILE_SIZE load_size, float load_time);
@@ -755,7 +777,6 @@ EXTERNCPP void GLUIUpdateCfaces(void);
 EXTERNCPP void ShowObjectsMenu(int var);
 EXTERNCPP void UpdateShowHRRPUVPlot(int val);
 
-EXTERNCPP void ScriptViewXYZMINMAXOrtho(int option);
 
 EXTERNCPP void InitStartupDirs(void);
 
@@ -792,9 +813,7 @@ EXTERNCPP void HideSlices(char *longlabel);
 
 EXTERNCPP void OutputMinMax(char *meshlabel, char *label, char *unit, float valmin_fds, float valmax_fds, float valmin_smv, float valmax_smv);
 
-EXTERNCPP void ScriptLoadSliceRender(scriptdata*scripti);
 EXTERNCPP int GetSmokeNFrames(int type, float *tmin, float *tmax);
-EXTERNCPP void ScriptLoadSmokeRender(scriptdata *scripti);
 EXTERNCPP void SmokeWrapup(void);
 FILE_SIZE LoadSmoke3D(int type, int frame, int *count, float *time_value);
 EXTERNCPP int GetNSliceFrames(char *file, float *stime_min, float *stime_max);
@@ -866,7 +885,6 @@ EXTERNCPP void InitScriptErrorFiles(void);
 EXTERNCPP void UpdateRenderListSkip(void);
 EXTERNCPP void UpdateFrameNumber(int changetime);
 EXTERNCPP void UpdateOpacityMap(void);
-EXTERNCPP int  GetVolFrameMax(int meshnum);
 EXTERNCPP void UpdateGluiRotateAbout(int val);
 EXTERNCPP void ReloadAllSliceFiles(int load_flag);
 EXTERNCPP void ReloadAllVectorSliceFiles(int load_flag);
@@ -951,20 +969,6 @@ EXTERNCPP void SetupGlut(int argc, char **argv);
 
 EXTERNCPP void UpdateSliceMenuShow(sliceparmdata *sp);
 EXTERNCPP void UpdateDefer(void);
-EXTERNCPP void SetTimeVal(float timeval);
-
-EXTERNCPP void LoadSmokeFrame(int meshnum, int framenum);
-EXTERNCPP void LoadTimeFrame(int meshnum, float timeval);
-EXTERNCPP void ScriptLoadVolSmokeFrame2(void);
-EXTERNCPP void ScriptLoadIsoFrame2(scriptdata *scripti);
-EXTERNCPP void StartScript(void);
-EXTERNCPP int RunScriptCommand(scriptdata *script_command);
-EXTERNCPP int  CompileScript(char *scriptfile);
-EXTERNCPP scriptfiledata *InsertScriptFile(char *file);
-EXTERNCPP char *GetIniFileName(int id);
-EXTERNCPP char *GetScriptFileName(int id);
-EXTERNCPP inifiledata *InsertIniFile(char *file);
-EXTERNCPP void GetNewScriptFileName(char *newscriptfilename);
 EXTERNCPP void ParticlePropShowMenu(int value);
 EXTERNCPP void UpdateSliceContours(int slice_type_index, float line_min, float line_max, int nline_values);
 EXTERNCPP void ScriptMenu(int var);
@@ -1149,7 +1153,6 @@ EXTERNCPP void UpdateSliceBoundIndexes(void);
 EXTERNCPP void UpdateSliceBoundLabels(void);
 EXTERNCPP void UpdateBoundaryType(void);
 
-EXTERNCPP void SetViewZMAXPersp(void);
 EXTERNCPP void UpdateTerrainOptions(void);
 EXTERNCPP void LoadPlot3dMenu(int value);
 EXTERNCPP void DialogMenu(int value);
