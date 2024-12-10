@@ -1009,6 +1009,16 @@ EXTERNCPP int  SmokeviewImage2File(char *directory, char *GIFfilename, int rende
 EXTERNCPP int SVimage2var(int rendertype, int woffset, int width, int hoffset, int height, gdImagePtr *RENDERimage);
 #endif
 
+//*** shaders.c headers
+
+#ifdef pp_GPU
+EXTERNCPP int  InitShaders(void);
+EXTERNCPP void LoadSmokeShaders(void);
+EXTERNCPP void Load3DSliceShaders(void);
+EXTERNCPP void LoadZoneSmokeShaders(void);
+EXTERNCPP void LoadVolsmokeShaders(void);
+EXTERNCPP void UnLoadShaders(void);
+#endif
 
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -1128,14 +1138,6 @@ EXTERNCPP void KeyboardCB(unsigned char key, int x, int y);
 EXTERNCPP void SetupGlut(int argc, char **argv);
 
 EXTERNCPP void UpdateDefer(void);
-#ifdef pp_GPU
-EXTERNCPP int  InitShaders(void);
-EXTERNCPP void LoadSmokeShaders(void);
-EXTERNCPP void Load3DSliceShaders(void);
-EXTERNCPP void LoadZoneSmokeShaders(void);
-EXTERNCPP void LoadVolsmokeShaders(void);
-EXTERNCPP void UnLoadShaders(void);
-#endif
 #ifdef pp_SKY
 EXTERNCPP float *InitSphere2(int nlat, int nlong);
 EXTERNCPP void DrawHalfSphere(void);
