@@ -1094,6 +1094,16 @@ EXTERNCPP void PutStartupSmoke3D(FILE *fileout);
 EXTERNCPP void Set3DSmokeStartup(void);
 EXTERNCPP void SetupGlut(int argc, char **argv);
 
+//*** unit.c headers
+
+EXTERNCPP f_units *GetUnitClass(char *unit);
+EXTERNCPP void GetUnitInfo(const char *unitlabel, int *unitclass, int *unittype);
+EXTERNCPP float GetUnitVal(const char *unitlabel, float oldval, int ndecimals);
+EXTERNCPP void InitUnitDefs(void);
+EXTERNCPP void InitUnits(void);
+EXTERNCPP void SetUnitVis(void);
+EXTERNCPP void UpdateUnitDefs(void);
+
 //*** update.c headers
 
 EXTERNCPP int CompareFloat(const void *arg1, const void *arg2);
@@ -1207,12 +1217,6 @@ EXTERNCPP int  OnMeshBoundary(float *xyz);
 EXTERNCPP void RenderCB(int var);
 EXTERNCPP char *STRSTR(char *c, const char *key);
 
-EXTERNCPP void SetUnitVis(void);
-EXTERNCPP void GetUnitInfo(const char *unitlabel, int *unitclass, int *unittype);
-EXTERNCPP float GetUnitVal(const char *unitlabel, float oldval, int ndecimals);
-
-EXTERNCPP void UpdateUnitDefs(void);
-
 EXTERNCPP void SmoothIsoSurface(isosurface *surfacedata);
 EXTERNCPP void Array2String(float *array, int narray, char *string);
 EXTERNCPP void Rgb2Hsl(unsigned char *rgbvals, float *hslvals);
@@ -1227,11 +1231,6 @@ EXTERNCPP float ScaleFloat2Float(float floatfrom, const float *scale);
 EXTERNCPP void ScaleString(const char *stringfrom, char *stringto, const float *scale);
 EXTERNCPP void Num2String(char *string, float tval);
 EXTERNCPP int  SetupCase(char *file);
-
-
-EXTERNCPP void InitUnitDefs(void);
-EXTERNCPP void InitUnits(void);
-EXTERNCPP f_units *GetUnitClass(char *unit);
 
 EXTERNCPP int  STRCMP(const char *s1, const char *s2);
 EXTERNCPP void UpdateShowExtPatch(int show_option, int hide_option);
