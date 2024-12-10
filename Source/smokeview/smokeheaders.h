@@ -13,7 +13,6 @@
 EXTERNCPP void *SetupFF(void *arg);
 EXTERNCPP void *MtLoadAllPartFiles(void *arg);
 EXTERNCPP void *PlayMovie(void *arg);
-EXTERNCPP void *ReadVolsmokeAllFramesAllMeshes2(void *arg);
 
 //*** glui_bounds.cpp headers
 
@@ -858,6 +857,12 @@ EXTERNCPP void UpdateViewTour(void);
 
 //*** IOvolsmoke.c headers
 
+EXTERNCPP void DefineVolsmokeTextures(void);
+EXTERNCPP void DrawSmoke3DVol(void);
+EXTERNCPP void *InitNabors(void *arg);
+EXTERNCPP void MakeFireColors(float temp_min, float temp_max, int nfire_colors_arg);
+EXTERNCPP void *ReadVolsmokeAllFramesAllMeshes2(void *arg);
+
 //*** IOwui.c headers
 
 EXTERNCPP void DrawTerrainGeom(int option);
@@ -890,6 +895,8 @@ EXTERNCPP void ReadZone(int ifile, int flag, int *errorcode);
 //*** menu.c headers
 
 EXTERNCPP void PrintFileLoadTimes(int file_count, FILE_SIZE load_size, float load_time);
+
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 #ifdef pp_REFRESH
 EXTERNCPP void PeriodicRefresh(int var);
@@ -972,7 +979,6 @@ EXTERNCPP int HaveSootLoaded(void);
 EXTERNCPP void LoadAllPartFilesMT(int val);
 EXTERNCPP void LoadAllPartFiles(int partnum);
 EXTERNCPP void InitRolloutList(void);
-EXTERNCPP void *InitNabors(void *arg);
 EXTERNCPP int Smv2Html(char *html_out, int option, int from_where);
 EXTERNCPP int Smv2Geom(char *html_file);
 EXTERNCPP int Obst2Data(char *html_file);
@@ -1045,7 +1051,6 @@ EXTERNCPP void DrawFilledTetra(float *v1, float *v2, float *v3, float *v4, unsig
 EXTERNCPP void DrawFilled2Tetra(float *v1, float *v2, float *v3, float *v4,
    unsigned char *rgb0color,unsigned char *rgb1color,unsigned char *rgb2color,unsigned char *rgb3color,int *vis_state);
 EXTERNCPP void DrawTetraOutline(float *v1, float *v2, float *v3, float *v4, unsigned char *rgbcolor);
-EXTERNCPP void DefineVolsmokeTextures(void);
 EXTERNCPP void GetViewportInfo(void);
 
 EXTERNCPP void ScaleFont2D(void);
@@ -1150,7 +1155,6 @@ EXTERNCPP int BoxInFrustum(float *xx, float *yy, float *zz, int n);
 EXTERNCPP int MeshInFrustum(meshdata *meshi);
 EXTERNCPP int  RectangleInFrustum(float *x11, float *x12, float *x22, float *x21);
 
-EXTERNCPP void DrawSmoke3DVol(void);
 EXTERNCPP void GetInverse(float *m, float *mi);
 EXTERNCPP void MatMultMat(float *m1, float *m2, float *m3);
 EXTERNCPP void BlockageMenu(int value);
@@ -1236,8 +1240,5 @@ EXTERNCPP int  SmokeviewImage2File(char *directory, char *GIFfilename, int rende
 #ifdef pp_LUA
 EXTERNCPP int SVimage2var(int rendertype, int woffset, int width, int hoffset, int height, gdImagePtr *RENDERimage);
 #endif
-
-EXTERNCPP void MakeFireColors(float temp_min, float temp_max, int nfire_colors_arg);
-
 
 #endif
