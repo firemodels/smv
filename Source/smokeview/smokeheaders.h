@@ -788,6 +788,24 @@ EXTERNCPP void UpdateSmokeAlphas(void);
 
 //*** IOtour.c headers
 
+EXTERNCPP keyframe *AddFrame(keyframe *framei, float time, float pause_time, float *xyz, float view[3]);
+EXTERNCPP tourdata *AddTour(char *label);
+EXTERNCPP void CreateTourPaths(void);
+EXTERNCPP keyframe *DeleteFrame(keyframe *step);
+EXTERNCPP void DeleteTour(int tour_index);
+EXTERNCPP void DrawSelectTours(void);
+EXTERNCPP void DefaultTour(void);
+EXTERNCPP void DrawTours(void);
+EXTERNCPP int  GetTourFrame(tourdata *touri, int itime);
+EXTERNCPP void GetTourXYZ(float t, tourdata *this_tour, float *xyz);
+EXTERNCPP void InitCircularTour(tourdata *touri, int nkeyframes, int option);
+EXTERNCPP void NewSelect(keyframe *newselect);
+EXTERNCPP void ReverseTour(char *label);
+EXTERNCPP void SetupCircularTourNodes(void);
+EXTERNCPP void SetupTour(void);
+EXTERNCPP void UpdateTourMenuLabels(void);
+EXTERNCPP void UpdateViewTour(void);
+
 //*** IOvolsmoke.c headers
 
 //*** IOwui.c headers
@@ -898,8 +916,6 @@ EXTERNCPP int HaveSootLoaded(void);
 EXTERNCPP void LoadAllPartFilesMT(int val);
 EXTERNCPP void LoadAllPartFiles(int partnum);
 EXTERNCPP void InitRolloutList(void);
-EXTERNCPP void GetTourXYZ(float t, tourdata *this_tour, float *xyz);
-EXTERNCPP int GetTourFrame(tourdata *touri, int itime);
 EXTERNCPP void *InitNabors(void *arg);
 EXTERNCPP int Smv2Html(char *html_out, int option, int from_where);
 EXTERNCPP int Smv2Geom(char *html_file);
@@ -1136,22 +1152,6 @@ EXTERNCPP void Hsl2Rgb(float *hslvals, unsigned char *rgbvals);
 
 EXTERNCPP void InitColorbarsDir(void);
 EXTERNCPP void InitTextureDir(void);
-
-EXTERNCPP void UpdateViewTour(void);
-EXTERNCPP void SetupTour(void);
-EXTERNCPP void CreateTourPaths(void);
-EXTERNCPP void DrawTours(void);
-EXTERNCPP void DrawSelectTours(void);
-EXTERNCPP void UpdateTourMenuLabels(void);
-EXTERNCPP void DefaultTour(void);
-EXTERNCPP void NewSelect(keyframe *newselect);
-EXTERNCPP void DeleteTour(int tour_index);
-EXTERNCPP tourdata *AddTour(char *label);
-EXTERNCPP void ReverseTour(char *label);
-EXTERNCPP void SetupCircularTourNodes(void);
-EXTERNCPP void InitCircularTour(tourdata *touri, int nkeyframes, int option);
-EXTERNCPP keyframe *DeleteFrame(keyframe *step);
-EXTERNCPP keyframe *AddFrame(keyframe *framei, float time, float pause_time, float *xyz, float view[3]);
 
 EXTERNCPP void TransparentOff(void);
 EXTERNCPP void TransparentOn(void);
