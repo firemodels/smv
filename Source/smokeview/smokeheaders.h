@@ -8,6 +8,10 @@
 #include "readgeom.h"
 #include "readsmoke.h"
 
+#ifndef TERRAIN_FIRE_LINE_UPDATE
+#define TERRAIN_FIRE_LINE_UPDATE 39
+#endif
+
 //*** glui_bounds.cpp headers
 
 EXTERNCPP int  GLUIGetChopHide(char *label);
@@ -112,6 +116,14 @@ EXTERNCPP void GLUIRefreshDialogs(void);
 #endif
 EXTERNCPP void GLUIUpdateVectorpointsize(void);
 EXTERNCPP void GLUIUpdateSliceDupDialog(void);
+EXTERNCPP void SetLoadedSliceBounds(int *list, int nlist);
+EXTERNCPP void SetLoadedPatchBounds(int *list, int nlist);
+EXTERNCPP void SetLoadedPlot3DBounds(void);
+EXTERNCPP void SetLoadedPartBounds(int *list, int nlist);
+EXTERNCPP void ScriptCB(int var);
+EXTERNCPP void PartBoundCB(int var);
+EXTERNCPP void UpdateColorbarSelectionIndex(int val);
+
 
 //*** glui_clip.cpp headers
 
@@ -120,6 +132,8 @@ EXTERNCPP void GLUIUpdateClip(void);
 EXTERNCPP void GLUIShowClip(void);
 EXTERNCPP void GLUIHideClip(void);
 EXTERNCPP void GLUIUpdateClipAll(void);
+EXTERNCPP void ClipCB(int var);
+EXTERNCPP void SetClipControls(int val);
 
 //*** glui_colorbar.cpp headers
 
@@ -168,19 +182,22 @@ EXTERNCPP void GLUIUpdateHVACViews(void);
 EXTERNCPP void GLUIShowGeometry(void);
 EXTERNCPP void GLUIShowTerrain(void);
 EXTERNCPP void GLUIHideTerrain(void);
+EXTERNCPP void GLUIHideGeometry(void);
 EXTERNCPP void GLUIHideHVAC(void);
 EXTERNCPP void GLUIShowHVAC(void);
 EXTERNCPP void GLUIHVAC2Glui(int index);
 EXTERNCPP void GLUIUpdateTerrainTexture(int val);
 EXTERNCPP void GLUIUpdateGeomBoundingBox(void);
 EXTERNCPP void GLUIUpdateSelectGeom(void);
+EXTERNCPP void GLUIUpdateShowOnlyTop(void);
 EXTERNCPP void GLUIUpdateTriangleInfo(surfdata *tri_surf, float tri_area);
 EXTERNCPP void GLUIUpdateVertexInfo(float *xyz1, float *xyz2);
 EXTERNCPP void GLUIUpdateWhereFaceVolumes(void);
 EXTERNCPP void GLUIGetGeomDialogState(void);
+EXTERNCPP void GLUIUpdateCfaces(void);
 EXTERNCPP void GLUIUpdateGeometryControls(void);
 EXTERNCPP void GLUIUpdateHVACVarLists(void);
-EXTERNCPP void GLUIHideGeometry(void);
+EXTERNCPP void GetGeomZBounds(float *zmin, float *zmax);
 
 //*** glui_motion.cpp headers
 
@@ -229,6 +246,15 @@ EXTERNCPP void GLUIUpdateMeshList1(int val);
 EXTERNCPP void GLUIUpdateTranslate(void);
 EXTERNCPP void GLUIShowHideTranslate(int var);
 EXTERNCPP void GLUISetStartupView(void);
+#ifdef CPP
+EXTERNCPP void InsertRollout(GLUI_Rollout *rollout, GLUI *dialog);
+#endif
+EXTERNCPP void InitRolloutList(void);
+EXTERNCPP void UpdateRenderListSkip(void);
+EXTERNCPP void UpdateGluiRotateAbout(int val);
+EXTERNCPP void UpdateRenderStartButton(void);
+EXTERNCPP void UpdateRenderType(int type);
+EXTERNCPP void UpdateMovieType(int type);
 
 //*** glui_objects.cpp headers
 
@@ -252,6 +278,7 @@ EXTERNCPP void GLUIUpdateShowbeamAsLine(void);
 EXTERNCPP void GLUIUpdatePlot2DSize(void);
 EXTERNCPP void GLUIUpdateDeviceAdd(void);
 EXTERNCPP void GLUIGenPlotCB(int var);
+EXTERNCPP void UpdateCSVFileTypes(void);
 
 
 //*** glui_smoke.cpp headers
@@ -298,6 +325,7 @@ EXTERNCPP void GLUIDeleteTourList(void);
 EXTERNCPP void GLUIUpdateTourControls(void);
 EXTERNCPP void GLUISetTourKeyframe(void);
 EXTERNCPP void GLUIUpdateKeyframe(void);
+EXTERNCPP void TourCB(int var);
 
 //*** glui_trainer.cpp headers
 
@@ -530,6 +558,7 @@ EXTERNCPP void UncompressBoundaryDataGEOM(patchdata *patchi, int frame_index);
 EXTERNCPP void UncompressBoundaryDataBNDF(meshdata *meshi,int frame_index);
 EXTERNCPP void UpdateBoundaryTypes(void);
 EXTERNCPP void UpdateBoundaryMenuLabels(void);
+EXTERNCPP void UpdateBoundarySliceDups(void);
 
 //*** IOgeometry.c headers
 
@@ -889,6 +918,9 @@ EXTERNCPP void OpenSMVFile(char *filename,int filenamelength,int *openfile);
 EXTERNCPP void ParticlePropShowMenu(int value);
 EXTERNCPP void ParticleShowMenu(int value);
 EXTERNCPP void ParticleStreakShowMenu(int var);
+#ifdef pp_REFRESH
+EXTERNCPP void PeriodicRefresh(int var);
+#endif
 EXTERNCPP void Plot3DListMenu(int value);
 EXTERNCPP void Plot3DShowMenu(int value);
 EXTERNCPP void PrintFileLoadTimes(int file_count, FILE_SIZE load_size, float load_time);
@@ -1120,6 +1152,7 @@ EXTERNCPP void OutputMinMax(char *meshlabel, char *label, char *unit, float valm
 EXTERNCPP void PauseTime(float pause_time);
 EXTERNCPP void ResetItimes0(void);
 EXTERNCPP void ShiftColorbars(void);
+EXTERNCPP void SynchTimes(void);
 EXTERNCPP void UpdateClipbounds(int set_i0, int *i0, int set_i1, int *i1, int maxi);
 EXTERNCPP int GetColorbarState(void);
 EXTERNCPP void UpdateColorTable(colortabledata *ctableinfo, int nctableinfo);
@@ -1135,57 +1168,6 @@ EXTERNCPP int GetStringWidth(char *string);
 EXTERNCPP void GetViewportInfo(void);
 
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-#ifdef pp_REFRESH
-EXTERNCPP void PeriodicRefresh(int var);
-#endif
-
-EXTERNCPP void GLUIUpdateShowOnlyTop(void);
-
-EXTERNCPP void DrawObstDebug(void);
-
-EXTERNCPP void GLUIUpdateCfaces(void);
-
-EXTERNCPP void UpdateShowHRRPUVPlot(int val);
-
-#ifndef TERRAIN_FIRE_LINE_UPDATE
-#define TERRAIN_FIRE_LINE_UPDATE 39
-#endif
-
-EXTERNCPP void ClipCB(int var);
-EXTERNCPP void SynchTimes(void);
-
-EXTERNCPP void GetSliceFileHeader(char *file, int *ip1, int *ip2, int *jp1, int *jp2, int *kp1, int *kp2, int *error);
-bufferstreamdata *GetSMVBuffer(char *file);
-
-EXTERNCPP void SetPercentileDrawOff(void);
-EXTERNCPP void SetPercentilePartBounds(void);
-EXTERNCPP void SetPercentilePlot3DBounds(void);
-EXTERNCPP void SetLoadedSliceBounds(int *list, int nlist);
-EXTERNCPP void SetLoadedPatchBounds(int *list, int nlist);
-EXTERNCPP void SetLoadedPlot3DBounds(void);
-EXTERNCPP void SetLoadedPartBounds(int *list, int nlist);
-
-#ifdef CPP
-EXTERNCPP void InsertRollout(GLUI_Rollout *rollout, GLUI *dialog);
-#endif
-
-EXTERNCPP void UpdateCSVFileTypes(void);
-EXTERNCPP void InitRolloutList(void);
-EXTERNCPP void UpdateRenderListSkip(void);
-EXTERNCPP void UpdateOpacityMap(void);
-EXTERNCPP void UpdateGluiRotateAbout(int val);
-EXTERNCPP void ScriptCB(int var);
-EXTERNCPP void TourCB(int var);
-EXTERNCPP void SetClipControls(int val);
-EXTERNCPP void PartBoundCB(int var);
-EXTERNCPP void UpdateColorbarSelectionIndex(int val);
-
-EXTERNCPP void UpdateBoundarySliceDups(void);
-EXTERNCPP void GetGeomZBounds(float *zmin, float *zmax);
-EXTERNCPP void UpdateRenderStartButton(void);
-EXTERNCPP void UpdateRenderType(int type);
-EXTERNCPP void UpdateMovieType(int type);
 
 EXTERNCPP void UpdateGluiBoundaryUnits(void);
 EXTERNCPP void UpdateGluiSliceUnits(void);
