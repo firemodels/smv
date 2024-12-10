@@ -1129,6 +1129,11 @@ EXTERNCPP void UpdateShow(void);
 EXTERNCPP void UpdateShowScene(void);
 EXTERNCPP void UpdateTimes(void);
 
+//*** viewports.c headers
+
+EXTERNCPP int GetStringWidth(char *string);
+EXTERNCPP void GetViewportInfo(void);
+
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 #ifdef pp_REFRESH
@@ -1142,8 +1147,6 @@ EXTERNCPP void DrawObstDebug(void);
 EXTERNCPP void GLUIUpdateCfaces(void);
 
 EXTERNCPP void UpdateShowHRRPUVPlot(int val);
-
-EXTERNCPP int GetStringWidth(char *string);
 
 #ifndef TERRAIN_FIRE_LINE_UPDATE
 #define TERRAIN_FIRE_LINE_UPDATE 39
@@ -1191,8 +1194,6 @@ EXTERNCPP void GetBoundaryParams(void);
 
 EXTERNCPP void AddDeleteKeyframe(int flag);
 EXTERNCPP void VentMenu(int value);
-
-EXTERNCPP void GetViewportInfo(void);
 
 EXTERNCPP int  LabelInit(labeldata *gl);
 EXTERNCPP void LabelResort(labeldata *label);
