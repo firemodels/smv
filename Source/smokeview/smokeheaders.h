@@ -1067,7 +1067,34 @@ EXTERNCPP void SetClipPlanes(clipdata *ci, int option);
 EXTERNCPP void Slerp(float *p0, float *p1, float t, float *pout);
 EXTERNCPP void UpdatePlotxyzAll(void);
 
-//*** update.c
+//*** startup.c headers
+
+/**
+ * @brief Free the global variables initialized by @ref InitVars.
+ */
+EXTERNCPP void FreeVars(void);
+EXTERNCPP char *GetHomeDir(void);
+EXTERNCPP void GetStartupVSlice(int seq_id);
+EXTERNCPP void GetStartupSlice(int seq_id);
+EXTERNCPP void GetStartupPart(int seq_id);
+EXTERNCPP void GetStartupPlot3D(int seq_id);
+EXTERNCPP void GetStartupSmoke(int seq_id);
+EXTERNCPP void GetStartupISO(int seq_id);
+EXTERNCPP void GetStartupBoundary(int seq_id);
+EXTERNCPP int GLUTGetScreenWidth(void);
+EXTERNCPP int GLUTGetScreenHeight(void);
+EXTERNCPP void InitColorbarsDir(void);
+EXTERNCPP void InitOpenGL(int option);
+EXTERNCPP void InitScriptErrorFiles(void);
+EXTERNCPP void InitStartupDirs(void);
+EXTERNCPP void InitTextureDir(void);
+EXTERNCPP void InitVars(void);
+EXTERNCPP void LoadFiles(void);
+EXTERNCPP void PutStartupSmoke3D(FILE *fileout);
+EXTERNCPP void Set3DSmokeStartup(void);
+EXTERNCPP void SetupGlut(int argc, char **argv);
+
+//*** update.c headers
 
 EXTERNCPP int CompareFloat(const void *arg1, const void *arg2);
 EXTERNCPP void EnableDisableMakeMovie(int onoff);
@@ -1106,8 +1133,6 @@ EXTERNCPP void GLUIUpdateCfaces(void);
 
 EXTERNCPP void UpdateShowHRRPUVPlot(int val);
 
-EXTERNCPP void InitStartupDirs(void);
-
 EXTERNCPP int GetStringWidth(char *string);
 
 #ifndef TERRAIN_FIRE_LINE_UPDATE
@@ -1117,13 +1142,9 @@ EXTERNCPP int GetStringWidth(char *string);
 EXTERNCPP void ClipCB(int var);
 EXTERNCPP void SynchTimes(void);
 
-EXTERNCPP int GLUTGetScreenWidth(void);
-EXTERNCPP int GLUTGetScreenHeight(void);
-
 EXTERNCPP void GetSliceFileHeader(char *file, int *ip1, int *ip2, int *jp1, int *jp2, int *kp1, int *kp2, int *error);
 bufferstreamdata *GetSMVBuffer(char *file);
 
-EXTERNCPP char *GetHomeDir(void);
 EXTERNCPP void SetPercentileDrawOff(void);
 EXTERNCPP void SetPercentilePartBounds(void);
 EXTERNCPP void SetPercentilePlot3DBounds(void);
@@ -1138,7 +1159,6 @@ EXTERNCPP void InsertRollout(GLUI_Rollout *rollout, GLUI *dialog);
 
 EXTERNCPP void UpdateCSVFileTypes(void);
 EXTERNCPP void InitRolloutList(void);
-EXTERNCPP void InitScriptErrorFiles(void);
 EXTERNCPP void UpdateRenderListSkip(void);
 EXTERNCPP void UpdateOpacityMap(void);
 EXTERNCPP void UpdateGluiRotateAbout(int val);
@@ -1169,8 +1189,6 @@ EXTERNCPP void LabelResort(labeldata *label);
 
 EXTERNCPP void KeyboardCB(unsigned char key, int x, int y);
 
-EXTERNCPP void SetupGlut(int argc, char **argv);
-
 EXTERNCPP void UpdateDefer(void);
 #ifdef pp_SKY
 EXTERNCPP float *InitSphere2(int nlat, int nlong);
@@ -1180,31 +1198,13 @@ EXTERNCPP void DrawHalfSphere(void);
 EXTERNCPP void Rgb2Labs(unsigned char *rgbs255, float *labs);
 
 EXTERNCPP char *GetChid(char *file, char *buffer);
-EXTERNCPP void InitOpenGL(int option);
-
 
 EXTERNCPP void CopyArgs(int *argc, char **aargv, char ***argv_sv);
 EXTERNCPP void InitMultiThreading(void);
 
-EXTERNCPP void InitVars(void);
-/**
- * @brief Free the global variables initialized by @ref InitVars.
- */
-EXTERNCPP void FreeVars(void);
-
 EXTERNCPP int  OnMeshBoundary(float *xyz);
 
 EXTERNCPP void RenderCB(int var);
-EXTERNCPP void LoadFiles(void);
-EXTERNCPP void GetStartupVSlice(int seq_id);
-EXTERNCPP void GetStartupSlice(int seq_id);
-EXTERNCPP void GetStartupPart(int seq_id);
-EXTERNCPP void GetStartupPlot3D(int seq_id);
-EXTERNCPP void GetStartupSmoke(int seq_id);
-EXTERNCPP void GetStartupISO(int seq_id);
-EXTERNCPP void GetStartupBoundary(int seq_id);
-EXTERNCPP void Set3DSmokeStartup(void);
-EXTERNCPP void PutStartupSmoke3D(FILE *fileout);
 EXTERNCPP char *STRSTR(char *c, const char *key);
 
 EXTERNCPP void SetUnitVis(void);
@@ -1217,9 +1217,6 @@ EXTERNCPP void SmoothIsoSurface(isosurface *surfacedata);
 EXTERNCPP void Array2String(float *array, int narray, char *string);
 EXTERNCPP void Rgb2Hsl(unsigned char *rgbvals, float *hslvals);
 EXTERNCPP void Hsl2Rgb(float *hslvals, unsigned char *rgbvals);
-
-EXTERNCPP void InitColorbarsDir(void);
-EXTERNCPP void InitTextureDir(void);
 
 EXTERNCPP void SliceBounds2Glui(int slicefile_labelindex);
 
