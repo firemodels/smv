@@ -319,41 +319,6 @@ EXTERNCPP void GLUIHideAlert(void);
 EXTERNCPP void GLUIShowTrainer(void);
 EXTERNCPP void GLUIHideTrainer(void);
 
-//*** readsmv.c headers
-
-EXTERNCPP void *CheckFiles(void *arg);
-EXTERNCPP void *Compress(void *arg);
-#ifdef pp_SKY
-EXTERNCPP void GetBoxSkyCorners(void);
-#endif
-EXTERNCPP void GetElevAz(float *xyznorm,float *dtheta, float *rotate_axis, float *dpsi);
-EXTERNCPP void GetSliceParmInfo(sliceparmdata *sp);
-EXTERNCPP int GetSmoke3DType(char *label);
-EXTERNCPP void InitCellMeshInfo(void);
-EXTERNCPP FILE_SIZE ReadAllCSVFiles(int flag);
-EXTERNCPP int  ReadBinIni(void);
-EXTERNCPP FILE_SIZE ReadCSVFile(csvfiledata *csvfi, int flag);
-EXTERNCPP void ReadHRR(int flag);
-EXTERNCPP int  ReadIni(char *inifile);
-EXTERNCPP int  ReadSMV(bufferstreamdata *stream);
-EXTERNCPP void ReadSMVDynamic(char *file);
-EXTERNCPP void ReadSMVOrig(void);
-EXTERNCPP void SetBoundBounds(int set_valmin, float valmin, int set_valmax, float valmax, char *buffer2);
-EXTERNCPP void SetPatchMin(int set_valmin, float valmin, char *buffer2);
-EXTERNCPP void SetPatchMax(int set_valmax, float valmax, char *buffer2);
-EXTERNCPP void SetSliceBounds(int set_valmin, float valmin, int set_valmax, float valmax, char *buffer2);
-EXTERNCPP void SetSliceMin(int set_valmin, float valmin, char *buffer2);
-EXTERNCPP void SetSliceMax(int set_valmax, float valmax, char *buffer2);
-EXTERNCPP void SetSliceParmInfo(sliceparmdata *sp);
-EXTERNCPP void *SetupAllIsosurfaces(void *arg);
-EXTERNCPP void UpdateBlockType(void);
-EXTERNCPP void UpdateHoc(void);
-EXTERNCPP void UpdateLoadedLists(void);
-EXTERNCPP void UpdateSMVDynamic(char *file);
-EXTERNCPP void UpdateUseTextures(void);
-EXTERNCPP void UpdateVentOffset(void);
-EXTERNCPP void WriteIni(int flag,char *file);
-
 //*** callback.c headers
 
 EXTERNCPP void ClearBuffers(int mode);
@@ -984,6 +949,49 @@ EXTERNCPP void ScaleFont2D(void);
 EXTERNCPP void ScaleFont3D(void);
 EXTERNCPP void WriteLabels(labels_collection *labelscoll);
 
+//*** readsmv.c headers
+
+EXTERNCPP void *CheckFiles(void *arg);
+EXTERNCPP void *Compress(void *arg);
+#ifdef pp_SKY
+EXTERNCPP void GetBoxSkyCorners(void);
+#endif
+EXTERNCPP void GetElevAz(float *xyznorm,float *dtheta, float *rotate_axis, float *dpsi);
+EXTERNCPP void GetSliceParmInfo(sliceparmdata *sp);
+EXTERNCPP int GetSmoke3DType(char *label);
+EXTERNCPP void InitCellMeshInfo(void);
+EXTERNCPP FILE_SIZE ReadAllCSVFiles(int flag);
+EXTERNCPP int  ReadBinIni(void);
+EXTERNCPP FILE_SIZE ReadCSVFile(csvfiledata *csvfi, int flag);
+EXTERNCPP void ReadHRR(int flag);
+EXTERNCPP int  ReadIni(char *inifile);
+EXTERNCPP int  ReadSMV(bufferstreamdata *stream);
+EXTERNCPP void ReadSMVDynamic(char *file);
+EXTERNCPP void ReadSMVOrig(void);
+EXTERNCPP void SetBoundBounds(int set_valmin, float valmin, int set_valmax, float valmax, char *buffer2);
+EXTERNCPP void SetPatchMin(int set_valmin, float valmin, char *buffer2);
+EXTERNCPP void SetPatchMax(int set_valmax, float valmax, char *buffer2);
+EXTERNCPP void SetSliceBounds(int set_valmin, float valmin, int set_valmax, float valmax, char *buffer2);
+EXTERNCPP void SetSliceMin(int set_valmin, float valmin, char *buffer2);
+EXTERNCPP void SetSliceMax(int set_valmax, float valmax, char *buffer2);
+EXTERNCPP void SetSliceParmInfo(sliceparmdata *sp);
+EXTERNCPP void *SetupAllIsosurfaces(void *arg);
+EXTERNCPP void UpdateBlockType(void);
+EXTERNCPP void UpdateHoc(void);
+EXTERNCPP void UpdateLoadedLists(void);
+EXTERNCPP void UpdateSMVDynamic(char *file);
+EXTERNCPP void UpdateUseTextures(void);
+EXTERNCPP void UpdateVentOffset(void);
+EXTERNCPP void WriteIni(int flag,char *file);
+
+//*** renderhtml.c headers
+
+EXTERNCPP int Obst2Data(char *html_file);
+EXTERNCPP int SliceNode2Data(char *html_file, int option);
+EXTERNCPP int SliceCell2Data(char *html_file, int option);
+EXTERNCPP int Smv2Html(char *html_out, int option, int from_where);
+EXTERNCPP int Smv2Geom(char *html_file);
+
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 #ifdef pp_REFRESH
@@ -1050,11 +1058,6 @@ EXTERNCPP void UpdateCSVFileTypes(void);
 EXTERNCPP int HaveFireLoaded(void);
 EXTERNCPP int HaveSootLoaded(void);
 EXTERNCPP void InitRolloutList(void);
-EXTERNCPP int Smv2Html(char *html_out, int option, int from_where);
-EXTERNCPP int Smv2Geom(char *html_file);
-EXTERNCPP int Obst2Data(char *html_file);
-EXTERNCPP int SliceNode2Data(char *html_file, int option);
-EXTERNCPP int SliceCell2Data(char *html_file, int option);
 EXTERNCPP void ResetRenderResolution(int *width_low, int *height_low, int *width_high, int *height_high);
 EXTERNCPP void GetRenderResolution(int *width_low, int *height_low, int *width_high, int *height_high);
 EXTERNCPP void InitScriptErrorFiles(void);
