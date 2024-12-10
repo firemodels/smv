@@ -6655,7 +6655,6 @@ void ImmersedMenu(int value){
 
 /* ------------------ BlockageMenu ------------------------ */
 
-void GeometryMenu(int val);
 void BlockageMenu(int value){
   int change_state=0;
 
