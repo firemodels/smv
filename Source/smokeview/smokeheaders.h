@@ -283,9 +283,6 @@ EXTERNCPP void GLUIUpdateStereo(void);
 EXTERNCPP void GLUIShowStereo(void);
 EXTERNCPP void GLUIHideStereo(void);
 
-EXTERNCPP float GetTime(void);
-EXTERNCPP void StartTimer(float *timerptr);
-
 //*** glui_tour.cpp headers
 
 EXTERNCPP void GLUITourSetup(int main_window);
@@ -1020,6 +1017,30 @@ EXTERNCPP void LoadVolsmokeShaders(void);
 EXTERNCPP void UnLoadShaders(void);
 #endif
 
+//*** showscene.c headers
+
+EXTERNCPP void ShowScene(int mode, int view_mode, int quad, GLint s_left, GLint s_down, screendata *screen);
+
+//*** skybox.c headers
+
+EXTERNCPP void DrawSkybox(void);
+EXTERNCPP void FreeSkybox(void);
+EXTERNCPP void LoadSkyTexture(char *filebase, texturedata *texti);
+
+//*** smokeview.c headers
+
+EXTERNCPP void AntiAliasLine(int flag);
+EXTERNCPP int BuildGbndFile(int file_type);
+EXTERNCPP void DisplayVersionInfo(char *progname);
+EXTERNCPP void InitVolrenderScript(char *prefix, char *tour_label, int startframe, int skipframe);
+EXTERNCPP int IsFDSRunning(FILE_SIZE *last_size);
+EXTERNCPP void SetViewPoint(int option);
+EXTERNCPP void SMV_EXIT(int code);
+EXTERNCPP void StartTimer(float *timerptr);
+EXTERNCPP void TransparentOff(void);
+EXTERNCPP void TransparentOn(void);
+EXTERNCPP void UpdateLights(float *pos1, float *pos2);
+
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 #ifdef pp_REFRESH
@@ -1061,8 +1082,6 @@ EXTERNCPP void OutputMinMax(char *meshlabel, char *label, char *unit, float valm
 
 EXTERNCPP void GetSliceFileHeader(char *file, int *ip1, int *ip2, int *jp1, int *jp2, int *kp1, int *kp2, int *error);
 bufferstreamdata *GetSMVBuffer(char *file);
-EXTERNCPP int IsFDSRunning(FILE_SIZE *last_size);
-EXTERNCPP int BuildGbndFile(int file_type);
 
 EXTERNCPP void PauseTime(float pause_time);
 
@@ -1077,7 +1096,6 @@ EXTERNCPP void SetLoadedPartBounds(int *list, int nlist);
 
 EXTERNCPP void ShiftColorbars(void);
 EXTERNCPP int GetColorbarState(void);
-EXTERNCPP void SMV_EXIT(int code);
 #ifdef CPP
 EXTERNCPP void InsertRollout(GLUI_Rollout *rollout, GLUI *dialog);
 #endif
@@ -1108,7 +1126,6 @@ EXTERNCPP void UpdateRenderType(int type);
 EXTERNCPP void UpdateMovieType(int type);
 EXTERNCPP void UpdateDisplay(void);
 EXTERNCPP void UpdateShowScene(void);
-EXTERNCPP void InitVolrenderScript(char *prefix, char *tour_label, int startframe, int skipframe);
 
 EXTERNCPP void UpdateGluiBoundaryUnits(void);
 EXTERNCPP void UpdateGluiSliceUnits(void);
@@ -1175,9 +1192,6 @@ EXTERNCPP void GetStartupBoundary(int seq_id);
 EXTERNCPP void Set3DSmokeStartup(void);
 EXTERNCPP void PutStartupSmoke3D(FILE *fileout);
 EXTERNCPP void GetNewPos(float *oldpos, float dx, float dy, float dz, float speed_factor);
-EXTERNCPP void FreeSkybox(void);
-EXTERNCPP void DrawSkybox(void);
-EXTERNCPP void LoadSkyTexture(char *filebase, texturedata *texti);
 EXTERNCPP void GetScreenMapping(float *xyz0, float *screen_perm);
 EXTERNCPP void ExtractFrustum(void);
 EXTERNCPP int BoxInFrustum(float *xx, float *yy, float *zz, int n);
@@ -1205,17 +1219,10 @@ EXTERNCPP void Hsl2Rgb(float *hslvals, unsigned char *rgbvals);
 EXTERNCPP void InitColorbarsDir(void);
 EXTERNCPP void InitTextureDir(void);
 
-EXTERNCPP void TransparentOff(void);
-EXTERNCPP void TransparentOn(void);
-EXTERNCPP void AntiAliasLine(int flag);
 EXTERNCPP void SliceBounds2Glui(int slicefile_labelindex);
-EXTERNCPP void UpdateLights(float *pos1, float *pos2);
-EXTERNCPP void ShowScene(int mode, int view_mode, int quad, GLint s_left, GLint s_down, screendata *screen);
 
 EXTERNCPP void UpdateBoundaryType(void);
 
-EXTERNCPP void SetViewPoint(int option);
-EXTERNCPP void DisplayVersionInfo(char *progname);
 EXTERNCPP void ScaleFloat2String(float floatfrom, char *stringto, const float *scale);
 EXTERNCPP float ScaleFloat2Float(float floatfrom, const float *scale);
 EXTERNCPP void ScaleString(const char *stringfrom, char *stringto, const float *scale);
