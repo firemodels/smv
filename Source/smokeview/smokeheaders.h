@@ -717,6 +717,25 @@ EXTERNCPP void InitPlot2D(plot2ddata *plot2di, int plot_index);
 EXTERNCPP void SetupPlot2DUnitData(void);
 EXTERNCPP void TimeAveragePlot2DData(float *times, float *vals, float *vals_avg, int nvals, float time_interval);
 
+//*** IOplot3d.c headers
+
+EXTERNCPP void DrawGrid(const meshdata *gb);
+EXTERNCPP void DrawPlot3dFrame(void);
+EXTERNCPP void DrawPlot3dTexture(meshdata *gb);
+EXTERNCPP void GetPlot3DHists(plot3ddata *p);
+EXTERNCPP int  GetPlot3dTime(float *time);
+EXTERNCPP void GetPlot3dUVW(float xyz[3], float uvw[3]);
+EXTERNCPP void InitPlot3dTimeList(void);
+EXTERNCPP FILE_SIZE ReadPlot3D(char *file, int ifile, int flag,int *errorcode);
+EXTERNCPP void UpdatePlot3DColors(plot3ddata *plot3di, int flag, int *errorcode);
+EXTERNCPP void MergePlot3DHistograms(void);
+EXTERNCPP void UpdateAllPlotSlices(void);
+EXTERNCPP void UpdatePlotSlice(int slicedir);
+EXTERNCPP void UpdatePlot3dMenuLabels(void);
+EXTERNCPP void UpdatePlotxyzAll(void);
+EXTERNCPP void UpdateShowStep(int val, int slicedir);
+EXTERNCPP void UpdateSurface(void);
+
 //*** menu.c headers
 
 EXTERNCPP void PrintFileLoadTimes(int file_count, FILE_SIZE load_size, float load_time);
@@ -745,8 +764,6 @@ EXTERNCPP int GetFontHeight(void);
 EXTERNCPP void LoadAllMultiSliceMenu(void);
 EXTERNCPP void LoadAllMultiVSliceMenu(void);
 
-EXTERNCPP void MergePlot3DHistograms(void);
-EXTERNCPP void GetPlot3DHists(plot3ddata *p);
 
 
 EXTERNCPP int GetStringWidth(char *string);
@@ -930,7 +947,6 @@ EXTERNCPP void LabelResort(labeldata *label);
 EXTERNCPP void KeyboardCB(unsigned char key, int x, int y);
 EXTERNCPP void MenuStatusCB(int status, int x, int y);
 
-EXTERNCPP void UpdatePlotxyzAll(void);
 EXTERNCPP void SetupGlut(int argc, char **argv);
 
 EXTERNCPP void UpdateSliceMenuShow(sliceparmdata *sp);
@@ -1025,7 +1041,6 @@ EXTERNCPP int InExterior(float *xyz);
 EXTERNCPP int  OnMeshBoundary(float *xyz);
 
 EXTERNCPP void RenderCB(int var);
-EXTERNCPP void GetPlot3dUVW(float xyz[3], float uvw[3]);
 EXTERNCPP void SolveShooterData(void);
 EXTERNCPP void DrawShooter(void);
 EXTERNCPP void LoadFiles(void);
@@ -1054,7 +1069,6 @@ EXTERNCPP int  RectangleInFrustum(float *x11, float *x12, float *x22, float *x21
 EXTERNCPP int UpdateSmoke3D(smoke3ddata *smoke3di);
 EXTERNCPP void DrawSmokeFrame(void);
 EXTERNCPP void DrawVolSmokeFrame(void);
-EXTERNCPP void DrawPlot3dFrame(void);
 EXTERNCPP void DrawVSliceFrame(void);
 EXTERNCPP void DrawSliceFrame(void);
 EXTERNCPP void DrawVGSliceData(vslicedata *vslicei);
@@ -1077,7 +1091,6 @@ EXTERNCPP char *STRSTR(char *c, const char *key);
 EXTERNCPP int GetTimeInterval(float val, float *array, int n);
 
 EXTERNCPP void SetUnitVis(void);
-EXTERNCPP void UpdateAllPlotSlices(void);
 EXTERNCPP int  MakeIBlank(void);
 EXTERNCPP int  MakeIBlankCarve(void);
 EXTERNCPP void MakeIBlankSmoke3D(void);
@@ -1088,14 +1101,12 @@ EXTERNCPP void UpdateUnitDefs(void);
 
 EXTERNCPP void SmoothIsoSurface(isosurface *surfacedata);
 EXTERNCPP void UpdateSliceFilenum(void);
-EXTERNCPP int  GetPlot3dTime(float *time);
 EXTERNCPP void Array2String(float *array, int narray, char *string);
 
 EXTERNCPP void *UpdateVSlices(void *arg);
 EXTERNCPP void GetGSliceParams(void);
 EXTERNCPP void UpdateSliceMenuLabels(sliceparmdata *sp);
 EXTERNCPP void UpdateVsliceMenuLabels(sliceparmdata *sp);
-EXTERNCPP void UpdatePlot3dMenuLabels(void);
 
 EXTERNCPP void Rgb2Hsl(unsigned char *rgbvals, float *hslvals);
 EXTERNCPP void Hsl2Rgb(float *hslvals, unsigned char *rgbvals);
@@ -1129,9 +1140,6 @@ EXTERNCPP void SetupScreeninfo(void);
 EXTERNCPP int  MergeRenderScreenBuffers360(void);
 EXTERNCPP GLubyte *GetScreenBuffer(void);
 EXTERNCPP void ShowScene(int mode, int view_mode, int quad, GLint s_left, GLint s_down, screendata *screen);
-EXTERNCPP void DrawPlot3dTexture(meshdata *gb);
-EXTERNCPP void UpdateShowStep(int val, int slicedir);
-EXTERNCPP void UpdatePlotSlice(int slicedir);
 
 EXTERNCPP void Render(int view_mode);
 EXTERNCPP void UpdateVSliceBoundIndexes(void);
@@ -1144,12 +1152,10 @@ EXTERNCPP void UpdateBoundaryType(void);
 EXTERNCPP void SetViewZMAXPersp(void);
 EXTERNCPP void UpdateTerrainOptions(void);
 EXTERNCPP void LoadPlot3dMenu(int value);
-EXTERNCPP void InitPlot3dTimeList(void);
 EXTERNCPP void DialogMenu(int value);
 EXTERNCPP void ApertureMenu(int value);
 EXTERNCPP void ZoomMenu(int value);
 EXTERNCPP int  NewMultiSlice(slicedata *sdold,slicedata *sd);
-EXTERNCPP void DrawGrid(const meshdata *gb);
 EXTERNCPP void DrawZoneRoomGeom(void);
 EXTERNCPP void DrawZoneFireData(void);
 EXTERNCPP void DrawZoneRoomData(void);
@@ -1163,7 +1169,6 @@ EXTERNCPP void UpdateTerrain(int allocate_memory);
 EXTERNCPP void RenderMenu(int value);
 EXTERNCPP void LoadSmoke3DMenu(int value);
 EXTERNCPP void DisplayVersionInfo(char *progname);
-EXTERNCPP void UpdateSurface(void);
 EXTERNCPP void ScaleFloat2String(float floatfrom, char *stringto, const float *scale);
 EXTERNCPP float ScaleFloat2Float(float floatfrom, const float *scale);
 EXTERNCPP void ScaleString(const char *stringfrom, char *stringto, const float *scale);
@@ -1174,8 +1179,6 @@ EXTERNCPP int  SetupCase(char *file);
 EXTERNCPP void InitUnitDefs(void);
 EXTERNCPP void InitUnits(void);
 EXTERNCPP f_units *GetUnitClass(char *unit);
-
-EXTERNCPP FILE_SIZE ReadPlot3D(char *file, int ifile, int flag,int *errorcode);
 
 EXTERNCPP void ReadZone(int ifile, int flag, int *errorcode);
 EXTERNCPP FILE_SIZE ReadVSlice(int ivslice, int time_frame, float *time_value, int flag, int set_slice_color, int *errorcode);
@@ -1210,7 +1213,6 @@ EXTERNCPP void GetZoneColors(const float *t, int nt, unsigned char *it,
                );
 
 EXTERNCPP int LoadAllPlot3D(float time);
-EXTERNCPP void UpdatePlot3DColors(plot3ddata *plot3di, int flag, int *errorcode);
 EXTERNCPP void SetSliceColors(float smin, float smax, slicedata *sd, int flag, int *errorcode);
 EXTERNCPP void MakeTimesMap(float *times, unsigned char **times_map_ptr, int n);
 EXTERNCPP int  SmokeviewImage2File(char *directory, char *GIFfilename, int rendertype, int woffset, int width, int hoffset, int height);
