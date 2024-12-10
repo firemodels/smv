@@ -8,11 +8,6 @@
 #include "readgeom.h"
 #include "readsmoke.h"
 
-//*** threader headers
-
-EXTERNCPP void *SetupFF(void *arg);
-EXTERNCPP void *PlayMovie(void *arg);
-
 //*** glui_bounds.cpp headers
 
 EXTERNCPP int  GLUIGetChopHide(char *label);
@@ -992,6 +987,29 @@ EXTERNCPP int SliceCell2Data(char *html_file, int option);
 EXTERNCPP int Smv2Html(char *html_out, int option, int from_where);
 EXTERNCPP int Smv2Geom(char *html_file);
 
+//*** renderimage.c headers
+
+#ifdef pp_RENDER360_DEBUG
+EXTERNCPP void DrawScreenInfo(void);
+#endif
+EXTERNCPP char *GetMovieFilePath(char *moviefile_path);
+EXTERNCPP void GetRenderResolution(int *width_low, int *height_low, int *width_high, int *height_high);
+EXTERNCPP GLubyte *GetScreenBuffer(void);
+EXTERNCPP void MakeMovie(void);
+EXTERNCPP int  MergeRenderScreenBuffers(int nscreen_rows, GLubyte **screenbuffers);
+EXTERNCPP int  MergeRenderScreenBuffers360(void);
+EXTERNCPP void *PlayMovie(void *arg);
+EXTERNCPP void Render(int view_mode);
+EXTERNCPP void RenderFrame(int view_mode);
+EXTERNCPP void ResetRenderResolution(int *width_low, int *height_low, int *width_high, int *height_high);
+EXTERNCPP void *SetupFF(void *arg);
+EXTERNCPP void SetupScreeninfo(void);
+EXTERNCPP int  SmokeviewImage2File(char *directory, char *GIFfilename, int rendertype, int woffset, int width, int hoffset, int height);
+#ifdef pp_LUA
+EXTERNCPP int SVimage2var(int rendertype, int woffset, int width, int hoffset, int height, gdImagePtr *RENDERimage);
+#endif
+
+
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 #ifdef pp_REFRESH
@@ -1058,8 +1076,6 @@ EXTERNCPP void UpdateCSVFileTypes(void);
 EXTERNCPP int HaveFireLoaded(void);
 EXTERNCPP int HaveSootLoaded(void);
 EXTERNCPP void InitRolloutList(void);
-EXTERNCPP void ResetRenderResolution(int *width_low, int *height_low, int *width_high, int *height_high);
-EXTERNCPP void GetRenderResolution(int *width_low, int *height_low, int *width_high, int *height_high);
 EXTERNCPP void InitScriptErrorFiles(void);
 EXTERNCPP void UpdateRenderListSkip(void);
 EXTERNCPP void UpdateFrameNumber(int changetime);
@@ -1072,17 +1088,12 @@ EXTERNCPP void PartBoundCB(int var);
 EXTERNCPP void UpdateColorbarSelectionIndex(int val);
 
 EXTERNCPP void UpdateBoundarySliceDups(void);
-#ifdef pp_RENDER360_DEBUG
-EXTERNCPP void DrawScreenInfo(void);
-#endif
 EXTERNCPP void GetGeomZBounds(float *zmin, float *zmax);
 EXTERNCPP void UpdateColorTable(colortabledata *ctableinfo, int nctableinfo);
-EXTERNCPP char *GetMovieFilePath(char *moviefile_path);
 EXTERNCPP void EnableDisableMakeMovie(int onoff);
 EXTERNCPP void EnableDisablePlayMovie(void);
 EXTERNCPP void HandleMakeMovie(void);
 EXTERNCPP void UpdateRenderStartButton(void);
-EXTERNCPP void MakeMovie(void);
 EXTERNCPP void UpdateRenderType(int type);
 EXTERNCPP void UpdateMovieType(int type);
 EXTERNCPP void UpdateDisplay(void);
@@ -1197,17 +1208,11 @@ EXTERNCPP void TransparentOn(void);
 EXTERNCPP void AntiAliasLine(int flag);
 EXTERNCPP void SliceBounds2Glui(int slicefile_labelindex);
 EXTERNCPP void UpdateLights(float *pos1, float *pos2);
-EXTERNCPP int  MergeRenderScreenBuffers(int nscreen_rows, GLubyte **screenbuffers);
-EXTERNCPP void SetupScreeninfo(void);
-EXTERNCPP int  MergeRenderScreenBuffers360(void);
-EXTERNCPP GLubyte *GetScreenBuffer(void);
 EXTERNCPP void ShowScene(int mode, int view_mode, int quad, GLint s_left, GLint s_down, screendata *screen);
 
-EXTERNCPP void Render(int view_mode);
 EXTERNCPP void UpdateBoundaryType(void);
 
 EXTERNCPP void SetViewPoint(int option);
-EXTERNCPP void RenderFrame(int view_mode);
 EXTERNCPP void DisplayVersionInfo(char *progname);
 EXTERNCPP void ScaleFloat2String(float floatfrom, char *stringto, const float *scale);
 EXTERNCPP float ScaleFloat2Float(float floatfrom, const float *scale);
@@ -1229,9 +1234,5 @@ EXTERNCPP void GetZoneColors(const float *t, int nt, unsigned char *it,
                char **zonelabels, float zonevalues[12], float *tvals256
                );
 
-EXTERNCPP int  SmokeviewImage2File(char *directory, char *GIFfilename, int rendertype, int woffset, int width, int hoffset, int height);
-#ifdef pp_LUA
-EXTERNCPP int SVimage2var(int rendertype, int woffset, int width, int hoffset, int height, gdImagePtr *RENDERimage);
-#endif
 
 #endif
