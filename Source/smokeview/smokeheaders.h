@@ -757,6 +757,12 @@ EXTERNCPP void SetTimeVal(float timeval);
 EXTERNCPP void SetViewZMAXPersp(void);
 EXTERNCPP void StartScript(void);
 
+//*** IOscript.c headers
+
+EXTERNCPP void DrawShooter(void);
+EXTERNCPP void InitShooterData(void);
+EXTERNCPP void SolveShooterData(void);
+
 
 //*** menu.c headers
 
@@ -891,7 +897,6 @@ EXTERNCPP void ReloadAllVectorSliceFiles(int load_flag);
 EXTERNCPP void UnloadAllSliceFiles(char *longlabel);
 EXTERNCPP void ParticleStreakShowMenu(int var);
 EXTERNCPP void Plot3DListMenu(int value);
-EXTERNCPP void InitShooterData(void);
 EXTERNCPP void ScriptCB(int var);
 EXTERNCPP void TourCB(int var);
 EXTERNCPP void SetClipControls(int val);
@@ -1045,8 +1050,6 @@ EXTERNCPP int InExterior(float *xyz);
 EXTERNCPP int  OnMeshBoundary(float *xyz);
 
 EXTERNCPP void RenderCB(int var);
-EXTERNCPP void SolveShooterData(void);
-EXTERNCPP void DrawShooter(void);
 EXTERNCPP void LoadFiles(void);
 EXTERNCPP void GetStartupVSlice(int seq_id);
 EXTERNCPP void GetStartupSlice(int seq_id);
