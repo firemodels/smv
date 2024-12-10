@@ -810,6 +810,20 @@ EXTERNCPP void UpdateViewTour(void);
 
 //*** IOwui.c headers
 
+EXTERNCPP void DrawTerrainGeom(int option);
+EXTERNCPP void DrawTerrainOBST(terraindata *terri, int flag);
+EXTERNCPP void DrawTerrainOBSTSides(meshdata *meshi);
+EXTERNCPP void DrawTerrainOBSTTexture(terraindata *terri);
+EXTERNCPP void DrawNorth(void);
+EXTERNCPP void DrawTrees(void);
+EXTERNCPP void GenerateTerrainGeom(float **vertices_arg, unsigned int **indices_arg, int *nindices_arg);
+EXTERNCPP float GetZCellValOffset(meshdata *meshi,float xval, float yval, int *loc);
+EXTERNCPP int  HaveTerrainSlice(void);
+EXTERNCPP int  HaveTerrainTexture(int *draw_surfaceptr);
+EXTERNCPP void UpdateTerrain(int allocate_memory);
+EXTERNCPP void UpdateTerrainColors(void);
+EXTERNCPP void UpdateTerrainOptions(void);
+
 //*** IOzone.c headers
 
 //*** menu.c headers
@@ -870,8 +884,6 @@ EXTERNCPP void OutputMinMax(char *meshlabel, char *label, char *unit, float valm
 FILE_SIZE LoadSmoke3D(int type, int frame, int *count, float *time_value);
 EXTERNCPP int GetNSliceFrames(char *file, float *stime_min, float *stime_max);
 EXTERNCPP void GenerateSliceMenu(int from_commandline);
-void DrawTerrainGeom(int option);
-void GenerateTerrainGeom(float **vertices_arg, unsigned int **indices_arg, int *nindices_arg);
 
 EXTERNCPP void GetSliceFileHeader(char *file, int *ip1, int *ip2, int *jp1, int *jp2, int *kp1, int *kp2, int *error);
 EXTERNCPP int TimeAverageData(float **data_out, float **data_in, int ndata, int data_per_timestep, float *times_local, int ntimes_local, float average_time);
@@ -958,7 +970,6 @@ EXTERNCPP void GeometryMenu(int var);
 EXTERNCPP void DrawScreenInfo(void);
 #endif
 EXTERNCPP void GetGeomZBounds(float *zmin, float *zmax);
-EXTERNCPP void DrawNorth(void);
 EXTERNCPP void UpdateColorTable(colortabledata *ctableinfo, int nctableinfo);
 EXTERNCPP char *GetMovieFilePath(char *moviefile_path);
 EXTERNCPP int GetNumActiveDevices(void);
@@ -1016,11 +1027,6 @@ EXTERNCPP void ParticlePropShowMenu(int value);
 EXTERNCPP void UpdateSliceContours(int slice_type_index, float line_min, float line_max, int nline_values);
 EXTERNCPP void ScriptMenu(int var);
 EXTERNCPP void SmokeColorbarMenu(int var);
-EXTERNCPP void UpdateTerrainColors(void);
-EXTERNCPP void DrawTerrainOBST(terraindata *terri, int flag);
-EXTERNCPP void DrawTerrainOBSTTexture(terraindata *terri);
-EXTERNCPP void DrawTerrainOBSTSides(meshdata *meshi);
-EXTERNCPP void DrawTrees(void);
 #ifdef pp_GPU
 EXTERNCPP int  InitShaders(void);
 EXTERNCPP void LoadSmokeShaders(void);
@@ -1033,8 +1039,6 @@ EXTERNCPP void UnLoadShaders(void);
 EXTERNCPP float *InitSphere2(int nlat, int nlong);
 EXTERNCPP void DrawHalfSphere(void);
 #endif
-EXTERNCPP int  HaveTerrainSlice(void);
-EXTERNCPP float GetZCellValOffset(meshdata *meshi,float xval, float yval, int *loc);
 
 EXTERNCPP void Rgb2Labs(unsigned char *rgbs255, float *labs);
 
@@ -1120,7 +1124,6 @@ EXTERNCPP void DrawVolSliceVerts(const slicedata *sd);
 EXTERNCPP void SortSlices(void);
 EXTERNCPP void DrawSortSlices(void);
 EXTERNCPP void DrawSortSlicesDebug(void);
-EXTERNCPP int HaveTerrainTexture(int *draw_surfaceptr);
 
 EXTERNCPP void DrawSmoke3DVol(void);
 EXTERNCPP void InitSliceData(void);
@@ -1172,7 +1175,6 @@ EXTERNCPP void UpdateSliceBoundIndexes(void);
 EXTERNCPP void UpdateSliceBoundLabels(void);
 EXTERNCPP void UpdateBoundaryType(void);
 
-EXTERNCPP void UpdateTerrainOptions(void);
 EXTERNCPP void LoadPlot3dMenu(int value);
 EXTERNCPP void DialogMenu(int value);
 EXTERNCPP void ApertureMenu(int value);
@@ -1187,7 +1189,6 @@ EXTERNCPP void DrawZoneFirePlume(float radius, float height, float maxheight);
 EXTERNCPP void DrawZoneVentDataProfile(void);
 EXTERNCPP void SetViewPoint(int option);
 EXTERNCPP void RenderFrame(int view_mode);
-EXTERNCPP void UpdateTerrain(int allocate_memory);
 EXTERNCPP void RenderMenu(int value);
 EXTERNCPP void LoadSmoke3DMenu(int value);
 EXTERNCPP void DisplayVersionInfo(char *progname);
