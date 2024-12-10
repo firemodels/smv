@@ -685,7 +685,6 @@ EXTERNCPP void MergePlot3DHistograms(void);
 EXTERNCPP void UpdateAllPlotSlices(void);
 EXTERNCPP void UpdatePlotSlice(int slicedir);
 EXTERNCPP void UpdatePlot3dMenuLabels(void);
-EXTERNCPP void UpdatePlotxyzAll(void);
 EXTERNCPP void UpdateShowStep(int val, int slicedir);
 EXTERNCPP void UpdateSurface(void);
 
@@ -1041,6 +1040,58 @@ EXTERNCPP void TransparentOff(void);
 EXTERNCPP void TransparentOn(void);
 EXTERNCPP void UpdateLights(float *pos1, float *pos2);
 
+//*** smv_geometry.c headers
+
+EXTERNCPP int BoxInFrustum(float *xx, float *yy, float *zz, int n);
+EXTERNCPP void DrawFilledTetra(float *v1, float *v2, float *v3, float *v4, unsigned char *rgbcolor);
+EXTERNCPP void DrawFilled2Tetra(float *v1, float *v2, float *v3, float *v4,
+   unsigned char *rgb0color,unsigned char *rgb1color,unsigned char *rgb2color,unsigned char *rgb3color,int *vis_state);
+EXTERNCPP void DrawTetraOutline(float *v1, float *v2, float *v3, float *v4, unsigned char *rgbcolor);
+EXTERNCPP void ExtractFrustum(void);
+EXTERNCPP void GetInverse(float *m, float *mi);
+EXTERNCPP meshdata *GetMesh(float *xyz);
+EXTERNCPP meshdata *GetMeshNoFail(float *xyz);
+EXTERNCPP void GetNewPos(float *oldpos, float dx, float dy, float dz, float speed_factor);
+EXTERNCPP void GetScreenMapping(float *xyz0, float *screen_perm);
+EXTERNCPP int GetTimeInterval(float val, float *array, int n);
+EXTERNCPP int InExterior(float *xyz);
+EXTERNCPP void InitClip(void);
+EXTERNCPP void InitTetraClipInfo(clipdata *ci,float *v1, float *v2, float *v3, float *v4);
+EXTERNCPP void MatMultMat(float *m1, float *m2, float *m3);
+EXTERNCPP int  MakeIBlank(void);
+EXTERNCPP int  MakeIBlankCarve(void);
+EXTERNCPP void MergeClipPlanes(clipdata *ci, clipdata *cj);
+EXTERNCPP int  MeshInFrustum(meshdata *meshi);
+EXTERNCPP int  RectangleInFrustum(float *x11, float *x12, float *x22, float *x21);
+EXTERNCPP void SetClipPlanes(clipdata *ci, int option);
+EXTERNCPP void Slerp(float *p0, float *p1, float t, float *pout);
+EXTERNCPP void UpdatePlotxyzAll(void);
+
+//*** update.c
+
+EXTERNCPP int CompareFloat(const void *arg1, const void *arg2);
+EXTERNCPP void EnableDisableMakeMovie(int onoff);
+EXTERNCPP void EnableDisablePlayMovie(void);
+EXTERNCPP int GetIndex(float key, const float *list, int nlist);
+EXTERNCPP int GetPlotState(int choice);
+EXTERNCPP float GetTime(void);
+EXTERNCPP void HandleMakeMovie(void);
+EXTERNCPP int HaveFireLoaded(void);
+EXTERNCPP int HaveSootLoaded(void);
+EXTERNCPP int ISearch(float *list, int nlist, float key, int guess);
+EXTERNCPP void OutputMinMax(char *meshlabel, char *label, char *unit, float valmin_fds, float valmax_fds, float valmin_smv, float valmax_smv);
+EXTERNCPP void PauseTime(float pause_time);
+EXTERNCPP void ResetItimes0(void);
+EXTERNCPP void ShiftColorbars(void);
+EXTERNCPP void UpdateClipbounds(int set_i0, int *i0, int set_i1, int *i1, int maxi);
+EXTERNCPP int GetColorbarState(void);
+EXTERNCPP void UpdateColorTable(colortabledata *ctableinfo, int nctableinfo);
+EXTERNCPP void UpdateDisplay(void);
+EXTERNCPP void UpdateFrameNumber(int changetime);
+EXTERNCPP void UpdateShow(void);
+EXTERNCPP void UpdateShowScene(void);
+EXTERNCPP void UpdateTimes(void);
+
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 #ifdef pp_REFRESH
@@ -1057,33 +1108,20 @@ EXTERNCPP void UpdateShowHRRPUVPlot(int val);
 
 EXTERNCPP void InitStartupDirs(void);
 
-
 EXTERNCPP int GetStringWidth(char *string);
-EXTERNCPP int GetPlotState(int choice);
 
 #ifndef TERRAIN_FIRE_LINE_UPDATE
 #define TERRAIN_FIRE_LINE_UPDATE 39
 #endif
 
-EXTERNCPP void UpdateClipbounds(int set_i0, int *i0, int set_i1, int *i1, int maxi);
 EXTERNCPP void ClipCB(int var);
-EXTERNCPP int CompareFloat(const void *arg1, const void *arg2);
-EXTERNCPP void ResetItimes0(void);
-EXTERNCPP void UpdateShow(void);
 EXTERNCPP void SynchTimes(void);
-EXTERNCPP void UpdateTimes(void);
-EXTERNCPP int GetIndex(float key, const float *list, int nlist);
-EXTERNCPP int ISearch(float *list, int nlist, float key, int guess);
 
 EXTERNCPP int GLUTGetScreenWidth(void);
 EXTERNCPP int GLUTGetScreenHeight(void);
 
-EXTERNCPP void OutputMinMax(char *meshlabel, char *label, char *unit, float valmin_fds, float valmax_fds, float valmin_smv, float valmax_smv);
-
 EXTERNCPP void GetSliceFileHeader(char *file, int *ip1, int *ip2, int *jp1, int *jp2, int *kp1, int *kp2, int *error);
 bufferstreamdata *GetSMVBuffer(char *file);
-
-EXTERNCPP void PauseTime(float pause_time);
 
 EXTERNCPP char *GetHomeDir(void);
 EXTERNCPP void SetPercentileDrawOff(void);
@@ -1094,19 +1132,14 @@ EXTERNCPP void SetLoadedPatchBounds(int *list, int nlist);
 EXTERNCPP void SetLoadedPlot3DBounds(void);
 EXTERNCPP void SetLoadedPartBounds(int *list, int nlist);
 
-EXTERNCPP void ShiftColorbars(void);
-EXTERNCPP int GetColorbarState(void);
 #ifdef CPP
 EXTERNCPP void InsertRollout(GLUI_Rollout *rollout, GLUI *dialog);
 #endif
 
 EXTERNCPP void UpdateCSVFileTypes(void);
-EXTERNCPP int HaveFireLoaded(void);
-EXTERNCPP int HaveSootLoaded(void);
 EXTERNCPP void InitRolloutList(void);
 EXTERNCPP void InitScriptErrorFiles(void);
 EXTERNCPP void UpdateRenderListSkip(void);
-EXTERNCPP void UpdateFrameNumber(int changetime);
 EXTERNCPP void UpdateOpacityMap(void);
 EXTERNCPP void UpdateGluiRotateAbout(int val);
 EXTERNCPP void ScriptCB(int var);
@@ -1117,15 +1150,9 @@ EXTERNCPP void UpdateColorbarSelectionIndex(int val);
 
 EXTERNCPP void UpdateBoundarySliceDups(void);
 EXTERNCPP void GetGeomZBounds(float *zmin, float *zmax);
-EXTERNCPP void UpdateColorTable(colortabledata *ctableinfo, int nctableinfo);
-EXTERNCPP void EnableDisableMakeMovie(int onoff);
-EXTERNCPP void EnableDisablePlayMovie(void);
-EXTERNCPP void HandleMakeMovie(void);
 EXTERNCPP void UpdateRenderStartButton(void);
 EXTERNCPP void UpdateRenderType(int type);
 EXTERNCPP void UpdateMovieType(int type);
-EXTERNCPP void UpdateDisplay(void);
-EXTERNCPP void UpdateShowScene(void);
 
 EXTERNCPP void UpdateGluiBoundaryUnits(void);
 EXTERNCPP void UpdateGluiSliceUnits(void);
@@ -1133,18 +1160,8 @@ EXTERNCPP void UpdateGluiSliceUnits(void);
 EXTERNCPP void GetBoundaryParams(void);
 
 EXTERNCPP void AddDeleteKeyframe(int flag);
-EXTERNCPP void Slerp(float *p0, float *p1, float t, float *pout);
 EXTERNCPP void VentMenu(int value);
 
-EXTERNCPP void MergeClipPlanes(clipdata *ci, clipdata *cj);
-EXTERNCPP void InitTetraClipInfo(clipdata *ci,float *v1, float *v2, float *v3, float *v4);
-EXTERNCPP void InitClip(void);
-EXTERNCPP void SetClipPlanes(clipdata *ci, int option);
-
-EXTERNCPP void DrawFilledTetra(float *v1, float *v2, float *v3, float *v4, unsigned char *rgbcolor);
-EXTERNCPP void DrawFilled2Tetra(float *v1, float *v2, float *v3, float *v4,
-   unsigned char *rgb0color,unsigned char *rgb1color,unsigned char *rgb2color,unsigned char *rgb3color,int *vis_state);
-EXTERNCPP void DrawTetraOutline(float *v1, float *v2, float *v3, float *v4, unsigned char *rgbcolor);
 EXTERNCPP void GetViewportInfo(void);
 
 EXTERNCPP int  LabelInit(labeldata *gl);
@@ -1174,9 +1191,6 @@ EXTERNCPP void InitVars(void);
  * @brief Free the global variables initialized by @ref InitVars.
  */
 EXTERNCPP void FreeVars(void);
-EXTERNCPP meshdata *GetMesh(float *xyz);
-EXTERNCPP meshdata *GetMeshNoFail(float *xyz);
-EXTERNCPP int InExterior(float *xyz);
 
 EXTERNCPP int  OnMeshBoundary(float *xyz);
 
@@ -1191,21 +1205,9 @@ EXTERNCPP void GetStartupISO(int seq_id);
 EXTERNCPP void GetStartupBoundary(int seq_id);
 EXTERNCPP void Set3DSmokeStartup(void);
 EXTERNCPP void PutStartupSmoke3D(FILE *fileout);
-EXTERNCPP void GetNewPos(float *oldpos, float dx, float dy, float dz, float speed_factor);
-EXTERNCPP void GetScreenMapping(float *xyz0, float *screen_perm);
-EXTERNCPP void ExtractFrustum(void);
-EXTERNCPP int BoxInFrustum(float *xx, float *yy, float *zz, int n);
-EXTERNCPP int MeshInFrustum(meshdata *meshi);
-EXTERNCPP int  RectangleInFrustum(float *x11, float *x12, float *x22, float *x21);
-
-EXTERNCPP void GetInverse(float *m, float *mi);
-EXTERNCPP void MatMultMat(float *m1, float *m2, float *m3);
 EXTERNCPP char *STRSTR(char *c, const char *key);
-EXTERNCPP int GetTimeInterval(float val, float *array, int n);
 
 EXTERNCPP void SetUnitVis(void);
-EXTERNCPP int  MakeIBlank(void);
-EXTERNCPP int  MakeIBlankCarve(void);
 EXTERNCPP void GetUnitInfo(const char *unitlabel, int *unitclass, int *unittype);
 EXTERNCPP float GetUnitVal(const char *unitlabel, float oldval, int ndecimals);
 
