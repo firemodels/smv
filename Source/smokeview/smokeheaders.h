@@ -826,6 +826,17 @@ EXTERNCPP void UpdateTerrainOptions(void);
 
 //*** IOzone.c headers
 
+EXTERNCPP void DrawZoneFireData(void);
+EXTERNCPP void DrawZoneFirePlume(float radius, float height, float maxheight);
+EXTERNCPP void DrawZoneRoomData(void);
+EXTERNCPP void DrawZoneRoomGeom(void);
+EXTERNCPP void DrawZoneVentData(void);
+EXTERNCPP void DrawZoneVentDataProfile(void);
+EXTERNCPP void DrawZoneWallData(void);
+EXTERNCPP void GetZoneTempBounds(void);
+EXTERNCPP void ReadZone(int ifile, int flag, int *errorcode);
+
+
 //*** menu.c headers
 
 EXTERNCPP void PrintFileLoadTimes(int file_count, FILE_SIZE load_size, float load_time);
@@ -911,7 +922,6 @@ EXTERNCPP void SetLoadedPartBounds(int *list, int nlist);
 EXTERNCPP void ShiftColorbars(void);
 EXTERNCPP int GetColorbarState(void);
 EXTERNCPP void SMV_EXIT(int code);
-EXTERNCPP void GetZoneTempBounds(void);
 EXTERNCPP FILE_SIZE GetSliceData(slicedata *sd, const char *slicefilename, int time_frame, int *is1ptr, int *is2ptr, int *js1ptr, int *js2ptr, int *ks1ptr, int *ks2ptr, int *idirptr,
   float *qminptr, float *qmaxptr, float *qdataptr, float *timesptr, int ntimes_old_arg, int *ntimesptr,
   int tload_step_arg, int tload_beg_arg, int settmax_s_arg, float tmin_s_arg, float tmax_s_arg
@@ -1180,13 +1190,6 @@ EXTERNCPP void DialogMenu(int value);
 EXTERNCPP void ApertureMenu(int value);
 EXTERNCPP void ZoomMenu(int value);
 EXTERNCPP int  NewMultiSlice(slicedata *sdold,slicedata *sd);
-EXTERNCPP void DrawZoneRoomGeom(void);
-EXTERNCPP void DrawZoneFireData(void);
-EXTERNCPP void DrawZoneRoomData(void);
-EXTERNCPP void DrawZoneVentData(void);
-EXTERNCPP void DrawZoneWallData(void);
-EXTERNCPP void DrawZoneFirePlume(float radius, float height, float maxheight);
-EXTERNCPP void DrawZoneVentDataProfile(void);
 EXTERNCPP void SetViewPoint(int option);
 EXTERNCPP void RenderFrame(int view_mode);
 EXTERNCPP void RenderMenu(int value);
@@ -1203,7 +1206,6 @@ EXTERNCPP void InitUnitDefs(void);
 EXTERNCPP void InitUnits(void);
 EXTERNCPP f_units *GetUnitClass(char *unit);
 
-EXTERNCPP void ReadZone(int ifile, int flag, int *errorcode);
 EXTERNCPP FILE_SIZE ReadVSlice(int ivslice, int time_frame, float *time_value, int flag, int set_slice_color, int *errorcode);
 
 EXTERNCPP FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_value, int flag, int set_slicecolor, int *errorcode);
