@@ -967,6 +967,23 @@ EXTERNCPP void UpdateStreakValue(float value);
 EXTERNCPP void ViewpointMenu(int value);
 EXTERNCPP void ZoomMenu(int value);
 
+//*** output.c headers
+
+EXTERNCPP void DrawLabels(labels_collection *labelscoll);
+EXTERNCPP  int GetFontHeight(void);
+EXTERNCPP float GetStringLength(char *string);
+EXTERNCPP void Output3Text(float *color, float x, float y, float z, char *string);
+EXTERNCPP void Output3TextRight(float *color, float x, float y, float z, char *string, float pad_length);
+EXTERNCPP void Output3Val(float x, float y, float z, float val);
+EXTERNCPP void OutputAxisLabels(void);
+EXTERNCPP void OutputBarText(float x, float y, const GLfloat *color, char *string);
+EXTERNCPP void OutputLargeText(float x, float y, char *string);
+EXTERNCPP void OutputText(float x, float y, char *string);
+EXTERNCPP void OutputTextColor(float *fontcolor, float x, float y, char *string);
+EXTERNCPP void ScaleFont2D(void);
+EXTERNCPP void ScaleFont3D(void);
+EXTERNCPP void WriteLabels(labels_collection *labelscoll);
+
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 #ifdef pp_REFRESH
@@ -983,7 +1000,6 @@ EXTERNCPP void UpdateShowHRRPUVPlot(int val);
 
 EXTERNCPP void InitStartupDirs(void);
 
-EXTERNCPP int GetFontHeight(void);
 
 EXTERNCPP int GetStringWidth(char *string);
 EXTERNCPP int GetPlotState(int choice);
@@ -1090,8 +1106,6 @@ EXTERNCPP void DrawFilled2Tetra(float *v1, float *v2, float *v3, float *v4,
 EXTERNCPP void DrawTetraOutline(float *v1, float *v2, float *v3, float *v4, unsigned char *rgbcolor);
 EXTERNCPP void GetViewportInfo(void);
 
-EXTERNCPP void ScaleFont2D(void);
-EXTERNCPP void ScaleFont3D(void);
 EXTERNCPP int  LabelInit(labeldata *gl);
 EXTERNCPP void LabelResort(labeldata *label);
 
@@ -1144,8 +1158,6 @@ EXTERNCPP void GetStartupISO(int seq_id);
 EXTERNCPP void GetStartupBoundary(int seq_id);
 EXTERNCPP void Set3DSmokeStartup(void);
 EXTERNCPP void PutStartupSmoke3D(FILE *fileout);
-EXTERNCPP void WriteLabels(labels_collection *labelscoll);
-EXTERNCPP void DrawLabels(labels_collection *labelscoll);
 EXTERNCPP void GetNewPos(float *oldpos, float dx, float dy, float dz, float speed_factor);
 EXTERNCPP void FreeSkybox(void);
 EXTERNCPP void DrawSkybox(void);
@@ -1206,15 +1218,6 @@ EXTERNCPP void InitUnits(void);
 EXTERNCPP f_units *GetUnitClass(char *unit);
 
 EXTERNCPP int  STRCMP(const char *s1, const char *s2);
-EXTERNCPP void OutputAxisLabels(void);
-EXTERNCPP void OutputLargeText(float x, float y, char *string);
-EXTERNCPP void OutputText(float x, float y, char *string);
-EXTERNCPP void OutputTextColor(float *fontcolor, float x, float y, char *string);
-EXTERNCPP void Output3TextRight(float *color, float x, float y, float z, char *string, float pad_length);
-EXTERNCPP void Output3Text(float *color, float x, float y, float z, char *string);
-EXTERNCPP void Output3Val(float x, float y, float z, float val);
-EXTERNCPP void OutputBarText(float x, float y, const GLfloat *color, char *string);
-EXTERNCPP float GetStringLength(char *string);
 EXTERNCPP void UpdateShowExtPatch(int show_option, int hide_option);
 EXTERNCPP void UpdateShowIntPatch(int show_option, int hide_option);
 
