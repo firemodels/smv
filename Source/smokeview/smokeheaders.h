@@ -14,8 +14,6 @@ EXTERNCPP void *SetupFF(void *arg);
 EXTERNCPP void *MtLoadAllPartFiles(void *arg);
 EXTERNCPP void *PlayMovie(void *arg);
 EXTERNCPP void *ReadVolsmokeAllFramesAllMeshes2(void *arg);
-EXTERNCPP void *MtMergeSmoke3D(void *arg);
-EXTERNCPP void UpdateGluiMergeSmoke(void);
 
 //*** glui_bounds.cpp headers
 
@@ -763,6 +761,38 @@ EXTERNCPP void DrawShooter(void);
 EXTERNCPP void InitShooterData(void);
 EXTERNCPP void SolveShooterData(void);
 
+//*** IOslice.c headers
+
+//*** IOsmoke.c headers
+
+EXTERNCPP void DrawSmokeFrame(void);
+EXTERNCPP void DrawVolSmokeFrame(void);
+EXTERNCPP void GetSmoke3DTimeSteps(int fortran_skip, char *smokefile, int version, int *ntimes_found, int *ntimes_full);
+EXTERNCPP int GetSmokeNFrames(int type, float *tmin, float *tmax);
+EXTERNCPP void InitAlphas(unsigned char *alphanew,
+                          float base_extinct, float new_extinct,
+                          float base_dx, float new_dx);
+EXTERNCPP int  IsSmokeComponentPresent(smoke3ddata *smoke3di);
+EXTERNCPP void MakeIBlankSmoke3D(void);
+EXTERNCPP void MakeTimesMap(float *times, unsigned char **times_map_ptr, int n);
+EXTERNCPP void MergeSmoke3D(smoke3ddata *smoke3dset);
+EXTERNCPP void *MtMergeSmoke3D(void *arg);
+EXTERNCPP FILE_SIZE ReadSmoke3D(int iframe, int ifile, int flag, int first_time, int *errorcode);
+EXTERNCPP void ReadSmoke3DAllMeshes(int iframe, int smoketype, int *errorcode);
+EXTERNCPP void SmokeWrapup(void);
+EXTERNCPP void UpdateGluiMergeSmoke(void);
+EXTERNCPP int   UpdateSmoke3D(smoke3ddata *smoke3di);
+EXTERNCPP void UpdateSmoke3dFileParms(void);
+EXTERNCPP void UpdateSmoke3dMenuLabels(void);
+EXTERNCPP void UpdateSmokeAlphas(void);
+
+//*** IOtour.c headers
+
+//*** IOvolsmoke.c headers
+
+//*** IOwui.c headers
+
+//*** IOzone.c headers
 
 //*** menu.c headers
 
@@ -819,8 +849,6 @@ EXTERNCPP void HideSlices(char *longlabel);
 
 EXTERNCPP void OutputMinMax(char *meshlabel, char *label, char *unit, float valmin_fds, float valmax_fds, float valmin_smv, float valmax_smv);
 
-EXTERNCPP int GetSmokeNFrames(int type, float *tmin, float *tmax);
-EXTERNCPP void SmokeWrapup(void);
 FILE_SIZE LoadSmoke3D(int type, int frame, int *count, float *time_value);
 EXTERNCPP int GetNSliceFrames(char *file, float *stime_min, float *stime_max);
 EXTERNCPP void GenerateSliceMenu(int from_commandline);
@@ -879,13 +907,11 @@ EXTERNCPP int Obst2Data(char *html_file);
 EXTERNCPP int SliceNode2Data(char *html_file, int option);
 EXTERNCPP int SliceCell2Data(char *html_file, int option);
 EXTERNCPP void GetFileSizes(void);
-EXTERNCPP int IsSmokeComponentPresent(smoke3ddata *smoke3di);
 EXTERNCPP void GetSliceDataBounds(slicedata *sd, float *pmin, float *pmax);
 EXTERNCPP void UpdateAllSliceColors(int slicetype, int *errorcode);
 EXTERNCPP void UpdateSliceBounds(void);
 EXTERNCPP void ResetRenderResolution(int *width_low, int *height_low, int *width_high, int *height_high);
 EXTERNCPP void GetRenderResolution(int *width_low, int *height_low, int *width_high, int *height_high);
-EXTERNCPP void UpdateSmoke3dFileParms(void);
 EXTERNCPP void SkipMenu(int value);
 EXTERNCPP void InitScriptErrorFiles(void);
 EXTERNCPP void UpdateRenderListSkip(void);
@@ -907,10 +933,6 @@ EXTERNCPP void UnloadVSliceMenu(int value);
 EXTERNCPP void UpdateSliceDups(sliceparmdata *sp);
 EXTERNCPP void UpdateColorbarSelectionIndex(int val);
 
-EXTERNCPP void UpdateSmokeAlphas(void);
-EXTERNCPP void InitAlphas(unsigned char *alphanew,
-                          float base_extinct, float new_extinct,
-                          float base_dx, float new_dx);
 EXTERNCPP void ShowDevicesMenu(int value);
 EXTERNCPP void UpdateBoundarySliceDups(void);
 EXTERNCPP void UnLoadVolsmoke3DMenu(int value);
@@ -1067,15 +1089,11 @@ EXTERNCPP void FreeSkybox(void);
 EXTERNCPP void DrawSkybox(void);
 EXTERNCPP void LoadSkyTexture(char *filebase, texturedata *texti);
 EXTERNCPP void SetTour(tourdata *thetour);
-EXTERNCPP void MergeSmoke3D(smoke3ddata *smoke3dset);
 EXTERNCPP void GetScreenMapping(float *xyz0, float *screen_perm);
 EXTERNCPP void ExtractFrustum(void);
 EXTERNCPP int BoxInFrustum(float *xx, float *yy, float *zz, int n);
 EXTERNCPP int MeshInFrustum(meshdata *meshi);
 EXTERNCPP int  RectangleInFrustum(float *x11, float *x12, float *x22, float *x21);
-EXTERNCPP int UpdateSmoke3D(smoke3ddata *smoke3di);
-EXTERNCPP void DrawSmokeFrame(void);
-EXTERNCPP void DrawVolSmokeFrame(void);
 EXTERNCPP void DrawVSliceFrame(void);
 EXTERNCPP void DrawSliceFrame(void);
 EXTERNCPP void DrawVGSliceData(vslicedata *vslicei);
@@ -1089,7 +1107,6 @@ EXTERNCPP void DrawSortSlicesDebug(void);
 EXTERNCPP int HaveTerrainTexture(int *draw_surfaceptr);
 
 EXTERNCPP void DrawSmoke3DVol(void);
-EXTERNCPP void UpdateSmoke3dMenuLabels(void);
 EXTERNCPP void InitSliceData(void);
 EXTERNCPP void GetInverse(float *m, float *mi);
 EXTERNCPP void MatMultMat(float *m1, float *m2, float *m3);
@@ -1100,7 +1117,6 @@ EXTERNCPP int GetTimeInterval(float val, float *array, int n);
 EXTERNCPP void SetUnitVis(void);
 EXTERNCPP int  MakeIBlank(void);
 EXTERNCPP int  MakeIBlankCarve(void);
-EXTERNCPP void MakeIBlankSmoke3D(void);
 EXTERNCPP void GetUnitInfo(const char *unitlabel, int *unitclass, int *unittype);
 EXTERNCPP float GetUnitVal(const char *unitlabel, float oldval, int ndecimals);
 
@@ -1189,9 +1205,6 @@ EXTERNCPP f_units *GetUnitClass(char *unit);
 EXTERNCPP void ReadZone(int ifile, int flag, int *errorcode);
 EXTERNCPP FILE_SIZE ReadVSlice(int ivslice, int time_frame, float *time_value, int flag, int set_slice_color, int *errorcode);
 
-EXTERNCPP void GetSmoke3DTimeSteps(int fortran_skip, char *smokefile, int version, int *ntimes_found, int *ntimes_full);
-EXTERNCPP void ReadSmoke3DAllMeshes(int iframe, int smoketype, int *errorcode);
-EXTERNCPP FILE_SIZE ReadSmoke3D(int iframe, int ifile, int flag, int first_time, int *errorcode);
 EXTERNCPP FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_value, int flag, int set_slicecolor, int *errorcode);
 
 EXTERNCPP void InitMenus(void);
@@ -1220,7 +1233,6 @@ EXTERNCPP void GetZoneColors(const float *t, int nt, unsigned char *it,
 
 EXTERNCPP int LoadAllPlot3D(float time);
 EXTERNCPP void SetSliceColors(float smin, float smax, slicedata *sd, int flag, int *errorcode);
-EXTERNCPP void MakeTimesMap(float *times, unsigned char **times_map_ptr, int n);
 EXTERNCPP int  SmokeviewImage2File(char *directory, char *GIFfilename, int rendertype, int woffset, int width, int hoffset, int height);
 #ifdef pp_LUA
 EXTERNCPP int SVimage2var(int rendertype, int woffset, int width, int hoffset, int height, gdImagePtr *RENDERimage);
