@@ -13,6 +13,7 @@
 #include "IOvolsmoke.h"
 #include "infoheader.h"
 #include "glui_bounds.h"
+#include "glui_motion.h"
 #include "glui_smoke.h"
 #include "c_api.h"
 #include "gd.h"
