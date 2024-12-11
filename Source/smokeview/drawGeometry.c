@@ -7,6 +7,7 @@
 #include GLUT_H
 
 #include "smokeviewvars.h"
+#include "IOobjects.h"
 #include "readimage.h"
 
 cadgeomdata *current_cadgeom;

@@ -12,6 +12,7 @@
 #include "dmalloc.h"
 #include "glui_smoke.h"
 #include "glui_bounds.h"
+#include "glui_motion.h"
 #include "histogram.h"
 
 void SetResearchMode(int flag);
@@ -3044,7 +3045,7 @@ GLUI_RadioButton *RADIOBUTTON_zone_permax=NULL;
 #define ISO_ROLLOUT      3
 #define PART_ROLLOUT     4
 #define PLOT3D_ROLLOUT   6
-#define SLICE_ROLLOUT    7
+#define SLICE_ROLLOUT_BOUNDS    7
 #define HVACDUCT_ROLLOUT 8
 #define HVACNODE_ROLLOUT 9
 
@@ -3562,7 +3563,7 @@ void BoundRolloutCB(int var){
     if(var==ZONE_ROLLOUT){
       GLUISliceBoundCB(SETZONEVALMINMAX);
     }
-    if(var==SLICE_ROLLOUT){
+    if(var==SLICE_ROLLOUT_BOUNDS){
       list_slice_index = CLAMP(list_slice_index,0,nlist_slice_index-1);
       if(RADIO_slice!=NULL)RADIO_slice->set_int_val(list_slice_index);
       GLUISliceBoundCB(FILETYPE_INDEX);
@@ -4226,7 +4227,7 @@ extern "C" void BoundBoundCB(int var){
     }
     updatemenu = 1;
     break;
-  case STARTUP:
+  case BOUND_STARTUP:
     BoundsDlgCB(SAVE_SETTINGS_BOUNDS);
     break;
   case SAVE_FILE_LIST:
@@ -5380,9 +5381,9 @@ hvacductboundsCPP.setup("hvac", ROLLOUT_hvacduct, hvacductbounds_cpp, nhvacductb
 
   if(slicecoll.nsliceinfo>0){
     glui_active=1;
-    ROLLOUT_slice = glui_bounds->add_rollout_to_panel(ROLLOUT_filebounds,"Slice",false,SLICE_ROLLOUT,BoundRolloutCB);
+    ROLLOUT_slice = glui_bounds->add_rollout_to_panel(ROLLOUT_filebounds,"Slice",false,SLICE_ROLLOUT_BOUNDS,BoundRolloutCB);
     INSERT_ROLLOUT(ROLLOUT_slice, glui_bounds);
-    ADDPROCINFO(boundprocinfo, nboundprocinfo, ROLLOUT_slice, SLICE_ROLLOUT, glui_bounds);
+    ADDPROCINFO(boundprocinfo, nboundprocinfo, ROLLOUT_slice, SLICE_ROLLOUT_BOUNDS, glui_bounds);
 
     sliceboundsCPP.setup("slice", ROLLOUT_slice, slicebounds_cpp, nslicebounds_cpp, &cache_slice_data, HIDE_CACHE_CHECKBOX, GLUIHVACSliceBoundsCPP_CB,
       SliceRolloutCB, sliceprocinfo, &nsliceprocinfo);
@@ -5639,7 +5640,7 @@ hvacductboundsCPP.setup("hvac", ROLLOUT_hvacduct, hvacductbounds_cpp, nhvacductb
   INSERT_ROLLOUT(ROLLOUT_autoload, glui_bounds);
   ADDPROCINFO(loadprocinfo, nloadprocinfo, ROLLOUT_autoload, LOAD_AUTO_ROLLOUT, glui_bounds);
 
-  glui_bounds->add_checkbox_to_panel(ROLLOUT_autoload, _("Auto load at startup"), &loadfiles_at_startup, STARTUP, BoundBoundCB);
+  glui_bounds->add_checkbox_to_panel(ROLLOUT_autoload, _("Auto load at startup"), &loadfiles_at_startup, BOUND_STARTUP, BoundBoundCB);
   glui_bounds->add_button_to_panel(ROLLOUT_autoload, _("Save auto load file list"), SAVE_FILE_LIST, BoundBoundCB);
   glui_bounds->add_button_to_panel(ROLLOUT_autoload, _("Auto load now"), LOAD_FILES, BoundBoundCB);
 

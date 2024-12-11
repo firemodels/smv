@@ -15,6 +15,7 @@
 #include "smokeviewvars.h"
 #include "IOscript.h"
 #include "getdata.h"
+#include "glui_bounds.h"
 
 #include "readslice.h"
 

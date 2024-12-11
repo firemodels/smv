@@ -53,6 +53,7 @@
 #ifndef pp_NOQUARTZ     // if used, passed in from the command line so we don'thave to change source
 #define pp_QUARTZ       // use Quartz
 #endif
+#define GL_SILENCE_DEPRECATION
 #endif
 
 #ifdef pp_QUARTZ

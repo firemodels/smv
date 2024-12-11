@@ -6,6 +6,7 @@
 #include <math.h>
 
 #include "smokeviewvars.h"
+#include "glui_bounds.h"
 
 #define EXPMIN -1
 #define EXPMAX 3

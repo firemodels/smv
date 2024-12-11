@@ -9,6 +9,7 @@
 #include <ctype.h>
 #include "smokeviewvars.h"
 #include "glui_bounds.h"
+#include "glui_motion.h"
 
 GLUI *glui_colorbar=NULL;
 

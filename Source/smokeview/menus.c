@@ -13,9 +13,14 @@
 
 #include "string_util.h"
 #include "smokeviewvars.h"
+#include "glui_bounds.h"
+#include "glui_motion.h"
 #include "IOvolsmoke.h"
 #include "readhvac.h"
 #include "readobject.h"
+#include "IOobjects.h"
+#include "IOscript.h"
+#include "viewports.h"
 
 void LoadHVACMenu(int value);
 void LoadPlot2DMenu(int value);
@@ -4163,9 +4168,6 @@ void LoadAllPartFiles(int partnum){
 
 void SetupPart(int value){
   int i;
-
-#define SETVALMIN 1
-#define SETVALMAX 2
   int *list = NULL, nlist = 0;
 
   NewMemory((void **)&list, npartinfo*sizeof(int));

@@ -6,6 +6,7 @@
 #include <math.h>
 
 #include "smokeviewvars.h"
+#include "glui_bounds.h"
 #include "IOscript.h"
 
 #ifdef _DEBUG

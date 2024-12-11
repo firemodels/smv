@@ -5,128 +5,9 @@
 #include "gd.h"
 #endif
 
-#include "readgeom.h"
-#include "readsmoke.h"
-
 #ifndef TERRAIN_FIRE_LINE_UPDATE
 #define TERRAIN_FIRE_LINE_UPDATE 39
 #endif
-
-//*** glui_bounds.cpp headers
-
-EXTERNCPP int  GLUIGetChopHide(char *label);
-EXTERNCPP void GLUISetChopHide(char *label, int val);
-
-EXTERNCPP int  GLUIGetChopMin(int type, char *label, int *set_valmin, float *valmin);
-EXTERNCPP int  GLUIGetChopMax(int type, char *label, int *set_valmax, float *valmax);
-EXTERNCPP int  GLUISetChopMin(int type, char *label, int set_chopmin, float chopmin);
-EXTERNCPP int  GLUISetChopMax(int type, char *label, int set_chopmax, float chopmax);
-
-EXTERNCPP void GLUIUpdateTextureDisplay(void);
-EXTERNCPP void GLUIUpdateLoadAllSlices(void);
-EXTERNCPP void GLUIUpdateMeshBounds(void);
-EXTERNCPP void GLUIUpdateLoadWhenLoaded(void);
-EXTERNCPP void GLUIBoundsSetup(int main_window);
-EXTERNCPP void GLUIUpdatePartPointSize(void);
-EXTERNCPP void GLUIUpdateBoundTbounds(void);
-EXTERNCPP void GLUIUpdatePlotLabel(void);
-EXTERNCPP void GLUIHVACDuctBoundsCPP_CB(int var);
-EXTERNCPP void GLUIHVACNodeBoundsCPP_CB(int var);
-EXTERNCPP void GLUISplitCB(int var);
-EXTERNCPP void GLUIPlot3DBoundCB(int var);
-EXTERNCPP void GLUIUpdateSliceSkip(void);
-EXTERNCPP void GLUIUpdateHVACDuctType(void);
-EXTERNCPP  void GLUIUpdateSliceXYZ(void);
-EXTERNCPP void GLUIPartBoundsCPP_CB(int var);
-EXTERNCPP void GLUIUpdatdateResearchModeCPP(void);
-EXTERNCPP void GLUISliceBoundsSetupNoGraphics(void);
-EXTERNCPP void GLUIGetGlobalBoundsMinMax(int type, char *label, float *valmin, float *valmax);
-EXTERNCPP void GLUIHVACSliceBoundsCPP_CB(int var);
-EXTERNCPP void GLUIPatchBoundsCPP_CB(int var);
-EXTERNCPP cpp_boundsdata *GLUIGetBoundsData(int type);
-EXTERNCPP void GLUISetCacheFlag(int type, int cache_flag);
-EXTERNCPP void GLUISetValTypeIndex(int type, int valtype_index);
-EXTERNCPP int GLUIGetNValtypes(int type);
-EXTERNCPP void GLUIGetMinMax(int type, char *label, int *set_valmin, float *valmin, int *set_valmax, float *valmax);
-EXTERNCPP void GLUIGetOnlyMinMax(int type, char* label, int* set_valmin, float* valmin, int* set_valmax, float* valmax);
-EXTERNCPP void GLUIGetMinMaxAll(int type, int *set_valmin, float *valmin, int *set_valmax, float *valmax, int *nall);
-EXTERNCPP void GLUISetMin(int type, char *label, int set_valmin, float valmin);
-EXTERNCPP void GLUISetMax(int type, char *label, int set_valmax, float valmax);
-EXTERNCPP void GLUISetMinMax(int type, char *label, int set_valmin, float valmin, int set_valmax, float valmax);
-EXTERNCPP void GLUISetMinMaxAll(int type, int *set_valmin, float *valmin, int *set_valmax, float *valmax, int nall);
-EXTERNCPP void GLUISetGlobalMinMaxAll(int type, float *valmin, float *valmax, int nall);
-EXTERNCPP void GLUISetLoadedMinMaxAll(int type, float *valmin, float *valmax, int nall);
-EXTERNCPP void GLUIGetGlobalMinMaxAll(int type, float *valmin, float *valmax, int nall);
-EXTERNCPP void GLUIGetLoadedMinMaxAll(int type, float *valmin, float *valmax, int nall);
-EXTERNCPP void GLUIUpdateBounds(void);
-EXTERNCPP void GLUIPlot3DBoundsCPP_CB(int var);
-EXTERNCPP void GLUISetColorbarDigitsCPP(int ndigits);
-EXTERNCPP void GLUIUpdatePartFast(void);
-EXTERNCPP void GLUIUpdateColorbarControls2(void);
-EXTERNCPP void GLUISetColorbarDigits(void);
-EXTERNCPP void GLUIIncrementPartPropIndex(void);
-EXTERNCPP void GLUIUpdateIsoBounds();
-EXTERNCPP void GLUIUpdateListIsoColorobar(void);
-EXTERNCPP void GLUIUpdateUseLighting(void);
-EXTERNCPP void GLUIImmersedBoundCB(int var);
-EXTERNCPP void GLUIShowBoundsDialog(int type);
-EXTERNCPP void GLUIExtremeCB(int var);
-EXTERNCPP void GLUIUpdateExtremeVals(void);
-EXTERNCPP void GLUIIsoBoundCB(int var);
-EXTERNCPP void GLUIUpdateScriptStep(void);
-EXTERNCPP void GLUIAddScriptList(char *file, int id);
-EXTERNCPP void GLUISliceInObstMenu2Dialog(int var);
-EXTERNCPP void GLUIUpdateColorTableList(int ncolortableinfo_old);
-EXTERNCPP void GLUIUpdateIsoColorlevel(void);
-EXTERNCPP void GLUIUpdateZoneBounds(void);
-EXTERNCPP void GLUIScriptDisable(void);
-EXTERNCPP void GLUIScriptEnable(void);
-EXTERNCPP void GLUIUpdateVecFactor(void);
-EXTERNCPP void GLUIUpdatePlot3Dtype(void);
-EXTERNCPP void GLUIUpdateIsotype(void);
-EXTERNCPP void GLUIUpdateStreakValue(float rvalue);
-EXTERNCPP void GLUISetLabelControls2(void);
-EXTERNCPP void GLUIShowBounds(int menu_id);
-EXTERNCPP void GLUIHideBounds(void);
-EXTERNCPP void GLUIUpdateBoundaryListIndex(int patchfilenum);
-EXTERNCPP void GLUIUpdatePlot3dListIndex(void);
-EXTERNCPP void GLUISetColorbarListBound(int val);
-SVEXTERN void GLUIUpdatePlot2DSize2(void);
-SVEXTERN void GLUIUpdateVectorWidgets(void);
-EXTERNCPP void GLUIUpdateTransparency(void);
-EXTERNCPP void GLUIUpdateScriptStart(void);
-EXTERNCPP void GLUIUpdateResearchMode(void);
-EXTERNCPP void GLUIUpdateScriptStop(void);
-EXTERNCPP void GLUIUpdateTBounds(void);
-EXTERNCPP void GLUIUpdateTimeBounds(float time_min, float time_max);
-EXTERNCPP void GLUIUpdateColorbarFlip(void);
-EXTERNCPP void GLUICompressOnOff(int flag);
-EXTERNCPP void GLUIUpdateColorbarListBound(int flag);
-EXTERNCPP void GLUIUpdateColorbarBound(void);
-EXTERNCPP void GLUIUpdateOverwrite(void);
-EXTERNCPP void GLUIUpdatePlot3dDisplay(void);
-EXTERNCPP void GLUIUpdateSortSlices(void);
-EXTERNCPP void GLUIUpdateExtreme(void);
-EXTERNCPP void GLUISliceBoundCB(int var);
-EXTERNCPP void GLUIUpdateChar(void);
-EXTERNCPP void GLUIUpdateTracers(void);
-EXTERNCPP void GLUIUpdateShowHideButtons(void);
-#ifdef pp_REFRESH
-EXTERNCPP void GLUIRefreshDialogs(void);
-#endif
-EXTERNCPP void GLUIUpdateVectorpointsize(void);
-EXTERNCPP void GLUIUpdateSliceDupDialog(void);
-EXTERNCPP void SetLoadedSliceBounds(int *list, int nlist);
-EXTERNCPP void SetLoadedPatchBounds(int *list, int nlist);
-EXTERNCPP void SetLoadedPlot3DBounds(void);
-EXTERNCPP void SetLoadedPartBounds(int *list, int nlist);
-EXTERNCPP void ScriptCB(int var);
-EXTERNCPP void PartBoundCB(int var);
-EXTERNCPP void UpdateColorbarSelectionIndex(int val);
-EXTERNCPP void SliceBounds2Glui(int slicefile_labelindex);
-EXTERNCPP void UpdateShowExtPatch(int show_option, int hide_option);
-EXTERNCPP void UpdateShowIntPatch(int show_option, int hide_option);
-
 
 //*** glui_clip.cpp headers
 
@@ -202,64 +83,6 @@ EXTERNCPP void GLUIUpdateGeometryControls(void);
 EXTERNCPP void GLUIUpdateHVACVarLists(void);
 EXTERNCPP void GetGeomZBounds(float *zmin, float *zmax);
 
-//*** glui_motion.cpp headers
-
-EXTERNCPP void GLUIMotionSetup(int main_window);
-EXTERNCPP void GLUIViewpointCB(int val);
-EXTERNCPP void GLUIUpdateMovieParms(void);
-EXTERNCPP void GLUISetCurrentViewPoint(char *viewpoint_label);
-EXTERNCPP void GLUIUpdateUseGeomFactors(void);
-EXTERNCPP void GLUIUpdateWindowAspect(void);
-EXTERNCPP void GLUIShrinkDialogs(void);
-#ifdef CPP
-EXTERNCPP void GLUICloseRollouts(GLUI *dialog);
-EXTERNCPP void GLUIToggleRollout(procdata *procinfo, int nprocinfo, int motion_id);
-#endif
-EXTERNCPP void GLUIUpdatePosView(void);
-EXTERNCPP void GLUIUpdateRenderRadioButtons(int width_low, int height_low, int width_high, int height_high);
-EXTERNCPP void GLUIUpdateZAxisCustom(void);
-EXTERNCPP void GLUIUpdateShowGravityVector(void);
-EXTERNCPP void GLUIUpdateShowRotationCenter(void);
-EXTERNCPP void GLUIUpdateShowRotationCenter2(void);
-EXTERNCPP void GLUIUpdateRotationIndex(int val);
-EXTERNCPP void GLUIUpdateRender(void);
-EXTERNCPP void GLUIEnable360Zoom(void);
-EXTERNCPP void GLUIEnableDisableMakeMovieCPP(int onoff);
-EXTERNCPP void GLUIEnableDisablePlayMovieCPP(void);
-EXTERNCPP void GLUIAddListView(char *label_in);
-EXTERNCPP void GLUIUpdateViewpointList(void);
-EXTERNCPP void GLUIUpdateCameraLabel(void);
-EXTERNCPP void GLUISceneMotionCB(int var);
-EXTERNCPP void GLUIUpdateWindowSizeList(void);
-EXTERNCPP void GLUIUpdateGsliceParms(void);
-EXTERNCPP void GLUIUpdateResolutionMultiplier(void);
-EXTERNCPP void GLUISetColorControls(void);
-EXTERNCPP void GLUIShowMotion(int menu_id);
-EXTERNCPP void GLUIHideMotion(void);
-EXTERNCPP void GLUIUpdateZoom(void);
-EXTERNCPP void GLUISetPosXYZSMV(float *xyz);
-EXTERNCPP void GLUISetPosXYZFDS(float *xyz);
-EXTERNCPP void GLUIUpdateFileLabel(int var);
-EXTERNCPP void GLUIRotationTypeCB(int var);
-EXTERNCPP void GLUIUpdateRotationType(int val);
-EXTERNCPP void GLUIEnableResetSavedView(void);
-EXTERNCPP void GLUIResetView(int ival);
-EXTERNCPP void GLUIUpdateProjectionType(void);
-EXTERNCPP void GLUIUpdateMeshList1(int val);
-EXTERNCPP void GLUIUpdateTranslate(void);
-EXTERNCPP void GLUIShowHideTranslate(int var);
-EXTERNCPP void GLUISetStartupView(void);
-#ifdef CPP
-EXTERNCPP void InsertRollout(GLUI_Rollout *rollout, GLUI *dialog);
-#endif
-EXTERNCPP void InitRolloutList(void);
-EXTERNCPP void UpdateRenderListSkip(void);
-EXTERNCPP void UpdateGluiRotateAbout(int val);
-EXTERNCPP void UpdateRenderStartButton(void);
-EXTERNCPP void UpdateRenderType(int type);
-EXTERNCPP void UpdateMovieType(int type);
-EXTERNCPP void RenderCB(int var);
-
 //*** glui_objects.cpp headers
 
 EXTERNCPP void GLUIDeviceCB(int val);
@@ -283,29 +106,6 @@ EXTERNCPP void GLUIUpdatePlot2DSize(void);
 EXTERNCPP void GLUIUpdateDeviceAdd(void);
 EXTERNCPP void GLUIGenPlotCB(int var);
 EXTERNCPP void UpdateCSVFileTypes(void);
-
-
-//*** glui_smoke.cpp headers
-
-EXTERNCPP void GLUIGetPixelsPerTriangle(void);
-EXTERNCPP void GLUIForceAlphaOpaque(void);
-EXTERNCPP void GLUI3dSmokeSetup(int main_window);
-EXTERNCPP void GLUISmoke3dCB(int var);
-EXTERNCPP void GLUIUpdateCO2ColorbarList(int value);
-EXTERNCPP void GLUIUpdateFireColorbarList(void);
-EXTERNCPP void GLUIUpdateFreeze(int val);
-EXTERNCPP void GLUIUpdateLoadTimeVal(float val);
-EXTERNCPP void GLUIUpdateTimeFrameBounds(float time_min, float time_max);
-EXTERNCPP void GLUIUpdateLoadFrameVal(int frames);
-EXTERNCPP void GLUIUpdateLoadFrameMax(int max_frames);
-EXTERNCPP void GLUISmoke3dCB(int var);
-EXTERNCPP void GLUIUpdateFireAlpha(void);
-#ifdef pp_SMOKE16
-EXTERNCPP void GLUIUpdateSmoke16(void);
-#endif
-EXTERNCPP void GLUIUpdateSmoke3dFlags(void);
-EXTERNCPP void GLUICreateVolTourList(void);
-EXTERNCPP void GLUIDeleteVolTourList(void);
 
 //*** glui_stereo.cpp headers
 
@@ -376,7 +176,6 @@ EXTERNCPP void UpdateCurrentMesh(meshdata *meshi);
 EXTERNCPP void UpdatePlot3dTitle(void);
 EXTERNCPP void WindowStatus(int state);
 EXTERNCPP void KeyboardCB(unsigned char key, int x, int y);
-
 
 //*** camera.c headers
 
@@ -640,38 +439,6 @@ EXTERNCPP void UpdateIsoTypes(void);
 EXTERNCPP void UpdateIsoShowLevels(void);
 EXTERNCPP void *UpdateTrianglesAll(void *arg);
 
-//*** IOobject.c headers
-
-EXTERNCPP void DeviceData2WindRose(int nr, int ntheta);
-EXTERNCPP void DrawDevices(int mode);
-EXTERNCPP void DrawDevicesVal(void);
-EXTERNCPP void DrawCircle(float diameter, unsigned char *rgbcolor, circdata *circinfo);
-EXTERNCPP void DrawFilledCircle(float diameter, unsigned char *rgbcolor, circdata *circinfo);
-EXTERNCPP void DrawFilledRectangle(float width, float height, unsigned char *rgbcolor);
-EXTERNCPP void DrawRectangle(float width, float height, unsigned char *rgbcolor);
-EXTERNCPP void DrawWindRosesDevices(void);
-EXTERNCPP devicedata *GetCSVDeviceFromLabel(char *label, int index);
-EXTERNCPP devicedata *GetDeviceFromLabel(char *label, int index);
-EXTERNCPP int GetDeviceIndexFromLabel(char *label);
-EXTERNCPP char *GetDeviceLabel(char *buffer);
-EXTERNCPP float GetDeviceVal(float time_local, devicedata *devicei, int *valid);
-EXTERNCPP void GetGlobalDeviceBounds(int type);
-EXTERNCPP int GetNDevices(char *file);
-EXTERNCPP void GetSmokeSensors(void);
-EXTERNCPP int HaveSmokeSensor(void);
-EXTERNCPP void InitDevicePlane(devicedata *devicei);
-EXTERNCPP void InitializeDeviceCsvData(int flag);
-EXTERNCPP void InitSphere(int nlat, int nlong);
-EXTERNCPP FILE_SIZE ReadDeviceData(char *file, int filetype, int flag);
-EXTERNCPP void RGBTest(void);
-EXTERNCPP void SetupZoneDevs(void);
-EXTERNCPP void UpdateColorDevices(void);
-EXTERNCPP void UpdateObjectUsed(void);
-#ifdef pp_SKY
-EXTERNCPP float *InitSphere2(int nlat, int nlong);
-EXTERNCPP void DrawHalfSphere(void);
-#endif
-
 //*** IOpart.c headers
 
 EXTERNCPP void ClosePartFiles(void);
@@ -733,27 +500,6 @@ EXTERNCPP void UpdatePlotSlice(int slicedir);
 EXTERNCPP void UpdatePlot3dMenuLabels(void);
 EXTERNCPP void UpdateShowStep(int val, int slicedir);
 EXTERNCPP void UpdateSurface(void);
-
-//*** IOscript.c headers
-
-EXTERNCPP int  CompileScript(char *scriptfile);
-EXTERNCPP char *GetIniFileName(int id);
-EXTERNCPP void GetNewScriptFileName(char *newscriptfilename);
-EXTERNCPP char *GetScriptFileName(int id);
-EXTERNCPP int  GetVolFrameMax(int meshnum);
-EXTERNCPP inifiledata *InsertIniFile(char *file);
-EXTERNCPP scriptfiledata *InsertScriptFile(char *file);
-EXTERNCPP void LoadSmokeFrame(int meshnum, int framenum);
-EXTERNCPP void LoadTimeFrame(int meshnum, float timeval);
-EXTERNCPP int  RunScriptCommand(scriptdata *script_command);
-EXTERNCPP void ScriptLoadIsoFrame2(scriptdata *scripti);
-EXTERNCPP void ScriptLoadSliceRender(scriptdata*scripti);
-EXTERNCPP void ScriptLoadSmokeRender(scriptdata *scripti);
-EXTERNCPP void ScriptLoadVolSmokeFrame2(void);
-EXTERNCPP void ScriptViewXYZMINMAXOrtho(int option);
-EXTERNCPP void SetTimeVal(float timeval);
-EXTERNCPP void SetViewZMAXPersp(void);
-EXTERNCPP void StartScript(void);
 
 //*** IOshooter.c headers
 
@@ -855,14 +601,6 @@ EXTERNCPP void SetupCircularTourNodes(void);
 EXTERNCPP void SetupTour(void);
 EXTERNCPP void UpdateTourMenuLabels(void);
 EXTERNCPP void UpdateViewTour(void);
-
-//*** IOvolsmoke.c headers
-
-EXTERNCPP void DefineVolsmokeTextures(void);
-EXTERNCPP void DrawSmoke3DVol(void);
-EXTERNCPP void *InitNabors(void *arg);
-EXTERNCPP void MakeFireColors(float temp_min, float temp_max, int nfire_colors_arg);
-EXTERNCPP void *ReadVolsmokeAllFramesAllMeshes2(void *arg);
 
 //*** IOwui.c headers
 
@@ -1119,9 +857,6 @@ EXTERNCPP int  OnMeshBoundary(float *xyz);
 
 //*** startup.c headers
 
-/**
- * @brief Free the global variables initialized by @ref InitVars.
- */
 EXTERNCPP void FreeVars(void);
 EXTERNCPP char *GetHomeDir(void);
 EXTERNCPP void GetStartupVSlice(int seq_id);
@@ -1180,9 +915,4 @@ EXTERNCPP void UpdateFrameNumber(int changetime);
 EXTERNCPP void UpdateShow(void);
 EXTERNCPP void UpdateShowScene(void);
 EXTERNCPP void UpdateTimes(void);
-
-//*** viewports.c headers
-
-EXTERNCPP int GetStringWidth(char *string);
-EXTERNCPP void GetViewportInfo(void);
 #endif

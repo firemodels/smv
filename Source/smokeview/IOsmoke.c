@@ -11,6 +11,7 @@
 #include <float.h>
 
 #include "smokeviewvars.h"
+#include "glui_smoke.h"
 #include "IOvolsmoke.h"
 #include "compress.h"
 #include "getdata.h"

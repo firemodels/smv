@@ -13,6 +13,8 @@
 #include "IOscript.h"
 #include "glui_motion.h"
 #include "glui_smoke.h"
+#include "glui_bounds.h"
+#include "IOobjects.h"
 
 static char param_buffer[1024];
 static int param_status, line_number;

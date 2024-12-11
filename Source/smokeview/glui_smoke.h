@@ -87,5 +87,28 @@
 #define VOLTEST_UPDATE 103
 #define FORCE_ALPHA_OPAQUE 104
 #define MERGE_SMOKE 105
+
+//*** glui_smoke.cpp headers
+
+EXTERNCPP void GLUIGetPixelsPerTriangle(void);
+EXTERNCPP void GLUIForceAlphaOpaque(void);
+EXTERNCPP void GLUI3dSmokeSetup(int main_window);
+EXTERNCPP void GLUISmoke3dCB(int var);
+EXTERNCPP void GLUIUpdateCO2ColorbarList(int value);
+EXTERNCPP void GLUIUpdateFireColorbarList(void);
+EXTERNCPP void GLUIUpdateFreeze(int val);
+EXTERNCPP void GLUIUpdateLoadTimeVal(float val);
+EXTERNCPP void GLUIUpdateTimeFrameBounds(float time_min, float time_max);
+EXTERNCPP void GLUIUpdateLoadFrameVal(int frames);
+EXTERNCPP void GLUIUpdateLoadFrameMax(int max_frames);
+EXTERNCPP void GLUISmoke3dCB(int var);
+EXTERNCPP void GLUIUpdateFireAlpha(void);
+#ifdef pp_SMOKE16
+EXTERNCPP void GLUIUpdateSmoke16(void);
+#endif
+EXTERNCPP void GLUIUpdateSmoke3dFlags(void);
+EXTERNCPP void GLUICreateVolTourList(void);
+EXTERNCPP void GLUIDeleteVolTourList(void);
+
 #endif
 

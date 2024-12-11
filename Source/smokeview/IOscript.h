@@ -116,5 +116,27 @@
 #define NOT_LOADRENDER (current_script_command->command!=SCRIPT_LOADSLICERENDER && current_script_command->command != SCRIPT_LOADSMOKERENDER)
 #define IS_LOADRENDER  (current_script_command->command==SCRIPT_LOADSLICERENDER || current_script_command->command == SCRIPT_LOADSMOKERENDER)
 
+//*** IOscript.c headers
+
+EXTERNCPP int  CompileScript(char *scriptfile);
+EXTERNCPP char *GetIniFileName(int id);
+EXTERNCPP void GetNewScriptFileName(char *newscriptfilename);
+EXTERNCPP char *GetScriptFileName(int id);
+EXTERNCPP int  GetVolFrameMax(int meshnum);
+EXTERNCPP inifiledata *InsertIniFile(char *file);
+EXTERNCPP scriptfiledata *InsertScriptFile(char *file);
+EXTERNCPP void LoadSmokeFrame(int meshnum, int framenum);
+EXTERNCPP void LoadTimeFrame(int meshnum, float timeval);
+EXTERNCPP int  RunScriptCommand(scriptdata *script_command);
+EXTERNCPP void ScriptLoadIsoFrame2(scriptdata *scripti);
+EXTERNCPP void ScriptLoadSliceRender(scriptdata *scripti);
+EXTERNCPP void ScriptLoadSmokeRender(scriptdata *scripti);
+EXTERNCPP void ScriptLoadVolSmokeFrame2(void);
+EXTERNCPP void ScriptViewXYZMINMAXOrtho(int option);
+EXTERNCPP void SetTimeVal(float timeval);
+EXTERNCPP void SetViewZMAXPersp(void);
+EXTERNCPP void StartScript(void);
+
+
 #endif
 

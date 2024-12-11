@@ -9,4 +9,9 @@ void ViewportSlicePlot(int quad, GLint s_left, GLint s_down);
 void ViewportVerticalColorbar(int quad, GLint s_left, GLint s_down);
 void ViewportTitle(int quad, GLint s_left, GLint s_down);
 void ViewportScene(int quad, int view_mode, GLint s_left, GLint s_down, screendata *screen);
+
+//*** viewports.c headers
+
+EXTERNCPP int GetStringWidth(char *string);
+EXTERNCPP void GetViewportInfo(void);
 #endif
