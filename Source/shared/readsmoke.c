@@ -8,7 +8,7 @@
 #include "MALLOCC.h"
 #include "contourdefs.h"
 #include "histogram.h"
-#include "isodefs.h"
+#include "isobox.h"
 #include "readsmoke.h"
 #include "smokeviewdefs.h"
 #include "string_util.h"

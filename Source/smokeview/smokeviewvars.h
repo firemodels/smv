@@ -9,7 +9,7 @@
 #include "translate.h"
 #include "csphere.h"
 #include "smokeviewdefs.h"
-#include "isodefs.h"
+#include "isobox.h"
 #include "contourdefs.h"
 #include "histogram.h"
 #include "structures.h"

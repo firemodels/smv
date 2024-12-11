@@ -13,7 +13,7 @@
 #include <stdio.h>
 #include "MALLOCC.h"
 #define IN_ISOBOX
-#include "isodefs.h"
+#include "isobox.h"
 #include "datadefs.h"
 
 #define GAS 1

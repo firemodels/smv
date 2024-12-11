@@ -7,7 +7,7 @@
 #include <string.h>
 #include "smokeviewdefs.h"
 #include "contourdefs.h"
-#include "isodefs.h"
+#include "isobox.h"
 #include "histogram.h"
 #include "structures.h"
 #include "datadefs.h"

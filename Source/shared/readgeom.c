@@ -6,7 +6,7 @@
 
 #include <string.h>
 #include "smokeviewdefs.h"
-#include "isodefs.h"
+#include "isobox.h"
 #include "histogram.h"
 #include "datadefs.h"
 #include "readgeom.h"

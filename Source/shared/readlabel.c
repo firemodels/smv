@@ -7,7 +7,7 @@
 
 #include "MALLOCC.h"
 #include "histogram.h"
-#include "isodefs.h"
+#include "isobox.h"
 #include "readlabel.h"
 #include "shared_structures.h"
 #include "string_util.h"
