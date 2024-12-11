@@ -5,7 +5,7 @@
 #include "env2mod.h"
 #include "datadefs.h"
 #include "string_util.h"
-#include "MALLOCC.h"
+#include "dmalloc.h"
 
 /* ------------------ NextLine ------------------------ */
 

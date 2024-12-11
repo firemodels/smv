@@ -113,9 +113,9 @@ int GetCBSimpleType(colorbardata *cbi){
   return cbi->nnodes - 1;
 }
 
-/* ------------------ UpdateNodeLabel ------------------------ */
+/* ------------------ GLUIUpdateNodeLabel ------------------------ */
 
-void UpdateNodeLabel(colorbardata *cbi){
+void GLUIUpdateNodeLabel(colorbardata *cbi){
   char label_nodes[sizeof(GLUI_String)];
 
   if(cbi->adjusted == 1){
@@ -135,7 +135,7 @@ void UpdateNodeLabel(colorbardata *cbi){
 void ColorbarGeneral2Simple(colorbardata *cbi){
   int i;
 
-  UpdateNodeLabel(cbi);
+  GLUIUpdateNodeLabel(cbi);
   update_colorbar_dialog = 1;
 
   if(cbi->nnodes > 5||cbi->nnodes<2){

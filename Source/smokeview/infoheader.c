@@ -4,7 +4,7 @@
 #include <string.h>
 #include GLUT_H
 
-#include "MALLOCC.h"
+#include "dmalloc.h"
 #include "infoheader.h"
 #include "smokeviewvars.h"
 

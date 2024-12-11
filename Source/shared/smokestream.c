@@ -15,7 +15,7 @@
 #endif
 #include <time.h>
 #include <math.h>
-#include "MALLOCC.h"
+#include "dmalloc.h"
 #include "smokeviewvars.h"
 #include "smokestream.h"
 

@@ -8,7 +8,7 @@
 #include <math.h>
 #include "histogram.h"
 #include "pragmas.h"
-#include "MALLOCC.h"
+#include "dmalloc.h"
 #include "datadefs.h"
 
 /* ------------------ GetHistogramCDF ------------------------ */

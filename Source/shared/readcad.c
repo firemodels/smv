@@ -11,11 +11,11 @@
 #include GLU_H
 #include GL_H
 
-#include "MALLOCC.h"
+#include "dmalloc.h"
 #include "file_util.h"
 #include "string_util.h"
 
-#include "isodefs.h"
+#include "isobox.h"
 #include "readcad.h"
 #include "readimage.h"
 

@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "stdio_buffer.h"
-#include "MALLOCC.h"
+#include "dmalloc.h"
 #include "string_util.h"
 
 /* ------------------ OutputFileBuffer ------------------------ */

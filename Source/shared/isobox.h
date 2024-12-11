@@ -97,6 +97,7 @@ SV_EXTERN int UpdateIsosurface(isosurface *surface,
                       const int *triangles,
                       int ntriangles);
 
+SV_EXTERN void SmoothIsoSurface(isosurface *surfacedata);
 SV_EXTERN void DrawIsosurface(const isosurface *isodata);
 SV_EXTERN void FreeSurface(isosurface *surfacedata);
 SV_EXTERN void InitIsoSurface(isosurface *surfacedata, float level, float *color, int colorindex);

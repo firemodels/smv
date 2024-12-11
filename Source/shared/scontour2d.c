@@ -2,8 +2,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include GLUT_H
-#include "contourdefs.h"
-#include "MALLOCC.h"
+#include "scontour2d.h"
+#include "dmalloc.h"
 
 #define SOLID 0
 #define GAS 1

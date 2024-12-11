@@ -1,7 +1,7 @@
 #ifndef SMOKEVIEWVARS_H_DEFINED
 #define SMOKEVIEWVARS_H_DEFINED
 #include <time.h>
-#include "MALLOCC.h"
+#include "dmalloc.h"
 #ifdef CPP
 #include "glui.h"
 #endif
@@ -9,8 +9,8 @@
 #include "translate.h"
 #include "csphere.h"
 #include "smokeviewdefs.h"
-#include "isodefs.h"
-#include "contourdefs.h"
+#include "isobox.h"
+#include "scontour2d.h"
 #include "histogram.h"
 #include "structures.h"
 #include "readhvac.h"

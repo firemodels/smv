@@ -8,7 +8,7 @@
 
 #include "smokeviewvars.h"
 #include "IOscript.h"
-#include "MALLOCC.h"
+#include "dmalloc.h"
 #include "glui_smoke.h"
 #include "glui_bounds.h"
 #include "histogram.h"

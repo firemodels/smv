@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#include "MALLOCC.h"
+#include "dmalloc.h"
 #include "string_util.h"
 #include "translate.h"
 

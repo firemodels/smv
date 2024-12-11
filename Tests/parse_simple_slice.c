@@ -1,7 +1,7 @@
 #include "options.h"
 // TODO: sort out imports
 #include "getdata.h"
-#include "MALLOCC.h"
+#include "dmalloc.h"
 #include <stdlib.h>
 
 int main(int argc, char **argv) {

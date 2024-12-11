@@ -7,6 +7,7 @@
 #include GLUT_H
 
 #include "smokeviewvars.h"
+#include "string_util.h"
 #include "IOscript.h"
 
 /* ------------------ UpdateTimeLabels ------------------------ */
@@ -920,7 +921,7 @@ void GetColorDist(colorbardata *cbi, int option, float *min, float *max){
   }
 }
 
-/* ------------------ RemapColorbar ------------------------ */
+/* ------------------ SetAlpha ------------------------ */
 
 unsigned char SetAlpha(unsigned char *node_rgb){
   if(
@@ -1092,7 +1093,7 @@ void ReadCSVColorbar(colorbardata *cbptr, char *dir, char *file, char *colorbar_
   fclose(stream);
 }
 
-/* ------------------ InitDefaultColorbars ------------------------ */
+/* ------------------ UpdateColorbarOrig ------------------------ */
 
 void UpdateColorbarOrig(void){
   int i;

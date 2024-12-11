@@ -2645,7 +2645,7 @@ int IsVentVisible(ventdata *vi){
   return 1;
 }
 
-/* ------------------ UpdateFaceLists ------------------------ */
+/* ------------------ UpdateFaceListsWorker ------------------------ */
 
 void UpdateFaceListsWorker(void){
   int n_textures, n_outlines;

@@ -7,8 +7,8 @@
 #include <math.h>
 #include <zlib.h>
 #include "svzip.h"
-#include "MALLOCC.h"
-#include "isodefs.h"
+#include "dmalloc.h"
+#include "isobox.h"
 #include "compress.h"
 #include "getdata.h"
 
