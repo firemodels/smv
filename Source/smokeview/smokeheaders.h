@@ -923,9 +923,4 @@ EXTERNCPP void UpdateFrameNumber(int changetime);
 EXTERNCPP void UpdateShow(void);
 EXTERNCPP void UpdateShowScene(void);
 EXTERNCPP void UpdateTimes(void);
-
-//*** viewports.c headers
-
-EXTERNCPP int GetStringWidth(char *string);
-EXTERNCPP void GetViewportInfo(void);
 #endif

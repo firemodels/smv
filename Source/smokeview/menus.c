@@ -20,6 +20,7 @@
 #include "readobject.h"
 #include "IOobjects.h"
 #include "IOscript.h"
+#include "viewports.h"
 
 void LoadHVACMenu(int value);
 void LoadPlot2DMenu(int value);
