@@ -10,6 +10,7 @@
 #include "smokeviewvars.h"
 #include "glui_bounds.h"
 #include "glui_motion.h"
+#include "IOobjects.h"
 
 #define NEW_CURVE      0
 #define EXISTING_CURVE 1

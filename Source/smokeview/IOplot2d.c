@@ -6,6 +6,7 @@
 
 #include "datadefs.h"
 #include "smokeviewvars.h"
+#include "IOobjects.h"
 
 /* ------------------ GetCsvData ------------------------ */
 

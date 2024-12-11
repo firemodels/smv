@@ -12,6 +12,7 @@
 #include "glui_motion.h"
 #include "glui_bounds.h"
 #include "glui_smoke.h"
+#include "IOobjects.h"
 #include "fopen.h"
 
 #ifdef pp_LUA

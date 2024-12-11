@@ -444,38 +444,6 @@ EXTERNCPP void UpdateIsoTypes(void);
 EXTERNCPP void UpdateIsoShowLevels(void);
 EXTERNCPP void *UpdateTrianglesAll(void *arg);
 
-//*** IOobject.c headers
-
-EXTERNCPP void DeviceData2WindRose(int nr, int ntheta);
-EXTERNCPP void DrawDevices(int mode);
-EXTERNCPP void DrawDevicesVal(void);
-EXTERNCPP void DrawCircle(float diameter, unsigned char *rgbcolor, circdata *circinfo);
-EXTERNCPP void DrawFilledCircle(float diameter, unsigned char *rgbcolor, circdata *circinfo);
-EXTERNCPP void DrawFilledRectangle(float width, float height, unsigned char *rgbcolor);
-EXTERNCPP void DrawRectangle(float width, float height, unsigned char *rgbcolor);
-EXTERNCPP void DrawWindRosesDevices(void);
-EXTERNCPP devicedata *GetCSVDeviceFromLabel(char *label, int index);
-EXTERNCPP devicedata *GetDeviceFromLabel(char *label, int index);
-EXTERNCPP int GetDeviceIndexFromLabel(char *label);
-EXTERNCPP char *GetDeviceLabel(char *buffer);
-EXTERNCPP float GetDeviceVal(float time_local, devicedata *devicei, int *valid);
-EXTERNCPP void GetGlobalDeviceBounds(int type);
-EXTERNCPP int GetNDevices(char *file);
-EXTERNCPP void GetSmokeSensors(void);
-EXTERNCPP int HaveSmokeSensor(void);
-EXTERNCPP void InitDevicePlane(devicedata *devicei);
-EXTERNCPP void InitializeDeviceCsvData(int flag);
-EXTERNCPP void InitSphere(int nlat, int nlong);
-EXTERNCPP FILE_SIZE ReadDeviceData(char *file, int filetype, int flag);
-EXTERNCPP void RGBTest(void);
-EXTERNCPP void SetupZoneDevs(void);
-EXTERNCPP void UpdateColorDevices(void);
-EXTERNCPP void UpdateObjectUsed(void);
-#ifdef pp_SKY
-EXTERNCPP float *InitSphere2(int nlat, int nlong);
-EXTERNCPP void DrawHalfSphere(void);
-#endif
-
 //*** IOpart.c headers
 
 EXTERNCPP void ClosePartFiles(void);
