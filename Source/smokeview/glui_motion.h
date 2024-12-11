@@ -25,7 +25,7 @@
 #define RESTORE_VIEW           8
 #define REPLACE_VIEW           9
 #define REPLACE_CURRENT_VIEW  44
-#define STARTUP               10
+#define MOTION_STARTUP        10
 #define CYCLEVIEWS_ALL        46
 #define CYCLEVIEWS_DEFAULT    47
 #define CYCLEVIEWS_USER       48

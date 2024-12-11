@@ -16,6 +16,7 @@
 #include "IOvolsmoke.h"
 #include "stdio_buffer.h"
 #include "glui_motion.h"
+#include "glui_bounds.h"
 #include "shared_structures.h"
 #include "readimage.h"
 #include "readhvac.h"
@@ -13764,8 +13765,8 @@ int ReadIni2(char *inifile, int localfile){
       int setvalmin, setvalmax;
       char *isolabel;
 
-#define SETVALMIN 1
-#define SETVALMAX 1
+#define SETVALMIN_ORIG 1
+#define SETVALMAX_ORIG 1
 
       fgets(buffer, 255, stream);
       strcpy(buffer2, "");
@@ -13777,8 +13778,8 @@ int ReadIni2(char *inifile, int localfile){
           isobounds[i].ini_defined = 1;
           isobounds[i].ini_setvalmin = setvalmin;
           isobounds[i].ini_setvalmax = setvalmax;
-          if(setvalmin == SETVALMIN)isobounds[i].ini_valmin = valmin;
-          if(setvalmax == SETVALMAX)isobounds[i].ini_valmax = valmax;
+          if(setvalmin == SETVALMIN_ORIG)isobounds[i].ini_valmin = valmin;
+          if(setvalmax == SETVALMAX_ORIG)isobounds[i].ini_valmax = valmax;
           update_iso_ini = 1;
           break;
         }

@@ -10,6 +10,8 @@
 #include "IOvolsmoke.h"
 #include "glui_smoke.h"
 #include "glui_tour.h"
+#include "glui_bounds.h"
+
 
 extern GLUI_Rollout *ROLLOUT_smoke3d;
 extern GLUI *glui_bounds;

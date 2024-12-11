@@ -993,7 +993,7 @@ extern "C" void GLUIViewpointCB(int var){
       }
     }
     break;
-  case STARTUP:
+  case MOTION_STARTUP:
     startup_view_ini = LIST_viewpoints->get_int_val();
     {
       char *cam_label;
@@ -1369,7 +1369,7 @@ extern "C" void GLUIMotionSetup(int main_window){
 
   BUTTON_add_view = glui_motion->add_button_to_panel(PANEL_reset2, _("Add"), ADD_VIEW, GLUIViewpointCB);
   BUTTON_replace_view = glui_motion->add_button_to_panel(PANEL_reset2, _("Replace"), REPLACE_VIEW, GLUIViewpointCB);
-  BUTTON_startup = glui_motion->add_button_to_panel(PANEL_reset2, _("Apply at startup"),  STARTUP,            GLUIViewpointCB);
+  BUTTON_startup = glui_motion->add_button_to_panel(PANEL_reset2, _("Apply at startup"),  MOTION_STARTUP,            GLUIViewpointCB);
   EDIT_view_label = glui_motion->add_edittext_to_panel(PANEL_reset2, _("Edit:"), GLUI_EDITTEXT_TEXT, camera_label, LABEL_VIEW, GLUIViewpointCB);
 
   ROLLOUT_projection = glui_motion->add_rollout_to_panel(ROLLOUT_viewA,_("Window properties"), false,WINDOW_ROLLOUT,MotionRolloutCB);
@@ -2527,7 +2527,7 @@ extern "C" void GLUIShowMotion(int menu_id){
 /* ------------------ GLUISetStartupView ------------------------ */
 
  extern "C" void GLUISetStartupView(void){
-  GLUIViewpointCB(STARTUP);
+  GLUIViewpointCB(MOTION_STARTUP);
 }
 
 /* ------------------ GLUIAddListView ------------------------ */

@@ -7,6 +7,7 @@
 #include GLUT_H
 
 #include "smokeviewvars.h"
+#include "glui_bounds.h"
 #include "IOobjects.h"
 #include "getdata.h"
 

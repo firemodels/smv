@@ -117,7 +117,7 @@
 #define OVERWRITE 96
 #define COMPRESS_AUTOLOADED 91
 #define ERASE 95
-#define STARTUP 94
+#define BOUND_STARTUP 94
 #define SAVE_FILE_LIST 93
 #define LOAD_FILES 92
 #define COLORBAR_EXTREME2 109
@@ -161,6 +161,121 @@
 #define FILESHOW_sizes       20
 #define BOUNDARY_LOAD_INCREMENTAL 16
 #define SLICE_LOAD_INCREMENTAL 17
+
+//*** glui_bounds.cpp headers
+
+EXTERNCPP int  GLUIGetChopHide(char *label);
+EXTERNCPP void GLUISetChopHide(char *label, int val);
+
+EXTERNCPP int  GLUIGetChopMin(int type, char *label, int *set_valmin, float *valmin);
+EXTERNCPP int  GLUIGetChopMax(int type, char *label, int *set_valmax, float *valmax);
+EXTERNCPP int  GLUISetChopMin(int type, char *label, int set_chopmin, float chopmin);
+EXTERNCPP int  GLUISetChopMax(int type, char *label, int set_chopmax, float chopmax);
+
+EXTERNCPP void GLUIUpdateTextureDisplay(void);
+EXTERNCPP void GLUIUpdateLoadAllSlices(void);
+EXTERNCPP void GLUIUpdateMeshBounds(void);
+EXTERNCPP void GLUIUpdateLoadWhenLoaded(void);
+EXTERNCPP void GLUIBoundsSetup(int main_window);
+EXTERNCPP void GLUIUpdatePartPointSize(void);
+EXTERNCPP void GLUIUpdateBoundTbounds(void);
+EXTERNCPP void GLUIUpdatePlotLabel(void);
+EXTERNCPP void GLUIHVACDuctBoundsCPP_CB(int var);
+EXTERNCPP void GLUIHVACNodeBoundsCPP_CB(int var);
+EXTERNCPP void GLUISplitCB(int var);
+EXTERNCPP void GLUIPlot3DBoundCB(int var);
+EXTERNCPP void GLUIUpdateSliceSkip(void);
+EXTERNCPP void GLUIUpdateHVACDuctType(void);
+EXTERNCPP  void GLUIUpdateSliceXYZ(void);
+EXTERNCPP void GLUIPartBoundsCPP_CB(int var);
+EXTERNCPP void GLUIUpdatdateResearchModeCPP(void);
+EXTERNCPP void GLUISliceBoundsSetupNoGraphics(void);
+EXTERNCPP void GLUIGetGlobalBoundsMinMax(int type, char *label, float *valmin, float *valmax);
+EXTERNCPP void GLUIHVACSliceBoundsCPP_CB(int var);
+EXTERNCPP void GLUIPatchBoundsCPP_CB(int var);
+EXTERNCPP cpp_boundsdata *GLUIGetBoundsData(int type);
+EXTERNCPP void GLUISetCacheFlag(int type, int cache_flag);
+EXTERNCPP void GLUISetValTypeIndex(int type, int valtype_index);
+EXTERNCPP int GLUIGetNValtypes(int type);
+EXTERNCPP void GLUIGetMinMax(int type, char *label, int *set_valmin, float *valmin, int *set_valmax, float *valmax);
+EXTERNCPP void GLUIGetOnlyMinMax(int type, char *label, int *set_valmin, float *valmin, int *set_valmax, float *valmax);
+EXTERNCPP void GLUIGetMinMaxAll(int type, int *set_valmin, float *valmin, int *set_valmax, float *valmax, int *nall);
+EXTERNCPP void GLUISetMin(int type, char *label, int set_valmin, float valmin);
+EXTERNCPP void GLUISetMax(int type, char *label, int set_valmax, float valmax);
+EXTERNCPP void GLUISetMinMax(int type, char *label, int set_valmin, float valmin, int set_valmax, float valmax);
+EXTERNCPP void GLUISetMinMaxAll(int type, int *set_valmin, float *valmin, int *set_valmax, float *valmax, int nall);
+EXTERNCPP void GLUISetGlobalMinMaxAll(int type, float *valmin, float *valmax, int nall);
+EXTERNCPP void GLUISetLoadedMinMaxAll(int type, float *valmin, float *valmax, int nall);
+EXTERNCPP void GLUIGetGlobalMinMaxAll(int type, float *valmin, float *valmax, int nall);
+EXTERNCPP void GLUIGetLoadedMinMaxAll(int type, float *valmin, float *valmax, int nall);
+EXTERNCPP void GLUIUpdateBounds(void);
+EXTERNCPP void GLUIPlot3DBoundsCPP_CB(int var);
+EXTERNCPP void GLUISetColorbarDigitsCPP(int ndigits);
+EXTERNCPP void GLUIUpdatePartFast(void);
+EXTERNCPP void GLUIUpdateColorbarControls2(void);
+EXTERNCPP void GLUISetColorbarDigits(void);
+EXTERNCPP void GLUIIncrementPartPropIndex(void);
+EXTERNCPP void GLUIUpdateIsoBounds();
+EXTERNCPP void GLUIUpdateListIsoColorobar(void);
+EXTERNCPP void GLUIUpdateUseLighting(void);
+EXTERNCPP void GLUIImmersedBoundCB(int var);
+EXTERNCPP void GLUIShowBoundsDialog(int type);
+EXTERNCPP void GLUIExtremeCB(int var);
+EXTERNCPP void GLUIUpdateExtremeVals(void);
+EXTERNCPP void GLUIIsoBoundCB(int var);
+EXTERNCPP void GLUIUpdateScriptStep(void);
+EXTERNCPP void GLUIAddScriptList(char *file, int id);
+EXTERNCPP void GLUISliceInObstMenu2Dialog(int var);
+EXTERNCPP void GLUIUpdateColorTableList(int ncolortableinfo_old);
+EXTERNCPP void GLUIUpdateIsoColorlevel(void);
+EXTERNCPP void GLUIUpdateZoneBounds(void);
+EXTERNCPP void GLUIScriptDisable(void);
+EXTERNCPP void GLUIScriptEnable(void);
+EXTERNCPP void GLUIUpdateVecFactor(void);
+EXTERNCPP void GLUIUpdatePlot3Dtype(void);
+EXTERNCPP void GLUIUpdateIsotype(void);
+EXTERNCPP void GLUIUpdateStreakValue(float rvalue);
+EXTERNCPP void GLUISetLabelControls2(void);
+EXTERNCPP void GLUIShowBounds(int menu_id);
+EXTERNCPP void GLUIHideBounds(void);
+EXTERNCPP void GLUIUpdateBoundaryListIndex(int patchfilenum);
+EXTERNCPP void GLUIUpdatePlot3dListIndex(void);
+EXTERNCPP void GLUISetColorbarListBound(int val);
+SVEXTERN void GLUIUpdatePlot2DSize2(void);
+SVEXTERN void GLUIUpdateVectorWidgets(void);
+EXTERNCPP void GLUIUpdateTransparency(void);
+EXTERNCPP void GLUIUpdateScriptStart(void);
+EXTERNCPP void GLUIUpdateResearchMode(void);
+EXTERNCPP void GLUIUpdateScriptStop(void);
+EXTERNCPP void GLUIUpdateTBounds(void);
+EXTERNCPP void GLUIUpdateTimeBounds(float time_min, float time_max);
+EXTERNCPP void GLUIUpdateColorbarFlip(void);
+EXTERNCPP void GLUICompressOnOff(int flag);
+EXTERNCPP void GLUIUpdateColorbarListBound(int flag);
+EXTERNCPP void GLUIUpdateColorbarBound(void);
+EXTERNCPP void GLUIUpdateOverwrite(void);
+EXTERNCPP void GLUIUpdatePlot3dDisplay(void);
+EXTERNCPP void GLUIUpdateSortSlices(void);
+EXTERNCPP void GLUIUpdateExtreme(void);
+EXTERNCPP void GLUISliceBoundCB(int var);
+EXTERNCPP void GLUIUpdateChar(void);
+EXTERNCPP void GLUIUpdateTracers(void);
+EXTERNCPP void GLUIUpdateShowHideButtons(void);
+#ifdef pp_REFRESH
+EXTERNCPP void GLUIRefreshDialogs(void);
+#endif
+EXTERNCPP void GLUIUpdateVectorpointsize(void);
+EXTERNCPP void GLUIUpdateSliceDupDialog(void);
+EXTERNCPP void SetLoadedSliceBounds(int *list, int nlist);
+EXTERNCPP void SetLoadedPatchBounds(int *list, int nlist);
+EXTERNCPP void SetLoadedPlot3DBounds(void);
+EXTERNCPP void SetLoadedPartBounds(int *list, int nlist);
+EXTERNCPP void ScriptCB(int var);
+EXTERNCPP void PartBoundCB(int var);
+EXTERNCPP void UpdateColorbarSelectionIndex(int val);
+EXTERNCPP void SliceBounds2Glui(int slicefile_labelindex);
+EXTERNCPP void UpdateShowExtPatch(int show_option, int hide_option);
+EXTERNCPP void UpdateShowIntPatch(int show_option, int hide_option);
 
 
 #endif

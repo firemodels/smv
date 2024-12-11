@@ -8,6 +8,7 @@
 #include <math.h>
 
 #include "smokeviewvars.h"
+#include "glui_bounds.h"
 #include "histogram.h"
 #include "compress.h"
 #include "IOobjects.h"

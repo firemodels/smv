@@ -8,6 +8,7 @@
 #include <math.h>
 
 #include "smokeviewvars.h"
+#include "glui_bounds.h"
 
 #define LOAD_SMOKE 100
 #define LOAD_TEMP 101

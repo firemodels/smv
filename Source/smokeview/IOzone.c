@@ -8,6 +8,7 @@
 
 #include "string_util.h"
 #include "smokeviewvars.h"
+#include "glui_bounds.h"
 #include "IOobjects.h"
 #include "getdata.h"
 
