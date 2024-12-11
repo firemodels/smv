@@ -9,7 +9,7 @@
 #ifdef WIN32
 #include <share.h>
 #endif
-#include "MALLOCC.h"
+#include "dmalloc.h"
 #include "datadefs.h"
 #include "getdata.h"
 #include "string_util.h"

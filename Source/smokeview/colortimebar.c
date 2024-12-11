@@ -7,6 +7,7 @@
 #include GLUT_H
 
 #include "smokeviewvars.h"
+#include "string_util.h"
 #include "IOscript.h"
 
 /* ------------------ UpdateTimeLabels ------------------------ */

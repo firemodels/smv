@@ -7,7 +7,7 @@
 #include <unistd.h>
 #endif
 #include "string_util.h"
-#include "MALLOCC.h"
+#include "dmalloc.h"
 
 
 #define LENBUFFER 255

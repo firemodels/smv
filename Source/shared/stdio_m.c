@@ -4,7 +4,7 @@
 #include <string.h>
 #include "stdio_m.h"
 #include "file_util.h"
-#include "MALLOCC.h"
+#include "dmalloc.h"
 
 /* ------------------ GetFileBuffer ------------------------ */
 

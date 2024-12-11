@@ -7,10 +7,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "MALLOCC.h"
-#include "contourdefs.h"
+#include "dmalloc.h"
+#include "scontour2d.h"
 #include "histogram.h"
-#include "isodefs.h"
+#include "isobox.h"
 #include "shared_structures.h"
 #include "smokeviewdefs.h"
 #include "string_util.h"

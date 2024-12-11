@@ -7,7 +7,7 @@
 #include <math.h>
 #include "string_util.h"
 #include "file_util.h"
-#include "MALLOCC.h"
+#include "dmalloc.h"
 #ifdef WIN32
 #include <windows.h>
 #endif

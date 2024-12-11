@@ -1,6 +1,6 @@
 #ifndef SHARED_STRUCTURES_H_DEFINED
 #define SHARED_STRUCTURES_H_DEFINED
-#include "isodefs.h"
+#include "isobox.h"
 #include "options.h"
 #include <stdio.h>
 #ifdef pp_FRAME
@@ -72,8 +72,8 @@ typedef struct _sv_object {
 } sv_object;
 
 #include "string_util.h"
-#include "isodefs.h"
-#include "contourdefs.h"
+#include "isobox.h"
+#include "scontour2d.h"
 #include "histogram.h"
 
 /* --------------------------  keyframe ------------------------------------ */

@@ -2,7 +2,7 @@
 
 #include "getdata.h"
 
-#include "MALLOCC.h"
+#include "dmalloc.h"
 
 #include "string_util.h"
 #include <assert.h>

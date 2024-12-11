@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <pthread.h>
-#include "MALLOCC.h"
+#include "dmalloc.h"
 #include "fopen.h"
 
 /* ------------------ InitOpenTest ------------------------ */

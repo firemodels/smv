@@ -8,7 +8,7 @@
 #include <string.h>
 
 #include "options.h"
-#include "MALLOCC.h"
+#include "dmalloc.h"
 #include "command_args.h"
 
 /* ------------------ CLE_Message ------------------------ */

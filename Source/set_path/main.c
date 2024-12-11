@@ -9,7 +9,7 @@
 #include "string_util.h"
 #include "file_util.h"
 #include "datadefs.h"
-#include "MALLOCC.h"
+#include "dmalloc.h"
 
 // dummy change to bump version to 1.0
 

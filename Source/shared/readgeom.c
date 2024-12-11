@@ -1,12 +1,12 @@
 #include "options.h"
-#include "MALLOCC.h"
+#include "dmalloc.h"
 #include "string_util.h"
 #include "gd.h"
 #include <math.h>
 
 #include <string.h>
 #include "smokeviewdefs.h"
-#include "isodefs.h"
+#include "isobox.h"
 #include "histogram.h"
 #include "datadefs.h"
 #include "readgeom.h"

@@ -6,7 +6,7 @@
 #include "datadefs.h"
 #include "string_util.h"
 #include "file_util.h"
-#include "MALLOCC.h"
+#include "dmalloc.h"
 
 //dummy change to bump version number to  0.9
 

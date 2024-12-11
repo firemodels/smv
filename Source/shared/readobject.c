@@ -6,10 +6,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "MALLOCC.h"
+#include "dmalloc.h"
 #include "datadefs.h"
 #include "histogram.h"
-#include "isodefs.h"
+#include "isobox.h"
 #include "string_util.h"
 
 #include "readobject.h"
