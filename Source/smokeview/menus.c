@@ -14,6 +14,7 @@
 #include "string_util.h"
 #include "smokeviewvars.h"
 #include "glui_bounds.h"
+#include "glui_motion.h"
 #include "IOvolsmoke.h"
 #include "readhvac.h"
 #include "readobject.h"

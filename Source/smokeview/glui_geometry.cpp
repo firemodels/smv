@@ -9,7 +9,7 @@
 
 #include "smokeviewvars.h"
 #include "glui_bounds.h"
-
+#include "glui_motion.h"
 
 void TerrainCB(int var);
 void VolumeCB(int var);

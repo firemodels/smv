@@ -8,6 +8,7 @@
 #include GLUT_H
 
 #include "smokeviewvars.h"
+#include "glui_motion.h"
 
 #ifdef WIN32
 #include <direct.h>

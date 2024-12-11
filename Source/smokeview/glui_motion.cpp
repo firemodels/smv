@@ -1310,9 +1310,9 @@ extern "C" void GLUIMotionSetup(int main_window){
   ROLLOUT_orientation->close();
   zaxis_custom=0;
 
-  ROLLOUT_gslice = glui_motion->add_rollout_to_panel(ROLLOUT_motion, _("Slice motion"),false,SLICE_ROLLOUT,MotionRolloutCB);
+  ROLLOUT_gslice = glui_motion->add_rollout_to_panel(ROLLOUT_motion, _("Slice motion"),false,SLICE_ROLLOUT_MOTION,MotionRolloutCB);
   INSERT_ROLLOUT(ROLLOUT_gslice, glui_motion);
-  ADDPROCINFO(motionprocinfo,nmotionprocinfo,ROLLOUT_gslice,SLICE_ROLLOUT, glui_motion);
+  ADDPROCINFO(motionprocinfo,nmotionprocinfo,ROLLOUT_gslice,SLICE_ROLLOUT_MOTION, glui_motion);
 
   if(gslice_xyz[0]<-1000000.0&&gslice_xyz[1]<-1000000.0&&gslice_xyz[2]<-1000000.0){
     gslice_xyz[0]=(xbar0+SMV2FDS_X(xbar))/2.0;
