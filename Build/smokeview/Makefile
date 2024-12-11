@@ -65,7 +65,7 @@ cobj = $(csrc:.c=.o)
 cppobj = $(cppsrc:.cpp=.o)
 obj = $(cobj) $(cppobj)
 
-incs = compress.h contourdefs.h csphere.h datadefs.h dirent_win.h file_util.h glui_bounds.h \
+incs = compress.h scontour2d.h csphere.h datadefs.h dirent_win.h file_util.h glui_bounds.h \
        glui_motion.h glui_smoke.h glui_tour.h histogram.h infoheader.h interp.h isobox.h \
        IOobjects.h IOscript.h IOvolsmoke.h lint.h lua_api.h MALLOCC.h options.h options_common.h \
        pragmas.h smokeheaders.h smokeviewdefs.h smokeviewvars.h \

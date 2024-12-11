@@ -73,7 +73,7 @@ typedef struct _sv_object {
 
 #include "string_util.h"
 #include "isobox.h"
-#include "contourdefs.h"
+#include "scontour2d.h"
 #include "histogram.h"
 
 /* --------------------------  keyframe ------------------------------------ */

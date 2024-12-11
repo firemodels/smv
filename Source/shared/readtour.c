@@ -6,7 +6,7 @@
 #include <string.h>
 
 #include "MALLOCC.h"
-#include "contourdefs.h"
+#include "scontour2d.h"
 #include "datadefs.h"
 #include "histogram.h"
 #include "isobox.h"

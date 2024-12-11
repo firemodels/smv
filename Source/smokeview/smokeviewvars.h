@@ -10,7 +10,7 @@
 #include "csphere.h"
 #include "smokeviewdefs.h"
 #include "isobox.h"
-#include "contourdefs.h"
+#include "scontour2d.h"
 #include "histogram.h"
 #include "structures.h"
 #include "readhvac.h"

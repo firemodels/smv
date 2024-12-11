@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include GLUT_H
-#include "contourdefs.h"
+#include "scontour2d.h"
 #include "MALLOCC.h"
 
 #define SOLID 0
