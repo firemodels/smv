@@ -607,14 +607,6 @@ EXTERNCPP void SetupTour(void);
 EXTERNCPP void UpdateTourMenuLabels(void);
 EXTERNCPP void UpdateViewTour(void);
 
-//*** IOvolsmoke.c headers
-
-EXTERNCPP void DefineVolsmokeTextures(void);
-EXTERNCPP void DrawSmoke3DVol(void);
-EXTERNCPP void *InitNabors(void *arg);
-EXTERNCPP void MakeFireColors(float temp_min, float temp_max, int nfire_colors_arg);
-EXTERNCPP void *ReadVolsmokeAllFramesAllMeshes2(void *arg);
-
 //*** IOwui.c headers
 
 EXTERNCPP void DrawTerrainGeom(int option);

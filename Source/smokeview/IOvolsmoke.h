@@ -14,5 +14,14 @@ EXTERNCPP void ReadVolsmokeAllFramesAllMeshes(void);
 EXTERNCPP void FreeVolsmokeFrame(volrenderdata *vr, int framenum);
 EXTERNCPP void ReadVolsmokeFrame(volrenderdata *vr, int framenum, int *first);
 EXTERNCPP void UnloadVolsmokeAllFrames(volrenderdata *vr);
+
+//*** IOvolsmoke.c headers
+
+EXTERNCPP void DefineVolsmokeTextures(void);
+EXTERNCPP void DrawSmoke3DVol(void);
+EXTERNCPP void *InitNabors(void *arg);
+EXTERNCPP void MakeFireColors(float temp_min, float temp_max, int nfire_colors_arg);
+EXTERNCPP void *ReadVolsmokeAllFramesAllMeshes2(void *arg);
+
 #endif
 
