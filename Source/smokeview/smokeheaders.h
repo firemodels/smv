@@ -5,13 +5,9 @@
 #include "gd.h"
 #endif
 
-#include "readgeom.h"
-#include "readsmoke.h"
-
 #ifndef TERRAIN_FIRE_LINE_UPDATE
 #define TERRAIN_FIRE_LINE_UPDATE 39
 #endif
-
 
 //*** glui_clip.cpp headers
 
@@ -180,7 +176,6 @@ EXTERNCPP void UpdateCurrentMesh(meshdata *meshi);
 EXTERNCPP void UpdatePlot3dTitle(void);
 EXTERNCPP void WindowStatus(int state);
 EXTERNCPP void KeyboardCB(unsigned char key, int x, int y);
-
 
 //*** camera.c headers
 
@@ -862,9 +857,6 @@ EXTERNCPP int  OnMeshBoundary(float *xyz);
 
 //*** startup.c headers
 
-/**
- * @brief Free the global variables initialized by @ref InitVars.
- */
 EXTERNCPP void FreeVars(void);
 EXTERNCPP char *GetHomeDir(void);
 EXTERNCPP void GetStartupVSlice(int seq_id);
