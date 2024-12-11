@@ -123,6 +123,9 @@ EXTERNCPP void SetLoadedPartBounds(int *list, int nlist);
 EXTERNCPP void ScriptCB(int var);
 EXTERNCPP void PartBoundCB(int var);
 EXTERNCPP void UpdateColorbarSelectionIndex(int val);
+EXTERNCPP void SliceBounds2Glui(int slicefile_labelindex);
+EXTERNCPP void UpdateShowExtPatch(int show_option, int hide_option);
+EXTERNCPP void UpdateShowIntPatch(int show_option, int hide_option);
 
 
 //*** glui_clip.cpp headers
@@ -255,6 +258,7 @@ EXTERNCPP void UpdateGluiRotateAbout(int val);
 EXTERNCPP void UpdateRenderStartButton(void);
 EXTERNCPP void UpdateRenderType(int type);
 EXTERNCPP void UpdateMovieType(int type);
+EXTERNCPP void RenderCB(int var);
 
 //*** glui_objects.cpp headers
 
@@ -326,6 +330,7 @@ EXTERNCPP void GLUIUpdateTourControls(void);
 EXTERNCPP void GLUISetTourKeyframe(void);
 EXTERNCPP void GLUIUpdateKeyframe(void);
 EXTERNCPP void TourCB(int var);
+EXTERNCPP void AddDeleteKeyframe(int flag);
 
 //*** glui_trainer.cpp headers
 
@@ -339,7 +344,7 @@ EXTERNCPP void GLUIHideAlert(void);
 EXTERNCPP void GLUIShowTrainer(void);
 EXTERNCPP void GLUIHideTrainer(void);
 
-//*** callback.c headers
+//*** callbacks.c headers
 
 EXTERNCPP void ClearBuffers(int mode);
 EXTERNCPP void DisplayCB(void);
@@ -370,6 +375,8 @@ EXTERNCPP void UpdateClipPlanes(void);
 EXTERNCPP void UpdateCurrentMesh(meshdata *meshi);
 EXTERNCPP void UpdatePlot3dTitle(void);
 EXTERNCPP void WindowStatus(int state);
+EXTERNCPP void KeyboardCB(unsigned char key, int x, int y);
+
 
 //*** camera.c headers
 
@@ -542,6 +549,10 @@ EXTERNCPP void UpdateRGBColors(int colorindex);
 EXTERNCPP void UpdateSliceBounds2(void);
 EXTERNCPP void UpdateSliceColors(int last_slice);
 EXTERNCPP void UpdateTexturebar(void);
+EXTERNCPP void GetZoneColors(const float *t, int nt, unsigned char *it,
+               float tmin, float tmax, int nlevel, int nlevel_full,
+               char **zonelabels, float zonevalues[12], float *tvals256
+               );
 
 //*** IOboundary.c headers
 
@@ -559,6 +570,8 @@ EXTERNCPP void UncompressBoundaryDataBNDF(meshdata *meshi,int frame_index);
 EXTERNCPP void UpdateBoundaryTypes(void);
 EXTERNCPP void UpdateBoundaryMenuLabels(void);
 EXTERNCPP void UpdateBoundarySliceDups(void);
+EXTERNCPP void GetBoundaryParams(void);
+EXTERNCPP void UpdateBoundaryType(void);
 
 //*** IOgeometry.c headers
 
@@ -654,6 +667,10 @@ EXTERNCPP void RGBTest(void);
 EXTERNCPP void SetupZoneDevs(void);
 EXTERNCPP void UpdateColorDevices(void);
 EXTERNCPP void UpdateObjectUsed(void);
+#ifdef pp_SKY
+EXTERNCPP float *InitSphere2(int nlat, int nlong);
+EXTERNCPP void DrawHalfSphere(void);
+#endif
 
 //*** IOpart.c headers
 
@@ -1074,7 +1091,7 @@ EXTERNCPP void UpdateLights(float *pos1, float *pos2);
 
 //*** smv_geometry.c headers
 
-EXTERNCPP int BoxInFrustum(float *xx, float *yy, float *zz, int n);
+EXTERNCPP int  BoxInFrustum(float *xx, float *yy, float *zz, int n);
 EXTERNCPP void DrawFilledTetra(float *v1, float *v2, float *v3, float *v4, unsigned char *rgbcolor);
 EXTERNCPP void DrawFilled2Tetra(float *v1, float *v2, float *v3, float *v4,
    unsigned char *rgb0color,unsigned char *rgb1color,unsigned char *rgb2color,unsigned char *rgb3color,int *vis_state);
@@ -1085,8 +1102,8 @@ EXTERNCPP meshdata *GetMesh(float *xyz);
 EXTERNCPP meshdata *GetMeshNoFail(float *xyz);
 EXTERNCPP void GetNewPos(float *oldpos, float dx, float dy, float dz, float speed_factor);
 EXTERNCPP void GetScreenMapping(float *xyz0, float *screen_perm);
-EXTERNCPP int GetTimeInterval(float val, float *array, int n);
-EXTERNCPP int InExterior(float *xyz);
+EXTERNCPP int  GetTimeInterval(float val, float *array, int n);
+EXTERNCPP int  InExterior(float *xyz);
 EXTERNCPP void InitClip(void);
 EXTERNCPP void InitTetraClipInfo(clipdata *ci,float *v1, float *v2, float *v3, float *v4);
 EXTERNCPP void MatMultMat(float *m1, float *m2, float *m3);
@@ -1098,6 +1115,7 @@ EXTERNCPP int  RectangleInFrustum(float *x11, float *x12, float *x22, float *x21
 EXTERNCPP void SetClipPlanes(clipdata *ci, int option);
 EXTERNCPP void Slerp(float *p0, float *p1, float t, float *pout);
 EXTERNCPP void UpdatePlotxyzAll(void);
+EXTERNCPP int  OnMeshBoundary(float *xyz);
 
 //*** startup.c headers
 
@@ -1125,6 +1143,7 @@ EXTERNCPP void LoadFiles(void);
 EXTERNCPP void PutStartupSmoke3D(FILE *fileout);
 EXTERNCPP void Set3DSmokeStartup(void);
 EXTERNCPP void SetupGlut(int argc, char **argv);
+EXTERNCPP int  SetupCase(char *file);
 
 //*** unit.c headers
 
@@ -1166,63 +1185,4 @@ EXTERNCPP void UpdateTimes(void);
 
 EXTERNCPP int GetStringWidth(char *string);
 EXTERNCPP void GetViewportInfo(void);
-
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-EXTERNCPP void UpdateGluiBoundaryUnits(void);
-EXTERNCPP void UpdateGluiSliceUnits(void);
-
-EXTERNCPP void GetBoundaryParams(void);
-
-EXTERNCPP void AddDeleteKeyframe(int flag);
-EXTERNCPP void VentMenu(int value);
-
-EXTERNCPP int  LabelInit(labeldata *gl);
-EXTERNCPP void LabelResort(labeldata *label);
-
-EXTERNCPP void KeyboardCB(unsigned char key, int x, int y);
-
-EXTERNCPP void UpdateDefer(void);
-#ifdef pp_SKY
-EXTERNCPP float *InitSphere2(int nlat, int nlong);
-EXTERNCPP void DrawHalfSphere(void);
-#endif
-
-EXTERNCPP void Rgb2Labs(unsigned char *rgbs255, float *labs);
-
-EXTERNCPP char *GetChid(char *file, char *buffer);
-
-EXTERNCPP void CopyArgs(int *argc, char **aargv, char ***argv_sv);
-EXTERNCPP void InitMultiThreading(void);
-
-EXTERNCPP int  OnMeshBoundary(float *xyz);
-
-EXTERNCPP void RenderCB(int var);
-EXTERNCPP char *STRSTR(char *c, const char *key);
-
-EXTERNCPP void SmoothIsoSurface(isosurface *surfacedata);
-EXTERNCPP void Array2String(float *array, int narray, char *string);
-EXTERNCPP void Rgb2Hsl(unsigned char *rgbvals, float *hslvals);
-EXTERNCPP void Hsl2Rgb(float *hslvals, unsigned char *rgbvals);
-
-EXTERNCPP void SliceBounds2Glui(int slicefile_labelindex);
-
-EXTERNCPP void UpdateBoundaryType(void);
-
-EXTERNCPP void ScaleFloat2String(float floatfrom, char *stringto, const float *scale);
-EXTERNCPP float ScaleFloat2Float(float floatfrom, const float *scale);
-EXTERNCPP void ScaleString(const char *stringfrom, char *stringto, const float *scale);
-EXTERNCPP void Num2String(char *string, float tval);
-EXTERNCPP int  SetupCase(char *file);
-
-EXTERNCPP int  STRCMP(const char *s1, const char *s2);
-EXTERNCPP void UpdateShowExtPatch(int show_option, int hide_option);
-EXTERNCPP void UpdateShowIntPatch(int show_option, int hide_option);
-
-EXTERNCPP void GetZoneColors(const float *t, int nt, unsigned char *it,
-               float tmin, float tmax, int nlevel, int nlevel_full,
-               char **zonelabels, float zonevalues[12], float *tvals256
-               );
-
-
 #endif
