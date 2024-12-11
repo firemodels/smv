@@ -39,6 +39,9 @@ GLUI_Panel *PANEL_tour_circular_view;
 GLUI_Checkbox *CHECKBOX_view1 = NULL;
 GLUI_Checkbox *CHECKBOX_view2 = NULL;
 GLUI_Checkbox *CHECKBOX_tour_snap = NULL;
+#ifdef pp_TOUR
+GLUI_Checkbox *CHECKBOX_tour_constant_velocity = NULL;
+#endif
 GLUI_Checkbox *CHECKBOX_showtourroute1 = NULL;
 GLUI_Checkbox *CHECKBOX_showtourroute2 = NULL;
 GLUI_Checkbox *CHECKBOX_showintermediate = NULL;
@@ -214,9 +217,16 @@ extern "C" void GLUITourSetup(int main_window){
   EDIT_label->set_w(200);
   glui_tour->add_button_to_panel(PANEL_tour, _("Update label"), TOUR_UPDATELABEL, TourCB);
 
-  CHECKBOX_showtourroute1 = glui_tour->add_checkbox_to_panel(ROLLOUT_keyframe, _("Show tour"), &edittour, SHOWTOURROUTE1, TourCB);
-  CHECKBOX_view1 = glui_tour->add_checkbox_to_panel(ROLLOUT_keyframe, _("View from tour"), &viewtourfrompath, VIEWTOURFROMPATH1, TourCB);
-  CHECKBOX_tour_snap = glui_tour->add_checkbox_to_panel(ROLLOUT_keyframe, _("View from current tour position"), &tour_snap, TOUR_SNAP, TourCB);
+  CHECKBOX_showtourroute1        = glui_tour->add_checkbox_to_panel(ROLLOUT_keyframe, _("Show tour"),
+    &edittour, SHOWTOURROUTE1, TourCB);
+  CHECKBOX_view1                 = glui_tour->add_checkbox_to_panel(ROLLOUT_keyframe, _("View from tour"),
+    &viewtourfrompath, VIEWTOURFROMPATH1, TourCB);
+  CHECKBOX_tour_snap             = glui_tour->add_checkbox_to_panel(ROLLOUT_keyframe, _("View from current tour position"),
+    &tour_snap, TOUR_SNAP, TourCB);
+#ifdef pp_TOUR
+  CHECKBOX_tour_constant_velocity = glui_tour->add_checkbox_to_panel(ROLLOUT_keyframe, _("Constant velocity"),
+    &tour_constant_velocity, TOUR_CONSTANT_VELOCITY, TourCB);
+#endif
 
   PANEL_node = glui_tour->add_panel_to_panel(ROLLOUT_keyframe, "", GLUI_PANEL_NONE);
 
@@ -227,7 +237,9 @@ extern "C" void GLUITourSetup(int main_window){
   SPINNER_x=glui_tour->add_spinner_to_panel(PANEL_tourposition,"x:",GLUI_SPINNER_FLOAT,glui_tour_xyz,  KEYFRAME_tXYZ,TourCB);
   SPINNER_y=glui_tour->add_spinner_to_panel(PANEL_tourposition,"y:",GLUI_SPINNER_FLOAT,glui_tour_xyz+1,KEYFRAME_tXYZ,TourCB);
   SPINNER_z=glui_tour->add_spinner_to_panel(PANEL_tourposition,"z:",GLUI_SPINNER_FLOAT,glui_tour_xyz+2,KEYFRAME_tXYZ,TourCB);
-
+#ifdef pp_TOUR
+  TourCB(TOUR_CONSTANT_VELOCITY);
+#endif
   PANEL_tourview = glui_tour->add_panel_to_panel(PANEL_node, _("Target"));
   SPINNER_viewx=glui_tour->add_spinner_to_panel(PANEL_tourview,"x",GLUI_SPINNER_FLOAT,glui_tour_view,  KEYFRAME_viewXYZ,TourCB);
   SPINNER_viewy=glui_tour->add_spinner_to_panel(PANEL_tourview,"y",GLUI_SPINNER_FLOAT,glui_tour_view+1,KEYFRAME_viewXYZ,TourCB);
@@ -543,6 +555,18 @@ void TourCB(int var){
     TourCB(VIEWTOURFROMPATH);
     CHECKBOX_view2->set_int_val(viewtourfrompath);
     break;
+#ifdef pp_TOUR
+  case TOUR_CONSTANT_VELOCITY:
+    if(SPINNER_tour_time != NULL){
+      if(tour_constant_velocity == 1){
+        SPINNER_tour_time->disable();
+      }
+      else{
+        SPINNER_tour_time->enable();
+      }
+    }
+    break;
+#endif
   case VIEWTOURFROMPATH2:
     TourCB(VIEWTOURFROMPATH);
     CHECKBOX_view1->set_int_val(viewtourfrompath);
@@ -732,7 +756,6 @@ void TourCB(int var){
       TOURMENU(MENU_TOUR_CLEARALL);  // reset tour vis to ini values
       if(PANEL_node != NULL)PANEL_node->disable();
       if(PANEL_tournavigate!=NULL)PANEL_tournavigate->disable();
-      if(SPINNER_tour_time!= NULL)SPINNER_tour_time->disable();
       break;
     case TOURINDEX_DEFAULT:
       TOURMENU(MENU_TOUR_DEFAULT);  // default tour
@@ -745,7 +768,11 @@ void TourCB(int var){
       GLUISetTourKeyframe();
       if(PANEL_node != NULL)PANEL_node->enable();
       if(PANEL_tournavigate!=NULL)PANEL_tournavigate->enable();
+#ifdef pp_TOUR
+      TourCB(TOUR_CONSTANT_VELOCITY);
+#else
       if(SPINNER_tour_time!= NULL)SPINNER_tour_time->disable();
+#endif
       break;
     }
     GLUIDeleteTourList();
@@ -791,7 +818,9 @@ void TourCB(int var){
     selected_tour->display=0;
     TOURMENU(selectedtour_index);
     if(PANEL_node!=NULL)PANEL_node->enable();
+#ifndef pp_TOUR
     if(SPINNER_tour_time!=NULL)SPINNER_tour_time->disable();
+#endif
     updatemenu=1;
     break;
   case TOUR_LABEL:

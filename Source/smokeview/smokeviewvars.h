@@ -2130,6 +2130,9 @@ SVEXTERN tour_collection tourcoll;
 SVEXTERN int SVDECL(selectedtour_index, TOURINDEX_MANUAL), SVDECL(selectedtour_index_old, TOURINDEX_MANUAL), SVDECL(selectedtour_index_ini, TOURINDEX_MANUAL);
 SVEXTERN int SVDECL(update_selectedtour_index,0);
 SVEXTERN int SVDECL(viewtourfrompath,0),SVDECL(viewalltours,0),SVDECL(viewanytours,0),SVDECL(edittour,0);
+#ifdef pp_TOUR
+SVEXTERN int SVDECL(tour_constant_velocity, 1);
+#endif
 
 SVEXTERN int SVDECL(have_animate_blockages, 0), SVDECL(animate_blockages, 0);
 SVEXTERN xbdata SVDECL(*obstinfo, NULL);
