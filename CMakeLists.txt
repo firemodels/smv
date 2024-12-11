@@ -186,7 +186,7 @@ add_executable(smokeview
     Source/shared/isobox.c
     Source/smokeview/getdatabounds.c
     Source/smokeview/readsmv.c
-    Source/smokeview/scontour2d.c
+    Source/shared/scontour2d.c
     Source/shared/dmalloc.c
     Source/shared/compress.c
     Source/smokeview/IOvolsmoke.c
