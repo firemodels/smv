@@ -6,7 +6,7 @@
 #include <math.h>
 #include "svdiff.h"
 #include "string_util.h"
-#include "MALLOCC.h"
+#include "dmalloc.h"
 #include "stdio_buffer.h"
 
 /* ------------------ usage ------------------------ */

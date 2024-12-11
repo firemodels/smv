@@ -1,7 +1,7 @@
 #ifndef READSLICE_H_DEFINED
 #define READSLICE_H_DEFINED
 #include "options.h"
-#include "MALLOCC.h"
+#include "dmalloc.h"
 #include "string_util.h"
 #include "gd.h"
 

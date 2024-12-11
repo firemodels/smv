@@ -159,7 +159,7 @@ void UpdateCameraYpos(cameradata *ci, int option){
   ci->isometric_y = (eyeyfactor-1.0)*xyzbox;
 }
 
-/* ------------------ SetCameraView ------------------------ */
+/* ------------------ SetCameraViewPersp ------------------------ */
 
 void SetCameraViewPersp(cameradata *ca, int option){
   float az = 0.0, elev = 0.0;

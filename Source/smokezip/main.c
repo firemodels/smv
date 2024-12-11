@@ -7,7 +7,7 @@
 #include <math.h>
 #include "svzip.h"
 #include "string_util.h"
-#include "MALLOCC.h"
+#include "dmalloc.h"
 
 //dummy change to bump version number to 1.4.8
 //dummy change to force githash update

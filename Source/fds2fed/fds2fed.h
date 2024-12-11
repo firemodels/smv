@@ -1,7 +1,7 @@
 #ifndef FDS2FED_H_DEFINED
 #define FDS2FED_H_DEFINED
 #include "string_util.h"
-#include "MALLOCC.h"
+#include "dmalloc.h"
 #include "stdio_buffer.h"
 #include "file_util.h"
 

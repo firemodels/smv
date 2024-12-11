@@ -1,6 +1,6 @@
 #ifndef READTOUR_H_DEFINED
 #define READTOUR_H_DEFINED
-#include "MALLOCC.h"
+#include "dmalloc.h"
 #include "options.h"
 #include "shared_structures.h"
 

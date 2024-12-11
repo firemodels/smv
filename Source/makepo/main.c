@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "string_util.h"
-#include "MALLOCC.h"
+#include "dmalloc.h"
 
 int add_msgstring=0;
 int add_comments=0;

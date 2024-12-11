@@ -464,7 +464,7 @@ FILE_SIZE ReadAllCSVFiles(int flag){
 
   if(ncsvfileinfo == 0)return 0;
 #define GENPLOT_REM_ALL_PLOTS       136
-  GenPlotCB(GENPLOT_REM_ALL_PLOTS);
+  GLUIGenPlotCB(GENPLOT_REM_ALL_PLOTS);
   for(i = 0; i < ncsvfileinfo; i++){
     csvfiledata *csvfi;
 

@@ -3791,6 +3791,7 @@ void ScriptViewXYZMINMAXOrtho(int command){
 }
 
 /* ------------------ ScriptViewXYZMINMAXPersp ------------------------ */
+
 void ResetDefaultMenu(int var);
 void ScriptViewXYZMINMAXPersp(int command){
   switch(command){

@@ -1,7 +1,7 @@
 #include "options.h"
 
 // TODO: sort out imports
-#include "MALLOCC.h"
+#include "dmalloc.h"
 #include "getdata.h"
 #include <stdlib.h>
 
@@ -13,10 +13,10 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
-#include "MALLOCC.h"
+#include "dmalloc.h"
 #include "datadefs.h"
 #include "histogram.h"
-#include "isodefs.h"
+#include "isobox.h"
 #include "string_util.h"
 
 #include "file_util.h"

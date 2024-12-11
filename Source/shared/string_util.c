@@ -22,7 +22,7 @@
 #else
 #include <dirent.h>
 #endif
-#include "MALLOCC.h"
+#include "dmalloc.h"
 #include "datadefs.h"
 #include "file_util.h"
 #include "string_util.h"

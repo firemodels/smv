@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "stdio_m.h"
-#include "MALLOCC.h"
+#include "dmalloc.h"
 #include "IOframe.h"
 #include "file_util.h"
 

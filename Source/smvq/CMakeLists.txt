@@ -21,7 +21,7 @@ add_executable(smvq smvq.c
     ../shared/isobox.c
     ../smokeview/getdatabounds.c
     ../smokeview/readsmv.c
-    ../smokeview/scontour2d.c
+    ../shared/scontour2d.c
     ../shared/dmalloc.c
     ../shared/compress.c
     ../smokeview/IOvolsmoke.c
