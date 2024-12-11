@@ -19,6 +19,7 @@
 #include "readhvac.h"
 #include "readobject.h"
 #include "IOobjects.h"
+#include "IOscript.h"
 
 void LoadHVACMenu(int value);
 void LoadPlot2DMenu(int value);

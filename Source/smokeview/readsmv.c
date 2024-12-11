@@ -26,6 +26,7 @@
 #include "readlabel.h"
 #include "readsmoke.h"
 #include "IOobjects.h"
+#include "IOscript.h"
 
 #define BREAK break
 #define BREAK2 \

@@ -8,6 +8,7 @@
 
 #include "smokeviewvars.h"
 #include "glui_motion.h"
+#include "IOscript.h"
 
 /* ------------------ Zoom2Aperture ------------------------ */
 

@@ -9,6 +9,7 @@
 
 #include "smokeviewvars.h"
 #include "glui_motion.h"
+#include "IOscript.h"
 
 #ifdef WIN32
 #include <direct.h>

@@ -12,6 +12,7 @@
 #include "smokeviewvars.h"
 #include "command_args.h"
 #include "fopen.h"
+#include "IOscript.h"
 
 #ifdef WIN32
 #include <direct.h>
