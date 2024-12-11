@@ -9,6 +9,7 @@
 #include GLUT_H
 
 #include "smokeviewvars.h"
+#include "glui_bounds.h"
 #include "IOvolsmoke.h"
 #include "infoheader.h"
 #include "readtour.h"
