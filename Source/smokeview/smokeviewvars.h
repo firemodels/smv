@@ -1,7 +1,7 @@
 #ifndef SMOKEVIEWVARS_H_DEFINED
 #define SMOKEVIEWVARS_H_DEFINED
 #include <time.h>
-#include "MALLOCC.h"
+#include "dmalloc.h"
 #ifdef CPP
 #include "glui.h"
 #endif

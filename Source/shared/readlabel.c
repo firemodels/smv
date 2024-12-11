@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "MALLOCC.h"
+#include "dmalloc.h"
 #include "histogram.h"
 #include "isobox.h"
 #include "readlabel.h"

@@ -5,7 +5,7 @@
 #include <string.h>
 #include <assert.h>
 
-#include "MALLOCC.h"
+#include "dmalloc.h"
 #include "threader.h"
 
 #ifdef pp_SAMPLE

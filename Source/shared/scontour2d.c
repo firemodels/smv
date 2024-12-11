@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include GLUT_H
 #include "scontour2d.h"
-#include "MALLOCC.h"
+#include "dmalloc.h"
 
 #define SOLID 0
 #define GAS 1

@@ -1,5 +1,5 @@
-#ifndef MALLOC_H_DEFINED
-#define MALLOC_H_DEFINED
+#ifndef dmalloc_H_DEFINED
+#define dmalloc_H_DEFINED
 
 #ifdef __MINGW32__
 #include "options.h"

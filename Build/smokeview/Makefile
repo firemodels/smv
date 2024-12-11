@@ -67,7 +67,7 @@ obj = $(cobj) $(cppobj)
 
 incs = compress.h scontour2d.h csphere.h datadefs.h dirent_win.h file_util.h glui_bounds.h \
        glui_motion.h glui_smoke.h glui_tour.h histogram.h infoheader.h interp.h isobox.h \
-       IOobjects.h IOscript.h IOvolsmoke.h lint.h lua_api.h MALLOCC.h options.h options_common.h \
+       IOobjects.h IOscript.h IOvolsmoke.h lint.h lua_api.h dmalloc.h options.h options_common.h \
        pragmas.h smokeheaders.h smokeviewdefs.h smokeviewvars.h \
        stdio_buffer.h stdio_m.h string_util.h structures.h translate.h threader.h viewports.h command_args.h
 

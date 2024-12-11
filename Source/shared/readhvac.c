@@ -8,7 +8,7 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
-#include "MALLOCC.h"
+#include "dmalloc.h"
 #include "datadefs.h"
 #include "histogram.h"
 #include "isobox.h"

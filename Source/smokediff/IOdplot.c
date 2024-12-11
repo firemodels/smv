@@ -4,7 +4,7 @@
 #include <string.h>
 #include <math.h>
 #include "svdiff.h"
-#include "MALLOCC.h"
+#include "dmalloc.h"
 #include "datadefs.h"
 #include "file_util.h"
 #include "getdata.h"

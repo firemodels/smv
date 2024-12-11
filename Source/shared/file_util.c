@@ -32,7 +32,7 @@
 #include <dirent.h>
 #include <libgen.h>
 #endif
-#include "MALLOCC.h"
+#include "dmalloc.h"
 #include "string_util.h"
 #include "file_util.h"
 #include "threader.h"

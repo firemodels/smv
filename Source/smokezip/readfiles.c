@@ -5,7 +5,7 @@
 #include <string.h>
 #include <math.h>
 #include "svzip.h"
-#include "MALLOCC.h"
+#include "dmalloc.h"
 #include "stdio_buffer.h"
 #include "getdata.h"
 

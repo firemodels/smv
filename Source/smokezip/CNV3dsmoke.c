@@ -6,7 +6,7 @@
 #include "zlib.h"
 #include "svzip.h"
 #include "file_util.h"
-#include "MALLOCC.h"
+#include "dmalloc.h"
 #include "compress.h"
 
 /* ------------------ Convert3DSmoke ------------------------ */

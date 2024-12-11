@@ -2,7 +2,7 @@
 #include "options.h"
 #include <stdlib.h>
 #include <stdio.h>
-#include "MALLOCC.h"
+#include "dmalloc.h"
 #include "zlib.h"
 #include "svzip.h"
 

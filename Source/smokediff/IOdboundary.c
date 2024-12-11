@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "svdiff.h"
-#include "MALLOCC.h"
+#include "dmalloc.h"
 #include "file_util.h"
 #include "getdata.h"
 

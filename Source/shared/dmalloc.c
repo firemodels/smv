@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
-#include "MALLOCC.h"
+#include "dmalloc.h"
 #ifdef pp_MEMDEBUG
 static int checkmemoryflag=1;
 #endif

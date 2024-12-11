@@ -9,7 +9,7 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
-#include "MALLOCC.h"
+#include "dmalloc.h"
 #include "smokeviewvars.h"
 #include "string_util.h"
 

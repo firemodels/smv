@@ -11,7 +11,7 @@
 #endif
 #include <math.h>
 #include <stdio.h>
-#include "MALLOCC.h"
+#include "dmalloc.h"
 #define IN_ISOBOX
 #include "isobox.h"
 #include "datadefs.h"
