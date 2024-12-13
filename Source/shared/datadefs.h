@@ -62,8 +62,6 @@
   vavg[1]=(v1[1]+v2[1]+v3[1])/3.0;\
   vavg[2]=(v1[2]+v2[2]+v3[2])/3.0
 
-#define DIST2(v1,v2)  sqrt((v1[0]-v2[0])*(v1[0]-v2[0])+(v1[1]-v2[1])*(v1[1]-v2[1]))
-
 #define DIST3(v1,v2,dist2) \
   dx=v1[0]-v2[0];\
   dy=v1[1]-v2[1];\
@@ -104,15 +102,6 @@
   (vec)[1] *= (a);\
   (vec)[2] *= (a)
 
-#define VEC2DA(vec,a)\
-  (vec)[0] /= (a);\
-  (vec)[1] /= (a)
-
-#define VEC3DA(vec,a)\
-  (vec)[0] /= (a);\
-  (vec)[1] /= (a);\
-  (vec)[2] /= (a)
-
 #ifndef DOT2
 #define DOT2(x,y) ((x)[0]*(y)[0]+(x)[1]*(y)[1])
 #endif
@@ -148,41 +137,11 @@
   (y)[2]=(x)
 #endif
 
-#ifndef VEC3ADD
-#define VEC3ADD(ypx,x,y)\
-  (ypx)[0]=(y)[0]+(x)[0];\
-  (ypx)[1]=(y)[1]+(x)[1];\
-  (ypx)[2]=(y)[2]+(x)[2]
-#endif
-
 #ifndef VEC3DIFF
 #define VEC3DIFF(ymx,y,x)\
   (ymx)[0]=(y)[0]-(x)[0];\
   (ymx)[1]=(y)[1]-(x)[1];\
   (ymx)[2]=(y)[2]-(x)[2]
-#endif
-
-#ifndef VEC3AVG
-#define VEC3AVG(yavg,y,x)\
-  (yavg)[0]=((y)[0]+(x)[0])/2.0;\
-  (yavg)[1]=((y)[1]+(x)[1])/2.0;\
-  (yavg)[2]=((y)[2]+(x)[2])/2.0
-#endif
-
-#ifndef VEC4EQ
-#define VEC4EQ(y,x)\
-  (y)[0] = (x)[0];\
-  (y)[1] = (x)[1];\
-  (y)[2] = (x)[2];\
-  (y)[3] = (x)[3]
-#endif
-
-#ifndef VEC4EQCONS
-#define VEC4EQCONS(y,x)\
-  (y)[0]=(x);\
-  (y)[1]=(x);\
-  (y)[2]=(x);\
-  (y)[3]=(x)
 #endif
 
 #ifndef DOT3
@@ -234,20 +193,12 @@
 #define RAD2DEG (180.0/3.14159265359f)
 #endif
 
-#ifndef PERCENT
-#define PERCENT(num,denom)  ((int)(100.0*(float)(num)/(float)(denom)+0.5))
-#endif
-
 #ifndef MAX
 #define MAX(a,b)  ((a)>(b) ? (a) : (b))
 #endif
 
 #ifndef MAXABS3
 #define MAXABS3(x) (MAX(ABS((x)[0]),MAX(ABS((x)[1]),ABS((x)[2]))))
-#endif
-
-#ifndef MAX3
-#define MAX3(a,b,c) ((a)<(b)?(MAX(b,c)):(MAX(a,c)))
 #endif
 
 #ifndef MIN
@@ -292,22 +243,6 @@
 
 #ifndef IJKN
 #define IJKN(i,j,k,n) (IJKNODE(i,j,k)+(n)*nxyz)
-#endif
-
-#ifndef GET_QDATA
-#define GET_QDATA(i,j,k,n) qdata[IJKN(i,j,k,n)]
-#endif
-
-#ifndef GET_QVAL
-#define GET_QVAL(i,j,k,n) \
-  if(qdata!=NULL){\
-    qval=qdata[IJKN(i,j,k,n)];\
-  }\
-  else{\
-    float *qvals;\
-    qvals=p3levels256[n];\
-    qval=qvals[iqdata[IJKN(i,j,k,n)]];\
-  }
 #endif
 
 #ifndef IJKCELL
