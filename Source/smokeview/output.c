@@ -225,6 +225,49 @@ float GetStringLength(char *string){
   return length;
 }
 
+/* ------------------------ GetStringWidth ------------------------- */
+
+int GetStringWidth(char *string){
+  char *c;
+  int length = 0;
+
+  if(string == NULL)return 0;
+  switch(fontindex){
+  case SMALL_FONT:
+    for(c = string; *c != '\0'; c++){
+      length += glutBitmapWidth(GLUT_BITMAP_HELVETICA_10, *c);
+    }
+    length *= (288.0 / 235.0);
+#ifdef pp_OSX_HIGHRES
+    if(double_scale == 1){
+      length *= 2;
+    }
+#endif
+    break;
+  case LARGE_FONT:
+    for(c = string; *c != '\0'; c++){
+      length += glutBitmapWidth(GLUT_BITMAP_HELVETICA_18, *c);
+    }
+    length *= (416.0 / 423.0);
+#ifdef pp_OSX_HIGHRES
+    if(double_scale == 1){
+      length *= 2;
+    }
+#endif
+    break;
+  case SCALED_FONT:
+    for(c = string; *c != '\0'; c++){
+      length += glutStrokeWidth(GLUT_STROKE_ROMAN, *c);
+    }
+    length *= (283.0 / 402.0) * scale_2d_x;
+    break;
+  default:
+    assert(FFALSE);
+    break;
+  }
+  return length;
+}
+
 /* ------------------ glutBitmapCharacterShiftLeft ------------------------ */
 
 void glutBitmapCharacterShiftLeft(GLUTbitmapFont font, int c, float advance){

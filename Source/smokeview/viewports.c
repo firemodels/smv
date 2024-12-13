@@ -18,49 +18,6 @@
 #define CONV(p,pl,pr,pxl,pxr) ( (pxl) + ((pxr)-(pxl))*((p)-(pl))/((pr)-(pl)) )
 #define TIMEBAR_HEIGHT 20
 
-/* ------------------------ GetStringWidth ------------------------- */
-
-int GetStringWidth(char *string){
-  char *c;
-  int length=0;
-
-  if(string==NULL)return 0;
-  switch(fontindex){
-    case SMALL_FONT:
-      for(c=string;*c!='\0';c++){
-        length += glutBitmapWidth(GLUT_BITMAP_HELVETICA_10, *c);
-      }
-      length *= (288.0/235.0);
-#ifdef pp_OSX_HIGHRES
-      if(double_scale==1){
-        length *= 2;
-      }
-#endif
-      break;
-    case LARGE_FONT:
-      for(c=string;*c!='\0';c++){
-        length += glutBitmapWidth(GLUT_BITMAP_HELVETICA_18, *c);
-      }
-      length *= (416.0/423.0);
-#ifdef pp_OSX_HIGHRES
-      if(double_scale==1){
-        length *= 2;
-      }
-#endif
-      break;
-    case SCALED_FONT:
-      for(c=string;*c!='\0';c++){
-        length += glutStrokeWidth(GLUT_STROKE_ROMAN, *c);
-      }
-      length *= (283.0/402.0)*scale_2d_x;
-      break;
-    default:
-      assert(FFALSE);
-      break;
-  }
-  return length;
-}
-
 /* ------------------ GetColorbarLabelWidth ------------------------ */
 
 void GetColorbarLabelWidth(int show_slice_colorbar_local, int showcfast_local,

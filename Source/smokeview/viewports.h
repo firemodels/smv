@@ -12,6 +12,5 @@ void ViewportScene(int quad, int view_mode, GLint s_left, GLint s_down, screenda
 
 //*** viewports.c headers
 
-EXTERNCPP int GetStringWidth(char *string);
 EXTERNCPP void GetViewportInfo(void);
 #endif

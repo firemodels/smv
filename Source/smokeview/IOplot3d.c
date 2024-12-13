@@ -13,6 +13,23 @@
 
 #define PLOT3DCONVERT(val, valmin, valmax) ( (val-valmin)/(valmax-valmin) )
 
+#ifndef GET_QDATA
+#define GET_QDATA(i,j,k,n) qdata[IJKN(i,j,k,n)]
+#endif
+
+#ifndef GET_QVAL
+#define GET_QVAL(i,j,k,n) \
+  if(qdata!=NULL){\
+    qval=qdata[IJKN(i,j,k,n)];\
+  }\
+  else{\
+    float *qvals;\
+    qvals=p3levels256[n];\
+    qval=qvals[iqdata[IJKN(i,j,k,n)]];\
+  }
+#endif
+
+
 /* ------------------ GetPlot3DHists ------------------------ */
 
 void GetPlot3DHists(plot3ddata *p){
