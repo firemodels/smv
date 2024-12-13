@@ -721,12 +721,9 @@ EXTERNCPP void Output3TextRight(float *color, float x, float y, float z, char *s
 EXTERNCPP void Output3Val(float x, float y, float z, float val);
 EXTERNCPP void OutputAxisLabels(void);
 EXTERNCPP void OutputBarText(float x, float y, const GLfloat *color, char *string);
-EXTERNCPP void OutputLargeText(float x, float y, char *string);
 EXTERNCPP void OutputText(float x, float y, char *string);
 EXTERNCPP void OutputTextColor(float *fontcolor, float x, float y, char *string);
-EXTERNCPP void ScaleFont2D(void);
 EXTERNCPP void ScaleFont3D(void);
-EXTERNCPP void WriteLabels(labels_collection *labelscoll);
 
 //*** readsmv.c headers
 

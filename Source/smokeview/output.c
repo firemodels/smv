@@ -352,16 +352,12 @@ void Output3TextRight(float *color, float x, float y, float z, char *string, flo
   }
 }
 
-/* ------------------ OutputLargeText ------------------------ */
-
-void OutputLargeText(float x, float y, char *string){
-  char *c;
-
-  if(string==NULL)return;
-  glColor3fv(foregroundcolor);
-  glRasterPos2f(x, y);
-  for(c=string; *c!='\0'; c++){
-    glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18,(unsigned char)*c);
+void ScaleFont2D(void){
+  if(render_mode == RENDER_360){
+    glLineWidth(( float )resolution_multiplier * ( float )scaled_font2d_thickness);
+  }
+  else{
+    glLineWidth(( float )scaled_font2d_thickness);
   }
 }
 
@@ -514,15 +510,6 @@ void DrawLabels(labels_collection *labelscoll_arg){
 }
 
 /* ----------------------- ScaleFont2D ----------------------------- */
-
-void ScaleFont2D(void){
-  if(render_mode == RENDER_360){
-    glLineWidth((float)resolution_multiplier*(float)scaled_font2d_thickness);
-  }
-  else{
-    glLineWidth((float)scaled_font2d_thickness);
-  }
-}
 
 /* ----------------------- ScaleFont3D ----------------------------- */
 
