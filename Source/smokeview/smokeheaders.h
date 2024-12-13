@@ -715,6 +715,7 @@ EXTERNCPP void ZoomMenu(int value);
 EXTERNCPP void DrawLabels(labels_collection *labelscoll);
 EXTERNCPP  int GetFontHeight(void);
 EXTERNCPP float GetStringLength(char *string);
+EXTERNCPP int  GetStringWidth(char *string);
 EXTERNCPP void Output3Text(float *color, float x, float y, float z, char *string);
 EXTERNCPP void Output3TextRight(float *color, float x, float y, float z, char *string, float pad_length);
 EXTERNCPP void Output3Val(float x, float y, float z, float val);
