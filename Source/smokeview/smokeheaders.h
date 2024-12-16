@@ -376,7 +376,6 @@ EXTERNCPP void UpdateBoundaryType(void);
 
 EXTERNCPP void CancelUpdateTriangles(void);
 EXTERNCPP void *ClassifyAllGeom(void *arg);
-EXTERNCPP void ClassifyGeom(geomdata *geomi, int *geom_frame_index);
 EXTERNCPP void DrawBoxMinMax(float *bbmin, float *bbmax, float *box_color);
 EXTERNCPP void DrawBoxOutline(float *bb, float *box_color);
 EXTERNCPP void DrawBoxShaded(float *bb, int flag, int *hidden6, float *box_color);

@@ -15,6 +15,302 @@
 #define BUILD_GEOM_OFFSETS 0
 #define GET_GEOM_OFFSETS  -1
 
+/* ------------------ CompareFaces ------------------------ */
+
+int CompareFaces(const void *arg1, const void *arg2){
+  tridata *face1, *face2;
+  int *verts1, *verts2;
+  int v1[3], v2[3];
+
+  face1 = *( tridata ** )arg1;
+  face2 = *( tridata ** )arg2;
+  verts1 = face1->vert_index;
+  verts2 = face2->vert_index;
+
+  v1[0] = MIN(verts1[0], MIN(verts1[1], verts1[2]));
+  v1[2] = MAX(verts1[0], MAX(verts1[1], verts1[2]));
+  v1[1] = verts1[0] + verts1[1] + verts1[2] - v1[0] - v1[2];
+
+  v2[0] = MIN(verts2[0], MIN(verts2[1], verts2[2]));
+  v2[2] = MAX(verts2[0], MAX(verts2[1], verts2[2]));
+  v2[1] = verts2[0] + verts2[1] + verts2[2] - v2[0] - v2[2];
+
+  if(v1[0] < v2[0])return -1;
+  if(v1[0] > v2[0])return 1;
+
+  if(v1[1] < v2[1])return -1;
+  if(v1[1] > v2[1])return 1;
+
+  if(v1[2] < v2[2])return -1;
+  if(v1[2] > v2[2])return 1;
+  return 0;
+}
+
+/* ------------------ CompareEdges ------------------------ */
+
+int CompareEdges(const void *arg1, const void *arg2){
+  edgedata *edge1, *edge2;
+  int *v1, *v2;
+
+  edge1 = *( edgedata ** )arg1;
+  edge2 = *( edgedata ** )arg2;
+  v1 = edge1->vert_index;
+  v2 = edge2->vert_index;
+
+  if(v1[0] < v2[0])return -1;
+  if(v1[0] > v2[0])return 1;
+
+  if(v1[1] < v2[1])return -1;
+  if(v1[1] > v2[1])return 1;
+  return 0;
+}
+
+/* ------------------ CompareVerts2 ------------------------ */
+
+#define VERT_EPS 0.001
+
+int CompareVerts2(const void *arg1, const void *arg2){
+  vertdata *vert1, *vert2;
+  float *xyz1, *xyz2;
+
+
+  vert1 = *( vertdata ** )arg1;
+  xyz1 = vert1->xyz;
+
+  vert2 = *( vertdata ** )arg2;
+  xyz2 = vert2->xyz;
+
+  if(xyz1[0] < xyz2[0] - VERT_EPS)return -1;
+  if(xyz1[0] > xyz2[0] + VERT_EPS)return  1;
+
+  if(xyz1[1] < xyz2[1] - VERT_EPS)return -1;
+  if(xyz1[1] > xyz2[1] + VERT_EPS)return  1;
+
+  if(xyz1[2] < xyz2[2] - VERT_EPS)return -1;
+  if(xyz1[2] > xyz2[2] + VERT_EPS)return  1;
+  return 0;
+}
+
+/* ------------------ CompareEdges2 ------------------------ */
+
+int CompareEdges2(edgedata *edge1, edgedata *edge2){
+  int *v1, *v2;
+
+  v1 = edge1->vert_index;
+  v2 = edge2->vert_index;
+
+  if(v1[0] < v2[0])return -1;
+  if(v1[0] > v2[0])return 1;
+
+  if(v1[1] < v2[1])return -1;
+  if(v1[1] > v2[1])return 1;
+  return 0;
+}
+
+/* ------------------ GetEdge ------------------------ */
+
+edgedata *GetEdge(edgedata *edges, int nedges, int iv1, int iv2){
+  int iresult;
+  edgedata ei, *elow, *emid, *ehigh;
+  int low, mid, high;
+  int ilow, ihigh;
+
+  ei.vert_index[0] = MIN(iv1, iv2);
+  ei.vert_index[1] = MAX(iv1, iv2);
+
+  elow = edges;
+  ehigh = edges + nedges - 1;
+
+  ilow = CompareEdges2(&ei, elow);
+  if(ilow < 0)return NULL;
+  if(ilow == 0)return elow;
+
+  ihigh = CompareEdges2(&ei, ehigh);
+  if(ihigh > 0)return NULL;
+  if(ihigh == 0)return ehigh;
+
+  low = 0;
+  high = nedges - 1;
+  while(high - low > 1){
+    mid = (low + high) / 2;
+    emid = edges + mid;
+    iresult = CompareEdges2(&ei, emid);
+    if(iresult == 0)return emid;
+    if(iresult > 0){
+      low = mid;
+    }
+    else{
+      high = mid;
+    }
+  }
+  return NULL;
+}
+
+/* ------------------ ClassifyGeom ------------------------ */
+
+void ClassifyGeom(geomdata *geomi, int *geom_frame_index){
+  int i, iend;
+
+  if(geomi->geomlistinfo == NULL)return;
+  iend = geomi->ntimes;
+  if(geom_frame_index != NULL)iend = 1;
+
+  for(i = -1; i < iend; i++){
+    geomlistdata *geomlisti;
+    int nverts, ntriangles;
+    int j;
+    vertdata *vertbase;
+
+
+    geomlisti = geomi->geomlistinfo + i;
+    if(i != -1 && geom_frame_index != NULL)geomlisti = geomi->geomlistinfo + (*geom_frame_index);
+
+    nverts = geomlisti->nverts;
+    ntriangles = geomlisti->ntriangles;
+    if(nverts == 0 || geomlisti->verts == NULL)continue;
+    vertbase = geomlisti->verts;
+    if(ntriangles > 0){
+      int nfacelist_index;
+      tridata **facelist_ptrs = NULL;
+
+      nfacelist_index = ntriangles;
+      NewMemory(( void ** )&facelist_ptrs, nfacelist_index * sizeof(tridata *));
+      for(j = 0; j < nfacelist_index; j++){
+        tridata *trij;
+        int *vert_index;
+
+        trij = geomlisti->triangles + j;
+        trij->exterior = 1;
+        facelist_ptrs[j] = trij;
+        vert_index = trij->vert_index;
+        vert_index[0] = trij->verts[0] - vertbase;
+        vert_index[1] = trij->verts[1] - vertbase;
+        vert_index[2] = trij->verts[2] - vertbase;
+      }
+      qsort(facelist_ptrs, nfacelist_index, sizeof(tridata *), CompareFaces);
+      for(j = 1; j < nfacelist_index; j++){
+        if(CompareFaces(facelist_ptrs + j, facelist_ptrs + j - 1) == 0){
+          tridata *trij, *trijm1;
+
+          trij = facelist_ptrs[j];
+          trij->exterior = 0;
+
+          trijm1 = facelist_ptrs[j - 1];
+          trijm1->exterior = 0;
+        }
+      }
+      FREEMEMORY(facelist_ptrs);
+    }
+    if(ntriangles > 0){
+      edgedata **edgelist_ptr, *edges, *edges2;
+      tridata *triangles;
+      int ii;
+      int ntris;
+      int nedges;
+      int nedgelist_index = 0;
+
+      ntris = geomlisti->ntriangles;
+      triangles = geomlisti->triangles;
+
+      NewMemory(( void ** )&edges, 3 * ntris * sizeof(edgedata));
+      NewMemory(( void ** )&edges2, 3 * ntris * sizeof(edgedata));
+
+      nedgelist_index = 3 * ntris;
+      NewMemory(( void ** )&edgelist_ptr, nedgelist_index * sizeof(edgedata *));
+
+      for(ii = 0; ii < ntris; ii++){
+        int i0, i1, i2;
+
+        i0 = triangles[ii].vert_index[0];
+        i1 = triangles[ii].vert_index[1];
+        i2 = triangles[ii].vert_index[2];
+
+        edges[3 * ii].vert_index[0] = MIN(i0, i1);
+        edges[3 * ii].vert_index[1] = MAX(i0, i1);
+
+        edges[3 * ii + 1].vert_index[0] = MIN(i1, i2);
+        edges[3 * ii + 1].vert_index[1] = MAX(i1, i2);
+
+        edges[3 * ii + 2].vert_index[0] = MIN(i2, i0);
+        edges[3 * ii + 2].vert_index[1] = MAX(i2, i0);
+
+        edgelist_ptr[3 * ii] = edges + 3 * ii;
+        edgelist_ptr[3 * ii + 1] = edges + 3 * ii + 1;
+        edgelist_ptr[3 * ii + 2] = edges + 3 * ii + 2;
+      }
+
+
+      // remove duplicate edges
+      qsort(edgelist_ptr, nedgelist_index, sizeof(edgedata *), CompareEdges);
+      nedges = 0;
+      edges2[nedges].vert_index[0] = edgelist_ptr[nedges]->vert_index[0];
+      edges2[nedges].vert_index[1] = edgelist_ptr[nedges]->vert_index[1];
+      nedges++;
+      for(ii = 1; ii < nedgelist_index; ii++){
+        if(CompareEdges(edgelist_ptr + ii - 1, edgelist_ptr + ii) == 0)continue;
+        memcpy(edges2[nedges].vert_index, edgelist_ptr[ii]->vert_index, 2 * sizeof(int));
+        nedges++;
+      }
+      if(nedges > 0)ResizeMemory(( void ** )&edges2, nedges * sizeof(edgedata));
+      geomlisti->edges = edges2;
+      geomlisti->nedges = nedges;
+      FREEMEMORY(edges);
+      edges = edges2;
+
+      for(ii = 0; ii < nedges; ii++){
+        edges[ii].ntriangles = 0;
+      }
+
+      // count triangles associated with each edge
+
+      for(ii = 0; ii < ntris; ii++){
+        edgedata *edgei;
+        int *vi;
+
+        vi = triangles[ii].vert_index;
+        edgei = GetEdge(edges, nedges, vi[0], vi[1]);
+        if(edgei != NULL)edgei->ntriangles++;
+        edgei = GetEdge(edges, nedges, vi[1], vi[2]);
+        if(edgei != NULL)edgei->ntriangles++;
+        edgei = GetEdge(edges, nedges, vi[2], vi[0]);
+        if(edgei != NULL)edgei->ntriangles++;
+      }
+
+    }
+    if(nverts > 0){
+      int nvertlist_index = 0;
+      vertdata **vertlist_ptr, *verts;
+      int ii;
+
+      verts = geomlisti->verts;
+      nvertlist_index = nverts;
+      NewMemory(( void ** )&vertlist_ptr, nvertlist_index * sizeof(vertdata *));
+      for(ii = 0; ii < nvertlist_index; ii++){
+        vertlist_ptr[ii] = verts + ii;
+      }
+
+      qsort(vertlist_ptr, nvertlist_index, sizeof(vertdata *), CompareVerts2);
+      for(ii = 0; ii < nvertlist_index; ii++){
+        vertdata *vi;
+
+        vi = verts + ii;
+        vi->isdup = 0;
+      }
+      for(ii = 1; ii < nvertlist_index; ii++){
+        if(CompareVerts2(vertlist_ptr + ii - 1, vertlist_ptr + ii) == 0){
+          vertdata *v1, *v2;
+
+          v1 = vertlist_ptr[ii];
+          v2 = vertlist_ptr[ii - 1];
+          v1->isdup = 1;
+          v2->isdup = 1;
+        }
+      }
+      FREEMEMORY(vertlist_ptr);
+    }
+  }
+}
+
 /* ------------------ ClassifyAllGeom ------------------------ */
 
 void *ClassifyAllGeom(void *arg){
@@ -3386,308 +3682,12 @@ void ReorderFace(int *faces){
   VEC3EQ(faces,face_temp+2);
 }
 
-/* ------------------ CompareVerts2 ------------------------ */
-
-#define VERT_EPS 0.001
-
-int CompareVerts2(const void *arg1, const void *arg2){
-  vertdata *vert1, *vert2;
-  float *xyz1, *xyz2;
-
-
-  vert1 = *(vertdata **)arg1;
-  xyz1 = vert1->xyz;
-
-  vert2 = *(vertdata **)arg2;
-  xyz2 = vert2->xyz;
-
-  if(xyz1[0]<xyz2[0] - VERT_EPS)return -1;
-  if(xyz1[0]>xyz2[0] + VERT_EPS)return  1;
-
-  if(xyz1[1]<xyz2[1] - VERT_EPS)return -1;
-  if(xyz1[1]>xyz2[1] + VERT_EPS)return  1;
-
-  if(xyz1[2]<xyz2[2] - VERT_EPS)return -1;
-  if(xyz1[2]>xyz2[2] + VERT_EPS)return  1;
-  return 0;
-}
-
-/* ------------------ CompareEdges ------------------------ */
-
-int CompareEdges(const void *arg1, const void *arg2){
-  edgedata *edge1, *edge2;
-  int *v1, *v2;
-
-  edge1 = *(edgedata **)arg1;
-  edge2 = *(edgedata **)arg2;
-  v1 = edge1->vert_index;
-  v2 = edge2->vert_index;
-
-  if(v1[0]<v2[0])return -1;
-  if(v1[0]>v2[0])return 1;
-
-  if(v1[1]<v2[1])return -1;
-  if(v1[1]>v2[1])return 1;
-  return 0;
-}
-
-/* ------------------ CompareEdges2 ------------------------ */
-
-int CompareEdges2(edgedata *edge1, edgedata *edge2){
-  int *v1, *v2;
-
-  v1 = edge1->vert_index;
-  v2 = edge2->vert_index;
-
-  if(v1[0]<v2[0])return -1;
-  if(v1[0]>v2[0])return 1;
-
-  if(v1[1]<v2[1])return -1;
-  if(v1[1]>v2[1])return 1;
-  return 0;
-}
-
-/* ------------------ CompareFaces ------------------------ */
-
-int CompareFaces(const void *arg1, const void *arg2){
-  tridata *face1, *face2;
-  int *verts1, *verts2;
-  int v1[3], v2[3];
-
-  face1 = *(tridata **)arg1;
-  face2 = *(tridata **)arg2;
-  verts1 = face1->vert_index;
-  verts2 = face2->vert_index;
-
-  v1[0] = MIN(verts1[0], MIN(verts1[1], verts1[2]));
-  v1[2] = MAX(verts1[0], MAX(verts1[1], verts1[2]));
-  v1[1] = verts1[0]+verts1[1]+verts1[2]-v1[0]-v1[2];
-
-  v2[0] = MIN(verts2[0], MIN(verts2[1], verts2[2]));
-  v2[2] = MAX(verts2[0], MAX(verts2[1], verts2[2]));
-  v2[1] = verts2[0]+verts2[1]+verts2[2]-v2[0]-v2[2];
-
-  if(v1[0]<v2[0])return -1;
-  if(v1[0]>v2[0])return 1;
-
-  if(v1[1]<v2[1])return -1;
-  if(v1[1]>v2[1])return 1;
-
-  if(v1[2]<v2[2])return -1;
-  if(v1[2]>v2[2])return 1;
-  return 0;
-}
-
-/* ------------------ GetEdge ------------------------ */
-
-edgedata *GetEdge(edgedata *edges, int nedges, int iv1, int iv2){
-  int iresult;
-  edgedata ei, *elow, *emid, *ehigh;
-  int low, mid, high;
-  int ilow, ihigh;
-
-  ei.vert_index[0] = MIN(iv1, iv2);
-  ei.vert_index[1] = MAX(iv1, iv2);
-
-  elow = edges;
-  ehigh = edges + nedges - 1;
-
-  ilow = CompareEdges2(&ei, elow);
-  if(ilow < 0)return NULL;
-  if(ilow == 0)return elow;
-
-  ihigh = CompareEdges2(&ei, ehigh);
-  if(ihigh > 0)return NULL;
-  if(ihigh == 0)return ehigh;
-
-  low = 0;
-  high = nedges - 1;
-  while(high - low > 1){
-    mid = (low + high) / 2;
-    emid = edges + mid;
-    iresult = CompareEdges2(&ei, emid);
-    if(iresult == 0)return emid;
-    if(iresult > 0){
-      low = mid;
-    }
-    else{
-      high = mid;
-    }
-  }
-  return NULL;
-}
-
 /* ------------------ CancelUpdateTriangles ------------------------ */
 
 void CancelUpdateTriangles(void){
   cancel_update_triangles = 1;
   THREADcontrol(triangles_threads, THREAD_JOIN);
   cancel_update_triangles = 0;
-}
-
-/* ------------------ ClassifyGeom ------------------------ */
-
-void ClassifyGeom(geomdata *geomi,int *geom_frame_index){
-  int i, iend;
-
-  if(geomi->geomlistinfo==NULL)return;
-  iend = geomi->ntimes;
-  if(geom_frame_index!=NULL)iend=1;
-
-  for(i = -1; i<iend; i++){
-    geomlistdata *geomlisti;
-    int nverts, ntriangles;
-    int j;
-    vertdata *vertbase;
-
-
-    geomlisti = geomi->geomlistinfo+i;
-    if(i!=-1&&geom_frame_index!=NULL)geomlisti = geomi->geomlistinfo+(*geom_frame_index);
-
-    nverts=geomlisti->nverts;
-    ntriangles = geomlisti->ntriangles;
-    if(nverts==0||geomlisti->verts==NULL)continue;
-    vertbase = geomlisti->verts;
-    if(ntriangles > 0){
-      int nfacelist_index;
-      tridata **facelist_ptrs = NULL;
-
-      nfacelist_index = ntriangles;
-      NewMemory((void **)&facelist_ptrs, nfacelist_index*sizeof(tridata *));
-      for(j = 0; j < nfacelist_index; j++){
-        tridata *trij;
-        int *vert_index;
-
-        trij = geomlisti->triangles + j;
-        trij->exterior = 1;
-        facelist_ptrs[j] = trij;
-        vert_index = trij->vert_index;
-        vert_index[0] = trij->verts[0] - vertbase;
-        vert_index[1] = trij->verts[1] - vertbase;
-        vert_index[2] = trij->verts[2] - vertbase;
-      }
-      qsort(facelist_ptrs, nfacelist_index, sizeof(tridata *), CompareFaces);
-      for(j = 1; j < nfacelist_index; j++){
-        if(CompareFaces(facelist_ptrs + j, facelist_ptrs + j - 1) == 0){
-          tridata *trij, *trijm1;
-
-          trij = facelist_ptrs[j];
-          trij->exterior = 0;
-
-          trijm1 = facelist_ptrs[j - 1];
-          trijm1->exterior = 0;
-         }
-      }
-      FREEMEMORY(facelist_ptrs);
-    }
-    if(ntriangles > 0){
-      edgedata **edgelist_ptr, *edges, *edges2;
-      tridata *triangles;
-      int ii;
-      int ntris;
-      int nedges;
-      int nedgelist_index = 0;
-
-      ntris = geomlisti->ntriangles;
-      triangles = geomlisti->triangles;
-
-      NewMemory((void **)&edges, 3 * ntris * sizeof(edgedata));
-      NewMemory((void **)&edges2, 3 * ntris * sizeof(edgedata));
-
-      nedgelist_index = 3 * ntris;
-      NewMemory((void **)&edgelist_ptr, nedgelist_index * sizeof(edgedata *));
-
-      for(ii = 0; ii<ntris; ii++){
-        int i0, i1, i2;
-
-        i0 = triangles[ii].vert_index[0];
-        i1 = triangles[ii].vert_index[1];
-        i2 = triangles[ii].vert_index[2];
-
-        edges[3 * ii].vert_index[0] = MIN(i0, i1);
-        edges[3 * ii].vert_index[1] = MAX(i0, i1);
-
-        edges[3 * ii + 1].vert_index[0] = MIN(i1, i2);
-        edges[3 * ii + 1].vert_index[1] = MAX(i1, i2);
-
-        edges[3 * ii + 2].vert_index[0] = MIN(i2, i0);
-        edges[3 * ii + 2].vert_index[1] = MAX(i2, i0);
-
-        edgelist_ptr[3*ii]   = edges+3*ii;
-        edgelist_ptr[3*ii+1] = edges+3*ii+1;
-        edgelist_ptr[3*ii+2] = edges+3*ii+2;
-      }
-
-
-      // remove duplicate edges
-      qsort(edgelist_ptr, nedgelist_index, sizeof(edgedata *), CompareEdges);
-      nedges = 0;
-      edges2[nedges].vert_index[0] = edgelist_ptr[nedges]->vert_index[0];
-      edges2[nedges].vert_index[1] = edgelist_ptr[nedges]->vert_index[1];
-      nedges++;
-      for(ii = 1; ii < nedgelist_index; ii++){
-        if(CompareEdges(edgelist_ptr+ii - 1, edgelist_ptr+ii)==0)continue;
-        memcpy(edges2[nedges].vert_index, edgelist_ptr[ii]->vert_index, 2*sizeof(int));
-        nedges++;
-      }
-      if(nedges>0)ResizeMemory((void **)&edges2, nedges * sizeof(edgedata));
-      geomlisti->edges = edges2;
-      geomlisti->nedges = nedges;
-      FREEMEMORY(edges);
-      edges = edges2;
-
-      for(ii = 0; ii < nedges; ii++){
-        edges[ii].ntriangles = 0;
-      }
-
-      // count triangles associated with each edge
-
-      for(ii = 0; ii<ntris; ii++){
-        edgedata *edgei;
-        int *vi;
-
-        vi = triangles[ii].vert_index;
-        edgei = GetEdge(edges, nedges, vi[0], vi[1]);
-        if(edgei != NULL)edgei->ntriangles++;
-        edgei = GetEdge(edges, nedges, vi[1], vi[2]);
-        if(edgei != NULL)edgei->ntriangles++;
-        edgei = GetEdge(edges, nedges, vi[2], vi[0]);
-        if(edgei != NULL)edgei->ntriangles++;
-      }
-
-    }
-    if(nverts > 0){
-      int nvertlist_index = 0;
-      vertdata **vertlist_ptr, *verts;
-      int ii;
-
-      verts = geomlisti->verts;
-      nvertlist_index = nverts;
-      NewMemory((void **)&vertlist_ptr, nvertlist_index * sizeof(vertdata *));
-      for(ii = 0; ii < nvertlist_index; ii++){
-        vertlist_ptr[ii] = verts + ii;
-      }
-
-      qsort(vertlist_ptr, nvertlist_index, sizeof(vertdata *), CompareVerts2);
-      for(ii = 0; ii < nvertlist_index; ii++){
-        vertdata *vi;
-
-        vi = verts + ii;
-        vi->isdup = 0;
-      }
-      for(ii = 1; ii < nvertlist_index; ii++){
-        if(CompareVerts2(vertlist_ptr + ii - 1, vertlist_ptr + ii) == 0){
-          vertdata *v1, *v2;
-
-          v1 = vertlist_ptr[ii];
-          v2 = vertlist_ptr[ii-1];
-          v1->isdup = 1;
-          v2->isdup = 1;
-        }
-      }
-      FREEMEMORY(vertlist_ptr);
-    }
-  }
 }
 
 /* ------------------ ReadGeom ------------------------ */
