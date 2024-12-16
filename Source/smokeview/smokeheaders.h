@@ -472,7 +472,6 @@ EXTERNCPP void DrawPlot2D(int option, float *x, float *z, float *z2, int n,
 EXTERNCPP void DrawTreeDevicePlots(void);
 
 EXTERNCPP csvdata *GetCsvCurve(int i, csvfiledata **csvf_ptr);
-EXTERNCPP csvdata *GetCsvData(int file_index, int col_index, csvfiledata **csvf_ptr);
 EXTERNCPP char *GetPlotShortLabel(plot2ddata *plot2di, int curv_index);
 EXTERNCPP char *GetPlotShortLabel2(plot2ddata *plot2di, curvedata *curv);
 EXTERNCPP char *GetPlotUnit(plot2ddata * plot2di, int curv_index);
