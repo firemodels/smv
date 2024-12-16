@@ -864,18 +864,6 @@ void GetSliceTempBounds(void){
   slice_temp_bounds_defined = 1;
 }
 
-/* ------------------ GetZoneBounds ------------------------ */
-
-void GetZoneTempBounds(void){
-  int errorcode;
-
-  if(zoneinfo->loaded==0){
-    ReadZone(0, BOUNDS_ONLY, &errorcode);
-    ReadZone(0, UNLOAD, &errorcode);
-  }
-  zone_temp_bounds_defined = 1;
-}
-
 /* ------------------ ReadZone ------------------------ */
 
 void ReadZone(int ifile, int flag, int *errorcode){
@@ -2224,6 +2212,37 @@ void DrawZoneSmoke(roomdata *roomi){
   }
 }
 
+/* ------------------ DrawZoneFirePlume ------------------------ */
+
+void DrawZoneFirePlume(float diameter, float height, float maxheight){
+  unsigned char firecolor[3] = {255,128,0};
+
+  if(height <= maxheight){
+    float dlower, dupper;
+
+    dlower = diameter;
+    dupper = 0.0;
+    DrawTruncCone(dlower, dupper, height, firecolor);
+  }
+  else{
+    float dh;
+    float dlower1, dupper1;
+    float dlower2, dupper2;
+
+    dh = height - maxheight;
+    dlower1 = diameter;
+    dupper1 = diameter * dh / height;
+    DrawTruncCone(dlower1, dupper1, maxheight, firecolor);
+
+    glPushMatrix();
+    glTranslatef(0.0, 0.0, maxheight - dupper1 / 2.0);
+    dlower2 = 0.0;
+    dupper2 = 2.0 * dh;
+    DrawTruncCone(dlower2, dupper2, dupper1 / 2.0, firecolor);
+    glPopMatrix();
+  }
+}
+
 /* ------------------ DrawZoneFireData ------------------------ */
 
 void DrawZoneFireData(void){
@@ -2423,35 +2442,4 @@ void DrawZoneRoomData(void){
 
   if(use_transparency_data==1)TransparentOff();
   if(cullfaces==1)glEnable(GL_CULL_FACE);
-}
-
-/* ------------------ DrawZoneFirePlume ------------------------ */
-
-void DrawZoneFirePlume(float diameter, float height, float maxheight){
-  unsigned char firecolor[3]={255,128,0};
-
-  if(height<=maxheight){
-    float dlower, dupper;
-
-    dlower=diameter;
-    dupper=0.0;
-    DrawTruncCone(dlower,dupper,height,firecolor);
-  }
-  else{
-    float dh;
-    float dlower1, dupper1;
-    float dlower2, dupper2;
-
-    dh = height-maxheight;
-    dlower1=diameter;
-    dupper1=diameter*dh/height;
-    DrawTruncCone(dlower1,dupper1,maxheight,firecolor);
-
-    glPushMatrix();
-    glTranslatef(0.0,0.0,maxheight-dupper1/2.0);
-    dlower2=0.0;
-    dupper2=2.0*dh;
-    DrawTruncCone(dlower2,dupper2,dupper1/2.0,firecolor);
-    glPopMatrix();
-  }
 }

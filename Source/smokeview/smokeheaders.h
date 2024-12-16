@@ -376,7 +376,6 @@ EXTERNCPP void UpdateBoundaryType(void);
 
 EXTERNCPP void CancelUpdateTriangles(void);
 EXTERNCPP void *ClassifyAllGeom(void *arg);
-EXTERNCPP void ClassifyGeom(geomdata *geomi, int *geom_frame_index);
 EXTERNCPP void DrawBoxMinMax(float *bbmin, float *bbmax, float *box_color);
 EXTERNCPP void DrawBoxOutline(float *bb, float *box_color);
 EXTERNCPP void DrawBoxShaded(float *bb, int flag, int *hidden6, float *box_color);
@@ -472,7 +471,6 @@ EXTERNCPP void DrawPlot2D(int option, float *x, float *z, float *z2, int n,
 EXTERNCPP void DrawTreeDevicePlots(void);
 
 EXTERNCPP csvdata *GetCsvCurve(int i, csvfiledata **csvf_ptr);
-EXTERNCPP csvdata *GetCsvData(int file_index, int col_index, csvfiledata **csvf_ptr);
 EXTERNCPP char *GetPlotShortLabel(plot2ddata *plot2di, int curv_index);
 EXTERNCPP char *GetPlotShortLabel2(plot2ddata *plot2di, curvedata *curv);
 EXTERNCPP char *GetPlotUnit(plot2ddata * plot2di, int curv_index);
@@ -487,7 +485,6 @@ EXTERNCPP void TimeAveragePlot2DData(float *times, float *vals, float *vals_avg,
 
 EXTERNCPP void DrawGrid(const meshdata *gb);
 EXTERNCPP void DrawPlot3dFrame(void);
-EXTERNCPP void DrawPlot3dTexture(meshdata *gb);
 EXTERNCPP void GetPlot3DHists(plot3ddata *p);
 EXTERNCPP int  GetPlot3dTime(float *time);
 EXTERNCPP void GetPlot3dUVW(float xyz[3], float uvw[3]);
@@ -592,7 +589,6 @@ EXTERNCPP void DeleteTour(int tour_index);
 EXTERNCPP void DrawSelectTours(void);
 EXTERNCPP void DefaultTour(void);
 EXTERNCPP void DrawTours(void);
-EXTERNCPP int  GetTourFrame(tourdata *touri, int itime);
 EXTERNCPP void GetTourXYZ(float t, tourdata *this_tour, float *xyz);
 EXTERNCPP void InitCircularTour(tourdata *touri, int nkeyframes, int option);
 EXTERNCPP void NewSelect(keyframe *newselect);
@@ -621,13 +617,10 @@ EXTERNCPP void UpdateTerrainOptions(void);
 //*** IOzone.c headers
 
 EXTERNCPP void DrawZoneFireData(void);
-EXTERNCPP void DrawZoneFirePlume(float radius, float height, float maxheight);
 EXTERNCPP void DrawZoneRoomData(void);
 EXTERNCPP void DrawZoneRoomGeom(void);
 EXTERNCPP void DrawZoneVentData(void);
-EXTERNCPP void DrawZoneVentDataProfile(void);
 EXTERNCPP void DrawZoneWallData(void);
-EXTERNCPP void GetZoneTempBounds(void);
 EXTERNCPP void ReadZone(int ifile, int flag, int *errorcode);
 
 //*** menu.c headers
@@ -721,12 +714,9 @@ EXTERNCPP void Output3TextRight(float *color, float x, float y, float z, char *s
 EXTERNCPP void Output3Val(float x, float y, float z, float val);
 EXTERNCPP void OutputAxisLabels(void);
 EXTERNCPP void OutputBarText(float x, float y, const GLfloat *color, char *string);
-EXTERNCPP void OutputLargeText(float x, float y, char *string);
 EXTERNCPP void OutputText(float x, float y, char *string);
 EXTERNCPP void OutputTextColor(float *fontcolor, float x, float y, char *string);
-EXTERNCPP void ScaleFont2D(void);
 EXTERNCPP void ScaleFont3D(void);
-EXTERNCPP void WriteLabels(labels_collection *labelscoll);
 
 //*** readsmv.c headers
 
