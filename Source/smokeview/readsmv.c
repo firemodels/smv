@@ -16715,9 +16715,6 @@ void WriteIniLocal(FILE *fileout){
     fprintf(fileout, "ZONEVIEW\n");
     fprintf(fileout, " %f\n", zone_hvac_diam);
   }
-
-  // write out labels to casename.evt if this file exsits
-  //WriteLabels(&labelscoll);
 }
 
   /* ------------------ WriteIni ------------------------ */
