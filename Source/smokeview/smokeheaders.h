@@ -487,7 +487,6 @@ EXTERNCPP void TimeAveragePlot2DData(float *times, float *vals, float *vals_avg,
 
 EXTERNCPP void DrawGrid(const meshdata *gb);
 EXTERNCPP void DrawPlot3dFrame(void);
-EXTERNCPP void DrawPlot3dTexture(meshdata *gb);
 EXTERNCPP void GetPlot3DHists(plot3ddata *p);
 EXTERNCPP int  GetPlot3dTime(float *time);
 EXTERNCPP void GetPlot3dUVW(float xyz[3], float uvw[3]);
