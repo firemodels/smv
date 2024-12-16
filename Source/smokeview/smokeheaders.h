@@ -621,11 +621,9 @@ EXTERNCPP void UpdateTerrainOptions(void);
 //*** IOzone.c headers
 
 EXTERNCPP void DrawZoneFireData(void);
-EXTERNCPP void DrawZoneFirePlume(float radius, float height, float maxheight);
 EXTERNCPP void DrawZoneRoomData(void);
 EXTERNCPP void DrawZoneRoomGeom(void);
 EXTERNCPP void DrawZoneVentData(void);
-EXTERNCPP void DrawZoneVentDataProfile(void);
 EXTERNCPP void DrawZoneWallData(void);
 EXTERNCPP void ReadZone(int ifile, int flag, int *errorcode);
 
