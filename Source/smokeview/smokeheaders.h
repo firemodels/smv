@@ -592,7 +592,6 @@ EXTERNCPP void DeleteTour(int tour_index);
 EXTERNCPP void DrawSelectTours(void);
 EXTERNCPP void DefaultTour(void);
 EXTERNCPP void DrawTours(void);
-EXTERNCPP int  GetTourFrame(tourdata *touri, int itime);
 EXTERNCPP void GetTourXYZ(float t, tourdata *this_tour, float *xyz);
 EXTERNCPP void InitCircularTour(tourdata *touri, int nkeyframes, int option);
 EXTERNCPP void NewSelect(keyframe *newselect);
