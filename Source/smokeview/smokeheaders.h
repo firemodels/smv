@@ -627,7 +627,6 @@ EXTERNCPP void DrawZoneRoomGeom(void);
 EXTERNCPP void DrawZoneVentData(void);
 EXTERNCPP void DrawZoneVentDataProfile(void);
 EXTERNCPP void DrawZoneWallData(void);
-EXTERNCPP void GetZoneTempBounds(void);
 EXTERNCPP void ReadZone(int ifile, int flag, int *errorcode);
 
 //*** menu.c headers

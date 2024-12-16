@@ -864,18 +864,6 @@ void GetSliceTempBounds(void){
   slice_temp_bounds_defined = 1;
 }
 
-/* ------------------ GetZoneBounds ------------------------ */
-
-void GetZoneTempBounds(void){
-  int errorcode;
-
-  if(zoneinfo->loaded==0){
-    ReadZone(0, BOUNDS_ONLY, &errorcode);
-    ReadZone(0, UNLOAD, &errorcode);
-  }
-  zone_temp_bounds_defined = 1;
-}
-
 /* ------------------ ReadZone ------------------------ */
 
 void ReadZone(int ifile, int flag, int *errorcode){
