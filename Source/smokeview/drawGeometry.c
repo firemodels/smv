@@ -2597,36 +2597,44 @@ void ShowHideInternalFaces(meshdata *meshi, int show){
     facej->hidden = 0; facej++;
   }
   if(show == 1)return;
-  for(j = 0;j < meshi->nbptrs;j++){
+  float eps_x, eps_y, eps_z;
+  float *xplt, *yplt, *zplt;
+
+  xplt = meshi->xplt_orig;
+  yplt = meshi->yplt_orig;
+  zplt = meshi->zplt_orig;
+  eps_x = (xplt[1] - xplt[0])/2.0;
+  eps_y = (yplt[1] - yplt[0])/2.0;
+  eps_z = (zplt[1] - zplt[0])/2.0;
+  for(j = 0; j < meshi->nbptrs; j++){
     facedata *facej;
     blockagedata *bc;
 
     bc = meshi->blockageinfoptrs[j];
     facej = meshi->faceinfo + 6 * j;
 
-#define EPS 0.01
 //down y
-    if(bc->xyzEXACT[2] > ybar0FDS + EPS)facej->hidden = 1;
+    if(bc->xyzEXACT[2] > ybar0FDS + eps_y)facej->hidden = 1;
     facej++;
 
 // up x
-    if(bc->xyzEXACT[1] < xbarFDS - EPS)facej->hidden = 1;
+    if(bc->xyzEXACT[1] < xbarFDS  - eps_x)facej->hidden = 1;
     facej++;
 
 //up y
-    if(bc->xyzEXACT[3] < ybarFDS - EPS)facej->hidden = 1;
+    if(bc->xyzEXACT[3] < ybarFDS  - eps_y)facej->hidden = 1;
     facej++;
 
 // down x
-    if(bc->xyzEXACT[0] > xbar0FDS + EPS)facej->hidden = 1;
+    if(bc->xyzEXACT[0] > xbar0FDS + eps_x)facej->hidden = 1;
     facej++;
 
 // down z
-    if(bc->xyzEXACT[4] > zbar0FDS + EPS)facej->hidden = 1;
+    if(bc->xyzEXACT[4] > zbar0FDS + eps_z)facej->hidden = 1;
     facej++;
 
 // up z
-    if(bc->xyzEXACT[5] < zbarFDS - EPS)facej->hidden = 1;
+    if(bc->xyzEXACT[5] < zbarFDS  - eps_z)facej->hidden = 1;
     facej++;
   }
 }
