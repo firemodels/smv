@@ -933,7 +933,7 @@ int BoundsBnd2Gbnd(int file_type){
       }
       fprintf(stream, "%s ", reg_file);
       for(j = 0; j < nbounds; j++){
-        fprintf(stream, " %f %f ", valmins[j], valmaxs[j]);
+        fprintf(stream, " %g %g ", valmins[j], valmaxs[j]);
       }
       if(GetBoundLabel(file_type, i, label) != NULL)fprintf(stream, "! %s", label);
       fprintf(stream, "\n");
