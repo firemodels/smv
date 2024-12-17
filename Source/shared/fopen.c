@@ -48,13 +48,13 @@ void RemoveOpenFile(FILE *stream){
 
     oi = openinfo + i;
     if(oi->stream == stream){
-      printf("close file:%s\n", oi->file);
+      fprintf(stderr, "close file:%s\n", oi->file);
       oi->stream = NULL;
       remove_index = i;
     }
   }
   if(remove_index < 0){
-    printf("file is not in list\n");
+    fprintf(stderr, "file is not in list\n");
     return;
   }
   int nmove;
@@ -76,9 +76,9 @@ void RemoveOpenFile(FILE *stream){
       opendata *oi;
 
       oi = openinfo + i;
-      printf("file: %s\n", oi->file);
-      printf("source: %s\n", oi->source);
-      printf("line: %i\n\n", oi->line);
+      fprintf(stderr, "file: %s\n", oi->file);
+      fprintf(stderr, "source: %s\n", oi->source);
+      fprintf(stderr, "line: %i\n\n", oi->line);
     }
   }
   UNLOCK_FOPEN;
@@ -109,7 +109,7 @@ int fclose_counting(FILE *stream)
     RemoveOpenFile(stream);
     open_files--;
     if(open_files < 0){
-      printf("file count negative\n");
+      fprintf(stderr, "file count negative\n");
     }
   }
   return status;

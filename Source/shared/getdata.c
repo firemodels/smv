@@ -135,7 +135,7 @@ void getzonesize(const char *zonefilename, int *nzonet, int *nrooms,
   file = FOPEN(zonefilename, "rb");
 
   if(file == NULL){
-    printf(" The zone file name, %s does not exist\n", zonefilename);
+    fprintf(stderr, " The zone file name, %s does not exist\n", zonefilename);
     *error = 1;
     return;
   }
@@ -190,13 +190,13 @@ void getpatchsizes1(FILE **file, const char *patchfilename, int *npatch,
   *error = 0;
   assert(file!=NULL);
   if(file == NULL){
-    printf("***Error: null pointer in getpatchsizes1 routine\n");
+    fprintf(stderr, "***Error: null pointer in getpatchsizes1 routine\n");
     *error = 1;
     return;
   }
   *file = FOPEN(patchfilename, "rb");
   if(*file == NULL){
-    printf(" The boundary file name, %s does not exist\n", patchfilename);
+    fprintf(stderr, " The boundary file name, %s does not exist\n", patchfilename);
     *error = 1;
     return;
   }
@@ -412,7 +412,7 @@ void getboundaryheader1(const char *boundaryfilename, FILE **file, int *npatch,
   *error = 0;
   *file = FOPEN(boundaryfilename, "rb");
   if(*file == NULL){
-    printf(" The boundary file name, %s does not exist\n", boundaryfilename);
+    fprintf(stderr, " The boundary file name, %s does not exist\n", boundaryfilename);
     *error = 1;
     return;
   }
@@ -471,7 +471,7 @@ FILE *openboundary(const char *boundaryfilename, int version, int *error){
   int npatch;
   FILE *file = FOPEN(boundaryfilename, "rb");
   if(file == NULL){
-    printf(" The boundary file name, %s does not exist\n", boundaryfilename);
+    fprintf(stderr, " The boundary file name, %s does not exist\n", boundaryfilename);
     *error = 1;
     return file;
   }
@@ -608,7 +608,7 @@ void getzonedata(const char *zonefilename, int *nzonet, int *nrooms,
 
   FILE *file = FOPEN(zonefilename, "rb");
   if(file == NULL){
-    printf(" The zone file name, %s does not exist\n", zonefilename);
+    fprintf(stderr, " The zone file name, %s does not exist\n", zonefilename);
     *error = 1;
     return;
   }
@@ -780,7 +780,7 @@ void writeslicedata(const char *slicefilename, int is1, int is2, int js1,
   nysp = js2 + 1 - js1;
   nzsp = ks2 + 1 - ks1;
   nframe = nxsp * nysp * nzsp;
-  if(redirect_flag == 0) printf("output slice data to %s\n", slicefilename);
+  if(redirect_flag == 0) fprintf(stderr, "output slice data to %s\n", slicefilename);
   int i;
   for(i = 0; i < ntimes; i++){
     fortwrite(times + i, sizeof(float), 1, file);
@@ -950,7 +950,7 @@ void getplot3dq(const char *qfilename, int nx, int ny, int nz, float *qq, float 
     *error = 0;
     FILE *file = FOPEN(qfilename, "rb");
     if(file == NULL){
-      printf(" The file name, %s does not exist\n", qfilename);
+      fprintf(stderr, " The file name, %s does not exist\n", qfilename);
       exit(1);
     }
     *error = fortread(npts, sizeof(*npts), 3, file);
@@ -966,9 +966,9 @@ void getplot3dq(const char *qfilename, int nx, int ny, int nz, float *qq, float 
       if(*error) goto end;
     } else{
       *error = 1;
-      printf(" *** Fatal error in getplot3dq ***\n");
-      printf(" Grid size found in plot3d file was: %d,%d,%d\n", (int)nxpts, (int)nypts, (int)nzpts);
-      printf(" Was expecting: %d,%d,%d\n", nx, ny, nz);
+      fprintf(stderr, " *** Fatal error in getplot3dq ***\n");
+      fprintf(stderr, " Grid size found in plot3d file was: %d,%d,%d\n", (int)nxpts, (int)nypts, (int)nzpts);
+      fprintf(stderr, " Was expecting: %d,%d,%d\n", nx, ny, nz);
       exit(1);
     }
   end:

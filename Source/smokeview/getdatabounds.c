@@ -1045,7 +1045,7 @@ void BoundsUpdate(int file_type){
     strcat(label2, "SLICE");
     strcat(label3, "SLICE");
 #ifdef pp_BOUND_DEBUG
-    printf("BoundsUpdate(SLICE)\n");
+    fprintf(stderr, "BoundsUpdate(SLICE)\n");
 #endif
   }
   else if(file_type == BOUND_PATCH){
@@ -1053,7 +1053,7 @@ void BoundsUpdate(int file_type){
     strcat(label2, "PATCH");
     strcat(label3, "PATCH");
 #ifdef pp_BOUND_DEBUG
-    printf("BoundsUpdate(PATCH)\n");
+    fprintf(stderr, "BoundsUpdate(PATCH)\n");
 #endif
   }
   else if(file_type == BOUND_PLOT3D){
@@ -1061,7 +1061,7 @@ void BoundsUpdate(int file_type){
     strcat(label2, "PLOT3D");
     strcat(label3, "PLOT3D");
 #ifdef pp_BOUND_DEBUG
-    printf("BoundsUpdate(PLOT3D)\n");
+    fprintf(stderr, "BoundsUpdate(PLOT3D)\n");
 #endif
   }
   INIT_PRINT_TIMER(bound_setup);
