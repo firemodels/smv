@@ -527,7 +527,7 @@ void RoundDecimalPos(float val, char *cval, int decimalpos){
     sprintf(label+1, "%.12f", val);
   }
   else{
-    sprintf(label, "%.12f", val);
+    sprintf(label, "%.25f", val);
   }
   period = strchr(label, '.');
   if(period==NULL){
