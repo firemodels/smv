@@ -1,12 +1,9 @@
 
 # smvq
 add_executable(smvq smvq.c
-    ../shared/getdata.c
-    ../shared/dmalloc.c
     ../smokeview/menus.c
     ../smokeview/IOscript.c
     ../smokeview/IOshooter.c
-    ../shared/csphere.c
     ../smokeview/colortimebar.c
     ../smokeview/camera.c
     ../smokeview/IOgeometry.c
@@ -18,12 +15,8 @@ add_executable(smvq smvq.c
     ../smokeview/output.c
     ../smokeview/renderimage.c
     ../smokeview/renderhtml.c
-    ../shared/isobox.c
     ../smokeview/getdatabounds.c
     ../smokeview/readsmv.c
-    ../shared/scontour2d.c
-    ../shared/dmalloc.c
-    ../shared/compress.c
     ../smokeview/IOvolsmoke.c
     ../smokeview/IOsmoke.c
     ../smokeview/IOplot3d.c
@@ -37,35 +30,14 @@ add_executable(smvq smvq.c
     ../smokeview/callbacks.c
     ../smokeview/drawGeometry.c
     ../smokeview/skybox.c
-    ../shared/file_util.c
-    ../shared/string_util.c
     ../smokeview/startup.c
     ../smokeview/shaders.c
     ../smokeview/unit.c
-    ../shared/threader.c
-    ../shared/histogram.c
-    ../shared/translate.c
     ../smokeview/update.c
     ../smokeview/viewports.c
     ../smokeview/smv_geometry.c
     ../smokeview/showscene.c
     ../smokeview/infoheader.c
-    ../shared/md5.c
-    ../shared/sha1.c
-    ../shared/sha256.c
-    ../shared/stdio_m.c
-    ../shared/stdio_buffer.c
-    ../shared/getdata.c
-    ../shared/color2rgb.c
-    ../shared/readimage.c
-    ../shared/readcad.c
-    ../shared/readhvac.c
-    ../shared/readgeom.c
-    ../shared/readsmoke.c
-    ../shared/readslice.c
-    ../shared/readobject.c
-    ../shared/readtour.c
-    ../shared/readlabel.c
     ../smokeview/colortable.c
     ../smokeview/command_args.c
 
@@ -90,6 +62,7 @@ target_include_directories(smvq PRIVATE
     ../glui_v2_1_beta
     ../glui_gl
 )
+target_link_libraries(smvq PRIVATE libsmv)
 
 find_package(json-c CONFIG)
 if (NOT json-c_FOUND)
@@ -150,39 +123,6 @@ elseif (GLUT_FOUND)
 else()
     target_link_libraries(smvq PRIVATE glut32_static)
 endif ()
-if (GLEW_FOUND)
-    target_link_libraries(smvq PRIVATE GLEW::GLEW)
-    # This line is a hack to work around the fact the code includes "glew.h"
-    # rather than <GL/glew.h>
-    target_include_directories(smvq PRIVATE ${GLEW_INCLUDE_DIRS}/GL)
-else()
-    target_sources(smvq PRIVATE
-        ../glew/glew.c
-    )
-    target_include_directories(smvq PRIVATE ../glew)
-endif()
-if (JPEG_FOUND)
-    target_link_libraries(smvq PRIVATE JPEG::JPEG)
-else()
-    target_link_libraries(smvq PRIVATE jpeg_static)
-endif()
-if (PNG_FOUND)
-    target_link_libraries(smvq PRIVATE PNG::PNG)
-else()
-    target_link_libraries(smvq PRIVATE png_static)
-endif()
-if (ZLIB_FOUND)
-    target_link_libraries(smvq PRIVATE ZLIB::ZLIB)
-else()
-    target_link_libraries(smvq PRIVATE zlib_static)
-endif()
-if (LIBGD_FOUND)
-    target_link_libraries(smvq PRIVATE PkgConfig::LIBGD)
-else()
-    target_link_libraries(smvq PRIVATE gd_static)
-endif()
-target_link_libraries(smvq PRIVATE OpenGL::GL OpenGL::GLU)
-
 
 if (WIN32)
     target_include_directories(smvq PRIVATE ../pthreads)
