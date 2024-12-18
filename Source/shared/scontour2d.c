@@ -1,11 +1,13 @@
 #include "options.h"
 #include <stdlib.h>
 #include <stdio.h>
-#ifdef pp_DRAW
-#include GLUT_H
-#endif
 #include "scontour2d.h"
 #include "dmalloc.h"
+#ifdef _WIN32
+#include <windows.h>
+#endif
+#include GLU_H
+#include GL_H
 
 #define SOLID 0
 #define GAS 1
@@ -707,8 +709,6 @@ void GetContourAreas(const contour *ci){
   }
 }
 
-#ifdef pp_DRAW
-
 /*  ------------------ DrawContours ------------------------ */
 
 void DrawContours(const contour *ci){
@@ -809,5 +809,3 @@ void DrawLineContours(const contour *ci, float linewidth){
     }
   }
 }
-#endif
-
