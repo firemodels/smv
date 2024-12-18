@@ -128,7 +128,7 @@ void CopyFILE(char *destdir, char *file_in, char *file_out, int mode){
     fclose(streamin);
     return;
   }
-  PRINTF("  Copying %s to %s\n",file_in,file_out);
+  fprintf(stderr, "  Copying %s to %s\n",file_in,file_out);
   for(;;){
     int end_of_file;
 
@@ -651,7 +651,7 @@ void PrintTime(const char *filepath, int line, float *timer, const char *label, 
   }
   if(label != NULL){
     if(stop_flag == 1)STOP_TIMER(*timer);
-    if(*timer > 0.1)printf("%s/%i/%s %.1f s\n", file, line, label, *timer);
+    if(*timer > 0.1)fprintf(stderr, "%s/%i/%s %.1f s\n", file, line, label, *timer);
   }
   START_TIMER(*timer);
 }

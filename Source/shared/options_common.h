@@ -94,11 +94,11 @@
 
 #ifdef pp_TRACE
 #define BTRACE \
-  printf("entering, file: %s, line: %d\n",__FILE__,__LINE__)
+  fprintf(stderr, "entering, file: %s, line: %d\n",__FILE__,__LINE__)
 #define TTRACE \
-  printf("in, file: %s, line: %d\n",__FILE__,__LINE__)
+  fprintf(stderr, "in, file: %s, line: %d\n",__FILE__,__LINE__)
 #define ETRACE \
-  printf("leaving, file: %s, line: %d\n",__FILE__,__LINE__)
+  fprintf(stderr, "leaving, file: %s, line: %d\n",__FILE__,__LINE__)
 #else
 #define BTRACE
 #define TTRACE

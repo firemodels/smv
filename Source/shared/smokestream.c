@@ -328,16 +328,16 @@ int StreamAllLoaded(streamdata *stream){
 
 void StreamFrameSizeOutput(size_t file_size, float *time){
   if(file_size>1000000000){
-    PRINTF("(%.1f GB", (float)file_size/1000000000.);
+    fprintf(stderr, "(%.1f GB", (float)file_size/1000000000.);
   }
   else if(file_size>1000000){
-    PRINTF("(%.1f MB", (float)file_size/1000000.);
+    fprintf(stderr, "(%.1f MB", (float)file_size/1000000.);
   }
   else{
-    PRINTF("(%.0f KB", (float)file_size/1000.);
+    fprintf(stderr, "(%.0f KB", (float)file_size/1000.);
   }
-  if(time!=NULL)PRINTF("/%.1f s", *time);
-  PRINTF(")\n");
+  if(time!=NULL)fprintf(stderr, "/%.1f s", *time);
+  fprintf(stderr, ")\n");
 }
 
 /* ------------------  StreamReadList ------------------------ */
@@ -376,7 +376,7 @@ void StreamReadList(streamdata **streams, int nstreams){
       }
       if(stream_pause==1)PauseTime(0.5);
       if(count_streams>0&&stream_output==1){
-        printf("Loading frame(%i streams): %i\n", count_streams, frame_index);
+        fprintf(stderr, "Loading frame(%i streams): %i\n", count_streams, frame_index);
       }
     }
     // check if all frames have been loaded, if so then we are finished if not then load some more
@@ -397,13 +397,13 @@ void StreamReadList(streamdata **streams, int nstreams){
         streamdata *streami;
 
         streami = streams[stream_index];
-        printf("Loaded %s", streami->file);
+        fprintf(stderr, "Loaded %s", streami->file);
         StreamFrameSizeOutput(streami->filesize, &(streami->load_time));
         total_filesize += streami->filesize;
         total_time     += streami->load_time;
       }
       if(nstreams>1){
-        printf("Loaded total(%f)", totaltime);
+        fprintf(stderr, "Loaded total(%f)", totaltime);
         StreamFrameSizeOutput(total_filesize, &total_time);
       }
       return;
@@ -425,12 +425,11 @@ void StreamCheck(streamdata *framestream){
     offset = framestream->frame_offsets[i]+4;
     fseek(filestream, offset, SEEK_SET);
     fread(&time, 4, 1, filestream);
-    printf("%f ", time);
-    if(i%10==0)printf("\n");
+    fprintf(stderr, "%f ", time);
+    if(i%10==0)fprintf(stderr, "\n");
   }
-  printf("\n");
+  fprintf(stderr, "\n");
   fclose(filestream);
 }
 
 #endif
-

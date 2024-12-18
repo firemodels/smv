@@ -16,7 +16,7 @@ void OutputFileBuffer(filedata *fileinfo){
 
     buffer = fileinfo->lines[i];
     if(buffer==NULL||strlen(buffer)==0)continue;
-    printf("%s\n", buffer);
+    fprintf(stderr, "%s\n", buffer);
   }
 }
 
@@ -34,7 +34,7 @@ bufferstreamdata *AppendFileBuffer(bufferstreamdata *stream, char *file){
 
   file1 = stream->fileinfo;
   file2 = stream2->fileinfo;
-  
+
   if(NewMemory((void **)&buffer, file1->filesize + file2->filesize)==0){
     return stream;
   }
