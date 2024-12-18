@@ -602,7 +602,7 @@ void DecimateTerrain(vertdata *verts, int nverts, tridata *triangles,
       tri->ival = ival;
     }
   }
-  printf("ncount1=%i ncount2=%i\n", ntriangles, ncount2);
+  fprintf(stderr, "ncount1=%i ncount2=%i\n", ntriangles, ncount2);
   FREEMEMORY(tri_new);
 }
 

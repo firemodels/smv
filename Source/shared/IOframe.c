@@ -7,14 +7,14 @@
 #include "IOframe.h"
 #include "file_util.h"
 
-// The routines is this file read data files consisting of a header followed by one or 
-// more data frames.  Each data frame starts with a time value followed by a number 
-// data of values.  The number of values in a frame may vary.  The frame data structures 
-// are initialized using FRAMEInit.  This routine is passed a file name,  a file type 
+// The routines is this file read data files consisting of a header followed by one or
+// more data frames.  Each data frame starts with a time value followed by a number
+// data of values.  The number of values in a frame may vary.  The frame data structures
+// are initialized using FRAMEInit.  This routine is passed a file name,  a file type
 // parameter (C or Fortran) and a routine that determines the size of each data frame.
-// FDS generated files use the Fortran file type. Each Fortran generated data record 
+// FDS generated files use the Fortran file type. Each Fortran generated data record
 // is prefixed and suffixed with four bytes. Files compressed with smokezip use the
-// C file type. The FRAMEsetup routine is then called when a file is read in define the 
+// C file type. The FRAMEsetup routine is then called when a file is read in define the
 // header and data frame sizes.  These operations are consolidated by the FRAMELoadFrame routine.
 
   /* ------------------ FRAMEInit ------------------------ */
@@ -204,7 +204,7 @@ void FRAMESetTimes(framedata *fi, int iframe, int nframes){
 #ifdef pp_FRAME_DEBUG2
     float time;
     time = fi->times[i];
-    printf("time[%i]=%f\n", i,time);
+    fprintf(stderr, "time[%i]=%f\n", i,time);
 #endif
   }
 }
@@ -330,7 +330,7 @@ int FRAMEGetNFrames(char *file, int type){
   return nframes;
 }
 
-//******* The following routines define header and frame sizes for each file type 
+//******* The following routines define header and frame sizes for each file type
 //        (3d smoke, slice, isosurface, and particle - boundary file routine not implemente)
 /* ------------------ GetSmoke3DFrameInfo ------------------------ */
 
@@ -426,7 +426,7 @@ void GetSmoke3DFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **frame
 
 /* ------------------ GetBoundaryFrameInfo ------------------------ */
 
-void GetBoundaryFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **framesptr, int *nframesptr, 
+void GetBoundaryFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **framesptr, int *nframesptr,
                           int **subframeoffsetsptr, int **subframesizesptr, int *nsubframesptr,
                           int *compression_type, FILE_SIZE *filesizeptr){
   FILE *stream;
@@ -596,7 +596,7 @@ void GetSliceFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **framesp
     *framesptr = NULL;
   }
 
-  headersize = 3*(4+30+4);  // 3 30 byte labels 
+  headersize = 3*(4+30+4);  // 3 30 byte labels
   fseek_m(stream, headersize, SEEK_CUR);
 
   fseek_m(stream, 4, SEEK_CUR);returncode = fread_m(ijk, 4, 6, stream);fseek_m(stream, 4, SEEK_CUR);
@@ -755,8 +755,8 @@ void GetGeomDataFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **fram
   }
 
   if(*compression_type != FRAME_ZLIB){
-    headersize  = 4+4+4;  // 1 
-    headersize += 4+4+4;  // version 
+    headersize  = 4+4+4;  // 1
+    headersize += 4+4+4;  // version
   }
   else{
     headersize  = 4;  // 1
@@ -889,7 +889,7 @@ void GetPartFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **framespt
       fseek_m(stream, 4, SEEK_CUR);returncode = fread_m(&nplim, 4, 1, stream);fseek_m(stream, 4, SEEK_CUR);
       framesize += 4 + 4 + 4;             // nplim
 
-//      printf("nplim %i: %i\n",i, nplim);
+//      fprintf(stderr, "nplim %i: %i\n",i, nplim);
       skip  = 4 + 3*nplim*sizeof(float) + 4;          // xp, yp, zp
       skip += 4 +   nplim*sizeof(int)   + 4;          // tag
       if(nquants[2*i] > 0){
