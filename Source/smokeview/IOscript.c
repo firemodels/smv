@@ -3530,56 +3530,54 @@ void ScriptSetTimeVal(scriptdata *scripti){
   float timeval;
   int i,imin;
   float valmin;
-  char message[255];
 
   timeval = scripti->fval;
   PRINTF("script: setting time to %f\n\n", timeval);
   UpdateTimes();
-  if(global_times == NULL || nglobal_times <= 0)PRINTF("***error: SETTIMES script failed, global_times time array not defined\n");
-  updatetimes_debug = message;
-  updatetimes_debug = NULL;
-  if(global_times!=NULL&&nglobal_times>0){
-    float mintime, maxtime;
-
-    mintime = global_times[0];
-    if(timeval < mintime)timeval = mintime;
-
-    maxtime = global_times[nglobal_times - 1] - 0.0001;
-    if(timeval>maxtime){
-      float dt;
-
-      dt = timeval-maxtime;
-      if(nglobal_times>1&&dt>global_times[1]-global_times[0]){
-        fprintf(stderr,"*** Error: data not available at time requested\n");
-        fprintf(stderr,"           time: %f s, min time: %f, max time: %f s, number of times: %i\n",
-          timeval,global_times[0],global_times[nglobal_times-1],nglobal_times);
-        fprintf(stderr,"all times: ");
-
-        if(stderr2!=NULL)fprintf(stderr2, "*** Error: data not available at time requested\n");
-        if(stderr2!=NULL)fprintf(stderr2, "           time: %f s, min time: %f, max time: %f s, number of times: %i\n",
-          timeval, global_times[0], global_times[nglobal_times - 1], nglobal_times);
-      }
-      timeval=maxtime;
-    }
-    valmin=ABS(global_times[0]-timeval);
-    imin=0;
-    for(i=1;i<nglobal_times;i++){
-      float val;
-
-      val = ABS(global_times[i]-timeval);
-      if(val<valmin){
-        valmin=val;
-        imin=i;
-      }
-    }
-    itimes=imin;
-    script_itime=imin;
-    stept=0;
-    last_time_paused = 1;
-    force_redisplay=1;
-    UpdateFrameNumber(0);
-    UpdateTimeLabels();
+  if(global_times == NULL || nglobal_times <= 0){
+    PRINTF("***error: SETTIMES script failed, global_times time array not defined\n");
+    return;
   }
+  float mintime, maxtime;
+
+  mintime = global_times[0];
+  if(timeval < mintime)timeval = mintime;
+
+  maxtime = global_times[nglobal_times - 1] - 0.0001;
+  if(timeval>maxtime){
+    float dt;
+
+    dt = timeval-maxtime;
+    if(nglobal_times>1&&dt>global_times[1]-global_times[0]){
+      fprintf(stderr,"*** Error: data not available at time requested\n");
+      fprintf(stderr,"           time: %f s, min time: %f, max time: %f s, number of times: %i\n",
+        timeval,global_times[0],global_times[nglobal_times-1],nglobal_times);
+      fprintf(stderr,"all times: ");
+
+      if(stderr2!=NULL)fprintf(stderr2, "*** Error: data not available at time requested\n");
+      if(stderr2!=NULL)fprintf(stderr2, "           time: %f s, min time: %f, max time: %f s, number of times: %i\n",
+        timeval, global_times[0], global_times[nglobal_times - 1], nglobal_times);
+    }
+    timeval=maxtime;
+  }
+  valmin=ABS(global_times[0]-timeval);
+  imin=0;
+  for(i=1;i<nglobal_times;i++){
+    float val;
+
+    val = ABS(global_times[i]-timeval);
+    if(val<valmin){
+      valmin=val;
+      imin=i;
+    }
+  }
+  itimes=imin;
+  script_itime=imin;
+  stept=0;
+  last_time_paused = 1;
+  force_redisplay=1;
+  UpdateFrameNumber(0);
+  UpdateTimeLabels();
 }
 
 /* ------------------ ScriptProjection ------------------------ */
