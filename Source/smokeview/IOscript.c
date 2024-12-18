@@ -3530,14 +3530,11 @@ void ScriptSetTimeVal(scriptdata *scripti){
   float timeval;
   int i,imin;
   float valmin;
-  char message[255];
 
   timeval = scripti->fval;
   PRINTF("script: setting time to %f\n\n", timeval);
   UpdateTimes();
   if(global_times == NULL || nglobal_times <= 0)PRINTF("***error: SETTIMES script failed, global_times time array not defined\n");
-  updatetimes_debug = message;
-  updatetimes_debug = NULL;
   if(global_times!=NULL&&nglobal_times>0){
     float mintime, maxtime;
 
