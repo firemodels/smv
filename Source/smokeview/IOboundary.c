@@ -16,9 +16,17 @@
 #define BOUNDARY_NODE_CENTERED 1
 
 #define IJKBF(i,j) ((i)*ncol+(j))
+#define GETBOUNDVAL(index) (patchi->compression_type==UNCOMPRESSED ? \
+               patchvals[index] : \
+               (float)cpatchvals[index] \
+               )
 #define BOUNDCONVERT(index, valmin, valmax) (patchi->compression_type==UNCOMPRESSED ? \
                ( valmin == valmax ? 0.0 : (patchvals[index]-valmin)/(valmax-valmin) ) : \
                (float)cpatchvals[index]/255 \
+               )
+#define BOUNDCONVERT2(val, valmin, valmax) (patchi->compression_type==UNCOMPRESSED ? \
+               ( valmin == valmax ? 0.0 : (val-valmin)/(valmax-valmin) ) : \
+               (float)val/255 \
                )
 
 /* ------------------ OutputBoundaryData ------------------------ */
@@ -2654,6 +2662,9 @@ void DrawBoundaryTexture(const meshdata *meshi){
       }
     }
     if(drawit==1){
+      int is_time_arrival = 0;
+
+      if(strcmp(patchi->label.shortlabel, "t_a") == 0)is_time_arrival = 1;
       nrow=pfi->nrow;
       ncol=pfi->ncol;
       xyzpatchcopy = xyzpatch + 3* pfi->start;
@@ -2676,18 +2687,30 @@ void DrawBoundaryTexture(const meshdata *meshi){
         patchblank2 = patchblank1 + ncol;
 
         for(icol=0;icol<ncol-1;icol++){
-          float cparm[4];
+          float cparm[4], parm[4];
+          int skip;
 
-          cparm[0] = CLAMP(BOUNDCONVERT(IJKBF(irow, icol), ttmin, ttmax), 0.0, 1.0);
-          cparm[1] = CLAMP(BOUNDCONVERT(IJKBF(irow, icol + 1), ttmin, ttmax), 0.0, 1.0);
-          cparm[2] = CLAMP(BOUNDCONVERT(IJKBF(irow + 1, icol), ttmin, ttmax), 0.0, 1.0);
-          cparm[3] = CLAMP(BOUNDCONVERT(IJKBF(irow + 1, icol + 1), ttmin, ttmax), 0.0, 1.0);
+          skip = 0;
+          parm[0] = GETBOUNDVAL(IJKBF(irow,   icol));
+          parm[1] = GETBOUNDVAL(IJKBF(irow,   icol+1));
+          parm[2] = GETBOUNDVAL(IJKBF(irow+1, icol));
+          parm[3] = GETBOUNDVAL(IJKBF(irow+1, icol+1));
+          cparm[0] = CLAMP(BOUNDCONVERT2(parm[0], ttmin, ttmax), 0.0, 1.0);
+          cparm[1] = CLAMP(BOUNDCONVERT2(parm[1], ttmin, ttmax), 0.0, 1.0);
+          cparm[2] = CLAMP(BOUNDCONVERT2(parm[2], ttmin, ttmax), 0.0, 1.0);
+          cparm[3] = CLAMP(BOUNDCONVERT2(parm[3], ttmin, ttmax), 0.0, 1.0);
           if(
                rgb_patch[4*(int)(255*cparm[0])+3]==0.0||
                rgb_patch[4*(int)(255*cparm[1])+3]==0.0||
                rgb_patch[4*(int)(255*cparm[2])+3]==0.0||
                rgb_patch[4*(int)(255*cparm[3])+3]==0.0
                ){
+            skip = 1;
+          }
+          if(is_time_arrival == 1 && skip == 0){
+            if(parm[0] > TOA_LIMIT || parm[1] > TOA_LIMIT || parm[2] > TOA_LIMIT || parm[3] > TOA_LIMIT)skip = 1;
+          }
+          if(skip == 1){
             patchblank1++;
             patchblank2++;
             xyzp1+=3;
