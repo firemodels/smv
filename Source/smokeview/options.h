@@ -40,6 +40,9 @@
 #endif
 #endif
 
+//*** options: all platforms
+#define pp_DRAW             // turn on glut/opengl drawing routines in shared files (currently just scontour2d.c )
+
 //*** options: Linux
 
 #ifdef pp_LINUX
