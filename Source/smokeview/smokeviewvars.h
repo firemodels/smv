@@ -621,7 +621,6 @@ SVEXTERN float SVDECL(beam_line_width, 4.0);
 SVEXTERN float SVDECL(zone_hvac_diam, 0.05);
 SVEXTERN int SVDECL(setup_only, 0);
 SVEXTERN int SVDECL(timearray_test, 0);
-SVEXTERN char SVDECL(*updatetimes_debug, NULL);
 SVEXTERN int SVDECL(slice_time, 0);
 SVEXTERN int SVDECL(in_part_mt, 0);
 SVEXTERN histogramdata SVDECL(*full_plot3D_histograms, NULL);
