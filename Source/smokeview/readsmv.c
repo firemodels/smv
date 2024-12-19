@@ -14655,8 +14655,9 @@ int ReadIni2(char *inifile, int localfile){
     }
     if(MatchINI(buffer, "CONTOURTYPE") == 1){
       fgets(buffer, 255, stream);
-      sscanf(buffer, "%i", &contour_type);
+      sscanf(buffer, "%i %i", &contour_type, &colorbar_linewidth);
       contour_type = CLAMP(contour_type, 0, 2);
+      colorbar_linewidth = CLAMP(colorbar_linewidth, 1, 10);
       continue;
     }
     if(MatchINI(buffer, "P3CONT3DSMOOTH") == 1){
@@ -17051,7 +17052,7 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, "CLIP\n");
   fprintf(fileout, " %f %f\n", nearclip, farclip);
   fprintf(fileout, "CONTOURTYPE\n");
-  fprintf(fileout, " %i\n", contour_type);
+  fprintf(fileout, " %i %i\n", contour_type, colorbar_linewidth);
   fprintf(fileout, "CULLFACES\n");
   fprintf(fileout, " %i\n", cullfaces);
   fprintf(fileout, "ENABLETEXTURELIGHTING\n");

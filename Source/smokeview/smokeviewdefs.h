@@ -7,6 +7,8 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 #define SNIFF_ERRORS(f)
 #endif
 
+#define TOA_LIMIT 9.9E5 // time of arrival limit - for wui cases
+
 #define SLICE_LOAD_SPECIFIED    0
 #define SLICE_LOADALL_XorYorZ   1
 #define SLICE_LOADALL_XandYandZ 2

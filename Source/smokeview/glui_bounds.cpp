@@ -2904,6 +2904,7 @@ GLUI_Spinner *SPINNER_ncolorlabel_digits = NULL;
 GLUI_Spinner *SPINNER_ncolorlabel_padding = NULL;
 GLUI_Spinner *SPINNER_colorbar_selection_width = NULL;
 GLUI_Spinner *SPINNER_colorbar_select_index = NULL;
+GLUI_Spinner *SPINNER_colorbar_linewidth = NULL;
 GLUI_Spinner *SPINNER_labels_transparency_data = NULL;
 GLUI_Spinner *SPINNER_down_red = NULL, *SPINNER_down_green = NULL, *SPINNER_down_blue = NULL;
 GLUI_Spinner *SPINNER_up_red = NULL, *SPINNER_up_green = NULL, *SPINNER_up_blue = NULL;
@@ -5766,6 +5767,8 @@ hvacductboundsCPP.setup("hvac", ROLLOUT_hvacduct, hvacductbounds_cpp, nhvacductb
   glui_bounds->add_radiobutton_to_group(RADIO2_plot3d_display, _("Continuous"));
   glui_bounds->add_radiobutton_to_group(RADIO2_plot3d_display, _("Stepped"));
   glui_bounds->add_radiobutton_to_group(RADIO2_plot3d_display, _("Line"));
+  SPINNER_colorbar_linewidth = glui_bounds->add_spinner_to_panel(PANEL_colorbar_properties, _("line width:"), GLUI_SPINNER_INT, &colorbar_linewidth, UPDATEPLOT, GLUIPlot3DBoundCB);
+  SPINNER_colorbar_linewidth->set_int_limits(1, 10);
   CHECKBOX_colorbar_flip = glui_bounds->add_checkbox_to_panel(PANEL_colorbar_properties, _("flip"), &colorbar_flip, FLIP, GLUILabelsCB);
   CHECKBOX_colorbar_autoflip = glui_bounds->add_checkbox_to_panel(PANEL_colorbar_properties, _("Auto flip"), &colorbar_autoflip, FLIP, GLUILabelsCB);
   SPINNER_colorbar_shift = glui_bounds->add_spinner_to_panel(PANEL_colorbar_properties, _("shift:"), GLUI_SPINNER_FLOAT, &colorbar_shift, LABELS_colorbar_shift, GLUILabelsCB);

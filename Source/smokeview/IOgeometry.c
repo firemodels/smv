@@ -2501,6 +2501,7 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
     slicei->times = NULL;
   }
   patchi->bounds.defined = 0;
+  have_boundary_arrival = 0;
 
   FREEMEMORY(patchi->geom_nstatics);
   FREEMEMORY(patchi->geom_ndynamics);
@@ -2747,6 +2748,9 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
 
     if(patchi->boundary==1){
       bound_type = BOUND_PATCH;
+      from_read_boundary = 1;
+      int HaveBoundaryArrival(void);
+      have_boundary_arrival = HaveBoundaryArrival();
     }
     else{
       bound_type = BOUND_SLICE;
@@ -3570,7 +3574,7 @@ FILE_SIZE ReadGeom2(geomdata *geomi, int load_flag, int type){
       }
 
       CheckMemory;
-      assert(geomi->ngeomobj_offsets<=0 || ntris==geomi->ngeomobj_offsets);
+     // assert(geomi->ngeomobj_offsets<=0 || ntris==geomi->ngeomobj_offsets);
       for(ii=0;ii<ntris;ii++){
         surfdata *surfi;
         int k;
@@ -3956,10 +3960,16 @@ void DrawGeomVData(vslicedata *vd){
 
   /* ------------------ DrawGeomData ------------------------ */
 
+#define GEOMVAL(index) ( patchi->is_compressed==0 ? vals[(index)] : (float)cvals[(index)] )
 #define GEOMTEXTURE(index, vmin, vmax) ( \
         patchi->is_compressed==0 ? \
         CLAMP( (vals[(index)]-vmin)/(vmax-vmin),0.0,1.0) : \
         CLAMP( (float)cvals[(index)]/255.0,0.0,1.0) \
+        )
+#define GEOMTEXTURE2(geomval, vmin, vmax) ( \
+        patchi->is_compressed==0 ? \
+        CLAMP( (geomval-vmin)/(vmax-vmin),0.0,1.0) : \
+        CLAMP( (float)geomval/255.0,0.0,1.0) \
         )
 
 void DrawGeomData(int flag, slicedata *sd, patchdata *patchi, int geom_type){
@@ -4027,7 +4037,9 @@ void DrawGeomData(int flag, slicedata *sd, patchdata *patchi, int geom_type){
         UpdatePatchGeomTriangles(patchi, geom_type);
       }
       tridata *triangles;
+      int is_time_arrival = 0;
 
+      if(strcmp(patchi->label.shortlabel, "t_a") == 0)is_time_arrival = 1;
       triangles = geomlisti->triangles;
       ntris     = geomlisti->ntriangles;
       if(ntris == 0)continue;
@@ -4063,7 +4075,9 @@ void DrawGeomData(int flag, slicedata *sd, patchdata *patchi, int geom_type){
 
           trianglei = triangles + j;
           if(patchi->patch_filetype==PATCH_GEOMETRY_BOUNDARY){
-            rvals[0] = GEOMTEXTURE(j, ttmin, ttmax);
+            rvals[0] = GEOMVAL(j);
+            if(is_time_arrival == 1 && rvals[0] > TOA_LIMIT)continue;
+            rvals[0] = GEOMTEXTURE2(rvals[0], ttmin, ttmax);
           }
           else if(patchi->patch_filetype==PATCH_GEOMETRY_SLICE){
             rvals[0] = GEOMTEXTURE(j, valmin, valmax);
@@ -4639,8 +4653,10 @@ void DrawCGeom(int flag, geomdata *cgeom){
           }
         }
         if(geom_force_transparent==1)transparent_level_local = geom_transparency;
-        if(flag==DRAW_TRANSPARENT&&transparent_level_local>=1.0)continue;
-        if(flag!=DRAW_TRANSPARENT&&transparent_level_local<1.0)continue;
+        if(have_boundary_arrival == 0){
+          if(flag==DRAW_TRANSPARENT&&transparent_level_local>=1.0)continue;
+          if(flag!=DRAW_TRANSPARENT&&transparent_level_local<1.0)continue;
+        }
 
         if(lighting_on==1)glNormal3fv(trianglei->tri_norm);
         glColor4f(color[0], color[1], color[2], transparent_level_local);
