@@ -16,9 +16,17 @@
 #define BOUNDARY_NODE_CENTERED 1
 
 #define IJKBF(i,j) ((i)*ncol+(j))
+#define GETBOUNDVAL(index) (patchi->compression_type==UNCOMPRESSED ? \
+               patchvals[index] : \
+               (float)cpatchvals[index] \
+               )
 #define BOUNDCONVERT(index, valmin, valmax) (patchi->compression_type==UNCOMPRESSED ? \
                ( valmin == valmax ? 0.0 : (patchvals[index]-valmin)/(valmax-valmin) ) : \
                (float)cpatchvals[index]/255 \
+               )
+#define BOUNDCONVERT2(val, valmin, valmax) (patchi->compression_type==UNCOMPRESSED ? \
+               ( valmin == valmax ? 0.0 : (val-valmin)/(valmax-valmin) ) : \
+               (float)val/255 \
                )
 
 /* ------------------ OutputBoundaryData ------------------------ */
@@ -2244,6 +2252,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
   if(patchi->finalize==1){
 
     boundary_loaded = 1;
+    from_read_boundary = 1;
 
     ShowInternalBlockages();
     update_boundary_loaded = 1;
@@ -2546,6 +2555,10 @@ void DrawBoundaryTexture(const meshdata *meshi){
   glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_REPLACE);
   glEnable(GL_TEXTURE_1D);
   glBindTexture(GL_TEXTURE_1D,texture_patch_colorbar_id);
+  glPushMatrix();
+  float delta_z;
+  delta_z = (meshinfo->zplt[1] - meshinfo->zplt[0])/2.0;
+  glTranslatef(0.0, 0.0, delta_z);
 
   CheckMemory;
   glBegin(GL_TRIANGLES);
@@ -2591,10 +2604,10 @@ void DrawBoundaryTexture(const meshdata *meshi){
           cparm[3] = CLAMP(BOUNDCONVERT(IJKBF(irow + 1, icol + 1), ttmin, ttmax), 0.0, 1.0);
           if(*patchblank1==GAS&&*patchblank2==GAS&&*(patchblank1+1)==GAS&&*(patchblank2+1)==GAS){
             if(
-               rgb_patch[4*(int)(255*cparm[0])+3]==0.0||
-               rgb_patch[4*(int)(255*cparm[1])+3]==0.0||
-               rgb_patch[4*(int)(255*cparm[2])+3]==0.0||
-               rgb_patch[4*(int)(255*cparm[3])+3]==0.0
+              rgb_patch[4*(int)(255*cparm[0])+3] < 0.1 ||
+              rgb_patch[4*(int)(255*cparm[1])+3] < 0.1 ||
+              rgb_patch[4*(int)(255*cparm[2])+3] < 0.1 ||
+              rgb_patch[4*(int)(255*cparm[3])+3] < 0.1
                ){
               patchblank1++;
               patchblank2++;
@@ -2654,6 +2667,9 @@ void DrawBoundaryTexture(const meshdata *meshi){
       }
     }
     if(drawit==1){
+      int is_time_arrival = 0;
+
+      if(strcmp(patchi->label.shortlabel, "t_a") == 0)is_time_arrival = 1;
       nrow=pfi->nrow;
       ncol=pfi->ncol;
       xyzpatchcopy = xyzpatch + 3* pfi->start;
@@ -2676,44 +2692,57 @@ void DrawBoundaryTexture(const meshdata *meshi){
         patchblank2 = patchblank1 + ncol;
 
         for(icol=0;icol<ncol-1;icol++){
-          float cparm[4];
+          float cparm[4], parm[4];
+          int skip, iparm[4];
 
-          cparm[0] = CLAMP(BOUNDCONVERT(IJKBF(irow, icol), ttmin, ttmax), 0.0, 1.0);
-          cparm[1] = CLAMP(BOUNDCONVERT(IJKBF(irow, icol + 1), ttmin, ttmax), 0.0, 1.0);
-          cparm[2] = CLAMP(BOUNDCONVERT(IJKBF(irow + 1, icol), ttmin, ttmax), 0.0, 1.0);
-          cparm[3] = CLAMP(BOUNDCONVERT(IJKBF(irow + 1, icol + 1), ttmin, ttmax), 0.0, 1.0);
-          if(
-               rgb_patch[4*(int)(255*cparm[0])+3]==0.0||
-               rgb_patch[4*(int)(255*cparm[1])+3]==0.0||
-               rgb_patch[4*(int)(255*cparm[2])+3]==0.0||
-               rgb_patch[4*(int)(255*cparm[3])+3]==0.0
-               ){
-            patchblank1++;
-            patchblank2++;
-            xyzp1+=3;
-            xyzp2+=3;
-            continue;
+          skip = 0;
+          parm[0] = GETBOUNDVAL(IJKBF(irow,   icol));
+          parm[1] = GETBOUNDVAL(IJKBF(irow,   icol+1));
+          parm[2] = GETBOUNDVAL(IJKBF(irow+1, icol));
+          parm[3] = GETBOUNDVAL(IJKBF(irow+1, icol+1));
+          cparm[0] = CLAMP(BOUNDCONVERT2(parm[0], ttmin, ttmax), 0.0, 1.0);
+          cparm[1] = CLAMP(BOUNDCONVERT2(parm[1], ttmin, ttmax), 0.0, 1.0);
+          cparm[2] = CLAMP(BOUNDCONVERT2(parm[2], ttmin, ttmax), 0.0, 1.0);
+          cparm[3] = CLAMP(BOUNDCONVERT2(parm[3], ttmin, ttmax), 0.0, 1.0);
+          iparm[0] = CLAMP(255.0 * cparm[0], 0, 255);
+          iparm[1] = CLAMP(255.0 * cparm[1], 0, 255);
+          iparm[2] = CLAMP(255.0 * cparm[2], 0, 255);
+          iparm[3] = CLAMP(255.0 * cparm[3], 0, 255);
+          if(is_time_arrival == 1){
+            if(parm[0] > TOA_LIMIT || parm[1] > TOA_LIMIT || parm[2] > TOA_LIMIT || parm[3] > TOA_LIMIT)skip = 1;
           }
-          if(*patchblank1==GAS&&*patchblank2==GAS&&*(patchblank1+1)==GAS&&*(patchblank2+1)==GAS){
-            r11 = cparm[0];
-            r12 = cparm[1];
-            r21 = cparm[2];
-            r22 = cparm[3];
-            if(ABS(cparm[0]-cparm[3])<ABS(cparm[1]-cparm[2])){
-              glTexCoord1f(r11);glVertex3fv(xyzp1);
-              glTexCoord1f(r12);glVertex3fv(xyzp1+3);
-              glTexCoord1f(r22);glVertex3fv(xyzp2+3);
-              glTexCoord1f(r11);glVertex3fv(xyzp1);
-              glTexCoord1f(r22);glVertex3fv(xyzp2+3);
-              glTexCoord1f(r21);glVertex3fv(xyzp2);
+          if(skip == 0){
+            if(
+              rgb_full[iparm[0]][3] < 0.1 ||
+              rgb_full[iparm[1]][3] < 0.1 ||
+              rgb_full[iparm[2]][3] < 0.1 ||
+              rgb_full[iparm[3]][3] < 0.1
+              ){
+              skip = 1;
             }
-            else{
-              glTexCoord1f(r11);glVertex3fv(xyzp1);
-              glTexCoord1f(r12);glVertex3fv(xyzp1+3);
-              glTexCoord1f(r21);glVertex3fv(xyzp2);
-              glTexCoord1f(r12);glVertex3fv(xyzp1+3);
-              glTexCoord1f(r22);glVertex3fv(xyzp2+3);
-              glTexCoord1f(r21);glVertex3fv(xyzp2);
+          }
+          if(skip == 0){
+            if(*patchblank1 == GAS && *patchblank2 == GAS && *(patchblank1 + 1) == GAS && *(patchblank2 + 1) == GAS){
+              r11 = cparm[0];
+              r12 = cparm[1];
+              r21 = cparm[2];
+              r22 = cparm[3];
+              if(ABS(cparm[0] - cparm[3]) < ABS(cparm[1] - cparm[2])){
+                glTexCoord1f(r11); glVertex3fv(xyzp1);
+                glTexCoord1f(r12); glVertex3fv(xyzp1 + 3);
+                glTexCoord1f(r22); glVertex3fv(xyzp2 + 3);
+                glTexCoord1f(r11); glVertex3fv(xyzp1);
+                glTexCoord1f(r22); glVertex3fv(xyzp2 + 3);
+                glTexCoord1f(r21); glVertex3fv(xyzp2);
+              }
+              else{
+                glTexCoord1f(r11); glVertex3fv(xyzp1);
+                glTexCoord1f(r12); glVertex3fv(xyzp1 + 3);
+                glTexCoord1f(r21); glVertex3fv(xyzp2);
+                glTexCoord1f(r12); glVertex3fv(xyzp1 + 3);
+                glTexCoord1f(r22); glVertex3fv(xyzp2 + 3);
+                glTexCoord1f(r21); glVertex3fv(xyzp2);
+              }
             }
           }
           patchblank1++;
@@ -2811,6 +2840,7 @@ void DrawBoundaryTexture(const meshdata *meshi){
     }
   }
   glEnd();
+  glPopMatrix();
   glDisable(GL_TEXTURE_1D);
 }
 

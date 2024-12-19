@@ -301,6 +301,7 @@ SVEXTERN char *dimensionless = "dimensionless";
 SVEXTERN char *cslice_label, *cpart_label, *cbound_label, *cplot3d_label;
 SVEXTERN char *dimensionless;
 #endif
+SVEXTERN int SVDECL(colorbar_linewidth, 3);
 
 SVEXTERN float SVDECL(plot2d_size_factor, 0.15), SVDECL(plot2d_font_spacing, 1.2);
 SVEXTERN float SVDECL(plot2d_line_width, 1.0), SVDECL(plot2d_point_size, 5.0), SVDECL(plot2d_frame_width, 1.0);
@@ -1329,6 +1330,8 @@ SVEXTERN int vis_boundary_type[7], SVDECL(update_ini_boundary_type,0);
 SVEXTERN int p3_extreme_min[MAXPLOT3DVARS], p3_extreme_max[MAXPLOT3DVARS];
 SVEXTERN int SVDECL(show_mirror_boundary,0), SVDECL(show_open_boundary, 0);
 SVEXTERN int SVDECL(n_mirrorvents,0), SVDECL(n_openvents,0);
+SVEXTERN int SVDECL(from_read_boundary, 0);
+SVEXTERN int SVDECL(have_boundary_arrival, 0);
 
 
 SVEXTERN int setp3min_all[MAXPLOT3DVARS];
