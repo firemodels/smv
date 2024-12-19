@@ -1329,6 +1329,8 @@ SVEXTERN int vis_boundary_type[7], SVDECL(update_ini_boundary_type,0);
 SVEXTERN int p3_extreme_min[MAXPLOT3DVARS], p3_extreme_max[MAXPLOT3DVARS];
 SVEXTERN int SVDECL(show_mirror_boundary,0), SVDECL(show_open_boundary, 0);
 SVEXTERN int SVDECL(n_mirrorvents,0), SVDECL(n_openvents,0);
+SVEXTERN int SVDECL(from_read_boundary, 0);
+SVEXTERN int SVDECL(have_boundary_arrival, 0);
 
 
 SVEXTERN int setp3min_all[MAXPLOT3DVARS];

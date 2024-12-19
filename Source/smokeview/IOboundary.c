@@ -2252,6 +2252,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
   if(patchi->finalize==1){
 
     boundary_loaded = 1;
+    from_read_boundary = 1;
 
     ShowInternalBlockages();
     update_boundary_loaded = 1;
@@ -2554,6 +2555,10 @@ void DrawBoundaryTexture(const meshdata *meshi){
   glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_REPLACE);
   glEnable(GL_TEXTURE_1D);
   glBindTexture(GL_TEXTURE_1D,texture_patch_colorbar_id);
+  glPushMatrix();
+  float delta_z;
+  delta_z = (meshinfo->zplt[1] - meshinfo->zplt[0])/2.0;
+  glTranslatef(0.0, 0.0, delta_z);
 
   CheckMemory;
   glBegin(GL_TRIANGLES);
@@ -2834,6 +2839,7 @@ void DrawBoundaryTexture(const meshdata *meshi){
     }
   }
   glEnd();
+  glPopMatrix();
   glDisable(GL_TEXTURE_1D);
 }
 

@@ -2501,6 +2501,7 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
     slicei->times = NULL;
   }
   patchi->bounds.defined = 0;
+  have_boundary_arrival = 0;
 
   FREEMEMORY(patchi->geom_nstatics);
   FREEMEMORY(patchi->geom_ndynamics);
@@ -2747,6 +2748,9 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
 
     if(patchi->boundary==1){
       bound_type = BOUND_PATCH;
+      from_read_boundary = 1;
+      int HaveBoundaryArrival(void);
+      have_boundary_arrival = HaveBoundaryArrival();
     }
     else{
       bound_type = BOUND_SLICE;
@@ -4649,8 +4653,10 @@ void DrawCGeom(int flag, geomdata *cgeom){
           }
         }
         if(geom_force_transparent==1)transparent_level_local = geom_transparency;
-        if(flag==DRAW_TRANSPARENT&&transparent_level_local>=1.0)continue;
-        if(flag!=DRAW_TRANSPARENT&&transparent_level_local<1.0)continue;
+        if(have_boundary_arrival == 0){
+          if(flag==DRAW_TRANSPARENT&&transparent_level_local>=1.0)continue;
+          if(flag!=DRAW_TRANSPARENT&&transparent_level_local<1.0)continue;
+        }
 
         if(lighting_on==1)glNormal3fv(trianglei->tri_norm);
         glColor4f(color[0], color[1], color[2], transparent_level_local);
