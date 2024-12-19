@@ -7604,8 +7604,23 @@ void ToggleMetroMode(void){
   HVACMenu(MENU_HVAC_METRO_VIEW);
 }
 
-  /* ------------------ GeometryMenu ------------------------ */
+  /* ------------------ HaveBoundaryArrival ------------------------ */
 
+int HaveBoundaryArrival(void){
+  int i;
+
+  for(i = 0; i < npatchinfo; i++){
+    patchdata *patchi;
+
+    patchi = patchinfo + i;
+    if(patchi->loaded == 1 && patchi->display == 1 && strcmp(patchi->label.shortlabel, "t_a") == 0){
+      return 1;
+    }
+  }
+  return 0;
+}
+
+  /* ------------------ GeometryMenu ------------------------ */
 
 void GeometryMenu(int value){
 
@@ -7629,6 +7644,10 @@ void GeometryMenu(int value){
   case 17+TERRAIN_SURFACE:
   case 17+TERRAIN_IMAGE:
   case 17+TERRAIN_HIDDEN:
+    if(value == 17 + TERRAIN_HIDDEN && from_read_boundary == 1){
+      from_read_boundary = 0;
+      if(HaveBoundaryArrival() == 1)break;
+    }
     visTerrainType = value-17;
     GLUIUpdateTerrain();
     if(visTerrainType == TERRAIN_HIDDEN){
