@@ -1191,7 +1191,7 @@ void UpdateSmokeColormap(int option){
 void UpdateRGBColors(int colorbar_index){
 
   int n,nn;
-  int i,j;
+  int i;
   float *rgb2ptr;
   int cci;
   meshdata *meshi;
@@ -1393,6 +1393,8 @@ void UpdateRGBColors(int colorbar_index){
     rgb[rgb_black][2]=1.0;
   }
   for(i=0;i<nmeshes;i++){
+    int j;
+
     meshi=meshinfo + i;
     vent_offset = 6*meshi->nbptrs;
     outline_offset = vent_offset + meshi->nvents;
