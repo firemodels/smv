@@ -3,6 +3,11 @@
 #include <stdio.h>
 #include "scontour2d.h"
 #include "dmalloc.h"
+#ifdef _WIN32
+#include <windows.h>
+#endif
+#include GLU_H
+#include GL_H
 
 #define SOLID 0
 #define GAS 1
@@ -700,6 +705,107 @@ void GetContourAreas(const contour *ci){
       }
       xnode+=polysize[ipoly];
       ynode+=polysize[ipoly];
+    }
+  }
+}
+
+/*  ------------------ DrawContours ------------------------ */
+
+void DrawContours(const contour *ci){
+  int nlevels, n, npolys, *polysize, ipoly, j, nnodes;
+  float *xnode, *ynode, xyzval;
+  float **rgb;
+
+  int *npolysv;
+
+  rgb=ci->rgbptr;
+  nlevels=ci->nlevels;
+  xyzval=ci->xyzval;
+  for(n=0;n<nlevels;n++){
+    xnode=ci->xnode[n];
+    ynode=ci->ynode[n];
+    polysize=ci->polysize[n];
+    npolysv=ci->npolys;
+    npolys=npolysv[n];
+    if(ci->idir==XDIR){
+      glColor4fv(rgb[n]);
+      for(ipoly=0;ipoly<npolys;ipoly++){
+        glBegin(GL_POLYGON);
+        for(j=0;j<polysize[ipoly];j++){
+          glVertex3f(xyzval,*xnode++,*ynode++);
+        }
+        glEnd();
+      }
+    }
+    else if(ci->idir==YDIR){
+      glColor4fv(rgb[n]);
+      for(ipoly=0;ipoly<npolys;ipoly++){
+        nnodes=polysize[ipoly];
+        glBegin(GL_POLYGON);
+        for(j=0;j<nnodes;j++){
+          glVertex3f(*xnode++,xyzval,*ynode++);
+        }
+        glEnd();
+      }
+    }
+    else if(ci->idir==ZDIR){
+      glColor4fv(rgb[n]);
+      for(ipoly=0;ipoly<npolys;ipoly++){
+        glBegin(GL_POLYGON);
+        for(j=0;j<polysize[ipoly];j++){
+          glVertex3f(*xnode++,*ynode++,xyzval);
+        }
+        glEnd();
+      }
+    }
+  }
+}
+
+/*  ------------------ DrawLineContours ------------------------ */
+
+void DrawLineContours(const contour *ci, float linewidth){
+
+  int nlevels, n;
+  float xyzval;
+  float *xline, *yline;
+  float **rgb;
+
+  int nlinepts,iline;
+
+  if(ci==NULL)return;
+  rgb=ci->rgbptr;
+  nlevels=ci->nlevels;
+  xyzval=ci->xyzval;
+  for(n=0;n<nlevels;n++){
+    xline=ci->xlines[n];
+    yline=ci->ylines[n];
+    nlinepts=ci->nlines[n];
+    if(ci->idir==XDIR){
+      glColor4fv(rgb[n]);
+      glLineWidth(linewidth);
+      glBegin(GL_LINES);
+      for(iline=0;iline<nlinepts;iline++){
+        glVertex3f(xyzval,*xline++,*yline++);
+      }
+      glEnd();
+    }
+    else if(ci->idir==YDIR){
+      glColor4fv(rgb[n]);
+      glLineWidth(linewidth);
+      glBegin(GL_LINES);
+      for(iline=0;iline<nlinepts;iline++){
+        glVertex3f(*xline++,xyzval,*yline++);
+      }
+      glEnd();
+    }
+    else if(ci->idir==ZDIR){
+      glColor4fv(rgb[n]);
+      glLineWidth(linewidth);
+      glBegin(GL_LINES);
+      for(iline=0;iline<nlinepts;iline++){
+        glVertex3f(*xline++,*yline++,xyzval);
+      }
+      glEnd();
     }
   }
 }
