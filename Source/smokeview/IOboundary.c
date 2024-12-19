@@ -2604,10 +2604,10 @@ void DrawBoundaryTexture(const meshdata *meshi){
           cparm[3] = CLAMP(BOUNDCONVERT(IJKBF(irow + 1, icol + 1), ttmin, ttmax), 0.0, 1.0);
           if(*patchblank1==GAS&&*patchblank2==GAS&&*(patchblank1+1)==GAS&&*(patchblank2+1)==GAS){
             if(
-               rgb_patch[4*(int)(255*cparm[0])+3]==0.0||
-               rgb_patch[4*(int)(255*cparm[1])+3]==0.0||
-               rgb_patch[4*(int)(255*cparm[2])+3]==0.0||
-               rgb_patch[4*(int)(255*cparm[3])+3]==0.0
+              rgb_patch[4*(int)(255*cparm[0])+3] < 0.1 ||
+              rgb_patch[4*(int)(255*cparm[1])+3] < 0.1 ||
+              rgb_patch[4*(int)(255*cparm[2])+3] < 0.1 ||
+              rgb_patch[4*(int)(255*cparm[3])+3] < 0.1
                ){
               patchblank1++;
               patchblank2++;
@@ -2693,7 +2693,7 @@ void DrawBoundaryTexture(const meshdata *meshi){
 
         for(icol=0;icol<ncol-1;icol++){
           float cparm[4], parm[4];
-          int skip;
+          int skip, iparm[4];
 
           skip = 0;
           parm[0] = GETBOUNDVAL(IJKBF(irow,   icol));
@@ -2704,44 +2704,45 @@ void DrawBoundaryTexture(const meshdata *meshi){
           cparm[1] = CLAMP(BOUNDCONVERT2(parm[1], ttmin, ttmax), 0.0, 1.0);
           cparm[2] = CLAMP(BOUNDCONVERT2(parm[2], ttmin, ttmax), 0.0, 1.0);
           cparm[3] = CLAMP(BOUNDCONVERT2(parm[3], ttmin, ttmax), 0.0, 1.0);
-          if(
-               rgb_patch[4*(int)(255*cparm[0])+3]==0.0||
-               rgb_patch[4*(int)(255*cparm[1])+3]==0.0||
-               rgb_patch[4*(int)(255*cparm[2])+3]==0.0||
-               rgb_patch[4*(int)(255*cparm[3])+3]==0.0
-               ){
-            skip = 1;
-          }
-          if(is_time_arrival == 1 && skip == 0){
+          iparm[0] = CLAMP(255.0 * cparm[0], 0, 255);
+          iparm[1] = CLAMP(255.0 * cparm[1], 0, 255);
+          iparm[2] = CLAMP(255.0 * cparm[2], 0, 255);
+          iparm[3] = CLAMP(255.0 * cparm[3], 0, 255);
+          if(is_time_arrival == 1){
             if(parm[0] > TOA_LIMIT || parm[1] > TOA_LIMIT || parm[2] > TOA_LIMIT || parm[3] > TOA_LIMIT)skip = 1;
           }
-          if(skip == 1){
-            patchblank1++;
-            patchblank2++;
-            xyzp1+=3;
-            xyzp2+=3;
-            continue;
-          }
-          if(*patchblank1==GAS&&*patchblank2==GAS&&*(patchblank1+1)==GAS&&*(patchblank2+1)==GAS){
-            r11 = cparm[0];
-            r12 = cparm[1];
-            r21 = cparm[2];
-            r22 = cparm[3];
-            if(ABS(cparm[0]-cparm[3])<ABS(cparm[1]-cparm[2])){
-              glTexCoord1f(r11);glVertex3fv(xyzp1);
-              glTexCoord1f(r12);glVertex3fv(xyzp1+3);
-              glTexCoord1f(r22);glVertex3fv(xyzp2+3);
-              glTexCoord1f(r11);glVertex3fv(xyzp1);
-              glTexCoord1f(r22);glVertex3fv(xyzp2+3);
-              glTexCoord1f(r21);glVertex3fv(xyzp2);
+          if(skip == 0){
+            if(
+              rgb_full[iparm[0]][3] < 0.1 ||
+              rgb_full[iparm[1]][3] < 0.1 ||
+              rgb_full[iparm[2]][3] < 0.1 ||
+              rgb_full[iparm[3]][3] < 0.1
+              ){
+              skip = 1;
             }
-            else{
-              glTexCoord1f(r11);glVertex3fv(xyzp1);
-              glTexCoord1f(r12);glVertex3fv(xyzp1+3);
-              glTexCoord1f(r21);glVertex3fv(xyzp2);
-              glTexCoord1f(r12);glVertex3fv(xyzp1+3);
-              glTexCoord1f(r22);glVertex3fv(xyzp2+3);
-              glTexCoord1f(r21);glVertex3fv(xyzp2);
+          }
+          if(skip == 0){
+            if(*patchblank1 == GAS && *patchblank2 == GAS && *(patchblank1 + 1) == GAS && *(patchblank2 + 1) == GAS){
+              r11 = cparm[0];
+              r12 = cparm[1];
+              r21 = cparm[2];
+              r22 = cparm[3];
+              if(ABS(cparm[0] - cparm[3]) < ABS(cparm[1] - cparm[2])){
+                glTexCoord1f(r11); glVertex3fv(xyzp1);
+                glTexCoord1f(r12); glVertex3fv(xyzp1 + 3);
+                glTexCoord1f(r22); glVertex3fv(xyzp2 + 3);
+                glTexCoord1f(r11); glVertex3fv(xyzp1);
+                glTexCoord1f(r22); glVertex3fv(xyzp2 + 3);
+                glTexCoord1f(r21); glVertex3fv(xyzp2);
+              }
+              else{
+                glTexCoord1f(r11); glVertex3fv(xyzp1);
+                glTexCoord1f(r12); glVertex3fv(xyzp1 + 3);
+                glTexCoord1f(r21); glVertex3fv(xyzp2);
+                glTexCoord1f(r12); glVertex3fv(xyzp1 + 3);
+                glTexCoord1f(r22); glVertex3fv(xyzp2 + 3);
+                glTexCoord1f(r21); glVertex3fv(xyzp2);
+              }
             }
           }
           patchblank1++;

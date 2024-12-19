@@ -1244,23 +1244,18 @@ void UpdateRGBColors(int colorbar_index){
       rgb_full2[n][3]=rgb_full[n][3];
       rgb_full[n][3]=0;
     }
-    for(n=0;n<11;n++){
-      int nnm1,nnp0,nnp1;
 
-      if(n==0){
-        nnp0=1;
+    int width;
+    width = ( int )(256.0 / 10.0 );
+    for(n=0;n<11;n++){
+      int cbmin, cbmax, j;
+
+      cbmin = CLAMP(n * width, 0, 255);
+      cbmax = CLAMP(cbmin + colorbar_linewidth, 0, 255);
+      cbmin = CLAMP(cbmax - colorbar_linewidth, 0, 255);
+      for(j = cbmin; j <= cbmax; j++){
+        rgb_full[j][3] = rgb_full2[j][3];
       }
-      else if(n==10){
-        nnp0=254;
-      }
-      else{
-        nnp0=1+n*25.4;
-      }
-      nnm1=nnp0-1;
-      nnp1=nnp0+1;
-      rgb_full[nnm1][3]=rgb_full2[nnm1][3];
-      rgb_full[nnp0][3]=rgb_full2[nnp0][3];
-      rgb_full[nnp1][3]=rgb_full2[nnp1][3];
     }
   }
   if(contour_type==STEPPED_CONTOURS){

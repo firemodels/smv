@@ -301,6 +301,7 @@ SVEXTERN char *dimensionless = "dimensionless";
 SVEXTERN char *cslice_label, *cpart_label, *cbound_label, *cplot3d_label;
 SVEXTERN char *dimensionless;
 #endif
+SVEXTERN int SVDECL(colorbar_linewidth, 3);
 
 SVEXTERN float SVDECL(plot2d_size_factor, 0.15), SVDECL(plot2d_font_spacing, 1.2);
 SVEXTERN float SVDECL(plot2d_line_width, 1.0), SVDECL(plot2d_point_size, 5.0), SVDECL(plot2d_frame_width, 1.0);
