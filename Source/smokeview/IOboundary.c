@@ -2212,11 +2212,22 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
     patchstart = patchi->ntimes_old*meshi->npatchsize;
 
     if(patchi->have_bound_file==NO&&FileExistsOrig(patchi->bound_file)==NO){
+      float *patchval;
+
       patchmin_global = 10000000000000.0;
       patchmax_global = -patchmin_global;
-      for(i = 0; i < npatchvals; i++){
-        patchmin_global = MIN(patchmin_global, meshi->patchval[i]);
-        patchmax_global = MAX(patchmax_global, meshi->patchval[i]);
+      patchval = meshi->patchval;
+      if(strcmp(patchi->label.shortlabel, "t_a") == 0){
+        for(i = 0; i < npatchvals; i++){
+          patchmin_global = MIN(patchmin_global, patchval[i]);
+          if(patchval[i]<TOA_LIMIT)patchmax_global = MAX(patchmax_global, patchval[i]);
+        }
+      }
+      else{
+        for(i = 0; i < npatchvals; i++){
+          patchmin_global = MIN(patchmin_global, patchval[i]);
+          patchmax_global = MAX(patchmax_global, patchval[i]);
+        }
       }
       patchi->valmin_patch = patchmin_global;
       patchi->valmax_patch = patchmax_global;

@@ -2614,6 +2614,36 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
     return return_filesize;
   }
 
+  if(FileExistsOrig(patchi->bound_file)==0){
+    float *vals, valmin, valmax;
+
+    vals = patchi->geom_vals;
+    if(strcmp(patchi->label.shortlabel, "t_a") == 0){
+      valmin = 1.0;
+      valmax = 0.0;
+      for(i = 0;i < nvals;i++){
+        if(valmin > valmax){
+          if(vals[i] < TOA_LIMIT){
+            valmin = vals[i];
+            valmax = valmin;
+          }
+        }
+        else{
+          valmin = MIN(vals[i], valmin);
+          if(vals[i] < TOA_LIMIT)valmax = MAX(vals[i], valmax);
+        }
+      }
+    }
+    else{
+      valmin = vals[0];
+      valmax = valmin;
+      for(i = 1;i < nvals;i++){
+        valmin = MIN(vals[i], valmin);
+        valmax = MAX(vals[i], valmax);
+      }
+    }
+    WriteFileBounds(patchi->bound_file, valmin, valmax);
+  }
   patchi->ngeom_times = ntimes_local;
   patchi->geom_nvals = nvals;
   patchi->geom_ivals_static_offset[0] = 0;
