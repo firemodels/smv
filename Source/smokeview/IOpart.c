@@ -1054,6 +1054,7 @@ wrapup:
 void CreatePartSizeFile(partdata *parti){
   FILE *stream_local=NULL;
   LINT header_offset_local;
+  char *smokeview_scratchdir = GetUserConfigDir();
 
   if(parti->reg_file!=NULL)stream_local = fopen(parti->reg_file, "rb");
   if(parti->reg_file==NULL||stream_local==NULL)return;
@@ -1069,12 +1070,14 @@ void CreatePartSizeFile(partdata *parti){
     fclose(stream_local);
     TestWrite(smokeview_scratchdir, &(parti->size_file));
     CreatePartSizeFileFromBound(parti->bound_file, parti->size_file, header_offset_local);
+    FREEMEMORY(smokeview_scratchdir);
     return;
   }
   printf("***warning: particle bound/size file %s could not be opened\n", parti->bound_file);
   printf("            particle sizing proceeding using the full particle file: %s\n", parti->reg_file);
   TestWrite(smokeview_scratchdir, &(parti->size_file));
   CreatePartSizeFileFromPart(parti->reg_file, parti->size_file, header_offset_local);
+  FREEMEMORY(smokeview_scratchdir);
 }
 #endif
 

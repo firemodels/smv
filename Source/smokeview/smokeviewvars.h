@@ -1128,8 +1128,6 @@ SVEXTERN float glui_xyz_fds[3],user_zaxis[3];
   SVEXTERN float zaxis_angles_orig[3];
 #endif
 
-SVEXTERN char SVDECL(*smokeviewini_filename, NULL);
-
 SVEXTERN spherepoints SVDECL(*sphereinfo,NULL), SVDECL(*wui_sphereinfo,NULL);
 
 #ifdef INMAIN
@@ -1400,7 +1398,6 @@ SVEXTERN int SVDECL(screenX0, 0), SVDECL(screenY0, 0);
 SVEXTERN int SVDECL(dialogX0, 0), SVDECL(dialogY0, 0);
 SVEXTERN int SVDECL(have_dialogX0, 0), SVDECL(have_dialogY0, 0);
 SVEXTERN int SVDECL(use_commandline_origin, 0);
-SVEXTERN char SVDECL(*smv_screenini, NULL);
 SVEXTERN int screenWidth_save, screenHeight_save;
 SVEXTERN int SVDECL(screenWidthINI,640), SVDECL(screenHeightINI,480);
 SVEXTERN int SVDECL(glui_screenWidth,640), SVDECL(glui_screenHeight,480);
@@ -1780,8 +1777,6 @@ SVEXTERN float redcolor[4];
 
 SVEXTERN int SVDECL(loadfiles_at_startup,0);
 
-SVEXTERN char SVDECL(*smokeview_scratchdir,NULL);
-
 SVEXTERN int SVDECL(nmenus,0);
 #define MAXMENUS 10000
 SVEXTERN menudata menuinfo[MAXMENUS];
@@ -1980,14 +1975,11 @@ SVEXTERN char SVDECL(*expcsv_filename, NULL);
 SVEXTERN char SVDECL(*event_filename, NULL);
 SVEXTERN int SVDECL(event_file_exists,0);
 SVEXTERN char SVDECL(*zonelonglabels,NULL), SVDECL(*zoneshortlabels,NULL), SVDECL(*zoneunits,NULL);
-SVEXTERN char SVDECL(*smokeviewini,NULL);
 SVEXTERN char SVDECL(*html_filename, NULL);
 SVEXTERN char SVDECL(*htmlvr_filename, NULL);
 SVEXTERN char SVDECL(*htmlslicenode_filename, NULL);
 SVEXTERN char SVDECL(*htmlslicecell_filename, NULL);
 SVEXTERN char SVDECL(*htmlobst_filename, NULL);
-SVEXTERN char SVDECL(*smokeview_html, NULL);
-SVEXTERN char SVDECL(*smokeviewvr_html, NULL);
 SVEXTERN int SVDECL(overwrite_all,0),SVDECL(erase_all,0);
 SVEXTERN int SVDECL(compress_autoloaded,0);
 SVEXTERN tridata SVDECL(**opaque_triangles,NULL),SVDECL(**transparent_triangles,NULL),SVDECL(**alltriangles,NULL);

@@ -1638,6 +1638,7 @@ int GetHtmlFileName(char *htmlfile_full, int option){
   // directory - put files in '.' or smokevewtempdir
 
   if(Writable(htmlfile_dir)==NO){
+    char *smokeview_scratchdir = GetUserConfigDir();
     if(Writable(smokeview_scratchdir)==YES){
       strcpy(htmlfile_dir, smokeview_scratchdir);
     }
@@ -1651,6 +1652,7 @@ int GetHtmlFileName(char *htmlfile_full, int option){
       }
       return 1;
     }
+    FREEMEMORY(smokeview_scratchdir);
   }
 
   // filename suffix
@@ -2186,7 +2188,7 @@ int Smv2Html(char *html_file, int option, int from_where){
   int copy_html, i;
   webgeomdata slice_node_web, slice_cell_web, slice_geom_web, bndf_node_web, part_node_web;
 
-  template_file = smokeview_html;
+  template_file = GetSmokeviewHtmlPath();
   stream_in = fopen(template_file, "r");
   if(stream_in==NULL){
     printf("***error: smokeview html template file %s failed to open\n", template_file);

@@ -261,7 +261,7 @@
 #define IJ2(i,j) ((nycell+1)*(i) + (j))
 #endif
 
-#define FOPEN_2DIR(file, mode) fopen_2dir(file, mode, smokeview_scratchdir)
+#define FOPEN_2DIR(file, mode) fopen_2dir_scratch(file, mode)
 
 #define PI           3.14159265359f
 
