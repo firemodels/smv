@@ -1578,10 +1578,7 @@ void UpdateChopColors(void){
     smin = boundarylevels256[0];
     smax = boundarylevels256[255];
 
-// make boundary colors opaque except when greater than chopmax or less than chopmin values
-    for(i=0;i<nrgb_full;i++){
-      rgb_patch[4*i+3]=1.0;
-    }
+// make boundary opacities same as base colorbar opaque except when greater than chopmax or less than chopmin values
     if(setpatchchopmin_local==1){
       ichopmin=nrgb_full*(patchchopmin_local-smin)/(smax-smin);
       if(ichopmin<0)ichopmin=0;
