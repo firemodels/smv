@@ -2717,9 +2717,8 @@ void DrawBoundaryTexture(const meshdata *meshi){
 
         for(icol=0;icol<ncol-1;icol++){
           float cparm[4], parm[4];
-          int skip, iparm[4];
+          int iparm[4];
 
-          skip = 0;
           parm[0] = GETBOUNDVAL(IJKBF(irow,   icol));
           parm[1] = GETBOUNDVAL(IJKBF(irow,   icol+1));
           parm[2] = GETBOUNDVAL(IJKBF(irow+1, icol));
