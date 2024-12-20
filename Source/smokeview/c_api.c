@@ -214,9 +214,10 @@ int Loadsmv(char *input_filename, char *input_filename_ext_arg) {
             strlen(fdsprefix) + strlen(".prt5.gbnd") + 1);
   STRCPY(part_globalbound_filename, fdsprefix);
   STRCAT(part_globalbound_filename, ".prt5.gbnd");
+  char *smokeview_scratchdir = GetUserConfigDir();
   part_globalbound_filename = GetFileName(
       smokeview_scratchdir, part_globalbound_filename, NOT_FORCE_IN_DIR);
-
+  FREEMEMORY(smokeview_scratchdir);
   // setup input files names
 
   input_file = smv_filename;

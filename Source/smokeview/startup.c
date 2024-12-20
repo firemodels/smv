@@ -233,7 +233,9 @@ int SetupCase(char *filename){
   NewMemory((void **)&part_globalbound_filename, strlen(fdsprefix)+strlen(".prt.gbnd")+1);
   STRCPY(part_globalbound_filename, fdsprefix);
   STRCAT(part_globalbound_filename, ".prt.gbnd");
+  char *smokeview_scratchdir = GetUserConfigDir();
   part_globalbound_filename = GetFileName(smokeview_scratchdir, part_globalbound_filename, NOT_FORCE_IN_DIR);
+  FREEMEMORY(smokeview_scratchdir);
 
   // setup input files names
 
@@ -370,7 +372,9 @@ int GetScreenHeight(void){
   strcpy(command,"system_profiler SPDisplaysDataType | grep Resolution | awk '{print $4}' | tail -1 >& ");
   strcpy(height_file, fdsprefix);
   strcat(height_file, ".hgt");
+  char *smokeview_scratchdir = GetUserConfigDir();
   full_height_file = GetFileName(smokeview_scratchdir, height_file, NOT_FORCE_IN_DIR);
+  FREEMEMORY(smokeview_scratchdir);
   strcat(command,full_height_file);
   system(command);
   stream = fopen(full_height_file,"r");
@@ -385,82 +389,28 @@ int GetScreenHeight(void){
 }
 #endif
 
-/* ------------------ GetHomeDir ------------------------ */
-
-char *GetHomeDir(){
-  char *homedir;
-
-#ifdef WIN32
-  homedir = getenv("userprofile");
-#else
-  homedir = getenv("HOME");
-#endif
-
-  if(homedir==NULL){
-    NewMemory((void **)&homedir, 2);
-    strcpy(homedir, ".");
-  }
-  return homedir;
-}
-
 /* ------------------ InitStartupDirs ------------------------ */
 
 void InitStartupDirs(void){
-  char *homedir = NULL;
-  char *smv_bindir = GetSmvRootDir();
-// get smokeview bin directory from argv[0] which contains the full path of the smokeview binary
-
-  // create full path for smokeview.ini file
-
-  NewMemory((void **)&smokeviewini, (unsigned int)(strlen(smv_bindir)+14));
-  STRCPY(smokeviewini, smv_bindir);
-  STRCAT(smokeviewini, "smokeview.ini");
-
-  // create full path for html template file
-
-  NewMemory((void **)&smokeview_html, (unsigned int)(strlen(smv_bindir)+strlen("smokeview.html")+1));
-  STRCPY(smokeview_html, smv_bindir);
-  STRCAT(smokeview_html, "smokeview.html");
-
-  NewMemory((void **)&smokeviewvr_html, (unsigned int)(strlen(smv_bindir)+strlen("smokeview_vr.html")+1));
-  STRCPY(smokeviewvr_html, smv_bindir);
-  STRCAT(smokeviewvr_html, "smokeview_vr.html");
-  FREEMEMORY(smv_bindir);
-
   startup_pass = 2;
 
-  homedir = GetHomeDir();
-
-  NewMemory((void **)&smokeview_scratchdir, strlen(homedir)+strlen(dirseparator)+strlen(".smokeview")+strlen(dirseparator)+1);
-  strcpy(smokeview_scratchdir, homedir);
-  strcat(smokeview_scratchdir, dirseparator);
-  strcat(smokeview_scratchdir, ".smokeview");
-  strcat(smokeview_scratchdir, dirseparator);
+  // Create the user config directory if it doesn't already exist.
+  char *smokeview_scratchdir = GetUserConfigDir();
   if(FileExistsOrig(smokeview_scratchdir)==NO){
     MKDIR(smokeview_scratchdir);
   }
 
-  NewMemory((void **)&smv_screenini, strlen(smokeview_scratchdir) + strlen("smv_screen.ini") + 1);
-  strcpy(smv_screenini, smokeview_scratchdir);
-  strcat(smv_screenini, "smv_screen.ini");
-
-  NewMemory((void **)&colorbars_user_dir, strlen(homedir) + strlen(dirseparator) + strlen(".smokeview") + strlen(dirseparator) + strlen("colorbars") + 1);
-  strcpy(colorbars_user_dir, homedir);
-  strcat(colorbars_user_dir, dirseparator);
-  strcat(colorbars_user_dir, ".smokeview");
-  strcat(colorbars_user_dir, dirseparator);
-  strcat(colorbars_user_dir, "colorbars");
-  if(FileExistsOrig(colorbars_user_dir) == NO){
-    FREEMEMORY(colorbars_user_dir);
+  // Create the colorbar directory if it doesn't already exist.
+  colorbars_user_dir = GetUserConfigSubPath("colorbars");
+  if(FileExistsOrig(colorbars_user_dir)==NO){
+    MKDIR(colorbars_user_dir);
   }
 
-  NewMemory((void **)&smokeviewini_filename, strlen(smokeview_scratchdir)+strlen(dirseparator)+strlen("smokeview.ini")+2);
-  strcpy(smokeviewini_filename, smokeview_scratchdir);
-  strcat(smokeviewini_filename, dirseparator);
-  strcat(smokeviewini_filename, "smokeview.ini");
-
   if(verbose_output==1)PRINTF("Scratch directory: %s\n", smokeview_scratchdir);
+  char *smokeviewini_filename = GetSystemIniPath();
   if(verbose_output==1)PRINTF("    smokeview.ini: %s\n", smokeviewini_filename);
+  FREEMEMORY(smokeviewini_filename);
+  FREEMEMORY(smokeview_scratchdir);
 
 #ifdef pp_OSX
   monitor_screen_height = GetScreenHeight();

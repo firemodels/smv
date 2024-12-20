@@ -15,7 +15,6 @@
 void Usage(int option){
   char githash[100];
   char gitdate[100];
-  char buffer[1024];
 
   GetGitInfo(githash,gitdate);    // get githash
 
