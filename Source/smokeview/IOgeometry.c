@@ -2615,7 +2615,6 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
   }
 
   if(FileExistsOrig(patchi->bound_file)==0){
-    int i;
     float *vals, valmin, valmax;
 
     vals = patchi->geom_vals;
