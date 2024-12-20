@@ -4102,15 +4102,20 @@ void DrawGeomData(int flag, slicedata *sd, patchdata *patchi, int geom_type){
         for(j = 0; j < ntris; j++){
           float *xyzptr[3];
           tridata *trianglei;
+          int ival;
 
           trianglei = triangles + j;
           if(patchi->patch_filetype==PATCH_GEOMETRY_BOUNDARY){
             rvals[0] = GEOMVAL(j);
             if(is_time_arrival == 1 && rvals[0] > TOA_LIMIT)continue;
             rvals[0] = GEOMTEXTURE2(rvals[0], ttmin, ttmax);
+            ival = CLAMP(rvals[0] * 255.0, 0, 255);
+            if(rgb_patch[4*ival + 3] == 0.0)continue;
           }
           else if(patchi->patch_filetype==PATCH_GEOMETRY_SLICE){
             rvals[0] = GEOMTEXTURE(j, valmin, valmax);
+            ival = CLAMP(rvals[0] * 255.0, 0, 255);
+            if(rgb_slice[4*ival + 3] == 0.0)continue;
           }
           else{
             rvals[0] = (float)ivals[j]/255.0;
