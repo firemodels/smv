@@ -191,7 +191,7 @@ char *SetDir(char *argdir){
 
 /* ------------------ GetBaseFileName ------------------------ */
 
-char *GetBaseFileName(char *buffer,char *file){
+char *GetBaseFileName(char *buffer, const char *file){
   char *filebase,*ext;
 
   strcpy(buffer,file);
@@ -872,6 +872,13 @@ FILE *fopen_indir(char *dir, char *file, char *mode){
   return stream;
 }
 
+FILE *fopen_2dir_scratch(char *file, char *mode) {
+  char *smokeview_scratchdir = GetUserConfigDir();
+  FILE *f = fopen_2dir(file, mode, smokeview_scratchdir);
+  FREEMEMORY(smokeview_scratchdir);
+  return f;
+}
+
 /* ------------------ fopen_2dir ------------------------ */
 
 FILE *fopen_2dir(char *file, char *mode, char *scratch_dir){
@@ -1069,6 +1076,30 @@ char *GetFloatFileSizeLabel(float size, char *sizelabel){
   return sizelabel;
 }
 
+// Only allows something from NEWMEMORY
+char *JoinPath(const char *path, const char *segment) {
+  // TODO: replace with platform-specific functions
+  char *new_path;
+  if (path == NULL) {
+    if (segment == NULL) return NULL;
+    NEWMEMORY(new_path, (strlen(segment) + 1) * sizeof(char));
+    STRCPY(new_path, segment);
+    return new_path;
+  };
+  if (segment == NULL) {
+    NEWMEMORY(new_path, (strlen(path) + 1) * sizeof(char));
+    STRCPY(new_path, path);
+    return new_path;
+  };
+  int path_len = strlen(path);
+  int newlen = path_len + strlen(dirseparator) + strlen(segment) + 1;
+  NEWMEMORY(new_path, (newlen + 1) * sizeof(char));
+  strcpy(new_path, path);
+  strcat(new_path, dirseparator);
+  strcat(new_path, segment);
+  return new_path;
+}
+
 #ifdef _WIN32
 
 /* ------------------ GetBinPath - windows ------------------------ */
@@ -1242,6 +1273,69 @@ char *GetSmvRootDir(){
     return GetBinDir();
 #endif
   }
+}
+
+char *GetSmvRootSubPath(const char *subdir) {
+  char *root_dir = GetSmvRootDir();
+  if (root_dir == NULL || subdir == NULL) return NULL;
+  return JoinPath(root_dir,subdir);
+}
+
+/* ------------------ GetHomeDir ------------------------ */
+
+char *GetHomeDir() {
+#ifdef WIN32
+  char *homedir = getenv("userprofile");
+#else
+  char *homedir = getenv("HOME");
+#endif
+  if (homedir == NULL) return ".";
+  return homedir;
+}
+
+/* ------------------ GetUserConfigDir ------------------------ */
+
+char *GetUserConfigDir() {
+  char *homedir = GetHomeDir();
+  if (homedir == NULL) return NULL;
+
+  char *config_path;
+  NEWMEMORY(config_path,
+            strlen(homedir) + strlen(dirseparator) + strlen(".smokeview") + 1);
+  strcpy(config_path, homedir);
+  strcat(config_path, dirseparator);
+  strcat(config_path, ".smokeview");
+  return config_path;
+}
+
+/* ------------------ GetUserConfigSubPath ------------------------ */
+
+char *GetUserConfigSubPath(const char *subdir) {
+  char *config_dir = GetUserConfigDir();
+  if (config_dir == NULL || subdir == NULL) return NULL;
+  return JoinPath(config_dir,subdir);
+}
+
+char *GetSystemIniPath() {
+  return GetSmvRootSubPath("smokeview.ini");
+}
+
+char *GetUserIniPath() {
+  return GetUserConfigSubPath("smokeview.ini");
+}
+
+char *GetSmokeviewHtmlPath() {
+  return GetSmvRootSubPath("smokeview.html");
+}
+
+// TODO: This is currently unused
+char *GetSmokeviewHtmlVrPath() {
+  return GetSmvRootSubPath("smokeview_vr.html");
+}
+
+// TODO: This is currently unused
+char *GetSmvScreenIni() {
+  return GetSmvRootSubPath("smv_screen.ini");
 }
 
 /* ------------------ IsSootFile ------------------------ */

@@ -12855,7 +12855,9 @@ static int menu_count=0;
         n_inifiles++;
       }
     }
-    if( n_inifiles>0||FILE_EXISTS(smokeviewini_filename)==YES||FILE_EXISTS(caseini_filename)==YES||FILE_EXISTS(smokeviewini)==YES){
+    char *global_ini_path = GetSystemIniPath();
+    char *user_ini_path = GetUserIniPath();
+    if( n_inifiles>0||FILE_EXISTS(user_ini_path)==YES||FILE_EXISTS(caseini_filename)==YES||FILE_EXISTS(global_ini_path)==YES){
       if(n_inifiles==0){
         glutAddMenuEntry(_("Read ini files"),MENU_READINI);
       }
@@ -12863,6 +12865,8 @@ static int menu_count=0;
         GLUTADDSUBMENU(_("Read ini files"),inisubmenu);
       }
     }
+    FREEMEMORY(global_ini_path);
+    FREEMEMORY(user_ini_path);
    }
 
 
