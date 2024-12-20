@@ -16053,8 +16053,6 @@ int ReadBinIni(void){
 /* ------------------ ReadIni ------------------------ */
 
 int ReadIni(char *inifile){
-  char *smvprogini_ptr=NULL;
-
   // There are 7 places to retrieve configuration file from:
   //
   //   1. A file within the same directory as the smokeview executable named
