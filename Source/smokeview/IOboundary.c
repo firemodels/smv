@@ -2212,11 +2212,22 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
     patchstart = patchi->ntimes_old*meshi->npatchsize;
 
     if(patchi->have_bound_file==NO&&FileExistsOrig(patchi->bound_file)==NO){
+      float *patchval;
+
       patchmin_global = 10000000000000.0;
       patchmax_global = -patchmin_global;
-      for(i = 0; i < npatchvals; i++){
-        patchmin_global = MIN(patchmin_global, meshi->patchval[i]);
-        patchmax_global = MAX(patchmax_global, meshi->patchval[i]);
+      patchval = meshi->patchval;
+      if(strcmp(patchi->label.shortlabel, "t_a") == 0){
+        for(i = 0; i < npatchvals; i++){
+          patchmin_global = MIN(patchmin_global, patchval[i]);
+          if(patchval[i]<TOA_LIMIT)patchmax_global = MAX(patchmax_global, patchval[i]);
+        }
+      }
+      else{
+        for(i = 0; i < npatchvals; i++){
+          patchmin_global = MIN(patchmin_global, patchval[i]);
+          patchmax_global = MAX(patchmax_global, patchval[i]);
+        }
       }
       patchi->valmin_patch = patchmin_global;
       patchi->valmax_patch = patchmax_global;
@@ -2556,9 +2567,13 @@ void DrawBoundaryTexture(const meshdata *meshi){
   glEnable(GL_TEXTURE_1D);
   glBindTexture(GL_TEXTURE_1D,texture_patch_colorbar_id);
   glPushMatrix();
-  float delta_z;
-  delta_z = (meshinfo->zplt[1] - meshinfo->zplt[0])/2.0;
-  glTranslatef(0.0, 0.0, delta_z);
+
+  if(strcmp(patchi->label.shortlabel,"t_a")==0){
+    float delta_z=0.0;
+
+    delta_z = (meshinfo->zplt[1] - meshinfo->zplt[0])/10.0;
+    glTranslatef(0.0, 0.0, delta_z);
+  }
 
   CheckMemory;
   glBegin(GL_TRIANGLES);
@@ -2596,18 +2611,27 @@ void DrawBoundaryTexture(const meshdata *meshi){
         xyzp2 = xyzp1 + 3*ncol;
 
         for(icol=0;icol<ncol-1;icol++){
-          float cparm[4];
+          float cparm[4], parm[4];
+          int iparm[4];
 
-          cparm[0] = CLAMP(BOUNDCONVERT(IJKBF(irow, icol), ttmin, ttmax), 0.0, 1.0);
-          cparm[1] = CLAMP(BOUNDCONVERT(IJKBF(irow, icol + 1), ttmin, ttmax), 0.0, 1.0);
-          cparm[2] = CLAMP(BOUNDCONVERT(IJKBF(irow + 1, icol), ttmin, ttmax), 0.0, 1.0);
-          cparm[3] = CLAMP(BOUNDCONVERT(IJKBF(irow + 1, icol + 1), ttmin, ttmax), 0.0, 1.0);
+          parm[0] = GETBOUNDVAL(IJKBF(irow,   icol));
+          parm[1] = GETBOUNDVAL(IJKBF(irow,   icol+1));
+          parm[2] = GETBOUNDVAL(IJKBF(irow+1, icol));
+          parm[3] = GETBOUNDVAL(IJKBF(irow+1, icol+1));
+          cparm[0] = CLAMP(BOUNDCONVERT2(parm[0], ttmin, ttmax), 0.0, 1.0);
+          cparm[1] = CLAMP(BOUNDCONVERT2(parm[1], ttmin, ttmax), 0.0, 1.0);
+          cparm[2] = CLAMP(BOUNDCONVERT2(parm[2], ttmin, ttmax), 0.0, 1.0);
+          cparm[3] = CLAMP(BOUNDCONVERT2(parm[3], ttmin, ttmax), 0.0, 1.0);
+          iparm[0] = CLAMP(255.0*cparm[0], 0, 255);
+          iparm[1] = CLAMP(255.0*cparm[1], 0, 255);
+          iparm[2] = CLAMP(255.0*cparm[2], 0, 255);
+          iparm[3] = CLAMP(255.0*cparm[3], 0, 255);
           if(*patchblank1==GAS&&*patchblank2==GAS&&*(patchblank1+1)==GAS&&*(patchblank2+1)==GAS){
             if(
-              rgb_patch[4*(int)(255*cparm[0])+3] < 0.1 ||
-              rgb_patch[4*(int)(255*cparm[1])+3] < 0.1 ||
-              rgb_patch[4*(int)(255*cparm[2])+3] < 0.1 ||
-              rgb_patch[4*(int)(255*cparm[3])+3] < 0.1
+              rgb_patch[4*iparm[0]+3] == 0.0 ||
+              rgb_patch[4*iparm[1]+3] == 0.0 ||
+              rgb_patch[4*iparm[2]+3] == 0.0 ||
+              rgb_patch[4*iparm[3]+3] == 0.0
                ){
               patchblank1++;
               patchblank2++;
@@ -2704,19 +2728,19 @@ void DrawBoundaryTexture(const meshdata *meshi){
           cparm[1] = CLAMP(BOUNDCONVERT2(parm[1], ttmin, ttmax), 0.0, 1.0);
           cparm[2] = CLAMP(BOUNDCONVERT2(parm[2], ttmin, ttmax), 0.0, 1.0);
           cparm[3] = CLAMP(BOUNDCONVERT2(parm[3], ttmin, ttmax), 0.0, 1.0);
-          iparm[0] = CLAMP(255.0 * cparm[0], 0, 255);
-          iparm[1] = CLAMP(255.0 * cparm[1], 0, 255);
-          iparm[2] = CLAMP(255.0 * cparm[2], 0, 255);
-          iparm[3] = CLAMP(255.0 * cparm[3], 0, 255);
+          iparm[0] = CLAMP(255.0*cparm[0], 0, 255);
+          iparm[1] = CLAMP(255.0*cparm[1], 0, 255);
+          iparm[2] = CLAMP(255.0*cparm[2], 0, 255);
+          iparm[3] = CLAMP(255.0*cparm[3], 0, 255);
           if(is_time_arrival == 1){
             if(parm[0] > TOA_LIMIT || parm[1] > TOA_LIMIT || parm[2] > TOA_LIMIT || parm[3] > TOA_LIMIT)skip = 1;
           }
           if(skip == 0){
             if(
-              rgb_full[iparm[0]][3] < 0.1 ||
-              rgb_full[iparm[1]][3] < 0.1 ||
-              rgb_full[iparm[2]][3] < 0.1 ||
-              rgb_full[iparm[3]][3] < 0.1
+              rgb_patch[4*iparm[0]+3] == 0.0 ||
+              rgb_patch[4*iparm[1]+3] == 0.0 ||
+              rgb_patch[4*iparm[2]+3] == 0.0 ||
+              rgb_patch[4*iparm[3]+3] == 0.0
               ){
               skip = 1;
             }
@@ -2791,18 +2815,27 @@ void DrawBoundaryTexture(const meshdata *meshi){
         patchblank2 = patchblank1 + ncol;
 
         for(icol=0;icol<ncol-1;icol++){
-          float cparm[4];
+          float cparm[4], parm[4];
+          int iparm[4];
 
-          cparm[0] = CLAMP(BOUNDCONVERT(IJKBF(irow, icol), ttmin, ttmax), 0.0, 1.0);
-          cparm[1] = CLAMP(BOUNDCONVERT(IJKBF(irow, icol + 1), ttmin, ttmax), 0.0, 1.0);
-          cparm[2] = CLAMP(BOUNDCONVERT(IJKBF(irow + 1, icol), ttmin, ttmax), 0.0, 1.0);
-          cparm[3] = CLAMP(BOUNDCONVERT(IJKBF(irow + 1, icol + 1), ttmin, ttmax), 0.0, 1.0);
+          parm[0] = GETBOUNDVAL(IJKBF(irow,   icol));
+          parm[1] = GETBOUNDVAL(IJKBF(irow,   icol+1));
+          parm[2] = GETBOUNDVAL(IJKBF(irow+1, icol));
+          parm[3] = GETBOUNDVAL(IJKBF(irow+1, icol+1));
+          cparm[0] = CLAMP(BOUNDCONVERT2(parm[0], ttmin, ttmax), 0.0, 1.0);
+          cparm[1] = CLAMP(BOUNDCONVERT2(parm[1], ttmin, ttmax), 0.0, 1.0);
+          cparm[2] = CLAMP(BOUNDCONVERT2(parm[2], ttmin, ttmax), 0.0, 1.0);
+          cparm[3] = CLAMP(BOUNDCONVERT2(parm[3], ttmin, ttmax), 0.0, 1.0);
+          iparm[0] = CLAMP(255.0*cparm[0], 0, 255);
+          iparm[1] = CLAMP(255.0*cparm[1], 0, 255);
+          iparm[2] = CLAMP(255.0*cparm[2], 0, 255);
+          iparm[3] = CLAMP(255.0*cparm[3], 0, 255);
           if(
-               rgb_patch[4*(int)(255*cparm[0])+3]==0.0||
-               rgb_patch[4*(int)(255*cparm[1])+3]==0.0||
-               rgb_patch[4*(int)(255*cparm[2])+3]==0.0||
-               rgb_patch[4*(int)(255*cparm[3])+3]==0.0
-               ){
+              rgb_patch[4*iparm[0]+3] == 0.0 ||
+              rgb_patch[4*iparm[1]+3] == 0.0 ||
+              rgb_patch[4*iparm[2]+3] == 0.0 ||
+              rgb_patch[4*iparm[3]+3] == 0.0
+             ){
             patchblank1++;
             patchblank2++;
             xyzp1+=3;
