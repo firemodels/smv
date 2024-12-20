@@ -2567,9 +2567,13 @@ void DrawBoundaryTexture(const meshdata *meshi){
   glEnable(GL_TEXTURE_1D);
   glBindTexture(GL_TEXTURE_1D,texture_patch_colorbar_id);
   glPushMatrix();
-  float delta_z;
-  delta_z = (meshinfo->zplt[1] - meshinfo->zplt[0])/2.0;
-  glTranslatef(0.0, 0.0, delta_z);
+
+  if(strcmp(patchi->label.shortlabel,"t_a")==0){
+    float delta_z=0.0;
+
+    delta_z = (meshinfo->zplt[1] - meshinfo->zplt[0])/10.0;
+    glTranslatef(0.0, 0.0, delta_z);
+  }
 
   CheckMemory;
   glBegin(GL_TRIANGLES);
