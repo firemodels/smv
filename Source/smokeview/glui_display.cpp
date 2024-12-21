@@ -1368,9 +1368,9 @@ extern "C" void GLUILabelsCB(int var){
     InitRGB();
     break;
   case LABELS_shadedata:
-    if(setbwdata==1 && bw_colorbar_index>=0){
+    if(setbwdata==1 && colorbars.bw_colorbar_index>=0){
       colorbartype_save=colorbartype;
-      ColorbarMenu(bw_colorbar_index);
+      ColorbarMenu(colorbars.bw_colorbar_index);
     }
     else{
       if(colorbartype_save>-1)ColorbarMenu(colorbartype_save);

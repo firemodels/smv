@@ -206,15 +206,15 @@ extern "C" void GLUIUpdateFireAlpha(void){
 /* ------------------ GLUIUpdateCO2ColorbarList ------------------------ */
 
 extern "C" void GLUIUpdateCO2ColorbarList(int value){
-  co2_colorbar_index = CLAMP(value, 0, ncolorbars-1);
-  if(LISTBOX_co2_colorbar!=NULL)LISTBOX_co2_colorbar->set_int_val(co2_colorbar_index);
+  colorbars.co2_colorbar_index = CLAMP(value, 0, colorbars.ncolorbars-1);
+  if(LISTBOX_co2_colorbar!=NULL)LISTBOX_co2_colorbar->set_int_val(colorbars.co2_colorbar_index);
   GLUISmoke3dCB(CO2_COLORBAR_LIST);
 }
 
 /* ------------------ GLUIUpdateFireColorbarList ------------------------ */
 
 extern "C" void GLUIUpdateFireColorbarList(void){
-  if(LISTBOX_smoke_colorbar!=NULL)LISTBOX_smoke_colorbar->set_int_val(fire_colorbar_index);
+  if(LISTBOX_smoke_colorbar!=NULL)LISTBOX_smoke_colorbar->set_int_val(colorbars.fire_colorbar_index);
 }
 
 /* ------------------ GLUIUpdateBackgroundFlip2 ------------------------ */
@@ -476,17 +476,17 @@ extern "C" void GLUI3dSmokeSetup(int main_window){
   SPINNER_smoke3d_fire_green->set_int_limits(0,255);
   SPINNER_smoke3d_fire_blue->set_int_limits(0,255);
 
-  if(ncolorbars > 0){
+  if(colorbars.ncolorbars > 0){
     CHECKBOX_use_fire_colormap = glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_firecolor, "set smoke/fire color using colormap", &use_fire_colormap, USE_FIRE_COLORMAP, GLUISmoke3dCB);
     PANEL_colormap3 = glui_3dsmoke->add_panel_to_panel(ROLLOUT_firecolor, "colormap");
-    LISTBOX_smoke_colorbar = glui_3dsmoke->add_listbox_to_panel(PANEL_colormap3, "Select:", &fire_colorbar_index, SMOKE_COLORBAR_LIST, GLUISmoke3dCB);
-    for(i = 0;i < ncolorbars;i++){
+    LISTBOX_smoke_colorbar = glui_3dsmoke->add_listbox_to_panel(PANEL_colormap3, "Select:", &colorbars.fire_colorbar_index, SMOKE_COLORBAR_LIST, GLUISmoke3dCB);
+    for(i = 0;i < colorbars.ncolorbars;i++){
       colorbardata *cbi;
 
-      cbi = colorbarinfo + i;
+      cbi = colorbars.colorbarinfo + i;
       LISTBOX_smoke_colorbar->add_item(i, cbi->menu_label);
     }
-    LISTBOX_smoke_colorbar->set_int_val(fire_colorbar_index);
+    LISTBOX_smoke_colorbar->set_int_val(colorbars.fire_colorbar_index);
     glui_3dsmoke->add_column_to_panel(PANEL_colormap3,false);
     CHECKBOX_edit_colormap = glui_3dsmoke->add_checkbox_to_panel(PANEL_colormap3, "Edit", &show_firecolormap, SHOW_FIRECOLORMAP, GLUISmoke3dCB);
   }
@@ -577,16 +577,16 @@ extern "C" void GLUI3dSmokeSetup(int main_window){
     SPINNER_co2color[0]->set_int_limits(0, 255);
     SPINNER_co2color[1]->set_int_limits(0, 255);
     SPINNER_co2color[2]->set_int_limits(0, 255);
-    if(ncolorbars > 0){
+    if(colorbars.ncolorbars > 0){
       CHECKBOX_use_co2_colormap = glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_co2color, "set colormap", &use_co2_colormap, USE_CO2_COLORMAP, GLUISmoke3dCB);
-      LISTBOX_co2_colorbar = glui_3dsmoke->add_listbox_to_panel(ROLLOUT_co2color, "colormap:", &co2_colorbar_index, CO2_COLORBAR_LIST, GLUISmoke3dCB);
-      for(i = 0; i < ncolorbars; i++){
+      LISTBOX_co2_colorbar = glui_3dsmoke->add_listbox_to_panel(ROLLOUT_co2color, "colormap:", &colorbars.co2_colorbar_index, CO2_COLORBAR_LIST, GLUISmoke3dCB);
+      for(i = 0; i < colorbars.ncolorbars; i++){
         colorbardata *cbi;
 
-        cbi = colorbarinfo+i;
+        cbi = colorbars.colorbarinfo+i;
         LISTBOX_co2_colorbar->add_item(i, cbi->menu_label);
       }
-      LISTBOX_co2_colorbar->set_int_val(co2_colorbar_index);
+      LISTBOX_co2_colorbar->set_int_val(colorbars.co2_colorbar_index);
     }
 
     if(nco2files > 0){
@@ -1073,12 +1073,12 @@ extern "C" void GLUISmoke3dCB(int var){
     }
     if(fire_temp_min<20.0){
       fire_temp_min = 20.0;
-      SPINNER_fire_temp_min->set_float_val(fire_temp_min);     
+      SPINNER_fire_temp_min->set_float_val(fire_temp_min);
     }
     if(fire_temp_min>fire_temp_max){
       fire_temp_max = fire_temp_min + 1500.0;
-      SPINNER_fire_temp_min->set_float_val(fire_temp_min);     
-      SPINNER_fire_temp_max->set_float_val(fire_temp_max);     
+      SPINNER_fire_temp_min->set_float_val(fire_temp_min);
+      SPINNER_fire_temp_max->set_float_val(fire_temp_max);
     }
     MakeFireColors(fire_temp_min, fire_temp_max, nfire_colors);
     break;
@@ -1177,11 +1177,11 @@ extern "C" void GLUISmoke3dCB(int var){
         SmokeColorbarMenu(fire_colorbar_index_save);
       }
       else{
-        SmokeColorbarMenu(fire_colorbar_index);
+        SmokeColorbarMenu(colorbars.fire_colorbar_index);
       }
       break;
     case FIRECOLORMAP_DIRECT:
-      fire_colorbar_index_save = fire_colorbar_index;
+      fire_colorbar_index_save = colorbars.fire_colorbar_index;
       UpdateRGBColors(colorbar_select_index);
       UpdateSmokeColormap(smoke_render_option);
       break;
@@ -1191,13 +1191,13 @@ extern "C" void GLUISmoke3dCB(int var){
 #endif
       break;
     }
-    if(LISTBOX_smoke_colorbar->get_int_val()!=fire_colorbar_index){
-      LISTBOX_smoke_colorbar->set_int_val(fire_colorbar_index);
+    if(LISTBOX_smoke_colorbar->get_int_val()!=colorbars.fire_colorbar_index){
+      LISTBOX_smoke_colorbar->set_int_val(colorbars.fire_colorbar_index);
     }
     UpdateSmokeColormap(smoke_render_option);
     break;
   case SMOKE_COLORBAR_LIST:
-    SmokeColorbarMenu(fire_colorbar_index);
+    SmokeColorbarMenu(colorbars.fire_colorbar_index);
     UpdateSmokeColormap(smoke_render_option);
     updatemenu=1;
     break;

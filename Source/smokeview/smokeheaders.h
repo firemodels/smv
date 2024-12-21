@@ -9,6 +9,8 @@
 #define TERRAIN_FIRE_LINE_UPDATE 39
 #endif
 
+#include "colorbars.h"
+
 //*** glui_clip.cpp headers
 
 EXTERNCPP void GLUIClipSetup(int main_window);
@@ -220,11 +222,8 @@ EXTERNCPP void DrawVerticalColorbarRegLabels(void);
 EXTERNCPP void DrawSelectColorbar(void);
 EXTERNCPP void DrawTimebar(float xleft, float xright, float ybot, float ytop);
 EXTERNCPP void FRgb2Lab(float *rgb_arg, float *lab);
-EXTERNCPP colorbardata *GetColorbar(char *label);
-EXTERNCPP void InitDefaultColorbars(int nini);
 EXTERNCPP int  IsColorbarSplit(colorbardata *cbi);
 EXTERNCPP void Lab2Rgb(unsigned char *rgb255, float *frgb, float *lab);
-EXTERNCPP void RemapColorbar(colorbardata *cbi);
 EXTERNCPP void RevertColorBar(colorbardata *cbi);
 EXTERNCPP void Rgb2Lab(unsigned char *rgb, float *lab);
 EXTERNCPP void SortColorBars(void);

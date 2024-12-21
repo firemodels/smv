@@ -21,6 +21,7 @@
 #include "IOobjects.h"
 #include "IOscript.h"
 #include "viewports.h"
+#include "colorbars.h"
 
 void LoadHVACMenu(int value);
 void LoadPlot2DMenu(int value);
@@ -948,9 +949,9 @@ void SmokeColorbarMenu(int value){
   if(value==MENU_DUMMY)return;
   updatemenu=1;
 
-  value = CLAMP(value, 0, ncolorbars - 1);
-  fire_colorbar_index=value;
-  fire_colorbar = colorbarinfo + value;
+  value = CLAMP(value, 0, colorbars.ncolorbars - 1);
+  colorbars.fire_colorbar_index=value;
+  fire_colorbar = colorbars.colorbarinfo + value;
   UpdateRGBColors(colorbar_select_index);
   if(FlowDir>0){
     Keyboard('-',FROM_SMOKEVIEW);
@@ -1010,9 +1011,9 @@ void ColorbarMenu(int value){
       break;
     case COLORBAR_TOGGLE_BW_DATA:
       setbwdata = 1 - setbwdata;
-      if(setbwdata==1&&bw_colorbar_index>=0){
+      if(setbwdata==1&&colorbars.bw_colorbar_index>=0){
         colorbartype_save=colorbartype;
-        ColorbarMenu(bw_colorbar_index);
+        ColorbarMenu(colorbars.bw_colorbar_index);
       }
       else{
         if(colorbartype_save>-1)ColorbarMenu(colorbartype_save);
@@ -1069,14 +1070,14 @@ void ColorbarMenu(int value){
   }
   if(value>=0){
     colorbartype=value;
-    iso_colorbar_index=value;
-    iso_colorbar = colorbarinfo + iso_colorbar_index;
+    colorbars.iso_colorbar_index=value;
+    iso_colorbar = colorbars.colorbarinfo + colorbars.iso_colorbar_index;
     update_texturebar=1;
     GLUIUpdateListIsoColorobar();
-    UpdateCurrentColorbar(colorbarinfo+colorbartype);
+    UpdateCurrentColorbar(colorbars.colorbarinfo+colorbartype);
     GLUIUpdateColorbarType();
     GLUISetColorbarListBound(colorbartype);
-    if(colorbartype == bw_colorbar_index&&bw_colorbar_index>=0){
+    if(colorbartype == colorbars.bw_colorbar_index&&colorbars.bw_colorbar_index>=0){
       setbwdata = 1;
     }
     else{
@@ -1085,7 +1086,7 @@ void ColorbarMenu(int value){
     GLUIIsoBoundCB(ISO_COLORS);
     GLUISetLabelControls();
     char *ext, cblabel[1024];
-    strcpy(cblabel,colorbarinfo[colorbartype].menu_label);
+    strcpy(cblabel,colorbars.colorbarinfo[colorbartype].menu_label);
     ext = strrchr(cblabel,'.');
     if(ext!=NULL)*ext=0;
   }
@@ -8899,10 +8900,10 @@ void InitPatchSubMenus(int **loadsubpatchmenu_sptr, int **nsubpatchmenus_sptr){
 int MakeSubColorbarMenu(int *submenuptr, int *nmenusptr, char *ctype, void (*CBMenu)(int)){
   int i, nitems=0, submenu;
 
-  for(i = 0; i < ncolorbars; i++){
+  for(i = 0; i < colorbars.ncolorbars; i++){
     colorbardata *cbi;
 
-    cbi = colorbarinfo + i;
+    cbi = colorbars.colorbarinfo + i;
     if(strcmp(cbi->colorbar_type, ctype) != 0)continue;
     nitems++;
     break;
@@ -8913,10 +8914,10 @@ int MakeSubColorbarMenu(int *submenuptr, int *nmenusptr, char *ctype, void (*CBM
   *submenuptr = submenu;
   char ccolorbarmenu[256];
 
-  for(i = 0; i < ncolorbars; i++){
+  for(i = 0; i < colorbars.ncolorbars; i++){
     colorbardata *cbi;
 
-    cbi = colorbarinfo + colorbar_list_sorted[i];
+    cbi = colorbars.colorbarinfo + colorbar_list_sorted[i];
     if(strcmp(cbi->colorbar_type, ctype) != 0)continue;
     strcpy(ccolorbarmenu, "");
     if(colorbartype == colorbar_list_sorted[i]){

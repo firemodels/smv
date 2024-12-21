@@ -2966,9 +2966,9 @@ void ScriptSetCbar(scriptdata *scripti){
   int cb_index;
 
   if(scripti->cval!=NULL){
-    cb = GetColorbar(scripti->cval);
+    cb = GetColorbar(&colorbars, scripti->cval);
     if(cb != NULL){
-      cb_index = cb - colorbarinfo;
+      cb_index = cb - colorbars.colorbarinfo;
       ColorbarMenu(cb_index);
     }
   }

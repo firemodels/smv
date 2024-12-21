@@ -211,6 +211,7 @@ void DisplayVersionInfo(char *progname){
   }
   char *smv_progname = GetBinPath();
   PRINTF("Smokeview path   : %s\n",smv_progname);
+  FREEMEMORY(smv_progname);
 #ifdef pp_COMPRESS
   if(smokezippath!=NULL){
     if(verbose_output==1)PRINTF("Smokezip         : %s\n",smokezippath);

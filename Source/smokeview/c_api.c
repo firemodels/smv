@@ -786,8 +786,8 @@ ERROR_CODE SetNamedColorbar(const char *name) {
 }
 
 ERROR_CODE GetNamedColorbar(const char *name, size_t *index) {
-  for(size_t i = 0; i < ncolorbars; i++) {
-    if(strcmp(colorbarinfo[i].menu_label, name) == 0) {
+  for (size_t i = 0; i < colorbars.ncolorbars; i++) {
+    if (strcmp(colorbars.colorbarinfo[i].menu_label, name) == 0) {
       *index = i;
       return 0;
     }
@@ -799,13 +799,13 @@ ERROR_CODE GetNamedColorbar(const char *name, size_t *index) {
 /// @param value
 void SetColorbar(size_t value) {
   colorbartype = value;
-  iso_colorbar_index = value;
-  iso_colorbar = colorbarinfo + iso_colorbar_index;
+  colorbars.iso_colorbar_index = value;
+  iso_colorbar = colorbars.colorbarinfo + colorbars.iso_colorbar_index;
   update_texturebar = 1;
   GLUIUpdateListIsoColorobar();
-  UpdateCurrentColorbar(colorbarinfo + colorbartype);
+  UpdateCurrentColorbar(colorbars.colorbarinfo + colorbartype);
   GLUIUpdateColorbarType();
-  if(colorbartype == bw_colorbar_index && bw_colorbar_index >= 0) {
+  if(colorbartype == colorbars.bw_colorbar_index && colorbars.bw_colorbar_index >= 0) {
     setbwdata = 1;
   }
   else {
@@ -3209,7 +3209,7 @@ int SetFirecolor(int r, int g, int b) {
 
 int SetFirecolormap(int type, int index) {
   fire_colormap_type = type;
-  fire_colorbar_index = index;
+  colorbars.fire_colorbar_index = index;
   return 0;
 } // FIRECOLORMAP
 

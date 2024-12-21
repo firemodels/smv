@@ -191,33 +191,6 @@ typedef struct _treedata {
   int state;
 } treedata;
 
-/* --------------------------  colorbardata ------------------------------------ */
-
-#define CB_RAINBOW    0
-#define CB_ORIGINAL   1
-#define CB_LINEAR     2
-#define CB_DIVERGENT  3
-#define CB_CIRCULAR   4
-#define CB_DEPRECATED 5
-#define CB_USER       6
-#define CB_OTHER      7
-#define INTERP_RGB    0
-#define INTERP_LAB    1
-typedef struct _colorbardata {
-  char menu_label[1024];        // menu label
-  char colorbar_type[256];      // rainbow, linear, divergent, etc
-  int nnodes, nnodes_orig, node_index_orig[1024], nodehilight, type;
-  unsigned char node_rgb_orig[3*1024], node_rgb[3*1024], colorbar_alpha[1024];
-  unsigned char node_index[1024];  // colorbar index
-  float node_dist[1024];
-  float colorbar_dist[256];
-  int dist_ind[256];
-  float colorbar_dist_delta[1024];
-  int interp;   // (LAB or RGB)
-  int can_adjust, adjusted;
-  float colorbar_rgb[3*1024], colorbar_lab[3*1024];
-} colorbardata;
-
 /* --------------------------  colortabledata ------------------------------------ */
 
 typedef struct _colortabledata {

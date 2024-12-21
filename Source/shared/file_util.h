@@ -261,6 +261,7 @@ EXTERNCPP char *GetSystemIniPath();
  * @return The path allocated with NEWMEMORY.
  */
 EXTERNCPP char *GetUserIniPath();
+EXTERNCPP char *GetUserColorbarDirPath();
 EXTERNCPP char *GetSmokeviewHtmlPath();
 EXTERNCPP void PrintTime(const char *tag, int line, float *timer,
                          const char *label, int stop_flag);
@@ -268,6 +269,8 @@ EXTERNCPP void PrintTime(const char *tag, int line, float *timer,
 EXTERNCPP int IsSootFile(char *shortlabel, char *longlabel);
 
 EXTERNCPP char *LastName(char *argi);
+
+EXTERNCPP char *JoinPath(const char *path, const char *segment);
 
 // vvvvvvvvvvvvvvvvvvvvvvvv variables vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 
