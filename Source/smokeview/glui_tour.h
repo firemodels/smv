@@ -37,6 +37,9 @@
 #define TOUR_REVERSE 35
 #define TOUR_CIRCULAR_UPDATE 36
 #define KEYFRAME_UPDATE_ALL 38
+#ifdef pp_TOUR
+#define KEYFRAME_SET_TOUR_TIME 47
+#endif
 
 #define TOURMENU(f) callfrom_tourglui=1;TourMenu(f);callfrom_tourglui=0;
 

@@ -444,7 +444,7 @@ void GetKeyXYZ(float t, keyframe *this_key, float *xyz){
   }
   else{
     dt = next_key->time - this_key->time - this_key->pause_time;
-    if(dt > 0.0)t_scaled = CLAMP((t - this_key->time-this_key->pause_time) / dt, 0.0, 1.0);
+    if(dt > 0.0)t_scaled = CLAMP((t - this_key->time -this_key->pause_time) / dt, 0.0, 1.0);
     HermiteXYZ(t_scaled, this_key, next_key, xyz, NULL);
   }
 }
@@ -522,7 +522,7 @@ void GetTourProperties(tourdata *touri){
     }
     thiskey->npoints = npoints_i;
     cum_dist       += thiskey->arc_dist;
-    nextkey->time   = tourcoll.tour_tstart + thiskey->cum_pause_time + (tourcoll.tour_tstop-total_pause_time-tourcoll.tour_tstart)*(cum_dist/touri->global_dist);
+    nextkey->time = tourcoll.tour_tstart + thiskey->cum_pause_time + (tourcoll.tour_tstop-total_pause_time-tourcoll.tour_tstart)*(cum_dist/touri->global_dist);
   }
 
   (touri->last_frame).prev->time = tourcoll.tour_tstop;
@@ -787,7 +787,7 @@ keyframe *AddFrame(keyframe *last_frame, float time_local, float pause_time_loca
 
   FDS2SMV_XYZ(feye, xyz);
   FDS2SMV_XYZ(fxyz_view,view);
-  this_frame->time=time_local;
+  this_frame->time =time_local;
 
   this_frame->view_smv[0] = fxyz_view[0];
   this_frame->view_smv[1] = fxyz_view[1];
@@ -797,6 +797,9 @@ keyframe *AddFrame(keyframe *last_frame, float time_local, float pause_time_loca
   this_frame->xyz_fds[1] = xyz[1];
   this_frame->xyz_fds[2] = xyz[2];
   this_frame->pause_time = pause_time_local;
+#ifdef pp_TOUR
+  this_frame->set_tour_time = last_frame->set_tour_time;
+#endif
 
   CheckMemory;
   return this_frame;

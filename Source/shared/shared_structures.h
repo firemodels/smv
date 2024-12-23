@@ -80,6 +80,9 @@ typedef struct _sv_object {
 
 typedef struct _keyframe {
   int selected, npoints;
+#ifdef pp_TOUR
+  int set_tour_time;
+#endif
   float time;
   float pause_time, cum_pause_time;
   float view_smv[3], view2_smv[3];
