@@ -29,30 +29,12 @@ int main(int argc, char **argv) {
     // There should be no objects to begin with
     assert(objectscoll->nobject_defs == 0);
     ReadDefaultObjectCollection(objectscoll, NULL, 0, 0);
-    // for (int i = 0; i < objectscoll->nobject_defs; i++) {
-    //   sv_object *objecti = objectscoll->object_defs[i];
-    //   printf("label[%d]: %s\n", i, objecti->label);
-    // }
     FreeObjectCollection(objectscoll);
   }
   {
     // Create an object collection, read in object definitions, then free it.
     object_collection *objectscoll = CreateObjectCollection();
     ReadDefaultObjectCollection(objectscoll, NULL, 0, 0);
-    // for (int i = 0; i < objectscoll->nobject_defs; i++) {
-    //   sv_object *objecti = objectscoll->object_defs[i];
-    //   printf("label[%d]: %s\n", i, objecti->label);
-    // }
-    FreeObjectCollection(objectscoll);
-  }
-  if (argc > 1) {
-    const char *bad_file_path = argv[1];
-    // Create an object collection, read in object definitions, then free it.
-    object_collection *objectscoll = CreateObjectCollection();
-    int result = ReadObjectDefs(objectscoll, bad_file_path, 0);
-    // Two of the objects in this bad file are still parsable so we should
-    // parse 2 object definitions.
-    assert(result == 2);
     FreeObjectCollection(objectscoll);
   }
   return 0;

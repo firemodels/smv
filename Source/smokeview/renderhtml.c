@@ -2194,6 +2194,7 @@ int Smv2Html(char *html_file, int option, int from_where){
     printf("***error: smokeview html template file %s failed to open\n", template_file);
     return 1;
   }
+  FREEMEMORY(template_file);
 
   if(from_where==FROM_SCRIPT){
     strcpy(html_fullfile, html_file);
