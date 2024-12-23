@@ -16,6 +16,8 @@ add_library(libsmv STATIC
     stdio_buffer.c
     getdata.c
     color2rgb.c
+    colorbars.c
+    colorbar_defs.c
     readimage.c
     readcad.c
     readgeom.c
