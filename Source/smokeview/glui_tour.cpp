@@ -44,6 +44,10 @@ GLUI_Checkbox *CHECKBOX_tour_constant_velocity = NULL;
 #endif
 GLUI_Checkbox *CHECKBOX_showtourroute1 = NULL;
 GLUI_Checkbox *CHECKBOX_showtourroute2 = NULL;
+#ifdef _DEBUG
+GLUI_Checkbox *CHECKBOX_showdebugtour1= NULL;
+GLUI_Checkbox *CHECKBOX_showdebugtour2= NULL;
+#endif
 GLUI_Checkbox *CHECKBOX_showintermediate = NULL;
 GLUI_Checkbox *CHECKBOX_tourhide=NULL;
 
@@ -165,6 +169,9 @@ extern "C" void GLUITourSetup(int main_window){
   ADDPROCINFO(toursprocinfo, ntoursprocinfo, ROLLOUT_circular, MODIFY_TOURS_ROLLOUT, glui_tour);
 
   CHECKBOX_showtourroute2 = glui_tour->add_checkbox_to_panel(ROLLOUT_circular, _("Show tour"), &edittour, SHOWTOURROUTE2, TourCB);
+#ifdef _DEBUG
+  CHECKBOX_showdebugtour2  = glui_tour->add_checkbox_to_panel(ROLLOUT_circular, _("Show debug info"), &showdebugtour, SHOWTOURROUTE2, TourCB);
+#endif
   CHECKBOX_view2 = glui_tour->add_checkbox_to_panel(ROLLOUT_circular, _("View from tour path"), &viewtourfrompath, VIEWTOURFROMPATH2, TourCB);
 
   SPINNER_tour_circular_radius = glui_tour->add_spinner_to_panel(ROLLOUT_circular, "radius", GLUI_SPINNER_FLOAT, &tour_circular_radius,TOUR_CIRCULAR_UPDATE,TourCB);
@@ -219,6 +226,9 @@ extern "C" void GLUITourSetup(int main_window){
 
   CHECKBOX_showtourroute1        = glui_tour->add_checkbox_to_panel(ROLLOUT_keyframe, _("Show tour"),
     &edittour, SHOWTOURROUTE1, TourCB);
+#ifdef _DEBUG
+  CHECKBOX_showdebugtour1 = glui_tour->add_checkbox_to_panel(ROLLOUT_keyframe, _("Show debug info"), &showdebugtour, SHOWTOURROUTE1, TourCB);
+#endif
   CHECKBOX_view1                 = glui_tour->add_checkbox_to_panel(ROLLOUT_keyframe, _("View from tour"),
     &viewtourfrompath, VIEWTOURFROMPATH1, TourCB);
   CHECKBOX_tour_snap             = glui_tour->add_checkbox_to_panel(ROLLOUT_keyframe, _("View from current tour position"),
@@ -546,10 +556,16 @@ void TourCB(int var){
   case SHOWTOURROUTE1:
     TourCB(SHOWTOURROUTE);
     CHECKBOX_showtourroute2->set_int_val(edittour);
+#ifdef _DEBUG
+    CHECKBOX_showdebugtour2->set_int_val(showdebugtour);
+#endif
     break;
   case SHOWTOURROUTE2:
     TourCB(SHOWTOURROUTE);
     CHECKBOX_showtourroute1->set_int_val(edittour);
+#ifdef _DEBUG
+    CHECKBOX_showdebugtour1->set_int_val(showdebugtour);
+#endif
     break;
   case VIEWTOURFROMPATH1:
     TourCB(VIEWTOURFROMPATH);

@@ -235,7 +235,14 @@ void DrawTours(void){
         {
           char label[128];
 #ifdef _DEBUG
-          sprintf(label, "t=%8.2f n=%i n/ad=%8.2f ad=%8.2f ld=%8.2f", framej->time, framej->npoints, (float)framej->npoints/framej->arc_dist, framej->arc_dist, framej->line_dist);
+          if(showdebugtour == 1){
+            sprintf(label, "t=%8.2f n=%i n/ad=%8.2f ad=%8.2f ld=%8.2f",
+              framej->time, framej->npoints, (float)framej->npoints / framej->arc_dist, framej->arc_dist, framej->line_dist);
+            if(j==0)strcat(label, "(ad==arc distance, ld==line distance)");
+          }
+          else{
+            sprintf(label, "%8.2f", framej->time);
+          }
 #else
           sprintf(label, "%8.2f", framej->time);
 #endif
