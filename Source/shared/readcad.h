@@ -3,51 +3,6 @@
 
 #include "shared_structures.h"
 
-typedef struct _cadlookdata {
-  int index;
-  float texture_width, texture_height, texture_origin[3];
-  float rgb[4], shininess;
-  texturedata textureinfo;
-  int onesided;
-} cadlookdata;
-
-typedef struct _cadquad {
-  float xyzpoints[12];
-  float txypoints[8];
-  float normals[3];
-  int colorindex;
-  float colors[4];
-  float time_show;
-  cadlookdata *cadlookq;
-} cadquad;
-
-typedef struct _cadgeomdata {
-  char *file;
-  int *order;
-  int version;
-  int ncadlookinfo;
-  cadlookdata *cadlookinfo;
-  int nquads;
-  cadquad *quad;
-} cadgeomdata;
-
-/**
- * @brief A collection of CAD geometry definitions. This is allocated with a
- * fixed capacity.
- *
- */
-typedef struct {
-  /** @brief The capacity of the array. This cannot be changed after creation.
-   */
-  int capacity;
-  /** @brief The number of CAD geometry objects currently defined. */
-  int ncadgeom;
-  /** @brief The array of object definitions. The length of this array is @ref
-   * capacity but only the first @ref ncadgeom entries contain valid
-   * information. */
-  cadgeomdata *cadgeominfo;
-} cadgeom_collection;
-
 /**
  * @brief Create and initialise an @ref cadgeom_collection.
  *

@@ -9,23 +9,6 @@
 #define HERMDERIV(p0,p1,m0,m1)      ((6.0*t2-6.0*t)*(p0) + (3.0*t2-4.0*t+1.0)*(m0) + (3.0*t2-2.0*t)*(m1) +  (-6.0*t2+6.0*t)*(p1))
 // clang-format on
 
-typedef struct {
-  /// @brief Number of tours. This is the length of the array tourinfo
-  int ntourinfo;
-  /// @brief An array of tours.
-  tourdata *tourinfo;
-  /// @brief The number of times in each tour. This is the same across all
-  /// tours.
-  int tour_ntimes;
-  float *tour_t;
-  float *tour_t2;
-  float *tour_dist;
-  float *tour_dist2;
-  float *tour_dist3;
-  float tour_tstart;
-  float tour_tstop;
-} tour_collection;
-
 /**
  * @brief Initialize a tour.
  *
