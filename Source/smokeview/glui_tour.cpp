@@ -69,6 +69,10 @@ GLUI_Spinner *SPINNER_tour_circular_angle0 = NULL;
 GLUI_Button *BUTTON_next_tour=NULL;
 GLUI_Button *BUTTON_prev_tour=NULL;
 GLUI_Button *BUTTON_delete_tour = NULL;
+#ifdef pp_TOUR
+GLUI_Button *BUTTON_update_tour_path = NULL;
+#endif
+
 GLUI_EditText *EDIT_label=NULL;
 
 GLUI_Listbox *LISTBOX_tour=NULL;
@@ -204,7 +208,9 @@ extern "C" void GLUITourSetup(int main_window){
   BUTTON_next_tour = glui_tour->add_button_to_panel(PANEL_tour1, _("Next"), TOUR_NEXT, TourCB);
   glui_tour->add_button_to_panel(PANEL_tour1, _("New"), TOUR_INSERT_NEW, TourCB);
   glui_tour->add_button_to_panel(PANEL_tour1, _("Reverse"), TOUR_REVERSE, TourCB);
-
+#ifdef pp_TOUR
+  BUTTON_update_tour_path = glui_tour->add_button_to_panel(PANEL_tour, _("Update tour path"), TOUR_UPDATE_PATH, TourCB);
+#endif
   if(tourcoll.ntourinfo > 0){
     selectedtour_index = TOURINDEX_MANUAL;
     selectedtour_index_old = TOURINDEX_MANUAL;
@@ -496,6 +502,11 @@ void TourCB(int var){
   }
 
   switch(var){
+#ifdef pp_TOUR
+  case TOUR_UPDATE_PATH:
+    CreateTourPaths();
+    break;
+#endif
   case TOUR_CIRCULAR_UPDATE:
     if(edittour==0){
       edittour=1;
@@ -685,6 +696,7 @@ void TourCB(int var){
       xyz_view = selected_frame->view_smv;
 #ifdef pp_TOUR
       selected_frame->set_tour_time = glui_set_tour_time;
+      selected_frame->time          = glui_tour_time;
 #endif
 
       FDS2SMV_XYZ(eye, glui_tour_xyz);
@@ -693,7 +705,9 @@ void TourCB(int var){
       selected_frame->pause_time = glui_tour_pause_time;
 
       FDS2SMV_XYZ(xyz_view, glui_tour_view);
+#ifndef pp_TOUR
       if(update_tour_path == 1)CreateTourPaths();
+#endif
       selected_frame->selected = 1;
       TourCB(KEYFRAME_viewXYZ);
 #ifdef pp_TOUR
