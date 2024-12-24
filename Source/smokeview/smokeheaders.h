@@ -9,7 +9,7 @@
 #define TERRAIN_FIRE_LINE_UPDATE 39
 #endif
 
-#include "colorbars.h"
+#include "shared_structures.h"
 
 //*** glui_clip.cpp headers
 

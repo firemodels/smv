@@ -19,12 +19,12 @@
 #define USEMESH_DRAW -1
 #define IF_NOT_USEMESH_RETURN0(loaded,blocknum)\
   if(loaded==1)return 0;\
-  if((blocknum)>=0 && meshinfo[(blocknum)].use == 0){\
+  if((blocknum)>=0 && global_scase.meshescoll.meshinfo[(blocknum)].use == 0){\
     return 0;\
    }
 #define IF_NOT_USEMESH_CONTINUE(loaded,blocknum)\
   if(loaded==1)continue;\
-  if((blocknum)>=0 && meshinfo[(blocknum)].use == 0){\
+  if((blocknum)>=0 && global_scase.meshescoll.meshinfo[(blocknum)].use == 0){\
     continue;\
    }
 
@@ -41,13 +41,13 @@
 #define REL_VAL(val, valmin, valmax) ((float)((val)-(valmin))/(float)((valmax)-(valmin)))
 #define SHIFT_VAL(val, valmin, valmax, shift_val) ((valmin) + ((valmax)-(valmin))*pow(REL_VAL((val),(valmin),(valmax)),(shift_val)))
 
-#define FDS2SMV_X(x) (((x)-xbar0)/xyzmaxdiff)
-#define FDS2SMV_Y(y) (((y)-ybar0)/xyzmaxdiff)
-#define FDS2SMV_Z(z) (((z)-zbar0)/xyzmaxdiff)
+#define FDS2SMV_X(x) (((x)-global_scase.xbar0)/xyzmaxdiff)
+#define FDS2SMV_Y(y) (((y)-global_scase.ybar0)/xyzmaxdiff)
+#define FDS2SMV_Z(z) (((z)-global_scase.zbar0)/xyzmaxdiff)
 
-#define SMV2FDS_X(x) (xbar0+(x)*xyzmaxdiff)
-#define SMV2FDS_Y(y) (ybar0+(y)*xyzmaxdiff)
-#define SMV2FDS_Z(z) (zbar0+(z)*xyzmaxdiff)
+#define SMV2FDS_X(x) (global_scase.xbar0+(x)*xyzmaxdiff)
+#define SMV2FDS_Y(y) (global_scase.ybar0+(y)*xyzmaxdiff)
+#define SMV2FDS_Z(z) (global_scase.zbar0+(z)*xyzmaxdiff)
 
 #define DONOT_SET_MINMAX_FLAG 0
 #define SET_MINMAX_FLAG       1

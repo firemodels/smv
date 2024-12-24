@@ -24,10 +24,10 @@
 void ClosePartFiles(void){
   int i;
 
-  for(i = 0; i<npartinfo; i++){
+  for(i = 0; i<global_scase.npartinfo; i++){
     partdata *parti;
 
-    parti = partinfo+i;
+    parti = global_scase.partinfo+i;
     if(parti->loaded==1&&parti->stream!=NULL){
       fclose_m(parti->stream);
       parti->stream = NULL;
@@ -153,7 +153,7 @@ int GetTagIndex(const partdata *partin_arg, part5data **datain_arg, int tagval_a
 
   if(flag==LOADING&&partfast==YES)return -1;
 
-  for(i = -1; i < npartinfo; i++){
+  for(i = -1; i < global_scase.npartinfo; i++){
     const partdata *parti_local;
 
     if(i == -1){
@@ -161,7 +161,7 @@ int GetTagIndex(const partdata *partin_arg, part5data **datain_arg, int tagval_a
       data_local = *datain_arg;
     }
     else{
-      parti_local = partinfo + i;
+      parti_local = global_scase.partinfo + i;
       if(parti_local== partin_arg)continue;
       if(parti_local->loaded == 0 || parti_local->display == 0)continue;
       data_local = parti_local->data5 + (*datain_arg- partin_arg->data5);
@@ -198,7 +198,7 @@ void DrawPart(const partdata *parti, int mode){
   float valmin, valmax;
 
   if(nglobal_times<1||parti->times[0] > global_times[itimes])return;
-  if(nterraininfo > 0 && ABS(vertical_factor - 1.0) > 0.01){
+  if(global_scase.nterraininfo > 0 && ABS(vertical_factor - 1.0) > 0.01){
     offset_terrain = 1;
   }
   else{
@@ -221,7 +221,7 @@ void DrawPart(const partdata *parti, int mode){
   CheckMemory;
   glPushMatrix();
   glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
-  glTranslatef(-xbar0, -ybar0, -zbar0);
+  glTranslatef(-global_scase.xbar0, -global_scase.ybar0, -global_scase.zbar0);
   if(part5show == 1){
     if(streak5show == 0 || (streak5show == 1 && showstreakhead == 1)){
       for(i = 0;i < parti->nclasses;i++){
@@ -232,7 +232,7 @@ void DrawPart(const partdata *parti, int mode){
         int show_default;
 
         partclassi = parti->partclassptr[i];
-        partclass_index = partclassi - partclassinfo;
+        partclass_index = partclassi - global_scase.partclassinfo;
 
         vistype = current_property->class_present[partclass_index];
         class_vis = current_property->class_vis[partclass_index];
@@ -377,9 +377,9 @@ void DrawPart(const partdata *parti, int mode){
                 CopyDepVals(partclassi, datacopy, colorptr, prop, j);
                 glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
 
-                partfacedir[0] = xbar0 + SCALE2SMV(fds_eyepos[0]) - xpos[j];
-                partfacedir[1] = ybar0 + SCALE2SMV(fds_eyepos[1]) - ypos[j];
-                partfacedir[2] = zbar0 + SCALE2SMV(fds_eyepos[2]) - zpos[j];
+                partfacedir[0] = global_scase.xbar0 + SCALE2SMV(fds_eyepos[0]) - xpos[j];
+                partfacedir[1] = global_scase.ybar0 + SCALE2SMV(fds_eyepos[1]) - ypos[j];
+                partfacedir[2] = global_scase.zbar0 + SCALE2SMV(fds_eyepos[2]) - zpos[j];
 
                 DrawSmvObject(prop->smv_object, 0, prop, 0, NULL, 0);
                 glPopMatrix();
@@ -447,7 +447,7 @@ void DrawPart(const partdata *parti, int mode){
                 float zoffset;
                 int loc;
 
-                zoffset = GetZCellValOffset(meshinfo, xpos[j], ypos[j], &loc);
+                zoffset = GetZCellValOffset(global_scase.meshescoll.meshinfo, xpos[j], ypos[j], &loc);
                 if(vis[j] == 1)glVertex3f(xpos[j], ypos[j], zpos[j] + zoffset);
               }
             }
@@ -484,7 +484,7 @@ void DrawPart(const partdata *parti, int mode){
       int partclass_index, itype, vistype, class_vis;
 
       partclassi = parti->partclassptr[i];
-      partclass_index = partclassi - partclassinfo;
+      partclass_index = partclassi - global_scase.partclassinfo;
 
       vistype = current_property->class_present[partclass_index];
       class_vis = current_property->class_vis[partclass_index];
@@ -587,10 +587,10 @@ void DrawPartFrame(int mode){
   partdata *parti;
   int i;
 
-  if(use_tload_begin==1&&global_times[itimes]<tload_begin)return;
-  if(use_tload_end==1&&global_times[itimes]>tload_end)return;
-  for(i=0;i<npartinfo;i++){
-    parti = partinfo + i;
+  if(use_tload_begin==1&&global_times[itimes]<global_scase.tload_begin)return;
+  if(use_tload_end==1&&global_times[itimes]>global_scase.tload_end)return;
+  for(i=0;i<global_scase.npartinfo;i++){
+    parti = global_scase.partinfo + i;
     if(parti->loaded==0||parti->display==0)continue;
     IF_NOT_USEMESH_CONTINUE(USEMESH_DRAW,parti->blocknumber);
     DrawPart(parti, mode);
@@ -671,8 +671,8 @@ int ComparePart(const void *arg1, const void *arg2){
   i = *(int *)arg1;
   j = *(int *)arg2;
 
-  parti = partinfo + i;
-  partj = partinfo + j;
+  parti = global_scase.partinfo + i;
+  partj = global_scase.partinfo + j;
 
   if(parti->blocknumber<partj->blocknumber)return -1;
   if(parti->blocknumber>partj->blocknumber)return 1;
@@ -1144,11 +1144,11 @@ void MergePartHistograms(void){
   for(i=0;i<npart5prop;i++){
     InitHistogram(full_part_histogram+i, NHIST_BUCKETS, NULL, NULL);
   }
-  for(i = 0; i<npartinfo; i++){
+  for(i = 0; i<global_scase.npartinfo; i++){
     partdata *parti;
     int j;
 
-    parti = partinfo + i;
+    parti = global_scase.partinfo + i;
     if(parti->loaded==0)continue;
     for(j = 0; j < parti->nclasses; j++){
       partclassdata *partclassi;
@@ -1174,10 +1174,10 @@ void MergePartHistograms(void){
 void GeneratePartHistograms(void){
   int i;
 
-  for(i=0;i<npartinfo;i++){
+  for(i=0;i<global_scase.npartinfo;i++){
     partdata *parti;
 
-    parti = partinfo + i;
+    parti = global_scase.partinfo + i;
     if(parti->loaded==1){
       GetPartHistogramFile(parti);
     }
@@ -1212,10 +1212,10 @@ void *SortAllPartTags(void *arg){
   int i;
 
   INIT_PRINT_TIMER(timer_sortparttags);
-  for(i = 0; i < npartinfo; i++){
+  for(i = 0; i < global_scase.npartinfo; i++){
     partdata *parti;
 
-    parti = partinfo + i;
+    parti = global_scase.partinfo + i;
     if(parti->loaded == 0)continue;
     SortPartTags(parti);
   }
@@ -1305,8 +1305,8 @@ void GetPartData(partdata *parti, int nf_all_arg, FILE_SIZE *file_size_arg){
     if(count_read!=1)goto wrapup;
 
     if((tload_step>1       && count_local%tload_step!=0)||
-       (use_tload_begin==1 && time_local<tload_begin-TEPS)||
-       (use_tload_end==1   && time_local>tload_end+TEPS)){
+       (use_tload_begin==1 && time_local<global_scase.tload_begin-TEPS)||
+       (use_tload_end==1   && time_local>global_scase.tload_end+TEPS)){
       doit_local=0;
     }
     else{
@@ -1461,9 +1461,9 @@ int GetPartPropIndex(int class_i, int class_i_j){
   partclassdata *partclassi;
   flowlabels *labels, *labelj;
 
-  assert(class_i>=0&&class_i<npartclassinfo);
-  class_i = CLAMP(class_i,0, npartclassinfo-1);
-  partclassi = partclassinfo+class_i;
+  assert(class_i>=0&&class_i<global_scase.npartclassinfo);
+  class_i = CLAMP(class_i,0, global_scase.npartclassinfo-1);
+  partclassi = global_scase.partclassinfo+class_i;
 
   labels = partclassi->labels;
   assert(class_i_j>=0&&class_i_j<partclassi->ntypes);
@@ -1516,10 +1516,10 @@ void InitPartProp(void){
 
   // 1.  count max number of distinct variables
 
-  for(i=0;i<npartclassinfo;i++){
+  for(i=0;i<global_scase.npartclassinfo;i++){
     partclassdata *partclassi;
 
-    partclassi = partclassinfo + i;
+    partclassi = global_scase.partclassinfo + i;
     npart5prop+=(partclassi->ntypes-1);  // don't include first type which is hidden
   }
 
@@ -1529,10 +1529,10 @@ void InitPartProp(void){
     NewMemory((void **)&part5propinfo,npart5prop*sizeof(partpropdata));
     npart5prop=0;
 
-    for(i=0;i<npartclassinfo;i++){
+    for(i=0;i<global_scase.npartclassinfo;i++){
       partclassdata *partclassi;
 
-      partclassi = partclassinfo + i;
+      partclassi = global_scase.partclassinfo + i;
       for(j=1;j<partclassi->ntypes;j++){ // skip over first type which is hidden
         flowlabels *flowlabel;
         int define_it;
@@ -1590,19 +1590,19 @@ void InitPartProp(void){
     propi->class_present=NULL;
     propi->class_vis=NULL;
     propi->class_types=NULL;
-    NewMemory((void **)&propi->class_types,npartclassinfo*sizeof(unsigned int));
-    NewMemory((void **)&propi->class_present,npartclassinfo*sizeof(unsigned char));
-    NewMemory((void **)&propi->class_vis,npartclassinfo*sizeof(unsigned char));
-    for(ii=0;ii<npartclassinfo;ii++){
+    NewMemory((void **)&propi->class_types,global_scase.npartclassinfo*sizeof(unsigned int));
+    NewMemory((void **)&propi->class_present,global_scase.npartclassinfo*sizeof(unsigned char));
+    NewMemory((void **)&propi->class_vis,global_scase.npartclassinfo*sizeof(unsigned char));
+    for(ii=0;ii<global_scase.npartclassinfo;ii++){
       propi->class_vis[ii]=1;
       propi->class_present[ii]=0;
       propi->class_types[ii]=0;
     }
   }
-  for(i=0;i<npartclassinfo;i++){
+  for(i=0;i<global_scase.npartclassinfo;i++){
     partclassdata *partclassi;
 
-    partclassi = partclassinfo + i;
+    partclassi = global_scase.partclassinfo + i;
     for(j=1;j<partclassi->ntypes;j++){
       flowlabels *flowlabel;
       partpropdata *classprop;
@@ -1697,11 +1697,11 @@ int GetMinPartFrames(int flag){
   int min_frames=-1;
 
   INIT_PRINT_TIMER(timer_nparts);
-  for(i=0;i<npartinfo;i++){
+  for(i=0;i<global_scase.npartinfo;i++){
     partdata *parti;
     int nframes;
 
-    parti = partinfo + i;
+    parti = global_scase.partinfo + i;
     if(flag == PARTFILE_LOADALL ||
       (flag == PARTFILE_RELOADALL&&parti->loaded == 1) ||
       (flag >= 0 && i == flag)){
@@ -1934,7 +1934,7 @@ int GetPartHeader(partdata * parti, int *nf_all, int option_arg, int print_optio
     sscanf(buffer_local,"%f",&time_local);
     exitloop_local =0;
     for(i=0;i<parti->nclasses;i++){
-      if(fgets(buffer_local,255,stream)==NULL||(npartinfo>1&&npartframes_max!=-1&&nframes_all_local+1>npartframes_max)){
+      if(fgets(buffer_local,255,stream)==NULL||(global_scase.npartinfo>1&&npartframes_max!=-1&&nframes_all_local+1>npartframes_max)){
         exitloop_local =1;
         break;
       }
@@ -1942,8 +1942,8 @@ int GetPartHeader(partdata * parti, int *nf_all, int option_arg, int print_optio
     if(exitloop_local == 1)break;
     nframes_all_local++;
     if(tload_step>1       && (nframes_all_local-1)%tload_step!=0)continue;
-    if(use_tload_begin==1 && time_local<tload_begin-TEPS)continue;
-    if(use_tload_end==1   && time_local>tload_end+TEPS)break;
+    if(use_tload_begin==1 && time_local<global_scase.tload_begin-TEPS)continue;
+    if(use_tload_end==1   && time_local>global_scase.tload_end+TEPS)break;
     (parti->ntimes)++;
   }
   rewind(stream);
@@ -2003,8 +2003,8 @@ int GetPartHeader(partdata * parti, int *nf_all, int option_arg, int print_optio
       parti->filepos[count_local] = filepos_local;               // record file position for every frame
       skipit = 0;
       if(tload_step>1       && count_local%tload_step!=0)skipit = 1;
-      if(use_tload_begin==1 && time_local<tload_begin-TEPS)skipit = 1;
-      if(use_tload_end==1   && time_local>tload_end+TEPS)break;
+      if(use_tload_begin==1 && time_local<global_scase.tload_begin-TEPS)skipit = 1;
+      if(use_tload_end==1   && time_local>global_scase.tload_end+TEPS)break;
       if(skipit == 1){
         for(j=0;j<parti->nclasses;j++){
           if(fgets(buffer_local,255,stream)==NULL){
@@ -2107,7 +2107,7 @@ void UpdatePartColors(partdata *parti, int flag){
       for(n = 0; n<MAXRGB; n++){
         colorlabelpart[n] = NULL;
       }
-      for(n = 0; n<nrgb; n++){
+      for(n = 0; n<global_scase.nrgb; n++){
         NewMemory((void **)&colorlabelpart[n], 11);
       }
     }
@@ -2115,7 +2115,7 @@ void UpdatePartColors(partdata *parti, int flag){
   if(parti!=NULL){
     if(parti->loaded==1&&parti->display==1){
       if(parti->stream!=NULL){
-        GetPartColors(parti, nrgb, flag);
+        GetPartColors(parti, global_scase.nrgb, flag);
       }
       else{
         printf("***warning: particle data in %s was unloaded, colors not updated\n",parti->file);
@@ -2123,10 +2123,10 @@ void UpdatePartColors(partdata *parti, int flag){
     }
   }
   else{
-    for(j = 0; j<npartinfo; j++){
+    for(j = 0; j<global_scase.npartinfo; j++){
       partdata *partj;
 
-      partj = partinfo+j;
+      partj = global_scase.partinfo+j;
       if(partj->loaded==1&&partj->display==1){
         if(partj->stream==NULL){
           printf("***warning: particle data in one or more particle files was unloaded, colors not updated\n");
@@ -2134,12 +2134,12 @@ void UpdatePartColors(partdata *parti, int flag){
         }
       }
     }
-    for(j = 0; j<npartinfo; j++){
+    for(j = 0; j<global_scase.npartinfo; j++){
       partdata *partj;
 
-      partj = partinfo+j;
+      partj = global_scase.partinfo+j;
       if(partj->loaded==1&&partj->display==1){
-        GetPartColors(partj, nrgb, flag);
+        GetPartColors(partj, global_scase.nrgb, flag);
       }
     }
   }
@@ -2150,10 +2150,10 @@ void UpdatePartColors(partdata *parti, int flag){
 void FinalizePartLoad(partdata *parti){
   int j;
 
-  for(j = 0; j<npartinfo; j++){
+  for(j = 0; j<global_scase.npartinfo; j++){
     partdata *partj;
 
-    partj = partinfo+j;
+    partj = global_scase.partinfo+j;
     if(partj->request_load==1){
       MakeTimesMap(partj->times, &partj->times_map, partj->ntimes);
       partj->request_load = 0;
@@ -2175,10 +2175,10 @@ void FinalizePartLoad(partdata *parti){
   PRINT_TIMER(part_time1, "particle get bounds time");
   if(cache_part_data==1){
     INIT_PRINT_TIMER(part_time2);
-    for(j = 0; j<npartinfo; j++){
+    for(j = 0; j<global_scase.npartinfo; j++){
       partdata *partj;
 
-      partj = partinfo+j;
+      partj = global_scase.partinfo+j;
       if(partj->loaded==1){
         UpdatePartColors(partj, 0);
       }
@@ -2215,8 +2215,8 @@ FILE_SIZE ReadPart(char *file_arg, int ifile_arg, int load_flag, int *errorcode_
   START_TIMER(total_time);
 #endif
   START_TIMER(load_time_local);
-  assert(ifile_arg>=0&&ifile_arg<npartinfo);
-  parti=partinfo+ifile_arg;
+  assert(ifile_arg>=0&&ifile_arg<global_scase.npartinfo);
+  parti=global_scase.partinfo+ifile_arg;
 
 #ifdef pp_PARTFRAME
   FreeAllPart5Data(parti, load_flag);
@@ -2308,7 +2308,7 @@ FILE_SIZE ReadPart(char *file_arg, int ifile_arg, int load_flag, int *errorcode_
 
   parti->request_load = 1;
   if(use_partload_threads==1){
-    if(npartinfo>1){
+    if(global_scase.npartinfo>1){
       THREADcontrol(partload_threads, THREAD_LOCK);
       PrintPartLoadSummary(PART_AFTER, PART_LOADING);
       THREADcontrol(partload_threads, THREAD_UNLOCK);
@@ -2351,29 +2351,29 @@ void UpdatePartMenuLabels(void){
   char label[128];
   int lenlabel;
 
-  if(npartinfo>0){
+  if(global_scase.npartinfo>0){
     FREEMEMORY(partorderindex);
-    NewMemory((void **)&partorderindex,sizeof(int)*npartinfo);
-    for(i=0;i<npartinfo;i++){
+    NewMemory((void **)&partorderindex,sizeof(int)*global_scase.npartinfo);
+    for(i=0;i<global_scase.npartinfo;i++){
       partorderindex[i]=i;
     }
-    qsort( (int *)partorderindex, (size_t)npartinfo, sizeof(int), ComparePart);
+    qsort( (int *)partorderindex, (size_t)global_scase.npartinfo, sizeof(int), ComparePart);
 
-    for(i=0;i<npartinfo;i++){
-      parti = partinfo + i;
+    for(i=0;i<global_scase.npartinfo;i++){
+      parti = global_scase.partinfo + i;
       STRCPY(parti->menulabel,"");
       STRCAT(parti->menulabel, "particles");
       lenlabel=strlen(parti->menulabel);
-      if(nmeshes>1){
+      if(global_scase.meshescoll.nmeshes>1){
         meshdata *partmesh;
 
-        partmesh = meshinfo + parti->blocknumber;
+        partmesh = global_scase.meshescoll.meshinfo + parti->blocknumber;
         sprintf(label,"%s",partmesh->label);
         if(lenlabel>0)STRCAT(parti->menulabel,", ");
         STRCAT(parti->menulabel,label);
       }
       if(showfiles==1||lenlabel==0){
-        if(nmeshes>1||lenlabel>0)STRCAT(parti->menulabel,", ");
+        if(global_scase.meshescoll.nmeshes>1||lenlabel>0)STRCAT(parti->menulabel,", ");
         STRCAT(parti->menulabel,parti->file);
       }
     }

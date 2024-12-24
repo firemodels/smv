@@ -112,7 +112,7 @@ void DrawTimebar(float xleft, float xright, float ybot, float ytop){
   if(xright<=xleft)return;
   DISABLE_LIGHTING;
 
-  glLineWidth(linewidth);
+  glLineWidth(global_scase.linewidth);
   glBegin(GL_LINE_LOOP);
   glColor4fv(timebarcolor);
   glVertex2f(xleft,ybot);
@@ -273,7 +273,7 @@ void DrawColorbarPathRGB(void){
     if(fontindex==SCALED_FONT)ScaleFont3D();
     glPushMatrix();
     glScalef(SCALE2SMV(1.0),SCALE2SMV(1.0),SCALE2SMV(1.0));
-    glTranslatef(-xbar0,-ybar0,-zbar0);
+    glTranslatef(-global_scase.xbar0,-global_scase.ybar0,-global_scase.zbar0);
     int skip = 1;
     if(cbi->nnodes > 16)skip = cbi->nnodes / 16;
     for(i=0;i<cbi->nnodes;i+=skip){
@@ -305,7 +305,7 @@ void DrawColorbarPathRGB(void){
 
       if(have_fire==HRRPUV_index&&smoke_render_option==RENDER_SLICE){
         vval_min=global_hrrpuv_min;
-        vval_cutoff=global_hrrpuv_cutoff;
+        vval_cutoff=global_scase.global_hrrpuv_cutoff;
         vval_max=global_hrrpuv_max;
       }
       else{
@@ -470,7 +470,7 @@ void DrawColorbarPathCIELab(void){
   if(fontindex == SCALED_FONT)ScaleFont3D();
   glPushMatrix();
   glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
-  glTranslatef(-xbar0, -ybar0, -zbar0);
+  glTranslatef(-global_scase.xbar0, -global_scase.ybar0, -global_scase.zbar0);
   int skip = 1;
   if(cbi->nnodes > 16)skip = cbi->nnodes / 16;
   for(i = 0;i < cbi->nnodes;i+=skip){
@@ -820,8 +820,8 @@ void UpdateShowColorbar(int *showcfast_arg, int *show_slice_colorbar_arg,
   int showcfast_local = 0;
   int show_slice_colorbar_local = 0;
 
-  if(hvaccoll.hvacductvar_index >= 0)*show_hvacduct_colorbar_arg = 1;
-  if(hvaccoll.hvacnodevar_index >= 0)*show_hvacnode_colorbar_arg = 1;
+  if(global_scase.hvaccoll.hvacductvar_index >= 0)*show_hvacduct_colorbar_arg = 1;
+  if(global_scase.hvaccoll.hvacnodevar_index >= 0)*show_hvacnode_colorbar_arg = 1;
   if(showzone==1&&zonecolortype==ZONETEMP_COLOR)showcfast_local = 1;
   if(showslice==1||(showcfast_local==0&&showvslice==1&&vslicecolorbarflag==1))show_slice_colorbar_local = 1;
   if(show_slice_colorbar_local==1&&showcfast_local==1&&strcmp(slicebounds[slicefile_labelindex].label->shortlabel, "TEMP")==0)show_slice_colorbar_local=0;
@@ -929,17 +929,17 @@ void DrawHorizontalColorbars(void){
     int i;
     float right_hat;
 
-    right_hat = hcolorbar_right_pos*(float)(nrgb - 3) / (float)(nrgb - 2)+hcolorbar_left_pos/(float)(nrgb-2);
+    right_hat = hcolorbar_right_pos*(float)(global_scase.nrgb - 3) / (float)(global_scase.nrgb - 2)+hcolorbar_left_pos/(float)(global_scase.nrgb-2);
 
     glBegin(GL_QUADS);
-    for(i = 0; i < nrgb - 2; i++){
+    for(i = 0; i < global_scase.nrgb - 2; i++){
       float *rgb_plot3d_local;
       float xleft, xright;
 
       rgb_plot3d_local = rgb_plot3d_contour[i];
 
-      xleft = MIX2(i, nrgb - 3, right_hat, hcolorbar_left_pos);
-      xright = MIX2(i + 1, nrgb - 3, right_hat, hcolorbar_left_pos);
+      xleft = MIX2(i, global_scase.nrgb - 3, right_hat, hcolorbar_left_pos);
+      xright = MIX2(i + 1, global_scase.nrgb - 3, right_hat, hcolorbar_left_pos);
 
       if(rgb_plot3d_local[3] != 0.0){
         glColor4fv(rgb_plot3d_local);
@@ -955,11 +955,11 @@ void DrawHorizontalColorbars(void){
       float *rgb_plot3d_local;
       float xleft, xright;
 
-      rgb_plot3d_local = rgb_plot3d_contour[nrgb - 2];
+      rgb_plot3d_local = rgb_plot3d_contour[global_scase.nrgb - 2];
       barmid = (hcolorbar_down_pos + hcolorbar_top_pos) / 2.0;
       i = -1;
-      xright = MIX2(i + 0.5, nrgb - 3, hcolorbar_right_pos, hcolorbar_left_pos);
-      xleft  = MIX2(i + 1, nrgb - 3, hcolorbar_right_pos, hcolorbar_left_pos);
+      xright = MIX2(i + 0.5, global_scase.nrgb - 3, hcolorbar_right_pos, hcolorbar_left_pos);
+      xleft  = MIX2(i + 1, global_scase.nrgb - 3, hcolorbar_right_pos, hcolorbar_left_pos);
 
       if(have_extreme_mindata == 1 || have_extreme_maxdata == 1)glEnable(GL_POLYGON_SMOOTH);
 
@@ -973,11 +973,11 @@ void DrawHorizontalColorbars(void){
         glEnd();
       }
 
-      i = nrgb - 2;
-      xleft = MIX2(i, nrgb - 3, hcolorbar_right_pos, hcolorbar_left_pos);
-      xright = MIX2(i + 0.5, nrgb - 3, hcolorbar_right_pos, hcolorbar_left_pos);
+      i = global_scase.nrgb - 2;
+      xleft = MIX2(i, global_scase.nrgb - 3, hcolorbar_right_pos, hcolorbar_left_pos);
+      xright = MIX2(i + 0.5, global_scase.nrgb - 3, hcolorbar_right_pos, hcolorbar_left_pos);
 
-      rgb_plot3d_local = rgb_plot3d_contour[nrgb - 1];
+      rgb_plot3d_local = rgb_plot3d_contour[global_scase.nrgb - 1];
       if(show_extreme_maxdata == 1 && have_extreme_maxdata == 1 && rgb_plot3d_local[3] != 0.0){
         glBegin(GL_TRIANGLES);
         glColor4fv(rgb_plot3d_local);
@@ -1052,16 +1052,16 @@ void DrawVerticalColorbars(void){
     if(showplot3d==1&&contour_type==STEPPED_CONTOURS){
       float top_hat;
 
-      top_hat = vcolorbar_top_pos*(float)(nrgb - 3) / (float)(nrgb - 2)+vcolorbar_down_pos/(float)(nrgb-2);
+      top_hat = vcolorbar_top_pos*(float)(global_scase.nrgb - 3) / (float)(global_scase.nrgb - 2)+vcolorbar_down_pos/(float)(global_scase.nrgb-2);
 
       glBegin(GL_QUADS);
-      for(i = 0; i < nrgb-2; i++){
+      for(i = 0; i < global_scase.nrgb-2; i++){
         float *rgb_plot3d_local;
         float ybot, ytop;
 
         rgb_plot3d_local = rgb_plot3d_contour[i];
-        ybot = MIX2(  i,nrgb-3,top_hat,vcolorbar_down_pos);
-        ytop = MIX2(i+1,nrgb-3,top_hat,vcolorbar_down_pos);
+        ybot = MIX2(  i,global_scase.nrgb-3,top_hat,vcolorbar_down_pos);
+        ytop = MIX2(i+1,global_scase.nrgb-3,top_hat,vcolorbar_down_pos);
 
         if(rgb_plot3d_local[3]!=0.0){
           glColor4fv(rgb_plot3d_local);
@@ -1078,11 +1078,11 @@ void DrawVerticalColorbars(void){
         float *rgb_plot3d_local;
         float ybot, ytop;
 
-        rgb_plot3d_local = rgb_plot3d_contour[nrgb-2];
+        rgb_plot3d_local = rgb_plot3d_contour[global_scase.nrgb-2];
         barmid = (vcolorbar_left_pos+vcolorbar_right_pos)/2.0;
         i=-1;
-        ytop = MIX2(i+0.5,nrgb-3,vcolorbar_top_pos,vcolorbar_down_pos);
-        ybot = MIX2(i+1,nrgb-3,vcolorbar_top_pos,vcolorbar_down_pos);
+        ytop = MIX2(i+0.5,global_scase.nrgb-3,vcolorbar_top_pos,vcolorbar_down_pos);
+        ybot = MIX2(i+1,global_scase.nrgb-3,vcolorbar_top_pos,vcolorbar_down_pos);
 
         if(have_extreme_mindata==1||have_extreme_maxdata==1)glEnable(GL_POLYGON_SMOOTH);
 
@@ -1096,11 +1096,11 @@ void DrawVerticalColorbars(void){
           glEnd();
         }
 
-        i=nrgb-2;
-        ybot = MIX2(i,nrgb-3,vcolorbar_top_pos,vcolorbar_down_pos);
-        ytop = MIX2(i+0.5,nrgb-3,vcolorbar_top_pos,vcolorbar_down_pos);
+        i=global_scase.nrgb-2;
+        ybot = MIX2(i,global_scase.nrgb-3,vcolorbar_top_pos,vcolorbar_down_pos);
+        ytop = MIX2(i+0.5,global_scase.nrgb-3,vcolorbar_top_pos,vcolorbar_down_pos);
 
-        rgb_plot3d_local = rgb_plot3d_contour[nrgb-1];
+        rgb_plot3d_local = rgb_plot3d_contour[global_scase.nrgb-1];
         if(show_extreme_maxdata==1&&have_extreme_maxdata==1&&rgb_plot3d_local[3]!=0.0){
           glBegin(GL_TRIANGLES);
           glColor4fv(rgb_plot3d_local);
@@ -1288,7 +1288,7 @@ void DrawHorizontalColorbarRegLabels(void){
     patchdata *patchi;
     int patchunitclass, patchunittype;
 
-    patchi = patchinfo + boundarytypes[iboundarytype];
+    patchi = global_scase.patchinfo + global_scase.boundarytypes[iboundarytype];
     strcpy(unitlabel, patchi->label.unit);
     GetUnitInfo(patchi->label.unit, &patchunitclass, &patchunittype);
     if(patchunitclass >= 0 && patchunitclass < nunitclasses){
@@ -1315,7 +1315,7 @@ void DrawHorizontalColorbarRegLabels(void){
     char unitlabel[256];
     int plot3dunitclass, plot3dunittype;
 
-    up3label = plot3dinfo[0].label[plotn - 1].unit;
+    up3label = global_scase.plot3dinfo[0].label[plotn - 1].unit;
     strcpy(unitlabel, up3label);
     GetUnitInfo(up3label, &plot3dunitclass, &plot3dunittype);
     if(plot3dunitclass >= 0 && plot3dunitclass < nunitclasses){
@@ -1325,7 +1325,7 @@ void DrawHorizontalColorbarRegLabels(void){
         strcpy(unitlabel, unitclasses[plot3dunitclass].units[plot3dunittype].unit);
       }
     }
-    p3label = plot3dinfo[0].label[plotn - 1].shortlabel;
+    p3label = global_scase.plot3dinfo[0].label[plotn - 1].shortlabel;
     glPushMatrix();
     glTranslatef(type_label_left, type_label_down, 0.0);
     OutputBarText(0.0, 3 * (VP_vcolorbar.text_height + v_space), foreground_color, "Plot3D");
@@ -1392,20 +1392,20 @@ void DrawHorizontalColorbarRegLabels(void){
       ScaleFloat2String(tttval, isocolorlabel, isofactor);
       isocolorlabel_ptr = isocolorlabel;
       horiz_position = MIX2(global_colorbar_index, 255, hcolorbar_right_pos, hcolorbar_left_pos);
-      iposition = MIX2(global_colorbar_index, 255, nrgb - 1, 0);
+      iposition = MIX2(global_colorbar_index, 255, global_scase.nrgb - 1, 0);
       OutputBarText(horiz_position, 0.0, red_color, isocolorlabel_ptr);
     }
-    for(i = 0; i < nrgb - 1; i++){
+    for(i = 0; i < global_scase.nrgb - 1; i++){
       float horiz_position;
       char isocolorlabel[256];
       char *isocolorlabel_ptr = NULL;
       float val;
 
-      horiz_position = MIX2(i, nrgb - 2, hcolorbar_right_pos, hcolorbar_left_pos);
+      horiz_position = MIX2(i, global_scase.nrgb - 2, hcolorbar_right_pos, hcolorbar_left_pos);
       if(iposition == i)continue;
       isocolorlabel_ptr = &(sb->colorlabels[i + 1][0]);
 
-      val = tttmin + i*isorange / (nrgb - 2);
+      val = tttmin + i*isorange / (global_scase.nrgb - 2);
       ScaleFloat2String(val, isocolorlabel, isofactor);
       isocolorlabel_ptr = isocolorlabel;
       OutputBarText(horiz_position, 0.0, foreground_color, isocolorlabel_ptr);
@@ -1442,15 +1442,15 @@ void DrawHorizontalColorbarRegLabels(void){
         partcolorlabel_ptr = partcolorlabel;
       }
       horiz_position = MIX2(global_colorbar_index, 255, hcolorbar_right_pos, hcolorbar_left_pos);
-      iposition = MIX2(global_colorbar_index, 255, nrgb - 1, 0);
+      iposition = MIX2(global_colorbar_index, 255, global_scase.nrgb - 1, 0);
       OutputBarText(horiz_position, 0.0, red_color, partcolorlabel_ptr);
     }
-    for(i = 0; i < nrgb - 1; i++){
+    for(i = 0; i < global_scase.nrgb - 1; i++){
       float horiz_position;
       char partcolorlabel[256];
       char *partcolorlabel_ptr = NULL;
 
-      horiz_position = MIX2(i, nrgb - 2, hcolorbar_right_pos, hcolorbar_left_pos);
+      horiz_position = MIX2(i, global_scase.nrgb - 2, hcolorbar_right_pos, hcolorbar_left_pos);
       if(iposition == i)continue;
       if(global_prop_index>= 0 &&global_prop_index < npart5prop){
         float val;
@@ -1471,7 +1471,7 @@ void DrawHorizontalColorbarRegLabels(void){
         float val;
 
         partcolorlabel_ptr = partcolorlabel;
-        val = tttmin + i*partrange / (nrgb - 2);
+        val = tttmin + i*partrange / (global_scase.nrgb - 2);
         val = ScaleFloat2Float(val, partfactor);
         Float2String(partcolorlabel_ptr, val, ncolorlabel_digits, force_fixedpoint);
       }
@@ -1507,22 +1507,22 @@ void DrawHorizontalColorbarRegLabels(void){
         slicecolorlabel_ptr = slicecolorlabel;
       }
       horiz_position = MIX2(global_colorbar_index, 255, hcolorbar_right_pos, hcolorbar_left_pos);
-      iposition = MIX2(global_colorbar_index, 255, nrgb - 1, 0);
+      iposition = MIX2(global_colorbar_index, 255, global_scase.nrgb - 1, 0);
       OutputBarText(horiz_position, 0.0, red_color, slicecolorlabel_ptr);
     }
     {
-      for(i = 0; i < nrgb - 1; i++){
+      for(i = 0; i < global_scase.nrgb - 1; i++){
         float horiz_position;
         char slicecolorlabel[256];
         char *slicecolorlabel_ptr = NULL;
 
-        horiz_position = MIX2(i, nrgb - 2, hcolorbar_right_pos, hcolorbar_left_pos);
+        horiz_position = MIX2(i, global_scase.nrgb - 2, hcolorbar_right_pos, hcolorbar_left_pos);
         if(iposition == i)continue;
         slicecolorlabel_ptr = &(sb->colorlabels[i + 1][0]);
         if(sliceflag == 1){
           float val;
 
-          val = tttmin + i*slicerange / (nrgb - 2);
+          val = tttmin + i*slicerange / (global_scase.nrgb - 2);
           ScaleFloat2String(val, slicecolorlabel, slicefactor);
           slicecolorlabel_ptr = slicecolorlabel;
           Float2String(slicecolorlabel_ptr, val, ncolorlabel_digits, force_fixedpoint);
@@ -1561,20 +1561,20 @@ void DrawHorizontalColorbarRegLabels(void){
         boundary_colorlabel_ptr = boundary_colorlabel;
       }
       horiz_position = MIX2(global_colorbar_index, 255, hcolorbar_right_pos, hcolorbar_left_pos);
-      iposition = MIX2(global_colorbar_index, 255, nrgb - 1, 0);
+      iposition = MIX2(global_colorbar_index, 255, global_scase.nrgb - 1, 0);
       OutputBarText(0.0,horiz_position, red_color, boundary_colorlabel_ptr);
     }
-    for(i = 0; i < nrgb - 1; i++){
+    for(i = 0; i < global_scase.nrgb - 1; i++){
       char boundary_colorlabel[256];
       char *boundary_colorlabel_ptr = NULL;
       float horiz_position;
       float val;
 
-      horiz_position = MIX2(i, nrgb - 2, hcolorbar_right_pos, hcolorbar_left_pos);
+      horiz_position = MIX2(i, global_scase.nrgb - 2, hcolorbar_right_pos, hcolorbar_left_pos);
 
       if(iposition == i)continue;
       if(patchflag == 1){
-        val = tttmin + i*patchrange / (nrgb - 2);
+        val = tttmin + i*patchrange / (global_scase.nrgb - 2);
       }
       else{
         val = colorvaluespatch[i+1];
@@ -1610,21 +1610,21 @@ void DrawHorizontalColorbarRegLabels(void){
         zonecolorlabel_ptr = zonecolorlabel;
       }
       horiz_position = MIX2(global_colorbar_index, 255, hcolorbar_right_pos, hcolorbar_left_pos);
-      iposition = MIX2(global_colorbar_index, 255, nrgb - 1, 0);
+      iposition = MIX2(global_colorbar_index, 255, global_scase.nrgb - 1, 0);
       OutputBarText(horiz_position, 0.0, red_color, zonecolorlabel_ptr);
     }
-    for(i = 0; i < nrgb - 1; i++){
+    for(i = 0; i < global_scase.nrgb - 1; i++){
       float horiz_position;
       char zonecolorlabel[256];
       char *zonecolorlabel_ptr = NULL;
 
-      horiz_position = MIX2(i, nrgb - 2, hcolorbar_right_pos, hcolorbar_left_pos);
+      horiz_position = MIX2(i, global_scase.nrgb - 2, hcolorbar_right_pos, hcolorbar_left_pos);
       if(iposition == i)continue;
-      zonecolorlabel_ptr = &colorlabelzone[i + 1][0];
+      zonecolorlabel_ptr = &global_scase.colorlabelzone[i + 1][0];
       if(zoneflag == 1){
         float val;
 
-        val = tttmin + (i - 1)*zonerange / (nrgb - 2);
+        val = tttmin + (i - 1)*zonerange / (global_scase.nrgb - 2);
         ScaleFloat2String(val, zonecolorlabel, zonefactor);
         zonecolorlabel_ptr = zonecolorlabel;
       }
@@ -1659,21 +1659,21 @@ void DrawHorizontalColorbarRegLabels(void){
         plot3dcolorlabel_ptr = plot3dcolorlabel;
       }
       horiz_position = MIX2(global_colorbar_index, 255, hcolorbar_right_pos, hcolorbar_left_pos);
-      iposition = MIX2(global_colorbar_index, 255, nrgb - 1, 0);
+      iposition = MIX2(global_colorbar_index, 255, global_scase.nrgb - 1, 0);
       OutputBarText(horiz_position, 0.0, red_color, plot3dcolorlabel_ptr);
     }
     if(visiso == 0){
       float horiz_position;
 
-      for(i = 0; i < nrgb - 1; i++){
+      for(i = 0; i < global_scase.nrgb - 1; i++){
         char plot3dcolorlabel[256];
         char *plot3dcolorlabel_ptr = NULL;
         float val;
 
-        horiz_position = MIX2(i, nrgb - 2, hcolorbar_right_pos, hcolorbar_left_pos);
+        horiz_position = MIX2(i, global_scase.nrgb - 2, hcolorbar_right_pos, hcolorbar_left_pos);
         if(iposition == i)continue;
         if(plot3dflag == 1){
-          val = tttmin + i*plot3drange / (nrgb - 2);
+          val = tttmin + i*plot3drange / (global_scase.nrgb - 2);
         }
         else{
           val = colorvaluesp3[plotn - 1][i];
@@ -1688,19 +1688,19 @@ void DrawHorizontalColorbarRegLabels(void){
       float horiz_position;
       float right_hat;
 
-      right_hat = hcolorbar_right_pos*(float)(nrgb - 3) / (float)(nrgb - 2)+hcolorbar_left_pos/(float)(nrgb-2);
-      for(i = 0; i < nrgb - 2; i++){
+      right_hat = hcolorbar_right_pos*(float)(global_scase.nrgb - 3) / (float)(global_scase.nrgb - 2)+hcolorbar_left_pos/(float)(global_scase.nrgb-2);
+      for(i = 0; i < global_scase.nrgb - 2; i++){
         char plot3dcolorlabel[256];
         char *plot3dcolorlabel_ptr = NULL;
 
-        horiz_position = MIX2(i, nrgb - 2, right_hat, hcolorbar_left_pos);
+        horiz_position = MIX2(i, global_scase.nrgb - 2, right_hat, hcolorbar_left_pos);
 
         if(iposition == i)continue;
         plot3dcolorlabel_ptr = &colorlabeliso[plotn - 1][i][0];
         if(plot3dflag == 1){
           float val;
 
-          val = tttmin + (i - 1)*plot3drange / (nrgb - 2);
+          val = tttmin + (i - 1)*plot3drange / (global_scase.nrgb - 2);
           ScaleFloat2String(val, plot3dcolorlabel, plot3dfactor);
           plot3dcolorlabel_ptr = plot3dcolorlabel;
         }
@@ -1817,20 +1817,20 @@ void DrawVerticalColorbarRegLabels(void){
       ScaleFloat2String(tttval, isocolorlabel, isofactor);
       isocolorlabel_ptr = isocolorlabel;
       vert_position = MIX2(global_colorbar_index, 255, vcolorbar_top_pos, vcolorbar_down_pos);
-      iposition = MIX2(global_colorbar_index, 255, nrgb - 1, 0);
+      iposition = MIX2(global_colorbar_index, 255, global_scase.nrgb - 1, 0);
       OutputBarText(0.0, vert_position, red_color, isocolorlabel_ptr);
     }
-    for(i = 0; i < nrgb - 1; i++){
+    for(i = 0; i < global_scase.nrgb - 1; i++){
       float vert_position;
       char isocolorlabel[256];
       char *isocolorlabel_ptr = NULL;
       float val;
 
-      vert_position = MIX2(i, nrgb - 2, vcolorbar_top_pos, vcolorbar_down_pos);
+      vert_position = MIX2(i, global_scase.nrgb - 2, vcolorbar_top_pos, vcolorbar_down_pos);
       if(iposition == i)continue;
       isocolorlabel_ptr = &(sb->colorlabels[i + 1][0]);
 
-      val = tttmin + i*isorange / (nrgb - 2);
+      val = tttmin + i*isorange / (global_scase.nrgb - 2);
       ScaleFloat2String(val, isocolorlabel, isofactor);
       isocolorlabel_ptr = isocolorlabel;
       OutputBarText(0.0, vert_position, foreground_color, isocolorlabel_ptr);
@@ -1893,10 +1893,10 @@ void DrawVerticalColorbarRegLabels(void){
         partcolorlabel_ptr = partcolorlabel;
       }
       vert_position = MIX2(global_colorbar_index, 255, vcolorbar_top_pos, vcolorbar_down_pos);
-      iposition = MIX2(global_colorbar_index, 255, nrgb - 1, 0);
+      iposition = MIX2(global_colorbar_index, 255, global_scase.nrgb - 1, 0);
       OutputBarText(0.0, vert_position, red_color, partcolorlabel_ptr);
     }
-    for(i = 0; i < nrgb - 1; i++){
+    for(i = 0; i < global_scase.nrgb - 1; i++){
       float val;
 
       if(iposition == i)continue;
@@ -1904,12 +1904,12 @@ void DrawVerticalColorbarRegLabels(void){
       val = ScaleFloat2Float(val, partfactor);
       colorbar_vals[i] = val;
     }
-    Floats2Strings(colorbar_labels, colorbar_vals, nrgb-1, ncolorlabel_digits, force_fixedpoint, force_exponential, force_decimal, force_zero_pad, exp_factor_label);
+    Floats2Strings(colorbar_labels, colorbar_vals, global_scase.nrgb-1, ncolorlabel_digits, force_fixedpoint, force_exponential, force_decimal, force_zero_pad, exp_factor_label);
     max_colorbar_label_width = MAX(max_colorbar_label_width, GetStringWidth(exp_factor_label));
-    for(i = 0; i < nrgb - 1; i++){
+    for(i = 0; i < global_scase.nrgb - 1; i++){
       float vert_position;
 
-      vert_position = MIX2(i, nrgb - 2, vcolorbar_top_pos, vcolorbar_down_pos);
+      vert_position = MIX2(i, global_scase.nrgb - 2, vcolorbar_top_pos, vcolorbar_down_pos);
       if(iposition == i)continue;
       OutputBarText(0.0, vert_position, foreground_color, colorbar_labels[i]);
       max_colorbar_label_width = MAX(max_colorbar_label_width, GetStringWidth(colorbar_labels[i]));
@@ -2011,7 +2011,7 @@ void DrawVerticalColorbarRegLabels(void){
         slicecolorlabel_ptr = slicecolorlabel;
       }
       vert_position = MIX2(shifted_colorbar_index, 255, vcolorbar_top_pos, vcolorbar_down_pos);
-      iposition = MIX2(shifted_colorbar_index, 255, nrgb - 1, 0);
+      iposition = MIX2(shifted_colorbar_index, 255, global_scase.nrgb - 1, 0);
       OutputBarText(0.0, vert_position, red_color, slicecolorlabel_ptr);
     }
     {
@@ -2030,18 +2030,18 @@ void DrawVerticalColorbarRegLabels(void){
         valmax = tttmax;
       }
       else{
-        valmax = sb->colorvalues[nrgb-1];
+        valmax = sb->colorvalues[global_scase.nrgb-1];
       }
       valmax = ScaleFloat2Float(valmax, slicefactor);
       colorbar_max = MAX(ABS(valmax), ABS(valmin));
       colorbar_max = MAX(colorbar_max, colorbar_eps);
 
-      for(i = 0; i<nrgb-1; i++){
+      for(i = 0; i<global_scase.nrgb-1; i++){
         float val;
 
         if(iposition==i)continue;
         if(sliceflag==1){
-          val = tttmin+i*slicerange/(nrgb-2);
+          val = tttmin+i*slicerange/(global_scase.nrgb-2);
         }
         else{
           val = sb->colorvalues[i+1];
@@ -2052,12 +2052,12 @@ void DrawVerticalColorbarRegLabels(void){
         }
         colorbar_vals[i] = val;
       }
-      Floats2Strings(colorbar_labels, colorbar_vals, nrgb-1, ncolorlabel_digits, force_fixedpoint, force_exponential, force_decimal, force_zero_pad, exp_factor_label);
+      Floats2Strings(colorbar_labels, colorbar_vals, global_scase.nrgb-1, ncolorlabel_digits, force_fixedpoint, force_exponential, force_decimal, force_zero_pad, exp_factor_label);
       max_colorbar_label_width = MAX(max_colorbar_label_width, GetStringWidth(exp_factor_label));
-      for(i = 0; i < nrgb - 1; i++){
+      for(i = 0; i < global_scase.nrgb - 1; i++){
         float vert_position;
 
-        vert_position = MIX2(i, nrgb - 2, vcolorbar_top_pos, vcolorbar_down_pos);
+        vert_position = MIX2(i, global_scase.nrgb - 2, vcolorbar_top_pos, vcolorbar_down_pos);
         if(iposition == i)continue;
         OutputBarText(0.0, vert_position, foreground_color, colorbar_labels[i]);
         max_colorbar_label_width = MAX(max_colorbar_label_width, GetStringWidth(colorbar_labels[i]));
@@ -2103,12 +2103,12 @@ void DrawVerticalColorbarRegLabels(void){
 
   // -------------- HVAC node left labels ------------
 
-  if(show_hvacnode_colorbar_local==1 && hvaccoll.hvacnodevar_index>=0){
+  if(show_hvacnode_colorbar_local==1 && global_scase.hvaccoll.hvacnodevar_index>=0){
     hvacvaldata *hi;
     float tttval, tttmin, tttmax;
     float hvacrange;
 
-    hi = hvaccoll.hvacnodevalsinfo->node_vars + hvaccoll.hvacnodevar_index;
+    hi = global_scase.hvaccoll.hvacnodevalsinfo->node_vars + global_scase.hvaccoll.hvacnodevar_index;
     iposition = -1;
     tttmin = hi->levels256[0];
     tttmax = hi->levels256[255];
@@ -2125,23 +2125,23 @@ void DrawVerticalColorbarRegLabels(void){
       Num2String(hvaclabel, tttval);
       hvac_colorlabel_ptr = &(hvaclabel[0]);
       vert_position = MIX2(global_colorbar_index, 255, vcolorbar_top_pos, vcolorbar_down_pos);
-      iposition = MIX2(global_colorbar_index, 255, nrgb - 1, 0);
+      iposition = MIX2(global_colorbar_index, 255, global_scase.nrgb - 1, 0);
       OutputBarText(0.0, vert_position, red_color, hvac_colorlabel_ptr);
     }
-    for(i = 0; i < nrgb - 1; i++){
+    for(i = 0; i < global_scase.nrgb - 1; i++){
       float val;
 
       if(iposition == i)continue;
-      val = tttmin + i * hvacrange / (nrgb - 2);
+      val = tttmin + i * hvacrange / (global_scase.nrgb - 2);
       colorbar_vals[i] = val;
       GetMantissaExponent(ABS(val), colorbar_exponents + i);
     }
-    Floats2Strings(colorbar_labels, colorbar_vals, nrgb-1, ncolorlabel_digits, force_fixedpoint, force_exponential, force_decimal, force_zero_pad, exp_factor_label);
+    Floats2Strings(colorbar_labels, colorbar_vals, global_scase.nrgb-1, ncolorlabel_digits, force_fixedpoint, force_exponential, force_decimal, force_zero_pad, exp_factor_label);
     max_colorbar_label_width = MAX(max_colorbar_label_width, GetStringWidth(exp_factor_label));
-    for(i = 0; i < nrgb - 1; i++){
+    for(i = 0; i < global_scase.nrgb - 1; i++){
       float vert_position;
 
-      vert_position = MIX2(i, nrgb - 2, vcolorbar_top_pos, vcolorbar_down_pos);
+      vert_position = MIX2(i, global_scase.nrgb - 2, vcolorbar_top_pos, vcolorbar_down_pos);
 
       if(iposition == i)continue;
       OutputBarText(0.0, vert_position, foreground_color, colorbar_labels[i]);
@@ -2152,12 +2152,12 @@ void DrawVerticalColorbarRegLabels(void){
 
   // -------------- HVAC duct left labels ------------
 
-  if(show_hvacduct_colorbar_local==1 && hvaccoll.hvacductvar_index>=0){
+  if(show_hvacduct_colorbar_local==1 && global_scase.hvaccoll.hvacductvar_index>=0){
     hvacvaldata *hi;
     float tttval, tttmin, tttmax;
     float hvacrange;
 
-    hi = hvaccoll.hvacductvalsinfo->duct_vars + hvaccoll.hvacductvar_index;
+    hi = global_scase.hvaccoll.hvacductvalsinfo->duct_vars + global_scase.hvaccoll.hvacductvar_index;
     iposition = -1;
     tttmin = hi->levels256[0];
     tttmax = hi->levels256[255];
@@ -2174,23 +2174,23 @@ void DrawVerticalColorbarRegLabels(void){
       Num2String(hvaclabel, tttval);
       hvac_colorlabel_ptr = &(hvaclabel[0]);
       vert_position = MIX2(global_colorbar_index, 255, vcolorbar_top_pos, vcolorbar_down_pos);
-      iposition = MIX2(global_colorbar_index, 255, nrgb - 1, 0);
+      iposition = MIX2(global_colorbar_index, 255, global_scase.nrgb - 1, 0);
       OutputBarText(0.0, vert_position, red_color, hvac_colorlabel_ptr);
     }
-    for(i = 0; i < nrgb - 1; i++){
+    for(i = 0; i < global_scase.nrgb - 1; i++){
       float val;
 
       if(iposition == i)continue;
-      val = tttmin + i * hvacrange / (nrgb - 2);
+      val = tttmin + i * hvacrange / (global_scase.nrgb - 2);
       colorbar_vals[i] = val;
       GetMantissaExponent(ABS(val), colorbar_exponents + i);
     }
-    Floats2Strings(colorbar_labels, colorbar_vals, nrgb-1, ncolorlabel_digits, force_fixedpoint, force_exponential, force_decimal, force_zero_pad, exp_factor_label);
+    Floats2Strings(colorbar_labels, colorbar_vals, global_scase.nrgb-1, ncolorlabel_digits, force_fixedpoint, force_exponential, force_decimal, force_zero_pad, exp_factor_label);
     max_colorbar_label_width = MAX(max_colorbar_label_width, GetStringWidth(exp_factor_label));
-    for(i = 0; i < nrgb - 1; i++){
+    for(i = 0; i < global_scase.nrgb - 1; i++){
       float vert_position;
 
-      vert_position = MIX2(i, nrgb - 2, vcolorbar_top_pos, vcolorbar_down_pos);
+      vert_position = MIX2(i, global_scase.nrgb - 2, vcolorbar_top_pos, vcolorbar_down_pos);
 
       if(iposition == i)continue;
       OutputBarText(0.0, vert_position, foreground_color, colorbar_labels[i]);
@@ -2201,11 +2201,11 @@ void DrawVerticalColorbarRegLabels(void){
 
   // -------------- HVAC file node top labels ------------
 
-  if(show_hvacnode_colorbar_local==1 && hvaccoll.hvacnodevar_index>=0){
+  if(show_hvacnode_colorbar_local==1 && global_scase.hvaccoll.hvacnodevar_index>=0){
     char *slabel, *unitlabel;
     hvacvaldata *hi;
 
-    hi = hvaccoll.hvacnodevalsinfo->node_vars + hvaccoll.hvacnodevar_index;
+    hi = global_scase.hvaccoll.hvacnodevalsinfo->node_vars + global_scase.hvaccoll.hvacnodevar_index;
     slabel = hi->label.shortlabel;
     unitlabel = hi->label.unit;
 
@@ -2225,11 +2225,11 @@ void DrawVerticalColorbarRegLabels(void){
 
   // -------------- HVAC file duct top labels ------------
 
-  if(show_hvacduct_colorbar_local==1 && hvaccoll.hvacductvar_index >=0){
+  if(show_hvacduct_colorbar_local==1 && global_scase.hvaccoll.hvacductvar_index >=0){
     char *slabel, *unitlabel;
     hvacvaldata *hi;
 
-    hi = hvaccoll.hvacductvalsinfo->duct_vars + hvaccoll.hvacductvar_index;
+    hi = global_scase.hvaccoll.hvacductvalsinfo->duct_vars + global_scase.hvaccoll.hvacductvar_index;
     slabel = hi->label.shortlabel;
     unitlabel = hi->label.unit;
 
@@ -2256,7 +2256,7 @@ void DrawVerticalColorbarRegLabels(void){
     patchdata *patchi;
     int patchunitclass, patchunittype;
 
-    patchi = patchinfo + boundarytypes[iboundarytype];
+    patchi = global_scase.patchinfo + global_scase.boundarytypes[iboundarytype];
     strcpy(unitlabel, patchi->label.unit);
     GetUnitInfo(patchi->label.unit, &patchunitclass, &patchunittype);
     if(patchunitclass >= 0 && patchunitclass < nunitclasses){
@@ -2288,15 +2288,15 @@ void DrawVerticalColorbarRegLabels(void){
         boundary_colorlabel_ptr = boundary_colorlabel;
       }
       vert_position = MIX2(global_colorbar_index, 255, vcolorbar_top_pos, vcolorbar_down_pos);
-      iposition = MIX2(global_colorbar_index, 255, nrgb - 1, 0);
+      iposition = MIX2(global_colorbar_index, 255, global_scase.nrgb - 1, 0);
       OutputBarText(0.0, vert_position, red_color, boundary_colorlabel_ptr);
     }
-    for(i = 0; i < nrgb - 1; i++){
+    for(i = 0; i < global_scase.nrgb - 1; i++){
       float val;
 
       if(iposition == i)continue;
       if(patchflag==1){
-        val = tttmin+i*patchrange/(nrgb-2);
+        val = tttmin+i*patchrange/(global_scase.nrgb-2);
       }
       else{
         val = colorvaluespatch[i+1];
@@ -2305,12 +2305,12 @@ void DrawVerticalColorbarRegLabels(void){
       colorbar_vals[i] = val;
       GetMantissaExponent(ABS(val), colorbar_exponents + i);
     }
-    Floats2Strings(colorbar_labels, colorbar_vals, nrgb-1, ncolorlabel_digits, force_fixedpoint, force_exponential, force_decimal, force_zero_pad, exp_factor_label);
+    Floats2Strings(colorbar_labels, colorbar_vals, global_scase.nrgb-1, ncolorlabel_digits, force_fixedpoint, force_exponential, force_decimal, force_zero_pad, exp_factor_label);
     max_colorbar_label_width = MAX(max_colorbar_label_width, GetStringWidth(exp_factor_label));
-    for(i = 0; i < nrgb - 1; i++){
+    for(i = 0; i < global_scase.nrgb - 1; i++){
       float vert_position;
 
-      vert_position = MIX2(i, nrgb - 2, vcolorbar_top_pos, vcolorbar_down_pos);
+      vert_position = MIX2(i, global_scase.nrgb - 2, vcolorbar_top_pos, vcolorbar_down_pos);
 
       if(iposition == i)continue;
       OutputBarText(0.0, vert_position, foreground_color, colorbar_labels[i]);
@@ -2326,7 +2326,7 @@ void DrawVerticalColorbarRegLabels(void){
     patchdata *patchi;
     int patchunitclass, patchunittype;
 
-    patchi = patchinfo + boundarytypes[iboundarytype];
+    patchi = global_scase.patchinfo + global_scase.boundarytypes[iboundarytype];
     strcpy(unitlabel, patchi->label.unit);
     GetUnitInfo(patchi->label.unit, &patchunitclass, &patchunittype);
     if(patchunitclass >= 0 && patchunitclass < nunitclasses){
@@ -2388,20 +2388,20 @@ void DrawVerticalColorbarRegLabels(void){
         zonecolorlabel_ptr = zonecolorlabel;
       }
       vert_position = MIX2(global_colorbar_index, 255, vcolorbar_top_pos, vcolorbar_down_pos);
-      iposition = MIX2(global_colorbar_index, 255, nrgb - 1, 0);
+      iposition = MIX2(global_colorbar_index, 255, global_scase.nrgb - 1, 0);
       OutputBarText(0.0, vert_position, red_color, zonecolorlabel_ptr);
       max_colorbar_label_width = MAX(max_colorbar_label_width, GetStringWidth(zonecolorlabel_ptr));
     }
-    for(i = 0; i < nrgb - 1; i++){
+    for(i = 0; i < global_scase.nrgb - 1; i++){
       float vert_position;
       char zonecolorlabel[256];
       char *zonecolorlabel_ptr = NULL;
       float val;
 
-      vert_position = MIX2(i, nrgb - 2, vcolorbar_top_pos, vcolorbar_down_pos);
+      vert_position = MIX2(i, global_scase.nrgb - 2, vcolorbar_top_pos, vcolorbar_down_pos);
       if(iposition == i)continue;
       if(zoneflag == 1){
-        val = tttmin + i*zonerange / (nrgb - 2);
+        val = tttmin + i*zonerange / (global_scase.nrgb - 2);
       }
       else{
         val = colorvalueszone[i+1];
@@ -2453,7 +2453,7 @@ void DrawVerticalColorbarRegLabels(void){
     char unitlabel[256];
     int plot3dunitclass, plot3dunittype;
 
-    up3label = plot3dinfo[0].label[plotn-1].unit;
+    up3label = global_scase.plot3dinfo[0].label[plotn-1].unit;
     strcpy(unitlabel, up3label);
     GetUnitInfo(up3label, &plot3dunitclass, &plot3dunittype);
     if(plot3dunitclass>=0&&plot3dunitclass<nunitclasses){
@@ -2483,16 +2483,16 @@ void DrawVerticalColorbarRegLabels(void){
         plot3dcolorlabel_ptr = plot3dcolorlabel;
       }
       vert_position = MIX2(global_colorbar_index, 255, vcolorbar_top_pos, vcolorbar_down_pos);
-      iposition = MIX2(global_colorbar_index, 255, nrgb - 1, 0);
+      iposition = MIX2(global_colorbar_index, 255, global_scase.nrgb - 1, 0);
       OutputBarText(0.0, vert_position, red_color, plot3dcolorlabel_ptr);
     }
     if(visiso == 0){
-      for(i = 0; i < nrgb - 1; i++){
+      for(i = 0; i < global_scase.nrgb - 1; i++){
         float val;
 
         if(iposition == i)continue;
         if(plot3dflag == 1){
-          val = tttmin + i*plot3drange / (nrgb - 2);
+          val = tttmin + i*plot3drange / (global_scase.nrgb - 2);
         }
         else{
           val = colorvaluesp3[plotn - 1][i];
@@ -2501,12 +2501,12 @@ void DrawVerticalColorbarRegLabels(void){
         colorbar_vals[i] = val;
         GetMantissaExponent(ABS(val), colorbar_exponents + i);
       }
-      Floats2Strings(colorbar_labels, colorbar_vals, nrgb-1, ncolorlabel_digits, force_fixedpoint, force_exponential, force_decimal, force_zero_pad, exp_factor_label);
+      Floats2Strings(colorbar_labels, colorbar_vals, global_scase.nrgb-1, ncolorlabel_digits, force_fixedpoint, force_exponential, force_decimal, force_zero_pad, exp_factor_label);
       max_colorbar_label_width = MAX(max_colorbar_label_width, GetStringWidth(exp_factor_label));
-      for(i = 0; i < nrgb - 1; i++){
+      for(i = 0; i < global_scase.nrgb - 1; i++){
         float vert_position;
 
-        vert_position = MIX2(i, nrgb - 2, vcolorbar_top_pos, vcolorbar_down_pos);
+        vert_position = MIX2(i, global_scase.nrgb - 2, vcolorbar_top_pos, vcolorbar_down_pos);
 
         if(iposition == i)continue;
         OutputBarText(0.0, vert_position, foreground_color, colorbar_labels[i]);
@@ -2516,16 +2516,16 @@ void DrawVerticalColorbarRegLabels(void){
     else{
       float vert_position;
 
-      for(i = 0; i < nrgb - 2; i++){
+      for(i = 0; i < global_scase.nrgb - 2; i++){
         float val;
 
-        val = tttmin + (float)(i +0.5)*plot3drange / (nrgb - 2);
+        val = tttmin + (float)(i +0.5)*plot3drange / (global_scase.nrgb - 2);
         colorbar_vals[i] = val;
       }
-      Floats2Strings(colorbar_labels, colorbar_vals, nrgb-2, ncolorlabel_digits, force_fixedpoint, force_exponential, force_decimal, force_zero_pad, exp_factor_label);
+      Floats2Strings(colorbar_labels, colorbar_vals, global_scase.nrgb-2, ncolorlabel_digits, force_fixedpoint, force_exponential, force_decimal, force_zero_pad, exp_factor_label);
       max_colorbar_label_width = MAX(max_colorbar_label_width, GetStringWidth(exp_factor_label));
-      for(i = 0; i < nrgb - 2; i++){
-        vert_position = MIX2(i+0.5, nrgb - 2, vcolorbar_top_pos, vcolorbar_down_pos);
+      for(i = 0; i < global_scase.nrgb - 2; i++){
+        vert_position = MIX2(i+0.5, global_scase.nrgb - 2, vcolorbar_top_pos, vcolorbar_down_pos);
         if(iposition == i)continue;
         if(isolevelindex == i || isolevelindex2 == i){
           OutputBarText(0.0, vert_position, red_color, colorbar_labels[i]);
@@ -2545,7 +2545,7 @@ void DrawVerticalColorbarRegLabels(void){
     char unitlabel[256];
     int plot3dunitclass, plot3dunittype;
 
-    up3label = plot3dinfo[0].label[plotn - 1].unit;
+    up3label = global_scase.plot3dinfo[0].label[plotn - 1].unit;
     strcpy(unitlabel, up3label);
     GetUnitInfo(up3label, &plot3dunitclass, &plot3dunittype);
     if(plot3dunitclass >= 0 && plot3dunitclass < nunitclasses){
@@ -2555,7 +2555,7 @@ void DrawVerticalColorbarRegLabels(void){
         strcpy(unitlabel, unitclasses[plot3dunitclass].units[plot3dunittype].unit);
       }
     }
-    p3label = plot3dinfo[0].label[plotn - 1].shortlabel;
+    p3label = global_scase.plot3dinfo[0].label[plotn - 1].shortlabel;
     glPushMatrix();
     glTranslatef(
       vcolorbar_left_pos - colorbar_label_width,

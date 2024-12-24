@@ -40,7 +40,7 @@ void OutputBoundaryData(patchdata *patchi){
   meshdata *meshi;
 
   patchfile = patchi->file;
-  meshi = meshinfo + patchi->blocknumber;
+  meshi = global_scase.meshescoll.meshinfo + patchi->blocknumber;
 
   if(patchout_tmin > patchout_tmax)return;
   strcpy(csvfile, patchi->file);
@@ -194,11 +194,11 @@ void OutputBoundaryData(patchdata *patchi){
 int GetBoundaryIndex(const patchdata *patchi){
   int j;
 
-  for(j = 0; j < nboundarytypes; j++){
+  for(j = 0; j < global_scase.nboundarytypes; j++){
     patchdata *patchi2;
 
-    patchi2 = patchinfo + boundarytypes[j];
-    if(strcmp(patchi->label.shortlabel, patchi2->label.shortlabel) == 0)return boundarytypes[j];
+    patchi2 = global_scase.patchinfo + global_scase.boundarytypes[j];
+    if(strcmp(patchi->label.shortlabel, patchi2->label.shortlabel) == 0)return global_scase.boundarytypes[j];
   }
   return -1;
 }
@@ -209,11 +209,11 @@ void InitVentColors(void){
   int i;
 
   nventcolors = 0;
-  for(i = 0; i < nmeshes; i++){
+  for(i = 0; i < global_scase.meshescoll.nmeshes; i++){
     meshdata *meshi;
     int j;
 
-    meshi = meshinfo + i;
+    meshi = global_scase.meshescoll.meshinfo + i;
     for(j = 0; j<meshi->nvents; j++){
       ventdata *venti;
 
@@ -226,12 +226,12 @@ void InitVentColors(void){
   for(i = 0; i < nventcolors; i++){
     ventcolors[i] = NULL;
   }
-  ventcolors[0] = surfinfo->color;
-  for(i = 0; i < nmeshes; i++){
+  ventcolors[0] = global_scase.surfcoll.surfinfo->color;
+  for(i = 0; i < global_scase.meshescoll.nmeshes; i++){
     meshdata *meshi;
     int j;
 
-    meshi = meshinfo + i;
+    meshi = global_scase.meshescoll.meshinfo + i;
     for(j = 0; j < meshi->nvents; j++){
       ventdata *venti;
       int vent_id;
@@ -274,7 +274,7 @@ int NodeInBlockage(const meshdata *meshnode, int i, int j, int k, int *imesh, in
 
   *imesh = -1;
 
-  for(ii = 0; ii < nmeshes; ii++){
+  for(ii = 0; ii < global_scase.meshescoll.nmeshes; ii++){
     int jj;
     meshdata *meshii;
     blockagedata *bc;
@@ -286,7 +286,7 @@ int NodeInBlockage(const meshdata *meshnode, int i, int j, int k, int *imesh, in
     float zb_min, zb_max;
     float *xplt, *yplt, *zplt;
 
-    meshii = meshinfo + ii;
+    meshii = global_scase.meshescoll.meshinfo + ii;
     if(meshnode == meshii)continue;
 
     xplt = meshii->xplt;
@@ -546,7 +546,7 @@ void DrawOnlyThreshold(const meshdata *meshi){
   patch_times = meshi->patch_times;
   xyzpatch = meshi->xyzpatch_threshold;
   patchblank = meshi->patchblank;
-  patchi = patchinfo+meshi->patchfilenum;
+  patchi = global_scase.patchinfo+meshi->patchfilenum;
   switch(patchi->compression_type){
   case UNCOMPRESSED:
     assert(meshi->cpatchval_iframe!=NULL);
@@ -557,7 +557,7 @@ void DrawOnlyThreshold(const meshdata *meshi){
   default:
     assert(FFALSE);
   }
-  patchi = patchinfo+meshi->patchfilenum;
+  patchi = global_scase.patchinfo+meshi->patchfilenum;
 
   if(patch_times[0]>global_times[itimes]||patchi->display==0)return;
   if(cullfaces==1)glDisable(GL_CULL_FACE);
@@ -997,7 +997,7 @@ void GetBoundaryHeader2(char *file, patchfacedata *patchfaceinfo, int nmeshes_ar
     patchfaceinfo->mesh_index = mesh_index;
     patchfaceinfo->meshinfo = NULL;
     patchfaceinfo->obst     = NULL;
-    if(mesh_index >= 0 && mesh_index < nmeshes_arg)patchfaceinfo->meshinfo = meshinfo + mesh_index;
+    if(mesh_index >= 0 && mesh_index < nmeshes_arg)patchfaceinfo->meshinfo = global_scase.meshescoll.meshinfo + mesh_index;
     if(patchfaceinfo->meshinfo != NULL && obst_index>=0 && obst_index<patchfaceinfo->meshinfo->nbptrs)patchfaceinfo->obst = patchfaceinfo->meshinfo->blockageinfoptrs[obst_index];
   }
   fclose(stream);
@@ -1125,10 +1125,10 @@ void ComputeLoadedPatchHist(char *label, histogramdata **histptr, float *global_
   int i, have_data=0;
 
 
-  for(i = 0; i<npatchinfo; i++){
+  for(i = 0; i<global_scase.npatchinfo; i++){
     patchdata *patchi;
 
-    patchi = patchinfo+i;
+    patchi = global_scase.patchinfo+i;
     if(patchi->loaded==0||strcmp(patchi->label.shortlabel, label)!=0)continue;
     if(patchi->blocknumber>=0){
       if(patchi->patch_filetype==PATCH_STRUCTURED_NODE_CENTER||patchi->patch_filetype==PATCH_STRUCTURED_CELL_CENTER){
@@ -1149,10 +1149,10 @@ void ComputeLoadedPatchHist(char *label, histogramdata **histptr, float *global_
   *histptr = hist;
 
   InitHistogram(hist, NHIST_BUCKETS, global_min, global_max);
-  for(i = 0; i<npatchinfo; i++){
+  for(i = 0; i<global_scase.npatchinfo; i++){
     patchdata *patchi;
 
-    patchi = patchinfo+i;
+    patchi = global_scase.patchinfo+i;
     if(patchi->loaded==0||strcmp(patchi->label.shortlabel, label)!=0)continue;
     switch(patchi->patch_filetype){
       case PATCH_STRUCTURED_NODE_CENTER:
@@ -1161,7 +1161,7 @@ void ComputeLoadedPatchHist(char *label, histogramdata **histptr, float *global_
           int npatchvals;
           meshdata *meshi;
 
-          meshi = meshinfo+patchi->blocknumber;
+          meshi = global_scase.meshescoll.meshinfo+patchi->blocknumber;
           npatchvals = patchi->ntimes*meshi->npatchsize;
           MergeVals2Histogram(meshi->patchval, NULL, NULL, npatchvals, hist);
         }
@@ -1252,7 +1252,7 @@ void GetPatchSizes2(FILE_m *stream, int npatch, int nmeshes_arg, int *npatchsize
     mesh_index = ijkp[8] - 1;
     pfi->meshinfo = NULL;
     pfi->obst     = NULL;
-    if(mesh_index >= 0 && mesh_index < nmeshes_arg)pfi->meshinfo = meshinfo + ijkp[8] - 1;
+    if(mesh_index >= 0 && mesh_index < nmeshes_arg)pfi->meshinfo = global_scase.meshescoll.meshinfo + ijkp[8] - 1;
     if(pfi->meshinfo != NULL && obst_index >= 0 && obst_index < pfi->meshinfo->nbptrs)pfi->obst = pfi->meshinfo->blockageinfoptrs[obst_index];
     pfi->obst_index = obst_index;
     pfi->mesh_index = mesh_index;
@@ -1387,7 +1387,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
   FILE_SIZE return_filesize = 0;
 
   CheckMemory;
-  patchi = patchinfo + ifile;
+  patchi = global_scase.patchinfo + ifile;
   if(patchi->loaded==0&&load_flag==UNLOAD)return 0;
   if(strcmp(patchi->label.shortlabel,"wc")==0)wallcenter=1;
 
@@ -1403,12 +1403,12 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
   file = patchi->file;
   blocknumber = patchi->blocknumber;
   highlight_mesh = blocknumber;
-  meshi = meshinfo+blocknumber;
+  meshi = global_scase.meshescoll.meshinfo+blocknumber;
   UpdateCurrentMesh(meshi);
-  if(load_flag!=RELOAD&&load_flag!=UNLOAD&&meshi->patchfilenum >= 0 && meshi->patchfilenum < npatchinfo){
+  if(load_flag!=RELOAD&&load_flag!=UNLOAD&&meshi->patchfilenum >= 0 && meshi->patchfilenum < global_scase.npatchinfo){
     patchdata *patchold;
 
-    patchold = patchinfo + meshi->patchfilenum;
+    patchold = global_scase.patchinfo + meshi->patchfilenum;
     if(patchold->loaded == 1){
       int errorcode2;
 
@@ -1424,7 +1424,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
 #endif
 #endif
 
-  if(load_flag!=RELOAD&&filenum>=0&&filenum<npatchinfo){
+  if(load_flag!=RELOAD&&filenum>=0&&filenum<global_scase.npatchinfo){
     patchi->loaded=0;
   }
 
@@ -1433,7 +1433,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
 
   nbb = meshi->nbptrs;
   if(nbb==0)nbb=1;
-  updatefaces=1;
+  global_scase.updatefaces=1;
   *errorcode=0;
   if(load_flag != RELOAD){
     FREEMEMORY(meshi->xyzpatch_offset);
@@ -1458,7 +1458,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
 
   if(load_flag==UNLOAD){
     boundary_loaded = 0;
-    if(boundary_interface_unhide == 1 && have_removable_obsts == 1 && nmeshes>1){
+    if(boundary_interface_unhide == 1 && have_removable_obsts == 1 && global_scase.meshescoll.nmeshes>1){
       BlockageMenu(visBLOCKAsInput);
     }
     UpdateBoundaryType();
@@ -1481,7 +1481,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
   update_frame = 1;
 #endif
 
-  if(ifile>=0&&ifile<npatchinfo){
+  if(ifile>=0&&ifile<global_scase.npatchinfo){
     Global2GLUIBoundaryBounds(patchi->label.shortlabel);
   }
 
@@ -1544,7 +1544,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
   }
 
   if(patchi->compression_type==UNCOMPRESSED){
-    GetPatchSizes2(stream, patchi->npatches, nmeshes, &meshi->npatchsize, patchi->patchfaceinfo, &headersize, &framesize);
+    GetPatchSizes2(stream, patchi->npatches, global_scase.meshescoll.nmeshes, &meshi->npatchsize, patchi->patchfaceinfo, &headersize, &framesize);
 
     // loadpatchbysteps
     //  0 - load entire uncompressed data set
@@ -1563,7 +1563,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
     int nnsize=0;
     int i;
 
-    GetBoundaryHeader2(file, patchi->patchfaceinfo, nmeshes);
+    GetBoundaryHeader2(file, patchi->patchfaceinfo, global_scase.meshescoll.nmeshes);
     for(i=0;i<patchi->npatches;i++){
       int ii1, ii2, jj1, jj2, kk1, kk2;
       patchfacedata *pfi;
@@ -1627,7 +1627,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
     k1 = pfi->ib[4];
     k2 = pfi->ib[5];
 
-    // determine if a patch is on an external wall 
+    // determine if a patch is on an external wall
     if(i1 == i2){
       if(j1 == 0 && j2 == meshi->jbar && k1 == 0 && k2 == meshi->kbar){
         if(i1 == 0)patchi->meshfaceinfo[0]           = pfi;
@@ -2034,7 +2034,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
     return 0;
   }
   if(loadpatchbysteps==COMPRESSED_ALLFRAMES){
-    GetBoundaryDataZlib(patchi,meshi->cpatchval_zlib,ncompressed_buffer, 
+    GetBoundaryDataZlib(patchi,meshi->cpatchval_zlib,ncompressed_buffer,
       meshi->patch_times,meshi->zipoffset,meshi->zipsize,patchi->ntimes);
     framestart = 0;
     return_filesize += ncompressed_buffer;
@@ -2080,7 +2080,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
           int filesize;
           int imesh;
 
-          imesh = (int)(meshi - meshinfo);
+          imesh = (int)(meshi - global_scase.meshescoll.meshinfo);
 
           GetPatchData(imesh,stream,patchi->npatches,patchi->patchfaceinfo,
           meshi->patch_timesi,meshi->patchval_iframe,&npatchval_iframe,&filesize, &error);
@@ -2156,7 +2156,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
     }
     CheckMemory;
     if(error!=0)break;
-    if(use_tload_end!=0&&*meshi->patch_timesi>tload_end)break;
+    if(use_tload_end!=0&&*meshi->patch_timesi>global_scase.tload_end)break;
 
     switch(loadpatchbysteps){
       case UNCOMPRESSED_ALLFRAMES:
@@ -2191,7 +2191,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
   for(n=0;n<MAXRGB;n++){
     colorlabelpatch[n]=NULL;
   }
-  for(n=0;n<nrgb;n++){
+  for(n=0;n<global_scase.nrgb;n++){
     if(NewResizeMemory(colorlabelpatch[n],11)==0){
       *errorcode=1;
       if(loadpatchbysteps!=COMPRESSED_ALLFRAMES){
@@ -2238,13 +2238,13 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
     }
     GetBoundaryColors3(patchi, meshi->patchval, patchstart, npatchvals, meshi->cpatchval,
                        &glui_patchmin, &glui_patchmax,
-                       nrgb, colorlabelpatch, colorvaluespatch, boundarylevels256,
+                       global_scase.nrgb, colorlabelpatch, colorvaluespatch, boundarylevels256,
                        &patchi->extreme_min, &patchi->extreme_max, 0);
     break;
   case COMPRESSED_ALLFRAMES:
     GetBoundaryLabels(
       glui_patchmin, glui_patchmax,
-      colorlabelpatch,colorvaluespatch,boundarylevels256,nrgb);
+      colorlabelpatch,colorvaluespatch,boundarylevels256,global_scase.nrgb);
     break;
   default:
     assert(FFALSE);
@@ -2271,10 +2271,10 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
     if(loadpatchbysteps==UNCOMPRESSED_ALLFRAMES && output_patchdata==1){
       int j;
 
-      for(j=0; j<npatchinfo; j++){
+      for(j=0; j<global_scase.npatchinfo; j++){
         patchdata *patchj;
 
-        patchj = patchinfo + j;
+        patchj = global_scase.patchinfo + j;
         if(patchj->loaded == 0)continue;
         OutputBoundaryData(patchj);
       }
@@ -2334,10 +2334,10 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
       meshi->patchventcolors[i]=ventcolors[vent_index];
     }
     int mintimes = -1;
-    for(i = 0;i < npatchinfo;i++){
+    for(i = 0;i < global_scase.npatchinfo;i++){
       patchdata *pi;
 
-      pi = patchinfo + i;
+      pi = global_scase.patchinfo + i;
       if(pi->loaded == 0)continue;
       if(mintimes < 0){
         mintimes = pi->ntimes;
@@ -2346,13 +2346,13 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
         mintimes = MIN(mintimes, pi->ntimes);
       }
     }
-    for(i = 0;i < npatchinfo;i++){
+    for(i = 0;i < global_scase.npatchinfo;i++){
       patchdata *pi;
       meshdata *mi;
 
-      pi = patchinfo + i;
+      pi = global_scase.patchinfo + i;
       if(pi->loaded == 0)continue;
-      mi = meshinfo + pi->blocknumber;
+      mi = global_scase.meshescoll.meshinfo + pi->blocknumber;
       mi->maxtimes_boundary = mintimes;
     }
   }
@@ -2465,12 +2465,12 @@ FILE_SIZE ReadBoundary(int ifile, int load_flag, int *errorcode){
 
 
   SetTimeState();
-  patchi = patchinfo + ifile;
+  patchi = global_scase.patchinfo + ifile;
   if(patchi->structured == NO){
     return_filesize=ReadGeomData(patchi,NULL, load_flag,ALL_FRAMES, NULL, 1, errorcode);
   }
   else{
-    assert(ifile>=0&&ifile<npatchinfo);
+    assert(ifile>=0&&ifile<global_scase.npatchinfo);
     return_filesize=ReadBoundaryBndf(ifile,load_flag,errorcode);
   }
   return return_filesize;
@@ -2481,10 +2481,10 @@ FILE_SIZE ReadBoundary(int ifile, int load_flag, int *errorcode){
 void GLUI2GlobalBoundaryBounds(const char *key){
   int i;
 
-  for(i=0;i<npatchinfo;i++){
+  for(i=0;i<global_scase.npatchinfo;i++){
     patchdata *patchi;
 
-    patchi = patchinfo + i;
+    patchi = global_scase.patchinfo + i;
     if(strcmp(key,"")==0||strcmp(patchi->label.shortlabel,key)==0){
       patchi->valmin_glui = glui_patchmin;
       patchi->valmax_glui = glui_patchmax;
@@ -2502,10 +2502,10 @@ void GLUI2GlobalBoundaryBounds(const char *key){
 void Global2GLUIBoundaryBounds(const char *key){
   int i;
 
-  for(i=0;i<npatchinfo;i++){
+  for(i=0;i<global_scase.npatchinfo;i++){
     patchdata *patchi;
 
-    patchi = patchinfo + i;
+    patchi = global_scase.patchinfo + i;
     if(strcmp(patchi->label.shortlabel,key)==0){
       glui_patchmin = patchi->valmin_glui;
       glui_patchmax = patchi->valmax_glui;
@@ -2536,7 +2536,7 @@ int SkipPatchTriangle(int is_time_arrival, float *cb, float *parm, int *iparm){
   if(skip == 0 && cb[4*iparm[0]+3] == 0.0 && cb[4*iparm[1]+3] == 0.0 && cb[4*iparm[3]+3] == 0.0)skip = 1;
   if(skip == 0 && cb[4*iparm[0]+3] == 0.0 && cb[4*iparm[2]+3] == 0.0 && cb[4*iparm[3]+3] == 0.0)skip = 1;
   return skip;
-}            
+}
 
 /* ------------------ DrawBoundaryTexture ------------------------ */
 
@@ -2559,8 +2559,8 @@ void DrawBoundaryTexture(const meshdata *meshi){
   patch_times=meshi->patch_times;
   xyzpatch = GetPatchXYZ(meshi);
   patchblank=meshi->patchblank;
-  patchi=patchinfo+meshi->patchfilenum;
-  patchi = patchinfo + meshi->patchfilenum;
+  patchi=global_scase.patchinfo+meshi->patchfilenum;
+  patchi = global_scase.patchinfo + meshi->patchfilenum;
 
   int set_valmin, set_valmax;
   char *label;
@@ -2584,7 +2584,7 @@ void DrawBoundaryTexture(const meshdata *meshi){
   if(is_time_arrival == 1){
     float delta_z=0.0;
 
-    delta_z = (meshinfo->zplt[1] - meshinfo->zplt[0])/10.0;
+    delta_z = (global_scase.meshescoll.meshinfo->zplt[1] - global_scase.meshescoll.meshinfo->zplt[0])/10.0;
     glPushMatrix();
     glTranslatef(0.0, 0.0, delta_z);
   }
@@ -2879,7 +2879,7 @@ void DrawBoundaryTextureThreshold(const meshdata *meshi){
   patch_times=meshi->patch_times;
   xyzpatch = GetPatchXYZ(meshi);
   patchblank=meshi->patchblank;
-  patchi=patchinfo+meshi->patchfilenum;
+  patchi=global_scase.patchinfo+meshi->patchfilenum;
   switch(patchi->compression_type){
   case UNCOMPRESSED:
 #ifndef pp_BOUNDFRAME
@@ -2892,7 +2892,7 @@ void DrawBoundaryTextureThreshold(const meshdata *meshi){
   default:
     assert(FFALSE);
   }
-  patchi = patchinfo + meshi->patchfilenum;
+  patchi = global_scase.patchinfo + meshi->patchfilenum;
 
   if(patch_times[0]>global_times[itimes]||patchi->display==0)return;
 
@@ -3208,7 +3208,7 @@ void DrawBoundaryThresholdCellcenter(const meshdata *meshi){
   patch_times=meshi->patch_times;
   xyzpatch = GetPatchXYZ(meshi);
   patchblank=meshi->patchblank;
-  patchi=patchinfo+meshi->patchfilenum;
+  patchi=global_scase.patchinfo+meshi->patchfilenum;
   switch(patchi->compression_type){
   case UNCOMPRESSED:
     assert(meshi->cpatchval_iframe!=NULL);
@@ -3219,7 +3219,7 @@ void DrawBoundaryThresholdCellcenter(const meshdata *meshi){
   default:
     assert(FFALSE);
   }
-  patchi = patchinfo + meshi->patchfilenum;
+  patchi = global_scase.patchinfo + meshi->patchfilenum;
 
   if(patch_times[0]>global_times[itimes]||patchi->display==0)return;
   if(cullfaces==1)glDisable(GL_CULL_FACE);
@@ -3404,7 +3404,7 @@ void MakeBoundaryMask(patchdata *patchi){
   int n;
 
   if(patchi->blocknumber < 0)return;
-  meshi = meshinfo + patchi->blocknumber;
+  meshi = global_scase.meshescoll.meshinfo + patchi->blocknumber;
   if(meshi->boundary_mask != NULL|| meshi->npatchsize <= 0)return;
   NewMemory((void **)&meshi->boundary_mask, meshi->npatchsize);
   memset(meshi->boundary_mask, 0, meshi->npatchsize);
@@ -3448,7 +3448,7 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
 
   patch_times = meshi->patch_times;
   patchventcolors = meshi->patchventcolors;
-  patchi = patchinfo+meshi->patchfilenum;
+  patchi = global_scase.patchinfo+meshi->patchfilenum;
   xyzpatch = GetPatchXYZ(meshi);
 
   label = patchi->label.shortlabel;
@@ -3470,7 +3470,7 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
   default:
     assert(FFALSE);
   }
-  patchi = patchinfo+meshi->patchfilenum;
+  patchi = global_scase.patchinfo+meshi->patchfilenum;
 
   if(patch_times[0]>global_times[itimes]||patchi->display==0)return;
   if(cullfaces==1)glDisable(GL_CULL_FACE);
@@ -3765,13 +3765,13 @@ meshdata *GetPatchMeshNabor(meshdata *meshi, int *ib){
 void DrawBoundaryFrame(int flag){
   int i;
 
-  if(use_tload_begin==1 && global_times[itimes]<tload_begin)return;
-  if(use_tload_end==1   && global_times[itimes]>tload_end)return;
+  if(use_tload_begin==1 && global_times[itimes]<global_scase.tload_begin)return;
+  if(use_tload_end==1   && global_times[itimes]>global_scase.tload_end)return;
 
-  for(i=0;i<npatchinfo;i++){
+  for(i=0;i<global_scase.npatchinfo;i++){
     patchdata *patchi;
 
-    patchi = patchinfo + i;
+    patchi = global_scase.patchinfo + i;
     IF_NOT_USEMESH_CONTINUE(USEMESH_DRAW,patchi->blocknumber);
     if(patchi->structured == NO && patchi->loaded == 1 && patchi->display == 1){
       if(flag == DRAW_OPAQUE){
@@ -3789,14 +3789,14 @@ void DrawBoundaryFrame(int flag){
     }
   }
   if(flag == DRAW_TRANSPARENT)return;
-  for(i = 0; i < npatchinfo; i++){
+  for(i = 0; i < global_scase.npatchinfo; i++){
     patchdata *patchi;
     meshdata *meshi;
 
-    patchi = patchinfo + i;
+    patchi = global_scase.patchinfo + i;
     IF_NOT_USEMESH_CONTINUE(USEMESH_DRAW, patchi->blocknumber);
     if(patchi->structured == NO)continue;
-    meshi = meshinfo + patchi->blocknumber;
+    meshi = global_scase.meshescoll.meshinfo + patchi->blocknumber;
     if(meshi->use == 0)continue;
     if(patchi->loaded == 0 || patchi->display == 0 || patchi->shortlabel_index != iboundarytype)continue;
     if(patchi->npatches < 0)continue;
@@ -3827,13 +3827,13 @@ void UpdateBoundaryTypes(void){
   int i;
   patchdata *patchi;
 
-  nboundarytypes = 0;
-  for(i=0;i<npatchinfo;i++){
-    patchi = patchinfo+i;
-    if(GetBoundaryIndex(patchi)==-1)boundarytypes[nboundarytypes++]=i;
+  global_scase.nboundarytypes = 0;
+  for(i=0;i<global_scase.npatchinfo;i++){
+    patchi = global_scase.patchinfo+i;
+    if(GetBoundaryIndex(patchi)==-1)global_scase.boundarytypes[global_scase.nboundarytypes++]=i;
   }
-  for(i=0;i<npatchinfo;i++){
-    patchi = patchinfo+i;
+  for(i=0;i<global_scase.npatchinfo;i++){
+    patchi = global_scase.patchinfo+i;
     patchi->shortlabel_index =GetBoundaryType(patchi);
   }
 }
@@ -3843,10 +3843,10 @@ void UpdateBoundaryTypes(void){
 int GetBoundaryType(const patchdata *patchi){
   int j;
 
-  for(j=0;j<nboundarytypes;j++){
+  for(j=0;j<global_scase.nboundarytypes;j++){
     patchdata *patchi2;
 
-    patchi2 = patchinfo+boundarytypes[j];
+    patchi2 = global_scase.patchinfo+global_scase.boundarytypes[j];
     if(strcmp(patchi->label.shortlabel,patchi2->label.shortlabel)==0)return j;
   }
   return -1;
@@ -3857,17 +3857,17 @@ int GetBoundaryType(const patchdata *patchi){
 void UpdateBoundaryType(void){
   int i;
 
-  for(i=0;i<npatchinfo;i++){
+  for(i=0;i<global_scase.npatchinfo;i++){
     patchdata *patchi;
 
-    patchi = patchinfo + i;
+    patchi = global_scase.patchinfo + i;
     if(patchi->boundary==1&&patchi->loaded==1&&patchi->display==1&&patchi->shortlabel_index==iboundarytype)return;
   }
 
-  for(i=0;i<npatchinfo;i++){
+  for(i=0;i<global_scase.npatchinfo;i++){
     patchdata *patchi;
 
-    patchi = patchinfo + i;
+    patchi = global_scase.patchinfo + i;
     if(patchi->boundary==1&&patchi->loaded==1&&patchi->display==1){
       iboundarytype = GetBoundaryIndex(patchi);
       return;
@@ -3881,8 +3881,8 @@ void UpdateBoundaryType(void){
 int BoundaryCompare(const void *arg1, const void *arg2){
   patchdata *patchi, *patchj;
 
-  patchi = patchinfo + *(int *)arg1;
-  patchj = patchinfo + *(int *)arg2;
+  patchi = global_scase.patchinfo + *(int *)arg1;
+  patchj = global_scase.patchinfo + *(int *)arg2;
 
   if(strcmp(patchi->menulabel_base,patchj->menulabel_base)<0)return -1;
   if(strcmp(patchi->menulabel_base,patchj->menulabel_base)>0)return 1;
@@ -3900,18 +3900,18 @@ void UpdateBoundaryMenuLabels(void){
   patchdata *patchi;
   char label[128];
 
-  if(npatchinfo>0){
-    for(i=0;i<npatchinfo;i++){
-      patchi = patchinfo + i;
+  if(global_scase.npatchinfo>0){
+    for(i=0;i<global_scase.npatchinfo;i++){
+      patchi = global_scase.patchinfo + i;
       STRCPY(patchi->menulabel, "");
       STRCPY(patchi->menulabel_suffix, "");
-      if(nmeshes == 1){
+      if(global_scase.meshescoll.nmeshes == 1){
         STRCAT(patchi->menulabel, patchi->label.longlabel);
       }
       else{
         meshdata *patchmesh;
 
-        patchmesh = meshinfo + patchi->blocknumber;
+        patchmesh = global_scase.meshescoll.meshinfo + patchi->blocknumber;
         sprintf(label,"%s",patchmesh->label);
         STRCAT(patchi->menulabel,label);
       }
@@ -3953,11 +3953,11 @@ void UpdateBoundaryMenuLabels(void){
       }
     }
     FREEMEMORY(patchorderindex);
-    NewMemory((void **)&patchorderindex, sizeof(int)*npatchinfo);
-    for(i = 0;i < npatchinfo;i++){
+    NewMemory((void **)&patchorderindex, sizeof(int)*global_scase.npatchinfo);
+    for(i = 0;i < global_scase.npatchinfo;i++){
       patchorderindex[i] = i;
     }
-    qsort((int *)patchorderindex, (size_t)npatchinfo, sizeof(int), BoundaryCompare);
+    qsort((int *)patchorderindex, (size_t)global_scase.npatchinfo, sizeof(int), BoundaryCompare);
   }
 }
 
@@ -3994,17 +3994,17 @@ int IsBoundaryDuplicate(patchdata *patchi, int flag){
   if(patchi->dir == 0)return 0;
   xyzmini = patchi->xyz_min;
   xyzmaxi = patchi->xyz_max;
-  meshi = meshinfo + patchi->blocknumber;
+  meshi = global_scase.meshescoll.meshinfo + patchi->blocknumber;
   labeli = &(patchi->label);
-  for(j=0;j<npatchinfo;j++){ // identify duplicate slices
+  for(j=0;j<global_scase.npatchinfo;j++){ // identify duplicate slices
     patchdata *patchj;
     float *xyzminj, *xyzmaxj, grid_eps;
     meshdata *meshj;
     flowlabels *labelj;
 
-    patchj = patchinfo + j;
+    patchj = global_scase.patchinfo + j;
     labelj = &(patchj->label);
-    meshj = meshinfo + patchj->blocknumber;
+    meshj = global_scase.meshescoll.meshinfo + patchj->blocknumber;
 
     if(patchj==patchi||patchj->skip==1)continue;
     if(patchj->structured == YES||patchj->patch_filetype!=PATCH_GEOMETRY_SLICE)continue;
@@ -4030,10 +4030,10 @@ int CountBoundarySliceDups(void){
   int i, count;
 
   count = 0;
-  for(i = 0; i < npatchinfo; i++){
+  for(i = 0; i < global_scase.npatchinfo; i++){
     patchdata *patchi;
 
-    patchi = patchinfo + i;
+    patchi = global_scase.patchinfo + i;
     count += IsBoundaryDuplicate(patchi, COUNT_DUPLICATES);
   }
   return count;
@@ -4044,17 +4044,17 @@ int CountBoundarySliceDups(void){
 void UpdateBoundarySliceDups(void){
   int i;
 
-  for(i = 0;i < npatchinfo;i++){
+  for(i = 0;i < global_scase.npatchinfo;i++){
     patchdata *patchi;
 
-    patchi = patchinfo + i;
+    patchi = global_scase.patchinfo + i;
     patchi->skip = 0;
   }
   // look for duplicate patches
-  for(i = 0;i < npatchinfo;i++){
+  for(i = 0;i < global_scase.npatchinfo;i++){
     patchdata *patchi;
 
-    patchi = patchinfo + i;
+    patchi = global_scase.patchinfo + i;
     if(patchi->structured == YES||patchi->patch_filetype!=PATCH_GEOMETRY_SLICE)continue;
     patchi->skip = IsBoundaryDuplicate(patchi, FIND_DUPLICATES);
   }
@@ -4065,7 +4065,7 @@ void UpdateBoundarySliceDups(void){
 void GetBoundaryParams(void){
   int i;
 
-  for(i = 0;i < npatchinfo;i++){
+  for(i = 0;i < global_scase.npatchinfo;i++){
     patchdata *patchi;
     float *xyz_min, *xyz_max;
     int *ijk;
@@ -4073,7 +4073,7 @@ void GetBoundaryParams(void){
     float *xplt, *yplt, *zplt;
     float dxyz[3];
 
-    patchi = patchinfo + i;
+    patchi = global_scase.patchinfo + i;
     patchi->dir = 0;
 
     xyz_min = patchi->xyz_min;
@@ -4088,7 +4088,7 @@ void GetBoundaryParams(void){
     if(patchi->structured == YES || patchi->patch_filetype != PATCH_GEOMETRY_SLICE)continue;
 
     ijk = patchi->ijk;
-    meshi = meshinfo + patchi->blocknumber;
+    meshi = global_scase.meshescoll.meshinfo + patchi->blocknumber;
 
     xplt = meshi->xplt;
     yplt = meshi->yplt;

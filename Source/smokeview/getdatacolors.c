@@ -112,19 +112,19 @@ void WriteBoundIni(void){
 
   if(fullfilename == NULL)return;
 
-  for(i = 0; i < npatchinfo; i++){
+  for(i = 0; i < global_scase.npatchinfo; i++){
     bounddata *boundi;
     patchdata *patchi;
     int skipi;
     int j;
 
     skipi = 0;
-    patchi = patchinfo + i;
+    patchi = global_scase.patchinfo + i;
     if(patchi->bounds.defined == 0)continue;
     for(j = 0; j < i - 1; j++){
       patchdata *patchj;
 
-      patchj = patchinfo + j;
+      patchj = global_scase.patchinfo + j;
       if(patchi->shortlabel_index == patchj->shortlabel_index&&patchi->patch_filetype == patchj->patch_filetype){
         skipi = 1;
         break;
@@ -220,19 +220,19 @@ void GetBoundaryColors3(patchdata *patchi, float *t, int start, int nt, unsigned
 void UpdateAllBoundaryColors(int flag){
   int i, *list = NULL, nlist = 0;
 
-  if(npatchinfo==0)return;
-  NewMemory((void **)&list, npatchinfo*sizeof(int));
+  if(global_scase.npatchinfo==0)return;
+  NewMemory((void **)&list, global_scase.npatchinfo*sizeof(int));
   nlist = 0;
-  for(i = 0; i<npatchinfo; i++){
+  for(i = 0; i<global_scase.npatchinfo; i++){
     meshdata *meshi;
     patchdata *patchi;
 
-    patchi = patchinfo+i;
+    patchi = global_scase.patchinfo+i;
     if(patchi->loaded==0)continue;
     switch(patchi->patch_filetype){
       case PATCH_STRUCTURED_NODE_CENTER:
       case PATCH_STRUCTURED_CELL_CENTER:
-        meshi = meshinfo+patchi->blocknumber;
+        meshi = global_scase.meshescoll.meshinfo+patchi->blocknumber;
         if(meshi->patchval==NULL||meshi->cpatchval==NULL)continue;
         list[nlist++] = i;
         break;
@@ -252,7 +252,7 @@ void UpdateAllBoundaryColors(int flag){
     for(i = 0; i<nlist; i++){
       patchdata *patchi;
 
-      patchi = patchinfo+list[i];
+      patchi = global_scase.patchinfo+list[i];
       if(patchi->loaded==1){
         int set_valmin, set_valmax;
         float valmin, valmax;
@@ -267,11 +267,11 @@ void UpdateAllBoundaryColors(int flag){
               meshdata *meshi;
               int npatchvals;
 
-              meshi = meshinfo+patchi->blocknumber;
+              meshi = global_scase.meshescoll.meshinfo+patchi->blocknumber;
               npatchvals = patchi->ntimes*meshi->npatchsize;
               GetBoundaryColors3(patchi, meshi->patchval, 0, npatchvals, meshi->cpatchval,
                                  &glui_patchmin, &glui_patchmax,
-                                 nrgb, colorlabelpatch, colorvaluespatch, boundarylevels256,
+                                 global_scase.nrgb, colorlabelpatch, colorvaluespatch, boundarylevels256,
                                  &patchi->extreme_min, &patchi->extreme_max, flag);
             }
             break;
@@ -279,7 +279,7 @@ void UpdateAllBoundaryColors(int flag){
           case PATCH_GEOMETRY_SLICE:
             GetBoundaryColors3(patchi, patchi->geom_vals, 0, patchi->geom_nvals, patchi->geom_ivals,
                                &valmin, &valmax,
-                               nrgb, colorlabelpatch, colorvaluespatch, boundarylevels256,
+                               global_scase.nrgb, colorlabelpatch, colorvaluespatch, boundarylevels256,
                                &patchi->extreme_min, &patchi->extreme_max, flag);
             break;
           default:
@@ -643,10 +643,10 @@ void GetPlot3DColors(int plot3dvar, float *ttmin, float *ttmax,
       factor = 0.0f;
     }
 
-    for(i = 0; i<nplot3dinfo; i++){
-      p = plot3dinfo+i;
+    for(i = 0; i<global_scase.nplot3dinfo; i++){
+      p = global_scase.plot3dinfo+i;
       if(p->loaded==0||p->display==0)continue;
-      meshi = meshinfo+p->blocknumber;
+      meshi = global_scase.meshescoll.meshinfo+p->blocknumber;
       ntotal = (meshi->ibar+1)*(meshi->jbar+1)*(meshi->kbar+1);
 
       if(meshi->qdata!=NULL){
@@ -696,10 +696,10 @@ void GetPlot3DColors(int plot3dvar, float *ttmin, float *ttmax,
   }
 
   if(flag==1){
-    for(i = 0; i<nplot3dinfo; i++){
-      p = plot3dinfo+i;
+    for(i = 0; i<global_scase.nplot3dinfo; i++){
+      p = global_scase.plot3dinfo+i;
       if(p->loaded==0||p->display==0)continue;
-      meshi = meshinfo+p->blocknumber;
+      meshi = global_scase.meshescoll.meshinfo+p->blocknumber;
       ntotal = (meshi->ibar+1)*(meshi->jbar+1)*(meshi->kbar+1);
 
       if(meshi->qdata==NULL){
@@ -724,11 +724,11 @@ void GetPlot3DColors(int plot3dvar, float *ttmin, float *ttmax,
 void UpdateAllPlot3DColors(int flag){
   int i, updated=0;
 
-  for(i = 0; i < nplot3dinfo; i++){
+  for(i = 0; i < global_scase.nplot3dinfo; i++){
     plot3ddata *plot3di;
     int errorcode;
 
-    plot3di = plot3dinfo + i;
+    plot3di = global_scase.plot3dinfo + i;
     if(plot3di->loaded == 1){
       UpdatePlot3DColors(plot3di, flag, &errorcode);
       updated = 1;
@@ -769,7 +769,7 @@ void UpdateSliceColors(int last_slice){
     slicedata *sd;
 
     i = slice_loaded_list[ii];
-    sd = slicecoll.sliceinfo+i;
+    sd = global_scase.slicecoll.sliceinfo+i;
     if(sd->vloaded==0&&sd->display==0)continue;
     if(sd->slicefile_labelindex==slicefile_labelindex){
       int set_slicecolor;
@@ -796,7 +796,7 @@ void UpdateSliceBounds2(void){
     float qmin, qmax;
 
     i = slice_loaded_list[ii];
-    sd = slicecoll.sliceinfo+i;
+    sd = global_scase.slicecoll.sliceinfo+i;
     if(sd->display==0)continue;
     GLUIGetMinMax(BOUND_SLICE, sd->label.shortlabel, &set_valmin, &qmin, &set_valmax, &qmax);
     sd->valmin_slice      = qmin;
@@ -805,15 +805,15 @@ void UpdateSliceBounds2(void){
     sd->globalmax_slice   = qmax;
     SetSliceColors(qmin, qmax, sd, 0, &error);
   }
-  for(ii = 0; ii<slicecoll.nvsliceinfo; ii++){
+  for(ii = 0; ii<global_scase.slicecoll.nvsliceinfo; ii++){
     vslicedata *vd;
     slicedata *sd;
     int set_valmin, set_valmax;
     float qmin, qmax;
 
-    vd = slicecoll.vsliceinfo+ii;
+    vd = global_scase.slicecoll.vsliceinfo+ii;
     if(vd->loaded==0||vd->display==0||vd->ival==-1)continue;
-    sd = slicecoll.sliceinfo+vd->ival;
+    sd = global_scase.slicecoll.sliceinfo+vd->ival;
     GLUIGetMinMax(BOUND_SLICE, sd->label.shortlabel, &set_valmin, &qmin, &set_valmax, &qmax);
     sd->valmin_slice    = qmin;
     sd->valmax_slice    = qmax;
@@ -906,14 +906,14 @@ void InitCadColors(void){
   switch(setbw){
    case 0:
     for(n=0;n<nrgb_cad;n++){
-      xx = (float)n/(float)nrgb_cad * (float)(nrgb-1);
+      xx = (float)n/(float)nrgb_cad * (float)(global_scase.nrgb-1);
       i1 = (int)xx;
       i2 = (int)(xx+1);
       f2 = xx - (float)i1;
       f1 = 1.0f - f2;
       sum=0.0;
       for(i=0;i<3;i++){
-        rgb_cad[n][i] = f1*rgb[i1][i] + f2*rgb[i2][i];
+        rgb_cad[n][i] = f1*global_scase.rgb[i1][i] + f2*global_scase.rgb[i2][i];
         sum += rgb_cad[n][i]*rgb_cad[n][i];
       }
       sum=sqrt((double)sum);
@@ -1005,30 +1005,30 @@ void InitRGB(void){
   if(setbw==0){
     ConvertColor(TO_COLOR);
     if(nrgb_ini > 0){
-      nrgb = nrgb_ini;
+      global_scase.nrgb = nrgb_ini;
       for(n=0;n<nrgb_ini;n++){
-        rgb[n][0] = rgb_ini[n*3];
-        rgb[n][1] = rgb_ini[n*3+1];
-        rgb[n][2] = rgb_ini[n*3+2];
-        rgb[n][3] = transparent_level_local;
+        global_scase.rgb[n][0] = rgb_ini[n*3];
+        global_scase.rgb[n][1] = rgb_ini[n*3+1];
+        global_scase.rgb[n][2] = rgb_ini[n*3+2];
+        global_scase.rgb[n][3] = transparent_level_local;
       }
     }
     else{
-      for(n=0;n<nrgb;n++){
-        rgb[n][0] = rgb_base[n][0];
-        rgb[n][1] = rgb_base[n][1];
-        rgb[n][2] = rgb_base[n][2];
-        rgb[n][3] = transparent_level_local;
+      for(n=0;n<global_scase.nrgb;n++){
+        global_scase.rgb[n][0] = rgb_base[n][0];
+        global_scase.rgb[n][1] = rgb_base[n][1];
+        global_scase.rgb[n][2] = rgb_base[n][2];
+        global_scase.rgb[n][3] = transparent_level_local;
       }
     }
   }
   else{
     ConvertColor(TO_BW);
-    for(n=0;n<nrgb;n++){
-      rgb[n][0] = bw_base[n][0];
-      rgb[n][1] = bw_base[n][1];
-      rgb[n][2] = bw_base[n][2];
-      rgb[n][3] = transparent_level_local;
+    for(n=0;n<global_scase.nrgb;n++){
+      global_scase.rgb[n][0] = bw_base[n][0];
+      global_scase.rgb[n][1] = bw_base[n][1];
+      global_scase.rgb[n][2] = bw_base[n][2];
+      global_scase.rgb[n][3] = transparent_level_local;
     }
   }
 }
@@ -1082,7 +1082,7 @@ void UpdateSmokeColormap(int option){
 
   if(have_fire==HRRPUV_index&&option==RENDER_SLICE){
     valmin=global_hrrpuv_min;
-    valcut=global_hrrpuv_cutoff;
+    valcut=global_scase.global_hrrpuv_cutoff;
     valmax=global_hrrpuv_max;
     rgb_colormap = rgb_slicesmokecolormap_01;
   }
@@ -1349,53 +1349,53 @@ void UpdateRGBColors(int colorbar_index){
     rgb2ptr=&(rgb2[0][0]);
   }
   if(colorbar_index!=0){
-    for(n=0;n<nrgb;n++){
-      nn=n*(nrgb_full-1)/(nrgb-1);
-      rgb[n][0] = rgb_full[nn][0];
-      rgb[n][1] = rgb_full[nn][1];
-      rgb[n][2] = rgb_full[nn][2];
-      rgb[n][3] = transparent_level_local;
+    for(n=0;n<global_scase.nrgb;n++){
+      nn=n*(nrgb_full-1)/(global_scase.nrgb-1);
+      global_scase.rgb[n][0] = rgb_full[nn][0];
+      global_scase.rgb[n][1] = rgb_full[nn][1];
+      global_scase.rgb[n][2] = rgb_full[nn][2];
+      global_scase.rgb[n][3] = transparent_level_local;
     }
   }
-  for(n=nrgb;n<nrgb+nrgb2;n++){
-    rgb[n][0]=rgb2ptr[3*(n-nrgb)];
-    rgb[n][1]=rgb2ptr[3*(n-nrgb)+1];
-    rgb[n][2]=rgb2ptr[3*(n-nrgb)+2];
-    rgb[n][3]=transparent_level_local;
+  for(n=global_scase.nrgb;n<global_scase.nrgb+global_scase.nrgb2;n++){
+    global_scase.rgb[n][0]=rgb2ptr[3*(n-global_scase.nrgb)];
+    global_scase.rgb[n][1]=rgb2ptr[3*(n-global_scase.nrgb)+1];
+    global_scase.rgb[n][2]=rgb2ptr[3*(n-global_scase.nrgb)+2];
+    global_scase.rgb[n][3]=transparent_level_local;
   }
-  rgb_white=nrgb;
-  rgb_yellow=nrgb+1;
-  rgb_blue=nrgb+2;
-  rgb_red=nrgb+3;
+  rgb_white=global_scase.nrgb;
+  rgb_yellow=global_scase.nrgb+1;
+  rgb_blue=global_scase.nrgb+2;
+  rgb_red=global_scase.nrgb+3;
 
   if(background_flip==0){
     for(i=0;i<3;i++){
       foregroundcolor[i]=foregroundbasecolor[i];
       backgroundcolor[i]=backgroundbasecolor[i];
     }
-    rgb[rgb_white][0]=1.0;
-    rgb[rgb_white][1]=1.0;
-    rgb[rgb_white][2]=1.0;
-    rgb[rgb_black][0]=0.0;
-    rgb[rgb_black][1]=0.0;
-    rgb[rgb_black][2]=0.0;
+    global_scase.rgb[rgb_white][0]=1.0;
+    global_scase.rgb[rgb_white][1]=1.0;
+    global_scase.rgb[rgb_white][2]=1.0;
+    global_scase.rgb[rgb_black][0]=0.0;
+    global_scase.rgb[rgb_black][1]=0.0;
+    global_scase.rgb[rgb_black][2]=0.0;
   }
   else{
     for(i=0;i<3;i++){
       foregroundcolor[i]=backgroundbasecolor[i];
       backgroundcolor[i]=foregroundbasecolor[i];
     }
-    rgb[rgb_white][0]=0.0;  //xxx fix or take out
-    rgb[rgb_white][1]=0.0;
-    rgb[rgb_white][2]=0.0;
-    rgb[rgb_black][0]=1.0;
-    rgb[rgb_black][1]=1.0;
-    rgb[rgb_black][2]=1.0;
+    global_scase.rgb[rgb_white][0]=0.0;  //xxx fix or take out
+    global_scase.rgb[rgb_white][1]=0.0;
+    global_scase.rgb[rgb_white][2]=0.0;
+    global_scase.rgb[rgb_black][0]=1.0;
+    global_scase.rgb[rgb_black][1]=1.0;
+    global_scase.rgb[rgb_black][2]=1.0;
   }
-  for(i=0;i<nmeshes;i++){
+  for(i=0;i<global_scase.meshescoll.nmeshes;i++){
     int j;
 
-    meshi=meshinfo + i;
+    meshi=global_scase.meshescoll.meshinfo + i;
     vent_offset = 6*meshi->nbptrs;
     outline_offset = vent_offset + meshi->nvents;
     if(meshi->faceinfo == NULL)continue;
@@ -1553,10 +1553,10 @@ void UpdateChopColors(void){
   if(showall_3dslices==1){
     int slice3d_loaded = 0;
 
-    for(i=0;i<slicecoll.nsliceinfo;i++){
+    for(i=0;i<global_scase.slicecoll.nsliceinfo;i++){
       slicedata *slicei;
 
-      slicei = slicecoll.sliceinfo + i;
+      slicei = global_scase.slicecoll.sliceinfo + i;
       if(slicei->volslice==1&&slicei->loaded==1&&slicei->display==1){
         slice3d_loaded = 1;
         break;
@@ -1708,18 +1708,18 @@ void UpdateChopColors(void){
         if(ii>NCHOP-1)continue;
         rgb_plot3d[4*i+3]=transparent_level_local*(float)ii/(float)(NCHOP-1);
       }
-      for(i = 0; i<nrgb-2; i++){
+      for(i = 0; i<global_scase.nrgb-2; i++){
         int ii;
         float factor;
 
-        factor = 256.0/(float)(nrgb-2);
+        factor = 256.0/(float)(global_scase.nrgb-2);
 
         ii = factor*((float)i+0.5);
         if(ii>255)ii = 255;
         rgb_plot3d_contour[i] = rgb_plot3d + 4*ii;
       }
-      rgb_plot3d_contour[nrgb-2] = rgb_plot3d;
-      rgb_plot3d_contour[nrgb-1] = rgb_plot3d + 4*255;
+      rgb_plot3d_contour[global_scase.nrgb-2] = rgb_plot3d;
+      rgb_plot3d_contour[global_scase.nrgb-1] = rgb_plot3d + 4*255;
     }
     if(setp3chopmax_temp_local==1){
       ichopmax=nrgb_full*(p3chopmax_temp_local - glui_p3min_local)/(glui_p3max_local - glui_p3min_local);
@@ -1739,10 +1739,10 @@ void UpdateChopColors(void){
       }
     }
   }
-  for(i=0;i<npartinfo;i++){
+  for(i=0;i<global_scase.npartinfo;i++){
     partdata *parti;
 
-    parti = partinfo + i;
+    parti = global_scase.partinfo + i;
     if(parti->loaded==0)continue;
     AdjustPart5Chops(); // only needs to be called once
     break;
@@ -1767,6 +1767,7 @@ void GetRGB(unsigned int val, unsigned char *rr, unsigned char *gg, unsigned cha
   b = b << nblueshift;
   *rr=r; *gg=g; *bb=b;
 }
+
 
 /* ------------------ GetColorPtr ------------------------ */
 
@@ -1828,18 +1829,17 @@ float *GetColorTranPtr(float *color, float transparency){
 
 void ConvertColor(int flag){
   colordata *colorptr;
-  extern colordata *firstcolor;
 
   switch(flag){
    case TO_BW:
-    for(colorptr=firstcolor;colorptr!=NULL;colorptr=colorptr->nextcolor){
+    for(colorptr=global_scase.firstcolor;colorptr!=NULL;colorptr=colorptr->nextcolor){
       colorptr->color[0]=colorptr->bw_color[0];
       colorptr->color[1]=colorptr->bw_color[1];
       colorptr->color[2]=colorptr->bw_color[2];
     }
     break;
    case TO_COLOR:
-    for(colorptr=firstcolor;colorptr!=NULL;colorptr=colorptr->nextcolor){
+    for(colorptr=global_scase.firstcolor;colorptr!=NULL;colorptr=colorptr->nextcolor){
       colorptr->color[0]=colorptr->full_color[0];
       colorptr->color[1]=colorptr->full_color[1];
       colorptr->color[2]=colorptr->full_color[2];
