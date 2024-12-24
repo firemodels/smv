@@ -49,7 +49,7 @@ typedef struct {
 } cadgeom_collection;
 
 /**
- * @brief Initialise an @ref cadgeom_collection.
+ * @brief Create and initialise an @ref cadgeom_collection.
  *
  * @param capacity The maximum capacity of this collection.
  *
@@ -58,8 +58,26 @@ typedef struct {
 cadgeom_collection *CreateCADGeomCollection(int capacity);
 
 /**
- * @brief Free an @ref cadgeom_collection previously created by @ref
- * CreateCADGeomCollection.
+ * @brief Initialise an already allocated cadgeom_collection. This is useful
+ * when the collection is allocated as part of a larger data structure.
+ *
+ * @param coll
+ * @param capacity
+ * @return int
+ */
+int InitCADGeomCollection(cadgeom_collection *coll, int capacity);
+
+/**
+ * @brief Clear an @ref cadgeom_collection. This does not free the data
+ * structure itself, but simply empties it.
+ *
+ * @param[inout] coll The @ref cadgeom_collection to clear.
+ */
+void ClearCADGeomCollection(cadgeom_collection *coll);
+
+/**
+ * @brief Free a @ref cadgeom_collection that was previously allocated with
+ * NewMemory or created by @ref CreateCADGeomCollection.
  *
  * @param[inout] coll The @ref cadgeom_collection to free.
  */
