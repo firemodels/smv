@@ -1456,20 +1456,32 @@ void InitStdObjectDefs(object_collection *objectscoll, int setbw,
   }
 }
 
-object_collection *CreateObjectCollection(void){
-  object_collection *objectscoll;
-  NewMemory((void **)&objectscoll, sizeof(object_collection));
-  // Set everything to NULL
-  memset(objectscoll, 0, sizeof(object_collection));
-  strcpy(objectscoll->object_def_first.label, "first");
-  objectscoll->object_def_first.next = &objectscoll->object_def_last;
-  objectscoll->object_def_first.prev = NULL;
 
-  strcpy(objectscoll->object_def_last.label, "last");
-  objectscoll->object_def_last.next = NULL;
-  objectscoll->object_def_last.prev = &objectscoll->object_def_first;
-  objectscoll->object_defs = NULL;
-  return objectscoll;
+int InitObjectCollection(object_collection *coll) {
+  // Set everything to NULL
+  memset(coll, 0, sizeof(object_collection));
+  strcpy(coll->object_def_first.label, "first");
+  coll->object_def_first.next = &coll->object_def_last;
+  coll->object_def_first.prev = NULL;
+
+  strcpy(coll->object_def_last.label, "last");
+  coll->object_def_last.next = NULL;
+  coll->object_def_last.prev = &coll->object_def_first;
+  coll->object_defs = NULL;
+  return 0;
+}
+
+object_collection *CreateObjectCollection(void) {
+  object_collection *coll;
+  if(NEWMEMORY(coll, sizeof(object_collection)) == 0) return NULL;
+  int ret = InitObjectCollection(coll);
+  if(ret != 0) {
+    FREEMEMORY(coll);
+    return NULL;
+  }
+  else {
+    return coll;
+  }
 }
 
 void LoadDefaultObjectDefs(object_collection *objectscoll){

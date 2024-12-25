@@ -344,6 +344,15 @@ typedef struct {
 object_collection *CreateObjectCollection(void);
 
 /**
+ * @brief Initialise an already allocated object_collection. This is useful
+ * when the collection is allocated as part of a larger data structure.
+ *
+ * @param[inout] coll
+ * @return int
+ */
+int InitObjectCollection(object_collection *coll);
+
+/**
  * @brief Read objects from the standard file locations, using fallback objects
  * if object definitions are not found.
  *
