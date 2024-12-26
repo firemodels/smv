@@ -169,5 +169,4 @@ unsigned char *ReadPicture(char *texturedir, char *filename, int *width, int *he
     }
   }
   return returncode;
-
 }

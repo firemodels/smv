@@ -17,6 +17,8 @@
 #include "readobject.h"
 #include "readtour.h"
 
+/* ------------------ ReallocTourMemory ------------------------ */
+
 void ReallocTourMemory(tour_collection *tourcoll) {
   tourdata *touri;
 
@@ -141,6 +143,7 @@ keyframe *GetKeyFrame(const tourdata *touri, float time) {
   }
   return last_key->prev;
 }
+
 /* ------------------ GetKeyView ------------------------ */
 
 void GetKeyView(float t, keyframe *this_key, float *view) {
@@ -187,8 +190,7 @@ void GetTourXYZView(float time, float *times, float *vals, int n, float *val3) {
   val3[2] = (1.0 - factor) * v1[2] + factor * v2[2];
 }
 
-
-/* ------------------ SetTourXYZView ------------------------ */
+ /* ------------------ SetTourXYZView ------------------------ */
 
 void SetTourXYZView(float t, tourdata *touri) {
   keyframe *this_key, *first_key, *last_key;
