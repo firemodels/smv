@@ -344,6 +344,15 @@ typedef struct {
 object_collection *CreateObjectCollection(void);
 
 /**
+ * @brief Initialise an already allocated object_collection. This is useful
+ * when the collection is allocated as part of a larger data structure.
+ *
+ * @param[inout] coll
+ * @return int
+ */
+int InitObjectCollection(object_collection *coll);
+
+/**
  * @brief Read objects from the standard file locations, using fallback objects
  * if object definitions are not found.
  *
@@ -358,13 +367,23 @@ object_collection *CreateObjectCollection(void);
 void ReadDefaultObjectCollection(object_collection *objectscoll,
                                  const char *fdsprefix, int setbw,
                                  int isZoneFireModel);
+
 /**
- * @brief Free an @ref object_collection previously created by @ref
- * CreateObjectCollection.
+ * @brief Clear a @ref object_collection. This does not free the data structure
+ * itself but simply empties it.
+ *
+ * @param[inout] objectscoll The @ref object_collection to clear.
+ */
+void ClearObjectCollection(object_collection *objectscoll);
+
+/**
+ * @brief Free an @ref object_collection previously allocated with NewMemory or
+ * created by @ref CreateObjectCollection.
  *
  * @param[inout] objectscoll The @ref object_collection to free.
  */
 void FreeObjectCollection(object_collection *objectscoll);
+
 /**
  * @brief Given a label, find the @ref sv_object in the given @ref
  * object_collection.
@@ -375,6 +394,7 @@ void FreeObjectCollection(object_collection *objectscoll);
  * @return A pointer to the object if found, NULL if not found.
  */
 sv_object *GetSmvObject(object_collection *objectscoll, char *label);
+
 /**
  * @brief Given a label, find the @ref sv_object in the given @ref
  * object_collection.
@@ -387,6 +407,7 @@ sv_object *GetSmvObject(object_collection *objectscoll, char *label);
  */
 sv_object *GetSmvObjectType(object_collection *objectscoll, char *olabel,
                             sv_object *default_object);
+
 /**
  * @brief Read in object definitions from an object file and add them to an
  * object collection.

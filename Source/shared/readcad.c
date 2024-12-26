@@ -415,14 +415,28 @@ int ReadCADGeomToCollection(cadgeom_collection *coll, const char *file,
   return 0;
 }
 
+int InitCADGeomCollection(cadgeom_collection *coll, int capacity) {
+  // Set everything to NULL
+  memset(coll, 0, sizeof(cadgeom_collection));
+  // Allocate capacity
+  if(NEWMEMORY(coll->cadgeominfo, capacity * sizeof(cadgeomdata)) == 0)
+    return 1;
+  coll->capacity = capacity;
+  return 0;
+}
+
 cadgeom_collection *CreateCADGeomCollection(int capacity) {
   cadgeom_collection *coll;
   if(NewMemory((void **)&coll, capacity * sizeof(cadgeom_collection)) == 0)
     return NULL;
-  // Set everything to NULL
-  memset(coll, 0, capacity * sizeof(cadgeom_collection));
-  coll->capacity = capacity;
-  return coll;
+  int ret = InitCADGeomCollection(coll, capacity);
+  if(ret != 0) {
+    FREEMEMORY(coll);
+    return NULL;
+  }
+  else {
+    return coll;
+  }
 }
 
 void FreeCADGeom(cadgeomdata *cd) {
@@ -431,10 +445,15 @@ void FreeCADGeom(cadgeomdata *cd) {
 }
 
 void FreeCADGeomCollection(cadgeom_collection *coll) {
+  ClearCADGeomCollection(coll);
+  FREEMEMORY(coll);
+}
+
+void ClearCADGeomCollection(cadgeom_collection *coll) {
   for(int i = 0; i < coll->ncadgeom; i++) {
     FreeCADGeom(&(coll->cadgeominfo[i]));
   }
-  FreeMemory(coll);
+  if(coll->cadgeominfo != NULL) FreeMemory(coll->cadgeominfo);
 }
 
 int NCADGeom(cadgeom_collection *coll) {
