@@ -1,3 +1,5 @@
+#ifndef C_API_H_DEFINED
+#define C_API_H_DEFINED
 #include "options_common.h"
 
 #include "gd.h"
@@ -336,16 +338,9 @@ int SetWindowheight(int v);                   // WINDOWHEIGHT
 // --  *** DATA LOADING ***
 
 int SetBoundzipstep(int v); // BOUNDZIPSTEP
-#ifdef pp_FED
-int SetFed(int v);                    // FED
-int SetFedcolorbar(const char *name); // FEDCOLORBAR
-#endif
 int SetIsozipstep(int v); // ISOZIPSTEP
 int SetNopart(int v);     // NOPART
 // int set_partpointstep(int v); // PARTPOINTSTEP
-#ifdef pp_FED
-int SetShowfedarea(int v); // SHOWFEDAREA
-#endif
 int SetSliceaverage(int flag, float interval, int vis); // SLICEAVERAGE
 int SetSlicedataout(int v);                             // SLICEDATAOUT
 int SetSlicezipstep(int v);                             // SLICEZIPSTEP
@@ -595,3 +590,4 @@ int ShowSlicesHideall();
 int RenderFrameLuaVar(int view_mode, gdImagePtr *RENDERimage);
 
 #define PROPINDEX_STRIDE 2
+#endif
