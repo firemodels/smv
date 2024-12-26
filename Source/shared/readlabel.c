@@ -25,6 +25,8 @@ labeldata *LabelGet(labels_collection *labelscoll, char *name) {
   return NULL;
 }
 
+/* ------------------ LabelInsertBefore ------------------------ */
+
 void LabelInsertBefore(labeldata *listlabel, labeldata *label) {
   labeldata *prev, *next;
 
@@ -36,6 +38,8 @@ void LabelInsertBefore(labeldata *listlabel, labeldata *label) {
   label->next = next;
 }
 
+/* ------------------ LabelInsertAfter ------------------------ */
+
 void LabelInsertAfter(labeldata *listlabel, labeldata *label) {
   labeldata *prev, *next;
 
@@ -46,6 +50,8 @@ void LabelInsertAfter(labeldata *listlabel, labeldata *label) {
   label->prev = prev;
   label->next = next;
 }
+
+/* ------------------ LabelInsert ------------------------ */
 
 labeldata *LabelInsert(labels_collection *labelscoll, labeldata *labeltemp) {
   labeldata *newlabel, *thislabel;
@@ -202,6 +208,8 @@ int LabelGetNUserLabels(labels_collection *labelscoll) {
   return count;
 }
 
+/* ------------------ InitLabelsCollection ------------------------ */
+
 void InitLabelsCollection(labels_collection *labelscoll) {
   labelscoll->label_first_ptr = &labelscoll->label_first;
   labelscoll->label_last_ptr = &labelscoll->label_last;
@@ -215,12 +223,16 @@ void InitLabelsCollection(labels_collection *labelscoll) {
   strcpy(labelscoll->label_last_ptr->name, "last");
 }
 
+/* ------------------ FreeLabelsCollection ------------------------ */
+
 labels_collection *CreateLabelsCollection() {
   labels_collection *labelscoll;
   NEWMEMORY(labelscoll, sizeof(labels_collection));
   InitLabelsCollection(labelscoll);
   return labelscoll;
 }
+
+/* ------------------ FreeLabelsCollection ------------------------ */
 
 void FreeLabelsCollection(labels_collection *labelscoll) {
   labeldata *thislabel = labelscoll->label_first_ptr->next;
