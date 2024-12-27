@@ -316,10 +316,10 @@ void ClassifyGeom(geomdata *geomi, int *geom_frame_index){
 void *ClassifyAllGeom(void *arg){
   int i;
 
-  for(i = 0; i < ngeominfo; i++){
+  for(i = 0; i < global_scase.ngeominfo; i++){
     geomdata *geomi;
 
-    geomi = geominfo + i;
+    geomi = global_scase.geominfo + i;
     THREADcontrol(readallgeom_threads, THREAD_LOCK);
     if(geomi->read_status != 0){
       THREADcontrol(readallgeom_threads, THREAD_UNLOCK);
@@ -335,10 +335,10 @@ void *ClassifyAllGeom(void *arg){
     geomi->read_status = 2;
     THREADcontrol(readallgeom_threads, THREAD_UNLOCK);
   }
-  for(i = 0; i < ncgeominfo; i++){
+  for(i = 0; i < global_scase.ncgeominfo; i++){
     geomdata *geomi;
 
-    geomi = cgeominfo + i;
+    geomi = global_scase.cgeominfo + i;
     THREADcontrol(readallgeom_threads, THREAD_LOCK);
     if(geomi->read_status != 0){
       THREADcontrol(readallgeom_threads, THREAD_UNLOCK);
@@ -465,10 +465,10 @@ void UpdateGeomAreas(void){
 
     // initialize surf values
 
-    for(i = 0; i<nsurfinfo; i++){
+    for(i = 0; i<global_scase.surfcoll.nsurfinfo; i++){
       surfdata *surfi;
 
-      surfi = surfinfo+i;
+      surfi = global_scase.surfcoll.surfinfo+i;
       surfi->geom_area = 0.0;
       surfi->axis[0] = 0.0;
       surfi->axis[1] = 0.0;
@@ -506,10 +506,10 @@ void UpdateGeomAreas(void){
 
     // normalize median
 
-    for(i = 0; i<nsurfinfo; i++){
+    for(i = 0; i<global_scase.surfcoll.nsurfinfo; i++){
       surfdata *surfi;
 
-      surfi = surfinfo+i;
+      surfi = global_scase.surfcoll.surfinfo+i;
       if(surfi->ntris>0){
         surfi->axis[0] /= surfi->ntris;
         surfi->axis[1] /= surfi->ntris;
@@ -538,7 +538,7 @@ void DrawSelectGeom(void){
 
       glPushMatrix();
       glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
-      glTranslatef(-xbar0, -ybar0, -zbar0);
+      glTranslatef(-global_scase.xbar0, -global_scase.ybar0, -global_scase.zbar0);
       glPointSize(20);
       color_index = 1;
       glBegin(GL_POINTS);
@@ -565,7 +565,7 @@ void DrawSelectGeom(void){
 
       glPushMatrix();
       glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
-      glTranslatef(-xbar0, -ybar0, -zbar0);
+      glTranslatef(-global_scase.xbar0, -global_scase.ybar0, -global_scase.zbar0);
       color_index = 0;
       glBegin(GL_TRIANGLES);
       for(i = 0; i<geomlisti->ntriangles; i++){
@@ -832,7 +832,7 @@ void DrawObstBoundingBox(void){
   if(obst_bounding_box[4]>obst_bounding_box[5])return;
   glPushMatrix();
   glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
-  glTranslatef(-xbar0, -ybar0, -zbar0);
+  glTranslatef(-global_scase.xbar0, -global_scase.ybar0, -global_scase.zbar0);
   DrawBoxOutline(obst_bounding_box, foregroundcolor);
   glPopMatrix();
 }
@@ -844,12 +844,12 @@ void DrawGeomBoundingBox(float *boundingbox_color){
 
   glPushMatrix();
   glScalef(SCALE2SMV(1.0),SCALE2SMV(1.0),vertical_factor*SCALE2SMV(1.0));
-  glTranslatef(-xbar0,-ybar0,-zbar0);
-  for(i = 0; i<ngeominfo; i++){
+  glTranslatef(-global_scase.xbar0,-global_scase.ybar0,-global_scase.zbar0);
+  for(i = 0; i<global_scase.ngeominfo; i++){
     geomdata *geomi;
     int j, have_box;
 
-    geomi = geominfo + i;
+    geomi = global_scase.geominfo + i;
     if(geomi->geomtype!=GEOM_GEOM)continue;
     have_box = 0;
     for(j = 0; j<geomi->ngeomobjinfo; j++){
@@ -887,7 +887,7 @@ void DrawGeom(int flag, int timestate){
   tridata **tris;
   int texture_state = OFF, texture_first=1;
 
-  if(auto_terrain==1)return;
+  if(global_scase.auto_terrain==1)return;
   if(show_geom_boundingbox==SHOW_BOUNDING_BOX_ALWAYS||geom_bounding_box_mousedown==1){
     if(flag==DRAW_OPAQUE&&timestate==GEOM_STATIC&&have_geom_triangles==1){
       DrawGeomBoundingBox(NULL);
@@ -939,7 +939,7 @@ void DrawGeom(int flag, int timestate){
 
     glPushMatrix();
     glScalef(SCALE2SMV(1.0),SCALE2SMV(1.0),vertical_factor*SCALE2SMV(1.0));
-    glTranslatef(-xbar0,-ybar0,-zbar0);
+    glTranslatef(-global_scase.xbar0,-global_scase.ybar0,-global_scase.zbar0);
     glBegin(GL_TRIANGLES);
     if(have_non_textures==1){
       for(i = 0; i<ntris; i++){
@@ -1250,16 +1250,16 @@ void DrawGeom(int flag, int timestate){
     if(show_surf_axis==1){
       glPushMatrix();
       glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
-      glTranslatef(-xbar0, -ybar0, -zbar0);
+      glTranslatef(-global_scase.xbar0, -global_scase.ybar0, -global_scase.zbar0);
       glLineWidth(glui_surf_axis_width);
       glBegin(GL_LINES);
-      for(i = 0; i<nsurfinfo;  i++){
+      for(i = 0; i<global_scase.surfcoll.nsurfinfo;  i++){
         surfdata *surfi;
         float *axis;
         float x0, y0, z0;
         float x1, y1, z1;
 
-        surfi = surfinfo+i;
+        surfi = global_scase.surfcoll.surfinfo+i;
         if(surfi->ntris==0)continue;
         axis = surfi->axis;
 
@@ -1286,13 +1286,13 @@ void DrawGeom(int flag, int timestate){
         Output3Text(foregroundcolor, x0, y0, z1, "Z");
       }
       glEnd();
-      for(i = 0; i<nsurfinfo; i++){
+      for(i = 0; i<global_scase.surfcoll.nsurfinfo; i++){
         surfdata *surfi;
         float *axis;
         float x0, y0, z0;
         float x1, y1, z1;
 
-        surfi = surfinfo+i;
+        surfi = global_scase.surfcoll.surfinfo+i;
         if(surfi->ntris==0)continue;
         axis = surfi->axis;
 
@@ -1318,7 +1318,7 @@ void DrawGeom(int flag, int timestate){
 
       glPushMatrix();
       glScalef(SCALE2SMV(1.0),SCALE2SMV(1.0),SCALE2SMV(1.0));
-      glTranslatef(-xbar0,-ybar0,-zbar0);
+      glTranslatef(-global_scase.xbar0,-global_scase.ybar0,-global_scase.zbar0);
       glTranslatef(0.0, 0.0, geom_dz_offset);
       if(geomi->geomtype==GEOM_ISO){
         glLineWidth(isolinewidth);
@@ -1420,7 +1420,7 @@ void DrawGeom(int flag, int timestate){
 
       glPushMatrix();
       glScalef(SCALE2SMV(1.0),SCALE2SMV(1.0),SCALE2SMV(1.0));
-      glTranslatef(-xbar0,-ybar0,-zbar0);
+      glTranslatef(-global_scase.xbar0,-global_scase.ybar0,-global_scase.zbar0);
       glTranslatef(0.0, 0.0, geom_dz_offset);
       glPointSize(geom_pointsize);
       glBegin(GL_POINTS);
@@ -1496,7 +1496,7 @@ void DrawGeom(int flag, int timestate){
     if(doit==1){  // draw faceted normals
       glPushMatrix();
       glScalef(SCALE2SMV(1.0),SCALE2SMV(1.0),SCALE2SMV(1.0));
-      glTranslatef(-xbar0,-ybar0,-zbar0);
+      glTranslatef(-global_scase.xbar0,-global_scase.ybar0,-global_scase.zbar0);
       glLineWidth(geom_linewidth);
       glBegin(GL_LINES);
       glColor3fv(blue);
@@ -1574,7 +1574,7 @@ void DrawGeom(int flag, int timestate){
     if(doit==1){  // draw smooth normals
       glPushMatrix();
       glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
-      glTranslatef(-xbar0, -ybar0, -zbar0);
+      glTranslatef(-global_scase.xbar0, -global_scase.ybar0, -global_scase.zbar0);
       glLineWidth(geom_linewidth);
       glBegin(GL_LINES);
       glColor3fv(blue);
@@ -2677,7 +2677,7 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
     for(n = 0; n < MAXRGB; n++){
       colorlabelpatch[n] = NULL;
     }
-    for(n = 0; n < nrgb; n++){
+    for(n = 0; n < global_scase.nrgb; n++){
       if(NewMemory((void **)&colorlabelpatch[n], 11) == 0){
         ReadGeomData(patchi, NULL, UNLOAD, time_frame, time_value, 0, &error);
         return 0;
@@ -2694,7 +2694,7 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
     if(patchi->patch_filetype != PATCH_GEOMETRY_BOUNDARY && patchi->patch_filetype != PATCH_GEOMETRY_SLICE)convert = 0;
     GetBoundaryColors3(patchi, patchi->geom_vals, 0, patchi->geom_nvals, patchi->geom_ivals,
       &valmin, &valmax,
-      nrgb, colorlabelpatch, colorvaluespatch, boundarylevels256,
+      global_scase.nrgb, colorlabelpatch, colorvaluespatch, boundarylevels256,
       &patchi->extreme_min, &patchi->extreme_max, convert);
     if(cache_boundary_data==0){
       FREEMEMORY(patchi->geom_vals);
@@ -2756,7 +2756,7 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
     SliceBounds2Glui(slicefile_labelindex);
 
     GetSliceColors(patchi->geom_vals, patchi->geom_nvals, patchi->geom_ivals,
-      glui_slicemin, glui_slicemax, nrgb_full, nrgb,
+      glui_slicemin, glui_slicemax, nrgb_full, global_scase.nrgb,
       sb->colorlabels, sb->colorvalues, sb->levels256,
       &slicei->extreme_min, &slicei->extreme_max, 1
     );
@@ -2856,16 +2856,16 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
 void SetupReadAllGeom(void){
   int i;
 
-  for(i = 0; i<ngeominfo; i++){
+  for(i = 0; i<global_scase.ngeominfo; i++){
     geomdata *geomi;
 
-    geomi = geominfo+i;
+    geomi = global_scase.geominfo+i;
     geomi->read_status = 0;
   }
-  for(i = 0; i<ncgeominfo; i++){
+  for(i = 0; i<global_scase.ncgeominfo; i++){
     geomdata *geomi;
 
-    geomi = cgeominfo+i;
+    geomi = global_scase.cgeominfo+i;
     geomi->read_status = 0;
   }
 }
@@ -2979,10 +2979,10 @@ void UpdateGeomTriangles(geomdata *geomi, int geom_type){
 void *ReadAllGeom(void *arg){
   int i;
 
-  for(i=0;i<ngeominfo;i++){
+  for(i=0;i<global_scase.ngeominfo;i++){
     geomdata *geomi;
 
-    geomi = geominfo + i;
+    geomi = global_scase.geominfo + i;
     THREADcontrol(readallgeom_threads, THREAD_LOCK);
     if(geomi->read_status!=0){
       THREADcontrol(readallgeom_threads, THREAD_UNLOCK);
@@ -2996,10 +2996,10 @@ void *ReadAllGeom(void *arg){
     geomi->read_status = 2;
     THREADcontrol(readallgeom_threads, THREAD_UNLOCK);
   }
-  for(i = 0; i<ncgeominfo; i++){
+  for(i = 0; i<global_scase.ncgeominfo; i++){
     geomdata *geomi;
 
-    geomi = cgeominfo+i;
+    geomi = global_scase.cgeominfo+i;
     THREADcontrol(readallgeom_threads, THREAD_LOCK);
     if(geomi->read_status!=0){
       THREADcontrol(readallgeom_threads, THREAD_UNLOCK);
@@ -3022,10 +3022,10 @@ void *ReadAllGeom(void *arg){
 void UpdateAllGeomTriangles(void){
   int i;
 
-  for(i = 0; i<ngeominfo; i++){
+  for(i = 0; i<global_scase.ngeominfo; i++){
     geomdata *geomi;
 
-    geomi = geominfo+i;
+    geomi = global_scase.geominfo+i;
     UpdateGeomTriangles(geomi, GEOM_STATIC);
   }
 }
@@ -3132,8 +3132,8 @@ FILE_SIZE ReadGeom0(geomdata *geomi, int load_flag, int type, int *geom_frame_in
 
       icount++;
       if(geom_frame_index == NULL){
-        if(use_tload_begin == 1 && times_local[0]     < tload_begin)skipframe = 1;
-        if(use_tload_end   == 1 && times_local[0]     > tload_end)skipframe = 1;
+        if(use_tload_begin == 1 && times_local[0]     < global_scase.tload_begin)skipframe = 1;
+        if(use_tload_end   == 1 && times_local[0]     > global_scase.tload_end)skipframe = 1;
         if(tload_step      >  1 && icount%tload_step != 0)skipframe = 1;
         if(skipframe == 0)geomi->times[iframe] = times_local[0];
       }
@@ -3215,7 +3215,7 @@ FILE_SIZE ReadGeom0(geomdata *geomi, int load_flag, int type, int *geom_frame_in
       if(count_read != ntris)break;
       return_filesize += 4+ntris*4+4;
 
-      if(type==GEOM_ISO)offset=nsurfinfo;
+      if(type==GEOM_ISO)offset=global_scase.surfcoll.nsurfinfo;
       for(ii=0;ii<ntris;ii++){
         surfdata *surfi;
 
@@ -3223,7 +3223,7 @@ FILE_SIZE ReadGeom0(geomdata *geomi, int load_flag, int type, int *geom_frame_in
         triangles[ii].verts[1]=verts+ijk[3*ii+1]-1;
         triangles[ii].verts[2]=verts+ijk[3*ii+2]-1;
 
-        surfi = surfinfo+CLAMP(surf_ind[ii]+offset, nsurfinfo+1, nsurfinfo+MAX_ISO_COLORS);
+        surfi = global_scase.surfcoll.surfinfo+CLAMP(surf_ind[ii]+offset, global_scase.surfcoll.nsurfinfo+1, global_scase.surfcoll.nsurfinfo+MAX_ISO_COLORS);
         triangles[ii].geomsurf=surfi;
         if(geomi->file2_tris!=NULL){
           triangles[ii].geomobj = geomi->geomobjinfo + geomi->file2_tris[ii] - 1;
@@ -3244,7 +3244,7 @@ FILE_SIZE ReadGeom0(geomdata *geomi, int load_flag, int type, int *geom_frame_in
       // add decimation code here
       iframe++;
     }
-    if(geom_frame_index==NULL&&use_tload_end == 1 && times_local[0] > tload_end)break;
+    if(geom_frame_index==NULL&&use_tload_end == 1 && times_local[0] > global_scase.tload_end)break;
   }
   geomi->loaded = 1;
   geomi->display=1;
@@ -3257,11 +3257,11 @@ FILE_SIZE ReadGeom0(geomdata *geomi, int load_flag, int type, int *geom_frame_in
 int InMesh(float *xyz){
   int i;
 
-  for(i = 0;i < nmeshes;i++){
+  for(i = 0;i < global_scase.meshescoll.nmeshes;i++){
     meshdata *meshi;
     float *boxmin, *boxmax;
 
-    meshi = meshinfo + i;
+    meshi = global_scase.meshescoll.meshinfo + i;
     boxmin = meshi->boxmin;
     boxmax = meshi->boxmax;
     if(xyz[0]<boxmin[0] || xyz[0]>boxmax[0])continue;
@@ -3512,7 +3512,7 @@ FILE_SIZE ReadGeom2(geomdata *geomi, int load_flag, int type){
           have_geom_factors = 1;
         }
 
-        if(terrain_textures!=NULL){
+        if(global_scase.terrain_texture_coll.terrain_textures!=NULL){
           float xfactor, yfactor;
 
           xfactor = 1.0;
@@ -3622,18 +3622,17 @@ FILE_SIZE ReadGeom2(geomdata *geomi, int load_flag, int type){
                           triangles[ii].tri_norm, NULL);
 
         CheckMemory;
-        surfi = surfinfo;
         triangles[ii].geomtype = type;
         switch(type){
         case GEOM_CGEOM:
-          surfi=surfinfo + CLAMP(surf_ind[ii],0,nsurfinfo-1);
+          surfi=global_scase.surfcoll.surfinfo + CLAMP(surf_ind[ii],0,global_scase.surfcoll.nsurfinfo-1);
           triangles[ii].insolid = locations[ii];
-          triangles[ii].geomobj = geominfo->geomobjinfo+geom_ind[ii]-1;
+          triangles[ii].geomobj = global_scase.geominfo->geomobjinfo+geom_ind[ii]-1;
           break;
         case GEOM_GEOM:
         case GEOM_ISO:
-          surfi=surfinfo + CLAMP(surf_ind[ii],0,nsurfinfo-1);
-          if(type==GEOM_ISO)surfi+=nsurfinfo;
+          surfi=global_scase.surfcoll.surfinfo + CLAMP(surf_ind[ii],0,global_scase.surfcoll.nsurfinfo-1);
+          if(type==GEOM_ISO)surfi+=global_scase.surfcoll.nsurfinfo;
           triangles[ii].insolid = surf_ind[ii];
           if(geomi->file2_tris!=NULL){
             triangles[ii].geomobj = geomi->geomobjinfo+geomi->file2_tris[ii]-1;
@@ -3649,7 +3648,7 @@ FILE_SIZE ReadGeom2(geomdata *geomi, int load_flag, int type){
           break;
         case GEOM_SLICE:
         case GEOM_BOUNDARY:
-          surfi=surfinfo;
+          surfi=global_scase.surfcoll.surfinfo;
           triangles[ii].insolid = 0;
           break;
 	    default:
@@ -3839,8 +3838,8 @@ void DrawGeomVData(vslicedata *vd){
 
       glPushMatrix();
       glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
-      glTranslatef(-xbar0, -ybar0, -zbar0);
-      if(auto_terrain==1)glTranslatef(0.0, 0.0, SCALE2FDS(0.01));
+      glTranslatef(-global_scase.xbar0, -global_scase.ybar0, -global_scase.zbar0);
+      if(global_scase.auto_terrain==1)glTranslatef(0.0, 0.0, SCALE2FDS(0.01));
 
       glLineWidth(vectorlinewidth);
       glBegin(GL_LINES);
@@ -4094,8 +4093,8 @@ void DrawGeomData(int flag, slicedata *sd, patchdata *patchi, int geom_type){
 
       glPushMatrix();
       glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
-      glTranslatef(-xbar0, -ybar0, -zbar0+boundaryoffset);
-      if(auto_terrain==1)glTranslatef(0.0, 0.0, slice_dz);
+      glTranslatef(-global_scase.xbar0, -global_scase.ybar0, -global_scase.zbar0+boundaryoffset);
+      if(global_scase.auto_terrain==1)glTranslatef(0.0, 0.0, slice_dz);
       glBegin(GL_TRIANGLES);
       if((patchi->patch_filetype!=PATCH_GEOMETRY_BOUNDARY&&smooth_iso_normal == 0)
        ||patchi->patch_filetype==PATCH_GEOMETRY_BOUNDARY){
@@ -4270,7 +4269,7 @@ void DrawGeomData(int flag, slicedata *sd, patchdata *patchi, int geom_type){
 
       glPushMatrix();
       glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
-      glTranslatef(-xbar0, -ybar0, -zbar0);
+      glTranslatef(-global_scase.xbar0, -global_scase.ybar0, -global_scase.zbar0);
       if(patchi->patch_filetype == PATCH_GEOMETRY_BOUNDARY){
         glLineWidth(geomboundary_linewidth);
       }
@@ -4418,7 +4417,7 @@ void DrawGeomData(int flag, slicedata *sd, patchdata *patchi, int geom_type){
 
       glPushMatrix();
       glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
-      glTranslatef(-xbar0, -ybar0, -zbar0);
+      glTranslatef(-global_scase.xbar0, -global_scase.ybar0, -global_scase.zbar0);
       if(patchi->patch_filetype == PATCH_GEOMETRY_BOUNDARY){
         glPointSize(geomboundary_pointsize);
       }
@@ -4543,7 +4542,7 @@ void DrawGeomValues(slicedata *sd, patchdata *patchi, int geom_type){
 
       glPushMatrix();
       glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
-      glTranslatef(-xbar0, -ybar0, -zbar0);
+      glTranslatef(-global_scase.xbar0, -global_scase.ybar0, -global_scase.zbar0);
       for(j = 0; j<nvals; j++){
         tridata *trianglei;
         vertdata *verti;
@@ -4653,7 +4652,7 @@ void DrawCGeom(int flag, geomdata *cgeom){
 
       glPushMatrix();
       glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
-      glTranslatef(-xbar0, -ybar0, -zbar0);
+      glTranslatef(-global_scase.xbar0, -global_scase.ybar0, -global_scase.zbar0);
       glBegin(GL_TRIANGLES);
       for(j = 0; j<ntris; j++){
         float *color, *xyzptr[3];
@@ -4726,7 +4725,7 @@ void DrawCGeom(int flag, geomdata *cgeom){
 
       glPushMatrix();
       glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
-      glTranslatef(-xbar0, -ybar0, -zbar0);
+      glTranslatef(-global_scase.xbar0, -global_scase.ybar0, -global_scase.zbar0);
       glTranslatef(0.0, 0.0, geom_dz_offset);
       glLineWidth(geom_linewidth);
       glBegin(GL_LINES);
@@ -4804,7 +4803,7 @@ void DrawCGeom(int flag, geomdata *cgeom){
 
       glPushMatrix();
       glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
-      glTranslatef(-xbar0, -ybar0, -zbar0);
+      glTranslatef(-global_scase.xbar0, -global_scase.ybar0, -global_scase.zbar0);
       glLineWidth(geom_linewidth);
       glBegin(GL_LINES);
       for(j = 0; j<geomi->ncface_normals; j++){
@@ -4836,7 +4835,7 @@ void DrawCGeom(int flag, geomdata *cgeom){
 
       glPushMatrix();
       glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
-      glTranslatef(-xbar0, -ybar0, -zbar0);
+      glTranslatef(-global_scase.xbar0, -global_scase.ybar0, -global_scase.zbar0);
       glTranslatef(0.0, 0.0, geom_dz_offset);
       glPointSize(geom_pointsize);
       glBegin(GL_POINTS);
@@ -4871,7 +4870,7 @@ void GetGeomInfoPtrs(int flag){
   if(flag==1){
     int count;
 
-    count = nisoinfo+ngeominfo;
+    count = global_scase.nisoinfo+global_scase.ngeominfo;
     if(count>0){
       NewMemory((void **)&gptr, count*sizeof(geomdata *));
     }
@@ -4883,10 +4882,10 @@ void GetGeomInfoPtrs(int flag){
 
   gptr = geominfoptrs;
   hide_geom = 0;
-  for(i = 0;i < npatchinfo;i++){
+  for(i = 0;i < global_scase.npatchinfo;i++){
     patchdata *patchi;
 
-    patchi = patchinfo + i;
+    patchi = global_scase.patchinfo + i;
     if(patchi->patch_filetype == PATCH_GEOMETRY_BOUNDARY && patchi->loaded == 1 && patchi->display == 1){
       hide_geom = 1;
       break;
@@ -4897,18 +4896,18 @@ void GetGeomInfoPtrs(int flag){
   // count size of geominfoptrs array
 
   ngeominfoptrs=0;
-  for(i=0;i<ngeominfo;i++){
+  for(i=0;i<global_scase.ngeominfo;i++){
     geomdata *geomi;
 
-    geomi = geominfo + i;
+    geomi = global_scase.geominfo + i;
     // hide geometry if we are displaying a boundary file over top of it
     if(geomi->loaded==1&&geomi->display==1&&geomi->geomtype==GEOM_GEOM&&hide_geom==0)ngeominfoptrs++;
   }
-  for(i=0;i<nisoinfo;i++){
+  for(i=0;i<global_scase.nisoinfo;i++){
     isodata *isoi;
     geomdata *geomi;
 
-    isoi = isoinfo + i;
+    isoi = global_scase.isoinfo + i;
     if(isoi->loaded==0||isoi->display==0)continue;
     geomi = isoi->geominfo;
     if(geomi==NULL)continue;
@@ -4918,17 +4917,17 @@ void GetGeomInfoPtrs(int flag){
 
   // put pointers into geominfoptrs array
 
-  for(i=0;i<ngeominfo;i++){
+  for(i=0;i<global_scase.ngeominfo;i++){
     geomdata *geomi;
 
-    geomi = geominfo + i;
+    geomi = global_scase.geominfo + i;
     if(geomi->loaded==1&&geomi->display==1&&geomi->geomtype==GEOM_GEOM&&hide_geom == 0)*gptr++=geomi;
   }
-  for(i=0;i<nisoinfo;i++){
+  for(i=0;i<global_scase.nisoinfo;i++){
     isodata *isoi;
     geomdata *geomi;
 
-    isoi = isoinfo + i;
+    isoi = global_scase.isoinfo + i;
     if(isoi->loaded==0||isoi->display==0)continue;
     geomi = isoi->geominfo;
     if(geomi==NULL||geomi->loaded==0||geomi->display==0)continue;
@@ -4961,7 +4960,7 @@ void ShowHideSortGeometry(int sort_geom, float *mm){
 
       // reject unwanted geometry
 
-      if(auto_terrain==1&&i==0)continue;
+      if(global_scase.auto_terrain==1&&i==0)continue;
       if(geomi->is_terrain==1)continue;
       have_geom_triangles = 1;
       if( (geomi->fdsblock == NOT_FDSBLOCK && geomi->geomtype!=GEOM_ISO)|| geomi->patchactive == 1)continue;
@@ -4978,8 +4977,8 @@ void ShowHideSortGeometry(int sort_geom, float *mm){
           if(geomi->currentframe != NULL)geomlisti = geomi->currentframe;
         }
         if(itime==1&&geomi->geomtype==GEOM_ISO){
-          if(use_tload_begin==1&&global_times[itimes]<tload_begin)continue;
-          if(use_tload_end==1&&global_times[itimes]>tload_end)continue;
+          if(use_tload_begin==1&&global_times[itimes]<global_scase.tload_begin)continue;
+          if(use_tload_end==1&&global_times[itimes]>global_scase.tload_end)continue;
         }
 
         for(j = 0; j < geomlisti->ntriangles; j++){
@@ -5000,7 +4999,7 @@ void ShowHideSortGeometry(int sort_geom, float *mm){
             if(tri->geomsurf!=NULL&&tri->geomsurf->transparent_level>=1.0)is_opaque = 1;
           }
           if(geom_force_transparent == 1)is_opaque = 0;
-          isurf = tri->geomsurf - surfinfo - nsurfinfo - 1;
+          isurf = tri->geomsurf - global_scase.surfcoll.surfinfo - global_scase.surfcoll.nsurfinfo - 1;
           tri->geomlisti = geomlisti;
           if((geomi->geomtype==GEOM_ISO&&showlevels != NULL&&showlevels[isurf] == 0) || tri->geomsurf->transparent_level <= 0.0){
             continue;

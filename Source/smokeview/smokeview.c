@@ -178,9 +178,9 @@ void InitVolrenderScript(char *prefix, char *tour_label, int startframe, int ski
   if(volrender_scriptname==NULL){
     int len;
 
-    len = strlen(fdsprefix)+strlen("_volrender.ssf")+1;
+    len = strlen(global_scase.fdsprefix)+strlen("_volrender.ssf")+1;
     NewMemory((void **)&volrender_scriptname,(unsigned int)(len));
-    STRCPY(volrender_scriptname,fdsprefix);
+    STRCPY(volrender_scriptname,global_scase.fdsprefix);
     STRCAT(volrender_scriptname,"_volrender.ssf");
   }
 
@@ -206,8 +206,8 @@ void InitVolrenderScript(char *prefix, char *tour_label, int startframe, int ski
 
 void DisplayVersionInfo(char *progname){
   PRINTVERSION(progname);
-  if(fds_version!=NULL){
-    PRINTF("FDS Build        : %s\n",fds_githash);
+  if(global_scase.fds_version!=NULL){
+    PRINTF("FDS Build        : %s\n",global_scase.fds_githash);
   }
   char *smv_progname = GetBinPath();
   PRINTF("Smokeview path   : %s\n",smv_progname);
@@ -243,17 +243,17 @@ void DisplayVersionInfo(char *progname){
   char fullini_filename[256];
   strcpy(fullini_filename, "");
   char *smokeview_scratchdir = GetUserConfigDir();
-  if(caseini_filename != NULL){
-    if(FileExistsOrig(caseini_filename) == 1){
+  if(global_scase.paths.caseini_filename != NULL){
+    if(FileExistsOrig(global_scase.paths.caseini_filename) == 1){
       char cwdpath[1000];
       GETCWD(cwdpath, 1000);
       strcpy(fullini_filename, cwdpath);
       strcat(fullini_filename, dirseparator);
-      strcat(fullini_filename, caseini_filename);
+      strcat(fullini_filename, global_scase.paths.caseini_filename);
     }
     else if(smokeview_scratchdir!=NULL){
       strcpy(fullini_filename, smokeview_scratchdir);
-      strcat(fullini_filename, caseini_filename);
+      strcat(fullini_filename, global_scase.paths.caseini_filename);
       if(FileExistsOrig(fullini_filename)==0)strcpy(fullini_filename, "");
     }
   }
@@ -275,7 +275,7 @@ void DisplayVersionInfo(char *progname){
 int IsFDSRunning(FILE_SIZE *last_size){
   FILE_SIZE file_size;
 
-  file_size = GetFileSizeSMV(stepcsv_filename);
+  file_size = GetFileSizeSMV(global_scase.paths.stepcsv_filename);
   if(file_size != *last_size){
     *last_size = file_size;
     return 1;
@@ -289,15 +289,15 @@ int BuildGbndFile(int file_type){
   switch(file_type){
     case BOUND_SLICE:
       if(FileExistsOrig(slice_gbnd_filename)==0)return 1;
-      if(IsFileNewer(stepcsv_filename, slice_gbnd_filename)==1)return 1;
+      if(IsFileNewer(global_scase.paths.stepcsv_filename, slice_gbnd_filename)==1)return 1;
       break;
     case BOUND_PATCH:
       if(FileExistsOrig(patch_gbnd_filename)==0)return 1;
-      if(IsFileNewer(stepcsv_filename, patch_gbnd_filename)==1)return 1;
+      if(IsFileNewer(global_scase.paths.stepcsv_filename, patch_gbnd_filename)==1)return 1;
       break;
     case BOUND_PLOT3D:
       if(FileExistsOrig(plot3d_gbnd_filename)==0)return 1;
-      if(IsFileNewer(stepcsv_filename, plot3d_gbnd_filename)==1)return 1;
+      if(IsFileNewer(global_scase.paths.stepcsv_filename, plot3d_gbnd_filename)==1)return 1;
       break;
     default:
       assert(FFALSE);

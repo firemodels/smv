@@ -59,7 +59,7 @@ int initialiseInfoHeader(titledata *titleinfo_ptr,
   snprintf(line,MAX_TITLE_LINE_LENGTH,"Smokeview build: %s",smv_githash_string);
   strncpy(titleinfo_ptr->smvbuildline, line, MAX_TITLE_LINE_LENGTH);
 
-  if(fds_githash!=NULL){
+  if(global_scase.fds_githash!=NULL){
     snprintf(line,MAX_TITLE_LINE_LENGTH,"FDS build: %s",fds_githash_string);
     strncpy(titleinfo_ptr->fdsbuildline, line, MAX_TITLE_LINE_LENGTH);
   }

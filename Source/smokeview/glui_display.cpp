@@ -9,6 +9,7 @@
 #include "smokeviewvars.h"
 #include "glui_bounds.h"
 #include "glui_motion.h"
+#include "colorbars.h"
 #include "readlabel.h"
 
 GLUI *glui_labels=NULL;
@@ -332,7 +333,7 @@ void DisplayRolloutCB(int var){
 /* ------------------ UpdateGluiLabelText ------------------------ */
 
 void UpdateGluiLabelText(void){
-  if(LabelGetNUserLabels(&labelscoll)>0){
+  if(LabelGetNUserLabels(&global_scase.labelscoll)>0){
     labeldata *gl;
 
     gl=&LABEL_local;
@@ -415,7 +416,7 @@ void TextLabelsCB(int var){
     updatemenu = 1;
     break;
   case LB_UPDATE:
-    for(thislabel = labelscoll.label_first_ptr->next;thislabel->next != NULL;thislabel = thislabel->next){
+    for(thislabel = global_scase.labelscoll.label_first_ptr->next;thislabel->next != NULL;thislabel = thislabel->next){
       if(thislabel->glui_id < 0)continue;
       LIST_LB_labels->delete_item(thislabel->glui_id);
     }
@@ -423,7 +424,7 @@ void TextLabelsCB(int var){
     //LabelResort(LABEL_global_ptr);
 
     count = 0;
-    for(thislabel = labelscoll.label_first_ptr->next;thislabel->next != NULL;thislabel = thislabel->next){
+    for(thislabel = global_scase.labelscoll.label_first_ptr->next;thislabel->next != NULL;thislabel = thislabel->next){
       if(thislabel->labeltype == TYPE_SMV)continue;
       thislabel->glui_id = count;
       LIST_LB_labels->add_item(count++, thislabel->name);
@@ -439,8 +440,8 @@ void TextLabelsCB(int var){
     memcpy(&LABEL_global_ptr->useforegroundcolor, &gl->useforegroundcolor, sizeof(int));
     break;
   case LB_PREVIOUS:
-    new_label = LabelGet(&labelscoll, LIST_LB_labels->curr_text);
-    new_label = LabelPrevious(&labelscoll, new_label);
+    new_label = LabelGet(&global_scase.labelscoll, LIST_LB_labels->curr_text);
+    new_label = LabelPrevious(&global_scase.labelscoll, new_label);
     if(new_label == NULL)break;
     LABEL_global_ptr = new_label;
     if(new_label != NULL){
@@ -449,8 +450,8 @@ void TextLabelsCB(int var){
     }
     break;
   case LB_NEXT:
-    new_label = LabelGet(&labelscoll, LIST_LB_labels->curr_text);
-    new_label = LabelNext(&labelscoll, new_label);
+    new_label = LabelGet(&global_scase.labelscoll, LIST_LB_labels->curr_text);
+    new_label = LabelNext(&global_scase.labelscoll, new_label);
     if(new_label == NULL)break;
     LABEL_global_ptr = new_label;
     if(new_label != NULL){
@@ -459,7 +460,7 @@ void TextLabelsCB(int var){
     }
     break;
   case LB_LIST:
-    new_label = LabelGet(&labelscoll, LIST_LB_labels->curr_text);
+    new_label = LabelGet(&global_scase.labelscoll, LIST_LB_labels->curr_text);
     LABEL_global_ptr = new_label;
     if(new_label != NULL){
       LabelCopy(gl, new_label);
@@ -468,7 +469,7 @@ void TextLabelsCB(int var){
     break;
   case LB_ADD:
     updatemenu = 1;
-    if(LabelGetNUserLabels(&labelscoll) > 0){
+    if(LabelGetNUserLabels(&global_scase.labelscoll) > 0){
       strcpy(name, "copy of ");
       strcat(name, gl->name);
       strcpy(gl->name, name);
@@ -477,13 +478,13 @@ void TextLabelsCB(int var){
       gl = &LABEL_default;
     }
     gl->labeltype = TYPE_INI;
-    for(thislabel = labelscoll.label_first_ptr->next;thislabel->next != NULL;thislabel = thislabel->next){
+    for(thislabel = global_scase.labelscoll.label_first_ptr->next;thislabel->next != NULL;thislabel = thislabel->next){
       if(thislabel->glui_id < 0)continue;
       LIST_LB_labels->delete_item(thislabel->glui_id);
     }
-    LabelInsert(&labelscoll, gl);
+    LabelInsert(&global_scase.labelscoll, gl);
     count = 0;
-    for(thislabel = labelscoll.label_first_ptr->next;thislabel->next != NULL;thislabel = thislabel->next){
+    for(thislabel = global_scase.labelscoll.label_first_ptr->next;thislabel->next != NULL;thislabel = thislabel->next){
       if(thislabel->labeltype == TYPE_SMV)continue;
       thislabel->glui_id = count;
       LIST_LB_labels->add_item(count++, thislabel->name);
@@ -492,16 +493,16 @@ void TextLabelsCB(int var){
     break;
   case LB_DELETE:
     strcpy(name, LIST_LB_labels->curr_text);
-    for(thislabel = labelscoll.label_first_ptr->next;thislabel->next != NULL;thislabel = thislabel->next){
+    for(thislabel = global_scase.labelscoll.label_first_ptr->next;thislabel->next != NULL;thislabel = thislabel->next){
       if(thislabel->glui_id < 0)continue;
       LIST_LB_labels->delete_item(thislabel->glui_id);
     }
-    thislabel = LabelGet(&labelscoll, name);
+    thislabel = LabelGet(&global_scase.labelscoll, name);
     if(thislabel != NULL){
       LabelDelete(thislabel);
     }
     count = 0;
-    for(thislabel = labelscoll.label_first_ptr->next;thislabel->next != NULL;thislabel = thislabel->next){
+    for(thislabel = global_scase.labelscoll.label_first_ptr->next;thislabel->next != NULL;thislabel = thislabel->next){
       if(thislabel->labeltype == TYPE_SMV)continue;
       thislabel->glui_id = count;
       LIST_LB_labels->add_item(count++, thislabel->name);
@@ -632,7 +633,7 @@ void SurfaceCB(int var){
     {
       surfdata *surfi;
 
-      surfi = surfinfo + glui_surf_index;
+      surfi = global_scase.surfcoll.surfinfo + glui_surf_index;
       surfi->color = surfi->color_orig;
       surfi->transparent_level = surfi->transparent_level_orig;
       SurfaceCB(SURFACE_SELECT);
@@ -644,7 +645,7 @@ void SurfaceCB(int var){
       surfdata *surfi;
       float s_color[4];
 
-      surfi = surfinfo + glui_surf_index;
+      surfi = global_scase.surfcoll.surfinfo + glui_surf_index;
       s_color[0] = (float)glui_surface_color[0]/255.0;
       s_color[1] = (float)glui_surface_color[1]/255.0;
       s_color[2] = (float)glui_surface_color[2]/255.0;
@@ -661,7 +662,7 @@ void SurfaceCB(int var){
       s_color[3] = surfi->transparent_level;
       surfi->color = GetColorPtr(s_color);
       updatefacelists = 1;
-      updatefaces = 1;
+      global_scase.updatefaces = 1;
     }
     break;
   case SURFACE_SELECT:
@@ -670,7 +671,7 @@ void SurfaceCB(int var){
       float s_color[4];
       int i;
 
-      surfi = surfinfo + glui_surf_index;
+      surfi = global_scase.surfcoll.surfinfo + glui_surf_index;
       memcpy(s_color, surfi->color, 3*sizeof(float));
       s_color[3] = surfi->transparent_level;
 
@@ -692,8 +693,8 @@ extern "C" void GLUIUpdateTextureDisplay(void){
   int i;
   int showall = 1, hideall = 1, update=0;
 
-  for(i = 0;i < ntextureinfo;i++){
-    texti = textureinfo + i;
+  for(i = 0;i < global_scase.texture_coll.ntextureinfo;i++){
+    texti = global_scase.texture_coll.textureinfo + i;
     if(texti->loaded == 0 || texti->used == 0)continue;
     if(texti->display == 0)showall=0;
     if(texti->display == 1)hideall = 0;
@@ -776,7 +777,7 @@ extern "C" void GLUIDisplaySetup(int main_window){
 
   PANEL_gen1=glui_labels->add_panel_to_panel(ROLLOUT_general,"",GLUI_PANEL_NONE);
 
-  if(slicecoll.nsliceinfo>0)CHECKBOX_labels_average = glui_labels->add_checkbox_to_panel(PANEL_gen1, _("Average"), &vis_slice_average, LABELS_label, GLUILabelsCB);
+  if(global_scase.slicecoll.nsliceinfo>0)CHECKBOX_labels_average = glui_labels->add_checkbox_to_panel(PANEL_gen1, _("Average"), &vis_slice_average, LABELS_label, GLUILabelsCB);
   CHECKBOX_labels_axis = glui_labels->add_checkbox_to_panel(PANEL_gen1, _("Axis"), &visaxislabels, LABELS_label, GLUILabelsCB);
   CHECKBOX_visColorbarVertical   = glui_labels->add_checkbox_to_panel(PANEL_gen1, _("Colorbar(vertical)"),   &visColorbarVertical,   LABELS_vcolorbar, GLUILabelsCB);
   CHECKBOX_visColorbarHorizontal = glui_labels->add_checkbox_to_panel(PANEL_gen1, _("Colorbar(horizontal)"), &visColorbarHorizontal, LABELS_hcolorbar, GLUILabelsCB);
@@ -822,7 +823,7 @@ extern "C" void GLUIDisplaySetup(int main_window){
   glui_labels->add_radiobutton_to_group(RADIO_show_geom_boundingbox, "when mouse is pressed");
   glui_labels->add_radiobutton_to_group(RADIO_show_geom_boundingbox, "never");
 
-  if(ntickinfo > 0){
+  if(global_scase.ntickinfo > 0){
     CHECKBOX_labels_ticks->enable();
   }
   else{
@@ -842,7 +843,7 @@ extern "C" void GLUIDisplaySetup(int main_window){
   PANEL_gen3=glui_labels->add_panel_to_panel(ROLLOUT_general,"",GLUI_PANEL_NONE);
 
   PANEL_linewidth=glui_labels->add_panel_to_panel(PANEL_gen3,"line width");
-  SPINNER_linewidth=glui_labels->add_spinner_to_panel(PANEL_linewidth,_("blockage"),GLUI_SPINNER_FLOAT,&linewidth);
+  SPINNER_linewidth=glui_labels->add_spinner_to_panel(PANEL_linewidth,_("blockage"),GLUI_SPINNER_FLOAT,&global_scase.linewidth);
   SPINNER_linewidth->set_float_limits(1.0,10.0,GLUI_LIMIT_CLAMP);
   SPINNER_gridlinewidth=glui_labels->add_spinner_to_panel(PANEL_linewidth,_("grid"),GLUI_SPINNER_FLOAT,&gridlinewidth);
   SPINNER_gridlinewidth->set_float_limits(1.0,10.0,GLUI_LIMIT_CLAMP);
@@ -858,10 +859,10 @@ extern "C" void GLUIDisplaySetup(int main_window){
 
   int i, surfcount = 0, first_surf=-1;
 
-  for(i = 0; i<nsurfinfo; i++){
+  for(i = 0; i<global_scase.surfcoll.nsurfinfo; i++){
     surfdata *surfi;
 
-    surfi = surfinfo+i;
+    surfi = global_scase.surfcoll.surfinfo+i;
     if(surfi->used_by_geom==0&&surfi->used_by_obst==0)continue;
     if(strcmp(surfi->surfacelabel, "INERT")==0)continue;
     if(first_surf<0)first_surf = i;
@@ -872,10 +873,10 @@ extern "C" void GLUIDisplaySetup(int main_window){
     glui_surf_index = first_surf;
     PANEL_surfs = glui_labels->add_panel_to_panel(PANEL_gen3, "Surface color");
     LIST_surfs = glui_labels->add_listbox_to_panel(PANEL_surfs, _("Select"), &glui_surf_index, SURFACE_SELECT, SurfaceCB);
-    for(i = 0; i<nsurfinfo; i++){
+    for(i = 0; i<global_scase.surfcoll.nsurfinfo; i++){
       surfdata *surfi;
 
-      surfi = surfinfo+i;
+      surfi = global_scase.surfcoll.surfinfo+i;
       if(surfi->used_by_geom==0&&surfi->used_by_obst==0)continue;
       if(strcmp(surfi->surfacelabel, "INERT")==0)continue;
       LIST_surfs->add_item(i, surfi->surfacelabel);
@@ -898,12 +899,12 @@ extern "C" void GLUIDisplaySetup(int main_window){
 
   CHECKBOX_visaxislabels = glui_labels->add_checkbox_to_panel(PANEL_gen3, _("Show axis labels"), &visaxislabels, UPDATEMENU, UpdateMenuCB);
 
-  if(nzoneinfo > 0){
+  if(global_scase.nzoneinfo > 0){
     SPINNER_zone_hvac_diam = glui_labels->add_spinner_to_panel(PANEL_gen3, "HVAC (cfast)", GLUI_SPINNER_FLOAT, &zone_hvac_diam);
     SPINNER_zone_hvac_diam->set_float_limits(0.0, 1.0, GLUI_LIMIT_CLAMP);
   }
 
-  if(have_northangle==1){
+  if(global_scase.have_northangle==1){
     ROLLOUT_north = glui_labels->add_rollout_to_panel(PANEL_gen3,_("North direction"),false);
     INSERT_ROLLOUT(ROLLOUT_north, glui_labels);
     CHECKBOX_shownorth=glui_labels->add_checkbox_to_panel(ROLLOUT_north,_("show"),&vis_northangle,LABELS_shownorth,GLUILabelsCB);
@@ -1126,7 +1127,7 @@ extern "C" void GLUIDisplaySetup(int main_window){
     labeldata *thislabel;
     int count=0;
 
-    for(thislabel=labelscoll.label_first_ptr->next;thislabel->next!=NULL;thislabel=thislabel->next){
+    for(thislabel=global_scase.labelscoll.label_first_ptr->next;thislabel->next!=NULL;thislabel=thislabel->next){
       if(thislabel->labeltype==TYPE_SMV){
         thislabel->glui_id=-1;
         continue;
@@ -1306,7 +1307,7 @@ extern "C" void GLUILabelsCB(int var){
     break;
   case APPLY_VENTOFFSET:
     UpdateVentOffset();
-    updatefaces=1;
+    global_scase.updatefaces=1;
     break;
   case FLIP:
       colorbar_flip = 1 - colorbar_flip;

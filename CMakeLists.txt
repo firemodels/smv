@@ -115,7 +115,7 @@ if (LUA)
         add_subdirectory(Source/lfs)
     endif()
     if (VENDOR_LPEG)
-        add_subdirectory(Source/lpeg)
+        # add_subdirectory(Source/lpeg)
     endif()
 endif()
 

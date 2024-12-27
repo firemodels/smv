@@ -29,9 +29,9 @@ void UpdateHVACDuctColorLabels(int index){
   int set_valmin, set_valmax;
   float valmin, valmax;
 
-  hi = hvaccoll.hvacductvalsinfo->duct_vars + index;
+  hi = global_scase.hvaccoll.hvacductvalsinfo->duct_vars + index;
   GLUIGetMinMax(BOUND_HVACDUCT, hi->label.shortlabel, &set_valmin, &valmin, &set_valmax, &valmax);
-  GetColorbarLabels(valmin, valmax, nrgb, hi->colorlabels, hi->levels256);
+  GetColorbarLabels(valmin, valmax, global_scase.nrgb, hi->colorlabels, hi->levels256);
 }
 
 /* ------------------ UpdateHVACColorNodeLabels ------------------------ */
@@ -41,9 +41,9 @@ void UpdateHVACNodeColorLabels(int index){
   int set_valmin, set_valmax;
   float valmin, valmax;
 
-  hi = hvaccoll.hvacnodevalsinfo->node_vars + index;
+  hi = global_scase.hvaccoll.hvacnodevalsinfo->node_vars + index;
   GLUIGetMinMax(BOUND_HVACNODE, hi->label.shortlabel, &set_valmin, &valmin, &set_valmax, &valmax);
-  GetColorbarLabels(valmin, valmax, nrgb, hi->colorlabels, hi->levels256);
+  GetColorbarLabels(valmin, valmax, global_scase.nrgb, hi->colorlabels, hi->levels256);
 }
 
 /* ------------------ UpdateAllHVACColorLabels ------------------------ */
@@ -51,23 +51,23 @@ void UpdateHVACNodeColorLabels(int index){
 void UpdateAllHVACColorLabels(void){
   int i;
 
-  for(i = 0; i < hvaccoll.hvacductvalsinfo->n_duct_vars; i++){
+  for(i = 0; i < global_scase.hvaccoll.hvacductvalsinfo->n_duct_vars; i++){
     hvacvaldata *hi;
     int set_valmin, set_valmax;
     float valmin, valmax;
 
-    hi = hvaccoll.hvacductvalsinfo->duct_vars + i;
+    hi = global_scase.hvaccoll.hvacductvalsinfo->duct_vars + i;
     GLUIGetMinMax(BOUND_HVACDUCT, hi->label.shortlabel, &set_valmin, &valmin, &set_valmax, &valmax);
-    GetColorbarLabels(hi->valmin, hi->valmax, nrgb, hi->colorlabels, hi->levels256);
+    GetColorbarLabels(hi->valmin, hi->valmax, global_scase.nrgb, hi->colorlabels, hi->levels256);
   }
-  for(i = 0; i < hvaccoll.hvacnodevalsinfo->n_node_vars; i++){
+  for(i = 0; i < global_scase.hvaccoll.hvacnodevalsinfo->n_node_vars; i++){
     hvacvaldata *hi;
     int set_valmin, set_valmax;
     float valmin, valmax;
 
-    hi = hvaccoll.hvacnodevalsinfo->node_vars + i;
+    hi = global_scase.hvaccoll.hvacnodevalsinfo->node_vars + i;
     GLUIGetMinMax(BOUND_HVACNODE, hi->label.shortlabel, &set_valmin, &valmin, &set_valmax, &valmax);
-    GetColorbarLabels(valmin, valmax, nrgb, hi->colorlabels, hi->levels256);
+    GetColorbarLabels(valmin, valmax, global_scase.nrgb, hi->colorlabels, hi->levels256);
   }
 }
 
@@ -80,7 +80,7 @@ void ReadHVACData(int flag){
   if(flag == LOAD){
     START_TIMER(total_time);
   }
-  ReadHVACData0(&hvaccoll,flag, &file_size);
+  ReadHVACData0(&global_scase.hvaccoll,flag, &file_size);
   if(flag == LOAD){
     UpdateAllHVACColorLabels();
     GetGlobalHVACNodeBounds(1);
@@ -89,7 +89,7 @@ void ReadHVACData(int flag){
     GLUISetValTypeIndex(BOUND_HVACDUCT, 0);
 
     STOP_TIMER(total_time);
-    PRINTF("Loading %s", hvaccoll.hvacductvalsinfo->file);
+    PRINTF("Loading %s", global_scase.hvaccoll.hvacductvalsinfo->file);
     if(file_size > 1000000000){
       PRINTF(" - %.1f GB/%.1f s\n", (float)file_size / 1000000000., total_time);
     }
@@ -99,7 +99,7 @@ void ReadHVACData(int flag){
     else{
       PRINTF(" - %.0f KB/%.1f s\n", (float)file_size / 1000., total_time);
     }
-    hvaccoll.hvacductvalsinfo->loaded = 1;
+    global_scase.hvaccoll.hvacductvalsinfo->loaded = 1;
   }
   if(flag == BOUNDS_ONLY){
     ReadHVACData(UNLOAD);
@@ -354,42 +354,42 @@ void DrawHVAC(hvacdata *hvaci){
   unsigned char hvac_cell_color[3] = {128, 128, 128};
   float *last_color = NULL;
 
-  if((hvaccoll.hvacductvar_index >= 0||hvaccoll.hvacnodevar_index>=0)&&global_times!=NULL){
-    frame_index = GetTimeInterval(GetTime(), hvaccoll.hvacductvalsinfo->times, hvaccoll.hvacductvalsinfo->ntimes);
+  if((global_scase.hvaccoll.hvacductvar_index >= 0||global_scase.hvaccoll.hvacnodevar_index>=0)&&global_times!=NULL){
+    frame_index = GetTimeInterval(GetTime(), global_scase.hvaccoll.hvacductvalsinfo->times, global_scase.hvaccoll.hvacductvalsinfo->ntimes);
   }
 
   glPushMatrix();
   glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
-  glTranslatef(-xbar0, -ybar0, -zbar0);
+  glTranslatef(-global_scase.xbar0, -global_scase.ybar0, -global_scase.zbar0);
 
   // draw ducts
 
   float valmin, valmax;
   int set_valmin, set_valmax;
   hvacvaldata *ductvar;
-  if(global_times != NULL && hvaccoll.hvacductvar_index>=0){
-    ductvar = hvaccoll.hvacductvalsinfo->duct_vars + hvaccoll.hvacductvar_index;
+  if(global_times != NULL && global_scase.hvaccoll.hvacductvar_index>=0){
+    ductvar = global_scase.hvaccoll.hvacductvalsinfo->duct_vars + global_scase.hvaccoll.hvacductvar_index;
     GLUIGetOnlyMinMax(BOUND_HVACDUCT, ductvar->label.shortlabel, &set_valmin, &valmin, &set_valmax, &valmax);
   }
 
   glLineWidth(hvaci->duct_width);
   glBegin(GL_LINES);
-  if(hvaccoll.hvacductvar_index < 0||global_times==NULL){
+  if(global_scase.hvaccoll.hvacductvar_index < 0||global_times==NULL){
     uc_color[0] = CLAMP(hvaci->duct_color[0], 0, 255);
     uc_color[1] = CLAMP(hvaci->duct_color[1], 0, 255);
     uc_color[2] = CLAMP(hvaci->duct_color[2], 0, 255);
     glColor3ubv(uc_color);
   }
-  for(i = 0; i < hvaccoll.nhvacductinfo; i++){
+  for(i = 0; i < global_scase.hvaccoll.nhvacductinfo; i++){
     hvacductdata *ducti;
     hvacnodedata *node_from, *node_to;
 
-    ducti = hvaccoll.hvacductinfo + i;
+    ducti = global_scase.hvaccoll.hvacductinfo + i;
     if(hvac_show_networks==1&&strcmp(hvaci->network_name, ducti->network_name) != 0)continue;
     if(hvac_show_connections==1&&ducti->connect != NULL && ducti->connect->display == 0)continue;
 
-    node_from = hvaccoll.hvacnodeinfo + ducti->node_id_from;
-    node_to = hvaccoll.hvacnodeinfo + ducti->node_id_to;
+    node_from = global_scase.hvaccoll.hvacnodeinfo + ducti->node_id_from;
+    node_to = global_scase.hvaccoll.hvacnodeinfo + ducti->node_id_to;
     if(node_from == NULL || node_to == NULL)continue;
     float *xyzs;
     int nxyzs, j, *cell_index;
@@ -404,7 +404,7 @@ void DrawHVAC(hvacdata *hvaci){
       cell_index = ducti->cell_reg;
       nxyzs      = ducti->nxyz_reg_cell-1;
     }
-    if(global_times != NULL && hvaccoll.hvacductvar_index >= 0){
+    if(global_times != NULL && global_scase.hvaccoll.hvacductvar_index >= 0){
       for(j = 0;j < nxyzs;j++){
         float *xyz, *this_color;
         int cell;
@@ -442,12 +442,12 @@ void DrawHVAC(hvacdata *hvaci){
     glColor3ubv(hvac_cell_color);
     glPointSize(hvaci->cell_node_size);
     glBegin(GL_POINTS);
-    for(i = 0; i < hvaccoll.nhvacductinfo; i++){
+    for(i = 0; i < global_scase.hvaccoll.nhvacductinfo; i++){
       hvacductdata *ducti;
       float *xyzs;
       int nxyzs, j;
 
-      ducti = hvaccoll.hvacductinfo + i;
+      ducti = global_scase.hvaccoll.hvacductinfo + i;
       if(ducti->nduct_cells <= 1)continue;
 
       if(hvac_metro_view == 1){
@@ -469,20 +469,20 @@ void DrawHVAC(hvacdata *hvaci){
     SNIFF_ERRORS("after hvac duct points");
   }
   if(hvaci->show_duct_labels == 1){
-    for(i = 0; i < hvaccoll.nhvacductinfo; i++){
+    for(i = 0; i < global_scase.hvaccoll.nhvacductinfo; i++){
       hvacductdata *ducti;
       hvacnodedata *node_from, *node_to;
       float xyz[3];
       char label[256];
       float offset;
 
-      ducti = hvaccoll.hvacductinfo + i;
+      ducti = global_scase.hvaccoll.hvacductinfo + i;
       if(hvac_show_networks == 1 && strcmp(hvaci->network_name, ducti->network_name) != 0)continue;
       if(hvac_show_connections == 1 && ducti->connect != NULL && ducti->connect->display == 0)continue;
 
       strcpy(label, ducti->duct_name);
-      node_from = hvaccoll.hvacnodeinfo + ducti->node_id_from;
-      node_to   = hvaccoll.hvacnodeinfo + ducti->node_id_to;
+      node_from = global_scase.hvaccoll.hvacnodeinfo + ducti->node_id_from;
+      node_to   = global_scase.hvaccoll.hvacnodeinfo + ducti->node_id_to;
       if(node_from == NULL || node_to == NULL)continue;
       if(hvac_metro_view==1){
         memcpy(xyz, ducti->xyz_label_metro, 3*sizeof(float));
@@ -496,20 +496,20 @@ void DrawHVAC(hvacdata *hvaci){
     SNIFF_ERRORS("after hvac duct labels");
   }
   if(hvaci->show_component == DUCT_COMPONENT_TEXT){
-    for(i = 0; i < hvaccoll.nhvacductinfo; i++){
+    for(i = 0; i < global_scase.hvaccoll.nhvacductinfo; i++){
       hvacductdata *ducti;
       hvacnodedata *node_from, *node_to;
       float xyz[3];
       char label[256];
 
-      ducti = hvaccoll.hvacductinfo + i;
+      ducti = global_scase.hvaccoll.hvacductinfo + i;
       if(hvac_show_networks == 1 && strcmp(hvaci->network_name, ducti->network_name) != 0)continue;
       if(hvac_show_connections == 1 && ducti->connect != NULL && ducti->connect->display == 0)continue;
 
       strcpy(label, "");
       strcat(label, ducti->c_component);
-      node_from = hvaccoll.hvacnodeinfo + ducti->node_id_from;
-      node_to   = hvaccoll.hvacnodeinfo + ducti->node_id_to;
+      node_from = global_scase.hvaccoll.hvacnodeinfo + ducti->node_id_from;
+      node_to   = global_scase.hvaccoll.hvacnodeinfo + ducti->node_id_to;
       if(node_from == NULL || node_to == NULL)continue;
       if(hvac_metro_view == 1){
         memcpy(xyz, ducti->xyz_symbol_metro, 3*sizeof(float));
@@ -523,16 +523,16 @@ void DrawHVAC(hvacdata *hvaci){
     SNIFF_ERRORS("after hvac duct component text");
   }
   if(hvaci->show_component == DUCT_COMPONENT_SYMBOLS){
-    for(i = 0; i < hvaccoll.nhvacductinfo; i++){
+    for(i = 0; i < global_scase.hvaccoll.nhvacductinfo; i++){
       hvacductdata *ducti;
       hvacnodedata *node_from, *node_to;
       float *xyz;
 
-      ducti = hvaccoll.hvacductinfo + i;
+      ducti = global_scase.hvaccoll.hvacductinfo + i;
       if(hvac_show_networks == 1 && strcmp(hvaci->network_name, ducti->network_name) != 0)continue;
       if(hvac_show_connections == 1 && ducti->connect != NULL && ducti->connect->display == 0)continue;
-      node_from = hvaccoll.hvacnodeinfo + ducti->node_id_from;
-      node_to   = hvaccoll.hvacnodeinfo + ducti->node_id_to;
+      node_from = global_scase.hvaccoll.hvacnodeinfo + ducti->node_id_from;
+      node_to   = global_scase.hvaccoll.hvacnodeinfo + ducti->node_id_to;
       if(node_from == NULL || node_to == NULL)continue;
       float size;
       int state;
@@ -569,27 +569,27 @@ void DrawHVAC(hvacdata *hvaci){
   // draw nodes
   glPointSize(hvaci->node_size);
   glBegin(GL_POINTS);
-  if(hvaccoll.hvacnodevar_index < 0 || global_times == NULL){
+  if(global_scase.hvaccoll.hvacnodevar_index < 0 || global_times == NULL){
     uc_color[0] = CLAMP(hvaci->node_color[0], 0, 255);
     uc_color[1] = CLAMP(hvaci->node_color[1], 0, 255);
     uc_color[2] = CLAMP(hvaci->node_color[2], 0, 255);
     glColor3ubv(uc_color);
   }
-  for(i = 0; i < hvaccoll.nhvacnodeinfo; i++){
+  for(i = 0; i < global_scase.hvaccoll.nhvacnodeinfo; i++){
     hvacnodedata *nodei;
 
-    nodei = hvaccoll.hvacnodeinfo + i;
+    nodei = global_scase.hvaccoll.hvacnodeinfo + i;
     if(hvac_show_networks == 1 && strcmp(hvaci->network_name, nodei->network_name) != 0)continue;
     if(hvac_show_connections == 1 && nodei->connect != NULL && nodei->connect->display == 0)continue;
-    if(global_times != NULL && hvaccoll.hvacnodevar_index >= 0){
+    if(global_times != NULL && global_scase.hvaccoll.hvacnodevar_index >= 0){
       hvacvaldata *nodevar;
       unsigned char ival;
 
       //        duct: i
       //        time: itime
       //   var index: hvacductvar_index
-      nodevar = hvaccoll.hvacnodevalsinfo->node_vars + hvaccoll.hvacnodevar_index;
-      ival = HVACCOLORCONV(nodevar->vals[frame_index + i * hvaccoll.hvacnodevalsinfo->ntimes], nodevar->valmin, nodevar->valmax);
+      nodevar = global_scase.hvaccoll.hvacnodevalsinfo->node_vars + global_scase.hvaccoll.hvacnodevar_index;
+      ival = HVACCOLORCONV(nodevar->vals[frame_index + i * global_scase.hvaccoll.hvacnodevalsinfo->ntimes], nodevar->valmin, nodevar->valmax);
       glColor3fv(rgb_full[ival]);
     }
     glVertex3fv(nodei->xyz);
@@ -602,12 +602,12 @@ void DrawHVAC(hvacdata *hvaci){
   uc_color[2] = CLAMP(hvaci->node_color[2], 0, 255);
   glColor3ubv(uc_color);
   if(hvaci->show_node_labels == 1){
-    for(i = 0; i < hvaccoll.nhvacnodeinfo; i++){
+    for(i = 0; i < global_scase.hvaccoll.nhvacnodeinfo; i++){
       hvacnodedata* nodei;
       char label[256];
       float offset;
 
-      nodei = hvaccoll.hvacnodeinfo + i;
+      nodei = global_scase.hvaccoll.hvacnodeinfo + i;
       if(hvac_show_networks == 1 && strcmp(hvaci->network_name, nodei->network_name) != 0)continue;
       if(hvac_show_connections == 1 && nodei->connect != NULL && nodei->connect->display == 0)continue;
       offset = 0.01/xyzmaxdiff;
@@ -617,12 +617,12 @@ void DrawHVAC(hvacdata *hvaci){
     SNIFF_ERRORS("after hvac node labels");
   }
   if(hvaci->show_filters == NODE_FILTERS_LABELS){
-    for(i = 0; i < hvaccoll.nhvacnodeinfo; i++){
+    for(i = 0; i < global_scase.hvaccoll.nhvacnodeinfo; i++){
       hvacnodedata *nodei;
       char label[256];
       float offset;
 
-      nodei = hvaccoll.hvacnodeinfo + i;
+      nodei = global_scase.hvaccoll.hvacnodeinfo + i;
       if(hvac_show_networks == 1 && strcmp(hvaci->network_name, nodei->network_name) != 0)continue;
       if(hvac_show_connections == 1 && nodei->connect != NULL && nodei->connect->display == 0)continue;
       strcpy(label, nodei->c_filter);
@@ -632,13 +632,13 @@ void DrawHVAC(hvacdata *hvaci){
     SNIFF_ERRORS("after hvac node filter labels");
   }
   if(hvaci->show_filters == NODE_FILTERS_SYMBOLS){
-    for(i = 0; i < hvaccoll.nhvacnodeinfo; i++){
+    for(i = 0; i < global_scase.hvaccoll.nhvacnodeinfo; i++){
       hvacnodedata *nodei;
       float size;
 
       size  = xyzmaxdiff / 25.0;
       size *= hvaci->filter_size;
-      nodei = hvaccoll.hvacnodeinfo + i;
+      nodei = global_scase.hvaccoll.hvacnodeinfo + i;
       if(hvac_show_networks == 1 && strcmp(hvaci->network_name, nodei->network_name) != 0)continue;
       if(hvac_show_connections == 1 && nodei->connect != NULL && nodei->connect->display == 0)continue;
       if(nodei->filter == HVAC_FILTER_NO)continue;
@@ -654,10 +654,10 @@ void DrawHVAC(hvacdata *hvaci){
 void DrawHVACS(void){
   int i;
 
-  for(i=0; i<hvaccoll.nhvacinfo; i++){
+  for(i=0; i<global_scase.hvaccoll.nhvacinfo; i++){
     hvacdata *hvaci;
 
-    hvaci = hvaccoll.hvacinfo + i;
+    hvaci = global_scase.hvaccoll.hvacinfo + i;
     if(hvac_show_networks==1&&hvaci->display==0)continue;
     DrawHVAC(hvaci);
   }
