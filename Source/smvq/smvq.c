@@ -250,6 +250,48 @@ int RunBenchmark(char *input_file) {
     json_object_object_add(mesh_dimensions, "z_max",
                            json_object_new_double(mesh->z1));
     json_object_object_add(mesh_obj, "dimensions", mesh_dimensions);
+
+    struct json_object *vents = json_object_new_array();
+    for(int j = 0; j < mesh->nvents; j++) {
+      ventdata *vent = &mesh->ventinfo[j];
+      struct json_object *vent_obj = json_object_new_object();
+      json_object_object_add(vent_obj, "index", json_object_new_int(j + 1));
+      json_object_object_add(
+          vent_obj, "surface_id",
+          json_object_new_string(vent->surf[0]->surfacelabel));
+      struct json_object *dimensions = json_object_new_object();
+      json_object_object_add(dimensions, "x_min",
+                             json_object_new_double(vent->xmin));
+      json_object_object_add(dimensions, "x_max",
+                             json_object_new_double(vent->xmax));
+      json_object_object_add(dimensions, "y_min",
+                             json_object_new_double(vent->ymin));
+      json_object_object_add(dimensions, "y_max",
+                             json_object_new_double(vent->ymax));
+      json_object_object_add(dimensions, "z_min",
+                             json_object_new_double(vent->zmin));
+      json_object_object_add(dimensions, "z_max",
+                             json_object_new_double(vent->zmax));
+      json_object_object_add(vent_obj, "dimensions", dimensions);
+
+      struct json_object *coordinates = json_object_new_object();
+      json_object_object_add(coordinates, "i_min",
+                             json_object_new_int(vent->imin));
+      json_object_object_add(coordinates, "i_max",
+                             json_object_new_int(vent->imax));
+      json_object_object_add(coordinates, "j_min",
+                             json_object_new_int(vent->jmin));
+      json_object_object_add(coordinates, "j_max",
+                             json_object_new_int(vent->jmax));
+      json_object_object_add(coordinates, "k_min",
+                             json_object_new_int(vent->kmin));
+      json_object_object_add(coordinates, "k_max",
+                             json_object_new_int(vent->kmax));
+      json_object_object_add(vent_obj, "coordinates", coordinates);
+      json_object_array_add(vents, vent_obj);
+    }
+    json_object_object_add(mesh_obj, "vents", vents);
+
     json_object_array_add(mesh_array, mesh_obj);
   }
   json_object_object_add(jobj, "meshes", mesh_array);

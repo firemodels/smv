@@ -17,6 +17,13 @@
 #define INTERP_RGB 0
 #define INTERP_LAB 1
 
+/* --------------------------  colordata ------------------------------------ */
+
+typedef struct _colordata {
+  float color[4], full_color[4], bw_color[4];
+  struct _colordata *nextcolor;
+} colordata;
+
 typedef struct _colorbardata {
   /// @brief The label used in GUI menus
   char menu_label[1024];
