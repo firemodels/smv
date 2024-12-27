@@ -299,44 +299,6 @@
 // BEGIN MAIN API
 
 /**
- * @brief A number of standard objects to be used.
- *
- */
-typedef struct {
-  sv_object *thcp_object_backup;
-  sv_object *target_object_backup;
-  sv_object *heat_detector_object_backup;
-  sv_object *sprinkler_upright_object_backup;
-  sv_object *smoke_detector_object_backup;
-  sv_object *error_device;
-  sv_object *missing_device;
-} std_objects;
-
-/**
- * @brief A collection of object definitions. At it's core this collection
- * contains a linked list, but also an array of pointers into that linked list.
- *
- */
-typedef struct {
-  /** @brief The number object definitions in object_defs. */
-  int nobject_defs;
-  /** @brief An array of pointers object definitions. */
-  sv_object **object_defs;
-  /** @brief The start of a linked list of object definitions. This is a dummy
-   * object and isn't actually used. */
-  sv_object object_def_first;
-  /** @brief The end of a linked list of object definitions. This is a dummy
-   * object and isn't actually used. */
-  sv_object object_def_last;
-  /** @brief A number of standard objects to be used. */
-  std_objects std_object_defs;
-  int iavatar_types;
-  int navatar_types;
-  sv_object **avatar_types;
-  sv_object *avatar_defs_backup[2];
-} object_collection;
-
-/**
  * @brief Initialise an @ref object_collection.
  *
  * @returns A @ref object_collection which has been properly initialized.
