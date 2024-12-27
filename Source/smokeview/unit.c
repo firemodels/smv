@@ -52,10 +52,10 @@ void SetUnitVis(void){
     uci = unitclasses + i;
     uci->visible=0;
 
-    for(j=0;j<slicecoll.nsliceinfo;j++){
+    for(j=0;j<global_scase.slicecoll.nsliceinfo;j++){
       slicedata *slicej;
 
-      slicej = slicecoll.sliceinfo + j;
+      slicej = global_scase.slicecoll.sliceinfo + j;
       if(IsUnitPresent(slicej->label.unit,uci->units->unit)==1){
         uci->visible=1;
         break;
@@ -63,10 +63,10 @@ void SetUnitVis(void){
     }
     if(uci->visible==1)continue;
 
-    for(j=0;j<npatchinfo;j++){
+    for(j=0;j<global_scase.npatchinfo;j++){
       patchdata *patchj;
 
-      patchj = patchinfo + j;
+      patchj = global_scase.patchinfo + j;
       if(IsUnitPresent(patchj->label.unit,uci->units->unit)==1){
         uci->visible=1;
         break;
@@ -74,11 +74,11 @@ void SetUnitVis(void){
     }
     if(uci->visible==1)continue;
 
-    for(j=0;j<nplot3dinfo;j++){
+    for(j=0;j<global_scase.nplot3dinfo;j++){
       plot3ddata *plot3dj;
       int n;
 
-      plot3dj = plot3dinfo + j;
+      plot3dj = global_scase.plot3dinfo + j;
       for(n=0;n<5;n++){
         if(IsUnitPresent(plot3dj->label[n].unit,uci->units->unit)==1){
           uci->visible=1;
@@ -115,10 +115,10 @@ void UpdateUnitDefs(void){
     int firstslice, firstpatch, firstplot3d, diff_index;
 
     firstpatch=1;
-    for(j=0;j<npatchinfo;j++){
+    for(j=0;j<global_scase.npatchinfo;j++){
       patchdata *patchj;
 
-      patchj = patchinfo + j;
+      patchj = global_scase.patchinfo + j;
       if(patchj->loaded==0||patchj->display==0)continue;
       if(UnitTypeMatch(patchj->label.unit,unitclasses+i)!=0)continue;
       if(firstpatch==1){
@@ -133,10 +133,10 @@ void UpdateUnitDefs(void){
     }
 
     firstslice=1;
-    for(j=0;j<slicecoll.nsliceinfo;j++){
+    for(j=0;j<global_scase.slicecoll.nsliceinfo;j++){
       slicedata *slicej;
 
-      slicej = slicecoll.sliceinfo + j;
+      slicej = global_scase.slicecoll.sliceinfo + j;
       if(slicej->loaded==0||slicej->display==0)continue;
       if(UnitTypeMatch(slicej->label.unit,unitclasses+i)!=0)continue;
       if(firstslice==1){
@@ -151,11 +151,11 @@ void UpdateUnitDefs(void){
     }
 
     firstplot3d=1;
-    for(j=0;j<nplot3dinfo;j++){
+    for(j=0;j<global_scase.nplot3dinfo;j++){
       plot3ddata *plot3dj;
       int n;
 
-      plot3dj = plot3dinfo + j;
+      plot3dj = global_scase.plot3dinfo + j;
       if(plot3dj->loaded==0||plot3dj->display==0)continue;
       for(n=0;n<5;n++){
         if(UnitTypeMatch(plot3dj->label[n].unit,unitclasses+i)!=0)continue;

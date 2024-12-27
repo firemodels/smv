@@ -1260,8 +1260,8 @@ int LuaCreateCase(lua_State *L) {
   lua_newtable(L);
   // lua_pushstring(L, chidfilebase);
   // lua_setfield(L, -2, "chid");
-  lua_pushstring(L, fdsprefix);
-  lua_setfield(L, -2, "fdsprefix");
+  lua_pushstring(L, global_scase.fdsprefix);
+  lua_setfield(L, -2, "global_scase.fdsprefix");
 
   lua_pushcfunction(L, &LuaCaseTitle);
   lua_setfield(L, -2, "plot_title");
@@ -5665,7 +5665,7 @@ int LoadLuaScript(const char *filename) {
 int LoadSsfScript(const char *filename) {
   // char filename[1024];
   //   if (strlen(script_filename) == 0) {
-  //       strncpy(filename, fdsprefix, 1020);
+  //       strncpy(filename, global_scase.fdsprefix, 1020);
   //       strcat(filename, ".ssf");
   //   } else {
   //       strncpy(filename, script_filename, 1024);
@@ -5680,7 +5680,7 @@ int LoadSsfScript(const char *filename) {
   int level = 0;
   char l_string[1024];
   snprintf(l_string, 1024, "require(\"ssfparser\")\nrunSSF(\"%s.ssf\")",
-           fdsprefix);
+           global_scase.fdsprefix);
   int ssfparser_loaded_err = luaL_dostring(lua_instance, "require \"ssfparser\"");
   if(ssfparser_loaded_err) {
     fprintf(stderr, "Failed to load ssfparser\n");

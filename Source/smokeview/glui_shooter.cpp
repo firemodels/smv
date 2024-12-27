@@ -294,22 +294,22 @@ extern "C" void GLUIShooterSetup(int main_window){
   PANEL_shooter_frameB=glui_shooter->add_panel_to_panel(PANEL_shooter_frameE,_("Size"));
 
   SPINNER_shooter_x=glui_shooter->add_spinner_to_panel(PANEL_shooter_frameA,"x",GLUI_SPINNER_FLOAT,shooter_xyz,SHOOTER_XYZ,ShooterCB);
-  SPINNER_shooter_x->set_float_limits(xbar0,xbarORIG);
+  SPINNER_shooter_x->set_float_limits(global_scase.xbar0,xbarORIG);
 
   SPINNER_shooter_y=glui_shooter->add_spinner_to_panel(PANEL_shooter_frameA,"y",GLUI_SPINNER_FLOAT,shooter_xyz+1,SHOOTER_XYZ,ShooterCB);
-  SPINNER_shooter_y->set_float_limits(ybar0,ybarORIG);
+  SPINNER_shooter_y->set_float_limits(global_scase.ybar0,ybarORIG);
 
   SPINNER_shooter_z=glui_shooter->add_spinner_to_panel(PANEL_shooter_frameA,"z",GLUI_SPINNER_FLOAT,shooter_xyz+2,SHOOTER_XYZ,ShooterCB);
-  SPINNER_shooter_z->set_float_limits(zbar0,zbarORIG);
+  SPINNER_shooter_z->set_float_limits(global_scase.zbar0,zbarORIG);
 
   SPINNER_shooter_dx=glui_shooter->add_spinner_to_panel(PANEL_shooter_frameB,"dx",GLUI_SPINNER_FLOAT,shooter_dxyz,SHOOTER_DXYZ,ShooterCB);
-  SPINNER_shooter_dx->set_float_limits(0.0,xbarORIG-xbar0);
+  SPINNER_shooter_dx->set_float_limits(0.0,xbarORIG-global_scase.xbar0);
 
   SPINNER_shooter_dy=glui_shooter->add_spinner_to_panel(PANEL_shooter_frameB,"dy",GLUI_SPINNER_FLOAT,shooter_dxyz+1,SHOOTER_DXYZ,ShooterCB);
-  SPINNER_shooter_dy->set_float_limits(0.0,ybarORIG-ybar0);
+  SPINNER_shooter_dy->set_float_limits(0.0,ybarORIG-global_scase.ybar0);
 
   SPINNER_shooter_dz=glui_shooter->add_spinner_to_panel(PANEL_shooter_frameB,"dz",GLUI_SPINNER_FLOAT,shooter_dxyz+2,SHOOTER_DXYZ,ShooterCB);
-  SPINNER_shooter_dz->set_float_limits(0.0,zbarORIG-zbar0);
+  SPINNER_shooter_dz->set_float_limits(0.0,zbarORIG-global_scase.zbar0);
 
   PANEL_shooter_frameF=glui_shooter->add_panel_to_panel(ROLLOUT_shooter_frame,_("Velocities"));
   SPINNER_shooter_u=glui_shooter->add_spinner_to_panel(PANEL_shooter_frameF,"u",GLUI_SPINNER_FLOAT,shooter_uvw,SHOOTER_UVW,ShooterCB);

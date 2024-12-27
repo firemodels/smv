@@ -15,7 +15,7 @@ csvdata *GetCsvData(int file_index, int col_index, csvfiledata **csvf_ptr){
   csvfiledata *csvfi;
   csvdata *csvi=NULL;
 
-  csvfi = csvfileinfo    + file_index;
+  csvfi = global_scase.csvcoll.csvfileinfo    + file_index;
   if(csvfi->csvinfo!=NULL)csvi  = csvfi->csvinfo + col_index;
   if(csvf_ptr != NULL)*csvf_ptr = csvfi;
   return csvi;
@@ -96,21 +96,21 @@ void DrawGenCurve(int option, plot2ddata *plot2di, curvedata *curve, float size_
     if(use_tload_begin==1||use_tload_end==1){
       if(use_tload_begin==1){
         for(i=0;i<n;i++){
-          if(tload_begin<x[i]){
+          if(global_scase.tload_begin<x[i]){
             itbeg = i;
             break;
           }
         }
-        xmin = tload_begin;
+        xmin = global_scase.tload_begin;
       }
       if(use_tload_end==1){
         for(i=n-1;i>=0;i--){
-          if(x[i]<tload_end){
+          if(x[i]<global_scase.tload_end){
             itend = i;
             break;
           }
         }
-        xmax = tload_end;
+        xmax = global_scase.tload_end;
       }
     }
     if(xmax==xmin)xmax = xmin+1.0;
@@ -372,11 +372,11 @@ void UpdateCurveBounds(plot2ddata *plot2di, int option){
       strcpy(curve->scaled_unit,  "");
     }
   }
-  for(i = 0; i<ncsvfileinfo; i++){
+  for(i = 0; i<global_scase.csvcoll.ncsvfileinfo; i++){
     int j;
     csvfiledata *csvfi;
 
-    csvfi = csvfileinfo+i;
+    csvfi = global_scase.csvcoll.csvfileinfo+i;
     if(csvfi->defined != CSV_DEFINED)continue;
     for(j = 0; j<csvfi->ncsvinfo; j++){
       csvdata *csvi;
@@ -631,18 +631,18 @@ void DrawGenPlots(void){
 void SetupPlot2DUnitData(void){
 
   //setup deviceunits
-  if(ndeviceinfo > 0){
+  if(global_scase.devicecoll.ndeviceinfo > 0){
     int i;
 
     ndeviceunits = 0;
     FREEMEMORY(deviceunits);
-    NewMemory((void **)&deviceunits, ndeviceinfo * sizeof(devicedata *));
-    for(i = 0; i < ndeviceinfo; i++){
+    NewMemory((void **)&deviceunits, global_scase.devicecoll.ndeviceinfo * sizeof(devicedata *));
+    for(i = 0; i < global_scase.devicecoll.ndeviceinfo; i++){
       int j;
       devicedata *devi;
       int skip_dev;
 
-      devi = deviceinfo + i;
+      devi = global_scase.devicecoll.deviceinfo + i;
       if(devi->nvals == 0 || strlen(devi->quantity) == 0 || strlen(devi->unit) == 0)continue;
       skip_dev = 0;
       for(j = 0; j < ndeviceunits; j++){
@@ -659,18 +659,18 @@ void SetupPlot2DUnitData(void){
     }
   }
   //setup hrrunits
-  if(nhrrinfo > 0){
+  if(global_scase.hrr_coll.nhrrinfo > 0){
     int i;
 
     nhrrunits = 0;
     FREEMEMORY(hrrunits);
-    NewMemory((void **)&hrrunits, nhrrinfo * sizeof(hrrdata *));
-    for(i = 0; i < nhrrinfo; i++){
+    NewMemory((void **)&hrrunits, global_scase.hrr_coll.nhrrinfo * sizeof(hrrdata *));
+    for(i = 0; i < global_scase.hrr_coll.nhrrinfo; i++){
       int j;
       hrrdata *hrri;
       int skip_hrr;
 
-      hrri = hrrinfo + i;
+      hrri = global_scase.hrr_coll.hrrinfo + i;
       if(hrri->nvals == 0 || strlen(hrri->label.shortlabel) == 0 || strlen(hrri->label.unit) == 0)continue;
       if(STRCMP(hrri->label.shortlabel, "Time") == 0)continue;
       skip_hrr = 0;
@@ -750,7 +750,7 @@ void GetPlot2DBounds(plot2ddata *plot2di, float *valmin, float *valmax){
 /* ------------------ InitPlot2D ------------------------ */
 
 void InitPlot2D(plot2ddata *plot2di, int plot_index){
-  if(ndeviceinfo == 0 && nhrrinfo == 0)return;
+  if(global_scase.devicecoll.ndeviceinfo == 0 && global_scase.hrr_coll.nhrrinfo == 0)return;
   plot2di->ncurves = 0;
   plot2di->ncurves_ini = 0;
   plot2di->show = 1;
@@ -976,10 +976,10 @@ void DrawDevicePlots(void){
   int i;
 
   if(vis_device_plot!=DEVICE_PLOT_HIDDEN){
-    for(i = 0; i<ndeviceinfo; i++){
+    for(i = 0; i<global_scase.devicecoll.ndeviceinfo; i++){
       devicedata *devicei;
 
-      devicei = deviceinfo+i;
+      devicei = global_scase.devicecoll.deviceinfo+i;
       if(vis_device_plot==DEVICE_PLOT_SHOW_SELECTED&&devicei->selected==0)continue;
       if(devicei->times==NULL||devicei->vals==NULL)continue;
       if(devicei->update_avg==1){

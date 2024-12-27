@@ -141,10 +141,10 @@ void MakeMovie(void){
 
 // make movie
     if(output_ffmpeg_command==1){
-      if(ffmpeg_command_filename!=NULL){
+      if(global_scase.paths.ffmpeg_command_filename!=NULL){
         FILE *stream_ffmpeg=NULL;
 
-        stream_ffmpeg = fopen(ffmpeg_command_filename,"w");
+        stream_ffmpeg = fopen(global_scase.paths.ffmpeg_command_filename,"w");
         if(stream_ffmpeg!=NULL){
 #ifdef WIN32
           fprintf(stream_ffmpeg,"@echo off\n");
@@ -267,7 +267,7 @@ int GetRenderFileName(int view_mode, char *renderfile_dir, char *renderfile_full
       use_scriptfile = 1;
     }
     else{
-      strcpy(renderfile_name, fdsprefix);
+      strcpy(renderfile_name, global_scase.fdsprefix);
     }
     if(script_dir_path != NULL&&strlen(script_dir_path) > 0){
       if(strlen(script_dir_path) == 2 && script_dir_path[0] == '.'&&script_dir_path[1] == dirseparator[0]){
@@ -360,11 +360,11 @@ int GetRenderFileName(int view_mode, char *renderfile_dir, char *renderfile_full
 
       time_local = global_times[itimes];
       dt = ABS(global_times[1] - global_times[0]);
-      maxtime = MAX(ABS(global_times[nglobal_times-1]), ABS(global_tend));
-      maxtime = MAX(maxtime, ABS(global_tbegin));
+      maxtime = MAX(ABS(global_times[nglobal_times-1]), ABS(global_scase.global_tend));
+      maxtime = MAX(maxtime, ABS(global_scase.global_tbegin));
       maxtime = MAX(maxtime, 10.0);
       //allow space for minus sign
-      if(global_tend<0.0 || global_tbegin<0.0 || global_times[nglobal_times-1] < 0.0)maxtime *= 10.0;
+      if(global_scase.global_tend<0.0 || global_scase.global_tbegin<0.0 || global_times[nglobal_times-1] < 0.0)maxtime *= 10.0;
       timelabelptr = Time2RenderLabel(time_local, dt, maxtime, timelabel_local);
       strcpy(suffix, timelabelptr);
       strcat(suffix, "s");
@@ -422,7 +422,7 @@ void OutputSliceData(void){
 
   for(ii = 0; ii < nslice_loaded; ii++){
     i = slice_loaded_list[ii];
-    sd = slicecoll.sliceinfo + i;
+    sd = global_scase.slicecoll.sliceinfo + i;
     if(sd->display == 0 || sd->slicefile_labelindex != slicefile_labelindex)continue;
     if(sd->times[0] > global_times[itimes])continue;
 
@@ -1115,13 +1115,13 @@ void SetSmokeSensor(gdImagePtr RENDERimage, int width, int height){
   if(test_smokesensors == 1 && active_smokesensors == 1 && show_smokesensors != SMOKESENSORS_HIDDEN){
     int idev;
 
-    for(idev = 0; idev < ndeviceinfo; idev++){
+    for(idev = 0; idev < global_scase.devicecoll.ndeviceinfo; idev++){
       devicedata *devicei;
       int idev_col, idev_row;
       int col_offset, row_offset;
       unsigned int red = 255 << 16;
 
-      devicei = deviceinfo + idev;
+      devicei = global_scase.devicecoll.deviceinfo + idev;
 
       if(devicei->object->visible == 0 || devicei->show == 0)continue;
       if(strcmp(devicei->object->label, "smokesensor") != 0)continue;
