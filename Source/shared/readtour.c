@@ -93,10 +93,16 @@ void InitTour(tour_collection *tourcoll, tourdata *touri) {
   touri->first_frame.prev = NULL;
   touri->first_frame.next = &touri->last_frame;
   touri->first_frame.time = -1000000000.0;
+#ifdef pp_TOUR
+  touri->first_frame.set_tour_time = 0;
+#endif
 
   touri->last_frame.prev = &touri->first_frame;
   touri->last_frame.next = NULL;
   touri->last_frame.time = 1000000000.0;
+#ifdef pp_TOUR
+  touri->last_frame.set_tour_time = 0;
+#endif
 
   touri->nkeyframes = 0;
   touri->ntimes = tourcoll->tour_ntimes;

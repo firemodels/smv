@@ -235,7 +235,14 @@ void DrawTours(void){
         {
           char label[128];
 #ifdef _DEBUG
-          sprintf(label, "t=%8.2f n=%i n/ad=%8.2f ad=%8.2f ld=%8.2f", framej->time, framej->npoints, (float)framej->npoints/framej->arc_dist, framej->arc_dist, framej->line_dist);
+          if(showdebugtour == 1){
+            sprintf(label, "t=%8.2f n=%i n/ad=%8.2f ad=%8.2f ld=%8.2f",
+              framej->time, framej->npoints, (float)framej->npoints / framej->arc_dist, framej->arc_dist, framej->line_dist);
+            if(j==0)strcat(label, "(ad==arc distance, ld==line distance)");
+          }
+          else{
+            sprintf(label, "%8.2f", framej->time);
+          }
 #else
           sprintf(label, "%8.2f", framej->time);
 #endif
@@ -437,7 +444,7 @@ void GetKeyXYZ(float t, keyframe *this_key, float *xyz){
   }
   else{
     dt = next_key->time - this_key->time - this_key->pause_time;
-    if(dt > 0.0)t_scaled = CLAMP((t - this_key->time-this_key->pause_time) / dt, 0.0, 1.0);
+    if(dt > 0.0)t_scaled = CLAMP((t - this_key->time -this_key->pause_time) / dt, 0.0, 1.0);
     HermiteXYZ(t_scaled, this_key, next_key, xyz, NULL);
   }
 }
@@ -475,9 +482,7 @@ void GetTourProperties(tourdata *touri){
       GetTourVal(t, thiskey, nextkey, xyz1);
       DDIST3(xyz0, xyz1, delta);
       dist += delta;
-      xyz0[0] = xyz1[0];
-      xyz0[1] = xyz1[1];
-      xyz0[2] = xyz1[2];
+      memcpy(xyz0, xyz1, 3*sizeof(float));
     }
     thiskey->arc_dist   = dist;
     touri->global_dist += dist;
@@ -515,7 +520,9 @@ void GetTourProperties(tourdata *touri){
     }
     thiskey->npoints = npoints_i;
     cum_dist       += thiskey->arc_dist;
-    nextkey->time   = global_scase.tourcoll.tour_tstart + thiskey->cum_pause_time + (global_scase.tourcoll.tour_tstop-total_pause_time-global_scase.tourcoll.tour_tstart)*(cum_dist/touri->global_dist);
+    if(nextkey->set_tour_time == 0){
+      nextkey->time = global_scase.tourcoll.tour_tstart + thiskey->cum_pause_time + (global_scase.tourcoll.tour_tstop - total_pause_time - global_scase.tourcoll.tour_tstart) * (cum_dist / touri->global_dist);
+    }
   }
 
   (touri->last_frame).prev->time = global_scase.tourcoll.tour_tstop;
@@ -719,8 +726,7 @@ void CreateTourPaths(void){
     for(keyj = (touri->first_frame).next; keyj->next!=NULL; keyj = keyj->next){
       float denom, view_smv[3];
 
-      view_smv[0] = keyj->view_tangent_right[0];
-      view_smv[1] = keyj->view_tangent_right[1];
+      memcpy(view_smv, keyj->view_tangent_right, 2*sizeof(float));
       view_smv[2] = 0.0;
 
       ROTATE(keyj->view2_smv, view_smv, 0.0);
@@ -780,16 +786,14 @@ keyframe *AddFrame(keyframe *last_frame, float time_local, float pause_time_loca
 
   FDS2SMV_XYZ(feye, xyz);
   FDS2SMV_XYZ(fxyz_view,view);
-  this_frame->time=time_local;
+  this_frame->time =time_local;
 
-  this_frame->view_smv[0] = fxyz_view[0];
-  this_frame->view_smv[1] = fxyz_view[1];
-  this_frame->view_smv[2] = fxyz_view[2];
-
-  this_frame->xyz_fds[0] = xyz[0];
-  this_frame->xyz_fds[1] = xyz[1];
-  this_frame->xyz_fds[2] = xyz[2];
+  memcpy(this_frame->view_smv, fxyz_view, 3*sizeof(float));
+  memcpy(this_frame->xyz_fds,  xyz,       3*sizeof(float));
   this_frame->pause_time = pause_time_local;
+#ifdef pp_TOUR
+  this_frame->set_tour_time = last_frame->set_tour_time;
+#endif
 
   CheckMemory;
   return this_frame;
@@ -833,9 +837,7 @@ void SetupCircularTourNodes(void){
   tour_circular_view[0]=(global_scase.xbar0+xbarORIG)/2.0;
   tour_circular_view[1]=(global_scase.ybar0+ybarORIG)/2.0;
   tour_circular_view[2]=(global_scase.zbar0+zbarORIG)/2.0;
-  tour_circular_center[0]=tour_circular_view[0];
-  tour_circular_center[1]=tour_circular_view[1];
-  tour_circular_center[2]=tour_circular_view[2];
+  memcpy(tour_circular_center, tour_circular_view, 3*sizeof(float));
 
   dx = ABS(xbarORIG - global_scase.xbar0)/2.0;
   dy = ABS(ybarORIG - global_scase.ybar0)/2.0;
@@ -873,9 +875,7 @@ void InitCircularTour(tourdata *touri, int nkeyframes, int option){
   strcpy(touri->label,"Circular");
   NewMemory((void **)&touri->keyframe_times, nkeyframes*sizeof(float));
   NewMemory((void **)&touri->path_times,global_scase.tourcoll.tour_ntimes*sizeof(float));
-  key_view[0]=tour_circular_view[0];
-  key_view[1]=tour_circular_view[1];
-  key_view[2]=tour_circular_view[2];
+  memcpy(key_view, tour_circular_view, 3*sizeof(float));
 
   rad = tour_circular_radius;
 

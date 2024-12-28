@@ -11,6 +11,10 @@
 #define SHOWTOURROUTE 8
 #define VIEWTOURFROMPATH 9
 #define VIEWTOURFROMPATH1 41
+#ifdef pp_TOUR
+#define TOUR_CONSTANT_VELOCITY 46
+#define KEYFRAME_t 49
+#endif
 #define VIEWTOURFROMPATH2 42
 #define TOUR_SNAP 43
 #define SHOWTOURROUTE1 39
@@ -34,6 +38,9 @@
 #define TOUR_REVERSE 35
 #define TOUR_CIRCULAR_UPDATE 36
 #define KEYFRAME_UPDATE_ALL 38
+#ifdef pp_TOUR
+#define KEYFRAME_SET_TOUR_TIME 47
+#endif
 
 #define TOURMENU(f) callfrom_tourglui=1;TourMenu(f);callfrom_tourglui=0;
 
