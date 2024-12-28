@@ -4902,27 +4902,27 @@ void SetupMeshWalls(void){
   }
 }
 
-/* ------------------ MakeFileLists ------------------------ */
-
-void MakeFileLists(void){
+/// @brief Set the file lists of a case. That is, lists of files associated with the given case.
+/// @param[inout] scase The case
+void MakeFileLists(smv_case *scase){
   char filter_casedir[256], filter_casename[256];
 
   // create list of all files for the case being visualized (casename*.* )
 
   strcpy(filter_casename, "");
-  if(global_scase.fdsprefix != NULL&&strlen(global_scase.fdsprefix) > 0){
-    strcat(filter_casename, global_scase.fdsprefix);
+  if(scase->fdsprefix != NULL&&strlen(scase->fdsprefix) > 0){
+    strcat(filter_casename, scase->fdsprefix);
     strcat(filter_casename, "*");
   }
 
   // create a list of all files in the current directory
 
-  global_scase.filelist_coll.nfilelist_casename = GetFileListSize(".", filter_casename, FILE_MODE);
-  MakeFileList(".", filter_casename, global_scase.filelist_coll.nfilelist_casename, YES, &global_scase.filelist_coll.filelist_casename, FILE_MODE);
+  scase->filelist_coll.nfilelist_casename = GetFileListSize(".", filter_casename, FILE_MODE);
+  MakeFileList(".", filter_casename, scase->filelist_coll.nfilelist_casename, YES, &scase->filelist_coll.filelist_casename, FILE_MODE);
 
   strcpy(filter_casedir, "");
-  global_scase.filelist_coll.nfilelist_casedir = GetFileListSize(".", filter_casedir, FILE_MODE);
-  MakeFileList(".", filter_casedir, global_scase.filelist_coll.nfilelist_casedir, YES, &global_scase.filelist_coll.filelist_casedir, FILE_MODE);
+  scase->filelist_coll.nfilelist_casedir = GetFileListSize(".", filter_casedir, FILE_MODE);
+  MakeFileList(".", filter_casedir, scase->filelist_coll.nfilelist_casedir, YES, &scase->filelist_coll.filelist_casedir, FILE_MODE);
 }
 
 #define RETURN_TWO        2
@@ -7036,7 +7036,7 @@ int ReadSMV_Init(){
   }
 
   START_TIMER(getfilelist_time);
-  MakeFileLists();
+  MakeFileLists(&global_scase);
   PRINT_TIMER(timer_setup, "MakeFileLists");
   STOP_TIMER(getfilelist_time);
 
