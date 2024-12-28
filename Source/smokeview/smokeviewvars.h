@@ -2100,7 +2100,6 @@ SVEXTERN int surface_indices_bak[7];
 SVEXTERN int SVDECL(wall_case,0);
 SVEXTERN surfdata SVDECL(*surfacedefault,NULL), SVDECL(*vent_surfacedefault,NULL);
 SVEXTERN int ntotalfaces;
-SVEXTERN colordata SVDECL(*firstcolor,NULL);
 SVEXTERN texturedata SVDECL(*textureinfo,NULL), SVDECL(*terrain_textures,NULL);
 #ifdef pp_SKY
 SVEXTERN texturedata SVDECL(*sky_texture, NULL);

@@ -1771,26 +1771,26 @@ void GetRGB(unsigned int val, unsigned char *rr, unsigned char *gg, unsigned cha
 
 /* ------------------ GetColorPtr ------------------------ */
 
-float *GetColorPtr(float *color){
+float *GetColorPtr(smv_case *scase, float *color){
   colordata *colorptr,*oldlastcolor,*lastcolor;
 
   int i;
 
-  if(firstcolor==NULL){
-    NewMemory((void *)&firstcolor,sizeof(colordata));
+  if(scase->firstcolor==NULL){
+    NewMemory((void *)&scase->firstcolor,sizeof(colordata));
     for(i=0;i<4;i++){
-      firstcolor->color[i]=color[i];
-      firstcolor->full_color[i]=color[i];
+      scase->firstcolor->color[i]=color[i];
+      scase->firstcolor->full_color[i]=color[i];
     }
-    firstcolor->bw_color[0] = TOBW(color);
-    firstcolor->bw_color[1] = firstcolor->bw_color[0];
-    firstcolor->bw_color[2] = firstcolor->bw_color[0];
-    firstcolor->bw_color[3] = color[3];
-    firstcolor->nextcolor=NULL;
-    return firstcolor->color;
+    scase->firstcolor->bw_color[0] = TOBW(color);
+    scase->firstcolor->bw_color[1] = scase->firstcolor->bw_color[0];
+    scase->firstcolor->bw_color[2] = scase->firstcolor->bw_color[0];
+    scase->firstcolor->bw_color[3] = color[3];
+    scase->firstcolor->nextcolor=NULL;
+    return scase->firstcolor->color;
   }
-  oldlastcolor = firstcolor;
-  for(colorptr = firstcolor; colorptr!=NULL; colorptr = colorptr->nextcolor){
+  oldlastcolor = scase->firstcolor;
+  for(colorptr = scase->firstcolor; colorptr!=NULL; colorptr = colorptr->nextcolor){
     oldlastcolor=colorptr;
     if(ABS(colorptr->color[0]-color[0])>0.0001)continue;
     if(ABS(colorptr->color[1]-color[1])>0.0001)continue;
@@ -1822,7 +1822,7 @@ float *GetColorTranPtr(float *color, float transparency){
   col[1] = color[1];
   col[2] = color[2];
   col[3] = transparency;
-  return GetColorPtr(col);
+  return GetColorPtr(&global_scase, col);
 }
 
   /* ------------------ ConvertColor ------------------------ */
