@@ -6249,47 +6249,49 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
   return RETURN_PROCEED;
 }
 
-/* ------------------ FreeSliceData ------------------------ */
-
-void FreeSliceData(void){
+/// @brief Free all of the slice data associated with a case. This includes both
+/// scalar and vectors slices. After this nsliceinfo, nmultisliceinfo,
+/// nvsliceinfo, and nmultivsliceinfo are all zero.
+/// @param scase The case from which to clear slice data
+void FreeSliceData(smv_case *scase){
   int i;
 
-  FREEMEMORY(global_scase.surfcoll.surfinfo);
-  if(global_scase.slicecoll.nsliceinfo>0){
-    for(i = 0; i<global_scase.slicecoll.nsliceinfo; i++){
+  FREEMEMORY(scase->surfcoll.surfinfo);
+  if(scase->slicecoll.nsliceinfo>0){
+    for(i = 0; i<scase->slicecoll.nsliceinfo; i++){
       slicedata *sd;
-      sd = global_scase.slicecoll.sliceinfo+i;
-      FreeLabels(&global_scase.slicecoll.sliceinfo[i].label);
+      sd = scase->slicecoll.sliceinfo+i;
+      FreeLabels(&scase->slicecoll.sliceinfo[i].label);
       FREEMEMORY(sd->reg_file);
       FREEMEMORY(sd->comp_file);
       FREEMEMORY(sd->size_file);
     }
-    FREEMEMORY(global_scase.sliceorderindex);
-    for(i = 0; i<global_scase.slicecoll.nmultisliceinfo; i++){
+    FREEMEMORY(scase->sliceorderindex);
+    for(i = 0; i<scase->slicecoll.nmultisliceinfo; i++){
       multislicedata *mslicei;
 
-      mslicei = global_scase.slicecoll.multisliceinfo+i;
+      mslicei = scase->slicecoll.multisliceinfo+i;
       mslicei->loadable = 1;
       FREEMEMORY(mslicei->islices);
     }
-    FREEMEMORY(global_scase.slicecoll.multisliceinfo);
-    global_scase.slicecoll.nmultisliceinfo = 0;
-    FREEMEMORY(global_scase.slicecoll.sliceinfo);
+    FREEMEMORY(scase->slicecoll.multisliceinfo);
+    scase->slicecoll.nmultisliceinfo = 0;
+    FREEMEMORY(scase->slicecoll.sliceinfo);
   }
-  global_scase.slicecoll.nsliceinfo = 0;
+  scase->slicecoll.nsliceinfo = 0;
 
   //*** free multi-vector slice data
 
-  if(global_scase.slicecoll.nvsliceinfo>0){
-    FREEMEMORY(global_scase.vsliceorderindex);
-    for(i = 0; i<global_scase.slicecoll.nmultivsliceinfo; i++){
+  if(scase->slicecoll.nvsliceinfo>0){
+    FREEMEMORY(scase->vsliceorderindex);
+    for(i = 0; i<scase->slicecoll.nmultivsliceinfo; i++){
       multivslicedata *mvslicei;
 
-      mvslicei = global_scase.slicecoll.multivsliceinfo+i;
+      mvslicei = scase->slicecoll.multivsliceinfo+i;
       FREEMEMORY(mvslicei->ivslices);
     }
-    FREEMEMORY(global_scase.slicecoll.multivsliceinfo);
-    global_scase.slicecoll.nmultivsliceinfo = 0;
+    FREEMEMORY(scase->slicecoll.multivsliceinfo);
+    scase->slicecoll.nmultivsliceinfo = 0;
   }
 }
 
@@ -7229,7 +7231,7 @@ int ReadSMV_Init(){
 
 
   //*** free slice data
-  FreeSliceData();
+  FreeSliceData(&global_scase);
 
   if(global_scase.npatchinfo>0){
     for(i=0;i<global_scase.npatchinfo;i++){
