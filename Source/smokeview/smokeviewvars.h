@@ -168,14 +168,12 @@ SVEXTERN int SVDECL(update_slicexyz, 0);
 SVEXTERN int SVDECL(update_splitcolorbar, 0);
 SVEXTERN int SVDECL(slice_plot_bound_option, 1);
 #ifdef INMAIN
-SVEXTERN float obst_bounding_box[6] = {1.0,0.0,1.0,0.0,1.0,0.0};
 SVEXTERN float geom_bounding_box[6] = {1000000000.0, -1000000000.0,
                                        1000000000.0, -1000000000.0,
                                        1000000000.0, -1000000000.0
                                       };
 SVEXTERN int glui_surface_color[4] = {255, 255, 255, 255};
 #else
-SVEXTERN float obst_bounding_box[6];
 SVEXTERN float geom_bounding_box[6];
 SVEXTERN int glui_surface_color[4];
 #endif
@@ -1820,6 +1818,7 @@ SVEXTERN smv_case global_scase = {.tourcoll = {.ntourinfo = 0,
                            .nrgb = NRGB,
                            .linewidth = 2.0,
                            .ventlinewidth = 2.0,
+                           .obst_bounding_box = {1.0,0.0,1.0,0.0,1.0,0.0},
                            .hvaccoll = {
                               .hvacductvar_index= -1,
                               .hvacnodevar_index= -1,
