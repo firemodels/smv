@@ -2169,7 +2169,7 @@ void InitDevice(devicedata *devicei, float *xyz, int is_beam, float *xyz1, float
 
 /* ------------------ ParseDevicekeyword ------------------------ */
 
-void ParseDevicekeyword(BFILE *stream, devicedata *devicei){
+void ParseDevicekeyword(smv_case *scase, BFILE *stream, devicedata *devicei){
   float xyz[3]={0.0,0.0,0.0}, xyzn[3]={0.0,0.0,0.0};
   float xyz1[3] = { 0.0,0.0,0.0 }, xyz2[3] = { 0.0,0.0,0.0 };
   int state0=0;
@@ -2309,7 +2309,7 @@ void ParseDevicekeyword(BFILE *stream, devicedata *devicei){
 
 /* ------------------ ParseDevicekeyword2 ------------------------ */
 
-void ParseDevicekeyword2(FILE *stream, devicedata *devicei){
+void ParseDevicekeyword2(smv_case *scase, FILE *stream, devicedata *devicei){
   float xyz[3] = {0.0,0.0,0.0}, xyzn[3] = {0.0,0.0,0.0};
   float xyz1[3] = {0.0,0.0,0.0}, xyz2[3] = {0.0,0.0,0.0};
   int state0 = 0;
@@ -4366,7 +4366,7 @@ void ReadDeviceHeader(char *file, devicedata *devices, int ndevices){
       break;
     }
     if(strcmp(buffer, "DEVICE") == 0){
-      ParseDevicekeyword2(stream, devicecopy);
+      ParseDevicekeyword2(&global_scase, stream, devicecopy);
       devicecopy++;
     }
   }
@@ -9652,7 +9652,7 @@ int ReadSMV_Parse(bufferstreamdata *stream){
       devicedata *devicei;
 
       devicei = global_scase.devicecoll.deviceinfo + global_scase.devicecoll.ndeviceinfo;
-      ParseDevicekeyword(stream,devicei);
+      ParseDevicekeyword(&global_scase,stream,devicei);
       CheckMemory;
       update_device = 1;
       global_scase.devicecoll.ndeviceinfo++;
