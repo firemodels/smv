@@ -6721,9 +6721,12 @@ void ReadSMVOrig(void){
   fclose(stream);
 }
 
-  /* ------------------ InitCSV ------------------------ */
-
-void InitCSV(csvfiledata *csvi, char *file, char *type, int format){
+/// @brief Initialize a CSV file definition.
+/// @param[out] csvi The previously allocated csvfiledata
+/// @param[in] file The filename of the CSV file
+/// @param[in] type The type of the file. Typically just a label
+/// @param[in] format The format of the CSV file, either FDS or CFAST
+void InitCSV(csvfiledata *csvi, const char *file, const char *type, int format){
   csvi->loaded       = 0;
   csvi->display      = 0;
   csvi->defined      = 0;
@@ -6738,45 +6741,48 @@ void InitCSV(csvfiledata *csvi, char *file, char *type, int format){
     strcpy(csvi->file, file);
   }
   else{
-    csvi->file = file;
+    csvi->file = NULL;
   }
   strcpy(csvi->c_type, type);
 }
 
-  /* ------------------ AddCfastCsvfi ------------------------ */
-
-void AddCfastCsvfi(char *suffix, char *type, int format){
+/// @brief Add the definition of a CSV file to case.
+/// @param[inout] scase The case to add the CSV file defintion to.
+/// @param[in] suffix The suffix of the file (e.g. "_devices")
+/// @param[in] type The type of the file. Typically just a label
+/// @param[in] format The format of the CSV file, either FDS or CFAST
+void AddCfastCsvfi(smv_case *scase, const char *suffix, const char *type, int format){
   char filename[255];
   int i;
 
-  strcpy(filename, global_scase.fdsprefix);
+  strcpy(filename, scase->fdsprefix);
   strcat(filename, suffix);
   strcat(filename, ".csv");
-  for(i=0;i<global_scase.csvcoll.ncsvfileinfo;i++){
+  for(i=0;i<scase->csvcoll.ncsvfileinfo;i++){
     csvfiledata *csvfi;
 
-    csvfi = global_scase.csvcoll.csvfileinfo + i;
+    csvfi = scase->csvcoll.csvfileinfo + i;
     if(strcmp(csvfi->c_type,type)==0)return;
   }
   if(FILE_EXISTS_CASEDIR(filename) == NO)return;
-  InitCSV(global_scase.csvcoll.csvfileinfo + global_scase.csvcoll.ncsvfileinfo, filename, type, format);
-  global_scase.csvcoll.ncsvfileinfo++;
+  InitCSV(scase->csvcoll.csvfileinfo + scase->csvcoll.ncsvfileinfo, filename, type, format);
+  scase->csvcoll.ncsvfileinfo++;
 }
 
   /* ------------------ AddCfastCsvf ------------------------ */
 
-void AddCfastCsvf(void){
+void AddCfastCsvf(smv_case *scase){
 #define CFAST_CSV_MAX 10
-  AddCfastCsvfi("_zone",         "zone",         CSV_FDS_FORMAT);
-  AddCfastCsvfi("_compartments", "compartments", CSV_CFAST_FORMAT);
-  AddCfastCsvfi("_devices",      "devices",      CSV_CFAST_FORMAT);
-  AddCfastCsvfi("_walls",        "walls",        CSV_CFAST_FORMAT);
-  AddCfastCsvfi("_masses",       "masses",       CSV_CFAST_FORMAT);
-  AddCfastCsvfi("_vents",        "vents",        CSV_CFAST_FORMAT);
- // AddCfastCsvfi("_diagnostics",  "diagnostics",  CSV_CFAST_FORMAT);
- // AddCfastCsvfi("_resid",        "resid",        CSV_CFAST_FORMAT);
- // AddCfastCsvfi("_slab",         "slab",         CSV_CFAST_FORMAT);
- // AddCfastCsvfi("_calculations", "calculations", CSV_CFAST_FORMAT);
+  AddCfastCsvfi(scase, "_zone",         "zone",         CSV_FDS_FORMAT);
+  AddCfastCsvfi(scase, "_compartments", "compartments", CSV_CFAST_FORMAT);
+  AddCfastCsvfi(scase, "_devices",      "devices",      CSV_CFAST_FORMAT);
+  AddCfastCsvfi(scase, "_walls",        "walls",        CSV_CFAST_FORMAT);
+  AddCfastCsvfi(scase, "_masses",       "masses",       CSV_CFAST_FORMAT);
+  AddCfastCsvfi(scase, "_vents",        "vents",        CSV_CFAST_FORMAT);
+ // AddCfastCsvfi(scase, "_diagnostics",  "diagnostics",  CSV_CFAST_FORMAT);
+ // AddCfastCsvfi(scase, "_resid",        "resid",        CSV_CFAST_FORMAT);
+ // AddCfastCsvfi(scase, "_slab",         "slab",         CSV_CFAST_FORMAT);
+ // AddCfastCsvfi(scase, "_calculations", "calculations", CSV_CFAST_FORMAT);
 }
 
 /* ------------------ Compress ------------------------ */
@@ -11718,7 +11724,7 @@ int ReadSMV_Configure(){
   UpdateSmoke3dFileParms();
   PRINT_TIMER(timer_readsmv, "UpdateSmoke3dFileParms");
 
-  AddCfastCsvf();
+  AddCfastCsvf(&global_scase);
   PRINT_TIMER(timer_readsmv, "AddCfastCsvf");
 
   //RemoveDupBlockages();
