@@ -1567,7 +1567,6 @@ SVEXTERN int SVDECL(visMeshlabel, 1);
 SVEXTERN int SVDECL(visOpenVents,1),SVDECL(visDummyVents,1),SVDECL(visCircularVents,VENT_CIRCLE);
 SVEXTERN int SVDECL(visOpenVentsAsOutline,0);
 SVEXTERN int SVDECL(visParticles,1), SVDECL(visZone,0);
-SVEXTERN int visBlocks;
 
 // need to clean up these variables
 #ifdef pp_PATCH_HIDE
@@ -1576,7 +1575,10 @@ SVEXTERN int SVDECL(menu_hide_internal_blockages, 0);
 SVEXTERN int SVDECL(hide_internal_blockages, 0);
 
 SVEXTERN int SVDECL(outline_color_flag,0);
-SVEXTERN int SVDECL(solid_state,-1),SVDECL(outline_state,-1);
+SVEXTERN int visBlocks,                SVDECL(solid_state,-1),      SVDECL(outline_state,-1);
+SVEXTERN int SVDECL(visBlocks_ini,-1), SVDECL(solid_state_ini, -1), SVDECL(outline_state_ini, -1);
+SVEXTERN int SVDECL(update_showblock_ini, 0);
+
 SVEXTERN int SVDECL(visTransparentBlockage,0);
 SVEXTERN int SVDECL(blocklocation,BLOCKlocation_grid);
 SVEXTERN int SVDECL(blocklocation_menu, BLOCKlocation_grid);
@@ -1586,6 +1588,7 @@ SVEXTERN int SVDECL(visWalls,0), SVDECL(visGrid,0), SVDECL(visCeiling,0);
 SVEXTERN int SVDECL(visZonePlane,ZONE_YPLANE), SVDECL(viszonefire,1), SVDECL(visSZone,0);
 SVEXTERN int SVDECL(visSensor,1), SVDECL(visSensorNorm,1), SVDECL(hasSensorNorm,0);
 SVEXTERN int SVDECL(visVents, 1), SVDECL(visVentFlow, 1),SVDECL(visVentHFlow, 1),SVDECL(visVentVFlow, 1),SVDECL(visVentMFlow, 1);
+SVEXTERN int SVDECL(update_ini_vents, 0);
 SVEXTERN int SVDECL(viewoption,0);
 SVEXTERN int SVDECL(clip_mode,CLIP_OFF),clip_mode_last;
 SVEXTERN int clip_i,clip_j,clip_k;
