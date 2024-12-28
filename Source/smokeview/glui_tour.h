@@ -13,6 +13,7 @@
 #define VIEWTOURFROMPATH1 41
 #ifdef pp_TOUR
 #define TOUR_CONSTANT_VELOCITY 46
+#define KEYFRAME_t 49
 #endif
 #define VIEWTOURFROMPATH2 42
 #define TOUR_SNAP 43

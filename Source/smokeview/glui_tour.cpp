@@ -253,8 +253,10 @@ extern "C" void GLUITourSetup(int main_window){
 #ifdef pp_TOUR
   CHECKBOX_set_tour_time = glui_tour->add_checkbox_to_panel(PANEL_tourposition, _("Set time"),
     &glui_set_tour_time, KEYFRAME_SET_TOUR_TIME, TourCB);
-#endif
+  SPINNER_tour_time = glui_tour->add_spinner_to_panel(PANEL_tourposition, "t:", GLUI_SPINNER_FLOAT, &glui_tour_time, KEYFRAME_t, TourCB);
+#else
   SPINNER_tour_time = glui_tour->add_spinner_to_panel(PANEL_tourposition, "t:", GLUI_SPINNER_FLOAT, &glui_tour_time, KEYFRAME_tXYZ, TourCB);
+#endif
   SPINNER_tour_pause_time = glui_tour->add_spinner_to_panel(PANEL_tourposition, "pause:", GLUI_SPINNER_FLOAT, &glui_tour_pause_time, KEYFRAME_tXYZ, TourCB);
   SPINNER_x=glui_tour->add_spinner_to_panel(PANEL_tourposition,"x:",GLUI_SPINNER_FLOAT,glui_tour_xyz,  KEYFRAME_tXYZ,TourCB);
   SPINNER_y=glui_tour->add_spinner_to_panel(PANEL_tourposition,"y:",GLUI_SPINNER_FLOAT,glui_tour_xyz+1,KEYFRAME_tXYZ,TourCB);
@@ -623,6 +625,13 @@ void TourCB(int var){
     }
     break;
   case KEYFRAME_SET_TOUR_TIME:
+    if(selected_frame != NULL&&selected_tour!=NULL && glui_set_tour_time == 1){
+      if(selected_frame->prev == &(selected_tour->first_frame) ||
+         selected_frame->next == &(selected_tour->last_frame)){
+        glui_set_tour_time = 0;
+        CHECKBOX_set_tour_time->set_int_val(0);
+      }
+    }
     TourCB(KEYFRAME_tXYZ);
     tour_constant_velocity = 1;
     if(glui_set_tour_time == 1){
@@ -688,6 +697,28 @@ void TourCB(int var){
       selected_frame->selected = 1;
     }
     break;
+#ifdef pp_TOUR
+  case KEYFRAME_t:
+#define TOUR_EPS 0.01
+    if(selected_frame != NULL && glui_set_tour_time ==1){
+      float tour_tmin, tour_tmax;
+      thiskey = selected_frame;
+      nextkey = thiskey->next;
+      lastkey = thiskey->prev;
+      tour_tmin = MAX(lastkey->time + lastkey->pause_time + TOUR_EPS, global_scase.tourcoll.tour_tstart);
+      tour_tmax = MIN(nextkey->time - TOUR_EPS, global_scase.tourcoll.tour_tstop);
+      if(glui_tour_time < tour_tmin){
+        glui_tour_time = tour_tmin;
+        SPINNER_tour_time->set_float_val(glui_tour_time);
+      }
+      else if(glui_tour_time > tour_tmax){
+        glui_tour_time = tour_tmax;
+        SPINNER_tour_time->set_float_val(glui_tour_time);
+      }
+    }
+    TourCB(KEYFRAME_tXYZ);
+    break;
+#endif
   case KEYFRAME_tXYZ:
     if(selected_frame != NULL){
       show_tour_hint = 0;
