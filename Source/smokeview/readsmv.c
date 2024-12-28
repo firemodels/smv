@@ -4345,7 +4345,7 @@ void InitVentSurface(surfdata *surf){
 /* ----------------------- ReadDeviceHeader ----------------------------- */
 #define BUFFER_LEN 255
 
-void ReadDeviceHeader(char *file, devicedata *devices, int ndevices){
+void ReadDeviceHeader(smv_case *scase, char *file, devicedata *devices, int ndevices){
   FILE *stream;
   devicedata *devicecopy;
   char buffer[BUFFER_LEN], *comma;
@@ -4366,7 +4366,7 @@ void ReadDeviceHeader(char *file, devicedata *devices, int ndevices){
       break;
     }
     if(strcmp(buffer, "DEVICE") == 0){
-      ParseDevicekeyword2(&global_scase, stream, devicecopy);
+      ParseDevicekeyword2(scase, stream, devicecopy);
       devicecopy++;
     }
   }
@@ -9985,7 +9985,7 @@ int ReadSMV_Parse(bufferstreamdata *stream){
 
         csvi = global_scase.csvcoll.csvfileinfo + i;
         if(strcmp(csvi->c_type, "ext") == 0){
-          ReadDeviceHeader(csvi->file,devicecopy2,nexp_devices[i]);
+          ReadDeviceHeader(&global_scase, csvi->file,devicecopy2,nexp_devices[i]);
           devicecopy2 += nexp_devices[i];
         }
       }
