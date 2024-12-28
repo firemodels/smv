@@ -4418,7 +4418,7 @@ FILE_SIZE ReadSmoke3D(int time_frame,int ifile_arg,int load_flag, int first_time
   }
 #endif
   if(smoke3di->extinct>0.0){
-    SOOT_index = GetSmoke3DType(smoke3di->label.shortlabel);
+    SOOT_index = GetSmoke3DType(&global_scase, smoke3di->label.shortlabel);
     global_scase.update_smoke_alphas = 1;
 #define SMOKE_EXTINCT 95
     GLUISmoke3dCB(SMOKE_EXTINCT);

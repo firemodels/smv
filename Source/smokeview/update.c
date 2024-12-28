@@ -1949,7 +1949,7 @@ int HaveSootLoaded(void){
     smoke3ddata *smoke3di;
 
     smoke3di = global_scase.smoke3dcoll.smoke3dinfo+i;
-    if(smoke3di->loaded==1&&smoke3di->extinct>0.0)return GetSmoke3DType(smoke3di->label.shortlabel);
+    if(smoke3di->loaded==1&&smoke3di->extinct>0.0)return GetSmoke3DType(&global_scase, smoke3di->label.shortlabel);
   }
   return NO_SMOKE;
 }
