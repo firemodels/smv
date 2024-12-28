@@ -14204,7 +14204,8 @@ int ReadIni2(const char *inifile, int localfile){
     }
     if(MatchINI(buffer, "SHOWBLOCKS") == 1){
       fgets(buffer, 255, stream);
-      sscanf(buffer, "%i ", &visBlocks);
+      sscanf(buffer, "%i %i %i", &visBlocks_ini, &solid_state_ini, &outline_state_ini);
+      update_showblock_ini = 1;
       continue;
     }
     if(MatchINI(buffer, "SHOWSENSORS") == 1){
@@ -17147,7 +17148,7 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, "SHOWBLOCKLABEL\n");
   fprintf(fileout, " %i\n", visMeshlabel);
   fprintf(fileout, "SHOWBLOCKS\n");
-  fprintf(fileout, " %i\n", visBlocks);
+  fprintf(fileout, " %i %i %i\n", visBlocks, solid_state, outline_state);
   fprintf(fileout, "SHOWBOUNDS\n");
   fprintf(fileout, " %i %i\n", bounds_each_mesh, show_bound_diffs);
   fprintf(fileout, "SHOWCADOPAQUE\n");

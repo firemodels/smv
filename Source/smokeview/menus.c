@@ -6320,9 +6320,17 @@ void ShowInternalBlockages(void){
     solid_state=visBLOCKHide;
   }
   else{
-    visBlocks=visBLOCKNormal;
-    solid_state=visBLOCKNormal;
-    outline_state=OUTLINE_NONE;
+    if(update_showblock_ini == 1){
+      update_showblock_ini = 0;
+      visBlocks     = visBlocks_ini;
+      solid_state   = solid_state_ini;
+      outline_state = outline_state_ini;
+    }
+    else{
+      visBlocks = visBLOCKNormal;
+      solid_state = visBLOCKNormal;
+      outline_state = OUTLINE_NONE;
+    }
     GeometryMenu(17 + TERRAIN_HIDDEN);
   }
   updatemenu = 1;

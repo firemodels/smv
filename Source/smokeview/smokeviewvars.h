@@ -1567,7 +1567,6 @@ SVEXTERN int SVDECL(visMeshlabel, 1);
 SVEXTERN int SVDECL(visOpenVents,1),SVDECL(visDummyVents,1),SVDECL(visCircularVents,VENT_CIRCLE);
 SVEXTERN int SVDECL(visOpenVentsAsOutline,0);
 SVEXTERN int SVDECL(visParticles,1), SVDECL(visZone,0);
-SVEXTERN int visBlocks;
 
 // need to clean up these variables
 #ifdef pp_PATCH_HIDE
@@ -1576,7 +1575,10 @@ SVEXTERN int SVDECL(menu_hide_internal_blockages, 0);
 SVEXTERN int SVDECL(hide_internal_blockages, 0);
 
 SVEXTERN int SVDECL(outline_color_flag,0);
-SVEXTERN int SVDECL(solid_state,-1),SVDECL(outline_state,-1);
+SVEXTERN int visBlocks,                SVDECL(solid_state,-1),      SVDECL(outline_state,-1);
+SVEXTERN int SVDECL(visBlocks_ini,-1), SVDECL(solid_state_ini, -1), SVDECL(outline_state_ini, -1);
+SVEXTERN int SVDECL(update_showblock_ini, 0);
+
 SVEXTERN int SVDECL(visTransparentBlockage,0);
 SVEXTERN int SVDECL(blocklocation,BLOCKlocation_grid);
 SVEXTERN int SVDECL(blocklocation_menu, BLOCKlocation_grid);
