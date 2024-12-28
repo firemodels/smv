@@ -429,7 +429,7 @@ int RunBenchmark(char *input_file) {
     if(return_code) return return_code;
   }
   show_timings = 1;
-  ReadSMVOrig();
+  ReadSMVOrig(&global_scase);
   INIT_PRINT_TIMER(ReadSMVDynamic_time);
   ReadSMVDynamic(input_file);
   STOP_TIMER(ReadSMVDynamic_time);

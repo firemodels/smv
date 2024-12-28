@@ -267,7 +267,7 @@ int SetupCase(char *filename){
     }
 
   // read casename.smo (only OBST lines) to define a one mesh version of OBST's
-    ReadSMVOrig();
+    ReadSMVOrig(&global_scase);
   }
   if(return_code==0&&trainer_mode==1){
     GLUIShowTrainer();

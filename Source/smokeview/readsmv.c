@@ -6638,12 +6638,12 @@ blockagedata *GetBlockagePtr(float *xyz){
 
 /* ------------------ ReadSMVOrig ------------------------ */
 
-void ReadSMVOrig(void){
+void ReadSMVOrig(smv_case *scase){
   FILE *stream=NULL;
 
-  stream = fopen(global_scase.paths.smv_orig_filename, "r");
+  stream = fopen(scase->paths.smv_orig_filename, "r");
   if(stream == NULL)return;
-  PRINTF("reading  %s\n", global_scase.paths.smv_orig_filename);
+  PRINTF("reading  %s\n", scase->paths.smv_orig_filename);
 
   for(;;){
     char buffer[255];
@@ -6681,15 +6681,15 @@ void ReadSMVOrig(void){
       float *xyz;
       int i;
 
-      FREEMEMORY(global_scase.obstcoll.obstinfo);
+      FREEMEMORY(scase->obstcoll.obstinfo);
       fgets(buffer, 255, stream);
-      sscanf(buffer, "%i", &global_scase.obstcoll.nobstinfo);
-      NewMemory((void **)&global_scase.obstcoll.obstinfo, global_scase.obstcoll.nobstinfo*sizeof(xbdata));
-      for(i = 0; i<global_scase.obstcoll.nobstinfo; i++){
+      sscanf(buffer, "%i", &scase->obstcoll.nobstinfo);
+      NewMemory((void **)&scase->obstcoll.obstinfo, scase->obstcoll.nobstinfo*sizeof(xbdata));
+      for(i = 0; i<scase->obstcoll.nobstinfo; i++){
         xbdata *obi;
         int blockid, *surf_index;
 
-        obi = global_scase.obstcoll.obstinfo+i;
+        obi = scase->obstcoll.obstinfo+i;
         xyz = obi->xyz;
         surf_index = obi->surf_index;
         fgets(buffer, 255, stream);
@@ -6698,13 +6698,13 @@ void ReadSMVOrig(void){
              &blockid,
              surf_index, surf_index+1, surf_index+2, surf_index+3, surf_index+4, surf_index+5);
       }
-      for(i = 0; i<global_scase.obstcoll.nobstinfo; i++){
+      for(i = 0; i<scase->obstcoll.nobstinfo; i++){
         xbdata *obi;
         int dummy[6];
         float s_color[4];
         int colorindex, blocktype;
 
-        obi = global_scase.obstcoll.obstinfo+i;
+        obi = scase->obstcoll.obstinfo+i;
         obi->transparent   = 0;
         obi->invisible     = 0;
         obi->usecolorindex = 0;
@@ -6732,14 +6732,14 @@ void ReadSMVOrig(void){
           obi->invisible=1;
         }
         if(colorindex>=0){
-          obi->color = GetColorPtr(&global_scase, global_scase.rgb[global_scase.nrgb+colorindex]);
+          obi->color = GetColorPtr(&global_scase, scase->rgb[scase->nrgb+colorindex]);
           obi->usecolorindex=1;
           obi->colorindex=colorindex;
-          global_scase.updateindexcolors=1;
+          scase->updateindexcolors=1;
         }
         if(colorindex==-3){
           obi->color = GetColorPtr(&global_scase, s_color);
-          global_scase.updateindexcolors=1;
+          scase->updateindexcolors=1;
         }
         obi->colorindex = colorindex;
         obi->blocktype = blocktype;
@@ -6749,9 +6749,9 @@ void ReadSMVOrig(void){
         for(j=0;j<6;j++){
           obi->surfs[0] = NULL;
         }
-        if(global_scase.surfcoll.surfinfo!=NULL){
+        if(scase->surfcoll.surfinfo!=NULL){
           for(j=0;j<6;j++){
-            if(obi->surf_index[j]>=0)obi->surfs[j] = global_scase.surfcoll.surfinfo + obi->surf_index[j];
+            if(obi->surf_index[j]>=0)obi->surfs[j] = scase->surfcoll.surfinfo + obi->surf_index[j];
           }
         }
         obi->bc = GetBlockagePtr(obi->xyz);
