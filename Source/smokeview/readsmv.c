@@ -7014,7 +7014,7 @@ static float pass5_time;
 /// @brief Initialise any global variables necessary to being parsing an SMV
 /// file. This should be called before @ref ReadSMV_Parse.
 /// @return zero on success, nonzero on failure.
-int ReadSMV_Init(){
+int ReadSMV_Init(smv_case *scase){
   float timer_readsmv;
   float timer_setup;
 
@@ -7036,83 +7036,83 @@ int ReadSMV_Init(){
   }
 
   START_TIMER(getfilelist_time);
-  MakeFileLists(&global_scase);
+  MakeFileLists(scase);
   PRINT_TIMER(timer_setup, "MakeFileLists");
   STOP_TIMER(getfilelist_time);
 
   START_TIMER(pass0_time);
 
-  global_scase.propcoll.npropinfo=1; // the 0'th prop is the default human property
+  scase->propcoll.npropinfo=1; // the 0'th prop is the default human property
 
   FREEMEMORY(fds_title);
 
-  FREEMEMORY(global_scase.treeinfo);
-  global_scase.ntreeinfo=0;
+  FREEMEMORY(scase->treeinfo);
+  scase->ntreeinfo=0;
 
   int i;
-  for(i=0;i<global_scase.nterraininfo;i++){
+  for(i=0;i<scase->nterraininfo;i++){
     terraindata *terri;
 
-    terri = global_scase.terraininfo + i;
+    terri = scase->terraininfo + i;
     FREEMEMORY(terri->xplt);
     FREEMEMORY(terri->yplt);
     FREEMEMORY(terri->zcell);
     FREEMEMORY(terri->znode);
   }
-  FREEMEMORY(global_scase.terraininfo);
-  global_scase.nterraininfo=0;
-  global_scase.niso_compressed=0;
-  if(global_scase.sphereinfo==NULL){
-    NewMemory((void **)&global_scase.sphereinfo,sizeof(spherepoints));
-    InitSpherePoints(global_scase.sphereinfo,14);
+  FREEMEMORY(scase->terraininfo);
+  scase->nterraininfo=0;
+  scase->niso_compressed=0;
+  if(scase->sphereinfo==NULL){
+    NewMemory((void **)&scase->sphereinfo,sizeof(spherepoints));
+    InitSpherePoints(scase->sphereinfo,14);
   }
-  if(global_scase.wui_sphereinfo==NULL){
-    NewMemory((void **)&global_scase.wui_sphereinfo,sizeof(spherepoints));
-    InitSpherePoints(global_scase.wui_sphereinfo,14);
+  if(scase->wui_sphereinfo==NULL){
+    NewMemory((void **)&scase->wui_sphereinfo,sizeof(spherepoints));
+    InitSpherePoints(scase->wui_sphereinfo,14);
   }
   PRINT_TIMER(timer_setup, "InitSpherePoints");
   ntotal_blockages=0;
 
-  if(global_scase.csvcoll.ncsvfileinfo>0){
+  if(scase->csvcoll.ncsvfileinfo>0){
     csvfiledata *csvi;
 
-    for(i=0;i<global_scase.csvcoll.ncsvfileinfo;i++){
-      csvi = global_scase.csvcoll.csvfileinfo + i;
+    for(i=0;i<scase->csvcoll.ncsvfileinfo;i++){
+      csvi = scase->csvcoll.csvfileinfo + i;
       FREEMEMORY(csvi->file);
     }
-    FREEMEMORY(global_scase.csvcoll.csvfileinfo);
+    FREEMEMORY(scase->csvcoll.csvfileinfo);
   }
-  global_scase.csvcoll.ncsvfileinfo=0;
+  scase->csvcoll.ncsvfileinfo=0;
 
-  if(global_scase.ngeominfo>0){
-    for(i=0;i<global_scase.ngeominfo;i++){
+  if(scase->ngeominfo>0){
+    for(i=0;i<scase->ngeominfo;i++){
       geomdata *geomi;
 
-      geomi = global_scase.geominfo + i;
+      geomi = scase->geominfo + i;
       if(geomi->ngeomobjinfo>0){
         FREEMEMORY(geomi->geomobjinfo);
         geomi->ngeomobjinfo=0;
       }
       FREEMEMORY(geomi->file);
     }
-    FREEMEMORY(global_scase.geominfo);
-    global_scase.ngeominfo=0;
+    FREEMEMORY(scase->geominfo);
+    scase->ngeominfo=0;
   }
 
-  if(global_scase.ncgeominfo>0){
-    for(i = 0; i<global_scase.ncgeominfo; i++){
+  if(scase->ncgeominfo>0){
+    for(i = 0; i<scase->ncgeominfo; i++){
       geomdata *geomi;
 
-      geomi = global_scase.cgeominfo+i;
+      geomi = scase->cgeominfo+i;
       FREEMEMORY(geomi->file);
     }
-    FREEMEMORY(global_scase.cgeominfo);
-    global_scase.ncgeominfo = 0;
+    FREEMEMORY(scase->cgeominfo);
+    scase->ncgeominfo = 0;
   }
 
-  FREEMEMORY(global_scase.tickinfo);
-  global_scase.ntickinfo=0;
-  global_scase.ntickinfo_smv=0;
+  FREEMEMORY(scase->tickinfo);
+  scase->ntickinfo=0;
+  scase->ntickinfo_smv=0;
 
   FREEMEMORY(camera_external);
   NewMemory((void **)&camera_external,sizeof(cameradata));
@@ -7138,36 +7138,36 @@ int ReadSMV_Init(){
   FREEMEMORY(camera_last);
   NewMemory((void **)&camera_last,sizeof(cameradata));
 
-  global_scase.updatefaces=1;
-  global_scase.nfires=0;
-  global_scase.nrooms=0;
+  scase->updatefaces=1;
+  scase->nfires=0;
+  scase->nrooms=0;
 
   START_TIMER(timer_setup);
-  InitSurface(&global_scase.sdefault);
+  InitSurface(&scase->sdefault);
   PRINT_TIMER(timer_setup, "InitSurface");
-  NewMemory((void **)&global_scase.sdefault.surfacelabel,(5+1));
-  strcpy(global_scase.sdefault.surfacelabel,"INERT");
+  NewMemory((void **)&scase->sdefault.surfacelabel,(5+1));
+  strcpy(scase->sdefault.surfacelabel,"INERT");
 
-  InitVentSurface(&global_scase.v_surfacedefault);
+  InitVentSurface(&scase->v_surfacedefault);
   PRINT_TIMER(timer_setup, "InitVentSurface");
-  NewMemory((void **)&global_scase.v_surfacedefault.surfacelabel,(4+1));
-  strcpy(global_scase.v_surfacedefault.surfacelabel,"VENT");
+  NewMemory((void **)&scase->v_surfacedefault.surfacelabel,(4+1));
+  strcpy(scase->v_surfacedefault.surfacelabel,"VENT");
 
-  InitSurface(&global_scase.e_surfacedefault);
+  InitSurface(&scase->e_surfacedefault);
   PRINT_TIMER(timer_setup, "InitSurface");
-  NewMemory((void **)&global_scase.e_surfacedefault.surfacelabel,(8+1));
-  strcpy(global_scase.e_surfacedefault.surfacelabel,"EXTERIOR");
-  global_scase.e_surfacedefault.color=mat_ambient2;
+  NewMemory((void **)&scase->e_surfacedefault.surfacelabel,(8+1));
+  strcpy(scase->e_surfacedefault.surfacelabel,"EXTERIOR");
+  scase->e_surfacedefault.color=mat_ambient2;
 
   // free memory for particle class
 
-  if(global_scase.partclassinfo!=NULL){
+  if(scase->partclassinfo!=NULL){
     int j;
 
-    for(i=0;i<global_scase.npartclassinfo+1;i++){
+    for(i=0;i<scase->npartclassinfo+1;i++){
       partclassdata *partclassi;
 
-      partclassi = global_scase.partclassinfo + i;
+      partclassi = scase->partclassinfo + i;
       FREEMEMORY(partclassi->name);
       if(partclassi->ntypes>0){
         for(j=0;j<partclassi->ntypes;j++){
@@ -7180,28 +7180,28 @@ int ReadSMV_Init(){
         partclassi->ntypes=0;
       }
     }
-    FREEMEMORY(global_scase.partclassinfo);
+    FREEMEMORY(scase->partclassinfo);
   }
-  global_scase.npartclassinfo=0;
+  scase->npartclassinfo=0;
 
-  if(global_scase.devicecoll.ndeviceinfo>0){
-    for(i=0;i<global_scase.devicecoll.ndeviceinfo;i++){
+  if(scase->devicecoll.ndeviceinfo>0){
+    for(i=0;i<scase->devicecoll.ndeviceinfo;i++){
     }
-    FREEMEMORY(global_scase.devicecoll.deviceinfo);
-    global_scase.devicecoll.ndeviceinfo=0;
+    FREEMEMORY(scase->devicecoll.deviceinfo);
+    scase->devicecoll.ndeviceinfo=0;
   }
 
   // read in device (.svo) definitions
 
   START_TIMER(timer_setup);
-  ReadDefaultObjectCollection(&global_scase.objectscoll, global_scase.fdsprefix, setbw, global_scase.isZoneFireModel);
+  ReadDefaultObjectCollection(&scase->objectscoll, scase->fdsprefix, setbw, scase->isZoneFireModel);
   PRINT_TIMER(timer_setup, "InitSurface");
 
-  if(global_scase.noutlineinfo>0){
-    for(i=0;i<global_scase.noutlineinfo;i++){
+  if(scase->noutlineinfo>0){
+    for(i=0;i<scase->noutlineinfo;i++){
       outlinedata *outlinei;
 
-      outlinei = global_scase.outlineinfo + i;
+      outlinei = scase->outlineinfo + i;
       FREEMEMORY(outlinei->x1);
       FREEMEMORY(outlinei->y1);
       FREEMEMORY(outlinei->z1);
@@ -7209,108 +7209,108 @@ int ReadSMV_Init(){
       FREEMEMORY(outlinei->y2);
       FREEMEMORY(outlinei->z2);
     }
-    FREEMEMORY(global_scase.outlineinfo);
-    global_scase.noutlineinfo=0;
+    FREEMEMORY(scase->outlineinfo);
+    scase->noutlineinfo=0;
   }
 
-  if(global_scase.nzoneinfo>0){
-    for(i=0;i<global_scase.nzoneinfo;i++){
+  if(scase->nzoneinfo>0){
+    for(i=0;i<scase->nzoneinfo;i++){
       zonedata *zonei;
       int n;
 
-      zonei = global_scase.zoneinfo + i;
+      zonei = scase->zoneinfo + i;
       for(n=0;n<4;n++){
         FreeLabels(&zonei->label[n]);
       }
       FREEMEMORY(zonei->file);
     }
-    FREEMEMORY(global_scase.zoneinfo);
+    FREEMEMORY(scase->zoneinfo);
   }
-  global_scase.nzoneinfo=0;
+  scase->nzoneinfo=0;
 
-  if(global_scase.smoke3dcoll.nsmoke3dinfo>0){
+  if(scase->smoke3dcoll.nsmoke3dinfo>0){
     {
       smoke3ddata *smoke3di;
 
-      for(i=0;i<global_scase.smoke3dcoll.nsmoke3dinfo;i++){
-        smoke3di = global_scase.smoke3dcoll.smoke3dinfo + i;
+      for(i=0;i<scase->smoke3dcoll.nsmoke3dinfo;i++){
+        smoke3di = scase->smoke3dcoll.smoke3dinfo + i;
         FreeSmoke3D(smoke3di);
         FREEMEMORY(smoke3di->comp_file);
         FREEMEMORY(smoke3di->reg_file);
       }
-      FREEMEMORY(global_scase.smoke3dcoll.smoke3dinfo);
-      global_scase.smoke3dcoll.nsmoke3dinfo=0;
+      FREEMEMORY(scase->smoke3dcoll.smoke3dinfo);
+      scase->smoke3dcoll.nsmoke3dinfo=0;
     }
   }
 
-  if(global_scase.npartinfo>0){
-    for(i=0;i<global_scase.npartinfo;i++){
-      FREEMEMORY(global_scase.partinfo[i].partclassptr);
-      FREEMEMORY(global_scase.partinfo[i].reg_file);
-      FREEMEMORY(global_scase.partinfo[i].size_file);
+  if(scase->npartinfo>0){
+    for(i=0;i<scase->npartinfo;i++){
+      FREEMEMORY(scase->partinfo[i].partclassptr);
+      FREEMEMORY(scase->partinfo[i].reg_file);
+      FREEMEMORY(scase->partinfo[i].size_file);
     }
-    FREEMEMORY(global_scase.partinfo);
+    FREEMEMORY(scase->partinfo);
   }
-  global_scase.npartinfo=0;
+  scase->npartinfo=0;
 
 
   //*** free slice data
-  FreeSliceData(&global_scase);
+  FreeSliceData(scase);
 
-  if(global_scase.npatchinfo>0){
-    for(i=0;i<global_scase.npatchinfo;i++){
+  if(scase->npatchinfo>0){
+    for(i=0;i<scase->npatchinfo;i++){
       patchdata *patchi;
 
-      patchi = global_scase.patchinfo + i;
+      patchi = scase->patchinfo + i;
       FreeLabels(&patchi->label);
       FREEMEMORY(patchi->reg_file);
       FREEMEMORY(patchi->comp_file);
       FREEMEMORY(patchi->size_file);
     }
-    FREEMEMORY(global_scase.patchinfo);
+    FREEMEMORY(scase->patchinfo);
   }
-  global_scase.npatchinfo=0;
+  scase->npatchinfo=0;
 
-  if(global_scase.nisoinfo>0){
-    for(i=0;i<global_scase.nisoinfo;i++){
-      FreeLabels(&global_scase.isoinfo[i].surface_label);
-      FREEMEMORY(global_scase.isoinfo[i].file);
+  if(scase->nisoinfo>0){
+    for(i=0;i<scase->nisoinfo;i++){
+      FreeLabels(&scase->isoinfo[i].surface_label);
+      FREEMEMORY(scase->isoinfo[i].file);
     }
-    FREEMEMORY(global_scase.isoinfo);
+    FREEMEMORY(scase->isoinfo);
   }
-  global_scase.nisoinfo=0;
+  scase->nisoinfo=0;
 
-  global_scase.updateindexcolors=0;
-  global_scase.ntrnx=0;
-  global_scase.ntrny=0;
-  global_scase.ntrnz=0;
-  global_scase.meshescoll.nmeshes=0;
-  global_scase.npdim=0;
-  global_scase.nVENT=0;
-  global_scase.nCVENT=0;
-  global_scase.ncvents=0;
-  global_scase.nOBST=0;
-  global_scase.noffset=0;
-  global_scase.surfcoll.nsurfinfo=0;
+  scase->updateindexcolors=0;
+  scase->ntrnx=0;
+  scase->ntrny=0;
+  scase->ntrnz=0;
+  scase->meshescoll.nmeshes=0;
+  scase->npdim=0;
+  scase->nVENT=0;
+  scase->nCVENT=0;
+  scase->ncvents=0;
+  scase->nOBST=0;
+  scase->noffset=0;
+  scase->surfcoll.nsurfinfo=0;
   nvent_transparent=0;
 
-  global_scase.setPDIM=0;
+  scase->setPDIM=0;
 
-  FREEMEMORY(global_scase.slicecoll.vsliceinfo);
-  FREEMEMORY(global_scase.slicecoll.sliceinfo);
+  FREEMEMORY(scase->slicecoll.vsliceinfo);
+  FREEMEMORY(scase->slicecoll.sliceinfo);
 
-  FREEMEMORY(global_scase.plot3dinfo);
-  FREEMEMORY(global_scase.patchinfo);
-  FREEMEMORY(global_scase.boundarytypes);
-  FREEMEMORY(global_scase.isoinfo);
-  FREEMEMORY(global_scase.isotypes);
-  FREEMEMORY(global_scase.roominfo);
-  FREEMEMORY(global_scase.fireinfo);
-  FREEMEMORY(global_scase.zoneinfo);
-  FREEMEMORY(global_scase.zventinfo);
-  FREEMEMORY(global_scase.texture_coll.textureinfo);
-  FREEMEMORY(global_scase.surfcoll.surfinfo);
-  FREEMEMORY(global_scase.terrain_texture_coll.terrain_textures);
+  FREEMEMORY(scase->plot3dinfo);
+  FREEMEMORY(scase->patchinfo);
+  FREEMEMORY(scase->boundarytypes);
+  FREEMEMORY(scase->isoinfo);
+  FREEMEMORY(scase->isotypes);
+  FREEMEMORY(scase->roominfo);
+  FREEMEMORY(scase->fireinfo);
+  FREEMEMORY(scase->zoneinfo);
+  FREEMEMORY(scase->zventinfo);
+  FREEMEMORY(scase->texture_coll.textureinfo);
+  FREEMEMORY(scase->surfcoll.surfinfo);
+  FREEMEMORY(scase->terrain_texture_coll.terrain_textures);
 
   STOP_TIMER(pass0_time );
   PRINT_TIMER(timer_readsmv, "readsmv setup");
@@ -12140,7 +12140,7 @@ int ReadSMV_Configure(){
 /// @param stream the file stream to parse.
 /// @return zero on sucess, non-zero on error
 int ReadSMV(bufferstreamdata *stream){
-  ReadSMV_Init();
+  ReadSMV_Init(&global_scase);
   ReadSMV_Parse(stream);
   ReadSMV_Configure();
   return 0;
