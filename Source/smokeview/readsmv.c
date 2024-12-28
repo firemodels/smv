@@ -4671,7 +4671,7 @@ void ParseDatabase(smv_case *scase, char *file){
 
 /* ------------------ ReadZVentData ------------------------ */
 
-void ReadZVentData(zventdata *zvi, char *buffer, int flag){
+void ReadZVentData(smv_case *scase, zventdata *zvi, char *buffer, int flag){
   float dxyz[3];
   float xyz[6];
   float color[4];
@@ -10305,7 +10305,7 @@ int ReadSMV_Parse(bufferstreamdata *stream){
       }
       else if(vent_type==MFLOW_VENT){
         global_scase.nzmvents++;
-        ReadZVentData(zvi, buffer, ZVENT_1ROOM);
+        ReadZVentData(&global_scase, zvi, buffer, ZVENT_1ROOM);
       }
       CheckMemory;
       continue;
@@ -10331,15 +10331,15 @@ int ReadSMV_Parse(bufferstreamdata *stream){
       switch(vent_type){
       case HFLOW_VENT:
         global_scase.nzhvents++;
-        ReadZVentData(zvi, buffer,ZVENT_2ROOM);
+        ReadZVentData(&global_scase, zvi, buffer,ZVENT_2ROOM);
         break;
       case VFLOW_VENT:
         global_scase.nzvvents++;
-        ReadZVentData(zvi, buffer, ZVENT_2ROOM);
+        ReadZVentData(&global_scase, zvi, buffer, ZVENT_2ROOM);
         break;
       case MFLOW_VENT:
         global_scase.nzmvents++;
-        ReadZVentData(zvi, buffer, ZVENT_1ROOM);
+        ReadZVentData(&global_scase, zvi, buffer, ZVENT_1ROOM);
         break;
       default:
         assert(FFALSE);
