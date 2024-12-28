@@ -4478,7 +4478,7 @@ void UpdateSortedSurfIdList(surf_collection *surfcoll){
 
 /* ------------------ ParseDatabase ------------------------ */
 // TODO: this needs to be renamed as it never actually parses a database
-void ParseDatabase(char *file){
+void ParseDatabase(smv_case *scase, char *file){
   FILE *stream;
   char buffer[1000], *buffer2 = NULL, *buffer3, *slashptr;
   size_t lenbuffer, lenbuffer2;
@@ -4493,23 +4493,23 @@ void ParseDatabase(char *file){
 
   /* free memory called before */
 
-  for(i = 0; i<global_scase.surfcoll.nsurfids; i++){
-    surf_id = global_scase.surfcoll.surfids[i].label;
+  for(i = 0; i<scase->surfcoll.nsurfids; i++){
+    surf_id = scase->surfcoll.surfids[i].label;
     FREEMEMORY(surf_id);
   }
-  FREEMEMORY(global_scase.surfcoll.surfids);
-  global_scase.surfcoll.nsurfids = 0;
+  FREEMEMORY(scase->surfcoll.surfids);
+  scase->surfcoll.nsurfids = 0;
 
 
   if(file==NULL||strlen(file)==0||(stream = fopen(file, "r"))==NULL){
-    NewMemory((void **)&global_scase.surfcoll.surfids, (global_scase.surfcoll.nsurfids+1)*sizeof(surfid));
+    NewMemory((void **)&scase->surfcoll.surfids, (scase->surfcoll.nsurfids+1)*sizeof(surfid));
     surf_id = NULL;
     NewMemory((void **)&surf_id, 6);
     strcpy(surf_id, "INERT");
-    global_scase.surfcoll.surfids[0].label = surf_id;
-    global_scase.surfcoll.surfids[0].location = 0;
-    global_scase.surfcoll.surfids[0].show = 1;
-    global_scase.surfcoll.nsurfids = 1;
+    scase->surfcoll.surfids[0].label = surf_id;
+    scase->surfcoll.surfids[0].location = 0;
+    scase->surfcoll.surfids[0].show = 1;
+    scase->surfcoll.nsurfids = 1;
   }
 
   else{
@@ -4539,24 +4539,24 @@ void ParseDatabase(char *file){
         buffer3 = buffer2;
       }
       start = STRSTR(buffer3, "ID");
-      if(start!=NULL)global_scase.surfcoll.nsurfids++;
+      if(start!=NULL)scase->surfcoll.nsurfids++;
     }
 
     /* allocate memory */
 
-    NewMemory((void **)&global_scase.surfcoll.surfids, (global_scase.surfcoll.nsurfids+1)*sizeof(surfid));
+    NewMemory((void **)&scase->surfcoll.surfids, (scase->surfcoll.nsurfids+1)*sizeof(surfid));
     surf_id = NULL;
     NewMemory((void **)&surf_id, 6);
     strcpy(surf_id, "INERT");
-    global_scase.surfcoll.surfids[0].label = surf_id;
-    global_scase.surfcoll.surfids[0].location = 0;
-    global_scase.surfcoll.surfids[0].show = 1;
+    scase->surfcoll.surfids[0].label = surf_id;
+    scase->surfcoll.surfids[0].location = 0;
+    scase->surfcoll.surfids[0].show = 1;
 
 
     /* now look for IDs and copy them into an array */
 
     rewind(stream);
-    global_scase.surfcoll.nsurfids = 1;
+    scase->surfcoll.nsurfids = 1;
     while(!feof(stream)){
       if(fgets(buffer, 1000, stream)==NULL)break;
       if(STRSTR(buffer, "&SURF")==NULL)continue;
@@ -4578,7 +4578,7 @@ void ParseDatabase(char *file){
         buffer3 = buffer2;
       }
       start = STRSTR(buffer3+3, "ID");
-      if(start!=NULL)global_scase.surfcoll.nsurfids++;
+      if(start!=NULL)scase->surfcoll.nsurfids++;
       surf_id = NULL;
       surf_id2 = NULL;
       for(c = start; c!=NULL&&*c!='\0'; c++){
@@ -4590,9 +4590,9 @@ void ParseDatabase(char *file){
           *c = '\0';
           NewMemory((void **)&surf_id2, strlen(surf_id)+1);
           strcpy(surf_id2, surf_id);
-          global_scase.surfcoll.surfids[ global_scase.surfcoll.nsurfids-1].label = surf_id2;
-          global_scase.surfcoll.surfids[ global_scase.surfcoll.nsurfids-1].location = 1;
-          global_scase.surfcoll.surfids[ global_scase.surfcoll.nsurfids-1].show = 1;
+          scase->surfcoll.surfids[ scase->surfcoll.nsurfids-1].label = surf_id2;
+          scase->surfcoll.surfids[ scase->surfcoll.nsurfids-1].location = 1;
+          scase->surfcoll.surfids[ scase->surfcoll.nsurfids-1].show = 1;
           break;
         }
       }
@@ -4604,11 +4604,11 @@ void ParseDatabase(char *file){
   /*** debug: make sure ->show is defined for all cases ***/
 
   nsurfids_shown = 0;
-  for(i = 0; i<global_scase.surfcoll.nsurfids; i++){
-    labeli = global_scase.surfcoll.surfids[i].label;
+  for(i = 0; i<scase->surfcoll.nsurfids; i++){
+    labeli = scase->surfcoll.surfids[i].label;
     nexti = 0;
-    for(j = 0; j<global_scase.surfcoll.nsurfinfo; j++){
-      surfj = global_scase.surfcoll.surfinfo+j;
+    for(j = 0; j<scase->surfcoll.nsurfinfo; j++){
+      surfj = scase->surfcoll.surfinfo+j;
       labelj = surfj->surfacelabel;
       if(strcmp(labeli, labelj)==0){
         nexti = 1;
@@ -4616,18 +4616,18 @@ void ParseDatabase(char *file){
       }
     }
     if(nexti==1){
-      global_scase.surfcoll.surfids[i].show = 0;
+      scase->surfcoll.surfids[i].show = 0;
       continue;
     }
     for(j = 0; j<i; j++){
-      labelj = global_scase.surfcoll.surfids[j].label;
+      labelj = scase->surfcoll.surfids[j].label;
       if(strcmp(labeli, labelj)==0){
         nexti = 1;
         break;
       }
     }
     if(nexti==1){
-      global_scase.surfcoll.surfids[i].show = 0;
+      scase->surfcoll.surfids[i].show = 0;
       continue;
     }
     nsurfids_shown++;
@@ -4637,34 +4637,34 @@ void ParseDatabase(char *file){
   /* add surfaces found in database to those surfaces defined in previous SURF lines */
 
   if(nsurfids_shown>0){
-    if(global_scase.surfcoll.nsurfinfo==0){
-      FREEMEMORY(global_scase.surfcoll.surfinfo);
-      FREEMEMORY(global_scase.texture_coll.textureinfo);
-      NewMemory((void **)&global_scase.surfcoll.surfinfo, (nsurfids_shown+MAX_ISO_COLORS+1)*sizeof(surfdata));
-      NewMemory((void **)&global_scase.texture_coll.textureinfo, nsurfids_shown*sizeof(texturedata));
+    if(scase->surfcoll.nsurfinfo==0){
+      FREEMEMORY(scase->surfcoll.surfinfo);
+      FREEMEMORY(scase->texture_coll.textureinfo);
+      NewMemory((void **)&scase->surfcoll.surfinfo, (nsurfids_shown+MAX_ISO_COLORS+1)*sizeof(surfdata));
+      NewMemory((void **)&scase->texture_coll.textureinfo, nsurfids_shown*sizeof(texturedata));
     }
-    if(global_scase.surfcoll.nsurfinfo>0){
-      if(global_scase.surfcoll.surfinfo==NULL){
-        NewMemory((void **)&global_scase.surfcoll.surfinfo, (nsurfids_shown+global_scase.surfcoll.nsurfinfo+MAX_ISO_COLORS+1)*sizeof(surfdata));
+    if(scase->surfcoll.nsurfinfo>0){
+      if(scase->surfcoll.surfinfo==NULL){
+        NewMemory((void **)&scase->surfcoll.surfinfo, (nsurfids_shown+scase->surfcoll.nsurfinfo+MAX_ISO_COLORS+1)*sizeof(surfdata));
       }
       else{
-        ResizeMemory((void **)&global_scase.surfcoll.surfinfo, (nsurfids_shown+global_scase.surfcoll.nsurfinfo+MAX_ISO_COLORS+1)*sizeof(surfdata));
+        ResizeMemory((void **)&scase->surfcoll.surfinfo, (nsurfids_shown+scase->surfcoll.nsurfinfo+MAX_ISO_COLORS+1)*sizeof(surfdata));
       }
-      if(global_scase.texture_coll.textureinfo==NULL){
-        NewMemory((void **)&global_scase.texture_coll.textureinfo, (nsurfids_shown+global_scase.surfcoll.nsurfinfo)*sizeof(texturedata));
+      if(scase->texture_coll.textureinfo==NULL){
+        NewMemory((void **)&scase->texture_coll.textureinfo, (nsurfids_shown+scase->surfcoll.nsurfinfo)*sizeof(texturedata));
       }
       else{
-        ResizeMemory((void **)&global_scase.texture_coll.textureinfo, (nsurfids_shown+global_scase.surfcoll.nsurfinfo)*sizeof(texturedata));
+        ResizeMemory((void **)&scase->texture_coll.textureinfo, (nsurfids_shown+scase->surfcoll.nsurfinfo)*sizeof(texturedata));
       }
     }
-    surfj = global_scase.surfcoll.surfinfo+global_scase.surfcoll.nsurfinfo-1;
-    for(j = 0; j<global_scase.surfcoll.nsurfids; j++){
-      if(global_scase.surfcoll.surfids[j].show==0)continue;
+    surfj = scase->surfcoll.surfinfo+scase->surfcoll.nsurfinfo-1;
+    for(j = 0; j<scase->surfcoll.nsurfids; j++){
+      if(scase->surfcoll.surfids[j].show==0)continue;
       surfj++;
       InitSurface(surfj);
-      surfj->surfacelabel = global_scase.surfcoll.surfids[j].label;
+      surfj->surfacelabel = scase->surfcoll.surfids[j].label;
     }
-    global_scase.surfcoll.nsurfinfo += nsurfids_shown;
+    scase->surfcoll.nsurfinfo += nsurfids_shown;
   }
   UpdateSortedSurfIdList(&global_scase.surfcoll);
 }
@@ -9495,7 +9495,7 @@ int ReadSMV_Parse(bufferstreamdata *stream){
   START_TIMER(pass3_time);
 
   CheckMemory;
-  ParseDatabase(NULL);
+  ParseDatabase(&global_scase, NULL);
 
   if(setGRID==0){
     meshdata *meshi;
