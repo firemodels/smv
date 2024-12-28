@@ -40,7 +40,6 @@
 #define KEYFRAME_UPDATE_ALL 38
 #ifdef pp_TOUR
 #define KEYFRAME_SET_TOUR_TIME 47
-#define TOUR_UPDATE_PATH 48
 #endif
 
 #define TOURMENU(f) callfrom_tourglui=1;TourMenu(f);callfrom_tourglui=0;

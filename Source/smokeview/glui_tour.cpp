@@ -70,9 +70,6 @@ GLUI_Spinner *SPINNER_tour_circular_angle0 = NULL;
 GLUI_Button *BUTTON_next_tour=NULL;
 GLUI_Button *BUTTON_prev_tour=NULL;
 GLUI_Button *BUTTON_delete_tour = NULL;
-#ifdef pp_TOUR
-GLUI_Button *BUTTON_update_tour_path = NULL;
-#endif
 
 GLUI_EditText *EDIT_label=NULL;
 
@@ -209,9 +206,6 @@ extern "C" void GLUITourSetup(int main_window){
   BUTTON_next_tour = glui_tour->add_button_to_panel(PANEL_tour1, _("Next"), TOUR_NEXT, TourCB);
   glui_tour->add_button_to_panel(PANEL_tour1, _("New"), TOUR_INSERT_NEW, TourCB);
   glui_tour->add_button_to_panel(PANEL_tour1, _("Reverse"), TOUR_REVERSE, TourCB);
-#ifdef pp_TOUR
-  BUTTON_update_tour_path = glui_tour->add_button_to_panel(PANEL_tour, _("Update tour path"), TOUR_UPDATE_PATH, TourCB);
-#endif
   if(global_scase.tourcoll.ntourinfo > 0){
     selectedtour_index = TOURINDEX_MANUAL;
     selectedtour_index_old = TOURINDEX_MANUAL;
@@ -505,11 +499,6 @@ void TourCB(int var){
   }
 
   switch(var){
-#ifdef pp_TOUR
-  case TOUR_UPDATE_PATH:
-    CreateTourPaths();
-    break;
-#endif
   case TOUR_CIRCULAR_UPDATE:
     if(edittour==0){
       edittour=1;
