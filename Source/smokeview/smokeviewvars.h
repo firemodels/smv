@@ -1588,6 +1588,7 @@ SVEXTERN int SVDECL(visWalls,0), SVDECL(visGrid,0), SVDECL(visCeiling,0);
 SVEXTERN int SVDECL(visZonePlane,ZONE_YPLANE), SVDECL(viszonefire,1), SVDECL(visSZone,0);
 SVEXTERN int SVDECL(visSensor,1), SVDECL(visSensorNorm,1), SVDECL(hasSensorNorm,0);
 SVEXTERN int SVDECL(visVents, 1), SVDECL(visVentFlow, 1),SVDECL(visVentHFlow, 1),SVDECL(visVentVFlow, 1),SVDECL(visVentMFlow, 1);
+SVEXTERN int SVDECL(update_ini_vents, 0);
 SVEXTERN int SVDECL(viewoption,0);
 SVEXTERN int SVDECL(clip_mode,CLIP_OFF),clip_mode_last;
 SVEXTERN int clip_i,clip_j,clip_k;

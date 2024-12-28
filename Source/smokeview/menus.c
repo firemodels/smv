@@ -7660,8 +7660,13 @@ void GeometryMenu(int value){
     global_scase.visTerrainType = value-17;
     GLUIUpdateTerrain();
     if(global_scase.visTerrainType == TERRAIN_HIDDEN){
-      if(global_scase.visOtherVents!=global_scase.visOtherVentsSAVE){
-        global_scase.visOtherVents=global_scase.visOtherVentsSAVE;
+      if(update_ini_vents == 0){
+        if(global_scase.visOtherVents != global_scase.visOtherVentsSAVE){
+          global_scase.visOtherVents = global_scase.visOtherVentsSAVE;
+        }
+      }
+      else{
+        update_ini_vents = 0;
       }
     }
     else{

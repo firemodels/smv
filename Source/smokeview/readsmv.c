@@ -14623,6 +14623,7 @@ int ReadIni2(const char *inifile, int localfile){
     if(MatchINI(buffer, "SHOWOTHERVENTS") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%i", &global_scase.visOtherVents);
+      update_ini_vents = 1;
       ONEORZERO(global_scase.visOtherVents);
       continue;
     }
