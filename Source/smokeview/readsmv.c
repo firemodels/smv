@@ -2507,18 +2507,22 @@ int GetInpf(bufferstreamdata *stream_in){
   return 0;
 }
 
-/* ------------------ IsDupTexture ------------------------ */
-
-int IsDupTexture(texturedata *texti){
+/// @brief Given a pointer to texturedata, determine if there is another
+/// *loaded* texturedata in the case that has the same filename. If there is a
+/// duplicate, set the name and loaded status of texti to that duplicate.
+/// @param[inout] scase The case
+/// @param[inout] texti A pointer to the texture data
+/// @return 1 if there is a duplicate, 0 if there is no duplicate.
+int IsDupTexture(smv_case *scase, texturedata *texti) {
   int dup_texture;
   int i, j;
 
-  i = texti - global_scase.texture_coll.textureinfo;
+  i = texti - scase->texture_coll.textureinfo;
   dup_texture=0;
   for(j=0;j<i;j++){
     texturedata *textj;
 
-    textj = global_scase.texture_coll.textureinfo + j;
+    textj = scase->texture_coll.textureinfo + j;
     if(textj->loaded==0)continue;
     if(strcmp(texti->file,textj->file)==0){
       texti->name=textj->name;
@@ -2529,17 +2533,19 @@ int IsDupTexture(texturedata *texti){
   return dup_texture;
 }
 
-/* ------------------ IsTerrainTexture ------------------------ */
-
-int IsTerrainTexture(texturedata *texti){
+/// @brief Given a pointer to texturedata, determine if this texture is a terrain texture
+/// @param[in] scase The case
+/// @param[in] texti A pointer to the texture data
+/// @return 1 if it is a terrain texture, 0 otherwise.
+int IsTerrainTexture(smv_case *scase, texturedata *texti){
   int is_terrain_texture;
   int i;
 
   is_terrain_texture=0;
-  for(i=0;i<global_scase.terrain_texture_coll.nterrain_textures;i++){
+  for(i=0;i<scase->terrain_texture_coll.nterrain_textures;i++){
     texturedata *tt;
 
-    tt = global_scase.terrain_texture_coll.terrain_textures + i;
+    tt = scase->terrain_texture_coll.terrain_textures + i;
     if(tt->file==NULL||strcmp(tt->file, texti->file)!=0)continue;
     return 1;
   }
@@ -2628,7 +2634,7 @@ void InitTextures0(void){
 
     texti = global_scase.texture_coll.textureinfo + i;
     texti->loaded=0;
-    if(texti->file==NULL||IsDupTexture(texti)==1||IsTerrainTexture(texti)==1)continue;
+    if(texti->file==NULL||IsDupTexture(&global_scase, texti)==1||IsTerrainTexture(&global_scase, texti)==1)continue;
 
     CheckMemory;
     filename=strrchr(texti->file,*dirseparator);
