@@ -734,7 +734,7 @@ EXTERNCPP FILE_SIZE ReadCSVFile(csvfiledata *csvfi, int flag);
 EXTERNCPP void ReadHRR(int flag);
 EXTERNCPP int  ReadIni(char *inifile);
 EXTERNCPP int  ReadSMV(bufferstreamdata *stream);
-EXTERNCPP void ReadSMVDynamic(char *file);
+EXTERNCPP void ReadSMVDynamic(smv_case *scase, char *file);
 EXTERNCPP void ReadSMVOrig(smv_case *scase);
 EXTERNCPP void SetBoundBounds(int set_valmin, float valmin, int set_valmax, float valmax, char *buffer2);
 EXTERNCPP void SetPatchMin(int set_valmin, float valmin, char *buffer2);
