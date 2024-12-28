@@ -434,7 +434,7 @@ EXTERNCPP void UpdateIsoMenuLabels(void);
 EXTERNCPP void UpdateIsoTriangles(int flag);
 EXTERNCPP void UpdateIsoType(void);
 EXTERNCPP void UpdateIsoTypes(void);
-EXTERNCPP void UpdateIsoShowLevels(void);
+EXTERNCPP void UpdateIsoShowLevels(smv_case *scase, meshdata *isomesh);
 EXTERNCPP void *UpdateTrianglesAll(void *arg);
 
 //*** IOpart.c headers

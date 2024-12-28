@@ -1306,7 +1306,7 @@ void IsoShowMenu(int value){
       UpdateShow();
     }
   }
-  UpdateIsoShowLevels();
+  UpdateIsoShowLevels(&global_scase, loaded_isomesh);
   UpdateIsoTriangles(1);
 
   updatemenu=1;

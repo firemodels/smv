@@ -588,7 +588,7 @@ FILE_SIZE ReadIsoGeom(int ifile, int load_flag, int *geom_frame_index, int *erro
   isoi->loaded=1;
   isoi->display=1;
   loaded_isomesh= GetLoadedIsoMesh();
-  UpdateIsoShowLevels();
+  UpdateIsoShowLevels(&global_scase, loaded_isomesh);
   ReadIsoFile=1;
   plotstate=GetPlotState(DYNAMIC_PLOTS);
   updatemenu=1;
@@ -694,7 +694,7 @@ void ReadIsoOrig(const char *file, int ifile, int flag, int *errorcode){
   if(flag==UNLOAD){
     updatemenu=1;
     loaded_isomesh= GetLoadedIsoMesh();
-    UpdateIsoShowLevels();
+    UpdateIsoShowLevels(&global_scase, loaded_isomesh);
     return;
   }
   meshi->isofilenum=ifile;
@@ -1054,7 +1054,7 @@ void ReadIsoOrig(const char *file, int ifile, int flag, int *errorcode){
   ib->loaded=1;
   ib->display=1;
   loaded_isomesh= GetLoadedIsoMesh();
-  UpdateIsoShowLevels();
+  UpdateIsoShowLevels(&global_scase, loaded_isomesh);
   ReadIsoFile=1;
   plotstate=GetPlotState(DYNAMIC_PLOTS);
   updatemenu=1;
@@ -1692,19 +1692,19 @@ void UpdateIsoMenuLabels(void){
 
 /* ------------------ UpdateIsoShowLevels ------------------------ */
 
-void UpdateIsoShowLevels(void){
+void UpdateIsoShowLevels(smv_case *scase, meshdata *isomesh){
   int nisolevels;
   int *showlevels;
   int i, j;
   meshdata *meshi;
 
-  if(loaded_isomesh==NULL)return;
+  if(isomesh==NULL)return;
 
-  nisolevels=loaded_isomesh->nisolevels;
-  showlevels=loaded_isomesh->showlevels;
+  nisolevels=isomesh->nisolevels;
+  showlevels=isomesh->showlevels;
 
-  for(j=0;j<global_scase.meshescoll.nmeshes;j++){
-    meshi = global_scase.meshescoll.meshinfo+j;
+  for(j=0;j<scase->meshescoll.nmeshes;j++){
+    meshi = scase->meshescoll.meshinfo+j;
     if(meshi->isofilenum==-1)continue;
     for(i=0;i<nisolevels;i++){
       if(i<meshi->nisolevels)meshi->showlevels[i]=showlevels[i];
