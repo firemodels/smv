@@ -788,7 +788,7 @@ void InitProp(propdata *propi, int nsmokeview_ids, char *label){
 
 /* ------------------ InitDefaultProp ------------------------ */
 
-void InitDefaultProp(void){
+void InitDefaultProp(smv_case *scase){
 /*
 PROP
  Human_props
@@ -809,7 +809,7 @@ PROP
   char buffer[255];
   int i;
 
-  propi = global_scase.propcoll.propinfo + global_scase.propcoll.npropinfo;
+  propi = scase->propcoll.propinfo + scase->propcoll.npropinfo;
 
   strcpy(proplabel,"Human_props(default)");           // from input
 
@@ -825,7 +825,7 @@ PROP
     NewMemory((void **)&smokeview_id,lenbuf+1);
     strcpy(smokeview_id,buffer);
     propi->smokeview_ids[i]=smokeview_id;
-    propi->smv_objects[i]=GetSmvObjectType(&global_scase.objectscoll, propi->smokeview_ids[i],global_scase.objectscoll.std_object_defs.missing_device);
+    propi->smv_objects[i]=GetSmvObjectType(&scase->objectscoll, propi->smokeview_ids[i],scase->objectscoll.std_object_defs.missing_device);
   }
   propi->smv_object=propi->smv_objects[0];
   propi->smokeview_id=propi->smokeview_ids[0];
@@ -8216,7 +8216,7 @@ int ReadSMV_Parse(bufferstreamdata *stream){
 
   if(global_scase.propcoll.npropinfo>0){
     global_scase.propcoll.npropinfo=0;
-    InitDefaultProp();
+    InitDefaultProp(&global_scase);
     global_scase.propcoll.npropinfo=1;
   }
 
