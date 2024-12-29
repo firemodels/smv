@@ -44,9 +44,8 @@
 
 #define TOURMENU(f) callfrom_tourglui=1;TourMenu(f);callfrom_tourglui=0;
 
-#define SETTINGS_TOURS_ROLLOUT 0
-#define KEYFRAME_TOURS_ROLLOUT 1
-#define MODIFY_TOURS_ROLLOUT 2
+#define KEYFRAME_TOURS_ROLLOUT 0
+#define MODIFY_TOURS_ROLLOUT   1
 
 #endif
 
