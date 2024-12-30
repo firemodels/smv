@@ -243,9 +243,16 @@ extern "C" void GLUITourSetup(int main_window){
   CHECKBOX_tour_snap             = glui_tour->add_checkbox_to_panel(PANEL_tour5, _("View from current tour position"),
     &tour_snap, TOUR_SNAP, TourCB);
 #endif
+  CHECKBOX_tour_constant_velocity = glui_tour->add_checkbox_to_panel(PANEL_tour5, _("Constant velocity"),
+    &tour_constant_velocity, TOUR_CONSTANT_VELOCITY, TourCB);
+
+  
+  glui_tour->add_column_to_panel(PANEL_tour6, false);
+  PANEL_tour7 = glui_tour->add_panel_to_panel(PANEL_tour6, "");
+
   if(global_scase.objectscoll.navatar_types > 0){
-    glui_tour->add_checkbox_to_panel(PANEL_tour5, _("Show avatar"), &show_avatar);
-    LISTBOX_avatar = glui_tour->add_listbox_to_panel(PANEL_tour5, _("Avatar:"), &glui_avatar_index, TOUR_AVATAR, TourCB);
+    glui_tour->add_checkbox_to_panel(PANEL_tour7, _("Show avatar"), &show_avatar);
+    LISTBOX_avatar = glui_tour->add_listbox_to_panel(PANEL_tour7, _("Avatar:"), &glui_avatar_index, TOUR_AVATAR, TourCB);
     for(i = 0;i < global_scase.objectscoll.navatar_types;i++){
       LISTBOX_avatar->add_item(i, global_scase.objectscoll.avatar_types[i]->label);
     }
@@ -260,15 +267,8 @@ extern "C" void GLUITourSetup(int main_window){
     }
     LISTBOX_avatar->set_int_val(glui_avatar_index);
   }
-
-  
-  glui_tour->add_column_to_panel(PANEL_tour6, false);
-  PANEL_tour7 = glui_tour->add_panel_to_panel(PANEL_tour6, "");
-
-  CHECKBOX_tour_constant_velocity = glui_tour->add_checkbox_to_panel(PANEL_tour7, _("Constant velocity"),
-    &tour_constant_velocity, TOUR_CONSTANT_VELOCITY, TourCB);
+  CHECKBOX_showintermediate = glui_tour->add_checkbox_to_panel(PANEL_tour7, _("Show points"), &show_path_knots);
   glui_tour->add_spinner_to_panel(PANEL_tour7, _("points"), GLUI_SPINNER_INT, &global_scase.tourcoll.tour_ntimes, VIEW_times, TourCB);
-  CHECKBOX_showintermediate = glui_tour->add_checkbox_to_panel(PANEL_tour7, _("Show all points"), &show_path_knots);
 
   PANEL_node = glui_tour->add_panel_to_panel(ROLLOUT_keyframe, "", GLUI_PANEL_NONE);
 
@@ -289,8 +289,8 @@ extern "C" void GLUITourSetup(int main_window){
   SPINNER_viewx=glui_tour->add_spinner_to_panel(PANEL_tourview,"x",GLUI_SPINNER_FLOAT,glui_tour_view,  KEYFRAME_viewXYZ,TourCB);
   SPINNER_viewy=glui_tour->add_spinner_to_panel(PANEL_tourview,"y",GLUI_SPINNER_FLOAT,glui_tour_view+1,KEYFRAME_viewXYZ,TourCB);
   SPINNER_viewz=glui_tour->add_spinner_to_panel(PANEL_tourview,"z",GLUI_SPINNER_FLOAT,glui_tour_view+2,KEYFRAME_viewXYZ,TourCB);
-  glui_tour->add_button_to_panel(PANEL_tourview, _("Use target at each node"),     VIEW_ALL_NODES, TourCB);
-  glui_tour->add_button_to_panel(PANEL_tourview, _("Set targets using next nodes"), VIEW_NEXT_NODE, TourCB);
+  glui_tour->add_button_to_panel(PANEL_tourview, _("Set target(all nodes)"),     VIEW_ALL_NODES, TourCB);
+  glui_tour->add_button_to_panel(PANEL_tourview, _("Set targets(next node)"), VIEW_NEXT_NODE, TourCB);
 
   PANEL_tournavigate = glui_tour->add_panel_to_panel(PANEL_node, "", GLUI_PANEL_NONE);
 
