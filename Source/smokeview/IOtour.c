@@ -791,9 +791,7 @@ keyframe *AddFrame(keyframe *last_frame, float time_local, float pause_time_loca
   memcpy(this_frame->view_smv, fxyz_view, 3*sizeof(float));
   memcpy(this_frame->xyz_fds,  xyz,       3*sizeof(float));
   this_frame->pause_time = pause_time_local;
-#ifdef pp_TOUR
   this_frame->set_tour_time = last_frame->set_tour_time;
-#endif
 
   CheckMemory;
   return this_frame;

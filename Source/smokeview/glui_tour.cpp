@@ -46,10 +46,8 @@ GLUI_Checkbox *CHECKBOX_view2 = NULL;
 #ifdef pp_TOUR_SNAP
 GLUI_Checkbox *CHECKBOX_tour_snap = NULL;
 #endif
-#ifdef pp_TOUR
 GLUI_Checkbox *CHECKBOX_tour_constant_velocity = NULL;
 GLUI_Checkbox *CHECKBOX_set_tour_time = NULL;
-#endif
 GLUI_Checkbox *CHECKBOX_showtourroute1 = NULL;
 GLUI_Checkbox *CHECKBOX_showtourroute2 = NULL;
 #ifdef _DEBUG
@@ -267,11 +265,8 @@ extern "C" void GLUITourSetup(int main_window){
   glui_tour->add_column_to_panel(PANEL_tour6, false);
   PANEL_tour7 = glui_tour->add_panel_to_panel(PANEL_tour6, "");
 
-
-#ifdef pp_TOUR
   CHECKBOX_tour_constant_velocity = glui_tour->add_checkbox_to_panel(PANEL_tour7, _("Constant velocity"),
     &tour_constant_velocity, TOUR_CONSTANT_VELOCITY, TourCB);
-#endif
   glui_tour->add_spinner_to_panel(PANEL_tour7, _("start time"), GLUI_SPINNER_FLOAT, &global_scase.tourcoll.tour_tstart, VIEW_times, TourCB);
   glui_tour->add_spinner_to_panel(PANEL_tour7, _("stop time:"), GLUI_SPINNER_FLOAT, &global_scase.tourcoll.tour_tstop, VIEW_times, TourCB);
   glui_tour->add_spinner_to_panel(PANEL_tour7, _("points"), GLUI_SPINNER_INT, &global_scase.tourcoll.tour_ntimes, VIEW_times, TourCB);
@@ -282,21 +277,15 @@ extern "C" void GLUITourSetup(int main_window){
   PANEL_tour4 = glui_tour->add_panel_to_panel(PANEL_node, _(""), GLUI_PANEL_NONE);
   PANEL_tourposition = glui_tour->add_panel_to_panel(PANEL_tour4, _("Node"));
 
-#ifdef pp_TOUR
   CHECKBOX_set_tour_time = glui_tour->add_checkbox_to_panel(PANEL_tourposition, _("Set time"),
     &glui_set_tour_time, KEYFRAME_SET_TOUR_TIME, TourCB);
   SPINNER_tour_time = glui_tour->add_spinner_to_panel(PANEL_tourposition, "t:", GLUI_SPINNER_FLOAT, &glui_tour_time, KEYFRAME_t, TourCB);
-#else
-  SPINNER_tour_time = glui_tour->add_spinner_to_panel(PANEL_tourposition, "t:", GLUI_SPINNER_FLOAT, &glui_tour_time, KEYFRAME_tXYZ, TourCB);
-#endif
   SPINNER_tour_pause_time = glui_tour->add_spinner_to_panel(PANEL_tourposition, "pause:", GLUI_SPINNER_FLOAT, &glui_tour_pause_time, KEYFRAME_tXYZ, TourCB);
   SPINNER_x=glui_tour->add_spinner_to_panel(PANEL_tourposition,"x:",GLUI_SPINNER_FLOAT,glui_tour_xyz,  KEYFRAME_tXYZ,TourCB);
   SPINNER_y=glui_tour->add_spinner_to_panel(PANEL_tourposition,"y:",GLUI_SPINNER_FLOAT,glui_tour_xyz+1,KEYFRAME_tXYZ,TourCB);
   SPINNER_z=glui_tour->add_spinner_to_panel(PANEL_tourposition,"z:",GLUI_SPINNER_FLOAT,glui_tour_xyz+2,KEYFRAME_tXYZ,TourCB);
-#ifdef pp_TOUR
   TourCB(TOUR_CONSTANT_VELOCITY);
   TourCB(KEYFRAME_tXYZ);
-#endif
   glui_tour->add_column_to_panel(PANEL_tour4, false);
   PANEL_tourview = glui_tour->add_panel_to_panel(PANEL_tour4, _("View direction (target)"));
   SPINNER_viewx=glui_tour->add_spinner_to_panel(PANEL_tourview,"x",GLUI_SPINNER_FLOAT,glui_tour_view,  KEYFRAME_viewXYZ,TourCB);
@@ -372,18 +361,14 @@ float TrimVal(float val){
 
  extern "C" void GLUIUpdateKeyframe(void){
   glui_tour_time = selected_frame->time;
-#ifdef pp_TOUR
   glui_set_tour_time = selected_frame->set_tour_time;
-#endif
   SPINNER_tour_time->set_float_val(glui_tour_time);
   glui_tour_pause_time = selected_frame->pause_time;
   SPINNER_tour_pause_time->set_float_val(glui_tour_pause_time);
   SPINNER_x->set_float_val(glui_tour_xyz[0]);
   SPINNER_y->set_float_val(glui_tour_xyz[1]);
   SPINNER_z->set_float_val(glui_tour_xyz[2]);
-#ifdef pp_TOUR
   CHECKBOX_set_tour_time->set_int_val(glui_set_tour_time);
-#endif
 }
 
 /* ------------------ GLUISetTourKeyframe ------------------------ */
@@ -405,9 +390,7 @@ extern "C" void GLUISetTourKeyframe(void){
   eye = selected_frame->xyz_smv;
   xyz_view = selected_frame->view_smv;
 
-#ifdef pp_TOUR
   glui_set_tour_time = selected_frame->set_tour_time;
-#endif
   glui_tour_time    = selected_frame->time;
   glui_tour_pause_time = selected_frame->pause_time;
   glui_tour_xyz[0]  = TrimVal(SMV2FDS_X(eye[0]));
@@ -427,7 +410,6 @@ extern "C" void GLUISetTourKeyframe(void){
     SPINNER_tour_time->set_float_val(glui_tour_time);
   }
 
-#ifdef pp_TOUR
   CHECKBOX_set_tour_time->set_int_val(glui_set_tour_time);
   if(glui_set_tour_time == 1){
     SPINNER_tour_time->enable();
@@ -435,7 +417,6 @@ extern "C" void GLUISetTourKeyframe(void){
   else{
     SPINNER_tour_time->disable();
   }
-#endif
   SPINNER_tour_pause_time->set_float_val(glui_tour_pause_time);
   SPINNER_tour_time->set_float_val(glui_tour_time);
   SPINNER_x->set_float_val(glui_tour_xyz[0]);
@@ -606,7 +587,6 @@ void TourCB(int var){
     TourCB(VIEWTOURFROMPATH);
     CHECKBOX_view2->set_int_val(viewtourfrompath);
     break;
-#ifdef pp_TOUR
   case TOUR_CONSTANT_VELOCITY:
     if(selected_tour != NULL&&tour_constant_velocity==1){
       keyframe *frame;
@@ -649,7 +629,6 @@ void TourCB(int var){
     }
     CHECKBOX_tour_constant_velocity->set_int_val(tour_constant_velocity);
     break;
-#endif
   case VIEWTOURFROMPATH2:
     TourCB(VIEWTOURFROMPATH);
     CHECKBOX_view1->set_int_val(viewtourfrompath);
@@ -695,7 +674,6 @@ void TourCB(int var){
       selected_frame->selected = 1;
     }
     break;
-#ifdef pp_TOUR
   case KEYFRAME_t:
 #define TOUR_EPS 0.01
     if(selected_frame != NULL && glui_set_tour_time ==1){
@@ -716,7 +694,6 @@ void TourCB(int var){
     }
     TourCB(KEYFRAME_tXYZ);
     break;
-#endif
   case KEYFRAME_tXYZ:
     if(selected_frame != NULL){
       show_tour_hint = 0;
@@ -724,10 +701,8 @@ void TourCB(int var){
       selected_tour->startup = 0;
       eye = selected_frame->xyz_smv;
       xyz_view = selected_frame->view_smv;
-#ifdef pp_TOUR
       selected_frame->set_tour_time = glui_set_tour_time;
       selected_frame->time          = glui_tour_time;
-#endif
 
       FDS2SMV_XYZ(eye, glui_tour_xyz);
       memcpy(selected_frame->xyz_fds, glui_tour_xyz, 3 * sizeof(float));
@@ -735,19 +710,8 @@ void TourCB(int var){
       selected_frame->pause_time = glui_tour_pause_time;
 
       FDS2SMV_XYZ(xyz_view, glui_tour_view);
-#ifndef pp_TOUR
-      if(update_tour_path == 1)CreateTourPaths();
-#endif
       selected_frame->selected = 1;
       TourCB(KEYFRAME_viewXYZ);
-#ifdef pp_TOUR
-      if(glui_set_tour_time == 1){
-        SPINNER_tour_time->enable();
-      }
-      else{
-        SPINNER_tour_time->disable();
-      }
-#endif
     }
     break;
   case KEYFRAME_NEXT:
@@ -887,11 +851,7 @@ void TourCB(int var){
       GLUISetTourKeyframe();
       if(PANEL_node != NULL)PANEL_node->enable();
       if(PANEL_tournavigate!=NULL)PANEL_tournavigate->enable();
-#ifdef pp_TOUR
       TourCB(TOUR_CONSTANT_VELOCITY);
-#else
-      if(SPINNER_tour_time!= NULL)SPINNER_tour_time->disable();
-#endif
       break;
     }
     GLUIDeleteTourList();
@@ -937,7 +897,6 @@ void TourCB(int var){
     selected_tour->display=0;
     TOURMENU(selectedtour_index);
     if(PANEL_node!=NULL)PANEL_node->enable();
-#ifdef pp_TOUR
     if(SPINNER_tour_time != NULL){
       if(glui_set_tour_time == 1){
         SPINNER_tour_time->enable();
@@ -946,9 +905,6 @@ void TourCB(int var){
         SPINNER_tour_time->disable();
       }
     }
-#else
-    if(SPINNER_tour_time!=NULL)SPINNER_tour_time->disable();
-#endif
     updatemenu=1;
     break;
   case TOUR_LABEL:

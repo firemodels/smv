@@ -1675,9 +1675,7 @@ SVEXTERN float gslice_xyz[3];
 SVEXTERN float gslice_normal_xyz[3];
 SVEXTERN float gslice_normal_azelev[2];
 #endif
-#ifdef pp_TOUR
 SVEXTERN int SVDECL(glui_set_tour_time, 0);
-#endif
 SVEXTERN float SVDECL(glui_tour_time, 0.0);
 SVEXTERN float SVDECL(glui_tour_pause_time, 0.0);
 
@@ -2068,9 +2066,7 @@ SVEXTERN int SVDECL(viewtourfrompath,0),SVDECL(viewalltours,0),SVDECL(viewanytou
 #ifdef _DEBUG
 SVEXTERN int SVDECL(showdebugtour, 1);
 #endif
-#ifdef pp_TOUR
 SVEXTERN int SVDECL(tour_constant_velocity, 1);
-#endif
 
 SVEXTERN int SVDECL(have_animate_blockages, 0), SVDECL(animate_blockages, 0);
 SVEXTERN selectdata SVDECL(*selectfaceinfo,NULL);
