@@ -1016,7 +1016,7 @@ void GetScreenMapping(float *xyz0, float *screen_perm){
 int GetTimeInterval(float val, float *array, int n){
   if(n <= 1)return 0;
   if(val<array[1])return 0;
-  if(val>array[n-2])return n-2;
+  if(val>=array[n-1])return n-1;
   return GetInterval(val, array, n);
 }
 
