@@ -690,38 +690,6 @@ void UpdateShow(void){
   }
 }
 
-/* ------------------ GetItime ------------------------ */
-
-int GetItime(int n, int *timeslist, unsigned char *times_map, float *times, int ntimes){
-  int istart=0;
-
-  if(n>0)istart=timeslist[n-1];
-  if(times_map == NULL){
-    while(1){
-      if(istart < ntimes - 1 && times[istart] <= global_times[n]){
-        istart++;
-        continue;
-      }
-      break;
-    }
-  }
-  else{
-    while(1){
-      if(times_map != NULL && istart >= 0 && istart < ntimes - 1 && times_map[istart] == 0){
-        istart++;
-        continue;
-      }
-      if(istart < ntimes - 1 && times[istart] <= global_times[n]){
-        istart++;
-        continue;
-      }
-      break;
-    }
-  }
-  istart=CLAMP(istart,0,ntimes-1);
-  return istart;
-}
-
 /* ------------------ GetDataTimeFrame ------------------------ */
 
 int GetDataTimeFrame(float time, unsigned char *times_map, float *times, int ntimes){
