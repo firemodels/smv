@@ -893,7 +893,8 @@ void InitCircularTour(tourdata *touri, int nkeyframes, int option){
 
   thisframe=&touri->first_frame;
   float tour_tstart, tour_tstop;
-  GetTourTimeBounds(touri, &tour_tstart, &tour_tstop);
+  tour_tstart = global_scase.tourcoll.tour_tstart;
+  tour_tstop  = global_scase.tourcoll.tour_tstop;
   for(j=0;j<nkeyframes;j++){
     if(nkeyframes == 1){
       angle_local = 0.0;
