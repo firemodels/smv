@@ -84,18 +84,24 @@ int GetTokensBlank(char *buffer, char **tokens){
   return nt;
 }
 
-/* ------------------ GetHoc ------------------------ */
-
-void GetHoc(float *hoc, char *name){
+/// @brief Given a case, if there are any fuels, take take the name and heat of
+/// combustion of that fuel and store those values in the output parameters. If
+/// there are no defined fuels, scan the ${fdsprefix}.out file to find the first
+/// "Heat of Combustion". If neither is found, hoc is set to 0.0 and name to the
+/// empty string.
+/// @param scase The case
+/// @param hoc A pointer in which to store the heat of combustion value
+/// @param name A pointer to a pre-allocated buffer in which to store the name of the species
+void GetHoc(smv_case *scase, float *hoc, char *name){
   char outfile[256], buffer[255];
   FILE *stream;
 
-  if(global_scase.fuelcoll.nfuelinfo > 0){
-    *hoc = global_scase.fuelcoll.fuelinfo->hoc;
-    strcpy(name, global_scase.fuelcoll.fuelinfo->fuel);
+  if(scase->fuelcoll.nfuelinfo > 0){
+    *hoc = scase->fuelcoll.fuelinfo->hoc;
+    strcpy(name, scase->fuelcoll.fuelinfo->fuel);
     return;
   }
-  strcpy(outfile, global_scase.fdsprefix);
+  strcpy(outfile, scase->fdsprefix);
   strcat(outfile, ".out");
   stream = fopen(outfile, "r");
   if(stream==NULL){
@@ -514,7 +520,7 @@ void ReadHRR(int flag){
   char *buffer, *buffer_labels, *buffer_units, *buffer_temp;
   int len_buffer;
 
-  GetHoc(&global_scase.fuel_hoc, fuel_name);
+  GetHoc(&global_scase, &global_scase.fuel_hoc, fuel_name);
   fuel_hoc_default = global_scase.fuel_hoc;
   if(global_scase.hrr_coll.nhrrinfo>0){
     for(i=0;i<global_scase.hrr_coll.nhrrinfo;i++){
