@@ -236,8 +236,8 @@ void DrawTours(void){
           char label[128];
 #ifdef _DEBUG
           if(showdebugtour == 1){
-            sprintf(label, "t=%8.2f n=%i n/ad=%8.2f ad=%8.2f ld=%8.2f",
-              framej->time, framej->npoints, (float)framej->npoints / framej->arc_dist, framej->arc_dist, framej->line_dist);
+            sprintf(label, "t=%8.2f/%i n=%i n/ad=%8.2f ad=%8.2f ld=%8.2f",
+              framej->time, framej->set_tour_time, framej->npoints, (float)framej->npoints / framej->arc_dist, framej->arc_dist, framej->line_dist);
             if(j==0)strcat(label, "(ad==arc distance, ld==line distance)");
           }
           else{
@@ -269,11 +269,12 @@ void DrawTours(void){
           if(touri->display==0||touri->nkeyframes<=1)continue;
           if(touri->timeslist==NULL)continue;
 
-          float xyz[3], view[3], *times;
+          float xyz[3], view[3];
+          float tour_time=0.0;
 
-          times = touri->path_times;
-          GetTourXYZ(times[itimes], touri, xyz);
-          GetTourView(times[itimes], touri, view);
+          if(global_times!=NULL)tour_time = global_times[itimes];
+          GetTourXYZ(tour_time,  touri, xyz);
+          GetTourView(tour_time, touri, view);
 
           glVertex3fv(xyz);
           glVertex3f(xyz[0], xyz[1], xyz[2]+0.1);
@@ -291,10 +292,11 @@ void DrawTours(void){
           if(touri->display==0||touri->nkeyframes<=1)continue;
           if(touri->timeslist==NULL)continue;
 
-          float xyz[3], *times;
+          float xyz[3];
+          float tour_time=0.0;
 
-          times = touri->path_times;
-          GetTourXYZ(times[itimes], touri, xyz);
+          if(global_times!=NULL)tour_time = global_times[itimes];
+          GetTourXYZ(tour_time, touri, xyz);
           DrawCir(xyz,tourrad_avatar,tourcol_avatar);
         }
         break;
@@ -307,11 +309,12 @@ void DrawTours(void){
           if(touri->display==0||touri->nkeyframes<=1)continue;
           if(touri->timeslist==NULL)continue;
 
-          float xyz[3], tour_view[3], *times;
+          float xyz[3], tour_view[3];
+          float tour_time=0.0;
 
-          times = touri->path_times;
-          GetTourXYZ(times[itimes], touri, xyz);
-          GetTourView(times[itimes], touri, tour_view);
+          if(global_times!=NULL)tour_time = global_times[itimes];
+          GetTourXYZ(tour_time,  touri, xyz);
+          GetTourView(tour_time, touri, tour_view);
           dxy[0]=tour_view[0]-xyz[0];
           dxy[1]=tour_view[1]-xyz[1];
           if(dxy[0]!=0.0||dxy[1]!=0.0){
@@ -449,6 +452,13 @@ void GetKeyXYZ(float t, keyframe *this_key, float *xyz){
   }
 }
 
+/* ------------------ GetTourTimeBounds ------------------------ */
+
+void GetTourTimeBounds(tourdata *touri, float *tour_tstart, float *tour_tstop){
+  *tour_tstart = touri->first_frame.next->time;
+  *tour_tstop  = touri->last_frame.prev->time;
+}
+
 /* ------------------ GetTourProperties ------------------------ */
 
 void GetTourProperties(tourdata *touri){
@@ -487,8 +497,12 @@ void GetTourProperties(tourdata *touri){
     thiskey->arc_dist   = dist;
     touri->global_dist += dist;
   }
+
+  float tour_tstart, tour_tstop;
+  GetTourTimeBounds(touri, &tour_tstart, &tour_tstop);
+
   thiskey = (touri->first_frame).next;
-  thiskey->time = global_scase.tourcoll.tour_tstart;
+  thiskey->time = tour_tstart;
   float cum_dist = 0.0;
   int cum_npoints = 0;
   float *tour_times, *xyzs, *views, total_distance;
@@ -521,11 +535,11 @@ void GetTourProperties(tourdata *touri){
     thiskey->npoints = npoints_i;
     cum_dist       += thiskey->arc_dist;
     if(nextkey->set_tour_time == 0){
-      nextkey->time = global_scase.tourcoll.tour_tstart + thiskey->cum_pause_time + (global_scase.tourcoll.tour_tstop - total_pause_time - global_scase.tourcoll.tour_tstart) * (cum_dist / touri->global_dist);
+      nextkey->time = tour_tstart + thiskey->cum_pause_time + (tour_tstop - total_pause_time - tour_tstart) * (cum_dist / touri->global_dist);
     }
   }
 
-  (touri->last_frame).prev->time = global_scase.tourcoll.tour_tstop;
+  (touri->last_frame).prev->time = tour_tstop;
 
   for(thiskey = (touri->first_frame).next, j = 0; thiskey->next!=NULL; thiskey = thiskey->next, j++){
     touri->keyframe_list[j]  = thiskey;
@@ -544,7 +558,7 @@ void GetTourProperties(tourdata *touri){
 
     f1 = 0.0;
     if(global_scase.tourcoll.tour_ntimes>1)f1 = (float)j/(float)(global_scase.tourcoll.tour_ntimes - 1);
-    vtime                = global_scase.tourcoll.tour_tstart*(1.0-f1) + global_scase.tourcoll.tour_tstop*f1;
+    vtime                = tour_tstart*(1.0-f1) + tour_tstop*f1;
     tour_times[j]        = vtime;
     touri->path_times[j] = vtime;
     {
@@ -564,7 +578,7 @@ void GetTourProperties(tourdata *touri){
   }
   total_distance = tour_times[global_scase.tourcoll.tour_ntimes-1];
   for(j=0;j<global_scase.tourcoll.tour_ntimes;j++){
-    tour_times[j] = global_scase.tourcoll.tour_tstart + tour_times[j]*(global_scase.tourcoll.tour_tstop - global_scase.tourcoll.tour_tstart)/total_distance;
+    tour_times[j] = tour_tstart + tour_times[j]*(tour_tstop - tour_tstart)/total_distance;
   }
   FREEMEMORY(tour_times);
   FREEMEMORY(xyzs);
@@ -765,7 +779,7 @@ void DefaultTour(void){
 
 /* ------------------ AddFrame ------------------------ */
 
-keyframe *AddFrame(keyframe *last_frame, float time_local, float pause_time_local, float *xyz, float view[3]){
+keyframe *AddFrame(keyframe *last_frame, float time_local, float pause_time_local, float *xyz, float view[3], int set_time){
   keyframe *this_frame,*next_frame;
   float *feye, *fxyz_view;
 
@@ -791,9 +805,7 @@ keyframe *AddFrame(keyframe *last_frame, float time_local, float pause_time_loca
   memcpy(this_frame->view_smv, fxyz_view, 3*sizeof(float));
   memcpy(this_frame->xyz_fds,  xyz,       3*sizeof(float));
   this_frame->pause_time = pause_time_local;
-#ifdef pp_TOUR
-  this_frame->set_tour_time = last_frame->set_tour_time;
-#endif
+  this_frame->set_tour_time = set_time;
 
   CheckMemory;
   return this_frame;
@@ -880,6 +892,9 @@ void InitCircularTour(tourdata *touri, int nkeyframes, int option){
   rad = tour_circular_radius;
 
   thisframe=&touri->first_frame;
+  float tour_tstart, tour_tstop;
+  tour_tstart = global_scase.tourcoll.tour_tstart;
+  tour_tstop  = global_scase.tourcoll.tour_tstop;
   for(j=0;j<nkeyframes;j++){
     if(nkeyframes == 1){
       angle_local = 0.0;
@@ -903,9 +918,9 @@ void InitCircularTour(tourdata *touri, int nkeyframes, int option){
     else{
       f1 = (float)j / (float)(nkeyframes - 1);
     }
-    key_time = global_scase.tourcoll.tour_tstart*(1.0-f1) + global_scase.tourcoll.tour_tstop*f1;
+    key_time = tour_tstart*(1.0-f1) + tour_tstop*f1;
 
-    addedframe = AddFrame(thisframe, key_time, 0.0, key_xyz, key_view);
+    addedframe = AddFrame(thisframe, key_time, 0.0, key_xyz, key_view, 0);
     thisframe=addedframe;
     touri->keyframe_times[j]=key_time;
   }
@@ -1018,7 +1033,7 @@ tourdata *AddTour(char *label){
     key_xyz[2] = (global_scase.zbar0 + zbarORIG)/2.0;
     key_time = global_scase.tourcoll.tour_tstart;
     thisframe=&touri->first_frame;
-    addedframe = AddFrame(thisframe, key_time, 0.0, key_xyz, key_view);
+    addedframe = AddFrame(thisframe, key_time, 0.0, key_xyz, key_view, 0);
     touri->keyframe_times[0]=key_time;
 
     key_xyz[0] = xbarORIG + 1.0;
@@ -1026,7 +1041,7 @@ tourdata *AddTour(char *label){
     key_xyz[2] = (global_scase.zbar0 + zbarORIG)/2.0;
     key_time = global_scase.tourcoll.tour_tstop;
     thisframe=addedframe;
-    addedframe = AddFrame(thisframe, key_time, 0.0, key_xyz, key_view);
+    addedframe = AddFrame(thisframe, key_time, 0.0, key_xyz, key_view, 0);
     touri->keyframe_times[1]=key_time;
   }
   else{
