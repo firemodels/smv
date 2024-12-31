@@ -767,7 +767,7 @@ void TourCB(int var){
         GetKeyView(t_avg, thiskey, key_view);
         SMV2FDS_XYZ(key_view, key_view);
       }
-      newframe = AddFrame(selected_frame, key_time_in, 0.0, key_xyz, key_view);
+      newframe = AddFrame(selected_frame, key_time_in, 0.0, key_xyz, key_view, 0);
       CreateTourPaths();
       NewSelect(newframe);
       GLUISetTourKeyframe();

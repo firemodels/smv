@@ -580,7 +580,7 @@ EXTERNCPP void UpdateSmokeAlphas(void);
 
 //*** IOtour.c headers
 
-EXTERNCPP keyframe *AddFrame(keyframe *framei, float time, float pause_time, float *xyz, float view[3]);
+EXTERNCPP keyframe *AddFrame(keyframe *framei, float time, float pause_time, float *xyz, float view[3], int set_time);
 EXTERNCPP tourdata *AddTour(char *label);
 EXTERNCPP void CreateTourPaths(void);
 EXTERNCPP keyframe *DeleteFrame(keyframe *step);

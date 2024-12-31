@@ -236,8 +236,8 @@ void DrawTours(void){
           char label[128];
 #ifdef _DEBUG
           if(showdebugtour == 1){
-            sprintf(label, "t=%8.2f n=%i n/ad=%8.2f ad=%8.2f ld=%8.2f",
-              framej->time, framej->npoints, (float)framej->npoints / framej->arc_dist, framej->arc_dist, framej->line_dist);
+            sprintf(label, "t=%8.2f/%i n=%i n/ad=%8.2f ad=%8.2f ld=%8.2f",
+              framej->time, framej->set_tour_time, framej->npoints, (float)framej->npoints / framej->arc_dist, framej->arc_dist, framej->line_dist);
             if(j==0)strcat(label, "(ad==arc distance, ld==line distance)");
           }
           else{
@@ -779,7 +779,7 @@ void DefaultTour(void){
 
 /* ------------------ AddFrame ------------------------ */
 
-keyframe *AddFrame(keyframe *last_frame, float time_local, float pause_time_local, float *xyz, float view[3]){
+keyframe *AddFrame(keyframe *last_frame, float time_local, float pause_time_local, float *xyz, float view[3], int set_time){
   keyframe *this_frame,*next_frame;
   float *feye, *fxyz_view;
 
@@ -805,7 +805,7 @@ keyframe *AddFrame(keyframe *last_frame, float time_local, float pause_time_loca
   memcpy(this_frame->view_smv, fxyz_view, 3*sizeof(float));
   memcpy(this_frame->xyz_fds,  xyz,       3*sizeof(float));
   this_frame->pause_time = pause_time_local;
-  this_frame->set_tour_time = last_frame->set_tour_time;
+  this_frame->set_tour_time = set_time;
 
   CheckMemory;
   return this_frame;
@@ -919,7 +919,7 @@ void InitCircularTour(tourdata *touri, int nkeyframes, int option){
     }
     key_time = tour_tstart*(1.0-f1) + tour_tstop*f1;
 
-    addedframe = AddFrame(thisframe, key_time, 0.0, key_xyz, key_view);
+    addedframe = AddFrame(thisframe, key_time, 0.0, key_xyz, key_view, 0);
     thisframe=addedframe;
     touri->keyframe_times[j]=key_time;
   }
@@ -1032,7 +1032,7 @@ tourdata *AddTour(char *label){
     key_xyz[2] = (global_scase.zbar0 + zbarORIG)/2.0;
     key_time = global_scase.tourcoll.tour_tstart;
     thisframe=&touri->first_frame;
-    addedframe = AddFrame(thisframe, key_time, 0.0, key_xyz, key_view);
+    addedframe = AddFrame(thisframe, key_time, 0.0, key_xyz, key_view, 0);
     touri->keyframe_times[0]=key_time;
 
     key_xyz[0] = xbarORIG + 1.0;
@@ -1040,7 +1040,7 @@ tourdata *AddTour(char *label){
     key_xyz[2] = (global_scase.zbar0 + zbarORIG)/2.0;
     key_time = global_scase.tourcoll.tour_tstop;
     thisframe=addedframe;
-    addedframe = AddFrame(thisframe, key_time, 0.0, key_xyz, key_view);
+    addedframe = AddFrame(thisframe, key_time, 0.0, key_xyz, key_view, 0);
     touri->keyframe_times[1]=key_time;
   }
   else{

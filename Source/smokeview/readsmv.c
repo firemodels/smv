@@ -15263,6 +15263,11 @@ int ReadIni2(const char *inifile, int localfile){
         sscanf(buffer, "%i %i %f", &viewtourfrompath, &tour_snap, &tour_snap_time);
         continue;
       }
+      if(MatchINI(buffer, "TOURCONSTANTVEL") == 1){
+        if(fgets(buffer, 255, stream) == NULL)break;
+        sscanf(buffer, "%i", &tour_constant_velocity);
+        continue;
+      }
       if(MatchINI(buffer, "VIEWALLTOURS") == 1){
         if(fgets(buffer, 255, stream) == NULL)break;
         sscanf(buffer, "%i", &viewalltours);
@@ -15870,17 +15875,20 @@ int ReadIni2(const char *inifile, int localfile){
               if(NewMemory((void **)&touri->path_times, global_scase.tourcoll.tour_ntimes*sizeof(float)) == 0)return 2;
               thisframe = &touri->first_frame;
               for(j = 0; j < nkeyframes; j++){
+                int key_set_time;
+
+                key_set_time = 0;
                 key_pause_time = 0.0;
                 key_view[0] = 0.0;
                 key_view[1] = 0.0;
                 key_view[2] = 0.0;
                 fgets(buffer, 255, stream);
-                sscanf(buffer, "%f %f %f %f %f",
-                  &key_time, &key_pause_time, key_xyz, key_xyz + 1, key_xyz + 2);
+                sscanf(buffer, "%f %f %f %f %f %i",
+                  &key_time, &key_pause_time, key_xyz, key_xyz + 1, key_xyz + 2, &key_set_time);
 
                 fgets(buffer, 255, stream);
                 sscanf(buffer, "%f %f %f", key_view, key_view + 1, key_view + 2);
-                addedframe = AddFrame(thisframe, key_time, key_pause_time, key_xyz, key_view);
+                addedframe = AddFrame(thisframe, key_time, key_pause_time, key_xyz, key_view, key_set_time);
                 thisframe = addedframe;
                 touri->keyframe_times[j] = key_time;
               }
@@ -16021,7 +16029,7 @@ int ReadIni2(const char *inifile, int localfile){
                 }
                 if(zzoom<0.25)zzoom = 0.25;
                 if(zzoom>4.00)zzoom = 4.0;
-                addedframe = AddFrame(thisframe, key_time, key_pause_time, key_xyz, key_view);
+                addedframe = AddFrame(thisframe, key_time, key_pause_time, key_xyz, key_view, 0);
                 thisframe = addedframe;
                 touri->keyframe_times[j] = key_time;
               }
@@ -16513,7 +16521,7 @@ void WriteIniLocal(FILE *fileout){
 
         framei = framei->next;
         SMV2FDS_XYZ(xyz_smv, framei->xyz_smv);
-        fprintf(fileout, "    %f %f %f %f %f\n", framei->time, framei->pause_time, xyz_smv[0], xyz_smv[1], xyz_smv[2]);
+        fprintf(fileout, "    %f %f %f %f %f %i\n", framei->time, framei->pause_time, xyz_smv[0], xyz_smv[1], xyz_smv[2], framei->set_tour_time);
 
         SMV2FDS_XYZ(view_smv, framei->view_smv);
         fprintf(fileout, "    %f %f %f\n", view_smv[0], view_smv[1], view_smv[2]);
@@ -17510,6 +17518,8 @@ void WriteIni(int flag,char *filename){
 
 
   }
+  fprintf(fileout, "TOURCONSTANTVEL\n");
+  fprintf(fileout, " %i\n", tour_constant_velocity);
   fprintf(fileout, "VIEWALLTOURS\n");
   fprintf(fileout, " %i\n", viewalltours);
   fprintf(fileout, "VIEWTIMES\n");
