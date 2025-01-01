@@ -337,6 +337,7 @@ void InitKeywords(void){
 
 // controlling the scene
   InitKeyword("EXIT",                SCRIPT_EXIT, 0);                // documented
+  InitKeyword("NOEXIT",              SCRIPT_NOEXIT, 0);
   InitKeyword("GSLICEORIEN",         SCRIPT_GSLICEORIEN, 1);         // documented
   InitKeyword("GSLICEPOS",           SCRIPT_GSLICEPOS, 1);           // documented
   InitKeyword("GSLICEVIEW",          SCRIPT_GSLICEVIEW, 1);          // documented
@@ -1082,7 +1083,8 @@ int CompileScript(char *scriptfile){
         SETcval2;
         SETfval;
         break;
-
+// NOEXIT
+      case SCRIPT_NOEXIT:
 // EXIT
       case SCRIPT_EXIT:
 
@@ -4170,6 +4172,9 @@ int RunScriptCommand(scriptdata *script_command){
       break;
     case SCRIPT_UNLOADTOUR:
       TourMenu(MENU_TOUR_MANUAL);
+      break;
+    case SCRIPT_NOEXIT:
+      noexit = 1;
       break;
     case SCRIPT_EXIT:
 #ifndef _DEBUG
