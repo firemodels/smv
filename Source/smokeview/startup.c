@@ -1184,30 +1184,13 @@ void AutoLoadSmoke3D(int smoke3d_type){
 
     //*** autoload vector slice files
 
-    int lastslice=0;
-    for(i = global_scase.slicecoll.nvsliceinfo-1; i>=0; i--){
-      vslicedata *vslicei;
-
-      vslicei = global_scase.slicecoll.vsliceinfo+i;
-      if(vslicei->autoload==1){
-        lastslice = i;
-        break;
-      }
-    }
     for(i = 0; i<global_scase.slicecoll.nvsliceinfo; i++){
       vslicedata *vslicei;
 
       vslicei = global_scase.slicecoll.vsliceinfo + i;
-      if(vslicei->autoload==0&&vslicei->loaded==1){
-        ReadVSlice(i, ALL_FRAMES, NULL, UNLOAD, DEFER_SLICECOLOR, &errorcode);
-      }
-      if(vslicei->autoload==1){
-        if(lastslice==i){
-          ReadVSlice(i,ALL_FRAMES, NULL, LOAD, SET_SLICECOLOR, &errorcode);
-        }
-        else{
-          ReadVSlice(i,ALL_FRAMES, NULL, LOAD, DEFER_SLICECOLOR, &errorcode);
-        }
+      if(vslicei->autoload == 1){
+        void LoadVSliceMenu(int value);
+        LoadVSliceMenu(i);
       }
     }
 
@@ -1217,14 +1200,16 @@ void AutoLoadSmoke3D(int smoke3d_type){
 
     for(i = 0;i<global_scase.slicecoll.nmultisliceinfo; i++){
       multislicedata *mslicei;
+      slicedata *slicei;
 
-      mslicei = global_scase.slicecoll.multisliceinfo + i;
+      mslicei = global_scase.slicecoll.multisliceinfo + i; 
       if(mslicei->autoload == 0)continue;
+      slicei = global_scase.slicecoll.sliceinfo + mslicei->islices[0];
+      if(slicei->vloaded == 1)continue;
       void LoadMultiSliceMenu(int var);
       LoadMultiSliceMenu(i);
       void ShowMultiSliceMenu(int var);
       ShowMultiSliceMenu(i);
-   //   break;
     }
 
 // auto load 3D smoke quantities

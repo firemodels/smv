@@ -13383,6 +13383,12 @@ int ReadIni2(const char *inifile, int localfile){
 
         fgets(buffer, 255, stream);
         sscanf(buffer, "%i", &n3dsmokes);
+        for(i=0;i<global_scase.slicecoll.nvsliceinfo;i++){
+          vslicedata *vslicei;
+
+          vslicei = global_scase.slicecoll.vsliceinfo + i;
+          vslicei->autoload = 0;
+        }
         for(i = 0; i<n3dsmokes; i++){
           fgets(buffer, 255, stream);
           sscanf(buffer, "%i", &seq_id);
