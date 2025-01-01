@@ -1119,7 +1119,8 @@ void AutoLoadSmoke3D(int smoke3d_type){
     int i;
     int errorcode;
 
-//    GLUIShowAlert();
+    //*** autoload PLOT3D files
+
     for(i = 0; i<global_scase.nplot3dinfo; i++){
       plot3ddata *plot3di;
 
@@ -1146,6 +1147,9 @@ void AutoLoadSmoke3D(int smoke3d_type){
         ReadPlot3D(plot3di->file,i,LOAD,&errorcode);
       }
     }
+
+    //*** autoload particle files
+
     npartframes_max=GetMinPartFrames(PARTFILE_RELOADALL);
     for(i=0;i<global_scase.npartinfo;i++){
       partdata *parti;
@@ -1161,6 +1165,9 @@ void AutoLoadSmoke3D(int smoke3d_type){
       if(parti->autoload==0&&parti->loaded==1)ReadPart(parti->file, i, UNLOAD, &errorcode);
       if(parti->autoload==1)ReadPart(parti->file, i, LOAD, &errorcode);
     }
+
+    //*** autoload isosurface files
+
     update_readiso_geom_wrapup = UPDATE_ISO_START_ALL;
     CancelUpdateTriangles();
     for(i = 0; i<global_scase.nisoinfo; i++){
@@ -1174,6 +1181,8 @@ void AutoLoadSmoke3D(int smoke3d_type){
     }
     if(update_readiso_geom_wrapup == UPDATE_ISO_ALL_NOW)ReadIsoGeomWrapup(BACKGROUND);
     update_readiso_geom_wrapup = UPDATE_ISO_OFF;
+
+    //*** autoload vector slice files
 
     int lastslice=0;
     for(i = global_scase.slicecoll.nvsliceinfo-1; i>=0; i--){
@@ -1201,31 +1210,21 @@ void AutoLoadSmoke3D(int smoke3d_type){
         }
       }
     }
+
+    //*** autoload slice files
+
     // note:  only slices that are NOT a part of a vector slice will be loaded here
-    {
-      int last_slice;
 
-      last_slice = global_scase.slicecoll.nsliceinfo - 1;
-      for(i = global_scase.slicecoll.nsliceinfo-1; i >=0; i--){
-        slicedata *slicei;
+    for(i = 0;i<global_scase.slicecoll.nmultisliceinfo; i++){
+      multislicedata *mslicei;
 
-        slicei = global_scase.slicecoll.sliceinfo + i;
-        if((slicei->autoload == 0 && slicei->loaded == 1)||(slicei->autoload == 1 && slicei->loaded == 0)){
-          last_slice = i;
-          break;
-        }
-      }
-      for(i = 0; i < global_scase.slicecoll.nsliceinfo; i++){
-        slicedata *slicei;
-        int set_slicecolor;
-
-        slicei = global_scase.slicecoll.sliceinfo + i;
-        set_slicecolor = DEFER_SLICECOLOR;
-        if(i == last_slice)set_slicecolor = SET_SLICECOLOR;
-        if(slicei->autoload == 0 && slicei->loaded == 1)ReadSlice(slicei->file, i, ALL_FRAMES, NULL, UNLOAD, set_slicecolor,&errorcode);
-        if(slicei->autoload == 1 && slicei->loaded == 0){
-        }
-      }
+      mslicei = global_scase.slicecoll.multisliceinfo + i;
+      if(mslicei->autoload == 0)continue;
+      void LoadMultiSliceMenu(int var);
+      LoadMultiSliceMenu(i);
+      void ShowMultiSliceMenu(int var);
+      ShowMultiSliceMenu(i);
+   //   break;
     }
 
 // auto load 3D smoke quantities
@@ -1235,6 +1234,8 @@ void AutoLoadSmoke3D(int smoke3d_type){
     AutoLoadSmoke3D(TEMP_index);
     AutoLoadSmoke3D(CO2_index);
 
+//*** autoload boundary files
+
     for(i=0;i<global_scase.npatchinfo;i++){
       patchdata *patchi;
 
@@ -1242,12 +1243,15 @@ void AutoLoadSmoke3D(int smoke3d_type){
       if(patchi->autoload==0&&patchi->loaded==1)ReadBoundary(i,UNLOAD,&errorcode);
       if(patchi->autoload==1)ReadBoundary(i,LOAD,&errorcode);
     }
+
+//*** wrapup
+
     force_redisplay=1;
     UpdateFrameNumber(0);
     updatemenu=1;
     update_load_files=0;
     GLUIHideAlert();
-    TrainerViewMenu(trainerview);
+   // TrainerViewMenu(trainerview); // this breaks auto slice loading
   }
 
   /* ------------------ InitTextureDir ------------------------ */
