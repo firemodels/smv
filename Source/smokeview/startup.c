@@ -1072,7 +1072,48 @@ void InitOpenGL(int option){
     }
   }
 
- /* ------------------ LoadFiles ------------------------ */
+  /* ------------------ AutoLoadSmoke3D ------------------------ */
+
+void AutoLoadSmoke3D(int smoke3d_type){
+  int i, errorcode;
+  int nauto_loaded = 0;
+
+  if(smoke3d_type < 0)return;
+  for(i = 0;i < global_scase.smoke3dcoll.nsmoke3dinfo;i++){
+    smoke3ddata *smoke3di;
+
+    smoke3di = global_scase.smoke3dcoll.smoke3dinfo + i;
+    if(smoke3di->autoload == 0 && smoke3di->loaded == 1)ReadSmoke3D(ALL_SMOKE_FRAMES, i, UNLOAD, FIRST_TIME, &errorcode);
+  }
+  for(i = 0;i < global_scase.smoke3dcoll.nsmoke3dinfo;i++){
+    smoke3ddata *smoke3di;
+
+    smoke3di = global_scase.smoke3dcoll.smoke3dinfo + i;
+    if(smoke3di->autoload == 1 && smoke3di->type == smoke3d_type){
+      smoke3di->finalize = 0;
+      nauto_loaded++;
+    }
+  }
+  if(nauto_loaded > 0){
+    for(i = global_scase.smoke3dcoll.nsmoke3dinfo - 1;i >= 0;i--){
+      smoke3ddata *smoke3di;
+
+      smoke3di = global_scase.smoke3dcoll.smoke3dinfo + i;
+      if(smoke3di->autoload == 1 && smoke3di->type == smoke3d_type){
+        smoke3di->finalize = 1;
+        break;
+      }
+    }
+    for(i = 0;i < global_scase.smoke3dcoll.nsmoke3dinfo;i++){
+      smoke3ddata *smoke3di;
+
+      smoke3di = global_scase.smoke3dcoll.smoke3dinfo + i;
+      if(smoke3di->autoload == 1 && smoke3di->type == smoke3d_type)ReadSmoke3D(ALL_SMOKE_FRAMES, i, LOAD, FIRST_TIME, &errorcode);
+    }
+  }
+}
+  
+  /* ------------------ LoadFiles ------------------------ */
 
   void LoadFiles(void){
     int i;
@@ -1186,13 +1227,14 @@ void InitOpenGL(int option){
         }
       }
     }
-    for(i=0;i<global_scase.smoke3dcoll.nsmoke3dinfo;i++){
-      smoke3ddata *smoke3di;
 
-      smoke3di = global_scase.smoke3dcoll.smoke3dinfo + i;
-      if(smoke3di->autoload==0&&smoke3di->loaded==1)ReadSmoke3D(ALL_SMOKE_FRAMES, i, UNLOAD, FIRST_TIME, &errorcode);
-      if(smoke3di->autoload==1)ReadSmoke3D(ALL_SMOKE_FRAMES, i, LOAD, FIRST_TIME, &errorcode);
-    }
+// auto load 3D smoke quantities
+
+    AutoLoadSmoke3D(SOOT_index);
+    AutoLoadSmoke3D(HRRPUV_index);
+    AutoLoadSmoke3D(TEMP_index);
+    AutoLoadSmoke3D(CO2_index);
+
     for(i=0;i<global_scase.npatchinfo;i++){
       patchdata *patchi;
 
