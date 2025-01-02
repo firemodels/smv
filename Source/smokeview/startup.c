@@ -1150,20 +1150,19 @@ void AutoLoadSmoke3D(int smoke3d_type){
 
     //*** autoload particle files
 
-    npartframes_max=GetMinPartFrames(PARTFILE_RELOADALL);
+    int autoload_parts=0;
+
     for(i=0;i<global_scase.npartinfo;i++){
       partdata *parti;
 
       parti = global_scase.partinfo + i;
-      if(parti->autoload==0&&parti->loaded==1)ReadPart(parti->file, i, UNLOAD, &errorcode);
-      if(parti->autoload==1)ReadPart(parti->file, i, UNLOAD, &errorcode);
+      if(parti->autoload==1){
+        autoload_parts = 1;
+        break;
+      }
     }
-    for(i=0;i<global_scase.npartinfo;i++){
-      partdata *parti;
-
-      parti = global_scase.partinfo + i;
-      if(parti->autoload==0&&parti->loaded==1)ReadPart(parti->file, i, UNLOAD, &errorcode);
-      if(parti->autoload==1)ReadPart(parti->file, i, LOAD, &errorcode);
+    if(autoload_parts == 1){
+      LoadParticleMenu(PARTFILE_LOADALL);
     }
 
     //*** autoload isosurface files

@@ -13454,6 +13454,13 @@ int ReadIni2(const char *inifile, int localfile){
 
       fgets(buffer, 255, stream);
       sscanf(buffer, "%i", &n3dsmokes);
+
+      for(i = 0; i < global_scase.npartinfo; i++){
+        partdata *parti;
+
+        parti = global_scase.partinfo + i;
+        parti->autoload = 0;
+      }
       for(i = 0; i<n3dsmokes; i++){
         fgets(buffer, 255, stream);
         sscanf(buffer, "%i", &seq_id);
