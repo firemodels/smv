@@ -2051,16 +2051,20 @@ void GetLabels(char *buffer, char **label1, char **label2){
   if(label1 != NULL)*label1 = tok1;
 }
 
-/* ------------------ GetPropID ------------------------ */
-
-propdata *GetPropID(char *prop_id){
+/// @brief Given a case, find the first instance of propdata that has the given
+/// prop_id.
+/// @param scase The case
+/// @param prop_id The id to search for
+/// @return A pointer to the first instance of propdata with the matching id.
+/// Returns NULL if there are no matching props.
+propdata *GetPropID(smv_case *scase, char *prop_id){
   int i;
 
-  if(global_scase.propcoll.propinfo == NULL || prop_id == NULL || strlen(prop_id) == 0)return NULL;
-  for(i = 0; i < global_scase.propcoll.npropinfo; i++){
+  if(scase->propcoll.propinfo == NULL || prop_id == NULL || strlen(prop_id) == 0)return NULL;
+  for(i = 0; i < scase->propcoll.npropinfo; i++){
     propdata *propi;
 
-    propi = global_scase.propcoll.propinfo + i;
+    propi = scase->propcoll.propinfo + i;
 
     if(strcmp(propi->label, prop_id) == 0)return propi;
   }
@@ -2239,7 +2243,7 @@ void ParseDevicekeyword(BFILE *stream, devicedata *devicei){
   devicei->is_beam = is_beam;
 
   GetLabels(buffer,&prop_id,NULL);
-  devicei->prop=GetPropID(prop_id);
+  devicei->prop=GetPropID(&global_scase, prop_id);
   if(prop_id!=NULL&&devicei->prop!=NULL&&devicei->prop->smv_object!=NULL){
     devicei->object=devicei->prop->smv_object;
   }
@@ -2367,7 +2371,7 @@ void ParseDevicekeyword2(FILE *stream, devicedata *devicei){
   devicei->is_beam = is_beam;
 
   GetLabels(buffer, &prop_id, NULL);
-  devicei->prop = GetPropID(prop_id);
+  devicei->prop = GetPropID(&global_scase, prop_id);
   if(prop_id!=NULL&&devicei->prop!=NULL&&devicei->prop->smv_object!=NULL){
     devicei->object = devicei->prop->smv_object;
   }
@@ -10079,7 +10083,7 @@ int ReadSMV_Parse(bufferstreamdata *stream){
       FGETS(buffer,255,stream);
 
       GetLabels(buffer,&device_ptr,&prop_id);
-      partclassi->prop=GetPropID(prop_id);
+      partclassi->prop=GetPropID(&global_scase, prop_id);
       UpdatePartClassDepend(partclassi);
 
       global_scase.npartclassinfo++;
