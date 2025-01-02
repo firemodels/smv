@@ -1221,6 +1221,7 @@ void *SortAllPartTags(void *arg){
   }
   PRINT_TIMER(timer_sortparttags, "SortPartTags");
   THREAD_EXIT(sorttags_threads);
+  sorting_tags = 0;
 }
 
 /* ------------------ GetPartData ------------------------ */
@@ -1497,7 +1498,7 @@ partpropdata *GetPartProp(char *label){
 /* ------------------ SetStreakShow ------------------------ */
 
 void SetStreakShow(int show){
-  if(show == 1){
+  if(show == 1 && sorting_tags==1){
     THREADcontrol(sorttags_threads, THREAD_JOIN);
   }
   streak5show = show;
@@ -2162,6 +2163,7 @@ void FinalizePartLoad(partdata *parti){
     }
   }
   visParticles = 1;
+  sorting_tags = 1;
   THREADrun(sorttags_threads);
   if(runscript == 1 || streak5show == 1){
     THREADcontrol(sorttags_threads, THREAD_JOIN);

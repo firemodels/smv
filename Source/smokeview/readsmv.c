@@ -13391,6 +13391,12 @@ int ReadIni2(const char *inifile, int localfile){
 
         fgets(buffer, 255, stream);
         sscanf(buffer, "%i", &n3dsmokes);
+        for(i=0;i<global_scase.slicecoll.nvsliceinfo;i++){
+          vslicedata *vslicei;
+
+          vslicei = global_scase.slicecoll.vsliceinfo + i;
+          vslicei->autoload = 0;
+        }
         for(i = 0; i<n3dsmokes; i++){
           fgets(buffer, 255, stream);
           sscanf(buffer, "%i", &seq_id);
@@ -13419,6 +13425,13 @@ int ReadIni2(const char *inifile, int localfile){
 
       fgets(buffer, 255, stream);
       sscanf(buffer, "%i", &n3dsmokes);
+      for(i = 0;i < global_scase.slicecoll.nmultisliceinfo;i++){
+        multislicedata *mslicei;
+
+        mslicei = global_scase.slicecoll.multisliceinfo + i;
+        mslicei->autoload = 0;
+        mslicei->loadable = 0;
+      }
       for(i = 0; i<n3dsmokes; i++){
 
         fgets(buffer, 255, stream);
@@ -13441,6 +13454,13 @@ int ReadIni2(const char *inifile, int localfile){
 
       fgets(buffer, 255, stream);
       sscanf(buffer, "%i", &n3dsmokes);
+
+      for(i = 0; i < global_scase.npartinfo; i++){
+        partdata *parti;
+
+        parti = global_scase.partinfo + i;
+        parti->autoload = 0;
+      }
       for(i = 0; i<n3dsmokes; i++){
         fgets(buffer, 255, stream);
         sscanf(buffer, "%i", &seq_id);

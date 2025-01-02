@@ -77,6 +77,7 @@ SVEXTERN threaderdata SVDECL(*partload_threads,         NULL);
 //*** sorttags
 SVEXTERN int SVDECL(n_sorttags_threads, 1), SVDECL(use_sorttags_threads, 1);
 SVEXTERN threaderdata SVDECL(*sorttags_threads, NULL);
+SVEXTERN int SVDECL(sorting_tags, 0);
 
 //*** patchbounds
 SVEXTERN int SVDECL(n_patchbound_threads, 1), SVDECL(use_patchbound_threads, 1);

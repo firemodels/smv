@@ -1072,13 +1072,55 @@ void InitOpenGL(int option){
     }
   }
 
- /* ------------------ LoadFiles ------------------------ */
+  /* ------------------ AutoLoadSmoke3D ------------------------ */
+
+void AutoLoadSmoke3D(int smoke3d_type){
+  int i, errorcode;
+  int nauto_loaded = 0;
+
+  if(smoke3d_type < 0)return;
+  for(i = 0;i < global_scase.smoke3dcoll.nsmoke3dinfo;i++){
+    smoke3ddata *smoke3di;
+
+    smoke3di = global_scase.smoke3dcoll.smoke3dinfo + i;
+    if(smoke3di->autoload == 0 && smoke3di->loaded == 1)ReadSmoke3D(ALL_SMOKE_FRAMES, i, UNLOAD, FIRST_TIME, &errorcode);
+  }
+  for(i = 0;i < global_scase.smoke3dcoll.nsmoke3dinfo;i++){
+    smoke3ddata *smoke3di;
+
+    smoke3di = global_scase.smoke3dcoll.smoke3dinfo + i;
+    if(smoke3di->autoload == 1 && smoke3di->type == smoke3d_type){
+      smoke3di->finalize = 0;
+      nauto_loaded++;
+    }
+  }
+  if(nauto_loaded > 0){
+    for(i = global_scase.smoke3dcoll.nsmoke3dinfo - 1;i >= 0;i--){
+      smoke3ddata *smoke3di;
+
+      smoke3di = global_scase.smoke3dcoll.smoke3dinfo + i;
+      if(smoke3di->autoload == 1 && smoke3di->type == smoke3d_type){
+        smoke3di->finalize = 1;
+        break;
+      }
+    }
+    for(i = 0;i < global_scase.smoke3dcoll.nsmoke3dinfo;i++){
+      smoke3ddata *smoke3di;
+
+      smoke3di = global_scase.smoke3dcoll.smoke3dinfo + i;
+      if(smoke3di->autoload == 1 && smoke3di->type == smoke3d_type)ReadSmoke3D(ALL_SMOKE_FRAMES, i, LOAD, FIRST_TIME, &errorcode);
+    }
+  }
+}
+  
+  /* ------------------ LoadFiles ------------------------ */
 
   void LoadFiles(void){
     int i;
     int errorcode;
 
-//    GLUIShowAlert();
+    //*** autoload PLOT3D files
+
     for(i = 0; i<global_scase.nplot3dinfo; i++){
       plot3ddata *plot3di;
 
@@ -1105,21 +1147,26 @@ void InitOpenGL(int option){
         ReadPlot3D(plot3di->file,i,LOAD,&errorcode);
       }
     }
-    npartframes_max=GetMinPartFrames(PARTFILE_RELOADALL);
+
+    //*** autoload particle files
+
+    int autoload_parts=0;
+
     for(i=0;i<global_scase.npartinfo;i++){
       partdata *parti;
 
       parti = global_scase.partinfo + i;
-      if(parti->autoload==0&&parti->loaded==1)ReadPart(parti->file, i, UNLOAD, &errorcode);
-      if(parti->autoload==1)ReadPart(parti->file, i, UNLOAD, &errorcode);
+      if(parti->autoload==1){
+        autoload_parts = 1;
+        break;
+      }
     }
-    for(i=0;i<global_scase.npartinfo;i++){
-      partdata *parti;
+    if(autoload_parts == 1){
+      LoadParticleMenu(PARTFILE_LOADALL);
+    }
 
-      parti = global_scase.partinfo + i;
-      if(parti->autoload==0&&parti->loaded==1)ReadPart(parti->file, i, UNLOAD, &errorcode);
-      if(parti->autoload==1)ReadPart(parti->file, i, LOAD, &errorcode);
-    }
+    //*** autoload isosurface files
+
     update_readiso_geom_wrapup = UPDATE_ISO_START_ALL;
     CancelUpdateTriangles();
     for(i = 0; i<global_scase.nisoinfo; i++){
@@ -1134,65 +1181,45 @@ void InitOpenGL(int option){
     if(update_readiso_geom_wrapup == UPDATE_ISO_ALL_NOW)ReadIsoGeomWrapup(BACKGROUND);
     update_readiso_geom_wrapup = UPDATE_ISO_OFF;
 
-    int lastslice=0;
-    for(i = global_scase.slicecoll.nvsliceinfo-1; i>=0; i--){
-      vslicedata *vslicei;
+    //*** autoload vector slice files
 
-      vslicei = global_scase.slicecoll.vsliceinfo+i;
-      if(vslicei->autoload==1){
-        lastslice = i;
-        break;
-      }
-    }
     for(i = 0; i<global_scase.slicecoll.nvsliceinfo; i++){
       vslicedata *vslicei;
 
       vslicei = global_scase.slicecoll.vsliceinfo + i;
-      if(vslicei->autoload==0&&vslicei->loaded==1){
-        ReadVSlice(i, ALL_FRAMES, NULL, UNLOAD, DEFER_SLICECOLOR, &errorcode);
-      }
-      if(vslicei->autoload==1){
-        if(lastslice==i){
-          ReadVSlice(i,ALL_FRAMES, NULL, LOAD, SET_SLICECOLOR, &errorcode);
-        }
-        else{
-          ReadVSlice(i,ALL_FRAMES, NULL, LOAD, DEFER_SLICECOLOR, &errorcode);
-        }
+      if(vslicei->autoload == 1){
+        void LoadVSliceMenu(int value);
+        LoadVSliceMenu(i);
       }
     }
+
+    //*** autoload slice files
+
     // note:  only slices that are NOT a part of a vector slice will be loaded here
-    {
-      int last_slice;
 
-      last_slice = global_scase.slicecoll.nsliceinfo - 1;
-      for(i = global_scase.slicecoll.nsliceinfo-1; i >=0; i--){
-        slicedata *slicei;
+    for(i = 0;i<global_scase.slicecoll.nmultisliceinfo; i++){
+      multislicedata *mslicei;
+      slicedata *slicei;
 
-        slicei = global_scase.slicecoll.sliceinfo + i;
-        if((slicei->autoload == 0 && slicei->loaded == 1)||(slicei->autoload == 1 && slicei->loaded == 0)){
-          last_slice = i;
-          break;
-        }
-      }
-      for(i = 0; i < global_scase.slicecoll.nsliceinfo; i++){
-        slicedata *slicei;
-        int set_slicecolor;
-
-        slicei = global_scase.slicecoll.sliceinfo + i;
-        set_slicecolor = DEFER_SLICECOLOR;
-        if(i == last_slice)set_slicecolor = SET_SLICECOLOR;
-        if(slicei->autoload == 0 && slicei->loaded == 1)ReadSlice(slicei->file, i, ALL_FRAMES, NULL, UNLOAD, set_slicecolor,&errorcode);
-        if(slicei->autoload == 1 && slicei->loaded == 0){
-        }
-      }
+      mslicei = global_scase.slicecoll.multisliceinfo + i; 
+      if(mslicei->autoload == 0)continue;
+      slicei = global_scase.slicecoll.sliceinfo + mslicei->islices[0];
+      if(slicei->vloaded == 1)continue;
+      void LoadMultiSliceMenu(int var);
+      LoadMultiSliceMenu(i);
+      void ShowMultiSliceMenu(int var);
+      ShowMultiSliceMenu(i);
     }
-    for(i=0;i<global_scase.smoke3dcoll.nsmoke3dinfo;i++){
-      smoke3ddata *smoke3di;
 
-      smoke3di = global_scase.smoke3dcoll.smoke3dinfo + i;
-      if(smoke3di->autoload==0&&smoke3di->loaded==1)ReadSmoke3D(ALL_SMOKE_FRAMES, i, UNLOAD, FIRST_TIME, &errorcode);
-      if(smoke3di->autoload==1)ReadSmoke3D(ALL_SMOKE_FRAMES, i, LOAD, FIRST_TIME, &errorcode);
-    }
+// auto load 3D smoke quantities
+
+    AutoLoadSmoke3D(SOOT_index);
+    AutoLoadSmoke3D(HRRPUV_index);
+    AutoLoadSmoke3D(TEMP_index);
+    AutoLoadSmoke3D(CO2_index);
+
+//*** autoload boundary files
+
     for(i=0;i<global_scase.npatchinfo;i++){
       patchdata *patchi;
 
@@ -1200,12 +1227,15 @@ void InitOpenGL(int option){
       if(patchi->autoload==0&&patchi->loaded==1)ReadBoundary(i,UNLOAD,&errorcode);
       if(patchi->autoload==1)ReadBoundary(i,LOAD,&errorcode);
     }
+
+//*** wrapup
+
     force_redisplay=1;
     UpdateFrameNumber(0);
     updatemenu=1;
     update_load_files=0;
     GLUIHideAlert();
-    TrainerViewMenu(trainerview);
+   // TrainerViewMenu(trainerview); // this breaks auto slice loading
   }
 
   /* ------------------ InitTextureDir ------------------------ */
