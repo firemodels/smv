@@ -3210,22 +3210,27 @@ dialog box or by clicking and dragging with the mouse.}
  \label{figTOUREXAMPLE}
 \end{figure}
 
-The touring option allows one to specify paths or tours through a
-Smokeview scene.  One may then view a scene from the vantage point of an
-observer moving along one of these paths. Smokeview creates a tour surrounding
+The touring option allows one to specify a path or tour through a
+Smokeview scene.  One may then view the scene from the vantage point of an
+observer moving along this path. Smokeview creates a tour surrounding
 the scene by default.  This tour is named {\em Circular}.
 An example for the townhouse case is illustrated
 in Fig. \ref{figTOUREXAMPLE}.
-The user may create a new tour (or modify an existing one) using the Tour
+The user may create a new tour or modify an existing tour using the Tour
 dialog box illustrated in Fig. \ref{figTOUR}. The user creates a tour by
-defining two or more keyframes. Each keyframe defines a position, view direction and pause time.
+defining two or more keyframes. Each keyframe defines a 
+position, view direction, pause time and optionally a time.
+By default, movement along a tour path occurs at a constant rate or velocity. 
+In this case, keyframe arrival times are calculated by smokeview.  You may also specify
+arrival times at any keyframe (overriding the constant velocity assumption) 
+by selecting the {\em Set time}\ checkbox.
 The default view direction is towards the position (0.0,0.0,0.0) or lower front left of the scene and the default pause time is 0.0~s.
 Smokeview creates a smooth
 path through these positions using piecewise cubic Hermite polynomials.
 
 \begin{figure}[bph]
 \begin{center}
-\includegraphics[width=2.569444in]{\SMVfigdir/figTOUR}
+\includegraphics[width=4.41111in]{\SMVfigdir/figTOUR}
 \end{center}
 \caption[Touring dialog box.]{The Touring dialog
 box may be used to select tours or keyframes, change the
@@ -3244,21 +3249,17 @@ goes through the middle of the Smokeview scene starting at the
 front left and finishing at the back right.
 A tour may be modified by selecting the {\em Edit Tour}\ checkbox.
 Tour characteristics such as keyframe positions and view directions at those positions
-are saved in the configuration file, {\tt casename.ini}.
+are saved in the configuration file, {\tt casenamea .ini}.
 
-The {\em View From Tour Path}\ and  {\em
-View From Selected Keyframe}\ checkboxes are used to control how one observes the
+The {\em View From Tour Path} checkbox is used to control how one observes the
 scene using a Tour.  If {\em View From Tour Path}\ is checked then one moves through the
-scene along the currently specified tour.  If {\em
-View From Selected Keyframe}\ is checked then one sees the scene from the point of view of the
-currently selected keyframe.  This allows one to observe how
-the position and view direction settings will affect the view.  Unchecking these options
+scene along the currently specified tour.  Unchecking this option
 returns control of scene movement to the user allowing one to have a global view of the tour.
 
-Keyframe times are  proportional to the path length
+By default Keyframe times are  proportional to the path length
 between keyframes so that the speed traversed along the tour is constant.
-The start and stop times of the tour may also be specified using the {\em start time}\ and
-{\em stop time}\ entries in the dialog box.
+This behavior may be overridden by specifying an arrival time at any keyframe after selecting
+the {\em Set time} checkbox.
 
 
 %---------------------------------------------------------------------------------
@@ -3314,7 +3315,7 @@ Path view directions are absolute.  One selects the (x,y,z) view position by
 editing the x,y and/or z edit boxes in the View direction panel.
 
 Cubic Hermite polynomials  are uniquely
-specified for each interval using function and derivative values
+specified for each interval using function and slope values
 at each endpoint of
 the interval ({\em i.e., 4 data values}).
 
