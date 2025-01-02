@@ -3408,15 +3408,19 @@ void UpdateMeshBoxBounds(void){
   }
 }
 
-/* ------------------ GetSmoke3DType ------------------------ */
-
-int GetSmoke3DType(char *label){
+/// @brief Given a case, find the first instance of smoke3dtype that has the
+/// given label.
+/// @param scase The case
+/// @param label The label to search for
+/// @return An offset into scase->smoke3dcoll.nsmoke3dtypes of the first
+/// matching smoke3dtype. Returns -1 if there are no matching props.
+int GetSmoke3DType(smv_case *scase, const char *label) {
   int i;
 
-  for(i=0; i<global_scase.smoke3dcoll.nsmoke3dtypes; i++){
+  for(i=0; i<scase->smoke3dcoll.nsmoke3dtypes; i++){
     smoke3ddata *smoke3di;
 
-    smoke3di = global_scase.smoke3dcoll.smoke3dtypes[i].smoke3d;
+    smoke3di = scase->smoke3dcoll.smoke3dtypes[i].smoke3d;
     if(Match(smoke3di->label.shortlabel, label)==1)return i;
   }
   return -1;
@@ -3504,7 +3508,7 @@ void UpdateSmoke3DTypes(void){
     smokestatedata *smokestate;
 
     smoke3di = global_scase.smoke3dcoll.smoke3dinfo+i;
-    smoke3di->type = GetSmoke3DType(smoke3di->label.shortlabel);
+    smoke3di->type = GetSmoke3DType(&global_scase, smoke3di->label.shortlabel);
 
     NewMemory((void **)&smokestate, global_scase.smoke3dcoll.nsmoke3dtypes*sizeof(smokestatedata));
     smoke3di->smokestate = smokestate;
