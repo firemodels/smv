@@ -241,7 +241,20 @@ CommandlineArgs ParseCommandlineNew(int argc, char **argv, char *message,
       args.geominfo = true;
     } else if (strcmp(argv[i], "-fast") == 0) {
       args.fast = true;
-    } else if(strcmp(argv[i], "-full") == 0) {
+    }
+    else if(strcmp(argv[i], "-load_co2") == 0) {
+      args.load_co2 = true;
+    }
+    else if(strcmp(argv[i], "-load_hrrpuv") == 0) {
+      args.load_hrrpuv = true;
+    }
+    else if(strcmp(argv[i], "-load_soot") == 0) {
+      args.load_soot = true;
+    }
+    else if(strcmp(argv[i], "-load_temp") == 0) {
+      args.load_temp = true;
+    }
+    else if(strcmp(argv[i], "-full") == 0) {
       args.full = true;
     } else if (strcmp(argv[i], "-blank") == 0) {
       args.blank = true;

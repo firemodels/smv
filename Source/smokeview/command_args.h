@@ -18,6 +18,10 @@ typedef struct CommandlineArgs {
   bool print_version;
   bool update_bounds;
   bool large_case;
+  bool load_co2;
+  bool load_hrrpuv;
+  bool load_soot;
+  bool load_temp;
   bool no_graphics;
   /// @brief calculate slice file parameters
   bool update_slice;

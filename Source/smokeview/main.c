@@ -62,6 +62,10 @@ void Usage(int option){
     PRINTF("%s\n", _(" -info            generate casename.slcf and casename.viewpoint files containing slice file and viewpiont info"));
     PRINTF("%s\n", _(" -lang xx       - where xx is de, es, fr, it for German, Spanish, French or Italian"));
     PRINTF("%s\n", _(" -large         - take some shortcuts when reading in large geometry cases"));
+    PRINTF("%s\n", _(" -load_co2      - load 3D smoke of type co2 at startup "));
+    PRINTF("%s\n", _(" -load_hrrpuv   - load 3D smoke of type hrrpuv at startup "));
+    PRINTF("%s\n", _(" -load_soot     - load 3D smoke of type soot at startup "));
+    PRINTF("%s\n", _(" -load_temp     - load 3D smoke of type temperature at startup "));
     PRINTF("%s\n", _(" -make_movie    - open the movie generating dialog box"));
     PRINTF("%s\n", _(" -max_mem mem   - specify maximum memory used in GB"));
     PRINTF("%s\n", _(" -outline       - show geometry bound boxes instead of geometry"));
@@ -585,6 +589,24 @@ char *ProcessCommandLine(CommandlineArgs *args){
     }
     if(args->geominfo){
       print_geominfo = 1;
+    }
+    if(args->load_co2){
+      loadfiles_commandline[0]          = 1;
+      loadfiles_commandline[LOAD_3DCO2] = 1;
+    }
+    if(args->load_hrrpuv){
+      loadfiles_commandline[0]             = 1;
+      loadfiles_commandline[LOAD_3DHRRPUV] = 1;
+      loadfiles_commandline[LOAD_3DTEMP]   = 0;
+    }
+    if(args->load_soot){
+      loadfiles_commandline[0]           = 1;
+      loadfiles_commandline[LOAD_3DSOOT] = 1;
+    }
+    if(args->load_temp){
+      loadfiles_commandline[0]             = 1;
+      loadfiles_commandline[LOAD_3DTEMP]   = 1;
+      loadfiles_commandline[LOAD_3DHRRPUV] = 0;
     }
     if(args->fast){
       fast_startup = 1;

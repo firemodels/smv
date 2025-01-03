@@ -1731,6 +1731,15 @@ SVEXTERN float redcolor[4];
 #endif
 
 SVEXTERN int SVDECL(loadfiles_at_startup,0);
+#define LOAD_3DCO2    1
+#define LOAD_3DHRRPUV 2
+#define LOAD_3DSOOT   3
+#define LOAD_3DTEMP   4
+#ifdef INMAIN
+SVEXTERN int loadfiles_commandline[5]={0,0,0,0,0};
+#else
+SVEXTERN int loadfiles_commandline[5];
+#endif
 
 SVEXTERN int SVDECL(nmenus,0);
 #define MAXMENUS 10000
