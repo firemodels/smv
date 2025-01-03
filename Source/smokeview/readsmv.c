@@ -8181,7 +8181,7 @@ int ReadSMV_Parse(bufferstreamdata *stream){
     // Allocate a fixed-size collection large enough to hold each of the CADGEOM
     // definitions.
     int err = InitCADGeomCollection(&global_scase.cadgeomcoll, n_cadgeom_keywords);
-    if (err == 0) return 2;
+    if (err != 0) return 2;
   }
 
   if(global_scase.noutlineinfo>0){
