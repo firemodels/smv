@@ -411,7 +411,7 @@ int ReadCADGeom(cadgeomdata *cd, const char *file, GLfloat block_shininess) {
 
 int ReadCADGeomToCollection(cadgeom_collection *coll, const char *file,
                             GLfloat block_shininess) {
-  if(coll->capacity >= (coll->ncadgeom + 1)) {
+  if(coll->ncadgeom >= coll->capacity){
     fprintf(stderr, "CADGeomCollection has exceeded capacity");
     return -1;
   }
