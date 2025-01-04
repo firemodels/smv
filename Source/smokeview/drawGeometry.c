@@ -2818,36 +2818,36 @@ void UpdateFaceListsWorker(void){
 
       if(facej->hidden == 0){
         switch(facej->type){
-            case BLOCK_regular:
-              if(facej->show_bothsides == 0)meshi->face_normals_single[n_normals_single++] = facej;
-              if(facej->show_bothsides == 1)meshi->face_normals_double[n_normals_double++] = facej;
-              break;
-            case BLOCK_texture:
-              if(facej->textureinfo != NULL){
-                if(facej->textureinfo->display == 1){
-                  meshi->face_textures[n_textures++] = facej;
-                  }
-                else{
-                  if(facej->type2 == BLOCK_face){
-                    if(facej->show_bothsides == 0)meshi->face_normals_single[n_normals_single++] = facej;
-                    if(facej->show_bothsides == 1)meshi->face_normals_double[n_normals_double++] = facej;
-                    }
-                  if(facej->type2 == VENT_face)meshi->face_outlines[n_outlines++] = facej;
-                  }
-                continue;
+          case BLOCK_regular:
+            if(facej->show_bothsides == 0)meshi->face_normals_single[n_normals_single++] = facej;
+            if(facej->show_bothsides == 1)meshi->face_normals_double[n_normals_double++] = facej;
+            break;
+          case BLOCK_texture:
+            if(facej->textureinfo != NULL){
+              if(facej->textureinfo->display == 1){
+                meshi->face_textures[n_textures++] = facej;
+              }
+              else{
+                if(facej->type2 == BLOCK_face){
+                  if(facej->show_bothsides == 0)meshi->face_normals_single[n_normals_single++] = facej;
+                  if(facej->show_bothsides == 1)meshi->face_normals_double[n_normals_double++] = facej;
                 }
-              break;
-            case BLOCK_outline:
-              meshi->face_outlines[n_outlines++] = facej;
-              break;
-            case BLOCK_hidden:
-              break;
-            default:
-              PRINTF("facej->type=%i\n", facej->type);
-              assert(FFALSE);
-              break;
-          }
+                if(facej->type2 == VENT_face)meshi->face_outlines[n_outlines++] = facej;
+              }
+              continue;
+            }
+            break;
+          case BLOCK_outline:
+            meshi->face_outlines[n_outlines++] = facej;
+            break;
+          case BLOCK_hidden:
+            break;
+          default:
+            PRINTF("facej->type=%i\n", facej->type);
+            assert(FFALSE);
+            break;
         }
+      }
     }
 
     meshi->nface_textures = n_textures;
