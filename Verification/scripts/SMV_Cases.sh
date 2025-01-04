@@ -1,5 +1,6 @@
 #!/bin/bash
 $QFDS -d Visualization boundtest.fds
+$QFDS -d Visualization cad_test.fds
 $QFDS -d Visualization cell_test.fds
 $RUNCFAST -d Visualization cfast_test.in
 $QFDS -d Visualization colorbar.fds

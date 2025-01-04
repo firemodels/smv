@@ -3,11 +3,11 @@
 
 --- Case from Blender Scene: <Example_case> | View Layer: <View Layer>
 
-&HEAD CHID='cadtest' TITLE='This is an example case' /
+&HEAD CHID='cad_test' TITLE='This is an example case' /
 &TIME T_END=10.0 /
 &REAC FUEL='Example' FORMULA='C1H2O0.5' CO_YIELD=0.040 SOOT_YIELD=0.070
       HEAT_OF_COMBUSTION=20000.0 /
-&DUMP RENDER_FILE='cadtest.ge1' /
+&DUMP RENDER_FILE='cad_test.ge1' /
 
 --- Free text from Blender Text: <Text>
 
