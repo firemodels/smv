@@ -298,7 +298,7 @@ add_test(NAME "Simple PL3d - Complete"
     COMMAND parse_simple_pl3d ${FIG_DIR}/smv/Tests/simple_pl3d.q)
 
 add_test(NAME "Parse CAD"
-    COMMAND parse_cad)
+    COMMAND parse_cad ${CMAKE_SOURCE_DIR}/Verification/Visualization/cad_test.ge1)
 
 add_test(NAME "Test Object API"
     COMMAND test_objects)
