@@ -1422,7 +1422,7 @@ grid planes: $40\times 40\times 40$
 \section{Obstacles}
 Figures \ref{figobsttest}, \ref{figobstremove} and \ref{figtransparency} test different methods for
 displaying obstacles. Figure \ref{figobsttest} shows obstacles drawn as solids,
-as outlines or hidden. Figure \ref{figobstremove} shows a boundary file for a case with 
+as outlines or hidden. Figure \ref{figobstremove} shows a boundary file for a case with
 removable blockages. Figure \ref{figtransparency} shows obstacles drawn
 transparently. The left view shows the opaque obstacle drawn in front (and blocking)
 a portion of the transparent obstacle behind.  The center view shows both obstacles
@@ -1481,7 +1481,9 @@ by running the Smokeview script, {\tt plume5c.ssf}\ (see Appendix \ref{SSFplume5
 \clearpage
 
 \section{Geometry}
-Figure \ref{figgeomtest} shows four geometry objects colored using a color specified on a SURF line or a color specified on a GEOM line. The object color should match the color given on the label below it.
+Figure \ref{figgeomtest} shows four geometry objects colored using a color specified on a SURF line or a color specified on a GEOM line. The object color should match the color given on the label below it. 
+Figure \ref{figcadgeomtest} show a case created with BlenderFDS\cite{blenderfds}, an open source graphical user interface for creating FDS input files.  This case is displayed as specified by the user (a cube rotate 45 degrees) and as modeled by FDS (a collection of OBSTs). The two views are toggled by pressing the
+`q' key in Smokeview.
 
 \begin{figure}[bph]
 \begin{center}
@@ -1491,6 +1493,19 @@ Figure \ref{figgeomtest} shows four geometry objects colored using a color speci
 \end{center}
  \caption{A test verifying objects are colored correctly when colors are specified on either a SURF or a GEOM line.}
 \label{figgeomtest}%
+\end{figure}
+
+\begin{figure}[bph]
+\begin{center}
+\begin{tabular}{cc}
+ \includegraphics[width=3.0in]{SCRIPT_FIGURES/cadtest_cad}&
+ \includegraphics[width=3.0in]{SCRIPT_FIGURES/cadtest_fds}\\
+ geometry view&
+ obstacle view\\
+ \end{tabular}
+\end{center}
+ \caption{A test verifying a geometry and an obstacle view are displayed correctly.}
+\label{figcadgeomtest}%
 \end{figure}
 
 \clearpage

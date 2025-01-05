@@ -2319,6 +2319,8 @@ void Keyboard(unsigned char key, int flag){
       else{
         blocklocation++;
       }
+      if(blocklocation == BLOCKlocation_cad && highlight_flag == 1)highlight_flag = 2;
+
       if((NCADGeom(&global_scase.cadgeomcoll)==0&&blocklocation>BLOCKlocation_exact)||blocklocation>BLOCKlocation_cad){
         blocklocation=BLOCKlocation_grid;
       }

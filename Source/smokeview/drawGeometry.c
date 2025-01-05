@@ -12,6 +12,10 @@
 #include "readcad.h"
 #include "readobject.h"
 
+#define DRAW_OBSTS_AND_VENTS 0
+#define DRAW_OBSTS           1
+#define DRAW_VENTS           2
+
 cadgeomdata *current_cadgeom;
 
 /* ------------------ DrawCircVentsApproxSolid ------------------------ */
@@ -1988,11 +1992,11 @@ void ObstOrVent2Faces(const meshdata *meshi, blockagedata *bc,
     faceptr->meshindex=meshi-global_scase.meshescoll.meshinfo;
     faceptr->type2=facetype;
     faceptr->show_bothsides=0;
-    faceptr->bc=NULL;
+    faceptr->bc = bc;
+    faceptr->vi = vi;
     faceptr->interior = 0;
 
     if(bc!=NULL){
-      faceptr->bc=bc;
       faceptr->hidden = bc->hidden6[j];
       faceptr->blockageindex=-2;
       if(visBlocks==visBLOCKSolidOutline){
@@ -2818,36 +2822,36 @@ void UpdateFaceListsWorker(void){
 
       if(facej->hidden == 0){
         switch(facej->type){
-            case BLOCK_regular:
-              if(facej->show_bothsides == 0)meshi->face_normals_single[n_normals_single++] = facej;
-              if(facej->show_bothsides == 1)meshi->face_normals_double[n_normals_double++] = facej;
-              break;
-            case BLOCK_texture:
-              if(facej->textureinfo != NULL){
-                if(facej->textureinfo->display == 1){
-                  meshi->face_textures[n_textures++] = facej;
-                  }
-                else{
-                  if(facej->type2 == BLOCK_face){
-                    if(facej->show_bothsides == 0)meshi->face_normals_single[n_normals_single++] = facej;
-                    if(facej->show_bothsides == 1)meshi->face_normals_double[n_normals_double++] = facej;
-                    }
-                  if(facej->type2 == VENT_face)meshi->face_outlines[n_outlines++] = facej;
-                  }
-                continue;
+          case BLOCK_regular:
+            if(facej->show_bothsides == 0)meshi->face_normals_single[n_normals_single++] = facej;
+            if(facej->show_bothsides == 1)meshi->face_normals_double[n_normals_double++] = facej;
+            break;
+          case BLOCK_texture:
+            if(facej->textureinfo != NULL){
+              if(facej->textureinfo->display == 1){
+                meshi->face_textures[n_textures++] = facej;
+              }
+              else{
+                if(facej->type2 == BLOCK_face){
+                  if(facej->show_bothsides == 0)meshi->face_normals_single[n_normals_single++] = facej;
+                  if(facej->show_bothsides == 1)meshi->face_normals_double[n_normals_double++] = facej;
                 }
-              break;
-            case BLOCK_outline:
-              meshi->face_outlines[n_outlines++] = facej;
-              break;
-            case BLOCK_hidden:
-              break;
-            default:
-              PRINTF("facej->type=%i\n", facej->type);
-              assert(FFALSE);
-              break;
-          }
+                if(facej->type2 == VENT_face)meshi->face_outlines[n_outlines++] = facej;
+              }
+              continue;
+            }
+            break;
+          case BLOCK_outline:
+            meshi->face_outlines[n_outlines++] = facej;
+            break;
+          case BLOCK_hidden:
+            break;
+          default:
+            PRINTF("facej->type=%i\n", facej->type);
+            assert(FFALSE);
+            break;
         }
+      }
     }
 
     meshi->nface_textures = n_textures;
@@ -3125,8 +3129,8 @@ void DrawObstsDebug(void){
 }
 
 /* ------------------ DrawFacesOLD ------------------------ */
-// add option to turn off lighting when verifying smoke
-void DrawFacesOLD(){
+
+void DrawFacesOLD(int option){
   float *new_color, *old_color = NULL;
   int **showtimelist_handle, *showtimelist;
   float up_color[4] = {0.9,0.9,0.9,1.0};
@@ -3156,6 +3160,10 @@ void DrawFacesOLD(){
         float *vertices;
 
         facei = meshi->face_normals_single[i];
+        if(option == DRAW_OBSTS && facei->bc == NULL)continue;
+        if(option == DRAW_VENTS){
+          if(facei->vi == NULL || facei->vi->dummy == 0)continue;
+        }
         if(facei->hidden == 1)continue;
         if(blocklocation == BLOCKlocation_grid){
           vertices = facei->approx_vertex_coords;
@@ -3235,6 +3243,10 @@ void DrawFacesOLD(){
         float *vertices;
 
         facei = meshi->face_normals_double[i];
+        if(option == DRAW_OBSTS && facei->bc == NULL)continue;
+        if(option == DRAW_VENTS){
+          if(facei->vi == NULL || facei->vi->dummy == 0)continue;
+        }
         if(facei->hidden == 1)continue;
         if(blocklocation == BLOCKlocation_grid){
           vertices = facei->approx_vertex_coords;
@@ -3309,6 +3321,10 @@ void DrawFacesOLD(){
         float *vertices;
 
         facei = meshi->face_outlines[i];
+        if(option == DRAW_OBSTS && facei->bc == NULL)continue;
+        if(option == DRAW_VENTS){
+          if(facei->vi == NULL || facei->vi->dummy == 0)continue;
+        }
         if(facei->hidden == 1)continue;
         showtimelist_handle = facei->showtimelist_handle;
         showtimelist = *showtimelist_handle;
@@ -3379,6 +3395,10 @@ void DrawFacesOLD(){
         texturedata *texti;
 
         facei = meshi->face_textures[i];
+        if(option == DRAW_OBSTS && facei->bc == NULL)continue;
+        if(option == DRAW_VENTS){
+          if(facei->vi == NULL || facei->vi->dummy == 0)continue;
+        }
         if(facei->hidden == 1)continue;
         showtimelist_handle = facei->showtimelist_handle;
         showtimelist = *showtimelist_handle;
@@ -5039,7 +5059,7 @@ void DrawBlockages(int mode, int trans_flag){
     else{
       switch(blockage_draw_option){
       case 0:
-        DrawFacesOLD();
+        DrawFacesOLD(DRAW_OBSTS_AND_VENTS);
         break;
       case 1:
         DrawFaces();
@@ -5058,6 +5078,7 @@ void DrawBlockages(int mode, int trans_flag){
   if(blocklocation==BLOCKlocation_cad||(NCADGeom(&global_scase.cadgeomcoll)!=0&&show_cad_and_grid==1)){
     int ntriangles=0;
 
+    DrawFacesOLD(DRAW_VENTS);
     for(i=0;i<NCADGeom(&global_scase.cadgeomcoll);i++){
       cd=global_scase.cadgeomcoll.cadgeominfo+i;
       if(cd->version==1){

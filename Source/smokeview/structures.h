@@ -141,6 +141,7 @@ typedef struct _facedata {
   int **showtimelist_handle;
   int show_bothsides;
   struct _blockagedata *bc;
+  struct _ventdata     *vi;
   surfdata *surfinfo;
   texturedata *textureinfo;
 } facedata;
