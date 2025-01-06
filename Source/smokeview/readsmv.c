@@ -4166,13 +4166,13 @@ void UpdateMeshCoords(void){
 
 /* ------------------ IsSliceDup ------------------------ */
 
-int IsSliceDup(slicedata *sd, int nslice){
+int IsSliceDup(smv_case *scase, slicedata *sd, int nslice){
   int i;
 
   for(i=0;i<nslice-1;i++){
     slicedata *slicei;
 
-    slicei = global_scase.slicecoll.sliceinfo + i;
+    slicei = scase->slicecoll.sliceinfo + i;
     if(slicei->ijk_min[0]!=sd->ijk_min[0]||slicei->ijk_max[0]!=sd->ijk_max[0])continue;
     if(slicei->ijk_min[1]!=sd->ijk_min[1]||slicei->ijk_max[1]!=sd->ijk_max[1])continue;
     if(slicei->ijk_min[2]!=sd->ijk_min[2]||slicei->ijk_max[2]!=sd->ijk_max[2])continue;
