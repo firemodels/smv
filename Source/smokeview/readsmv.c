@@ -4381,7 +4381,7 @@ void ReadDeviceHeader(smv_case *scase, char *file, devicedata *devices, int ndev
 
 /* ------------------ SetSurfaceIndex ------------------------ */
 
-void SetSurfaceIndex(blockagedata *bc){
+void SetSurfaceIndex(smv_case *scase, blockagedata *bc){
   int i, j, jj;
   surfdata *surfj;
   char *surflabel, *bclabel;
@@ -4392,10 +4392,10 @@ void SetSurfaceIndex(blockagedata *bc){
     bc->surf_index[i] = -1;
     bclabel = bc->surf[i]->surfacelabel;
     if(bc->surf[i] == NULL)continue;
-    for(jj = 1; jj < global_scase.surfcoll.nsurfinfo + 1; jj++){
+    for(jj = 1; jj < scase->surfcoll.nsurfinfo + 1; jj++){
       j = jj;
-      if(jj == global_scase.surfcoll.nsurfinfo)j = 0;
-      surfj = global_scase.surfcoll.surfinfo + j;
+      if(jj == scase->surfcoll.nsurfinfo)j = 0;
+      surfj = scase->surfcoll.surfinfo + j;
       surflabel = surfj->surfacelabel;
       if(strcmp(bclabel, surflabel) != 0)continue;
       bc->surf_index[i] = j;
@@ -10716,7 +10716,7 @@ typedef struct {
         for(i=0;i<6;i++){
           bc->surf[i]->used_by_obst=1;
         }
-        SetSurfaceIndex(bc);
+        SetSurfaceIndex(scase, bc);
       }
 
       nn=-1;
