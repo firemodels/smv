@@ -1,3 +1,9 @@
+// _GNU_SOURCE needs to be switched on to access qsort_r. qsort_r is included in
+// POSIX 2024 as standard but is also available via GNU extensions.
+#ifndef _WIN32
+#define _GNU_SOURCE
+#endif
+
 #include "options.h"
 #include "glew.h"
 #include <assert.h>
@@ -4425,38 +4431,47 @@ void SetSurfaceIndex(blockagedata *bc){
 
 /* ------------------ SurfIdCompare ------------------------ */
 
-int SurfIdCompare(const void *arg1, const void *arg2){
-  surfdata *surfi, *surfj;
-  int i, j;
+#ifdef __linux__
+int SurfIdCompare(const void *arg1, const void *arg2, void *surfinfo) {
+#else // assumed to be osx or windows
+int SurfIdCompare(void *surfinfo, const void *arg1, const void *arg2) {
+#endif
+  int i = *(int *)arg1;
+  int j = *(int *)arg2;
 
-  i = *(int *)arg1;
-  j = *(int *)arg2;
-
-  surfi = global_scase.surfcoll.surfinfo+i;
-  surfj = global_scase.surfcoll.surfinfo+j;
+  surfdata *surfi = (surfdata *)surfinfo+i;
+  surfdata *surfj = (surfdata *)surfinfo+j;
 
   return(strcmp(surfi->surfacelabel, surfj->surfacelabel));
 }
 
 /* ------------------ UpdateSortedSurfIdList ------------------------ */
 
-void UpdateSortedSurfIdList(void){
+void UpdateSortedSurfIdList(surf_collection *surfcoll){
   int i;
 
-  FREEMEMORY(global_scase.surfcoll.sorted_surfidlist);
-  FREEMEMORY(global_scase.surfcoll.inv_sorted_surfidlist);
-  NewMemory((void **)&global_scase.surfcoll.sorted_surfidlist, global_scase.surfcoll.nsurfinfo*sizeof(int));
-  NewMemory((void **)&global_scase.surfcoll.inv_sorted_surfidlist, global_scase.surfcoll.nsurfinfo*sizeof(int));
+  FREEMEMORY(surfcoll->sorted_surfidlist);
+  FREEMEMORY(surfcoll->inv_sorted_surfidlist);
+  NewMemory((void **)&surfcoll->sorted_surfidlist, surfcoll->nsurfinfo*sizeof(int));
+  NewMemory((void **)&surfcoll->inv_sorted_surfidlist, surfcoll->nsurfinfo*sizeof(int));
 
 
-  global_scase.surfcoll.nsorted_surfidlist = global_scase.surfcoll.nsurfinfo;
-  for(i = 0; i<global_scase.surfcoll.nsorted_surfidlist; i++){
-    global_scase.surfcoll.sorted_surfidlist[i] = i;
+  surfcoll->nsorted_surfidlist = surfcoll->nsurfinfo;
+  for(i = 0; i<surfcoll->nsorted_surfidlist; i++){
+    surfcoll->sorted_surfidlist[i] = i;
   }
-
-  qsort((int *)global_scase.surfcoll.sorted_surfidlist, (size_t)global_scase.surfcoll.nsurfinfo, sizeof(int), SurfIdCompare);
-  for(i = 0; i<global_scase.surfcoll.nsorted_surfidlist; i++){
-    global_scase.surfcoll.inv_sorted_surfidlist[global_scase.surfcoll.sorted_surfidlist[i]] = i;
+// Sort surfaces by name in a separate list. Each platform has sort-with-context
+// (qsort_s, qsort_r) with either a different name or the arguments in a
+// different order. They are functionally the same.
+#ifdef _WIN32
+  qsort_s(surfcoll->sorted_surfidlist, (size_t)surfcoll->nsurfinfo, sizeof(int), SurfIdCompare,(void *)surfcoll->surfinfo);
+#elif __linux__
+  qsort_r(surfcoll->sorted_surfidlist, (size_t)surfcoll->nsurfinfo, sizeof(int), SurfIdCompare,(void *)surfcoll->surfinfo);
+#else // assumed to be osx
+  qsort_r(surfcoll->sorted_surfidlist, (size_t)surfcoll->nsurfinfo, sizeof(int), (void *)surfcoll->surfinfo, SurfIdCompare);
+#endif
+  for(i = 0; i<surfcoll->nsorted_surfidlist; i++){
+    surfcoll->inv_sorted_surfidlist[surfcoll->sorted_surfidlist[i]] = i;
   }
 }
 
@@ -4651,7 +4666,7 @@ void ParseDatabase(char *file){
     }
     global_scase.surfcoll.nsurfinfo += nsurfids_shown;
   }
-  UpdateSortedSurfIdList();
+  UpdateSortedSurfIdList(&global_scase.surfcoll);
 }
 
 /* ------------------ ReadZVentData ------------------------ */
