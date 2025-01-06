@@ -52,9 +52,9 @@
 #define ZVENT_1ROOM 1
 #define ZVENT_2ROOM 2
 
-#define PARTBUFFER(len)    global_scase.part_buffer;    global_scase.part_buffer    += (len)
-#define SMOKE3DBUFFER(len) global_scase.smoke3d_buffer; global_scase.smoke3d_buffer += (len)
-#define SLICEBUFFER(len)   global_scase.slice_buffer;   global_scase.slice_buffer   += (len)
+#define PARTBUFFER(len)    scase->part_buffer;    scase->part_buffer    += (len)
+#define SMOKE3DBUFFER(len) scase->smoke3d_buffer; scase->smoke3d_buffer += (len)
+#define SLICEBUFFER(len)   scase->slice_buffer;   scase->slice_buffer   += (len)
 
 int GetNDevices(char *file);
 
