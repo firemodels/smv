@@ -1889,7 +1889,6 @@ typedef struct {
   int clip_I;
   int clip_J;
   int clip_K;
-  GLfloat block_shininess;
   int visTerrainType;
   int have_gvec;
   outlinedata *outlineinfo;
@@ -1992,5 +1991,13 @@ typedef struct {
   float pass5_time;
   float processing_time;
 } smv_case;
+
+typedef struct {
+  int smoke3d_only;
+  int setup_only;
+  int fast_startup;
+  int lookfor_compressed_files;
+  int handle_slice_files;
+} parse_options;
 
 #endif

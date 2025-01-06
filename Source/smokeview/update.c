@@ -2484,14 +2484,14 @@ void BoundBoundCB(int var);
     UpdateTimes();
     END_SHOW_UPDATE(update_times);
   }
-  if(update_device==1){
-    SHOW_UPDATE(update_device);
-    update_device = 0;
+  if(global_scase.update_device==1){
+    SHOW_UPDATE(global_scase.update_device);
+    global_scase.update_device = 0;
     if(HaveSmokeSensor()==1){
       use_lighting = 0;
       update_use_lighting = 1;
     }
-    END_SHOW_UPDATE(update_device);
+    END_SHOW_UPDATE(global_scase.update_device);
   }
   if(update_use_lighting==1){
     SHOW_UPDATE(update_use_lighting);

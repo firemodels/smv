@@ -255,7 +255,7 @@ int SetupCase(char *filename){
 
     PRINTF("reading  %s\n", input_file);
     if(FileExistsOrig(global_scase.paths.smvzip_filename) == 1){
-      lookfor_compressed_files = 1;
+      parse_opts.lookfor_compressed_files = 1;
     }
     smv_streaminfo = GetSMVBuffer(input_file);
     smv_streaminfo = AppendFileBuffer(smv_streaminfo, global_scase.paths.iso_filename);

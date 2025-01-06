@@ -243,10 +243,8 @@ SVEXTERN int SVDECL(nsubslicemenuinfo, 0), SVDECL(nsubvectorslicemenuinfo, 0);
 SVEXTERN int SVDECL(nsubslicex, 0), SVDECL(nsubslicey, 0), SVDECL(nsubslicez, 0), SVDECL(nsubslicexyz, 0);
 SVEXTERN int SVDECL(nsubvectorslicex, 0), SVDECL(nsubvectorslicey, 0), SVDECL(nsubvectorslicez, 0), SVDECL(nsubvectorslicexyz, 0);
 SVEXTERN slicemenudata SVDECL(**slicemenu_sorted, NULL);
-SVEXTERN int SVDECL(handle_slice_files, 1);
 SVEXTERN int SVDECL(plot_option, 0);
 SVEXTERN float hrr_valmin, hrr_valmax;
-SVEXTERN int SVDECL(is_terrain_case, 0);
 SVEXTERN int SVDECL(visFrameTimelabel, 1);
 SVEXTERN int SVDECL(rotation_axis, 1);
 SVEXTERN ztreedevicedata SVDECL(*ztreedeviceinfo, NULL);
@@ -414,7 +412,6 @@ SVEXTERN int SVDECL(update_times,0);
 SVEXTERN int SVDECL(show_geom_bndf, 0),SVDECL(glui_show_geom_bndf, 0);
 SVEXTERN int SVDECL(update_windrose, 0);
 SVEXTERN int SVDECL(update_use_lighting, 0), SVDECL(use_lighting, 1);
-SVEXTERN int SVDECL(update_device, 0);
 
 SVEXTERN cellmeshdata SVDECL(*cellmeshinfo, NULL);
 SVEXTERN int SVDECL(is_convex, 0);
@@ -465,7 +462,6 @@ SVEXTERN int SVDECL(research_mode_override, -1);
 SVEXTERN float SVDECL(geomboundary_pointsize, 5.0);
 SVEXTERN float SVDECL(geomboundary_linewidth, 5.0);
 
-SVEXTERN int SVDECL(smoke3d_only, 0);
 SVEXTERN int SVDECL(update_tour_path,1);
 SVEXTERN int SVDECL(tour_circular_index, -1);
 SVEXTERN float tour_circular_center[3], tour_circular_radius, tour_circular_view[3], SVDECL(tour_circular_angle0,0.0);
@@ -558,11 +554,6 @@ SVEXTERN float startup_time;
 #ifdef pp_FRAME
 SVEXTERN int SVDECL(nframe_threads, 4), SVDECL(read_buffer_size, 10);
 #endif
-#ifdef pp_FAST
-SVEXTERN int SVDECL(fast_startup, 1), SVDECL(lookfor_compressed_files,0);
-#else
-SVEXTERN int SVDECL(fast_startup, 0), SVDECL(lookfor_compressed_files,1);
-#endif
 SVEXTERN int SVDECL(alt_ctrl_key_state, KEY_NONE);
 SVEXTERN devicedata SVDECL(**vel_devices, NULL);
 SVEXTERN int SVDECL(nvel_devices, 0);
@@ -592,7 +583,6 @@ SVEXTERN int SVDECL(showbeam_as_line, 1), SVDECL(use_beamcolor,0), beam_color[3]
 SVEXTERN float SVDECL(beam_line_width, 4.0);
 
 SVEXTERN float SVDECL(zone_hvac_diam, 0.05);
-SVEXTERN int SVDECL(setup_only, 0);
 SVEXTERN int SVDECL(timearray_test, 0);
 SVEXTERN int SVDECL(slice_time, 0);
 SVEXTERN int SVDECL(in_part_mt, 0);
@@ -1624,7 +1614,6 @@ SVEXTERN int SVDECL(tload_skip, 0), SVDECL(tload_step, 1);
 SVEXTERN float SVDECL(frameinterval,1);
 
 SVEXTERN int SVDECL(blockages_dirty,0);
-SVEXTERN int SVDECL(usetextures,0);
 SVEXTERN int SVDECL(canrestorelastview,0);
 SVEXTERN int SVDECL(ntargets,0);
 
@@ -1782,7 +1771,6 @@ SVEXTERN smv_case global_scase = {.tourcoll = {.ntourinfo = 0,
                            .visOtherVentsSAVE = 1,
                            .hvac_duct_color = {63, 0, 15},
                            .hvac_node_color = {63, 0, 15},
-                           .block_shininess = 100.0,
                            .nrgb2 = 8,
                            .pref = 101325.0,
                            .pamb = 0.0,
@@ -1797,8 +1785,21 @@ SVEXTERN smv_case global_scase = {.tourcoll = {.ntourinfo = 0,
                               0
                             }
                           };
+parse_options parse_opts = {
+    .smoke3d_only = 0,
+    .setup_only = 0,
+#ifdef pp_FAST
+    .fast_startup = 1,
+    .lookfor_compressed_files = 0,
+#else
+    .fast_startup = 0,
+    .lookfor_compressed_files = 1,
+#endif
+    .handle_slice_files = 1
+};
 #else
 SVEXTERN smv_case global_scase;
+SVEXTERN parse_options parse_opts;
 #endif
 SVEXTERN meshdata SVDECL(*current_mesh,NULL), SVDECL(*mesh_save,NULL);
 SVEXTERN meshdata SVDECL(*mesh_last,NULL), SVDECL(*loaded_isomesh,NULL);
