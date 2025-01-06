@@ -1847,6 +1847,7 @@ typedef struct {
   int have_object_box;
   int have_beam;
   int have_missing_objects;
+  int have_hidden6;
   int show_hrrcutoff_active;
   int show_tempcutoff_active;
   int ntotal_blockages;
@@ -1955,6 +1956,41 @@ typedef struct {
   int nrgb;
   float linewidth, ventlinewidth;
   float rgb[MAXRGB][4];
+  char fuel_name[256];
+  float fuel_hoc_default;
+
+  int time_col;
+  int hrr_col;
+  int qradi_col;
+  int mlr_col;
+  int have_mlr;
+  int chirad_col;
+
+  hrrdata *hrrptr;
+  hrrdata *timeptr;
+
+  int have_animate_blockages;
+  int have_removable_obsts;
+
+  slicedata **sliceinfoptrs;
+  int *subslice_menuindex;
+  int *subvslice_menuindex;
+  int *msubslice_menuindex;
+  int *msubvslice_menuindex;
+
+  int visFrame;
+  int visFloor;
+  int visWalls;
+  int visCeiling;
+
+  float getfilelist_time;
+  float pass0_time;
+  float pass1_time;
+  float pass2_time;
+  float pass3_time;
+  float pass4_time;
+  float pass5_time;
+  float processing_time;
 } smv_case;
 
 #endif

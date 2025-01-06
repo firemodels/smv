@@ -356,7 +356,7 @@ int SetupCase(char *filename){
     GLUIShowAlert();
   }
   // initialize info header
-  initialiseInfoHeader(&titleinfo, release_title, smv_githash, global_scase.fds_githash, chidfilebase, fds_title);
+  initialiseInfoHeader(&titleinfo, release_title, smv_githash, global_scase.fds_githash, global_scase.paths.chidfilebase, global_scase.fds_title);
   PRINT_TIMER(timer_start, "glut routines");
   return 0;
 }
@@ -1112,7 +1112,7 @@ void AutoLoadSmoke3D(int smoke3d_type){
     }
   }
 }
-  
+
   /* ------------------ LoadFiles ------------------------ */
 
   void LoadFiles(void){
@@ -1201,7 +1201,7 @@ void AutoLoadSmoke3D(int smoke3d_type){
       multislicedata *mslicei;
       slicedata *slicei;
 
-      mslicei = global_scase.slicecoll.multisliceinfo + i; 
+      mslicei = global_scase.slicecoll.multisliceinfo + i;
       if(mslicei->autoload == 0)continue;
       slicei = global_scase.slicecoll.sliceinfo + mslicei->islices[0];
       if(slicei->vloaded == 1)continue;
@@ -1244,20 +1244,20 @@ void InitTextureDir(void){
   char *texture_buffer;
   size_t texture_len;
 
-  if(texturedir!=NULL)return;
+  if(global_scase.texturedir!=NULL)return;
 
   texture_buffer=getenv("texturedir");
   if(texture_buffer!=NULL){
     texture_len=strlen(texture_buffer);
-    NewMemory((void **)&texturedir,texture_len+1);
-    strcpy(texturedir,texture_buffer);
+    NewMemory((void **)&global_scase.texturedir,texture_len+1);
+    strcpy(global_scase.texturedir,texture_buffer);
   }
   char *smv_bindir = GetSmvRootDir();
-  if(texturedir==NULL){
+  if(global_scase.texturedir==NULL){
     texture_len=strlen(smv_bindir)+strlen("textures");
-    NewMemory((void **)&texturedir,texture_len+2);
-    strcpy(texturedir,smv_bindir);
-    strcat(texturedir,"textures");
+    NewMemory((void **)&global_scase.texturedir,texture_len+2);
+    strcpy(global_scase.texturedir,smv_bindir);
+    strcat(global_scase.texturedir,"textures");
   }
   FREEMEMORY(smv_bindir);
 }
@@ -1281,7 +1281,7 @@ void InitVars(void){
 #ifdef pp_OSX_HIGHRES
   double_scale = 1;
 #endif
-  curdir_writable = Writable(".");
+  global_scase.curdir_writable = Writable(".");
   windrose_circ.ncirc=0;
   InitCircle(180, &windrose_circ);
 

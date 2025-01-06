@@ -350,7 +350,7 @@ void UpdateShow(void){
 
   RenderTime=0;
 
-  if(vis_hrr_plot==1&&hrrptr!=NULL)showhrrflag = 1;
+  if(vis_hrr_plot==1&&global_scase.hrrptr!=NULL)showhrrflag = 1;
 
   if(global_scase.hvaccoll.hvacductvar_index >= 0 || global_scase.hvaccoll.hvacnodevar_index >= 0){
     showhvacflag = 1;
@@ -1238,8 +1238,8 @@ void UpdateTimes(void){
     MergeGlobalTimes(&global_scase.tload_end, 1);
   }
 
-  if(vis_hrr_plot==1&&hrrptr!=NULL){
-    MergeGlobalTimes(timeptr->vals, timeptr->nvals);
+  if(vis_hrr_plot==1&&global_scase.hrrptr!=NULL){
+    MergeGlobalTimes(global_scase.timeptr->vals, global_scase.timeptr->nvals);
   }
   {
     float *times = NULL;
@@ -1690,7 +1690,7 @@ int GetPlotStateSub(int choice){
         stept = 1;
         return DYNAMIC_PLOTS;
       }
-      if(vis_hrr_plot==1&&hrrptr!=NULL){
+      if(vis_hrr_plot==1&&global_scase.hrrptr!=NULL){
         stept = 1;
         return DYNAMIC_PLOTS;
       }
@@ -3043,7 +3043,7 @@ void UpdateDisplay(void){
 
       meshi = global_scase.meshescoll.meshinfo + ig;
       void SetHiddenBlockages(meshdata *meshi);
-      if(have_hidden6 == 0){
+      if(global_scase.have_hidden6 == 0){
         if(ig == 0)printf("setting hidden blockages\n");
         SetHiddenBlockages(meshi);
       }

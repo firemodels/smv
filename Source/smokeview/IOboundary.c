@@ -1458,7 +1458,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
 
   if(load_flag==UNLOAD){
     boundary_loaded = 0;
-    if(boundary_interface_unhide == 1 && have_removable_obsts == 1 && global_scase.meshescoll.nmeshes>1){
+    if(boundary_interface_unhide == 1 && global_scase.have_removable_obsts == 1 && global_scase.meshescoll.nmeshes>1){
       BlockageMenu(visBLOCKAsInput);
     }
     UpdateBoundaryType();
