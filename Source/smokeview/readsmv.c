@@ -4237,7 +4237,7 @@ surfdata *GetSurface(smv_case *scase, const char *label){
 
 /* ------------------ InitObst ------------------------ */
 
-void InitObst(blockagedata *bc, surfdata *surf, int index, int meshindex){
+void InitObst(smv_case *scase, blockagedata *bc, surfdata *surf, int index, int meshindex){
   int colorindex, blocktype;
   int i;
   char blocklabel[255];
@@ -4258,9 +4258,9 @@ void InitObst(blockagedata *bc, surfdata *surf, int index, int meshindex){
   bc->meshindex = meshindex;
   bc->hidden = 0;
   bc->invisible = 0;
-  bc->texture_origin[0] = global_scase.texture_origin[0];
-  bc->texture_origin[1] = global_scase.texture_origin[1];
-  bc->texture_origin[2] = global_scase.texture_origin[2];
+  bc->texture_origin[0] = scase->texture_origin[0];
+  bc->texture_origin[1] = scase->texture_origin[1];
+  bc->texture_origin[2] = scase->texture_origin[2];
 
   /*
   new OBST format:
@@ -10629,7 +10629,7 @@ typedef struct {
         nn++;
         meshi->blockageinfoptrs[nn] = meshi->blockageinfo + nn;
         bc=meshi->blockageinfoptrs[nn];
-        InitObst(bc,surfacedefault,nn+1,iobst-1);
+        InitObst(scase,bc,surfacedefault,nn+1,iobst-1);
         FGETS(buffer,255,stream);
 
         char id_label[100], *id_labelptr;
