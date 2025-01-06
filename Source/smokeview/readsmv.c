@@ -60,14 +60,14 @@ int GetNDevices(char *file);
 
 /* ------------------ GetHrrCsvCol ------------------------ */
 
-int GetHrrCsvCol(char *label){
+int GetHrrCsvCol(smv_case *scase, char *label){
   int i;
 
-  if(label==NULL||strlen(label)==0||global_scase.hrr_coll.nhrrinfo==0)return -1;
-  for(i = 0; i<global_scase.hrr_coll.nhrrinfo; i++){
+  if(label==NULL||strlen(label)==0||scase->hrr_coll.nhrrinfo==0)return -1;
+  for(i = 0; i<scase->hrr_coll.nhrrinfo; i++){
     hrrdata *hi;
 
-    hi = global_scase.hrr_coll.hrrinfo+i;
+    hi = scase->hrr_coll.hrrinfo+i;
     if(hi->label.shortlabel==NULL)continue;
     if(strcmp(hi->label.shortlabel, label)==0)return i;
   }
@@ -604,13 +604,13 @@ NewMemory((void **)&valids,                    global_scase.hrr_coll.nhrrinfo*si
 
 // find column index of several quantities
 
-  time_col  = GetHrrCsvCol("Time");
+  time_col  = GetHrrCsvCol(&global_scase, "Time");
   if(time_col>=0)timeptr = global_scase.hrr_coll.hrrinfo+time_col;
 
-  hrr_col   = GetHrrCsvCol("HRR");
+  hrr_col   = GetHrrCsvCol(&global_scase, "HRR");
   if(hrr_col>=0&&time_col>=0)hrrptr = global_scase.hrr_coll.hrrinfo+hrr_col;
 
-  qradi_col = GetHrrCsvCol("Q_RADI");
+  qradi_col = GetHrrCsvCol(&global_scase, "Q_RADI");
   CheckMemory;
 
 // define column for each MLR column by heat of combustion except for air and products
