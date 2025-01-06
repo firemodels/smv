@@ -6606,18 +6606,18 @@ void UpdateObstBoundingBox(smv_case *scase, float *XB){
 
 /* ------------------ GetBlockagePtr ------------------------ */
 
-blockagedata *GetBlockagePtr(float *xyz){
+blockagedata *GetBlockagePtr(smv_case *scase, float *xyz){
   float xyzcenter[3];
   int i;
 
   xyzcenter[0] = (xyz[0]+xyz[1])/2.0;
   xyzcenter[1] = (xyz[2]+xyz[3])/2.0;
   xyzcenter[2] = (xyz[4]+xyz[5])/2.0;
-  for(i=0;i<global_scase.meshescoll.nmeshes;i++){
+  for(i=0;i<scase->meshescoll.nmeshes;i++){
     meshdata *meshi;
     int j;
 
-    meshi = global_scase.meshescoll.meshinfo + i;
+    meshi = scase->meshescoll.meshinfo + i;
     if(xyzcenter[0]<meshi->boxmin[0]||xyzcenter[0]>meshi->boxmax[0])continue;
     if(xyzcenter[1]<meshi->boxmin[1]||xyzcenter[1]>meshi->boxmax[1])continue;
     if(xyzcenter[2]<meshi->boxmin[2]||xyzcenter[2]>meshi->boxmax[2])continue;
@@ -6754,7 +6754,7 @@ void ReadSMVOrig(smv_case *scase){
             if(obi->surf_index[j]>=0)obi->surfs[j] = scase->surfcoll.surfinfo + obi->surf_index[j];
           }
         }
-        obi->bc = GetBlockagePtr(obi->xyz);
+        obi->bc = GetBlockagePtr(scase, obi->xyz);
       }
       break;
     }
