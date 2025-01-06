@@ -415,9 +415,9 @@ int ReadCADGeomToCollection(cadgeom_collection *coll, const char *file,
     fprintf(stderr, "CADGeomCollection has exceeded capacity");
     return -1;
   }
-  ReadCADGeom(&coll->cadgeominfo[coll->ncadgeom], file, block_shininess);
+  int res = ReadCADGeom(&coll->cadgeominfo[coll->ncadgeom], file, block_shininess);
   coll->ncadgeom++;
-  return 0;
+  return res;
 }
 
 /* ------------------ InitCADGeomCollection ------------------------ */
