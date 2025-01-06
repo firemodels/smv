@@ -515,7 +515,7 @@ FILE_SIZE ReadAllCSVFiles(int flag){
 
 /* ------------------ ReadHRR ------------------------ */
 
-void ReadHRR(int flag){
+void ReadHRR(smv_case *scase, int flag){
   FILE *stream;
   int nrows, ncols;
   char **labels, **units;
@@ -526,35 +526,35 @@ void ReadHRR(int flag){
   char *buffer, *buffer_labels, *buffer_units, *buffer_temp;
   int len_buffer;
 
-  GetHoc(&global_scase, &global_scase.fuel_hoc, fuel_name);
-  fuel_hoc_default = global_scase.fuel_hoc;
-  if(global_scase.hrr_coll.nhrrinfo>0){
-    for(i=0;i<global_scase.hrr_coll.nhrrinfo;i++){
+  GetHoc(scase, &scase->fuel_hoc, fuel_name);
+  fuel_hoc_default = scase->fuel_hoc;
+  if(scase->hrr_coll.nhrrinfo>0){
+    for(i=0;i<scase->hrr_coll.nhrrinfo;i++){
       hrrdata *hi;
 
-      hi = global_scase.hrr_coll.hrrinfo + i;
+      hi = scase->hrr_coll.hrrinfo + i;
       FREEMEMORY(hi->vals);
       FREEMEMORY(hi->vals_orig);
       FREEMEMORY(hi->label.longlabel);
       FREEMEMORY(hi->label.shortlabel);
       FREEMEMORY(hi->label.unit);
     }
-    FREEMEMORY(global_scase.hrr_coll.hrrinfo);
-    global_scase.hrr_coll.nhrrinfo = 0;
+    FREEMEMORY(scase->hrr_coll.hrrinfo);
+    scase->hrr_coll.nhrrinfo = 0;
   }
   time_col  = -1;
   hrr_col   = -1;
   qradi_col = -1;
   if(flag==UNLOAD)return;
 
-  stream = fopen(global_scase.paths.hrr_csv_filename, "r");
+  stream = fopen(scase->paths.hrr_csv_filename, "r");
   if(stream==NULL)return;
 
   len_buffer = GetRowCols(stream, &nrows, &ncols);
   len_buffer = MAX(len_buffer + 100, 1000) + ncols;
-  global_scase.hrr_coll.nhrrinfo = ncols;
+  scase->hrr_coll.nhrrinfo = ncols;
 
-  if(global_scase.hrr_coll.nhrrinfo == 0)return;
+  if(scase->hrr_coll.nhrrinfo == 0)return;
   // allocate memory
 
   NewMemory((void **)&(buffer),        len_buffer);
@@ -562,17 +562,17 @@ void ReadHRR(int flag){
   NewMemory((void **)&(buffer_units),  len_buffer);
   NewMemory((void **)&(buffer_temp),   len_buffer);
 
-  NewMemory((void **)&labels,                  global_scase.hrr_coll.nhrrinfo*sizeof(char *));
-  NewMemory((void **)&units,                   global_scase.hrr_coll.nhrrinfo*sizeof(char *));
-  NewMemory((void **)&global_scase.hrr_coll.hrrinfo,  2*global_scase.hrr_coll.nhrrinfo*sizeof(hrrdata));
-NewMemory((void **)&vals,                      global_scase.hrr_coll.nhrrinfo*sizeof(float));
-NewMemory((void **)&valids,                    global_scase.hrr_coll.nhrrinfo*sizeof(int));
+  NewMemory((void **)&labels,                     scase->hrr_coll.nhrrinfo*sizeof(char *));
+  NewMemory((void **)&units,                      scase->hrr_coll.nhrrinfo*sizeof(char *));
+  NewMemory((void **)&scase->hrr_coll.hrrinfo,  2*scase->hrr_coll.nhrrinfo*sizeof(hrrdata));
+  NewMemory((void **)&vals,                       scase->hrr_coll.nhrrinfo*sizeof(float));
+  NewMemory((void **)&valids,                     scase->hrr_coll.nhrrinfo*sizeof(int));
 
 // initialize each column
-  for(i = 0; i<2*global_scase.hrr_coll.nhrrinfo; i++){
+  for(i = 0; i<2*scase->hrr_coll.nhrrinfo; i++){
     hrrdata *hi;
 
-    hi = global_scase.hrr_coll.hrrinfo+i;
+    hi = scase->hrr_coll.hrrinfo+i;
     NewMemory((void **)&hi->vals,      MAX(1,(nrows+10))*sizeof(float));
     NewMemory((void **)&hi->vals_orig, MAX(1,(nrows+10))*sizeof(float));
     hi->base_col = -1;
@@ -589,10 +589,10 @@ NewMemory((void **)&valids,                    global_scase.hrr_coll.nhrrinfo*si
   ParseCSV(buffer_labels, buffer_temp, labels, &nlabels);
   CheckMemory;
 
-  for(i = 0; i<global_scase.hrr_coll.nhrrinfo; i++){
+  for(i = 0; i<scase->hrr_coll.nhrrinfo; i++){
     hrrdata *hi;
 
-    hi = global_scase.hrr_coll.hrrinfo+i;
+    hi = scase->hrr_coll.hrrinfo+i;
     TrimBack(labels[i]);
     TrimBack(units[i]);
     hi->label.longlabel = NULL;
@@ -605,20 +605,20 @@ NewMemory((void **)&valids,                    global_scase.hrr_coll.nhrrinfo*si
 // find column index of several quantities
 
   time_col  = GetHrrCsvCol(&global_scase, "Time");
-  if(time_col>=0)timeptr = global_scase.hrr_coll.hrrinfo+time_col;
+  if(time_col>=0)timeptr = scase->hrr_coll.hrrinfo+time_col;
 
   hrr_col   = GetHrrCsvCol(&global_scase, "HRR");
-  if(hrr_col>=0&&time_col>=0)hrrptr = global_scase.hrr_coll.hrrinfo+hrr_col;
+  if(hrr_col>=0&&time_col>=0)hrrptr = scase->hrr_coll.hrrinfo+hrr_col;
 
   qradi_col = GetHrrCsvCol(&global_scase, "Q_RADI");
   CheckMemory;
 
 // define column for each MLR column by heat of combustion except for air and products
-  global_scase.hrr_coll.nhrrhcinfo = 0;
-  for(i = 0; i<global_scase.hrr_coll.nhrrinfo; i++){
+  scase->hrr_coll.nhrrhcinfo = 0;
+  for(i = 0; i<scase->hrr_coll.nhrrinfo; i++){
     hrrdata *hi, *hi2;
 
-    hi = global_scase.hrr_coll.hrrinfo+i;
+    hi = scase->hrr_coll.hrrinfo+i;
     if(strlen(hi->label.longlabel)>3&&strncmp(hi->label.longlabel,"MLR_",4)==0){
       char label[256];
       int doit = 0;
@@ -627,7 +627,7 @@ NewMemory((void **)&valids,                    global_scase.hrr_coll.nhrrinfo*si
       if(strlen(fuel_name)>0&&strstr(hi->label.longlabel, fuel_name)!=NULL)doit = 1;
       if(doit==0&&strstr(hi->label.longlabel, "FUEL")!=NULL)doit = 1;
       if(doit==0)continue;
-      hi2 = global_scase.hrr_coll.hrrinfo + global_scase.hrr_coll.nhrrinfo + global_scase.hrr_coll.nhrrhcinfo;
+      hi2 = scase->hrr_coll.hrrinfo + scase->hrr_coll.nhrrinfo + scase->hrr_coll.nhrrhcinfo;
       hi2->base_col = i;
       strcpy(label, "HOC*");
       strcat(label, hi->label.longlabel);
@@ -635,9 +635,9 @@ NewMemory((void **)&valids,                    global_scase.hrr_coll.nhrrinfo*si
       hi2->label.shortlabel = NULL;
       hi2->label.unit = NULL;
       SetLabels(&(hi2->label), label, label, "kW");
-      mlr_col = hi2-global_scase.hrr_coll.hrrinfo;
+      mlr_col = hi2-scase->hrr_coll.hrrinfo;
       have_mlr = 1;
-      global_scase.hrr_coll.nhrrhcinfo++;
+      scase->hrr_coll.nhrrhcinfo++;
     }
   }
   CheckMemory;
@@ -650,10 +650,10 @@ NewMemory((void **)&valids,                    global_scase.hrr_coll.nhrrinfo*si
     if(strlen(buffer)==0)break;
     FParseCSV(buffer, vals, valids, ncols, &nvals);
     if(nvals<ncols)break;
-    for(i = 0; i<global_scase.hrr_coll.nhrrinfo; i++){
+    for(i = 0; i<scase->hrr_coll.nhrrinfo; i++){
       hrrdata *hi;
 
-      hi = global_scase.hrr_coll.hrrinfo+i;
+      hi = scase->hrr_coll.hrrinfo+i;
       hi->vals[irow] = 0.0;
       if(valids[i]==1)hi->vals[irow] = vals[i];
     }
@@ -668,8 +668,8 @@ NewMemory((void **)&valids,                    global_scase.hrr_coll.nhrrinfo*si
     hrrdata *hi_chirad;
 
 
-    chirad_col = global_scase.hrr_coll.nhrrinfo+global_scase.hrr_coll.nhrrhcinfo;
-    hi_chirad = global_scase.hrr_coll.hrrinfo+chirad_col;
+    chirad_col = scase->hrr_coll.nhrrinfo+scase->hrr_coll.nhrrhcinfo;
+    hi_chirad = scase->hrr_coll.hrrinfo+chirad_col;
 
     strcpy(label, "CHIRAD");
     hi_chirad->label.longlabel = NULL;
@@ -677,16 +677,16 @@ NewMemory((void **)&valids,                    global_scase.hrr_coll.nhrrinfo*si
     hi_chirad->label.unit = NULL;
     SetLabels(&(hi_chirad->label), label, label, "-");
     hi_chirad->nvals = nrows - 2;
-    global_scase.hrr_coll.nhrrhcinfo++;
+    scase->hrr_coll.nhrrhcinfo++;
   }
   CheckMemory;
 
-  global_scase.hrr_coll.nhrrinfo += global_scase.hrr_coll.nhrrhcinfo;
+  scase->hrr_coll.nhrrinfo += scase->hrr_coll.nhrrhcinfo;
 // construct column for each MLR column by heat of combustion except for air and products
-  for(i = global_scase.hrr_coll.nhrrinfo- global_scase.hrr_coll.nhrrhcinfo; i<global_scase.hrr_coll.nhrrinfo; i++){
+  for(i = scase->hrr_coll.nhrrinfo- scase->hrr_coll.nhrrhcinfo; i<scase->hrr_coll.nhrrinfo; i++){
     hrrdata *hi;
 
-    hi = global_scase.hrr_coll.hrrinfo+i;
+    hi = scase->hrr_coll.hrrinfo+i;
     hi->nvals = nrows-2;
   }
   UpdateHoc(&global_scase);
@@ -696,9 +696,9 @@ NewMemory((void **)&valids,                    global_scase.hrr_coll.nhrrinfo*si
   if(hrr_col>=0&&qradi_col>=0){
     hrrdata *hi_chirad, *hi_hrr, *hi_qradi;
 
-    hi_chirad = global_scase.hrr_coll.hrrinfo+chirad_col;
-    hi_hrr = global_scase.hrr_coll.hrrinfo+hrr_col;
-    hi_qradi = global_scase.hrr_coll.hrrinfo+qradi_col;
+    hi_chirad = scase->hrr_coll.hrrinfo+chirad_col;
+    hi_hrr = scase->hrr_coll.hrrinfo+hrr_col;
+    hi_qradi = scase->hrr_coll.hrrinfo+qradi_col;
     hi_chirad->nvals = MIN(hi_qradi->nvals, hi_hrr->nvals);
     for(i=0;i<hi_chirad->nvals;i++){
       if(hi_hrr->vals[i]!=0.0){
@@ -712,20 +712,20 @@ NewMemory((void **)&valids,                    global_scase.hrr_coll.nhrrinfo*si
   CheckMemory;
 
 //compute vals into vals_orig
-  for(i = 0; i<global_scase.hrr_coll.nhrrinfo; i++){
+  for(i = 0; i<scase->hrr_coll.nhrrinfo; i++){
     hrrdata *hi;
 
-    hi = global_scase.hrr_coll.hrrinfo+i;
+    hi = scase->hrr_coll.hrrinfo+i;
     memcpy(hi->vals_orig, hi->vals, hi->nvals*sizeof(float));
   }
 
 //compute min and max of each column
-  for(i = 0; i<global_scase.hrr_coll.nhrrinfo; i++){
+  for(i = 0; i<scase->hrr_coll.nhrrinfo; i++){
     hrrdata *hi;
     float valmin, valmax;
     int j;
 
-    hi = global_scase.hrr_coll.hrrinfo+i;
+    hi = scase->hrr_coll.hrrinfo+i;
     hi->nvals = irow;
     valmin = hi->vals[0];
     valmax = valmin;
@@ -739,10 +739,10 @@ NewMemory((void **)&valids,                    global_scase.hrr_coll.nhrrinfo*si
   CheckMemory;
 
 // free arrays that were not used
-  for(i = global_scase.hrr_coll.nhrrinfo; i<2*(global_scase.hrr_coll.nhrrinfo-global_scase.hrr_coll.nhrrhcinfo); i++){
+  for(i = scase->hrr_coll.nhrrinfo; i<2*(scase->hrr_coll.nhrrinfo-scase->hrr_coll.nhrrhcinfo); i++){
     hrrdata *hi;
 
-    hi = global_scase.hrr_coll.hrrinfo+i;
+    hi = scase->hrr_coll.hrrinfo+i;
     FREEMEMORY(hi->vals);
     FREEMEMORY(hi->vals_orig);
   }
@@ -11776,7 +11776,7 @@ int ReadSMV_Configure(){
 
   if(global_scase.meshescoll.meshinfo!=NULL&&global_scase.meshescoll.meshinfo->jbar==1)force_isometric=1;
 
-  if(global_scase.paths.hrr_csv_filename != NULL)ReadHRR(LOAD);
+  if(global_scase.paths.hrr_csv_filename != NULL)ReadHRR(&global_scase, LOAD);
   PRINT_TIMER(timer_readsmv, "ReadHRR");
 
   if(runscript == 1){

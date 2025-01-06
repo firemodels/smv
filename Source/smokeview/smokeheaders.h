@@ -731,7 +731,7 @@ EXTERNCPP void InitCellMeshInfo(void);
 EXTERNCPP FILE_SIZE ReadAllCSVFiles(int flag);
 EXTERNCPP int  ReadBinIni(void);
 EXTERNCPP FILE_SIZE ReadCSVFile(csvfiledata *csvfi, int flag);
-EXTERNCPP void ReadHRR(int flag);
+EXTERNCPP void ReadHRR(smv_case *scase, int flag);
 EXTERNCPP int  ReadIni(char *inifile);
 EXTERNCPP int  ReadSMV(bufferstreamdata *stream);
 EXTERNCPP void ReadSMVDynamic(smv_case *scase, char *file);
