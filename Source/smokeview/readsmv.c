@@ -788,7 +788,7 @@ void InitProp(propdata *propi, int nsmokeview_ids, char *label){
 
 /* ------------------ InitDefaultProp ------------------------ */
 
-void InitDefaultProp(void){
+void InitDefaultProp(smv_case *scase){
 /*
 PROP
  Human_props
@@ -809,7 +809,7 @@ PROP
   char buffer[255];
   int i;
 
-  propi = global_scase.propcoll.propinfo + global_scase.propcoll.npropinfo;
+  propi = scase->propcoll.propinfo + scase->propcoll.npropinfo;
 
   strcpy(proplabel,"Human_props(default)");           // from input
 
@@ -825,7 +825,7 @@ PROP
     NewMemory((void **)&smokeview_id,lenbuf+1);
     strcpy(smokeview_id,buffer);
     propi->smokeview_ids[i]=smokeview_id;
-    propi->smv_objects[i]=GetSmvObjectType(&global_scase.objectscoll, propi->smokeview_ids[i],global_scase.objectscoll.std_object_defs.missing_device);
+    propi->smv_objects[i]=GetSmvObjectType(&scase->objectscoll, propi->smokeview_ids[i],scase->objectscoll.std_object_defs.missing_device);
   }
   propi->smv_object=propi->smv_objects[0];
   propi->smokeview_id=propi->smokeview_ids[0];
@@ -2169,7 +2169,7 @@ void InitDevice(devicedata *devicei, float *xyz, int is_beam, float *xyz1, float
 
 /* ------------------ ParseDevicekeyword ------------------------ */
 
-void ParseDevicekeyword(BFILE *stream, devicedata *devicei){
+void ParseDevicekeyword(smv_case *scase, BFILE *stream, devicedata *devicei){
   float xyz[3]={0.0,0.0,0.0}, xyzn[3]={0.0,0.0,0.0};
   float xyz1[3] = { 0.0,0.0,0.0 }, xyz2[3] = { 0.0,0.0,0.0 };
   int state0=0;
@@ -2309,7 +2309,7 @@ void ParseDevicekeyword(BFILE *stream, devicedata *devicei){
 
 /* ------------------ ParseDevicekeyword2 ------------------------ */
 
-void ParseDevicekeyword2(FILE *stream, devicedata *devicei){
+void ParseDevicekeyword2(smv_case *scase, FILE *stream, devicedata *devicei){
   float xyz[3] = {0.0,0.0,0.0}, xyzn[3] = {0.0,0.0,0.0};
   float xyz1[3] = {0.0,0.0,0.0}, xyz2[3] = {0.0,0.0,0.0};
   int state0 = 0;
@@ -2439,7 +2439,7 @@ bufferstreamdata *CopySMVBuffer(bufferstreamdata *stream_in);
 
 /* ------------------ GetInpf ------------------------ */
 
-int GetInpf(bufferstreamdata *stream_in){
+int GetInpf(smv_case *scase, bufferstreamdata *stream_in){
   char buffer[255], *bufferptr;
   bufferstreamdata *stream;
   int len;
@@ -2462,43 +2462,43 @@ int GetInpf(bufferstreamdata *stream_in){
       bufferptr=TrimFrontBack(buffer);
 
       len=strlen(bufferptr);
-      FREEMEMORY(global_scase.paths.fds_filein);
-      if(NewMemory((void **)&global_scase.paths.fds_filein,(unsigned int)(len+1))==0)return 2;
-      STRCPY(global_scase.paths.fds_filein,bufferptr);
-      if(FILE_EXISTS_CASEDIR(global_scase.paths.fds_filein)==NO){
-        FreeMemory(global_scase.paths.fds_filein);
+      FREEMEMORY(scase->paths.fds_filein);
+      if(NewMemory((void **)&scase->paths.fds_filein,(unsigned int)(len+1))==0)return 2;
+      STRCPY(scase->paths.fds_filein,bufferptr);
+      if(FILE_EXISTS_CASEDIR(scase->paths.fds_filein)==NO){
+        FreeMemory(scase->paths.fds_filein);
       }
 
       if(chidfilebase==NULL){
         char *chidptr=NULL;
         char buffer_chid[1024];
 
-        if(global_scase.paths.fds_filein!=NULL)chidptr=GetChid(global_scase.paths.fds_filein,buffer_chid);
+        if(scase->paths.fds_filein!=NULL)chidptr=GetChid(scase->paths.fds_filein,buffer_chid);
         if(chidptr!=NULL){
           NewMemory((void **)&chidfilebase,(unsigned int)(strlen(chidptr)+1));
           STRCPY(chidfilebase,chidptr);
         }
       }
       if(chidfilebase!=NULL){
-        NewMemory((void **)&global_scase.paths.hrr_csv_filename,(unsigned int)(strlen(chidfilebase)+8+1));
-        STRCPY(global_scase.paths.hrr_csv_filename,chidfilebase);
-        STRCAT(global_scase.paths.hrr_csv_filename,"_hrr.csv");
-        if(FILE_EXISTS_CASEDIR(global_scase.paths.hrr_csv_filename)==NO){
-          FREEMEMORY(global_scase.paths.hrr_csv_filename);
+        NewMemory((void **)&scase->paths.hrr_csv_filename,(unsigned int)(strlen(chidfilebase)+8+1));
+        STRCPY(scase->paths.hrr_csv_filename,chidfilebase);
+        STRCAT(scase->paths.hrr_csv_filename,"_hrr.csv");
+        if(FILE_EXISTS_CASEDIR(scase->paths.hrr_csv_filename)==NO){
+          FREEMEMORY(scase->paths.hrr_csv_filename);
         }
 
-        NewMemory((void **)&global_scase.paths.devc_csv_filename,(unsigned int)(strlen(chidfilebase)+9+1));
-        STRCPY(global_scase.paths.devc_csv_filename,chidfilebase);
-        STRCAT(global_scase.paths.devc_csv_filename,"_devc.csv");
-        if(FILE_EXISTS_CASEDIR(global_scase.paths.devc_csv_filename)==NO){
-          FREEMEMORY(global_scase.paths.devc_csv_filename);
+        NewMemory((void **)&scase->paths.devc_csv_filename,(unsigned int)(strlen(chidfilebase)+9+1));
+        STRCPY(scase->paths.devc_csv_filename,chidfilebase);
+        STRCAT(scase->paths.devc_csv_filename,"_devc.csv");
+        if(FILE_EXISTS_CASEDIR(scase->paths.devc_csv_filename)==NO){
+          FREEMEMORY(scase->paths.devc_csv_filename);
         }
 
-        NewMemory((void **)&global_scase.paths.exp_csv_filename,(unsigned int)(strlen(chidfilebase)+8+1));
-        STRCPY(global_scase.paths.exp_csv_filename,chidfilebase);
-        STRCAT(global_scase.paths.exp_csv_filename,"_exp.csv");
-        if(FILE_EXISTS_CASEDIR(global_scase.paths.exp_csv_filename)==NO){
-          FREEMEMORY(global_scase.paths.exp_csv_filename);
+        NewMemory((void **)&scase->paths.exp_csv_filename,(unsigned int)(strlen(chidfilebase)+8+1));
+        STRCPY(scase->paths.exp_csv_filename,chidfilebase);
+        STRCAT(scase->paths.exp_csv_filename,"_exp.csv");
+        if(FILE_EXISTS_CASEDIR(scase->paths.exp_csv_filename)==NO){
+          FREEMEMORY(scase->paths.exp_csv_filename);
         }
       }
       break;
@@ -2507,18 +2507,22 @@ int GetInpf(bufferstreamdata *stream_in){
   return 0;
 }
 
-/* ------------------ IsDupTexture ------------------------ */
-
-int IsDupTexture(texturedata *texti){
+/// @brief Given a pointer to texturedata, determine if there is another
+/// *loaded* texturedata in the case that has the same filename. If there is a
+/// duplicate, set the name and loaded status of texti to that duplicate.
+/// @param[inout] scase The case
+/// @param[inout] texti A pointer to the texture data
+/// @return 1 if there is a duplicate, 0 if there is no duplicate.
+int IsDupTexture(smv_case *scase, texturedata *texti) {
   int dup_texture;
   int i, j;
 
-  i = texti - global_scase.texture_coll.textureinfo;
+  i = texti - scase->texture_coll.textureinfo;
   dup_texture=0;
   for(j=0;j<i;j++){
     texturedata *textj;
 
-    textj = global_scase.texture_coll.textureinfo + j;
+    textj = scase->texture_coll.textureinfo + j;
     if(textj->loaded==0)continue;
     if(strcmp(texti->file,textj->file)==0){
       texti->name=textj->name;
@@ -2529,17 +2533,19 @@ int IsDupTexture(texturedata *texti){
   return dup_texture;
 }
 
-/* ------------------ IsTerrainTexture ------------------------ */
-
-int IsTerrainTexture(texturedata *texti){
+/// @brief Given a pointer to texturedata, determine if this texture is a terrain texture
+/// @param[in] scase The case
+/// @param[in] texti A pointer to the texture data
+/// @return 1 if it is a terrain texture, 0 otherwise.
+int IsTerrainTexture(smv_case *scase, texturedata *texti){
   int is_terrain_texture;
   int i;
 
   is_terrain_texture=0;
-  for(i=0;i<global_scase.terrain_texture_coll.nterrain_textures;i++){
+  for(i=0;i<scase->terrain_texture_coll.nterrain_textures;i++){
     texturedata *tt;
 
-    tt = global_scase.terrain_texture_coll.terrain_textures + i;
+    tt = scase->terrain_texture_coll.terrain_textures + i;
     if(tt->file==NULL||strcmp(tt->file, texti->file)!=0)continue;
     return 1;
   }
@@ -2628,7 +2634,7 @@ void InitTextures0(void){
 
     texti = global_scase.texture_coll.textureinfo + i;
     texti->loaded=0;
-    if(texti->file==NULL||IsDupTexture(texti)==1||IsTerrainTexture(texti)==1)continue;
+    if(texti->file==NULL||IsDupTexture(&global_scase, texti)==1||IsTerrainTexture(&global_scase, texti)==1)continue;
 
     CheckMemory;
     filename=strrchr(texti->file,*dirseparator);
@@ -4339,7 +4345,7 @@ void InitVentSurface(surfdata *surf){
 /* ----------------------- ReadDeviceHeader ----------------------------- */
 #define BUFFER_LEN 255
 
-void ReadDeviceHeader(char *file, devicedata *devices, int ndevices){
+void ReadDeviceHeader(smv_case *scase, char *file, devicedata *devices, int ndevices){
   FILE *stream;
   devicedata *devicecopy;
   char buffer[BUFFER_LEN], *comma;
@@ -4360,7 +4366,7 @@ void ReadDeviceHeader(char *file, devicedata *devices, int ndevices){
       break;
     }
     if(strcmp(buffer, "DEVICE") == 0){
-      ParseDevicekeyword2(stream, devicecopy);
+      ParseDevicekeyword2(scase, stream, devicecopy);
       devicecopy++;
     }
   }
@@ -4896,27 +4902,27 @@ void SetupMeshWalls(void){
   }
 }
 
-/* ------------------ MakeFileLists ------------------------ */
-
-void MakeFileLists(void){
+/// @brief Set the file lists of a case. That is, lists of files associated with the given case.
+/// @param[inout] scase The case
+void MakeFileLists(smv_case *scase){
   char filter_casedir[256], filter_casename[256];
 
   // create list of all files for the case being visualized (casename*.* )
 
   strcpy(filter_casename, "");
-  if(global_scase.fdsprefix != NULL&&strlen(global_scase.fdsprefix) > 0){
-    strcat(filter_casename, global_scase.fdsprefix);
+  if(scase->fdsprefix != NULL&&strlen(scase->fdsprefix) > 0){
+    strcat(filter_casename, scase->fdsprefix);
     strcat(filter_casename, "*");
   }
 
   // create a list of all files in the current directory
 
-  global_scase.filelist_coll.nfilelist_casename = GetFileListSize(".", filter_casename, FILE_MODE);
-  MakeFileList(".", filter_casename, global_scase.filelist_coll.nfilelist_casename, YES, &global_scase.filelist_coll.filelist_casename, FILE_MODE);
+  scase->filelist_coll.nfilelist_casename = GetFileListSize(".", filter_casename, FILE_MODE);
+  MakeFileList(".", filter_casename, scase->filelist_coll.nfilelist_casename, YES, &scase->filelist_coll.filelist_casename, FILE_MODE);
 
   strcpy(filter_casedir, "");
-  global_scase.filelist_coll.nfilelist_casedir = GetFileListSize(".", filter_casedir, FILE_MODE);
-  MakeFileList(".", filter_casedir, global_scase.filelist_coll.nfilelist_casedir, YES, &global_scase.filelist_coll.filelist_casedir, FILE_MODE);
+  scase->filelist_coll.nfilelist_casedir = GetFileListSize(".", filter_casedir, FILE_MODE);
+  MakeFileList(".", filter_casedir, scase->filelist_coll.nfilelist_casedir, YES, &scase->filelist_coll.filelist_casedir, FILE_MODE);
 }
 
 #define RETURN_TWO        2
@@ -5000,14 +5006,14 @@ void *SetupAllIsosurfaces(void *arg){
 
 /* ------------------ ParseISOFCount ------------------------ */
 
-void ParseISOFCount(void){
+void ParseISOFCount(smv_case *scase){
   if(setup_only == 1 || smoke3d_only == 1)return;
-  global_scase.nisoinfo++;
+  scase->nisoinfo++;
 }
 
 /* ------------------ ParseISOFProcess ------------------------ */
 
-int ParseISOFProcess(bufferstreamdata *stream, char *buffer, int *iiso_in, int *ioffset_in, int *nn_iso_in, int nisos_per_mesh_in){
+int ParseISOFProcess(smv_case *scase, bufferstreamdata *stream, char *buffer, int *iiso_in, int *ioffset_in, int *nn_iso_in, int nisos_per_mesh_in){
   isodata *isoi;
   int dataflag = 0, geomflag = 0;
   char tbuffer[255], *tbufferptr;
@@ -5027,7 +5033,7 @@ int ParseISOFProcess(bufferstreamdata *stream, char *buffer, int *iiso_in, int *
   nn_iso = *nn_iso_in;
   nisos_per_mesh = nisos_per_mesh_in;
 
-  isoi = global_scase.isoinfo+iiso;
+  isoi = scase->isoinfo+iiso;
   isoi->isof_index = nn_iso%nisos_per_mesh;
   nn_iso++;
   *nn_iso_in = nn_iso;
@@ -5037,7 +5043,7 @@ int ParseISOFProcess(bufferstreamdata *stream, char *buffer, int *iiso_in, int *
   TrimBack(buffer);
   len = strlen(buffer);
 
-  if(global_scase.meshescoll.nmeshes>1){
+  if(scase->meshescoll.nmeshes>1){
     blocknumber = ioffset-1;
   }
   else{
@@ -5054,7 +5060,7 @@ int ParseISOFProcess(bufferstreamdata *stream, char *buffer, int *iiso_in, int *
     blocknumber--;
   }
   if(FGETS(buffer, 255, stream)==NULL){
-    global_scase.nisoinfo--;
+    scase->nisoinfo--;
     return RETURN_BREAK;
   }
 
@@ -5074,7 +5080,7 @@ int ParseISOFProcess(bufferstreamdata *stream, char *buffer, int *iiso_in, int *
   isoi->geomflag = geomflag;
   isoi->nlevels = 0;
   isoi->levels = NULL;
-  isoi->memory_id = ++global_scase.nmemory_ids;
+  isoi->memory_id = ++scase->nmemory_ids;
   isoi->geom_nstatics = NULL;
   isoi->geom_ndynamics = NULL;
   isoi->geom_times = NULL;
@@ -5088,8 +5094,8 @@ int ParseISOFProcess(bufferstreamdata *stream, char *buffer, int *iiso_in, int *
   isoi->color_label.unit = NULL;
   isoi->geominfo = NULL;
   NewMemory((void **)&isoi->geominfo, sizeof(geomdata));
-  global_scase.nmemory_ids++;
-  isoi->geominfo->memory_id = global_scase.nmemory_ids;
+  scase->nmemory_ids++;
+  isoi->geominfo->memory_id = scase->nmemory_ids;
   InitGeom(isoi->geominfo, GEOM_ISO, NOT_FDSBLOCK, CFACE_NORMALS_NO,blocknumber);
 
   bufferptr = TrimFrontBack(buffer);
@@ -5111,7 +5117,7 @@ int ParseISOFProcess(bufferstreamdata *stream, char *buffer, int *iiso_in, int *
 
   if(isoi->dataflag==1&&isoi->geomflag==1){
     if(FGETS(tbuffer, 255, stream)==NULL){
-      global_scase.nisoinfo--;
+      scase->nisoinfo--;
       return RETURN_BREAK;
     }
     TrimBack(tbuffer);
@@ -5151,7 +5157,7 @@ int ParseISOFProcess(bufferstreamdata *stream, char *buffer, int *iiso_in, int *
     if(isoi->dataflag==1){
       if(ReadLabels(&isoi->color_label, stream, NULL)==LABEL_ERR)return 2;
     }
-    global_scase.nisoinfo--;
+    scase->nisoinfo--;
   }
   return RETURN_CONTINUE;
 }
@@ -5160,7 +5166,7 @@ int ParseISOFProcess(bufferstreamdata *stream, char *buffer, int *iiso_in, int *
 #define NO_SCAN 1
 /* ------------------ ParseCHIDProcess ------------------------ */
 
-int ParseCHIDProcess(bufferstreamdata *stream, int option){
+int ParseCHIDProcess(smv_case *scase, bufferstreamdata *stream, int option){
   size_t len;
   char buffer[255], *bufferptr;
 
@@ -5180,16 +5186,16 @@ int ParseCHIDProcess(bufferstreamdata *stream, int option){
   }
   bufferptr = TrimFrontBack(buffer);
   len = strlen(bufferptr);
-  FREEMEMORY(global_scase.paths.chidfilebase);
-  NewMemory((void **)&global_scase.paths.chidfilebase, (unsigned int)(len+1));
-  STRCPY(global_scase.paths.chidfilebase, bufferptr);
+  FREEMEMORY(scase->paths.chidfilebase);
+  NewMemory((void **)&scase->paths.chidfilebase, (unsigned int)(len+1));
+  STRCPY(scase->paths.chidfilebase, bufferptr);
 
-  if(global_scase.paths.chidfilebase!=NULL){
-    NewMemory((void **)&global_scase.paths.hrr_csv_filename, (unsigned int)(strlen(global_scase.paths.chidfilebase)+8+1));
-    STRCPY(global_scase.paths.hrr_csv_filename, chidfilebase);
-    STRCAT(global_scase.paths.hrr_csv_filename, "_hrr.csv");
-    if(FILE_EXISTS_CASEDIR(global_scase.paths.hrr_csv_filename)==NO){
-      FREEMEMORY(global_scase.paths.hrr_csv_filename);
+  if(scase->paths.chidfilebase!=NULL){
+    NewMemory((void **)&scase->paths.hrr_csv_filename, (unsigned int)(strlen(scase->paths.chidfilebase)+8+1));
+    STRCPY(scase->paths.hrr_csv_filename, chidfilebase);
+    STRCAT(scase->paths.hrr_csv_filename, "_hrr.csv");
+    if(FILE_EXISTS_CASEDIR(scase->paths.hrr_csv_filename)==NO){
+      FREEMEMORY(scase->paths.hrr_csv_filename);
     }
   }
   return RETURN_CONTINUE;
@@ -5198,21 +5204,21 @@ int ParseCHIDProcess(bufferstreamdata *stream, int option){
 /* ------------------ ReadSMVCHID ------------------------ */
 
 int ReadSMVCHID(bufferstreamdata *stream){
-  ParseCHIDProcess(stream, SCAN);
+  ParseCHIDProcess(&global_scase, stream, SCAN);
   return 0;
 }
 
 
 /* ------------------ ParsePRTCount ------------------------ */
 
-void ParsePRT5Count(void){
+void ParsePRT5Count(smv_case *scase){
   if(setup_only==1||smoke3d_only==1)return;
-  global_scase.npartinfo++;
+  scase->npartinfo++;
 }
 
 /* ------------------ ParsePRT5Process ------------------------ */
 
-int ParsePRT5Process(bufferstreamdata *stream, char *buffer, int *nn_part_in, int *ipart_in, int *ioffset_in){
+int ParsePRT5Process(smv_case *scase, bufferstreamdata *stream, char *buffer, int *nn_part_in, int *ipart_in, int *ioffset_in){
   unsigned int lenkey;
   partdata *parti;
   int blocknumber;
@@ -5230,10 +5236,10 @@ int ParsePRT5Process(bufferstreamdata *stream, char *buffer, int *nn_part_in, in
 
   nn_part++;
   *nn_part_in = nn_part;
-  parti = global_scase.partinfo+ipart;
+  parti = scase->partinfo+ipart;
   lenkey = 4;
   len = strlen(buffer);
-  if(global_scase.meshescoll.nmeshes>1){
+  if(scase->meshescoll.nmeshes>1){
     blocknumber = ioffset-1;
   }
   else{
@@ -5259,7 +5265,7 @@ int ParsePRT5Process(bufferstreamdata *stream, char *buffer, int *nn_part_in, in
   parti->hist_update = 0;
   parti->skipload = 1;
   if(FGETS(buffer, 255, stream)==NULL){
-    global_scase.npartinfo--;
+    scase->npartinfo--;
     return RETURN_BREAK;
   }
 
@@ -5333,12 +5339,12 @@ int ParsePRT5Process(bufferstreamdata *stream, char *buffer, int *nn_part_in, in
       if(parti->file==NULL)continue;
       sscanf(buffer, "%i", &iclass);
       if(iclass<1)iclass = 1;
-      if(iclass>global_scase.npartclassinfo)iclass = global_scase.npartclassinfo;
+      if(iclass>scase->npartclassinfo)iclass = scase->npartclassinfo;
       ic = 0;
-      for(iii = 0; iii<global_scase.npartclassinfo; iii++){
+      for(iii = 0; iii<scase->npartclassinfo; iii++){
         partclassdata *pci;
 
-        pci = global_scase.partclassinfo+iii;
+        pci = scase->partclassinfo+iii;
         if(iclass-1==ic){
           parti->partclassptr[i] = pci;
           break;
@@ -5352,29 +5358,29 @@ int ParsePRT5Process(bufferstreamdata *stream, char *buffer, int *nn_part_in, in
 
   if(parti->file!=NULL&&parti->nclasses==0){
     NewMemory((void **)&parti->partclassptr, sizeof(partclassdata *));
-    parti->partclassptr[i] = global_scase.partclassinfo+parti->nclasses;
+    parti->partclassptr[i] = scase->partclassinfo+parti->nclasses;
   }
   if(fast_startup==1||(parti->file!=NULL&&FILE_EXISTS_CASEDIR(parti->file)==YES)){
     ipart++;
     *ipart_in = ipart;
   }
   else{
-    global_scase.npartinfo--;
+    scase->npartinfo--;
   }
   return RETURN_CONTINUE;
 }
 
 /* ------------------ ParseBNDFCount ------------------------ */
 
-int ParseBNDFCount(void){
+int ParseBNDFCount(smv_case *scase){
   if(setup_only==1||smoke3d_only==1)return RETURN_CONTINUE;
-  global_scase.npatchinfo++;
+  scase->npatchinfo++;
   return RETURN_CONTINUE;
 }
 
 /* ------------------ ParseBNDFProcess ------------------------ */
 
-int ParseBNDFProcess(bufferstreamdata *stream, char *buffer, int *nn_patch_in, int *ioffset_in, patchdata **patchgeom_in, int *ipatch_in, char buffers[6][256]){
+int ParseBNDFProcess(smv_case *scase, bufferstreamdata *stream, char *buffer, int *nn_patch_in, int *ioffset_in, patchdata **patchgeom_in, int *ipatch_in, char buffers[6][256]){
   patchdata *patchi;
   int blocknumber;
   size_t len;
@@ -5402,7 +5408,7 @@ int ParseBNDFProcess(bufferstreamdata *stream, char *buffer, int *nn_patch_in, i
   TrimBack(buffer);
   len = strlen(buffer);
 
-  if(global_scase.meshescoll.nmeshes>1){
+  if(scase->meshescoll.nmeshes>1){
     blocknumber = ioffset-1;
   }
   else{
@@ -5420,7 +5426,7 @@ int ParseBNDFProcess(bufferstreamdata *stream, char *buffer, int *nn_patch_in, i
     patchi = patchgeom;
   }
   else{
-    patchi = global_scase.patchinfo+ipatch;
+    patchi = scase->patchinfo+ipatch;
   }
 
   for(i = 0; i<6; i++){
@@ -5445,7 +5451,7 @@ int ParseBNDFProcess(bufferstreamdata *stream, char *buffer, int *nn_patch_in, i
     patchi->patch_filetype = PATCH_STRUCTURED_CELL_CENTER;
   }
   if(Match(buffer, "BNDE")==1){
-    global_scase.ngeom_data++;
+    scase->ngeom_data++;
     patchi->patch_filetype = PATCH_GEOMETRY_BOUNDARY;
     patchi->structured = NO;
   }
@@ -5454,7 +5460,7 @@ int ParseBNDFProcess(bufferstreamdata *stream, char *buffer, int *nn_patch_in, i
     char *sliceparms;
 
     CheckMemory;
-    global_scase.ngeom_data++;
+    scase->ngeom_data++;
     patchi->patch_filetype = PATCH_GEOMETRY_SLICE;
     patchi->structured = NO;
     patchi->boundary = 0;
@@ -5491,7 +5497,7 @@ int ParseBNDFProcess(bufferstreamdata *stream, char *buffer, int *nn_patch_in, i
   }
   else{
     if(FGETS(buffer, 255, stream)==NULL){
-      global_scase.npatchinfo--;
+      scase->npatchinfo--;
       return RETURN_BREAK;
     }
   }
@@ -5532,20 +5538,20 @@ int ParseBNDFProcess(bufferstreamdata *stream, char *buffer, int *nn_patch_in, i
     }
     else{
       if(FGETS(buffer, 255, stream)==NULL){
-        global_scase.npatchinfo--;
+        scase->npatchinfo--;
         return RETURN_BREAK;
       }
     }
 
-    if(patchi->patch_filetype==PATCH_GEOMETRY_BOUNDARY&&global_scase.ncgeominfo>0){
-      patchi->geominfo = global_scase.cgeominfo+blocknumber;
+    if(patchi->patch_filetype==PATCH_GEOMETRY_BOUNDARY&&scase->ncgeominfo>0){
+      patchi->geominfo = scase->cgeominfo+blocknumber;
     }
     else{
       geomfile = TrimFrontBack(buffer);
-      for(igeom = 0; igeom<global_scase.ngeominfo; igeom++){
+      for(igeom = 0; igeom<scase->ngeominfo; igeom++){
         geomdata *geomi;
 
-        geomi = global_scase.geominfo+igeom;
+        geomi = scase->geominfo+igeom;
         if(strcmp(geomi->file, geomfile)==0){
           patchi->geominfo = geomi;
           if(patchi->patch_filetype==PATCH_GEOMETRY_BOUNDARY){
@@ -5591,7 +5597,7 @@ int ParseBNDFProcess(bufferstreamdata *stream, char *buffer, int *nn_patch_in, i
   patchi->chopmin = 1.0;
   patchi->setchopmax = 0;
   patchi->chopmax = 0.0;
-  global_scase.meshescoll.meshinfo[blocknumber].patchfilenum = -1;
+  scase->meshescoll.meshinfo[blocknumber].patchfilenum = -1;
   {
     char geomlabel2[256], *geomptr = NULL;
 
@@ -5638,14 +5644,14 @@ int ParseBNDFProcess(bufferstreamdata *stream, char *buffer, int *nn_patch_in, i
 
 /* ------------------ ParseSMOKE3DCount ------------------------ */
 
-void ParseSMOKE3DCount(void){
+void ParseSMOKE3DCount(smv_case *scase){
   if(setup_only==1)return;
-  global_scase.smoke3dcoll.nsmoke3dinfo++;
+  scase->smoke3dcoll.nsmoke3dinfo++;
 }
 
 /* ------------------ ParseSMOKE3DProcess ------------------------ */
 
-int ParseSMOKE3DProcess(bufferstreamdata *stream, char *buffer, int *nn_smoke3d_in, int *ioffset_in, int *ismoke3dcount_in, int *ismoke3d_in){
+int ParseSMOKE3DProcess(smv_case *scase, bufferstreamdata *stream, char *buffer, int *nn_smoke3d_in, int *ioffset_in, int *ismoke3dcount_in, int *ismoke3d_in){
   size_t len;
   size_t lenbuffer;
   int filetype = C_GENERATED;
@@ -5672,7 +5678,7 @@ int ParseSMOKE3DProcess(bufferstreamdata *stream, char *buffer, int *nn_smoke3d_
 
   TrimBack(buffer);
   len = strlen(buffer);
-  if(global_scase.meshescoll.nmeshes>1){
+  if(scase->meshescoll.nmeshes>1){
     blocknumber = ioffset-1;
   }
   else{
@@ -5686,7 +5692,7 @@ int ParseSMOKE3DProcess(bufferstreamdata *stream, char *buffer, int *nn_smoke3d_
     blocknumber--;
   }
   if(FGETS(buffer, 255, stream)==NULL){
-    global_scase.smoke3dcoll.nsmoke3dinfo--;
+    scase->smoke3dcoll.nsmoke3dinfo--;
     return RETURN_BREAK;
   }
   bufferptr = TrimFrontBack(buffer);
@@ -5696,10 +5702,10 @@ int ParseSMOKE3DProcess(bufferstreamdata *stream, char *buffer, int *nn_smoke3d_
     smoke3ddata *smoke3di;
     int i;
 
-    smoke3di = global_scase.smoke3dcoll.smoke3dinfo+ismoke3d;
+    smoke3di = scase->smoke3dcoll.smoke3dinfo+ismoke3d;
 
 #ifdef _DEBUG
-    if(global_scase.smoke3dcoll.nsmoke3dinfo>500&&(ismoke3d%100==0||ismoke3d==global_scase.smoke3dcoll.nsmoke3dinfo-1)){
+    if(scase->smoke3dcoll.nsmoke3dinfo>500&&(ismoke3d%100==0||ismoke3d==scase->smoke3dcoll.nsmoke3dinfo-1)){
       PRINTF("     examining %i'st 3D smoke file\n", ismoke3dcount);
     }
 #endif
@@ -5823,7 +5829,7 @@ int ParseSMOKE3DProcess(bufferstreamdata *stream, char *buffer, int *nn_smoke3d_
       strcat(smoke3di->cextinct, cextinct);
       strcat(smoke3di->cextinct, ")");
     }
-    global_scase.update_smoke_alphas = 1;
+    scase->update_smoke_alphas = 1;
   }
   return RETURN_CONTINUE;
 }
@@ -5831,7 +5837,7 @@ int ParseSMOKE3DProcess(bufferstreamdata *stream, char *buffer, int *nn_smoke3d_
 
 /* ------------------ ParseSLCFCount ------------------------ */
 
-int ParseSLCFCount(int option, bufferstreamdata *stream, char *buffer, int *nslicefiles_in){
+int ParseSLCFCount(smv_case *scase, int option, bufferstreamdata *stream, char *buffer, int *nslicefiles_in){
   if(setup_only==1||smoke3d_only==1||handle_slice_files==0)return RETURN_CONTINUE;
   if(option==SCAN){
     for(;;){
@@ -5848,8 +5854,8 @@ int ParseSLCFCount(int option, bufferstreamdata *stream, char *buffer, int *nsli
       return RETURN_BREAK;
     }
   }
-  global_scase.slicecoll.nsliceinfo++;
-  *nslicefiles_in = global_scase.slicecoll.nsliceinfo;
+  scase->slicecoll.nsliceinfo++;
+  *nslicefiles_in = scase->slicecoll.nsliceinfo;
   if(Match(buffer, "BNDS")==1){
     if(FGETS(buffer, 255, stream)==NULL){
       return RETURN_BREAK;
@@ -5872,7 +5878,7 @@ int ParseSLCFCount(int option, bufferstreamdata *stream, char *buffer, int *nsli
 
 /* ------------------ ParseSLCFProcess ------------------------ */
 
-int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn_slice_in, int ioffset_in,
+int ParseSLCFProcess(smv_case *scase, int option, bufferstreamdata *stream, char *buffer, int *nn_slice_in, int ioffset_in,
   int *nslicefiles_in, slicedata **sliceinfo_copy_in, patchdata **patchgeom_in,
   char buffers[6][256]){
   char *slicelabelptr, slicelabel[256], *sliceparms;
@@ -5953,12 +5959,12 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
     terrain = 1;
   }
   if(Match(buffer, "SLCC")==1){
-    global_scase.cellcenter_slice_active = 1;
+    scase->cellcenter_slice_active = 1;
     cellcenter = 1;
   }
   TrimBack(buffer);
   len = strlen(buffer);
-  if(global_scase.meshescoll.nmeshes>1){
+  if(scase->meshescoll.nmeshes>1){
     blocknumber = ioffset_in-1;
   }
   else{
@@ -5975,7 +5981,7 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
   // read in slice file name
 
   if(FGETS(buffer, 255, stream)==NULL){
-    global_scase.slicecoll.nsliceinfo--;
+    scase->slicecoll.nsliceinfo--;
     return RETURN_BREAK;
   }
   if(slicegeom==1){
@@ -5985,7 +5991,7 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
   bufferptr = TrimFrontBack(buffer);
   len = strlen(bufferptr);
 
-  sd = global_scase.slicecoll.sliceinfo+nn_slice-1;
+  sd = scase->slicecoll.sliceinfo+nn_slice-1;
 
 #ifdef pp_SLICEFRAME
   sd->frameinfo        = NULL;
@@ -6052,7 +6058,7 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
   }
   if(compression_type==UNCOMPRESSED&&(fast_startup==1||FILE_EXISTS_CASEDIR(bufferptr)==YES))has_reg = YES;
   if(has_reg==NO&&compression_type==UNCOMPRESSED){
-    global_scase.slicecoll.nsliceinfo--;
+    scase->slicecoll.nsliceinfo--;
 
     nslicefiles--;
     *nslicefiles_in = nslicefiles;
@@ -6106,7 +6112,7 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
     char buffer2[256];
 
     if(FGETS(buffer2, 255, stream)==NULL){
-      global_scase.slicecoll.nsliceinfo--;
+      scase->slicecoll.nsliceinfo--;
       return RETURN_BREAK;
     }
     strcpy(buffers[2], buffer2);
@@ -6232,7 +6238,7 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
   {
     meshdata *meshi;
 
-    meshi = global_scase.meshescoll.meshinfo+blocknumber;
+    meshi = scase->meshescoll.meshinfo+blocknumber;
     sd->full_mesh = NO;
     if(sd->is2-sd->is1==meshi->ibar &&
       sd->js2-sd->js1==meshi->jbar &&
@@ -6254,7 +6260,7 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
 
   meshdata *meshi;
 
-  meshi = global_scase.meshescoll.meshinfo + blocknumber;
+  meshi = scase->meshescoll.meshinfo + blocknumber;
   meshi->nsliceinfo++;
 
   if(slicegeom==1){
@@ -7008,7 +7014,7 @@ static float pass5_time;
 /// @brief Initialise any global variables necessary to being parsing an SMV
 /// file. This should be called before @ref ReadSMV_Parse.
 /// @return zero on success, nonzero on failure.
-int ReadSMV_Init(){
+int ReadSMV_Init(smv_case *scase){
   float timer_readsmv;
   float timer_setup;
 
@@ -7030,83 +7036,83 @@ int ReadSMV_Init(){
   }
 
   START_TIMER(getfilelist_time);
-  MakeFileLists();
+  MakeFileLists(scase);
   PRINT_TIMER(timer_setup, "MakeFileLists");
   STOP_TIMER(getfilelist_time);
 
   START_TIMER(pass0_time);
 
-  global_scase.propcoll.npropinfo=1; // the 0'th prop is the default human property
+  scase->propcoll.npropinfo=1; // the 0'th prop is the default human property
 
   FREEMEMORY(fds_title);
 
-  FREEMEMORY(global_scase.treeinfo);
-  global_scase.ntreeinfo=0;
+  FREEMEMORY(scase->treeinfo);
+  scase->ntreeinfo=0;
 
   int i;
-  for(i=0;i<global_scase.nterraininfo;i++){
+  for(i=0;i<scase->nterraininfo;i++){
     terraindata *terri;
 
-    terri = global_scase.terraininfo + i;
+    terri = scase->terraininfo + i;
     FREEMEMORY(terri->xplt);
     FREEMEMORY(terri->yplt);
     FREEMEMORY(terri->zcell);
     FREEMEMORY(terri->znode);
   }
-  FREEMEMORY(global_scase.terraininfo);
-  global_scase.nterraininfo=0;
-  global_scase.niso_compressed=0;
-  if(global_scase.sphereinfo==NULL){
-    NewMemory((void **)&global_scase.sphereinfo,sizeof(spherepoints));
-    InitSpherePoints(global_scase.sphereinfo,14);
+  FREEMEMORY(scase->terraininfo);
+  scase->nterraininfo=0;
+  scase->niso_compressed=0;
+  if(scase->sphereinfo==NULL){
+    NewMemory((void **)&scase->sphereinfo,sizeof(spherepoints));
+    InitSpherePoints(scase->sphereinfo,14);
   }
-  if(global_scase.wui_sphereinfo==NULL){
-    NewMemory((void **)&global_scase.wui_sphereinfo,sizeof(spherepoints));
-    InitSpherePoints(global_scase.wui_sphereinfo,14);
+  if(scase->wui_sphereinfo==NULL){
+    NewMemory((void **)&scase->wui_sphereinfo,sizeof(spherepoints));
+    InitSpherePoints(scase->wui_sphereinfo,14);
   }
   PRINT_TIMER(timer_setup, "InitSpherePoints");
   ntotal_blockages=0;
 
-  if(global_scase.csvcoll.ncsvfileinfo>0){
+  if(scase->csvcoll.ncsvfileinfo>0){
     csvfiledata *csvi;
 
-    for(i=0;i<global_scase.csvcoll.ncsvfileinfo;i++){
-      csvi = global_scase.csvcoll.csvfileinfo + i;
+    for(i=0;i<scase->csvcoll.ncsvfileinfo;i++){
+      csvi = scase->csvcoll.csvfileinfo + i;
       FREEMEMORY(csvi->file);
     }
-    FREEMEMORY(global_scase.csvcoll.csvfileinfo);
+    FREEMEMORY(scase->csvcoll.csvfileinfo);
   }
-  global_scase.csvcoll.ncsvfileinfo=0;
+  scase->csvcoll.ncsvfileinfo=0;
 
-  if(global_scase.ngeominfo>0){
-    for(i=0;i<global_scase.ngeominfo;i++){
+  if(scase->ngeominfo>0){
+    for(i=0;i<scase->ngeominfo;i++){
       geomdata *geomi;
 
-      geomi = global_scase.geominfo + i;
+      geomi = scase->geominfo + i;
       if(geomi->ngeomobjinfo>0){
         FREEMEMORY(geomi->geomobjinfo);
         geomi->ngeomobjinfo=0;
       }
       FREEMEMORY(geomi->file);
     }
-    FREEMEMORY(global_scase.geominfo);
-    global_scase.ngeominfo=0;
+    FREEMEMORY(scase->geominfo);
+    scase->ngeominfo=0;
   }
 
-  if(global_scase.ncgeominfo>0){
-    for(i = 0; i<global_scase.ncgeominfo; i++){
+  if(scase->ncgeominfo>0){
+    for(i = 0; i<scase->ncgeominfo; i++){
       geomdata *geomi;
 
-      geomi = global_scase.cgeominfo+i;
+      geomi = scase->cgeominfo+i;
       FREEMEMORY(geomi->file);
     }
-    FREEMEMORY(global_scase.cgeominfo);
-    global_scase.ncgeominfo = 0;
+    FREEMEMORY(scase->cgeominfo);
+    scase->ncgeominfo = 0;
   }
 
-  FREEMEMORY(global_scase.tickinfo);
-  global_scase.ntickinfo=0;
-  global_scase.ntickinfo_smv=0;
+  FREEMEMORY(scase->tickinfo);
+  scase->ntickinfo=0;
+  scase->ntickinfo_smv=0;
 
   FREEMEMORY(camera_external);
   NewMemory((void **)&camera_external,sizeof(cameradata));
@@ -7132,36 +7138,36 @@ int ReadSMV_Init(){
   FREEMEMORY(camera_last);
   NewMemory((void **)&camera_last,sizeof(cameradata));
 
-  global_scase.updatefaces=1;
-  global_scase.nfires=0;
-  global_scase.nrooms=0;
+  scase->updatefaces=1;
+  scase->nfires=0;
+  scase->nrooms=0;
 
   START_TIMER(timer_setup);
-  InitSurface(&global_scase.sdefault);
+  InitSurface(&scase->sdefault);
   PRINT_TIMER(timer_setup, "InitSurface");
-  NewMemory((void **)&global_scase.sdefault.surfacelabel,(5+1));
-  strcpy(global_scase.sdefault.surfacelabel,"INERT");
+  NewMemory((void **)&scase->sdefault.surfacelabel,(5+1));
+  strcpy(scase->sdefault.surfacelabel,"INERT");
 
-  InitVentSurface(&global_scase.v_surfacedefault);
+  InitVentSurface(&scase->v_surfacedefault);
   PRINT_TIMER(timer_setup, "InitVentSurface");
-  NewMemory((void **)&global_scase.v_surfacedefault.surfacelabel,(4+1));
-  strcpy(global_scase.v_surfacedefault.surfacelabel,"VENT");
+  NewMemory((void **)&scase->v_surfacedefault.surfacelabel,(4+1));
+  strcpy(scase->v_surfacedefault.surfacelabel,"VENT");
 
-  InitSurface(&global_scase.e_surfacedefault);
+  InitSurface(&scase->e_surfacedefault);
   PRINT_TIMER(timer_setup, "InitSurface");
-  NewMemory((void **)&global_scase.e_surfacedefault.surfacelabel,(8+1));
-  strcpy(global_scase.e_surfacedefault.surfacelabel,"EXTERIOR");
-  global_scase.e_surfacedefault.color=mat_ambient2;
+  NewMemory((void **)&scase->e_surfacedefault.surfacelabel,(8+1));
+  strcpy(scase->e_surfacedefault.surfacelabel,"EXTERIOR");
+  scase->e_surfacedefault.color=mat_ambient2;
 
   // free memory for particle class
 
-  if(global_scase.partclassinfo!=NULL){
+  if(scase->partclassinfo!=NULL){
     int j;
 
-    for(i=0;i<global_scase.npartclassinfo+1;i++){
+    for(i=0;i<scase->npartclassinfo+1;i++){
       partclassdata *partclassi;
 
-      partclassi = global_scase.partclassinfo + i;
+      partclassi = scase->partclassinfo + i;
       FREEMEMORY(partclassi->name);
       if(partclassi->ntypes>0){
         for(j=0;j<partclassi->ntypes;j++){
@@ -7174,28 +7180,28 @@ int ReadSMV_Init(){
         partclassi->ntypes=0;
       }
     }
-    FREEMEMORY(global_scase.partclassinfo);
+    FREEMEMORY(scase->partclassinfo);
   }
-  global_scase.npartclassinfo=0;
+  scase->npartclassinfo=0;
 
-  if(global_scase.devicecoll.ndeviceinfo>0){
-    for(i=0;i<global_scase.devicecoll.ndeviceinfo;i++){
+  if(scase->devicecoll.ndeviceinfo>0){
+    for(i=0;i<scase->devicecoll.ndeviceinfo;i++){
     }
-    FREEMEMORY(global_scase.devicecoll.deviceinfo);
-    global_scase.devicecoll.ndeviceinfo=0;
+    FREEMEMORY(scase->devicecoll.deviceinfo);
+    scase->devicecoll.ndeviceinfo=0;
   }
 
   // read in device (.svo) definitions
 
   START_TIMER(timer_setup);
-  ReadDefaultObjectCollection(&global_scase.objectscoll, global_scase.fdsprefix, setbw, global_scase.isZoneFireModel);
+  ReadDefaultObjectCollection(&scase->objectscoll, scase->fdsprefix, setbw, scase->isZoneFireModel);
   PRINT_TIMER(timer_setup, "InitSurface");
 
-  if(global_scase.noutlineinfo>0){
-    for(i=0;i<global_scase.noutlineinfo;i++){
+  if(scase->noutlineinfo>0){
+    for(i=0;i<scase->noutlineinfo;i++){
       outlinedata *outlinei;
 
-      outlinei = global_scase.outlineinfo + i;
+      outlinei = scase->outlineinfo + i;
       FREEMEMORY(outlinei->x1);
       FREEMEMORY(outlinei->y1);
       FREEMEMORY(outlinei->z1);
@@ -7203,108 +7209,108 @@ int ReadSMV_Init(){
       FREEMEMORY(outlinei->y2);
       FREEMEMORY(outlinei->z2);
     }
-    FREEMEMORY(global_scase.outlineinfo);
-    global_scase.noutlineinfo=0;
+    FREEMEMORY(scase->outlineinfo);
+    scase->noutlineinfo=0;
   }
 
-  if(global_scase.nzoneinfo>0){
-    for(i=0;i<global_scase.nzoneinfo;i++){
+  if(scase->nzoneinfo>0){
+    for(i=0;i<scase->nzoneinfo;i++){
       zonedata *zonei;
       int n;
 
-      zonei = global_scase.zoneinfo + i;
+      zonei = scase->zoneinfo + i;
       for(n=0;n<4;n++){
         FreeLabels(&zonei->label[n]);
       }
       FREEMEMORY(zonei->file);
     }
-    FREEMEMORY(global_scase.zoneinfo);
+    FREEMEMORY(scase->zoneinfo);
   }
-  global_scase.nzoneinfo=0;
+  scase->nzoneinfo=0;
 
-  if(global_scase.smoke3dcoll.nsmoke3dinfo>0){
+  if(scase->smoke3dcoll.nsmoke3dinfo>0){
     {
       smoke3ddata *smoke3di;
 
-      for(i=0;i<global_scase.smoke3dcoll.nsmoke3dinfo;i++){
-        smoke3di = global_scase.smoke3dcoll.smoke3dinfo + i;
+      for(i=0;i<scase->smoke3dcoll.nsmoke3dinfo;i++){
+        smoke3di = scase->smoke3dcoll.smoke3dinfo + i;
         FreeSmoke3D(smoke3di);
         FREEMEMORY(smoke3di->comp_file);
         FREEMEMORY(smoke3di->reg_file);
       }
-      FREEMEMORY(global_scase.smoke3dcoll.smoke3dinfo);
-      global_scase.smoke3dcoll.nsmoke3dinfo=0;
+      FREEMEMORY(scase->smoke3dcoll.smoke3dinfo);
+      scase->smoke3dcoll.nsmoke3dinfo=0;
     }
   }
 
-  if(global_scase.npartinfo>0){
-    for(i=0;i<global_scase.npartinfo;i++){
-      FREEMEMORY(global_scase.partinfo[i].partclassptr);
-      FREEMEMORY(global_scase.partinfo[i].reg_file);
-      FREEMEMORY(global_scase.partinfo[i].size_file);
+  if(scase->npartinfo>0){
+    for(i=0;i<scase->npartinfo;i++){
+      FREEMEMORY(scase->partinfo[i].partclassptr);
+      FREEMEMORY(scase->partinfo[i].reg_file);
+      FREEMEMORY(scase->partinfo[i].size_file);
     }
-    FREEMEMORY(global_scase.partinfo);
+    FREEMEMORY(scase->partinfo);
   }
-  global_scase.npartinfo=0;
+  scase->npartinfo=0;
 
 
   //*** free slice data
-  FreeSliceData(&global_scase);
+  FreeSliceData(scase);
 
-  if(global_scase.npatchinfo>0){
-    for(i=0;i<global_scase.npatchinfo;i++){
+  if(scase->npatchinfo>0){
+    for(i=0;i<scase->npatchinfo;i++){
       patchdata *patchi;
 
-      patchi = global_scase.patchinfo + i;
+      patchi = scase->patchinfo + i;
       FreeLabels(&patchi->label);
       FREEMEMORY(patchi->reg_file);
       FREEMEMORY(patchi->comp_file);
       FREEMEMORY(patchi->size_file);
     }
-    FREEMEMORY(global_scase.patchinfo);
+    FREEMEMORY(scase->patchinfo);
   }
-  global_scase.npatchinfo=0;
+  scase->npatchinfo=0;
 
-  if(global_scase.nisoinfo>0){
-    for(i=0;i<global_scase.nisoinfo;i++){
-      FreeLabels(&global_scase.isoinfo[i].surface_label);
-      FREEMEMORY(global_scase.isoinfo[i].file);
+  if(scase->nisoinfo>0){
+    for(i=0;i<scase->nisoinfo;i++){
+      FreeLabels(&scase->isoinfo[i].surface_label);
+      FREEMEMORY(scase->isoinfo[i].file);
     }
-    FREEMEMORY(global_scase.isoinfo);
+    FREEMEMORY(scase->isoinfo);
   }
-  global_scase.nisoinfo=0;
+  scase->nisoinfo=0;
 
-  global_scase.updateindexcolors=0;
-  global_scase.ntrnx=0;
-  global_scase.ntrny=0;
-  global_scase.ntrnz=0;
-  global_scase.meshescoll.nmeshes=0;
-  global_scase.npdim=0;
-  global_scase.nVENT=0;
-  global_scase.nCVENT=0;
-  global_scase.ncvents=0;
-  global_scase.nOBST=0;
-  global_scase.noffset=0;
-  global_scase.surfcoll.nsurfinfo=0;
+  scase->updateindexcolors=0;
+  scase->ntrnx=0;
+  scase->ntrny=0;
+  scase->ntrnz=0;
+  scase->meshescoll.nmeshes=0;
+  scase->npdim=0;
+  scase->nVENT=0;
+  scase->nCVENT=0;
+  scase->ncvents=0;
+  scase->nOBST=0;
+  scase->noffset=0;
+  scase->surfcoll.nsurfinfo=0;
   nvent_transparent=0;
 
-  global_scase.setPDIM=0;
+  scase->setPDIM=0;
 
-  FREEMEMORY(global_scase.slicecoll.vsliceinfo);
-  FREEMEMORY(global_scase.slicecoll.sliceinfo);
+  FREEMEMORY(scase->slicecoll.vsliceinfo);
+  FREEMEMORY(scase->slicecoll.sliceinfo);
 
-  FREEMEMORY(global_scase.plot3dinfo);
-  FREEMEMORY(global_scase.patchinfo);
-  FREEMEMORY(global_scase.boundarytypes);
-  FREEMEMORY(global_scase.isoinfo);
-  FREEMEMORY(global_scase.isotypes);
-  FREEMEMORY(global_scase.roominfo);
-  FREEMEMORY(global_scase.fireinfo);
-  FREEMEMORY(global_scase.zoneinfo);
-  FREEMEMORY(global_scase.zventinfo);
-  FREEMEMORY(global_scase.texture_coll.textureinfo);
-  FREEMEMORY(global_scase.surfcoll.surfinfo);
-  FREEMEMORY(global_scase.terrain_texture_coll.terrain_textures);
+  FREEMEMORY(scase->plot3dinfo);
+  FREEMEMORY(scase->patchinfo);
+  FREEMEMORY(scase->boundarytypes);
+  FREEMEMORY(scase->isoinfo);
+  FREEMEMORY(scase->isotypes);
+  FREEMEMORY(scase->roominfo);
+  FREEMEMORY(scase->fireinfo);
+  FREEMEMORY(scase->zoneinfo);
+  FREEMEMORY(scase->zventinfo);
+  FREEMEMORY(scase->texture_coll.textureinfo);
+  FREEMEMORY(scase->surfcoll.surfinfo);
+  FREEMEMORY(scase->terrain_texture_coll.terrain_textures);
 
   STOP_TIMER(pass0_time );
   PRINT_TIMER(timer_readsmv, "readsmv setup");
@@ -7410,7 +7416,7 @@ int ReadSMV_Parse(bufferstreamdata *stream){
 
   // get input file name
 
-    return_code=GetInpf(stream);
+    return_code=GetInpf(&global_scase, stream);
     if(return_code!=0)return return_code;
   }
 
@@ -7859,7 +7865,7 @@ int ReadSMV_Parse(bufferstreamdata *stream){
     if(MatchSMV(buffer,"PRT5")==1||
        MatchSMV(buffer,"EVA5")==1
       ){
-      ParsePRT5Count();
+      ParsePRT5Count(&global_scase);
       continue;
     }
 
@@ -7873,7 +7879,7 @@ int ReadSMV_Parse(bufferstreamdata *stream){
       ){
       int return_val;
 
-      return_val = ParseSLCFCount(NO_SCAN, stream, buffer, &nslicefiles);
+      return_val = ParseSLCFCount(&global_scase, NO_SCAN, stream, buffer, &nslicefiles);
       if(return_val==RETURN_BREAK){
         BREAK;
       }
@@ -7889,7 +7895,7 @@ int ReadSMV_Parse(bufferstreamdata *stream){
       MatchSMV(buffer, "SMOKE3D") == 1  ||
       MatchSMV(buffer, "SMOKF3D") == 1  ||
       MatchSMV(buffer, "SMOKG3D") == 1){
-      ParseSMOKE3DCount();
+      ParseSMOKE3DCount(&global_scase);
       continue;
     }
 
@@ -7900,7 +7906,7 @@ int ReadSMV_Parse(bufferstreamdata *stream){
        MatchSMV(buffer, "BNDE") == 1
       || MatchSMV(buffer, "BNDS") == 1
       ){
-      ParseBNDFCount();
+      ParseBNDFCount(&global_scase);
       continue;
     }
 
@@ -7910,7 +7916,7 @@ int ReadSMV_Parse(bufferstreamdata *stream){
        MatchSMV(buffer,"TISOF")==1||
        MatchSMV(buffer,"ISOG") == 1||
        MatchSMV(buffer, "TISOG")==1){
-      ParseISOFCount();
+      ParseISOFCount(&global_scase);
       continue;
     }
 
@@ -8210,7 +8216,7 @@ int ReadSMV_Parse(bufferstreamdata *stream){
 
   if(global_scase.propcoll.npropinfo>0){
     global_scase.propcoll.npropinfo=0;
-    InitDefaultProp();
+    InitDefaultProp(&global_scase);
     global_scase.propcoll.npropinfo=1;
   }
 
@@ -9646,7 +9652,7 @@ int ReadSMV_Parse(bufferstreamdata *stream){
       devicedata *devicei;
 
       devicei = global_scase.devicecoll.deviceinfo + global_scase.devicecoll.ndeviceinfo;
-      ParseDevicekeyword(stream,devicei);
+      ParseDevicekeyword(&global_scase,stream,devicei);
       CheckMemory;
       update_device = 1;
       global_scase.devicecoll.ndeviceinfo++;
@@ -9979,7 +9985,7 @@ int ReadSMV_Parse(bufferstreamdata *stream){
 
         csvi = global_scase.csvcoll.csvfileinfo + i;
         if(strcmp(csvi->c_type, "ext") == 0){
-          ReadDeviceHeader(csvi->file,devicecopy2,nexp_devices[i]);
+          ReadDeviceHeader(&global_scase, csvi->file,devicecopy2,nexp_devices[i]);
           devicecopy2 += nexp_devices[i];
         }
       }
@@ -11365,7 +11371,7 @@ typedef struct {
     if(MatchSMV(buffer,"CHID") == 1){
       int return_val;
 
-      return_val = ParseCHIDProcess(stream, NO_SCAN);
+      return_val = ParseCHIDProcess(&global_scase, stream, NO_SCAN);
       if(return_val==RETURN_BREAK){
         BREAK;
       }
@@ -11390,7 +11396,7 @@ typedef struct {
       int return_val;
 
       START_TIMER(SMOKE3D_timer);
-      return_val = ParseSMOKE3DProcess(stream, buffer, &nn_smoke3d, &ioffset, &ismoke3dcount, &ismoke3d);
+      return_val = ParseSMOKE3DProcess(&global_scase, stream, buffer, &nn_smoke3d, &ioffset, &ismoke3dcount, &ismoke3d);
       CUM_TIMER(SMOKE3D_timer, cum_SMOKE3D_timer);
       if(return_val==RETURN_BREAK){
         BREAK;
@@ -11415,7 +11421,7 @@ typedef struct {
       int return_val;
 
       START_TIMER(PRT5_timer);
-      return_val = ParsePRT5Process(stream, buffer, &nn_part, &ipart, &ioffset);
+      return_val = ParsePRT5Process(&global_scase, stream, buffer, &nn_part, &ipart, &ioffset);
       CUM_TIMER(PRT5_timer, cum_PRT5_timer);
       if(return_val==RETURN_BREAK){
         BREAK;
@@ -11445,7 +11451,7 @@ typedef struct {
       int return_val;
 
       START_TIMER(SLCF_timer);
-      return_val = ParseSLCFProcess(NO_SCAN, stream, buffer, &nn_slice, ioffset, &nslicefiles, &sliceinfo_copy, &patchgeom, buffers);
+      return_val = ParseSLCFProcess(&global_scase, NO_SCAN, stream, buffer, &nn_slice, ioffset, &nslicefiles, &sliceinfo_copy, &patchgeom, buffers);
       CUM_TIMER(SLCF_timer, cum_SLCF_timer);
       if(return_val==RETURN_BREAK){
         BREAK;
@@ -11475,7 +11481,7 @@ typedef struct {
       int return_val;
 
       START_TIMER(BNDF_timer);
-      return_val = ParseBNDFProcess(stream, buffer, &nn_patch, &ioffset, &patchgeom, &ipatch, buffers);
+      return_val = ParseBNDFProcess(&global_scase, stream, buffer, &nn_patch, &ioffset, &patchgeom, &ipatch, buffers);
       CUM_TIMER(BNDF_timer, cum_BNDF_timer);
       if(return_val==RETURN_BREAK){
         BREAK;
@@ -11505,7 +11511,7 @@ typedef struct {
       int return_val;
 
       START_TIMER(ISOF_timer);
-      return_val = ParseISOFProcess(stream, buffer, &iiso, &ioffset, &nn_iso, nisos_per_mesh);
+      return_val = ParseISOFProcess(&global_scase, stream, buffer, &iiso, &ioffset, &nn_iso, nisos_per_mesh);
       CUM_TIMER(ISOF_timer, cum_ISOF_timer);
       if(return_val==RETURN_BREAK){
         BREAK;
@@ -12134,7 +12140,7 @@ int ReadSMV_Configure(){
 /// @param stream the file stream to parse.
 /// @return zero on sucess, non-zero on error
 int ReadSMV(bufferstreamdata *stream){
-  ReadSMV_Init();
+  ReadSMV_Init(&global_scase);
   ReadSMV_Parse(stream);
   ReadSMV_Configure();
   return 0;
