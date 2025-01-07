@@ -429,9 +429,9 @@ int RunBenchmark(char *input_file) {
     if(return_code) return return_code;
   }
   show_timings = 1;
-  ReadSMVOrig();
+  ReadSMVOrig(&global_scase);
   INIT_PRINT_TIMER(ReadSMVDynamic_time);
-  ReadSMVDynamic(input_file);
+  ReadSMVDynamic(&global_scase, input_file);
   STOP_TIMER(ReadSMVDynamic_time);
   fprintf(stderr, "ReadSMVDynamic:\t%8.3f ms\n", ReadSMVDynamic_time * 1000);
   STOP_TIMER(parse_time);

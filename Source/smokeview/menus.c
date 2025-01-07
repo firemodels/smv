@@ -1306,7 +1306,7 @@ void IsoShowMenu(int value){
       UpdateShow();
     }
   }
-  UpdateIsoShowLevels();
+  UpdateIsoShowLevels(&global_scase, loaded_isomesh);
   UpdateIsoTriangles(1);
 
   updatemenu=1;
@@ -3524,7 +3524,7 @@ void LoadUnloadMenu(int value){
 #endif
     THREADcontrol(compress_threads, THREAD_LOCK);
     if(global_scase.paths.hrr_csv_filename!=NULL){
-      ReadHRR(LOAD);
+      ReadHRR(&global_scase, LOAD);
     }
 
     //*** reload hvac file

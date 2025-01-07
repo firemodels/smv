@@ -1732,7 +1732,7 @@ int Unloadall() {
     fprintf(scriptoutstream, "UNLOADALL\n");
   }
   if(global_scase.paths.hrr_csv_filename != NULL) {
-    ReadHRR(UNLOAD);
+    ReadHRR(&global_scase, UNLOAD);
   }
   if(nvolrenderinfo > 0) {
     LoadVolsmoke3DMenu(UNLOAD_ALL);

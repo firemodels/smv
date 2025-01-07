@@ -3759,7 +3759,7 @@ void UpdatePlot3dTitle(void){
 void UpdateCurrentMesh(meshdata *meshi){
   current_mesh=meshi;
   loaded_isomesh= GetLoadedIsoMesh();
-  UpdateIsoShowLevels();
+  UpdateIsoShowLevels(&global_scase, loaded_isomesh);
   UpdatePlot3dTitle();
 }
 

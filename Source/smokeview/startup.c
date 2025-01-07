@@ -267,7 +267,7 @@ int SetupCase(char *filename){
     }
 
   // read casename.smo (only OBST lines) to define a one mesh version of OBST's
-    ReadSMVOrig();
+    ReadSMVOrig(&global_scase);
   }
   if(return_code==0&&trainer_mode==1){
     GLUIShowTrainer();
@@ -1421,31 +1421,31 @@ void InitVars(void){
   mat_specular_orig[1]=0.5f;
   mat_specular_orig[2]=0.2f;
   mat_specular_orig[3]=1.0f;
-  mat_specular2=GetColorPtr(mat_specular_orig);
+  mat_specular2=GetColorPtr(&global_scase, mat_specular_orig);
 
   mat_ambient_orig[0] = 0.5f;
   mat_ambient_orig[1] = 0.5f;
   mat_ambient_orig[2] = 0.2f;
   mat_ambient_orig[3] = 1.0f;
-  mat_ambient2=GetColorPtr(mat_ambient_orig);
+  mat_ambient2=GetColorPtr(&global_scase, mat_ambient_orig);
 
   ventcolor_orig[0]=1.0;
   ventcolor_orig[1]=0.0;
   ventcolor_orig[2]=1.0;
   ventcolor_orig[3]=1.0;
-  ventcolor=GetColorPtr(ventcolor_orig);
+  ventcolor=GetColorPtr(&global_scase, ventcolor_orig);
 
   block_ambient_orig[0] = 1.0;
   block_ambient_orig[1] = 0.8;
   block_ambient_orig[2] = 0.4;
   block_ambient_orig[3] = 1.0;
-  block_ambient2=GetColorPtr(block_ambient_orig);
+  block_ambient2=GetColorPtr(&global_scase, block_ambient_orig);
 
   block_specular_orig[0] = 0.0;
   block_specular_orig[1] = 0.0;
   block_specular_orig[2] = 0.0;
   block_specular_orig[3] = 1.0;
-  block_specular2=GetColorPtr(block_specular_orig);
+  block_specular2=GetColorPtr(&global_scase, block_specular_orig);
 
   for(i=0;i<256;i++){
     boundarylevels256[i]=(float)i/255.0;
@@ -1473,7 +1473,7 @@ void InitVars(void){
   direction_color[1]=64.0/255.0;
   direction_color[2]=139.0/255.0;
   direction_color[3]=1.0;
-  direction_color_ptr=GetColorPtr(direction_color);
+  direction_color_ptr=GetColorPtr(&global_scase, direction_color);
 
   GetGitInfo(smv_githash,smv_gitdate);
 

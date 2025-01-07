@@ -318,7 +318,7 @@ EXTERNCPP void GetBoundaryLabels(
               char **labels, float *boundaryvaluespatch, float *tvals256, int nlevel);
 EXTERNCPP void GetColorbarLabels(float tmin, float tmax, int nlevel,
               char labels[12][11],float *tlevels256);
-EXTERNCPP float *GetColorPtr(float *color);
+EXTERNCPP float *GetColorPtr(smv_case *scase, float *color);
 EXTERNCPP float *GetColorTranPtr(float *color, float transparency);
 EXTERNCPP void GetPartColors(partdata *parti, int nlevels, int flag);
 EXTERNCPP void GetPlot3DColors(int iplot, float *ttmin, float *ttmax,
@@ -434,7 +434,7 @@ EXTERNCPP void UpdateIsoMenuLabels(void);
 EXTERNCPP void UpdateIsoTriangles(int flag);
 EXTERNCPP void UpdateIsoType(void);
 EXTERNCPP void UpdateIsoTypes(void);
-EXTERNCPP void UpdateIsoShowLevels(void);
+EXTERNCPP void UpdateIsoShowLevels(smv_case *scase, meshdata *isomesh);
 EXTERNCPP void *UpdateTrianglesAll(void *arg);
 
 //*** IOpart.c headers
@@ -731,11 +731,11 @@ EXTERNCPP void InitCellMeshInfo(void);
 EXTERNCPP FILE_SIZE ReadAllCSVFiles(int flag);
 EXTERNCPP int  ReadBinIni(void);
 EXTERNCPP FILE_SIZE ReadCSVFile(csvfiledata *csvfi, int flag);
-EXTERNCPP void ReadHRR(int flag);
+EXTERNCPP void ReadHRR(smv_case *scase, int flag);
 EXTERNCPP int  ReadIni(char *inifile);
 EXTERNCPP int  ReadSMV(bufferstreamdata *stream);
-EXTERNCPP void ReadSMVDynamic(char *file);
-EXTERNCPP void ReadSMVOrig(void);
+EXTERNCPP void ReadSMVDynamic(smv_case *scase, char *file);
+EXTERNCPP void ReadSMVOrig(smv_case *scase);
 EXTERNCPP void SetBoundBounds(int set_valmin, float valmin, int set_valmax, float valmax, char *buffer2);
 EXTERNCPP void SetPatchMin(int set_valmin, float valmin, char *buffer2);
 EXTERNCPP void SetPatchMax(int set_valmax, float valmax, char *buffer2);
@@ -745,7 +745,7 @@ EXTERNCPP void SetSliceMax(int set_valmax, float valmax, char *buffer2);
 EXTERNCPP void SetSliceParmInfo(sliceparmdata *sp);
 EXTERNCPP void *SetupAllIsosurfaces(void *arg);
 EXTERNCPP void UpdateBlockType(void);
-EXTERNCPP void UpdateHoc(void);
+EXTERNCPP void UpdateHoc(smv_case *scase);
 EXTERNCPP void UpdateLoadedLists(void);
 EXTERNCPP void UpdateSMVDynamic(char *file);
 EXTERNCPP void UpdateUseTextures(void);

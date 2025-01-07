@@ -623,7 +623,7 @@ void UpdateIndexColors(void){
       if(bc->usecolorindex==1){
         colorindex=bc->colorindex;
         if(colorindex>=0){
-          bc->color = GetColorPtr(global_scase.rgb[global_scase.nrgb+colorindex]);
+          bc->color = GetColorPtr(&global_scase, global_scase.rgb[global_scase.nrgb+colorindex]);
         }
       }
     }
@@ -638,7 +638,7 @@ void UpdateIndexColors(void){
         s_color[1]=global_scase.rgb[global_scase.nrgb+colorindex][1];
         s_color[2]=global_scase.rgb[global_scase.nrgb+colorindex][2];
         s_color[3]=1.0;
-        vi->color = GetColorPtr(s_color);
+        vi->color = GetColorPtr(&global_scase, s_color);
       }
     }
   }
