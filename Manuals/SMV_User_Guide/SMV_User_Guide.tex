@@ -3218,13 +3218,13 @@ An example for the townhouse case is illustrated
 in Fig. \ref{figTOUREXAMPLE}.
 The user may create a new tour or modify an existing tour using the Tour
 dialog box illustrated in Fig. \ref{figTOUR}. The user creates a tour by
-defining two or more keyframes. Each keyframe defines a 
+defining two or more keyframes. Each keyframe defines a
 position, view direction, pause time and optionally a time.
-By default, movement along a tour path occurs at a constant rate or velocity. 
+By default, movement along a tour path occurs at a constant rate or velocity.
 In this case, keyframe arrival times are calculated by smokeview.  You may also specify
-arrival times at any keyframe (overriding the constant velocity assumption) 
+arrival times at any keyframe (overriding the constant velocity assumption)
 by selecting the {\em Set time}\ checkbox.
-The default view direction is towards the position (0.0,0.0,0.0) or lower front left of the scene and the default pause time is 0.0~s.
+The default view direction is towards the position (0.0,0.0,0.0) or lower front left corner of the scene.  The default pause time is 0.0~s.
 Smokeview creates a smooth
 path through these positions using piecewise cubic Hermite polynomials.
 
@@ -3249,16 +3249,16 @@ goes through the middle of the Smokeview scene starting at the
 front left and finishing at the back right.
 A tour may be modified by selecting the {\em Edit Tour}\ checkbox.
 Tour characteristics such as keyframe positions and view directions at those positions
-are saved in the configuration file, {\tt casenamea .ini}.
+are saved in the configuration file, {\tt casename.ini}.
 
 The {\em View From Tour Path} checkbox is used to control how one observes the
 scene using a Tour.  If {\em View From Tour Path}\ is checked then one moves through the
 scene along the currently specified tour.  Unchecking this option
 returns control of scene movement to the user allowing one to have a global view of the tour.
 
-By default Keyframe times are  proportional to the path length
-between keyframes so that the speed traversed along the tour is constant.
-This behavior may be overridden by specifying an arrival time at any keyframe after selecting
+By default keyframe times are  proportional to path length
+so that the speed traversed along the tour is constant.
+This may be overridden by specifying an arrival time at any keyframe after selecting
 the {\em Set time} checkbox.
 
 
