@@ -6,15 +6,50 @@
 
 &MISC TMPA=30., BNDF_DEFAULT=F/
 
-&SURF ID='surf1', COLOR='BLACK'/
-&SURF ID='surf2', COLOR='CYAN'/
+&MATL ID                    = 'FOAM'
+      FYI                   = 'Properties completely fabricated'
+      SPECIFIC_HEAT         = 1.0
+      CONDUCTIVITY          = 0.05
+      DENSITY               = 40.0
+      N_REACTIONS           = 1
+      NU_SPEC               = 1.
+      SPEC_ID               = 'PROPANE'
+      REFERENCE_TEMPERATURE = 350.
+      HEAT_OF_REACTION      = 1500.
+      HEAT_OF_COMBUSTION    = 30000. /
+
+&SURF ID             = 'surf1'
+      FYI            = 'Properties completely fabricated'
+      RGB            = 151,96,88
+      BURN_AWAY      = .FALSE.
+      MATL_ID = 'FOAM',
+      THICKNESS = 0.1,
+      COLOR='BLACK'
+/
+
+&SURF ID             = 'surf2'
+      FYI            = 'Properties completely fabricated'
+      RGB            = 151,96,88
+      BURN_AWAY      = .FALSE.
+      MATL_ID = 'FOAM',
+      THICKNESS = 0.1,
+      COLOR='CYAN'
+/
+
 &SURF ID='surf3', COLOR='PURPLE'/
 &SURF ID='surf4', COLOR='PINK'/
 
-&OBST XB=0.2,0.4,0.2,0.4,0.2,0.4, SURF_ID='surf1', BNDF_OBST=T/
-&OBST XB=0.6,0.8,0.2,0.4,0.2,0.4, SURF_ID='surf2' /
+&REAC SOOT_YIELD=0.01,FUEL='PROPANE'/
+&SURF ID='BURNER',HRRPUA=600.0 /  Ignition source
+
+&OBST XB=0.3,0.7,0.3,0.7,0.0,0.1 /
+&VENT XB=0.3,0.7,0.3,0.7,0.1,0.1, SURF_ID='BURNER' /
+
+&OBST XB=0.2,0.4,0.4,0.6,0.5,0.8, SURF_ID='surf1', BNDF_OBST=T/
+&OBST XB=0.6,0.8,0.4,0.6,0.5,0.8, SURF_ID='surf2' /
+
 &VENT XB=0.0,1.0,0.0,1.0,0.0,0.0, SURF_ID='surf3' /
 &VENT XB=0.0,0.0,0.3,0.7,0.3,0.7, SURF_ID='surf4' /
-&BNDF QUANTITY='BACK WALL TEMPERATURE', CELL_CENTERED=T/
+&BNDF QUANTITY='WALL TEMPERATURE', CELL_CENTERED=T/
 
 &TAIL /
