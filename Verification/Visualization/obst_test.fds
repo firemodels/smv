@@ -7,7 +7,7 @@
 &MISC TMPA=30., BNDF_DEFAULT=F/
 
 &SURF ID='surf1', COLOR='BLACK'/
-&SURF ID='surf2', COLOR='WHITE'/
+&SURF ID='surf2', COLOR='CYAN'/
 &SURF ID='surf3', COLOR='PURPLE'/
 &SURF ID='surf4', COLOR='PINK'/
 
