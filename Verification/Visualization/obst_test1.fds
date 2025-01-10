@@ -1,4 +1,4 @@
-&HEAD CHID='obst_test' /
+&HEAD CHID='obst_test1' /
 
 &MESH IJK=10,10,10, XB=0.0,1.0,0.0,1.0,0.0,1.0/
 
