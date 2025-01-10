@@ -14685,6 +14685,7 @@ int ReadIni2(const char *inifile, int localfile){
       sscanf(buffer, "%i", &global_scase.visOtherVents);
       update_ini_vents = 1;
       ONEORZERO(global_scase.visOtherVents);
+      global_scase.visOtherVentsSAVE = global_scase.visOtherVents;
       continue;
     }
     if(MatchINI(buffer, "SHOWCVENTS") == 1){
