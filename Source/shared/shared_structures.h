@@ -784,6 +784,7 @@ typedef struct _blockagedata {
   int usecolorindex;
   int blockage_id,dup;
   int is_wuiblock;
+  int patch_index;
   int hole;
   int nnodes;
   int hidden, invisible, interior[6];
@@ -1707,12 +1708,17 @@ typedef struct _labeldata {
  * contains a linked list, but also an array of pointers into that linked list.
  *
  */
+
+/* --------------------------  labels_collection ------------------------------------ */
+
 typedef struct {
   labeldata label_first;
   labeldata label_last;
   labeldata *label_first_ptr;
   labeldata *label_last_ptr;
 } labels_collection;
+
+/* --------------------------  smv_case ------------------------------------ */
 
 typedef struct {
   char *fdsprefix;

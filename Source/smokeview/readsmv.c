@@ -4243,6 +4243,7 @@ void InitObst(smv_case *scase, blockagedata *bc, surfdata *surf, int index, int 
   char blocklabel[255];
   size_t len;
 
+  bc->patch_index = -1;
   bc->prop = NULL;
   bc->is_wuiblock = 0;
   bc->transparent = 0;

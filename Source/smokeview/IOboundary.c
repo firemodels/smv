@@ -2261,6 +2261,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
   int recompute = 0;
 #endif
   if(patchi->finalize==1){
+    int i;
 
     boundary_loaded = 1;
     from_read_boundary = 1;
@@ -2319,6 +2320,41 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
     }
 #define BOUND_PERCENTILE_DRAW          120
     GLUIPatchBoundsCPP_CB(BOUND_PERCENTILE_DRAW);
+
+    // link patch index to blockage
+    for(i = 0;i < global_scase.meshescoll.nmeshes;i++){
+      int j;
+      meshdata *meshi;
+
+      meshi = global_scase.meshescoll.meshinfo + i;
+      for(j = 0;j < meshi->nbptrs;j++){
+        blockagedata *bcj;
+
+        bcj = meshi->blockageinfoptrs[j];
+        bcj->patch_index = -1;
+      }
+    }
+    for(i=0;i<global_scase.npatchinfo;i++){
+      patchdata *patchii;
+
+      patchii = global_scase.patchinfo + i;
+      if(patchii->loaded==0)continue;
+      for(n = 0;n<patchii->npatches;n++){
+        patchfacedata *pfi;
+        int mesh_index=-1;
+
+        pfi = patchii->patchfaceinfo + n;
+        if(pfi->meshinfo!=NULL)mesh_index = pfi->meshinfo - global_scase.meshescoll.meshinfo;
+        if(mesh_index >= 0 && mesh_index < global_scase.meshescoll.nmeshes){
+          if(pfi->obst_index >= 0 && pfi->obst_index < pfi->meshinfo->nbptrs){
+            blockagedata *bc;
+
+            bc = pfi->meshinfo->blockageinfoptrs[pfi->obst_index];
+            bc->patch_index = n;
+          }
+        }
+      }
+    }
   }
 
   if(wallcenter==1){
