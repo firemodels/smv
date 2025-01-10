@@ -154,8 +154,6 @@ typedef struct _selectdadta {
   int type;
 } selectdata;
 
-
-
 /* --------------------------  volfacelistdata ------------------------------ */
 
 typedef struct _volfacelistdata {
@@ -204,7 +202,6 @@ typedef struct _plot2ddata{
   int bounds_defined;
   float xyz[3], xyz_orig[3];
 } plot2ddata;
-
 
 /* --------------------------  treedevicedata ------------------------------- */
 
@@ -284,7 +281,6 @@ typedef struct _cameradata {
   char name[301];
 } cameradata;
 
-
 /* --------------------------  menudata ------------------------------------ */
 
 typedef struct _menudata {
@@ -299,8 +295,6 @@ typedef struct _fileboundsdata {
   float valmin, valmax;
 } fileboundsdata;
 
-
-
 /* --------------------------  slicemenudata ------------------------------------ */
 
 typedef struct _slicemenudata {
@@ -314,7 +308,6 @@ typedef struct _subslicemenudata {
   int slicetype;
   int havex, havey, havez, havexyz;
 } subslicemenudata;
-
 
 /* --------------------------  splitslicedata ------------------------------------ */
 
@@ -336,8 +329,6 @@ typedef struct _cpp_boundsdata {
   int set_valtype, cache;
   histogramdata *hist;
 } cpp_boundsdata;
-
-
 
 /* --------------------------  f_unit ------------------------------------ */
 

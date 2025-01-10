@@ -30,6 +30,8 @@ typedef struct _tokendata {
   char string[256], default_string[256], *stringptr;
 } tokendata;
 
+/* --------------------------  sv_object_frame ------------------------------------ */
+
 /**
  * @brief The graphical definition of an object. This represents a single state.
  * This can form a node in a linked-list.
@@ -44,6 +46,9 @@ typedef struct _sv_object_frame {
   struct _sv_object *device;
   struct _sv_object_frame *prev, *next;
 } sv_object_frame;
+
+
+/* --------------------------  sv_object ------------------------------------ */
 
 /**
  * @brief An object that can be rendered. This can form a node in a linked-list.
@@ -79,9 +84,9 @@ typedef struct _sv_object {
 #include "stdio_m.h"
 #include "string_util.h"
 
-#define MAXPLOT3DVARS 6
-#define MAXRGB                  256
-#define MAXFILELEN 360
+#define MAXPLOT3DVARS   6
+#define MAXRGB        256
+#define MAXFILELEN    360
 
 /* --------------------------  outlinedata ---------------------------------- */
 
@@ -103,7 +108,8 @@ typedef struct _treedata {
   int state;
 } treedata;
 
-/* --------------------------  langlistdata ---------- ---------------------- */
+/* --------------------------  smokethreaddata ---------- ---------------------- */
+
 typedef struct _smokethreaddata {
   int ithread, nthreads;
 } smokethreaddata;
@@ -407,7 +413,6 @@ typedef struct _propdata {
   float *fvals, fvars_dep[PROPVARMAX];
   int tag_number;
 } propdata;
-
 
 /* --------------------------  partpropdata --------------------------------- */
 
@@ -719,7 +724,6 @@ typedef struct _vslicedata {
   char menulabel2[128];
 } vslicedata;
 
-
 /* --------------------------  circdata ------------------------------------- */
 
 typedef struct _circdata {
@@ -727,10 +731,13 @@ typedef struct _circdata {
   int ncirc;
 } circdata;
 
+/* --------------------------  meshescollection ------------------------------------- */
+
 typedef struct {
   meshdata *meshinfo;
   int nmeshes;
 } meshescollection;
+
 /* --------------------------  hrrdata ------------------------------------ */
 
 typedef struct _hrrdata {
@@ -964,36 +971,50 @@ typedef struct _fueldata {
   float hoc;
 } fueldata;
 
+/* --------------------------  hrr_collection ------------------------------------ */
+
 typedef struct {
   int nhrrinfo;
   int nhrrhcinfo;
   hrrdata *hrrinfo;
 } hrr_collection;
 
+/* --------------------------  fuel_collection ------------------------------------ */
+
 typedef struct {
   int nfuelinfo;
   fueldata *fuelinfo;
 } fuel_collection;
+
+/* --------------------------  prop_collection ------------------------------------ */
 
 typedef struct {
   int npropinfo;
   propdata *propinfo;
 } prop_collection;
 
+/* --------------------------  obst_collection ------------------------------------ */
+
 typedef struct {
   int nobstinfo;
   xbdata *obstinfo;
 } obst_collection;
+
+/* --------------------------  texture_collection ------------------------------------ */
 
 typedef struct {
   int ntextureinfo;
   texturedata *textureinfo;
 } texture_collection;
 
+/* --------------------------  terrain_texture_collection ------------------------------------ */
+
 typedef struct {
   int nterrain_textures;
   texturedata *terrain_textures;
 } terrain_texture_collection;
+
+/* --------------------------  device_collection ------------------------------------ */
 
 typedef struct {
   int ndeviceinfo;
@@ -1004,12 +1025,16 @@ typedef struct {
   vdevicesortdata *vdevices_sorted;
 } device_collection;
 
+/* --------------------------  device_texture_list_collection ------------------------------------ */
+
 typedef struct {
   int ndevice_texture_list;
   char **device_texture_list;
   int *device_texture_list_index;
   // texturedata *device_textures;
 } device_texture_list_collection;
+
+/* --------------------------  slice_collection ------------------------------------ */
 
 typedef struct {
   int nsliceinfo;
@@ -1025,7 +1050,7 @@ typedef struct {
   multivslicedata *multivsliceinfo;
 } slice_collection;
 
-/* --------------------------  circdata ------------------------------------ */
+/* --------------------------  sliceparmdata ------------------------------------ */
 
 typedef struct _sliceparmdata {
   int nsliceinfo;
@@ -1033,6 +1058,8 @@ typedef struct _sliceparmdata {
   int nmultisliceinfo;
   int nmultivsliceinfo;
 } sliceparmdata;
+
+/* --------------------------  surf_collection ------------------------------------ */
 
 typedef struct {
   int nsurfinfo;
@@ -1046,6 +1073,8 @@ typedef struct {
   int *inv_sorted_surfidlist;
 
 } surf_collection;
+
+/* --------------------------  casepaths ------------------------------------ */
 
 typedef struct {
   char *fds_filein;
@@ -1087,6 +1116,7 @@ typedef struct {
 } casepaths;
 
 /* --------------------------  csvdata ------------------------------------ */
+
 typedef struct _csvdata {
   flowlabels label;
   float val, *vals, *vals_orig;
@@ -1109,15 +1139,14 @@ typedef struct _csvfiledata {
   char c_type[32];
 } csvfiledata;
 
-/* --------------------------  csv_collection
- * ------------------------------------ */
+/* --------------------------  csv_collection ------------------------------------ */
+
 typedef struct {
   int ncsvfileinfo;
   csvfiledata *csvfileinfo;
 } csv_collection;
 
-/* --------------------------  volrenderdata
- * ------------------------------------ */
+/* --------------------------  volrenderdata ------------------------------------ */
 
 typedef struct _volrenderdata {
   char *rendermeshlabel;
@@ -1139,8 +1168,7 @@ typedef struct _volrenderdata {
   int loaded, display;
 } volrenderdata;
 
-/* --------------------------  meshplanedata
- * ------------------------------------ */
+/* --------------------------  meshplanedata ------------------------------------ */
 
 typedef struct _meshplanedata {
   float verts[6 * 3], verts_smv[6 * 3];
@@ -1398,6 +1426,8 @@ typedef struct _patchdata {
 #endif
 } patchdata;
 
+/* --------------------------  std_objects ------------------------------------ */
+
 /**
  * @brief A number of standard objects to be used.
  *
@@ -1411,6 +1441,8 @@ typedef struct {
   sv_object *error_device;
   sv_object *missing_device;
 } std_objects;
+
+/* --------------------------  object_collection ------------------------------------ */
 
 /**
  * @brief A collection of object definitions. At it's core this collection
@@ -1526,6 +1558,8 @@ typedef struct _smoke3dtypedata {
   float extinction, valmin, valmax;
 } smoke3dtypedata;
 
+/* --------------------------  smoke3d_collection ------------------------------------ */
+
 typedef struct {
   int nsmoke3dinfo;
   smoke3ddata *smoke3dinfo;
@@ -1534,6 +1568,8 @@ typedef struct {
   int smoke3d_other;
   smoke3dtypedata *smoke3dtypes;
 } smoke3d_collection;
+
+/* --------------------------  tour_collection ------------------------------------ */
 
 typedef struct {
   /// @brief Number of tours. This is the length of the array tourinfo
@@ -1552,6 +1588,8 @@ typedef struct {
   float tour_tstop;
 } tour_collection;
 
+/* --------------------------  cadlookdata ------------------------------------ */
+
 typedef struct _cadlookdata {
   int index;
   float texture_width, texture_height, texture_origin[3];
@@ -1559,6 +1597,8 @@ typedef struct _cadlookdata {
   texturedata textureinfo;
   int onesided;
 } cadlookdata;
+
+/* --------------------------  cadquad ------------------------------------ */
 
 typedef struct _cadquad {
   float xyzpoints[12];
@@ -1570,6 +1610,8 @@ typedef struct _cadquad {
   cadlookdata *cadlookq;
 } cadquad;
 
+/* --------------------------  cadgeomdata ------------------------------------ */
+
 typedef struct _cadgeomdata {
   char *file;
   int *order;
@@ -1579,6 +1621,8 @@ typedef struct _cadgeomdata {
   int nquads;
   cadquad *quad;
 } cadgeomdata;
+
+/* --------------------------  cadgeom_collection ------------------------------------ */
 
 /**
  * @brief A collection of CAD geometry definitions. This is allocated with a
@@ -1666,6 +1710,8 @@ typedef struct _hvacvalsdata {
   float *times;
   hvacvaldata *node_vars, *duct_vars;
 } hvacvalsdata;
+
+/* --------------------------  hvacdatacollection ------------------------------------ */
 
 typedef struct {
   hvacnodedata *hvacnodeinfo;
