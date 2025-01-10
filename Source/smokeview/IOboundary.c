@@ -2324,13 +2324,13 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
     // link patch index to blockage
     for(i = 0;i < global_scase.meshescoll.nmeshes;i++){
       int j;
-      meshdata *meshi;
+      meshdata *meshii;
 
-      meshi = global_scase.meshescoll.meshinfo + i;
-      for(j = 0;j < meshi->nbptrs;j++){
+      meshii = global_scase.meshescoll.meshinfo + i;
+      for(j = 0;j < meshii->nbptrs;j++){
         blockagedata *bcj;
 
-        bcj = meshi->blockageinfoptrs[j];
+        bcj = meshii->blockageinfoptrs[j];
         bcj->patch_index = -1;
       }
     }
