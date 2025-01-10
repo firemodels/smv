@@ -4243,6 +4243,7 @@ void InitObst(smv_case *scase, blockagedata *bc, surfdata *surf, int index, int 
   char blocklabel[255];
   size_t len;
 
+  bc->patch_index = -1;
   bc->prop = NULL;
   bc->is_wuiblock = 0;
   bc->transparent = 0;
@@ -14684,6 +14685,7 @@ int ReadIni2(const char *inifile, int localfile){
       sscanf(buffer, "%i", &global_scase.visOtherVents);
       update_ini_vents = 1;
       ONEORZERO(global_scase.visOtherVents);
+      global_scase.visOtherVentsSAVE = global_scase.visOtherVents;
       continue;
     }
     if(MatchINI(buffer, "SHOWCVENTS") == 1){

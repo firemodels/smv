@@ -2619,6 +2619,11 @@ void ShowHideInternalFaces(meshdata *meshi, int show){
     bc = meshi->blockageinfoptrs[j];
     facej = meshi->faceinfo + 6 * j;
 
+    if(bc->patch_index < 0){
+      facej+=6;
+      continue;
+    }
+
 //down y
     if(bc->xyzEXACT[2] > ybar0FDS + eps_y)facej->hidden = 1;
     facej++;
@@ -2721,6 +2726,7 @@ void UpdateFaceListsWorker(void){
 
       vi = meshi->ventinfo+j-vent_offset;
       facej = meshi->faceinfo + j;
+
 
       if(showonly_hiddenfaces==0&&facej->hidden==1)continue;
       if(showonly_hiddenfaces==1&&facej->hidden==0)continue;
@@ -3596,6 +3602,7 @@ void DrawFaces(){
     glDisable(GL_COLOR_MATERIAL);
     DISABLE_LIGHTING;
   }
+
   if(nface_outlines>0){
     int j;
 
