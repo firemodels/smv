@@ -83,12 +83,12 @@ void UpdateTimeLabels(void){
     }
   }
 
-  if(hrrptr!=NULL&&global_times!=NULL&&vis_hrr_label==1){
+  if(global_scase.hrrptr!=NULL&&global_times!=NULL&&vis_hrr_label==1){
     float hrr;
     int itime;
 
-    itime = GetInterval(global_times[itimes], timeptr->vals, timeptr->nvals);
-    hrr = hrrptr->vals[itime];
+    itime = GetInterval(global_times[itimes], global_scase.timeptr->vals, global_scase.timeptr->nvals);
+    hrr = global_scase.hrrptr->vals[itime];
     if(hrr<1.0){
       sprintf(hrrlabel,"HRR: %4.1f W",hrr*1000.0);
     }

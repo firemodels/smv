@@ -1664,16 +1664,16 @@ void Keyboard(unsigned char key, int flag){
 #define DEVYES_HRRNO  2
 #define DEVNO_HRRYES  3
     case 'A':
-      if(hrrptr==NULL&&global_scase.devicecoll.ndeviceinfo==0)break;
-      if(hrrptr!=NULL&&global_scase.devicecoll.ndeviceinfo>0){
+      if(global_scase.hrrptr==NULL&&global_scase.devicecoll.ndeviceinfo==0)break;
+      if(global_scase.hrrptr!=NULL&&global_scase.devicecoll.ndeviceinfo>0){
         plot_option++;
         if(plot_option>3)plot_option = 0;
       }
       else{
         int plot_option_temp = DEVNO_HRRNO;
 
-        if(global_scase.devicecoll.ndeviceinfo==0&&hrrptr!=NULL&&plot_option==DEVNO_HRRNO)plot_option_temp = DEVNO_HRRYES;
-        if(global_scase.devicecoll.ndeviceinfo>0&&hrrptr==NULL&&plot_option==DEVNO_HRRNO)plot_option_temp = DEVYES_HRRNO;
+        if(global_scase.devicecoll.ndeviceinfo==0&&global_scase.hrrptr!=NULL&&plot_option==DEVNO_HRRNO)plot_option_temp = DEVNO_HRRYES;
+        if(global_scase.devicecoll.ndeviceinfo>0&&global_scase.hrrptr==NULL&&plot_option==DEVNO_HRRNO)plot_option_temp = DEVYES_HRRNO;
         plot_option = plot_option_temp;
       }
       // 0 - device no, hrr no
@@ -1894,7 +1894,7 @@ void Keyboard(unsigned char key, int flag){
 #endif
       case GLUT_ACTIVE_CTRL:
       default:
-        if(ntotal_blockages>0||global_scase.isZoneFireModel==0||(global_scase.isZoneFireModel==1&&global_scase.ntrnx>0)){
+        if(global_scase.ntotal_blockages>0||global_scase.isZoneFireModel==0||(global_scase.isZoneFireModel==1&&global_scase.ntrnx>0)){
           switch(visGrid){
             case NOGRID_NOPROBE:
               visGrid=GRID_NOPROBE;
@@ -2246,8 +2246,8 @@ void Keyboard(unsigned char key, int flag){
       }
       else{
         highlight_flag++;
-        if(highlight_flag!=0&&visFrame==0){
-          visFrame = 1;
+        if(highlight_flag!=0&&global_scase.visFrame==0){
+          global_scase.visFrame = 1;
           updatefacelists = 1;
           updatemenu = 1;
           glutPostRedisplay();

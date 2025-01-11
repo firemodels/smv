@@ -1425,7 +1425,7 @@ void GLUIGenPlotCB(int var){
       GLUIGenPlotCB(GENPLOT_CURVE_FACTOR);
       break;
     case GENPLOT_RESET_FUEL_HOC:
-      SPINNER_curve_factor->set_float_val(MAX(0.0,fuel_hoc_default));
+      SPINNER_curve_factor->set_float_val(MAX(0.0,global_scase.fuel_hoc_default));
       GLUIGenPlotCB(GENPLOT_CURVE_FACTOR);
       break;
     case GENPLOT_CURVE_FACTOR:

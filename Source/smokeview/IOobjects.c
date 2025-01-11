@@ -806,7 +806,7 @@ void DrawTargetNorm(void){
   devicedata *devicei;
   float *xyz, *xyznorm;
 
-  if(global_scase.isZoneFireModel==1&&hasSensorNorm==1&&visSensor==1&&visSensorNorm==1){
+  if(global_scase.isZoneFireModel==1&&global_scase.hasSensorNorm==1&&visSensor==1&&visSensorNorm==1){
     glPushMatrix();
     glScalef(SCALE2SMV(1.0),SCALE2SMV(1.0),SCALE2SMV(1.0));
     glBegin(GL_LINES);

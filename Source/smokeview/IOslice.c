@@ -2222,7 +2222,7 @@ void UpdateSliceinfoPtrs(sliceparmdata *sp){
     meshi->isliceinfo     = meshim1->isliceinfo + meshim1->nsliceinfo;
   }
   for(i=0; i<sp->nsliceinfo; i++){
-    sliceinfoptrs[i] = NULL;
+    global_scase.sliceinfoptrs[i] = NULL;
   }
   for(i=0; i<sp->nsliceinfo; i++){
     slicedata *slicei;
@@ -2230,7 +2230,7 @@ void UpdateSliceinfoPtrs(sliceparmdata *sp){
 
     slicei                             = global_scase.slicecoll.sliceinfo + i;
     meshi                              = global_scase.meshescoll.meshinfo + slicei->blocknumber;
-    sliceinfoptrs[meshi->isliceinfo++] = slicei;
+    global_scase.sliceinfoptrs[meshi->isliceinfo++] = slicei;
   }
   global_scase.meshescoll.meshinfo->isliceinfo    = 0;
   for(i=1; i<global_scase.meshescoll.nmeshes; i++){
@@ -2700,7 +2700,7 @@ void *UpdateVSlices(void *arg){
       for(j=0;j<meshi->nsliceinfo;j++){
         slicedata *sdj;
 
-        sdj = sliceinfoptrs[meshi->isliceinfo + j];
+        sdj = global_scase.sliceinfoptrs[meshi->isliceinfo + j];
         if(sdj->slice_filetype!=SLICE_CELL_CENTER)continue;
         if(sdi->blocknumber!=sdj->blocknumber)continue;
         if(sdi->is1!=sdj->is1||sdi->is2!=sdj->is2||sdi->js1!=sdj->js1)continue;
@@ -2714,7 +2714,7 @@ void *UpdateVSlices(void *arg){
       for(j = 0;j < meshi->nsliceinfo;j++){
         slicedata *sdj;
 
-        sdj = sliceinfoptrs[meshi->isliceinfo + j];
+        sdj = global_scase.sliceinfoptrs[meshi->isliceinfo + j];
         if(sdj->slice_filetype!=SLICE_GEOM)continue;
         if(sdi->blocknumber!=sdj->blocknumber)continue;
         if(sdi->is1!=sdj->is1||sdi->is2!=sdj->is2||sdi->js1!=sdj->js1)continue;
@@ -2728,7 +2728,7 @@ void *UpdateVSlices(void *arg){
       for(j = 0;j < meshi->nsliceinfo;j++){
         slicedata *sdj;
 
-        sdj = sliceinfoptrs[meshi->isliceinfo + j];
+        sdj = global_scase.sliceinfoptrs[meshi->isliceinfo + j];
         if(sdj->slice_filetype == SLICE_CELL_CENTER|| sdj->slice_filetype == SLICE_GEOM)continue;
         if(sdi->blocknumber != sdj->blocknumber)continue;
         if(sdi->is1 != sdj->is1 || sdi->is2 != sdj->is2 || sdi->js1 != sdj->js1)continue;

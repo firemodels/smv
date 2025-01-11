@@ -979,9 +979,9 @@ void ViewportHrrPlot(int quad, GLint screen_left, GLint screen_down){
     char *quantity2=NULL;
     float valmin, valmax;
 
-    if(hrr_col>=0&&mlr_col>=0&&hoc_hrr==1&&(glui_hrr==hrr_col||glui_hrr==mlr_col)){
-      hi        = global_scase.hrr_coll.hrrinfo + mlr_col;
-      hi2       = global_scase.hrr_coll.hrrinfo + hrr_col;
+    if(global_scase.hrr_col>=0&&global_scase.mlr_col>=0&&hoc_hrr==1&&(glui_hrr==global_scase.hrr_col||glui_hrr==global_scase.mlr_col)){
+      hi        = global_scase.hrr_coll.hrrinfo + global_scase.mlr_col;
+      hi2       = global_scase.hrr_coll.hrrinfo + global_scase.hrr_col;
       vals2     = hi2->vals;
       quantity2 = hi2->label.longlabel;
       valmin    = MIN(hi->valmin, hi2->valmin);
@@ -993,7 +993,7 @@ void ViewportHrrPlot(int quad, GLint screen_left, GLint screen_down){
       valmax = hi->valmax;
     }
 
-    hitime = global_scase.hrr_coll.hrrinfo+time_col;
+    hitime = global_scase.hrr_coll.hrrinfo+global_scase.time_col;
 
     if(update_avg==1){
       TimeAveragePlot2DData(hitime->vals, hi->vals_orig, hi->vals, hi->nvals, plot2d_time_average);
@@ -1239,10 +1239,10 @@ void ViewportTimebar(int quad, GLint screen_left, GLint screen_down){
     if(visTimelabel==1){
       OutputText(VP_timebar.left,v_space, timelabel);
     }
-    if(visFramelabel==1&&(vis_hrr_label==0||hrrptr==NULL)){
+    if(visFramelabel==1&&(vis_hrr_label==0||global_scase.hrrptr==NULL)){
       OutputText(VP_timebar.left,v_space+VP_timebar.text_height+v_space, framelabel);
     }
-    if(vis_hrr_label==1&&hrrptr!=NULL){
+    if(vis_hrr_label==1&&global_scase.hrrptr!=NULL){
       OutputText(VP_timebar.left,v_space+VP_timebar.text_height+v_space, hrrlabel);
     }
     if(visTimebar==1){
