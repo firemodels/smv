@@ -4595,7 +4595,7 @@ FILE_SIZE LoadVSliceMenu2(int value){
     value = -(1000 + value);
     submenutype=value/4;
     dir=value%4;
-    submenutype=subvslice_menuindex[submenutype];
+    submenutype=global_scase.subvslice_menuindex[submenutype];
     vslicei = global_scase.slicecoll.vsliceinfo + submenutype;
     slicei = global_scase.slicecoll.sliceinfo + vslicei->ival;
     submenulabel = slicei->label.longlabel;
@@ -5184,7 +5184,7 @@ void LoadSliceMenu(int value){
       default:
         value = -(1000 + value);
         submenutype=value/4;
-        submenutype=subslice_menuindex[submenutype];
+        submenutype=global_scase.subslice_menuindex[submenutype];
         slicei = global_scase.slicecoll.sliceinfo + submenutype;
 #ifndef pp_SLICEFRAME
         submenulabel = slicei->label.longlabel;
@@ -5299,7 +5299,7 @@ void LoadMultiVSliceMenu(int value){
     value = -(1000 + value);
     submenutype=value/4-1;
     dir=value%4;
-    submenutype=msubvslice_menuindex[submenutype];
+    submenutype=global_scase.msubvslice_menuindex[submenutype];
 
     slicei = global_scase.slicecoll.sliceinfo + submenutype;
     submenulabel = slicei->label.longlabel;
@@ -5509,7 +5509,7 @@ void LoadMultiSliceMenu(int value){
     value = -(1000 + value);
     submenutype=value/4;
     dir=value%4;
-    submenutype=msubslice_menuindex[submenutype];
+    submenutype=global_scase.msubslice_menuindex[submenutype];
     slicei = global_scase.slicecoll.sliceinfo + submenutype;
     submenulabel = slicei->label.longlabel;
     START_TIMER(load_time);
@@ -7635,16 +7635,16 @@ void GeometryMenu(int value){
 
   switch(value){
   case GEOM_Outline:
-    if(global_scase.isZoneFireModel==0)visFrame=1-visFrame;
+    if(global_scase.isZoneFireModel==0)global_scase.visFrame=1-global_scase.visFrame;
     break;
   case 5:
-    visFloor=1-visFloor;
+    global_scase.visFloor=1-global_scase.visFloor;
     break;
   case 6:
-    visWalls=1-visWalls;
+    global_scase.visWalls=1-global_scase.visWalls;
     break;
   case 7:
-    visCeiling=1-visCeiling;
+    global_scase.visCeiling=1-global_scase.visCeiling;
     break;
   case 17+TERRAIN_TOP:
     terrain_showonly_top = 1 - terrain_showonly_top;
@@ -7684,18 +7684,18 @@ void GeometryMenu(int value){
     }
     break;
   case GEOM_ShowAll:
-    if(global_scase.isZoneFireModel)visFrame=1;
+    if(global_scase.isZoneFireModel)global_scase.visFrame=1;
     show_faces_shaded=1;
-    visFloor = 1;
-    visFrame = 1;
+    global_scase.visFloor = 1;
+    global_scase.visFrame = 1;
     BlockageMenu(visBLOCKAsInput);
     VentMenu(SHOW_ALL_VENTS);
     break;
   case GEOM_HideAll:
-    visFrame=0;
-    visFloor=0;
-    visWalls=0;
-    visCeiling=0;
+    global_scase.visFrame=0;
+    global_scase.visFloor=0;
+    global_scase.visWalls=0;
+    global_scase.visCeiling=0;
     VentMenu(HIDE_ALL_VENTS);
     visGrid = NOGRID_NOPROBE;
     BlockageMenu(visBLOCKHide);
@@ -8205,7 +8205,7 @@ void InitLoadMultiSubMenu(int **loadsubmslicemenuptr, int *nmultisliceloadedptr)
     sd = global_scase.slicecoll.sliceinfo+mslicei->islices[0];
 
     if(i==0||strcmp(sd->label.longlabel, sdim1->label.longlabel)!=0){
-      msubslice_menuindex[nloadsubmslicemenu]=mslicei->islices[0];
+      global_scase.msubslice_menuindex[nloadsubmslicemenu]=mslicei->islices[0];
       CREATEMENU(loadsubmslicemenu[nloadsubmslicemenu], LoadMultiSliceMenu);
       nloadsubmslicemenu++;
     }
@@ -8715,7 +8715,7 @@ void InitMultiVectorSubMenu(int **loadsubmvslicemenuptr){
     si = global_scase.slicecoll.sliceinfo+vi->ival;
     if(i==0||strcmp(si->label.longlabel, sim1->label.longlabel)!=0){
       CREATEMENU(loadsubmvslicemenu[nloadsubmvslicemenu], LoadMultiVSliceMenu);
-      msubvslice_menuindex[nloadsubmvslicemenu] = vi->ival;
+      global_scase.msubvslice_menuindex[nloadsubmvslicemenu] = vi->ival;
     }
 
     STRCPY(menulabel, "");
@@ -9404,7 +9404,7 @@ static int menu_count=0;
 
   CREATEMENU(blockagemenu,BlockageMenu);
   glutAddMenuEntry(_("View Method:"),MENU_DUMMY);
-  if(global_scase.tourcoll.tourinfo!=NULL&&have_animate_blockages == 1){
+  if(global_scase.tourcoll.tourinfo!=NULL&&global_scase.have_animate_blockages == 1){
     if(animate_blockages == 1)glutAddMenuEntry(_("   *Animate blockages"), ANIMATE_BLOCKAGES);
     if(animate_blockages==0)glutAddMenuEntry(_("   Animate blockages"),    ANIMATE_BLOCKAGES);
   }
@@ -9815,7 +9815,7 @@ static int menu_count=0;
     }
     if(show_bothsides_ext == 1)glutAddMenuEntry(_("*Two sided (exterior)"), MENU_VENT_TWOEXTERIOR);
     if(show_bothsides_ext == 0)glutAddMenuEntry(_("Two sided (exterior)"), MENU_VENT_TWOEXTERIOR);
-    if(nvent_transparent>0){
+    if(global_scase.nvent_transparent>0){
       if(show_transparent_vents == 1)glutAddMenuEntry(_("*Transparent"), MENU_VENT_TRANSPARENT);
       if(show_transparent_vents == 0)glutAddMenuEntry(_("Transparent"), MENU_VENT_TRANSPARENT);
     }
@@ -9914,7 +9914,7 @@ static int menu_count=0;
       glutAddMenuEntry(qlabel, i);
     }
   }
-  if(global_scase.objectscoll.nobject_defs>0||hrrptr!=NULL){
+  if(global_scase.objectscoll.nobject_defs>0||global_scase.hrrptr!=NULL){
     CREATEMENU(showobjectsplotmenu,ShowObjectsMenu);
     if(ndevicetypes>0){
       GLUTADDSUBMENU(_("quantity"),devicetypemenu);
@@ -9925,7 +9925,7 @@ static int menu_count=0;
       if(vis_device_plot==DEVICE_PLOT_SHOW_SELECTED)glutAddMenuEntry( "*Selected devices",      OBJECT_PLOT_SHOW_SELECTED);
       if(vis_device_plot!=DEVICE_PLOT_SHOW_SELECTED)glutAddMenuEntry( "Selected devices",       OBJECT_PLOT_SHOW_SELECTED);
     }
-    if(hrrptr!=NULL){
+    if(global_scase.hrrptr!=NULL){
       if(vis_hrr_plot==1)glutAddMenuEntry("*HRRPUV", PLOT_HRRPUV);
       if(vis_hrr_plot==0)glutAddMenuEntry("HRRPUV", PLOT_HRRPUV);
     }
@@ -10239,7 +10239,7 @@ static int menu_count=0;
   /* --------------------------------geometry menu -------------------------- */
 
   CREATEMENU(geometrymenu,GeometryMainMenu);
-  if(ntotal_blockages>0)GLUTADDSUBMENU(_("Obstacles"),blockagemenu);
+  if(global_scase.ntotal_blockages>0)GLUTADDSUBMENU(_("Obstacles"),blockagemenu);
   if(global_scase.ngeominfo>0){
     GLUTADDSUBMENU(_("Immersed"), immersedmenu);
   }
@@ -10262,11 +10262,11 @@ static int menu_count=0;
   }
   GLUTADDSUBMENU(_("Grid"),gridslicemenu);
   if(global_scase.isZoneFireModel==0){
-    if(visFrame==1)glutAddMenuEntry(_("*Outline"), GEOM_Outline);
-    if(visFrame==0)glutAddMenuEntry(_("Outline"), GEOM_Outline);
+    if(global_scase.visFrame==1)glutAddMenuEntry(_("*Outline"), GEOM_Outline);
+    if(global_scase.visFrame==0)glutAddMenuEntry(_("Outline"), GEOM_Outline);
   }
   else{
-    visFrame=0;
+    global_scase.visFrame=0;
   }
   if(show_geom_boundingbox == SHOW_BOUNDING_BOX_ALWAYS)glutAddMenuEntry(_("*bounding box(always)"), GEOM_BOUNDING_BOX_ALWAYS);
   if(show_geom_boundingbox != SHOW_BOUNDING_BOX_ALWAYS)glutAddMenuEntry(_("bounding box(always)"), GEOM_BOUNDING_BOX_ALWAYS);
@@ -10333,7 +10333,7 @@ static int menu_count=0;
   if(vis_title_smv_version == 0)glutAddMenuEntry(_("Smokeview version, build date"), MENU_TITLE_title_smv_version);
   if(vis_title_gversion== 1)glutAddMenuEntry(_("*FDS, Smokeview version"), MENU_TITLE_gversion);
   if(vis_title_gversion== 0)glutAddMenuEntry(_("FDS, Smokeview version"), MENU_TITLE_gversion);
-  if(fds_title!=NULL){
+  if(global_scase.fds_title!=NULL){
     if(vis_title_fds == 1)glutAddMenuEntry(_("*Input file title"), MENU_TITLE_title_fds);
     if(vis_title_fds == 0)glutAddMenuEntry(_("Input file title"), MENU_TITLE_title_fds);
   }
@@ -10378,20 +10378,20 @@ static int menu_count=0;
   if(visgridloc == 1)glutAddMenuEntry(_("*Grid locations"), MENU_LABEL_grid);
   if(visgridloc == 0)glutAddMenuEntry(_("Grid locations"), MENU_LABEL_grid);
 
-  if(show_hrrcutoff_active == 1&&show_tempcutoff_active==1){
+  if(global_scase.show_hrrcutoff_active == 1&&global_scase.show_tempcutoff_active==1){
     if(show_firecutoff == 1)glutAddMenuEntry(_("*Fire cutoff"), MENU_LABEL_firecutoff);
     if(show_firecutoff == 0)glutAddMenuEntry(_("Fire cutoff"), MENU_LABEL_firecutoff);
   }
-  else if(show_hrrcutoff_active == 1&&show_tempcutoff_active==0){
+  else if(global_scase.show_hrrcutoff_active == 1&&global_scase.show_tempcutoff_active==0){
     if(show_firecutoff == 1)glutAddMenuEntry(_("*HRRPUV cutoff"), MENU_LABEL_firecutoff);
     if(show_firecutoff == 0)glutAddMenuEntry(_("HRRPUV cutoff"), MENU_LABEL_firecutoff);
   }
-  else if(show_hrrcutoff_active == 0&&show_tempcutoff_active==1){
+  else if(global_scase.show_hrrcutoff_active == 0&&global_scase.show_tempcutoff_active==1){
     if(show_firecutoff == 1)glutAddMenuEntry(_("*Temperature cutoff"), MENU_LABEL_firecutoff);
     if(show_firecutoff == 0)glutAddMenuEntry(_("Temperature cutoff"), MENU_LABEL_firecutoff);
   }
 
-  if(hrrptr != NULL){
+  if(global_scase.hrrptr != NULL){
     if(vis_hrr_label == 1)glutAddMenuEntry(_("*HRR"), MENU_LABEL_hrr);
     if(vis_hrr_label == 0)glutAddMenuEntry(_("HRR"), MENU_LABEL_hrr);
   }
@@ -11469,7 +11469,7 @@ static int menu_count=0;
     if(global_scase.isZoneFireModel==1){
       if(visSensor==1)glutAddMenuEntry(_("*Targets"), MENU_SHOWHIDE_SENSOR);
       if(visSensor==0)glutAddMenuEntry(_("Targets"), MENU_SHOWHIDE_SENSOR);
-      if(hasSensorNorm==1){
+      if(global_scase.hasSensorNorm==1){
         if(visSensorNorm==1)glutAddMenuEntry(_("*Target orientation"), MENU_SHOWHIDE_SENSOR_NORM);
         if(visSensorNorm==0)glutAddMenuEntry(_("Target orientation"), MENU_SHOWHIDE_SENSOR_NORM);
       }
@@ -11477,7 +11477,7 @@ static int menu_count=0;
     else{
       if(visSensor==1)glutAddMenuEntry(_("*Thermocouples"), MENU_SHOWHIDE_SENSOR);
       if(visSensor==0)glutAddMenuEntry(_("Thermocouples"), MENU_SHOWHIDE_SENSOR);
-      if(hasSensorNorm==1){
+      if(global_scase.hasSensorNorm==1){
         if(visSensorNorm==1)glutAddMenuEntry(_("*Thermocouple norms"), MENU_SHOWHIDE_SENSOR_NORM);
         if(visSensorNorm==0)glutAddMenuEntry(_("Thermocouple norms"), MENU_SHOWHIDE_SENSOR_NORM);
       }
@@ -11832,7 +11832,7 @@ static int menu_count=0;
         else{
           strcpy(menulabel,uci->units[j].unit);
         }
-        if(smokediff==1&&uci->diff_index==j&&uci->units[j].rel_defined==1){
+        if(global_scase.smokediff==1&&uci->diff_index==j&&uci->units[j].rel_defined==1){
           strcat(menulabel," rel to ");
           strcat(menulabel,uci->units[j].rel_val);
           strcat(menulabel," ");
@@ -12036,17 +12036,17 @@ static int menu_count=0;
   glutAddMenuEntry(_("Misc"), MENU_DUMMY);
   glutAddMenuEntry(_("  A: toggle between plot types (device and HRRPUV)"), MENU_DUMMY);
   glutAddMenuEntry(_("  e: toggle between view rotation types: scene centered 2 axis, 1 axis, 3 axis and eye centered"), MENU_DUMMY);
-  if(ntotal_blockages>0||global_scase.isZoneFireModel==1){
+  if(global_scase.ntotal_blockages>0||global_scase.isZoneFireModel==1){
     glutAddMenuEntry(_("  g: toggle grid visibility modes"), MENU_DUMMY);
   }
   if(global_scase.devicecoll.ndeviceinfo > 0 && GetNumActiveDevices() > 0){
     glutAddMenuEntry("  j/ALT j: increase/decrease object size", MENU_DUMMY);
   }
-  if(have_cface_normals == CFACE_NORMALS_YES){
+  if(global_scase.have_cface_normals == CFACE_NORMALS_YES){
     glutAddMenuEntry(_("  n: display cface normal vectors"), MENU_DUMMY);
   }
   glutAddMenuEntry(_("  M: toggle command line clipping"), MENU_DUMMY);
-  if(ntotal_blockages > 0){
+  if(global_scase.ntotal_blockages > 0){
     glutAddMenuEntry(_("  O: toggle blockage view (normal <--> outline)"), MENU_DUMMY);
     glutAddMenuEntry(_("  ALT o: cycle between blockage view types"), MENU_DUMMY);
   }
@@ -13022,7 +13022,7 @@ static int menu_count=0;
 
       // volume rendered smoke
 
-      if(nvolrenderinfo>0&&smokediff==0){
+      if(nvolrenderinfo>0&&global_scase.smokediff==0){
         char vlabel[256];
 
         strcpy(vlabel,_("3D smoke (Volume rendered)"));

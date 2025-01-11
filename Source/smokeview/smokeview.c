@@ -217,8 +217,8 @@ void DisplayVersionInfo(char *progname){
     if(verbose_output==1)PRINTF("Smokezip         : %s\n",smokezippath);
   }
 #endif
-  if(texturedir!=NULL){
-    if(verbose_output==1)PRINTF("Texture directory: %s\n",texturedir);
+  if(global_scase.texturedir!=NULL){
+    if(verbose_output==1)PRINTF("Texture directory: %s\n",global_scase.texturedir);
   }
   char *smv_bindir = GetSmvRootDir();
   if(smv_bindir){

@@ -558,10 +558,10 @@ char *ProcessCommandLine(CommandlineArgs *args){
       isotest = 1;
     }
     if(args->smoke3d){
-      smoke3d_only = 1;
+      parse_opts.smoke3d_only = 1;
     }
     if(args->no_slcf){
-    handle_slice_files = 0;
+    parse_opts.handle_slice_files = 0;
     }
     if(args->show_help_summary){
       Usage(HELP_SUMMARY);
@@ -609,12 +609,12 @@ char *ProcessCommandLine(CommandlineArgs *args){
       loadfiles_commandline[LOAD_3DHRRPUV] = 0;
     }
     if(args->fast){
-      fast_startup = 1;
-      lookfor_compressed_files = 0;
+      parse_opts.fast_startup = 1;
+      parse_opts.lookfor_compressed_files = 0;
     }
     if(args->full){
-      fast_startup = 0;
-      lookfor_compressed_files = 1;
+      parse_opts.fast_startup = 0;
+      parse_opts.lookfor_compressed_files = 1;
     }
     if(args->blank){
       global_scase.iblank_set_on_commandline = 1;
@@ -722,7 +722,7 @@ char *ProcessCommandLine(CommandlineArgs *args){
       noexit = 1;
     }
     if(args->setup){
-      setup_only = 1;
+      parse_opts.setup_only = 1;
     }
     if(args->bindir != NULL){
       SetSmvRootOverride(args->bindir);

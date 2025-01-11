@@ -920,7 +920,7 @@ extern "C" void GLUIGeometrySetup(int main_window){
       glui_geometry->add_radiobutton_to_group(RADIO_cface_type, "triangles");
       glui_geometry->add_radiobutton_to_group(RADIO_cface_type, "polygons");
       VolumeCB(VOL_USE_CFACES);
-      if(have_cface_normals==CFACE_NORMALS_YES){
+      if(global_scase.have_cface_normals==CFACE_NORMALS_YES){
         CHECKBOX_show_cface_normals = glui_geometry->add_checkbox_to_panel(PANEL_cfaces, "normal vectors", &show_cface_normals);
       }
     }

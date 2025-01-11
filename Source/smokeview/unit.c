@@ -109,7 +109,7 @@ void InitUnitDefs(void){
 void UpdateUnitDefs(void){
   int i, j;
 
-  if(smokediff==0)return;
+  if(global_scase.smokediff==0)return;
   for(i=0;i<nunitclasses;i++){
     float valmin, valmax, diff_maxmin;
     int firstslice, firstpatch, firstplot3d, diff_index;

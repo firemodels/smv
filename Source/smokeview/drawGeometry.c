@@ -597,8 +597,8 @@ void UpdateIndexColors(void){
 
   global_scase.updateindexcolors=0;
 
-  if(strcmp(surfacedefault->surfacelabel,"INERT")==0){
-    surfacedefault->color=block_ambient2;
+  if(strcmp(global_scase.surfacedefault->surfacelabel,"INERT")==0){
+    global_scase.surfacedefault->color=block_ambient2;
   }
   for(i=0;i<global_scase.surfcoll.nsurfinfo;i++){
     surfdata *surfi;
@@ -2063,10 +2063,10 @@ void ObstOrVent2Faces(const meshdata *meshi, blockagedata *bc,
         faceptr->transparent=bc->transparent;
         break;
       case FFALSE:
-        if(bc->surf[j]==surfacedefault){
+        if(bc->surf[j]==global_scase.surfacedefault){
          // faceptr->color=block_ambient2;
-          faceptr->color=surfacedefault->color;  /* fix ?? */
-          faceptr->transparent=surfacedefault->transparent;
+          faceptr->color=global_scase.surfacedefault->color;  /* fix ?? */
+          faceptr->transparent=global_scase.surfacedefault->transparent;
         }
         else{
           faceptr->color=bc->surf[j]->color;
@@ -2741,7 +2741,7 @@ void UpdateFaceListsWorker(void){
       if(j<vent_offset){
         if(visBlocks==visBLOCKHide)continue;
       }
-      if(j>=outline_offset&&j<outline_offset+6&&visFrame==0){
+      if(j>=outline_offset&&j<outline_offset+6&&global_scase.visFrame==0){
         continue;
       }
       if(j>=vent_offset&&j<vent_offset+meshi->nvents){
@@ -2775,18 +2775,18 @@ void UpdateFaceListsWorker(void){
       if(j>=exteriorsurface_offset){
         switch(j-exteriorsurface_offset){
          case DOWN_Z:
-           if(visFloor==0){
+           if(global_scase.visFloor==0){
              continue;
            }
           break;
          case UP_Z:
-           if(visCeiling==0)continue;
+           if(global_scase.visCeiling==0)continue;
           break;
          case UP_X:
          case DOWN_X:
          case UP_Y:
          case DOWN_Y:
-           if(visWalls==0)continue;
+           if(global_scase.visWalls==0)continue;
           break;
          default:
            assert(FFALSE);
