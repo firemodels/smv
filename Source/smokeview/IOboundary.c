@@ -1232,6 +1232,29 @@ void GetPatchSizes1(FILE_m **stream, const char *patchfilename, unsigned char *b
   return;
 }
 
+// !  ------------------ GetVentIndex ------------------------
+
+int GetVentIndex(int mesh_index, int ib[6]){
+  meshdata *meshi;
+  int i;
+
+  if(mesh_index<0 || mesh_index>global_scase.meshescoll.nmeshes)return -1;
+  meshi = global_scase.meshescoll.meshinfo;
+  for(i = 0;i < meshi->nvents;i++){
+    ventdata *venti;
+
+    venti = meshi->ventinfo+i;
+    if(
+      venti->imin == ib[0] && venti->imax == ib[1] && 
+      venti->jmin == ib[2] && venti->jmax == ib[3] && 
+      venti->kmin == ib[4] && venti->kmax == ib[5]
+      ){
+      return -(i + 2);
+    }
+  }
+  return -1;
+}
+
 // !  ------------------ GetPatchSizes2 ------------------------
 
 void GetPatchSizes2(FILE_m *stream, int npatch, int nmeshes_arg, int *npatchsize, patchfacedata *patchfaceinfo, int *headersize, int *framesize){
@@ -1254,7 +1277,6 @@ void GetPatchSizes2(FILE_m *stream, int npatch, int nmeshes_arg, int *npatchsize
     pfi->obst     = NULL;
     if(mesh_index >= 0 && mesh_index < nmeshes_arg)pfi->meshinfo = global_scase.meshescoll.meshinfo + ijkp[8] - 1;
     if(pfi->meshinfo != NULL && obst_index >= 0 && obst_index < pfi->meshinfo->nbptrs)pfi->obst = pfi->meshinfo->blockageinfoptrs[obst_index];
-    pfi->obst_index = obst_index;
     pfi->mesh_index = mesh_index;
     int i1 = ijkp[0];
     int i2 = ijkp[1];
@@ -1262,6 +1284,12 @@ void GetPatchSizes2(FILE_m *stream, int npatch, int nmeshes_arg, int *npatchsize
     int j2 = ijkp[3];
     int k1 = ijkp[4];
     int k2 = ijkp[5];
+    if(obst_index<0){
+      pfi->obst_index = GetVentIndex(mesh_index, ijkp);
+    }
+    else{
+      pfi->obst_index = obst_index;
+    }
     *npatchsize += (i2 + 1 - i1) * (j2 + 1 - j1) * (k2 + 1 - k1);
   }
   *headersize += npatch * (4 + 6 * 4 + 4);
@@ -2333,6 +2361,12 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
         bcj = meshii->blockageinfoptrs[j];
         bcj->patch_index = -1;
       }
+      for(j = 0;j < meshii->nvents;j++){
+        ventdata *venti;
+
+        venti = meshi->ventinfo + j;
+        venti->patch_index = -1;
+      }
     }
     for(i=0;i<global_scase.npatchinfo;i++){
       patchdata *patchii;
@@ -2351,6 +2385,16 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
 
             bc = pfi->meshinfo->blockageinfoptrs[pfi->obst_index];
             bc->patch_index = n;
+          }
+          if(pfi->obst_index < -1){
+            int vent_index;
+            ventdata *venti;
+
+            vent_index = -(pfi->obst_index + 2);
+            if(vent_index >= 0 && vent_index < meshi->nvents){
+              venti = meshi->ventinfo + vent_index;
+              venti->patch_index = n;
+            }
           }
         }
       }
