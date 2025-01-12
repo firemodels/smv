@@ -11072,6 +11072,7 @@ typedef struct {
         ventdata *vi;
 
         vi=vinfo+nn;
+        vi->patch_index = -1;
         vi->type=VENT_SOLID;
         vi->dummyptr=NULL;
         vi->transparent=0;
