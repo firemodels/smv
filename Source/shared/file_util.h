@@ -103,9 +103,6 @@ typedef struct {
 #define BFILE bufferstreamdata
 
 #define FILE_EXISTS(a) FileExists(a, NULL, 0, NULL, 0)
-#define FILE_EXISTS_CASEDIR(a)                                                 \
-  FileExists(a, global_scase.filelist_coll.filelist_casename, global_scase.filelist_coll.nfilelist_casename, global_scase.filelist_coll.filelist_casedir,       \
-             global_scase.filelist_coll.nfilelist_casedir)
 int FileExistsOrig(char *filename);
 
 #ifdef WIN32

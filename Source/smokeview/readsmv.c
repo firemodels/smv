@@ -1739,7 +1739,7 @@ void ReadSMVDynamic(smv_case *scase, char *file){
 
       plot3di->file=plot3di->reg_file;
 
-      if(parse_opts.fast_startup==1||FILE_EXISTS_CASEDIR(plot3di->file)==YES){
+      if(parse_opts.fast_startup==1||FileExistsCaseDir(scase, plot3di->file)==YES){
         int n;
         int read_ok = YES;
 
@@ -2471,7 +2471,7 @@ int GetInpf(smv_case *scase, bufferstreamdata *stream_in){
       FREEMEMORY(scase->paths.fds_filein);
       if(NewMemory((void **)&scase->paths.fds_filein,(unsigned int)(len+1))==0)return 2;
       STRCPY(scase->paths.fds_filein,bufferptr);
-      if(FILE_EXISTS_CASEDIR(scase->paths.fds_filein)==NO){
+      if(FileExistsCaseDir(scase, scase->paths.fds_filein)==NO){
         FreeMemory(scase->paths.fds_filein);
       }
 
@@ -2489,21 +2489,21 @@ int GetInpf(smv_case *scase, bufferstreamdata *stream_in){
         NewMemory((void **)&scase->paths.hrr_csv_filename,(unsigned int)(strlen(scase->paths.chidfilebase)+8+1));
         STRCPY(scase->paths.hrr_csv_filename,scase->paths.chidfilebase);
         STRCAT(scase->paths.hrr_csv_filename,"_hrr.csv");
-        if(FILE_EXISTS_CASEDIR(scase->paths.hrr_csv_filename)==NO){
+        if(FileExistsCaseDir(scase, scase->paths.hrr_csv_filename)==NO){
           FREEMEMORY(scase->paths.hrr_csv_filename);
         }
 
         NewMemory((void **)&scase->paths.devc_csv_filename,(unsigned int)(strlen(scase->paths.chidfilebase)+9+1));
         STRCPY(scase->paths.devc_csv_filename,scase->paths.chidfilebase);
         STRCAT(scase->paths.devc_csv_filename,"_devc.csv");
-        if(FILE_EXISTS_CASEDIR(scase->paths.devc_csv_filename)==NO){
+        if(FileExistsCaseDir(scase, scase->paths.devc_csv_filename)==NO){
           FREEMEMORY(scase->paths.devc_csv_filename);
         }
 
         NewMemory((void **)&scase->paths.exp_csv_filename,(unsigned int)(strlen(scase->paths.chidfilebase)+8+1));
         STRCPY(scase->paths.exp_csv_filename,scase->paths.chidfilebase);
         STRCAT(scase->paths.exp_csv_filename,"_exp.csv");
-        if(FILE_EXISTS_CASEDIR(scase->paths.exp_csv_filename)==NO){
+        if(FileExistsCaseDir(scase, scase->paths.exp_csv_filename)==NO){
           FREEMEMORY(scase->paths.exp_csv_filename);
         }
       }
@@ -5142,7 +5142,7 @@ int ParseISOFProcess(smv_case *scase, bufferstreamdata *stream, char *buffer, in
     strcpy(isoi->tfile, tbufferptr);
   }
 
-  if(parse_opts.fast_startup==1||FILE_EXISTS_CASEDIR(isoi->reg_file)==YES){
+  if(parse_opts.fast_startup==1||FileExistsCaseDir(scase, isoi->reg_file)==YES){
     isoi->get_isolevels = 1;
     isoi->file = isoi->reg_file;
     if(ReadLabels(&isoi->surface_label, stream, NULL)==LABEL_ERR)return 2;
@@ -5210,7 +5210,7 @@ int ParseCHIDProcess(smv_case *scase, bufferstreamdata *stream, int option){
     NewMemory((void **)&scase->paths.hrr_csv_filename, (unsigned int)(strlen(scase->paths.chidfilebase)+8+1));
     STRCPY(scase->paths.hrr_csv_filename, scase->paths.chidfilebase);
     STRCAT(scase->paths.hrr_csv_filename, "_hrr.csv");
-    if(FILE_EXISTS_CASEDIR(scase->paths.hrr_csv_filename)==NO){
+    if(FileExistsCaseDir(scase, scase->paths.hrr_csv_filename)==NO){
       FREEMEMORY(scase->paths.hrr_csv_filename);
     }
   }
@@ -5303,7 +5303,7 @@ int ParsePRT5Process(smv_case *scase, bufferstreamdata *stream, char *buffer, in
 
   // parti->size_file can't be written to, then put it in a world writable temp directory
   char *smokeview_scratchdir = GetUserConfigDir();
-  if(FILE_EXISTS_CASEDIR(parti->size_file)==NO&&scase->curdir_writable==NO&&smokeview_scratchdir!=NULL){
+  if(FileExistsCaseDir(scase, parti->size_file)==NO&&scase->curdir_writable==NO&&smokeview_scratchdir!=NULL){
     len = strlen(smokeview_scratchdir)+strlen(bufferptr)+1+3+1;
     parti->size_file = NULL;
     if(NewMemory((void **)&parti->size_file, (unsigned int)len)==0)return RETURN_TWO;
@@ -5317,7 +5317,7 @@ int ParsePRT5Process(smv_case *scase, bufferstreamdata *stream, char *buffer, in
   // parti->hist_file can't be written to, then put it in a world writable temp directory
 
   parti->compression_type = UNCOMPRESSED;
-  if(FILE_EXISTS_CASEDIR(parti->reg_file)==YES){
+  if(FileExistsCaseDir(scase, parti->reg_file)==YES){
     parti->file = parti->reg_file;
   }
   else{
@@ -5376,7 +5376,7 @@ int ParsePRT5Process(smv_case *scase, bufferstreamdata *stream, char *buffer, in
     NewMemory((void **)&parti->partclassptr, sizeof(partclassdata *));
     parti->partclassptr[i] = scase->partclassinfo+parti->nclasses;
   }
-  if(parse_opts.fast_startup==1||(parti->file!=NULL&&FILE_EXISTS_CASEDIR(parti->file)==YES)){
+  if(parse_opts.fast_startup==1||(parti->file!=NULL&&FileExistsCaseDir(scase, parti->file)==YES)){
     ipart++;
     *ipart_in = ipart;
   }
@@ -5536,7 +5536,7 @@ int ParseBNDFProcess(smv_case *scase, bufferstreamdata *stream, char *buffer, in
   STRCPY(patchi->size_file, bufferptr);
   //      STRCAT(patchi->size_file,".szz"); when we actully use file check both .sz and .szz extensions
 
-  if(parse_opts.lookfor_compressed_files==1&&FILE_EXISTS_CASEDIR(patchi->comp_file) == YES){
+  if(parse_opts.lookfor_compressed_files==1&&FileExistsCaseDir(scase, patchi->comp_file) == YES){
     patchi->compression_type = COMPRESSED_ZLIB;
     patchi->file             = patchi->comp_file;
   }
@@ -5787,7 +5787,7 @@ int ParseSMOKE3DProcess(smv_case *scase, bufferstreamdata *stream, char *buffer,
     smoke3di->comp_file = SMOKE3DBUFFER(len + 1);
     STRCPY(smoke3di->comp_file, buffer2);
 
-    if(FILE_EXISTS_CASEDIR(smoke3di->comp_file) == YES){
+    if(FileExistsCaseDir(scase, smoke3di->comp_file) == YES){
       smoke3di->file = smoke3di->comp_file;
       smoke3di->is_zlib = 1;
       smoke3di->compression_type = COMPRESSED_ZLIB;
@@ -5806,7 +5806,7 @@ int ParseSMOKE3DProcess(smv_case *scase, bufferstreamdata *stream, char *buffer,
     strcat(buffer16, ".s16");
     smoke3di->s16_file = SMOKE3DBUFFER(strlen(buffer16) + 1);
     STRCPY(smoke3di->s16_file, buffer16);
-    if(FILE_EXISTS_CASEDIR(smoke3di->s16_file)==YES){
+    if(FileExistsCaseDir(scase, smoke3di->s16_file)==YES){
       smoke3di->is_s16 = 1;
       have_smoke16 = 1;
     }
@@ -6069,10 +6069,10 @@ int ParseSLCFProcess(smv_case *scase, int option, bufferstreamdata *stream, char
   has_reg = NO;
   compression_type = UNCOMPRESSED;
   if(parse_opts.lookfor_compressed_files==1){
-    if(FILE_EXISTS_CASEDIR(rle_file)==YES)compression_type  = COMPRESSED_RLE;
-    if(FILE_EXISTS_CASEDIR(zlib_file)==YES)compression_type = COMPRESSED_ZLIB;
+    if(FileExistsCaseDir(scase, rle_file)==YES)compression_type  = COMPRESSED_RLE;
+    if(FileExistsCaseDir(scase, zlib_file)==YES)compression_type = COMPRESSED_ZLIB;
   }
-  if(compression_type==UNCOMPRESSED&&(parse_opts.fast_startup==1||FILE_EXISTS_CASEDIR(bufferptr)==YES))has_reg = YES;
+  if(compression_type==UNCOMPRESSED&&(parse_opts.fast_startup==1||FileExistsCaseDir(scase, bufferptr)==YES))has_reg = YES;
   if(has_reg==NO&&compression_type==UNCOMPRESSED){
     scase->slicecoll.nsliceinfo--;
 
@@ -6806,7 +6806,7 @@ void AddCfastCsvfi(smv_case *scase, const char *suffix, const char *type, int fo
     csvfi = scase->csvcoll.csvfileinfo + i;
     if(strcmp(csvfi->c_type,type)==0)return;
   }
-  if(FILE_EXISTS_CASEDIR(filename) == NO)return;
+  if(FileExistsCaseDir(scase, filename) == NO)return;
   InitCSV(scase->csvcoll.csvfileinfo + scase->csvcoll.ncsvfileinfo, filename, type, format);
   scase->csvcoll.ncsvfileinfo++;
 }
@@ -6877,7 +6877,7 @@ void *CheckFiles(void *arg){
     int have_file;
 
     patchi = global_scase.patchinfo + i;
-    have_file = FILE_EXISTS_CASEDIR(patchi->comp_file);
+    have_file = FileExistsCaseDir(&global_scase, patchi->comp_file);
     THREADcontrol(checkfiles_threads, THREAD_LOCK);
     if(have_file == YES){
       patchi->compression_type_temp = COMPRESSED_ZLIB;
@@ -6890,7 +6890,7 @@ void *CheckFiles(void *arg){
     int have_file;
 
     smoke3di = global_scase.smoke3dcoll.smoke3dinfo + i;
-    have_file = FILE_EXISTS_CASEDIR(smoke3di->comp_file);
+    have_file = FileExistsCaseDir(&global_scase, smoke3di->comp_file);
     THREADcontrol(checkfiles_threads, THREAD_LOCK);
     if(have_file == YES){
       smoke3di->compression_type_temp = COMPRESSED_ZLIB;
@@ -7119,30 +7119,6 @@ int ReadSMV_Init(smv_case *scase){
   FREEMEMORY(scase->tickinfo);
   scase->ntickinfo=0;
   scase->ntickinfo_smv=0;
-
-  FREEMEMORY(camera_external);
-  NewMemory((void **)&camera_external,sizeof(cameradata));
-
-  FREEMEMORY(camera_defaults);
-  NewMemory((void **)&camera_defaults, 6*sizeof(cameradata *));
-  NewMemory((void **)&(camera_defaults[0]), sizeof(cameradata));
-  NewMemory((void **)&(camera_defaults[1]), sizeof(cameradata));
-  NewMemory((void **)&(camera_defaults[2]), sizeof(cameradata));
-  NewMemory((void **)&(camera_defaults[3]), sizeof(cameradata));
-  NewMemory((void **)&(camera_defaults[4]), sizeof(cameradata));
-  NewMemory((void **)&(camera_defaults[5]), sizeof(cameradata));
-
-  FREEMEMORY(camera_external_save);
-  NewMemory((void **)&camera_external_save,sizeof(cameradata));
-
-  FREEMEMORY(camera_current);
-  NewMemory((void **)&camera_current,sizeof(cameradata));
-
-  FREEMEMORY(camera_save);
-  NewMemory((void **)&camera_save,sizeof(cameradata));
-
-  FREEMEMORY(camera_last);
-  NewMemory((void **)&camera_last,sizeof(cameradata));
 
   scase->updatefaces=1;
   scase->nfires=0;
@@ -7568,7 +7544,7 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
       FGETS(buffer2,255,stream);
       TrimBack(buffer2);
       file_ptr=TrimFront(buffer2);
-      if(FILE_EXISTS_CASEDIR(file_ptr)==YES)scase->csvcoll.ncsvfileinfo++;
+      if(FileExistsCaseDir(scase, file_ptr)==YES)scase->csvcoll.ncsvfileinfo++;
       continue;
     }
     if(MatchSMV(buffer, "CGEOM")==1){
@@ -8315,7 +8291,7 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
       }
       TrimBack(buffer2);
       file_ptr=TrimFront(buffer2);
-      if(FILE_EXISTS_CASEDIR(file_ptr) == NO)continue;
+      if(FileExistsCaseDir(scase, file_ptr) == NO)continue;
 
       csvi = scase->csvcoll.csvfileinfo + scase->csvcoll.ncsvfileinfo;
       InitCSV(csvi, file_ptr, type_ptr, CSV_FDS_FORMAT);
@@ -8442,7 +8418,7 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
         if(ext!=NULL){
           ext[0] = 0;
           strcat(buff2,".ge2");
-          if(FILE_EXISTS_CASEDIR(buff2)==YES){
+          if(FileExistsCaseDir(scase, buff2)==YES){
             NewMemory((void **)&geomi->file2,strlen(buff2)+1);
             strcpy(geomi->file2,buff2);
             ReadGeomFile2(geomi);
@@ -9116,7 +9092,7 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
         BREAK;
       }
       bufferptr=TrimFrontBack(buffer);
-      if (FILE_EXISTS_CASEDIR(bufferptr) == YES) {
+      if (FileExistsCaseDir(scase, bufferptr) == YES) {
         ReadCADGeomToCollection(&scase->cadgeomcoll, bufferptr, block_shininess);
       }
       else {
@@ -9235,17 +9211,17 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
         char texturebuffer[1024];
 
         found_texture=0;
-        if(scase->texturedir!=NULL&&FILE_EXISTS_CASEDIR(buffer3)==NO){
+        if(scase->texturedir!=NULL&&FileExistsCaseDir(scase, buffer3)==NO){
           STRCPY(texturebuffer,scase->texturedir);
           STRCAT(texturebuffer,dirseparator);
           STRCAT(texturebuffer,buffer3);
-          if(FILE_EXISTS_CASEDIR(texturebuffer)==YES){
+          if(FileExistsCaseDir(scase, texturebuffer)==YES){
             if(NewMemory((void **)&surfi->texturefile,strlen(texturebuffer)+1)==0)return 2;
             STRCPY(surfi->texturefile,texturebuffer);
             found_texture=1;
           }
         }
-        if(FILE_EXISTS_CASEDIR(buffer3)==YES){
+        if(FileExistsCaseDir(scase, buffer3)==YES){
           len=strlen(buffer3);
           if(NewMemory((void **)&surfi->texturefile,(unsigned int)(len+1))==0)return 2;
           STRCPY(surfi->texturefile,buffer3);
@@ -9556,7 +9532,7 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
   scase->devicecoll.ndeviceinfo=0;
   REWIND(stream);
 
-  if(FILE_EXISTS_CASEDIR(scase->paths.expcsv_filename)==YES){
+  if(FileExistsCaseDir(scase, scase->paths.expcsv_filename)==YES){
     csvfiledata *csvi;
     char csv_type[256];
 
@@ -10009,8 +9985,6 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
   }
 
   // define texture data structures by constructing a list of unique file names from surfinfo and devices
-
- InitTextures(use_graphics);
 
 /*
     Initialize blockage labels and blockage surface labels
@@ -11725,6 +11699,32 @@ int ReadSMV_Configure(){
   START_TIMER(timer_readsmv);
 
   PRINTF("  wrapping up\n");
+
+  InitTextures(use_graphics);
+
+  FREEMEMORY(camera_external);
+  NewMemory((void **)&camera_external,sizeof(cameradata));
+
+  FREEMEMORY(camera_defaults);
+  NewMemory((void **)&camera_defaults, 6*sizeof(cameradata *));
+  NewMemory((void **)&(camera_defaults[0]), sizeof(cameradata));
+  NewMemory((void **)&(camera_defaults[1]), sizeof(cameradata));
+  NewMemory((void **)&(camera_defaults[2]), sizeof(cameradata));
+  NewMemory((void **)&(camera_defaults[3]), sizeof(cameradata));
+  NewMemory((void **)&(camera_defaults[4]), sizeof(cameradata));
+  NewMemory((void **)&(camera_defaults[5]), sizeof(cameradata));
+
+  FREEMEMORY(camera_external_save);
+  NewMemory((void **)&camera_external_save,sizeof(cameradata));
+
+  FREEMEMORY(camera_current);
+  NewMemory((void **)&camera_current,sizeof(cameradata));
+
+  FREEMEMORY(camera_save);
+  NewMemory((void **)&camera_save,sizeof(cameradata));
+
+  FREEMEMORY(camera_last);
+  NewMemory((void **)&camera_last,sizeof(cameradata));
 
   INIT_PRINT_TIMER(fdsrunning_timer);
   last_size_for_slice = GetFileSizeSMV(global_scase.paths.stepcsv_filename); // used by IsFDSRunning
