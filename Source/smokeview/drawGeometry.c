@@ -2654,14 +2654,13 @@ void ShowHideInternalFaces(meshdata *meshi, int show){
 
 int IsVentVisible(ventdata *vi){
   if(boundary_loaded == 1){
-    if(vi->patch_index == -1)return 1;
-    if(vi->wall_type == LEFTwall  && vis_boundary_type[LEFTwall]  == 0)return 1;
-    if(vi->wall_type == RIGHTwall && vis_boundary_type[RIGHTwall] == 0)return 1;
-    if(vi->wall_type == FRONTwall && vis_boundary_type[FRONTwall] == 0)return 1;
-    if(vi->wall_type == BACKwall  && vis_boundary_type[BACKwall]  == 0)return 1;
-    if(vi->wall_type == DOWNwall  && vis_boundary_type[DOWNwall]  == 0)return 1;
-    if(vi->wall_type == UPwall    && vis_boundary_type[UPwall]    == 0)return 1;
-    return 0;
+    if(vi->patch_index >= 0)return 0;
+    if(vi->wall_type == LEFTwall  && vis_boundary_type[LEFTwall]  == 0)return 0;
+    if(vi->wall_type == RIGHTwall && vis_boundary_type[RIGHTwall] == 0)return 0;
+    if(vi->wall_type == FRONTwall && vis_boundary_type[FRONTwall] == 0)return 0;
+    if(vi->wall_type == BACKwall  && vis_boundary_type[BACKwall]  == 0)return 0;
+    if(vi->wall_type == DOWNwall  && vis_boundary_type[DOWNwall]  == 0)return 0;
+    if(vi->wall_type == UPwall    && vis_boundary_type[UPwall]    == 0)return 0;
   }
   return 1;
 }
