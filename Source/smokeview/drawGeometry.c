@@ -2628,12 +2628,11 @@ void ShowHideInternalFaces(meshdata *meshi, int show){
     facej++;
 
 // down z
-    if(bc->patch_face_index[4] >= 0||(bc->ijk[4]==bc->ijk[5]))facej->hidden = 1;
-    facej->hidden = 1;
+    if(bc->patch_face_index[4] >= 0)facej->hidden = 1;
     facej++;
 
 // up z
-    if(bc->patch_face_index[5] >= 0||(bc->ijk[4] == bc->ijk[5]))facej->hidden = 1;
+    if(bc->patch_face_index[5] >= 0)facej->hidden = 1;
     facej++;
   }
 }
