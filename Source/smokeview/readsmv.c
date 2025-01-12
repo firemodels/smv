@@ -9986,8 +9986,6 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
 
   // define texture data structures by constructing a list of unique file names from surfinfo and devices
 
- InitTextures(use_graphics);
-
 /*
     Initialize blockage labels and blockage surface labels
 
@@ -11701,6 +11699,8 @@ int ReadSMV_Configure(){
   START_TIMER(timer_readsmv);
 
   PRINTF("  wrapping up\n");
+
+  InitTextures(use_graphics);
 
   FREEMEMORY(camera_external);
   NewMemory((void **)&camera_external,sizeof(cameradata));
