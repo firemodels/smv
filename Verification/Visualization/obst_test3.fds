@@ -1,0 +1,23 @@
+&HEAD CHID='obst_test3' /
+
+&MESH IJK=10,10,5, XB=0.0,1.0,0.0,1.0,0.0,0.5/
+&MESH IJK=10,10,5, XB=0.0,1.0,0.0,1.0,0.5,1.0/
+
+&TIME T_END=10./
+
+&MISC TMPA=30. /
+
+&SURF ID             = 'surf1'
+      FYI            = 'Properties completely fabricated'
+      RGB            = 151,96,88
+      BURN_AWAY      = .FALSE.
+      MATL_ID = 'FOAM',
+      THICKNESS = 0.1,
+      COLOR='BLACK'
+/
+
+&OBST XB=0.2,0.4,0.4,0.6,0.5,0.8, SURF_ID='surf1' /
+
+&BNDF QUANTITY='WALL TEMPERATURE', CELL_CENTERED=T/
+
+&TAIL /

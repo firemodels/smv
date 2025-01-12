@@ -14,6 +14,7 @@
 //#define pp_SKYBOX_FLOOR     // use DrawFloor routine when using a skybox (probably not necessary)
 //#define pp_SKY              // add sky, a blue hemisphere, above the scene
 //#define pp_TOUR_SNAP         // turn on tour snap option
+//#define pp_BOUND_FACE       // show hide obst face independently when visualizing boundary files
 
 #ifdef pp_FRAME          // turn on each frame type if pp_FRAME is set
 #define pp_BOUNDFRAME    // turn on frame code for boundary files

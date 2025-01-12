@@ -2587,7 +2587,57 @@ int CompareColorFaces(const void *arg1, const void *arg2){
 
 /* ------------------ ShowHideInternalFaces ------------------------ */
 
-//***need to update
+#ifdef pp_BOUND_FACE
+void ShowHideInternalFaces(meshdata *meshi, int show){
+  int j;
+
+  for(j = 0;j < meshi->nbptrs;j++){
+    facedata *facej;
+
+    facej = meshi->faceinfo + 6 * j;
+    facej->hidden = 0; facej++;
+    facej->hidden = 0; facej++;
+    facej->hidden = 0; facej++;
+    facej->hidden = 0; facej++;
+    facej->hidden = 0; facej++;
+    facej->hidden = 0; facej++;
+  }
+  if(show == 1)return;
+
+  for(j = 0; j < meshi->nbptrs; j++){
+    facedata *facej;
+    blockagedata *bc;
+
+    bc = meshi->blockageinfoptrs[j];
+    facej = meshi->faceinfo + 6 * j;
+
+//down y
+    if(bc->patch_face_index[2]>=0)facej->hidden = 1;
+    facej++;
+
+// up x
+    if(bc->patch_face_index[1] >= 0)facej->hidden = 1;
+    facej++;
+
+//up y
+    if(bc->patch_face_index[3] >= 0 )facej->hidden = 1;
+    facej++;
+
+// down x
+    if(bc->patch_face_index[0] >= 0)facej->hidden = 1;
+    facej++;
+
+// down z
+    if(bc->patch_face_index[4] >= 0||(bc->ijk[4]==bc->ijk[5]))facej->hidden = 1;
+    facej->hidden = 1;
+    facej++;
+
+// up z
+    if(bc->patch_face_index[5] >= 0||(bc->ijk[4] == bc->ijk[5]))facej->hidden = 1;
+    facej++;
+  }
+}
+#else
 void ShowHideInternalFaces(meshdata *meshi, int show){
   int j;
 
@@ -2649,6 +2699,7 @@ void ShowHideInternalFaces(meshdata *meshi, int show){
     facej++;
   }
 }
+#endif
 
 /* ------------------ IsVentVisible ------------------------ */
 
