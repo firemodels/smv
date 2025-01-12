@@ -7120,30 +7120,6 @@ int ReadSMV_Init(smv_case *scase){
   scase->ntickinfo=0;
   scase->ntickinfo_smv=0;
 
-  FREEMEMORY(camera_external);
-  NewMemory((void **)&camera_external,sizeof(cameradata));
-
-  FREEMEMORY(camera_defaults);
-  NewMemory((void **)&camera_defaults, 6*sizeof(cameradata *));
-  NewMemory((void **)&(camera_defaults[0]), sizeof(cameradata));
-  NewMemory((void **)&(camera_defaults[1]), sizeof(cameradata));
-  NewMemory((void **)&(camera_defaults[2]), sizeof(cameradata));
-  NewMemory((void **)&(camera_defaults[3]), sizeof(cameradata));
-  NewMemory((void **)&(camera_defaults[4]), sizeof(cameradata));
-  NewMemory((void **)&(camera_defaults[5]), sizeof(cameradata));
-
-  FREEMEMORY(camera_external_save);
-  NewMemory((void **)&camera_external_save,sizeof(cameradata));
-
-  FREEMEMORY(camera_current);
-  NewMemory((void **)&camera_current,sizeof(cameradata));
-
-  FREEMEMORY(camera_save);
-  NewMemory((void **)&camera_save,sizeof(cameradata));
-
-  FREEMEMORY(camera_last);
-  NewMemory((void **)&camera_last,sizeof(cameradata));
-
   scase->updatefaces=1;
   scase->nfires=0;
   scase->nrooms=0;
@@ -11725,6 +11701,30 @@ int ReadSMV_Configure(){
   START_TIMER(timer_readsmv);
 
   PRINTF("  wrapping up\n");
+
+  FREEMEMORY(camera_external);
+  NewMemory((void **)&camera_external,sizeof(cameradata));
+
+  FREEMEMORY(camera_defaults);
+  NewMemory((void **)&camera_defaults, 6*sizeof(cameradata *));
+  NewMemory((void **)&(camera_defaults[0]), sizeof(cameradata));
+  NewMemory((void **)&(camera_defaults[1]), sizeof(cameradata));
+  NewMemory((void **)&(camera_defaults[2]), sizeof(cameradata));
+  NewMemory((void **)&(camera_defaults[3]), sizeof(cameradata));
+  NewMemory((void **)&(camera_defaults[4]), sizeof(cameradata));
+  NewMemory((void **)&(camera_defaults[5]), sizeof(cameradata));
+
+  FREEMEMORY(camera_external_save);
+  NewMemory((void **)&camera_external_save,sizeof(cameradata));
+
+  FREEMEMORY(camera_current);
+  NewMemory((void **)&camera_current,sizeof(cameradata));
+
+  FREEMEMORY(camera_save);
+  NewMemory((void **)&camera_save,sizeof(cameradata));
+
+  FREEMEMORY(camera_last);
+  NewMemory((void **)&camera_last,sizeof(cameradata));
 
   INIT_PRINT_TIMER(fdsrunning_timer);
   last_size_for_slice = GetFileSizeSMV(global_scase.paths.stepcsv_filename); // used by IsFDSRunning
