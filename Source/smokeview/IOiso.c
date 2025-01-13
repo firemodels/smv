@@ -204,7 +204,7 @@ void UnloadIso(meshdata *meshi){
 #ifdef pp_SLICEFRAME
   FRAMEFree(ib->frameinfo);
   ib->frameinfo = NULL;
-  ib->global_scase.geominfo->frameinfo = NULL;
+  ib->geominfo->frameinfo = NULL;
 #endif
 
   FreeAllMemory(ib->memory_id);
