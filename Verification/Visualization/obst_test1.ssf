@@ -1,0 +1,22 @@
+// put rendered files in specified directory
+
+RENDERDIR
+ ..\..\Manuals\SMV_Verification_Guide\SCRIPT_FIGURES
+
+UNLOADALL
+LOADINIFILE
+ obst_test1.ini
+
+// render boundary files
+
+// LOADFILE
+//  plume5c_03.bf
+RENDERONCE
+ obst_test1_nobound
+LOADBOUNDARYM
+ WALL TEMPERATURE
+ 1
+SETTIMEVAL
+ 10.0
+RENDERONCE
+ obst_test1_bound_10
