@@ -791,7 +791,11 @@ typedef struct _blockagedata {
   int usecolorindex;
   int blockage_id,dup;
   int is_wuiblock;
+#ifdef pp_BOUND_FACE
+  int patch_face_index[6];
+#else
   int patch_index;
+#endif
   int hole;
   int nnodes;
   int hidden, invisible, interior[6];

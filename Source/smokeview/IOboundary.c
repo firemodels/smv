@@ -2331,7 +2331,12 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
         blockagedata *bcj;
 
         bcj = meshii->blockageinfoptrs[j];
+#ifdef pp_BOUND_FACE
+        int default_ind[]={-1,-1,-1,-1,-1,-1};
+        memcpy(bcj->patch_face_index, default_ind, 6*sizeof(int));
+#else
         bcj->patch_index = -1;
+#endif
       }
       for(j = 0;j < meshii->nvents;j++){
         ventdata *venti;
@@ -2356,7 +2361,25 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
             blockagedata *bc;
 
             bc = pfi->meshinfo->blockageinfoptrs[pfi->obst_index - 1];
+#ifdef pp_BOUND_FACE
+            int *patch_ib, *obst_ijk;
+            patch_ib = pfi->ib;
+            obst_ijk = bc->ijk;
+            if(patch_ib[0] == patch_ib[1]){
+              if(patch_ib[0]==obst_ijk[0])bc->patch_face_index[0] = n;
+              if(patch_ib[0]==obst_ijk[1])bc->patch_face_index[1] = n;
+            }
+            else if(patch_ib[2] == patch_ib[3]){
+              if(patch_ib[2]==obst_ijk[2])bc->patch_face_index[2] = n;
+              if(patch_ib[2]==obst_ijk[3])bc->patch_face_index[3] = n;
+            }
+            else if(patch_ib[4] == patch_ib[5]){
+              if(patch_ib[4]==obst_ijk[4])bc->patch_face_index[4] = n;
+              if(patch_ib[4]==obst_ijk[5])bc->patch_face_index[5] = n;
+            }
+#else
             bc->patch_index = n;
+#endif
           }
           // get patch index for each vent
           if(pfi->obst_index == 0){
@@ -2498,6 +2521,38 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
     }
     int i;
     meshi = global_scase.meshescoll.meshinfo + patchi->blocknumber;
+#ifdef pp_BOUND_FACE
+    // output obst info
+
+    if(meshi->nvents > 0)printf("\n");
+    for(i = 0;i < meshi->nbptrs;i++){
+      blockagedata *bc;
+      int *ijk, *ind;
+
+      bc = meshi->blockageinfo+i;
+      ijk = bc->ijk;
+      ind = bc->patch_face_index;
+      printf("obst %i: (%i,%i,%i,%i,%i,%i) patch_face_indices: %i %i %i %i %i %i\n",
+      i + 1, ijk[0],ijk[1],ijk[2],ijk[3],ijk[4],ijk[5], ind[0], ind[1], ind[2], ind[3], ind[4], ind[5]);
+    }
+    printf("\n");
+#else
+    if(meshi->nvents > 0)printf("\n");
+    for(i = 0;i < meshi->nbptrs;i++){
+      blockagedata *bc;
+      int *ijk, ind;
+
+      bc = meshi->blockageinfo+i;
+      ijk = bc->ijk;
+      ind = bc->patch_index;
+      printf("obst %i: (%i,%i,%i,%i,%i,%i) patch_index: %i\n",
+      i + 1, ijk[0],ijk[1],ijk[2],ijk[3],ijk[4],ijk[5], ind);
+    }
+    printf("\n");
+#endif
+
+    // output vent info
+
     if(meshi->nvents > 0)printf("\n");
     for(i = 0;i < meshi->nvents;i++){
       ventdata *venti;

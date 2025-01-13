@@ -357,6 +357,11 @@ The temperature of the upper obstacle is initialized to \SI{600}{\degreeCelsius}
 hence the red colors for the $t=\SI{0}{s}$ images. The first column of images
 colors data at cell nodes using temperatures averaged at surrounding cell centers.
 The second column of images colors data using data values at cell centers.
+Figure \ref{figboundpartialtest} verifies the use of the {\tt BNDF\_DEFAULT}\
+and BNDF\_OBST keywords. {\tt BNDF\_DEFAULT}\ is set to false
+on the {\tt \&MISC}\ line causing boundary files to not be applied to obstacles by default.
+The {\tt BNDF\_OBST}\ keyword is set to true for the obstacle on the left allowing a boundary
+file to be applied for this obstacle.
 Figure \ref{figgeomboundtest} presents images for geometry boundary files comparing compressed and
 uncompressed data.smoke
 
@@ -384,6 +389,22 @@ for the $t\approx\SI{2}{s}$ images. For the chopped contours, the
 color near the chop boundary should match the color near
 \SI{140}{\degreeCelsius} in the colorbar.}
 \label{figboundtest}%
+\end{figure}
+
+\begin{figure}[bph]
+\begin{center}
+\begin{tabular}{cc}
+\includegraphics[height=\figheightE]{SCRIPT_FIGURES/obst_test1_nobound}&
+\includegraphics[height=\figheightE]{SCRIPT_FIGURES/obst_test1_bound_10}\\
+no boundary file&boundary file on left blockage at 10.0~s 
+\end{tabular}
+\end{center}
+\caption[Boundary file test of {\tt BNDF\_DEFAULT}\ and {\tt BNDF\_OBST keywords}.]
+{Boundary file test of {\tt BNDF\_DEFAULT}\ and {\tt BNDF\_OBST keywords}. 
+{\tt BNDF\_DEFAULT}\ is set to F
+on the {\tt \&MISC}\ line, {\tt BNDF\_OBST}\ is set to true for the obstacle on the left allowing a boundary
+file to be applied.}
+\label{figboundpartialtest}%
 \end{figure}
 
 \begin{figure}[bph]
@@ -1481,7 +1502,7 @@ by running the Smokeview script, {\tt plume5c.ssf}\ (see Appendix \ref{SSFplume5
 \clearpage
 
 \section{Geometry}
-Figure \ref{figgeomtest} shows four geometry objects colored using a color specified on a SURF line or a color specified on a GEOM line. The object color should match the color given on the label below it. 
+Figure \ref{figgeomtest} shows four geometry objects colored using a color specified on a SURF line or a color specified on a GEOM line. The object color should match the color given on the label below it.
 Figure \ref{figcadgeomtest} show a case created with BlenderFDS\cite{blenderfds}, an open source graphical user interface for creating FDS input files.  This case is displayed as specified by the user (a cube rotate 45 degrees) and as modeled by FDS (a collection of OBSTs). The two views are toggled by pressing the
 `q' key in Smokeview.
 

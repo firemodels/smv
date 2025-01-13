@@ -1,6 +1,13 @@
-&HEAD CHID='obst_test2' /
+&HEAD CHID='obst_test3' /
 
-&MESH IJK=10,10,10, XB=0.0,1.0,0.0,1.0,0.0,1.0/
+&MESH IJK=5,5,5, XB=0.0,0.5,0.0,0.5,0.0,0.5/
+&MESH IJK=5,5,5, XB=0.0,0.5,0.0,0.5,0.5,1.0/
+&MESH IJK=5,5,5, XB=0.0,0.5,0.5,1.0,0.0,0.5/
+&MESH IJK=5,5,5, XB=0.0,0.5,0.5,1.0,0.5,1.0/
+&MESH IJK=5,5,5, XB=0.5,1.0,0.0,0.5,0.0,0.5/
+&MESH IJK=5,5,5, XB=0.5,1.0,0.0,0.5,0.5,1.0/
+&MESH IJK=5,5,5, XB=0.5,1.0,0.5,1.0,0.0,0.5/
+&MESH IJK=5,5,5, XB=0.5,1.0,0.5,1.0,0.5,1.0/
 
 &TIME T_END=10./
 
@@ -27,29 +34,14 @@
       COLOR='BLACK'
 /
 
-&SURF ID             = 'surf2'
-      FYI            = 'Properties completely fabricated'
-      RGB            = 151,96,88
-      BURN_AWAY      = .FALSE.
-      MATL_ID = 'FOAM',
-      THICKNESS = 0.1,
-      COLOR='CYAN'
-/
-
-&SURF ID='surf3', COLOR='PURPLE'/
-&SURF ID='surf4', COLOR='PINK'/
-
 &REAC SOOT_YIELD=0.01,FUEL='PROPANE'/
 &SURF ID='BURNER',HRRPUA=600.0 /  Ignition source
 
 &OBST XB=0.3,0.7,0.3,0.7,0.0,0.1 /
 &VENT XB=0.3,0.7,0.3,0.7,0.1,0.1, SURF_ID='BURNER' /
 
-&OBST XB=0.2,0.4,0.4,0.6,0.5,0.8, SURF_ID='surf1', BNDF_FACE(1)=T, BNDF_FACE(-2)=T/
-&OBST XB=0.6,0.8,0.4,0.6,0.5,0.8, SURF_ID='surf2' /
+&OBST XB=0.5,0.8,0.5,0.8,0.5,0.8, SURF_ID='surf1', BNDF_OBST=T /
 
-&VENT XB=0.0,1.0,0.0,1.0,0.0,0.0, SURF_ID='surf3' /
-&VENT XB=0.0,0.0,0.3,0.7,0.3,0.7, SURF_ID='surf4' /
 &BNDF QUANTITY='WALL TEMPERATURE', CELL_CENTERED=T/
 
 &TAIL /
