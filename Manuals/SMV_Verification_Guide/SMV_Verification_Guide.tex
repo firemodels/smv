@@ -362,6 +362,8 @@ and BNDF\_OBST keywords. {\tt BNDF\_DEFAULT}\ is set to false
 on the {\tt \&MISC}\ line causing boundary files to not be applied to obstacles by default.
 The {\tt BNDF\_OBST}\ keyword is set to true for the obstacle on the left allowing a boundary
 file to be applied for this obstacle.
+Figure \ref{figboundobstventtest} verifies that a boundary file can be displayed
+properly on an obstacle that also has a vent applied.
 Figure \ref{figgeomboundtest} presents images for geometry boundary files comparing compressed and
 uncompressed data.smoke
 
@@ -396,15 +398,28 @@ color near the chop boundary should match the color near
 \begin{tabular}{cc}
 \includegraphics[height=\figheightE]{SCRIPT_FIGURES/obst_test1_nobound}&
 \includegraphics[height=\figheightE]{SCRIPT_FIGURES/obst_test1_bound_10}\\
-no boundary file&boundary file on left blockage at 10.0~s 
+no boundary file&boundary file on left blockage at 10.0~s\\
 \end{tabular}
 \end{center}
 \caption[Boundary file test of {\tt BNDF\_DEFAULT}\ and {\tt BNDF\_OBST keywords}.]
-{Boundary file test of {\tt BNDF\_DEFAULT}\ and {\tt BNDF\_OBST keywords}. 
+{Boundary file test of {\tt BNDF\_DEFAULT}\ and {\tt BNDF\_OBST keywords}.
 {\tt BNDF\_DEFAULT}\ is set to F
 on the {\tt \&MISC}\ line, {\tt BNDF\_OBST}\ is set to true for the obstacle on the left allowing a boundary
 file to be applied.}
 \label{figboundpartialtest}%
+\end{figure}
+
+\begin{figure}[bph]
+\begin{center}
+\begin{tabular}{cc}
+\includegraphics[height=\figheightE]{SCRIPT_FIGURES/obst_test4_nobound}&
+\includegraphics[height=\figheightE]{SCRIPT_FIGURES/obst_test4_bound_05}\\
+no boundary file&boundary file at 5.0~s
+\end{tabular}
+\end{center}
+\caption[Boundary file test of display over a thin obstacle and vent.]
+{Boundary file test of display over a thin obstacle and vent.}
+\label{figboundobstventtest}%
 \end{figure}
 
 \begin{figure}[bph]

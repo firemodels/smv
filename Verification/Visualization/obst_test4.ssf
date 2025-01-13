@@ -1,0 +1,19 @@
+// put rendered files in specified directory
+
+RENDERDIR
+ ..\..\Manuals\SMV_Verification_Guide\SCRIPT_FIGURES
+
+UNLOADALL
+LOADINIFILE
+ obst_test4.ini
+
+// render boundary files
+
+RENDERONCE
+ obst_test4_nobound
+LOADBOUNDARY
+ WALL TEMPERATURE(cell centered)
+SETTIMEVAL
+ 5.0
+RENDERONCE
+ obst_test4_bound_05
