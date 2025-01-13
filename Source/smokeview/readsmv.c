@@ -7378,7 +7378,9 @@ void SetExternalVents(void){
 int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
   int i;
   int have_zonevents,nzventsnew=0;
+#ifdef pp_DEPRECATED
   devicedata *devicecopy;
+#endif
   int do_pass4=0, do_pass5=0;
   int roomdefined=0;
   int GRIDpresent=0,startpass;
@@ -9537,7 +9539,9 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
 
   if(scase->devicecoll.ndeviceinfo>0){
     if(NewMemory((void **)&scase->devicecoll.deviceinfo,scase->devicecoll.ndeviceinfo*sizeof(devicedata))==0)return 2;
+#ifdef pp_DEPRECATED
     devicecopy=scase->devicecoll.deviceinfo;
+#endif
   }
   scase->devicecoll.ndeviceinfo=0;
   REWIND(stream);
