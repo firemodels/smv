@@ -1364,7 +1364,6 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
   int headersize, framesize;
   int statfile;
   STRUCTSTAT statbuffer;
-  int nbb;
   float *xplttemp,*yplttemp,*zplttemp;
   int blocknumber;
   patchdata *patchi;
@@ -1431,8 +1430,6 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
   patchi->display=0;
   plotstate=GetPlotState(DYNAMIC_PLOTS);
 
-  nbb = meshi->nbptrs;
-  if(nbb==0)nbb=1;
   global_scase.updatefaces=1;
   *errorcode=0;
   if(load_flag != RELOAD){
@@ -2685,7 +2682,6 @@ void DrawBoundaryTexture(const meshdata *meshi){
   patch_times=meshi->patch_times;
   xyzpatch = GetPatchXYZ(meshi);
   patchblank=meshi->patchblank;
-  patchi=global_scase.patchinfo+meshi->patchfilenum;
   patchi = global_scase.patchinfo + meshi->patchfilenum;
 
   int set_valmin, set_valmax;
