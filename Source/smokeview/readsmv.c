@@ -45,9 +45,11 @@
 #define BLOCK_OUTLINE 2
 
 #define DEVICE_DEVICE 0
+#ifdef pp_DEPRECATED
 #define DEVICE_HEAT 2
 #define DEVICE_SPRK 3
 #define DEVICE_SMOKE 4
+#endif
 
 #define ZVENT_1ROOM 1
 #define ZVENT_2ROOM 2
@@ -1109,6 +1111,7 @@ void InitMesh(meshdata *meshi){
   meshi->thresholdtime = NULL;
   meshi->patchblank = NULL;
   meshi->patch_timeslist = NULL;
+#ifdef pp_DEPRECATED
   meshi->ntc = 0;
   meshi->nspr = 0;
   meshi->xsprplot = NULL;
@@ -1126,6 +1129,7 @@ void InitMesh(meshdata *meshi){
   meshi->yheat = NULL;
   meshi->zheat = NULL;
   meshi->theat = NULL;
+#endif
   meshi->blockageinfoptrs = NULL;
   meshi->blockageinfo     = NULL;
 
@@ -1509,6 +1513,7 @@ void ReadSMVDynamic(smv_case *scase, char *file){
 
       continue;
     }
+#ifdef pp_DEPRECATED
   /*
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     ++++++++++++++++++++++ HEAT_ACT +++++++++++++++++++++++++++++
@@ -1622,6 +1627,7 @@ void ReadSMVDynamic(smv_case *scase, char *file){
       }
       continue;
     }
+#endif
   /*
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     ++++++++++++++++++++++ MINMAXPL3D +++++++++++++++++++++++++++
@@ -1684,7 +1690,6 @@ void ReadSMVDynamic(smv_case *scase, char *file){
       if(minmaxpl3d==1)do_pass3=1;
       nn_plot3d++;
       TrimBack(buffer);
-      blocknumber = 0;
       if(scase->meshescoll.nmeshes>1){
         blocknumber=ioffset-1;
       }
@@ -4081,14 +4086,17 @@ void UpdateMeshCoords(void){
 
   for(i=0;i<global_scase.meshescoll.nmeshes;i++){
     meshdata *meshi;
+#ifdef pp_DEPRECATED
     float *xspr, *yspr, *zspr;
     float *xsprplot, *ysprplot, *zsprplot;
     float *xheat, *yheat, *zheat;
     float *xheatplot, *yheatplot, *zheatplot;
+#endif
     float *offset;
 
     meshi=global_scase.meshescoll.meshinfo + i;
     offset = meshi->offset;
+#ifdef pp_DEPRECATED
     xsprplot = meshi->xsprplot;
     ysprplot = meshi->ysprplot;
     zsprplot = meshi->zsprplot;
@@ -4111,6 +4119,7 @@ void UpdateMeshCoords(void){
       yheatplot[n]=FDS2SMV_Y(offset[YYY]+yheat[n]);
       zheatplot[n]=FDS2SMV_Z(offset[ZZZ]+zheat[n]);
     }
+#endif
     for(n=0;n<meshi->nvents+12;n++){
       ventdata *vi;
 
@@ -7685,6 +7694,7 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
       scase->devicecoll.ndeviceinfo++;
       continue;
     }
+#ifdef pp_DEPRECATED
     if(
         MatchSMV(buffer,"SPRK") == 1||
        MatchSMV(buffer,"HEAT") == 1||
@@ -7702,6 +7712,7 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
       }
       continue;
     }
+#endif
     if(MatchSMV(buffer,"FDSVERSION")==1){
       int lenbuffer;
       char *buffptr;
@@ -9639,6 +9650,7 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
       scase->devicecoll.ndeviceinfo++;
       continue;
     }
+#ifdef pp_DEPRECATED
   /*
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     ++++++++++++++++++++++ THCP ++++++++++++++++++++++++++++++
@@ -9922,6 +9934,7 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
       }
       continue;
     }
+#endif
   }
 
   STOP_TIMER(scase->pass3_time);
