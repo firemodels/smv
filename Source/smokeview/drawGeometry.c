@@ -2705,13 +2705,16 @@ void ShowHideInternalFaces(meshdata *meshi, int show){
 int IsVentVisible(ventdata *vi){
   if(boundary_loaded == 0)return 1; // bouindary file not loaded
   if(vi->patch_index < 0)return 1;  // patch not associated with this vent
+
+  // show vent if boundary file is not visible on corresponding vent
   if(vi->wall_type == LEFTwall)return  1 - vis_boundary_type[LEFTwall];
   if(vi->wall_type == RIGHTwall)return 1 - vis_boundary_type[RIGHTwall];
   if(vi->wall_type == FRONTwall)return 1 - vis_boundary_type[FRONTwall];
   if(vi->wall_type == BACKwall)return  1 - vis_boundary_type[BACKwall];
   if(vi->wall_type == DOWNwall)return  1 - vis_boundary_type[DOWNwall];
   if(vi->wall_type == UPwall  )return  1 - vis_boundary_type[UPwall];
-  return 1;
+
+  return 0; //boundary file is visible so hide vent
 }
 
 /* ------------------ UpdateFaceListsWorker ------------------------ */

@@ -2382,20 +2382,18 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
 #endif
           }
           // get patch index for each vent
-          if(pfi->obst_index == 0){
-            int j;
+          int j;
 
-            for(j=0; j<pfi->meshinfo->nvents; j++){
-              ventdata *vi;
+          for(j=0; j<pfi->meshinfo->nvents; j++){
+            ventdata *vi;
 
-              vi = pfi->meshinfo->ventinfo + j;
-              if(
-                vi->imin == pfi->ib[0] && vi->imax == pfi->ib[1]    &&
-                vi->jmin == pfi->ib[2] && vi->jmax == pfi->ib[3] &&
-                vi->kmin == pfi->ib[4] && vi->kmax == pfi->ib[5] 
-                ){
-                vi->patch_index = n;
-              }
+            vi = pfi->meshinfo->ventinfo + j;
+            if(
+              vi->imin >= pfi->ib[0] && vi->imax <= pfi->ib[1] &&
+              vi->jmin >= pfi->ib[2] && vi->jmax <= pfi->ib[3] &&
+              vi->kmin >= pfi->ib[4] && vi->kmax <= pfi->ib[5] 
+              ){
+              vi->patch_index = n;
             }
           }
         }
