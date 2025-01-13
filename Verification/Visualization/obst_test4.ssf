@@ -5,18 +5,15 @@ RENDERDIR
 
 UNLOADALL
 LOADINIFILE
- obst_test1.ini
+ obst_test4.ini
 
 // render boundary files
 
-// LOADFILE
-//  plume5c_03.bf
 RENDERONCE
- obst_test1_nobound
-LOADBOUNDARYM
- WALL TEMPERATURE
- 1
+ obst_test4_nobound
+LOADBOUNDARY
+ WALL TEMPERATURE(cell centered)
 SETTIMEVAL
- 10.0
+ 5.0
 RENDERONCE
- obst_test1_bound
+ obst_test4_bound

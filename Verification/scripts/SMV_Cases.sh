@@ -15,6 +15,7 @@ $QFDS -d Visualization objects_elem.fds
 $QFDS -d Visualization objects_static.fds
 $QFDS -p 2 -d Visualization obst_remove.fds
 $QFDS -d Visualization obst_test1.fds
+$QFDS -p 4 -d Visualization obst_test4.fds
 $QFDS -d Visualization part_color.fds
 $QFDS -d Visualization plume5c.fds
 $QFDS -d Visualization plume5cdelta.fds
