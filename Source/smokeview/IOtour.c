@@ -1041,7 +1041,7 @@ tourdata *AddTour(char *label){
     key_xyz[2] = (global_scase.zbar0 + zbarORIG)/2.0;
     key_time = global_scase.tourcoll.tour_tstop;
     thisframe=addedframe;
-    addedframe = AddFrame(thisframe, key_time, 0.0, key_xyz, key_view, 0);
+    AddFrame(thisframe, key_time, 0.0, key_xyz, key_view, 0);
     touri->keyframe_times[1]=key_time;
   }
   else{
@@ -1070,7 +1070,7 @@ tourdata *AddTour(char *label){
       keylast = keyj;
     }
     touri->last_frame.prev = keylast;
-    keylast->next = &(touri->last_frame);
+    if(keylast!=NULL)keylast->next = &(touri->last_frame);
   }
   touri->display=1;
 
