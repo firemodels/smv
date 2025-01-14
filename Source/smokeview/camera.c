@@ -54,18 +54,17 @@ void InitCameraList(void){
 /* ------------------ AddDefaultViewpoints ------------------------ */
 
 void AddDefaultViewpoints(void){
-  cameradata *cfirst, *clast, *cnext;
+  cameradata *cfirst, *clast;
   int i;
 
   cfirst                = &camera_list_first;
   clast                 = cfirst->next;
-  cnext                 = cfirst->next;
   cfirst->next          = camera_external;
   camera_external->prev = cfirst;
   camera_external->next = clast;
   clast->prev           = camera_external;
   for(i = 0; i<6; i++){
-    cameradata *ca;
+    cameradata *ca, *cnext;
 
     ca           = camera_defaults[i];
     cnext        = cfirst->next;
