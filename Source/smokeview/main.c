@@ -678,6 +678,9 @@ char *ProcessCommandLine(CommandlineArgs *args){
       make_volrender_script = 1;
     }
     if(args->script!=NULL||args->htmlscript!=NULL){
+      char scriptbuffer[MAX_SCRIPT_FILENAME_BUFFER];
+      scriptfiledata *sfd;
+
       bool is_htmlscript = args->htmlscript!=NULL;
       if(is_htmlscript){
         use_graphics = 0;
@@ -685,26 +688,28 @@ char *ProcessCommandLine(CommandlineArgs *args){
       }
       from_commandline = 1;
       use_iso_threads=0;
-        char scriptbuffer[MAX_SCRIPT_FILENAME_BUFFER];
-        scriptfiledata *sfd;
-        if(args->script != NULL){
-          if(strlen(args->script) > MAX_SCRIPT_FILENAME_BUFFER-1){
-            fprintf(stderr, "*** Error: script filename exceeds maximum length of %d\n", MAX_SCRIPT_FILENAME_BUFFER-1);
-            SMV_EXIT(1);
-          }
+      if(args->script != NULL){
+        if(strlen(args->script) < MAX_SCRIPT_FILENAME_BUFFER){
           strcpy(scriptbuffer, args->script);
-        } else{
-          if(strlen(args->htmlscript) > MAX_SCRIPT_FILENAME_BUFFER-1){
-            fprintf(stderr, "*** Error: luascript filename exceeds maximum length of %d\n", MAX_SCRIPT_FILENAME_BUFFER-1);
-            SMV_EXIT(1);
-          }
+        }
+        else{
+          fprintf(stderr, "*** Error: script filename exceeds maximum length of %d\n", MAX_SCRIPT_FILENAME_BUFFER-1);
+          SMV_EXIT(1);
+        }
+      } else{
+        if(strlen(args->htmlscript) < MAX_SCRIPT_FILENAME_BUFFER){
           strcpy(scriptbuffer, args->htmlscript);
         }
-        sfd = InsertScriptFile(scriptbuffer);
-        if(sfd != NULL)default_script = sfd;
-        if(!is_htmlscript){
-          runscript = 1;
+        else{
+          fprintf(stderr, "*** Error: luascript filename exceeds maximum length of %d\n", MAX_SCRIPT_FILENAME_BUFFER-1);
+          SMV_EXIT(1);
         }
+      }
+      sfd = InsertScriptFile(scriptbuffer);
+      if(sfd != NULL)default_script = sfd;
+      if(!is_htmlscript){
+        runscript = 1;
+      }
     }
 #ifdef pp_LUA
     if(args->luascript != NULL){
