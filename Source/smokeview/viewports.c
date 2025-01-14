@@ -952,7 +952,6 @@ void ViewportInfo(int quad, GLint screen_left, GLint screen_down){
 
     if(mesh_xyz==NULL){
       sprintf(meshlabel,"mesh: %i",highlight_mesh+1);
-      mesh_xyz = global_scase.meshescoll.meshinfo + highlight_mesh;
     }
     else{
       int imesh;
@@ -1019,7 +1018,7 @@ void ViewportHrrPlot(int quad, GLint screen_left, GLint screen_down){
 /* ------------------------ OutputSlicePlot ------------------------- */
 
 void OutputSlicePlot(char *file){
-  int i, ntimes,first=1;
+  int i, ntimes=0,first=1;
   FILE *stream = NULL;
 
   if(file == NULL||strlen(file)==0)return;
