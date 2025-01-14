@@ -2915,7 +2915,6 @@ void OutputBounds(void){
       }
     }
 
-    p = global_scase.plot3dinfo+update_plot3d_bounds;
     for(j=0;j<MAXPLOT3DVARS;j++){
 
       label = global_scase.plot3dinfo[update_plot3d_bounds].label[j].longlabel;
