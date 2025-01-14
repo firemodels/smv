@@ -1706,7 +1706,7 @@ void LoadSmokeFrame(int meshnum, int framenum){
   int first = 1;
   int i;
   int max_frames = -1, frame_old;
-  float valtime;
+  float valtime=0.0;
 
   if(meshnum > global_scase.meshescoll.nmeshes - 1||meshnum<-1)meshnum = -1;
 
@@ -1853,15 +1853,13 @@ void ScriptVolSmokeRenderAll(scriptdata *scripti){
 /* ------------------ ScriptLoadIsoFrame ------------------------ */
 
 void ScriptLoadIsoFrame(scriptdata *scripti, int flag){
-  int framenum, index;
+  int framenum;
   int i;
   int fileindex;
 
   THREADcontrol(isosurface_threads, THREAD_JOIN);
-  index = scripti->ival;
   framenum = scripti->ival2;
   fileindex = scripti->ival4;
-  if(index > global_scase.meshescoll.nmeshes - 1)index = -1;
 
   update_readiso_geom_wrapup = UPDATE_ISO_START_ALL;
   CancelUpdateTriangles();
@@ -1973,7 +1971,8 @@ void ScriptLoadIso(scriptdata *scripti, int meshnum){
 
     isoi = global_scase.isoinfo + i;
     if(meshnum != -1 && isoi->blocknumber + 1 != meshnum)continue;
-    lencval = strlen(scripti->cval);
+    lencval = 0;
+    if(scripti->cval!=NULL)lencval = strlen(scripti->cval);
     lenlabel = strlen(isoi->surface_label.longlabel);
     if(lencval <= lenlabel){
       strncpy(label2, isoi->surface_label.longlabel, lencval);
@@ -1991,7 +1990,8 @@ void ScriptLoadIso(scriptdata *scripti, int meshnum){
 
     isoi = global_scase.isoinfo + i;
     if(meshnum != -1 && isoi->blocknumber+1 != meshnum)continue;
-    lencval = strlen(scripti->cval);
+    lencval = 0;
+    if(scripti->cval!=NULL)lencval = strlen(scripti->cval);
     lenlabel = strlen(isoi->surface_label.longlabel);
     if(lencval<=lenlabel){
       strncpy(label2, isoi->surface_label.longlabel, lencval);
@@ -2123,7 +2123,7 @@ int SliceMatch(scriptdata *scripti, slicedata *slicei){
   }
   else{
     if(slicei->slice_filetype==SLICE_TERRAIN){
-      if(strcmp(scripti->c_pbxyz, "AGL_SLICE")!=0)return 0;
+      if(scripti->c_pbxyz != NULL && strcmp(scripti->c_pbxyz, "AGL_SLICE")!=0)return 0;
       if(ABS(slicei->above_ground_level-scripti->pbxyz_val)>slicei->delta_orig)return 0;
     }
     else{
@@ -2318,7 +2318,6 @@ void ScriptLoadSlice(scriptdata *scripti){
       }
       LoadSliceMenu(mslicei->islices[j]);
       slicej->finalize = finalize_save;
-      slicej = global_scase.slicecoll.sliceinfo + mslicei->islices[j];
       count++;
     }
     break;
@@ -2564,7 +2563,6 @@ void ScriptLoadSliceRender(scriptdata *scripti){
     fprintf(stderr,  "*** Error: Slice files of type %s, frame %i failed to load\n", scripti->cval, frame_current);
     if(stderr2!=NULL)fprintf(stderr2, "*** Error: Slice files of type %s, frame %i failed to load\n", scripti->cval, frame_current);
     scripti->exit = 1;
-    valid_frame = 0;
     RenderState(RENDER_OFF);
   }
 }
@@ -2681,7 +2679,6 @@ void ScriptLoadSmokeRender(scriptdata *scripti){
     fprintf(stderr,  "*** Error: 3D smoke files of type %s, frame %i failed to load\n", scripti->cval, frame_current);
     if(stderr2!=NULL)fprintf(stderr2, "*** Error: Slice files of type %s, frame %i failed to load\n", scripti->cval, frame_current);
     scripti->exit = 1;
-    valid_frame = 0;
     RenderState(RENDER_OFF);
   }
 }
@@ -2820,7 +2817,7 @@ void ScriptLoadTour(scriptdata *scripti){
     tourdata *touri;
 
     touri = global_scase.tourcoll.tourinfo + i;
-    if(strcmp(touri->label,scripti->cval)==0){
+    if(scripti->cval!=NULL&&strcmp(touri->label,scripti->cval)==0){
       TourMenu(i);
       viewtourfrompath=0;
       TourMenu(MENU_TOUR_VIEWFROMROUTE);
@@ -3176,7 +3173,7 @@ void ScriptPartClassType(scriptdata *scripti){
 
       if(propi->class_present[j]==0)continue;
       partclassj = global_scase.partclassinfo + j;
-      if(strcmp(partclassj->name,scripti->cval)==0){
+      if(scripti->cval!=NULL&&strcmp(partclassj->name,scripti->cval)==0){
         ParticlePropShowMenu(-10-j);
         count++;
       }
@@ -3729,7 +3726,12 @@ void ScriptSetViewpoint(scriptdata *scripti){
 
   viewpoint = scripti->cval;
   update_viewpoint_script = 3;
-  strcpy(viewpoint_script, viewpoint);
+  if(viewpoint == NULL){
+    strcpy(viewpoint_script, "viewpoint");
+  }
+  else{
+    strcpy(viewpoint_script, viewpoint);
+  }
   viewpoint_script_ptr = NULL;
   PRINTF("script: set viewpoint to %s\n\n",viewpoint);
   if(GetCamera(viewpoint) == NULL){
