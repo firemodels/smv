@@ -901,10 +901,7 @@ extern "C" void GLUIViewpointCB(int var){
     for(ca = cex;ca->next != NULL;ca = ca->next){
       if(ca->view_id == ival)break;
     }
-    if(ival == ca->view_id){
-      cam1 = ca;
-    }
-    else{
+    if(ival != ca->view_id){
       return;
     }
     prev = ca->prev;
@@ -928,7 +925,6 @@ extern "C" void GLUIViewpointCB(int var){
     break;
   case DELETE_VIEW:
     ival = LIST_viewpoints->get_int_val();
-    label = EDIT_view_label->get_text();
     cex = &camera_list_first;
     cex = cex->next;
     cex = cex->next;
@@ -1739,14 +1735,18 @@ extern "C" void GLUIUpdateTranslate(void){
   d_eye_xyz[2]=eye_xyz[2]-eye_xyz0[2];
 
 #ifdef ROTATE_TRANSLATE
-  TRANSLATE_xy->set_x(d_eye_xyz[0]);
+  if(TRANSLATE_xy != NULL){
+    TRANSLATE_xy->set_x(d_eye_xyz[0]);
+  }
 #endif
   if(rotation_type==ROTATION_1AXIS){
     d_eye_xyz[1]=0.0;
   }
 #ifdef ROTATE_TRANSLATE
-  TRANSLATE_xy->set_y(d_eye_xyz[1]);
-  TRANSLATE_z->set_y(eye_xyz[2]);
+  if(TRANSLATE_xy != NULL){
+    TRANSLATE_xy->set_y(d_eye_xyz[1]);
+    TRANSLATE_z->set_y(eye_xyz[2]);
+  }
 #endif
   if(rotation_type==ROTATION_3AXIS){
   }
