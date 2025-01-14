@@ -771,6 +771,7 @@ void FilterList(void){
         strcpy(unit_label, "dimensionless");
       }
     }
+    compartment_id = -1;
     if(global_scase.isZoneFireModel==1){
       compartment_id = LIST_curve_compartments->get_int_val();
     }
