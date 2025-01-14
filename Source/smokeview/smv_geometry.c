@@ -1150,7 +1150,7 @@ int MakeIBlankCarve(void){
     }
     for(j=0;j<global_scase.meshescoll.nmeshes;j++){
       meshdata *meshj;
-      int i1, i2, jj1, j2, k1, k2;
+      int i1=0, i2=0, jj1=0, j2=0, k1=0, k2=0;
       int ii, jj, kk;
       float *xplt, *yplt, *zplt;
 
