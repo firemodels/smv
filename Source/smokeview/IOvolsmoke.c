@@ -1145,7 +1145,6 @@ void InitSuperMesh(void){
   // merge connected meshes to form supermeshes
 
   global_scase.nsupermeshinfo = 0;
-  thismesh = GetMinMesh();
   for(smesh = global_scase.supermeshinfo, thismesh = GetMinMesh();thismesh!=NULL;thismesh = GetMinMesh(), smesh++){
     MakeSMesh(smesh, thismesh);
     global_scase.nsupermeshinfo++;
@@ -1567,8 +1566,6 @@ void IntegrateFireColors(float *integrated_firecolor, float *xyzvert, float dlen
   nsteps = 2*distseg/dlength;
   if(nsteps<1)nsteps=1;
   dlength=SCALE2FDS(distseg/(float)nsteps);
-  blank_local=NULL;
-  if(block_volsmoke==1)blank_local=meshi->c_iblank_cell;
   taun=1.0;
   alphan=0.0;
   for(i=0;i<nsteps;i++){
@@ -2751,14 +2748,14 @@ void ReadVolsmokeFrame(volrenderdata *vr, int framenum, int *first){
   if(load_volcompressed==1&&vr->smokeslice->vol_file!=NULL){
     volstream=fopen(vr->smokeslice->vol_file,"rb");
   }
-  if(volstream==NULL){
-    skip_local =           (HEADER_SIZE+30        +TRAILER_SIZE); // long label
-    skip_local +=          (HEADER_SIZE+30        +TRAILER_SIZE); // short label
-    skip_local +=          (HEADER_SIZE+30        +TRAILER_SIZE); // unit label
-    skip_local +=          (HEADER_SIZE+24        +TRAILER_SIZE); // is1, is2, js1, js2, ks1, ks2
-    skip_local += framenum*(HEADER_SIZE +4        +TRAILER_SIZE); // framenum time's
-    skip_local += (LINT)framenum*(LINT)(HEADER_SIZE +4*framesize+TRAILER_SIZE); // framenum slice data's
 
+  skip_local = (HEADER_SIZE + 30 + TRAILER_SIZE); // long label
+  skip_local += (HEADER_SIZE + 30 + TRAILER_SIZE); // short label
+  skip_local += (HEADER_SIZE + 30 + TRAILER_SIZE); // unit label
+  skip_local += (HEADER_SIZE + 24 + TRAILER_SIZE); // is1, is2, js1, js2, ks1, ks2
+  skip_local += framenum * (HEADER_SIZE + 4 + TRAILER_SIZE); // framenum time's
+  skip_local += ( LINT )framenum * ( LINT )(HEADER_SIZE + 4 * framesize + TRAILER_SIZE); // framenum slice data's
+  if(volstream==NULL){
     SLICEFILE=fopen(smokeslice->reg_file,"rb");
     if(SLICEFILE==NULL)return;
 
