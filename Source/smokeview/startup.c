@@ -225,10 +225,9 @@ void ReadBoundINI(void){
 /* ------------------ SetupCase ------------------------ */
 
 int SetupCase(char *filename){
-  int return_code;
+  int return_code=-1;
   char *input_file;
 
-  return_code=-1;
   FREEMEMORY(part_globalbound_filename);
   NewMemory((void **)&part_globalbound_filename, strlen(global_scase.fdsprefix)+strlen(".prt.gbnd")+1);
   STRCPY(part_globalbound_filename, global_scase.fdsprefix);
@@ -565,7 +564,9 @@ int GetOpenGLVersion(char *version_label){
 
 void InitOpenGL(int option){
   int type;
+#ifdef pp_GPU
   int err;
+#endif
 
   if(option==PRINT){
     if(verbose_output==1)PRINTF("%s\n", _("initializing OpenGL"));
@@ -627,7 +628,6 @@ void InitOpenGL(int option){
 
   opengl_version = GetOpenGLVersion(opengl_version_label);
 
-  err=0;
  #ifdef pp_GPU
   err=glewInit();
   if(err==GLEW_OK){
