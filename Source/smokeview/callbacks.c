@@ -728,7 +728,7 @@ int GetColorbarIndex(int x, int y){
 
 #define GLUTGETMODIFIERS GlutGetModifiersNew
 int GlutGetModifiersNew(void){
-  int modifier;
+  int modifier=0;
 
   switch(alt_ctrl_key_state){
   case KEY_NONE:
@@ -741,7 +741,6 @@ int GlutGetModifiersNew(void){
     modifier = GLUT_ACTIVE_ALT;
     break;
   default:
-    modifier = glutGetModifiers();
     assert(FFALSE);
     break;
   }
@@ -1387,19 +1386,7 @@ void MoveScene(int xm, int ym){
         xx = xx/(float)screenWidth;
         yy = ym-mouse_down_xy0[1];
         yy = yy/(float)screenHeight;
-        if(rotation_type==EYE_CENTERED){
-          float xx2, yy2;
-          float cs_az, sn_az;
-
-          cs_az = cos(DEG2RAD*camera_current->azimuth);
-          sn_az = sin(DEG2RAD*camera_current->azimuth);
-
-          xx2 = cs_az*xx - sn_az*yy;
-          yy2 = sn_az*xx + cs_az*yy;
-          xx = xx2;
-          yy = yy2;
-        }
-        else{
+        if(rotation_type!=EYE_CENTERED){
           dx = (xyzbox+eye_xyz0[0])*xx;
           dy = -(xyzbox-eye_xyz0[1])*yy;
           eye_xyz[0] = eye_xyz0[0] + dx;
@@ -1413,8 +1400,6 @@ void MoveScene(int xm, int ym){
       break;
 
     case KEY_ALT:
-      xx = xm-mouse_down_xy0[0];
-      xx = xx/(float)screenWidth;
       yy = ym-mouse_down_xy0[1];
       yy = yy/(float)screenHeight;
 
@@ -3825,7 +3810,7 @@ void DoStereo(void){
         screenWidth=screenWidth_save;
         screenWidth = MAX(screenWidth, 1);
       }
-      if(render_mode == RENDER_360 && render_status == RENDER_ON)screeni->screenbuffer = GetScreenBuffer();
+      if(screeni!=NULL&&render_mode == RENDER_360 && render_status == RENDER_ON)screeni->screenbuffer = GetScreenBuffer();
       if(buffertype == DOUBLE_BUFFER)glutSwapBuffers();
     }
     if(render_status == RENDER_ON){
