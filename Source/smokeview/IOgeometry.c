@@ -905,7 +905,7 @@ void DrawGeom(int flag, int timestate){
   if(ntris==0&&show_faces_shaded==1&&show_faces_outline==0)return;
 
   if(ntris>0&&timestate==GEOM_STATIC){
-    float *color;
+    float *color=NULL;
     surfdata *selected_surf;
 
   // draw geometry surface
@@ -1034,7 +1034,7 @@ void DrawGeom(int flag, int timestate){
                 texture_state = TextureOff();
                 glBegin(GL_TRIANGLES);
               }
-              glColor4f(color[0], color[1], color[2], transparent_level_local);
+              if(color!=NULL) glColor4f(color[0], color[1], color[2], transparent_level_local);
               last_color = color;
               last_transparent_level = transparent_level_local;
             }
@@ -2205,7 +2205,7 @@ int GetGeomDataSize(char *filename, int *nvars, int time_frame, int *cvals_offse
   }
   else{
     frame_start = time_frame;
-    fseek_m(stream, geom_offsets[time_frame], SEEK_CUR);
+    if(geom_offsets!=NULL)fseek_m(stream, geom_offsets[time_frame], SEEK_CUR);
   }
   int count = 0;
   for(iframe=frame_start;;iframe++){
@@ -2381,7 +2381,7 @@ FILE_SIZE GetGeomData(patchdata *patchi, char *filename, int load_flag, int ntim
   else{
     frame_start = time_frame;
     frame_stop = time_frame+1;
-    fseek_m(stream, geom_offsets[time_frame], SEEK_CUR);
+    if(geom_offsets!=NULL)fseek_m(stream, geom_offsets[time_frame], SEEK_CUR);
   }
   for(iframe = frame_start; iframe<frame_stop; iframe++){
     int nvals_local[4];
@@ -2477,7 +2477,7 @@ FILE_SIZE GetGeomData(patchdata *patchi, char *filename, int load_flag, int ntim
 FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int time_frame, float *time_value, int flag, int *errorcode){
   int ntimes_local;
   int i;
-  int nvals;
+  int nvals=0;
   int n;
   int error;
   FILE_SIZE return_filesize = 0;
@@ -2874,7 +2874,7 @@ void SetupReadAllGeom(void){
 
 void UpdateGeomTriangles(geomdata *geomi, int geom_type){
   geomlistdata *geomlisti;
-  tridata **connected_triangles;
+  tridata **connected_triangles=NULL;
   int ntris, nverts, nconnected_triangles = 0;
   int j;
 
@@ -4547,8 +4547,6 @@ void DrawGeomValues(slicedata *sd, patchdata *patchi, int geom_type){
         tridata *trianglei;
         vertdata *verti;
         int draw_foreground;
-
-        draw_foreground = 0;
 
         int insolid;
 
