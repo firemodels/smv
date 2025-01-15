@@ -671,11 +671,16 @@ void Truncate(float val, char *cval, int ndigits){
 
 void ShiftDecimal(char *cval, int nshift){
   int i, ii, iperiod;
-  char *period, cvalcopy[100], cvalcopy2[100], *trim;
+  char cvalcopy[100], cvalcopy2[100], *trim;
 
-  period = strchr(cval, '.');
-  if(period==NULL)strcat(cval, ".");
+  {
+    char *period;
 
+    period = strchr(cval, '.');
+    if(period == NULL)strcat(cval, ".");
+    period = strchr(cval, '.');
+    iperiod = period - cval;
+  }
   ii = 0;
   if(nshift<0){
     for(i = 0; i<ABS(nshift); i++){
@@ -697,7 +702,6 @@ void ShiftDecimal(char *cval, int nshift){
   cvalcopy[ii] = 0;
   if(nshift>0)iperiod += nshift;
 
-  ii = 0;
   for(i = 0; i<iperiod; i++){
     cvalcopy2[i] = cvalcopy[i];
   }
@@ -1458,7 +1462,6 @@ int ReadLabelsBNDS(flowlabels *flowlabel, BFILE *stream, char *bufferD, char *bu
     strcpy(buffer2, bufferD);
   }
 
-  len = strlen(buffer2);
   buffer = TrimFront(buffer2);
   TrimBack(buffer);
   len = strlen(buffer);
@@ -1477,7 +1480,6 @@ int ReadLabelsBNDS(flowlabels *flowlabel, BFILE *stream, char *bufferD, char *bu
     strcpy(buffer2, bufferE);
   }
 
-  len = strlen(buffer2);
   buffer = TrimFront(buffer2);
   TrimBack(buffer);
   len = strlen(buffer);
@@ -1494,7 +1496,6 @@ int ReadLabelsBNDS(flowlabels *flowlabel, BFILE *stream, char *bufferD, char *bu
     strcpy(buffer2, bufferF);
   }
 
-  len = strlen(buffer2);
   buffer = TrimFront(buffer2);
   TrimBack(buffer);
   len = strlen(buffer) + 1;// allow room for deg C symbol in case it is present
@@ -1517,7 +1518,6 @@ int ReadLabels(flowlabels *flowlabel, BFILE *stream, char *suffix_label){
     return_val = LABEL_ERR;
   }
 
-  len = strlen(buffer2);
   buffer = TrimFront(buffer2);
   TrimBack(buffer);
   len = strlen(buffer);
@@ -1533,7 +1533,6 @@ int ReadLabels(flowlabels *flowlabel, BFILE *stream, char *suffix_label){
     return_val = LABEL_ERR;
   }
 
-  len = strlen(buffer2);
   buffer = TrimFront(buffer2);
   TrimBack(buffer);
   len = strlen(buffer);
@@ -1547,7 +1546,6 @@ int ReadLabels(flowlabels *flowlabel, BFILE *stream, char *suffix_label){
     return_val = LABEL_ERR;
   }
 
-  len = strlen(buffer2);
   buffer = TrimFront(buffer2);
   TrimBack(buffer);
   len = strlen(buffer)+1;// allow room for deg C symbol in case it is present
