@@ -65,6 +65,10 @@ cobj = $(csrc:.c=.o)
 cppobj = $(cppsrc:.cpp=.o)
 obj = $(cobj) $(cppobj)
 
+cclang = $(csrc:.c=.i)
+cppclang = $(cppsrc:.cpp=.i)
+clangi = $(cclang) $(cppclang)
+
 incs = compress.h scontour2d.h csphere.h datadefs.h dirent_win.h file_util.h glui_bounds.h \
        glui_motion.h glui_smoke.h glui_tour.h histogram.h infoheader.h interp.h isobox.h \
        IOobjects.h IOscript.h IOvolsmoke.h lint.h lua_api.h dmalloc.h options.h options_common.h \
@@ -121,7 +125,10 @@ no_target:
 	@echo \******** You did not specify a make target \********
 	@echo Use one of targets found in the Makefile
 
-.SUFFIXES: .c .obj .o .cpp
+.SUFFIXES: .c .obj .o .cpp .i
+
+CLANGA=clang --analyze
+CLANGI=../../scripts/clang_summary.sh
 
 .c.obj:
 	$(CC) -c $(C_STANDARD) $(CFLAGS) $(INC) $<
@@ -132,6 +139,11 @@ no_target:
 	$(CPP) -c $(CPP_STANDARD) $(CFLAGS) $(INC) $<
 .cpp.o:
 	$(CPP) -c $(CPP_STANDARD) $(CFLAGS) $(INC) $<
+
+.c.i:
+	$(CLANGA) $(CFLAGS) $(INC) $< 2> $@
+.cpp.i:
+	$(CLANGA) $(CFLAGS) $(INC) $< 2> $@
 
 # ********  rules for each platform supported *************
 
@@ -359,6 +371,12 @@ gnu_linux_64 : $(obj) $(if $(LUA_SCRIPTING),smvluacore)
 gnu_linux_64_check : CFLAGS    = -O2 -m64 -Wall
 gnu_linux_64_check: $(src)
 	clang-tidy $^ --  $(CFLAGS) $(INC)
+
+# ------------- linux_64_check ----------------
+
+linux_64_check : CFLAGS    =
+linux_64_check: $(clangi)
+	$(CLANGI) smokeview.summary
 
 
 # VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
