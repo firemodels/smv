@@ -374,8 +374,8 @@ gnu_linux_64_check: $(src)
 
 # ------------- linux_64_check ----------------
 
-linux_64_check : CFLAGS    =
-linux_64_check: $(clangi)
+linux_check : CFLAGS    =
+linux_check: $(clangi)
 	$(CLANGI) smokeview.summary
 
 
