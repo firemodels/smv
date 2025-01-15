@@ -661,6 +661,7 @@ float GetArea(float *xnodes, float *ynodes, int ind){
   float v1[2], v2[2];
   float area;
 
+  if(xnodes == NULL || ynodes == NULL)return 0;
   v1[0]=xnodes[ind]-xnodes[0];
   v1[1]=ynodes[ind]-ynodes[0];
 
