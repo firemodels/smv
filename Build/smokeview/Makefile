@@ -65,8 +65,8 @@ cobj = $(csrc:.c=.o)
 cppobj = $(cppsrc:.cpp=.o)
 obj = $(cobj) $(cppobj)
 
-cclang = $(csrc:.c=.i)
-cppclang = $(cppsrc:.cpp=.i)
+cclang = $(csrc:.c=.chk)
+cppclang = $(cppsrc:.cpp=.chk)
 clangi = $(cclang) $(cppclang)
 
 incs = compress.h scontour2d.h csphere.h datadefs.h dirent_win.h file_util.h glui_bounds.h \
@@ -125,10 +125,11 @@ no_target:
 	@echo \******** You did not specify a make target \********
 	@echo Use one of targets found in the Makefile
 
-.SUFFIXES: .c .obj .o .cpp .i
+.SUFFIXES: .c .obj .o .cpp .chk
 
 CLANGA=clang --analyze
 CLANGI=../../scripts/clang_summary.sh
+CLANGWINI=../../scripts/clang_summary.bat
 
 .c.obj:
 	$(CC) -c $(C_STANDARD) $(CFLAGS) $(INC) $<
@@ -140,9 +141,9 @@ CLANGI=../../scripts/clang_summary.sh
 .cpp.o:
 	$(CPP) -c $(CPP_STANDARD) $(CFLAGS) $(INC) $<
 
-.c.i:
+.c.chk:
 	$(CLANGA) $(CFLAGS) $(INC) $< 2> $@
-.cpp.i:
+.cpp.chk:
 	$(CLANGA) $(CFLAGS) $(INC) $< 2> $@
 
 # ********  rules for each platform supported *************
@@ -372,12 +373,18 @@ gnu_linux_64_check : CFLAGS    = -O2 -m64 -Wall
 gnu_linux_64_check: $(src)
 	clang-tidy $^ --  $(CFLAGS) $(INC)
 
-# ------------- linux_64_check ----------------
+# ------------- linux_osx_check ----------------
 
 linux_osx_check : CFLAGS    =
 linux_osx_check: $(clangi)
 	$(CLANGI) smokeview.summary
 
+# ------------- win_check ----------------
+
+win_check : CFLAGS    = -D NDEBUG -D WIN32 -D _CONSOLE -D X64 -D GLEW_STATIC -D PTW32_STATIC_LIB 
+win_check : INC += $(WININC)
+win_check: $(clangi)
+	$(CLANGWINI) smokeview.summary
 
 # VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
 # VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV   OSX   VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
