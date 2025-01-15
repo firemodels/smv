@@ -51,7 +51,7 @@ void UpdateTimeLabels(void){
       dt = current_script_command->fval5;
     }
     else{
-      if(nglobal_times>1){
+      if(global_times!=NULL && nglobal_times>1){
         dt = global_times[1]-global_times[0];
       }
       else{
@@ -1388,7 +1388,6 @@ void DrawHorizontalColorbarRegLabels(void){
 
       tttval = sb->levels256[valindex];
       Num2String(isolabel, tttval);
-      isocolorlabel_ptr = isolabel;
       ScaleFloat2String(tttval, isocolorlabel, isofactor);
       isocolorlabel_ptr = isocolorlabel;
       horiz_position = MIX2(global_colorbar_index, 255, hcolorbar_right_pos, hcolorbar_left_pos);
@@ -1403,7 +1402,6 @@ void DrawHorizontalColorbarRegLabels(void){
 
       horiz_position = MIX2(i, global_scase.nrgb - 2, hcolorbar_right_pos, hcolorbar_left_pos);
       if(iposition == i)continue;
-      isocolorlabel_ptr = &(sb->colorlabels[i + 1][0]);
 
       val = tttmin + i*isorange / (global_scase.nrgb - 2);
       ScaleFloat2String(val, isocolorlabel, isofactor);
@@ -1518,7 +1516,6 @@ void DrawHorizontalColorbarRegLabels(void){
 
         horiz_position = MIX2(i, global_scase.nrgb - 2, hcolorbar_right_pos, hcolorbar_left_pos);
         if(iposition == i)continue;
-        slicecolorlabel_ptr = &(sb->colorlabels[i + 1][0]);
         if(sliceflag == 1){
           float val;
 
@@ -1761,8 +1758,6 @@ void DrawVerticalColorbarRegLabels(void){
   UpdateShowColorbar(&showcfast_local, &show_slice_colorbar_local,
     &show_hvacduct_colorbar_local, &show_hvacnode_colorbar_local);
 
-  colorbar_eps = pow(10.0, -ncolorlabel_digits);
-
   // -------------- compute columns where left labels will occur ------------
 
   lefthvacnode = 0;
@@ -1813,7 +1808,6 @@ void DrawVerticalColorbarRegLabels(void){
 
       tttval = sb->levels256[valindex];
       Num2String(isolabel, tttval);
-      isocolorlabel_ptr = isolabel;
       ScaleFloat2String(tttval, isocolorlabel, isofactor);
       isocolorlabel_ptr = isocolorlabel;
       vert_position = MIX2(global_colorbar_index, 255, vcolorbar_top_pos, vcolorbar_down_pos);
@@ -1828,7 +1822,6 @@ void DrawVerticalColorbarRegLabels(void){
 
       vert_position = MIX2(i, global_scase.nrgb - 2, vcolorbar_top_pos, vcolorbar_down_pos);
       if(iposition == i)continue;
-      isocolorlabel_ptr = &(sb->colorlabels[i + 1][0]);
 
       val = tttmin + i*isorange / (global_scase.nrgb - 2);
       ScaleFloat2String(val, isocolorlabel, isofactor);
@@ -1953,8 +1946,6 @@ void DrawVerticalColorbarRegLabels(void){
       GetUnitInfo(partunitlabel, &partunitclass, &partunittype);
       if(partunitclass >= 0 && partunitclass < nunitclasses){
         if(partunittype >= 0){
-          partflag = 1;
-          partfactor = unitclasses[partunitclass].units[partunittype].scale;
           strcpy(partunitlabel2, unitclasses[partunitclass].units[partunittype].unit);
         }
       }
@@ -2033,8 +2024,6 @@ void DrawVerticalColorbarRegLabels(void){
         valmax = sb->colorvalues[global_scase.nrgb-1];
       }
       valmax = ScaleFloat2Float(valmax, slicefactor);
-      colorbar_max = MAX(ABS(valmax), ABS(valmin));
-      colorbar_max = MAX(colorbar_max, colorbar_eps);
 
       for(i = 0; i<global_scase.nrgb-1; i++){
         float val;
@@ -2078,7 +2067,6 @@ void DrawVerticalColorbarRegLabels(void){
     GetUnitInfo(sb->label->unit, &sliceunitclass, &sliceunittype);
     if(sliceunitclass >= 0 && sliceunitclass < nunitclasses){
       if(sliceunittype > 0){
-        sliceflag = 1;
         slicefactor = unitclasses[sliceunitclass].units[sliceunittype].scale;
         strcpy(unitlabel, unitclasses[sliceunitclass].units[sliceunittype].unit);
       }
@@ -2096,7 +2084,6 @@ void DrawVerticalColorbarRegLabels(void){
     if(strcmp(unitlabel, "ppm") == 0 && slicefactor != NULL){
       slicefactor2[0] = *slicefactor;
       slicefactor2[1] = 0.0;
-      slicefactor = slicefactor2;
     }
     glPopMatrix();
   }
@@ -2331,8 +2318,6 @@ void DrawVerticalColorbarRegLabels(void){
     GetUnitInfo(patchi->label.unit, &patchunitclass, &patchunittype);
     if(patchunitclass >= 0 && patchunitclass < nunitclasses){
       if(patchunittype > 0){
-        patchflag = 1;
-        patchfactor = unitclasses[patchunitclass].units[patchunittype].scale;
         strcpy(unitlabel, unitclasses[patchunitclass].units[patchunittype].unit);
       }
     }
@@ -2427,8 +2412,6 @@ void DrawVerticalColorbarRegLabels(void){
     GetUnitInfo(unitlabel, &zoneunitclass, &zoneunittype);
     if(zoneunitclass >= 0 && zoneunitclass < nunitclasses){
       if(zoneunittype > 0){
-        zoneflag = 1;
-        zonefactor = unitclasses[zoneunitclass].units[zoneunittype].scale;
         strcpy(unitlabel, unitclasses[zoneunitclass].units[zoneunittype].unit);
       }
     }
@@ -2550,7 +2533,6 @@ void DrawVerticalColorbarRegLabels(void){
     GetUnitInfo(up3label, &plot3dunitclass, &plot3dunittype);
     if(plot3dunitclass >= 0 && plot3dunitclass < nunitclasses){
       if(plot3dunittype > 0){
-        plot3dflag = 1;
         plot3dfactor = unitclasses[plot3dunitclass].units[plot3dunittype].scale;
         strcpy(unitlabel, unitclasses[plot3dunitclass].units[plot3dunittype].unit);
       }
@@ -2568,7 +2550,6 @@ void DrawVerticalColorbarRegLabels(void){
     if(strcmp(unitlabel, "ppm") == 0 && plot3dfactor != NULL){
       plot3dfactor2[0] = *plot3dfactor;
       plot3dfactor2[1] = 0.0;
-      plot3dfactor = plot3dfactor2;
     }
     glPopMatrix();
   }
