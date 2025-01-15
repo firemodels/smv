@@ -65,9 +65,15 @@ cobj = $(csrc:.c=.o)
 cppobj = $(cppsrc:.cpp=.o)
 obj = $(cobj) $(cppobj)
 
-cclang = $(csrc:.c=.chk)
+# setup for analyzing smokeview source code using clang
+
+cclang   = $(csrc:.c=.chk)
 cppclang = $(cppsrc:.cpp=.chk)
-clangi = $(cclang) $(cppclang)
+clangchk = $(cclang) $(cppclang)
+
+CLANGANALYZE=clang --analyze
+CLANGSUMMARY=../../scripts/clang_summary.sh
+CLANGWINSUMMARY=../../scripts/clang_summary.bat
 
 incs = compress.h scontour2d.h csphere.h datadefs.h dirent_win.h file_util.h glui_bounds.h \
        glui_motion.h glui_smoke.h glui_tour.h histogram.h infoheader.h interp.h isobox.h \
@@ -127,10 +133,6 @@ no_target:
 
 .SUFFIXES: .c .obj .o .cpp .chk
 
-CLANGA=clang --analyze
-CLANGI=../../scripts/clang_summary.sh
-CLANGWINI=../../scripts/clang_summary.bat
-
 .c.obj:
 	$(CC) -c $(C_STANDARD) $(CFLAGS) $(INC) $<
 .c.o:
@@ -142,9 +144,9 @@ CLANGWINI=../../scripts/clang_summary.bat
 	$(CPP) -c $(CPP_STANDARD) $(CFLAGS) $(INC) $<
 
 .c.chk:
-	$(CLANGA) $(CFLAGS) $(INC) $< 2> $@
+	$(CLANGANALYZE) $(CFLAGS) $(INC) $< 2> $@
 .cpp.chk:
-	$(CLANGA) $(CFLAGS) $(INC) $< 2> $@
+	$(CLANGANALYZE) $(CFLAGS) $(INC) $< 2> $@
 
 # ********  rules for each platform supported *************
 
@@ -367,24 +369,28 @@ gnu_linux_64 : $(obj) $(if $(LUA_SCRIPTING),smvluacore)
 		$(SMV_LIBS_LINUX) $(SYSTEM_LIBS_LINUX) \
 		$(if $(LUA_SCRIPTING),$(LIB_DIR_PLAT)/liblua.a -ldl)
 
+# -------------------------------------------------
+# ------------- analyze source --------------------
+# -------------------------------------------------
+
 # ------------- gnu_linux_64_check ----------------
 
 gnu_linux_64_check : CFLAGS    = -O2 -m64 -Wall
-gnu_linux_64_check: $(src)
+gnu_linux_64_check : $(src)
 	clang-tidy $^ --  $(CFLAGS) $(INC)
 
 # ------------- linux_osx_check ----------------
 
 linux_osx_check : CFLAGS    =
-linux_osx_check: $(clangi)
-	$(CLANGI) smokeview.summary
+linux_osx_check : $(clangchk)
+	$(CLANGSUMMARY) smokeview.summary
 
 # ------------- win_check ----------------
 
 win_check : CFLAGS    = -D NDEBUG -D WIN32 -D _CONSOLE -D X64 -D GLEW_STATIC -D PTW32_STATIC_LIB 
 win_check : INC += $(WININC)
-win_check: $(clangi)
-	$(CLANGWINI) smokeview.summary
+win_check : $(clangchk)
+	$(CLANGWINSUMMARY) smokeview.summary
 
 # VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
 # VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV   OSX   VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
