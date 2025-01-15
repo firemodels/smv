@@ -1724,12 +1724,10 @@ void DrawVerticalColorbarRegLabels(void){
 
   int sliceflag = 0;
   float *slicefactor = NULL;
-  float slicefactor2[2];
   float *isofactor = NULL;
 
   int plot3dflag = 0;
   float *plot3dfactor = NULL;
-  float plot3dfactor2[2];
   float plot3drange;
 
   int patchflag = 0;
@@ -1742,8 +1740,6 @@ void DrawVerticalColorbarRegLabels(void){
   int partflag = 0;
   float *partfactor = NULL;
   int dohist = 0;
-
-  float colorbar_max, colorbar_eps;
 
   GLfloat *foreground_color, *red_color;
 
@@ -2081,10 +2077,6 @@ void DrawVerticalColorbarRegLabels(void){
     OutputBarText(0.0, 2 * (VP_vcolorbar.text_height + v_space), foreground_color, sb->label->shortlabel);
     OutputBarText(0.0,     (VP_vcolorbar.text_height + v_space), foreground_color, unitlabel);
     OutputBarText(0.0, 0                                       , foreground_color, exp_factor_label);
-    if(strcmp(unitlabel, "ppm") == 0 && slicefactor != NULL){
-      slicefactor2[0] = *slicefactor;
-      slicefactor2[1] = 0.0;
-    }
     glPopMatrix();
   }
 
@@ -2547,10 +2539,6 @@ void DrawVerticalColorbarRegLabels(void){
     OutputBarText(0.0, 2 * (VP_vcolorbar.text_height + v_space), foreground_color, p3label);
     OutputBarText(0.0,     (VP_vcolorbar.text_height + v_space), foreground_color, unitlabel);
     OutputBarText(0.0, 0                                       , foreground_color, exp_factor_label);
-    if(strcmp(unitlabel, "ppm") == 0 && plot3dfactor != NULL){
-      plot3dfactor2[0] = *plot3dfactor;
-      plot3dfactor2[1] = 0.0;
-    }
     glPopMatrix();
   }
 }
