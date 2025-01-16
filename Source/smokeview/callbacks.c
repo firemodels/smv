@@ -847,7 +847,7 @@ void TimebarDrag(int xm){
 
 void UpdateMouseInfo(int flag, int xm, int ym){
   float thistime_local;
-  float dx, dy;
+  float dx=0.0, dy=0.0;
   int maxWH;
   float quat_temp[4];
   float delta_angle,delta_angle2,delta_distance;
