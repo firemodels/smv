@@ -673,6 +673,7 @@ void ShiftDecimal(char *cval, int nshift){
   int i, ii, iperiod;
   char cvalcopy[100], cvalcopy2[100], *trim;
 
+  memset(cvalcopy, 0, 100);
   {
     char *period;
 
