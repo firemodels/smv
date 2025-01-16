@@ -3246,7 +3246,7 @@ FILE_SIZE ReadGeom0(geomdata *geomi, int load_flag, int type, int *geom_frame_in
       // add decimation code here
       iframe++;
     }
-    if(geom_frame_index==NULL&&use_tload_end == 1 && times_local!=NULL && (times_local[0] > global_scase.tload_end))break;
+    if(geom_frame_index==NULL&&use_tload_end == 1 && (times_local[0] > global_scase.tload_end))break;
   }
   geomi->loaded = 1;
   geomi->display=1;
