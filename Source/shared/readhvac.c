@@ -276,9 +276,17 @@ void SetDuctLabelSymbolXYZ(hvacductdata *ducti) {
   if(ducti->nxyz_reg == 2) {
     xyz1 = ducti->node_from->xyz;
     xyz2 = ducti->node_to->xyz;
-    for(j = 0; j < 3; j++) {
-      ducti->xyz_symbol[j] = 0.50 * xyz1[j] + 0.50 * xyz2[j];
-      ducti->xyz_label[j] = 0.25 * xyz1[j] + 0.75 * xyz2[j];
+    if(xyz1 != NULL && xyz2 != NULL){
+      for(j = 0; j < 3; j++) {
+        ducti->xyz_symbol[j] = 0.50 * xyz1[j] + 0.50 * xyz2[j];
+        ducti->xyz_label[j] = 0.25 * xyz1[j] + 0.75 * xyz2[j];
+      }
+    }
+    else{
+      for(j = 0; j < 3; j++) {
+        ducti->xyz_symbol[j] = 0.0;
+        ducti->xyz_label[j] = 0.0;
+      }
     }
   }
   else {
