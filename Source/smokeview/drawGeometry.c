@@ -3183,7 +3183,7 @@ void DrawObstsDebug(void){
 /* ------------------ DrawFacesOLD ------------------------ */
 
 void DrawFacesOLD(int option){
-  float *new_color, *old_color = NULL;
+  float *new_color=NULL, *old_color = NULL;
   int **showtimelist_handle, *showtimelist;
   float up_color[4] = {0.9,0.9,0.9,1.0};
   float down_color[4] = {0.1,0.1,0.1,1.0};
@@ -3501,7 +3501,7 @@ void DrawFacesOLD(int option){
 /* ------------------ DrawFaces ------------------------ */
 
 void DrawFaces(){
-  float *new_color,*old_color=NULL;
+  float *new_color=NULL,*old_color=NULL;
   int **showtimelist_handle, *showtimelist;
   float up_color[4]={0.9,0.9,0.9,1.0};
   float down_color[4]={0.1,0.1,0.1,1.0};
