@@ -1118,7 +1118,7 @@ void DrawGeom(int flag, int timestate){
     }
     glEnd();
     if(texture_state==ON){
-      texture_state=TextureOff();
+      TextureOff();
     }
 
     if(visGeomTextures == 1 || show_texture_1dimage == 1){
@@ -2461,7 +2461,7 @@ FILE_SIZE GetGeomData(patchdata *patchi, char *filename, int load_flag, int ntim
       }
     }
     if(time_frame==iframe){
-      *time_value = times[count];
+      if(time_value!=NULL)*time_value = times[count];
       break;
     }
     if(time_frame==ALL_FRAMES)count++;
@@ -3119,7 +3119,7 @@ FILE_SIZE ReadGeom0(geomdata *geomi, int load_flag, int type, int *geom_frame_in
     geomlistdata *geomlisti;
     int nverts, ntris;
     int  skipframe;
-    vertdata *verts;
+    vertdata *verts=NULL;
 
     geomlisti = geomi->geomlistinfo+iframe;
     InitGeomlist(geomlisti);
@@ -3216,23 +3216,25 @@ FILE_SIZE ReadGeom0(geomdata *geomi, int load_flag, int type, int *geom_frame_in
       return_filesize += 4+ntris*4+4;
 
       if(type==GEOM_ISO)offset=global_scase.surfcoll.nsurfinfo;
-      for(ii=0;ii<ntris;ii++){
-        surfdata *surfi;
+      if(verts != NULL){
+        for(ii = 0; ii < ntris; ii++){
+          surfdata *surfi;
 
-        triangles[ii].verts[0]=verts+ijk[3*ii]-1;
-        triangles[ii].verts[1]=verts+ijk[3*ii+1]-1;
-        triangles[ii].verts[2]=verts+ijk[3*ii+2]-1;
+          triangles[ii].verts[0] = verts + ijk[3 * ii] - 1;
+          triangles[ii].verts[1] = verts + ijk[3 * ii + 1] - 1;
+          triangles[ii].verts[2] = verts + ijk[3 * ii + 2] - 1;
 
-        surfi = global_scase.surfcoll.surfinfo+CLAMP(surf_ind[ii]+offset, global_scase.surfcoll.nsurfinfo+1, global_scase.surfcoll.nsurfinfo+MAX_ISO_COLORS);
-        triangles[ii].geomsurf=surfi;
-        if(geomi->file2_tris!=NULL){
-          triangles[ii].geomobj = geomi->geomobjinfo + geomi->file2_tris[ii] - 1;
+          surfi = global_scase.surfcoll.surfinfo + CLAMP(surf_ind[ii] + offset, global_scase.surfcoll.nsurfinfo + 1, global_scase.surfcoll.nsurfinfo + MAX_ISO_COLORS);
+          triangles[ii].geomsurf = surfi;
+          if(geomi->file2_tris != NULL){
+            triangles[ii].geomobj = geomi->geomobjinfo + geomi->file2_tris[ii] - 1;
+          }
+          else{
+            triangles[ii].geomobj = NULL;
+          }
+          surfi->used_by_geom = 1;
+          triangles[ii].textureinfo = NULL;
         }
-        else{
-          triangles[ii].geomobj = NULL;
-        }
-        surfi->used_by_geom = 1;
-        triangles[ii].textureinfo=NULL;
       }
 #ifndef pp_ISOFRAME
       FREEMEMORY(ijk);
@@ -3289,7 +3291,7 @@ FILE_SIZE ReadGeom2(geomdata *geomi, int load_flag, int type){
   int returncode=0;
   int ntimes_local;
   int i;
-  vertdata *verts;
+  vertdata *verts=NULL;
   tridata *triangles;
   int version;
   int nvertfacesvolumes[3];
@@ -3470,136 +3472,142 @@ FILE_SIZE ReadGeom2(geomdata *geomi, int load_flag, int type){
       // compute texture coordinates
 
       if(geomi->is_terrain==1){
-        float xmin, xmax, ymin, ymax, zmin, zmax;
+        if(verts != NULL){
+          float xmin, xmax, ymin, ymax, zmin, zmax;
 
-        xmin = verts[0].xyz[0];
-        xmax = xmin;
-        ymin = verts[0].xyz[1];
-        ymax = ymin;
-        zmin = verts[0].xyz[2];
-        zmax = zmin;
+          xmin = verts[0].xyz[0];
+          xmax = xmin;
+          ymin = verts[0].xyz[1];
+          ymax = ymin;
+          zmin = verts[0].xyz[2];
+          zmax = zmin;
 
-        for(ii=1;ii<nverts;ii++){
-          float *xyz;
+          for(ii = 1; ii < nverts; ii++){
+            float *xyz;
 
-          xyz = verts[ii].xyz;
-          xmin = MIN(xmin,xyz[0]);
-          xmax = MAX(xmax,xyz[0]);
-          ymin = MIN(ymin,xyz[1]);
-          ymax = MAX(ymax,xyz[1]);
-          zmin = MIN(zmin,xyz[2]);
-          zmax = MAX(zmax,xyz[2]);
+            xyz = verts[ii].xyz;
+            xmin = MIN(xmin, xyz[0]);
+            xmax = MAX(xmax, xyz[0]);
+            ymin = MIN(ymin, xyz[1]);
+            ymax = MAX(ymax, xyz[1]);
+            zmin = MIN(zmin, xyz[2]);
+            zmax = MAX(zmax, xyz[2]);
+          }
+          if(zmax > zmin && xmax > xmin){
+            float xratio, yratio, zratio;
+
+            xratio = (xmax - xmin) / (xbarORIG - xbar0ORIG);
+            yratio = (ymax - ymin) / (ybarORIG - ybar0ORIG);
+            zratio = (zmax - zmin) / (zbarORIG - zbar0ORIG);
+
+            geomyfactor = MAX(xratio, zratio);
+            geomyfactor = MAX(1.0, geomyfactor);
+
+            geomzfactor = MAX(xratio, yratio);
+            geomzfactor = MAX(1.0, geomzfactor);
+
+            geom_xmin = xmin;
+            geom_xmax = xmax;
+            geom_ymin = ymin;
+            geom_ymax = ymax;
+            geom_zmin = zmin;
+            geom_zmax = zmax;
+            have_geom_factors = 1;
+          }
+
+          if(global_scase.terrain_texture_coll.terrain_textures != NULL){
+            float xfactor, yfactor;
+
+            xfactor = 1.0;
+            yfactor = 1.0;
+            if(ABS(xmax - xmin) > 0.0001)xfactor = 1.0 / (xmax - xmin);
+            if(ABS(ymax - ymin) > 0.0001)yfactor = 1.0 / (ymax - ymin);
+            for(ii = 0; ii < ntris; ii++){
+              float *text_coords;
+              int *tri_ind;
+              float *xy;
+              vertdata *vert;
+
+              text_coords = texture_coords + 6 * ii;
+              tri_ind = ijk + 3 * ii;
+
+              vert = verts + tri_ind[0] - 1;
+              xy = vert->xyz;
+              text_coords[0] = (xy[0] - xmin) * xfactor;
+              text_coords[1] = (xy[1] - ymin) * yfactor;
+
+              vert = verts + tri_ind[1] - 1;
+              xy = vert->xyz;
+              text_coords[2] = (xy[0] - xmin) * xfactor;
+              text_coords[3] = (xy[1] - ymin) * yfactor;
+
+              vert = verts + tri_ind[2] - 1;
+              xy = vert->xyz;
+              text_coords[4] = (xy[0] - xmin) * xfactor;
+              text_coords[5] = (xy[1] - ymin) * yfactor;
+            }
+          }
         }
-        if(zmax>zmin&&xmax>xmin){
-          float xratio, yratio, zratio;
-
-          xratio = (xmax-xmin)/(xbarORIG-xbar0ORIG);
-          yratio = (ymax-ymin)/(ybarORIG-ybar0ORIG);
-          zratio = (zmax-zmin)/(zbarORIG-zbar0ORIG);
-
-          geomyfactor = MAX(xratio,zratio);
-          geomyfactor = MAX(1.0,geomyfactor);
-
-          geomzfactor = MAX(xratio, yratio);
-          geomzfactor = MAX(1.0, geomzfactor);
-
-          geom_xmin = xmin;
-          geom_xmax = xmax;
-          geom_ymin = ymin;
-          geom_ymax = ymax;
-          geom_zmin = zmin;
-          geom_zmax = zmax;
-          have_geom_factors = 1;
-        }
-
-        if(global_scase.terrain_texture_coll.terrain_textures!=NULL){
-          float xfactor, yfactor;
-
-          xfactor = 1.0;
-          yfactor = 1.0;
-          if(ABS(xmax-xmin)>0.0001)xfactor = 1.0/(xmax-xmin);
-          if(ABS(ymax-ymin)>0.0001)yfactor = 1.0/(ymax-ymin);
-          for(ii=0;ii<ntris;ii++){
+      }
+      else if(geomi->geomtype!=GEOM_CGEOM&&geomi->geomobjinfo!=NULL&&geomi->geomobjinfo->texture_mapping==TEXTURE_SPHERICAL){
+        if(verts != NULL){
+          for(ii = 0; ii < ntris; ii++){
             float *text_coords;
             int *tri_ind;
             float *xy;
             vertdata *vert;
 
-            text_coords = texture_coords + 6*ii;
-            tri_ind = ijk + 3*ii;
-
-            vert = verts+tri_ind[0]-1;
-            xy = vert->xyz;
-            text_coords[0] = (xy[0]-xmin)*xfactor;
-            text_coords[1] = (xy[1]-ymin)*yfactor;
-
-            vert = verts+tri_ind[1]-1;
-            xy = vert->xyz;
-            text_coords[2] = (xy[0]-xmin)*xfactor;
-            text_coords[3] = (xy[1]-ymin)*yfactor;
-
-            vert = verts+tri_ind[2]-1;
-            xy = vert->xyz;
-            text_coords[4] = (xy[0]-xmin)*xfactor;
-            text_coords[5] = (xy[1]-ymin)*yfactor;
-          }
-        }
-      }
-      else if(geomi->geomtype!=GEOM_CGEOM&&geomi->geomobjinfo!=NULL&&geomi->geomobjinfo->texture_mapping==TEXTURE_SPHERICAL){
-        for(ii = 0; ii<ntris; ii++){
-          float *text_coords;
-          int *tri_ind;
-          float *xy;
-          vertdata *vert;
-
 #define XYZ2AZ(x,y)     CLAMP(((atan2((y),(x))+PI)/(2.0*PI)), 0.0, 1.0)
 #define XYZ2ELEV(x,y,z) CLAMP(( (PI/2.0+atan2( (z), sqrt( (x)*(x)+(y)*(y) ) )) /PI ), 0.0, 1.0)
 
-          text_coords = texture_coords+6*ii;
-          tri_ind = ijk+3*ii;
+            text_coords = texture_coords + 6 * ii;
+            tri_ind = ijk + 3 * ii;
 
-          vert = verts+tri_ind[0]-1;
-          xy = vert->xyz;
-          text_coords[0] = XYZ2AZ(xy[0],xy[1]);
-          text_coords[1] = XYZ2ELEV(xy[0], xy[1], xy[2]);
+            vert = verts + tri_ind[0] - 1;
+            xy = vert->xyz;
+            text_coords[0] = XYZ2AZ(xy[0], xy[1]);
+            text_coords[1] = XYZ2ELEV(xy[0], xy[1], xy[2]);
 
-          vert = verts+tri_ind[1]-1;
-          xy = vert->xyz;
-          text_coords[2] = XYZ2AZ(xy[0], xy[1]);
-          text_coords[3] = XYZ2ELEV(xy[0], xy[1], xy[2]);
+            vert = verts + tri_ind[1] - 1;
+            xy = vert->xyz;
+            text_coords[2] = XYZ2AZ(xy[0], xy[1]);
+            text_coords[3] = XYZ2ELEV(xy[0], xy[1], xy[2]);
 
-          vert = verts+tri_ind[2]-1;
-          xy = vert->xyz;
-          text_coords[4] = XYZ2AZ(xy[0], xy[1]);
-          text_coords[5] = XYZ2ELEV(xy[0], xy[1], xy[2]);
+            vert = verts + tri_ind[2] - 1;
+            xy = vert->xyz;
+            text_coords[4] = XYZ2AZ(xy[0], xy[1]);
+            text_coords[5] = XYZ2ELEV(xy[0], xy[1], xy[2]);
+          }
         }
       }
       else if(geomi->geomtype!=GEOM_CGEOM&&geomi->geomobjinfo!=NULL&&geomi->geomobjinfo->texture_mapping==TEXTURE_RECTANGULAR){
-        for(ii = 0; ii<ntris; ii++){
-          float *text_coords;
-          int *tri_ind;
-          float *xy;
-          vertdata *vert;
+        if(verts != NULL){
+          for(ii = 0; ii < ntris; ii++){
+            float *text_coords;
+            int *tri_ind;
+            float *xy;
+            vertdata *vert;
 
 #define XYZ2X(x) ((x)-bounding_box[XMIN])/(bounding_box[XMAX]-bounding_box[XMIN])
 #define XYZ2Y(y) ((y)-bounding_box[YMIN])/(bounding_box[YMAX]-bounding_box[YMIN])
-          text_coords = texture_coords+6*ii;
-          tri_ind = ijk+3*ii;
+            text_coords = texture_coords + 6 * ii;
+            tri_ind = ijk + 3 * ii;
 
-          vert = verts+tri_ind[0]-1;
-          xy = vert->xyz;
-          text_coords[0] = XYZ2X(xy[0]);
-          text_coords[1] = XYZ2Y(xy[1]);
+            vert = verts + tri_ind[0] - 1;
+            xy = vert->xyz;
+            text_coords[0] = XYZ2X(xy[0]);
+            text_coords[1] = XYZ2Y(xy[1]);
 
-          vert = verts+tri_ind[1]-1;
-          xy = vert->xyz;
-          text_coords[2] = XYZ2X(xy[0]);
-          text_coords[3] = XYZ2Y(xy[1]);
+            vert = verts + tri_ind[1] - 1;
+            xy = vert->xyz;
+            text_coords[2] = XYZ2X(xy[0]);
+            text_coords[3] = XYZ2Y(xy[1]);
 
-          vert = verts+tri_ind[2]-1;
-          xy = vert->xyz;
-          text_coords[4] = XYZ2X(xy[0]);
-          text_coords[5] = XYZ2Y(xy[1]);
+            vert = verts + tri_ind[2] - 1;
+            xy = vert->xyz;
+            text_coords[4] = XYZ2X(xy[0]);
+            text_coords[5] = XYZ2Y(xy[1]);
+          }
         }
       }
 
@@ -4999,7 +5007,10 @@ void ShowHideSortGeometry(int sort_geom, float *mm){
           if(geom_force_transparent == 1)is_opaque = 0;
           isurf = tri->geomsurf - global_scase.surfcoll.surfinfo - global_scase.surfcoll.nsurfinfo - 1;
           tri->geomlisti = geomlisti;
-          if((geomi->geomtype==GEOM_ISO&&showlevels != NULL&&showlevels[isurf] == 0) || tri->geomsurf->transparent_level <= 0.0){
+          if(
+            (geomi->geomtype==GEOM_ISO&&showlevels != NULL&&showlevels[isurf] == 0) || 
+            (tri->geomsurf!=NULL&&tri->geomsurf->transparent_level <= 0.0)
+            ){
             continue;
           }
           if(iter == 1){
