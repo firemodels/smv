@@ -147,6 +147,9 @@ void ParseSmvObjectString(object_collection *objectscoll, char *string,
   char *tokens_head[BUFFER_SIZE], *tokens_tail[BUFFER_SIZE];
   int in_head = 1, nhead = 0, ntail = 0;
 
+  for(i=0;i<BUFFER_SIZE;i++){
+    tokens_tail[i] = NULL;
+  }
   c = string;
   in_quote = 0;
   in_token = 0;
