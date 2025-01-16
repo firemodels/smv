@@ -1117,6 +1117,10 @@ void DrawGeom(int flag, int timestate){
       }
     }
     glEnd();
+    if(texture_state==ON){
+      texture_state=TextureOff();
+    }
+
     if(visGeomTextures == 1 || show_texture_1dimage == 1){
       texturedata *lasttexture;
 
@@ -2456,13 +2460,8 @@ FILE_SIZE GetGeomData(patchdata *patchi, char *filename, int load_flag, int ntim
         }
       }
     }
-    if(time_frame==iframe&&time_value!=NULL){
-      if(times != NULL){
-        *time_value = times[count];
-      }
-      else{
-        *time_value = 0.0;
-      }
+    if(time_frame==iframe){
+      *time_value = times[count];
       break;
     }
     if(time_frame==ALL_FRAMES)count++;
@@ -3120,13 +3119,12 @@ FILE_SIZE ReadGeom0(geomdata *geomi, int load_flag, int type, int *geom_frame_in
     geomlistdata *geomlisti;
     int nverts, ntris;
     int  skipframe;
-    vertdata *verts=NULL;
+    vertdata *verts;
 
     geomlisti = geomi->geomlistinfo+iframe;
     InitGeomlist(geomlisti);
     skipframe = 0;
 
-    times_local[0] = 0.0;
     if(iframe>=0){
       FORTREAD_m(times_local, 4, 2, stream);
       if(count_read != 2)break;
@@ -3187,7 +3185,7 @@ FILE_SIZE ReadGeom0(geomdata *geomi, int load_flag, int type, int *geom_frame_in
       FREEMEMORY(xyz);
 #endif
     }
-    if(verts!=NULL&&skipframe==0&&ntris>0){
+    if(skipframe==0&&ntris>0){
       int *surf_ind=NULL,*ijk=NULL;
       int ii;
       int offset=0;
@@ -3246,7 +3244,7 @@ FILE_SIZE ReadGeom0(geomdata *geomi, int load_flag, int type, int *geom_frame_in
       // add decimation code here
       iframe++;
     }
-    if(geom_frame_index==NULL&&use_tload_end == 1 && times_local!=NULL && (times_local[0] > global_scase.tload_end))break;
+    if(geom_frame_index==NULL&&use_tload_end == 1 && times_local[0] > global_scase.tload_end)break;
   }
   geomi->loaded = 1;
   geomi->display=1;
@@ -3291,7 +3289,7 @@ FILE_SIZE ReadGeom2(geomdata *geomi, int load_flag, int type){
   int returncode=0;
   int ntimes_local;
   int i;
-  vertdata *verts=NULL;
+  vertdata *verts;
   tridata *triangles;
   int version;
   int nvertfacesvolumes[3];
@@ -3471,7 +3469,7 @@ FILE_SIZE ReadGeom2(geomdata *geomi, int load_flag, int type){
 
       // compute texture coordinates
 
-      if(verts!=NULL&&geomi->is_terrain==1){
+      if(geomi->is_terrain==1){
         float xmin, xmax, ymin, ymax, zmin, zmax;
 
         xmin = verts[0].xyz[0];
@@ -3514,7 +3512,7 @@ FILE_SIZE ReadGeom2(geomdata *geomi, int load_flag, int type){
           have_geom_factors = 1;
         }
 
-        if(texture_coords!=NULL&&verts!=NULL&&global_scase.terrain_texture_coll.terrain_textures!=NULL){
+        if(global_scase.terrain_texture_coll.terrain_textures!=NULL){
           float xfactor, yfactor;
 
           xfactor = 1.0;
@@ -3547,7 +3545,7 @@ FILE_SIZE ReadGeom2(geomdata *geomi, int load_flag, int type){
           }
         }
       }
-      else if(verts!=NULL&&geomi->geomtype!=GEOM_CGEOM&&geomi->geomobjinfo!=NULL&&geomi->geomobjinfo->texture_mapping==TEXTURE_SPHERICAL){
+      else if(geomi->geomtype!=GEOM_CGEOM&&geomi->geomobjinfo!=NULL&&geomi->geomobjinfo->texture_mapping==TEXTURE_SPHERICAL){
         for(ii = 0; ii<ntris; ii++){
           float *text_coords;
           int *tri_ind;
@@ -3576,7 +3574,7 @@ FILE_SIZE ReadGeom2(geomdata *geomi, int load_flag, int type){
           text_coords[5] = XYZ2ELEV(xy[0], xy[1], xy[2]);
         }
       }
-      else if(verts!=NULL&&geomi->geomtype!=GEOM_CGEOM&&geomi->geomobjinfo!=NULL&&geomi->geomobjinfo->texture_mapping==TEXTURE_RECTANGULAR){
+      else if(geomi->geomtype!=GEOM_CGEOM&&geomi->geomobjinfo!=NULL&&geomi->geomobjinfo->texture_mapping==TEXTURE_RECTANGULAR){
         for(ii = 0; ii<ntris; ii++){
           float *text_coords;
           int *tri_ind;
@@ -3607,67 +3605,65 @@ FILE_SIZE ReadGeom2(geomdata *geomi, int load_flag, int type){
 
       CheckMemory;
      // assert(geomi->ngeomobj_offsets<=0 || ntris==geomi->ngeomobj_offsets);
-      if(texture_coords!=NULL&&verts != NULL){
-        for(ii = 0;ii < ntris;ii++){
-          surfdata *surfi;
-          int k;
+      for(ii=0;ii<ntris;ii++){
+        surfdata *surfi;
+        int k;
 
-          for(k = 0;k < 3;k++){
-            triangles[ii].verts[k] = verts + ijk[3 * ii + k] - 1;
-          }
+        for(k=0;k<3;k++){
+          triangles[ii].verts[k]=verts+ijk[3*ii+k]-1;
+        }
 
-          if(geomi->geomtype != GEOM_CGEOM){
-            for(k = 0;k < 6;k++){
-              triangles[ii].tverts[k] = texture_coords[6 * ii + k];
-            }
+        if(geomi->geomtype!=GEOM_CGEOM){
+          for(k=0;k<6;k++){
+            triangles[ii].tverts[k]=texture_coords[6*ii+k];
           }
-          GetTriangleNormal(triangles[ii].verts[0]->xyz, triangles[ii].verts[1]->xyz, triangles[ii].verts[2]->xyz,
-            triangles[ii].tri_norm, NULL);
+        }
+        GetTriangleNormal(triangles[ii].verts[0]->xyz, triangles[ii].verts[1]->xyz, triangles[ii].verts[2]->xyz,
+                          triangles[ii].tri_norm, NULL);
 
-          CheckMemory;
-          triangles[ii].geomtype = type;
-          switch(type){
-          case GEOM_CGEOM:
-            surfi = global_scase.surfcoll.surfinfo + CLAMP(surf_ind[ii], 0, global_scase.surfcoll.nsurfinfo - 1);
-            triangles[ii].insolid = locations[ii];
-            triangles[ii].geomobj = global_scase.geominfo->geomobjinfo + geom_ind[ii] - 1;
-            break;
-          case GEOM_GEOM:
-          case GEOM_ISO:
-            surfi = global_scase.surfcoll.surfinfo + CLAMP(surf_ind[ii], 0, global_scase.surfcoll.nsurfinfo - 1);
-            if(type == GEOM_ISO)surfi += global_scase.surfcoll.nsurfinfo;
-            triangles[ii].insolid = surf_ind[ii];
-            if(geomi->file2_tris != NULL){
-              triangles[ii].geomobj = geomi->geomobjinfo + geomi->file2_tris[ii] - 1;
-            }
-            else{
-              if(geomi->ngeomobj_offsets > 0 && ii < geomi->ngeomobj_offsets && geomi->geomobj_offsets != NULL){
-                triangles[ii].geomobj = geomi->geomobjinfo + geomi->geomobj_offsets[ii];
-              }
-              else{
-                triangles[ii].geomobj = geomi->geomobjinfo;
-              }
-            }
-            break;
-          case GEOM_SLICE:
-          case GEOM_BOUNDARY:
-            surfi = global_scase.surfcoll.surfinfo;
-            triangles[ii].insolid = 0;
-            break;
-          default:
-            assert(FFALSE);
-            break;
-          }
-          if(geomi->geomtype == GEOM_GEOM)surfi->used_by_geom = 1;
-          triangles[ii].geomsurf = surfi;
-          if(terrain_textures != NULL && geomi->is_terrain == 1){
-            triangles[ii].textureinfo = terrain_textures;
+        CheckMemory;
+        triangles[ii].geomtype = type;
+        switch(type){
+        case GEOM_CGEOM:
+          surfi=global_scase.surfcoll.surfinfo + CLAMP(surf_ind[ii],0,global_scase.surfcoll.nsurfinfo-1);
+          triangles[ii].insolid = locations[ii];
+          triangles[ii].geomobj = global_scase.geominfo->geomobjinfo+geom_ind[ii]-1;
+          break;
+        case GEOM_GEOM:
+        case GEOM_ISO:
+          surfi=global_scase.surfcoll.surfinfo + CLAMP(surf_ind[ii],0,global_scase.surfcoll.nsurfinfo-1);
+          if(type==GEOM_ISO)surfi+=global_scase.surfcoll.nsurfinfo;
+          triangles[ii].insolid = surf_ind[ii];
+          if(geomi->file2_tris!=NULL){
+            triangles[ii].geomobj = geomi->geomobjinfo+geomi->file2_tris[ii]-1;
           }
           else{
-            triangles[ii].textureinfo = surfi->textureinfo;
+            if(geomi->ngeomobj_offsets>0  && ii < geomi->ngeomobj_offsets && geomi->geomobj_offsets != NULL){
+              triangles[ii].geomobj = geomi->geomobjinfo + geomi->geomobj_offsets[ii];
+            }
+            else{
+              triangles[ii].geomobj = geomi->geomobjinfo;
+            }
           }
-          triangles[ii].outside_domain = OutSideDomain(triangles[ii].verts);
+          break;
+        case GEOM_SLICE:
+        case GEOM_BOUNDARY:
+          surfi=global_scase.surfcoll.surfinfo;
+          triangles[ii].insolid = 0;
+          break;
+	    default:
+	      assert(FFALSE);
+	      break;
         }
+        if(geomi->geomtype==GEOM_GEOM)surfi->used_by_geom = 1;
+        triangles[ii].geomsurf=surfi;
+        if(terrain_textures!=NULL&&geomi->is_terrain==1){
+          triangles[ii].textureinfo = terrain_textures;
+        }
+        else{
+          triangles[ii].textureinfo = surfi->textureinfo;
+        }
+        triangles[ii].outside_domain = OutSideDomain(triangles[ii].verts);
       }
       FREEMEMORY(ijk);
       FREEMEMORY(surf_ind);
@@ -3995,14 +3991,10 @@ void DrawGeomVData(vslicedata *vd){
 
 #define GEOMVAL(index) ( patchi->is_compressed==0 ? vals[(index)] : (float)cvals[(index)] )
 #define GEOMTEXTURE(index, vmin, vmax) ( \
-        CLAMP( (vals[(index)]-vmin)/(vmax-vmin),0.0,1.0) \
+        patchi->is_compressed==0 ? \
+        CLAMP( (vals[(index)]-vmin)/(vmax-vmin),0.0,1.0) : \
+        CLAMP( (float)cvals[(index)]/255.0,0.0,1.0) \
         )
-
-//#define GEOMTEXTURE(index, vmin, vmax) ( \
-//        patchi->is_compressed==0 ? \
-//        CLAMP( (vals[(index)]-vmin)/(vmax-vmin),0.0,1.0) : \
-//        CLAMP( (float)cvals[(index)]/255.0,0.0,1.0) \
-//        )
 #define GEOMTEXTURE2(geomval, vmin, vmax) ( \
         patchi->is_compressed==0 ? \
         CLAMP( (geomval-vmin)/(vmax-vmin),0.0,1.0) : \
@@ -4013,7 +4005,7 @@ void DrawGeomData(int flag, slicedata *sd, patchdata *patchi, int geom_type){
   int i;
   unsigned char *ivals, *cvals;
   int is_ccell = 0;
-  float *vals=NULL;
+  float *vals;
 
   int set_valmin, set_valmax;
   char *label;
@@ -4104,12 +4096,8 @@ void DrawGeomData(int flag, slicedata *sd, patchdata *patchi, int geom_type){
       glTranslatef(-global_scase.xbar0, -global_scase.ybar0, -global_scase.zbar0+boundaryoffset);
       if(global_scase.auto_terrain==1)glTranslatef(0.0, 0.0, slice_dz);
       glBegin(GL_TRIANGLES);
-      if(
-        vals!=NULL &&
-       ( (patchi->patch_filetype!=PATCH_GEOMETRY_BOUNDARY&&smooth_iso_normal == 0) ||
-         patchi->patch_filetype==PATCH_GEOMETRY_BOUNDARY)
-
-       ){
+      if((patchi->patch_filetype!=PATCH_GEOMETRY_BOUNDARY&&smooth_iso_normal == 0)
+       ||patchi->patch_filetype==PATCH_GEOMETRY_BOUNDARY){
         for(j = 0; j < ntris; j++){
           float *xyzptr[3];
           tridata *trianglei;
@@ -5011,7 +4999,7 @@ void ShowHideSortGeometry(int sort_geom, float *mm){
           if(geom_force_transparent == 1)is_opaque = 0;
           isurf = tri->geomsurf - global_scase.surfcoll.surfinfo - global_scase.surfcoll.nsurfinfo - 1;
           tri->geomlisti = geomlisti;
-          if((geomi->geomtype==GEOM_ISO&&showlevels != NULL&&showlevels[isurf] == 0) || (tri->geomsurf!=NULL&&tri->geomsurf->transparent_level <= 0.0)){
+          if((geomi->geomtype==GEOM_ISO&&showlevels != NULL&&showlevels[isurf] == 0) || tri->geomsurf->transparent_level <= 0.0){
             continue;
           }
           if(iter == 1){
