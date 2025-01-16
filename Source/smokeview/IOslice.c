@@ -2247,7 +2247,7 @@ void UpdateSliceinfoPtrs(sliceparmdata *sp){
 
 void GetSliceParams(sliceparmdata *sp){
   int i;
-  int error;
+  int error=0;
   int build_cache;
   FILE *stream=NULL;
 
@@ -2315,8 +2315,12 @@ void GetSliceParams(sliceparmdata *sp){
       }
     }
     else if(sd->compression_type!=UNCOMPRESSED){
+      int return_code;
+      
+      is1 = 0;is2 = 0;js1 = 0;js2 = 0;ks1 = 0;ks2 = 0;
       error=0;
-      if(GetSliceHeader0(sd->comp_file,sd->size_file,sd->compression_type,&is1,&is2,&js1,&js2,&ks1,&ks2, &sd->volslice)==0)error=1;
+      return_code = GetSliceHeader0(sd->comp_file,sd->size_file,sd->compression_type,&is1,&is2,&js1,&js2,&ks1,&ks2, &sd->volslice);
+      if(return_code==0)error=1;
       ni = is2 + 1 - is1;
       nj = js2 + 1 - js1;
       nk = ks2 + 1 - ks1;
@@ -3837,7 +3841,7 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
   float frame_valmin, frame_valmax;
 #endif
 #ifndef pp_SLICEFRAME
-  int headersize, framesize;
+  int headersize, framesize=0;
 #endif
 
   SNIFF_ERRORS("ReadSlice: start");
