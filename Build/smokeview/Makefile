@@ -71,6 +71,7 @@ cclang   = $(csrc:.c=.chk)
 cppclang = $(cppsrc:.cpp=.chk)
 clangchk = $(cclang) $(cppclang)
 
+#CLANGANALYZE=clang --analyze -Xanalyzer -analyzer-checker=core,deadcode
 CLANGANALYZE=clang --analyze
 CLANGSUMMARY=../../scripts/clang_summary.sh
 CLANGWINSUMMARY=../../scripts/clang_summary.bat
@@ -369,9 +370,9 @@ gnu_linux_64 : $(obj) $(if $(LUA_SCRIPTING),smvluacore)
 		$(SMV_LIBS_LINUX) $(SYSTEM_LIBS_LINUX) \
 		$(if $(LUA_SCRIPTING),$(LIB_DIR_PLAT)/liblua.a -ldl)
 
-# -------------------------------------------------
-# ------------- analyze source --------------------
-# -------------------------------------------------
+# VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
+# VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV   check source   VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
+# VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
 
 # ------------- gnu_linux_64_check ----------------
 
@@ -386,6 +387,7 @@ linux_osx_check : $(clangchk)
 	$(CLANGSUMMARY) smokeview.summary
 
 # ------------- win_check ----------------
+# (not working yet)
 
 win_check : CFLAGS    = -D NDEBUG -D WIN32 -D _CONSOLE -D X64 -D GLEW_STATIC -D PTW32_STATIC_LIB 
 win_check : INC += $(WININC)
