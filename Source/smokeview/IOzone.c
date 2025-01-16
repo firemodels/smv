@@ -2318,8 +2318,8 @@ void DrawZoneFireData(void){
 void DrawZoneRoomData(void){
   float xroom0, yroom0, zroom0, xroom, yroom, zroom;
   float *zoneylaybase,dx,dy;
-  unsigned char *hazardcolorbase, *zonecolorbaseU;
-  unsigned char *zonecolorbaseL;
+  unsigned char *hazardcolorbase, *zonecolorbaseU=NULL;
+  unsigned char *zonecolorbaseL=NULL;
   float ylay;
   float *colorvU;
   unsigned char *izonetubase;
@@ -2338,7 +2338,8 @@ void DrawZoneRoomData(void){
   zoneylaybase = zoneylay + izone*global_scase.nrooms;
 
   if(zonecolortype==ZONEHAZARD_COLOR){
-    zonecolorbaseU=hazardcolorbase;
+    zonecolorbaseU = hazardcolorbase;
+    zonecolorbaseL = hazardcolorbase;
   }
   else{
     zonecolorbaseU=izonetubase;
@@ -2361,6 +2362,7 @@ void DrawZoneRoomData(void){
     colorU = *(zonecolorbaseU+i);
     if(zonecolortype==ZONEHAZARD_COLOR){
       colorvU = rgbhazard[colorU];
+      colorvL = rgbhazard[colorU];
     }
     else{
       colorvU = rgb_full[colorU];
