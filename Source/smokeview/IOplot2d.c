@@ -145,7 +145,7 @@ void DrawGenCurve(int option, plot2ddata *plot2di, curvedata *curve, float size_
     glPushMatrix();
     glScalef(1.0, 1.0, curve_factor);
   }
-  if(option!=PLOT_ONLY_FRAME){
+  if(option!=PLOT_ONLY_FRAME&&x!=NULL){
     glBegin(GL_LINES);
     if(apply_curve_factor==1){
       for(i = itbeg; i<itend; i++){
@@ -154,11 +154,9 @@ void DrawGenCurve(int option, plot2ddata *plot2di, curvedata *curve, float size_
       }
     }
     else{
-      if(x != NULL){
-        for(i = itbeg; i < itend; i++){
-          glVertex3f(x[i], 0.0, CLAMP(z[i], zmin, zmax));
-          glVertex3f(x[i + 1], 0.0, CLAMP(z[i + 1], zmin, zmax));
-        }
+      for(i = itbeg; i < itend; i++){
+        glVertex3f(x[i], 0.0, CLAMP(z[i], zmin, zmax));
+        glVertex3f(x[i + 1], 0.0, CLAMP(z[i + 1], zmin, zmax));
       }
     }
     glEnd();
