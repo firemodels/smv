@@ -360,7 +360,7 @@ int GetIsoTType(const isodata *isoi){
 void SyncIsoBounds(){
   int i, ncount;
   int firsttime = 1;
-  float tmin_local, tmax_local;
+  float tmin_local=1.0, tmax_local=0.0;
 
   // find number of iso-surfaces with values
 
