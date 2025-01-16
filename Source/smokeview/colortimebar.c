@@ -2063,7 +2063,6 @@ void DrawVerticalColorbarRegLabels(void){
     GetUnitInfo(sb->label->unit, &sliceunitclass, &sliceunittype);
     if(sliceunitclass >= 0 && sliceunitclass < nunitclasses){
       if(sliceunittype > 0){
-        slicefactor = unitclasses[sliceunitclass].units[sliceunittype].scale;
         strcpy(unitlabel, unitclasses[sliceunitclass].units[sliceunittype].unit);
       }
     }
@@ -2525,7 +2524,6 @@ void DrawVerticalColorbarRegLabels(void){
     GetUnitInfo(up3label, &plot3dunitclass, &plot3dunittype);
     if(plot3dunitclass >= 0 && plot3dunitclass < nunitclasses){
       if(plot3dunittype > 0){
-        plot3dfactor = unitclasses[plot3dunitclass].units[plot3dunittype].scale;
         strcpy(unitlabel, unitclasses[plot3dunitclass].units[plot3dunittype].unit);
       }
     }
