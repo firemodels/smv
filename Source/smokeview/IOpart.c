@@ -1486,6 +1486,7 @@ int GetPartPropIndex(int class_i, int class_i_j){
 partpropdata *GetPartProp(char *label){
   int i;
 
+  if(part5propinfo == NULL)return NULL;
   for(i=0;i<npart5prop;i++){
     partpropdata *propi;
 
