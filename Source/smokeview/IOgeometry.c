@@ -3115,7 +3115,7 @@ FILE_SIZE ReadGeom0(geomdata *geomi, int load_flag, int type, int *geom_frame_in
   // surf_ind ntris
   icount=-1;
   for(iframe=-1;iframe<ntimes_local;){
-    float times_local[2];
+    float times_local[2]={0.0, 0.0};
     geomlistdata *geomlisti;
     int nverts, ntris;
     int  skipframe;
@@ -3438,7 +3438,7 @@ FILE_SIZE ReadGeom2(geomdata *geomi, int load_flag, int type){
       if(geomi->geomtype==GEOM_CGEOM){
         NewMemory((void **)&locations, ntris*sizeof(int));
         NewMemory((void **)&geom_ind,  ntris*sizeof(int));
-        texture_coords = NULL;
+        NewMemory((void **)&texture_coords, 6 * sizeof(float));
       }
       else{
         NewMemory((void **)&texture_coords,6*ntris*sizeof(float));
@@ -3998,11 +3998,7 @@ void DrawGeomVData(vslicedata *vd){
   /* ------------------ DrawGeomData ------------------------ */
 
 #define GEOMVAL(index) ( patchi->is_compressed==0 ? vals[(index)] : (float)cvals[(index)] )
-#define GEOMTEXTURE(index, vmin, vmax) ( \
-        patchi->is_compressed==0 ? \
-        CLAMP( (vals[(index)]-vmin)/(vmax-vmin),0.0,1.0) : \
-        CLAMP( (float)cvals[(index)]/255.0,0.0,1.0) \
-        )
+#define GEOMTEXTURE(index, vmin, vmax) ( CLAMP( (vals[(index)]-vmin)/(vmax-vmin),0.0,1.0) )
 #define GEOMTEXTURE2(geomval, vmin, vmax) ( \
         patchi->is_compressed==0 ? \
         CLAMP( (geomval-vmin)/(vmax-vmin),0.0,1.0) : \
@@ -4013,7 +4009,7 @@ void DrawGeomData(int flag, slicedata *sd, patchdata *patchi, int geom_type){
   int i;
   unsigned char *ivals, *cvals;
   int is_ccell = 0;
-  float *vals;
+  float *vals=NULL;
 
   int set_valmin, set_valmax;
   char *label;
@@ -4051,7 +4047,9 @@ void DrawGeomData(int flag, slicedata *sd, patchdata *patchi, int geom_type){
      show_slice_shaded[IN_SOLID_GLUI]==1||
      show_slice_shaded[IN_GAS_GLUI] == 1))
      ){
-    for(i = 0; i < 1; i++){
+    int nloops = 1;
+    if(vals == NULL)nloops = 0;
+    for(i = 0; i < nloops; i++){
       geomdata *geomi;
       geomlistdata *geomlisti;
       int ntris, j, enable_lighting;
