@@ -32,5 +32,9 @@ for file in *.chk; do
   fi
 done
 echo
-echo $nfiles files scanned, $nwarnfiles files have $total_warnings warnings
+if [ "$total_warnings" == "0" ]; then
+  echo $nfiles files scanned, no warnings were found
+else
+  echo $nfiles files scanned, $nwarnfiles files have $total_warnings warnings
+fi
 
