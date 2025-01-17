@@ -17,14 +17,20 @@ if [ "$HAVE_WARNINGS" == "" ]; then
 fi
 total_warnings=0
 nfiles=0
+nwarnfiles=0
+echo ""
 for file in *.chk; do
   nfiles=$((nfiles+1))
   if [ -s $file ]; then
     nwarnings=`tail -1 $file | awk '{print $1}'`
     total_warnings=$((total_warnings+nwarnings))
-    echo $file: $nwarnings >> $OUTFILE
+    nwarnfiles=$((nwarnfiles+1))
+    echo $file: $nwarnings  warnings >> $OUTFILE
+    if [ "$nwarnings" != "0" ]; then
+      echo $file: $nwarnings warnings
+    fi
   fi
 done
 echo
-echo $nfiles files scanned, $total_warnings warnings found
+echo $nfiles files scanned, $nwarnfiles files have $total_warnings warnings
 
