@@ -689,7 +689,6 @@ void bounds_dialog::get_global_minmax(char *label, float *valmin, float *valmax)
 void bounds_dialog::set_min_all(int *set_valmin, float *valmin, int nvals){
   int i;
 
-  nvals = MIN(nall_bounds, nvals);
   for(i = 0; i<nall_bounds; i++){
     cpp_boundsdata *boundi;
 
@@ -704,7 +703,6 @@ void bounds_dialog::set_min_all(int *set_valmin, float *valmin, int nvals){
 void bounds_dialog::get_global_minmax_all(float *valmin, float *valmax, int nvals){
   int i, set_valmin, set_valmax;
 
-  nvals = MIN(nall_bounds, nvals);
   set_valmin = BOUND_GLOBAL_MIN;
   set_valmax = BOUND_GLOBAL_MAX;
   for(i = 0; i < nall_bounds; i++){
@@ -721,7 +719,6 @@ void bounds_dialog::get_global_minmax_all(float *valmin, float *valmax, int nval
 void bounds_dialog::get_loaded_minmax_all(float *valmin, float *valmax, int nvals){
   int i, set_valmin, set_valmax;
 
-  nvals = MIN(nall_bounds, nvals);
   set_valmin = BOUND_LOADED_MIN;
   set_valmax = BOUND_LOADED_MAX;
   for(i = 0; i < nall_bounds; i++){
@@ -738,7 +735,6 @@ void bounds_dialog::get_loaded_minmax_all(float *valmin, float *valmax, int nval
 void bounds_dialog::set_global_minmax_all(float *valmin, float *valmax, int nvals){
   int i, set_valmin, set_valmax;
 
-  nvals = MIN(nall_bounds, nvals);
   set_valmin = BOUND_GLOBAL_MIN;
   set_valmax = BOUND_GLOBAL_MAX;
   for(i = 0; i < nall_bounds; i++){
@@ -755,7 +751,6 @@ void bounds_dialog::set_global_minmax_all(float *valmin, float *valmax, int nval
 void bounds_dialog::set_loaded_minmax_all(float *valmin, float *valmax, int nvals){
   int i, set_valmin, set_valmax;
 
-  nvals = MIN(nall_bounds, nvals);
   set_valmin = BOUND_LOADED_MIN;
   set_valmax = BOUND_LOADED_MAX;
   for(i = 0; i < nall_bounds; i++){
@@ -772,7 +767,6 @@ void bounds_dialog::set_loaded_minmax_all(float *valmin, float *valmax, int nval
 void bounds_dialog::set_max_all(int *set_valmax, float *valmax, int nvals){
   int i;
 
-  nvals = MIN(nall_bounds, nvals);
   for(i = 0; i<nall_bounds; i++){
     cpp_boundsdata *boundi;
 
@@ -2498,7 +2492,7 @@ void SetLoadedSliceBounds(int *list, int nlist){
 /* ------------------ SetLoadedPatchBounds ------------------------ */
 
 void SetLoadedPatchBounds(int *list, int nlist){
-  int set_valmin, set_valmax;
+  int set_valmin=0, set_valmax=0;
   float valmin_dlg, valmax_dlg;
   float valmin, valmax;
   char *label=NULL;
@@ -3671,16 +3665,19 @@ extern "C" void GLUIUpdateColorTableList(int ncolortableinfo_old){
     qsort((int *)order, (size_t)ncolortableinfo, sizeof(int), ColorTableCompare);
   }
 
+  if(LIST_colortable != NULL){
+    for(i = -1; i < ncolortableinfo; i++){
+      if(i == -1){
+        LIST_colortable->add_item(i, "Custom");
+      }
+      else{
+        if(order != NULL){
+          colortabledata *cti;
 
-  for(i = -1; i<ncolortableinfo; i++){
-    if(i==-1){
-      LIST_colortable->add_item(i, "Custom");
-    }
-    else{
-      colortabledata *cti;
-
-      cti = colortableinfo+order[i];
-      LIST_colortable->add_item(i, cti->label);
+          cti = colortableinfo + order[i];
+          LIST_colortable->add_item(i, cti->label);
+        }
+      }
     }
   }
   if(ncolortableinfo>0){
@@ -4825,7 +4822,7 @@ void SliceLoadCB(int var){
 extern "C" void GLUIUpdateColorbarListBound(int flag){
   int i;
   char label[64];
-  GLUI_Listbox *LIST_cb;
+  GLUI_Listbox *LIST_cb=NULL;
 
   switch(flag){
     case 1:
@@ -4838,7 +4835,6 @@ extern "C" void GLUIUpdateColorbarListBound(int flag){
      LIST_cb = LISTBOX_cb_toggle_bound2;
      break;
     default:
-     LIST_cb = LISTBOX_cb_bound;
      assert(FFALSE);
      break;
   }
@@ -5964,7 +5960,7 @@ extern "C" void GLUIPlot3DBoundCB(int var){
   case UPDATE_VECTOR:
     if(vecfactor<0.0){
       vecfactor = 0.0;
-      if(SPINNER_vectorlinewidth!=NULL)SPINNER_vectorlinelength->set_float_val(vecfactor);
+      if(SPINNER_vectorlinelength !=NULL)SPINNER_vectorlinelength->set_float_val(vecfactor);
       if(SPINNER_plot3d_vectorlinelength!=NULL)SPINNER_plot3d_vectorlinelength->set_float_val(vecfactor);
     }
     UpdatePlotSlice(XDIR);
@@ -6886,7 +6882,7 @@ extern "C" void GLUISliceBoundCB(int var){
     if(SPINNER_plot3d_vectorpointsize!=NULL&&SPINNER_plot3d_vectorlinewidth!=NULL&&SPINNER_plot3d_vectorlinelength!=NULL){
       SPINNER_plot3d_vectorpointsize->set_float_val(vectorpointsize);
       SPINNER_plot3d_vectorlinewidth->set_float_val(vectorlinewidth);
-      if(SPINNER_vectorlinewidth!=NULL)SPINNER_vectorlinelength->set_float_val(vecfactor);
+      if(SPINNER_vectorlinelength !=NULL)SPINNER_vectorlinelength->set_float_val(vecfactor);
       SPINNER_plot3d_vectorlinelength->set_float_val(vecfactor);
     }
     GLUISliceBoundCB(UPDATE_VECTOR);
@@ -6897,7 +6893,7 @@ extern "C" void GLUISliceBoundCB(int var){
   case UPDATE_VECTOR:
     if(vecfactor<0.0){
       vecfactor = 0.0;
-      if(SPINNER_vectorlinewidth!=NULL)SPINNER_vectorlinelength->set_float_val(vecfactor);
+      if(SPINNER_vectorlinelength !=NULL)SPINNER_vectorlinelength->set_float_val(vecfactor);
       if(SPINNER_plot3d_vectorlinelength!=NULL)SPINNER_plot3d_vectorlinelength->set_float_val(vecfactor);
     }
     break;

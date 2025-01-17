@@ -1486,6 +1486,7 @@ int GetPartPropIndex(int class_i, int class_i_j){
 partpropdata *GetPartProp(char *label){
   int i;
 
+  if(part5propinfo == NULL)return NULL;
   for(i=0;i<npart5prop;i++){
     partpropdata *propi;
 
@@ -1773,8 +1774,8 @@ int GetPartHeader(partdata *parti, int *nf_all, int option_arg, int print_option
     if(count != 1||nframes_all_local == npart_frames_max)break;
     nframes_all_local++;
     if(tload_step > 1 && (nframes_all_local - 1) % tload_step != 0)continue;
-    if(use_tload_begin == 1 && time_local < tload_begin - TEPS)continue;
-    if(use_tload_end == 1 && time_local > tload_end + TEPS)break;
+    if(use_tload_begin == 1 && time_local < global_scase.tload_begin - TEPS)continue;
+    if(use_tload_end == 1   && time_local > global_scase.tload_end + TEPS)break;
     (parti->ntimes)++;
   }
   rewind_m(stream);
@@ -1819,8 +1820,8 @@ int GetPartHeader(partdata *parti, int *nf_all, int option_arg, int print_option
 
    int skipit = 0;
    if(tload_step > 1 && i % tload_step != 0)skipit = 1;
-   if(use_tload_begin == 1 && time_local < tload_begin - TEPS)skipit = 1;
-   if(use_tload_end == 1 && time_local > tload_end + TEPS)break;
+   if(use_tload_begin == 1 && time_local < global_scase.tload_begin - TEPS)skipit = 1;
+   if(use_tload_end == 1   && time_local > global_scase.tload_end + TEPS)break;
    if(skipit==1)continue;
     for(j = 0; j < parti->nclasses; j++){
       int npoints_local;

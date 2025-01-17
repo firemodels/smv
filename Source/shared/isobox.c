@@ -1232,7 +1232,6 @@ int CompressIsoSurface(isosurface *surface, int reduce_triangles,
   }
 
   for(i=0;i<nvertices;i++){vertexmap[i]=i;}
-  nn=0;
   sumx=0; sumy = 0; sumz = 0; sumt=0;
 
   /* average nodes */
@@ -1325,7 +1324,7 @@ int UpdateIsosurface(isosurface *surface,
                       int nvert,
                       const int *triangles,
                       int ntriangles){
-  int n,ns, noldvert, *is;
+  int n,ns, noldvert=0, *is;
   float *xs=NULL, *ys=NULL, *zs=NULL, *ts=NULL;
   int *cn=NULL;
 

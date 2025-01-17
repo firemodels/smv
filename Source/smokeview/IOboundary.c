@@ -1364,7 +1364,6 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
   int headersize, framesize;
   int statfile;
   STRUCTSTAT statbuffer;
-  int nbb;
   float *xplttemp,*yplttemp,*zplttemp;
   int blocknumber;
   patchdata *patchi;
@@ -1431,8 +1430,6 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
   patchi->display=0;
   plotstate=GetPlotState(DYNAMIC_PLOTS);
 
-  nbb = meshi->nbptrs;
-  if(nbb==0)nbb=1;
   global_scase.updatefaces=1;
   *errorcode=0;
   if(load_flag != RELOAD){
@@ -1526,8 +1523,6 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
   else{
     patchi->npatches=0;
     GetBoundaryHeader(file,&patchi->npatches,&glui_patchmin,&glui_patchmax);
-    patchmin_global = glui_patchmin;
-    patchmax_global = glui_patchmax;
   }
   CheckMemory;
   if(patchi->npatches>0){
@@ -2091,7 +2086,6 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
     }
     if(do_threshold==1){
       if(local_first==1){
-        nn=0;
         for(n=0;n<meshi->npatchsize;n++){
           meshi->thresholdtime[n]=-1.0;
         }
@@ -2685,7 +2679,6 @@ void DrawBoundaryTexture(const meshdata *meshi){
   patch_times=meshi->patch_times;
   xyzpatch = GetPatchXYZ(meshi);
   patchblank=meshi->patchblank;
-  patchi=global_scase.patchinfo+meshi->patchfilenum;
   patchi = global_scase.patchinfo + meshi->patchfilenum;
 
   int set_valmin, set_valmax;
@@ -2914,8 +2907,10 @@ void DrawBoundaryTexture(const meshdata *meshi){
 #ifdef pp_BOUNDFRAME
       patchvals = (float *)FRAMEGetSubFramePtr(patchi->frameinfo, meshi->patch_itime, n);
 #else
+      patchvals = meshi->patchval_iframe;
       if(patchi->compression_type != COMPRESSED_ZLIB)patchvals  = meshi->patchval_iframe + pfi->start;
 #endif
+      cpatchvals = meshi->cpatchval_iframe_zlib;
       if(patchi->compression_type == COMPRESSED_ZLIB)cpatchvals = meshi->cpatchval_iframe_zlib + pfi->start;
       for(irow=0;irow<nrow-1;irow++){
         int *patchblank1, *patchblank2;
@@ -3005,19 +3000,10 @@ void DrawBoundaryTextureThreshold(const meshdata *meshi){
   patch_times=meshi->patch_times;
   xyzpatch = GetPatchXYZ(meshi);
   patchblank=meshi->patchblank;
-  patchi=global_scase.patchinfo+meshi->patchfilenum;
-  switch(patchi->compression_type){
-  case UNCOMPRESSED:
 #ifndef pp_BOUNDFRAME
     assert(meshi->patchval_iframe!=NULL);
     patchval_iframe=meshi->patchval_iframe;
 #endif
-    break;
-  case COMPRESSED_ZLIB:
-    break;
-  default:
-    assert(FFALSE);
-  }
   patchi = global_scase.patchinfo + meshi->patchfilenum;
 
   if(patch_times[0]>global_times[itimes]||patchi->display==0)return;
@@ -3248,6 +3234,7 @@ void DrawBoundaryTextureThreshold(const meshdata *meshi){
 #else
       patchvals  = patchval_iframe + pfi->start;
 #endif
+      cpatchvals = meshi->cpatchval_iframe_zlib;
       if(patchi->compression_type == COMPRESSED_ZLIB)cpatchvals = meshi->cpatchval_iframe_zlib + pfi->start;
       for(irow=0;irow<nrow-1;irow++){
         int *patchblank1, *patchblank2;
@@ -3558,7 +3545,7 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
   float *patchvals;
   unsigned char *cpatchvals;
 #ifndef pp_BOUNDFRAME
-  float *patchval_iframe;
+  float *patchval_iframe=NULL;
 #endif
   float *patch_times;
   patchdata *patchi;
@@ -3596,6 +3583,9 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
   default:
     assert(FFALSE);
   }
+#ifndef pp_BOUNDFRAME
+  if(patchval_iframe == NULL)return;
+#endif
   patchi = global_scase.patchinfo+meshi->patchfilenum;
 
   if(patch_times[0]>global_times[itimes]||patchi->display==0)return;
@@ -3630,6 +3620,7 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
 #else
       patchvals  = patchval_iframe+ pfi->start;
 #endif
+      cpatchvals = meshi->cpatchval_iframe_zlib;
       if(patchi->compression_type == COMPRESSED_ZLIB)cpatchvals = meshi->cpatchval_iframe_zlib + pfi->start;
       for(irow = 0;irow<nrow-1;irow++){
         int *patchblank1, *patchblank2;
@@ -3795,7 +3786,7 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
 #ifdef pp_BOUNDFRAME
       patchvals = (float *)FRAMEGetSubFramePtr(patchi->frameinfo, meshi->patch_itime, n);
 #else
-      patchvals  = patchval_iframe+ pfi->start;
+      patchvals  = patchval_iframe + pfi->start;
 #endif
       if(patchi->compression_type == COMPRESSED_ZLIB)cpatchvals = meshi->cpatchval_iframe_zlib + pfi->start;
       for(irow = 0;irow<nrow-1;irow++){
@@ -3863,7 +3854,7 @@ meshdata *GetPatchMeshNabor(meshdata *meshi, int *ib){
     else if(ib[0] == meshi->ibar){
       return_mesh = meshi->nabors[MRIGHT];
     }
-    if(meshi->jbar != return_mesh->jbar || meshi->kbar != return_mesh->kbar)return_mesh = NULL;
+    if(return_mesh == NULL || meshi->jbar != return_mesh->jbar || meshi->kbar != return_mesh->kbar)return_mesh = NULL;
   }
   else if(ib[2] == ib[3]){
     if(ib[2] == 0){
@@ -3872,7 +3863,7 @@ meshdata *GetPatchMeshNabor(meshdata *meshi, int *ib){
     else if(ib[2] == meshi->jbar){
       return_mesh = meshi->nabors[MBACK];
     }
-    if(meshi->ibar != return_mesh->ibar || meshi->kbar != return_mesh->kbar)return_mesh = NULL;
+    if(return_mesh == NULL || meshi->ibar != return_mesh->ibar || meshi->kbar != return_mesh->kbar)return_mesh = NULL;
   }
   else if(ib[4]==ib[5]){
     if(ib[4]==0){
@@ -3881,7 +3872,7 @@ meshdata *GetPatchMeshNabor(meshdata *meshi, int *ib){
     else if(ib[4] == meshi->kbar){
       return_mesh = meshi->nabors[MUP];
     }
-    if(meshi->ibar != return_mesh->ibar || meshi->jbar != return_mesh->jbar)return_mesh = NULL;
+    if(return_mesh==NULL || meshi->ibar != return_mesh->ibar || meshi->jbar != return_mesh->jbar)return_mesh = NULL;
   }
   return return_mesh;
 }

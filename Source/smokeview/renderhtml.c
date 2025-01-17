@@ -1235,8 +1235,6 @@ void BndfNodeTriangles2Geom(webgeomdata *bndf_node_web, int option){
     GetBndfNodeVerts(1, option, &offset, verts, textures, &nbndf_node_verts,
       indices, &nbndf_node_tris,
       &(bndf_node_web->framesize), &(bndf_node_web->nframes));
-    verts     += 3*nbndf_node_verts;
-    indices += 3*nbndf_node_tris;
   }
 
   bndf_node_web->nverts   = nverts;
@@ -1293,8 +1291,6 @@ void PartNodeVerts2Geom(webgeomdata *part_node_web, int option){
       verts, colors, &npart_verts,
       indices, &npart_indices,
       framesizes, &(part_node_web->nframes));
-    verts   += 3*npart_verts;
-    indices += npart_indices;
   }
 
   part_node_web->nverts     = nverts;
@@ -1348,8 +1344,6 @@ int SliceCellTriangles2Geom(webgeomdata *slice_cell_web, int option){
       verts, textures, &nslice_verts,
       indices, &nslice_tris,
       &(slice_cell_web->framesize), &(slice_cell_web->nframes));
-    verts   += 3*nslice_verts;
-    indices += 3*nslice_tris;
   }
 
   slice_cell_web->nverts   = nverts;
@@ -1405,9 +1399,6 @@ int SliceNodeTriangles2Geom(webgeomdata *slice_node_web, int option){
     int nslice_verts, nslice_tris;
 
     GetSliceNodeVerts(1, option, &offset, verts, textures, &nslice_verts, indices, blank, &nslice_tris, &(slice_node_web->framesize), &(slice_node_web->nframes));
-    verts   += 3*nslice_verts;
-    indices += 3*nslice_tris;
-    blank   += nslice_verts/3;
   }
 
   slice_node_web->nverts     = nverts;
@@ -1459,8 +1450,6 @@ void SliceGeomTriangles2Geom(webgeomdata *slice_geom_web, int option){
     int nslice_verts, nslice_tris;
 
     GetSliceGeomVerts(1, option, &offset, verts, textures, &nslice_verts, indices, &nslice_tris, &(slice_geom_web->framesize), &(slice_geom_web->nframes));
-    verts   += 3*nslice_verts;
-    indices += 3*nslice_tris;
   }
 
   slice_geom_web->nverts   = nverts;
@@ -1611,9 +1600,6 @@ void GeomLitTriangles2Geom(float **vertsptr, float **normalsptr, float **colorsp
     int ngeom_verts, ngeom_tris;
 
     GetGeometryNodes(1, &offset, verts, normals, colors, &ngeom_verts, indices, &ngeom_tris);
-    verts   += 3*ngeom_verts;
-    normals += 3*ngeom_verts;
-    indices += 3*ngeom_tris;
   }
 
   *n_verts     = nverts;

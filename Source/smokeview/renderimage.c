@@ -424,7 +424,7 @@ void OutputSliceData(void){
     i = slice_loaded_list[ii];
     sd = global_scase.slicecoll.sliceinfo + i;
     if(sd->display == 0 || sd->slicefile_labelindex != slicefile_labelindex)continue;
-    if(sd->times[0] > global_times[itimes])continue;
+    if(global_times!=NULL&&sd->times[0] > global_times[itimes])continue;
 
     if(sd->qslicedata == NULL){
       PRINTF("  Slice data unavailable for output\n");
@@ -589,13 +589,8 @@ int MergeRenderScreenBuffers(int nfactor, GLubyte **screenbuffers){
     height_hat = clip_top_hat - clip_bottom_hat + 1;
   }
   else{
-    clip_left = 0;
-    clip_right = screenWidth - 1;
     clip_left_hat = 0;
     clip_right_hat = nfactor*screenWidth - 1;
-
-    clip_bottom = 0;
-    clip_top = screenHeight - 1;
     clip_bottom_hat = 0;
     clip_top_hat = nfactor*screenHeight - 1;
 
@@ -677,7 +672,7 @@ unsigned int GetScreenMap360(float *xyz, float *xx, float *yy){
   screendata *screeni;
   int ibuff;
   float xyznorm;
-  int maxbuff;
+  int maxbuff=0;
   float maxcos, cosangle;
   float *view, *up, *right, t;
   float A, B;

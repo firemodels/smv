@@ -45,9 +45,11 @@
 #define BLOCK_OUTLINE 2
 
 #define DEVICE_DEVICE 0
+#ifdef pp_DEPRECATED
 #define DEVICE_HEAT 2
 #define DEVICE_SPRK 3
 #define DEVICE_SMOKE 4
+#endif
 
 #define ZVENT_1ROOM 1
 #define ZVENT_2ROOM 2
@@ -1109,6 +1111,7 @@ void InitMesh(meshdata *meshi){
   meshi->thresholdtime = NULL;
   meshi->patchblank = NULL;
   meshi->patch_timeslist = NULL;
+#ifdef pp_DEPRECATED
   meshi->ntc = 0;
   meshi->nspr = 0;
   meshi->xsprplot = NULL;
@@ -1126,6 +1129,7 @@ void InitMesh(meshdata *meshi){
   meshi->yheat = NULL;
   meshi->zheat = NULL;
   meshi->theat = NULL;
+#endif
   meshi->blockageinfoptrs = NULL;
   meshi->blockageinfo     = NULL;
 
@@ -1509,6 +1513,7 @@ void ReadSMVDynamic(smv_case *scase, char *file){
 
       continue;
     }
+#ifdef pp_DEPRECATED
   /*
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     ++++++++++++++++++++++ HEAT_ACT +++++++++++++++++++++++++++++
@@ -1622,6 +1627,7 @@ void ReadSMVDynamic(smv_case *scase, char *file){
       }
       continue;
     }
+#endif
   /*
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     ++++++++++++++++++++++ MINMAXPL3D +++++++++++++++++++++++++++
@@ -1684,8 +1690,6 @@ void ReadSMVDynamic(smv_case *scase, char *file){
       if(minmaxpl3d==1)do_pass3=1;
       nn_plot3d++;
       TrimBack(buffer);
-      len=strlen(buffer);
-      blocknumber = 0;
       if(scase->meshescoll.nmeshes>1){
         blocknumber=ioffset-1;
       }
@@ -2000,7 +2004,6 @@ void ReadSMVDynamic(smv_case *scase, char *file){
 
       FGETS(buffer,255,stream);
       strcpy(file2,buffer);
-      file_ptr = file2;
       TrimBack(file2);
       file_ptr = TrimFront(file2);
 
@@ -4083,14 +4086,17 @@ void UpdateMeshCoords(void){
 
   for(i=0;i<global_scase.meshescoll.nmeshes;i++){
     meshdata *meshi;
+#ifdef pp_DEPRECATED
     float *xspr, *yspr, *zspr;
     float *xsprplot, *ysprplot, *zsprplot;
     float *xheat, *yheat, *zheat;
     float *xheatplot, *yheatplot, *zheatplot;
+#endif
     float *offset;
 
     meshi=global_scase.meshescoll.meshinfo + i;
     offset = meshi->offset;
+#ifdef pp_DEPRECATED
     xsprplot = meshi->xsprplot;
     ysprplot = meshi->ysprplot;
     zsprplot = meshi->zsprplot;
@@ -4113,6 +4119,7 @@ void UpdateMeshCoords(void){
       yheatplot[n]=FDS2SMV_Y(offset[YYY]+yheat[n]);
       zheatplot[n]=FDS2SMV_Z(offset[ZZZ]+zheat[n]);
     }
+#endif
     for(n=0;n<meshi->nvents+12;n++){
       ventdata *vi;
 
@@ -4192,24 +4199,19 @@ int CreateNullLabel(flowlabels *flowlabel){
   char buffer[255];
   size_t len;
 
-  len = strlen("Particles");
   strcpy(buffer, "Particles");
   TrimBack(buffer);
   len = strlen(buffer);
   if(NewMemory((void **)&flowlabel->longlabel, (unsigned int)(len + 1)) == 0)return 2;
   STRCPY(flowlabel->longlabel, buffer);
 
-  len = strlen("Particles");
   strcpy(buffer, "Particles");
-  len = strlen(buffer);
   TrimBack(buffer);
   len = strlen(buffer);
   if(NewMemory((void **)&flowlabel->shortlabel, (unsigned int)(len + 1)) == 0)return 2;
   STRCPY(flowlabel->shortlabel, buffer);
 
-  len = strlen("Particles");
   strcpy(buffer, "Particles");
-  len = strlen(buffer);
   TrimBack(buffer);
   len = strlen(buffer);
   if(NewMemory((void *)&flowlabel->unit, (unsigned int)(len + 1)) == 0)return 2;
@@ -5248,7 +5250,6 @@ int ParsePRT5Process(smv_case *scase, bufferstreamdata *stream, char *buffer, in
   char *buffer3, *bufferptr;
 
   int nn_part, ipart, ioffset;
-  int i;
 
   if(parse_opts.setup_only==1||parse_opts.smoke3d_only==1)return RETURN_CONTINUE;
 
@@ -5352,6 +5353,8 @@ int ParsePRT5Process(smv_case *scase, bufferstreamdata *stream, char *buffer, in
   FGETS(buffer, 255, stream);
   sscanf(buffer, "%i", &parti->nclasses);
   if(parti->nclasses>0){
+    int i;
+
     NewMemory((void **)&parti->partclassptr, parti->nclasses*sizeof(partclassdata *));
     for(i = 0; i<parti->nclasses; i++){
       int iclass;
@@ -5380,7 +5383,7 @@ int ParsePRT5Process(smv_case *scase, bufferstreamdata *stream, char *buffer, in
 
   if(parti->file!=NULL&&parti->nclasses==0){
     NewMemory((void **)&parti->partclassptr, sizeof(partclassdata *));
-    parti->partclassptr[i] = scase->partclassinfo+parti->nclasses;
+    parti->partclassptr[0] = scase->partclassinfo+parti->nclasses;
   }
   if(parse_opts.fast_startup==1||(parti->file!=NULL&&FileExistsCaseDir(scase, parti->file)==YES)){
     ipart++;
@@ -7375,7 +7378,9 @@ void SetExternalVents(void){
 int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
   int i;
   int have_zonevents,nzventsnew=0;
+#ifdef pp_DEPRECATED
   devicedata *devicecopy;
+#endif
   int do_pass4=0, do_pass5=0;
   int roomdefined=0;
   int GRIDpresent=0,startpass;
@@ -7691,6 +7696,7 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
       scase->devicecoll.ndeviceinfo++;
       continue;
     }
+#ifdef pp_DEPRECATED
     if(
         MatchSMV(buffer,"SPRK") == 1||
        MatchSMV(buffer,"HEAT") == 1||
@@ -7708,6 +7714,7 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
       }
       continue;
     }
+#endif
     if(MatchSMV(buffer,"FDSVERSION")==1){
       int lenbuffer;
       char *buffptr;
@@ -9041,7 +9048,6 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
             dxyz[i]=-dxyz[i];
           }
         }
-        sum = 0.0;
         sum = dxyz[0]*dxyz[0] + dxyz[1]*dxyz[1] + dxyz[2]*dxyz[2];
         if(sum>0.0){
           sum=sqrt(sum);
@@ -9349,7 +9355,6 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
       zonedata *zonei;
       char buffer_csv[1000],*buffer_csvptr;
       char *period=NULL;
-      size_t len;
       int n;
       char *bufferptr;
 
@@ -9359,7 +9364,6 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
         BREAK;
       }
       bufferptr=TrimFrontBack(buffer);
-      len=strlen(bufferptr);
       zonei->loaded=0;
       zonei->display=0;
 
@@ -9388,6 +9392,8 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
         scase->nzoneinfo--;
       }
       else{
+        size_t len;
+
         len=strlen(filename);
         NewMemory((void **)&zonei->file,(unsigned int)(len+1));
         STRCPY(zonei->file,filename);
@@ -9533,7 +9539,9 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
 
   if(scase->devicecoll.ndeviceinfo>0){
     if(NewMemory((void **)&scase->devicecoll.deviceinfo,scase->devicecoll.ndeviceinfo*sizeof(devicedata))==0)return 2;
+#ifdef pp_DEPRECATED
     devicecopy=scase->devicecoll.deviceinfo;
+#endif
   }
   scase->devicecoll.ndeviceinfo=0;
   REWIND(stream);
@@ -9646,6 +9654,7 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
       scase->devicecoll.ndeviceinfo++;
       continue;
     }
+#ifdef pp_DEPRECATED
   /*
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     ++++++++++++++++++++++ THCP ++++++++++++++++++++++++++++++
@@ -9929,6 +9938,7 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
       }
       continue;
     }
+#endif
   }
 
   STOP_TIMER(scase->pass3_time);
@@ -11574,7 +11584,6 @@ typedef struct {
 
       FGETS(buffer,255,stream);
       strcpy(file2_local,buffer);
-      file_ptr = file2_local;
       TrimBack(file2_local);
       file_ptr = TrimFront(file2_local);
 
@@ -11605,7 +11614,6 @@ typedef struct {
 
       FGETS(buffer,255,stream);
       strcpy(file2_local,buffer);
-      file_ptr = file2_local;
       TrimBack(file2_local);
       file_ptr = TrimFront(file2_local);
 
@@ -15779,7 +15787,6 @@ int ReadIni2(const char *inifile, int localfile){
               dxyz[i] = -dxyz[i];
             }
           }
-          sum = 0.0;
           sum = dxyz[0] * dxyz[0] + dxyz[1] * dxyz[1] + dxyz[2] * dxyz[2];
           if(sum>0.0){
             sum = sqrt(sum);

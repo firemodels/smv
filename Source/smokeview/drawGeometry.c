@@ -672,7 +672,8 @@ void DrawObstOutlines(void){
       blockagedata *bc;
 
       bc = meshi->blockageinfoptrs[i];
-      if(bc != NULL && bc->showtimelist != NULL && bc->showtimelist[itimes] == 0)continue;
+      if(bc == NULL)continue;
+      if(bc->showtimelist != NULL && bc->showtimelist[itimes] == 0)continue;
       color = bc->color;
       if(color != oldcolor){
         glColor3fv(color);
@@ -961,7 +962,6 @@ void SetCVentDirs(void){
       if(cvi->imin==cvi->imax)dir=XDIR;
       if(cvi->jmin==cvi->jmax)dir=YDIR;
       if(cvi->kmin==cvi->kmax)dir=ZDIR;
-      orien=0;
 
       boxmin[0]=cvi->xmin;
       boxmin[1]=cvi->ymin;
@@ -1141,7 +1141,7 @@ void SetCVentDirs(void){
     zplt = meshi->zplt_cen;
     for(iv = 0;iv < meshi->ncvents;iv++){
       cventdata *cvi;
-      int nx, ny;
+      int nx=0, ny=0;
 
       cvi = meshi->cventinfo + iv;
 
@@ -1162,8 +1162,6 @@ void SetCVentDirs(void){
         ny = cvi->jmax - cvi->jmin;
         break;
       default:
-        nx = 0;
-        ny = 0;
         assert(FFALSE);
         break;
       }
@@ -1330,7 +1328,6 @@ void SetVentDirs(void){
       if(vi->imin==vi->imax)dir=XDIR;
       if(vi->jmin==vi->jmax)dir=YDIR;
       if(vi->kmin==vi->kmax)dir=ZDIR;
-      orien=0;
 
       switch(dir){
       case XDIR:
@@ -2668,10 +2665,7 @@ void ShowHideInternalFaces(meshdata *meshi, int show){
     bc = meshi->blockageinfoptrs[j];
     facej = meshi->faceinfo + 6 * j;
 
-    if(bc->patch_index < 0){
-      facej+=6;
-      continue;
-    }
+    if(bc->patch_index < 0)continue;
 
 //down y
     if(bc->xyzEXACT[2] > ybar0FDS + eps_y)facej->hidden = 1;
@@ -3189,7 +3183,7 @@ void DrawObstsDebug(void){
 /* ------------------ DrawFacesOLD ------------------------ */
 
 void DrawFacesOLD(int option){
-  float *new_color, *old_color = NULL;
+  float *new_color=NULL, *old_color = NULL;
   int **showtimelist_handle, *showtimelist;
   float up_color[4] = {0.9,0.9,0.9,1.0};
   float down_color[4] = {0.1,0.1,0.1,1.0};
@@ -3507,7 +3501,7 @@ void DrawFacesOLD(int option){
 /* ------------------ DrawFaces ------------------------ */
 
 void DrawFaces(){
-  float *new_color,*old_color=NULL;
+  float *new_color=NULL,*old_color=NULL;
   int **showtimelist_handle, *showtimelist;
   float up_color[4]={0.9,0.9,0.9,1.0};
   float down_color[4]={0.1,0.1,0.1,1.0};
@@ -3836,6 +3830,7 @@ void DrawTransparentFaces(){
   if(nface_transparent>0){
     int i;
 
+    new_color=block_ambient2;
     ENABLE_LIGHTING;
     glMaterialfv(GL_FRONT_AND_BACK,GL_SHININESS,&block_shininess);
     glMaterialfv(GL_FRONT_AND_BACK,GL_AMBIENT_AND_DIFFUSE,block_ambient2);
@@ -4372,7 +4367,6 @@ void DrawDemo(int nlat, int nlong){
           xyz00 = sphere_xyz + sphere_index(i,j);
           xyz10 = sphere_xyz + sphere_index(i,j+1);
           xyz01 = sphere_xyz + sphere_index(i+1,j);
-          xyz11 = sphere_xyz + sphere_index(i+1,j+1);
           glVertex3fv(xyz00);
           glVertex3fv(xyz01);
           glVertex3fv(xyz00);
@@ -4604,7 +4598,7 @@ int GetTickDir(float *mm){
 void DrawUserTicks(void){
   int i;
   float xyz[3],xyz2[3];
-  float tick_origin[3], step[3];
+  float tick_origin[3]={0,0,0}, step[3]={0,0,0};
   int show_tick_x=0, show_tick_y=0, show_tick_z=0;
   float fds_tick_length;
 
@@ -5541,11 +5535,10 @@ void GetObstLabels(const char *filein){
       fgets(buffer,1000,stream_in);
     }
     obstlabel++;
-    lenlabel=strlen(obstlabel);
     obstlabel=TrimFront(obstlabel);
     TrimBack(obstlabel);
     lenlabel=strlen(obstlabel);
-    if(lenlabel>0){
+    if(lenlabel>0&&obstlabels!=NULL){
       NewMemory((void **)&obstlabels[fdsobstcount-1],(unsigned int)(lenlabel+1));
       strcpy(obstlabels[fdsobstcount-1],obstlabel);
     }

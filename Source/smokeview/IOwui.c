@@ -1018,7 +1018,6 @@ void ComputeTerrainNormalsAuto(void){
     znode_offset = terri->znode_offset;
     nycell = terri->jbar;
 
-    uc_znormal = terri->uc_znormal;
     for(j=0;j<=terri->jbar;j++){
       int i;
       float ynode;

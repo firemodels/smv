@@ -185,7 +185,6 @@ int GetPlot3DBounds(plot3ddata *plot3di){
   meshi = global_scase.meshescoll.meshinfo+plot3di->blocknumber;
   if(meshi->qdata==NULL)return 0;
   ntotal = (meshi->ibar+1)*(meshi->jbar+1)*(meshi->kbar+1);
-  iblank = meshi->c_iblank_node;
 
   for(i = 0; i<plot3di->nplot3dvars; i++){
     int n;
@@ -691,7 +690,6 @@ void DrawPlot3dTexture(meshdata *meshi){
     /* draw yz vectors */
 
     if(visVector==1){
-      dx_yzcopy=dx_yz; dy_yzcopy=dy_yz; dz_yzcopy=dz_yz;
       AntiAliasLine(ON);
       glLineWidth(vectorlinewidth);
       glBegin(GL_LINES);
@@ -723,9 +721,6 @@ void DrawPlot3dTexture(meshdata *meshi){
 
       /* draw points for yz vectors */
 
-      dx_yzcopy=dx_yz;
-      dy_yzcopy=dy_yz;
-      dz_yzcopy=dz_yz;
       glPointSize(vectorpointsize);
       glBegin(GL_POINTS);
       for(j=0; j<=jbar; j+=vectorskip){
@@ -1103,7 +1098,6 @@ int GetPlot3dIndex(meshdata *meshi, int dir, float val){
       break;
     default:
       xyz = NULL;
-      nvals = 0;
       assert(FFALSE);
       break;
   }

@@ -1413,7 +1413,7 @@ void UpdateRGBColors(int colorbar_index){
 
 void UpdateChopColors(void){
   int i;
-  int ichopmin=0,ichopmax=nrgb_full;
+  int ichopmin=0,ichopmax;
 #define NCHOP 8
   float transparent_level_local=1.0;
 
@@ -1628,8 +1628,8 @@ void UpdateChopColors(void){
   if(slicebounds!=NULL&&slicefile_labelindex!=-1){
     float smin, smax;
 
-    smin=slicebounds[slicefile_labelindex].dlg_valmin;
-    smax=slicebounds[slicefile_labelindex].dlg_valmax;
+    //smin=slicebounds[slicefile_labelindex].dlg_valmin;
+    //smax=slicebounds[slicefile_labelindex].dlg_valmax;
     smin = colorbar_slice_min;
     smax = colorbar_slice_max;
 

@@ -276,9 +276,17 @@ void SetDuctLabelSymbolXYZ(hvacductdata *ducti) {
   if(ducti->nxyz_reg == 2) {
     xyz1 = ducti->node_from->xyz;
     xyz2 = ducti->node_to->xyz;
-    for(j = 0; j < 3; j++) {
-      ducti->xyz_symbol[j] = 0.50 * xyz1[j] + 0.50 * xyz2[j];
-      ducti->xyz_label[j] = 0.25 * xyz1[j] + 0.75 * xyz2[j];
+    if(xyz1 != NULL && xyz2 != NULL){
+      for(j = 0; j < 3; j++) {
+        ducti->xyz_symbol[j] = 0.50 * xyz1[j] + 0.50 * xyz2[j];
+        ducti->xyz_label[j] = 0.25 * xyz1[j] + 0.75 * xyz2[j];
+      }
+    }
+    else{
+      for(j = 0; j < 3; j++) {
+        ducti->xyz_symbol[j] = 0.0;
+        ducti->xyz_label[j] = 0.0;
+      }
     }
   }
   else {
@@ -685,17 +693,19 @@ int ReadHVACData0(hvacdatacollection *hvaccoll, int flag,
         max_duct_buffer = ntotalvals + 100;
       }
       int icell;
-      for(icell = 0; icell < duct_ncells[iduct]; icell++) {
-        int ivar;
+      if(duct_buffer!=NULL){
+        for(icell = 0; icell < duct_ncells[iduct]; icell++) {
+          int ivar;
 
-        FSEEK(stream, 4, SEEK_CUR);
-        fread(duct_buffer, 4, n_duct_vars, stream);
-        FSEEK(stream, 4, SEEK_CUR);
-        for(ivar = 0; ivar < n_duct_vars; ivar++) {
-          hvacvaldata *hk;
+          FSEEK(stream, 4, SEEK_CUR);
+          fread(duct_buffer, 4, n_duct_vars, stream);
+          FSEEK(stream, 4, SEEK_CUR);
+          for(ivar = 0; ivar < n_duct_vars; ivar++) {
+            hvacvaldata *hk;
 
-          hk = hvaccoll->hvacductvalsinfo->duct_vars + ivar;
-          hk->vals[hvacval(hvaccoll, iframe, iduct, icell)] = duct_buffer[ivar];
+            hk = hvaccoll->hvacductvalsinfo->duct_vars + ivar;
+            hk->vals[hvacval(hvaccoll, iframe, iduct, icell)] = duct_buffer[ivar];
+          }
         }
       }
     }

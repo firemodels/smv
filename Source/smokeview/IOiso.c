@@ -204,7 +204,7 @@ void UnloadIso(meshdata *meshi){
 #ifdef pp_SLICEFRAME
   FRAMEFree(ib->frameinfo);
   ib->frameinfo = NULL;
-  ib->global_scase.geominfo->frameinfo = NULL;
+  ib->geominfo->frameinfo = NULL;
 #endif
 
   FreeAllMemory(ib->memory_id);
@@ -360,7 +360,7 @@ int GetIsoTType(const isodata *isoi){
 void SyncIsoBounds(){
   int i, ncount;
   int firsttime = 1;
-  float tmin_local, tmax_local;
+  float tmin_local=1.0, tmax_local=0.0;
 
   // find number of iso-surfaces with values
 
@@ -755,7 +755,7 @@ void ReadIsoOrig(const char *file, int ifile, int flag, int *errorcode){
     fclose(isostream);
     return;
   }
-  if(strcmp(ib->surface_label.shortlabel,"FED")==0){
+  {
     float fed_blue[]={0.0,0.0,1.0,1.0};
     float fed_yellow[]={1.0,1.0,0.0,1.0};
     float fed_red[]={1.0,0.0,0.0,1.0};
@@ -775,7 +775,6 @@ void ReadIsoOrig(const char *file, int ifile, int flag, int *errorcode){
   for(;;){
     int skip_frame;
 
-    skip_frame=0;
     iitime++;
 
     fread(&time_local,4,1,isostream);
@@ -1117,9 +1116,10 @@ void DrawIsoOrig(int tranflag){
 
   CheckMemory;
   if(tranflag==DRAW_TRANSPARENT&&((visAIso&1)==0))return;
-  if(meshi->isofilenum>=0){
+  if(meshi->isofilenum>=0&& global_scase.isoinfo!=NULL){
     isoi = global_scase.isoinfo + meshi->isofilenum;
   }
+  if(isoi==NULL)return;
 
   iso_lighting=1;
 
@@ -1352,7 +1352,6 @@ void DrawStaticIso(const isosurface *asurface,int surfacetype,
   unsigned short *v1, *v2, *v3;
   unsigned short *vertices_i=NULL;
   int *triangles_i=NULL;
-  int nvertices;
   int i1, i2, i3;
   short *norm1,*norm2,*norm3,*vertexnorm=NULL;
   int ntriangles;
@@ -1367,7 +1366,6 @@ void DrawStaticIso(const isosurface *asurface,int surfacetype,
   xyzmin[2] = asurface->zmin;
   xyzmaxdiff_local = asurface->xyzmaxdiff;
 
-  nvertices=asurface->nvertices;
   ntriangles=asurface->ntriangles/3;
   if(ntriangles==0)return;
   if(surfacetype==SURFACE_SOLID||surfacetype==-1){
@@ -1503,6 +1501,8 @@ void DrawStaticIso(const isosurface *asurface,int surfacetype,
   }
 
   if(surfacetype==SURFACE_POINTS){
+    int nvertices;
+
     glPushMatrix();
     AntiAliasLine(ON);
     glPointSize(plot3dpointsize);
@@ -1525,8 +1525,7 @@ void DrawStaticIso(const isosurface *asurface,int surfacetype,
     glPopMatrix();
   }
 
-  if(show_iso_normal==1){
-
+  if(show_iso_normal==1&&triangles_i!=NULL){
     glPushMatrix();
     AntiAliasLine(ON);
     glLineWidth(line_width);
@@ -1546,13 +1545,22 @@ void DrawStaticIso(const isosurface *asurface,int surfacetype,
       }
 
       if(smooth_iso_normal==1){
-        norm1 = vertexnorm+i1;
-        norm2 = vertexnorm+i2;
-        norm3 = vertexnorm+i3;
-        for(k=0;k<3;k++){
-          vv1n[k]=vv1[k]+norm1[k]/(8.*32768.)/4.0;
-          vv2n[k]=vv2[k]+norm2[k]/(8.*32768.)/4.0;
-          vv3n[k]=vv3[k]+norm3[k]/(8.*32768.)/4.0;
+        if(vertexnorm==NULL){
+          for(k=0;k<3;k++){
+            vv1n[k]=vv1[k];
+            vv2n[k]=vv2[k];
+            vv3n[k]=vv3[k];
+          }
+        }
+        else{
+          norm1 = vertexnorm+i1;
+          norm2 = vertexnorm+i2;
+          norm3 = vertexnorm+i3;
+          for(k=0;k<3;k++){
+            vv1n[k]=vv1[k]+norm1[k]/(8.*32768.)/4.0;
+            vv2n[k]=vv2[k]+norm2[k]/(8.*32768.)/4.0;
+            vv3n[k]=vv3[k]+norm3[k]/(8.*32768.)/4.0;
+          }
         }
 
         glVertex3fv(vv1);
@@ -1563,10 +1571,19 @@ void DrawStaticIso(const isosurface *asurface,int surfacetype,
         glVertex3fv(vv3n);
       }
       else{
-        for(k=0;k<3;k++){
-          vv1n[k]=vv1[k]+norm[k]/(8.*32768.)/4.0;
-          vv2n[k]=vv2[k]+norm[k]/(8.*32768.)/4.0;
-          vv3n[k]=vv3[k]+norm[k]/(8.*32768.)/4.0;
+        if(norm==NULL){
+          for(k=0;k<3;k++){
+            vv1n[k]=vv1[k];
+            vv2n[k]=vv2[k];
+            vv3n[k]=vv3[k];
+          }
+        }
+        else{
+          for(k=0;k<3;k++){
+            vv1n[k]=vv1[k]+norm[k]/(8.*32768.)/4.0;
+            vv2n[k]=vv2[k]+norm[k]/(8.*32768.)/4.0;
+            vv3n[k]=vv3[k]+norm[k]/(8.*32768.)/4.0;
+          }
         }
 
         glVertex3fv(vv1);
@@ -1889,7 +1906,6 @@ void UpdateIsoTriangles(int flag){
   if(niso_trans==-1||niso_opaques==-1){
     int i;
 
-    flag=1;
     iso_trans_tmp=iso_trans;
     iso_opaques_tmp=iso_opaques;
     niso_trans=0;
