@@ -3525,19 +3525,14 @@ FILE_SIZE ReadGeom2(geomdata *geomi, int load_flag, int type){
             for(ii = 0; ii < ntris; ii++){
               float *text_coords;
               int *tri_ind;
-              float *xy, xy_default[2] = {0.0, 0.0};
+              float *xy;
               vertdata *vert;
 
               text_coords = texture_coords + 6 * ii;
               tri_ind = ijk + 3 * ii;
 
               vert = verts + tri_ind[0] - 1;
-              if(vert->xyz == NULL){
-                xy = xy_default;
-              }
-              else{
-                xy = vert->xyz;
-              }
+              xy = vert->xyz;
               text_coords[0] = (xy[0] - xmin) * xfactor;
               text_coords[1] = (xy[1] - ymin) * yfactor;
 
