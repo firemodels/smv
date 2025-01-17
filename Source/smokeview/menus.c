@@ -2439,7 +2439,7 @@ void OpenUrl(char *url){
 void HelpMenu(int value){
   switch(value){
     case MENU_HELP_FORUM:
-      OPENURL("https://groups.google.com/forum/?fromgroups#!forum/fds-smv");
+      OPENURL("https://github.com/firemodels/fds/discussions");
       break;
     case MENU_HELP_FDS_ISSUES:
       OPENURL("https://github.com/firemodels/fds/issues");
@@ -11982,7 +11982,7 @@ static int menu_count=0;
 #ifdef pp_LINUX
   glutAddMenuEntry(_("Downloads: https://pages.nist.gov/fds-smv/"),                                   MENU_HELP_DOWNLOADS);
   glutAddMenuEntry(_("Documentation:  https://pages.nist.gov/fds-smv/manuals.html"),                  MENU_HELP_DOCUMENTATION);
-  glutAddMenuEntry(_("Discussion forum: https://groups.google.com/forum/?fromgroups#!forum/fds-smv"), MENU_HELP_FORUM);
+  glutAddMenuEntry(_("Discussion forum: https://github.com/firemodels/fds/discussions"),              MENU_HELP_FORUM);
   glutAddMenuEntry(_("FDS issue tracker: https://github.com/firemodels/fds/issues"),                  MENU_HELP_FDS_ISSUES);
   glutAddMenuEntry(_("Smokeview issue tracker: https://github.com/firemodels/smv/issues"),            MENU_HELP_SMV_ISSUES);
   glutAddMenuEntry(_("Release notes: https://pages.nist.gov/fds-smv/smv_readme.html"),                MENU_HELP_RELEASENOTES);
