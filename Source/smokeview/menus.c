@@ -8459,7 +8459,7 @@ void InitLoadMultiSliceMenu(int *loadmultislicemenuptr, int *loadsubmslicemenu, 
   int i, loadmultislicemenu;
   int nloadsubmslicemenu;
   int iloadsubpatchmenu_s;
-  int loadsubslicexmenu, loadsubsliceymenu, loadsubslicezmenu, loadsubslicexyzmenu;
+  int loadsubslicexmenu=0, loadsubsliceymenu=0, loadsubslicezmenu=0, loadsubslicexyzmenu=0;
 
   InitSubSliceMenuInfo();
   if(nsubslicemenuinfo>0){
