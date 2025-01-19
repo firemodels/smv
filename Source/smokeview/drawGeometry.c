@@ -412,6 +412,8 @@ void DrawCircVentsExactSolid(int option){
         SetClipPlanes(&circleclip,CLIP_ON_DENORMAL);
       }
       glTranslatef(x0,yy0,z0);
+      width  = 0.0;
+      height = 0.0;
       switch(cvi->dir){
         case DOWN_X:
           glTranslatef(-delta,0.0,0.0);
@@ -522,6 +524,8 @@ void DrawCircVentsExactOutline(int option){
         SetClipPlanes(&circleclip,CLIP_ON_DENORMAL);
       }
       glTranslatef(x0,yy0,z0);
+      width  = 0.0;
+      height = 0.0;
       switch(cvi->dir){
         case DOWN_X:
           glTranslatef(-delta,0.0,0.0);
