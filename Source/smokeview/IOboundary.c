@@ -2822,7 +2822,7 @@ void DrawBoundaryTexture(const meshdata *meshi){
       patchvals = (float *)FRAMEGetSubFramePtr(patchi->frameinfo, meshi->patch_itime, n);
 
 #else
-      patchvals = NULL;
+      patchvals = meshi->patchval_iframe;
       if(patchi->compression_type != COMPRESSED_ZLIB)patchvals  = meshi->patchval_iframe + pfi->start;
 #endif
       cpatchvals = NULL;
