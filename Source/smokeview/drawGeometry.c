@@ -412,40 +412,42 @@ void DrawCircVentsExactSolid(int option){
         SetClipPlanes(&circleclip,CLIP_ON_DENORMAL);
       }
       glTranslatef(x0,yy0,z0);
+      width  = 0.0;
+      height = 0.0;
       switch(cvi->dir){
         case DOWN_X:
           glTranslatef(-delta,0.0,0.0);
           glRotatef(-90.0,0.0,1.0,0.0);
-          width = cvi->ymax-cvi->ymin;
-          height = cvi->zmax-cvi->zmin;
+          width  += cvi->ymax-cvi->ymin;
+          height += cvi->zmax-cvi->zmin;
           break;
         case UP_X:
           glTranslatef(delta,0.0,0.0);
           glRotatef(-90.0,0.0,1.0,0.0);
-          width = cvi->ymax-cvi->ymin;
-          height = cvi->zmax-cvi->zmin;
+          width  += cvi->ymax-cvi->ymin;
+          height += cvi->zmax-cvi->zmin;
           break;
         case DOWN_Y:
           glTranslatef(0.0,-delta,0.0);
           glRotatef(90.0,1.0,0.0,0.0);
-          width = cvi->xmax-cvi->xmin;
-          height = cvi->zmax-cvi->zmin;
+          width  += cvi->xmax-cvi->xmin;
+          height += cvi->zmax-cvi->zmin;
           break;
         case UP_Y:
           glTranslatef(0.0,delta,0.0);
           glRotatef(90.0,1.0,0.0,0.0);
-          width = cvi->xmax-cvi->xmin;
-          height = cvi->zmax-cvi->zmin;
+          width  += cvi->xmax-cvi->xmin;
+          height += cvi->zmax-cvi->zmin;
           break;
         case DOWN_Z:
           glTranslatef(0.0,0.0,-delta);
-          width = cvi->xmax-cvi->xmin;
-          height = cvi->ymax-cvi->ymin;
+          width  += cvi->xmax-cvi->xmin;
+          height += cvi->ymax-cvi->ymin;
           break;
         case UP_Z:
           glTranslatef(0.0,0.0,delta);
-          width = cvi->xmax-cvi->xmin;
-          height = cvi->ymax-cvi->ymin;
+          width  += cvi->xmax-cvi->xmin;
+          height += cvi->ymax-cvi->ymin;
           break;
         default:
           assert(FFALSE);
@@ -522,40 +524,42 @@ void DrawCircVentsExactOutline(int option){
         SetClipPlanes(&circleclip,CLIP_ON_DENORMAL);
       }
       glTranslatef(x0,yy0,z0);
+      width  = 0.0;
+      height = 0.0;
       switch(cvi->dir){
         case DOWN_X:
           glTranslatef(-delta,0.0,0.0);
           glRotatef(-90.0,0.0,1.0,0.0);
-          width = cvi->ymax-cvi->ymin;
-          height = cvi->zmax-cvi->zmin;
+          width  += cvi->ymax-cvi->ymin;
+          height += cvi->zmax-cvi->zmin;
           break;
         case UP_X:
           glTranslatef(delta,0.0,0.0);
           glRotatef(-90.0,0.0,1.0,0.0);
-          width = cvi->ymax-cvi->ymin;
-          height = cvi->zmax-cvi->zmin;
+          width  += cvi->ymax-cvi->ymin;
+          height += cvi->zmax-cvi->zmin;
           break;
         case DOWN_Y:
           glTranslatef(0.0,-delta,0.0);
           glRotatef(90.0,1.0,0.0,0.0);
-          width = cvi->xmax-cvi->xmin;
-          height = cvi->zmax-cvi->zmin;
+          width  += cvi->xmax-cvi->xmin;
+          height += cvi->zmax-cvi->zmin;
           break;
         case UP_Y:
           glTranslatef(0.0,delta,0.0);
           glRotatef(90.0,1.0,0.0,0.0);
-          width = cvi->xmax-cvi->xmin;
-          height = cvi->zmax-cvi->zmin;
+          width  += cvi->xmax-cvi->xmin;
+          height += cvi->zmax-cvi->zmin;
           break;
         case DOWN_Z:
           glTranslatef(0.0,0.0,-delta);
-          width = cvi->xmax-cvi->xmin;
-          height = cvi->ymax-cvi->ymin;
+          width  += cvi->xmax-cvi->xmin;
+          height += cvi->ymax-cvi->ymin;
           break;
         case UP_Z:
           glTranslatef(0.0,0.0,delta);
-          width = cvi->xmax-cvi->xmin;
-          height = cvi->ymax-cvi->ymin;
+          width  += cvi->xmax-cvi->xmin;
+          height += cvi->ymax-cvi->ymin;
           break;
         default:
           assert(FFALSE);

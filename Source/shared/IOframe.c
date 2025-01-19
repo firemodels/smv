@@ -1,4 +1,5 @@
 #include "options.h"
+#ifdef pp_FRAME
 #include <assert.h>
 #include <stdio.h>
 #include <string.h>
@@ -915,3 +916,4 @@ void GetPartFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **framespt
   *filesizeptr = filesize;
   if(stream->stream != NULL)fclose(stream->stream);
 }
+#endif

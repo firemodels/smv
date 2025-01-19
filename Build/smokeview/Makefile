@@ -50,12 +50,12 @@ csrc = callbacks.c camera.c color2rgb.c readimage.c readgeom.c readobject.c read
       drawGeometry.c file_util.c getdata.c getdatabounds.c getdatacolors.c glew.c  \
       histogram.c infoheader.c readlabel.c readtour.c readhvac.c readslice.c readsmoke.c colorbars.c colorbar_defs.c \
       IOboundary.c IOgeometry.c IOhvac.c IOiso.c IOobjects.c IOpart.c IOplot2d.c IOplot3d.c \
-      IOscript.c IOshooter.c IOslice.c IOsmoke.c IOtour.c IOvolsmoke.c IOwui.c IOzone.c IOframe.o isobox.c \
+      IOscript.c IOshooter.c IOslice.c IOsmoke.c IOtour.c IOvolsmoke.c IOwui.c IOzone.c IOframe.c isobox.c \
       main.c md5.c menus.c output.c readsmv.c renderhtml.c renderimage.c scontour2d.c sha1.c \
       sha256.c shaders.c showscene.c skybox.c smokestream.c smokeview.c smv_geometry.c startup.c fopen.c \
       stdio_buffer.c stdio_m.c string_util.c threader.c translate.c unit.c update.c viewports.c colortable.c command_args.c
 
-cppsrc = glui_bounds.o \
+cppsrc = glui_bounds.cpp \
      glui_clip.cpp glui_colorbar.cpp glui_display.cpp glui_geometry.cpp glui_motion.cpp glui_objects.cpp \
       glui_shooter.cpp glui_smoke.cpp glui_stereo.cpp glui_tour.cpp glui_trainer.cpp
 
@@ -71,10 +71,14 @@ cclang   = $(csrc:.c=.chk)
 cppclang = $(cppsrc:.cpp=.chk)
 clangchk = $(cclang) $(cppclang)
 
+wincclang   = $(csrc:.c=.winchk)
+wincppclang = $(cppsrc:.cpp=.winchk)
+winclangchk = $(wincclang) $(wincppclang)
+
 #CLANGANALYZE=clang --analyze -Xanalyzer -analyzer-checker=core,deadcode
 CLANGANALYZE=clang --analyze
 CLANGSUMMARY=../../scripts/clang_summary.sh
-CLANGWINSUMMARY=../../scripts/clang_summary.bat
+CLANGWINSUMMARY=..\..\scripts\clang_summary.bat
 
 incs = compress.h scontour2d.h csphere.h datadefs.h dirent_win.h file_util.h glui_bounds.h \
        glui_motion.h glui_smoke.h glui_tour.h histogram.h infoheader.h interp.h isobox.h \
@@ -132,7 +136,7 @@ no_target:
 	@echo \******** You did not specify a make target \********
 	@echo Use one of targets found in the Makefile
 
-.SUFFIXES: .c .obj .o .cpp .chk
+.SUFFIXES: .c .obj .o .cpp .chk .winchk
 
 .c.obj:
 	$(CC) -c $(C_STANDARD) $(CFLAGS) $(INC) $<
@@ -144,9 +148,16 @@ no_target:
 .cpp.o:
 	$(CPP) -c $(CPP_STANDARD) $(CFLAGS) $(INC) $<
 
+# linux and osx clang checks
 .c.chk:
 	$(CLANGANALYZE) $(CFLAGS) $(INC) $< 2> $@
 .cpp.chk:
+	$(CLANGANALYZE) $(CFLAGS) $(INC) $< 2> $@
+
+# windows clang checks
+.c.winchk:
+	$(CLANGANALYZE) $(CFLAGS) $(INC) $< 2> $@
+.cpp.winchk:
 	$(CLANGANALYZE) $(CFLAGS) $(INC) $< 2> $@
 
 # ********  rules for each platform supported *************
@@ -391,7 +402,7 @@ linux_osx_check : $(clangchk)
 
 win_check : CFLAGS    = -D NDEBUG -D WIN32 -D _CONSOLE -D X64 -D GLEW_STATIC -D PTW32_STATIC_LIB 
 win_check : INC += $(WININC)
-win_check : $(clangchk)
+win_check : $(winclangchk)
 	$(CLANGWINSUMMARY) smokeview.summary
 
 # VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV

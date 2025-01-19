@@ -78,14 +78,14 @@ int GetHrrCsvCol(smv_case *scase, char *label){
 
 /* ----------------------- GetTokensBlank ----------------------------- */
 
-int GetTokensBlank(char *buffer, char **tokens){
+int GetTokensBlank(char *buffer, char **tokens, int lenbuffer){
 
   int nt = 0;
   char *token;
 
   TrimBack(buffer);
   token = strtok(buffer, " ");
-  while(token!=NULL){
+  while(nt<lenbuffer&&token!=NULL){
     tokens[nt++] = token;
     token = strtok(NULL, " ");
   }
@@ -122,11 +122,14 @@ void GetHoc(smv_case *scase, float *hoc, char *name){
     fgets(buffer, 255, stream);
     if(strstr(buffer, "Heat of Combustion")!=NULL){
       char *tokens[256], *token;
-      int ntokens;
+      int ntokens, ii;
       float val;
 
       fgets(buffer, 255, stream);
-      ntokens = GetTokensBlank(buffer, tokens);
+      for(ii = 0;ii < 255;ii++){
+        tokens[ii] = NULL;
+      }
+      ntokens = GetTokensBlank(buffer, tokens, 255);
       token = tokens[ntokens-1];
       sscanf(token, "%f", &val);
       fclose(stream);
@@ -3053,7 +3056,7 @@ void UpdateBoundInfo(void){
   int nhvacboundsmax = 0;
   if(global_scase.hvaccoll.hvacductvalsinfo != NULL)nhvacboundsmax += global_scase.hvaccoll.hvacductvalsinfo->n_duct_vars;
   if(global_scase.hvaccoll.hvacnodevalsinfo != NULL)nhvacboundsmax += global_scase.hvaccoll.hvacnodevalsinfo->n_node_vars;
-  if(nhvacboundsmax>0){
+  if(nhvacboundsmax>0 && global_scase.hvaccoll.hvacductvalsinfo!=NULL){
     FREEMEMORY(hvacductbounds);
     NewMemory((void*)&hvacductbounds,global_scase.hvaccoll.hvacductvalsinfo->n_duct_vars*sizeof(boundsdata));
     nhvacductbounds=0;
@@ -3432,11 +3435,13 @@ void UpdateMeshBoxBounds(void){
 int GetSmoke3DType(smv_case *scase, const char *label) {
   int i;
 
-  for(i=0; i<scase->smoke3dcoll.nsmoke3dtypes; i++){
-    smoke3ddata *smoke3di;
+  if(scase->smoke3dcoll.smoke3dtypes != NULL){
+    for(i = 0; i < scase->smoke3dcoll.nsmoke3dtypes; i++){
+      smoke3ddata *smoke3di;
 
-    smoke3di = scase->smoke3dcoll.smoke3dtypes[i].smoke3d;
-    if(Match(smoke3di->label.shortlabel, label)==1)return i;
+      smoke3di = scase->smoke3dcoll.smoke3dtypes[i].smoke3d;
+      if(Match(smoke3di->label.shortlabel, label) == 1)return i;
+    }
   }
   return -1;
 }
@@ -3538,30 +3543,32 @@ void UpdateSmoke3DTypes(void){
   TEMP_index   = -1;
   CO2_index    = -1;
 
-  for(i = 0; i<global_scase.smoke3dcoll.nsmoke3dtypes; i++){
-    smoke3ddata *smoke3di;
-    char *label;
-    float ext;
+  if(global_scase.smoke3dcoll.smoke3dtypes != NULL){
+    for(i = 0; i < global_scase.smoke3dcoll.nsmoke3dtypes; i++){
+      smoke3ddata *smoke3di;
+      char *label;
+      float ext;
 
-    smoke3di = global_scase.smoke3dcoll.smoke3dtypes[i].smoke3d;
-    label = smoke3di->label.shortlabel;
-    ext = smoke3di->extinct;
-    if(ext>0.0){
-      SOOT_index = i;
-      glui_smoke3d_extinct = global_scase.smoke3dcoll.smoke3dtypes[i].extinction;
-      continue;
-    }
-    if(Match(label, "hrrpuv")==1){
-      HRRPUV_index = i;
-      continue;
-    }
-    if(Match(label, "temp")==1){
-      TEMP_index = i;
-      continue;
-    }
-    if(Match(label, "rho_CO2")==1||Match(label, "Y_CO2")==1){
-      CO2_index = i;
-      continue;
+      smoke3di = global_scase.smoke3dcoll.smoke3dtypes[i].smoke3d;
+      label = smoke3di->label.shortlabel;
+      ext = smoke3di->extinct;
+      if(ext > 0.0){
+        SOOT_index = i;
+        glui_smoke3d_extinct = global_scase.smoke3dcoll.smoke3dtypes[i].extinction;
+        continue;
+      }
+      if(Match(label, "hrrpuv") == 1){
+        HRRPUV_index = i;
+        continue;
+      }
+      if(Match(label, "temp") == 1){
+        TEMP_index = i;
+        continue;
+      }
+      if(Match(label, "rho_CO2") == 1 || Match(label, "Y_CO2") == 1){
+        CO2_index = i;
+        continue;
+      }
     }
   }
 }
@@ -7402,7 +7409,7 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
   int n_surf_keywords = 0;
 
   char buffer[256], buffers[6][256];
-  patchdata *patchgeom;
+  patchdata *patchgeom=NULL;
 
  {
     int return_code;
@@ -10034,7 +10041,7 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
   }
 
   nvents=0;
-  itrnx=0, itrny=0, itrnz=0, igrid=0, ipdim=0, iobst=0, ivent=0, icvent=0;
+  itrnx=0, itrny=0, itrnz=0, ipdim=0, iobst=0, ivent=0, icvent=0;
   ioffset=0;
   scase->npartclassinfo=0;
   if(scase->noffset==0)ioffset=1;
@@ -10601,15 +10608,18 @@ typedef struct {
       nn=-1;
       for(iblock=0;iblock<n_blocks;iblock++){
         int s_num[6];
-        blockagedata *bc;
+        blockagedata *bc=NULL;
 
         if((scase->auto_terrain==1||scase->manual_terrain==1)&&meshi->is_block_terrain!=NULL&&meshi->is_block_terrain[iblock]==1){
           FGETS(buffer,255,stream);
           continue;
         }
         nn++;
-        meshi->blockageinfoptrs[nn] = meshi->blockageinfo + nn;
-        bc=meshi->blockageinfoptrs[nn];
+        if(meshi->blockageinfo != NULL && meshi->blockageinfoptrs != NULL){
+          meshi->blockageinfoptrs[nn] = meshi->blockageinfo + nn;
+          bc = meshi->blockageinfoptrs[nn];
+        }
+        if(bc == NULL)continue;
         InitObst(scase,bc,global_scase.surfacedefault,nn+1,iobst-1);
         FGETS(buffer,255,stream);
 
@@ -10702,7 +10712,7 @@ typedef struct {
 
       nn=-1;
       for(iblock=0;iblock<n_blocks;iblock++){
-        blockagedata *bc;
+        blockagedata *bc=NULL;
         int *ijk;
         int colorindex, blocktype;
 
@@ -10712,7 +10722,11 @@ typedef struct {
         }
         nn++;
 
-        bc=meshi->blockageinfoptrs[nn];
+
+        if(meshi->blockageinfoptrs != NULL && meshi->blockageinfoptrs[nn] != NULL){
+          bc = meshi->blockageinfoptrs[nn];
+        }
+        if(bc == NULL)continue;
         colorindex=-1;
         blocktype=-1;
 
@@ -11178,7 +11192,8 @@ typedef struct {
           if(strncmp(vi->surf[0]->surfacelabel, "MIRROR", 6)==0)vi->isMirrorvent = 1;
           vi->surf[0]->used_by_vent=1;
         }
-        vi->color_bak=scase->surfcoll.surfinfo[0].color;
+        vi->color_bak=NULL;
+        if(scase->surfcoll.surfinfo!=NULL)vi->color_bak=scase->surfcoll.surfinfo[0].color;
       }
       for(nn=0;nn<nvents+12;nn++){
         ventdata *vi;
@@ -12252,7 +12267,7 @@ void UpdateUseTextures(void){
       }
     }
   }
-  if(global_scase.terrain_texture_coll.nterrain_textures>0){
+  if(global_scase.terrain_texture_coll.nterrain_textures>0 && global_scase.texture_coll.textureinfo != NULL){
     for(i=0;i<global_scase.terrain_texture_coll.nterrain_textures;i++){
       texturedata *texti;
 

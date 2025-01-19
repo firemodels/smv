@@ -1081,7 +1081,7 @@ void UpdateAllPlotSlices(void){
 int GetPlot3dIndex(meshdata *meshi, int dir, float val){
   float valmin;
   int i, ivalmin, nvals;
-  float *xyz;
+  float *xyz=NULL;
 
   switch(dir){
     case XDIR:
@@ -1103,11 +1103,14 @@ int GetPlot3dIndex(meshdata *meshi, int dir, float val){
   }
 
   ivalmin=0;
-  valmin = ABS(xyz[0]- val);
-  for(i=1;i<=nvals;i++){
-    if(ABS(xyz[i]-val)<valmin){
-      valmin = ABS(xyz[i]-val);
-      ivalmin = i;
+  assert(xyz != NULL);
+  if(xyz != NULL){
+    valmin = ABS(xyz[0] - val);
+    for(i = 1;i <= nvals;i++){
+      if(ABS(xyz[i] - val) < valmin){
+        valmin = ABS(xyz[i] - val);
+        ivalmin = i;
+      }
     }
   }
   return ivalmin;

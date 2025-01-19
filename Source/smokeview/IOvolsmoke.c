@@ -1453,7 +1453,7 @@ void IntegrateFireColors(float *integrated_firecolor, float *xyzvert, float dlen
   float dxyz[3];
   float distseg, dxseg, dyseg, dzseg;
   float xyz[3];
-  float *vert_beg, *vert_end;
+  float *vert_beg=NULL, *vert_end=NULL;
   int iwall_min=0;
   float xyzvals[3];
   char *blank_local;
@@ -1515,6 +1515,9 @@ void IntegrateFireColors(float *integrated_firecolor, float *xyzvert, float dlen
         }
       }
     }
+    vert_end[0] = 0.0;
+    vert_end[1] = 0.0;
+    vert_end[2] = 0.0;
     switch(iwall_min){
       case XWALLMIN:
         vert_end[0] = boxmin[0];

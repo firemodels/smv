@@ -16,11 +16,11 @@
 #define BOUNDARY_NODE_CENTERED 1
 
 #define IJKBF(i,j) ((i)*ncol+(j))
-#define GETBOUNDVAL(index) (patchi->compression_type==UNCOMPRESSED ? \
+#define GETBOUNDVAL(index) (cpatchvals == NULL ? \
                patchvals[index] : \
                (float)cpatchvals[index] \
                )
-#define BOUNDCONVERT(index, valmin, valmax) (patchi->compression_type==UNCOMPRESSED ? \
+#define BOUNDCONVERT(index, valmin, valmax) (cpatchvals==NULL ? \
                ( valmin == valmax ? 0.0 : (patchvals[index]-valmin)/(valmax-valmin) ) : \
                (float)cpatchvals[index]/255 \
                )
@@ -2732,6 +2732,7 @@ void DrawBoundaryTexture(const meshdata *meshi){
 #else
       patchvals = meshi->patchval_iframe + pfi->start;
 #endif
+      cpatchvals = NULL;
       if(patchi->compression_type == COMPRESSED_ZLIB)cpatchvals = meshi->cpatchval_iframe_zlib + pfi->start;
 
       for(irow=0;irow<nrow-1;irow++){
@@ -2821,9 +2822,12 @@ void DrawBoundaryTexture(const meshdata *meshi){
       patchvals = (float *)FRAMEGetSubFramePtr(patchi->frameinfo, meshi->patch_itime, n);
 
 #else
+      patchvals = meshi->patchval_iframe;
       if(patchi->compression_type != COMPRESSED_ZLIB)patchvals  = meshi->patchval_iframe + pfi->start;
 #endif
+      cpatchvals = NULL;
       if(patchi->compression_type == COMPRESSED_ZLIB)cpatchvals = meshi->cpatchval_iframe_zlib + pfi->start;
+      assert(patchvals != NULL || cpatchvals != NULL);
       for(irow=0;irow<nrow-1;irow++){
         int *patchblank1, *patchblank2;
         float *xyzp1, *xyzp2;
@@ -2910,7 +2914,7 @@ void DrawBoundaryTexture(const meshdata *meshi){
       patchvals = meshi->patchval_iframe;
       if(patchi->compression_type != COMPRESSED_ZLIB)patchvals  = meshi->patchval_iframe + pfi->start;
 #endif
-      cpatchvals = meshi->cpatchval_iframe_zlib;
+      cpatchvals = NULL;
       if(patchi->compression_type == COMPRESSED_ZLIB)cpatchvals = meshi->cpatchval_iframe_zlib + pfi->start;
       for(irow=0;irow<nrow-1;irow++){
         int *patchblank1, *patchblank2;
@@ -3050,6 +3054,7 @@ void DrawBoundaryTextureThreshold(const meshdata *meshi){
 #else
       patchvals = patchval_iframe + pfi->start;
 #endif
+      cpatchvals = NULL;
       if(patchi->compression_type == COMPRESSED_ZLIB)cpatchvals = meshi->cpatchval_iframe_zlib + pfi->start;
       for(irow=0;irow<nrow-1;irow++){
         int *patchblank1, *patchblank2;
@@ -3144,6 +3149,7 @@ void DrawBoundaryTextureThreshold(const meshdata *meshi){
 #else
       patchvals  = patchval_iframe + pfi->start;
 #endif
+      cpatchvals = NULL;
       if(patchi->compression_type == COMPRESSED_ZLIB)cpatchvals = meshi->cpatchval_iframe_zlib + pfi->start;
       for(irow=0;irow<nrow-1;irow++){
         int *patchblank1, *patchblank2;
@@ -3234,7 +3240,7 @@ void DrawBoundaryTextureThreshold(const meshdata *meshi){
 #else
       patchvals  = patchval_iframe + pfi->start;
 #endif
-      cpatchvals = meshi->cpatchval_iframe_zlib;
+      cpatchvals = NULL;
       if(patchi->compression_type == COMPRESSED_ZLIB)cpatchvals = meshi->cpatchval_iframe_zlib + pfi->start;
       for(irow=0;irow<nrow-1;irow++){
         int *patchblank1, *patchblank2;
@@ -3620,7 +3626,7 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
 #else
       patchvals  = patchval_iframe+ pfi->start;
 #endif
-      cpatchvals = meshi->cpatchval_iframe_zlib;
+      cpatchvals = NULL;
       if(patchi->compression_type == COMPRESSED_ZLIB)cpatchvals = meshi->cpatchval_iframe_zlib + pfi->start;
       for(irow = 0;irow<nrow-1;irow++){
         int *patchblank1, *patchblank2;
@@ -3708,6 +3714,7 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
 #else
       patchvals = patchval_iframe+ pfi->start;
 #endif
+      cpatchvals = NULL;
       if(patchi->compression_type == COMPRESSED_ZLIB)cpatchvals = meshi->cpatchval_iframe_zlib + pfi->start;
       for(irow = 0;irow<nrow-1;irow++){
         int *patchblank1, *patchblank2;
@@ -3788,6 +3795,7 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
 #else
       patchvals  = patchval_iframe + pfi->start;
 #endif
+      cpatchvals = NULL;
       if(patchi->compression_type == COMPRESSED_ZLIB)cpatchvals = meshi->cpatchval_iframe_zlib + pfi->start;
       for(irow = 0;irow<nrow-1;irow++){
         int *patchblank1, *patchblank2;

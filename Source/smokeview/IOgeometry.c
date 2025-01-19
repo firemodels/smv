@@ -3614,7 +3614,7 @@ FILE_SIZE ReadGeom2(geomdata *geomi, int load_flag, int type){
       CheckMemory;
      // assert(geomi->ngeomobj_offsets<=0 || ntris==geomi->ngeomobj_offsets);
       for(ii=0;ii<ntris;ii++){
-        surfdata *surfi;
+        surfdata *surfi=NULL;
         int k;
 
         for(k=0;k<3;k++){
@@ -3659,19 +3659,30 @@ FILE_SIZE ReadGeom2(geomdata *geomi, int load_flag, int type){
           surfi=global_scase.surfcoll.surfinfo;
           triangles[ii].insolid = 0;
           break;
-	    default:
+	      default:
 	      assert(FFALSE);
 	      break;
         }
-        if(geomi->geomtype==GEOM_GEOM)surfi->used_by_geom = 1;
-        triangles[ii].geomsurf=surfi;
-        if(terrain_textures!=NULL&&geomi->is_terrain==1){
-          triangles[ii].textureinfo = terrain_textures;
+        switch(type){
+        case GEOM_CGEOM:
+        case GEOM_GEOM:
+        case GEOM_ISO:
+        case GEOM_SLICE:
+        case GEOM_BOUNDARY:
+          if(geomi->geomtype==GEOM_GEOM)surfi->used_by_geom = 1;
+          triangles[ii].geomsurf=surfi;
+          if(terrain_textures!=NULL&&geomi->is_terrain==1){
+            triangles[ii].textureinfo = terrain_textures;
+          }
+          else{
+            triangles[ii].textureinfo = surfi->textureinfo;
+          }
+          triangles[ii].outside_domain = OutSideDomain(triangles[ii].verts);
+          break;
+        default:
+	      assert(FFALSE);
+	      break;
         }
-        else{
-          triangles[ii].textureinfo = surfi->textureinfo;
-        }
-        triangles[ii].outside_domain = OutSideDomain(triangles[ii].verts);
       }
       FREEMEMORY(ijk);
       FREEMEMORY(surf_ind);

@@ -200,6 +200,9 @@ void ColorbarSimple2General(colorbardata *cbi){
   int node_rgb[1024 * 3];
   int i;
 
+  for(i = 0;i < 1024 * 3;i++){
+    node_rgb[i] = 0;
+  }
   switch(colorbar_simple_type){
   case 0: // constant (1 node)
     cbi->nnodes = 1;
