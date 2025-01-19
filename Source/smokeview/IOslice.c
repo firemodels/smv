@@ -2918,6 +2918,7 @@ void UpdateSliceContours(int slice_type_index, float line_min, float line_max, i
     ny = jbar + 1;
     nz = kbar + 1;
 
+    constval=0.0;
     switch(sd->idir){
       case XDIR:
       constval = xplt[sd->is1]+offset_slice*sd->sliceoffset;
@@ -7332,7 +7333,7 @@ int SetupSlice(slicedata *sd){
 
 void DrawSliceFrame(){
   int ii;
-  int jjj, nslicemax, blend_mode;
+  int jjj, nslicemax=0, blend_mode;
   int draw_slice;
 
   if(vis_slice_plot==1||vis_colorbar_dists_plot==1){
