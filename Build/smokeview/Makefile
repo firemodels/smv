@@ -50,12 +50,12 @@ csrc = callbacks.c camera.c color2rgb.c readimage.c readgeom.c readobject.c read
       drawGeometry.c file_util.c getdata.c getdatabounds.c getdatacolors.c glew.c  \
       histogram.c infoheader.c readlabel.c readtour.c readhvac.c readslice.c readsmoke.c colorbars.c colorbar_defs.c \
       IOboundary.c IOgeometry.c IOhvac.c IOiso.c IOobjects.c IOpart.c IOplot2d.c IOplot3d.c \
-      IOscript.c IOshooter.c IOslice.c IOsmoke.c IOtour.c IOvolsmoke.c IOwui.c IOzone.c IOframe.o isobox.c \
+      IOscript.c IOshooter.c IOslice.c IOsmoke.c IOtour.c IOvolsmoke.c IOwui.c IOzone.c IOframe.c isobox.c \
       main.c md5.c menus.c output.c readsmv.c renderhtml.c renderimage.c scontour2d.c sha1.c \
       sha256.c shaders.c showscene.c skybox.c smokestream.c smokeview.c smv_geometry.c startup.c fopen.c \
       stdio_buffer.c stdio_m.c string_util.c threader.c translate.c unit.c update.c viewports.c colortable.c command_args.c
 
-cppsrc = glui_bounds.o \
+cppsrc = glui_bounds.cpp \
      glui_clip.cpp glui_colorbar.cpp glui_display.cpp glui_geometry.cpp glui_motion.cpp glui_objects.cpp \
       glui_shooter.cpp glui_smoke.cpp glui_stereo.cpp glui_tour.cpp glui_trainer.cpp
 
