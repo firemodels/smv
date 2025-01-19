@@ -71,6 +71,10 @@ cclang   = $(csrc:.c=.chk)
 cppclang = $(cppsrc:.cpp=.chk)
 clangchk = $(cclang) $(cppclang)
 
+wincclang   = $(csrc:.c=.winchk)
+wincppclang = $(cppsrc:.cpp=.winchk)
+winclangchk = $(wincclang) $(wincppclang)
+
 #CLANGANALYZE=clang --analyze -Xanalyzer -analyzer-checker=core,deadcode
 CLANGANALYZE=clang --analyze
 CLANGSUMMARY=../../scripts/clang_summary.sh
@@ -132,7 +136,7 @@ no_target:
 	@echo \******** You did not specify a make target \********
 	@echo Use one of targets found in the Makefile
 
-.SUFFIXES: .c .obj .o .cpp .chk
+.SUFFIXES: .c .obj .o .cpp .chk .winchk
 
 .c.obj:
 	$(CC) -c $(C_STANDARD) $(CFLAGS) $(INC) $<
@@ -144,9 +148,16 @@ no_target:
 .cpp.o:
 	$(CPP) -c $(CPP_STANDARD) $(CFLAGS) $(INC) $<
 
+# linux and osx clang checks
 .c.chk:
 	$(CLANGANALYZE) $(CFLAGS) $(INC) $< 2> $@
 .cpp.chk:
+	$(CLANGANALYZE) $(CFLAGS) $(INC) $< 2> $@
+
+# windows clang checks
+.c.winchk:
+	$(CLANGANALYZE) $(CFLAGS) $(INC) $< 2> $@
+.cpp.winchk:
 	$(CLANGANALYZE) $(CFLAGS) $(INC) $< 2> $@
 
 # ********  rules for each platform supported *************
@@ -391,7 +402,7 @@ linux_osx_check : $(clangchk)
 
 win_check : CFLAGS    = -D NDEBUG -D WIN32 -D _CONSOLE -D X64 -D GLEW_STATIC -D PTW32_STATIC_LIB 
 win_check : INC += $(WININC)
-win_check : $(clangchk)
+win_check : $(winclangchk)
 	$(CLANGWINSUMMARY) smokeview.summary
 
 # VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
