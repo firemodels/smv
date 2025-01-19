@@ -2478,6 +2478,8 @@ void SetLoadedSliceBounds(int *list, int nlist){
     }
   }
   if(valmin<=valmax){
+    set_valmin = BOUND_LOADED_MIN;
+    set_valmax = BOUND_LOADED_MAX;
     GLUIGetMinMax(BOUND_SLICE, label, &set_valmin, &valmin_dlg, &set_valmax, &valmax_dlg);
     if(set_valmin!=BOUND_LOADED_MIN){
       valmin = valmin_dlg;
@@ -6964,6 +6966,7 @@ extern "C" void GLUISliceBoundCB(int var){
       slice_fileupdate--;
       break;
     }
+  last_slice = -1; 
     for(ii = nslice_loaded - 1; ii >= 0; ii--){
       i = slice_loaded_list[ii];
       sd = global_scase.slicecoll.sliceinfo + i;
@@ -6979,6 +6982,7 @@ extern "C" void GLUISliceBoundCB(int var){
         int set_slicecolor;
 
         set_slicecolor = DEFER_SLICECOLOR;
+        assert(last_slice!=1);
         if(i == last_slice)set_slicecolor = SET_SLICECOLOR;
         ReadSlice("", i, ALL_FRAMES, NULL, RESETBOUNDS, set_slicecolor, &error);
       }
