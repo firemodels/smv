@@ -1,41 +1,58 @@
 @echo off
+setlocal enabledelayedexpansion
 set OUTFILE=%1
-if not "x%OUTFILE%" == "x" ] goto endif1
-  OUTFILE=clang_warnings.txt
+set NWARNINGFILE=%TEMP%\nwarnings.txt
+if not "x%OUTFILE%" == "x" goto endif1
+  set OUTFILE=clang_warnings.txt
 :endif1
 
-set HAVE_WARNINGS=
-for /F %%F file in (*.winchk) do ; do
-  if [ -s $file ]; then
-    HAVE_WARNINGS=1
-    break
-  fi
-done
-echo clang warnings > $OUTFILE
-echo -------------- >> $OUTFILE
-if [ "$HAVE_WARNINGS" == "" ]; then
-  echo no warnings were found > $OUTFILE
-fi
-total_warnings=0
-nfiles=0
-nwarnfiles=0
-echo ""
-for file in *.chk; do
-  nfiles=$((nfiles+1))
-  if [ -s $file ]; then
-    nwarnings=`tail -1 $file | awk '{print $1}'`
-    total_warnings=$((total_warnings+nwarnings))
-    nwarnfiles=$((nwarnfiles+1))
-    echo $file: $nwarnings  warnings >> $OUTFILE
-    if [ "$nwarnings" != "0" ]; then
-      echo $file: $nwarnings warnings
-    fi
-  fi
-done
-echo
-if [ "$total_warnings" == "0" ]; then
-  echo $nfiles files scanned, no warnings were found
-else
-  echo $nfiles files scanned, $nwarnfiles files have $total_warnings warnings
-fi
+set HAVEWARNINGS=0
 
+for %%f in (*.winchk) do (
+  call :GetFileSize %%f filesize
+  if not "%filesize%" == "0" set HAVEWARNING=1
+  if not "%filesize%" == "0" goto loop1
+)
+:loop1
+
+
+echo clang warnings > %OUTFILE%
+echo -------------- >> %OUTFILE%
+if not "x%HAVEWARNINGS%" == "x" goto endif2
+  echo no warnings were found > %OUTFILE%
+  exit /b
+fi
+:endif2
+
+set total_warnings=0
+set nfiles=0
+set nwarnfiles=0
+
+for %%f in ( *.winchk ) do (
+  set /a nfiles=!nfiles!+1
+  call :GetFileSize %%f filesize
+  if not "!filesize!" == "0" tail -1 %%f | gawk "{print $1}" > %NWARNINGFILE%
+  if not "!filesize!" == "0" set /p nwarnings=<%NWARNINGFILE%
+  if not "!filesize!" == "0" set /a total_warnings=!total_warnings!+!nwarnings!"
+  if not "!filesize!" == "0" set /a nwarnfiles=!nwarnfiles!+1
+  if not "!!ilesize!" == "0" echo %%f: !nwarnings!  warnings >> %OUTFILE%
+  if not "!filesize!" == "0" echo %%f: !nwarnings!  warnings
+)
+echo.
+if not "%total_warnings%" == "0" goto else5
+  echo %nfiles% files scanned, no warnings were found
+  goto endif5
+:else5
+  echo %nfiles% files scanned, %nwarnfiles% files have %total_warnings% warnings
+:endif5
+
+goto eof
+
+::--------------------------------------------------
+:GetFileSize
+::--------------------------------------------------
+set filesize=%~z1
+set %2=%filesize%
+exit /b
+
+:eof
