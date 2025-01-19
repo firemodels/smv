@@ -35,15 +35,17 @@ for %%f in ( *.winchk ) do (
   if not "!filesize!" == "0" set /p nwarnings=<%NWARNINGFILE%
   if not "!filesize!" == "0" set /a total_warnings=!total_warnings!+!nwarnings!"
   if not "!filesize!" == "0" set /a nwarnfiles=!nwarnfiles!+1
-  if not "!!ilesize!" == "0" echo %%f: !nwarnings!  warnings >> %OUTFILE%
+  if not "!filesize!" == "0" echo %%f: !nwarnings!  warnings >> %OUTFILE%
   if not "!filesize!" == "0" echo %%f: !nwarnings!  warnings
 )
 echo.
 if not "%total_warnings%" == "0" goto else5
   echo %nfiles% files scanned, no warnings were found
+  echo %nfiles% files scanned, no warnings were found >> %OUTFILE%
   goto endif5
 :else5
   echo %nfiles% files scanned, %nwarnfiles% files have %total_warnings% warnings
+  echo %nfiles% files scanned, %nwarnfiles% files have %total_warnings% warnings >> %OUTFILE%
 :endif5
 
 goto eof

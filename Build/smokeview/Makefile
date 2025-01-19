@@ -78,7 +78,7 @@ winclangchk = $(wincclang) $(wincppclang)
 #CLANGANALYZE=clang --analyze -Xanalyzer -analyzer-checker=core,deadcode
 CLANGANALYZE=clang --analyze
 CLANGSUMMARY=../../scripts/clang_summary.sh
-CLANGWINSUMMARY=../../scripts/clang_summary.bat
+CLANGWINSUMMARY=..\..\scripts\clang_summary.bat
 
 incs = compress.h scontour2d.h csphere.h datadefs.h dirent_win.h file_util.h glui_bounds.h \
        glui_motion.h glui_smoke.h glui_tour.h histogram.h infoheader.h interp.h isobox.h \
