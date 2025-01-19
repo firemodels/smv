@@ -2921,13 +2921,13 @@ void UpdateSliceContours(int slice_type_index, float line_min, float line_max, i
     constval=0.0;
     switch(sd->idir){
       case XDIR:
-      constval = xplt[sd->is1]+offset_slice*sd->sliceoffset;
+      constval += xplt[sd->is1]+offset_slice*sd->sliceoffset;
       break;
       case YDIR:
-      constval = yplt[sd->js1]+offset_slice*sd->sliceoffset;
+      constval += yplt[sd->js1]+offset_slice*sd->sliceoffset;
       break;
       case ZDIR:
-      constval = zplt[sd->ks1]+offset_slice*sd->sliceoffset;
+      constval += zplt[sd->ks1]+offset_slice*sd->sliceoffset;
       break;
       default:
         assert(FFALSE);
