@@ -1,5 +1,5 @@
 #include "options.h"
-#define pp_CLANG_TEST
+//#define pp_CLANG_TEST
 #ifdef pp_CLANG_TEST
 #include <assert.h>
 #include <stdlib.h>
