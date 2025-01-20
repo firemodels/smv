@@ -46,18 +46,18 @@ bin = .
 
 # Definition of the object variables
 
-csrc = callbacks.c camera.c color2rgb.c readimage.c readgeom.c readobject.c readcad.c colortimebar.c compress.c csphere.c dmalloc.c \
-      drawGeometry.c file_util.c getdata.c getdatabounds.c getdatacolors.c glew.c  \
-      histogram.c infoheader.c readlabel.c readtour.c readhvac.c readslice.c readsmoke.c colorbars.c colorbar_defs.c \
-      IOboundary.c IOgeometry.c IOhvac.c IOiso.c IOobjects.c IOpart.c IOplot2d.c IOplot3d.c \
-      IOscript.c IOshooter.c IOslice.c IOsmoke.c IOtour.c IOvolsmoke.c IOwui.c IOzone.c IOframe.c isobox.c \
-      main.c md5.c menus.c output.c readsmv.c renderhtml.c renderimage.c scontour2d.c sha1.c \
-      sha256.c shaders.c showscene.c skybox.c smokestream.c smokeview.c smv_geometry.c startup.c fopen.c \
-      stdio_buffer.c stdio_m.c string_util.c threader.c translate.c unit.c update.c viewports.c colortable.c command_args.c
+csrc = callbacks.c camera.c color2rgb.c readimage.c readgeom.c readobject.c readcad.c colortimebar.c  \
+       clang_test.c compress.c csphere.c dmalloc.c  drawGeometry.c file_util.c getdata.c getdatabounds.c \
+       getdatacolors.c glew.c histogram.c infoheader.c readlabel.c readtour.c readhvac.c readslice.c  \
+       readsmoke.c colorbars.c colorbar_defs.c IOboundary.c IOgeometry.c IOhvac.c IOiso.c IOobjects.c \
+       IOpart.c IOplot2d.c IOplot3d.c IOscript.c IOshooter.c IOslice.c IOsmoke.c IOtour.c IOvolsmoke.c \
+       IOwui.c IOzone.c IOframe.c isobox.c main.c md5.c menus.c output.c readsmv.c renderhtml.c        \
+       renderimage.c scontour2d.c sha1.c sha256.c shaders.c showscene.c skybox.c smokestream.c         \
+       smokeview.c smv_geometry.c startup.c fopen.c stdio_buffer.c stdio_m.c string_util.c threader.c  \
+       translate.c unit.c update.c viewports.c colortable.c command_args.c
 
-cppsrc = glui_bounds.cpp \
-     glui_clip.cpp glui_colorbar.cpp glui_display.cpp glui_geometry.cpp glui_motion.cpp glui_objects.cpp \
-      glui_shooter.cpp glui_smoke.cpp glui_stereo.cpp glui_tour.cpp glui_trainer.cpp
+cppsrc = glui_bounds.cpp  glui_clip.cpp glui_colorbar.cpp glui_display.cpp glui_geometry.cpp glui_motion.cpp \
+         glui_objects.cpp glui_shooter.cpp glui_smoke.cpp glui_stereo.cpp glui_tour.cpp glui_trainer.cpp
 
 src = $(csrc) $(cppsrc)
 
@@ -67,13 +67,13 @@ obj = $(cobj) $(cppobj)
 
 # setup for analyzing smokeview source code using clang
 
-cclang   = $(csrc:.c=.chk)
-cppclang = $(cppsrc:.cpp=.chk)
-clangchk = $(cclang) $(cppclang)
+linux_osx_c_chk    = $(csrc:.c=.chk)
+linux_osx_cpp_chk  = $(cppsrc:.cpp=.chk)
+linux_osx_chk      = $(linux_osx_c_chk) $(linux_osx_cpp_chk)
 
-wincclang   = $(csrc:.c=.winchk)
-wincppclang = $(cppsrc:.cpp=.winchk)
-winclangchk = $(wincclang) $(wincppclang)
+win_c_chk   = $(csrc:.c=.winchk)
+win_cpp_chk = $(cppsrc:.cpp=.winchk)
+win_chk     = $(win_c_chk) $(win_cpp_chk)
 
 #CLANGANALYZE=clang --analyze -Xanalyzer -analyzer-checker=core,deadcode
 CLANGANALYZE=clang --analyze
@@ -394,15 +394,14 @@ gnu_linux_64_check : $(src)
 # ------------- linux_osx_check ----------------
 
 linux_osx_check : CFLAGS    =
-linux_osx_check : $(clangchk)
+linux_osx_check : $(linux_osx_chk)
 	$(CLANGSUMMARY) smokeview.summary
 
 # ------------- win_check ----------------
-# (not working yet)
 
 win_check : CFLAGS    = -D NDEBUG -D WIN32 -D _CONSOLE -D X64 -D GLEW_STATIC -D PTW32_STATIC_LIB 
 win_check : INC += $(WININC)
-win_check : $(winclangchk)
+win_check : $(win_chk)
 	$(CLANGWINSUMMARY) smokeview.summary
 
 # VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
