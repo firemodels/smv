@@ -1,5 +1,4 @@
 #include "options.h"
-//#define pp_CLANG_TEST
 #ifdef pp_CLANG_TEST
 #include <assert.h>
 #include <stdlib.h>
@@ -19,9 +18,13 @@ b=1/a;
 //use undefined value
 c=c+d;
 
-//access array 
+//access NULL array 
 c=array[0];
+
+//access undefined array
 d=barray[0];
+
+//access undefined array position
 e=carray[0];
 
 return;

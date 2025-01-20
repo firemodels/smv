@@ -67,13 +67,13 @@ obj = $(cobj) $(cppobj)
 
 # setup for analyzing smokeview source code using clang
 
-cclang   = $(csrc:.c=.chk)
-cppclang = $(cppsrc:.cpp=.chk)
-clangchk = $(cclang) $(cppclang)
+linux_osx_c_chk    = $(csrc:.c=.chk)
+linux_osx_cpp_chk  = $(cppsrc:.cpp=.chk)
+linux_osx_chk      = $(linux_osx_c_chk) $(linux_osx_cpp_chk)
 
-wincclang   = $(csrc:.c=.winchk)
-wincppclang = $(cppsrc:.cpp=.winchk)
-winclangchk = $(wincclang) $(wincppclang)
+win_c_chk   = $(csrc:.c=.winchk)
+win_cpp_chk = $(cppsrc:.cpp=.winchk)
+win_chk     = $(win_c_chk) $(win_cpp_chk)
 
 #CLANGANALYZE=clang --analyze -Xanalyzer -analyzer-checker=core,deadcode
 CLANGANALYZE=clang --analyze
@@ -394,15 +394,14 @@ gnu_linux_64_check : $(src)
 # ------------- linux_osx_check ----------------
 
 linux_osx_check : CFLAGS    =
-linux_osx_check : $(clangchk)
+linux_osx_check : $(linux_osx_chk)
 	$(CLANGSUMMARY) smokeview.summary
 
 # ------------- win_check ----------------
-# (not working yet)
 
 win_check : CFLAGS    = -D NDEBUG -D WIN32 -D _CONSOLE -D X64 -D GLEW_STATIC -D PTW32_STATIC_LIB 
 win_check : INC += $(WININC)
-win_check : $(winclangchk)
+win_check : $(win_chk)
 	$(CLANGWINSUMMARY) smokeview.summary
 
 # VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
