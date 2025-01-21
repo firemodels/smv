@@ -2675,6 +2675,7 @@ void DrawBoundaryTexture(const meshdata *meshi){
 
   CheckMemory;
   if(vis_threshold==1&&vis_onlythreshold==1&&do_threshold==1)return;
+  if(meshi->patchvis == 0)return;
 
   patch_times=meshi->patch_times;
   xyzpatch = GetPatchXYZ(meshi);
@@ -3564,6 +3565,7 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
   float ttmin, ttmax;
 
   if(vis_threshold==1&&vis_onlythreshold==1&&do_threshold==1)return;
+  if(meshi->patchvis == 0)return;
 
   patch_times = meshi->patch_times;
   patchventcolors = meshi->patchventcolors;

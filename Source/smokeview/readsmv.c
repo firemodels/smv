@@ -1030,6 +1030,7 @@ void InitMesh(meshdata *meshi){
   meshi->mesh_offset_ptr = NULL;
   meshi->cullgeominfo = NULL;
   meshi->blockvis = 1;
+  meshi->patchvis = 1;
   // set meshi->terrain to NULL just after meshinfo is allocated
   meshi->meshrgb[0] = 0.0;
   meshi->meshrgb[1] = 0.0;
