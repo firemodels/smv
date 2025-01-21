@@ -393,7 +393,7 @@ gnu_linux_64_check : $(src)
 
 # ------------- linux_osx_check ----------------
 
-linux_osx_check : CFLAGS    =
+linux_osx_check : CFLAGS    = $(SMV_TESTFLAG)
 linux_osx_check : $(linux_osx_chk)
 	$(CLANGSUMMARY) smokeview.summary
 
