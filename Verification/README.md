@@ -1,8 +1,8 @@
 ##  Smokeview Verification
 
 The smv/Verification/Visualization and smv/Verification/WUI directories contain FDS input files that are run by smokebot 
-to verify visualization results of cases run by FDS.  The smokebot script is contained in bot/Smokebot directory in bot repository at
-[firemodels/bot](https://github.com/firemodels/bot). 
+to verify visualization results of cases run by FDS.  The smokebot script is contained in bot/Smokebot directory  at
+[firemodels/bot/Smokebot](https://github.com/firemodels/bot/Smokebot). 
 
 ### Introduction 
 
