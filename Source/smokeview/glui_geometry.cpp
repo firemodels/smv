@@ -193,8 +193,6 @@ GLUI_Panel *PANEL_properties_triangle = NULL;
 GLUI_Panel *PANEL_properties_vertex = NULL;
 GLUI_Panel *PANEL_properties2 = NULL;
 GLUI_Panel *PANEL_obj_stretch2=NULL,*PANEL_obj_stretch3=NULL, *PANEL_obj_stretch4=NULL;
-GLUI_Panel *PANEL_mesh_vis = NULL;
-GLUI_Panel *PANEL_patch_vis = NULL;
 GLUI_Panel *PANEL_geomedgecheck=NULL;
 GLUI_Panel *PANEL_group1=NULL;
 GLUI_Panel *PANEL_geom_offset=NULL;
@@ -847,30 +845,6 @@ extern "C" void GLUIGeometrySetup(int main_window){
     STATIC_blockage_index = glui_geometry->add_statictext_to_panel(PANEL_obj_stretch4, "&OBST number: ");
     STATIC_label          = glui_geometry->add_statictext_to_panel(PANEL_obj_stretch4, "&OBST label:");
     STATIC_id_label       = glui_geometry->add_statictext_to_panel(PANEL_obj_stretch4, "&OBST ID:");
-
-
-    PANEL_mesh_vis = glui_geometry->add_panel_to_panel(ROLLOUT_structured, "Show blockages(in mesh)");
-    int nn=MIN(global_scase.meshescoll.nmeshes,16);
-    for(i = 0; i < nn; i++){
-      meshdata *meshi;
-      char label[340];
-
-      meshi = global_scase.meshescoll.meshinfo + i;
-      sprintf(label, "%i", i + 1);
-      if(i==nn/2)glui_geometry->add_column_to_panel(PANEL_mesh_vis, false);
-      glui_geometry->add_checkbox_to_panel(PANEL_mesh_vis, label, &meshi->blockvis);
-    }
-
-    PANEL_patch_vis = glui_geometry->add_panel_to_panel(ROLLOUT_structured, "Show patches(in mesh)");
-    for(i = 0; i < nn; i++){
-      meshdata *meshi;
-      char label[340];
-
-      meshi = global_scase.meshescoll.meshinfo + i;
-      sprintf(label, "%i", i + 1);
-      if(i==nn/2)glui_geometry->add_column_to_panel(PANEL_patch_vis, false);
-      glui_geometry->add_checkbox_to_panel(PANEL_patch_vis, label, &meshi->patchvis);
-    }
 
     PANEL_obj_stretch2 = glui_geometry->add_panel_to_panel(ROLLOUT_structured, "Coordinates");
 

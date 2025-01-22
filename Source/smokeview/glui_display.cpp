@@ -149,6 +149,7 @@ GLUI_Rollout *ROLLOUT_user_tick=NULL;
 GLUI_Rollout *ROLLOUT_general=NULL;
 GLUI_Rollout *ROLLOUT_north = NULL;
 GLUI_Rollout *ROLLOUT_light2 = NULL;
+GLUI_Rollout *ROLLOUT_vismesh = NULL;
 
 GLUI_Panel *PANEL_blockage_drawing = NULL;
 GLUI_Panel *PANEL_boundingbox = NULL;
@@ -181,6 +182,8 @@ GLUI_Panel *PANEL_linewidth = NULL;
 GLUI_Panel *PANEL_offset = NULL;
 GLUI_Panel *PANEL_surfs = NULL;
 GLUI_Panel *PANEL_texture_display = NULL;
+GLUI_Panel *PANEL_mesh_vis = NULL;
+GLUI_Panel *PANEL_patch_vis = NULL;
 
 GLUI_RadioGroup *RADIO_show_geom_boundingbox = NULL;
 GLUI_RadioGroup *RADIO_timebar_overlap = NULL;
@@ -281,16 +284,17 @@ GLUI_Button *BUTTON_label_4=NULL;
 #define UPDATEPLOT 10
 
 
-#define GENERAL_ROLLOUT 0
-#define COLORING_ROLLOUT 1
-#define FONTS_ROLLOUT 2
-#define TICKS_ROLLOUT 3
-#define LABELS_ROLLOUT 4
-#define LIGHT_ROLLOUT 5
+#define GENERAL_ROLLOUT   0
+#define COLORING_ROLLOUT  1
+#define FONTS_ROLLOUT     2
+#define TICKS_ROLLOUT     3
+#define LABELS_ROLLOUT    4
+#define LIGHT_ROLLOUT     5
+#define MESHPATCH_ROLLOUT 6
 
 #define UPDATEMENU 1
 
-procdata displayprocinfo[6];
+procdata displayprocinfo[7];
 int ndisplayprocinfo = 0;
 
 /* ------------------ GLUIUpdateVisAxisLabels ------------------------ */
@@ -949,6 +953,31 @@ extern "C" void GLUIDisplaySetup(int main_window){
   PANEL_texture_display = glui_labels->add_panel_to_panel(PANEL_gen3, _("Textures"));
   CHECKBOX_texture_showall = glui_labels->add_checkbox_to_panel(PANEL_texture_display, _("show all"), &texture_showall, TEXTURE_SHOWALL, GLUITextureCB);
   CHECKBOX_texture_hideall = glui_labels->add_checkbox_to_panel(PANEL_texture_display, _("hide all"), &texture_hideall, TEXTURE_HIDEALL, GLUITextureCB);
+
+
+  ROLLOUT_vismesh = glui_labels->add_rollout("Mesh/Patches",false,MESHPATCH_ROLLOUT,DisplayRolloutCB);
+  PANEL_mesh_vis = glui_labels->add_panel_to_panel(ROLLOUT_vismesh, "Show blockages(in mesh)");
+  int nn=MIN(global_scase.meshescoll.nmeshes,16);
+  for(i = 0; i < nn; i++){
+    meshdata *meshi;
+    char label[340];
+
+    meshi = global_scase.meshescoll.meshinfo + i;
+    sprintf(label, "%i", i + 1);
+    if(i==nn/2)glui_labels->add_column_to_panel(PANEL_mesh_vis, false);
+    glui_labels->add_checkbox_to_panel(PANEL_mesh_vis, label, &meshi->blockvis);
+  }
+
+  PANEL_patch_vis = glui_labels->add_panel_to_panel(ROLLOUT_vismesh, "Show patches(in mesh)");
+  for(i = 0; i < nn; i++){
+    meshdata *meshi;
+    char label[340];
+
+    meshi = global_scase.meshescoll.meshinfo + i;
+    sprintf(label, "%i", i + 1);
+    if(i==nn/2)glui_labels->add_column_to_panel(PANEL_patch_vis, false);
+    glui_labels->add_checkbox_to_panel(PANEL_patch_vis, label, &meshi->patchvis);
+  }
 
   ROLLOUT_light2 = glui_labels->add_rollout("Light",false,LIGHT_ROLLOUT,DisplayRolloutCB);
   INSERT_ROLLOUT(ROLLOUT_light2, glui_labels);
