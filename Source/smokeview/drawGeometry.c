@@ -2613,27 +2613,27 @@ void ShowHideInternalFaces(meshdata *meshi, int show){
     facej = meshi->faceinfo + 6 * j;
 
 //down y
-    if(bc->patch_face_index[2]>=0)facej->hidden = 1;
+    if(bc->patch_face_index[2] >= 0 || (meshi->nabors[MFRONT] != NULL && bc->ijk[2]==0))facej->hidden = 1;
     facej++;
 
 // up x
-    if(bc->patch_face_index[1] >= 0)facej->hidden = 1;
+    if(bc->patch_face_index[1] >= 0 || (meshi->nabors[MRIGHT] != NULL && bc->ijk[1] == meshi->ibar))facej->hidden = 1;
     facej++;
 
 //up y
-    if(bc->patch_face_index[3] >= 0 )facej->hidden = 1;
+    if(bc->patch_face_index[3] >= 0 || (meshi->nabors[MBACK] != NULL && bc->ijk[3] == meshi->jbar))facej->hidden = 1;
     facej++;
 
 // down x
-    if(bc->patch_face_index[0] >= 0)facej->hidden = 1;
+    if(bc->patch_face_index[0] >= 0 || (meshi->nabors[MLEFT] != NULL && bc->ijk[0] == 0))facej->hidden = 1;
     facej++;
 
 // down z
-    if(bc->patch_face_index[4] >= 0)facej->hidden = 1;
+    if(bc->patch_face_index[4] >= 0 || (meshi->nabors[MDOWN] != NULL && bc->ijk[4] == 0))facej->hidden = 1;
     facej++;
 
 // up z
-    if(bc->patch_face_index[5] >= 0)facej->hidden = 1;
+    if(bc->patch_face_index[5] >= 0 || (meshi->nabors[MUP]   != NULL && bc->ijk[5] == meshi->kbar))facej->hidden = 1;
     facej++;
   }
 }

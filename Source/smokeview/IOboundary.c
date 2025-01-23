@@ -2357,6 +2357,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
             bc = pfi->meshinfo->blockageinfoptrs[pfi->obst_index - 1];
 #ifdef pp_BOUND_FACE
             int *patch_ib, *obst_ijk;
+
             patch_ib = pfi->ib;
             obst_ijk = bc->ijk;
             if(patch_ib[0] == patch_ib[1]){
@@ -2493,7 +2494,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
 
       pfi = patchi->patchfaceinfo + n;
       if(n == 0)printf("\n");
-      printf("%i: (%i,%i,%i,%i,%i,%i) direction: %i, obst index: %i, mesh index: %i,",
+      printf("patch %i: (%i,%i,%i,%i,%i,%i) direction: %i, obst index: %i, mesh index: %i,",
         n+1, pfi->ib[0], pfi->ib[1], pfi->ib[2], pfi->ib[3], pfi->ib[4], pfi->ib[5],
         pfi->dir, pfi->obst_index, pfi->mesh_index+1);
       if(pfi->internal_mesh_face == 1){
@@ -2675,6 +2676,7 @@ void DrawBoundaryTexture(const meshdata *meshi){
 
   CheckMemory;
   if(vis_threshold==1&&vis_onlythreshold==1&&do_threshold==1)return;
+  if(meshi->patchvis == 0)return;
 
   patch_times=meshi->patch_times;
   xyzpatch = GetPatchXYZ(meshi);
@@ -3564,6 +3566,7 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
   float ttmin, ttmax;
 
   if(vis_threshold==1&&vis_onlythreshold==1&&do_threshold==1)return;
+  if(meshi->patchvis == 0)return;
 
   patch_times = meshi->patch_times;
   patchventcolors = meshi->patchventcolors;
