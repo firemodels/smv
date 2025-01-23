@@ -45,11 +45,6 @@
 #define BLOCK_OUTLINE 2
 
 #define DEVICE_DEVICE 0
-#ifdef pp_DEPRECATED
-#define DEVICE_HEAT 2
-#define DEVICE_SPRK 3
-#define DEVICE_SMOKE 4
-#endif
 
 #define ZVENT_1ROOM 1
 #define ZVENT_2ROOM 2
@@ -1115,25 +1110,6 @@ void InitMesh(meshdata *meshi){
   meshi->thresholdtime = NULL;
   meshi->patchblank = NULL;
   meshi->patch_timeslist = NULL;
-#ifdef pp_DEPRECATED
-  meshi->ntc = 0;
-  meshi->nspr = 0;
-  meshi->xsprplot = NULL;
-  meshi->ysprplot = NULL;
-  meshi->zsprplot = NULL;
-  meshi->xspr = NULL;
-  meshi->yspr = NULL;
-  meshi->zspr = NULL;
-  meshi->tspr = NULL;
-  meshi->nheat = 0;
-  meshi->xheatplot = NULL;
-  meshi->yheatplot = NULL;
-  meshi->zheatplot = NULL;
-  meshi->xheat = NULL;
-  meshi->yheat = NULL;
-  meshi->zheat = NULL;
-  meshi->theat = NULL;
-#endif
   meshi->blockageinfoptrs = NULL;
   meshi->blockageinfo     = NULL;
 
@@ -1517,121 +1493,6 @@ void ReadSMVDynamic(smv_case *scase, char *file){
 
       continue;
     }
-#ifdef pp_DEPRECATED
-  /*
-    +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    ++++++++++++++++++++++ HEAT_ACT +++++++++++++++++++++++++++++
-    +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  */
-    if(MatchSMV(buffer,"HEAT_ACT") == 1){
-      meshdata *meshi;
-      int blocknumber,blocktemp;
-      int nn;
-
-      if(scase->meshescoll.nmeshes>1){
-        blocknumber=ioffset-1;
-      }
-      else{
-        blocknumber=0;
-      }
-      if(strlen(buffer)>9){
-        sscanf(buffer,"%s %i",buffer2,&blocktemp);
-        if(blocktemp>0&&blocktemp<=scase->meshescoll.nmeshes)blocknumber = blocktemp-1;
-      }
-      meshi=scase->meshescoll.meshinfo + blocknumber;
-      FGETS(buffer,255,stream);
-      sscanf(buffer,"%i %f",&nn,&time_local);
-      if(meshi->theat!=NULL && nn>=1 && nn <= meshi->nheat){
-        int idev;
-        int count=0;
-
-        meshi->theat[nn-1]=time_local;
-        for(idev=0;idev<scase->devicecoll.ndeviceinfo;idev++){
-          devicedata *devicei;
-
-          devicei = scase->devicecoll.deviceinfo + idev;
-          if(devicei->type==DEVICE_HEAT){
-            count++;
-            if(nn==count){
-              devicei->act_time=time_local;
-              break;
-            }
-          }
-        }
-      }
-      continue;
-    }
-  /*
-    +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    ++++++++++++++++++++++ SPRK_ACT ++++++++++++++++++++++++++++++
-    +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  */
-    if(MatchSMV(buffer,"SPRK_ACT") == 1){
-      meshdata *meshi;
-      int blocknumber,blocktemp;
-      int nn;
-
-      if(scase->meshescoll.nmeshes>1){
-        blocknumber=ioffset-1;
-      }
-      else{
-        blocknumber=0;
-      }
-      if(strlen(buffer)>9){
-        sscanf(buffer,"%s %i",buffer2,&blocktemp);
-        if(blocktemp>0&&blocktemp<=scase->meshescoll.nmeshes)blocknumber = blocktemp-1;
-      }
-      meshi=scase->meshescoll.meshinfo + blocknumber;
-      FGETS(buffer,255,stream);
-      sscanf(buffer,"%i %f",&nn,&time_local);
-      if(meshi->tspr!=NULL && nn <= meshi->nspr && nn > 0){
-        int idev;
-        int count=0;
-
-        meshi->tspr[nn-1]=time_local;
-
-        for(idev=0;idev<scase->devicecoll.ndeviceinfo;idev++){
-          devicedata *devicei;
-
-          devicei = scase->devicecoll.deviceinfo + idev;
-          if(devicei->type==DEVICE_SPRK){
-            count++;
-            if(nn==count){
-              devicei->act_time=time_local;
-              break;
-            }
-          }
-        }
-      }
-      continue;
-    }
-  /*
-    +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    ++++++++++++++++++++++ SMOD_ACT ++++++++++++++++++++++++++++++
-    +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  */
-    if(MatchSMV(buffer,"SMOD_ACT") == 1){
-      int idev;
-      int count=0;
-      int nn;
-
-      FGETS(buffer,255,stream);
-      sscanf(buffer,"%i %f",&nn,&time_local);
-      for(idev=0;idev<scase->devicecoll.ndeviceinfo;idev++){
-        devicedata *devicei;
-
-        devicei = scase->devicecoll.deviceinfo + idev;
-        if(devicei->type==DEVICE_SMOKE){
-          count++;
-          if(nn==count){
-            devicei->act_time=time_local;
-            break;
-          }
-        }
-      }
-      continue;
-    }
-#endif
   /*
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     ++++++++++++++++++++++ MINMAXPL3D +++++++++++++++++++++++++++
@@ -4094,40 +3955,10 @@ void UpdateMeshCoords(void){
 
   for(i=0;i<global_scase.meshescoll.nmeshes;i++){
     meshdata *meshi;
-#ifdef pp_DEPRECATED
-    float *xspr, *yspr, *zspr;
-    float *xsprplot, *ysprplot, *zsprplot;
-    float *xheat, *yheat, *zheat;
-    float *xheatplot, *yheatplot, *zheatplot;
-#endif
     float *offset;
 
     meshi=global_scase.meshescoll.meshinfo + i;
     offset = meshi->offset;
-#ifdef pp_DEPRECATED
-    xsprplot = meshi->xsprplot;
-    ysprplot = meshi->ysprplot;
-    zsprplot = meshi->zsprplot;
-    xspr = meshi->xspr;
-    yspr = meshi->yspr;
-    zspr = meshi->zspr;
-    xheatplot = meshi->xheatplot;
-    yheatplot = meshi->yheatplot;
-    zheatplot = meshi->zheatplot;
-    xheat = meshi->xheat;
-    yheat = meshi->yheat;
-    zheat = meshi->zheat;
-    for(n=0;n<meshi->nspr;n++){
-      xsprplot[n]=FDS2SMV_X(offset[XXX]+xspr[n]);
-      ysprplot[n]=FDS2SMV_Y(offset[YYY]+yspr[n]);
-      zsprplot[n]=FDS2SMV_Z(offset[ZZZ]+zspr[n]);
-    }
-    for(n=0;n<meshi->nheat;n++){
-      xheatplot[n]=FDS2SMV_X(offset[XXX]+xheat[n]);
-      yheatplot[n]=FDS2SMV_Y(offset[YYY]+yheat[n]);
-      zheatplot[n]=FDS2SMV_Z(offset[ZZZ]+zheat[n]);
-    }
-#endif
     for(n=0;n<meshi->nvents+12;n++){
       ventdata *vi;
 
@@ -7386,9 +7217,6 @@ void SetExternalVents(void){
 int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
   int i;
   int have_zonevents,nzventsnew=0;
-#ifdef pp_DEPRECATED
-  devicedata *devicecopy;
-#endif
   int do_pass4=0, do_pass5=0;
   int roomdefined=0;
   int GRIDpresent=0,startpass;
@@ -7704,25 +7532,6 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
       scase->devicecoll.ndeviceinfo++;
       continue;
     }
-#ifdef pp_DEPRECATED
-    if(
-        MatchSMV(buffer,"SPRK") == 1||
-       MatchSMV(buffer,"HEAT") == 1||
-       MatchSMV(buffer,"SMOD") == 1||
-       MatchSMV(buffer,"THCP") == 1
-    ){
-      int local_ntc;
-
-      FGETS(buffer,255,stream);
-      sscanf(buffer,"%i",&local_ntc);
-      if(local_ntc<0)local_ntc=0;
-      scase->devicecoll.ndeviceinfo+=local_ntc;
-      for(i=0;i<local_ntc;i++){
-        FGETS(buffer,255,stream);
-      }
-      continue;
-    }
-#endif
     if(MatchSMV(buffer,"FDSVERSION")==1){
       int lenbuffer;
       char *buffptr;
@@ -9547,9 +9356,6 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
 
   if(scase->devicecoll.ndeviceinfo>0){
     if(NewMemory((void **)&scase->devicecoll.deviceinfo,scase->devicecoll.ndeviceinfo*sizeof(devicedata))==0)return 2;
-#ifdef pp_DEPRECATED
-    devicecopy=scase->devicecoll.deviceinfo;
-#endif
   }
   scase->devicecoll.ndeviceinfo=0;
   REWIND(stream);
@@ -9662,291 +9468,6 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
       scase->devicecoll.ndeviceinfo++;
       continue;
     }
-#ifdef pp_DEPRECATED
-  /*
-    +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    ++++++++++++++++++++++ THCP ++++++++++++++++++++++++++++++
-    +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  */
-    if(MatchSMV(buffer,"THCP") == 1){
-      meshdata *meshi;
-      float normdenom;
-      char *device_label;
-      int tempval;
-
-      if(ioffset==0)ioffset=1;
-      meshi=scase->meshescoll.meshinfo + ioffset - 1;
-      FGETS(buffer,255,stream);
-      sscanf(buffer,"%i",&tempval);
-      if(tempval<0)tempval=0;
-      meshi->ntc=tempval;
-      scase->ntc_total += meshi->ntc;
-      scase->hasSensorNorm=0;
-      if(meshi->ntc>0){
-        int nn;
-
-        for(nn=0;nn<meshi->ntc;nn++){
-          float *xyz, *xyznorm;
-          FGETS(buffer,255,stream);
-
-          strcpy(devicecopy->deviceID,"");
-          xyz = devicecopy->xyz;
-          xyznorm = devicecopy->xyznorm;
-          xyz[0]=0.0;
-          xyz[1]=0.0;
-          xyz[2]=0.0;
-          xyznorm[0]=0.0;
-          xyznorm[1]=0.0;
-          xyznorm[2]=-1.0;
-          device_label= GetDeviceLabel(buffer);
-          sscanf(buffer,"%f %f %f %f %f %f",xyz,xyz+1,xyz+2,xyznorm,xyznorm+1,xyznorm+2);
-          normdenom=0.0;
-          normdenom+=xyznorm[0]*xyznorm[0];
-          normdenom+=xyznorm[1]*xyznorm[1];
-          normdenom+=xyznorm[2]*xyznorm[2];
-          if(normdenom>0.1){
-            scase->hasSensorNorm=1;
-            normdenom=sqrt(normdenom);
-            xyznorm[0]/=normdenom;
-            xyznorm[1]/=normdenom;
-            xyznorm[2]/=normdenom;
-          }
-          if(device_label==NULL){
-            if(scase->isZoneFireModel==1){
-              devicecopy->object = GetSmvObjectType(&scase->objectscoll,  "target",scase->objectscoll.std_object_defs.thcp_object_backup);
-            }
-            else{
-              devicecopy->object = GetSmvObjectType(&scase->objectscoll,  "thermoc4",scase->objectscoll.std_object_defs.thcp_object_backup);
-            }
-          }
-          else{
-            devicecopy->object = GetSmvObjectType(&scase->objectscoll,  device_label,scase->objectscoll.std_object_defs.thcp_object_backup);
-          }
-          GetElevAz(xyznorm,&devicecopy->dtheta,devicecopy->rotate_axis,NULL);
-
-          InitDevice(scase, devicecopy,xyz,0,NULL,NULL,xyznorm,0,0,NULL,"target");
-          devicecopy->prop=NULL;
-
-          devicecopy++;
-          scase->devicecoll.ndeviceinfo++;
-        }
-      }
-      continue;
-    }
-  /*
-    +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    ++++++++++++++++++++++ SPRK ++++++++++++++++++++++++++++++
-    +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  */
-    if(MatchSMV(buffer,"SPRK") == 1){
-      meshdata *meshi;
-      char *device_label;
-      int tempval;
-
-      meshi=scase->meshescoll.meshinfo + ioffset - 1;
-      FGETS(buffer,255,stream);
-      sscanf(buffer,"%i",&tempval);
-      if(tempval<0)tempval=0;
-      meshi->nspr=tempval;
-      scase->nspr_total += meshi->nspr;
-      if(meshi->nspr>0){
-        float *xsprcopy, *ysprcopy, *zsprcopy;
-        int nn;
-
-        FREEMEMORY(meshi->xspr); FREEMEMORY(meshi->yspr); FREEMEMORY(meshi->zspr); FREEMEMORY(meshi->tspr);
-        if(NewMemory((void **)&meshi->xspr,meshi->nspr*sizeof(float))==0||
-           NewMemory((void **)&meshi->yspr,meshi->nspr*sizeof(float))==0||
-           NewMemory((void **)&meshi->zspr,meshi->nspr*sizeof(float))==0||
-           NewMemory((void **)&meshi->tspr,meshi->nspr*sizeof(float))==0||
-           NewMemory((void **)&meshi->xsprplot,meshi->nspr*sizeof(float))==0||
-           NewMemory((void **)&meshi->ysprplot,meshi->nspr*sizeof(float))==0||
-           NewMemory((void **)&meshi->zsprplot,meshi->nspr*sizeof(float))==0)return 2;
-        for(nn=0;nn<meshi->nspr;nn++){
-          meshi->tspr[nn]=99999.;
-        }
-        xsprcopy=meshi->xspr;
-        ysprcopy=meshi->yspr;
-        zsprcopy=meshi->zspr;
-        for(nn=0;nn<meshi->nspr;nn++){
-          float *xyznorm;
-          float normdenom;
-
-          FGETS(buffer,255,stream);
-          xyznorm = devicecopy->xyznorm;
-          xyznorm[0]=0.0;
-          xyznorm[1]=0.0;
-          xyznorm[2]=-1.0;
-          device_label= GetDeviceLabel(buffer);
-          sscanf(buffer,"%f %f %f %f %f %f",xsprcopy,ysprcopy,zsprcopy,xyznorm,xyznorm+1,xyznorm+2);
-          devicecopy->act_time=-1.0;
-          devicecopy->type = DEVICE_SPRK;
-          devicecopy->xyz[0]=*xsprcopy;
-          devicecopy->xyz[1]=*ysprcopy;
-          devicecopy->xyz[2]=*zsprcopy;
-          normdenom=0.0;
-          normdenom+=xyznorm[0]*xyznorm[0];
-          normdenom+=xyznorm[1]*xyznorm[1];
-          normdenom+=xyznorm[2]*xyznorm[2];
-          normdenom=sqrt(normdenom);
-          if(normdenom>0.001){
-            xyznorm[0]/=normdenom;
-            xyznorm[1]/=normdenom;
-            xyznorm[2]/=normdenom;
-          }
-          if(device_label==NULL){
-            devicecopy->object = GetSmvObjectType(&scase->objectscoll,  "sprinkler_upright",scase->objectscoll.std_object_defs.sprinkler_upright_object_backup);
-          }
-          else{
-            devicecopy->object = GetSmvObjectType(&scase->objectscoll,  device_label,scase->objectscoll.std_object_defs.sprinkler_upright_object_backup);
-          }
-          GetElevAz(xyznorm,&devicecopy->dtheta,devicecopy->rotate_axis,NULL);
-
-          InitDevice(scase, devicecopy,NULL,0,NULL,NULL,xyznorm,0,0,NULL,NULL);
-
-          devicecopy++;
-          scase->devicecoll.ndeviceinfo++;
-
-          xsprcopy++; ysprcopy++; zsprcopy++;
-        }
-      }
-      continue;
-    }
-  /*
-    +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    ++++++++++++++++++++++ HEAT ++++++++++++++++++++++++++++++
-    +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  */
-    if(MatchSMV(buffer,"HEAT") == 1){
-      meshdata *meshi;
-      char *device_label;
-      int tempval;
-      int  nn;
-
-      meshi=scase->meshescoll.meshinfo + ioffset - 1;
-      FGETS(buffer,255,stream);
-      sscanf(buffer,"%i",&tempval);
-      if(tempval<0)tempval=0;
-      meshi->nheat=tempval;
-      scase->nheat_total += meshi->nheat;
-      if(meshi->nheat>0){
-        float *xheatcopy, *yheatcopy, *zheatcopy;
-
-        FREEMEMORY(meshi->xheat); FREEMEMORY(meshi->yheat); FREEMEMORY(meshi->zheat); FREEMEMORY(meshi->theat);
-        FREEMEMORY(meshi->xheatplot); FREEMEMORY(meshi->yheatplot); FREEMEMORY(meshi->zheatplot);
-        if(NewMemory((void **)&meshi->xheat,meshi->nheat*sizeof(float))==0||
-           NewMemory((void **)&meshi->yheat,meshi->nheat*sizeof(float))==0||
-           NewMemory((void **)&meshi->zheat,meshi->nheat*sizeof(float))==0||
-           NewMemory((void **)&meshi->theat,meshi->nheat*sizeof(float))==0||
-           NewMemory((void **)&meshi->xheatplot,meshi->nheat*sizeof(float))==0||
-           NewMemory((void **)&meshi->yheatplot,meshi->nheat*sizeof(float))==0||
-           NewMemory((void **)&meshi->zheatplot,meshi->nheat*sizeof(float))==0)return 2;
-        for(nn=0;nn<meshi->nheat;nn++){
-          meshi->theat[nn]=99999.;
-        }
-        xheatcopy=meshi->xheat;
-        yheatcopy=meshi->yheat;
-        zheatcopy=meshi->zheat;
-        for(nn=0;nn<meshi->nheat;nn++){
-          float *xyznorm;
-          float normdenom;
-          FGETS(buffer,255,stream);
-          xyznorm=devicecopy->xyznorm;
-          xyznorm[0]=0.0;
-          xyznorm[1]=0.0;
-          xyznorm[2]=-1.0;
-          device_label= GetDeviceLabel(buffer);
-          sscanf(buffer,"%f %f %f %f %f %f",xheatcopy,yheatcopy,zheatcopy,xyznorm,xyznorm+1,xyznorm+2);
-          devicecopy->type = DEVICE_HEAT;
-          devicecopy->act_time=-1.0;
-          devicecopy->xyz[0]=*xheatcopy;
-          devicecopy->xyz[1]=*yheatcopy;
-          devicecopy->xyz[2]=*zheatcopy;
-          normdenom=0.0;
-          normdenom+=xyznorm[0]*xyznorm[0];
-          normdenom+=xyznorm[1]*xyznorm[1];
-          normdenom+=xyznorm[2]*xyznorm[2];
-          normdenom=sqrt(normdenom);
-          if(normdenom>0.001){
-            xyznorm[0]/=normdenom;
-            xyznorm[1]/=normdenom;
-            xyznorm[2]/=normdenom;
-          }
-          if(device_label==NULL){
-            devicecopy->object = GetSmvObjectType(&scase->objectscoll,  "heat_detector",scase->objectscoll.std_object_defs.heat_detector_object_backup);
-          }
-          else{
-            devicecopy->object = GetSmvObjectType(&scase->objectscoll,  device_label,scase->objectscoll.std_object_defs.heat_detector_object_backup);
-          }
-          GetElevAz(xyznorm,&devicecopy->dtheta,devicecopy->rotate_axis,NULL);
-
-          InitDevice(scase, devicecopy,NULL,0,NULL,NULL,xyznorm,0,0,NULL,NULL);
-          devicecopy->prop=NULL;
-
-          devicecopy++;
-          scase->devicecoll.ndeviceinfo++;
-          xheatcopy++; yheatcopy++; zheatcopy++;
-
-        }
-      }
-      continue;
-    }
-  /*
-    +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    ++++++++++++++++++++++ SMOD ++++++++++++++++++++++++++++++
-    +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  */
-    if(MatchSMV(buffer,"SMOD") == 1){
-      float xyz[3];
-      int sdnum;
-      char *device_label;
-      int nn;
-
-      FGETS(buffer,255,stream);
-      sscanf(buffer,"%i",&sdnum);
-      if(sdnum<0)sdnum=0;
-      for(nn=0;nn<sdnum;nn++){
-        float *xyznorm;
-        float normdenom;
-
-        xyznorm = devicecopy->xyznorm;
-        xyznorm[0]=0.0;
-        xyznorm[1]=0.0;
-        xyznorm[2]=-1.0;
-        device_label= GetDeviceLabel(buffer);
-        FGETS(buffer,255,stream);
-        sscanf(buffer,"%f %f %f %f %f %f",xyz,xyz+1,xyz+2,xyznorm,xyznorm+1,xyznorm+2);
-        devicecopy->type = DEVICE_SMOKE;
-        devicecopy->act_time=-1.0;
-        devicecopy->xyz[0]=xyz[0];
-        devicecopy->xyz[1]=xyz[1];
-        devicecopy->xyz[2]=xyz[2];
-        normdenom=0.0;
-        normdenom+=xyznorm[0]*xyznorm[0];
-        normdenom+=xyznorm[1]*xyznorm[1];
-        normdenom+=xyznorm[2]*xyznorm[2];
-        normdenom=sqrt(normdenom);
-        if(normdenom>0.001){
-          xyznorm[0]/=normdenom;
-          xyznorm[1]/=normdenom;
-          xyznorm[2]/=normdenom;
-        }
-        if(device_label==NULL){
-          devicecopy->object = GetSmvObjectType(&scase->objectscoll,  "smoke_detector",scase->objectscoll.std_object_defs.smoke_detector_object_backup);
-        }
-        else{
-          devicecopy->object = GetSmvObjectType(&scase->objectscoll,  device_label,scase->objectscoll.std_object_defs.smoke_detector_object_backup);
-        }
-        GetElevAz(xyznorm,&devicecopy->dtheta,devicecopy->rotate_axis,NULL);
-
-        InitDevice(scase, devicecopy,xyz,0,NULL,NULL,xyznorm,0,0,NULL,NULL);
-
-        devicecopy++;
-        scase->devicecoll.ndeviceinfo++;
-
-      }
-      continue;
-    }
-#endif
   }
 
   STOP_TIMER(scase->pass3_time);
