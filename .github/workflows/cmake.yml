@@ -26,7 +26,7 @@ jobs:
     steps:
       # Check out the smv repo
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       # If we are currently building on Linux (ubuntu) install all the native
       # pre-requisites
       - name: Install linux deps
@@ -76,7 +76,7 @@ jobs:
         run: echo "exec_suffix=-lua" >> $GITHUB_ENV
       # Archive the smokeview executable
       - name: Archive production artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: smokeview-${{ runner.os }}-${{ env.exec_suffix }}
           path: smokeview
@@ -140,7 +140,7 @@ jobs:
         shell: bash
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Pin vcpkg version
         run: |
           cd C:\vcpkg
@@ -165,7 +165,7 @@ jobs:
         if: ${{ matrix.lua }}
         run: echo "exec_suffix=-lua" >> $GITHUB_ENV
       - name: Archive production artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: smokeview-windows-msvc-${{ env.exec_suffix }}
           path: smokeview.exe
