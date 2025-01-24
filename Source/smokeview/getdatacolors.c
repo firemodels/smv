@@ -1778,10 +1778,8 @@ float *GetColorPtr(smv_case *scase, float *color){
 
   if(scase->firstcolor==NULL){
     NewMemory((void *)&scase->firstcolor,sizeof(colordata));
-    for(i=0;i<4;i++){
-      scase->firstcolor->color[i]=color[i];
-      scase->firstcolor->full_color[i]=color[i];
-    }
+    memcpy(scase->firstcolor->color,      color, 4*sizeof(float));
+    memcpy(scase->firstcolor->full_color, color, 4*sizeof(float));
     scase->firstcolor->bw_color[0] = TOBW(color);
     scase->firstcolor->bw_color[1] = scase->firstcolor->bw_color[0];
     scase->firstcolor->bw_color[2] = scase->firstcolor->bw_color[0];
@@ -1801,10 +1799,8 @@ float *GetColorPtr(smv_case *scase, float *color){
   lastcolor=NULL;
   NewMemory((void *)&lastcolor,sizeof(colordata));
   oldlastcolor->nextcolor=lastcolor;
-  for(i=0;i<4;i++){
-    lastcolor->color[i]=color[i];
-    lastcolor->full_color[i]=color[i];
-  }
+  memcpy(lastcolor->color,      color, 4*sizeof(float));
+  memcpy(lastcolor->full_color, color, 4*sizeof(float));
   lastcolor->bw_color[0] = TOBW(color);
   lastcolor->bw_color[1] = lastcolor->bw_color[0];
   lastcolor->bw_color[2] = lastcolor->bw_color[0];
