@@ -4084,13 +4084,9 @@ void InitObst(smv_case *scase, blockagedata *bc, surfdata *surf, int index, int 
   char blocklabel[255];
   size_t len;
 
-#ifdef pp_BOUND_FACE
   int ind_default[] = {-1, -1, -1, -1, -1, -1};
 
   memcpy(bc->patch_face_index, ind_default, 6 * sizeof(int));
-#else
-  bc->patch_index = -1;
-#endif
   bc->prop = NULL;
   bc->is_wuiblock = 0;
   bc->transparent = 0;
