@@ -288,15 +288,6 @@ typedef struct _meshdata {
   struct _isosurface *currentsurf, *currentsurf2;
   struct _isosurface *blockagesurface;
   struct _isosurface **blockagesurfaces;
-#ifdef pp_DEPRECATED
-  int ntc;
-  int nspr;
-  float *xsprplot, *ysprplot, *zsprplot, *tspr;
-  int nheat;
-  float *xheatplot, *yheatplot, *zheatplot, *theat;
-  float *xspr, *yspr, *zspr;
-  float *xheat, *yheat, *zheat;
-#endif
 
   struct _isosurface *animatedsurfaces;
   int nisolevels, *showlevels;

@@ -21,17 +21,6 @@ SETTIMEVAL
 RENDERONCE
  test1_iso_19
 
-// render particle files using points
-
-UNLOADALL
-LOADPARTICLES
-PARTCLASSCOLOR
- Uniform color
-SETTIMEVAL
- 19
-RENDERONCE
- test1_part_19
-
 // render boundary files
 
 UNLOADALL
@@ -56,3 +45,13 @@ SETTIMEVAL
 RENDERONCE
  test1_smoke_19
 
+// render particle files using points
+
+UNLOADALL
+LOADPARTICLES
+PARTCLASSCOLOR
+ Uniform color
+SETTIMEVAL
+ 19
+RENDERONCE
+ test1_part_19
