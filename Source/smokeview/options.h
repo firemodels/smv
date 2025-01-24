@@ -15,7 +15,6 @@
 //#define pp_SKY              // add sky, a blue hemisphere, above the scene
 //#define pp_TOUR_SNAP         // turn on tour snap option
 #define pp_BOUND_FACE       // show hide obst face independently when visualizing boundary files
-//#define pp_CLANG_TEST     // turn on to test clang --analyze
 
 #ifdef pp_FRAME          // turn on each frame type if pp_FRAME is set
 #define pp_BOUNDFRAME    // turn on frame code for boundary files

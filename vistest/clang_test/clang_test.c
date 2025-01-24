@@ -1,5 +1,3 @@
-#include "options.h"
-#ifdef pp_CLANG_TEST
 #include <assert.h>
 #include <stdlib.h>
 #include <math.h>
@@ -32,4 +30,3 @@ return;
 b=1;
 c=1;
 }
-#endif
