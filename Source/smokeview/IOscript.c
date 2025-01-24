@@ -781,6 +781,7 @@ int CompileScript(char *scriptfile){
 
 // UNLOADALL
       case SCRIPT_UNLOADALL:
+        break;
 
 // LOADPARTICLES
       case SCRIPT_LOADPARTICLES:
@@ -789,9 +790,11 @@ int CompileScript(char *scriptfile){
 
 // CBARFLIP:
       case SCRIPT_CBARFLIP:
+        break;
 
 // CBARNORMAL:
       case SCRIPT_CBARNORMAL:
+        break;
 
 // OUTPUTSMOKESENSORS
       case SCRIPT_OUTPUTSMOKESENSORS:
