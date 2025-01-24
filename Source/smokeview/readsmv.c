@@ -14166,22 +14166,6 @@ int ReadIni2(const char *inifile, int localfile){
       GLUISetColorControls();
       continue;
     }
-    if(MatchINI(buffer, "BLOCKCOLOR") == 1){
-      float blockcolor_temp[4];
-
-      fgets(buffer, 255, stream);
-      sscanf(buffer, "%f %f %f", blockcolor_temp, blockcolor_temp + 1, blockcolor_temp + 2);
-      blockcolor_temp[3] = 1.0;
-      block_ambient2 = GetColorPtr(&global_scase, blockcolor_temp);
-      global_scase.updatefaces = 1;
-      global_scase.updateindexcolors = 1;
-      continue;
-    }
-    if(MatchINI(buffer, "BLOCKLOCATION") == 1){
-      fgets(buffer, 255, stream);
-      sscanf(buffer, "%i", &blocklocation);
-      continue;
-    }
     if(MatchINI(buffer, "BEAM") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%i %f %i %i %i %i",
@@ -14193,7 +14177,22 @@ int ReadIni2(const char *inifile, int localfile){
       beam_color[2] = CLAMP(beam_color[2], 0, 255);
       continue;
     }
+    if(MatchINI(buffer, "BLOCKLOCATION") == 1){
+      fgets(buffer, 255, stream);
+      sscanf(buffer, "%i", &blocklocation);
+      continue;
+    }
+    if(MatchINI(buffer, "BLOCKCOLOR") == 1){
+      float blockcolor_temp[4];
 
+      fgets(buffer, 255, stream);
+      sscanf(buffer, "%f %f %f", blockcolor_temp, blockcolor_temp + 1, blockcolor_temp + 2);
+      blockcolor_temp[3] = 1.0;
+      block_ambient2 = GetColorPtr(&global_scase, blockcolor_temp);
+      global_scase.updatefaces = 1;
+      global_scase.updateindexcolors = 1;
+      continue;
+    }
     if(MatchINI(buffer, "BLOCKSHININESS") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%f", &block_shininess);
