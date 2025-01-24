@@ -1774,8 +1774,6 @@ void GetRGB(unsigned int val, unsigned char *rr, unsigned char *gg, unsigned cha
 float *GetColorPtr(smv_case *scase, float *color){
   colordata *colorptr,*oldlastcolor,*lastcolor;
 
-  int i;
-
   if(scase->firstcolor==NULL){
     NewMemory((void *)&scase->firstcolor,sizeof(colordata));
     memcpy(scase->firstcolor->color,      color, 4*sizeof(float));
