@@ -3583,6 +3583,8 @@ void DrawFaces(){
   if(nface_normals_double>0){
     int j;
 
+    new_color = NULL;
+    old_color = NULL;
     ENABLE_LIGHTING;
     glMaterialfv(GL_FRONT_AND_BACK,GL_SHININESS,&block_shininess);
     glMaterialfv(GL_FRONT_AND_BACK,GL_AMBIENT_AND_DIFFUSE,block_ambient2);
