@@ -1,6 +1,7 @@
 #include "options.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 #include "scontour2d.h"
 #include "dmalloc.h"
 #ifdef _WIN32
