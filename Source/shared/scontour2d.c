@@ -549,12 +549,12 @@ void GetContourNodes(const double x[4], const double y[4], const double val[4],
   *nnode2=contourline_list[casenum][0];
   if(casenum==0)return;
 
+  memcpy(xcopy,     x, 4*sizeof(float));;
+  memcpy(ycopy,     y, 4*sizeof(float));;
+  memcpy(valcopy, val, 4*sizeof(float));;
   for(n=0;n<4;n++){
-    xcopy[n]=x[n];
-    ycopy[n]=y[n];
-    valcopy[n]=val[n];
-    vallownet[n]=val[n]-contlow;
-    valhighnet[n]=val[n]-conthigh;
+    vallownet[n]  =val[n] - contlow;
+    valhighnet[n] =val[n] - conthigh;
   }
   xcopy[4]=x[0];
   ycopy[4]=y[0];
@@ -627,10 +627,13 @@ void GetLineContourNodes(double linelevel, const double x[4], const double y[4],
   *nline_nodes=contourline_list[casenum][0];
   if(casenum==0)return;
 
+
+  for(n = 0;n < 4;n++){
+    xcopy[n] = x[n];
+    ycopy[n] = y[n];
+    valcopy[n] = val[n];
+  }
   for(n=0;n<4;n++){
-    xcopy[n]=x[n];
-    ycopy[n]=y[n];
-    valcopy[n]=val[n];
     valnet[n]=val[n]-linelevel;
   }
   xcopy[4]=x[0];

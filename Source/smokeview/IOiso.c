@@ -1546,11 +1546,9 @@ void DrawStaticIso(const isosurface *asurface,int surfacetype,
 
       if(smooth_iso_normal==1){
         if(vertexnorm==NULL){
-          for(k=0;k<3;k++){
-            vv1n[k]=vv1[k];
-            vv2n[k]=vv2[k];
-            vv3n[k]=vv3[k];
-          }
+          memcpy(vv1n, vv1, 3*sizeof(float));
+          memcpy(vv2n, vv2, 3*sizeof(float));
+          memcpy(vv3n, vv3, 3*sizeof(float));
         }
         else{
           norm1 = vertexnorm+i1;
@@ -1572,11 +1570,9 @@ void DrawStaticIso(const isosurface *asurface,int surfacetype,
       }
       else{
         if(norm==NULL){
-          for(k=0;k<3;k++){
-            vv1n[k]=vv1[k];
-            vv2n[k]=vv2[k];
-            vv3n[k]=vv3[k];
-          }
+          memcpy(vv1n, vv1, 3*sizeof(float));
+          memcpy(vv2n, vv2, 3*sizeof(float));
+          memcpy(vv3n, vv3, 3*sizeof(float));
         }
         else{
           for(k=0;k<3;k++){
