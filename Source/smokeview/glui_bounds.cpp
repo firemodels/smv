@@ -2719,11 +2719,6 @@ extern GLUI *glui_clip, *glui_colorbar, *glui_labels, *glui_geometry, *glui_moti
 extern GLUI *glui_shooter, *glui_tour, *glui_stereo, *glui_trainer;
 #endif
 
-GLUI_Listbox *LISTBOX_cb_bound = NULL;
-
-GLUI_Rollout *ROLLOUT_zone_bound=NULL;
-GLUI_Rollout *ROLLOUT_coloring=NULL;
-
 #define MEMCHECK 1
 
 GLUI_Button *BUTTON_globalalpha = NULL;
@@ -2748,9 +2743,13 @@ GLUI_Button *BUTTON_BOUNDARY = NULL;
 GLUI_Button *BUTTON_ISO = NULL;
 GLUI_Button *BUTTON_OUTPUT_PLOT2D=NULL;
 
+GLUI_Listbox *LISTBOX_cb_bound = NULL;
 GLUI_Listbox *LIST_colortable = NULL;
 GLUI_Listbox *LIST_iso_colorbar = NULL;
 
+GLUI_Rollout *ROLLOUT_zone_bound=NULL;
+GLUI_Rollout *ROLLOUT_coloring=NULL;
+GLUI_Rollout *ROLLOUT_vismesh = NULL;
 GLUI_Rollout *ROLLOUT_memcheck=NULL;
 GLUI_Rollout *ROLLOUT_boundary_duplicates;
 GLUI_Rollout *ROLLOUT_iso_settings;
@@ -2857,6 +2856,8 @@ GLUI_Panel *PANEL_slice_plot2df = NULL;
 GLUI_Panel *PANEL_loadbounds = NULL;
 GLUI_Panel *PANEL_intersection_box = NULL;
 GLUI_Panel *PANEL_read_test = NULL;
+GLUI_Panel *PANEL_mesh_vis = NULL;
+GLUI_Panel *PANEL_patch_vis = NULL;
 
 GLUI_Spinner *SPINNER_partdrawskip = NULL;
 GLUI_Spinner *SPINNER_sliceval_ndigits = NULL;
@@ -3048,8 +3049,10 @@ GLUI_RadioButton *RADIOBUTTON_zone_permax=NULL;
 #define SLICE_ROLLOUT_BOUNDS    7
 #define HVACDUCT_ROLLOUT 8
 #define HVACNODE_ROLLOUT 9
+#define TIME_ROLLOUT     10
+#define MESHPATCH_ROLLOUT 11
 
-procdata  boundprocinfo[10];
+procdata  boundprocinfo[12];
 int      nboundprocinfo = 0;
 
 //*** loadprocinfo entries
@@ -3110,9 +3113,8 @@ int      nplot3dprocinfo=0;
 #define FILEBOUNDS_ROLLOUT 5
 #define COLORING_ROLLOUT   6
 #define MEMCHECK_ROLLOUT   7
-#define TIME_ROLLOUT       8
 
-procdata  fileprocinfo[9];
+procdata  fileprocinfo[8];
 int      nfileprocinfo = 0;
 
 //*** particleprocinfo entries
@@ -5037,6 +5039,7 @@ extern "C" void GLUIBoundsSetup(int main_window){
 
   // ----------------------------------- 3D smoke ----------------------------------------
 
+
   if(global_scase.smoke3dcoll.nsmoke3dinfo>0||nvolrenderinfo>0){
     ROLLOUT_smoke3d = glui_bounds->add_rollout_to_panel(ROLLOUT_filebounds,_("3D smoke"),false,SMOKE3D_ROLLOUT,BoundRolloutCB);
     INSERT_ROLLOUT(ROLLOUT_smoke3d, glui_bounds);
@@ -5621,9 +5624,9 @@ hvacductboundsCPP.setup("hvac", ROLLOUT_hvacduct, hvacductbounds_cpp, nhvacductb
 
   // ----------------------------------- Time ----------------------------------------
 
-  ROLLOUT_time = glui_bounds->add_rollout_to_panel(ROLLOUT_filebounds, "Loading options", false, TIME_ROLLOUT, BoundRolloutCB);
+  ROLLOUT_time = glui_bounds->add_rollout_to_panel(ROLLOUT_filebounds, "Load options", false, TIME_ROLLOUT, BoundRolloutCB);
   INSERT_ROLLOUT(ROLLOUT_time, glui_bounds);
-  ADDPROCINFO(fileprocinfo, nfileprocinfo, ROLLOUT_time, TIME_ROLLOUT, glui_bounds);
+  ADDPROCINFO(boundprocinfo, nboundprocinfo, ROLLOUT_time, TIME_ROLLOUT, glui_bounds);
 
 #ifdef pp_FRAME
   SPINNER_nframe_threads = glui_bounds->add_spinner_to_panel(ROLLOUT_time, _("read threads:"), GLUI_SPINNER_INT, &nframe_threads);
@@ -5744,6 +5747,39 @@ hvacductboundsCPP.setup("hvac", ROLLOUT_hvacduct, hvacductbounds_cpp, nhvacductb
   MeshBoundCB(USEMESH_USE_XYZ_ALL);
   glui_meshclip_defined = 1;
 
+  ROLLOUT_vismesh = glui_bounds->add_rollout_to_panel(ROLLOUT_filebounds, "View options",false,MESHPATCH_ROLLOUT, BoundRolloutCB);
+  INSERT_ROLLOUT(ROLLOUT_vismesh, glui_bounds);
+  ADDPROCINFO(boundprocinfo, nboundprocinfo, ROLLOUT_vismesh, MESHPATCH_ROLLOUT, glui_bounds);
+
+  PANEL_mesh_vis = glui_bounds->add_panel_to_panel(ROLLOUT_vismesh, "Show blockages in mesh:");
+  int nn=MIN(global_scase.meshescoll.nmeshes,64);
+  for(i = 0; i < nn; i++){
+    meshdata *meshi;
+    char label[340];
+
+    meshi = global_scase.meshescoll.meshinfo + i;
+    sprintf(label, "%i", i + 1);
+    if(
+        i ==   nn/8 || i ==   nn/4 || i ==3*nn/8 || i==nn/2 ||
+        i == 5*nn/8 || i == 3*nn/4 || i ==7*nn/8
+      )glui_bounds->add_column_to_panel(PANEL_mesh_vis, false);
+    glui_bounds->add_checkbox_to_panel(PANEL_mesh_vis, label, &meshi->blockvis);
+  }
+
+  PANEL_patch_vis = glui_bounds->add_panel_to_panel(ROLLOUT_vismesh, "Show data in mesh:");
+  for(i = 0; i < nn; i++){
+    meshdata *meshi;
+    char label[340];
+
+    meshi = global_scase.meshescoll.meshinfo + i;
+    sprintf(label, "%i", i + 1);
+    if(
+        i ==   nn/8 || i ==   nn/4 || i ==3*nn/8 || i==nn/2 ||
+        i == 5*nn/8 || i == 3*nn/4 || i ==7*nn/8
+      )glui_bounds->add_column_to_panel(PANEL_patch_vis, false);
+    glui_bounds->add_checkbox_to_panel(PANEL_patch_vis, label, &meshi->datavis);
+  }
+  
   // -------------- Data coloring -------------------
 
   ROLLOUT_coloring = glui_bounds->add_rollout("Coloring", false, COLORING_ROLLOUT, FileRolloutCB);

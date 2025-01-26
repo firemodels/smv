@@ -213,7 +213,7 @@ typedef struct _meshdata {
 #endif
   float meshrgb[3], *meshrgb_ptr;
   float mesh_offset[3], *mesh_offset_ptr;
-  int blockvis, patchvis;
+  int blockvis, datavis;
   float *xplt, *yplt, *zplt;
   double *xpltd, *ypltd, *zpltd;
   int ivolbar, jvolbar, kvolbar;

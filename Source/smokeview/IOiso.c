@@ -1113,6 +1113,7 @@ void DrawIsoOrig(int tranflag){
   meshdata *meshi;
 
   meshi = loaded_isomesh;
+  if(meshi->datavis == 0)return;
 
   CheckMemory;
   if(tranflag==DRAW_TRANSPARENT&&((visAIso&1)==0))return;
