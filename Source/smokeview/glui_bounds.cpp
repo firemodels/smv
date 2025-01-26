@@ -4894,6 +4894,9 @@ void GLUIShowHideGeomDataCB(int var){
         CHECKBOX_show_mesh_data[i]->set_int_val(0);
       }
       break;
+    default:
+      assert(FFALSE);
+      break;
   }
 }
 
