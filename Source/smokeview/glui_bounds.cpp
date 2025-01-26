@@ -288,9 +288,9 @@ void bounds_dialog::setupNoGraphics(const char *file_type, cpp_boundsdata *bound
 
 /* ------------------ setup ------------------------ */
 
-void bounds_dialog::setup(const char *file_type, GLUI_Rollout * ROLLOUT_dialog, cpp_boundsdata * bounds_arg, int nbounds_arg, int *cache_flag, int cache_enable,
+void bounds_dialog::setup(const char *file_type, GLUI_Rollout *ROLLOUT_dialog, cpp_boundsdata *bounds_arg, int nbounds_arg, int *cache_flag, int cache_enable,
   void Callback(int var),
-  GLUI_Update_CB PROC_CB, procdata * procinfo, int *nprocinfo){
+  GLUI_Update_CB PROC_CB, procdata *procinfo, int *nprocinfo){
   GLUI_Rollout *ROLLOUT_bound;
   GLUI_Panel *PANEL_bound2, *PANEL_minmax, *PANEL_minmax2, *PANEL_buttons;
   GLUI_Panel *PANEL_truncate_min, *PANEL_truncate_max, *PANEL_edit_min, *PANEL_edit_max;
@@ -3262,7 +3262,7 @@ extern "C" void GLUISplitCB(int var){
     if(split_colorbar == NULL)break;
     denom = splitvals[2] - splitvals[0];
     if(denom == 0.0)denom = 1.0;
-    isplit = CLAMP(255 * (splitvals[1] - splitvals[0]) / denom, 0, 254);
+    isplit = CLAMP(255*(splitvals[1] - splitvals[0]) / denom, 0, 254);
     split_colorbar->node_index[1] = isplit;
     split_colorbar->node_index[2] = isplit + 1;
 
@@ -5815,7 +5815,6 @@ hvacductboundsCPP.setup("hvac", ROLLOUT_hvacduct, hvacductbounds_cpp, nhvacductb
   glui_bounds->add_column_to_panel(PANEL_geom_vis3, false);  
   glui_bounds->add_button_to_panel(PANEL_geom_vis3, _("Hide all"),     HIDE_ALL_MESH_GEOM, GLUIShowHideGeomDataCB);
   
-
   PANEL_data_vis1 = glui_bounds->add_panel_to_panel(ROLLOUT_vismesh, "Show/hide data in mesh:");
   PANEL_data_vis2 = glui_bounds->add_panel_to_panel(PANEL_data_vis1, "", GLUI_PANEL_NONE);
   for(i = 0; i < nn; i++){
@@ -6318,7 +6317,7 @@ extern "C" void GLUIIsoBoundCB(int var){
     break;
   case GLOBAL_ALPHA:
     for(i = 0; i < MAX_ISO_COLORS; i++){
-      iso_colors[4 * i + 3] = iso_transparency;
+      iso_colors[4*i + 3] = iso_transparency;
     }
     if(SPINNER_iso_colors[3]!=NULL)SPINNER_iso_colors[3]->set_int_val(glui_iso_transparency);
     GLUIIsoBoundCB(ISO_COLORS);
@@ -6337,10 +6336,10 @@ extern "C" void GLUIIsoBoundCB(int var){
       float graylevel;
 
       graylevel = TOBW(iso_colors+4*i);
-      iso_colorsbw[4 * i + 0] = graylevel;
-      iso_colorsbw[4 * i + 1] = graylevel;
-      iso_colorsbw[4 * i + 2] = graylevel;
-      iso_colorsbw[4 * i + 3] = iso_colors[4 * i + 3];
+      iso_colorsbw[4*i + 0] = graylevel;
+      iso_colorsbw[4*i + 1] = graylevel;
+      iso_colorsbw[4*i + 2] = graylevel;
+      iso_colorsbw[4*i + 3] = iso_colors[4*i + 3];
     }
     UpdateIsoColors();
     if(LIST_colortable!=NULL){
