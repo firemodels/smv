@@ -1,8 +1,6 @@
 name: CMake Build
 on: [push, pull_request]
 env:
-  CACHE_NUMBER: 2
-  COMPILER_VERSION: 2022.0.3
   BUILD_TYPE: Release
 
 jobs:
@@ -16,7 +14,7 @@ jobs:
       # and build configurations
       matrix:
         os:
-          - ubuntu-latest
+          - ubuntu-24.04
           - macos-latest
         lua:
           - on
@@ -72,58 +70,14 @@ jobs:
           xvfb-run ctest --test-dir cbuild -j10 --output-on-failure -V
       # Set a suffix based on whether lua is included
       - name: Set exec suffix
-        if: ${{ matrix.lua }}
+        if: matrix.lua == 'on'
         run: echo "exec_suffix=-lua" >> $GITHUB_ENV
       # Archive the smokeview executable
       - name: Archive production artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: smokeview-${{ runner.os }}-${{ env.exec_suffix }}
+          name: smokeview-${{ runner.os }}${{ env.exec_suffix }}
           path: smokeview
-  #build_unix_rpm_gcc:
-  #  name: build (rpm) ${{ matrix.os }} - lua=${{ matrix.lua }} - gcc
-  #  runs-on:  ubuntu-latest
-  #  container: centos:7
-  #  strategy:
-  #    fail-fast: false
-  #    matrix:
-  #      lua:
-  #        - on
-  #        - off
-  #  steps:
-  #    - name: Checkout code
-  #      uses: actions/checkout@v3
-  #    - name: Install linux deps
-  #      run: |
-  #        yum -y install epel-release
-  #        yum -y install cmake3
-  #        yum -y install make gcc-c++ mesa-libGL-devel glut-devel libjpeg-devel libpng-devel gd-devel glew-devel libXmu-devel libXi-devel lua-devel json-c-devel
-  #        yum -y install wget unzip git
-  #    - name: set gcc
-  #      shell: bash
-  #      run: |
-  #        echo "CC=gcc" >> $GITHUB_ENV
-  #        echo "CXX=g++" >> $GITHUB_ENV
-  #    - name: Build
-  #      shell: bash
-  #      run: |
-  #        pkg-config --cflags json-c
-  #        cmake3 -B ${{github.workspace}}/cbuild -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DLUA=${{ matrix.lua }}
-  #        cmake3 --build ${{github.workspace}}/cbuild -j4
-  #        cp ${{github.workspace}}/cbuild/smokeview smokeview
-  #    # - name: Test
-  #    #   shell: bash
-  #    #   working-directory: ${{github.workspace}}/cbuild
-  #    #   run: |
-  #    #     ctest -j10 --output-on-failure -V
-  #    - name: Set exec suffix
-  #      if: ${{ matrix.lua }}
-  #      run: echo "exec_suffix=-lua" >> $GITHUB_ENV
-  #    - name: Archive production artifacts
-  #      uses: actions/upload-artifact@v3
-  #      with:
-  #        name: smokeview-${{ runner.os }}-${{ env.exec_suffix }}
-  #        path: smokeview
   build_windows_msvc:
     name: build ${{ matrix.os }} - lua=${{ matrix.lua }} - msvc
     strategy:
@@ -162,10 +116,10 @@ jobs:
         run: |
           ctest -j10 -C ${{env.BUILD_TYPE}} --output-on-failure
       - name: Set exec suffix
-        if: ${{ matrix.lua }}
+        if: matrix.lua == 'on'
         run: echo "exec_suffix=-lua" >> $GITHUB_ENV
       - name: Archive production artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: smokeview-windows-msvc-${{ env.exec_suffix }}
           path: smokeview.exe
