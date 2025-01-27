@@ -1,8 +1,8 @@
 #ifndef DATADEFS_H_DEFINED
 #define DATADEFS_H_DEFINED
 
-#ifndef ADDPROCINFO
-#define ADDPROCINFO(procinfo,nprocinfo,proc,proc_id,dialog_id) \
+#ifndef TOGGLE_ROLLOUT
+#define TOGGLE_ROLLOUT(procinfo,nprocinfo,proc,proc_id,dialog_id) \
   InsertRollout(proc,dialog_id); \
   procinfo[nprocinfo].rollout = proc; \
   procinfo[nprocinfo].rollout_id = proc_id; \
