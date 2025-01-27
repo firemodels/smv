@@ -2588,7 +2588,6 @@ int CompareColorFaces(const void *arg1, const void *arg2){
 
 /* ------------------ ShowHideInternalFaces ------------------------ */
 
-#ifdef pp_BOUND_FACE
 void ShowHideInternalFaces(meshdata *meshi, int show){
   int j;
 
@@ -2637,66 +2636,6 @@ void ShowHideInternalFaces(meshdata *meshi, int show){
     facej++;
   }
 }
-#else
-void ShowHideInternalFaces(meshdata *meshi, int show){
-  int j;
-
-  for(j = 0;j < meshi->nbptrs;j++){
-    facedata *facej;
-
-    facej = meshi->faceinfo + 6 * j;
-    facej->hidden = 0; facej++;
-    facej->hidden = 0; facej++;
-    facej->hidden = 0; facej++;
-    facej->hidden = 0; facej++;
-    facej->hidden = 0; facej++;
-    facej->hidden = 0; facej++;
-  }
-  if(show == 1)return;
-  float eps_x, eps_y, eps_z;
-  float *xplt, *yplt, *zplt;
-
-  xplt = meshi->xplt_orig;
-  yplt = meshi->yplt_orig;
-  zplt = meshi->zplt_orig;
-  eps_x = (xplt[1] - xplt[0])/2.0;
-  eps_y = (yplt[1] - yplt[0])/2.0;
-  eps_z = (zplt[1] - zplt[0])/2.0;
-  for(j = 0; j < meshi->nbptrs; j++){
-    facedata *facej;
-    blockagedata *bc;
-
-    bc = meshi->blockageinfoptrs[j];
-    facej = meshi->faceinfo + 6 * j;
-
-    if(bc->patch_index < 0)continue;
-
-//down y
-    if(bc->xyzEXACT[2] > ybar0FDS + eps_y)facej->hidden = 1;
-    facej++;
-
-// up x
-    if(bc->xyzEXACT[1] < xbarFDS  - eps_x)facej->hidden = 1;
-    facej++;
-
-//up y
-    if(bc->xyzEXACT[3] < ybarFDS  - eps_y)facej->hidden = 1;
-    facej++;
-
-// down x
-    if(bc->xyzEXACT[0] > xbar0FDS + eps_x)facej->hidden = 1;
-    facej++;
-
-// down z
-    if(bc->xyzEXACT[4] > zbar0FDS + eps_z)facej->hidden = 1;
-    facej++;
-
-// up z
-    if(bc->xyzEXACT[5] < zbarFDS  - eps_z)facej->hidden = 1;
-    facej++;
-  }
-}
-#endif
 
 /* ------------------ IsVentVisible ------------------------ */
 

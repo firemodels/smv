@@ -3295,11 +3295,14 @@ void DrawSmokeFrame(void){
   }
   for(i = 0; i<global_scase.smoke3dcoll.nsmoke3dinfo; i++){
     smoke3ddata *smoke3di;
+    meshdata *smokemesh;
 
     smoke3di = global_scase.smoke3dcoll.smoke3dinfo_sorted[i];
     if(smoke3di->loaded==0||smoke3di->display==0)continue;
     if(smoke3di->primary_file==0)continue;
     IF_NOT_USEMESH_CONTINUE(USEMESH_DRAW,smoke3di->blocknumber);
+    smokemesh = global_scase.meshescoll.meshinfo + smoke3di->blocknumber;
+    if(smokemesh->datavis == 0)continue;
     if(IsSmokeComponentPresent(smoke3di)==0)continue;
     if(smoke3d_use_skip==1){
       if(smoke3di->smokeframe_loaded==NULL){

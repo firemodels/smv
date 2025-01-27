@@ -7363,6 +7363,8 @@ void DrawSliceFrame(){
     sd = global_scase.slicecoll.sliceinfo + i;
     if(SetupSlice(sd) == 0)continue;
     IF_NOT_USEMESH_CONTINUE(USEMESH_DRAW,sd->blocknumber);
+    slicemesh = global_scase.meshescoll.meshinfo + sd->blocknumber;
+    if(slicemesh->datavis == 0)continue;
     orien = 0;
     direction = 1;
     blend_mode = 0;
@@ -7375,7 +7377,6 @@ void DrawSliceFrame(){
       slice_normal[0] = 0.0;
       slice_normal[1] = 0.0;
       slice_normal[2] = 0.0;
-      slicemesh = global_scase.meshescoll.meshinfo+sd->blocknumber;
       if(slicemesh->smokedir<0)direction = -1;
       switch(ABS(slicemesh->smokedir)){
       case 4:  // -45 slope slices
@@ -8576,11 +8577,15 @@ void DrawVSliceFrame(void){
   for(i=0;i<global_scase.slicecoll.nvsliceinfo;i++){
     vslicedata *vd;
     slicedata *u, *v, *w, *val;
+    meshdata *slicemesh;
 
     vd = global_scase.slicecoll.vsliceinfo + i;
     if(vd->loaded==0||vd->display==0||global_scase.slicecoll.sliceinfo[vd->ival].slicefile_labelindex!=slicefile_labelindex)continue;
+
     val = vd->val;
     if(val==NULL)continue;
+    slicemesh = global_scase.meshescoll.meshinfo + val->blocknumber;
+    if(slicemesh->datavis == 0)continue;
     u = vd->u;
     v = vd->v;
     w = vd->w;
@@ -9542,11 +9547,15 @@ void DrawSortSlices(void){
   for(i = 0;i < nsplitsliceinfo;i++){
     splitslicedata *si;
     slicedata *sd;
+    meshdata *slicemesh;
 
     si = splitsliceinfoptr[i];
     sd = si->slice;
     if(SetupSlice(sd) == 0)continue;
     IF_NOT_USEMESH_CONTINUE(USEMESH_DRAW,sd->blocknumber);
+    slicemesh = global_scase.meshescoll.meshinfo + sd->blocknumber;
+    if(slicemesh->datavis == 0)continue;
+
     switch(sd->slice_filetype){
       case SLICE_NODE_CENTER:
         DrawVolSliceTexture(sd, si->is1, si->is2, si->js1, si->js2, si->ks1, si->ks2, si->splitdir);

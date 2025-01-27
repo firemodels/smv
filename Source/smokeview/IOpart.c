@@ -584,15 +584,19 @@ void DrawPart(const partdata *parti, int mode){
 /* ------------------ DrawPartFrame ------------------------ */
 
 void DrawPartFrame(int mode){
-  partdata *parti;
   int i;
 
   if(use_tload_begin==1&&global_times[itimes]<global_scase.tload_begin)return;
   if(use_tload_end==1&&global_times[itimes]>global_scase.tload_end)return;
   for(i=0;i<global_scase.npartinfo;i++){
+    partdata *parti;
+    meshdata *meshi;
+
     parti = global_scase.partinfo + i;
     if(parti->loaded==0||parti->display==0)continue;
     IF_NOT_USEMESH_CONTINUE(USEMESH_DRAW,parti->blocknumber);
+    meshi = global_scase.meshescoll.meshinfo + parti->blocknumber;
+    if(meshi->datavis == 0)continue;
     DrawPart(parti, mode);
     SNIFF_ERRORS("after DrawPart");
   }

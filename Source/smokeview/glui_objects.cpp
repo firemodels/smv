@@ -1865,8 +1865,7 @@ extern "C" void GLUIPlot2DSetup(int main_window){
 
 
     ROLLOUT_plotproperties = glui_plot2d->add_rollout("plot properties(all plots)", true, PLOT2D_NEW_ROLLOUT, Plot2D_Rollout_CB);
-    INSERT_ROLLOUT(ROLLOUT_plotproperties, glui_plot2d);
-    ADDPROCINFO(plot2dprocinfo, nplot2dprocinfo, ROLLOUT_plotproperties, PLOT2D_NEW_ROLLOUT, glui_plot2d);
+    TOGGLE_ROLLOUT(plot2dprocinfo, nplot2dprocinfo, ROLLOUT_plotproperties, PLOT2D_NEW_ROLLOUT, glui_plot2d);
 
     PANEL_plotproperties1 = glui_plot2d->add_panel_to_panel(ROLLOUT_plotproperties, "", GLUI_PANEL_NONE);
     PANEL_plot_position = glui_plot2d->add_panel_to_panel(PANEL_plotproperties1, "position");
@@ -1925,8 +1924,7 @@ extern "C" void GLUIPlot2DSetup(int main_window){
     memcpy(&glui_curve, &glui_curve_default, sizeof(curvedata));
 
     ROLLOUT_curve_properties = glui_plot2d->add_rollout("curve properties", false, PLOT2D_CURVE_ROLLOUT, Plot2D_Rollout_CB);
-    INSERT_ROLLOUT(ROLLOUT_curve_properties, glui_plot2d);
-    ADDPROCINFO(plot2dprocinfo, nplot2dprocinfo, ROLLOUT_curve_properties, PLOT2D_CURVE_ROLLOUT, glui_plot2d);
+    TOGGLE_ROLLOUT(plot2dprocinfo, nplot2dprocinfo, ROLLOUT_curve_properties, PLOT2D_CURVE_ROLLOUT, glui_plot2d);
 
     if(nplot2dinfo>0&&glui_plot2dinfo->ncurves==0)ROLLOUT_curve_properties->disable();
     LIST_plotcurves = glui_plot2d->add_listbox_to_panel(ROLLOUT_curve_properties, "select:", &glui_plot2dinfo->curve_index, GENPLOT_SELECT_CURVE, GLUIGenPlotCB);
@@ -1963,8 +1961,7 @@ extern "C" void GLUIPlot2DSetup(int main_window){
     SPINNER_genplot_linewidth->set_float_limits(1.0, 10.0);
 
     ROLLOUT_plot_bounds = glui_plot2d->add_rollout("plot bounds(all plots)", false, PLOT2D_BOUNDS_ROLLOUT, Plot2D_Rollout_CB);
-    INSERT_ROLLOUT(ROLLOUT_plot_bounds, glui_plot2d);
-    ADDPROCINFO(plot2dprocinfo, nplot2dprocinfo, ROLLOUT_plot_bounds, PLOT2D_BOUNDS_ROLLOUT, glui_plot2d);
+    TOGGLE_ROLLOUT(plot2dprocinfo, nplot2dprocinfo, ROLLOUT_plot_bounds, PLOT2D_BOUNDS_ROLLOUT, glui_plot2d);
 
     PANEL_plot_bounds2 = glui_plot2d->add_panel_to_panel(ROLLOUT_plot_bounds, "", 0);
 
@@ -2035,8 +2032,7 @@ extern "C" void GLUIDeviceSetup(int main_window){
     PANEL_objects = glui_device->add_panel("Devices/Objects/2D plots", false);
 
     ROLLOUT_smvobjects = glui_device->add_rollout_to_panel(PANEL_objects, _("Objects"), false, OBJECTS_ROLLOUT, Device_Rollout_CB);
-    INSERT_ROLLOUT(ROLLOUT_smvobjects, glui_device);
-    ADDPROCINFO(deviceprocinfo, ndeviceprocinfo, ROLLOUT_smvobjects, OBJECTS_ROLLOUT, glui_device);
+    TOGGLE_ROLLOUT(deviceprocinfo, ndeviceprocinfo, ROLLOUT_smvobjects, OBJECTS_ROLLOUT, glui_device);
 
     SPINNER_sensorrelsize = glui_device->add_spinner_to_panel(ROLLOUT_smvobjects, _("Scale"), GLUI_SPINNER_FLOAT, &sensorrelsize, DEVICE_sensorsize, GLUIDeviceCB);
     CHECKBOX_device_3 = glui_device->add_checkbox_to_panel(ROLLOUT_smvobjects, _("Outline"), &object_outlines);
@@ -2059,8 +2055,7 @@ extern "C" void GLUIDeviceSetup(int main_window){
 
     if(GetNumActiveDevices()>0||global_scase.isZoneFireModel==1){
       ROLLOUT_velocityvectors = glui_device->add_rollout_to_panel(PANEL_objects, "Flow vectors", false, FLOWVECTORS_ROLLOUT, Device_Rollout_CB);
-      INSERT_ROLLOUT(ROLLOUT_velocityvectors, glui_device);
-      ADDPROCINFO(deviceprocinfo, ndeviceprocinfo, ROLLOUT_velocityvectors, FLOWVECTORS_ROLLOUT, glui_device);
+      TOGGLE_ROLLOUT(deviceprocinfo, ndeviceprocinfo, ROLLOUT_velocityvectors, FLOWVECTORS_ROLLOUT, glui_device);
 
       if(global_scase.devicecoll.nvdeviceinfo==0)ROLLOUT_velocityvectors->disable();
       CHECKBOX_device_1 = glui_device->add_checkbox_to_panel(ROLLOUT_velocityvectors, _("Show"), &showvdevice_val);
@@ -2071,7 +2066,6 @@ extern "C" void GLUIDeviceSetup(int main_window){
       glui_device->add_radiobutton_to_group(RADIO_vectortype, _("object"));
       glui_device->add_radiobutton_to_group(RADIO_vectortype, _("profile"));
       ROLLOUT_arrow_dimensions = glui_device->add_rollout_to_panel(ROLLOUT_velocityvectors, _("Dimensions"), false);
-      INSERT_ROLLOUT(ROLLOUT_arrow_dimensions, glui_device);
       PANEL_arrow_base = glui_device->add_panel_to_panel(ROLLOUT_arrow_dimensions, _("base"), true);
       glui_device->add_spinner_to_panel(PANEL_arrow_base, _("length"), GLUI_SPINNER_FLOAT, &vector_baselength);
       glui_device->add_spinner_to_panel(PANEL_arrow_base, _("diameter"), GLUI_SPINNER_FLOAT, &vector_basediameter);
@@ -2081,7 +2075,6 @@ extern "C" void GLUIDeviceSetup(int main_window){
 
       if(ntreedeviceinfo>0){
         ROLLOUT_trees = glui_device->add_rollout_to_panel(ROLLOUT_velocityvectors, "Device trees", false);
-        INSERT_ROLLOUT(ROLLOUT_trees, glui_device);
         SPINNER_mintreesize = glui_device->add_spinner_to_panel(ROLLOUT_trees, _("min size"), GLUI_SPINNER_INT, &mintreesize);
         SPINNER_mintreesize->set_int_limits(2, MAX(2, max_device_tree));
         CHECKBOX_vis_xtree = glui_device->add_checkbox_to_panel(ROLLOUT_trees, _A(_("Show"), " x"), &vis_xtree);
@@ -2090,9 +2083,7 @@ extern "C" void GLUIDeviceSetup(int main_window){
       }
 
       ROLLOUT_windrose = glui_device->add_rollout_to_panel(PANEL_objects, "Windrose", false, WINDROSE_ROLLOUT, Device_Rollout_CB);
-      INSERT_ROLLOUT(ROLLOUT_windrose, glui_device);
-      ADDPROCINFO(deviceprocinfo, ndeviceprocinfo, ROLLOUT_windrose, WINDROSE_ROLLOUT, glui_device);
-
+      TOGGLE_ROLLOUT(deviceprocinfo, ndeviceprocinfo, ROLLOUT_windrose, WINDROSE_ROLLOUT, glui_device);
 
       glui_device->add_checkbox_to_panel(ROLLOUT_windrose, _("show"), &viswindrose, DEVICE_WINDROSE_UPDATE, GLUIDeviceCB);
 
@@ -2141,7 +2132,6 @@ extern "C" void GLUIDeviceSetup(int main_window){
         int icheckboxes;
 
         ROLLOUT_showhide_windrose = glui_device->add_rollout_to_panel(ROLLOUT_windrose, "trees", false);
-        INSERT_ROLLOUT(ROLLOUT_showhide_windrose, glui_device);
 
         SPINNER_windrose_first = glui_device->add_spinner_to_panel(ROLLOUT_showhide_windrose, _("first"), GLUI_SPINNER_INT, &windrose_first, DEVICE_WINDROSE_SHOW_FIRST, GLUIDeviceCB);
         SPINNER_windrose_next = glui_device->add_spinner_to_panel(ROLLOUT_showhide_windrose, _("skip"), GLUI_SPINNER_INT, &windrose_next, DEVICE_WINDROSE_SHOW_NEXT, GLUIDeviceCB);
@@ -2190,7 +2180,6 @@ extern "C" void GLUIDeviceSetup(int main_window){
           //sprintf(roselabel, "x=%s, y=%s", xlabel, ylabel);
           snprintf(roselabel, sizeof(roselabel), "x=%s, y=%s", xlabel, ylabel);
           ROLLOUT_showz_windrose[i] = glui_device->add_rollout_to_panel(ROLLOUT_showhide_windrose, roselabel, false);
-          INSERT_ROLLOUT(ROLLOUT_showz_windrose[i], glui_device);
           glui_device->add_button_to_panel(ROLLOUT_showz_windrose[i], _("Show all"), DEVICE_WINDROSE_SHOWHIDEALL+i, GLUIDeviceCB);
           glui_device->add_button_to_panel(ROLLOUT_showz_windrose[i], _("Hide all"), DEVICE_WINDROSE_SHOWHIDEALL+nzwindtreeinfo+i, GLUIDeviceCB);
 
@@ -2219,7 +2208,6 @@ extern "C" void GLUIDeviceSetup(int main_window){
       }
 
       ROLLOUT_scale_windrose = glui_device->add_rollout_to_panel(ROLLOUT_windrose, _("scale"), false);
-      INSERT_ROLLOUT(ROLLOUT_scale_windrose, glui_device);
       glui_device->add_checkbox_to_panel(ROLLOUT_scale_windrose, _("show scale"), &showref_windrose);
       glui_device->add_checkbox_to_panel(ROLLOUT_scale_windrose, _("show labels"), &showlabels_windrose);
       RADIO_scale_windrose = glui_device->add_radiogroup_to_panel(ROLLOUT_scale_windrose, &scale_windrose);

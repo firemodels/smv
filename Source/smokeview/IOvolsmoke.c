@@ -1057,42 +1057,44 @@ void *InitNabors(void *arg){
   int i;
 
   INIT_PRINT_TIMER(timer_init_nabors);
-  for(i = 0;i<global_scase.meshescoll.nmeshes;i++){
-    meshdata *meshi;
-    int j;
+  if(have_mesh_nabors == 0){
+    for(i = 0;i < global_scase.meshescoll.nmeshes;i++){
+      meshdata *meshi;
+      int j;
 
-    meshi = global_scase.meshescoll.meshinfo+i;
-    meshi->is_bottom = IsBottomMesh(meshi);
-    for(j = 0;j<global_scase.meshescoll.nmeshes;j++){
-      meshdata *meshj;
+      meshi = global_scase.meshescoll.meshinfo + i;
+      meshi->is_bottom = IsBottomMesh(meshi);
+      for(j = 0;j < global_scase.meshescoll.nmeshes;j++){
+        meshdata *meshj;
 
-      if(i==j)continue;
+        if(i == j)continue;
 
-      meshj = global_scase.meshescoll.meshinfo+j;
+        meshj = global_scase.meshescoll.meshinfo + j;
 
-      if(MeshConnect(meshi, MLEFT, meshj)==1){
-        meshi->nabors[MRIGHT] = meshj;
-        continue;
-      }
-      if(MeshConnect(meshi, MRIGHT, meshj)==1){
-        meshi->nabors[MLEFT] = meshj;
-        continue;
-      }
-      if(MeshConnect(meshi, MFRONT, meshj)==1){
-        meshi->nabors[MBACK] = meshj;
-        continue;
-      }
-      if(MeshConnect(meshi, MBACK, meshj)==1){
-        meshi->nabors[MFRONT] = meshj;
-        continue;
-      }
-      if(MeshConnect(meshi, MDOWN, meshj)==1){
-        meshi->nabors[MUP] = meshj;
-        continue;
-      }
-      if(MeshConnect(meshi, MUP, meshj)==1){
-        meshi->nabors[MDOWN] = meshj;
-        continue;
+        if(MeshConnect(meshi, MLEFT, meshj) == 1){
+          meshi->nabors[MRIGHT] = meshj;
+          continue;
+        }
+        if(MeshConnect(meshi, MRIGHT, meshj) == 1){
+          meshi->nabors[MLEFT] = meshj;
+          continue;
+        }
+        if(MeshConnect(meshi, MFRONT, meshj) == 1){
+          meshi->nabors[MBACK] = meshj;
+          continue;
+        }
+        if(MeshConnect(meshi, MBACK, meshj) == 1){
+          meshi->nabors[MFRONT] = meshj;
+          continue;
+        }
+        if(MeshConnect(meshi, MDOWN, meshj) == 1){
+          meshi->nabors[MUP] = meshj;
+          continue;
+        }
+        if(MeshConnect(meshi, MUP, meshj) == 1){
+          meshi->nabors[MDOWN] = meshj;
+          continue;
+        }
       }
     }
   }

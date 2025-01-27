@@ -1025,7 +1025,7 @@ void InitMesh(meshdata *meshi){
   meshi->mesh_offset_ptr = NULL;
   meshi->cullgeominfo = NULL;
   meshi->blockvis = 1;
-  meshi->patchvis = 1;
+  meshi->datavis = 1;
   // set meshi->terrain to NULL just after meshinfo is allocated
   meshi->meshrgb[0] = 0.0;
   meshi->meshrgb[1] = 0.0;
@@ -4084,13 +4084,9 @@ void InitObst(smv_case *scase, blockagedata *bc, surfdata *surf, int index, int 
   char blocklabel[255];
   size_t len;
 
-#ifdef pp_BOUND_FACE
   int ind_default[] = {-1, -1, -1, -1, -1, -1};
 
   memcpy(bc->patch_face_index, ind_default, 6 * sizeof(int));
-#else
-  bc->patch_index = -1;
-#endif
   bc->prop = NULL;
   bc->is_wuiblock = 0;
   bc->transparent = 0;
@@ -9076,6 +9072,7 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
       float *xp2, *yp2, *zp2;
       float *xplt_cen, *yplt_cen,*zplt_cen;
       int *imap, *jmap, *kmap;
+      int mesh_nabors[6] = {-2, -2, -2, -2, -2, -2};
 
       igrid++;
       if(scase->meshescoll.meshinfo!=NULL){
@@ -9107,7 +9104,9 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
       }
       else{
         FGETS(buffer,255,stream);
-        sscanf(buffer,"%i %i %i",&ibartemp,&jbartemp,&kbartemp);
+        sscanf(buffer,"%i %i %i %i %i %i %i %i %i",&ibartemp,&jbartemp,&kbartemp, 
+          mesh_nabors, mesh_nabors+1, mesh_nabors+2, mesh_nabors+3, mesh_nabors+4, mesh_nabors+5);
+          if(mesh_nabors[5]>=-1)have_mesh_nabors = 1;
       }
       if(ibartemp<1)ibartemp=1;
       if(jbartemp<1)jbartemp=1;
@@ -9159,6 +9158,13 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
         meshi->n_jmap = 0;
         meshi->kmap = kmap;
         meshi->n_kmap = 0;
+        if(have_mesh_nabors == 1){
+          for(i = 0; i < 6; i++){
+            if(mesh_nabors[i] >= 0 && mesh_nabors[i] < scase->meshescoll.nmeshes){
+              meshi->nabors[i] = scase->meshescoll.meshinfo + mesh_nabors[i];
+            }
+          }
+        }
       }
       continue;
     }
