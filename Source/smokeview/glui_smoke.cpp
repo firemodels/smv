@@ -385,7 +385,6 @@ extern "C" void GLUI3dSmokeSetup(int main_window){
   //-----------------------------------------------------------------------------------------------------------
 
   ROLLOUT_smoke_settings = glui_3dsmoke->add_rollout_to_panel(ROLLOUT_smoke3d, "Settings", true, SMOKE_SETTINGS, SmokeRolloutCB);
-  INSERT_ROLLOUT(ROLLOUT_smoke_settings, glui_3dsmoke);
   ADDPROCINFO(smokeprocinfo, nsmokeprocinfo, ROLLOUT_smoke_settings, SMOKE_SETTINGS, glui_3dsmoke);
 
   PANEL_settings1 = glui_3dsmoke->add_panel_to_panel(ROLLOUT_smoke_settings, "");
@@ -414,7 +413,6 @@ extern "C" void GLUI3dSmokeSetup(int main_window){
   if(global_scase.smoke3dcoll.nsmoke3dinfo>0){
     if(nvolrenderinfo > 0){
       ROLLOUT_slices = glui_3dsmoke->add_rollout_to_panel(ROLLOUT_smoke3d, _("Slice render settings"), false, SLICERENDER_ROLLOUT, SmokeRolloutCB);
-      INSERT_ROLLOUT(ROLLOUT_slices, glui_3dsmoke);
       ADDPROCINFO(smokeprocinfo, nsmokeprocinfo, ROLLOUT_slices, SLICERENDER_ROLLOUT, glui_3dsmoke);
     }
     else{
@@ -452,7 +450,6 @@ extern "C" void GLUI3dSmokeSetup(int main_window){
   //---------------------------------------------Smoke/fire color--------------------------------------------------------------
 
   ROLLOUT_firecolor = glui_3dsmoke->add_rollout_to_panel(ROLLOUT_smoke3d, _("Smoke/fire color"),false, FIRECOLOR_ROLLOUT, SmokeRolloutCB);
-  INSERT_ROLLOUT(ROLLOUT_firecolor, glui_3dsmoke);
   ADDPROCINFO(smokeprocinfo, nsmokeprocinfo, ROLLOUT_firecolor, FIRECOLOR_ROLLOUT, glui_3dsmoke);
 
   CHECKBOX_use_fire_rgb = glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_firecolor, "set smoke/fire color manually", &use_fire_rgb, USE_FIRE_RGB, GLUISmoke3dCB);
@@ -507,7 +504,6 @@ extern "C" void GLUI3dSmokeSetup(int main_window){
   //---------------------------------------------Smoke/fire opacity--------------------------------------------------------------
 
   ROLLOUT_opacity = glui_3dsmoke->add_rollout_to_panel(ROLLOUT_smoke3d, "Smoke/fire opacity",false, FIREOPACITY_ROLLOUT, SmokeRolloutCB);
-  INSERT_ROLLOUT(ROLLOUT_opacity, glui_3dsmoke);
   ADDPROCINFO(smokeprocinfo, nsmokeprocinfo, ROLLOUT_opacity, FIREOPACITY_ROLLOUT, glui_3dsmoke);
 
   PANEL_smoke_opacity = glui_3dsmoke->add_panel_to_panel(ROLLOUT_opacity, "smoke opacity");
@@ -567,7 +563,6 @@ extern "C" void GLUI3dSmokeSetup(int main_window){
 
   if(nsmoke3d_co2 > 0){
     ROLLOUT_co2color=glui_3dsmoke->add_rollout_to_panel(ROLLOUT_smoke3d, "CO2 color", false, CO2COLOR_ROLLOUT, SmokeRolloutCB);
-    INSERT_ROLLOUT(ROLLOUT_co2color,glui_3dsmoke);
     ADDPROCINFO(smokeprocinfo, nsmokeprocinfo, ROLLOUT_co2color, CO2COLOR_ROLLOUT, glui_3dsmoke);
     CHECKBOX_use_co2_rgb = glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_co2color, "set red/green/blue", &use_co2_rgb, USE_CO2_RGB, GLUISmoke3dCB);
 
@@ -611,7 +606,6 @@ extern "C" void GLUI3dSmokeSetup(int main_window){
   //---------------------------------------------Skip planes--------------------------------------------------------------
 
   ROLLOUT_skip = glui_3dsmoke->add_rollout_to_panel(ROLLOUT_smoke3d, "Skip planes", false, SKIP_ROLLOUT, SmokeRolloutCB);
-  INSERT_ROLLOUT(ROLLOUT_skip, glui_3dsmoke);
   ADDPROCINFO(smokeprocinfo, nsmokeprocinfo, ROLLOUT_skip, SKIP_ROLLOUT, glui_3dsmoke);
 
   PANEL_skip_planes = glui_3dsmoke->add_panel_to_panel(ROLLOUT_skip, "", GLUI_PANEL_NONE);
@@ -632,13 +626,11 @@ extern "C" void GLUI3dSmokeSetup(int main_window){
 
   if(nvolrenderinfo > 0){
     ROLLOUT_volume = glui_3dsmoke->add_rollout_to_panel(ROLLOUT_smoke3d, _("Volume render settings"), false, VOLRENDER_ROLLOUT, SmokeRolloutCB);
-    INSERT_ROLLOUT(ROLLOUT_volume, glui_3dsmoke);
     ADDPROCINFO(smokeprocinfo, nsmokeprocinfo, ROLLOUT_volume, VOLRENDER_ROLLOUT, glui_3dsmoke);
 
     //*** display
 
     ROLLOUT_voldisplay = glui_3dsmoke->add_rollout_to_panel(ROLLOUT_volume,_("Display"),false, VOLSMOKE_DISPLAY, VolSmokeRolloutCB);
-    INSERT_ROLLOUT(ROLLOUT_voldisplay, glui_3dsmoke);
     ADDPROCINFO(volsmokeprocinfo, nvolsmokeprocinfo, ROLLOUT_voldisplay, VOLSMOKE_DISPLAY, glui_3dsmoke);
 
     glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_voldisplay, _("Show"), &usevolrender, VOL_SMOKE, GLUISmoke3dCB);
@@ -673,7 +665,6 @@ extern "C" void GLUI3dSmokeSetup(int main_window){
     //*** scene movement
 
     ROLLOUT_volsmoke_move = glui_3dsmoke->add_rollout_to_panel(ROLLOUT_volume, _("Scene movement"), false, VOLSMOKE_MOVEMENT, VolSmokeRolloutCB);
-    INSERT_ROLLOUT(ROLLOUT_volsmoke_move, glui_3dsmoke);
     ADDPROCINFO(volsmokeprocinfo, nvolsmokeprocinfo, ROLLOUT_volsmoke_move, VOLSMOKE_MOVEMENT, glui_3dsmoke);
 
     glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_volsmoke_move, _("Auto freeze"), &autofreeze_volsmoke);
@@ -683,7 +674,6 @@ extern "C" void GLUI3dSmokeSetup(int main_window){
     //*** compute
 
     ROLLOUT_volsmoke_compute = glui_3dsmoke->add_rollout_to_panel(ROLLOUT_volume, _("Compute"), false, VOLSMOKE_COMPUTE_ROLLOUT, VolSmokeRolloutCB);
-    INSERT_ROLLOUT(ROLLOUT_volsmoke_compute, glui_3dsmoke);
     ADDPROCINFO(volsmokeprocinfo, nvolsmokeprocinfo, ROLLOUT_volsmoke_compute, VOLSMOKE_COMPUTE_ROLLOUT, glui_3dsmoke);
 
     SPINNER_fire_opacity_factor = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_volsmoke_compute, _("Fire opacity multiplier"), GLUI_SPINNER_FLOAT, &fire_opacity_factor);
@@ -699,7 +689,6 @@ extern "C" void GLUI3dSmokeSetup(int main_window){
     //*** load
 
     ROLLOUT_volsmoke_load = glui_3dsmoke->add_rollout_to_panel(ROLLOUT_volume, _("Load"), false, VOLSMOKE_LOAD_ROLLOUT, VolSmokeRolloutCB);
-    INSERT_ROLLOUT(ROLLOUT_volsmoke_load, glui_3dsmoke);
     ADDPROCINFO(volsmokeprocinfo, nvolsmokeprocinfo, ROLLOUT_volsmoke_load, VOLSMOKE_LOAD_ROLLOUT, glui_3dsmoke);
 
     glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_volsmoke_load, _("Load data in background"), &use_multi_threading);
@@ -741,7 +730,6 @@ extern "C" void GLUI3dSmokeSetup(int main_window){
     GLUISmoke3dCB(SMOKE_OPTIONS);
 
     ROLLOUT_loadframe = glui_3dsmoke->add_rollout_to_panel(ROLLOUT_volume, _("Load frame"), false, VOLSMOKE_LOADFRAME_ROLLOUT, VolSmokeRolloutCB);
-    INSERT_ROLLOUT(ROLLOUT_loadframe, glui_3dsmoke);
     ADDPROCINFO(volsmokeprocinfo, nvolsmokeprocinfo, ROLLOUT_loadframe, VOLSMOKE_LOADFRAME_ROLLOUT, glui_3dsmoke);
     PANEL_loadframe = glui_3dsmoke->add_panel_to_panel(ROLLOUT_loadframe, "", false);
 

@@ -774,7 +774,6 @@ extern "C" void GLUIDisplaySetup(int main_window){
   // -------------- General1 Settings -------------------
 
   ROLLOUT_general1 = glui_labels->add_rollout(_("Labels/Titles/Bounding box"),true, GENERAL_ROLLOUT1, DisplayRolloutCB);
-  INSERT_ROLLOUT(ROLLOUT_general1, glui_labels);
   ADDPROCINFO(displayprocinfo, ndisplayprocinfo, ROLLOUT_general1, GENERAL_ROLLOUT1, glui_labels);
 
   PANEL_gen1=glui_labels->add_panel_to_panel(ROLLOUT_general1,"",GLUI_PANEL_NONE);
@@ -841,7 +840,6 @@ extern "C" void GLUIDisplaySetup(int main_window){
   BUTTON_label_2=glui_labels->add_button_to_panel(PANEL_gen2,_("Hide all"),LABELS_hideall,GLUILabelsCB);
 
   ROLLOUT_general2 = glui_labels->add_rollout(_("Lines/Offsets/Surfaces/Other"), false, GENERAL_ROLLOUT2, DisplayRolloutCB);
-  INSERT_ROLLOUT(ROLLOUT_general2, glui_labels);
   ADDPROCINFO(displayprocinfo, ndisplayprocinfo, ROLLOUT_general2, GENERAL_ROLLOUT2, glui_labels);
 
   PANEL_linewidth=glui_labels->add_panel_to_panel(ROLLOUT_general2,"line width");
@@ -953,7 +951,6 @@ extern "C" void GLUIDisplaySetup(int main_window){
   CHECKBOX_texture_hideall = glui_labels->add_checkbox_to_panel(PANEL_texture_display, _("hide all"), &texture_hideall, TEXTURE_HIDEALL, GLUITextureCB);
 
   ROLLOUT_light2 = glui_labels->add_rollout("Light",false,LIGHT_ROLLOUT,DisplayRolloutCB);
-  INSERT_ROLLOUT(ROLLOUT_light2, glui_labels);
   ADDPROCINFO(displayprocinfo, ndisplayprocinfo, ROLLOUT_light2, LIGHT_ROLLOUT, glui_labels);
 
   for(i = 0; i<3;i++){
@@ -1017,7 +1014,6 @@ extern "C" void GLUIDisplaySetup(int main_window){
   // -------------- Fonts -------------------
 
   ROLLOUT_font = glui_labels->add_rollout("Fonts",false,FONTS_ROLLOUT,DisplayRolloutCB);
-  INSERT_ROLLOUT(ROLLOUT_font, glui_labels);
   ADDPROCINFO(displayprocinfo, ndisplayprocinfo, ROLLOUT_font, FONTS_ROLLOUT, glui_labels);
 
   RADIO_fontsize = glui_labels->add_radiogroup_to_panel(ROLLOUT_font,&fontindex,LABELS_fontsize,GLUILabelsCB);
@@ -1043,7 +1039,6 @@ extern "C" void GLUIDisplaySetup(int main_window){
   // -------------- User tick settings -------------------
 
   ROLLOUT_user_tick = glui_labels->add_rollout("User ticks",false,TICKS_ROLLOUT,DisplayRolloutCB);
-  INSERT_ROLLOUT(ROLLOUT_user_tick, glui_labels);
   ADDPROCINFO(displayprocinfo, ndisplayprocinfo, ROLLOUT_user_tick, TICKS_ROLLOUT, glui_labels);
 
   PANEL_tick1 = glui_labels->add_panel_to_panel(ROLLOUT_user_tick,_("Display"),true);
@@ -1109,7 +1104,6 @@ extern "C" void GLUIDisplaySetup(int main_window){
 
   gl=&LABEL_local;
   ROLLOUT_user_labels = glui_labels->add_rollout("Labels + Ticks",false,LABELS_ROLLOUT,DisplayRolloutCB);
-  INSERT_ROLLOUT(ROLLOUT_user_labels, glui_labels);
   ADDPROCINFO(displayprocinfo, ndisplayprocinfo, ROLLOUT_user_labels, LABELS_ROLLOUT, glui_labels);
 
   PANEL_LB_panel1 = glui_labels->add_panel_to_panel(ROLLOUT_user_labels,"",GLUI_PANEL_NONE);

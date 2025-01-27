@@ -172,7 +172,6 @@ extern "C" void GLUITourSetup(int main_window){
   glui_tour->hide();
 
   ROLLOUT_circular = glui_tour->add_rollout(_("Modify circular tour"),false, MODIFY_TOURS_ROLLOUT, ToursRolloutCB);
-  INSERT_ROLLOUT(ROLLOUT_circular, glui_tour);
   ADDPROCINFO(toursprocinfo, ntoursprocinfo, ROLLOUT_circular, MODIFY_TOURS_ROLLOUT, glui_tour);
 
   CHECKBOX_showtourroute2 = glui_tour->add_checkbox_to_panel(ROLLOUT_circular, _("Show tour"), &edittour, SHOWTOURROUTE2, TourCB);
@@ -196,7 +195,6 @@ extern "C" void GLUITourSetup(int main_window){
   SPINNER_tour_circular_view[2]=glui_tour->add_spinner_to_panel(PANEL_tour_circular_view,"z",GLUI_SPINNER_FLOAT,tour_circular_view+2,TOUR_CIRCULAR_UPDATE,TourCB);
 
   ROLLOUT_keyframe = glui_tour->add_rollout("Modify general tour",true,KEYFRAME_TOURS_ROLLOUT, ToursRolloutCB);
-  INSERT_ROLLOUT(ROLLOUT_keyframe, glui_tour);
   ADDPROCINFO(toursprocinfo, ntoursprocinfo, ROLLOUT_keyframe, KEYFRAME_TOURS_ROLLOUT, glui_tour);
 
   PANEL_tour = glui_tour->add_panel_to_panel(ROLLOUT_keyframe,"Tour", true);

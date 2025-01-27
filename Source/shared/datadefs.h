@@ -3,13 +3,14 @@
 
 #ifndef ADDPROCINFO
 #define ADDPROCINFO(procinfo,nprocinfo,proc,proc_id,dialog_id) \
+  InsertRollout(proc,dialog_id); \
   procinfo[nprocinfo].rollout = proc; \
   procinfo[nprocinfo].rollout_id = proc_id; \
   procinfo[nprocinfo].dialog = dialog_id; \
   (nprocinfo)++
 #endif
 
-#define INSERT_ROLLOUT(a,b) InsertRollout(a,b)
+#define INSERT_ROLLOUT(proc,dialog_id) InsertRollout(proc,dialog_id)
 
 #define ONEORZERO(val) if(val!=0)val=1
 
