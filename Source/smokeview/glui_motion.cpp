@@ -59,6 +59,8 @@ GLUI_Panel *PANEL_reset=NULL;
 GLUI_Panel *PANEL_specify=NULL;
 GLUI_Panel *PANEL_change_zaxis=NULL;
 GLUI_Panel *PANEL_colors=NULL;
+GLUI_Panel *PANEL_background = NULL;
+GLUI_Panel *PANEL_foreground = NULL;
 
 GLUI_Rollout *ROLLOUT_scale = NULL;
 GLUI_Rollout *ROLLOUT_viewA = NULL;
@@ -84,8 +86,6 @@ GLUI_Rollout *ROLLOUT_lower = NULL;
 GLUI_Rollout *ROLLOUT_middle = NULL;
 GLUI_Rollout *ROLLOUT_upper = NULL;
 #endif
-GLUI_Rollout *ROLLOUT_background = NULL;
-GLUI_Rollout *ROLLOUT_foreground = NULL;
 
 GLUI_Spinner *SPINNER_movie_nprocs=NULL;
 GLUI_Spinner *SPINNER_360_skip_x=NULL;
@@ -203,8 +203,8 @@ GLUI_Listbox *LIST_render_skip=NULL;
 
 rolloutlistdata first_rollout, last_rollout;
 
-procdata motionprocinfo[9], mvrprocinfo[5], subrenderprocinfo[4];
-int nmotionprocinfo = 0, nmvrprocinfo=0, nsubrenderprocinfo=0;
+procdata motionprocinfo[9], mvrprocinfo[5], subrenderprocinfo[4], screenprocinfo[3];
+int nmotionprocinfo = 0, nmvrprocinfo=0, nsubrenderprocinfo=0, nscreenprocinfo=0;
 
 /* ------------------ MakeMovieBashScript ------------------------ */
 
@@ -479,6 +479,12 @@ void MovieCB(int val){
       assert(FFALSE);
       break;
   }
+}
+
+/* ------------------ ScreenRolloutCB ------------------------ */
+
+void ScreenRolloutCB(int var){
+  GLUIToggleRollout(screenprocinfo, nscreenprocinfo, var);
 }
 
 /* ------------------ SubRenderRolloutCB ------------------------ */
@@ -1393,20 +1399,18 @@ extern "C" void GLUIMotionSetup(int main_window){
 
   PANEL_colors = glui_motion->add_panel_to_panel(ROLLOUT_projection, "Colors", true);
 
-  ROLLOUT_foreground = glui_motion->add_rollout_to_panel(PANEL_colors,_("Background"), false);
-  INSERT_ROLLOUT(ROLLOUT_foreground, glui_motion);
-  SPINNER_foreground_red = glui_motion->add_spinner_to_panel(ROLLOUT_foreground,_("red"),GLUI_SPINNER_INT,glui_foregroundbasecolor,WINDOW_COLORS,GLUISceneMotionCB);
-  SPINNER_foreground_green = glui_motion->add_spinner_to_panel(ROLLOUT_foreground, _("green"), GLUI_SPINNER_INT, glui_foregroundbasecolor+1, WINDOW_COLORS, GLUISceneMotionCB);
-  SPINNER_foreground_blue = glui_motion->add_spinner_to_panel(ROLLOUT_foreground, _("blue"), GLUI_SPINNER_INT, glui_foregroundbasecolor+2, WINDOW_COLORS, GLUISceneMotionCB);
+  PANEL_foreground = glui_motion->add_panel_to_panel(PANEL_colors,_("Background"), true);
+  SPINNER_foreground_red = glui_motion->add_spinner_to_panel(PANEL_foreground,_("red"),GLUI_SPINNER_INT,glui_foregroundbasecolor,WINDOW_COLORS,GLUISceneMotionCB);
+  SPINNER_foreground_green = glui_motion->add_spinner_to_panel(PANEL_foreground, _("green"), GLUI_SPINNER_INT, glui_foregroundbasecolor+1, WINDOW_COLORS, GLUISceneMotionCB);
+  SPINNER_foreground_blue = glui_motion->add_spinner_to_panel(PANEL_foreground, _("blue"), GLUI_SPINNER_INT, glui_foregroundbasecolor+2, WINDOW_COLORS, GLUISceneMotionCB);
   SPINNER_foreground_red->set_int_limits(0, 255);
   SPINNER_foreground_green->set_int_limits(0, 255);
   SPINNER_foreground_blue->set_int_limits(0, 255);
 
-  ROLLOUT_background = glui_motion->add_rollout_to_panel(PANEL_colors, _("Foreground"), false);
-  INSERT_ROLLOUT(ROLLOUT_background, glui_motion);
-  SPINNER_background_red = glui_motion->add_spinner_to_panel(ROLLOUT_background,_("red"),GLUI_SPINNER_INT,glui_backgroundbasecolor,WINDOW_COLORS,GLUISceneMotionCB);
-  SPINNER_background_green = glui_motion->add_spinner_to_panel(ROLLOUT_background,_("green"),GLUI_SPINNER_INT,glui_backgroundbasecolor+1,WINDOW_COLORS,GLUISceneMotionCB);
-  SPINNER_background_blue = glui_motion->add_spinner_to_panel(ROLLOUT_background,_("blue"),GLUI_SPINNER_INT,glui_backgroundbasecolor+2,WINDOW_COLORS,GLUISceneMotionCB);
+  PANEL_background = glui_motion->add_panel_to_panel(PANEL_colors, _("Foreground"), true);
+  SPINNER_background_red = glui_motion->add_spinner_to_panel(PANEL_background,_("red"),GLUI_SPINNER_INT,glui_backgroundbasecolor,WINDOW_COLORS,GLUISceneMotionCB);
+  SPINNER_background_green = glui_motion->add_spinner_to_panel(PANEL_background,_("green"),GLUI_SPINNER_INT,glui_backgroundbasecolor+1,WINDOW_COLORS,GLUISceneMotionCB);
+  SPINNER_background_blue = glui_motion->add_spinner_to_panel(PANEL_background,_("blue"),GLUI_SPINNER_INT,glui_backgroundbasecolor+2,WINDOW_COLORS,GLUISceneMotionCB);
   SPINNER_background_red->set_int_limits(0, 255);
   SPINNER_background_green->set_int_limits(0, 255);
   SPINNER_background_blue->set_int_limits(0, 255);
@@ -1504,8 +1508,8 @@ extern "C" void GLUIMotionSetup(int main_window){
   CHECKBOX_screenview = glui_motion->add_checkbox_to_panel(ROLLOUT_screenvis, "view screens", &screenview);
   CHECKBOX_screenvis[0] = glui_motion->add_checkbox_to_panel(ROLLOUT_screenvis, "bottom", screenvis);
 
-  ROLLOUT_lower = glui_motion->add_rollout_to_panel(ROLLOUT_screenvis, "lower", false);
-  INSERT_ROLLOUT(ROLLOUT_lower, glui_motion);
+  ROLLOUT_lower = glui_motion->add_rollout_to_panel(ROLLOUT_screenvis, "lower", false, LOWER_SCREEN_ROLLOUT, ScreenRolloutCB);
+  ADDPROCINFO(screenprocinfo,nscreenprocinfo,ROLLOUT_lower, LOWER_SCREEN_ROLLOUT, glui_motion);
   CHECKBOX_screenvis[1] = glui_motion->add_checkbox_to_panel(ROLLOUT_lower, "1", screenvis + 1);
   CHECKBOX_screenvis[2] = glui_motion->add_checkbox_to_panel(ROLLOUT_lower, "2", screenvis + 2);
   CHECKBOX_screenvis[3] = glui_motion->add_checkbox_to_panel(ROLLOUT_lower, "3", screenvis + 3);
@@ -1516,8 +1520,8 @@ extern "C" void GLUIMotionSetup(int main_window){
   CHECKBOX_screenvis[8] = glui_motion->add_checkbox_to_panel(ROLLOUT_lower, "8", screenvis + 8);
 
 
-  ROLLOUT_middle = glui_motion->add_rollout_to_panel(ROLLOUT_screenvis, "middle", false);
-  INSERT_ROLLOUT(ROLLOUT_middle, glui_motion);
+  ROLLOUT_middle = glui_motion->add_rollout_to_panel(ROLLOUT_screenvis, "middle", false, MIDDLE_SCREEN_ROLLOUT, ScreenRolloutCB);
+  ADDPROCINFO(screenprocinfo,nscreenprocinfo,ROLLOUT_middle, MIDDLE_SCREEN_ROLLOUT, glui_motion);
   CHECKBOX_screenvis[9] = glui_motion->add_checkbox_to_panel(ROLLOUT_middle, "1", screenvis + 9);
   CHECKBOX_screenvis[10] = glui_motion->add_checkbox_to_panel(ROLLOUT_middle, "2", screenvis + 10);
   CHECKBOX_screenvis[11] = glui_motion->add_checkbox_to_panel(ROLLOUT_middle, "3", screenvis + 11);
@@ -1527,8 +1531,8 @@ extern "C" void GLUIMotionSetup(int main_window){
   CHECKBOX_screenvis[15] = glui_motion->add_checkbox_to_panel(ROLLOUT_middle, "7", screenvis + 15);
   CHECKBOX_screenvis[16] = glui_motion->add_checkbox_to_panel(ROLLOUT_middle, "8", screenvis + 16);
 
-  ROLLOUT_upper = glui_motion->add_rollout_to_panel(ROLLOUT_screenvis, "upper", false);
-  INSERT_ROLLOUT(ROLLOUT_upper, glui_motion);
+  ROLLOUT_upper = glui_motion->add_rollout_to_panel(ROLLOUT_screenvis, "upper", false, UPPER_SCREEN_ROLLOUT, ScreenRolloutCB);
+  ADDPROCINFO(screenprocinfo,nscreenprocinfo,ROLLOUT_upper, UPPER_SCREEN_ROLLOUT, glui_motion);
   CHECKBOX_screenvis[17] = glui_motion->add_checkbox_to_panel(ROLLOUT_upper, "1", screenvis + 17);
   CHECKBOX_screenvis[18] = glui_motion->add_checkbox_to_panel(ROLLOUT_upper, "2", screenvis + 18);
   CHECKBOX_screenvis[19] = glui_motion->add_checkbox_to_panel(ROLLOUT_upper, "3", screenvis + 19);

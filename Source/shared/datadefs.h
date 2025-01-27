@@ -10,8 +10,6 @@
   (nprocinfo)++
 #endif
 
-#define INSERT_ROLLOUT(proc,dialog_id) InsertRollout(proc,dialog_id)
-
 #define ONEORZERO(val) if(val!=0)val=1
 
 #define K2C(T) ((T)-273.15)
