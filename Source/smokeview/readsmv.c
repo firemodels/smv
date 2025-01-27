@@ -9072,7 +9072,9 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
       float *xp2, *yp2, *zp2;
       float *xplt_cen, *yplt_cen,*zplt_cen;
       int *imap, *jmap, *kmap;
+#ifdef pp_FDS_NABOR
       int mesh_nabors[6] = {-2, -2, -2, -2, -2, -2};
+#endif
 
       igrid++;
       if(scase->meshescoll.meshinfo!=NULL){
@@ -9104,9 +9106,13 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
       }
       else{
         FGETS(buffer,255,stream);
+#ifdef pp_FDS_NABOR
         sscanf(buffer,"%i %i %i %i %i %i %i %i %i",&ibartemp,&jbartemp,&kbartemp, 
           mesh_nabors, mesh_nabors+1, mesh_nabors+2, mesh_nabors+3, mesh_nabors+4, mesh_nabors+5);
           if(mesh_nabors[5]>=-1)have_mesh_nabors = 1;
+#else
+        sscanf(buffer, "%i %i %i", &ibartemp, &jbartemp, &kbartemp);
+#endif
       }
       if(ibartemp<1)ibartemp=1;
       if(jbartemp<1)jbartemp=1;
@@ -9158,13 +9164,15 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
         meshi->n_jmap = 0;
         meshi->kmap = kmap;
         meshi->n_kmap = 0;
+#ifdef pp_FDS_NABOR
         if(have_mesh_nabors == 1){
           for(i = 0; i < 6; i++){
-            if(mesh_nabors[i] >= 0 && mesh_nabors[i] < scase->meshescoll.nmeshes){
-              meshi->nabors[i] = scase->meshescoll.meshinfo + mesh_nabors[i];
+            if(mesh_nabors[i] >= 1 && mesh_nabors[i] <= scase->meshescoll.nmeshes){
+              meshi->nabors[i] = scase->meshescoll.meshinfo + mesh_nabors[i]-1;
             }
           }
         }
+#endif
       }
       continue;
     }
