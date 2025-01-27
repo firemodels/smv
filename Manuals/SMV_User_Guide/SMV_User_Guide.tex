@@ -1325,7 +1325,7 @@ FDS also outputs duplicate slices when two or more identical {\tt \&SLCF}\ entri
 
 \begin{figure}[bph]
 \centerline{
-\includegraphics[width=1.8055in]{\SMVfigdir/figsliceduplicate}
+\includegraphics[width=1.264in]{\SMVfigdir/figsliceduplicate}
 }
 \caption[Dialog box for specifying duplicate slice visibility.]{Dialog box for specifying duplicate slice visibility.}
 \label{fig:sliceduplicate}
@@ -1964,7 +1964,7 @@ by loading a temperature slice and setting the position to $x=0.5$, $z=1.5$ .}
 Data is loaded in smokeview by clicking the right mouse button and selecting one of the data types
 under the Load/Unload menu. Smokeview loads data for all available times and meshes by default.
 For large cases, it is useful to decrease the amount of data loaded in order to reduce load times .
-To do this, use the Loading options tab of the Files/Data/Coloring dialog box
+To do this, use the Load options tab of the Files/Data/Coloring dialog box
 illustrated in Figure \ref{figDataloading}.
 To open this dialog box select the Dialogs>File/Data/Coloring menu entry then select the Loading options tab.
 To reduce the loading time interval, specify a min and/or max time.
@@ -1979,6 +1979,7 @@ then be loaded. Meshes can also be selected directly, allowing one to load data 
 If the `Load a file only if unloaded` checkbox is selected and if the intersection box
 is expanded to include more meshes then only data in these extra meshes where data was not loaded before will be loaded
 (data will not be loaded twice).
+Once data is loaded it may be shown or hidden by mesh by setting checkboxes in the View options tab of the Files/Data/Coloring dialog box as illustrated in Figure \ref{figDataviewing}.
 
 \begin{figure}[bph]
 \centerline{
@@ -1989,6 +1990,14 @@ Data may be loaded within specified time bounds.
 Data may also be loaded from meshes within a specified box or from specified meshes.
 }
 \label{figDataloading}
+\end{figure}
+
+\begin{figure}[bph]
+\centerline{
+\includegraphics[width=4.0in]{\SMVfigdir/figDataviewing}}
+\caption[Dialog box for limiting data viewed by mesh.]
+{Dialog box for limiting data viewed by mesh.}
+\label{figDataviewing}
 \end{figure}
 
 %---------------------------------------------------------------------------------
