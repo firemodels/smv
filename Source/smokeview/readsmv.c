@@ -9158,9 +9158,11 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
         meshi->n_jmap = 0;
         meshi->kmap = kmap;
         meshi->n_kmap = 0;
-        for(i = 0;i < 6;i++){
-          if(mesh_nabors[i]>=0&&mesh_nabors[i]<scase->meshescoll.nmeshes){
-            meshi->nabors[i] = scase->meshescoll.meshinfo + mesh_nabors[i];
+        if(have_mesh_nabors == 1){
+          for(i = 0; i < 6; i++){
+            if(mesh_nabors[i] >= 0 && mesh_nabors[i] < scase->meshescoll.nmeshes){
+              meshi->nabors[i] = scase->meshescoll.meshinfo + mesh_nabors[i];
+            }
           }
         }
       }
