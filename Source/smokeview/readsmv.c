@@ -5519,6 +5519,7 @@ int ParseSMOKE3DProcess(smv_case *scase, bufferstreamdata *stream, char *buffer,
   char buffer2[256];
   char *bufferptr;
   float extinct = -1.0;
+  float alpha_factor = 1.0;
 
   int nn_smoke3d, ioffset, ismoke3dcount, ismoke3d;
 
@@ -5548,7 +5549,7 @@ int ParseSMOKE3DProcess(smv_case *scase, bufferstreamdata *stream, char *buffer,
     char *buffer3;
 
     buffer3 = buffer+8;
-    sscanf(buffer3, "%i %f", &blocknumber, &extinct);
+    sscanf(buffer3, "%i %f %f", &blocknumber, &extinct, &alpha_factor);
     blocknumber--;
   }
   if(FGETS(buffer, 255, stream)==NULL){
@@ -5602,6 +5603,7 @@ int ParseSMOKE3DProcess(smv_case *scase, bufferstreamdata *stream, char *buffer,
 #ifndef pp_SMOKEFRAME
     smoke3di->smoke_comp_all = NULL;
 #endif
+    smoke3di->alpha_factor = alpha_factor;
     smoke3di->smokeview_tmp = NULL;
     smoke3di->times = NULL;
     smoke3di->times_map = NULL;
