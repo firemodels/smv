@@ -1516,7 +1516,6 @@ typedef struct _smoke3ddata {
   unsigned char *alphas_dir[6];
   int fire_alpha, co2_alpha;
   float fire_alphas[256], co2_alphas[256];
-  float alpha_factor;
   int *timeslist;
   int ntimes, ntimes_old, ismoke3d_time, lastiframe, ntimes_full;
   int nchars_uncompressed;
