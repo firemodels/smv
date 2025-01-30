@@ -87,6 +87,7 @@
 #define VOLTEST_UPDATE 103
 #define FORCE_ALPHA_OPAQUE 104
 #define MERGE_SMOKE 105
+#define SMOKE_SKIP 106
 
 //*** glui_smoke.cpp headers
 

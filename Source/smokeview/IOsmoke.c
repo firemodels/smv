@@ -1538,6 +1538,9 @@ void InitAlphas(unsigned char *alphanew,  float base_extinct,  float alpha_facto
     }
   }
   else{
+    if(smokeskipm1 != 0){
+      base_dx /= (float)(smokeskipm1 + 1);
+    }
     for(i = 1; i<255; i++){
       float val;
       int ival;
