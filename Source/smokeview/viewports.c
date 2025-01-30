@@ -1994,7 +1994,7 @@ void GetSmokeDir(float *mm){
       else{
         smoke_dist = meshj->smoke_dist[minalphadir];
       }
-      InitAlphas(soot->alphas_dir[minalphadir], soot->extinct, glui_smoke3d_extinct,
+      InitAlphas(soot->alphas_dir[minalphadir], soot->extinct, soot->alpha_factor, glui_smoke3d_extinct,
         meshj->dxyz_orig[0], smoke_dist);
     }
     if(demo_mode != 0){

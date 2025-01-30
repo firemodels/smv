@@ -670,7 +670,7 @@ all of the data in the slice.  The second column discards or chops data below
 \SI{140}{\degreeCelsius}. Note that the color near the chopped boundary should
 match the color in the color bar near \SI{140}{\degreeCelsius}.
 
-Figure \ref{figsliceaveragetest} presents images verifying slice averaging.  The left column shows regular slices.  The right column
+Figure \ref{figsliceaveragetest} presents images verifying slice averaging.  The left column shows regular, non-averaged slices.  The right column
 shows slices averaged over a 5~s time interval.
 
 Figure \ref{figslicesort} presents images verifying that two slices
@@ -739,7 +739,7 @@ files. Difference contours from these slice files are displayed at \SI{0}{s},
 \includegraphics[height=2.5in]{SCRIPT_FIGURES/plume_orig_slice_05}&
  \includegraphics[height=2.5in]{SCRIPT_FIGURES/plume_average_slice_05}\\
 
-& regular slice&averaged slice\\
+& non-averaged slice&averaged slice\\
 &&&\raisebox{0.5in}[0pt]{\includegraphics[height=7.5in]{\SMVfigdir/colorbar_20_620}}\\
  \end{tabular}
 \end{center}
@@ -1798,9 +1798,6 @@ glasses are required to see the 3D stereo effect. }
 \section{vcirctest}
 \fdsinput{vcirctest.fds}
 
-\section{vcirctest2}
-\fdsinput{vcirctest2.fds}
-
 \chapter{Smokeview Scripts}
 \label{smvscripts}
 
@@ -1846,8 +1843,5 @@ glasses are required to see the 3D stereo effect. }
 
 \section{vcirctest}
 \fdsinput{vcirctest.ssf}
-
-\section{vcirctest2}
-\fdsinput{vcirctest2.ssf}
 
 \end{document}
