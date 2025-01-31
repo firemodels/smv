@@ -5603,7 +5603,6 @@ int ParseSMOKE3DProcess(smv_case *scase, bufferstreamdata *stream, char *buffer,
 #ifndef pp_SMOKEFRAME
     smoke3di->smoke_comp_all = NULL;
 #endif
-    smoke3di->alpha_factor = alpha_factor;
     smoke3di->smokeview_tmp = NULL;
     smoke3di->times = NULL;
     smoke3di->times_map = NULL;

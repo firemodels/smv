@@ -22,6 +22,9 @@
 #include "IOscript.h"
 #include "viewports.h"
 #include "colorbars.h"
+#ifdef pp_SMOKE16
+#include "glui_smoke.h"
+#endif
 
 void LoadHVACMenu(int value);
 void LoadPlot2DMenu(int value);

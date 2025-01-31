@@ -438,7 +438,7 @@ extern "C" void GLUI3dSmokeSetup(int main_window){
 #endif
 
     PANEL_display = glui_3dsmoke->add_panel_to_panel(ROLLOUT_slices, "smoke slice display");
-    RADIO_skipframes = glui_3dsmoke->add_radiogroup_to_panel(PANEL_display,&smokeskipm1);
+    RADIO_skipframes = glui_3dsmoke->add_radiogroup_to_panel(PANEL_display,&smokeskipm1, SMOKE_SKIP, GLUISmoke3dCB);
     glui_3dsmoke->add_radiobutton_to_group(RADIO_skipframes,_("All"));
     glui_3dsmoke->add_radiobutton_to_group(RADIO_skipframes,_("Every 2nd"));
     glui_3dsmoke->add_radiobutton_to_group(RADIO_skipframes,_("Every 3rd"));
@@ -1264,6 +1264,9 @@ extern "C" void GLUISmoke3dCB(int var){
     UpdateSmokeColormap(smoke_render_option);
     IdleCB();
      break;
+    case SMOKE_SKIP:
+      global_scase.update_smoke_alphas = 1;
+      break;
    case SMOKE_EXTINCT:
      global_scase.update_smoke_alphas = 1;
      glui_smoke3d_extinct = MAX(glui_smoke3d_extinct, 0.0);

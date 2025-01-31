@@ -1521,15 +1521,12 @@ void DrawSmoke3DGPU(smoke3ddata *smoke3di){
 
 /* ------------------ InitAlphas ------------------------ */
 
-void InitAlphas(unsigned char *alphanew,  float base_extinct,  float alpha_factor, float new_extinct, float base_dx, float new_dx){
+void InitAlphas(unsigned char *alphanew,  float base_extinct, float new_extinct, float base_dx, float new_dx){
   int i;
 
   if(base_extinct<=0.01){
     base_extinct = 1.0;
     new_extinct = 1.0;
-  }
-  if(alpha_factor <= 0.01){
-    alpha_factor = 0.01;
   }
   alphanew[0] = 0;
   if(force_alpha_opaque==1){
@@ -1538,13 +1535,16 @@ void InitAlphas(unsigned char *alphanew,  float base_extinct,  float alpha_facto
     }
   }
   else{
+    if(smokeskipm1 != 0){
+      base_dx /= (float)(smokeskipm1 + 1);
+    }
     for(i = 1; i<255; i++){
       float val;
       int ival;
 
       val = -log(1.0-(float)i/254.0)/(base_extinct*base_dx);
       val = 254.0*(1.0-exp(-val*new_extinct*new_dx))+0.5;
-      ival = CLAMP(val/alpha_factor, 0, 254);
+      ival = CLAMP(val, 0, 254);
       alphanew[i] = (unsigned char)ival;
     }
   }
@@ -1573,9 +1573,7 @@ void UpdateSmokeAlphas(void){
     dists[ALPHA_YZ] = smoke_mesh->dyzDdx*dx;
     dists[ALPHA_XZ] = smoke_mesh->dxzDdx*dx;
     for(j=0;j<6;j++){
-      InitAlphas(smoke3di->alphas_dir[j],
-                 smoke3di->extinct, smoke3di->alpha_factor, glui_smoke3d_extinct,
-                 smoke_mesh->dxyz_orig[0], dists[j]);
+      InitAlphas(smoke3di->alphas_dir[j], smoke3di->extinct, glui_smoke3d_extinct, smoke_mesh->dxyz_orig[0], dists[j]);
     }
   }
 }
