@@ -63,9 +63,9 @@
 #define SMOKE_SKIP_Z   111
 #define SMOKE_BLACK 75
 #ifdef pp_SMOKE16
-#define SMOKE_LOAD16 101
-#define SMOKE_SHOW16 102
-#define SMOKE_SHOW8  103
+#define SMOKE_LOAD16 112
+#define SMOKE_SHOW16 113
+#define SMOKE_SHOW8  114
 #endif
 #define SMOKE_DELTA_PAR 76
 #define SMOKE_NEW 77
