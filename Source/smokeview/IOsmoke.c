@@ -1603,16 +1603,11 @@ void UpdateSmokeAlphas(void){
     dists[ALPHA_XZ] = smoke_mesh->dxzDdx*dx;
     for(j=0;j<6;j++){
 #ifdef pp_SMOKE_DENSITY
-      int use_smoke_density;
       float maxval;
 
-      use_smoke_density = 0;
       maxval = smoke3di->maxval;
-      if(smoke3di->is_smoke_density == 1 && load_smoke_density == 1){
-        use_smoke_density = 1;
-        maxval = smoke3di->maxvals[smoke3di->ismoke3d_time];
-      }
-      InitAlphas(smoke3di->alphas_dir[j], smoke3di->extinct, use_smoke_density, maxval, glui_smoke3d_extinct, smoke_mesh->dxyz_orig[0], dists[j]);
+      if(smoke3di->soot_density_loaded == 1)maxval = smoke3di->maxvals[smoke3di->ismoke3d_time];
+      InitAlphas(smoke3di->alphas_dir[j], smoke3di->extinct, smoke3di->soot_density_loaded, maxval, glui_smoke3d_extinct, smoke_mesh->dxyz_orig[0], dists[j]);
 #else
       InitAlphas(smoke3di->alphas_dir[j], smoke3di->extinct, glui_smoke3d_extinct, smoke_mesh->dxyz_orig[0], dists[j]);
 #endif
@@ -4103,6 +4098,9 @@ int SetupSmoke3D(smoke3ddata *smoke3di, int load_flag, int iframe_arg, int *erro
     SetSmokeColorFlags(&global_scase.smoke3dcoll);
     update_fire_alpha = 1;
 
+#ifdef pp_SMOKE_DENSITY
+    smoke3di->soot_density_loaded = 0;
+#endif
     if(smoke3di->type==HRRPUV_index)mesh_smoke3d->smoke3d_hrrpuv = NULL;
     if(smoke3di->type==TEMP_index)mesh_smoke3d->smoke3d_temp = NULL;
     if(smoke3di->type==SOOT_index)mesh_smoke3d->smoke3d_co2 = NULL;
@@ -4451,6 +4449,9 @@ FILE_SIZE ReadSmoke3D(int time_frame,int ifile_arg,int load_flag, int first_time
   }
 #endif
 
+#ifdef pp_SMOKE_DENSITY
+  if(load_smoke_density == 1 && smoke3di->is_smoke_density == 1)smoke3di->soot_density_loaded = 1;
+#endif
   smoke3di->loaded=1;
   smoke3di->display=1;
 

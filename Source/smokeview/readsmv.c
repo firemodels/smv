@@ -5594,7 +5594,8 @@ int ParseSMOKE3DProcess(smv_case *scase, bufferstreamdata *stream, char *buffer,
     smoke3di->filetype = filetype;
     smoke3di->is_zlib = 0;
 #ifdef pp_SMOKE_DENSITY
-    smoke3di->is_smoke_density     = 0;
+    smoke3di->is_smoke_density    = 0;
+    smoke3di->soot_density_loaded = 0;
 #endif
 #ifdef pp_SMOKEFRAME
     smoke3di->frameinfo = NULL;

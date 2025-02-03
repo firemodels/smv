@@ -1493,6 +1493,7 @@ typedef struct _smoke3ddata {
   int is_zlib;
 #ifdef pp_SMOKE_DENSITY
   int is_smoke_density;
+  int soot_density_loaded;
 #endif
   smokestatedata *smokestate;
   int blocknumber;
