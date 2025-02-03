@@ -3433,6 +3433,17 @@ void UpdateSmoke3DTypes(void){
       }
     }
   }
+#ifdef pp_SMOKE_DENSITY
+  for(i = 0; i<global_scase.smoke3dcoll.nsmoke3dinfo; i++){
+    smoke3ddata *smoke3di;
+
+    smoke3di = global_scase.smoke3dcoll.smoke3dinfo + i;
+    if(smoke3di->type == SOOT_index && FileExistsCaseDir(&global_scase, smoke3di->smoke_density_file)==YES){
+      smoke3di->is_smoke_density = 1;
+      have_smoke_density = 1;
+    }
+  }
+#endif
 }
 
 /* ------------------ UpdateMeshCoords ------------------------ */
@@ -5582,12 +5593,8 @@ int ParseSMOKE3DProcess(smv_case *scase, bufferstreamdata *stream, char *buffer,
     smoke3di->ntimes_old = 0;
     smoke3di->filetype = filetype;
     smoke3di->is_zlib = 0;
-#ifdef pp_SMOKE16
-    smoke3di->is_s16     = 0;
-    smoke3di->val16s     = NULL;
-    smoke3di->val16_mins = NULL;
-    smoke3di->val16_maxs = NULL;
-    smoke3di->times16    = NULL;
+#ifdef pp_SMOKE_DENSITY
+    smoke3di->is_smoke_density     = 0;
 #endif
 #ifdef pp_SMOKEFRAME
     smoke3di->frameinfo = NULL;
@@ -5611,6 +5618,9 @@ int ParseSMOKE3DProcess(smv_case *scase, bufferstreamdata *stream, char *buffer,
     smoke3di->nchars_compressed_smoke = NULL;
     smoke3di->nchars_compressed_smoke_full = NULL;
     smoke3di->maxval = -1.0;
+#ifdef pp_SMOKE_DENSITY
+    smoke3di->maxvals = NULL;
+#endif
     smoke3di->frame_all_zeros = NULL;
     smoke3di->smoke_boxmin = NULL;
     smoke3di->smoke_boxmax = NULL;
@@ -5641,20 +5651,15 @@ int ParseSMOKE3DProcess(smv_case *scase, bufferstreamdata *stream, char *buffer,
       smoke3di->file = smoke3di->reg_file;
     }
 
-#ifdef pp_SMOKE16
-    char buffer16[256];
-    char *ext;
+#ifdef pp_SMOKE_DENSITY
+    char buffer8[256], *ext;
 
-    strcpy(buffer16, bufferptr);
-    ext = strrchr(buffer16, '.');
+    strcpy(buffer8, bufferptr);
+    ext = strrchr(buffer8, '.');
     if(ext != NULL)*ext = 0;
-    strcat(buffer16, ".s16");
-    smoke3di->s16_file = SMOKE3DBUFFER(strlen(buffer16) + 1);
-    STRCPY(smoke3di->s16_file, buffer16);
-    if(FileExistsCaseDir(scase, smoke3di->s16_file)==YES){
-      smoke3di->is_s16 = 1;
-      have_smoke16 = 1;
-    }
+    strcat(buffer8, ".s3dd");
+    smoke3di->smoke_density_file = SMOKE3DBUFFER(strlen(buffer8) + 1);
+    STRCPY(smoke3di->smoke_density_file, buffer8);
 #endif
 
     {

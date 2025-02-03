@@ -1521,7 +1521,11 @@ void DrawSmoke3DGPU(smoke3ddata *smoke3di){
 
 /* ------------------ InitAlphas ------------------------ */
 
+#ifdef pp_SMOKE_DENSITY
+void InitAlphas(unsigned char *alphanew, float base_extinct, int use_smoke_density, float maxval, float new_extinct, float base_dx, float new_dx){
+#else
 void InitAlphas(unsigned char *alphanew,  float base_extinct, float new_extinct, float base_dx, float new_dx){
+#endif
   int i;
 
   if(base_extinct<=0.01){
@@ -1538,6 +1542,30 @@ void InitAlphas(unsigned char *alphanew,  float base_extinct, float new_extinct,
     if(smokeskipm1 != 0){
       base_dx /= (float)(smokeskipm1 + 1);
     }
+#ifdef pp_SMOKE_DENSITY
+    if(use_smoke_density == 1){;
+      for(i = 1; i < 255; i++){
+        float val;
+        int ival;
+
+        val = ( float )i / 255.0 * maxval;
+        val = 254.0 * (1.0 - exp(-val * new_extinct * new_dx)) + 0.5;
+        ival = CLAMP(val, 0, 254);
+        alphanew[i] = ( unsigned char )ival;
+      }
+    }
+    else{
+      for(i = 1; i<255; i++){
+        float val;
+        int ival;
+
+        val = -log(1.0-(float)i/254.0)/(base_extinct*base_dx);
+        val = 254.0*(1.0-exp(-val*new_extinct*new_dx))+0.5;
+        ival = CLAMP(val, 0, 254);
+        alphanew[i] = (unsigned char)ival;
+      }
+    }
+#else
     for(i = 1; i<255; i++){
       float val;
       int ival;
@@ -1547,6 +1575,7 @@ void InitAlphas(unsigned char *alphanew,  float base_extinct, float new_extinct,
       ival = CLAMP(val, 0, 254);
       alphanew[i] = (unsigned char)ival;
     }
+#endif
   }
 }
 
@@ -1573,7 +1602,20 @@ void UpdateSmokeAlphas(void){
     dists[ALPHA_YZ] = smoke_mesh->dyzDdx*dx;
     dists[ALPHA_XZ] = smoke_mesh->dxzDdx*dx;
     for(j=0;j<6;j++){
+#ifdef pp_SMOKE_DENSITY
+      int use_smoke_density;
+      float maxval;
+
+      use_smoke_density = 0;
+      maxval = smoke3di->maxval;
+      if(smoke3di->is_smoke_density == 1 && load_smoke_density == 1){
+        use_smoke_density = 1;
+        maxval = smoke3di->maxvals[smoke3di->ismoke3d_time];
+      }
+      InitAlphas(smoke3di->alphas_dir[j], smoke3di->extinct, use_smoke_density, maxval, glui_smoke3d_extinct, smoke_mesh->dxyz_orig[0], dists[j]);
+#else
       InitAlphas(smoke3di->alphas_dir[j], smoke3di->extinct, glui_smoke3d_extinct, smoke_mesh->dxyz_orig[0], dists[j]);
+#endif
     }
   }
 }
@@ -3667,9 +3709,13 @@ void MakeTimesMap(float *times, unsigned char **times_map_ptr, int n){
 
 /* ------------------ GetSmoke3DSizes ------------------------ */
 
+#ifdef pp_SMOKE_DENSITY
+int GetSmoke3DSizes(smoke3ddata *smoke3di, int fortran_skip, char *smokefile, int version, unsigned char **times_map_ptr, float **times_ptr, int **use_smokeframe,
+  int *nchars_smoke_uncompressed, int **nchars_smoke_compressed_found, int **nchars_smoke_compressed_full, float **maxvals_ptr, float *maxval, int *ntimes_found, int *ntimes_full){
+#else
 int GetSmoke3DSizes(smoke3ddata *smoke3di, int fortran_skip, char *smokefile, int version, unsigned char **times_map_ptr, float **times_ptr, int **use_smokeframe,
   int *nchars_smoke_uncompressed, int **nchars_smoke_compressed_found, int **nchars_smoke_compressed_full, float *maxval, int *ntimes_found, int *ntimes_full){
-
+#endif
   char buffer[255];
   FILE *SMOKE_SIZE = NULL;
   int nframes_found;
@@ -3686,6 +3732,9 @@ int GetSmoke3DSizes(smoke3ddata *smoke3di, int fortran_skip, char *smokefile, in
   int first = 1;
   int nchars_first;
   float time_last;
+#ifdef pp_SMOKE_DENSITY
+  float *maxvals;
+#endif
 
   if(smokefile==NULL){
     printf("***error: smokefile pointer is NULL\n");
@@ -3742,18 +3791,31 @@ int GetSmoke3DSizes(smoke3ddata *smoke3di, int fortran_skip, char *smokefile, in
   times_map                 = *times_map_ptr;
   nch_smoke_compressed_full = *nchars_smoke_compressed_full;
   nch_smoke_compressed_found= *nchars_smoke_compressed_found;
+#ifdef pp_SMOKE_DENSITY
+  if(load_smoke_density == 1 && smoke3di->is_smoke_density == 1)maxvals = *maxvals_ptr;
+#endif
 
   NewResizeMemory(       use_smokeframe_full, (*ntimes_full)  * sizeof(int));
   NewResizeMemory(                     times, nframes_found   * sizeof(float));
   NewResizeMemory(                 times_map, nframes_found   * sizeof(char));
   NewResizeMemory( nch_smoke_compressed_full, (*ntimes_full)  * sizeof(int));
   NewResizeMemory(nch_smoke_compressed_found, (*ntimes_found) * sizeof(int));
+#ifdef pp_SMOKE_DENSITY
+  if(load_smoke_density == 1 && smoke3di->is_smoke_density == 1){
+    NewResizeMemory(maxvals, (*ntimes_full) * sizeof(float));
+  }
+#endif
 
   *use_smokeframe                = use_smokeframe_full;
   *times_ptr                     = times;
   *times_map_ptr                 = times_map;
   *nchars_smoke_compressed_full  = nch_smoke_compressed_full;
   *nchars_smoke_compressed_found = nch_smoke_compressed_found;
+#ifdef pp_SMOKE_DENSITY
+  if(load_smoke_density == 1 && smoke3di->is_smoke_density == 1){
+    *maxvals_ptr = maxvals;
+  }
+#endif
 
   fgets(buffer, 255, SMOKE_SIZE);
   ntimes_full2 = 0;
@@ -3763,13 +3825,21 @@ int GetSmoke3DSizes(smoke3ddata *smoke3di, int fortran_skip, char *smokefile, in
   int count=0;
   while(!feof(SMOKE_SIZE)){
     float maxvali;
+#ifdef pp_SMOKE_DENSITY
+    float maxval_density;
+    int nch_smoke_density;
+#endif
 
     if(fgets(buffer, 255, SMOKE_SIZE) == NULL)break;
     ntimes_full2++;
     if(ntimes_full2 > *ntimes_full)break;
     maxvali = -1.0;
     if(version == 0){
+#ifdef pp_SMOKE_DENSITY
+      sscanf(buffer, "%f %i %i %f %i %f", &time_local, &nch_uncompressed, &nch_smoke_compressed, &maxvali, &nch_smoke_density, &maxval_density);
+#else
       sscanf(buffer, "%f %i %i %f", &time_local, &nch_uncompressed, &nch_smoke_compressed, &maxvali);
+#endif
     }
     else{
       int nch_light;
@@ -3778,7 +3848,17 @@ int GetSmoke3DSizes(smoke3ddata *smoke3di, int fortran_skip, char *smokefile, in
       sscanf(buffer, "%f %i %i %i %i %f", &time_local, &nch_uncompressed, &dummy, &nch_smoke_compressed, &nch_light, &maxvali);
     }
     *maxval = MAX(maxvali, *maxval);
+#ifdef pp_SMOKE_DENSITY
+    if(load_smoke_density == 1 && smoke3di->is_smoke_density == 1){
+      *maxvals++ = maxval_density;
+      *nch_smoke_compressed_full++ = nch_smoke_density;
+    }
+    else{
+      *nch_smoke_compressed_full++ = nch_smoke_compressed;
+    }
+#else
     *nch_smoke_compressed_full++ = nch_smoke_compressed;
+#endif
     *use_smokeframe_full = 0;
     if(use_tload_end == 1 && time_local > global_scase.tload_end)break;
 
@@ -3786,7 +3866,16 @@ int GetSmoke3DSizes(smoke3ddata *smoke3di, int fortran_skip, char *smokefile, in
       *use_smokeframe_full = 1;
       *times++ = time_local;
       count++;
+#ifdef pp_SMOKE_DENSITY
+      if(load_smoke_density == 1 && smoke3di->is_smoke_density == 1){
+        *nch_smoke_compressed_found++ = nch_smoke_density;
+      }
+      else{
+        *nch_smoke_compressed_found++ = nch_smoke_compressed;
+      }
+#else
       *nch_smoke_compressed_found++ = nch_smoke_compressed;
+#endif
     }
     use_smokeframe_full++;
     iii++;
@@ -3959,75 +4048,6 @@ void SmokeWrapup(void){
   ForceIdle();
 }
 
-#ifdef pp_SMOKE16
-
-/* ------------------ ReadSmoke16 ------------------------ */
-
-void ReadSmoke16(smoke3ddata *smoke3di, int flag){
-  // one, version, ibarp1, jbarp1, kbar+1
-  // time
-  // nvals, nvals16_out, valmin, valmax
-  // (2**16 - 1)(val - valmin) / (valmax - valmin)
-  // BUFFER16_IN(I), I = 1, 2 * NVALS)
-  FILE *stream = NULL;
-  int returncode;
-  FILE_SIZE file_size;
-  int vals[6], ibarp1, jbarp1, kbarp1;
-  int sizebuffer;
-  unsigned short *val16s;
-  int nframes;
-  float *times16, *val16_mins, *val16_maxs;
-  int i;
-
-  FREEMEMORY(smoke3di->val16s);
-  FREEMEMORY(smoke3di->times16);
-  FREEMEMORY(smoke3di->val16_mins);
-  FREEMEMORY(smoke3di->val16_maxs);
-  if(flag == UNLOAD)return;
-
-  stream = fopen(smoke3di->s16_file, "rb");
-  if(stream == NULL)return;
-  FORTREAD(vals, 4, 6, stream);
-  ibarp1 = vals[3];
-  jbarp1 = vals[4];
-  kbarp1 = vals[5];
-  sizebuffer = ibarp1*jbarp1*kbarp1;
-  file_size = GetFileSizeSMV(smoke3di->s16_file);
-  // header size: 8 + 6*4
-  // frame size 8+4 (time) + 8+sizebuffer*sizeof(unsigned short) (data size)
-  nframes = (file_size - (8+6*4)) / (8+4 + 8+sizebuffer*sizeof(unsigned short));
-  NewMemory((void **)&val16s, nframes * sizebuffer * sizeof(unsigned short));
-  NewMemory((void **)&times16, nframes * sizeof(float));
-  NewMemory((void **)&val16_mins, nframes * sizeof(float));
-  NewMemory((void **)&val16_maxs, nframes * sizeof(float));
-  smoke3di->times16    = times16;
-  smoke3di->val16_mins = val16_mins;
-  smoke3di->val16_maxs = val16_maxs;
-  smoke3di->val16s     = val16s;
-
-  for(i = 0;i < nframes;i++){
-    float time;
-    char buffer4[16];
-    // time
-    // nvals, nvals16_out, valmin, valmax
-    // (2**16 - 1)(val - valmin) / (valmax - valmin)
-    // BUFFER16_IN(I), I = 1, 2 * NVALS)
-    FORTREAD(&time, 4, 1, stream);
-    FORTREAD(buffer4, 1, 16, stream);
-    float valmin, valmax;
-
-    memcpy(&valmin, buffer4 + 8,  sizeof(float));
-    memcpy(&valmax, buffer4 + 12, sizeof(float));
-    times16[i] = time;
-    val16_mins[i] = valmin;
-    val16_maxs[i] = valmax;
-    FORTREAD(val16s, 2, sizebuffer, stream);
-    val16s += sizebuffer;
-  }
-  fclose(stream);
-}
-#endif
-
 #define READSMOKE3D_CONTINUE_ON 0
 #define READSMOKE3D_RETURN      1
 
@@ -4149,6 +4169,9 @@ int SetupSmoke3D(smoke3ddata *smoke3di, int load_flag, int iframe_arg, int *erro
     &smoke3di->nchars_uncompressed,
     &smoke3di->nchars_compressed_smoke,
     &smoke3di->nchars_compressed_smoke_full,
+#ifdef pp_SMOKE_DENSITY
+    &smoke3di->maxvals,
+#endif
     &smoke3di->maxval,
     &smoke3di->ntimes,
     &smoke3di->ntimes_full)==1){
@@ -4170,12 +4193,14 @@ int SetupSmoke3D(smoke3ddata *smoke3di, int load_flag, int iframe_arg, int *erro
       }
       return_flag_local = 1;
     }
+#ifndef pp_SMOKE_DENSITY
     if(smoke3di->type==SOOT_index&&smoke3di->maxval<=load_3dsmoke_cutoff){
       smoke3di->skip_smoke = 1;
       *errorcode_arg = 0;
       PRINTF(" - skipped (opacity<%0.f)\n", load_3dsmoke_cutoff);
       return_flag_local = 1;
     }
+#endif
     if(return_flag_local==1){
       if(smoke3di->finalize==1){
         SmokeWrapup();
@@ -4269,12 +4294,6 @@ FILE_SIZE ReadSmoke3D(int time_frame,int ifile_arg,int load_flag, int first_time
   if(smoke3di->filetype==FORTRAN_GENERATED&&smoke3di->is_zlib==0)fortran_skip=4;
 #endif
 
-#ifdef pp_SMOKE16
-  if(load_smoke16==1||load_flag==UNLOAD ){
-    ReadSmoke16(smoke3di, load_flag);
-  }
-#endif
-
   if(first_time == FIRST_TIME){
     if(SetupSmoke3D(smoke3di, load_flag,time_frame, errorcode_arg)==READSMOKE3D_RETURN){
       return 0;
@@ -4325,7 +4344,12 @@ FILE_SIZE ReadSmoke3D(int time_frame,int ifile_arg,int load_flag, int first_time
     }
   }
 #else
-  SMOKE3DFILE=fopen(smoke3di->file,"rb");
+  char *file;
+  file = smoke3di->file;
+#ifdef pp_SMOKE_DENSITY
+  if(load_smoke_density == 1 && smoke3di->is_smoke_density == 1)file = smoke3di->smoke_density_file;
+#endif
+  SMOKE3DFILE=fopen(file,"rb");
   if(SMOKE3DFILE==NULL){
     SetupSmoke3D(smoke3di,UNLOAD, time_frame, &error_local);
     *errorcode_arg =1;

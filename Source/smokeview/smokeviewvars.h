@@ -537,10 +537,6 @@ SVEXTERN float voltest_center[3] = {0.8, 0.8, 1.0};
 #else
 SVEXTERN float voltest_center[3];
 #endif
-#ifdef pp_SMOKE16
-SVEXTERN int SVDECL(show_3dsmoke_8bit, 1);
-SVEXTERN int SVDECL(show_3dsmoke_16bit, 0);
-#endif
 SVEXTERN int SVDECL(show_plot3dfiles, 1), SVDECL(show_isofiles,1);
 SVEXTERN int SVDECL(show_boundaryfiles, 1);
 
@@ -651,9 +647,9 @@ SVEXTERN int colorsplit[12] = {0,0,0,  64,64,255,  0,192,0,  255,0,0};
 SVEXTERN int colorsplit[12];
 #endif
 
-#ifdef pp_SMOKE16
-SVEXTERN int SVDECL(load_smoke16, 0);
-SVEXTERN int SVDECL(have_smoke16, 0);
+#ifdef pp_SMOKE_DENSITY
+SVEXTERN int SVDECL(load_smoke_density, 0);
+SVEXTERN int SVDECL(have_smoke_density, 0);
 #endif
 SVEXTERN int SVDECL(show_zlevel, 0);
 SVEXTERN float terrain_zlevel;

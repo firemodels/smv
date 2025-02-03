@@ -33,6 +33,9 @@ void FreeSmoke3D(smoke3ddata *smoke3di) {
   FREEMEMORY(smoke3di->frame_all_zeros);
   FREEMEMORY(smoke3di->smoke_boxmin);
   FREEMEMORY(smoke3di->smoke_boxmax);
+#ifdef pp_SMOKE_DENSITY
+  FREEMEMORY(smoke3di->maxvals);
+#endif
 #ifndef pp_SMOKEFRAME
   FREEMEMORY(smoke3di->smoke_comp_all);
 #endif

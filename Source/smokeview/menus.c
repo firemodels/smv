@@ -22,9 +22,6 @@
 #include "IOscript.h"
 #include "viewports.h"
 #include "colorbars.h"
-#ifdef pp_SMOKE16
-#include "glui_smoke.h"
-#endif
 
 void LoadHVACMenu(int value);
 void LoadPlot2DMenu(int value);
@@ -1109,46 +1106,16 @@ void Smoke3DShowMenu(int value){
     case SHOW_ALL:
       plotstate=DYNAMIC_PLOTS;
       show_3dsmoke=1;
-#ifdef pp_SMOKE16
-      show_3dsmoke_16bit = 0;
-      show_3dsmoke_8bit = 1;
-#endif
       Smoke3DShowMenu(SET_SMOKE3D);
       break;
     case HIDE_ALL:
       show_3dsmoke=0;
-#ifdef pp_SMOKE16
-      show_3dsmoke_16bit = 0;
-      show_3dsmoke_8bit = 0;
-#endif
       Smoke3DShowMenu(SET_SMOKE3D);
       break;
-#ifdef pp_SMOKE16
-    case TOGGLE_SMOKE3D_16BIT:
-    case TOGGLE_SMOKE3D_8BIT:
-      if(value == TOGGLE_SMOKE3D_16BIT){
-        show_3dsmoke_16bit = 1 - show_3dsmoke_16bit;
-        if(show_3dsmoke_16bit == 1 && show_3dsmoke_8bit == 1)show_3dsmoke_8bit = 0;
-      }
-      if(value == TOGGLE_SMOKE3D_8BIT){
-        show_3dsmoke_8bit = 1 - show_3dsmoke_8bit;
-        if(show_3dsmoke_16bit == 1 && show_3dsmoke_8bit == 1)show_3dsmoke_16bit = 0;
-      }
-      if(show_3dsmoke_16bit == 1 || show_3dsmoke_8bit == 1){
-        show_3dsmoke = 1;
-      }
-      else{
-        show_3dsmoke = 0;
-      }
-      Smoke3DShowMenu(SET_SMOKE3D);
-      GLUIUpdateSmoke16();
-      break;
-#else
     case TOGGLE_SMOKE3D:
       show_3dsmoke = 1 - show_3dsmoke;
       Smoke3DShowMenu(SET_SMOKE3D);
       break;
-#endif
     case SET_SMOKE3D:
       for(i=0;i<global_scase.smoke3dcoll.nsmoke3dinfo;i++){
         smoke3di = global_scase.smoke3dcoll.smoke3dinfo + i;
@@ -4910,9 +4877,6 @@ void LoadSmoke3DMenu(int value){
 #define MENU_DUMMY_SMOKE           -9
 #define MENU_SMOKE_SETTINGS        -4
 #define MENU_SMOKE_FILE_SIZES     -10
-#ifdef pp_SMOKE16
-#define MENU_SMOKE_16             -11
-#endif
 
   if(value == MENU_DUMMY_SMOKE)return;
   START_TIMER(load_time);
@@ -5001,13 +4965,6 @@ void LoadSmoke3DMenu(int value){
       }
     }
   }
-#ifdef pp_SMOKE16
-  else if(value ==MENU_SMOKE_16){
-    load_smoke16 = 1-load_smoke16;
-    GLUIUpdateSmoke16();
-    updatemenu = 1;
-  }
-#endif
   else if(value<=-100){
     smoke3ddata *smoke3di;
 
@@ -10890,15 +10847,8 @@ static int menu_count=0;
     {
       if(nsmoke3dloaded>0){
         CREATEMENU(smoke3dshowmenu, Smoke3DShowMenu);
-#ifdef pp_SMOKE16
-        if(show_3dsmoke_8bit == 1)glutAddMenuEntry(_("*Show 8 bit"),   TOGGLE_SMOKE3D_8BIT);
-        if(show_3dsmoke_8bit == 0)glutAddMenuEntry(_("Show 8 bit"),    TOGGLE_SMOKE3D_8BIT);
-        if(show_3dsmoke_16bit == 1)glutAddMenuEntry(_("*Show 16 bit"), TOGGLE_SMOKE3D_16BIT);
-        if(show_3dsmoke_16bit == 0)glutAddMenuEntry(_("Show 16 bit"),  TOGGLE_SMOKE3D_16BIT);
-#else
         if(show_3dsmoke==1)glutAddMenuEntry(_("*Show"), TOGGLE_SMOKE3D);
         if(show_3dsmoke==0)glutAddMenuEntry(_("Show"), TOGGLE_SMOKE3D);
-#endif
         GLUTADDSUBMENU(_("Smoke colorbar"),smokecolorbarmenu);
       }
     }
@@ -12381,16 +12331,6 @@ static int menu_count=0;
         }
 
         glutAddMenuEntry("-", MENU_DUMMY3);
-#ifdef pp_SMOKE16
-        if(have_smoke16==1){
-          if(load_smoke16==1){
-            glutAddMenuEntry(_("*Load 16 bit files"), MENU_SMOKE_16);
-          }
-          else{
-            glutAddMenuEntry(_("Load 16 bit files"), MENU_SMOKE_16);
-          }
-        }
-#endif
         glutAddMenuEntry(_("3D smoke file sizes"), MENU_SMOKE_FILE_SIZES);
         glutAddMenuEntry("-", MENU_DUMMY3);
         glutAddMenuEntry(_("Settings..."), MENU_SMOKE_SETTINGS);

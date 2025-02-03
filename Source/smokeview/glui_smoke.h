@@ -62,11 +62,6 @@
 #define SMOKE_SKIP_Y   110
 #define SMOKE_SKIP_Z   111
 #define SMOKE_BLACK 75
-#ifdef pp_SMOKE16
-#define SMOKE_LOAD16 112
-#define SMOKE_SHOW16 113
-#define SMOKE_SHOW8  114
-#endif
 #define SMOKE_DELTA_PAR 76
 #define SMOKE_NEW 77
 #define SMOKE_DELTA_MULTIPLE 78
@@ -104,9 +99,6 @@ EXTERNCPP void GLUIUpdateLoadFrameVal(int frames);
 EXTERNCPP void GLUIUpdateLoadFrameMax(int max_frames);
 EXTERNCPP void GLUISmoke3dCB(int var);
 EXTERNCPP void GLUIUpdateFireAlpha(void);
-#ifdef pp_SMOKE16
-EXTERNCPP void GLUIUpdateSmoke16(void);
-#endif
 EXTERNCPP void GLUIUpdateSmoke3dFlags(void);
 EXTERNCPP void GLUICreateVolTourList(void);
 EXTERNCPP void GLUIDeleteVolTourList(void);

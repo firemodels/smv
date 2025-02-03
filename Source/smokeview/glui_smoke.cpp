@@ -103,11 +103,6 @@ GLUI_Checkbox *CHECKBOX_use_fire_colormap = NULL;
 GLUI_Checkbox *CHECKBOX_use_fire_rgb = NULL;
 GLUI_Checkbox *CHECKBOX_use_co2_rgb = NULL;
 GLUI_Checkbox *CHECKBOX_smoke_flip=NULL;
-#ifdef pp_SMOKE16
-GLUI_Checkbox *CHECKBOX_load_smoke16=NULL;
-GLUI_Checkbox *CHECKBOX_show_smoke16=NULL;
-GLUI_Checkbox *CHECKBOX_show_smoke8=NULL;
-#endif
 GLUI_Checkbox *CHECKBOX_smoke_getvals=NULL;
 GLUI_Checkbox *CHECKBOX_update_smokeplanes = NULL;
 GLUI_Checkbox *CHECKBOX_plane_single = NULL;
@@ -222,16 +217,6 @@ extern "C" void GLUIUpdateFireColorbarList(void){
 extern "C" void GLUIUpdateBackgroundFlip2(int flip){
   if(CHECKBOX_smoke_flip!=NULL)CHECKBOX_smoke_flip->set_int_val(flip);
 }
-
-/* ------------------ GLUIUpdateSmoke16 ------------------------ */
-
-#ifdef pp_SMOKE16
-extern "C" void GLUIUpdateSmoke16(void){
-  if(CHECKBOX_load_smoke16 != NULL)CHECKBOX_load_smoke16->set_int_val(load_smoke16);
-  if(CHECKBOX_show_smoke16 != NULL)CHECKBOX_show_smoke16->set_int_val(show_3dsmoke_16bit);
-  if(CHECKBOX_show_smoke8  != NULL)CHECKBOX_show_smoke8->set_int_val(show_3dsmoke_8bit);
-}
-#endif
 
 /* ------------------ GLUIUpdateFreeze ------------------------ */
 
@@ -393,14 +378,12 @@ extern "C" void GLUI3dSmokeSetup(int main_window){
 #endif
   glui_3dsmoke->add_checkbox_to_panel(PANEL_settings1, _("max blending"), &hrrpuv_max_blending);
   CHECKBOX_smoke_flip    = glui_3dsmoke->add_checkbox_to_panel(PANEL_settings1, _("flip background"), &background_flip,BACKGROUND_FLIP, GLUISmoke3dCB);
-#ifdef pp_SMOKE16
-  if(have_smoke16 == 1){
-    CHECKBOX_load_smoke16 = glui_3dsmoke->add_checkbox_to_panel(PANEL_settings1, _("load 16 bit files"), &load_smoke16,       SMOKE_LOAD16, GLUISmoke3dCB);
-    CHECKBOX_show_smoke16 = glui_3dsmoke->add_checkbox_to_panel(PANEL_settings1, _("show 16 bit files"), &show_3dsmoke_16bit, SMOKE_SHOW16, GLUISmoke3dCB);
-    CHECKBOX_show_smoke8 = glui_3dsmoke->add_checkbox_to_panel(PANEL_settings1,  _("show 8 bit files"),  &show_3dsmoke_8bit,  SMOKE_SHOW8,  GLUISmoke3dCB);
+  glui_3dsmoke->add_checkbox_to_panel(PANEL_settings1, _("triangle display rate"), &show_trirates);
+#ifdef pp_SMOKE_DENSITY
+  if(have_smoke_density == 1){
+    glui_3dsmoke->add_checkbox_to_panel(PANEL_settings1, _("load raw soot files"), &load_smoke_density);
   }
 #endif
-  glui_3dsmoke->add_checkbox_to_panel(PANEL_settings1, _("triangle display rate"), &show_trirates);
 
   PANEL_smoke_parallel = glui_3dsmoke->add_panel_to_panel(PANEL_settings1,"parallel");
   CHECKBOX_view_parallel = glui_3dsmoke->add_checkbox_to_panel(PANEL_smoke_parallel, _("drawing setup"),  &use_mergesmoke_glui_threads, MERGE_SMOKE, GLUISmoke3dCB);
@@ -877,25 +860,6 @@ extern "C" void GLUISmoke3dCB(int var){
     ShowHideMenu(MENU_SHOWHIDE_FLIP);
     updatemenu = 1;
     break;
-#ifdef pp_SMOKE16
-  case SMOKE_LOAD16:
-    updatemenu = 1;
-    break;
-  case SMOKE_SHOW16:
-    if(show_3dsmoke_16bit==1&&show_3dsmoke_8bit==1){
-      show_3dsmoke_8bit = 0;
-      CHECKBOX_show_smoke8->set_int_val(0);
-    }
-    updatemenu = 1;
-    break;
-  case SMOKE_SHOW8:
-    if(show_3dsmoke_16bit==1&&show_3dsmoke_8bit==1){
-      show_3dsmoke_16bit = 0;
-      CHECKBOX_show_smoke16->set_int_val(0);
-    }
-    updatemenu = 1;
-    break;
-#endif
   case MERGE_SMOKE:
     UpdateGluiMergeSmoke();
     break;
