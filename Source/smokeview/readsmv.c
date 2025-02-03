@@ -5646,14 +5646,14 @@ int ParseSMOKE3DProcess(smv_case *scase, bufferstreamdata *stream, char *buffer,
       smoke3di->file = smoke3di->reg_file;
     }
 
-    char buffer8[256], *ext;
+    char buffer_s3dd[256], *ext;
 
-    strcpy(buffer8, bufferptr);
-    ext = strrchr(buffer8, '.');
+    strcpy(buffer_s3dd, bufferptr);
+    ext = strrchr(buffer_s3dd, '.');
     if(ext != NULL)*ext = 0;
-    strcat(buffer8, ".s3dd");
-    smoke3di->smoke_density_file = SMOKE3DBUFFER(strlen(buffer8) + 1);
-    STRCPY(smoke3di->smoke_density_file, buffer8);
+    strcat(buffer_s3dd, ".s3dd");
+    smoke3di->smoke_density_file = SMOKE3DBUFFER(strlen(buffer_s3dd) + 1);
+    STRCPY(smoke3di->smoke_density_file, buffer_s3dd);
 
     {
       if(ReadLabels(&smoke3di->label, stream, NULL)==LABEL_ERR)return RETURN_TWO;
