@@ -561,15 +561,9 @@ EXTERNCPP void DrawSmokeFrame(void);
 EXTERNCPP void DrawVolSmokeFrame(void);
 EXTERNCPP void GetSmoke3DTimeSteps(int fortran_skip, char *smokefile, int version, int *ntimes_found, int *ntimes_full);
 EXTERNCPP int GetSmokeNFrames(int type, float *tmin, float *tmax);
-#ifdef pp_SMOKE_DENSITY
 EXTERNCPP void InitAlphas(unsigned char *alphanew,
                           float base_extinct, int use_smoke_density, float maxval, float new_extinct,
                           float base_dx, float new_dx);
-#else
-EXTERNCPP void InitAlphas(unsigned char *alphanew,
-  float base_extinct, float new_extinct,
-  float base_dx, float new_dx);
-#endif
 EXTERNCPP int  IsSmokeComponentPresent(smoke3ddata *smoke3di);
 EXTERNCPP void MakeIBlankSmoke3D(void);
 EXTERNCPP void MakeTimesMap(float *times, unsigned char **times_map_ptr, int n);

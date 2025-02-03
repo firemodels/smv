@@ -1994,7 +1994,6 @@ void GetSmokeDir(float *mm){
       else{
         smoke_dist = meshj->smoke_dist[minalphadir];
       }
-#ifdef pp_SMOKE_DENSITY
       int use_soot_density;
       float maxval;
 
@@ -2005,9 +2004,6 @@ void GetSmokeDir(float *mm){
         maxval = soot->maxvals[soot->ismoke3d_time];
       }
       InitAlphas(soot->alphas_dir[minalphadir], soot->extinct, use_soot_density, maxval, glui_smoke3d_extinct, meshj->dxyz_orig[0], smoke_dist);
-#else
-      InitAlphas(soot->alphas_dir[minalphadir], soot->extinct, glui_smoke3d_extinct, meshj->dxyz_orig[0], smoke_dist);
-#endif
     }
     if(demo_mode != 0){
       meshj->smokedir = 1;

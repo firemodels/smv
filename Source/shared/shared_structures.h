@@ -1483,18 +1483,14 @@ typedef struct _smoke3ddata {
   int seq_id, autoload;
   char *file;
   char *comp_file, *reg_file;
-#ifdef pp_SMOKE_DENSITY
   char *smoke_density_file;
-#endif
   int filetype;
   int skip_smoke, skip_fire;
   int is_smoke, is_fire;
   int loaded, request_load, finalize, display, primary_file;
   int is_zlib;
-#ifdef pp_SMOKE_DENSITY
   int is_smoke_density;
   int soot_density_loaded;
-#endif
   smokestatedata *smokestate;
   int blocknumber;
   int type;
@@ -1523,9 +1519,7 @@ typedef struct _smoke3ddata {
 
   int ncomp_smoke_total;
   int *nchars_compressed_smoke, *nchars_compressed_smoke_full;
-#ifdef pp_SMOKE_DENSITY
   float *maxvals;
-#endif
   float maxval;
   unsigned char *smokeframe_in, *smokeframe_out, **smokeframe_comp_list;
   unsigned char *smokeview_tmp;

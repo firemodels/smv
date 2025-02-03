@@ -3433,7 +3433,6 @@ void UpdateSmoke3DTypes(void){
       }
     }
   }
-#ifdef pp_SMOKE_DENSITY
   for(i = 0; i<global_scase.smoke3dcoll.nsmoke3dinfo; i++){
     smoke3ddata *smoke3di;
 
@@ -3443,7 +3442,6 @@ void UpdateSmoke3DTypes(void){
       have_smoke_density = 1;
     }
   }
-#endif
 }
 
 /* ------------------ UpdateMeshCoords ------------------------ */
@@ -5593,10 +5591,8 @@ int ParseSMOKE3DProcess(smv_case *scase, bufferstreamdata *stream, char *buffer,
     smoke3di->ntimes_old = 0;
     smoke3di->filetype = filetype;
     smoke3di->is_zlib = 0;
-#ifdef pp_SMOKE_DENSITY
     smoke3di->is_smoke_density    = 0;
     smoke3di->soot_density_loaded = 0;
-#endif
 #ifdef pp_SMOKEFRAME
     smoke3di->frameinfo = NULL;
 #endif
@@ -5619,9 +5615,7 @@ int ParseSMOKE3DProcess(smv_case *scase, bufferstreamdata *stream, char *buffer,
     smoke3di->nchars_compressed_smoke = NULL;
     smoke3di->nchars_compressed_smoke_full = NULL;
     smoke3di->maxval = -1.0;
-#ifdef pp_SMOKE_DENSITY
     smoke3di->maxvals = NULL;
-#endif
     smoke3di->frame_all_zeros = NULL;
     smoke3di->smoke_boxmin = NULL;
     smoke3di->smoke_boxmax = NULL;
@@ -5652,7 +5646,6 @@ int ParseSMOKE3DProcess(smv_case *scase, bufferstreamdata *stream, char *buffer,
       smoke3di->file = smoke3di->reg_file;
     }
 
-#ifdef pp_SMOKE_DENSITY
     char buffer8[256], *ext;
 
     strcpy(buffer8, bufferptr);
@@ -5661,7 +5654,6 @@ int ParseSMOKE3DProcess(smv_case *scase, bufferstreamdata *stream, char *buffer,
     strcat(buffer8, ".s3dd");
     smoke3di->smoke_density_file = SMOKE3DBUFFER(strlen(buffer8) + 1);
     STRCPY(smoke3di->smoke_density_file, buffer8);
-#endif
 
     {
       if(ReadLabels(&smoke3di->label, stream, NULL)==LABEL_ERR)return RETURN_TWO;
