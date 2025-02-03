@@ -1540,7 +1540,7 @@ void InitAlphas(unsigned char *alphanew,  float base_extinct, float new_extinct,
   }
   else{
     if(smokeskipm1 != 0){
-      base_dx /= (float)(smokeskipm1 + 1);
+      new_dx *= (float)(smokeskipm1 + 1);
     }
 #ifdef pp_SMOKE_DENSITY
     if(use_smoke_density == 1){;
