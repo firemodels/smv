@@ -9170,6 +9170,7 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
               meshi->nabors[i] = scase->meshescoll.meshinfo + mesh_nabors[i]-1;
             }
           }
+          if(mesh_nabors[4] == 0)meshi->is_bottom = 1;
         }
 #endif
       }
