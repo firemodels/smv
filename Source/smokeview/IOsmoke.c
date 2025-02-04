@@ -3702,7 +3702,7 @@ int GetSmoke3DSizes(smoke3ddata *smoke3di, int fortran_skip, char *smokefile, in
   int first = 1;
   int nchars_first;
   float time_last;
-  float *maxvals;
+  float *maxvals=NULL;
 
   if(smokefile==NULL){
     printf("***error: smokefile pointer is NULL\n");
@@ -3787,8 +3787,8 @@ int GetSmoke3DSizes(smoke3ddata *smoke3di, int fortran_skip, char *smokefile, in
   int count=0;
   while(!feof(SMOKE_SIZE)){
     float maxvali;
-    float maxval_density;
-    int nch_smoke_density;
+    float maxval_density=0.0;
+    int nch_smoke_density=0;
 
     if(fgets(buffer, 255, SMOKE_SIZE) == NULL)break;
     ntimes_full2++;
