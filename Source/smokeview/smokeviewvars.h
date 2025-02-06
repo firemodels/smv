@@ -2157,7 +2157,7 @@ SVEXTERN int SVDECL(use_opacity_multiplier, 0), SVDECL(use_opacity_multiplier_in
 SVEXTERN int SVDECL(use_opacity_ini, 0);
 
 SVEXTERN int SVDECL(update_smokefire_colors, 0);
-SVEXTERN float SVDECL(fire_halfdepth,0.3), SVDECL(fire_halfdepth2, 0.3);
+SVEXTERN float SVDECL(fire_halfdepth,0.3);
 SVEXTERN float SVDECL(co2_halfdepth, 10.0);
 
 SVEXTERN int SVDECL(co2_colormap_type, CO2_COLORBAR);
