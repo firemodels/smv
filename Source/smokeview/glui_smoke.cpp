@@ -77,7 +77,6 @@ GLUI_Spinner *SPINNER_smoke3d_fire_green=NULL;
 GLUI_Spinner *SPINNER_smoke3d_fire_blue=NULL;
 GLUI_Spinner *SPINNER_smoke3d_fire_halfdepth=NULL;
 GLUI_Spinner *SPINNER_smoke3d_co2_halfdepth = NULL;
-GLUI_Spinner *SPINNER_smoke3d_fire_halfdepth2=NULL;
 GLUI_Spinner *SPINNER_smoke3d_co2_alpha = NULL;
 GLUI_Spinner *SPINNER_smoke3d_smoke_red=NULL;
 GLUI_Spinner *SPINNER_smoke3d_fire_alpha = NULL;
@@ -585,7 +584,7 @@ extern "C" void GLUI3dSmokeSetup(int main_window){
     }
 
     if(nco2files > 0){
-      SPINNER_smoke3d_co2_halfdepth = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_co2color, _("50% CO2 opacity at depth (m)"), GLUI_SPINNER_FLOAT, &co2_halfdepth, UPDATE_SMOKEFIRE_COLORS, GLUISmoke3dCB);
+      SPINNER_smoke3d_co2_halfdepth = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_co2color, _("50% CO2 opacity at depth (m)"), GLUI_SPINNER_FLOAT, &co2_halfdepth, UPDATE_CO2_COLORS, GLUISmoke3dCB);
     }
   }
 
@@ -594,7 +593,7 @@ extern "C" void GLUI3dSmokeSetup(int main_window){
   GLUISmoke3dCB(USE_CO2_RGB);
   GLUISmoke3dCB(USE_CO2_COLORMAP);
   GLUISmoke3dCB(UPDATE_SMOKEFIRE_COLORS);
-  GLUISmoke3dCB(UPDATE_SMOKEFIRE_COLORS2);
+  GLUISmoke3dCB(UPDATE_CO2_COLORS);
   GLUISmoke3dCB(USE_SMOKE_RGB);
 
   if(global_scase.smoke3dcoll.nsmoke3dinfo<=0||nvolrenderinfo<=0){
@@ -1201,17 +1200,17 @@ extern "C" void GLUISmoke3dCB(int var){
     ForceIdle();
     UpdateSmokeColormap(smoke_render_option);
     break;
-  case UPDATE_SMOKEFIRE_COLORS2:
-    fire_halfdepth2 = MAX(fire_halfdepth2, 0.001);
-    SPINNER_smoke3d_fire_halfdepth->set_float_val(fire_halfdepth2);
+  case UPDATE_SMOKEFIRE_COLORS:
+    fire_halfdepth = MAX(fire_halfdepth, 0.001);
+    SPINNER_smoke3d_fire_halfdepth->set_float_val(fire_halfdepth);
     GLUISmoke3dCB(UPDATE_SMOKEFIRE_COLORS_COMMON);
     break;
-  case UPDATE_SMOKEFIRE_COLORS:
-    co2_halfdepth = MAX(co2_halfdepth, 0.001);
-    if(SPINNER_smoke3d_co2_halfdepth!=NULL)SPINNER_smoke3d_co2_halfdepth->set_float_val(co2_halfdepth);
-
-    if(SPINNER_smoke3d_fire_halfdepth2!=NULL)SPINNER_smoke3d_fire_halfdepth2->set_float_val(fire_halfdepth);
-    GLUISmoke3dCB(UPDATE_SMOKEFIRE_COLORS_COMMON);
+  case UPDATE_CO2_COLORS:
+    if(SPINNER_smoke3d_co2_halfdepth!=NULL){
+      co2_halfdepth = MAX(co2_halfdepth, 0.001);
+      SPINNER_smoke3d_co2_halfdepth->set_float_val(co2_halfdepth);
+      GLUISmoke3dCB(UPDATE_SMOKEFIRE_COLORS_COMMON);
+    }
     break;
   case CO2_COLOR:
     GLUISmoke3dCB(UPDATE_SMOKEFIRE_COLORS_COMMON);

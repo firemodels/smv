@@ -2442,7 +2442,7 @@ void BoundBoundCB(int var);
     SHOW_UPDATE(update_smokefire_colors);
     update_smokefire_colors = 0;
     GLUISmoke3dCB(UPDATE_SMOKEFIRE_COLORS);
-    GLUISmoke3dCB(UPDATE_SMOKEFIRE_COLORS2);
+    GLUISmoke3dCB(UPDATE_CO2_COLORS);
     GLUISmoke3dCB(USE_OPACITY_DEPTH);
     END_SHOW_UPDATE(update_smokefire_colors);
   }
