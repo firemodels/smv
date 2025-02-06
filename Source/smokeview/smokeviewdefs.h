@@ -325,10 +325,6 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 #define POLYGON_TEST     2
 #define TETRAHEDRON_TEST 3
 
-#ifndef UPDATE_SMOKEFIRE_COLORS
-#define UPDATE_SMOKEFIRE_COLORS 54
-#endif
-
 #define NELEV_ZONE 100
 
 #define UPDATE_ISO_OFF        0
