@@ -1588,8 +1588,12 @@ void UpdateSmokeAlphas(void){
     for(j=0;j<6;j++){
       float maxval;
 
+      assert(
+             (smoke3di->soot_density_loaded == 1 && smoke3di->maxvals!=NULL) || 
+             (smoke3di->soot_density_loaded == 0 && smoke3di->maxvals==NULL) 
+            );
       maxval = smoke3di->maxval;
-      if(smoke3di->soot_density_loaded == 1)maxval = smoke3di->maxvals[smoke3di->ismoke3d_time];
+      if(smoke3di->soot_density_loaded == 1 && smoke3di->maxvals!=NULL)maxval = smoke3di->maxvals[smoke3di->ismoke3d_time];
       InitAlphas(smoke3di->alphas_dir[j], smoke3di->extinct, smoke3di->soot_density_loaded, maxval, glui_smoke3d_extinct, smoke_mesh->dxyz_orig[0], dists[j]);
     }
   }
@@ -4697,7 +4701,6 @@ void MergeSmoke3DColors(smoke3ddata *smoke3dset){
 
             fcolor = (float)firecolor_data[j]/255.0;
             opacity_multiplier = 1.0 + (emission_factor-1.0)*fcolor;
-//            opacity_multiplier = 1.0 + (emission_factor-1.0)*fcolor*fcolor*fcolor*fcolor;
             alpha_smoke_local = CLAMP(smokecolor_data[j] * opacity_multiplier, 0, 255);
           }
         }
