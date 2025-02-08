@@ -81,6 +81,9 @@
 #define FORCE_ALPHA_OPAQUE 104
 #define MERGE_SMOKE 105
 #define SMOKE_SKIP 106
+#ifdef pp_SMOKETEST
+#define SMOKETEST2 112
+#endif
 
 //*** glui_smoke.cpp headers
 

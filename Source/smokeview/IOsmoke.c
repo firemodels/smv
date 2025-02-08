@@ -3283,6 +3283,41 @@ int DrawSmoke3D(smoke3ddata *smoke3di){
   return nsmoke_triangles;
 }
 
+#ifdef pp_SMOKETEST
+void DrawSmokeTest(void){
+  int i;
+  float dy;
+
+
+  dy = 1.0/(float)n_smoketest_planes;
+  TransparentOn();
+  glBegin(GL_TRIANGLES);
+    for(i = n_smoketest_planes - 1;i >= 0; i--){
+    float y;
+
+    y = (float)i * dy;
+    glColor4f(0.0, 0.0, 0.0, smoketest_alpha);                                \
+     glVertex3f(0.0, y, 0.0);
+    glVertex3f(0.5,y,0.0);
+    glVertex3f(0.5,y,1.0);
+    glVertex3f(0.0,y,0.0);
+    glVertex3f(0.5,y,1.0);
+    glVertex3f(0.0,y,1.0);
+
+    glColor4ub(0,0,0,smoketest_ialpha);
+    glVertex3f(0.5, y, 0.0);
+    glVertex3f(1.0, y, 0.0);
+    glVertex3f(1.0, y, 1.0);
+    glVertex3f(0.5, y, 0.0);
+    glVertex3f(1.0, y, 1.0);
+    glVertex3f(0.5, y, 1.0);
+
+  }
+  glEnd();
+  TransparentOff();
+}
+#endif
+
 /* ------------------ DrawSmokeFrame ------------------------ */
 
 void DrawSmokeFrame(void){

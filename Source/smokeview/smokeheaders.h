@@ -577,6 +577,10 @@ EXTERNCPP int   UpdateSmoke3D(smoke3ddata *smoke3di);
 EXTERNCPP void UpdateSmoke3dFileParms(void);
 EXTERNCPP void UpdateSmoke3dMenuLabels(void);
 EXTERNCPP void UpdateSmokeAlphas(void);
+#ifdef pp_SMOKETEST
+EXTERNCPP void DrawSmokeTest(void);
+#endif
+
 
 //*** IOtour.c headers
 

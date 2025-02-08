@@ -94,6 +94,9 @@ GLUI_Spinner *SPINNER_globalloadframe = NULL;
 GLUI_Spinner *SPINNER_timeloadframe = NULL;
 GLUI_Spinner *SPINNER_co2color[3];
 GLUI_Spinner *SPINNER_emission_factor=NULL;
+#ifdef pp_SMOKETEST
+GLUI_Spinner *SPINNER_smoketest=NULL;
+#endif
 
 GLUI_Checkbox *CHECKBOX_smoke3d_use_skip=NULL;
 GLUI_Checkbox *CHECKBOX_use_opacity_depth = NULL;
@@ -118,6 +121,9 @@ GLUI_Checkbox *CHECKBOX_meshvis = NULL;
 GLUI_Checkbox *CHECKBOX_edit_colormap=NULL;
 GLUI_Checkbox *CHECKBOX_plane_normal=NULL;
 GLUI_Checkbox *CHECKBOX_view_parallel = NULL;
+#ifdef pp_SMOKETEST
+GLUI_Checkbox *CHECKBOX_view_smoketest = NULL;
+#endif
 
 GLUI_Panel *PANEL_colormap3 = NULL;
 GLUI_Panel *PANEL_fire_opacity = NULL;
@@ -142,6 +148,9 @@ GLUI_Panel *PANEL_load_options = NULL;
 GLUI_Panel *PANEL_smoke_rgb = NULL;
 GLUI_Panel *PANEL_fire_rgb = NULL;
 GLUI_Panel *PANEL_smokefire_rgb = NULL;
+#ifdef pp_SMOKETEST
+GLUI_Panel *PANEL_smoketest = NULL;
+#endif
 
 GLUI_Rollout *ROLLOUT_smoke_settings = NULL;
 GLUI_Rollout *ROLLOUT_skip = NULL;
@@ -386,6 +395,13 @@ extern "C" void GLUI3dSmokeSetup(int main_window){
   SPINNER_smoke3d_draw_threads = glui_3dsmoke->add_spinner_to_panel(PANEL_smoke_parallel, _("threads"), GLUI_SPINNER_INT, &n_mergesmoke_glui_threads,   MERGE_SMOKE, GLUISmoke3dCB);
   SPINNER_smoke3d_draw_threads->set_int_limits(1, MAX_THREADS);
   GLUISmoke3dCB(MERGE_SMOKE);
+
+#ifdef pp_SMOKETEST
+  PANEL_smoketest         = glui_3dsmoke->add_panel_to_panel(PANEL_settings1, "smoke opacity test");
+  CHECKBOX_view_smoketest = glui_3dsmoke->add_checkbox_to_panel(PANEL_smoketest, _("show smoketest"), &show_smoketest);
+  SPINNER_smoketest       = glui_3dsmoke->add_spinner_to_panel(PANEL_smoketest, _("number of smoke planes"), GLUI_SPINNER_INT, &n_smoketest_planes, SMOKETEST2, GLUISmoke3dCB);
+  SPINNER_smoketest->set_int_limits(1, 10000);
+#endif
 
   //---------------------------------------------Slice render settings--------------------------------------------------------------
 
@@ -789,6 +805,13 @@ extern "C" void GLUISmoke3dCB(int var){
   switch(var){
   float temp_min, temp_max;
 
+#ifdef pp_SMOKETEST
+  case SMOKETEST2:
+    smoketest_alpha = (1.0 - pow(0.5, 1.0 / (float)n_smoketest_planes));
+    smoketest_ialpha = (int)(255.0*smoketest_alpha+0.5);
+    printf("smoketest_alpha=%f smoketset_ialpha=%i\n", smoketest_alpha, smoketest_ialpha);
+    break;
+#endif
   case FORCE_ALPHA_OPAQUE:
     global_scase.update_smoke_alphas = 1;
     updatemenu = 1;

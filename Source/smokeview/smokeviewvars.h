@@ -179,6 +179,10 @@ SVEXTERN int SVDECL(update_plot_label, 0);
 SVEXTERN int SVDECL(terrain_skip, 1);
 SVEXTERN int nsmoke3dtypes, smoke3d_other;
 SVEXTERN smoke3dtypedata SVDECL(*smoke3dtypes, NULL);
+#ifdef pp_SMOKETEST
+SVEXTERN int SVDECL(n_smoketest_planes,1), SVDECL(show_smoketest,0), SVDECL(smoketest_ialpha, 0);
+SVEXTERN float SVDECL(smoketest_alpha, 0.0);
+#endif
 
 SVEXTERN int SOOT_index, HRRPUV_index, TEMP_index, CO2_index;
 
