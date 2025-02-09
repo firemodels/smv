@@ -967,6 +967,8 @@ void InitMesh(meshdata *meshi){
     meshi->n_bc_faces[i] = 0;
   }
 
+  meshi->is_firenode = NULL;
+  meshi->is_firenodeptr = NULL;
   meshi->terrain = NULL;
   meshi->boundary_mask = NULL;
   meshi->in_frustum = 1;
@@ -5585,7 +5587,8 @@ int ParseSMOKE3DProcess(smv_case *scase, bufferstreamdata *stream, char *buffer,
     smoke3di->reg_file = SMOKE3DBUFFER(len + 1);
     STRCPY(smoke3di->reg_file, bufferptr);
     for(i=0; i<6; i++){
-      smoke3di->alphas_dir[i] = (unsigned char *)SMOKE3DBUFFER(256);
+      smoke3di->alphas_smokedir[i] = smoke3di->alphas_smokebuffer + 256*i;
+      smoke3di->alphas_firedir[i]  = smoke3di->alphas_firebuffer  + 256*i;
     }
     smoke3di->ntimes = 0;
     smoke3di->ntimes_old = 0;
@@ -7059,7 +7062,7 @@ int ReadSMV_Init(smv_case *scase){
 
       for(i=0;i<scase->smoke3dcoll.nsmoke3dinfo;i++){
         smoke3di = scase->smoke3dcoll.smoke3dinfo + i;
-        FreeSmoke3D(smoke3di);
+        FreeSmoke3D(&global_scase, smoke3di);
         FREEMEMORY(smoke3di->comp_file);
         FREEMEMORY(smoke3di->reg_file);
       }
@@ -15074,11 +15077,6 @@ int ReadIni2(const char *inifile, int localfile){
         ONEORZERO(output_patchdata);
         continue;
       }
-      if(MatchINI(buffer, "SMOKE3DCUTOFFS") == 1){
-        fgets(buffer, 255, stream);
-        sscanf(buffer, "%f %f", &load_3dsmoke_cutoff, &global_scase.load_hrrpuv_cutoff);
-        continue;
-      }
 
       /*
       +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -16053,8 +16051,7 @@ void WriteIniLocal(FILE *fileout){
                     plot2d_size_factor, vis_slice_plot, slice_plot_bound_option,
                     slice_dxyz[0], slice_dxyz[1], slice_dxyz[2], average_plot2d_slice_region, show_plot2d_slice_position
                     );
-  fprintf(fileout, "SMOKE3DCUTOFFS\n");
-  fprintf(fileout, " %f %f\n", load_3dsmoke_cutoff, global_scase.load_hrrpuv_cutoff);
+  
   for(i = global_scase.ntickinfo_smv; i < global_scase.ntickinfo; i++){
     float *begt;
     float *endt;

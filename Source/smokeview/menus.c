@@ -3353,7 +3353,7 @@ void UnloadSmoke3D(smoke3ddata *smoke3di){
   smoke3di->request_load = 0;
   smoke3di->soot_density_loaded = 0;
   if(smoke3di->loaded == 0)return;
-  FreeSmoke3D(smoke3di);
+  FreeSmoke3D(&global_scase, smoke3di);
   smoke3di->loaded  = 0;
   smoke3di->display = 0;
 }

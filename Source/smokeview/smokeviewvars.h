@@ -605,7 +605,6 @@ SVEXTERN int SVDECL(colorbar_toggle, 1);
 SVEXTERN int SVDECL(color_vector_black, 0);
 SVEXTERN float SVDECL(geom_transparency, 0.5);
 SVEXTERN int SVDECL(geom_force_transparent, 0);
-SVEXTERN float SVDECL(load_3dsmoke_cutoff, 1.0);
 SVEXTERN int SVDECL(override_3dsmoke_cutoff, 0);
 SVEXTERN int SVDECL(visCompartments, 1);
 SVEXTERN int render_mode, render_times;

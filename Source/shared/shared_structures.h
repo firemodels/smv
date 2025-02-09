@@ -257,6 +257,7 @@ typedef struct _meshdata {
   char *c_iblank_embed0;
   float *block_zdist0;
   float *opacity_adjustments;
+  unsigned char *is_firenode, *is_firenodeptr;
 
   char *c_iblank_node,      *c_iblank_cell,      *c_iblank_x,      *c_iblank_y,      *c_iblank_z;
   char *c_iblank_node_temp, *c_iblank_cell_temp, *c_iblank_x_temp, *c_iblank_y_temp, *c_iblank_z_temp;
@@ -1510,7 +1511,8 @@ typedef struct _smoke3ddata {
 #define ALPHA_XY 3
 #define ALPHA_YZ 4
 #define ALPHA_XZ 5
-  unsigned char *alphas_dir[6];
+  unsigned char *alphas_smokedir[6], *alphas_firedir[6];
+  unsigned char alphas_smokebuffer[6*256], alphas_firebuffer[6*256];
   int fire_alpha, co2_alpha;
   float fire_alphas[256], co2_alphas[256];
   int *timeslist;

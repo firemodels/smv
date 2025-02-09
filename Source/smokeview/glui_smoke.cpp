@@ -84,8 +84,6 @@ GLUI_Spinner *SPINNER_smoke3d_smoke_red=NULL;
 GLUI_Spinner *SPINNER_smoke3d_fire_alpha = NULL;
 GLUI_Spinner *SPINNER_smoke3d_smoke_green=NULL;
 GLUI_Spinner *SPINNER_smoke3d_smoke_blue=NULL;
-GLUI_Spinner *SPINNER_load_3dsmoke = NULL;
-GLUI_Spinner *SPINNER_load_hrrpuv = NULL;
 GLUI_Spinner *SPINNER_smoke_test_color[4];
 GLUI_Spinner *SPINNER_smoke_test_range = NULL;
 GLUI_Spinner *SPINNER_smoke_test_nslices = NULL;
@@ -406,31 +404,15 @@ extern "C" void GLUI3dSmokeSetup(int main_window){
   //---------------------------------------------Slice render settings--------------------------------------------------------------
 
   if(global_scase.smoke3dcoll.nsmoke3dinfo>0){
-    if(nvolrenderinfo > 0){
-      ROLLOUT_slices = glui_3dsmoke->add_rollout_to_panel(ROLLOUT_smoke3d, _("Slice render settings"), false, SLICERENDER_ROLLOUT, SmokeRolloutCB);
-      TOGGLE_ROLLOUT(smokeprocinfo, nsmokeprocinfo, ROLLOUT_slices, SLICERENDER_ROLLOUT, glui_3dsmoke);
+    glui_3dsmoke->add_column_to_panel(ROLLOUT_smoke_settings, false);
+    ROLLOUT_slices = ROLLOUT_smoke_settings;
+
+    if(have_smoke_density == 1){
+      PANEL_load_options = glui_3dsmoke->add_panel_to_panel(ROLLOUT_slices, _("Load using"));
+      RADIO_sootdensity = glui_3dsmoke->add_radiogroup_to_panel(PANEL_load_options,&load_smoke_density);
+      glui_3dsmoke->add_radiobutton_to_group(RADIO_sootdensity,_("soot opacity"));
+      glui_3dsmoke->add_radiobutton_to_group(RADIO_sootdensity,_("soot density"));
     }
-    else{
-      glui_3dsmoke->add_column_to_panel(ROLLOUT_smoke_settings, false);
-      ROLLOUT_slices = ROLLOUT_smoke_settings;
-    }
-
-    PANEL_load_options = glui_3dsmoke->add_panel_to_panel(ROLLOUT_slices, _("Load"));
-    SPINNER_load_3dsmoke = glui_3dsmoke->add_spinner_to_panel(PANEL_load_options, _("when soot alpha >"), GLUI_SPINNER_FLOAT, &load_3dsmoke_cutoff);
-    SPINNER_load_3dsmoke->set_float_limits(0.0, 255.0);
-
-#define HRRPUV_CUTOFF_MAX (hrrpuv_max_smv-0.01)
-    SPINNER_load_hrrpuv = glui_3dsmoke->add_spinner_to_panel(PANEL_load_options, _("when HRRPUV >"), GLUI_SPINNER_FLOAT, &global_scase.load_hrrpuv_cutoff);
-    SPINNER_load_hrrpuv->set_float_limits(0.0, HRRPUV_CUTOFF_MAX);
-
-    glui_3dsmoke->add_checkbox_to_panel(PANEL_load_options,"override cutoffs", &override_3dsmoke_cutoff);
-
-  if(have_smoke_density == 1){
-    glui_bounds->add_separator_to_panel(PANEL_load_options);
-    RADIO_sootdensity = glui_3dsmoke->add_radiogroup_to_panel(PANEL_load_options,&load_smoke_density);
-    glui_3dsmoke->add_radiobutton_to_group(RADIO_sootdensity,_("soot opacity"));
-    glui_3dsmoke->add_radiobutton_to_group(RADIO_sootdensity,_("soot density"));
-  }
 #ifdef pp_GPU
     if(gpuactive==0){
       usegpu=0;
@@ -438,11 +420,11 @@ extern "C" void GLUI3dSmokeSetup(int main_window){
     }
 #endif
 
-    PANEL_display = glui_3dsmoke->add_panel_to_panel(ROLLOUT_slices, "smoke slice display");
+    PANEL_display = glui_3dsmoke->add_panel_to_panel(ROLLOUT_slices, "Display using");
     RADIO_skipframes = glui_3dsmoke->add_radiogroup_to_panel(PANEL_display,&smokeskipm1, SMOKE_SKIP, GLUISmoke3dCB);
-    glui_3dsmoke->add_radiobutton_to_group(RADIO_skipframes,_("All"));
-    glui_3dsmoke->add_radiobutton_to_group(RADIO_skipframes,_("Every 2nd"));
-    glui_3dsmoke->add_radiobutton_to_group(RADIO_skipframes,_("Every 3rd"));
+    glui_3dsmoke->add_radiobutton_to_group(RADIO_skipframes,_("all planes"));
+    glui_3dsmoke->add_radiobutton_to_group(RADIO_skipframes,_("every 2nd plane"));
+    glui_3dsmoke->add_radiobutton_to_group(RADIO_skipframes,_("every 3rd plane"));
 
     SPINNER_smoke3d_extinct = glui_3dsmoke->add_spinner_to_panel(PANEL_display, _("Extinction (m2/kg)"),
                                                                  GLUI_SPINNER_FLOAT, &glui_smoke3d_extinct, SMOKE_EXTINCT, GLUISmoke3dCB);
@@ -489,6 +471,7 @@ extern "C" void GLUI3dSmokeSetup(int main_window){
     CHECKBOX_edit_colormap = glui_3dsmoke->add_checkbox_to_panel(PANEL_colormap3, "Edit", &show_firecolormap, SHOW_FIRECOLORMAP, GLUISmoke3dCB);
   }
 
+#define HRRPUV_CUTOFF_MAX (hrrpuv_max_smv-0.01)
   PANEL_fire_cutoff = glui_3dsmoke->add_panel_to_panel(ROLLOUT_firecolor, "Color as fire when:");
   SPINNER_hrrpuv_cutoff = glui_3dsmoke->add_spinner_to_panel(PANEL_fire_cutoff, "HRRPUV (kW/m3) > ", GLUI_SPINNER_FLOAT, &global_scase.global_hrrpuv_cutoff, GLOBAL_FIRE_CUTOFF, GLUISmoke3dCB);
   SPINNER_hrrpuv_cutoff->set_float_limits(0.0, HRRPUV_CUTOFF_MAX);
