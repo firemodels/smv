@@ -7022,7 +7022,7 @@ int ReadSMV_Init(smv_case *scase){
   // read in device (.svo) definitions
 
   START_TIMER(timer_setup);
-  ReadDefaultObjectCollection(&scase->objectscoll, scase->fdsprefix, setbw, scase->isZoneFireModel);
+  ReadDefaultObjectCollection(&scase->objectscoll, scase->fdsprefix, scase->isZoneFireModel);
   PRINT_TIMER(timer_setup, "InitSurface");
 
   if(scase->noutlineinfo>0){

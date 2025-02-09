@@ -74,7 +74,7 @@ int main(int argc, char **argv) {
   //   const char *bad_file_path = argv[1];
   //   // Create an object collection, read in object definitions, then free it.
   //   object_collection *objectscoll = CreateObjectCollection();
-  //   int result = ReadObjectDefs(objectscoll, bad_file_path, 0);
+  //   int result = ReadObjectDefs(objectscoll, bad_file_path);
   //   // Two of the objects in this bad file are still parsable so we should
   //   // parse 2 object definitions.
   //   assert(result == 2);

@@ -2790,7 +2790,7 @@ void SmokeviewIniMenu(int value){
     WriteIni(LOCAL_INI,NULL);
     break;
   case MENU_READSVO:
-    ReadDefaultObjectCollection(&global_scase.objectscoll, global_scase.fdsprefix, setbw, global_scase.isZoneFireModel);
+    ReadDefaultObjectCollection(&global_scase.objectscoll, global_scase.fdsprefix, global_scase.isZoneFireModel);
     break;
   case MENU_DUMMY:
     break;
