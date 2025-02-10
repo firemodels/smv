@@ -1311,7 +1311,7 @@ SVEXTERN int SVDECL(glui_active,0);
 
 SVEXTERN int SVDECL(old_draw_colorlabel,0);
 SVEXTERN int SVDECL(vis3DSmoke3D,1);
-SVEXTERN int SVDECL(smokeskip,1),SVDECL(smokeskipm1,0);
+SVEXTERN int SVDECL(smokeskip,1),SVDECL(smoke3d_frame_inc,1),SVDECL(update_smoke3d_frame_inc,0);;
 SVEXTERN float SVDECL(scene_aspect_ratio,1.0);
 
 SVEXTERN int SVDECL(fix_window_aspect, 0);

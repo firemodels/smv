@@ -437,7 +437,7 @@ void DrawSmoke3DGPU(smoke3ddata *smoke3di){
   nxy = nx*ny;
 
   ssmokedir = meshi->smokedir;
-  skip_local = smokeskipm1+1;
+  skip_local = smoke3d_frame_inc;
 
   xyzindex1[0] = 0;
   xyzindex1[1] = 1;
@@ -1544,7 +1544,7 @@ void InitAlphas(unsigned char *smokealphanew, unsigned char *firealphanew, float
     memset(firealphanew+1,  254, 254);
     return;
   }
-  if(smokeskipm1 != 0)new_dx *= (float)(smokeskipm1 + 1);
+  if(smoke3d_frame_inc != 1)new_dx *= (float)smoke3d_frame_inc;
   if(use_smoke_density == 1){;
     for(i = 1; i < 255; i++){
       float val;
@@ -1698,7 +1698,7 @@ int DrawSmoke3D(smoke3ddata *smoke3di){
   nxy = nx*ny;
 
   ssmokedir = meshi->smokedir;
-  skip_local = smokeskipm1+1;
+  skip_local = smoke3d_frame_inc;
 
   xyzindex1[0] = 0;
   xyzindex1[1] = 1;

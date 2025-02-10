@@ -40,7 +40,6 @@ GLUI_RadioGroup *RADIO_smokealign = NULL;
 GLUI_RadioGroup *RADIO_smoke_outline_type = NULL;
 GLUI_RadioGroup *RADIO_newsmoke = NULL;
 GLUI_RadioGroup *RADIO_render=NULL;
-GLUI_RadioGroup *RADIO_skipframes=NULL;
 GLUI_RadioGroup *RADIO_smokesensors=NULL;
 GLUI_RadioGroup *RADIO_sootdensity = NULL;
 
@@ -73,6 +72,7 @@ GLUI_Spinner *SPINNER_smoke3d_skipz = NULL;
 GLUI_Spinner *SPINNER_smoke3d_kmax = NULL;
 GLUI_Spinner *SPINNER_smoke3d_extinct = NULL;
 GLUI_Spinner *SPINNER_smoke3d_extinct2 = NULL;
+GLUI_Spinner *SPINNER_smoke3d_frame_inc = NULL;
 
 GLUI_Spinner *SPINNER_smoke3d_fire_red=NULL;
 GLUI_Spinner *SPINNER_smoke3d_fire_green=NULL;
@@ -345,7 +345,7 @@ extern "C" void GLUIUpdateSmoke3dFlags(void){
   if(CHECKBOX_smokeGPU!=NULL)CHECKBOX_smokeGPU->set_int_val(usegpu);
 #endif
   CHECKBOX_smokecullflag->set_int_val(smokecullflag);
-  RADIO_skipframes->set_int_val(smokeskipm1);
+  SPINNER_smoke3d_frame_inc->set_int_val(smoke3d_frame_inc);
   GLUISmoke3dCB(VOL_SMOKE);
   glutPostRedisplay();
 }
@@ -421,10 +421,8 @@ extern "C" void GLUI3dSmokeSetup(int main_window){
 #endif
 
     PANEL_display = glui_3dsmoke->add_panel_to_panel(ROLLOUT_slices, "Display using");
-    RADIO_skipframes = glui_3dsmoke->add_radiogroup_to_panel(PANEL_display,&smokeskipm1, SMOKE_SKIP, GLUISmoke3dCB);
-    glui_3dsmoke->add_radiobutton_to_group(RADIO_skipframes,_("all planes"));
-    glui_3dsmoke->add_radiobutton_to_group(RADIO_skipframes,_("every 2nd plane"));
-    glui_3dsmoke->add_radiobutton_to_group(RADIO_skipframes,_("every 3rd plane"));
+    SPINNER_smoke3d_frame_inc = glui_3dsmoke->add_spinner_to_panel(PANEL_display, _("frame display increment"),
+      GLUI_SPINNER_INT, &smoke3d_frame_inc, SMOKE_FRAME_INC, GLUISmoke3dCB);
 
     SPINNER_smoke3d_extinct = glui_3dsmoke->add_spinner_to_panel(PANEL_display, _("Extinction (m2/kg)"),
                                                                  GLUI_SPINNER_FLOAT, &glui_smoke3d_extinct, SMOKE_EXTINCT, GLUISmoke3dCB);
@@ -1236,8 +1234,12 @@ extern "C" void GLUISmoke3dCB(int var){
     UpdateSmokeColormap(smoke_render_option);
     IdleCB();
      break;
-    case SMOKE_SKIP:
+    case SMOKE_FRAME_INC:
       global_scase.update_smoke_alphas = 1;
+      if(smoke3d_frame_inc<1){
+        smoke3d_frame_inc=1;
+        SPINNER_smoke3d_frame_inc->set_int_val(1);
+      }
       break;
    case SMOKE_EXTINCT:
      global_scase.update_smoke_alphas = 1;
@@ -1278,14 +1280,14 @@ extern "C" void GLUISmoke3dCB(int var){
     if(have_fire==HRRPUV_index&&smoke_render_option==RENDER_SLICE){
 #ifdef pp_GPU
       if(usegpu==1){
-        RADIO_skipframes->set_int_val(0);
-        RADIO_skipframes->disable();
+        SPINNER_smoke3d_frame_inc->set_int_val(1);
+        SPINNER_smoke3d_frame_inc->disable();
       }
       else{
-        RADIO_skipframes->enable();
+        SPINNER_smoke3d_frame_inc->enable();
       }
 #else
-      RADIO_skipframes->enable();
+      SPINNER_smoke3d_frame_inc->enable();
 #endif
     }
     break;
