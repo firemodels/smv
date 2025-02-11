@@ -344,8 +344,8 @@ extern "C" void GLUIUpdateSmoke3dFlags(void){
 #ifdef pp_GPU
   if(CHECKBOX_smokeGPU!=NULL)CHECKBOX_smokeGPU->set_int_val(usegpu);
 #endif
-  CHECKBOX_smokecullflag->set_int_val(smokecullflag);
-  SPINNER_smoke3d_frame_inc->set_int_val(smoke3d_frame_inc);
+  if(CHECKBOX_smokecullflag!=NULL)CHECKBOX_smokecullflag->set_int_val(smokecullflag);
+  if(SPINNER_smoke3d_frame_inc!=NULL)SPINNER_smoke3d_frame_inc->set_int_val(smoke3d_frame_inc);
   GLUISmoke3dCB(VOL_SMOKE);
   glutPostRedisplay();
 }
