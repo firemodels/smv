@@ -1538,7 +1538,7 @@ void InitAlphas(unsigned char *smokealphanew, unsigned char *firealphanew, float
     new_extinct = 1.0;
   }
   smokealphanew[0] = 0;
-  firealphanew[0] = 0;
+  firealphanew[0]  = 0;
   if(force_alpha_opaque==1){
     memset(smokealphanew+1, 254, 254);
     memset(firealphanew+1,  254, 254);
@@ -1547,28 +1547,28 @@ void InitAlphas(unsigned char *smokealphanew, unsigned char *firealphanew, float
   if(smoke3d_frame_inc != 1)new_dx *= (float)smoke3d_frame_inc;
   if(use_smoke_density == 1){;
     for(i = 1; i < 255; i++){
-      float val;
-      int ival;
+      float soot_density, soot_opacity;
+      int soot_alpha, fire_alpha;
 
-      val = maxval*(float)i/255.0;
-      val = 254.0*(1.0 - exp(-new_extinct*new_dx*val));
-      ival             = CLAMP(val+0.5, 0, 254);
-      smokealphanew[i] = (unsigned char)ival;
-      ival             = CLAMP(emission_factor*val+0.5, 0, 254);
-      firealphanew[i]  = (unsigned char)ival;
+      soot_density     = maxval*(float)i/255.0;
+      soot_opacity     = 254.0*(1.0 - exp(-new_extinct*new_dx*soot_density));
+      soot_alpha       = CLAMP(soot_opacity+0.5, 0, 254);
+      smokealphanew[i] = (unsigned char)soot_alpha;
+      fire_alpha       = CLAMP(emission_factor*soot_opacity+0.5, 0, 254);
+      firealphanew[i]  = (unsigned char)fire_alpha;
     }
   }
   else{
     for(i = 1; i<255; i++){
-      float val;
-      int ival;
+      float soot_density, soot_opacity;
+      int soot_alpha, fire_alpha;
 
-      val = -log(1.0-(float)i/254.0)/(base_extinct*base_dx);
-      val = 254.0*(1.0-exp(-val*new_extinct*new_dx))+0.5;
-      ival             = CLAMP(val+0.5, 0, 254);
-      smokealphanew[i] = (unsigned char)ival;
-      ival             = CLAMP(emission_factor*val+0.5, 0, 254);
-      firealphanew[i]  = (unsigned char)ival;
+      soot_density     = -log(1.0-(float)i/254.0)/(base_extinct*base_dx);
+      soot_opacity     = 254.0*(1.0-exp(-new_extinct*new_dx*soot_density))+0.5;
+      soot_alpha       = CLAMP(soot_opacity+0.5, 0, 254);
+      smokealphanew[i] = (unsigned char)soot_alpha;
+      fire_alpha       = CLAMP(emission_factor*soot_opacity+0.5, 0, 254);
+      firealphanew[i]  = (unsigned char)fire_alpha;
     }
   }
 }
@@ -4742,11 +4742,15 @@ void MergeSmoke3DColors(smoke3ddata *smoke3dset){
             alpha_smoke_local = smoke3di->fire_alpha;
           }
           else{
+#ifdef pp_FIREALPHA_CORRECTION
+            alpha_smoke_local = CLAMP(smokecolor_data[j], 0, 255);
+#else
             float opacity_multiplier, fcolor;
 
             fcolor = (float)firecolor_data[j]/255.0;
             opacity_multiplier = 1.0 + (emission_factor-1.0)*fcolor;
             alpha_smoke_local = CLAMP(smokecolor_data[j] * opacity_multiplier, 0, 255);
+#endif
           }
         }
         else{
