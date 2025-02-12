@@ -16,7 +16,12 @@
 
 /* ------------------ FreeSmoke3d ------------------------ */
 
-void FreeSmoke3D(smoke3ddata *smoke3di) {
+void FreeSmoke3D(smv_case *scase, smoke3ddata *smoke3di){
+  meshdata *meshi;
+
+  meshi = scase->meshescoll.meshinfo + smoke3di->blocknumber;
+  FREEMEMORY(meshi->is_firenode);
+  meshi->is_firenodeptr = NULL;
   smoke3di->lastiframe = -999;
 #ifdef pp_SMOKEFRAME
   FRAMEFree(smoke3di->frameinfo);
@@ -33,6 +38,7 @@ void FreeSmoke3D(smoke3ddata *smoke3di) {
   FREEMEMORY(smoke3di->frame_all_zeros);
   FREEMEMORY(smoke3di->smoke_boxmin);
   FREEMEMORY(smoke3di->smoke_boxmax);
+  FREEMEMORY(smoke3di->maxvals);
 #ifndef pp_SMOKEFRAME
   FREEMEMORY(smoke3di->smoke_comp_all);
 #endif

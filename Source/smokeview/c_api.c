@@ -3309,7 +3309,7 @@ int SetSmokecull(int v) {
 } // SMOKECULL
 
 int SetSmokeskip(int v) {
-  smokeskipm1 = v;
+  smoke3d_frame_inc = v+1;
   return 0;
 } // SMOKESKIP
 

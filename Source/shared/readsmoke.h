@@ -17,5 +17,5 @@
 
 #include "readobject.h"
 
-void FreeSmoke3D(smoke3ddata *smoke3di);
+void FreeSmoke3D(smv_case *scase, smoke3ddata *smoke3di);
 #endif

@@ -7,14 +7,14 @@
 //#define pp_SHOW_UPDATE      // show what is being update in UpdateShowScene routine
 //#define pp_PARTBOUND_MULTI // compute particle bounds in the background
 //#define pp_LUA            // turn on LUA option
-//#define pp_SMOKE16        // load 16 bit smoke files
 #define pp_FAST             // set fast startup by default
 #define pp_GPU              // support the GPU
 #define pp_THREAD           // turn on multi-threading
 //#define pp_SKYBOX_FLOOR     // use DrawFloor routine when using a skybox (probably not necessary)
 //#define pp_SKY              // add sky, a blue hemisphere, above the scene
 //#define pp_TOUR_SNAP         // turn on tour snap option
-#define pp_FDS_NABOR       // obtain mesh nabor info from .smv file
+//#define pp_SMOKETEST
+#define pp_FIREALPHA_CORRECTION
 
 #ifdef pp_FRAME          // turn on each frame type if pp_FRAME is set
 #define pp_BOUNDFRAME    // turn on frame code for boundary files

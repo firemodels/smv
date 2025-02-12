@@ -2446,6 +2446,10 @@ void BoundBoundCB(int var);
     GLUISmoke3dCB(USE_OPACITY_DEPTH);
     END_SHOW_UPDATE(update_smokefire_colors);
   }
+  if(update_smoke3d_frame_inc == 1){
+    update_smoke3d_frame_inc = 0;
+    GLUIUpdateSmoke3dFlags();
+  }
   if(update_splitcolorbar==1){
     SHOW_UPDATE(update_splitcolorbar);
     GLUISplitCB(SPLIT_COLORBAR);
