@@ -14863,7 +14863,7 @@ int ReadIni2(const char *inifile, int localfile){
         global_scase.global_hrrpuv_cutoff = global_scase.global_hrrpuv_cutoff_default;
         continue;
       }
-      if(MatchINI(buffer, "FIREDEPTH") == 1){
+      if(MatchINI(buffer, "FDEPTH") == 1){
         if(fgets(buffer, 255, stream) == NULL)break;
         sscanf(buffer, "%f %f %f %i %i", &fire_halfdepth,&co2_halfdepth,&emission_factor,&use_fire_alpha, &force_alpha_opaque);
         continue;
@@ -17025,6 +17025,8 @@ void WriteIni(int flag,char *filename){
     fprintf(fileout, " FIRE %i %s\n", fire_colormap_type, colorbars.colorbarinfo[colorbars.fire_colorbar_index].menu_label);
   }
   fprintf(fileout, "FIREDEPTH\n");
+  fprintf(fileout, " %f %f %f %i %i\n", fire_halfdepth, co2_halfdepth, emission_factor, use_fire_alpha, force_alpha_opaque);
+  fprintf(fileout, "FDEPTH\n");
   fprintf(fileout, " %f %f %f %i %i\n", fire_halfdepth, co2_halfdepth, emission_factor, use_fire_alpha, force_alpha_opaque);
   if(colorbars.ncolorbars > colorbars.ndefaultcolorbars){
     colorbardata *cbi;
