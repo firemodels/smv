@@ -4097,6 +4097,7 @@ void LoadAllPartFiles(int partnum){
     FILE_SIZE file_size;
 
     parti = global_scase.partinfo+i;
+    if(parti->file == NULL)continue;
 #ifdef pp_PARTFRAME
     if(partnum != RELOAD_LOADED_PART_FILES && partnum != LOAD_ALL_PART_FILES){
       IF_NOT_USEMESH_CONTINUE(parti->loaded, parti->blocknumber);
