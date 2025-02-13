@@ -105,6 +105,7 @@ GLUI_Checkbox *CHECKBOX_use_fire_colormap = NULL;
 GLUI_Checkbox *CHECKBOX_use_fire_rgb = NULL;
 GLUI_Checkbox *CHECKBOX_use_co2_rgb = NULL;
 GLUI_Checkbox *CHECKBOX_smoke_flip=NULL;
+GLUI_Checkbox *CHECKBOX_triangle_display_rate = NULL;
 GLUI_Checkbox *CHECKBOX_smoke_getvals=NULL;
 GLUI_Checkbox *CHECKBOX_update_smokeplanes = NULL;
 GLUI_Checkbox *CHECKBOX_plane_single = NULL;
@@ -386,7 +387,7 @@ extern "C" void GLUI3dSmokeSetup(int main_window){
 #endif
   glui_3dsmoke->add_checkbox_to_panel(PANEL_settings1, _("max blending"), &hrrpuv_max_blending);
   CHECKBOX_smoke_flip    = glui_3dsmoke->add_checkbox_to_panel(PANEL_settings1, _("flip background"), &background_flip,BACKGROUND_FLIP, GLUISmoke3dCB);
-  glui_3dsmoke->add_checkbox_to_panel(PANEL_settings1, _("triangle display rate"), &show_trirates);
+  CHECKBOX_triangle_display_rate = glui_3dsmoke->add_checkbox_to_panel(PANEL_settings1, _("triangle display rate"), &show_trirates);
 
   PANEL_smoke_parallel = glui_3dsmoke->add_panel_to_panel(PANEL_settings1,"parallel");
   CHECKBOX_view_parallel = glui_3dsmoke->add_checkbox_to_panel(PANEL_smoke_parallel, _("drawing setup"),  &use_mergesmoke_glui_threads, MERGE_SMOKE, GLUISmoke3dCB);
@@ -1277,17 +1278,20 @@ extern "C" void GLUISmoke3dCB(int var){
         }
       }
     }
-    if(have_fire==HRRPUV_index&&smoke_render_option==RENDER_SLICE){
+    if(SPINNER_smoke3d_frame_inc != NULL && CHECKBOX_triangle_display_rate != NULL){
 #ifdef pp_GPU
-      if(usegpu==1){
+      if(usegpu == 1){
         SPINNER_smoke3d_frame_inc->set_int_val(1);
         SPINNER_smoke3d_frame_inc->disable();
+        CHECKBOX_triangle_display_rate->disable();
       }
       else{
         SPINNER_smoke3d_frame_inc->enable();
+        CHECKBOX_triangle_display_rate->enable();
       }
 #else
       SPINNER_smoke3d_frame_inc->enable();
+      CHECKBOX_triangle_display_rate->enable();
 #endif
     }
     break;
