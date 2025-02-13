@@ -84,6 +84,7 @@
 #define SMOKETEST2 112
 #endif
 #define SMOKE_FRAME_INC 113
+#define REFRESH_FIRE       114
 
 //*** glui_smoke.cpp headers
 

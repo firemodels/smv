@@ -482,6 +482,7 @@ extern "C" void GLUI3dSmokeSetup(int main_window){
     SPINNER_temperature_cutoff = glui_3dsmoke->add_spinner_to_panel(PANEL_fire_cutoff, temp_cutoff_label, GLUI_SPINNER_FLOAT,
       &global_temp_cutoff, TEMP_CUTOFF, GLUISmoke3dCB);
   }
+  glui_3dsmoke->add_button_to_panel(PANEL_fire_cutoff, "Refresh", REFRESH_FIRE, GLUISmoke3dCB);
   BUTTON_cutoff_defaults = glui_3dsmoke->add_button_to_panel(PANEL_fire_cutoff, "Reset", CUTOFF_RESET, GLUISmoke3dCB);
 
   //---------------------------------------------Smoke/fire opacity--------------------------------------------------------------
@@ -1171,6 +1172,9 @@ extern "C" void GLUISmoke3dCB(int var){
     glutPostRedisplay();
     ForceIdle();
     UpdateSmokeColormap(smoke_render_option);
+    break;
+  case REFRESH_FIRE:
+    ForceIdle();
     break;
   case UPDATE_SMOKEFIRE_COLORS:
     fire_halfdepth = MAX(fire_halfdepth, 0.001);
