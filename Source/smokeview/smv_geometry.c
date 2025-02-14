@@ -1013,11 +1013,17 @@ void GetScreenMapping(float *xyz0, float *screen_perm){
 
 /* ------------------ GetTimeInterval ------------------------ */
 
-int GetTimeInterval(float val, float *array, int n){
-  if(n <= 1)return 0;
-  if(val<array[1])return 0;
-  if(val>=array[n-1])return n-1;
-  return GetInterval(val, array, n);
+int GetTimeInterval(float val, float *vals, int n){
+  int ival;
+
+  if(n <= 1 || val<vals[0])return 0;
+  if(val>= vals[n-1])return n-1;
+
+  ival = GetInterval(val, vals, n);
+  if(ival >= n - 1)return n - 1;
+  if(ival <= 0)return 0;
+  if(ABS(val - vals[ival]) < ABS(val - vals[ival + 1]))return ival;
+  return ival + 1;
 }
 
 /* ------------------ GetNewPos ------------------------ */

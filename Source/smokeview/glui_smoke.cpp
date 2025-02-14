@@ -105,6 +105,7 @@ GLUI_Checkbox *CHECKBOX_use_fire_colormap = NULL;
 GLUI_Checkbox *CHECKBOX_use_fire_rgb = NULL;
 GLUI_Checkbox *CHECKBOX_use_co2_rgb = NULL;
 GLUI_Checkbox *CHECKBOX_smoke_flip=NULL;
+GLUI_Checkbox *CHECKBOX_triangle_display_rate = NULL;
 GLUI_Checkbox *CHECKBOX_smoke_getvals=NULL;
 GLUI_Checkbox *CHECKBOX_update_smokeplanes = NULL;
 GLUI_Checkbox *CHECKBOX_plane_single = NULL;
@@ -291,7 +292,7 @@ void VolSmokeRolloutCB(int var){
 void SmokeRolloutCB(int var){
   if(var == VOLRENDER_ROLLOUT)smoke_render_option = RENDER_VOLUME;
   if(var == SLICERENDER_ROLLOUT)smoke_render_option = RENDER_SLICE;
-  GLUISmoke3dCB(SMOKE_OPTIONS);
+//  GLUISmoke3dCB(SMOKE_OPTIONS);
   GLUIToggleRollout(smokeprocinfo, nsmokeprocinfo, var);
 }
 
@@ -386,7 +387,7 @@ extern "C" void GLUI3dSmokeSetup(int main_window){
 #endif
   glui_3dsmoke->add_checkbox_to_panel(PANEL_settings1, _("max blending"), &hrrpuv_max_blending);
   CHECKBOX_smoke_flip    = glui_3dsmoke->add_checkbox_to_panel(PANEL_settings1, _("flip background"), &background_flip,BACKGROUND_FLIP, GLUISmoke3dCB);
-  glui_3dsmoke->add_checkbox_to_panel(PANEL_settings1, _("triangle display rate"), &show_trirates);
+  CHECKBOX_triangle_display_rate = glui_3dsmoke->add_checkbox_to_panel(PANEL_settings1, _("triangle display rate"), &show_trirates);
 
   PANEL_smoke_parallel = glui_3dsmoke->add_panel_to_panel(PANEL_settings1,"parallel");
   CHECKBOX_view_parallel = glui_3dsmoke->add_checkbox_to_panel(PANEL_smoke_parallel, _("drawing setup"),  &use_mergesmoke_glui_threads, MERGE_SMOKE, GLUISmoke3dCB);
@@ -481,6 +482,7 @@ extern "C" void GLUI3dSmokeSetup(int main_window){
     SPINNER_temperature_cutoff = glui_3dsmoke->add_spinner_to_panel(PANEL_fire_cutoff, temp_cutoff_label, GLUI_SPINNER_FLOAT,
       &global_temp_cutoff, TEMP_CUTOFF, GLUISmoke3dCB);
   }
+  glui_3dsmoke->add_button_to_panel(PANEL_fire_cutoff, "Refresh", REFRESH_FIRE, GLUISmoke3dCB);
   BUTTON_cutoff_defaults = glui_3dsmoke->add_button_to_panel(PANEL_fire_cutoff, "Reset", CUTOFF_RESET, GLUISmoke3dCB);
 
   //---------------------------------------------Smoke/fire opacity--------------------------------------------------------------
@@ -1057,13 +1059,12 @@ extern "C" void GLUISmoke3dCB(int var){
   case SMOKE_OPTIONS:
     if(nsmoke3d_temp==0&&smoke_render_option==RENDER_SLICE){
       fire_colormap_type=fire_colormap_type_save;
-      GLUISmoke3dCB(SET_RGB_COLORGB_CHECKBOXES);
     }
     else{
       fire_colormap_type_save=fire_colormap_type;
       fire_colormap_type=FIRECOLORMAP_CONSTRAINT;
-      GLUISmoke3dCB(SET_RGB_COLORGB_CHECKBOXES);
     }
+    GLUISmoke3dCB(SET_RGB_COLORGB_CHECKBOXES);
     GLUISmoke3dCB(FIRECOLORMAP_TYPE);
     break;
   case CO2COLORMAP_TYPE:
@@ -1171,6 +1172,9 @@ extern "C" void GLUISmoke3dCB(int var){
     ForceIdle();
     UpdateSmokeColormap(smoke_render_option);
     break;
+  case REFRESH_FIRE:
+    ForceIdle();
+    break;
   case UPDATE_SMOKEFIRE_COLORS:
     fire_halfdepth = MAX(fire_halfdepth, 0.001);
     SPINNER_smoke3d_fire_halfdepth->set_float_val(fire_halfdepth);
@@ -1277,17 +1281,20 @@ extern "C" void GLUISmoke3dCB(int var){
         }
       }
     }
-    if(have_fire==HRRPUV_index&&smoke_render_option==RENDER_SLICE){
+    if(SPINNER_smoke3d_frame_inc != NULL && CHECKBOX_triangle_display_rate != NULL){
 #ifdef pp_GPU
-      if(usegpu==1){
+      if(usegpu == 1){
         SPINNER_smoke3d_frame_inc->set_int_val(1);
         SPINNER_smoke3d_frame_inc->disable();
+        CHECKBOX_triangle_display_rate->disable();
       }
       else{
         SPINNER_smoke3d_frame_inc->enable();
+        CHECKBOX_triangle_display_rate->enable();
       }
 #else
       SPINNER_smoke3d_frame_inc->enable();
+      CHECKBOX_triangle_display_rate->enable();
 #endif
     }
     break;
