@@ -4214,7 +4214,11 @@ void DisplayCB(void){
 #endif
   UpdateDisplay();
 #ifdef pp_AUTO_REFRESH
-  ForceIdle();
+  if(nsootloaded>0 && nhrrpuvloaded>0){
+    INIT_PRINT_TIMER(timer_idle);
+    ForceIdle();
+    PRINT_TIMER(timer_idle, "display ForceIdle");
+  }
 #endif
   glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
   if(stereotype==STEREO_NONE){
