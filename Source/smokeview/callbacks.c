@@ -4213,6 +4213,9 @@ void DisplayCB(void){
   DoScriptLua();
 #endif
   UpdateDisplay();
+#ifdef pp_AUTO_REFRESH
+  ForceIdle();
+#endif
   glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
   if(stereotype==STEREO_NONE){
     if(use_vr==0){
