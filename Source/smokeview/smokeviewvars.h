@@ -225,6 +225,7 @@ SVEXTERN char viewpoint_script[256], SVDECL(*viewpoint_script_ptr, NULL);
 SVEXTERN char viewpoint_label_saved[256];
 SVEXTERN int SVDECL(update_saving_viewpoint, 0);
 SVEXTERN float SVDECL(timer_startup, 0.0), SVDECL(timer_render, -1.0);
+SVEXTERN float SVDECL(timer_mouse_motion, 0.0);
 SVEXTERN int SVDECL(frames_total, 0 );
 SVEXTERN int SVDECL(open_movie_dialog, 0);
 SVEXTERN int SVDECL(geom_bounding_box_mousedown, 0);
