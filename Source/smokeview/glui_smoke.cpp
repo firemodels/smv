@@ -292,7 +292,7 @@ void VolSmokeRolloutCB(int var){
 void SmokeRolloutCB(int var){
   if(var == VOLRENDER_ROLLOUT)smoke_render_option = RENDER_VOLUME;
   if(var == SLICERENDER_ROLLOUT)smoke_render_option = RENDER_SLICE;
-  GLUISmoke3dCB(SMOKE_OPTIONS);
+//  GLUISmoke3dCB(SMOKE_OPTIONS);
   GLUIToggleRollout(smokeprocinfo, nsmokeprocinfo, var);
 }
 
@@ -1059,13 +1059,12 @@ extern "C" void GLUISmoke3dCB(int var){
   case SMOKE_OPTIONS:
     if(nsmoke3d_temp==0&&smoke_render_option==RENDER_SLICE){
       fire_colormap_type=fire_colormap_type_save;
-      GLUISmoke3dCB(SET_RGB_COLORGB_CHECKBOXES);
     }
     else{
       fire_colormap_type_save=fire_colormap_type;
       fire_colormap_type=FIRECOLORMAP_CONSTRAINT;
-      GLUISmoke3dCB(SET_RGB_COLORGB_CHECKBOXES);
     }
+    GLUISmoke3dCB(SET_RGB_COLORGB_CHECKBOXES);
     GLUISmoke3dCB(FIRECOLORMAP_TYPE);
     break;
   case CO2COLORMAP_TYPE:
