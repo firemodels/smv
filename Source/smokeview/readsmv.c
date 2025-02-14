@@ -11676,6 +11676,10 @@ int ReadSMV_Configure(){
   InitMeshBlockages();
   SetExternalVents();
 
+  if(global_scase.meshescoll.nmeshes > 200){
+    show_geom_boundingbox = 1;
+  }
+
   PRINTF("%s", _("complete"));
   PRINTF("\n\n");
   PrintMemoryInfo;
