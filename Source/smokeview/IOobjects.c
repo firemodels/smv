@@ -3817,7 +3817,6 @@ void DrawDevices(int mode){
   for(ii = 0;ii < global_scase.devicecoll.ndeviceinfo;ii++){
     devicedata *devicei;
     int tagval;
-    int save_use_displaylist;
     propdata *prop;
     int j;
     float dpsi;
@@ -3831,7 +3830,6 @@ void DrawDevices(int mode){
     if(global_scase.isZoneFireModel == 1 && STRCMP(devicei->object->label, "target") == 0 && visSensor == 0)continue;
     if(devicei->in_zone_csv == 1&&strcmp(devicei->deviceID,"TARGET")!=0)continue;
     if(global_scase.isZoneFireModel == 1 && STRCMP(devicei->deviceID, "TIME") == 0)continue;
-    save_use_displaylist = devicei->object->use_displaylist;
     tagval = ii + 1;
     if(select_device == 1 && show_mode == SELECTOBJECT){
 
@@ -3839,7 +3837,6 @@ void DrawDevices(int mode){
       select_device_color[1] = tagval >> nbluebits;
       select_device_color[2] = tagval&rgbmask[nbluebits - 1];
       select_device_color_ptr = select_device_color;
-      devicei->object->use_displaylist = 0;
     }
     else{
       if(devicei->selected==1 && select_device == 1){
@@ -3847,7 +3844,6 @@ void DrawDevices(int mode){
         select_device_color[0] = 255;
         select_device_color[1] = 0;
         select_device_color[2] = 0;
-        devicei->object->use_displaylist = 0;
       }
       else{
         select_device_color_ptr = NULL;
@@ -3991,7 +3987,6 @@ void DrawDevices(int mode){
     if(devicei->nparams > 0 && prop != NULL){
       prop->nvars_indep = 0;
     }
-    devicei->object->use_displaylist = save_use_displaylist;
     glPopMatrix();
   }
 
@@ -4007,7 +4002,6 @@ void DrawSmvObject(sv_object *object_dev, int iframe_local, propdata *prop, int 
   tokendata *toknext;
   unsigned char *rgbptr_local;
   unsigned char rgbcolor[4];
-  int displaylist_id = 0;
   int ii;
   sv_object *object;
   int use_material;
@@ -4085,25 +4079,6 @@ void DrawSmvObject(sv_object *object_dev, int iframe_local, propdata *prop, int 
       }
     }
 
-  }
-
-  if(framei->display_list_ID != -1 && object->use_displaylist == 1){
-    if(framei->use_bw == setbw){
-      glCallList(framei->display_list_ID);
-      glPopMatrix();
-      return;
-    }
-    framei->use_bw = setbw;
-    glDeleteLists(framei->display_list_ID, 1);
-    framei->display_list_ID = -1;
-  }
-
-  if(object->use_displaylist == 1){
-    displaylist_id = glGenLists(1);
-    if(displaylist_id != 0){
-      framei->display_list_ID = displaylist_id;
-      glNewList(displaylist_id, GL_COMPILE_AND_EXECUTE);
-    }
   }
 
   use_material = 0;
@@ -4765,10 +4740,6 @@ void DrawSmvObject(sv_object *object_dev, int iframe_local, propdata *prop, int 
   if(use_material == 1 && recurse_level == 0){
     glDisable(GL_COLOR_MATERIAL);
     DISABLE_LIGHTING;
-  }
-
-  if(object->use_displaylist == 1 && displaylist_id != 0){
-    glEndList();
   }
 
   glPopMatrix();
