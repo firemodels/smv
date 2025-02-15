@@ -39,7 +39,6 @@ typedef struct _tokendata {
 typedef struct _sv_object_frame {
   int use_bw;
   int error;
-  int display_list_ID;
   int *symbols, nsymbols;
   tokendata *tokens, **command_list;
   int ntokens, ncommands, ntextures;
@@ -59,7 +58,6 @@ typedef struct _sv_object {
   int type;
   int visible;
   int used, used_by_device;
-  int use_displaylist;
   int select_mode;
   /** @brief The number of frames (i.e., possible states) associated with this
    * object. */
