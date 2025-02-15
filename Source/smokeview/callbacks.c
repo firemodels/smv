@@ -1146,9 +1146,6 @@ void MouseCBWorker(int button, int state, int xm, int ym){
 /* ------------------ MouseCB ------------------------ */
 
 void MouseCB(int button, int state, int xm, int ym){
-  if(show_geom_boundingbox != 1){
-    START_TIMER(timer_mouse_motion);
-  }
   INIT_PRINT_TIMER(timer_mouse_down);
   MouseCBWorker(button, state, xm, ym);
   PRINT_TIMER(timer_mouse_down, "MouseCB");
@@ -1456,15 +1453,6 @@ int ThrottleGpu(void){
 /* ------------------ MouseDragCB ------------------------ */
 
 void MouseDragCB(int xm, int ym){
-  if(show_geom_boundingbox != 1){
-    STOP_TIMER(timer_mouse_motion);
-    if(timer_mouse_motion>0.2){
-      show_geom_boundingbox = 1;
-      updatemenu            = 1;
-      GLUIUpdateGeomBoundingBox();
-    }
-    START_TIMER(timer_mouse_motion);
-  }
 #ifdef pp_OSX_HIGHRES
   if(double_scale==1){
     xm *= 2;
@@ -4214,7 +4202,11 @@ void DisplayCB(void){
 #endif
   UpdateDisplay();
 #ifdef pp_AUTO_REFRESH
-  ForceIdle();
+  if(nsootloaded>0 && nhrrpuvloaded>0){
+    INIT_PRINT_TIMER(timer_idle);
+    ForceIdle();
+    PRINT_TIMER(timer_idle, "display ForceIdle");
+  }
 #endif
   glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
   if(stereotype==STEREO_NONE){
