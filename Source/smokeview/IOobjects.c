@@ -4020,7 +4020,6 @@ void DrawSmvObject(sv_object *object_dev, int iframe_local, propdata *prop, int 
   assert(framei->error == 0 || framei->error == 1);
 
   if(framei->error == 1){
-    object = global_scase.objectscoll.std_object_defs.error_device;
     framei = global_scase.objectscoll.std_object_defs.error_device->obj_frames[0];
     prop = NULL;
   }
