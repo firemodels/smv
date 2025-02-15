@@ -921,7 +921,7 @@ void DrawGeom(int flag, int timestate){
     ENABLE_LIGHTING;
     glMaterialfv(GL_FRONT_AND_BACK,GL_SPECULAR,iso_specular);
     glMaterialf(GL_FRONT_AND_BACK,GL_SHININESS,iso_shininess);
-    glMaterialfv(GL_FRONT_AND_BACK,GL_AMBIENT_AND_DIFFUSE,block_ambient2);
+    glMaterialfv(GL_FRONT_AND_BACK,GL_AMBIENT_AND_DIFFUSE,global_scase.color_defs.block_ambient2);
     glEnable(GL_COLOR_MATERIAL);
 
     glPushMatrix();
@@ -4092,7 +4092,7 @@ void DrawGeomData(int flag, slicedata *sd, patchdata *patchi, int geom_type){
       glBindTexture(GL_TEXTURE_1D, texture_slice_colorbar_id);
       glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR,            iso_specular);
       glMaterialf(GL_FRONT_AND_BACK,  GL_SHININESS,           iso_shininess);
-      glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, block_ambient2);
+      glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, global_scase.color_defs.block_ambient2);
       glEnable(GL_COLOR_MATERIAL);
 
       glPushMatrix();
@@ -4649,7 +4649,7 @@ void DrawCGeom(int flag, geomdata *cgeom){
       ENABLE_LIGHTING;
       glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, iso_specular);
       glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, iso_shininess);
-      glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, block_ambient2);
+      glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, global_scase.color_defs.block_ambient2);
       glEnable(GL_COLOR_MATERIAL);
 
       glPushMatrix();
