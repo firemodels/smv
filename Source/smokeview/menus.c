@@ -42,13 +42,11 @@ float     part_load_time;
 #define GEOM_TriangleCount           14
 #define GEOM_ShowAll                 11
 #define GEOM_HideAll                 13
-#define GEOM_BOUNDING_BOX_ALWAYS     10
 #define GEOM_BOUNDING_BOX_MOUSE_DOWN  9
 
 #define MENU_TERRAIN_SHOW_SURFACE      -1
 #define MENU_TERRAIN_SHOW_LINES        -2
 #define MENU_TERRAIN_SHOW_POINTS       -3
-#define MENU_TERRAIN_BOUNDING_BOX      -5
 #define MENU_TERRAIN_BOUNDING_BOX_AUTO -6
 
 #define MENU_KEEP_ALL -2
@@ -6653,15 +6651,6 @@ void BlockageMenu(int value){
   if(solid_state<0)solid_state=visBlocks;
   if(outline_state<0)outline_state=OUTLINE_NONE;
   switch(value){
-    case GEOM_BOUNDING_BOX_ALWAYS:
-      if(show_geom_boundingbox==SHOW_BOUNDING_BOX_ALWAYS){
-        show_geom_boundingbox = SHOW_BOUNDING_BOX_NEVER;
-      }
-      else{
-        show_geom_boundingbox = SHOW_BOUNDING_BOX_ALWAYS;
-      }
-      GLUIUpdateGeomBoundingBox();
-      break;
     case GEOM_BOUNDING_BOX_MOUSE_DOWN:
       if(show_geom_boundingbox==SHOW_BOUNDING_BOX_MOUSE_DOWN){
         show_geom_boundingbox = SHOW_BOUNDING_BOX_NEVER;
@@ -7089,15 +7078,6 @@ void TerrainGeomShowMenu(int value){
       break;
     case MENU_TERRAIN_SHOW_POINTS:
       terrain_show_geometry_points = 1-terrain_show_geometry_points;
-      break;
-    case MENU_TERRAIN_BOUNDING_BOX:
-      if(show_geom_boundingbox==SHOW_BOUNDING_BOX_ALWAYS){
-        show_geom_boundingbox = SHOW_BOUNDING_BOX_NEVER;
-      }
-      else{
-        show_geom_boundingbox = SHOW_BOUNDING_BOX_ALWAYS;
-      }
-      GLUIUpdateGeomBoundingBox();
       break;
     case MENU_TERRAIN_BOUNDING_BOX_AUTO:
       if(show_geom_boundingbox==SHOW_BOUNDING_BOX_MOUSE_DOWN){
@@ -7668,15 +7648,6 @@ void GeometryMenu(int value){
     break;
   case GEOM_Compartments:
     visCompartments = 1 - visCompartments;
-    break;
-  case GEOM_BOUNDING_BOX_ALWAYS:
-    if(show_geom_boundingbox==SHOW_BOUNDING_BOX_ALWAYS){
-      show_geom_boundingbox = SHOW_BOUNDING_BOX_NEVER;
-    }
-    else{
-      show_geom_boundingbox = SHOW_BOUNDING_BOX_ALWAYS;
-    }
-    GLUIUpdateGeomBoundingBox();
     break;
   case GEOM_BOUNDING_BOX_MOUSE_DOWN:
     if(show_geom_boundingbox==SHOW_BOUNDING_BOX_MOUSE_DOWN){
@@ -10230,8 +10201,6 @@ static int menu_count=0;
   else{
     global_scase.visFrame=0;
   }
-  if(show_geom_boundingbox == SHOW_BOUNDING_BOX_ALWAYS)glutAddMenuEntry(_("*bounding box(always)"), GEOM_BOUNDING_BOX_ALWAYS);
-  if(show_geom_boundingbox != SHOW_BOUNDING_BOX_ALWAYS)glutAddMenuEntry(_("bounding box(always)"), GEOM_BOUNDING_BOX_ALWAYS);
   if(show_geom_boundingbox == SHOW_BOUNDING_BOX_MOUSE_DOWN)glutAddMenuEntry(_("*bounding box(mouse down)"), GEOM_BOUNDING_BOX_MOUSE_DOWN);
   if(show_geom_boundingbox != SHOW_BOUNDING_BOX_MOUSE_DOWN)glutAddMenuEntry(_("bounding box(mouse down)"), GEOM_BOUNDING_BOX_MOUSE_DOWN);
   if(NCADGeom(&global_scase.cadgeomcoll) == 0){
