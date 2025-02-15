@@ -25,8 +25,7 @@
 
 #define BOX_CLIPPLANES 0
 
-int GetTokenId(char *token, int *opptr, int *num_opptr, int *num_outopptr,
-               int *use_displaylist);
+int GetTokenId(char *token, int *opptr, int *num_opptr, int *num_outopptr);
 void ParseSmvObjectString(object_collection *objectscoll, char *string,
                           char **tokens, int *ntokens, int setbw);
 sv_object *InitSmvObject1(object_collection *objectscoll, const char *label,
@@ -370,14 +369,13 @@ char *ParseObjectFrame(object_collection *objectscoll, const char *buffer_in,
     toki->is_texturefile = 0;
     toki->next = NULL;
     if((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')){
-      int use_displaylist;
       int nargs_actual, noutargs_actual;
       tokendata *this_token, *last_token;
       int error_code;
 
       toki->type = TOKEN_COMMAND;
       error_code = GetTokenId(toki->token, &toki->command, &toki->nvars,
-                              &toki->noutvars, &use_displaylist);
+                              &toki->noutvars);
       toki->included_frame = 0;
       toki->included_object = NULL;
       if(error_code == 1){
@@ -389,8 +387,6 @@ char *ParseObjectFrame(object_collection *objectscoll, const char *buffer_in,
         fprintf(stderr, "      %s\n\n", object_buffer);
       }
       frame->command_list[ncommands] = toki;
-      if(frame->device != NULL)
-        frame->device->use_displaylist = use_displaylist;
       if(ncommands > 0){
         this_token = toki;
         last_token = frame->command_list[ncommands - 1];
@@ -615,13 +611,11 @@ char *ParseObjectFrame(object_collection *objectscoll, const char *buffer_in,
 
 /* ----------------------- GetTokenId ----------------------------- */
 
-int GetTokenId(char *token, int *opptr, int *num_opptr, int *num_outopptr,
-               int *use_displaylist){
+int GetTokenId(char *token, int *opptr, int *num_opptr, int *num_outopptr){
 
   int op, num_op, num_outop;
   int return_val;
 
-  *use_displaylist = 0;
 
   return_val = 0;
   if(STRCMP(token, "translate") == 0){
@@ -832,7 +826,6 @@ int GetTokenId(char *token, int *opptr, int *num_opptr, int *num_outopptr,
   }
   else if(STRCMP(token, "drawtsphere") == 0){
     op = SV_DRAWTSPHERE;
-    *use_displaylist = 0;
     num_op = SV_DRAWTSPHERE_NUMARGS;
     num_outop = SV_DRAWTSPHERE_NUMOUTARGS;
   }
@@ -1003,49 +996,41 @@ int GetTokenId(char *token, int *opptr, int *num_opptr, int *num_outopptr,
   }
   else if(STRCMP(token, "multiaddt") == 0){
     op = SV_MULTIADDT;
-    *use_displaylist = 0;
     num_op = SV_MULTIADDT_NUMARGS;
     num_outop = SV_MULTIADDT_NUMOUTARGS;
   }
   else if(STRCMP(token, "clip") == 0){
     op = SV_CLIP;
-    *use_displaylist = 0;
     num_op = SV_CLIP_NUMARGS;
     num_outop = SV_CLIP_NUMOUTARGS;
   }
   else if(STRCMP(token, "clipx") == 0){
     op = SV_CLIP;
-    *use_displaylist = 0;
     num_op = SV_CLIP_NUMARGS;
     num_outop = SV_CLIP_NUMOUTARGS;
   }
   else if(STRCMP(token, "clipy") == 0){
     op = SV_CLIP;
-    *use_displaylist = 0;
     num_op = SV_CLIP_NUMARGS;
     num_outop = SV_CLIP_NUMOUTARGS;
   }
   else if(STRCMP(token, "clipz") == 0){
     op = SV_CLIP;
-    *use_displaylist = 0;
     num_op = SV_CLIP_NUMARGS;
     num_outop = SV_CLIP_NUMOUTARGS;
   }
   else if(STRCMP(token, "clipoff") == 0){
     op = SV_CLIP;
-    *use_displaylist = 0;
     num_op = SV_CLIP_NUMARGS;
     num_outop = SV_CLIP_NUMOUTARGS;
   }
   else if(STRCMP(token, "mirrorclip") == 0){
     op = SV_MIRRORCLIP;
-    *use_displaylist = 0;
     num_op = SV_MIRRORCLIP_NUMARGS;
     num_outop = SV_MIRRORCLIP_NUMOUTARGS;
   }
   else if(STRCMP(token, "periodicclip") == 0){
     op = SV_PERIODICCLIP;
-    *use_displaylist = 0;
     num_op = SV_PERIODICCLIP_NUMARGS;
     num_outop = SV_PERIODICCLIP_NUMOUTARGS;
   }
@@ -1088,7 +1073,6 @@ sv_object *InitSmvObject2(object_collection *objectscoll, const char *label,
   int i;
 
   NewMemory((void **)&object, sizeof(sv_object));
-  object->use_displaylist = 1;
   object->select_mode = 0;
   object->used = 0;
   object->visible = visible;
@@ -1108,7 +1092,6 @@ sv_object *InitSmvObject2(object_collection *objectscoll, const char *label,
       framei->error = 0;
       framei->device = object;
       ParseObjectFrame(objectscoll, commandsoff, NULL, &eof, framei, setbw);
-      framei->display_list_ID = -1;
       framei->use_bw = setbw;
       framei->ntextures = 0;
     }
@@ -1118,7 +1101,6 @@ sv_object *InitSmvObject2(object_collection *objectscoll, const char *label,
       framei->device = object;
       ParseObjectFrame(objectscoll, commandson, NULL, &eof, framei, setbw);
       framei->error = 0;
-      framei->display_list_ID = -1;
       framei->use_bw = setbw;
       framei->ntextures = 0;
     }
@@ -1135,7 +1117,6 @@ sv_object *InitSmvObject1(object_collection *objectscoll, const char *label,
   int eof;
 
   NewMemory((void **)&object, sizeof(sv_object));
-  object->use_displaylist = 1;
   object->select_mode = 0;
   object->used = 0;
   object->visible = visible;
@@ -1149,7 +1130,6 @@ sv_object *InitSmvObject1(object_collection *objectscoll, const char *label,
   object->obj_frames[0] = framei;
   framei->device = object;
   ParseObjectFrame(objectscoll, commands, NULL, &eof, framei, setbw);
-  framei->display_list_ID = -1;
   framei->error = 0;
   framei->use_bw = setbw;
   framei->ntextures = 0;
@@ -1242,7 +1222,6 @@ int ReadObjectDefs(object_collection *objectscoll, const char *file,
 
       NewMemory((void **)&current_object, sizeof(sv_object));
       current_object->used = 0;
-      current_object->use_displaylist = 1;
       current_object->select_mode = 0;
       strcpy(current_object->label, label);
       prev_object = objectscoll->object_def_last.prev;
@@ -1285,7 +1264,6 @@ int ReadObjectDefs(object_collection *objectscoll, const char *file,
       current_frame->next = next_frame;
       current_frame->prev = prev_frame;
 
-      current_frame->display_list_ID = -1;
       current_frame->use_bw = setbw;
       current_frame->device = current_object;
       current_object->nframes++;
