@@ -793,6 +793,7 @@ extern "C" void GLUIDisplaySetup(int main_window){
   CHECKBOX_labels_availmemory = glui_labels->add_checkbox_to_panel(PANEL_gen1, _("Memory load"), &visAvailmemory, LABELS_label, GLUILabelsCB);
 #endif
 #ifdef pp_SKY
+  glui_labels->add_checkbox_to_panel(PANEL_gen1, _("show skybox"), &visSkybox);
   glui_labels->add_checkbox_to_panel(PANEL_gen1, _("show sky"), &visSky, SKY_VIS, GLUISkyCB);
   SPINNER_sky_diam = glui_labels->add_spinner_to_panel(PANEL_gen1, _("sky diameter"), GLUI_SPINNER_FLOAT, &sky_diam, SKY_DIAM, GLUISkyCB);
 #endif
