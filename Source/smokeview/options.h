@@ -10,7 +10,6 @@
 #define pp_FAST             // set fast startup by default
 #define pp_GPU              // support the GPU
 #define pp_THREAD           // turn on multi-threading
-//#define pp_SKYBOX_FLOOR     // use DrawFloor routine when using a skybox (probably not necessary)
 //#define pp_TOUR_SNAP         // turn on tour snap option
 //#define pp_SMOKETEST
 #define pp_FIREALPHA_CORRECTION
