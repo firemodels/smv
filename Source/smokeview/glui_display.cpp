@@ -141,6 +141,7 @@ GLUI_Checkbox *CHECKBOX_ticks_outside = NULL;
 GLUI_Checkbox *CHECKBOX_labels_fds_title = NULL;
 GLUI_Checkbox *CHECKBOX_texture_showall = NULL;
 GLUI_Checkbox *CHECKBOX_texture_hideall = NULL;
+GLUI_Checkbox *CHECKBOX_show_geom_boundingbox = NULL;
 
 GLUI_Rollout *ROLLOUT_LB_tick0 = NULL;
 GLUI_Rollout *ROLLOUT_font=NULL;
@@ -152,7 +153,6 @@ GLUI_Rollout *ROLLOUT_north = NULL;
 GLUI_Rollout *ROLLOUT_light2 = NULL;
 
 GLUI_Panel *PANEL_blockage_drawing = NULL;
-GLUI_Panel *PANEL_boundingbox = NULL;
 GLUI_Panel *PANEL_titles=NULL;
 GLUI_Panel *PANEL_screen = NULL;
 GLUI_Panel *PANEL_light=NULL;
@@ -183,7 +183,6 @@ GLUI_Panel *PANEL_offset = NULL;
 GLUI_Panel *PANEL_surfs = NULL;
 GLUI_Panel *PANEL_texture_display = NULL;
 
-GLUI_RadioGroup *RADIO_show_geom_boundingbox = NULL;
 GLUI_RadioGroup *RADIO_timebar_overlap = NULL;
 GLUI_RadioGroup *RADIO_fontsize = NULL;
 GLUI_RadioGroup *RADIOBUTTON_label_1 = NULL;
@@ -817,12 +816,7 @@ extern "C" void GLUIDisplaySetup(int main_window){
   CHECKBOX_labels_fds_title = glui_labels->add_checkbox_to_panel(PANEL_titles, _("Input file title"),              &vis_title_fds,         LABELS_label,   GLUILabelsCB);
   CHECKBOX_labels_chid = glui_labels->add_checkbox_to_panel(PANEL_titles,      _("CHID"),                          &vis_title_CHID,        LABELS_label,   GLUILabelsCB);
 
-  PANEL_boundingbox = glui_labels->add_panel_to_panel(PANEL_gen1, "show bounding box");
-  PANEL_boundingbox->set_alignment(GLUI_ALIGN_LEFT);
-  RADIO_show_geom_boundingbox = glui_labels->add_radiogroup_to_panel(PANEL_boundingbox, &show_geom_boundingbox, LABELS_BOUNDING_BOX, GLUILabelsCB);
-  glui_labels->add_radiobutton_to_group(RADIO_show_geom_boundingbox, "always");
-  glui_labels->add_radiobutton_to_group(RADIO_show_geom_boundingbox, "when mouse is pressed");
-  glui_labels->add_radiobutton_to_group(RADIO_show_geom_boundingbox, "never");
+  CHECKBOX_show_geom_boundingbox = glui_labels->add_checkbox_to_panel(PANEL_gen1, _("show bounding box when mouse is pressed"), &show_geom_boundingbox, LABELS_BOUNDING_BOX, GLUILabelsCB);
 
   if(global_scase.ntickinfo > 0){
     CHECKBOX_labels_ticks->enable();
@@ -1244,7 +1238,7 @@ extern "C" void GLUIUpdateColorbarControls(void){
 /* ------------------ GLUIUpdateGeomBoundingBox ------------------------ */
 
 extern "C" void GLUIUpdateGeomBoundingBox(void){
-  if(RADIO_show_geom_boundingbox != NULL)RADIO_show_geom_boundingbox->set_int_val(show_geom_boundingbox);
+  if(CHECKBOX_show_geom_boundingbox != NULL)CHECKBOX_show_geom_boundingbox->set_int_val(show_geom_boundingbox);
 }
 
 /* ------------------ GLUILabelsCB ------------------------ */

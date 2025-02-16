@@ -314,7 +314,7 @@ void ShowScene2(int mode){
   /* ++++++++++++++++++++++++ draw blockages +++++++++++++++++++++++++ */
 
   CLIP_GEOMETRY;
-  if(show_geom_boundingbox!=SHOW_BOUNDING_BOX_ALWAYS&&geom_bounding_box_mousedown==0){
+  if(geom_bounding_box_mousedown==0){
     DrawBlockages(mode, DRAW_OPAQUE);
     SNIFF_ERRORS("DrawBlockages");
   }
@@ -596,7 +596,7 @@ void ShowScene2(int mode){
   //  DrawDemo(20,20);
   //  DrawDemo2();
   CLIP_GEOMETRY;
-  if(show_geom_boundingbox!=SHOW_BOUNDING_BOX_ALWAYS&&geom_bounding_box_mousedown==0){
+  if(geom_bounding_box_mousedown==0){
     DrawBlockages(mode, DRAW_TRANSPARENT);
     SNIFF_ERRORS("after drawBlockages");
   }

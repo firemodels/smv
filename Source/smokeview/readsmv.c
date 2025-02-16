@@ -11676,6 +11676,10 @@ int ReadSMV_Configure(){
   InitMeshBlockages();
   SetExternalVents();
 
+  if(global_scase.meshescoll.nmeshes > 200){
+    show_geom_boundingbox = 1;
+  }
+
   PRINTF("%s", _("complete"));
   PRINTF("\n\n");
   PrintMemoryInfo;
@@ -12254,6 +12258,7 @@ int ReadIni2(const char *inifile, int localfile){
       sscanf(buffer, " %i %i %i %i", &dummy, &dummy, &dummy, &dummy);
       fgets(buffer, 255, stream);
       sscanf(buffer, " %f %f %i %i %i %i", &geom_vert_exag, &rdummy, &dummy, &dummy2, &show_geom_boundingbox, &show_geom_bndf );
+      if(show_geom_boundingbox !=SHOW_BOUNDING_BOX_MOUSE_DOWN)show_geom_boundingbox = SHOW_BOUNDING_BOX_NEVER;
       continue;
     }
     if(MatchINI(buffer, "SHOWTRIANGLECOUNT") == 1){
@@ -16715,7 +16720,12 @@ void WriteIni(int flag,char *filename){
      0, 1, show_faces_shaded, show_faces_outline, smooth_geom_normal,
      geom_force_transparent, geom_transparency, geom_linewidth, use_geom_factors, show_cface_normals, geom_pointsize, geom_dz_offset, geom_norm_offset);
   fprintf(fileout, " %i %i %i %i\n", 0, 0, 0, 0);
-  fprintf(fileout, " %f %f %i %i %i %i\n", geom_vert_exag, 30.0, 0, 0, show_geom_boundingbox, show_geom_bndf);
+
+  int show_geom_boundingbox_old;
+
+  show_geom_boundingbox_old = show_geom_boundingbox;
+  if(show_geom_boundingbox != 1)show_geom_boundingbox_old = 2;
+  fprintf(fileout, " %f %f %i %i %i %i\n", geom_vert_exag, 30.0, 0, 0, show_geom_boundingbox_old, show_geom_bndf);
 
   fprintf(fileout, "GVERSION\n");
   fprintf(fileout, " %i\n", vis_title_gversion);
