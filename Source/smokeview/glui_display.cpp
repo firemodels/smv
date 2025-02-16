@@ -25,9 +25,7 @@ GLUI_Listbox *LIST_surfs=NULL;
 GLUI_Spinner *SPINNER_refresh_rate=NULL;
 #endif
 
-#ifdef pp_SKY
 GLUI_Spinner *SPINNER_sky_diam = NULL;
-#endif
 
 GLUI_Spinner *SPINNER_LB_tick_xbeg=NULL;
 GLUI_Spinner *SPINNER_LB_tick_ybeg=NULL;
@@ -226,10 +224,8 @@ GLUI_Button *BUTTON_label_4=NULL;
 #define LB_TICK_XYZ 12
 #define LB_SHOW_TICK 13
 
-#ifdef pp_SKY
 #define SKY_DIAM 0
 #define SKY_VIS  1
-#endif
 
 #define LABELS_label           0
 //#define LABELS_vcolorbar      34  movied to smokeviewdefs.h
@@ -736,7 +732,6 @@ extern "C" void GLUITextureCB(int var){
   }
 }
 
-#ifdef pp_SKY
 /* ------------------ GLUISkyCB ------------------------ */
 
 void GLUISkyCB(int var){
@@ -756,7 +751,6 @@ void GLUISkyCB(int var){
       break;
   }
 }
-#endif
 
 /* ------------------ GLUIDisplaySetup ------------------------ */
 
@@ -792,11 +786,9 @@ extern "C" void GLUIDisplaySetup(int main_window){
 #ifdef pp_memstatus
   CHECKBOX_labels_availmemory = glui_labels->add_checkbox_to_panel(PANEL_gen1, _("Memory load"), &visAvailmemory, LABELS_label, GLUILabelsCB);
 #endif
-#ifdef pp_SKY
   glui_labels->add_checkbox_to_panel(PANEL_gen1, _("show skybox"), &visSkybox);
   glui_labels->add_checkbox_to_panel(PANEL_gen1, _("show sky"), &visSky, SKY_VIS, GLUISkyCB);
   SPINNER_sky_diam = glui_labels->add_spinner_to_panel(PANEL_gen1, _("sky diameter"), GLUI_SPINNER_FLOAT, &sky_diam, SKY_DIAM, GLUISkyCB);
-#endif
 
 
   glui_labels->add_column_to_panel(PANEL_gen1, false);

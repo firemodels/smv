@@ -2321,7 +2321,6 @@ void GetMinMaxDepth(float *min_depth, float *max_depth){
     *max_depth = MAX(*max_depth, maxdist);
   }
 
-#ifdef pp_SKY
   // get distance to each corner of the skybox
   if(visSky == 1){
     float mindist, maxdist;
@@ -2330,7 +2329,6 @@ void GetMinMaxDepth(float *min_depth, float *max_depth){
     *min_depth = MIN(*min_depth, mindist);
     *max_depth = MAX(*max_depth, maxdist);
   }
-#endif
 
   // get distance to each tour node
 

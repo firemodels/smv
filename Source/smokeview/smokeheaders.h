@@ -725,9 +725,7 @@ EXTERNCPP void ScaleFont3D(void);
 
 EXTERNCPP void *CheckFiles(void *arg);
 EXTERNCPP void *Compress(void *arg);
-#ifdef pp_SKY
 EXTERNCPP void GetBoxSkyCorners(void);
-#endif
 EXTERNCPP void GetElevAz(float *xyznorm,float *dtheta, float *rotate_axis, float *dpsi);
 EXTERNCPP void GetSliceParmInfo(sliceparmdata *sp);
 EXTERNCPP int GetSmoke3DType(smv_case *scase, const char *label);

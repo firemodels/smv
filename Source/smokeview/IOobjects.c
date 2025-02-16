@@ -19,9 +19,7 @@
 #include "readgeom.h"
 
 static float *cos_long = NULL, *sin_long = NULL, *cos_lat = NULL, *sin_lat = NULL;
-#ifdef pp_SKY
 static float *sphere_coords = NULL;
-#endif
 static float specular[4] = {0.4,0.4,0.4,1.0};
 unsigned char *rgbimage = NULL;
 int rgbsize = 0;
@@ -1555,7 +1553,6 @@ void DrawHSphere(float diameter, unsigned char *rgbcolor){
   glPopMatrix();
 }
 
-#ifdef pp_SKY
 /* ----------------------- DrawHalfSphere ----------------------------- */
 
 void DrawHalfSphere(void){
@@ -1695,7 +1692,6 @@ void DrawHalfSphere(void){
   }
   glPopMatrix();
 }
-#endif
 
 /* ----------------------- DrawPoint ----------------------------- */
 
@@ -3323,7 +3319,6 @@ void InitSphere(int nlat, int nlong){
   sin_long[nlong]=sin_long[0];
 }
 
-#ifdef pp_SKY
 /* ----------------------- InitSphere2 ----------------------------- */
 
 float *InitSphere2(int nlat, int nlong){
@@ -3365,7 +3360,6 @@ float *InitSphere2(int nlat, int nlong){
 
   return sphere;
 }
-#endif
 
 /* ----------------------- GetGlobalDeviceBounds ----------------------------- */
 

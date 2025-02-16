@@ -2698,7 +2698,6 @@ void InitTextures0(void){
   }
   PRINT_TIMER(texture_timer, "terrain texture setup");
 
-#ifdef pp_SKY
   // define sky texture
 
   if(nsky_texture > 0){
@@ -2740,7 +2739,6 @@ void InitTextures0(void){
     }
   }
   PRINT_TIMER(texture_timer, "sky texture setup");
-#endif
 }
 
   /* ------------------ InitTextures ------------------------ */
@@ -3090,8 +3088,6 @@ void UpdateBlockType(void){
   }
 }
 
-#ifdef pp_SKY
-
 /* ------------------ GetBoxSkyCorners ------------------------ */
 
 void GetBoxSkyCorners(void){
@@ -3150,7 +3146,6 @@ void GetBoxSkyCorners(void){
   box_sky_corners[7][1] = ymax;
   box_sky_corners[7][2] = zmax;
 }
-#endif
 
 /* ------------------ GetBoxGeomCorners ------------------------ */
 
@@ -7499,7 +7494,6 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
       }
       continue;
     }
-#ifdef pp_SKY
     if(MatchSMV(buffer, "SKYIMAGE") == 1){
       char *buff2;
       int len_buffer;
@@ -7520,7 +7514,6 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
       }
       continue;
     }
-#endif
     if(
       (MatchSMV(buffer,"DEVICE") == 1)&&
       (MatchSMV(buffer,"DEVICE_ACT") != 1)
@@ -11642,9 +11635,7 @@ int ReadSMV_Configure(){
   UpdateTriangles(GEOM_STATIC,GEOM_UPDATE_ALL);
   GetFaceInfo();
   GetBoxGeomCorners();
-#ifdef pp_SKY
   GetBoxSkyCorners();
-#endif
   PRINT_TIMER(timer_readsmv, "update trianglesfaces");
 
   if(global_scase.ngeominfo>0&&global_scase.auto_terrain==1){
@@ -14398,14 +14389,12 @@ int ReadIni2(const char *inifile, int localfile){
       zonecolortype = CLAMP(zonecolortype, 0, 2);
       continue;
     }
-#ifdef pp_SKY
     if(MatchINI(buffer, "SHOWSKY") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%i", &visSky);
       ONEORZERO(visSky);
       continue;
     }
-#endif
     if(MatchINI(buffer, "SHOWSMOKEPART") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%i", &visSmokePart);
@@ -16837,10 +16826,8 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %i\n", global_scase.show_slice_in_obst);
   fprintf(fileout, "SHOWSMOKEPART\n");
   fprintf(fileout, " %i\n", visSmokePart);
-#ifdef pp_SKY
   fprintf(fileout, "SHOWSKY\n");
   fprintf(fileout, " %i\n", visSky);
-#endif
   fprintf(fileout, "SHOWSPRINKPART\n");
   fprintf(fileout, " %i\n", visSprinkPart);
   fprintf(fileout, "SHOWSTREAK\n");
