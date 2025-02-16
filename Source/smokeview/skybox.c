@@ -179,12 +179,12 @@ void DrawSkybox(void){
   /* stuff min and max grid data into a more convenient form
   assuming the following grid numbering scheme
 
-  5-------6
-  / |      /|
-  /   |     / |
-  4 -------7   |
-  |    |   |   |
-  Z    1---|---2
+      5--------6
+    / |      / |
+   /  |     /  |
+  4--------7   |
+  |   |    |   |
+  Z   1----|---2
   |  Y     |  /
   |/       |/
   0--X-----3
@@ -216,17 +216,16 @@ void DrawSkybox(void){
     0, 3, 2, 1,
     5, 6, 7, 4
   };
-  float *xyz;
-  float *normal;
   int *faceptr;
 
-  float increment = 0.0;
-
   for(i = 0; i<8; i++){
+    float *xyz;
+    float skybox_diam=3.0;
+
     xyz = points+3*i;
-    xyz[0] = 3.0*(xyz[0]-0.5)+camera_current->eye[0];
-    xyz[1] = 3.0*(xyz[1]-0.5)+camera_current->eye[1];
-    xyz[2] = 3.0*(xyz[2]-0.5+increment)+camera_current->eye[2];
+    xyz[0] = skybox_diam*(xyz[0]-0.5)+camera_current->eye[0];
+    xyz[1] = skybox_diam*(xyz[1]-0.5)+camera_current->eye[1];
+    xyz[2] = skybox_diam*(xyz[2]-0.5)+camera_current->eye[2];
   }
 
   glDisable(GL_BLEND);
@@ -236,6 +235,8 @@ void DrawSkybox(void){
   glEnable(GL_TEXTURE_2D);
 
   for(i = 0; i<6; i++){
+    float *normal, *xyz;
+
     if(skyboxinfo->face[i].file==NULL)continue;
 
     glBindTexture(GL_TEXTURE_2D, skyboxinfo->face[i].name);

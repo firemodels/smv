@@ -54,7 +54,7 @@ void DrawLights(float *position0, float *position1){
 
 void ShowScene2(int mode){
   if(mode==DRAWSCENE){
-    if(rotation_type==EYE_CENTERED&&nskyboxinfo>0)DrawSkybox();
+    if(rotation_type==EYE_CENTERED&&nskyboxinfo>0&&visSkybox==1)DrawSkybox();
     UpdateLights(light_position0, light_position1);
     if(drawlights==1)DrawLights(light_position0, light_position1);
 
