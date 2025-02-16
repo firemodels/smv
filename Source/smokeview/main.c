@@ -582,7 +582,7 @@ char *ProcessCommandLine(CommandlineArgs *args){
       verbose_output = 1;
     }
     if(args->outline){
-      show_geom_boundingbox = SHOW_BOUNDING_BOX_ALWAYS;
+      show_geom_boundingbox = SHOW_BOUNDING_BOX_MOUSE_DOWN;
     }
     if(args->make_movie){
       open_movie_dialog = 1;
