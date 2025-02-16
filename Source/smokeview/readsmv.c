@@ -2721,7 +2721,7 @@ void InitTextures0(void){
 #ifdef _DEBUG
       PRINTF("sky texture file: %s\n", tt->file);
 #endif
-      floortex = ReadPicture(texturedir, tt->file, &texwid, &texht, &is_transparent, 0);
+      floortex = ReadPicture(global_scase.texturedir, tt->file, &texwid, &texht, &is_transparent, 0);
       tt->is_transparent = is_transparent;
       if(floortex == NULL)PRINTF("***Error: Texture file %s failed to load\n", tt->file);
     }
