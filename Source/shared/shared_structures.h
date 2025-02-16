@@ -37,7 +37,6 @@ typedef struct _tokendata {
  * This can form a node in a linked-list.
  */
 typedef struct _sv_object_frame {
-  int use_bw;
   int error;
   int *symbols, nsymbols;
   tokendata *tokens, **command_list;
