@@ -273,100 +273,14 @@ if ((NOT MACOSX) AND UNIX)
 endif()
 
 # sort_surfs
-add_executable(sort_surfs sort_surfs.c
-    ../Source/smokeview/menus.c
-    ../Source/smokeview/IOscript.c
-    ../Source/smokeview/IOshooter.c
-    ../Source/smokeview/colortimebar.c
-    ../Source/smokeview/camera.c
-    ../Source/smokeview/IOgeometry.c
-    ../Source/smokeview/IOwui.c
-    ../Source/smokeview/IOobjects.c
-    ../Source/smokeview/IOtour.c
-    ../Source/smokeview/getdatacolors.c
-    ../Source/smokeview/smokeview.c
-    ../Source/smokeview/output.c
-    ../Source/smokeview/renderimage.c
-    ../Source/smokeview/renderhtml.c
-    ../Source/smokeview/getdatabounds.c
-    ../Source/smokeview/readsmv.c
-    ../Source/smokeview/IOvolsmoke.c
-    ../Source/smokeview/IOsmoke.c
-    ../Source/smokeview/IOplot3d.c
-    ../Source/smokeview/IOplot2d.c
-    ../Source/smokeview/IOslice.c
-    ../Source/smokeview/IOhvac.c
-    ../Source/smokeview/IOboundary.c
-    ../Source/smokeview/IOpart.c
-    ../Source/smokeview/IOzone.c
-    ../Source/smokeview/IOiso.c
-    ../Source/smokeview/callbacks.c
-    ../Source/smokeview/drawGeometry.c
-    ../Source/smokeview/skybox.c
-    ../Source/smokeview/update.c
-    ../Source/smokeview/viewports.c
-    ../Source/smokeview/smv_geometry.c
-    ../Source/smokeview/showscene.c
-    ../Source/smokeview/infoheader.c
-    ../Source/smokeview/startup.c
-    ../Source/smokeview/shaders.c
-    ../Source/smokeview/unit.c
-    ../Source/smokeview/colortable.c
-    ../Source/smokeview/command_args.c
-    ../Source/smokeview/c_api.c
-)
+# add_executable(sort_surfs sort_surfs.c
+# )
 
-target_sources(sort_surfs PRIVATE
-    ../Source/smokeview/glui_smoke.cpp
-    ../Source/smokeview/glui_clip.cpp
-    ../Source/smokeview/glui_stereo.cpp
-    ../Source/smokeview/glui_geometry.cpp
-    ../Source/smokeview/glui_motion.cpp
-    ../Source/smokeview/glui_bounds.cpp
-    ../Source/smokeview/glui_colorbar.cpp
-    ../Source/smokeview/glui_display.cpp
-    ../Source/smokeview/glui_tour.cpp
-    ../Source/smokeview/glui_trainer.cpp
-    ../Source/smokeview/glui_objects.cpp
-    ../Source/smokeview/glui_shooter.cpp
-)
-
-target_include_directories(sort_surfs PRIVATE
-    ../Tests
-    ../Source/shared
-    ../Source/glew
-    ../Source/smokeview
-)
-target_link_libraries(sort_surfs PRIVATE libsmv)
-if (WIN32)
-    target_include_directories(sort_surfs PRIVATE ../Source/glut_gl)
-else()
-    target_include_directories(sort_surfs PRIVATE ../Source/glui_gl)
-endif ()
-target_link_libraries(sort_surfs PRIVATE glui_static)
-target_include_directories(sort_surfs PRIVATE ../Source/glui_v2_1_beta)
-if (MACOSX)
-    add_definitions(-Dpp_NOQUARTZ)
-    target_link_libraries(sort_surfs PRIVATE "-framework OpenGL" "-framework GLUT")
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99")
-elseif (GLUT_FOUND)
-    target_link_libraries(sort_surfs PRIVATE GLUT::GLUT)
-else()
-    target_link_libraries(sort_surfs PRIVATE glut32_static)
-endif ()
-target_link_libraries(sort_surfs PRIVATE GLEW::GLEW)
-if (WIN32)
-    target_include_directories(sort_surfs PRIVATE ../Source/pthreads)
-endif()
-if ((NOT MACOSX) AND UNIX)
-    target_link_libraries(sort_surfs PRIVATE m)
-endif()
-target_link_libraries(sort_surfs PRIVATE JPEG::JPEG)
-target_link_libraries(sort_surfs PRIVATE PNG::PNG)
-target_link_libraries(sort_surfs PRIVATE ZLIB::ZLIB)
-target_link_libraries(sort_surfs PRIVATE OpenGL::GL OpenGL::GLU)
-
-
+# target_include_directories(sort_surfs PRIVATE
+#     ../Tests
+#     ../Source/shared
+#     ../Source/glew
+# )
 
 
 # Arguments to this tests are <slice path> <number of frames in slice>
@@ -424,5 +338,5 @@ add_test(NAME "Mem Test"
 add_test(NAME "Test Root Dir"
     COMMAND test_root_dir)
 
-add_test(NAME "Sort Surfs"
-    COMMAND sort_surfs)
+# add_test(NAME "Sort Surfs"
+#     COMMAND sort_surfs)

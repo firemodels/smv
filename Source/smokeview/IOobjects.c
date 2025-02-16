@@ -1576,7 +1576,7 @@ void DrawHalfSphere(void){
 
   glPushMatrix();
   glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
-  glTranslatef(-xbar0, -ybar0, -zbar0);
+  glTranslatef(-global_scase.xbar0, -global_scase.ybar0, -global_scase.zbar0);
   glTranslatef(dxFDS/2.0,dyFDS/2.0,0.0);
   glScalef(diameter/2.0, diameter/2.0, diameter/2.0);
 
