@@ -2322,7 +2322,7 @@ void GetMinMaxDepth(float *min_depth, float *max_depth){
   }
 
   // get distance to each corner of the skybox
-  if(visSky == 1){
+  if(visSkysphere == 1){
     float mindist, maxdist;
 
     DistPointBox(smv_eyepos, box_sky_corners, &mindist, &maxdist);

@@ -14389,10 +14389,10 @@ int ReadIni2(const char *inifile, int localfile){
       zonecolortype = CLAMP(zonecolortype, 0, 2);
       continue;
     }
-    if(MatchINI(buffer, "SHOWSKY") == 1){
+    if(MatchINI(buffer, "SHOWSKYSPHERE") == 1){
       fgets(buffer, 255, stream);
-      sscanf(buffer, "%i", &visSky);
-      ONEORZERO(visSky);
+      sscanf(buffer, "%i", &visSkysphere);
+      ONEORZERO(visSkysphere);
       continue;
     }
     if(MatchINI(buffer, "SHOWSMOKEPART") == 1){
@@ -16826,8 +16826,8 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %i\n", global_scase.show_slice_in_obst);
   fprintf(fileout, "SHOWSMOKEPART\n");
   fprintf(fileout, " %i\n", visSmokePart);
-  fprintf(fileout, "SHOWSKY\n");
-  fprintf(fileout, " %i\n", visSky);
+  fprintf(fileout, "SHOWSKYSPHERE\n");
+  fprintf(fileout, " %i\n", visSkysphere);
   fprintf(fileout, "SHOWSPRINKPART\n");
   fprintf(fileout, " %i\n", visSprinkPart);
   fprintf(fileout, "SHOWSTREAK\n");

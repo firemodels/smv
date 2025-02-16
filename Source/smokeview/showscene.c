@@ -318,7 +318,10 @@ void ShowScene2(int mode){
     DrawBlockages(mode, DRAW_OPAQUE);
     SNIFF_ERRORS("DrawBlockages");
   }
-  if(visSky == 1)DrawHalfSphere();
+
+  /* ++++++++++++++++++++++++ draw sky sphere +++++++++++++++++++++++++ */
+
+  if(visSkysphere == 1)DrawHalfSphere();
 
   /* ++++++++++++++++++++++++ draw opaque cfaces +++++++++++++++++++++++++ */
 
