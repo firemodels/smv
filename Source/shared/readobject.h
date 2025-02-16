@@ -321,13 +321,12 @@ int InitObjectCollection(object_collection *coll);
  * @param[inout] objectscoll Pointer to the location of the @ref
  * object_collection to read object definitions into. This @ref
  * object_collection
- * @param[in] setbw Set the colors to black and white.
  * @param[in] fdsprefix The fdsprefix. This is used to find case-specific object
  * files (e.g., "${fdsprefix}.svo"). If NULL, such files are never read.
  * @param[in] isZoneFireModel Is this model a zone fire model.
  */
 void ReadDefaultObjectCollection(object_collection *objectscoll,
-                                 const char *fdsprefix, int setbw,
+                                 const char *fdsprefix,
                                  int isZoneFireModel);
 
 /**
@@ -381,7 +380,7 @@ sv_object *GetSmvObjectType(object_collection *objectscoll, char *olabel,
  *
  * @returns The number of objects read
  */
-int ReadObjectDefs(object_collection *objectscoll, const char *file, int setbw);
+int ReadObjectDefs(object_collection *objectscoll, const char *file);
 // END MAIN API
 
 // These still need to be documented.
