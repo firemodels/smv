@@ -2080,7 +2080,7 @@ SVEXTERN float mscale[3];
 #endif
 SVEXTERN float xclip_min, yclip_min, zclip_min;
 SVEXTERN float xclip_max, yclip_max, zclip_max;
-SVEXTERN float SVDECL(nearclip, 0.001), SVDECL(farclip, 3.0);
+SVEXTERN float SVDECL(nearclip, 0.001), SVDECL(farclip, 3.0), SVDECL(farclip_save, 3.0);
 SVEXTERN int SVDECL(updateclipvals, 0);
 SVEXTERN int SVDECL(updateUpdateFrameRateMenu,0);
 SVEXTERN int ntextures_loaded_used, SVDECL(iterrain_textures,0);

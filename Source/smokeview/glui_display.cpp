@@ -737,6 +737,20 @@ extern "C" void GLUITextureCB(int var){
 /* ------------------ GLUISkyCB ------------------------ */
 
 void GLUISkyCB(int var){
+  float farclip_before;
+
+  farclip_before = farclip;
+  if(visSkybox == 1 || visSkysphere == 1){
+    farclip = MAX(farclip_save, sky_diam);
+  }
+  else{
+    farclip = farclip_save;
+  }
+  if(farclip != farclip_before){
+    GLUISceneMotionCB(NEARFARCLIP);
+    GLUIUpdateFarclip();
+  }
+
   switch (var){
     case SKY_BOX:
       if(sky_diam<1.0){

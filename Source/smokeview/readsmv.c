@@ -13593,6 +13593,7 @@ int ReadIni2(const char *inifile, int localfile){
     if(MatchINI(buffer, "CLIP") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%f %f", &nearclip, &farclip);
+      farclip_save = farclip;
       continue;
     }
     if(MatchINI(buffer, "SHOWTRACERSALWAYS") == 1){

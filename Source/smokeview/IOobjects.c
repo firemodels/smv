@@ -1576,6 +1576,9 @@ void DrawHalfSphere(void){
   glTranslatef(-global_scase.xbar0, -global_scase.ybar0, -global_scase.zbar0);
   glTranslatef(dxFDS/2.0,dyFDS/2.0,0.0);
   glScalef(diameter/2.0, diameter/2.0, diameter/2.0);
+  if(mscale[0]>0.0&&mscale[1]>0.0&&mscale[2]>0.0){
+    glScalef(1.0/mscale[0], 1.0/mscale[1], 1.0/mscale[2]);
+  }
 
   int use_sky;
 
@@ -1594,6 +1597,10 @@ void DrawHalfSphere(void){
   nlats = nlat_hsphere - 1 - nlat_hsphere / 2;
   for(j = nlat_hsphere/2; j < nlat_hsphere; j++){
     float r[2], g[2], b[2];
+    float tj, tjp1;
+
+    tj   = (float)(j-nlat_hsphere/2)/(float)(nlats+1);
+    tjp1 = (float)(j+1-nlat_hsphere/2)/(float)(nlats+1);
 
     if(use_sky == 0){
       float f1, f2;
@@ -1636,16 +1643,16 @@ void DrawHalfSphere(void){
         float tx[4], ty[4];
 
         tx[0] = (float)i/(float)nlong_hsphere;
-        ty[0] = (float)j/(float)nlat_hsphere;
+        ty[0] = tj;
 
         tx[1] = (float)(ip1)/(float)nlong_hsphere;
-        ty[1] = (float)j/(float)nlat_hsphere;
+        ty[1] = tj;
 
         tx[2] = (float)(ip1)/(float)nlong_hsphere;
-        ty[2] = (float)(j + 1)/(float)nlat_hsphere;
+        ty[2] = tjp1;
 
         tx[3] = (float)i/(float)nlong_hsphere;
-        ty[3] = (float)(j + 1)/(float)nlat_hsphere;
+        ty[3] = tjp1;
 
         glNormal3f(x[0], y[0], z[0]);
         glTexCoord2f(tx[0],ty[0]);
