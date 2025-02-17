@@ -1589,7 +1589,27 @@ void DrawHalfSphere(void){
 
   glBegin(GL_QUADS);
   if(use_sky == 0)glColor3f(0.0, 0.0, 1.0);
+  int nlats;
+
+  nlats = nlat_hsphere - 1 - nlat_hsphere / 2;
   for(j = nlat_hsphere/2; j < nlat_hsphere; j++){
+    float r[2], g[2], b[2];
+
+    if(use_sky == 0){
+      float f1, f2;
+
+      f1 = (float)(j - nlat_hsphere / 2) / (float)nlats;
+      f2 = 1.0 - f1;
+      r[0] = (f1 * 32.0 + f2 * 160.0) / 256.0;
+      g[0] = r[0];
+      b[0] = 1.0;
+
+      f1 = (float)(j+1 - nlat_hsphere / 2) / (float)nlats;
+      f2 = 1.0 - f1;
+      r[1] = (f1 * 32.0 + f2 * 160.0) / 256.0;
+      g[1] = r[1];
+      b[1] = 1.0;
+    }
     for(i = 0; i < nlong_hsphere; i++){
       float x[4], y[4], z[4];
       int ip1;
@@ -1660,27 +1680,32 @@ void DrawHalfSphere(void){
         glVertex3f(x[1], y[1], z[1]);
       }
       else{
+        glColor3f(r[0], g[0], b[0]);
         glNormal3f(x[0], y[0], z[0]);
         glVertex3f(x[0], y[0], z[0]);
 
         glNormal3f(x[1], y[1], z[1]);
         glVertex3f(x[1], y[1], z[1]);
 
+        glColor3f(r[1], g[1], b[1]);
         glNormal3f(x[2], y[2], z[2]);
         glVertex3f(x[2], y[2], z[2]);
 
         glNormal3f(x[3], y[3], z[3]);
         glVertex3f(x[3], y[3], z[3]);
 
+        glColor3f(r[0], g[0], b[0]);
         glNormal3f(-x[0], -y[0], -z[0]);
         glVertex3f(x[0], y[0], z[0]);
 
+        glColor3f(r[1], g[1], b[1]);
         glNormal3f(-x[3], -y[3], -z[3]);
         glVertex3f(x[3], y[3], z[3]);
 
         glNormal3f(-x[2], -y[2], -z[2]);
         glVertex3f(x[2], y[2], z[2]);
 
+        glColor3f(r[0], g[0], b[0]);
         glNormal3f(-x[1], -y[1], -z[1]);
         glVertex3f(x[1], y[1], z[1]);
       }
