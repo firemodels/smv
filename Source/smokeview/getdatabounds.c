@@ -1077,7 +1077,7 @@ void BoundsUpdate(int file_type){
 
 /* ------------------ GetGlobalPatchBounds ------------------------ */
 
-void GetGlobalPatchBounds(int flag, int set_flag){
+void GetGlobalPatchBounds(int flag, int set_flag, char *label){
   int i;
 
   if(global_scase.npatchinfo==0)return;
@@ -1107,6 +1107,7 @@ void GetGlobalPatchBounds(int flag, int set_flag){
       patchi->valmax_patch = 1.0;
     }
     if(force_bound_update == 1)doit = 1;
+    if(label != NULL && strcmp(patchi->label.shortlabel, label) != 0)doit = 0;
     if(doit==1){
 #ifdef pp_BOUNDFRAME
       if(patchi->frameinfo != NULL){
@@ -1144,6 +1145,7 @@ void GetGlobalPatchBounds(int flag, int set_flag){
     int j;
 
     boundi = patchbounds + i;
+    if(label != NULL && strcmp(boundi->label->shortlabel, label) != 0)continue;
     boundi->dlg_valmin = boundi->dlg_global_valmin;
     boundi->dlg_valmax = boundi->dlg_global_valmax;
     for(j = 0; j < global_scase.npatchinfo; j++){
@@ -1168,6 +1170,7 @@ void GetGlobalPatchBounds(int flag, int set_flag){
 
       boundscppi = patchbounds_cpp+i;
       boundi = patchbounds+i;
+      if(label != NULL && strcmp(boundi->label->shortlabel, label) != 0)continue;
       strcpy(boundscppi->label, boundi->shortlabel);
       strcpy(boundscppi->unit, boundi->label->unit);
 
@@ -1203,7 +1206,7 @@ void GetGlobalPatchBounds(int flag, int set_flag){
 
 void *GetGlobalPatchBoundsFull(void *arg){
   THREADcontrol(patchbound_threads, THREAD_LOCK);
-  GetGlobalPatchBounds(1,SET_MINMAX_FLAG);
+  GetGlobalPatchBounds(1,SET_MINMAX_FLAG,NULL);
   THREADcontrol(patchbound_threads, THREAD_UNLOCK);
   THREAD_EXIT(patchbound_threads);
 }
@@ -1211,7 +1214,7 @@ void *GetGlobalPatchBoundsFull(void *arg){
 /* ------------------ GetGlobalPatchBoundsReduced ------------------------ */
 
 void GetGlobalPatchBoundsReduced(void){
-  GetGlobalPatchBounds(0,SET_MINMAX_FLAG);
+  GetGlobalPatchBounds(0,SET_MINMAX_FLAG,NULL);
 }
 
 /* ------------------ GetPlot3DFileBounds ------------------------ */
@@ -1419,7 +1422,7 @@ boundsdata *GetSliceBoundsInfo(char *shortlabel){
 
 /* ------------------ GetGlobalSliceBounds ------------------------ */
 
-void GetGlobalSliceBounds(int flag, int set_flag){
+void GetGlobalSliceBounds(int flag, int set_flag, char *label){
   int i;
 
   if(no_bounds == 1 && force_bounds==0)flag = 0;
@@ -1440,6 +1443,7 @@ void GetGlobalSliceBounds(int flag, int set_flag){
     int doit;
 
     slicei = global_scase.slicecoll.sliceinfo+i;
+    if(label != NULL && strcmp(slicei->label.shortlabel, label) != 0)continue;
     if(slicei->valmin_slice>slicei->valmax_slice ||
        current_script_command==NULL || NOT_LOADRENDER)doit=1;
     if(flag==0){
@@ -1475,6 +1479,7 @@ void GetGlobalSliceBounds(int flag, int set_flag){
     boundsdata *boundi;
 
     boundi = slicebounds+i;
+    if(label!=NULL&&strcmp(boundi->label->shortlabel, label) != 0)continue;
     boundi->dlg_valmin = boundi->dlg_global_valmin;
     boundi->dlg_valmax = boundi->dlg_global_valmax;
   }
@@ -1489,6 +1494,7 @@ void GetGlobalSliceBounds(int flag, int set_flag){
 
       boundscppi = slicebounds_cpp + i;
       boundi     = slicebounds + i;
+      if(label != NULL && strcmp(boundi->label->shortlabel, label) != 0)continue;
       strcpy(boundscppi->label, boundi->shortlabel);
       strcpy(boundscppi->unit, boundi->label->unit);
 
@@ -1525,7 +1531,7 @@ void GetGlobalSliceBounds(int flag, int set_flag){
 
 void *GetGlobalSliceBoundsFull(void *arg){
   THREADcontrol(slicebound_threads, THREAD_LOCK);
-  GetGlobalSliceBounds(1,SET_MINMAX_FLAG);
+  GetGlobalSliceBounds(1,SET_MINMAX_FLAG,NULL);
   THREADcontrol(slicebound_threads, THREAD_UNLOCK);
   THREAD_EXIT(slicebound_threads);
 }
@@ -1533,7 +1539,7 @@ void *GetGlobalSliceBoundsFull(void *arg){
 /* ------------------ GetGlobalSliceBoundsReduced ------------------------ */
 
 void GetGlobalSliceBoundsReduced(void){
-  GetGlobalSliceBounds(0,SET_MINMAX_FLAG);
+  GetGlobalSliceBounds(0,SET_MINMAX_FLAG,NULL);
 }
 
 /* ------------------ GetHVACDuctBounds ------------------------ */

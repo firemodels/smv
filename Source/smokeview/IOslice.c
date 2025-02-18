@@ -4294,7 +4294,7 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
 #ifdef pp_RECOMPUTE_DEBUG
       recompute = 1;
 #endif
-      GetGlobalSliceBounds(1, DONOT_SET_MINMAX_FLAG);
+      GetGlobalSliceBounds(1, DONOT_SET_MINMAX_FLAG, sd->label.shortlabel);
       SetLoadedSliceBounds(NULL, 0);
     }
     GLUIGetMinMax(BOUND_SLICE, sd->label.shortlabel, &set_valmin, &qmin, &set_valmax, &qmax);
