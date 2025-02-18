@@ -2376,16 +2376,11 @@ void ViewportScene(int quad, int view_mode, GLint screen_left, GLint screen_down
     VP_scene.width=screenWidth;
   }
   if(plotstate==DYNAMIC_PLOTS&&selected_tour!=NULL&&selected_tour->timeslist!=NULL){
-    if((tour_snap==1||viewtourfrompath==1)&&selectedtour_index>=0){
+    if(viewtourfrompath==1&&selectedtour_index>=0){
       tourdata *touri;
 
       touri = global_scase.tourcoll.tourinfo + selectedtour_index;
-      if(tour_snap==1){
-        SetTourXYZView(tour_snap_time, touri);
-      }
-      else{
-        SetTourXYZView(global_times[itimes], touri);
-      }
+      SetTourXYZView(global_times[itimes], touri);
       memcpy(camera_current->eye, touri->xyz_smv, 3*sizeof(float));
       camera_current->az_elev[1]=0.0;
       camera_current->az_elev[0]=0.0;
@@ -2504,14 +2499,9 @@ void ViewportScene(int quad, int view_mode, GLint screen_left, GLint screen_down
       tourdata *touri;
 
       if(plotstate==DYNAMIC_PLOTS&&selected_tour!=NULL&&selected_tour->timeslist!=NULL){
-        if((tour_snap==1||viewtourfrompath==1)&&selectedtour_index>=0){
+        if(viewtourfrompath==1&&selectedtour_index>=0){
           touri = global_scase.tourcoll.tourinfo + selectedtour_index;
-          if(tour_snap==1){
-            SetTourXYZView(tour_snap_time, touri);
-          }
-          else{
-            SetTourXYZView(global_times[itimes], touri);
-          }
+          SetTourXYZView(global_times[itimes], touri);
           viewx = touri->view_smv[0]+dEyeSeparation[0];
           viewy = touri->view_smv[1]-dEyeSeparation[1];
           viewz = touri->view_smv[2];

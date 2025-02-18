@@ -43,9 +43,6 @@ GLUI_Panel *PANEL_tour7;
 
 GLUI_Checkbox *CHECKBOX_view1 = NULL;
 GLUI_Checkbox *CHECKBOX_view2 = NULL;
-#ifdef pp_TOUR_SNAP
-GLUI_Checkbox *CHECKBOX_tour_snap = NULL;
-#endif
 GLUI_Checkbox *CHECKBOX_tour_constant_velocity = NULL;
 GLUI_Checkbox *CHECKBOX_set_tour_time = NULL;
 GLUI_Checkbox *CHECKBOX_showtourroute1 = NULL;
@@ -237,10 +234,6 @@ extern "C" void GLUITourSetup(int main_window){
 #endif
   CHECKBOX_view1                 = glui_tour->add_checkbox_to_panel(PANEL_tour5, _("View from tour"),
     &viewtourfrompath, VIEWTOURFROMPATH1, TourCB);
-#ifdef pp_TOUR_SNAP
-  CHECKBOX_tour_snap             = glui_tour->add_checkbox_to_panel(PANEL_tour5, _("View from current tour position"),
-    &tour_snap, TOUR_SNAP, TourCB);
-#endif
   CHECKBOX_tour_constant_velocity = glui_tour->add_checkbox_to_panel(PANEL_tour5, _("Constant velocity"),
     &tour_constant_velocity, TOUR_CONSTANT_VELOCITY, TourCB);
 
@@ -621,16 +614,6 @@ void TourCB(int var){
   case VIEWTOURFROMPATH2:
     TourCB(VIEWTOURFROMPATH);
     CHECKBOX_view1->set_int_val(viewtourfrompath);
-    break;
-  case TOUR_SNAP:
-    if(tour_snap == 1){
-      if(global_times != NULL){
-        tour_snap_time = global_times[itimes];
-      }
-      else{
-        tour_snap_time = 0.0;
-      }
-    }
     break;
   case VIEWTOURFROMPATH:
     viewtourfrompath = 1 - viewtourfrompath;

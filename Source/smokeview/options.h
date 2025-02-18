@@ -4,14 +4,11 @@
 #include "options_common.h"
 
 //#define pp_FRAME           // turn on frame code
-//#define pp_SHOW_UPDATE      // show what is being update in UpdateShowScene routine
-//#define pp_PARTBOUND_MULTI // compute particle bounds in the background
+//#define pp_SHOW_UPDATE      // show what is being updated in the UpdateShowScene routine
 //#define pp_LUA            // turn on LUA option
 #define pp_FAST             // set fast startup by default
 #define pp_GPU              // support the GPU
 #define pp_THREAD           // turn on multi-threading
-//#define pp_TOUR_SNAP         // turn on tour snap option
-//#define pp_SMOKETEST
 
 #ifdef pp_FRAME          // turn on each frame type if pp_FRAME is set
 #define pp_BOUNDFRAME    // turn on frame code for boundary files

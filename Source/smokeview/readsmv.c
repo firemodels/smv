@@ -2991,14 +2991,7 @@ void UpdateBoundInfo(void){
 
   GLUIUpdateChar();
   PRINT_TIMER(bound_timer, "GLUIUpdateChar");
-#ifdef pp_PARTBOUND_MULTI
-  if(partbound_threads == NULL){
-    partbound_threads = THREADinit(&n_partbound_threads, &use_partbound_threads, GetGlobalPartBoundsReduced);
-    THREADrun(partbound_threads);
-  }
-#else
   GetGlobalPartBounds(0);
-#endif
   PRINT_TIMER(bound_timer, "GetGlobalPartBounds");
 
   GetGlobalSliceBoundsReduced();
@@ -13282,9 +13275,6 @@ int ReadIni2(const char *inifile, int localfile){
       strcpy(buffer2, "");
       sscanf(buffer, "%i %f %i %f %s", &setvalmin, &valmin, &setvalmax, &valmax, buffer2);
       if(strcmp(buffer2, "")!=0&&strcmp(buffer2,"Uniform")!=0){
-#ifdef pp_PARTBOUND_MULTI
-        THREADcontrol(partbound_threads, THREAD_JOIN);
-#endif
         for(i = 0; i<npartbounds_cpp; i++){
           cpp_boundsdata *boundi;
 
@@ -14865,7 +14855,7 @@ int ReadIni2(const char *inifile, int localfile){
       }
       if(MatchINI(buffer, "VIEWTOURFROMPATH") == 1){
         if(fgets(buffer, 255, stream) == NULL)break;
-        sscanf(buffer, "%i %i %f", &viewtourfrompath, &tour_snap, &tour_snap_time);
+        sscanf(buffer, "%i", &viewtourfrompath);
         continue;
       }
       if(MatchINI(buffer, "TOURCONSTANTVEL") == 1){
@@ -16160,9 +16150,6 @@ void WriteIniLocal(FILE *fileout){
         );
     }
   }
-#ifdef pp_PARTBOUND_MULTI
-  THREADcontrol(partbound_threads, THREAD_JOIN);
-#endif
   for(i = 0; i<npartbounds_cpp; i++){
     cpp_boundsdata *boundi;
 
@@ -17128,8 +17115,7 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, "VIEWTIMES\n");
   fprintf(fileout, " %f %f %i\n", global_scase.tourcoll.tour_tstart, global_scase.tourcoll.tour_tstop, global_scase.tourcoll.tour_ntimes);
   fprintf(fileout, "VIEWTOURFROMPATH\n");
-  fprintf(fileout, " %i %i %f\n", viewtourfrompath, tour_snap, tour_snap_time);
-
+  fprintf(fileout, " %i %i %f\n", viewtourfrompath, 0, 0.0);
 
   if(flag == LOCAL_INI)WriteIniLocal(fileout);
   if(

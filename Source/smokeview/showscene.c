@@ -523,15 +523,6 @@ void ShowScene2(int mode){
     DrawSmokeFrame();
   }
 
-#ifdef pp_SMOKETEST
-
-  /* ++++++++++++++++++++++++ draw smoke test +++++++++++++++++++++++++ */
-
-  if(show_smoketest == 1){
-    DrawSmokeTest();
-  }
-#endif
-
   /* ++++++++++++++++++++++++ draw vol smoke +++++++++++++++++++++++++ */
 
   if(showvolrender == 1 && show3dsmoke==0 && geom_bounding_box_mousedown==0){

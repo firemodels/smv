@@ -179,10 +179,6 @@ SVEXTERN int SVDECL(update_plot_label, 0);
 SVEXTERN int SVDECL(terrain_skip, 1);
 SVEXTERN int nsmoke3dtypes, smoke3d_other;
 SVEXTERN smoke3dtypedata SVDECL(*smoke3dtypes, NULL);
-#ifdef pp_SMOKETEST
-SVEXTERN int SVDECL(n_smoketest_planes,1), SVDECL(show_smoketest,0), SVDECL(smoketest_ialpha, 0);
-SVEXTERN float SVDECL(smoketest_alpha, 0.0);
-#endif
 
 SVEXTERN int SOOT_index, HRRPUV_index, TEMP_index, CO2_index;
 
@@ -473,8 +469,6 @@ SVEXTERN float tour_circular_center[3], tour_circular_radius, tour_circular_view
 SVEXTERN float tour_circular_center_default[3], tour_circular_radius_default, tour_circular_view_default[3];
 SVEXTERN float SVDECL(tour_speedup_factor, 1.0);
 SVEXTERN int SVDECL(ncircletournodes, 16);
-SVEXTERN int SVDECL(tour_snap, 0);
-SVEXTERN float SVDECL(tour_snap_time, 0.0);
 
 SVEXTERN int SVDECL(render_resolution, RENDER_RESOLUTION_CURRENT);
 SVEXTERN int SVDECL(timebar_overlap, TIMEBAR_OVERLAP_AUTO);

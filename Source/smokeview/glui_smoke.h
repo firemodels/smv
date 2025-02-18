@@ -32,7 +32,6 @@
 #define SMOKE_RTHICK 8
 #endif
 #define SAVE_SETTINGS_SMOKE 9
-#define SMOKETEST 11
 #define VOL_SMOKE 13
 #define VOL_NGRID 18
 #define SMOKE_OPTIONS 19
@@ -80,9 +79,6 @@
 #define VOLTEST_UPDATE 103
 #define FORCE_ALPHA_OPAQUE 104
 #define MERGE_SMOKE 105
-#ifdef pp_SMOKETEST
-#define SMOKETEST2 112
-#endif
 #define SMOKE_FRAME_INC 113
 #define REFRESH_FIRE       114
 
