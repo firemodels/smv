@@ -14865,7 +14865,7 @@ int ReadIni2(const char *inifile, int localfile){
       }
       if(MatchINI(buffer, "VIEWTOURFROMPATH") == 1){
         if(fgets(buffer, 255, stream) == NULL)break;
-        sscanf(buffer, "%i %i %f", &viewtourfrompath, &tour_snap, &tour_snap_time);
+        sscanf(buffer, "%i", &viewtourfrompath);
         continue;
       }
       if(MatchINI(buffer, "TOURCONSTANTVEL") == 1){
@@ -17128,8 +17128,7 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, "VIEWTIMES\n");
   fprintf(fileout, " %f %f %i\n", global_scase.tourcoll.tour_tstart, global_scase.tourcoll.tour_tstop, global_scase.tourcoll.tour_ntimes);
   fprintf(fileout, "VIEWTOURFROMPATH\n");
-  fprintf(fileout, " %i %i %f\n", viewtourfrompath, tour_snap, tour_snap_time);
-
+  fprintf(fileout, " %i %i %f\n", viewtourfrompath, 0, 0.0);
 
   if(flag == LOCAL_INI)WriteIniLocal(fileout);
   if(
