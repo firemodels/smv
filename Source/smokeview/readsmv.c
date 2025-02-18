@@ -2991,14 +2991,7 @@ void UpdateBoundInfo(void){
 
   GLUIUpdateChar();
   PRINT_TIMER(bound_timer, "GLUIUpdateChar");
-#ifdef pp_PARTBOUND_MULTI
-  if(partbound_threads == NULL){
-    partbound_threads = THREADinit(&n_partbound_threads, &use_partbound_threads, GetGlobalPartBoundsReduced);
-    THREADrun(partbound_threads);
-  }
-#else
   GetGlobalPartBounds(0);
-#endif
   PRINT_TIMER(bound_timer, "GetGlobalPartBounds");
 
   GetGlobalSliceBoundsReduced();
@@ -13282,9 +13275,6 @@ int ReadIni2(const char *inifile, int localfile){
       strcpy(buffer2, "");
       sscanf(buffer, "%i %f %i %f %s", &setvalmin, &valmin, &setvalmax, &valmax, buffer2);
       if(strcmp(buffer2, "")!=0&&strcmp(buffer2,"Uniform")!=0){
-#ifdef pp_PARTBOUND_MULTI
-        THREADcontrol(partbound_threads, THREAD_JOIN);
-#endif
         for(i = 0; i<npartbounds_cpp; i++){
           cpp_boundsdata *boundi;
 
@@ -16160,9 +16150,6 @@ void WriteIniLocal(FILE *fileout){
         );
     }
   }
-#ifdef pp_PARTBOUND_MULTI
-  THREADcontrol(partbound_threads, THREAD_JOIN);
-#endif
   for(i = 0; i<npartbounds_cpp; i++){
     cpp_boundsdata *boundi;
 
