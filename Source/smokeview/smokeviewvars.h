@@ -1776,13 +1776,8 @@ SVEXTERN smv_case global_scase = {.tourcoll = {.ntourinfo = 0,
 parse_options parse_opts = {
     .smoke3d_only = 0,
     .setup_only = 0,
-#ifdef pp_FAST
     .fast_startup = 1,
     .lookfor_compressed_files = 0,
-#else
-    .fast_startup = 0,
-    .lookfor_compressed_files = 1,
-#endif
     .handle_slice_files = 1
 };
 #else

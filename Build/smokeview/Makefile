@@ -53,7 +53,7 @@ csrc = callbacks.c camera.c color2rgb.c readimage.c readgeom.c readobject.c read
        IOpart.c IOplot2d.c IOplot3d.c IOscript.c IOshooter.c IOslice.c IOsmoke.c IOtour.c IOvolsmoke.c \
        IOwui.c IOzone.c IOframe.c isobox.c main.c md5.c menus.c output.c readsmv.c renderhtml.c        \
        renderimage.c scontour2d.c sha1.c sha256.c shaders.c showscene.c skybox.c smokestream.c         \
-       smokeview.c smv_geometry.c startup.c fopen.c stdio_buffer.c stdio_m.c string_util.c threader.c  \
+       smokeview.c smv_geometry.c startup.c stdio_buffer.c stdio_m.c string_util.c threader.c  \
        translate.c unit.c update.c viewports.c colortable.c command_args.c
 
 cppsrc = glui_bounds.cpp  glui_clip.cpp glui_colorbar.cpp glui_display.cpp glui_geometry.cpp glui_motion.cpp \

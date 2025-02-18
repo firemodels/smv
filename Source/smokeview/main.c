@@ -11,7 +11,6 @@
 #include "string_util.h"
 #include "smokeviewvars.h"
 #include "command_args.h"
-#include "fopen.h"
 #include "IOscript.h"
 #include "IOvolsmoke.h"
 
@@ -827,9 +826,6 @@ int main(int argc, char **argv){
   // to use the lua interpreter we ignore the code below and exit once the lua
   // run is complete.
   return return_code;
-#endif
-#ifdef pp_OPEN_TEST
-  InitOpenTest();
 #endif
   SetStdOut(stdout);
   initMALLOC();

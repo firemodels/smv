@@ -36,8 +36,6 @@
 #include "string_util.h"
 #include "file_util.h"
 #include "threader.h"
-#include "fopen.h"
-
 
 FILE *alt_stdout=NULL;
 
@@ -732,12 +730,6 @@ bufferdata *File2Buffer(char *file, bufferdata *bufferinfo,  FILE_SIZE *nreadptr
   FILE *stream;
 #ifdef WIN32
   stream = _fsopen(file, "rb", _SH_DENYNO);
-#ifdef pp_OPEN_TEST
-  if(stream != NULL){
-    AddOpenFile(file, stream, __FILE__, __LINE__);
-    open_files++;
-  }
-#endif
 #else
   stream = fopen(file, "rb");
 #endif
@@ -837,12 +829,6 @@ FILE *fopen_indir(char *dir, char *file, char *mode){
   if(dir==NULL||strlen(dir)==0){
 #ifdef WIN32
     stream = _fsopen(file, mode, _SH_DENYNO);
-#ifdef pp_OPEN_TEST
-    if(stream != NULL){
-      AddOpenFile(file, stream, __FILE__, __LINE__);
-      open_files++;
-    }
-#endif
 #else
     stream = fopen(file,mode);
 #endif
@@ -858,12 +844,6 @@ FILE *fopen_indir(char *dir, char *file, char *mode){
     strcat(filebuffer,file);
 #ifdef WIN32
     stream = _fsopen(filebuffer, mode, _SH_DENYNO);
-#ifdef pp_OPEN_TEST
-    if(stream != NULL){
-      AddOpenFile(filebuffer, stream, __FILE__, __LINE__);
-      open_files++;
-    }
-#endif
 #else
     stream = fopen(filebuffer, mode);
 #endif
@@ -887,12 +867,6 @@ FILE *fopen_2dir(char *file, char *mode, char *scratch_dir){
   if(file == NULL)return NULL;
 #ifdef WIN32
   stream = _fsopen(file,mode,_SH_DENYNO);
-#ifdef pp_OPEN_TEST
-  if(stream != NULL){
-    AddOpenFile(file, stream, __FILE__, __LINE__);
-    open_files++;
-  }
-#endif
 #else
   stream = fopen(file,mode);
 #endif

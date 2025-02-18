@@ -6,7 +6,6 @@
 //#define pp_FRAME           // turn on frame code
 //#define pp_SHOW_UPDATE      // show what is being updated in the UpdateShowScene routine
 //#define pp_LUA            // turn on LUA option
-#define pp_FAST             // set fast startup by default
 #define pp_GPU              // support the GPU
 #define pp_THREAD           // turn on multi-threading
 
@@ -16,7 +15,6 @@
 #define pp_ISOFRAME      // turn on frame code for isosurfaces
 #define pp_SLICEFRAME    // turn on frame code for slices
 #define pp_PARTFRAME     // turn on frame code for particles
-//#define pp_OPEN_TEST     // count number of file opens and closes
 //#define pp_FRAME_DEBUG   // frame timing test
 //#define pp_FRAME_DEBUG2  // output frame times
 #endif
