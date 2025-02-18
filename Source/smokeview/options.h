@@ -16,7 +16,6 @@
 #define pp_ISOFRAME      // turn on frame code for isosurfaces
 #define pp_SLICEFRAME    // turn on frame code for slices
 #define pp_PARTFRAME     // turn on frame code for particles
-//#define pp_OPEN_TEST     // count number of file opens and closes
 //#define pp_FRAME_DEBUG   // frame timing test
 //#define pp_FRAME_DEBUG2  // output frame times
 #endif

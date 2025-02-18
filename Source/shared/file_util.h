@@ -1,6 +1,5 @@
 #ifndef FILE_UTIL_H_DEFINED
 #define FILE_UTIL_H_DEFINED
-#include "fopen.h"
 
 #ifdef IN_FILE_UTIL
 int show_timings = 0;
