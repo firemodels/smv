@@ -25,9 +25,7 @@ GLUI_Listbox *LIST_surfs=NULL;
 GLUI_Spinner *SPINNER_refresh_rate=NULL;
 #endif
 
-#ifdef pp_SKY
 GLUI_Spinner *SPINNER_sky_diam = NULL;
-#endif
 
 GLUI_Spinner *SPINNER_LB_tick_xbeg=NULL;
 GLUI_Spinner *SPINNER_LB_tick_ybeg=NULL;
@@ -142,6 +140,8 @@ GLUI_Checkbox *CHECKBOX_labels_fds_title = NULL;
 GLUI_Checkbox *CHECKBOX_texture_showall = NULL;
 GLUI_Checkbox *CHECKBOX_texture_hideall = NULL;
 GLUI_Checkbox *CHECKBOX_show_geom_boundingbox = NULL;
+GLUI_Checkbox *CHECKBOX_visSkybox = NULL;
+GLUI_Checkbox *CHECKBOX_visSkysphere = NULL;
 
 GLUI_Rollout *ROLLOUT_LB_tick0 = NULL;
 GLUI_Rollout *ROLLOUT_font=NULL;
@@ -226,10 +226,8 @@ GLUI_Button *BUTTON_label_4=NULL;
 #define LB_TICK_XYZ 12
 #define LB_SHOW_TICK 13
 
-#ifdef pp_SKY
-#define SKY_DIAM 0
-#define SKY_VIS  1
-#endif
+#define SKY_BOX     0
+#define SKY_SPHERE  1
 
 #define LABELS_label           0
 //#define LABELS_vcolorbar      34  movied to smokeviewdefs.h
@@ -736,19 +734,40 @@ extern "C" void GLUITextureCB(int var){
   }
 }
 
-#ifdef pp_SKY
 /* ------------------ GLUISkyCB ------------------------ */
 
 void GLUISkyCB(int var){
+  float farclip_before;
+
+  farclip_before = farclip;
+  if(visSkybox == 1 || visSkysphere == 1){
+    farclip = MAX(farclip_save, sky_diam);
+  }
+  else{
+    farclip = farclip_save;
+  }
+  if(farclip != farclip_before){
+    GLUISceneMotionCB(NEARFARCLIP);
+    GLUIUpdateFarclip();
+  }
+
   switch (var){
-    case SKY_DIAM:
+    case SKY_BOX:
       if(sky_diam<1.0){
         sky_diam = 1.0;
         if(SPINNER_sky_diam!=NULL)SPINNER_sky_diam->set_float_val(sky_diam);
       }
+      if(visSkybox==1&&visSkysphere==1){
+        visSkysphere = 0;
+        CHECKBOX_visSkysphere->set_int_val(0);
+      }
       GetBoxSkyCorners();
       break;
-    case SKY_VIS:
+    case SKY_SPHERE:
+      if(visSkybox==1&&visSkysphere==1){
+        visSkybox = 0;
+        CHECKBOX_visSkybox->set_int_val(0);
+      }
       GetBoxSkyCorners();
       break;
     default:
@@ -756,7 +775,6 @@ void GLUISkyCB(int var){
       break;
   }
 }
-#endif
 
 /* ------------------ GLUIDisplaySetup ------------------------ */
 
@@ -792,10 +810,9 @@ extern "C" void GLUIDisplaySetup(int main_window){
 #ifdef pp_memstatus
   CHECKBOX_labels_availmemory = glui_labels->add_checkbox_to_panel(PANEL_gen1, _("Memory load"), &visAvailmemory, LABELS_label, GLUILabelsCB);
 #endif
-#ifdef pp_SKY
-  glui_labels->add_checkbox_to_panel(PANEL_gen1, _("show sky"), &visSky, SKY_VIS, GLUISkyCB);
-  SPINNER_sky_diam = glui_labels->add_spinner_to_panel(PANEL_gen1, _("sky diameter"), GLUI_SPINNER_FLOAT, &sky_diam, SKY_DIAM, GLUISkyCB);
-#endif
+  CHECKBOX_visSkybox    = glui_labels->add_checkbox_to_panel(PANEL_gen1, _("show sky box"),    &visSkybox,    SKY_BOX,    GLUISkyCB);
+  CHECKBOX_visSkysphere = glui_labels->add_checkbox_to_panel(PANEL_gen1, _("show sky sphere"), &visSkysphere, SKY_SPHERE, GLUISkyCB);
+  SPINNER_sky_diam = glui_labels->add_spinner_to_panel(PANEL_gen1, _("sky diameter"), GLUI_SPINNER_FLOAT, &sky_diam, SKY_BOX, GLUISkyCB);
 
 
   glui_labels->add_column_to_panel(PANEL_gen1, false);

@@ -572,10 +572,6 @@ SVEXTERN float smoke_test_target_color[4];
 SVEXTERN float SVDECL(smoke_test_range,1.0), SVDECL(smoke_test_opacity,0.5);
 SVEXTERN int SVDECL(smoke_test_nslices,3);
 
-#ifdef pp_SKY
-SVEXTERN int SVDECL(visSky, 0);
-SVEXTERN float box_sky_corners[8][3];
-#endif
 SVEXTERN float box_corners[8][3], box_geom_corners[8][3];
 SVEXTERN int SVDECL(have_box_geom_corners, 0);
 SVEXTERN float boxmin_global[3], boxmax_global[3], max_cell_length;
@@ -2023,9 +2019,7 @@ SVEXTERN int SVDECL(show_avatar,1);
 SVEXTERN int SVDECL(tourlocus_type,0);
 SVEXTERN int SVDECL(glui_avatar_index,0);
 SVEXTERN int SVDECL(device_sphere_segments,6);
-#ifdef pp_SKY
 SVEXTERN int SVDECL(nlat_hsphere, 20), SVDECL(nlong_hsphere, 40);
-#endif
 SVEXTERN int ntexturestack;
 
 SVEXTERN float SVDECL(fire_opacity_factor,3.0),SVDECL(mass_extinct,8700.0);
@@ -2066,11 +2060,14 @@ SVEXTERN int surface_indices_bak[7];
 SVEXTERN int SVDECL(wall_case,0);
 SVEXTERN int ntotalfaces;
 SVEXTERN texturedata SVDECL(*textureinfo,NULL), SVDECL(*terrain_textures,NULL);
-#ifdef pp_SKY
+
+SVEXTERN int SVDECL(visSkysphere, 0), SVDECL(visSkybox, 1);
+SVEXTERN float box_sky_corners[8][3];
+
 SVEXTERN texturedata SVDECL(*sky_texture, NULL);
 SVEXTERN int SVDECL(nsky_texture, 0);
 SVEXTERN float SVDECL(sky_diam, 4.0);
-#endif
+
 SVEXTERN GLuint texture_colorbar_id, texture_slice_colorbar_id, texture_patch_colorbar_id, texture_plot3d_colorbar_id, texture_iso_colorbar_id, terrain_colorbar_id;
 SVEXTERN GLuint volsmoke_colormap_id,slice3d_colormap_id,slicesmoke_colormap_id;
 SVEXTERN int SVDECL(volsmoke_colormap_id_defined,-1);
@@ -2083,7 +2080,7 @@ SVEXTERN float mscale[3];
 #endif
 SVEXTERN float xclip_min, yclip_min, zclip_min;
 SVEXTERN float xclip_max, yclip_max, zclip_max;
-SVEXTERN float SVDECL(nearclip, 0.001), SVDECL(farclip, 3.0);
+SVEXTERN float SVDECL(nearclip, 0.001), SVDECL(farclip, 3.0), SVDECL(farclip_save, 3.0);
 SVEXTERN int SVDECL(updateclipvals, 0);
 SVEXTERN int SVDECL(updateUpdateFrameRateMenu,0);
 SVEXTERN int ntextures_loaded_used, SVDECL(iterrain_textures,0);

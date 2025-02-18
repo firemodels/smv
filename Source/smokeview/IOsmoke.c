@@ -4742,15 +4742,7 @@ void MergeSmoke3DColors(smoke3ddata *smoke3dset){
             alpha_smoke_local = smoke3di->fire_alpha;
           }
           else{
-#ifdef pp_FIREALPHA_CORRECTION
             alpha_smoke_local = CLAMP(smokecolor_data[j], 0, 255);
-#else
-            float opacity_multiplier, fcolor;
-
-            fcolor = (float)firecolor_data[j]/255.0;
-            opacity_multiplier = 1.0 + (emission_factor-1.0)*fcolor;
-            alpha_smoke_local = CLAMP(smokecolor_data[j] * opacity_multiplier, 0, 255);
-#endif
           }
         }
         else{

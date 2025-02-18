@@ -85,7 +85,11 @@ EXTERNCPP void GLUIUpdateGeometryControls(void);
 EXTERNCPP void GLUIUpdateHVACVarLists(void);
 EXTERNCPP void GetGeomZBounds(float *zmin, float *zmax);
 
-//*** glui_objects.cpp headers
+//*** glui_motion.cpp headers
+
+EXTERNCPP void GLUIUpdateFarclip(void);
+  
+  //*** glui_objects.cpp headers
 
 EXTERNCPP void GLUIDeviceCB(int val);
 EXTERNCPP void GLUIDeviceSetup(int main_window);
@@ -725,9 +729,7 @@ EXTERNCPP void ScaleFont3D(void);
 
 EXTERNCPP void *CheckFiles(void *arg);
 EXTERNCPP void *Compress(void *arg);
-#ifdef pp_SKY
 EXTERNCPP void GetBoxSkyCorners(void);
-#endif
 EXTERNCPP void GetElevAz(float *xyznorm,float *dtheta, float *rotate_axis, float *dpsi);
 EXTERNCPP void GetSliceParmInfo(sliceparmdata *sp);
 EXTERNCPP int GetSmoke3DType(smv_case *scase, const char *label);

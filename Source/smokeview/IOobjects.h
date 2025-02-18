@@ -37,9 +37,7 @@ EXTERNCPP void RGBTest(void);
 EXTERNCPP void SetupZoneDevs(void);
 EXTERNCPP void UpdateColorDevices(void);
 EXTERNCPP void UpdateObjectUsed(void);
-#ifdef pp_SKY
 EXTERNCPP float *InitSphere2(int nlat, int nlong);
 EXTERNCPP void DrawHalfSphere(void);
-#endif
 
 #endif

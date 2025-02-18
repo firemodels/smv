@@ -19,9 +19,7 @@
 #include "readgeom.h"
 
 static float *cos_long = NULL, *sin_long = NULL, *cos_lat = NULL, *sin_lat = NULL;
-#ifdef pp_SKY
 static float *sphere_coords = NULL;
-#endif
 static float specular[4] = {0.4,0.4,0.4,1.0};
 unsigned char *rgbimage = NULL;
 int rgbsize = 0;
@@ -1555,7 +1553,6 @@ void DrawHSphere(float diameter, unsigned char *rgbcolor){
   glPopMatrix();
 }
 
-#ifdef pp_SKY
 /* ----------------------- DrawHalfSphere ----------------------------- */
 
 void DrawHalfSphere(void){
@@ -1579,6 +1576,9 @@ void DrawHalfSphere(void){
   glTranslatef(-global_scase.xbar0, -global_scase.ybar0, -global_scase.zbar0);
   glTranslatef(dxFDS/2.0,dyFDS/2.0,0.0);
   glScalef(diameter/2.0, diameter/2.0, diameter/2.0);
+  if(mscale[0]>0.0&&mscale[1]>0.0&&mscale[2]>0.0){
+    glScalef(1.0/mscale[0], 1.0/mscale[1], 1.0/mscale[2]);
+  }
 
   int use_sky;
 
@@ -1592,7 +1592,31 @@ void DrawHalfSphere(void){
 
   glBegin(GL_QUADS);
   if(use_sky == 0)glColor3f(0.0, 0.0, 1.0);
+  int nlats;
+
+  nlats = nlat_hsphere - 1 - nlat_hsphere / 2;
   for(j = nlat_hsphere/2; j < nlat_hsphere; j++){
+    float r[2], g[2], b[2];
+    float tj, tjp1;
+
+    tj   = (float)(j-nlat_hsphere/2)/(float)(nlats+1);
+    tjp1 = (float)(j+1-nlat_hsphere/2)/(float)(nlats+1);
+
+    if(use_sky == 0){
+      float f1, f2;
+
+      f1 = (float)(j - nlat_hsphere / 2) / (float)nlats;
+      f2 = 1.0 - f1;
+      r[0] = (f1 * 32.0 + f2 * 160.0) / 256.0;
+      g[0] = r[0];
+      b[0] = 1.0;
+
+      f1 = (float)(j+1 - nlat_hsphere / 2) / (float)nlats;
+      f2 = 1.0 - f1;
+      r[1] = (f1 * 32.0 + f2 * 160.0) / 256.0;
+      g[1] = r[1];
+      b[1] = 1.0;
+    }
     for(i = 0; i < nlong_hsphere; i++){
       float x[4], y[4], z[4];
       int ip1;
@@ -1619,16 +1643,16 @@ void DrawHalfSphere(void){
         float tx[4], ty[4];
 
         tx[0] = (float)i/(float)nlong_hsphere;
-        ty[0] = (float)j/(float)nlat_hsphere;
+        ty[0] = tj;
 
         tx[1] = (float)(ip1)/(float)nlong_hsphere;
-        ty[1] = (float)j/(float)nlat_hsphere;
+        ty[1] = tj;
 
         tx[2] = (float)(ip1)/(float)nlong_hsphere;
-        ty[2] = (float)(j + 1)/(float)nlat_hsphere;
+        ty[2] = tjp1;
 
         tx[3] = (float)i/(float)nlong_hsphere;
-        ty[3] = (float)(j + 1)/(float)nlat_hsphere;
+        ty[3] = tjp1;
 
         glNormal3f(x[0], y[0], z[0]);
         glTexCoord2f(tx[0],ty[0]);
@@ -1663,27 +1687,32 @@ void DrawHalfSphere(void){
         glVertex3f(x[1], y[1], z[1]);
       }
       else{
+        glColor3f(r[0], g[0], b[0]);
         glNormal3f(x[0], y[0], z[0]);
         glVertex3f(x[0], y[0], z[0]);
 
         glNormal3f(x[1], y[1], z[1]);
         glVertex3f(x[1], y[1], z[1]);
 
+        glColor3f(r[1], g[1], b[1]);
         glNormal3f(x[2], y[2], z[2]);
         glVertex3f(x[2], y[2], z[2]);
 
         glNormal3f(x[3], y[3], z[3]);
         glVertex3f(x[3], y[3], z[3]);
 
+        glColor3f(r[0], g[0], b[0]);
         glNormal3f(-x[0], -y[0], -z[0]);
         glVertex3f(x[0], y[0], z[0]);
 
+        glColor3f(r[1], g[1], b[1]);
         glNormal3f(-x[3], -y[3], -z[3]);
         glVertex3f(x[3], y[3], z[3]);
 
         glNormal3f(-x[2], -y[2], -z[2]);
         glVertex3f(x[2], y[2], z[2]);
 
+        glColor3f(r[0], g[0], b[0]);
         glNormal3f(-x[1], -y[1], -z[1]);
         glVertex3f(x[1], y[1], z[1]);
       }
@@ -1695,7 +1724,6 @@ void DrawHalfSphere(void){
   }
   glPopMatrix();
 }
-#endif
 
 /* ----------------------- DrawPoint ----------------------------- */
 
@@ -3323,7 +3351,6 @@ void InitSphere(int nlat, int nlong){
   sin_long[nlong]=sin_long[0];
 }
 
-#ifdef pp_SKY
 /* ----------------------- InitSphere2 ----------------------------- */
 
 float *InitSphere2(int nlat, int nlong){
@@ -3365,7 +3392,6 @@ float *InitSphere2(int nlat, int nlong){
 
   return sphere;
 }
-#endif
 
 /* ----------------------- GetGlobalDeviceBounds ----------------------------- */
 
