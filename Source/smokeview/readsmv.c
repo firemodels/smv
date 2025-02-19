@@ -7204,7 +7204,7 @@ void GetSkyBoxTextures(void){
   if(skyboxinfo != NULL)return;
   for(i = 0; i < 6; i++){
     char buffer[256];
-    char *sides[6] = {"_posz.jpg", "_posx.jpg", "_negz.jpg", "_negx.jpg", "_negy.jpg", "_posy.jpg"};
+    char *sides[6] = {"_ymax.jpg", "_xmin.jpg", "_ymin.jpg", "_xmax.jpg", "_zmin.jpg", "_zmax.jpg"};
 
     strcpy(buffer, global_scase.fdsprefix);
     strcat(buffer, sides[i]);
@@ -7218,8 +7218,8 @@ void GetSkyBoxTextures(void){
   NewMemory((void **)&skyboxinfo, nskyboxinfo * sizeof(skyboxdata));
   for(i = 0; i < 6; i++){
     char buffer[256];
-    char *sides[6] = {"_posz.jpg", "_posx.jpg", "_negz.jpg", "_negx.jpg", "_negy.jpg", "_posy.jpg"};
-    
+    char *sides[6] = {"_ymax.jpg", "_xmin.jpg", "_ymin.jpg", "_xmax.jpg", "_zmin.jpg", "_zmax.jpg"};
+
     strcpy(buffer, global_scase.fdsprefix);
     strcat(buffer, sides[i]);
     LoadSkyTexture(buffer, skyboxinfo->face + i);
