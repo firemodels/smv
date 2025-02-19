@@ -7213,6 +7213,7 @@ void GetSkyBoxTextures(void){
       break;
     }
   }
+  if(have_textures == 0)return;
   nskyboxinfo = 1;
   NewMemory((void **)&skyboxinfo, nskyboxinfo * sizeof(skyboxdata));
   for(i = 0; i < 6; i++){
