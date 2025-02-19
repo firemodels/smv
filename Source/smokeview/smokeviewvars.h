@@ -2050,7 +2050,7 @@ SVEXTERN int SVDECL(wall_case,0);
 SVEXTERN int ntotalfaces;
 SVEXTERN texturedata SVDECL(*textureinfo,NULL), SVDECL(*terrain_textures,NULL);
 
-SVEXTERN int SVDECL(visSkysphere, 0), SVDECL(visSkybox, 1);
+SVEXTERN int SVDECL(visSkysphere, 0), SVDECL(visSkybox, 1), SVDECL(visSkySpheretexture, 1);
 SVEXTERN float box_sky_corners[8][3];
 
 SVEXTERN texturedata SVDECL(*sky_texture, NULL);
