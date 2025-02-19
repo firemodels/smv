@@ -182,6 +182,7 @@ GLUI_Panel *PANEL_linewidth = NULL;
 GLUI_Panel *PANEL_offset = NULL;
 GLUI_Panel *PANEL_surfs = NULL;
 GLUI_Panel *PANEL_texture_display = NULL;
+GLUI_Panel *PANEL_sky = NULL;
 
 GLUI_RadioGroup *RADIO_timebar_overlap = NULL;
 GLUI_RadioGroup *RADIO_fontsize = NULL;
@@ -766,7 +767,7 @@ void GLUISkyCB(int var){
     case SKY_SPHERE:
       if(visSkybox==1&&visSkysphere==1){
         visSkybox = 0;
-        CHECKBOX_visSkybox->set_int_val(0);
+        if(CHECKBOX_visSkybox!=NULL)CHECKBOX_visSkybox->set_int_val(0);
       }
       GetBoxSkyCorners();
       break;
@@ -781,23 +782,23 @@ void GLUISkyCB(int var){
 extern "C" void GLUIDisplaySetup(int main_window){
   labeldata *gl;
 
-  if(glui_labels!=NULL){
+  if(glui_labels != NULL){
     glui_labels->close();
-    glui_labels=NULL;
+    glui_labels = NULL;
   }
-  glui_labels = GLUI_Master.create_glui("Display",0,dialogX0,dialogY0);
+  glui_labels = GLUI_Master.create_glui("Display", 0, dialogX0, dialogY0);
   glui_labels->hide();
 
   // -------------- General1 Settings -------------------
 
-  ROLLOUT_general1 = glui_labels->add_rollout(_("Labels/Titles/Bounding box"),true, GENERAL_ROLLOUT1, DisplayRolloutCB);
+  ROLLOUT_general1 = glui_labels->add_rollout(_("Labels/Titles/Bounding box"), true, GENERAL_ROLLOUT1, DisplayRolloutCB);
   TOGGLE_ROLLOUT(displayprocinfo, ndisplayprocinfo, ROLLOUT_general1, GENERAL_ROLLOUT1, glui_labels);
 
-  PANEL_gen1=glui_labels->add_panel_to_panel(ROLLOUT_general1,"",GLUI_PANEL_NONE);
+  PANEL_gen1 = glui_labels->add_panel_to_panel(ROLLOUT_general1, "", GLUI_PANEL_NONE);
 
-  if(global_scase.slicecoll.nsliceinfo>0)CHECKBOX_labels_average = glui_labels->add_checkbox_to_panel(PANEL_gen1, _("Average"), &vis_slice_average, LABELS_label, GLUILabelsCB);
+  if(global_scase.slicecoll.nsliceinfo > 0)CHECKBOX_labels_average = glui_labels->add_checkbox_to_panel(PANEL_gen1, _("Average"), &vis_slice_average, LABELS_label, GLUILabelsCB);
   CHECKBOX_labels_axis = glui_labels->add_checkbox_to_panel(PANEL_gen1, _("Axis"), &visaxislabels, LABELS_label, GLUILabelsCB);
-  CHECKBOX_visColorbarVertical   = glui_labels->add_checkbox_to_panel(PANEL_gen1, _("Colorbar(vertical)"),   &visColorbarVertical,   LABELS_vcolorbar, GLUILabelsCB);
+  CHECKBOX_visColorbarVertical = glui_labels->add_checkbox_to_panel(PANEL_gen1, _("Colorbar(vertical)"), &visColorbarVertical, LABELS_vcolorbar, GLUILabelsCB);
   CHECKBOX_visColorbarHorizontal = glui_labels->add_checkbox_to_panel(PANEL_gen1, _("Colorbar(horizontal)"), &visColorbarHorizontal, LABELS_hcolorbar, GLUILabelsCB);
   CHECKBOX_labels_timebar = glui_labels->add_checkbox_to_panel(PANEL_gen1, _("Timebar"), &visTimebar, LABELS_label, GLUILabelsCB);
   CHECKBOX_labels_framelabel = glui_labels->add_checkbox_to_panel(PANEL_gen1, _("Frame"), &visFramelabel, LABELS_label, GLUILabelsCB);
@@ -810,9 +811,16 @@ extern "C" void GLUIDisplaySetup(int main_window){
 #ifdef pp_memstatus
   CHECKBOX_labels_availmemory = glui_labels->add_checkbox_to_panel(PANEL_gen1, _("Memory load"), &visAvailmemory, LABELS_label, GLUILabelsCB);
 #endif
-  CHECKBOX_visSkybox    = glui_labels->add_checkbox_to_panel(PANEL_gen1, _("show sky box"),    &visSkybox,    SKY_BOX,    GLUISkyCB);
-  CHECKBOX_visSkysphere = glui_labels->add_checkbox_to_panel(PANEL_gen1, _("show sky sphere"), &visSkysphere, SKY_SPHERE, GLUISkyCB);
-  SPINNER_sky_diam = glui_labels->add_spinner_to_panel(PANEL_gen1, _("sky diameter"), GLUI_SPINNER_FLOAT, &sky_diam, SKY_BOX, GLUISkyCB);
+
+  PANEL_sky = glui_labels->add_panel_to_panel(PANEL_gen1, "Sky");
+  if(skyboxinfo != NULL){
+    CHECKBOX_visSkybox = glui_labels->add_checkbox_to_panel(PANEL_sky, _("show sky box"), &visSkybox, SKY_BOX, GLUISkyCB);
+  }
+  CHECKBOX_visSkysphere = glui_labels->add_checkbox_to_panel(PANEL_sky, _("show sky sphere"), &visSkysphere, SKY_SPHERE, GLUISkyCB);
+  SPINNER_sky_diam = glui_labels->add_spinner_to_panel(PANEL_sky, _("sky diameter"), GLUI_SPINNER_FLOAT, &sky_diam, SKY_BOX, GLUISkyCB);
+  if(sky_texture != NULL){
+    glui_labels->add_checkbox_to_panel(PANEL_sky, _("show sky sphere texture"), &visSkySpheretexture, SKY_SPHERE, GLUISkyCB);
+  }
 
 
   glui_labels->add_column_to_panel(PANEL_gen1, false);

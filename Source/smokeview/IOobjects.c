@@ -1583,7 +1583,7 @@ void DrawHalfSphere(void){
   int use_sky;
 
   use_sky = 0;
-  if(nsky_texture > 0 && sky_texture != NULL && sky_texture->loaded == 1 && sky_texture->display == 1)use_sky = 1;
+  if(nsky_texture > 0 && sky_texture != NULL && sky_texture->loaded == 1 && sky_texture->display == 1&& visSkySpheretexture==1)use_sky = 1;
   if(use_sky == 1){
     glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
     glEnable(GL_TEXTURE_2D);
