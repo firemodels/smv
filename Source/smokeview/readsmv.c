@@ -7195,6 +7195,51 @@ void SetExternalVents(void){
   }
 }
 
+/* ------------------ GetSkyBox ------------------------ */
+
+void GetSkyBoxTextures(void){
+  int have_textures = 1;
+  int i;
+
+  if(skyboxinfo != NULL)return;
+  for(i = 0; i < 6; i++){
+    char buffer[256];
+    char *sides[6] = {"_posz.jpg", "_posx.jpg", "_negz.jpg", "_negx.jpg", "_negy.jpg", "_posy.jpg"};
+
+    strcpy(buffer, global_scase.fdsprefix);
+    strcat(buffer, sides[i]);
+    if(FileExistsOrig(buffer) == 0){
+      have_textures = 0;
+      break;
+    }
+  }
+  nskyboxinfo = 1;
+  NewMemory((void **)&skyboxinfo, nskyboxinfo * sizeof(skyboxdata));
+  for(i = 0; i < 6; i++){
+    char buffer[256];
+    char *sides[6] = {"_posz.jpg", "_posx.jpg", "_negz.jpg", "_negx.jpg", "_negy.jpg", "_posy.jpg"};
+    
+    strcpy(buffer, global_scase.fdsprefix);
+    strcat(buffer, sides[i]);
+    LoadSkyTexture(buffer, skyboxinfo->face + i);
+  }
+}
+
+/* ------------------ GetSkyImage ------------------------ */
+
+void GetSkyImageTexture(void){
+  char buffer[256];
+  
+  strcpy(buffer, global_scase.fdsprefix);
+  strcat(buffer, "_sky.jpg");
+  if(sky_texture != NULL || FileExistsOrig(buffer) == 0)return;
+  
+  nsky_texture = 1;
+  NewMemory((void **)&sky_texture, nsky_texture * sizeof(texturedata));
+  NewMemory((void **)&sky_texture->file, (strlen(buffer) + 1) * sizeof(char));
+  strcpy(sky_texture->file, buffer);
+}
+
 /* ------------------ ReadSMV_Parse ------------------------ */
 /// @brief Parse an SMV file into global variables. This should only be called
 /// after ReadSMV_Init to ensure that the appropriate variables are set.
@@ -11247,6 +11292,8 @@ int ReadSMV_Configure(){
 
   PRINTF("  wrapping up\n");
 
+  GetSkyBoxTextures();
+  GetSkyImageTexture();
   InitTextures(use_graphics);
 
   FREEMEMORY(camera_external);
@@ -12839,19 +12886,15 @@ int ReadIni2(const char *inifile, int localfile){
       continue;
     }
     if(MatchINI(buffer, "SKYBOX") == 1){
-      skyboxdata *skyi;
-
       FreeSkybox();
       nskyboxinfo = 1;
       NewMemory((void **)&skyboxinfo, nskyboxinfo*sizeof(skyboxdata));
-      skyi = skyboxinfo;
-
       for(i = 0; i<6; i++){
         char *skybox_texture;
 
         fgets(buffer, 255, stream);
         skybox_texture = TrimFrontBack(buffer);
-        LoadSkyTexture(skybox_texture, skyi->face + i);
+        LoadSkyTexture(skybox_texture, skyboxinfo->face + i);
       }
     }
     if(MatchINI(buffer, "C_PLOT3D")==1){
