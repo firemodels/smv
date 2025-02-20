@@ -14426,8 +14426,14 @@ int ReadIni2(const char *inifile, int localfile){
     }
     if(MatchINI(buffer, "SHOWSKYSPHERE") == 1){
       fgets(buffer, 255, stream);
-      sscanf(buffer, "%i", &visSkysphere);
+      sscanf(buffer, "%i %i %i %i %i %f", &visSkysphere, &visSkybox, &visSkyground, &visSkyboxoutline, &visSkySpheretexture, &sky_diam);
       ONEORZERO(visSkysphere);
+      ONEORZERO(visSkybox);
+      ONEORZERO(visSkyground);
+      ONEORZERO(visSkyboxoutline);
+      ONEORZERO(visSkySpheretexture);
+      GLUISkyCB(SKY_BOX);
+      GLUISkyCB(SKY_SPHERE);
       continue;
     }
     if(MatchINI(buffer, "SHOWSMOKEPART") == 1){
@@ -16859,7 +16865,7 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, "SHOWSMOKEPART\n");
   fprintf(fileout, " %i\n", visSmokePart);
   fprintf(fileout, "SHOWSKYSPHERE\n");
-  fprintf(fileout, " %i\n", visSkysphere);
+  fprintf(fileout, "%i %i %i %i %i %f\n", visSkysphere, visSkybox, visSkyground, visSkyboxoutline, visSkySpheretexture, sky_diam);
   fprintf(fileout, "SHOWSPRINKPART\n");
   fprintf(fileout, " %i\n", visSprinkPart);
   fprintf(fileout, "SHOWSTREAK\n");

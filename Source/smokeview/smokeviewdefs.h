@@ -187,6 +187,9 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 #define PRINT    1
 #define NO_PRINT 0
 
+#define SKY_BOX     0
+#define SKY_SPHERE  1
+
 #define TIMEBAR_OVERLAP_ALWAYS 0
 #define TIMEBAR_OVERLAP_NEVER  1
 #define TIMEBAR_OVERLAP_AUTO   2

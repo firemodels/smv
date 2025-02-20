@@ -2056,7 +2056,8 @@ SVEXTERN float box_sky_corners[8][3];
 SVEXTERN texturedata SVDECL(*sky_texture, NULL);
 SVEXTERN int SVDECL(nsky_texture, 0);
 SVEXTERN float SVDECL(sky_diam, 4.0);
-SVEXTERN int SVDECL(skybox_outline, 0);
+SVEXTERN int SVDECL(visSkyboxoutline, 0);
+SVEXTERN int SVDECL(visSkyground, 1);
 
 SVEXTERN GLuint texture_colorbar_id, texture_slice_colorbar_id, texture_patch_colorbar_id, texture_plot3d_colorbar_id, texture_iso_colorbar_id, terrain_colorbar_id;
 SVEXTERN GLuint volsmoke_colormap_id,slice3d_colormap_id,slicesmoke_colormap_id;

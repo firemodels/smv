@@ -7578,7 +7578,7 @@ void GeometryMenu(int value){
 
   switch(value){
   case SKY_OUTLINE:
-    skybox_outline = 1 - skybox_outline;
+    visSkyboxoutline = 1 - visSkyboxoutline;
     GLUIUpdateVisSkyboxOutline();
     break;
   case GEOM_Outline:
@@ -10213,8 +10213,8 @@ static int menu_count=0;
     global_scase.visFrame=0;
   }
   if(skyboxinfo!=NULL){
-    if(skybox_outline==1)glutAddMenuEntry(_("*Outline(skybox images)"), SKY_OUTLINE);
-    if(skybox_outline==0)glutAddMenuEntry(_("Outline(skybox images)"), SKY_OUTLINE);
+    if(visSkyboxoutline==1)glutAddMenuEntry(_("*Outline(skybox images)"), SKY_OUTLINE);
+    if(visSkyboxoutline==0)glutAddMenuEntry(_("Outline(skybox images)"), SKY_OUTLINE);
   }
   if(show_geom_boundingbox == SHOW_BOUNDING_BOX_MOUSE_DOWN)glutAddMenuEntry(_("*bounding box(mouse down)"), GEOM_BOUNDING_BOX_MOUSE_DOWN);
   if(show_geom_boundingbox != SHOW_BOUNDING_BOX_MOUSE_DOWN)glutAddMenuEntry(_("bounding box(mouse down)"), GEOM_BOUNDING_BOX_MOUSE_DOWN);
