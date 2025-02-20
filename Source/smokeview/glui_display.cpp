@@ -142,7 +142,8 @@ GLUI_Checkbox *CHECKBOX_texture_hideall = NULL;
 GLUI_Checkbox *CHECKBOX_show_geom_boundingbox = NULL;
 GLUI_Checkbox *CHECKBOX_visSkybox = NULL;
 GLUI_Checkbox *CHECKBOX_visSkysphere = NULL;
-GLUI_Checkbox *CHECKBOX_skybox_outline;
+GLUI_Checkbox *CHECKBOX_visSkyground = NULL;
+GLUI_Checkbox *CHECKBOX_visSkyboxoutline;
 
 GLUI_Rollout *ROLLOUT_LB_tick0 = NULL;
 GLUI_Rollout *ROLLOUT_font=NULL;
@@ -185,6 +186,8 @@ GLUI_Panel *PANEL_offset = NULL;
 GLUI_Panel *PANEL_surfs = NULL;
 GLUI_Panel *PANEL_texture_display = NULL;
 GLUI_Panel *PANEL_sky = NULL;
+GLUI_Panel *PANEL_sphere = NULL;
+GLUI_Panel *PANEL_box = NULL;
 
 GLUI_RadioGroup *RADIO_timebar_overlap = NULL;
 GLUI_RadioGroup *RADIO_fontsize = NULL;
@@ -228,9 +231,6 @@ GLUI_Button *BUTTON_label_4=NULL;
 #define LB_VISLABELS 11
 #define LB_TICK_XYZ 12
 #define LB_SHOW_TICK 13
-
-#define SKY_BOX     0
-#define SKY_SPHERE  1
 
 #define LABELS_label           0
 //#define LABELS_vcolorbar      34  movied to smokeviewdefs.h
@@ -299,7 +299,7 @@ int ndisplayprocinfo = 0;
 /* ------------------ GLUIUpdateVisSkyboxOutline ------------------------ */
 
 extern "C" void GLUIUpdateVisSkyboxOutline(void){
-  if(CHECKBOX_skybox_outline != NULL)CHECKBOX_skybox_outline->set_int_val(skybox_outline);
+  if(CHECKBOX_visSkyboxoutline != NULL)CHECKBOX_visSkyboxoutline->set_int_val(visSkyboxoutline);
 }
 
 /* ------------------ GLUIUpdateVisAxisLabels ------------------------ */
@@ -746,7 +746,7 @@ extern "C" void GLUITextureCB(int var){
 
 /* ------------------ GLUISkyCB ------------------------ */
 
-void GLUISkyCB(int var){
+extern "C" void GLUISkyCB(int var){
   float farclip_before;
 
   farclip_before = farclip;
@@ -1212,16 +1212,19 @@ extern "C" void GLUIDisplaySetup(int main_window){
 
   // -------------- Sky -------------------
 
-  ROLLOUT_sky = glui_labels->add_rollout("Sky",false,SKY_ROLLOUT,DisplayRolloutCB);
+  ROLLOUT_sky = glui_labels->add_rollout("Sky/ground",false,SKY_ROLLOUT,DisplayRolloutCB);
   TOGGLE_ROLLOUT(displayprocinfo, ndisplayprocinfo, ROLLOUT_sky, SKY_ROLLOUT, glui_labels);
   if(skyboxinfo != NULL){
-    CHECKBOX_visSkybox      = glui_labels->add_checkbox_to_panel(ROLLOUT_sky, _("show sky box"), &visSkybox, SKY_BOX, GLUISkyCB);
-    CHECKBOX_skybox_outline = glui_labels->add_checkbox_to_panel(ROLLOUT_sky, _("show sky box outlines"), &skybox_outline);
+    PANEL_box=glui_labels->add_panel_to_panel(ROLLOUT_sky,_("box"));
+    CHECKBOX_visSkybox      = glui_labels->add_checkbox_to_panel(PANEL_box, _("show"), &visSkybox, SKY_BOX, GLUISkyCB);
+    CHECKBOX_visSkyboxoutline = glui_labels->add_checkbox_to_panel(PANEL_box, _("show box outlines"), &visSkyboxoutline);
   }
-  CHECKBOX_visSkysphere = glui_labels->add_checkbox_to_panel(ROLLOUT_sky, _("show sky sphere"), &visSkysphere, SKY_SPHERE, GLUISkyCB);
-  SPINNER_sky_diam = glui_labels->add_spinner_to_panel(ROLLOUT_sky, _("sky diameter"), GLUI_SPINNER_FLOAT, &sky_diam, SKY_BOX, GLUISkyCB);
+  PANEL_sphere=glui_labels->add_panel_to_panel(ROLLOUT_sky,_("hemisphere"));
+  CHECKBOX_visSkysphere = glui_labels->add_checkbox_to_panel(PANEL_sphere, _("show"), &visSkysphere, SKY_SPHERE, GLUISkyCB);
+  CHECKBOX_visSkyground = glui_labels->add_checkbox_to_panel(PANEL_sphere, _("show ground"), &visSkyground, SKY_SPHERE, GLUISkyCB);
+  SPINNER_sky_diam = glui_labels->add_spinner_to_panel(PANEL_sphere, _("diameter"), GLUI_SPINNER_FLOAT, &sky_diam, SKY_BOX, GLUISkyCB);
   if(sky_texture != NULL){
-    glui_labels->add_checkbox_to_panel(ROLLOUT_sky, _("show sky sphere texture"), &visSkySpheretexture, SKY_SPHERE, GLUISkyCB);
+    glui_labels->add_checkbox_to_panel(PANEL_sphere, _("show texture"), &visSkySpheretexture, SKY_SPHERE, GLUISkyCB);
   }
 
   // --------------

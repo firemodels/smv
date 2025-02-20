@@ -112,9 +112,6 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 #define CFACE_NORMALS_NO  0
 #define CFACE_NORMALS_YES 1
 
-#define SHOW_BOUNDING_BOX_NEVER      0
-#define SHOW_BOUNDING_BOX_MOUSE_DOWN 1
-
 #define ALL_FRAMES       -1
 
 #define COLORBAR_SHIFT_MIN          0.1
@@ -186,6 +183,9 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 
 #define PRINT    1
 #define NO_PRINT 0
+
+#define SKY_BOX     0
+#define SKY_SPHERE  1
 
 #define TIMEBAR_OVERLAP_ALWAYS 0
 #define TIMEBAR_OVERLAP_NEVER  1

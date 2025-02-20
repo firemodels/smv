@@ -174,7 +174,7 @@ void DrawSkybox(void){
   glDepthMask(GL_TRUE);
   glEnable(GL_BLEND);
 
-  if(skybox_outline == 1){
+  if(visSkyboxoutline == 1){
     glBegin(GL_LINES);
     glColor3fv(foregroundcolor);
     for(i = 0; i < 6; i++){

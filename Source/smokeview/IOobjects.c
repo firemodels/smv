@@ -1580,6 +1580,34 @@ void DrawHalfSphere(void){
     glScalef(1.0/mscale[0], 1.0/mscale[1], 1.0/mscale[2]);
   }
 
+  if(visSkyground == 1){
+    unsigned char forest_green[3]={87,108,67};
+
+    j = nlat_hsphere / 2;
+    glBegin(GL_TRIANGLES);
+    glColor3ubv(forest_green);
+    for(i = 0; i < nlong_hsphere; i++){
+      int ip1;
+      float x[2], y[2], z[2];
+
+      ip1 = i + 1;
+      x[0] = c_long[i] * c_lat[j];
+      y[0] = s_long[i] * c_lat[j];
+      z[0] = s_lat[j];
+
+      x[1] = c_long[ip1] * c_lat[j];
+      y[1] = s_long[ip1] * c_lat[j];
+      z[1] = s_lat[j];
+      glVertex3f(0.0,0.0,0.0);
+      glVertex3f(x[0], y[0], z[0]);
+      glVertex3f(x[1], y[1], z[1]);
+      glVertex3f(0.0, 0.0, 0.0);
+      glVertex3f(x[1], y[1], z[1]);
+      glVertex3f(x[0], y[0], z[0]);
+    }
+    glEnd();
+  }
+
   int use_sky;
 
   use_sky = 0;

@@ -405,11 +405,6 @@ char *ProcessCommandLine(CommandlineArgs *args){
     STRCAT(global_scase.paths.ffmpeg_command_filename,".sh");
 #endif
   }
-  if(global_scase.paths.stop_filename == NULL){
-    NewMemory((void **)&global_scase.paths.stop_filename, (unsigned int)(len_casename + strlen(".stop") + 1));
-    STRCPY(global_scase.paths.stop_filename, global_scase.fdsprefix);
-    STRCAT(global_scase.paths.stop_filename, ".stop");
-  }
   if(global_scase.paths.smvzip_filename == NULL){
     NewMemory((void **)&global_scase.paths.smvzip_filename, (unsigned int)(len_casename + strlen(".smvzip") + 1));
     STRCPY(global_scase.paths.smvzip_filename, global_scase.fdsprefix);
@@ -507,7 +502,7 @@ char *ProcessCommandLine(CommandlineArgs *args){
       PRINTF("stereo option activated\n");
     }
     if(args->big){
-      show_geom_boundingbox = SHOW_BOUNDING_BOX_MOUSE_DOWN;
+      show_geom_boundingbox = 1;
     }
     if(args->timings){
       show_timings = 1;
@@ -581,7 +576,7 @@ char *ProcessCommandLine(CommandlineArgs *args){
       verbose_output = 1;
     }
     if(args->outline){
-      show_geom_boundingbox = SHOW_BOUNDING_BOX_MOUSE_DOWN;
+      show_geom_boundingbox = 1;
     }
     if(args->make_movie){
       open_movie_dialog = 1;

@@ -199,7 +199,7 @@ SVEXTERN int SVDECL(frame360, 0);
 SVEXTERN int SVDECL(sliceval_ndigits, 0);
 SVEXTERN int SVDECL(rotate_center, 0);
 SVEXTERN int SVDECL(have_geom_bb, 0);
-SVEXTERN int SVDECL(show_geom_boundingbox, SHOW_BOUNDING_BOX_NEVER);
+SVEXTERN int SVDECL(show_geom_boundingbox, 0);
 SVEXTERN int SVDECL(have_obsts, 0);
 SVEXTERN int SVDECL(have_geometry_dialog, 0);
 SVEXTERN int SVDECL(chop_patch, 0);
@@ -2056,7 +2056,8 @@ SVEXTERN float box_sky_corners[8][3];
 SVEXTERN texturedata SVDECL(*sky_texture, NULL);
 SVEXTERN int SVDECL(nsky_texture, 0);
 SVEXTERN float SVDECL(sky_diam, 4.0);
-SVEXTERN int SVDECL(skybox_outline, 0);
+SVEXTERN int SVDECL(visSkyboxoutline, 0);
+SVEXTERN int SVDECL(visSkyground, 1);
 
 SVEXTERN GLuint texture_colorbar_id, texture_slice_colorbar_id, texture_patch_colorbar_id, texture_plot3d_colorbar_id, texture_iso_colorbar_id, terrain_colorbar_id;
 SVEXTERN GLuint volsmoke_colormap_id,slice3d_colormap_id,slicesmoke_colormap_id;
