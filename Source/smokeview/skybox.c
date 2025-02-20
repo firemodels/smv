@@ -173,4 +173,24 @@ void DrawSkybox(void){
   glEnable(GL_DEPTH_TEST);
   glDepthMask(GL_TRUE);
   glEnable(GL_BLEND);
+
+  if(skybox_outline == 1){
+    glBegin(GL_LINES);
+    glColor3fv(foregroundcolor);
+    for(i = 0; i < 6; i++){
+      float *xyz[4];
+
+      if(skyboxinfo->face[i].file == NULL)continue;
+      faceptr = faces + 4 * i;
+      xyz[0] = points + 3 * faceptr[0];
+      xyz[1] = points + 3 * faceptr[1];
+      xyz[2] = points + 3 * faceptr[2];
+      xyz[3] = points + 3 * faceptr[3];
+      glVertex3fv(xyz[0]); glVertex3fv(xyz[1]);
+      glVertex3fv(xyz[1]); glVertex3fv(xyz[2]);
+      glVertex3fv(xyz[2]); glVertex3fv(xyz[3]);
+      glVertex3fv(xyz[3]); glVertex3fv(xyz[0]);
+    }
+    glEnd();
+  }
 }

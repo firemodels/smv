@@ -51,6 +51,7 @@ EXTERNCPP void GLUIShowDisplay(int menu_id);
 EXTERNCPP void GLUISetLabelControls(void);
 EXTERNCPP void GLUIHideDisplay(void);
 EXTERNCPP void GLUILabelsCB(int value);
+EXTERNCPP void GLUIUpdateVisSkyboxOutline(void);
 
 //*** glui_shooter.cpp headers
 

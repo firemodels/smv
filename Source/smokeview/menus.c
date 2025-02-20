@@ -43,6 +43,7 @@ float     part_load_time;
 #define GEOM_ShowAll                 11
 #define GEOM_HideAll                 13
 #define GEOM_BOUNDING_BOX_MOUSE_DOWN  9
+#define SKY_OUTLINE                   4
 
 #define MENU_TERRAIN_SHOW_SURFACE      -1
 #define MENU_TERRAIN_SHOW_LINES        -2
@@ -7576,6 +7577,10 @@ int HaveBoundaryArrival(void){
 void GeometryMenu(int value){
 
   switch(value){
+  case SKY_OUTLINE:
+    skybox_outline = 1 - skybox_outline;
+    GLUIUpdateVisSkyboxOutline();
+    break;
   case GEOM_Outline:
     if(global_scase.isZoneFireModel==0)global_scase.visFrame=1-global_scase.visFrame;
     break;
@@ -10195,11 +10200,21 @@ static int menu_count=0;
   }
   GLUTADDSUBMENU(_("Grid"),gridslicemenu);
   if(global_scase.isZoneFireModel==0){
-    if(global_scase.visFrame==1)glutAddMenuEntry(_("*Outline"), GEOM_Outline);
-    if(global_scase.visFrame==0)glutAddMenuEntry(_("Outline"), GEOM_Outline);
+    if(skyboxinfo==NULL){
+      if(global_scase.visFrame==1)glutAddMenuEntry(_("*Outline"), GEOM_Outline);
+      if(global_scase.visFrame==0)glutAddMenuEntry(_("Outline"), GEOM_Outline);
+    }
+    else{
+      if(global_scase.visFrame==1)glutAddMenuEntry(_("*Outline(FDS scene)"), GEOM_Outline);
+      if(global_scase.visFrame==0)glutAddMenuEntry(_("Outline(FDS scene)"), GEOM_Outline);
+    }
   }
   else{
     global_scase.visFrame=0;
+  }
+  if(skyboxinfo!=NULL){
+    if(skybox_outline==1)glutAddMenuEntry(_("*Outline(skybox images)"), SKY_OUTLINE);
+    if(skybox_outline==0)glutAddMenuEntry(_("Outline(skybox images)"), SKY_OUTLINE);
   }
   if(show_geom_boundingbox == SHOW_BOUNDING_BOX_MOUSE_DOWN)glutAddMenuEntry(_("*bounding box(mouse down)"), GEOM_BOUNDING_BOX_MOUSE_DOWN);
   if(show_geom_boundingbox != SHOW_BOUNDING_BOX_MOUSE_DOWN)glutAddMenuEntry(_("bounding box(mouse down)"), GEOM_BOUNDING_BOX_MOUSE_DOWN);
