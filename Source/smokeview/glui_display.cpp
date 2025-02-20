@@ -142,6 +142,7 @@ GLUI_Checkbox *CHECKBOX_texture_hideall = NULL;
 GLUI_Checkbox *CHECKBOX_show_geom_boundingbox = NULL;
 GLUI_Checkbox *CHECKBOX_visSkybox = NULL;
 GLUI_Checkbox *CHECKBOX_visSkysphere = NULL;
+GLUI_Checkbox *CHECKBOX_skybox_outline;
 
 GLUI_Rollout *ROLLOUT_LB_tick0 = NULL;
 GLUI_Rollout *ROLLOUT_font=NULL;
@@ -294,6 +295,12 @@ GLUI_Button *BUTTON_label_4=NULL;
 
 procdata displayprocinfo[8];
 int ndisplayprocinfo = 0;
+
+/* ------------------ GLUIUpdateVisSkyboxOutline ------------------------ */
+
+extern "C" void GLUIUpdateVisSkyboxOutline(void){
+  if(CHECKBOX_skybox_outline != NULL)CHECKBOX_skybox_outline->set_int_val(skybox_outline);
+}
 
 /* ------------------ GLUIUpdateVisAxisLabels ------------------------ */
 
@@ -1208,7 +1215,8 @@ extern "C" void GLUIDisplaySetup(int main_window){
   ROLLOUT_sky = glui_labels->add_rollout("Sky",false,SKY_ROLLOUT,DisplayRolloutCB);
   TOGGLE_ROLLOUT(displayprocinfo, ndisplayprocinfo, ROLLOUT_sky, SKY_ROLLOUT, glui_labels);
   if(skyboxinfo != NULL){
-    CHECKBOX_visSkybox = glui_labels->add_checkbox_to_panel(ROLLOUT_sky, _("show sky box"), &visSkybox, SKY_BOX, GLUISkyCB);
+    CHECKBOX_visSkybox      = glui_labels->add_checkbox_to_panel(ROLLOUT_sky, _("show sky box"), &visSkybox, SKY_BOX, GLUISkyCB);
+    CHECKBOX_skybox_outline = glui_labels->add_checkbox_to_panel(ROLLOUT_sky, _("show sky box outlines"), &skybox_outline);
   }
   CHECKBOX_visSkysphere = glui_labels->add_checkbox_to_panel(ROLLOUT_sky, _("show sky sphere"), &visSkysphere, SKY_SPHERE, GLUISkyCB);
   SPINNER_sky_diam = glui_labels->add_spinner_to_panel(ROLLOUT_sky, _("sky diameter"), GLUI_SPINNER_FLOAT, &sky_diam, SKY_BOX, GLUISkyCB);
