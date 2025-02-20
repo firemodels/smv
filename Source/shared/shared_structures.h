@@ -1098,7 +1098,6 @@ typedef struct {
   char *event_filename;
   char *ffmpeg_command_filename;
   char *fed_filename;
-  char *stop_filename;
   char *smvzip_filename;
   char *sliceinfo_filename;
   char *deviceinfo_filename;

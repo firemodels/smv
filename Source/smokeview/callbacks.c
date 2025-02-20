@@ -3951,12 +3951,6 @@ void DoScript(void){
   script_render_flag=0;
   if(nscriptinfo>0&&current_script_command!=NULL&&(script_step==0||(script_step==1&&script_step_now==1))){
     script_step_now=0;
-#ifndef WIN32
-    if(FILE_EXISTS(global_scase.paths.stop_filename)==YES){
-      fprintf(stderr,"*** Warning: stop file found.  Remove before running smokeview script\n");
-      SMV_EXIT(0);
-    }
-#endif
     if(current_script_command>=scriptinfo){
       if(current_script_command->command==SCRIPT_VOLSMOKERENDERALL){
         if(current_script_command->exit==0){

@@ -405,11 +405,6 @@ char *ProcessCommandLine(CommandlineArgs *args){
     STRCAT(global_scase.paths.ffmpeg_command_filename,".sh");
 #endif
   }
-  if(global_scase.paths.stop_filename == NULL){
-    NewMemory((void **)&global_scase.paths.stop_filename, (unsigned int)(len_casename + strlen(".stop") + 1));
-    STRCPY(global_scase.paths.stop_filename, global_scase.fdsprefix);
-    STRCAT(global_scase.paths.stop_filename, ".stop");
-  }
   if(global_scase.paths.smvzip_filename == NULL){
     NewMemory((void **)&global_scase.paths.smvzip_filename, (unsigned int)(len_casename + strlen(".smvzip") + 1));
     STRCPY(global_scase.paths.smvzip_filename, global_scase.fdsprefix);
