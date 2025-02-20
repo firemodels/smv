@@ -112,9 +112,6 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 #define CFACE_NORMALS_NO  0
 #define CFACE_NORMALS_YES 1
 
-#define SHOW_BOUNDING_BOX_NEVER      0
-#define SHOW_BOUNDING_BOX_MOUSE_DOWN 1
-
 #define ALL_FRAMES       -1
 
 #define COLORBAR_SHIFT_MIN          0.1

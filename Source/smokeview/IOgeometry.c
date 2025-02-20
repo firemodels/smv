@@ -888,7 +888,7 @@ void DrawGeom(int flag, int timestate){
   int texture_state = OFF, texture_first=1;
 
   if(global_scase.auto_terrain==1)return;
-  if(geom_bounding_box_mousedown==SHOW_BOUNDING_BOX_MOUSE_DOWN){
+  if(geom_bounding_box_mousedown==1){
     if(flag==DRAW_OPAQUE&&timestate==GEOM_STATIC&&have_geom_triangles==1){
       DrawGeomBoundingBox(NULL);
     }
@@ -4635,7 +4635,7 @@ void DrawCGeom(int flag, geomdata *cgeom){
   geomdata *geomi;
 
   if(HaveTerrainTexture(NULL) == 1)return;
-  if(geom_bounding_box_mousedown==SHOW_BOUNDING_BOX_MOUSE_DOWN){
+  if(geom_bounding_box_mousedown==1){
     if(flag==DRAW_OPAQUE&&have_geom_triangles==1){
       DrawGeomBoundingBox(NULL);
     }

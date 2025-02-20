@@ -11336,7 +11336,7 @@ int ReadSMV_Configure(){
       break;
     }
   }
-  if(global_scase.ntotal_blockages > 250000)show_geom_boundingbox = SHOW_BOUNDING_BOX_MOUSE_DOWN;
+  if(global_scase.ntotal_blockages > 250000)show_geom_boundingbox = 1;
 
   if(checkfiles_threads != NULL){
     checkfiles_threads = THREADinit(&n_checkfiles_threads, &use_checkfiles_threads, CheckFiles);
@@ -12290,7 +12290,7 @@ int ReadIni2(const char *inifile, int localfile){
       sscanf(buffer, " %i %i %i %i", &dummy, &dummy, &dummy, &dummy);
       fgets(buffer, 255, stream);
       sscanf(buffer, " %f %f %i %i %i %i", &geom_vert_exag, &rdummy, &dummy, &dummy2, &show_geom_boundingbox, &show_geom_bndf );
-      if(show_geom_boundingbox !=SHOW_BOUNDING_BOX_MOUSE_DOWN)show_geom_boundingbox = SHOW_BOUNDING_BOX_NEVER;
+      if(show_geom_boundingbox !=1)show_geom_boundingbox = 0;
       continue;
     }
     if(MatchINI(buffer, "SHOWTRIANGLECOUNT") == 1){

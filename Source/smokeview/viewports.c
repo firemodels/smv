@@ -1234,7 +1234,7 @@ void ViewportTimebar(int quad, GLint screen_left, GLint screen_down){
     DrawHorizontalColorbars();
   }
 
-  if((visTimelabel == 1 || visFramelabel == 1 || vis_hrr_label == 1 || visTimebar == 1) && showtime==1 && geom_bounding_box_mousedown==0){
+  if((visTimelabel == 1 || visFramelabel == 1 || vis_hrr_label == 1 || visTimebar == 1) && showtime==1){
     if(visTimelabel==1){
       OutputText(VP_timebar.left,v_space, timelabel);
     }

@@ -1047,7 +1047,7 @@ void MouseCBWorker(int button, int state, int xm, int ym){
     return;
   }
 
-  if(show_geom_boundingbox==SHOW_BOUNDING_BOX_MOUSE_DOWN)geom_bounding_box_mousedown = 1;
+  if(show_geom_boundingbox==1)geom_bounding_box_mousedown = 1;
   mouse_down=1;
 
   // check for double click for translating/rotating 3D slice plane
@@ -1744,12 +1744,12 @@ void Keyboard(unsigned char key, int flag){
       }
       break;
     case 'B':
-      if(show_geom_boundingbox==SHOW_BOUNDING_BOX_MOUSE_DOWN){
-        show_geom_boundingbox = SHOW_BOUNDING_BOX_NEVER;
+      if(show_geom_boundingbox==1){
+        show_geom_boundingbox = 0;
         printf("show bounding box when mouse is down: off\n");
       }
       else{
-        show_geom_boundingbox = SHOW_BOUNDING_BOX_MOUSE_DOWN;
+        show_geom_boundingbox = 1;
         printf("show bounding box when mouse is down: on\n");
       }
       GLUIUpdateGeomBoundingBox();
