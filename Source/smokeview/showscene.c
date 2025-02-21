@@ -99,7 +99,11 @@ void ShowScene2(int mode){
 
     if(global_scase.ncvents>0 && visCircularVents != VENT_HIDE && showpatch==0){
       CLIP_GEOMETRY;
-      DrawCircVents(visCircularVents);
+      if(mouse_down==1&&show_geom_boundingbox==1){
+      }
+      else{
+        DrawCircVents(visCircularVents);
+      }
     }
 
     /* ++++++++++++++++++++++++ draw sensors/sprinklers/heat detectors +++++++++++++++++++++++++ */
