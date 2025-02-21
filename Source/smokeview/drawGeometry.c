@@ -49,6 +49,7 @@ void DrawCircVentsApproxSolid(int option){
       float xx2, yy2, zz2;
 
       cvi = meshi->cventinfo + j;
+      if(showpatch==1 && cvi->have_boundary_file == 1)continue;
 
       // check for visibility
 
@@ -209,6 +210,7 @@ void DrawCircVentsApproxOutline(int option){
       // check for visibility
 
       if(cvi->showtimelist!=NULL&&cvi->showtimelist[itimes]==0)continue;
+      if(showpatch==1 && cvi->have_boundary_file == 1)continue;
 
       glColor3fv(cvi->color);
       if(cvi->dir==UP_X||cvi->dir==UP_Y||cvi->dir==UP_Z){
@@ -380,6 +382,7 @@ void DrawCircVentsExactSolid(int option){
       // check for visibility
 
       if(cvi->showtimelist!=NULL&&cvi->showtimelist[itimes]==0)continue;
+      if(showpatch==1 && cvi->have_boundary_file == 1)continue;
 
       if(option==VENT_CIRCLE){
         x0 = cvi->origin[0];
@@ -492,6 +495,7 @@ void DrawCircVentsExactOutline(int option){
       // check for visibility
 
       if(cvi->showtimelist!=NULL&&cvi->showtimelist[itimes]==0)continue;
+      if(showpatch==1 && cvi->have_boundary_file == 1)continue;
 
       if(option==VENT_CIRCLE){
         x0 = cvi->origin[0];
@@ -934,6 +938,7 @@ int HaveCircularVents(void){
   }
   return 0;
 }
+
       /* ------------------ SetCVentDirs ------------------------ */
 
 void SetCVentDirs(void){

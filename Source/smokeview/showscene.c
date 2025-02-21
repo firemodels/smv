@@ -97,11 +97,9 @@ void ShowScene2(int mode){
 
     /* ++++++++++++++++++++++++ draw circular vents +++++++++++++++++++++++++ */
 
-    if(global_scase.ncvents>0 && visCircularVents != VENT_HIDE && showpatch==0){
+    if(global_scase.ncvents>0 && visCircularVents != VENT_HIDE){
       CLIP_GEOMETRY;
-      if(mouse_down==1&&show_geom_boundingbox==1){
-      }
-      else{
+      if(mouse_down==0 || show_geom_boundingbox==0){
         DrawCircVents(visCircularVents);
       }
     }

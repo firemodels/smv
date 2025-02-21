@@ -949,7 +949,7 @@ typedef struct _cventdata {
   int nshowtime, *showtimelist;
   float *showtime;
   unsigned char *showhide;
-  int useventcolor, hideboundary;
+  int useventcolor, hideboundary, have_boundary_file;
   float origin[3], radius;
   float *color;
   surfdata *surf[1];
