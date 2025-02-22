@@ -10569,7 +10569,7 @@ typedef struct {
         have_boundary_file=1;
 
         FGETS(buffer,255,stream);
-        sscanf(buffer,"%i %i %i %i %i %i %i %i %f %f %f",
+        sscanf(buffer,"%i %i %i %i %i %i %i %i %f %f %f %i",
           &cvi->imin,&cvi->imax,&cvi->jmin,&cvi->jmax,&cvi->kmin,&cvi->kmax,
           &ventindex,&venttype,s2_color,s2_color+1,s2_color+2,&have_boundary_file);
         cvi->have_boundary_file = have_boundary_file;
