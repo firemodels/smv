@@ -2748,6 +2748,7 @@ GLUI_Listbox *LIST_iso_colorbar = NULL;
 
 GLUI_Rollout *ROLLOUT_zone_bound=NULL;
 GLUI_Rollout *ROLLOUT_coloring=NULL;
+GLUI_Rollout *ROLLOUT_view_options = NULL;
 GLUI_Rollout *ROLLOUT_vismesh_blockages = NULL;
 GLUI_Rollout *ROLLOUT_vismesh_data = NULL;
 GLUI_Rollout *ROLLOUT_memcheck=NULL;
@@ -3053,11 +3054,16 @@ GLUI_RadioButton *RADIOBUTTON_zone_permax=NULL;
 #define HVACDUCT_ROLLOUT 8
 #define HVACNODE_ROLLOUT 9
 #define TIME_ROLLOUT     10
-#define MESHBLOCKAGE_ROLLOUT 11
-#define MESHDATA_ROLLOUT 12
+#define VIEWOPTIONS_ROLLOUT 11
 
-procdata  boundprocinfo[13];
+procdata  boundprocinfo[12];
 int      nboundprocinfo = 0;
+
+#define MESHBLOCKAGE_ROLLOUT 0
+#define MESHDATA_ROLLOUT 1
+
+procdata  viewprocinfo[2];
+int      nviewprocinfo = 0;
 
 //*** loadprocinfo entries
 #define LOAD_AUTO_ROLLOUT       0
@@ -3577,6 +3583,12 @@ void BoundRolloutCB(int var){
       GLUISliceBoundCB(FILETYPE_INDEX);
     }
   }
+}
+
+/* ------------------ ViewRolloutCB ------------------------ */
+
+void ViewRolloutCB(int var){
+  GLUIToggleRollout(viewprocinfo, nviewprocinfo, var);
 }
 
 /* ------------------ SubBoundRolloutCB ------------------------ */
@@ -5754,8 +5766,11 @@ hvacductboundsCPP.setup("hvac", ROLLOUT_hvacduct, hvacductbounds_cpp, nhvacductb
   MeshBoundCB(USEMESH_USE_XYZ_ALL);
   glui_meshclip_defined = 1;
 
-  ROLLOUT_vismesh_blockages = glui_bounds->add_rollout_to_panel(ROLLOUT_filebounds, "View mesh options",false,MESHBLOCKAGE_ROLLOUT, BoundRolloutCB);
-  TOGGLE_ROLLOUT(boundprocinfo, nboundprocinfo, ROLLOUT_vismesh_blockages, MESHBLOCKAGE_ROLLOUT, glui_bounds);
+  ROLLOUT_view_options = glui_bounds->add_rollout_to_panel(ROLLOUT_filebounds, "View options",false,VIEWOPTIONS_ROLLOUT, BoundRolloutCB);
+  TOGGLE_ROLLOUT(boundprocinfo, nboundprocinfo, ROLLOUT_view_options, VIEWOPTIONS_ROLLOUT, glui_bounds);
+
+  ROLLOUT_vismesh_blockages = glui_bounds->add_rollout_to_panel(ROLLOUT_view_options, "View blockages by mesh",false,MESHBLOCKAGE_ROLLOUT, ViewRolloutCB);
+  TOGGLE_ROLLOUT(viewprocinfo, nviewprocinfo, ROLLOUT_vismesh_blockages, MESHBLOCKAGE_ROLLOUT, glui_bounds);
 
   int nn=MIN(global_scase.meshescoll.nmeshes,256);
   PANEL_geom_vis2 = glui_bounds->add_panel_to_panel(ROLLOUT_vismesh_blockages, "", GLUI_PANEL_NONE);
@@ -5776,8 +5791,8 @@ hvacductboundsCPP.setup("hvac", ROLLOUT_hvacduct, hvacductbounds_cpp, nhvacductb
   glui_bounds->add_column_to_panel(PANEL_geom_vis3, false);  
   glui_bounds->add_button_to_panel(PANEL_geom_vis3, _("Hide all"),     HIDE_ALL_MESH_GEOM, GLUIShowHideGeomDataCB);
   
-  ROLLOUT_vismesh_data = glui_bounds->add_rollout_to_panel(ROLLOUT_filebounds, "View data options", false, MESHDATA_ROLLOUT, BoundRolloutCB);
-  TOGGLE_ROLLOUT(boundprocinfo, nboundprocinfo, ROLLOUT_vismesh_data, MESHDATA_ROLLOUT, glui_bounds);
+  ROLLOUT_vismesh_data = glui_bounds->add_rollout_to_panel(ROLLOUT_view_options, "View data by mesh", false, MESHDATA_ROLLOUT, ViewRolloutCB);
+  TOGGLE_ROLLOUT(viewprocinfo, nviewprocinfo, ROLLOUT_vismesh_data, MESHDATA_ROLLOUT, glui_bounds);
   PANEL_data_vis2 = glui_bounds->add_panel_to_panel(ROLLOUT_vismesh_data, "", GLUI_PANEL_NONE);
   for(i = 0; i < nn; i++){
     meshdata *meshi;
