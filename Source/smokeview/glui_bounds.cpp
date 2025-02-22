@@ -295,7 +295,7 @@ void bounds_dialog::setup(const char *file_type, GLUI_Rollout *ROLLOUT_dialog, c
   GLUI_Panel *PANEL_bound2, *PANEL_minmax, *PANEL_minmax2, *PANEL_buttons;
   GLUI_Panel *PANEL_truncate_min, *PANEL_truncate_max, *PANEL_edit_min, *PANEL_edit_max;
   int i;
-  char label1[64], label2[64];
+  char label1[256], label2[256];
 
   all_bounds = bounds_arg;
   nall_bounds = nbounds_arg;
@@ -2748,7 +2748,8 @@ GLUI_Listbox *LIST_iso_colorbar = NULL;
 
 GLUI_Rollout *ROLLOUT_zone_bound=NULL;
 GLUI_Rollout *ROLLOUT_coloring=NULL;
-GLUI_Rollout *ROLLOUT_vismesh = NULL;
+GLUI_Rollout *ROLLOUT_vismesh_blockages = NULL;
+GLUI_Rollout *ROLLOUT_vismesh_data = NULL;
 GLUI_Rollout *ROLLOUT_memcheck=NULL;
 GLUI_Rollout *ROLLOUT_boundary_duplicates;
 GLUI_Rollout *ROLLOUT_iso_settings;
@@ -2854,10 +2855,8 @@ GLUI_Panel *PANEL_slice_plot2df = NULL;
 GLUI_Panel *PANEL_loadbounds = NULL;
 GLUI_Panel *PANEL_intersection_box = NULL;
 GLUI_Panel *PANEL_read_test = NULL;
-GLUI_Panel *PANEL_geom_vis1 = NULL;
 GLUI_Panel *PANEL_geom_vis2 = NULL;
 GLUI_Panel *PANEL_geom_vis3 = NULL;
-GLUI_Panel *PANEL_data_vis1 = NULL;
 GLUI_Panel *PANEL_data_vis2 = NULL;
 GLUI_Panel *PANEL_data_vis3 = NULL;
 
@@ -2935,8 +2934,8 @@ GLUI_Checkbox *CHECKBOX_hide_all_exterior_patch_data = NULL;
 GLUI_Checkbox *CHECKBOX_show_all_interior_patch_data = NULL;
 GLUI_Checkbox *CHECKBOX_hide_all_interior_patch_data = NULL;
 GLUI_Checkbox *CHECKBOX_show_exterior_walls[7];
-GLUI_Checkbox *CHECKBOX_show_mesh_geom[64];
-GLUI_Checkbox *CHECKBOX_show_mesh_data[64];
+GLUI_Checkbox *CHECKBOX_show_mesh_geom[256];
+GLUI_Checkbox *CHECKBOX_show_mesh_data[256];
 
 #ifndef pp_PARTFRAME
 GLUI_Checkbox *CHECKBOX_use_partload_threads = NULL;
@@ -3054,9 +3053,10 @@ GLUI_RadioButton *RADIOBUTTON_zone_permax=NULL;
 #define HVACDUCT_ROLLOUT 8
 #define HVACNODE_ROLLOUT 9
 #define TIME_ROLLOUT     10
-#define MESHPATCH_ROLLOUT 11
+#define MESHBLOCKAGE_ROLLOUT 11
+#define MESHDATA_ROLLOUT 12
 
-procdata  boundprocinfo[12];
+procdata  boundprocinfo[13];
 int      nboundprocinfo = 0;
 
 //*** loadprocinfo entries
@@ -4869,7 +4869,7 @@ extern "C" void GLUIUpdateColorbarListBound(int flag){
 
 void GLUIShowHideGeomDataCB(int var){
   int i;
-  int nn=MIN(global_scase.meshescoll.nmeshes,64);
+  int nn=MIN(global_scase.meshescoll.nmeshes,256);
 
   switch (var){
     case SHOW_ALL_MESH_GEOM:
@@ -5754,12 +5754,11 @@ hvacductboundsCPP.setup("hvac", ROLLOUT_hvacduct, hvacductbounds_cpp, nhvacductb
   MeshBoundCB(USEMESH_USE_XYZ_ALL);
   glui_meshclip_defined = 1;
 
-  ROLLOUT_vismesh = glui_bounds->add_rollout_to_panel(ROLLOUT_filebounds, "View options",false,MESHPATCH_ROLLOUT, BoundRolloutCB);
-  TOGGLE_ROLLOUT(boundprocinfo, nboundprocinfo, ROLLOUT_vismesh, MESHPATCH_ROLLOUT, glui_bounds);
+  ROLLOUT_vismesh_blockages = glui_bounds->add_rollout_to_panel(ROLLOUT_filebounds, "View mesh options",false,MESHBLOCKAGE_ROLLOUT, BoundRolloutCB);
+  TOGGLE_ROLLOUT(boundprocinfo, nboundprocinfo, ROLLOUT_vismesh_blockages, MESHBLOCKAGE_ROLLOUT, glui_bounds);
 
-  PANEL_geom_vis1 = glui_bounds->add_panel_to_panel(ROLLOUT_vismesh, "Show/hide blockages in mesh:");
-  PANEL_geom_vis2 = glui_bounds->add_panel_to_panel(PANEL_geom_vis1, "", GLUI_PANEL_NONE);
-  int nn=MIN(global_scase.meshescoll.nmeshes,64);
+  int nn=MIN(global_scase.meshescoll.nmeshes,256);
+  PANEL_geom_vis2 = glui_bounds->add_panel_to_panel(ROLLOUT_vismesh_blockages, "", GLUI_PANEL_NONE);
   for(i = 0; i < nn; i++){
     meshdata *meshi;
     char label[340];
@@ -5772,13 +5771,14 @@ hvacductboundsCPP.setup("hvac", ROLLOUT_hvacduct, hvacductbounds_cpp, nhvacductb
       )glui_bounds->add_column_to_panel(PANEL_geom_vis2, false);
     CHECKBOX_show_mesh_geom[i] = glui_bounds->add_checkbox_to_panel(PANEL_geom_vis2, label, &meshi->blockvis);
   }
-  PANEL_geom_vis3 = glui_bounds->add_panel_to_panel(PANEL_geom_vis1, "", GLUI_PANEL_NONE);
+  PANEL_geom_vis3 = glui_bounds->add_panel_to_panel(ROLLOUT_vismesh_blockages, "", GLUI_PANEL_NONE);
   glui_bounds->add_button_to_panel(PANEL_geom_vis3, _("Show all"),     SHOW_ALL_MESH_GEOM, GLUIShowHideGeomDataCB);
   glui_bounds->add_column_to_panel(PANEL_geom_vis3, false);  
   glui_bounds->add_button_to_panel(PANEL_geom_vis3, _("Hide all"),     HIDE_ALL_MESH_GEOM, GLUIShowHideGeomDataCB);
   
-  PANEL_data_vis1 = glui_bounds->add_panel_to_panel(ROLLOUT_vismesh, "Show/hide data in mesh:");
-  PANEL_data_vis2 = glui_bounds->add_panel_to_panel(PANEL_data_vis1, "", GLUI_PANEL_NONE);
+  ROLLOUT_vismesh_data = glui_bounds->add_rollout_to_panel(ROLLOUT_filebounds, "View data options", false, MESHDATA_ROLLOUT, BoundRolloutCB);
+  TOGGLE_ROLLOUT(boundprocinfo, nboundprocinfo, ROLLOUT_vismesh_data, MESHDATA_ROLLOUT, glui_bounds);
+  PANEL_data_vis2 = glui_bounds->add_panel_to_panel(ROLLOUT_vismesh_data, "", GLUI_PANEL_NONE);
   for(i = 0; i < nn; i++){
     meshdata *meshi;
     char label[340];
@@ -5791,7 +5791,7 @@ hvacductboundsCPP.setup("hvac", ROLLOUT_hvacduct, hvacductbounds_cpp, nhvacductb
       )glui_bounds->add_column_to_panel(PANEL_data_vis2, false);
     CHECKBOX_show_mesh_data[i] = glui_bounds->add_checkbox_to_panel(PANEL_data_vis2, label, &meshi->datavis);
   }
-  PANEL_data_vis3 = glui_bounds->add_panel_to_panel(PANEL_data_vis1, "", GLUI_PANEL_NONE);
+  PANEL_data_vis3 = glui_bounds->add_panel_to_panel(ROLLOUT_vismesh_data, "", GLUI_PANEL_NONE);
   glui_bounds->add_button_to_panel(PANEL_data_vis3, _("Show all"),     SHOW_ALL_MESH_DATA, GLUIShowHideGeomDataCB);
   glui_bounds->add_column_to_panel(PANEL_data_vis3, false);  
   glui_bounds->add_button_to_panel(PANEL_data_vis3, _("Hide all"),     HIDE_ALL_MESH_DATA, GLUIShowHideGeomDataCB);
