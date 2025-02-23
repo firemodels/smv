@@ -10494,6 +10494,7 @@ typedef struct {
         cvi->texture_origin[2]=scase->texture_origin[2];
         cvi->useventcolor=1;
         cvi->hideboundary=0;
+        cvi->have_boundary_file = 1;
         cvi->cvent_id=-1;
         cvi->color=NULL;
         cvi->blank=NULL;
@@ -10545,6 +10546,7 @@ typedef struct {
         float *vcolor;
         int venttype,ventindex;
         float s_color[4],s2_color[4];
+        int have_boundary_file;
 
         s2_color[0]=-1.0;
         s2_color[1]=-1.0;
@@ -10564,11 +10566,13 @@ typedef struct {
         s_color[2]=vcolor[2];
         s_color[3]=vcolor[3];
         venttype=-99;
+        have_boundary_file=1;
 
         FGETS(buffer,255,stream);
-        sscanf(buffer,"%i %i %i %i %i %i %i %i %f %f %f",
+        sscanf(buffer,"%i %i %i %i %i %i %i %i %f %f %f %i",
           &cvi->imin,&cvi->imax,&cvi->jmin,&cvi->jmax,&cvi->kmin,&cvi->kmax,
-          &ventindex,&venttype,s2_color,s2_color+1,s2_color+2);
+          &ventindex,&venttype,s2_color,s2_color+1,s2_color+2,&have_boundary_file);
+        cvi->have_boundary_file = have_boundary_file;
 
         // use color from &VENT
 

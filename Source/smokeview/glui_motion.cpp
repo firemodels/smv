@@ -321,7 +321,7 @@ extern "C" void GLUICloseRollouts(GLUI *dialog){
 /* ------------------ GLUIUpdateFarclip ------------------------ */
 
 extern "C" void GLUIUpdateFarclip(void){
-  SPINNER_farclip->set_float_val(farclip);
+  if(SPINNER_farclip != NULL)SPINNER_farclip->set_float_val(farclip);
 }
 
 /* ------------------ GLUIUpdateMovieParms ------------------------ */
