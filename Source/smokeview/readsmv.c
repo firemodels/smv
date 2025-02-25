@@ -6871,7 +6871,9 @@ int ReadSMV_Init(smv_case *scase){
     use_ffmpeg_threads      = 0;
     use_readallgeom_threads = 0;
     use_isosurface_threads  = 0;
+#ifdef pp_SMOKE_THREAD
     use_mergesmoke_threads  = 0;
+#endif
     use_meshnabors_threads  = 0;
   }
 
@@ -11535,6 +11537,7 @@ int ReadSMV_Configure(){
   MakeIBlankCarve();
   PRINT_TIMER(timer_readsmv, "MakeIBlankCarve");
 
+#ifdef pp_SMOKE_THREAD
   if(mergesmoke_threads == NULL){
     mergesmoke_threads = THREADinit(&n_mergesmoke_threads, &use_mergesmoke_threads, MtMergeSmoke3D);
     for(i = 0; i < n_mergesmoke_threads; i++){
@@ -11542,6 +11545,7 @@ int ReadSMV_Configure(){
       smokethreadinfo[i].nthreads = n_mergesmoke_threads;
     }
   }
+#endif
 
   if(ffmpeg_threads == NULL){
     ffmpeg_threads = THREADinit(&n_ffmpeg_threads, &use_ffmpeg_threads, SetupFF);
