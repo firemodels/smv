@@ -78,7 +78,9 @@
 #define VOLTEST_DEPTH 102
 #define VOLTEST_UPDATE 103
 #define FORCE_ALPHA_OPAQUE 104
+#ifdef pp_SMOKE_THREAD
 #define MERGE_SMOKE 105
+#endif
 #define SMOKE_FRAME_INC 113
 #define REFRESH_FIRE       114
 

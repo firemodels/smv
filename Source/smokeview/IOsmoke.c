@@ -4226,7 +4226,9 @@ FILE_SIZE ReadSmoke3D(int time_frame,int ifile_arg,int load_flag, int first_time
   int fortran_skip=0;
 #endif
 
+#ifdef pp_SMOKE_THREAD
   update_glui_merge_smoke = 1;
+#endif
   GLUTPOSTREDISPLAY;
   SetTimeState();
   update_smokefire_colors = 1;
@@ -4891,6 +4893,7 @@ void MergeSmoke3D(smoke3ddata *smoke3dset){
   PRINT_TIMER(merge_smoke_time, "MergeSmoke3D");
 }
 
+#ifdef pp_SMOKE_THREAD
 /* ------------------ UpdateGluiMergeSmoke ------------------------ */
 
 void UpdateGluiMergeSmoke(void){
@@ -4932,6 +4935,27 @@ void *MtMergeSmoke3D(void *arg){
   }
   THREAD_EXIT(mergesmoke_threads);
 }
+#else
+void MergeSmoke3DAll(void){
+  int i;
+
+  for(i = 0;i < global_scase.smoke3dcoll.nsmoke3dinfo;i++){
+    smoke3ddata *smoke3di;
+
+    smoke3di = global_scase.smoke3dcoll.smoke3dinfo + i;
+    if(smoke3di->loaded == 0 || smoke3di->display == 0)continue;
+    assert(smoke3di->timeslist != NULL);
+    if(smoke3di->timeslist==NULL)continue;
+    smoke3di->ismoke3d_time = smoke3di->timeslist[itimes];
+    if(IsSmokeComponentPresent(smoke3di) == 0)continue;
+    if(smoke3di->ismoke3d_time != smoke3di->lastiframe){
+      smoke3di->lastiframe = smoke3di->ismoke3d_time;
+      UpdateSmoke3D(smoke3di);
+    }
+    MergeSmoke3D(smoke3di);
+  }
+}
+#endif
 
 /* ------------------ UpdateSmoke3dMenuLabels ------------------------ */
 

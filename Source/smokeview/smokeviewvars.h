@@ -32,11 +32,13 @@
 //*** threader variables
 
 //***mergesmoke
-SVEXTERN int SVDECL(n_mergesmoke_threads, 4), SVDECL(use_mergesmoke_threads, 1);
+#ifdef pp_SMOKE_THREAD
+SVEXTERN int SVDECL(n_mergesmoke_threads, 4), SVDECL(use_mergesmoke_threads, 0);
 SVEXTERN threaderdata SVDECL(*mergesmoke_threads, NULL);
 SVEXTERN smokethreaddata smokethreadinfo[MAX_THREADS];
-SVEXTERN int SVDECL(n_mergesmoke_glui_threads, 4), SVDECL(use_mergesmoke_glui_threads, 1);
+SVEXTERN int SVDECL(n_mergesmoke_glui_threads, 4), SVDECL(use_mergesmoke_glui_threads, 0);
 SVEXTERN int SVDECL(update_glui_merge_smoke, 1);
+#endif
 
 //***isosurface
 SVEXTERN int SVDECL(n_isosurface_threads, 1), SVDECL(use_isosurface_threads, 1);
