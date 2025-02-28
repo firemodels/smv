@@ -3585,6 +3585,7 @@ void ScriptSetTimeVal(scriptdata *scripti){
   force_redisplay=1;
   UpdateFrameNumber(0);
   UpdateTimeLabels();
+  ForceIdle();
 }
 
 /* ------------------ ScriptProjection ------------------------ */
