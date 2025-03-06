@@ -9,6 +9,7 @@
 #define pp_GPU              // support the GPU
 #define pp_THREAD           // turn on multi-threading
 //#define pp_SMOKE_THREAD     // use multi-threading for merging smoke
+//#define pp_BOUNDING_BOX   // draw bounding box when mouse is pressed and option selected
 
 #ifdef pp_FRAME          // turn on each frame type if pp_FRAME is set
 #define pp_BOUNDFRAME    // turn on frame code for boundary files

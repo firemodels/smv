@@ -201,7 +201,7 @@ SVEXTERN int SVDECL(frame360, 0);
 SVEXTERN int SVDECL(sliceval_ndigits, 0);
 SVEXTERN int SVDECL(rotate_center, 0);
 SVEXTERN int SVDECL(have_geom_bb, 0);
-SVEXTERN int SVDECL(show_geom_boundingbox, 0);
+SVEXTERN int SVDECL(hide_scene, 0);
 SVEXTERN int SVDECL(have_obsts, 0);
 SVEXTERN int SVDECL(have_geometry_dialog, 0);
 SVEXTERN int SVDECL(chop_patch, 0);
@@ -225,7 +225,6 @@ SVEXTERN int SVDECL(update_saving_viewpoint, 0);
 SVEXTERN float SVDECL(timer_startup, 0.0), SVDECL(timer_render, -1.0);
 SVEXTERN int SVDECL(frames_total, 0 );
 SVEXTERN int SVDECL(open_movie_dialog, 0);
-SVEXTERN int SVDECL(geom_bounding_box_mousedown, 0);
 SVEXTERN float SVDECL(plot2d_time_average, 0.0);
 #ifdef pp_REFRESH
 SVEXTERN int SVDECL(periodic_refresh, 0), SVDECL(update_refresh, 1);

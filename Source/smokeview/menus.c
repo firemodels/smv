@@ -6655,11 +6655,11 @@ void BlockageMenu(int value){
   if(outline_state<0)outline_state=OUTLINE_NONE;
   switch(value){
     case GEOM_BOUNDING_BOX_MOUSE_DOWN:
-      if(show_geom_boundingbox==1){
-        show_geom_boundingbox = 0;
+      if(hide_scene==1){
+        hide_scene = 0;
       }
       else{
-        show_geom_boundingbox = 1;
+        hide_scene = 1;
       }
       GLUIUpdateGeomBoundingBox();
       break;
@@ -7083,11 +7083,11 @@ void TerrainGeomShowMenu(int value){
       terrain_show_geometry_points = 1-terrain_show_geometry_points;
       break;
     case MENU_TERRAIN_BOUNDING_BOX_AUTO:
-      if(show_geom_boundingbox==1){
-        show_geom_boundingbox = 0;
+      if(hide_scene==1){
+        hide_scene = 0;
       }
       else{
-        show_geom_boundingbox = 1;
+        hide_scene = 1;
       }
       GLUIUpdateGeomBoundingBox();
       break;
@@ -7657,11 +7657,11 @@ void GeometryMenu(int value){
     visCompartments = 1 - visCompartments;
     break;
   case GEOM_BOUNDING_BOX_MOUSE_DOWN:
-    if(show_geom_boundingbox==1){
-      show_geom_boundingbox = 0;
+    if(hide_scene==1){
+      hide_scene = 0;
     }
     else{
-      show_geom_boundingbox = 1;
+      hide_scene = 1;
     }
     GLUIUpdateGeomBoundingBox();
     break;
@@ -10218,8 +10218,8 @@ static int menu_count=0;
     if(visSkyboxoutline==1)glutAddMenuEntry(_("*Outline(skybox images)"), SKY_OUTLINE);
     if(visSkyboxoutline==0)glutAddMenuEntry(_("Outline(skybox images)"), SKY_OUTLINE);
   }
-  if(show_geom_boundingbox == 1)glutAddMenuEntry(_("*bounding box(mouse down)"), GEOM_BOUNDING_BOX_MOUSE_DOWN);
-  if(show_geom_boundingbox != 1)glutAddMenuEntry(_("bounding box(mouse down)"), GEOM_BOUNDING_BOX_MOUSE_DOWN);
+  if(hide_scene == 1)glutAddMenuEntry(_("*bounding box(mouse down)"), GEOM_BOUNDING_BOX_MOUSE_DOWN);
+  if(hide_scene != 1)glutAddMenuEntry(_("bounding box(mouse down)"), GEOM_BOUNDING_BOX_MOUSE_DOWN);
   if(NCADGeom(&global_scase.cadgeomcoll) == 0){
     if(blocklocation == BLOCKlocation_grid){
       glutAddMenuEntry("Locations(*actual,requested)", BLOCKlocation_grid);
@@ -13131,12 +13131,6 @@ void MenuStatusCB(int status, int x, int y){
   float *eye_xyz;
 
   menustatus=status;
-  if(menustatus==GLUT_MENU_IN_USE &&  show_geom_boundingbox==1){
-    geom_bounding_box_mousedown = 1;
-  }
-  else{
-    geom_bounding_box_mousedown = 0;
-  }
 
   /* keep scene from "bouncing" around when leaving a menu */
   start_xyz0[0]=x;

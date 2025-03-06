@@ -11342,7 +11342,7 @@ int ReadSMV_Configure(){
       break;
     }
   }
-  if(global_scase.ntotal_blockages > 250000)show_geom_boundingbox = 1;
+  if(global_scase.ntotal_blockages > 250000)hide_scene = 1;
 
   if(checkfiles_threads != NULL){
     checkfiles_threads = THREADinit(&n_checkfiles_threads, &use_checkfiles_threads, CheckFiles);
@@ -11717,7 +11717,7 @@ int ReadSMV_Configure(){
   SetExternalVents();
 
   if(global_scase.meshescoll.nmeshes > 200){
-    show_geom_boundingbox = 1;
+    hide_scene = 1;
   }
 
   PRINTF("%s", _("complete"));
@@ -12297,8 +12297,8 @@ int ReadIni2(const char *inifile, int localfile){
       fgets(buffer, 255, stream);
       sscanf(buffer, " %i %i %i %i", &dummy, &dummy, &dummy, &dummy);
       fgets(buffer, 255, stream);
-      sscanf(buffer, " %f %f %i %i %i %i", &geom_vert_exag, &rdummy, &dummy, &dummy2, &show_geom_boundingbox, &show_geom_bndf );
-      if(show_geom_boundingbox !=1)show_geom_boundingbox = 0;
+      sscanf(buffer, " %f %f %i %i %i %i", &geom_vert_exag, &rdummy, &dummy, &dummy2, &hide_scene, &show_geom_bndf );
+      if(hide_scene !=1)hide_scene = 0;
       continue;
     }
     if(MatchINI(buffer, "SHOWTRIANGLECOUNT") == 1){
@@ -16756,11 +16756,11 @@ void WriteIni(int flag,char *filename){
      geom_force_transparent, geom_transparency, geom_linewidth, use_geom_factors, show_cface_normals, geom_pointsize, geom_dz_offset, geom_norm_offset);
   fprintf(fileout, " %i %i %i %i\n", 0, 0, 0, 0);
 
-  int show_geom_boundingbox_old;
+  int hide_scene_old;
 
-  show_geom_boundingbox_old = show_geom_boundingbox;
-  if(show_geom_boundingbox != 1)show_geom_boundingbox_old = 2;
-  fprintf(fileout, " %f %f %i %i %i %i\n", geom_vert_exag, 30.0, 0, 0, show_geom_boundingbox_old, show_geom_bndf);
+  hide_scene_old = hide_scene;
+  if(hide_scene != 1)hide_scene_old = 2;
+  fprintf(fileout, " %f %f %i %i %i %i\n", geom_vert_exag, 30.0, 0, 0, hide_scene_old, show_geom_bndf);
 
   fprintf(fileout, "GVERSION\n");
   fprintf(fileout, " %i\n", vis_title_gversion);
