@@ -502,7 +502,7 @@ char *ProcessCommandLine(CommandlineArgs *args){
       PRINTF("stereo option activated\n");
     }
     if(args->big){
-      show_geom_boundingbox = 1;
+      hide_scene = 1;
     }
     if(args->timings){
       show_timings = 1;
@@ -576,7 +576,7 @@ char *ProcessCommandLine(CommandlineArgs *args){
       verbose_output = 1;
     }
     if(args->outline){
-      show_geom_boundingbox = 1;
+      hide_scene = 1;
     }
     if(args->make_movie){
       open_movie_dialog = 1;

@@ -391,7 +391,9 @@ EXTERNCPP void DrawGeomBoundingBox(float *boundingbox_color);
 EXTERNCPP void DrawGeomData(int flag, slicedata *sd, patchdata *patchi, int geom_type);
 EXTERNCPP void DrawGeomValues(slicedata *sd, patchdata *patchi, int geom_type);
 EXTERNCPP void DrawGeomVData(vslicedata *vd);
+#ifdef pp_BOUNDING_BOX
 EXTERNCPP void DrawObstBoundingBox(void);
+#endif
 EXTERNCPP void DrawSelectGeom(void);
 EXTERNCPP void GetFaceInfo(void);
 EXTERNCPP FILE_SIZE GetGeomData(patchdata *patchi, char *filename, int load_flag, int ntimes, int nvals, float *times,

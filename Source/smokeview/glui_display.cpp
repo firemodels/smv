@@ -139,7 +139,7 @@ GLUI_Checkbox *CHECKBOX_ticks_outside = NULL;
 GLUI_Checkbox *CHECKBOX_labels_fds_title = NULL;
 GLUI_Checkbox *CHECKBOX_texture_showall = NULL;
 GLUI_Checkbox *CHECKBOX_texture_hideall = NULL;
-GLUI_Checkbox *CHECKBOX_show_geom_boundingbox = NULL;
+GLUI_Checkbox *CHECKBOX_hide_scene = NULL;
 GLUI_Checkbox *CHECKBOX_visSkybox = NULL;
 GLUI_Checkbox *CHECKBOX_visSkysphere = NULL;
 GLUI_Checkbox *CHECKBOX_visSkyground = NULL;
@@ -833,7 +833,7 @@ extern "C" void GLUIDisplaySetup(int main_window){
   SPINNER_refresh_rate->set_int_limits(0,10);
 #endif
 
-  CHECKBOX_show_geom_boundingbox = glui_labels->add_checkbox_to_panel(PANEL_gen1, _("hide scene when mouse is pressed"), &show_geom_boundingbox, LABELS_BOUNDING_BOX, GLUILabelsCB);
+  CHECKBOX_hide_scene = glui_labels->add_checkbox_to_panel(PANEL_gen1, _("hide scene when mouse is pressed"), &hide_scene, LABELS_BOUNDING_BOX, GLUILabelsCB);
 
   PANEL_titles=glui_labels->add_panel_to_panel(PANEL_gen1,"Titles");
   CHECKBOX_labels_title = glui_labels->add_checkbox_to_panel(PANEL_titles,     _("Smokeview build date"), &vis_title_smv_version, LABELS_label,   GLUILabelsCB);
@@ -1282,7 +1282,7 @@ extern "C" void GLUIUpdateColorbarControls(void){
 /* ------------------ GLUIUpdateGeomBoundingBox ------------------------ */
 
 extern "C" void GLUIUpdateGeomBoundingBox(void){
-  if(CHECKBOX_show_geom_boundingbox != NULL)CHECKBOX_show_geom_boundingbox->set_int_val(show_geom_boundingbox);
+  if(CHECKBOX_hide_scene != NULL)CHECKBOX_hide_scene->set_int_val(hide_scene);
 }
 
 /* ------------------ GLUILabelsCB ------------------------ */

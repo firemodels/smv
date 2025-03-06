@@ -824,6 +824,7 @@ void DrawBoxMinMax(float *bbmin, float *bbmax, float *box_color){
   DrawBoxOutline(bb, box_color);
 }
 
+#ifdef pp_BOUNDING_BOX
 /* ------------------ DrawObstBoundingBox ------------------------ */
 
 void DrawObstBoundingBox(void){
@@ -836,6 +837,7 @@ void DrawObstBoundingBox(void){
   DrawBoxOutline(global_scase.obst_bounding_box, foregroundcolor);
   glPopMatrix();
 }
+#endif
 
 /* ------------------ DrawGeomBoundingBox ------------------------ */
 
@@ -888,7 +890,7 @@ void DrawGeom(int flag, int timestate){
   int texture_state = OFF, texture_first=1;
 
   if(global_scase.auto_terrain==1)return;
-  if(geom_bounding_box_mousedown==1){
+  if(hide_scene==1 && mouse_down==1){
     if(flag==DRAW_OPAQUE&&timestate==GEOM_STATIC&&have_geom_triangles==1){
       DrawGeomBoundingBox(NULL);
     }
@@ -4635,7 +4637,7 @@ void DrawCGeom(int flag, geomdata *cgeom){
   geomdata *geomi;
 
   if(HaveTerrainTexture(NULL) == 1)return;
-  if(geom_bounding_box_mousedown==1){
+  if(hide_scene==1 && mouse_down==1){
     if(flag==DRAW_OPAQUE&&have_geom_triangles==1){
       DrawGeomBoundingBox(NULL);
     }
