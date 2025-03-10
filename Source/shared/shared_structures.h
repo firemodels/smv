@@ -1758,25 +1758,26 @@ typedef struct {
   char *fds_version;
   char *fds_githash;
 
-  meshescollection meshescoll;
   colordata *firstcolor;
-  prop_collection propcoll;
-  object_collection objectscoll;
-  hrr_collection hrr_coll;
-  smoke3d_collection smoke3dcoll;
-  surf_collection surfcoll;
-  slice_collection slicecoll;
-  texture_collection texture_coll;
-  terrain_texture_collection terrain_texture_coll;
+
+  cadgeom_collection             cadgeomcoll;
+  csv_collection                 csvcoll;
+  device_collection              devicecoll;
   device_texture_list_collection device_texture_list_coll;
-  device_collection devicecoll;
-  obst_collection obstcoll;
-  csv_collection csvcoll;
-  tour_collection tourcoll;
-  fuel_collection fuelcoll;
-  cadgeom_collection cadgeomcoll;
-  hvacdatacollection hvaccoll;
-  labels_collection labelscoll;
+  fuel_collection                fuelcoll;
+  hrr_collection                 hrr_coll;
+  hvacdatacollection             hvaccoll;
+  labels_collection              labelscoll;
+  meshescollection               meshescoll;
+  object_collection              objectscoll;
+  obst_collection                obstcoll;
+  prop_collection                propcoll;
+  slice_collection               slicecoll;
+  smoke3d_collection             smoke3dcoll;
+  surf_collection                surfcoll;
+  terrain_texture_collection     terrain_texture_coll;
+  texture_collection             texture_coll;
+  tour_collection                tourcoll;
 
   casepaths paths;
 

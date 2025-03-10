@@ -1727,7 +1727,91 @@ SVEXTERN int SVDECL(output_slicedata,0),SVDECL(output_patchdata,0);
 SVEXTERN f_units SVDECL(*unitclasses,NULL),SVDECL(*unitclasses_default,NULL),SVDECL(*unitclasses_ini,NULL);
 SVEXTERN int SVDECL(nunitclasses,0),SVDECL(nunitclasses_default,0),SVDECL(nunitclasses_ini,0);
 #ifdef INMAIN
-SVEXTERN smv_case global_scase = {.tourcoll = {.ntourinfo = 0,
+SVEXTERN smv_case global_scase = {
+                           .cadgeomcoll = {
+                                            .capacity=0,
+                                            .ncadgeom=0,
+                                            .cadgeominfo=NULL
+                                       },
+                           .csvcoll = {
+                                          .ncsvfileinfo=0,
+                                           .csvfileinfo=NULL
+                                       },
+                           .devicecoll = {
+                                           .ndeviceinfo=0,
+                                           .nvdeviceinfo=0,
+                                           .ndeviceinfo_exp=0,
+                                           .deviceinfo=NULL,
+                                           .vdeviceinfo=NULL,
+                                           .vdevices_sorted=NULL
+                                       },
+                           .device_texture_list_coll = {
+                                           .ndevice_texture_list=0,
+                                           .device_texture_list=NULL,
+                                           .device_texture_list_index=NULL
+                                       },
+                           .filelist_coll = {
+                                            .nini_filelist=0,
+                                            .ini_filelist=NULL,
+                                            .nfilelist_casename=0,
+                                            .filelist_casename=NULL,
+                                            .nfilelist_casedir=0,
+                                            .filelist_casedir=NULL
+                                       },
+                           .hrr_coll = {
+                                          .nhrrinfo=0,
+                                          .nhrrhcinfo=0,
+                                          .hrrinfo=NULL
+                                       },
+                           .meshescoll = {
+                                           .meshinfo=NULL,
+                                           .nmeshes=0,
+                                       },
+                           .obstcoll = {
+                                          .nobstinfo=0,
+                                          .obstinfo=NULL
+                                       },
+                           .propcoll = {
+                                          .npropinfo=0,
+                                          .propinfo=NULL
+                                       },
+                           .slicecoll = {
+                                          .nsliceinfo=0,
+                                          .sliceinfo=NULL,
+                                          .nmultisliceinfo=0,
+                                          .multisliceinfo=NULL,
+                                          .nvsliceinfo=0,
+                                          .vsliceinfo=NULL,
+                                          .nmultivsliceinfo=0,
+                                          .multivsliceinfo=NULL
+                                       },
+                           .smoke3dcoll = {
+                                         .nsmoke3dinfo=0,
+                                         .smoke3dinfo=NULL,
+                                         .smoke3dinfo_sorted=NULL,
+                                         .nsmoke3dtypes=0,
+                                         .smoke3d_other=0,
+                                         .smoke3dtypes=NULL
+                                       },
+                           .surfcoll = {
+                                           .nsurfinfo=0,
+                                           .surfinfo=NULL,
+                                           .nsurfids=0,
+                                           .surfids=NULL,
+                                           .nsorted_surfidlist=0,
+                                           .sorted_surfidlist=NULL,
+                                           .inv_sorted_surfidlist=NULL
+                                       },
+                           .terrain_texture_coll = {
+                                          .nterrain_textures=0,
+                                          .terrain_textures=NULL
+                                       },
+                           .texture_coll = {
+                                          .ntextureinfo=0,
+                                          .textureinfo=NULL
+                                       },
+                           .tourcoll = {
+                                        .ntourinfo = 0,
                                         .tourinfo = NULL,
                                         .tour_ntimes = 1000,
                                         .tour_t = NULL,
@@ -1736,7 +1820,8 @@ SVEXTERN smv_case global_scase = {.tourcoll = {.ntourinfo = 0,
                                         .tour_dist2 = NULL,
                                         .tour_dist3 = NULL,
                                         .tour_tstart = 0.0,
-                                        .tour_tstop = 100.0},
+                                        .tour_tstop = 100.0
+                                       },
                            .fuel_hoc = -1.0,
                            .fuel_hoc_default = -1.0,
                            .have_cface_normals = CFACE_NORMALS_NO,
