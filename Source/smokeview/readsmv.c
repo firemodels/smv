@@ -10341,7 +10341,7 @@ typedef struct {
                 hidden6, hidden6 + 1, hidden6 + 2, hidden6 + 3, hidden6 + 4, hidden6 + 5);
               int ii;
               for(ii = 0; ii < 6; ii++){
-                if(hidden6[i] >= 0)hidden6[ii] = 1 - hidden6[ii];
+                if(hidden6[ii] >= 0)hidden6[ii] = 1 - hidden6[ii];
               }
               memcpy(bc->hidden6, hidden6, 6*sizeof(int));
               if(hidden6[0] >= 0)scase->have_hidden6 = 1;
