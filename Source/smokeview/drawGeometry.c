@@ -2865,14 +2865,21 @@ void UpdateFaceListsWorker(void){
     nface_transparent_double += n_transparent_double;
     nface_outlines += n_outlines;
 
+    meshi->nface_normals_single_DOWN_X = 0;
+    meshi->nface_normals_single_UP_X   = 0;
+    meshi->nface_normals_single_DOWN_Y = 0;
+    meshi->nface_normals_single_UP_Y   = 0;
+    meshi->nface_normals_single_DOWN_Z = 0;
+    meshi->nface_normals_single_UP_Z   = 0;
+    meshi->face_normals_single_DOWN_X  = NULL;
+    meshi->face_normals_single_UP_X    = NULL;
+    meshi->face_normals_single_DOWN_Y  = NULL;
+    meshi->face_normals_single_UP_Y    = NULL;
+    meshi->face_normals_single_DOWN_Z  = NULL;
+    meshi->face_normals_single_UP_Z    = NULL;
+
     if(blockage_draw_option != 1)continue;
 
-    meshi->nface_normals_single_DOWN_X=0;
-    meshi->nface_normals_single_UP_X=0;
-    meshi->nface_normals_single_DOWN_Y=0;
-    meshi->nface_normals_single_UP_Y=0;
-    meshi->nface_normals_single_DOWN_Z=0;
-    meshi->nface_normals_single_UP_Z=0;
     if(n_normals_single>0){
       int iface;
       int istartD=-1,istartU=-1;
@@ -3041,6 +3048,8 @@ void DrawSelectFaces(){
         culldata *cullport;\
         facedata *facei;\
         float *vertices;\
+        assert(i>=0&&i<meshi->nface_normals_single);\
+        assert(face_START!=NULL);\
         facei = face_START[i];\
         cullport=facei->cullport;\
         if(cullport!=NULL&&cullport->vis==0)continue;\
