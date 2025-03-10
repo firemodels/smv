@@ -3498,7 +3498,7 @@ void LoadUnloadMenu(int value){
       ReadZone(i,UNLOAD,&errorcode);
     }
 #ifdef pp_DEBUG_OSX_CRASH
-    printf("unloading 3d smoke\n");
+    printf("unloading 3d smoke nsmoke3d=%i\n",global_scase.smoke3dcoll.nsmoke3dinfo);
 #endif
     if(global_scase.smoke3dcoll.nsmoke3dinfo > 0){
       UnloadAllSmoke3D(-1);
@@ -3750,7 +3750,7 @@ void LoadUnloadMenu(int value){
     assert(FFALSE);
     break;
   }
-  GLUTSETCURSOR(GLUT_CURSOR_RIGHT_ARROW);
+  //GLUTSETCURSOR(GLUT_CURSOR_RIGHT_ARROW);
 }
 
 /* ------------------ TourMenu ------------------------ */
