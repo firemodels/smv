@@ -3427,7 +3427,7 @@ void LoadUnloadMenu(int value){
     printf("unloading all files\n");
 #endif
   if(value==MENU_DUMMY)return;
-//  GLUTSETCURSOR(GLUT_CURSOR_WAIT);
+  GLUTSETCURSOR(GLUT_CURSOR_WAIT);
   switch(value){
   case UNLOADALL:
     if(scriptoutstream!=NULL){
@@ -3750,7 +3750,7 @@ void LoadUnloadMenu(int value){
     assert(FFALSE);
     break;
   }
-  //GLUTSETCURSOR(GLUT_CURSOR_RIGHT_ARROW);
+  GLUTSETCURSOR(GLUT_CURSOR_RIGHT_ARROW);
 }
 
 /* ------------------ TourMenu ------------------------ */
