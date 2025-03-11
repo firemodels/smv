@@ -3043,14 +3043,10 @@ void DrawSelectFaces(){
   glEnd();
 }
 
-#define DRAWFACE(DEFfacetest,DEFeditcolor)    \
+#define DRAWFACE(facei,DEFfacetest,DEFeditcolor)    \
         float *facepos;\
         culldata *cullport;\
-        facedata *facei;\
         float *vertices;\
-        assert(i>=0&&i<meshi->nface_normals_single);\
-        assert(face_START!=NULL);\
-        facei = face_START[i];\
         cullport=facei->cullport;\
         if(cullport!=NULL&&cullport->vis==0)continue;\
         if(blocklocation==BLOCKlocation_grid){\
@@ -3474,7 +3470,6 @@ void DrawFaces(){
     glEnable(GL_COLOR_MATERIAL);
     glBegin(GL_TRIANGLES);
     for(j=0;j<global_scase.meshescoll.nmeshes;j++){
-      facedata **face_START;
       meshdata *meshi;
       int i;
 
@@ -3484,49 +3479,61 @@ void DrawFaces(){
       // DOWN_X faces
 
       glNormal3f(-1.0,0.0,0.0);
-      face_START=meshi->face_normals_single_DOWN_X;
       for(i=0;i<meshi->nface_normals_single_DOWN_X;i++){
-        DRAWFACE(smv_eyepos[0]>facepos[0],down_color)
+        facedata *facei;
+
+        facei = meshi->face_normals_single_DOWN_X[i];
+        DRAWFACE(facei,smv_eyepos[0] > facepos[0], down_color)
       }
 
       // UP_X faces
 
       glNormal3f(1.0,0.0,0.0);
-      face_START=meshi->face_normals_single_UP_X;
       for(i=0;i<meshi->nface_normals_single_UP_X;i++){
-        DRAWFACE(smv_eyepos[0]<facepos[0],up_color)
+        facedata *facei;
+
+        facei = meshi->face_normals_single_UP_X[i];
+        DRAWFACE(facei,smv_eyepos[0]<facepos[0],up_color)
       }
 
       // DOWN_Y faces
 
       glNormal3f(0.0,-1.0,0.0);
-      face_START=meshi->face_normals_single_DOWN_Y;
       for(i=0;i<meshi->nface_normals_single_DOWN_Y;i++){
-        DRAWFACE(smv_eyepos[1]>facepos[1],down_color)
+        facedata *facei;
+
+        facei = meshi->face_normals_single_DOWN_Y[i];
+        DRAWFACE(facei,smv_eyepos[1]>facepos[1],down_color)
       }
 
       // UP_Y faces
 
       glNormal3f(0.0,1.0,0.0);
-      face_START=meshi->face_normals_single_UP_Y;
       for(i=0;i<meshi->nface_normals_single_UP_Y;i++){
-        DRAWFACE(smv_eyepos[1]<facepos[1],up_color)
+        facedata *facei;
+
+        facei = meshi->face_normals_single_UP_Y[i];
+        DRAWFACE(facei,smv_eyepos[1]<facepos[1],up_color)
       }
 
       // DOWN_Z faces
 
       glNormal3f(0.0,0.0,-1.0);
-      face_START=meshi->face_normals_single_DOWN_Z;
       for(i=0;i<meshi->nface_normals_single_DOWN_Z;i++){
-        DRAWFACE(smv_eyepos[2]>facepos[2],down_color)
+        facedata *facei;
+
+        facei = meshi->face_normals_single_DOWN_Z[i];
+        DRAWFACE(facei,smv_eyepos[2]>facepos[2],down_color)
       }
 
       // UP_Z faces
 
       glNormal3f(0.0,0.0,1.0);
-      face_START=meshi->face_normals_single_UP_Z;
       for(i=0;i<meshi->nface_normals_single_UP_Z;i++){
-        DRAWFACE(smv_eyepos[2]<facepos[2],up_color)
+        facedata *facei;
+
+        facei = meshi->face_normals_single_UP_Z[i];
+        DRAWFACE(facei,smv_eyepos[2]<facepos[2],up_color)
       }
     }
     glEnd();
