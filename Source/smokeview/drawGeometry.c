@@ -3045,8 +3045,8 @@ void DrawSelectFaces(){
 
 #define DRAWFACE(facei,DEFfacetest,DEFeditcolor)    \
         float *facepos;\
-        culldata *cullport;\
         float *vertices;\
+        culldata *cullport;\
         cullport=facei->cullport;\
         if(cullport!=NULL&&cullport->vis==0)continue;\
         if(blocklocation==BLOCKlocation_grid){\
@@ -5374,8 +5374,9 @@ culldata *GetFacePort(meshdata *meshi, facedata *facei){
   }
   if(kk1<0||kk1>nz)return NULL;
 
-
   ixyz = ii1 + jj1*nx + kk1*nx*ny;
+  assert(ixyz>=0&&ixyz < meshi->ncullgeominfo);
+  ixyz = CLAMP(ixyz, 0,meshi->ncullgeominfo-1);
   return_cull = meshi->cullgeominfo + ixyz;
 
   return return_cull;
