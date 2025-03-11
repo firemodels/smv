@@ -1460,8 +1460,8 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int load_flag, int *errorcode){
     }
     UpdateBoundaryType();
     UpdateUnitDefs();
-    update_times = 1;
     patchi->npatches=0;
+    UpdateTimes();
     patchi->ntimes_old=0;
     patchi->ntimes=0;
     updatemenu=1;
