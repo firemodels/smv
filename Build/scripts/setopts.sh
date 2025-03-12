@@ -12,8 +12,6 @@ if [ "`uname`" == "Darwin" ]; then
 else
   GLUT=glut
 fi
-QUARTZSMV=framework
-NOQUARTZ=1
 inc=
 BUILD_LIBS=
 BUILD_ALL=1
@@ -22,7 +20,7 @@ if [ "$BUILD_ALL" == "1" ]; then
   FULL_BUILD="[default]"
 fi
 TESTOPT=
-while getopts 'AfhiLmpqQrStT' OPTION
+while getopts 'AfhiLmprStT' OPTION
 do
 case $OPTION in
   A)
@@ -55,14 +53,6 @@ case $OPTION in
    SMV_MAKE_OPTS=$SMV_MAKE_OPTS"SMV_PROFILEFLAG=\"-pg\" "
    SMV_MAKE_OPTS=$SMV_MAKE_OPTS"SMV_PROFILESTRING=\"p\" "
   ;;
-  q)
-   QUARTZSMV="use_quartz"
-   NOQUARTZ=
-   SMV_MAKE_OPTS=$SMV_MAKE_OPTS"-I /opt/X11/include -Wno-unknown-pragmas"
-  ;;
-  Q)
-   DUMMY=1
-  ;;
   r)
   ;;
   S)
@@ -86,20 +76,11 @@ export SMV_MAKE_OPTS
 export GLUT
 export TEST
 export SANITIZE
-if [ "$NOQUARTZ" != "" ]; then
-  TESTFLAG="$TESTFLAG -D pp_NOQUARTZ"
-  SMV_MAKE_OPTS="$SMV_MAKE_OPTS NOQUARTZ=\"\" "
-else
-  SMV_MAKE_OPTS="$SMV_MAKE_OPTS NOQUARTZ=\"q_\" "
-fi
 if [ "$TESTFLAG" != "" ]; then
    SMV_MAKE_OPTS="$SMV_MAKE_OPTS SMV_TESTFLAG=\"$TESTFLAG\" "
 fi
 
 # this parameter is only for the mac
 if [ "`uname`" == "Darwin" ]; then
-  export QUARTZSMV
   export GLIBDIROPT
-else
-  QUARTZSMV=
 fi

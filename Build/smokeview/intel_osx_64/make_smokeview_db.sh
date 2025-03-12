@@ -1,26 +1,16 @@
 #!/bin/bash
-export NOQUARTZ=1
 
 OPTS="-Q $*"
 echo building smokeview non/Quartz
 
 source ../../scripts/setopts.sh $OPTS
 
-if [ "$QUARTZSMV" == "use_quartz" ]; then
-  LIBDIR=../../LIBS/intel_osx_q_64
-else
-  LIBDIR=../../LIBS/intel_osx_64
-fi
+LIBDIR=../../LIBS/intel_osx_64
 
 CURDIR=`pwd`
 cd $LIBDIR
 build_libs=$BUILD_LIBS
 LIBS="libgd.a libglui.a libjpeg.a libpng.a libz.a"
-
-# build glut if using the quartz library
-if [ "$QUARTZSMV" == "use_quartz" ]; then
-  LIBS="$LIBS libglut.a"
-fi
 
 for f in $LIBS
 do 
@@ -38,4 +28,4 @@ cd $CURDIR
 if [ "$BUILD_ALL" == "1" ]; then
   rm -f *.o *.mod smokeview_osx_64*
 fi
-eval make -j 4 QUARTZ="$QUARTZSMV" GLUT="$GLUT" ${SMV_MAKE_OPTS} -f ../Makefile intel_osx_64_db
+eval make -j 4 GLUT="$GLUT" ${SMV_MAKE_OPTS} -f ../Makefile intel_osx_64_db
