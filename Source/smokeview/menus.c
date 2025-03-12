@@ -3362,9 +3362,6 @@ void UnloadSmoke3D(smoke3ddata *smoke3di){
 void UnloadAllSmoke3D(int type){
   int i;
 
-#ifdef pp_SMOKE_THREAD
-  update_glui_merge_smoke = 1;
-#endif
   if(global_scase.smoke3dcoll.nsmoke3dinfo > 0){
     for(i = 0; i < global_scase.smoke3dcoll.nsmoke3dinfo; i++){
       smoke3ddata *smoke3di;
