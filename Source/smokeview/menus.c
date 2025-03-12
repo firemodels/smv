@@ -3423,9 +3423,6 @@ void LoadUnloadMenu(int value){
   float load_time;
   int load_flag;
 
-#ifdef pp_DEBUG_OSX_CRASH
-    printf("unloading all files\n");
-#endif
   if(value==MENU_DUMMY)return;
   GLUTSETCURSOR(GLUT_CURSOR_WAIT);
   switch(value){
@@ -3433,27 +3430,15 @@ void LoadUnloadMenu(int value){
     if(scriptoutstream!=NULL){
       fprintf(scriptoutstream,"UNLOADALL\n");
     }
-#ifdef pp_DEBUG_OSX_CRASH
-    printf("unloading hvac\n");
-#endif
     if(global_scase.hvaccoll.nhvacinfo>0){
       LoadHVACMenu(MENU_HVAC_UNLOAD);
     }
-#ifdef pp_DEBUG_OSX_CRASH
-    printf("unloading volsmoke\n");
-#endif
     if(nvolrenderinfo>0){
       LoadVolsmoke3DMenu(UNLOAD_ALL);
     }
 
-#ifdef pp_DEBUG_OSX_CRASH
-    printf("unloading vslice\n");
-#endif
     LoadVSliceMenu2(UNLOAD_ALL);
 
-#ifdef pp_DEBUG_OSX_CRASH
-    printf("unloading slice\n");
-#endif
     for(i = 0; i < global_scase.slicecoll.nsliceinfo; i++){
       slicedata *slicei;
 
@@ -3467,59 +3452,32 @@ void LoadUnloadMenu(int value){
         }
       }
     }
-#ifdef pp_DEBUG_OSX_CRASH
-    printf("unloading plot3d\n");
-#endif
     for(i = 0; i<global_scase.nplot3dinfo; i++){
       ReadPlot3D("",i,UNLOAD,&errorcode);
     }
-#ifdef pp_DEBUG_OSX_CRASH
-    printf("unloading boundary\n");
-#endif
     for(i=0;i<global_scase.npatchinfo;i++){
       ReadBoundary(i,UNLOAD,&errorcode);
     }
-#ifdef pp_DEBUG_OSX_CRASH
-    printf("unloading part\n");
-#endif
     for(i=0;i<global_scase.npartinfo;i++){
       ReadPart("",i,UNLOAD,&errorcode);
     }
-#ifdef pp_DEBUG_OSX_CRASH
-    printf("unloading iso\n");
-#endif
     for(i=0;i<global_scase.nisoinfo;i++){
       ReadIso("",i,UNLOAD,NULL,&errorcode);
     }
-#ifdef pp_DEBUG_OSX_CRASH
-    printf("unloading zone\n");
-#endif
     for(i=0;i<global_scase.nzoneinfo;i++){
       ReadZone(i,UNLOAD,&errorcode);
     }
-#ifdef pp_DEBUG_OSX_CRASH
-    printf("unloading 3d smoke nsmoke3d=%i\n",global_scase.smoke3dcoll.nsmoke3dinfo);
-#endif
     if(global_scase.smoke3dcoll.nsmoke3dinfo > 0){
       UnloadAllSmoke3D(-1);
     }
-#ifdef pp_DEBUG_OSX_CRASH
-    printf("unloading volsmoke\n");
-#endif
     if(nvolrenderinfo>0){
       UnLoadVolsmoke3DMenu(UNLOAD_ALL);
     }
-#ifdef pp_DEBUG_OSX_CRASH
-    printf("update devices\n");
-#endif
     if(showdevice_val==1||vis_device_plot!=DEVICE_PLOT_HIDDEN){
       vis_device_plot = DEVICE_PLOT_HIDDEN;
       showdevice_val = 0;
       GLUIUpdateDeviceShow();
     }
-#ifdef pp_DEBUG_OSX_CRASH
-    printf("LoadPlot2DMenu\n");
-#endif
     LoadPlot2DMenu(MENU_PLOT2D_UNLOAD);
     updatemenu=1;
     GLUTPOSTREDISPLAY;
