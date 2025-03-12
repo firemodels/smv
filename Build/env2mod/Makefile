@@ -104,16 +104,6 @@ gnu_osx_64 : exe       = env2mod_osx_64
 gnu_osx_64 : $(obj)
 	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS)
 
-# ------------- intel osx 64 ----------------
-
-intel_osx_64 : CFLAGS    = -O2 -m64 -D pp_OSX $(GITINFO) $(INTEL_COMPINFO)
-intel_osx_64 : LFLAGS    = -m64
-intel_osx_64 : CC        = icc
-intel_osx_64 : exe       = env2mod_osx_64
-
-intel_osx_64 : $(obj)
-	$(CC) -o $(bin)/$(exe) $(LFLABS) $(obj)
-
 .PHONY : clean
 clean:
 	rm -f *.o

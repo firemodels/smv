@@ -86,16 +86,6 @@ gnu_linux_64_db : exe       = background_linux_64
 gnu_linux_64_db: $(obj)
 	$(CC) -m64 -o $(bin)/$(exe) $(obj) -lm
 
-# ------------- OSX 64 ----------------
-#  64 bit osx
-
-intel_osx_64 : CFLAGS    = -O2 -m64 -D pp_OSX $(GITINFO) $(INTEL_COMPINFO)
-intel_osx_64 : CC        = icc
-intel_osx_64 : exe       = background_osx_64
-
-intel_osx_64 : $(obj)
-	$(CC) -o $(bin)/$(exe) -m64 $(obj)
-
 # ------------- gcc OSX 64 ----------------
 gnu_osx_64 : CFLAGS    = -O2 -m64 -D pp_OSX $(GITINFO) $(GNU_COMPINFO)
 gnu_osx_64 : CC        = gcc

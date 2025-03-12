@@ -78,16 +78,6 @@ gcc_linux_64 : exe       = makepo_linux_64
 gcc_linux_64 : $(obj)
 	$(CC) -o $(bin)/$(exe) $(obj) $(LFLAGS)
 
-# ------------- intel osx 64 ----------------
-
-intel_osx_64 : CFLAGS    = -O2 -m64 -D pp_OSX $(GITINFO) $(INTEL_COMPINFO)
-intel_osx_64 : LFLAGS    = -lpthread
-intel_osx_64 : CC        = icc
-intel_osx_64 : exe       = makepo_osx_64
-
-intel_osx_64 : $(obj)
-	$(CC) -o $(bin)/$(exe) $(obj)
-
 # ------------- gcc osx 64 ----------------
 
 gcc_osx_64 : CFLAGS    = -O2 -m64 -D pp_OSX $(GITINFO) $(GNU_COMPINFO)

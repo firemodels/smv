@@ -134,27 +134,6 @@ intel_linux_64_db : exe       = convert_linux_64_db
 intel_linux_64_db : $(obj)
 	$(CC) -o $(bin)/$(exe) -static-intel $(obj)
 
-
-# ------------- intel osx 64 ----------------
-
-intel_osx_64 : CFLAGS    = -O2 -m64 -D pp_OSX $(GITINFO) $(INTEL_COMPINFO) -mmacosx-version-min=10.9
-intel_osx_64 : CC        = icc
-intel_osx_64 : CPP       = icc
-intel_osx_64 : exe       = convert_osx_64
-
-intel_osx_64 : $(obj)
-	$(CPP) -o $(bin)/$(exe) -m64 -static-intel $(obj) -mmacosx-version-min=10.9
-
-# ------------- intel osx 64 db ----------------
-
-intel_osx_64_db : CFLAGS    = -O0 -g -m64 -static-intel -D _DEBUG -D pp_OSX -mmacosx-version-min=10.7 $(SMV_TESTFLAG) -Wall -Wextra -check=stack,uninit -fp-stack-check -fp-trap-all=divzero,invalid,overflow -ftrapuv -Wuninitialized -Wunused-function -Wunused-variable $(GITINFO) $(INTEL_COMPINFO)
-intel_osx_64_db : CC        = icc
-intel_osx_64_db : CPP       = icc
-intel_osx_64_db : exe       = convert_osx_64_db
-
-intel_osx_64_db : $(obj)
-	$(CPP) -o $(bin)/$(exe) -m64 -static-intel $(obj) -mmacosx-version-min=10.9
-
 #-------------- compile sring_util.c so revision strings are updated -----------
 
 string_util.o:  .FORCE
