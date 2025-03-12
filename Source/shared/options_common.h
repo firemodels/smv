@@ -144,10 +144,6 @@
 #undef  GLUT_H
 #define GLUT_H <GLUT/glut.h>
 #endif
-#ifdef pp_QUARTZ
-#undef  GLUT_H
-#define GLUT_H <GL/glut.h>
-#endif
 
 #define GL_H <GL/gl.h>
 #ifdef pp_OSX

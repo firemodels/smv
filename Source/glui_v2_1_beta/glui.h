@@ -22,12 +22,8 @@
 #define _GLUI_H_
 
 #ifdef pp_OSX
-#ifdef pp_QUARTZ
-#include <GL/glut.h>
-#else
 #include <GLUT/glut.h>
 #include "glutbitmap.h"  // only needed on non-quartz osx platforms
-#endif
 #else
 #include <GL/glut.h>
 #endif

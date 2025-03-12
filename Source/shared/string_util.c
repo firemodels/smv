@@ -2071,11 +2071,7 @@ void PRINTversion(char *progname){
   PRINTF("\n");
 #endif
 #ifdef pp_OSX
-#ifdef pp_QUARTZ
-  PRINTF("Platform         : OSX64/QUARTZ\n");
-#else
   PRINTF("Platform         : OSX64\n");
-#endif
 #endif
 #ifdef pp_LINUX
   PRINTF("Platform         : LINUX64\n");
