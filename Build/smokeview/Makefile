@@ -411,11 +411,7 @@ win_check : $(win_chk)
 ifeq ($(GLUT),freeglut)
   SMV_LIBS_OSX =  -lglui  -lglut -lgd -ljpeg -lpng -lz
 else
-  ifeq ($(QUARTZ),framework)
-    SMV_LIBS_OSX = -lglui        -lgd -ljpeg -lpng -lz
-  else
-    SMV_LIBS_OSX = -lglui -lglut -lgd -ljpeg -lpng -lz
-  endif
+  SMV_LIBS_OSX =  -lglui        -lgd -ljpeg -lpng -lz
 endif
 
 # ------------- intel_osx_64 ----------------
@@ -425,22 +421,18 @@ intel_osx_64 : C_STANDARD    = -std=gnu99
 intel_osx_64 : LIBLUA    =
 ifeq ($(LUA_SCRIPTING),true)
 intel_osx_64 : CFLAGS    += -D pp_LUA
-intel_osx_64 : SMVLUACORE_FILES += $(LIB_DIR)/intel_osx_$(NOQUARTZ)64/lpeg.so
-intel_osx_64 : LIBLUA    += $(LIB_DIR)/intel_osx_$(NOQUARTZ)64/liblua.a -ldl
+intel_osx_64 : SMVLUACORE_FILES += $(LIB_DIR)/intel_osx_64/lpeg.so
+intel_osx_64 : LIBLUA    += $(LIB_DIR)/intel_osx_64/liblua.a -ldl
 endif
-intel_osx_64 : LFLAGS    = -m64 -L$(LIB_DIR)/intel_osx_$(NOQUARTZ)64 $(SMV_LIBS_OSX) -traceback -static-intel  -diag-disable=10441
+intel_osx_64 : LFLAGS    = -m64 -L$(LIB_DIR)/intel_osx_64 $(SMV_LIBS_OSX) -traceback -static-intel  -diag-disable=10441
 ifeq ($(GLUT),freeglut)
 intel_osx_64 : LFLAGS   += -L /opt/X11/lib -lX11 -lXmu -lGLU -lGL
 else
-ifeq ($(QUARTZ),framework)
 intel_osx_64 : LFLAGS   += -framework OpenGL -framework GLUT
-else
-intel_osx_64 : LFLAGS   += -L /opt/X11/lib -lX11 -lXmu -lGLU -lGL
-endif
 endif
 intel_osx_64 : CC        = icc
 intel_osx_64 : CPP       = icpc
-intel_osx_64 : exe       = smokeview_osx_$(SMV_TESTSTRING)$(NOQUARTZ)64
+intel_osx_64 : exe       = smokeview_osx_$(SMV_TESTSTRING)64
 
 intel_osx_64 : $(obj) $(if $(LUA_SCRIPTING),smvluacore)
 	icpc -o $(bin)/$(exe) $(obj) $(LFLAGS) $(INTEL_LIBS_OSX) $(LIBLUA)
@@ -452,23 +444,19 @@ intel_osx_64_db : C_STANDARD    = -std=gnu99
 intel_osx_64_db : LIBLUA    =
 ifeq ($(LUA_SCRIPTING),true)
 intel_osx_64_db : CFLAGS    += -D pp_LUA
-intel_osx_64_db : SMVLUACORE_FILES += $(LIB_DIR)/intel_osx_$(NOQUARTZ)64/lpeg.so
-intel_osx_64_db : LIBLUA    += $(LIB_DIR)/intel_osx_$(NOQUARTZ)64/liblua.a -ldl
+intel_osx_64_db : SMVLUACORE_FILES += $(LIB_DIR)/intel_osx_64/lpeg.so
+intel_osx_64_db : LIBLUA    += $(LIB_DIR)/intel_osx_64/liblua.a -ldl
 endif
 # remove following from LFLAGS line
-intel_osx_64_db : LFLAGS    = -m64 -L$(LIB_DIR)/intel_osx_$(NOQUARTZ)64 $(SMV_LIBS_OSX) -traceback -static-intel -diag-disable=10441
+intel_osx_64_db : LFLAGS    = -m64 -L$(LIB_DIR)/intel_osx_64 $(SMV_LIBS_OSX) -traceback -static-intel -diag-disable=10441
 ifeq ($(GLUT),freeglut)
 intel_osx_64_db : LFLAGS   += -L /opt/X11/lib -lX11 -lXmu -lGLU -lGL
 else
-ifeq ($(QUARTZ),framework)
 intel_osx_64_db : LFLAGS   += -framework OpenGL -framework GLUT
-else
-intel_osx_64_db : LFLAGS   += -L /opt/X11/lib -lX11 -lXmu -lGLU -lGL
-endif
 endif
 intel_osx_64_db : CC        = icc
 intel_osx_64_db : CPP       = icpc
-intel_osx_64_db : exe       = smokeview_osx_$(SMV_TESTSTRING)$(NOQUARTZ)64_db
+intel_osx_64_db : exe       = smokeview_osx_$(SMV_TESTSTRING)64_db
 
 intel_osx_64_db : $(obj) $(if $(LUA_SCRIPTING),smvluacore)
 	icpc -o $(bin)/$(exe) $(obj) $(LFLAGS) $(INTEL_LIBS_OSX) $(LIBLUA)
@@ -482,11 +470,7 @@ ifeq ($(GLUT),freeglut)
 gnu_osx_64_db : LFLAGS   += -L /opt/X11/lib -lX11 -lXmu -lGLU -lGL
 gnu_osx_64_db : CFLAGS   += -D FREEGLUT_STATIC
 else
-ifeq ($(QUARTZ),framework)
 gnu_osx_64_db : LFLAGS   += -framework OpenGL -framework GLUT
-else
-gnu_osx_64_db : LFLAGS   += -L /opt/X11/lib -lX11 -lXmu -lGLU -lGL
-endif
 endif
 gnu_osx_64_db : CC        = gcc$(GLIBVERS)
 gnu_osx_64_db : CPP       = g++$(GLIBVERS)
@@ -504,11 +488,7 @@ ifeq ($(GLUT),freeglut)
 gnu_osx_64 : LFLAGS   += -L /opt/X11/lib -lX11 -lXmu -lGLU -lGL
 gnu_osx_64 : CFLAGS   += -D FREEGLUT_STATIC
 else
-ifeq ($(QUARTZ),framework)
 gnu_osx_64 : LFLAGS   += -framework OpenGL -framework GLUT
-else
-gnu_osx_64 : LFLAGS   += -L /opt/X11/lib -lX11 -lXmu -lGLU -lGL
-endif
 endif
 gnu_osx_64 : CC        = gcc$(GLIBVERS)
 gnu_osx_64 : CPP       = g++$(GLIBVERS)

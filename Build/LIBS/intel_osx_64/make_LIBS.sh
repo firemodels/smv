@@ -2,7 +2,7 @@
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd $DIR
-OPTS="-I -Q $*"
+OPTS="-I $*"
 
 source ../../../Source/scripts/setopts.sh $OPTS
 
@@ -45,14 +45,7 @@ echo "********** building freeglut"
   ./make_freeglut.sh $OPTS  >& $LIBDIR/freeglut.out
   cp libglut.a $LIBDIR/.
 else
-  if [ "$QUARTZ" != "framework" ]; then
-echo "********** building glut"
-    cd $SRCDIR/glut-3.7.6
-    ./makelib.sh $OPTS >& $LIBDIR/glut.out
-    cp libglut.a $LIBDIR/.
-  else
 echo "********** using OSX provided glut"
-  fi
 fi
 fi
 

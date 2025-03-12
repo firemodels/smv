@@ -37,7 +37,7 @@ set(GLUI_SRCS
 add_library(glui_static STATIC ${GLUI_SRCS})
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
   set(MACOSX TRUE)
-  add_definitions(-Dpp_OSX -Dpp_NOQUARTZ)
+  add_definitions(-Dpp_OSX)
 else ()
   target_include_directories(glui_static PRIVATE ../glui_gl)
 endif()
