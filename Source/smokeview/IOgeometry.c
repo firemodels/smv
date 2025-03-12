@@ -824,21 +824,6 @@ void DrawBoxMinMax(float *bbmin, float *bbmax, float *box_color){
   DrawBoxOutline(bb, box_color);
 }
 
-#ifdef pp_BOUNDING_BOX
-/* ------------------ DrawObstBoundingBox ------------------------ */
-
-void DrawObstBoundingBox(void){
-  if(global_scase.obst_bounding_box[0]>global_scase.obst_bounding_box[1])return;
-  if(global_scase.obst_bounding_box[2]>global_scase.obst_bounding_box[3])return;
-  if(global_scase.obst_bounding_box[4]>global_scase.obst_bounding_box[5])return;
-  glPushMatrix();
-  glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
-  glTranslatef(-global_scase.xbar0, -global_scase.ybar0, -global_scase.zbar0);
-  DrawBoxOutline(global_scase.obst_bounding_box, foregroundcolor);
-  glPopMatrix();
-}
-#endif
-
 /* ------------------ DrawGeomBoundingBox ------------------------ */
 
 void DrawGeomBoundingBox(float *boundingbox_color){

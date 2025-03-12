@@ -9,7 +9,6 @@
 #define pp_GPU              // support the GPU
 #define pp_THREAD           // turn on multi-threading
 //#define pp_SMOKE_THREAD     // use multi-threading for merging smoke
-//#define pp_BOUNDING_BOX   // draw bounding box when mouse is pressed and option selected
 //#define pp_CULL_GEOM       // cull (do not draw) geometry that is not in the view frustum
 
 #ifdef pp_FRAME          // turn on each frame type if pp_FRAME is set
