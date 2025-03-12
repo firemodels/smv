@@ -2431,6 +2431,7 @@ int ClipFace(clipdata *ci, facedata *facei){
   return 0;
 }
 
+#ifdef pp_CULL_GEOM
 /* ------------------ SetCullVis ------------------------ */
 
 void SetCullVis(void){
@@ -2461,6 +2462,7 @@ void SetCullVis(void){
     }
   }
 }
+#endif
 
 /* ------------------ CompareSingleFaces0 ------------------------ */
 
@@ -2692,12 +2694,14 @@ void UpdateFaceListsWorker(void){
     int vent_offset, outline_offset, exteriorsurface_offset;
 
     meshi = global_scase.meshescoll.meshinfo + i;
+#ifdef pp_CULL_GEOM
     for(j=0;j<meshi->nfaces;j++){
       facedata *facej;
 
       facej = meshi->faceinfo + j;
       facej->cullport=NULL;
     }
+#endif
 
     patchfilenum=meshi->patchfilenum;
     patchi=NULL;
@@ -2931,7 +2935,9 @@ void UpdateFaceListsWorker(void){
         facedata *facei;
 
         facei=meshi->face_normals_single[iface];
+#ifdef pp_CULL_GEOM
         facei->cullport=GetFacePort(meshi,facei);
+#endif
         switch(facei->dir){
           case DOWN_X:
             if(istartD==-1){
@@ -3043,16 +3049,19 @@ void DrawSelectFaces(){
   glEnd();
 }
 
-#define DRAWFACE(DEFfacetest,DEFeditcolor)    \
+#ifdef pp_CULL_GEOM
+#define CULL_GEOM \
+culldata *cullport;\
+cullport = facei->cullport;\
+if(cullport != NULL && cullport->vis == 0)continue
+#else
+#define CULL_GEOM
+#endif
+
+#define DRAWFACE(facei,DEFfacetest,DEFeditcolor)    \
         float *facepos;\
-        culldata *cullport;\
-        facedata *facei;\
         float *vertices;\
-        assert(i>=0&&i<meshi->nface_normals_single);\
-        assert(face_START!=NULL);\
-        facei = face_START[i];\
-        cullport=facei->cullport;\
-        if(cullport!=NULL&&cullport->vis==0)continue;\
+        CULL_GEOM; \
         if(blocklocation==BLOCKlocation_grid){\
           vertices = facei->approx_vertex_coords;\
         }\
@@ -3474,7 +3483,6 @@ void DrawFaces(){
     glEnable(GL_COLOR_MATERIAL);
     glBegin(GL_TRIANGLES);
     for(j=0;j<global_scase.meshescoll.nmeshes;j++){
-      facedata **face_START;
       meshdata *meshi;
       int i;
 
@@ -3484,49 +3492,61 @@ void DrawFaces(){
       // DOWN_X faces
 
       glNormal3f(-1.0,0.0,0.0);
-      face_START=meshi->face_normals_single_DOWN_X;
       for(i=0;i<meshi->nface_normals_single_DOWN_X;i++){
-        DRAWFACE(smv_eyepos[0]>facepos[0],down_color)
+        facedata *facei;
+
+        facei = meshi->face_normals_single_DOWN_X[i];
+        DRAWFACE(facei,smv_eyepos[0] > facepos[0], down_color)
       }
 
       // UP_X faces
 
       glNormal3f(1.0,0.0,0.0);
-      face_START=meshi->face_normals_single_UP_X;
       for(i=0;i<meshi->nface_normals_single_UP_X;i++){
-        DRAWFACE(smv_eyepos[0]<facepos[0],up_color)
+        facedata *facei;
+
+        facei = meshi->face_normals_single_UP_X[i];
+        DRAWFACE(facei,smv_eyepos[0]<facepos[0],up_color)
       }
 
       // DOWN_Y faces
 
       glNormal3f(0.0,-1.0,0.0);
-      face_START=meshi->face_normals_single_DOWN_Y;
       for(i=0;i<meshi->nface_normals_single_DOWN_Y;i++){
-        DRAWFACE(smv_eyepos[1]>facepos[1],down_color)
+        facedata *facei;
+
+        facei = meshi->face_normals_single_DOWN_Y[i];
+        DRAWFACE(facei,smv_eyepos[1]>facepos[1],down_color)
       }
 
       // UP_Y faces
 
       glNormal3f(0.0,1.0,0.0);
-      face_START=meshi->face_normals_single_UP_Y;
       for(i=0;i<meshi->nface_normals_single_UP_Y;i++){
-        DRAWFACE(smv_eyepos[1]<facepos[1],up_color)
+        facedata *facei;
+
+        facei = meshi->face_normals_single_UP_Y[i];
+        DRAWFACE(facei,smv_eyepos[1]<facepos[1],up_color)
       }
 
       // DOWN_Z faces
 
       glNormal3f(0.0,0.0,-1.0);
-      face_START=meshi->face_normals_single_DOWN_Z;
       for(i=0;i<meshi->nface_normals_single_DOWN_Z;i++){
-        DRAWFACE(smv_eyepos[2]>facepos[2],down_color)
+        facedata *facei;
+
+        facei = meshi->face_normals_single_DOWN_Z[i];
+        DRAWFACE(facei,smv_eyepos[2]>facepos[2],down_color)
       }
 
       // UP_Z faces
 
       glNormal3f(0.0,0.0,1.0);
-      face_START=meshi->face_normals_single_UP_Z;
       for(i=0;i<meshi->nface_normals_single_UP_Z;i++){
-        DRAWFACE(smv_eyepos[2]<facepos[2],up_color)
+        facedata *facei;
+
+        facei = meshi->face_normals_single_UP_Z[i];
+        DRAWFACE(facei,smv_eyepos[2]<facepos[2],up_color)
       }
     }
     glEnd();
@@ -5210,6 +5230,7 @@ void GetDrawingParms(int *drawing_transparent, int *drawing_blockage_transparent
   }
 }
 
+#ifdef pp_CULL_GEOM
 /* ------------------ InitCullGeom ------------------------ */
 
 void InitCullGeom(int cullgeomflag){
@@ -5367,12 +5388,14 @@ culldata *GetFacePort(meshdata *meshi, facedata *facei){
   }
   if(kk1<0||kk1>nz)return NULL;
 
-
   ixyz = ii1 + jj1*nx + kk1*nx*ny;
+  assert(ixyz>=0&&ixyz < meshi->ncullgeominfo);
+  ixyz = CLAMP(ixyz, 0,meshi->ncullgeominfo-1);
   return_cull = meshi->cullgeominfo + ixyz;
 
   return return_cull;
 }
+#endif
 
 /* ------------------ CompareBlockage ------------------------ */
 

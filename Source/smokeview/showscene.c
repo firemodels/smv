@@ -172,12 +172,6 @@ void ShowScene2(int mode){
       SNIFF_ERRORS("after DrawOutlines");
     }
 
-#ifdef pp_BOUNDING_BOX
-    if(hide_scene==1 && mouse_down==1){
-      DrawObstBoundingBox();
-    }
-#endif
-
     if(show_intersected_meshes == 1){
       int i;
       float box_black[4] = {0.0, 0.0, 0.0, 1.0};

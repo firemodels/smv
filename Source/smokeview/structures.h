@@ -137,7 +137,9 @@ typedef struct _facedata {
   float xmin, xmax, ymin, ymax, zmin, zmax;
   int dir, hidden, dup, interior;
   int transparent;
+#ifdef pp_CULL_GEOM
   struct _culldata *cullport;
+#endif
   int **showtimelist_handle;
   int show_bothsides;
   struct _blockagedata *bc;

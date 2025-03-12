@@ -262,18 +262,20 @@ EXTERNCPP void GetBlockVals(float *xmin, float *xmax,
                    float *ymin, float *ymax,
                    float *zmin, float *zmax,
                    int *imin, int *jmin, int *kmin);
-EXTERNCPP void GetCullSkips(meshdata *meshi, int cullflag, int cull_portsize, int *iiskip, int *jjskip, int *kkskip);
 EXTERNCPP void GetDrawingParms(int *drawing_transparent, int *drawing_blockage_transparent, int *drawing_vent_transparent);
-EXTERNCPP culldata *GetFacePort(meshdata *meshi, facedata *facei);
 EXTERNCPP void GetObstLabels(const char *filein);
 EXTERNCPP int  HaveCircularVents(void);
 EXTERNCPP int  InBlockage(const meshdata *gb,float x, float y, float z);
+#ifdef pp_CULL_GEOM
+EXTERNCPP void GetCullSkips(meshdata *meshi, int cullflag, int cull_portsize, int *iiskip, int *jjskip, int *kkskip);
+EXTERNCPP culldata *GetFacePort(meshdata *meshi, facedata *facei);
 EXTERNCPP void InitCullGeom(int cullflag);
+EXTERNCPP void SetCullVis(void);
+#endif
 EXTERNCPP void InitDemo(float rad, int nlat, int nlong);
 EXTERNCPP void InitUserTicks(void);
 EXTERNCPP void LevelScene(int level_x, int level_y, float *quat);
 EXTERNCPP void RemoveDupBlockages(void);
-EXTERNCPP void SetCullVis(void);
 EXTERNCPP void SetCVentDirs(void);
 EXTERNCPP void SetInteriorBlockages(void);
 EXTERNCPP void SetVentDirs(void);
@@ -391,9 +393,6 @@ EXTERNCPP void DrawGeomBoundingBox(float *boundingbox_color);
 EXTERNCPP void DrawGeomData(int flag, slicedata *sd, patchdata *patchi, int geom_type);
 EXTERNCPP void DrawGeomValues(slicedata *sd, patchdata *patchi, int geom_type);
 EXTERNCPP void DrawGeomVData(vslicedata *vd);
-#ifdef pp_BOUNDING_BOX
-EXTERNCPP void DrawObstBoundingBox(void);
-#endif
 EXTERNCPP void DrawSelectGeom(void);
 EXTERNCPP void GetFaceInfo(void);
 EXTERNCPP FILE_SIZE GetGeomData(patchdata *patchi, char *filename, int load_flag, int ntimes, int nvals, float *times,
@@ -577,17 +576,10 @@ EXTERNCPP int  IsSmokeComponentPresent(smoke3ddata *smoke3di);
 EXTERNCPP void MakeIBlankSmoke3D(void);
 EXTERNCPP void MakeTimesMap(float *times, unsigned char **times_map_ptr, int n);
 EXTERNCPP void MergeSmoke3D(smoke3ddata *smoke3dset);
-#ifdef pp_SMOKE_THREAD
-EXTERNCPP void *MtMergeSmoke3D(void *arg);
-#else
 EXTERNCPP void MergeSmoke3DAll(void);
-#endif
 EXTERNCPP FILE_SIZE ReadSmoke3D(int iframe, int ifile, int flag, int first_time, int *errorcode);
 EXTERNCPP void ReadSmoke3DAllMeshes(int iframe, int smoketype, int *errorcode);
 EXTERNCPP void SmokeWrapup(void);
-#ifdef pp_SMOKE_THREAD
-EXTERNCPP void UpdateGluiMergeSmoke(void);
-#endif
 EXTERNCPP int   UpdateSmoke3D(smoke3ddata *smoke3di);
 EXTERNCPP void UpdateSmoke3dFileParms(void);
 EXTERNCPP void UpdateSmoke3dMenuLabels(void);
