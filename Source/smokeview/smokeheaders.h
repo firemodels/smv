@@ -262,18 +262,20 @@ EXTERNCPP void GetBlockVals(float *xmin, float *xmax,
                    float *ymin, float *ymax,
                    float *zmin, float *zmax,
                    int *imin, int *jmin, int *kmin);
-EXTERNCPP void GetCullSkips(meshdata *meshi, int cullflag, int cull_portsize, int *iiskip, int *jjskip, int *kkskip);
 EXTERNCPP void GetDrawingParms(int *drawing_transparent, int *drawing_blockage_transparent, int *drawing_vent_transparent);
-EXTERNCPP culldata *GetFacePort(meshdata *meshi, facedata *facei);
 EXTERNCPP void GetObstLabels(const char *filein);
 EXTERNCPP int  HaveCircularVents(void);
 EXTERNCPP int  InBlockage(const meshdata *gb,float x, float y, float z);
+#ifdef pp_CULL_GEOM
+EXTERNCPP void GetCullSkips(meshdata *meshi, int cullflag, int cull_portsize, int *iiskip, int *jjskip, int *kkskip);
+EXTERNCPP culldata *GetFacePort(meshdata *meshi, facedata *facei);
 EXTERNCPP void InitCullGeom(int cullflag);
+EXTERNCPP void SetCullVis(void);
+#endif
 EXTERNCPP void InitDemo(float rad, int nlat, int nlong);
 EXTERNCPP void InitUserTicks(void);
 EXTERNCPP void LevelScene(int level_x, int level_y, float *quat);
 EXTERNCPP void RemoveDupBlockages(void);
-EXTERNCPP void SetCullVis(void);
 EXTERNCPP void SetCVentDirs(void);
 EXTERNCPP void SetInteriorBlockages(void);
 EXTERNCPP void SetVentDirs(void);

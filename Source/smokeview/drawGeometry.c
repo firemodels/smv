@@ -2431,6 +2431,7 @@ int ClipFace(clipdata *ci, facedata *facei){
   return 0;
 }
 
+#ifdef pp_CULL_GEOM
 /* ------------------ SetCullVis ------------------------ */
 
 void SetCullVis(void){
@@ -2461,6 +2462,7 @@ void SetCullVis(void){
     }
   }
 }
+#endif
 
 /* ------------------ CompareSingleFaces0 ------------------------ */
 
@@ -2692,12 +2694,14 @@ void UpdateFaceListsWorker(void){
     int vent_offset, outline_offset, exteriorsurface_offset;
 
     meshi = global_scase.meshescoll.meshinfo + i;
+#ifdef pp_CULL_GEOM
     for(j=0;j<meshi->nfaces;j++){
       facedata *facej;
 
       facej = meshi->faceinfo + j;
       facej->cullport=NULL;
     }
+#endif
 
     patchfilenum=meshi->patchfilenum;
     patchi=NULL;
@@ -2931,7 +2935,9 @@ void UpdateFaceListsWorker(void){
         facedata *facei;
 
         facei=meshi->face_normals_single[iface];
+#ifdef pp_CULL_GEOM
         facei->cullport=GetFacePort(meshi,facei);
+#endif
         switch(facei->dir){
           case DOWN_X:
             if(istartD==-1){
@@ -3043,12 +3049,19 @@ void DrawSelectFaces(){
   glEnd();
 }
 
+#ifdef pp_CULL_GEOM
+#define CULL_GEOM \
+culldata *cullport;\
+cullport = facei->cullport;\
+if(cullport != NULL && cullport->vis == 0)continue
+#else
+#define CULL_GEOM
+#endif
+
 #define DRAWFACE(facei,DEFfacetest,DEFeditcolor)    \
         float *facepos;\
         float *vertices;\
-        culldata *cullport;\
-        cullport=facei->cullport;\
-        if(cullport!=NULL&&cullport->vis==0)continue;\
+        CULL_GEOM; \
         if(blocklocation==BLOCKlocation_grid){\
           vertices = facei->approx_vertex_coords;\
         }\
@@ -5217,6 +5230,7 @@ void GetDrawingParms(int *drawing_transparent, int *drawing_blockage_transparent
   }
 }
 
+#ifdef pp_CULL_GEOM
 /* ------------------ InitCullGeom ------------------------ */
 
 void InitCullGeom(int cullgeomflag){
@@ -5381,6 +5395,7 @@ culldata *GetFacePort(meshdata *meshi, facedata *facei){
 
   return return_cull;
 }
+#endif
 
 /* ------------------ CompareBlockage ------------------------ */
 
