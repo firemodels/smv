@@ -79,15 +79,6 @@ intel_linux_64 : exe       = test_linux_64
 intel_linux_64 : $(obj)
 	$(CC) -o $(bin)/$(exe) $(obj)
 
-# ------------- intel osx 64 ----------------
-
-intel_osx_64 : CFLAGS    = -O2 -m64
-intel_osx_64 : CC        = icc
-intel_osx_64 : exe       = test_osx_64
-
-intel_osx_64 : $(obj)
-	$(CC) -o $(bin)/$(exe) -m64 $(obj)
-
 # ------------- gnu osx 64 ----------------
 
 gnu_osx_64 : CFLAGS    = -O0 -m64

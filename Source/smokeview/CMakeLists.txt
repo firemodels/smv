@@ -91,7 +91,6 @@ endif()
 # Selecting which GLUT version to use is the most platform-dependent part of the
 # build.
 if (MACOSX)
-    add_definitions(-Dpp_NOQUARTZ)
     target_link_libraries(smokeview PRIVATE "-framework OpenGL" "-framework GLUT")
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99")
 elseif (GLUT_FOUND)

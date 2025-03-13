@@ -38,15 +38,6 @@ intel_linux_64 : exe       = hashfort_linux_64
 intel_linux_64 : $(obj)
 	$(FC) -o $(bin)/$(exe) $(obj)
 
-# ------------- intel oxx 64 ----------------
-
-intel_osx_64 : FFLAGS    = -O2 -m64 -stand:f18
-intel_osx_64 : FC        = ifort
-intel_osx_64 : exe       = hashfort_osx_64
-
-intel_osx_64 : $(obj)
-	$(FC) -o $(bin)/$(exe)  -mmacosx-version-min=10.4 $(obj)
-
 #-------------- Clean Target to remove Object and Module files -----------
 
 .PHONY : clean

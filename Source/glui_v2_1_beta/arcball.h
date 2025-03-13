@@ -40,11 +40,7 @@
 #include "algebra3.h"
 #include "quaternion.h"
 #ifdef pp_OSX
-#ifdef pp_QUARTZ
-#include <GL/glut.h>
-#else
 #include <GLUT/glut.h>
-#endif
 #else
 #include <GL/glut.h>
 #endif

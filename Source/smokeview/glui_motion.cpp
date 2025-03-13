@@ -2193,10 +2193,8 @@ extern "C" void GLUISceneMotionCB(int var){
       break;
     case WINDOW_RESIZE:
 #ifdef pp_OSX
-#ifndef pp_QUARTZ
       glui_screenWidth  /= 2;
       glui_screenHeight /= 2;
-#endif
 #endif
       SetScreenSize(&glui_screenWidth, &glui_screenHeight);
       screenWidth = glui_screenWidth;

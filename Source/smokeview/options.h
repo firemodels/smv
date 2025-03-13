@@ -45,23 +45,14 @@
 //*** options: Mac
 
 #ifdef pp_OSX
-#ifndef pp_NOQUARTZ     // if used, passed in from the command line so we don'thave to change source
-#define pp_QUARTZ       // use Quartz
-#endif
 #define GL_SILENCE_DEPRECATION
-#endif
-
-#ifdef pp_QUARTZ
-#define pp_CLOSEOFF     // turn off and disable close buttons in dialog box
 #endif
 
 #undef pp_OSX_HIGHRES
 #ifdef pp_OSX
-#ifndef pp_QUARTZ
 #define pp_REFRESH      // refresh glui dialogs when they change size
 #ifndef pp_OSX_LOWRES
 #define pp_OSX_HIGHRES
-#endif
 #endif
 #endif
 

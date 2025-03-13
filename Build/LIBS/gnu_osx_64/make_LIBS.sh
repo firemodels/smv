@@ -35,11 +35,7 @@ if [ "$GLUT" == "freeglut" ]; then
   ./make_freeglut.sh $OPTS
   cp libglut.a $LIBDIR/.
 else
-  if [ "$QUARTZ" != "framework" ]; then
-    cd $SRCDIR/glut-3.7.6
-    ./makelib.sh $OPTS -q
-    cp libglut.a $LIBDIR/.
-  fi
+  echo ***using OSX provided glut
 fi
 
 # JPEG
