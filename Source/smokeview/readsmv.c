@@ -14992,7 +14992,7 @@ int ReadIni2(const char *inifile, int localfile){
         ncolorbarini = MAX(ncolorbarini, 0);
         InitDefaultColorbars(&colorbars, ncolorbarini, show_extreme_mindata,
                              rgb_below_min, show_extreme_maxdata,
-                             rgb_above_max, colorbarcopyinfo);
+                             rgb_above_max, &colorbarcopyinfo);
         UpdateColorbarDialogs();
         UpdateCurrentColorbar(colorbars.colorbarinfo + colorbartype);
         update_colorbar_dialog = 0;
@@ -15803,7 +15803,7 @@ int ReadIni(char *inifile){
   }
   if(colorbars.ncolorbars<=colorbars.ndefaultcolorbars){
     InitDefaultColorbars(&colorbars, 0, show_extreme_mindata, rgb_below_min,
-                         show_extreme_maxdata, rgb_above_max, colorbarcopyinfo);
+                         show_extreme_maxdata, rgb_above_max, &colorbarcopyinfo);
     UpdateColorbarDialogs();
     UpdateCurrentColorbar(colorbars.colorbarinfo + colorbartype);
     update_colorbar_dialog = 0;

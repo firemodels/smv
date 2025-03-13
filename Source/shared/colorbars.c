@@ -681,7 +681,7 @@ EXTERNCPP void InitDefaultColorbars(colorbar_collection *colorbars, int nini,
                                     unsigned char rgb_below_min[3],
                                     int show_extreme_maxdata,
                                     unsigned char rgb_above_max[3],
-                                    colorbardata *colorbarcopyinfo) {
+                                    colorbardata **colorbarcopyinfoptr) {
 
   // Add colorbars as defined in the code.
   CreateColorbarRainbow(NewColorbar(colorbars));
@@ -749,7 +749,12 @@ EXTERNCPP void InitDefaultColorbars(colorbar_collection *colorbars, int nini,
       AdjustColorBar(cbi);
     }
   }
-  NEWMEMORY(colorbarcopyinfo, colorbars->ncolorbars * sizeof(colorbardata));
-  memcpy(colorbarcopyinfo, colorbars->colorbarinfo,
+  colorbardata *colorbarcopy;
+  if(*colorbarcopyinfoptr != NULL){
+    FREEMEMORY(*colorbarcopyinfoptr);
+  }
+  NEWMEMORY(colorbarcopy, colorbars->ncolorbars * sizeof(colorbardata));
+  memcpy(colorbarcopy, colorbars->colorbarinfo,
          colorbars->ncolorbars * sizeof(colorbardata));
+  *colorbarcopyinfoptr = colorbarcopy;
 }
