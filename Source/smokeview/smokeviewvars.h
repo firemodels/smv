@@ -1821,11 +1821,6 @@ SVEXTERN smv_case global_scase = {
                            .global_tend = 0.0,
                            .tload_begin = 0.0,
                            .tload_end = 0.0,
-                           .load_hrrpuv_cutoff = 200.0,
-                           .global_hrrpuv_cb_min = 200.0,
-                           .global_hrrpuv_cb_min_default = 200.0,
-                           .global_hrrpuv_cb_max = 1200.0,
-                           .global_hrrpuv_cb_max_default = 1200.0,
                            .smoke_albedo = 0.3,
                            .smoke_albedo_base = 0.3,
                            .xbar = 1.0,
@@ -2091,13 +2086,14 @@ SVEXTERN int ntexturestack;
 
 SVEXTERN float SVDECL(fire_opacity_factor,3.0),SVDECL(mass_extinct,8700.0);
 
-SVEXTERN float SVDECL(global_temp_cb_min, 600.0), SVDECL(global_temp_cb_min_default, 600.0);
-SVEXTERN float SVDECL(global_temp_cb_max,2000.0), SVDECL(global_temp_cb_max_default, 2000.0);
-
-SVEXTERN float SVDECL(global_temp_min,20.0),SVDECL(global_temp_max,2000.0);
+SVEXTERN float SVDECL(global_temp_min,20.0),              SVDECL(global_temp_max,2000.0);
+SVEXTERN float SVDECL(global_temp_cb_min, 600.0),         SVDECL(global_temp_cb_max,2000.0);
+SVEXTERN float SVDECL(global_temp_cb_min_default, 600.0), SVDECL(global_temp_cb_max_default, 2000.0);
 
 SVEXTERN float SVDECL(hrrpuv_max_smv,1200.0);
-SVEXTERN float SVDECL(global_hrrpuv_min,0.0),SVDECL(global_hrrpuv_max,1200.0);
+SVEXTERN float SVDECL(global_hrrpuv_min,0.0),              SVDECL(global_hrrpuv_max,1200.0);
+SVEXTERN float SVDECL(global_hrrpuv_cb_min,200.0),         SVDECL(global_hrrpuv_cb_max,1200.0);
+SVEXTERN float SVDECL(global_hrrpuv_cb_min_default,200.0), SVDECL(global_hrrpuv_cb_max_default,1200.0);
 
 SVEXTERN int SVDECL(volbw,0);
 SVEXTERN float SVDECL(tourrad_avatar,0.1);

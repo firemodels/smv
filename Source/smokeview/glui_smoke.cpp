@@ -442,8 +442,8 @@ extern "C" void GLUI3dSmokeSetup(int main_window){
 
   PANEL_fire_cutoff = glui_3dsmoke->add_panel_to_panel(ROLLOUT_firecolor, "Colorbar fire bounds");
   PANEL_hrrpuv_minmax = glui_3dsmoke->add_panel_to_panel(PANEL_fire_cutoff, "HRRPUV (kW/m3)");
-  SPINNER_hrrpuv_min = glui_3dsmoke->add_spinner_to_panel(PANEL_hrrpuv_minmax, "min", GLUI_SPINNER_FLOAT, &global_scase.global_hrrpuv_cb_min, GLOBAL_HRRPUV_MIN, GLUISmoke3dCB);
-  SPINNER_hrrpuv_max = glui_3dsmoke->add_spinner_to_panel(PANEL_hrrpuv_minmax, "max", GLUI_SPINNER_FLOAT, &global_scase.global_hrrpuv_cb_max,    GLOBAL_HRRPUV_MAX, GLUISmoke3dCB);
+  SPINNER_hrrpuv_min = glui_3dsmoke->add_spinner_to_panel(PANEL_hrrpuv_minmax, "min", GLUI_SPINNER_FLOAT, &global_hrrpuv_cb_min, GLOBAL_HRRPUV_MIN, GLUISmoke3dCB);
+  SPINNER_hrrpuv_max = glui_3dsmoke->add_spinner_to_panel(PANEL_hrrpuv_minmax, "max", GLUI_SPINNER_FLOAT, &global_hrrpuv_cb_max,    GLOBAL_HRRPUV_MAX, GLUISmoke3dCB);
   {
     char temp_cutoff_label[300];
 
@@ -964,12 +964,12 @@ extern "C" void GLUISmoke3dCB(int var){
     GLUISmoke3dCB(SMOKE_EXTINCT);
     break;
   case CUTOFF_RESET:
-    global_scase.global_hrrpuv_cb_min = global_scase.global_hrrpuv_cb_min_default;
-    global_scase.global_hrrpuv_cb_max    = global_scase.global_hrrpuv_cb_max_default;
+    global_hrrpuv_cb_min = global_hrrpuv_cb_min_default;
+    global_hrrpuv_cb_max    = global_hrrpuv_cb_max_default;
     global_temp_cb_min = global_temp_cb_min_default;
     global_temp_cb_max    = global_temp_cb_max_default;
-    SPINNER_hrrpuv_min->set_float_val(global_scase.global_hrrpuv_cb_min);
-    SPINNER_hrrpuv_max->set_float_val(global_scase.global_hrrpuv_cb_max);
+    SPINNER_hrrpuv_min->set_float_val(global_hrrpuv_cb_min);
+    SPINNER_hrrpuv_max->set_float_val(global_hrrpuv_cb_max);
     SPINNER_temperature_min->set_float_val(global_temp_cb_min);
     SPINNER_temperature_max->set_float_val(global_temp_cb_max);
     break;

@@ -9683,9 +9683,8 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
       sscanf(buffer,"%i",&nhrrpuvcut);
       if(nhrrpuvcut>=1){
         FGETS(buffer,255,stream);
-        sscanf(buffer,"%f",&scase->global_hrrpuv_cb_min_default);
-        scase->global_hrrpuv_cb_min = scase->global_hrrpuv_cb_min_default;
-        scase->load_hrrpuv_cutoff = scase->global_hrrpuv_cb_min;
+        sscanf(buffer,"%f",&global_hrrpuv_cb_min_default);
+        global_hrrpuv_cb_min = global_hrrpuv_cb_min_default;
         for(i=1;i<nhrrpuvcut;i++){
           FGETS(buffer,255,stream);
         }
@@ -14881,8 +14880,8 @@ int ReadIni2(const char *inifile, int localfile){
        }
       if(MatchINI(buffer, "HRRPUVCUTOFF")==1){
         if(fgets(buffer, 255, stream)==NULL)break;
-        sscanf(buffer, "%f", &global_scase.global_hrrpuv_cb_min_default);
-        global_scase.global_hrrpuv_cb_min = global_scase.global_hrrpuv_cb_min_default;
+        sscanf(buffer, "%f", &global_hrrpuv_cb_min_default);
+        global_hrrpuv_cb_min = global_hrrpuv_cb_min_default;
         continue;
       }
       if(MatchINI(buffer, "FDEPTH") == 1){
@@ -17066,7 +17065,7 @@ void WriteIni(int flag,char *filename){
     }
   }
   fprintf(fileout, "HRRPUVCUTOFF\n");
-  fprintf(fileout, " %f\n", global_scase.global_hrrpuv_cb_min);
+  fprintf(fileout, " %f\n", global_hrrpuv_cb_min);
   fprintf(fileout, "SHOWEXTREMEDATA\n");
   {
     int show_extremedata = 0;
