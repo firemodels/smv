@@ -5650,16 +5650,24 @@ int ParseSMOKE3DProcess(smv_case *scase, bufferstreamdata *stream, char *buffer,
 
     {
       if(ReadLabels(&smoke3di->label, stream, NULL)==LABEL_ERR)return RETURN_TWO;
+      smoke3di->valmin = -1.0;
+      smoke3di->valmax = -1.0;
       if(strcmp(smoke3di->label.longlabel, "SOOT DENSITY") == 0){
         smoke3di->is_smoke = 1;
+        smoke3di->valmin = 0.0;
+        smoke3di->valmax = -1.0;
       }
       if(strcmp(smoke3di->label.longlabel, "HRRPUV")==0){
         scase->show_hrrcutoff_active = 1;
         smoke3di->is_fire = 1;
+        smoke3di->valmin = 0.0;
+        smoke3di->valmax = 1200.0;
       }
       if(strstr(smoke3di->label.longlabel, "TEMPERATURE") !=NULL){
         scase->show_tempcutoff_active = 1;
         smoke3di->is_fire = 1;
+        smoke3di->valmin = 20.0;
+        smoke3di->valmax = 2000.0;
       }
       ismoke3d++;
       *ismoke3d_in = ismoke3d;
@@ -14893,8 +14901,8 @@ int ReadIni2(const char *inifile, int localfile){
        }
       if(MatchINI(buffer, "HRRPUVCUTOFF")==1){
         if(fgets(buffer, 255, stream)==NULL)break;
-        sscanf(buffer, "%f", &global_scase.global_hrrpuv_cutoff_default);
-        global_scase.global_hrrpuv_cutoff = global_scase.global_hrrpuv_cutoff_default;
+        sscanf(buffer, "%f", &global_scase.global_hrrpuv_cb_min_default);
+        global_scase.global_hrrpuv_cb_min = global_scase.global_hrrpuv_cb_min_default;
         continue;
       }
       if(MatchINI(buffer, "FDEPTH") == 1){
@@ -17080,7 +17088,7 @@ void WriteIni(int flag,char *filename){
     }
   }
   fprintf(fileout, "HRRPUVCUTOFF\n");
-  fprintf(fileout, " %f\n", global_scase.global_hrrpuv_cutoff);
+  fprintf(fileout, " %f\n", global_scase.global_hrrpuv_cb_min);
   fprintf(fileout, "SHOWEXTREMEDATA\n");
   {
     int show_extremedata = 0;
