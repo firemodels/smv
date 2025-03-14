@@ -961,7 +961,7 @@ SVEXTERN char opengl_version_label[256];
 SVEXTERN int SVDECL(usevolrender,1);
 #ifdef pp_GPU
 SVEXTERN int SVDECL(usegpu,0),SVDECL(gpuactive,0);
-SVEXTERN int GPU_skip, GPU_hrrcutoff, GPU_hrr, GPU_hrrpuv_max_smv, GPU_hrrpuv_cutoff;
+SVEXTERN int GPU_skip, GPU_hrrcutoff, GPU_hrr, GPU_global_hrrpuv_max, GPU_global_hrrpuv_cb_min;
 SVEXTERN int GPU_fire_alpha, GPU_firecolor, GPU_have_smoke, GPU_smokecolormap;
 SVEXTERN int GPU_smokeshade,GPU_smokealpha;
 SVEXTERN int GPU_use_fire_alpha, GPU_emission_factor;
@@ -2090,7 +2090,6 @@ SVEXTERN float SVDECL(global_temp_min,20.0),              SVDECL(global_temp_max
 SVEXTERN float SVDECL(global_temp_cb_min, 600.0),         SVDECL(global_temp_cb_max,2000.0);
 SVEXTERN float SVDECL(global_temp_cb_min_default, 600.0), SVDECL(global_temp_cb_max_default, 2000.0);
 
-SVEXTERN float SVDECL(hrrpuv_max_smv,1200.0);
 SVEXTERN float SVDECL(global_hrrpuv_min,0.0),              SVDECL(global_hrrpuv_max,1200.0);
 SVEXTERN float SVDECL(global_hrrpuv_cb_min,200.0),         SVDECL(global_hrrpuv_cb_max,1200.0);
 SVEXTERN float SVDECL(global_hrrpuv_cb_min_default,200.0), SVDECL(global_hrrpuv_cb_max_default,1200.0);

@@ -400,8 +400,8 @@ void DrawSmoke3DGPU(smoke3ddata *smoke3di){
   }
   iblank_smoke3d = meshi->iblank_smoke3d;
 
-  // meshi->hrrpuv_cutoff
-  // hrrpuv_max_smv;
+  // meshi->global_hrrpuv_cb_min
+  // global_hrrpuv_max;
 
   meshi = global_scase.meshescoll.meshinfo+smoke3di->blocknumber;
   if(meshvisptr[meshi-global_scase.meshescoll.meshinfo]==0)return;
@@ -461,8 +461,8 @@ void DrawSmoke3DGPU(smoke3ddata *smoke3di){
   glUniform1i(GPU_use_fire_alpha, use_fire_alpha);
   glUniform1i(GPU_have_smoke, have_smoke_local);
   glUniform1i(GPU_smokecolormap, 0);
-  glUniform1f(GPU_hrrpuv_max_smv, hrrpuv_max_smv);
-  glUniform1f(GPU_hrrpuv_cutoff, global_hrrpuv_cb_min);
+  glUniform1f(GPU_global_hrrpuv_max,    global_hrrpuv_max);
+  glUniform1f(GPU_global_hrrpuv_cb_min, global_hrrpuv_cb_min);
   glUniform1f(GPU_fire_alpha, smoke3di->fire_alpha);
 
   TransparentOn();
@@ -4518,8 +4518,8 @@ void MergeSmoke3DColors(smoke3ddata *smoke3dset){
     last = first;
   }
   if(have_fire==HRRPUV_index){
-    i_smoke3d_cutoff = 254*global_hrrpuv_cb_min/hrrpuv_max_smv;
-    i_co2_cutoff     = 254*(MAX(0.0,global_hrrpuv_cb_min))/hrrpuv_max_smv;
+    i_smoke3d_cutoff = 254*global_hrrpuv_cb_min/global_hrrpuv_max;
+    i_co2_cutoff     = 254*(MAX(0.0,global_hrrpuv_cb_min))/global_hrrpuv_max;
   }
   else if(have_fire==TEMP_index){
     i_smoke3d_cutoff = 254*((global_temp_cb_min - global_temp_min)/(global_temp_cb_max- global_temp_min));
