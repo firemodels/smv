@@ -12945,18 +12945,6 @@ int ReadIni2(const char *inifile, int localfile){
       ONEORZERO(vis_hrr_label);
       continue;
     }
-    if(MatchINI(buffer, "SHOWHRRCUTOFF") == 1){
-      fgets(buffer, 255, stream);
-      sscanf(buffer, "%i", &show_firecutoff);
-      ONEORZERO(show_firecutoff);
-      continue;
-    }
-    if(MatchINI(buffer, "SHOWFIRECUTOFF") == 1){
-      fgets(buffer, 255, stream);
-      sscanf(buffer, "%i", &show_firecutoff);
-      ONEORZERO(show_firecutoff);
-      continue;
-    }
     if(MatchINI(buffer, "TWOSIDEDVENTS") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%i %i", &show_bothsides_int, &show_bothsides_ext);
@@ -16827,8 +16815,6 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %i %i\n", visCircularVents, circle_outline);
   fprintf(fileout, "SHOWDUMMYVENTS\n");
   fprintf(fileout, " %i\n", visDummyVents);
-  fprintf(fileout, "SHOWFIRECUTOFF\n");
-  fprintf(fileout, " %i\n", show_firecutoff);
   fprintf(fileout, "SHOWFLOOR\n");
   fprintf(fileout, " %i\n", global_scase.visFloor);
   fprintf(fileout, "SHOWFRAME\n");

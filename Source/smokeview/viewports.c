@@ -278,9 +278,6 @@ void GetViewportInfo(void){
   doit=0;
   if(showtime==1){
     if(visTimelabel == 1 || visFramelabel == 1 || vis_hrr_label == 1 || visTimebar == 1)doit=1;
-    if(doit==0&&show_firecutoff==1&&current_mesh!=NULL){
-      if(hrrpuv_loaded==1||temp_loaded==1)doit=1;
-    }
     if(doit==0&&visFramerate==1)doit=1;
     if(doit==0&&vis_slice_average==1&&show_slice_average&&slice_average_flag==1)doit=1;
   }
@@ -1266,64 +1263,6 @@ void ViewportTimebar(int quad, GLint screen_left, GLint screen_down){
     OutputText(right_label_pos,3*v_space+2*VP_timebar.text_height, frameratelabel); // test print
   }
 
-  if((hrrpuv_loaded == 1 || temp_loaded == 1) && show_firecutoff == 1 && current_mesh != NULL){
-    char cutoff_label[256];
-    int i_cutoff;
-    float x1, x2, y1, y2;
-    float f_red, f_green, f_blue;
-
-    if(hrrpuv_loaded == 1 && show_firecutoff == 1){
-      i_cutoff = (int)(global_scase.global_hrrpuv_cb_min + 0.5);
-      sprintf(cutoff_label, ">%i kW/m3", i_cutoff);
-    }
-    else{
-      i_cutoff = (int)(global_temp_cb_min + 0.5);
-      sprintf(cutoff_label, ">%i %s", i_cutoff,degC);
-    }
-    OutputText(right_label_pos+5+h_space,3*v_space+2*VP_timebar.text_height,cutoff_label);
-
-    if(fire_colormap_type == 0){
-      f_red   = (float)fire_color_int255[0] / 255.0;
-      f_green = (float)fire_color_int255[1] / 255.0;
-      f_blue  = (float)fire_color_int255[2] / 255.0;
-      glColor3f(f_red, f_green, f_blue);
-    }
-    else{
-      float *colors;
-      int icolor;
-
-      if(strcmp(fire_colorbar->menu_label, "fire") == 0){
-        icolor = 192;
-      }
-      else if(strcmp(fire_colorbar->menu_label, "fire 2") == 0){
-        icolor = 128 + 127*(global_scase.global_hrrpuv_cb_min - global_hrrpuv_min) / (global_hrrpuv_max - global_hrrpuv_min);
-        icolor = CLAMP((icolor + 1), 0, 255);
-      }
-      else{
-        icolor = 255*(global_scase.global_hrrpuv_cb_min-global_hrrpuv_min)/(global_hrrpuv_max-global_hrrpuv_min);
-        icolor = CLAMP((icolor + 1), 0, 255);
-      }
-      colors = fire_colorbar->colorbar_rgb;
-      f_red = colors[3*icolor + 0];
-      f_green = colors[3*icolor + 1];
-      f_blue = colors[3*icolor + 2];
-      glColor3f(f_red, f_green, f_blue);
-    }
-
-    x1 = (float)(right_label_pos + h_space - 20);
-    x2 = x1 + (float)20;
-    y1 = (float)(5 + 2*VP_timebar.text_height);
-    y2 = y1 + (float)20;
-
-    glBegin(GL_TRIANGLES);
-    glVertex3f(x1,y1,0.0);
-    glVertex3f(x2,y1,0.0);
-    glVertex3f(x2,y2,0.0);
-    glVertex3f(x1, y1, 0.0);
-    glVertex3f(x2, y2, 0.0);
-    glVertex3f(x1, y2, 0.0);
-    glEnd();
-  }
 #ifdef pp_memstatus
   if(visAvailmemory==1){
     MEMSTATUS(0,&availmemory,NULL,NULL);

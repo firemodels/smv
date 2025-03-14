@@ -1904,7 +1904,7 @@ SVEXTERN int SVDECL(stereoactive,0);
 SVEXTERN int SVDECL(stereotype,STEREO_NONE), SVDECL(stereotypeOLD, STEREO_NONE);
 SVEXTERN int SVDECL(show_parallax,0), SVDECL(stereotype_frame, BOTH_EYES);
 
-SVEXTERN int SVDECL(show_firecutoff,0),SVDECL(hrrpuv_loaded,0);
+SVEXTERN int SVDECL(hrrpuv_loaded,0);
 SVEXTERN int SVDECL(temp_loaded,0);
 SVEXTERN int SVDECL(trainerview,1);
 SVEXTERN int SVDECL(apertureindex,1);
