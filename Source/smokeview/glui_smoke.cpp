@@ -440,7 +440,6 @@ extern "C" void GLUI3dSmokeSetup(int main_window){
     GLUISmoke3dCB(USE_FIRE_COLORMAP);
   }
 
-#define HRRPUV_CUTOFF_MAX (hrrpuv_max_smv-0.01)
   PANEL_fire_cutoff = glui_3dsmoke->add_panel_to_panel(ROLLOUT_firecolor, "Colorbar fire bounds");
   PANEL_hrrpuv_minmax = glui_3dsmoke->add_panel_to_panel(PANEL_fire_cutoff, "HRRPUV (kW/m3)");
   SPINNER_hrrpuv_min = glui_3dsmoke->add_spinner_to_panel(PANEL_hrrpuv_minmax, "min", GLUI_SPINNER_FLOAT, &global_scase.global_hrrpuv_cb_min, GLOBAL_HRRPUV_MIN, GLUISmoke3dCB);
