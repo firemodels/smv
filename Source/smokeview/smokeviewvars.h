@@ -1825,6 +1825,8 @@ SVEXTERN smv_case global_scase = {
                            .load_hrrpuv_cutoff = 200.0,
                            .global_hrrpuv_cutoff = 200.0,
                            .global_hrrpuv_cutoff_default = 200.0,
+                           .global_hrrpuv_max = 1200.0,
+                           .global_hrrpuv_max_default = 1200.0,
                            .smoke_albedo = 0.3,
                            .smoke_albedo_base = 0.3,
                            .xbar = 1.0,
@@ -2089,8 +2091,9 @@ SVEXTERN int SVDECL(nlat_hsphere, 20), SVDECL(nlong_hsphere, 40);
 SVEXTERN int ntexturestack;
 
 SVEXTERN float SVDECL(fire_opacity_factor,3.0),SVDECL(mass_extinct,8700.0);
-SVEXTERN float SVDECL(global_temp_min,20.0),SVDECL(global_temp_max,2000.0);
+SVEXTERN float SVDECL(global_temp_min,20.0);
 SVEXTERN float SVDECL(global_temp_cutoff, 600.0), SVDECL(global_temp_cutoff_default, 600.0);
+SVEXTERN float SVDECL(global_temp_max,2000.0), SVDECL(global_temp_max_default, 2000.0);
 SVEXTERN float SVDECL(global_hrrpuv_min,0.0),SVDECL(global_hrrpuv_max,1200.0);
 SVEXTERN int SVDECL(volbw,0);
 SVEXTERN float SVDECL(tourrad_avatar,0.1);
