@@ -149,6 +149,7 @@ GLUI_Checkbox **CHECKBOX_screenvis = NULL;
 #ifdef ROTATE_TRANSLATE
 GLUI_Translation *ROTATE_2axis = NULL;
 GLUI_Translation *TRANSLATE_z=NULL,*TRANSLATE_xy=NULL, *ROTATE_eye_z = NULL;
+GLUI_Translation *TRANSLATE_x = NULL, *TRANSLATE_y = NULL;
 #endif
 
 GLUI_RadioGroup *RADIO_render_resolution = NULL;
@@ -1177,10 +1178,16 @@ extern "C" void GLUIMotionSetup(int main_window){
   TRANSLATE_xy=glui_motion->add_translation_to_panel(PANEL_translate2,_("Horizontal"),GLUI_TRANSLATION_XY,d_eye_xyz,TRANSLATE_XY,GLUISceneMotionCB);
   TRANSLATE_xy->set_speed(TRANSLATE_SPEED);
 
+  TRANSLATE_x = glui_motion->add_translation_to_panel(PANEL_translate2, _("Left/Right"), GLUI_TRANSLATION_X, d_eye_xyz, TRANSLATE_X, GLUISceneMotionCB);
+  TRANSLATE_x->set_speed(TRANSLATE_SPEED);
+
   glui_motion->add_column_to_panel(PANEL_translate2,false);
 
   TRANSLATE_z=glui_motion->add_translation_to_panel(PANEL_translate2,_("Vertical"),GLUI_TRANSLATION_Y,eye_xyz+2,GLUI_Z,GLUISceneMotionCB);
   TRANSLATE_z->set_speed(TRANSLATE_SPEED);
+
+  TRANSLATE_y = glui_motion->add_translation_to_panel(PANEL_translate2, _("Front/Back"), GLUI_TRANSLATION_Y, d_eye_xyz+1, TRANSLATE_Y, GLUISceneMotionCB);
+  TRANSLATE_y->set_speed(TRANSLATE_SPEED);
 
   PANEL_rotate = glui_motion->add_panel_to_panel(ROLLOUT_translaterotate,_("Rotate"));
 
@@ -2014,7 +2021,9 @@ extern "C" void GLUISceneMotionCB(int var){
 
 #ifdef pp_GPU
   if(usegpu==1&&showvolrender==1&&show_volsmoke_moving==1&&
-     (var==EYE_ROTATE||var==EYE_ROTATE_90||var==ROTATE_2AXIS||var==TRANSLATE_XY||var==GLUI_Z)
+     (var==EYE_ROTATE||var==EYE_ROTATE_90||var==ROTATE_2AXIS||
+      var==TRANSLATE_XY||var==TRANSLATE_X||TRANSLATE_Y||
+      var==GLUI_Z)
     ){
     float fps;
 
@@ -2320,6 +2329,8 @@ extern "C" void GLUISceneMotionCB(int var){
     case ZAXIS_UP:
     case SET_VIEW_XYZ:
     case TRANSLATE_XY:
+    case TRANSLATE_X:
+    case TRANSLATE_Y:
     case GLUI_Z:
       break;
     default:
@@ -2412,6 +2423,8 @@ extern "C" void GLUISceneMotionCB(int var){
       break;
     case EYE_ROTATE:
     case TRANSLATE_XY:
+    case TRANSLATE_X:
+    case TRANSLATE_Y:
       if(glui_move_mode==EYE_ROTATE){
         eye_xyz0[0]=eye_xyz[0];
         eye_xyz0[1]=eye_xyz[1];
@@ -2420,6 +2433,12 @@ extern "C" void GLUISceneMotionCB(int var){
       if(TRANSLATE_xy!=NULL){
         TRANSLATE_xy->set_x(d_eye_xyz[0]);
         TRANSLATE_xy->set_y(d_eye_xyz[1]);
+      }
+      if(TRANSLATE_x!=NULL){
+        TRANSLATE_x->set_x(d_eye_xyz[0]);
+      }
+      if(TRANSLATE_y!=NULL){
+        TRANSLATE_y->set_y(d_eye_xyz[1]);
       }
 #endif
       glui_move_mode=TRANSLATE_XY;
