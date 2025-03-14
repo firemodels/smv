@@ -1900,10 +1900,10 @@ typedef struct {
   float tload_begin;
   float tload_end;
   float load_hrrpuv_cutoff;
-  float global_hrrpuv_cutoff;
-  float global_hrrpuv_cutoff_default;
-  float global_hrrpuv_max;
-  float global_hrrpuv_max_default;
+  float global_hrrpuv_cb_min;
+  float global_hrrpuv_cb_min_default;
+  float global_hrrpuv_cb_max;
+  float global_hrrpuv_cb_max_default;
   float smoke_albedo;
   float smoke_albedo_base;
 
