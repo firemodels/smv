@@ -1197,6 +1197,7 @@ extern "C" void GLUIMotionSetup(int main_window){
   ROTATE_eye_z=glui_motion->add_translation_to_panel(PANEL_rotate,_("View"),GLUI_TRANSLATION_X,motion_dir,EYE_ROTATE,GLUISceneMotionCB);
   ROTATE_eye_z->set_speed(180.0/(float)screenWidth);
   ROTATE_eye_z->disable();
+  glui_motion->add_button_to_panel(ROLLOUT_translaterotate, _("Snap"), SNAPSCENE, GLUISceneMotionCB);
 #endif
 
   ROLLOUT_view = glui_motion->add_rollout_to_panel(ROLLOUT_motion, _("Position/View"), false, POSITION_VIEW_ROLLOUT, MotionRolloutCB);
