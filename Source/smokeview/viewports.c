@@ -1277,7 +1277,7 @@ void ViewportTimebar(int quad, GLint screen_left, GLint screen_down){
       sprintf(cutoff_label, ">%i kW/m3", i_cutoff);
     }
     else{
-      i_cutoff = (int)(global_temp_cutoff + 0.5);
+      i_cutoff = (int)(global_temp_cb_min + 0.5);
       sprintf(cutoff_label, ">%i %s", i_cutoff,degC);
     }
     OutputText(right_label_pos+5+h_space,3*v_space+2*VP_timebar.text_height,cutoff_label);

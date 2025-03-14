@@ -451,8 +451,8 @@ extern "C" void GLUI3dSmokeSetup(int main_window){
     //sprintf(temp_cutoff_label, "temperature (%s) > ", degC);
     snprintf(temp_cutoff_label, sizeof(temp_cutoff_label), "temperature (%s)", degC);
     PANEL_temp_minmax = glui_3dsmoke->add_panel_to_panel(PANEL_fire_cutoff, temp_cutoff_label);
-    SPINNER_temperature_min = glui_3dsmoke->add_spinner_to_panel(PANEL_temp_minmax, "min", GLUI_SPINNER_FLOAT, &global_temp_cutoff, GLOBAL_TEMP_MIN, GLUISmoke3dCB);
-    SPINNER_temperature_max = glui_3dsmoke->add_spinner_to_panel(PANEL_temp_minmax, "max", GLUI_SPINNER_FLOAT, &global_temp_max,    GLOBAL_TEMP_MAX, GLUISmoke3dCB);
+    SPINNER_temperature_min = glui_3dsmoke->add_spinner_to_panel(PANEL_temp_minmax, "min", GLUI_SPINNER_FLOAT, &global_temp_cb_min, GLOBAL_TEMP_MIN, GLUISmoke3dCB);
+    SPINNER_temperature_max = glui_3dsmoke->add_spinner_to_panel(PANEL_temp_minmax, "max", GLUI_SPINNER_FLOAT, &global_temp_cb_max, GLOBAL_TEMP_MAX, GLUISmoke3dCB);
   }
   glui_3dsmoke->add_button_to_panel(PANEL_fire_cutoff, "Refresh", REFRESH_FIRE, GLUISmoke3dCB);
   BUTTON_cutoff_defaults = glui_3dsmoke->add_button_to_panel(PANEL_fire_cutoff, "Reset", CUTOFF_RESET, GLUISmoke3dCB);
@@ -944,9 +944,9 @@ extern "C" void GLUISmoke3dCB(int var){
       global_temp_min = 0.0;
       SPINNER_temperature_min->set_float_val(global_temp_min);
     }
-    if(global_temp_max<global_temp_min){
-      global_temp_max = global_temp_min+1.0;
-      SPINNER_temperature_max->set_float_val(global_temp_max);
+    if(global_temp_cb_max<global_temp_min){
+      global_temp_cb_max = global_temp_min+1.0;
+      SPINNER_temperature_max->set_float_val(global_temp_cb_max);
     }
     UpdateSmokeColormap(smoke_render_option);
     break;
@@ -967,12 +967,12 @@ extern "C" void GLUISmoke3dCB(int var){
   case CUTOFF_RESET:
     global_scase.global_hrrpuv_cutoff = global_scase.global_hrrpuv_cutoff_default;
     global_scase.global_hrrpuv_max    = global_scase.global_hrrpuv_max_default;
-    global_temp_cutoff = global_temp_cutoff_default;
-    global_temp_max    = global_temp_max_default;
+    global_temp_cb_min = global_temp_cb_min_default;
+    global_temp_cb_max    = global_temp_cb_max_default;
     SPINNER_hrrpuv_min->set_float_val(global_scase.global_hrrpuv_cutoff);
     SPINNER_hrrpuv_max->set_float_val(global_scase.global_hrrpuv_max);
-    SPINNER_temperature_min->set_float_val(global_temp_cutoff);
-    SPINNER_temperature_max->set_float_val(global_temp_max);
+    SPINNER_temperature_min->set_float_val(global_temp_cb_min);
+    SPINNER_temperature_max->set_float_val(global_temp_cb_max);
     break;
   case VOLTEST_DEPTH:
     voltest_soot1 = log(2.0)/(mass_extinct*voltest_depth1);
@@ -1009,15 +1009,15 @@ extern "C" void GLUISmoke3dCB(int var){
     break;
   case GLOBAL_TEMP_MIN:
     temp_min = (float)(10*(int)(global_temp_min/10.0) + 10.0);
-    temp_max = (float)(10*(int)(global_temp_max/10.0) - 10.0);
+    temp_max = (float)(10*(int)(global_temp_cb_max/10.0) - 10.0);
     SPINNER_temperature_min->set_float_limits(temp_min,temp_max);
     UpdateSmokeColormap(smoke_render_option);
     glutPostRedisplay();
     break;
   case GLOBAL_TEMP_MAX:
-    if(global_temp_max<global_temp_min){
-      global_temp_max = global_temp_min+1.0;
-      SPINNER_temperature_max->set_float_val(global_temp_max);
+    if(global_temp_cb_max<global_temp_min){
+      global_temp_cb_max = global_temp_min+1.0;
+      SPINNER_temperature_max->set_float_val(global_temp_cb_max);
     }
     UpdateSmokeColormap(smoke_render_option);
     break;

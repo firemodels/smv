@@ -4524,8 +4524,8 @@ void MergeSmoke3DColors(smoke3ddata *smoke3dset){
     i_co2_cutoff = 254*(MAX(0.0,global_scase.global_hrrpuv_cutoff-CO2_HRRPUV_OFFSET))/hrrpuv_max_smv;
   }
   else if(have_fire==TEMP_index){
-    i_smoke3d_cutoff = 254*((global_temp_cutoff - global_temp_min)/(global_temp_max- global_temp_min));
-    i_co2_cutoff = 254*((MAX(0.0,global_temp_cutoff - global_temp_min-CO2_TEMP_OFFSET))/(global_temp_max- global_temp_min));
+    i_smoke3d_cutoff = 254*((global_temp_cb_min - global_temp_min)/(global_temp_cb_max- global_temp_min));
+    i_co2_cutoff = 254*((MAX(0.0,global_temp_cb_min - global_temp_min-CO2_TEMP_OFFSET))/(global_temp_cb_max- global_temp_min));
   }
   else{
     i_smoke3d_cutoff = 255;

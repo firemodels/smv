@@ -3075,8 +3075,8 @@ int SetVolsmoke(int a, int b, int c, int d, int e, float f, float g, float h,
   volbw = d;
   show_volsmoke_moving = e;
   global_temp_min = f;
-  global_temp_cutoff = g;
-  global_temp_max = h;
+  global_temp_cb_min = g;
+  global_temp_cb_max = h;
   fire_opacity_factor = i;
   mass_extinct = j;
   gpu_vol_factor = k;

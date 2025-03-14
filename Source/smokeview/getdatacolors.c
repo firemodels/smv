@@ -1088,8 +1088,8 @@ void UpdateSmokeColormap(int option){
   }
   else{
     valmin = global_temp_min;
-    valcut = global_temp_cutoff;
-    valmax = global_temp_max;
+    valcut = global_temp_cb_min;
+    valmax = global_temp_cb_max;
     rgb_colormap = rgb_volsmokecolormap;
     if(have_fire == TEMP_index)rgb_colormap=rgb_slicesmokecolormap_01;
   }
