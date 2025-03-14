@@ -1501,7 +1501,7 @@ typedef struct _smoke3ddata {
   unsigned char *times_map;
   int *use_smokeframe;
   int *smokeframe_loaded;
-  float extinct, valmin, valmax;
+  float extinct;
   char cextinct[32];
 #define ALPHA_X 0
 #define ALPHA_Y 1
