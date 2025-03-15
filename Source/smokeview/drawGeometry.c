@@ -2431,39 +2431,6 @@ int ClipFace(clipdata *ci, facedata *facei){
   return 0;
 }
 
-#ifdef pp_CULL_GEOM
-/* ------------------ SetCullVis ------------------------ */
-
-void SetCullVis(void){
-  int imesh;
-
-  if(update_initcullgeom==1){
-    InitCullGeom(cullgeom);
-    UpdateFaceLists();
-  }
-  for(imesh=0;imesh<global_scase.meshescoll.nmeshes;imesh++){
-    int iport;
-    meshdata *meshi;
-
-    meshi = global_scase.meshescoll.meshinfo + imesh;
-    meshi->in_frustum = MeshInFrustum(meshi);
-    for(iport=0;iport<meshi->ncullgeominfo;iport++){
-      culldata *culli;
-      float xx[2], yy[2], zz[2];
-
-      culli = meshi->cullgeominfo+iport;
-      xx[0] = FDS2SMV_X(culli->xbeg);
-      xx[1] = FDS2SMV_X(culli->xend);
-      yy[0] = FDS2SMV_Y(culli->ybeg);
-      yy[1] = FDS2SMV_Y(culli->yend);
-      zz[0] = FDS2SMV_Z(culli->zbeg);
-      zz[1] = FDS2SMV_Z(culli->zend);
-      culli->vis = BoxInFrustum(xx,yy,zz,2);
-    }
-  }
-}
-#endif
-
 /* ------------------ CompareSingleFaces0 ------------------------ */
 
 int CompareSingleFaces0(const void *arg1, const void *arg2){
@@ -2694,14 +2661,6 @@ void UpdateFaceListsWorker(void){
     int vent_offset, outline_offset, exteriorsurface_offset;
 
     meshi = global_scase.meshescoll.meshinfo + i;
-#ifdef pp_CULL_GEOM
-    for(j=0;j<meshi->nfaces;j++){
-      facedata *facej;
-
-      facej = meshi->faceinfo + j;
-      facej->cullport=NULL;
-    }
-#endif
 
     patchfilenum=meshi->patchfilenum;
     patchi=NULL;
@@ -2935,9 +2894,6 @@ void UpdateFaceListsWorker(void){
         facedata *facei;
 
         facei=meshi->face_normals_single[iface];
-#ifdef pp_CULL_GEOM
-        facei->cullport=GetFacePort(meshi,facei);
-#endif
         switch(facei->dir){
           case DOWN_X:
             if(istartD==-1){
@@ -3049,19 +3005,9 @@ void DrawSelectFaces(){
   glEnd();
 }
 
-#ifdef pp_CULL_GEOM
-#define CULL_GEOM \
-culldata *cullport;\
-cullport = facei->cullport;\
-if(cullport != NULL && cullport->vis == 0)continue
-#else
-#define CULL_GEOM
-#endif
-
 #define DRAWFACE(facei,DEFfacetest,DEFeditcolor)    \
         float *facepos;\
         float *vertices;\
-        CULL_GEOM; \
         if(blocklocation==BLOCKlocation_grid){\
           vertices = facei->approx_vertex_coords;\
         }\
@@ -5229,173 +5175,6 @@ void GetDrawingParms(int *drawing_transparent, int *drawing_blockage_transparent
     *drawing_vent_transparent=1;
   }
 }
-
-#ifdef pp_CULL_GEOM
-/* ------------------ InitCullGeom ------------------------ */
-
-void InitCullGeom(int cullgeomflag){
-  culldata *culli;
-  int imesh;
-
-  update_initcullgeom=0;
-  updatefacelists=1;
-  for(imesh=0;imesh<global_scase.meshescoll.nmeshes;imesh++){
-    meshdata *meshi;
-    int iskip, jskip, kskip;
-    int ibeg, iend, jbeg, jend, kbeg, kend;
-    float xbeg, xend, ybeg, yend, zbeg, zend;
-    int i, j, k;
-    int nx, ny, nz;
-    int *nxyzgeomcull, *nxyzskipgeomcull;
-
-    meshi=global_scase.meshescoll.meshinfo+imesh;
-
-    GetCullSkips(meshi,cullgeomflag,cullgeom_portsize,&iskip,&jskip,&kskip);
-    nx = (meshi->ibar-1)/iskip + 1;
-    ny = (meshi->jbar-1)/jskip + 1;
-    nz = (meshi->kbar-1)/kskip + 1;
-    meshi->ncullgeominfo = nx*ny*nz;
-
-    nxyzgeomcull=meshi->nxyzgeomcull;
-    nxyzskipgeomcull=meshi->nxyzskipgeomcull;
-
-    nxyzgeomcull[0]=nx;
-    nxyzgeomcull[1]=ny;
-    nxyzgeomcull[2]=nz;
-
-    nxyzskipgeomcull[0]=iskip;
-    nxyzskipgeomcull[1]=jskip;
-    nxyzskipgeomcull[2]=kskip;
-
-
-    FREEMEMORY(meshi->cullgeominfo);
-    NewMemory( (void **)&meshi->cullgeominfo,nx*ny*nz*sizeof(culldata));
-    culli=meshi->cullgeominfo;
-
-    for(k=0;k<nz;k++){
-      kbeg = k*kskip;
-      kend = kbeg + kskip;
-      if(kend>meshi->kbar)kend=meshi->kbar;
-      zbeg = meshi->zplt[kbeg];
-      zend = meshi->zplt[kend];
-      for(j=0;j<ny;j++){
-        jbeg = j*jskip;
-        jend = jbeg + jskip;
-        if(jend>meshi->jbar)jend=meshi->jbar;
-        ybeg = meshi->yplt[jbeg];
-        yend = meshi->yplt[jend];
-        for(i=0;i<nx;i++){
-          ibeg = i*iskip;
-          iend = ibeg + iskip;
-          if(iend>meshi->ibar)iend=meshi->ibar;
-          xbeg = meshi->xplt[ibeg];
-          xend = meshi->xplt[iend];
-
-          culli->ibeg=ibeg;
-          culli->iend=iend;
-
-          culli->jbeg=jbeg;
-          culli->jend=jend;
-
-          culli->kbeg=kbeg;
-          culli->kend=kend;
-
-          culli->xbeg=xbeg;
-          culli->xend=xend;
-
-          culli->ybeg=ybeg;
-          culli->yend=yend;
-
-          culli->zbeg=zbeg;
-          culli->zend=zend;
-
-          culli->iskip=iskip;
-          culli->jskip=jskip;
-          culli->kskip=kskip;
-
-          culli->npixels=0;
-          culli->npixels_old=-1;
-
-          culli++;
-        }
-      }
-    }
-  }
-}
-
-/* ------------------ GetCullSkips ------------------------ */
-
-void GetCullSkips(meshdata *meshi, int cullflag, int cull_portsize_local, int *iiskip, int *jjskip, int *kkskip){
-  int iskip, jskip, kskip;
-
-  if(cullflag==1){
-    iskip = cull_portsize_local;
-    if(iskip<3)iskip=3;
-    if(iskip>meshi->ibar+1)iskip=meshi->ibar+1;
-
-    jskip = cull_portsize_local;
-    if(jskip<3)jskip=3;
-    if(jskip>meshi->jbar+1)jskip=meshi->jbar+1;
-
-    kskip = cull_portsize_local;
-    if(kskip<3)kskip=3;
-    if(kskip>meshi->kbar+1)kskip=meshi->kbar+1;
-  }
-  else{
-    iskip = meshi->ibar+1;
-    jskip = meshi->jbar+1;
-    kskip = meshi->kbar+1;
-  }
-  *iiskip=iskip;
-  *jjskip=jskip;
-  *kkskip=kskip;
-}
-
-/* ------------------ GetFacePort ------------------------ */
-
-culldata *GetFacePort(meshdata *meshi, facedata *facei){
-  int ii1, jj1, kk1;
-  int ii2, jj2, kk2;
-  int nx, ny, nz;
-  int ixyz;
-  culldata *return_cull;
-  int *skip2,*nxyz;
-
-  skip2=meshi->nxyzskipgeomcull;
-  nxyz=meshi->nxyzgeomcull;
-  nx=nxyz[0];
-  ny=nxyz[1];
-  nz=nxyz[2];
-
-  ii1=facei->imin/skip2[0];
-  if(facei->imax!=facei->imin){
-    ii2=(facei->imax-1)/skip2[0];
-    if(ii1!=ii2)return NULL;
-  }
-  if(ii1<0||ii1>nx)return NULL;
-
-  jj1=facei->jmin/skip2[1];
-  if(facei->jmin!=facei->jmax){
-    jj2=(facei->jmax-1)/skip2[1];
-    if(jj1!=jj2)return NULL;
-  }
-  if(jj1<0||jj1>ny)return NULL;
-
-  kk1=facei->kmin/skip2[2];
-  if(facei->kmin!=facei->kmax){
-    kk2=(facei->kmax-1)/skip2[2];
-    if(kk1!=kk2)return NULL;
-  }
-  if(kk1<0||kk1>nz)return NULL;
-
-  ixyz = ii1 + jj1*nx + kk1*nx*ny;
-  assert(ixyz>=0&&ixyz < meshi->ncullgeominfo);
-  ixyz = CLAMP(ixyz, 0,meshi->ncullgeominfo-1);
-  return_cull = meshi->cullgeominfo + ixyz;
-
-  return return_cull;
-}
-#endif
 
 /* ------------------ CompareBlockage ------------------------ */
 

@@ -1025,9 +1025,6 @@ void InitMesh(meshdata *meshi){
   meshi->slice3d_c_buffer = NULL;
 #endif
   meshi->mesh_offset_ptr = NULL;
-#ifdef pp_CULL_GEOM
-  meshi->cullgeominfo = NULL;
-#endif
   meshi->blockvis = 1;
   meshi->datavis = 1;
   // set meshi->terrain to NULL just after meshinfo is allocated
@@ -11360,10 +11357,6 @@ int ReadSMV_Configure(){
   PRINT_TIMER(timer_readsmv, "AddCfastCsvf");
 
   //RemoveDupBlockages();
-#ifdef pp_CULL_GEOM
-  InitCullGeom(cullgeom);
-  PRINT_TIMER(timer_readsmv, "InitCullGeom");
-#endif
   UpdateINIList();
   PRINT_TIMER(timer_readsmv, "UpdateINIList");
 
