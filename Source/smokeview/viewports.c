@@ -2592,8 +2592,5 @@ void ViewportScene(int quad, int view_mode, GLint screen_left, GLint screen_down
 
     glScalef(mscale[0],mscale[1],mscale[2]);
     ExtractFrustum();
-#ifdef pp_CULL_GEOM
-    SetCullVis();
-#endif
   }
 }

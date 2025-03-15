@@ -348,11 +348,6 @@ typedef struct _meshdata {
 
   char *label;
 
-#ifdef pp_CULL_GEOM
-  int ncullgeominfo,nxyzgeomcull[3],nxyzskipgeomcull[3];
-  struct _culldata *cullgeominfo;
-#endif
-
   struct _volrenderdata *volrenderinfo;
   int  nslicex,  nslicey,  nslicez;
   struct _slicedata **slicex, **slicey, **slicez;
