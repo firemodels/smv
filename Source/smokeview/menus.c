@@ -4333,15 +4333,12 @@ void LoadParticleMenu(int value){
       if(value == PARTFILE_LOADALL){
         SetupPart(value);
       }
-#ifdef pp_PART_COUNT
       if(value==PARTFILE_LOADALL){
         npartframes_max=GetMinPartFrames(PARTFILE_LOADALL);
       }
       else{
         npartframes_max=GetMinPartFrames(PARTFILE_RELOADALL);
       }
-#endif
-
       if(scriptoutstream==NULL||script_defer_loading==0){
 
         SetupPart(value);
