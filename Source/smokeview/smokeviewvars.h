@@ -1355,6 +1355,7 @@ SVEXTERN int SVDECL(vectorskip,1);
 SVEXTERN int SVDECL(first_frame_index,0), SVDECL(izone,0);
 SVEXTERN int SVDECL(rotation_type,ROTATION_2AXIS),SVDECL(eyeview_level,1);
 SVEXTERN int SVDECL(rotation_type_old,ROTATION_2AXIS),SVDECL(eyeview_SAVE,0),SVDECL(eyeview_last,0);
+SVEXTERN int SVDECL(translation_type, 0);
 SVEXTERN int SVDECL(frameratevalue,1000);
 SVEXTERN int SVDECL(setpartmin,PERCENTILE_MIN),   SVDECL(setpartmax,PERCENTILE_MAX);
 SVEXTERN int SVDECL(setisomin, GLOBAL_MIN),   SVDECL(setisomax, GLOBAL_MAX);
