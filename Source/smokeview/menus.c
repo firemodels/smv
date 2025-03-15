@@ -6800,6 +6800,27 @@ void BlockageMenu(int value){
   GLUTPOSTREDISPLAY;
 }
 
+/* ------------------ TranslateTypeMenu ------------------------ */
+
+void TranslateTypeMenu(int value){
+  assert(value>=0&&value<=2);
+  translation_type = CLAMP(value,0,2);
+  switch(translation_type){
+  case TRANSLATE_XY_option:
+    printf("translate left/right and front/back\n");
+    break;
+  case TRANSLATE_X_option:
+    printf("translate only left/right\n");
+    break;
+  case TRANSLATE_Y_option:
+    printf("translate only front/back\n");
+    break;
+  default:
+    assert(0);
+    break;
+  }
+}
+
 /* ------------------ RotateTypeMenu ------------------------ */
 
 void RotateTypeMenu(int value){
@@ -8931,7 +8952,7 @@ void InitMenus(void){
 
 static int filesdialogmenu = 0, viewdialogmenu = 0, datadialogmenu = 0, windowdialogmenu=0;
 static int labelmenu=0, titlemenu=0, colorbarmenu=0, colorbarsmenu=0, colorbarshademenu, smokecolorbarmenu=0, showhidemenu=0,colorbardigitmenu=0;
-static int optionmenu=0, rotatetypemenu=0;
+static int optionmenu=0, rotatetypemenu=0, translatetypemenu=0;
 static int colorbars_submenu1 = 0, colorbars_submenu2 = 0, colorbars_submenu3 = 0;
 static int colorbars_submenu4 = 0, colorbars_submenu5 = 0, colorbars_submenu6 = 0;
 static int colorbars_submenu7 = 0;
@@ -10362,7 +10383,26 @@ static int menu_count=0;
   glutAddMenuEntry(_("Hide all"), MENU_LABEL_HideAll);
   glutAddMenuEntry(_("Settings..."), MENU_LABEL_SETTINGS);
 
-/* --------------------------------rotate type menu -------------------------- */
+  /* --------------------------------translate type menu -------------------------- */
+
+  CREATEMENU(translatetypemenu, TranslateTypeMenu);
+  if(translation_type==TRANSLATE_XY_option){
+    glutAddMenuEntry("*translate left/right and front/back", TRANSLATE_XY_option);
+    glutAddMenuEntry("translate only front/back", TRANSLATE_Y_option);
+    glutAddMenuEntry("translate only left/right", TRANSLATE_X_option);
+  }
+  if(translation_type==TRANSLATE_Y_option){
+    glutAddMenuEntry("translate left/right and front/back", TRANSLATE_XY_option);
+    glutAddMenuEntry("*translate only front/back", TRANSLATE_Y_option);
+    glutAddMenuEntry("translate only left/right", TRANSLATE_X_option);
+  }
+  if(translation_type==TRANSLATE_X_option){
+    glutAddMenuEntry("translate left/right and front/back", TRANSLATE_XY_option);
+    glutAddMenuEntry("translate only front/back", TRANSLATE_Y_option);
+    glutAddMenuEntry("*translate only left/right", TRANSLATE_X_option);
+  }
+
+  /* --------------------------------rotate type menu -------------------------- */
 
   CREATEMENU(rotatetypemenu,RotateTypeMenu);
   glutAddMenuEntry(_("Scene centered:"),MENU_DUMMY);
@@ -11797,6 +11837,7 @@ static int menu_count=0;
   CREATEMENU(optionmenu,OptionMenu);
   if(nunitclasses>0)GLUTADDSUBMENU(_("Display Units"),unitsmenu);
   GLUTADDSUBMENU(_("Rotation parameters"),rotatetypemenu);
+  GLUTADDSUBMENU(_("Translation parameters"), translatetypemenu);
   GLUTADDSUBMENU(_("Max frame rate"),frameratemenu);
   GLUTADDSUBMENU(_("Render"),rendermenu);
   GLUTADDSUBMENU(_("Tours"),tourmenu);
