@@ -266,12 +266,6 @@ EXTERNCPP void GetDrawingParms(int *drawing_transparent, int *drawing_blockage_t
 EXTERNCPP void GetObstLabels(const char *filein);
 EXTERNCPP int  HaveCircularVents(void);
 EXTERNCPP int  InBlockage(const meshdata *gb,float x, float y, float z);
-#ifdef pp_CULL_GEOM
-EXTERNCPP void GetCullSkips(meshdata *meshi, int cullflag, int cull_portsize, int *iiskip, int *jjskip, int *kkskip);
-EXTERNCPP culldata *GetFacePort(meshdata *meshi, facedata *facei);
-EXTERNCPP void InitCullGeom(int cullflag);
-EXTERNCPP void SetCullVis(void);
-#endif
 EXTERNCPP void InitDemo(float rad, int nlat, int nlong);
 EXTERNCPP void InitUserTicks(void);
 EXTERNCPP void LevelScene(int level_x, int level_y, float *quat);
