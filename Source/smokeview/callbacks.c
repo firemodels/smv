@@ -1378,8 +1378,9 @@ void MoveScene(int xm, int ym){
     case KEY_CTRL:
       {
         float dx, dy;
-        float xx = 0.0, yy = 0.0;
 
+        xx = 0.0;
+        yy = 0.0;
         if(translation_type != TRANSLATE_Y_option){
           xx = (xm - mouse_down_xy0[0])/(float)screenWidth;
         }
