@@ -2,6 +2,8 @@
 #define IGLUI_MOTION_H_DEFINED
 
 #define TRANSLATE_XY 101
+#define TRANSLATE_X  105
+#define TRANSLATE_Y  106
 #define ROTATE_2AXIS 102
 #define GLUI_Z         2
 #define ROTATE_ABOUT   4
