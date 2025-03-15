@@ -1379,10 +1379,14 @@ void MoveScene(int xm, int ym){
       {
         float dx, dy;
 
-        xx = xm-mouse_down_xy0[0];
-        xx = xx/(float)screenWidth;
-        yy = ym-mouse_down_xy0[1];
-        yy = yy/(float)screenHeight;
+        xx = 0.0;
+        yy = 0.0;
+        if(translation_type != TRANSLATE_Y_option){
+          xx = (xm - mouse_down_xy0[0])/(float)screenWidth;
+        }
+        if(translation_type != TRANSLATE_X_option){
+          yy = (ym - mouse_down_xy0[1])/(float)screenHeight;
+        }
         if(rotation_type!=EYE_CENTERED){
           dx = (xyzbox+eye_xyz0[0])*xx;
           dy = -(xyzbox-eye_xyz0[1])*yy;
@@ -1843,7 +1847,6 @@ void Keyboard(unsigned char key, int flag){
       }
       break;
     case 'e':
-    case 'E':
       switch(keystate){
       case GLUT_ACTIVE_ALT:
 #ifdef pp_DIALOG_SHORTCUTS
@@ -1857,6 +1860,24 @@ void Keyboard(unsigned char key, int flag){
         GLUIRotationTypeCB(rotation_type);
         GLUIUpdateRotationType(rotation_type);
         HandleRotationType(ROTATION_2AXIS);
+      }
+      break;
+    case 'E':
+      translation_type++;
+      if(translation_type>2)translation_type=0;
+      switch(translation_type){
+      case TRANSLATE_XY_option:
+        printf("translate left/right and front/back\n");
+        break;
+      case TRANSLATE_X_option:
+        printf("translate only left/right\n");
+        break;
+      case TRANSLATE_Y_option:
+        printf("translate only front/back\n");
+        break;
+      default:
+        assert(0);
+        break;
       }
       break;
     case 'f':
