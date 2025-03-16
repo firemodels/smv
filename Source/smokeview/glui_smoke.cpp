@@ -342,6 +342,89 @@ extern "C" void GLUIUpdateSmoke3dFlags(void){
   glutPostRedisplay();
 }
 
+/* ------------------ GLUIUpdateSmoke3dMaps ------------------------ */
+
+extern "C" void GLUIUpdateSmoke3dMaps(void){
+
+// fire_color_int255  (fire color)
+// global_cb_min_index global_cb_max_index (min and max indices)
+
+// global_hrrpuv_cb_min global_hrrpuv_cb_max
+// global_hrrpuv_min    global_hrrpuv_max
+
+// global_temp_cb_min global_temp_cb_max
+// global_temp_min    global_temp_max
+
+  int delta_cb_nodes;
+  float delta_hrrpuv, delta_temp;
+  float delta_cb_hrrpuv, delta_cb_temp;
+
+  delta_cb_nodes   = global_cb_max_index  - global_cb_min_index;
+
+  delta_hrrpuv     = global_hrrpuv_max    - global_hrrpuv_min;
+  delta_cb_hrrpuv  = global_hrrpuv_cb_max - global_hrrpuv_cb_min;
+
+  delta_temp     = global_temp_max    - global_temp_min;
+  delta_cb_temp  = global_temp_cb_max - global_temp_cb_min;
+    
+  if(delta_hrrpuv > 0.0){
+    int i, imin, imax;
+
+    imin = CLAMP(255*(global_hrrpuv_cb_min - global_hrrpuv_min)/delta_hrrpuv, 0, 255);
+    imax = CLAMP(255*(global_hrrpuv_cb_max - global_hrrpuv_min)/delta_hrrpuv, 0, 255);
+
+#ifdef FIRECOLOR_DEBUG
+    printf("hrrpuv map: (%i, %i)",imin,imax);
+#endif
+    for(i = 0;i < 256;i++){
+      float val;
+      int ival;
+
+      val = global_hrrpuv_min + (float)i * delta_hrrpuv / 255.0;
+      ival = global_cb_min_index + delta_cb_nodes*(val - global_hrrpuv_cb_min)/delta_cb_hrrpuv;
+      if(ival < global_cb_min_index)ival = -1;
+      ival = MIN(ival, global_cb_max_index);
+      smoke3d_hrrpuv_index_map[i] = ival;
+#ifdef FIRECOLOR_DEBUG
+      printf(" %i",smoke3d_hrrpuv_index_map[i]);
+      if(i % 20 == 0)printf("\n");
+#endif
+    }
+  }
+  else{
+    int i;
+
+    for(i = 0;i < 256;i++){
+      smoke3d_hrrpuv_index_map[i] = global_cb_min_index;
+    }
+  }
+#ifdef FIRECOLOR_DEBUG
+  printf("\n");
+#endif
+  if(delta_temp > 0.0){
+    int i;
+
+    for(i = 0;i < 256;i++){
+      float val;
+      int ival;
+
+      val = global_temp_min + (float)i * delta_temp / 255.0;
+      ival = global_cb_min_index + delta_cb_nodes * (val - global_temp_cb_min) / delta_cb_temp;
+      if(ival < global_cb_min_index)ival = -1;
+      ival = MIN(ival, global_cb_max_index);
+      smoke3d_temp_index_map[i] = ival;
+    }
+  }
+  else{
+    int i;
+
+    assert(global_cb_min_index >= -1 && global_cb_min_index <= 255);
+    for(i = 0;i < 256;i++){
+      smoke3d_temp_index_map[i] = global_cb_min_index;
+    }
+  }
+}
+
 /* ------------------ GLUISmoke3dColorbarCB ------------------------ */
 
 extern "C" void GLUISmoke3dColorbarCB(int var){
@@ -438,6 +521,7 @@ extern "C" void GLUISmoke3dColorbarCB(int var){
   }
   ForceIdle();
   UpdateSmokeColormap(smoke_render_option);
+  GLUIUpdateSmoke3dMaps();
   glutPostRedisplay();
 }
 
@@ -555,9 +639,16 @@ extern "C" void GLUI3dSmokeSetup(int main_window){
     SPINNER_temperature_min = glui_3dsmoke->add_spinner_to_panel(PANEL_temp_minmax, "min", GLUI_SPINNER_FLOAT, &global_temp_cb_min, GLOBAL_TEMP_MIN, GLUISmoke3dColorbarCB);
     SPINNER_temperature_max = glui_3dsmoke->add_spinner_to_panel(PANEL_temp_minmax, "max", GLUI_SPINNER_FLOAT, &global_temp_cb_max, GLOBAL_TEMP_MAX, GLUISmoke3dColorbarCB);
   }
-  PANEL_cb_index = glui_3dsmoke->add_panel_to_panel(PANEL_fire_cutoff, "colorbar index bounds");
+  PANEL_cb_index = glui_3dsmoke->add_panel_to_panel(PANEL_fire_cutoff, "colorbar index");
   SPINNER_cb_min_index = glui_3dsmoke->add_spinner_to_panel(PANEL_cb_index, "min", GLUI_SPINNER_INT, &global_cb_min_index, COLORBAR_INDEX_MIN, GLUISmoke3dColorbarCB);
   SPINNER_cb_max_index = glui_3dsmoke->add_spinner_to_panel(PANEL_cb_index, "max", GLUI_SPINNER_INT, &global_cb_max_index, COLORBAR_INDEX_MAX, GLUISmoke3dColorbarCB);
+
+  GLUISmoke3dColorbarCB(GLOBAL_HRRPUV_MIN);
+  GLUISmoke3dColorbarCB(GLOBAL_HRRPUV_MAX);
+  GLUISmoke3dColorbarCB(GLOBAL_TEMP_MIN);
+  GLUISmoke3dColorbarCB(GLOBAL_TEMP_MAX);
+  GLUISmoke3dColorbarCB(COLORBAR_INDEX_MIN);
+  GLUISmoke3dColorbarCB(COLORBAR_INDEX_MAX);
 
   glui_3dsmoke->add_button_to_panel(PANEL_fire_cutoff, "Refresh", REFRESH_FIRE, GLUISmoke3dCB);
   BUTTON_cutoff_defaults = glui_3dsmoke->add_button_to_panel(PANEL_fire_cutoff, "Reset", CUTOFF_RESET, GLUISmoke3dCB);

@@ -1949,6 +1949,10 @@ SVEXTERN int ntexturestack;
 
 SVEXTERN float SVDECL(fire_opacity_factor,3.0),SVDECL(mass_extinct,8700.0);
 
+SVEXTERN int smoke3d_hrrpuv_index_map_array[256], smoke3d_temp_index_map_array[256];
+SVEXTERN int SVDECL(*smoke3d_hrrpuv_index_map, smoke3d_hrrpuv_index_map_array + 1);
+SVEXTERN int SVDECL(*smoke3d_temp_index_map, smoke3d_temp_index_map_array + 1);
+
 SVEXTERN float SVDECL(global_temp_min,20.0),              SVDECL(global_temp_max,2000.0);
 SVEXTERN float SVDECL(global_temp_cb_min, 600.0),         SVDECL(global_temp_cb_max,2000.0);
 SVEXTERN float SVDECL(global_temp_cb_min_default, 600.0), SVDECL(global_temp_cb_max_default, 2000.0);

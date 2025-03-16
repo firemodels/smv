@@ -8,6 +8,7 @@
 //#define pp_LUA            // turn on LUA option
 #define pp_GPU              // support the GPU
 #define pp_THREAD           // turn on multi-threading
+//#define pp_FIRECOLOR_DEBUG  // output fire color debug info
 
 #ifdef pp_FRAME          // turn on each frame type if pp_FRAME is set
 #define pp_BOUNDFRAME    // turn on frame code for boundary files
