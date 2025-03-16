@@ -2135,9 +2135,9 @@ int SetBackgroundcolor(float r, float g, float b) {
 } // BACKGROUNDCOLOR
 
 int SetBlockcolor(float r, float g, float b) {
-  block_ambient2[0] = r;
-  block_ambient2[1] = g;
-  block_ambient2[2] = b;
+  global_scase.color_defs.block_ambient2[0] = r;
+  global_scase.color_defs.block_ambient2[1] = g;
+  global_scase.color_defs.block_ambient2[2] = b;
   return 0;
 } // BLOCKCOLOR
 

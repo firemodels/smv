@@ -1060,9 +1060,6 @@ SVEXTERN float tourcol_pathknots[3];
 SVEXTERN float tourcol_text[3];
 SVEXTERN float tourcol_avatar[3];
 #endif
-SVEXTERN float mat_ambient_orig[4];
-SVEXTERN float mat_specular_orig[4];
-SVEXTERN float SVDECL(*mat_ambient2,NULL), SVDECL(*mat_specular2,NULL);
 
 #ifdef INMAIN
 SVEXTERN GLfloat iso_specular[4]={0.7,0.7,0.7,1.0};
@@ -1071,11 +1068,6 @@ SVEXTERN GLfloat iso_specular[4];
 #endif
 SVEXTERN GLfloat SVDECL(iso_shininess, 50.0), SVDECL(glui_shininess, 50.0);
 
-SVEXTERN float block_ambient_orig[4];
-SVEXTERN float SVDECL(*block_ambient2,NULL);
-SVEXTERN float block_specular_orig[4];
-SVEXTERN float SVDECL(*block_specular2,NULL);
-SVEXTERN GLfloat SVDECL(block_shininess,100.0);
 
 #ifdef INMAIN
 SVEXTERN GLfloat light_position0[4]={1.0,1.0,1.0,0.0};
@@ -1625,8 +1617,6 @@ SVEXTERN int SVDECL(show_gslice_triangulation,0);
 SVEXTERN int SVDECL(show_gslice_normal,0),SVDECL(show_gslice_normal_keyboard,0);
 
 
-SVEXTERN float ventcolor_orig[4];
-SVEXTERN float SVDECL(*ventcolor,NULL);
 #ifdef INMAIN
 SVEXTERN float static_color[4]={0.0,1.0,0.0,1.0};
 SVEXTERN float sensorcolor[4]={1.0,1.0,0.0,1.0};
