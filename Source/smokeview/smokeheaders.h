@@ -339,6 +339,9 @@ EXTERNCPP void GetSliceColors(const float *t, int nt, unsigned char *it,
 EXTERNCPP int  GetZoneColor(float t, float tmin, float tmax, int nlevel);
 EXTERNCPP void InitCadColors(void);
 EXTERNCPP void InitRGB(void);
+EXTERNCPP void InitScase(smv_case *scase);
+EXTERNCPP smv_case * CreateScase();
+EXTERNCPP void DestroyScase(smv_case *scase);
 EXTERNCPP void MakeColorLabels(char colorlabels[12][11], float colorvalues[12], float tmin_arg, float tmax_arg, int nlevel);
 EXTERNCPP void UpdateAllBoundaryColors(int flag);
 EXTERNCPP void UpdateChopColors(void);

@@ -139,10 +139,10 @@ void InitMisc(void){
   thistime=0;
   lasttime=0;
 
-  block_ambient2[3] = 1.0;
-  block_specular2[3] = 1.0;
-  mat_ambient2[3] = 1.0;
-  mat_specular2[3] = 1.0;
+  global_scase.color_defs.block_ambient2[3] = 1.0;
+  global_scase.color_defs.block_specular2[3] = 1.0;
+  global_scase.color_defs.mat_ambient2[3] = 1.0;
+  global_scase.color_defs.mat_specular2[3] = 1.0;
 
   glui_curve_default.use_foreground_color = 1;
   glui_curve_default.color[0]           = 0;
@@ -1278,6 +1278,8 @@ void InitVars(void){
   int i;
   char *queue_list = NULL, *queue=NULL, *htmldir=NULL, *email=NULL;
 
+  InitScase(&global_scase);
+
 #ifdef pp_OSX_HIGHRES
   double_scale = 1;
 #endif
@@ -1383,8 +1385,6 @@ void InitVars(void){
   strcpy((char *)degC,"C");
   strcpy((char *)degF,"F");
 
-  InitLabelsCollection(&global_scase.labelscoll);
-
   {
     labeldata *gl;
 
@@ -1417,35 +1417,6 @@ void InitVars(void){
   }
 
   strcpy(startup_lang_code,"en");
-  mat_specular_orig[0]=0.5f;
-  mat_specular_orig[1]=0.5f;
-  mat_specular_orig[2]=0.2f;
-  mat_specular_orig[3]=1.0f;
-  mat_specular2=GetColorPtr(&global_scase, mat_specular_orig);
-
-  mat_ambient_orig[0] = 0.5f;
-  mat_ambient_orig[1] = 0.5f;
-  mat_ambient_orig[2] = 0.2f;
-  mat_ambient_orig[3] = 1.0f;
-  mat_ambient2=GetColorPtr(&global_scase, mat_ambient_orig);
-
-  ventcolor_orig[0]=1.0;
-  ventcolor_orig[1]=0.0;
-  ventcolor_orig[2]=1.0;
-  ventcolor_orig[3]=1.0;
-  ventcolor=GetColorPtr(&global_scase, ventcolor_orig);
-
-  block_ambient_orig[0] = 1.0;
-  block_ambient_orig[1] = 0.8;
-  block_ambient_orig[2] = 0.4;
-  block_ambient_orig[3] = 1.0;
-  block_ambient2=GetColorPtr(&global_scase, block_ambient_orig);
-
-  block_specular_orig[0] = 0.0;
-  block_specular_orig[1] = 0.0;
-  block_specular_orig[2] = 0.0;
-  block_specular_orig[3] = 1.0;
-  block_specular2=GetColorPtr(&global_scase, block_specular_orig);
 
   for(i=0;i<256;i++){
     boundarylevels256[i]=(float)i/255.0;
@@ -1580,7 +1551,6 @@ void InitVars(void){
   strcpy(global_scase.surfacedefaultlabel,"");
   if(streak_index>=0)float_streak5value=streak_rvalue[streak_index];
 
-  InitObjectCollection(&global_scase.objectscoll);
 
   GetTitle("Smokeview ", release_title);
   GetTitle("Smokeview ", plot3d_title);

@@ -1519,7 +1519,7 @@ void DrawTerrainOBSTSides(meshdata *meshi){
   glTranslatef(-global_scase.xbar0, -global_scase.ybar0, -global_scase.zbar0);
 
   ENABLE_LIGHTING;
-  glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, &block_shininess);
+  glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, &global_scase.color_defs.block_shininess);
 
   glEnable(GL_COLOR_MATERIAL);
   glColor4fv(terrain_color);
@@ -1660,7 +1660,7 @@ void DrawTerrainOBSTTexture(terraindata *terri){
   glTranslatef(-global_scase.xbar0,-global_scase.ybar0,-global_scase.zbar0);
 
   ENABLE_LIGHTING;
-  glMaterialfv(GL_FRONT_AND_BACK,GL_SHININESS,&block_shininess);
+  glMaterialfv(GL_FRONT_AND_BACK,GL_SHININESS,&global_scase.color_defs.block_shininess);
   glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_MODULATE);
   glEnable(GL_TEXTURE_2D);
   glBindTexture(GL_TEXTURE_2D,global_scase.terrain_texture_coll.terrain_textures[iterrain_textures].name);
