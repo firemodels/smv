@@ -1,6 +1,7 @@
-
 # smvq
-add_executable(smvq smvq.c
+add_executable(smvq smvq.c)
+
+target_sources(smvq PRIVATE
     ../smokeview/menus.c
     ../smokeview/IOscript.c
     ../smokeview/IOshooter.c
@@ -59,9 +60,9 @@ target_include_directories(smvq PRIVATE
     ../shared
     ../glew
     ../smokeview
-    ../glui_v2_1_beta
-    ../glui_gl
 )
+
+target_include_directories(smvq PRIVATE)
 target_link_libraries(smvq PRIVATE libsmv)
 
 find_package(json-c CONFIG)
@@ -90,50 +91,31 @@ if (NOT json-c_FOUND)
 else()
     target_link_libraries(smvq PRIVATE json-c::json-c)
 endif()
-
-# These include directories are an existing workaround that would be good to
-# remove.Because of this custom code and the potential conflict with native libs
-# this needs to be early in the include order.
 if (WIN32)
-    target_include_directories(smvq PRIVATE ../glut_gl)
-else()
-    target_include_directories(smvq PRIVATE ../glui_gl)
-endif ()
+    find_package(unofficial-getopt-win32 REQUIRED)
+    target_link_libraries(smvq PRIVATE unofficial::getopt-win32::getopt)
+    # if (BUILD_SHARED_LIBS)
+    #     install(IMPORTED_RUNTIME_ARTIFACTS unofficial::getopt-win32::getopt)
+    # endif()
+endif()
+
+## BEGIN OLD STUFF
 # GLUI can be provided natively, but there are modifications in the code
 # vendored with Smokeview that we rely on. Because of this custom code and the
 # potential conflict with native libs this needs to be early in the include order.
+target_include_directories(smvq PRIVATE ../glui_gl)
+target_link_libraries(smvq PRIVATE GLEW::GLEW)
 target_link_libraries(smvq PRIVATE glui_static)
 target_include_directories(smvq PRIVATE ../glui_v2_1_beta)
-if(WIN32)
-    if (PThreads4W_FOUND)
-        target_link_libraries(smvq PRIVATE PThreads4W::PThreads4W)
-    else()
-        target_include_directories(smvq PRIVATE ../pthreads)
-        target_link_libraries(smvq PRIVATE pthread_static)
-    endif()
-endif()
-# Selecting which GLUT version to use is the most platform-dependent part of the
-# build.
 if (MACOSX)
     target_link_libraries(smvq PRIVATE "-framework OpenGL" "-framework GLUT")
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99")
 elseif (GLUT_FOUND)
     target_link_libraries(smvq PRIVATE GLUT::GLUT)
 else()
-    target_link_libraries(smvq PRIVATE glut32_static)
+    target_link_libraries(smvq PRIVATE glut32)
 endif ()
+## END OLD STUFF
 
-if (WIN32)
-    target_include_directories(smvq PRIVATE ../pthreads)
-    find_package(unofficial-getopt-win32 REQUIRED)
-    target_link_libraries(smvq PRIVATE unofficial::getopt-win32::getopt)
-endif()
-if ((NOT MACOSX) AND UNIX)
-    target_link_libraries(smvq PRIVATE m)
-endif()
-if (LINUX)
-    add_definitions(-Dpp_LINUX)
-    target_link_libraries(smvq PRIVATE pthread X11 Xmu GLU GL m stdc++)
-endif()
-
+target_link_libraries(smvq PUBLIC json-c::json-c)
 install(TARGETS smvq)
