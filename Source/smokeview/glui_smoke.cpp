@@ -370,8 +370,14 @@ extern "C" void GLUIUpdateSmoke3dMaps(void){
   if(delta_hrrpuv > 0.0){
     int i;
 
-#ifdef FIRECOLOR_DEBUG
-    printf("hrrpuv map: (%i, %i)",imin,imax);
+#ifdef pp_FIRECOLOR_DEBUG
+    if(firecolor_debug == 1){
+      int imin, imax;
+
+      imin = CLAMP(255 * (global_hrrpuv_cb_min - global_hrrpuv_min) / delta_hrrpuv, 0, 255);
+      imax = CLAMP(255 * (global_hrrpuv_cb_max - global_hrrpuv_min) / delta_hrrpuv, 0, 255);
+      printf("hrrpuv map: (%i, %i)", imin, imax);
+    }
 #endif
     for(i = 0;i < 256;i++){
       float val;
@@ -382,25 +388,47 @@ extern "C" void GLUIUpdateSmoke3dMaps(void){
       if(ival < global_cb_min_index)ival = -1;
       ival = MIN(ival, global_cb_max_index);
       smoke3d_hrrpuv_index_map[i] = ival;
-#ifdef FIRECOLOR_DEBUG
-      printf(" %i",smoke3d_hrrpuv_index_map[i]);
-      if(i % 20 == 0)printf("\n");
+#ifdef pp_FIRECOLOR_DEBUG
+      if(firecolor_debug == 1){
+        printf(" %i", smoke3d_hrrpuv_index_map[i]);
+        if(i % 20 == 0)printf("\n");
+      }
 #endif
     }
   }
   else{
     int i;
 
+#ifdef pp_FIRECOLOR_DEBUG
+    if(firecolor_debug == 1){
+      printf("hrrpuv map: ");
+    }
+#endif
     for(i = 0;i < 256;i++){
       smoke3d_hrrpuv_index_map[i] = global_cb_min_index;
+#ifdef pp_FIRECOLOR_DEBUG
+      if(firecolor_debug == 1){
+        printf(" %i", smoke3d_hrrpuv_index_map[i]);
+        if(i % 20 == 0)printf("\n");
+      }
+#endif
     }
   }
-#ifdef FIRECOLOR_DEBUG
-  printf("\n");
+#ifdef pp_FIRECOLOR_DEBUG
+  if(firecolor_debug == 1)printf("\n");
 #endif
   if(delta_temp > 0.0){
     int i;
 
+#ifdef pp_FIRECOLOR_DEBUG
+    if(firecolor_debug == 1){
+      int imin, imax;
+
+      imin = CLAMP(255 * (global_temp_cb_min - global_temp_min) / delta_temp, 0, 255);
+      imax = CLAMP(255 * (global_temp_cb_max - global_temp_min) / delta_temp, 0, 255);
+      printf("temp map: (%i, %i)", imin, imax);
+    }
+#endif
     for(i = 0;i < 256;i++){
       float val;
       int ival;
@@ -410,16 +438,36 @@ extern "C" void GLUIUpdateSmoke3dMaps(void){
       if(ival < global_cb_min_index)ival = -1;
       ival = MIN(ival, global_cb_max_index);
       smoke3d_temp_index_map[i] = ival;
+#ifdef pp_FIRECOLOR_DEBUG
+      if(firecolor_debug == 1){
+        printf(" %i", smoke3d_temp_index_map[i]);
+        if(i % 20 == 0)printf("\n");
+      }
+#endif
     }
   }
   else{
     int i;
 
+#ifdef pp_FIRECOLOR_DEBUG
+    if(firecolor_debug == 1){
+      printf("temp map: ");
+    }
+#endif
     assert(global_cb_min_index >= -1 && global_cb_min_index <= 255);
     for(i = 0;i < 256;i++){
       smoke3d_temp_index_map[i] = global_cb_min_index;
+#ifdef pp_FIRECOLOR_DEBUG
+      if(firecolor_debug == 1){
+        printf(" %i", smoke3d_temp_index_map[i]);
+        if(i % 20 == 0)printf("\n");
+      }
+#endif
     }
   }
+#ifdef pp_FIRECOLOR_DEBUG
+  if(firecolor_debug == 1)printf("\n");
+#endif
 }
 
 /* ------------------ GLUISmoke3dColorbarCB ------------------------ */
@@ -646,6 +694,10 @@ extern "C" void GLUI3dSmokeSetup(int main_window){
   GLUISmoke3dColorbarCB(GLOBAL_TEMP_MAX);
   GLUISmoke3dColorbarCB(COLORBAR_INDEX_MIN);
   GLUISmoke3dColorbarCB(COLORBAR_INDEX_MAX);
+
+#ifdef pp_FIRECOLOR_DEBUG
+  glui_3dsmoke->add_checkbox_to_panel(PANEL_fire_cutoff, "show 3D smoke/fire mapping", &firecolor_debug);
+#endif
 
   glui_3dsmoke->add_button_to_panel(PANEL_fire_cutoff, "Refresh", REFRESH_FIRE, GLUISmoke3dCB);
   BUTTON_cutoff_defaults = glui_3dsmoke->add_button_to_panel(PANEL_fire_cutoff, "Reset", CUTOFF_RESET, GLUISmoke3dCB);
