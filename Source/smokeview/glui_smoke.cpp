@@ -368,10 +368,7 @@ extern "C" void GLUIUpdateSmoke3dMaps(void){
   delta_cb_temp  = global_temp_cb_max - global_temp_cb_min;
     
   if(delta_hrrpuv > 0.0){
-    int i, imin, imax;
-
-    imin = CLAMP(255*(global_hrrpuv_cb_min - global_hrrpuv_min)/delta_hrrpuv, 0, 255);
-    imax = CLAMP(255*(global_hrrpuv_cb_max - global_hrrpuv_min)/delta_hrrpuv, 0, 255);
+    int i;
 
 #ifdef FIRECOLOR_DEBUG
     printf("hrrpuv map: (%i, %i)",imin,imax);
