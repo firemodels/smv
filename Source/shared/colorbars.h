@@ -3,7 +3,11 @@
 #define COLORBARS_H_DEFINED
 
 #include "options.h"
-
+#if defined(WIN32)
+#include <windows.h>
+#endif
+#include GLU_H
+#include GL_H
 #define FILE_UPDATE 6
 
 #define CB_RAINBOW 0
@@ -16,6 +20,21 @@
 #define CB_OTHER 7
 #define INTERP_RGB 0
 #define INTERP_LAB 1
+
+// Define a number of readonly color defaults.
+#ifdef INMAIN
+SVEXTERN float mat_ambient_orig[4] = {0.5f, 0.5f, 0.2f, 1.0f};
+SVEXTERN float mat_specular_orig[4] = {0.5f, 0.5f, 0.2f, 1.0f};
+SVEXTERN float ventcolor_orig[4] = {1.0, 0.0, 1.0, 1.0};
+SVEXTERN float block_ambient_orig[4] = {1.0, 0.8, 0.4, 1.0};
+SVEXTERN float block_specular_orig[4] = {0.0, 0.0, 0.0, 1.0};
+#else
+SVEXTERN float mat_ambient_orig[4];
+SVEXTERN float mat_specular_orig[4];
+SVEXTERN float ventcolor_orig[4];
+SVEXTERN float block_ambient_orig[4];
+SVEXTERN float block_specular_orig[4];
+#endif
 
 /* --------------------------  colordata ------------------------------------ */
 

@@ -606,17 +606,17 @@ void UpdateIndexColors(void){
   global_scase.updateindexcolors=0;
 
   if(strcmp(global_scase.surfacedefault->surfacelabel,"INERT")==0){
-    global_scase.surfacedefault->color=block_ambient2;
+    global_scase.surfacedefault->color=global_scase.color_defs.block_ambient2;
   }
   for(i=0;i<global_scase.surfcoll.nsurfinfo;i++){
     surfdata *surfi;
 
     surfi = global_scase.surfcoll.surfinfo + i;
     if(strcmp(surfi->surfacelabel,"INERT")==0){
-      surfi->color=block_ambient2;
+      surfi->color=global_scase.color_defs.block_ambient2;
     }
     if(strcmp(surfi->surfacelabel,"OPEN")==0){
-      surfi->color=ventcolor;
+      surfi->color=global_scase.color_defs.ventcolor;
     }
   }
 
@@ -1674,8 +1674,8 @@ void DrawCADGeom(const cadgeomdata *cd){
   if(cullfaces==1)glDisable(GL_CULL_FACE);
 
   ENABLE_LIGHTING;
-  glMaterialfv(GL_FRONT_AND_BACK,GL_SHININESS,&block_shininess);
-  glMaterialfv(GL_FRONT_AND_BACK,GL_SPECULAR,block_specular2);
+  glMaterialfv(GL_FRONT_AND_BACK,GL_SHININESS,&global_scase.color_defs.block_shininess);
+  glMaterialfv(GL_FRONT_AND_BACK,GL_SPECULAR,global_scase.color_defs.block_specular2);
   glEnable(GL_COLOR_MATERIAL);
   glBegin(GL_QUADS);
   for(i=0;i<cd->nquads;i++){
@@ -1737,7 +1737,7 @@ void DrawCAD2Geom(const cadgeomdata *cd, int trans_flag){
 
   glEnable(GL_COLOR_MATERIAL);
   glColorMaterial(GL_FRONT_AND_BACK,GL_AMBIENT_AND_DIFFUSE);
-  glMaterialfv(GL_FRONT_AND_BACK,GL_SPECULAR,block_specular2);
+  glMaterialfv(GL_FRONT_AND_BACK,GL_SPECULAR,global_scase.color_defs.block_specular2);
   ENABLE_LIGHTING;
   if(trans_flag==DRAW_TRANSPARENT)TransparentOn();
   glBegin(GL_QUADS);
@@ -1817,7 +1817,7 @@ void DrawCAD2Geom(const cadgeomdata *cd, int trans_flag){
   glEnd();
 
   if(visCadTextures==1){
-    glMaterialfv(GL_FRONT_AND_BACK,GL_SHININESS,&block_shininess);
+    glMaterialfv(GL_FRONT_AND_BACK,GL_SHININESS,&global_scase.color_defs.block_shininess);
     glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,enable_texture_lighting? GL_MODULATE : GL_REPLACE);
     glEnable(GL_TEXTURE_2D);
     glColor4ub(255, 255, 255, 255);
@@ -2070,7 +2070,7 @@ void ObstOrVent2Faces(const meshdata *meshi, blockagedata *bc,
         break;
       case FFALSE:
         if(bc->surf[j]==global_scase.surfacedefault){
-         // faceptr->color=block_ambient2;
+         // faceptr->color=global_scase.color_defs.block_ambient2;
           faceptr->color=global_scase.surfacedefault->color;  /* fix ?? */
           faceptr->transparent=global_scase.surfacedefault->transparent;
         }
@@ -3024,7 +3024,7 @@ void DrawSelectFaces(){
           new_color=facei->color;\
         }\
         else{\
-          if(visNormalEditColors==0)new_color=block_ambient2;\
+          if(visNormalEditColors==0)new_color=global_scase.color_defs.block_ambient2;\
           if(visNormalEditColors==1)new_color=facei->color;\
           if(highlight_block==facei->blockageindex&&highlight_mesh==facei->meshindex){\
             new_color=DEFeditcolor;\
@@ -3051,9 +3051,9 @@ void DrawObstsDebug(void){
   glTranslatef(-global_scase.xbar0,-global_scase.ybar0,-global_scase.zbar0);
   if(light_faces == 1){
     ENABLE_LIGHTING;
-    glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, &block_shininess);
-    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, block_ambient2);
-    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, block_specular2);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, &global_scase.color_defs.block_shininess);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, global_scase.color_defs.block_ambient2);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, global_scase.color_defs.block_specular2);
     glEnable(GL_COLOR_MATERIAL);
   }
   for(i = 1; i <= global_scase.meshescoll.nmeshes; i++){
@@ -3107,9 +3107,9 @@ void DrawFacesOLD(int option){
     glEnable(GL_CULL_FACE);
     if(light_faces == 1){
       ENABLE_LIGHTING;
-      glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, &block_shininess);
-      glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, block_ambient2);
-      glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, block_specular2);
+      glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, &global_scase.color_defs.block_shininess);
+      glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, global_scase.color_defs.block_ambient2);
+      glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, global_scase.color_defs.block_specular2);
       glEnable(GL_COLOR_MATERIAL);
     }
     glBegin(GL_TRIANGLES);
@@ -3142,7 +3142,7 @@ void DrawFacesOLD(int option){
           new_color = facei->color;
         }
         else{
-          if(visNormalEditColors == 0)new_color = block_ambient2;
+          if(visNormalEditColors == 0)new_color = global_scase.color_defs.block_ambient2;
           if(visNormalEditColors == 1)new_color = facei->color;
           if(highlight_block == facei->blockageindex && highlight_mesh == facei->meshindex){
             new_color = highlight_color;
@@ -3189,9 +3189,9 @@ void DrawFacesOLD(int option){
 
     if(light_faces == 1){
       ENABLE_LIGHTING;
-      glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, &block_shininess);
-      glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, block_ambient2);
-      glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, block_specular2);
+      glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, &global_scase.color_defs.block_shininess);
+      glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, global_scase.color_defs.block_ambient2);
+      glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, global_scase.color_defs.block_specular2);
       glEnable(GL_COLOR_MATERIAL);
     }
     if(cullfaces == 1)glDisable(GL_CULL_FACE);
@@ -3225,7 +3225,7 @@ void DrawFacesOLD(int option){
           new_color = facei->color;
         }
         else{
-          if(visNormalEditColors == 0)new_color = block_ambient2;
+          if(visNormalEditColors == 0)new_color = global_scase.color_defs.block_ambient2;
           if(visNormalEditColors == 1)new_color = facei->color;
           if(highlight_block == facei->blockageindex && highlight_mesh == facei->meshindex){
             new_color = highlight_color;
@@ -3341,8 +3341,8 @@ void DrawFacesOLD(int option){
     glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, enable_texture_lighting?GL_MODULATE:GL_REPLACE);
     if(light_faces == 1){
       glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
-      glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, &block_shininess);
-      glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, block_specular2);
+      glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, &global_scase.color_defs.block_shininess);
+      glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, global_scase.color_defs.block_specular2);
     }
     glEnable(GL_TEXTURE_2D);
     glColor4ub(255, 255, 255, 255);
@@ -3423,9 +3423,9 @@ void DrawFaces(){
     int j;
 
     ENABLE_LIGHTING;
-    glMaterialfv(GL_FRONT_AND_BACK,GL_SHININESS,&block_shininess);
-    glMaterialfv(GL_FRONT_AND_BACK,GL_AMBIENT_AND_DIFFUSE,block_ambient2);
-    glMaterialfv(GL_FRONT_AND_BACK,GL_SPECULAR,block_specular2);
+    glMaterialfv(GL_FRONT_AND_BACK,GL_SHININESS,&global_scase.color_defs.block_shininess);
+    glMaterialfv(GL_FRONT_AND_BACK,GL_AMBIENT_AND_DIFFUSE,global_scase.color_defs.block_ambient2);
+    glMaterialfv(GL_FRONT_AND_BACK,GL_SPECULAR,global_scase.color_defs.block_specular2);
     glEnable(GL_COLOR_MATERIAL);
     glBegin(GL_TRIANGLES);
     for(j=0;j<global_scase.meshescoll.nmeshes;j++){
@@ -3505,9 +3505,9 @@ void DrawFaces(){
     new_color = NULL;
     old_color = NULL;
     ENABLE_LIGHTING;
-    glMaterialfv(GL_FRONT_AND_BACK,GL_SHININESS,&block_shininess);
-    glMaterialfv(GL_FRONT_AND_BACK,GL_AMBIENT_AND_DIFFUSE,block_ambient2);
-    glMaterialfv(GL_FRONT_AND_BACK,GL_SPECULAR,block_specular2);
+    glMaterialfv(GL_FRONT_AND_BACK,GL_SHININESS,&global_scase.color_defs.block_shininess);
+    glMaterialfv(GL_FRONT_AND_BACK,GL_AMBIENT_AND_DIFFUSE,global_scase.color_defs.block_ambient2);
+    glMaterialfv(GL_FRONT_AND_BACK,GL_SPECULAR,global_scase.color_defs.block_specular2);
     glEnable(GL_COLOR_MATERIAL);
     if(cullfaces==1)glDisable(GL_CULL_FACE);
     glBegin(GL_QUADS);
@@ -3534,7 +3534,7 @@ void DrawFaces(){
           new_color=facei->color;
         }
         else{
-          if(visNormalEditColors==0)new_color=block_ambient2;
+          if(visNormalEditColors==0)new_color=global_scase.color_defs.block_ambient2;
           if(visNormalEditColors==1)new_color=facei->color;
           if(highlight_block==facei->blockageindex&&highlight_mesh==facei->meshindex){
             new_color=highlight_color;
@@ -3637,8 +3637,8 @@ void DrawFaces(){
     ENABLE_LIGHTING;
     glEnable(GL_COLOR_MATERIAL);
     glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,enable_texture_lighting? GL_MODULATE : GL_REPLACE);
-    glMaterialfv(GL_FRONT_AND_BACK,GL_SHININESS,&block_shininess);
-    glMaterialfv(GL_FRONT_AND_BACK,GL_SPECULAR,block_specular2);
+    glMaterialfv(GL_FRONT_AND_BACK,GL_SHININESS,&global_scase.color_defs.block_shininess);
+    glMaterialfv(GL_FRONT_AND_BACK,GL_SPECULAR,global_scase.color_defs.block_specular2);
     glEnable(GL_TEXTURE_2D);
     glColor4ub(255, 255, 255, 255);
     for(j=0;j<global_scase.meshescoll.nmeshes;j++){
@@ -3755,10 +3755,10 @@ void DrawTransparentFaces(){
   if(nface_transparent>0){
     int i;
 
-    new_color=block_ambient2;
+    new_color=global_scase.color_defs.block_ambient2;
     ENABLE_LIGHTING;
-    glMaterialfv(GL_FRONT_AND_BACK,GL_SHININESS,&block_shininess);
-    glMaterialfv(GL_FRONT_AND_BACK,GL_AMBIENT_AND_DIFFUSE,block_ambient2);
+    glMaterialfv(GL_FRONT_AND_BACK,GL_SHININESS,&global_scase.color_defs.block_shininess);
+    glMaterialfv(GL_FRONT_AND_BACK,GL_AMBIENT_AND_DIFFUSE,global_scase.color_defs.block_ambient2);
     glEnable(GL_COLOR_MATERIAL);
     glBegin(GL_QUADS);
     for(i=0;i<nface_transparent;i++){
@@ -3779,7 +3779,7 @@ void DrawTransparentFaces(){
         new_color=facei->color;
       }
       else{
-        if(visNormalEditColors==0)new_color=block_ambient2;
+        if(visNormalEditColors==0)new_color=global_scase.color_defs.block_ambient2;
         if(visNormalEditColors==1)new_color=facei->color;
         if(highlight_block==facei->blockageindex&&highlight_mesh==facei->meshindex){
           new_color=highlight_color;
@@ -3831,8 +3831,8 @@ void DrawTransparentFaces(){
     int j;
 
     ENABLE_LIGHTING;
-    glMaterialfv(GL_FRONT_AND_BACK,GL_SHININESS,&block_shininess);
-    glMaterialfv(GL_FRONT_AND_BACK,GL_AMBIENT_AND_DIFFUSE,block_ambient2);
+    glMaterialfv(GL_FRONT_AND_BACK,GL_SHININESS,&global_scase.color_defs.block_shininess);
+    glMaterialfv(GL_FRONT_AND_BACK,GL_AMBIENT_AND_DIFFUSE,global_scase.color_defs.block_ambient2);
     glEnable(GL_COLOR_MATERIAL);
     if(cullfaces==1)glDisable(GL_CULL_FACE);
     glBegin(GL_QUADS);
@@ -4325,8 +4325,8 @@ void DrawDemo(int nlat, int nlong){
 //#define COLOR(x) (1.0+((x)-0.2143)/0.3)/2.0
 #define COLOR(x) 0.0
       ENABLE_LIGHTING;
-      glMaterialfv(GL_FRONT_AND_BACK,GL_SHININESS,&block_shininess);
-      glMaterialfv(GL_FRONT_AND_BACK,GL_AMBIENT_AND_DIFFUSE,block_ambient2);
+      glMaterialfv(GL_FRONT_AND_BACK,GL_SHININESS,&global_scase.color_defs.block_shininess);
+      glMaterialfv(GL_FRONT_AND_BACK,GL_AMBIENT_AND_DIFFUSE,global_scase.color_defs.block_ambient2);
       glMaterialfv(GL_FRONT_AND_BACK,GL_SPECULAR,specular);
       glEnable(GL_COLOR_MATERIAL);
       for(j=0;j<nlong;j++){

@@ -21,6 +21,8 @@ add_library(libsmv STATIC
     readimage.c
     readcad.c
     readgeom.c
+    colorbars.c
+    colorbar_defs.c
     readhvac.c
     readslice.c
     readsmoke.c
@@ -29,6 +31,8 @@ add_library(libsmv STATIC
     readlabel.c
     readtour.c
     scontour2d.c
+
+    # ../smokeview/readsmv.c
 )
 target_include_directories(libsmv PUBLIC
     .
@@ -47,38 +51,16 @@ if(WIN32)
                 FILES_MATCHING PATTERN "*.dll")
     endif()
 endif()
-if (JPEG_FOUND)
-    target_link_libraries(libsmv PUBLIC JPEG::JPEG)
-else()
-    target_link_libraries(libsmv PUBLIC jpeg_static)
-endif()
-if (PNG_FOUND)
-    target_link_libraries(libsmv PUBLIC PNG::PNG)
-else()
-    target_link_libraries(libsmv PUBLIC png_static)
-endif()
-if (ZLIB_FOUND)
-    target_link_libraries(libsmv PUBLIC ZLIB::ZLIB)
-else()
-    target_link_libraries(libsmv PUBLIC zlib_static)
-endif()
-if (LIBGD_FOUND)
-    target_link_libraries(libsmv PUBLIC PkgConfig::LIBGD)
-else()
-    target_link_libraries(libsmv PUBLIC gd_static)
-endif()
+target_link_libraries(libsmv PRIVATE JPEG::JPEG)
+target_link_libraries(libsmv PRIVATE PNG::PNG)
+target_link_libraries(libsmv PUBLIC ZLIB::ZLIB)
+target_link_libraries(libsmv PRIVATE OpenGL::GL OpenGL::GLU)
+target_link_libraries(libsmv PRIVATE PkgConfig::LIBGD)
 if ((NOT MACOSX) AND UNIX)
     target_link_libraries(libsmv PUBLIC m)
 endif()
-target_link_libraries(libsmv PRIVATE OpenGL::GL OpenGL::GLU)
-if (GLEW_FOUND)
-    target_link_libraries(libsmv PUBLIC GLEW::GLEW)
-    # This line is a hack to work around the fact the code includes "glew.h"
-    # rather than <GL/glew.h>
-    target_include_directories(libsmv PUBLIC ${GLEW_INCLUDE_DIRS}/GL)
-else()
-    target_sources(libsmv PUBLIC
-        ../glew/glew.c
-    )
-    target_include_directories(libsmv PUBLIC ../glew)
+if (SMV_ROOT_OVERRIDE)
+    target_compile_definitions(libsmv PRIVATE SMV_ROOT_OVERRIDE="${SMV_ROOT_OVERRIDE}")
 endif()
+target_link_libraries(libsmv PRIVATE OpenGL::GL OpenGL::GLU)
+target_compile_definitions(libsmv PRIVATE ASLIB)

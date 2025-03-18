@@ -642,8 +642,8 @@ void DrawWindRose(windrosedata *wr,int orientation){
     maxr = maxr_windrose;
   }
   ENABLE_LIGHTING;
-  glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, &block_shininess);
-  glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, block_ambient2);
+  glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, &global_scase.color_defs.block_shininess);
+  glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, global_scase.color_defs.block_ambient2);
   glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, specular);
   glEnable(GL_COLOR_MATERIAL);
 
@@ -3471,8 +3471,8 @@ void DrawDevices(int mode){
     if(object_box==1){
       if(object_outlines==0){
         ENABLE_LIGHTING;
-        glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, &block_shininess);
-        glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, block_ambient2);
+        glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, &global_scase.color_defs.block_shininess);
+        glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, global_scase.color_defs.block_ambient2);
         glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, specular);
         glEnable(GL_COLOR_MATERIAL);
       }
@@ -3523,8 +3523,8 @@ void DrawDevices(int mode){
     int j;
 
     ENABLE_LIGHTING;
-    glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, &block_shininess);
-    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, block_ambient2);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, &global_scase.color_defs.block_shininess);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, global_scase.color_defs.block_ambient2);
     glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, specular);
     glEnable(GL_COLOR_MATERIAL);
 
@@ -4138,8 +4138,8 @@ void DrawSmvObject(sv_object *object_dev, int iframe_local, propdata *prop, int 
   if(select_device_color_ptr == NULL&&recurse_level == 0){
     ENABLE_LIGHTING;
 
-    glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, &block_shininess);
-    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, block_ambient2);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, &global_scase.color_defs.block_shininess);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, global_scase.color_defs.block_ambient2);
     glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, specular);
 
     glEnable(GL_COLOR_MATERIAL);

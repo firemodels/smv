@@ -1060,9 +1060,6 @@ SVEXTERN float tourcol_pathknots[3];
 SVEXTERN float tourcol_text[3];
 SVEXTERN float tourcol_avatar[3];
 #endif
-SVEXTERN float mat_ambient_orig[4];
-SVEXTERN float mat_specular_orig[4];
-SVEXTERN float SVDECL(*mat_ambient2,NULL), SVDECL(*mat_specular2,NULL);
 
 #ifdef INMAIN
 SVEXTERN GLfloat iso_specular[4]={0.7,0.7,0.7,1.0};
@@ -1071,11 +1068,6 @@ SVEXTERN GLfloat iso_specular[4];
 #endif
 SVEXTERN GLfloat SVDECL(iso_shininess, 50.0), SVDECL(glui_shininess, 50.0);
 
-SVEXTERN float block_ambient_orig[4];
-SVEXTERN float SVDECL(*block_ambient2,NULL);
-SVEXTERN float block_specular_orig[4];
-SVEXTERN float SVDECL(*block_specular2,NULL);
-SVEXTERN GLfloat SVDECL(block_shininess,100.0);
 
 #ifdef INMAIN
 SVEXTERN GLfloat light_position0[4]={1.0,1.0,1.0,0.0};
@@ -1626,8 +1618,6 @@ SVEXTERN int SVDECL(show_gslice_triangulation,0);
 SVEXTERN int SVDECL(show_gslice_normal,0),SVDECL(show_gslice_normal_keyboard,0);
 
 
-SVEXTERN float ventcolor_orig[4];
-SVEXTERN float SVDECL(*ventcolor,NULL);
 #ifdef INMAIN
 SVEXTERN float static_color[4]={0.0,1.0,0.0,1.0};
 SVEXTERN float sensorcolor[4]={1.0,1.0,0.0,1.0};
@@ -1719,138 +1709,7 @@ SVEXTERN int SVDECL(output_slicedata,0),SVDECL(output_patchdata,0);
 SVEXTERN f_units SVDECL(*unitclasses,NULL),SVDECL(*unitclasses_default,NULL),SVDECL(*unitclasses_ini,NULL);
 SVEXTERN int SVDECL(nunitclasses,0),SVDECL(nunitclasses_default,0),SVDECL(nunitclasses_ini,0);
 #ifdef INMAIN
-SVEXTERN smv_case global_scase = {
-                           .cadgeomcoll = {
-                                            .capacity=0,
-                                            .ncadgeom=0,
-                                            .cadgeominfo=NULL
-                                       },
-                           .csvcoll = {
-                                          .ncsvfileinfo=0,
-                                           .csvfileinfo=NULL
-                                       },
-                           .devicecoll = {
-                                           .ndeviceinfo=0,
-                                           .nvdeviceinfo=0,
-                                           .ndeviceinfo_exp=0,
-                                           .deviceinfo=NULL,
-                                           .vdeviceinfo=NULL,
-                                           .vdevices_sorted=NULL
-                                       },
-                           .device_texture_list_coll = {
-                                           .ndevice_texture_list=0,
-                                           .device_texture_list=NULL,
-                                           .device_texture_list_index=NULL
-                                       },
-                           .filelist_coll = {
-                                            .nini_filelist=0,
-                                            .ini_filelist=NULL,
-                                            .nfilelist_casename=0,
-                                            .filelist_casename=NULL,
-                                            .nfilelist_casedir=0,
-                                            .filelist_casedir=NULL
-                                       },
-                           .hrr_coll = {
-                                          .nhrrinfo=0,
-                                          .nhrrhcinfo=0,
-                                          .hrrinfo=NULL
-                                       },
-                           .meshescoll = {
-                                           .meshinfo=NULL,
-                                           .nmeshes=0,
-                                       },
-                           .obstcoll = {
-                                          .nobstinfo=0,
-                                          .obstinfo=NULL
-                                       },
-                           .propcoll = {
-                                          .npropinfo=0,
-                                          .propinfo=NULL
-                                       },
-                           .slicecoll = {
-                                          .nsliceinfo=0,
-                                          .sliceinfo=NULL,
-                                          .nmultisliceinfo=0,
-                                          .multisliceinfo=NULL,
-                                          .nvsliceinfo=0,
-                                          .vsliceinfo=NULL,
-                                          .nmultivsliceinfo=0,
-                                          .multivsliceinfo=NULL
-                                       },
-                           .smoke3dcoll = {
-                                         .nsmoke3dinfo=0,
-                                         .smoke3dinfo=NULL,
-                                         .smoke3dinfo_sorted=NULL,
-                                         .nsmoke3dtypes=0,
-                                         .smoke3d_other=0,
-                                         .smoke3dtypes=NULL
-                                       },
-                           .surfcoll = {
-                                           .nsurfinfo=0,
-                                           .surfinfo=NULL,
-                                           .nsurfids=0,
-                                           .surfids=NULL,
-                                           .nsorted_surfidlist=0,
-                                           .sorted_surfidlist=NULL,
-                                           .inv_sorted_surfidlist=NULL
-                                       },
-                           .terrain_texture_coll = {
-                                          .nterrain_textures=0,
-                                          .terrain_textures=NULL
-                                       },
-                           .texture_coll = {
-                                          .ntextureinfo=0,
-                                          .textureinfo=NULL
-                                       },
-                           .tourcoll = {
-                                        .ntourinfo = 0,
-                                        .tourinfo = NULL,
-                                        .tour_ntimes = 1000,
-                                        .tour_t = NULL,
-                                        .tour_t2 = NULL,
-                                        .tour_dist = NULL,
-                                        .tour_dist2 = NULL,
-                                        .tour_dist3 = NULL,
-                                        .tour_tstart = 0.0,
-                                        .tour_tstop = 100.0
-                                       },
-                           .fuel_hoc = -1.0,
-                           .fuel_hoc_default = -1.0,
-                           .have_cface_normals = CFACE_NORMALS_NO,
-                           .gvecphys = {0.0, 0.0, -9.8},
-                           .gvecunit = {0.0, 0.0, -1.0},
-                           .global_tbegin = 1.0,
-                           .global_tend = 0.0,
-                           .tload_begin = 0.0,
-                           .tload_end = 0.0,
-                           .load_hrrpuv_cutoff = 200.0,
-                           .global_hrrpuv_cutoff = 200.0,
-                           .global_hrrpuv_cutoff_default = 200.0,
-                           .smoke_albedo = 0.3,
-                           .smoke_albedo_base = 0.3,
-                           .xbar = 1.0,
-                           .ybar = 1.0,
-                           .zbar = 1.0,
-                           .show_slice_in_obst = ONLY_IN_GAS,
-                           .use_iblank = 1,
-                           .visOtherVents = 1,
-                           .visOtherVentsSAVE = 1,
-                           .hvac_duct_color = {63, 0, 15},
-                           .hvac_node_color = {63, 0, 15},
-                           .nrgb2 = 8,
-                           .pref = 101325.0,
-                           .pamb = 0.0,
-                           .tamb = 293.15,
-                           .nrgb = NRGB,
-                           .linewidth = 2.0,
-                           .ventlinewidth = 2.0,
-                           .obst_bounding_box = {1.0,0.0,1.0,0.0,1.0,0.0},
-                           .hvaccoll = {
-                              .hvacductvar_index= -1,
-                              .hvacnodevar_index= -1,
-                              0
-                            }
-                          };
+SVEXTERN smv_case global_scase = {0};
 parse_options parse_opts = {
     .smoke3d_only = 0,
     .setup_only = 0,

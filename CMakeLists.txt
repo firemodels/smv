@@ -1,45 +1,67 @@
 # We select CMake version 3.25 as it allows us to use the LINUX variable.
-cmake_minimum_required(VERSION 3.17)
+cmake_minimum_required(VERSION 3.24)
 # Set a policy to use the newer MSVC ABI selection
 cmake_policy(SET CMP0091 NEW)
-# Set a policy to use the newer approach to timestampes in FetchContent
+# Set a policy to use the newer approach to timestamps in FetchContent
 if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.24")
     cmake_policy(SET CMP0135 NEW)
 endif()
 if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.19")
     cmake_policy(SET CMP0110 NEW)
 endif()
-# Use FetchContent, this is used mostly to pull in Lua via git
 include(FetchContent)
+
 # Selected the multithreaded runtime when using MSVC
-set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
-project(smv LANGUAGES C CXX)
+set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL")
+project(smv LANGUAGES C CXX VERSION 1.17.0)
 # Use C99
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_C_EXTENSIONS ON)
 # Requires adherence to this standard
 set(CMAKE_C_STANDARD_REQUIRED TRUE)
-# GNUInstallDirs is used to set the appropriate paths on linux (/usr/lib64 etc).
-include(GNUInstallDirs)
+if(WIN32)
+    # Set the folder for executables and libraries as the install directory.
+    # Using the same conventions as  GNUInstallDirs may be better but this
+    # matches the current setup.
+    set(CMAKE_INSTALL_BINDIR ".")
+    set(CMAKE_INSTALL_LIBDIR ".")
+    set(CMAKE_INSTALL_SYSCONFDIR ".")
+else()
+    # GNUInstallDirs is used to set the appropriate paths on linux (/usr/lib64
+    # etc).
+    include(GNUInstallDirs)
+endif()
 # Pass a flag to to the source code. There's no great need for this but allows
 # us to have conditional code based on the build method.
 add_definitions(-Dpp_CMAKE)
+add_compile_definitions(pp_GITHASH="${PROJECT_VERSION}+sc2.lua")
+
+
+include(InstallRequiredSystemLibraries)
+configure_file(LICENSE.md LICENSE.txt)
+set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_BINARY_DIR}/LICENSE.txt")
+set(CPACK_PACKAGE_VERSION_MAJOR "${PROJECT_VERSION_MAJOR}")
+set(CPACK_PACKAGE_VERSION_MINOR "${PROJECT_VERSION_MINOR}")
+set(CPACK_PACKAGE_VERSION_PATCH "${PROJECT_VERSION_PATCH}")
+set(CPACK_GENERATOR "WIX")
+set(CPACK_WIX_UPGRADE_GUID "1940d8a1-c842-442f-bf5d-00a570219bdb")
+set(CPACK_WIX_INSTALL_SCOPE "perUser")
+set(CPACK_PACKAGE_NAME "Smokeview JSONRPC")
+set(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}")
+set(CPACK_PACKAGE_VENDOR "firemodels")
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY
+    "A modified smokeview with the ability to communicate via JSONRPC.")
+set(CPACK_WIX_PRODUCT_ICON "${CMAKE_CURRENT_SOURCE_DIR}/Build/for_bundle/icon.ico")
+set(CPACK_WIX_PATCH_FILE "${CMAKE_CURRENT_SOURCE_DIR}/cpack_patch.xml")
+include(CPack)
+message("Package Name: ${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION}-${CPACK_SYSTEM_NAME}.msi")
 
 # Options which can be configured (along with their defaults)
 option(BETA "Include beta functionality" OFF)
-option(LUA "Include lua scripting" OFF)
-option(LUA_BUILD_BINARY "Build a lua intepreter" OFF)
-option(LUA_UTIL_LIBS "Build LPEG and LFS, useful native libs for lua" OFF)
 option(STRICT_CHECKS "Run additional strict checks" OFF)
-
-# There are some C-based lua libraries that are generally distributed separately
-# (e.g. via a linux distribution or luarocks). Sometimes (particularly on
-# Windows) it makes sense to compile them here.
-if (LUA_UTIL_LIBS)
-    set(VENDOR_LFS TRUE)
-    set(VENDOR_LPEG TRUE)
-endif()
+option(VENDORED_UI_LIBS "Use the vendored GLUT" ON)
+option(BUILD_SHARED_LIBS "Build using shared libraries" ON)
 
 # Ensure all files are in the right place to run the tests
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
@@ -55,70 +77,38 @@ endif()
 # Set flags for Windows
 if (WIN32)
     add_definitions(-D_CRT_SECURE_NO_WARNINGS -D_WIN32)
-    add_compile_definitions(PTW32_BUILD PTW32_STATIC_LIB X64 _WIN32 WIN32 _CONSOLE)
+    add_compile_definitions(PTW32_BUILD PTW32_STATIC_LIB   X64 _WIN32 WIN32 _CONSOLE)
 endif()
 # Set flags for Linux
 if (LINUX)
     add_definitions(-Dpp_LINUX)
 endif()
 
+add_compile_definitions(pp_CMAKE)
 
 find_package(OpenGL REQUIRED)
-if (NOT(WIN32))
-    find_package(GLUT)
-endif()
-if (NOT GLUT_FOUND)
-    add_subdirectory(Source/glut-3.7.6)
-endif()
-find_package(OpenGL REQUIRED)
-find_package(GLEW)
-# If GLEW is not found natively we compile it into smokeview directly later in
-# this file rather than adding a subdirectory
-find_package(JPEG)
-if (NOT JPEG_FOUND)
-    add_subdirectory(Source/jpeg-9b)
-endif()
-find_package(PNG)
-if (NOT PNG_FOUND)
-    add_subdirectory(Source/png-1.6.21)
-endif()
-find_package(ZLIB)
-if (NOT ZLIB_FOUND)
-    add_subdirectory(Source/zlib128)
-endif()
-
-# GLUI has been modified for smokeview, so we have to vendor it and can't use a
-# native version.
-add_subdirectory(Source/glui_v2_1_beta)
-
-# This fails on Windows so we disable it for now
-if (NOT(WIN32))
-    find_package(PkgConfig)
-    if (PKG_CONFIG_FOUND)
-        pkg_check_modules(LIBGD IMPORTED_TARGET gdlib)
+if (VENDORED_UI_LIBS)
+    if (NOT MACOSX)
+        add_subdirectory(Source/glut-3.7.6)
     endif()
+    add_subdirectory(Source/glui_v2_1_beta)
+else()
+    FetchContent_Declare(
+        glui-git
+        GIT_REPOSITORY https://github.com/JakeOShannessy/glui.git
+        GIT_TAG        fb8380b8603b77aea997428af3fba41c70920b2f
+    )
 endif()
-
-if (NOT LIBGD_FOUND)
-    add_subdirectory(Source/gd-2.0.15)
-endif()
-
+find_package(GLEW REQUIRED)
+find_package(JPEG REQUIRED)
+find_package(PNG REQUIRED)
+find_package(ZLIB REQUIRED)
+find_package(json-c CONFIG REQUIRED)
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(LIBGD REQUIRED IMPORTED_TARGET gdlib)
 if (WIN32)
-    find_package(PThreads4W)
-    if (NOT PThreads4W_FOUND)
-        add_subdirectory(Source/pthreads)
-    endif()
+    find_package(PThreads4W REQUIRED)
 endif()
-
-if (LUA)
-    if (VENDOR_LFS)
-        add_subdirectory(Source/lfs)
-    endif()
-    if (VENDOR_LPEG)
-        # add_subdirectory(Source/lpeg)
-    endif()
-endif()
-
 
 if (NOT MSVC)
     add_compile_options(-Wunused)
@@ -148,10 +138,15 @@ if(STRICT_CHECKS AND (NOT MSVC))
     add_compile_options(-Wno-unused-result)
     add_compile_options(-Wno-format-overflow)
     add_compile_options(-Wno-format-truncation)
+    add_compile_options("$<$<COMPILE_LANGUAGE:CXX>:$<BUILD_INTERFACE:-Wno-overloaded-virtual;-Wno-unused-comparison>>")
+
+
     add_compile_options(-Wno-nonnull)
     add_compile_options(-Wno-comment)
     if (NOT (CMAKE_C_COMPILER_ID STREQUAL IntelLLVM))
-        add_compile_options(-Wno-stringop-truncation)
+        if (CMAKE_C_COMPILER_ID STREQUAL "GNU")
+            add_compile_options(-Wno-stringop-truncation)
+        endif()
         add_compile_options(-ffat-lto-objects)
         add_compile_options(-flto=auto)
     else()
@@ -160,16 +155,11 @@ if(STRICT_CHECKS AND (NOT MSVC))
         add_compile_options(-Wno-for-loop-analysis)
     endif()
 
-    add_compile_options(-Wshadow)
+    # add_compile_options(-Wshadow)
 elseif(STRICT_CHECKS AND (NOT MSVC))
     add_compile_options(/Wall)
     add_compile_options(/Werror)
 endif()
-
-
-if (BETA)
-    add_compile_definitions(pp_BETA)
-endif ()
 
 
 include(CTest)
@@ -178,19 +168,6 @@ add_subdirectory(Tests)
 option(VERIFICATION_TESTS "Run larger verification tests" OFF)
 if (VERIFICATION_TESTS)
     add_subdirectory(Verification/Visualization)
-endif()
-
-# Retrieve configuration and data files from the bot repo
-file(DOWNLOAD "https://raw.githubusercontent.com/firemodels/bot/a0a9d710f7a55b4e04c9ac4e32a04e2efe197c47/Bundlebot/smv/for_bundle/objects.svo" "${CMAKE_BINARY_DIR}/objects.svo" STATUS object_svo_status)
-list(GET object_svo_status 0 object_svo_status_code)
-if (object_svo_status_code)
-    message(FATAL_ERROR "Could not download objects.svo ${smokeview_ini_status_code}")
-endif()
-
-file(DOWNLOAD "https://raw.githubusercontent.com/firemodels/bot/a0a9d710f7a55b4e04c9ac4e32a04e2efe197c47/Bundlebot/smv/for_bundle/smokeview.ini" "${CMAKE_BINARY_DIR}/smokeview.ini" STATUS smokeview_ini_status)
-list(GET smokeview_ini_status 0 smokeview_ini_status_code)
-if (smokeview_ini_status_code)
-    message(FATAL_ERROR "Could not download smokeview.ini ${smokeview_ini_status_code}")
 endif()
 
 # Libraries to build (which may be dependencies of the programs below)
@@ -209,7 +186,6 @@ if (pp_HASH)
 endif()
 add_subdirectory(Source/makepo)
 add_subdirectory(Source/mergepo)
-add_subdirectory(Source/set_path)
 add_subdirectory(Source/smokediff)
 add_subdirectory(Source/smokeview)
 add_subdirectory(Source/smokezip)
@@ -220,4 +196,9 @@ add_subdirectory(Source/wind2fds)
 # The programs to build on Windows only
 if(WIN32)
     add_subdirectory(Source/runbatch)
+    add_subdirectory(Source/set_path)
 endif()
+
+# Install config files
+install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/Build/for_bundle/smokeview.ini" DESTINATION "${CMAKE_INSTALL_SYSCONFDIR}/smokeview")
+install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/Build/for_bundle/objects.svo" DESTINATION "${CMAKE_INSTALL_SYSCONFDIR}/smokeview")
