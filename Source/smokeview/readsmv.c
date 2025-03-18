@@ -45,6 +45,7 @@
 #include "readsmoke.h"
 #include "readcad.h"
 #include "readtour.h"
+#include "readsmvfile.h"
 
 #define BREAK break
 #define BREAK2 \
@@ -67,18 +68,6 @@
 
 #define SCAN    0
 #define NO_SCAN 1
-
-int GetNDevices(char *file);
-void AddCfastCsvf(smv_case *scase);
-int ReadSMV_Init(smv_case *scase);
-int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream);
-int CompareSmoketypes(const void *arg1, const void *arg2);
-int IsDupTexture(smv_case *scase, texturedata *texti);
-int IsTerrainTexture(smv_case *scase, texturedata *texti);
-surfdata *GetSurface(smv_case *scase, const char *label);
-int ParseCHIDProcess(smv_case *scase, bufferstreamdata *stream, int option);
-float *GetColorPtr(smv_case *scase, float *color);
-void GetElevAz(float *xyznorm,float *dtheta,float *rotate_axis, float *dpsi);
 
 #if defined(ASLIB) || !defined(pp_CMAKE)
 parse_options parse_opts = {

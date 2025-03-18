@@ -1712,7 +1712,6 @@ SVEXTERN smv_case global_scase = {0};
 #else
 SVEXTERN smv_case global_scase;
 #endif
-extern CCC parse_options parse_opts;
 SVEXTERN meshdata SVDECL(*current_mesh,NULL), SVDECL(*mesh_save,NULL);
 SVEXTERN meshdata SVDECL(*mesh_last,NULL), SVDECL(*loaded_isomesh,NULL);
 SVEXTERN float SVDECL(devicenorm_length,0.1);
