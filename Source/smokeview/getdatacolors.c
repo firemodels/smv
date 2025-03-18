@@ -1758,45 +1758,6 @@ void GetRGB(unsigned int val, unsigned char *rr, unsigned char *gg, unsigned cha
   *rr=r; *gg=g; *bb=b;
 }
 
-
-/* ------------------ GetColorPtr ------------------------ */
-
-float *GetColorPtr(smv_case *scase, float *color){
-  colordata *colorptr,*oldlastcolor,*lastcolor;
-
-  if(scase->firstcolor==NULL){
-    NewMemory((void *)&scase->firstcolor,sizeof(colordata));
-    memcpy(scase->firstcolor->color,      color, 4*sizeof(float));
-    memcpy(scase->firstcolor->full_color, color, 4*sizeof(float));
-    scase->firstcolor->bw_color[0] = TOBW(color);
-    scase->firstcolor->bw_color[1] = scase->firstcolor->bw_color[0];
-    scase->firstcolor->bw_color[2] = scase->firstcolor->bw_color[0];
-    scase->firstcolor->bw_color[3] = color[3];
-    scase->firstcolor->nextcolor=NULL;
-    return scase->firstcolor->color;
-  }
-  oldlastcolor = scase->firstcolor;
-  for(colorptr = scase->firstcolor; colorptr!=NULL; colorptr = colorptr->nextcolor){
-    oldlastcolor=colorptr;
-    if(ABS(colorptr->color[0]-color[0])>0.0001)continue;
-    if(ABS(colorptr->color[1]-color[1])>0.0001)continue;
-    if(ABS(colorptr->color[2]-color[2])>0.0001)continue;
-    if(ABS(colorptr->color[3]-color[3])>0.0001)continue;
-    return colorptr->color;
-  }
-  lastcolor=NULL;
-  NewMemory((void *)&lastcolor,sizeof(colordata));
-  oldlastcolor->nextcolor=lastcolor;
-  memcpy(lastcolor->color,      color, 4*sizeof(float));
-  memcpy(lastcolor->full_color, color, 4*sizeof(float));
-  lastcolor->bw_color[0] = TOBW(color);
-  lastcolor->bw_color[1] = lastcolor->bw_color[0];
-  lastcolor->bw_color[2] = lastcolor->bw_color[0];
-  lastcolor->bw_color[3] = color[3];
-  lastcolor->nextcolor=NULL;
-  return lastcolor->color;
-}
-
 /* ------------------ GetColorTranPtr ------------------------ */
 
 float *GetColorTranPtr(float *color, float transparency){
