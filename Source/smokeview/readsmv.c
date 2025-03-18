@@ -6875,14 +6875,6 @@ int ReadSMV_Init(smv_case *scase){
 #ifdef pp_ISOFRAME
   use_isosurface_threads = 0;
 #endif
-//** initialize multi-threading
-  if(runscript == 1){
-    use_checkfiles_threads  = 0;
-    use_ffmpeg_threads      = 0;
-    use_readallgeom_threads = 0;
-    use_isosurface_threads  = 0;
-    use_meshnabors_threads  = 0;
-  }
 
   START_TIMER(scase->getfilelist_time);
   MakeFileLists(scase);
@@ -11829,6 +11821,14 @@ void DestroyScase(smv_case *scase) {
 /// @return zero on sucess, non-zero on error
 int ReadSMV(bufferstreamdata *stream){
   InitScase(&global_scase);
+  //** initialize multi-threading
+  if(runscript == 1){
+    use_checkfiles_threads  = 0;
+    use_ffmpeg_threads      = 0;
+    use_readallgeom_threads = 0;
+    use_isosurface_threads  = 0;
+    use_meshnabors_threads  = 0;
+  }
   ReadSMV_Init(&global_scase);
   ReadSMV_Parse(&global_scase, stream);
   ReadSMV_Configure();
