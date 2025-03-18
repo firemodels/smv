@@ -5236,42 +5236,6 @@ char *GetDeviceLabel(char *buffer){
   return label_present;
 }
 
-
-/* ----------------------- GetNDevices ----------------------------- */
-#define BUFFER_LEN 255
-int GetNDevices(char *file){
-  FILE *stream;
-  char buffer[BUFFER_LEN], *comma;
-  int buffer_len = BUFFER_LEN, nd = 0;
-
-  if(file == NULL) return 0;
-  stream = fopen(file, "r");
-  if(stream == NULL) return 0;
-  fgets(buffer, buffer_len, stream);
-  comma = strchr(buffer, ',');
-  if(comma != NULL) *comma = 0;
-  TrimBack(buffer);
-  if(strcmp(buffer, "//HEADER") != 0){
-    fclose(stream);
-    return 0;
-  }
-
-  while(!feof(stream)){
-    fgets(buffer, buffer_len, stream);
-    comma = strchr(buffer, ',');
-    if(comma != NULL) *comma = 0;
-    TrimBack(buffer);
-    if(strcmp(buffer, "//DATA") == 0){
-      break;
-    }
-    if(strcmp(buffer, "DEVICE") == 0){
-      nd++;
-    }
-  }
-  fclose(stream);
-  return nd;
-}
-
 void RewindDeviceFile(FILE *stream){
 #define BUFFER_LEN 255
   char buffer[BUFFER_LEN], *comma;
