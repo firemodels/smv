@@ -55,6 +55,14 @@
 
 int GetNDevices(char *file);
 
+parse_options parse_opts = {
+  .smoke3d_only = 0,
+  .setup_only = 0,
+  .fast_startup = 1,
+  .lookfor_compressed_files = 0,
+  .handle_slice_files = 1
+};
+
 /* ------------------ GetHrrCsvCol ------------------------ */
 
 int GetHrrCsvCol(smv_case *scase, char *label){

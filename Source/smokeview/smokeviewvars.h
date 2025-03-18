@@ -1709,17 +1709,10 @@ SVEXTERN f_units SVDECL(*unitclasses,NULL),SVDECL(*unitclasses_default,NULL),SVD
 SVEXTERN int SVDECL(nunitclasses,0),SVDECL(nunitclasses_default,0),SVDECL(nunitclasses_ini,0);
 #ifdef INMAIN
 SVEXTERN smv_case global_scase = {0};
-parse_options parse_opts = {
-    .smoke3d_only = 0,
-    .setup_only = 0,
-    .fast_startup = 1,
-    .lookfor_compressed_files = 0,
-    .handle_slice_files = 1
-};
 #else
 SVEXTERN smv_case global_scase;
-SVEXTERN parse_options parse_opts;
 #endif
+extern CCC parse_options parse_opts;
 SVEXTERN meshdata SVDECL(*current_mesh,NULL), SVDECL(*mesh_save,NULL);
 SVEXTERN meshdata SVDECL(*mesh_last,NULL), SVDECL(*loaded_isomesh,NULL);
 SVEXTERN float SVDECL(devicenorm_length,0.1);
