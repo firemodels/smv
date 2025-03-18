@@ -452,6 +452,28 @@ void GetKeyXYZ(float t, keyframe *this_key, float *xyz){
   }
 }
 
+/* ------------------ SetTourXYZView ------------------------ */
+
+void SetTourXYZView(float t, tourdata *touri) {
+  keyframe *this_key, *first_key, *last_key;
+
+  first_key = touri->first_frame.next;
+  last_key = touri->last_frame.prev;
+  if(t < first_key->time) {
+    memcpy(touri->xyz_smv, first_key->xyz_smv, 3 * sizeof(float));
+    memcpy(touri->view_smv, first_key->view_smv, 3 * sizeof(float));
+    return;
+  }
+  if(t >= last_key->time) {
+    memcpy(touri->xyz_smv, last_key->xyz_smv, 3 * sizeof(float));
+    memcpy(touri->view_smv, last_key->view_smv, 3 * sizeof(float));
+    return;
+  }
+  this_key = GetKeyFrame(touri, t);
+  GetKeyXYZ(t, this_key, touri->xyz_smv);
+  GetKeyView(t, this_key, touri->view_smv);
+}
+
 /* ------------------ GetTourTimeBounds ------------------------ */
 
 void GetTourTimeBounds(tourdata *touri, float *tour_tstart, float *tour_tstop){
