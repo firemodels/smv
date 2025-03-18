@@ -6221,28 +6221,3 @@ void InitDevicePlane(devicedata *devicei){
   }
 
 }
-
-/* ------------------ Normalize ------------------------ */
-
-void Normalize(float *xyz, int n){
-  float norm,norm2;
-  int i;
-
-  norm2 = 0.0;
-
-  for(i=0;i<n;i++){
-    norm2 += xyz[i]*xyz[i];
-  }
-  norm = sqrt(norm2);
-  if(norm<0.00001){
-    for(i=0;i<n-1;i++){
-      xyz[i]=0.0;
-    }
-    xyz[n-1]=1.0;
-  }
-  else{
-    for(i=0;i<n;i++){
-      xyz[i]/=norm;
-    }
-  }
-}
