@@ -1057,7 +1057,7 @@ void *InitNabors(void *arg){
   int i;
 
   INIT_PRINT_TIMER(timer_init_nabors);
-  if(have_mesh_nabors == 0){
+  if(global_scase.have_mesh_nabors == 0){
     for(i = 0;i < global_scase.meshescoll.nmeshes;i++){
       meshdata *meshi;
       int j;
