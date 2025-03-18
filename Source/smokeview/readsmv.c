@@ -4081,7 +4081,7 @@ surfdata *GetSurface(smv_case *scase, const char *label){
     surfi = scase->surfcoll.surfinfo + i;
     if(strcmp(surfi->surfacelabel, label) == 0)return surfi;
   }
-  return global_scase.surfacedefault;
+  return scase->surfacedefault;
 }
 
 /* ------------------ InitObst ------------------------ */
