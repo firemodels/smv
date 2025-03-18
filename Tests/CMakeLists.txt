@@ -16,7 +16,8 @@ FetchContent_MakeAvailable(test_data)
 set(FIG_DIR ${test_data_SOURCE_DIR})
 
 # parse_simple_slice
-add_executable(parse_simple_slice parse_simple_slice.c
+add_executable(parse_simple_slice parse_simple_slice.c)
+target_sources(parse_simple_slice PRIVATE
     ../Source/shared/getdata.c
     ../Source/shared/dmalloc.c
 )
@@ -33,7 +34,8 @@ if ((NOT MACOSX) AND UNIX)
 endif()
 
 # parse_simple_bndf
-add_executable(parse_simple_bndf parse_simple_bndf.c
+add_executable(parse_simple_bndf parse_simple_bndf.c)
+target_sources(parse_simple_bndf PRIVATE
     ../Source/shared/getdata.c
     ../Source/shared/dmalloc.c
 )
@@ -51,7 +53,8 @@ endif()
 
 
 # parse_simple_part
-add_executable(parse_simple_part parse_simple_part.c
+add_executable(parse_simple_part parse_simple_part.c)
+target_sources(parse_simple_part PRIVATE
     ../Source/shared/getdata.c
     ../Source/shared/dmalloc.c
 )
@@ -69,7 +72,8 @@ endif()
 
 
 # parse_simple_pl3d
-add_executable(parse_simple_pl3d parse_simple_pl3d.c
+add_executable(parse_simple_pl3d parse_simple_pl3d.c)
+target_sources(parse_simple_pl3d PRIVATE
     ../Source/shared/getdata.c
     ../Source/shared/dmalloc.c
 )
@@ -117,7 +121,8 @@ if ((NOT MACOSX) AND UNIX)
 endif()
 
 # test_objects
-add_executable(test_objects test_objects.c
+add_executable(test_objects test_objects.c)
+target_sources(test_objects PRIVATE
     ../Source/shared/dmalloc.c
     ../Source/shared/readobject.c
     ../Source/shared/string_util.c
@@ -141,7 +146,8 @@ if ((NOT MACOSX) AND UNIX)
 endif()
 
 # parse_hvac_vals
-add_executable(parse_hvac_vals parse_hvac_vals.c
+add_executable(parse_hvac_vals parse_hvac_vals.c)
+target_sources(parse_hvac_vals PRIVATE
     ../Source/shared/readhvac.c
     ../Source/shared/file_util.c
     ../Source/shared/string_util.c
@@ -165,7 +171,8 @@ if ((NOT MACOSX) AND UNIX)
 endif()
 
 # test_labels
-add_executable(test_labels test_labels.c
+add_executable(test_labels test_labels.c)
+target_sources(test_labels PRIVATE
     ../Source/shared/dmalloc.c
     ../Source/shared/readlabel.c
     ../Source/shared/string_util.c
@@ -190,7 +197,8 @@ endif()
 
 
 # parse_objects
-add_executable(parse_objects parse_objects.c
+add_executable(parse_objects parse_objects.c)
+target_sources(parse_objects PRIVATE
     ../Source/shared/dmalloc.c
     ../Source/shared/readobject.c
     ../Source/shared/string_util.c
@@ -214,7 +222,8 @@ endif()
 
 
 # parse_colorbar
-add_executable(parse_colorbar parse_colorbar.c
+add_executable(parse_colorbar parse_colorbar.c)
+target_sources(parse_colorbar PRIVATE
     ../Source/shared/getdata.c
     ../Source/shared/dmalloc.c
     ../Source/shared/colorbars.c
@@ -250,7 +259,8 @@ target_include_directories(mem_test PRIVATE
 )
 
 # test_root_dir
-add_executable(test_root_dir test_root_dir.c
+add_executable(test_root_dir test_root_dir.c)
+target_sources(test_root_dir PRIVATE
     ../Source/shared/dmalloc.c
     ../Source/shared/readobject.c
     ../Source/shared/string_util.c
