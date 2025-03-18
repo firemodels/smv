@@ -264,4 +264,6 @@
 
 #define PI           3.14159265359f
 
+#define TOBW(col) ( 0.299*(col)[0] + 0.587*(col)[1] + 0.114*(col)[2])
+
 #endif
