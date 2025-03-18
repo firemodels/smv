@@ -1611,11 +1611,11 @@ void DrawHalfSphere(void){
   int use_sky;
 
   use_sky = 0;
-  if(nsky_texture > 0 && sky_texture != NULL && sky_texture->loaded == 1 && sky_texture->display == 1&& visSkySpheretexture==1)use_sky = 1;
+  if(global_scase.nsky_texture > 0 && global_scase.sky_texture != NULL && global_scase.sky_texture->loaded == 1 && global_scase.sky_texture->display == 1&& visSkySpheretexture==1)use_sky = 1;
   if(use_sky == 1){
     glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
     glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, sky_texture->name);
+    glBindTexture(GL_TEXTURE_2D, global_scase.sky_texture->name);
   }
 
   glBegin(GL_QUADS);
