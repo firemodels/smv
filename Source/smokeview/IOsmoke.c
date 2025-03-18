@@ -16,6 +16,7 @@
 #include "compress.h"
 #include "getdata.h"
 #include "readsmoke.h"
+#include "readsmvfile.h"
 
 typedef FILE MFILE;
 #define MFILE                   FILE

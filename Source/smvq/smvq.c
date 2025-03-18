@@ -14,6 +14,9 @@
 
 #include "smokeviewvars.h"
 #include "string_util.h"
+#include <math.h>
+#include "readlabel.h"
+#include "readsmvfile.h"
 
 #include <json-c/json_object.h>
 
