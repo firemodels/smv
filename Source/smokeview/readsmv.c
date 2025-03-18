@@ -1216,6 +1216,10 @@ ventdata *GetCloseVent(meshdata *ventmesh, int ivent){
 /// @param file The path to the *.smv file.
 void UpdateSMVDynamic(char *file){
   INIT_PRINT_TIMER(smv_timer1);
+  // As we are going to re-read the smv file and update some values we need to
+  // set these two flags to ensure the GUI updates itself appropriately.
+  updatefacelists=1;
+  updatemenu=1;
   ReadSMVDynamic(&global_scase, file);
   PRINT_TIMER(smv_timer1, "ReadSMVDynamic");
   INIT_PRINT_TIMER(smv_timer2);
@@ -1240,8 +1244,6 @@ void ReadSMVDynamic(smv_case *scase, char *file){
 
   nplot3dinfo_old=scase->nplot3dinfo;
 
-  updatefacelists=1;
-  updatemenu=1;
   if(scase->nplot3dinfo>0){
     int n;
 
