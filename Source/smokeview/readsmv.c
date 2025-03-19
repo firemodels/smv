@@ -55,6 +55,14 @@
 
 int GetNDevices(char *file);
 
+parse_options parse_opts = {
+  .smoke3d_only = 0,
+  .setup_only = 0,
+  .fast_startup = 1,
+  .lookfor_compressed_files = 0,
+  .handle_slice_files = 1
+};
+
 /* ------------------ GetHrrCsvCol ------------------------ */
 
 int GetHrrCsvCol(smv_case *scase, char *label){
@@ -1208,6 +1216,10 @@ ventdata *GetCloseVent(meshdata *ventmesh, int ivent){
 /// @param file The path to the *.smv file.
 void UpdateSMVDynamic(char *file){
   INIT_PRINT_TIMER(smv_timer1);
+  // As we are going to re-read the smv file and update some values we need to
+  // set these two flags to ensure the GUI updates itself appropriately.
+  updatefacelists=1;
+  updatemenu=1;
   ReadSMVDynamic(&global_scase, file);
   PRINT_TIMER(smv_timer1, "ReadSMVDynamic");
   INIT_PRINT_TIMER(smv_timer2);
@@ -1232,8 +1244,6 @@ void ReadSMVDynamic(smv_case *scase, char *file){
 
   nplot3dinfo_old=scase->nplot3dinfo;
 
-  updatefacelists=1;
-  updatemenu=1;
   if(scase->nplot3dinfo>0){
     int n;
 
@@ -2699,14 +2709,14 @@ void InitTextures0(void){
 
   // define sky texture
 
-  if(nsky_texture > 0){
+  if(global_scase.nsky_texture > 0){
     texturedata *tt;
     unsigned char *floortex=NULL;
     int texwid, texht;
 
     int is_transparent;
 
-    tt                 = sky_texture;
+    tt                 = global_scase.sky_texture;
     tt->loaded         = 0;
     tt->used           = 0;
     tt->display        = 0;
@@ -4071,7 +4081,7 @@ surfdata *GetSurface(smv_case *scase, const char *label){
     surfi = scase->surfcoll.surfinfo + i;
     if(strcmp(surfi->surfacelabel, label) == 0)return surfi;
   }
-  return global_scase.surfacedefault;
+  return scase->surfacedefault;
 }
 
 /* ------------------ InitObst ------------------------ */
@@ -6865,14 +6875,6 @@ int ReadSMV_Init(smv_case *scase){
 #ifdef pp_ISOFRAME
   use_isosurface_threads = 0;
 #endif
-//** initialize multi-threading
-  if(runscript == 1){
-    use_checkfiles_threads  = 0;
-    use_ffmpeg_threads      = 0;
-    use_readallgeom_threads = 0;
-    use_isosurface_threads  = 0;
-    use_meshnabors_threads  = 0;
-  }
 
   START_TIMER(scase->getfilelist_time);
   MakeFileLists(scase);
@@ -7229,15 +7231,15 @@ void GetSkyBoxTextures(void){
 
 void GetSkyImageTexture(void){
   char buffer[256];
-  
+
   strcpy(buffer, global_scase.fdsprefix);
   strcat(buffer, "_sky.jpg");
-  if(sky_texture != NULL || FileExistsOrig(buffer) == 0)return;
-  
-  nsky_texture = 1;
-  NewMemory((void **)&sky_texture, nsky_texture * sizeof(texturedata));
-  NewMemory((void **)&sky_texture->file, (strlen(buffer) + 1) * sizeof(char));
-  strcpy(sky_texture->file, buffer);
+  if(global_scase.sky_texture != NULL || FileExistsOrig(buffer) == 0)return;
+
+  global_scase.nsky_texture = 1;
+  NewMemory((void **)&global_scase.sky_texture, global_scase.nsky_texture * sizeof(texturedata));
+  NewMemory((void **)&global_scase.sky_texture->file, (strlen(buffer) + 1) * sizeof(char));
+  strcpy(global_scase.sky_texture->file, buffer);
 }
 
 /* ------------------ ReadSMV_Parse ------------------------ */
@@ -7536,19 +7538,19 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
       char *buff2;
       int len_buffer;
 
-      if(sky_texture != NULL){
-        FREEMEMORY(sky_texture->file);
-        FREEMEMORY(sky_texture);
+      if(scase->sky_texture != NULL){
+        FREEMEMORY(scase->sky_texture->file);
+        FREEMEMORY(scase->sky_texture);
       }
-      nsky_texture = 1;
-      NewMemory((void **)&sky_texture, nsky_texture * sizeof(texturedata));
+      scase->nsky_texture = 1;
+      NewMemory((void **)&scase->sky_texture, scase->nsky_texture * sizeof(texturedata));
       FGETS(buffer, 255, stream);
       buff2 = TrimFrontBack(buffer);
       len_buffer = strlen(buff2);
-      sky_texture->file = NULL;
+      scase->sky_texture->file = NULL;
       if(len_buffer > 0 && strcmp(buff2, "null") != 0){
-         NewMemory((void **)&sky_texture->file, (len_buffer + 1) * sizeof(char));
-         strcpy(sky_texture->file, buff2);
+         NewMemory((void **)&scase->sky_texture->file, (len_buffer + 1) * sizeof(char));
+         strcpy(scase->sky_texture->file, buff2);
       }
       continue;
     }
@@ -9139,7 +9141,7 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
         FGETS(buffer,255,stream);
         sscanf(buffer,"%i %i %i %i %i %i %i %i %i",&ibartemp,&jbartemp,&kbartemp,
           mesh_nabors, mesh_nabors+1, mesh_nabors+2, mesh_nabors+3, mesh_nabors+4, mesh_nabors+5);
-          if(mesh_nabors[5]>=-1)have_mesh_nabors = 1;
+          if(mesh_nabors[5]>=-1)scase->have_mesh_nabors = 1;
       }
       if(ibartemp<1)ibartemp=1;
       if(jbartemp<1)jbartemp=1;
@@ -9191,7 +9193,7 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
         meshi->n_jmap = 0;
         meshi->kmap = kmap;
         meshi->n_kmap = 0;
-        if(have_mesh_nabors == 1){
+        if(scase->have_mesh_nabors == 1){
           for(i = 0; i < 6; i++){
             if(mesh_nabors[i] >= 1 && mesh_nabors[i] <= scase->meshescoll.nmeshes){
               meshi->nabors[i] = scase->meshescoll.meshinfo + mesh_nabors[i]-1;
@@ -11819,6 +11821,14 @@ void DestroyScase(smv_case *scase) {
 /// @return zero on sucess, non-zero on error
 int ReadSMV(bufferstreamdata *stream){
   InitScase(&global_scase);
+  //** initialize multi-threading
+  if(runscript == 1){
+    use_checkfiles_threads  = 0;
+    use_ffmpeg_threads      = 0;
+    use_readallgeom_threads = 0;
+    use_isosurface_threads  = 0;
+    use_meshnabors_threads  = 0;
+  }
   ReadSMV_Init(&global_scase);
   ReadSMV_Parse(&global_scase, stream);
   ReadSMV_Configure();

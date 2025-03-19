@@ -11,6 +11,7 @@
 #include "readlabel.h"
 #include "shared_structures.h"
 #include "string_util.h"
+#include "datadefs.h"
 
 /* ------------------ LabelGet ------------------------ */
 
