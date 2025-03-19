@@ -321,7 +321,9 @@ document is regenerated.
 \begin{center}
 \includegraphics[height=3.0in]{SCRIPT_FIGURES/plume5c_bounddef_init}
 \end{center}
-\caption{The temperatures in the plume5c.fds case are initialized to
+\caption
+[The temperatures in the plume5c.fds case are initialized to \SI{600}{\degreeCelsius}]
+{The temperatures in the plume5c.fds case are initialized to
 \SI{600}{\degreeCelsius} within the region outlined in blue.}
 \label{figbounddef}%
 \end{figure}
@@ -383,8 +385,9 @@ cell averaged  data&chopped data&cell centered data\\
  &&&\raisebox{0.0in}[0pt]{\includegraphics[height=7.0in]{\SMVfigdir/colorbar_20_620}}\\
   \end{tabular}
 \end{center}
-\caption[Boundary file test of shaded and chopped
-contours]{Boundary file test of shaded and chopped contours at
+\caption
+[Boundary file test of shaded and chopped contours]
+{Boundary file test of shaded and chopped contours at
 \SI{2}{s}, \SI{10}{s} and \SI{30}{s}. The
 upper obstacle is initialized to \SI{600}{\degreeCelsius} and should be red
 for the $t\approx\SI{2}{s}$ images. For the chopped contours, the
@@ -401,7 +404,8 @@ color near the chop boundary should match the color near
 no boundary file&boundary file on left blockage at 10.0~s\\
 \end{tabular}
 \end{center}
-\caption[Boundary file test of {\tt BNDF\_DEFAULT}\ and {\tt BNDF\_OBST keywords}.]
+\caption
+[Boundary file test of {\tt BNDF\_DEFAULT}\ and {\tt BNDF\_OBST keywords}]
 {Boundary file test of {\tt BNDF\_DEFAULT}\ and {\tt BNDF\_OBST keywords}.
 {\tt BNDF\_DEFAULT}\ is set to F
 on the {\tt \&MISC}\ line, {\tt BNDF\_OBST}\ is set to true for the obstacle on the left allowing a boundary
@@ -417,7 +421,8 @@ file to be applied.}
 no boundary file&boundary file at 5.0~s
 \end{tabular}
 \end{center}
-\caption[Boundary file test of display over a thin obstacle and vent.]
+\caption
+[Boundary file test of display over a thin obstacle and vent]
 {Boundary file test of display over a thin obstacle and vent.}
 \label{figboundobstventtest}%
 \end{figure}
@@ -432,7 +437,8 @@ no boundary file&boundary file at 5.0~s
  uncompressed&compressed\\
 \end{tabular}
 \end{center}
-\caption[Geometry Boundary file test for compressed and uncompressed data.]
+\caption
+[Geometry Boundary file test for compressed and uncompressed data]
 {Geometry Boundary file test for compressed and uncompressed data.}
 \label{figgeomboundtest}%
 \end{figure}
@@ -470,8 +476,10 @@ color customization using the {\tt ISOCOLORS}\ .ini keyword.
  point view&outline view&solid view
   \end{tabular}
 \end{center}
- \caption[A test showing an isosurface enclosing a region initialized
- to \SI{600}{\degreeCelsius}]{A test showing an isosurface enclosing a
+\caption
+[A test showing an isosurface enclosing a region initialized
+ to \SI{600}{\degreeCelsius}]
+{A test showing an isosurface enclosing a
  region initialized to \SI{600}{\degreeCelsius} at \SI{0}{s}, \SI{10}{s}
  and \SI{30}{s}. The isosurface should surround this region for the $t=\SI{0}{s}$ images.}
 \label{figisotest}%
@@ -489,7 +497,9 @@ color customization using the {\tt ISOCOLORS}\ .ini keyword.
  debug on&debug off
   \end{tabular}
 \end{center}
- \caption[A test showing isosurfaces colored by a second value.]{A test showing isosurfaces colored by a second value. The left column used the DEBUG=.TRUE. option on the \&ISOF line
+\caption
+[A test showing isosurfaces colored by a second value]
+{A test showing isosurfaces colored by a second value. The left column used the DEBUG=.TRUE. option on the \&ISOF line
  and shows a growing sphere colored proportional to the vertical location.  The right column shows
  a temerature isosurface colored by HRRPUV. }
 \label{figtisotest}%
@@ -504,8 +514,10 @@ color customization using the {\tt ISOCOLORS}\ .ini keyword.
  solid view - orange&solid view - blue
   \end{tabular}
 \end{center}
- \caption[A test showing isosurfaces colored orange and blue using the
- ISOCOLORS .ini keyword.]{A test showing isosurfaces colored orange and
+\caption
+[A test showing isosurfaces colored orange and blue using the
+ ISOCOLORS .ini keyword]
+{A test showing isosurfaces colored orange and
  blue using the ISOCOLORS .ini keyword at \SI{30}{s}.  The two isosurfaces
  are colored orange and blue using the ISOCOLORS .ini keyword.}
 \label{figisotest2}%
@@ -518,7 +530,9 @@ color customization using the {\tt ISOCOLORS}\ .ini keyword.
 \begin{center}
 \includegraphics[height=3.0in]{\SMVfigdir/linear_interpolationiso}
 \end{center}
- \caption{A portion of an iso-surface defined by $f(x,y,z)=T_m$
+\caption
+[A portion of an iso-surface defined by $f(x,y,z)=T_m$]
+{A portion of an iso-surface defined by $f(x,y,z)=T_m$
  (for some arbitrary function $f$)  crossing a line segment at the point $(x_m,y,z)$.
   }
 \label{figisointerpiso}%
@@ -538,7 +552,8 @@ $(x_1,y,z)$ and $(x_2,y,z)$, where interpolated data takes on a particular value
 \begin{center}
 \includegraphics[height=3.0in]{\SMVfigdir/linear_interpolation}
 \end{center}
-\caption[Diagram setting up an inverse linear interpolation calculation]
+\caption
+[Diagram setting up an inverse linear interpolation calculation]
 {Diagram setting up an inverse linear interpolation calculation.
 The dependent data values $T_1$ and $T_2$ are known at locations $x_1$ and $x_2$.
 The inverse interpolation problem is to find the location $x_m$ that has value $T_m$.
@@ -629,7 +644,9 @@ streak shows a history of where the particle has been.
  points&\SI{0.5}{s} streaks&\SI{1}{s} streaks\\
   \end{tabular}
 \end{center}
- \caption[A test showing particles and particle streaks]{A test showing particles
+\caption
+[A test showing particles and particle streaks]
+{A test showing particles
  and particle streaks at \SI{1}{s}, \SI{10}{s} and \SI{30}{s}}
 \label{figparttest}%
 \end{figure}
@@ -648,8 +665,9 @@ The case has four meshes.  Particle temperatures in these meshes are initialized
 \raisebox{2.0ex}[2pt]{\includegraphics[width=5.0in]{SCRIPT_FIGURES/part_color_1}}\\
 \includegraphics[width=5.30in]{\SMVfigdir/horiz_colorbar}
 \end{center}
- \caption[A test verifying particle color assignment]
- {A test verifying particle color assignment.
+\caption
+[A test verifying particle color assignment]
+{A test verifying particle color assignment.
  Particles in the four meshes (from left to right) have temperatures
  \SI{100}{\degreeCelsius},
  \SI{200}{\degreeCelsius},
@@ -713,8 +731,9 @@ files. Difference contours from these slice files are displayed at \SI{0}{s},
 &&\raisebox{0.5in}[0pt]{\includegraphics[height=7.5in]{\SMVfigdir/colorbar_20_620}}\\
  \end{tabular}
 \end{center}
- \caption[A test showing shaded and chopped contours of node centered slice
- file data]{A test showing shaded and chopped contours of node centered slice
+\caption
+[A test showing shaded and chopped contours of node centered slice  file data]
+{A test showing shaded and chopped contours of node centered slice
  file data at \SI{0}{s}, \SI{10}{s} and \SI{30}{s}.  A portion of the interior
  gas temperature is initialized to \SI{600}{\degreeCelsius}.  The slice file
  in this region should be red for the $t=\SI{0}{s}$ images.  For the chopped
@@ -743,7 +762,9 @@ files. Difference contours from these slice files are displayed at \SI{0}{s},
 &&&\raisebox{0.5in}[0pt]{\includegraphics[height=7.5in]{\SMVfigdir/colorbar_20_620}}\\
  \end{tabular}
 \end{center}
- \caption[A test showing regular and averaged slice file data]{A test showing regular slice file images and slice file images averaged over a 5~s time interval.}
+\caption
+[A test showing regular and averaged slice file data]
+{A test showing regular slice file images and slice file images averaged over a 5~s time interval.}
 \label{figsliceaveragetest}%
 \end{figure}
 
@@ -755,8 +776,9 @@ files. Difference contours from these slice files are displayed at \SI{0}{s},
  sorted&unsorted\\
  \end{tabular}
 \end{center}
- \caption[A test showing two vertical slices drawn without visual artifacts when drawn sorted
- from back to front.]{A test showing two vertical slices drawn without visual artifacts when drawn sorted
+\caption
+[A test showing two vertical slices drawn without visual artifacts]
+{A test showing two vertical slices drawn without visual artifacts when drawn sorted
  from back to front and drawn with visual artifacts (a portion of the slice in back appears in front) when drawn unsorted.}
 \label{figslicesort}%
 \end{figure}
@@ -769,7 +791,9 @@ files. Difference contours from these slice files are displayed at \SI{0}{s},
  $x=0.4$&$y=1.2$\\
  \end{tabular}
 \end{center}
- \caption[Two vertical slices drawn at $x=0.4$ and $y=1.2$.]{Two vertical slices drawn at $x=0.4$ and $y=1.2$.}
+\caption
+[Two vertical slices drawn at $x=0.4$ and $y=1.2$]
+{Two vertical slices drawn at $x=0.4$ and $y=1.2$.}
 \label{figslicexy}%
 \end{figure}
 
@@ -789,8 +813,9 @@ files. Difference contours from these slice files are displayed at \SI{0}{s},
  &&\raisebox{0.5in}[0pt]{\includegraphics[height=7.5in]{\SMVfigdir/colorbar_20_620}}\\
  \end{tabular}
 \end{center}
- \caption[A test showing shaded and chopped contours of cell centered slice file
- data]{A test showing shaded and chopped contours of cell centered slice file data
+\caption
+[A test showing shaded and chopped contours of cell centered slice file  data]
+{A test showing shaded and chopped contours of cell centered slice file data
  at \SI{0}{s}, \SI{10}{s} and \SI{30}{s}.  A portion of the interior gas temperature
  is initialized to \SI{600}{\degreeCelsius}.  The slice file in this region should
  be red for the $t=\SI{0}{s}$ images.  For the chopped contours, the color near the
@@ -814,8 +839,9 @@ files. Difference contours from these slice files are displayed at \SI{0}{s},
   d) side view (right slice)\\
 \end{tabular}
 \end{center}
- \caption[A test to demonstrate that cell centered slice file  data is transferred
- from FDS to Smokeview properly.]{A test to demonstrate that cell centered slice file
+\caption
+[A test to demonstrate that cell centered slice file  data is transferred  properly]
+{A test to demonstrate that cell centered slice file
  data is transferred to Smokeview properly.  Cell values are initialized in
  FDS to $100*i + 10*j + k$ where $1\le i \le 3$, $1\le j \le 4$ and $1\le k \le 5$.
  Cell values displayed should match the $(i,j,k)$ grid cell indices.  The three plots
@@ -834,8 +860,9 @@ files. Difference contours from these slice files are displayed at \SI{0}{s},
 above on boundary&above
 \end{tabular}
 \end{center}
- \caption[A test to demonstrate that node centered slice files are masked properly.]
- {A test to demonstrate that node centered slice files are masked properly when drawn through or near blockages.}
+\caption
+[A test to demonstrate that node centered slice files are masked properly]
+{A test to demonstrate that node centered slice files are masked properly when drawn through or near blockages.}
 \label{figslicenodemasktest}%
 \end{figure}
 
@@ -848,8 +875,9 @@ above on boundary&above
  below&through&above
 \end{tabular}
 \end{center}
- \caption[A test to demonstrate that cell centered slice files are masked properly.]
- {A test to demonstrate that cell centered slice files are masked properly when drawn through or near blockages.}
+\caption
+[A test to demonstrate that cell centered slice files are masked properly.]
+{A test to demonstrate that cell centered slice files are masked properly when drawn through or near blockages.}
 \label{figslicecellmasktest}%
 \end{figure}
 
@@ -862,7 +890,9 @@ above on boundary&above
 &&\raisebox{0.5in}[0pt]{\includegraphics[height=7.5in]{\SMVfigdir/colorbar_20_620}}\\
  \end{tabular}
 \end{center}
- \caption[A shaded 3D slice files]{A shaded 3D slice files at \SI{0}{s}, \SI{10}{s} and \SI{30}{s}.}
+\caption
+[A shaded 3D slice files]
+{A shaded 3D slice files at \SI{0}{s}, \SI{10}{s} and \SI{30}{s}.}
 \label{figslice3D}%
 \end{figure}
 
@@ -882,8 +912,10 @@ above on boundary&above
  &&\raisebox{0.5in}[0pt]{\includegraphics[height=7.5in]{\SMVfigdir/colorbar_20_620}}\\
  \end{tabular}
 \end{center}
- \caption[A test showing arbitrarily oriented slice file planes generated from
- 3D slice files]{A test showing arbitrarily oriented slice file planes generated
+\caption
+[A test showing arbitrarily oriented slice file planes generated from
+ 3D slice files]
+{A test showing arbitrarily oriented slice file planes generated
  from 3D slice files at \SI{0}{s}, \SI{10}{s} and \SI{30}{s}.  Two orientations are
  shown at three time steps. }
 \label{figgslicetest}%
@@ -898,8 +930,10 @@ above on boundary&above
 &\raisebox{0.5in}[0pt]{\includegraphics[height=7.5in]{\SMVfigdir/colorbar_tempdiff}}\\
  \end{tabular}
 \end{center}
- \caption[A test showing slice contours generated by differencing two cases with
- Smokediff]{A test showing slice contours generated by differencing
+\caption
+[A test showing slice contours generated by differencing two cases with
+ Smokediff]
+{A test showing slice contours generated by differencing
  two cases with Smokediff  at \SI{0}{s}, \SI{10}{s} and \SI{30}{s}.}
 \label{figdiffslicetest}%
 \end{figure}
@@ -942,7 +976,9 @@ ways. Images are drawn at \SI{0}{s}, \SI{10}{s} and \SI{30}{s}.
 
  \end{tabular}
 \end{center}
- \caption[A test showing vector slice file data] {A test showing vector slice file data
+\caption
+[A test showing vector slice file data]
+{A test showing vector slice file data
  at \SI{1}{s}, \SI{10}{s} and \SI{30}{s}. A portion of the interior gas temperature
  is initialized to \SI{600}{\degreeCelsius}.  The vectors in this region should be
  red for the $t=\SI{0}{s}$ images. For the chopped contours, the color near the chop
@@ -961,7 +997,8 @@ ways. Images are drawn at \SI{0}{s}, \SI{10}{s} and \SI{30}{s}.
  uniform spacing
  \end{tabular}
 \end{center}
- \caption[A test showing uniform vector slices where grids are non-uniform in the X direction.]
+\caption
+[A test showing uniform vector slices where grids are non-uniform in the X direction]
 {A test showing uniform vector slices where grids are non-uniform in the X direction.}
 \label{figvsliceuniformx}%
 \end{figure}
@@ -975,7 +1012,8 @@ ways. Images are drawn at \SI{0}{s}, \SI{10}{s} and \SI{30}{s}.
  grid&original spacing&uniform spacing\\
  \end{tabular}
 \end{center}
- \caption[A test showing uniform vector slices where grids are non-uniform in the Z direction.]
+\caption
+[A test showing uniform vector slices where grids are non-uniform in the Z direction]
 {A test showing uniform vector slices where grids are non-uniform in the Z direction.}
 \label{figvsliceuniformz}%
 \end{figure}
@@ -989,7 +1027,9 @@ ways. Images are drawn at \SI{0}{s}, \SI{10}{s} and \SI{30}{s}.
 &&\raisebox{0.5in}[0pt]{\includegraphics[height=7.5in]{\SMVfigdir/colorbar_20_620}}\\
  \end{tabular}
 \end{center}
- \caption[A test showing 3D vector slice data]{A test showing 3D vector slice data at \SI{0}{s}, \SI{10}{s} and \SI{30}{s}.}
+\caption
+[A test showing 3D vector slice data]
+{A test showing 3D vector slice data at \SI{0}{s}, \SI{10}{s} and \SI{30}{s}.}
 \label{figvslice3D}%
 \end{figure}
 
@@ -1009,8 +1049,9 @@ ways. Images are drawn at \SI{0}{s}, \SI{10}{s} and \SI{30}{s}.
  &&\raisebox{0.5in}[0pt]{\includegraphics[height=7.5in]{\SMVfigdir/colorbar_20_620}}\\
  \end{tabular}
 \end{center}
- \caption[A test showing arbitrarily oriented vector slice file planes generated from
- 3D slice files]{A test showing arbitrarily oriented vector slice file planes generated
+\caption
+[A test showing arbitrarily oriented vector slice file planes generated from  3D slice files]
+{A test showing arbitrarily oriented vector slice file planes generated
  from 3D slice files at \SI{0}{s}, \SI{10}{s} and \SI{30}{s}.  Two orientations are
  shown at three time steps. }
 \label{figvgslicetest}%
@@ -1033,7 +1074,9 @@ derived from both soot density and HRRPUV data.
  \includegraphics[height=\figheightD]{SCRIPT_FIGURES/plume5c_smoke_30}
 \end{tabular}
 \end{center}
- \caption{A test showing 3D smoke drawn at \SI{1}{s}, \SI{10}{s} and \SI{30}{s}}
+\caption
+[A test showing 3D smoke drawn at \SI{1}{s}, \SI{10}{s} and \SI{30}{s}]
+{A test showing 3D smoke drawn at \SI{1}{s}, \SI{10}{s} and \SI{30}{s}.}
 \label{figsmoketest}%
 \end{figure}
 
@@ -1060,7 +1103,9 @@ Figure \ref{figPLOT3Dtestiso} shows PLOT3D iso-surfaces for \SI{50}{\degreeCelsi
  continuous contours
  \end{tabular}
 \end{center}
- \caption{A test showing PLOT3D stepped and continuous temperature contours.}
+\caption
+[A test showing PLOT3D stepped and continuous temperature contours]
+{A test showing PLOT3D stepped and continuous temperature contours.}
 \label{figPLOT3Dtest}%
 \end{figure}
 
@@ -1073,7 +1118,9 @@ Figure \ref{figPLOT3Dtestiso} shows PLOT3D iso-surfaces for \SI{50}{\degreeCelsi
  \includegraphics[height=\figheightH]{SCRIPT_FIGURES/plume5c_plot3d_y4}\\
  \end{tabular}
 \end{center}
- \caption{A test showing PLOT3D stepped contours at four positions along the y axis.}
+\caption
+[A test showing PLOT3D stepped contours at four positions along the y axis]
+{A test showing PLOT3D stepped contours at four positions along the y axis.}
 \label{figPLOT3Dtestvalue}%
 \end{figure}
 
@@ -1086,7 +1133,9 @@ Figure \ref{figPLOT3Dtestiso} shows PLOT3D iso-surfaces for \SI{50}{\degreeCelsi
  \includegraphics[height=\figheightH]{SCRIPT_FIGURES/plume5c_plot3d_l4}\\
  \end{tabular}
 \end{center}
- \caption{A test showing PLOT3D narrow band contours at four positions along the y axis.}
+\caption
+[A test showing PLOT3D narrow band contours at four positions along the y axis]
+{A test showing PLOT3D narrow band contours at four positions along the y axis.}
 \label{figPLOT3Dtestline}%
 \end{figure}
 
@@ -1099,7 +1148,10 @@ Figure \ref{figPLOT3Dtestiso} shows PLOT3D iso-surfaces for \SI{50}{\degreeCelsi
  \includegraphics[height=\figheightH]{SCRIPT_FIGURES/plume5c_plot3d_v4}\\
  \end{tabular}
 \end{center}
- \caption{A test showing PLOT3D vectors shaded by temperature at four positions
+\caption
+[A test showing PLOT3D vectors shaded by temperature at four positions
+ along the y axis]
+{A test showing PLOT3D vectors shaded by temperature at four positions
  along the y axis.}
 \label{figPLOT3Dtestvector}%
 \end{figure}
@@ -1116,7 +1168,9 @@ Figure \ref{figPLOT3Dtestiso} shows PLOT3D iso-surfaces for \SI{50}{\degreeCelsi
 &&\raisebox{0.5in}[0pt]{\includegraphics[height=7.5in]{\SMVfigdir/colorbar_050_590_plot3d_iso}}\\
  \end{tabular}
 \end{center}
- \caption{A test showing PLOT3D iso-surfaces for \SI{50}{\degreeCelsius},
+\caption
+[A test showing PLOT3D iso-surfaces]
+{A test showing PLOT3D iso-surfaces for \SI{50}{\degreeCelsius},
  \SI{230}{\degreeCelsius}, \SI{410}{\degreeCelsius} and \SI{590}{\degreeCelsius}.}
 \label{figPLOT3Dtestiso}%
 \end{figure}
@@ -1139,7 +1193,9 @@ Figure \ref{figPLOT3Dtestiso} shows PLOT3D iso-surfaces for \SI{50}{\degreeCelsi
  particle&Plot3D
  \end{tabular}
 \end{center}
- \caption[A test showing bounds for various file type]{A test showing slice, vector slice, boundary, cell centered boundary, particle and plot3D file plots along with their min and max bounds.}
+\caption
+[A test showing bounds for various file type]
+{A test showing slice, vector slice, boundary, cell centered boundary, particle and plot3D file plots along with their min and max bounds.}
 \label{figBOUNDS}%
 \end{figure}
 
@@ -1166,7 +1222,9 @@ slice& \includegraphics[height=\figheightI]{SCRIPT_FIGURES/test2_temp_19}&
  &with restart file&without restart file
  \end{tabular}
 \end{center}
- \caption[A test comparing OBST cases run with and without a restart file.]{A test comparing OBST cases run with and without a restart file. The two cases are the
+\caption
+[A test comparing OBST cases run with and without a restart file]
+{A test comparing OBST cases run with and without a restart file. The two cases are the
  same otherwise.}
 \label{figRESTARTstructured}%
 \end{figure}
@@ -1183,7 +1241,9 @@ slice& \includegraphics[height=\figheightI]{SCRIPT_FIGURES/geom1_temp_05}&
  &with restart file&without restart file
  \end{tabular}
 \end{center}
- \caption[A test comparing immersed geometry cases run with and without a restart file.]{A test comparing immersed geometry cases run with and without a restart file.
+\caption
+[A test comparing immersed geometry cases run with and without a restart file]
+{A test comparing immersed geometry cases run with and without a restart file.
  The two cases are the same otherwise.}
 \label{figRESTARTgeom}
 \end{figure}
@@ -1266,7 +1326,8 @@ displayed would be 128 (grey level of the adjacent grey background) not 255
 \includegraphics[width=3.0in]{SCRIPT_FIGURES/smoke_sensor}&
  \end{tabular}
 \end{center}
-\caption[A test verifying that the Smokeview smoke\_sensor object is working properly]
+\caption
+[A test verifying that the Smokeview smoke\_sensor object is working properly]
 {A test verifying that Smokeview can correctly transform the physical $(x,y,z)$
 location of the smoke\_sensor object to its equivalent screen coordinates where
 the underlying smoke obscuration level is retrieved. A small white (255,255,255)
@@ -1326,7 +1387,9 @@ These transparency levels can then be compared to observed levels when viewing t
  \includegraphics[height=4.0in]{SCRIPT_FIGURES/smoke_test_side}
  \end{tabular}
 \end{center}
- \caption[Side view of the numerical smoke test compartment.]{Side view of the numerical
+\caption
+[Side view of the numerical smoke test compartment]
+{Side view of the numerical
  smoke test compartment.  Blockages are placed at \SI{0.5}{m}, \SI{1}{m}, \SI{2}{m},
  \SI{3}{m}, \SI{4}{m} , \SI{5}{m} from the front of the domain to make the scaled transparency levels have values
  181, 128, 64, 32, 16 and 8 respectively.}
@@ -1354,7 +1417,9 @@ values. The numbers displayed in the lower row of both resolution images represe
 0.5 m grid\\ \\
  \end{tabular}
 \end{center}
- \caption[A test verifying smoke transparency for three grid resolutions.]{A test verifying
+\caption
+[A test verifying smoke transparency for three grid resolutions]
+{A test verifying
  smoke transparency for three grid resolutions.  This test fills the space with a uniform distribution of soot so that blockages
  placed 0.5, 1.0, 2.0, 3.0, 4.0 and 5.0 m from the front of the domain result in
  in grey levels of  181, 128, 64, 32, 16 and 8 respectively.
@@ -1400,7 +1465,9 @@ larger error.
 \centered{\includegraphics[width=3.50in]{SCRIPT_FIGURES/smoke1_down_z}}\\
 \end{tabular}
 \end{center}
- \caption[A test verifying smoke transparency for three grid spacings 80, 40 and 20.]{A test verifying smoke transparency for three grid spacings 80, 40 and 20 along the x, y and z directions. Expected gray level is 100.
+\caption
+[A test verifying smoke transparency for three grid spacings 80, 40 and 20]
+{A test verifying smoke transparency for three grid spacings 80, 40 and 20 along the x, y and z directions. Expected gray level is 100.
  }
 \label{figsmokedirection}%
 \end{figure}
@@ -1419,8 +1486,9 @@ larger error.
 160 grid planes\\
 \end{tabular}
 \end{center}
- \caption[A test verifying smoke transparency for three grid spacings 10, 20, 40, 80 and 160 grid planes along the X direction.]
- {A test verifying smoke transparency for three grid spacings 10, 20, 40, 80 and 160 grid planes along the X direction.
+\caption
+[A test verifying smoke transparency for three grid spacings along the X direction]
+{A test verifying smoke transparency for three grid spacings 10, 20, 40, 80 and 160 grid planes along the X direction.
  Expected gray level is 100.
  }
 \label{figsmoke1x}%
@@ -1441,7 +1509,9 @@ larger error.
 grid planes: $40\times 40\times 40$
  \end{tabular}
 \end{center}
- \caption[A test verifying smoke transparency for three orientations and two grid resolutions.]{A test verifying smoke transparency for three orientations and two grid resolutions. The number in the center
+\caption
+[A test verifying smoke transparency for three orientations and two grid resolutions]
+{A test verifying smoke transparency for three orientations and two grid resolutions. The number in the center
  is the grey level `computed` by smokeview.  The path length is longer when looking towards
  an edge or corner so the smoke appears darker and has a smaller gray level.
  }
@@ -1478,7 +1548,9 @@ by running the Smokeview script, {\tt plume5c.ssf}\ (see Appendix \ref{SSFplume5
 
  \end{tabular}
 \end{center}
- \caption{A test showing 3 drawing modes for representing blockages: solid, outline and hidden}
+\caption
+[A test showing 3 drawing modes for representing blockages: solid, outline and hidden]
+{A test showing 3 drawing modes for representing blockages: solid, outline and hidden}
 \label{figobsttest}%
 \end{figure}
 
@@ -1494,7 +1566,9 @@ by running the Smokeview script, {\tt plume5c.ssf}\ (see Appendix \ref{SSFplume5
 
  \end{tabular}
 \end{center}
- \caption{A test showing that blockages are removed and drawn properly when drawing a boundary file}
+\caption
+[A test showing that blockages are removed and drawn properly when drawing a boundary file]
+{A test showing that blockages are removed and drawn properly when drawing a boundary file}
 \label{figobstremove}%
 \end{figure}
 
@@ -1509,7 +1583,9 @@ by running the Smokeview script, {\tt plume5c.ssf}\ (see Appendix \ref{SSFplume5
  right view - transparent obstacle in front\\
  \end{tabular}
 \end{center}
- \caption{A test showing that transparent objects are drawn properly}
+\caption
+[A test showing that transparent objects are drawn properly]
+{A test showing that transparent objects are drawn properly.}
 \label{figtransparency}%
 \end{figure}
 
@@ -1527,7 +1603,9 @@ Figure \ref{figcadgeomtest} show a case created with BlenderFDS\cite{blenderfds}
  \includegraphics[height=\figheightD]{SCRIPT_FIGURES/color_geom}
 \end{tabular}
 \end{center}
- \caption{A test verifying objects are colored correctly when colors are specified on either a SURF or a GEOM line.}
+\caption
+[A test verifying objects are colored correctly]
+{A test verifying objects are colored correctly when colors are specified on either a SURF or a GEOM line.}
 \label{figgeomtest}%
 \end{figure}
 
@@ -1540,7 +1618,9 @@ Figure \ref{figcadgeomtest} show a case created with BlenderFDS\cite{blenderfds}
  obstacle view\\
  \end{tabular}
 \end{center}
- \caption{A test verifying a geometry and an obstacle view are displayed correctly.}
+\caption
+[A test verifying a geometry and an obstacle view are displayed correctly]
+{A test verifying a geometry and an obstacle view are displayed correctly.}
 \label{figcadgeomtest}%
 \end{figure}
 
@@ -1564,7 +1644,9 @@ were created automatically by running the Smokeview script, {\tt sprinkler\_many
 
  \end{tabular}
 \end{center}
- \caption{A test showing that devices are drawn properly}
+\caption
+[A test showing that devices are drawn properly]
+{A test showing that devices are drawn properly.}
 \label{figsprinkmany}%
 \end{figure}
 
@@ -1591,8 +1673,9 @@ The circular vents are drawn as requested by the user (a circle) and as implemen
 
  \end{tabular}
 \end{center}
- \caption{A test showing 3 modes for drawing vents: show all vents, hide open vents
- and hide all vents}
+\caption
+[A test showing 3 modes for drawing vents: show all vents, hide open vents and hide all vents]
+{A test showing 3 modes for drawing vents: show all vents, hide open vents and hide all vents.}
 \label{figventtest}%
 \end{figure}
 
@@ -1607,7 +1690,9 @@ The circular vents are drawn as requested by the user (a circle) and as implemen
  FDS implementation
 \end{tabular}
 \end{center}
- \caption{A test showing circular vents applied to a blockage.
+\caption
+[A test showing circular vents applied to a blockage]
+{A test showing circular vents applied to a blockage.
  Vents in the top row are displayed as solid.
  Vents in the bottom row are displayed as outlines.
 }
@@ -1664,7 +1749,9 @@ test were created automatically by running the Smokeview script, {\tt colorbar.s
 &&&\raisebox{0.0in}[0pt]{\includegraphics[height=8.0in]{\SMVfigdir/colorbar_20_100}}\\
 \end{tabular}
 \end{center}
- \caption[A test showing that data is converted to color properly]{
+\caption
+[A test showing that data is converted to color properly]
+{
  A test showing that data is converted to color properly.  Temperature
  between \SI{20}{\degreeCelsius} and \SI{100}{\degreeCelsius} are
  converted to colors between blue and red.}
@@ -1679,7 +1766,9 @@ test were created automatically by running the Smokeview script, {\tt colorbar.s
  \includegraphics[height=2.75in]{SCRIPT_FIGURES/colorbar_high}\\
  \end{tabular}
 \end{center}
- \caption[A test showing that data is converted to color properly]{A
+\caption
+[A test showing that data is converted to color properly]
+{A
  test showing that data is converted to color properly.  Temperature
  between \SI{20}{\degreeCelsius} and \SI{100}{\degreeCelsius} are
  converted to colors between blue and red.  The highlighted region
@@ -1709,7 +1798,9 @@ corresponding images in each column should be similar.
  CPU generated&GPU generated\\
  \end{tabular}
 \end{center}
- \caption{A test showing that the GPU is properly used to draw smoke}
+\caption
+[A test showing that the GPU is properly used to draw smoke]
+{A test showing that the GPU is properly used to draw smoke.}
 \label{figgputest}%
 \end{figure}
 
@@ -1722,7 +1813,9 @@ Figures \ref{figlrstereo}, \ref{figrbstereo} and  \ref{figrcstereo} test whether
 \begin{figure}[bph]
 \begin{center}
 \includegraphics[height=5.0in]{SCRIPT_FIGURES/plume5c_iso_lr_stereo}
-\caption[Stereo pair view.]{ Stereo
+\caption
+[Stereo pair view]
+{ Stereo
 pair view. To aid in viewing the
 stereo effect, place a finger in front of each image.  Relax your
 eyes allowing your two fingers and stereo pair images to merge
@@ -1733,8 +1826,9 @@ into one. } \label{figlrstereo}
 \begin{figure}[bph]
 \begin{center}
 \includegraphics[width=4.5in]{SCRIPT_FIGURES/plume5c_iso_rb_stereo}
-\caption[Red/blue stereo pair view.]{
-Red/blue stereo pair view. Red/blue
+\caption
+[Red/blue stereo pair view]
+{Red/blue stereo pair view. Red/blue
 glasses are required to see the 3D stereo effect. }
 \label{figrbstereo}
 \end{center}
@@ -1743,8 +1837,9 @@ glasses are required to see the 3D stereo effect. }
 \begin{figure}[bph]
 \begin{center}
 \includegraphics[width=4.5in]{SCRIPT_FIGURES/plume5c_iso_rc_stereo}
-\caption[Red/cyan stereo pair view.]{
-Red/cyan stereo pair view. Red/cyan
+\caption
+[Red/cyan stereo pair view]
+{Red/cyan stereo pair view. Red/cyan
 glasses are required to see the 3D stereo effect. }
 \label{figrcstereo}
 \end{center}
