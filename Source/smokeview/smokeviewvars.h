@@ -42,7 +42,6 @@ SVEXTERN threaderdata SVDECL(*sliceparms_threads, NULL);
 //***meshnabors
 SVEXTERN int SVDECL(n_meshnabors_threads, 1), SVDECL(use_meshnabors_threads, 1);
 SVEXTERN threaderdata SVDECL(*meshnabors_threads, NULL);
-SVEXTERN int SVDECL(have_mesh_nabors, 0);
 
 //***checkfiles
 SVEXTERN int SVDECL(n_checkfiles_threads, 1), SVDECL(use_checkfiles_threads, 1);
@@ -1709,17 +1708,10 @@ SVEXTERN f_units SVDECL(*unitclasses,NULL),SVDECL(*unitclasses_default,NULL),SVD
 SVEXTERN int SVDECL(nunitclasses,0),SVDECL(nunitclasses_default,0),SVDECL(nunitclasses_ini,0);
 #ifdef INMAIN
 SVEXTERN smv_case global_scase = {0};
-parse_options parse_opts = {
-  .smoke3d_only = 0,
-  .setup_only = 0,
-  .fast_startup = 1,
-  .lookfor_compressed_files = 0,
-  .handle_slice_files = 1
-};
 #else
 SVEXTERN smv_case global_scase;
-SVEXTERN parse_options parse_opts;
 #endif
+extern CCC parse_options parse_opts;
 SVEXTERN meshdata SVDECL(*current_mesh,NULL), SVDECL(*mesh_save,NULL);
 SVEXTERN meshdata SVDECL(*mesh_last,NULL), SVDECL(*loaded_isomesh,NULL);
 SVEXTERN float SVDECL(devicenorm_length,0.1);
@@ -2006,8 +1998,6 @@ SVEXTERN texturedata SVDECL(*textureinfo,NULL), SVDECL(*terrain_textures,NULL);
 SVEXTERN int SVDECL(visSkysphere, 0), SVDECL(visSkybox, 1), SVDECL(visSkySpheretexture, 1);
 SVEXTERN float box_sky_corners[8][3];
 
-SVEXTERN texturedata SVDECL(*sky_texture, NULL);
-SVEXTERN int SVDECL(nsky_texture, 0);
 SVEXTERN float SVDECL(sky_diam, 4.0);
 SVEXTERN int SVDECL(visSkyboxoutline, 0);
 SVEXTERN int SVDECL(visSkyground, 1);

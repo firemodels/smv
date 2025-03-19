@@ -1611,11 +1611,11 @@ void DrawHalfSphere(void){
   int use_sky;
 
   use_sky = 0;
-  if(nsky_texture > 0 && sky_texture != NULL && sky_texture->loaded == 1 && sky_texture->display == 1&& visSkySpheretexture==1)use_sky = 1;
+  if(global_scase.nsky_texture > 0 && global_scase.sky_texture != NULL && global_scase.sky_texture->loaded == 1 && global_scase.sky_texture->display == 1&& visSkySpheretexture==1)use_sky = 1;
   if(use_sky == 1){
     glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
     glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, sky_texture->name);
+    glBindTexture(GL_TEXTURE_2D, global_scase.sky_texture->name);
   }
 
   glBegin(GL_QUADS);
@@ -5236,42 +5236,6 @@ char *GetDeviceLabel(char *buffer){
   return label_present;
 }
 
-
-/* ----------------------- GetNDevices ----------------------------- */
-#define BUFFER_LEN 255
-int GetNDevices(char *file){
-  FILE *stream;
-  char buffer[BUFFER_LEN], *comma;
-  int buffer_len = BUFFER_LEN, nd = 0;
-
-  if(file == NULL) return 0;
-  stream = fopen(file, "r");
-  if(stream == NULL) return 0;
-  fgets(buffer, buffer_len, stream);
-  comma = strchr(buffer, ',');
-  if(comma != NULL) *comma = 0;
-  TrimBack(buffer);
-  if(strcmp(buffer, "//HEADER") != 0){
-    fclose(stream);
-    return 0;
-  }
-
-  while(!feof(stream)){
-    fgets(buffer, buffer_len, stream);
-    comma = strchr(buffer, ',');
-    if(comma != NULL) *comma = 0;
-    TrimBack(buffer);
-    if(strcmp(buffer, "//DATA") == 0){
-      break;
-    }
-    if(strcmp(buffer, "DEVICE") == 0){
-      nd++;
-    }
-  }
-  fclose(stream);
-  return nd;
-}
-
 void RewindDeviceFile(FILE *stream){
 #define BUFFER_LEN 255
   char buffer[BUFFER_LEN], *comma;
@@ -6220,29 +6184,4 @@ void InitDevicePlane(devicedata *devicei){
     SmoothIsoSurface(devicei->plane_surface[i]);
   }
 
-}
-
-/* ------------------ Normalize ------------------------ */
-
-void Normalize(float *xyz, int n){
-  float norm,norm2;
-  int i;
-
-  norm2 = 0.0;
-
-  for(i=0;i<n;i++){
-    norm2 += xyz[i]*xyz[i];
-  }
-  norm = sqrt(norm2);
-  if(norm<0.00001){
-    for(i=0;i<n-1;i++){
-      xyz[i]=0.0;
-    }
-    xyz[n-1]=1.0;
-  }
-  else{
-    for(i=0;i<n;i++){
-      xyz[i]/=norm;
-    }
-  }
 }

@@ -31,4 +31,5 @@ static inline int FileExistsCaseDir(smv_case *scase, char *filename) {
                     scase->filelist_coll.filelist_casedir,
                     scase->filelist_coll.nfilelist_casedir);
 }
+
 #endif

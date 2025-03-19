@@ -250,8 +250,6 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 #define STOP_TICKS(a) a = glutGet(GLUT_ELAPSED_TIME) - a
 #endif
 
-#define TOBW(col) ( 0.299*(col)[0] + 0.587*(col)[1] + 0.114*(col)[2])
-
 #define TMAX 1000000000.0
 
 #define PARTFILE_LOADALL   -11
