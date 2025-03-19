@@ -1,6 +1,8 @@
 #!/bin/bash
-fdsdir=../../../fds/Manuals/Bibliography
-cp $fdsdir/FDS_general.bib .
-cp $fdsdir/FDS_mathcomp.bib .
-cp $fdsdir/FDS_refs.bib .
-cp $fdsdir/authors.tex .
+bibdir=../../../fds/Manuals/Bibliography
+scriptdir=../../../fds/Manuals/scripts
+cp $bibdir/FDS_general.bib .
+cp $bibdir/FDS_mathcomp.bib .
+cp $bibdir/FDS_refs.bib .
+cp $bibdir/authors.tex .
+cp $scriptdir/check_manuals.py ../scripts/.
