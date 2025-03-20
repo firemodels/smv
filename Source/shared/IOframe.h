@@ -57,7 +57,7 @@ unsigned char *FRAMEGetFramePtr(framedata *fi, int iframe);
 int FRAMEGetMinMax(framedata *fi);
 int FRAMEGetNFrames(char *file, int type);
 unsigned char *FRAMEGetSubFramePtr(framedata *fi, int iframe, int isubframe);
-framedata *FRAMELoadData(framedata *frameinfo, char *file, int load_flag, int time_frame, int file_type,
+framedata *FRAMELoadData(framedata *frameinfo, char *file, char *sizefile, int *options, int load_flag, int time_frame, int file_type,
                               void GetFrameInfo(bufferdata *bufferinfo, int *headersize, int **sizes, int *nsizes, int **subframeptrs, int **subframesizesptr, int *nsubframes, int *compression_type, FILE_SIZE *filesizeptr));
 
 bufferdata *FRAMEReadFrame(framedata *fi, int iframe, int nframes, int *nreadptr);

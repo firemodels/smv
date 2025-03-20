@@ -2259,7 +2259,7 @@ FILE_SIZE ReadPart(char *file_arg, int ifile_arg, int load_flag, int *errorcode_
   }
 
 #ifdef pp_PARTFRAME
-  parti->frameinfo = FRAMELoadData(parti->frameinfo, parti->file, load_flag, time_frame, FORTRAN_FILE, GetPartFrameInfo);
+  parti->frameinfo = FRAMELoadData(parti->frameinfo, parti->file, parti->size_file, NULL, load_flag, time_frame, FORTRAN_FILE, GetPartFrameInfo);
   update_frame = 1;
 #endif
 
