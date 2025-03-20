@@ -5105,10 +5105,9 @@ void LoadSliceMenu(int value){
   }
   else{
     switch(value){
-      int submenutype;
       slicedata *slicei;
 #ifndef pp_SLICEFRAME
-      slicedata *slicei;
+      int submenutype;
       char *submenulabel;
       int dir;
       int last_slice;
@@ -5139,11 +5138,14 @@ void LoadSliceMenu(int value){
       case MENU_SLICE_SETTINGS:
         GLUIShowBoundsDialog(DLG_SLICE);
         break;
+#ifdef pp_SLICEFRAME
+      default:
+        break;
+#else
       default:
         value = -(1000 + value);
         submenutype=value/4;
         submenutype=global_scase.subslice_menuindex[submenutype];
-#ifndef pp_SLICEFRAME
         slicei = global_scase.slicecoll.sliceinfo + submenutype;
         submenulabel = slicei->label.longlabel;
         dir=value%4;
@@ -5162,6 +5164,7 @@ void LoadSliceMenu(int value){
         load_size = LoadAllSliceFiles(last_slice, submenulabel, dir, &file_count);
         STOP_TIMER(load_time);
         PrintFileLoadTimes(file_count,load_size,load_time);
+        break;
 #endif
       }
   }
