@@ -2310,7 +2310,7 @@ FILE_SIZE GetGeomData(patchdata *patchi, char *filename, int load_flag, int ntim
 
 #ifdef pp_BOUNDFRAME
   if(patchi != NULL&&load_flag!=UNLOAD){
-    patchi->frameinfo = FRAMELoadData(patchi->frameinfo, patchi->file, load_flag, time_frame, FORTRAN_FILE, GetGeomDataFrameInfo);
+    patchi->frameinfo = FRAMELoadData(patchi->frameinfo, patchi->file, patchi->size_file, NULL, load_flag, time_frame, FORTRAN_FILE, GetGeomDataFrameInfo);
     update_frame = 1;
   }
 #endif
