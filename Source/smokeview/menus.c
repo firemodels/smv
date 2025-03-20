@@ -5108,6 +5108,7 @@ void LoadSliceMenu(int value){
       int submenutype;
       slicedata *slicei;
 #ifndef pp_SLICEFRAME
+      slicedata *slicei;
       char *submenulabel;
       int dir;
       int last_slice;
@@ -5142,8 +5143,8 @@ void LoadSliceMenu(int value){
         value = -(1000 + value);
         submenutype=value/4;
         submenutype=global_scase.subslice_menuindex[submenutype];
-        slicei = global_scase.slicecoll.sliceinfo + submenutype;
 #ifndef pp_SLICEFRAME
+        slicei = global_scase.slicecoll.sliceinfo + submenutype;
         submenulabel = slicei->label.longlabel;
         dir=value%4;
         last_slice = global_scase.slicecoll.nsliceinfo - 1;
