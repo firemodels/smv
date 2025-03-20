@@ -4006,7 +4006,7 @@ extern "C" void BoundBoundCB(int var){
   case READ_TEST:
     if(MakeFile(frametest_filename, read_buffer_size) == 1){
       START_TIMER(read_time);
-      bufferinfo = File2Buffer(frametest_filename, bufferinfo, &nread);
+      bufferinfo = File2Buffer(frametest_filename, NULL, NULL, bufferinfo, &nread);
       STOP_TIMER(read_time);
       sprintf(ctime, "%f", read_time);
       TrimZeros(ctime);

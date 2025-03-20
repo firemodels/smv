@@ -5583,6 +5583,11 @@ int ParseSMOKE3DProcess(smv_case *scase, bufferstreamdata *stream, char *buffer,
 
     smoke3di->reg_file = SMOKE3DBUFFER(len + 1);
     STRCPY(smoke3di->reg_file, bufferptr);
+#ifdef pp_SMOKEFRAME
+    smoke3di->size_file = SMOKE3DBUFFER(len + 3 + 1);
+    STRCPY(smoke3di->size_file, bufferptr);
+    STRCAT(smoke3di->size_file, ".sz");
+#endif
     for(i=0; i<6; i++){
       smoke3di->alphas_smokedir[i] = smoke3di->alphas_smokebuffer + 256*i;
       smoke3di->alphas_firedir[i]  = smoke3di->alphas_firebuffer  + 256*i;
@@ -8065,7 +8070,11 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
 
   if(scase->npartinfo>0 && NewMemory((void **)&scase->part_buffer,       3*scase->npartinfo*MAXFILELEN)    == 0)return 2;
   if(scase->slicecoll.nsliceinfo>0 && NewMemory((void **)&scase->slice_buffer,     7*scase->slicecoll.nsliceinfo*MAXFILELEN)   == 0)return 2;
+#ifdef pp_SMOKEFRAME
+  if(scase->smoke3dcoll.nsmoke3dinfo>0 && NewMemory((void **)&scase->smoke3d_buffer, 10*scase->smoke3dcoll.nsmoke3dinfo*MAXFILELEN) == 0)return 2;
+#else
   if(scase->smoke3dcoll.nsmoke3dinfo>0 && NewMemory((void **)&scase->smoke3d_buffer, 9*scase->smoke3dcoll.nsmoke3dinfo*MAXFILELEN) == 0)return 2;
+#endif
 
   PRINT_TIMER(timer_readsmv, "pass 1");
 

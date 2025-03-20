@@ -656,13 +656,22 @@ void PrintTime(const char *filepath, int line, float *timer, const char *label, 
 
 /* ------------------ InitBufferData ------------------------ */
 
-bufferdata *InitBufferData(char *file){
+bufferdata *InitBufferData(char *file, char *size_file, int *options){
   bufferdata *buffinfo = NULL;
   unsigned char *buffer = NULL;
   FILE_SIZE nbuffer = 0;
 
   NewMemory((void **)&buffinfo, sizeof(bufferdata));
   buffinfo->file = file;
+  buffinfo->size_file = size_file;
+  buffinfo->options = options;
+  if(options != NULL && options[0]>0){
+    int *optionsptr;
+
+    NewMemory((void **)&optionsptr, (options[0]+1)*sizeof(int));
+    memcpy(optionsptr, options, (options[0]+1)*sizeof(int));
+    buffinfo->options = optionsptr;
+  }
   nbuffer = GetFileSizeSMV(file);
   NewMemory((void **)&buffer, nbuffer);
   buffinfo->buffer   = buffer;
@@ -676,12 +685,13 @@ bufferdata *InitBufferData(char *file){
 void FreeBufferInfo(bufferdata *bufferinfo){
   if(bufferinfo == NULL)return;
   FREEMEMORY(bufferinfo->buffer);
+  FREEMEMORY(bufferinfo->options);
   FREEMEMORY(bufferinfo);
 }
 
 /* ------------------ File2Buffer ------------------------ */
 
-bufferdata *File2Buffer(char *file, bufferdata *bufferinfo,  FILE_SIZE *nreadptr){
+bufferdata *File2Buffer(char *file, char *size_file, int *options, bufferdata *bufferinfo,  FILE_SIZE *nreadptr){
   FILE_SIZE nfile=0, offset_buffer = 0, offset_file = 0, nread_actual, nread_try;
 
   *nreadptr = 0;
@@ -689,7 +699,7 @@ bufferdata *File2Buffer(char *file, bufferdata *bufferinfo,  FILE_SIZE *nreadptr
 
   INIT_PRINT_TIMER(timer_file2buffer);
   if(bufferinfo == NULL){ // read entire file
-    bufferinfo     = InitBufferData(file);
+    bufferinfo     = InitBufferData(file, size_file, options);
     offset_file    = 0;
     offset_buffer  = 0;
     nread_try      = bufferinfo->nbuffer;
