@@ -1111,8 +1111,10 @@ void GetGlobalPatchBounds(int flag, int set_flag, char *label){
     if(doit==1){
 #ifdef pp_BOUNDFRAME
       if(patchi->frameinfo != NULL){
-        valmin = patchi->frameinfo->valmin;
-        valmax = patchi->frameinfo->valmax;
+//*** comment these lines for now
+//        valmin = patchi->frameinfo->valmin;
+//        valmax = patchi->frameinfo->valmax;
+        BoundsGet(patchi->reg_file, patchglobalboundsinfo, sorted_patch_filenames, global_scase.npatchinfo, 1, &valmin, &valmax);
       }
       else{
         BoundsGet(patchi->reg_file, patchglobalboundsinfo, sorted_patch_filenames, global_scase.npatchinfo, 1, &valmin, &valmax);
