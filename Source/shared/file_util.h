@@ -56,10 +56,11 @@ typedef struct {
  */
 
 typedef struct {
-  char *file;
-  unsigned char *buffer; // copy of file
-  FILE_SIZE nbuffer;     // size of buffer
-  FILE_SIZE nfile;       // amount of data in buffer
+  char *file, *size_file;
+  int *options;           // parameter array
+  unsigned char *buffer;  // copy of file
+  FILE_SIZE nbuffer;      // size of buffer
+  FILE_SIZE nfile;        // amount of data in buffer
 } bufferdata;
 
 // vvvvvvvvvvvvvvvvvvvvvvvv preprocessing directives
@@ -142,8 +143,8 @@ int FileExistsOrig(char *filename);
 // vvvvvvvvvvvvvvvvvvvvvvvv headers vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 EXTERNCPP int MakeFile(char *file, int size);
 EXTERNCPP void FreeBufferInfo(bufferdata *bufferinfoptr);
-EXTERNCPP bufferdata *InitBufferData(char *file);
-EXTERNCPP bufferdata *File2Buffer(char *file, bufferdata *bufferinfo, FILE_SIZE *nreadptr);
+EXTERNCPP bufferdata *InitBufferData(char *file, char *size_file, int *options);
+EXTERNCPP bufferdata *File2Buffer(char *file, char *size_file, int *options, bufferdata *bufferinfo, FILE_SIZE *nreadptr);
 EXTERNCPP FILE_SIZE fread_p(char *file, unsigned char *buffer, FILE_SIZE offset, FILE_SIZE nchars, int nthreads);
 EXTERNCPP void FileErase(char *file);
 EXTERNCPP FILE *FOPEN(const char *file, const char *mode);

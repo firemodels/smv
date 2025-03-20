@@ -3996,7 +3996,7 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
 
 #ifdef pp_SLICEFRAME
     if(sd->compression_type == UNCOMPRESSED){
-      sd->frameinfo = FRAMELoadData(sd->frameinfo, sd->file, load_flag, time_frame, FORTRAN_FILE, GetSliceFrameInfo);
+      sd->frameinfo = FRAMELoadData(sd->frameinfo, sd->file, sd->size_file, NULL, load_flag, time_frame, FORTRAN_FILE, GetSliceFrameInfo);
       sd->ntimes = sd->frameinfo->nframes;
       NewMemory((void **)&sd->times, sd->ntimes * sizeof(float));
       memcpy(sd->times, sd->frameinfo->times, sd->ntimes * sizeof(float));

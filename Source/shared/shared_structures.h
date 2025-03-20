@@ -1478,6 +1478,9 @@ typedef struct _smoke3ddata {
   char *file;
   char *comp_file, *reg_file;
   char *smoke_density_file;
+#ifdef pp_SMOKEFRAME
+  char *size_file;
+#endif
   int filetype;
   int skip_smoke, skip_fire;
   int is_smoke, is_fire;

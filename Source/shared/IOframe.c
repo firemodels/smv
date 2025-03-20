@@ -195,7 +195,6 @@ void FRAMESetTimes(framedata *fi, int iframe, int nframes){
 
   last_frame = first_frame + nframes - 1;
   if(last_frame>fi->nframes - 1)last_frame = fi->nframes-1;
-  nframes = last_frame + 1 - first_frame;
   for(i = first_frame;i <= last_frame;i++){
     FILE_SIZE offset;
 
@@ -256,7 +255,7 @@ unsigned char *FRAMEGetSubFramePtr(framedata *fi, int iframe, int isubframe){
 
 /* ------------------ FRAMELoadData ------------------------ */
 
-framedata *FRAMELoadData(framedata *frameinfo, char *file, int load_flag, int time_frame, int file_type,
+framedata *FRAMELoadData(framedata *frameinfo, char *file, char *size_file, int *options, int load_flag, int time_frame, int file_type,
                   void GetFrameInfo(bufferdata *bufferinfo, int *headersize, int **sizes, int *nsizes,
                                     int **subframeptrs, int **subframesizesptr, int *nsubframes,
                                     int *compression_type, FILE_SIZE *filesizeptr)){
@@ -273,10 +272,10 @@ framedata *FRAMELoadData(framedata *frameinfo, char *file, int load_flag, int ti
       FreeBufferInfo(frameinfo->bufferinfo);
       frameinfo->bufferinfo = NULL;
     }
-    frameinfo->bufferinfo = InitBufferData(file);
+    frameinfo->bufferinfo = InitBufferData(file, size_file, options);
   }
   nframes_before = frameinfo->nframes;
-  frameinfo->bufferinfo = File2Buffer(file, frameinfo->bufferinfo, &nread);
+  frameinfo->bufferinfo = File2Buffer(file, size_file, options, frameinfo->bufferinfo, &nread);
   FRAMESetup(frameinfo);
   frameinfo->bytes_read = nread;
   if(nread > 0){
@@ -324,6 +323,7 @@ int FRAMEGetNFrames(char *file, int type){
     frameinfo->bufferinfo->file = file;
     frameinfo->bufferinfo->buffer = NULL;
     frameinfo->bufferinfo->nbuffer = 0;
+    frameinfo->bufferinfo->options = NULL;
     FRAMESetup(frameinfo);
     nframes = frameinfo->nframes;
     FRAMEFree(frameinfo);
@@ -343,8 +343,6 @@ void GetSmoke3DFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **frame
   char buffer[255];
   int headersize, nframes, *frames;
   FILE_SIZE filesize;
-  char sizefile[1024];
-  char *ext;
 
   *compression_type = FRAME_RLE;
   if(bufferinfo == NULL)return;
@@ -353,23 +351,11 @@ void GetSmoke3DFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **frame
   if(stream == NULL)return;
   fclose(stream);
 
-  strcpy(sizefile, bufferinfo->file);
-  ext = strrchr(sizefile, '.');
-  if(ext != NULL)ext[0] = 0;
-  strcat(sizefile, ".szz");
-  stream = fopen(sizefile, "r");
-  if(stream!=NULL){
-    *compression_type = FRAME_ZLIB;
-  }
-  else{
-    strcpy(sizefile, bufferinfo->file);
-    strcat(sizefile, ".sz");
-    stream = fopen(sizefile, "r");
-    if(stream == NULL){
-      *nframesptr = 0;
-      *framesptr = NULL;
-      return;
-    }
+  stream = fopen(bufferinfo->size_file, "r");
+  if(stream == NULL){
+    *nframesptr = 0;
+    *framesptr = NULL;
+    return;
   }
 
   fgets(buffer, 255, stream);
@@ -400,7 +386,14 @@ void GetSmoke3DFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **frame
     //    IF(NCHARS_OUT > 0) WRITE(LU_SMOKE3D)(BUFFER_OUT(I), I = 1, NCHARS_OUT)
     if(fgets(buffer, 255, stream) == NULL)break;
     if(*compression_type == FRAME_RLE){
-      sscanf(buffer, "%f %i %i", &time_local, &nchars, &nchars_compressed);
+      if(bufferinfo->options==NULL||bufferinfo->options[1]==0){
+        sscanf(buffer, "%f %i %i", &time_local, &nchars, &nchars_compressed);
+      }
+      else{
+        float rval;
+        int ival;
+        sscanf(buffer, "%f %i %i %f %i", &time_local, &nchars, &ival, &rval, &nchars_compressed);
+      }
       framesize = 4 + 4 + 4;
       framesize += 4 + 8 + 4;
       if(nchars_compressed > 0)framesize += 4 + nchars_compressed + 4;
@@ -671,7 +664,7 @@ void GetIsoFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **framesptr
   headersize  = 4 + 4 + 4; // ONE
   headersize += 4 + 4 + 4; // VERSION
   fseek_m(stream, headersize, SEEK_CUR);
-  fseek_m(stream, 4, SEEK_CUR);returncode = fread_m(&niso_levels, 4, 1, stream);fseek_m(stream, 4, SEEK_CUR);
+  fseek_m(stream, 4, SEEK_CUR);fread_m(&niso_levels, 4, 1, stream);fseek_m(stream, 4, SEEK_CUR);
   headersize += 4+4+4; // NISO_LEVELS
 
   levelsize = 0;
@@ -723,7 +716,7 @@ void GetIsoFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **framesptr
   *filesizeptr = filesize;
 }
 
-/* ------------------ GetIsoFrameInfo ------------------------ */
+/* ------------------ GetGeomDataFrameInfo ------------------------ */
 
 void GetGeomDataFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **framesptr, int *nframesptr,
   int **subframeoffsetsptr, int **subframesizesptr, int *nsubframesptr,
@@ -850,7 +843,7 @@ void GetPartFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **framespt
   headersize += 4 + 4 + 4; // FDS VERSION
   fseek_m(stream, headersize, SEEK_CUR);
 
-  fseek_m(stream, 4, SEEK_CUR);returncode = fread_m(&n_part, 4, 1, stream);fseek_m(stream, 4, SEEK_CUR);
+  fseek_m(stream, 4, SEEK_CUR);fread_m(&n_part, 4, 1, stream);fseek_m(stream, 4, SEEK_CUR);
   headersize += 4 + 4 + 4; // n_part
 
   NewMemory((void **)&nquants, 2*n_part*sizeof(int));
@@ -859,7 +852,7 @@ void GetPartFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **framespt
   for(i=0; i<n_part; i++){
     int labelsize;
 
-    fseek_m(stream, 4, SEEK_CUR);returncode = fread_m(nquants + 2 * i, 4, 2, stream);fseek_m(stream, 4, SEEK_CUR);
+    fseek_m(stream, 4, SEEK_CUR);fread_m(nquants + 2 * i, 4, 2, stream);fseek_m(stream, 4, SEEK_CUR);
     headersize += 4 + 2*4 + 4;
 
     labelsize = 2*nquants[2*i]*(4+30+4);
@@ -887,7 +880,7 @@ void GetPartFrameInfo(bufferdata *bufferinfo, int *headersizeptr, int **framespt
       int nplim;
       long int skip;
 
-      fseek_m(stream, 4, SEEK_CUR);returncode = fread_m(&nplim, 4, 1, stream);fseek_m(stream, 4, SEEK_CUR);
+      fseek_m(stream, 4, SEEK_CUR);fread_m(&nplim, 4, 1, stream);fseek_m(stream, 4, SEEK_CUR);
       framesize += 4 + 4 + 4;             // nplim
 
 //      fprintf(stderr, "nplim %i: %i\n",i, nplim);
