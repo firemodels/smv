@@ -29,13 +29,19 @@ exit 0
 
 #*** parse command line options
 
+FDS=
+SMV=
+USE=
+VER=
+VAL=
+TECH=
 while getopts 'afFhsStuvV' OPTION
 do
 case $OPTION  in
   a)
   FDS=1
   SMV=1
-  USER=1
+  USE=1
   VER=1
   VAL=1
   TECH=1
@@ -45,7 +51,7 @@ case $OPTION  in
   ;;
   F)
   FDS=1
-  USER=1
+  USE=1
   VER=1
   VAL=1
   TECH=1
@@ -58,7 +64,7 @@ case $OPTION  in
   ;;
   S)
   SMV=1
-  USER=1
+  USE=1
   VER=1
   ;;
   t)
@@ -66,7 +72,7 @@ case $OPTION  in
   TECH=1
   ;;
   u)
-  USER=1
+  USE=1
   ;;
   v)
   VER=1
@@ -88,14 +94,14 @@ if [[ "$FDS" == "" ]] && [[ "$SMV" == "" ]]; then
 fi
 
 if [ "SMV" != "" ]; then
-  if [[ "$USER" == "" ]] && [[ "$VER" == "" ]]; then
-    USER=1
+  if [[ "$USE" == "" ]] && [[ "$VER" == "" ]]; then
+    USE=1
   fi
 fi
 
 if [ "FDS" != "" ]; then
-  if [[ "$USER" == "" ]] && [[ "$VER" == "" ]] && [[ "$VAL" == "" ]] && [[ "$TECH" == "" ]]; then
-    USER=1
+  if [[ "$USE" == "" ]] && [[ "$VER" == "" ]] && [[ "$VAL" == "" ]] && [[ "$TECH" == "" ]]; then
+    USE=1
   fi
 fi
 
@@ -104,7 +110,6 @@ CURDIR=`pwd`
 cd files
 FILESDIR=`pwd`
 
-echo cleaning $FILESDIR
 git clean -dxf >& /dev/null
 
 cd $CURDIR
@@ -135,13 +140,17 @@ COPYFILES ()
   fi
 }
 
-SMVREPO=../../smv
+ROOT=../../..
+cd $ROOT
+ROOT=`pwd`
+
+SMVREPO=$ROOT/smv
 cd $SMVREPO
 SMVREPO=`pwd`
 cd $CURDIR
 
 if [ "$SMV" != "" ]; then
-  if [ "$USER" != "" ]; then
+  if [ "$USE" != "" ]; then
     DOWNLOADFILE SMOKEVIEW_TEST SMV_UG_figures.tar.gz
     COPYFILES $SMVREPO//Manuals/SMV_User_Guide/SCRIPT_FIGURES        SMV_UG_figures.tar.gz
   fi
@@ -152,14 +161,13 @@ if [ "$SMV" != "" ]; then
   fi
 fi
 
-cd $CURDIR
-FDSREPO=../../fds
+FDSREPO=$ROOT/fds
 cd $FDSREPO
 FDSREPO=`pwd`
 cd $CURDIR
 
 if [ "$FDS" != "" ]; then
-  if [ "$USER" != "" ]; then
+  if [ "$USE" != "" ]; then
     DOWNLOADFILE  FDS_TEST FDS_UG_figures.tar.gz
     COPYFILES $FDSREPO/Manuals/FDS_User_Guide/SCRIPT_FIGURES                FDS_UG_figures.tar.gz
   fi
