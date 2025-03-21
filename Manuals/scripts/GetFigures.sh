@@ -123,7 +123,8 @@ DOWNLOADFILE ()
   TAG=$1
   FILE=$2
   echo ""
-  echo downloading $FILE
+  echo downloading $FILE using:
+  echo gh release download $TAG -p $FILE -D $FILESDIR  -R github.com/$GH_OWNER/$GH_REPO
   gh release download $TAG -p $FILE -D $FILESDIR  -R github.com/$GH_OWNER/$GH_REPO
 }
 
