@@ -85,7 +85,8 @@ goto eof
   set TAG=%1
   set FILE=%2
   echo.
-  echo downloading %FILE% to %FILESDIR%
+  echo downloading %FILE% to %FILESDIR% using:
+  echo gh release download %TAG% -p %FILE% -D %FILESDIR%  -R github.com/%GH_OWNER%/%GH_REPO%
   gh release download %TAG% -p %FILE% -D %FILESDIR%  -R github.com/%GH_OWNER%/%GH_REPO%
   exit /b
 
