@@ -21,7 +21,6 @@
 #include "translate.h"
 #include "file_util.h"
 #include "datadefs.h"
-#include "readimage.h"
 #include "readhvac.h"
 #include "readslice.h"
 #include "readobject.h"
