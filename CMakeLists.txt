@@ -34,7 +34,7 @@ else()
 endif()
 # Pass a flag to to the source code. There's no great need for this but allows
 # us to have conditional code based on the build method.
-add_definitions(-Dpp_CMAKE)
+# add_definitions(-Dpp_CMAKE)
 add_compile_definitions(pp_GITHASH="${PROJECT_VERSION}+sc2.lua")
 
 
@@ -84,7 +84,7 @@ if (LINUX)
     add_definitions(-Dpp_LINUX)
 endif()
 
-add_compile_definitions(pp_CMAKE)
+# add_compile_definitions(pp_CMAKE)
 
 find_package(OpenGL REQUIRED)
 if (VENDORED_UI_LIBS)

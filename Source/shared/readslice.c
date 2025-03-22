@@ -1,7 +1,6 @@
 #include "options.h"
 #include "dmalloc.h"
 #include "string_util.h"
-#include "gd.h"
 #include <math.h>
 
 #include <string.h>
