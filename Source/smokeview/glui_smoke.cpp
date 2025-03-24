@@ -582,7 +582,7 @@ extern "C" void GLUI3dSmokeSetup(int main_window){
 
   glui_3dsmoke=glui_bounds;
 
-  if(fire_colormap_type==0){
+  if(fire_colormap_type== FIRECOLORMAP_DIRECT){
     use_fire_rgb       = 1;
     use_fire_colormap  = 0;
   }
@@ -958,11 +958,11 @@ void SetRGBColorMapVars(int use_rgb){
   use_co2_colormap   = use_colormap;
   GLUISmoke3dCB(ENABLE_DISABLE_FIRE);
   GLUISmoke3dCB(SET_RGB_COLORGB_CHECKBOXES);
-  if(use_fire_rgb==1)fire_colormap_type = 0;
-  if(use_fire_colormap==1)fire_colormap_type = 1;
+  if(use_fire_rgb==1)fire_colormap_type      = FIRECOLORMAP_DIRECT;
+  if(use_fire_colormap==1)fire_colormap_type = FIRECOLORMAP_CONSTRAINT;
   GLUISmoke3dCB(FIRECOLORMAP_TYPE);
-  if(use_co2_rgb==1)co2_colormap_type = 0;
-  if(use_co2_colormap==1)co2_colormap_type = 1;
+  if(use_co2_rgb==1)co2_colormap_type      = CO2_RGB;
+  if(use_co2_colormap==1)co2_colormap_type = CO2_COLORBAR;
   GLUISmoke3dCB(CO2COLORMAP_TYPE);
 }
 
