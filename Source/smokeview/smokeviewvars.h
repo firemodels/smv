@@ -1941,19 +1941,9 @@ SVEXTERN int ntexturestack;
 
 SVEXTERN float SVDECL(fire_opacity_factor,3.0),SVDECL(mass_extinct,8700.0);
 
-SVEXTERN int smoke3d_hrrpuv_index_map_array[257], smoke3d_temp_index_map_array[257];
-SVEXTERN int SVDECL(*smoke3d_hrrpuv_index_map, smoke3d_hrrpuv_index_map_array + 1);
-SVEXTERN int SVDECL(*smoke3d_temp_index_map, smoke3d_temp_index_map_array + 1);
-
-SVEXTERN unsigned char smoke3d_hrrpuv_colorbar_array[4 * 258];
-SVEXTERN unsigned char SVDECL(*smoke3d_hrrpuv_colorbar, smoke3d_hrrpuv_colorbar_array + 2*4); 
-
-SVEXTERN unsigned char smoke3d_temp_colorbar_array[4 * 258];
-SVEXTERN unsigned char SVDECL(*smoke3d_temp_colorbar, smoke3d_hrrpuv_colorbar_array + 2*4); 
-
-SVEXTERN float SVDECL(global_temp_min,20.0),              SVDECL(global_temp_max,2000.0);
-SVEXTERN float SVDECL(global_temp_cb_min, 600.0),         SVDECL(global_temp_cb_max,2000.0);
-SVEXTERN float SVDECL(global_temp_cb_min_default, 600.0), SVDECL(global_temp_cb_max_default, 2000.0);
+SVEXTERN float SVDECL(global_temp_min,20.0),               SVDECL(global_temp_max,2000.0);
+SVEXTERN float SVDECL(global_temp_cb_min, 600.0),          SVDECL(global_temp_cb_max,2000.0);
+SVEXTERN float SVDECL(global_temp_cb_min_default, 600.0),  SVDECL(global_temp_cb_max_default, 2000.0);
 
 SVEXTERN float SVDECL(global_hrrpuv_min,0.0),              SVDECL(global_hrrpuv_max,1200.0);
 SVEXTERN float SVDECL(global_hrrpuv_cb_min,200.0),         SVDECL(global_hrrpuv_cb_max,1200.0);
@@ -1961,10 +1951,6 @@ SVEXTERN float SVDECL(global_hrrpuv_cb_min_default,200.0), SVDECL(global_hrrpuv_
 
 SVEXTERN int SVDECL(global_cb_min_index, 0),               SVDECL(global_cb_max_index, 255);
 SVEXTERN int SVDECL(global_cb_min_default_index, 0),       SVDECL(global_cb_max_default_index, 255);
-
-#ifdef pp_FIRECOLOR_DEBUG
-SVEXTERN int SVDECL(firecolor_debug, 0);
-#endif
 
 SVEXTERN int SVDECL(volbw,0);
 SVEXTERN float SVDECL(tourrad_avatar,0.1);

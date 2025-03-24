@@ -54,7 +54,6 @@
 //*** options: for debugging
 
 #ifdef _DEBUG
-#define pp_FIRECOLOR_DEBUG   // output fire color debug info
 //#define pp_MEM_DEBUG_PRINT // output file/line number for each memory allocation call
 #define pp_RECOMPUTE_DEBUG   // output debug message if bounds are recomputed
 #define pp_BOUND_DEBUG       // output debug message in some bound routines
