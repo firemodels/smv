@@ -1076,8 +1076,8 @@ void UpdateSmokeColormap(int option){
   float transparent_level_local=1.0;
   unsigned char *alpha_rgb;
   float *fire_cb;
-  float valmin, valmax;
-  float valmin_cb, valmax_cb;
+  float valmin=0.0, valmax=1.0;
+  float valmin_cb=0.0, valmax_cb=1.0;
   float *rgb_colormap=NULL;
 
   rgb_colormap = rgb_slicesmokecolormap_01;
