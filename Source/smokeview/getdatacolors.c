@@ -1102,7 +1102,7 @@ void UpdateSmokeColormap(int option){
   fire_cb = colorbars.colorbarinfo[colorbars.fire_colorbar_index].colorbar_rgb;
 
   switch(fire_colormap_type){
-    case FIRECOLORMAP_DIRECT:
+    case FIRECOLOR_RGB:
       for(n=0;n<MAXSMOKERGB;n++){
         if(n<icut||have_fire==NO_FIRE){
           rgb_colormap[4*n+0] = (float)smoke_color_int255[0] / 255.0;
@@ -1122,7 +1122,7 @@ void UpdateSmokeColormap(int option){
         }
       }
       break;
-    case FIRECOLORMAP_CONSTRAINT:
+    case FIRECOLOR_COLORBAR:
       for(n=0;n<MAXSMOKERGB;n++){
         float n2,factor;
         int nn2;
@@ -1130,26 +1130,21 @@ void UpdateSmokeColormap(int option){
         float smoke_color1[3], smoke_color2[3];
 
         val = valmin + (float)n*(valmax-valmin)/(float)(MAXSMOKERGB-1);
-        if(fire_colormap_type==FIRECOLORMAP_CONSTRAINT){
-          if(val<=valcut){
-            if(valcut>valmin){
-              n2 = 1+127*(val-valmin)/(valcut-valmin);
-            }
-            else{
-              n2 = 1;
-            }
+        if(val<=valcut){
+          if(valcut>valmin){
+            n2 = 1+127*(val-valmin)/(valcut-valmin);
           }
           else{
-            if(valmax>valcut){
-              n2 = 128 + 126*(val-valcut)/(valmax-valcut);
-            }
-            else{
-              n2 = 128;
-            }
+            n2 = 1;
           }
         }
         else{
-          n2 = 1.0+253.0*(val-valmin)/(valmax-valmin);
+          if(valmax>valcut){
+            n2 = 128 + 126*(val-valcut)/(valmax-valcut);
+          }
+          else{
+            n2 = 128;
+          }
         }
         nn2 = (int)n2;
         nn2 = CLAMP(nn2,1,253);
@@ -1157,7 +1152,7 @@ void UpdateSmokeColormap(int option){
         factor = CLAMP(factor,0.0,1.0);
         fire1 = fire_cb + 3 * nn2;
         fire2 = fire1 + 3;
-        if(fire_colormap_type == FIRECOLORMAP_CONSTRAINT&&val <= valcut){
+        if(val <= valcut){
           smoke_color1[0] = fire1[0];
           smoke_color1[1] = fire1[1];
           smoke_color1[2] = fire1[2];

@@ -875,8 +875,8 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 
 #define offsetscale 100
 
-#define FIRECOLORMAP_DIRECT     0
-#define FIRECOLORMAP_CONSTRAINT 1
+#define FIRECOLOR_RGB      0
+#define FIRECOLOR_COLORBAR 1
 
 #define CO2_RGB      0
 #define CO2_COLORBAR 1

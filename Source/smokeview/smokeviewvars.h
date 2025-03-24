@@ -2091,8 +2091,8 @@ SVEXTERN float SVDECL(co2_halfdepth, 10.0);
 SVEXTERN int SVDECL(co2_colormap_type, CO2_COLORBAR);
 
 SVEXTERN int SVDECL(show_firecolormap,0);
-SVEXTERN int SVDECL(fire_colormap_type, FIRECOLORMAP_CONSTRAINT);
-SVEXTERN int SVDECL(fire_colormap_type_save, FIRECOLORMAP_CONSTRAINT);
+SVEXTERN int SVDECL(fire_colormap_type,      FIRECOLOR_COLORBAR);
+SVEXTERN int SVDECL(fire_colormap_type_save, FIRECOLOR_COLORBAR);
 
 SVEXTERN int SVDECL(use_smoke_colormap, 0), SVDECL(use_smoke_rgb, 1);
 SVEXTERN int SVDECL(use_fire_colormap, 0),  SVDECL(use_fire_rgb, 1);

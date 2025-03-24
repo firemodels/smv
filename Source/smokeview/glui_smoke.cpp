@@ -582,7 +582,7 @@ extern "C" void GLUI3dSmokeSetup(int main_window){
 
   glui_3dsmoke=glui_bounds;
 
-  if(fire_colormap_type== FIRECOLORMAP_DIRECT){
+  if(fire_colormap_type== FIRECOLOR_RGB){
     use_fire_rgb       = 1;
     use_fire_colormap  = 0;
   }
@@ -958,8 +958,8 @@ void SetRGBColorMapVars(int use_rgb){
   use_co2_colormap   = use_colormap;
   GLUISmoke3dCB(ENABLE_DISABLE_FIRE);
   GLUISmoke3dCB(SET_RGB_COLORGB_CHECKBOXES);
-  if(use_fire_rgb==1)fire_colormap_type      = FIRECOLORMAP_DIRECT;
-  if(use_fire_colormap==1)fire_colormap_type = FIRECOLORMAP_CONSTRAINT;
+  if(use_fire_rgb==1)fire_colormap_type      = FIRECOLOR_RGB;
+  if(use_fire_colormap==1)fire_colormap_type = FIRECOLOR_COLORBAR;
   GLUISmoke3dCB(FIRECOLORMAP_TYPE);
   if(use_co2_rgb==1)co2_colormap_type      = CO2_RGB;
   if(use_co2_colormap==1)co2_colormap_type = CO2_COLORBAR;
@@ -1254,8 +1254,8 @@ extern "C" void GLUISmoke3dCB(int var){
       fire_colormap_type=fire_colormap_type_save;
     }
     else{
-      fire_colormap_type_save=fire_colormap_type;
-      fire_colormap_type=FIRECOLORMAP_CONSTRAINT;
+      fire_colormap_type_save = fire_colormap_type;
+      fire_colormap_type      = FIRECOLOR_COLORBAR;
     }
     GLUISmoke3dCB(SET_RGB_COLORGB_CHECKBOXES);
     GLUISmoke3dCB(FIRECOLORMAP_TYPE);
@@ -1324,7 +1324,7 @@ extern "C" void GLUISmoke3dCB(int var){
   case FIRECOLORMAP_TYPE:
     GLUISmoke3dCB(SET_RGB_COLORGB_CHECKBOXES);
     switch(fire_colormap_type){
-    case FIRECOLORMAP_CONSTRAINT:
+    case FIRECOLOR_COLORBAR:
       if(fire_colorbar_index_save != -1){
         SmokeColorbarMenu(fire_colorbar_index_save);
       }
@@ -1332,7 +1332,7 @@ extern "C" void GLUISmoke3dCB(int var){
         SmokeColorbarMenu(colorbars.fire_colorbar_index);
       }
       break;
-    case FIRECOLORMAP_DIRECT:
+    case FIRECOLOR_RGB:
       fire_colorbar_index_save = colorbars.fire_colorbar_index;
       UpdateRGBColors(colorbar_select_index);
       UpdateSmokeColormap(smoke_render_option);
