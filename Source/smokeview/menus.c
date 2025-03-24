@@ -18,7 +18,6 @@
 #include "IOvolsmoke.h"
 #include "readhvac.h"
 #include "readobject.h"
-#include "readsmvfile.h"
 #include "IOobjects.h"
 #include "IOscript.h"
 #include "viewports.h"

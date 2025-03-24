@@ -91,7 +91,7 @@ EXTERNCPP void GetGeomZBounds(float *zmin, float *zmax);
 //*** glui_motion.cpp headers
 
 EXTERNCPP void GLUIUpdateFarclip(void);
-
+  
   //*** glui_objects.cpp headers
 
 EXTERNCPP void GLUIDeviceCB(int val);
@@ -727,12 +727,18 @@ EXTERNCPP void ScaleFont3D(void);
 EXTERNCPP void *CheckFiles(void *arg);
 EXTERNCPP void *Compress(void *arg);
 EXTERNCPP void GetBoxSkyCorners(void);
+EXTERNCPP void GetElevAz(float *xyznorm,float *dtheta, float *rotate_axis, float *dpsi);
 EXTERNCPP void GetSliceParmInfo(sliceparmdata *sp);
+EXTERNCPP int GetSmoke3DType(smv_case *scase, const char *label);
 EXTERNCPP void InitCellMeshInfo(void);
 EXTERNCPP FILE_SIZE ReadAllCSVFiles(int flag);
 EXTERNCPP int  ReadBinIni(void);
+EXTERNCPP FILE_SIZE ReadCSVFile(csvfiledata *csvfi, int flag);
+EXTERNCPP void ReadHRR(smv_case *scase, int flag);
 EXTERNCPP int  ReadIni(char *inifile);
 EXTERNCPP int  ReadSMV(bufferstreamdata *stream);
+EXTERNCPP void ReadSMVDynamic(smv_case *scase, char *file);
+EXTERNCPP void ReadSMVOrig(smv_case *scase);
 EXTERNCPP void SetBoundBounds(int set_valmin, float valmin, int set_valmax, float valmax, char *buffer2);
 EXTERNCPP void SetPatchMin(int set_valmin, float valmin, char *buffer2);
 EXTERNCPP void SetPatchMax(int set_valmax, float valmax, char *buffer2);
@@ -742,6 +748,7 @@ EXTERNCPP void SetSliceMax(int set_valmax, float valmax, char *buffer2);
 EXTERNCPP void SetSliceParmInfo(sliceparmdata *sp);
 EXTERNCPP void *SetupAllIsosurfaces(void *arg);
 EXTERNCPP void UpdateBlockType(void);
+EXTERNCPP void UpdateHoc(smv_case *scase);
 EXTERNCPP void UpdateLoadedLists(void);
 EXTERNCPP void UpdateSMVDynamic(char *file);
 EXTERNCPP void UpdateUseTextures(void);

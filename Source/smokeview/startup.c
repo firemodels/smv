@@ -20,7 +20,6 @@
 
 #include "readobject.h"
 #include "readlabel.h"
-#include "readsmvfile.h"
 #include "glui_bounds.h"
 #include "glui_motion.h"
 #include "glui_smoke.h"

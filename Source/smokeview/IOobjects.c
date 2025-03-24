@@ -17,7 +17,6 @@
 
 #include "readobject.h"
 #include "readgeom.h"
-#include "readsmvfile.h"
 
 static float *cos_long = NULL, *sin_long = NULL, *cos_lat = NULL, *sin_lat = NULL;
 static float *sphere_coords = NULL;
