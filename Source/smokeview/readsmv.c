@@ -12586,8 +12586,9 @@ int ReadIni2(const char *inifile, int localfile){
         &glui_compress_volsmoke, &use_multi_threading, &load_at_rendertimes, &volbw, &show_volsmoke_moving);
       fgets(buffer, 255, stream);
       sscanf(buffer, "%f %f %f %f %f %f %f",
-        &global_temp_min, &global_temp_cb_min, &global_temp_cb_max, &fire_opacity_factor, &mass_extinct, &gpu_vol_factor, &nongpu_vol_factor);
-      global_temp_cb_min_default = global_temp_cb_min;
+        &global_temp_min, &global_temp_cb_min_default, &global_temp_cb_max_default, &fire_opacity_factor, &mass_extinct, &gpu_vol_factor, &nongpu_vol_factor);
+      global_temp_cb_min = global_temp_cb_min_default;
+      global_temp_cb_max = global_temp_cb_max_default;
       ONEORZERO(glui_compress_volsmoke);
       ONEORZERO(use_multi_threading);
       ONEORZERO(load_at_rendertimes);
@@ -14973,8 +14974,12 @@ int ReadIni2(const char *inifile, int localfile){
        }
       if(MatchINI(buffer, "HRRPUVCUTOFF")==1){
         if(fgets(buffer, 255, stream)==NULL)break;
-        sscanf(buffer, "%f", &global_hrrpuv_cb_min_default);
+        sscanf(buffer, "%f %f %i %i", &global_hrrpuv_cb_min_default, &global_hrrpuv_cb_max_default,
+                                      &global_cb_min_index_default, &global_cb_max_index_default);
         global_hrrpuv_cb_min = global_hrrpuv_cb_min_default;
+        global_hrrpuv_cb_max = global_hrrpuv_cb_max_default;
+        global_cb_min_index  = global_cb_min_index_default;
+        global_cb_max_index  = global_cb_max_index_default;
         continue;
       }
       if(MatchINI(buffer, "FDEPTH") == 1){
@@ -17158,7 +17163,8 @@ void WriteIni(int flag,char *filename){
     }
   }
   fprintf(fileout, "HRRPUVCUTOFF\n");
-  fprintf(fileout, " %f\n", global_hrrpuv_cb_min);
+  fprintf(fileout, " %f %f %i %i\n", global_hrrpuv_cb_min, global_hrrpuv_cb_max, global_cb_min_index, global_cb_max_index);
+
   fprintf(fileout, "SHOWEXTREMEDATA\n");
   {
     int show_extremedata = 0;

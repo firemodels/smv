@@ -1077,8 +1077,8 @@ extern "C" void GLUISmoke3dCB(int var){
     global_hrrpuv_cb_max = global_hrrpuv_cb_max_default;
     global_temp_cb_min   = global_temp_cb_min_default;
     global_temp_cb_max   = global_temp_cb_max_default;
-    global_cb_min_index  = global_cb_min_default_index;
-    global_cb_max_index  = global_cb_max_default_index;
+    global_cb_min_index  = global_cb_min_index_default;
+    global_cb_max_index  = global_cb_max_index_default;
     SPINNER_hrrpuv_min->set_float_val(global_hrrpuv_cb_min);
     SPINNER_hrrpuv_max->set_float_val(global_hrrpuv_cb_max);
     SPINNER_temperature_min->set_float_val(global_temp_cb_min);
