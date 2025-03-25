@@ -3340,13 +3340,18 @@ void GetFireMinMax(float *firemin, float *firemax, float *firemin_cb, float *fir
 
 void DrawSmoke3DColorMap(void){
   int i;
-  float yleft, yright;
+  float yleft,  yright;
+  float yleft2, yright2;
   float ybot, ytop;
+  float *fire_cb;
   char label[32];
 
+  fire_cb = colorbars.colorbarinfo[colorbars.fire_colorbar_index].colorbar_rgb;
   yleft = FDS2SMV_X(xbarFDS);
   yleft += 0.05;
   yright = yleft + 0.1;
+  yleft2 = yright + 0.075;
+  yright2 = yleft2 + 0.1;
 
   glBegin(GL_QUADS);
   for(i = 0; i < 255; i++){
@@ -3359,6 +3364,25 @@ void DrawSmoke3DColorMap(void){
     glVertex3f(yright, 0.0, ybot);
     glVertex3f(yright, 0.0, ytop);
     glVertex3f(yleft,  0.0, ytop);
+  }
+  if(use_fire_colormap==1){
+    float fire_color_local[3];
+
+    fire_color_local[0] = fire_color_int255[0]/255.0;
+    fire_color_local[1] = fire_color_int255[1]/255.0;
+    fire_color_local[2] = fire_color_int255[2]/255.0;
+    glColor3fv(fire_color_local);
+  }
+  for(i = 0; i < 255; i++){
+
+    ybot = (float)i / 255.0;
+    ytop = (float)(i + 1) / 255.0;
+
+    if(use_fire_colormap==1)glColor3fv(fire_cb + 3*i);
+    glVertex3f(yleft2,  0.0, ybot);
+    glVertex3f(yright2, 0.0, ybot);
+    glVertex3f(yright2, 0.0, ytop);
+    glVertex3f(yleft2,  0.0, ytop);
   }
   glEnd();
 
@@ -3383,6 +3407,15 @@ void DrawSmoke3DColorMap(void){
   sprintf(label, "%f", firemax);
   TrimZeros(label);
   Output3Text(foregroundcolor, yright, 0.0, 1.0, label);
+
+  Output3Text(foregroundcolor, yleft, 0.0, 1.005, "applied");
+  Output3Text(foregroundcolor, yleft2, 0.0, 1.005, "base");
+  glBegin(GL_LINES);;
+  glVertex3f(yleft2,  0.0, (float)global_cb_max_index/255.0);
+  glVertex3f(yright,  0.0,  imax);
+  glVertex3f(yleft2,  0.0, (float)global_cb_min_index / 255.0);
+  glVertex3f(yright,  0.0,  imin);
+  glEnd();
 }
 
 /* ------------------ DrawSmokeFrame ------------------------ */
