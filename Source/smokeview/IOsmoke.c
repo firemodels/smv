@@ -4097,6 +4097,8 @@ void SmokeWrapup(void){
   UpdateSmoke3dFileParms();
   UpdateTimes();
   GLUISmoke3dCB(UPDATE_SMOKEFIRE_COLORS);
+  GLUISmoke3dCB(USE_FIRE_COLORMAP);
+
   smoke_render_option = RENDER_SLICE;
   update_fire_alpha = 1;
   have_fire  = HaveFireLoaded();

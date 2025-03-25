@@ -431,6 +431,10 @@ extern "C" void GLUISmoke3dColorbarCB(int var){
       SPINNER_cb_min_index->set_int_val(global_cb_min_index);
       SPINNER_cb_max_index->set_int_val(global_cb_max_index);
     }
+    GLUISmoke3dColorbarCB(GLOBAL_TEMP_MIN);
+    GLUISmoke3dColorbarCB(GLOBAL_TEMP_MAX);
+    GLUISmoke3dColorbarCB(GLOBAL_HRRPUV_MIN);
+    GLUISmoke3dColorbarCB(GLOBAL_HRRPUV_MAX);
     break;
   default:
     assert(0);
