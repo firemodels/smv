@@ -3304,6 +3304,87 @@ int DrawSmoke3D(smoke3ddata *smoke3di){
   return nsmoke_triangles;
 }
 
+/* ------------------ GetFireMinMax ------------------------ */
+
+void GetFireMinMax(float *firemin, float *firemax, float *firemin_cb, float *firemax_cb, float *i_min, float *i_max){
+  if(have_fire==HRRPUV_index){
+    *firemin_cb = global_hrrpuv_cb_min;
+    *firemax_cb = global_hrrpuv_cb_max;
+    *firemin    = global_hrrpuv_min;
+    *firemax    = global_hrrpuv_max;
+  }
+  else if(have_fire==TEMP_index){
+    *firemin_cb = global_temp_cb_min;
+    *firemax_cb = global_temp_cb_max;
+    *firemin    = global_temp_min;
+    *firemax    = global_temp_max;
+  }
+  else{
+    *firemin_cb = 0.0;
+    *firemax_cb = 1.0;
+    *firemin    = 0.0;
+    *firemax    = 1.0;
+    return;
+  }
+  float denom;
+
+  denom = *firemax - *firemin;
+  if(denom == 0.0)denom = 1.0;
+  *i_min = (*firemin_cb - *firemin) / denom;
+  *i_min = CLAMP(*i_min, 0.0, 1.0);
+  *i_max = (*firemax_cb - *firemin) / denom;
+  *i_max = CLAMP(*i_max, 0.0, 1.0);
+}
+
+/* ------------------ DrawSmoke3DColorMap ------------------------ */
+
+void DrawSmoke3DColorMap(void){
+  int i;
+  float yleft, yright;
+  float ybot, ytop;
+  char label[32];
+
+  yleft = FDS2SMV_X(xbarFDS);
+  yleft += 0.05;
+  yright = yleft + 0.1;
+
+  glBegin(GL_QUADS);
+  for(i = 0; i < 255; i++){
+
+    ybot = (float)i/255.0;
+    ytop = (float)(i+1)/255.0;
+
+    glColor4fv(rgb_slicesmokecolormap_01+4*i);
+    glVertex3f(yleft,  0.0, ybot);
+    glVertex3f(yright, 0.0, ybot);
+    glVertex3f(yright, 0.0, ytop);
+    glVertex3f(yleft,  0.0, ytop);
+  }
+  glEnd();
+
+  float firemin_cb, firemax_cb;
+  float firemin,    firemax;
+  float imin,       imax;
+
+  GetFireMinMax(&firemin, &firemax, &firemin_cb, &firemax_cb, &imin, &imax);
+
+  sprintf(label, "%f", firemin);
+  TrimZeros(label);
+  Output3Text(foregroundcolor, yright, 0.0, 0.0, label);
+
+  sprintf(label, "%f", firemin_cb);
+  TrimZeros(label);
+  Output3Text(foregroundcolor, yright, 0.0, imin, label);
+  
+  sprintf(label, "%f", firemax_cb);
+  TrimZeros(label);
+  Output3Text(foregroundcolor, yright, 0.0, imax, label);
+
+  sprintf(label, "%f", firemax);
+  TrimZeros(label);
+  Output3Text(foregroundcolor, yright, 0.0, 1.0, label);
+}
+
 /* ------------------ DrawSmokeFrame ------------------------ */
 
 void DrawSmokeFrame(void){
@@ -3408,6 +3489,9 @@ void DrawSmokeFrame(void){
     UnLoadShaders();
   }
 #endif
+  if(have_fire != NO_FIRE && show_smoke3d_colorbar == 1){
+    DrawSmoke3DColorMap();
+  }
   SNIFF_ERRORS("after drawsmoke");
 }
 

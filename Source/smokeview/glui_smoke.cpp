@@ -559,6 +559,7 @@ extern "C" void GLUI3dSmokeSetup(int main_window){
   SPINNER_cb_min_index = glui_3dsmoke->add_spinner_to_panel(PANEL_cb_index, "min", GLUI_SPINNER_INT, &global_cb_min_index, COLORBAR_INDEX_MIN, GLUISmoke3dColorbarCB);
   SPINNER_cb_max_index = glui_3dsmoke->add_spinner_to_panel(PANEL_cb_index, "max", GLUI_SPINNER_INT, &global_cb_max_index, COLORBAR_INDEX_MAX, GLUISmoke3dColorbarCB);
 
+  glui_3dsmoke->add_checkbox_to_panel(PANEL_fire_cutoff, "Show color map", &show_smoke3d_colorbar, USE_FIRE_COLORMAP, GLUISmoke3dCB);
   glui_3dsmoke->add_button_to_panel(PANEL_fire_cutoff, "Refresh", REFRESH_FIRE, GLUISmoke3dCB);
   BUTTON_cutoff_defaults = glui_3dsmoke->add_button_to_panel(PANEL_fire_cutoff, "Reset", CUTOFF_RESET, GLUISmoke3dCB);
 
@@ -1261,7 +1262,6 @@ extern "C" void GLUISmoke3dCB(int var){
       SPINNER_smoke3d_smoke_green->set_float_val(smoke_gray_level);
       SPINNER_smoke3d_smoke_blue->set_float_val(smoke_gray_level);
     }
-    GLUISmoke3dCB(USE_SMOKE_RGB);
     GLUISmoke3dCB(UPDATE_SMOKEFIRE_COLORS_COMMON);
     break;
   case FIRE_RED:

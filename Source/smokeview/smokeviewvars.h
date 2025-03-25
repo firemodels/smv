@@ -1952,6 +1952,8 @@ SVEXTERN float SVDECL(global_hrrpuv_cb_min_default,200.0), SVDECL(global_hrrpuv_
 SVEXTERN int SVDECL(global_cb_min_index, 0),               SVDECL(global_cb_max_index, 255);
 SVEXTERN int SVDECL(global_cb_min_default_index, 0),       SVDECL(global_cb_max_default_index, 255);
 
+SVEXTERN int SVDECL(show_smoke3d_colorbar, 0);
+
 SVEXTERN int SVDECL(volbw,0);
 SVEXTERN float SVDECL(tourrad_avatar,0.1);
 SVEXTERN int SVDECL(dirtycircletour,0);
