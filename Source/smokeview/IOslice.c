@@ -7133,7 +7133,7 @@ void Slice2Device(void){
           is_dup = 0;
           for(ll=0;ll<noffsets-1;ll++){
             if(offsets[ll] == offsets[noffsets-1]){
-              is_dup = 1;;
+              is_dup = 1;
               break;
             }
           }

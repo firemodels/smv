@@ -248,7 +248,7 @@ unsigned char *FRAMEGetSubFramePtr(framedata *fi, int iframe, int isubframe){
   ptr = FRAMEGetFramePtr(fi, iframe);
   if(ptr == NULL)return NULL;
   if(isubframe <0)isubframe = 0;
-  if(isubframe >fi->nsubframes-1)isubframe = fi->nsubframes - 1;;
+  if(isubframe >fi->nsubframes-1)isubframe = fi->nsubframes - 1;
   ptr += fi->subframeoffsets[isubframe];
   return ptr;
 }

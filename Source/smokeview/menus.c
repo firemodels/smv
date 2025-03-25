@@ -5739,7 +5739,7 @@ int LoadAllPlot3D(float time){
     plot3ddata *plot3di;
 
     plot3di = global_scase.plot3dinfo + i;
-    if(ABS(plot3di->time - time) > 0.5)continue;;
+    if(ABS(plot3di->time - time) > 0.5)continue;
     total_plot3d_filesize += ReadPlot3D(plot3di->file, plot3di - global_scase.plot3dinfo, LOAD, &errorcode);
     file_count++;
     if(errorcode==0)count++;
@@ -11653,7 +11653,7 @@ static int menu_count=0;
 #endif
   glutAddMenuEntry(_("Save/load configuration files..."), DIALOG_CONFIG);
   glutAddMenuEntry(_("Render images..."), DIALOG_RENDER);
-  THREADcontrol(ffmpeg_threads, THREAD_LOCK);;
+  THREADcontrol(ffmpeg_threads, THREAD_LOCK);
   if(have_slurm==1&&have_ffmpeg==1){
     glutAddMenuEntry(_("Make movies(local)..."), DIALOG_MOVIE);
     glutAddMenuEntry(_("Make movies(cluster)..."), DIALOG_MOVIE_BATCH);

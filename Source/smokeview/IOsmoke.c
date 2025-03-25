@@ -3410,7 +3410,7 @@ void DrawSmoke3DColorMap(void){
 
   Output3Text(foregroundcolor, yleft, 0.0, 1.005, "applied");
   Output3Text(foregroundcolor, yleft2, 0.0, 1.005, "base");
-  glBegin(GL_LINES);;
+  glBegin(GL_LINES);
   glVertex3f(yleft2,  0.0, (float)global_cb_max_index/255.0);
   glVertex3f(yright,  0.0,  imax);
   glVertex3f(yleft2,  0.0, (float)global_cb_min_index / 255.0);

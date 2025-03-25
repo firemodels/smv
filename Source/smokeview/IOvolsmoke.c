@@ -386,7 +386,7 @@ float GetPlankVal(float lambda, float temp){
   //c2 = hc/k = 0.014388 m K
   c1 = 3.74183*pow(10.0, -16);
   c2 = 0.014388;
-  float return_val = (c1 / pow(lambda, 5.0)) / (exp(c2 / (lambda*temp)) - 1.0);;
+  float return_val = (c1 / pow(lambda, 5.0)) / (exp(c2 / (lambda*temp)) - 1.0);
   return return_val;
 }
 
@@ -433,7 +433,7 @@ void GetRGBFireVal(float temp, float *rgb_arg){
   valmax = 780.0;
   factor = pow(10.0, 9.0);
   n = 81;
-  dval = (valmax - valmin)/(float)(n-1);;
+  dval = (valmax - valmin)/(float)(n-1);
   rgb_arg[0] = 0.0;
   rgb_arg[1] = 0.0;
   rgb_arg[2] = 0.0;

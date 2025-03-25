@@ -550,9 +550,9 @@ void GetContourNodes(const double x[4], const double y[4], const double val[4],
   *nnode2=contourline_list[casenum][0];
   if(casenum==0)return;
 
-  memcpy(xcopy,     x, 4*sizeof(float));;
-  memcpy(ycopy,     y, 4*sizeof(float));;
-  memcpy(valcopy, val, 4*sizeof(float));;
+  memcpy(xcopy,     x, 4*sizeof(float));
+  memcpy(ycopy,     y, 4*sizeof(float));
+  memcpy(valcopy, val, 4*sizeof(float));
   for(n=0;n<4;n++){
     vallownet[n]  =val[n] - contlow;
     valhighnet[n] =val[n] - conthigh;

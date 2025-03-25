@@ -49,7 +49,7 @@ void *SetupFF(void *arg){
   have_ffplay_local = HaveProg("ffplay -version >/dev/null 2>/dev/null");
 #endif
 
-  THREADcontrol(ffmpeg_threads, THREAD_LOCK);;
+  THREADcontrol(ffmpeg_threads, THREAD_LOCK);
   update_ff = 1;
   have_ffmpeg = have_ffmpeg_local;
   have_ffplay = have_ffplay_local;
