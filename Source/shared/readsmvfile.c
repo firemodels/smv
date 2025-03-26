@@ -7281,9 +7281,8 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
       sscanf(buffer,"%i",&nhrrpuvcut);
       if(nhrrpuvcut>=1){
         FGETS(buffer,255,stream);
-        sscanf(buffer,"%f",&scase->global_hrrpuv_cutoff_default);
-        scase->global_hrrpuv_cutoff = scase->global_hrrpuv_cutoff_default;
-        scase->load_hrrpuv_cutoff = scase->global_hrrpuv_cutoff;
+        sscanf(buffer,"%f",&global_hrrpuv_cb_min_default);
+        global_hrrpuv_cb_min = global_hrrpuv_cb_min_default;
         for(i=1;i<nhrrpuvcut;i++){
           FGETS(buffer,255,stream);
         }
@@ -8889,9 +8888,6 @@ void InitScase(smv_case *scase) {
   scase->gvecphys[2] =  -9.8;
   scase->gvecunit[2] =  -1.0;
   scase->global_tbegin = 1.0;
-  scase->load_hrrpuv_cutoff = 200.0;
-  scase->global_hrrpuv_cutoff = 200.0;
-  scase->global_hrrpuv_cutoff_default = 200.0;
   scase->smoke_albedo = 0.3;
   scase->smoke_albedo_base = 0.3;
   scase->xbar = 1.0;
