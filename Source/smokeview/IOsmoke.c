@@ -3347,10 +3347,10 @@ void DrawSmoke3DColorMap(void){
   char label[32];
 
   fire_cb = colorbars.colorbarinfo[colorbars.fire_colorbar_index].colorbar_rgb;
-  yleft = FDS2SMV_X(xbarFDS);
-  yleft += 0.05;
-  yright = yleft + 0.1;
-  yleft2 = yright + 0.075;
+  yleft   = FDS2SMV_X(xbarFDS);
+  yleft  += 0.05;
+  yright  = yleft  + 0.1;
+  yleft2  = yright + 0.075;
   yright2 = yleft2 + 0.1;
 
   glBegin(GL_QUADS);
