@@ -1090,7 +1090,7 @@ void UpdateSmokeColormap(int option){
   if(have_fire==TEMP_index){
     valmin    = global_temp_min;
     valmin_cb = global_temp_cb_min;
-    valmax    = global_temp_cb_max;
+    valmax    = global_temp_max;
     valmax_cb = global_temp_cb_max;
   }
 
