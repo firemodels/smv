@@ -379,7 +379,7 @@ generated data files, are related.
 
 Smokeview is written in C~\cite{C:book}\ and C++\cite{Cpp17}. It consists
 of about \smvlines\ lines of code. The C portion visualizes the
-data, while the C++ portoin is used to implement dialog boxes.
+data, while the C++ portion is used to implement dialog boxes.
 Smokeview uses the 3D graphics
 library OpenGL~\cite{OpenGLRed}\ for generating the visualizations
 and the Graphics Library Utility Toolkit (GLUT)~\cite{OpenGLGlut}
@@ -1610,7 +1610,7 @@ network being visualized.}\ \label{figHVACsettings}
 {HVAC network example.
 This example illustrates an HVAC network showing a air coil, damper, fan and filter . The central sphere
 changes from green to color when activated.
-In adddition, The damper is drawn vertically and the fan rotates when activated.}\ \label{figHVACexample}
+In addition, The damper is drawn vertically and the fan rotates when activated.}\ \label{figHVACexample}
 \end{figure}
 
 
@@ -1920,7 +1920,7 @@ by setting various plot and curve property options.}
 You may also delete a plot or select a plot if more than one plot has been created.
 
 \item Select the csv file type in the \frameit{add curves} panel. For example select devc
-for device data, hrr for heat release data data or step for cpu and time step data.
+for device data, hrr for heat release data or step for cpu and time step data.
 
 \item Select one or more curves to add to the plot using the \frameit{select curve} list box.
 The number of curves in this list box may be reduced by selecting a unit (m, m/s, kW {\em etc.}).
@@ -2193,7 +2193,7 @@ selecting the Fast loading checkbox and setting the number of files to load in p
 }\
 \caption
 [Dialog box for setting slice rendered 3D smoke settings]
-{Dialog box for setting slice rendered 3D smoke settings.  Settings such as GPU use and extinction coeficcient may be specified.}
+{Dialog box for setting slice rendered 3D smoke settings.  Settings such as GPU use and extinction coefficient may be specified.}
 \label{fig3DSmokeSettings}
 \end{figure}
 
@@ -2202,7 +2202,7 @@ selecting the Fast loading checkbox and setting the number of files to load in p
 }\
 \caption
 [Dialog box for setting slice rendered 3D smoke options - color]
-{Dialog box for setting slice rendered 3D smoke and fire color.  Smoke color may be specifed using red, green blue integer values between 0 and 255.
+{Dialog box for setting slice rendered 3D smoke and fire color.  Smoke color may be specified using red, green blue integer values between 0 and 255.
 Fire color may be specified using red, green and blue values over the same range or by using a colorbar.
 }
 \label{fig3DSmokeColor}
@@ -3940,7 +3940,7 @@ and VECTOR indicates that slice files for 3 components of velocity in addition t
 The ID keyword may be used to specify a slice file instead of QUANTITY and one of PBX, PBY, PBZ and PB3D.
 QUANTITY contains a string enclosed in single quotes such as
 TEMPERATURE. U-VELOCITY, or SOOT DENSITY {\em etc}.
-Blanks are allowed in an ID or QUANTITY value.  They must be enlosed by single not double quotes.
+Blanks are allowed in an ID or QUANTITY value.  They must be enclosed by single not double quotes.
 Any value used in an FDS input file may be used here. You may use blanks or commas to separate keywords.
 Note, that these files need to exist in order to be loaded.
 
@@ -4414,7 +4414,7 @@ SETVIEWPOINT
 
 %%+++++++++++++++++++++++
 \hitemssf{XYZVIEW}Sets the position (x, y and z location) and view direction (azimuth and elevation angle in degrees).
-Usge:
+Usage:
 \begin{lstlisting}
 XYZVIEW
  xpos ypos zpos az elev
@@ -4628,7 +4628,7 @@ RENDERHTMLDIR
 \hitemssfN{RENDERHTMLSLICENODE}
 
 %%+++++++++++++++++++++++
-\hitemssf{RENDERSIZE}Set the width and heightt of rendered images.
+\hitemssf{RENDERSIZE}Set the width and height of rendered images.
 Usage:
 \begin{lstlisting}
 RENDERSIZE
@@ -4677,7 +4677,7 @@ VOLSMOKERENDERALL
 \blist
 
 %%+++++++++++++++++++++++
-\hitemssf{GPUOFF}Turn off the GPU if is active and being used (in smoekview)
+\hitemssf{GPUOFF}Turn off the GPU if is active and being used (in smokeview)
 \begin{lstlisting}
   GPUOFF
 \end{lstlisting}
@@ -4917,7 +4917,7 @@ A linear colorbar is a colorbar with two nodes that transition smoothly
 from one color at node 1 to a second color at node 5.
 Node 1 and node 5 colors are converted from RGB to CIELab coordinates internally in smokeview.
 These coordinates are then interpolated
-linearly between nodes 1 and 5 to create 256 CIELab coorindates.
+linearly between nodes 1 and 5 to create 256 CIELab coordinates.
 Since the linear interpolation occurs in CIELab space the paths are straight lines in the CIELab
 images while curved in the RGB images.
 Finally these 256 CIELab coordinates are converted back to RGB to form the colorbar.
