@@ -3306,24 +3306,27 @@ int DrawSmoke3D(smoke3ddata *smoke3di){
 
 /* ------------------ GetFireMinMax ------------------------ */
 
-void GetFireMinMax(float *firemin, float *firemax, float *firemin_cb, float *firemax_cb, float *i_min, float *i_max){
+void GetFireMinMax(char *cb_label, float *firemin, float *firemax, float *firemin_cb, float *firemax_cb, float *i_min, float *i_max){
   if(have_fire==HRRPUV_index){
     *firemin_cb = global_hrrpuv_cb_min;
     *firemax_cb = global_hrrpuv_cb_max;
     *firemin    = global_hrrpuv_min;
     *firemax    = global_hrrpuv_max;
+    strcpy(cb_label, "HRRPUV");
   }
   else if(have_fire==TEMP_index){
     *firemin_cb = global_temp_cb_min;
     *firemax_cb = global_temp_cb_max;
     *firemin    = global_temp_min;
     *firemax    = global_temp_max;
+    strcpy(cb_label, "Temperature");
   }
   else{
     *firemin_cb = 0.0;
     *firemax_cb = 1.0;
     *firemin    = 0.0;
     *firemax    = 1.0;
+    strcpy(cb_label, "");
     return;
   }
   float denom;
@@ -3337,6 +3340,8 @@ void GetFireMinMax(float *firemin, float *firemax, float *firemin_cb, float *fir
 }
 
 /* ------------------ DrawSmoke3DColorMap ------------------------ */
+
+#define CB_SPACE 0.005
 
 void DrawSmoke3DColorMap(void){
   int i;
@@ -3389,27 +3394,28 @@ void DrawSmoke3DColorMap(void){
   float firemin_cb, firemax_cb;
   float firemin,    firemax;
   float imin,       imax;
+  char cb_label[32];
 
-  GetFireMinMax(&firemin, &firemax, &firemin_cb, &firemax_cb, &imin, &imax);
+  GetFireMinMax(cb_label, &firemin, &firemax, &firemin_cb, &firemax_cb, &imin, &imax);
 
   sprintf(label, "%f", firemin);
   TrimZeros(label);
-  Output3Text(foregroundcolor, yright, 0.0, 0.0, label);
+  Output3Text(foregroundcolor, yright + CB_SPACE, 0.0, 0.0, label);
 
   sprintf(label, "%f", firemin_cb);
   TrimZeros(label);
-  Output3Text(foregroundcolor, yright, 0.0, imin, label);
+  Output3Text(foregroundcolor, yright + CB_SPACE, 0.0, imin, label);
   
   sprintf(label, "%f", firemax_cb);
   TrimZeros(label);
-  Output3Text(foregroundcolor, yright, 0.0, imax, label);
+  Output3Text(foregroundcolor, yright + CB_SPACE, 0.0, imax, label);
 
   sprintf(label, "%f", firemax);
   TrimZeros(label);
-  Output3Text(foregroundcolor, yright, 0.0, 1.0, label);
+  Output3Text(foregroundcolor, yright + CB_SPACE, 0.0, 1.0, label);
 
-  Output3Text(foregroundcolor, yleft, 0.0, 1.005,  "modified");
-  Output3Text(foregroundcolor, yleft2, 0.0, 1.005, "original");
+  Output3Text(foregroundcolor, yleft, 0.0, 1.0175,  cb_label);
+  Output3Text(foregroundcolor, yleft, 0.0, 1.005 , "color");
   glBegin(GL_LINES);
   glVertex3f(yleft2,  0.0, (float)global_cb_max_index/255.0);
   glVertex3f(yright,  0.0,  imax);

@@ -42,6 +42,7 @@ GLUI_RadioGroup *RADIO_newsmoke = NULL;
 GLUI_RadioGroup *RADIO_render=NULL;
 GLUI_RadioGroup *RADIO_smokesensors=NULL;
 GLUI_RadioGroup *RADIO_sootdensity = NULL;
+GLUI_RadioGroup *RADIO_use_fire_colormap = NULL;
 
 GLUI_Spinner *SPINNER_smoke_num=NULL;
 GLUI_Spinner *SPINNER_startframe=NULL;
@@ -99,7 +100,6 @@ GLUI_Checkbox *CHECKBOX_use_opacity_depth = NULL;
 GLUI_Checkbox *CHECKBOX_use_opacity_multiplier = NULL;
 GLUI_Checkbox *CHECKBOX_force_alpha_opaque = NULL;
 GLUI_Checkbox *CHECKBOX_use_co2_colormap = NULL;
-GLUI_Checkbox *CHECKBOX_use_fire_colormap = NULL;
 GLUI_Checkbox *CHECKBOX_use_co2_rgb = NULL;
 GLUI_Checkbox *CHECKBOX_smoke_flip=NULL;
 GLUI_Checkbox *CHECKBOX_triangle_display_rate = NULL;
@@ -117,7 +117,8 @@ GLUI_Checkbox *CHECKBOX_meshvis = NULL;
 GLUI_Checkbox *CHECKBOX_edit_colormap=NULL;
 GLUI_Checkbox *CHECKBOX_plane_normal=NULL;
 
-GLUI_Panel *PANEL_colormap3 = NULL;
+GLUI_Panel *PANEL_specify_fire = NULL;
+GLUI_Panel *PANEL_fire_colormap = NULL;
 GLUI_Panel *PANEL_fire_opacity = NULL;
 GLUI_Panel *PANEL_smoke_opacity = NULL;
 GLUI_Panel *PANEL_slice_alignment = NULL;
@@ -522,9 +523,14 @@ extern "C" void GLUI3dSmokeSetup(int main_window){
   if(colorbars.ncolorbars > 0){
     ROLLOUT_firecolor = glui_3dsmoke->add_rollout_to_panel(ROLLOUT_smoke3d, _("Fire color"), false, FIRECOLOR_ROLLOUT, SmokeRolloutCB);
     TOGGLE_ROLLOUT(smokeprocinfo, nsmokeprocinfo, ROLLOUT_firecolor, FIRECOLOR_ROLLOUT, glui_3dsmoke);
-    CHECKBOX_use_fire_colormap = glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_firecolor, "set color using colormap", &use_fire_colormap, USE_FIRE_COLORMAP, GLUISmoke3dCB);
 
-    PANEL_fire_rgb = glui_3dsmoke->add_panel_to_panel(ROLLOUT_firecolor, "fire");
+    PANEL_specify_fire = glui_3dsmoke->add_panel_to_panel(ROLLOUT_firecolor, "Specify fire colors using");
+    RADIO_use_fire_colormap = glui_3dsmoke->add_radiogroup_to_panel(PANEL_specify_fire,  &use_fire_colormap, USE_FIRE_COLORMAP, GLUISmoke3dCB);
+    glui_3dsmoke->add_radiobutton_to_group(RADIO_use_fire_colormap, "red,green,blue");
+    glui_3dsmoke->add_radiobutton_to_group(RADIO_use_fire_colormap, "colorbar");
+    glui_3dsmoke->add_checkbox_to_panel(PANEL_specify_fire, "Show fire colorbar", &show_smoke3d_colorbar, USE_FIRE_COLORMAP, GLUISmoke3dCB);
+
+    PANEL_fire_rgb = glui_3dsmoke->add_panel_to_panel(PANEL_specify_fire, "", false);
     SPINNER_smoke3d_fire_red   = glui_3dsmoke->add_spinner_to_panel(PANEL_fire_rgb, _("red"),   GLUI_SPINNER_INT, fire_color_int255,     FIRE_RED,   GLUISmoke3dCB);
     SPINNER_smoke3d_fire_green = glui_3dsmoke->add_spinner_to_panel(PANEL_fire_rgb, _("green"), GLUI_SPINNER_INT, fire_color_int255 + 1, FIRE_GREEN, GLUISmoke3dCB);
     SPINNER_smoke3d_fire_blue  = glui_3dsmoke->add_spinner_to_panel(PANEL_fire_rgb, _("blue"),  GLUI_SPINNER_INT, fire_color_int255 + 2, FIRE_BLUE,  GLUISmoke3dCB);
@@ -532,8 +538,8 @@ extern "C" void GLUI3dSmokeSetup(int main_window){
     SPINNER_smoke3d_fire_green->set_int_limits(0, 255);
     SPINNER_smoke3d_fire_blue->set_int_limits(0, 255);
 
-    PANEL_colormap3 = glui_3dsmoke->add_panel_to_panel(ROLLOUT_firecolor, "colormap");
-    LISTBOX_smoke_colorbar = glui_3dsmoke->add_listbox_to_panel(PANEL_colormap3, "Select:", &colorbars.fire_colorbar_index, SMOKE_COLORBAR_LIST, GLUISmoke3dCB);
+    PANEL_fire_colormap = glui_3dsmoke->add_panel_to_panel(PANEL_specify_fire, "", false);
+    LISTBOX_smoke_colorbar = glui_3dsmoke->add_listbox_to_panel(PANEL_fire_colormap, "colorbar:", &colorbars.fire_colorbar_index, SMOKE_COLORBAR_LIST, GLUISmoke3dCB);
     for(i = 0;i < colorbars.ncolorbars;i++){
       colorbardata *cbi;
 
@@ -541,8 +547,8 @@ extern "C" void GLUI3dSmokeSetup(int main_window){
       LISTBOX_smoke_colorbar->add_item(i, cbi->menu_label);
     }
     LISTBOX_smoke_colorbar->set_int_val(colorbars.fire_colorbar_index);
-    glui_3dsmoke->add_column_to_panel(PANEL_colormap3,false);
-    CHECKBOX_edit_colormap = glui_3dsmoke->add_checkbox_to_panel(PANEL_colormap3, "Edit", &show_firecolormap, SHOW_FIRECOLORMAP, GLUISmoke3dCB);
+    glui_3dsmoke->add_column_to_panel(PANEL_fire_colormap,false);
+    CHECKBOX_edit_colormap = glui_3dsmoke->add_checkbox_to_panel(PANEL_fire_colormap, "Edit", &show_firecolormap, SHOW_FIRECOLORMAP, GLUISmoke3dCB);
     GLUISmoke3dCB(USE_FIRE_COLORMAP);
   }
 
@@ -559,11 +565,11 @@ extern "C" void GLUI3dSmokeSetup(int main_window){
     SPINNER_temperature_min = glui_3dsmoke->add_spinner_to_panel(PANEL_temp_minmax, "min", GLUI_SPINNER_FLOAT, &global_temp_cb_min, GLOBAL_TEMP_MIN, GLUISmoke3dColorbarCB);
     SPINNER_temperature_max = glui_3dsmoke->add_spinner_to_panel(PANEL_temp_minmax, "max", GLUI_SPINNER_FLOAT, &global_temp_cb_max, GLOBAL_TEMP_MAX, GLUISmoke3dColorbarCB);
   }
-  PANEL_cb_index = glui_3dsmoke->add_panel_to_panel(PANEL_fire_cutoff, "colorbar index");
+  glui_3dsmoke->add_column_to_panel(PANEL_fire_cutoff, false);
+  PANEL_cb_index = glui_3dsmoke->add_panel_to_panel(PANEL_fire_cutoff, "colorbar bounds");
   SPINNER_cb_min_index = glui_3dsmoke->add_spinner_to_panel(PANEL_cb_index, "min", GLUI_SPINNER_INT, &global_cb_min_index, COLORBAR_INDEX_MIN, GLUISmoke3dColorbarCB);
   SPINNER_cb_max_index = glui_3dsmoke->add_spinner_to_panel(PANEL_cb_index, "max", GLUI_SPINNER_INT, &global_cb_max_index, COLORBAR_INDEX_MAX, GLUISmoke3dColorbarCB);
 
-  glui_3dsmoke->add_checkbox_to_panel(PANEL_fire_cutoff, "Show color map", &show_smoke3d_colorbar, USE_FIRE_COLORMAP, GLUISmoke3dCB);
   glui_3dsmoke->add_button_to_panel(PANEL_fire_cutoff, "Refresh", REFRESH_FIRE, GLUISmoke3dCB);
   BUTTON_cutoff_defaults = glui_3dsmoke->add_button_to_panel(PANEL_fire_cutoff, "Reset", CUTOFF_RESET, GLUISmoke3dCB);
 
@@ -1146,7 +1152,7 @@ extern "C" void GLUISmoke3dCB(int var){
     GLUISmoke3dCB(UPDATE_SMOKECOLORS);
     break;
   case SET_RGB_COLORGB_CHECKBOXES:
-    if(CHECKBOX_use_fire_colormap!=NULL)CHECKBOX_use_fire_colormap->set_int_val(use_fire_colormap);
+    if(RADIO_use_fire_colormap!=NULL)RADIO_use_fire_colormap->set_int_val(use_fire_colormap);
     if(CHECKBOX_use_co2_rgb!=NULL)CHECKBOX_use_co2_rgb->set_int_val(use_co2_rgb);
     if(CHECKBOX_use_co2_colormap!=NULL)CHECKBOX_use_co2_colormap->set_int_val(use_co2_colormap);
 
@@ -1174,11 +1180,11 @@ extern "C" void GLUISmoke3dCB(int var){
   case ENABLE_DISABLE_FIRE:
     if(use_fire_colormap == 1){
       if(PANEL_fire_rgb != NULL)PANEL_fire_rgb->disable();
-      if(PANEL_colormap3 != NULL)PANEL_colormap3->enable();
+      if(PANEL_fire_colormap != NULL)PANEL_fire_colormap->enable();
     }
     else{
       if(PANEL_fire_rgb != NULL)PANEL_fire_rgb->enable();
-      if(PANEL_colormap3 != NULL)PANEL_colormap3->disable();
+      if(PANEL_fire_colormap != NULL)PANEL_fire_colormap->disable();
     }
     break;
   case USE_FIRE_COLORMAP:
