@@ -527,13 +527,22 @@ extern "C" void GLUI3dSmokeSetup(int main_window){
     TOGGLE_ROLLOUT(smokeprocinfo, nsmokeprocinfo, ROLLOUT_firecolor, FIRECOLOR_ROLLOUT, glui_3dsmoke);
 
     PANEL_specify_fire = glui_3dsmoke->add_panel_to_panel(ROLLOUT_firecolor, "Specify fire colors using");
-
-    
     PANEL_specify_firea = glui_3dsmoke->add_panel_to_panel(PANEL_specify_fire, "", false);
     RADIO_use_fire_colormap = glui_3dsmoke->add_radiogroup_to_panel(PANEL_specify_firea,  &use_fire_colormap, USE_FIRE_COLORMAP, GLUISmoke3dCB);
     glui_3dsmoke->add_radiobutton_to_group(RADIO_use_fire_colormap, "red,green,blue");
     glui_3dsmoke->add_radiobutton_to_group(RADIO_use_fire_colormap, "colorbar");
-    glui_3dsmoke->add_checkbox_to_panel(PANEL_specify_fire, "Show fire colorbar", &show_smoke3d_colorbar, USE_FIRE_COLORMAP, GLUISmoke3dCB);
+    PANEL_fire_colormap = glui_3dsmoke->add_panel_to_panel(PANEL_specify_firea, "", false);
+    LISTBOX_smoke_colorbar = glui_3dsmoke->add_listbox_to_panel(PANEL_fire_colormap, "colorbar:", &colorbars.fire_colorbar_index, SMOKE_COLORBAR_LIST, GLUISmoke3dCB);
+    for(i = 0;i < colorbars.ncolorbars;i++){
+      colorbardata *cbi;
+
+      cbi = colorbars.colorbarinfo + i;
+      LISTBOX_smoke_colorbar->add_item(i, cbi->menu_label);
+    }
+    LISTBOX_smoke_colorbar->set_int_val(colorbars.fire_colorbar_index);
+    CHECKBOX_edit_colormap = glui_3dsmoke->add_checkbox_to_panel(PANEL_fire_colormap, "Edit colorbar", &show_firecolormap, SHOW_FIRECOLORMAP, GLUISmoke3dCB);
+    GLUISmoke3dCB(USE_FIRE_COLORMAP);
+
     glui_3dsmoke->add_column_to_panel(PANEL_specify_fire, false);
 
     PANEL_specify_fireb = glui_3dsmoke->add_panel_to_panel(PANEL_specify_fire, "", false);
@@ -545,18 +554,6 @@ extern "C" void GLUI3dSmokeSetup(int main_window){
     SPINNER_smoke3d_fire_green->set_int_limits(0, 255);
     SPINNER_smoke3d_fire_blue->set_int_limits(0, 255);
 
-    PANEL_fire_colormap = glui_3dsmoke->add_panel_to_panel(PANEL_specify_fireb, "", false);
-    LISTBOX_smoke_colorbar = glui_3dsmoke->add_listbox_to_panel(PANEL_fire_colormap, "colorbar:", &colorbars.fire_colorbar_index, SMOKE_COLORBAR_LIST, GLUISmoke3dCB);
-    for(i = 0;i < colorbars.ncolorbars;i++){
-      colorbardata *cbi;
-
-      cbi = colorbars.colorbarinfo + i;
-      LISTBOX_smoke_colorbar->add_item(i, cbi->menu_label);
-    }
-    LISTBOX_smoke_colorbar->set_int_val(colorbars.fire_colorbar_index);
-    glui_3dsmoke->add_column_to_panel(PANEL_fire_colormap,false);
-    CHECKBOX_edit_colormap = glui_3dsmoke->add_checkbox_to_panel(PANEL_fire_colormap, "Edit", &show_firecolormap, SHOW_FIRECOLORMAP, GLUISmoke3dCB);
-    GLUISmoke3dCB(USE_FIRE_COLORMAP);
   }
 
   PANEL_fire_cutoff = glui_3dsmoke->add_panel_to_panel(ROLLOUT_firecolor, "Colorbar fire bounds");
@@ -577,7 +574,8 @@ extern "C" void GLUI3dSmokeSetup(int main_window){
   SPINNER_cb_min_index = glui_3dsmoke->add_spinner_to_panel(PANEL_cb_index, "min", GLUI_SPINNER_INT, &global_cb_min_index, COLORBAR_INDEX_MIN, GLUISmoke3dColorbarCB);
   SPINNER_cb_max_index = glui_3dsmoke->add_spinner_to_panel(PANEL_cb_index, "max", GLUI_SPINNER_INT, &global_cb_max_index, COLORBAR_INDEX_MAX, GLUISmoke3dColorbarCB);
 
-  glui_3dsmoke->add_button_to_panel(PANEL_fire_cutoff, "Refresh", REFRESH_FIRE, GLUISmoke3dCB);
+  glui_3dsmoke->add_checkbox_to_panel(PANEL_fire_cutoff, "Show fire colorbar", &show_smoke3d_colorbar, USE_FIRE_COLORMAP, GLUISmoke3dCB);
+  glui_3dsmoke->add_button_to_panel(PANEL_fire_cutoff,   "Refresh", REFRESH_FIRE, GLUISmoke3dCB);
   BUTTON_cutoff_defaults = glui_3dsmoke->add_button_to_panel(PANEL_fire_cutoff, "Reset", CUTOFF_RESET, GLUISmoke3dCB);
 
   //---------------------------------------------Smoke/fire opacity--------------------------------------------------------------
