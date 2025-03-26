@@ -120,7 +120,6 @@ GLUI_Checkbox *CHECKBOX_labels_timelabel=NULL;
 GLUI_Checkbox *CHECKBOX_labels_framelabel=NULL;
 GLUI_Checkbox *CHECKBOX_labels_frametimelabel = NULL;
 GLUI_Checkbox *CHECKBOX_labels_hrrlabel=NULL;
-GLUI_Checkbox *CHECKBOX_labels_firecutoff=NULL;
 GLUI_Checkbox *CHECKBOX_labels_availmemory=NULL;
 GLUI_Checkbox *CHECKBOX_labels_labels=NULL;
 GLUI_Checkbox *CHECKBOX_labels_gridloc=NULL;
@@ -816,7 +815,6 @@ extern "C" void GLUIDisplaySetup(int main_window){
   CHECKBOX_labels_framerate = glui_labels->add_checkbox_to_panel(PANEL_gen1, _("Frame rate"), &visFramerate, LABELS_label, GLUILabelsCB);
   CHECKBOX_labels_gridloc = glui_labels->add_checkbox_to_panel(PANEL_gen1, _("Grid location"), &visgridloc, LABELS_label, GLUILabelsCB);
   CHECKBOX_labels_hrrlabel = glui_labels->add_checkbox_to_panel(PANEL_gen1, _("HRR"), &vis_hrr_label, HRR_label, GLUILabelsCB);
-  CHECKBOX_labels_firecutoff = glui_labels->add_checkbox_to_panel(PANEL_gen1, _("Fire cutoff"), &show_firecutoff, FIRECUTOFF_label, GLUILabelsCB);
 #ifdef pp_memstatus
   CHECKBOX_labels_availmemory = glui_labels->add_checkbox_to_panel(PANEL_gen1, _("Memory load"), &visAvailmemory, LABELS_label, GLUILabelsCB);
 #endif
@@ -1447,7 +1445,6 @@ extern "C" void GLUISetLabelControls(){
   if(CHECKBOX_LB_visLabels!=NULL)CHECKBOX_LB_visLabels->set_int_val(visLabels);
   if(CHECKBOX_visUSERticks!=NULL)CHECKBOX_visUSERticks->set_int_val(visUSERticks);
   if(CHECKBOX_labels_hrrlabel!=NULL)CHECKBOX_labels_hrrlabel->set_int_val(vis_hrr_label);
-  if(CHECKBOX_labels_firecutoff!=NULL)CHECKBOX_labels_firecutoff->set_int_val(show_firecutoff);
   if(CHECKBOX_labels_title!=NULL)CHECKBOX_labels_title->set_int_val(vis_title_smv_version);
   if(CHECKBOX_labels_fds_title!=NULL)CHECKBOX_labels_fds_title->set_int_val(vis_title_fds);
   if(CHECKBOX_labels_chid!=NULL)CHECKBOX_labels_chid->set_int_val(vis_title_CHID);

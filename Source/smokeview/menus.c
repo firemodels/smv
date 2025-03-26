@@ -844,7 +844,6 @@ void LabelMenu(int value){
     if(global_scase.ntickinfo>0)visFDSticks=1;
     visgridloc=1;
     vis_hrr_label=1;
-    show_firecutoff=1;
     visFramelabel=1;
     break;
    case MENU_LABEL_HideAll:
@@ -863,7 +862,6 @@ void LabelMenu(int value){
     visFramelabel=0;
     visMeshlabel=0;
     vis_hrr_label=0;
-    show_firecutoff=0;
     if(global_scase.ntickinfo>0)visFDSticks=0;
     visgridloc=0;
     vis_slice_average=0;
@@ -927,9 +925,6 @@ void LabelMenu(int value){
      break;
    case MENU_LABEL_hrr:
      vis_hrr_label=1-vis_hrr_label;
-     break;
-   case MENU_LABEL_firecutoff:
-     show_firecutoff=1-show_firecutoff;
      break;
    case MENU_LABEL_userticks:
      visUSERticks = 1 - visUSERticks;
@@ -5745,7 +5740,7 @@ int LoadAllPlot3D(float time){
     plot3ddata *plot3di;
 
     plot3di = global_scase.plot3dinfo + i;
-    if(ABS(plot3di->time - time) > 0.5)continue;;
+    if(ABS(plot3di->time - time) > 0.5)continue;
     total_plot3d_filesize += ReadPlot3D(plot3di->file, plot3di - global_scase.plot3dinfo, LOAD, &errorcode);
     file_count++;
     if(errorcode==0)count++;
@@ -10346,19 +10341,6 @@ static int menu_count=0;
   if(visgridloc == 1)glutAddMenuEntry(_("*Grid locations"), MENU_LABEL_grid);
   if(visgridloc == 0)glutAddMenuEntry(_("Grid locations"), MENU_LABEL_grid);
 
-  if(global_scase.show_hrrcutoff_active == 1&&global_scase.show_tempcutoff_active==1){
-    if(show_firecutoff == 1)glutAddMenuEntry(_("*Fire cutoff"), MENU_LABEL_firecutoff);
-    if(show_firecutoff == 0)glutAddMenuEntry(_("Fire cutoff"), MENU_LABEL_firecutoff);
-  }
-  else if(global_scase.show_hrrcutoff_active == 1&&global_scase.show_tempcutoff_active==0){
-    if(show_firecutoff == 1)glutAddMenuEntry(_("*HRRPUV cutoff"), MENU_LABEL_firecutoff);
-    if(show_firecutoff == 0)glutAddMenuEntry(_("HRRPUV cutoff"), MENU_LABEL_firecutoff);
-  }
-  else if(global_scase.show_hrrcutoff_active == 0&&global_scase.show_tempcutoff_active==1){
-    if(show_firecutoff == 1)glutAddMenuEntry(_("*Temperature cutoff"), MENU_LABEL_firecutoff);
-    if(show_firecutoff == 0)glutAddMenuEntry(_("Temperature cutoff"), MENU_LABEL_firecutoff);
-  }
-
   if(global_scase.hrrptr != NULL){
     if(vis_hrr_label == 1)glutAddMenuEntry(_("*HRR"), MENU_LABEL_hrr);
     if(vis_hrr_label == 0)glutAddMenuEntry(_("HRR"), MENU_LABEL_hrr);
@@ -11672,7 +11654,7 @@ static int menu_count=0;
 #endif
   glutAddMenuEntry(_("Save/load configuration files..."), DIALOG_CONFIG);
   glutAddMenuEntry(_("Render images..."), DIALOG_RENDER);
-  THREADcontrol(ffmpeg_threads, THREAD_LOCK);;
+  THREADcontrol(ffmpeg_threads, THREAD_LOCK);
   if(have_slurm==1&&have_ffmpeg==1){
     glutAddMenuEntry(_("Make movies(local)..."), DIALOG_MOVIE);
     glutAddMenuEntry(_("Make movies(cluster)..."), DIALOG_MOVIE_BATCH);

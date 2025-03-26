@@ -1499,7 +1499,7 @@ typedef struct _smoke3ddata {
   unsigned char *times_map;
   int *use_smokeframe;
   int *smokeframe_loaded;
-  float extinct, valmin, valmax;
+  float extinct;
   char cextinct[32];
 #define ALPHA_X 0
 #define ALPHA_Y 1
@@ -1906,11 +1906,11 @@ typedef struct {
   float global_tend;
   float tload_begin;
   float tload_end;
-  float load_hrrpuv_cutoff;
-  float global_hrrpuv_cutoff;
-  float global_hrrpuv_cutoff_default;
   float smoke_albedo;
   float smoke_albedo_base;
+
+  int hrrpuvcut_set;
+  float hrrpuvcut;
 
   // TODO: the below probably don't really belong here
   filelist_collection filelist_coll;

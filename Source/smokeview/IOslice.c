@@ -7133,7 +7133,7 @@ void Slice2Device(void){
           is_dup = 0;
           for(ll=0;ll<noffsets-1;ll++){
             if(offsets[ll] == offsets[noffsets-1]){
-              is_dup = 1;;
+              is_dup = 1;
               break;
             }
           }
@@ -9045,74 +9045,6 @@ void InitSliceData(void){
 
   }
 }
-
-/* ------------------ SliceData2Hist ------------------------ */
-
-void SliceData2Hist(slicedata *sd, float *xyz, float *dxyz, float time, float dtime, histogramdata *histogram){
-  int i,j,k,t;
-  int imin, imax, jmin, jmax, kmin, kmax, tmin, tmax;
-  int ntimes;
-  float *times, *xplt, *yplt, *zplt;
-  int ibar, jbar, kbar;
-  meshdata *meshi;
-  int nvals,ival;
-  float *vals;
-
-  meshi = global_scase.meshescoll.meshinfo+sd->blocknumber;
-  xplt = meshi->xplt;
-  yplt = meshi->yplt;
-  zplt = meshi->zplt;
-  ibar = meshi->ibar;
-  jbar = meshi->jbar;
-  kbar = meshi->kbar;
-
-
-  times = sd->times;
-  ntimes = sd->ntimes;
-  tmin = GetInterval(time-dtime, times, ntimes);
-  tmax = GetInterval(time+dtime, times, ntimes);
-  imin = GetInterval(xyz[0]-dxyz[0], xplt, ibar+1);
-  imax = GetInterval(xyz[0]+dxyz[0], xplt, ibar+1);
-  jmin = GetInterval(xyz[1]-dxyz[1], yplt, jbar+1);
-  jmax = GetInterval(xyz[1]+dxyz[1], yplt, jbar+1);
-  kmin = GetInterval(xyz[2]-dxyz[2], zplt, kbar+1);
-  kmax = GetInterval(xyz[2]+dxyz[2], zplt, kbar+1);
-
-  nvals = (tmax+1-tmin)*(imax+1-imin)*(jmax+1-jmin)*(kmax+1-kmin);
-  NewMemory((void **)&vals, nvals*sizeof(float));
-
-  // val(i,j,k) = di*nj*nk + dj*nk + dk
-
-//#define SLICEVAL(i,j,k) qslice[(i-sd->is1)*sd->nslicej*sd->nslicek + (j-sd->js1)*sd->nslicek + (k-sd->ks1)]
-  ival = 0;
-  for(t = tmin; t<=tmax; t++){
-    float *qslice;
-
-    qslice = sd->qslicedata+t*sd->nsliceijk;
-    for(i = imin; i<=imax; i++){
-      float *qslicei;
-
-      qslicei = qslice+(i-sd->is1)*sd->nslicej*sd->nslicek;
-      for(j = jmin; j<=jmax; j++){
-        float *qslicej;
-
-        qslicej = qslicei+(j-sd->js1)*sd->nslicek;
-        for(k = kmin; k<=kmax; k++){
-          float *qslicek;
-
-          qslicek = qslicej+(k-sd->ks1);
-          vals[ival++] = *qslicek;
-        }
-      }
-    }
-  }
-  InitHistogram(histogram, NHIST_BUCKETS, NULL, NULL);
-  int use_bounds=0;
-  float valmin = 0.0, valmax = 1.0;
-  CopyVals2Histogram(vals, NULL, NULL, nvals, histogram, use_bounds, valmin, valmax);
-  FREEMEMORY(vals);
-}
-
 
 /* ------------------ ISSliceMenuDup ------------------------ */
 

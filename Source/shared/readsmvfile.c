@@ -7281,8 +7281,8 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
       sscanf(buffer,"%i",&nhrrpuvcut);
       if(nhrrpuvcut>=1){
         FGETS(buffer,255,stream);
-        sscanf(buffer,"%f",&global_hrrpuv_cb_min_default);
-        global_hrrpuv_cb_min = global_hrrpuv_cb_min_default;
+        sscanf(buffer,"%f",&scase->hrrpuvcut);
+        scase->hrrpuvcut_set = 1;
         for(i=1;i<nhrrpuvcut;i++){
           FGETS(buffer,255,stream);
         }

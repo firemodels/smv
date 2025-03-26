@@ -2897,6 +2897,10 @@ int ReadSMV_Configure(){
   if(global_scase.meshescoll.nmeshes > 200){
     hide_scene = 1;
   }
+  if(global_scase.hrrpuvcut_set) {
+    global_hrrpuv_cb_min_default = global_scase.hrrpuvcut;
+    global_hrrpuv_cb_min = global_hrrpuv_cb_min_default;
+  }
 
   PRINTF("%s", _("complete"));
   PRINTF("\n\n");
@@ -3689,8 +3693,9 @@ int ReadIni2(const char *inifile, int localfile){
         &glui_compress_volsmoke, &use_multi_threading, &load_at_rendertimes, &volbw, &show_volsmoke_moving);
       fgets(buffer, 255, stream);
       sscanf(buffer, "%f %f %f %f %f %f %f",
-        &global_temp_min, &global_temp_cutoff, &global_temp_max, &fire_opacity_factor, &mass_extinct, &gpu_vol_factor, &nongpu_vol_factor);
-      global_temp_cutoff_default = global_temp_cutoff;
+        &global_temp_min, &global_temp_cb_min_default, &global_temp_cb_max_default, &fire_opacity_factor, &mass_extinct, &gpu_vol_factor, &nongpu_vol_factor);
+      global_temp_cb_min = global_temp_cb_min_default;
+      global_temp_cb_max = global_temp_cb_max_default;
       ONEORZERO(glui_compress_volsmoke);
       ONEORZERO(use_multi_threading);
       ONEORZERO(load_at_rendertimes);
@@ -4130,18 +4135,6 @@ int ReadIni2(const char *inifile, int localfile){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%i", &vis_hrr_label);
       ONEORZERO(vis_hrr_label);
-      continue;
-    }
-    if(MatchINI(buffer, "SHOWHRRCUTOFF") == 1){
-      fgets(buffer, 255, stream);
-      sscanf(buffer, "%i", &show_firecutoff);
-      ONEORZERO(show_firecutoff);
-      continue;
-    }
-    if(MatchINI(buffer, "SHOWFIRECUTOFF") == 1){
-      fgets(buffer, 255, stream);
-      sscanf(buffer, "%i", &show_firecutoff);
-      ONEORZERO(show_firecutoff);
       continue;
     }
     if(MatchINI(buffer, "TWOSIDEDVENTS") == 1){
@@ -6088,8 +6081,12 @@ int ReadIni2(const char *inifile, int localfile){
        }
       if(MatchINI(buffer, "HRRPUVCUTOFF")==1){
         if(fgets(buffer, 255, stream)==NULL)break;
-        sscanf(buffer, "%f", &global_scase.global_hrrpuv_cutoff_default);
-        global_scase.global_hrrpuv_cutoff = global_scase.global_hrrpuv_cutoff_default;
+        sscanf(buffer, "%f %f %i %i", &global_hrrpuv_cb_min_default, &global_hrrpuv_cb_max_default,
+                                      &global_cb_min_index_default, &global_cb_max_index_default);
+        global_hrrpuv_cb_min = global_hrrpuv_cb_min_default;
+        global_hrrpuv_cb_max = global_hrrpuv_cb_max_default;
+        global_cb_min_index  = global_cb_min_index_default;
+        global_cb_max_index  = global_cb_max_index_default;
         continue;
       }
       if(MatchINI(buffer, "FDEPTH") == 1){
@@ -8012,8 +8009,6 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %i %i\n", visCircularVents, circle_outline);
   fprintf(fileout, "SHOWDUMMYVENTS\n");
   fprintf(fileout, " %i\n", visDummyVents);
-  fprintf(fileout, "SHOWFIRECUTOFF\n");
-  fprintf(fileout, " %i\n", show_firecutoff);
   fprintf(fileout, "SHOWFLOOR\n");
   fprintf(fileout, " %i\n", global_scase.visFloor);
   fprintf(fileout, "SHOWFRAME\n");
@@ -8273,7 +8268,8 @@ void WriteIni(int flag,char *filename){
     }
   }
   fprintf(fileout, "HRRPUVCUTOFF\n");
-  fprintf(fileout, " %f\n", global_scase.global_hrrpuv_cutoff);
+  fprintf(fileout, " %f %f %i %i\n", global_hrrpuv_cb_min, global_hrrpuv_cb_max, global_cb_min_index, global_cb_max_index);
+
   fprintf(fileout, "SHOWEXTREMEDATA\n");
   {
     int show_extremedata = 0;
@@ -8308,7 +8304,7 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %i %i %i %i %i\n",
     glui_compress_volsmoke, use_multi_threading, load_at_rendertimes, volbw, show_volsmoke_moving);
   fprintf(fileout, " %f %f %f %f %f %f %f\n",
-    global_temp_min, global_temp_cutoff, global_temp_max, fire_opacity_factor, mass_extinct, gpu_vol_factor, nongpu_vol_factor);
+    global_temp_min, global_temp_cb_min, global_temp_cb_max, fire_opacity_factor, mass_extinct, gpu_vol_factor, nongpu_vol_factor);
 
   fprintf(fileout, "\n *** ZONE FIRE PARAMETRES ***\n\n");
 
