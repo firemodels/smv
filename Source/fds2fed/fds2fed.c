@@ -269,7 +269,7 @@ void AddSlice(slicedata *slicei){
   for(i = 0;i < nfedinfo;i++){
     fedi = fedinfo + i;
     if(fedi->co != NULL && slicei != fedi->co && MatchFED(slicei, fedi->co)==1){
-      if(slicei->quant == O2)fedi->o2 = slicei;;
+      if(slicei->quant == O2)fedi->o2 = slicei;
       if(slicei->quant == CO2)fedi->co2 = slicei;
       fedi->keyword_label = slicei->keyword_label;
       MakeFEDFileNames(fedi->sf_file, fedi->iso_file, fedi->bndfile, slicei->file);
@@ -277,7 +277,7 @@ void AddSlice(slicedata *slicei){
       return;
     }
     if(fedi->co2 != NULL && slicei != fedi->co2 && MatchFED(slicei, fedi->co2)==1){
-      if(slicei->quant == O2)fedi->o2 = slicei;;
+      if(slicei->quant == O2)fedi->o2 = slicei;
       if(slicei->quant == CO)fedi->co = slicei;
       fedi->keyword_label = slicei->keyword_label;
       MakeFEDFileNames(fedi->sf_file, fedi->iso_file, fedi->bndfile, slicei->file);
@@ -285,7 +285,7 @@ void AddSlice(slicedata *slicei){
       return;
     }
     if(fedi->o2 != NULL && slicei != fedi->o2 && MatchFED(slicei, fedi->o2)==1){
-      if(slicei->quant == CO2)fedi->co2 = slicei;;
+      if(slicei->quant == CO2)fedi->co2 = slicei;
       if(slicei->quant == CO)fedi->co = slicei;
       fedi->keyword_label = slicei->keyword_label;
       MakeFEDFileNames(fedi->sf_file, fedi->iso_file, fedi->bndfile, slicei->file);
@@ -294,7 +294,7 @@ void AddSlice(slicedata *slicei){
     }
   }
   fedi = fedinfo + nfedinfo++;
-  if(slicei->quant == CO2)fedi->co2 = slicei;;
+  if(slicei->quant == CO2)fedi->co2 = slicei;
   if(slicei->quant == CO)fedi->co = slicei;
   if(slicei->quant == O2)fedi->o2 = slicei;
   MakeFEDFileNames(fedi->sf_file, fedi->iso_file, fedi->bndfile, slicei->file);

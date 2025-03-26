@@ -386,7 +386,7 @@ float GetPlankVal(float lambda, float temp){
   //c2 = hc/k = 0.014388 m K
   c1 = 3.74183*pow(10.0, -16);
   c2 = 0.014388;
-  float return_val = (c1 / pow(lambda, 5.0)) / (exp(c2 / (lambda*temp)) - 1.0);;
+  float return_val = (c1 / pow(lambda, 5.0)) / (exp(c2 / (lambda*temp)) - 1.0);
   return return_val;
 }
 
@@ -433,7 +433,7 @@ void GetRGBFireVal(float temp, float *rgb_arg){
   valmax = 780.0;
   factor = pow(10.0, 9.0);
   n = 81;
-  dval = (valmax - valmin)/(float)(n-1);;
+  dval = (valmax - valmin)/(float)(n-1);
   rgb_arg[0] = 0.0;
   rgb_arg[1] = 0.0;
   rgb_arg[2] = 0.0;
@@ -652,11 +652,11 @@ void GetFireEmission(float *smoke_tran, float *fire_emission, float dlength, flo
       Temperature2Emission(temperature, fire_emission);
     }
     else{
-      if(temperature > global_temp_cutoff){
+      if(temperature > global_temp_cb_min){
         int index;
         float temp_factor;
 
-        temp_factor = (float)MAXSMOKERGB/(global_temp_max - global_temp_min);
+        temp_factor = (float)MAXSMOKERGB/(global_temp_cb_max - global_temp_min);
         index = CLAMP(temp_factor*(temperature - global_temp_min), 0, MAXSMOKERGB - 1);
         memcpy(fire_emission, rgb_volsmokecolormap + 4*index, 3*sizeof(float));
       }
@@ -672,11 +672,11 @@ void GetFireEmission(float *smoke_tran, float *fire_emission, float dlength, flo
   if(smokedata_local!=NULL){
     INTERP3D(smokedata_local, soot_density);
     *smoke_tran = exp(-mass_extinct*soot_density*dlength);
-    if(firedata_local!=NULL&&temperature<=global_temp_cutoff){
+    if(firedata_local!=NULL&&temperature<=global_temp_cb_min){
       memcpy(fire_emission, black, 3*sizeof(float));
     }
   }
-  if(firedata_local!=NULL&&temperature>global_temp_cutoff){
+  if(firedata_local!=NULL&&temperature>global_temp_cb_min){
     if(use_opacity_depth==1){
       *smoke_tran = pow(0.5, dlength/fire_halfdepth);
     }
@@ -2410,8 +2410,8 @@ void DrawSmoke3DGPUVol(void){
   glUniform1f(GPUvol_mass_extinct,mass_extinct);
   glUniform1i(GPUvol_volbw,volbw);
   glUniform1f(GPUvol_temperature_min, global_temp_min);
-  glUniform1f(GPUvol_temperature_cutoff, global_temp_cutoff);
-  glUniform1f(GPUvol_temperature_max, global_temp_max);
+  glUniform1f(GPUvol_temperature_cutoff, global_temp_cb_min);
+  glUniform1f(GPUvol_temperature_max, global_temp_cb_max);
   glUniform1i(GPUvol_block_volsmoke,block_volsmoke);
 
   SNIFF_ERRORS("after DrawSmoke3dGpuVol before update textures");

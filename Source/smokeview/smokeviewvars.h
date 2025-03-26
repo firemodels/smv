@@ -960,7 +960,7 @@ SVEXTERN char opengl_version_label[256];
 SVEXTERN int SVDECL(usevolrender,1);
 #ifdef pp_GPU
 SVEXTERN int SVDECL(usegpu,0),SVDECL(gpuactive,0);
-SVEXTERN int GPU_skip, GPU_hrrcutoff, GPU_hrr, GPU_hrrpuv_max_smv, GPU_hrrpuv_cutoff;
+SVEXTERN int GPU_skip, GPU_hrrcutoff, GPU_hrr, GPU_global_hrrpuv_max, GPU_global_hrrpuv_cb_min;
 SVEXTERN int GPU_fire_alpha, GPU_firecolor, GPU_have_smoke, GPU_smokecolormap;
 SVEXTERN int GPU_smokeshade,GPU_smokealpha;
 SVEXTERN int GPU_use_fire_alpha, GPU_emission_factor;
@@ -1378,7 +1378,6 @@ SVEXTERN float SVDECL(glui_slicemin,1.0),       SVDECL(glui_slicemax,0.0);
 
 SVEXTERN float SVDECL(zonemin,1.0), SVDECL(zonemax,0.0);
 SVEXTERN float SVDECL(plot3d_uvw_max,1.0);
-SVEXTERN float SVDECL(hrrpuv_max_smv,1200.0);
 SVEXTERN int SVDECL(FlowDir,1),SVDECL(ClipDir,1);
 SVEXTERN int SVDECL(plotn,1);
 SVEXTERN int SVDECL(stept,0);
@@ -1754,7 +1753,7 @@ SVEXTERN int SVDECL(stereoactive,0);
 SVEXTERN int SVDECL(stereotype,STEREO_NONE), SVDECL(stereotypeOLD, STEREO_NONE);
 SVEXTERN int SVDECL(show_parallax,0), SVDECL(stereotype_frame, BOTH_EYES);
 
-SVEXTERN int SVDECL(show_firecutoff,0),SVDECL(hrrpuv_loaded,0);
+SVEXTERN int SVDECL(hrrpuv_loaded,0);
 SVEXTERN int SVDECL(temp_loaded,0);
 SVEXTERN int SVDECL(trainerview,1);
 SVEXTERN int SVDECL(apertureindex,1);
@@ -1941,9 +1940,20 @@ SVEXTERN int SVDECL(nlat_hsphere, 20), SVDECL(nlong_hsphere, 40);
 SVEXTERN int ntexturestack;
 
 SVEXTERN float SVDECL(fire_opacity_factor,3.0),SVDECL(mass_extinct,8700.0);
-SVEXTERN float SVDECL(global_temp_min,20.0),SVDECL(global_temp_max,2000.0);
-SVEXTERN float SVDECL(global_temp_cutoff, 600.0), SVDECL(global_temp_cutoff_default, 600.0);
-SVEXTERN float SVDECL(global_hrrpuv_min,0.0),SVDECL(global_hrrpuv_max,1200.0);
+
+SVEXTERN float SVDECL(global_temp_min,20.0),               SVDECL(global_temp_max,2000.0);
+SVEXTERN float SVDECL(global_temp_cb_min, 600.0),          SVDECL(global_temp_cb_max,2000.0);
+SVEXTERN float SVDECL(global_temp_cb_min_default, 600.0),  SVDECL(global_temp_cb_max_default, 2000.0);
+
+SVEXTERN float SVDECL(global_hrrpuv_min,0.0),              SVDECL(global_hrrpuv_max,1200.0);
+SVEXTERN float SVDECL(global_hrrpuv_cb_min,200.0),         SVDECL(global_hrrpuv_cb_max,1200.0);
+SVEXTERN float SVDECL(global_hrrpuv_cb_min_default,200.0), SVDECL(global_hrrpuv_cb_max_default,1200.0);
+
+SVEXTERN int SVDECL(global_cb_min_index, 0),               SVDECL(global_cb_max_index, 255);
+SVEXTERN int SVDECL(global_cb_min_index_default, 0),       SVDECL(global_cb_max_index_default, 255);
+
+SVEXTERN int SVDECL(show_smoke3d_colorbar, 0);
+
 SVEXTERN int SVDECL(volbw,0);
 SVEXTERN float SVDECL(tourrad_avatar,0.1);
 SVEXTERN int SVDECL(dirtycircletour,0);
@@ -2075,8 +2085,8 @@ SVEXTERN float SVDECL(co2_halfdepth, 10.0);
 SVEXTERN int SVDECL(co2_colormap_type, CO2_COLORBAR);
 
 SVEXTERN int SVDECL(show_firecolormap,0);
-SVEXTERN int SVDECL(fire_colormap_type, FIRECOLORMAP_CONSTRAINT);
-SVEXTERN int SVDECL(fire_colormap_type_save, FIRECOLORMAP_CONSTRAINT);
+SVEXTERN int SVDECL(fire_colormap_type,      FIRECOLOR_COLORBAR);
+SVEXTERN int SVDECL(fire_colormap_type_save, FIRECOLOR_COLORBAR);
 
 SVEXTERN int SVDECL(use_smoke_colormap, 0), SVDECL(use_smoke_rgb, 1);
 SVEXTERN int SVDECL(use_fire_colormap, 0),  SVDECL(use_fire_rgb, 1);

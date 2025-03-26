@@ -398,7 +398,7 @@ char **GetSortedFilenames(int file_type){
 /* ------------------ GetRegFile ------------------------ */
 
 char *GetRegFile(int file_type, int i){
-  char *reg_file = NULL;;
+  char *reg_file = NULL;
 
   ASSERT_BOUND_TYPE;
   if(file_type == BOUND_SLICE){
@@ -675,7 +675,7 @@ int GetNBounds(int file_type){
 /* ------------------ GetShortLabel ------------------------ */
 
 char *GetShortLabel(int file_type, int i, int ilabel){
-  char *shortlabel = NULL;;
+  char *shortlabel = NULL;
 
   ASSERT_BOUND_TYPE;
   if(file_type == BOUND_SLICE){

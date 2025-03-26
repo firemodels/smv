@@ -488,7 +488,7 @@ int SetSmokeShaders(){
   const GLchar *VertexShaderSource[]={
     "#version 120\n"
     "uniform sampler1D smokecolormap;"
-    "uniform float hrrpuv_max_smv, hrrpuv_cutoff, emission_factor;"
+    "uniform float global_hrrpuv_max, global_hrrpuv_cb_min, emission_factor;"
     "uniform float fire_alpha;"
     "uniform int have_smoke, use_fire_alpha;"
 
@@ -505,12 +505,12 @@ int SetSmokeShaders(){
     "  if(have_smoke==1){"
     "    alpha=smoke_alpha/255.0;"
     "  }"
-    "  hrrlocal=(hrr/254.0)*hrrpuv_max_smv;"
-    "  if(hrrlocal>hrrpuv_cutoff){"
-    "    colorindex=0.51+((hrrlocal-hrrpuv_cutoff)/(hrrpuv_max_smv-hrrpuv_cutoff))/2.0;"
+    "  hrrlocal=(hrr/254.0)*global_hrrpuv_max;"
+    "  if(hrrlocal>global_hrrpuv_cb_min){"
+    "    colorindex=0.51+((hrrlocal-global_hrrpuv_cb_min)/(global_hrrpuv_max-global_hrrpuv_cb_min))/2.0;"
     "    colorindex=clamp(colorindex,0.5,1.0);"
     "    if(use_fire_alpha==0&&have_smoke==1){"
-    "      fcolor=hrrlocal/hrrpuv_max_smv;"
+    "      fcolor=hrrlocal/global_hrrpuv_max;"
     "      opacity_multiplier=1.0+(emission_factor-1.0)*fcolor;"
     "      alpha = (smoke_alpha/255.0)*opacity_multiplier;"
     "    }"
@@ -521,7 +521,7 @@ int SetSmokeShaders(){
     "    newcolor=vec4(vec3(hrrcolor),alpha);"
     "  }"
     "  else{"
-    "    colorindex=0.5*hrrlocal/hrrpuv_cutoff;"
+    "    colorindex=0.5*hrrlocal/global_hrrpuv_cb_min;"
     "    colorindex=clamp(colorindex,0.0,0.49);"
     "    smokecolor = texture1D(smokecolormap,colorindex);"
     "    newcolor=vec4(vec3(smokecolor),alpha);"
@@ -547,8 +547,8 @@ int SetSmokeShaders(){
   glLinkProgram(p_smoke);
   if(ShaderLinkStatus(p_smoke)==GL_FALSE)return 0;
 
-  GPU_hrrpuv_max_smv  = glGetUniformLocation(p_smoke,"hrrpuv_max_smv");
-  GPU_hrrpuv_cutoff   = glGetUniformLocation(p_smoke,"hrrpuv_cutoff");
+  GPU_global_hrrpuv_max      = glGetUniformLocation(p_smoke,"global_hrrpuv_max");
+  GPU_global_hrrpuv_cb_min   = glGetUniformLocation(p_smoke,"global_hrrpuv_cb_min");
   GPU_fire_alpha      = glGetUniformLocation(p_smoke,"fire_alpha");
   GPU_smokecolormap   = glGetUniformLocation(p_smoke,"smokecolormap");
   GPU_have_smoke      = glGetUniformLocation(p_smoke,"have_smoke");
