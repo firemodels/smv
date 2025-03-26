@@ -2185,31 +2185,55 @@ selecting the Fast loading checkbox and setting the number of files to load in p
 \label{figBOUNDSpart}
 \end{figure}
 
-
 %---------------------------------------------------------------------------------
 %---------------------------------------------------------------------------------
 \section{3D Smoke Options}
 \begin{figure}[bph]
-\centerline{\includegraphics[width=3.75in]{\SMVfigdir/fig3DSmoke}
+\centerline{\includegraphics[width=3.75in]{\SMVfigdir/fig3DSmokeSliceSettings}
 }\
 \caption
-[Dialog box for setting slice rendered 3D smoke options]
-{Dialog box for setting slice rendered 3D smoke options.  Fire color may be specified for hrrpuv values above a specified cutoff.
-Smoke color may be specified for hrrpuv values below the same cutoff. }
-\label{fig3DSmoke}
+[Dialog box for setting slice rendered 3D smoke settings]
+{Dialog box for setting slice rendered 3D smoke settings.  Settings such as GPU use and extinction coeficcient may be specified.}
+\label{fig3DSmokeSettings}
 \end{figure}
+
 \begin{figure}[bph]
-\centerline{\includegraphics[width=2.9791666in]{\SMVfigdir/fig3DSmokeB}
+\centerline{\includegraphics[width=3.75in]{\SMVfigdir/fig3DSmokeSliceColor}
+}\
+\caption
+[Dialog box for setting slice rendered 3D smoke options - color]
+{Dialog box for setting slice rendered 3D smoke and fire color.  Smoke color may be specifed using red, green blue integer values between 0 and 255.
+Fire color may be specified using red, green and blue values over the same range or by using a colorbar.
+}
+\label{fig3DSmokeColor}
+\end{figure}
+
+\begin{figure}[bph]
+\centerline{\includegraphics[width=3.75in]{\SMVfigdir/fig3DSmokeSliceOpacity}
+}\
+\caption
+[Dialog box for setting slice rendered 3D smoke options - opacity]
+{Dialog box for setting slice rendered 3D smoke and fire opacity.  Smoke opacity may be specified by setting
+the extinction coefficient. Fire opacity may be specified as a multiple of soot opacity (if soot is present)
+or in terms of depth.
+}
+\label{fig3DSmokeOpacity}
+\end{figure}
+
+\begin{figure}[bph]
+\centerline{\includegraphics[width=2.9791666in]{\SMVfigdir/fig3DSmokeVol}
 }\
 \caption
 [Dialog box for setting volume rendered 3D smoke options]
 {Dialog box for setting volume rendered 3D smoke options.
 Fire color may be specified for temperature values above a specified cutoff.
 Smoke color may be specified for hrrpuv values below the same cutoff.
-}\ \label{fig3DSmokeB}
+}\ \label{fig3DSmokeVol}
 \end{figure}
-Figures \ref{fig3DSmoke}\ and Figure \ref{fig3DSmokeB}\ show a dialog box for controlling the display of
-slice and volume rendered smoke.
+
+Figures \ref{fig3DSmokeSettings}, \ref{fig3DSmokeColor} and \ref{fig3DSmokeOpacity} show dialog boxes for controlling
+the display of slice rendered smoke.
+Figure \ref{fig3DSmokeVol}\ shows a dialog box for controlling the display of volume rendered smoke.
 The user may specify parameters such as fire and smoke color, smoke albedo and an hrrpuv cutoff value used
 to determine what is colored as smoke and fire.  The user may also specify cutoff values used to determine when to load smoke
 and fire data files.
