@@ -2679,10 +2679,11 @@ void DrawBoundaryTexture(const meshdata *meshi){
   glEnable(GL_TEXTURE_1D);
   glBindTexture(GL_TEXTURE_1D,texture_patch_colorbar_id);
 
-  if(is_time_arrival == 1){
+  if(global_scase.nterraininfo > 0||is_time_arrival == 1){
     float delta_z=0.0;
 
     delta_z = (global_scase.meshescoll.meshinfo->zplt[1] - global_scase.meshescoll.meshinfo->zplt[0])/10.0;
+    if(global_scase.nterraininfo > 0)delta_z=boundaryoffset;
     glPushMatrix();
     glTranslatef(0.0, 0.0, delta_z);
   }
@@ -2953,7 +2954,7 @@ void DrawBoundaryTexture(const meshdata *meshi){
     }
   }
   glEnd();
-  if(is_time_arrival == 1)glPopMatrix();
+  if(global_scase.nterraininfo > 0 || is_time_arrival == 1)glPopMatrix();
   glDisable(GL_TEXTURE_1D);
 }
 
