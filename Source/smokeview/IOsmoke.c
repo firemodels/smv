@@ -4609,6 +4609,23 @@ int UpdateSmoke3D(smoke3ddata *smoke3di){
   case COMPRESSED_RLE:
     buffer_in = smoke3di->smokeframe_comp_list[iframe_local];
     countout = UnCompressRLE(buffer_in,countin,smoke3di->smokeframe_in);
+#ifdef pp_FIRE_HIST
+    if(update_fire_histogram == 1 && smoke3di->is_fire==1 && smoke3di->histtimes != NULL && smoke3di->histtimes[iframe_local] == 0){
+      int i;
+      unsigned char *vals;
+
+      vals = smoke3di->smokeframe_in;
+      smoke3di->histtimes[iframe_local] = 1;
+      for(i = 0; i < countout; i++){
+        smoke3d_firecounts[vals[i]]++;
+      }
+      smoke3d_firevals[256] = 0.0;
+      for(i = 0; i < 256; i++){
+        smoke3d_firevals[i] = (float)smoke3d_firecounts[i];
+        smoke3d_firevals[256] = MAX(smoke3d_firevals[256], smoke3d_firevals[i]);
+      }
+    }
+#endif
     CheckMemory;
     break;
   case COMPRESSED_ZLIB:
@@ -5023,6 +5040,8 @@ void MergeSmoke3D(smoke3ddata *smoke3dset){
   }
   PRINT_TIMER(merge_smoke_time, "MergeSmoke3D");
 }
+
+/* ------------------ MergeSmoke3DAll ------------------------ */
 
 void MergeSmoke3DAll(void){
   int i;
