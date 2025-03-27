@@ -304,12 +304,12 @@ void DrawColorbarPathRGB(void){
       float vval_min, vval_cutoff, vval_max;
 
       if(have_fire==HRRPUV_index&&smoke_render_option==RENDER_SLICE){
-        vval_min=global_hrrpuv_min;
+        vval_min=global_scase.hrrpuv_min;
         vval_cutoff=global_hrrpuv_cb_min;
-        vval_max=global_hrrpuv_max;
+        vval_max=global_scase.hrrpuv_max;
       }
       else{
-        vval_min=global_temp_min;
+        vval_min=global_scase.temp_min;
         vval_cutoff= global_temp_cb_min;
         vval_max= global_temp_cb_max;
       }
