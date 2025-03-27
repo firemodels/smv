@@ -462,7 +462,7 @@ void DrawSmoke3DGPU(smoke3ddata *smoke3di){
   glUniform1i(GPU_use_fire_alpha, use_fire_alpha);
   glUniform1i(GPU_have_smoke, have_smoke_local);
   glUniform1i(GPU_smokecolormap, 0);
-  glUniform1f(GPU_global_hrrpuv_max,    global_hrrpuv_max);
+  glUniform1f(GPU_global_hrrpuv_max,    global_scase.hrrpuv_max);
   glUniform1f(GPU_global_hrrpuv_cb_min, global_hrrpuv_cb_min);
   glUniform1f(GPU_fire_alpha, smoke3di->fire_alpha);
 
@@ -1600,8 +1600,8 @@ void UpdateSmokeAlphas(void){
       float maxval;
 
       assert(
-             (smoke3di->soot_density_loaded == 1 && smoke3di->maxvals!=NULL) || 
-             (smoke3di->soot_density_loaded == 0 && smoke3di->maxvals==NULL) 
+             (smoke3di->soot_density_loaded == 1 && smoke3di->maxvals!=NULL) ||
+             (smoke3di->soot_density_loaded == 0 && smoke3di->maxvals==NULL)
             );
       maxval = smoke3di->maxval;
       if(smoke3di->soot_density_loaded == 1 && smoke3di->maxvals!=NULL)maxval = smoke3di->maxvals[smoke3di->ismoke3d_time];
@@ -3311,15 +3311,15 @@ void GetFireMinMax(char *cb_label, float *firemin, float *firemax, float *firemi
   if(have_fire==HRRPUV_index){
     *firemin_cb = global_hrrpuv_cb_min;
     *firemax_cb = global_hrrpuv_cb_max;
-    *firemin    = global_hrrpuv_min;
-    *firemax    = global_hrrpuv_max;
+    *firemin    = global_scase.hrrpuv_min;
+    *firemax    = global_scase.hrrpuv_max;
     strcpy(cb_label, "HRRPUV");
   }
   else if(have_fire==TEMP_index){
     *firemin_cb = global_temp_cb_min;
     *firemax_cb = global_temp_cb_max;
-    *firemin    = global_temp_min;
-    *firemax    = global_temp_max;
+    *firemin    = global_scase.temp_min;
+    *firemax    = global_scase.temp_max;
     strcpy(cb_label, "Temperature");
   }
   else{
@@ -3406,7 +3406,7 @@ void DrawSmoke3DColorMap(void){
   sprintf(label, "%f", firemin_cb);
   TrimZeros(label);
   Output3Text(foregroundcolor, yright + CB_SPACE, 0.0, imin, label);
-  
+
   sprintf(label, "%f", firemax_cb);
   TrimZeros(label);
   Output3Text(foregroundcolor, yright + CB_SPACE, 0.0, imax, label);
@@ -4655,12 +4655,12 @@ void MergeSmoke3DColors(smoke3ddata *smoke3dset){
     last = first;
   }
   if(have_fire==HRRPUV_index){
-    i_smoke3d_cutoff = 254*global_hrrpuv_cb_min/global_hrrpuv_max;
-    i_co2_cutoff     = 254*(MAX(0.0,global_hrrpuv_cb_min))/global_hrrpuv_max;
+    i_smoke3d_cutoff = 254*global_hrrpuv_cb_min/global_scase.hrrpuv_max;
+    i_co2_cutoff     = 254*(MAX(0.0,global_hrrpuv_cb_min))/global_scase.hrrpuv_max;
   }
   else if(have_fire==TEMP_index){
-    i_smoke3d_cutoff = 254*((global_temp_cb_min - global_temp_min)/(global_temp_cb_max- global_temp_min));
-    i_co2_cutoff     = 254*((MAX(0.0,global_temp_cb_min - global_temp_min))/(global_temp_cb_max- global_temp_min));
+    i_smoke3d_cutoff = 254*((global_temp_cb_min - global_scase.temp_min)/(global_temp_cb_max- global_scase.temp_min));
+    i_co2_cutoff     = 254*((MAX(0.0,global_temp_cb_min - global_scase.temp_min))/(global_temp_cb_max- global_scase.temp_min));
   }
   else{
     i_smoke3d_cutoff = 255;

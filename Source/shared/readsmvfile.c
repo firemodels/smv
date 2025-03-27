@@ -7291,6 +7291,27 @@ int ReadSMV_Parse(smv_case *scase, bufferstreamdata *stream){
     }
   /*
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    ++++++++++++++++++++++ HRRPUV_MINMAX ++++++++++++++++++++++++
+    +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  */
+    if(MatchSMV(buffer, "HRRPUV_MINMAX") == 1){
+      FGETS(buffer, 255, stream);
+      sscanf(buffer, "%f %f", &scase->hrrpuv_min, &scase->hrrpuv_max);
+      continue;
+    }
+
+  /*
+    +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    ++++++++++++++++++++++ TEMP_MINMAX ++++++++++++++++++++++++++
+    +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  */
+    if(MatchSMV(buffer, "TEMP_MINMAX") == 1){
+      FGETS(buffer, 255, stream);
+      sscanf(buffer, "%f %f", &scase->temp_min, &scase->temp_max);
+      continue;
+    }
+  /*
+    +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     ++++++++++++++++++++++ OFFSET ++++++++++++++++++++++++++++++
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   */
@@ -8890,6 +8911,10 @@ void InitScase(smv_case *scase) {
   scase->global_tbegin = 1.0;
   scase->smoke_albedo = 0.3;
   scase->smoke_albedo_base = 0.3;
+  scase->hrrpuv_min = 0.0;
+  scase->hrrpuv_max = 1200;
+  scase->temp_min = 0.0;
+  scase->temp_max = 2000;
   scase->xbar = 1.0;
   scase->ybar = 1.0;
   scase->zbar = 1.0;
