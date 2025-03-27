@@ -1198,8 +1198,6 @@ extern "C" void GLUISmoke3dCB(int var){
 #ifdef pp_FIRE_HIST
   case UPDATE_FIRE_HISTOGRAM:
     if(update_fire_histogram == 1){
-      int i;
-
       for(i = 0; i < 257; i++){
         smoke3d_firecounts[i] = 0;
         smoke3d_firevals[i]   = 0.0;
@@ -1223,8 +1221,6 @@ extern "C" void GLUISmoke3dCB(int var){
       }
     }
     else{
-      int i;
-
       for(i = 0; global_scase.smoke3dcoll.nsmoke3dinfo; i++){
         smoke3ddata *smoke3di;
 
