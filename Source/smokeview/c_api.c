@@ -2701,7 +2701,7 @@ int SetOffsetslice(int v) {
 } // OFFSETSLICE
 
 int SetOutlinemode(int a, int b) {
-  highlight_flag = a;
+  outline_mode = a;
   outline_color_flag = b;
   return 0;
 } // OUTLINEMODE

@@ -2684,6 +2684,9 @@ void UpdateFaceListsWorker(void){
       vi = meshi->ventinfo+j-vent_offset;
       facej = meshi->faceinfo + j;
 
+      if(j >= outline_offset && j < outline_offset + 6){
+        facej->linecolor = foregroundcolor;
+      }
 
       if(showonly_hiddenfaces==0&&facej->hidden==1)continue;
       if(showonly_hiddenfaces==1&&facej->hidden==0)continue;
@@ -2698,7 +2701,7 @@ void UpdateFaceListsWorker(void){
       if(j<vent_offset){
         if(visBlocks==visBLOCKHide)continue;
       }
-      if(j>=outline_offset&&j<outline_offset+6){
+      if(j>=outline_offset&&j<outline_offset+6&&global_scase.visFrame==0){
         continue;
       }
       if(j>=vent_offset&&j<vent_offset+meshi->nvents){
@@ -3299,10 +3302,10 @@ void DrawFacesOLD(int option){
         else{
           vertices = facei->exact_vertex_coords;
         }
-        if(facei->type2 != OUTLINE_FRAME_face || highlight_flag == 1){
+        if(facei->type2 != OUTLINE_FRAME_face || outline_mode == SCENE_OUTLINE_MESH){
           glEnd();
           if(global_scase.meshescoll.nmeshes > 1 && facei->type2 == OUTLINE_FRAME_face &&
-            highlight_mesh == facei->meshindex && highlight_flag == 1){
+            highlight_mesh == facei->meshindex && outline_mode == SCENE_OUTLINE_MESH){
             glLineWidth(highlight_linewidth);
           }
           else{
@@ -3601,10 +3604,10 @@ void DrawFaces(){
         else{
           vertices = facei->exact_vertex_coords;
         }
-        if(facei->type2!=OUTLINE_FRAME_face||highlight_flag==1){
+        if(facei->type2!=OUTLINE_FRAME_face || outline_mode==SCENE_OUTLINE_MESH){
           glEnd();
           if(global_scase.meshescoll.nmeshes>1&&facei->type2==OUTLINE_FRAME_face&&
-            highlight_mesh==facei->meshindex&&highlight_flag==1){
+            highlight_mesh==facei->meshindex&&outline_mode==1){
             glLineWidth(highlight_linewidth);
           }
           else{

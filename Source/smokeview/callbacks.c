@@ -2234,16 +2234,24 @@ void Keyboard(unsigned char key, int flag){
         }
       }
       else{
-        highlight_flag++;
-        if(highlight_flag!=0&&global_scase.visFrame==0){
+        outline_mode++;
+        if(outline_mode!=SCENE_OUTLINE_HIDDEN&&global_scase.visFrame==0){
           global_scase.visFrame = 1;
           updatefacelists = 1;
           updatemenu = 1;
           glutPostRedisplay();
         }
-        if(highlight_flag>2&&global_scase.noutlineinfo>0)highlight_flag=0;
-        if(highlight_flag>1&&global_scase.noutlineinfo==0)highlight_flag=0;
-        PRINTF("outline mode=%i\n",highlight_flag);
+        if(outline_mode>2&&global_scase.noutlineinfo>0)outline_mode=SCENE_OUTLINE_HIDDEN;
+        if(outline_mode>1&&global_scase.noutlineinfo==0)outline_mode=SCENE_OUTLINE_HIDDEN;
+        if(outline_mode==SCENE_OUTLINE_HIDDEN){
+          global_scase.visFrame = 0;
+        }
+        else{
+          global_scase.visFrame = 1;
+        }
+        if(outline_mode==SCENE_OUTLINE_HIDDEN)PRINTF("outline mode: hidden\n",outline_mode);
+        if(outline_mode==SCENE_OUTLINE_MESH)PRINTF("outline mode: mesh\n",outline_mode);
+        if(outline_mode==SCENE_OUTLINE_SCENE)PRINTF("outline mode: scene\n",outline_mode);
       }
       break;
     case 'P':
@@ -2308,7 +2316,9 @@ void Keyboard(unsigned char key, int flag){
       else{
         blocklocation++;
       }
-      if(blocklocation == BLOCKlocation_cad && highlight_flag == 1)highlight_flag = 2;
+      if(blocklocation == BLOCKlocation_cad && outline_mode == SCENE_OUTLINE_MESH){
+        outline_mode = SCENE_OUTLINE_SCENE;
+      }
 
       if((NCADGeom(&global_scase.cadgeomcoll)==0&&blocklocation>BLOCKlocation_exact)||blocklocation>BLOCKlocation_cad){
         blocklocation=BLOCKlocation_grid;
