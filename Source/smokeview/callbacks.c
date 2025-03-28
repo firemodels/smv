@@ -2243,7 +2243,15 @@ void Keyboard(unsigned char key, int flag){
         }
         if(outline_mode>2&&global_scase.noutlineinfo>0)outline_mode=SCENE_OUTLINE_HIDDEN;
         if(outline_mode>1&&global_scase.noutlineinfo==0)outline_mode=SCENE_OUTLINE_HIDDEN;
-        PRINTF("outline mode=%i\n",outline_mode);
+        if(outline_mode==SCENE_OUTLINE_HIDDEN){
+          global_scase.visFrame = 0;
+        }
+        else{
+          global_scase.visFrame = 1;
+        }
+        if(outline_mode==SCENE_OUTLINE_HIDDEN)PRINTF("outline mode: hidden\n",outline_mode);
+        if(outline_mode==SCENE_OUTLINE_MESH)PRINTF("outline mode: mesh\n",outline_mode);
+        if(outline_mode==SCENE_OUTLINE_SCENE)PRINTF("outline mode: scene\n",outline_mode);
       }
       break;
     case 'P':

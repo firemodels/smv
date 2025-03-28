@@ -240,6 +240,7 @@ EXTERNCPP void UpdateCurrentColorbar(colorbardata *cb);
 EXTERNCPP void UpdateShowColorbar(int *showcfast_arg, int *show_slice_colorbar_arg,
   int *show_hvacduct_colorbar_arg, int *show_hvacnode_colorbar_arg);
 EXTERNCPP void UpdateTimeLabels(void);
+EXTERNCPP void UpdateOutlineMode(void);
 
 //*** drawGeometry.c headers
 
