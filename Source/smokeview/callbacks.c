@@ -2235,14 +2235,14 @@ void Keyboard(unsigned char key, int flag){
       }
       else{
         outline_mode++;
-        if(outline_mode!=0&&global_scase.visFrame==0){
+        if(outline_mode!=SCENE_OUTLINE_HIDDEN&&global_scase.visFrame==0){
           global_scase.visFrame = 1;
           updatefacelists = 1;
           updatemenu = 1;
           glutPostRedisplay();
         }
-        if(outline_mode>2&&global_scase.noutlineinfo>0)outline_mode=0;
-        if(outline_mode>1&&global_scase.noutlineinfo==0)outline_mode=0;
+        if(outline_mode>2&&global_scase.noutlineinfo>0)outline_mode=SCENE_OUTLINE_HIDDEN;
+        if(outline_mode>1&&global_scase.noutlineinfo==0)outline_mode=SCENE_OUTLINE_HIDDEN;
         PRINTF("outline mode=%i\n",outline_mode);
       }
       break;
@@ -2308,7 +2308,9 @@ void Keyboard(unsigned char key, int flag){
       else{
         blocklocation++;
       }
-      if(blocklocation == BLOCKlocation_cad && outline_mode == 1)outline_mode = 2;
+      if(blocklocation == BLOCKlocation_cad && outline_mode == SCENE_OUTLINE_MESH){
+        outline_mode = SCENE_OUTLINE_SCENE;
+      }
 
       if((NCADGeom(&global_scase.cadgeomcoll)==0&&blocklocation>BLOCKlocation_exact)||blocklocation>BLOCKlocation_cad){
         blocklocation=BLOCKlocation_grid;

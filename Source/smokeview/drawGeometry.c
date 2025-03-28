@@ -3302,10 +3302,10 @@ void DrawFacesOLD(int option){
         else{
           vertices = facei->exact_vertex_coords;
         }
-        if(facei->type2 != OUTLINE_FRAME_face || outline_mode == 1){
+        if(facei->type2 != OUTLINE_FRAME_face || outline_mode == SCENE_OUTLINE_MESH){
           glEnd();
           if(global_scase.meshescoll.nmeshes > 1 && facei->type2 == OUTLINE_FRAME_face &&
-            highlight_mesh == facei->meshindex && outline_mode == 1){
+            highlight_mesh == facei->meshindex && outline_mode == SCENE_OUTLINE_MESH){
             glLineWidth(highlight_linewidth);
           }
           else{
@@ -3604,7 +3604,7 @@ void DrawFaces(){
         else{
           vertices = facei->exact_vertex_coords;
         }
-        if(facei->type2!=OUTLINE_FRAME_face||outline_mode==1){
+        if(facei->type2!=OUTLINE_FRAME_face || outline_mode==SCENE_OUTLINE_MESH){
           glEnd();
           if(global_scase.meshescoll.nmeshes>1&&facei->type2==OUTLINE_FRAME_face&&
             highlight_mesh==facei->meshindex&&outline_mode==1){

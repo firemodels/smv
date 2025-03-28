@@ -1910,7 +1910,7 @@ SVEXTERN char script_renderdir[1024], script_renderfilesuffix[1024], script_rend
 SVEXTERN char SVDECL(*script_renderdir_cmd, NULL);
 SVEXTERN inifiledata first_inifile, last_inifile;
 SVEXTERN char script_filename[1024];
-SVEXTERN int SVDECL(highlight_block,-1), SVDECL(highlight_mesh,0), SVDECL(outline_mode,2);
+SVEXTERN int SVDECL(highlight_block,-1), SVDECL(highlight_mesh,0), SVDECL(outline_mode,SCENE_OUTLINE_SCENE);
 SVEXTERN int SVDECL(updategetobstlabels,1);
 
 SVEXTERN int smoke_alpha;

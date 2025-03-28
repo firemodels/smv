@@ -11420,10 +11420,10 @@ int ReadSMV_Configure(){
   PRINT_TIMER(timer_readsmv, "InitClip");
 
   if(global_scase.noutlineinfo>0){
-    outline_mode=2;
+    outline_mode=SCENE_OUTLINE_SCENE;
   }
   else{
-    outline_mode=1;
+    outline_mode=SCENE_OUTLINE_MESH;
   }
   InitCadColors();
   PRINT_TIMER(timer_readsmv, "InitCadColors");
@@ -13693,7 +13693,7 @@ int ReadIni2(const char *inifile, int localfile){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%i %i", &outline_mode, &outline_color_flag);
       if(global_scase.meshescoll.nmeshes<2){
-        ONEORZERO(outline_mode);
+        outline_mode = CLAMP(outline_mode, 0, 1);
       }
       continue;
     }
