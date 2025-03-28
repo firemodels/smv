@@ -848,12 +848,12 @@ SVEXTERN int SVDECL(show_cface_normals, 0);
 
 SVEXTERN int SVDECL(show_iso_normal, 0), SVDECL(smooth_iso_normal, 1);
 
-SVEXTERN int SVDECL(boundary_edgetype, OUTLINE_HIDDEN);
+SVEXTERN int SVDECL(boundary_edgetype, GEOM_OUTLINE_HIDDEN);
 
-SVEXTERN int SVDECL(glui_slice_edgetype, OUTLINE_HIDDEN);
+SVEXTERN int SVDECL(glui_slice_edgetype, GEOM_OUTLINE_HIDDEN);
 SVEXTERN int SVDECL(slice_celltype, 0);
 #ifdef INMAIN
-  SVEXTERN int slice_edgetypes[3] = {OUTLINE_HIDDEN, OUTLINE_HIDDEN, OUTLINE_HIDDEN};
+  SVEXTERN int slice_edgetypes[3] = {GEOM_OUTLINE_HIDDEN, GEOM_OUTLINE_HIDDEN, GEOM_OUTLINE_HIDDEN};
 #else
   SVEXTERN int slice_edgetypes[3];
 #endif
