@@ -2684,6 +2684,9 @@ void UpdateFaceListsWorker(void){
       vi = meshi->ventinfo+j-vent_offset;
       facej = meshi->faceinfo + j;
 
+      if(j >= outline_offset && j < outline_offset + 6){
+        facej->linecolor = foregroundcolor;
+      }
 
       if(showonly_hiddenfaces==0&&facej->hidden==1)continue;
       if(showonly_hiddenfaces==1&&facej->hidden==0)continue;
