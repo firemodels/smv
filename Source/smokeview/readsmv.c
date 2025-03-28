@@ -11420,10 +11420,10 @@ int ReadSMV_Configure(){
   PRINT_TIMER(timer_readsmv, "InitClip");
 
   if(global_scase.noutlineinfo>0){
-    highlight_flag=2;
+    outline_mode=2;
   }
   else{
-    highlight_flag=1;
+    outline_mode=1;
   }
   InitCadColors();
   PRINT_TIMER(timer_readsmv, "InitCadColors");
@@ -13691,9 +13691,9 @@ int ReadIni2(const char *inifile, int localfile){
     }
     if(MatchINI(buffer, "OUTLINEMODE") == 1){
       fgets(buffer, 255, stream);
-      sscanf(buffer, "%i %i", &highlight_flag, &outline_color_flag);
+      sscanf(buffer, "%i %i", &outline_mode, &outline_color_flag);
       if(global_scase.meshescoll.nmeshes<2){
-        ONEORZERO(highlight_flag);
+        ONEORZERO(outline_mode);
       }
       continue;
     }
@@ -16896,7 +16896,7 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, "OFFSETSLICE\n");
   fprintf(fileout, " %i\n", offset_slice);
   fprintf(fileout, "OUTLINEMODE\n");
-  fprintf(fileout, " %i %i\n", highlight_flag, outline_color_flag);
+  fprintf(fileout, " %i %i\n", outline_mode, outline_color_flag);
   fprintf(fileout, "P3DSURFACETYPE\n");
   fprintf(fileout, " %i\n", p3dsurfacetype);
   fprintf(fileout, "P3DSURFACESMOOTH\n");
