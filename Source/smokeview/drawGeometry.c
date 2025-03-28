@@ -2698,7 +2698,7 @@ void UpdateFaceListsWorker(void){
       if(j<vent_offset){
         if(visBlocks==visBLOCKHide)continue;
       }
-      if(j>=outline_offset&&j<outline_offset+6){
+      if(j>=outline_offset&&j<outline_offset+6&&global_scase.visFrame==0){
         continue;
       }
       if(j>=vent_offset&&j<vent_offset+meshi->nvents){
