@@ -1220,14 +1220,6 @@ extern "C" void GLUISmoke3dCB(int var){
         }
       }
     }
-    else{
-      for(i = 0; global_scase.smoke3dcoll.nsmoke3dinfo; i++){
-        smoke3ddata *smoke3di;
-
-        smoke3di = global_scase.smoke3dcoll.smoke3dinfo + i;
-        FREEMEMORY(smoke3di->histtimes);
-      }
-    }
     break;
 #endif
   case USE_FIRE_COLORMAP:
