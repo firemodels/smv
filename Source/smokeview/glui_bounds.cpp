@@ -3917,11 +3917,11 @@ extern "C" void GLUIImmersedBoundCB(int var){
     glui_show_slice_values   = show_slice_values[slice_celltype];
     for(i=0;i<3;i++){
       switch(slice_edgetypes[i]){
-        case OUTLINE_POLYGON:
-        case OUTLINE_TRIANGLE:
+        case GEOM_OUTLINE_POLYGON:
+        case GEOM_OUTLINE_TRIANGLE:
           show_slice_outlines[i]=1;
           break;
-        case OUTLINE_HIDDEN:
+        case GEOM_OUTLINE_HIDDEN:
           show_slice_outlines[i]=0;
           break;
 	      default:
@@ -3953,10 +3953,10 @@ extern "C" void GLUIImmersedBoundCB(int var){
     break;
   case IMMERSED_SET_DRAWTYPE:
     if(glui_show_slice_outlines == 0){
-      glui_slice_edgetype = OUTLINE_HIDDEN;
+      glui_slice_edgetype = GEOM_OUTLINE_HIDDEN;
     }
     else{
-      if(glui_slice_edgetype == OUTLINE_HIDDEN)glui_slice_edgetype = OUTLINE_TRIANGLE;
+      if(glui_slice_edgetype == GEOM_OUTLINE_HIDDEN)glui_slice_edgetype = GEOM_OUTLINE_TRIANGLE;
     }
     show_vector_slice[slice_celltype]   = glui_show_vector_slice;
     slice_edgetypes[slice_celltype]     = glui_slice_edgetype;
@@ -4018,13 +4018,13 @@ extern "C" void BoundBoundCB(int var){
 #endif
   case SHOW_BOUNDARY_OUTLINE:
     if(global_scase.ngeom_data==0)break;
-    if(show_boundary_outline==1&&boundary_edgetype==OUTLINE_HIDDEN)boundary_edgetype = OUTLINE_POLYGON;
-    if(show_boundary_outline==0&&boundary_edgetype!=OUTLINE_HIDDEN)boundary_edgetype = OUTLINE_HIDDEN;
+    if(show_boundary_outline==1&&boundary_edgetype==GEOM_OUTLINE_HIDDEN)boundary_edgetype = GEOM_OUTLINE_POLYGON;
+    if(show_boundary_outline==0&&boundary_edgetype!=GEOM_OUTLINE_HIDDEN)boundary_edgetype = GEOM_OUTLINE_HIDDEN;
     if(boundary_edgetype!=RADIO_boundary_edgetype->get_int_val())RADIO_boundary_edgetype->set_int_val(boundary_edgetype);
     break;
   case BOUNDARY_EDGETYPE:
-    if(boundary_edgetype==OUTLINE_HIDDEN&&show_boundary_outline==1)show_boundary_outline=0;
-    if(boundary_edgetype!=OUTLINE_HIDDEN&&show_boundary_outline==0)show_boundary_outline=1;
+    if(boundary_edgetype==GEOM_OUTLINE_HIDDEN&&show_boundary_outline==1)show_boundary_outline=0;
+    if(boundary_edgetype!=GEOM_OUTLINE_HIDDEN&&show_boundary_outline==0)show_boundary_outline=1;
     if(show_boundary_outline!=CHECKBOX_show_boundary_outline->get_int_val())CHECKBOX_show_boundary_outline->set_int_val(show_boundary_outline);
     break;
   case UPDATE_BOUNDARYSLICEDUPS:

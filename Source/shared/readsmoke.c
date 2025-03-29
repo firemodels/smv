@@ -30,6 +30,9 @@ void FreeSmoke3D(smv_case *scase, smoke3ddata *smoke3di){
   FREEMEMORY(smoke3di->smokeframe_in);
   FREEMEMORY(smoke3di->smokeframe_out);
   FREEMEMORY(smoke3di->timeslist);
+#ifdef pp_FIRE_HIST
+  FREEMEMORY(smoke3di->histtimes);
+#endif
   FREEMEMORY(smoke3di->times);
   FREEMEMORY(smoke3di->times_map);
   FREEMEMORY(smoke3di->use_smokeframe);

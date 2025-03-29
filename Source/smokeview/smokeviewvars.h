@@ -848,12 +848,12 @@ SVEXTERN int SVDECL(show_cface_normals, 0);
 
 SVEXTERN int SVDECL(show_iso_normal, 0), SVDECL(smooth_iso_normal, 1);
 
-SVEXTERN int SVDECL(boundary_edgetype, OUTLINE_HIDDEN);
+SVEXTERN int SVDECL(boundary_edgetype, GEOM_OUTLINE_HIDDEN);
 
-SVEXTERN int SVDECL(glui_slice_edgetype, OUTLINE_HIDDEN);
+SVEXTERN int SVDECL(glui_slice_edgetype, GEOM_OUTLINE_HIDDEN);
 SVEXTERN int SVDECL(slice_celltype, 0);
 #ifdef INMAIN
-  SVEXTERN int slice_edgetypes[3] = {OUTLINE_HIDDEN, OUTLINE_HIDDEN, OUTLINE_HIDDEN};
+  SVEXTERN int slice_edgetypes[3] = {GEOM_OUTLINE_HIDDEN, GEOM_OUTLINE_HIDDEN, GEOM_OUTLINE_HIDDEN};
 #else
   SVEXTERN int slice_edgetypes[3];
 #endif
@@ -1909,7 +1909,7 @@ SVEXTERN char script_renderdir[1024], script_renderfilesuffix[1024], script_rend
 SVEXTERN char SVDECL(*script_renderdir_cmd, NULL);
 SVEXTERN inifiledata first_inifile, last_inifile;
 SVEXTERN char script_filename[1024];
-SVEXTERN int SVDECL(highlight_block,-1), SVDECL(highlight_mesh,0), SVDECL(highlight_flag,2);
+SVEXTERN int SVDECL(highlight_block,-1), SVDECL(highlight_mesh,0), SVDECL(outline_mode,SCENE_OUTLINE_SCENE);
 SVEXTERN int SVDECL(updategetobstlabels,1);
 
 SVEXTERN int smoke_alpha;
@@ -1948,6 +1948,11 @@ SVEXTERN float SVDECL(global_hrrpuv_cb_min_default,200.0), SVDECL(global_hrrpuv_
 
 SVEXTERN int SVDECL(global_cb_min_index, 0),               SVDECL(global_cb_max_index, 255);
 SVEXTERN int SVDECL(global_cb_min_index_default, 0),       SVDECL(global_cb_max_index_default, 255);
+
+#ifdef pp_FIRE_HIST
+SVEXTERN float smoke3d_firevals[257];
+SVEXTERN int   smoke3d_firecounts[257], SVDECL(update_fire_histogram, 0);
+#endif
 
 SVEXTERN int SVDECL(show_smoke3d_colorbar, 0);
 

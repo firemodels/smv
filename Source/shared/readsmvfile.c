@@ -3747,6 +3747,9 @@ int ParseSMOKE3DProcess(smv_case *scase, bufferstreamdata *stream, char *buffer,
 #endif
     smoke3di->smokeview_tmp = NULL;
     smoke3di->times = NULL;
+#ifdef pp_FIRE_HIST
+    smoke3di->histtimes = NULL;
+#endif
     smoke3di->times_map = NULL;
     smoke3di->use_smokeframe = NULL;
     smoke3di->smokeframe_loaded = NULL;

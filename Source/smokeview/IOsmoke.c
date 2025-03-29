@@ -3390,6 +3390,21 @@ void DrawSmoke3DColorMap(void){
     glVertex3f(yright2, 0.0, ytop);
     glVertex3f(yleft2,  0.0, ytop);
   }
+#ifdef pp_FIRE_HIST
+  if(update_fire_histogram == 1){
+    glColor3fv(foregroundcolor);
+    for(i = 0; i < 255; i++){
+
+      ybot = (float)i / 255.0;
+      ytop = (float)(i + 1) / 255.0;
+
+      glVertex3f(yright2, 0.0, ybot);
+      glVertex3f(yright2+smoke3d_firevals[i]/3.0, 0.0, ybot);
+      glVertex3f(yright2+smoke3d_firevals[i]/3.0, 0.0, ytop);
+      glVertex3f(yright2, 0.0, ytop);
+    }
+  }
+#endif
   glEnd();
 
   float firemin_cb, firemax_cb;
@@ -4610,6 +4625,30 @@ int UpdateSmoke3D(smoke3ddata *smoke3di){
   case COMPRESSED_RLE:
     buffer_in = smoke3di->smokeframe_comp_list[iframe_local];
     countout = UnCompressRLE(buffer_in,countin,smoke3di->smokeframe_in);
+#ifdef pp_FIRE_HIST
+    if(update_fire_histogram == 1 && smoke3di->is_fire==1 && smoke3di->histtimes != NULL && smoke3di->histtimes[iframe_local] == 0){
+      int i;
+      unsigned char *vals;
+
+      vals = smoke3di->smokeframe_in;
+      smoke3di->histtimes[iframe_local] = 1;
+      for(i = 0; i < countout; i++){
+        smoke3d_firecounts[vals[i]]++;
+      }
+      smoke3d_firecounts[0] = 0;
+
+      smoke3d_firevals[256] = 0.0;
+      for(i = 0; i < 256; i++){
+        smoke3d_firevals[i] = (float)smoke3d_firecounts[i];
+        smoke3d_firevals[256] = MAX(smoke3d_firevals[256], smoke3d_firevals[i]);
+      }
+      float denom = 1.0;
+      if(smoke3d_firevals[256] > 0.0)denom = smoke3d_firevals[256];
+      for(i = 0; i < 256; i++){
+        smoke3d_firevals[i] /= denom;
+      }
+    }
+#endif
     CheckMemory;
     break;
   case COMPRESSED_ZLIB:
@@ -5024,6 +5063,8 @@ void MergeSmoke3D(smoke3ddata *smoke3dset){
   }
   PRINT_TIMER(merge_smoke_time, "MergeSmoke3D");
 }
+
+/* ------------------ MergeSmoke3DAll ------------------------ */
 
 void MergeSmoke3DAll(void){
   int i;

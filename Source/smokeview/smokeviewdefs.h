@@ -433,9 +433,13 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 
 #define MAX_CELL_TYPES 3
 
-#define OUTLINE_POLYGON  0
-#define OUTLINE_TRIANGLE 1
-#define OUTLINE_HIDDEN   2
+#define GEOM_OUTLINE_POLYGON  0
+#define GEOM_OUTLINE_TRIANGLE 1
+#define GEOM_OUTLINE_HIDDEN   2
+
+#define SCENE_OUTLINE_HIDDEN 0
+#define SCENE_OUTLINE_MESH   1
+#define SCENE_OUTLINE_SCENE  2
 
 #define EMBED_YES 0
 #define EMBED_NO  1
