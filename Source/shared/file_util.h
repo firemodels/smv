@@ -16,7 +16,7 @@ extern int show_timings;
 #include "options.h"
 #include <stdio.h>
 #endif
-#ifdef pp_GCC
+#ifdef __GNU__
 #include <unistd.h>
 #endif
 
